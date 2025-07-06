@@ -388,6 +388,12 @@ func parseSimple(src string) []byte {
 	lines := strings.Split(src, "\n")
 	for i, line := range lines {
 		l := strings.TrimSpace(line)
+		if strings.HasPrefix(l, "module ") || strings.HasPrefix(l, "import ") {
+			continue
+		}
+		if strings.HasPrefix(l, "data ") || strings.HasPrefix(l, "newtype ") || strings.HasPrefix(l, "type ") || strings.HasPrefix(l, "instance ") {
+			continue
+		}
 		if strings.HasPrefix(l, "main =") {
 			body := strings.TrimSpace(strings.TrimPrefix(l, "main ="))
 			if body == "do" && i+1 < len(lines) {

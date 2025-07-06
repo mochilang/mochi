@@ -1,99 +1,99 @@
 # Errors
 
-- append_builtin: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- avg_builtin: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- basic_compare: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- binary_precedence: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- bool_chain: parse error: parse error: 18:37: lexer: invalid input text "$)\nprint(1 < 2))..."
-- break_continue: parse error: parse error: 19:23: lexer: invalid input text "`mod` 2) == 0) t..."
-- cast_string_to_int: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- cast_struct: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- closure: parse error: parse error: 18:32: lexer: invalid input text "\\x(->, (x, +, n)..."
-- count_builtin: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- cross_join: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- cross_join_filter: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- cross_join_triple: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- dataset_sort_take_limit: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- dataset_where_filter: parse error: parse error: 19:315: lexer: invalid input text "\\person, ->, (fr..."
-- exists_builtin: parse error: parse error: 19:42: lexer: invalid input text "\\x, ->, (x, ==, ..."
-- for_list_collection: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- for_loop: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- for_map_collection: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- fun_call: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- fun_expr_in_let: parse error: parse error: 18:15: lexer: invalid input text "\\x(->, (x, *, x)..."
-- fun_three_args: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- group_by: parse error: parse error: 19:235: lexer: invalid input text "\\person, ->, fro..."
-- group_by_conditional_sum: parse error: parse error: 19:278: lexer: invalid input text "\\(i), ->, fromMa..."
-- group_by_having: parse error: parse error: 19:128: lexer: invalid input text "\\p, ->, fromMayb..."
-- group_by_join: parse error: parse error: 20:299: lexer: invalid input text "\\(o,, c), ->, fr..."
-- group_by_left_join: parse error: parse error: 20:110: lexer: invalid input text "\\r, ->, fromMayb..."
-- group_by_multi_join: parse error: parse error: 22:198: lexer: invalid input text "\\x, ->, fromMayb..."
-- group_by_multi_join_sort: parse error: parse error: 24:2067: lexer: invalid input text "\\(c,, o,, l,, n)..."
-- group_by_sort: parse error: parse error: 19:321: lexer: invalid input text "\\(i), ->, fromMa..."
-- group_items_iteration: parse error: parse error: 19:47: lexer: invalid input text "\\d, ->, fromMayb..."
+- append_builtin: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- avg_builtin: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- basic_compare: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- binary_precedence: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- bool_chain: parse error: parse error: 17:37: lexer: invalid input text "$)\nprint(1 < 2))..."
+- break_continue: parse error: parse error: 18:23: lexer: invalid input text "`mod` 2) == 0) t..."
+- cast_string_to_int: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- cast_struct: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- closure: parse error: parse error: 17:32: lexer: invalid input text "\\x(->, (x, +, n)..."
+- count_builtin: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- cross_join: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- cross_join_filter: parse error: parse error: 19:96: lexer: invalid input text "`mod` 2) == 0)]\n..."
+- cross_join_triple: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- dataset_sort_take_limit: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- dataset_where_filter: parse error: parse error: 18:285: lexer: invalid input text "\\person -> (from..."
+- exists_builtin: parse error: parse error: 17:42: lexer: invalid input text "\\x, ->, (x, ==, ..."
+- for_list_collection: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- for_loop: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- for_map_collection: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- fun_call: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- fun_expr_in_let: parse error: parse error: 17:15: lexer: invalid input text "\\x(->, (x, *, x)..."
+- fun_three_args: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- group_by: parse error: parse error: 18:208: lexer: invalid input text "\\person -> fromM..."
+- group_by_conditional_sum: parse error: parse error: 18:278: lexer: invalid input text "\\(i), ->, fromMa..."
+- group_by_having: parse error: parse error: 18:114: lexer: invalid input text "\\p -> fromMaybe ..."
+- group_by_join: parse error: parse error: 19:264: lexer: invalid input text "\\(o, c) -> fromM..."
+- group_by_left_join: parse error: parse error: 19:98: lexer: invalid input text "\\r -> fromMaybe ..."
+- group_by_multi_join: parse error: parse error: 21:176: lexer: invalid input text "\\x -> fromMaybe ..."
+- group_by_multi_join_sort: parse error: parse error: 23:2067: lexer: invalid input text "\\(c,, o,, l,, n)..."
+- group_by_sort: parse error: parse error: 18:321: lexer: invalid input text "\\(i), ->, fromMa..."
+- group_items_iteration: parse error: parse error: 17:41: lexer: invalid input text "\\d -> fromMaybe ..."
 - if_else: compile error: unsupported statement in main
-- if_then_else: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- if_then_else_nested: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- in_operator: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- in_operator_extended: parse error: parse error: 19:28: lexer: invalid input text "\\x -> ((x % 2) =..."
-- inner_join: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- join_multi: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- json_builtin: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- left_join: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- left_join_multi: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- len_builtin: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- len_map: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- len_string: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- let_and_print: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- if_then_else: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- if_then_else_nested: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- in_operator: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- in_operator_extended: parse error: parse error: 18:28: lexer: invalid input text "\\x -> ((x `mod` ..."
+- inner_join: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- join_multi: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- json_builtin: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- left_join: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- left_join_multi: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- len_builtin: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- len_map: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- len_string: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- let_and_print: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
 - list_assign: compile error: unsupported statement in main
-- list_index: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- list_index: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
 - list_nested_assign: compile error: unsupported statement in main
-- list_set_ops: parse error: parse error: 19:24: lexer: invalid input text "\\, [2]))\nprint(L..."
-- load_yaml: parse error: parse error: 20:96: lexer: invalid input text "\\p, ->, (age, (p..."
+- list_set_ops: parse error: parse error: 18:22: lexer: invalid input text "\\ [2])\nprint(Lis..."
+- load_yaml: parse error: parse error: 18:86: lexer: invalid input text "\\p -> (age (p) >..."
 - map_assign: compile error: unsupported statement in main
-- map_in_operator: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- map_index: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- map_int_key: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- map_literal_dynamic: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- map_membership: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- map_in_operator: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- map_index: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- map_int_key: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- map_literal_dynamic: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- map_membership: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
 - map_nested_assign: compile error: unsupported statement in main
-- match_expr: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- match_full: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- math_ops: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- membership: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- min_max_builtin: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- nested_function: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- order_by_map: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- outer_join: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- partial_application: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- print_hello: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- pure_fold: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- pure_global_fold: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- query_sum_select: parse error: parse error: 19:41: lexer: invalid input text "\\n, ->, (n, >, 1..."
-- record_assign: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- right_join: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- save_jsonl_stdout: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- short_circuit: parse error: parse error: 18:53: lexer: invalid input text "$) }\nprint(false..."
-- slice: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- sort_stable: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- str_builtin: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- string_compare: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- string_concat: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- string_contains: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- string_in_operator: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- string_index: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- string_prefix_slice: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- substring_builtin: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- sum_builtin: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- tail_recursion: parse error: parse error: 18:53: lexer: invalid input text "$) }\nprint(sum_r..."
-- test_block: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- tree_sum: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- two-sum: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- typed_let: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- typed_var: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- unary_neg: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- match_expr: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- match_full: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- math_ops: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- membership: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- min_max_builtin: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- nested_function: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- order_by_map: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- outer_join: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- partial_application: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- print_hello: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- pure_fold: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- pure_global_fold: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- query_sum_select: parse error: parse error: 18:36: lexer: invalid input text "\\n -> (n > 1)) n..."
+- record_assign: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- right_join: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- save_jsonl_stdout: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- short_circuit: parse error: parse error: 17:53: lexer: invalid input text "$) }\nprint(false..."
+- slice: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- sort_stable: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- str_builtin: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- string_compare: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- string_concat: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- string_contains: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- string_in_operator: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- string_index: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- string_prefix_slice: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- substring_builtin: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- sum_builtin: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- tail_recursion: parse error: parse error: 17:53: lexer: invalid input text "$) }\nprint(sum_r..."
+- test_block: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- tree_sum: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- two-sum: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- typed_let: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- typed_var: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- unary_neg: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
 - update_stmt: compile error: unsupported statement in main
-- user_type_literal: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
-- values_builtin: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- user_type_literal: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- values_builtin: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
 - var_assignment: compile error: unsupported statement in main
-- while_loop: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- while_loop: parse error: parse error: 1:12: unexpected token "(" (expected ")" (":" TypeRef)? "{" Statement* "}")
