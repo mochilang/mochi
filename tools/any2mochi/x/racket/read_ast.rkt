@@ -2,7 +2,9 @@
 (require json)
 (define in (current-input-port))
 (define src (port->string in))
-(define stx (read-syntax "source" (open-input-string src)))
+(define stx
+  (parameterize ([read-accept-reader #t])
+    (read-syntax "source" (open-input-string src))))
 (define (s->jsexpr x)
   (cond
     [(syntax? x) (hash 'type "syntax"

@@ -3,9 +3,12 @@ package racket
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"runtime"
+	"strconv"
 	"strings"
 	"unicode"
 )
@@ -160,8 +163,17 @@ func parseOfficial(src string) ([]item, error) {
 	cmd := exec.Command("racket", scriptPath)
 	cmd.Stdin = strings.NewReader(src)
 	var out bytes.Buffer
+	var errBuf bytes.Buffer
 	cmd.Stdout = &out
+	cmd.Stderr = &errBuf
 	if err := cmd.Run(); err != nil {
+		msg := strings.TrimSpace(errBuf.String())
+		if msg != "" {
+			if line := parseErrorLine(msg); line > 0 {
+				msg += "\n" + snippetAround(src, line)
+			}
+			return nil, fmt.Errorf("%v: %s", err, msg)
+		}
 		return nil, err
 	}
 	var node map[string]interface{}
@@ -180,11 +192,29 @@ func parseOfficial(src string) ([]item, error) {
 }
 
 func parse(src string) []item {
-	if items, err := parseOfficial(src); err == nil && len(items) > 0 {
-		return items
+	items, err := parseOfficial(src)
+	if err == nil {
+		extra := parseTokens(tokenize(src))
+		for _, it := range extra {
+			if it.Kind == "func" || it.Kind == "var" {
+				dup := false
+				for _, ex := range items {
+					if ex.Kind == it.Kind && ex.Name == it.Name {
+						dup = true
+						break
+					}
+				}
+				if dup {
+					continue
+				}
+			}
+			items = append(items, it)
+		}
+		if len(items) > 0 {
+			return items
+		}
 	}
-	toks := tokenize(src)
-	return parseTokens(toks)
+	return parseTokens(tokenize(src))
 }
 
 func currentFile() string {
@@ -229,7 +259,17 @@ func walkSyntax(src string, node map[string]interface{}) []item {
 			// variable definition
 			if nameNode, ok := datum[1].(map[string]interface{}); ok {
 				nm, _ := nameNode["datum"].(string)
-				return []item{{Kind: "var", Name: nm, Value: "", StartLine: startLine, EndLine: endLine}}
+				val := ""
+				if len(datum) >= 3 {
+					if valNode, ok := datum[2].(map[string]interface{}); ok {
+						vp, _ := valNode["pos"].(float64)
+						vs, _ := valNode["span"].(float64)
+						if int(vp) >= 0 && int(vp+vs) <= len(src) {
+							val = strings.TrimSpace(src[int(vp):int(vp+vs)])
+						}
+					}
+				}
+				return []item{{Kind: "var", Name: nm, Value: val, StartLine: startLine, EndLine: endLine}}
 			}
 		}
 	}
@@ -248,4 +288,30 @@ func lineForPos(src string, pos int) int {
 		}
 	}
 	return cnt
+}
+
+func snippetAround(src string, line int) string {
+	lines := strings.Split(src, "\n")
+	start := line - 2
+	if start < 0 {
+		start = 0
+	}
+	end := line + 1
+	if end > len(lines) {
+		end = len(lines)
+	}
+	for i := start; i < end; i++ {
+		lines[i] = fmt.Sprintf("%3d: %s", i+1, lines[i])
+	}
+	return strings.Join(lines[start:end], "\n")
+}
+
+func parseErrorLine(msg string) int {
+	re := regexp.MustCompile(`line (\d+)`)
+	if m := re.FindStringSubmatch(msg); len(m) == 2 {
+		if n, err := strconv.Atoi(m[1]); err == nil {
+			return n
+		}
+	}
+	return 0
 }
