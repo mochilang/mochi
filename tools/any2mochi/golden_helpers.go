@@ -406,6 +406,71 @@ func RunConvertRunStatus(t *testing.T, dir, pattern string, convert func(string)
 	return runConvertRunStatus(t, dir, pattern, convert, lang, outExt, errExt)
 }
 
+// RunCompileConvertRunStatus compiles Mochi source files to another language,
+// converts the generated code back to Mochi and executes it with the VM. The
+// resulting status map contains any error message encountered for each file.
+// An empty message indicates success.
+func RunCompileConvertRunStatus(
+	t *testing.T,
+	dir, pattern string,
+	compile func(string) ([]byte, error),
+	convert func(string) ([]byte, error),
+	lang string,
+) map[string]string {
+	files, err := filepath.Glob(filepath.Join(dir, pattern))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(files) == 0 {
+		t.Fatalf("no files: %s", filepath.Join(dir, pattern))
+	}
+	status := make(map[string]string)
+	for _, src := range files {
+		name := strings.TrimSuffix(filepath.Base(src), filepath.Ext(src))
+		var errMsg string
+		t.Run(name, func(t *testing.T) {
+			langCode, err := compile(src)
+			if err == nil {
+				tmpDir := t.TempDir()
+				tmpFile := filepath.Join(tmpDir, name+"."+lang)
+				if wErr := os.WriteFile(tmpFile, langCode, 0644); wErr != nil {
+					t.Fatalf("write temp: %v", wErr)
+				}
+				var out []byte
+				out, err = convert(tmpFile)
+				if err == nil {
+					prog, pErr := parser.ParseString(string(out))
+					if pErr != nil {
+						err = fmt.Errorf("parse error: %w", pErr)
+					} else {
+						env := types.NewEnv(nil)
+						if errs := types.Check(prog, env); len(errs) > 0 {
+							err = fmt.Errorf("type error: %v", errs[0])
+						} else if p2, vErr := vm.CompileWithSource(prog, env, string(out)); vErr != nil {
+							err = fmt.Errorf("vm compile error: %w", vErr)
+						} else {
+							var buf bytes.Buffer
+							m := vm.New(p2, &buf)
+							if rErr := m.Run(); rErr != nil {
+								if ve, ok := rErr.(*vm.VMError); ok {
+									err = fmt.Errorf("vm run error:\n%s", ve.Format(p2))
+								} else {
+									err = fmt.Errorf("vm run error: %v", rErr)
+								}
+							}
+						}
+					}
+				}
+			}
+			if err != nil {
+				errMsg = err.Error()
+			}
+		})
+		status[name] = errMsg
+	}
+	return status
+}
+
 // WriteErrorsMarkdown writes all error messages to ERRORS.md in the provided
 // directory.
 func WriteErrorsMarkdown(dir string, errs []string) {
