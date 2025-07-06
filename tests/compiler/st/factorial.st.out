@@ -2,11 +2,11 @@ Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDict
 
 !Main class methodsFor: 'mochi'!
 factorial: n
-	((n <= 1)) ifTrue: [
-		^ 1
-	]
-	.
-	^ (n * (Main factorial: ((n - 1))))
+    ((n <= 1)) ifTrue: [
+        ^ 1
+    ]
+    .
+    ^ (n * (Main factorial: ((n - 1))))
 !
 
 !!

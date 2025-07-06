@@ -1,11 +1,13 @@
+Smalltalk at: #p put: nil.
+
 Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
 
 !Main class methodsFor: 'types'!
 newPerson: name age: age | dict |
-	dict := Dictionary new.
-	dict at: 'name' put: name.
-	dict at: 'age' put: age.
-	^ dict
+    dict := Dictionary new.
+    dict at: 'name' put: name.
+    dict at: 'age' put: age.
+    ^ dict
 !
 !!
 p := (Main newPerson: 'Ada' age: 42).

@@ -1,10 +1,12 @@
+Smalltalk at: #x put: nil.
+
 Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
 
 !!
 x := 5.
 ((x > 3)) ifTrue: [
-	('big') displayOn: Transcript. Transcript cr.
+    ('big') displayOn: Transcript. Transcript cr.
 ] ifFalse: [
-	('small') displayOn: Transcript. Transcript cr.
+    ('small') displayOn: Transcript. Transcript cr.
 ]
 .

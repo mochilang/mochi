@@ -2,7 +2,7 @@ Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDict
 
 !Main class methodsFor: 'mochi'!
 add: a b: b
-	^ (a + b)
+    ^ (a + b)
 !
 
 !!
