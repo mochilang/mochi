@@ -17,14 +17,16 @@ type Func struct {
 	Params   []string `json:"params"`
 	Body     []string `json:"body"`
 	Line     int      `json:"line"`
+	EndLine  int      `json:"end"`
 	Arity    int      `json:"arity"`
 	Exported bool     `json:"exported"`
 }
 
 type Record struct {
-	Name   string   `json:"name"`
-	Fields []string `json:"fields"`
-	Line   int      `json:"line"`
+	Name    string   `json:"name"`
+	Fields  []string `json:"fields"`
+	Line    int      `json:"line"`
+	EndLine int      `json:"end,omitempty"`
 }
 
 type AST struct {
