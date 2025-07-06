@@ -6,21 +6,36 @@ import (
 	"strings"
 )
 
-// ConvertCobol converts COBOL source code to Mochi using the language server.
+// ConvertCobol converts COBOL source code to Mochi using the cobolast CLI.
 func ConvertCobol(src string) ([]byte, error) {
-	ls := Servers["cobol"]
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+	ast, err := parseCobolCLI(src)
 	if err != nil {
 		return nil, err
 	}
-	if len(diags) > 0 {
-		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
-	}
-
 	var out strings.Builder
-	writeCobolSymbols(&out, ls, src, nil, syms)
+	for _, fn := range ast.Functions {
+		name := fn.Name
+		if name == "" {
+			name = "main"
+		}
+		out.WriteString("fun ")
+		out.WriteString(name)
+		out.WriteString("()")
+		stmts := parseCobolStatements(fn.Lines)
+		if len(stmts) == 0 {
+			out.WriteString(" {}\n")
+			continue
+		}
+		out.WriteString(" {\n")
+		for _, st := range stmts {
+			out.WriteString("  ")
+			out.WriteString(st)
+			out.WriteByte('\n')
+		}
+		out.WriteString("}\n")
+	}
 	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+		return nil, fmt.Errorf("no convertible functions found")
 	}
 	return []byte(out.String()), nil
 }
