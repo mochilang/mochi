@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -98,6 +99,33 @@ func repoRoot() (string, error) {
 	return "", os.ErrNotExist
 }
 
+// sanitizeName converts Clojure identifiers into valid Mochi identifiers.
+// Leading dashes are replaced with an underscore and special characters
+// like '-' or '?' are mapped to underscores or readable suffixes.
+func sanitizeName(s string) string {
+	s = strings.TrimLeft(s, "-")
+	s = strings.ReplaceAll(s, "->", "_to_")
+	s = strings.ReplaceAll(s, "-", "_")
+	s = strings.ReplaceAll(s, "?", "_p")
+	s = strings.ReplaceAll(s, "!", "_bang")
+	s = strings.ReplaceAll(s, "/", "_")
+	s = strings.ReplaceAll(s, ".", "_")
+	if s == "" {
+		return "_"
+	}
+	if s[0] >= '0' && s[0] <= '9' {
+		s = "_" + s
+	}
+	return s
+}
+
+func isNumber(s string) bool {
+	if _, err := strconv.ParseFloat(s, 64); err == nil {
+		return true
+	}
+	return false
+}
+
 // Convert converts Clojure source code to Mochi using the language server.
 func Convert(src string) ([]byte, error) {
 	if prog, err := parseCLI(src); err == nil {
@@ -123,7 +151,7 @@ func writeCljSymbols(out *strings.Builder, prefix []string, syms []any2mochi.Doc
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
-			nameParts = append(nameParts, s.Name)
+			nameParts = append(nameParts, sanitizeName(s.Name))
 		}
 		switch s.Kind {
 		case any2mochi.SymbolKindFunction, any2mochi.SymbolKindMethod:
@@ -412,9 +440,14 @@ func convertFallback(src string) ([]byte, error) {
 					name, _ := list[1].(string)
 					params := paramList(list[2])
 					out.WriteString("fun ")
-					out.WriteString(name)
+					out.WriteString(sanitizeName(name))
 					out.WriteByte('(')
-					out.WriteString(strings.Join(params, ", "))
+					for i, p := range params {
+						if i > 0 {
+							out.WriteString(", ")
+						}
+						out.WriteString(sanitizeName(p))
+					}
 					out.WriteByte(')')
 					if len(list) == 3 {
 						out.WriteString(" {}\n")
@@ -434,7 +467,8 @@ func convertFallback(src string) ([]byte, error) {
 			case "def":
 				if len(list) >= 3 {
 					out.WriteString("let ")
-					out.WriteString(cljToMochi(list[1]))
+					name := cljToMochi(list[1])
+					out.WriteString(sanitizeName(name))
 					if v := cljToMochi(list[2]); v != "" {
 						out.WriteString(" = ")
 						out.WriteString(v)
@@ -466,9 +500,14 @@ func programToMochi(p *Program, src string) ([]byte, error) {
 				out.WriteByte('\n')
 			}
 			out.WriteString("fun ")
-			out.WriteString(f.Name)
+			out.WriteString(sanitizeName(f.Name))
 			out.WriteByte('(')
-			out.WriteString(strings.Join(f.Params, ", "))
+			for i, p := range f.Params {
+				if i > 0 {
+					out.WriteString(", ")
+				}
+				out.WriteString(sanitizeName(p))
+			}
 			out.WriteByte(')')
 			if len(f.Body) == 0 {
 				out.WriteString(" {}\n")
@@ -485,7 +524,7 @@ func programToMochi(p *Program, src string) ([]byte, error) {
 			}
 		case "def":
 			out.WriteString("let ")
-			out.WriteString(f.Name)
+			out.WriteString(sanitizeName(f.Name))
 			if s := cljToMochi(nodeToSexpr(f.Value)); s != "" {
 				out.WriteString(" = ")
 				out.WriteString(s)
@@ -667,7 +706,16 @@ func parseForm(toks []token, i int) (sexprNode, int) {
 func cljToMochi(n sexprNode) string {
 	switch v := n.(type) {
 	case string:
-		return v
+		if strings.HasPrefix(v, "\"") && strings.HasSuffix(v, "\"") {
+			return v
+		}
+		if isNumber(v) {
+			return v
+		}
+		if strings.HasPrefix(v, ":") {
+			v = strings.TrimPrefix(v, ":")
+		}
+		return sanitizeName(v)
 	case []sexprNode:
 		if len(v) == 0 {
 			return ""
@@ -677,6 +725,8 @@ func cljToMochi(n sexprNode) string {
 			return ""
 		}
 		switch head {
+		case "ns", "declare":
+			return ""
 		case "println":
 			var args []string
 			for _, a := range v[1:] {
