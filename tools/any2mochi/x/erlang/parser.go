@@ -1,4 +1,4 @@
-package any2mochi
+package erlang
 
 import (
 	"bytes"
@@ -11,13 +11,13 @@ import (
 	"time"
 )
 
-type erlFunc struct {
+type Function struct {
 	Name   string   `json:"name"`
 	Params []string `json:"params"`
 	Body   []string `json:"body"`
 }
 
-func parseErlangAST(src string) ([]erlFunc, error) {
+func parseAST(src string) ([]Function, error) {
 	tmp, err := os.CreateTemp("", "src-*.erl")
 	if err != nil {
 		return nil, err
@@ -27,7 +27,7 @@ func parseErlangAST(src string) ([]erlFunc, error) {
 		return nil, err
 	}
 	tmp.Close()
-	script := filepath.Join("tools", "any2mochi", "erlang_parser", "parser.escript")
+	script := filepath.Join("tools", "any2mochi", "x", "erlang", "parser", "parser.escript")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	cmd := exec.CommandContext(ctx, "escript", script, tmp.Name())
@@ -37,7 +37,7 @@ func parseErlangAST(src string) ([]erlFunc, error) {
 		return nil, err
 	}
 	var res struct {
-		Functions []erlFunc `json:"functions"`
+		Functions []Function `json:"functions"`
 	}
 	if err := json.Unmarshal(out.Bytes(), &res); err != nil {
 		return nil, err

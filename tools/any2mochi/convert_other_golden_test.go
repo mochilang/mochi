@@ -5,6 +5,8 @@ package any2mochi
 import (
 	"path/filepath"
 	"testing"
+
+	erlang "mochi/tools/any2mochi/x/erlang"
 )
 
 // TestConvertOther_Golden converts sample code for a variety of languages
@@ -25,7 +27,7 @@ func TestConvertOther_Golden(t *testing.T) {
 		{"cpp", "*.cpp.out", ConvertCppFile, "cpp"},
 		{"cs", "*.cs.out", ConvertCsFile, "cs"},
 		{"dart", "*.dart.out", ConvertDartFile, "dart"},
-		{"erl", "*.erl.out", ConvertErlangFile, "erl"},
+		{"erl", "*.erl.out", erlang.ConvertFile, "erl"},
 		{"ex", "*.ex.out", ConvertExFile, "ex"},
 		{"fortran", "*.f90.out", ConvertFortranFile, "fortran"},
 		{"fs", "*.fs.out", ConvertFsFile, "fs"},
