@@ -1,6 +1,9 @@
 package scheme
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 // Node represents a parsed Scheme s-expression. When Atom is empty the node
 // contains a list of child nodes. Line and Col store the 1-indexed location of
@@ -13,6 +16,18 @@ type Node struct {
 	Col     int
 	EndLine int
 	EndCol  int
+	Text    string // exact source snippet
+}
+
+// ParseError represents a syntax error with location context.
+type ParseError struct {
+	Line int
+	Col  int
+	Msg  string
+}
+
+func (e *ParseError) Error() string {
+	return fmt.Sprintf("line %d:%d: %s", e.Line, e.Col, e.Msg)
 }
 
 // String reconstructs the Scheme code represented by the node. It mirrors the
@@ -48,9 +63,16 @@ type Item struct {
 // conversion tests.
 func ParseItems(src string) ([]Item, error) {
 	toks := tokenize(src)
-	nodes, _, err := parseList(toks, 0)
+	nodes, i, err := parseList(toks, 0)
 	if err != nil {
+		if pe, ok := err.(*ParseError); ok {
+			pe.Msg += "\n" + snippetAround(src, pe.Line)
+		}
 		return nil, err
+	}
+	if i != len(toks) {
+		tok := toks[i]
+		return nil, &ParseError{Line: tok.line, Col: tok.col, Msg: "unexpected token"}
 	}
 	var items []Item
 	for _, n := range nodes {
@@ -89,9 +111,16 @@ func ParseItems(src string) ([]Item, error) {
 // Parse parses Scheme source and returns the root nodes of the AST.
 func Parse(src string) ([]Node, error) {
 	toks := tokenize(src)
-	n, _, err := parseList(toks, 0)
+	n, i, err := parseList(toks, 0)
 	if err != nil {
+		if pe, ok := err.(*ParseError); ok {
+			pe.Msg += "\n" + snippetAround(src, pe.Line)
+		}
 		return nil, err
+	}
+	if i != len(toks) {
+		tok := toks[i]
+		return nil, &ParseError{Line: tok.line, Col: tok.col, Msg: "unexpected token"}
 	}
 	out := make([]Node, len(n))
 	for i, nd := range n {
@@ -206,6 +235,7 @@ func (n node) String() string {
 }
 
 func parseList(toks []token, i int) ([]node, int, error) {
+	start := i
 	var nodes []node
 	for i < len(toks) {
 		tok := toks[i]
@@ -221,9 +251,11 @@ func parseList(toks []token, i int) ([]node, int, error) {
 			if j < len(toks) {
 				nd.endLine = toks[j].line
 				nd.endCol = toks[j].col + 1
+				i = j + 1
+			} else {
+				i = j
 			}
 			nodes = append(nodes, nd)
-			i = j + 1
 		case scTokAtom, scTokString:
 			nodes = append(nodes, node{atom: tok.val, line: tok.line, col: tok.col, endLine: tok.line, endCol: tok.col + len(tok.val)})
 			i++
@@ -231,11 +263,40 @@ func parseList(toks []token, i int) ([]node, int, error) {
 			i++
 		}
 	}
+	if start != 0 && i >= len(toks) {
+		// allow unterminated list at EOF to support partial snippets
+		return nodes, len(toks), nil
+	}
+	if start != 0 {
+		tok := toks[start-1]
+		return nil, i, &ParseError{Line: tok.line, Col: tok.col, Msg: "missing ')'"}
+	}
 	return nodes, i, nil
 }
 
+func snippetAround(src string, line int) string {
+	lines := strings.Split(src, "\n")
+	start := line - 2
+	if start < 0 {
+		start = 0
+	}
+	end := line + 1
+	if end > len(lines) {
+		end = len(lines)
+	}
+	var b strings.Builder
+	for i := start; i < end; i++ {
+		prefix := "  "
+		if i+1 == line {
+			prefix = "->"
+		}
+		b.WriteString(fmt.Sprintf("%s%3d| %s\n", prefix, i+1, lines[i]))
+	}
+	return strings.TrimRight(b.String(), "\n")
+}
+
 func toPublic(n node) Node {
-	out := Node{Atom: n.atom, Line: n.line, Col: n.col, EndLine: n.endLine, EndCol: n.endCol}
+	out := Node{Atom: n.atom, Line: n.line, Col: n.col, EndLine: n.endLine, EndCol: n.endCol, Text: n.String()}
 	if len(n.list) > 0 {
 		out.List = make([]Node, len(n.list))
 		for i, c := range n.list {

@@ -29,6 +29,8 @@ func Convert(src string) ([]byte, error) {
 		// fall back to the simple CLI-based parser
 		if simple, err := convertSimple(src); err == nil && len(simple) > 0 {
 			return simple, nil
+		} else if err != nil {
+			return nil, err
 		}
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
 	}
