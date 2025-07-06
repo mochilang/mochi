@@ -39,6 +39,13 @@ func parseAST(src string) (*AST, error) {
 	if _, err := exec.LookPath("escript"); err != nil {
 		return nil, fmt.Errorf("escript not found")
 	}
+	if strings.HasPrefix(src, "#!") {
+		if i := strings.Index(src, "\n"); i != -1 {
+			src = src[i+1:]
+		} else {
+			src = ""
+		}
+	}
 	tmp, err := os.CreateTemp("", "src-*.erl")
 	if err != nil {
 		return nil, err

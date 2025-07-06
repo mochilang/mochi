@@ -6,6 +6,8 @@ This package provides an experimental Erlang frontend for the `any2mochi` tool. 
 
 1. `parse.go` invokes `parser/parser.escript` to obtain a lightweight AST of functions.
    The parser now records the line number, arity and export status of each function for better diagnostics.
+   Shebang lines at the top of the file are automatically ignored so `escript`
+   output from the Mochi compiler can be parsed without errors.
 2. `convert.go` walks this AST and emits Mochi `fun` definitions. Simple calls to
    `io:format` or `io:fwrite` are rewritten as `print` statements and each emitted
    function is prefixed with a comment indicating the original line number.
