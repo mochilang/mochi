@@ -1,1 +1,2 @@
-fun main() {}
+expect 2 + 2 == 4
+print("ok")

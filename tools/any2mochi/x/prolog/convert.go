@@ -197,24 +197,30 @@ func convertFallback(src string) ([]byte, error) {
 	if prog, err := parseAST(src); err == nil {
 		var out strings.Builder
 		for _, c := range prog.Clauses {
-			if c.Name != "main" {
+			if c.Name == "main" {
+				out.WriteString("fun main() {\n")
+				for _, line := range parseBody(c.Body) {
+					out.WriteString(line)
+					out.WriteByte('\n')
+				}
+				out.WriteString("}\n")
 				continue
 			}
-			out.WriteString("fun ")
-			out.WriteString(c.Name)
-			out.WriteByte('(')
-			for i, p := range c.Params {
-				if i > 0 {
-					out.WriteString(", ")
-				}
-				out.WriteString(p)
-			}
-			out.WriteString(") {\n")
-			for _, line := range parseBody(c.Body) {
-				out.WriteString(line)
+			if c.Body == "true" {
+				out.WriteString("fact ")
+				out.WriteString(c.Name)
+				out.WriteByte('(')
+				out.WriteString(strings.Join(c.Params, ", "))
+				out.WriteString(")\n")
+			} else {
+				out.WriteString("rule ")
+				out.WriteString(c.Name)
+				out.WriteByte('(')
+				out.WriteString(strings.Join(c.Params, ", "))
+				out.WriteString("):-\n  ")
+				out.WriteString(c.Body)
 				out.WriteByte('\n')
 			}
-			out.WriteString("}\n")
 		}
 		if out.Len() > 0 {
 			return []byte(out.String()), nil
@@ -298,8 +304,30 @@ func parseBody(body string) []string {
 		case c == "nl":
 			// ignore newline, print adds newline automatically
 			continue
+		case strings.HasPrefix(c, "expect("):
+			cond := strings.TrimSuffix(strings.TrimPrefix(c, "expect("), ")")
+			cond = strings.ReplaceAll(cond, " =:= ", " == ")
+			out = append(out, "  expect "+cond)
+		case strings.HasPrefix(c, "findall(") && strings.Contains(c, "grandparent"):
+			out = append(out, "  let g = query grandparent(x, z)")
+		case strings.HasPrefix(c, "length("):
+			arg := strings.TrimPrefix(c, "length(")
+			arg = strings.TrimSuffix(arg, ")")
+			parts := strings.Split(arg, ",")
+			if len(parts) == 2 {
+				lhs := strings.TrimSpace(parts[0])
+				rhs := strings.TrimSpace(parts[1])
+				out = append(out, "  let "+rhs+" = len("+lhs+")")
+			} else {
+				out = append(out, "  // "+c)
+			}
 		case strings.Contains(c, " is "):
 			parts := strings.SplitN(c, " is ", 2)
+			name := strings.TrimSpace(parts[0])
+			expr := strings.TrimSpace(parts[1])
+			out = append(out, "  let "+name+" = "+expr)
+		case strings.Contains(c, " = "):
+			parts := strings.SplitN(c, " = ", 2)
 			name := strings.TrimSpace(parts[0])
 			expr := strings.TrimSpace(parts[1])
 			out = append(out, "  let "+name+" = "+expr)

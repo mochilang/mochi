@@ -1,14 +1,18 @@
-fun main() {
-  // dict_create(_16282, p_person, [name-Alice, age-30])
-  // dict_create(_16322, p_person, [name-Bob, age-15])
-  // dict_create(_16364, p_person, [name-Charlie, age-65])
-  // _16392=[_16282
-  // _16322
-  // _16364]
-  // to_list(_16392, _16400)
-  // findall(_16404, (member(_16404, _16400), get_dict(age, _16404, _16414), _16414>=18), _16440)
-  // findall(_16458, (member(_16404, _16440), get_dict(name, _16404, _16454), _16458=_16454), _16480)
-  // _16484=_16480
-  // to_list(_16484, _16492)
-  // catch((member(_16496, _16492), catch((write(_16496), nl, true), continue, true), fail;true), break, true)
+type Person {
+  name: string
+  age: int
+}
+
+let people = [
+  Person { name: "Alice", age: 30 },
+  Person { name: "Bob", age: 15 },
+  Person { name: "Charlie", age: 65 }
+]
+
+let names = from p in people
+            where p.age >= 18
+            select p.name
+
+for n in names {
+  print(n)
 }

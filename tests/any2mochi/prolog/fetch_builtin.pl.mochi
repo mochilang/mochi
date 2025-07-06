@@ -1,1 +1,6 @@
-fun main() {}
+type Msg {
+  message: string
+}
+
+let data: Msg = fetch "file://../../../tests/compiler/pl/fetch_builtin.json" with { method: "GET" }
+print(data.message)

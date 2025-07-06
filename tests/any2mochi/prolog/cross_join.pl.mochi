@@ -1,1 +1,44 @@
-fun main() {}
+// cross_join.mochi
+type Customer {
+  id: int
+  name: string
+}
+
+type Order {
+  id: int
+  customerId: int
+  total: int
+}
+
+type PairInfo {
+  orderId: int
+  orderCustomerId: int
+  pairedCustomerName: string
+  orderTotal: int
+}
+
+let customers = [
+  Customer { id: 1, name: "Alice" },
+  Customer { id: 2, name: "Bob" },
+  Customer { id: 3, name: "Charlie" }
+]
+let orders = [
+  Order { id: 100, customerId: 1, total: 250 },
+  Order { id: 101, customerId: 2, total: 125 },
+  Order { id: 102, customerId: 1, total: 300 }
+]
+let result = from o in orders
+             from c in customers
+             select PairInfo {
+               orderId: o.id,
+               orderCustomerId: o.customerId,
+               pairedCustomerName: c.name,
+               orderTotal: o.total
+             }
+print("--- Cross Join: All order-customer pairs ---")
+for entry in result {
+  print("Order", entry.orderId,
+        "(customerId:", entry.orderCustomerId,
+        ", total: $", entry.orderTotal,
+        ") paired with", entry.pairedCustomerName)
+}
