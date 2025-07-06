@@ -10,10 +10,10 @@
 help:
   Choose an operator that supports these operand types.
 - break_continue: line 2: unsupported line
-      1| Object[] numbers = new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9};
->>>   2| for (var n : numbers) {
-      3| if (((n % 2) == 0)) {
-      4| continue;
+      1| if (((n % 2) == 0)) {
+>>>   2| continue;
+      3| }
+      4| if ((n > 7)) {
 
 - cast_string_to_int: line 6: unsupported line
       4| }
@@ -78,21 +78,9 @@ help:
       4| java.util.List<Object> _src = _toList(data);
       5| _src = _filter(_src, (Object x) -> { return (x == 1); });
 
-- for_list_collection: line 1: unsupported line
->>>   1| for (var n : new int[] {1, 2, 3}) {
-      2| System.out.println(n);
-
-- for_loop: line 3: unsupported line
-      1| for (int i = 1; i < 4; i++) {
-      2| System.out.println(i);
->>>   3| }
-
-- for_map_collection: line 2: unsupported line
-      1| java.util.Map<String, Integer> m = new java.util.HashMap<>(java.util.Map.of("a", 1, "b", 2));
->>>   2| for (var k : m.keySet()) {
-      3| System.out.println(k);
-      4| }
-
+- for_list_collection: ok
+- for_loop: ok
+- for_map_collection: ok
 - fun_call: ok
 - fun_expr_in_let: type error: error[T003]: unknown function: fn
   --> :2:16
@@ -378,12 +366,10 @@ help:
      25| if (cls.isInstance(v)) return cls.cast(v);
      26| if (cls == Integer.class) {
 
-- two-sum: line 6: unsupported line
-      4| if (((nums[i] + nums[j]) == target)) {
-      5| return new int[] {i, j};
->>>   6| }
-      7| }
-      8| }
+- two-sum: line 3: unsupported line
+      1| if (((nums[i] + nums[j]) == target)) {
+      2| return new int[] {i, j};
+>>>   3| }
 
 - typed_let: line 1: unsupported line
 >>>   1| int y;
