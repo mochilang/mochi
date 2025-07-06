@@ -476,6 +476,11 @@ func parseStructs(src string) []string {
 				continue
 			}
 			fieldName := fields[len(fields)-1]
+			// Handle pointer declarations like "int *data" where
+			// the asterisk is attached to the name. The pointer
+			// stars are ignored as Mochi currently has no pointer
+			// types. We simply strip them from the identifier.
+			fieldName = strings.TrimLeft(fieldName, "*")
 			fieldType := mapType(strings.Join(fields[:len(fields)-1], " "))
 			b.WriteString("  ")
 			b.WriteString(fieldName)
