@@ -64,6 +64,9 @@ func Convert(src string) ([]byte, error) {
 		if s.Kind != any2mochi.SymbolKindFunction {
 			continue
 		}
+		if skipFuncs[s.Name] || strings.HasPrefix(s.Name, "_") {
+			continue
+		}
 		params, ret := getSignature(src, s.SelectionRange.Start, ls)
 		code := convertFunc(lines, s, params, ret)
 		if code == "" {
@@ -128,8 +131,8 @@ func convertFunc(lines []string, sym any2mochi.DocumentSymbol, params []string, 
 	retPrefix := "throw {:return,"
 	level := 1
 	inTry := false
-	for _, l := range seg[1:] {
-		l = strings.TrimSpace(l)
+	for i := 1; i < len(seg); i++ {
+		l := strings.TrimSpace(seg[i])
 		if l == "catch {:return, v} -> v end" {
 			break
 		}
@@ -137,6 +140,41 @@ func convertFunc(lines []string, sym any2mochi.DocumentSymbol, params []string, 
 		case l == "" || strings.HasPrefix(l, "try do"):
 			inTry = true
 			continue
+		case i+4 < len(seg) && strings.Contains(l, "= (fn ->") && strings.TrimSpace(seg[i+2]) == "cond do":
+			assign := strings.TrimSpace(seg[i+1])
+			parts := strings.SplitN(assign, "=", 2)
+			if len(parts) == 2 {
+				tmp := strings.TrimSpace(parts[0])
+				expr := translateExpr(strings.TrimSpace(parts[1]))
+				var cases []string
+				j := i + 3
+				for ; j < len(seg); j++ {
+					line := strings.TrimSpace(seg[j])
+					if line == "end" {
+						break
+					}
+					if strings.HasPrefix(line, tmp+" ==") {
+						idx := strings.Index(line, "->")
+						if idx > 0 {
+							pat := strings.TrimSpace(line[len(tmp)+3 : idx])
+							res := translateExpr(strings.TrimSpace(line[idx+2:]))
+							cases = append(cases, pat+" => "+res)
+						}
+					} else if strings.HasPrefix(line, "true ->") {
+						res := translateExpr(strings.TrimSpace(line[len("true ->"):]))
+						cases = append(cases, "_ => "+res)
+					}
+				}
+				if j+1 < len(seg) && strings.TrimSpace(seg[j+1]) == "end)()" {
+					b.WriteString(strings.Repeat("  ", level) + strings.TrimSpace(strings.Split(l, "=")[0]) + " = match " + expr + " {\n")
+					for _, ccase := range cases {
+						b.WriteString(strings.Repeat("  ", level+1) + ccase + "\n")
+					}
+					b.WriteString(strings.Repeat("  ", level) + "}\n")
+					i = j + 1
+					continue
+				}
+			}
 		case l == "end":
 			if level > 1 {
 				level--
