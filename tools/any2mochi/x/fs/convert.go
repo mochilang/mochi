@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 
 	parent "mochi/tools/any2mochi"
@@ -199,6 +200,12 @@ func mapType(t string) string {
 	return ""
 }
 
+var indexRe = regexp.MustCompile(`(\w+)\.\[(.+)\]`)
+
+func fixIndex(expr string) string {
+	return indexRe.ReplaceAllString(expr, `$1[$2]`)
+}
+
 func functionBody(src string, sym parent.DocumentSymbol) []string {
 	lines := strings.Split(src, "\n")
 	start := posToOffset(lines, sym.Range.Start)
@@ -284,14 +291,25 @@ func writeStmts(out *strings.Builder, stmts []Stmt, indent int) {
 				kw = "var "
 			}
 			out.WriteString(idt + kw + v.Name)
+			if v.Type != "" {
+				if t := mapType(v.Type); t != "" {
+					out.WriteString(": " + t)
+				}
+			}
 			if v.Expr != "" {
-				out.WriteString(" = " + v.Expr)
+				out.WriteString(" = " + fixIndex(v.Expr))
 			}
 			out.WriteByte('\n')
 		case Assign:
-			out.WriteString(idt + v.Name + " = " + v.Expr + "\n")
+			lhs := v.Name
+			if v.Index != "" {
+				lhs += "[" + fixIndex(v.Index) + "]"
+			}
+			out.WriteString(idt + lhs + " = " + fixIndex(v.Expr) + "\n")
 		case Print:
-			out.WriteString(idt + "print(" + v.Expr + ")\n")
+			out.WriteString(idt + "print(" + fixIndex(v.Expr) + ")\n")
+		case Expect:
+			out.WriteString(idt + "expect(" + v.Cond + ")\n")
 		case ForRange:
 			out.WriteString(idt + "for " + v.Var + " in " + v.Start + ".." + v.End + " {\n")
 			writeStmts(out, v.Body, indent+1)

@@ -15,13 +15,15 @@ type Var struct {
 	Name    string `json:"name"`
 	Expr    string `json:"expr"`
 	Mutable bool   `json:"mutable"`
+	Type    string `json:"type"`
 	Line    int    `json:"line"`
 }
 
 type Assign struct {
-	Name string `json:"name"`
-	Expr string `json:"expr"`
-	Line int    `json:"line"`
+	Name  string `json:"name"`
+	Index string `json:"index"`
+	Expr  string `json:"expr"`
+	Line  int    `json:"line"`
 }
 
 type ForRange struct {
@@ -52,6 +54,11 @@ type Print struct {
 
 type Stmt interface{}
 
+type Expect struct {
+	Cond string `json:"cond"`
+	Line int    `json:"line"`
+}
+
 type Program struct {
 	Vars   []Var    `json:"vars"`
 	Prints []string `json:"prints"`
@@ -59,13 +66,16 @@ type Program struct {
 }
 
 var (
-	printRe      = regexp.MustCompile(`ignore\s*\(printfn\s*"%A"\s*\((.*)\)\)`)
-	letRe        = regexp.MustCompile(`^let\s+(\w+)\s*=\s*(.*)$`)
-	mutableLetRe = regexp.MustCompile(`^let\s+mutable\s+(\w+)\s*=\s*(.*)$`)
-	assignRe     = regexp.MustCompile(`^(\w+)\s*<-\s*(.*)$`)
-	forRangeRe   = regexp.MustCompile(`^for\s+(\w+)\s*=\s*(.+)\s+to\s+(.+)\s+do$`)
-	forInRe      = regexp.MustCompile(`^for\s+(\w+)\s+in\s+(.+)\s+do$`)
-	whileRe      = regexp.MustCompile(`^while\s*\((.+)\)\s*do$`)
+	printRe       = regexp.MustCompile(`ignore\s*\(printfn\s*"%A"\s*\((.*)\)\)`)
+	typedLetRe    = regexp.MustCompile(`^let\s+(mutable\s+)?(\w+)\s*:\s*([^=]+)\s*=\s*(.*)$`)
+	letRe         = regexp.MustCompile(`^let\s+(\w+)\s*=\s*(.*)$`)
+	mutableLetRe  = regexp.MustCompile(`^let\s+mutable\s+(\w+)\s*=\s*(.*)$`)
+	assignIndexRe = regexp.MustCompile(`^(\w+)\.\[(.+)\]\s*<-\s*(.*)$`)
+	assignRe      = regexp.MustCompile(`^(\w+)\s*<-\s*(.*)$`)
+	expectRe      = regexp.MustCompile(`^if\s+not\s+\((.+)\)\s+then\s+failwith\s+"expect failed"$`)
+	forRangeRe    = regexp.MustCompile(`^for\s+(\w+)\s*=\s*(.+)\s+to\s+(.+)\s+do$`)
+	forInRe       = regexp.MustCompile(`^for\s+(\w+)\s+in\s+(.+)\s+do$`)
+	whileRe       = regexp.MustCompile(`^while\s*\((.+)\)\s*do$`)
 )
 
 // Parse performs a very small subset of F# parsing using regular expressions.
@@ -117,15 +127,24 @@ func Parse(src string) (*Program, error) {
 			case printRe.MatchString(t):
 				m := printRe.FindStringSubmatch(t)
 				stmts = append(stmts, Print{Expr: strings.TrimSpace(m[1]), Line: lineNum})
+			case typedLetRe.MatchString(t):
+				m := typedLetRe.FindStringSubmatch(t)
+				stmts = append(stmts, Var{Name: m[2], Expr: strings.TrimSpace(m[4]), Mutable: strings.TrimSpace(m[1]) != "", Type: strings.TrimSpace(m[3]), Line: lineNum})
 			case mutableLetRe.MatchString(t):
 				m := mutableLetRe.FindStringSubmatch(t)
 				stmts = append(stmts, Var{Name: m[1], Expr: strings.TrimSpace(m[2]), Mutable: true, Line: lineNum})
 			case letRe.MatchString(t):
 				m := letRe.FindStringSubmatch(t)
 				stmts = append(stmts, Var{Name: m[1], Expr: strings.TrimSpace(m[2]), Line: lineNum})
+			case assignIndexRe.MatchString(t):
+				m := assignIndexRe.FindStringSubmatch(t)
+				stmts = append(stmts, Assign{Name: m[1], Index: strings.TrimSpace(m[2]), Expr: strings.TrimSpace(m[3]), Line: lineNum})
 			case assignRe.MatchString(t):
 				m := assignRe.FindStringSubmatch(t)
 				stmts = append(stmts, Assign{Name: m[1], Expr: strings.TrimSpace(m[2]), Line: lineNum})
+			case expectRe.MatchString(t):
+				m := expectRe.FindStringSubmatch(t)
+				stmts = append(stmts, Expect{Cond: strings.TrimSpace(m[1]), Line: lineNum})
 			case forRangeRe.MatchString(t):
 				m := forRangeRe.FindStringSubmatch(t)
 				body := parseBlock(ind + 4)
@@ -157,7 +176,7 @@ func Parse(src string) (*Program, error) {
 		if start < 0 {
 			start = 0
 		}
-		end := ln + 1
+		end := ln + 2
 		if end > len(lines) {
 			end = len(lines)
 		}

@@ -1,0 +1,3 @@
+let x = (1 + 2)
+expect((x = 3))
+print("ok")
