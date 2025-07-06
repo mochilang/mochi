@@ -1,0 +1,5 @@
+print(__add(1, 2))
+print(5 - 3)
+print(4 * 2)
+print(__div(8, 2))
+print(7 % 3)
