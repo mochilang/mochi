@@ -14,6 +14,8 @@ This directory contains golden files used by `any2mochi` tests for converting Ty
   - `break` and `continue`
   - `console.log` translated to `print`
 - Type aliases and enums when reported by the language server
+- AST parser now records start and end columns along with a snippet of the
+  source for richer tooling and diagnostics
 
 ## Unsupported features
 
