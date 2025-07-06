@@ -568,20 +568,20 @@ func convertImpl(src string, n *node) []string {
 }
 
 func runRustAnalyzerParse(cmd, src string) (string, error) {
-        ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-        defer cancel()
-        c := exec.CommandContext(ctx, cmd, "parse")
-        c.Stdin = strings.NewReader(src)
-       var out, stderr bytes.Buffer
-       c.Stdout = &out
-       c.Stderr = &stderr
-       if err := c.Run(); err != nil {
-               if msg := strings.TrimSpace(stderr.String()); msg != "" {
-                       return "", fmt.Errorf("%v: %s", err, msg)
-               }
-               return "", err
-        }
-        return out.String(), nil
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	c := exec.CommandContext(ctx, cmd, "parse")
+	c.Stdin = strings.NewReader(src)
+	var out, stderr bytes.Buffer
+	c.Stdout = &out
+	c.Stderr = &stderr
+	if err := c.Run(); err != nil {
+		if msg := strings.TrimSpace(stderr.String()); msg != "" {
+			return "", fmt.Errorf("%v: %s", err, msg)
+		}
+		return "", err
+	}
+	return out.String(), nil
 }
 
 func convertRustTree(src string, tree *node) ([]byte, error) {
@@ -613,6 +613,9 @@ func convertRustTree(src string, tree *node) ([]byte, error) {
 				name := strings.TrimSpace(src[typNode.start:typNode.end])
 				methods[name] = append(methods[name], convertImpl(src, c)...)
 			}
+		case "TRAIT":
+			sl, sc := position(src, c.start)
+			return nil, fmt.Errorf("unsupported item TRAIT at %d:%d\n%s", sl, sc, snippetAt(src, sl, sc))
 		case "FN":
 			nameNode := findChild(findChild(c, "NAME"), "IDENT")
 			if nameNode == nil {
@@ -709,4 +712,24 @@ func snippet(src string) string {
 		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
 	}
 	return strings.Join(lines, "\n")
+}
+
+func snippetAt(src string, line, col int) string {
+	lines := strings.Split(src, "\n")
+	start := line - 1
+	if start-1 >= 0 {
+		start--
+	}
+	end := line - 1
+	if end+1 < len(lines) {
+		end++
+	}
+	var out strings.Builder
+	for i := start; i <= end && i < len(lines); i++ {
+		out.WriteString(fmt.Sprintf("%3d | %s\n", i+1, lines[i]))
+		if i == line-1 {
+			out.WriteString("    | " + strings.Repeat(" ", col-1) + "^\n")
+		}
+	}
+	return strings.TrimSuffix(out.String(), "\n")
 }

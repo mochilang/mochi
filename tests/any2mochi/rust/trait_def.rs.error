@@ -1,7 +1,4 @@
-no convertible symbols found
-
-source snippet:
-  1: trait Foo {
-  2:     fn bar(&self);
-  3: }
-  4:
+unsupported item TRAIT at 1:1
+  1 | trait Foo {
+    | ^
+  2 |     fn bar(&self);

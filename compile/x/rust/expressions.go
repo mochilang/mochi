@@ -820,7 +820,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Save != nil:
 		return c.compileSaveExpr(p.Save)
 	default:
-		return "", fmt.Errorf("unsupported expression")
+		return "", fmt.Errorf("unsupported expression at %d:%d", p.Pos.Line, p.Pos.Column)
 	}
 }
 
