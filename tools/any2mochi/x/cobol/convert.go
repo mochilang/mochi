@@ -3,6 +3,7 @@ package cobol
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 )
 
@@ -287,7 +288,8 @@ func parseStatements(lines []string, vars map[string]bool, lineBase int) ([]stri
 func normalizeExpr(expr string, vars map[string]bool) string {
 	for name := range vars {
 		upper := strings.ToUpper(name)
-		expr = strings.ReplaceAll(expr, upper, name)
+		re := regexp.MustCompile(`\b` + regexp.QuoteMeta(upper) + `\b`)
+		expr = re.ReplaceAllString(expr, name)
 	}
 	return expr
 }
