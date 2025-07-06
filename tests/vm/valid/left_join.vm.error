@@ -1,1 +1,9 @@
-parse error: 3:20: unexpected token "{" (expected "=>" Expr)
+output mismatch
+-- python --
+--- Left Join ---
+Order 100 customer {'id': 1, 'name': 'Alice'} total 250
+Order 101 customer None total 80
+-- vm --
+--- Left Join ---
+Order 100 customer map[id:1 name:Alice] total 250
+Order 101 customer <nil> total 80

@@ -1,5 +1,0 @@
-error[T024]: cannot assign to `matrix` (immutable)
-  --> :2:1
-
-help:
-  Use `var` to declare mutable variables.

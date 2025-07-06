@@ -1,0 +1,16 @@
+python run error: exit status 1
+Traceback (most recent call last):
+  File "/tmp/pyrt3338312139/main.py", line 52, in <module>
+    main()
+  File "/tmp/pyrt3338312139/main.py", line 48, in main
+    print(sum_tree(t))
+          ^^^^^^^^^^^
+  File "/tmp/pyrt3338312139/main.py", line 9, in sum_tree
+    return (
+           ^
+  File "/tmp/pyrt3338312139/main.py", line 14, in <lambda>
+    (
+  File "/tmp/pyrt3338312139/main.py", line 16, in <lambda>
+    (sum_tree(left) + value) + sum_tree(right)
+     ~~~~~~~~~~~~~~~^~~~~~~
+TypeError: unsupported operand type(s) for +: 'NoneType' and 'int'

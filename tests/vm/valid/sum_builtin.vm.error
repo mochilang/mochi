@@ -1,5 +1,0 @@
-error[T003]: unknown function: __sum
-  --> :1:7
-
-help:
-  Ensure the function is defined before it's called.

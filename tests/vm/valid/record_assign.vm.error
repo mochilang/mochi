@@ -1,1 +1,5 @@
-parse error: 3:12: unexpected token "[" (expected "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+output mismatch
+-- python --
+0
+-- vm --
+1

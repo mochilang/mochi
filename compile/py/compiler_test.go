@@ -14,6 +14,7 @@ import (
 	pycode "mochi/compile/py"
 	"mochi/golden"
 	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -108,21 +109,35 @@ func TestPyCompiler_GoldenOutput(t *testing.T) {
 			return nil, fmt.Errorf("write error: %w", err)
 		}
 		cmd := exec.Command("python3", file)
+		var inData []byte
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			inData = data
 			cmd.Stdin = bytes.NewReader(data)
 		}
-		out, err := cmd.CombinedOutput()
+		pyOut, err := cmd.CombinedOutput()
 		if err != nil {
-			return nil, fmt.Errorf("❌ python run error: %w\n%s", err, out)
+			return nil, fmt.Errorf("❌ python run error: %w\n%s", err, pyOut)
 		}
-		gotOut := bytes.TrimSpace(out)
-		wantOutPath := strings.TrimSuffix(src, ".mochi") + ".out"
-		wantOut, err := os.ReadFile(wantOutPath)
+
+		// Run with the Mochi VM to get expected output.
+		p, err := vm.Compile(prog, typeEnv)
 		if err != nil {
-			return nil, fmt.Errorf("failed to read golden output: %w", err)
+			return nil, fmt.Errorf("vm compile error: %w", err)
 		}
-		if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
-			return nil, fmt.Errorf("output mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", filepath.Base(wantOutPath), gotOut, bytes.TrimSpace(wantOut))
+		var outBuf bytes.Buffer
+		in := bytes.NewReader(inData)
+		m := vm.NewWithIO(p, in, &outBuf)
+		if err := m.Run(); err != nil {
+			if ve, ok := err.(*vm.VMError); ok {
+				return nil, fmt.Errorf("vm run error:\n%s", ve.Format(p))
+			}
+			return nil, fmt.Errorf("vm run error: %w", err)
+		}
+
+		gotOut := bytes.TrimSpace(pyOut)
+		wantOut := bytes.TrimSpace(outBuf.Bytes())
+		if !bytes.Equal(gotOut, wantOut) {
+			return nil, fmt.Errorf("output mismatch for %s\n\n--- Python ---\n%s\n\n--- VM ---\n%s\n", filepath.Base(src), gotOut, wantOut)
 		}
 
 		return bytes.TrimSpace(code), nil

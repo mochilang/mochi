@@ -1,0 +1,11 @@
+python run error: exit status 1
+Traceback (most recent call last):
+  File "/tmp/pyrt2039090231/main.py", line 103, in <module>
+    main()
+  File "/tmp/pyrt2039090231/main.py", line 94, in main
+    for _it in _load("../interpreter/valid/people.yaml", dict({"format": "yaml"}))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/pyrt2039090231/main.py", line 25, in _load
+    f = sys.stdin if path is None else open(path, "r")
+                                       ^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '../interpreter/valid/people.yaml'

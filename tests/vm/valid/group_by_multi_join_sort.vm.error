@@ -1,1 +1,5 @@
-parse error: 2:11: unexpected token "[" (expected "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+output mismatch
+-- python --
+{'c_custkey': 1, 'c_name': 'Alice', 'revenue': 900.0, 'c_acctbal': 100, 'n_name': 'BRAZIL', 'c_address': '123 St', 'c_phone': '123-456', 'c_comment': 'Loyal'}
+-- vm --
+map[c_acctbal:100 c_address:123 St c_comment:Loyal c_custkey:1 c_name:Alice c_phone:123-456 n_name:BRAZIL revenue:900]

@@ -1,0 +1,13 @@
+python run error: exit status 1
+Traceback (most recent call last):
+  File "/tmp/pyrt1174530904/main.py", line 39, in <module>
+    main()
+  File "/tmp/pyrt1174530904/main.py", line 34, in main
+    result = [_sum(n) for n in nums if (n > 1)]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/pyrt1174530904/main.py", line 34, in <listcomp>
+    result = [_sum(n) for n in nums if (n > 1)]
+              ^^^^^^^
+  File "/tmp/pyrt1174530904/main.py", line 14, in _sum
+    raise Exception("sum() expects list or group")
+Exception: sum() expects list or group

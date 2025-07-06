@@ -1,1 +1,6 @@
-parse error: 2:19: unexpected token "," (expected PostfixExpr)
+output mismatch
+-- python --
+
+-- vm --
+{"age":30,"name":"Alice"}
+{"age":25,"name":"Bob"}

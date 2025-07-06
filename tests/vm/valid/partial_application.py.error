@@ -1,0 +1,6 @@
+python run error: exit status 1
+Traceback (most recent call last):
+  File "/tmp/pyrt2356638088/main.py", line 11, in <module>
+    add5 = add(5)
+           ^^^^^^
+TypeError: add() missing 1 required positional argument: 'b'

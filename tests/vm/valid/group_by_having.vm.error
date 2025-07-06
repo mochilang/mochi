@@ -1,1 +1,5 @@
-parse error: 2:11: unexpected token "[" (expected "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+output mismatch
+-- python --
+[{"city": "Paris", "num": 4}, {"city": "Hanoi", "num": 3}]
+-- vm --
+[{"city":"Paris","num":4}]

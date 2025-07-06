@@ -1,0 +1,10 @@
+python run error: exit status 1
+Traceback (most recent call last):
+  File "/tmp/pyrt653669905/main.py", line 176, in <module>
+    main()
+  File "/tmp/pyrt653669905/main.py", line 165, in main
+    for x in _get(g, "items"):
+             ^^^^^^^^^^^^^^^^
+  File "/tmp/pyrt653669905/main.py", line 24, in _get
+    raise Exception("field not found: " + name)
+Exception: field not found: items

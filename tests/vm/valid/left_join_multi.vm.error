@@ -1,1 +1,9 @@
-parse error: 4:20: unexpected token "{" (expected "=>" Expr)
+output mismatch
+-- python --
+--- Left Join Multi ---
+100 Alice {'orderId': 100, 'sku': 'a'}
+101 Bob None
+-- vm --
+--- Left Join Multi ---
+100 Alice map[orderId:100 sku:a]
+101 Bob <nil>

@@ -1,0 +1,11 @@
+python run error: exit status 1
+Traceback (most recent call last):
+  File "/tmp/pyrt2428824001/main.py", line 187, in <module>
+    main()
+  File "/tmp/pyrt2428824001/main.py", line 182, in main
+    grouped = _q0()
+              ^^^^^
+  File "/tmp/pyrt2428824001/main.py", line 172, in _q0
+    _src = items
+           ^^^^^
+UnboundLocalError: cannot access local variable 'items' where it is not associated with a value

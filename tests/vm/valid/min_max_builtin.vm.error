@@ -1,5 +1,0 @@
-error[T003]: unknown function: __min
-  --> :2:7
-
-help:
-  Ensure the function is defined before it's called.

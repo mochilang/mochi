@@ -1,1 +1,5 @@
-parse error: 2:11: unexpected token "[" (expected "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+output mismatch
+-- python --
+{'part': 100, 'total': 20.0} {'part': 200, 'total': 15.0}
+-- vm --
+map[part:100 total:20] map[part:200 total:15]

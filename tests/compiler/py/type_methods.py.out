@@ -4,9 +4,10 @@ from __future__ import annotations
 import dataclasses
 import typing
 
-from typing import Any, TypeVar
+from typing import Any, TypeVar, Generic, Callable
 
 T = TypeVar("T")
+K = TypeVar("K")
 
 
 def _get(obj, name):

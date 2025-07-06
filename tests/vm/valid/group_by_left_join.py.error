@@ -1,0 +1,14 @@
+python run error: exit status 1
+Traceback (most recent call last):
+  File "/tmp/pyrt1586518385/main.py", line 146, in <module>
+    main()
+  File "/tmp/pyrt1586518385/main.py", line 124, in main
+    stats = _query(
+            ^^^^^^^
+  File "/tmp/pyrt1586518385/main.py", line 101, in _query
+    res.append(opts["select"](*r))
+               ^^^^^^^^^^^^^^^^^^
+  File "/tmp/pyrt1586518385/main.py", line 135, in <lambda>
+    "name": _get(g, "key"),
+                 ^
+NameError: name 'g' is not defined

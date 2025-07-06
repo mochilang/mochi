@@ -1,0 +1,9 @@
+output mismatch
+-- python --
+42
+3
+1
+-- vm --
+42
+3.5
+1

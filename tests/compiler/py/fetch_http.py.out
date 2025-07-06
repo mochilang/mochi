@@ -6,9 +6,10 @@ import json
 import typing
 import urllib.request
 
-from typing import Any, TypeVar
+from typing import Any, TypeVar, Generic, Callable
 
 T = TypeVar("T")
+K = TypeVar("K")
 
 
 def _fetch(url, opts):
