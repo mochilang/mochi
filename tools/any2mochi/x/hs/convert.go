@@ -76,6 +76,8 @@ func Convert(src string) ([]byte, error) {
 			if out := convertItems(items); out != nil {
 				return out, nil
 			}
+		} else if err2 != nil {
+			return nil, err2
 		}
 		if out := parseSimple(src); out != nil {
 			return out, nil
@@ -92,6 +94,8 @@ func Convert(src string) ([]byte, error) {
 			if res := convertItems(items); res != nil {
 				return res, nil
 			}
+		} else if err2 != nil {
+			return nil, err2
 		}
 		if simple := parseSimple(src); simple != nil {
 			return simple, nil
@@ -112,7 +116,7 @@ func ConvertFile(path string) ([]byte, error) {
 
 // parseCLI parses the source using the built-in parser and returns the items.
 func parseCLI(src string) ([]Item, error) {
-	return Parse(src), nil
+	return Parse(src)
 }
 
 func getSignature(src string, sym any2mochi.DocumentSymbol, ls any2mochi.LanguageServer) ([]string, string) {
@@ -407,6 +411,15 @@ func parseSimple(src string) []byte {
 				continue
 			}
 			var out strings.Builder
+			if len(params) == 0 {
+				out.WriteString("let ")
+				out.WriteString(name)
+				if body != "" {
+					out.WriteString(" = ")
+					out.WriteString(body)
+				}
+				return []byte(out.String())
+			}
 			out.WriteString("fun ")
 			out.WriteString(name)
 			out.WriteByte('(')
