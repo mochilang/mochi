@@ -1,0 +1,12 @@
+parse error: parse error: 17:32: unexpected token "https://jsonplaceholder.typicode.com/todos/1" (expected "(" (Expr ("," Expr)*)? ")")
+
+  1| open System
+  2| 
+  3| let _cast<'T> (v: obj) : 'T =
+  4|   match v with
+  5|   | :? 'T as t -> t
+  6|   | _ ->
+  7|       let json = System.Text.Json.JsonSerializer.Serialize(v)
+  8|       System.Text.Json.JsonSerializer.Deserialize<'T>(json)
+  9| let _fetch (url: string) (opts: Map<string,obj> option) : Map<string,obj> =
+ 10|   if url.StartsWith("file://") then

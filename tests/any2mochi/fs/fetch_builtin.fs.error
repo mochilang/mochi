@@ -1,0 +1,16 @@
+type error: error[T002]: undefined variable: None
+  --> :9:65
+
+help:
+  Check if the variable was declared in this scope.
+
+  1| open System
+  2| 
+  3| let _fetch (url: string) (opts: Map<string,obj> option) : Map<string,obj> =
+  4|   if url.StartsWith("file://") then
+  5|     let path = url.Substring(7)
+  6|     let text = System.IO.File.ReadAllText(path)
+  7|     Map.ofList [("status", box 200); ("body", box text)]
+  8|   else
+  9|     let mutable urlStr = url
+ 10|     let meth = opts |> Option.bind (Map.tryFind "method") |> Option.map string |> Option.defaultValue "GET"

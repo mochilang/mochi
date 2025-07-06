@@ -4,11 +4,11 @@
 - avg_builtin: parse2 error: parse error: 1:21: unexpected token "," (expected "]")
 - basic_compare: parse2 error: parse error: 4:10: unexpected token "=" (expected "(" (Expr ("," Expr)*)? ")")
 - binary_precedence: ok
-- bool_chain: unsupported syntax at line 8: failwith "unreachable"
-  7:         raise (Return_boom (true))
-  8:         failwith "unreachable"
-  9:     with Return_boom v -> v
- 10: 
+- bool_chain: type2 error: error[T020]: operator `&&` cannot be used on types bool and fun(): bool
+  --> :6:33
+
+help:
+  Choose an operator that supports these operand types.
 - break_continue: unsupported syntax at line 2: exception BreakException of int
   1: open System
   2: exception BreakException of int
@@ -16,11 +16,7 @@
   4: 
 - cast_string_to_int: parse2 error: parse error: 1:12: unexpected token "1995" (expected "(" (Expr ("," Expr)*)? ")")
 - cast_struct: parse2 error: parse error: 6:44: unexpected token "," (expected ")")
-- closure: unsupported syntax at line 8: failwith "unreachable"
-  7:         raise (Return_makeAdder ((fun (x: int) -> (x + n))))
-  8:         failwith "unreachable"
-  9:     with Return_makeAdder v -> v
- 10: 
+- closure: parse2 error: parse error: 3:22: unexpected token ")" (expected "<" TypeRef ("," TypeRef)* ">")
 - count_builtin: parse2 error: parse error: 1:20: unexpected token "," (expected "]")
 - cross_join: parse2 error: parse error: 9:33: unexpected token "," (expected "(" (Expr ("," Expr)*)? ")")
 - cross_join_filter: type2 error: error[T000]: `let` requires a type or a value
@@ -39,17 +35,17 @@ help:
 - for_list_collection: parse2 error: parse error: 1:13: lexer: invalid input text "; 2; 3|] {\n  pri..."
 - for_loop: ok
 - for_map_collection: parse2 error: parse error: 1:25: unexpected token "," (expected ")")
-- fun_call: unsupported syntax at line 9: failwith "unreachable"
-  8:         raise (Return_add ((a + b)))
-  9:         failwith "unreachable"
- 10:     with Return_add v -> v
- 11: 
+- fun_call: type2 error: error[T002]: undefined variable: a
+  --> :2:11
+
+help:
+  Check if the variable was declared in this scope.
 - fun_expr_in_let: parse2 error: parse error: 1:26: unexpected token ")" (expected "<" TypeRef ("," TypeRef)* ">")
-- fun_three_args: unsupported syntax at line 10: failwith "unreachable"
-  9:         raise (Return_sum3 (((a + b) + c)))
- 10:         failwith "unreachable"
- 11:     with Return_sum3 v -> v
- 12: 
+- fun_three_args: type2 error: error[T002]: undefined variable: a
+  --> :2:11
+
+help:
+  Check if the variable was declared in this scope.
 - group_by: unsupported syntax at line 8: type _Group<'T>(key: obj) =
   7: let avg_age = "avg_age"
   8: type _Group<'T>(key: obj) =
@@ -124,56 +120,51 @@ help:
 - map_membership: parse2 error: parse error: 1:25: unexpected token "," (expected ")")
 - map_nested_assign: parse2 error: parse error: 1:32: unexpected token "," (expected ")")
 - match_expr: parse2 error: parse error: 2:22: unexpected token "with" (expected "{" MatchCase* "}")
-- match_full: unsupported syntax at line 8: failwith "unreachable"
-  7:         raise (Return_classify ((match n with | 0 -> "zero" | 1 -> "one" | _ -> "many")))
-  8:         failwith "unreachable"
-  9:     with Return_classify v -> v
- 10: 
+- match_full: parse2 error: parse error: 3:19: unexpected token "with" (expected "{" MatchCase* "}")
 - math_ops: ok
 - membership: parse2 error: parse error: 2:22: unexpected token "2" (expected ")")
 - min_max_builtin: parse2 error: parse error: 2:15: unexpected token "nums" (expected ")")
-- nested_function: unsupported syntax at line 13: failwith "unreachable"
- 12:                 raise (Return_inner ((x + y)))
- 13:                 failwith "unreachable"
- 14:             with Return_inner v -> v
- 15:         raise (Return_outer (inner (5)))
+- nested_function: type2 error: error[T002]: undefined variable: x
+  --> :2:11
+
+help:
+  Check if the variable was declared in this scope.
 - order_by_map: parse2 error: parse error: 3:27: unexpected token "," (expected "(" (Expr ("," Expr)*)? ")")
 - outer_join: parse2 error: parse error: 7:33: unexpected token "," (expected "(" (Expr ("," Expr)*)? ")")
-- partial_application: unsupported syntax at line 9: failwith "unreachable"
-  8:         raise (Return_add ((a + b)))
-  9:         failwith "unreachable"
- 10:     with Return_add v -> v
- 11: 
+- partial_application: type2 error: error[T002]: undefined variable: a
+  --> :2:11
+
+help:
+  Check if the variable was declared in this scope.
 - print_hello: ok
-- pure_fold: unsupported syntax at line 8: failwith "unreachable"
-  7:         raise (Return_triple ((x * 3)))
-  8:         failwith "unreachable"
-  9:     with Return_triple v -> v
- 10: 
-- pure_global_fold: unsupported syntax at line 8: failwith "unreachable"
-  7:         raise (Return_inc ((x + k)))
-  8:         failwith "unreachable"
-  9:     with Return_inc v -> v
- 10: 
+- pure_fold: type2 error: error[T002]: undefined variable: x
+  --> :2:11
+
+help:
+  Check if the variable was declared in this scope.
+- pure_global_fold: type2 error: error[T002]: undefined variable: x
+  --> :2:11
+
+help:
+  Check if the variable was declared in this scope.
 - query_sum_select: type2 error: error[T000]: `let` requires a type or a value
   --> :2:1
 
 help:
   Use `let x = ...` or `let x: int` to declare a variable.
-- record_assign: unsupported syntax at line 13: failwith "unreachable"
- 12:         c <- (c.n + 1)
- 13:         failwith "unreachable"
- 14:     with Return_inc v -> v
- 15: 
+- record_assign: unsupported syntax at line 17: ignore (inc c)
+ 16: let mutable c = { n = 0 }
+ 17: ignore (inc c)
+ 18: ignore (printfn "%A" (c.n))
 - right_join: parse2 error: parse error: 7:33: unexpected token "," (expected "(" (Expr ("," Expr)*)? ")")
 - save_jsonl_stdout: unsupported syntax at line 47: ignore (_save people Some "-" Some (Map.ofList [(format, "jsonl")]))
  46: let people = [|Map.ofList [(name, "Alice"); (age, 30)]; Map.ofList [(name, "Bob"); (age, 25)]|]
  47: ignore (_save people Some "-" Some (Map.ofList [(format, "jsonl")]))
-- short_circuit: unsupported syntax at line 10: failwith "unreachable"
-  9:         raise (Return_boom (true))
- 10:         failwith "unreachable"
- 11:     with Return_boom v -> v
- 12: 
+- short_circuit: type2 error: error[T002]: undefined variable: a
+  --> :2:11
+
+help:
+  Check if the variable was declared in this scope.
 - slice: parse2 error: parse error: 1:17: unexpected token "[" (expected <ident>)
 - sort_stable: parse2 error: parse error: 3:28: unexpected token "," (expected "(" (Expr ("," Expr)*)? ")")
 - str_builtin: parse2 error: parse error: 1:15: unexpected token "123" (expected "(" (Expr ("," Expr)*)? ")")
@@ -193,26 +184,14 @@ help:
 help:
   Pass exactly 3 arguments to `substring`.
 - sum_builtin: parse2 error: parse error: 1:17: unexpected token "," (expected "]")
-- tail_recursion: unsupported syntax at line 11: failwith "unreachable"
- 10:         raise (Return_sum_rec (sum_rec ((n - 1)) ((acc + n))))
- 11:         failwith "unreachable"
- 12:     with Return_sum_rec v -> v
- 13: 
+- tail_recursion: parse2 error: parse error: 4:9: unexpected token "=" (expected "(" (Expr ("," Expr)*)? ")")
 - test_block: unsupported syntax at line 13: let test_addition_works() =
  12: 
  13: let test_addition_works() =
  14:     let x = (1 + 2)
  15:     if not ((x = 3)) then failwith "expect failed"
-- tree_sum: unsupported syntax at line 12: failwith "unreachable"
- 11:         raise (Return_sum_tree ((match t with | Leaf -> 0 | Node(left, value, right) -> ((sum_tree left + value) + sum_tree right))))
- 12:         failwith "unreachable"
- 13:     with Return_sum_tree v -> v
- 14: 
-- two-sum: unsupported syntax at line 14: failwith "unreachable"
- 13:         raise (Return_twoSum ([|(-1); (-1)|]))
- 14:         failwith "unreachable"
- 15:     with Return_twoSum v -> v
- 16: 
+- tree_sum: parse2 error: parse error: 6:19: unexpected token "with" (expected "{" MatchCase* "}")
+- two-sum: parse2 error: parse error: 7:27: unexpected token "[" (expected <ident>)
 - typed_let: panic: runtime error: invalid memory address or nil pointer dereference
 - typed_var: panic: runtime error: invalid memory address or nil pointer dereference
 - unary_neg: ok

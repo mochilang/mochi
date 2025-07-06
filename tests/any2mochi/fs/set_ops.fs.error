@@ -1,0 +1,12 @@
+parse error: parse error: 9:14: unexpected token "a" (expected ")")
+
+  1| open System
+  2| 
+  3| let _except (a: 'T[]) (b: 'T[]) : 'T[] =
+  4|   let setB = Set.ofArray b
+  5|   Array.filter (fun x -> not (Set.contains x setB)) a
+  6| let _intersect (a: 'T[]) (b: 'T[]) : 'T[] =
+  7|   let setB = Set.ofArray b
+  8|   Array.filter (fun x -> Set.contains x setB) a |> Array.distinct
+  9| let _union (a: 'T[]) (b: 'T[]) : 'T[] =
+ 10|   Array.append a b |> Array.distinct

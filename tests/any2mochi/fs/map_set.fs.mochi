@@ -1,3 +1,0 @@
-var scores = Map.ofList [("a", 1)]
-scores = Map.add "b" 2 scores
-print(scores["b"])

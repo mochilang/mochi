@@ -3,3 +3,14 @@ unsupported syntax at line 11: else
  11:         else
  12:             raise (Return_foo (1))
  13:         failwith "unreachable"
+
+  1| open System
+  2| 
+  3| exception Return_foo of int
+  4| let rec foo (n: int) : int =
+  5|     try
+  6|         let mutable n = n
+  7|         if (n < 0) then
+  8|             raise (Return_foo ((-1)))
+  9|         elif (n = 0) then
+ 10|             raise (Return_foo (0))

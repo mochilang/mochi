@@ -1,0 +1,6 @@
+parse error: parse error: 1:26: unexpected token "2.3" (expected ")")
+
+  1| open System
+  2| 
+  3| ignore (printfn "%A" (Math.Ceiling(float 2.3)))
+  4|

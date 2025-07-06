@@ -1,5 +1,12 @@
-unsupported syntax at line 8: failwith "unreachable"
-  7:         raise (Return_sumN (((n * ((n + 1))) / 2)))
-  8:         failwith "unreachable"
-  9:     with Return_sumN v -> v
- 10:
+parse error: parse error: 6:12: unexpected token "n" (expected ")")
+
+  1| open System
+  2| 
+  3| exception Return_sumN of int
+  4| let rec sumN (n: int) : int =
+  5|     try
+  6|         let mutable n = n
+  7|         raise (Return_sumN (((n * ((n + 1))) / 2)))
+  8|         failwith "unreachable"
+  9|     with Return_sumN v -> v
+ 10|

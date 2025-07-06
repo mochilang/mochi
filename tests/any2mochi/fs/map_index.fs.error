@@ -1,0 +1,7 @@
+parse error: parse error: 1:34: unexpected token "," (expected ")")
+
+  1| open System
+  2| 
+  3| let scores = Map.ofList [("Alice", 10); ("Bob", 15)]
+  4| ignore (printfn "%A" (scores.["Bob"]))
+  5|

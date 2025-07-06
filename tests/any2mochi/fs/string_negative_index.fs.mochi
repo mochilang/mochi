@@ -1,2 +1,0 @@
-let text = "hello"
-print((string text[(if (-1) < 0 then text.Length + (-1) else (-1))]))

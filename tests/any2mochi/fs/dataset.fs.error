@@ -1,0 +1,12 @@
+parse error: parse error: 1:32: unexpected token "," (expected "(" (Expr ("," Expr)*)? ")")
+
+  1| open System
+  2| 
+  3| let people = [|Map.ofList [(name, "Alice"); (age, 30)]; Map.ofList [(name, "Bob"); (age, 15)]; Map.ofList [(name, "Charlie"); (age, 65)]; Map.ofList [(name, "Diana"); (age, 45)]|]
+  4| let adults = [|
+  5|     for person in people do
+  6|     if (person.age >= 18) then
+  7|     yield Map.ofList [(name, person.name); (age, person.age); (is_senior, (person.age >= 60))]
+  8| |]
+  9| for person in adults do
+ 10|     ignore (printfn "%A" (person.name, "is", person.age, "years old."))

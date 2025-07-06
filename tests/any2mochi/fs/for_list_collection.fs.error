@@ -1,0 +1,7 @@
+parse error: parse error: 1:13: lexer: invalid input text "; 2; 3|] {\n  pri..."
+
+  1| open System
+  2| 
+  3| for n in [|1; 2; 3|] do
+  4|     ignore (printfn "%A" (n))
+  5|

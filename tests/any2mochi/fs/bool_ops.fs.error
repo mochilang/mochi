@@ -1,0 +1,8 @@
+parse error: parse error: 3:12: unexpected token "false" (expected "(" (Expr ("," Expr)*)? ")")
+
+  1| open System
+  2| 
+  3| ignore (printfn "%A" ((true && false)))
+  4| ignore (printfn "%A" ((true || false)))
+  5| ignore (printfn "%A" ((not false)))
+  6|

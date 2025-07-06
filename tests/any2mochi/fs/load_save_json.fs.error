@@ -1,3 +1,14 @@
 unsupported syntax at line 110: ignore (_save people None Some (Map.ofList [(format, "json")]))
 109: let people = _load None Some (Map.ofList [(format, "json")]) |> List.map (fun row -> _cast<Person>(row))
 110: ignore (_save people None Some (Map.ofList [(format, "json")]))
+
+  1| open System
+  2| 
+  3| let format = "format"
+  4| let _cast<'T> (v: obj) : 'T =
+  5|   match v with
+  6|   | :? 'T as t -> t
+  7|   | _ ->
+  8|       let json = System.Text.Json.JsonSerializer.Serialize(v)
+  9|       System.Text.Json.JsonSerializer.Deserialize<'T>(json)
+ 10| let _load (path: string option) (opts: Map<string,obj> option) : List<Map<string,obj>> =

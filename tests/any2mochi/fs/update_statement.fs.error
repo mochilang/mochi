@@ -2,4 +2,15 @@ unsupported syntax at line 29: let test_update_adult_status() =
  28:     people.[i] <- item
  29: let test_update_adult_status() =
  30:     if not ((people = [|{ name = "Alice"; age = 17; status = "minor" }; { name = "Bob"; age = 26; status = "adult" }; { name = "Charlie"; age = 19; status = "adult" }; { name = "Diana"; age = 16; status = "minor" }|])) then failwith "expect failed"
- 31:
+ 31: 
+
+  1| open System
+  2| 
+  3| let _run_test (name: string) (f: unit -> unit) : bool =
+  4|   printf "%s ... " name
+  5|   try
+  6|     f()
+  7|     printfn "PASS"
+  8|     true
+  9|   with e ->
+ 10|     printfn "FAIL (%s)" e.Message

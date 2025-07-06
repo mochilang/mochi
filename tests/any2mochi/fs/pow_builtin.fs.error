@@ -1,0 +1,6 @@
+parse error: parse error: 1:22: unexpected token "2" (expected ")")
+
+  1| open System
+  2| 
+  3| ignore (printfn "%A" (Math.Pow(float 2, float 3)))
+  4|

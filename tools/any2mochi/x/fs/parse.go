@@ -192,12 +192,10 @@ func Parse(src string) (*Program, error) {
 			}
 			switch {
 			case strings.Contains(t, "failwith \"unreachable\""):
-				if parseErr == nil {
-					errLine = lineNum
-					linesCopy = append([]line(nil), lines...)
-					snippet := l.raw
-					parseErr = fmt.Errorf("unsupported syntax at line %d: %s", lineNum, strings.TrimSpace(snippet))
-				}
+				// Ignore code paths marked unreachable in the
+				// generated F# output. Treating these as errors
+				// prevented successful roundtripping of many
+				// valid programs.
 				continue
 			case printRe.MatchString(t):
 				m := printRe.FindStringSubmatch(t)

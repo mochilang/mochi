@@ -1,0 +1,12 @@
+parse error: parse error: 9:25: unexpected token "," (expected PostfixExpr)
+
+  1| open System
+  2| 
+  3| type Person =
+  4|     {
+  5|         name: string;
+  6|         age: int
+  7|     }
+  8| 
+  9| type Person =
+ 10|     {

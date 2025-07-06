@@ -1,5 +1,16 @@
-unsupported syntax at line 12: failwith "unreachable"
- 11:         raise (Return_outer (p.name))
- 12:         failwith "unreachable"
- 13:     with Return_outer v -> v
- 14:
+type error: error[T001]: assignment to undeclared variable: name
+  --> :5:13
+
+help:
+  Declare `name` first using `let`.
+
+  1| open System
+  2| 
+  3| exception Return_outer of string
+  4| let rec outer  : string =
+  5|     try
+  6|         type Person =
+  7|             {
+  8|                 name: string
+  9|             }
+ 10|         let p = { name = "Bob" }

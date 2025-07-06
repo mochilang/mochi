@@ -1,0 +1,12 @@
+parse error: parse error: 7:15: unexpected token "," (expected "]")
+
+  1| open System
+  2| 
+  3| let inline sum (xs: seq< ^T >) : ^T =
+  4|   Seq.sum xs
+  5| let inline avg (xs: seq< ^T >) : ^T =
+  6|   Seq.average xs
+  7| let count (xs: seq<'T>) : int =
+  8|   Seq.length xs
+  9| 
+ 10| ignore (printfn "%A" (count [|1; 2; 3|]))

@@ -1,2 +1,0 @@
-var m = Map.empty
-print(Map.count (m))
