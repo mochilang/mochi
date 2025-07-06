@@ -1,4 +1,4 @@
 var square = fun (x: int): int {
   return (x * x)
 }
-print(str(square(6)))
+print(square(6))

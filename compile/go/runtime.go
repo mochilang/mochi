@@ -67,25 +67,17 @@ const (
 		"        case []any:\n" +
 		"            items = s\n" +
 		"        case []int:\n" +
-		"            items = make([]any, len(s))\n" +
-		"            for i, v := range s {\n" +
-		"                items[i] = v\n" +
-		"            }\n" +
+		"            items = []any{}\n" +
+		"            for _, v := range s { items = append(items, v) }\n" +
 		"        case []float64:\n" +
-		"            items = make([]any, len(s))\n" +
-		"            for i, v := range s {\n" +
-		"                items[i] = v\n" +
-		"            }\n" +
+		"            items = []any{}\n" +
+		"            for _, v := range s { items = append(items, v) }\n" +
 		"        case []string:\n" +
-		"            items = make([]any, len(s))\n" +
-		"            for i, v := range s {\n" +
-		"                items[i] = v\n" +
-		"            }\n" +
+		"            items = []any{}\n" +
+		"            for _, v := range s { items = append(items, v) }\n" +
 		"        case []bool:\n" +
-		"            items = make([]any, len(s))\n" +
-		"            for i, v := range s {\n" +
-		"                items[i] = v\n" +
-		"            }\n" +
+		"            items = []any{}\n" +
+		"            for _, v := range s { items = append(items, v) }\n" +
 		"        default:\n" +
 		"            panic(\"avg() expects list or group\")\n" +
 		"        }\n" +
@@ -109,11 +101,11 @@ const (
 		"        case []any:\n" +
 		"            items = s\n" +
 		"        case []int:\n" +
-		"            items = make([]any, len(s))\n" +
-		"            for i, v := range s { items[i] = v }\n" +
+		"            items = []any{}\n" +
+		"            for _, v := range s { items = append(items, v) }\n" +
 		"        case []float64:\n" +
-		"            items = make([]any, len(s))\n" +
-		"            for i, v := range s { items[i] = v }\n" +
+		"            items = []any{}\n" +
+		"            for _, v := range s { items = append(items, v) }\n" +
 		"        case []string, []bool:\n" +
 		"            panic(\"sum() expects numbers\")\n" +
 		"        default:\n" +
@@ -424,14 +416,14 @@ const (
 		"}\n"
 
 	helperToAnySlice = "func _toAnySlice[T any](s []T) []any {\n" +
-		"    out := make([]any, len(s))\n" +
-		"    for i, v := range s { out[i] = v }\n" +
+		"    out := []any{}\n" +
+		"    for _, v := range s { out = append(out, v) }\n" +
 		"    return out\n" +
 		"}\n"
 
 	helperConvSlice = "func _convSlice[T any, U any](s []T) []U {\n" +
-		"    out := make([]U, len(s))\n" +
-		"    for i, v := range s { out[i] = any(v).(U) }\n" +
+		"    out := []U{}\n" +
+		"    for _, v := range s { out = append(out, any(v).(U)) }\n" +
 		"    return out\n" +
 		"}\n"
 

@@ -8,4 +8,4 @@ fun _avgOrdered(s: list<T>): float64 {
 }
   return sum / float64(len(s))
 }
-print(str(_avgOrdered([1, 2, 3])))
+print(_avgOrdered([1, 2, 3]))

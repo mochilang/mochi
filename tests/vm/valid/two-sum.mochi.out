@@ -10,5 +10,5 @@ fun twoSum(nums: list<int>, target: int): list<int> {
   return [-1, -1]
 }
 var result = twoSum([2, 7, 11, 15], 9)
-print(str(result[0]))
-print(str(result[1]))
+print(result[0])
+print(result[1])

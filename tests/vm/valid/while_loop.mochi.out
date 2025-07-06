@@ -3,6 +3,6 @@ while true {
   if !(i < 3) {
   break
 }
-  print(str(i))
+  print(i)
   i = (i + 1)
 }

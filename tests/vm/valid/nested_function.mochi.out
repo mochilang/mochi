@@ -4,4 +4,4 @@ fun outer(x: int): int {
 }
   return inner(5)
 }
-print(str(outer(3)))
+print(outer(3))

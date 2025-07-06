@@ -4,7 +4,7 @@ _ = letters
 var bools = [true, false]
 _ = bools
 var combos = fun (): list<map<string, any>> {
-  let _res = []
+  var _res = []
   for n in nums {
   for l in letters {
   for b in bools {
@@ -14,7 +14,7 @@ var combos = fun (): list<map<string, any>> {
 }
   return _res
 }()
-print(str("--- Cross Join of three lists ---"))
+print("--- Cross Join of three lists ---")
 for c in combos {
   print(str(c["n"]) + " " + str(c["l"]) + " " + str(c["b"]))
 }

@@ -1,2 +1,2 @@
-print(str(-3))
-print(str((5 + (-2))))
+print(-3)
+print((5 + (-2)))
