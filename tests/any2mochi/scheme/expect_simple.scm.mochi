@@ -1,2 +1,4 @@
 let x = 1 + 2
+if not(x = 3) {
+}
 print("ok")

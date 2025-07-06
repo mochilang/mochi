@@ -10,13 +10,15 @@ import (
 // the first token and EndLine/EndCol mark the closing token for better
 // diagnostics.
 type Node struct {
-	Atom    string
-	List    []Node
-	Line    int
-	Col     int
-	EndLine int
-	EndCol  int
-	Text    string // exact source snippet
+	Atom     string
+	List     []Node
+	Line     int
+	Col      int
+	EndLine  int
+	EndCol   int
+	StartPos int    // byte offset of first token
+	EndPos   int    // byte offset after last token
+	Text     string // exact source snippet
 }
 
 // ParseError represents a syntax error with location context.
@@ -66,7 +68,7 @@ func ParseItems(src string) ([]Item, error) {
 	nodes, i, err := parseList(toks, 0)
 	if err != nil {
 		if pe, ok := err.(*ParseError); ok {
-			pe.Msg += "\n" + snippetAround(src, pe.Line)
+			pe.Msg += "\n" + snippetAround(src, pe.Line, pe.Col)
 		}
 		return nil, err
 	}
@@ -114,7 +116,7 @@ func Parse(src string) ([]Node, error) {
 	n, i, err := parseList(toks, 0)
 	if err != nil {
 		if pe, ok := err.(*ParseError); ok {
-			pe.Msg += "\n" + snippetAround(src, pe.Line)
+			pe.Msg += "\n" + snippetAround(src, pe.Line, pe.Col)
 		}
 		return nil, err
 	}
@@ -134,6 +136,8 @@ type token struct {
 	val  string
 	line int
 	col  int
+	pos  int
+	end  int
 }
 
 const (
@@ -165,11 +169,11 @@ func tokenize(src string) []token {
 		case '\r':
 			i++
 		case '(':
-			toks = append(toks, token{scTokLParen, "(", line, col})
+			toks = append(toks, token{scTokLParen, "(", line, col, i, i + 1})
 			i++
 			col++
 		case ')':
-			toks = append(toks, token{scTokRParen, ")", line, col})
+			toks = append(toks, token{scTokRParen, ")", line, col, i, i + 1})
 			i++
 			col++
 		case '"':
@@ -190,9 +194,9 @@ func tokenize(src string) []token {
 				jcol++
 			}
 			if j <= len(src) {
-				toks = append(toks, token{scTokString, src[i:j], line, col})
+				toks = append(toks, token{scTokString, src[i:j], line, col, i, j})
 			} else {
-				toks = append(toks, token{scTokString, src[i:], line, col})
+				toks = append(toks, token{scTokString, src[i:], line, col, i, len(src)})
 			}
 			col = jcol
 			i = j
@@ -203,7 +207,7 @@ func tokenize(src string) []token {
 				j++
 				jcol++
 			}
-			toks = append(toks, token{scTokAtom, src[i:j], line, col})
+			toks = append(toks, token{scTokAtom, src[i:j], line, col, i, j})
 			col = jcol
 			i = j
 		}
@@ -218,6 +222,8 @@ type node struct {
 	col     int
 	endLine int
 	endCol  int
+	pos     int
+	end     int
 }
 
 // String reconstructs the Scheme code represented by the node. It is not
@@ -247,17 +253,18 @@ func parseList(toks []token, i int) ([]node, int, error) {
 			if err != nil {
 				return nil, 0, err
 			}
-			nd := node{list: lst, line: tok.line, col: tok.col}
+			nd := node{list: lst, line: tok.line, col: tok.col, pos: tok.pos}
 			if j < len(toks) {
 				nd.endLine = toks[j].line
 				nd.endCol = toks[j].col + 1
+				nd.end = toks[j].end
 				i = j + 1
 			} else {
 				i = j
 			}
 			nodes = append(nodes, nd)
 		case scTokAtom, scTokString:
-			nodes = append(nodes, node{atom: tok.val, line: tok.line, col: tok.col, endLine: tok.line, endCol: tok.col + len(tok.val)})
+			nodes = append(nodes, node{atom: tok.val, line: tok.line, col: tok.col, endLine: tok.line, endCol: tok.col + len(tok.val), pos: tok.pos, end: tok.end})
 			i++
 		default:
 			i++
@@ -274,7 +281,7 @@ func parseList(toks []token, i int) ([]node, int, error) {
 	return nodes, i, nil
 }
 
-func snippetAround(src string, line int) string {
+func snippetAround(src string, line, col int) string {
 	lines := strings.Split(src, "\n")
 	start := line - 2
 	if start < 0 {
@@ -291,12 +298,18 @@ func snippetAround(src string, line int) string {
 			prefix = "->"
 		}
 		b.WriteString(fmt.Sprintf("%s%3d| %s\n", prefix, i+1, lines[i]))
+		if i+1 == line {
+			if col < 1 {
+				col = 1
+			}
+			b.WriteString("     " + strings.Repeat(" ", col-1) + "^\n")
+		}
 	}
 	return strings.TrimRight(b.String(), "\n")
 }
 
 func toPublic(n node) Node {
-	out := Node{Atom: n.atom, Line: n.line, Col: n.col, EndLine: n.endLine, EndCol: n.endCol, Text: n.String()}
+	out := Node{Atom: n.atom, Line: n.line, Col: n.col, EndLine: n.endLine, EndCol: n.endCol, StartPos: n.pos, EndPos: n.end, Text: n.String()}
 	if len(n.list) > 0 {
 		out.List = make([]Node, len(n.list))
 		for i, c := range n.list {

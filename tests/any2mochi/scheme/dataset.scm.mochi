@@ -3,3 +3,6 @@ fun map-set(m, k, v) {}
 fun new-Person(name, age) {}
 let people = [[cons('name, "Alice"), cons('age, 30)], [cons('name, "Bob"), cons('age, 15)], [cons('name, "Charlie"), cons('age, 65)]]
 let names = let((), for-each((lambda (p) (when (>= (map-get p 'age) 18) (set! _res (append _res (list (map-get p 'name)))))), if(string?(people), string->list(people), people)), _res)
+for n in names {
+  print(n)
+}

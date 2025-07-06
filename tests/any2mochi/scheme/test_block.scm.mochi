@@ -5,3 +5,6 @@ fun print-test-fail(err) {}
 fun run-test(name, thunk) {}
 fun test_addition_works() {}
 print("ok")
+if failures > 0 {
+  print("\n[FAIL] ")
+}

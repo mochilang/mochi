@@ -7,3 +7,16 @@ let customers = [[cons('id, 1), cons('name, "Alice")], [cons('id, 2), cons('name
 let orders = [[cons('id, 100), cons('customerId, 1), cons('total, 250)], [cons('id, 101), cons('customerId, 2), cons('total, 125)], [cons('id, 102), cons('customerId, 1), cons('total, 300)], [cons('id, 103), cons('customerId, 4), cons('total, 80)]]
 let result = let((), for-each((lambda (o) (for-each (lambda (c) (when (= (map-get o 'customerId) (map-get c 'id)) (set! _res (append _res (list (list (cons 'orderId (map-get o 'id)) (cons 'customerName (map-get c 'name)) (cons 'total (map-get o 'total)))))))) (if (string? customers) (string->list customers) customers))), if(string?(orders), string->list(orders), orders)), _res)
 print("--- Orders with customer info ---")
+for entry in result {
+  print("Order")
+  print(" ")
+  print(map-get(entry, 'orderId))
+  print(" ")
+  print("by")
+  print(" ")
+  print(map-get(entry, 'customerName))
+  print(" ")
+  print("- $")
+  print(" ")
+  print(map-get(entry, 'total))
+}
