@@ -143,6 +143,49 @@ func convertPythonCmd() *cobra.Command {
 	return cmd
 }
 
+func convertPasCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "convert-pas <file.pas>",
+		Short: "Convert Pascal source to Mochi",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			data, err := os.ReadFile(args[0])
+			if err != nil {
+				return err
+			}
+			out, err := any2mochi.ConvertPas(string(data))
+			if err != nil {
+				return err
+			}
+			_, err = cmd.OutOrStdout().Write(out)
+			return err
+		},
+	}
+	return cmd
+}
+
+func parsePasCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "parse-pas <file.pas>",
+		Short: "Parse Pascal and output AST JSON",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			data, err := os.ReadFile(args[0])
+			if err != nil {
+				return err
+			}
+			ast, err := any2mochi.ParsePasSimple(string(data))
+			if err != nil {
+				return err
+			}
+			enc := json.NewEncoder(cmd.OutOrStdout())
+			enc.SetIndent("", "  ")
+			return enc.Encode(ast)
+		},
+	}
+	return cmd
+}
+
 func convertTSCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "convert-ts <file.ts>",
@@ -266,8 +309,10 @@ func newRootCmd() *cobra.Command {
 	}
 	cmd.AddCommand(
 		parseCmd(),
+		parsePasCmd(),
 		convertGoCmd(),
 		convertRustCmd(),
+		convertPasCmd(),
 		convertPythonCmd(),
 		convertHsCmd(),
 		convertTSCmd(),

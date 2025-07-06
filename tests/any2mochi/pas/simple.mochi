@@ -1,0 +1,5 @@
+fun main() {
+  var x: int
+  x = 1
+  print("hello")
+}

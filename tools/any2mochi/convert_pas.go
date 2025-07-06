@@ -11,7 +11,7 @@ func ConvertPas(src string) ([]byte, error) {
 	ls := Servers["pas"]
 	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
 	if err != nil {
-		// fall back to very small regex based parser when pasls is missing
+		// fall back to small builtin parser when pasls is missing
 		return convertPasFallback(src)
 	}
 	if len(diags) > 0 {
@@ -334,88 +334,9 @@ func convertPasBody(src string, sym DocumentSymbol) string {
 // language server is available. It recognises simple type declarations,
 // variable definitions and statements inside the main program block.
 func convertPasFallback(src string) ([]byte, error) {
-	lines := strings.Split(src, "\n")
-	var out []string
-	inBody := false
-	for i := 0; i < len(lines); i++ {
-		l := strings.TrimSpace(lines[i])
-		lower := strings.ToLower(l)
-		if !inBody {
-			switch {
-			case strings.HasPrefix(lower, "type") && strings.Contains(l, "("):
-				name := ""
-				if idx := strings.Index(strings.ToLower(l), "type"); idx != -1 {
-					rest := strings.TrimSpace(l[idx+len("type"):])
-					eq := strings.Index(rest, "=")
-					if eq != -1 {
-						name = strings.TrimSpace(rest[:eq])
-						rest = rest[eq+1:]
-					}
-					vals := rest
-					for !strings.Contains(vals, ")") && i+1 < len(lines) {
-						i++
-						vals += strings.TrimSpace(lines[i])
-					}
-					if cIdx := strings.Index(vals, "("); cIdx != -1 {
-						vals = vals[cIdx+1:]
-					}
-					if end := strings.Index(vals, ")"); end != -1 {
-						vals = vals[:end]
-					}
-					var members []string
-					for _, part := range strings.Split(vals, ",") {
-						v := strings.TrimSpace(strings.TrimSuffix(part, ";"))
-						if v != "" {
-							members = append(members, v)
-						}
-					}
-					if name != "" && len(members) > 0 {
-						out = append(out, "type "+name+" {")
-						for _, m := range members {
-							out = append(out, "  "+m)
-						}
-						out = append(out, "}")
-					}
-				}
-			case strings.HasPrefix(lower, "var") && strings.Contains(l, ":"):
-				rest := strings.TrimSpace(strings.TrimPrefix(l, "var"))
-				rest = strings.TrimSuffix(rest, ";")
-				if idx := strings.Index(rest, ":"); idx != -1 {
-					name := strings.TrimSpace(rest[:idx])
-					typ := pasToMochiType(strings.TrimSpace(rest[idx+1:]))
-					if name != "" {
-						if typ != "" {
-							out = append(out, "let "+name+": "+typ)
-						} else {
-							out = append(out, "let "+name)
-						}
-					}
-				}
-			case lower == "begin":
-				inBody = true
-			}
-			continue
-		}
-		if lower == "end." || lower == "end;" {
-			inBody = false
-			continue
-		}
-		if l == "" {
-			continue
-		}
-		switch {
-		case strings.HasPrefix(lower, "writeln("):
-			expr := strings.TrimSuffix(strings.TrimPrefix(l, "writeln("), ");")
-			out = append(out, "print("+expr+")")
-		case strings.Contains(l, ":="):
-			parts := strings.SplitN(l, ":=", 2)
-			name := strings.TrimSpace(parts[0])
-			expr := strings.TrimSpace(strings.TrimSuffix(parts[1], ";"))
-			out = append(out, name+" = "+expr)
-		}
+	prog, err := ParsePasSimple(src)
+	if err != nil {
+		return nil, err
 	}
-	if len(out) == 0 {
-		return nil, fmt.Errorf("convert failure: no convertible content")
-	}
-	return []byte(strings.Join(out, "\n")), nil
+	return pasProgToMochi(prog), nil
 }
