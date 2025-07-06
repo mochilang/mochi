@@ -1,27 +1,42 @@
 package any2mochi
 
 import (
+	"bytes"
+	"context"
+	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
+	"time"
 )
 
 // ConvertHs converts hs source code to Mochi using the language server.
 func ConvertHs(src string) ([]byte, error) {
 	ls := Servers["hs"]
 	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
-	if err != nil {
+	if err != nil || len(diags) > 0 {
+		if items, err2 := parseHsCLI(src); err2 == nil {
+			if out := convertHsItems(items); out != nil {
+				return out, nil
+			}
+		}
 		if out := parseSimpleHs(src); out != nil {
 			return out, nil
 		}
-		return nil, err
-	}
-	if len(diags) > 0 {
+		if err != nil {
+			return nil, err
+		}
 		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
 	}
 	var out strings.Builder
 	writeHsSymbols(&out, nil, syms, src, ls)
 	if out.Len() == 0 {
+		if items, err2 := parseHsCLI(src); err2 == nil {
+			if res := convertHsItems(items); res != nil {
+				return res, nil
+			}
+		}
 		if simple := parseSimpleHs(src); simple != nil {
 			return simple, nil
 		}
@@ -37,6 +52,32 @@ func ConvertHsFile(path string) ([]byte, error) {
 		return nil, err
 	}
 	return ConvertHs(string(data))
+}
+
+// parseHsCLI invokes the hsast CLI to parse the Haskell source into hsItems.
+func parseHsCLI(src string) ([]hsItem, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	path, err := exec.LookPath("hsast")
+	if err != nil {
+		path = "go"
+	}
+	var args []string
+	if path == "go" {
+		args = []string{"run", "./tools/any2mochi/cmd/hsast"}
+	}
+	cmd := exec.CommandContext(ctx, path, args...)
+	cmd.Stdin = strings.NewReader(src)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	if err := cmd.Run(); err != nil {
+		return nil, err
+	}
+	var items []hsItem
+	if err := json.Unmarshal(out.Bytes(), &items); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 func getHsSignature(src string, sym DocumentSymbol, ls LanguageServer) ([]string, string) {
