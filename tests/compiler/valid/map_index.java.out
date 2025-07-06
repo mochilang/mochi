@@ -1,0 +1,7 @@
+public class Main {
+  public static void main(String[] args) {
+    java.util.Map<String, Integer> scores =
+        new java.util.HashMap<>(java.util.Map.of("Alice", 10, "Bob", 15));
+    System.out.println(scores.get("Bob"));
+  }
+}

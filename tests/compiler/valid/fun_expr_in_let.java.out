@@ -1,0 +1,9 @@
+public class Main {
+  public static void main(String[] args) {
+    java.util.function.Function<Integer, Integer> square =
+        (x) -> {
+          return (x * x);
+        };
+    System.out.println(square.apply(6));
+  }
+}

@@ -1,0 +1,30 @@
+public class Main {
+  public static void main(String[] args) {
+    java.util.Map<Integer, Integer> m = new java.util.HashMap<>();
+    m.put(1, 10);
+    m.put(2, 20);
+    if (_in(1, m)) {
+      System.out.println(m.get(1));
+    }
+    System.out.println(m.get(2));
+  }
+
+  static boolean _in(Object item, Object col) {
+    if (col instanceof String s && item instanceof String sub) return s.contains(sub);
+    if (col instanceof java.util.Map<?, ?> m) return m.containsKey(item);
+    if (col != null && col.getClass().isArray()) {
+      int n = java.lang.reflect.Array.getLength(col);
+      for (int i = 0; i < n; i++) {
+        if (java.util.Objects.equals(java.lang.reflect.Array.get(col, i), item)) return true;
+      }
+      return false;
+    }
+    if (col instanceof Iterable<?> it) {
+      for (Object v : it) {
+        if (java.util.Objects.equals(v, item)) return true;
+      }
+      return false;
+    }
+    return false;
+  }
+}

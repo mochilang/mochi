@@ -66,7 +66,11 @@ func TestJavaCompiler_SubsetPrograms(t *testing.T) {
 }
 
 func TestJavaCompiler_GoldenOutput(t *testing.T) {
-	golden.Run(t, "tests/compiler/java", ".mochi", ".java.out", func(src string) ([]byte, error) {
+	if err := javacode.EnsureJavac(); err != nil {
+		t.Skipf("javac not installed: %v", err)
+	}
+
+	runCompile := func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
 			return nil, fmt.Errorf("❌ parse error: %w", err)
@@ -75,12 +79,53 @@ func TestJavaCompiler_GoldenOutput(t *testing.T) {
 		if errs := types.Check(prog, env); len(errs) > 0 {
 			return nil, fmt.Errorf("❌ type error: %v", errs[0])
 		}
+
 		code, err := javacode.New(env).Compile(prog)
 		if err != nil {
 			return nil, fmt.Errorf("❌ compile error: %w", err)
 		}
+
+		dir := t.TempDir()
+		file := filepath.Join(dir, "Main.java")
+		if err := os.WriteFile(file, code, 0644); err != nil {
+			return nil, fmt.Errorf("write error: %w", err)
+		}
+		if out, err := exec.Command("javac", "-d", dir, file).CombinedOutput(); err != nil {
+			return nil, fmt.Errorf("❌ javac error: %w\n%s", err, out)
+		}
+
+		mainClass := "Main"
+		if prog.Package != "" {
+			mainClass = prog.Package + ".Main"
+		}
+		cmd := exec.Command("java", "-cp", dir, mainClass)
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			cmd.Stdin = bytes.NewReader(data)
+		}
+		gotOut, err := cmd.CombinedOutput()
+		if err != nil {
+			return nil, fmt.Errorf("❌ java run error: %w\n%s", err, gotOut)
+		}
+
+		modRoot, _ := mod.FindRoot(filepath.Dir(src))
+		interp := interpreter.New(prog, env, modRoot)
+		var wantBuf bytes.Buffer
+		interp.Env().SetWriter(&wantBuf)
+		if err := interp.Run(); err != nil {
+			return nil, fmt.Errorf("vm run error: %w", err)
+		}
+
+		got := bytes.TrimSpace(gotOut)
+		want := bytes.TrimSpace(wantBuf.Bytes())
+		if !bytes.Equal(got, want) {
+			return nil, fmt.Errorf("runtime output mismatch\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", got, want)
+		}
+
 		return bytes.TrimSpace(code), nil
-	})
+	}
+
+	golden.Run(t, "tests/compiler/valid", ".mochi", ".java.out", runCompile)
+	golden.Run(t, "tests/compiler/java", ".mochi", ".java.out", runCompile)
 }
 
 // runLeetExample compiles and runs the Mochi LeetCode example with the given id.

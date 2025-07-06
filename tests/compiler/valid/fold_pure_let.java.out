@@ -1,0 +1,11 @@
+public class Main {
+  static int sumN(int n) {
+    return ((n * (n + 1)) / 2);
+  }
+
+  public static void main(String[] args) {
+    int n = 10;
+    System.out.println(sumN(n));
+    System.out.println(n);
+  }
+}
