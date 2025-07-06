@@ -1,37 +1,26 @@
-package main
+package dart
 
 import (
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
-	"os"
 	"regexp"
 	"strings"
 )
 
-type dartParam struct {
-	Name string `json:"name"`
-	Type string `json:"type"`
+type param struct{ name, typ string }
+
+type Func struct {
+	Name   string
+	Params []param
+	Ret    string
+	Body   []string
 }
 
-type dartFunc struct {
-	Name   string      `json:"name"`
-	Params []dartParam `json:"params"`
-	Ret    string      `json:"ret"`
-	Body   []string    `json:"body"`
-}
-
-type ast struct {
-	Functions []dartFunc `json:"functions"`
-}
-
-func parseParams(s string) []dartParam {
+func parseParams(s string) []param {
 	s = strings.TrimSpace(s)
 	if s == "" {
 		return nil
 	}
 	parts := strings.Split(s, ",")
-	params := make([]dartParam, 0, len(parts))
+	params := make([]param, 0, len(parts))
 	for _, p := range parts {
 		p = strings.TrimSpace(p)
 		p = strings.TrimPrefix(p, "var ")
@@ -41,7 +30,7 @@ func parseParams(s string) []dartParam {
 		}
 		name := fields[len(fields)-1]
 		typ := strings.Join(fields[:len(fields)-1], " ")
-		params = append(params, dartParam{Name: name, Type: typ})
+		params = append(params, param{name: name, typ: toMochiType(typ)})
 	}
 	return params
 }
@@ -106,11 +95,12 @@ func parseStatements(body string) []string {
 	return out
 }
 
-func parse(src string) []dartFunc {
+// parse returns the functions found in src.
+func parse(src string) ([]Func, error) {
 	re := regexp.MustCompile(`(?m)^\s*([A-Za-z_][\w<>,\[\]\s]*)\s+([A-Za-z_][\w]*)\s*\(([^)]*)\)\s*\{`)
 	matches := re.FindAllStringSubmatchIndex(src, -1)
 	subs := re.FindAllStringSubmatch(src, -1)
-	var funcs []dartFunc
+	var funcs []Func
 	for i, m := range matches {
 		if len(subs[i]) < 4 {
 			continue
@@ -140,27 +130,12 @@ func parse(src string) []dartFunc {
 			}
 		}
 		body := src[start:bodyEnd]
-		funcs = append(funcs, dartFunc{
+		funcs = append(funcs, Func{
 			Name:   name,
 			Params: parseParams(params),
-			Ret:    strings.TrimSpace(ret),
+			Ret:    toMochiType(ret),
 			Body:   parseStatements(body[1:]),
 		})
 	}
-	return funcs
-}
-
-func main() {
-	data, err := ioutil.ReadAll(os.Stdin)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
-	a := ast{Functions: parse(string(data))}
-	enc := json.NewEncoder(os.Stdout)
-	enc.SetIndent("", "  ")
-	if err := enc.Encode(a); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
+	return funcs, nil
 }

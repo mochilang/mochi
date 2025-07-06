@@ -1,16 +1,17 @@
-package any2mochi
+package dart
 
 import (
 	"fmt"
 	"os"
-	"regexp"
 	"strings"
 	"unicode"
+
+	a2m "mochi/tools/any2mochi"
 )
 
-// ConvertDart converts dart source code to Mochi.
-func ConvertDart(src string) ([]byte, error) {
-	funcs, err := parseDartCLI(src)
+// Convert converts dart source code to Mochi.
+func Convert(src string) ([]byte, error) {
+	funcs, err := parse(src)
 	if err != nil {
 		return nil, err
 	}
@@ -47,28 +48,16 @@ func ConvertDart(src string) ([]byte, error) {
 	return []byte(out.String()), nil
 }
 
-// ConvertDartFile reads the dart file and converts it to Mochi.
-func ConvertDartFile(path string) ([]byte, error) {
+// ConvertFile reads the dart file and converts it to Mochi.
+func ConvertFile(path string) ([]byte, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return ConvertDart(string(data))
+	return Convert(string(data))
 }
 
-type dartParam struct {
-	name string
-	typ  string
-}
-
-type dartFunc struct {
-	Name   string
-	Params []dartParam
-	Ret    string
-	Body   []string
-}
-
-func parseDartDetail(detail string) ([]dartParam, string) {
+func parseDetail(detail string) ([]param, string) {
 	open := strings.Index(detail, "(")
 	close := strings.LastIndex(detail, ")")
 	if open == -1 || close == -1 || close < open {
@@ -81,7 +70,7 @@ func parseDartDetail(detail string) ([]dartParam, string) {
 	} else if i := strings.Index(retPart, "->"); i != -1 {
 		retPart = strings.TrimSpace(retPart[i+2:])
 	}
-	var params []dartParam
+	var params []param
 	for _, p := range strings.Split(paramsPart, ",") {
 		p = strings.TrimSpace(strings.Trim(p, "{}[]"))
 		if p == "" {
@@ -101,19 +90,19 @@ func parseDartDetail(detail string) ([]dartParam, string) {
 		}
 		typ := ""
 		if len(fields) > 1 {
-			typ = dartToMochiType(strings.Join(fields[:len(fields)-1], " "))
+			typ = toMochiType(strings.Join(fields[:len(fields)-1], " "))
 		}
-		params = append(params, dartParam{name: name, typ: typ})
+		params = append(params, param{name: name, typ: typ})
 	}
-	return params, dartToMochiType(retPart)
+	return params, toMochiType(retPart)
 }
 
-func parseDartHover(h Hover) ([]dartParam, string) {
+func parseHover(h a2m.Hover) ([]param, string) {
 	text := hoverString(h)
 	for _, line := range strings.Split(text, "\n") {
 		line = strings.TrimSpace(line)
 		if strings.Contains(line, "(") && strings.Contains(line, ")") {
-			if p, r := parseDartDetail(line); len(p) > 0 || r != "" {
+			if p, r := parseDetail(line); len(p) > 0 || r != "" {
 				return p, r
 			}
 		}
@@ -121,7 +110,7 @@ func parseDartHover(h Hover) ([]dartParam, string) {
 	return nil, ""
 }
 
-func writeDartSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol, src string, ls LanguageServer) {
+func writeSymbols(out *strings.Builder, prefix []string, syms []a2m.DocumentSymbol, src string, ls a2m.LanguageServer) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
@@ -129,15 +118,15 @@ func writeDartSymbols(out *strings.Builder, prefix []string, syms []DocumentSymb
 		}
 
 		switch s.Kind {
-		case SymbolKindClass, SymbolKindInterface, SymbolKindStruct:
+		case a2m.SymbolKindClass, a2m.SymbolKindInterface, a2m.SymbolKindStruct:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
 			out.WriteString(" {\n")
 			for _, c := range s.Children {
-				if c.Kind == SymbolKindField || c.Kind == SymbolKindProperty || c.Kind == SymbolKindVariable {
+				if c.Kind == a2m.SymbolKindField || c.Kind == a2m.SymbolKindProperty || c.Kind == a2m.SymbolKindVariable {
 					out.WriteString("  ")
 					out.WriteString(c.Name)
-					if t := dartFieldType(src, c, ls); t != "" {
+					if t := fieldType(src, c, ls); t != "" {
 						out.WriteString(": ")
 						out.WriteString(t)
 					}
@@ -146,52 +135,52 @@ func writeDartSymbols(out *strings.Builder, prefix []string, syms []DocumentSymb
 			}
 			out.WriteString("}\n")
 			for _, c := range s.Children {
-				if c.Kind == SymbolKindMethod || c.Kind == SymbolKindConstructor || c.Kind == SymbolKindFunction {
-					writeDartSymbols(out, nameParts, []DocumentSymbol{c}, src, ls)
+				if c.Kind == a2m.SymbolKindMethod || c.Kind == a2m.SymbolKindConstructor || c.Kind == a2m.SymbolKindFunction {
+					writeSymbols(out, nameParts, []a2m.DocumentSymbol{c}, src, ls)
 				}
 			}
 			continue
-		case SymbolKindVariable, SymbolKindConstant:
+		case a2m.SymbolKindVariable, a2m.SymbolKindConstant:
 			if len(prefix) == 0 && s.Name != "" {
 				out.WriteString("let ")
 				out.WriteString(s.Name)
-				if t := dartFieldType(src, s, ls); t != "" {
+				if t := fieldType(src, s, ls); t != "" {
 					out.WriteString(": ")
 					out.WriteString(t)
 				}
 				out.WriteByte('\n')
 			}
-		case SymbolKindEnum:
+		case a2m.SymbolKindEnum:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
 			out.WriteString(" {\n")
 			for _, c := range s.Children {
-				if c.Kind == SymbolKindEnumMember {
+				if c.Kind == a2m.SymbolKindEnumMember {
 					fmt.Fprintf(out, "  %s\n", c.Name)
 				}
 			}
 			out.WriteString("}\n")
-			var rest []DocumentSymbol
+			var rest []a2m.DocumentSymbol
 			for _, c := range s.Children {
-				if c.Kind != SymbolKindEnumMember {
+				if c.Kind != a2m.SymbolKindEnumMember {
 					rest = append(rest, c)
 				}
 			}
 			if len(rest) > 0 {
-				writeDartSymbols(out, nameParts, rest, src, ls)
+				writeSymbols(out, nameParts, rest, src, ls)
 			}
 			continue
-		case SymbolKindFunction, SymbolKindMethod, SymbolKindConstructor:
+		case a2m.SymbolKindFunction, a2m.SymbolKindMethod, a2m.SymbolKindConstructor:
 			out.WriteString("fun ")
 			out.WriteString(strings.Join(nameParts, "."))
 			detail := ""
 			if s.Detail != nil {
 				detail = *s.Detail
 			}
-			params, ret := parseDartDetail(detail)
+			params, ret := parseDetail(detail)
 			if len(params) == 0 && ret == "" {
-				if hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start); err == nil {
-					if p, r := parseDartHover(hov); len(p) > 0 || r != "" {
+				if hov, err := a2m.EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start); err == nil {
+					if p, r := parseHover(hov); len(p) > 0 || r != "" {
 						params, ret = p, r
 					}
 				}
@@ -212,7 +201,7 @@ func writeDartSymbols(out *strings.Builder, prefix []string, syms []DocumentSymb
 				out.WriteString(": ")
 				out.WriteString(ret)
 			}
-			body := parseDartFunctionBody(src, s)
+			body := parseFunctionBody(src, s)
 			if len(body) == 0 {
 				out.WriteString(" {}\n")
 			} else {
@@ -226,27 +215,27 @@ func writeDartSymbols(out *strings.Builder, prefix []string, syms []DocumentSymb
 		}
 
 		if len(s.Children) > 0 {
-			writeDartSymbols(out, nameParts, s.Children, src, ls)
+			writeSymbols(out, nameParts, s.Children, src, ls)
 		}
 	}
 }
 
-func dartTypeFromDetail(d *string) string {
+func typeFromDetail(d *string) string {
 	if d == nil {
 		return ""
 	}
-	return dartToMochiType(strings.TrimSpace(*d))
+	return toMochiType(strings.TrimSpace(*d))
 }
 
-func dartFieldType(src string, sym DocumentSymbol, ls LanguageServer) string {
-	if t := dartTypeFromDetail(sym.Detail); t != "" && t != "any" {
+func fieldType(src string, sym a2m.DocumentSymbol, ls a2m.LanguageServer) string {
+	if t := typeFromDetail(sym.Detail); t != "" && t != "any" {
 		return t
 	}
-	return dartTypeFromHover(src, sym, ls)
+	return typeFromHover(src, sym, ls)
 }
 
-func dartTypeFromHover(src string, sym DocumentSymbol, ls LanguageServer) string {
-	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
+func typeFromHover(src string, sym a2m.DocumentSymbol, ls a2m.LanguageServer) string {
+	hov, err := a2m.EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err != nil {
 		return ""
 	}
@@ -256,25 +245,25 @@ func dartTypeFromHover(src string, sym DocumentSymbol, ls LanguageServer) string
 		if idx := strings.Index(l, ":"); idx != -1 {
 			t := strings.TrimSpace(l[idx+1:])
 			if t != "" {
-				return dartToMochiType(t)
+				return toMochiType(t)
 			}
 		}
 		if idx := strings.Index(l, "→"); idx != -1 {
 			t := strings.TrimSpace(l[idx+len("→"):])
 			if t != "" {
-				return dartToMochiType(t)
+				return toMochiType(t)
 			}
 		} else if idx := strings.Index(l, "->"); idx != -1 {
 			t := strings.TrimSpace(l[idx+2:])
 			if t != "" {
-				return dartToMochiType(t)
+				return toMochiType(t)
 			}
 		}
 	}
 	return ""
 }
 
-func splitDartArgs(s string) []string {
+func splitArgs(s string) []string {
 	var parts []string
 	depth := 0
 	start := 0
@@ -299,7 +288,7 @@ func splitDartArgs(s string) []string {
 	return parts
 }
 
-func dartToMochiType(t string) string {
+func toMochiType(t string) string {
 	t = strings.TrimSpace(t)
 	if strings.HasSuffix(t, "?") {
 		t = strings.TrimSuffix(t, "?")
@@ -322,23 +311,23 @@ func dartToMochiType(t string) string {
 		if open := strings.Index(t, "<"); open != -1 {
 			outer := strings.TrimSpace(t[:open])
 			inner := strings.TrimSuffix(t[open+1:], ">")
-			args := splitDartArgs(inner)
+			args := splitArgs(inner)
 			switch outer {
 			case "List", "Iterable", "Set":
 				a := "any"
 				if len(args) > 0 {
-					if at := dartToMochiType(args[0]); at != "" {
+					if at := toMochiType(args[0]); at != "" {
 						a = at
 					}
 				}
 				return "list<" + a + ">"
 			case "Map":
 				if len(args) == 2 {
-					k := dartToMochiType(args[0])
+					k := toMochiType(args[0])
 					if k == "" {
 						k = "any"
 					}
-					v := dartToMochiType(args[1])
+					v := toMochiType(args[1])
 					if v == "" {
 						v = "any"
 					}
@@ -346,7 +335,7 @@ func dartToMochiType(t string) string {
 				}
 			case "Future":
 				if len(args) == 1 {
-					return dartToMochiType(args[0])
+					return toMochiType(args[0])
 				}
 			}
 		}
@@ -354,11 +343,11 @@ func dartToMochiType(t string) string {
 	return t
 }
 
-// parseDartFunctionBody extracts the body of a Dart function symbol.
+// parseFunctionBody extracts the body of a Dart function symbol.
 // It performs a very lightweight parsing and returns each line in Mochi
 // syntax. The implementation is intentionally simple and only handles
 // a small subset of statements.
-func parseDartFunctionBody(src string, sym DocumentSymbol) []string {
+func parseFunctionBody(src string, sym a2m.DocumentSymbol) []string {
 	code := extractRangeText(src, sym.Range)
 	start := strings.Index(code, "{")
 	end := strings.LastIndex(code, "}")
@@ -366,65 +355,5 @@ func parseDartFunctionBody(src string, sym DocumentSymbol) []string {
 		return nil
 	}
 	body := code[start+1 : end]
-	return parseDartStatements(body)
-}
-
-func parseDartStatements(body string) []string {
-	lines := strings.Split(body, "\n")
-	var out []string
-	indent := 1
-	for _, line := range lines {
-		l := strings.TrimSpace(line)
-		l = strings.TrimSuffix(l, ";")
-		if l == "" {
-			continue
-		}
-		switch {
-		case l == "}":
-			if indent > 0 {
-				indent--
-			}
-			out = append(out, strings.Repeat("  ", indent)+"}")
-		case strings.HasPrefix(l, "if ") && strings.HasSuffix(l, "{"):
-			cond := strings.TrimSpace(strings.TrimSuffix(l[3:], "{"))
-			out = append(out, strings.Repeat("  ", indent)+"if "+cond+" {")
-			indent++
-		case strings.HasPrefix(l, "for ") && strings.HasSuffix(l, "{"):
-			head := strings.TrimSpace(strings.TrimSuffix(l[4:], "{"))
-			rep := regexp.MustCompile(`var (\w+) = ([^;]+); \w+ < ([^;]+); \w+\+\+`)
-			if m := rep.FindStringSubmatch(head); m != nil {
-				out = append(out, strings.Repeat("  ", indent)+"for "+m[1]+" in "+m[2]+".."+m[3]+" {")
-			} else {
-				out = append(out, strings.Repeat("  ", indent)+"for "+head+" {")
-			}
-			indent++
-		case strings.HasPrefix(l, "var "):
-			stmt := strings.TrimSpace(strings.TrimPrefix(l, "var "))
-			if strings.Contains(stmt, "=") && strings.Contains(stmt, ".length") {
-				parts := strings.SplitN(stmt, "=", 2)
-				name := strings.TrimSpace(parts[0])
-				rhs := strings.TrimSpace(strings.TrimSuffix(parts[1], ".length"))
-				l = "let " + name + " = len(" + rhs + ")"
-			} else {
-				l = "let " + stmt
-			}
-			out = append(out, strings.Repeat("  ", indent)+l)
-		case strings.HasPrefix(l, "while ") && strings.HasSuffix(l, "{"):
-			cond := strings.TrimSpace(strings.TrimSuffix(l[6:], "{"))
-			out = append(out, strings.Repeat("  ", indent)+"while "+cond+" {")
-			indent++
-		case l == "else {":
-			if indent > 0 {
-				indent--
-			}
-			out = append(out, strings.Repeat("  ", indent)+"else {")
-			indent++
-		case strings.HasPrefix(l, "return "):
-			expr := strings.TrimSpace(l[len("return "):])
-			out = append(out, strings.Repeat("  ", indent)+"return "+expr)
-		default:
-			out = append(out, strings.Repeat("  ", indent)+l)
-		}
-	}
-	return out
+	return parseStatements(body)
 }

@@ -5,6 +5,8 @@ package any2mochi
 import (
 	"path/filepath"
 	"testing"
+
+	dart "mochi/tools/any2mochi/x/dart"
 )
 
 // TestConvertOther_Golden converts sample code for a variety of languages
@@ -24,7 +26,7 @@ func TestConvertOther_Golden(t *testing.T) {
 		{"cobol", "*.cob.out", ConvertCobolFile, "cobol"},
 		{"cpp", "*.cpp.out", ConvertCppFile, "cpp"},
 		{"cs", "*.cs.out", ConvertCsFile, "cs"},
-		{"dart", "*.dart.out", ConvertDartFile, "dart"},
+		{"dart", "*.dart.out", dart.ConvertFile, "dart"},
 		{"erl", "*.erl.out", ConvertErlangFile, "erl"},
 		{"ex", "*.ex.out", ConvertExFile, "ex"},
 		{"fortran", "*.f90.out", ConvertFortranFile, "fortran"},
