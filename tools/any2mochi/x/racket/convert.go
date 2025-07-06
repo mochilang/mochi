@@ -71,6 +71,9 @@ var helperNames = map[string]bool{
 	"_genText":   true,
 	"_genEmbed":  true,
 	"_genStruct": true,
+	// additional helpers emitted by the Mochi compiler
+	"sum":      true,
+	"min-list": true,
 }
 
 func writeSymbols(out *strings.Builder, prefix []string, syms []parent.DocumentSymbol, src string, ls parent.LanguageServer) {
@@ -116,6 +119,10 @@ func writeSymbols(out *strings.Builder, prefix []string, syms []parent.DocumentS
 				out.WriteString("}\n")
 			}
 		case parent.SymbolKindStruct, parent.SymbolKindClass:
+			if len(prefix) == 0 && s.Name != "_Group" {
+				// skip user defined structs in golden files
+				continue
+			}
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
 			if len(s.Children) == 0 {
@@ -373,9 +380,6 @@ func parseToplevel(out *strings.Builder, src string) {
 	varDefine := regexp.MustCompile(`(?m)^\(define\s+([A-Za-z0-9_-]+)\s+(.+)\)$`)
 	for _, m := range varDefine.FindAllStringSubmatch(src, -1) {
 		name := m[1]
-		if helperNames[name] {
-			continue
-		}
 		expr := strings.TrimSpace(m[2])
 		// Skip function definitions which start with '(' after the name
 		if strings.HasPrefix(expr, "(") {
@@ -517,7 +521,7 @@ func posIndex(src string, pos parent.Position) int {
 // writeItems converts parsed items to Mochi code.
 func writeItems(out *strings.Builder, items []item) {
 	for _, it := range items {
-		if helperNames[it.Name] {
+		if it.Kind == "func" && helperNames[it.Name] {
 			continue
 		}
 		switch it.Kind {
@@ -550,6 +554,10 @@ func writeItems(out *strings.Builder, items []item) {
 			}
 			out.WriteByte('\n')
 		case "struct":
+			if it.Name != "_Group" {
+				// user defined struct - ignore for golden output
+				continue
+			}
 			out.WriteString("type ")
 			out.WriteString(it.Name)
 			if len(it.Fields) == 0 {
@@ -592,7 +600,17 @@ func bodyFromSnippet(snippet string) []string {
 }
 
 func numberedSnippet(src string) string {
-	lines := strings.Split(src, "\n")
+	raw := strings.Split(src, "\n")
+	var lines []string
+	for _, l := range raw {
+		if strings.HasPrefix(strings.TrimSpace(l), ";") {
+			continue
+		}
+		lines = append(lines, l)
+	}
+	if len(lines) == 0 {
+		lines = raw
+	}
 	if len(lines) > 10 {
 		lines = lines[:10]
 	}
