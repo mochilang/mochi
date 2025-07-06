@@ -101,8 +101,9 @@ runtime helpers referenced during compilation.
 
 ## Tests
 
-Golden tests ensure generated code matches the expected output. They are tagged
-`slow` as they invoke the Go toolchain. Run them with:
+Golden tests ensure the compiler emits the expected Go code and that the
+generated program produces the correct output. They are tagged `slow` as they
+invoke the Go toolchain. Run them with:
 
 ```bash
 go test ./compile/go -tags slow
