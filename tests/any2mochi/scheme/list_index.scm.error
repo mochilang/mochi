@@ -1,6 +1,0 @@
-no convertible symbols found
-
-source snippet:
-  1: (define xs (list 10 20 30))
-  2: (begin (display (list-ref xs 1)) (newline))
-  3: 

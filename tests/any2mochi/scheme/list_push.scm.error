@@ -1,5 +1,0 @@
-no convertible symbols found
-
-source snippet:
-  1: (begin (display (append (list 1 2) (list 3))) (newline))
-  2: 

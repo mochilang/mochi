@@ -1,0 +1,1 @@
+print(map(car, [cons("a", 1), cons("b", 2)]))

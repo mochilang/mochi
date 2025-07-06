@@ -1,1 +1,2 @@
-fun add(a, b) {}
+let add = fun(a, b) => a + b
+print(add(2, 3))
