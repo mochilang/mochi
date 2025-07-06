@@ -1,0 +1,2 @@
+tree = Node(Leaf(), 1, Leaf())
+print(tree["left"]["__name"])

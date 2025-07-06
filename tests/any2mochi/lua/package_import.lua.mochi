@@ -1,0 +1,11 @@
+fun _import_helper() {
+  let _pkg = []
+  fun double(x) {
+    return x * 2
+  }
+  _pkg["double"] = double
+  _pkg["__name"] = "helper"
+  return _pkg
+}
+let helper = _import_helper()
+print(helper["double"](5))

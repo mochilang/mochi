@@ -1,0 +1,7 @@
+no convertible symbols found
+
+source snippet:
+  1: function double(x)
+  2:     return (x * 2)
+  3: end
+  4:

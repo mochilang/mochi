@@ -1,0 +1,7 @@
+Person = []
+Person["__index"] = Person
+people = [{ "name": "Alice", "age": 30 }, { "name": "Bob", "age": 15 }, { "name": "Charlie", "age": 65 }]
+names = ()
+for _, n in ipairs(names) {
+  print(n)
+}

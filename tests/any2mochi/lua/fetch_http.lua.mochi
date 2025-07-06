@@ -1,0 +1,4 @@
+Todo = []
+Todo["__index"] = Todo
+todo = Todo["new"](__fetch("https://jsonplaceholder.typicode.com/todos/1", null))
+print(todo["title"])

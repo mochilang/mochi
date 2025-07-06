@@ -1,0 +1,3 @@
+print(fib(0))
+print(fib(1))
+print(fib(6))

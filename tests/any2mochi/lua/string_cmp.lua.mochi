@@ -1,0 +1,6 @@
+print()
+print()
+print()
+print()
+print(__eq("abc", "abc"))
+print(!__eq("foo", "bar"))

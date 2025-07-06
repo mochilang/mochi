@@ -1,0 +1,2 @@
+print(isLeaf({ "__name": "Leaf" }))
+print(isLeaf({ "__name": "Node", "left": { "__name": "Leaf" }, "value": 1, "right": { "__name": "Leaf" } }))

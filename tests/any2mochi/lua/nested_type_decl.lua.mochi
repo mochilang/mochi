@@ -1,0 +1,3 @@
+Person = []
+Person["__index"] = Person
+print("ok")

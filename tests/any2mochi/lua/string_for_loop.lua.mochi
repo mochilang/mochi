@@ -1,0 +1,5 @@
+let _s0 = "cat"
+for _i0 = 1; _i0 <= ; _i0 += 1 {
+  let ch = string["sub"](_s0, _i0, _i0)
+  print(ch)
+}

@@ -1,0 +1,4 @@
+Person = []
+Person["__index"] = Person
+people = __load(null, { "format": "jsonl" })
+print(__count(people))

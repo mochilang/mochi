@@ -1,0 +1,2 @@
+print(__contains("catch", "cat"))
+print(__contains("catch", "dog"))
