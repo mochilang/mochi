@@ -23,7 +23,10 @@ type TSAstDecl struct {
 	Alias     string    `json:"alias,omitempty"`
 	Variants  []string  `json:"variants,omitempty"`
 	StartLine int       `json:"start,omitempty"`
+	StartCol  int       `json:"startCol,omitempty"`
 	EndLine   int       `json:"end,omitempty"`
+	EndCol    int       `json:"endCol,omitempty"`
+	Snippet   string    `json:"snippet,omitempty"`
 }
 
 // parseTSAST parses src using a Deno helper and returns the AST.

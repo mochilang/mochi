@@ -18,7 +18,10 @@ interface TSDecl {
   alias?: string;
   variants?: string[];
   start?: number;
+  startCol?: number;
   end?: number;
+  endCol?: number;
+  snippet?: string;
 }
 
 function tsToMochiType(t: string): string {
@@ -73,6 +76,9 @@ function parse(src: string): TSDecl[] {
   for (const stmt of file.getStatements()) {
     const start = stmt.getStartLineNumber();
     const end = stmt.getEndLineNumber();
+    const startCol = stmt.getStart() - stmt.getStartLinePos();
+    const endCol = stmt.getEnd() - stmt.getEndLinePos();
+    const snippet = stmt.getText();
     if (Node.isVariableStatement(stmt)) {
       for (const d of stmt.getDeclarationList().getDeclarations()) {
         const name = d.getName();
@@ -81,7 +87,10 @@ function parse(src: string): TSDecl[] {
           kind: "var",
           name,
           start,
+          startCol,
           end,
+          endCol,
+          snippet,
           fields: undefined,
           params: undefined,
           ret: undefined,
@@ -106,14 +115,26 @@ function parse(src: string): TSDecl[] {
         kind: "func",
         name,
         start,
+        startCol,
         end,
+        endCol,
+        snippet,
         params,
         ret: rt,
         body: stmt.getBodyText() || "",
       });
     } else if (Node.isEnumDeclaration(stmt)) {
       const variants = stmt.getMembers().map((m) => m.getName());
-      decls.push({ kind: "enum", name: stmt.getName(), start, end, variants });
+      decls.push({
+        kind: "enum",
+        name: stmt.getName(),
+        start,
+        startCol,
+        end,
+        endCol,
+        snippet,
+        variants,
+      });
     } else if (
       Node.isClassDeclaration(stmt) || Node.isInterfaceDeclaration(stmt)
     ) {
@@ -130,7 +151,10 @@ function parse(src: string): TSDecl[] {
         kind: "type",
         name: stmt.getName() || "",
         start,
+        startCol,
         end,
+        endCol,
+        snippet,
         fields,
       });
     } else if (Node.isTypeAliasDeclaration(stmt)) {
@@ -146,10 +170,28 @@ function parse(src: string): TSDecl[] {
             });
           }
         });
-        decls.push({ kind: "type", name, start, end, fields });
+        decls.push({
+          kind: "type",
+          name,
+          start,
+          startCol,
+          end,
+          endCol,
+          snippet,
+          fields,
+        });
       } else if (tn) {
         const alias = tsToMochiType(tn.getText());
-        decls.push({ kind: "alias", name, start, end, alias });
+        decls.push({
+          kind: "alias",
+          name,
+          start,
+          startCol,
+          end,
+          endCol,
+          snippet,
+          alias,
+        });
       }
     }
   }
