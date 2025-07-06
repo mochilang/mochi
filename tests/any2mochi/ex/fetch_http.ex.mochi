@@ -1,0 +1,22 @@
+fun main() {
+  let todo = _fetch("https://jsonplaceholder.typicode.com/todos/1", nil)
+  print(todo.title)
+}
+main()
+fun _fetch(url, opts) {
+  :inets.start()
+  :ssl.start()
+  let method = if opts, do: Map.get(opts, "method", "GET"), else: "GET"
+  let headers = if opts && Map.has_key?(opts, "headers"), do: Enum.map(opts["headers"], fn {k,v} -> {String.to_charlist(k), String.to_charlist(to_string(v))} end), else: []
+  let body = if opts && Map.has_key?(opts, "body"), do: Jason.encode!(opts["body"]), else: ""
+  let query = if opts && Map.has_key?(opts, "query"), do: URI.encode_query(opts["query"]), else: nil
+  let full = if query, do: url <> "?" <> query, else: url
+  let timeout = if opts && Map.has_key?(opts, "timeout"), do: (t = opts["timeout"]; cond do
+  is_integer(t) -> trunc(t * 1000)
+  is_float(t) -> trunc(t * 1000)
+  true -> nil
+  end), else: nil
+  let http_opts = if timeout, do: [timeout: timeout], else: []
+  let {{_,_,_}, _, resp} = :httpc.request(String.to_atom(String.upcase(method)), {String.to_charlist(full), headers, 'application/json', String.to_charlist(body)}, [], http_opts) |> elem(1)
+  Jason.decode!(resp, keys: :atoms)
+}
