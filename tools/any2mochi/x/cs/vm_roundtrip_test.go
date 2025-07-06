@@ -14,7 +14,6 @@ import (
 	cscode "mochi/compile/x/cs"
 	"mochi/parser"
 	vm "mochi/runtime/vm"
-	any2mochi "mochi/tools/any2mochi"
 	"mochi/types"
 )
 
@@ -89,7 +88,7 @@ func writeStatusMarkdown(dir string, status map[string]string) {
 }
 
 func TestCSRroundTripVM(t *testing.T) {
-	root := any2mochi.FindRepoRoot(t)
+	root := findRepoRoot(t)
 	pattern := filepath.Join(root, "tests/vm/valid", "*.mochi")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
@@ -112,4 +111,23 @@ func TestCSRroundTripVM(t *testing.T) {
 		}
 	}
 	writeStatusMarkdown(filepath.Join(root, "tests/any2mochi/cs_vm"), status)
+}
+
+func findRepoRoot(t *testing.T) string {
+	dir, err := os.Getwd()
+	if err != nil {
+		t.Fatal("cannot determine working directory")
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	t.Fatal("go.mod not found (not in Go module)")
+	return ""
 }
