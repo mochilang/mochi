@@ -55,14 +55,14 @@ fun _load(path, opts) {
   return [dict(data)]
 }
   return []
-}
-  let elif fmt = = "jsonl":
+} else if fmt == "jsonl" {
   return [json.loads(line) for line in f if line.strip()]
-  let elif fmt = = "yaml":
+} else if fmt == "yaml" {
   import yaml
   let data = yaml.safe_load(f)
   if isinstance(data, list) {
   return [dict(d) for d in data]
+}
   if isinstance(data, dict) {
   return [dict(data)]
 }
@@ -109,26 +109,26 @@ fun _save(rows, path, opts) {
   rec.append(json.dumps(val))
 } else if val is None {
   rec.append("")
-}
-  else:
+} else {
   rec.append(str(val))
+}
 }
   w.writerow(rec)
 }
   return
 } else if fmt == "json" {
   json.dump(rows, f)
-}
-  let elif fmt = = "jsonl":
+} else if fmt == "jsonl" {
   for row in rows {
   f.write(json.dumps(row))
   f.write("\n")
 }
-  let elif fmt = = "yaml":
+} else if fmt == "yaml" {
   import yaml
   let yaml.safe_dump(rows[0] if len(rows) = = 1 else rows, f)
-  else:
+} else {
   raise Exception("unknown format: " + fmt)
+}
 }
   finally:
   if path is not None {

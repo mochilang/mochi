@@ -479,50 +479,31 @@ func parseLines(lines []string, indent string) ([]string, int) {
 			cond := strings.TrimSpace(strings.TrimSuffix(s[3:], ":"))
 			body, n := parseLines(lines[i+1:], step)
 			i = i + 1 + n
-			var elseBody []string
-			if i < len(lines) {
+			var parts []string
+			parts = append(parts, "if "+cond+formatBlock(body))
+			for i < len(lines) {
 				nextLine := lines[i]
 				if strings.HasPrefix(nextLine, indent) {
 					nextLine = nextLine[len(indent):]
 				}
 				next := strings.TrimSpace(nextLine)
-				if strings.HasPrefix(next, "else:") {
-					var m int
-					elseBody, m = parseLines(lines[i+1:], step)
-					i = i + 1 + m
-				} else if strings.HasPrefix(next, "elif ") {
-					var m int
+				switch {
+				case strings.HasPrefix(next, "elif "):
 					elifCond := strings.TrimSpace(strings.TrimSuffix(next[5:], ":"))
 					elifBody, m := parseLines(lines[i+1:], step)
 					i = i + 1 + m
-					bodyBlock := formatBlock(body)
-					elifBlock := formatBlock(elifBody)
-					stmts = append(stmts, "if "+cond+bodyBlock+" else if "+elifCond+elifBlock)
-					continue
+					parts = append(parts, "else if "+elifCond+formatBlock(elifBody))
+				case strings.HasPrefix(next, "else:"):
+					elseBody, m := parseLines(lines[i+1:], step)
+					i = i + 1 + m
+					parts = append(parts, "else"+formatBlock(elseBody))
+					goto endIf
+				default:
+					goto endIf
 				}
 			}
-			var b strings.Builder
-			b.WriteString("if ")
-			b.WriteString(cond)
-			if len(body) == 0 {
-				b.WriteString(" {}")
-			} else {
-				b.WriteString(" {")
-				for _, st := range body {
-					b.WriteString("\n  ")
-					b.WriteString(st)
-				}
-				b.WriteString("\n}")
-			}
-			if len(elseBody) > 0 {
-				b.WriteString(" else {")
-				for _, st := range elseBody {
-					b.WriteString("\n  ")
-					b.WriteString(st)
-				}
-				b.WriteString("\n}")
-			}
-			stmts = append(stmts, b.String())
+		endIf:
+			stmts = append(stmts, strings.Join(parts, " "))
 		case strings.HasPrefix(s, "for ") && strings.HasSuffix(s, ":"):
 			rest := strings.TrimSpace(strings.TrimSuffix(s[4:], ":"))
 			if idx := strings.Index(rest, " in "); idx != -1 {
@@ -759,6 +740,10 @@ func convertFallback(src string) ([]byte, error) {
 						out.WriteString(": ")
 						out.WriteString(mapType(f.Type))
 					}
+					if f.Value != "" {
+						out.WriteString(" = ")
+						out.WriteString(strings.ReplaceAll(f.Value, "\n", " "))
+					}
 					out.WriteByte('\n')
 				}
 				out.WriteString("}\n")
@@ -843,8 +828,9 @@ func indentOf(s string) string {
 }
 
 type fieldItem struct {
-	Name string `json:"name"`
-	Type string `json:"type,omitempty"`
+	Name  string `json:"name"`
+	Type  string `json:"type,omitempty"`
+	Value string `json:"value,omitempty"`
 }
 
 type paramItem struct {
@@ -911,7 +897,13 @@ for n in tree.body:
                         typ = ast.unparse(b.annotation)
                     except Exception:
                         pass
-                fields.append({"name": b.target.id, "type": typ})
+                val = ""
+                if b.value is not None:
+                    try:
+                        val = ast.unparse(b.value)
+                    except Exception:
+                        pass
+                fields.append({"name": b.target.id, "type": typ, "value": val})
         items.append({"kind": "class", "name": n.name, "fields": fields})
 json.dump(items, sys.stdout)`
 
@@ -929,6 +921,8 @@ func runParse(src string) ([]item, error) {
 		if msg != "" {
 			if line := parseErrorLine(msg); line > 0 {
 				msg += "\n" + snippetDetailed(src, line)
+			} else {
+				msg += "\n" + numberedSnippet(src)
 			}
 			return nil, fmt.Errorf("%v: %s", err, msg)
 		}

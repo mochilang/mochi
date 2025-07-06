@@ -1,21 +1,17 @@
-let T = TypeVar('T')
-fun _sort_key(k) {
+let T = TypeVar("T")
+fun _sort_key() {
   if isinstance(k, (list, tuple, dict)) {
-  return str(k)
-}
+    return str(k)
+  }
   return k
 }
 type Product {
   name: string
   price: int
 }
-let products = [Product(name='Laptop', price=1500), Product(name='Smartphone', price=900), Product(name='Tablet', price=600), Product(name='Monitor', price=300), Product(name='Keyboard', price=100), Product(name='Mouse', price=50), Product(name='Headphones', price=200)]
-let expensive = None
-fun main() {
-  let products = [ Product(name="Laptop", price=1500), Product(name="Smartphone", price=900), Product(name="Tablet", price=600), Product(name="Monitor", price=300), Product(name="Keyboard", price=100), Product(name="Mouse", price=50), Product(name="Headphones", price=200), ]
-  let expensive = [ p for p in ( (sorted([p for p in products], key=lambda p: _sort_key((-p.price))))[ max(1, 0) : ] )[: max(3, 0)] ]
-  print("--- Top products (excluding most expensive) ---")
-  for item in expensive {
+let products = [Product {name: "Laptop", price: 1500}, Product {name: "Smartphone", price: 900}, Product {name: "Tablet", price: 600}, Product {name: "Monitor", price: 300}, Product {name: "Keyboard", price: 100}, Product {name: "Mouse", price: 50}, Product {name: "Headphones", price: 200}]
+let expensive = from p in sorted(from p in products select p, key: )[max(1, 0):][:max(3, 0)] select p
+print("--- Top products (excluding most expensive) ---")
+for item in expensive {
   print(item.name, "costs $", item.price)
-}
 }

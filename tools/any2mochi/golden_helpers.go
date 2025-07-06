@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -13,6 +14,7 @@ import (
 
 	gocode "mochi/compile/go"
 	"mochi/parser"
+	vm "mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -92,6 +94,13 @@ func runConvertCompileGolden(t *testing.T, dir, pattern string, convert func(str
 					} else {
 						if _, cErr := gocode.New(env).Compile(prog); cErr != nil {
 							err = fmt.Errorf("compile error: %w", cErr)
+						} else {
+							p, vmErr := vm.Compile(prog, env)
+							if vmErr != nil {
+								err = fmt.Errorf("vm compile error: %w", vmErr)
+							} else if rErr := vm.New(p, io.Discard).Run(); rErr != nil {
+								err = fmt.Errorf("vm run error: %w", rErr)
+							}
 						}
 					}
 				}
