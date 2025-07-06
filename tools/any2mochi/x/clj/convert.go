@@ -20,6 +20,7 @@ type form struct {
 	Type   string   `json:"type"`
 	Name   string   `json:"name,omitempty"`
 	Params []string `json:"params,omitempty"`
+	Doc    string   `json:"doc,omitempty"`
 	Body   []node   `json:"body,omitempty"`
 	Value  node     `json:"value,omitempty"`
 	Line   int      `json:"line,omitempty"`
@@ -455,6 +456,11 @@ func programToMochi(p *Program, src string) ([]byte, error) {
 	for _, f := range p.Forms {
 		switch f.Type {
 		case "defn":
+			if f.Doc != "" {
+				out.WriteString("// ")
+				out.WriteString(f.Doc)
+				out.WriteByte('\n')
+			}
 			out.WriteString("fun ")
 			out.WriteString(f.Name)
 			out.WriteByte('(')

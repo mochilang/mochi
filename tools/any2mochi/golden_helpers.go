@@ -65,6 +65,8 @@ func runConvertCompileGolden(t *testing.T, dir, pattern string, convert func(str
 			name = strings.TrimSuffix(filepath.Base(src), ".py.out")
 		case strings.HasSuffix(src, ".ts.out"):
 			name = strings.TrimSuffix(filepath.Base(src), ".ts.out")
+		case strings.HasSuffix(src, ".clj.out"):
+			name = strings.TrimSuffix(filepath.Base(src), ".clj.out")
 		case strings.HasSuffix(src, ".f90.out"):
 			name = strings.TrimSuffix(filepath.Base(src), ".f90.out")
 		case strings.HasSuffix(src, ".pas.out"):
