@@ -540,7 +540,12 @@ func parseStatements(body string) []string {
 			if strings.HasSuffix(l, "{") {
 				h := strings.TrimSpace(strings.TrimSuffix(l, "{"))
 				h = strings.TrimPrefix(h, "if")
-				h = strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(h, "("), ")"))
+				h = strings.TrimSpace(h)
+				for strings.HasPrefix(h, "(") && strings.HasSuffix(h, ")") {
+					h = strings.TrimPrefix(h, "(")
+					h = strings.TrimSuffix(h, ")")
+					h = strings.TrimSpace(h)
+				}
 				out = append(out, strings.Repeat("  ", indent)+"if "+h+" {")
 				indent++
 			} else {
@@ -605,6 +610,21 @@ func parseStatements(body string) []string {
 				v := strings.TrimSpace(parts[0])
 				val := strings.TrimSpace(parts[1])
 				out = append(out, strings.Repeat("  ", indent)+v+" = "+v+" % "+val)
+			case strings.Contains(l, "&="):
+				parts := strings.SplitN(l, "&=", 2)
+				v := strings.TrimSpace(parts[0])
+				val := strings.TrimSpace(parts[1])
+				out = append(out, strings.Repeat("  ", indent)+v+" = "+v+" & "+val)
+			case strings.Contains(l, "|="):
+				parts := strings.SplitN(l, "|=", 2)
+				v := strings.TrimSpace(parts[0])
+				val := strings.TrimSpace(parts[1])
+				out = append(out, strings.Repeat("  ", indent)+v+" = "+v+" | "+val)
+			case strings.Contains(l, "^="):
+				parts := strings.SplitN(l, "^=", 2)
+				v := strings.TrimSpace(parts[0])
+				val := strings.TrimSpace(parts[1])
+				out = append(out, strings.Repeat("  ", indent)+v+" = "+v+" ^ "+val)
 			case strings.HasPrefix(l, "int "):
 				out = append(out, strings.Repeat("  ", indent)+"var "+strings.TrimSpace(l[4:]))
 			case strings.HasPrefix(l, "float "):
