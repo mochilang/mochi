@@ -1,21 +1,24 @@
 program main;
 {$mode objfpc}
+
 uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
 
 type
   generic TArray<T> = array of T;
 
 function abs_val(n: integer): integer;
+
 var
   _tmp0: integer;
 begin
   if (n < 0) then
-  begin
-    _tmp0 := -n;
-  end else
-  begin
-    _tmp0 := n;
-  end;
+    begin
+      _tmp0 := -n;
+    end
+  else
+    begin
+      _tmp0 := n;
+    end;
   result := _tmp0;
   exit;
 end;

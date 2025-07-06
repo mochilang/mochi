@@ -1,5 +1,6 @@
 program main;
 {$mode objfpc}
+
 uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
 
 type
@@ -11,8 +12,8 @@ var
 
 begin
   for _tmp0 := 1 to Length('cat') do
-  begin
-    ch := 'cat'[_tmp0];
-    writeln(ch);
-  end;
+    begin
+      ch := 'cat'[_tmp0];
+      writeln(ch);
+    end;
 end.

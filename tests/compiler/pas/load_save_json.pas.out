@@ -1,23 +1,24 @@
 program main;
 {$mode objfpc}
+
 uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
 
 type
   generic TArray<T> = array of T;
+
 type Person = record
   name: string;
   age: integer;
   email: string;
 end;
 
-var
-  _tmp0: specialize TArray<Person>;
-  adults: specialize TArray<Person>;
-  p: Person;
-  people: specialize TArray<Person>;
-
 generic function _loadJSON<T>(path: string): specialize TArray<T>;
-var sl: TStringList; data: TJSONData; arr: TJSONArray; i: Integer; ds: TJSONDeStreamer;
+
+var sl: TStringList;
+  data: TJSONData;
+  arr: TJSONArray;
+  i: Integer;
+  ds: TJSONDeStreamer;
 begin
   sl := TStringList.Create;
   try
@@ -32,42 +33,51 @@ begin
     try
       for i := 0 to arr.Count - 1 do
         ds.JSONToObject(arr.Objects[i], @Result[i], TypeInfo(T));
-      finally
-        ds.Free;
-      end;
     finally
-      sl.Free;
-    end;
-  end;
+      ds.Free;
+end;
+finally
+  sl.Free;
+end;
+end;
 
-  generic procedure _saveJSON<T>(data: specialize TArray<T>; path: string);
-  var sl: TStringList; i: Integer; ds: TJSONStreamer;
-  begin
-    sl := TStringList.Create;
-    ds := TJSONStreamer.Create(nil);
-    try
-      sl.Add('[');
-      for i := 0 to High(data) do
+generic procedure _saveJSON<T>(data: specialize TArray<T>; path: string);
+
+var sl: TStringList;
+  i: Integer;
+  ds: TJSONStreamer;
+begin
+  sl := TStringList.Create;
+  ds := TJSONStreamer.Create(nil);
+  try
+    sl.Add('[');
+    for i := 0 to High(data) do
       begin
         sl.Add(ds.ObjectToJSONString(@data[i], TypeInfo(T)));
         if i < High(data) then sl[sl.Count-1] := sl[sl.Count-1] + ',';
       end;
-      sl.Add(']');
-      sl.SaveToFile(path);
-    finally
-      ds.Free;
-      sl.Free;
-    end;
-  end;
+    sl.Add(']');
+    sl.SaveToFile(path);
+  finally
+    ds.Free;
+    sl.Free;
+end;
+end;
 
-  begin
+var
+  _tmp0: specialize TArray<Person>;
+  adults: specialize TArray<Person>;
+  p: Person;
+  people: specialize TArray<Person>;
+
+begin
   people := specialize _loadJSON<Person>("");
   SetLength(_tmp0, 0);
   for p in people do
-  begin
-    if not ((p.age >= 18)) then continue;
-    _tmp0 := Concat(_tmp0, [p]);
-  end;
+    begin
+      if not ((p.age >= 18)) then continue;
+      _tmp0 := Concat(_tmp0, [p]);
+    end;
   adults := _tmp0;
   _saveJSON(adults, "");
-  end.
+end.

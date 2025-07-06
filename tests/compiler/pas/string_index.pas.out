@@ -1,12 +1,10 @@
 program main;
 {$mode objfpc}
+
 uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
 
 type
   generic TArray<T> = array of T;
-
-var
-  text: string;
 
 function _indexString(s: string; i: integer): string;
 begin
@@ -15,6 +13,9 @@ begin
     raise Exception.Create('index out of range');
   Result := s[i + 1];
 end;
+
+var
+  text: string;
 
 begin
   text := 'hello';

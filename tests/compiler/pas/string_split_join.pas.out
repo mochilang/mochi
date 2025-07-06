@@ -1,26 +1,25 @@
 program main;
 {$mode objfpc}
+
 uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
 
 type
   generic TArray<T> = array of T;
 
-var
-  parts: specialize TArray<string>;
-  sep: string;
-
 function _joinStrings(parts: specialize TArray<string>; sep: string): string;
+
 var i: Integer;
 begin
   Result := '';
   for i := 0 to High(parts) do
-  begin
-    if i > 0 then Result := Result + sep;
-    Result := Result + parts[i];
-  end;
+    begin
+      if i > 0 then Result := Result + sep;
+      Result := Result + parts[i];
+    end;
 end;
 
 function _sliceString(s: string; i, j: integer): string;
+
 var start_, end_, n: integer;
 begin
   start_ := i;
@@ -35,7 +34,9 @@ begin
 end;
 
 function _splitString(s, sep: string): specialize TArray<string>;
-var sl: TStringList; i: Integer;
+
+var sl: TStringList;
+  i: Integer;
 begin
   sl := TStringList.Create;
   try
@@ -47,8 +48,12 @@ begin
       Result[i] := sl[i];
   finally
     sl.Free;
-  end;
 end;
+end;
+
+var
+  parts: specialize TArray<string>;
+  sep: string;
 
 begin
   parts := _splitString('a,b,c', ',');
