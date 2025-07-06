@@ -3,9 +3,11 @@ package prolog
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strings"
 )
 
 type program struct {
@@ -13,11 +15,15 @@ type program struct {
 }
 
 type clause struct {
-	Name   string   `json:"name"`
-	Params []string `json:"params"`
-	Body   string   `json:"body"`
-	Start  int      `json:"start"`
-	End    int      `json:"end"`
+	Name      string   `json:"name"`
+	Params    []string `json:"params"`
+	Body      string   `json:"body"`
+	Start     int      `json:"start"`
+	End       int      `json:"end"`
+	StartLine int
+	StartCol  int
+	EndLine   int
+	EndCol    int
 }
 
 func parseAST(src string) (*program, error) {
@@ -26,15 +32,20 @@ func parseAST(src string) (*program, error) {
 	cmd := exec.Command("swipl", "-q", "-f", script, "-t", "main")
 	cmd.Stdin = bytes.NewBufferString(src)
 	var out bytes.Buffer
+	var stderr bytes.Buffer
 	cmd.Stdout = &out
+	cmd.Stderr = &stderr
 	if err := cmd.Run(); err != nil {
+		if stderr.Len() > 0 {
+			return nil, fmt.Errorf("%s", strings.TrimSpace(stderr.String()))
+		}
 		return nil, err
 	}
 	var prog program
 	if err := json.Unmarshal(out.Bytes(), &prog); err != nil {
 		return nil, err
 	}
-	// compute line numbers from character offsets
+	// compute line and column information from offsets
 	lineOffsets := []int{0}
 	for i, r := range src {
 		if r == '\n' {
@@ -42,19 +53,23 @@ func parseAST(src string) (*program, error) {
 		}
 	}
 	for i, c := range prog.Clauses {
-		prog.Clauses[i].Start = offsetToLine(lineOffsets, c.Start)
-		prog.Clauses[i].End = offsetToLine(lineOffsets, c.End)
+		l1, c1 := offsetToPos(lineOffsets, c.Start)
+		l2, c2 := offsetToPos(lineOffsets, c.End)
+		prog.Clauses[i].StartLine = l1
+		prog.Clauses[i].StartCol = c1
+		prog.Clauses[i].EndLine = l2
+		prog.Clauses[i].EndCol = c2
 	}
 	return &prog, nil
 }
 
-func offsetToLine(lines []int, off int) int {
+func offsetToPos(lines []int, off int) (int, int) {
 	for i := len(lines) - 1; i >= 0; i-- {
 		if off >= lines[i] {
-			return i + 1
+			return i + 1, off - lines[i] + 1
 		}
 	}
-	return 1
+	return 1, off + 1
 }
 
 // ParseASTForTest is a test helper exposing parseAST.

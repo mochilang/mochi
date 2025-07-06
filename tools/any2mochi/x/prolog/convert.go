@@ -6,8 +6,27 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 )
+
+// ConvertError provides detailed diagnostics for conversion failures.
+type ConvertError struct {
+	Line   int
+	Column int
+	Msg    string
+	Snip   string
+}
+
+func (e *ConvertError) Error() string {
+	if e.Line > 0 {
+		if e.Column > 0 {
+			return fmt.Sprintf("line %d:%d: %s\n%s", e.Line, e.Column, e.Msg, e.Snip)
+		}
+		return fmt.Sprintf("line %d: %s\n%s", e.Line, e.Msg, e.Snip)
+	}
+	return fmt.Sprintf("%s\n%s", e.Msg, e.Snip)
+}
 
 func snippet(src string) string {
 	lines := strings.Split(src, "\n")
@@ -24,13 +43,24 @@ func diagnostics(src string, diags []any2mochi.Diagnostic) string {
 	lines := strings.Split(src, "\n")
 	var out strings.Builder
 	for _, d := range diags {
-		start := int(d.Range.Start.Line)
+		l := int(d.Range.Start.Line)
+		c := int(d.Range.Start.Character)
 		msg := d.Message
-		line := ""
-		if start < len(lines) {
-			line = strings.TrimSpace(lines[start])
+		from := l - 1
+		if from < 0 {
+			from = 0
 		}
-		out.WriteString(fmt.Sprintf("line %d: %s\n  %s\n", start+1, msg, line))
+		to := l + 1
+		if to >= len(lines) {
+			to = len(lines) - 1
+		}
+		out.WriteString(fmt.Sprintf("line %d:%d: %s\n", l+1, c+1, msg))
+		for i := from; i <= to; i++ {
+			out.WriteString(fmt.Sprintf("%4d| %s\n", i+1, lines[i]))
+			if i == l {
+				out.WriteString("     " + strings.Repeat(" ", c) + "^\n")
+			}
+		}
 	}
 	return strings.TrimSpace(out.String())
 }
@@ -54,12 +84,12 @@ func convert(src, root string) ([]byte, error) {
 		return nil, err
 	}
 	if len(diags) > 0 {
-		return nil, fmt.Errorf("%s", diagnostics(src, diags))
+		return nil, &ConvertError{Line: int(diags[0].Range.Start.Line) + 1, Column: int(diags[0].Range.Start.Character) + 1, Msg: diags[0].Message, Snip: diagnostics(src, diags)}
 	}
 	var out strings.Builder
 	writeSymbols(&out, ls, src, syms, root)
 	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
+		return nil, &ConvertError{Msg: "no convertible symbols found", Snip: snippet(src)}
 	}
 	return []byte(out.String()), nil
 }
@@ -174,6 +204,40 @@ func offsetFromPosition(src string, pos any2mochi.Position) int {
 	return off + col
 }
 
+func snippetAround(src string, line, col int) string {
+	lines := strings.Split(src, "\n")
+	start := line - 2
+	if start < 0 {
+		start = 0
+	}
+	end := line
+	if end > len(lines) {
+		end = len(lines)
+	}
+	var b strings.Builder
+	for i := start; i < end; i++ {
+		fmt.Fprintf(&b, "%4d| %s\n", i+1, lines[i])
+		if i == line-1 {
+			b.WriteString("    | " + strings.Repeat(" ", col-1) + "^\n")
+		}
+	}
+	return strings.TrimRight(b.String(), "\n")
+}
+
+func formatParseError(src string, err error) error {
+	if err == nil {
+		return nil
+	}
+	msg := err.Error()
+	re := regexp.MustCompile(`(\d+):(\d+)`)
+	if m := re.FindStringSubmatch(msg); len(m) == 3 {
+		ln, _ := strconv.Atoi(m[1])
+		col, _ := strconv.Atoi(m[2])
+		return &ConvertError{Line: ln, Column: col, Msg: msg, Snip: snippetAround(src, ln, col)}
+	}
+	return &ConvertError{Msg: msg, Snip: snippet(src)}
+}
+
 func parseBodyFromRange(src string, rng any2mochi.Range) []string {
 	start := offsetFromPosition(src, rng.Start)
 	end := offsetFromPosition(src, rng.End)
@@ -225,6 +289,8 @@ func convertFallback(src string) ([]byte, error) {
 		if out.Len() > 0 {
 			return []byte(out.String()), nil
 		}
+	} else {
+		return nil, formatParseError(src, err)
 	}
 
 	funcs := parseFuncs(src)
@@ -232,7 +298,7 @@ func convertFallback(src string) ([]byte, error) {
 		if strings.Contains(src, "main :-") || strings.Contains(src, "main:-") {
 			funcs = append(funcs, function{name: "main", body: ""})
 		} else {
-			return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
+			return nil, &ConvertError{Msg: "no convertible symbols found", Snip: snippet(src)}
 		}
 	}
 	var out strings.Builder
