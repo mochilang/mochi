@@ -17,26 +17,33 @@ type Program struct {
 }
 
 type Class struct {
-	Name    string     `json:"name"`
-	Fields  []Field    `json:"fields"`
-	Methods []Function `json:"methods,omitempty"`
+	Name      string     `json:"name"`
+	Fields    []Field    `json:"fields"`
+	Methods   []Function `json:"methods,omitempty"`
+	StartLine int        `json:"start,omitempty"`
+	EndLine   int        `json:"end,omitempty"`
 }
 
 type Field struct {
-	Name string `json:"name"`
-	Type string `json:"type"`
+	Name      string `json:"name"`
+	Type      string `json:"type"`
+	StartLine int    `json:"start,omitempty"`
 }
 
 type VarDecl struct {
-	Name  string `json:"name"`
-	Type  string `json:"type,omitempty"`
-	Value string `json:"value"`
+	Name      string `json:"name"`
+	Type      string `json:"type,omitempty"`
+	Value     string `json:"value"`
+	StartLine int    `json:"start,omitempty"`
 }
 
 type Function struct {
-	Name   string   `json:"name"`
-	Params []string `json:"params"`
-	Lines  []string `json:"lines"`
+	Name      string   `json:"name"`
+	Params    []string `json:"params"`
+	Ret       string   `json:"ret,omitempty"`
+	Lines     []string `json:"lines"`
+	StartLine int      `json:"start,omitempty"`
+	EndLine   int      `json:"end,omitempty"`
 }
 
 func main() {
@@ -66,33 +73,37 @@ func main() {
 
 func parse(src string) Program {
 	sc := bufio.NewScanner(strings.NewReader(src))
-	funRE := regexp.MustCompile(`^fun\s+([A-Za-z0-9_]+)\s*\(([^)]*)\)`)
+	funRE := regexp.MustCompile(`^fun\s+([A-Za-z0-9_]+)\s*\(([^)]*)\)(?:\s*:\s*([^\s{]+))?`)
 	classRE := regexp.MustCompile(`^(?:data\s+)?class\s+([A-Za-z0-9_]+)\s*(\(([^)]*)\))?`)
 	varRE := regexp.MustCompile(`^(val|var)\s+([A-Za-z0-9_]+)(?:\s*:\s*([^=]+))?\s*=\s*(.+)`)
 
 	var prog Program
 	var curFn *Function
 	var depth int
+	lineNum := 0
 	for sc.Scan() {
 		line := strings.TrimSpace(sc.Text())
+		lineNum++
 		switch {
 		case curFn != nil:
 			depth += strings.Count(line, "{")
 			depth -= strings.Count(line, "}")
 			if depth <= 0 && line == "}" {
+				curFn.EndLine = lineNum
 				curFn = nil
 				depth = 0
 				continue
 			}
 			curFn.Lines = append(curFn.Lines, line)
 			if depth <= 0 {
+				curFn.EndLine = lineNum
 				curFn = nil
 				depth = 0
 			}
 		default:
 			if funRE.MatchString(line) {
 				m := funRE.FindStringSubmatch(line)
-				fn := Function{Name: m[1], Params: parseParams(m[2])}
+				fn := Function{Name: m[1], Params: parseParams(m[2]), Ret: strings.TrimSpace(m[3]), StartLine: lineNum}
 				prog.Functions = append(prog.Functions, fn)
 				curFn = &prog.Functions[len(prog.Functions)-1]
 				depth = strings.Count(line, "{") - strings.Count(line, "}")
@@ -100,13 +111,13 @@ func parse(src string) Program {
 			}
 			if classRE.MatchString(line) {
 				m := classRE.FindStringSubmatch(line)
-				cls := Class{Name: m[1], Fields: parseFields(m[3])}
+				cls := Class{Name: m[1], Fields: parseFields(m[3]), StartLine: lineNum}
 				prog.Classes = append(prog.Classes, cls)
 				continue
 			}
 			if varRE.MatchString(line) {
 				m := varRE.FindStringSubmatch(line)
-				v := VarDecl{Name: m[2], Type: strings.TrimSpace(m[3]), Value: strings.TrimSpace(m[4])}
+				v := VarDecl{Name: m[2], Type: strings.TrimSpace(m[3]), Value: strings.TrimSpace(m[4]), StartLine: lineNum}
 				prog.Vars = append(prog.Vars, v)
 				continue
 			}
