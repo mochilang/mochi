@@ -392,6 +392,7 @@ func convertBody(src string, sym any2mochi.DocumentSymbol) []string {
 
 	var out []string
 	indent := 1
+	defined := map[string]bool{}
 	reDo := regexp.MustCompile(`do\s+(\w+)\s*=\s*(.+),\s*(.+)`)
 	reIf := regexp.MustCompile(`if\s*\((.*)\)\s*then`)
 	reElseIf := regexp.MustCompile(`else\s*if\s*\((.*)\)\s*then`)
@@ -493,7 +494,13 @@ func convertBody(src string, sym any2mochi.DocumentSymbol) []string {
 				parts := strings.SplitN(l, "=", 2)
 				left := strings.TrimSpace(parts[0])
 				right := cleanExpr(strings.TrimSpace(parts[1]))
-				out = append(out, strings.Repeat("  ", indent)+left+" = "+right)
+				stmt := left + " = " + right
+				if defined[left] || strings.ContainsAny(left, "() ") {
+					out = append(out, strings.Repeat("  ", indent)+stmt)
+				} else {
+					defined[left] = true
+					out = append(out, strings.Repeat("  ", indent)+"let "+stmt)
+				}
 			} else {
 				out = append(out, strings.Repeat("  ", indent)+"// "+l)
 			}
