@@ -21,9 +21,12 @@ type ASTNode struct {
 	Value       json.RawMessage `json:"value,omitempty"`
 	Func        *ASTNode        `json:"func,omitempty"`
 	Args        json.RawMessage `json:"args,omitempty"`
+	Annotation  *ASTNode        `json:"annotation,omitempty"`
+	Returns     *ASTNode        `json:"returns,omitempty"`
 	Test        *ASTNode        `json:"test,omitempty"`
 	Target      *ASTNode        `json:"target,omitempty"`
 	Iter        *ASTNode        `json:"iter,omitempty"`
+	Operand     *ASTNode        `json:"operand,omitempty"`
 	Orelse      []*ASTNode      `json:"orelse,omitempty"`
 	Op          *ASTNode        `json:"op,omitempty"`
 	Left        *ASTNode        `json:"left,omitempty"`
@@ -485,6 +488,22 @@ func emitExpr(b *strings.Builder, n *ASTNode, lines []string) error {
 			}
 		}
 		b.WriteByte(']')
+	case "UnaryOp":
+		if n.Op != nil {
+			switch n.Op.Type {
+			case "USub":
+				b.WriteByte('-')
+			case "UAdd":
+				b.WriteByte('+')
+			case "Not":
+				b.WriteString("not ")
+			default:
+				return newConvertError(n.Line, lines, "unhandled unary operator")
+			}
+		}
+		if err := emitExpr(b, n.Operand, lines); err != nil {
+			return err
+		}
 	default:
 		return newConvertError(n.Line, lines, "unhandled expression")
 	}
