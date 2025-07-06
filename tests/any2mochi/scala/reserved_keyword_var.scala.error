@@ -1,0 +1,13 @@
+type error: error[T004]: `map` is not callable
+  --> :2:7
+
+help:
+  Use a function or closure in this position.
+
+  1| object Main {
+  2|     def main(args: Array[String]): Unit = {
+  3|         val map: scala.collection.mutable.Map[String, Int] = scala.collection.mutable.Map("a" -> 1)
+  4|         println(map("a"))
+  5|     }
+  6| }
+  7|

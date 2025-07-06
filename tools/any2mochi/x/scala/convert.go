@@ -236,6 +236,39 @@ func convertExpr(expr string) string {
 		inner := strings.TrimSuffix(strings.TrimPrefix(expr, prefix), ")")
 		expr = "[" + inner + "]"
 	}
+	mapPrefix := "scala.collection.mutable.Map("
+	if strings.HasPrefix(expr, mapPrefix) && strings.HasSuffix(expr, ")") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(expr, mapPrefix), ")")
+		parts := splitArgs(inner)
+		items := make([]string, len(parts))
+		for i, p := range parts {
+			kv := strings.SplitN(p, "->", 2)
+			if len(kv) == 2 {
+				k := convertExpr(strings.TrimSpace(kv[0]))
+				v := convertExpr(strings.TrimSpace(kv[1]))
+				items[i] = k + ": " + v
+			} else {
+				items[i] = convertExpr(p)
+			}
+		}
+		return "{" + strings.Join(items, ", ") + "}"
+	}
+	if strings.HasPrefix(expr, "Map(") && strings.HasSuffix(expr, ")") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(expr, "Map("), ")")
+		parts := splitArgs(inner)
+		items := make([]string, len(parts))
+		for i, p := range parts {
+			kv := strings.SplitN(p, "->", 2)
+			if len(kv) == 2 {
+				k := convertExpr(strings.TrimSpace(kv[0]))
+				v := convertExpr(strings.TrimSpace(kv[1]))
+				items[i] = k + ": " + v
+			} else {
+				items[i] = convertExpr(p)
+			}
+		}
+		return "{" + strings.Join(items, ", ") + "}"
+	}
 	if strings.HasSuffix(expr, ".size") {
 		expr = "len(" + strings.TrimSuffix(expr, ".size") + ")"
 	}

@@ -1,7 +1,0 @@
-type Foo =
-  Empty
-  | Node(child: Foo)
-fun listit() {
-  return [Empty()]
-}
-print(len(listit()))

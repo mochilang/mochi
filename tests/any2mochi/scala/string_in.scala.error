@@ -1,0 +1,13 @@
+type error: error[T004]: `` is not callable
+  --> :1:23
+
+help:
+  Use a function or closure in this position.
+
+  1| object Main {
+  2|     def main(args: Array[String]): Unit = {
+  3|         println("catch".contains("cat"))
+  4|         println("catch".contains("dog"))
+  5|     }
+  6| }
+  7|

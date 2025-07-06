@@ -1,0 +1,16 @@
+type error: error[T002]: undefined variable: scala
+  --> :2:14
+
+help:
+  Check if the variable was declared in this scope.
+
+  1| object Main {
+  2|     def main(args: Array[String]): Unit = {
+  3|         println("Enter first input:")
+  4|         val input1: String = scala.io.StdIn.readLine()
+  5|         println("Enter second input:")
+  6|         val input2: String = scala.io.StdIn.readLine()
+  7|         println("You entered:", input1, ",", input2)
+  8|     }
+  9| }
+ 10|

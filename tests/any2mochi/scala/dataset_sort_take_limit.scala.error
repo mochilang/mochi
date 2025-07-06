@@ -1,0 +1,12 @@
+parse error: parse error: 1:54: unexpected token ">" (expected PostfixExpr)
+
+  1| object Main {
+  2|     def main(args: Array[String]): Unit = {
+  3|         val products: scala.collection.mutable.ArrayBuffer[scala.collection.mutable.Map[String, Any]] = scala.collection.mutable.ArrayBuffer(scala.collection.mutable.Map("name" -> "Laptop", "price" -> 1500), scala.collection.mutable.Map("name" -> "Smartphone", "price" -> 900), scala.collection.mutable.Map("name" -> "Tablet", "price" -> 600), scala.collection.mutable.Map("name" -> "Monitor", "price" -> 300), scala.collection.mutable.Map("name" -> "Keyboard", "price" -> 100), scala.collection.mutable.Map("name" -> "Mouse", "price" -> 50), scala.collection.mutable.Map("name" -> "Headphones", "price" -> 200))
+  4|         val expensive: scala.collection.mutable.ArrayBuffer[scala.collection.mutable.Map[String, Any]] = (() => {
+  5|     val src = products
+  6|     val res = _query(src, Seq(
+  7|     ), Map("select" -> ((args: Seq[Any]) => {
+  8|     val p = args(0)
+  9|     p
+ 10| }), "sortKey" -> ((args: Seq[Any]) => {

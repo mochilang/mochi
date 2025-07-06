@@ -1,2 +1,0 @@
-let scores = scala.collection.mutable.Map("Alice" -> 10, "Bob" -> 15)
-print(scores("Bob"))

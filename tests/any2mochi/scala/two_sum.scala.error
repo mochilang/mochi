@@ -1,0 +1,16 @@
+type error: error[T005]: parameter `nums` is missing a type
+  --> :1:1
+
+help:
+  Add a type like `x: int` to this parameter.
+
+  1| object Main {
+  2|     def twoSum(nums: scala.collection.mutable.ArrayBuffer[Int], target: Int): scala.collection.mutable.ArrayBuffer[Int] = {
+  3|         val n: Int = nums.length
+  4|         var i1 = 0
+  5|         while (i1 < n) {
+  6|             val i: Int = i1
+  7|             i1 = i1 + 1
+  8|             var i2 = (i + 1)
+  9|             while (i2 < n) {
+ 10|                 val j: Int = i2

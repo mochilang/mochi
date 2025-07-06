@@ -1,5 +1,0 @@
-fun makeAdder(n) {
-  > Int) = {
-}
-let add10 = > Int) = makeAdder(10)
-print(add10(7))

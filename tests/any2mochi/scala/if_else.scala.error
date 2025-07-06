@@ -1,0 +1,12 @@
+parse error: parse error: 4:3: unexpected token "else" (expected "}" (("else" IfStmt) | ("else" "{" Statement* "}"))?)
+
+  1| object Main {
+  2|     def foo(n: Int): Int = {
+  3|         if ((n < 0)) {
+  4|             return (-1)
+  5|         } else         if ((n == 0)) {
+  6|             return 0
+  7|         } else {
+  8|             return 1
+  9|         }
+ 10|     }

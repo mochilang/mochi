@@ -19,18 +19,21 @@ var parseCmd = "scalaast"
 type Field struct {
 	Name string `json:"name"`
 	Type string `json:"type,omitempty"`
+	Line int    `json:"line,omitempty"`
 }
 
 // Variant represents a case class belonging to a sealed trait.
 type Variant struct {
 	Name   string  `json:"name"`
 	Fields []Field `json:"fields"`
+	Line   int     `json:"line,omitempty"`
 }
 
 // TypeDecl holds a trait name and its case class variants.
 type TypeDecl struct {
 	Name     string    `json:"name"`
 	Variants []Variant `json:"variants"`
+	Line     int       `json:"line,omitempty"`
 }
 
 // Func represents a top level Scala function extracted from the AST.
@@ -122,7 +125,7 @@ func parseSource(src string) File {
 	for i := 0; i < len(lines); i++ {
 		line := strings.TrimSpace(lines[i])
 		if m := reTrait.FindStringSubmatch(line); m != nil {
-			file.Types = append(file.Types, TypeDecl{Name: m[1]})
+			file.Types = append(file.Types, TypeDecl{Name: m[1], Line: i + 1})
 			continue
 		}
 		if m := reCase.FindStringSubmatch(line); m != nil {
@@ -139,18 +142,18 @@ func parseSource(src string) File {
 					name = strings.TrimSpace(p[:idx])
 					typStr = strings.TrimSpace(p[idx+1:])
 				}
-				fields = append(fields, Field{Name: name, Type: typStr})
+				fields = append(fields, Field{Name: name, Type: typStr, Line: i + 1})
 			}
 			added := false
 			for j := range file.Types {
 				if file.Types[j].Name == typ {
-					file.Types[j].Variants = append(file.Types[j].Variants, Variant{Name: m[1], Fields: fields})
+					file.Types[j].Variants = append(file.Types[j].Variants, Variant{Name: m[1], Fields: fields, Line: i + 1})
 					added = true
 					break
 				}
 			}
 			if !added {
-				file.Types = append(file.Types, TypeDecl{Name: typ, Variants: []Variant{{Name: m[1], Fields: fields}}})
+				file.Types = append(file.Types, TypeDecl{Name: typ, Line: i + 1, Variants: []Variant{{Name: m[1], Fields: fields, Line: i + 1}}})
 			}
 			continue
 		}

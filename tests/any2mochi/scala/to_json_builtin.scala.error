@@ -1,0 +1,12 @@
+parse error: parse error: 1:50: unexpected token ">" (expected PostfixExpr)
+
+  1| object Main {
+  2|     def main(args: Array[String]): Unit = {
+  3|         println(_to_json(scala.collection.mutable.Map("a" -> 1)))
+  4|     }
+  5|     def _to_json(v: Any): String = v match {
+  6|             case null => "null"
+  7|             case s: String => "\"" + s.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
+  8|             case b: Boolean => b.toString
+  9|             case i: Int => i.toString
+ 10|             case l: Long => l.toString

@@ -1,0 +1,12 @@
+parse error: parse error: 1:63: unexpected token ">" (expected PostfixExpr)
+
+  1| case class Person(name: String, age: Int)
+  2| 
+  3| object Main {
+  4|     def main(args: Array[String]): Unit = {
+  5|         val people: scala.collection.mutable.ArrayBuffer[Person] = _load("", scala.collection.mutable.Map("format" -> "json")).map(_.asInstanceOf[Person])
+  6|         _save(people, "", scala.collection.mutable.Map("format" -> "json"))
+  7|     }
+  8|     def _load(path: String, opts: Map[String, Any]): Seq[Any] = {
+  9|             val fmt = opts.getOrElse("format", "json").asInstanceOf[String]
+ 10|             val src = if (path == "" || path == "-") scala.io.Source.stdin else scala.io.Source.fromFile(path)

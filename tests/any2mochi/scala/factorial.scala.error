@@ -1,0 +1,16 @@
+type error: error[T005]: parameter `n` is missing a type
+  --> :1:1
+
+help:
+  Add a type like `x: int` to this parameter.
+
+  1| object Main {
+  2|     def factorial(n: Int): Int = {
+  3|         if ((n <= 1)) {
+  4|             return 1
+  5|         }
+  6|         return (n * factorial((n - 1)))
+  7|     }
+  8|     
+  9|     def main(args: Array[String]): Unit = {
+ 10|         println(factorial(0))
