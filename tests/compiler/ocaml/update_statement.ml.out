@@ -14,15 +14,15 @@ let decode_Person json = {
 let test_update_adult_status () =
   if not (people = [{ name = "Alice"; age = 17; status = "minor" }; { name = "Bob"; age = 26; status = "adult" }; { name = "Charlie"; age = 19; status = "adult" }; { name = "Diana"; age = 16; status = "minor" }]) then failwith "expect failed";
 
-let people = [{ name = "Alice"; age = 17; status = "minor" }; { name = "Bob"; age = 25; status = "unknown" }; { name = "Charlie"; age = 18; status = "unknown" }; { name = "Diana"; age = 16; status = "minor" }];;
+  let people = [{ name = "Alice"; age = 17; status = "minor" }; { name = "Bob"; age = 25; status = "unknown" }; { name = "Charlie"; age = 18; status = "unknown" }; { name = "Diana"; age = 16; status = "minor" }];;
 let people = List.map (fun _item ->
-  let name = _item.name in
-  let age = _item.age in
-  let status = _item.status in
-  if age >= 18 then
-    { _item with status = "adult"; age = age + 1 }
-  else
-    _item
-) people;;
+    let name = _item.name in
+    let age = _item.age in
+    let status = _item.status in
+    if age >= 18 then
+      { _item with status = "adult"; age = age + 1 }
+    else
+      _item
+  ) people;;
 print_endline "ok";;
 test_update_adult_status ();;
