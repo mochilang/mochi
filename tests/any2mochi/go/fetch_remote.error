@@ -1,5 +1,0 @@
-tests/compiler/go/fetch_remote.go.out:32: unsupported statement *ast.TypeSwitchStmt
->>> 31:    var out T
-32:>>> switch any(out).(type) {
-33:    case int:
-34:    switch vv := v.(type) {

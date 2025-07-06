@@ -1,0 +1,5 @@
+fun Leaf(): map[string]any {}
+fun Node(left: map[string]any, value: int, right: map[string]any): map[string]any {}
+fun main() {}
+fun _cast(v: any): T {}
+fun _convertMapAny(m: map[any]any): map[string]any {}

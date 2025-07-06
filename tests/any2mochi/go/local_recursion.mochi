@@ -1,0 +1,17 @@
+type Tree {
+}
+type Leaf {
+}
+type Node {
+  Left: Tree
+  Value: int
+  Right: Tree
+}
+fun Tree.isTree() {}
+fun Leaf.isTree() {}
+fun Node.isTree() {}
+fun fromList(nums: list<int>): Tree {}
+fun inorder(t: Tree): list<int> {}
+fun main() {}
+fun _convSlice(s: list<T>): list<U> {}
+fun _toAnySlice(s: list<T>): list<any> {}

@@ -1,5 +1,0 @@
-tests/compiler/go/map_any_hint.go.out:31: unsupported statement *ast.TypeSwitchStmt
->>> 30:    var out T
-31:>>> switch any(out).(type) {
-32:    case int:
-33:    switch vv := v.(type) {

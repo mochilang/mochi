@@ -1,0 +1,5 @@
+type Info {
+  Msg: string
+}
+fun main() {}
+fun _genStruct(prompt: string, model: string, params: map[string]any): T {}

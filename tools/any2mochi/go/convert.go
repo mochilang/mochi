@@ -11,6 +11,20 @@ import (
 	"strings"
 )
 
+// ConvertError provides a detailed error suitable for golden tests.
+type ConvertError struct {
+	Line int
+	Msg  string
+	Snip string
+}
+
+func (e *ConvertError) Error() string {
+	if e.Line > 0 {
+		return fmt.Sprintf("line %d: %s\n%s", e.Line, e.Msg, e.Snip)
+	}
+	return fmt.Sprintf("%s\n%s", e.Msg, e.Snip)
+}
+
 // Convert converts Go source code to Mochi without relying on a
 // language server. It parses the source using the standard library
 // and emits minimal Mochi stubs.
@@ -21,7 +35,7 @@ func Convert(src string) ([]byte, error) {
 	}
 	out := ConvertAST(ast)
 	if len(out) == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\n%s", numberedSnippet(src))
+		return nil, &ConvertError{Msg: "no convertible symbols found", Snip: numberedSnippet(src)}
 	}
 	return out, nil
 }
@@ -204,9 +218,13 @@ func formatParseError(src string, err error) error {
 		}
 		var snippet strings.Builder
 		for i := start; i < end; i++ {
-			snippet.WriteString(fmt.Sprintf("%3d: %s\n", i+1, lines[i]))
+			marker := "   "
+			if i == line-1 {
+				marker = ">>>"
+			}
+			snippet.WriteString(fmt.Sprintf("%3d:%s %s\n", i+1, marker, lines[i]))
 		}
-		return fmt.Errorf("parse error at %d:%d: %s\n%s", line, pos.Column, e.Msg, snippet.String())
+		return &ConvertError{Line: line, Msg: e.Msg, Snip: strings.TrimRight(snippet.String(), "\n")}
 	}
 	return err
 }

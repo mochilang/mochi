@@ -1,0 +1,16 @@
+type Tree {
+}
+type Leaf {
+}
+type Node {
+  Left: Tree
+  Value: int
+  Right: Tree
+}
+fun Tree.isTree() {}
+fun Leaf.isTree() {}
+fun Node.isTree() {}
+fun inorder(t: Tree): list<int> {}
+fun main() {}
+fun _cast(v: any): T {}
+fun _convertMapAny(m: map[any]any): map[string]any {}

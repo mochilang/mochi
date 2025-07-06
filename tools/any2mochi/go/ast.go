@@ -29,8 +29,10 @@ type Param struct {
 }
 
 type Type struct {
-	Name   string  `json:"name"`
-	Fields []Field `json:"fields,omitempty"`
+	Name      string  `json:"name"`
+	Fields    []Field `json:"fields,omitempty"`
+	Methods   []Func  `json:"methods,omitempty"`
+	Interface bool    `json:"interface,omitempty"`
 }
 
 type Field struct {
@@ -112,7 +114,7 @@ func ParseAST(src string) (*AST, error) {
 						out.Types = append(out.Types, gt)
 					}
 					if iface, ok := ts.Type.(*ast.InterfaceType); ok {
-						out.Types = append(out.Types, Type{Name: ts.Name.Name})
+						gt := Type{Name: ts.Name.Name, Interface: true}
 						for _, m := range iface.Methods.List {
 							if len(m.Names) == 0 {
 								continue
@@ -150,8 +152,10 @@ func ParseAST(src string) (*AST, error) {
 									}
 								}
 							}
+							gt.Methods = append(gt.Methods, fn)
 							out.Functions = append(out.Functions, fn)
 						}
+						out.Types = append(out.Types, gt)
 					}
 				}
 			case token.VAR, token.CONST:
@@ -189,6 +193,48 @@ func ConvertAST(g *AST) []byte {
 	for _, t := range g.Types {
 		b.WriteString("type ")
 		b.WriteString(t.Name)
+		if t.Interface {
+			b.WriteString(" interface {\n")
+			for _, m := range t.Methods {
+				b.WriteString("  ")
+				b.WriteString("fun ")
+				b.WriteString(m.Name)
+				b.WriteByte('(')
+				for i, p := range m.Params {
+					if i > 0 {
+						b.WriteString(", ")
+					}
+					if p.Name != "" {
+						b.WriteString(p.Name)
+					} else {
+						b.WriteByte('_')
+					}
+					if p.Type != "" {
+						b.WriteString(": ")
+						b.WriteString(p.Type)
+					}
+				}
+				b.WriteByte(')')
+				if len(m.Results) == 1 {
+					if m.Results[0] != "" && m.Results[0] != "void" {
+						b.WriteString(": ")
+						b.WriteString(m.Results[0])
+					}
+				} else if len(m.Results) > 1 {
+					b.WriteString(": (")
+					for i, r := range m.Results {
+						if i > 0 {
+							b.WriteString(", ")
+						}
+						b.WriteString(r)
+					}
+					b.WriteString(")")
+				}
+				b.WriteByte('\n')
+			}
+			b.WriteString("}\n")
+			continue
+		}
 		b.WriteString(" {\n")
 		for _, f := range t.Fields {
 			b.WriteString("  ")

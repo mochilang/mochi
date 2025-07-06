@@ -1,5 +1,0 @@
-tests/compiler/go/union_inorder.go.out:12: unsupported method declaration
->>> 11:    
-12:>>> func (Leaf) isTree() {}
-13:    
-14:    type Node struct {

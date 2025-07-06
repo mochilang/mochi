@@ -1,0 +1,8 @@
+type Msg {
+  Message: string
+}
+fun main() {}
+fun _cast(v: any): T {}
+fun _convertMapAny(m: map[any]any): map[string]any {}
+fun _fetch(url: string, opts: map[string]any): any {}
+fun _toAnyMap(m: any): map[string]any {}

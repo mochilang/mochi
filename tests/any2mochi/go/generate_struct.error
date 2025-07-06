@@ -1,5 +1,0 @@
-tests/compiler/go/generate_struct.go.out:29: unsupported assignment
->>> 28:    }
-29:>>> resp, err := llm.Chat(context.Background(), []llm.Message{{Role: "user", Content: prompt}}, opts...)
-30:    if err != nil {
-31:    panic(err)

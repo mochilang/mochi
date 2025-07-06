@@ -1,0 +1,2 @@
+fun main() {}
+fun _avg(v: any): float64 {}
