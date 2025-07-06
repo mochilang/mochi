@@ -1,0 +1,12 @@
+type Person {
+  Name: string
+  Age: int
+  Email: string
+}
+fun main() {}
+fun _cast(v: any): T {}
+fun _convertMapAny(m: map[any]any): map[string]any {}
+fun _load(path: string, opts: map[string]any): list<map[string]any> {}
+fun _save(src: any, path: string, opts: map[string]any) {}
+fun _toAnyMap(m: any): map[string]any {}
+fun _toMapSlice(v: any): (list<map[string]any>, bool) {}

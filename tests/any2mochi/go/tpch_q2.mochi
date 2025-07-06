@@ -1,0 +1,52 @@
+type RegionItem {
+  R_regionkey: int
+  R_name: string
+}
+type NationItem {
+  N_nationkey: int
+  N_regionkey: int
+  N_name: string
+}
+type SupplierItem {
+  S_suppkey: int
+  S_name: string
+  S_address: string
+  S_nationkey: int
+  S_phone: string
+  S_acctbal: float64
+  S_comment: string
+}
+type PartItem {
+  P_partkey: int
+  P_type: string
+  P_size: int
+  P_mfgr: string
+}
+type PartsuppItem {
+  Ps_partkey: int
+  Ps_suppkey: int
+  Ps_supplycost: float64
+}
+let region: list<RegionItem>
+let nation: list<NationItem>
+let supplier: list<SupplierItem>
+let part: list<PartItem>
+let partsupp: list<PartsuppItem>
+let europe_nations: list<NationItem>
+let europe_suppliers: list<map[string]any>
+let target_parts: list<PartItem>
+let target_partsupp: list<map[string]any>
+let costs: list<any>
+let min_cost: any
+let result: list<map[string]any>
+fun expect(cond: bool) {}
+fun formatDuration(d: time.Duration): string {}
+fun printTestStart(name: string) {}
+fun printTestPass(d: time.Duration) {}
+fun printTestFail(err: error, d: time.Duration) {}
+fun test_Q2_returns_only_supplier_with_min_cost_in_Europe_for_brass_part() {}
+fun main() {}
+fun _cast(v: any): T {}
+fun _convertMapAny(m: map[any]any): map[string]any {}
+fun _equal(a: any, b: any): bool {}
+fun _min(v: any): any {}

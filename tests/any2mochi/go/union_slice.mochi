@@ -1,0 +1,13 @@
+type Foo {
+}
+type Empty {
+}
+type Node {
+  Child: Foo
+}
+fun Foo.isFoo() {}
+fun Empty.isFoo() {}
+fun Node.isFoo() {}
+fun listit(): list<Foo> {}
+fun main() {}
+fun _convSlice(s: list<T>): list<U> {}

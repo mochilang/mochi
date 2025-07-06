@@ -1,5 +1,0 @@
-tests/compiler/go/load_jsonl_stdin.go.out:33: unsupported statement *ast.TypeSwitchStmt
->>> 32:    var out T
-33:>>> switch any(out).(type) {
-34:    case int:
-35:    switch vv := v.(type) {

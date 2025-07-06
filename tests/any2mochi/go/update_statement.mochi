@@ -1,0 +1,14 @@
+type Person {
+  Name: string
+  Age: int
+  Status: string
+}
+let people: list<Person>
+fun expect(cond: bool) {}
+fun formatDuration(d: time.Duration): string {}
+fun printTestStart(name: string) {}
+fun printTestPass(d: time.Duration) {}
+fun printTestFail(err: error, d: time.Duration) {}
+fun test_update_adult_status() {}
+fun main() {}
+fun _equal(a: any, b: any): bool {}

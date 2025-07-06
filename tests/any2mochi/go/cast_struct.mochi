@@ -1,0 +1,6 @@
+type Todo {
+  Title: string
+}
+fun main() {}
+fun _cast(v: any): T {}
+fun _convertMapAny(m: map[any]any): map[string]any {}
