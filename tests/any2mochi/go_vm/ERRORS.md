@@ -6,14 +6,14 @@
 - binary_precedence: ok
 - bool_chain: ok
 - break_continue: ok
-- cast_string_to_int: parse error: parse error: 3:26: unexpected token "[" (expected ")" (":" TypeRef)? "{" Statement* "}")
-- cast_struct: parse error: parse error: 6:26: unexpected token "[" (expected ")" (":" TypeRef)? "{" Statement* "}")
-- closure: parse error: parse error: 2:28: unexpected token "(" (expected "{" Statement* "}")
+- cast_string_to_int: ok
+- cast_struct: ok
+- closure: ok
 - count_builtin: ok
 - cross_join: ok
 - cross_join_filter: ok
 - cross_join_triple: ok
-- dataset_sort_take_limit: parse error: parse error: 3:3: unexpected token "on" (expected "fun" <ident> "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+- dataset_sort_take_limit: ok
 - dataset_where_filter: ok
 - exists_builtin: ok
 - for_list_collection: ok
@@ -22,14 +22,14 @@
 - fun_call: ok
 - fun_expr_in_let: ok
 - fun_three_args: ok
-- group_by: parse error: parse error: 4:26: unexpected token "[" (expected ")" (":" TypeRef)? "{" Statement* "}")
-- group_by_conditional_sum: parse error: parse error: 3:26: unexpected token "[" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- group_by: ok
+- group_by_conditional_sum: ok
 - group_by_having: ok
 - group_by_join: ok
-- group_by_left_join: parse error: parse error: 3:26: unexpected token "[" (expected ")" (":" TypeRef)? "{" Statement* "}")
-- group_by_multi_join: parse error: parse error: 3:26: unexpected token "[" (expected ")" (":" TypeRef)? "{" Statement* "}")
-- group_by_multi_join_sort: parse error: parse error: 3:26: unexpected token "[" (expected ")" (":" TypeRef)? "{" Statement* "}")
-- group_by_sort: parse error: parse error: 3:26: unexpected token "[" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- group_by_left_join: ok
+- group_by_multi_join: ok
+- group_by_multi_join_sort: ok
+- group_by_sort: ok
 - group_items_iteration: go compile error: cannot iterate over type any
 - if_else: ok
 - if_then_else: ok
@@ -39,8 +39,8 @@
 - inner_join: ok
 - join_multi: ok
 - json_builtin: ok
-- left_join: parse error: parse error: 3:3: unexpected token "on" (expected "fun" <ident> "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
-- left_join_multi: parse error: parse error: 3:3: unexpected token "on" (expected "fun" <ident> "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+- left_join: ok
+- left_join_multi: ok
 - len_builtin: ok
 - len_map: ok
 - len_string: ok
@@ -49,7 +49,7 @@
 - list_index: ok
 - list_nested_assign: ok
 - list_set_ops: ok
-- load_yaml: parse error: parse error: 8:26: unexpected token "[" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- load_yaml: ok
 - map_assign: ok
 - map_in_operator: ok
 - map_index: ok
@@ -63,19 +63,19 @@
 - membership: ok
 - min_max_builtin: ok
 - nested_function: ok
-- order_by_map: parse error: parse error: 3:3: unexpected token "on" (expected "fun" <ident> "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
-- outer_join: parse error: parse error: 3:3: unexpected token "on" (expected "fun" <ident> "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+- order_by_map: ok
+- outer_join: ok
 - partial_application: ok
 - print_hello: ok
 - pure_fold: ok
 - pure_global_fold: ok
 - query_sum_select: ok
-- record_assign: parse error: parse error: 8:26: unexpected token "[" (expected ")" (":" TypeRef)? "{" Statement* "}")
-- right_join: parse error: parse error: 3:3: unexpected token "on" (expected "fun" <ident> "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
-- save_jsonl_stdout: parse error: parse error: 2:44: unexpected token "[" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- record_assign: ok
+- right_join: ok
+- save_jsonl_stdout: parse error: parse error: 4:26: unexpected token "(" (expected TypeRef)
 - short_circuit: ok
 - slice: ok
-- sort_stable: parse error: parse error: 3:3: unexpected token "on" (expected "fun" <ident> "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+- sort_stable: ok
 - str_builtin: ok
 - string_compare: ok
 - string_concat: ok
@@ -86,13 +86,13 @@
 - substring_builtin: ok
 - sum_builtin: ok
 - tail_recursion: ok
-- test_block: parse error: parse error: 1:5: unexpected token "expect" (expected <ident> "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+- test_block: parse error: parse error: 2:27: unexpected token "." (expected ")" (":" TypeRef)? "{" Statement* "}")
 - tree_sum: parse error: parse error: 3:1: unexpected token "}" (expected "{" Statement* "}")
 - two-sum: ok
 - typed_let: ok
 - typed_var: ok
 - unary_neg: ok
-- update_stmt: parse error: parse error: 7:5: unexpected token "expect" (expected <ident> "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+- update_stmt: parse error: parse error: 8:27: unexpected token "." (expected ")" (":" TypeRef)? "{" Statement* "}")
 - user_type_literal: ok
 - values_builtin: ok
 - var_assignment: ok
