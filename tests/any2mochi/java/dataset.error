@@ -5,4 +5,3 @@ line 3: unsupported line: public java.util.List<Object> get() {
   4| java.util.List<Object> _src = _toList(people);
   5| _src = _filter(_src, (Object person) -> { return (person.age >= 18); });
 
-
