@@ -1,4 +1,0 @@
-unsupported syntax at line 3: let mutable m: Map<int,int> = Map.empty
-  2: 
-  3: let mutable m: Map<int,int> = Map.empty
-  4: ignore (printfn "%A" (Map.count (m)))

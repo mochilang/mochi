@@ -1,4 +1,0 @@
-unsupported syntax at line 4: nums.[1] <- 3
-  3: let mutable nums = [|1; 2|]
-  4: nums.[1] <- 3
-  5: ignore (printfn "%A" (nums.[1]))

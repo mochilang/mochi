@@ -1,4 +1,0 @@
-unsupported syntax at line 4: if not ((x = 3)) then failwith "expect failed"
-  3: let x = (1 + 2)
-  4: if not ((x = 3)) then failwith "expect failed"
-  5: ignore (printfn "%A" ("ok"))
