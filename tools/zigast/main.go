@@ -11,20 +11,35 @@ import (
 )
 
 type AST struct {
-	Vars      []Var  `json:"vars"`
-	Functions []Func `json:"functions"`
+	Vars      []Var    `json:"vars"`
+	Structs   []Struct `json:"structs"`
+	Functions []Func   `json:"functions"`
 }
 
 type Var struct {
 	Name string `json:"name"`
 	Type string `json:"type"`
+	Line int    `json:"line"`
 }
 
 type Func struct {
 	Name   string   `json:"name"`
 	Params string   `json:"params"`
 	Ret    string   `json:"ret"`
+	Line   int      `json:"line"`
 	Lines  []string `json:"lines"`
+}
+
+type Struct struct {
+	Name   string  `json:"name"`
+	Line   int     `json:"line"`
+	Fields []Field `json:"fields"`
+}
+
+type Field struct {
+	Name string `json:"name"`
+	Type string `json:"type"`
+	Line int    `json:"line"`
 }
 
 func main() {
@@ -53,27 +68,42 @@ func main() {
 }
 
 var funRE = regexp.MustCompile(`^(?:pub\s+)?fn\s+([A-Za-z0-9_]+)\s*\(([^)]*)\)\s*([^\s{]+)?\s*{`)
+var structStartRE = regexp.MustCompile(`^(?:pub\s+)?const\s+([A-Za-z0-9_]+)\s*=\s*struct\s*{`)
 
 func parse(src string) AST {
 	sc := bufio.NewScanner(strings.NewReader(src))
 	var ast AST
-	var cur *Func
+	var curFunc *Func
+	var curStruct *Struct
 	depth := 0
+	lineNum := 0
 	for sc.Scan() {
-		line := strings.TrimSpace(sc.Text())
-		if cur == nil {
+		raw := sc.Text()
+		line := strings.TrimSpace(raw)
+
+		if curFunc == nil && curStruct == nil {
 			if funRE.MatchString(line) {
 				m := funRE.FindStringSubmatch(line)
-				f := Func{Name: m[1], Params: strings.TrimSpace(m[2]), Ret: strings.TrimSpace(m[3])}
+				f := Func{Name: m[1], Params: strings.TrimSpace(m[2]), Ret: strings.TrimSpace(m[3]), Line: lineNum + 1}
 				ast.Functions = append(ast.Functions, f)
-				cur = &ast.Functions[len(ast.Functions)-1]
+				curFunc = &ast.Functions[len(ast.Functions)-1]
 				depth = 1
 				if idx := strings.Index(line, "{"); idx != -1 && idx < len(line)-1 {
 					rest := strings.TrimSpace(line[idx+1:])
 					if rest != "" {
-						cur.Lines = append(cur.Lines, rest)
+						curFunc.Lines = append(curFunc.Lines, rest)
 					}
 				}
+				lineNum++
+				continue
+			}
+			if structStartRE.MatchString(line) {
+				m := structStartRE.FindStringSubmatch(line)
+				s := Struct{Name: m[1], Line: lineNum + 1}
+				ast.Structs = append(ast.Structs, s)
+				curStruct = &ast.Structs[len(ast.Structs)-1]
+				depth = 1
+				lineNum++
 				continue
 			}
 			if strings.HasPrefix(line, "const ") || strings.HasPrefix(line, "var ") {
@@ -85,26 +115,62 @@ func parse(src string) AST {
 						typ = strings.TrimSpace(name[i+1:])
 						name = name[:i]
 					}
-					ast.Vars = append(ast.Vars, Var{Name: name, Type: typ})
+					ast.Vars = append(ast.Vars, Var{Name: name, Type: typ, Line: lineNum + 1})
 				}
 			}
+			lineNum++
 			continue
 		}
-		depth += strings.Count(line, "{")
-		depth -= strings.Count(line, "}")
-		if depth <= 0 {
-			// handle possible code before closing brace
-			if idx := strings.Index(line, "}"); idx != -1 {
-				l := strings.TrimSpace(line[:idx])
-				if l != "" {
-					cur.Lines = append(cur.Lines, l)
+
+		if curFunc != nil {
+			depth += strings.Count(line, "{")
+			depth -= strings.Count(line, "}")
+			if depth <= 0 {
+				if idx := strings.Index(line, "}"); idx != -1 {
+					l := strings.TrimSpace(line[:idx])
+					if l != "" {
+						curFunc.Lines = append(curFunc.Lines, l)
+					}
+				}
+				curFunc = nil
+				depth = 0
+				lineNum++
+				continue
+			}
+			curFunc.Lines = append(curFunc.Lines, line)
+			lineNum++
+			continue
+		}
+
+		if curStruct != nil {
+			if strings.Contains(line, "};") || line == "}" || line == "};" {
+				if idx := strings.Index(line, "};"); idx != -1 {
+					field := strings.TrimSpace(line[:idx])
+					if field != "" && !strings.HasPrefix(field, "/") {
+						if parts := strings.SplitN(strings.TrimSuffix(field, ","), ":", 2); len(parts) == 2 {
+							name := strings.TrimSpace(parts[0])
+							typ := strings.TrimSpace(parts[1])
+							curStruct.Fields = append(curStruct.Fields, Field{Name: name, Type: typ, Line: lineNum + 1})
+						}
+					}
+				}
+				curStruct = nil
+				depth = 0
+				lineNum++
+				continue
+			}
+			if line != "" && !strings.HasPrefix(line, "/") {
+				if parts := strings.SplitN(strings.TrimSuffix(line, ","), ":", 2); len(parts) == 2 {
+					name := strings.TrimSpace(parts[0])
+					typ := strings.TrimSpace(parts[1])
+					curStruct.Fields = append(curStruct.Fields, Field{Name: name, Type: typ, Line: lineNum + 1})
 				}
 			}
-			cur = nil
-			depth = 0
+			lineNum++
 			continue
 		}
-		cur.Lines = append(cur.Lines, line)
+
+		lineNum++
 	}
 	return ast
 }
