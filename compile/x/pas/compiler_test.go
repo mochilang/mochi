@@ -124,7 +124,7 @@ func TestPascalCompiler_SubsetPrograms(t *testing.T) {
 }
 
 func TestPascalCompiler_GoldenOutput(t *testing.T) {
-	compileFn := func(src string) ([]byte, error) {
+	runCompile := func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
 			return nil, fmt.Errorf("❌ parse error: %w", err)
@@ -138,10 +138,65 @@ func TestPascalCompiler_GoldenOutput(t *testing.T) {
 		if err != nil {
 			return nil, fmt.Errorf("❌ compile error: %w", err)
 		}
+
+		fpc, err := pascode.EnsureFPC()
+		if err != nil {
+			return nil, err
+		}
+		dir := t.TempDir()
+		file := filepath.Join(dir, "prog.pas")
+		if err := os.WriteFile(file, code, 0644); err != nil {
+			return nil, fmt.Errorf("write error: %w", err)
+		}
+		if out, err := exec.Command(fpc, file).CombinedOutput(); err != nil {
+			return nil, fmt.Errorf("❌ fpc error: %w\n%s", err, out)
+		}
+		exe := filepath.Join(dir, "prog")
+		cmd := exec.Command(exe)
+		var inData []byte
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			inData = data
+			cmd.Stdin = bytes.NewReader(data)
+		}
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			return nil, fmt.Errorf("❌ run error: %w\n%s", err, out)
+		}
+		pasOut := bytes.TrimSpace(out)
+
+		// run with VM for expected result
+		p, err := vm.Compile(prog, env)
+		if err != nil {
+			return nil, fmt.Errorf("❌ vm compile error: %w", err)
+		}
+		var vmIn io.Reader
+		if len(inData) > 0 {
+			vmIn = bytes.NewReader(inData)
+		}
+		var vmBuf bytes.Buffer
+		m := vm.NewWithIO(p, vmIn, &vmBuf)
+		if err := m.Run(); err != nil {
+			return nil, fmt.Errorf("❌ vm run error: %w", err)
+		}
+		vmOut := bytes.TrimSpace(vmBuf.Bytes())
+
+		root := repoRoot()
+		outPath := strings.TrimSuffix(src, ".mochi") + ".out"
+		if want, err := os.ReadFile(outPath); err == nil {
+			if !bytes.Equal(normalizeOutput(root, vmOut), normalizeOutput(root, bytes.TrimSpace(want))) {
+				return nil, fmt.Errorf("runtime output mismatch\n\n--- VM ---\n%s\n\n--- Want ---\n%s\n", vmOut, want)
+			}
+		}
+
+		if !bytes.Equal(normalizeOutput(root, pasOut), normalizeOutput(root, vmOut)) {
+			return nil, fmt.Errorf("vm mismatch\n\n--- Pascal ---\n%s\n\n--- VM ---\n%s\n", pasOut, vmOut)
+		}
+
 		return bytes.TrimSpace(code), nil
 	}
 
-	golden.Run(t, "tests/compiler/pas", ".mochi", ".pas.out", compileFn)
+	golden.Run(t, "tests/compiler/valid", ".mochi", ".pas.out", runCompile)
+	golden.Run(t, "tests/compiler/pas", ".mochi", ".pas.out", runCompile)
 }
 
 // TestPascalCompiler_LeetCodeExamples compiles a small subset of the
