@@ -1,0 +1,12 @@
+parse error: parse error: 1:81: unexpected token ">" (expected PostfixExpr)
+
+  1| object Main {
+  2|     def main(args: Array[String]): Unit = {
+  3|         val resp = _fetch("https://example.com", scala.collection.mutable.Map("method" -> "POST", "headers" -> scala.collection.mutable.Map("Content-Type" -> "application/json"), "query" -> scala.collection.mutable.Map("q" -> "test"), "body" -> scala.collection.mutable.Map("x" -> 1), "timeout" -> 5))
+  4|         println(resp)
+  5|     }
+  6|     def _fetch(url: String, opts: Map[String, Any]): Any = {
+  7|             import java.net.{HttpURLConnection, URL, URLEncoder}
+  8|             import java.io.{BufferedWriter, OutputStreamWriter}
+  9|             var u = url
+ 10|             if (opts != null && opts.contains("query")) {

@@ -1,0 +1,12 @@
+parse error: parse error: 8:18: unexpected token "start" (expected "{" Statement* "}" (("else" IfStmt) | ("else" "{" Statement* "}"))?)
+
+  1| object Main {
+  2|     def main(args: Array[String]): Unit = {
+  3|         println(_sliceString("hello", 1, 4))
+  4|     }
+  5|     def _sliceString(s: String, i: Int, j: Int): String = {
+  6|             var start = i
+  7|             var end = j
+  8|             val chars = s.toVector
+  9|             val n = chars.length
+ 10|             if (start < 0) start += n

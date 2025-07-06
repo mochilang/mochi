@@ -1,0 +1,12 @@
+parse error: parse error: 2:51: unexpected token "," (expected "]")
+
+  1| object Main {
+  2|     def Leaf(): scala.collection.mutable.Map[String, Any] = {
+  3|         return _cast[scala.collection.mutable.Map[String, Any]](scala.collection.mutable.Map("__name" -> "Leaf"))
+  4|     }
+  5|     
+  6|     def Node(left: scala.collection.mutable.Map[String, Any], value: Int, right: scala.collection.mutable.Map[String, Any]): scala.collection.mutable.Map[String, Any] = {
+  7|         return scala.collection.mutable.Map("__name" -> "Node", "left" -> left, "value" -> value, "right" -> right)
+  8|     }
+  9|     
+ 10|     def main(args: Array[String]): Unit = {

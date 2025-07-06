@@ -1,0 +1,12 @@
+type error: error[T002]: undefined variable: scala
+  --> :1:8
+
+help:
+  Check if the variable was declared in this scope.
+
+  1| object Main {
+  2|     def main(args: Array[String]): Unit = {
+  3|         println((scala.collection.mutable.ArrayBuffer(1, 2, 3).sum / scala.collection.mutable.ArrayBuffer(1, 2, 3).size))
+  4|     }
+  5| }
+  6|

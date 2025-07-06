@@ -1,0 +1,12 @@
+parse error: parse error: 2:35: unexpected token "]" (expected "}")
+
+  1| object Main {
+  2|     def prepend(level: scala.collection.mutable.ArrayBuffer[Int], result: scala.collection.mutable.ArrayBuffer[scala.collection.mutable.ArrayBuffer[Int]]): scala.collection.mutable.ArrayBuffer[scala.collection.mutable.ArrayBuffer[Int]] = {
+  3|         var result_var: scala.collection.mutable.ArrayBuffer[scala.collection.mutable.ArrayBuffer[Int]] = result
+  4|         result_var = (scala.collection.mutable.ArrayBuffer(level) + result_var)
+  5|         return result_var
+  6|     }
+  7|     
+  8|     def main(args: Array[String]): Unit = {
+  9|         println(prepend(scala.collection.mutable.ArrayBuffer(1, 2), scala.collection.mutable.ArrayBuffer(scala.collection.mutable.ArrayBuffer(3), scala.collection.mutable.ArrayBuffer(4))))
+ 10|     }

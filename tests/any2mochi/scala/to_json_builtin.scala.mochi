@@ -1,5 +1,0 @@
-print(_to_json(scala.collection.mutable.Map("a" -> 1)))
-
-fun _to_json(v) {
-  match v {
-}

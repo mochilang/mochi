@@ -1,0 +1,16 @@
+type error: error[T008]: type mismatch: expected void, got [Foo]
+  --> :5:10
+
+help:
+  Change the value to match the expected type.
+
+  1| sealed trait Foo
+  2| case class Empty() extends Foo
+  3| case class Node(child: Any) extends Foo
+  4| 
+  5| object Main {
+  6|     def listit(): scala.collection.mutable.ArrayBuffer[Any] = {
+  7|         return scala.collection.mutable.ArrayBuffer(Empty())
+  8|     }
+  9|     
+ 10|     def main(args: Array[String]): Unit = {

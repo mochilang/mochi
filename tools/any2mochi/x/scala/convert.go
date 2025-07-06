@@ -190,18 +190,39 @@ func convertFunc(lines []string, sym any2mochi.DocumentSymbol, root string) stri
 		case strings.HasPrefix(line, "var "):
 			content := strings.TrimPrefix(line, "var ")
 			if idx := strings.Index(content, "="); idx != -1 {
-				n := strings.Fields(strings.TrimSpace(content[:idx]))[0]
+				left := strings.TrimSpace(content[:idx])
 				expr := strings.TrimSpace(content[idx+1:])
-				write("var " + n + " = " + convertExpr(expr))
+				name := left
+				typ := ""
+				if c := strings.Index(left, ":"); c != -1 {
+					name = strings.TrimSpace(left[:c])
+					typ = strings.TrimSpace(left[c+1:])
+				}
+				code := "var " + name
+				if typ != "" {
+					code += ": " + mapType(typ)
+				}
+				code += " = " + convertExpr(expr)
+				write(code)
 			} else {
 				write("var " + content)
 			}
 		case strings.HasPrefix(line, "val "):
 			if idx := strings.Index(line, "="); idx != -1 {
-				n := strings.Fields(strings.TrimSpace(line[4:idx]))[0]
-				n = strings.TrimSuffix(n, ":")
+				left := strings.TrimSpace(line[4:idx])
 				expr := strings.TrimSpace(line[idx+1:])
-				write("let " + n + " = " + convertExpr(expr))
+				name := left
+				typ := ""
+				if c := strings.Index(left, ":"); c != -1 {
+					name = strings.TrimSpace(left[:c])
+					typ = strings.TrimSpace(left[c+1:])
+				}
+				code := "let " + name
+				if typ != "" {
+					code += ": " + mapType(typ)
+				}
+				code += " = " + convertExpr(expr)
+				write(code)
 			}
 		case strings.Contains(line, ".append("):
 			idx := strings.Index(line, ".append(")
@@ -566,18 +587,39 @@ func convertFromAST(fn Func) string {
 		case strings.HasPrefix(line, "var "):
 			content := strings.TrimPrefix(line, "var ")
 			if idx := strings.Index(content, "="); idx != -1 {
-				n := strings.Fields(strings.TrimSpace(content[:idx]))[0]
+				left := strings.TrimSpace(content[:idx])
 				expr := strings.TrimSpace(content[idx+1:])
-				write("var " + n + " = " + convertExpr(expr))
+				name := left
+				typ := ""
+				if c := strings.Index(left, ":"); c != -1 {
+					name = strings.TrimSpace(left[:c])
+					typ = strings.TrimSpace(left[c+1:])
+				}
+				code := "var " + name
+				if typ != "" {
+					code += ": " + mapType(typ)
+				}
+				code += " = " + convertExpr(expr)
+				write(code)
 			} else {
 				write("var " + content)
 			}
 		case strings.HasPrefix(line, "val "):
 			if idx := strings.Index(line, "="); idx != -1 {
-				n := strings.Fields(strings.TrimSpace(line[4:idx]))[0]
-				n = strings.TrimSuffix(n, ":")
+				left := strings.TrimSpace(line[4:idx])
 				expr := strings.TrimSpace(line[idx+1:])
-				write("let " + n + " = " + convertExpr(expr))
+				name := left
+				typ := ""
+				if c := strings.Index(left, ":"); c != -1 {
+					name = strings.TrimSpace(left[:c])
+					typ = strings.TrimSpace(left[c+1:])
+				}
+				code := "let " + name
+				if typ != "" {
+					code += ": " + mapType(typ)
+				}
+				code += " = " + convertExpr(expr)
+				write(code)
 			}
 		case strings.Contains(line, ".append("):
 			idx := strings.Index(line, ".append(")

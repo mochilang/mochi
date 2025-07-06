@@ -1,0 +1,12 @@
+parse error: parse error: 16:5: unexpected token "else" (expected "}" (("else" IfStmt) | ("else" "{" Statement* "}"))?)
+
+  1| object Main {
+  2|     def searchMatrix(matrix: scala.collection.mutable.ArrayBuffer[scala.collection.mutable.ArrayBuffer[Int]], target: Int): Boolean = {
+  3|         val m: Int = matrix.length
+  4|         if ((m == 0)) {
+  5|             return false
+  6|         }
+  7|         val n: Int = _indexList(matrix, 0).length
+  8|         var left: Int = 0
+  9|         var right: Int = ((m * n) - 1)
+ 10|         while ((left <= right)) {

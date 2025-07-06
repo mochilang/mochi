@@ -1,2 +1,0 @@
-let map = scala.collection.mutable.Map("a" -> 1)
-print(map("a"))

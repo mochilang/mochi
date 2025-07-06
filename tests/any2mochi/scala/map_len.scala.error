@@ -1,0 +1,8 @@
+parse error: parse error: 1:45: unexpected token ">" (expected PostfixExpr)
+
+  1| object Main {
+  2|     def main(args: Array[String]): Unit = {
+  3|         println(scala.collection.mutable.Map("a" -> 1, "b" -> 2).size)
+  4|     }
+  5| }
+  6|

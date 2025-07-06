@@ -1,0 +1,9 @@
+parse error: parse error: 1:30: unexpected token "="
+
+  1| object Main {
+  2|     def main(args: Array[String]): Unit = {
+  3|         val scores: scala.collection.mutable.Map[String, Int] = scala.collection.mutable.Map("Alice" -> 10, "Bob" -> 15)
+  4|         println(scores("Bob"))
+  5|     }
+  6| }
+  7|

@@ -1,0 +1,12 @@
+parse error: parse error: 1:26: unexpected token "="
+
+  1| object Main {
+  2|     def main(args: Array[String]): Unit = {
+  3|         val xs: scala.collection.mutable.ArrayBuffer[Int] = scala.collection.mutable.ArrayBuffer(10, 20, 30)
+  4|         println(_indexList(xs, 1))
+  5|     }
+  6|     def _indexList[T](arr: scala.collection.mutable.ArrayBuffer[T], i: Int): T = {
+  7|             var idx = i
+  8|             val n = arr.length
+  9|             if (idx < 0) idx += n
+ 10|             if (idx < 0 || idx >= n) throw new RuntimeException("index out of range")
