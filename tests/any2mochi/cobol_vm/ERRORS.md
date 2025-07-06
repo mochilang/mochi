@@ -1,7 +1,11 @@
 # Errors
 
-- append_builtin: append_builtin: parse2 error: parse error: 2:8: unexpected token "=" (expected "}")
-- avg_builtin: avg_builtin: parse2 error: parse error: 2:11: unexpected token "=" (expected "}")
+- append_builtin: append_builtin: type2 error: error[T001]: assignment to undeclared variable: a
+  --> :2:3
+
+help:
+  Declare `a` first using `let`.
+- avg_builtin: avg_builtin: parse2 error: parse error: 11:11: unexpected token "=" (expected "{" Statement* "}" (("else" IfStmt) | ("else" "{" Statement* "}"))?)
 - basic_compare: basic_compare: parse2 error: parse error: 5:16: unexpected token "=" (expected "}")
 - binary_precedence: ok
 - bool_chain: bool_chain: type2 error: error[T020]: operator `*` cannot be used on types bool and bool
@@ -9,7 +13,7 @@
 
 help:
   Choose an operator that supports these operand types.
-- break_continue: break_continue: parse2 error: parse error: 2:14: unexpected token "=" (expected "}")
+- break_continue: break_continue: parse2 error: parse error: 14:17: unexpected token "MOD" (expected "{" Statement* "}" (("else" IfStmt) | ("else" "{" Statement* "}"))?)
 - cast_string_to_int: ok
 - cast_struct: cast_struct: type2 error: error[T002]: undefined variable: TODO_TITLE
   --> :3:9
@@ -42,8 +46,16 @@ help:
   34 |     DISPLAY "--- Adults ---"
   35 |     *> unsupported for-in loop
   36 |     STOP RUN.
-- exists_builtin: exists_builtin: parse2 error: parse error: 2:11: unexpected token "=" (expected "}")
-- for_list_collection: for_list_collection: parse2 error: parse error: 2:11: unexpected token "=" (expected "}")
+- exists_builtin: exists_builtin: type2 error: error[T001]: assignment to undeclared variable: data
+  --> :2:3
+
+help:
+  Declare `data` first using `let`.
+- for_list_collection: for_list_collection: type2 error: error[T001]: assignment to undeclared variable: tmp0
+  --> :2:3
+
+help:
+  Declare `tmp0` first using `let`.
 - for_loop: ok
 - for_map_collection: for_map_collection: convert error: unsupported feature at line 11:  unsupported for-in loop
   10 |     COMPUTE M = 0
@@ -64,8 +76,8 @@ help:
   34 |     DISPLAY "--- People grouped by city ---"
   35 |     *> unsupported for-in loop
   36 |     STOP RUN.
-- group_by_conditional_sum: group_by_conditional_sum: parse2 error: parse error: 2:12: unexpected token "=" (expected "}")
-- group_by_having: group_by_having: parse2 error: parse error: 2:13: unexpected token "=" (expected "}")
+- group_by_conditional_sum: group_by_conditional_sum: parse2 error: parse error: 12:12: unexpected token "=" (expected "{" Statement* "}" (("else" IfStmt) | ("else" "{" Statement* "}"))?)
+- group_by_having: group_by_having: parse2 error: parse error: 16:12: unexpected token "=" (expected "{" Statement* "}" (("else" IfStmt) | ("else" "{" Statement* "}"))?)
 - group_by_join: group_by_join: convert error: unsupported feature at line 43:  unsupported for-in loop
   42 |     DISPLAY "--- Orders per customer ---"
   43 |     *> unsupported for-in loop
@@ -74,9 +86,9 @@ help:
   43 |     DISPLAY "--- Group Left Join ---"
   44 |     *> unsupported for-in loop
   45 |     STOP RUN.
-- group_by_multi_join: group_by_multi_join: parse2 error: parse error: 2:14: unexpected token "=" (expected "}")
-- group_by_multi_join_sort: group_by_multi_join_sort: parse2 error: parse error: 2:13: unexpected token "=" (expected "}")
-- group_by_sort: group_by_sort: parse2 error: parse error: 2:12: unexpected token "=" (expected "}")
+- group_by_multi_join: group_by_multi_join: parse2 error: parse error: 20:19: unexpected token "=" (expected "{" Statement* "}" (("else" IfStmt) | ("else" "{" Statement* "}"))?)
+- group_by_multi_join_sort: group_by_multi_join_sort: parse2 error: parse error: 24:86: unexpected token "=" (expected "{" Statement* "}" (("else" IfStmt) | ("else" "{" Statement* "}"))?)
+- group_by_sort: group_by_sort: parse2 error: parse error: 13:12: unexpected token "=" (expected "{" Statement* "}" (("else" IfStmt) | ("else" "{" Statement* "}"))?)
 - group_items_iteration: group_items_iteration: convert error: unsupported feature at line 36:  unsupported for-in loop
   35 |     END-PERFORM
   36 |     *> unsupported for-in loop
@@ -92,8 +104,12 @@ help:
 
 help:
   Check if the variable was declared in this scope.
-- in_operator: in_operator: parse2 error: parse error: 2:9: unexpected token "=" (expected "}")
-- in_operator_extended: in_operator_extended: parse2 error: parse error: 2:9: unexpected token "=" (expected "}")
+- in_operator: in_operator: type2 error: error[T001]: assignment to undeclared variable: xs
+  --> :2:3
+
+help:
+  Declare `xs` first using `let`.
+- in_operator_extended: in_operator_extended: parse2 error: parse error: 10:17: unexpected token "MOD" (expected "{" Statement* "}" (("else" IfStmt) | ("else" "{" Statement* "}"))?)
 - inner_join: inner_join: convert error: unsupported feature at line 45:  unsupported for-in loop
   44 |     DISPLAY "--- Orders with customer info ---"
   45 |     *> unsupported for-in loop
@@ -128,7 +144,11 @@ help:
 help:
   Check if the variable was declared in this scope.
 - list_assign: list_assign: compile panic: interface conversion: interface {} is nil, not string
-- list_index: list_index: parse2 error: parse error: 2:9: unexpected token "=" (expected "}")
+- list_index: list_index: type2 error: error[T001]: assignment to undeclared variable: xs
+  --> :2:3
+
+help:
+  Declare `xs` first using `let`.
 - list_nested_assign: list_nested_assign: compile panic: interface conversion: interface {} is nil, not string
 - list_set_ops: list_set_ops: parse2 error: parse error: 8:32: unexpected token "union_all" (expected ")")
 - load_yaml: load_yaml: convert error: unsupported feature at line 31:  unsupported for-in loop
@@ -141,16 +161,16 @@ help:
 
 help:
   Choose an operator that supports these operand types.
-- map_index: map_index: type2 error: error[T004]: `m` is not callable
+- map_index: map_index: type2 error: error[T018]: type int does not support indexing
   --> :3:14
 
 help:
-  Use a function or closure in this position.
-- map_int_key: map_int_key: type2 error: error[T004]: `m` is not callable
+  Only `list<T>` and `map<K,V>` can be indexed.
+- map_int_key: map_int_key: type2 error: error[T018]: type int does not support indexing
   --> :3:14
 
 help:
-  Use a function or closure in this position.
+  Only `list<T>` and `map<K,V>` can be indexed.
 - map_literal_dynamic: ok
 - map_membership: map_membership: type2 error: error[T020]: operator `in` cannot be used on types string and int
   --> :3:18
@@ -165,14 +185,22 @@ help:
 
 help:
   Check if the variable was declared in this scope.
-- membership: membership: parse2 error: parse error: 2:11: unexpected token "=" (expected "}")
-- min_max_builtin: min_max_builtin: parse2 error: parse error: 2:11: unexpected token "=" (expected "}")
+- membership: membership: type2 error: error[T001]: assignment to undeclared variable: nums
+  --> :2:3
+
+help:
+  Declare `nums` first using `let`.
+- min_max_builtin: min_max_builtin: type2 error: error[T001]: assignment to undeclared variable: nums
+  --> :2:3
+
+help:
+  Declare `nums` first using `let`.
 - nested_function: nested_function: type2 error: error[T003]: unknown function: fouter
   --> :3:3
 
 help:
   Ensure the function is defined before it's called.
-- order_by_map: order_by_map: parse2 error: parse error: 2:11: unexpected token "=" (expected "}")
+- order_by_map: order_by_map: parse2 error: parse error: 12:12: unexpected token "=" (expected "{" Statement* "}" (("else" IfStmt) | ("else" "{" Statement* "}"))?)
 - outer_join: outer_join: convert error: unsupported feature at line 46:  unsupported for-in loop
   45 |     DISPLAY "--- Outer Join using syntax ---"
   46 |     *> unsupported for-in loop
@@ -206,23 +234,31 @@ help:
   44 |     DISPLAY "--- Right Join using syntax ---"
   45 |     *> unsupported for-in loop
   46 |     STOP RUN.
-- save_jsonl_stdout: save_jsonl_stdout: parse2 error: parse error: 2:13: unexpected token "=" (expected "}")
+- save_jsonl_stdout: save_jsonl_stdout: type2 error: error[T001]: assignment to undeclared variable: people
+  --> :2:3
+
+help:
+  Declare `people` first using `let`.
 - short_circuit: short_circuit: type2 error: error[T003]: unknown function: fboom
   --> :4:3
 
 help:
   Ensure the function is defined before it's called.
-- slice: slice: parse2 error: parse error: 2:11: unexpected token "=" (expected "}")
-- sort_stable: sort_stable: parse2 error: parse error: 2:12: unexpected token "=" (expected "}")
+- slice: slice: parse2 error: parse error: 12:26: unexpected token ":" (expected ")")
+- sort_stable: sort_stable: parse2 error: parse error: 12:12: unexpected token "=" (expected "{" Statement* "}" (("else" IfStmt) | ("else" "{" Statement* "}"))?)
 - str_builtin: ok
 - string_compare: ok
 - string_concat: string_concat: parse2 error: parse error: 2:23: lexer: invalid input text "& \"world\"\n  prin..."
 - string_contains: ok
 - string_in_operator: ok
-- string_index: string_index: parse2 error: parse error: 9:20: unexpected token ":" (expected ")")
-- string_prefix_slice: string_prefix_slice: parse2 error: parse error: 7:21: unexpected token ":" (expected ")")
+- string_index: ok
+- string_prefix_slice: string_prefix_slice: parse2 error: parse error: 8:19: unexpected token "=" (expected "}")
 - substring_builtin: ok
-- sum_builtin: sum_builtin: parse2 error: parse error: 2:11: unexpected token "=" (expected "}")
+- sum_builtin: sum_builtin: type2 error: error[T001]: assignment to undeclared variable: tmp0
+  --> :2:3
+
+help:
+  Declare `tmp0` first using `let`.
 - tail_recursion: tail_recursion: type2 error: error[T003]: unknown function: fsum_rec
   --> :4:3
 
@@ -234,7 +270,7 @@ help:
 
 help:
   Check if the variable was declared in this scope.
-- two-sum: two-sum: parse2 error: parse error: 2:11: unexpected token "=" (expected "}")
+- two-sum: two-sum: parse2 error: parse error: 14:36: unexpected token "=" (expected "{" Statement* "}" (("else" IfStmt) | ("else" "{" Statement* "}"))?)
 - typed_let: ok
 - typed_var: ok
 - unary_neg: unary_neg: parse2 error: parse error: 3:18: unexpected token "-" (expected PostfixExpr)
