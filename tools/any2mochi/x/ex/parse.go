@@ -16,7 +16,9 @@ type Func struct {
 	Body      []string `json:"body"`
 	StartLine int      `json:"start"`
 	EndLine   int      `json:"end"`
+	Header    string   `json:"header"`
 	Doc       string   `json:"doc,omitempty"`
+	Comments  []string `json:"comments,omitempty"`
 	Raw       []string `json:"raw,omitempty"`
 }
 
@@ -115,6 +117,7 @@ func Parse(src string) (*AST, error) {
 		if m == nil {
 			continue
 		}
+		header := strings.TrimSpace(lines[i])
 		name := m[1]
 		params := parseParams(m[2])
 		var docLines []string
@@ -141,12 +144,15 @@ func Parse(src string) (*AST, error) {
 			}
 			body = append(body, l)
 		}
-		fn := Func{Name: name, Params: params, Body: body, StartLine: startLine, EndLine: endLine}
+		fn := Func{Name: name, Params: params, Body: body, StartLine: startLine, EndLine: endLine, Header: header}
 		if len(docLines) > 0 {
 			fn.Doc = strings.Join(docLines, "\n")
+			fn.Comments = docLines
 		}
 		fn.Raw = lines[startLine-1 : endLine]
-		ast.Funcs = append(ast.Funcs, fn)
+		if !skipFuncs[fn.Name] && !strings.HasPrefix(fn.Name, "_") {
+			ast.Funcs = append(ast.Funcs, fn)
+		}
 	}
 	if len(ast.Funcs) == 0 {
 		return nil, newConvertError(1, lines, "no functions found")

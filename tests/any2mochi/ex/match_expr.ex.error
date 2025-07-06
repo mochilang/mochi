@@ -1,9 +1,0 @@
-line 12: ** (SyntaxError) nofile:12:5: syntax error before: '('
-    |
- 12 | end)()
-    |     ^
-    (stdlib 4.3.1.3) erl_eval.erl:744: :erl_eval.do_apply/7
-    (elixir 1.14.0) lib/code.ex:422: Code.validated_eval_string/3
-    11:   end
->>> 12: end)()
-    13:     IO.puts(label)
