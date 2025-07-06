@@ -67,6 +67,9 @@ func convert(src, root string) ([]byte, error) {
 		return nil, fmt.Errorf("%s", diagnostics(src, diags))
 	}
 	var out strings.Builder
+	for _, t := range parseTypes(src) {
+		out.WriteString(t)
+	}
 	writeSymbols(&out, nil, syms, src, ls, root)
 	if out.Len() == 0 {
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
@@ -156,6 +159,41 @@ func mapType(t string) string {
 	default:
 		return ""
 	}
+}
+
+func parseTypes(src string) []string {
+	lines := strings.Split(src, "\n")
+	var out []string
+	for i := 0; i < len(lines); i++ {
+		l := strings.TrimSpace(strings.ToLower(lines[i]))
+		if strings.HasPrefix(l, "type ::") {
+			name := strings.TrimSpace(lines[i][len("type ::"):])
+			var fields []string
+			for j := i + 1; j < len(lines); j++ {
+				ll := strings.TrimSpace(lines[j])
+				if strings.HasPrefix(strings.ToLower(ll), "end type") {
+					i = j
+					break
+				}
+				idx := strings.Index(ll, "::")
+				if idx == -1 {
+					continue
+				}
+				typ := mapType(strings.TrimSpace(ll[:idx]))
+				names := strings.Split(ll[idx+2:], ",")
+				for _, n := range names {
+					n = strings.TrimSpace(n)
+					if n != "" {
+						fields = append(fields, fmt.Sprintf("  %s: %s", n, typ))
+					}
+				}
+			}
+			if name != "" && len(fields) > 0 {
+				out = append(out, fmt.Sprintf("type %s {\n%s\n}\n", name, strings.Join(fields, "\n")))
+			}
+		}
+	}
+	return out
 }
 
 // cleanExpr performs a few textual substitutions on simple Fortran
