@@ -1,0 +1,12 @@
+parse error: parse error: 1:32: lexer: invalid input text "\\x(->, (x, +, n)..."
+
+  1| {-# LANGUAGE DeriveGeneric #-}
+  2| 
+  3| module Main where
+  4| 
+  5| import qualified Data.Aeson as Aeson
+  6| import qualified Data.ByteString.Lazy.Char8 as BSL
+  7| import Data.List (intercalate, isPrefixOf)
+  8| import qualified Data.List as List
+  9| import qualified Data.Map as Map
+ 10| import Data.Maybe (fromMaybe)

@@ -24,6 +24,7 @@ type Item struct {
 	End        string   `json:"end,omitempty"`
 	Line       int      `json:"line"`
 	Doc        string   `json:"doc,omitempty"`
+	Derives    []string `json:"derives,omitempty"`
 }
 
 // Parse parses a very small subset of Haskell source and returns a slice
@@ -119,7 +120,27 @@ func Parse(src string) ([]Item, error) {
 							fs = append(fs, Field{Name: parts[0], Type: parts[2]})
 						}
 					}
-					items = append(items, Item{Kind: "struct", Name: name, Fields: fs, Line: i + 1})
+					var derives []string
+					rest := strings.TrimSpace(buf[end+1:])
+					if rest == "" && j+1 < len(lines) {
+						next := strings.TrimSpace(lines[j+1])
+						if strings.HasPrefix(next, "deriving") {
+							rest = next
+							j++
+						}
+					}
+					if strings.HasPrefix(rest, "deriving") {
+						list := rest[len("deriving"):]
+						list = strings.TrimSpace(strings.Trim(list, "()"))
+						parts := strings.Split(list, ",")
+						for _, p := range parts {
+							p = strings.TrimSpace(p)
+							if p != "" {
+								derives = append(derives, p)
+							}
+						}
+					}
+					items = append(items, Item{Kind: "struct", Name: name, Fields: fs, Line: i + 1, Derives: derives})
 					i = j
 					continue
 				}
@@ -230,7 +251,7 @@ func convertBody(body string) string {
 	if strings.HasPrefix(body, "print") {
 		arg := strings.TrimSpace(strings.TrimPrefix(body, "print"))
 		arg = strings.Trim(arg, "()")
-		return "print(" + arg + ")"
+		return "print(" + convertExpr(arg) + ")"
 	}
 	if strings.HasPrefix(body, "putStrLn") {
 		arg := strings.TrimSpace(strings.TrimPrefix(body, "putStrLn"))
@@ -238,9 +259,35 @@ func convertBody(body string) string {
 		if strings.HasPrefix(arg, "show ") {
 			arg = "str(" + strings.TrimSpace(strings.TrimPrefix(arg, "show ")) + ")"
 		}
-		return "print(" + arg + ")"
+		return "print(" + convertExpr(arg) + ")"
 	}
-	return body
+	return convertExpr(body)
+}
+
+func convertExpr(expr string) string {
+	expr = strings.TrimSpace(expr)
+	if strings.HasPrefix(expr, "div ") {
+		parts := strings.Fields(expr)
+		if len(parts) == 3 {
+			return parts[1] + " / " + parts[2]
+		}
+	}
+	if strings.Contains(expr, "`mod`") {
+		parts := strings.Split(expr, "`mod`")
+		if len(parts) == 2 {
+			return strings.TrimSpace(parts[0]) + " % " + strings.TrimSpace(parts[1])
+		}
+	}
+	expr = strings.ReplaceAll(expr, "True", "true")
+	expr = strings.ReplaceAll(expr, "False", "false")
+	parts := strings.Fields(expr)
+	if len(parts) > 1 {
+		ops := map[string]bool{"+": true, "-": true, "*": true, "/": true, "%": true, "&&": true, "||": true, "==": true, "<": true, ">": true, "<=": true, ">=": true}
+		if !ops[parts[1]] {
+			return parts[0] + "(" + strings.Join(parts[1:], ", ") + ")"
+		}
+	}
+	return expr
 }
 
 // convertItems converts the Haskell AST items to Mochi source code.
@@ -250,11 +297,11 @@ func convertItems(items []Item) []byte {
 		switch it.Kind {
 		case "print":
 			out.WriteString("print(")
-			out.WriteString(it.Body)
+			out.WriteString(convertExpr(it.Body))
 			out.WriteString(")\n")
 		case "json":
 			out.WriteString("json(")
-			out.WriteString(it.Body)
+			out.WriteString(convertExpr(it.Body))
 			out.WriteString(")\n")
 		case "func":
 			out.WriteString("fun ")
@@ -284,7 +331,7 @@ func convertItems(items []Item) []byte {
 				out.WriteString(" {}\n")
 			} else {
 				out.WriteString(" { ")
-				out.WriteString(it.Body)
+				out.WriteString(convertExpr(it.Body))
 				out.WriteString(" }\n")
 			}
 		case "var":
@@ -298,7 +345,7 @@ func convertItems(items []Item) []byte {
 			}
 			if it.Body != "" {
 				out.WriteString(" = ")
-				out.WriteString(it.Body)
+				out.WriteString(convertExpr(it.Body))
 			}
 			out.WriteByte('\n')
 		case "for":
@@ -313,7 +360,7 @@ func convertItems(items []Item) []byte {
 				out.WriteString(it.End)
 			}
 			out.WriteString(" { ")
-			out.WriteString(it.Body)
+			out.WriteString(convertExpr(it.Body))
 			out.WriteString(" }\n")
 		case "struct":
 			out.WriteString("type ")

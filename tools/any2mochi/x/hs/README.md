@@ -10,6 +10,7 @@ This package provides an experimental Haskell frontend for the `any2mochi` tool.
 
 - Top level functions, types and variables detected by the language server
 - Basic function signatures and field types
+- Record `deriving` clauses are captured by the fallback parser
 - Simple `main` functions using `putStrLn`
 
 ## Unsupported Features

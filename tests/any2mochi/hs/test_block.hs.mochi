@@ -1,3 +1,0 @@
-fun expect(True: bool): IO () { pure () }
-fun expect(False: bool): IO () { error "expect failed" }
-print("ok")

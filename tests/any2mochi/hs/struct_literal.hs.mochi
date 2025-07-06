@@ -1,4 +1,0 @@
-fun data(Person) { Person }
-fun data(Book) { Book }
-let book = Book {title = "Go", author = Person {name = "Bob", age = 42}}
-print(name (author (book)

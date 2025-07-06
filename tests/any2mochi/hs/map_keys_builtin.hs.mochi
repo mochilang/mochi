@@ -1,2 +1,0 @@
-let m = Map.fromList [("a", 1), ("b", 2)]
-print(length (Map.keys m)
