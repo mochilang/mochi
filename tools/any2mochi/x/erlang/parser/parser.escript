@@ -3,8 +3,13 @@
 
 main([File]) ->
     case epp:parse_file(File, []) of
-        {ok, Forms} -> output_ast(Forms);
-        {error, Reason} -> io:format("{\"error\":\"~p\"}\n", [Reason]), halt(1)
+        {ok, Forms} ->
+            case lists:keyfind(error, 1, Forms) of
+                {error, Reason} -> io:format("{\"error\":\"~p\"}\n", [Reason]), halt(1);
+                false -> output_ast(Forms)
+            end;
+        {error, Reason} ->
+            io:format("{\"error\":\"~p\"}\n", [Reason]), halt(1)
     end,
     halt(0).
 
@@ -27,15 +32,26 @@ fun_to_json({function,Line,Name,A,[Clause|_]}, Exports) ->
     {clause,_,Params,_G,Body} = Clause,
     ParamNames = [param_name(P) || P <- Params],
     BodyLines = [string:trim(io_lib:format("~s", [erl_pp:expr(E)])) || E <- Body],
+    EndLine = case Body of
+        [] -> Line;
+        _ -> expr_line(lists:last(Body))
+    end,
     Exported = lists:any(fun({N,Ar}) -> N == Name andalso Ar == A end, Exports),
     lists:flatten([
         "{\"name\":", json_string(atom_to_list(Name)),
         ",\"params\":", json_array(ParamNames),
         ",\"body\":", json_array(BodyLines),
         ",\"line\":", integer_to_list(Line),
+        ",\"end\":", integer_to_list(EndLine),
         ",\"arity\":", integer_to_list(A),
         ",\"exported\":", if Exported -> "true"; true -> "false" end,
         "}"]).
+
+expr_line({_,L}) when is_integer(L) -> L;
+expr_line({_,L,_}) -> L;
+expr_line({_,L,_,_}) -> L;
+expr_line(L) when is_list(L) -> expr_line(lists:last(L));
+expr_line(_) -> 0.
 
 record_to_json({attribute,Line,record,{Name,Fields}}) ->
     FieldNames = [atom_to_list(F) || {record_field,_,{atom,_,F}} <- Fields],
@@ -43,6 +59,7 @@ record_to_json({attribute,Line,record,{Name,Fields}}) ->
         "{\"name\":", json_string(atom_to_list(Name)),
         ",\"fields\":", json_array(FieldNames),
         ",\"line\":", integer_to_list(Line),
+        ",\"end\":", integer_to_list(Line),
         "}"]).
 
 param_name({var,_,Name}) -> atom_to_list(Name);

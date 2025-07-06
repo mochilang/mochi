@@ -20,13 +20,17 @@ func snippet(src string) string {
 
 // Convert converts erlang source code to Mochi using the language server.
 type ConvertError struct {
-	Line int
-	Msg  string
-	Snip string
+	Line   int
+	Column int
+	Msg    string
+	Snip   string
 }
 
 func (e *ConvertError) Error() string {
 	if e.Line > 0 {
+		if e.Column > 0 {
+			return fmt.Sprintf("line %d:%d: %s\n%s", e.Line, e.Column, e.Msg, e.Snip)
+		}
 		return fmt.Sprintf("line %d: %s\n%s", e.Line, e.Msg, e.Snip)
 	}
 	return fmt.Sprintf("%s\n%s", e.Msg, e.Snip)
@@ -46,6 +50,10 @@ func Convert(src string) ([]byte, error) {
 	for _, r := range ast.Records {
 		out.WriteString("// line ")
 		out.WriteString(fmt.Sprint(r.Line))
+		if r.EndLine > 0 && r.EndLine != r.Line {
+			out.WriteString("-")
+			out.WriteString(fmt.Sprint(r.EndLine))
+		}
 		out.WriteByte('\n')
 		out.WriteString("type ")
 		out.WriteString(strings.Title(r.Name))
@@ -58,17 +66,21 @@ func Convert(src string) ([]byte, error) {
 		out.WriteString("}\n")
 	}
 	hasMain := false
-        for _, f := range ast.Functions {
-                if f.Name == "main" {
-                        hasMain = true
-                }
-                out.WriteString("// line ")
-                out.WriteString(fmt.Sprint(f.Line))
-                if f.Exported {
-                        out.WriteString(" (exported)")
-                }
-                out.WriteByte('\n')
-                out.WriteString("fun ")
+	for _, f := range ast.Functions {
+		if f.Name == "main" {
+			hasMain = true
+		}
+		out.WriteString("// line ")
+		out.WriteString(fmt.Sprint(f.Line))
+		if f.EndLine > 0 && f.EndLine != f.Line {
+			out.WriteString("-")
+			out.WriteString(fmt.Sprint(f.EndLine))
+		}
+		if f.Exported {
+			out.WriteString(" (exported)")
+		}
+		out.WriteByte('\n')
+		out.WriteString("fun ")
 		if f.Name == "" {
 			out.WriteString("fun")
 		} else {
@@ -147,8 +159,11 @@ func formatParseError(src string, err error) error {
 				prefix = ">>>"
 			}
 			fmt.Fprintf(&b, "%s %d: %s\n", prefix, i+1, lines[i])
+			if i+1 == line {
+				b.WriteString("    ^\n")
+			}
 		}
-		return &ConvertError{Line: line, Msg: msg, Snip: strings.TrimRight(b.String(), "\n")}
+		return &ConvertError{Line: line, Column: 1, Msg: msg, Snip: strings.TrimRight(b.String(), "\n")}
 	}
 	return &ConvertError{Msg: msg, Snip: snippet(src)}
 }

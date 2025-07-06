@@ -1,0 +1,11 @@
+exit status 1
+  1: #!/usr/bin/env escript
+  2: -module(main).
+  3: -export([main/1]).
+  4: 
+  5: -record(person, {name, age}).
+  6: 
+  7: main(_) ->
+  8:     People = [#person{name="Alice", age=30}, #person{name="Bob", age=15}, #person{name="Charlie", age=65}],
+  9:     Names = [P#person.name || P <- [P || P <- People, (P#person.age >= 18)]],
+ 10:     mochi_foreach(fun(N) ->

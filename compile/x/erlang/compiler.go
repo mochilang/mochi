@@ -349,6 +349,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 }
 
 func (c *Compiler) compileFun(fun *parser.FunStmt) error {
+	c.writeln(fmt.Sprintf("%% line %d", fun.Pos.Line))
 	params := []string{}
 	savedVars := c.vars
 	savedCounts := c.counts
@@ -392,6 +393,7 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 }
 
 func (c *Compiler) compileMethod(structName string, fun *parser.FunStmt) error {
+	c.writeln(fmt.Sprintf("%% line %d", fun.Pos.Line))
 	params := []string{"Self"}
 	savedVars := c.vars
 	savedCounts := c.counts
