@@ -6,7 +6,7 @@ int main() {
   unordered_map<int, bool> m = unordered_map<int, bool>{};
   m[1] = true;
   m[2] = true;
-  auto sum = 0;
+  int sum = 0;
   for (const auto &_kv : m) {
     int k = _kv.first;
     sum = sum + k;

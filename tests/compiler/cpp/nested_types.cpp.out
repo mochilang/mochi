@@ -2,17 +2,46 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+template <typename T> inline void _hash_combine(size_t &seed, const T &v) {
+  seed ^= std::hash<T>{}(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+}
+
 struct Address {
   string street;
 };
+inline bool operator==(const Address &a, const Address &b) {
+  return a.street == b.street;
+}
+namespace std {
+template <> struct hash<Address> {
+  size_t operator()(const Address &k) const noexcept {
+    size_t h = 0;
+    _hash_combine(h, k.street);
+    return h;
+  }
+};
+} // namespace std
 
 struct Person {
   string name;
   Address addr;
 };
+inline bool operator==(const Person &a, const Person &b) {
+  return a.name == b.name && a.addr == b.addr;
+}
+namespace std {
+template <> struct hash<Person> {
+  size_t operator()(const Person &k) const noexcept {
+    size_t h = 0;
+    _hash_combine(h, k.name);
+    _hash_combine(h, k.addr);
+    return h;
+  }
+};
+} // namespace std
 
 int main() {
-  auto p = Person{string("Bob"), Address{string("Main")}};
+  Person p = Person{string("Bob"), Address{string("Main")}};
   std::cout << (p.addr.street) << std::endl;
   return 0;
 }

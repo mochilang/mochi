@@ -2,17 +2,34 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+template <typename T> inline void _hash_combine(size_t &seed, const T &v) {
+  seed ^= std::hash<T>{}(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+}
+
 struct Person {
   string name;
   int age;
 };
+inline bool operator==(const Person &a, const Person &b) {
+  return a.name == b.name && a.age == b.age;
+}
+namespace std {
+template <> struct hash<Person> {
+  size_t operator()(const Person &k) const noexcept {
+    size_t h = 0;
+    _hash_combine(h, k.name);
+    _hash_combine(h, k.age);
+    return h;
+  }
+};
+} // namespace std
 
 int main() {
-  auto people =
+  vector<Person> people =
       vector<Person>{Person{string("Alice"), 30}, Person{string("Bob"), 15},
                      Person{string("Charlie"), 65}};
-  auto names = ([&]() -> vector<auto> {
-    vector<auto> _res;
+  auto names = ([&]() -> vector<string> {
+    vector<string> _res;
     for (auto &p : people) {
       if (p.age >= 18) {
         _res.push_back(p.name);

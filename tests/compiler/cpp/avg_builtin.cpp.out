@@ -2,7 +2,8 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-template <typename T> auto _avg(const T &v) -> decltype(v.size(), double{}) {
+template <typename T>
+inline auto _avg(const T &v) -> decltype(v.size(), double{}) {
   if (v.size() == 0)
     return 0;
   double sum = 0;
@@ -10,7 +11,8 @@ template <typename T> auto _avg(const T &v) -> decltype(v.size(), double{}) {
     sum += it;
   return sum / v.size();
 }
-template <typename T> auto _avg(const T &v) -> decltype(v.Items, double{}) {
+template <typename T>
+inline auto _avg(const T &v) -> decltype(v.Items, double{}) {
   return _avg(v.Items);
 }
 

@@ -2,10 +2,27 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+template <typename T> inline void _hash_combine(size_t &seed, const T &v) {
+  seed ^= std::hash<T>{}(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+}
+
 struct Point {
   int x;
   int y;
 };
+inline bool operator==(const Point &a, const Point &b) {
+  return a.x == b.x && a.y == b.y;
+}
+namespace std {
+template <> struct hash<Point> {
+  size_t operator()(const Point &k) const noexcept {
+    size_t h = 0;
+    _hash_combine(h, k.x);
+    _hash_combine(h, k.y);
+    return h;
+  }
+};
+} // namespace std
 
 Point make() { return Point{1, 2}; }
 

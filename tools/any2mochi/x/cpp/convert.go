@@ -454,14 +454,12 @@ func formatParseErr(src string, err error) error {
 	for _, m := range matches {
 		ln, _ := strconv.Atoi(m[1])
 		col, _ := strconv.Atoi(m[2])
-		start := ln - 1
-		if start-1 >= 0 {
-			start--
+		start := ln - 2
+		if start < 0 {
+			start = 0
 		}
-		end := ln
-		if end < len(lines) {
-			end++
-		} else {
+		end := ln + 1
+		if end > len(lines) {
 			end = len(lines)
 		}
 		fmt.Fprintf(&b, "line %d:%d: %s\n", ln, col, msg)

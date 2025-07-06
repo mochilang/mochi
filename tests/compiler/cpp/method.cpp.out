@@ -2,11 +2,28 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+template <typename T> inline void _hash_combine(size_t &seed, const T &v) {
+  seed ^= std::hash<T>{}(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+}
+
 struct Circle {
   double radius;
 };
+inline bool operator==(const Circle &a, const Circle &b) {
+  return a.radius == b.radius;
+}
+namespace std {
+template <> struct hash<Circle> {
+  size_t operator()(const Circle &k) const noexcept {
+    size_t h = 0;
+    _hash_combine(h, k.radius);
+    return h;
+  }
+};
+} // namespace std
+
 double Circle_area(Circle &self) {
-  auto a = 3.14 * self.radius * self.radius;
+  double a = 3.14 * self.radius * self.radius;
   std::cout << (string("Calculating area:")) << " " << (a) << std::endl;
   return a;
 }
@@ -17,7 +34,7 @@ void Circle_describe(Circle &self) {
 }
 
 int main() {
-  auto c = Circle{5.0};
+  Circle c = Circle{5.0};
   Circle_describe(c);
   std::cout << (string("Area is")) << " " << (Circle_area(c)) << std::endl;
   return 0;

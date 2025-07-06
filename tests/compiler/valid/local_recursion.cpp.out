@@ -22,10 +22,10 @@ vector<int> inorder(Tree t) {
       auto l = _v.left;
       auto v = _v.value;
       auto r = _v.right;
-      return ([&](vector<int> a, vector<int> b) {
+      return ([&](vector<any> a, vector<any> b) {
         a.insert(a.end(), b.begin(), b.end());
         return a;
-      })(([&](vector<int> a, vector<int> b) {
+      })(([&](vector<any> a, vector<any> b) {
            a.insert(a.end(), b.begin(), b.end());
            return a;
          })(inorder(l), vector<int>{v}),

@@ -2,7 +2,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-template <typename T> string _fmtVec(const vector<T> &v) {
+template <typename T> inline string _fmtVec(const vector<T> &v) {
   stringstream ss;
   ss << '[';
   for (size_t i = 0; i < v.size(); i++) {
@@ -14,7 +14,8 @@ template <typename T> string _fmtVec(const vector<T> &v) {
   return ss.str();
 }
 
-template <typename T> vector<T> _union(const vector<T> &a, const vector<T> &b) {
+template <typename T>
+inline vector<T> _union(const vector<T> &a, const vector<T> &b) {
   vector<T> res = a;
   for (const auto &it : b) {
     if (find(res.begin(), res.end(), it) == res.end())
@@ -24,7 +25,7 @@ template <typename T> vector<T> _union(const vector<T> &a, const vector<T> &b) {
 }
 
 template <typename T>
-vector<T> _except(const vector<T> &a, const vector<T> &b) {
+inline vector<T> _except(const vector<T> &a, const vector<T> &b) {
   vector<T> res;
   for (const auto &it : a) {
     if (find(b.begin(), b.end(), it) == b.end())
@@ -34,7 +35,7 @@ vector<T> _except(const vector<T> &a, const vector<T> &b) {
 }
 
 template <typename T>
-vector<T> _intersect(const vector<T> &a, const vector<T> &b) {
+inline vector<T> _intersect(const vector<T> &a, const vector<T> &b) {
   vector<T> res;
   for (const auto &it : a) {
     if (find(b.begin(), b.end(), it) != b.end() &&
@@ -45,8 +46,8 @@ vector<T> _intersect(const vector<T> &a, const vector<T> &b) {
 }
 
 int main() {
-  auto a = vector<int>{1, 2, 3};
-  auto b = vector<int>{3, 4};
+  vector<int> a = vector<int>{1, 2, 3};
+  vector<int> b = vector<int>{3, 4};
   std::cout << (_fmtVec(_union(a, b))) << std::endl;
   std::cout << (_fmtVec(_except(a, b))) << std::endl;
   std::cout << (_fmtVec(_intersect(a, b))) << std::endl;

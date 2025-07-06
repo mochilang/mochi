@@ -163,6 +163,12 @@ func inferCppPrimaryType(env *types.Env, lookup CppVarLookup, p *parser.Primary)
 			valType = "any"
 		}
 		return "unordered_map<" + keyType + ", " + valType + ">"
+	case p.Query != nil:
+		rt := InferCppExprType(p.Query.Select, env, lookup)
+		if rt == "" || rt == "auto" {
+			rt = "any"
+		}
+		return "vector<" + rt + ">"
 	case p.Call != nil:
 		switch p.Call.Func {
 		case "len", "count", "now":

@@ -2,7 +2,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-template <typename T> string _fmtVec(const vector<T> &v) {
+template <typename T> inline string _fmtVec(const vector<T> &v) {
   stringstream ss;
   ss << '[';
   for (size_t i = 0; i < v.size(); i++) {

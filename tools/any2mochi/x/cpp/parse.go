@@ -39,6 +39,7 @@ type structDef struct {
 	fields    []structField
 	startLine int
 	endLine   int
+	snippet   string
 }
 
 func convertBodyString(body string) []string {
@@ -207,6 +208,7 @@ func collectAST(n *astNode, src string, funcs *[]funcDef, enums *[]enumDef, stru
 						fields:    fields,
 						startLine: lineNumber(src, n.Range.Begin.Offset),
 						endLine:   lineNumber(src, n.Range.End.Offset),
+						snippet:   snippet,
 					})
 				}
 			}

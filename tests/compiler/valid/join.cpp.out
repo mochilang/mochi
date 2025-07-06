@@ -2,29 +2,75 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+template <typename T> inline void _hash_combine(size_t &seed, const T &v) {
+  seed ^= std::hash<T>{}(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+}
+
 struct Customer {
   int id;
   string name;
 };
+inline bool operator==(const Customer &a, const Customer &b) {
+  return a.id == b.id && a.name == b.name;
+}
+namespace std {
+template <> struct hash<Customer> {
+  size_t operator()(const Customer &k) const noexcept {
+    size_t h = 0;
+    _hash_combine(h, k.id);
+    _hash_combine(h, k.name);
+    return h;
+  }
+};
+} // namespace std
 
 struct Order {
   int id;
   int customerId;
   int total;
 };
+inline bool operator==(const Order &a, const Order &b) {
+  return a.id == b.id && a.customerId == b.customerId && a.total == b.total;
+}
+namespace std {
+template <> struct hash<Order> {
+  size_t operator()(const Order &k) const noexcept {
+    size_t h = 0;
+    _hash_combine(h, k.id);
+    _hash_combine(h, k.customerId);
+    _hash_combine(h, k.total);
+    return h;
+  }
+};
+} // namespace std
 
 struct PairInfo {
   int orderId;
   string customerName;
   int total;
 };
+inline bool operator==(const PairInfo &a, const PairInfo &b) {
+  return a.orderId == b.orderId && a.customerName == b.customerName &&
+         a.total == b.total;
+}
+namespace std {
+template <> struct hash<PairInfo> {
+  size_t operator()(const PairInfo &k) const noexcept {
+    size_t h = 0;
+    _hash_combine(h, k.orderId);
+    _hash_combine(h, k.customerName);
+    _hash_combine(h, k.total);
+    return h;
+  }
+};
+} // namespace std
 
 int main() {
-  auto customers =
+  vector<Customer> customers =
       vector<Customer>{Customer{1, string("Alice")}, Customer{2, string("Bob")},
                        Customer{3, string("Charlie")}};
-  auto orders = vector<Order>{Order{100, 1, 250}, Order{101, 2, 125},
-                              Order{102, 1, 300}, Order{103, 4, 80}};
+  vector<Order> orders = vector<Order>{Order{100, 1, 250}, Order{101, 2, 125},
+                                       Order{102, 1, 300}, Order{103, 4, 80}};
   auto result = ([&]() -> vector<PairInfo> {
     vector<PairInfo> _res;
     for (auto &o : orders) {
