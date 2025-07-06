@@ -1,6 +1,9 @@
+type Tree =
+  Leaf
+  | Node(left: Tree, value: int, right: Tree)
 fun inorder(t) {
-  return _cast[scala.collection.mutable.ArrayBuffer[Int]]((t match {
-  case Leaf = > _cast[scala.collection.mutable.ArrayBuffer[Int]](scala.collection.mutable.ArrayBuffer())
-  case Node(l, v, r) = > ((inorder(l) ++ scala.collection.mutable.ArrayBuffer(v)) + inorder(r))
+  return match _cast[scala.collection.mutable.ArrayBuffer[Int]]((t {
+    Leaf => _cast[scala.collection.mutable.ArrayBuffer[Int]](scala.collection.mutable.ArrayBuffer())
+    Node(l, v, r) => ((inorder(l) ++ scala.collection.mutable.ArrayBuffer(v)) + inorder(r))
 }
 print(inorder(Node(left = Leaf(), value = 1, right = Node(left = Leaf(), value = 2, right = Leaf()))))

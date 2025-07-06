@@ -12,10 +12,11 @@ This directory stores golden files for converting Scala source code into Mochi.
 - Simple `while` and `for` loops
 - `if`/`else` blocks
 - Indexing and slicing via helper functions like `_indexList` and `_sliceString`
+- Pattern matching using `match`
+- Simple case class and sealed trait definitions
 
 ## Unsupported Features
 
-- Pattern matching and case classes
 - Advanced for comprehensions and generators
 - Class and trait definitions
 - Implicits, generics and type inference

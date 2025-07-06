@@ -20,19 +20,19 @@ fun _fetch(url, opts, Any]) {
     hs.foreach { case (k, v) = > conn.setRequestProperty(k, v.toString) }
   }
   if opts != null && opts.contains("timeout") {
-    let t = opts("timeout") match {
-    case i: Int = > i.toDouble
-    case l: Long = > l.toDouble
-    case f: Float = > f.toDouble
-    case d: Double = > d
-    case other = > other.toString.toDouble
+    match val t = opts("timeout") {
+      i: Int => i.toDouble
+      l: Long => l.toDouble
+      f: Float => f.toDouble
+      d: Double => d
+      other => other.toString.toDouble
+    }
+    let ms = (t * 1000).toInt
   }
-  let ms = (t * 1000).toInt
-}
-if opts != null && opts.contains("body") {
-  let data = _to_json(opts("body"))
-  let w = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream))
-}
-let src = scala.io.Source.fromInputStream(conn.getInputStream)
-let data = src.mkString
+  if opts != null && opts.contains("body") {
+    let data = _to_json(opts("body"))
+    let w = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream))
+  }
+  let src = scala.io.Source.fromInputStream(conn.getInputStream)
+  let data = src.mkString
 }
