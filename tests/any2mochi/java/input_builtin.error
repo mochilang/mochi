@@ -1,1 +1,8 @@
-unsupported line: static java.util.Scanner _scanner = new java.util.Scanner(System.in);
+line 10: unsupported line: static java.util.Scanner _scanner = new java.util.Scanner(System.in);
+  8| }
+  9| 
+ 10| static java.util.Scanner _scanner = new java.util.Scanner(System.in);
+ 11| 
+ 12| static String _input() {
+
+

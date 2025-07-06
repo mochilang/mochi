@@ -1,0 +1,5 @@
+fun main(args: String[]) {
+  var square = fn(x) { return x * x }
+  print(square(6))
+}
+

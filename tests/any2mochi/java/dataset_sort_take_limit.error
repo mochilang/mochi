@@ -1,2 +1,8 @@
-unsupported line: Object[] expensive = (new java.util.function.Supplier<java.util.List<Object>>() {
+line 11: unsupported line: Product() {}
+  9| }
+ 10| 
+ 11| Product() {}
+ 12| }
+ 13| 
+
 

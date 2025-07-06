@@ -5,27 +5,39 @@ import (
 	"encoding/json"
 	"fmt"
 	"os/exec"
+	"regexp"
 	"strings"
 )
 
+type structField struct {
+	Name string `json:"name"`
+	Type string `json:"type"`
+	Line int    `json:"line"`
+}
+
+type structDef struct {
+	Name   string        `json:"name"`
+	Line   int           `json:"line"`
+	Fields []structField `json:"fields"`
+}
+
+type funcParam struct {
+	Name string `json:"name"`
+	Type string `json:"type"`
+}
+
+type funcDef struct {
+	Name   string      `json:"name"`
+	Line   int         `json:"line"`
+	Ret    string      `json:"ret"`
+	Params []funcParam `json:"params"`
+	Body   []string    `json:"body"`
+}
+
 type javaAST struct {
-	Package string `json:"package"`
-	Structs []struct {
-		Name   string `json:"name"`
-		Fields []struct {
-			Name string `json:"name"`
-			Type string `json:"type"`
-		} `json:"fields"`
-	} `json:"structs"`
-	Funcs []struct {
-		Name   string `json:"name"`
-		Ret    string `json:"ret"`
-		Params []struct {
-			Name string `json:"name"`
-			Type string `json:"type"`
-		} `json:"params"`
-		Body []string `json:"body"`
-	} `json:"funcs"`
+	Package string      `json:"package"`
+	Structs []structDef `json:"structs"`
+	Funcs   []funcDef   `json:"funcs"`
 }
 
 func parse(src string) ([]string, error) {
@@ -42,13 +54,17 @@ func parse(src string) ([]string, error) {
 	cmd.Stdin = strings.NewReader(src)
 	var out bytes.Buffer
 	cmd.Stdout = &out
-	if err := cmd.Run(); err != nil {
-		return nil, err
+	if err := cmd.Run(); err == nil {
+		var ast javaAST
+		if err := json.Unmarshal(out.Bytes(), &ast); err != nil {
+			return nil, err
+		}
+		return astToLines(&ast, pkg)
 	}
-	var ast javaAST
-	if err := json.Unmarshal(out.Bytes(), &ast); err != nil {
-		return nil, err
-	}
+	return parseLegacy(src, pkg)
+}
+
+func astToLines(ast *javaAST, pkg string) ([]string, error) {
 	var lines []string
 	structs := make(map[string][]string)
 	for _, st := range ast.Structs {
@@ -97,6 +113,70 @@ func parse(src string) ([]string, error) {
 	return lines, nil
 }
 
+func parseLegacy(src, pkg string) ([]string, error) {
+	lines := strings.Split(src, "\n")
+	var ast javaAST
+	ast.Package = pkg
+	funcRe := regexp.MustCompile(`(?i)(?:public\s+)?static\s+([^\s]+)\s+([A-Za-z_][A-Za-z0-9_]*)\(([^)]*)\)\s*{`)
+	for i := 0; i < len(lines); i++ {
+		l := strings.TrimSpace(lines[i])
+		switch {
+		case strings.HasPrefix(l, "static class "):
+			stName := strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(l, "static class "), "{"))
+			st := structDef{Name: stName, Line: i + 1}
+			i++
+			for i < len(lines) {
+				t := strings.TrimSpace(lines[i])
+				if t == "}" {
+					break
+				}
+				if isFieldLine(t) {
+					typ, name := parseFieldLine(t)
+					st.Fields = append(st.Fields, structField{Name: name, Type: typ, Line: i + 1})
+				}
+				i++
+			}
+			ast.Structs = append(ast.Structs, st)
+		case funcRe.MatchString(l):
+			m := funcRe.FindStringSubmatch(l)
+			fn := funcDef{Name: m[2], Line: i + 1, Ret: m[1]}
+			params := splitArgs(m[3])
+			for _, p := range params {
+				f := strings.Fields(strings.TrimSpace(p))
+				if len(f) == 0 {
+					continue
+				}
+				name := f[len(f)-1]
+				typ := strings.Join(f[:len(f)-1], " ")
+				fn.Params = append(fn.Params, funcParam{Name: name, Type: typ})
+			}
+			i++
+			depth := 1
+			for i < len(lines) {
+				line := lines[i]
+				if strings.Contains(line, "{") {
+					depth++
+				}
+				if strings.Contains(line, "}") {
+					depth--
+					if depth == 0 {
+						break
+					}
+				}
+				fn.Body = append(fn.Body, line)
+				i++
+			}
+			ast.Funcs = append(ast.Funcs, fn)
+		default:
+			if l != "" && l != "{" && l != "}" && !strings.HasPrefix(l, "public class") {
+				snippet := numberedBodySnippet(lines, i)
+				return nil, fmt.Errorf("line %d: unsupported line: %s\n%s", i+1, l, snippet)
+			}
+		}
+	}
+	return astToLines(&ast, pkg)
+}
+
 func javaBodyLines(body []string, structs map[string][]string) ([]string, error) {
 	var out []string
 	for i := 0; i < len(body); i++ {
@@ -106,10 +186,13 @@ func javaBodyLines(body []string, structs map[string][]string) ([]string, error)
 		}
 		// join multi-line statements ending with '='
 		if strings.HasSuffix(l, "=") {
+			depth := 0
 			for i+1 < len(body) {
-				l += " " + strings.TrimSpace(body[i+1])
+				next := strings.TrimSpace(body[i+1])
+				l += " " + next
 				i++
-				if strings.HasSuffix(strings.TrimSpace(body[i]), ";") {
+				depth += strings.Count(next, "{") - strings.Count(next, "}")
+				if depth <= 0 && strings.HasSuffix(next, ";") {
 					break
 				}
 			}

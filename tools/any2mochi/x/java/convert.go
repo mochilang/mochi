@@ -25,6 +25,7 @@ func Convert(src string) ([]byte, error) {
 // resemble Mochi syntax. It does not attempt full parsing.
 func convertJavaExpr(expr string, structs map[string][]string) string {
 	expr = strings.TrimSpace(expr)
+	expr = strings.TrimSuffix(expr, ";")
 	for strings.HasPrefix(expr, "(") && strings.HasSuffix(expr, ")") {
 		expr = strings.TrimSpace(expr[1 : len(expr)-1])
 	}
@@ -147,6 +148,12 @@ func convertJavaExpr(expr string, structs map[string][]string) string {
 		if len(parts) == 2 {
 			return convertJavaExpr(parts[0], structs) + " in " + convertJavaExpr(parts[1], structs)
 		}
+	}
+
+	if idx := strings.Index(expr, ".apply("); idx != -1 && strings.HasSuffix(expr, ")") {
+		name := expr[:idx]
+		arg := strings.TrimSuffix(expr[idx+7:], ")")
+		return convertJavaExpr(name, structs) + "(" + convertJavaExpr(arg, structs) + ")"
 	}
 
 	reBuiltin := []struct{ old, new string }{

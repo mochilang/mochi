@@ -1,1 +1,8 @@
-unsupported line: while ((left <= right)) {
+line 4: unsupported line: }
+  2| if ((m == 0)) {
+  3| return false;
+  4| }
+  5| int n = matrix[0].length;
+  6| int left = 0;
+
+
