@@ -16,6 +16,8 @@ type DocumentSymbol struct {
 	Name           string           `json:"name"`
 	Detail         *string          `json:"detail,omitempty"`
 	Kind           int              `json:"kind"`
+	URI            string           `json:"uri,omitempty"`
+	Doc            string           `json:"doc,omitempty"`
 	Range          Range            `json:"range"`
 	SelectionRange Range            `json:"selectionRange"`
 	Children       []DocumentSymbol `json:"children,omitempty"`

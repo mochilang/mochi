@@ -54,11 +54,22 @@ func diagnostics(src string, diags []any2mochi.Diagnostic) string {
 	for _, d := range diags {
 		start := int(d.Range.Start.Line)
 		msg := d.Message
-		line := ""
-		if start < len(lines) {
-			line = strings.TrimSpace(lines[start])
+		out.WriteString(fmt.Sprintf("line %d: %s\n", start+1, msg))
+		from := start - 1
+		if from < 0 {
+			from = 0
 		}
-		out.WriteString(fmt.Sprintf("line %d: %s\n  %s\n", start+1, msg, line))
+		to := start + 1
+		if to >= len(lines) {
+			to = len(lines) - 1
+		}
+		for i := from; i <= to && i < len(lines); i++ {
+			prefix := "  "
+			if i == start {
+				prefix = "->"
+			}
+			out.WriteString(fmt.Sprintf("%s %3d| %s\n", prefix, i+1, lines[i]))
+		}
 	}
 	return strings.TrimSpace(out.String())
 }
@@ -336,6 +347,44 @@ func toMochiType(t string) string {
 	return t
 }
 
+func parseFuncHeader(l string) (string, string, string) {
+	l = strings.TrimSpace(l)
+	l = strings.TrimSuffix(l, ";")
+	if !strings.HasPrefix(strings.ToLower(l), "function") {
+		return "", "", ""
+	}
+	rest := strings.TrimSpace(l[len("function"):])
+	open := strings.Index(rest, "(")
+	close := strings.LastIndex(rest, ")")
+	if open == -1 || close == -1 || close <= open {
+		return "", "", ""
+	}
+	name := strings.TrimSpace(rest[:open])
+	paramsPart := rest[open+1 : close]
+	ret := ""
+	after := strings.TrimSpace(rest[close+1:])
+	if strings.HasPrefix(after, ":") {
+		ret = toMochiType(strings.TrimSpace(after[1:]))
+	}
+	var params []string
+	for _, p := range strings.Split(paramsPart, ";") {
+		p = strings.TrimSpace(p)
+		if p == "" {
+			continue
+		}
+		if idx := strings.Index(p, ":"); idx != -1 {
+			namePart := strings.TrimSpace(p[:idx])
+			typPart := toMochiType(strings.TrimSpace(p[idx+1:]))
+			if typPart != "" {
+				params = append(params, namePart+": "+typPart)
+			} else {
+				params = append(params, namePart)
+			}
+		}
+	}
+	return name, strings.Join(params, ", "), ret
+}
+
 // convertPasBody extracts the function body for sym from src and converts a few
 // basic statements into Mochi equivalents. Only very simple constructs like
 // assignments, returns and writeln calls are handled.
@@ -398,6 +447,8 @@ func convertFallback(src string) ([]byte, error) {
 	lines := strings.Split(src, "\n")
 	var out []string
 	inBody := false
+	inFunc := false
+	inLoop := false
 	for i := 0; i < len(lines); i++ {
 		l := strings.TrimSpace(lines[i])
 		lower := strings.ToLower(l)
@@ -438,6 +489,17 @@ func convertFallback(src string) ([]byte, error) {
 						out = append(out, "}")
 					}
 				}
+			case strings.HasPrefix(lower, "function") && strings.Contains(l, "("):
+				name, params, ret := parseFuncHeader(l)
+				if name != "" {
+					funLine := "fun " + name + "(" + params + ")"
+					if ret != "" {
+						funLine += ": " + ret
+					}
+					funLine += " {"
+					out = append(out, funLine)
+					inFunc = true
+				}
 			case strings.HasPrefix(lower, "var") && strings.Contains(l, ":"):
 				rest := strings.TrimSpace(strings.TrimPrefix(l, "var"))
 				rest = strings.TrimSuffix(rest, ";")
@@ -458,6 +520,14 @@ func convertFallback(src string) ([]byte, error) {
 			continue
 		}
 		if lower == "end." || lower == "end;" {
+			if inFunc {
+				out = append(out, "}")
+				inFunc = false
+			}
+			if inLoop {
+				out = append(out, "}")
+				inLoop = false
+			}
 			inBody = false
 			continue
 		}
@@ -465,6 +535,25 @@ func convertFallback(src string) ([]byte, error) {
 			continue
 		}
 		switch {
+		case strings.HasPrefix(lower, "for ") && strings.Contains(lower, ":=") && strings.Contains(lower, " to "):
+			varName := strings.TrimSpace(l[len("for "):strings.Index(l, ":=")])
+			rest := l[strings.Index(l, ":=")+2:]
+			toIdx := strings.Index(strings.ToLower(rest), " to ")
+			startExpr := strings.TrimSpace(rest[:toIdx])
+			rest = rest[toIdx+4:]
+			doIdx := strings.Index(strings.ToLower(rest), " do")
+			endExpr := strings.TrimSpace(rest[:doIdx])
+			out = append(out, fmt.Sprintf("for %s in %s..%s {", varName, startExpr, endExpr))
+			if i+1 < len(lines) && strings.TrimSpace(strings.ToLower(lines[i+1])) == "begin" {
+				i++
+			}
+			inLoop = true
+		case lower == "end;" && inLoop:
+			out = append(out, "}")
+			inLoop = false
+		case lower == "begin" && inFunc:
+			// skip function begin
+			continue
 		case strings.HasPrefix(lower, "writeln("):
 			expr := strings.TrimSuffix(strings.TrimPrefix(l, "writeln("), ");")
 			out = append(out, "print("+expr+")")
@@ -473,6 +562,8 @@ func convertFallback(src string) ([]byte, error) {
 			name := strings.TrimSpace(parts[0])
 			expr := strings.TrimSpace(strings.TrimSuffix(parts[1], ";"))
 			out = append(out, name+" = "+expr)
+		case lower == "exit;" && inFunc:
+			out = append(out, "return")
 		}
 	}
 	if len(out) == 0 {

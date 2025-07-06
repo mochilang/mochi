@@ -6,6 +6,8 @@ This directory contains golden files for converting Pascal programs to Mochi.
 - Enum type declarations
 - Variable declarations with simple types
 - Basic assignments and `writeln` statements in program bodies
+- Simple `for` loops
+- Basic function definitions
 
 ## Unsupported Features
 - Records and complex type definitions

@@ -1,0 +1,5 @@
+fun id(x: int): int {
+result = x
+return
+}
+print(id(123))
