@@ -3,9 +3,12 @@
    [clojure.data.json :as json]))
 
 (defn _cast_struct [ctor m]
-  (let [fields (first (:arglists (meta ctor)))]
+  (let [fields (or (some->> ctor meta :arglists first (map keyword))
+                   (keys m))]
     (apply ctor (map #(get m %) fields))))
 (defn _fetch [url opts]
+  ;; Ensure IPv4 is preferred to avoid network issues in some environments
+  (System/setProperty "java.net.preferIPv4Stack" "true")
   (let [method (get opts :method "GET")
         q      (get opts :query nil)
         url     (if q
@@ -17,27 +20,42 @@
                                                      q))
                         sep (if (clojure.string/includes? url "?") "&" "?")]
                     (str url sep qs))
-                  url)
-        builder (doto (java.net.http.HttpRequest/newBuilder (java.net.URI/create url))
-                  (.method method
-                           (if (contains? opts :body)
-                             (java.net.http.HttpRequest$BodyPublishers/ofString
-                              (clojure.data.json/write-str (:body opts)))
-                             (java.net.http.HttpRequest$BodyPublishers/noBody))))]
-    (when-let [hs (:headers opts)]
-      (doseq [[k v] hs]
-        (.header builder (name k) (str v))))
-    (when-let [t (:timeout opts)]
-      (.timeout builder (java.time.Duration/ofSeconds (long t))))
-    (let [client (java.net.http.HttpClient/newHttpClient)
-          resp (.send client (.build builder)
-                      (java.net.http.HttpResponse$BodyHandlers/ofString))]
-      (clojure.data.json/read-str (.body resp) :key-fn keyword))))
+                  url)]
+    (cond
+      (or (clojure.string/starts-with? url "file://")
+          (clojure.string/starts-with? url "file:"))
+      (let [path (if (clojure.string/starts-with? url "file://")
+                   (subs url 7)
+                   (subs url 5))
+            txt  (try
+                   (slurp path)
+                   (catch java.io.FileNotFoundException _
+                     (let [alt (str "../../.." "/" path)]
+                       (slurp alt))))]
+        (clojure.data.json/read-str txt :key-fn keyword))
+      :else
+      (let [builder (doto (java.net.http.HttpRequest/newBuilder (java.net.URI/create url))
+                      (.method method
+                               (if (contains? opts :body)
+                                 (java.net.http.HttpRequest$BodyPublishers/ofString
+                                  (clojure.data.json/write-str (:body opts)))
+                                 (java.net.http.HttpRequest$BodyPublishers/noBody))))]
+        (when-let [hs (:headers opts)]
+          (doseq [[k v] hs]
+            (.header builder (name k) (str v))))
+        (when-let [t (:timeout opts)]
+          (.timeout builder (java.time.Duration/ofSeconds (long t))))
+        (let [client (java.net.http.HttpClient/newHttpClient)
+              resp (.send client (.build builder)
+                          (java.net.http.HttpResponse$BodyHandlers/ofString))]
+          (clojure.data.json/read-str (.body resp) :key-fn keyword))))))
+(declare todo)
+
 (defn Todo [userId id title completed]
   {:__name "Todo" :userId userId :id id :title title :completed completed})
 
 (defn -main []
-  (def todo (_cast_struct Todo (_fetch "https://jsonplaceholder.typicode.com/todos/1" nil)))
+  (def todo (_cast_struct #'Todo (_fetch "https://jsonplaceholder.typicode.com/todos/1" nil)))
   (println (:title todo)))
 
 (-main)

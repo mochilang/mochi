@@ -7,6 +7,8 @@
       (throw (ex-info "index out of range" {}))
       (str (nth r i)))))
 
+(declare text)
+
 (defn -main []
   (def text "hello")
   (println (_indexString text (- 1))))

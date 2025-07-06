@@ -39,6 +39,8 @@
           :else []))
       :else [])))
 
+(declare people adults)
+
 (defn Person [name age email]
   {:__name "Person" :name name :age age :email email})
 

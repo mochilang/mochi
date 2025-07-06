@@ -1,5 +1,7 @@
 (ns main)
 
+(declare left right res)
+
 (defn -main []
   (def left [0 1 2 3])
   (def right [0 1 2 3])

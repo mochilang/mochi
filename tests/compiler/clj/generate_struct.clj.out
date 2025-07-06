@@ -4,14 +4,16 @@
 
 (defn _gen_struct [ctor prompt model params]
   (let [m (clojure.data.json/read-str prompt :key-fn keyword)
-        fields (first (:arglists (meta ctor)))
+        fields (some->> ctor meta :arglists first (map keyword))
         args (map #(get m %) fields)]
     (apply ctor args)))
+(declare info)
+
 (defn Info [msg]
   {:__name "Info" :msg msg})
 
 (defn -main []
-  (def info (_gen_struct Info "{\"msg\": \"hello\"}" "" nil))
+  (def info (_gen_struct #'Info "{\"msg\": \"hello\"}" "" nil))
   (println (:msg info)))
 
 (-main)

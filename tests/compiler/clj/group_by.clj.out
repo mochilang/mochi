@@ -78,6 +78,8 @@
           it (if (contains? opts :skip) (vec (drop (:skip opts) it)) it)
           it (if (contains? opts :take) (vec (take (:take opts) it)) it)]
       (mapv #(apply (:select opts) %) it)))
+(declare xs groups)
+
 (defn -main []
   (def xs [1 1 2])
   (def groups (let [_src xs
@@ -85,7 +87,7 @@
 
       ] { :select (fn [x] [x]) })
       _groups (_group_by _rows (fn [x] x))
-  (vec (map (fn [g] {:k (:key g) :c (_count g)}) _groups))))
+  (vec (map (fn [g] {:k (:key g) :c (count (:Items g))}) _groups))))
   (loop [_tmp0 (seq groups)]
     (when _tmp0
       (let [g (clojure.core/first _tmp0)]

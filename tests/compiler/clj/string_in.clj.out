@@ -1,13 +1,7 @@
 (ns main)
 
-(defn _in [item col]
-  (cond
-    (and (string? col) (string? item)) (clojure.string/includes? col item)
-    (map? col) (contains? col item)
-    (sequential? col) (some #(= item %) col)
-    :else false))
 (defn -main []
-  (println (_in "cat" "catch"))
-  (println (_in "dog" "catch")))
+  (println (clojure.string/includes? "catch" "cat"))
+  (println (clojure.string/includes? "catch" "dog")))
 
 (-main)
