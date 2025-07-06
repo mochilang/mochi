@@ -23,8 +23,9 @@ fun _fetch(url, opts) {
   let timeout = opts.get("timeout", None)
 }
   let req = urllib.request.Request(url, data=data, headers=headers, method=method)
-  let with urllib.request.urlopen(req, timeout = timeout) as resp:
+  with urllib.request.urlopen(req, timeout=timeout) as resp {
   let text = resp.read()
+}
   return json.loads(text)
 }
 type Todo {

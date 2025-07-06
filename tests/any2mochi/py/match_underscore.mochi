@@ -1,4 +1,4 @@
-fun value_of_root(t) {
+fun value_of_root(t: Tree): int {
   return (lambda _t0=t: (lambda v: v)(_t0.value) if isinstance(_t0, Node) else 0)()
 }
 type Tree {}

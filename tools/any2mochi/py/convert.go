@@ -565,6 +565,24 @@ func parseLines(lines []string, indent string) ([]string, int) {
 				b.WriteString("\n}")
 			}
 			stmts = append(stmts, b.String())
+		case strings.HasPrefix(s, "with ") && strings.HasSuffix(s, ":"):
+			ctx := strings.TrimSpace(strings.TrimSuffix(s[5:], ":"))
+			body, n := parseLines(lines[i+1:], step)
+			i = i + 1 + n
+			var b strings.Builder
+			b.WriteString("with ")
+			b.WriteString(ctx)
+			if len(body) == 0 {
+				b.WriteString(" {}")
+			} else {
+				b.WriteString(" {")
+				for _, st := range body {
+					b.WriteString("\n  ")
+					b.WriteString(st)
+				}
+				b.WriteString("\n}")
+			}
+			stmts = append(stmts, b.String())
 		case s == "continue":
 			stmts = append(stmts, "continue")
 			i++

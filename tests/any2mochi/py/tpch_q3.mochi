@@ -164,7 +164,7 @@ fun _sum(v) {
   continue
 }
   if isinstance(it, (int, float)) {
-  let s + = float(it)
+  let s = s + float(it)
 } else {
   raise Exception("sum() expects numbers")
 }
