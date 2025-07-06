@@ -1,0 +1,8 @@
+fun outer(): int {
+  fun inner(x: int): int {
+    return x * x
+  }
+  return inner(5)
+}
+
+print(outer())
