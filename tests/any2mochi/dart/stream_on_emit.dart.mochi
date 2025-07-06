@@ -1,3 +1,11 @@
+fun main() {
+  class Sensor {
+  let id: string
+  let temperature: float
+  Sensor({required this.id, required this.temperature})
+}
+let _SensorStream = _Stream<Sensor>('Sensor')
+}
 fun _handler_0(ev: Sensor) {
   let s = ev
   print([s.id.toString(), s.temperature.toString()].join(' '))
@@ -11,4 +19,7 @@ fun append(data: T): T {
   let f = Future.wait(tasks).then((_) => data)
   _pending.add(f)
   return f
+}
+fun _waitAll() {
+  await Future.wait(_pending)
 }

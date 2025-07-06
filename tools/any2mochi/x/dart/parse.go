@@ -15,13 +15,13 @@ type paramJSON struct {
 }
 
 type funcJSON struct {
-	Name   string      `json:"name"`
-	Params []paramJSON `json:"params"`
-	Ret    string      `json:"ret"`
-	Body   []string    `json:"body"`
-	Start  int         `json:"start"`
-	End    int         `json:"end"`
-	Doc    string      `json:"doc,omitempty"`
+	Name      string      `json:"name"`
+	Params    []paramJSON `json:"params"`
+	Ret       string      `json:"ret"`
+	Body      []string    `json:"body"`
+	StartLine int         `json:"start"`
+	EndLine   int         `json:"end"`
+	Doc       string      `json:"doc,omitempty"`
 }
 
 type ast struct {
@@ -91,7 +91,15 @@ func decodeFuncs(data []byte) ([]function, error) {
 		for _, p := range f.Params {
 			params = append(params, param{name: p.Name, typ: toMochiType(p.Type)})
 		}
-		funcs = append(funcs, function{Name: f.Name, Params: params, Body: f.Body, Ret: toMochiType(f.Ret), Doc: f.Doc})
+		funcs = append(funcs, function{
+			Name:      f.Name,
+			Params:    params,
+			Body:      f.Body,
+			Ret:       toMochiType(f.Ret),
+			StartLine: f.StartLine,
+			EndLine:   f.EndLine,
+			Doc:       f.Doc,
+		})
 	}
 	return funcs, nil
 }

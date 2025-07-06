@@ -130,7 +130,7 @@ func parseStatements(body string) []string {
 }
 
 func parse(src string) []dartFunc {
-	re := regexp.MustCompile(`(?m)^\s*([A-Za-z_][\w<>,\[\]\s]*)\s+([A-Za-z_][\w]*)\s*\(([^)]*)\)\s*\{`)
+	re := regexp.MustCompile(`(?m)^\s*([A-Za-z_][\w<>,\[\]\s]*)\s+([A-Za-z_][\w]*)\s*\(([^)]*)\)\s*(?:async\*?\s*)?\{`)
 	matches := re.FindAllStringSubmatchIndex(src, -1)
 	subs := re.FindAllStringSubmatch(src, -1)
 	var funcs []dartFunc
