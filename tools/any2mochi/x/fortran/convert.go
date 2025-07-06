@@ -317,6 +317,9 @@ func cleanExpr(e string) string {
 		".false.", "false",
 	)
 	e = replacer.Replace(e)
+	e = strings.ReplaceAll(e, "size(", "len(")
+	reReal := regexp.MustCompile(`\breal\(([^\)]*)\)`)
+	e = reReal.ReplaceAllString(e, "$1")
 	reMod := regexp.MustCompile(`\bmod(?:ulo)?\(([^,]+),\s*([^\)]+)\)`)
 	e = reMod.ReplaceAllString(e, "($1 % $2)")
 	reList := regexp.MustCompile(`\(/\s*(.*?)\s*/\)`)
@@ -324,11 +327,84 @@ func cleanExpr(e string) string {
 		inner := strings.TrimSpace(m[2 : len(m)-2])
 		return "[" + inner + "]"
 	})
+	e = replaceMerge(e)
 	if strings.HasPrefix(e, "/") && strings.HasSuffix(e, "/") {
 		inner := strings.TrimSpace(e[1 : len(e)-1])
 		e = "[" + inner + "]"
 	}
 	return e
+}
+
+func replaceMerge(e string) string {
+	for {
+		idx := strings.Index(e, "merge(")
+		if idx == -1 {
+			break
+		}
+		start := idx + len("merge(")
+		depth := 0
+		end := start
+		for end < len(e) {
+			switch e[end] {
+			case '(':
+				depth++
+			case ')':
+				if depth == 0 {
+					goto found
+				}
+				depth--
+			case '\'':
+				// skip quoted strings
+				end++
+				for end < len(e) && e[end] != '\'' {
+					end++
+				}
+			}
+			end++
+		}
+		break
+	found:
+		inner := e[start:end]
+		args := splitArgs(inner)
+		if len(args) != 3 {
+			break
+		}
+		repl := fmt.Sprintf("if %s then %s else %s", strings.TrimSpace(args[2]), strings.TrimSpace(args[0]), strings.TrimSpace(args[1]))
+		e = e[:idx] + repl + e[end+1:]
+	}
+	return e
+}
+
+func splitArgs(s string) []string {
+	var args []string
+	depth := 0
+	start := 0
+	inString := false
+	for i, r := range s {
+		switch r {
+		case '(':
+			if !inString {
+				depth++
+			}
+		case ')':
+			if !inString {
+				depth--
+			}
+		case ',':
+			if depth == 0 && !inString {
+				args = append(args, s[start:i])
+				start = i + 1
+				continue
+			}
+		case '\'':
+			inString = !inString
+		}
+	}
+	args = append(args, s[start:])
+	for i := range args {
+		args[i] = strings.TrimSpace(args[i])
+	}
+	return args
 }
 
 // convertBody attempts to convert a small subset of Fortran statements inside
