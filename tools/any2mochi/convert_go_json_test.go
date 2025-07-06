@@ -4,11 +4,13 @@ package any2mochi
 
 import (
 	"testing"
+
+	goconv "mochi/tools/any2mochi/go"
 )
 
 func TestConvertGoViaJSON(t *testing.T) {
 	src := "package foo\nfunc Add(x int, y int) int { return x + y }"
-	out, err := ConvertGoViaJSON(src)
+	out, err := goconv.ConvertGoViaJSON(src)
 	if err != nil {
 		t.Fatalf("convert: %v", err)
 	}

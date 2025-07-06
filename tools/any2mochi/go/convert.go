@@ -1,4 +1,4 @@
-package any2mochi
+package goconv
 
 import (
 	"bytes"
@@ -33,6 +33,17 @@ func ConvertGo(src string) ([]byte, error) {
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
 	}
 	return []byte(out.String()), nil
+}
+
+func numberedSnippet(src string) string {
+	lines := strings.Split(src, "\n")
+	if len(lines) > 10 {
+		lines = lines[:10]
+	}
+	for i, l := range lines {
+		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
+	}
+	return strings.Join(lines, "\n")
 }
 
 // ConvertGoFile reads the Go file at path and converts it to Mochi.
