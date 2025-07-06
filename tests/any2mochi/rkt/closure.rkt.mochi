@@ -1,3 +1,0 @@
-fun makeAdder(n) {}
-let add10
-print(( add10 7 ))

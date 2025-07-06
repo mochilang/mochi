@@ -1,6 +1,0 @@
-type _Group {
-  key
-  Items
-}
-let people
-let adults

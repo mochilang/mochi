@@ -576,10 +576,6 @@ func writeItems(out *strings.Builder, items []item) {
 			}
 			out.WriteByte('\n')
 		case "struct":
-			if it.Name != "_Group" {
-				// user defined struct - ignore for golden output
-				continue
-			}
 			out.WriteString("type ")
 			out.WriteString(it.Name)
 			if len(it.Fields) == 0 {

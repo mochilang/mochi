@@ -1,6 +1,0 @@
-let products
-let expensive
-print("--- Top products (excluding most expensive) ---")
-for item in (if (hash? expensive) (hash-keys expensive) expensive) {
-  print((format "~a ~a ~a" (hash-ref item "name") "costs $" (hash-ref item "price")))
-}

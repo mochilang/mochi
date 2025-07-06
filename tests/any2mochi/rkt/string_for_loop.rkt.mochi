@@ -1,3 +1,0 @@
-for ch in (if (hash? "cat") (hash-keys "cat") "cat") {
-  print(ch)
-}
