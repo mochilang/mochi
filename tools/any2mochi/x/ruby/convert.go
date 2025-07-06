@@ -12,7 +12,27 @@ import (
 // rbIndent returns a string of two-space indents for the given level.
 func indent(level int) string { return strings.Repeat("  ", level) }
 
-func snippet(src string) string {
+func snippetAround(src string, line int) string {
+	lines := strings.Split(src, "\n")
+	start := line - 2
+	if start < 0 {
+		start = 0
+	}
+	end := line
+	if end >= len(lines) {
+		end = len(lines) - 1
+	}
+	for i := start; i <= end; i++ {
+		prefix := "   "
+		if i+1 == line {
+			prefix = ">>>"
+		}
+		lines[i] = fmt.Sprintf("%s %d: %s", prefix, i+1, lines[i])
+	}
+	return strings.Join(lines[start:end+1], "\n")
+}
+
+func snippetHead(src string) string {
 	lines := strings.Split(src, "\n")
 	if len(lines) > 5 {
 		lines = lines[:5]
@@ -23,14 +43,31 @@ func snippet(src string) string {
 	return strings.Join(lines, "\n")
 }
 
+type ConvertError struct {
+	Line int
+	Snip string
+	Msg  string
+}
+
+func (e *ConvertError) Error() string {
+	return fmt.Sprintf("line %d: %s\n%s", e.Line, e.Msg, e.Snip)
+}
+
+func newConvertError(n Node, src string, msg string) error {
+	snip := snippetAround(src, n.Line)
+	return &ConvertError{Line: n.Line, Snip: snip, Msg: msg}
+}
+
 type Node struct {
 	Type     string
 	Value    string
+	Line     int
+	Col      int
 	Children []Node
 }
 
 func parseAST(src string) (*Node, error) {
-	cmd := exec.Command("ruby", "-e", `require 'json';require 'ripper';src=STDIN.read;b=Ripper::SexpBuilder.new(src);ast=b.parse; if b.error?; STDERR.puts b.error; exit 1; end; puts JSON.generate(ast)`)
+	cmd := exec.Command("ruby", "-e", `require 'json';require 'ripper';src=STDIN.read;ast=Ripper.sexp_raw(src);if !ast; STDERR.puts 'parse error'; exit 1; end;puts JSON.generate(ast)`)
 	cmd.Stdin = strings.NewReader(src)
 	var out bytes.Buffer
 	var errBuf bytes.Buffer
@@ -56,14 +93,32 @@ func buildNode(v interface{}) Node {
 		return Node{}
 	}
 	n := Node{Type: fmt.Sprint(arr[0])}
-	for i := 1; i < len(arr); i++ {
-		switch val := arr[i].(type) {
-		case []interface{}:
-			n.Children = append(n.Children, buildNode(val))
-		case string:
-			if n.Value == "" {
-				n.Value = val
+	if strings.HasPrefix(n.Type, "@") {
+		if len(arr) > 1 {
+			if s, ok := arr[1].(string); ok {
+				n.Value = s
 			}
+		}
+		if len(arr) > 2 {
+			if pos, ok := arr[2].([]interface{}); ok && len(pos) >= 2 {
+				if ln, ok := pos[0].(float64); ok {
+					n.Line = int(ln)
+				}
+				if col, ok := pos[1].(float64); ok {
+					n.Col = int(col)
+				}
+			}
+		}
+		return n
+	}
+	for i := 1; i < len(arr); i++ {
+		child := buildNode(arr[i])
+		if n.Line == 0 && child.Line != 0 {
+			n.Line = child.Line
+			n.Col = child.Col
+		}
+		if child.Type != "" {
+			n.Children = append(n.Children, child)
 		}
 	}
 	return n
@@ -197,6 +252,12 @@ func convertNode(n Node, level int, out *[]string) {
 		*out = append(*out, idt+"while "+cond+" {")
 		convertNode(n.Children[1], level+1, out)
 		*out = append(*out, idt+"}")
+	case "return", "break", "next":
+		expr := exprString(n)
+		if n.Type == "next" {
+			expr = strings.Replace(expr, "next", "continue", 1)
+		}
+		*out = append(*out, idt+expr)
 	case "for":
 		if len(n.Children) < 3 {
 			return
@@ -256,7 +317,7 @@ func Convert(src string) ([]byte, error) {
 	}
 	ast, err := parseAST(src)
 	if err != nil {
-		return nil, fmt.Errorf("%v\n%s", err, snippet(src))
+		return nil, fmt.Errorf("%v\n%s", err, snippetHead(src))
 	}
 	var lines []string
 	convertNode(*ast, 0, &lines)
