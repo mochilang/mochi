@@ -11,15 +11,16 @@ import (
 
 // RustASTNode represents a node in the Rust syntax tree.
 type ASTNode struct {
-	Kind        string     `json:"kind"`
-	Start       int        `json:"start"`
-	End         int        `json:"end"`
-	Children    []*ASTNode `json:"children,omitempty"`
-	StartLine   int        `json:"startLine,omitempty"`
-	StartColumn int        `json:"startColumn,omitempty"`
-	EndLine     int        `json:"endLine,omitempty"`
-	EndColumn   int        `json:"endColumn,omitempty"`
-	Text        string     `json:"text,omitempty"`
+        Kind        string     `json:"kind"`
+        Start       int        `json:"start"`
+        End         int        `json:"end"`
+        Children    []*ASTNode `json:"children,omitempty"`
+        StartLine   int        `json:"startLine,omitempty"`
+        StartColumn int        `json:"startColumn,omitempty"`
+        EndLine     int        `json:"endLine,omitempty"`
+        EndColumn   int        `json:"endColumn,omitempty"`
+        Text        string     `json:"text,omitempty"`
+       Snippet     string     `json:"snippet,omitempty"`
 }
 
 func position(src string, off int) (line, col int) {
@@ -37,21 +38,22 @@ func position(src string, off int) (line, col int) {
 }
 
 func toASTNode(src string, n *node) *ASTNode {
-	if n == nil {
-		return nil
-	}
-	sl, sc := position(src, n.start)
-	el, ec := position(src, n.end)
-	out := &ASTNode{
-		Kind:        n.kind,
-		Start:       n.start,
-		End:         n.end,
-		StartLine:   sl,
-		StartColumn: sc,
-		EndLine:     el,
-		EndColumn:   ec,
-		Text:        strings.TrimSpace(src[n.start:n.end]),
-	}
+        if n == nil {
+                return nil
+        }
+        sl, sc := position(src, n.start)
+        el, ec := position(src, n.end)
+       out := &ASTNode{
+                Kind:        n.kind,
+                Start:       n.start,
+                End:         n.end,
+                StartLine:   sl,
+                StartColumn: sc,
+                EndLine:     el,
+                EndColumn:   ec,
+                Text:        strings.TrimSpace(src[n.start:n.end]),
+                Snippet:     lineSnippet(src, sl),
+        }
 	for _, c := range n.children {
 		out.Children = append(out.Children, toASTNode(src, c))
 	}
@@ -101,5 +103,13 @@ func ParseASTFile(path string) (*ASTNode, error) {
 
 // MarshalAST writes the ASTNode as JSON.
 func MarshalAST(ast *ASTNode) ([]byte, error) {
-	return json.MarshalIndent(ast, "", "  ")
+        return json.MarshalIndent(ast, "", "  ")
+}
+
+func lineSnippet(src string, line int) string {
+       lines := strings.Split(src, "\n")
+       if line-1 < 0 || line-1 >= len(lines) {
+               return ""
+       }
+       return strings.TrimSpace(lines[line-1])
 }
