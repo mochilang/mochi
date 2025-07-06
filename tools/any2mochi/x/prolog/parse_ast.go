@@ -20,6 +20,8 @@ type clause struct {
 	Body      string   `json:"body"`
 	Start     int      `json:"start"`
 	End       int      `json:"end"`
+	Source    string   `json:"source"`
+	Head      string   `json:"head"`
 	StartLine int
 	StartCol  int
 	EndLine   int
@@ -61,6 +63,18 @@ func parseAST(src string) (*program, error) {
 		prog.Clauses[i].StartCol = c1
 		prog.Clauses[i].EndLine = l2
 		prog.Clauses[i].EndCol = c2
+		if c.Start >= 0 && c.End <= len(src) {
+			prog.Clauses[i].Source = strings.TrimSpace(src[c.Start:c.End])
+			headEnd := strings.Index(prog.Clauses[i].Source, ":-")
+			if headEnd == -1 {
+				headEnd = strings.Index(prog.Clauses[i].Source, ".")
+			}
+			if headEnd != -1 {
+				prog.Clauses[i].Head = strings.TrimSpace(prog.Clauses[i].Source[:headEnd])
+			} else {
+				prog.Clauses[i].Head = prog.Clauses[i].Source
+			}
+		}
 		prog.Clauses[i].Arity = len(c.Params)
 		if strings.TrimSpace(c.Body) == "true" {
 			prog.Clauses[i].Type = "fact"
