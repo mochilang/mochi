@@ -563,8 +563,34 @@ func parseLines(lines []string, indent string) ([]string, int) {
 				b.WriteString("\n}")
 			}
 			stmts = append(stmts, b.String())
+		case s == "continue":
+			stmts = append(stmts, "continue")
+			i++
+		case s == "break":
+			stmts = append(stmts, "break")
+			i++
 		default:
-			if idx := strings.Index(s, "="); idx != -1 && !strings.Contains(s[:idx], "==") {
+			if op := strings.Index(s, "+="); op != -1 {
+				name := strings.TrimSpace(s[:op])
+				expr := strings.TrimSpace(s[op+2:])
+				stmts = append(stmts, "let "+name+" = "+name+" + "+expr)
+				i++
+			} else if op := strings.Index(s, "-="); op != -1 {
+				name := strings.TrimSpace(s[:op])
+				expr := strings.TrimSpace(s[op+2:])
+				stmts = append(stmts, "let "+name+" = "+name+" - "+expr)
+				i++
+			} else if op := strings.Index(s, "*="); op != -1 {
+				name := strings.TrimSpace(s[:op])
+				expr := strings.TrimSpace(s[op+2:])
+				stmts = append(stmts, "let "+name+" = "+name+" * "+expr)
+				i++
+			} else if op := strings.Index(s, "/="); op != -1 {
+				name := strings.TrimSpace(s[:op])
+				expr := strings.TrimSpace(s[op+2:])
+				stmts = append(stmts, "let "+name+" = "+name+" / "+expr)
+				i++
+			} else if idx := strings.Index(s, "="); idx != -1 && !strings.Contains(s[:idx], "==") {
 				name := strings.TrimSpace(s[:idx])
 				expr := strings.TrimSpace(s[idx+1:])
 				if !balanced(expr) {

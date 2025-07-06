@@ -118,15 +118,27 @@ type ConvertError struct {
 }
 
 func (e *ConvertError) Error() string {
-	return fmt.Sprintf("line %d: %s\n  %s", e.Line, e.Msg, e.Snip)
+	return fmt.Sprintf("line %d: %s\n%s", e.Line, e.Msg, e.Snip)
 }
 
 func newConvertError(line int, lines []string, msg string) error {
-	ctx := ""
-	if line-1 < len(lines) && line-1 >= 0 {
-		ctx = strings.TrimSpace(lines[line-1])
+	start := line - 2
+	if start < 0 {
+		start = 0
 	}
-	return &ConvertError{Line: line, Snip: ctx, Msg: msg}
+	end := line
+	if end >= len(lines) {
+		end = len(lines) - 1
+	}
+	var b strings.Builder
+	for i := start; i <= end; i++ {
+		prefix := "   "
+		if i+1 == line {
+			prefix = ">>>"
+		}
+		fmt.Fprintf(&b, "%s %d: %s\n", prefix, i+1, strings.TrimRight(lines[i], "\n"))
+	}
+	return &ConvertError{Line: line, Snip: strings.TrimRight(b.String(), "\n"), Msg: msg}
 }
 
 func emitAST(b *strings.Builder, n *ASTNode, indent string, lines []string) error {
@@ -244,6 +256,42 @@ func emitAST(b *strings.Builder, n *ASTNode, indent string, lines []string) erro
 			}
 			b.WriteString(indent)
 			b.WriteString("}")
+		}
+		b.WriteByte('\n')
+	case "Continue":
+		b.WriteString("continue\n")
+	case "Break":
+		b.WriteString("break\n")
+	case "AugAssign":
+		if n.Target == nil || n.Op == nil {
+			return newConvertError(n.Line, lines, "bad augmented assignment")
+		}
+		b.WriteString("let ")
+		if err := emitExpr(b, n.Target, lines); err != nil {
+			return err
+		}
+		b.WriteString(" = ")
+		if err := emitExpr(b, n.Target, lines); err != nil {
+			return err
+		}
+		b.WriteByte(' ')
+		switch n.Op.Type {
+		case "Add":
+			b.WriteByte('+')
+		case "Sub":
+			b.WriteByte('-')
+		case "Mult":
+			b.WriteByte('*')
+		case "Div":
+			b.WriteByte('/')
+		case "Mod":
+			b.WriteByte('%')
+		default:
+			return newConvertError(n.Line, lines, "unhandled aug assign operator")
+		}
+		b.WriteByte(' ')
+		if err := emitExpr(b, n.valueNode(), lines); err != nil {
+			return err
 		}
 		b.WriteByte('\n')
 	}
