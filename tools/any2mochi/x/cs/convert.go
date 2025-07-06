@@ -1,4 +1,4 @@
-package any2mochi
+package cs
 
 import (
 	"fmt"
@@ -6,56 +6,83 @@ import (
 	"strings"
 
 	cscode "mochi/compile/x/cs"
+	any2mochi "mochi/tools/any2mochi"
 )
 
-// ConvertCs converts cs source code to Mochi using the language server.
-func ConvertCs(src string) ([]byte, error) {
-	ls := Servers["cs"]
+// Convert converts C# source code to Mochi using the language server.
+func Convert(src string) ([]byte, error) {
+	ls := any2mochi.Servers["cs"]
 	// omnisharp requires the dotnet CLI which may not be installed
 	_ = cscode.EnsureDotnet()
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+	syms, diags, err := any2mochi.EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
 	if err != nil {
 		return nil, err
 	}
 	if len(diags) > 0 {
-		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
+		return nil, fmt.Errorf("%s", diagnostics(src, diags))
 	}
 	var out strings.Builder
-	writeCsSymbols(&out, nil, syms, src, ls)
+	writeSymbols(&out, nil, syms, src, ls)
 	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
 	}
 	return []byte(out.String()), nil
 }
 
-// ConvertCsFile reads the cs file and converts it to Mochi.
-func ConvertCsFile(path string) ([]byte, error) {
+// ConvertFile reads the cs file and converts it to Mochi.
+func ConvertFile(path string) ([]byte, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return ConvertCs(string(data))
+	return Convert(string(data))
 }
 
-type csParam struct {
+type param struct {
 	name string
 	typ  string
 }
 
-func writeCsSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol, src string, ls LanguageServer) {
+func snippet(src string) string {
+	lines := strings.Split(src, "\n")
+	if len(lines) > 10 {
+		lines = lines[:10]
+	}
+	for i, l := range lines {
+		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
+	}
+	return strings.Join(lines, "\n")
+}
+
+func diagnostics(src string, diags []any2mochi.Diagnostic) string {
+	lines := strings.Split(src, "\n")
+	var out strings.Builder
+	for _, d := range diags {
+		start := int(d.Range.Start.Line)
+		msg := d.Message
+		line := ""
+		if start < len(lines) {
+			line = strings.TrimSpace(lines[start])
+		}
+		out.WriteString(fmt.Sprintf("line %d: %s\n  %s\n", start+1, msg, line))
+	}
+	return strings.TrimSpace(out.String())
+}
+
+func writeSymbols(out *strings.Builder, prefix []string, syms []any2mochi.DocumentSymbol, src string, ls any2mochi.LanguageServer) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
 			nameParts = append(nameParts, s.Name)
 		}
 		switch s.Kind {
-		case SymbolKindClass, SymbolKindStruct, SymbolKindInterface:
+		case any2mochi.SymbolKindClass, any2mochi.SymbolKindStruct, any2mochi.SymbolKindInterface:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
 			out.WriteString(" {\n")
 			for _, c := range s.Children {
-				if c.Kind == SymbolKindField || c.Kind == SymbolKindProperty {
-					typ := csFieldType(src, c, ls)
+				if c.Kind == any2mochi.SymbolKindField || c.Kind == any2mochi.SymbolKindProperty {
+					typ := fieldType(src, c, ls)
 					if typ == "" {
 						typ = "any"
 					}
@@ -63,19 +90,19 @@ func writeCsSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol
 				}
 			}
 			out.WriteString("}\n")
-			var rest []DocumentSymbol
+			var rest []any2mochi.DocumentSymbol
 			for _, c := range s.Children {
-				if c.Kind != SymbolKindField && c.Kind != SymbolKindProperty {
+				if c.Kind != any2mochi.SymbolKindField && c.Kind != any2mochi.SymbolKindProperty {
 					rest = append(rest, c)
 				}
 			}
 			if len(rest) > 0 {
-				writeCsSymbols(out, nameParts, rest, src, ls)
+				writeSymbols(out, nameParts, rest, src, ls)
 			}
-		case SymbolKindFunction, SymbolKindMethod, SymbolKindConstructor:
-			params, ret := parseCsSignature(s.Detail)
+		case any2mochi.SymbolKindFunction, any2mochi.SymbolKindMethod, any2mochi.SymbolKindConstructor:
+			params, ret := parseSignature(s.Detail)
 			if len(params) == 0 || ret == "" {
-				if p, r := csHoverSignature(src, s, ls); len(p) > 0 || r != "" {
+				if p, r := hoverSignature(src, s, ls); len(p) > 0 || r != "" {
 					if len(params) == 0 {
 						params = p
 					}
@@ -102,7 +129,7 @@ func writeCsSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol
 				out.WriteString(": ")
 				out.WriteString(ret)
 			}
-			body := convertCsBody(src, s.Range)
+			body := convertBody(src, s.Range)
 			if len(body) == 0 {
 				out.WriteString(" {}\n")
 			} else {
@@ -115,49 +142,49 @@ func writeCsSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol
 				out.WriteString("}\n")
 			}
 			if len(s.Children) > 0 {
-				writeCsSymbols(out, nameParts, s.Children, src, ls)
+				writeSymbols(out, nameParts, s.Children, src, ls)
 			}
-		case SymbolKindField, SymbolKindProperty, SymbolKindVariable, SymbolKindConstant:
+		case any2mochi.SymbolKindField, any2mochi.SymbolKindProperty, any2mochi.SymbolKindVariable, any2mochi.SymbolKindConstant:
 			if len(prefix) == 0 {
 				out.WriteString("let ")
 				out.WriteString(strings.Join(nameParts, "."))
-				if typ := csFieldType(src, s, ls); typ != "" {
+				if typ := fieldType(src, s, ls); typ != "" {
 					out.WriteString(": ")
 					out.WriteString(typ)
 				}
 				out.WriteByte('\n')
 			}
 			if len(s.Children) > 0 {
-				writeCsSymbols(out, nameParts, s.Children, src, ls)
+				writeSymbols(out, nameParts, s.Children, src, ls)
 			}
-		case SymbolKindEnum:
+		case any2mochi.SymbolKindEnum:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
 			out.WriteString(" {\n")
 			for _, c := range s.Children {
-				if c.Kind == SymbolKindEnumMember {
+				if c.Kind == any2mochi.SymbolKindEnumMember {
 					fmt.Fprintf(out, "  %s\n", c.Name)
 				}
 			}
 			out.WriteString("}\n")
-			var rest []DocumentSymbol
+			var rest []any2mochi.DocumentSymbol
 			for _, c := range s.Children {
-				if c.Kind != SymbolKindEnumMember {
+				if c.Kind != any2mochi.SymbolKindEnumMember {
 					rest = append(rest, c)
 				}
 			}
 			if len(rest) > 0 {
-				writeCsSymbols(out, nameParts, rest, src, ls)
+				writeSymbols(out, nameParts, rest, src, ls)
 			}
 		default:
 			if len(s.Children) > 0 {
-				writeCsSymbols(out, nameParts, s.Children, src, ls)
+				writeSymbols(out, nameParts, s.Children, src, ls)
 			}
 		}
 	}
 }
 
-func parseCsSignature(detail *string) ([]csParam, string) {
+func parseSignature(detail *string) ([]param, string) {
 	if detail == nil {
 		return nil, ""
 	}
@@ -170,7 +197,7 @@ func parseCsSignature(detail *string) ([]csParam, string) {
 	if open < 0 || close < open {
 		parts := strings.Fields(d)
 		if len(parts) > 0 {
-			return nil, mapCsType(parts[0])
+			return nil, mapType(parts[0])
 		}
 		return nil, ""
 	}
@@ -178,25 +205,25 @@ func parseCsSignature(detail *string) ([]csParam, string) {
 	parts := strings.Fields(pre)
 	ret := ""
 	if len(parts) >= 2 {
-		ret = mapCsType(parts[len(parts)-2])
+		ret = mapType(parts[len(parts)-2])
 	} else if len(parts) == 1 {
-		ret = mapCsType(parts[0])
+		ret = mapType(parts[0])
 	}
 	paramsPart := strings.TrimSpace(d[open+1 : close])
-	var params []csParam
+	var params []param
 	if paramsPart != "" {
 		rawParams := splitArgs(paramsPart)
 		for _, p := range rawParams {
-			typ, name := parseCsParam(p)
+			typ, name := parseParam(p)
 			if name != "" {
-				params = append(params, csParam{name: name, typ: typ})
+				params = append(params, param{name: name, typ: typ})
 			}
 		}
 	}
 	return params, ret
 }
 
-func parseCsParam(p string) (string, string) {
+func parseParam(p string) (string, string) {
 	p = strings.TrimSpace(p)
 	if p == "" {
 		return "", ""
@@ -230,7 +257,7 @@ done:
 	}
 	typ, name := splitTypeName(p)
 	name = strings.Trim(name, "*&[]")
-	typ = mapCsType(typ)
+	typ = mapType(typ)
 	return typ, name
 }
 
@@ -251,10 +278,10 @@ func splitTypeName(s string) (string, string) {
 	return "", strings.TrimSpace(s)
 }
 
-func mapCsType(t string) string {
+func mapType(t string) string {
 	t = strings.TrimSpace(t)
 	for strings.HasSuffix(t, "[]") {
-		inner := mapCsType(strings.TrimSuffix(t, "[]"))
+		inner := mapType(strings.TrimSuffix(t, "[]"))
 		if inner == "" {
 			inner = "any"
 		}
@@ -284,18 +311,18 @@ func mapCsType(t string) string {
 			case "List", "IEnumerable", "IList", "ICollection", "IReadOnlyList":
 				a := "any"
 				if len(args) > 0 {
-					if at := mapCsType(args[0]); at != "" {
+					if at := mapType(args[0]); at != "" {
 						a = at
 					}
 				}
 				return "list<" + a + ">"
 			case "Dictionary", "IDictionary":
 				if len(args) == 2 {
-					k := mapCsType(args[0])
+					k := mapType(args[0])
 					if k == "" {
 						k = "any"
 					}
-					v := mapCsType(args[1])
+					v := mapType(args[1])
 					if v == "" {
 						v = "any"
 					}
@@ -303,7 +330,7 @@ func mapCsType(t string) string {
 				}
 			case "Nullable":
 				if len(args) == 1 {
-					return mapCsType(args[0])
+					return mapType(args[0])
 				}
 			}
 		}
@@ -311,16 +338,16 @@ func mapCsType(t string) string {
 	return ""
 }
 
-func csHoverSignature(src string, sym DocumentSymbol, ls LanguageServer) ([]csParam, string) {
-	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
+func hoverSignature(src string, sym any2mochi.DocumentSymbol, ls any2mochi.LanguageServer) ([]param, string) {
+	hov, err := any2mochi.EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err != nil {
 		return nil, ""
 	}
-	if mc, ok := hov.Contents.(MarkupContent); ok {
+	if mc, ok := hov.Contents.(any2mochi.MarkupContent); ok {
 		for _, line := range strings.Split(mc.Value, "\n") {
 			l := strings.TrimSpace(line)
 			if strings.Contains(l, "(") && strings.Contains(l, ")") {
-				if p, r := parseCsSignature(&l); len(p) > 0 || r != "" {
+				if p, r := parseSignature(&l); len(p) > 0 || r != "" {
 					return p, r
 				}
 			}
@@ -329,43 +356,43 @@ func csHoverSignature(src string, sym DocumentSymbol, ls LanguageServer) ([]csPa
 	return nil, ""
 }
 
-func csFieldType(src string, sym DocumentSymbol, ls LanguageServer) string {
+func fieldType(src string, sym any2mochi.DocumentSymbol, ls any2mochi.LanguageServer) string {
 	if sym.Detail != nil {
-		if t := mapCsType(*sym.Detail); t != "" {
+		if t := mapType(*sym.Detail); t != "" {
 			return t
 		}
 	}
-	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
+	hov, err := any2mochi.EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err == nil {
-		if mc, ok := hov.Contents.(MarkupContent); ok {
+		if mc, ok := hov.Contents.(any2mochi.MarkupContent); ok {
 			for _, line := range strings.Split(mc.Value, "\n") {
 				l := strings.TrimSpace(line)
 				fields := strings.Fields(l)
 				if len(fields) >= 2 {
-					if t := mapCsType(fields[0]); t != "" {
+					if t := mapType(fields[0]); t != "" {
 						return t
 					}
-					if t := mapCsType(fields[len(fields)-1]); t != "" {
+					if t := mapType(fields[len(fields)-1]); t != "" {
 						return t
 					}
 				}
 				if idx := strings.Index(l, ":"); idx != -1 {
-					if t := mapCsType(strings.TrimSpace(l[idx+1:])); t != "" {
+					if t := mapType(strings.TrimSpace(l[idx+1:])); t != "" {
 						return t
 					}
 				}
 			}
 		}
 	}
-	defs, err := EnsureAndDefinition(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
+	defs, err := any2mochi.EnsureAndDefinition(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err == nil && len(defs) > 0 {
 		pos := defs[0].Range.Start
-		hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, pos)
+		hov, err := any2mochi.EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, pos)
 		if err == nil {
-			if mc, ok := hov.Contents.(MarkupContent); ok {
+			if mc, ok := hov.Contents.(any2mochi.MarkupContent); ok {
 				for _, line := range strings.Split(mc.Value, "\n") {
 					l := strings.TrimSpace(line)
-					if t := mapCsType(l); t != "" {
+					if t := mapType(l); t != "" {
 						return t
 					}
 				}
@@ -375,9 +402,9 @@ func csFieldType(src string, sym DocumentSymbol, ls LanguageServer) string {
 	return ""
 }
 
-// convertCsBody returns a slice of Mochi statements for the given range.
+// convertBody returns a slice of Mochi statements for the given range.
 // It performs very light-weight translation of common C# statements.
-func convertCsBody(src string, r Range) []string {
+func convertBody(src string, r any2mochi.Range) []string {
 	lines := strings.Split(src, "\n")
 	start := int(r.Start.Line)
 	end := int(r.End.Line)
@@ -456,4 +483,29 @@ func convertCsBody(src string, r Range) []string {
 		out = append(out, l)
 	}
 	return out
+}
+
+func splitArgs(s string) []string {
+	var parts []string
+	depth := 0
+	start := 0
+	for i, r := range s {
+		switch r {
+		case '[', '(', '<':
+			depth++
+		case ']', ')', '>':
+			if depth > 0 {
+				depth--
+			}
+		case ',':
+			if depth == 0 {
+				parts = append(parts, strings.TrimSpace(s[start:i]))
+				start = i + 1
+			}
+		}
+	}
+	if start < len(s) {
+		parts = append(parts, strings.TrimSpace(s[start:]))
+	}
+	return parts
 }
