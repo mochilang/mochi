@@ -249,6 +249,13 @@ func convertFunc(lines []string, sym any2mochi.DocumentSymbol, root string) stri
 
 func convertExpr(expr string) string {
 	expr = strings.TrimSpace(expr)
+	if strings.HasPrefix(expr, "Some(") && strings.HasSuffix(expr, ")") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(expr, "Some("), ")")
+		return convertExpr(inner)
+	}
+	if expr == "None" {
+		return "nil"
+	}
 	if strings.HasSuffix(expr, ".toString()") {
 		expr = "str(" + strings.TrimSuffix(expr, ".toString()") + ")"
 	}
@@ -256,6 +263,31 @@ func convertExpr(expr string) string {
 	if strings.HasPrefix(expr, prefix) && strings.HasSuffix(expr, ")") {
 		inner := strings.TrimSuffix(strings.TrimPrefix(expr, prefix), ")")
 		expr = "[" + inner + "]"
+	}
+	listPrefixes := []string{"List(", "Seq(", "Vector("}
+	for _, p := range listPrefixes {
+		if strings.HasPrefix(expr, p) && strings.HasSuffix(expr, ")") {
+			inner := strings.TrimSuffix(strings.TrimPrefix(expr, p), ")")
+			parts := splitArgs(inner)
+			for i, part := range parts {
+				parts[i] = convertExpr(part)
+			}
+			return "[" + strings.Join(parts, ", ") + "]"
+		}
+	}
+	if strings.HasPrefix(expr, "Map(") && strings.HasSuffix(expr, ")") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(expr, "Map("), ")")
+		parts := splitArgs(inner)
+		kvs := make([]string, 0, len(parts))
+		for _, p := range parts {
+			kv := strings.SplitN(p, "->", 2)
+			if len(kv) == 2 {
+				key := strings.TrimSpace(kv[0])
+				val := convertExpr(strings.TrimSpace(kv[1]))
+				kvs = append(kvs, key+": "+val)
+			}
+		}
+		return "{" + strings.Join(kvs, ", ") + "}"
 	}
 	if strings.HasSuffix(expr, ".size") {
 		expr = "len(" + strings.TrimSuffix(expr, ".size") + ")"
