@@ -30,6 +30,11 @@ func Convert(src string) ([]byte, error) {
 	}
 	var out strings.Builder
 	for _, c := range prog.Classes {
+		if c.Doc != "" {
+			out.WriteString("// ")
+			out.WriteString(strings.ReplaceAll(c.Doc, "\n", " "))
+			out.WriteByte('\n')
+		}
 		out.WriteString("type ")
 		out.WriteString(c.Name)
 		if len(c.Fields) == 0 && len(c.Methods) == 0 {
@@ -48,6 +53,11 @@ func Convert(src string) ([]byte, error) {
 				}
 			}
 			for _, m := range c.Methods {
+				if m.Doc != "" {
+					out.WriteString("  // ")
+					out.WriteString(strings.ReplaceAll(m.Doc, "\n", " "))
+					out.WriteByte('\n')
+				}
 				out.WriteString("  fun ")
 				out.WriteString(m.Name)
 				out.WriteByte('(')
@@ -56,15 +66,19 @@ func Convert(src string) ([]byte, error) {
 						out.WriteString(", ")
 					}
 					out.WriteString(p.Name)
+					out.WriteString(": ")
 					if p.Type != "" {
-						out.WriteString(": ")
 						out.WriteString(p.Type)
+					} else {
+						out.WriteString("any")
 					}
 				}
 				out.WriteString(")")
+				out.WriteString(": ")
 				if m.Return != "" {
-					out.WriteString(": ")
 					out.WriteString(m.Return)
+				} else {
+					out.WriteString("any")
 				}
 				out.WriteString(" {}\n")
 			}
@@ -72,6 +86,11 @@ func Convert(src string) ([]byte, error) {
 		}
 	}
 	for _, f := range prog.Functions {
+		if f.Doc != "" {
+			out.WriteString("// ")
+			out.WriteString(strings.ReplaceAll(f.Doc, "\n", " "))
+			out.WriteByte('\n')
+		}
 		out.WriteString("fun ")
 		out.WriteString(f.Name)
 		out.WriteByte('(')
@@ -80,15 +99,19 @@ func Convert(src string) ([]byte, error) {
 				out.WriteString(", ")
 			}
 			out.WriteString(p.Name)
+			out.WriteString(": ")
 			if p.Type != "" {
-				out.WriteString(": ")
 				out.WriteString(p.Type)
+			} else {
+				out.WriteString("any")
 			}
 		}
 		out.WriteString(")")
+		out.WriteString(": ")
 		if f.Return != "" {
-			out.WriteString(": ")
 			out.WriteString(f.Return)
+		} else {
+			out.WriteString("any")
 		}
 		out.WriteString(" {}\n")
 	}

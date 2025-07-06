@@ -1,7 +1,7 @@
 type Person {
   name: any
   age: any
-  fun __construct(fields) {}
+  fun __construct(fields: any): any {}
 }
-fun _load_json(path) {}
-fun _save_json(rows, path) {}
+fun _load_json(path: any): any {}
+fun _save_json(rows: any, path: any): any {}

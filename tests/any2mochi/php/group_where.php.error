@@ -1,0 +1,12 @@
+parse error: parse error: 7:20: unexpected token "A" (expected "]")
+
+  1| <?php
+  2| $items = [["qty" => 3, "flag" => "A"], ["qty" => 5, "flag" => "A"], ["qty" => 1, "flag" => "B"]];
+  3| $res = (function() use ($items) {
+  4| 	$_src = (is_string($items) ? str_split($items) : $items);
+  5| 	$_src = array_values(array_filter($_src, function($it) use ($items) { return (($it['qty'] > 2)); }));
+  6| 	$_groups = _group_by($_src, function($it) use ($items) { return $it['flag']; });
+  7| 	$res = [];
+  8| 	foreach ($_groups as $g) {
+  9| 		$res[] = ["flag" => $g->key, "total" => array_sum((function() use ($g) {
+ 10| 	$res = [];

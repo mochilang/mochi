@@ -1,2 +1,2 @@
-fun _print(args) {}
+fun _print(args: any): any {}
 let m = []

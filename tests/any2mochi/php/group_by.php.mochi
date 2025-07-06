@@ -1,8 +1,8 @@
 type _Group {
   key: any
   Items: any
-  fun __construct(key) {}
+  fun __construct(key: any): any {}
 }
-fun _group_by(src, keyfn) {}
-fun _print(args) {}
+fun _group_by(src: any, keyfn: any): any {}
+fun _print(args: any): any {}
 let xs = [1, 1, 2]

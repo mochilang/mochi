@@ -2,7 +2,7 @@ type Person {
   name: any
   age: any
   status: any
-  fun __construct(fields) {}
+  fun __construct(fields: any): any {}
 }
-fun mochi_test_update_adult_status() {}
-fun _print(args) {}
+fun mochi_test_update_adult_status(): any {}
+fun _print(args: any): any {}

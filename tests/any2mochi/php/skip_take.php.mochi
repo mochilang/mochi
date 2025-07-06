@@ -1,2 +1,2 @@
-fun _print(args) {}
+fun _print(args: any): any {}
 let nums = [1, 2, 3, 4, 5]

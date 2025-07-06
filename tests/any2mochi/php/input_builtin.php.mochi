@@ -1,3 +1,0 @@
-fun _print(args) {}
-print(""Enter first input:"")
-print(""Enter second input:"")

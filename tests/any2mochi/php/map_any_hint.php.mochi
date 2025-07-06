@@ -1,3 +1,3 @@
-fun mochi_Leaf() {}
-fun mochi_Node(left, value, right) {}
-fun _print(args) {}
+fun mochi_Leaf(): any {}
+fun mochi_Node(left: any, value: any, right: any): any {}
+fun _print(args: any): any {}

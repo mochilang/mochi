@@ -1,2 +1,2 @@
-fun mochi_add(a, b) {}
-fun _print(args) {}
+fun mochi_add(a: any, b: any): any {}
+fun _print(args: any): any {}

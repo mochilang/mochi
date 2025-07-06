@@ -1,0 +1,16 @@
+type error: error[T002]: undefined variable: hello
+  --> :2:14
+
+help:
+  Check if the variable was declared in this scope.
+
+  1| <?php
+  2| $text = "hello";
+  3| _print($text[1]);
+  4| 
+  5| function _print(...$args) {
+  6|     $parts = [];
+  7|     foreach ($args as $a) {
+  8|         if (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+  9|     }
+ 10|     echo implode(' ', $parts), PHP_EOL;
