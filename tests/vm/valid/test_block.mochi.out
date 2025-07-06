@@ -1,9 +1,9 @@
 fun test_addition_works() {
-  let x = (1 + 2)
-  if !(x == 3) {
-    error("expect failed")
-  }
+  let x = 1 + 2
+  assert(x == 3, "expect failed")
 }
-print("ok")
-let __tests = [{ "name": "addition works", "fn": test_addition_works }]
-__run_tests(__tests)
+fun main() {
+  print("ok")
+  test_addition_works()
+}
+main()

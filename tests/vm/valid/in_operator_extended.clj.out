@@ -1,0 +1,17 @@
+(ns main)
+
+(declare xs ys m s)
+
+(defn -main []
+  (def xs [1 2 3])
+  (def ys (vec (->> (for [x xs :when (= (mod x 2) 1)] x))))
+  (println (some #(= 1 %) ys))
+  (println (some #(= 2 %) ys))
+  (def m {:a 1})
+  (println (contains? m "a"))
+  (println (contains? m "b"))
+  (def s "hello")
+  (println (clojure.string/includes? s "ell"))
+  (println (clojure.string/includes? s "foo")))
+
+(-main)

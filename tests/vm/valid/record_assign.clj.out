@@ -1,0 +1,21 @@
+(ns main)
+
+(declare c)
+
+(defn Counter [n]
+  {:__name "Counter" :n n})
+
+(defn inc [c]
+  (try
+    (def c (+ (:n c) 1))
+    (catch clojure.lang.ExceptionInfo e
+      (if (= (.getMessage e) "return")
+        (:value (ex-data e))
+        (throw e)))))
+
+(defn -main []
+  (def c {:__name "Counter" :n 0})
+  (inc c)
+  (println (:n c)))
+
+(-main)

@@ -1,14 +1,12 @@
-fun twoSum(nums: list<int>, target: int): list<int> {
-  var n = len(nums)
-  for i in 0..n {
-  for j in (i + 1)..n {
-  if (nums[i] + nums[j]) == target {
-  return [i, j]
+fun _indexList(xs, i) {
+  (fun(idx) => if idx < 0 || idx >= count(xs) {  } else { nth(xs, idx) })(if neg_p(i) { i + count(xs) } else { i })
 }
+fun twoSum(nums, target) {
+  try(let n = count(nums), loop(i(0), if i < n { (fun(r) => cond(r == break, nil, else, recur(inc(i))))(try(loop(j(i + 1), if j < n { (fun(r) => cond(r == break, nil, else, recur(inc(j))))(try(, next, catch(clojure_lang_ExceptionInfo, e, cond(_getMessage(e) == "continue", next, _getMessage(e) == "break", break, else, )))) }), next, catch(clojure_lang_ExceptionInfo, e, cond(_getMessage(e) == "continue", next, _getMessage(e) == "break", break, else, )))) }), , catch(clojure_lang_ExceptionInfo, e, if _getMessage(e) == "return" { [value, ex_data(e)] }))
 }
+fun main() {
+  let result = twoSum([2, 7, 11, 15], 9)
+  print(_indexList(result, 0))
+  print(_indexList(result, 1))
 }
-  return [-1, -1]
-}
-var result = twoSum([2, 7, 11, 15], 9)
-print(result[0])
-print(result[1])
+main()

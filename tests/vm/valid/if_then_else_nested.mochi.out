@@ -1,16 +1,6 @@
-var x = 8
-_ = x
-var msg = fun (): string {
-  if x > 10 {
-  return "big"
-} else {
-  return fun (): string {
-  if x > 5 {
-  return "medium"
-} else {
-  return "small"
+fun main() {
+  let x = 8
+  let msg = if x > 10 { "big" } else { if x > 5 { "medium" } else { "small" } }
+  print(msg)
 }
-}()
-}
-}()
-print(msg)
+main()

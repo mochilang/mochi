@@ -1,7 +1,8 @@
-fun makeAdder(n: int): func(int) int {
-  return fun (x: int): int {
-  return (x + n)
+fun makeAdder(n) {
+  try(, catch(clojure_lang_ExceptionInfo, e, if _getMessage(e) == "return" { [value, ex_data(e)] }))
 }
+fun main() {
+  let add10 = makeAdder(10)
+  print(add10(7))
 }
-var add10 = makeAdder(10)
-print(add10(7))
+main()

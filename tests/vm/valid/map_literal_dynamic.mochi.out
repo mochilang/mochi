@@ -1,4 +1,7 @@
-var x = 3
-var y = 4
-var m = {"a": x, "b": y}
-print(str(m["a"]) + " " + str(m["b"]))
+fun main() {
+  let x = 3
+  let y = 4
+  let m = {"a"
+  print(get(m, "a"), get(m, "b"))
+}
+main()

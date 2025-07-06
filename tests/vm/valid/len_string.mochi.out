@@ -1,1 +1,4 @@
-print(5)
+fun main() {
+  print(count("mochi"))
+}
+main()

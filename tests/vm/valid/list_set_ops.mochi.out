@@ -1,4 +1,19 @@
-print(([1, 2] union [2, 3]))
-print(([1, 2, 3] except [2]))
-print(([1, 2, 3] intersect [2, 4]))
-print(len(([1, 2] union all [2, 3])))
+fun _union_all(a, b) {
+  vec(concat(a, b))
+}
+fun _union(a, b) {
+  vec(distinct(concat(a, b)))
+}
+fun _except(a, b) {
+  vec(remove(set(b), a))
+}
+fun _intersect(a, b) {
+  vec(distinct(filter(set(b), a)))
+}
+fun main() {
+  print(_union([1, 2], [2, 3]))
+  print(_except([1, 2, 3], [2]))
+  print(_intersect([1, 2, 3], [2, 4]))
+  print(count(_union_all([1, 2], [2, 3])))
+}
+main()

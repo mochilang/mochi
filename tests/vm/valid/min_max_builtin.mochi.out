@@ -1,29 +1,6 @@
-fun _maxOrdered(s: list<T>): T {
-  if len(s) == 0 {
-  var zero: T
-  return zero
+fun main() {
+  let nums = [3, 1, 4]
+  print(apply(min, nums))
+  print(apply(max, nums))
 }
-  var m = s[0]
-  for v in s[1:] {
-  if v > m {
-  m = v
-}
-}
-  return m
-}
-fun _minOrdered(s: list<T>): T {
-  if len(s) == 0 {
-  var zero: T
-  return zero
-}
-  var m = s[0]
-  for v in s[1:] {
-  if v < m {
-  m = v
-}
-}
-  return m
-}
-var nums = [3, 1, 4]
-print(_minOrdered(nums))
-print(_maxOrdered(nums))
+main()

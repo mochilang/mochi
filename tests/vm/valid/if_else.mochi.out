@@ -1,6 +1,5 @@
-var x = 5
-if x > 3 {
-  print("big")
-} else {
-  print("small")
+fun main() {
+  let x = 5
+  if x > 3 { do(print("big")) } else { do(print("small")) }
 }
+main()

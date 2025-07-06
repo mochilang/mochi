@@ -1,36 +1,7 @@
-let products = [{ "name": "Laptop", "price": 1500 }, { "name": "Smartphone", "price": 900 }, { "name": "Tablet", "price": 600 }, { "name": "Monitor", "price": 300 }, { "name": "Keyboard", "price": 100 }, { "name": "Mouse", "price": 50 }, { "name": "Headphones", "price": 200 }]
-let expensive = fun() {
-    let _res = []
-    for _, p in ipairs(products) {
-      _res[len(_res) + 1] = { "__key": -p["price"], "__val": p }
-    }
-    let items = _res
-    table["sort"](items, fun(a, b) {
-    return a["__key"] < b["__key"]
-})
-    let tmp = []
-    for _, it in ipairs(items) {
-      tmp[len(tmp) + 1] = it["__val"]
-    }
-    items = tmp
-    let skip = 1
-    if skip < len(items) {
-      for i = 1; i <= skip; i += 1 {
-        table["remove"](items, 1)
-      }
-    } else {
-      let items = []
-    }
-    let take = 3
-    if take < len(items) {
-      for i = len(items); i <= take + 1; i += -1 {
-        table["remove"](items)
-      }
-    }
-    _res = items
-    return _res
-}()
-print("--- Top products (excluding most expensive) ---")
-for _, item in ipairs(expensive) {
-  print(item["name"], "costs $", item["price"])
+fun main() {
+  let products = {:name("Laptop", price, _1500}, {:name, "Smartphone", price, _900}, {:name, "Tablet", price, _600}, {:name, "Monitor", price, _300}, {:name, "Keyboard", price, _100}, {:name, "Mouse", price, _50}, {:name, "Headphones", price, _200})
+  let expensive = vec(>>(for(p(products), p), sort_by(fn(p(), (-[price, p]))), drop(1), take(3)))
+  print("--- Top products (excluding most expensive) ---")
+  loop(_tmp0(seq(expensive)), if _tmp0 { (fun(item) => (fun(r) => cond(r == break, nil, else, recur(next(_tmp0))))(try(print([name, item], "costs $", [price, item]), next, catch(clojure_lang_ExceptionInfo, e, cond(_getMessage(e) == "continue", next, _getMessage(e) == "break", break, else, )))))(clojure_core_first(_tmp0)) })
 }
+main()

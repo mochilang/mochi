@@ -1,10 +1,6 @@
-var x = 12
-_ = x
-var msg = fun (): string {
-  if x > 10 {
-  return "yes"
-} else {
-  return "no"
+fun main() {
+  let x = 12
+  let msg = if x > 10 { "yes" } else { "no" }
+  print(msg)
 }
-}()
-print(msg)
+main()

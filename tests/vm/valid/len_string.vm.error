@@ -1,0 +1,5 @@
+error[T037]: count() expects list or group, got string
+  --> :2:9
+
+help:
+  Pass a list or group to count().

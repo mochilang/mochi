@@ -1,0 +1,10 @@
+(ns main)
+
+(declare scores)
+
+(defn -main []
+  (def scores {"alice" 1})
+  (def scores (assoc scores "bob" 2))
+  (println (get scores "bob")))
+
+(-main)

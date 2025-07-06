@@ -1,2 +1,5 @@
-var m = {"a": 1, "b": 2}
-print(m["b"])
+fun main() {
+  let m = {"a"
+  print(get(m, "b"))
+}
+main()

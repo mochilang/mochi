@@ -1,3 +1,4 @@
-for i in 1..4 {
-  print(i)
+fun main() {
+  loop(i(1), if i < 4 { (fun(r) => cond(r == break, nil, else, recur(inc(i))))(try(print(i), next, catch(clojure_lang_ExceptionInfo, e, cond(_getMessage(e) == "continue", next, _getMessage(e) == "break", break, else, )))) })
 }
+main()

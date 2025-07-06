@@ -1,4 +1,5 @@
-var square = fun (x: int): int {
-  return (x * x)
+fun main() {
+  let square = fn(x(), try(, catch(clojure_lang_ExceptionInfo, e, if _getMessage(e) == "return" { [value, ex_data(e)] })))
+  print(square(6))
 }
-print(square(6))
+main()

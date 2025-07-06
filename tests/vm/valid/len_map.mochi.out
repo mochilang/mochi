@@ -1,1 +1,4 @@
-print(len({"a": 1, "b": 2}))
+fun main() {
+  print(count({"a", 1, "b", _2}))
+}
+main()

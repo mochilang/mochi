@@ -1,0 +1,10 @@
+(ns main)
+
+(declare m)
+
+(defn -main []
+  (def m {1 "a" 2 "b"})
+  (println (contains? m 1))
+  (println (contains? m 3)))
+
+(-main)

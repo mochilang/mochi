@@ -1,1 +1,1 @@
-parse error: 2:19: unexpected token "," (expected PostfixExpr)
+parse error: 2:187: lexer: invalid input text "#, str(get(r, %,..."

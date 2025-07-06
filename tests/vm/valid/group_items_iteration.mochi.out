@@ -1,41 +1,11 @@
-let _Group = []
-fun _Group["new"](k) {
-  return { "key": k, "items": [] }
+defrecord(_Group, key(Items))
+fun _group_by(src, keyfn) {
+  (fun(groups) => doseq(it(src), (fun(k) => when_not(contains_p(@groups, ks), swap_bang(groups, assoc, ks, _Group_(k, )), swap_bang(order, conj, ks)))(keyfn(it))))(atom({}))
 }
-let data = [{ "tag": "a", "val": 1 }, { "tag": "a", "val": 2 }, { "tag": "b", "val": 3 }]
-let groups = fun() {
-    let _groups = __group_by(data, fun(d) {
-    return d["tag"]
-})
-    let _res = []
-    for _, g in ipairs(_groups) {
-      _res[len(_res) + 1] = g
-    }
-    return _res
-}()
-let tmp = []
-for _, g in ipairs(groups) {
-  let total = 0
-  for _, x in __iter(g["items"]) {
-    let total = (total + x["val"])
-  }
-  let tmp = append(tmp, { "tag": g["key"], "total": total })
+fun _query(src, joins, opts) {
+  (fun(items) => doseq(j(joins), (fun(joined) => cond([right, j] && [left, j], (fun(matched) => doseq(left(@items), (fun(m) => doseq(, (fun(keep) => if keep {
+  reset_bang(m, true)
+  aset(matched, ri, true)
+  swap_bang(joined, conj, conj(left, right))
+})(if_let(f([on, j]), apply(f, conj(left, right)), true)), when_not(@m, swap_bang(joined, conj, conj(left, nil)))))(atom(false))))(boolean_array(count([items, j])))))(atom())))(atom(mapv(vector, src)))
 }
-let result = fun() {
-    let _res = []
-    for _, r in ipairs(tmp) {
-      _res[len(_res) + 1] = { "__key": r["tag"], "__val": r }
-    }
-    let items = _res
-    table["sort"](items, fun(a, b) {
-    return a["__key"] < b["__key"]
-})
-    let tmp = []
-    for _, it in ipairs(items) {
-      tmp[len(tmp) + 1] = it["__val"]
-    }
-    items = tmp
-    _res = items
-    return _res
-}()
-print(result)

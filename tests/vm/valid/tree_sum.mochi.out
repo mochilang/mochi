@@ -1,16 +1,23 @@
-fun sum_tree(t) {
-  return fun() {
-    let _t0 = t
-    if _t0["__name"] == "Leaf" {
-      return 0
-    }
-    if _t0["__name"] == "Node" {
-      return fun(left, value, right) {
-    return ((sum_tree(left) + value) + sum_tree(right))
-}(_t0["left"], _t0["value"], _t0["right"])
-    }
-    return null
-}()
+fun Leaf() {
+  {:__name
+  "Leaf"
+  }
 }
-let t = { "__name": "Node", "left": Leaf, "value": 1, "right": { "__name": "Node", "left": Leaf, "value": 2, "right": Leaf } }
-print(sum_tree(t))
+fun Node(left, value, right) {
+  {:__name
+  "Node"
+  left
+  left
+  value
+  value
+  right
+  right}
+}
+fun sum_tree(t) {
+  try(, catch(clojure_lang_ExceptionInfo, e, if _getMessage(e) == "return" { [value, ex_data(e)] }))
+}
+fun main() {
+  let t = {:__name
+  print(sum_tree(t))
+}
+main()

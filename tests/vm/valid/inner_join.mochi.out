@@ -1,14 +1,8 @@
-let customers = [{ "id": 1, "name": "Alice" }, { "id": 2, "name": "Bob" }, { "id": 3, "name": "Charlie" }]
-let orders = [{ "id": 100, "customerId": 1, "total": 250 }, { "id": 101, "customerId": 2, "total": 125 }, { "id": 102, "customerId": 1, "total": 300 }, { "id": 103, "customerId": 4, "total": 80 }]
-let result = fun() {
-    let _src = orders
-    return __query(_src, [{ "items": customers, "on": fun(o, c) {
-    return (o["customerId"] == c["id"])
-} }], { "selectFn": fun(o, c) {
-    return { "orderId": o["id"], "customerName": c["name"], "total": o["total"] }
-} })
-}()
-print("--- Orders with customer info ---")
-for _, entry in ipairs(result) {
-  print("Order", entry["orderId"], "by", entry["customerName"], "- $", entry["total"])
+fun main() {
+  let customers = {:id(1, name, "Alice", }, {:id, 2, name, "Bob", }, {:id, 3, name, "Charlie", })
+  let orders = {:id(100, customerId, 1, total, _250}, {:id, 101, customerId, 2, total, _125}, {:id, 102, customerId, 1, total, _300}, {:id, 103, customerId, 4, total, _80})
+  let result = vec(>>(for(o(orders, c, customers, when, [customerId, o] == [id, c]), {:orderId, [id, o], customerName, [name, c], total, [total, o], })))
+  print("--- Orders with customer info ---")
+  loop(_tmp0(seq(result)), if _tmp0 { (fun(entry) => (fun(r) => cond(r == break, nil, else, recur(next(_tmp0))))(try(print("Order", [orderId, entry], "by", [customerName, entry], "- $", [total, entry]), next, catch(clojure_lang_ExceptionInfo, e, cond(_getMessage(e) == "continue", next, _getMessage(e) == "break", break, else, )))))(clojure_core_first(_tmp0)) })
 }
+main()

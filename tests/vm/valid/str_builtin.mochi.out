@@ -1,1 +1,4 @@
-print("123")
+fun main() {
+  print(str(123))
+}
+main()

@@ -1,0 +1,5 @@
+error[T003]: unknown function: subvec
+  --> :2:9
+
+help:
+  Ensure the function is defined before it's called.

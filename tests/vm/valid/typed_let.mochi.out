@@ -1,2 +1,4 @@
-var y = nil
-print(y)
+fun main() {
+  print(y)
+}
+main()

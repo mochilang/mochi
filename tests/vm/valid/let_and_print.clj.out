@@ -1,0 +1,10 @@
+(ns main)
+
+(declare a b)
+
+(defn -main []
+  (def a 10)
+  (def b 20)
+  (println (+ a b)))
+
+(-main)

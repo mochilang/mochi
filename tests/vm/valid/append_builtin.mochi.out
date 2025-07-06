@@ -1,9 +1,5 @@
-fun _convSlice(s: list<T>): list<U> {
-  var out = []
-  for v in s {
-  out = append(out, v as U)
+fun main() {
+  let a = [1, 2]
+  print(append(a, 3))
 }
-  return out
-}
-var a = [1, 2]
-print(append(_convSlice(a), 3))
+main()

@@ -1,8 +1,4 @@
-fun _sumOrdered(s: list<T>): float64 {
-  var sum: float64
-  for v in s {
-  sum = sum + float64(v)
+fun main() {
+  print(reduce(+, 0, [1, 2, 3]))
 }
-  return sum
-}
-print(_sumOrdered([1, 2, 3]))
+main()

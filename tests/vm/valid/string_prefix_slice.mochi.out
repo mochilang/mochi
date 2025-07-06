@@ -1,5 +1,8 @@
-let prefix = "fore"
-let s1 = "forest"
-print((s1[0:len(prefix)] == prefix))
-let s2 = "desert"
-print((s2[0:len(prefix)] == prefix))
+fun main() {
+  let prefix = "fore"
+  let s1 = "forest"
+  print(subs(s1, 0, count(prefix)) == prefix)
+  let s2 = "desert"
+  print(subs(s2, 0, count(prefix)) == prefix)
+}
+main()

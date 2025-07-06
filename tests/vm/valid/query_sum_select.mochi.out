@@ -1,11 +1,9 @@
-let nums = [1, 2, 3]
-let result = fun() {
-    let _res = []
-    for _, n in ipairs(nums) {
-      if n > 1 {
-        _res[len(_res) + 1] = __sum(n)
-      }
-    }
-    return _res
-}()
-print(result)
+fun _sum(v) {
+  (fun(lst) => reduce(+, 0, lst))(cond(map_p(v) && contains_p(v, Items), [Items, v], sequential_p(v), v, else, ))
+}
+fun main() {
+  let nums = [1, 2, 3]
+  let result = vec(>>(for(n(nums, when, n > 1), _sum(n))))
+  print(result)
+}
+main()

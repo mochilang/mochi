@@ -1,1 +1,4 @@
-print("1995")
+fun main() {
+  print(int("1995"))
+}
+main()

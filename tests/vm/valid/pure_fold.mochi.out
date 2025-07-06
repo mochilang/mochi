@@ -1,4 +1,7 @@
-fun triple(x: int): int {
-  return (x * 3)
+fun triple(x) {
+  try(, catch(clojure_lang_ExceptionInfo, e, if _getMessage(e) == "return" { [value, ex_data(e)] }))
 }
-print(triple((1 + 2)))
+fun main() {
+  print(triple(1 + 2))
+}
+main()

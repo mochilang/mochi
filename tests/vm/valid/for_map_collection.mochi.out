@@ -1,4 +1,5 @@
-var m = {"a": 1, "b": 2}
-for k in m {
-  print(k)
+fun main() {
+  let m = {"a"
+  loop(_tmp0(seq(m)), if _tmp0 { (fun(k) => (fun(r) => cond(r == break, nil, else, recur(next(_tmp0))))(try(print(k), next, catch(clojure_lang_ExceptionInfo, e, cond(_getMessage(e) == "continue", next, _getMessage(e) == "break", break, else, )))))(clojure_core_first(_tmp0)) })
 }
+main()

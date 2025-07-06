@@ -1,1 +1,1 @@
-parse error: 3:11: unexpected token "[" (expected "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+parse error: 5:351: lexer: invalid input text "#, clojure_data_..."

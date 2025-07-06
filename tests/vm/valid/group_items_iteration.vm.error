@@ -1,1 +1,1 @@
-parse error: 2:11: unexpected token "[" (expected "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+parse error: 3:65: lexer: invalid input text "@groups, ks), sw..."

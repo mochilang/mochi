@@ -1,7 +1,7 @@
-fun sum_rec(n: int, acc: int): int {
-  if n == 0 {
-  return acc
+fun sum_rec(n, acc) {
+  try(, , catch(clojure_lang_ExceptionInfo, e, if _getMessage(e) == "return" { [value, ex_data(e)] }))
 }
-  return sum_rec((n - 1), (acc + n))
+fun main() {
+  print(sum_rec(10, 0))
 }
-print(sum_rec(10, 0))
+main()

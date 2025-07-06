@@ -1,20 +1,22 @@
-let Person = []
-Person["__index"] = Person
-fun Person["new"](o) {
-  let o = o || []
-  setmetatable(o, Person)
-  return o
+fun _parse_csv(text, header, delim) {
+  (fun(lines) => mapv(fn(line(), (fun(parts) => zipmap(headers, parts))(clojure_string_split(line, re_pattern(str(delim))))), drop(if header { 1 } else { 0 }, lines)))(>>(clojure_string_split_lines(text), remove(clojure_string_blank_p)))
 }
-let people = __load("../interpreter/valid/people.yaml", { "format": "yaml" })
-let adults = fun() {
-    let _res = []
-    for _, p in ipairs(people) {
-      if p["age"] >= 18 {
-        _res[len(_res) + 1] = { "name": p["name"], "email": p["email"] }
-      }
-    }
-    return _res
-}()
-for _, a in ipairs(adults) {
-  print(a["name"], a["email"])
+fun _load(path, opts) {
+  (fun(fmt) => cond(fmt == "csv", _parse_csv(text, header, delim), fmt == "tsv", _parse_csv(text, header, "\t"), fmt == "json", (fun(data) => cond(map_p(data), data(), sequential_p(data), vec(data), else, ))(clojure_data_json_read_str(text, key_fn, keyword)), fmt == "jsonl", >>(clojure_string_split_lines(text), remove(clojure_string_blank_p), mapv(#, clojure_data_json_read_str(%, key_fn, keyword))), fmt == "yaml", (fun(y) => cond(instance_p(java_util_Map, y), , instance_p(java_util_List, y), mapv(#, into({}, %), y), else, ))(>(text, java_io_StringReader_, org_yaml_snakeyaml_Yaml_(), _load)), else, ))(get(opts, format, "csv"))
 }
+fun Person(name, age, email) {
+  {:__name
+  "Person"
+  name
+  name
+  age
+  age
+  email
+  email}
+}
+fun main() {
+  let people = mapv(Person, _load("../interpreter/valid/people.yaml", {:format, "yaml", }))
+  let adults = vec(>>(for(p(people, when, [age, p] >= 18), {:name, [name, p], email, [email, p], })))
+  loop(_tmp0(seq(adults)), if _tmp0 { (fun(a) => (fun(r) => cond(r == break, nil, else, recur(next(_tmp0))))(try(print([name, a], [email, a]), next, catch(clojure_lang_ExceptionInfo, e, cond(_getMessage(e) == "continue", next, _getMessage(e) == "break", break, else, )))))(clojure_core_first(_tmp0)) })
+}
+main()

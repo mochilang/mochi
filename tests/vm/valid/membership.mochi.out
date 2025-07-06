@@ -1,3 +1,6 @@
-var nums = [1, 2, 3]
-print(slices.Contains(nums, 2))
-print(slices.Contains(nums, 4))
+fun main() {
+  let nums = [1, 2, 3]
+  print(some(#, 2 == %, nums))
+  print(some(#, 4 == %, nums))
+}
+main()

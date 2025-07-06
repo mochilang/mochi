@@ -1,0 +1,6 @@
+(ns main)
+
+(defn -main []
+  (println (int "1995")))
+
+(-main)

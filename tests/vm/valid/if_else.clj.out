@@ -1,0 +1,14 @@
+(ns main)
+
+(declare x)
+
+(defn -main []
+  (def x 5)
+  (if (> x 3)
+    (do
+      (println "big"))
+
+    (do
+      (println "small"))))
+
+(-main)

@@ -1,56 +1,17 @@
 fun classify(n) {
-  return fun() {
-    let _t0 = n
-    if _t0 == 0 {
-      return "zero"
-    }
-    if _t0 == 1 {
-      return "one"
-    }
-    return "many"
-}()
+  try(, catch(clojure_lang_ExceptionInfo, e, if _getMessage(e) == "return" { [value, ex_data(e)] }))
 }
-let x = 2
-let label = fun() {
-    let _t1 = x
-    if _t1 == 1 {
-      return "one"
-    }
-    if _t1 == 2 {
-      return "two"
-    }
-    if _t1 == 3 {
-      return "three"
-    }
-    return "unknown"
-}()
-print(label)
-let day = "sun"
-let mood = fun() {
-    let _t2 = day
-    if _t2 == "mon" {
-      return "tired"
-    }
-    if _t2 == "fri" {
-      return "excited"
-    }
-    if _t2 == "sun" {
-      return "relaxed"
-    }
-    return "normal"
-}()
-print(mood)
-let ok = true
-let status = fun() {
-    let _t3 = ok
-    if _t3 == true {
-      return "confirmed"
-    }
-    if _t3 == false {
-      return "denied"
-    }
-    return null
-}()
-print(status)
-print(classify(0))
-print(classify(5))
+fun main() {
+  let x = 2
+  let label = (fun(t) => cond(t == 1, "one", t == 2, "two", t == 3, "three", else, "unknown"))(x)
+  print(label)
+  let day = "sun"
+  let mood = (fun(t) => cond(t == "mon", "tired", t == "fri", "excited", t == "sun", "relaxed", else, "normal"))(day)
+  print(mood)
+  let ok = true
+  let status = (fun(t) => cond(t == true, "confirmed", t == false, "denied", else, nil))(ok)
+  print(status)
+  print(classify(0))
+  print(classify(5))
+}
+main()

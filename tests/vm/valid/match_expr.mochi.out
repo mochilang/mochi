@@ -1,15 +1,6 @@
-let x = 2
-let label = fun() {
-    let _t0 = x
-    if _t0 == 1 {
-      return "one"
-    }
-    if _t0 == 2 {
-      return "two"
-    }
-    if _t0 == 3 {
-      return "three"
-    }
-    return "unknown"
-}()
-print(label)
+fun main() {
+  let x = 2
+  let label = (fun(t) => cond(t == 1, "one", t == 2, "two", t == 3, "three", else, "unknown"))(x)
+  print(label)
+}
+main()

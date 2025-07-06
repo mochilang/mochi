@@ -1,11 +1,4 @@
-fun _avgOrdered(s: list<T>): float64 {
-  if len(s) == 0 {
-  return 0
+fun main() {
+  print((fun(xs) => if empty_p(xs) { 0 } else { reduce(+, xs) / double(count(xs)) })([1, 2, 3]))
 }
-  var sum: float64
-  for v in s {
-  sum = sum + float64(v)
-}
-  return sum / float64(len(s))
-}
-print(_avgOrdered([1, 2, 3]))
+main()

@@ -1,31 +1,14 @@
-let _Group = []
-fun _Group["new"](k) {
-  return { "key": k, "items": [] }
+fun _count(v) {
+  cond(sequential_p(v), count(v), map_p(v) && contains_p(v, Items), count([Items, v]), else, )
 }
-let customers = [{ "id": 1, "name": "Alice" }, { "id": 2, "name": "Bob" }]
-let orders = [{ "id": 100, "customerId": 1 }, { "id": 101, "customerId": 1 }, { "id": 102, "customerId": 2 }]
-let stats = fun() {
-    let _src = orders
-    let _rows = __query(_src, [{ "items": customers, "on": fun(o, c) {
-    return (o["customerId"] == c["id"])
-} }], { "selectFn": fun(o, c) {
-    return [o, c]
-} })
-    let _groups = __group_by_rows(_rows, fun(o, c) {
-    return c["name"]
-}, fun(o, c) {
-    let _row = __merge(o, c)
-    _row["o"] = o
-    _row["c"] = c
-    return _row
-})
-    let _res = []
-    for _, g in ipairs(_groups) {
-      _res[len(_res) + 1] = { "name": g["key"], "count": count(g) }
-    }
-    return _res
-}()
-print("--- Orders per customer ---")
-for _, s in ipairs(stats) {
-  print(s["name"], "orders:", s["count"])
+defrecord(_Group, key(Items))
+fun _group_by(src, keyfn) {
+  (fun(groups) => doseq(it(src), (fun(k) => when_not(contains_p(@groups, ks), swap_bang(groups, assoc, ks, _Group_(k, )), swap_bang(order, conj, ks)))(keyfn(it))))(atom({}))
+}
+fun _query(src, joins, opts) {
+  (fun(items) => doseq(j(joins), (fun(joined) => cond([right, j] && [left, j], (fun(matched) => doseq(left(@items), (fun(m) => doseq(, (fun(keep) => if keep {
+  reset_bang(m, true)
+  aset(matched, ri, true)
+  swap_bang(joined, conj, conj(left, right))
+})(if_let(f([on, j]), apply(f, conj(left, right)), true)), when_not(@m, swap_bang(joined, conj, conj(left, nil)))))(atom(false))))(boolean_array(count([items, j])))))(atom())))(atom(mapv(vector, src)))
 }

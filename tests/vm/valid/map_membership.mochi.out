@@ -1,3 +1,6 @@
-let m = { "a": 1, "b": 2 }
-print(m["a"] ~= null)
-print(m["c"] ~= null)
+fun main() {
+  let m = {"a"
+  print(contains_p(m, "a"))
+  print(contains_p(m, "c"))
+}
+main()

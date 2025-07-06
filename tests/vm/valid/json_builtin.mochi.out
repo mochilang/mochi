@@ -1,2 +1,14 @@
-let m = { "a": 1, "b": 2 }
-__json(m)
+fun _escape_json(s) {
+  >(s, clojure_string_replace("\\", "\\\\"), clojure_string_replace("\"", "\\\""))
+}
+fun _to_json(v) {
+  cond(nil_p(v), "null", string_p(v), str("\"", _escape_json(v), "\""), number_p(v), str(v), boolean_p(v), str(v), sequential_p(v), str("[", clojure_string_join(",", map(_to_json, v)), "]"), map_p(v), str("{", clojure_string_join(",", map(fn(, str("\"", _escape_json(name(k)), "\":", _to_json(val))), v)), "}"), else, str("\"", _escape_json(str(v)), "\""))
+}
+fun _json(v) {
+  print(_to_json(v))
+}
+fun main() {
+  let m = {:a
+  _json(m)
+}
+main()

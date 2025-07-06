@@ -1,0 +1,10 @@
+(ns main)
+
+(declare data)
+
+(defn -main []
+  (def data {"outer" {"inner" 1}})
+  (def data (assoc-in data ["outer" "inner"] 2))
+  (println (get (get data "outer") "inner")))
+
+(-main)

@@ -1,1 +1,1 @@
-parse error: 14:14: lexer: invalid input text "~= null)\nprint(m..."
+parse error: 4:14: lexer: invalid input text "#, 1 == %, ys))\n..."

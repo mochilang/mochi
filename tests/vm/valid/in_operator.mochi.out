@@ -1,3 +1,6 @@
-var xs = [1, 2, 3]
-print(slices.Contains(xs, 2))
-print(!(slices.Contains(xs, 5)))
+fun main() {
+  let xs = [1, 2, 3]
+  print(some(#, 2 == %, xs))
+  print(!some(#, 5 == %, xs))
+}
+main()

@@ -1,17 +1,9 @@
-let customers = [{ "id": 1, "name": "Alice" }, { "id": 2, "name": "Bob" }]
-let orders = [{ "id": 100, "customerId": 1 }, { "id": 101, "customerId": 2 }]
-let items = [{ "orderId": 100, "sku": "a" }, { "orderId": 101, "sku": "b" }]
-let result = fun() {
-    let _src = orders
-    return __query(_src, [{ "items": customers, "on": fun(o, c) {
-    return (o["customerId"] == c["id"])
-} }, { "items": items, "on": fun(o, c, i) {
-    return (o["id"] == i["orderId"])
-} }], { "selectFn": fun(o, c, i) {
-    return { "name": c["name"], "sku": i["sku"] }
-} })
-}()
-print("--- Multi Join ---")
-for _, r in ipairs(result) {
-  print(r["name"], "bought item", r["sku"])
+fun main() {
+  let customers = {:id(1, name, "Alice", }, {:id, 2, name, "Bob", })
+  let orders = {:id(100, customerId, _1}, {:id, 101, customerId, _2})
+  let items = {:orderId(100, sku, "a", }, {:orderId, 101, sku, "b", })
+  let result = vec(>>(for(o(orders, c, customers, when, [customerId, o] == [id, c], i, items, when, [id, o] == [orderId, i]), {:name, [name, c], sku, [sku, i], })))
+  print("--- Multi Join ---")
+  loop(_tmp0(seq(result)), if _tmp0 { (fun(r) => (fun(r) => cond(r == break, nil, else, recur(next(_tmp0))))(try(print([name, r], "bought item", [sku, r]), next, catch(clojure_lang_ExceptionInfo, e, cond(_getMessage(e) == "continue", next, _getMessage(e) == "break", break, else, )))))(clojure_core_first(_tmp0)) })
 }
+main()

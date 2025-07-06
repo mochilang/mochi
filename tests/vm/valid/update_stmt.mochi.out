@@ -1,27 +1,26 @@
-let Person = []
-Person["__index"] = Person
-fun Person["new"](o) {
-  let o = o || []
-  setmetatable(o, Person)
-  return o
+fun _cast_struct(ctor, m) {
+  (fun(fields) => apply(ctor, map(#, get(m, %), fields)))(some_to_>(ctor, meta, arglists, first, map(keyword)) || keys(m))
+}
+fun _cast_struct_list(ctor, xs) {
+  mapv(#, _cast_struct(ctor, %), xs)
+}
+fun Person(name, age, status) {
+  {:__name
+  "Person"
+  name
+  name
+  age
+  age
+  status
+  status}
 }
 fun test_update_adult_status() {
-  if !(people == [{ "name": "Alice", "age": 17, "status": "minor" }, { "name": "Bob", "age": 26, "status": "adult" }, { "name": "Charlie", "age": 19, "status": "adult" }, { "name": "Diana", "age": 16, "status": "minor" }]) {
-    error("expect failed")
-  }
+  assert(people == {:__name("Person", name, "Alice", age, 17, status, "minor", }, {:__name, "Person", name, "Bob", age, 26, status, "adult", }, {:__name, "Person", name, "Charlie", age, 19, status, "adult", }, {:__name, "Person", name, "Diana", age, 16, status, "minor", }), "expect failed")
 }
-let people = [{ "name": "Alice", "age": 17, "status": "minor" }, { "name": "Bob", "age": 25, "status": "unknown" }, { "name": "Charlie", "age": 18, "status": "unknown" }, { "name": "Diana", "age": 16, "status": "minor" }]
-for _i0 = 1; _i0 <= len(people); _i0 += 1 {
-  let _it0 = people._i0
-  let name = _it0["name"]
-  let age = _it0["age"]
-  let status = _it0["status"]
-  if age >= 18 {
-    _it0["status"] = "adult"
-    _it0["age"] = (age + 1)
-  }
-  people._i0 = _it0
+fun main() {
+  let people = _cast_struct_list(#'Person, {:__name("Person", name, "Alice", age, 17, status, "minor", }, {:__name, "Person", name, "Bob", age, 25, status, "unknown", }, {:__name, "Person", name, "Charlie", age, 18, status, "unknown", }, {:__name, "Person", name, "Diana", age, 16, status, "minor", }))
+  let people = vec(map(fn(_tmp0(), (fun(name) => if age >= 18 { assoc(assoc(_tmp0, status, "adult"), age, age + 1) } else { _tmp0 })([name, _tmp0])), people))
+  print("ok")
+  test_update_adult_status()
 }
-print("ok")
-let __tests = [{ "name": "update adult status", "fn": test_update_adult_status }]
-__run_tests(__tests)
+main()

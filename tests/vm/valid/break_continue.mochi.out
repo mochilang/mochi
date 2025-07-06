@@ -1,10 +1,5 @@
-var numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-for n in numbers {
-  if (n % 2) == 0 {
-  continue
+fun main() {
+  let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+  loop(_tmp0(seq(numbers)), if _tmp0 { (fun(n) => (fun(r) => cond(r == break, nil, else, recur(next(_tmp0))))(try(, , print("odd number:", n), next, catch(clojure_lang_ExceptionInfo, e, cond(_getMessage(e) == "continue", next, _getMessage(e) == "break", break, else, )))))(clojure_core_first(_tmp0)) })
 }
-  if n > 7 {
-  break
-}
-  print(str("odd number:") + " " + str(n))
-}
+main()

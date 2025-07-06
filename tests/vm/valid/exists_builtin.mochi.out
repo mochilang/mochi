@@ -1,13 +1,6 @@
-var data = [1, 2]
-var flag = len(fun (): list<int> {
-  var _res = []
-  for x in data {
-  if x == 1 {
-  if x == 1 {
-  _res = append(_res, x)
+fun main() {
+  let data = [1, 2]
+  let flag = exists(vec(>>(for(x(data, when, x == 1), x))))
+  print(flag)
 }
-}
-}
-  return _res
-}()) > 0
-print(flag)
+main()

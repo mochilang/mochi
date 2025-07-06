@@ -1,1 +1,4 @@
-print("hello " + "world")
+fun main() {
+  print(str("hello ", "world"))
+}
+main()

@@ -1,4 +1,7 @@
-fun add(a: int, b: int): int {
-  return (a + b)
+fun add(a, b) {
+  try(, catch(clojure_lang_ExceptionInfo, e, if _getMessage(e) == "return" { [value, ex_data(e)] }))
 }
-print(5)
+fun main() {
+  print(add(2, 3))
+}
+main()

@@ -1,7 +1,7 @@
-fun outer(x: int): int {
-  var inner = fun (y: int): int {
-  return (x + y)
+fun outer(x) {
+  try(defn(inner, y(), try(, catch(clojure_lang_ExceptionInfo, e, if _getMessage(e) == "return" { [value, ex_data(e)] }))), , catch(clojure_lang_ExceptionInfo, e, if _getMessage(e) == "return" { [value, ex_data(e)] }))
 }
-  return inner(5)
+fun main() {
+  print(outer(3))
 }
-print(outer(3))
+main()

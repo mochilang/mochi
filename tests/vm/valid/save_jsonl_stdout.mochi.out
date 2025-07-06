@@ -1,2 +1,8 @@
-let people = [{ "name": "Alice", "age": 30 }, { "name": "Bob", "age": 25 }]
-__save(people, "-", { "format": "jsonl" })
+fun _save(rows, path, opts) {
+  (fun(fmt) => cond(fmt == "csv", (fun(lines) => if nil_p(path) || path == "" || path == "-" { print(out) } else { spit(path, out) })(concat(, map(fn(r(), clojure_string_join(delim, map(#, str(get(r, %, "")), headers))), rows))), fmt == "tsv", _save(rows, path, assoc(opts, format, "csv", delimiter, "\t")), fmt == "json", (fun(out) => if nil_p(path) || path == "" || path == "-" { print(out) } else { spit(path, out) })(clojure_data_json_write_str(rows)), fmt == "jsonl", (fun(out) => if nil_p(path) || path == "" || path == "-" { print(str(out, "\n")) } else { spit(path, str(out, "\n")) })(clojure_string_join("\n", map(#, clojure_data_json_write_str(%), rows))), fmt == "yaml", (fun(yaml) => if nil_p(path) || path == "" || path == "-" { print(out) } else { spit(path, out) })(org_yaml_snakeyaml_Yaml_()), else, nil))(get(opts, format, "csv"))
+}
+fun main() {
+  let people = {:name("Alice", age, _30}, {:name, "Bob", age, _25})
+  _save(people, "-", {:format, "jsonl", })
+}
+main()

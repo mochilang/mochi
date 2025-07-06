@@ -1,5 +1,1 @@
-error[T002]: undefined variable: slices
-  --> :2:7
-
-help:
-  Check if the variable was declared in this scope.
+parse error: 3:14: lexer: invalid input text "#, 2 == %, nums)..."

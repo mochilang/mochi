@@ -1,5 +1,5 @@
-error[T001]: assignment to undeclared variable: _
-  --> :2:1
+error[T003]: unknown function: clojure_string_includes_p
+  --> :3:9
 
 help:
-  Declare `_` first using `let`.
+  Ensure the function is defined before it's called.

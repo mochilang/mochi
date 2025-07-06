@@ -1,3 +1,9 @@
-var matrix = [[1, 2], [3, 4]]
-matrix[1][0] = 5
-print(matrix[1][0])
+fun _indexList(xs, i) {
+  (fun(idx) => if idx < 0 || idx >= count(xs) {  } else { nth(xs, idx) })(if neg_p(i) { i + count(xs) } else { i })
+}
+fun main() {
+  let matrix = 
+  let matrix = assoc_in(matrix, [1, 0], 5)
+  print(_indexList(_indexList(matrix, 1), 0))
+}
+main()

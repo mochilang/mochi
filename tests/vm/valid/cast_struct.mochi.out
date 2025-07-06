@@ -1,9 +1,14 @@
-let Todo = []
-Todo["__index"] = Todo
-fun Todo["new"](o) {
-  let o = o || []
-  setmetatable(o, Todo)
-  return o
+fun _cast_struct(ctor, m) {
+  (fun(fields) => apply(ctor, map(#, get(m, %), fields)))(some_to_>(ctor, meta, arglists, first, map(keyword)) || keys(m))
 }
-let todo = Todo["new"]({ "title": "hi" })
-print(todo["title"])
+fun Todo(title) {
+  {:__name
+  "Todo"
+  title
+  title}
+}
+fun main() {
+  let todo = _cast_struct(Todo, {"title", "hi", })
+  print([title, todo])
+}
+main()

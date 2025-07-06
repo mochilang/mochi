@@ -1,2 +1,8 @@
-var xs = [10, 20, 30]
-print(xs[1])
+fun _indexList(xs, i) {
+  (fun(idx) => if idx < 0 || idx >= count(xs) {  } else { nth(xs, idx) })(if neg_p(i) { i + count(xs) } else { i })
+}
+fun main() {
+  let xs = [10, 20, 30]
+  print(_indexList(xs, 1))
+}
+main()

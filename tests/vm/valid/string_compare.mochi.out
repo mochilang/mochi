@@ -1,4 +1,7 @@
-print(("a" < "b"))
-print(("a" <= "a"))
-print(("b" > "a"))
-print(("b" >= "b"))
+fun main() {
+  print(compare("a", "b") < 0)
+  print(compare("a", "a") <= 0)
+  print(compare("b", "a") > 0)
+  print(compare("b", "b") >= 0)
+}
+main()

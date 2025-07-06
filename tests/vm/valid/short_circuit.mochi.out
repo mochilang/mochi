@@ -1,6 +1,8 @@
-fun boom(a: int, b: int): bool {
-  print("boom")
-  return true
+fun boom(a, b) {
+  try(print("boom"), , catch(clojure_lang_ExceptionInfo, e, if _getMessage(e) == "return" { [value, ex_data(e)] }))
 }
-print((false && boom(1, 2)))
-print((true || boom(1, 2)))
+fun main() {
+  print(false && boom(1, 2))
+  print(true || boom(1, 2))
+}
+main()

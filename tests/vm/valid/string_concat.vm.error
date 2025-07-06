@@ -1,0 +1,5 @@
+error[T039]: function str expects 1 arguments, got 2
+  --> :2:9
+
+help:
+  Pass exactly 1 arguments to `str`.

@@ -1,0 +1,5 @@
+error[T003]: unknown function: apply
+  --> :3:9
+
+help:
+  Ensure the function is defined before it's called.

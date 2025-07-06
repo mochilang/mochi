@@ -1,3 +1,4 @@
-for n in [1, 2, 3] {
-  print(n)
+fun main() {
+  loop(_tmp0(seq([1, 2, 3])), if _tmp0 { (fun(n) => (fun(r) => cond(r == break, nil, else, recur(next(_tmp0))))(try(print(n), next, catch(clojure_lang_ExceptionInfo, e, cond(_getMessage(e) == "continue", next, _getMessage(e) == "break", break, else, )))))(clojure_core_first(_tmp0)) })
 }
+main()

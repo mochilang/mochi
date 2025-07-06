@@ -1,13 +1,15 @@
-let Counter = []
-Counter["__index"] = Counter
-fun Counter["new"](o) {
-  let o = o || []
-  setmetatable(o, Counter)
-  return o
+fun Counter(n) {
+  {:__name
+  "Counter"
+  n
+  n}
 }
 fun inc(c) {
-  let c = (c["n"] + 1)
+  try(let c = [n, c] + 1, catch(clojure_lang_ExceptionInfo, e, if _getMessage(e) == "return" { [value, ex_data(e)] }))
 }
-let c = { "n": 0 }
-inc(c)
-print(c["n"])
+fun main() {
+  let c = {:__name
+  inc(c)
+  print([n, c])
+}
+main()

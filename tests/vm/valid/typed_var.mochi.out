@@ -1,2 +1,5 @@
-var x = nil
-print(x)
+fun main() {
+  let x = nil
+  print(x)
+}
+main()

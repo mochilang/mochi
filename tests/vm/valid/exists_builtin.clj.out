@@ -1,0 +1,10 @@
+(ns main)
+
+(declare data flag)
+
+(defn -main []
+  (def data [1 2])
+  (def flag (exists (vec (->> (for [x data :when (= x 1)] x)))))
+  (println flag))
+
+(-main)

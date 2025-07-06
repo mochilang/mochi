@@ -1,19 +1,6 @@
-let items = [{ "n": 1, "v": "a" }, { "n": 1, "v": "b" }, { "n": 2, "v": "c" }]
-let result = fun() {
-    let _res = []
-    for _, i in ipairs(items) {
-      _res[len(_res) + 1] = { "__key": i["n"], "__val": i["v"] }
-    }
-    let items = _res
-    table["sort"](items, fun(a, b) {
-    return a["__key"] < b["__key"]
-})
-    let tmp = []
-    for _, it in ipairs(items) {
-      tmp[len(tmp) + 1] = it["__val"]
-    }
-    items = tmp
-    _res = items
-    return _res
-}()
-print(result)
+fun main() {
+  let items = {:n(1, v, "a", }, {:n, 1, v, "b", }, {:n, 2, v, "c", })
+  let result = vec(>>(for(i(items), [v, i]), sort_by(fn(i(), [n, i]))))
+  print(result)
+}
+main()

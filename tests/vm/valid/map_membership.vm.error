@@ -1,1 +1,1 @@
-parse error: 2:14: lexer: invalid input text "~= null)\nprint(m..."
+parse error: 7:1: unexpected token "<EOF>" (expected "}")

@@ -1,11 +1,21 @@
-type Person {
-  Name: string
-  Age: int
+fun Person(name, age) {
+  {:__name
+  "Person"
+  name
+  name
+  age
+  age}
 }
-type Book {
-  Title: string
-  Author: Person
+fun Book(title, author) {
+  {:__name
+  "Book"
+  title
+  title
+  author
+  author}
 }
-var book = Book { Title: "Go", Author: Person { Name: "Bob", Age: 42 } }
-_ = book
-print(book.Author.Name)
+fun main() {
+  let book = {:__name
+  print([name, [author, book]])
+}
+main()

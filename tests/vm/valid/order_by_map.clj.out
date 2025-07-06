@@ -1,0 +1,10 @@
+(ns main)
+
+(declare data sorted)
+
+(defn -main []
+  (def data [{:a 1 :b 2} {:a 1 :b 1} {:a 0 :b 5}])
+  (def sorted (vec (->> (for [x data] x) (sort-by (fn [x] {:a (:a x) :b (:b x)})))))
+  (println sorted))
+
+(-main)

@@ -1,18 +1,8 @@
-var nums = [1, 2, 3]
-var letters = ["A", "B"]
-_ = letters
-var pairs = fun (): list<map<string, any>> {
-  var _res = []
-  for n in nums {
-  if (n % 2) == 0 {
-  for l in letters {
-  _res = append(_res, {"n": n, "l": l})
+fun main() {
+  let nums = [1, 2, 3]
+  let letters = ["A", "B"]
+  let pairs = vec(>>(for(n(nums, when, n % 2 == 0, l, letters), {:n, n, l, l})))
+  print("--- Even pairs ---")
+  loop(_tmp0(seq(pairs)), if _tmp0 { (fun(p) => (fun(r) => cond(r == break, nil, else, recur(next(_tmp0))))(try(print([n, p], [l, p]), next, catch(clojure_lang_ExceptionInfo, e, cond(_getMessage(e) == "continue", next, _getMessage(e) == "break", break, else, )))))(clojure_core_first(_tmp0)) })
 }
-}
-}
-  return _res
-}()
-print("--- Even pairs ---")
-for p in pairs {
-  print(str(p["n"]) + " " + str(p["l"]))
-}
+main()

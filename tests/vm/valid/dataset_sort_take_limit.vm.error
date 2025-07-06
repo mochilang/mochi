@@ -1,1 +1,1 @@
-parse error: 18:16: lexer: invalid input text "; i <= skip; i +..."
+parse error: 2:19: unexpected token ":" (expected "}")

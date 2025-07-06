@@ -1,0 +1,11 @@
+(ns main)
+
+(declare x y m)
+
+(defn -main []
+  (def x 3)
+  (def y 4)
+  (def m {"a" x "b" y})
+  (println (get m "a") (get m "b")))
+
+(-main)

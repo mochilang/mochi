@@ -1,8 +1,5 @@
-var i = 0
-while true {
-  if !(i < 3) {
-  break
+fun main() {
+  let i = 0
+  loop(, if i < 3 { (fun(r) => cond(r == break, nil, r == next, recur()))(try(print(i), let i = i + 1, next, catch(clojure_lang_ExceptionInfo, e, cond(_getMessage(e) == "continue", next, _getMessage(e) == "break", break, else, )))) })
 }
-  print(i)
-  i = (i + 1)
-}
+main()

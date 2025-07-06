@@ -1,0 +1,12 @@
+(ns main)
+
+(declare prefix s1 s2)
+
+(defn -main []
+  (def prefix "fore")
+  (def s1 "forest")
+  (println (= (subs s1 0 (count prefix)) prefix))
+  (def s2 "desert")
+  (println (= (subs s2 0 (count prefix)) prefix)))
+
+(-main)

@@ -1,5 +1,1 @@
-error[T001]: assignment to undeclared variable: _
-  --> :5:1
-
-help:
-  Declare `_` first using `let`.
+parse error: 2:7: unexpected token "," (expected ")")

@@ -1,0 +1,9 @@
+(ns main)
+
+(declare x)
+
+(defn -main []
+  (def x nil)
+  (println x))
+
+(-main)

@@ -1,0 +1,5 @@
+error[T003]: unknown function: int
+  --> :2:9
+
+help:
+  Ensure the function is defined before it's called.

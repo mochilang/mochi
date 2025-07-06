@@ -1,6 +1,8 @@
-fun inc(x: int): int {
-  return (x + k)
+fun inc(x) {
+  try(, catch(clojure_lang_ExceptionInfo, e, if _getMessage(e) == "return" { [value, ex_data(e)] }))
 }
-var k = 2
-_ = k
-print(5)
+fun main() {
+  let k = 2
+  print(inc(3))
+}
+main()

@@ -1,4 +1,7 @@
-fun sum3(a: int, b: int, c: int): int {
-  return ((a + b) + c)
+fun sum3(a, b, c) {
+  try(, catch(clojure_lang_ExceptionInfo, e, if _getMessage(e) == "return" { [value, ex_data(e)] }))
 }
-print(6)
+fun main() {
+  print(sum3(1, 2, 3))
+}
+main()

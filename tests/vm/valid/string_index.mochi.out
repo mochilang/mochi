@@ -1,12 +1,8 @@
-fun _indexString(s: string, i: int): string {
-  var runes = s
-  if i < 0 {
-  i = i + len(runes)
+fun _indexString(s, i) {
+  (fun(r) => if i < 0 || i >= count(r) {  } else { str(nth(r, i)) })(vec(seq(s)))
 }
-  if i < 0 || i >= len(runes) {
-  panic("index out of range")
+fun main() {
+  let s = "mochi"
+  print(_indexString(s, 1))
 }
-  return str(runes[i])
-}
-var s = "mochi"
-print(_indexString(s, 1))
+main()
