@@ -1,7 +1,7 @@
-line 18: unsupported line
+line 18:9: unsupported line
  16|             c = (c + 1L);
  17|         }
  18|         foreach (var _tmp2 in "ab") {
-   |                                      ^
+   |         ^
  19|             c = (c + 1L);
  20|         }
