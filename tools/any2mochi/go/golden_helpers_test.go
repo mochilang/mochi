@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+
 	"os"
 	"path/filepath"
 	"strings"
@@ -13,8 +14,21 @@ import (
 
 	gocode "mochi/compile/go"
 	"mochi/parser"
+	vm "mochi/runtime/vm"
 	"mochi/types"
 )
+
+func snippetFromFile(path string) string {
+	data, _ := os.ReadFile(path)
+	lines := strings.Split(string(data), "\n")
+	if len(lines) > 10 {
+		lines = lines[:10]
+	}
+	for i, l := range lines {
+		lines[i] = fmt.Sprintf("%3d| %s", i+1, l)
+	}
+	return strings.Join(lines, "\n")
+}
 
 var update = flag.Bool("update", false, "update golden files")
 
