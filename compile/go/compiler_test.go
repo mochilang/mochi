@@ -91,7 +91,7 @@ func TestGoCompiler_SubsetPrograms(t *testing.T) {
 }
 
 func TestGoCompiler_GoldenOutput(t *testing.T) {
-	golden.Run(t, "tests/compiler/valid", ".mochi", ".go.out", func(src string) ([]byte, error) {
+	runCompile := func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
 			return nil, fmt.Errorf("❌ parse error: %w", err)
@@ -105,25 +105,42 @@ func TestGoCompiler_GoldenOutput(t *testing.T) {
 		if err != nil {
 			return nil, fmt.Errorf("❌ compile error: %w", err)
 		}
-		return bytes.TrimSpace(code), nil
-	})
 
-	golden.Run(t, "tests/compiler/go", ".mochi", ".go.out", func(src string) ([]byte, error) {
-		prog, err := parser.Parse(src)
+		// Write generated code to a temp file and run it using `go run`.
+		dir, err := os.MkdirTemp("", "mochi-go-compile")
 		if err != nil {
-			return nil, fmt.Errorf("❌ parse error: %w", err)
+			return nil, err
 		}
-		typeEnv := types.NewEnv(nil)
-		if errs := types.Check(prog, typeEnv); len(errs) > 0 {
-			return nil, fmt.Errorf("❌ type error: %v", errs[0])
+		defer os.RemoveAll(dir)
+		file := filepath.Join(dir, "main.go")
+		if err := os.WriteFile(file, code, 0644); err != nil {
+			return nil, fmt.Errorf("write error: %w", err)
 		}
-		c := gocode.New(typeEnv)
-		code, err := c.Compile(prog)
+		cmd := exec.Command("go", "run", file)
+		cmd.Env = append(os.Environ(), "GO111MODULE=on", "LLM_PROVIDER=echo")
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			cmd.Stdin = bytes.NewReader(data)
+		}
+		out, err := cmd.CombinedOutput()
 		if err != nil {
-			return nil, fmt.Errorf("❌ compile error: %w", err)
+			return nil, fmt.Errorf("❌ go run error: %w\n%s", err, out)
 		}
+
+		// If an output golden exists, ensure the program output matches.
+		outPath := strings.TrimSuffix(src, ".mochi") + ".out"
+		if want, err := os.ReadFile(outPath); err == nil {
+			got := bytes.TrimSpace(out)
+			root := repoRoot()
+			if !bytes.Equal(normalizeOutput(root, got), normalizeOutput(root, bytes.TrimSpace(want))) {
+				return nil, fmt.Errorf("runtime output mismatch\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", got, want)
+			}
+		}
+
 		return bytes.TrimSpace(code), nil
-	})
+	}
+
+	golden.Run(t, "tests/compiler/valid", ".mochi", ".go.out", runCompile)
+	golden.Run(t, "tests/compiler/go", ".mochi", ".go.out", runCompile)
 }
 
 func TestGoCompiler_LeetCodeExamples(t *testing.T) {
@@ -608,4 +625,22 @@ func normalizeOutput(root string, b []byte) []byte {
 		out += "\n"
 	}
 	return []byte(out)
+}
+
+func repoRoot() string {
+	dir, err := os.Getwd()
+	if err != nil {
+		return ""
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	return dir
 }
