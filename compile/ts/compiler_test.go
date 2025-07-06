@@ -15,6 +15,7 @@ import (
 	"mochi/golden"
 	"mochi/parser"
 	"mochi/runtime/mod"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -116,7 +117,8 @@ func TestTSCompiler_GoldenOutput(t *testing.T) {
 			return nil, fmt.Errorf("❌ compile error: %w", err)
 		}
 
-		// Verify the emitted code can run correctly.
+		// Verify the emitted code can run correctly and match the
+		// behaviour of the Mochi VM.
 		dir := t.TempDir()
 		file := filepath.Join(dir, "main.ts")
 		if err := os.WriteFile(file, code, 0644); err != nil {
@@ -124,7 +126,9 @@ func TestTSCompiler_GoldenOutput(t *testing.T) {
 		}
 		cmd := exec.Command("deno", "run", "--quiet", "--allow-net", "--allow-read", file)
 		cmd.Env = append(os.Environ(), "DENO_TLS_CA_STORE=system")
+		var inData []byte
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			inData = data
 			cmd.Stdin = bytes.NewReader(data)
 		}
 		out, err := cmd.CombinedOutput()
@@ -132,11 +136,24 @@ func TestTSCompiler_GoldenOutput(t *testing.T) {
 			return nil, fmt.Errorf("❌ deno run error: %w\n%s", err, out)
 		}
 		gotOut := bytes.TrimSpace(out)
-		wantOut, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".out")
-		if err == nil {
-			if want := bytes.TrimSpace(wantOut); !bytes.Equal(gotOut, want) {
-				t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", filepath.Base(src), gotOut, want)
+
+		// Execute with the Mochi VM for reference output.
+		vmProg, err := vm.CompileWithSource(prog, typeEnv, string(mustRead(src)))
+		if err != nil {
+			return nil, fmt.Errorf("vm compile error: %w", err)
+		}
+		var buf bytes.Buffer
+		vmExec := vm.NewWithIO(vmProg, bytes.NewReader(inData), &buf)
+		if err := vmExec.Run(); err != nil {
+			if ve, ok := err.(*vm.VMError); ok {
+				return nil, fmt.Errorf("vm run error:\n%s", ve.Format(vmProg))
 			}
+			return nil, fmt.Errorf("vm run error: %v", err)
+		}
+		want := bytes.TrimSpace(buf.Bytes())
+
+		if !bytes.Equal(gotOut, want) {
+			t.Errorf("output mismatch vs VM for %s\n\n--- Deno ---\n%s\n\n--- VM ---\n%s\n", filepath.Base(src), gotOut, want)
 		}
 
 		return bytes.TrimSpace(code), nil
@@ -459,4 +476,12 @@ func findRepoRoot(t *testing.T) string {
 	}
 	t.Fatal("go.mod not found (not in Go module)")
 	return ""
+}
+
+func mustRead(path string) []byte {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		panic(err)
+	}
+	return data
 }

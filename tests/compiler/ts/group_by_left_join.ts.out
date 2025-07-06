@@ -43,14 +43,14 @@ function main(): void {
     for (const _r of _items) {
       const [c, o] = _r;
       const _key = c.name;
-      const _ks = String(_key);
+      const _ks = JSON.stringify(_key);
       let _g = _map.get(_ks);
       if (!_g) {
         _g = { key: _key, items: [] };
         _map.set(_ks, _g);
         _order.push(_ks);
       }
-      _g.items.push(c);
+      _g.items.push({ ...c, ...o, c: c, o: o });
     }
     let _itemsG = _order.map((k) => _map.get(k)!);
     const _res = [];
@@ -107,17 +107,19 @@ function _query(src: any[], joins: any[], opts: any): any {
         for (let ri = 0; ri < j.items.length; ri++) {
           const right = j.items[ri];
           let keep = true;
-          if (j.on) keep = j.on(...left, right);
+          if (left.some((v: any) => v === null) || right === null) {
+            keep = false;
+          } else if (j.on) keep = j.on(...left, right);
           if (!keep) continue;
           m = true;
           matched[ri] = true;
           joined.push([...left, right]);
         }
-        if (!m) joined.push([...left, undefined]);
+        if (!m) joined.push([...left, null]);
       }
       for (let ri = 0; ri < j.items.length; ri++) {
         if (!matched[ri]) {
-          const undef = Array(items[0]?.length || 0).fill(undefined);
+          const undef = Array(items[0]?.length || 0).fill(null);
           joined.push([...undef, j.items[ri]]);
         }
       }
@@ -126,13 +128,15 @@ function _query(src: any[], joins: any[], opts: any): any {
         let m = false;
         for (const left of items) {
           let keep = true;
-          if (j.on) keep = j.on(...left, right);
+          if (left.some((v: any) => v === null) || right === null) {
+            keep = false;
+          } else if (j.on) keep = j.on(...left, right);
           if (!keep) continue;
           m = true;
           joined.push([...left, right]);
         }
         if (!m) {
-          const undef = Array(items[0]?.length || 0).fill(undefined);
+          const undef = Array(items[0]?.length || 0).fill(null);
           joined.push([...undef, right]);
         }
       }
@@ -141,12 +145,14 @@ function _query(src: any[], joins: any[], opts: any): any {
         let m = false;
         for (const right of j.items) {
           let keep = true;
-          if (j.on) keep = j.on(...left, right);
+          if (left.some((v: any) => v === null) || right === null) {
+            keep = false;
+          } else if (j.on) keep = j.on(...left, right);
           if (!keep) continue;
           m = true;
           joined.push([...left, right]);
         }
-        if (j.left && !m) joined.push([...left, undefined]);
+        if (j.left && !m) joined.push([...left, null]);
       }
     }
     items = joined;

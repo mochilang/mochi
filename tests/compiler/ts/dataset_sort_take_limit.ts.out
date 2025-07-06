@@ -41,7 +41,7 @@ function main(): void {
   ];
   expensive = (() => {
     const _src = products;
-    let _items = [];
+    var _items = [];
     for (const p of _src) {
       _items.push(p);
     }

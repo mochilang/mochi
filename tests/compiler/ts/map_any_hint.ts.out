@@ -17,7 +17,7 @@ function _Node(
   };
 }
 
-let tree: Record<string, any>;
+var tree: Record<string, any>;
 
 function main(): void {
   tree = _Node(Leaf(), 1, Leaf());

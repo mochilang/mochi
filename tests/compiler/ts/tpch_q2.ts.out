@@ -152,7 +152,7 @@ function main(): void {
   min_cost = _min(costs);
   result = (() => {
     const _src = target_partsupp;
-    let _items = [];
+    var _items = [];
     for (const x of _src) {
       if (!(_equal(x.ps_supplycost, min_cost))) continue;
       _items.push(x);
@@ -216,7 +216,7 @@ function _json(v: any): string {
   return JSON.stringify(_sort(v));
 }
 
-function _min(v: any): number {
+function _min(v: any): any {
   let list: any[] | null = null;
   if (Array.isArray(v)) list = v;
   else if (v && typeof v === "object") {
@@ -224,12 +224,17 @@ function _min(v: any): number {
     else if (Array.isArray((v as any).Items)) list = (v as any).Items;
   }
   if (!list || list.length === 0) return 0;
-  let m = Number(list[0]);
+  let m: any = list[0];
+  if (typeof m === "string") {
+    for (const s of list) if (typeof s === "string" && s < m) m = s;
+    return m;
+  }
+  let mv = Number(m);
   for (const n of list) {
     const num = Number(n);
-    if (num < m) m = num;
+    if (num < mv) mv = num;
   }
-  return m;
+  return mv;
 }
 
 function _query(src: any[], joins: any[], opts: any): any {
@@ -243,17 +248,19 @@ function _query(src: any[], joins: any[], opts: any): any {
         for (let ri = 0; ri < j.items.length; ri++) {
           const right = j.items[ri];
           let keep = true;
-          if (j.on) keep = j.on(...left, right);
+          if (left.some((v: any) => v === null) || right === null) {
+            keep = false;
+          } else if (j.on) keep = j.on(...left, right);
           if (!keep) continue;
           m = true;
           matched[ri] = true;
           joined.push([...left, right]);
         }
-        if (!m) joined.push([...left, undefined]);
+        if (!m) joined.push([...left, null]);
       }
       for (let ri = 0; ri < j.items.length; ri++) {
         if (!matched[ri]) {
-          const undef = Array(items[0]?.length || 0).fill(undefined);
+          const undef = Array(items[0]?.length || 0).fill(null);
           joined.push([...undef, j.items[ri]]);
         }
       }
@@ -262,13 +269,15 @@ function _query(src: any[], joins: any[], opts: any): any {
         let m = false;
         for (const left of items) {
           let keep = true;
-          if (j.on) keep = j.on(...left, right);
+          if (left.some((v: any) => v === null) || right === null) {
+            keep = false;
+          } else if (j.on) keep = j.on(...left, right);
           if (!keep) continue;
           m = true;
           joined.push([...left, right]);
         }
         if (!m) {
-          const undef = Array(items[0]?.length || 0).fill(undefined);
+          const undef = Array(items[0]?.length || 0).fill(null);
           joined.push([...undef, right]);
         }
       }
@@ -277,12 +286,14 @@ function _query(src: any[], joins: any[], opts: any): any {
         let m = false;
         for (const right of j.items) {
           let keep = true;
-          if (j.on) keep = j.on(...left, right);
+          if (left.some((v: any) => v === null) || right === null) {
+            keep = false;
+          } else if (j.on) keep = j.on(...left, right);
           if (!keep) continue;
           m = true;
           joined.push([...left, right]);
         }
-        if (j.left && !m) joined.push([...left, undefined]);
+        if (j.left && !m) joined.push([...left, null]);
       }
     }
     items = joined;
