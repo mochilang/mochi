@@ -2,5 +2,6 @@
 type Program {
 }
 fun Program.Main() {
-  print("Hello, world")
+  var value = (((1 + 2)) * 3)
+  print(value)
 }

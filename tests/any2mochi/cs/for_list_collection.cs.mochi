@@ -2,5 +2,6 @@
 type Program {
 }
 fun Program.Main() {
-  print("Hello, world")
+  for n in new long[] { 1, 2, 3 } {
+  print(n)
 }

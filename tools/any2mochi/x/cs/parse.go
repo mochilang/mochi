@@ -18,12 +18,14 @@ type Type struct {
 	EndLine   int
 	Fields    []Field
 	Methods   []Func
+	Doc       string
 }
 
 type Field struct {
 	Name string
 	Type string
 	Line int
+	Doc  string
 }
 
 type Func struct {
@@ -33,6 +35,7 @@ type Func struct {
 	Body      []string
 	StartLine int
 	EndLine   int
+	Doc       string
 }
 
 type Param struct {
@@ -56,13 +59,18 @@ func parseSimple(src string) (*AST, error) {
 	depth := 0
 	var unknownLine int = -1
 	var unknownMsg string
+	var pendingDoc []string
 	for i := 0; i < len(lines); i++ {
 		l := strings.TrimSpace(lines[i])
 		if strings.HasPrefix(l, "//") || l == "" {
+			if strings.HasPrefix(l, "//") {
+				pendingDoc = append(pendingDoc, strings.TrimSpace(strings.TrimPrefix(l, "//")))
+			}
 			continue
 		}
 		if m := typeRE.FindStringSubmatch(l); m != nil && strings.HasSuffix(l, "{") {
-			t := &Type{Name: m[2], Kind: strings.ToLower(m[1]), StartLine: i + 1}
+			t := &Type{Name: m[2], Kind: strings.ToLower(m[1]), StartLine: i + 1, Doc: strings.Join(pendingDoc, "\n")}
+			pendingDoc = nil
 			ast.Types = append(ast.Types, *t)
 			cur = &ast.Types[len(ast.Types)-1]
 			depth++
@@ -85,7 +93,8 @@ func parseSimple(src string) (*AST, error) {
 			continue
 		}
 		if m := funcRE.FindStringSubmatch(l); m != nil {
-			fn := Func{Name: m[2], Ret: m[1], StartLine: i + 1}
+			fn := Func{Name: m[2], Ret: m[1], StartLine: i + 1, Doc: strings.Join(pendingDoc, "\n")}
+			pendingDoc = nil
 			params := strings.Split(strings.TrimSpace(m[3]), ",")
 			for _, p := range params {
 				p = strings.TrimSpace(p)
@@ -121,7 +130,8 @@ func parseSimple(src string) (*AST, error) {
 			continue
 		}
 		if m := fieldRE.FindStringSubmatch(l); m != nil && strings.HasSuffix(l, ";") {
-			cur.Fields = append(cur.Fields, Field{Name: m[2], Type: m[1], Line: i + 1})
+			cur.Fields = append(cur.Fields, Field{Name: m[2], Type: m[1], Line: i + 1, Doc: strings.Join(pendingDoc, "\n")})
+			pendingDoc = nil
 			continue
 		}
 
@@ -138,11 +148,11 @@ func parseSimple(src string) (*AST, error) {
 		return nil, fmt.Errorf("no types found")
 	}
 	if unknownLine != -1 {
-		start := unknownLine - 1
+		start := unknownLine - 2
 		if start < 0 {
 			start = 0
 		}
-		end := unknownLine + 1
+		end := unknownLine + 2
 		if end >= len(lines) {
 			end = len(lines) - 1
 		}

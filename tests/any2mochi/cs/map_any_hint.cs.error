@@ -1,0 +1,7 @@
+line 11: unsupported line
+  9| 
+ 10| public class Program {
+ 11|     static Dictionary<string, dynamic> Leaf() {
+   |                                                ^
+ 12|         return new Dictionary<string, string> { { "__name", "Leaf" } };
+ 13|     }

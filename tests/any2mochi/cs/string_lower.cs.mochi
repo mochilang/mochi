@@ -2,5 +2,5 @@
 type Program {
 }
 fun Program.Main() {
-  print("Hello, world")
+  print(Convert.ToString("HELLO").ToLower())
 }

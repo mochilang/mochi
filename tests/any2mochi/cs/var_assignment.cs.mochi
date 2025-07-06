@@ -2,5 +2,7 @@
 type Program {
 }
 fun Program.Main() {
-  print("Hello, world")
+  var x = 1
+  x = 2
+  print(x)
 }
