@@ -1,4 +1,4 @@
-parse error: parse error: 2:14: lexer: invalid input text ";)\n"
+parse error: parse error: 3:15: unexpected token ")" (expected PostfixExpr)
 
   1| let i = ref 0;;
   2| while !i < 3 do

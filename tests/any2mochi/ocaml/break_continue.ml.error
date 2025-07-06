@@ -1,4 +1,4 @@
-parse error: parse error: 2:40: lexer: invalid input text ";  (n)]);)\n"
+parse error: parse error: 2:22: unexpected token " " (expected ")")
 
   1| exception BreakException of int
   2| exception ContinueException of int

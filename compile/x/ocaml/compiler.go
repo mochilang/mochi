@@ -893,6 +893,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	stringMode := types.IsStringExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: b.Left}}, c.env)
 	for _, op := range b.Right {
 		r, err := c.compilePostfix(op.Right)
 		if err != nil {
@@ -907,9 +908,10 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			oper = "mod"
 		} else if oper == "+" {
 			// use list concatenation or string concat if operand is list or string
+			rightStr := types.IsStringExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}, c.env)
 			if types.IsListExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}, c.env) {
 				oper = "@"
-			} else if types.IsStringExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}, c.env) || types.IsStringExpr(&parser.Expr{Binary: b}, c.env) {
+			} else if stringMode || rightStr || types.IsStringExpr(&parser.Expr{Binary: b}, c.env) {
 				oper = "^"
 				// convert char from String.get to string for concatenation
 				if strings.HasPrefix(r, "(String.get ") {
@@ -918,6 +920,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				if strings.HasPrefix(expr, "(String.get ") {
 					expr = fmt.Sprintf("(String.make 1 %s)", expr)
 				}
+				stringMode = true
 			}
 		} else if oper == "/" {
 			if types.IsFloatExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}, c.env) || types.IsFloatExpr(&parser.Expr{Binary: b}, c.env) {

@@ -1,4 +1,4 @@
-parse error: parse error: 5:14: lexer: invalid input text ";)\n"
+parse error: parse error: 1:16: unexpected token "let" (expected PostfixExpr)
 
   1| let people = [(let tbl = Hashtbl.create 2 in Hashtbl.add tbl "name" "Alice";Hashtbl.add tbl "age" 30; tbl); (let tbl = Hashtbl.create 2 in Hashtbl.add tbl "name" "Bob";Hashtbl.add tbl "age" 15; tbl); (let tbl = Hashtbl.create 2 in Hashtbl.add tbl "name" "Charlie";Hashtbl.add tbl "age" 65; tbl)];;
   2| let depts = [(let tbl = Hashtbl.create 1 in Hashtbl.add tbl "name" "HR"; tbl); (let tbl = Hashtbl.create 1 in Hashtbl.add tbl "name" "IT"; tbl)];;
