@@ -1,0 +1,12 @@
+parse error: parse error: 1:95: unexpected token "," (expected "]")
+
+  1| case class Msg(message: String)
+  2| 
+  3| object Main {
+  4|     def main(args: Array[String]): Unit = {
+  5|         val data: Msg = _cast[Msg](_fetch("file://tests/compiler/scala/fetch_builtin.json", Map[String, Any]()))
+  6|         println(data.message)
+  7|     }
+  8|     def _cast[T](v: Any)(implicit ct: scala.reflect.ClassTag[T]): T = {
+  9|             val cls = ct.runtimeClass
+ 10|             if (cls == classOf[Int]) v match {

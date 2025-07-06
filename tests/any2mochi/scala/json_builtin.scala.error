@@ -1,0 +1,12 @@
+parse error: parse error: 6:2: unexpected token "<EOF>" (expected "{" MatchCase* "}")
+
+  1| object Main {
+  2|     def main(args: Array[String]): Unit = {
+  3|         _json(scala.collection.mutable.Map("a" -> 1))
+  4|     }
+  5|     def _json(v: Any): Unit = println(_to_json(v))
+  6|     
+  7|     def _to_json(v: Any): String = v match {
+  8|             case null => "null"
+  9|             case s: String => "\"" + s.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
+ 10|             case b: Boolean => b.toString

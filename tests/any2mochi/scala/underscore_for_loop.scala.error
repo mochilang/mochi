@@ -1,0 +1,16 @@
+type error: error[T002]: undefined variable: scala
+  --> :8:11
+
+help:
+  Check if the variable was declared in this scope.
+
+  1| object Main {
+  2|     def main(args: Array[String]): Unit = {
+  3|         var c: Int = 0
+  4|         var i1 = 0
+  5|         while (i1 < 2) {
+  6|             val _ = i1
+  7|             i1 = i1 + 1
+  8|             c = (c + 1)
+  9|         }
+ 10|         val it2 = scala.collection.mutable.ArrayBuffer(1, 2).iterator

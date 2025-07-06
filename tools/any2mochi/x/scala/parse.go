@@ -31,6 +31,8 @@ type Variant struct {
 type TypeDecl struct {
 	Name     string    `json:"name"`
 	Variants []Variant `json:"variants"`
+	Line     int       `json:"line,omitempty"`
+	End      int       `json:"end,omitempty"`
 }
 
 // Func represents a top level Scala function extracted from the AST.
@@ -122,7 +124,7 @@ func parseSource(src string) File {
 	for i := 0; i < len(lines); i++ {
 		line := strings.TrimSpace(lines[i])
 		if m := reTrait.FindStringSubmatch(line); m != nil {
-			file.Types = append(file.Types, TypeDecl{Name: m[1]})
+			file.Types = append(file.Types, TypeDecl{Name: m[1], Line: i + 1})
 			continue
 		}
 		if m := reCase.FindStringSubmatch(line); m != nil {
@@ -145,12 +147,13 @@ func parseSource(src string) File {
 			for j := range file.Types {
 				if file.Types[j].Name == typ {
 					file.Types[j].Variants = append(file.Types[j].Variants, Variant{Name: m[1], Fields: fields})
+					file.Types[j].End = i + 1
 					added = true
 					break
 				}
 			}
 			if !added {
-				file.Types = append(file.Types, TypeDecl{Name: typ, Variants: []Variant{{Name: m[1], Fields: fields}}})
+				file.Types = append(file.Types, TypeDecl{Name: typ, Variants: []Variant{{Name: m[1], Fields: fields}}, Line: i + 1, End: i + 1})
 			}
 			continue
 		}

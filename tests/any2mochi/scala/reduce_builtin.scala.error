@@ -1,0 +1,16 @@
+type error: error[T005]: parameter `a` is missing a type
+  --> :1:1
+
+help:
+  Add a type like `x: int` to this parameter.
+
+  1| object Main {
+  2|     def add(a: Int, b: Int): Int = {
+  3|         return (a + b)
+  4|     }
+  5|     
+  6|     def main(args: Array[String]): Unit = {
+  7|         println(_reduce(scala.collection.mutable.ArrayBuffer(1, 2, 3), add, 0))
+  8|     }
+  9|     def _reduce[T](src: Iterable[T], fn: (T, T) => T, init: T): T = {
+ 10|             var acc = init

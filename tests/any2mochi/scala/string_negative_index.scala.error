@@ -1,0 +1,12 @@
+parse error: parse error: 7:16: unexpected token "idx" (expected "{" Statement* "}" (("else" IfStmt) | ("else" "{" Statement* "}"))?)
+
+  1| object Main {
+  2|     def main(args: Array[String]): Unit = {
+  3|         val text: String = "hello"
+  4|         println(_indexString(text, (-1)))
+  5|     }
+  6|     def _indexString(s: String, i: Int): String = {
+  7|             var idx = i
+  8|             val chars = s.toVector
+  9|             if (idx < 0) idx += chars.length
+ 10|             if (idx < 0 || idx >= chars.length) throw new RuntimeException("index out of range")

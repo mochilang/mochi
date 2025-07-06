@@ -1,0 +1,12 @@
+parse error: parse error: 2:18: unexpected token "=" (expected "(" (Expr ("," Expr)*)? ")")
+
+  1| object Main {
+  2|     def test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus(): Unit = {
+  3|         expect((result == scala.collection.mutable.ArrayBuffer(scala.collection.mutable.Map("returnflag" -> "N", "linestatus" -> "O", "sum_qty" -> 53, "sum_base_price" -> 3000, "sum_disc_price" -> (950 + 1800), "sum_charge" -> (((950 * 1.07)) + ((1800 * 1.05))), "avg_qty" -> 26.5, "avg_price" -> 1500, "avg_disc" -> 0.07500000000000001, "count_order" -> 2))))
+  4|     }
+  5|     
+  6|     def main(args: Array[String]): Unit = {
+  7|         val lineitem: scala.collection.mutable.ArrayBuffer[scala.collection.mutable.Map[String, Any]] = scala.collection.mutable.ArrayBuffer(scala.collection.mutable.Map("l_quantity" -> 17, "l_extendedprice" -> 1000, "l_discount" -> 0.05, "l_tax" -> 0.07, "l_returnflag" -> "N", "l_linestatus" -> "O", "l_shipdate" -> "1998-08-01"), scala.collection.mutable.Map("l_quantity" -> 36, "l_extendedprice" -> 2000, "l_discount" -> 0.1, "l_tax" -> 0.05, "l_returnflag" -> "N", "l_linestatus" -> "O", "l_shipdate" -> "1998-09-01"), scala.collection.mutable.Map("l_quantity" -> 25, "l_extendedprice" -> 1500, "l_discount" -> 0, "l_tax" -> 0.08, "l_returnflag" -> "R", "l_linestatus" -> "F", "l_shipdate" -> "1998-09-03"))
+  8|         val result: scala.collection.mutable.ArrayBuffer[scala.collection.mutable.Map[String, Any]] = _group_by((() => {
+  9|     val src = lineitem
+ 10|     val res = _query(src, Seq(

@@ -1,0 +1,12 @@
+parse error: parse error: 11:24: unexpected token "=" (expected ")")
+
+  1| sealed trait Tree
+  2| case class Leaf() extends Tree
+  3| case class Node(left: Any, value: Int, right: Any) extends Tree
+  4| 
+  5| object Main {
+  6|     def isLeaf(t: Any): Boolean = {
+  7|         return (t match {
+  8|     case Leaf => true
+  9|     case _ => false
+ 10| })

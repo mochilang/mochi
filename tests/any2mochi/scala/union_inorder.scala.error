@@ -1,0 +1,12 @@
+parse error: parse error: 6:10: unexpected token "=>" (expected ":" Expr)
+
+  1| sealed trait Tree
+  2| case class Leaf() extends Tree
+  3| case class Node(left: Any, value: Int, right: Any) extends Tree
+  4| 
+  5| object Main {
+  6|     def inorder(t: Any): scala.collection.mutable.ArrayBuffer[Int] = {
+  7|         return _cast[scala.collection.mutable.ArrayBuffer[Int]]((t match {
+  8|     case Leaf => _cast[scala.collection.mutable.ArrayBuffer[Int]](scala.collection.mutable.ArrayBuffer())
+  9|     case Node(l, v, r) => ((inorder(l) ++ scala.collection.mutable.ArrayBuffer(v)) + inorder(r))
+ 10| }))

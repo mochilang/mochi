@@ -1,0 +1,12 @@
+parse error: parse error: 1:25: unexpected token "="
+
+  1| object Main {
+  2|     def main(args: Array[String]): Unit = {
+  3|         val a: scala.collection.mutable.ArrayBuffer[Int] = scala.collection.mutable.ArrayBuffer(1, 2, 3)
+  4|         val b: scala.collection.mutable.ArrayBuffer[Int] = scala.collection.mutable.ArrayBuffer(3, 4)
+  5|         println((a ++ b).distinct)
+  6|         println(a.filterNot(b.contains))
+  7|         println(a.filter(b.contains).distinct)
+  8|         println((scala.collection.mutable.ArrayBuffer(1, 2) ++ scala.collection.mutable.ArrayBuffer(2, 3)).distinct)
+  9|     }
+ 10| }

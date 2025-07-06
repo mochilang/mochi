@@ -1,0 +1,8 @@
+parse error: parse error: 1:44: unexpected token "L" (expected ")")
+
+  1| object Main {
+  2|     def main(args: Array[String]): Unit = {
+  3|         println((System.currentTimeMillis() * 1000000L > 0))
+  4|     }
+  5| }
+  6|

@@ -1,1 +1,0 @@
-print((scala.collection.mutable.ArrayBuffer(1, 2) ++ scala.collection.mutable.ArrayBuffer(3, 4)))
