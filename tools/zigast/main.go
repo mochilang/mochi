@@ -21,6 +21,7 @@ type Var struct {
 	Type  string `json:"type"`
 	Value string `json:"value,omitempty"`
 	Const bool   `json:"const,omitempty"`
+	Pub   bool   `json:"pub,omitempty"`
 	Line  int    `json:"line"`
 }
 
@@ -28,6 +29,7 @@ type Func struct {
 	Name    string   `json:"name"`
 	Params  string   `json:"params"`
 	Ret     string   `json:"ret"`
+	Pub     bool     `json:"pub,omitempty"`
 	Line    int      `json:"line"`
 	EndLine int      `json:"endLine"`
 	Lines   []string `json:"lines"`
@@ -35,6 +37,7 @@ type Func struct {
 
 type Struct struct {
 	Name    string  `json:"name"`
+	Pub     bool    `json:"pub,omitempty"`
 	Line    int     `json:"line"`
 	EndLine int     `json:"endLine"`
 	Fields  []Field `json:"fields"`
@@ -71,8 +74,8 @@ func main() {
 	}
 }
 
-var funRE = regexp.MustCompile(`^(?:pub\s+)?fn\s+([A-Za-z0-9_]+)\s*\(([^)]*)\)\s*([^\s{]+)?\s*{`)
-var structStartRE = regexp.MustCompile(`^(?:pub\s+)?const\s+([A-Za-z0-9_]+)\s*=\s*struct\s*{`)
+var funRE = regexp.MustCompile(`^(?:(pub)\s+)?fn\s+([A-Za-z0-9_]+)\s*\(([^)]*)\)\s*([^\s{]+)?\s*{`)
+var structStartRE = regexp.MustCompile(`^(?:(pub)\s+)?(?:const|var)\s+([A-Za-z0-9_]+)\s*=\s*struct\s*{`)
 
 func parse(src string) AST {
 	sc := bufio.NewScanner(strings.NewReader(src))
@@ -88,7 +91,8 @@ func parse(src string) AST {
 		if curFunc == nil && curStruct == nil {
 			if funRE.MatchString(line) {
 				m := funRE.FindStringSubmatch(line)
-				f := Func{Name: m[1], Params: strings.TrimSpace(m[2]), Ret: strings.TrimSpace(m[3]), Line: lineNum + 1}
+				pub := m[1] != ""
+				f := Func{Name: m[2], Params: strings.TrimSpace(m[3]), Ret: strings.TrimSpace(m[4]), Pub: pub, Line: lineNum + 1}
 				ast.Functions = append(ast.Functions, f)
 				curFunc = &ast.Functions[len(ast.Functions)-1]
 				depth = 1
@@ -103,14 +107,20 @@ func parse(src string) AST {
 			}
 			if structStartRE.MatchString(line) {
 				m := structStartRE.FindStringSubmatch(line)
-				s := Struct{Name: m[1], Line: lineNum + 1}
+				pub := m[1] != ""
+				s := Struct{Name: m[2], Pub: pub, Line: lineNum + 1}
 				ast.Structs = append(ast.Structs, s)
 				curStruct = &ast.Structs[len(ast.Structs)-1]
 				depth = 1
 				lineNum++
 				continue
 			}
-			if strings.HasPrefix(line, "const ") || strings.HasPrefix(line, "var ") {
+			if strings.HasPrefix(line, "pub ") || strings.HasPrefix(line, "const ") || strings.HasPrefix(line, "var ") {
+				pub := false
+				if strings.HasPrefix(line, "pub ") {
+					pub = true
+					line = strings.TrimSpace(strings.TrimPrefix(line, "pub "))
+				}
 				isConst := strings.HasPrefix(line, "const ")
 				eq := strings.Index(line, "=")
 				left := strings.TrimSpace(line)
@@ -127,7 +137,7 @@ func parse(src string) AST {
 						typ = strings.TrimSpace(name[i+1:])
 						name = name[:i]
 					}
-					ast.Vars = append(ast.Vars, Var{Name: name, Type: typ, Value: val, Const: isConst, Line: lineNum + 1})
+					ast.Vars = append(ast.Vars, Var{Name: name, Type: typ, Value: val, Const: isConst, Pub: pub, Line: lineNum + 1})
 				}
 			}
 			lineNum++
