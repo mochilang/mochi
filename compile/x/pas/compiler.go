@@ -1407,7 +1407,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		case "len":
 			return fmt.Sprintf("Length(%s)", argStr), nil
 		case "print":
-			return fmt.Sprintf("writeln(%s)", argStr), nil
+			if len(args) == 0 {
+				return "writeln()", nil
+			}
+			withSpaces := make([]string, 0, len(args)*2-1)
+			withSpaces = append(withSpaces, args[0])
+			for _, a := range args[1:] {
+				withSpaces = append(withSpaces, "' '", a)
+			}
+			return fmt.Sprintf("writeln(%s)", strings.Join(withSpaces, ", ")), nil
 		case "abs":
 			if len(args) != 1 {
 				return "", fmt.Errorf("abs expects 1 argument")

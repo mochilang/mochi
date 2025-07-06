@@ -16,6 +16,6 @@ begin
     begin
       if (n mod 2 = 0) then ;
       if (n > 7) then ;
-      writeln('odd number:', n);
+      writeln('odd number:', ' ', n);
     end;
 end.

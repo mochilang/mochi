@@ -116,6 +116,6 @@ begin
   _result := _tmp12;
   for r in _result do
     begin
-      writeln(r.person, r.spent);
+      writeln(r.person, ' ', r.spent);
     end;
 end.
