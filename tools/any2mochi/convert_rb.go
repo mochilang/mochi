@@ -1,28 +1,208 @@
 package any2mochi
 
 import (
-	"bufio"
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 )
 
 // rbIndent returns a string of two-space indents for the given level.
 func rbIndent(level int) string { return strings.Repeat("  ", level) }
 
-// ConvertRb converts Ruby source code to Mochi. The source is validated using
-// the configured Ruby language server. After a successful parse a small subset
-// of Ruby constructs are translated directly in Go.
+type rbNode struct {
+	Type     string
+	Value    string
+	Children []rbNode
+}
+
+func parseRbAST(src string) (*rbNode, error) {
+	cmd := exec.Command("ruby", "-e", "require 'json';require 'ripper';puts JSON.generate(Ripper.sexp(ARGF.read))")
+	cmd.Stdin = strings.NewReader(src)
+	var buf bytes.Buffer
+	cmd.Stdout = &buf
+	if err := cmd.Run(); err != nil {
+		return nil, err
+	}
+	var data interface{}
+	if err := json.Unmarshal(buf.Bytes(), &data); err != nil {
+		return nil, err
+	}
+	node := buildRbNode(data)
+	return &node, nil
+}
+
+func buildRbNode(v interface{}) rbNode {
+	arr, ok := v.([]interface{})
+	if !ok || len(arr) == 0 {
+		return rbNode{}
+	}
+	n := rbNode{Type: fmt.Sprint(arr[0])}
+	for i := 1; i < len(arr); i++ {
+		switch val := arr[i].(type) {
+		case []interface{}:
+			n.Children = append(n.Children, buildRbNode(val))
+		case string:
+			if n.Value == "" {
+				n.Value = val
+			}
+		}
+	}
+	return n
+}
+
+func rbTokens(n rbNode) []string {
+	if strings.HasPrefix(n.Type, "@") {
+		if n.Value != "" {
+			return []string{n.Value}
+		}
+		return nil
+	}
+	var out []string
+	for _, c := range n.Children {
+		out = append(out, rbTokens(c)...)
+	}
+	return out
+}
+
+func rbExprString(n rbNode) string {
+	toks := rbTokens(n)
+	if len(toks) == 0 {
+		return ""
+	}
+	s := strings.Join(toks, " ")
+	reps := []struct{ old, new string }{
+		{" ( ", "("}, {" )", ")"}, {"( ", "("}, {" , ", ", "},
+		{" [ ", "["}, {" ] ", "]"}, {" . ", "."},
+	}
+	for _, r := range reps {
+		s = strings.ReplaceAll(s, r.old, r.new)
+	}
+	return s
+}
+
+func rbParams(n rbNode) string {
+	var names []string
+	var walk func(rbNode)
+	walk = func(n rbNode) {
+		if n.Type == "@ident" {
+			names = append(names, n.Value)
+			return
+		}
+		for _, c := range n.Children {
+			walk(c)
+		}
+	}
+	walk(n)
+	return strings.Join(names, ", ")
+}
+
+func convertRbNode(n rbNode, level int, out *[]string) {
+	idt := rbIndent(level)
+	switch n.Type {
+	case "program":
+		for _, c := range n.Children {
+			convertRbNode(c, level, out)
+		}
+	case "command", "method_add_arg":
+		if len(n.Children) > 0 {
+			f := n.Children[0]
+			if (f.Type == "@ident" && f.Value == "puts") ||
+				(f.Type == "fcall" && len(f.Children) > 0 && f.Children[0].Type == "@ident" && f.Children[0].Value == "puts") {
+				arg := rbExprString(n.Children[len(n.Children)-1])
+				*out = append(*out, idt+"print("+arg+")")
+				return
+			}
+		}
+		*out = append(*out, idt+rbExprString(n))
+	case "assign":
+		if len(n.Children) < 2 {
+			return
+		}
+		name := rbExprString(n.Children[0])
+		expr := rbExprString(n.Children[1])
+		kw := "let "
+		if level == 0 {
+			kw = "var "
+		}
+		*out = append(*out, idt+kw+name+" = "+expr)
+	case "while":
+		if len(n.Children) < 2 {
+			return
+		}
+		cond := rbExprString(n.Children[0])
+		*out = append(*out, idt+"while "+cond+" {")
+		convertRbNode(n.Children[1], level+1, out)
+		*out = append(*out, idt+"}")
+	case "for":
+		if len(n.Children) < 3 {
+			return
+		}
+		varName := rbExprString(n.Children[0])
+		iter := rbExprString(n.Children[1])
+		*out = append(*out, idt+"for "+varName+" in "+iter+" {")
+		convertRbNode(n.Children[2], level+1, out)
+		*out = append(*out, idt+"}")
+	case "if":
+		if len(n.Children) < 2 {
+			return
+		}
+		cond := rbExprString(n.Children[0])
+		*out = append(*out, idt+"if "+cond+" {")
+		convertRbNode(n.Children[1], level+1, out)
+		if len(n.Children) > 2 {
+			e := n.Children[2]
+			if e.Type == "else" {
+				*out = append(*out, idt+"} else {")
+				convertRbNode(e, level+1, out)
+			}
+		}
+		*out = append(*out, idt+"}")
+	case "else", "bodystmt":
+		for _, c := range n.Children {
+			convertRbNode(c, level, out)
+		}
+	case "def":
+		if len(n.Children) < 3 {
+			return
+		}
+		name := rbExprString(n.Children[0])
+		params := rbParams(n.Children[1])
+		*out = append(*out, idt+"fun "+name+"("+params+") {")
+		convertRbNode(n.Children[2], level+1, out)
+		*out = append(*out, idt+"}")
+	case "class":
+		if len(n.Children) < 3 {
+			return
+		}
+		name := rbExprString(n.Children[0])
+		*out = append(*out, idt+"type "+name+" {")
+		convertRbNode(n.Children[2], level+1, out)
+		*out = append(*out, idt+"}")
+	default:
+		for _, c := range n.Children {
+			convertRbNode(c, level, out)
+		}
+	}
+}
+
+// ConvertRb converts Ruby source code to Mochi using a small Ruby AST parser.
 func ConvertRb(src string) ([]byte, error) {
-	ls := Servers["rb"]
-	_, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+	if _, err := exec.LookPath("ruby"); err != nil {
+		return nil, fmt.Errorf("ruby not installed: %w", err)
+	}
+	ast, err := parseRbAST(src)
 	if err != nil {
 		return nil, err
 	}
-	if len(diags) > 0 {
-		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
+	var lines []string
+	convertRbNode(*ast, 0, &lines)
+	if len(lines) == 0 {
+		return nil, fmt.Errorf("no convertible statements")
 	}
-	return translateRb(src), nil
+	return []byte(strings.Join(lines, "\n")), nil
 }
 
 // ConvertRbFile reads the Ruby file at path and converts it to Mochi.
@@ -32,176 +212,4 @@ func ConvertRbFile(path string) ([]byte, error) {
 		return nil, err
 	}
 	return ConvertRb(string(data))
-}
-
-func translateRb(src string) []byte {
-	var out strings.Builder
-	sc := bufio.NewScanner(strings.NewReader(src))
-	level := 0
-	vars := map[string]bool{}
-
-	replaceMembership := func(s string) string {
-		if i := strings.Index(s, ".key?("); i != -1 && strings.HasSuffix(s, ")") {
-			key := strings.TrimSuffix(s[i+6:], ")")
-			m := strings.TrimSpace(s[:i])
-			return strings.TrimSpace(key) + " in " + m
-		}
-		return s
-	}
-
-	for sc.Scan() {
-		line := strings.TrimSpace(sc.Text())
-		if line == "" {
-			continue
-		}
-		line = strings.ReplaceAll(line, "...", "..")
-
-		switch {
-		case strings.HasPrefix(line, "puts(") && strings.HasSuffix(line, ")"):
-			arg := strings.TrimSuffix(strings.TrimPrefix(line, "puts("), ")")
-			if strings.HasPrefix(arg, "[") && strings.HasSuffix(arg, "].join(\" \"))") {
-				arg = strings.TrimSuffix(strings.TrimPrefix(arg, "["), "].join(\" \"))")
-			}
-			out.WriteString(rbIndent(level))
-			out.WriteString("print(")
-			out.WriteString(arg)
-			out.WriteString(")\n")
-		case strings.HasPrefix(line, "puts "):
-			arg := strings.TrimSpace(strings.TrimPrefix(line, "puts "))
-			if strings.HasPrefix(arg, "[") && strings.HasSuffix(arg, "].join(\" \"))") {
-				arg = strings.TrimSuffix(strings.TrimPrefix(arg, "["), "].join(\" \"))")
-			}
-			out.WriteString(rbIndent(level))
-			out.WriteString("print(")
-			out.WriteString(arg)
-			out.WriteString(")\n")
-		case strings.Contains(line, ".times do"):
-			parts := strings.SplitN(line, ".times do", 2)
-			count := strings.TrimSpace(parts[0])
-			varName := "_"
-			rest := strings.TrimSpace(parts[1])
-			if strings.HasPrefix(rest, "|") && strings.Contains(rest, "|") {
-				tmp := strings.TrimPrefix(rest, "|")
-				if idx := strings.Index(tmp, "|"); idx != -1 {
-					varName = strings.TrimSpace(tmp[:idx])
-				}
-			}
-			out.WriteString(rbIndent(level))
-			out.WriteString("for ")
-			out.WriteString(varName)
-			out.WriteString(" in 0..")
-			out.WriteString(count)
-			out.WriteString("-1 {\n")
-			level++
-		case strings.Contains(line, ".each do |") && strings.HasSuffix(line, "|"):
-			parts := strings.SplitN(line, ".each do |", 2)
-			coll := strings.TrimSpace(parts[0])
-			varName := strings.TrimSpace(strings.TrimSuffix(parts[1], "|"))
-			out.WriteString(rbIndent(level))
-			out.WriteString("for ")
-			out.WriteString(varName)
-			out.WriteString(" in ")
-			out.WriteString(coll)
-			out.WriteString(" {\n")
-			level++
-		case strings.HasPrefix(line, "for ") && strings.Contains(line, " in "):
-			parts := strings.SplitN(strings.TrimPrefix(line, "for "), " in ", 2)
-			if len(parts) == 2 {
-				out.WriteString(rbIndent(level))
-				out.WriteString("for ")
-				out.WriteString(strings.TrimSpace(parts[0]))
-				out.WriteString(" in ")
-				out.WriteString(strings.TrimSpace(parts[1]))
-				out.WriteString(" {\n")
-				level++
-			}
-		case strings.HasPrefix(line, "while "):
-			cond := replaceMembership(strings.TrimSpace(strings.TrimPrefix(line, "while ")))
-			out.WriteString(rbIndent(level))
-			out.WriteString("while ")
-			out.WriteString(cond)
-			out.WriteString(" {\n")
-			level++
-		case strings.HasPrefix(line, "if "):
-			cond := replaceMembership(strings.TrimSpace(strings.TrimPrefix(line, "if ")))
-			out.WriteString(rbIndent(level))
-			out.WriteString("if ")
-			out.WriteString(cond)
-			out.WriteString(" {\n")
-			level++
-		case strings.HasPrefix(line, "elsif "):
-			if level > 0 {
-				level--
-				out.WriteString(rbIndent(level))
-				out.WriteString("} else if ")
-				out.WriteString(replaceMembership(strings.TrimSpace(strings.TrimPrefix(line, "elsif "))))
-				out.WriteString(" {\n")
-				level++
-			}
-		case line == "else":
-			if level > 0 {
-				level--
-				out.WriteString(rbIndent(level))
-				out.WriteString("} else {\n")
-				level++
-			}
-		case line == "end":
-			if level > 0 {
-				level--
-				out.WriteString(rbIndent(level))
-				out.WriteString("}\n")
-			}
-		case strings.HasPrefix(line, "def "):
-			rest := strings.TrimSpace(strings.TrimPrefix(line, "def"))
-			name := rest
-			params := ""
-			if open := strings.Index(rest, "("); open != -1 {
-				if close := strings.LastIndex(rest, ")"); close > open {
-					name = strings.TrimSpace(rest[:open])
-					params = strings.TrimSpace(rest[open+1 : close])
-				}
-			}
-			out.WriteString(rbIndent(level))
-			out.WriteString("fun ")
-			out.WriteString(name)
-			out.WriteString("(")
-			out.WriteString(params)
-			out.WriteString(") {\n")
-			level++
-		case strings.HasPrefix(line, "class "):
-			name := strings.TrimSpace(strings.TrimPrefix(line, "class "))
-			out.WriteString(rbIndent(level))
-			out.WriteString("type ")
-			out.WriteString(name)
-			out.WriteString(" {\n")
-			level++
-		case strings.HasPrefix(line, "return "):
-			out.WriteString(rbIndent(level))
-			out.WriteString(line)
-			out.WriteByte('\n')
-		case strings.Contains(line, "="):
-			parts := strings.SplitN(line, "=", 2)
-			left := strings.TrimSpace(parts[0])
-			right := replaceMembership(strings.TrimSpace(parts[1]))
-			out.WriteString(rbIndent(level))
-			kw := "let "
-			if level == 0 && !vars[left] {
-				vars[left] = true
-				kw = "var "
-			}
-			out.WriteString(kw)
-			out.WriteString(left)
-			out.WriteString(" = ")
-			out.WriteString(right)
-			out.WriteByte('\n')
-		default:
-			out.WriteString(rbIndent(level))
-			out.WriteString(replaceMembership(line))
-			out.WriteByte('\n')
-		}
-	}
-	if out.Len() == 0 {
-		return nil
-	}
-	return []byte(out.String())
 }
