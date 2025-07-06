@@ -6,6 +6,7 @@ import (
 	"go/parser"
 	"go/token"
 	"os"
+	"reflect"
 	"strings"
 )
 
@@ -23,6 +24,7 @@ type Func struct {
 	Results []string `json:"results,omitempty"`
 	Doc     string   `json:"doc,omitempty"`
 	Line    int      `json:"line,omitempty"`
+	EndLine int      `json:"endLine,omitempty"`
 }
 
 type Param struct {
@@ -37,20 +39,24 @@ type Type struct {
 	Interface bool    `json:"interface,omitempty"`
 	Doc       string  `json:"doc,omitempty"`
 	Line      int     `json:"line,omitempty"`
+	EndLine   int     `json:"endLine,omitempty"`
 }
 
 type Field struct {
 	Name string `json:"name,omitempty"`
 	Type string `json:"type,omitempty"`
+	Tag  string `json:"tag,omitempty"`
+	Line int    `json:"line,omitempty"`
 }
 
 type Var struct {
-	Name  string `json:"name"`
-	Type  string `json:"type,omitempty"`
-	Value string `json:"value,omitempty"`
-	Const bool   `json:"const,omitempty"`
-	Doc   string `json:"doc,omitempty"`
-	Line  int    `json:"line,omitempty"`
+	Name    string `json:"name"`
+	Type    string `json:"type,omitempty"`
+	Value   string `json:"value,omitempty"`
+	Const   bool   `json:"const,omitempty"`
+	Doc     string `json:"doc,omitempty"`
+	Line    int    `json:"line,omitempty"`
+	EndLine int    `json:"endLine,omitempty"`
 }
 
 // ParseAST parses Go source and returns the simplified AST.
@@ -69,6 +75,7 @@ func ParseAST(src string) (*AST, error) {
 			}
 			fn := Func{Name: d.Name.Name}
 			fn.Line = fset.Position(d.Pos()).Line
+			fn.EndLine = fset.Position(d.End()).Line
 			if d.Doc != nil {
 				fn.Doc = strings.TrimSpace(d.Doc.Text())
 			}
@@ -112,24 +119,28 @@ func ParseAST(src string) (*AST, error) {
 						continue
 					}
 					if st, ok := ts.Type.(*ast.StructType); ok {
-						gt := Type{Name: ts.Name.Name, Line: fset.Position(ts.Pos()).Line}
+						gt := Type{Name: ts.Name.Name, Line: fset.Position(ts.Pos()).Line, EndLine: fset.Position(ts.End()).Line}
 						if d.Doc != nil {
 							gt.Doc = strings.TrimSpace(d.Doc.Text())
 						}
 						for _, f := range st.Fields.List {
 							typ := exprString(fset, f.Type)
+							tag := ""
+							if f.Tag != nil {
+								tag = strings.Trim(f.Tag.Value, "`")
+							}
 							if len(f.Names) == 0 {
-								gt.Fields = append(gt.Fields, Field{Type: typ})
+								gt.Fields = append(gt.Fields, Field{Type: typ, Tag: tag, Line: fset.Position(f.Pos()).Line})
 								continue
 							}
 							for _, n := range f.Names {
-								gt.Fields = append(gt.Fields, Field{Name: n.Name, Type: typ})
+								gt.Fields = append(gt.Fields, Field{Name: n.Name, Type: typ, Tag: tag, Line: fset.Position(n.Pos()).Line})
 							}
 						}
 						out.Types = append(out.Types, gt)
 					}
 					if iface, ok := ts.Type.(*ast.InterfaceType); ok {
-						gt := Type{Name: ts.Name.Name, Interface: true, Line: fset.Position(ts.Pos()).Line}
+						gt := Type{Name: ts.Name.Name, Interface: true, Line: fset.Position(ts.Pos()).Line, EndLine: fset.Position(ts.End()).Line}
 						if d.Doc != nil {
 							gt.Doc = strings.TrimSpace(d.Doc.Text())
 						}
@@ -143,6 +154,8 @@ func ParseAST(src string) (*AST, error) {
 								continue
 							}
 							fn := Func{Name: name, Recv: ts.Name.Name}
+							fn.Line = fset.Position(m.Pos()).Line
+							fn.EndLine = fset.Position(m.End()).Line
 							if ft.Params != nil {
 								for _, p := range ft.Params.List {
 									typ := exprString(fset, p.Type)
@@ -187,7 +200,7 @@ func ParseAST(src string) (*AST, error) {
 						typ = exprString(fset, vs.Type)
 					}
 					for i, n := range vs.Names {
-						v := Var{Name: n.Name, Type: typ, Const: d.Tok == token.CONST, Line: fset.Position(n.Pos()).Line}
+						v := Var{Name: n.Name, Type: typ, Const: d.Tok == token.CONST, Line: fset.Position(n.Pos()).Line, EndLine: fset.Position(n.End()).Line}
 						if vs.Doc != nil {
 							v.Doc = strings.TrimSpace(vs.Doc.Text())
 						}
@@ -263,8 +276,12 @@ func ConvertAST(g *AST) []byte {
 		b.WriteString(" {\n")
 		for _, f := range t.Fields {
 			b.WriteString("  ")
-			if f.Name != "" {
-				b.WriteString(f.Name)
+			name := f.Name
+			if j := jsonFieldName(f.Tag); j != "" {
+				name = j
+			}
+			if name != "" {
+				b.WriteString(name)
 			} else {
 				b.WriteString(f.Type)
 				b.WriteByte('\n')
@@ -363,4 +380,19 @@ func ConvertViaJSONFile(path string) ([]byte, error) {
 		return nil, err
 	}
 	return ConvertViaJSON(string(data))
+}
+
+func jsonFieldName(tag string) string {
+	tag = strings.TrimSpace(tag)
+	if tag == "" {
+		return ""
+	}
+	st := reflect.StructTag(tag)
+	if j := st.Get("json"); j != "" {
+		j = strings.Split(j, ",")[0]
+		if j != "" && j != "-" {
+			return j
+		}
+	}
+	return ""
 }

@@ -217,15 +217,19 @@ func formatParseError(src string, err error) error {
 		if start < 0 {
 			start = 0
 		}
-		end := line + 1
+		end := line + 2
 		if end > len(lines) {
 			end = len(lines)
 		}
 		var snippet strings.Builder
 		for i := start; i < end; i++ {
-			fmt.Fprintf(&snippet, "%4d| %s\n", i+1, lines[i])
-			if i == line-1 {
-				snippet.WriteString("    | " + strings.Repeat(" ", col-1) + "^\n")
+			prefix := "   "
+			if i+1 == line {
+				prefix = ">>>"
+			}
+			fmt.Fprintf(&snippet, "%s %d: %s\n", prefix, i+1, lines[i])
+			if i+1 == line {
+				snippet.WriteString("    " + strings.Repeat(" ", col-1) + "^\n")
 			}
 		}
 		return &ConvertError{Line: line, Column: col, Msg: e.Msg, Snip: strings.TrimRight(snippet.String(), "\n")}

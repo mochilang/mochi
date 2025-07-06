@@ -1253,6 +1253,7 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 }
 
 func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
+	c.writeln(fmt.Sprintf("// line %d", fun.Pos.Line))
 	name := sanitizeName(fun.Name)
 	if c.env != nil {
 		c.env.SetFunc(fun.Name, fun)
