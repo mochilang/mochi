@@ -1,6 +1,8 @@
-package any2mochi
+package scala
 
 import (
+	any2mochi "mochi/tools/any2mochi"
+
 	"fmt"
 	"os"
 	"path/filepath"
@@ -8,34 +10,34 @@ import (
 	"strings"
 )
 
-// ConvertScala converts scala source code to Mochi using the language server.
-func ConvertScala(src string) ([]byte, error) {
-	ls := Servers["scala"]
+// Convert converts Scala source code to Mochi using the language server.
+func Convert(src string) ([]byte, error) {
+	ls := any2mochi.Servers["scala"]
 	if ls.Command != "" {
-		if out, err := convertScalaWithLS(src, ""); err == nil {
+		if out, err := convertWithLS(src, ""); err == nil {
 			return out, nil
 		}
 	}
-	return convertScalaFallback(src)
+	return convertFallback(src)
 }
 
-func convertScalaWithLS(src, root string) ([]byte, error) {
-	ls := Servers["scala"]
-	syms, diags, err := EnsureAndParseWithRoot(ls.Command, ls.Args, ls.LangID, src, root)
+func convertWithLS(src, root string) ([]byte, error) {
+	ls := any2mochi.Servers["scala"]
+	syms, diags, err := any2mochi.EnsureAndParseWithRoot(ls.Command, ls.Args, ls.LangID, src, root)
 	if err != nil {
 		return nil, err
 	}
 	if len(diags) > 0 {
-		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
+		return nil, fmt.Errorf("%s", diagnostics(src, diags))
 	}
 
 	lines := strings.Split(strings.ReplaceAll(src, "\r\n", "\n"), "\n")
 	var out strings.Builder
 	for _, s := range syms {
-		if s.Kind != SymbolKindFunction {
+		if s.Kind != any2mochi.SymbolKindFunction {
 			continue
 		}
-		code := convertScalaFunc(lines, s, root)
+		code := convertFunc(lines, s, root)
 		if code == "" {
 			continue
 		}
@@ -43,27 +45,27 @@ func convertScalaWithLS(src, root string) ([]byte, error) {
 		out.WriteByte('\n')
 	}
 	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
 	}
 	return []byte(strings.TrimSuffix(out.String(), "\n")), nil
 }
 
-// ConvertScalaFile reads the scala file and converts it to Mochi.
-func ConvertScalaFile(path string) ([]byte, error) {
+// ConvertFile reads the Scala file and converts it to Mochi.
+func ConvertFile(path string) ([]byte, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	ls := Servers["scala"]
+	ls := any2mochi.Servers["scala"]
 	if ls.Command != "" {
-		if out, err := convertScalaWithLS(string(data), filepath.Dir(path)); err == nil {
+		if out, err := convertWithLS(string(data), filepath.Dir(path)); err == nil {
 			return out, nil
 		}
 	}
-	return convertScalaFallback(string(data))
+	return convertFallback(string(data))
 }
 
-func convertScalaFunc(lines []string, sym DocumentSymbol, root string) string {
+func convertFunc(lines []string, sym any2mochi.DocumentSymbol, root string) string {
 	start := int(sym.Range.Start.Line)
 	end := int(sym.Range.End.Line)
 	if start < 0 || end >= len(lines) || start >= end {
@@ -73,16 +75,16 @@ func convertScalaFunc(lines []string, sym DocumentSymbol, root string) string {
 	header := strings.TrimSpace(seg[0])
 
 	name := sym.Name
-	params, ret := parseScalaSignature(header, name)
+	params, ret := parseSignature(header, name)
 	if len(params) == 0 && sym.Detail != nil {
-		params, ret = parseScalaSignature(*sym.Detail, name)
+		params, ret = parseSignature(*sym.Detail, name)
 	}
 	if len(params) == 0 {
-		if hov, err := EnsureAndHoverWithRoot(Servers["scala"].Command, Servers["scala"].Args, Servers["scala"].LangID, strings.Join(lines, "\n"), sym.SelectionRange.Start, root); err == nil {
-			if mc, ok := hov.Contents.(MarkupContent); ok {
+		if hov, err := any2mochi.EnsureAndHoverWithRoot(any2mochi.Servers["scala"].Command, any2mochi.Servers["scala"].Args, any2mochi.Servers["scala"].LangID, strings.Join(lines, "\n"), sym.SelectionRange.Start, root); err == nil {
+			if mc, ok := hov.Contents.(any2mochi.MarkupContent); ok {
 				for _, l := range strings.Split(mc.Value, "\n") {
 					if strings.Contains(l, name+"(") {
-						params, ret = parseScalaSignature(l, name)
+						params, ret = parseSignature(l, name)
 						break
 					}
 				}
@@ -136,7 +138,7 @@ func convertScalaFunc(lines []string, sym DocumentSymbol, root string) string {
 
 		if m := reElseIf.FindStringSubmatch(line); m != nil {
 			indent--
-			write("else if " + convertScalaExpr(strings.TrimSpace(m[1])) + " {")
+			write("else if " + convertExpr(strings.TrimSpace(m[1])) + " {")
 			indent++
 			continue
 		}
@@ -147,19 +149,19 @@ func convertScalaFunc(lines []string, sym DocumentSymbol, root string) string {
 			continue
 		}
 		if m := reWhile.FindStringSubmatch(line); m != nil {
-			write("while " + convertScalaExpr(strings.TrimSpace(m[1])) + " {")
+			write("while " + convertExpr(strings.TrimSpace(m[1])) + " {")
 			indent++
 			continue
 		}
 		if m := reFor.FindStringSubmatch(line); m != nil {
 			name := strings.TrimSpace(m[1])
-			expr := convertScalaExpr(strings.TrimSpace(m[2]))
+			expr := convertExpr(strings.TrimSpace(m[2]))
 			write("for " + name + " in " + expr + " {")
 			indent++
 			continue
 		}
 		if m := reIf.FindStringSubmatch(line); m != nil {
-			write("if " + convertScalaExpr(strings.TrimSpace(m[1])) + " {")
+			write("if " + convertExpr(strings.TrimSpace(m[1])) + " {")
 			indent++
 			continue
 		}
@@ -167,24 +169,24 @@ func convertScalaFunc(lines []string, sym DocumentSymbol, root string) string {
 		switch {
 		case strings.HasPrefix(line, "println("):
 			expr := strings.TrimSuffix(strings.TrimPrefix(line, "println("), ")")
-			write("print(" + convertScalaExpr(expr) + ")")
+			write("print(" + convertExpr(expr) + ")")
 		case strings.HasPrefix(line, "return "):
 			expr := strings.TrimSpace(strings.TrimPrefix(line, "return "))
-			write("return " + convertScalaExpr(expr))
+			write("return " + convertExpr(expr))
 		case strings.HasPrefix(line, "var "):
 			write("var " + strings.TrimPrefix(line, "var "))
 		case strings.HasPrefix(line, "val "):
 			if idx := strings.Index(line, "="); idx != -1 {
 				n := strings.Fields(strings.TrimSpace(line[4:idx]))[0]
 				expr := strings.TrimSpace(line[idx+1:])
-				write("let " + n + " = " + convertScalaExpr(expr))
+				write("let " + n + " = " + convertExpr(expr))
 			}
 		case strings.Contains(line, "="):
 			parts := strings.SplitN(line, "=", 2)
 			left := strings.TrimSpace(parts[0])
 			right := strings.TrimSpace(parts[1])
 			if left != "" && right != "" {
-				write(left + " = " + convertScalaExpr(right))
+				write(left + " = " + convertExpr(right))
 			}
 		}
 	}
@@ -192,7 +194,7 @@ func convertScalaFunc(lines []string, sym DocumentSymbol, root string) string {
 	return b.String()
 }
 
-func convertScalaExpr(expr string) string {
+func convertExpr(expr string) string {
 	expr = strings.TrimSpace(expr)
 	if strings.HasSuffix(expr, ".toString()") {
 		expr = "str(" + strings.TrimSuffix(expr, ".toString()") + ")"
@@ -207,25 +209,25 @@ func convertScalaExpr(expr string) string {
 	}
 	if strings.HasPrefix(expr, "_indexList(") && strings.HasSuffix(expr, ")") {
 		inner := strings.TrimSuffix(strings.TrimPrefix(expr, "_indexList("), ")")
-		parts := splitArgsScala(inner)
+		parts := splitArgs(inner)
 		if len(parts) == 2 {
-			return convertScalaExpr(parts[0]) + "[" + convertScalaExpr(parts[1]) + "]"
+			return convertExpr(parts[0]) + "[" + convertExpr(parts[1]) + "]"
 		}
 	}
 	if strings.HasPrefix(expr, "_sliceString(") && strings.HasSuffix(expr, ")") {
 		inner := strings.TrimSuffix(strings.TrimPrefix(expr, "_sliceString("), ")")
-		parts := splitArgsScala(inner)
+		parts := splitArgs(inner)
 		if len(parts) == 3 {
-			return convertScalaExpr(parts[0]) + "[" + convertScalaExpr(parts[1]) + ": " + convertScalaExpr(parts[2]) + "]"
+			return convertExpr(parts[0]) + "[" + convertExpr(parts[1]) + ": " + convertExpr(parts[2]) + "]"
 		}
 	}
 	return expr
 }
 
-// parseScalaSignature extracts parameter names and return type from a Scala
+// parseSignature extracts parameter names and return type from a Scala
 // function signature string. The provided name is used to locate the opening
 // parenthesis when necessary.
-func parseScalaSignature(sig, name string) ([]string, string) {
+func parseSignature(sig, name string) ([]string, string) {
 	sig = strings.ReplaceAll(sig, "\n", " ")
 	idx := strings.Index(sig, name+"(")
 	if idx == -1 {
@@ -270,7 +272,7 @@ func parseScalaSignature(sig, name string) ([]string, string) {
 	return params, ret
 }
 
-func splitArgsScala(s string) []string {
+func splitArgs(s string) []string {
 	var parts []string
 	var b strings.Builder
 	depth := 0
@@ -311,16 +313,16 @@ func splitArgsScala(s string) []string {
 	return parts
 }
 
-// convertScalaFallback parses Scala source using the scalaast CLI and converts
+// convertFallback parses Scala source using the scalaast CLI and converts
 // the resulting AST to Mochi.
-func convertScalaFallback(src string) ([]byte, error) {
-	funcs, err := runScalaParse(src)
+func convertFallback(src string) ([]byte, error) {
+	funcs, err := runParse(src)
 	if err != nil {
 		return nil, err
 	}
 	var out strings.Builder
 	for _, fn := range funcs {
-		code := convertScalaFromAST(fn)
+		code := convertFromAST(fn)
 		if code == "" {
 			continue
 		}
@@ -328,13 +330,13 @@ func convertScalaFallback(src string) ([]byte, error) {
 		out.WriteByte('\n')
 	}
 	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
 	}
 	return []byte(strings.TrimSuffix(out.String(), "\n")), nil
 }
 
-// convertScalaFromAST converts a parsed scalaFunc into Mochi code.
-func convertScalaFromAST(fn scalaFunc) string {
+// convertFromAST converts a parsed Func into Mochi code.
+func convertFromAST(fn Func) string {
 	var b strings.Builder
 	topLevel := fn.Name == "main"
 	if !topLevel {
@@ -380,7 +382,7 @@ func convertScalaFromAST(fn scalaFunc) string {
 		}
 		if m := reElseIf.FindStringSubmatch(line); m != nil {
 			indent--
-			write("else if " + convertScalaExpr(strings.TrimSpace(m[1])) + " {")
+			write("else if " + convertExpr(strings.TrimSpace(m[1])) + " {")
 			indent++
 			continue
 		}
@@ -391,19 +393,19 @@ func convertScalaFromAST(fn scalaFunc) string {
 			continue
 		}
 		if m := reWhile.FindStringSubmatch(line); m != nil {
-			write("while " + convertScalaExpr(strings.TrimSpace(m[1])) + " {")
+			write("while " + convertExpr(strings.TrimSpace(m[1])) + " {")
 			indent++
 			continue
 		}
 		if m := reFor.FindStringSubmatch(line); m != nil {
 			name := strings.TrimSpace(m[1])
-			expr := convertScalaExpr(strings.TrimSpace(m[2]))
+			expr := convertExpr(strings.TrimSpace(m[2]))
 			write("for " + name + " in " + expr + " {")
 			indent++
 			continue
 		}
 		if m := reIf.FindStringSubmatch(line); m != nil {
-			write("if " + convertScalaExpr(strings.TrimSpace(m[1])) + " {")
+			write("if " + convertExpr(strings.TrimSpace(m[1])) + " {")
 			indent++
 			continue
 		}
@@ -411,24 +413,24 @@ func convertScalaFromAST(fn scalaFunc) string {
 		switch {
 		case strings.HasPrefix(line, "println("):
 			expr := strings.TrimSuffix(strings.TrimPrefix(line, "println("), ")")
-			write("print(" + convertScalaExpr(expr) + ")")
+			write("print(" + convertExpr(expr) + ")")
 		case strings.HasPrefix(line, "return "):
 			expr := strings.TrimSpace(strings.TrimPrefix(line, "return "))
-			write("return " + convertScalaExpr(expr))
+			write("return " + convertExpr(expr))
 		case strings.HasPrefix(line, "var "):
 			write("var " + strings.TrimPrefix(line, "var "))
 		case strings.HasPrefix(line, "val "):
 			if idx := strings.Index(line, "="); idx != -1 {
 				n := strings.Fields(strings.TrimSpace(line[4:idx]))[0]
 				expr := strings.TrimSpace(line[idx+1:])
-				write("let " + n + " = " + convertScalaExpr(expr))
+				write("let " + n + " = " + convertExpr(expr))
 			}
 		case strings.Contains(line, "="):
 			parts := strings.SplitN(line, "=", 2)
 			left := strings.TrimSpace(parts[0])
 			right := strings.TrimSpace(parts[1])
 			if left != "" && right != "" {
-				write(left + " = " + convertScalaExpr(right))
+				write(left + " = " + convertExpr(right))
 			}
 		}
 	}
@@ -436,4 +438,30 @@ func convertScalaFromAST(fn scalaFunc) string {
 		b.WriteString("}")
 	}
 	return b.String()
+}
+
+func snippet(src string) string {
+	lines := strings.Split(src, "\n")
+	if len(lines) > 10 {
+		lines = lines[:10]
+	}
+	for i, l := range lines {
+		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
+	}
+	return strings.Join(lines, "\n")
+}
+
+func diagnostics(src string, diags []any2mochi.Diagnostic) string {
+	lines := strings.Split(src, "\n")
+	var out strings.Builder
+	for _, d := range diags {
+		start := int(d.Range.Start.Line)
+		msg := d.Message
+		line := ""
+		if start < len(lines) {
+			line = strings.TrimSpace(lines[start])
+		}
+		out.WriteString(fmt.Sprintf("line %d: %s\n  %s\n", start+1, msg, line))
+	}
+	return strings.TrimSpace(out.String())
 }
