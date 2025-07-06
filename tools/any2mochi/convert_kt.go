@@ -350,7 +350,11 @@ func convertKtAST(ast *ktAST) ([]byte, error) {
 	var out strings.Builder
 	indent := 0
 	ind := func() string { return strings.Repeat("  ", indent) }
+	hasMain := false
 	for _, fn := range ast.Functions {
+		if fn.Name == "main" {
+			hasMain = true
+		}
 		out.WriteString(ind())
 		out.WriteString("fun ")
 		out.WriteString(fn.Name)
@@ -367,6 +371,9 @@ func convertKtAST(ast *ktAST) ([]byte, error) {
 		}
 		out.WriteString(ind())
 		out.WriteString("}\n")
+	}
+	if hasMain {
+		out.WriteString("main()\n")
 	}
 	if out.Len() == 0 {
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(""))

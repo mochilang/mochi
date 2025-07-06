@@ -161,6 +161,27 @@ func convertHsCmd() *cobra.Command {
 	return cmd
 }
 
+func convertKtCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "convert-kt <file.kt>",
+		Short: "Convert Kotlin source to Mochi",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			data, err := os.ReadFile(args[0])
+			if err != nil {
+				return err
+			}
+			out, err := any2mochi.ConvertKt(string(data))
+			if err != nil {
+				return err
+			}
+			_, err = cmd.OutOrStdout().Write(out)
+			return err
+		},
+	}
+	return cmd
+}
+
 func convertPythonCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "convert-py <file.py>",
@@ -378,6 +399,7 @@ func newRootCmd() *cobra.Command {
 		parseExCmd(),
 		convertExCmd(),
 		convertHsCmd(),
+		convertKtCmd(),
 		convertTSCmd(),
 		convertCCmd(),
 		convertCmd(),

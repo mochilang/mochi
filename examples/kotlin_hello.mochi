@@ -1,0 +1,4 @@
+fun main() {
+  print("Hello from Kotlin")
+}
+main()
