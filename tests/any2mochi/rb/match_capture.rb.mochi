@@ -11,6 +11,8 @@ fun depth(t) {
     0
   } else if _t0.is_a?(Node) {
     ->(l, r) { ((depth(l) + depth(r)) + 1) }.call(_t0.left, _t0.right)
+  } else {
+    nil
   }
   end)
 }

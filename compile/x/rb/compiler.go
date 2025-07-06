@@ -1463,17 +1463,13 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	var b strings.Builder
 	b.WriteString("(begin\n")
 	b.WriteString(fmt.Sprintf("\t%s = %s\n", tmp, target))
-	for i, cs := range m.Cases {
+	b.WriteString("\tcase\n")
+	for _, cs := range m.Cases {
 		res, err := c.compileExpr(cs.Result)
 		if err != nil {
 			return "", err
 		}
 		if isUnderscoreExpr(cs.Pattern) {
-			if i == 0 {
-				b.WriteString("\t" + res + "\n")
-				b.WriteString("end)")
-				return b.String(), nil
-			}
 			b.WriteString("\telse\n")
 			b.WriteString("\t\t" + res + "\n")
 			b.WriteString("\tend\nend)")
@@ -1509,11 +1505,7 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 			}
 			cond = fmt.Sprintf("%s == %s", tmp, pat)
 		}
-		if i == 0 {
-			b.WriteString("\tif " + cond + "\n")
-		} else {
-			b.WriteString("\telsif " + cond + "\n")
-		}
+		b.WriteString("\twhen " + cond + "\n")
 		b.WriteString("\t\t" + res + "\n")
 	}
 	b.WriteString("\telse\n\t\tnil\n\tend\nend)")

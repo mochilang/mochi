@@ -7,7 +7,11 @@ include Tree
 fun isLeaf(t) {
   (begin
   let _t0 = t
-  _t0.is_a?(Leaf)) || false
+  if _t0.is_a?(Leaf) {
+    true
+  } else {
+    false
+  }
   end)
 }
 print([isLeaf(Leaf.new)].join(" "))

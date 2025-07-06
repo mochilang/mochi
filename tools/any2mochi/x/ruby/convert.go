@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -77,7 +79,18 @@ func parseAST(src string) (*Node, error) {
 	cmd.Stderr = &errBuf
 	if err := cmd.Run(); err != nil {
 		if errBuf.Len() > 0 {
-			return nil, fmt.Errorf("%s", strings.TrimSpace(errBuf.String()))
+			msg := strings.TrimSpace(errBuf.String())
+			line := 0
+			if m := regexp.MustCompile(`(\d+):`).FindStringSubmatch(msg); len(m) > 1 {
+				if n, _ := strconv.Atoi(m[1]); n > 0 {
+					line = n
+				}
+			}
+			if line > 0 {
+				snip := snippetAround(src, line)
+				return nil, &ConvertError{Line: line, Snip: snip, Msg: msg}
+			}
+			return nil, fmt.Errorf("%s", msg)
 		}
 		return nil, err
 	}
@@ -302,6 +315,46 @@ func convertNode(n Node, level int, out *[]string) {
 			handleElse(n.Children[2])
 		}
 		*out = append(*out, idt+"}")
+	case "case":
+		if len(n.Children) < 2 {
+			return
+		}
+		cond := exprString(n.Children[0])
+		handleCase := func(w Node, first bool) {}
+		handleCase = func(w Node, first bool) {
+			switch w.Type {
+			case "when":
+				if len(w.Children) < 2 {
+					return
+				}
+				var condParts []string
+				for _, c := range w.Children[0].Children {
+					condParts = append(condParts, cond+" == "+exprString(c))
+				}
+				if len(condParts) == 0 {
+					condParts = append(condParts, cond+" == "+exprString(w.Children[0]))
+				}
+				cStr := strings.Join(condParts, " || ")
+				if first {
+					*out = append(*out, idt+"if "+cStr+" {")
+				} else {
+					*out = append(*out, idt+"} else if "+cStr+" {")
+				}
+				convertNode(w.Children[1], level+1, out)
+				if len(w.Children) > 2 {
+					handleCase(w.Children[2], false)
+				} else {
+					*out = append(*out, idt+"}")
+				}
+			case "else":
+				*out = append(*out, idt+"} else {")
+				if len(w.Children) > 0 {
+					convertNode(w.Children[0], level+1, out)
+				}
+				*out = append(*out, idt+"}")
+			}
+		}
+		handleCase(n.Children[1], true)
 	case "else", "bodystmt":
 		for _, c := range n.Children {
 			convertNode(c, level, out)
