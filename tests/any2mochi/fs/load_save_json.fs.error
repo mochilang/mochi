@@ -1,1 +1,4 @@
-unsupported syntax at line 2:
+unsupported syntax at line 4: let _cast<'T> (v: obj) : 'T =
+  3: let format = "format"
+  4: let _cast<'T> (v: obj) : 'T =
+  5:   match v with

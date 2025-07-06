@@ -15,11 +15,13 @@ type Var struct {
 	Name    string `json:"name"`
 	Expr    string `json:"expr"`
 	Mutable bool   `json:"mutable"`
+	Line    int    `json:"line"`
 }
 
 type Assign struct {
 	Name string `json:"name"`
 	Expr string `json:"expr"`
+	Line int    `json:"line"`
 }
 
 type ForRange struct {
@@ -27,21 +29,25 @@ type ForRange struct {
 	Start string `json:"start"`
 	End   string `json:"end"`
 	Body  []Stmt `json:"body"`
+	Line  int    `json:"line"`
 }
 
 type ForIn struct {
 	Var  string `json:"var"`
 	Expr string `json:"expr"`
 	Body []Stmt `json:"body"`
+	Line int    `json:"line"`
 }
 
 type While struct {
 	Cond string `json:"cond"`
 	Body []Stmt `json:"body"`
+	Line int    `json:"line"`
 }
 
 type Print struct {
 	Expr string `json:"expr"`
+	Line int    `json:"line"`
 }
 
 type Stmt interface{}
@@ -84,6 +90,8 @@ func Parse(src string) (*Program, error) {
 
 	var idx int
 	var parseErr error
+	var errLine int
+	var linesCopy []line
 	var parseBlock func(int) []Stmt
 	parseBlock = func(ind int) []Stmt {
 		var stmts []Stmt
@@ -99,36 +107,41 @@ func Parse(src string) (*Program, error) {
 			lineNum := idx + 1
 			idx++
 			t := l.text
+			if strings.TrimSpace(t) == "" {
+				continue
+			}
 			if strings.HasPrefix(t, "open ") {
 				continue
 			}
 			switch {
 			case printRe.MatchString(t):
 				m := printRe.FindStringSubmatch(t)
-				stmts = append(stmts, Print{Expr: strings.TrimSpace(m[1])})
+				stmts = append(stmts, Print{Expr: strings.TrimSpace(m[1]), Line: lineNum})
 			case mutableLetRe.MatchString(t):
 				m := mutableLetRe.FindStringSubmatch(t)
-				stmts = append(stmts, Var{Name: m[1], Expr: strings.TrimSpace(m[2]), Mutable: true})
+				stmts = append(stmts, Var{Name: m[1], Expr: strings.TrimSpace(m[2]), Mutable: true, Line: lineNum})
 			case letRe.MatchString(t):
 				m := letRe.FindStringSubmatch(t)
-				stmts = append(stmts, Var{Name: m[1], Expr: strings.TrimSpace(m[2])})
+				stmts = append(stmts, Var{Name: m[1], Expr: strings.TrimSpace(m[2]), Line: lineNum})
 			case assignRe.MatchString(t):
 				m := assignRe.FindStringSubmatch(t)
-				stmts = append(stmts, Assign{Name: m[1], Expr: strings.TrimSpace(m[2])})
+				stmts = append(stmts, Assign{Name: m[1], Expr: strings.TrimSpace(m[2]), Line: lineNum})
 			case forRangeRe.MatchString(t):
 				m := forRangeRe.FindStringSubmatch(t)
 				body := parseBlock(ind + 4)
-				stmts = append(stmts, ForRange{Var: m[1], Start: strings.TrimSpace(m[2]), End: strings.TrimSpace(m[3]), Body: body})
+				stmts = append(stmts, ForRange{Var: m[1], Start: strings.TrimSpace(m[2]), End: strings.TrimSpace(m[3]), Body: body, Line: lineNum})
 			case forInRe.MatchString(t):
 				m := forInRe.FindStringSubmatch(t)
 				body := parseBlock(ind + 4)
-				stmts = append(stmts, ForIn{Var: m[1], Expr: strings.TrimSpace(m[2]), Body: body})
+				stmts = append(stmts, ForIn{Var: m[1], Expr: strings.TrimSpace(m[2]), Body: body, Line: lineNum})
 			case whileRe.MatchString(t):
 				m := whileRe.FindStringSubmatch(t)
 				body := parseBlock(ind + 4)
-				stmts = append(stmts, While{Cond: strings.TrimSpace(m[1]), Body: body})
+				stmts = append(stmts, While{Cond: strings.TrimSpace(m[1]), Body: body, Line: lineNum})
 			default:
 				if parseErr == nil {
+					errLine = lineNum
+					linesCopy = append([]line(nil), lines...)
 					snippet := l.raw
 					parseErr = fmt.Errorf("unsupported syntax at line %d: %s", lineNum, strings.TrimSpace(snippet))
 				}
@@ -139,6 +152,29 @@ func Parse(src string) (*Program, error) {
 
 	prog := &Program{}
 	idx = 0
+	snippetAround := func(lines []line, ln int) string {
+		start := ln - 2
+		if start < 0 {
+			start = 0
+		}
+		end := ln + 1
+		if end > len(lines) {
+			end = len(lines)
+		}
+		var out strings.Builder
+		for i := start; i < end; i++ {
+			out.WriteString(fmt.Sprintf("%3d: %s\n", i+1, lines[i].raw))
+		}
+		return strings.TrimRight(out.String(), "\n")
+	}
+
 	prog.Stmts = parseBlock(0)
-	return prog, parseErr
+	if parseErr != nil {
+		if linesCopy == nil {
+			linesCopy = lines
+		}
+		msg := parseErr.Error() + "\n" + snippetAround(linesCopy, errLine)
+		return prog, fmt.Errorf("%s", msg)
+	}
+	return prog, nil
 }

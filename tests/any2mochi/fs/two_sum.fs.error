@@ -1,1 +1,4 @@
-unsupported syntax at line 2:
+unsupported syntax at line 3: exception Return_twoSum of int[]
+  2: 
+  3: exception Return_twoSum of int[]
+  4: let rec twoSum (nums: int[]) (target: int) : int[] =

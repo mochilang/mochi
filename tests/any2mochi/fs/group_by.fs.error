@@ -1,1 +1,4 @@
-unsupported syntax at line 2:
+unsupported syntax at line 3: type _Group<'T>(key: obj) =
+  2: 
+  3: type _Group<'T>(key: obj) =
+  4:   member val key = key with get, set

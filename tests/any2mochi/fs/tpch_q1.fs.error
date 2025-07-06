@@ -1,1 +1,4 @@
-unsupported syntax at line 2:
+unsupported syntax at line 20: type _Group<'T>(key: obj) =
+ 19: let count_order = "count_order"
+ 20: type _Group<'T>(key: obj) =
+ 21:   member val key = key with get, set

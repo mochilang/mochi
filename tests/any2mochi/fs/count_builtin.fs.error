@@ -1,1 +1,4 @@
-unsupported syntax at line 2:
+unsupported syntax at line 3: let inline sum (xs: seq< ^T >) : ^T =
+  2: 
+  3: let inline sum (xs: seq< ^T >) : ^T =
+  4:   Seq.sum xs

@@ -1,1 +1,4 @@
-unsupported syntax at line 2:
+unsupported syntax at line 3: exception Return_makeAdder of (int -> int)
+  2: 
+  3: exception Return_makeAdder of (int -> int)
+  4: let rec makeAdder (n: int) : int -> int =

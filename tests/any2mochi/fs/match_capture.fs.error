@@ -1,1 +1,4 @@
-unsupported syntax at line 2:
+unsupported syntax at line 3: type Tree =
+  2: 
+  3: type Tree =
+  4:     | Leaf

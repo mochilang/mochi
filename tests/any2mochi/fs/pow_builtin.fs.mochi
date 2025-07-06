@@ -1,0 +1,1 @@
+print(Math.Pow(float 2, float 3))

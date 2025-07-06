@@ -1,1 +1,4 @@
-unsupported syntax at line 2:
+unsupported syntax at line 8: |]
+  7:     yield Map.ofList [(name, person.name); (age, person.age); (is_senior, (person.age >= 60))]
+  8: |]
+  9: for person in adults do
