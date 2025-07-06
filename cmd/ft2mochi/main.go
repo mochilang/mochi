@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"mochi/tools/any2mochi"
+	ft "mochi/tools/any2mochi/x/fortran"
 )
 
 func main() {
@@ -14,13 +14,12 @@ func main() {
 		fmt.Fprintln(os.Stderr, "usage: ft2mochi <file.f90>")
 		os.Exit(1)
 	}
-	any2mochi.UseLSP = false
 	data, err := os.ReadFile(flag.Arg(0))
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-	code, err := any2mochi.ConvertFortran(string(data))
+	code, err := ft.Convert(string(data))
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)

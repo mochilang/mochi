@@ -1,163 +1,87 @@
-package any2mochi
+package fortran
 
 import (
-	"bytes"
-	"encoding/json"
+	any2mochi "mochi/tools/any2mochi"
+
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strings"
 )
 
-type ftParam struct{ name, typ string }
+type param struct{ name, typ string }
 
-// ftProgram and related structs mirror the JSON output of ft_ast.py
-type ftProgram struct {
-	Funcs []ftFunc `json:"funcs"`
-}
-
-type ftFunc struct {
-	Name   string   `json:"name"`
-	Params []string `json:"params"`
-	Body   []ftStmt `json:"body"`
-}
-
-type ftStmt struct {
-	Kind string `json:"kind"`
-	Var  string `json:"var,omitempty"`
-	Expr string `json:"expr,omitempty"`
-}
-
-// ConvertFortran converts Fortran source code to a minimal Mochi representation
-// using the fortls language server.
-func ConvertFortran(src string) ([]byte, error) {
-	if !UseLSP {
-		return convertFortranCLI(src)
+func snippet(src string) string {
+	lines := strings.Split(src, "\n")
+	if len(lines) > 10 {
+		lines = lines[:10]
 	}
-	return convertFortran(src, "")
+	for i, l := range lines {
+		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
+	}
+	return strings.Join(lines, "\n")
 }
 
-func convertFortran(src, root string) ([]byte, error) {
-	ls := Servers["fortran"]
-	syms, diags, err := EnsureAndParseWithRoot(ls.Command, ls.Args, ls.LangID, src, root)
+func diagnostics(src string, diags []any2mochi.Diagnostic) string {
+	lines := strings.Split(src, "\n")
+	var out strings.Builder
+	for _, d := range diags {
+		start := int(d.Range.Start.Line)
+		msg := d.Message
+		line := ""
+		if start < len(lines) {
+			line = strings.TrimSpace(lines[start])
+		}
+		out.WriteString(fmt.Sprintf("line %d: %s\n  %s\n", start+1, msg, line))
+	}
+	return strings.TrimSpace(out.String())
+}
+
+// Convert converts Fortran source code to Mochi using the fortls language server.
+func Convert(src string) ([]byte, error) {
+	return convert(src, "")
+}
+
+func convert(src, root string) ([]byte, error) {
+	ls := any2mochi.Servers["fortran"]
+	syms, diags, err := any2mochi.EnsureAndParseWithRoot(ls.Command, ls.Args, ls.LangID, src, root)
 	if err != nil {
 		return nil, err
 	}
 	if len(diags) > 0 {
-		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
+		return nil, fmt.Errorf("%s", diagnostics(src, diags))
 	}
 	var out strings.Builder
-	writeFtSymbols(&out, nil, syms, src, ls, root)
+	writeSymbols(&out, nil, syms, src, ls, root)
 	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
 	}
 	return []byte(out.String()), nil
 }
 
-// ConvertFortranFile reads the Fortran file and converts it to Mochi.
-func ConvertFortranFile(path string) ([]byte, error) {
+// ConvertFile reads the Fortran file and converts it to Mochi.
+func ConvertFile(path string) ([]byte, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	if !UseLSP {
-		return convertFortranCLI(string(data))
-	}
-	return convertFortran(string(data), filepath.Dir(path))
+	return convert(string(data), filepath.Dir(path))
 }
 
-// convertFortranCLI parses the source using the ft_ast.py helper and formats
-// the resulting AST as Mochi source.
-func convertFortranCLI(src string) ([]byte, error) {
-	prog, err := parseFortranCLI(src)
-	if err != nil {
-		return nil, err
-	}
-	out := formatFtProgram(prog)
-	if len(out) == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
-	}
-	return out, nil
-}
-
-func parseFortranCLI(src string) (*ftProgram, error) {
-	root, err := repoRoot()
-	if err != nil {
-		return nil, err
-	}
-	script := filepath.Join(root, "tools", "any2mochi", "ft_ast.py")
-	cmd := exec.Command("python3", script)
-	cmd.Stdin = strings.NewReader(src)
-	var out bytes.Buffer
-	var errBuf bytes.Buffer
-	cmd.Stdout = &out
-	cmd.Stderr = &errBuf
-	if err := cmd.Run(); err != nil {
-		msg := strings.TrimSpace(errBuf.String())
-		if msg == "" {
-			msg = err.Error()
-		}
-		return nil, fmt.Errorf("fortran parser: %s", msg)
-	}
-	var p ftProgram
-	if err := json.Unmarshal(out.Bytes(), &p); err != nil {
-		return nil, err
-	}
-	return &p, nil
-}
-
-func formatFtProgram(p *ftProgram) []byte {
-	var b strings.Builder
-	for _, fn := range p.Funcs {
-		if strings.ToLower(fn.Name) == "main" {
-			for _, st := range fn.Body {
-				switch st.Kind {
-				case "print":
-					b.WriteString("print(" + cleanFtExpr(st.Expr) + ")\n")
-				case "assign":
-					b.WriteString(st.Var + " = " + cleanFtExpr(st.Expr) + "\n")
-				}
-			}
-			continue
-		}
-		b.WriteString("fun ")
-		b.WriteString(strings.ToLower(fn.Name))
-		b.WriteByte('(')
-		for i, param := range fn.Params {
-			if i > 0 {
-				b.WriteString(", ")
-			}
-			b.WriteString(strings.ToLower(param))
-		}
-		b.WriteString(") {\n")
-		for _, st := range fn.Body {
-			switch st.Kind {
-			case "print":
-				b.WriteString("  print(" + cleanFtExpr(st.Expr) + ")\n")
-			case "assign":
-				b.WriteString("  " + st.Var + " = " + cleanFtExpr(st.Expr) + "\n")
-			}
-		}
-		b.WriteString("}\n")
-	}
-	return []byte(b.String())
-}
-
-func getFtSignatureWithRoot(src string, pos Position, ls LanguageServer, root string) ([]ftParam, string) {
-	hov, err := EnsureAndHoverWithRoot(ls.Command, ls.Args, ls.LangID, src, pos, root)
+func hoverSignature(src string, pos any2mochi.Position, ls any2mochi.LanguageServer, root string) ([]param, string) {
+	hov, err := any2mochi.EnsureAndHoverWithRoot(ls.Command, ls.Args, ls.LangID, src, pos, root)
 	if err != nil {
 		return nil, ""
 	}
-	mc, ok := hov.Contents.(MarkupContent)
+	mc, ok := hov.Contents.(any2mochi.MarkupContent)
 	if !ok {
 		return nil, ""
 	}
-	return parseFtSignature(mc.Value)
+	return parseSignature(mc.Value)
 }
 
-func parseFtSignature(sig string) ([]ftParam, string) {
+func parseSignature(sig string) ([]param, string) {
 	lines := strings.Split(sig, "\n")
 	if len(lines) == 0 {
 		return nil, ""
@@ -173,14 +97,14 @@ func parseFtSignature(sig string) ([]ftParam, string) {
 	ret := ""
 	if idx := strings.Index(lower, "function"); idx != -1 {
 		typ := strings.TrimSpace(first[:idx])
-		ret = mapFtType(typ)
+		ret = mapType(typ)
 	}
-	var params []ftParam
+	var params []param
 	if paramsPart != "" {
 		for _, p := range strings.Split(paramsPart, ",") {
 			p = strings.TrimSpace(p)
 			if p != "" {
-				params = append(params, ftParam{name: p})
+				params = append(params, param{name: p})
 			}
 		}
 	}
@@ -191,7 +115,7 @@ func parseFtSignature(sig string) ([]ftParam, string) {
 			continue
 		}
 		names := strings.Split(line[idx+2:], ",")
-		typ := mapFtType(strings.TrimSpace(line[:idx]))
+		typ := mapType(strings.TrimSpace(line[:idx]))
 		for _, n := range names {
 			n = strings.TrimSpace(n)
 			for i := range params {
@@ -204,7 +128,7 @@ func parseFtSignature(sig string) ([]ftParam, string) {
 	return params, ret
 }
 
-func mapFtType(t string) string {
+func mapType(t string) string {
 	t = strings.ToLower(t)
 	switch {
 	case strings.Contains(t, "real"):
@@ -220,9 +144,9 @@ func mapFtType(t string) string {
 	}
 }
 
-// cleanFtExpr performs a few textual substitutions on simple Fortran
+// cleanExpr performs a few textual substitutions on simple Fortran
 // expressions so they look more like Mochi syntax.
-func cleanFtExpr(e string) string {
+func cleanExpr(e string) string {
 	e = strings.TrimSpace(e)
 	replacer := strings.NewReplacer(
 		"_8", "",
@@ -236,10 +160,10 @@ func cleanFtExpr(e string) string {
 	return replacer.Replace(e)
 }
 
-// convertFtBody attempts to convert a small subset of Fortran statements inside
+// convertBody attempts to convert a small subset of Fortran statements inside
 // the given symbol's range into Mochi. It relies on the language server for the
 // outer structure and falls back to simple regex heuristics for the body.
-func convertFtBody(src string, sym DocumentSymbol) []string {
+func convertBody(src string, sym any2mochi.DocumentSymbol) []string {
 	lines := strings.Split(src, "\n")
 	start := int(sym.Range.Start.Line)
 	end := int(sym.Range.End.Line)
@@ -317,18 +241,18 @@ func convertFtBody(src string, sym DocumentSymbol) []string {
 					expr = strings.TrimPrefix(expr, "(")
 					expr = strings.TrimSuffix(expr, ")")
 				}
-				expr = cleanFtExpr(expr)
+				expr = cleanExpr(expr)
 				out = append(out, strings.Repeat("  ", indent)+"print("+expr+")")
 			}
 		case strings.HasPrefix(ll, "do while"):
 			m := regexp.MustCompile(`do\s*while\s*\((.*)\)`).FindStringSubmatch(l)
 			if len(m) == 2 {
-				out = append(out, strings.Repeat("  ", indent)+"while "+cleanFtExpr(m[1])+" {")
+				out = append(out, strings.Repeat("  ", indent)+"while "+cleanExpr(m[1])+" {")
 				indent++
 			}
 		case strings.HasPrefix(ll, "do"):
 			if m := reDo.FindStringSubmatch(l); len(m) == 4 {
-				out = append(out, strings.Repeat("  ", indent)+"for "+m[1]+" in "+cleanFtExpr(m[2])+".."+cleanFtExpr(m[3])+" {")
+				out = append(out, strings.Repeat("  ", indent)+"for "+m[1]+" in "+cleanExpr(m[2])+".."+cleanExpr(m[3])+" {")
 				indent++
 			}
 		case strings.HasPrefix(ll, "end do"):
@@ -336,13 +260,13 @@ func convertFtBody(src string, sym DocumentSymbol) []string {
 			out = append(out, strings.Repeat("  ", indent)+"}")
 		case strings.HasPrefix(ll, "if") && strings.Contains(ll, "then") && !strings.HasPrefix(ll, "else"):
 			if m := reIf.FindStringSubmatch(l); len(m) == 2 {
-				out = append(out, strings.Repeat("  ", indent)+"if "+cleanFtExpr(m[1])+" {")
+				out = append(out, strings.Repeat("  ", indent)+"if "+cleanExpr(m[1])+" {")
 				indent++
 			}
 		case strings.HasPrefix(ll, "else if"):
 			indent--
 			if m := reElseIf.FindStringSubmatch(l); len(m) == 2 {
-				out = append(out, strings.Repeat("  ", indent)+"else if "+cleanFtExpr(m[1])+" {")
+				out = append(out, strings.Repeat("  ", indent)+"else if "+cleanExpr(m[1])+" {")
 				indent++
 			}
 		case ll == "else":
@@ -358,7 +282,7 @@ func convertFtBody(src string, sym DocumentSymbol) []string {
 			if strings.Contains(l, "=") {
 				parts := strings.SplitN(l, "=", 2)
 				left := strings.TrimSpace(parts[0])
-				right := cleanFtExpr(strings.TrimSpace(parts[1]))
+				right := cleanExpr(strings.TrimSpace(parts[1]))
 				out = append(out, strings.Repeat("  ", indent)+left+" = "+right)
 			}
 		}
@@ -366,17 +290,17 @@ func convertFtBody(src string, sym DocumentSymbol) []string {
 	return out
 }
 
-func writeFtSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol, src string, ls LanguageServer, root string) {
+func writeSymbols(out *strings.Builder, prefix []string, syms []any2mochi.DocumentSymbol, src string, ls any2mochi.LanguageServer, root string) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
 			nameParts = append(nameParts, s.Name)
 		}
 		switch s.Kind {
-		case SymbolKindModule, SymbolKindFunction:
+		case any2mochi.SymbolKindModule, any2mochi.SymbolKindFunction:
 			out.WriteString("fun ")
 			out.WriteString(strings.Join(nameParts, "."))
-			params, ret := getFtSignatureWithRoot(src, s.SelectionRange.Start, ls, root)
+			params, ret := hoverSignature(src, s.SelectionRange.Start, ls, root)
 			out.WriteByte('(')
 			for i, p := range params {
 				if i > 0 {
@@ -393,7 +317,7 @@ func writeFtSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol
 				out.WriteString(": ")
 				out.WriteString(ret)
 			}
-			body := convertFtBody(src, s)
+			body := convertBody(src, s)
 			if len(body) == 0 {
 				out.WriteString(" {}\n")
 			} else {
@@ -406,7 +330,7 @@ func writeFtSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol
 			}
 		}
 		if len(s.Children) > 0 {
-			writeFtSymbols(out, nameParts, s.Children, src, ls, root)
+			writeSymbols(out, nameParts, s.Children, src, ls, root)
 		}
 	}
 }
