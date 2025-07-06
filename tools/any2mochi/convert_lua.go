@@ -32,7 +32,7 @@ func ConvertLua(src string) ([]byte, error) {
 	if pErr != nil {
 		return nil, fmt.Errorf("%s", formatLuaParseError(pErr, src))
 	}
-	fnMap := map[int]*luaast.FunctionExpr{}
+	fnMap := map[int]luaFuncInfo{}
 	collectLuaFuncs(chunk, fnMap)
 
 	var out strings.Builder
@@ -56,7 +56,7 @@ func ConvertLua(src string) ([]byte, error) {
 	return []byte(out.String()), nil
 }
 
-func writeLuaSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol, src string, ls LanguageServer, fns map[int]*luaast.FunctionExpr) {
+func writeLuaSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol, src string, ls LanguageServer, fns map[int]luaFuncInfo) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
@@ -65,7 +65,7 @@ func writeLuaSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbo
 		switch s.Kind {
 		case SymbolKindFunction, SymbolKindMethod:
 			fn := fns[int(s.Range.Start.Line)]
-			writeLuaFunc(out, strings.Join(nameParts, "."), s, src, ls, fn)
+			writeLuaFunc(out, strings.Join(nameParts, "."), s, src, ls, fn.fn)
 		case SymbolKindStruct, SymbolKindClass, SymbolKindInterface:
 			writeLuaType(out, strings.Join(nameParts, "."), s, src, ls, fns)
 		case SymbolKindVariable, SymbolKindConstant:
@@ -92,6 +92,11 @@ func writeLuaSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbo
 type luaParam struct {
 	name string
 	typ  string
+}
+
+type luaFuncInfo struct {
+	fn  *luaast.FunctionExpr
+	end int
 }
 
 func writeLuaFunc(out *strings.Builder, name string, sym DocumentSymbol, src string, ls LanguageServer, fn *luaast.FunctionExpr) {
@@ -255,7 +260,7 @@ func parseLuaVarDetail(detail *string) string {
 	return ""
 }
 
-func writeLuaType(out *strings.Builder, name string, sym DocumentSymbol, src string, ls LanguageServer, fns map[int]*luaast.FunctionExpr) {
+func writeLuaType(out *strings.Builder, name string, sym DocumentSymbol, src string, ls LanguageServer, fns map[int]luaFuncInfo) {
 	out.WriteString("type ")
 	out.WriteString(name)
 	if len(sym.Children) == 0 {
@@ -280,7 +285,7 @@ func writeLuaType(out *strings.Builder, name string, sym DocumentSymbol, src str
 		case SymbolKindFunction, SymbolKindMethod:
 			var b strings.Builder
 			fn := fns[int(c.Range.Start.Line)]
-			writeLuaFunc(&b, c.Name, c, src, ls, fn)
+			writeLuaFunc(&b, c.Name, c, src, ls, fn.fn)
 			for _, line := range strings.Split(strings.TrimSuffix(b.String(), "\n"), "\n") {
 				out.WriteString("  ")
 				out.WriteString(line)
@@ -326,11 +331,11 @@ func mapLuaType(t string) string {
 	}
 }
 
-func collectLuaFuncs(stmts []luaast.Stmt, m map[int]*luaast.FunctionExpr) {
+func collectLuaFuncs(stmts []luaast.Stmt, m map[int]luaFuncInfo) {
 	for _, st := range stmts {
 		switch s := st.(type) {
 		case *luaast.FuncDefStmt:
-			m[s.Line()-1] = s.Func
+			m[s.Line()-1] = luaFuncInfo{fn: s.Func, end: s.LastLine()}
 		case *luaast.DoBlockStmt:
 			collectLuaFuncs(s.Stmts, m)
 		case *luaast.WhileStmt:
@@ -347,7 +352,7 @@ func collectLuaFuncs(stmts []luaast.Stmt, m map[int]*luaast.FunctionExpr) {
 		case *luaast.LocalAssignStmt:
 			for _, e := range s.Exprs {
 				if fn, ok := e.(*luaast.FunctionExpr); ok {
-					m[e.Line()-1] = fn
+					m[e.Line()-1] = luaFuncInfo{fn: fn, end: fn.LastLine()}
 				}
 			}
 		}

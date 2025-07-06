@@ -12,7 +12,9 @@ import (
 	"testing"
 
 	gocode "mochi/compile/go"
+	"mochi/diagnostic"
 	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -85,33 +87,43 @@ func runConvertCompileGolden(t *testing.T, dir, pattern string, convert func(str
 			renameLegacy(outDir, lang, name, outExt)
 			renameLegacy(outDir, lang, name, errExt)
 
+			var progAST *parser.Program
+			var env *types.Env
+			var vmProg *vm.Program
 			if err == nil {
-				prog, pErr := parser.ParseString(string(mochiSrc))
+				progAST, pErr := parser.ParseString(string(mochiSrc))
 				if pErr != nil {
 					err = fmt.Errorf("parse error: %w", pErr)
 				} else {
-					env := types.NewEnv(nil)
-					if errs := types.Check(prog, env); len(errs) > 0 {
+					env = types.NewEnv(nil)
+					if errs := types.Check(progAST, env); len(errs) > 0 {
 						err = fmt.Errorf("type error: %v", errs[0])
+					} else if _, cErr := gocode.New(env).Compile(progAST); cErr != nil {
+						err = fmt.Errorf("compile error: %w", cErr)
+					} else if vmProg, cErr = vm.Compile(progAST, env); cErr != nil {
+						err = fmt.Errorf("vm compile error: %w", cErr)
 					} else {
-						if _, cErr := gocode.New(env).Compile(prog); cErr != nil {
-							err = fmt.Errorf("compile error: %w", cErr)
+						var buf bytes.Buffer
+						if vmErr := vm.New(vmProg, &buf).Run(); vmErr != nil {
+							err = fmt.Errorf("vm run error: %w", vmErr)
 						}
 					}
 				}
 			}
 
 			if err != nil {
+				msg := detailedError(err, vmProg, string(mochiSrc))
 				if *update {
 					os.WriteFile(outPath, nil, 0644)
-					os.WriteFile(errPath, normalizeOutput(rootDir(t), []byte(err.Error())), 0644)
+					os.WriteFile(errPath, normalizeOutput(rootDir(t), []byte(msg)), 0644)
 				}
 				altErr := filepath.Join(outDir, name+"."+lang+errExt)
 				want, readErr := readGolden(errPath, altErr)
 				if readErr != nil {
 					t.Fatalf("missing golden error: %v", readErr)
 				}
-				if got := normalizeOutput(rootDir(t), []byte(err.Error())); !bytes.Equal(got, normalizeOutput(rootDir(t), want)) {
+				got := normalizeOutput(rootDir(t), []byte(msg))
+				if !bytes.Equal(got, normalizeOutput(rootDir(t), want)) {
 					t.Errorf("error mismatch\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", got, want)
 				}
 				return
@@ -171,16 +183,18 @@ func runConvertGolden(t *testing.T, dir, pattern string, convert func(string) ([
 			renameLegacy(outDir, lang, name, errExt)
 
 			if err != nil {
+				msg := detailedError(err, nil, "")
 				if *update {
 					os.WriteFile(outPath, nil, 0644)
-					os.WriteFile(errPath, normalizeOutput(rootDir(t), []byte(err.Error())), 0644)
+					os.WriteFile(errPath, normalizeOutput(rootDir(t), []byte(msg)), 0644)
 				}
 				altErr := filepath.Join(outDir, name+"."+lang+errExt)
 				want, readErr := readGolden(errPath, altErr)
 				if readErr != nil {
 					t.Fatalf("missing golden error: %v", readErr)
 				}
-				if got := normalizeOutput(rootDir(t), []byte(err.Error())); !bytes.Equal(got, normalizeOutput(rootDir(t), want)) {
+				got := normalizeOutput(rootDir(t), []byte(msg))
+				if !bytes.Equal(got, normalizeOutput(rootDir(t), want)) {
 					t.Errorf("error mismatch\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", got, want)
 				}
 				return
@@ -235,6 +249,54 @@ func normalizeOutput(root string, b []byte) []byte {
 		out += "\n"
 	}
 	return []byte(out)
+}
+
+func formatDiagnosticWithSrc(d diagnostic.Diagnostic, src string) string {
+	if d.Pos.Filename == "" && src != "" {
+		lines := strings.Split(src, "\n")
+		line := int(d.Pos.Line)
+		col := int(d.Pos.Column)
+		if line <= 0 || line > len(lines) {
+			return d.Format()
+		}
+		start := line - 2
+		if start < 0 {
+			start = 0
+		}
+		end := line
+		if end >= len(lines) {
+			end = len(lines) - 1
+		}
+		var out strings.Builder
+		fmt.Fprintf(&out, "error[%s]: %s\n  --> %d:%d\n", d.Code, d.Msg, line, col)
+		for i := start; i <= end; i++ {
+			fmt.Fprintf(&out, "%4d| %s\n", i+1, lines[i])
+			if i == line-1 {
+				out.WriteString("    | " + strings.Repeat(" ", col-1) + "^\n")
+			}
+		}
+		if d.Help != "" {
+			out.WriteString("\nhelp: " + d.Help)
+		}
+		return out.String()
+	}
+	return d.Format()
+}
+
+func detailedError(err error, prog *vm.Program, src string) string {
+	if err == nil {
+		return ""
+	}
+	if d, ok := err.(diagnostic.Diagnostic); ok {
+		return formatDiagnosticWithSrc(d, src)
+	}
+	if vmErr, ok := err.(*vm.VMError); ok {
+		return vmErr.Format(prog)
+	}
+	if f, ok := err.(interface{ Format() string }); ok {
+		return f.Format()
+	}
+	return err.Error()
 }
 
 // RunConvertCompileGolden is an exported wrapper for runConvertCompileGolden.
