@@ -1,3 +1,4 @@
-let set: (int, bool) Hashtbl.t ref
-let i: int ref
-let count: int ref
+let set = ref (let tbl = Hashtbl.create 0 in tbl)
+let i = ref 1
+let count = ref 0
+print(str(!count))

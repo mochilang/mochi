@@ -1,1 +1,2 @@
-fun square(): int {}
+let square = fun x -> x * x
+print(str(square6))

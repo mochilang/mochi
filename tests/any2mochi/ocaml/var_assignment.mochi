@@ -1,1 +1,2 @@
-let x: int ref
+let x = ref 1
+print(str(!x))

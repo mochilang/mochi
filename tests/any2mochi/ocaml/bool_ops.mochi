@@ -1,4 +1,3 @@
-print(str(true && false))
-print(str(true || false))
+print(str(true&&false))
+print(str(true||false))
 print(str(!false))
-

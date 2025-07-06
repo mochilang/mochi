@@ -1,6 +1,5 @@
-fun _read_all(ic: in_channel): string {}
-fun _read_input(path: string option): string {}
-fun _load(path: string option, _: 'a): [> `List of 'b ] list {}
-fun _save(rows: 'a, path: string option, _: 'b) {}
-let rows: [> `List of 'a ] list
-let tbl: (string, string) Hashtbl.t
+let ic = match path with
+let txt = _read_all ic in
+let text = _read_input path in
+let oc = match path with
+let rows = _load None (let tbl = Hashtbl.create 1 in Hashtbl.add tbl "format" "json", tbl)

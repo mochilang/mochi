@@ -1,1 +1,2 @@
-let double: (int -> int) ref
+let double = ref (fun x -> x * 2)
+print(str(!double3))
