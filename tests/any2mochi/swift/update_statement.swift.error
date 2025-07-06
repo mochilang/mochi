@@ -1,1 +1,1 @@
-parse error: parse error: 1:5: unexpected token "expect" (expected <ident> "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+invalid character '3' looking for beginning of object key string
