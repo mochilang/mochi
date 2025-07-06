@@ -31,11 +31,11 @@ func diagnostics(src string, diags []any2mochi.Diagnostic) string {
 		col := int(d.Range.Start.Character)
 		msg := d.Message
 		fmt.Fprintf(&out, "line %d:%d: %s\n", ln+1, col+1, msg)
-		start := ln - 1
+		start := ln - 2
 		if start < 0 {
 			start = 0
 		}
-		end := ln + 1
+		end := ln + 2
 		if end >= len(lines) {
 			end = len(lines) - 1
 		}
@@ -47,6 +47,7 @@ func diagnostics(src string, diags []any2mochi.Diagnostic) string {
 				out.WriteString("     " + pointer + "\n")
 			}
 		}
+		out.WriteByte('\n')
 	}
 	return strings.TrimSpace(out.String())
 }

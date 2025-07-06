@@ -40,11 +40,11 @@ func formatDiagnostics(src string, diags []Diagnostic) string {
 		start := int(d.Range.Start.Line)
 		col := int(d.Range.Start.Character)
 		msg := d.Message
-		from := start - 1
+		from := start - 2
 		if from < 0 {
 			from = 0
 		}
-		to := start + 1
+		to := start + 2
 		if to >= len(lines) {
 			to = len(lines) - 1
 		}
@@ -55,6 +55,7 @@ func formatDiagnostics(src string, diags []Diagnostic) string {
 				out.WriteString("     " + strings.Repeat(" ", col) + "^\n")
 			}
 		}
+		out.WriteByte('\n')
 	}
 	return strings.TrimSpace(out.String())
 }

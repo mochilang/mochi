@@ -22,6 +22,7 @@ type DocumentSymbol struct {
 	SelectionRange Range            `json:"selectionRange"`
 	Deprecated     bool             `json:"deprecated,omitempty"`
 	Tags           []int            `json:"tags,omitempty"`
+	ContainerName  string           `json:"containerName,omitempty"`
 	Children       []DocumentSymbol `json:"children,omitempty"`
 }
 

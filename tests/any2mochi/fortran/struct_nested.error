@@ -1,5 +1,8 @@
-line 11: Variable "line" declared twice in scope
- 10| end type Line
- 11| type(Line) :: line
- 12| type(Point) :: p1
+line 11:1: Variable "line" declared twice in scope
+   9|     type(Point) :: end
+  10|   end type Line
+  11|   type(Line) :: line
+     ^
+  12|   type(Point) :: p1
+  13|   type(Point) :: p2
 
