@@ -42,6 +42,7 @@ type Func struct {
 	Params     []string `json:"params"`
 	ParamTypes []string `json:"param_types,omitempty"`
 	Return     string   `json:"return,omitempty"`
+	Signature  string   `json:"signature,omitempty"`
 	Body       []string `json:"body"`
 	Line       int      `json:"line"`
 	End        int      `json:"end"`
@@ -57,6 +58,19 @@ type File struct {
 func runParse(src string) (File, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
+
+	if _, err := exec.LookPath("scala-cli"); err == nil {
+		cmd := exec.CommandContext(ctx, "scala-cli", "ast", "--format=json", "-")
+		cmd.Stdin = bytes.NewBufferString(src)
+		var out bytes.Buffer
+		cmd.Stdout = &out
+		if err := cmd.Run(); err == nil {
+			var f File
+			if jsonErr := json.Unmarshal(out.Bytes(), &f); jsonErr == nil {
+				return f, nil
+			}
+		}
+	}
 
 	if _, err := exec.LookPath("scalac"); err == nil {
 		tmp, err := os.CreateTemp("", "scala-src-*.scala")
@@ -142,6 +156,7 @@ func parseSource(src string) File {
 		}
 		if depth == 0 {
 			if m := reHeader.FindStringSubmatch(line); m != nil {
+				header := line
 				name := m[1]
 				params := []string{}
 				types := []string{}
@@ -184,7 +199,7 @@ func parseSource(src string) File {
 						body = append(body, expr)
 					}
 				}
-				file.Funcs = append(file.Funcs, Func{Name: name, Params: params, ParamTypes: types, Return: ret, Body: body, Line: start, End: end})
+				file.Funcs = append(file.Funcs, Func{Name: name, Params: params, ParamTypes: types, Return: ret, Signature: header, Body: body, Line: start, End: end})
 			}
 		}
 	}
