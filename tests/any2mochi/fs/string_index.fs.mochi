@@ -1,2 +1,2 @@
 let text = "hello"
-print((string text.[1]))
+print((string text[1]))

@@ -2,3 +2,4 @@ unsupported syntax at line 3: exception Return_sumN of int
   2: 
   3: exception Return_sumN of int
   4: let rec sumN (n: int) : int =
+  5:     try

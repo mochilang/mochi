@@ -1,0 +1,3 @@
+open System
+
+ignore (printfn "%A" (Math.Floor(float 2.7)))

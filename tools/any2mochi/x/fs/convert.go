@@ -322,6 +322,44 @@ func writeStmts(out *strings.Builder, stmts []Stmt, indent int) {
 			out.WriteString(idt + "while " + v.Cond + " {\n")
 			writeStmts(out, v.Body, indent+1)
 			out.WriteString(idt + "}\n")
+		case TypeDecl:
+			if len(v.Fields) > 0 {
+				out.WriteString(idt + "type " + v.Name + " {\n")
+				for _, f := range v.Fields {
+					typ := mapType(f.Type)
+					if typ == "" {
+						typ = "any"
+					}
+					out.WriteString(idt + "  " + f.Name + ": " + typ + "\n")
+				}
+				out.WriteString(idt + "}\n")
+			} else if len(v.Variants) > 0 {
+				out.WriteString(idt + "type " + v.Name + " =\n")
+				for i, vr := range v.Variants {
+					sep := "  "
+					if i > 0 {
+						sep = "  | "
+					}
+					out.WriteString(idt + sep + vr.Name)
+					if len(vr.Fields) > 0 {
+						out.WriteByte('(')
+						for j, f := range vr.Fields {
+							if j > 0 {
+								out.WriteString(", ")
+							}
+							typ := mapType(f.Type)
+							if typ == "" {
+								typ = "any"
+							}
+							out.WriteString(f.Name + ": " + typ)
+						}
+						out.WriteByte(')')
+					}
+					out.WriteByte('\n')
+				}
+			} else {
+				out.WriteString(idt + "type " + v.Name + " {}\n")
+			}
 		}
 	}
 }

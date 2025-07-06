@@ -1,0 +1,8 @@
+var m = Map.empty
+m = Map.add 1 true m
+m = Map.add 2 true m
+var sum = 0
+for k in Map.keys m {
+  sum = (sum + k)
+}
+print(sum)

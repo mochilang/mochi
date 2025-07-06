@@ -2,3 +2,4 @@ unsupported syntax at line 3: let _except (a: 'T[]) (b: 'T[]) : 'T[] =
   2: 
   3: let _except (a: 'T[]) (b: 'T[]) : 'T[] =
   4:   let setB = Set.ofArray b
+  5:   Array.filter (fun x -> not (Set.contains x setB)) a

@@ -2,3 +2,4 @@ unsupported syntax at line 3: exception Return_prepend of int[][]
   2: 
   3: exception Return_prepend of int[][]
   4: let rec prepend (level: int[]) (result: int[][]) : int[][] =
+  5:     try

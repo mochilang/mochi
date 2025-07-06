@@ -473,6 +473,16 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: FloatType{},
 		Pure:   true,
 	}, false)
+	env.SetVar("ceil", FuncType{
+		Params: []Type{AnyType{}},
+		Return: FloatType{},
+		Pure:   true,
+	}, false)
+	env.SetVar("floor", FuncType{
+		Params: []Type{AnyType{}},
+		Return: FloatType{},
+		Pure:   true,
+	}, false)
 	env.SetVar("sum", FuncType{
 		Params: []Type{AnyType{}},
 		Return: FloatType{},
@@ -2276,6 +2286,8 @@ var builtinArity = map[string]int{
 	"count":     1,
 	"exists":    1,
 	"avg":       1,
+	"ceil":      1,
+	"floor":     1,
 	"sum":       1,
 	"min":       1,
 	"max":       1,
@@ -2399,6 +2411,14 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 		default:
 			return errSumOperand(pos, a)
 		}
+	case "ceil", "floor":
+		if len(args) != 1 {
+			return errArgCount(pos, name, 1, len(args))
+		}
+		if !isNumeric(args[0]) {
+			return fmt.Errorf("%s() expects numeric", name)
+		}
+		return nil
 	case "min", "max":
 		if len(args) != 1 {
 			return errArgCount(pos, name, 1, len(args))
