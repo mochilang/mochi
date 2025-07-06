@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -16,13 +17,17 @@ import (
 
 // ConvertError provides a detailed error message for Swift conversion.
 type ConvertError struct {
-	Line int
-	Msg  string
-	Snip string
+	Line   int
+	Column int
+	Msg    string
+	Snip   string
 }
 
 func (e *ConvertError) Error() string {
 	if e.Line > 0 {
+		if e.Column > 0 {
+			return fmt.Sprintf("line %d:%d: %s\n%s", e.Line, e.Column, e.Msg, e.Snip)
+		}
 		return fmt.Sprintf("line %d: %s\n%s", e.Line, e.Msg, e.Snip)
 	}
 	return fmt.Sprintf("%s\n%s", e.Msg, e.Snip)
@@ -155,6 +160,8 @@ type item struct {
 	Range         offsetRange `json:"range"`
 	Result        string      `json:"result,omitempty"`
 	InterfaceType string      `json:"interface_type,omitempty"`
+	ThrownType    string      `json:"thrown_type,omitempty"`
+	Access        string      `json:"access,omitempty"`
 	Members       []item      `json:"members,omitempty"`
 	Elements      []item      `json:"elements,omitempty"`
 }
@@ -205,9 +212,21 @@ func parse(src string) (file, error) {
 	cmd.Stdout = &out
 	cmd.Stderr = &out
 	if err := cmd.Run(); err != nil {
-		return file{}, &ConvertError{Msg: err.Error(), Snip: snippet(src)}
+		line, col := 0, 0
+		msg := err.Error()
+		re := regexp.MustCompile(`:(\d+):(\d+): error: (.*)`)
+		if m := re.FindStringSubmatch(out.String()); len(m) == 4 {
+			line, _ = strconv.Atoi(m[1])
+			col, _ = strconv.Atoi(m[2])
+			msg = m[3]
+		}
+		return file{}, &ConvertError{Line: line, Column: col, Msg: msg, Snip: snippetAround(src, line)}
 	}
-	dec := json.NewDecoder(bytes.NewReader(out.Bytes()))
+	data := out.Bytes()
+	if idx := bytes.IndexByte(data, '{'); idx > 0 {
+		data = data[idx:]
+	}
+	dec := json.NewDecoder(bytes.NewReader(data))
 	var f file
 	if err := dec.Decode(&f); err != nil {
 		return file{}, err
@@ -378,6 +397,29 @@ func snippet(src string) string {
 		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
 	}
 	return strings.Join(lines, "\n")
+}
+
+func snippetAround(src string, line int) string {
+	lines := strings.Split(src, "\n")
+	if line <= 0 || line > len(lines) {
+		return snippet(src)
+	}
+	start := line - 2
+	if start < 0 {
+		start = 0
+	}
+	end := line + 1
+	if end > len(lines) {
+		end = len(lines)
+	}
+	var out strings.Builder
+	for i := start; i < end; i++ {
+		fmt.Fprintf(&out, "%4d| %s\n", i+1, lines[i])
+		if i == line-1 {
+			out.WriteString("    | " + strings.Repeat(" ", len(lines[i])) + "^\n")
+		}
+	}
+	return strings.TrimRight(out.String(), "\n")
 }
 
 // ConvertFile reads the Swift file and converts it to Mochi.

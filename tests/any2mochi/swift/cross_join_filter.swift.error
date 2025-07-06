@@ -1,1 +1,5 @@
-parse error: parse error: 1:11: unexpected token "(" (expected "{" Statement* "}")
+line 8:18: type 'Any' does not conform to protocol 'Hashable'
+   7|     ({
+   8|       var _res: [[Any: Any]] = []
+    |                                  ^
+   9|       for n in nums {
