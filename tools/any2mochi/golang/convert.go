@@ -1,4 +1,4 @@
-package any2mochi
+package golang
 
 import (
 	"bytes"
@@ -158,4 +158,15 @@ func exprString(fset *token.FileSet, e ast.Expr) string {
 	var b bytes.Buffer
 	printer.Fprint(&b, fset, e)
 	return b.String()
+}
+
+func numberedSnippet(src string) string {
+	lines := strings.Split(src, "\n")
+	if len(lines) > 10 {
+		lines = lines[:10]
+	}
+	for i, l := range lines {
+		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
+	}
+	return strings.Join(lines, "\n")
 }
