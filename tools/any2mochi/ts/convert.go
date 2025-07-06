@@ -1,4 +1,4 @@
-package any2mochi
+package ts
 
 import (
 	"encoding/json"
@@ -11,17 +11,18 @@ import (
 	"strings"
 
 	tscode "mochi/compile/ts"
+	parent "mochi/tools/any2mochi"
 )
 
-// TypeScriptUseLanguageServer controls whether the TypeScript language server is
+// UseLanguageServer controls whether the TypeScript language server is
 // used when converting. It defaults to false and can be enabled by consumers.
-var TypeScriptUseLanguageServer = false
+var UseLanguageServer = false
 
-// ConvertTypeScript converts TypeScript source code to a minimal Mochi representation.
-// If TypeScriptUseLanguageServer is false the conversion relies solely on the
+// Convert converts TypeScript source code to a minimal Mochi representation.
+// If UseLanguageServer is false the conversion relies solely on the
 // regex based fallback parser. When enabled, the language server is attempted
 // after the fallback if no symbols were discovered.
-func ConvertTypeScript(src string) ([]byte, error) {
+func Convert(src string) ([]byte, error) {
 	var out strings.Builder
 
 	if decls, err := parseTSAST(src); err == nil && len(decls) > 0 {
@@ -32,14 +33,14 @@ func ConvertTypeScript(src string) ([]byte, error) {
 		parseTSFallback(&out, src)
 	}
 
-	var syms []DocumentSymbol
-	var diags []Diagnostic
+	var syms []parent.DocumentSymbol
+	var diags []parent.Diagnostic
 	var err error
 
-	if out.Len() == 0 && TypeScriptUseLanguageServer {
+	if out.Len() == 0 && UseLanguageServer {
 		_ = tscode.EnsureTSLanguageServer()
-		ls := Servers["typescript"]
-		syms, diags, err = EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+		ls := parent.Servers["typescript"]
+		syms, diags, err = parent.EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
 		if err == nil && len(diags) == 0 {
 			writeTSSymbols(&out, nil, syms, src, ls)
 		}
@@ -57,19 +58,19 @@ func ConvertTypeScript(src string) ([]byte, error) {
 	return []byte(out.String()), nil
 }
 
-// ConvertTypeScriptFile reads the TS file and converts it to Mochi.
-func ConvertTypeScriptFile(path string) ([]byte, error) {
+// ConvertFile reads the TS file and converts it to Mochi.
+func ConvertFile(path string) ([]byte, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return ConvertTypeScript(string(data))
+	return Convert(string(data))
 }
 
-// ConvertTypeScriptWithJSON converts the source and also returns the parsed
+// ConvertWithJSON converts the source and also returns the parsed
 // symbols encoded as JSON.
-func ConvertTypeScriptWithJSON(src string) ([]byte, []byte, error) {
-	if !TypeScriptUseLanguageServer {
+func ConvertWithJSON(src string) ([]byte, []byte, error) {
+	if !UseLanguageServer {
 		if data, err := parseTSDeno(src); err == nil && len(data) > 0 {
 			return data, nil, nil
 		}
@@ -81,8 +82,8 @@ func ConvertTypeScriptWithJSON(src string) ([]byte, []byte, error) {
 		return []byte(b.String()), nil, nil
 	}
 
-	ls := Servers["typescript"]
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+	ls := parent.Servers["typescript"]
+	syms, diags, err := parent.EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -98,28 +99,28 @@ func ConvertTypeScriptWithJSON(src string) ([]byte, []byte, error) {
 	return []byte(out.String()), js, nil
 }
 
-// ConvertTypeScriptFileWithJSON reads the TS file and converts it to Mochi
+// ConvertFileWithJSON reads the TS file and converts it to Mochi
 // while also returning the parsed symbols as JSON.
-func ConvertTypeScriptFileWithJSON(path string) ([]byte, []byte, error) {
+func ConvertFileWithJSON(path string) ([]byte, []byte, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, nil, err
 	}
-	return ConvertTypeScriptWithJSON(string(data))
+	return ConvertWithJSON(string(data))
 }
 
-func writeTSSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol, src string, ls LanguageServer) {
+func writeTSSymbols(out *strings.Builder, prefix []string, syms []parent.DocumentSymbol, src string, ls parent.LanguageServer) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
 			nameParts = append(nameParts, s.Name)
 		}
 		switch s.Kind {
-		case SymbolKindClass, SymbolKindInterface, SymbolKindStruct:
+		case parent.SymbolKindClass, parent.SymbolKindInterface, parent.SymbolKindStruct:
 			writeTSClass(out, nameParts, s, src, ls)
-		case SymbolKindEnum:
+		case parent.SymbolKindEnum:
 			writeTSEnum(out, nameParts, s, src, ls)
-		case SymbolKindVariable, SymbolKindConstant, SymbolKindField, SymbolKindProperty:
+		case parent.SymbolKindVariable, parent.SymbolKindConstant, parent.SymbolKindField, parent.SymbolKindProperty:
 			if s.Name != "" && len(prefix) == 0 {
 				if fields, alias := tsAliasDef(src, s, ls); len(fields) > 0 || alias != "" {
 					writeTSAlias(out, s.Name, fields, alias)
@@ -134,25 +135,25 @@ func writeTSSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol
 					out.WriteByte('\n')
 				}
 			}
-		case SymbolKindFunction, SymbolKindMethod, SymbolKindConstructor:
+		case parent.SymbolKindFunction, parent.SymbolKindMethod, parent.SymbolKindConstructor:
 			writeTSFunc(out, strings.Join(nameParts, "."), s, src, ls)
 		}
-		if len(s.Children) > 0 && s.Kind != SymbolKindClass && s.Kind != SymbolKindInterface && s.Kind != SymbolKindStruct {
+		if len(s.Children) > 0 && s.Kind != parent.SymbolKindClass && s.Kind != parent.SymbolKindInterface && s.Kind != parent.SymbolKindStruct {
 			writeTSSymbols(out, nameParts, s.Children, src, ls)
 		}
 	}
 }
 
-func writeTSClass(out *strings.Builder, nameParts []string, sym DocumentSymbol, src string, ls LanguageServer) {
+func writeTSClass(out *strings.Builder, nameParts []string, sym parent.DocumentSymbol, src string, ls parent.LanguageServer) {
 	out.WriteString("type ")
 	out.WriteString(strings.Join(nameParts, "."))
-	fields := []DocumentSymbol{}
-	methods := []DocumentSymbol{}
+	fields := []parent.DocumentSymbol{}
+	methods := []parent.DocumentSymbol{}
 	for _, c := range sym.Children {
 		switch c.Kind {
-		case SymbolKindField, SymbolKindProperty:
+		case parent.SymbolKindField, parent.SymbolKindProperty:
 			fields = append(fields, c)
-		case SymbolKindFunction, SymbolKindMethod, SymbolKindConstructor:
+		case parent.SymbolKindFunction, parent.SymbolKindMethod, parent.SymbolKindConstructor:
 			methods = append(methods, c)
 		}
 	}
@@ -182,7 +183,7 @@ func writeTSClass(out *strings.Builder, nameParts []string, sym DocumentSymbol, 
 	out.WriteString("}\n")
 }
 
-func writeTSFunc(out *strings.Builder, name string, sym DocumentSymbol, src string, ls LanguageServer) {
+func writeTSFunc(out *strings.Builder, name string, sym parent.DocumentSymbol, src string, ls parent.LanguageServer) {
 	params, ret := tsHoverSignature(src, sym, ls)
 	out.WriteString("fun ")
 	out.WriteString(name)
@@ -227,12 +228,12 @@ func writeTSFunc(out *strings.Builder, name string, sym DocumentSymbol, src stri
 	out.WriteString("}\n")
 }
 
-func tsHoverSignature(src string, sym DocumentSymbol, ls LanguageServer) ([]tsParam, string) {
-	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
+func tsHoverSignature(src string, sym parent.DocumentSymbol, ls parent.LanguageServer) ([]tsParam, string) {
+	hov, err := parent.EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err != nil {
 		return nil, ""
 	}
-	if mc, ok := hov.Contents.(MarkupContent); ok {
+	if mc, ok := hov.Contents.(parent.MarkupContent); ok {
 		lines := strings.Split(mc.Value, "\n")
 		for i := len(lines) - 1; i >= 0; i-- {
 			l := strings.TrimSpace(lines[i])
@@ -244,12 +245,12 @@ func tsHoverSignature(src string, sym DocumentSymbol, ls LanguageServer) ([]tsPa
 	return nil, ""
 }
 
-func tsFieldType(src string, sym DocumentSymbol, ls LanguageServer) string {
-	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
+func tsFieldType(src string, sym parent.DocumentSymbol, ls parent.LanguageServer) string {
+	hov, err := parent.EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err != nil {
 		return ""
 	}
-	if mc, ok := hov.Contents.(MarkupContent); ok {
+	if mc, ok := hov.Contents.(parent.MarkupContent); ok {
 		lines := strings.Split(mc.Value, "\n")
 		for _, l := range lines {
 			l = strings.TrimSpace(l)
@@ -271,12 +272,12 @@ type tsField struct {
 
 // tsAliasDef returns fields for a type alias object or the aliased type.
 // When neither can be determined it returns nil and empty string.
-func tsAliasDef(src string, sym DocumentSymbol, ls LanguageServer) ([]tsField, string) {
-	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
+func tsAliasDef(src string, sym parent.DocumentSymbol, ls parent.LanguageServer) ([]tsField, string) {
+	hov, err := parent.EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err != nil {
 		return nil, ""
 	}
-	if mc, ok := hov.Contents.(MarkupContent); ok {
+	if mc, ok := hov.Contents.(parent.MarkupContent); ok {
 		lines := strings.Split(mc.Value, "\n")
 		reading := false
 		var fields []tsField
@@ -334,27 +335,53 @@ func writeTSAlias(out *strings.Builder, name string, fields []tsField, alias str
 	out.WriteString("}\n")
 }
 
-func writeTSEnum(out *strings.Builder, nameParts []string, sym DocumentSymbol, src string, ls LanguageServer) {
+func writeTSEnum(out *strings.Builder, nameParts []string, sym parent.DocumentSymbol, src string, ls parent.LanguageServer) {
 	out.WriteString("type ")
 	out.WriteString(strings.Join(nameParts, "."))
 	out.WriteString(" {\n")
 	for _, c := range sym.Children {
-		if c.Kind == SymbolKindEnumMember {
+		if c.Kind == parent.SymbolKindEnumMember {
 			out.WriteString("  ")
 			out.WriteString(c.Name)
 			out.WriteByte('\n')
 		}
 	}
 	out.WriteString("}\n")
-	var rest []DocumentSymbol
+	var rest []parent.DocumentSymbol
 	for _, c := range sym.Children {
-		if c.Kind != SymbolKindEnumMember {
+		if c.Kind != parent.SymbolKindEnumMember {
 			rest = append(rest, c)
 		}
 	}
 	if len(rest) > 0 {
 		writeTSSymbols(out, nameParts, rest, src, ls)
 	}
+}
+
+func numberedSnippet(src string) string {
+	lines := strings.Split(src, "\n")
+	if len(lines) > 10 {
+		lines = lines[:10]
+	}
+	for i, l := range lines {
+		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
+	}
+	return strings.Join(lines, "\n")
+}
+
+func formatDiagnostics(src string, diags []parent.Diagnostic) string {
+	lines := strings.Split(src, "\n")
+	var out strings.Builder
+	for _, d := range diags {
+		start := int(d.Range.Start.Line)
+		msg := d.Message
+		line := ""
+		if start < len(lines) {
+			line = strings.TrimSpace(lines[start])
+		}
+		out.WriteString(fmt.Sprintf("line %d: %s\n  %s\n", start+1, msg, line))
+	}
+	return strings.TrimSpace(out.String())
 }
 
 type tsParam struct {

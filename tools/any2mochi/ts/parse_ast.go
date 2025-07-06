@@ -1,4 +1,4 @@
-package any2mochi
+package ts
 
 import (
 	"encoding/json"
