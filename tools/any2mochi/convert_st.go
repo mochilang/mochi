@@ -8,6 +8,11 @@ import (
 
 // ConvertSt converts st source code to Mochi using the language server.
 func ConvertSt(src string) ([]byte, error) {
+	if ast, err := parseStCLI(src); err == nil {
+		if out, err := convertStAST(ast); err == nil {
+			return out, nil
+		}
+	}
 	ls := Servers["st"]
 	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
 	if err != nil {
