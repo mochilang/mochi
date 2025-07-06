@@ -1,5 +1,0 @@
-tests/vm/valid/append_builtin.go.out:13: unsupported expr *ast.ArrayType
->>> 12:    func _convSlice[T any, U any](s []T) []U {
-13:>>> out := make([]U, len(s))
-14:    for i, v := range s {
-15:    out[i] = any(v).(U)

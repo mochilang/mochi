@@ -3,7 +3,7 @@ fun _maxOrdered(s: list<T>): T {
   var zero: T
   return zero
 }
-  let m = s[0]
+  var m = s[0]
   for v in s[1:] {
   if v > m {
   m = v
@@ -16,7 +16,7 @@ fun _minOrdered(s: list<T>): T {
   var zero: T
   return zero
 }
-  let m = s[0]
+  var m = s[0]
   for v in s[1:] {
   if v < m {
   m = v
@@ -25,5 +25,5 @@ fun _minOrdered(s: list<T>): T {
   return m
 }
 var nums = [3, 1, 4]
-print(str(_minOrdered(nums)))
-print(str(_maxOrdered(nums)))
+print(_minOrdered(nums))
+print(_maxOrdered(nums))

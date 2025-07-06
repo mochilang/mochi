@@ -2,7 +2,7 @@ var nums = [1, 2, 3]
 var letters = ["A", "B"]
 _ = letters
 var pairs = fun (): list<map<string, any>> {
-  let _res = []
+  var _res = []
   for n in nums {
   if (n % 2) == 0 {
   for l in letters {
@@ -12,7 +12,7 @@ var pairs = fun (): list<map<string, any>> {
 }
   return _res
 }()
-print(str("--- Even pairs ---"))
+print("--- Even pairs ---")
 for p in pairs {
   print(str(p["n"]) + " " + str(p["l"]))
 }

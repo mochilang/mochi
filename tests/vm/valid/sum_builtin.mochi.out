@@ -5,4 +5,4 @@ fun _sumOrdered(s: list<T>): float64 {
 }
   return sum
 }
-print(str(_sumOrdered([1, 2, 3])))
+print(_sumOrdered([1, 2, 3]))

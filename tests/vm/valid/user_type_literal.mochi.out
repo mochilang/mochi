@@ -8,4 +8,4 @@ type Book {
 }
 var book = Book { Title: "Go", Author: Person { Name: "Bob", Age: 42 } }
 _ = book
-print(str(book.Author.Name))
+print(book.Author.Name)

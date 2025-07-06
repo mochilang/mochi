@@ -1,6 +1,6 @@
 var x = 5
 if x > 3 {
-  print(str("big"))
+  print("big")
 } else {
-  print(str("small"))
+  print("small")
 }

@@ -1,6 +1,6 @@
 var data = [1, 2]
 var flag = len(fun (): list<int> {
-  let _res = []
+  var _res = []
   for x in data {
   if x == 1 {
   if x == 1 {
@@ -10,4 +10,4 @@ var flag = len(fun (): list<int> {
 }
   return _res
 }()) > 0
-print(str(flag))
+print(flag)

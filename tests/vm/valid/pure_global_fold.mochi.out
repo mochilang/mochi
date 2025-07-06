@@ -3,4 +3,4 @@ fun inc(x: int): int {
 }
 var k = 2
 _ = k
-print(str(5))
+print(5)

@@ -1,15 +1,5 @@
 # Go roundtrip VM test failures
 
-## tests/vm/valid/append_builtin.mochi
-
-```
-go2mochi error: tests/vm/valid/append_builtin.go.out:13: unsupported expr *ast.ArrayType
->>> 12:    func _convSlice[T any, U any](s []T) []U {
-13:>>> out := make([]U, len(s))
-14:    for i, v := range s {
-15:    out[i] = any(v).(U)
-```
-
 ## tests/vm/valid/avg_builtin.mochi
 
 ```
@@ -202,7 +192,7 @@ parse roundtrip error: parse error: 3:26: unexpected token "{" (expected "<" Typ
 
 ```
 type roundtrip error: error[T002]: undefined variable: slices
-  --> :2:11
+  --> :2:7
 
 help:
   Check if the variable was declared in this scope.
@@ -332,7 +322,7 @@ go2mochi error: tests/vm/valid/match_full.go.out:70: unsupported parameter list
 
 ```
 type roundtrip error: error[T002]: undefined variable: slices
-  --> :2:11
+  --> :2:7
 
 help:
   Check if the variable was declared in this scope.
@@ -448,7 +438,7 @@ help:
 
 ```
 type roundtrip error: error[T002]: undefined variable: strings
-  --> :2:11
+  --> :2:7
 
 help:
   Check if the variable was declared in this scope.
@@ -532,15 +522,5 @@ type roundtrip error: error[T001]: assignment to undeclared variable: _
 
 help:
   Declare `_` first using `let`.
-```
-
-## tests/vm/valid/values_builtin.mochi
-
-```
-output mismatch
--- got --
-[1 2 3]
--- want --
-1 2 3
 ```
 

@@ -179,14 +179,14 @@ func _sum(v any) float64 {
 		case []any:
 			items = s
 		case []int:
-			items = make([]any, len(s))
-			for i, v := range s {
-				items[i] = v
+			items = []any{}
+			for _, v := range s {
+				items = append(items, v)
 			}
 		case []float64:
-			items = make([]any, len(s))
-			for i, v := range s {
-				items[i] = v
+			items = []any{}
+			for _, v := range s {
+				items = append(items, v)
 			}
 		case []string, []bool:
 			panic("sum() expects numbers")

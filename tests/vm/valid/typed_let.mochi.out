@@ -1,2 +1,2 @@
 var y = nil
-print(str(y))
+print(y)

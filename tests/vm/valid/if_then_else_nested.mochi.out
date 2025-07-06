@@ -13,4 +13,4 @@ var msg = fun (): string {
 }()
 }
 }()
-print(str(msg))
+print(msg)

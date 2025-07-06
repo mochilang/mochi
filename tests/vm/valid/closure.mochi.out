@@ -4,4 +4,4 @@ fun makeAdder(n: int): func(int) int {
 }
 }
 var add10 = makeAdder(10)
-print(str(add10(7)))
+print(add10(7))

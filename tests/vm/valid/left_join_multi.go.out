@@ -301,9 +301,9 @@ func _query(src []any, joins []_joinSpec, opts _queryOpts) []any {
 }
 
 func _toAnySlice[T any](s []T) []any {
-	out := make([]any, len(s))
-	for i, v := range s {
-		out[i] = v
+	out := []any{}
+	for _, v := range s {
+		out = append(out, v)
 	}
 	return out
 }

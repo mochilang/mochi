@@ -1,5 +1,5 @@
 fun _indexString(s: string, i: int): string {
-  let runes = s
+  var runes = s
   if i < 0 {
   i = i + len(runes)
 }
@@ -9,4 +9,4 @@ fun _indexString(s: string, i: int): string {
   return str(runes[i])
 }
 var s = "mochi"
-print(str(_indexString(s, 1)))
+print(_indexString(s, 1))

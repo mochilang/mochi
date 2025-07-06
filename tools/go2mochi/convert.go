@@ -239,7 +239,7 @@ func (c *converter) translateStmt(s ast.Stmt) (string, error) {
 		case *ast.Ident:
 			switch st.Tok {
 			case token.DEFINE:
-				return fmt.Sprintf("let %s = %s", lhs.Name, rhs), nil
+				return fmt.Sprintf("var %s = %s", lhs.Name, rhs), nil
 			case token.ASSIGN:
 				return fmt.Sprintf("%s = %s", lhs.Name, rhs), nil
 			case token.ADD_ASSIGN, token.SUB_ASSIGN, token.MUL_ASSIGN, token.QUO_ASSIGN, token.REM_ASSIGN:
@@ -648,8 +648,18 @@ func (c *converter) translateExpr(e ast.Expr) (string, error) {
 		if idx, ok := ex.Fun.(*ast.IndexExpr); ok {
 			ex = &ast.CallExpr{Fun: idx.X, Args: ex.Args}
 		}
+		if idx, ok := ex.Fun.(*ast.IndexListExpr); ok {
+			ex = &ast.CallExpr{Fun: idx.X, Args: ex.Args}
+		}
 		if sel, ok := ex.Fun.(*ast.SelectorExpr); ok {
 			if pkg, ok := sel.X.(*ast.Ident); ok && pkg.Name == "fmt" && sel.Sel.Name == "Println" {
+				if len(ex.Args) == 1 {
+					arg, err := c.translateExpr(ex.Args[0])
+					if err != nil {
+						return "", err
+					}
+					return fmt.Sprintf("print(%s)", arg), nil
+				}
 				parts := make([]string, len(ex.Args))
 				for i, a := range ex.Args {
 					v, err := c.translateExpr(a)
@@ -692,6 +702,11 @@ func (c *converter) translateExpr(e ast.Expr) (string, error) {
 		}
 		if id, ok := ex.Fun.(*ast.Ident); ok {
 			switch id.Name {
+			case "any":
+				if len(ex.Args) != 1 {
+					return "", c.errorf(ex, "unsupported any args")
+				}
+				return c.translateExpr(ex.Args[0])
 			case "append":
 				if len(ex.Args) < 2 {
 					return "", c.errorf(ex, "unsupported append args")
@@ -821,6 +836,13 @@ func (c *converter) translateExpr(e ast.Expr) (string, error) {
 			return fmt.Sprintf("%s { %s }", ident.Name, strings.Join(fields, ", ")), nil
 		}
 		return "", c.errorf(ex, "unsupported composite literal")
+	case *ast.TypeAssertExpr:
+		x, err := c.translateExpr(ex.X)
+		if err != nil {
+			return "", err
+		}
+		typ := typeString(c.fset, ex.Type)
+		return fmt.Sprintf("%s as %s", x, typ), nil
 	default:
 		return "", c.errorf(ex, "unsupported expr %T", e)
 	}

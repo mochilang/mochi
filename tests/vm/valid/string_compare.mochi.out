@@ -1,4 +1,4 @@
-print(str(("a" < "b")))
-print(str(("a" <= "a")))
-print(str(("b" > "a")))
-print(str(("b" >= "b")))
+print(("a" < "b"))
+print(("a" <= "a"))
+print(("b" > "a"))
+print(("b" >= "b"))
