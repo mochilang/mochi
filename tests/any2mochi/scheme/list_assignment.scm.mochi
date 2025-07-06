@@ -1,4 +1,0 @@
-fun list-set(lst, idx, val) {}
-let xs = [1, 2, 3]
-xs = list-set(xs, 1, 5)
-print(xs[1])

@@ -1,1 +1,1 @@
-fun _slice(obj, i, j) {}
+fun _slice(obj: any, i: any, j: any) {}

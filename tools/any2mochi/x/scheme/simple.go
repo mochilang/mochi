@@ -4,6 +4,17 @@ import (
 	"strings"
 )
 
+// sanitizeName converts Scheme identifiers into Mochi compatible ones.
+// Hyphens and arrows become underscores, "?" turns into "_p" and "!" into
+// "_bang".
+func sanitizeName(s string) string {
+	s = strings.ReplaceAll(s, "->", "_to_")
+	s = strings.ReplaceAll(s, "-", "_")
+	s = strings.ReplaceAll(s, "?", "_p")
+	s = strings.ReplaceAll(s, "!", "_bang")
+	return s
+}
+
 // convertSimple converts Scheme source code using the internal parser when no
 // language server is available. It translates a very small subset of Scheme
 // used in the golden tests back into Mochi.
@@ -49,6 +60,8 @@ func convertNode(n Node) []string {
 		return convertIf(n)
 	case "when":
 		return convertWhen(n)
+	case "cond":
+		return convertCond(n)
 	case "let":
 		if f := convertFor(n); f != nil {
 			return f
@@ -68,11 +81,11 @@ func convertDefine(n Node) []string {
 	}
 	def := n.List[1]
 	if len(def.List) > 0 {
-		name := def.List[0].Atom
+		name := sanitizeName(def.List[0].Atom)
 		params := []string{}
 		for _, p := range def.List[1:] {
 			if p.Atom != "" {
-				params = append(params, p.Atom)
+				params = append(params, sanitizeName(p.Atom)+": any")
 			}
 		}
 		body := n.List[2]
@@ -83,7 +96,7 @@ func convertDefine(n Node) []string {
 	}
 	if def.Atom != "" {
 		val := expr(n.List[2])
-		return []string{"let " + def.Atom + " = " + val}
+		return []string{"let " + sanitizeName(def.Atom) + " = " + val}
 	}
 	return nil
 }
@@ -166,6 +179,43 @@ func convertWhen(n Node) []string {
 	return out
 }
 
+func convertCond(n Node) []string {
+	if len(n.List) < 2 {
+		return nil
+	}
+	clauses := n.List[1:]
+	if len(clauses) == 0 {
+		return nil
+	}
+	out := []string{}
+	for i, c := range clauses {
+		if len(c.List) < 2 {
+			continue
+		}
+		testNode := c.List[0]
+		body := convertBegin(c.List[1:])
+		if testNode.Atom == "else" {
+			if i == 0 {
+				out = append(out, "if true {")
+			} else {
+				out = append(out, "else {")
+			}
+			out = append(out, indent(body)...)
+			out = append(out, "}")
+			break
+		}
+		cond := expr(testNode)
+		if i == 0 {
+			out = append(out, "if "+cond+" {")
+		} else {
+			out = append(out, "else if "+cond+" {")
+		}
+		out = append(out, indent(body)...)
+		out = append(out, "}")
+	}
+	return out
+}
+
 func convertFor(n Node) []string {
 	if len(n.List) != 4 || n.List[0].Atom != "let" || n.List[1].Atom == "" {
 		return nil
@@ -177,7 +227,7 @@ func convertFor(n Node) []string {
 	if len(bind.List) != 2 || bind.List[0].Atom == "" {
 		return nil
 	}
-	idx := bind.List[0].Atom
+	idx := sanitizeName(bind.List[0].Atom)
 	start := expr(bind.List[1])
 
 	bodyIf := n.List[3]
@@ -204,7 +254,7 @@ func convertFor(n Node) []string {
 			if len(b.List) == 1 && len(b.List[0].List) == 2 && b.List[0].List[0].Atom != "" {
 				get := b.List[0].List[1]
 				if get.Atom == "" && len(get.List) == 3 && (get.List[0].Atom == "list-ref" || get.List[0].Atom == "string-ref") && get.List[2].Atom == idx {
-					name = b.List[0].List[0].Atom
+					name = sanitizeName(b.List[0].List[0].Atom)
 					src = expr(get.List[1])
 					inner := first.List[2]
 					if inner.Atom == "" && len(inner.List) > 0 && inner.List[0].Atom == "begin" {
@@ -264,7 +314,7 @@ func convertForEach(n Node) []string {
 	if len(params) != 1 || params[0].Atom == "" {
 		return nil
 	}
-	name := params[0].Atom
+	name := sanitizeName(params[0].Atom)
 	bodyLines := convertBegin([]Node{lam.List[2]})
 	src := expr(n.List[2])
 	out := []string{"for " + name + " in " + src + " {"}
@@ -318,11 +368,14 @@ func indent(lines []string) []string {
 
 func expr(n Node) string {
 	if n.Atom != "" {
+		if strings.HasPrefix(n.Atom, "'") && n.Atom != "'()" {
+			return "\"" + strings.TrimPrefix(n.Atom, "'") + "\""
+		}
 		switch n.Atom {
 		case "'()":
 			return "[]"
 		default:
-			return n.Atom
+			return sanitizeName(n.Atom)
 		}
 	}
 	if len(n.List) == 0 {
@@ -342,6 +395,10 @@ func expr(n Node) string {
 			elems[i-1] = expr(n.List[i])
 		}
 		return "[" + strings.Join(elems, ", ") + "]"
+	case "cons":
+		if len(n.List) == 3 {
+			return "[" + expr(n.List[1]) + ", " + expr(n.List[2]) + "]"
+		}
 	case "list-ref", "string-ref":
 		if len(n.List) == 3 {
 			return expr(n.List[1]) + "[" + expr(n.List[2]) + "]"
@@ -351,7 +408,7 @@ func expr(n Node) string {
 			params := n.List[1].List
 			ps := make([]string, len(params))
 			for i, p := range params {
-				ps[i] = p.Atom
+				ps[i] = sanitizeName(p.Atom)
 			}
 			if body, ok := unwrapCallCC(n.List[2]); ok {
 				return "fun(" + strings.Join(ps, ", ") + ") => " + expr(body)
@@ -362,7 +419,7 @@ func expr(n Node) string {
 		for i := 1; i < len(n.List); i++ {
 			args[i-1] = expr(n.List[i])
 		}
-		return head + "(" + strings.Join(args, ", ") + ")"
+		return sanitizeName(head) + "(" + strings.Join(args, ", ") + ")"
 	}
 	return n.String()
 }

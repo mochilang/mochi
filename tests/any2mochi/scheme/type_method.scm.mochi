@@ -1,6 +1,6 @@
-fun map-get(m, k) {}
-fun map-set(m, k, v) {}
-fun new-Person(name) {}
-fun Person_greet(Self) {}
-let p = [cons('name, "Ada")]
+fun map_get(m: any, k: any) {}
+fun map_set(m: any, k: any, v: any) {}
+fun new_Person(name: any) {}
+fun Person_greet(Self: any) {}
+let p = [["name", "Ada"]]
 print(Person_greet(p))

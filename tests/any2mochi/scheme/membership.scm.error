@@ -1,0 +1,5 @@
+parse error: parse error: 1:32: lexer: invalid input text "#t, #f))\nprint(i..."
+
+  1| (begin (display (if (member 2 (list 1 2 3)) #t #f)) (newline))
+  2| (begin (display (if (member "b" (list "a" "b")) #t #f)) (newline))
+  3|

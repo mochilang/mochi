@@ -1,8 +1,8 @@
 let failures = 0
-fun print-test-start(name) {}
-fun print-test-pass() {}
-fun print-test-fail(err) {}
-fun run-test(name, thunk) {}
+fun print_test_start(name: any) {}
+fun print_test_pass() {}
+fun print_test_fail(err: any) {}
+fun run_test(name: any, thunk: any) {}
 fun test_addition_works() {}
 print("ok")
 if failures > 0 {

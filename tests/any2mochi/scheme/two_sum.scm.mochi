@@ -1,1 +1,1 @@
-fun twoSum(nums, target) {}
+fun twoSum(nums: any, target: any) {}

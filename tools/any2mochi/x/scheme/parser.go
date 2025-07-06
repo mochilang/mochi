@@ -58,6 +58,8 @@ type Item struct {
 	Name   string   `json:"name"`
 	Params []string `json:"params,omitempty"`
 	Expr   string   `json:"expr,omitempty"`
+	Line   int      `json:"line,omitempty"`
+	Col    int      `json:"col,omitempty"`
 }
 
 // ParseSchemeItems parses Scheme source and returns a slice of SchemeItem.
@@ -97,14 +99,14 @@ func ParseItems(src string) ([]Item, error) {
 					params = append(params, p.atom)
 				}
 			}
-			items = append(items, Item{Kind: "func", Name: name, Params: params})
+			items = append(items, Item{Kind: "func", Name: name, Params: params, Line: def.line, Col: def.col})
 		} else if def.atom != "" {
 			// variable definition
 			expr := ""
 			if len(n.list) >= 3 {
 				expr = n.list[2].String()
 			}
-			items = append(items, Item{Kind: "var", Name: def.atom, Expr: expr})
+			items = append(items, Item{Kind: "var", Name: def.atom, Expr: expr, Line: def.line, Col: def.col})
 		}
 	}
 	return items, nil

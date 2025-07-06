@@ -1,6 +1,6 @@
-fun map-get(m, k) {}
-fun map-set(m, k, v) {}
-fun _count(v) {}
-fun _sum(v) {}
-fun _avg(v) {}
-fun _group_by(src, keyfn) {}
+fun map_get(m: any, k: any) {}
+fun map_set(m: any, k: any, v: any) {}
+fun _count(v: any) {}
+fun _sum(v: any) {}
+fun _avg(v: any) {}
+fun _group_by(src: any, keyfn: any) {}

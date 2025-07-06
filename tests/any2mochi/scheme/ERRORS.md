@@ -1,0 +1,47 @@
+# Errors
+
+- break_continue.scm.out: ok
+- closure.scm.out: type error: error[T005]: parameter `x` is missing a type
+- dataset.scm.out: parse error: parse error: 5:63: lexer: invalid input text "'age) 18) (set! ..."
+- dataset_sort_take_limit.scm.out: ok
+- expect_simple.scm.out: parse error: parse error: 2:10: unexpected token "=" (expected ")")
+- fetch_builtin.scm.out: ok
+- fetch_http.scm.out: ok
+- fetch_options.scm.out: ok
+- for_loop.scm.out: ok
+- fun_call.scm.out: ok
+- fun_expr_in_let.scm.out: type error: error[T005]: parameter `x` is missing a type
+- grouped_expr.scm.out: ok
+- if_else.scm.out: ok
+- if_elseif.scm.out: ok
+- join.scm.out: parse error: parse error: 8:85: lexer: invalid input text "'customerId) (ma..."
+- len_builtin.scm.out: type error: error[T003]: unknown function: length
+- let_and_print.scm.out: ok
+- list_assignment.scm.out: type error: error[T024]: cannot assign to `xs` (immutable)
+- list_except.scm.out: ok
+- list_for_loop.scm.out: ok
+- list_index.scm.out: ok
+- list_intersect.scm.out: ok
+- list_push.scm.out: ok
+- list_slice.scm.out: ok
+- list_union.scm.out: ok
+- list_union_all.scm.out: ok
+- load_jsonl_stdin.scm.out: ok
+- load_save_json.scm.out: ok
+- map_iterate.scm.out: parse error: parse error: 4:19: lexer: invalid input text "#t)\nm = map_set(..."
+- map_keys.scm.out: type error: error[T003]: unknown function: map
+- membership.scm.out: parse error: parse error: 1:32: lexer: invalid input text "#t, #f))\nprint(i..."
+- nested_list_assignment.scm.out: type error: error[T024]: cannot assign to `xs` (immutable)
+- print_hello.scm.out: ok
+- print_multi_args.scm.out: ok
+- string_concat.scm.out: type error: error[T003]: unknown function: string_append
+- string_for_loop.scm.out: ok
+- string_index.scm.out: ok
+- string_slice.scm.out: ok
+- test_block.scm.out: ok
+- tpch_q1.scm.out: ok
+- two_sum.scm.out: ok
+- type_method.scm.out: ok
+- update_stmt.scm.out: ok
+- var_assignment.scm.out: type error: error[T024]: cannot assign to `x` (immutable)
+- while_loop.scm.out: ok

@@ -1,0 +1,8 @@
+type error: error[T003]: unknown function: map
+  --> :1:7
+
+help:
+  Ensure the function is defined before it's called.
+
+  1| (begin (display (map car (list (cons "a" 1) (cons "b" 2)))) (newline))
+  2|

@@ -1,0 +1,8 @@
+type error: error[T003]: unknown function: string_append
+  --> :1:7
+
+help:
+  Ensure the function is defined before it's called.
+
+  1| (begin (display (string-append "hello " "world")) (newline))
+  2|
