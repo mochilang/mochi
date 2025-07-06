@@ -17,6 +17,7 @@ type Var struct {
 	Mutable bool   `json:"mutable"`
 	Type    string `json:"type"`
 	Line    int    `json:"line"`
+	Raw     string `json:"raw"`
 }
 
 type Assign struct {
@@ -24,6 +25,7 @@ type Assign struct {
 	Index string `json:"index"`
 	Expr  string `json:"expr"`
 	Line  int    `json:"line"`
+	Raw   string `json:"raw"`
 }
 
 type ForRange struct {
@@ -32,6 +34,7 @@ type ForRange struct {
 	End   string `json:"end"`
 	Body  []Stmt `json:"body"`
 	Line  int    `json:"line"`
+	Raw   string `json:"raw"`
 }
 
 type ForIn struct {
@@ -39,17 +42,20 @@ type ForIn struct {
 	Expr string `json:"expr"`
 	Body []Stmt `json:"body"`
 	Line int    `json:"line"`
+	Raw  string `json:"raw"`
 }
 
 type While struct {
 	Cond string `json:"cond"`
 	Body []Stmt `json:"body"`
 	Line int    `json:"line"`
+	Raw  string `json:"raw"`
 }
 
 type Print struct {
 	Expr string `json:"expr"`
 	Line int    `json:"line"`
+	Raw  string `json:"raw"`
 }
 
 type Stmt interface{}
@@ -61,12 +67,14 @@ type Fun struct {
 	Ret    string  `json:"ret"`
 	Body   []Stmt  `json:"body"`
 	Line   int     `json:"line"`
+	Raw    string  `json:"raw"`
 }
 
 // Return models a return statement which originates from a raise expression.
 type Return struct {
 	Expr string `json:"expr"`
 	Line int    `json:"line"`
+	Raw  string `json:"raw"`
 }
 
 // If represents a simple if-else statement.
@@ -75,6 +83,7 @@ type If struct {
 	Then []Stmt `json:"then"`
 	Else []Stmt `json:"else"`
 	Line int    `json:"line"`
+	Raw  string `json:"raw"`
 }
 
 type Field struct {
@@ -92,11 +101,13 @@ type TypeDecl struct {
 	Fields   []Field   `json:"fields"`
 	Variants []Variant `json:"variants"`
 	Line     int       `json:"line"`
+	Raw      string    `json:"raw"`
 }
 
 type Expect struct {
 	Cond string `json:"cond"`
 	Line int    `json:"line"`
+	Raw  string `json:"raw"`
 }
 
 type Program struct {
@@ -116,7 +127,7 @@ var (
 	forRangeRe    = regexp.MustCompile(`^for\s+(\w+)\s*=\s*(.+)\s+to\s+(.+)\s+do$`)
 	forInRe       = regexp.MustCompile(`^for\s+(\w+)\s+in\s+(.+)\s+do$`)
 	whileRe       = regexp.MustCompile(`^while\s*\((.+)\)\s*do$`)
-	funRe         = regexp.MustCompile(`^let\s+(?:rec\s+)?(\w+)(.*)?:\s*([^=]+)=\s*$`)
+	funRe         = regexp.MustCompile(`^let\s+(?:inline\s+)?(?:rec\s+)?(\w+)(.*)?:\s*([^=]+)=\s*$`)
 	exceptionRe   = regexp.MustCompile(`^exception\s+Return_(\w+)\s+of\s+(.+)$`)
 	returnRe      = regexp.MustCompile(`^raise\s*\(Return_(\w+)\s*\((.*)\)\)$`)
 	ifRe          = regexp.MustCompile(`^if\s+(.+)\s+then$`)
@@ -176,31 +187,42 @@ func Parse(src string) (*Program, error) {
 			if strings.HasPrefix(strings.TrimSpace(t), "|]") {
 				continue
 			}
+			if strings.HasPrefix(t, "member ") {
+				continue
+			}
 			switch {
+			case strings.Contains(t, "failwith \"unreachable\""):
+				if parseErr == nil {
+					errLine = lineNum
+					linesCopy = append([]line(nil), lines...)
+					snippet := l.raw
+					parseErr = fmt.Errorf("unsupported syntax at line %d: %s", lineNum, strings.TrimSpace(snippet))
+				}
+				continue
 			case printRe.MatchString(t):
 				m := printRe.FindStringSubmatch(t)
-				stmts = append(stmts, Print{Expr: strings.TrimSpace(m[1]), Line: lineNum})
+				stmts = append(stmts, Print{Expr: strings.TrimSpace(m[1]), Line: lineNum, Raw: l.raw})
 			case typedLetRe.MatchString(t):
 				m := typedLetRe.FindStringSubmatch(t)
-				stmts = append(stmts, Var{Name: m[2], Expr: strings.TrimSpace(m[4]), Mutable: strings.TrimSpace(m[1]) != "", Type: strings.TrimSpace(m[3]), Line: lineNum})
+				stmts = append(stmts, Var{Name: m[2], Expr: strings.TrimSpace(m[4]), Mutable: strings.TrimSpace(m[1]) != "", Type: strings.TrimSpace(m[3]), Line: lineNum, Raw: l.raw})
 			case mutableLetRe.MatchString(t):
 				m := mutableLetRe.FindStringSubmatch(t)
-				stmts = append(stmts, Var{Name: m[1], Expr: strings.TrimSpace(m[2]), Mutable: true, Line: lineNum})
+				stmts = append(stmts, Var{Name: m[1], Expr: strings.TrimSpace(m[2]), Mutable: true, Line: lineNum, Raw: l.raw})
 			case letRe.MatchString(t):
 				m := letRe.FindStringSubmatch(t)
-				stmts = append(stmts, Var{Name: m[1], Expr: strings.TrimSpace(m[2]), Line: lineNum})
+				stmts = append(stmts, Var{Name: m[1], Expr: strings.TrimSpace(m[2]), Line: lineNum, Raw: l.raw})
 			case assignIndexRe.MatchString(t):
 				m := assignIndexRe.FindStringSubmatch(t)
-				stmts = append(stmts, Assign{Name: m[1], Index: strings.TrimSpace(m[2]), Expr: strings.TrimSpace(m[3]), Line: lineNum})
+				stmts = append(stmts, Assign{Name: m[1], Index: strings.TrimSpace(m[2]), Expr: strings.TrimSpace(m[3]), Line: lineNum, Raw: l.raw})
 			case assignRe.MatchString(t):
 				m := assignRe.FindStringSubmatch(t)
-				stmts = append(stmts, Assign{Name: m[1], Expr: strings.TrimSpace(m[2]), Line: lineNum})
+				stmts = append(stmts, Assign{Name: m[1], Expr: strings.TrimSpace(m[2]), Line: lineNum, Raw: l.raw})
 			case expectRe.MatchString(t):
 				m := expectRe.FindStringSubmatch(t)
-				stmts = append(stmts, Expect{Cond: strings.TrimSpace(m[1]), Line: lineNum})
+				stmts = append(stmts, Expect{Cond: strings.TrimSpace(m[1]), Line: lineNum, Raw: l.raw})
 			case returnRe.MatchString(t):
 				m := returnRe.FindStringSubmatch(t)
-				stmts = append(stmts, Return{Expr: strings.TrimSpace(m[2]), Line: lineNum})
+				stmts = append(stmts, Return{Expr: strings.TrimSpace(m[2]), Line: lineNum, Raw: l.raw})
 			case ifRe.MatchString(t):
 				m := ifRe.FindStringSubmatch(t)
 				thenBlock := parseBlock(ind + 4)
@@ -210,13 +232,13 @@ func Parse(src string) (*Program, error) {
 						em := elifRe.FindStringSubmatch(lines[idx].text)
 						ln := idx + 1
 						idx++
-						elseBlock = []Stmt{If{Cond: strings.TrimSpace(em[1]), Then: parseBlock(ind + 4), Line: ln}}
+						elseBlock = []Stmt{If{Cond: strings.TrimSpace(em[1]), Then: parseBlock(ind + 4), Line: ln, Raw: lines[ln-1].raw}}
 					} else if elseRe.MatchString(lines[idx].text) {
 						idx++
 						elseBlock = parseBlock(ind + 4)
 					}
 				}
-				stmts = append(stmts, If{Cond: strings.TrimSpace(m[1]), Then: thenBlock, Else: elseBlock, Line: lineNum})
+				stmts = append(stmts, If{Cond: strings.TrimSpace(m[1]), Then: thenBlock, Else: elseBlock, Line: lineNum, Raw: l.raw})
 			case typeRe.MatchString(t):
 				m := typeRe.FindStringSubmatch(t)
 				name := m[1]
@@ -234,7 +256,7 @@ func Parse(src string) (*Program, error) {
 						}
 						idx++
 					}
-					stmts = append(stmts, TypeDecl{Name: name, Fields: fields, Line: lineNum})
+					stmts = append(stmts, TypeDecl{Name: name, Fields: fields, Line: lineNum, Raw: l.raw})
 				} else if idx < len(lines) && strings.HasPrefix(strings.TrimSpace(lines[idx].text), "|") {
 					var vars []Variant
 					for idx < len(lines) {
@@ -259,22 +281,22 @@ func Parse(src string) (*Program, error) {
 						}
 						idx++
 					}
-					stmts = append(stmts, TypeDecl{Name: name, Variants: vars, Line: lineNum})
+					stmts = append(stmts, TypeDecl{Name: name, Variants: vars, Line: lineNum, Raw: l.raw})
 				} else {
-					stmts = append(stmts, TypeDecl{Name: name, Line: lineNum})
+					stmts = append(stmts, TypeDecl{Name: name, Line: lineNum, Raw: l.raw})
 				}
 			case forRangeRe.MatchString(t):
 				m := forRangeRe.FindStringSubmatch(t)
 				body := parseBlock(ind + 4)
-				stmts = append(stmts, ForRange{Var: m[1], Start: strings.TrimSpace(m[2]), End: strings.TrimSpace(m[3]), Body: body, Line: lineNum})
+				stmts = append(stmts, ForRange{Var: m[1], Start: strings.TrimSpace(m[2]), End: strings.TrimSpace(m[3]), Body: body, Line: lineNum, Raw: l.raw})
 			case forInRe.MatchString(t):
 				m := forInRe.FindStringSubmatch(t)
 				body := parseBlock(ind + 4)
-				stmts = append(stmts, ForIn{Var: m[1], Expr: strings.TrimSpace(m[2]), Body: body, Line: lineNum})
+				stmts = append(stmts, ForIn{Var: m[1], Expr: strings.TrimSpace(m[2]), Body: body, Line: lineNum, Raw: l.raw})
 			case whileRe.MatchString(t):
 				m := whileRe.FindStringSubmatch(t)
 				body := parseBlock(ind + 4)
-				stmts = append(stmts, While{Cond: strings.TrimSpace(m[1]), Body: body, Line: lineNum})
+				stmts = append(stmts, While{Cond: strings.TrimSpace(m[1]), Body: body, Line: lineNum, Raw: l.raw})
 			case exceptionRe.MatchString(t):
 				m := exceptionRe.FindStringSubmatch(t)
 				retMap[m[1]] = strings.TrimSpace(m[2])
@@ -296,7 +318,7 @@ func Parse(src string) (*Program, error) {
 				if idx < len(lines) && strings.HasPrefix(strings.TrimSpace(lines[idx].text), "with Return_"+name) {
 					idx++
 				}
-				stmts = append(stmts, Fun{Name: name, Params: params, Ret: ret, Body: body, Line: lineNum})
+				stmts = append(stmts, Fun{Name: name, Params: params, Ret: ret, Body: body, Line: lineNum, Raw: l.raw})
 			default:
 				if parseErr == nil {
 					errLine = lineNum
