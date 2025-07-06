@@ -1,0 +1,4 @@
+fun add(a, b) {
+  return (a + b)
+}
+print(_reduce(scala.collection.mutable.ArrayBuffer(1, 2, 3), add, 0))

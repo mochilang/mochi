@@ -1,0 +1,4 @@
+fun listit() {
+  return [Empty()]
+}
+print(len(listit()))

@@ -1,0 +1,6 @@
+fun prepend(level, result) {
+  var result_var: = result
+  result_var = (scala.collection.mutable.ArrayBuffer(level) + result_var)
+  return result_var
+}
+print(prepend(scala.collection.mutable.ArrayBuffer(1, 2), scala.collection.mutable.ArrayBuffer(scala.collection.mutable.ArrayBuffer(3), scala.collection.mutable.ArrayBuffer(4))))

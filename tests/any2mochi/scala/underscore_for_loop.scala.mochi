@@ -1,0 +1,18 @@
+var c: = 0
+var i1 = 0
+while i1 < 2 {
+  let _ = i1
+  i1 = i1 + 1
+  c = (c + 1)
+}
+let it2 = scala.collection.mutable.ArrayBuffer(1, 2).iterator
+while it2.hasNext {
+  let _ = it2.next()
+  c = (c + 1)
+}
+let it3 = "ab".iterator
+while it3.hasNext {
+  let _ = it3.next().toString
+  c = (c + 1)
+}
+print(c)

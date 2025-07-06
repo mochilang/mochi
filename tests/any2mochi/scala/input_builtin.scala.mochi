@@ -1,0 +1,5 @@
+print("Enter first input:")
+let input1 = scala.io.StdIn.readLine()
+print("Enter second input:")
+let input2 = scala.io.StdIn.readLine()
+print("You entered:", input1, ",", input2)
