@@ -1,4 +1,23 @@
 # 📦 CHANGELOG.md
+
+## [0.10.17] – 2025-07-06T14:31:29+07:00
+
+### Added
+
+* CLI-based AST parsers for languages such as C, C++, Java, Kotlin, Scala and Rust
+* Fallback parser resolves files from the repository root
+* Converters support loops, structs, interfaces, slices and generics
+
+### Changed
+
+* Converters reorganized into subpackages with improved diagnostics
+* Improved translations for Go, Python, TypeScript, Dart, Ruby, Pascal, Lua, Prolog, Smalltalk, C# and PHP
+* Golden outputs and build scripts refreshed
+
+### Fixed
+
+* Build issues and `go vet` errors
+* VM golden files updated with tests marked slow
 ## [0.10.16] – 2025-07-05T17:01:44+07:00
 
 ### Added
