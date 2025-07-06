@@ -12,6 +12,17 @@ import (
 // rbIndent returns a string of two-space indents for the given level.
 func indent(level int) string { return strings.Repeat("  ", level) }
 
+func snippet(src string) string {
+	lines := strings.Split(src, "\n")
+	if len(lines) > 5 {
+		lines = lines[:5]
+	}
+	for i, l := range lines {
+		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
+	}
+	return strings.Join(lines, "\n")
+}
+
 type Node struct {
 	Type     string
 	Value    string
@@ -19,15 +30,20 @@ type Node struct {
 }
 
 func parseAST(src string) (*Node, error) {
-	cmd := exec.Command("ruby", "-e", "require 'json';require 'ripper';puts JSON.generate(Ripper.sexp(ARGF.read))")
+	cmd := exec.Command("ruby", "-e", `require 'json';require 'ripper';src=STDIN.read;b=Ripper::SexpBuilder.new(src);ast=b.parse; if b.error?; STDERR.puts b.error; exit 1; end; puts JSON.generate(ast)`)
 	cmd.Stdin = strings.NewReader(src)
-	var buf bytes.Buffer
-	cmd.Stdout = &buf
+	var out bytes.Buffer
+	var errBuf bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &errBuf
 	if err := cmd.Run(); err != nil {
+		if errBuf.Len() > 0 {
+			return nil, fmt.Errorf("%s", strings.TrimSpace(errBuf.String()))
+		}
 		return nil, err
 	}
 	var data interface{}
-	if err := json.Unmarshal(buf.Bytes(), &data); err != nil {
+	if err := json.Unmarshal(out.Bytes(), &data); err != nil {
 		return nil, err
 	}
 	node := buildNode(data)
@@ -99,6 +115,43 @@ func params(n Node) string {
 	return strings.Join(names, ", ")
 }
 
+func structFields(n Node) ([]string, bool) {
+	if n.Type != "method_add_arg" || len(n.Children) < 2 {
+		return nil, false
+	}
+	call := n.Children[0]
+	if call.Type != "call" || len(call.Children) < 3 {
+		return nil, false
+	}
+	if !(call.Children[0].Type == "var_ref" && len(call.Children[0].Children) > 0 && call.Children[0].Children[0].Type == "@const" && call.Children[0].Children[0].Value == "Struct") {
+		return nil, false
+	}
+	if call.Children[2].Type != "@ident" || call.Children[2].Value != "new" {
+		return nil, false
+	}
+	argParen := n.Children[1]
+	if argParen.Type != "arg_paren" || len(argParen.Children) == 0 {
+		return nil, false
+	}
+	args := argParen.Children[0]
+	if args.Type != "args_add_block" {
+		return nil, false
+	}
+	var fields []string
+	for _, a := range args.Children {
+		if a.Type == "symbol_literal" && len(a.Children) > 0 {
+			sym := a.Children[0]
+			if sym.Type == "symbol" && len(sym.Children) > 0 && sym.Children[0].Type == "@ident" {
+				fields = append(fields, sym.Children[0].Value)
+			}
+		}
+	}
+	if len(fields) == 0 {
+		return nil, false
+	}
+	return fields, true
+}
+
 func convertNode(n Node, level int, out *[]string) {
 	idt := indent(level)
 	switch n.Type {
@@ -122,6 +175,14 @@ func convertNode(n Node, level int, out *[]string) {
 			return
 		}
 		name := exprString(n.Children[0])
+		if fields, ok := structFields(n.Children[1]); ok {
+			*out = append(*out, idt+"type "+name+" {")
+			for _, f := range fields {
+				*out = append(*out, idt+"  "+f+": any")
+			}
+			*out = append(*out, idt+"}")
+			return
+		}
 		expr := exprString(n.Children[1])
 		kw := "let "
 		if level == 0 {
@@ -195,7 +256,7 @@ func Convert(src string) ([]byte, error) {
 	}
 	ast, err := parseAST(src)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%v\n%s", err, snippet(src))
 	}
 	var lines []string
 	convertNode(*ast, 0, &lines)
