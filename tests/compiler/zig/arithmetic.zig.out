@@ -1,9 +1,9 @@
 const std = @import("std");
 
 pub fn main() void {
-    std.debug.print("{any}\n", .{(@as(i32, @intCast(1)) + @as(i32, @intCast(2)))});
-    std.debug.print("{any}\n", .{(@as(i32, @intCast(5)) - @as(i32, @intCast(3)))});
-    std.debug.print("{any}\n", .{(@as(i32, @intCast(4)) * @as(i32, @intCast(2)))});
-    std.debug.print("{any}\n", .{(@as(i32, @intCast(8)) / @as(i32, @intCast(2)))});
-    std.debug.print("{any}\n", .{@mod(@as(i32, @intCast(7)), @as(i32, @intCast(3)))});
+    std.debug.print("{any}\n", .{(@as(i32,@intCast(1)) + @as(i32,@intCast(2)))});
+    std.debug.print("{any}\n", .{(@as(i32,@intCast(5)) - @as(i32,@intCast(3)))});
+    std.debug.print("{any}\n", .{(@as(i32,@intCast(4)) * @as(i32,@intCast(2)))});
+    std.debug.print("{any}\n", .{(@as(i32,@intCast(8)) / @as(i32,@intCast(2)))});
+    std.debug.print("{any}\n", .{@mod(@as(i32,@intCast(7)), @as(i32,@intCast(3)))});
 }

@@ -1,12 +1,12 @@
 const std = @import("std");
 
 fn outer(a: i32) i32 {
-	const inner = fn (b: i32) i32 {
-		return (a + b);
+    const inner = fn (b: i32) i32 {
+        return (a + b);
 };
-	return inner(@as(i32,@intCast(10)));
+    return inner(@as(i32,@intCast(10)));
 }
 
 pub fn main() void {
-	std.debug.print("{any}\n", .{outer(@as(i32,@intCast(5)))});
+    std.debug.print("{any}\n", .{outer(@as(i32,@intCast(5)))});
 }

@@ -27,7 +27,9 @@ const Person = struct {
     age: i32,
 };
 
+var people: []const i32 = undefined;
+
 pub fn main() void {
-    const people: []const i32 = _load_json([]Person, null);
+    people = _load_json([]Person, null);
     std.debug.print("{any}\n", .{(people).len});
 }

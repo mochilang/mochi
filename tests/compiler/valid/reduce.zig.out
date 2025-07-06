@@ -1,0 +1,20 @@
+const std = @import("std");
+
+fn _reduce(comptime T: type, v: []const T, init: T, f: fn (T, T) T) T {
+    var acc: T = init;
+    for (v) |it| {
+        acc = f(acc, it);
+    }
+    return acc;
+}
+
+var nums: []const i32 = undefined;
+
+fn add(acc: i32, v: i32) i32 {
+    (acc + v);
+}
+
+pub fn main() void {
+    nums = &[_]i32{@as(i32,@intCast(1)), @as(i32,@intCast(2)), @as(i32,@intCast(3)), @as(i32,@intCast(4)), @as(i32,@intCast(5))};
+    std.debug.print("{any}\n", .{_reduce(i32, nums, @as(i32,@intCast(0)), add)});
+}

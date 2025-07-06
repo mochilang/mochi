@@ -1,0 +1,13 @@
+const std = @import("std");
+
+var n: i32 = undefined;
+
+fn sumN(n: i32) i32 {
+    return ((n * ((n + @as(i32,@intCast(1))))) / @as(i32,@intCast(2)));
+}
+
+pub fn main() void {
+    n = @as(i32,@intCast(10));
+    std.debug.print("{any}\n", .{sumN(n)});
+    std.debug.print("{any}\n", .{n});
+}

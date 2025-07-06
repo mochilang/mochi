@@ -1,36 +1,39 @@
 const std = @import("std");
 
 fn _slice_list(comptime T: type, v: []const T, start: i32, end: i32, step: i32) []T {
-	var s = start;
-	var e = end;
-	var st = step;
-	const n: i32 = @as(i32, @intCast(v.len));
-	if (s < 0) s += n;
-	if (e < 0) e += n;
-	if (st == 0) st = 1;
-	if (s < 0) s = 0;
-	if (e > n) e = n;
-	if (st > 0 and e < s) e = s;
-	if (st < 0 and e > s) e = s;
-	var res = std.ArrayList(T).init(std.heap.page_allocator);
-	defer res.deinit();
-	var i: i32 = s;
-	while ((st > 0 and i < e) or (st < 0 and i > e)) : (i += st) {
-		res.append(v[@as(usize, @intCast(i))]) catch unreachable;
-	}
-	return res.toOwnedSlice() catch unreachable;
+    var s = start;
+    var e = end;
+    var st = step;
+    const n: i32 = @as(i32, @intCast(v.len));
+    if (s < 0) s += n;
+    if (e < 0) e += n;
+    if (st == 0) st = 1;
+    if (s < 0) s = 0;
+    if (e > n) e = n;
+    if (st > 0 and e < s) e = s;
+    if (st < 0 and e > s) e = s;
+    var res = std.ArrayList(T).init(std.heap.page_allocator);
+    defer res.deinit();
+    var i: i32 = s;
+    while ((st > 0 and i < e) or (st < 0 and i > e)) : (i += st) {
+        res.append(v[@as(usize, @intCast(i))]) catch unreachable;
+    }
+    return res.toOwnedSlice() catch unreachable;
 }
 
 const Product = struct {
-	name: []const u8,
-	price: i32,
+    name: []const u8,
+    price: i32,
 };
 
+var products: []const i32 = undefined;
+var expensive: []const i32 = undefined;
+
 pub fn main() void {
-	const products: []const i32 = &[_]i32{Product{ .name = "Laptop", .price = @as(i32,@intCast(1500)) }, Product{ .name = "Smartphone", .price = @as(i32,@intCast(900)) }, Product{ .name = "Tablet", .price = @as(i32,@intCast(600)) }, Product{ .name = "Monitor", .price = @as(i32,@intCast(300)) }, Product{ .name = "Keyboard", .price = @as(i32,@intCast(100)) }, Product{ .name = "Mouse", .price = @as(i32,@intCast(50)) }, Product{ .name = "Headphones", .price = @as(i32,@intCast(200)) }};
-	const expensive: []const i32 = blk: { var _tmp0 = std.ArrayList(struct { item: i32; key: i32 }).init(std.heap.page_allocator); for (products) |p| { _tmp0.append(.{ .item = p, .key = -p.price }) catch unreachable; } for (0.._tmp0.items.len) |i| { for (i+1.._tmp0.items.len) |j| { if (_tmp0.items[j].key < _tmp0.items[i].key) { const t = _tmp0.items[i]; _tmp0.items[i] = _tmp0.items[j]; _tmp0.items[j] = t; } } } var _tmp1 = std.ArrayList(i32).init(std.heap.page_allocator);for (_tmp0.items) |p| { _tmp1.append(p.item) catch unreachable; } var _tmp2 = _tmp1.toOwnedSlice() catch unreachable; _tmp2 = _slice_list(i32, _tmp2, @as(i32,@intCast(1)), (@as(i32,@intCast(1)) + @as(i32,@intCast(3))), 1); break :blk _tmp2; };
-	std.debug.print("{s}\n", .{"--- Top products (excluding most expensive) ---"});
-	for (expensive) |item| {
-		std.debug.print("{any} {s} {any}\n", .{item.name, "costs $", item.price});
-	}
+    products = &[_]i32{Product{ .name = "Laptop", .price = @as(i32,@intCast(1500)) }, Product{ .name = "Smartphone", .price = @as(i32,@intCast(900)) }, Product{ .name = "Tablet", .price = @as(i32,@intCast(600)) }, Product{ .name = "Monitor", .price = @as(i32,@intCast(300)) }, Product{ .name = "Keyboard", .price = @as(i32,@intCast(100)) }, Product{ .name = "Mouse", .price = @as(i32,@intCast(50)) }, Product{ .name = "Headphones", .price = @as(i32,@intCast(200)) }};
+    expensive = blk0: { var _tmp0 = std.ArrayList(struct { item: i32, key: i32 }).init(std.heap.page_allocator); for (products) |p| { _tmp0.append(.{ .item = p, .key = -p.price }) catch unreachable; } for (0.._tmp0.items.len) |i| { for (i+1.._tmp0.items.len) |j| { if (_tmp0.items[j].key < _tmp0.items[i].key) { const t = _tmp0.items[i]; _tmp0.items[i] = _tmp0.items[j]; _tmp0.items[j] = t; } } } var _tmp1 = std.ArrayList(i32).init(std.heap.page_allocator);for (_tmp0.items) |p| { _tmp1.append(p.item) catch unreachable; } const _tmp2 = _tmp1.toOwnedSlice() catch unreachable; _tmp2 = _slice_list(i32, _tmp2, @as(i32,@intCast(1)), (@as(i32,@intCast(1)) + @as(i32,@intCast(3))), 1); break :blk0 _tmp2; };
+    std.debug.print("{s}\n", .{"--- Top products (excluding most expensive) ---"});
+    for (expensive) |item| {
+        std.debug.print("{any} {s} {any}\n", .{item.name, "costs $", item.price});
+    }
 }

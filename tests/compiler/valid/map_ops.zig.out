@@ -1,0 +1,13 @@
+const std = @import("std");
+
+var m: std.AutoHashMap(i32, i32) = undefined;
+
+pub fn main() void {
+    m = blk0: { var m = std.AutoHashMap(i32, i32).init(std.heap.page_allocator); break :blk0 m; };
+    _ = m.put(@as(i32,@intCast(1)), @as(i32,@intCast(10))) catch unreachable;
+    _ = m.put(@as(i32,@intCast(2)), @as(i32,@intCast(20))) catch unreachable;
+    if (m.contains(@as(i32,@intCast(1)))) {
+        std.debug.print("{any}\n", .{m[@as(i32,@intCast(1))]});
+    }
+    std.debug.print("{any}\n", .{m[@as(i32,@intCast(2))]});
+}

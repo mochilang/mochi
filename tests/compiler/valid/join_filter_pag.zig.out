@@ -1,0 +1,25 @@
+const std = @import("std");
+
+const Person = struct {
+    id: i32,
+    name: []const u8,
+};
+
+const Purchase = struct {
+    id: i32,
+    personId: i32,
+    total: i32,
+};
+
+var people: []const i32 = undefined;
+var purchases: []const i32 = undefined;
+var result: []const std.AutoHashMap([]const u8, i32) = undefined;
+
+pub fn main() void {
+    people = &[_]i32{Person{ .id = @as(i32,@intCast(1)), .name = "Alice" }, Person{ .id = @as(i32,@intCast(2)), .name = "Bob" }, Person{ .id = @as(i32,@intCast(3)), .name = "Charlie" }};
+    purchases = &[_]i32{Purchase{ .id = @as(i32,@intCast(1)), .personId = @as(i32,@intCast(1)), .total = @as(i32,@intCast(200)) }, Purchase{ .id = @as(i32,@intCast(2)), .personId = @as(i32,@intCast(1)), .total = @as(i32,@intCast(50)) }, Purchase{ .id = @as(i32,@intCast(3)), .personId = @as(i32,@intCast(2)), .total = @as(i32,@intCast(150)) }, Purchase{ .id = @as(i32,@intCast(4)), .personId = @as(i32,@intCast(3)), .total = @as(i32,@intCast(100)) }, Purchase{ .id = @as(i32,@intCast(5)), .personId = @as(i32,@intCast(2)), .total = @as(i32,@intCast(250)) }};
+    result = blk1: { var _tmp0 = std.ArrayList(std.AutoHashMap([]const u8, i32)).init(std.heap.page_allocator); for (people) |p| { for (purchases) |o| { if (!((p.id == o.personId))) continue; if (!((o.total > @as(i32,@intCast(100))))) continue; _tmp0.append(blk0: { var m = std.AutoHashMap(i32, i32).init(std.heap.page_allocator); m.put("person", p.name) catch unreachable; m.put("spent", o.total) catch unreachable; break :blk0 m; }) catch unreachable; } } const _tmp1 = _tmp0.toOwnedSlice() catch unreachable; break :blk1 _tmp1; };
+    for (result) |r| {
+        std.debug.print("{any} {any}\n", .{r.person, r.spent});
+    }
+}

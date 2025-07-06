@@ -1,7 +1,9 @@
 const std = @import("std");
 
+var xs: []const i32 = undefined;
+
 pub fn main() void {
-    var xs: []const i32 = &[_]i32{ @as(i32, @intCast(1)), @as(i32, @intCast(2)), @as(i32, @intCast(3)) };
-    xs.items[@as(i32, @intCast(1))] = @as(i32, @intCast(5));
-    std.debug.print("{any}\n", .{xs[@as(i32, @intCast(1))]});
+    xs = &[_]i32{@as(i32,@intCast(1)), @as(i32,@intCast(2)), @as(i32,@intCast(3))};
+    xs.items[@as(i32,@intCast(1))] = @as(i32,@intCast(5));
+    std.debug.print("{any}\n", .{xs[@as(i32,@intCast(1))]});
 }

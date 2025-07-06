@@ -13,5 +13,5 @@ fn add(a: i32, b: i32) i32 {
 }
 
 pub fn main() void {
-    std.debug.print("{any}\n", .{_reduce(i32, &[_]i32{ @as(i32, @intCast(1)), @as(i32, @intCast(2)), @as(i32, @intCast(3)) }, @as(i32, @intCast(0)), add)});
+    std.debug.print("{any}\n", .{_reduce(i32, &[_]i32{@as(i32,@intCast(1)), @as(i32,@intCast(2)), @as(i32,@intCast(3))}, @as(i32,@intCast(0)), add)});
 }

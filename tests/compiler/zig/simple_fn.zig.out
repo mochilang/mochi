@@ -5,5 +5,5 @@ fn id(x: i32) i32 {
 }
 
 pub fn main() void {
-    std.debug.print("{any}\n", .{id(@as(i32, @intCast(123)))});
+    std.debug.print("{any}\n", .{id(@as(i32,@intCast(123)))});
 }
