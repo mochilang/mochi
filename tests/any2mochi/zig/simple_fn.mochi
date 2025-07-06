@@ -1,6 +1,8 @@
+// line 3
 fun id(x: int): int {
   return x
 }
+// line 7
 fun main() {
   print(id(123))
 }
