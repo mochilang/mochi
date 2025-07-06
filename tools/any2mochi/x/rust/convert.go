@@ -144,18 +144,11 @@ func convertStmt(src string, n *node, level int) []string {
 		switch c.kind {
 		case "MACRO_EXPR":
 			code := strings.TrimSpace(src[c.start:c.end])
-			if strings.HasPrefix(code, "println!") {
-				args := strings.TrimPrefix(code, "println!")
-				args = strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(args, "("), ")"))
-				parts := splitRustArgs(args)
-				if len(parts) > 0 && strings.HasPrefix(strings.TrimSpace(parts[0]), "\"") {
-					if len(parts) == 1 {
-						return []string{idt + fmt.Sprintf("print(%s)", parts[0])}
-					}
-					parts = parts[1:]
-				}
-				return []string{idt + fmt.Sprintf("print(%s)", strings.Join(parts, ", "))}
+			if line, ok := convertPrintMacro(code); ok {
+				return []string{idt + line}
 			}
+			code = strings.TrimSuffix(code, ";")
+			return []string{idt + code}
 			code = strings.TrimSuffix(code, ";")
 			return []string{idt + code}
 		case "FOR_EXPR":
@@ -303,6 +296,28 @@ func splitRustArgs(s string) []string {
 		args = append(args, strings.TrimSpace(s[start:]))
 	}
 	return args
+}
+
+func convertPrintMacro(code string) (string, bool) {
+	macros := []string{"println!", "print!", "eprintln!", "dbg!"}
+	for _, m := range macros {
+		if strings.HasPrefix(code, m) {
+			args := strings.TrimPrefix(code, m)
+			args = strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(args, "("), ")"))
+			parts := splitRustArgs(args)
+			if m == "dbg!" {
+				return "print(" + strings.Join(parts, ", ") + ")", true
+			}
+			if len(parts) > 0 && strings.HasPrefix(strings.TrimSpace(parts[0]), "\"") {
+				if len(parts) == 1 {
+					return fmt.Sprintf("print(%s)", parts[0]), true
+				}
+				parts = parts[1:]
+			}
+			return "print(" + strings.Join(parts, ", ") + ")", true
+		}
+	}
+	return "", false
 }
 
 func convertRustType(src string, n *node) string {
@@ -518,20 +533,8 @@ func fallbackRustBody(body string, level int) []string {
 		line = strings.TrimSuffix(line, ";")
 		line = strings.Replace(line, "let ", "var ", 1)
 		line = strings.Replace(line, "mut ", "", 1)
-		if strings.HasPrefix(line, "println!") {
-			args := strings.TrimPrefix(line, "println!")
-			args = strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(args, "("), ")"))
-			parts := splitRustArgs(args)
-			if len(parts) > 0 && strings.HasPrefix(strings.TrimSpace(parts[0]), "\"") {
-				if len(parts) == 1 {
-					line = "print(" + parts[0] + ")"
-				} else {
-					parts = parts[1:]
-					line = "print(" + strings.Join(parts, ", ") + ")"
-				}
-			} else {
-				line = "print(" + strings.Join(parts, ", ") + ")"
-			}
+		if nl, ok := convertPrintMacro(line); ok {
+			line = nl
 		}
 		out = append(out, indent(level)+line)
 	}
@@ -615,7 +618,7 @@ func convertRustTree(src string, tree *node) ([]byte, error) {
 			}
 		case "TRAIT":
 			sl, sc := position(src, c.start)
-			return nil, fmt.Errorf("unsupported item TRAIT at %d:%d\n%s", sl, sc, snippetAt(src, sl, sc))
+			return nil, fmt.Errorf("unsupported item TRAIT at line %d column %d\n%s", sl, sc, snippetAt(src, sl, sc))
 		case "FN":
 			nameNode := findChild(findChild(c, "NAME"), "IDENT")
 			if nameNode == nil {
