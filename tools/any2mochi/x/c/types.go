@@ -8,8 +8,9 @@ type function struct {
 	ret       string
 	params    []param
 	body      []string
-	startLine int // 1-indexed line of the function definition
-	endLine   int // 1-indexed line of the closing brace
+	startLine int    // 1-indexed line of the function definition
+	endLine   int    // 1-indexed line of the closing brace
+	source    string // full source snippet of the function
 }
 
 type param struct {

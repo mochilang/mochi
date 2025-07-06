@@ -1,47 +1,69 @@
 line 15:8: unknown type name 'map_string'
+  14| }
   15| static map_string _fetch(const char *url, void *opts) {
             ^
   16|   (void)opts;
+  17|   char *data = NULL;
 line 19:12: call to undeclared function '_read_all'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+  18|   if (strncmp(url, "file://", 7) == 0) {
   19|     data = _read_all(url + 7);
                 ^
   20|   } else if (strncmp(url, "file:", 5) == 0) {
+  21|     data = _read_all(url + 5);
 line 19:10: incompatible integer to pointer conversion assigning to 'char *' from 'int' [-Wint-conversion]
+  18|   if (strncmp(url, "file://", 7) == 0) {
   19|     data = _read_all(url + 7);
               ^
   20|   } else if (strncmp(url, "file:", 5) == 0) {
+  21|     data = _read_all(url + 5);
 line 21:12: call to undeclared function '_read_all'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+  20|   } else if (strncmp(url, "file:", 5) == 0) {
   21|     data = _read_all(url + 5);
                 ^
   22|   } else {
+  23|     char cmd[512];
 line 21:10: incompatible integer to pointer conversion assigning to 'char *' from 'int' [-Wint-conversion]
+  20|   } else if (strncmp(url, "file:", 5) == 0) {
   21|     data = _read_all(url + 5);
               ^
   22|   } else {
+  23|     char cmd[512];
 line 46:3: use of undeclared identifier 'list_map_string'
+  45|     data = strdup("");
   46|   list_map_string rows = _parse_json(data);
        ^
   47|   free(data);
+  48|   if (rows.len > 0)
 line 48:7: use of undeclared identifier 'rows'
+  47|   free(data);
   48|   if (rows.len > 0)
            ^
   49|     return rows.data[0];
+  50|   return map_string_create(0);
 line 49:12: use of undeclared identifier 'rows'
+  48|   if (rows.len > 0)
   49|     return rows.data[0];
                 ^
   50|   return map_string_create(0);
+  51| }
 line 50:10: call to undeclared function 'map_string_create'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+  49|     return rows.data[0];
   50|   return map_string_create(0);
               ^
   51| }
+  52| int main() {
 line 54:22: member reference base type 'int' is not a structure or union
+  53|   int data = (_fetch("file:../../tests/compiler/c/fetch_builtin.json", NULL));
   54|   printf("%s\n", data.data["message"]);
                           ^
   55|   return 0;
+  56| }
 line 54:27: array subscript is not an integer
+  53|   int data = (_fetch("file:../../tests/compiler/c/fetch_builtin.json", NULL));
   54|   printf("%s\n", data.data["message"]);
                                ^
   55|   return 0;
+  56| }
 
 source snippet:
   1: #include <stdio.h>
@@ -54,4 +76,3 @@ source snippet:
   8: } list_int;
   9: static list_int list_int_create(int len) {
  10:   list_int l;
-exit status 1

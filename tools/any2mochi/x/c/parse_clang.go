@@ -110,7 +110,13 @@ func parseClangFile(src string) ([]function, error) {
 				}
 			}
 			if len(body) > 0 {
-				funcs = append(funcs, function{name: n.Name, ret: ret, params: params, body: body, startLine: startLn, endLine: endLn})
+				srcLines := strings.Split(src, "\n")
+				if startLn-1 >= 0 && endLn <= len(srcLines) {
+					snippet := strings.Join(srcLines[startLn-1:endLn], "\n")
+					funcs = append(funcs, function{name: n.Name, ret: ret, params: params, body: body, startLine: startLn, endLine: endLn, source: snippet})
+				} else {
+					funcs = append(funcs, function{name: n.Name, ret: ret, params: params, body: body, startLine: startLn, endLine: endLn})
+				}
 			}
 		}
 		for _, c := range n.Inner {
@@ -136,11 +142,11 @@ func formatClangErrors(src, out string) string {
 		col, _ := strconv.Atoi(m[2])
 		msg := m[3]
 		buf.WriteString(fmt.Sprintf("line %d:%d: %s\n", ln, col, msg))
-		start := ln - 1
+		start := ln - 2
 		if start < 0 {
 			start = 0
 		}
-		end := ln
+		end := ln + 1
 		if end >= len(lines) {
 			end = len(lines) - 1
 		}
