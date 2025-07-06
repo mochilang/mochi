@@ -1,4 +1,4 @@
-package any2mochi
+package swift
 
 import (
 	"bytes"
@@ -9,13 +9,15 @@ import (
 	"os/exec"
 	"strings"
 	"time"
+
+	any2mochi "mochi/tools/any2mochi"
 )
 
-// ConvertSwift converts Swift source code to Mochi. It invokes the Swift
+// Convert converts Swift source code to Mochi. It invokes the Swift
 // compiler to dump the AST as JSON and then walks a minimal subset of the
 // structure to produce runnable Mochi code.
-func ConvertSwift(src string) ([]byte, error) {
-	ast, err := runSwiftParse(src)
+func Convert(src string) ([]byte, error) {
+	ast, err := parse(src)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +48,7 @@ func ConvertSwift(src string) ([]byte, error) {
 				out.WriteString(t)
 			}
 			if it.Body != nil {
-				body := swiftBodyFromRange(src, it.Body.Range)
+				body := bodyFromRange(src, it.Body.Range)
 				if len(body) == 0 {
 					out.WriteString(" {}\n")
 				} else {
@@ -62,68 +64,68 @@ func ConvertSwift(src string) ([]byte, error) {
 				out.WriteString(" {}\n")
 			}
 		case "top_level_code_decl":
-			code := extractSwiftRange(src, it.Range)
-			for _, st := range parseSwiftStatementsIndent(code, 0) {
+			code := extractRange(src, it.Range)
+			for _, st := range parseStatementsIndent(code, 0) {
 				out.WriteString(st)
 				out.WriteByte('\n')
 			}
 		}
 	}
 	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
 	}
 	return []byte(out.String()), nil
 }
 
-type swiftFile struct {
-	Items []swiftItem `json:"items"`
+type file struct {
+	Items []item `json:"items"`
 }
 
-type swiftItem struct {
-	Kind   string           `json:"_kind"`
-	Name   *swiftDeclName   `json:"name,omitempty"`
-	Params *swiftParamList  `json:"params,omitempty"`
-	Body   *swiftBody       `json:"body,omitempty"`
-	Range  swiftOffsetRange `json:"range"`
-	Result string           `json:"result,omitempty"`
+type item struct {
+	Kind   string      `json:"_kind"`
+	Name   *declName   `json:"name,omitempty"`
+	Params *paramList  `json:"params,omitempty"`
+	Body   *body       `json:"body,omitempty"`
+	Range  offsetRange `json:"range"`
+	Result string      `json:"result,omitempty"`
 }
 
-type swiftDeclName struct {
-	BaseName swiftBaseName `json:"base_name"`
+type declName struct {
+	BaseName baseName `json:"base_name"`
 }
 
-type swiftBaseName struct {
+type baseName struct {
 	Name string `json:"name"`
 }
 
-type swiftParamList struct {
-	Params []swiftParam `json:"params"`
+type paramList struct {
+	Params []param `json:"params"`
 }
 
-type swiftParam struct {
-	Name          swiftDeclName `json:"name"`
-	InterfaceType string        `json:"interface_type,omitempty"`
+type param struct {
+	Name          declName `json:"name"`
+	InterfaceType string   `json:"interface_type,omitempty"`
 }
 
-type swiftBody struct {
-	Range swiftOffsetRange `json:"range"`
+type body struct {
+	Range offsetRange `json:"range"`
 }
 
-type swiftOffsetRange struct {
+type offsetRange struct {
 	Start int `json:"start"`
 	End   int `json:"end"`
 }
 
-// runSwiftParse invokes swiftc to dump the AST as JSON.
-func runSwiftParse(src string) (swiftFile, error) {
+// parse invokes swiftc to dump the AST as JSON.
+func parse(src string) (file, error) {
 	tmp, err := os.CreateTemp("", "swift-src-*.swift")
 	if err != nil {
-		return swiftFile{}, err
+		return file{}, err
 	}
 	defer os.Remove(tmp.Name())
 	if _, err := tmp.WriteString(src); err != nil {
 		tmp.Close()
-		return swiftFile{}, err
+		return file{}, err
 	}
 	tmp.Close()
 
@@ -133,16 +135,16 @@ func runSwiftParse(src string) (swiftFile, error) {
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	if err := cmd.Run(); err != nil {
-		return swiftFile{}, err
+		return file{}, err
 	}
-	var file swiftFile
-	if err := json.Unmarshal(out.Bytes(), &file); err != nil {
-		return swiftFile{}, err
+	var f file
+	if err := json.Unmarshal(out.Bytes(), &f); err != nil {
+		return file{}, err
 	}
-	return file, nil
+	return f, nil
 }
 
-func extractSwiftRange(src string, r swiftOffsetRange) string {
+func extractRange(src string, r offsetRange) string {
 	if r.Start < 0 {
 		r.Start = 0
 	}
@@ -156,14 +158,14 @@ func extractSwiftRange(src string, r swiftOffsetRange) string {
 	return src[r.Start : end+1]
 }
 
-func swiftBodyFromRange(src string, r swiftOffsetRange) []string {
-	text := extractSwiftRange(src, r)
+func bodyFromRange(src string, r offsetRange) []string {
+	text := extractRange(src, r)
 	start := strings.Index(text, "{")
 	end := strings.LastIndex(text, "}")
 	if start == -1 || end == -1 || end <= start {
 		return nil
 	}
-	return parseSwiftStatementsIndent(text[start+1:end], 1)
+	return parseStatementsIndent(text[start+1:end], 1)
 }
 
 func interfaceTypeToMochi(t string) string {
@@ -183,11 +185,11 @@ func interfaceTypeToMochi(t string) string {
 	return ""
 }
 
-func parseSwiftStatements(body string) []string {
-	return parseSwiftStatementsIndent(body, 1)
+func parseStatements(body string) []string {
+	return parseStatementsIndent(body, 1)
 }
 
-func parseSwiftStatementsIndent(body string, indent int) []string {
+func parseStatementsIndent(body string, indent int) []string {
 	lines := strings.Split(body, "\n")
 	var out []string
 	for _, line := range lines {
@@ -240,7 +242,7 @@ func parseSwiftStatementsIndent(body string, indent int) []string {
 	return out
 }
 
-func extractRangeText(src string, r Range) string {
+func extractRangeText(src string, r any2mochi.Range) string {
 	lines := strings.Split(src, "\n")
 	var out strings.Builder
 	for i := int(r.Start.Line); i <= int(r.End.Line) && i < len(lines); i++ {
@@ -259,11 +261,22 @@ func extractRangeText(src string, r Range) string {
 	return out.String()
 }
 
-// ConvertSwiftFile reads the swift file and converts it to Mochi.
-func ConvertSwiftFile(path string) ([]byte, error) {
+func snippet(src string) string {
+	lines := strings.Split(src, "\n")
+	if len(lines) > 10 {
+		lines = lines[:10]
+	}
+	for i, l := range lines {
+		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
+	}
+	return strings.Join(lines, "\n")
+}
+
+// ConvertFile reads the Swift file and converts it to Mochi.
+func ConvertFile(path string) ([]byte, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return ConvertSwift(string(data))
+	return Convert(string(data))
 }
