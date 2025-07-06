@@ -25,6 +25,9 @@ type Stmt struct {
 	Else       []Stmt `json:"else,omitempty"`
 	Line       int    `json:"line,omitempty"`
 	Column     int    `json:"column,omitempty"`
+	EndLine    int    `json:"endLine,omitempty"`
+	EndColumn  int    `json:"endColumn,omitempty"`
+	Snippet    string `json:"snippet,omitempty"`
 }
 
 func main() {
@@ -72,18 +75,30 @@ func parse(src string) Program {
 		}
 		if stmt, n := parseWhile(lines, i); n > 0 {
 			stmt.Line = i + 1
+			stmt.Column = len(lines[i]) - len(strings.TrimLeft(lines[i], " \t")) + 1
+			stmt.EndLine = i + n - 1
+			stmt.EndColumn = len(strings.TrimRight(lines[i+n-1], "\n"))
+			stmt.Snippet = strings.TrimSpace(strings.Join(lines[i:i+n], "\n"))
 			stmts = append(stmts, stmt)
 			i += n - 1
 			continue
 		}
 		if stmt, n := parseIf(lines, i); n > 0 {
 			stmt.Line = i + 1
+			stmt.Column = len(lines[i]) - len(strings.TrimLeft(lines[i], " \t")) + 1
+			stmt.EndLine = i + n - 1
+			stmt.EndColumn = len(strings.TrimRight(lines[i+n-1], "\n"))
+			stmt.Snippet = strings.TrimSpace(strings.Join(lines[i:i+n], "\n"))
 			stmts = append(stmts, stmt)
 			i += n - 1
 			continue
 		}
 		if stmt, n := parseFor(lines, i); n > 0 {
 			stmt.Line = i + 1
+			stmt.Column = len(lines[i]) - len(strings.TrimLeft(lines[i], " \t")) + 1
+			stmt.EndLine = i + n - 1
+			stmt.EndColumn = len(strings.TrimRight(lines[i+n-1], "\n"))
+			stmt.Snippet = strings.TrimSpace(strings.Join(lines[i:i+n], "\n"))
 			stmts = append(stmts, stmt)
 			i += n - 1
 			continue
@@ -91,6 +106,12 @@ func parse(src string) Program {
 		s := parseSimpleStmt(strings.TrimSuffix(l, "."))
 		if s.Kind != "" {
 			s.Line = i + 1
+			s.Column = len(lines[i]) - len(strings.TrimLeft(lines[i], " \t")) + 1
+			s.EndLine = i + 1
+			s.EndColumn = len(strings.TrimRight(lines[i], "\n"))
+			if s.Snippet == "" {
+				s.Snippet = strings.TrimSpace(lines[i])
+			}
 			stmts = append(stmts, s)
 		} else {
 			stmts = append(stmts, Stmt{Kind: "unknown", Expr: l, Line: i + 1})
@@ -112,26 +133,26 @@ func parseSimpleStmt(line string) Stmt {
 		expr := strings.TrimSpace(parts[0])
 		expr = strings.Trim(expr, "()")
 		expr = strings.ReplaceAll(expr, "'", "\"")
-		return Stmt{Kind: "print", Expr: expr, Column: col}
+		return Stmt{Kind: "print", Expr: expr, Column: col, EndLine: 0, EndColumn: len(line), Snippet: strings.TrimSpace(line)}
 	}
 	if strings.Contains(l, ":=") {
 		parts := strings.SplitN(l, ":=", 2)
 		left := strings.TrimSpace(parts[0])
 		right := strings.TrimSpace(strings.TrimSuffix(parts[1], "."))
-		return Stmt{Kind: "assign", Name: left, Expr: right, Column: col}
+		return Stmt{Kind: "assign", Name: left, Expr: right, Column: col, EndLine: 0, EndColumn: len(line), Snippet: strings.TrimSpace(line)}
 	}
 	if strings.HasPrefix(l, "^") {
-		return Stmt{Kind: "return", Expr: strings.TrimSpace(strings.TrimPrefix(l, "^")), Column: col}
+		return Stmt{Kind: "return", Expr: strings.TrimSpace(strings.TrimPrefix(l, "^")), Column: col, EndLine: 0, EndColumn: len(line), Snippet: strings.TrimSpace(line)}
 	}
 	if m := regexp.MustCompile(`^Transcript\s+show:`).FindString(l); m != "" {
 		expr := strings.TrimSpace(strings.TrimPrefix(l, m))
 		expr = strings.TrimSuffix(expr, ".")
 		expr = strings.Trim(expr, "()")
 		expr = strings.ReplaceAll(expr, "'", "\"")
-		return Stmt{Kind: "print", Expr: expr, Column: col}
+		return Stmt{Kind: "print", Expr: expr, Column: col, EndLine: 0, EndColumn: len(line), Snippet: strings.TrimSpace(line)}
 	}
 	if l != "" {
-		return Stmt{Kind: "unknown", Expr: l, Column: col}
+		return Stmt{Kind: "unknown", Expr: l, Column: col, EndLine: 0, EndColumn: len(line), Snippet: strings.TrimSpace(line)}
 	}
 	return Stmt{}
 }
@@ -165,7 +186,9 @@ func parseWhile(lines []string, i int) (Stmt, int) {
 			body = append(body, Stmt{Kind: "unknown", Expr: line, Line: j + 1})
 		}
 	}
-	return Stmt{Kind: "while", Cond: cond, Body: body}, n
+	snippet := strings.TrimSpace(strings.Join(lines[i:i+n], "\n"))
+	col := len(lines[i]) - len(strings.TrimLeft(lines[i], " \t")) + 1
+	return Stmt{Kind: "while", Cond: cond, Body: body, Column: col, Snippet: snippet, EndLine: i + n - 1, EndColumn: len(strings.TrimRight(lines[i+n-1], "\n"))}, n
 }
 
 func parseFor(lines []string, i int) (Stmt, int) {
@@ -181,7 +204,9 @@ func parseFor(lines []string, i int) (Stmt, int) {
 		}
 		name := strings.TrimSpace(m[3])
 		body, n := parseBlock(lines, i)
-		return Stmt{Kind: "for", Name: name, Start: start, End: end, Body: body}, n
+		snippet := strings.TrimSpace(strings.Join(lines[i:i+n], "\n"))
+		col := len(lines[i]) - len(strings.TrimLeft(lines[i], " \t")) + 1
+		return Stmt{Kind: "for", Name: name, Start: start, End: end, Body: body, Column: col, Snippet: snippet, EndLine: i + n - 1, EndColumn: len(strings.TrimRight(lines[i+n-1], "\n"))}, n
 	}
 	m := regexp.MustCompile(`^(.*)\s+do:\s+\[:([A-Za-z_][A-Za-z0-9_]*) \|$`).FindStringSubmatch(l)
 	if len(m) != 3 {
@@ -190,7 +215,9 @@ func parseFor(lines []string, i int) (Stmt, int) {
 	coll := strings.TrimSpace(m[1])
 	name := strings.TrimSpace(m[2])
 	body, n := parseBlock(lines, i)
-	return Stmt{Kind: "foreach", Name: name, Collection: coll, Body: body}, n
+	snippet := strings.TrimSpace(strings.Join(lines[i:i+n], "\n"))
+	col := len(lines[i]) - len(strings.TrimLeft(lines[i], " \t")) + 1
+	return Stmt{Kind: "foreach", Name: name, Collection: coll, Body: body, Column: col, Snippet: snippet, EndLine: i + n - 1, EndColumn: len(strings.TrimRight(lines[i+n-1], "\n"))}, n
 }
 
 func parseBlock(lines []string, i int) ([]Stmt, int) {
@@ -234,12 +261,18 @@ func parseIf(lines []string, i int) (Stmt, int) {
 	// handle pattern "] ifFalse: ["
 	if strings.Contains(lines[j-1], "ifFalse:") {
 		elseBody, m2 = parseBlock(lines, j-1)
-		return Stmt{Kind: "if", Cond: cond, Body: thenBody, Else: elseBody}, n + m2 - 1
+		snippet := strings.TrimSpace(strings.Join(lines[i:i+n+m2-1], "\n"))
+		col := len(lines[i]) - len(strings.TrimLeft(lines[i], " \t")) + 1
+		return Stmt{Kind: "if", Cond: cond, Body: thenBody, Else: elseBody, Column: col, Snippet: snippet, EndLine: i + n + m2 - 2, EndColumn: len(strings.TrimRight(lines[i+n+m2-2], "\n"))}, n + m2 - 1
 	}
 	// handle next line starting with ifFalse:
 	if j < len(lines) && strings.HasPrefix(strings.TrimSpace(lines[j]), "ifFalse:") {
 		elseBody, m2 = parseBlock(lines, j)
-		return Stmt{Kind: "if", Cond: cond, Body: thenBody, Else: elseBody}, n + m2
+		snippet := strings.TrimSpace(strings.Join(lines[i:i+n+m2], "\n"))
+		col := len(lines[i]) - len(strings.TrimLeft(lines[i], " \t")) + 1
+		return Stmt{Kind: "if", Cond: cond, Body: thenBody, Else: elseBody, Column: col, Snippet: snippet, EndLine: i + n + m2 - 1, EndColumn: len(strings.TrimRight(lines[i+n+m2-1], "\n"))}, n + m2
 	}
-	return Stmt{Kind: "if", Cond: cond, Body: thenBody}, n
+	snippet := strings.TrimSpace(strings.Join(lines[i:i+n], "\n"))
+	col := len(lines[i]) - len(strings.TrimLeft(lines[i], " \t")) + 1
+	return Stmt{Kind: "if", Cond: cond, Body: thenBody, Column: col, Snippet: snippet, EndLine: i + n - 1, EndColumn: len(strings.TrimRight(lines[i+n-1], "\n"))}, n
 }

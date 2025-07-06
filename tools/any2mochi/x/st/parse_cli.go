@@ -26,6 +26,9 @@ type Stmt struct {
 	Else       []Stmt `json:"else,omitempty"`
 	Line       int    `json:"line,omitempty"`
 	Column     int    `json:"column,omitempty"`
+	EndLine    int    `json:"endLine,omitempty"`
+	EndColumn  int    `json:"endColumn,omitempty"`
+	Snippet    string `json:"snippet,omitempty"`
 }
 
 func parseCLI(src string) (*AST, error) {
@@ -67,7 +70,7 @@ func convertAST(ast *AST, src string) ([]byte, error) {
 	var out strings.Builder
 	for _, s := range ast.Statements {
 		if s.Kind == "unknown" {
-			return nil, fmt.Errorf("%s", formatError(src, s.Line, s.Column, "unsupported statement"))
+			return nil, fmt.Errorf("%s", formatErrorSnippet(src, s.Line, s.Column, "unsupported statement", s.Snippet))
 		}
 		writeStmt(&out, s, 0)
 	}
