@@ -884,6 +884,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if p.Call.Func == "print" {
 			return c.compilePrint(callArgs{args: args, exprs: p.Call.Args})
 		}
+		if p.Call.Func == "reverse" && len(args) == 1 {
+			c.usesList = true
+			return fmt.Sprintf("reverse %s", args[0]), nil
+		}
 		return fmt.Sprintf("%s %s", sanitizeName(p.Call.Func), strings.Join(args, " ")), nil
 	case p.Selector != nil:
 		expr := sanitizeName(p.Selector.Root)

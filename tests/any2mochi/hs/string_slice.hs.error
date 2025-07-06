@@ -1,4 +1,4 @@
-line 13: unsupported syntax
-    12 | 
-->  13 | forLoop :: Int -> Int -> (Int -> Maybe a) -> Maybe a
+line 15: unsupported syntax: where
     14 | forLoop start end f = go start
+->  15 |   where
+    16 |     go i
