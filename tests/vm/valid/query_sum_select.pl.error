@@ -1,0 +1,2 @@
+swipl error: exit status 2
+ERROR: /tmp/pl-run3770043451/main.pl:24: user:main Unknown message: error('sum expects list or group')

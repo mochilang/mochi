@@ -1,0 +1,2 @@
+swipl error: exit status 2
+ERROR: /tmp/pl-run912115736/main.pl:80: user:main get_dict/3: Type error: `dict' expected, found `[map{tag:"b",val:3}]' (a list)

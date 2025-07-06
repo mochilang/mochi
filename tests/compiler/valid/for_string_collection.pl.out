@@ -1,0 +1,26 @@
+:- style_check(-singleton).
+to_list(Str, L) :-
+    string(Str), !,
+    string_chars(Str, L).
+to_list(L, L).
+
+
+        main :-
+    to_list("hi", _V0),
+    catch(
+        (
+            member(Ch, _V0),
+            catch(
+                (
+                    write(Ch),
+                    nl,
+                    true
+                ), continue, true),
+                fail
+                ;
+                true
+            )
+            , break, true),
+            true
+        .
+:- initialization(main, main).

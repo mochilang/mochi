@@ -1,0 +1,2 @@
+swipl error: exit status 2
+ERROR: /tmp/pl-run1394079141/main.pl:7: user:main length/2: Type error: `list' expected, found `"mochi"' (a string)

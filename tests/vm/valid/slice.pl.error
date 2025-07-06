@@ -1,0 +1,9 @@
+output mismatch
+-- pl --
+[2,3]
+[1,2]
+ell
+-- vm --
+2 3
+1 2
+ell

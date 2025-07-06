@@ -1,0 +1,10 @@
+output mismatch
+-- pl --
+--- Group Left Join ---
+Bob orders: 0
+Alice orders: 0
+-- vm --
+--- Group Left Join ---
+Alice orders: 2
+Bob orders: 1
+Charlie orders: 0

@@ -1,0 +1,13 @@
+:- style_check(-singleton).
+
+        listit(Res) :-
+        dict_create(_V0, p_empty, []),
+        Res = [_V0].
+
+    main :-
+    listit(_V1),
+    length(_V1, _V2),
+    write(_V2),
+    nl
+    .
+:- initialization(main, main).

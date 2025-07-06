@@ -1,0 +1,9 @@
+output mismatch
+-- pl --
+--- Orders per customer ---
+Bob orders: 1
+Alice orders: 2
+-- vm --
+--- Orders per customer ---
+Alice orders: 2
+Bob orders: 1

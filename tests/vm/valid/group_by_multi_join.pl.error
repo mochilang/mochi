@@ -1,0 +1,5 @@
+output mismatch
+-- pl --
+[map{part:200,total:15},map{part:100,total:20}]
+-- vm --
+map[part:100 total:20] map[part:200 total:15]

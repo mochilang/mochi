@@ -1,0 +1,3 @@
+swipl error: exit status 2
+1
+ERROR: /tmp/pl-run660940679/main.pl:18: user:main main/0: Arguments are not sufficiently instantiated

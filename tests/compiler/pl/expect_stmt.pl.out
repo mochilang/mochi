@@ -4,7 +4,7 @@ expect(Cond) :- (Cond -> true ; throw(error('expect failed'))).
 
     main :-
     _V0 is 2 + 2,
-    expect(_V0 =:= 4),
+    expect(_V0 = 4),
     write("ok"),
     nl
     .

@@ -1,0 +1,5 @@
+output mismatch
+-- pl --
+ERROR: /tmp/pl-run2212243628/main.pl:3:7: Syntax error: Operand expected, unquoted comma or bar found
+-- vm --
+<nil>

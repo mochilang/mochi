@@ -1,0 +1,7 @@
+output mismatch
+-- pl --
+ERROR: /tmp/pl-run3103276892/main.pl:17:23: Syntax error: Unbalanced operator
+-- vm --
+0
+1
+2

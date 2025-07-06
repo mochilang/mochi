@@ -1,0 +1,5 @@
+output mismatch
+-- pl --
+[a,b,c]
+-- vm --
+a b c

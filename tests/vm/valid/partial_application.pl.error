@@ -1,0 +1,4 @@
+swipl error: exit status 2
+ERROR: /tmp/pl-run13854057/main.pl:13: user:main main/0: Unknown procedure: add/2
+ERROR:   However, there are definitions for:
+ERROR:         add/3

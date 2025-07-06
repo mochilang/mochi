@@ -1,0 +1,11 @@
+output mismatch
+-- pl --
+(1<2,2<3),3<4
+boom
+(1<2,2>3),_3896
+boom
+((1<2,2<3),3>4),_3966
+-- vm --
+true
+false
+false
