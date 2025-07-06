@@ -1,0 +1,29 @@
+package main
+
+import (
+	"flag"
+	"fmt"
+	"os"
+
+	"mochi/tools/any2mochi"
+)
+
+func main() {
+	flag.Parse()
+	if flag.NArg() != 1 {
+		fmt.Fprintln(os.Stderr, "usage: ft2mochi <file.f90>")
+		os.Exit(1)
+	}
+	any2mochi.UseLSP = false
+	data, err := os.ReadFile(flag.Arg(0))
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	code, err := any2mochi.ConvertFortran(string(data))
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	os.Stdout.Write(code)
+}
