@@ -38,6 +38,7 @@ type Compiler struct {
 	sumFn     bool
 	avgFn     bool
 	maxFn     bool
+	minFn     bool
 	substrFn  bool
 }
 
@@ -332,15 +333,16 @@ func (c *Compiler) ensureSum() {
 		return
 	}
 	c.sumFn = true
-	c.pre.WriteString("let _sum (_: 'a list) = 0.0;;\n\n")
+	c.pre.WriteString("let _sum l = List.fold_left ( + ) 0 l;;\n\n")
 }
 
 func (c *Compiler) ensureAvg() {
 	if c.avgFn {
 		return
 	}
+	c.ensureSum()
 	c.avgFn = true
-	c.pre.WriteString("let _avg (_: 'a list) = 0.0;;\n\n")
+	c.pre.WriteString("let _avg l = (_sum l) / List.length l;;\n\n")
 }
 
 func (c *Compiler) ensureMax() {
@@ -348,7 +350,15 @@ func (c *Compiler) ensureMax() {
 		return
 	}
 	c.maxFn = true
-	c.pre.WriteString("let _max (_: 'a list) = 0;;\n\n")
+	c.pre.WriteString("let _max l = match l with [] -> 0 | h::t -> List.fold_left max h t;;\n\n")
+}
+
+func (c *Compiler) ensureMin() {
+	if c.minFn {
+		return
+	}
+	c.minFn = true
+	c.pre.WriteString("let _min l = match l with [] -> 0 | h::t -> List.fold_left min h t;;\n\n")
 }
 
 func (c *Compiler) ensureSubstr() {
@@ -923,9 +933,14 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				stringMode = true
 			}
 		} else if oper == "/" {
-			if types.IsFloatExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}, c.env) || types.IsFloatExpr(&parser.Expr{Binary: b}, c.env) {
-				oper = "/."
+			// always use float division to match Mochi semantics
+			if !types.IsFloatExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}, c.env) {
+				r = fmt.Sprintf("float_of_int (%s)", r)
 			}
+			if !types.IsFloatExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: b.Left}}, c.env) {
+				expr = fmt.Sprintf("float_of_int (%s)", expr)
+			}
+			oper = "/."
 		} else if oper == "union_all" {
 			oper = "@"
 		} else if oper == "union" {
@@ -1297,6 +1312,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) == 1 {
 			c.ensureMax()
 			return fmt.Sprintf("_max %s", args[0]), nil
+		}
+	case "min":
+		if len(args) == 1 {
+			c.ensureMin()
+			return fmt.Sprintf("_min %s", args[0]), nil
 		}
 	case "concat":
 		if len(args) >= 2 {
