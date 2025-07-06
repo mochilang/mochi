@@ -1,4 +1,2 @@
-fun id(x: int): int {
-  return x
-}
-print(str(123))
+fun id(x: int): int {}
+fun main() {}

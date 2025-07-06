@@ -7,23 +7,4 @@ type Purchase {
   PersonId: int
   Total: int
 }
-var people = [Person { Id: 1, Name: "Alice" }, Person { Id: 2, Name: "Bob" }]
-var purchases = [Purchase { Id: 10, PersonId: 1, Total: 100 }, Purchase { Id: 11, PersonId: 2, Total: 200 }]
-_ = purchases
-var result = fun (): list<map<string, int>> {
-  let _res = []
-  for p in people {
-  if p.Id > 1 {
-  for o in purchases {
-  if !(p.Id == o.PersonId) {
-  continue
-}
-  _res = append(_res, {"pid": p.Id, "amount": o.Total})
-}
-}
-}
-  return _res
-}()
-for r in result {
-  print(str(r["pid"]) + " " + str(r["amount"]))
-}
+fun main() {}

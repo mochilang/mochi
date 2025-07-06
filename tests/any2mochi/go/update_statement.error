@@ -1,5 +1,1 @@
-tests/compiler/go/update_statement.go.out:55: unsupported declaration
->>> 54:    
-55:>>> var people []Person
-56:    
-57:    func main() {
+parse error: parse error: 1:5: unexpected token "expect" (expected <ident> "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")

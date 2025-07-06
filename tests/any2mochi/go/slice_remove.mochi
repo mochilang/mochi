@@ -1,4 +1,0 @@
-fun remove(nums: list<int>, i: int): list<int> {
-  return concat(concat([], nums[0:i]), nums[(i + 1):len(nums)])
-}
-print(str(remove([1, 2, 3, 4], 1)))

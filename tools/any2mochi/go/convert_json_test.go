@@ -4,19 +4,16 @@ package golang
 
 import (
 	"testing"
-
-	gocode "mochi/compile/go"
 )
 
-func TestConvertGo(t *testing.T) {
-	_ = gocode.EnsureGopls()
-	requireBinary(t, "gopls")
+func TestConvertViaJSON(t *testing.T) {
 	src := "package foo\nfunc Add(x int, y int) int { return x + y }"
-	out, err := ConvertGo(src)
+	out, err := ConvertViaJSON(src)
 	if err != nil {
 		t.Fatalf("convert: %v", err)
 	}
-	if string(out) != "fun Add() {}\n" {
+	want := "fun Add(x: int, y: int): int {}\n"
+	if string(out) != want {
 		t.Fatalf("unexpected output: %s", out)
 	}
 }

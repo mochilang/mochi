@@ -1,15 +1,1 @@
-var c = 0
-for _tmp0 in 0..2 {
-  c = (c + 1)
-}
-for _ in [1, 2] {
-  c = (c + 1)
-}
-for _ in "ab" {
-  c = (c + 1)
-}
-var m = {"x": 1, "y": 2}
-for _ in m {
-  c = (c + 1)
-}
-print(str(c))
+fun main() {}

@@ -1,22 +1,2 @@
-fun _sliceString(s: string, i: int, j: int): string {
-  let start = i
-  let end = j
-  let n = len(s)
-  if start < 0 {
-  start = start + n
-}
-  if end < 0 {
-  end = end + n
-}
-  if start < 0 {
-  start = 0
-}
-  if end > n {
-  end = n
-}
-  if end < start {
-  end = start
-}
-  return str(s[start:end])
-}
-print(str(_sliceString("hello", -4, -1)))
+fun main() {}
+fun _sliceString(s: string, i: int, j: int): string {}

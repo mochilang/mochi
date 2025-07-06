@@ -1,17 +1,1 @@
-var set = {}
-for n in [1, 2, 3] {
-  set[n] = true
-}
-var i = 1
-var count = 0
-while true {
-  let _tmp0 = i
-  let _tmp1 = set
-  let _tmp2 = _tmp0 in _tmp1
-  if !_tmp2 {
-  break
-}
-  i = (i + 1)
-  count = (count + 1)
-}
-print(str(count))
+fun main() {}

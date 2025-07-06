@@ -1,5 +1,1 @@
-tests/compiler/go/cast_struct.go.out:23: unsupported statement *ast.TypeSwitchStmt
->>> 22:    var out T
-23:>>> switch any(out).(type) {
-24:    case int:
-25:    switch vv := v.(type) {
+parse error: parse error: 6:26: unexpected token "[" (expected ")" (":" TypeRef)? "{" Statement* "}")

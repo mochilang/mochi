@@ -1,1 +1,1 @@
-print(str("Hello, world"))
+fun main() {}

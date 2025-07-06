@@ -1,1 +1,1 @@
-print(str(lower("BAR")))
+fun main() {}

@@ -1,5 +1,1 @@
-tests/compiler/go/load_save_json.go.out:45: unsupported statement *ast.TypeSwitchStmt
->>> 44:    var out T
-45:>>> switch any(out).(type) {
-46:    case int:
-47:    switch vv := v.(type) {
+parse error: parse error: 8:26: unexpected token "[" (expected ")" (":" TypeRef)? "{" Statement* "}")

@@ -1,5 +1,1 @@
-tests/compiler/go/count_builtin.go.out:17: unsupported statement *ast.TypeSwitchStmt
->>> 16:    }
-17:>>> switch s := v.(type) {
-18:    case []any:
-19:    return len(s)
+parse error: parse error: 3:20: unexpected token "[" (expected TypeRef)

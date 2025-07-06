@@ -1,10 +1,1 @@
-var m = {}
-m[1] = 10
-m[2] = 20
-let _tmp0 = 1
-let _tmp1 = m
-let _tmp2 = _tmp0 in _tmp1
-if _tmp2 {
-  print(str(m[1]))
-}
-print(str(m[2]))
+fun main() {}

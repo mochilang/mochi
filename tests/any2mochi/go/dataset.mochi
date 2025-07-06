@@ -2,18 +2,4 @@ type Person {
   Name: string
   Age: int
 }
-var people = [Person { Name: "Alice", Age: 30 }, Person { Name: "Bob", Age: 15 }, Person { Name: "Charlie", Age: 65 }]
-var names = fun (): list<string> {
-  let _res = []
-  for p in people {
-  if p.Age >= 18 {
-  if p.Age >= 18 {
-  _res = append(_res, p.Name)
-}
-}
-}
-  return _res
-}()
-for n in names {
-  print(str(n))
-}
+fun main() {}

@@ -11,10 +11,10 @@ import (
 	"strings"
 )
 
-// ConvertGo converts Go source code to Mochi without relying on a
+// Convert converts Go source code to Mochi without relying on a
 // language server. It parses the source using the standard library
 // and emits minimal Mochi stubs.
-func ConvertGo(src string) ([]byte, error) {
+func Convert(src string) ([]byte, error) {
 	fset := token.NewFileSet()
 	file, err := parser.ParseFile(fset, "src.go", src, parser.SkipObjectResolution)
 	if err != nil {
@@ -24,29 +24,27 @@ func ConvertGo(src string) ([]byte, error) {
 	for _, decl := range file.Decls {
 		switch d := decl.(type) {
 		case *ast.FuncDecl:
-			writeGoFunc(&out, fset, d)
+			writeFunc(&out, fset, d)
 		case *ast.GenDecl:
-			writeGoGenDecl(&out, fset, d)
+			writeGenDecl(&out, fset, d)
 		}
 	}
 	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
 	}
 	return []byte(out.String()), nil
 }
 
-// ConvertGoFile reads the Go file at path and converts it to Mochi.
-func ConvertGoFile(path string) ([]byte, error) {
+// ConvertFile reads the Go file at path and converts it to Mochi.
+func ConvertFile(path string) ([]byte, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return ConvertGo(string(data))
+	return Convert(string(data))
 }
 
-type goParam struct{ name, typ string }
-
-func writeGoFunc(out *strings.Builder, fset *token.FileSet, fn *ast.FuncDecl) {
+func writeFunc(out *strings.Builder, fset *token.FileSet, fn *ast.FuncDecl) {
 	if fn.Name == nil {
 		return
 	}
@@ -98,7 +96,7 @@ func writeGoFunc(out *strings.Builder, fset *token.FileSet, fn *ast.FuncDecl) {
 	out.WriteString(" {}\n")
 }
 
-func writeGoGenDecl(out *strings.Builder, fset *token.FileSet, d *ast.GenDecl) {
+func writeGenDecl(out *strings.Builder, fset *token.FileSet, d *ast.GenDecl) {
 	switch d.Tok {
 	case token.TYPE:
 		for _, spec := range d.Specs {
@@ -160,7 +158,7 @@ func exprString(fset *token.FileSet, e ast.Expr) string {
 	return b.String()
 }
 
-func numberedSnippet(src string) string {
+func snippet(src string) string {
 	lines := strings.Split(src, "\n")
 	if len(lines) > 10 {
 		lines = lines[:10]

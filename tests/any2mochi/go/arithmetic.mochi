@@ -1,5 +1,1 @@
-print(str((1 + 2)))
-print(str((5 - 3)))
-print(str((4 * 2)))
-print(str((8 / 2)))
-print(str((7 % 3)))
+fun main() {}

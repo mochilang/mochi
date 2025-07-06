@@ -1,12 +1,2 @@
-fun foo(n: int): int {
-  if n < 0 {
-  return -1
-} else if n == 0 {
-  return 0
-} else {
-  return 1
-}
-}
-print(str(foo(-2)))
-print(str(foo(0)))
-print(str(foo(3)))
+fun foo(n: int): int {}
+fun main() {}

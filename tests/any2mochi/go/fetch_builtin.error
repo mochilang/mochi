@@ -1,5 +1,1 @@
-tests/compiler/go/fetch_builtin.go.out:29: unsupported statement *ast.TypeSwitchStmt
->>> 28:    var out T
-29:>>> switch any(out).(type) {
-30:    case int:
-31:    switch vv := v.(type) {
+parse error: parse error: 6:26: unexpected token "[" (expected ")" (":" TypeRef)? "{" Statement* "}")

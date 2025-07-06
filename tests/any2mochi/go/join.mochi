@@ -12,22 +12,4 @@ type PairInfo {
   CustomerName: string
   Total: int
 }
-var customers = [Customer { Id: 1, Name: "Alice" }, Customer { Id: 2, Name: "Bob" }, Customer { Id: 3, Name: "Charlie" }]
-_ = customers
-var orders = [Order { Id: 100, CustomerId: 1, Total: 250 }, Order { Id: 101, CustomerId: 2, Total: 125 }, Order { Id: 102, CustomerId: 1, Total: 300 }, Order { Id: 103, CustomerId: 4, Total: 80 }]
-var result = fun (): list<PairInfo> {
-  let _res = []
-  for o in orders {
-  for c in customers {
-  if !(o.CustomerId == c.Id) {
-  continue
-}
-  _res = append(_res, PairInfo { OrderId: o.Id, CustomerName: c.Name, Total: o.Total })
-}
-}
-  return _res
-}()
-print(str("--- Orders with customer info ---"))
-for entry in result {
-  print(str("Order") + " " + str(entry.OrderId) + " " + str("by") + " " + str(entry.CustomerName) + " " + str("- $") + " " + str(entry.Total))
-}
+fun main() {}

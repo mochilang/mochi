@@ -1,5 +1,1 @@
-tests/compiler/go/dataset_sort_take_limit.go.out:28: unsupported declaration
->>> 27:    }
-28:>>> type pair struct {
-29:    item Product
-30:    key  any
+parse error: parse error: 6:20: unexpected token "[" (expected TypeRef)

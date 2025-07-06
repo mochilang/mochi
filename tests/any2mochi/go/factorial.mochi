@@ -1,9 +1,2 @@
-fun factorial(n: int): int {
-  if n <= 1 {
-  return 1
-}
-  return (n * factorial((n - 1)))
-}
-print(str(factorial(0)))
-print(str(factorial(1)))
-print(str(factorial(5)))
+fun factorial(n: int): int {}
+fun main() {}

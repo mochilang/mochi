@@ -1,5 +1,1 @@
-tests/compiler/go/local_recursion.go.out:11: unsupported method declaration
->>> 10:    
-11:>>> func (Leaf) isTree() {}
-12:    
-13:    type Node struct {
+parse error: parse error: 3:9: unexpected token "." (expected "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")

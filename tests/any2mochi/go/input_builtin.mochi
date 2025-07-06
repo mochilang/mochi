@@ -1,10 +1,2 @@
-fun _input(): string {
-  var s: string
-  s = input()
-  return s
-}
-print(str("Enter first input:"))
-var input1 = _input()
-print(str("Enter second input:"))
-var input2 = _input()
-print(str("You entered:") + " " + str(input1) + " " + str(",") + " " + str(input2))
+fun main() {}
+fun _input(): string {}
