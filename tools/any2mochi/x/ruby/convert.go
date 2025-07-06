@@ -206,23 +206,30 @@ func structFields(n Node) ([]string, bool) {
 	if call.Children[2].Type != "@ident" || call.Children[2].Value != "new" {
 		return nil, false
 	}
-	argParen := n.Children[1]
-	if argParen.Type != "arg_paren" || len(argParen.Children) == 0 {
-		return nil, false
+	arg := n.Children[1]
+	if arg.Type == "arg_paren" && len(arg.Children) > 0 {
+		arg = arg.Children[0]
 	}
-	args := argParen.Children[0]
-	if args.Type != "args_add_block" {
-		return nil, false
-	}
+	// args may be nested as args_add_block -> args_add ...
 	var fields []string
-	for _, a := range args.Children {
-		if a.Type == "symbol_literal" && len(a.Children) > 0 {
-			sym := a.Children[0]
+	var walk func(Node)
+	walk = func(x Node) {
+		switch x.Type {
+		case "args_add", "args_add_block":
+			for _, c := range x.Children {
+				walk(c)
+			}
+		case "symbol_literal":
+			if len(x.Children) == 0 {
+				return
+			}
+			sym := x.Children[0]
 			if sym.Type == "symbol" && len(sym.Children) > 0 && sym.Children[0].Type == "@ident" {
 				fields = append(fields, sym.Children[0].Value)
 			}
 		}
 	}
+	walk(arg)
 	if len(fields) == 0 {
 		return nil, false
 	}
@@ -289,6 +296,35 @@ func convertNode(n Node, level int, out *[]string) {
 		*out = append(*out, idt+"for "+varName+" in "+iter+" {")
 		convertNode(n.Children[2], level+1, out)
 		*out = append(*out, idt+"}")
+	case "method_add_block":
+		if len(n.Children) == 2 {
+			call := n.Children[0]
+			block := n.Children[1]
+			if call.Type == "call" && len(call.Children) == 3 && call.Children[2].Type == "@ident" && call.Children[2].Value == "times" {
+				count := exprString(call.Children[0])
+				varName := "i"
+				body := block
+				if block.Type == "do_block" && len(block.Children) >= 2 {
+					if len(block.Children) > 0 && block.Children[0].Type == "block_var" {
+						bv := block.Children[0]
+						if len(bv.Children) > 0 {
+							params := bv.Children[0]
+							if params.Type == "params" && len(params.Children) > 0 && len(params.Children[0].Children) > 0 {
+								ident := params.Children[0].Children[0]
+								if ident.Type == "@ident" {
+									varName = ident.Value
+								}
+							}
+						}
+					}
+					body = block.Children[len(block.Children)-1]
+				}
+				*out = append(*out, idt+"for "+varName+" in range("+count+") {")
+				convertNode(body, level+1, out)
+				*out = append(*out, idt+"}")
+				return
+			}
+		}
 	case "if":
 		if len(n.Children) < 2 {
 			return
