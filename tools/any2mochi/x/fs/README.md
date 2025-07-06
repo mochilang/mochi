@@ -9,8 +9,10 @@ The main entry points are `Convert` and `ConvertFile`.
 
 ## Supported features
 
-- `let` bindings converted to `let` statements
+- `let` and `let mutable` bindings converted to `let`/`var` statements
+- simple assignments `x <- expr`
 - `ignore (printfn "%A" (expr))` converted to `print(expr)`
+- `for` and `while` loops using basic patterns
 - Basic function stubs discovered via language server
 
 ## Unsupported features
