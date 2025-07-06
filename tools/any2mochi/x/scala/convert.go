@@ -209,6 +209,11 @@ func convertFunc(lines []string, sym any2mochi.DocumentSymbol, root string) stri
 			arg := strings.TrimSuffix(line[idx+8:], ")")
 			write("append(" + recv + ", " + convertExpr(arg) + ")")
 		case strings.Contains(line, "="):
+			if strings.Contains(line, "=>") {
+				// lambda or pattern match arrow, keep as-is
+				write(line)
+				continue
+			}
 			parts := strings.SplitN(line, "=", 2)
 			left := strings.TrimSpace(parts[0])
 			right := strings.TrimSpace(parts[1])
