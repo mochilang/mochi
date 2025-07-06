@@ -1,0 +1,5 @@
+tests/vm/valid/inner_join.go.out:8: unsupported declaration
+>>> 7:    func main() {
+8:>>> type CustomersItem struct {
+9:    Id   int    `json:"id"`
+10:    Name string `json:"name"`

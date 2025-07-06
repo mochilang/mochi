@@ -1,0 +1,5 @@
+tests/vm/valid/match_expr.go.out:26: unsupported parameter list
+>>> 25:    
+26:>>> func _equal(a, b any) bool {
+27:    av := reflect.ValueOf(a)
+28:    bv := reflect.ValueOf(b)

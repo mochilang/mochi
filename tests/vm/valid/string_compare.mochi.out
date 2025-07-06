@@ -1,0 +1,4 @@
+print(str(("a" < "b")))
+print(str(("a" <= "a")))
+print(str(("b" > "a")))
+print(str(("b" >= "b")))

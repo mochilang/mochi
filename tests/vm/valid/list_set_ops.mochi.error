@@ -1,0 +1,5 @@
+tests/vm/valid/list_set_ops.go.out:14: unsupported parameter list
+>>> 13:    
+14:>>> func _except[T any](a, b []T) []T {
+15:    res := []T{}
+16:    for _, x := range a {

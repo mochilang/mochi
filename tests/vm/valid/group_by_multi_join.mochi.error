@@ -1,0 +1,5 @@
+tests/vm/valid/group_by_multi_join.go.out:115: unsupported statement *ast.TypeSwitchStmt
+>>> 114:    var out T
+115:>>> switch any(out).(type) {
+116:    case int:
+117:    switch vv := v.(type) {

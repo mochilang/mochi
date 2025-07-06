@@ -1,0 +1,3 @@
+var s = "catch"
+print(str(strings.Contains(s, "cat")))
+print(str(strings.Contains(s, "dog")))

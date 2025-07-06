@@ -1,0 +1,18 @@
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	var a []int = []int{1, 2}
+	fmt.Println(append(_convSlice[int, any](a), 3))
+}
+
+func _convSlice[T any, U any](s []T) []U {
+	out := make([]U, len(s))
+	for i, v := range s {
+		out[i] = any(v).(U)
+	}
+	return out
+}

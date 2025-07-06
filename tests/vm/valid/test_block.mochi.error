@@ -1,0 +1,5 @@
+tests/vm/valid/test_block.go.out:48: unsupported statement *ast.BlockStmt
+>>> 47:    fmt.Println("ok")
+48:>>> {
+49:    printTestStart("addition works")
+50:    start := time.Now()
