@@ -1,4 +1,4 @@
-package any2mochi
+package cpp
 
 import (
 	"bytes"
@@ -8,19 +8,19 @@ import (
 	"strings"
 )
 
-type cppFuncDef struct {
+type funcDef struct {
 	name   string
-	params []cppParam
+	params []param
 	ret    string
 	body   string
 }
 
-type cppEnumDef struct {
+type enumDef struct {
 	name     string
 	variants []string
 }
 
-func convertCppBodyString(body string) []string {
+func convertBodyString(body string) []string {
 	lines := strings.Split(body, "\n")
 	if len(lines) > 0 && strings.TrimSpace(lines[0]) == "{" {
 		lines = lines[1:]
@@ -58,8 +58,8 @@ func convertCppBodyString(body string) []string {
 	return out
 }
 
-// parseCppAST uses clang++ to produce a JSON AST and extracts functions and enums.
-func parseCppAST(src string) ([]cppFuncDef, []cppEnumDef, error) {
+// parseAST uses clang++ to produce a JSON AST and extracts functions and enums.
+func parseAST(src string) ([]funcDef, []enumDef, error) {
 	cmd := exec.Command("clang++", "-x", "c++", "-std=c++20", "-fsyntax-only", "-Xclang", "-ast-dump=json", "-")
 	cmd.Stdin = strings.NewReader(src)
 	var buf bytes.Buffer
@@ -74,9 +74,9 @@ func parseCppAST(src string) ([]cppFuncDef, []cppEnumDef, error) {
 	if err := json.Unmarshal(buf.Bytes(), &root); err != nil {
 		return nil, nil, err
 	}
-	var funcs []cppFuncDef
-	var enums []cppEnumDef
-	collectCppAST(&root, src, &funcs, &enums)
+	var funcs []funcDef
+	var enums []enumDef
+	collectAST(&root, src, &funcs, &enums)
 	return funcs, enums, nil
 }
 
@@ -97,13 +97,13 @@ type astNode struct {
 	} `json:"range,omitempty"`
 }
 
-func collectCppAST(n *astNode, src string, funcs *[]cppFuncDef, enums *[]cppEnumDef) {
+func collectAST(n *astNode, src string, funcs *[]funcDef, enums *[]enumDef) {
 	switch n.Kind {
 	case "FunctionDecl":
 		if n.Range == nil || n.Range.Begin.Offset < 0 || n.Range.End.Offset > len(src) {
 			break
 		}
-		var params []cppParam
+		var params []param
 		var body string
 		for i := range n.Inner {
 			c := &n.Inner[i]
@@ -111,9 +111,9 @@ func collectCppAST(n *astNode, src string, funcs *[]cppFuncDef, enums *[]cppEnum
 			case "ParmVarDecl":
 				typ := ""
 				if c.Type != nil {
-					typ = mapCppType(c.Type.QualType)
+					typ = mapType(c.Type.QualType)
 				}
-				params = append(params, cppParam{name: c.Name, typ: typ})
+				params = append(params, param{name: c.Name, typ: typ})
 			case "CompoundStmt":
 				if c.Range != nil {
 					b := c.Range.Begin.Offset
@@ -130,10 +130,10 @@ func collectCppAST(n *astNode, src string, funcs *[]cppFuncDef, enums *[]cppEnum
 			if p := strings.Index(qt, "("); p != -1 {
 				ret = qt[:p]
 			}
-			ret = mapCppType(strings.TrimSpace(ret))
+			ret = mapType(strings.TrimSpace(ret))
 		}
 		if body != "" {
-			*funcs = append(*funcs, cppFuncDef{name: n.Name, params: params, ret: ret, body: body})
+			*funcs = append(*funcs, funcDef{name: n.Name, params: params, ret: ret, body: body})
 		}
 	case "EnumDecl":
 		if n.Range == nil || n.Range.Begin.Offset < 0 || n.Range.End.Offset > len(src) {
@@ -147,10 +147,10 @@ func collectCppAST(n *astNode, src string, funcs *[]cppFuncDef, enums *[]cppEnum
 			}
 		}
 		if len(vars) > 0 && n.Name != "" {
-			*enums = append(*enums, cppEnumDef{name: n.Name, variants: vars})
+			*enums = append(*enums, enumDef{name: n.Name, variants: vars})
 		}
 	}
 	for i := range n.Inner {
-		collectCppAST(&n.Inner[i], src, funcs, enums)
+		collectAST(&n.Inner[i], src, funcs, enums)
 	}
 }
