@@ -16,6 +16,7 @@ import (
 	"mochi/compile/x/testutil"
 	"mochi/golden"
 	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -154,18 +155,35 @@ func TestSchemeCompiler_SubsetPrograms(t *testing.T) {
 			return nil, fmt.Errorf("write error: %w", err)
 		}
 		cmd := exec.Command("chibi-scheme", "-m", "chibi", file)
+		var inData []byte
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 			cmd.Stdin = bytes.NewReader(data)
+			inData = data
 		}
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			return nil, fmt.Errorf("\u274c scheme run error: %w\n%s", err, out)
 		}
-		res := bytes.TrimSpace(out)
-		if res == nil {
-			res = []byte{}
+		schemeOut := bytes.TrimSpace(normalizeException(cleanOutput(out)))
+
+		// run with the Mochi VM for expected output
+		p2, err := vm.Compile(prog, env)
+		if err != nil {
+			return nil, fmt.Errorf("vm compile error: %w", err)
 		}
-		return res, nil
+		var vmBuf bytes.Buffer
+		m := vm.NewWithIO(p2, bytes.NewReader(inData), &vmBuf)
+		if err := m.Run(); err != nil {
+			if ve, ok := err.(*vm.VMError); ok {
+				return nil, fmt.Errorf("vm run error:\n%s", ve.Format(p2))
+			}
+			return nil, fmt.Errorf("vm run error: %v", err)
+		}
+		vmOut := bytes.TrimSpace(vmBuf.Bytes())
+		if !bytes.Equal(schemeOut, vmOut) {
+			return nil, fmt.Errorf("output mismatch:\n-- scheme --\n%s\n-- vm --\n%s", schemeOut, vmOut)
+		}
+		return vmOut, nil
 	})
 }
 
