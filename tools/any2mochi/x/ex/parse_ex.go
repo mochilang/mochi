@@ -1,4 +1,4 @@
-package any2mochi
+package ex
 
 import (
 	"fmt"
@@ -7,16 +7,16 @@ import (
 	"strings"
 )
 
-// ExFunc represents a parsed Elixir function.
-type ExFunc struct {
+// Func represents a parsed Elixir function.
+type Func struct {
 	Name   string   `json:"name"`
 	Params []string `json:"params"`
 	Body   []string `json:"body"`
 }
 
-// ExAST is a collection of functions in a source file.
-type ExAST struct {
-	Funcs []ExFunc `json:"funcs"`
+// AST is a collection of functions in a source file.
+type AST struct {
+	Funcs []Func `json:"funcs"`
 }
 
 var fnHeader = regexp.MustCompile(`^def\s+([a-zA-Z0-9_]+)(?:\(([^)]*)\))?\s*do\s*$`)
@@ -36,10 +36,10 @@ func parseParams(paramStr string) []string {
 	return out
 }
 
-// ParseExAST parses a subset of Elixir into an AST structure.
-func ParseExAST(src string) (*ExAST, error) {
+// Parse parses a subset of Elixir into an AST structure.
+func Parse(src string) (*AST, error) {
 	lines := strings.Split(src, "\n")
-	ast := &ExAST{}
+	ast := &AST{}
 	for i := 0; i < len(lines); i++ {
 		line := strings.TrimSpace(lines[i])
 		m := fnHeader.FindStringSubmatch(line)
@@ -57,7 +57,7 @@ func ParseExAST(src string) (*ExAST, error) {
 			}
 			body = append(body, l)
 		}
-		ast.Funcs = append(ast.Funcs, ExFunc{Name: name, Params: params, Body: body})
+		ast.Funcs = append(ast.Funcs, Func{Name: name, Params: params, Body: body})
 	}
 	if len(ast.Funcs) == 0 {
 		return nil, fmt.Errorf("no functions found")
@@ -79,8 +79,8 @@ func translateLine(l string) string {
 	return l
 }
 
-// ConvertExAST converts a parsed ExAST to Mochi source code.
-func ConvertExAST(ast *ExAST) ([]byte, error) {
+// ConvertAST converts a parsed AST to Mochi source code.
+func ConvertAST(ast *AST) ([]byte, error) {
 	var out strings.Builder
 	for _, fn := range ast.Funcs {
 		out.WriteString("fun ")
@@ -107,20 +107,20 @@ func ConvertExAST(ast *ExAST) ([]byte, error) {
 	return []byte(out.String()), nil
 }
 
-// ConvertEx2 parses Elixir source using ParseExAST and converts it to Mochi.
-func ConvertEx2(src string) ([]byte, error) {
-	ast, err := ParseExAST(src)
+// Convert parses Elixir source using Parse and converts it to Mochi.
+func Convert(src string) ([]byte, error) {
+	ast, err := Parse(src)
 	if err != nil {
 		return nil, err
 	}
-	return ConvertExAST(ast)
+	return ConvertAST(ast)
 }
 
-// ConvertExFile2 reads an Elixir file and converts it using ConvertEx2.
-func ConvertExFile2(path string) ([]byte, error) {
+// ConvertFile reads an Elixir file and converts it using Convert.
+func ConvertFile(path string) ([]byte, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return ConvertEx2(string(data))
+	return Convert(string(data))
 }

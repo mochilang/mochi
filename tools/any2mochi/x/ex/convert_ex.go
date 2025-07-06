@@ -1,23 +1,25 @@
-package any2mochi
+package ex
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
 
 	excode "mochi/compile/x/ex"
+	any2mochi "mochi/tools/any2mochi"
 )
 
-// ConvertEx converts Elixir source code to Mochi using the language server
+// FromLSP converts Elixir source code to Mochi using the language server
 // for basic parsing. It supports a small subset of Elixir consisting of
 // simple function definitions. When the language server fails to provide
 // usable details the converter falls back to light-weight regex matching of
 // the source. Basic control flow such as `if`, `for` and `while` blocks is
 // recognized along with assignments and IO.puts statements.
-func ConvertEx(src string) ([]byte, error) {
+func FromLSP(src string) ([]byte, error) {
 	_ = excode.Ensure()
-	ls := Servers["ex"]
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+	ls := any2mochi.Servers["ex"]
+	syms, diags, err := any2mochi.EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
 	if err != nil {
 		return nil, err
 	}
@@ -29,11 +31,11 @@ func ConvertEx(src string) ([]byte, error) {
 	var out strings.Builder
 	foundMain := false
 	for _, s := range syms {
-		if s.Kind != SymbolKindFunction {
+		if s.Kind != any2mochi.SymbolKindFunction {
 			continue
 		}
-		params, ret := getExSignature(src, s.SelectionRange.Start, ls)
-		code := convertExFunc(lines, s, params, ret)
+		params, ret := getSignature(src, s.SelectionRange.Start, ls)
+		code := convertFunc(lines, s, params, ret)
 		if code == "" {
 			continue
 		}
@@ -52,16 +54,16 @@ func ConvertEx(src string) ([]byte, error) {
 	return []byte(out.String()), nil
 }
 
-// ConvertExFile reads the Elixir file at path and converts it to Mochi.
-func ConvertExFile(path string) ([]byte, error) {
+// FromLSPFile reads the Elixir file at path and converts it using FromLSP.
+func FromLSPFile(path string) ([]byte, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return ConvertEx(string(data))
+	return FromLSP(string(data))
 }
 
-func convertExFunc(lines []string, sym DocumentSymbol, params []string, ret string) string {
+func convertFunc(lines []string, sym any2mochi.DocumentSymbol, params []string, ret string) string {
 	start := int(sym.Range.Start.Line)
 	end := int(sym.Range.End.Line)
 	if start < 0 || end >= len(lines) || start >= end {
@@ -166,16 +168,16 @@ func convertExFunc(lines []string, sym DocumentSymbol, params []string, ret stri
 	return b.String()
 }
 
-func getExSignature(src string, pos Position, ls LanguageServer) ([]string, string) {
-	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, pos)
+func getSignature(src string, pos any2mochi.Position, ls any2mochi.LanguageServer) ([]string, string) {
+	hov, err := any2mochi.EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, pos)
 	if err != nil {
 		return nil, ""
 	}
 	sig := hoverString(hov)
-	return parseExSignature(sig)
+	return parseSignature(sig)
 }
 
-func parseExSignature(sig string) ([]string, string) {
+func parseSignature(sig string) ([]string, string) {
 	sig = strings.ReplaceAll(sig, "\n", " ")
 	open := strings.Index(sig, "(")
 	close := strings.Index(sig, ")")
@@ -186,9 +188,9 @@ func parseExSignature(sig string) ([]string, string) {
 	rest := sig[close+1:]
 	ret := ""
 	if idx := strings.Index(rest, "::"); idx != -1 {
-		ret = mapExType(strings.TrimSpace(rest[idx+2:]))
+		ret = mapType(strings.TrimSpace(rest[idx+2:]))
 	} else if idx := strings.Index(rest, "->"); idx != -1 {
-		ret = mapExType(strings.TrimSpace(rest[idx+2:]))
+		ret = mapType(strings.TrimSpace(rest[idx+2:]))
 	}
 	var params []string
 	if paramsPart != "" {
@@ -210,7 +212,7 @@ func parseExSignature(sig string) ([]string, string) {
 	return params, ret
 }
 
-func mapExType(t string) string {
+func mapType(t string) string {
 	switch t {
 	case "integer()":
 		return "int"
@@ -223,4 +225,62 @@ func mapExType(t string) string {
 	default:
 		return t
 	}
+}
+
+func hoverString(h any2mochi.Hover) string {
+	switch v := h.Contents.(type) {
+	case any2mochi.MarkupContent:
+		return v.Value
+	case any2mochi.MarkedString:
+		b, err := json.Marshal(v)
+		if err == nil {
+			var ms any2mochi.MarkedStringStruct
+			if err := json.Unmarshal(b, &ms); err == nil {
+				if ms.Value != "" {
+					return ms.Value
+				}
+			}
+			var s string
+			if err := json.Unmarshal(b, &s); err == nil {
+				return s
+			}
+		}
+		return ""
+	case []any2mochi.MarkedString:
+		parts := make([]string, 0, len(v))
+		for _, m := range v {
+			parts = append(parts, hoverString(any2mochi.Hover{Contents: m}))
+		}
+		return strings.Join(parts, "\n")
+	case string:
+		return v
+	default:
+		return fmt.Sprint(v)
+	}
+}
+
+func formatDiagnostics(src string, diags []any2mochi.Diagnostic) string {
+	lines := strings.Split(src, "\n")
+	var out strings.Builder
+	for _, d := range diags {
+		start := int(d.Range.Start.Line)
+		msg := d.Message
+		line := ""
+		if start < len(lines) {
+			line = strings.TrimSpace(lines[start])
+		}
+		out.WriteString(fmt.Sprintf("line %d: %s\n  %s\n", start+1, msg, line))
+	}
+	return strings.TrimSpace(out.String())
+}
+
+func numberedSnippet(src string) string {
+	lines := strings.Split(src, "\n")
+	if len(lines) > 10 {
+		lines = lines[:10]
+	}
+	for i, l := range lines {
+		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
+	}
+	return strings.Join(lines, "\n")
 }
