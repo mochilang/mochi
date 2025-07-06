@@ -1,16 +1,19 @@
-package any2mochi
+package fs
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
+
+	parent "mochi/tools/any2mochi"
 )
 
-// ConvertFs converts F# source code to Mochi using the fsautocomplete language
-// server. The converter relies solely on the information returned by the
-// language server and avoids any regex based parsing.
-func ConvertFs(src string) ([]byte, error) {
-	ast, err := parseFsAST(src)
+// Convert translates F# source into Mochi code using the language server when
+// available. It falls back to a very small regex based parser when the server
+// is unavailable.
+func Convert(src string) ([]byte, error) {
+	ast, err := Parse(src)
 	if err == nil && ast != nil && (len(ast.Vars) > 0 || len(ast.Prints) > 0) {
 		var out strings.Builder
 		for _, v := range ast.Vars {
@@ -28,8 +31,8 @@ func ConvertFs(src string) ([]byte, error) {
 		return []byte(out.String()), nil
 	}
 
-	// Fallback to simple regex based conversion if parsing via CLI failed.
-	if out, ferr := convertFsFallback(src); ferr == nil {
+	// Fallback to simple regex based conversion if parsing failed.
+	if out, ferr := fallback(src); ferr == nil {
 		return out, nil
 	}
 	if err != nil {
@@ -38,13 +41,13 @@ func ConvertFs(src string) ([]byte, error) {
 	return nil, fmt.Errorf("unsupported")
 }
 
-// ConvertFsFile reads the fs file and converts it to Mochi.
-func ConvertFsFile(path string) ([]byte, error) {
+// ConvertFile reads the F# file at path and converts it to Mochi.
+func ConvertFile(path string) ([]byte, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return ConvertFs(string(data))
+	return Convert(string(data))
 }
 
 type fsParam struct {
@@ -52,18 +55,18 @@ type fsParam struct {
 	typ  string
 }
 
-func writeFsSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol, src string, ls LanguageServer) {
+func writeFsSymbols(out *strings.Builder, prefix []string, syms []parent.DocumentSymbol, src string, ls parent.LanguageServer) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
 			nameParts = append(nameParts, s.Name)
 		}
 		switch s.Kind {
-		case SymbolKindFunction, SymbolKindMethod:
-			params, ret := parseFsDetail(s.Detail)
+		case parent.SymbolKindFunction, parent.SymbolKindMethod:
+			params, ret := parseDetail(s.Detail)
 			if len(params) == 0 && ret == "" {
-				if hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start); err == nil {
-					params, ret = parseFsHover(hov)
+				if hov, err := parent.EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start); err == nil {
+					params, ret = parseHover(hov)
 				}
 			}
 			out.WriteString("fun ")
@@ -76,11 +79,11 @@ func writeFsSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol
 				out.WriteString(p.name)
 			}
 			out.WriteByte(')')
-			if t := mapFsType(ret); t != "" {
+			if t := mapType(ret); t != "" {
 				out.WriteString(": ")
 				out.WriteString(t)
 			}
-			body := fsFunctionBody(src, s)
+			body := functionBody(src, s)
 			if len(body) == 0 {
 				out.WriteString(" {}\n")
 			} else {
@@ -92,11 +95,11 @@ func writeFsSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol
 				}
 				out.WriteString("}\n")
 			}
-		case SymbolKindVariable, SymbolKindConstant, SymbolKindField:
+		case parent.SymbolKindVariable, parent.SymbolKindConstant, parent.SymbolKindField:
 			out.WriteString("let ")
 			out.WriteString(strings.Join(nameParts, "."))
 			out.WriteByte('\n')
-		case SymbolKindStruct, SymbolKindClass, SymbolKindInterface:
+		case parent.SymbolKindStruct, parent.SymbolKindClass, parent.SymbolKindInterface:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
 			out.WriteString(" {}\n")
@@ -107,7 +110,7 @@ func writeFsSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol
 	}
 }
 
-func parseFsDetail(detail *string) ([]fsParam, string) {
+func parseDetail(detail *string) ([]fsParam, string) {
 	if detail == nil {
 		return nil, ""
 	}
@@ -147,12 +150,12 @@ func parseFsDetail(detail *string) ([]fsParam, string) {
 	return params, ret
 }
 
-func parseFsHover(h Hover) ([]fsParam, string) {
+func parseHover(h parent.Hover) ([]fsParam, string) {
 	text := hoverString(h)
 	for _, line := range strings.Split(text, "\n") {
 		line = strings.TrimSpace(line)
 		if strings.Contains(line, "->") {
-			if p, r := parseFsDetail(&line); len(p) > 0 || r != "" {
+			if p, r := parseDetail(&line); len(p) > 0 || r != "" {
 				return p, r
 			}
 		}
@@ -160,7 +163,7 @@ func parseFsHover(h Hover) ([]fsParam, string) {
 	return nil, ""
 }
 
-func mapFsType(t string) string {
+func mapType(t string) string {
 	t = strings.TrimSpace(t)
 	switch t {
 	case "", "unit":
@@ -175,14 +178,14 @@ func mapFsType(t string) string {
 		return "string"
 	}
 	if strings.HasSuffix(t, " list") {
-		inner := mapFsType(strings.TrimSuffix(t, " list"))
+		inner := mapType(strings.TrimSuffix(t, " list"))
 		if inner == "" {
 			inner = "any"
 		}
 		return "list<" + inner + ">"
 	}
 	if strings.HasSuffix(t, " array") {
-		inner := mapFsType(strings.TrimSuffix(t, " array"))
+		inner := mapType(strings.TrimSuffix(t, " array"))
 		if inner == "" {
 			inner = "any"
 		}
@@ -191,10 +194,10 @@ func mapFsType(t string) string {
 	return ""
 }
 
-func fsFunctionBody(src string, sym DocumentSymbol) []string {
+func functionBody(src string, sym parent.DocumentSymbol) []string {
 	lines := strings.Split(src, "\n")
-	start := fsPosToOffset(lines, sym.Range.Start)
-	end := fsPosToOffset(lines, sym.Range.End)
+	start := posToOffset(lines, sym.Range.Start)
+	end := posToOffset(lines, sym.Range.End)
 	if start >= len(src) || end > len(src) || start >= end {
 		return nil
 	}
@@ -223,7 +226,7 @@ func fsFunctionBody(src string, sym DocumentSymbol) []string {
 	return []string{"return " + expr}
 }
 
-func fsPosToOffset(lines []string, pos Position) int {
+func posToOffset(lines []string, pos parent.Position) int {
 	off := 0
 	for i := 0; i < int(pos.Line); i++ {
 		if i < len(lines) {
@@ -234,7 +237,39 @@ func fsPosToOffset(lines []string, pos Position) int {
 	return off
 }
 
-func convertFsFallback(src string) ([]byte, error) {
+func hoverString(h parent.Hover) string {
+	switch v := h.Contents.(type) {
+	case parent.MarkupContent:
+		return v.Value
+	case parent.MarkedString:
+		b, err := json.Marshal(v)
+		if err == nil {
+			var ms parent.MarkedStringStruct
+			if err := json.Unmarshal(b, &ms); err == nil {
+				if ms.Value != "" {
+					return ms.Value
+				}
+			}
+			var s string
+			if err := json.Unmarshal(b, &s); err == nil {
+				return s
+			}
+		}
+		return ""
+	case []parent.MarkedString:
+		parts := make([]string, 0, len(v))
+		for _, m := range v {
+			parts = append(parts, hoverString(parent.Hover{Contents: m}))
+		}
+		return strings.Join(parts, "\n")
+	case string:
+		return v
+	default:
+		return fmt.Sprint(v)
+	}
+}
+
+func fallback(src string) ([]byte, error) {
 	for _, line := range strings.Split(src, "\n") {
 		l := strings.TrimSpace(line)
 		if strings.HasPrefix(l, "ignore (printfn") {
