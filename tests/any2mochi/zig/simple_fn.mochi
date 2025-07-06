@@ -5,6 +5,7 @@ fun id(x: int): int {
   return x
 }
 // line 7
+// pub
 fun main() {
   print(id(123))
 }

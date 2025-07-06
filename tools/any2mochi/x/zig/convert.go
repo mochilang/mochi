@@ -44,6 +44,7 @@ type variable struct {
 	Type  string `json:"type"`
 	Value string `json:"value,omitempty"`
 	Const bool   `json:"const,omitempty"`
+	Pub   bool   `json:"pub,omitempty"`
 	Line  int    `json:"line"`
 }
 
@@ -53,6 +54,7 @@ type function struct {
 	Ret     string   `json:"ret"`
 	Line    int      `json:"line"`
 	EndLine int      `json:"endLine"`
+	Pub     bool     `json:"pub,omitempty"`
 	Lines   []string `json:"lines"`
 }
 
@@ -60,6 +62,7 @@ type structDef struct {
 	Name    string  `json:"name"`
 	Line    int     `json:"line"`
 	EndLine int     `json:"endLine"`
+	Pub     bool    `json:"pub,omitempty"`
 	Fields  []field `json:"fields"`
 }
 
@@ -216,6 +219,9 @@ func convertAST(a *ast) ([]byte, error) {
 			out.WriteString(fmt.Sprint(v.Line))
 			out.WriteByte('\n')
 		}
+		if v.Pub {
+			out.WriteString("// pub\n")
+		}
 		out.WriteString("let ")
 		out.WriteString(v.Name)
 		if v.Type != "" {
@@ -234,6 +240,9 @@ func convertAST(a *ast) ([]byte, error) {
 			out.WriteString("// line ")
 			out.WriteString(fmt.Sprint(st.Line))
 			out.WriteByte('\n')
+		}
+		if st.Pub {
+			out.WriteString("// pub\n")
 		}
 		out.WriteString("type ")
 		out.WriteString(st.Name)
@@ -259,6 +268,9 @@ func convertAST(a *ast) ([]byte, error) {
 			out.WriteString("// line ")
 			out.WriteString(fmt.Sprint(fn.Line))
 			out.WriteByte('\n')
+		}
+		if fn.Pub {
+			out.WriteString("// pub\n")
 		}
 		out.WriteString("fun ")
 		out.WriteString(fn.Name)
@@ -315,6 +327,9 @@ func parseFunctionBodyLines(lines []string) []string {
 		}
 		for strings.HasPrefix(l, "}") {
 			indent--
+			if indent < 0 {
+				indent = 0
+			}
 			if len(post) > 0 {
 				p := post[len(post)-1]
 				if p != "" {
@@ -341,6 +356,9 @@ func parseFunctionBodyLines(lines []string) []string {
 		}
 		if l == "}" {
 			indent--
+			if indent < 0 {
+				indent = 0
+			}
 			if len(post) > 0 {
 				p := post[len(post)-1]
 				if p != "" {
@@ -668,6 +686,9 @@ func parseFunctionBody(src string, sym any2mochi.DocumentSymbol) []string {
 		}
 		for strings.HasPrefix(l, "}") {
 			indent--
+			if indent < 0 {
+				indent = 0
+			}
 			if len(post) > 0 {
 				p := post[len(post)-1]
 				if p != "" {
@@ -694,6 +715,9 @@ func parseFunctionBody(src string, sym any2mochi.DocumentSymbol) []string {
 		}
 		if l == "}" {
 			indent--
+			if indent < 0 {
+				indent = 0
+			}
 			if len(post) > 0 {
 				p := post[len(post)-1]
 				if p != "" {
