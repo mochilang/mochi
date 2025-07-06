@@ -27,23 +27,25 @@ func diagnostics(src string, diags []any2mochi.Diagnostic) string {
 	lines := strings.Split(src, "\n")
 	var out strings.Builder
 	for _, d := range diags {
-		start := int(d.Range.Start.Line)
-		end := int(d.Range.End.Line)
-		if end < start {
-			end = start
-		}
+		ln := int(d.Range.Start.Line)
+		col := int(d.Range.Start.Character)
 		msg := d.Message
-		out.WriteString(fmt.Sprintf("line %d: %s\n", start+1, msg))
-		from := start - 1
-		if from < 0 {
-			from = 0
+		fmt.Fprintf(&out, "line %d:%d: %s\n", ln+1, col+1, msg)
+		start := ln - 1
+		if start < 0 {
+			start = 0
 		}
-		to := end + 1
-		if to >= len(lines) {
-			to = len(lines) - 1
+		end := ln + 1
+		if end >= len(lines) {
+			end = len(lines) - 1
 		}
-		for i := from; i <= to && i < len(lines); i++ {
-			out.WriteString(fmt.Sprintf("%4d| %s\n", i+1, strings.TrimRight(lines[i], "")))
+		for i := start; i <= end; i++ {
+			line := strings.TrimRight(lines[i], "")
+			fmt.Fprintf(&out, "%4d| %s\n", i+1, line)
+			if i == ln {
+				pointer := strings.Repeat(" ", col) + "^"
+				out.WriteString("     " + pointer + "\n")
+			}
 		}
 	}
 	return strings.TrimSpace(out.String())
@@ -235,6 +237,9 @@ func convertBody(src string, sym any2mochi.DocumentSymbol) []string {
 	reDo := regexp.MustCompile(`do\s+(\w+)\s*=\s*(.+),\s*(.+)`)
 	reIf := regexp.MustCompile(`if\s*\((.*)\)\s*then`)
 	reElseIf := regexp.MustCompile(`else\s*if\s*\((.*)\)\s*then`)
+	reSelect := regexp.MustCompile(`select\s+case\s*\((.*)\)`)
+	reCase := regexp.MustCompile(`case\s*\((.*)\)`)
+	inCase := false
 	for _, l := range body {
 		l = strings.TrimSpace(l)
 		if l == "" {
@@ -264,6 +269,35 @@ func convertBody(src string, sym any2mochi.DocumentSymbol) []string {
 				out = append(out, strings.Repeat("  ", indent)+"while "+cleanExpr(m[1])+" {")
 				indent++
 			}
+		case reSelect.MatchString(ll):
+			m := reSelect.FindStringSubmatch(ll)
+			if len(m) == 2 {
+				out = append(out, strings.Repeat("  ", indent)+"switch "+cleanExpr(m[1])+" {")
+				indent++
+				inCase = false
+			}
+		case strings.HasPrefix(ll, "case"):
+			if inCase {
+				indent--
+				out = append(out, strings.Repeat("  ", indent)+"}")
+			}
+			if strings.Contains(ll, "default") {
+				out = append(out, strings.Repeat("  ", indent)+"else {")
+			} else if m := reCase.FindStringSubmatch(ll); len(m) == 2 {
+				out = append(out, strings.Repeat("  ", indent)+"case "+cleanExpr(m[1])+" {")
+			} else {
+				out = append(out, strings.Repeat("  ", indent)+"case {")
+			}
+			indent++
+			inCase = true
+		case strings.HasPrefix(ll, "end select"):
+			if inCase {
+				indent--
+				out = append(out, strings.Repeat("  ", indent)+"}")
+				inCase = false
+			}
+			indent--
+			out = append(out, strings.Repeat("  ", indent)+"}")
 		case strings.HasPrefix(ll, "do"):
 			if m := reDo.FindStringSubmatch(l); len(m) == 4 {
 				out = append(out, strings.Repeat("  ", indent)+"for "+m[1]+" in "+cleanExpr(m[2])+".."+cleanExpr(m[3])+" {")
@@ -277,6 +311,10 @@ func convertBody(src string, sym any2mochi.DocumentSymbol) []string {
 				out = append(out, strings.Repeat("  ", indent)+"if "+cleanExpr(m[1])+" {")
 				indent++
 			}
+		case strings.HasPrefix(ll, "cycle"):
+			out = append(out, strings.Repeat("  ", indent)+"continue")
+		case strings.HasPrefix(ll, "exit"):
+			out = append(out, strings.Repeat("  ", indent)+"break")
 		case strings.HasPrefix(ll, "else if"):
 			indent--
 			if m := reElseIf.FindStringSubmatch(l); len(m) == 2 {
