@@ -1,4 +1,4 @@
-package any2mochi
+package erlang
 
 import (
 	"fmt"
@@ -6,9 +6,20 @@ import (
 	"strings"
 )
 
-// ConvertErlang converts erlang source code to Mochi using the language server.
-func ConvertErlang(src string) ([]byte, error) {
-	funcs, err := parseErlangAST(src)
+func snippet(src string) string {
+	lines := strings.Split(src, "\n")
+	if len(lines) > 10 {
+		lines = lines[:10]
+	}
+	for i, l := range lines {
+		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
+	}
+	return strings.Join(lines, "\n")
+}
+
+// Convert converts erlang source code to Mochi using the language server.
+func Convert(src string) ([]byte, error) {
+	funcs, err := parseAST(src)
 	if err != nil {
 		return nil, err
 	}
@@ -51,16 +62,16 @@ func ConvertErlang(src string) ([]byte, error) {
 		out.WriteString("main()\n")
 	}
 	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
 	}
 	return []byte(out.String()), nil
 }
 
-// ConvertErlangFile reads the erlang file and converts it to Mochi.
-func ConvertErlangFile(path string) ([]byte, error) {
+// ConvertFile reads the erlang file and converts it to Mochi.
+func ConvertFile(path string) ([]byte, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return ConvertErlang(string(data))
+	return Convert(string(data))
 }
