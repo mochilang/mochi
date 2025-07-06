@@ -411,6 +411,10 @@ func parseToplevel(out *strings.Builder, src string) {
 // Racket backend.
 func parseValue(expr string) string {
 	expr = strings.TrimSpace(expr)
+	if strings.HasPrefix(expr, "(") && strings.HasSuffix(expr, ")") {
+		inner := strings.TrimSpace(expr[1 : len(expr)-1])
+		expr = "(" + inner + ")"
+	}
 	if strings.HasPrefix(expr, "\"") {
 		return expr
 	}
@@ -422,11 +426,21 @@ func parseValue(expr string) string {
 	}
 	if strings.HasPrefix(expr, "(list") && strings.HasSuffix(expr, ")") {
 		inner := strings.TrimSpace(expr[len("(list") : len(expr)-1])
+		if inner == "" {
+			return "[]"
+		}
 		itemRe := regexp.MustCompile(`\(hash[^\)]*\)`)
 		items := itemRe.FindAllString(inner, -1)
 		var out []string
-		for _, it := range items {
-			out = append(out, parseHash(it))
+		if len(items) > 0 {
+			for _, it := range items {
+				out = append(out, parseHash(it))
+			}
+		} else {
+			parts := strings.Fields(inner)
+			for _, p := range parts {
+				out = append(out, convertExpr(p))
+			}
 		}
 		if len(out) > 0 {
 			return "[" + strings.Join(out, ", ") + "]"
@@ -464,6 +478,13 @@ func convertExpr(expr string) string {
 		parts := strings.Fields(inner)
 		if len(parts) == 3 && (parts[0] == "+" || parts[0] == "-" || parts[0] == "*" || parts[0] == "/") {
 			return fmt.Sprintf("%s %s %s", parts[1], parts[0], parts[2])
+		}
+		if len(parts) >= 1 {
+			var args []string
+			for _, p := range parts[1:] {
+				args = append(args, convertExpr(p))
+			}
+			return fmt.Sprintf("%s(%s)", parts[0], strings.Join(args, ", "))
 		}
 	}
 	return expr

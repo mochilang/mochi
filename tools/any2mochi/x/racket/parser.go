@@ -230,21 +230,31 @@ func parse(src string) []item {
 		extra := parseTokens(tokenize(src))
 		for _, it := range extra {
 			if it.Kind == "func" || it.Kind == "var" {
-				dup := false
-				for _, ex := range items {
+				dupIdx := -1
+				for j, ex := range items {
 					if ex.Kind == it.Kind && ex.Name == it.Name {
-						dup = true
+						dupIdx = j
 						break
 					}
 				}
-				if dup {
+				if dupIdx != -1 {
+					if it.Kind == "var" && items[dupIdx].Value == "" && it.Value != "" {
+						items[dupIdx].Value = it.Value
+					}
 					continue
 				}
 			}
 			items = append(items, it)
 		}
 		if len(items) > 0 {
-			return items
+			var outItems []item
+			for _, it := range items {
+				if it.Kind == "var" && it.Value == "" {
+					continue
+				}
+				outItems = append(outItems, it)
+			}
+			return outItems
 		}
 	}
 	return parseTokens(tokenize(src))
