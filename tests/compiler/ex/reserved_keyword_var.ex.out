@@ -4,5 +4,6 @@ defmodule Main do
     map = %{a: 1}
     IO.puts(Map.get(map, "a"))
   end
-  end
+end
+
 Main.main()

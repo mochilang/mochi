@@ -3,16 +3,17 @@ defmodule Main do
   def main do
     IO.puts(_slice_string("hello", -4, -1))
   end
+
   defp _slice_string(s, i, j) do
-  chars = String.graphemes(s)
-  n = length(chars)
-  start = if i < 0, do: i + n, else: i
-  finish = if j < 0, do: j + n, else: j
-  start = if start < 0, do: 0, else: start
-  finish = if finish > n, do: n, else: finish
-  finish = if finish < start, do: start, else: finish
-  Enum.slice(chars, start, finish - start) |> Enum.join()
+    chars = String.graphemes(s)
+    n = length(chars)
+    start = if i < 0, do: i + n, else: i
+    finish = if j < 0, do: j + n, else: j
+    start = if start < 0, do: 0, else: start
+    finish = if finish > n, do: n, else: finish
+    finish = if finish < start, do: start, else: finish
+    Enum.slice(chars, start, finish - start) |> Enum.join()
+  end
 end
 
-  end
 Main.main()

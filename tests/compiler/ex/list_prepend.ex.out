@@ -3,12 +3,15 @@ defmodule Main do
   def prepend(level, result) do
     try do
       result = [level] ++ result
-      throw {:return, result}
-    catch {:return, v} -> v end
+      throw({:return, result})
+    catch
+      {:return, v} -> v
+    end
   end
-  
+
   def main do
     IO.puts(prepend([1, 2], [[3], [4]]))
   end
-  end
+end
+
 Main.main()

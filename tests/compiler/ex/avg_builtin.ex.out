@@ -3,18 +3,21 @@ defmodule Main do
   def main do
     IO.puts(_avg([1, 2, 3]))
   end
+
   defp _avg(v) do
-  list = cond do
-    is_map(v) and Map.has_key?(v, :Items) -> v[:Items]
-    is_list(v) -> v
-    true -> raise "avg() expects list or group"
-  end
-  if Enum.count(list) == 0 do
-    0
-  else
-    Enum.sum(list) / Enum.count(list)
+    list =
+      cond do
+        is_map(v) and Map.has_key?(v, :items) -> v[:items]
+        is_list(v) -> v
+        true -> raise "avg() expects list or group"
+      end
+
+    if Enum.count(list) == 0 do
+      0
+    else
+      Enum.sum(list) / Enum.count(list)
+    end
   end
 end
 
-  end
 Main.main()

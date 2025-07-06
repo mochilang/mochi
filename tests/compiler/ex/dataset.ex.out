@@ -2,10 +2,12 @@
 defmodule Main do
   def main do
     people = [%{name: "Alice", age: 30}, %{name: "Bob", age: 15}, %{name: "Charlie", age: 65}]
-    names = for p <- people, (p.age >= 18), do: p.name
+    names = for p <- people, p.age >= 18, do: p.name
+
     for n <- names do
       IO.puts(n)
     end
   end
-  end
+end
+
 Main.main()

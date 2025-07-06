@@ -5,10 +5,13 @@ defmodule Main do
     _ = m
     m = Map.put(m, 1, 10)
     m = Map.put(m, 2, 20)
-    if (if is_map(m), do: Map.has_key?(m, 1), else: Enum.member?(m, 1)) do
+
+    if if is_map(m), do: Map.has_key?(m, 1), else: Enum.member?(m, 1) do
       IO.puts(Map.get(m, 1))
     end
+
     IO.puts(Map.get(m, 2))
   end
-  end
+end
+
 Main.main()

@@ -6,5 +6,6 @@ defmodule Main do
     x = 2
     IO.puts(x)
   end
-  end
+end
+
 Main.main()

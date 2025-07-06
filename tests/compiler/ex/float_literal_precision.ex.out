@@ -3,5 +3,6 @@ defmodule Main do
   def main do
     IO.puts(9.261000000000001)
   end
-  end
+end
+
 Main.main()
