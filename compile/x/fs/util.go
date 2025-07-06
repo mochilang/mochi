@@ -9,6 +9,40 @@ import (
 	"mochi/types"
 )
 
+// fsTypeOf converts a static type to its F# representation.
+func fsTypeOf(t types.Type) string {
+	switch tt := t.(type) {
+	case types.IntType:
+		return "int"
+	case types.Int64Type:
+		return "int64"
+	case types.FloatType:
+		return "float"
+	case types.BoolType:
+		return "bool"
+	case types.StringType:
+		return "string"
+	case types.VoidType:
+		return "unit"
+	case types.ListType:
+		return fsTypeOf(tt.Elem) + "[]"
+	case types.MapType:
+		return fmt.Sprintf("Map<%s,%s>", fsTypeOf(tt.Key), fsTypeOf(tt.Value))
+	case types.StructType:
+		return sanitizeName(tt.Name)
+	case types.UnionType:
+		return sanitizeName(tt.Name)
+	case types.FuncType:
+		ret := fsTypeOf(tt.Return)
+		for i := len(tt.Params) - 1; i >= 0; i-- {
+			ret = fmt.Sprintf("%s -> %s", fsTypeOf(tt.Params[i]), ret)
+		}
+		return ret
+	default:
+		return "obj"
+	}
+}
+
 func fsType(t *parser.TypeRef) string {
 	if t == nil {
 		return "obj"
@@ -90,6 +124,26 @@ func isSimpleIdent(s string) bool {
 		}
 	}
 	return true
+}
+
+func isEmptyListLiteral(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	if ll := e.Binary.Left.Value.Target.List; ll != nil {
+		return len(ll.Elems) == 0
+	}
+	return false
+}
+
+func isEmptyMapLiteral(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	if ml := e.Binary.Left.Value.Target.Map; ml != nil {
+		return len(ml.Items) == 0
+	}
+	return false
 }
 
 // --- helpers ---
