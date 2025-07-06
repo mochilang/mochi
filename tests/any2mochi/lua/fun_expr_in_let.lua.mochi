@@ -1,2 +1,4 @@
-square = 
+square = fun(x) {
+    return x * x
+}
 print(square(6))

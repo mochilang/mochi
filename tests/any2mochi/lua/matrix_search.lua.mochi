@@ -1,2 +1,25 @@
+fun searchMatrix(matrix, target) {
+  let m = len(matrix)
+  if __eq(m, 0) {
+    return false
+  }
+  let n = len(__index(matrix, 0))
+  let left = 0
+  let right = m * n - 1
+  while left <= right {
+    let mid = __add(left, __div(right - left, 2))
+    let row = __div(mid, n)
+    let col = mid % n
+    let value = __index(__index(matrix, row), col)
+    if __eq(value, target) {
+      return true
+    } else if value < target {
+      left = __add(mid, 1)
+    } else {
+      right = mid - 1
+    }
+  }
+  return false
+}
 print(searchMatrix([[1, 3, 5, 7], [10, 11, 16, 20], [23, 30, 34, 60]], 3))
 print(searchMatrix([[1, 3, 5, 7], [10, 11, 16, 20], [23, 30, 34, 60]], 13))

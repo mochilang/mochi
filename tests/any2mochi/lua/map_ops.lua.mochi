@@ -1,7 +1,7 @@
 m = []
 m[1] = 10
 m[2] = 20
-if  {
+if m[1] ~= null {
   print(__index(m, 1))
 }
 print(__index(m, 2))

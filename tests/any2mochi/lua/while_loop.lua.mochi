@@ -1,5 +1,5 @@
 i = 0
-while  {
+while i < 3 {
   print(i)
   i = __add(i, 1)
 }

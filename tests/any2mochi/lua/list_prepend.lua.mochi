@@ -1,1 +1,5 @@
+fun prepend(level, result) {
+  result = __add([level], result)
+  return result
+}
 print(prepend([1, 2], [[3], [4]]))

@@ -1,1 +1,4 @@
-print()
+fun listit() {
+  return [{ "__name": "Empty" }]
+}
+print(len(listit()))

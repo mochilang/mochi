@@ -1,1 +1,15 @@
+fun depth(t) {
+  return fun() {
+    let _t0 = t
+    if _t0["__name"] == "Leaf" {
+      return 0
+    }
+    if _t0["__name"] == "Node" {
+      return fun(l, r) {
+    return __add(__add(depth(l), depth(r)), 1)
+}(_t0["left"], _t0["right"])
+    }
+    return null
+}()
+}
 print(depth({ "__name": "Node", "left": { "__name": "Leaf" }, "value": 0, "right": { "__name": "Leaf" } }))

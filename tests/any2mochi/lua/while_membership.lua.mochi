@@ -4,7 +4,7 @@ for _, n in ipairs([1, 2, 3]) {
 }
 i = 1
 count = 0
-while  {
+while set.i ~= null {
   i = __add(i, 1)
   count = __add(count, 1)
 }

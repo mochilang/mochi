@@ -1,12 +1,36 @@
 Customer = []
 Customer["__index"] = Customer
+fun Customer["new"](o) {
+  o = o || []
+  setmetatable(o, Customer)
+  return o
+}
 Order = []
 Order["__index"] = Order
+fun Order["new"](o) {
+  o = o || []
+  setmetatable(o, Order)
+  return o
+}
 PairInfo = []
 PairInfo["__index"] = PairInfo
+fun PairInfo["new"](o) {
+  o = o || []
+  setmetatable(o, PairInfo)
+  return o
+}
 customers = [{ "id": 1, "name": "Alice" }, { "id": 2, "name": "Bob" }, { "id": 3, "name": "Charlie" }]
 orders = [{ "id": 100, "customerId": 1, "total": 250 }, { "id": 101, "customerId": 2, "total": 125 }, { "id": 102, "customerId": 1, "total": 300 }, { "id": 103, "customerId": 4, "total": 80 }]
-result = ()
+result = fun() {
+    let _src = orders
+    return __query(_src, [{ "items": customers, "on": fun(o, c) {
+    return __eq(o["customerId"], c["id"])
+} }], { "selectFn": fun(o, c) {
+    return { "orderId": o["id"], "customerName": c["name"], "total": o["total"] }
+}, "where": fun(o, c) {
+    return __eq(c["name"], "Alice")
+} })
+}()
 print("--- Orders with customer info ---")
 for _, entry in ipairs(result) {
   print("Order", entry["orderId"], "by", entry["customerName"], "- $", entry["total"])
