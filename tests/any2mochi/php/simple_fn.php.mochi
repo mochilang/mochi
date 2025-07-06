@@ -1,2 +1,2 @@
-fun mochi_id(x) {}
-fun _print(args) {}
+fun mochi_id(x: any): any {}
+fun _print(args: any): any {}

@@ -1,2 +1,2 @@
-fun mochi_searchMatrix(matrix, target) {}
-fun _print(args) {}
+fun mochi_searchMatrix(matrix: any, target: any): any {}
+fun _print(args: any): any {}

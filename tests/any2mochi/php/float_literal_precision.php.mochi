@@ -1,2 +1,2 @@
-fun _print(args) {}
+fun _print(args: any): any {}
 print(9.261000000000001)

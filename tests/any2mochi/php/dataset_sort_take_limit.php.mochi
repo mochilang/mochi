@@ -1,8 +1,0 @@
-type Product {
-  name: any
-  price: any
-  fun __construct(fields) {}
-}
-fun _print(args) {}
-fun _query(src, joins, opts) {}
-print(""--- Top products (excluding most expensive) ---"")

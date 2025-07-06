@@ -1,8 +1,0 @@
-type _Group {
-  key: any
-  Items: any
-  fun __construct(key) {}
-}
-fun mochi_test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus() {}
-fun _group_by(src, keyfn) {}
-let lineitem = [[17, 1000.0, 0.05, 0.07, ""N"", ""O"", ""1998-08-01""], [36, 2000.0, 0.1, 0.05, ""N"", ""O"", ""1998-09-01""], [25, 1500.0, 0.0, 0.08, ""R"", ""F"", ""1998-09-03""]]

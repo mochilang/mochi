@@ -1,2 +1,2 @@
-fun mochi_makeAdder(n) {}
-fun _print(args) {}
+fun mochi_makeAdder(n: any): any {}
+fun _print(args: any): any {}

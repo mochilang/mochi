@@ -1,4 +1,4 @@
-fun _print(args) {}
+fun _print(args: any): any {}
 let c = 0
 let m = [1, 2]
 print(c)

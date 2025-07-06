@@ -1,0 +1,16 @@
+type error: error[T002]: undefined variable: value
+  --> :2:7
+
+help:
+  Check if the variable was declared in this scope.
+
+  1| <?php
+  2| $value = ((((is_array(1) && is_array(2)) ? array_merge(1, 2) : ((is_string(1) || is_string(2)) ? (1 . 2) : (1 + 2)))) * 3);
+  3| _print($value);
+  4| 
+  5| function _print(...$args) {
+  6|     $parts = [];
+  7|     foreach ($args as $a) {
+  8|         if (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+  9|     }
+ 10|     echo implode(' ', $parts), PHP_EOL;

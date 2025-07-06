@@ -55,6 +55,7 @@ type Func struct {
 	Name      string  `json:"name"`
 	Params    []Param `json:"params"`
 	Return    string  `json:"return,omitempty"`
+	Doc       string  `json:"doc,omitempty"`
 	StartLine int     `json:"start_line"`
 	EndLine   int     `json:"end_line"`
 }
@@ -63,6 +64,7 @@ type Class struct {
 	Name      string  `json:"name"`
 	Fields    []Field `json:"fields"`
 	Methods   []Func  `json:"methods"`
+	Doc       string  `json:"doc,omitempty"`
 	StartLine int     `json:"start_line"`
 	EndLine   int     `json:"end_line"`
 }
@@ -107,13 +109,14 @@ func funcFromFn(fn *stmt.Function) Func {
 		}
 	}
 	ret := typeString(fn.ReturnType)
+	doc := strings.TrimSpace(fn.PhpDocComment)
 	pos := fn.GetPosition()
-	return Func{Name: name, Params: params, Return: ret, StartLine: pos.StartLine, EndLine: pos.EndLine}
+	return Func{Name: name, Params: params, Return: ret, Doc: doc, StartLine: pos.StartLine, EndLine: pos.EndLine}
 }
 
 func classFromNode(c *stmt.Class) Class {
 	pos := c.GetPosition()
-	cl := Class{Name: identString(c.ClassName), StartLine: pos.StartLine, EndLine: pos.EndLine}
+	cl := Class{Name: identString(c.ClassName), Doc: strings.TrimSpace(c.PhpDocComment), StartLine: pos.StartLine, EndLine: pos.EndLine}
 	for _, st := range c.Stmts {
 		switch n := st.(type) {
 		case *stmt.PropertyList:
@@ -138,8 +141,9 @@ func methodFromNode(m *stmt.ClassMethod) Func {
 		}
 	}
 	ret := typeString(m.ReturnType)
+	doc := strings.TrimSpace(m.PhpDocComment)
 	pos := m.GetPosition()
-	return Func{Name: name, Params: params, Return: ret, StartLine: pos.StartLine, EndLine: pos.EndLine}
+	return Func{Name: name, Params: params, Return: ret, Doc: doc, StartLine: pos.StartLine, EndLine: pos.EndLine}
 }
 
 func parseExprStmt(p *Program, st *stmt.Expression) {

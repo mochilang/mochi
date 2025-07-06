@@ -1,0 +1,12 @@
+parse error: parse error: 8:10: unexpected token "-" (expected PostfixExpr)
+
+  1| <?php
+  2| class Product {
+  3| 	public $name;
+  4| 	public $price;
+  5| 	public function __construct($fields = []) {
+  6| 		$this->name = $fields['name'] ?? null;
+  7| 		$this->price = $fields['price'] ?? null;
+  8| 	}
+  9| }
+ 10|

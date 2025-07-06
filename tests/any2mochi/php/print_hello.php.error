@@ -1,0 +1,12 @@
+parse error: parse error: 2:9: unexpected token "hello" (expected ")")
+
+  1| <?php
+  2| _print("hello");
+  3| 
+  4| function _print(...$args) {
+  5|     $parts = [];
+  6|     foreach ($args as $a) {
+  7|         if (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+  8|     }
+  9|     echo implode(' ', $parts), PHP_EOL;
+ 10| }

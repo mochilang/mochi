@@ -3,7 +3,7 @@ type Todo {
   id: any
   title: any
   completed: any
-  fun __construct(fields) {}
+  fun __construct(fields: any): any {}
 }
-fun _fetch(url, opts) {}
-fun _print(args) {}
+fun _fetch(url: any, opts: any): any {}
+fun _print(args: any): any {}
