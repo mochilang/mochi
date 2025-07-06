@@ -1,1 +1,4 @@
 fun list-set(lst, idx, val) {}
+let xs = [[1, 2], [3, 4]]
+xs = list-set(xs, 1, list-set(xs[1], 0, 9))
+print(xs[1][0])

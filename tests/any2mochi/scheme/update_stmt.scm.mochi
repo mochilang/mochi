@@ -1,9 +1,11 @@
 fun map-get(m, k) {}
 fun map-set(m, k, v) {}
 fun list-set(lst, idx, val) {}
+let failures = 0
 fun print-test-start(name) {}
 fun print-test-pass() {}
 fun print-test-fail(err) {}
 fun run-test(name, thunk) {}
 fun new-Person(name, age, status) {}
+let people = [[cons('name, "Alice"), cons('age, 17), cons('status, "minor")], [cons('name, "Bob"), cons('age, 25), cons('status, "unknown")], [cons('name, "Charlie"), cons('age, 18), cons('status, "unknown")], [cons('name, "Diana"), cons('age, 16), cons('status, "minor")]]
 fun test_update_adult_status() {}

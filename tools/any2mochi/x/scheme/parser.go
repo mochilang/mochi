@@ -2,6 +2,29 @@ package scheme
 
 import "strings"
 
+// Node represents a parsed Scheme s-expression. When Atom is empty the node
+// contains a list of child nodes. Line and Col store the 1-indexed location of
+// the first token for better diagnostics.
+type Node struct {
+	Atom string
+	List []Node
+	Line int
+	Col  int
+}
+
+// String reconstructs the Scheme code represented by the node. It mirrors the
+// behaviour of the internal node type and is primarily used for error messages.
+func (n Node) String() string {
+	if n.Atom != "" {
+		return n.Atom
+	}
+	parts := make([]string, 0, len(n.List))
+	for _, c := range n.List {
+		parts = append(parts, c.String())
+	}
+	return "(" + strings.Join(parts, " ") + ")"
+}
+
 // SchemeItem represents a top level Scheme definition extracted from the source.
 // Only a minimal subset is supported: function definitions with parameter names
 // and simple variable definitions.
@@ -60,9 +83,25 @@ func ParseItems(src string) ([]Item, error) {
 	return items, nil
 }
 
+// Parse parses Scheme source and returns the root nodes of the AST.
+func Parse(src string) ([]Node, error) {
+	toks := tokenize(src)
+	n, _, err := parseList(toks, 0)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]Node, len(n))
+	for i, nd := range n {
+		out[i] = toPublic(nd)
+	}
+	return out, nil
+}
+
 type token struct {
-	typ int
-	val string
+	typ  int
+	val  string
+	line int
+	col  int
 }
 
 const (
@@ -74,6 +113,7 @@ const (
 
 func tokenize(src string) []token {
 	var toks []token
+	line, col := 1, 1
 	i := 0
 	for i < len(src) {
 		c := src[i]
@@ -81,40 +121,58 @@ func tokenize(src string) []token {
 		case ';':
 			for i < len(src) && src[i] != '\n' {
 				i++
+				col++
 			}
-		case ' ', '\t', '\n', '\r':
+		case ' ', '\t':
+			i++
+			col++
+		case '\n':
+			i++
+			line++
+			col = 1
+		case '\r':
 			i++
 		case '(':
-			toks = append(toks, token{scTokLParen, "("})
+			toks = append(toks, token{scTokLParen, "(", line, col})
 			i++
+			col++
 		case ')':
-			toks = append(toks, token{scTokRParen, ")"})
+			toks = append(toks, token{scTokRParen, ")", line, col})
 			i++
+			col++
 		case '"':
 			j := i + 1
+			jcol := col + 1
 			for j < len(src) {
 				if src[j] == '\\' && j+1 < len(src) {
 					j += 2
+					jcol += 2
 					continue
 				}
 				if src[j] == '"' {
 					j++
+					jcol++
 					break
 				}
 				j++
+				jcol++
 			}
 			if j <= len(src) {
-				toks = append(toks, token{scTokString, src[i:j]})
+				toks = append(toks, token{scTokString, src[i:j], line, col})
 			} else {
-				toks = append(toks, token{scTokString, src[i:]})
+				toks = append(toks, token{scTokString, src[i:], line, col})
 			}
+			col = jcol
 			i = j
 		default:
 			j := i
+			jcol := col
 			for j < len(src) && !strings.ContainsRune("()\n\t\r ", rune(src[j])) {
 				j++
+				jcol++
 			}
-			toks = append(toks, token{scTokAtom, src[i:j]})
+			toks = append(toks, token{scTokAtom, src[i:j], line, col})
+			col = jcol
 			i = j
 		}
 	}
@@ -124,6 +182,8 @@ func tokenize(src string) []token {
 type node struct {
 	atom string
 	list []node
+	line int
+	col  int
 }
 
 // String reconstructs the Scheme code represented by the node. It is not
@@ -152,14 +212,25 @@ func parseList(toks []token, i int) ([]node, int, error) {
 			if err != nil {
 				return nil, 0, err
 			}
-			nodes = append(nodes, node{list: lst})
+			nodes = append(nodes, node{list: lst, line: tok.line, col: tok.col})
 			i = j + 1
 		case scTokAtom, scTokString:
-			nodes = append(nodes, node{atom: tok.val})
+			nodes = append(nodes, node{atom: tok.val, line: tok.line, col: tok.col})
 			i++
 		default:
 			i++
 		}
 	}
 	return nodes, i, nil
+}
+
+func toPublic(n node) Node {
+	out := Node{Atom: n.atom, Line: n.line, Col: n.col}
+	if len(n.list) > 0 {
+		out.List = make([]Node, len(n.list))
+		for i, c := range n.list {
+			out.List[i] = toPublic(c)
+		}
+	}
+	return out
 }

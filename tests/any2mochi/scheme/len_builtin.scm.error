@@ -1,5 +1,0 @@
-no convertible symbols found
-
-source snippet:
-  1: (begin (display (length (list 1 2 3))) (newline))
-  2: 

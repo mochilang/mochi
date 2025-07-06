@@ -1,7 +1,0 @@
-no convertible symbols found
-
-source snippet:
-  1: (define a 10)
-  2: (define b 20)
-  3: (begin (display (+ a b)) (newline))
-  4: 

@@ -1,0 +1,2 @@
+print(if(member(2, [1, 2, 3]), #t, #f))
+print(if(member("b", ["a", "b"]), #t, #f))

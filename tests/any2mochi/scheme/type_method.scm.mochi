@@ -2,3 +2,5 @@ fun map-get(m, k) {}
 fun map-set(m, k, v) {}
 fun new-Person(name) {}
 fun Person_greet(Self) {}
+let p = [cons('name, "Ada")]
+print(Person_greet(p))
