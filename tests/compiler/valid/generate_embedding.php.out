@@ -1,0 +1,16 @@
+<?php
+$vec = _gen_embed("hi", null, null);
+_print((is_array($vec) ? count($vec) : strlen($vec)));
+
+function _gen_embed($text, $model, $params) {
+    $out = [];
+    for ($i = 0; $i < strlen($text); $i++) { $out[] = ord($text[$i]); }
+    return $out;
+}
+function _print(...$args) {
+    $parts = [];
+    foreach ($args as $a) {
+        if (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+    }
+    echo implode(' ', $parts), PHP_EOL;
+}

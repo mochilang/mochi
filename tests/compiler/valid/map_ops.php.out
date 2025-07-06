@@ -1,0 +1,16 @@
+<?php
+$m = [];
+$m[1] = 10;
+$m[2] = 20;
+if ((is_array($m) ? (array_key_exists(1, $m) || in_array(1, $m, true)) : (is_string($m) ? strpos($m, strval(1)) !== false : false))) {
+	_print($m[1]);
+}
+_print($m[2]);
+
+function _print(...$args) {
+    $parts = [];
+    foreach ($args as $a) {
+        if (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+    }
+    echo implode(' ', $parts), PHP_EOL;
+}

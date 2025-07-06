@@ -1,0 +1,16 @@
+<?php
+function mochi_sumN($n) {
+	return ((is_int(($n * (((is_array($n) && is_array(1)) ? array_merge($n, 1) : ((is_string($n) || is_string(1)) ? ($n . 1) : ($n + 1)))))) && is_int(2)) ? intdiv(($n * (((is_array($n) && is_array(1)) ? array_merge($n, 1) : ((is_string($n) || is_string(1)) ? ($n . 1) : ($n + 1))))), 2) : (($n * (((is_array($n) && is_array(1)) ? array_merge($n, 1) : ((is_string($n) || is_string(1)) ? ($n . 1) : ($n + 1))))) / 2));
+}
+
+$n = 10;
+_print(mochi_sumN($n));
+_print($n);
+
+function _print(...$args) {
+    $parts = [];
+    foreach ($args as $a) {
+        if (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+    }
+    echo implode(' ', $parts), PHP_EOL;
+}

@@ -1,0 +1,17 @@
+<?php
+function mochi_makeAdder($n) {
+	return function ($x) use ($n) {
+	return ((is_array($x) && is_array($n)) ? array_merge($x, $n) : ((is_string($x) || is_string($n)) ? ($x . $n) : ($x + $n)));
+};
+}
+
+$add10 = mochi_makeAdder(10);
+_print($add10(7));
+
+function _print(...$args) {
+    $parts = [];
+    foreach ($args as $a) {
+        if (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+    }
+    echo implode(' ', $parts), PHP_EOL;
+}

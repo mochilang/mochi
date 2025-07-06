@@ -1,0 +1,14 @@
+<?php
+$poem = _gen_text("echo hello", null, null);
+_print($poem);
+
+function _gen_text($prompt, $model, $params) {
+    return $prompt;
+}
+function _print(...$args) {
+    $parts = [];
+    foreach ($args as $a) {
+        if (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+    }
+    echo implode(' ', $parts), PHP_EOL;
+}
