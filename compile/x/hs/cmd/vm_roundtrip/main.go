@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	hscode "mochi/compile/x/hs"
@@ -27,6 +28,11 @@ func main() {
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "glob error:", err)
 		os.Exit(1)
+	}
+	if limitStr := os.Getenv("LIMIT"); limitStr != "" {
+		if n, err := strconv.Atoi(limitStr); err == nil && n < len(files) {
+			files = files[:n]
+		}
 	}
 
 	var report strings.Builder
