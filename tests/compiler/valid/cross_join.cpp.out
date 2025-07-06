@@ -74,7 +74,7 @@ int main() {
                        Customer{3, string("Charlie")}};
   vector<Order> orders =
       vector<Order>{Order{100, 1, 250}, Order{101, 2, 125}, Order{102, 1, 300}};
-  auto result = ([&]() -> vector<PairInfo> {
+  vector<PairInfo> result = ([&]() -> vector<PairInfo> {
     vector<PairInfo> _res;
     for (auto &o : orders) {
       for (auto &c : customers) {

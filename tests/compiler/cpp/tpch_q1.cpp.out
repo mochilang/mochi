@@ -162,22 +162,22 @@ int main() {
               {string("l_returnflag"), any(string("N"))},
               {string("l_linestatus"), any(string("O"))},
               {string("l_shipdate"), any(string("1998-08-01"))}},
-          unordered_map<string, any>{
-              {string("l_quantity"), any(36)},
-              {string("l_extendedprice"), any(2000.0)},
-              {string("l_discount"), any(0.1)},
-              {string("l_tax"), any(0.05)},
-              {string("l_returnflag"), any(string("N"))},
-              {string("l_linestatus"), any(string("O"))},
-              {string("l_shipdate"), any(string("1998-09-01"))}},
           unordered_map<string, int>{
-              {string("l_quantity"), 25},
-              {string("l_extendedprice"), 1500.0},
-              {string("l_discount"), 0.0},
-              {string("l_tax"), 0.08},
-              {string("l_returnflag"), string("R")},
-              {string("l_linestatus"), string("F")},
-              {string("l_shipdate"), string("1998-09-03")}}};
+              {string("l_quantity"), 36},
+              {string("l_extendedprice"), 2000.0},
+              {string("l_discount"), 0.1},
+              {string("l_tax"), 0.05},
+              {string("l_returnflag"), string("N")},
+              {string("l_linestatus"), string("O")},
+              {string("l_shipdate"), string("1998-09-01")}},
+          unordered_map<string, any>{
+              {string("l_quantity"), any(25)},
+              {string("l_extendedprice"), any(1500.0)},
+              {string("l_discount"), any(0.0)},
+              {string("l_tax"), any(0.08)},
+              {string("l_returnflag"), any(string("R"))},
+              {string("l_linestatus"), any(string("F"))},
+              {string("l_shipdate"), any(string("1998-09-03"))}}};
   struct GroupKey0 {
     string returnflag;
     string linestatus;
@@ -196,96 +196,99 @@ int main() {
   };
   } // namespace std
 
-  auto result = ([&]() -> vector<unordered_map<string, double>> {
-    using ElemT = unordered_map<string, string>;
-    using KeyT = GroupKey0;
-    struct Group {
-      KeyT Key;
-      vector<ElemT> Items;
-    };
-    unordered_map<KeyT, Group> groups;
-    vector<KeyT> order;
-    for (auto &row : lineitem) {
-      if (row["l_shipdate"] <= string("1998-09-02")) {
-        KeyT _k = GroupKey0{row["l_returnflag"], row["l_linestatus"]};
-        if (!groups.count(_k)) {
-          groups[_k] = Group{_k, {}};
-          order.push_back(_k);
+  vector<unordered_map<string, double>> result =
+      ([&]() -> vector<unordered_map<string, double>> {
+        using ElemT = unordered_map<string, string>;
+        using KeyT = GroupKey0;
+        struct Group {
+          KeyT Key;
+          vector<ElemT> Items;
+        };
+        unordered_map<KeyT, Group> groups;
+        vector<KeyT> order;
+        for (auto &row : lineitem) {
+          if (row["l_shipdate"] <= string("1998-09-02")) {
+            KeyT _k = GroupKey0{row["l_returnflag"], row["l_linestatus"]};
+            if (!groups.count(_k)) {
+              groups[_k] = Group{_k, {}};
+              order.push_back(_k);
+            }
+            groups[_k].Items.push_back(row);
+          }
         }
-        groups[_k].Items.push_back(row);
-      }
-    }
-    vector<Group *> items;
-    for (auto &_k : order)
-      items.push_back(&groups[_k]);
-    vector<unordered_map<string, double>> _res;
-    for (auto *g : items) {
-      _res.push_back(unordered_map<string, double>{
-          {string("returnflag"), g.key.returnflag},
-          {string("linestatus"), g.key.linestatus},
-          {string("sum_qty"), _sum(([&]() -> vector<any> {
-             vector<any> _res;
-             for (auto &x : g) {
-               _res.push_back(
-                   _cast<unordered_map<string, any>>(x)["l_quantity"]);
-             }
-             return _res;
-           })())},
-          {string("sum_base_price"), _sum(([&]() -> vector<any> {
-             vector<any> _res;
-             for (auto &x : g) {
-               _res.push_back(
-                   _cast<unordered_map<string, any>>(x)["l_extendedprice"]);
-             }
-             return _res;
-           })())},
-          {string("sum_disc_price"), _sum(([&]() -> vector<any> {
-             vector<any> _res;
-             for (auto &x : g) {
-               _res.push_back(
-                   _cast<unordered_map<string, any>>(x)["l_extendedprice"] *
-                   (1 - _cast<unordered_map<string, any>>(x)["l_discount"]));
-             }
-             return _res;
-           })())},
-          {string("sum_charge"), _sum(([&]() -> vector<any> {
-             vector<any> _res;
-             for (auto &x : g) {
-               _res.push_back(
-                   _cast<unordered_map<string, any>>(x)["l_extendedprice"] *
-                   (1 - _cast<unordered_map<string, any>>(x)["l_discount"]) *
-                   (1 + _cast<unordered_map<string, any>>(x)["l_tax"]));
-             }
-             return _res;
-           })())},
-          {string("avg_qty"), _avg(([&]() -> vector<any> {
-             vector<any> _res;
-             for (auto &x : g) {
-               _res.push_back(
-                   _cast<unordered_map<string, any>>(x)["l_quantity"]);
-             }
-             return _res;
-           })())},
-          {string("avg_price"), _avg(([&]() -> vector<any> {
-             vector<any> _res;
-             for (auto &x : g) {
-               _res.push_back(
-                   _cast<unordered_map<string, any>>(x)["l_extendedprice"]);
-             }
-             return _res;
-           })())},
-          {string("avg_disc"), _avg(([&]() -> vector<any> {
-             vector<any> _res;
-             for (auto &x : g) {
-               _res.push_back(
-                   _cast<unordered_map<string, any>>(x)["l_discount"]);
-             }
-             return _res;
-           })())},
-          {string("count_order"), _count(g)}});
-    }
-    return _res;
-  })();
+        vector<Group *> items;
+        for (auto &_k : order)
+          items.push_back(&groups[_k]);
+        vector<unordered_map<string, double>> _res;
+        for (auto *g : items) {
+          _res.push_back(unordered_map<string, double>{
+              {string("returnflag"), g.key.returnflag},
+              {string("linestatus"), g.key.linestatus},
+              {string("sum_qty"), _sum(([&]() -> vector<any> {
+                 vector<any> _res;
+                 for (auto &x : g) {
+                   _res.push_back(
+                       _cast<unordered_map<string, any>>(x)["l_quantity"]);
+                 }
+                 return _res;
+               })())},
+              {string("sum_base_price"), _sum(([&]() -> vector<any> {
+                 vector<any> _res;
+                 for (auto &x : g) {
+                   _res.push_back(
+                       _cast<unordered_map<string, any>>(x)["l_extendedprice"]);
+                 }
+                 return _res;
+               })())},
+              {string("sum_disc_price"), _sum(([&]() -> vector<any> {
+                 vector<any> _res;
+                 for (auto &x : g) {
+                   _res.push_back(
+                       _cast<unordered_map<string, any>>(x)["l_extendedprice"] *
+                       (1 -
+                        _cast<unordered_map<string, any>>(x)["l_discount"]));
+                 }
+                 return _res;
+               })())},
+              {string("sum_charge"), _sum(([&]() -> vector<any> {
+                 vector<any> _res;
+                 for (auto &x : g) {
+                   _res.push_back(
+                       _cast<unordered_map<string, any>>(x)["l_extendedprice"] *
+                       (1 -
+                        _cast<unordered_map<string, any>>(x)["l_discount"]) *
+                       (1 + _cast<unordered_map<string, any>>(x)["l_tax"]));
+                 }
+                 return _res;
+               })())},
+              {string("avg_qty"), _avg(([&]() -> vector<any> {
+                 vector<any> _res;
+                 for (auto &x : g) {
+                   _res.push_back(
+                       _cast<unordered_map<string, any>>(x)["l_quantity"]);
+                 }
+                 return _res;
+               })())},
+              {string("avg_price"), _avg(([&]() -> vector<any> {
+                 vector<any> _res;
+                 for (auto &x : g) {
+                   _res.push_back(
+                       _cast<unordered_map<string, any>>(x)["l_extendedprice"]);
+                 }
+                 return _res;
+               })())},
+              {string("avg_disc"), _avg(([&]() -> vector<any> {
+                 vector<any> _res;
+                 for (auto &x : g) {
+                   _res.push_back(
+                       _cast<unordered_map<string, any>>(x)["l_discount"]);
+                 }
+                 return _res;
+               })())},
+              {string("count_order"), _count(g)}});
+        }
+        return _res;
+      })();
   _json(result);
   auto test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus =
       [&]() {

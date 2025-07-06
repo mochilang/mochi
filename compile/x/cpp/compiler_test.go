@@ -14,6 +14,7 @@ import (
 	cppcode "mochi/compile/x/cpp"
 	"mochi/golden"
 	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -59,14 +60,36 @@ func TestCPPCompiler_SubsetPrograms(t *testing.T) {
 			return nil, fmt.Errorf("❌ cpp error: %w\n%s", err, out)
 		}
 		cmd := exec.Command(bin)
+		var inData []byte
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 			cmd.Stdin = bytes.NewReader(data)
+			inData = data
 		}
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			return nil, fmt.Errorf("❌ run error: %w\n%s", err, out)
 		}
-		return bytes.TrimSpace(out), nil
+		compiledOut := bytes.TrimSpace(out)
+
+		// Run with the VM for expected output.
+		srcData, _ := os.ReadFile(src)
+		p, err := vm.CompileWithSource(prog, env, string(srcData))
+		if err != nil {
+			return nil, fmt.Errorf("vm compile error: %w", err)
+		}
+		var buf bytes.Buffer
+		m := vm.NewWithIO(p, bytes.NewReader(inData), &buf)
+		if err := m.Run(); err != nil {
+			if ve, ok := err.(*vm.VMError); ok {
+				return nil, fmt.Errorf("vm run error:\n%s", ve.Format(p))
+			}
+			return nil, fmt.Errorf("vm run error: %v", err)
+		}
+		vmOut := bytes.TrimSpace(buf.Bytes())
+		if !bytes.Equal(compiledOut, vmOut) {
+			return nil, fmt.Errorf("runtime output mismatch\n\n--- VM ---\n%s\n\n--- C++ ---\n%s\n", vmOut, compiledOut)
+		}
+		return compiledOut, nil
 	})
 
 	golden.Run(t, "tests/compiler/cpp", ".mochi", ".out", func(src string) ([]byte, error) {
@@ -93,14 +116,35 @@ func TestCPPCompiler_SubsetPrograms(t *testing.T) {
 			return nil, fmt.Errorf("❌ cpp error: %w\n%s", err, out)
 		}
 		cmd := exec.Command(bin)
+		var inData []byte
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 			cmd.Stdin = bytes.NewReader(data)
+			inData = data
 		}
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			return nil, fmt.Errorf("❌ run error: %w\n%s", err, out)
 		}
-		return bytes.TrimSpace(out), nil
+		compiledOut := bytes.TrimSpace(out)
+
+		srcData, _ := os.ReadFile(src)
+		p, err := vm.CompileWithSource(prog, env, string(srcData))
+		if err != nil {
+			return nil, fmt.Errorf("vm compile error: %w", err)
+		}
+		var buf bytes.Buffer
+		m := vm.NewWithIO(p, bytes.NewReader(inData), &buf)
+		if err := m.Run(); err != nil {
+			if ve, ok := err.(*vm.VMError); ok {
+				return nil, fmt.Errorf("vm run error:\n%s", ve.Format(p))
+			}
+			return nil, fmt.Errorf("vm run error: %v", err)
+		}
+		vmOut := bytes.TrimSpace(buf.Bytes())
+		if !bytes.Equal(compiledOut, vmOut) {
+			return nil, fmt.Errorf("runtime output mismatch\n\n--- VM ---\n%s\n\n--- C++ ---\n%s\n", vmOut, compiledOut)
+		}
+		return compiledOut, nil
 	})
 }
 

@@ -4,7 +4,7 @@ using namespace std;
 
 int main() {
   vector<int> nums = vector<int>{1, 2, 3, 4, 5};
-  auto sub = ([&]() -> vector<int> {
+  vector<any> sub = ([&]() -> vector<int> {
     vector<int> _res;
     for (auto &n : nums) {
       _res.push_back(n);
@@ -19,7 +19,7 @@ int main() {
       _res.resize(_take);
     return _res;
   })();
-  for (int n : sub) {
+  for (const any &n : sub) {
     std::cout << (n) << std::endl;
   }
   return 0;

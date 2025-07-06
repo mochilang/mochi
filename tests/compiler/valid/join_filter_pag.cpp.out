@@ -51,35 +51,38 @@ int main() {
   vector<Purchase> purchases = vector<Purchase>{
       Purchase{1, 1, 200}, Purchase{2, 1, 50}, Purchase{3, 2, 150},
       Purchase{4, 3, 100}, Purchase{5, 2, 250}};
-  auto result = ([&]() -> vector<unordered_map<string, any>> {
-    vector<pair<unordered_map<string, any>, unordered_map<string, any>>> _tmp;
-    for (auto &p : people) {
-      for (auto &o : purchases) {
-        if (!(p.id == o.personId))
-          continue;
-        if (o.total > 100) {
-          _tmp.push_back({-o.total, unordered_map<string, any>{
-                                        {string("person"), any(p.name)},
-                                        {string("spent"), any(o.total)}}});
+  vector<unordered_map<string, any>> result =
+      ([&]() -> vector<unordered_map<string, any>> {
+        vector<pair<unordered_map<string, any>, unordered_map<string, any>>>
+            _tmp;
+        for (auto &p : people) {
+          for (auto &o : purchases) {
+            if (!(p.id == o.personId))
+              continue;
+            if (o.total > 100) {
+              _tmp.push_back({-o.total, unordered_map<string, any>{
+                                            {string("person"), any(p.name)},
+                                            {string("spent"), any(o.total)}}});
+            }
+          }
         }
-      }
-    }
-    std::sort(_tmp.begin(), _tmp.end(),
-              [](const auto &a, const auto &b) { return a.first < b.first; });
-    vector<unordered_map<string, any>> _res;
-    _res.reserve(_tmp.size());
-    for (auto &_it : _tmp)
-      _res.push_back(_it.second);
-    int _skip = 1;
-    if (_skip < (int)_res.size())
-      _res.erase(_res.begin(), _res.begin() + _skip);
-    else
-      _res.clear();
-    int _take = 2;
-    if (_take < (int)_res.size())
-      _res.resize(_take);
-    return _res;
-  })();
+        std::sort(_tmp.begin(), _tmp.end(), [](const auto &a, const auto &b) {
+          return a.first < b.first;
+        });
+        vector<unordered_map<string, any>> _res;
+        _res.reserve(_tmp.size());
+        for (auto &_it : _tmp)
+          _res.push_back(_it.second);
+        int _skip = 1;
+        if (_skip < (int)_res.size())
+          _res.erase(_res.begin(), _res.begin() + _skip);
+        else
+          _res.clear();
+        int _take = 2;
+        if (_take < (int)_res.size())
+          _res.resize(_take);
+        return _res;
+      })();
   for (const unordered_map<string, any> &r : result) {
     std::cout << (r["person"]) << " " << (r["spent"]) << std::endl;
   }
