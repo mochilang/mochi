@@ -5,40 +5,30 @@ import (
 	"os"
 	"strings"
 
-	protocol "github.com/tliron/glsp/protocol_3_16"
 	excode "mochi/compile/x/ex"
 )
 
-// ConvertEx converts Elixir source code to Mochi using the language server
-// for basic parsing. It supports a small subset of Elixir consisting of
-// simple function definitions. When the language server fails to provide
-// usable details the converter falls back to light-weight regex matching of
-// the source. Basic control flow such as `if`, `for` and `while` blocks is
-// recognized along with assignments and IO.puts statements.
+// ConvertEx converts Elixir source code to Mochi using a small regex based
+// parser. The language server is currently disabled by default. Only a very
+// small subset of Elixir syntax is supported including simple function
+// definitions with `if`, `for` and `while` blocks as well as assignments and
+// `IO.puts` statements.
 func ConvertEx(src string) ([]byte, error) {
 	_ = excode.Ensure()
-	ls := Servers["ex"]
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
-	if err != nil {
-		return nil, err
-	}
-	if len(diags) > 0 {
-		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
+
+	funcs := parseExFuncs(src)
+	if len(funcs) == 0 {
+		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
 	}
 
-	lines := strings.Split(src, "\n")
 	var out strings.Builder
 	foundMain := false
-	for _, s := range syms {
-		if s.Kind != protocol.SymbolKindFunction {
-			continue
-		}
-		params, ret := getExSignature(src, s.SelectionRange.Start, ls)
-		code := convertExFunc(lines, s, params, ret)
+	for _, f := range funcs {
+		code := convertExParsedFunc(f)
 		if code == "" {
 			continue
 		}
-		if s.Name == "main" {
+		if f.name == "main" {
 			foundMain = true
 		}
 		out.WriteString(code)
@@ -46,9 +36,6 @@ func ConvertEx(src string) ([]byte, error) {
 	}
 	if foundMain {
 		out.WriteString("main()\n")
-	}
-	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
 	}
 	return []byte(out.String()), nil
 }
@@ -62,43 +49,86 @@ func ConvertExFile(path string) ([]byte, error) {
 	return ConvertEx(string(data))
 }
 
-func convertExFunc(lines []string, sym protocol.DocumentSymbol, params []string, ret string) string {
-	start := int(sym.Range.Start.Line)
-	end := int(sym.Range.End.Line)
-	if start < 0 || end >= len(lines) || start >= end {
-		return ""
-	}
-	seg := lines[start : end+1]
-	header := strings.TrimSpace(seg[0])
+type exFunc struct {
+	name   string
+	params []string
+	body   []string
+}
 
-	name := sym.Name
-	paramStr := ""
-	if len(params) == 0 {
-		prefix := "def " + name + "("
-		if strings.HasPrefix(header, prefix) {
-			rest := header[len(prefix):]
-			if i := strings.Index(rest, ")"); i >= 0 {
-				paramStr = strings.TrimSpace(rest[:i])
+// parseExFuncs extracts top level function definitions using a simple scanner.
+func parseExFuncs(src string) []exFunc {
+	lines := strings.Split(src, "\n")
+	var funcs []exFunc
+	for i := 0; i < len(lines); i++ {
+		l := strings.TrimSpace(lines[i])
+		if !(strings.HasPrefix(l, "def ") || strings.HasPrefix(l, "defp ")) || !strings.HasSuffix(l, " do") {
+			continue
+		}
+		hdr := strings.TrimSuffix(l, " do")
+		if strings.HasPrefix(hdr, "defp ") {
+			hdr = strings.TrimPrefix(hdr, "defp ")
+		} else if strings.HasPrefix(hdr, "def ") {
+			hdr = strings.TrimPrefix(hdr, "def ")
+		}
+		hdr = strings.TrimSpace(hdr)
+		name := hdr
+		params := []string{}
+		if open := strings.Index(hdr, "("); open != -1 {
+			close := strings.LastIndex(hdr, ")")
+			if close > open {
+				name = strings.TrimSpace(hdr[:open])
+				paramPart := hdr[open+1 : close]
+				if paramPart != "" {
+					for _, p := range strings.Split(paramPart, ",") {
+						p = strings.TrimSpace(p)
+						if p == "" {
+							continue
+						}
+						if idx := strings.IndexAny(p, " :="); idx != -1 {
+							p = strings.TrimSpace(p[:idx])
+						}
+						params = append(params, p)
+					}
+				}
 			}
 		}
-	} else {
-		paramStr = strings.Join(params, ", ")
+		var body []string
+		depth := 0
+		for j := i + 1; j < len(lines); j++ {
+			t := strings.TrimSpace(lines[j])
+			if t == "end" {
+				if depth == 0 {
+					i = j
+					break
+				}
+				depth--
+				body = append(body, t)
+				continue
+			}
+			if strings.HasSuffix(t, " do") && (strings.HasPrefix(t, "if ") || strings.HasPrefix(t, "for ") || strings.HasPrefix(t, "while ")) {
+				depth++
+			}
+			body = append(body, t)
+		}
+		funcs = append(funcs, exFunc{name: name, params: params, body: body})
 	}
+	return funcs
+}
 
+func convertExParsedFunc(f exFunc) string {
 	var b strings.Builder
-	b.WriteString("fun " + name + "(" + paramStr + ")")
-	if ret != "" {
-		b.WriteString(": " + ret)
-	} else {
-		b.WriteString(": any")
-	}
-	b.WriteString(" {\n")
+	b.WriteString("fun ")
+	b.WriteString(f.name)
+	b.WriteByte('(')
+	b.WriteString(strings.Join(f.params, ", "))
+	b.WriteString(")")
+	b.WriteString(": any {\n")
 
 	retPrefix := "throw {:return,"
 	level := 1
 	inTry := false
-	for _, l := range seg[1:] {
-		l = strings.TrimSpace(l)
+	for _, line := range f.body {
+		l := strings.TrimSpace(line)
 		if l == "catch {:return, v} -> v end" {
 			break
 		}
@@ -134,7 +164,7 @@ func convertExFunc(lines []string, sym protocol.DocumentSymbol, params []string,
 				level++
 			}
 		case strings.HasPrefix(l, "while ") && strings.HasSuffix(l, " do"):
-			cond := strings.TrimSuffix(strings.TrimPrefix(l, "while "), " do")
+			cond := strings.TrimSuffix(strings.TrimPrefix(l, "while"), " do")
 			b.WriteString(strings.Repeat("  ", level) + "while " + cond + " {\n")
 			level++
 		case strings.HasPrefix(l, retPrefix):
@@ -165,63 +195,4 @@ func convertExFunc(lines []string, sym protocol.DocumentSymbol, params []string,
 	}
 	b.WriteString("}")
 	return b.String()
-}
-
-func getExSignature(src string, pos protocol.Position, ls LanguageServer) ([]string, string) {
-	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, pos)
-	if err != nil {
-		return nil, ""
-	}
-	sig := hoverString(hov)
-	return parseExSignature(sig)
-}
-
-func parseExSignature(sig string) ([]string, string) {
-	sig = strings.ReplaceAll(sig, "\n", " ")
-	open := strings.Index(sig, "(")
-	close := strings.Index(sig, ")")
-	if open == -1 || close == -1 || close < open {
-		return nil, ""
-	}
-	paramsPart := strings.TrimSpace(sig[open+1 : close])
-	rest := sig[close+1:]
-	ret := ""
-	if idx := strings.Index(rest, "::"); idx != -1 {
-		ret = mapExType(strings.TrimSpace(rest[idx+2:]))
-	} else if idx := strings.Index(rest, "->"); idx != -1 {
-		ret = mapExType(strings.TrimSpace(rest[idx+2:]))
-	}
-	var params []string
-	if paramsPart != "" {
-		parts := strings.Split(paramsPart, ",")
-		for _, p := range parts {
-			p = strings.TrimSpace(p)
-			if p == "" {
-				continue
-			}
-			if i := strings.Index(p, "::"); i != -1 {
-				p = strings.TrimSpace(p[:i])
-			}
-			fields := strings.Fields(p)
-			if len(fields) > 0 {
-				params = append(params, fields[0])
-			}
-		}
-	}
-	return params, ret
-}
-
-func mapExType(t string) string {
-	switch t {
-	case "integer()":
-		return "int"
-	case "float()":
-		return "float"
-	case "binary()":
-		return "string"
-	case "boolean()":
-		return "bool"
-	default:
-		return t
-	}
 }
