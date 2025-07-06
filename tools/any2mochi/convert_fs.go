@@ -10,25 +10,32 @@ import (
 // server. The converter relies solely on the information returned by the
 // language server and avoids any regex based parsing.
 func ConvertFs(src string) ([]byte, error) {
-	ls := Servers["fs"]
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
-	if err != nil || len(syms) == 0 {
-		if out, ferr := convertFsFallback(src); ferr == nil {
-			return out, nil
+	ast, err := parseFsAST(src)
+	if err == nil && ast != nil && (len(ast.Vars) > 0 || len(ast.Prints) > 0) {
+		var out strings.Builder
+		for _, v := range ast.Vars {
+			out.WriteString("let ")
+			out.WriteString(v.Name)
+			out.WriteString(" = ")
+			out.WriteString(v.Expr)
+			out.WriteByte('\n')
 		}
-		if err != nil {
-			return nil, err
+		for _, p := range ast.Prints {
+			out.WriteString("print(")
+			out.WriteString(p)
+			out.WriteString(")\n")
 		}
+		return []byte(out.String()), nil
 	}
-	if len(diags) > 0 {
-		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
+
+	// Fallback to simple regex based conversion if parsing via CLI failed.
+	if out, ferr := convertFsFallback(src); ferr == nil {
+		return out, nil
 	}
-	var out strings.Builder
-	writeFsSymbols(&out, nil, syms, src, ls)
-	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+	if err != nil {
+		return nil, err
 	}
-	return []byte(out.String()), nil
+	return nil, fmt.Errorf("unsupported")
 }
 
 // ConvertFsFile reads the fs file and converts it to Mochi.
