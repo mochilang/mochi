@@ -24,7 +24,7 @@ func ConvertLua(src string) ([]byte, error) {
 
 	chunk, pErr := luaparse.Parse(bytes.NewReader([]byte(src)), "src.lua")
 	if pErr != nil {
-		return nil, fmt.Errorf(formatLuaParseError(pErr, src))
+		return nil, newLuaParseError(pErr, src)
 	}
 	fnMap := map[int]*luaast.FunctionExpr{}
 	collectLuaFuncs(chunk, fnMap)
@@ -542,20 +542,43 @@ func writeLuaChunk(out *strings.Builder, chunk []luaast.Stmt) {
 	}
 }
 
-// formatLuaParseError formats parse errors with line numbers and context.
-func formatLuaParseError(err error, src string) string {
+// ConvertError reports a conversion failure with contextual information.
+type ConvertError struct {
+	Line int
+	Msg  string
+	Snip string
+}
+
+func (e *ConvertError) Error() string {
+	if e.Line > 0 {
+		return fmt.Sprintf("line %d: %s\n%s", e.Line, e.Msg, e.Snip)
+	}
+	return e.Msg
+}
+
+// newLuaParseError formats parse errors with line numbers and surrounding code.
+func newLuaParseError(err error, src string) error {
 	msg := err.Error()
 	line := 0
 	if i := strings.Index(msg, "line:"); i != -1 {
 		fmt.Sscanf(msg[i:], "line:%d", &line)
 	}
-	ctx := ""
 	lines := strings.Split(src, "\n")
-	if line-1 >= 0 && line-1 < len(lines) {
-		ctx = strings.TrimSpace(lines[line-1])
+	start := line - 2
+	if start < 0 {
+		start = 0
 	}
-	if line > 0 {
-		return fmt.Sprintf("line %d: %s\n  %s", line, msg, ctx)
+	end := line + 1
+	if end > len(lines) {
+		end = len(lines)
 	}
-	return msg
+	var b strings.Builder
+	for i := start; i < end; i++ {
+		marker := "   "
+		if i == line-1 {
+			marker = ">>>"
+		}
+		fmt.Fprintf(&b, "%3d:%s %s\n", i+1, marker, strings.TrimRight(lines[i], "\n"))
+	}
+	return &ConvertError{Line: line, Msg: msg, Snip: strings.TrimRight(b.String(), "\n")}
 }

@@ -1,0 +1,4 @@
+Info = []
+Info["__index"] = Info
+info = __gen_struct("{\"msg\": \"hello\"}", null, null)
+print(info["msg"])

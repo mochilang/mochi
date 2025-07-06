@@ -1,0 +1,5 @@
+line 15: src.lua line:15(column:19) near '/':   syntax error
+
+ 14:        if math.type and math.type(a) == 'integer' and math.type(b) == 'integer' then
+ 15:>>>         return a // b
+ 16:        end

@@ -1,0 +1,6 @@
+_Group = []
+xs = [1, 1, 2]
+groups = ()
+for _, g in ipairs(groups) {
+  print(g["k"], g["c"])
+}

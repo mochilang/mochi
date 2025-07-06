@@ -1,0 +1,4 @@
+Item = []
+Item["__index"] = Item
+items = __load(null, { "format": "yaml" })
+print(__count(items))

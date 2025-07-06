@@ -1,0 +1,4 @@
+Item = []
+Item["__index"] = Item
+items = __load(null, null)
+print(__count(items))

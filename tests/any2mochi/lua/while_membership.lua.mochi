@@ -1,0 +1,11 @@
+set = []
+for _, n in ipairs([1, 2, 3]) {
+  set.n = true
+}
+i = 1
+count = 0
+while  {
+  i = __add(i, 1)
+  count = __add(count, 1)
+}
+print(count)

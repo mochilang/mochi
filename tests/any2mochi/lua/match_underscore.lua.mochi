@@ -1,0 +1,1 @@
+print(value_of_root({ "__name": "Node", "left": { "__name": "Leaf" }, "value": 5, "right": { "__name": "Leaf" } }))

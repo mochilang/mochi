@@ -1,0 +1,6 @@
+x = 5
+if  {
+  print("big")
+} else {
+  print("small")
+}

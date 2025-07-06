@@ -1,0 +1,4 @@
+Msg = []
+Msg["__index"] = Msg
+data = __fetch("https://example.com", { "method": "POST", "headers": { "Accept": "application/json" }, "query": { "q": "1" }, "body": { "text": "hi" }, "timeout": 10.0 })
+print(data["message"])
