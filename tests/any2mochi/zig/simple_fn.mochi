@@ -1,3 +1,5 @@
+// line 1
+let std = @import("std")
 // line 3
 fun id(x: int): int {
   return x

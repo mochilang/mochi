@@ -17,9 +17,11 @@ type AST struct {
 }
 
 type Var struct {
-	Name string `json:"name"`
-	Type string `json:"type"`
-	Line int    `json:"line"`
+	Name  string `json:"name"`
+	Type  string `json:"type"`
+	Value string `json:"value,omitempty"`
+	Const bool   `json:"const,omitempty"`
+	Line  int    `json:"line"`
 }
 
 type Func struct {
@@ -109,7 +111,15 @@ func parse(src string) AST {
 				continue
 			}
 			if strings.HasPrefix(line, "const ") || strings.HasPrefix(line, "var ") {
-				fields := strings.Fields(line)
+				isConst := strings.HasPrefix(line, "const ")
+				eq := strings.Index(line, "=")
+				left := strings.TrimSpace(line)
+				val := ""
+				if eq != -1 {
+					val = strings.TrimSpace(strings.TrimSuffix(line[eq+1:], ";"))
+					left = strings.TrimSpace(line[:eq])
+				}
+				fields := strings.Fields(left)
 				if len(fields) >= 2 {
 					name := fields[1]
 					typ := ""
@@ -117,7 +127,7 @@ func parse(src string) AST {
 						typ = strings.TrimSpace(name[i+1:])
 						name = name[:i]
 					}
-					ast.Vars = append(ast.Vars, Var{Name: name, Type: typ, Line: lineNum + 1})
+					ast.Vars = append(ast.Vars, Var{Name: name, Type: typ, Value: val, Const: isConst, Line: lineNum + 1})
 				}
 			}
 			lineNum++
