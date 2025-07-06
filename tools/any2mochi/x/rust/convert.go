@@ -135,6 +135,7 @@ func convertStmt(src string, n *node, level int) []string {
 		text = strings.TrimSuffix(text, ";")
 		text = strings.Replace(text, "let ", "var ", 1)
 		text = strings.Replace(text, "mut ", "", 1)
+		text = sanitizeExpr(text)
 		return []string{idt + text}
 	case "EXPR_STMT":
 		if len(n.children) == 0 {
@@ -147,9 +148,11 @@ func convertStmt(src string, n *node, level int) []string {
 			if line, ok := convertPrintMacro(code); ok {
 				return []string{idt + line}
 			}
+			if line, ok := convertVecMacro(code); ok {
+				return []string{idt + line}
+			}
 			code = strings.TrimSuffix(code, ";")
-			return []string{idt + code}
-			code = strings.TrimSuffix(code, ";")
+			code = sanitizeExpr(code)
 			return []string{idt + code}
 		case "FOR_EXPR":
 			return convertFor(src, c, level)
@@ -164,6 +167,7 @@ func convertStmt(src string, n *node, level int) []string {
 			return []string{idt + "return " + strings.TrimPrefix(code, "return ")}
 		default:
 			code := strings.TrimSuffix(strings.TrimSpace(src[c.start:c.end]), ";")
+			code = sanitizeExpr(code)
 			return []string{idt + code}
 		}
 	case "FOR_EXPR":
@@ -269,6 +273,7 @@ func convertStmts(src string, list *node, level int) []string {
 	if lastExpr != nil {
 		expr := strings.TrimSpace(src[lastExpr.start:lastExpr.end])
 		if expr != "" {
+			expr = sanitizeExpr(expr)
 			out = append(out, indent(level)+"return "+expr)
 		}
 	}
@@ -318,6 +323,39 @@ func convertPrintMacro(code string) (string, bool) {
 		}
 	}
 	return "", false
+}
+
+func convertVecMacro(code string) (string, bool) {
+	c := strings.TrimSpace(code)
+	if strings.HasPrefix(c, "vec![") && strings.HasSuffix(c, "]") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(c, "vec!["), "]")
+		return "[" + inner + "]", true
+	}
+	if c == "Vec::new()" {
+		return "[]", true
+	}
+	return "", false
+}
+
+func convertBoxNew(code string) (string, bool) {
+	c := strings.TrimSpace(code)
+	if strings.HasPrefix(c, "Box::new(") && strings.HasSuffix(c, ")") {
+		inner := c[len("Box::new(") : len(c)-1]
+		return inner, true
+	}
+	return "", false
+}
+
+func sanitizeExpr(code string) string {
+	if v, ok := convertVecMacro(code); ok {
+		return v
+	}
+	if v, ok := convertBoxNew(code); ok {
+		return v
+	}
+	code = strings.ReplaceAll(code, ".to_vec()", "")
+	code = strings.ReplaceAll(code, ".to_string()", "")
+	return code
 }
 
 func convertRustType(src string, n *node) string {
@@ -536,6 +574,7 @@ func fallbackRustBody(body string, level int) []string {
 		if nl, ok := convertPrintMacro(line); ok {
 			line = nl
 		}
+		line = sanitizeExpr(line)
 		out = append(out, indent(level)+line)
 	}
 	return out

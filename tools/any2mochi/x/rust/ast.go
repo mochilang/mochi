@@ -25,6 +25,7 @@ type ASTNode struct {
 	ParentID    int        `json:"parentID,omitempty"`
 	Text        string     `json:"text,omitempty"`
 	Snippet     string     `json:"snippet,omitempty"`
+	Depth       int        `json:"depth,omitempty"`
 }
 
 func position(src string, off int) (line, col int) {
@@ -41,7 +42,7 @@ func position(src string, off int) (line, col int) {
 	return
 }
 
-func toASTNode(src string, n *node, parent string, parentID int, id *int) *ASTNode {
+func toASTNode(src string, n *node, parent string, parentID int, id *int, depth int) *ASTNode {
 	if n == nil {
 		return nil
 	}
@@ -62,9 +63,10 @@ func toASTNode(src string, n *node, parent string, parentID int, id *int) *ASTNo
 		ParentID:    parentID,
 		Text:        strings.TrimSpace(src[n.start:n.end]),
 		Snippet:     lineSnippet(src, sl),
+		Depth:       depth,
 	}
 	for _, c := range n.children {
-		out.Children = append(out.Children, toASTNode(src, c, n.kind, out.ID, id))
+		out.Children = append(out.Children, toASTNode(src, c, n.kind, out.ID, id, depth+1))
 	}
 	return out
 }
@@ -99,7 +101,7 @@ func ParseAST(src string) (*ASTNode, error) {
 		return nil, fmt.Errorf("parse failed")
 	}
 	id := 0
-	return toASTNode(src, tree, "", -1, &id), nil
+	return toASTNode(src, tree, "", -1, &id, 0), nil
 }
 
 // ParseASTFile reads the Rust file and parses it to an ASTNode.
