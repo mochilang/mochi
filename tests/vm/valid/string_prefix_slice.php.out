@@ -1,0 +1,14 @@
+<?php
+$prefix = "fore";
+$s1 = "forest";
+_print(((is_array($s1) ? array_slice($s1, 0, ((is_array($prefix) ? count($prefix) : strlen($prefix))) - (0)) : substr($s1, 0, ((is_array($prefix) ? count($prefix) : strlen($prefix))) - (0))) == $prefix));
+$s2 = "desert";
+_print(((is_array($s2) ? array_slice($s2, 0, ((is_array($prefix) ? count($prefix) : strlen($prefix))) - (0)) : substr($s2, 0, ((is_array($prefix) ? count($prefix) : strlen($prefix))) - (0))) == $prefix));
+
+function _print(...$args) {
+    $parts = [];
+    foreach ($args as $a) {
+        if (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+    }
+    echo implode(' ', $parts), PHP_EOL;
+}

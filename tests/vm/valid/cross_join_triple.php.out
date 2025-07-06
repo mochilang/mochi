@@ -1,0 +1,27 @@
+<?php
+$nums = [1, 2];
+$letters = ["A", "B"];
+$bools = [true, false];
+$combos = (function() use ($bools, $letters, $nums) {
+	$res = [];
+	foreach ((is_string($nums) ? str_split($nums) : $nums) as $n) {
+		foreach ((is_string($letters) ? str_split($letters) : $letters) as $l) {
+			foreach ((is_string($bools) ? str_split($bools) : $bools) as $b) {
+				$res[] = ["n" => $n, "l" => $l, "b" => $b];
+			}
+		}
+	}
+	return $res;
+})();
+_print("--- Cross Join of three lists ---");
+foreach ((is_string($combos) ? str_split($combos) : $combos) as $c) {
+	_print($c['n'], $c['l'], $c['b']);
+}
+
+function _print(...$args) {
+    $parts = [];
+    foreach ($args as $a) {
+        if (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+    }
+    echo implode(' ', $parts), PHP_EOL;
+}

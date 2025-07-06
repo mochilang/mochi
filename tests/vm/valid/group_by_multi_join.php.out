@@ -1,0 +1,136 @@
+<?php
+$nations = [["id" => 1, "name" => "A"], ["id" => 2, "name" => "B"]];
+$suppliers = [["id" => 1, "nation" => 1], ["id" => 2, "nation" => 2]];
+$partsupp = [["part" => 100, "supplier" => 1, "cost" => 10.0, "qty" => 2], ["part" => 100, "supplier" => 2, "cost" => 20.0, "qty" => 1], ["part" => 200, "supplier" => 1, "cost" => 5.0, "qty" => 3]];
+$filtered = (function() use ($nations, $partsupp, $suppliers) {
+	$_src = $partsupp;
+	return _query($_src, [
+		[ 'items' => $suppliers, 'on' => function($ps, $s) use ($nations, $partsupp, $suppliers) { return ($s['id'] == $ps['supplier']); } ],
+		[ 'items' => $nations, 'on' => function($ps, $s, $n) use ($nations, $partsupp, $suppliers) { return ($n['id'] == $s['nation']); } ]
+	], [ 'select' => function($ps, $s, $n) use ($nations, $partsupp, $suppliers) { return ["part" => $ps['part'], "value" => ($ps['cost'] * $ps['qty'])]; }, 'where' => function($ps, $s, $n) use ($nations, $partsupp, $suppliers) { return (($n['name'] == "A")); } ]);
+})();
+$grouped = (function() use ($filtered) {
+	$_src = (is_string($filtered) ? str_split($filtered) : $filtered);
+	$_groups = _group_by($_src, function($x) use ($filtered) { return $x['part']; });
+	$res = [];
+	foreach ($_groups as $g) {
+		$res[] = ["part" => $g->key, "total" => array_sum((function() use ($g) {
+	$res = [];
+	foreach ((is_string($g->Items) ? str_split($g->Items) : $g->Items) as $r) {
+		$res[] = $r['value'];
+	}
+	return $res;
+})())];
+	}
+	return $res;
+})();
+_print($grouped);
+
+class _Group {
+    public $key;
+    public $Items;
+    function __construct($key) { $this->key = $key; $this->Items = []; }
+}
+function _group_by($src, $keyfn) {
+    $groups = [];
+    $order = [];
+    foreach ($src as $it) {
+        $key = $keyfn($it);
+        if (is_array($key)) { $key = (object)$key; }
+        $ks = is_object($key) ? json_encode($key) : strval($key);
+        if (!isset($groups[$ks])) {
+            $groups[$ks] = new _Group($key);
+            $order[] = $ks;
+        }
+        $groups[$ks]->Items[] = $it;
+    }
+    $res = [];
+    foreach ($order as $ks) { $res[] = $groups[$ks]; }
+    return $res;
+}
+function _print(...$args) {
+    $parts = [];
+    foreach ($args as $a) {
+        if (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+    }
+    echo implode(' ', $parts), PHP_EOL;
+}
+function _query($src, $joins, $opts) {
+    $items = array_map(fn($v) => [$v], $src);
+    foreach ($joins as $j) {
+        $joined = [];
+        if (!empty($j['right']) && !empty($j['left'])) {
+            $matched = array_fill(0, count($j['items']), false);
+            foreach ($items as $left) {
+                $m = false;
+                foreach ($j['items'] as $ri => $right) {
+                    $keep = true;
+                    if (isset($j['on'])) { $args = array_merge($left, [$right]); $keep = $j['on'](...$args); }
+                    if (!$keep) continue;
+                    $m = true; $matched[$ri] = true;
+                    $joined[] = array_merge($left, [$right]);
+                }
+                if (!$m) { $joined[] = array_merge($left, [null]); }
+            }
+            foreach ($j['items'] as $ri => $right) {
+                if (!$matched[$ri]) {
+                    $undef = count($items) > 0 ? array_fill(0, count($items[0]), null) : [];
+                    $joined[] = array_merge($undef, [$right]);
+                }
+            }
+        } elseif (!empty($j['right'])) {
+            foreach ($j['items'] as $right) {
+                $m = false;
+                foreach ($items as $left) {
+                    $keep = true;
+                    if (isset($j['on'])) { $args = array_merge($left, [$right]); $keep = $j['on'](...$args); }
+                    if (!$keep) continue;
+                    $m = true; $joined[] = array_merge($left, [$right]);
+                }
+                if (!$m) {
+                    $undef = count($items) > 0 ? array_fill(0, count($items[0]), null) : [];
+                    $joined[] = array_merge($undef, [$right]);
+                }
+            }
+        } else {
+            foreach ($items as $left) {
+                $m = false;
+                foreach ($j['items'] as $right) {
+                    $keep = true;
+                    if (isset($j['on'])) { $args = array_merge($left, [$right]); $keep = $j['on'](...$args); }
+                    if (!$keep) continue;
+                    $m = true; $joined[] = array_merge($left, [$right]);
+                }
+                if (!empty($j['left']) && !$m) { $joined[] = array_merge($left, [null]); }
+            }
+        }
+        $items = $joined;
+    }
+    if (isset($opts['where'])) {
+        $filtered = [];
+        foreach ($items as $r) { if ($opts['where'](...$r)) $filtered[] = $r; }
+        $items = $filtered;
+    }
+    if (isset($opts['sortKey'])) {
+        $pairs = [];
+        foreach ($items as $it) { $pairs[] = ['item' => $it, 'key' => $opts['sortKey'](...$it)]; }
+        usort($pairs, function($a, $b) {
+            $ak = $a['key']; $bk = $b['key'];
+            if (is_int($ak) && is_int($bk)) return $ak <=> $bk;
+            if (is_string($ak) && is_string($bk)) return $ak <=> $bk;
+            return strcmp(strval($ak), strval($bk));
+        });
+        $items = array_map(fn($p) => $p['item'], $pairs);
+    }
+    if (array_key_exists('skip', $opts)) {
+        $n = $opts['skip'];
+        $items = $n < count($items) ? array_slice($items, $n) : [];
+    }
+    if (array_key_exists('take', $opts)) {
+        $n = $opts['take'];
+        if ($n < count($items)) $items = array_slice($items, 0, $n);
+    }
+    $res = [];
+    foreach ($items as $r) { $res[] = $opts['select'](...$r); }
+    return $res;
+}

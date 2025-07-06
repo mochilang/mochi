@@ -1,0 +1,15 @@
+<?php
+function mochi_inc($x) {
+	return ((is_array($x) && is_array($k)) ? array_merge($x, $k) : ((is_string($x) || is_string($k)) ? ($x . $k) : ($x + $k)));
+}
+
+$k = 2;
+_print(mochi_inc(3));
+
+function _print(...$args) {
+    $parts = [];
+    foreach ($args as $a) {
+        if (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+    }
+    echo implode(' ', $parts), PHP_EOL;
+}

@@ -14,6 +14,7 @@ import (
 	phpcode "mochi/compile/x/php"
 	"mochi/golden"
 	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -124,16 +125,38 @@ func TestPHPCompiler_SubsetPrograms(t *testing.T) {
 		if err := os.WriteFile(file, code, 0644); err != nil {
 			return nil, fmt.Errorf("write error: %w", err)
 		}
-		cmd := exec.Command("php", file)
+		var input []byte
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
-			cmd.Stdin = bytes.NewReader(data)
+			input = data
+		}
+		cmd := exec.Command("php", file)
+		if input != nil {
+			cmd.Stdin = bytes.NewReader(input)
 		}
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			return nil, fmt.Errorf("❌ php run error: %w\n%s", err, out)
 		}
-		res := strings.ReplaceAll(string(out), "\r\n", "\n")
-		return []byte(strings.TrimSpace(res)), nil
+		phpOut := strings.TrimSpace(strings.ReplaceAll(string(out), "\r\n", "\n"))
+
+		p, err := vm.Compile(prog, env)
+		if err != nil {
+			return nil, fmt.Errorf("vm compile error: %w", err)
+		}
+		var vmBuf bytes.Buffer
+		m := vm.NewWithIO(p, bytes.NewReader(input), &vmBuf)
+		if err := m.Run(); err != nil {
+			if ve, ok := err.(*vm.VMError); ok {
+				return nil, fmt.Errorf("vm run error:\n%s", ve.Format(p))
+			}
+			return nil, fmt.Errorf("vm run error: %v", err)
+		}
+		vmOut := strings.TrimSpace(vmBuf.String())
+		if phpOut != vmOut {
+			return nil, fmt.Errorf("output mismatch\n-- php --\n%s\n-- vm --\n%s", phpOut, vmOut)
+		}
+
+		return []byte(phpOut), nil
 	})
 }
 
