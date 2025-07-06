@@ -8,6 +8,9 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+
+	"mochi/parser"
+	"mochi/types"
 )
 
 type param struct{ name, typ string }
@@ -26,11 +29,30 @@ func snippet(src string) string {
 func diagnostics(src string, diags []any2mochi.Diagnostic) string {
 	lines := strings.Split(src, "\n")
 	var out strings.Builder
+	sevName := func(n int) string {
+		switch n {
+		case 1:
+			return "error"
+		case 2:
+			return "warning"
+		case 3:
+			return "info"
+		case 4:
+			return "hint"
+		default:
+			return ""
+		}
+	}
 	for _, d := range diags {
 		ln := int(d.Range.Start.Line)
 		col := int(d.Range.Start.Character)
 		msg := d.Message
-		fmt.Fprintf(&out, "line %d:%d: %s\n", ln+1, col+1, msg)
+		sev := sevName(d.Severity)
+		if sev != "" {
+			fmt.Fprintf(&out, "line %d:%d [%s]: %s\n", ln+1, col+1, sev, msg)
+		} else {
+			fmt.Fprintf(&out, "line %d:%d: %s\n", ln+1, col+1, msg)
+		}
 		start := ln - 2
 		if start < 0 {
 			start = 0
@@ -74,7 +96,15 @@ func convert(src, root string) ([]byte, error) {
 	if out.Len() == 0 {
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
 	}
-	return []byte(out.String()), nil
+	code := out.String()
+	prog, pErr := parser.ParseString(code)
+	if pErr != nil {
+		return nil, fmt.Errorf("generated code parse error: %w", pErr)
+	}
+	if errs := types.Check(prog, types.NewEnv(nil)); len(errs) > 0 {
+		return nil, fmt.Errorf("generated code type error: %v", errs[0])
+	}
+	return []byte(code), nil
 }
 
 // ConvertFile reads the Fortran file and converts it to Mochi.
@@ -146,15 +176,19 @@ func parseSignature(sig string) ([]param, string) {
 }
 
 func mapType(t string) string {
-	t = strings.ToLower(t)
+	ts := strings.TrimSpace(t)
+	lower := strings.ToLower(ts)
+	if strings.HasPrefix(lower, "type(") && strings.HasSuffix(lower, ")") {
+		return strings.TrimSpace(ts[len("type(") : len(ts)-1])
+	}
 	switch {
-	case strings.Contains(t, "real"):
+	case strings.Contains(lower, "real"):
 		return "float"
-	case strings.Contains(t, "integer"):
+	case strings.Contains(lower, "integer"):
 		return "int"
-	case strings.Contains(t, "character"):
+	case strings.Contains(lower, "character"):
 		return "string"
-	case strings.Contains(t, "logical"):
+	case strings.Contains(lower, "logical"):
 		return "bool"
 	default:
 		return ""
