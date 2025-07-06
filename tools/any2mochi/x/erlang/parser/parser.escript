@@ -13,7 +13,7 @@ output_funs(Forms) ->
     JsonFuns = [fun_to_json(F) || F <- Funs],
     io:format("{\"functions\":[~s]}\n", [string:join(JsonFuns, ",")]).
 
-fun_to_json({function,_,Name,_A,[Clause|_]}) ->
+fun_to_json({function,Line,Name,A,[Clause|_]}) ->
     {clause,_,Params,_G,Body} = Clause,
     ParamNames = [param_name(P) || P <- Params],
     BodyLines = [string:trim(io_lib:format("~s", [erl_pp:expr(E)])) || E <- Body],
@@ -21,6 +21,8 @@ fun_to_json({function,_,Name,_A,[Clause|_]}) ->
         "{\"name\":", json_string(atom_to_list(Name)),
         ",\"params\":", json_array(ParamNames),
         ",\"body\":", json_array(BodyLines),
+        ",\"line\":", integer_to_list(Line),
+        ",\"arity\":", integer_to_list(A),
         "}"]).
 
 param_name({var,_,Name}) -> atom_to_list(Name);

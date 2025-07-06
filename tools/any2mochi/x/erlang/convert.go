@@ -29,6 +29,9 @@ func Convert(src string) ([]byte, error) {
 		if f.Name == "main" {
 			hasMain = true
 		}
+		out.WriteString("// line ")
+		out.WriteString(fmt.Sprint(f.Line))
+		out.WriteByte('\n')
 		out.WriteString("fun ")
 		if f.Name == "" {
 			out.WriteString("fun")
@@ -50,6 +53,8 @@ func Convert(src string) ([]byte, error) {
 			for _, line := range f.Body {
 				if strings.HasPrefix(line, "io:format(") {
 					line = "print(" + strings.TrimPrefix(line, "io:format(")
+				} else if strings.HasPrefix(line, "io:fwrite(") {
+					line = "print(" + strings.TrimPrefix(line, "io:fwrite(")
 				}
 				out.WriteString("  ")
 				out.WriteString(line)

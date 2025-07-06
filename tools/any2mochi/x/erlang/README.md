@@ -5,7 +5,10 @@ This package provides an experimental Erlang frontend for the `any2mochi` tool. 
 ## Architecture
 
 1. `parse.go` invokes `parser/parser.escript` to obtain a lightweight AST of functions.
-2. `convert.go` walks this AST and emits Mochi `fun` definitions. Simple calls to `io:format` are rewritten as `print` statements.
+   The parser now records the line number and arity of each function for better diagnostics.
+2. `convert.go` walks this AST and emits Mochi `fun` definitions. Simple calls to
+   `io:format` or `io:fwrite` are rewritten as `print` statements and each emitted
+   function is prefixed with a comment indicating the original line number.
 
 `Convert` converts a source string, while `ConvertFile` is a helper that reads a file and calls `Convert`.
 
@@ -13,7 +16,8 @@ This package provides an experimental Erlang frontend for the `any2mochi` tool. 
 
 - Top-level function declarations
 - Detection of `main/0` and insertion of a `main()` call
-- Basic translation of `io:format/1` to `print`
+- Basic translation of `io:format/1` and `io:fwrite/1` to `print`
+- Functions include source line comments for easier debugging
 
 ## Unsupported features
 
