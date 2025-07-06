@@ -1,3 +1,4 @@
-line 1:1: unsupported statement
+no convertible symbols found
+
+source snippet:
   1: Object new foo.
-     ^

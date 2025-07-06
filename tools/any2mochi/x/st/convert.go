@@ -297,6 +297,7 @@ func convertSimpleStmt(l string) string {
 		expr := strings.TrimSpace(parts[0])
 		expr = strings.Trim(expr, "()")
 		expr = strings.ReplaceAll(expr, "'", "\"")
+		expr = strings.ReplaceAll(expr, "\\", "%")
 		return "print(" + expr + ")"
 	}
 	if strings.Contains(l, ":=") {
@@ -304,10 +305,13 @@ func convertSimpleStmt(l string) string {
 		left := strings.TrimSpace(parts[0])
 		right := strings.TrimSpace(parts[1])
 		right = strings.TrimSuffix(right, ".")
+		right = strings.ReplaceAll(right, "\\", "%")
 		return left + " = " + right
 	}
 	if strings.HasPrefix(l, "^") {
-		return "return " + strings.TrimSpace(strings.TrimPrefix(l, "^"))
+		expr := strings.TrimSpace(strings.TrimPrefix(l, "^"))
+		expr = strings.ReplaceAll(expr, "\\", "%")
+		return "return " + expr
 	}
 	return ""
 }
@@ -318,7 +322,7 @@ func formatError(src string, line int, col int, msg string) string {
 	if start < 0 {
 		start = 0
 	}
-	end := line + 1
+	end := line + 2
 	if end > len(lines) {
 		end = len(lines)
 	}
