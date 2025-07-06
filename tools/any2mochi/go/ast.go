@@ -21,6 +21,8 @@ type Func struct {
 	Recv    string   `json:"recv,omitempty"`
 	Params  []Param  `json:"params,omitempty"`
 	Results []string `json:"results,omitempty"`
+	Doc     string   `json:"doc,omitempty"`
+	Line    int      `json:"line,omitempty"`
 }
 
 type Param struct {
@@ -33,6 +35,8 @@ type Type struct {
 	Fields    []Field `json:"fields,omitempty"`
 	Methods   []Func  `json:"methods,omitempty"`
 	Interface bool    `json:"interface,omitempty"`
+	Doc       string  `json:"doc,omitempty"`
+	Line      int     `json:"line,omitempty"`
 }
 
 type Field struct {
@@ -41,14 +45,18 @@ type Field struct {
 }
 
 type Var struct {
-	Name string `json:"name"`
-	Type string `json:"type,omitempty"`
+	Name  string `json:"name"`
+	Type  string `json:"type,omitempty"`
+	Value string `json:"value,omitempty"`
+	Const bool   `json:"const,omitempty"`
+	Doc   string `json:"doc,omitempty"`
+	Line  int    `json:"line,omitempty"`
 }
 
 // ParseAST parses Go source and returns the simplified AST.
 func ParseAST(src string) (*AST, error) {
 	fset := token.NewFileSet()
-	file, err := parser.ParseFile(fset, "src.go", src, parser.SkipObjectResolution)
+	file, err := parser.ParseFile(fset, "src.go", src, parser.ParseComments|parser.SkipObjectResolution)
 	if err != nil {
 		return nil, err
 	}
@@ -60,6 +68,10 @@ func ParseAST(src string) (*AST, error) {
 				continue
 			}
 			fn := Func{Name: d.Name.Name}
+			fn.Line = fset.Position(d.Pos()).Line
+			if d.Doc != nil {
+				fn.Doc = strings.TrimSpace(d.Doc.Text())
+			}
 			if d.Recv != nil && len(d.Recv.List) > 0 {
 				fn.Recv = exprString(fset, d.Recv.List[0].Type)
 			}
@@ -100,7 +112,10 @@ func ParseAST(src string) (*AST, error) {
 						continue
 					}
 					if st, ok := ts.Type.(*ast.StructType); ok {
-						gt := Type{Name: ts.Name.Name}
+						gt := Type{Name: ts.Name.Name, Line: fset.Position(ts.Pos()).Line}
+						if d.Doc != nil {
+							gt.Doc = strings.TrimSpace(d.Doc.Text())
+						}
 						for _, f := range st.Fields.List {
 							typ := exprString(fset, f.Type)
 							if len(f.Names) == 0 {
@@ -114,7 +129,10 @@ func ParseAST(src string) (*AST, error) {
 						out.Types = append(out.Types, gt)
 					}
 					if iface, ok := ts.Type.(*ast.InterfaceType); ok {
-						gt := Type{Name: ts.Name.Name, Interface: true}
+						gt := Type{Name: ts.Name.Name, Interface: true, Line: fset.Position(ts.Pos()).Line}
+						if d.Doc != nil {
+							gt.Doc = strings.TrimSpace(d.Doc.Text())
+						}
 						for _, m := range iface.Methods.List {
 							if len(m.Names) == 0 {
 								continue
@@ -168,8 +186,15 @@ func ParseAST(src string) (*AST, error) {
 					if vs.Type != nil {
 						typ = exprString(fset, vs.Type)
 					}
-					for _, n := range vs.Names {
-						out.Vars = append(out.Vars, Var{Name: n.Name, Type: typ})
+					for i, n := range vs.Names {
+						v := Var{Name: n.Name, Type: typ, Const: d.Tok == token.CONST, Line: fset.Position(n.Pos()).Line}
+						if vs.Doc != nil {
+							v.Doc = strings.TrimSpace(vs.Doc.Text())
+						}
+						if i < len(vs.Values) {
+							v.Value = exprString(fset, vs.Values[i])
+						}
+						out.Vars = append(out.Vars, v)
 					}
 				}
 			}
@@ -259,6 +284,10 @@ func ConvertAST(g *AST) []byte {
 		if v.Type != "" {
 			b.WriteString(": ")
 			b.WriteString(v.Type)
+		}
+		if v.Value != "" {
+			b.WriteString(" = ")
+			b.WriteString(v.Value)
 		}
 		b.WriteByte('\n')
 	}
