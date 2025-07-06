@@ -1,0 +1,17 @@
+fun main() {
+  var xs = vec![1, 2, 3]
+  var ys = vec![10, 11, 12]
+  var res = {
+    let mut _res = Vec::new();
+    for x in xs.clone() {
+        if !(x > 1) { continue; }
+        for y in ys.clone() {
+            _res.push(x * y);
+        }
+    }
+    _res
+}
+  for v in res {
+    print(v)
+  }
+}

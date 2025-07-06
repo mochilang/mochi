@@ -1,0 +1,17 @@
+fun main() {
+  var nums = vec![0, 1, 2, 3, 4, 5]
+  var sub = {
+    let mut _res = Vec::new();
+    for n in nums {
+        _res.push(n);
+    }
+    let mut skip = 2 as usize;
+    if skip < _res.len() { _res = _res[skip..].to_vec(); } else { _res = Vec::new(); }
+    let take = 3 as usize;
+    if take < _res.len() { _res.truncate(take); }
+    _res
+}
+  for v in sub {
+    print(v)
+  }
+}

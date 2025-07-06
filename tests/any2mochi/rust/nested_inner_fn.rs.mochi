@@ -1,0 +1,6 @@
+fun outer(a: int): int {
+  return inner(10)
+}
+fun main() {
+  print(outer(5))
+}

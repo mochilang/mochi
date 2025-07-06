@@ -1,0 +1,13 @@
+fun main() {
+  print(_avg(&vec![1, 2, 3]))
+}
+fun _avg(v: [any]): float {
+  if v.is_empty() {
+    return 0.0
+  }
+  var sum = 0.0
+  for &it in v {
+    sum += Into::<f64>::into(it)
+  }
+  return sum / v.len() as f64
+}

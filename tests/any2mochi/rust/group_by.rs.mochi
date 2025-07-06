@@ -1,0 +1,31 @@
+fun main() {
+  var xs = vec![1, 1, 2]
+  var groups = {
+    #[derive(Clone, Debug)]
+    struct Group { key: std::boxed::Box<dyn std::any::Any>, items: Vec<i64> }
+    let mut groups: std::collections::HashMap<String, Group> = std::collections::HashMap::new();
+    let mut order: Vec<String> = Vec::new();
+    for x in xs.clone() {
+        let key: std::boxed::Box<dyn std::any::Any> = x;
+        let ks = format!("{:?}", key.clone());
+        if !groups.contains_key(&ks) {
+            groups.insert(ks.clone(), Group{ key: key.clone(), items: Vec::new() });
+            order.push(ks.clone());
+        }
+        groups.get_mut(&ks).unwrap().items.push(x.clone());
+    }
+    let mut _res: Vec<std::collections::HashMap<String, std::boxed::Box<dyn std::any::Any>>> = Vec::new();
+    for ks in order {
+        let g = groups.get(&ks).unwrap().clone();
+        _res.push(std::collections::HashMap::from([("k".to_string(), g.key), ("c".to_string(), _count(&g))]));
+    }
+    _res
+}
+
+  for g in groups {
+    print(g.k, g.c)
+  }
+}
+fun _count(v: [any]): int {
+  return v.len() as i32
+}

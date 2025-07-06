@@ -143,13 +143,29 @@ func formatDiagnosticsLocal(src string, diags []any2mochi.Diagnostic) string {
 	lines := strings.Split(src, "\n")
 	var out strings.Builder
 	for _, d := range diags {
-		start := int(d.Range.Start.Line)
+		ln := int(d.Range.Start.Line)
+		col := int(d.Range.Start.Character)
 		msg := d.Message
-		line := ""
-		if start < len(lines) {
-			line = strings.TrimSpace(lines[start])
+		if ln >= len(lines) {
+			out.WriteString(fmt.Sprintf("line %d:%d: %s\n", ln+1, col+1, msg))
+			continue
 		}
-		out.WriteString(fmt.Sprintf("line %d: %s\n  %s\n", start+1, msg, line))
+		out.WriteString(fmt.Sprintf("line %d:%d: %s\n", ln+1, col+1, msg))
+		start := ln - 1
+		if start < 0 {
+			start = 0
+		}
+		end := ln + 1
+		if end >= len(lines) {
+			end = len(lines) - 1
+		}
+		for i := start; i <= end; i++ {
+			out.WriteString(fmt.Sprintf("%3d | %s\n", i+1, lines[i]))
+			if i == ln {
+				pointer := strings.Repeat(" ", col) + "^"
+				out.WriteString("    | " + pointer + "\n")
+			}
+		}
 	}
 	return strings.TrimSpace(out.String())
 }

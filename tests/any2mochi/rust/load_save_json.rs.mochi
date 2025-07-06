@@ -1,0 +1,30 @@
+type Person {
+  name: string
+  age: int
+}
+fun main() {
+  var people = _load::<Person>("people.json", std::collections::HashMap::from([("format".to_string(), "json")]))
+  _save(people, "out.json", std::collections::HashMap::from([("format".to_string(), "json")]))
+}
+fun _load(_path: string, _opts: std::collections::HashMap): [any] {
+  var data = String::new()
+  if _path.is_empty() || _path == "-" {
+    std::io::stdin().read_to_string(&mut data).unwrap()
+  }
+  if let Ok(v) = serde_json::from_str::<Vec<T>>(&data) {
+    return v
+  }
+  if let Ok(v) = serde_json::from_str::<T>(&data) {
+    return vec![v]
+  }
+  return Vec::new()
+}
+fun _save(_src: [any], _path: string, _opts: std::collections::HashMap) {
+  if let Ok(text) = serde_json::to_string(_src) {
+    if _path.is_empty() || _path == "-" {
+      print(text)
+    else {
+      std::fs::write(_path, text).unwrap()
+    }
+  }
+}

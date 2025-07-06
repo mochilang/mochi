@@ -1,0 +1,11 @@
+fun fib(n: int): int {
+  if n <= 1 {
+    return n
+  }
+  return fib(n - 1) + fib(n - 2)
+}
+fun main() {
+  print(fib(0))
+  print(fib(1))
+  print(fib(6))
+}

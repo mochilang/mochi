@@ -1,0 +1,17 @@
+type Tree =
+  Leaf
+  | Node(left: Tree, value: int, right: Tree)
+fun fromList(nums: [int]): Tree {
+  return helper(0, nums.len() as i64)
+}
+fun inorder(t: Tree): [int] {
+  return (|| {
+    match t {
+        Tree::Leaf => { vec![] },
+        Tree::Node { left: l, value: v, right: r } => { { let a = &{ let a = &inorder(l); let b = &vec![v]; let mut res = Vec::with_capacity(a.len() + b.len()); res.extend_from_slice(a); res.extend_from_slice(b); res }; let b = &inorder(r); let mut res = Vec::with_capacity(a.len() + b.len()); res.extend_from_slice(a); res.extend_from_slice(b); res } },
+    }
+})()
+}
+fun main() {
+  print(inorder(fromList(vec![-10, -3, 0, 5, 9])).iter().map(|v| format!("{}", v)).collect::<Vec<_>>().join(" "))
+}

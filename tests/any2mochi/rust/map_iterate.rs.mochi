@@ -1,0 +1,11 @@
+fun main() {
+  var m: std::collections::HashMap<i64, bool> = std::collections::HashMap::from([])
+  m.insert(1, true)
+  m.insert(2, true)
+  var sum = 0
+  for k_key in m.keys() {
+    var k = k_key.clone()
+    sum = sum + k
+  }
+  print(sum)
+}

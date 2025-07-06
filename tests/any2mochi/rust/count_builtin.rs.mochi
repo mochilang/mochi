@@ -1,0 +1,6 @@
+fun main() {
+  print(_count(&vec![1, 2, 3]))
+}
+fun _count(v: [any]): int {
+  return v.len() as i32
+}
