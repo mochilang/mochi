@@ -10,13 +10,10 @@ end
 def depth(t)
   (begin
     _t0 = t
-    case
-    when _t0.is_a?(Leaf)
+    if _t0.is_a?(Leaf)
       0
-    when _t0.is_a?(Node)
+    elsif _t0.is_a?(Node)
       ->(l, r) { ((depth(l) + depth(r)) + 1) }.call(_t0.left, _t0.right)
-    else
-      nil
     end
   end)
 end

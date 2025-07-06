@@ -15,6 +15,7 @@ import (
 	rbcode "mochi/compile/x/rb"
 	"mochi/golden"
 	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -146,7 +147,6 @@ func TestRBCompiler_ValidPrograms(t *testing.T) {
 		if skip[name] {
 			continue
 		}
-		wantPath := filepath.Join(root, "tests", "compiler", "valid", name+".out")
 		t.Run(name, func(t *testing.T) {
 			prog, err := parser.Parse(src)
 			if err != nil {
@@ -175,13 +175,24 @@ func TestRBCompiler_ValidPrograms(t *testing.T) {
 				t.Fatalf("ruby run error: %v\n%s", err, out)
 			}
 			got := bytes.TrimSpace(out)
-			want, err := os.ReadFile(wantPath)
+
+			// Execute the program with the Mochi VM for comparison.
+			p, err := vm.Compile(prog, env)
 			if err != nil {
-				t.Fatalf("read golden error: %v", err)
+				t.Fatalf("vm compile error: %v", err)
 			}
-			want = bytes.TrimSpace(want)
+			var buf bytes.Buffer
+			m := vm.New(p, &buf)
+			if err := m.Run(); err != nil {
+				if ve, ok := err.(*vm.VMError); ok {
+					t.Fatalf("vm run error:\n%s", ve.Format(p))
+				}
+				t.Fatalf("vm run error: %v", err)
+			}
+			want := bytes.TrimSpace(buf.Bytes())
+
 			if !bytes.Equal(got, want) {
-				t.Errorf("golden mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s", name, got, want)
+				t.Errorf("vm mismatch for %s\n\n--- Ruby ---\n%s\n\n--- VM ---\n%s", name, got, want)
 			}
 		})
 	}
@@ -413,7 +424,7 @@ func TestRBCompiler_TPCDSQueries(t *testing.T) {
 		t.Skipf("ruby not installed: %v", err)
 	}
 	root := findRepoRoot(t)
-       for i := 1; i <= 99; i++ {
+	for i := 1; i <= 99; i++ {
 		q := fmt.Sprintf("q%d", i)
 		t.Run(q, func(t *testing.T) {
 			src := filepath.Join(root, "tests", "dataset", "tpc-ds", q+".mochi")
