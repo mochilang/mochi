@@ -1,0 +1,5 @@
+fun main() {
+  var a = 10
+  var b: i64 = 20
+  print(a + b)
+}

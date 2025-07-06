@@ -1,7 +1,6 @@
-fun add(a: int, b: int) {
+fun add(a: int, b: int): int {
   return a + b
 }
 fun main() {
   print(add(2, 3))
 }
-

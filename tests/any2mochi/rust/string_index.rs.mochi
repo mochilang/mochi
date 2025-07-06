@@ -1,0 +1,4 @@
+fun main() {
+  var text = "hello".to_string()
+  print({ let s = &text; let mut idx = 1; let chars: Vec<char> = s.chars().collect(); if idx < 0 { idx += chars.len() as i64; } if idx < 0 || idx >= chars.len() as i64 { panic!("index out of range"); } chars[idx as usize].to_string() })
+}

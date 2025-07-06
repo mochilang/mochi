@@ -1,0 +1,25 @@
+fun main() {
+  print(_slice_string("hello", 1, 4))
+}
+fun _slice_string(s: string, start: int, end: int): string {
+  var sidx = start
+  var eidx = end
+  var chars: Vec<char> = s.chars().collect()
+  var n = chars.len() as i64
+  if sidx < 0 {
+    sidx += n
+  }
+  if eidx < 0 {
+    eidx += n
+  }
+  if sidx < 0 {
+    sidx = 0
+  }
+  if eidx > n {
+    eidx = n
+  }
+  if eidx < sidx {
+    eidx = sidx
+  }
+  return chars[sidx as usize..eidx as usize].iter().collect()
+}

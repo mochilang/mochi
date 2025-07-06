@@ -1,0 +1,16 @@
+fun twoSum(nums: [int], target: int): [int] {
+  var n = nums.len() as i64
+  for i in 0..n {
+    for j in i + 1..n {
+      if nums[i as usize] + nums[j as usize] == target {
+        return vec![i, j]
+      }
+    }
+  }
+  return vec![-1, -1]
+}
+fun main() {
+  var result = twoSum(vec![2, 7, 11, 15], 9)
+  print(result[(0) as usize])
+  print(result[(1) as usize])
+}

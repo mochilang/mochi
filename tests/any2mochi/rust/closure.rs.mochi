@@ -1,0 +1,7 @@
+fun makeAdder(n: int): dyn Fn(i64) -> i64 {
+  return Box::new(move |x: i64| x + n)
+}
+fun main() {
+  var add10 = makeAdder(10)
+  print(add10(7))
+}

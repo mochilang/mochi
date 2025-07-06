@@ -1,0 +1,10 @@
+fun foo(n: int): int {
+  if n < 0 {
+    return -1
+  }
+}
+fun main() {
+  print(foo(-2))
+  print(foo(0))
+  print(foo(3))
+}

@@ -1,0 +1,18 @@
+type Person {
+  name: string
+  age: int
+}
+fun main() {
+  var people = vec![Person { name: "Alice".to_string(), age: 30 }, Person { name: "Bob".to_string(), age: 15 }, Person { name: "Charlie".to_string(), age: 65 }]
+  var names = {
+    let mut _res = Vec::new();
+    for p in people {
+        if !(p.age >= 18) { continue; }
+        _res.push(p.name);
+    }
+    _res
+}
+  for n in names {
+    print(n)
+  }
+}

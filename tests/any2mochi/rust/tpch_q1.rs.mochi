@@ -1,0 +1,101 @@
+type LineItem {
+  l_quantity: int
+  l_extendedprice: float
+  l_discount: float
+  l_tax: float
+  l_returnflag: string
+  l_linestatus: string
+  l_shipdate: string
+}
+fun main() {
+  var lineitem = vec![LineItem { l_quantity: 17, l_extendedprice: 1000.0, l_discount: 0.05, l_tax: 0.07, l_returnflag: "N".to_string(), l_linestatus: "O".to_string(), l_shipdate: "1998-08-01".to_string() }, LineItem { l_quantity: 36, l_extendedprice: 2000.0, l_discount: 0.1, l_tax: 0.05, l_returnflag: "N".to_string(), l_linestatus: "O".to_string(), l_shipdate: "1998-09-01".to_string() }, LineItem { l_quantity: 25, l_extendedprice: 1500.0, l_discount: 0.0, l_tax: 0.08, l_returnflag: "R".to_string(), l_linestatus: "F".to_string(), l_shipdate: "1998-09-03".to_string() }]
+  var result = {
+    #[derive(Clone, Debug)]
+    struct Group { key: std::collections::HashMap<String, std::boxed::Box<dyn std::any::Any>>, items: Vec<LineItem> }
+    let mut groups: std::collections::HashMap<String, Group> = std::collections::HashMap::new();
+    let mut order: Vec<String> = Vec::new();
+    for row in lineitem.clone() {
+        if !(row.l_shipdate <= "1998-09-02") { continue; }
+        let key: std::collections::HashMap<String, std::boxed::Box<dyn std::any::Any>> = std::collections::HashMap::from([("returnflag".to_string(), row.l_returnflag), ("linestatus".to_string(), row.l_linestatus)]);
+        let ks = format!("{:?}", key.clone());
+        if !groups.contains_key(&ks) {
+            groups.insert(ks.clone(), Group{ key: key.clone(), items: Vec::new() });
+            order.push(ks.clone());
+        }
+        groups.get_mut(&ks).unwrap().items.push(row.clone());
+    }
+    let mut _res: Vec<std::collections::HashMap<String, std::boxed::Box<dyn std::any::Any>>> = Vec::new();
+    for ks in order {
+        let g = groups.get(&ks).unwrap().clone();
+        _res.push(std::collections::HashMap::from([("returnflag".to_string(), g.key.returnflag), ("linestatus".to_string(), g.key.linestatus), ("sum_qty".to_string(), _sum(&{
+    let mut _res = Vec::new();
+    for x in g {
+        _res.push(x.l_quantity);
+    }
+    _res
+})), ("sum_base_price".to_string(), _sum(&{
+    let mut _res = Vec::new();
+    for x in g {
+        _res.push(x.l_extendedprice);
+    }
+    _res
+})), ("sum_disc_price".to_string(), _sum(&{
+    let mut _res = Vec::new();
+    for x in g {
+        _res.push(x.l_extendedprice * (1 - x.l_discount));
+    }
+    _res
+})), ("sum_charge".to_string(), _sum(&{
+    let mut _res = Vec::new();
+    for x in g {
+        _res.push(x.l_extendedprice * (1 - x.l_discount) * (1 + x.l_tax));
+    }
+    _res
+})), ("avg_qty".to_string(), _avg(&{
+    let mut _res = Vec::new();
+    for x in g {
+        _res.push(x.l_quantity);
+    }
+    _res
+})), ("avg_price".to_string(), _avg(&{
+    let mut _res = Vec::new();
+    for x in g {
+        _res.push(x.l_extendedprice);
+    }
+    _res
+})), ("avg_disc".to_string(), _avg(&{
+    let mut _res = Vec::new();
+    for x in g {
+        _res.push(x.l_discount);
+    }
+    _res
+})), ("count_order".to_string(), _count(&g))]));
+    }
+    _res
+}
+
+  json(result)
+}
+fun _avg(v: [any]): float {
+  if v.is_empty() {
+    return 0.0
+  }
+  var sum = 0.0
+  for &it in v {
+    sum += Into::<f64>::into(it)
+  }
+  return sum / v.len() as f64
+}
+fun _count(v: [any]): int {
+  return v.len() as i32
+}
+fun _sum(v: [any]): float {
+  if v.is_empty() {
+    return 0.0
+  }
+  var sum = 0.0
+  for &it in v {
+    sum += Into::<f64>::into(it)
+  }
+  return sum
+}
