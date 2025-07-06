@@ -14,20 +14,37 @@ import (
 // ConvertLua converts lua source code to Mochi using the language server.
 func ConvertLua(src string) ([]byte, error) {
 	ls := Servers["lua"]
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
-	if err != nil {
-		return nil, err
+	var syms []DocumentSymbol
+	var diags []Diagnostic
+	var err error
+
+	if UseLSP && ls.Command != "" {
+		syms, diags, err = EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
 	}
-	if len(diags) > 0 {
-		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
+
+	chunk, pErr := luaparse.Parse(bytes.NewReader([]byte(src)), "src.lua")
+	if pErr != nil {
+		return nil, fmt.Errorf(formatLuaParseError(pErr, src))
 	}
-	chunk, _ := luaparse.Parse(bytes.NewReader([]byte(src)), "src.lua")
 	fnMap := map[int]*luaast.FunctionExpr{}
 	collectLuaFuncs(chunk, fnMap)
 
 	var out strings.Builder
-	writeLuaSymbols(&out, nil, syms, src, ls, fnMap)
+	if err == nil && len(diags) == 0 && len(syms) > 0 {
+		writeLuaSymbols(&out, nil, syms, src, ls, fnMap)
+	}
+
 	if out.Len() == 0 {
+		writeLuaChunk(&out, chunk)
+	}
+
+	if out.Len() == 0 {
+		if err != nil {
+			return nil, err
+		}
+		if len(diags) > 0 {
+			return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
+		}
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
 	}
 	return []byte(out.String()), nil
@@ -436,6 +453,9 @@ func luaExprString(e luaast.Expr) string {
 	case *luaast.NilExpr:
 		return "null"
 	case *luaast.IdentExpr:
+		if v.Value == "__print" {
+			return "print"
+		}
 		return v.Value
 	case *luaast.ArithmeticOpExpr:
 		return luaExprString(v.Lhs) + " " + v.Operator + " " + luaExprString(v.Rhs)
@@ -507,4 +527,35 @@ func ConvertLuaFile(path string) ([]byte, error) {
 		return nil, err
 	}
 	return ConvertLua(string(data))
+}
+
+// writeLuaChunk converts all statements in the parsed chunk to Mochi syntax.
+// It is a best-effort fallback when no language server information is
+// available.
+func writeLuaChunk(out *strings.Builder, chunk []luaast.Stmt) {
+	for _, line := range convertLuaStmts(chunk, 0) {
+		if strings.HasPrefix(line, "fun __print") {
+			continue
+		}
+		out.WriteString(line)
+		out.WriteByte('\n')
+	}
+}
+
+// formatLuaParseError formats parse errors with line numbers and context.
+func formatLuaParseError(err error, src string) string {
+	msg := err.Error()
+	line := 0
+	if i := strings.Index(msg, "line:"); i != -1 {
+		fmt.Sscanf(msg[i:], "line:%d", &line)
+	}
+	ctx := ""
+	lines := strings.Split(src, "\n")
+	if line-1 >= 0 && line-1 < len(lines) {
+		ctx = strings.TrimSpace(lines[line-1])
+	}
+	if line > 0 {
+		return fmt.Sprintf("line %d: %s\n  %s", line, msg, ctx)
+	}
+	return msg
 }
