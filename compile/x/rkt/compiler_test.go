@@ -14,6 +14,7 @@ import (
 	rktcode "mochi/compile/x/rkt"
 	"mochi/golden"
 	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -57,37 +58,7 @@ func TestRacketCompiler_SubsetPrograms(t *testing.T) {
 		t.Skipf("racket not installed: %v", err)
 	}
 	golden.Run(t, "tests/compiler/rkt", ".mochi", ".out", func(src string) ([]byte, error) {
-		prog, err := parser.Parse(src)
-		if err != nil {
-			return nil, fmt.Errorf("\u274c parse error: %w", err)
-		}
-		env := types.NewEnv(nil)
-		if errs := types.Check(prog, env); len(errs) > 0 {
-			return nil, fmt.Errorf("\u274c type error: %v", errs[0])
-		}
-		c := rktcode.New(env)
-		code, err := c.Compile(prog)
-		if err != nil {
-			return nil, fmt.Errorf("\u274c compile error: %w", err)
-		}
-		dir := t.TempDir()
-		file := filepath.Join(dir, "main.rkt")
-		if err := os.WriteFile(file, code, 0644); err != nil {
-			return nil, fmt.Errorf("write error: %w", err)
-		}
-		cmd := exec.Command("racket", file)
-		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
-			cmd.Stdin = bytes.NewReader(data)
-		}
-		out, err := cmd.CombinedOutput()
-		if err != nil {
-			return nil, fmt.Errorf("\u274c racket run error: %w\n%s", err, out)
-		}
-		res := bytes.TrimSpace(out)
-		if res == nil {
-			res = []byte{}
-		}
-		return res, nil
+		return compileRun(t, src)
 	})
 }
 
@@ -108,6 +79,66 @@ func TestRacketCompiler_GoldenOutput(t *testing.T) {
 		}
 		return bytes.TrimSpace(code), nil
 	})
+}
+
+func compileRun(t *testing.T, src string) ([]byte, error) {
+	prog, err := parser.Parse(src)
+	if err != nil {
+		return nil, fmt.Errorf("\u274c parse error: %w", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		return nil, fmt.Errorf("\u274c type error: %v", errs[0])
+	}
+	code, err := rktcode.New(env).Compile(prog)
+	if err != nil {
+		return nil, fmt.Errorf("\u274c compile error: %w", err)
+	}
+	dir := t.TempDir()
+	file := filepath.Join(dir, "main.rkt")
+	if err := os.WriteFile(file, code, 0644); err != nil {
+		return nil, fmt.Errorf("write error: %w", err)
+	}
+	cmd := exec.Command("racket", file)
+	var inData []byte
+	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+		inData = data
+		cmd.Stdin = bytes.NewReader(data)
+	}
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		return nil, fmt.Errorf("\u274c racket run error: %w\n%s", err, out)
+	}
+	racketOut := bytes.TrimSpace(out)
+
+	vmProg, err := vm.CompileWithSource(prog, env, string(mustRead(src)))
+	if err != nil {
+		return nil, fmt.Errorf("vm compile error: %w", err)
+	}
+	var buf bytes.Buffer
+	m := vm.NewWithIO(vmProg, bytes.NewReader(inData), &buf)
+	if err := m.Run(); err != nil {
+		if ve, ok := err.(*vm.VMError); ok {
+			return nil, fmt.Errorf("vm run error:\n%s", ve.Format(vmProg))
+		}
+		return nil, fmt.Errorf("vm run error: %v", err)
+	}
+	want := bytes.TrimSpace(buf.Bytes())
+	if !bytes.Equal(racketOut, want) {
+		t.Errorf("output mismatch vs VM for %s\n\n--- Racket ---\n%s\n\n--- VM ---\n%s\n", filepath.Base(src), racketOut, want)
+	}
+	if racketOut == nil {
+		racketOut = []byte{}
+	}
+	return racketOut, nil
+}
+
+func mustRead(path string) []byte {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		panic(err)
+	}
+	return data
 }
 
 func TestRacketCompiler_LeetCodeExamples(t *testing.T) {
