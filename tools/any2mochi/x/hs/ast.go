@@ -17,6 +17,7 @@ type Item struct {
 	Name   string   `json:"name,omitempty"`
 	Params []string `json:"params,omitempty"`
 	Body   string   `json:"body,omitempty"`
+	Type   string   `json:"type,omitempty"`
 	Fields []Field  `json:"fields,omitempty"`
 	Line   int      `json:"line"`
 	Doc    string   `json:"doc,omitempty"`
@@ -29,10 +30,16 @@ func Parse(src string) ([]Item, error) {
 	lines := strings.Split(src, "\n")
 	var items []Item
 	var parseErr error
+	sigs := make(map[string]string)
 	for i := 0; i < len(lines); i++ {
 		line := lines[i]
 		l := strings.TrimSpace(line)
 		if l == "" || strings.HasPrefix(l, "--") || strings.HasPrefix(l, "module ") || strings.HasPrefix(l, "import ") || strings.HasPrefix(l, "{-") {
+			continue
+		}
+		if parts := strings.SplitN(l, "::", 2); len(parts) == 2 {
+			name := strings.TrimSpace(parts[0])
+			sigs[name] = strings.TrimSpace(parts[1])
 			continue
 		}
 		if strings.HasPrefix(l, "main =") {
@@ -100,7 +107,11 @@ func Parse(src string) ([]Item, error) {
 			if len(params) == 0 {
 				kind = "var"
 			}
-			items = append(items, Item{Kind: kind, Name: name, Params: params, Body: body, Line: i + 1})
+			it := Item{Kind: kind, Name: name, Params: params, Body: body, Line: i + 1}
+			if t, ok := sigs[name]; ok {
+				it.Type = t
+			}
+			items = append(items, it)
 			continue
 		}
 		if parseErr == nil {
@@ -120,7 +131,7 @@ func Parse(src string) ([]Item, error) {
 				}
 				snippet = append(snippet, fmt.Sprintf("%s%3d | %s", prefix, j+1, lines[j]))
 			}
-			parseErr = fmt.Errorf("line %d: unsupported syntax\n%s", i+1, strings.Join(snippet, "\n"))
+			parseErr = fmt.Errorf("line %d: unsupported syntax: %s\n%s", i+1, strings.TrimSpace(lines[i]), strings.Join(snippet, "\n"))
 		}
 	}
 	return items, parseErr
@@ -138,14 +149,27 @@ func convertItems(items []Item) []byte {
 		case "func":
 			out.WriteString("fun ")
 			out.WriteString(it.Name)
+			var paramTypes []string
+			var retType string
+			if it.Type != "" {
+				paramTypes, retType = parseSigTypes(it.Type)
+			}
 			out.WriteByte('(')
 			for i, p := range it.Params {
 				if i > 0 {
 					out.WriteString(", ")
 				}
 				out.WriteString(p)
+				if i < len(paramTypes) && paramTypes[i] != "" {
+					out.WriteString(": ")
+					out.WriteString(paramTypes[i])
+				}
 			}
 			out.WriteByte(')')
+			if retType != "" {
+				out.WriteString(": ")
+				out.WriteString(retType)
+			}
 			if it.Body == "" {
 				out.WriteString(" {}\n")
 			} else {
@@ -156,6 +180,12 @@ func convertItems(items []Item) []byte {
 		case "var":
 			out.WriteString("let ")
 			out.WriteString(it.Name)
+			if it.Type != "" {
+				if typ, ok := parseVarSig(it.Type); ok {
+					out.WriteString(": ")
+					out.WriteString(typ)
+				}
+			}
 			if it.Body != "" {
 				out.WriteString(" = ")
 				out.WriteString(it.Body)
