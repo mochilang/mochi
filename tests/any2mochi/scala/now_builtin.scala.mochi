@@ -1,0 +1,1 @@
+print((System.currentTimeMillis() * 1000000L > 0))
