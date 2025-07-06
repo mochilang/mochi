@@ -14,6 +14,7 @@ import (
 	ktcode "mochi/compile/x/kt"
 	"mochi/golden"
 	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -147,6 +148,10 @@ func TestKTCompiler_SubsetPrograms(t *testing.T) {
 }
 
 func TestKTCompiler_GoldenOutput(t *testing.T) {
+	if err := ktcode.EnsureKotlin(); err != nil {
+		t.Skipf("kotlin not installed: %v", err)
+	}
+
 	golden.Run(t, "tests/compiler/kt", ".mochi", ".kt.out", func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
@@ -160,6 +165,55 @@ func TestKTCompiler_GoldenOutput(t *testing.T) {
 		if err != nil {
 			return nil, fmt.Errorf("❌ compile error: %w", err)
 		}
+
+		// Write and run the generated Kotlin code.
+		dir := t.TempDir()
+		ktFile := filepath.Join(dir, "Main.kt")
+		if err := os.WriteFile(ktFile, code, 0644); err != nil {
+			return nil, fmt.Errorf("write error: %w", err)
+		}
+		jar := filepath.Join(dir, "main.jar")
+		if out, err := exec.Command("kotlinc", ktFile, "-include-runtime", "-d", jar).CombinedOutput(); err != nil {
+			return nil, fmt.Errorf("❌ kotlinc error: %w\n%s", err, out)
+		}
+		cmd := exec.Command("java", "-jar", jar)
+		inPath := strings.TrimSuffix(src, ".mochi") + ".in"
+		var inData []byte
+		if data, err := os.ReadFile(inPath); err == nil {
+			cmd.Stdin = bytes.NewReader(data)
+			inData = data
+		}
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			return nil, fmt.Errorf("❌ java run error: %w\n%s", err, out)
+		}
+		gotOut := bytes.TrimSpace(out)
+
+		// Run using the Mochi VM for comparison.
+		p, err := vm.Compile(prog, env)
+		if err != nil {
+			return nil, fmt.Errorf("❌ vm compile error: %w", err)
+		}
+		var vmBuf bytes.Buffer
+		m := vm.NewWithIO(p, bytes.NewReader(inData), &vmBuf)
+		if err := m.Run(); err != nil {
+			if ve, ok := err.(*vm.VMError); ok {
+				return nil, fmt.Errorf("❌ vm run error:\n%s", ve.Format(p))
+			}
+			return nil, fmt.Errorf("❌ vm run error: %w", err)
+		}
+		if vmOut := bytes.TrimSpace(vmBuf.Bytes()); !bytes.Equal(vmOut, gotOut) {
+			t.Errorf("runtime mismatch for %s\n\n--- VM ---\n%s\n\n--- Kotlin ---\n%s\n", filepath.Base(src), vmOut, gotOut)
+		}
+
+		// Compare Kotlin output to golden if present.
+		wantPath := strings.TrimSuffix(src, ".mochi") + ".out"
+		if wantData, err := os.ReadFile(wantPath); err == nil {
+			if want := bytes.TrimSpace(wantData); !bytes.Equal(gotOut, want) {
+				t.Errorf("output mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", filepath.Base(wantPath), gotOut, want)
+			}
+		}
+
 		return bytes.TrimSpace(code), nil
 	})
 }
