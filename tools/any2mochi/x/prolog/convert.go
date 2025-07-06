@@ -261,6 +261,9 @@ func convertFallback(src string) ([]byte, error) {
 	if prog, err := parseAST(src); err == nil {
 		var out strings.Builder
 		for _, c := range prog.Clauses {
+			if c.Name == ":-" {
+				continue
+			}
 			if c.Name == "main" {
 				out.WriteString("fun main() {\n")
 				for _, line := range parseBody(c.Body) {
@@ -412,6 +415,17 @@ func parseBody(body string) []string {
 					}
 				}
 				out = append(out, "  let "+varName+" = "+strings.Title(typ)+" { "+strings.Join(parts, ", ")+" }")
+			} else {
+				out = append(out, "  // "+c)
+			}
+		case strings.HasPrefix(c, "get_dict("):
+			re := regexp.MustCompile(`get_dict\(([^,]+),\s*([^,]+),\s*([^\)]+)\)`)
+			m := re.FindStringSubmatch(c)
+			if len(m) == 4 {
+				field := strings.TrimSpace(m[1])
+				obj := strings.TrimSpace(m[2])
+				dest := strings.TrimSpace(m[3])
+				out = append(out, fmt.Sprintf("  let %s = %s.%s", dest, obj, field))
 			} else {
 				out = append(out, "  // "+c)
 			}

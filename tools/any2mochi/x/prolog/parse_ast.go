@@ -22,6 +22,7 @@ type clause struct {
 	End       int      `json:"end"`
 	Source    string   `json:"source"`
 	Head      string   `json:"head"`
+	Comments  []string `json:"comments"`
 	StartLine int
 	StartCol  int
 	EndLine   int
@@ -56,7 +57,18 @@ func parseAST(src string) (*program, error) {
 			lineOffsets = append(lineOffsets, i+1)
 		}
 	}
+	prevEnd := 0
 	for i, c := range prog.Clauses {
+		if c.Start > prevEnd {
+			snippet := src[prevEnd:c.Start]
+			lines := strings.Split(snippet, "\n")
+			for _, l := range lines {
+				l = strings.TrimSpace(l)
+				if strings.HasPrefix(l, "%") {
+					prog.Clauses[i].Comments = append(prog.Clauses[i].Comments, strings.TrimSpace(strings.TrimPrefix(l, "%")))
+				}
+			}
+		}
 		l1, c1 := offsetToPos(lineOffsets, c.Start)
 		l2, c2 := offsetToPos(lineOffsets, c.End)
 		prog.Clauses[i].StartLine = l1
@@ -81,6 +93,7 @@ func parseAST(src string) (*program, error) {
 		} else {
 			prog.Clauses[i].Type = "rule"
 		}
+		prevEnd = c.End
 	}
 	return &prog, nil
 }
