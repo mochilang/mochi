@@ -1,0 +1,13 @@
+fun main() {
+  var a = 1
+  var b = 4
+  if a < b {
+    for i in range(a, b) {
+      print(i)
+    }
+  } else {
+    for i in range(a, b) {
+      print(i)
+    }
+  }
+}

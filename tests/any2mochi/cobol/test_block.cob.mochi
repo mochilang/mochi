@@ -1,0 +1,7 @@
+fun main() {
+  print("-- TEST addition works --")
+  var x = 1 + 2
+  if NOT (x = 3) {
+    print("expect failed")
+  }
+}

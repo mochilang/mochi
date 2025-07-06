@@ -1,0 +1,10 @@
+fun main() {
+  var tmp0 = 1 + 2
+  print(tmp0)
+  var tmp1 = 5 - 3
+  print(tmp1)
+  var tmp2 = 4 * 2
+  print(tmp2)
+  var tmp3 = 8 / 2
+  print(tmp3)
+}

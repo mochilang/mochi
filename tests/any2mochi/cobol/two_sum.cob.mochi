@@ -1,0 +1,32 @@
+fun main() {
+  nums(1) = 2
+  nums(2) = 7
+  nums(3) = 11
+  nums(4) = 15
+  var target = 9
+  var n = 4
+  result(1) = -1
+  result(2) = -1
+  for i in range(0, n) {
+    var jstart = i
+    jstart = jstart + 1
+    for j in range(jstart, n) {
+      if nUMS(i + 1) + nUMS(j + 1) = target {
+        result(1) = i
+        result(2) = j
+        var i = n
+        var j = n
+      }
+    }
+    if nUMS(i + 1) + nUMS(j + 1) = target {
+      result(1) = i
+      result(2) = j
+      i = n
+      j = n
+    }
+  }
+  var tmp0 = result(0 + 1)
+  print(tmp0)
+  var tmp1 = result(1 + 1)
+  print(tmp1)
+}

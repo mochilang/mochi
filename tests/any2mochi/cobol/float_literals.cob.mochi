@@ -1,0 +1,4 @@
+fun main() {
+  print(3.14)
+  print(0.5)
+}

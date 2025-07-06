@@ -1,0 +1,10 @@
+fun main() {
+  arr(1) = 1
+  arr(2) = 2
+  arr(3) = 3
+  var idx = 0
+  for idx in range(0, 3) {
+    var n = arr(idx + 1)
+    print(n)
+  }
+}

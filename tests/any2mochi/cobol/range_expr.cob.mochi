@@ -1,0 +1,28 @@
+fun main() {
+  tmp0(1) = 0
+  tmp0(2) = 2
+  tmp0(3) = 4
+  xs(1) = tmp0(1)
+  xs(2) = tmp0(2)
+  xs(3) = tmp0(3)
+  var tmp1 = 3
+  print(tmp1)
+  var tmp2 = 0
+  if tmp2 < 0 {
+    tmp2 = tmp2 + 3
+  }
+  var tmp3 = xs(tmp2 + 1)
+  print(tmp3)
+  var tmp4 = 1
+  if tmp4 < 0 {
+    tmp4 = tmp4 + 3
+  }
+  var tmp5 = xs(tmp4 + 1)
+  print(tmp5)
+  var tmp6 = 2
+  if tmp6 < 0 {
+    tmp6 = tmp6 + 3
+  }
+  var tmp7 = xs(tmp6 + 1)
+  print(tmp7)
+}

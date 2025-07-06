@@ -1,0 +1,10 @@
+fun main() {
+  tmp0(1) = 1
+  tmp0(2) = 2
+  tmp0(3) = 3
+  var idx = 0
+  for idx in range(0, 3) {
+    var n = tmp0(idx + 1)
+    print(n)
+  }
+}

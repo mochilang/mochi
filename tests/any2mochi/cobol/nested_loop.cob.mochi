@@ -1,0 +1,33 @@
+fun main() {
+  if 1 < 3 {
+    for i in range(1, 3) {
+      if 1 < 2 {
+        for j in range(1, 2) {
+          var tmp0 = i + j
+          print(tmp0)
+        }
+        tmp0 = i + j
+        print(tmp0)
+      }
+    }
+  } else {
+    for j in range(1, 2) {
+      var tmp1 = i + j
+      print(tmp1)
+    }
+  }
+  for i in range(1, 3) {
+    if 1 < 2 {
+      for j in range(1, 2) {
+        var tmp2 = i + j
+        print(tmp2)
+      }
+      tmp2 = i + j
+      print(tmp2)
+    }
+  }
+  for j in range(1, 2) {
+    var tmp3 = i + j
+    print(tmp3)
+  }
+}

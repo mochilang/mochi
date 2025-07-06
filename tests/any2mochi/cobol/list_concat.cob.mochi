@@ -1,0 +1,29 @@
+fun main() {
+  a(1) = 1
+  a(2) = 2
+  b(1) = 3
+  tmp0(1) = a(1)
+  tmp0(2) = a(2)
+  tmp0(3) = b(1)
+  c(1) = tmp0(1)
+  c(2) = tmp0(2)
+  c(3) = tmp0(3)
+  var tmp1 = 0
+  if tmp1 < 0 {
+    tmp1 = tmp1 + 3
+  }
+  var tmp2 = c(tmp1 + 1)
+  print(tmp2)
+  var tmp3 = 1
+  if tmp3 < 0 {
+    tmp3 = tmp3 + 3
+  }
+  var tmp4 = c(tmp3 + 1)
+  print(tmp4)
+  var tmp5 = 2
+  if tmp5 < 0 {
+    tmp5 = tmp5 + 3
+  }
+  var tmp6 = c(tmp5 + 1)
+  print(tmp6)
+}

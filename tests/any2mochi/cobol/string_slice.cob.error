@@ -1,0 +1,4 @@
+syntax error at line 15: syntax error, unexpected (, expecting TO
+  14 |     COMPUTE TMP1 = 1 + 1
+  15 |     MOVE "hello"(TMP1:TMP0) TO TMP2
+  16 |     MOVE TMP2 TO TMP3

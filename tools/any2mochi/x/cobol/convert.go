@@ -21,7 +21,11 @@ func Convert(src string) ([]byte, error) {
 		out.WriteString("fun ")
 		out.WriteString(name)
 		out.WriteString("()")
-		stmts := parseStatements(fn.Lines)
+		vars := map[string]bool{}
+		for _, v := range ast.Vars {
+			vars[v.Name] = false
+		}
+		stmts := parseStatements(fn.Lines, vars)
 		if len(stmts) == 0 {
 			out.WriteString(" {}\n")
 			continue
@@ -49,39 +53,68 @@ func ConvertFile(path string) ([]byte, error) {
 	return Convert(string(data))
 }
 
-func parseStatements(lines []string) []string {
+func parseStatements(lines []string, vars map[string]bool) []string {
 	var out []string
 	for i := 0; i < len(lines); i++ {
 		ll := strings.TrimSpace(strings.TrimSuffix(lines[i], "."))
 		switch {
 		case strings.HasPrefix(ll, "DISPLAY "):
 			expr := strings.TrimSpace(strings.TrimPrefix(ll, "DISPLAY "))
+			expr = normalizeExpr(expr, vars)
 			out = append(out, "print("+expr+")")
 
 		case strings.HasPrefix(ll, "MOVE "):
 			rest := strings.TrimSpace(strings.TrimPrefix(ll, "MOVE "))
 			parts := strings.Split(rest, " TO ")
 			if len(parts) == 2 {
-				expr := strings.TrimSpace(parts[0])
-				dest := strings.TrimSpace(parts[1])
-				out = append(out, dest+" = "+expr)
+				expr := normalizeExpr(strings.TrimSpace(parts[0]), vars)
+				dest := strings.ToLower(strings.TrimSpace(parts[1]))
+				if defined, ok := vars[dest]; ok && !defined {
+					out = append(out, "var "+dest+" = "+expr)
+					vars[dest] = true
+				} else {
+					if !ok {
+						vars[dest] = true
+					}
+					out = append(out, dest+" = "+expr)
+				}
 			}
 
 		case strings.HasPrefix(ll, "COMPUTE "):
 			expr := strings.TrimSpace(strings.TrimPrefix(ll, "COMPUTE "))
-			out = append(out, expr)
+			if strings.Contains(expr, "=") {
+				parts := strings.SplitN(expr, "=", 2)
+				dest := strings.ToLower(strings.TrimSpace(parts[0]))
+				rhs := normalizeExpr(strings.TrimSpace(parts[1]), vars)
+				if defined, ok := vars[dest]; ok && !defined {
+					out = append(out, "var "+dest+" = "+rhs)
+					vars[dest] = true
+				} else {
+					if !ok {
+						vars[dest] = true
+					}
+					out = append(out, dest+" = "+rhs)
+				}
+			} else {
+				out = append(out, expr)
+			}
 
 		case strings.HasPrefix(ll, "ADD "):
 			rest := strings.TrimSpace(strings.TrimPrefix(ll, "ADD "))
 			parts := strings.Split(rest, " TO ")
 			if len(parts) == 2 {
-				val := strings.TrimSpace(parts[0])
-				dest := strings.TrimSpace(parts[1])
-				out = append(out, dest+" = "+dest+" + "+val)
+				val := normalizeExpr(strings.TrimSpace(parts[0]), vars)
+				dest := strings.ToLower(strings.TrimSpace(parts[1]))
+				if _, ok := vars[dest]; !ok {
+					vars[dest] = true
+					out = append(out, "var "+dest+" = "+dest+" + "+val)
+				} else {
+					out = append(out, dest+" = "+dest+" + "+val)
+				}
 			}
 
 		case strings.HasPrefix(ll, "PERFORM UNTIL "):
-			cond := strings.TrimSpace(strings.TrimPrefix(ll, "PERFORM UNTIL "))
+			cond := normalizeExpr(strings.TrimSpace(strings.TrimPrefix(ll, "PERFORM UNTIL ")), vars)
 			body := []string{}
 			for j := i + 1; j < len(lines); j++ {
 				n := strings.TrimSpace(lines[j])
@@ -98,7 +131,7 @@ func parseStatements(lines []string) []string {
 			} else {
 				out = append(out, "while !("+cond+") {")
 			}
-			inner := parseStatements(body)
+			inner := parseStatements(body, vars)
 			for _, st := range inner {
 				out = append(out, "  "+st)
 			}
@@ -111,19 +144,23 @@ func parseStatements(lines []string) []string {
 				break
 			}
 			varName := strings.TrimSpace(parts[0])
+			vn := strings.ToLower(varName)
+			if _, ok := vars[vn]; !ok {
+				vars[vn] = true
+			}
 			rest = parts[1]
 			parts = strings.Split(rest, " BY ")
 			if len(parts) != 2 {
 				break
 			}
-			start := strings.TrimSpace(parts[0])
+			start := normalizeExpr(strings.TrimSpace(parts[0]), vars)
 			rest = parts[1]
 			parts = strings.Split(rest, " UNTIL ")
 			if len(parts) != 2 {
 				break
 			}
-			step := strings.TrimSpace(parts[0])
-			cond := strings.TrimSpace(parts[1])
+			step := normalizeExpr(strings.TrimSpace(parts[0]), vars)
+			cond := normalizeExpr(strings.TrimSpace(parts[1]), vars)
 			body := []string{}
 			for j := i + 1; j < len(lines); j++ {
 				n := strings.TrimSpace(lines[j])
@@ -135,9 +172,9 @@ func parseStatements(lines []string) []string {
 			}
 			end := ""
 			if strings.Contains(cond, ">=") {
-				end = strings.TrimSpace(strings.Split(cond, ">=")[1])
+				end = normalizeExpr(strings.TrimSpace(strings.Split(cond, ">=")[1]), vars)
 			} else if strings.Contains(cond, "<=") {
-				end = strings.TrimSpace(strings.Split(cond, "<=")[1])
+				end = normalizeExpr(strings.TrimSpace(strings.Split(cond, "<=")[1]), vars)
 			}
 			loop := "for " + strings.ToLower(varName) + " in range(" + start + ", " + end
 			if step != "1" && step != "-1" {
@@ -145,14 +182,14 @@ func parseStatements(lines []string) []string {
 			}
 			loop += ") {"
 			out = append(out, loop)
-			inner := parseStatements(body)
+			inner := parseStatements(body, vars)
 			for _, st := range inner {
 				out = append(out, "  "+st)
 			}
 			out = append(out, "}")
 
 		case strings.HasPrefix(ll, "IF "):
-			cond := strings.TrimSpace(strings.TrimPrefix(ll, "IF "))
+			cond := normalizeExpr(strings.TrimSpace(strings.TrimPrefix(ll, "IF ")), vars)
 			thenLines := []string{}
 			elseLines := []string{}
 			j := i + 1
@@ -174,13 +211,13 @@ func parseStatements(lines []string) []string {
 			}
 			i = j
 			out = append(out, "if "+cond+" {")
-			inner := parseStatements(thenLines)
+			inner := parseStatements(thenLines, vars)
 			for _, st := range inner {
 				out = append(out, "  "+st)
 			}
 			if len(elseLines) > 0 {
 				out = append(out, "} else {")
-				inner2 := parseStatements(elseLines)
+				inner2 := parseStatements(elseLines, vars)
 				for _, st := range inner2 {
 					out = append(out, "  "+st)
 				}
@@ -189,4 +226,12 @@ func parseStatements(lines []string) []string {
 		}
 	}
 	return out
+}
+
+func normalizeExpr(expr string, vars map[string]bool) string {
+	for name := range vars {
+		upper := strings.ToUpper(name)
+		expr = strings.ReplaceAll(expr, upper, name)
+	}
+	return expr
 }

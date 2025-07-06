@@ -1,0 +1,6 @@
+fun main() {
+  var tmp0 = 1 + 2 * 3
+  print(tmp0)
+  var tmp1 = 3 * 2 + 1
+  print(tmp1)
+}

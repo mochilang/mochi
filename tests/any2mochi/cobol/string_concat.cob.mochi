@@ -1,0 +1,4 @@
+fun main() {
+  var tmp0 = "hello " & "world"
+  print(tmp0)
+}

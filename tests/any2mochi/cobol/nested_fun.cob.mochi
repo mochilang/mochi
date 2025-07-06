@@ -1,0 +1,4 @@
+fun main() {
+  var outer_p0 = 3
+  print(outer_res)
+}
