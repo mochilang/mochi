@@ -1,93 +1,93 @@
 package ocaml
 
 import (
-        "fmt"
-        "os"
-        "regexp"
-        "strings"
+	"fmt"
+	"os"
+	"regexp"
+	"strings"
 
-        parent "mochi/tools/any2mochi"
+	parent "mochi/tools/any2mochi"
 )
 
 func snippet(src string) string {
-        lines := strings.Split(src, "\n")
-        if len(lines) > 10 {
-                lines = lines[:10]
-        }
-        for i, l := range lines {
-                lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
-        }
-        return strings.Join(lines, "\n")
+	lines := strings.Split(src, "\n")
+	if len(lines) > 10 {
+		lines = lines[:10]
+	}
+	for i, l := range lines {
+		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
+	}
+	return strings.Join(lines, "\n")
 }
 
 func diagnostics(src string, diags []parent.Diagnostic) string {
-        lines := strings.Split(src, "\n")
-        var out strings.Builder
-        for _, d := range diags {
-                start := int(d.Range.Start.Line)
-                col := int(d.Range.Start.Character)
-                msg := d.Message
-                from := start - 1
-                if from < 0 {
-                        from = 0
-                }
-                to := start + 1
-                if to >= len(lines) {
-                        to = len(lines) - 1
-                }
-                out.WriteString(fmt.Sprintf("line %d:%d: %s\n", start+1, col+1, msg))
-                for i := from; i <= to; i++ {
-                        out.WriteString(fmt.Sprintf("%4d| %s\n", i+1, lines[i]))
-                        if i == start {
-                                out.WriteString("     " + strings.Repeat(" ", col) + "^\n")
-                        }
-                }
-        }
-        return strings.TrimSpace(out.String())
+	lines := strings.Split(src, "\n")
+	var out strings.Builder
+	for _, d := range diags {
+		start := int(d.Range.Start.Line)
+		col := int(d.Range.Start.Character)
+		msg := d.Message
+		from := start - 2
+		if from < 0 {
+			from = 0
+		}
+		to := start + 2
+		if to >= len(lines) {
+			to = len(lines) - 1
+		}
+		out.WriteString(fmt.Sprintf("line %d:%d: %s\n", start+1, col+1, msg))
+		for i := from; i <= to; i++ {
+			out.WriteString(fmt.Sprintf("%4d| %s\n", i+1, lines[i]))
+			if i == start {
+				out.WriteString("     " + strings.Repeat(" ", col) + "^\n")
+			}
+		}
+	}
+	return strings.TrimSpace(out.String())
 }
 
 // Convert converts OCaml source code to Mochi. It prefers using the
 // language server when available and falls back to a small parser
 // implemented with tree-sitter otherwise.
 func Convert(src string) ([]byte, error) {
-       fallback := func() ([]byte, error) {
-                prog, err := parse(src)
-                if err == nil {
-                        code := formatProgram(prog)
-                        if len(code) > 0 {
-                                return code, nil
-                        }
-                }
-                var b strings.Builder
-                for _, l := range fallbackOcaml(strings.Split(src, "\n")) {
-                        b.WriteString(l)
-                        b.WriteByte('\n')
-                }
-                if b.Len() == 0 {
-                        if err != nil {
-                                return nil, err
-                        }
-                        return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
-                }
-                return []byte(b.String()), nil
-        }
+	fallback := func() ([]byte, error) {
+		prog, err := parse(src)
+		if err == nil {
+			code := formatProgram(prog)
+			if len(code) > 0 {
+				return code, nil
+			}
+		}
+		var b strings.Builder
+		for _, l := range fallbackOcaml(strings.Split(src, "\n")) {
+			b.WriteString(l)
+			b.WriteByte('\n')
+		}
+		if b.Len() == 0 {
+			if err != nil {
+				return nil, err
+			}
+			return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
+		}
+		return []byte(b.String()), nil
+	}
 
-        if !parent.UseLSP {
-                return fallback()
-        }
+	if !parent.UseLSP {
+		return fallback()
+	}
 
-        ls := parent.Servers["ocaml"]
-        if ls.Command == "" {
-                return fallback()
-        }
+	ls := parent.Servers["ocaml"]
+	if ls.Command == "" {
+		return fallback()
+	}
 
-        syms, diags, err := parent.EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
-        if err != nil {
-                return fallback()
-        }
-        if len(diags) > 0 {
-                return nil, fmt.Errorf("%s", diagnostics(src, diags))
-        }
+	syms, diags, err := parent.EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+	if err != nil {
+		return fallback()
+	}
+	if len(diags) > 0 {
+		return nil, fmt.Errorf("%s", diagnostics(src, diags))
+	}
 	var out strings.Builder
 	lines := strings.Split(src, "\n")
 	writeOcamlSymbols(&out, nil, syms, lines, src, ls)
@@ -356,26 +356,32 @@ func parseOcamlBody(lines []string, sym parent.DocumentSymbol) []string {
 }
 
 func fallbackOcaml(lines []string) []string {
-        var out []string
-        reLet := regexp.MustCompile(`^let\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(.*)`)
-        for _, line := range lines {
-                t := strings.TrimSpace(line)
-                if m := reLet.FindStringSubmatch(t); m != nil {
-                        expr := strings.TrimSuffix(m[2], ";;")
-                        expr = strings.ReplaceAll(expr, ";", ",")
-                        out = append(out, fmt.Sprintf("let %s = %s", m[1], strings.TrimSpace(expr)))
-                        continue
-                }
-                if strings.HasPrefix(t, "print_endline") {
-                        t = strings.ReplaceAll(t, "print_endline", "print")
-                        t = strings.ReplaceAll(t, "string_of_int", "str")
-                        t = strings.ReplaceAll(t, "string_of_float", "str")
-                        t = strings.ReplaceAll(t, "string_of_bool", "str")
-                        t = strings.ReplaceAll(t, "not ", "!")
-                        t = strings.TrimSuffix(t, ";;")
-                        t = strings.ReplaceAll(t, " ", "")
-                        out = append(out, t)
-                }
-        }
-        return out
+	var out []string
+	reLet := regexp.MustCompile(`^let\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(.*)`)
+	for _, line := range lines {
+		t := strings.TrimSpace(line)
+		if m := reLet.FindStringSubmatch(t); m != nil {
+			expr := strings.TrimSuffix(m[2], ";;")
+			expr = strings.ReplaceAll(expr, ";", ",")
+			out = append(out, fmt.Sprintf("let %s = %s", m[1], strings.TrimSpace(expr)))
+			continue
+		}
+		if strings.HasPrefix(t, "print_endline") {
+			t = strings.TrimPrefix(t, "print_endline")
+			t = strings.TrimSpace(strings.TrimSuffix(t, ";;"))
+			if strings.HasPrefix(t, "(") && strings.HasSuffix(t, ")") {
+				t = strings.TrimSuffix(strings.TrimPrefix(t, "("), ")")
+			}
+			t = strings.ReplaceAll(t, "string_of_int", "")
+			t = strings.ReplaceAll(t, "string_of_float", "")
+			t = strings.ReplaceAll(t, "string_of_bool", "")
+			t = strings.ReplaceAll(t, "not ", "!")
+			t = strings.TrimSpace(t)
+			if strings.HasPrefix(t, "str(") && strings.HasSuffix(t, ")") {
+				t = strings.TrimSuffix(strings.TrimPrefix(t, "str("), ")")
+			}
+			out = append(out, "print("+t+")")
+		}
+	}
+	return out
 }
