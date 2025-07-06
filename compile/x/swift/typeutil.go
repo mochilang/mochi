@@ -20,7 +20,11 @@ func swiftType(t types.Type) string {
 	case types.ListType:
 		return "[" + swiftType(tt.Elem) + "]"
 	case types.MapType:
-		return "[" + swiftType(tt.Key) + ": " + swiftType(tt.Value) + "]"
+		key := swiftType(tt.Key)
+		if key == "Any" {
+			key = "AnyHashable"
+		}
+		return "[" + key + ": " + swiftType(tt.Value) + "]"
 	case types.StructType:
 		return tt.Name
 	case types.UnionType:

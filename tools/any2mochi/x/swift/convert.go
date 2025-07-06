@@ -220,7 +220,7 @@ func parse(src string) (file, error) {
 			col, _ = strconv.Atoi(m[2])
 			msg = m[3]
 		}
-		return file{}, &ConvertError{Line: line, Column: col, Msg: msg, Snip: snippetAround(src, line)}
+		return file{}, &ConvertError{Line: line, Column: col, Msg: msg, Snip: snippetAround(src, line, col)}
 	}
 	data := out.Bytes()
 	if idx := bytes.IndexByte(data, '{'); idx > 0 {
@@ -399,7 +399,7 @@ func snippet(src string) string {
 	return strings.Join(lines, "\n")
 }
 
-func snippetAround(src string, line int) string {
+func snippetAround(src string, line, col int) string {
 	lines := strings.Split(src, "\n")
 	if line <= 0 || line > len(lines) {
 		return snippet(src)
@@ -408,7 +408,7 @@ func snippetAround(src string, line int) string {
 	if start < 0 {
 		start = 0
 	}
-	end := line + 1
+	end := line + 2
 	if end > len(lines) {
 		end = len(lines)
 	}
@@ -416,7 +416,11 @@ func snippetAround(src string, line int) string {
 	for i := start; i < end; i++ {
 		fmt.Fprintf(&out, "%4d| %s\n", i+1, lines[i])
 		if i == line-1 {
-			out.WriteString("    | " + strings.Repeat(" ", len(lines[i])) + "^\n")
+			caretPos := len(lines[i])
+			if col > 0 && col-1 < caretPos {
+				caretPos = col - 1
+			}
+			out.WriteString("    | " + strings.Repeat(" ", caretPos) + "^\n")
 		}
 	}
 	return strings.TrimRight(out.String(), "\n")
