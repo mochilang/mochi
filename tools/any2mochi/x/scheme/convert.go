@@ -61,11 +61,17 @@ func diagnostics(src string, diags []any2mochi.Diagnostic) string {
 	for _, d := range diags {
 		start := int(d.Range.Start.Line)
 		msg := d.Message
-		line := ""
-		if start < len(lines) {
-			line = strings.TrimSpace(lines[start])
+		out.WriteString(fmt.Sprintf("line %d: %s\n", start+1, msg))
+		for i := start - 1; i <= start+1; i++ {
+			if i < 0 || i >= len(lines) {
+				continue
+			}
+			prefix := "  "
+			if i == start {
+				prefix = "->"
+			}
+			out.WriteString(fmt.Sprintf("%s %3d| %s\n", prefix, i+1, strings.TrimSpace(lines[i])))
 		}
-		out.WriteString(fmt.Sprintf("line %d: %s\n  %s\n", start+1, msg, line))
 	}
 	return strings.TrimSpace(out.String())
 }
@@ -456,8 +462,15 @@ func convertExpr(expr string) string {
 			}
 		case "display":
 			return "print(" + strings.Join(parts[1:], " ") + ")"
+		case "list":
+			if len(parts) > 1 {
+				return "[" + strings.Join(parts[1:], ", ") + "]"
+			}
 		}
 		return inner
+	}
+	if expr == "'()" {
+		return "[]"
 	}
 	return expr
 }

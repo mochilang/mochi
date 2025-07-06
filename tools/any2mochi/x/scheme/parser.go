@@ -5,10 +5,16 @@ import "strings"
 // SchemeItem represents a top level Scheme definition extracted from the source.
 // Only a minimal subset is supported: function definitions with parameter names
 // and simple variable definitions.
+// Item represents a top level definition discovered in the Scheme source.
+// In addition to the kind and name of the definition it optionally exposes
+// the raw expression for simple variable definitions.  The expression string
+// is a very small subset of Scheme and is only used for the conversion tests
+// contained in this repository.
 type Item struct {
 	Kind   string   `json:"kind"`
 	Name   string   `json:"name"`
 	Params []string `json:"params,omitempty"`
+	Expr   string   `json:"expr,omitempty"`
 }
 
 // ParseSchemeItems parses Scheme source and returns a slice of SchemeItem.
@@ -44,7 +50,11 @@ func ParseItems(src string) ([]Item, error) {
 			items = append(items, Item{Kind: "func", Name: name, Params: params})
 		} else if def.atom != "" {
 			// variable definition
-			items = append(items, Item{Kind: "var", Name: def.atom})
+			expr := ""
+			if len(n.list) >= 3 {
+				expr = n.list[2].String()
+			}
+			items = append(items, Item{Kind: "var", Name: def.atom, Expr: expr})
 		}
 	}
 	return items, nil
@@ -114,6 +124,20 @@ func tokenize(src string) []token {
 type node struct {
 	atom string
 	list []node
+}
+
+// String reconstructs the Scheme code represented by the node. It is not
+// intended to be perfectly faithful but is sufficient for the simple conversion
+// logic used in tests.
+func (n node) String() string {
+	if n.atom != "" {
+		return n.atom
+	}
+	parts := make([]string, 0, len(n.list))
+	for _, c := range n.list {
+		parts = append(parts, c.String())
+	}
+	return "(" + strings.Join(parts, " ") + ")"
 }
 
 func parseList(toks []token, i int) ([]node, int, error) {
