@@ -359,10 +359,15 @@ func toMochiType(t string) string {
 func parseFuncHeader(l string) (string, string, string) {
 	l = strings.TrimSpace(l)
 	l = strings.TrimSuffix(l, ";")
-	if !strings.HasPrefix(strings.ToLower(l), "function") {
+	lower := strings.ToLower(l)
+	if strings.HasPrefix(lower, "function") {
+		l = strings.TrimSpace(l[len("function"):])
+	} else if strings.HasPrefix(lower, "procedure") {
+		l = strings.TrimSpace(l[len("procedure"):])
+	} else {
 		return "", "", ""
 	}
-	rest := strings.TrimSpace(l[len("function"):])
+	rest := l
 	open := strings.Index(rest, "(")
 	close := strings.LastIndex(rest, ")")
 	if open == -1 || close == -1 || close <= open {
@@ -458,6 +463,7 @@ func convertFallback(src string) ([]byte, error) {
 	inBody := false
 	inFunc := false
 	inLoop := false
+	inRepeat := false
 	for i := 0; i < len(lines); i++ {
 		l := strings.TrimSpace(lines[i])
 		lower := strings.ToLower(l)
@@ -537,8 +543,11 @@ func convertFallback(src string) ([]byte, error) {
 						out = append(out, "}")
 					}
 				}
-			case strings.HasPrefix(lower, "function") && strings.Contains(l, "("):
+			case (strings.HasPrefix(lower, "function") || strings.HasPrefix(lower, "procedure")) && strings.Contains(l, "("):
 				name, params, ret := parseFuncHeader(l)
+				if strings.HasPrefix(lower, "procedure") {
+					ret = ""
+				}
 				if name != "" {
 					funLine := "fun " + name + "(" + params + ")"
 					if ret != "" {
@@ -615,6 +624,16 @@ func convertFallback(src string) ([]byte, error) {
 				i++
 			}
 			inLoop = true
+		case lower == "repeat":
+			out = append(out, "while true {")
+			inLoop = true
+			inRepeat = true
+		case strings.HasPrefix(lower, "until ") && inRepeat:
+			cond := strings.TrimSuffix(strings.TrimSpace(l[len("until "):]), ";")
+			out = append(out, fmt.Sprintf("if %s { break }", cond))
+			out = append(out, "}")
+			inLoop = false
+			inRepeat = false
 		case lower == "end;" && inLoop:
 			out = append(out, "}")
 			inLoop = false
@@ -648,7 +667,7 @@ func convertFallback(src string) ([]byte, error) {
 		}
 	}
 	if len(out) == 0 {
-		return nil, fmt.Errorf("convert failure: no convertible content\n\nsource snippet:\n%s", snippet(src))
+		return nil, fmt.Errorf("convert failure: could not parse Pascal source\n\nsource snippet:\n%s", snippet(src))
 	}
 	return []byte(strings.Join(out, "\n")), nil
 }
