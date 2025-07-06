@@ -1,0 +1,99 @@
+# Errors
+
+- append_builtin.mochi: ok
+- avg_builtin.mochi: ok
+- basic_compare.mochi: ok
+- binary_precedence.mochi: ok
+- bool_chain.mochi: ok
+- break_continue.mochi: ok
+- cast_string_to_int.mochi: parse2 error: parse error: 3:26: unexpected token "[" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- cast_struct.mochi: parse2 error: parse error: 6:26: unexpected token "[" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- closure.mochi: parse2 error: parse error: 2:28: unexpected token "(" (expected "{" Statement* "}")
+- count_builtin.mochi: ok
+- cross_join.mochi: ok
+- cross_join_filter.mochi: ok
+- cross_join_triple.mochi: ok
+- dataset_sort_take_limit.mochi: parse2 error: parse error: 3:3: unexpected token "on" (expected "fun" <ident> "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+- dataset_where_filter.mochi: ok
+- exists_builtin.mochi: ok
+- for_list_collection.mochi: ok
+- for_loop.mochi: ok
+- for_map_collection.mochi: ok
+- fun_call.mochi: ok
+- fun_expr_in_let.mochi: ok
+- fun_three_args.mochi: ok
+- group_by.mochi: parse2 error: parse error: 4:26: unexpected token "[" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- group_by_conditional_sum.mochi: parse2 error: parse error: 3:26: unexpected token "[" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- group_by_having.mochi: ok
+- group_by_join.mochi: ok
+- group_by_left_join.mochi: parse2 error: parse error: 3:26: unexpected token "[" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- group_by_multi_join.mochi: parse2 error: parse error: 3:26: unexpected token "[" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- group_by_multi_join_sort.mochi: parse2 error: parse error: 3:26: unexpected token "[" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- group_by_sort.mochi: parse2 error: parse error: 3:26: unexpected token "[" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- group_items_iteration.mochi: go compile error: cannot iterate over type any
+- if_else.mochi: ok
+- if_then_else.mochi: ok
+- if_then_else_nested.mochi: ok
+- in_operator.mochi: ok
+- in_operator_extended.mochi: ok
+- inner_join.mochi: ok
+- join_multi.mochi: ok
+- json_builtin.mochi: ok
+- left_join.mochi: parse2 error: parse error: 3:3: unexpected token "on" (expected "fun" <ident> "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+- left_join_multi.mochi: parse2 error: parse error: 3:3: unexpected token "on" (expected "fun" <ident> "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+- len_builtin.mochi: ok
+- len_map.mochi: ok
+- len_string.mochi: ok
+- let_and_print.mochi: ok
+- list_assign.mochi: ok
+- list_index.mochi: ok
+- list_nested_assign.mochi: ok
+- list_set_ops.mochi: ok
+- load_yaml.mochi: parse2 error: parse error: 8:26: unexpected token "[" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- map_assign.mochi: ok
+- map_in_operator.mochi: ok
+- map_index.mochi: ok
+- map_int_key.mochi: ok
+- map_literal_dynamic.mochi: ok
+- map_membership.mochi: ok
+- map_nested_assign.mochi: ok
+- match_expr.mochi: ok
+- match_full.mochi: ok
+- math_ops.mochi: ok
+- membership.mochi: ok
+- min_max_builtin.mochi: ok
+- nested_function.mochi: ok
+- order_by_map.mochi: parse2 error: parse error: 3:3: unexpected token "on" (expected "fun" <ident> "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+- outer_join.mochi: parse2 error: parse error: 3:3: unexpected token "on" (expected "fun" <ident> "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+- partial_application.mochi: ok
+- print_hello.mochi: ok
+- pure_fold.mochi: ok
+- pure_global_fold.mochi: ok
+- query_sum_select.mochi: ok
+- record_assign.mochi: parse2 error: parse error: 8:26: unexpected token "[" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- right_join.mochi: parse2 error: parse error: 3:3: unexpected token "on" (expected "fun" <ident> "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+- save_jsonl_stdout.mochi: parse2 error: parse error: 2:44: unexpected token "[" (expected ")" (":" TypeRef)? "{" Statement* "}")
+- short_circuit.mochi: ok
+- slice.mochi: ok
+- sort_stable.mochi: parse2 error: parse error: 3:3: unexpected token "on" (expected "fun" <ident> "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+- str_builtin.mochi: ok
+- string_compare.mochi: ok
+- string_concat.mochi: ok
+- string_contains.mochi: ok
+- string_in_operator.mochi: ok
+- string_index.mochi: ok
+- string_prefix_slice.mochi: ok
+- substring_builtin.mochi: ok
+- sum_builtin.mochi: ok
+- tail_recursion.mochi: ok
+- test_block.mochi: parse2 error: parse error: 1:5: unexpected token "expect" (expected <ident> "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+- tree_sum.mochi: parse2 error: parse error: 3:1: unexpected token "}" (expected "{" Statement* "}")
+- two-sum.mochi: ok
+- typed_let.mochi: ok
+- typed_var.mochi: ok
+- unary_neg.mochi: ok
+- update_stmt.mochi: parse2 error: parse error: 7:5: unexpected token "expect" (expected <ident> "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+- user_type_literal.mochi: ok
+- values_builtin.mochi: ok
+- var_assignment.mochi: ok
+- while_loop.mochi: ok
