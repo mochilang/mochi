@@ -3,7 +3,7 @@
 using namespace std;
 
 int main() {
-  auto x = 5;
+  int x = 5;
   if (x > 3) {
     std::cout << (string("big")) << std::endl;
   } else {

@@ -2,10 +2,12 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-template <typename T> auto _count(const T &v) -> decltype(v.size(), int{}) {
+template <typename T>
+inline auto _count(const T &v) -> decltype(v.size(), int{}) {
   return (int)v.size();
 }
-template <typename T> auto _count(const T &v) -> decltype(v.Items, int{}) {
+template <typename T>
+inline auto _count(const T &v) -> decltype(v.Items, int{}) {
   return (int)v.Items.size();
 }
 

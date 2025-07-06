@@ -2,11 +2,29 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+template <typename T> inline void _hash_combine(size_t &seed, const T &v) {
+  seed ^= std::hash<T>{}(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+}
+
 struct Person {
   string name;
   int age;
   string status;
 };
+inline bool operator==(const Person &a, const Person &b) {
+  return a.name == b.name && a.age == b.age && a.status == b.status;
+}
+namespace std {
+template <> struct hash<Person> {
+  size_t operator()(const Person &k) const noexcept {
+    size_t h = 0;
+    _hash_combine(h, k.name);
+    _hash_combine(h, k.age);
+    _hash_combine(h, k.status);
+    return h;
+  }
+};
+} // namespace std
 
 int main() {
   vector<Person> people =

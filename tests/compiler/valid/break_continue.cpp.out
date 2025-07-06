@@ -3,7 +3,7 @@
 using namespace std;
 
 int main() {
-  auto numbers = vector<int>{1, 2, 3, 4, 5, 6, 7, 8, 9};
+  vector<int> numbers = vector<int>{1, 2, 3, 4, 5, 6, 7, 8, 9};
   for (int n : numbers) {
     if (n % 2 == 0) {
       continue;

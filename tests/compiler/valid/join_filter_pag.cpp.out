@@ -2,40 +2,71 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+template <typename T> inline void _hash_combine(size_t &seed, const T &v) {
+  seed ^= std::hash<T>{}(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+}
+
 struct Person {
   int id;
   string name;
 };
+inline bool operator==(const Person &a, const Person &b) {
+  return a.id == b.id && a.name == b.name;
+}
+namespace std {
+template <> struct hash<Person> {
+  size_t operator()(const Person &k) const noexcept {
+    size_t h = 0;
+    _hash_combine(h, k.id);
+    _hash_combine(h, k.name);
+    return h;
+  }
+};
+} // namespace std
 
 struct Purchase {
   int id;
   int personId;
   int total;
 };
+inline bool operator==(const Purchase &a, const Purchase &b) {
+  return a.id == b.id && a.personId == b.personId && a.total == b.total;
+}
+namespace std {
+template <> struct hash<Purchase> {
+  size_t operator()(const Purchase &k) const noexcept {
+    size_t h = 0;
+    _hash_combine(h, k.id);
+    _hash_combine(h, k.personId);
+    _hash_combine(h, k.total);
+    return h;
+  }
+};
+} // namespace std
 
 int main() {
-  auto people =
+  vector<Person> people =
       vector<Person>{Person{1, string("Alice")}, Person{2, string("Bob")},
                      Person{3, string("Charlie")}};
-  auto purchases = vector<Purchase>{Purchase{1, 1, 200}, Purchase{2, 1, 50},
-                                    Purchase{3, 2, 150}, Purchase{4, 3, 100},
-                                    Purchase{5, 2, 250}};
-  auto result = ([&]() -> vector<unordered_map<string, int>> {
-    vector<pair<unordered_map<string, int>, unordered_map<string, int>>> _tmp;
+  vector<Purchase> purchases = vector<Purchase>{
+      Purchase{1, 1, 200}, Purchase{2, 1, 50}, Purchase{3, 2, 150},
+      Purchase{4, 3, 100}, Purchase{5, 2, 250}};
+  auto result = ([&]() -> vector<unordered_map<string, any>> {
+    vector<pair<unordered_map<string, any>, unordered_map<string, any>>> _tmp;
     for (auto &p : people) {
       for (auto &o : purchases) {
         if (!(p.id == o.personId))
           continue;
         if (o.total > 100) {
-          _tmp.push_back({-o.total, unordered_map<string, auto>{
-                                        {string("person"), p.name},
-                                        {string("spent"), o.total}}});
+          _tmp.push_back({-o.total, unordered_map<string, any>{
+                                        {string("person"), any(p.name)},
+                                        {string("spent"), any(o.total)}}});
         }
       }
     }
     std::sort(_tmp.begin(), _tmp.end(),
               [](const auto &a, const auto &b) { return a.first < b.first; });
-    vector<unordered_map<string, int>> _res;
+    vector<unordered_map<string, any>> _res;
     _res.reserve(_tmp.size());
     for (auto &_it : _tmp)
       _res.push_back(_it.second);

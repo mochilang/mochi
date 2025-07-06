@@ -10,9 +10,10 @@ inline Acc _reduce(const Src &src, Fn fn, Acc acc) {
   return acc;
 }
 
+int add(int acc, int v) { acc + v; }
+
 int main() {
-  vector<int> nums = vector<int>{1, 2, 3, 4};
-  int sum = _reduce(nums, [=](int acc, int x) { return acc + x; }, 0);
-  std::cout << (sum) << std::endl;
+  vector<int> nums = vector<int>{1, 2, 3, 4, 5};
+  std::cout << (_reduce(nums, add, 0)) << std::endl;
   return 0;
 }

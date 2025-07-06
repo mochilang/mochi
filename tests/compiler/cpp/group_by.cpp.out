@@ -3,7 +3,7 @@
 using namespace std;
 
 template <typename Src, typename KeyFunc>
-auto _group_by(const Src &src, KeyFunc keyfn) {
+inline auto _group_by(const Src &src, KeyFunc keyfn) {
   using ElemT = typename std::decay<decltype(*std::begin(src))>::type;
   using KeyT = decltype(keyfn(*std::begin(src)));
   struct _Group {
@@ -26,22 +26,24 @@ auto _group_by(const Src &src, KeyFunc keyfn) {
   return res;
 }
 
-template <typename T> auto _count(const T &v) -> decltype(v.size(), int{}) {
+template <typename T>
+inline auto _count(const T &v) -> decltype(v.size(), int{}) {
   return (int)v.size();
 }
-template <typename T> auto _count(const T &v) -> decltype(v.Items, int{}) {
+template <typename T>
+inline auto _count(const T &v) -> decltype(v.Items, int{}) {
   return (int)v.Items.size();
 }
 
 int main() {
-  auto xs = vector<int>{1, 1, 2};
+  vector<int> xs = vector<int>{1, 1, 2};
   auto groups = ([&]() -> vector<unordered_map<string, int>> {
     auto _src = xs;
     auto _groups = _group_by(_src, [&](auto &x) { return x; });
     vector<unordered_map<string, int>> _res;
     for (auto &g : _groups) {
-      _res.push_back(unordered_map<string, auto>{{string("k"), g.key},
-                                                 {string("c"), _count(g)}});
+      _res.push_back(unordered_map<string, int>{{string("k"), g.key},
+                                                {string("c"), _count(g)}});
     }
     return _res;
   })();

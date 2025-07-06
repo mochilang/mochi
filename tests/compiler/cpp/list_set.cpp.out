@@ -3,7 +3,7 @@
 using namespace std;
 
 int main() {
-  auto nums = vector<int>{1, 2};
+  vector<int> nums = vector<int>{1, 2};
   nums[1] = 3;
   std::cout << (nums[1]) << std::endl;
   return 0;

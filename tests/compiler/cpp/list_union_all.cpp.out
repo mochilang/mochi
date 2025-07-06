@@ -2,7 +2,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-template <typename T> string _fmtVec(const vector<T> &v) {
+template <typename T> inline string _fmtVec(const vector<T> &v) {
   stringstream ss;
   ss << '[';
   for (size_t i = 0; i < v.size(); i++) {
@@ -15,7 +15,7 @@ template <typename T> string _fmtVec(const vector<T> &v) {
 }
 
 template <typename T>
-vector<T> _union_all(const vector<T> &a, const vector<T> &b) {
+inline vector<T> _union_all(const vector<T> &a, const vector<T> &b) {
   vector<T> res = a;
   res.insert(res.end(), b.begin(), b.end());
   return res;

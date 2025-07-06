@@ -1,0 +1,35 @@
+type Person {
+  name: string
+  age: int
+}
+fun _hash_combine(seed: int, v: T) {
+  seed ^= std::hash<T>{}(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2)
+}
+fun _hash_combine(seed: int, v: std::basic_string<char>) {
+  seed ^= std::hash<T>{}(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2)
+}
+fun _hash_combine(seed: int, v: int) {
+  seed ^= std::hash<T>{}(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2)
+}
+fun operator==(a: Person, b: Person): bool {
+  return a.name == b.name && a.age == b.age
+}
+fun main(): int {
+  vector<Person> people =
+  vector<Person>{Person{string("Alice"), 30}, Person{string("Bob"), 15},
+  Person{string("Charlie"), 65}}
+  let names = ([&]() -> vector<string> {
+  vector<string> _res
+  for (auto &p : people) {
+  if (p.age >= 18) {
+  _res.push_back(p.name)
+  }
+  }
+  return _res
+  })()
+  for (const string &n : names) {
+  print((n))
+  }
+  return 0
+}
+

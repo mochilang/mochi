@@ -2,7 +2,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-string _sliceString(const string &s, int start, int end) {
+inline string _sliceString(const string &s, int start, int end) {
   int n = s.size();
   if (start < 0)
     start += n;

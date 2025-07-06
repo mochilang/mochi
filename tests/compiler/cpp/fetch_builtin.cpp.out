@@ -2,6 +2,10 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+template <typename T> inline void _hash_combine(size_t &seed, const T &v) {
+  seed ^= std::hash<T>{}(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+}
+
 template <typename T> T _cast(any v);
 template <> inline int _cast<int>(any v) {
   if (v.type() == typeid(int))
@@ -106,9 +110,21 @@ unordered_map<string, string> _fetch(const string &url,
 struct Msg {
   string message;
 };
+inline bool operator==(const Msg &a, const Msg &b) {
+  return a.message == b.message;
+}
+namespace std {
+template <> struct hash<Msg> {
+  size_t operator()(const Msg &k) const noexcept {
+    size_t h = 0;
+    _hash_combine(h, k.message);
+    return h;
+  }
+};
+} // namespace std
 
 int main() {
-  auto opts = unordered_map<string, any>{
+  unordered_map<string, int> opts = unordered_map<string, any>{
       {string("method"), any(string("GET"))},
       {string("headers"),
        any(unordered_map<string, string>{{string("X-Test"), string("1")}})},

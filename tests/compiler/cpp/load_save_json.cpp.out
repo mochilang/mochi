@@ -121,7 +121,7 @@ static vector<unordered_map<string, string>> _parse_json(const string &text) {
   }
   return rows;
 }
-vector<unordered_map<string, string>>
+inline vector<unordered_map<string, string>>
 _load(const string &path, const unordered_map<string, string> &opts) {
   string format = "csv";
   bool header = true;
@@ -171,8 +171,9 @@ static string _json_sorted(const unordered_map<string, string> &m) {
   out += '}';
   return out;
 }
-void _save(const vector<unordered_map<string, string>> &src, const string &path,
-           const unordered_map<string, string> &opts) {
+inline void _save(const vector<unordered_map<string, string>> &src,
+                  const string &path,
+                  const unordered_map<string, string> &opts) {
   string format = "csv";
   bool header = false;
   char delim = ',';

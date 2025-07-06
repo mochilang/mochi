@@ -3,9 +3,9 @@
 using namespace std;
 
 int main() {
-  auto nums = vector<int>{1, 2, 3, 4, 5};
-  auto sub = ([&]() -> vector<auto> {
-    vector<auto> _res;
+  vector<int> nums = vector<int>{1, 2, 3, 4, 5};
+  auto sub = ([&]() -> vector<int> {
+    vector<int> _res;
     for (auto &n : nums) {
       _res.push_back(n);
     }

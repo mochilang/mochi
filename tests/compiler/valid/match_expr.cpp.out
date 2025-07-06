@@ -3,7 +3,7 @@
 using namespace std;
 
 int main() {
-  auto x = 2;
+  int x = 2;
   auto label = ([&]() {
     auto _t0 = x;
     if (_t0 == 1)
