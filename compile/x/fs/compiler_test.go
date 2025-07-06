@@ -15,6 +15,7 @@ import (
 	fscode "mochi/compile/x/fs"
 	"mochi/golden"
 	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -53,7 +54,13 @@ func TestFSCompiler_SubsetPrograms(t *testing.T) {
 }
 
 func TestFSCompiler_GoldenOutput(t *testing.T) {
-	compile := func(src string) ([]byte, error) {
+	compileRun := func(src string) ([]byte, error) {
+		if _, err := exec.LookPath("dotnet"); err != nil {
+			return nil, fmt.Errorf("dotnet not installed")
+		}
+		if err := exec.Command("dotnet", "fsi", "--help").Run(); err != nil {
+			return nil, fmt.Errorf("dotnet fsi not runnable: %v", err)
+		}
 		prog, err := parser.Parse(src)
 		if err != nil {
 			return nil, fmt.Errorf("❌ parse error: %w", err)
@@ -66,11 +73,54 @@ func TestFSCompiler_GoldenOutput(t *testing.T) {
 		if err != nil {
 			return nil, fmt.Errorf("❌ compile error: %w", err)
 		}
+
+		// Execute the generated F# code.
+		dir := t.TempDir()
+		file := filepath.Join(dir, "main.fsx")
+		if err := os.WriteFile(file, code, 0644); err != nil {
+			return nil, fmt.Errorf("write error: %w", err)
+		}
+		cmd := exec.Command("dotnet", "fsi", "--quiet", file)
+		var input []byte
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			cmd.Stdin = bytes.NewReader(data)
+			input = data
+		}
+		outFS, err := cmd.CombinedOutput()
+		if err != nil {
+			return nil, fmt.Errorf("❌ fsi error: %w\n%s", err, outFS)
+		}
+		outFS = bytes.TrimSpace(outFS)
+
+		// Run the original program via the Mochi VM for reference.
+		progBytes, rerr := os.ReadFile(src)
+		if rerr != nil {
+			return nil, rerr
+		}
+		p, err := vm.CompileWithSource(prog, env, string(progBytes))
+		if err != nil {
+			return nil, fmt.Errorf("❌ vm compile error: %w", err)
+		}
+		var vmOut bytes.Buffer
+		vmIn := bytes.NewReader(input)
+		m := vm.NewWithIO(p, vmIn, &vmOut)
+		if err := m.Run(); err != nil {
+			if ve, ok := err.(*vm.VMError); ok {
+				return nil, fmt.Errorf("❌ vm run error:\n%s", ve.Format(p))
+			}
+			return nil, fmt.Errorf("❌ vm run error: %v", err)
+		}
+		outVM := bytes.TrimSpace(vmOut.Bytes())
+
+		if !bytes.Equal(outFS, outVM) {
+			return nil, fmt.Errorf("runtime mismatch\n\n--- F# ---\n%s\n\n--- VM ---\n%s\n", outFS, outVM)
+		}
+
 		return bytes.TrimSpace(code), nil
 	}
 
-	runGoldenSkip(t, "tests/compiler/valid", ".mochi", ".fs.out", compile)
-	golden.Run(t, "tests/compiler/fs", ".mochi", ".fs.out", compile)
+	runGoldenSkip(t, "tests/compiler/valid", ".mochi", ".fs.out", compileRun)
+	golden.Run(t, "tests/compiler/fs", ".mochi", ".fs.out", compileRun)
 }
 
 func runGoldenSkip(t *testing.T, dir, srcExt, goldenExt string, fn func(string) ([]byte, error)) {
