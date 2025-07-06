@@ -5,6 +5,7 @@ package scalacode_test
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -14,6 +15,7 @@ import (
 	scalacode "mochi/compile/x/scala"
 	"mochi/golden"
 	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -67,7 +69,16 @@ func TestScalaCompiler_SubsetPrograms(t *testing.T) {
 		if err != nil {
 			return nil, fmt.Errorf("❌ scala run error: %w\n%s", err, out)
 		}
-		return bytes.TrimSpace(out), nil
+
+		vmOut, err := runWithVM(prog, env, src)
+		if err != nil {
+			return nil, err
+		}
+		scalaOut := bytes.TrimSpace(out)
+		if !bytes.Equal(scalaOut, vmOut) {
+			return nil, fmt.Errorf("❌ output mismatch\n-- scala --\n%s\n-- vm --\n%s", scalaOut, vmOut)
+		}
+		return scalaOut, nil
 	})
 	golden.Run(t, "tests/compiler/scala", ".mochi", ".out", func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
@@ -107,7 +118,16 @@ func TestScalaCompiler_SubsetPrograms(t *testing.T) {
 		if err != nil {
 			return nil, fmt.Errorf("❌ scala run error: %w\n%s", err, out)
 		}
-		return bytes.TrimSpace(out), nil
+
+		vmOut, err := runWithVM(prog, env, src)
+		if err != nil {
+			return nil, err
+		}
+		scalaOut := bytes.TrimSpace(out)
+		if !bytes.Equal(scalaOut, vmOut) {
+			return nil, fmt.Errorf("❌ output mismatch\n-- scala --\n%s\n-- vm --\n%s", scalaOut, vmOut)
+		}
+		return scalaOut, nil
 	})
 }
 
@@ -199,4 +219,24 @@ func runLeetExample(t *testing.T, id int) {
 			_ = out
 		})
 	}
+}
+
+func runWithVM(prog *parser.Program, env *types.Env, src string) ([]byte, error) {
+	p, err := vm.Compile(prog, env)
+	if err != nil {
+		return nil, fmt.Errorf("❌ vm compile error: %w", err)
+	}
+	var in io.Reader = bytes.NewReader(nil)
+	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+		in = bytes.NewReader(data)
+	}
+	var out bytes.Buffer
+	m := vm.NewWithIO(p, in, &out)
+	if err := m.Run(); err != nil {
+		if ve, ok := err.(*vm.VMError); ok {
+			return nil, fmt.Errorf("❌ vm run error:\n%s", ve.Format(p))
+		}
+		return nil, fmt.Errorf("❌ vm run error: %v", err)
+	}
+	return bytes.TrimSpace(out.Bytes()), nil
 }
