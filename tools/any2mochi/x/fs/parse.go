@@ -190,6 +190,11 @@ func Parse(src string) (*Program, error) {
 			if strings.HasPrefix(t, "member ") {
 				continue
 			}
+			if strings.HasPrefix(t, "exception BreakException") || strings.HasPrefix(t, "exception ContinueException") {
+				// Loop control helpers inserted by the F# backend
+				// are irrelevant for roundtripping back to Mochi.
+				continue
+			}
 			switch {
 			case strings.Contains(t, "failwith \"unreachable\""):
 				// Ignore code paths marked unreachable in the

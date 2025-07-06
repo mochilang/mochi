@@ -9,11 +9,11 @@
 
 help:
   Choose an operator that supports these operand types.
-- break_continue: unsupported syntax at line 2: exception BreakException of int
-  1: open System
-  2: exception BreakException of int
-  3: exception ContinueException of int
-  4: 
+- break_continue: unsupported syntax at line 6: try
+  5: let numbers = [|1; 2; 3; 4; 5; 6; 7; 8; 9|]
+  6: try
+  7:     for n in numbers do
+  8:         try
 - cast_string_to_int: parse2 error: parse error: 1:12: unexpected token "1995" (expected "(" (Expr ("," Expr)*)? ")")
 - cast_struct: parse2 error: parse error: 6:44: unexpected token "," (expected ")")
 - closure: parse2 error: parse error: 3:22: unexpected token ")" (expected "<" TypeRef ("," TypeRef)* ">")
