@@ -609,6 +609,32 @@ func convertImpl(src string, n *node) []string {
 	return wrapped
 }
 
+func convertTrait(src string, n *node) []string {
+	nameNode := findChild(n, "NAME")
+	if nameNode == nil {
+		return nil
+	}
+	name := strings.TrimSpace(src[nameNode.start:nameNode.end])
+	itemList := findChild(n, "ASSOC_ITEM_LIST")
+	var methods []string
+	if itemList != nil {
+		for _, it := range itemList.children {
+			if it.kind != "FN" {
+				continue
+			}
+			line := strings.TrimSpace(src[it.start:it.end])
+			line = strings.TrimSuffix(line, "{")
+			line = strings.TrimSuffix(line, "}")
+			line = strings.TrimSuffix(line, ";")
+			methods = append(methods, "# "+line)
+		}
+	}
+	out := []string{fmt.Sprintf("# trait %s {", name)}
+	out = append(out, methods...)
+	out = append(out, "# }")
+	return out
+}
+
 func runRustAnalyzerParse(cmd, src string) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -656,9 +682,7 @@ func convertRustTree(src string, tree *node) ([]byte, error) {
 				methods[name] = append(methods[name], convertImpl(src, c)...)
 			}
 		case "TRAIT":
-			sl, sc := position(src, c.start)
-			snip := snippetAt(src, sl, sc)
-			return nil, fmt.Errorf("error: unsupported TRAIT item\n--> line %d, column %d\n%s", sl, sc, snip)
+			out = append(out, convertTrait(src, c)...)
 		case "FN":
 			nameNode := findChild(findChild(c, "NAME"), "IDENT")
 			if nameNode == nil {
