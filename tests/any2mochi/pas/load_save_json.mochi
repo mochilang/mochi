@@ -1,0 +1,23 @@
+type Person {
+  name: string
+  age: int
+  email: string
+}
+let sl: tstringlist; data: tjsondata; arr: tjsonarray; i: integer; ds: tjsondestreamer
+sl = TStringList.Create
+data = GetJSON(sl.Text)
+arr = TJSONArray(data)
+arr = TJSONArray.Create([data])
+ds = TJSONDeStreamer.Create(nil)
+for i in 0..arr.Count - 1 {
+}
+let sl: tstringlist; i: integer; ds: tjsonstreamer
+sl = TStringList.Create
+ds = TJSONStreamer.Create(nil)
+for i in 0..High(data) {
+if i < High(data) then sl[sl.Count-1] = sl[sl.Count-1] + ','
+}
+people = specialize _loadJSON<Person>("")
+for p in people {
+_tmp0 = Concat(_tmp0, [p])
+}

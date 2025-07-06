@@ -1,0 +1,15 @@
+type Person {
+  name: string
+  age: int
+}
+_tmp0.name = 'Alice'
+_tmp0.age = 30
+_tmp1.name = 'Bob'
+_tmp1.age = 15
+_tmp2.name = 'Charlie'
+_tmp2.age = 65
+people = specialize TArray<Person>([_tmp0, _tmp1, _tmp2])
+for p in people {
+_tmp3 = Concat(_tmp3, [p.name])
+}
+print(n)

@@ -3,6 +3,5 @@ type Color {
   Green
   Blue
 }
-let c: Color
 c = Green
 print(c)

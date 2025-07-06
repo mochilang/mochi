@@ -1,0 +1,5 @@
+fun helper_double(x: int): int {
+result = x * 2
+return
+}
+print(helper_double(5))

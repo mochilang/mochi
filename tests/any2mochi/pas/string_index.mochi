@@ -1,0 +1,6 @@
+fun _indexString(s: string, i: int): string {
+if i < 0 then i = Length(s) + i
+Result = s[i + 1]
+}
+text = 'hello'
+print(_indexString(text, 1))

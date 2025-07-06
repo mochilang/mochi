@@ -1,0 +1,6 @@
+fun abs_val(n: int): int {
+_tmp0 = -n
+_tmp0 = n
+}
+print(abs_val(-2))
+print(abs_val(3))

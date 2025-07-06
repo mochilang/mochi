@@ -1,0 +1,12 @@
+type Color {
+  Red
+  Green
+  Blue
+}
+fun to_int(c: color): int {
+_tmp1 = c
+_tmp0 = 1
+_tmp0 = 2
+_tmp0 = 3
+}
+print(to_int(Green))
