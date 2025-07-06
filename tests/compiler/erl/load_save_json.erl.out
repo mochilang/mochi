@@ -3,115 +3,115 @@
 -export([main/1]).
 
 main(_) ->
-    Rows = mochi_load("", #{format => "json"}),
-    mochi_save(Rows, "", #{format => "json"}).
+	Rows = mochi_load("", #{format => "json"}),
+	mochi_save(Rows, "", #{format => "json"}).
 
 
 mochi_load(Path, Opts) ->
-    case file:read_file(Path) of
-        {ok, Bin} ->
-            Format = case Opts of
-                undefined -> undefined;
-                O -> maps:get(format, O, undefined)
-            end,
-            Ext = filename:extension(Path),
-            Text = binary_to_list(Bin),
-            Data0 = case {Format, Ext} of
-                {"json", _} -> mochi_decode_json(Text);
-                {_, ".json"} -> mochi_decode_json(Text);
-                {_, ".txt"} -> Text;
-                _ -> binary_to_term(Bin)
-            end,
-            Data1 = mochi_filter(Data0, Opts),
-            mochi_paginate(Data1, Opts);
-        _ -> []
-    end.
+	case file:read_file(Path) of
+		{ok, Bin} ->
+			Format = case Opts of
+				undefined -> undefined;
+				O -> maps:get(format, O, undefined)
+			end,
+			Ext = filename:extension(Path),
+			Text = binary_to_list(Bin),
+			Data0 = case {Format, Ext} of
+				{"json", _} -> mochi_decode_json(Text);
+				{_, ".json"} -> mochi_decode_json(Text);
+				{_, ".txt"} -> Text;
+				_ -> binary_to_term(Bin)
+			end,
+			Data1 = mochi_filter(Data0, Opts),
+			mochi_paginate(Data1, Opts);
+		_ -> []
+	end.
 
 mochi_save(Data, Path, Opts) ->
-    Format = case Opts of
-        undefined -> undefined;
-        O -> maps:get(format, O, undefined)
-    end,
-    Ext = filename:extension(Path),
-    Bin = case {Format, Ext} of
-        {"json", _} -> list_to_binary(mochi_to_json(Data));
-        {_, ".json"} -> list_to_binary(mochi_to_json(Data));
-        {_, ".txt"} -> Data;
-        _ -> term_to_binary(Data)
-    end,
-    ok = file:write_file(Path, Bin).
+	Format = case Opts of
+		undefined -> undefined;
+		O -> maps:get(format, O, undefined)
+	end,
+	Ext = filename:extension(Path),
+	Bin = case {Format, Ext} of
+		{"json", _} -> list_to_binary(mochi_to_json(Data));
+		{_, ".json"} -> list_to_binary(mochi_to_json(Data));
+		{_, ".txt"} -> Data;
+		_ -> term_to_binary(Data)
+	end,
+	ok = file:write_file(Path, Bin).
 
 mochi_filter(Data, Opts) when Opts =:= undefined -> Data;
 mochi_filter(Data, Opts) when is_list(Data) ->
-    case maps:get(filter, Opts, undefined) of
-        undefined -> Data;
-        Fun when is_function(Fun,1) -> [ X || X <- Data, Fun(X) ];
-        _ -> Data
-    end;
+	case maps:get(filter, Opts, undefined) of
+		undefined -> Data;
+		Fun when is_function(Fun,1) -> [ X || X <- Data, Fun(X) ];
+		_ -> Data
+	end;
 mochi_filter(Data, _) -> Data.
 
 mochi_paginate(Data, Opts) when Opts =:= undefined -> Data;
 mochi_paginate(Data, Opts) when is_list(Data) ->
-    Skip = maps:get(skip, Opts, 0),
-    Take = maps:get(take, Opts, -1),
-    Skipped = case Skip of
-        N when is_integer(N), N > 0 -> lists:nthtail(N, Data);
-        _ -> Data
-    end,
-    case Take of
-        N when is_integer(N), N >= 0 -> lists:sublist(Skipped, N);
-        _ -> Skipped
-    end;
+	Skip = maps:get(skip, Opts, 0),
+	Take = maps:get(take, Opts, -1),
+	Skipped = case Skip of
+		N when is_integer(N), N > 0 -> lists:nthtail(N, Data);
+		_ -> Data
+	end,
+	case Take of
+		N when is_integer(N), N >= 0 -> lists:sublist(Skipped, N);
+		_ -> Skipped
+	end;
 mochi_paginate(Data, _) -> Data.
 
 mochi_decode_json(Text) ->
-    {Val, _} = mochi_json_value(string:trim(Text)),
-    Val.
+	{Val, _} = mochi_json_value(string:trim(Text)),
+	Val.
 
 mochi_json_value([] = S) -> {[], S};
 mochi_json_value([${}|S]) -> mochi_json_object(S, #{});
 mochi_json_value([$[|S]) -> mochi_json_array(S, []);
 mochi_json_value([$"|S]) ->
-    {Str, R} = mochi_json_string(S, []),
-    {Str, mochi_skip_ws(R)}.
+	{Str, R} = mochi_json_string(S, []),
+	{Str, mochi_skip_ws(R)}.
 mochi_json_value(S) ->
-    {Num, R} = mochi_json_number(S),
-    {Num, mochi_skip_ws(R)}.
+	{Num, R} = mochi_json_number(S),
+	{Num, mochi_skip_ws(R)}.
 
 mochi_json_array([$]|S], Acc) -> {lists:reverse(Acc), mochi_skip_ws(S)};
 mochi_json_array(S, Acc) ->
-    {Val, R0} = mochi_json_value(mochi_skip_ws(S)),
-    R1 = mochi_skip_ws(R0),
-    case R1 of
-        [$,|T] -> mochi_json_array(T, [Val|Acc]);
-        [$]|T] -> {lists:reverse([Val|Acc]), mochi_skip_ws(T)};
-        _ -> {lists:reverse([Val|Acc]), R1}
-    end.
+	{Val, R0} = mochi_json_value(mochi_skip_ws(S)),
+	R1 = mochi_skip_ws(R0),
+	case R1 of
+		[$,|T] -> mochi_json_array(T, [Val|Acc]);
+		[$]|T] -> {lists:reverse([Val|Acc]), mochi_skip_ws(T)};
+		_ -> {lists:reverse([Val|Acc]), R1}
+	end.
 
 mochi_json_object([$}|S], Acc) -> {Acc, mochi_skip_ws(S)};
 mochi_json_object(S, Acc) ->
-    {Key, R0} = mochi_json_string(mochi_skip_ws(S), []),
-    R1 = mochi_skip_ws(R0),
-    [$:|R2] = R1,
-    {Val, R3} = mochi_json_value(mochi_skip_ws(R2)),
-    R4 = mochi_skip_ws(R3),
-    Acc1 = maps:put(Key, Val, Acc),
-    case R4 of
-        [$,|T] -> mochi_json_object(T, Acc1);
-        [$}|T] -> {Acc1, mochi_skip_ws(T)};
-        _ -> {Acc1, R4}
-    end.
+	{Key, R0} = mochi_json_string(mochi_skip_ws(S), []),
+	R1 = mochi_skip_ws(R0),
+	[$:|R2] = R1,
+	{Val, R3} = mochi_json_value(mochi_skip_ws(R2)),
+	R4 = mochi_skip_ws(R3),
+	Acc1 = maps:put(Key, Val, Acc),
+	case R4 of
+		[$,|T] -> mochi_json_object(T, Acc1);
+		[$}|T] -> {Acc1, mochi_skip_ws(T)};
+		_ -> {Acc1, R4}
+	end.
 
 mochi_json_string([$\,C|S], Acc) -> mochi_json_string(S, [C|Acc]);
 mochi_json_string([$"|S], Acc) -> {lists:reverse(Acc), S};
 mochi_json_string([C|S], Acc) -> mochi_json_string(S, [C|Acc]).
 
 mochi_json_number(S) ->
-    {NumStr, Rest} = mochi_take_number(S, []),
-    case string:to_float(NumStr) of
-        {error, _} -> {list_to_integer(NumStr), Rest};
-        {F, _} -> {F, Rest}
-    end.
+	{NumStr, Rest} = mochi_take_number(S, []),
+	case string:to_float(NumStr) of
+		{error, _} -> {list_to_integer(NumStr), Rest};
+		{F, _} -> {F, Rest}
+	end.
 
 mochi_take_number([C|S], Acc) when C >= $0, C =< $9; C == $.; C == $-; C == $+ -> mochi_take_number(S, [C|Acc]);
 mochi_take_number(S, Acc) -> {lists:reverse(Acc), S}.
@@ -121,12 +121,12 @@ mochi_skip_ws(S) -> S.
 
 mochi_escape_json([]) -> [];
 mochi_escape_json([H|T]) ->
-    E = case H of
-        $\\ -> "\\\\";
-        $" -> "\\"";
-        _ -> [H]
-    end,
-    E ++ mochi_escape_json(T).
+	E = case H of
+		$\\ -> "\\\\";
+		$" -> "\\"";
+		_ -> [H]
+	end,
+	E ++ mochi_escape_json(T).
 
 mochi_to_json(true) -> "true";
 mochi_to_json(false) -> "false";

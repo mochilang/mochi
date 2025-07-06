@@ -2,27 +2,29 @@
 -module(main).
 -export([main/1, 'Leaf'/0, 'Node'/3]).
 
+% line 1
 'Leaf'() ->
-    try
-        throw({return, #{"__name" => "Leaf"}})
-    catch
-        throw:{return, V} -> V
-    end.
+	try
+		throw({return, #{"__name" => "Leaf"}})
+	catch
+		throw:{return, V} -> V
+	end.
 
+% line 5
 'Node'(Left, Value, Right) ->
-    try
-        throw({return, #{"__name" => "Node", "left" => Left, "value" => Value, "right" => Right}})
-    catch
-        throw:{return, V} -> V
-    end.
+	try
+		throw({return, #{"__name" => "Node", "left" => Left, "value" => Value, "right" => Right}})
+	catch
+		throw:{return, V} -> V
+	end.
 
 main(_) ->
-    Tree = 'Node'('Leaf'(), 1, 'Leaf'()),
-    mochi_print([maps:get("__name", maps:get("left", Tree))]).
+	Tree = 'Node'('Leaf'(), 1, 'Leaf'()),
+	mochi_print([maps:get("__name", maps:get("left", Tree))]).
 
 mochi_print(Args) ->
-    Strs = [ mochi_format(A) || A <- Args ],
-    io:format("~s~n", [lists:flatten(Strs)]).
+	Strs = [ mochi_format(A) || A <- Args ],
+	io:format("~s~n", [lists:flatten(Strs)]).
 
 mochi_format(X) when is_integer(X) -> integer_to_list(X);
 mochi_format(X) when is_float(X) -> float_to_list(X);

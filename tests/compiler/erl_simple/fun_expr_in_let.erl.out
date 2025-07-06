@@ -3,18 +3,18 @@
 -export([main/1]).
 
 main(_) ->
-    Square = fun(X) ->
-        try
-            throw({return, (X * X)})
-        catch
-            throw:{return, V} -> V
-        end
+	Square = fun(X) ->
+		try
+			throw({return, (X * X)})
+		catch
+			throw:{return, V} -> V
+		end
 end,
-    mochi_print([Square(6)]).
+	mochi_print([Square(6)]).
 
 mochi_print(Args) ->
-    Strs = [ mochi_format(A) || A <- Args ],
-    io:format("~s~n", [lists:flatten(Strs)]).
+	Strs = [ mochi_format(A) || A <- Args ],
+	io:format("~s~n", [lists:flatten(Strs)]).
 
 mochi_format(X) when is_integer(X) -> integer_to_list(X);
 mochi_format(X) when is_float(X) -> float_to_list(X);

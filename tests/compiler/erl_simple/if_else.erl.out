@@ -2,30 +2,31 @@
 -module(main).
 -export([main/1, foo/1]).
 
+% line 1
 foo(N) ->
-    try
-                case (N < 0) of
-            true ->
-                throw({return, -1});
-                        _ ->
-                case (N == 0) of
-                    true ->
-                        throw({return, 0});
-                                        _ ->
-                        throw({return, 1})
-                end        end
-    catch
-        throw:{return, V} -> V
-    end.
+	try
+				case (N < 0) of
+			true ->
+				throw({return, -1});
+						_ ->
+				case (N == 0) of
+					true ->
+						throw({return, 0});
+										_ ->
+						throw({return, 1})
+				end		end
+	catch
+		throw:{return, V} -> V
+	end.
 
 main(_) ->
-    mochi_print([foo(-2)]),
-    mochi_print([foo(0)]),
-    mochi_print([foo(3)]).
+	mochi_print([foo(-2)]),
+	mochi_print([foo(0)]),
+	mochi_print([foo(3)]).
 
 mochi_print(Args) ->
-    Strs = [ mochi_format(A) || A <- Args ],
-    io:format("~s~n", [lists:flatten(Strs)]).
+	Strs = [ mochi_format(A) || A <- Args ],
+	io:format("~s~n", [lists:flatten(Strs)]).
 
 mochi_format(X) when is_integer(X) -> integer_to_list(X);
 mochi_format(X) when is_float(X) -> float_to_list(X);

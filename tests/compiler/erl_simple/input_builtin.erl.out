@@ -3,15 +3,15 @@
 -export([main/1]).
 
 main(_) ->
-    mochi_print(["Enter first input:"]),
-    Input1 = mochi_input(),
-    mochi_print(["Enter second input:"]),
-    Input2 = mochi_input(),
-    mochi_print(["You entered:", Input1, ",", Input2]).
+	mochi_print(["Enter first input:"]),
+	Input1 = mochi_input(),
+	mochi_print(["Enter second input:"]),
+	Input2 = mochi_input(),
+	mochi_print(["You entered:", Input1, ",", Input2]).
 
 mochi_print(Args) ->
-    Strs = [ mochi_format(A) || A <- Args ],
-    io:format("~s~n", [lists:flatten(Strs)]).
+	Strs = [ mochi_format(A) || A <- Args ],
+	io:format("~s~n", [lists:flatten(Strs)]).
 
 mochi_format(X) when is_integer(X) -> integer_to_list(X);
 mochi_format(X) when is_float(X) -> float_to_list(X);
@@ -19,7 +19,7 @@ mochi_format(X) when is_list(X) -> X;
 mochi_format(X) -> lists:flatten(io_lib:format("~p", [X])).
 
 mochi_input() ->
-    case io:get_line("") of
-        eof -> "";
-        Line -> string:trim(Line)
-    end.
+	case io:get_line("") of
+		eof -> "";
+		Line -> string:trim(Line)
+	end.

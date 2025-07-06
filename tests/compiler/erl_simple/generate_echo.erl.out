@@ -3,12 +3,12 @@
 -export([main/1]).
 
 main(_) ->
-    Poem = mochi_gen_text("echo hello", "", undefined),
-    mochi_print([Poem]).
+	Poem = mochi_gen_text("echo hello", "", undefined),
+	mochi_print([Poem]).
 
 mochi_print(Args) ->
-    Strs = [ mochi_format(A) || A <- Args ],
-    io:format("~s~n", [lists:flatten(Strs)]).
+	Strs = [ mochi_format(A) || A <- Args ],
+	io:format("~s~n", [lists:flatten(Strs)]).
 
 mochi_format(X) when is_integer(X) -> integer_to_list(X);
 mochi_format(X) when is_float(X) -> float_to_list(X);

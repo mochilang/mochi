@@ -3,12 +3,12 @@
 -export([main/1]).
 
 main(_) ->
-    Body = mochi_fetch("https://example.com", #{method => "GET"}),
-    mochi_print([(length(Body) > 0)]).
+	Body = mochi_fetch("https://example.com", #{method => "GET"}),
+	mochi_print([(length(Body) > 0)]).
 
 mochi_print(Args) ->
-    Strs = [ mochi_format(A) || A <- Args ],
-    io:format("~s~n", [lists:flatten(Strs)]).
+	Strs = [ mochi_format(A) || A <- Args ],
+	io:format("~s~n", [lists:flatten(Strs)]).
 
 mochi_format(X) when is_integer(X) -> integer_to_list(X);
 mochi_format(X) when is_float(X) -> float_to_list(X);
@@ -17,57 +17,57 @@ mochi_format(X) -> lists:flatten(io_lib:format("~p", [X])).
 
 
 mochi_fetch(Url, Opts) when Opts =:= undefined ->
-    mochi_fetch(Url, #{});
+	mochi_fetch(Url, #{});
 mochi_fetch(Url, Opts) ->
-    application:ensure_all_started(inets),
-    Method0 = maps:get(method, Opts, get),
-    Method = case Method0 of
-        M when is_atom(M) -> M;
-        M when is_list(M) -> list_to_atom(string:lowercase(M));
-        M when is_binary(M) -> list_to_atom(string:lowercase(binary_to_list(M)));
-        _ -> get
-    end,
-    Query = maps:get(query, Opts, undefined),
-    Url1 = case Query of
-        undefined -> Url;
-        Q ->
-            Pairs = [ K ++ "=" ++ lists:flatten(io_lib:format("~p", [V])) || {K,V} <- maps:to_list(Q) ],
-            Sep = case lists:member($?, Url) of true -> "&"; false -> "?" end,
-            Url ++ Sep ++ string:join(Pairs, "&")
-        end,
-    HeadersMap = maps:get(headers, Opts, #{}),
-    Headers = [ {K, case V of B when is_binary(V) -> binary_to_list(V); _ -> lists:flatten(io_lib:format("~p", [V])) end} || {K,V} <- maps:to_list(HeadersMap) ],
-    BodyOpt = maps:get(body, Opts, undefined),
-    Req = case BodyOpt of
-        undefined -> {Url1, Headers};
-        B -> {Url1, Headers, "application/json", list_to_binary(mochi_to_json(B))}
-    end,
-    TimeoutOpt = maps:get(timeout, Opts, undefined),
-    HTTPOpts = case TimeoutOpt of
-        undefined -> [];
-        T when is_integer(T) -> [{timeout, T * 1000}];
-        T when is_float(T) -> [{timeout, trunc(T * 1000)}];
-        _ -> []
-    end,
-    case string:prefix(Url1, "file://") of
-        true ->
-            {ok, Bin} = file:read_file(string:substr(Url1, 8)),
-            mochi_decode_json(binary_to_list(Bin));
-        _ ->
-            case httpc:request(Method, Req, HTTPOpts, []) of
-                {ok, {{_, 200, _}, _H, Body}} -> mochi_decode_json(binary_to_list(Body));
-                _ -> #{}
-            end
-        end.
+	application:ensure_all_started(inets),
+	Method0 = maps:get(method, Opts, get),
+	Method = case Method0 of
+		M when is_atom(M) -> M;
+		M when is_list(M) -> list_to_atom(string:lowercase(M));
+		M when is_binary(M) -> list_to_atom(string:lowercase(binary_to_list(M)));
+		_ -> get
+	end,
+	Query = maps:get(query, Opts, undefined),
+	Url1 = case Query of
+		undefined -> Url;
+		Q ->
+			Pairs = [ K ++ "=" ++ lists:flatten(io_lib:format("~p", [V])) || {K,V} <- maps:to_list(Q) ],
+			Sep = case lists:member($?, Url) of true -> "&"; false -> "?" end,
+			Url ++ Sep ++ string:join(Pairs, "&")
+		end,
+	HeadersMap = maps:get(headers, Opts, #{}),
+	Headers = [ {K, case V of B when is_binary(V) -> binary_to_list(V); _ -> lists:flatten(io_lib:format("~p", [V])) end} || {K,V} <- maps:to_list(HeadersMap) ],
+	BodyOpt = maps:get(body, Opts, undefined),
+	Req = case BodyOpt of
+		undefined -> {Url1, Headers};
+		B -> {Url1, Headers, "application/json", list_to_binary(mochi_to_json(B))}
+	end,
+	TimeoutOpt = maps:get(timeout, Opts, undefined),
+	HTTPOpts = case TimeoutOpt of
+		undefined -> [];
+		T when is_integer(T) -> [{timeout, T * 1000}];
+		T when is_float(T) -> [{timeout, trunc(T * 1000)}];
+		_ -> []
+	end,
+	case string:prefix(Url1, "file://") of
+		true ->
+			{ok, Bin} = file:read_file(string:substr(Url1, 8)),
+			mochi_decode_json(binary_to_list(Bin));
+		_ ->
+			case httpc:request(Method, Req, HTTPOpts, []) of
+				{ok, {{_, 200, _}, _H, Body}} -> mochi_decode_json(binary_to_list(Body));
+				_ -> #{}
+			end
+		end.
 
 mochi_escape_json([]) -> [];
 mochi_escape_json([H|T]) ->
-    E = case H of
-        $\\ -> "\\\\";
-        $" -> "\\"";
-        _ -> [H]
-    end,
-    E ++ mochi_escape_json(T).
+	E = case H of
+		$\\ -> "\\\\";
+		$" -> "\\"";
+		_ -> [H]
+	end,
+	E ++ mochi_escape_json(T).
 
 mochi_to_json(true) -> "true";
 mochi_to_json(false) -> "false";

@@ -2,26 +2,27 @@
 -module(main).
 -export([main/1, fib/1]).
 
+% line 1
 fib(N) ->
-    try
-                case (N =< 1) of
-            true ->
-                throw({return, N});
-                        _ -> ok
-        end,
-        throw({return, (fib((N - 1)) + fib((N - 2)))})
-    catch
-        throw:{return, V} -> V
-    end.
+	try
+				case (N =< 1) of
+			true ->
+				throw({return, N});
+						_ -> ok
+		end,
+		throw({return, (fib((N - 1)) + fib((N - 2)))})
+	catch
+		throw:{return, V} -> V
+	end.
 
 main(_) ->
-    mochi_print([fib(0)]),
-    mochi_print([fib(1)]),
-    mochi_print([fib(6)]).
+	mochi_print([fib(0)]),
+	mochi_print([fib(1)]),
+	mochi_print([fib(6)]).
 
 mochi_print(Args) ->
-    Strs = [ mochi_format(A) || A <- Args ],
-    io:format("~s~n", [lists:flatten(Strs)]).
+	Strs = [ mochi_format(A) || A <- Args ],
+	io:format("~s~n", [lists:flatten(Strs)]).
 
 mochi_format(X) when is_integer(X) -> integer_to_list(X);
 mochi_format(X) when is_float(X) -> float_to_list(X);

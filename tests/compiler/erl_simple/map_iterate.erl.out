@@ -3,14 +3,14 @@
 -export([main/1]).
 
 main(_) ->
-    M = #{"a" => 1, "b" => 2},
-    mochi_foreach(fun(K) ->
-        mochi_print([K])
-    end, maps:keys(M)).
+	M = #{"a" => 1, "b" => 2},
+	mochi_foreach(fun(K) ->
+		mochi_print([K])
+	end, maps:keys(M)).
 
 mochi_print(Args) ->
-    Strs = [ mochi_format(A) || A <- Args ],
-    io:format("~s~n", [lists:flatten(Strs)]).
+	Strs = [ mochi_format(A) || A <- Args ],
+	io:format("~s~n", [lists:flatten(Strs)]).
 
 mochi_format(X) when is_integer(X) -> integer_to_list(X);
 mochi_format(X) when is_float(X) -> float_to_list(X);
@@ -18,12 +18,12 @@ mochi_format(X) when is_list(X) -> X;
 mochi_format(X) -> lists:flatten(io_lib:format("~p", [X])).
 
 mochi_foreach(F, L) ->
-    try mochi_foreach_loop(F, L) catch throw:mochi_break -> ok end.
+	try mochi_foreach_loop(F, L) catch throw:mochi_break -> ok end.
 
 mochi_foreach_loop(_, []) -> ok;
 mochi_foreach_loop(F, [H|T]) ->
-    try F(H) catch
-        throw:mochi_continue -> ok;
-        throw:mochi_break -> throw(mochi_break)
-    end,
-    mochi_foreach_loop(F, T).
+	try F(H) catch
+		throw:mochi_continue -> ok;
+		throw:mochi_break -> throw(mochi_break)
+	end,
+	mochi_foreach_loop(F, T).

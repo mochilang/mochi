@@ -14,6 +14,7 @@ import (
 	erlcode "mochi/compile/x/erlang"
 	"mochi/golden"
 	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -122,41 +123,17 @@ func TestErlangCompiler_SubsetPrograms(t *testing.T) {
 	if err := erlcode.EnsureErlang(); err != nil {
 		t.Skipf("erlang not installed: %v", err)
 	}
-	golden.Run(t, "tests/compiler/erl_simple", ".mochi", ".out", func(src string) ([]byte, error) {
-		prog, err := parser.Parse(src)
-		if err != nil {
-			return nil, fmt.Errorf("❌ parse error: %w", err)
-		}
-		env := types.NewEnv(nil)
-		if errs := types.Check(prog, env); len(errs) > 0 {
-			return nil, fmt.Errorf("❌ type error: %v", errs[0])
-		}
-		c := erlcode.New(env)
-		code, err := c.Compile(prog)
-		if err != nil {
-			return nil, fmt.Errorf("❌ compile error: %w", err)
-		}
-		dir := t.TempDir()
-		file := filepath.Join(dir, "main.erl")
-		if err := os.WriteFile(file, code, 0755); err != nil {
-			return nil, fmt.Errorf("write error: %w", err)
-		}
-		cmd := exec.Command("escript", file)
-		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
-			cmd.Stdin = bytes.NewReader(data)
-		}
-		out, err := cmd.CombinedOutput()
-		if err != nil {
-			return nil, fmt.Errorf("❌ escript error: %w\n%s", err, out)
-		}
-		res := bytes.TrimSpace(out)
-		if res == nil {
-			res = []byte{}
-		}
-		return res, nil
-	})
 
-	golden.Run(t, "tests/compiler/erl", ".mochi", ".out", func(src string) ([]byte, error) {
+	// Provide a fake erlfmt to avoid network installation attempts.
+	tmpFmt := t.TempDir()
+	fake := filepath.Join(tmpFmt, "erlfmt")
+	if err := os.WriteFile(fake, []byte("#!/bin/sh\ncat"), 0755); err == nil {
+		oldPath := os.Getenv("PATH")
+		os.Setenv("PATH", tmpFmt+":"+oldPath)
+		t.Cleanup(func() { os.Setenv("PATH", oldPath) })
+	}
+
+	run := func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
 			return nil, fmt.Errorf("❌ parse error: %w", err)
@@ -165,8 +142,21 @@ func TestErlangCompiler_SubsetPrograms(t *testing.T) {
 		if errs := types.Check(prog, env); len(errs) > 0 {
 			return nil, fmt.Errorf("❌ type error: %v", errs[0])
 		}
-		c := erlcode.New(env)
-		code, err := c.Compile(prog)
+
+		// Execute using the VM to obtain expected output.
+		p, err := vm.Compile(prog, env)
+		if err != nil {
+			return nil, fmt.Errorf("❌ vm compile error: %w", err)
+		}
+		var wantBuf bytes.Buffer
+		m := vm.New(p, &wantBuf)
+		if err := m.Run(); err != nil {
+			return nil, fmt.Errorf("❌ vm run error: %w", err)
+		}
+		want := strings.TrimSpace(wantBuf.String())
+
+		// Compile to Erlang and run with escript.
+		code, err := erlcode.New(env).Compile(prog)
 		if err != nil {
 			return nil, fmt.Errorf("❌ compile error: %w", err)
 		}
@@ -183,15 +173,26 @@ func TestErlangCompiler_SubsetPrograms(t *testing.T) {
 		if err != nil {
 			return nil, fmt.Errorf("❌ escript error: %w\n%s", err, out)
 		}
-		res := bytes.TrimSpace(out)
-		if res == nil {
-			res = []byte{}
+		got := strings.TrimSpace(string(out))
+		if got != want {
+			return nil, fmt.Errorf("❌ output mismatch:\n-- got --\n%s\n-- want --\n%s", got, want)
 		}
-		return res, nil
-	})
+		return []byte(got), nil
+	}
+
+	golden.Run(t, "tests/compiler/erl_simple", ".mochi", ".out", run)
+
+	golden.Run(t, "tests/compiler/erl", ".mochi", ".out", run)
 }
 
 func TestErlangCompiler_GoldenOutput(t *testing.T) {
+	tmpFmt := t.TempDir()
+	fake := filepath.Join(tmpFmt, "erlfmt")
+	if err := os.WriteFile(fake, []byte("#!/bin/sh\ncat"), 0755); err == nil {
+		oldPath := os.Getenv("PATH")
+		os.Setenv("PATH", tmpFmt+":"+oldPath)
+		t.Cleanup(func() { os.Setenv("PATH", oldPath) })
+	}
 	run := func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {

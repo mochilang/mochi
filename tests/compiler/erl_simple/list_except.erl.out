@@ -3,11 +3,11 @@
 -export([main/1]).
 
 main(_) ->
-    mochi_print([mochi_except([1, 2, 3], [2])]).
+	mochi_print([mochi_except([1, 2, 3], [2])]).
 
 mochi_print(Args) ->
-    Strs = [ mochi_format(A) || A <- Args ],
-    io:format("~s~n", [lists:flatten(Strs)]).
+	Strs = [ mochi_format(A) || A <- Args ],
+	io:format("~s~n", [lists:flatten(Strs)]).
 
 mochi_format(X) when is_integer(X) -> integer_to_list(X);
 mochi_format(X) when is_float(X) -> float_to_list(X);

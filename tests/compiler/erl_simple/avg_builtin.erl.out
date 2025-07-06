@@ -3,11 +3,11 @@
 -export([main/1]).
 
 main(_) ->
-    mochi_print([mochi_avg([1, 2, 3])]).
+	mochi_print([mochi_avg([1, 2, 3])]).
 
 mochi_print(Args) ->
-    Strs = [ mochi_format(A) || A <- Args ],
-    io:format("~s~n", [lists:flatten(Strs)]).
+	Strs = [ mochi_format(A) || A <- Args ],
+	io:format("~s~n", [lists:flatten(Strs)]).
 
 mochi_format(X) when is_integer(X) -> integer_to_list(X);
 mochi_format(X) when is_float(X) -> float_to_list(X);
@@ -17,11 +17,11 @@ mochi_format(X) -> lists:flatten(io_lib:format("~p", [X])).
 mochi_avg([]) -> 0;
 mochi_avg(M) when is_map(M), maps:is_key('Items', M) -> mochi_avg(maps:get('Items', M));
 mochi_avg(L) when is_list(L) ->
-    Sum = lists:foldl(fun(X, Acc) ->
-        case X of
-            I when is_integer(I) -> Acc + I;
-            F when is_float(F) -> Acc + F;
-            _ -> erlang:error(badarg) end
-        end, 0, L),
-        Sum / length(L);
-    mochi_avg(_) -> erlang:error(badarg).
+	Sum = lists:foldl(fun(X, Acc) ->
+		case X of
+			I when is_integer(I) -> Acc + I;
+			F when is_float(F) -> Acc + F;
+			_ -> erlang:error(badarg) end
+		end, 0, L),
+		Sum / length(L);
+	mochi_avg(_) -> erlang:error(badarg).

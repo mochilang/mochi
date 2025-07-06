@@ -3,31 +3,33 @@
 -export([main/1]).
 
 -record(circle, {radius}).
+% line 4
 circle_area(Self) ->
-    try
-        A = ((3.14 * Self#circle.radius) * Self#circle.radius),
-        mochi_print(["Calculating area:", A]),
-        throw({return, A})
-    catch
-        throw:{return, V} -> V
-    end.
+	try
+		A = ((3.14 * Self#circle.radius) * Self#circle.radius),
+		mochi_print(["Calculating area:", A]),
+		throw({return, A})
+	catch
+		throw:{return, V} -> V
+	end.
 
+% line 10
 circle_describe(Self) ->
-    try
-        mochi_print(["Circle with radius", Self#circle.radius])
-    catch
-        throw:{return, V} -> V
-    end.
+	try
+		mochi_print(["Circle with radius", Self#circle.radius])
+	catch
+		throw:{return, V} -> V
+	end.
 
 
 main(_) ->
-    C = #circle{radius=5},
-    circle_describe(C),
-    mochi_print(["Area is", circle_area(C)]).
+	C = #circle{radius=5},
+	circle_describe(C),
+	mochi_print(["Area is", circle_area(C)]).
 
 mochi_print(Args) ->
-    Strs = [ mochi_format(A) || A <- Args ],
-    io:format("~s~n", [lists:flatten(Strs)]).
+	Strs = [ mochi_format(A) || A <- Args ],
+	io:format("~s~n", [lists:flatten(Strs)]).
 
 mochi_format(X) when is_integer(X) -> integer_to_list(X);
 mochi_format(X) when is_float(X) -> float_to_list(X);

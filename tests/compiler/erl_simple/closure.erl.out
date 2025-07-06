@@ -2,26 +2,27 @@
 -module(main).
 -export([main/1, 'makeAdder'/1]).
 
+% line 1
 'makeAdder'(N) ->
-    try
-        throw({return, fun(X) ->
-        try
-            throw({return, (X + N)})
-        catch
-            throw:{return, V} -> V
-        end
+	try
+		throw({return, fun(X) ->
+		try
+			throw({return, (X + N)})
+		catch
+			throw:{return, V} -> V
+		end
 end})
-    catch
-        throw:{return, V} -> V
-    end.
+	catch
+		throw:{return, V} -> V
+	end.
 
 main(_) ->
-    Add10 = 'makeAdder'(10),
-    mochi_print([Add10(7)]).
+	Add10 = 'makeAdder'(10),
+	mochi_print([Add10(7)]).
 
 mochi_print(Args) ->
-    Strs = [ mochi_format(A) || A <- Args ],
-    io:format("~s~n", [lists:flatten(Strs)]).
+	Strs = [ mochi_format(A) || A <- Args ],
+	io:format("~s~n", [lists:flatten(Strs)]).
 
 mochi_format(X) when is_integer(X) -> integer_to_list(X);
 mochi_format(X) when is_float(X) -> float_to_list(X);

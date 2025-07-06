@@ -3,12 +3,12 @@
 -export([main/1]).
 
 main(_) ->
-    Xs = [10, 20, 30],
-    mochi_print([mochi_get(Xs, 1)]).
+	Xs = [10, 20, 30],
+	mochi_print([mochi_get(Xs, 1)]).
 
 mochi_print(Args) ->
-    Strs = [ mochi_format(A) || A <- Args ],
-    io:format("~s~n", [lists:flatten(Strs)]).
+	Strs = [ mochi_format(A) || A <- Args ],
+	io:format("~s~n", [lists:flatten(Strs)]).
 
 mochi_format(X) when is_integer(X) -> integer_to_list(X);
 mochi_format(X) when is_float(X) -> float_to_list(X);
@@ -17,8 +17,8 @@ mochi_format(X) -> lists:flatten(io_lib:format("~p", [X])).
 
 
 mochi_get(L, I) when is_list(L), is_integer(I) ->
-    N = length(L),
-    Idx = case I >= 0 of true -> I + 1; false -> N + I + 1 end,
-    lists:nth(Idx, L);
+	N = length(L),
+	Idx = case I >= 0 of true -> I + 1; false -> N + I + 1 end,
+	lists:nth(Idx, L);
 mochi_get(M, K) when is_map(M) -> maps:get(K, M);
 mochi_get(_, _) -> erlang:error(badarg).

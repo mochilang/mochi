@@ -3,17 +3,17 @@
 -export([main/1]).
 
 main(_) ->
-    mochi_json(#{flag => true, other => false}).
+	mochi_json(#{flag => true, other => false}).
 
 
 mochi_escape_json([]) -> [];
 mochi_escape_json([H|T]) ->
-    E = case H of
-        $\\ -> "\\\\";
-        $" -> "\\"";
-        _ -> [H]
-    end,
-    E ++ mochi_escape_json(T).
+	E = case H of
+		$\\ -> "\\\\";
+		$" -> "\\"";
+		_ -> [H]
+	end,
+	E ++ mochi_escape_json(T).
 
 mochi_to_json(true) -> "true";
 mochi_to_json(false) -> "false";

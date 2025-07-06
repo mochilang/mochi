@@ -3,15 +3,15 @@
 -export([main/1]).
 
 main(_) ->
-    Xs = [1, 1, 2],
-    Groups = [#{k => maps:get(key, G), c => mochi_count(G)} || G <- mochi_group_by(Xs, fun(X) -> X end)],
-    mochi_foreach(fun(G) ->
-        mochi_print([maps:get(k, G), maps:get(c, G)])
-    end, Groups).
+	Xs = [1, 1, 2],
+	Groups = [#{k => maps:get(key, G), c => mochi_count(G)} || G <- mochi_group_by(Xs, fun(X) -> X end)],
+	mochi_foreach(fun(G) ->
+		mochi_print([maps:get(k, G), maps:get(c, G)])
+	end, Groups).
 
 mochi_print(Args) ->
-    Strs = [ mochi_format(A) || A <- Args ],
-    io:format("~s~n", [lists:flatten(Strs)]).
+	Strs = [ mochi_format(A) || A <- Args ],
+	io:format("~s~n", [lists:flatten(Strs)]).
 
 mochi_format(X) when is_integer(X) -> integer_to_list(X);
 mochi_format(X) when is_float(X) -> float_to_list(X);
@@ -25,28 +25,28 @@ mochi_count(X) when is_binary(X) -> byte_size(X);
 mochi_count(_) -> erlang:error(badarg).
 
 mochi_foreach(F, L) ->
-    try mochi_foreach_loop(F, L) catch throw:mochi_break -> ok end.
+	try mochi_foreach_loop(F, L) catch throw:mochi_break -> ok end.
 
 mochi_foreach_loop(_, []) -> ok;
 mochi_foreach_loop(F, [H|T]) ->
-    try F(H) catch
-        throw:mochi_continue -> ok;
-        throw:mochi_break -> throw(mochi_break)
-    end,
-    mochi_foreach_loop(F, T).
+	try F(H) catch
+		throw:mochi_continue -> ok;
+		throw:mochi_break -> throw(mochi_break)
+	end,
+	mochi_foreach_loop(F, T).
 
 mochi_group_by(Src, KeyFun) ->
-    {Groups, Order} = lists:foldl(fun(It, {G,O}) ->
-        Key = KeyFun(It),
-        KS = lists:flatten(io_lib:format("~p", [Key])),
-        case maps:get(KS, G, undefined) of
-            undefined ->
-                Group = #{key => Key, 'Items' => [It]},
-                {maps:put(KS, Group, G), O ++ [KS]};
-            Group0 ->
-                Items = maps:get('Items', Group0) ++ [It],
-                Group1 = maps:put('Items', Items, Group0),
-                {maps:put(KS, Group1, G), O}
-            end
-        end, {#{}, []}, Src),
-        [ maps:get(K, Groups) || K <- Order ].
+	{Groups, Order} = lists:foldl(fun(It, {G,O}) ->
+		Key = KeyFun(It),
+		KS = lists:flatten(io_lib:format("~p", [Key])),
+		case maps:get(KS, G, undefined) of
+			undefined ->
+				Group = #{key => Key, 'Items' => [It]},
+				{maps:put(KS, Group, G), O ++ [KS]};
+			Group0 ->
+				Items = maps:get('Items', Group0) ++ [It],
+				Group1 = maps:put('Items', Items, Group0),
+				{maps:put(KS, Group1, G), O}
+			end
+		end, {#{}, []}, Src),
+		[ maps:get(K, Groups) || K <- Order ].

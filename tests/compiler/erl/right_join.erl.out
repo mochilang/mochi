@@ -3,22 +3,22 @@
 -export([main/1]).
 
 main(_) ->
-    Customers = [#{id => 1, name => "Alice"}, #{id => 2, name => "Bob"}, #{id => 3, name => "Charlie"}, #{id => 4, name => "Diana"}],
-    Orders = [#{id => 100, customerId => 1, total => 250}, #{id => 101, customerId => 2, total => 125}, #{id => 102, customerId => 1, total => 300}],
-    Result = [#{customerName => maps:get(name, C), order => O} || {C, O} <- mochi_right_join(Customers, Orders, fun(C, O) -> (maps:get(customerId, O) == maps:get(id, C)) end)],
-    mochi_print(["--- Right Join using syntax ---"]),
-    mochi_foreach(fun(Entry) ->
-                case maps:get(order, Entry) of
-            true ->
-                mochi_print(["Customer", maps:get(customerName, Entry), "has order", maps:get(id, maps:get(order, Entry)), "- $", maps:get(total, maps:get(order, Entry))]);
-                        _ ->
-                mochi_print(["Customer", maps:get(customerName, Entry), "has no orders"])
-        end
-    end, Result).
+	Customers = [#{id => 1, name => "Alice"}, #{id => 2, name => "Bob"}, #{id => 3, name => "Charlie"}, #{id => 4, name => "Diana"}],
+	Orders = [#{id => 100, customerId => 1, total => 250}, #{id => 101, customerId => 2, total => 125}, #{id => 102, customerId => 1, total => 300}],
+	Result = [#{customerName => maps:get(name, C), order => O} || {C, O} <- mochi_right_join(Customers, Orders, fun(C, O) -> (maps:get(customerId, O) == maps:get(id, C)) end)],
+	mochi_print(["--- Right Join using syntax ---"]),
+	mochi_foreach(fun(Entry) ->
+				case maps:get(order, Entry) of
+			true ->
+				mochi_print(["Customer", maps:get(customerName, Entry), "has order", maps:get(id, maps:get(order, Entry)), "- $", maps:get(total, maps:get(order, Entry))]);
+						_ ->
+				mochi_print(["Customer", maps:get(customerName, Entry), "has no orders"])
+		end
+	end, Result).
 
 mochi_print(Args) ->
-    Strs = [ mochi_format(A) || A <- Args ],
-    io:format("~s~n", [lists:flatten(Strs)]).
+	Strs = [ mochi_format(A) || A <- Args ],
+	io:format("~s~n", [lists:flatten(Strs)]).
 
 mochi_format(X) when is_integer(X) -> integer_to_list(X);
 mochi_format(X) when is_float(X) -> float_to_list(X);
@@ -26,22 +26,22 @@ mochi_format(X) when is_list(X) -> X;
 mochi_format(X) -> lists:flatten(io_lib:format("~p", [X])).
 
 mochi_foreach(F, L) ->
-    try mochi_foreach_loop(F, L) catch throw:mochi_break -> ok end.
+	try mochi_foreach_loop(F, L) catch throw:mochi_break -> ok end.
 
 mochi_foreach_loop(_, []) -> ok;
 mochi_foreach_loop(F, [H|T]) ->
-    try F(H) catch
-        throw:mochi_continue -> ok;
-        throw:mochi_break -> throw(mochi_break)
-    end,
-    mochi_foreach_loop(F, T).
+	try F(H) catch
+		throw:mochi_continue -> ok;
+		throw:mochi_break -> throw(mochi_break)
+	end,
+	mochi_foreach_loop(F, T).
 
 mochi_right_join_item(B, A, Fun) ->
-    Matches = [ {I, B} || I <- A, Fun(I, B) ],
-    case Matches of
-        [] -> [{undefined, B}];
-        _ -> Matches
-    end.
+	Matches = [ {I, B} || I <- A, Fun(I, B) ],
+	case Matches of
+		[] -> [{undefined, B}];
+		_ -> Matches
+	end.
 
 mochi_right_join(L, R, Fun) ->
-    lists:flatmap(fun(Y) -> mochi_right_join_item(Y, L, Fun) end, R).
+	lists:flatmap(fun(Y) -> mochi_right_join_item(Y, L, Fun) end, R).

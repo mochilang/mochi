@@ -3,27 +3,27 @@
 -export([main/1]).
 
 main(_) ->
-    I = 0,
-    Loop = fun Loop(I) ->
-        case (I < 3) of
-            true ->
-                try
-                    mochi_print([I]),
-                    I_1 = (I + 1)
-                    Loop(I_1)
-                catch
-                    throw:mochi_continue -> Loop(I_1);
-                    throw:mochi_break -> {I_1}
-                end;
-            _ -> {I}
-        end
-    end,
-    {I_1} = Loop(I)
+	I = 0,
+	Loop = fun Loop(I) ->
+		case (I < 3) of
+			true ->
+				try
+					mochi_print([I]),
+					I_1 = (I + 1)
+					Loop(I_1)
+				catch
+					throw:mochi_continue -> Loop(I_1);
+					throw:mochi_break -> {I_1}
+				end;
+			_ -> {I}
+		end
+	end,
+	{I_1} = Loop(I)
 .
 
 mochi_print(Args) ->
-    Strs = [ mochi_format(A) || A <- Args ],
-    io:format("~s~n", [lists:flatten(Strs)]).
+	Strs = [ mochi_format(A) || A <- Args ],
+	io:format("~s~n", [lists:flatten(Strs)]).
 
 mochi_format(X) when is_integer(X) -> integer_to_list(X);
 mochi_format(X) when is_float(X) -> float_to_list(X);

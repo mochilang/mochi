@@ -2,20 +2,21 @@
 -module(main).
 -export([main/1, prepend/2]).
 
+% line 1
 prepend(Level, Result) ->
-    try
-        Result_1 = lists:append([Level], Result),
-        throw({return, Result_1})
-    catch
-        throw:{return, V} -> V
-    end.
+	try
+		Result_1 = lists:append([Level], Result),
+		throw({return, Result_1})
+	catch
+		throw:{return, V} -> V
+	end.
 
 main(_) ->
-    mochi_print([prepend([1, 2], [[3], [4]])]).
+	mochi_print([prepend([1, 2], [[3], [4]])]).
 
 mochi_print(Args) ->
-    Strs = [ mochi_format(A) || A <- Args ],
-    io:format("~s~n", [lists:flatten(Strs)]).
+	Strs = [ mochi_format(A) || A <- Args ],
+	io:format("~s~n", [lists:flatten(Strs)]).
 
 mochi_format(X) when is_integer(X) -> integer_to_list(X);
 mochi_format(X) when is_float(X) -> float_to_list(X);

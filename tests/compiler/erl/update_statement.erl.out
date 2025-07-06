@@ -6,12 +6,12 @@
 
 
 main(_) ->
-    People = [#person{name="Alice", age=17, status="minor"}, #person{name="Bob", age=25, status="unknown"}, #person{name="Charlie", age=18, status="unknown"}, #person{name="Diana", age=16, status="minor"}],
-    People_1 = [ (case (Item#person.age >= 18) of true -> Item#person{status="adult", age=(Item#person.age + 1)}; _ -> Item end) || Item <- People ]
+	People = [#person{name="Alice", age=17, status="minor"}, #person{name="Bob", age=25, status="unknown"}, #person{name="Charlie", age=18, status="unknown"}, #person{name="Diana", age=16, status="minor"}],
+	People_1 = [ (case (Item#person.age >= 18) of true -> Item#person{status="adult", age=(Item#person.age + 1)}; _ -> Item end) || Item <- People ]
 ,
-    mochi_run_test("update adult status", fun() ->
-        mochi_expect((People_1 == [#person{name="Alice", age=17, status="minor"}, #person{name="Bob", age=26, status="adult"}, #person{name="Charlie", age=19, status="adult"}, #person{name="Diana", age=16, status="minor"}]))
-    end).
+	mochi_run_test("update adult status", fun() ->
+		mochi_expect((People_1 == [#person{name="Alice", age=17, status="minor"}, #person{name="Bob", age=26, status="adult"}, #person{name="Charlie", age=19, status="adult"}, #person{name="Diana", age=16, status="minor"}]))
+	end).
 
 
 mochi_expect(true) -> ok;
@@ -22,12 +22,12 @@ mochi_test_pass(Dur) -> io:format(" ok (~p)~n", [Dur]).
 mochi_test_fail(Err, Dur) -> io:format(" fail ~p (~p)~n", [Err, Dur]).
 
 mochi_run_test(Name, Fun) ->
-    mochi_test_start(Name),
-    Start = erlang:monotonic_time(millisecond),
-    try Fun() of _ ->
-        Duration = erlang:monotonic_time(millisecond) - Start,
-        mochi_test_pass(Duration)
-    catch C:R ->
-        Duration = erlang:monotonic_time(millisecond) - Start,
-        mochi_test_fail({C,R}, Duration)
-    end.
+	mochi_test_start(Name),
+	Start = erlang:monotonic_time(millisecond),
+	try Fun() of _ ->
+		Duration = erlang:monotonic_time(millisecond) - Start,
+		mochi_test_pass(Duration)
+	catch C:R ->
+		Duration = erlang:monotonic_time(millisecond) - Start,
+		mochi_test_fail({C,R}, Duration)
+	end.
