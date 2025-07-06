@@ -13,15 +13,15 @@ This directory contains golden files used by `any2mochi` tests for converting Ty
   - `while` loops
   - `break` and `continue`
   - `console.log` translated to `print`
-- Type aliases and enums when reported by the language server
-- AST parser now records start and end columns along with a snippet of the
+  - Single line `if`, `for`, and `while` statements without braces
+  - Type aliases and enums when reported by the language server
+  - AST parser now records start and end columns along with a snippet of the
   source for richer tooling and diagnostics
-- Variable declarations assigned a function are now recognised when the
+  - Variable declarations assigned a function are now recognised when the
   TypeScript AST parser is available
 
 ## Unsupported features
 
-- Single line `if` statements without braces
 - Complex expressions or generic type inference
 - Switch statements and advanced class features
 - Module imports and exports

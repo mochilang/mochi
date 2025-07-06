@@ -95,7 +95,23 @@ func tsFunctionBody(src string) []string {
 			cond := strings.TrimSpace(s[strings.Index(s, "(")+1 : condEnd])
 			bodyStart := strings.Index(s[condEnd:], "{")
 			if bodyStart == -1 {
-				s = s[condEnd:]
+				rest := strings.TrimLeft(s[condEnd:], " \t")
+				end := strings.Index(rest, ";")
+				if end == -1 {
+					end = len(rest)
+				}
+				stmt := strings.TrimSpace(rest[:end])
+				bodyLines := tsFunctionBody(stmt)
+				lines = append(lines, "if "+cond+" {")
+				for _, l := range bodyLines {
+					lines = append(lines, "  "+l)
+				}
+				lines = append(lines, "}")
+				if end < len(rest) {
+					s = rest[end+1:]
+				} else {
+					s = ""
+				}
 				continue
 			}
 			bodyStart += condEnd + 1
@@ -131,7 +147,23 @@ func tsFunctionBody(src string) []string {
 				list := strings.TrimSpace(parts[1])
 				bodyStart := strings.Index(s[parenEnd:], "{")
 				if bodyStart == -1 {
-					s = s[parenEnd:]
+					rest := strings.TrimLeft(s[parenEnd:], " \t")
+					end := strings.Index(rest, ";")
+					if end == -1 {
+						end = len(rest)
+					}
+					stmt := strings.TrimSpace(rest[:end])
+					bodyLines := tsFunctionBody(stmt)
+					lines = append(lines, "for "+iter+" in "+list+" {")
+					for _, l := range bodyLines {
+						lines = append(lines, "  "+l)
+					}
+					lines = append(lines, "}")
+					if end < len(rest) {
+						s = rest[end+1:]
+					} else {
+						s = ""
+					}
 					continue
 				}
 				bodyStart += parenEnd + 1
@@ -156,7 +188,23 @@ func tsFunctionBody(src string) []string {
 			cond := strings.TrimSpace(s[strings.Index(s, "(")+1 : parenEnd])
 			bodyStart := strings.Index(s[parenEnd:], "{")
 			if bodyStart == -1 {
-				s = s[parenEnd:]
+				rest := strings.TrimLeft(s[parenEnd:], " \t")
+				end := strings.Index(rest, ";")
+				if end == -1 {
+					end = len(rest)
+				}
+				stmt := strings.TrimSpace(rest[:end])
+				bodyLines := tsFunctionBody(stmt)
+				lines = append(lines, "while "+cond+" {")
+				for _, l := range bodyLines {
+					lines = append(lines, "  "+l)
+				}
+				lines = append(lines, "}")
+				if end < len(rest) {
+					s = rest[end+1:]
+				} else {
+					s = ""
+				}
 				continue
 			}
 			bodyStart += parenEnd + 1
@@ -176,6 +224,14 @@ func tsFunctionBody(src string) []string {
 			}
 			stmt := strings.TrimSpace(s[:end])
 			parts := strings.SplitN(stmt, "=", 2)
+			if len(parts) < 2 {
+				if end < len(s) {
+					s = s[end+1:]
+				} else {
+					s = ""
+				}
+				continue
+			}
 			lhs := strings.TrimSpace(parts[0])
 			rhs := strings.TrimSpace(parts[1])
 

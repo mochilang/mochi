@@ -3,19 +3,11 @@
 package ts
 
 import (
-	"os/exec"
 	"testing"
 
 	tscode "mochi/compile/ts"
 	parent "mochi/tools/any2mochi"
 )
-
-func requireBinary(t *testing.T, name string) {
-	t.Helper()
-	if _, err := exec.LookPath(name); err != nil {
-		t.Skipf("%s not found", name)
-	}
-}
 
 func TestParseTypeScript(t *testing.T) {
 	_ = tscode.EnsureTSLanguageServer()
