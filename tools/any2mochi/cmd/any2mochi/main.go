@@ -181,6 +181,28 @@ func convertTSCmd() *cobra.Command {
 	return cmd
 }
 
+func convertCCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "convert-c <file.c>",
+		Short: "Convert C source to Mochi",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			any2mochi.UseLSP = false
+			data, err := os.ReadFile(args[0])
+			if err != nil {
+				return err
+			}
+			out, err := any2mochi.ConvertC(string(data))
+			if err != nil {
+				return err
+			}
+			_, err = cmd.OutOrStdout().Write(out)
+			return err
+		},
+	}
+	return cmd
+}
+
 func convertCmd() *cobra.Command {
 	var lang string
 	var server string
@@ -289,6 +311,7 @@ func newRootCmd() *cobra.Command {
 		convertPythonCmd(),
 		convertHsCmd(),
 		convertTSCmd(),
+		convertCCmd(),
 		convertCmd(),
 	)
 	return cmd

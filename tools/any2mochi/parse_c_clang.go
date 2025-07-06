@@ -55,6 +55,9 @@ func parseCFileClang(src string) ([]cFunc, error) {
 	var walk func(n clangNode)
 	walk = func(n clangNode) {
 		if n.Kind == "FunctionDecl" && (n.IsImplicit == nil || !*n.IsImplicit) {
+			if strings.Contains(n.Name, "_create") {
+				return
+			}
 			ret := ""
 			if n.Type != nil {
 				typ := n.Type.QualType
@@ -83,7 +86,9 @@ func parseCFileClang(src string) ([]cFunc, error) {
 					}
 				}
 			}
-			funcs = append(funcs, cFunc{name: n.Name, ret: ret, params: params, body: body})
+			if len(body) > 0 {
+				funcs = append(funcs, cFunc{name: n.Name, ret: ret, params: params, body: body})
+			}
 		}
 		for _, c := range n.Inner {
 			walk(c)

@@ -3,6 +3,7 @@ package any2mochi
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 )
 
@@ -193,6 +194,17 @@ func convertCSimple(src string) ([]byte, error) {
 	}
 	var out strings.Builder
 	for _, fn := range funcs {
+		if fn.name == "main" {
+			for _, ln := range fn.body {
+				trimmed := strings.TrimSpace(ln)
+				if strings.HasPrefix(trimmed, "return ") || trimmed == "return" {
+					continue
+				}
+				out.WriteString(trimmed)
+				out.WriteByte('\n')
+			}
+			continue
+		}
 		out.WriteString("fun ")
 		out.WriteString(fn.name)
 		out.WriteByte('(')
@@ -232,6 +244,12 @@ func convertCSimple(src string) ([]byte, error) {
 type cParam struct {
 	name string
 	typ  string
+}
+
+var castRE = regexp.MustCompile(`\([a-zA-Z_][a-zA-Z0-9_\s]*\*\)`) // matches C casts like (int *)
+
+func stripCasts(s string) string {
+	return castRE.ReplaceAllString(s, "")
 }
 
 func parseCSignature(detail *string) (string, []cParam) {
@@ -469,6 +487,7 @@ func parseCStatements(body string) []string {
 			if strings.HasSuffix(l, ";") {
 				l = strings.TrimSuffix(l, ";")
 			}
+			l = stripCasts(l)
 			switch {
 			case strings.HasSuffix(l, "++"):
 				v := strings.TrimSpace(strings.TrimSuffix(l, "++"))
