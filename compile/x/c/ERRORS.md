@@ -1,7 +1,6 @@
 # Errors
 
-- append_builtin: convert error: exit status 1
-line 19:18: call to undeclared function 'append'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+- append_builtin: convert error: line 19:18: call to undeclared function 'append'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
   18|   list_int a = _t1;
   19|   printf("%d\n", append(a, 3));
                       ^
@@ -18,16 +17,18 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
+ 10:   l.len = len;
 - avg_builtin: parse roundtrip error: parse error: 12:15: lexer: invalid input text "; i < _t1.len; i..."
-- basic_compare: parse roundtrip error: parse error: 3:8: unexpected token ":" (expected "}")
-- binary_precedence: parse roundtrip error: parse error: 3:8: unexpected token ":" (expected "}")
-- bool_chain: parse roundtrip error: parse error: 3:8: unexpected token ":" (expected "}")
+- basic_compare: ok
+- binary_precedence: ok
+- bool_chain: type roundtrip error: error[T020]: operator `&&` cannot be used on types bool and int
+  --> :11:33
+
+help:
+  Choose an operator that supports these operand types.
 - break_continue: parse roundtrip error: parse error: 17:17: lexer: invalid input text "; _t2 < numbers...."
-- cast_string_to_int: parse roundtrip error: parse error: 3:8: unexpected token ":" (expected "}")
-- cast_struct: convert error: exit status 1
-line 61:3: typedef redefinition with different types ('struct Todo' (aka 'Todo') vs 'struct Todo')
+- cast_string_to_int: ok
+- cast_struct: convert error: line 61:3: typedef redefinition with different types ('struct Todo' (aka 'Todo') vs 'struct Todo')
   60|   char *title;
   61| } Todo;
        ^
@@ -62,10 +63,8 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- closure: convert error: exit status 1
-line 14:35: use of undeclared identifier 'n'
+ 10:   l.len = len;
+- closure: convert error: line 14:35: use of undeclared identifier 'n'
   13| }
   14| int _lambda0(int x) { return (x + n); }
                                        ^
@@ -100,11 +99,9 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- count_builtin: parse roundtrip error: parse error: 3:8: unexpected token ":" (expected "}")
-- cross_join: convert error: exit status 1
-line 23:64: function definition is not allowed here
+ 10:   l.len = len;
+- count_builtin: parse roundtrip error: parse error: 7:13: unexpected token "="
+- cross_join: convert error: line 23:64: function definition is not allowed here
   22|   } list_customersItem;
   23|   static list_customersItem list_customersItem_create(int len) {
                                                                     ^
@@ -181,10 +178,8 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- cross_join_filter: convert error: exit status 1
-line 35:12: initializing 'list_int' with an expression of incompatible type 'int'
+ 10:   l.len = len;
+- cross_join_filter: convert error: line 35:12: initializing 'list_int' with an expression of incompatible type 'int'
   34|   list_string letters = _t2;
   35|   list_int pairs = 0;
                 ^
@@ -213,10 +208,8 @@ source snippet:
   7:   int *data;
   8: } list_int;
   9: static list_int list_int_create(int len) {
- 10:   list_int l;exit status 1
-
-- cross_join_triple: convert error: exit status 1
-line 38:12: initializing 'list_int' with an expression of incompatible type 'int'
+ 10:   list_int l;
+- cross_join_triple: convert error: line 38:12: initializing 'list_int' with an expression of incompatible type 'int'
   37|   list_int bools = _t3;
   38|   list_int combos = 0;
                 ^
@@ -251,10 +244,8 @@ source snippet:
   7:   int *data;
   8: } list_int;
   9: static list_int list_int_create(int len) {
- 10:   list_int l;exit status 1
-
-- dataset_sort_take_limit: convert error: exit status 1
-line 23:62: function definition is not allowed here
+ 10:   list_int l;
+- dataset_sort_take_limit: convert error: line 23:62: function definition is not allowed here
   22|   } list_productsItem;
   23|   static list_productsItem list_productsItem_create(int len) {
                                                                   ^
@@ -312,10 +303,8 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- dataset_where_filter: convert error: exit status 1
-line 66:58: function definition is not allowed here
+ 10:   l.len = len;
+- dataset_where_filter: convert error: line 66:58: function definition is not allowed here
   65|   } list_peopleItem;
   66|   static list_peopleItem list_peopleItem_create(int len) {
                                                               ^
@@ -404,10 +393,8 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- exists_builtin: convert error: exit status 1
-line 30:14: call to undeclared function 'exists'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+ 10:   l.len = len;
+- exists_builtin: convert error: line 30:14: call to undeclared function 'exists'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
   29|   _t2.len = _t3;
   30|   int flag = exists(_t2);
                   ^
@@ -424,12 +411,10 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
+ 10:   l.len = len;
 - for_list_collection: parse roundtrip error: parse error: 10:17: lexer: invalid input text "; _t2 < _t1.len;..."
 - for_loop: parse roundtrip error: parse error: 6:15: lexer: invalid input text "; i < 4; i++) {\n..."
-- for_map_collection: convert error: exit status 1
-line 59:26: incompatible pointer to integer conversion passing 'char[2]' to parameter of type 'int' [-Wint-conversion]
+- for_map_collection: convert error: line 59:26: incompatible pointer to integer conversion passing 'char[2]' to parameter of type 'int' [-Wint-conversion]
   58|   map_int_bool _t1 = map_int_bool_create(2);
   59|   map_int_bool_put(&_t1, "a", 1);
                               ^
@@ -470,13 +455,11 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- fun_call: parse roundtrip error: parse error: 3:8: unexpected token ":" (expected "}")
-- fun_expr_in_let: parse roundtrip error: parse error: 3:8: unexpected token ":" (expected "}")
-- fun_three_args: parse roundtrip error: parse error: 3:8: unexpected token ":" (expected "}")
-- group_by: convert error: exit status 1
-line 24:58: function definition is not allowed here
+ 10:   l.len = len;
+- fun_call: ok
+- fun_expr_in_let: parse roundtrip error: parse error: 9:5: unexpected token "(" (expected <ident> (":" TypeRef)? ("=" Expr)?)
+- fun_three_args: ok
+- group_by: convert error: line 24:58: function definition is not allowed here
   23|   } list_peopleItem;
   24|   static list_peopleItem list_peopleItem_create(int len) {
                                                               ^
@@ -529,10 +512,8 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- group_by_conditional_sum: convert error: exit status 1
-line 24:56: function definition is not allowed here
+ 10:   l.len = len;
+- group_by_conditional_sum: convert error: line 24:56: function definition is not allowed here
   23|   } list_itemsItem;
   24|   static list_itemsItem list_itemsItem_create(int len) {
                                                             ^
@@ -567,10 +548,8 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- group_by_having: convert error: exit status 1
-line 93:58: function definition is not allowed here
+ 10:   l.len = len;
+- group_by_having: convert error: line 93:58: function definition is not allowed here
   92|   } list_peopleItem;
   93|   static list_peopleItem list_peopleItem_create(int len) {
                                                               ^
@@ -611,10 +590,8 @@ source snippet:
   7:   int *data;
   8: } list_int;
   9: static list_int list_int_create(int len) {
- 10:   list_int l;exit status 1
-
-- group_by_join: convert error: exit status 1
-line 23:64: function definition is not allowed here
+ 10:   list_int l;
+- group_by_join: convert error: line 23:64: function definition is not allowed here
   22|   } list_customersItem;
   23|   static list_customersItem list_customersItem_create(int len) {
                                                                     ^
@@ -679,10 +656,8 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- group_by_left_join: convert error: exit status 1
-line 23:64: function definition is not allowed here
+ 10:   l.len = len;
+- group_by_left_join: convert error: line 23:64: function definition is not allowed here
   22|   } list_customersItem;
   23|   static list_customersItem list_customersItem_create(int len) {
                                                                     ^
@@ -753,10 +728,8 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- group_by_multi_join: convert error: exit status 1
-line 23:60: function definition is not allowed here
+ 10:   l.len = len;
+- group_by_multi_join: convert error: line 23:60: function definition is not allowed here
   22|   } list_nationsItem;
   23|   static list_nationsItem list_nationsItem_create(int len) {
                                                                 ^
@@ -833,10 +806,8 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- group_by_multi_join_sort: convert error: exit status 1
-line 23:58: function definition is not allowed here
+ 10:   l.len = len;
+- group_by_multi_join_sort: convert error: line 23:58: function definition is not allowed here
   22|   } list_nationItem;
   23|   static list_nationItem list_nationItem_create(int len) {
                                                               ^
@@ -919,10 +890,8 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- group_by_sort: convert error: exit status 1
-line 23:56: function definition is not allowed here
+ 10:   l.len = len;
+- group_by_sort: convert error: line 23:56: function definition is not allowed here
   22|   } list_itemsItem;
   23|   static list_itemsItem list_itemsItem_create(int len) {
                                                             ^
@@ -957,10 +926,8 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- group_items_iteration: convert error: exit status 1
-line 66:54: function definition is not allowed here
+ 10:   l.len = len;
+- group_items_iteration: convert error: line 66:54: function definition is not allowed here
   65|   } list_dataItem;
   66|   static list_dataItem list_dataItem_create(int len) {
                                                           ^
@@ -1060,14 +1027,12 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- if_else: parse roundtrip error: parse error: 3:8: unexpected token ":" (expected "}")
+ 10:   l.len = len;
+- if_else: ok
 - if_then_else: parse roundtrip error: parse error: 7:22: lexer: invalid input text "? \"yes\" : \"no\")\n..."
 - if_then_else_nested: parse roundtrip error: parse error: 7:22: lexer: invalid input text "? \"big\" : ((x > ..."
 - in_operator: parse roundtrip error: parse error: 7:17: lexer: invalid input text "; i < v.len; i++..."
-- in_operator_extended: convert error: exit status 1
-line 88:26: use of undeclared identifier 'a'
+- in_operator_extended: convert error: line 88:26: use of undeclared identifier 'a'
   87|   map_int_bool _t5 = map_int_bool_create(1);
   88|   map_int_bool_put(&_t5, a, 1);
                               ^
@@ -1102,10 +1067,8 @@ source snippet:
   7:   int *data;
   8: } list_int;
   9: static list_int list_int_create(int len) {
- 10:   list_int l;exit status 1
-
-- inner_join: convert error: exit status 1
-line 23:64: function definition is not allowed here
+ 10:   list_int l;
+- inner_join: convert error: line 23:64: function definition is not allowed here
   22|   } list_customersItem;
   23|   static list_customersItem list_customersItem_create(int len) {
                                                                     ^
@@ -1176,10 +1139,8 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- join_multi: convert error: exit status 1
-line 23:64: function definition is not allowed here
+ 10:   l.len = len;
+- join_multi: convert error: line 23:64: function definition is not allowed here
   22|   } list_customersItem;
   23|   static list_customersItem list_customersItem_create(int len) {
                                                                     ^
@@ -1262,10 +1223,8 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- json_builtin: convert error: exit status 1
-line 129:26: use of undeclared identifier 'a'
+ 10:   l.len = len;
+- json_builtin: convert error: line 129:26: use of undeclared identifier 'a'
  128|   map_int_bool _t1 = map_int_bool_create(2);
  129|   map_int_bool_put(&_t1, a, 1);
                               ^
@@ -1294,10 +1253,8 @@ source snippet:
   7:   int *data;
   8: } list_int;
   9: static list_int list_int_create(int len) {
- 10:   list_int l;exit status 1
-
-- left_join: convert error: exit status 1
-line 23:64: function definition is not allowed here
+ 10:   list_int l;
+- left_join: convert error: line 23:64: function definition is not allowed here
   22|   } list_customersItem;
   23|   static list_customersItem list_customersItem_create(int len) {
                                                                     ^
@@ -1368,10 +1325,8 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- left_join_multi: convert error: exit status 1
-line 23:64: function definition is not allowed here
+ 10:   l.len = len;
+- left_join_multi: convert error: line 23:64: function definition is not allowed here
   22|   } list_customersItem;
   23|   static list_customersItem list_customersItem_create(int len) {
                                                                     ^
@@ -1460,11 +1415,9 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- len_builtin: parse roundtrip error: parse error: 3:8: unexpected token ":" (expected "}")
-- len_map: convert error: exit status 1
-line 59:26: incompatible pointer to integer conversion passing 'char[2]' to parameter of type 'int' [-Wint-conversion]
+ 10:   l.len = len;
+- len_builtin: parse roundtrip error: parse error: 7:13: unexpected token "="
+- len_map: convert error: line 59:26: incompatible pointer to integer conversion passing 'char[2]' to parameter of type 'int' [-Wint-conversion]
   58|   map_int_bool _t1 = map_int_bool_create(2);
   59|   map_int_bool_put(&_t1, "a", 1);
                               ^
@@ -1487,16 +1440,18 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
+ 10:   l.len = len;
+- len_string: type roundtrip error: error[T003]: unknown function: strlen
+  --> :6:7
 
-- len_string: parse roundtrip error: parse error: 3:8: unexpected token ":" (expected "}")
-- let_and_print: parse roundtrip error: parse error: 3:8: unexpected token ":" (expected "}")
-- list_assign: parse roundtrip error: parse error: 3:8: unexpected token ":" (expected "}")
-- list_index: parse roundtrip error: parse error: 3:8: unexpected token ":" (expected "}")
-- list_nested_assign: parse roundtrip error: parse error: 3:8: unexpected token ":" (expected "}")
+help:
+  Ensure the function is defined before it's called.
+- let_and_print: ok
+- list_assign: parse roundtrip error: parse error: 7:13: unexpected token "="
+- list_index: parse roundtrip error: parse error: 7:13: unexpected token "="
+- list_nested_assign: parse roundtrip error: parse error: 13:13: unexpected token "="
 - list_set_ops: parse roundtrip error: parse error: 15:17: lexer: invalid input text "; i < a.len; i++..."
-- load_yaml: convert error: exit status 1
-line 227:3: typedef redefinition with different types ('struct Person' (aka 'Person') vs 'struct Person')
+- load_yaml: convert error: line 227:3: typedef redefinition with different types ('struct Person' (aka 'Person') vs 'struct Person')
  226|   char *email;
  227| } Person;
        ^
@@ -1585,10 +1540,8 @@ source snippet:
   7:   int *data;
   8: } list_int;
   9: static list_int list_int_create(int len) {
- 10:   list_int l;exit status 1
-
-- map_assign: convert error: exit status 1
-line 59:26: incompatible pointer to integer conversion passing 'char[6]' to parameter of type 'int' [-Wint-conversion]
+ 10:   list_int l;
+- map_assign: convert error: line 59:26: incompatible pointer to integer conversion passing 'char[6]' to parameter of type 'int' [-Wint-conversion]
   58|   map_int_bool _t1 = map_int_bool_create(1);
   59|   map_int_bool_put(&_t1, "alice", 1);
                               ^
@@ -1635,10 +1588,8 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- map_in_operator: convert error: exit status 1
-line 59:29: incompatible pointer to integer conversion passing 'char[2]' to parameter of type 'int' [-Wint-conversion]
+ 10:   l.len = len;
+- map_in_operator: convert error: line 59:29: incompatible pointer to integer conversion passing 'char[2]' to parameter of type 'int' [-Wint-conversion]
   58|   map_int_bool _t1 = map_int_bool_create(2);
   59|   map_int_bool_put(&_t1, 1, "a");
                                  ^
@@ -1679,10 +1630,8 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- map_index: convert error: exit status 1
-line 59:26: incompatible pointer to integer conversion passing 'char[2]' to parameter of type 'int' [-Wint-conversion]
+ 10:   l.len = len;
+- map_index: convert error: line 59:26: incompatible pointer to integer conversion passing 'char[2]' to parameter of type 'int' [-Wint-conversion]
   58|   map_int_bool _t1 = map_int_bool_create(2);
   59|   map_int_bool_put(&_t1, "a", 1);
                               ^
@@ -1723,10 +1672,8 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- map_int_key: convert error: exit status 1
-line 59:29: incompatible pointer to integer conversion passing 'char[2]' to parameter of type 'int' [-Wint-conversion]
+ 10:   l.len = len;
+- map_int_key: convert error: line 59:29: incompatible pointer to integer conversion passing 'char[2]' to parameter of type 'int' [-Wint-conversion]
   58|   map_int_bool _t1 = map_int_bool_create(2);
   59|   map_int_bool_put(&_t1, 1, "a");
                                  ^
@@ -1761,10 +1708,8 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- map_literal_dynamic: convert error: exit status 1
-line 61:26: incompatible pointer to integer conversion passing 'char[2]' to parameter of type 'int' [-Wint-conversion]
+ 10:   l.len = len;
+- map_literal_dynamic: convert error: line 61:26: incompatible pointer to integer conversion passing 'char[2]' to parameter of type 'int' [-Wint-conversion]
   60|   map_int_bool _t1 = map_int_bool_create(2);
   61|   map_int_bool_put(&_t1, "a", x);
                               ^
@@ -1817,10 +1762,8 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- map_membership: convert error: exit status 1
-line 59:26: incompatible pointer to integer conversion passing 'char[2]' to parameter of type 'int' [-Wint-conversion]
+ 10:   l.len = len;
+- map_membership: convert error: line 59:26: incompatible pointer to integer conversion passing 'char[2]' to parameter of type 'int' [-Wint-conversion]
   58|   map_int_bool _t1 = map_int_bool_create(2);
   59|   map_int_bool_put(&_t1, "a", 1);
                               ^
@@ -1861,10 +1804,8 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- map_nested_assign: convert error: exit status 1
-line 60:26: incompatible pointer to integer conversion passing 'char[6]' to parameter of type 'int' [-Wint-conversion]
+ 10:   l.len = len;
+- map_nested_assign: convert error: line 60:26: incompatible pointer to integer conversion passing 'char[6]' to parameter of type 'int' [-Wint-conversion]
   59|   map_int_bool _t2 = map_int_bool_create(1);
   60|   map_int_bool_put(&_t2, "inner", 1);
                               ^
@@ -1923,15 +1864,13 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
+ 10:   l.len = len;
 - match_expr: parse roundtrip error: parse error: 8:9: lexer: invalid input text "? \"one\" : (x == ..."
 - match_full: parse roundtrip error: parse error: 7:18: lexer: invalid input text "? \"zero\" : (n ==..."
-- math_ops: parse roundtrip error: parse error: 3:8: unexpected token ":" (expected "}")
+- math_ops: ok
 - membership: parse roundtrip error: parse error: 7:17: lexer: invalid input text "; i < v.len; i++..."
 - min_max_builtin: parse roundtrip error: parse error: 12:18: lexer: invalid input text "? nums.data[0] :..."
-- nested_function: convert error: exit status 1
-line 14:28: use of undeclared identifier 'x'
+- nested_function: convert error: line 14:28: use of undeclared identifier 'x'
   13| }
   14| int inner(int y) { return (x + y); }
                                 ^
@@ -1948,10 +1887,8 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- order_by_map: convert error: exit status 1
-line 66:54: function definition is not allowed here
+ 10:   l.len = len;
+- order_by_map: convert error: line 66:54: function definition is not allowed here
   65|   } list_dataItem;
   66|   static list_dataItem list_dataItem_create(int len) {
                                                           ^
@@ -2021,10 +1958,8 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- outer_join: convert error: exit status 1
-line 23:64: function definition is not allowed here
+ 10:   l.len = len;
+- outer_join: convert error: line 23:64: function definition is not allowed here
   22|   } list_customersItem;
   23|   static list_customersItem list_customersItem_create(int len) {
                                                                     ^
@@ -2125,10 +2060,8 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- partial_application: convert error: exit status 1
-line 17:27: too few arguments to function call, expected 2, have 1
+ 10:   l.len = len;
+- partial_application: convert error: line 17:27: too few arguments to function call, expected 2, have 1
   16| int main() {
   17|   int (*add5)(int) = add(5);
                                ^
@@ -2145,12 +2078,10 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- print_hello: parse roundtrip error: parse error: 3:8: unexpected token ":" (expected "}")
-- pure_fold: parse roundtrip error: parse error: 3:8: unexpected token ":" (expected "}")
-- pure_global_fold: convert error: exit status 1
-line 14:30: use of undeclared identifier 'k'
+ 10:   l.len = len;
+- print_hello: ok
+- pure_fold: ok
+- pure_global_fold: convert error: line 14:30: use of undeclared identifier 'k'
   13| }
   14| int inc(int x) { return (x + k); }
                                   ^
@@ -2167,10 +2098,8 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- query_sum_select: convert error: exit status 1
-line 33:30: passing 'int' to parameter of incompatible type 'list_int'
+ 10:   l.len = len;
+- query_sum_select: convert error: line 33:30: passing 'int' to parameter of incompatible type 'list_int'
   32|     }
   33|     _t2.data[_t3] = _sum_int(n);
                                   ^
@@ -2193,10 +2122,8 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- record_assign: convert error: exit status 1
-line 18:3: typedef redefinition with different types ('struct Counter' (aka 'Counter') vs 'struct Counter')
+ 10:   l.len = len;
+- record_assign: convert error: line 18:3: typedef redefinition with different types ('struct Counter' (aka 'Counter') vs 'struct Counter')
   17|   int n;
   18| } Counter;
        ^
@@ -2231,10 +2158,8 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- right_join: convert error: exit status 1
-line 23:64: function definition is not allowed here
+ 10:   l.len = len;
+- right_join: convert error: line 23:64: function definition is not allowed here
   22|   } list_customersItem;
   23|   static list_customersItem list_customersItem_create(int len) {
                                                                     ^
@@ -2317,10 +2242,8 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- save_jsonl_stdout: convert error: exit status 1
-line 28:10: call to undeclared function '_isnum'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+ 10:   l.len = len;
+- save_jsonl_stdout: convert error: line 28:10: call to undeclared function '_isnum'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
   27|   for (const char *p = s; *p; p++)
   28|     if (!_isnum(*p))
               ^
@@ -2367,12 +2290,14 @@ source snippet:
   7:   int *data;
   8: } list_int;
   9: static list_int list_int_create(int len) {
- 10:   list_int l;exit status 1
+ 10:   list_int l;
+- short_circuit: type roundtrip error: error[T020]: operator `&&` cannot be used on types int and int
+  --> :10:10
 
-- short_circuit: parse roundtrip error: parse error: 3:8: unexpected token ":" (expected "}")
+help:
+  Choose an operator that supports these operand types.
 - slice: parse roundtrip error: parse error: 61:8: lexer: invalid input text "\\n\")\nlist_int _t..."
-- sort_stable: convert error: exit status 1
-line 43:56: function definition is not allowed here
+- sort_stable: convert error: line 43:56: function definition is not allowed here
   42|   } list_itemsItem;
   43|   static list_itemsItem list_itemsItem_create(int len) {
                                                             ^
@@ -2406,13 +2331,15 @@ source snippet:
   7:   int *data;
   8: } list_int;
   9: static list_int list_int_create(int len) {
- 10:   list_int l;exit status 1
+ 10:   list_int l;
+- str_builtin: parse roundtrip error: parse error: 7:7: unexpected token "*" (expected <ident> (":" TypeRef)? ("=" Expr)?)
+- string_compare: type roundtrip error: error[T003]: unknown function: strcmp
+  --> :6:8
 
-- str_builtin: parse roundtrip error: parse error: 3:8: unexpected token ":" (expected "}")
-- string_compare: parse roundtrip error: parse error: 3:8: unexpected token ":" (expected "}")
+help:
+  Ensure the function is defined before it's called.
 - string_concat: parse roundtrip error: parse error: 12:22: lexer: invalid input text "'\\0'\n  return bu..."
-- string_contains: convert error: exit status 1
-line 16:19: member reference base type 'char *' is not a structure or union
+- string_contains: convert error: line 16:19: member reference base type 'char *' is not a structure or union
   15|   char *s = "catch";
   16|   printf("%d\n", s.contains("cat"));
                        ^
@@ -2435,13 +2362,11 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- string_in_operator: parse roundtrip error: parse error: 3:8: unexpected token ":" (expected "}")
+ 10:   l.len = len;
+- string_in_operator: parse roundtrip error: parse error: 9:5: unexpected token "*" (expected <ident> (":" TypeRef)? ("=" Expr)?)
 - string_index: parse roundtrip error: parse error: 18:9: lexer: invalid input text "'\\0'\n_b\n})\nprint..."
 - string_prefix_slice: parse roundtrip error: parse error: 24:15: lexer: invalid input text "'\\0'\n_b\n})\nprint..."
-- substring_builtin: convert error: exit status 1
-line 15:18: call to undeclared function 'substring'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+- substring_builtin: convert error: line 15:18: call to undeclared function 'substring'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
   14| int main() {
   15|   printf("%s\n", substring("mochi", 1, 4));
                       ^
@@ -2458,13 +2383,11 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
+ 10:   l.len = len;
 - sum_builtin: parse roundtrip error: parse error: 12:15: lexer: invalid input text "; i < _t1.len; i..."
-- tail_recursion: parse roundtrip error: parse error: 3:8: unexpected token ":" (expected "}")
-- test_block: parse roundtrip error: parse error: 3:8: unexpected token ":" (expected "}")
-- tree_sum: convert error: exit status 1
-line 19:3: typedef redefinition with different types ('struct Leaf' (aka 'Leaf') vs 'struct Leaf')
+- tail_recursion: ok
+- test_block: ok
+- tree_sum: convert error: line 19:3: typedef redefinition with different types ('struct Leaf' (aka 'Leaf') vs 'struct Leaf')
   18| typedef struct {
   19| } Leaf;
        ^
@@ -2589,14 +2512,20 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
+ 10:   l.len = len;
 - two-sum: parse roundtrip error: parse error: 8:17: lexer: invalid input text "; i < n; i++) {\n..."
-- typed_let: parse roundtrip error: parse error: 3:8: unexpected token ":" (expected "}")
-- typed_var: parse roundtrip error: parse error: 3:8: unexpected token ":" (expected "}")
-- unary_neg: parse roundtrip error: parse error: 3:8: unexpected token ":" (expected "}")
-- update_stmt: convert error: exit status 1
-line 20:3: typedef redefinition with different types ('struct Person' (aka 'Person') vs 'struct Person')
+- typed_let: type roundtrip error: error[T000]: `let` requires a type or a value
+  --> :6:1
+
+help:
+  Use `let x = ...` or `let x: int` to declare a variable.
+- typed_var: type roundtrip error: error[T000]: `let` requires a type or a value
+  --> :6:1
+
+help:
+  Use `let x = ...` or `let x: int` to declare a variable.
+- unary_neg: ok
+- update_stmt: convert error: line 20:3: typedef redefinition with different types ('struct Person' (aka 'Person') vs 'struct Person')
   19|   char *status;
   20| } Person;
        ^
@@ -2715,10 +2644,8 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- user_type_literal: convert error: exit status 1
-line 20:3: typedef redefinition with different types ('struct Person' (aka 'Person') vs 'struct Person')
+ 10:   l.len = len;
+- user_type_literal: convert error: line 20:3: typedef redefinition with different types ('struct Person' (aka 'Person') vs 'struct Person')
   19|   int age;
   20| } Person;
        ^
@@ -2759,10 +2686,8 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- values_builtin: convert error: exit status 1
-line 59:26: incompatible pointer to integer conversion passing 'char[2]' to parameter of type 'int' [-Wint-conversion]
+ 10:   l.len = len;
+- values_builtin: convert error: line 59:26: incompatible pointer to integer conversion passing 'char[2]' to parameter of type 'int' [-Wint-conversion]
   58|   map_int_bool _t1 = map_int_bool_create(3);
   59|   map_int_bool_put(&_t1, "a", 1);
                               ^
@@ -2803,7 +2728,6 @@ source snippet:
   7: } list_int;
   8: static list_int list_int_create(int len) {
   9:   list_int l;
- 10:   l.len = len;exit status 1
-
-- var_assignment: parse roundtrip error: parse error: 3:8: unexpected token ":" (expected "}")
-- while_loop: parse roundtrip error: parse error: 3:8: unexpected token ":" (expected "}")
+ 10:   l.len = len;
+- var_assignment: ok
+- while_loop: ok
