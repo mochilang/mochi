@@ -11,5 +11,5 @@ import (
 
 func TestConvertPhp_Golden(t *testing.T) {
 	root := any2mochi.FindRepoRoot(t)
-	any2mochi.RunConvertGolden(t, filepath.Join(root, "tests/compiler/php"), "*.php.out", ConvertFile, "php", ".mochi", ".error")
+	any2mochi.RunConvertCompileGolden(t, filepath.Join(root, "tests/compiler/php"), "*.php.out", ConvertFile, "php", ".mochi", ".error")
 }

@@ -18,6 +18,7 @@ type Program struct {
 	Classes   []Class     `json:"classes"`
 	Vars      []Var       `json:"vars"`
 	Prints    []PrintStmt `json:"prints"`
+	Lines     []string    `json:"lines"`
 }
 
 // ParseError represents a PHP parse error with line information.
@@ -84,7 +85,8 @@ func Parse(src string) (*Program, error) {
 	if !ok {
 		return nil, fmt.Errorf("unexpected root")
 	}
-	prog := &Program{}
+	lines := strings.Split(strings.ReplaceAll(src, "\r\n", "\n"), "\n")
+	prog := &Program{Lines: lines}
 	for _, st := range root.Stmts {
 		switch n := st.(type) {
 		case *stmt.Function:
@@ -217,6 +219,8 @@ func simpleExpr(n pnode.Node) (string, bool) {
 		return arrayExpr(v.Items)
 	case *expr.ShortArray:
 		return arrayExpr(v.Items)
+	case *expr.New:
+		return newStructExpr(v)
 	}
 	return "", false
 }
@@ -235,6 +239,44 @@ func arrayExpr(items []pnode.Node) (string, bool) {
 		elems = append(elems, val)
 	}
 	return "[" + strings.Join(elems, ", ") + "]", true
+}
+
+func newStructExpr(n *expr.New) (string, bool) {
+	name := nameString(n.Class)
+	if name == "" || n.ArgumentList == nil || len(n.ArgumentList.Arguments) != 1 {
+		return "", false
+	}
+	arg, ok := n.ArgumentList.Arguments[0].(*pnode.Argument)
+	if !ok {
+		return "", false
+	}
+	var items []pnode.Node
+	switch a := arg.Expr.(type) {
+	case *expr.Array:
+		items = a.Items
+	case *expr.ShortArray:
+		items = a.Items
+	default:
+		return "", false
+	}
+	fields := make([]string, 0, len(items))
+	for _, it := range items {
+		ai, ok := it.(*expr.ArrayItem)
+		if !ok || ai.Key == nil {
+			return "", false
+		}
+		key, ok := simpleExpr(ai.Key)
+		if !ok {
+			return "", false
+		}
+		key = strings.Trim(key, "\"")
+		val, ok := simpleExpr(ai.Val)
+		if !ok {
+			return "", false
+		}
+		fields = append(fields, fmt.Sprintf("%s: %s", key, val))
+	}
+	return fmt.Sprintf("%s { %s }", name, strings.Join(fields, ", ")), true
 }
 
 func paramInfo(p *pnode.Parameter) Param {

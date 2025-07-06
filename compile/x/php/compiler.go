@@ -927,6 +927,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("max expects 1 arg")
 		}
 		return fmt.Sprintf("(count(%[1]s) ? max(%[1]s) : 0)", args[0]), nil
+	case "min":
+		if len(args) != 1 {
+			return "", fmt.Errorf("min expects 1 arg")
+		}
+		return fmt.Sprintf("(count(%[1]s) ? min(%[1]s) : 0)", args[0]), nil
 	case "concat":
 		if len(args) == 0 {
 			return "[]", nil

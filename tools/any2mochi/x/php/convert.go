@@ -10,6 +10,7 @@ import (
 type ConvertError struct {
 	Path string
 	Line int
+	Col  int
 	Msg  string
 	Snip string
 }
@@ -17,7 +18,11 @@ type ConvertError struct {
 func (e *ConvertError) Error() string {
 	loc := e.Path
 	if e.Line > 0 {
-		loc = fmt.Sprintf("%s:%d", e.Path, e.Line)
+		if e.Col > 0 {
+			loc = fmt.Sprintf("%s:%d:%d", e.Path, e.Line, e.Col)
+		} else {
+			loc = fmt.Sprintf("%s:%d", e.Path, e.Line)
+		}
 	}
 	return fmt.Sprintf("%s: %s\n%s", loc, e.Msg, e.Snip)
 }
@@ -138,7 +143,7 @@ func ConvertFile(path string) ([]byte, error) {
 
 func formatParseError(path, src string, err error) error {
 	if e, ok := err.(*ParseError); ok {
-		snippet := arrowSnippet(src, e.Line)
+		snippet := arrowSnippet(src, e.Line, 0)
 		return &ConvertError{Path: path, Line: e.Line, Msg: e.Msg, Snip: snippet}
 	}
 	return &ConvertError{Path: path, Msg: err.Error(), Snip: snippet(src)}
@@ -152,7 +157,7 @@ func formatError(path, src string, err error) error {
 		return conv
 	}
 	if e, ok := err.(*ParseError); ok {
-		snippet := arrowSnippet(src, e.Line)
+		snippet := arrowSnippet(src, e.Line, 0)
 		return &ConvertError{Path: path, Line: e.Line, Msg: e.Msg, Snip: snippet}
 	}
 	if err.Error() == "no convertible symbols found" {
@@ -161,7 +166,7 @@ func formatError(path, src string, err error) error {
 	return &ConvertError{Path: path, Msg: err.Error()}
 }
 
-func arrowSnippet(src string, line int) string {
+func arrowSnippet(src string, line, col int) string {
 	lines := strings.Split(src, "\n")
 	start := line - 3
 	if start < 0 {
@@ -178,6 +183,9 @@ func arrowSnippet(src string, line int) string {
 			mark = ">>>"
 		}
 		fmt.Fprintf(&b, "%4d:%s %s\n", i+1, mark, lines[i])
+		if i+1 == line && col > 0 {
+			b.WriteString("     " + strings.Repeat(" ", col-1) + "^\n")
+		}
 	}
 	return b.String()
 }

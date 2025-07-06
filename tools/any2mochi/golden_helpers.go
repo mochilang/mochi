@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -13,6 +14,7 @@ import (
 
 	gocode "mochi/compile/go"
 	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -96,6 +98,16 @@ func runConvertCompileGolden(t *testing.T, dir, pattern string, convert func(str
 					} else {
 						if _, cErr := gocode.New(env).Compile(prog); cErr != nil {
 							err = fmt.Errorf("compile error: %w", cErr)
+						} else {
+							runOut, rErr := runMochi(mochiSrc, src)
+							if rErr != nil {
+								err = rErr
+							} else if want, wErr := os.ReadFile(strings.TrimSuffix(src, filepath.Ext(src)) + ".out"); wErr == nil {
+								got := normalizeOutput(rootDir(t), runOut)
+								if !bytes.Equal(got, normalizeOutput(rootDir(t), bytes.TrimSpace(want))) {
+									err = fmt.Errorf("output mismatch\n\n--- Got ---\n%s\n\n--- Want ---\n%s", got, bytes.TrimSpace(want))
+								}
+							}
 						}
 					}
 				}
@@ -235,6 +247,31 @@ func normalizeOutput(root string, b []byte) []byte {
 		out += "\n"
 	}
 	return []byte(out)
+}
+
+func runMochi(src []byte, srcPath string) ([]byte, error) {
+	prog, err := parser.ParseString(string(src))
+	if err != nil {
+		return nil, fmt.Errorf("parse error: %w", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		return nil, fmt.Errorf("type error: %v", errs[0])
+	}
+	var r io.Reader = os.Stdin
+	if data, err := os.ReadFile(strings.TrimSuffix(srcPath, filepath.Ext(srcPath)) + ".in"); err == nil {
+		r = bytes.NewReader(data)
+	}
+	out := &bytes.Buffer{}
+	p, err := vm.Compile(prog, env)
+	if err != nil {
+		return nil, fmt.Errorf("compile error: %w", err)
+	}
+	m := vm.NewWithIO(p, r, out)
+	if err := m.Run(); err != nil {
+		return nil, fmt.Errorf("runtime error: %w", err)
+	}
+	return bytes.TrimSpace(out.Bytes()), nil
 }
 
 // RunConvertCompileGolden is an exported wrapper for runConvertCompileGolden.
