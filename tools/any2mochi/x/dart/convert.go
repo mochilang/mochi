@@ -36,6 +36,10 @@ func Convert(src string) ([]byte, error) {
 		return nil, &ConvertError{Msg: "no convertible symbols found", Snip: any2mochi.NumberedSnippet(src)}
 	}
 	var out strings.Builder
+	for _, v := range parseTopLevelVars(src, funcs, classes, enums) {
+		out.WriteString(v)
+		out.WriteByte('\n')
+	}
 	for _, e := range enums {
 		out.WriteString("type ")
 		out.WriteString(e.Name)
@@ -570,4 +574,51 @@ func hoverString(h any2mochi.Hover) string {
 	default:
 		return fmt.Sprint(v)
 	}
+}
+
+func parseTopLevelVars(src string, funcs []function, classes []class, enums []dartEnum) []string {
+	lines := strings.Split(src, "\n")
+	skip := make([]bool, len(lines)+1)
+	mark := func(start, end int) {
+		for i := start; i <= end && i <= len(lines); i++ {
+			if i >= 1 {
+				skip[i] = true
+			}
+		}
+	}
+	for _, f := range funcs {
+		mark(f.StartLine, f.EndLine)
+	}
+	for _, c := range classes {
+		mark(c.StartLine, c.EndLine)
+	}
+	for _, e := range enums {
+		mark(e.StartLine, e.EndLine)
+	}
+	var vars []string
+	for i, line := range lines {
+		ln := i + 1
+		if skip[ln] {
+			continue
+		}
+		l := strings.TrimSpace(strings.TrimSuffix(line, ";"))
+		if strings.HasPrefix(l, "var ") {
+			vars = append(vars, "let "+strings.TrimSpace(l[4:]))
+			continue
+		}
+		if m := typedVarRe.FindStringSubmatch(l); m != nil {
+			typ := toMochiType(strings.TrimSpace(m[1]))
+			name := m[2]
+			val := strings.TrimSpace(strings.TrimPrefix(m[3], "="))
+			stmt := "let " + name
+			if typ != "" && typ != "any" {
+				stmt += ": " + typ
+			}
+			if val != "" {
+				stmt += " = " + val
+			}
+			vars = append(vars, stmt)
+		}
+	}
+	return vars
 }
