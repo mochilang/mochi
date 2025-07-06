@@ -170,14 +170,14 @@ int main() {
               {string("l_returnflag"), string("N")},
               {string("l_linestatus"), string("O")},
               {string("l_shipdate"), string("1998-09-01")}},
-          unordered_map<string, any>{
-              {string("l_quantity"), any(25)},
-              {string("l_extendedprice"), any(1500.0)},
-              {string("l_discount"), any(0.0)},
-              {string("l_tax"), any(0.08)},
-              {string("l_returnflag"), any(string("R"))},
-              {string("l_linestatus"), any(string("F"))},
-              {string("l_shipdate"), any(string("1998-09-03"))}}};
+          unordered_map<string, int>{
+              {string("l_quantity"), 25},
+              {string("l_extendedprice"), 1500.0},
+              {string("l_discount"), 0.0},
+              {string("l_tax"), 0.08},
+              {string("l_returnflag"), string("R")},
+              {string("l_linestatus"), string("F")},
+              {string("l_shipdate"), string("1998-09-03")}}};
   struct GroupKey0 {
     string returnflag;
     string linestatus;
@@ -293,18 +293,17 @@ int main() {
   auto test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus =
       [&]() {
         if (!(result ==
-              vector<unordered_map<string, double>>{
-                  unordered_map<string, double>{
-                      {string("returnflag"), string("N")},
-                      {string("linestatus"), string("O")},
-                      {string("sum_qty"), 53},
-                      {string("sum_base_price"), 3000},
-                      {string("sum_disc_price"), 950.0 + 1800.0},
-                      {string("sum_charge"), (950.0 * 1.07) + (1800.0 * 1.05)},
-                      {string("avg_qty"), 26.5},
-                      {string("avg_price"), 1500},
-                      {string("avg_disc"), 0.07500000000000001},
-                      {string("count_order"), 2}}})) {
+              vector<unordered_map<string, double>>{unordered_map<string, int>{
+                  {string("returnflag"), string("N")},
+                  {string("linestatus"), string("O")},
+                  {string("sum_qty"), 53},
+                  {string("sum_base_price"), 3000},
+                  {string("sum_disc_price"), 950.0 + 1800.0},
+                  {string("sum_charge"), (950.0 * 1.07) + (1800.0 * 1.05)},
+                  {string("avg_qty"), 26.5},
+                  {string("avg_price"), 1500},
+                  {string("avg_disc"), 0.07500000000000001},
+                  {string("count_order"), 2}}})) {
           std::cerr << "expect failed\n";
           exit(1);
         }
