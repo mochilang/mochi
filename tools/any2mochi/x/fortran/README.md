@@ -6,11 +6,10 @@ This package provides an experimental frontend for converting Fortran 90 source 
 
 - Detection of program and function declarations
 - Basic parameter and return type inference
-- Conversion of `print`, assignments, `if` blocks, `do` loops and `return` statements
+- Conversion of `print`, assignments, `if` blocks, `do` loops`, `select case`, `cycle`/`exit` and `return` statements
 
 ## Unsupported features
 
-- Complex numeric formatting and intrinsic functions
-- Advanced control flow such as `select case`
+- Complex numeric formatting and other advanced intrinsics
 - Modules with extensive `contains` sections
 - Preprocessor directives and macros
