@@ -1,7 +1,7 @@
-line 3: unsupported line: public java.util.List<Object> get() {
-  1| Object[] products = new Product[]{new Product("Laptop", 1500), new Product("Smartphone", 900), new Product("Tablet", 600), new Product("Monitor", 300), new Product("Keyboard", 100), new Product("Mouse", 50), new Product("Headphones", 200)};
-  2| Object[] expensive = (new java.util.function.Supplier<java.util.List<Object>>() {
-  3| public java.util.List<Object> get() {
-  4| java.util.List<Object> _src = _toList(products);
-  5| java.util.List<_JoinSpec> _joins = java.util.List.of(
+line 3: unsupported line
+      1| Object[] products = new Product[]{new Product("Laptop", 1500), new Product("Smartphone", 900), new Product("Tablet", 600), new Product("Monitor", 300), new Product("Keyboard", 100), new Product("Mouse", 50), new Product("Headphones", 200)};
+      2| Object[] expensive = (new java.util.function.Supplier<java.util.List<Object>>() {
+>>>   3| public java.util.List<Object> get() {
+      4| java.util.List<Object> _src = _toList(products);
+      5| java.util.List<_JoinSpec> _joins = java.util.List.of(
 
