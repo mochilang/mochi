@@ -23,7 +23,10 @@ var TypeScriptUseLanguageServer = false
 // after the fallback if no symbols were discovered.
 func ConvertTypeScript(src string) ([]byte, error) {
 	var out strings.Builder
-	if data, err := parseTSDeno(src); err == nil && len(data) > 0 {
+
+	if decls, err := parseTSAST(src); err == nil && len(decls) > 0 {
+		writeTSDecls(&out, decls)
+	} else if data, err := parseTSDeno(src); err == nil && len(data) > 0 {
 		out.Write(data)
 	} else {
 		parseTSFallback(&out, src)
@@ -188,10 +191,10 @@ func writeTSFunc(out *strings.Builder, name string, sym DocumentSymbol, src stri
 		if i > 0 {
 			out.WriteString(", ")
 		}
-		out.WriteString(p.name)
-		if p.typ != "" {
+		out.WriteString(p.Name)
+		if p.Typ != "" {
 			out.WriteString(": ")
-			out.WriteString(p.typ)
+			out.WriteString(p.Typ)
 		}
 	}
 	out.WriteByte(')')
@@ -262,8 +265,8 @@ func tsFieldType(src string, sym DocumentSymbol, ls LanguageServer) string {
 }
 
 type tsField struct {
-	name string
-	typ  string
+	Name string `json:"name"`
+	Typ  string `json:"typ"`
 }
 
 // tsAliasDef returns fields for a type alias object or the aliased type.
@@ -298,7 +301,7 @@ func tsAliasDef(src string, sym DocumentSymbol, ls LanguageServer) ([]tsField, s
 				if idx := strings.Index(l, ":"); idx != -1 {
 					name := strings.TrimSpace(l[:idx])
 					typ := tsToMochiType(strings.TrimSpace(l[idx+1:]))
-					fields = append(fields, tsField{name: name, typ: typ})
+					fields = append(fields, tsField{Name: name, Typ: typ})
 				}
 			}
 		}
@@ -321,10 +324,10 @@ func writeTSAlias(out *strings.Builder, name string, fields []tsField, alias str
 	out.WriteString(" {\n")
 	for _, f := range fields {
 		out.WriteString("  ")
-		out.WriteString(f.name)
-		if f.typ != "" {
+		out.WriteString(f.Name)
+		if f.Typ != "" {
 			out.WriteString(": ")
-			out.WriteString(f.typ)
+			out.WriteString(f.Typ)
 		}
 		out.WriteByte('\n')
 	}
@@ -355,8 +358,8 @@ func writeTSEnum(out *strings.Builder, nameParts []string, sym DocumentSymbol, s
 }
 
 type tsParam struct {
-	name string
-	typ  string
+	Name string `json:"name"`
+	Typ  string `json:"typ"`
 }
 
 func parseTSSignature(sig string) ([]tsParam, string) {
@@ -379,7 +382,7 @@ func parseTSSignature(sig string) ([]tsParam, string) {
 			name = strings.TrimSpace(p[:colon])
 			typ = strings.TrimSpace(p[colon+1:])
 		}
-		params = append(params, tsParam{name: name, typ: tsToMochiType(typ)})
+		params = append(params, tsParam{Name: name, Typ: tsToMochiType(typ)})
 	}
 	rest := strings.TrimSpace(sig[close+1:])
 	if strings.HasPrefix(rest, ":") {
@@ -582,10 +585,10 @@ func parseTSFallback(out *strings.Builder, src string) {
 			if i > 0 {
 				out.WriteString(", ")
 			}
-			out.WriteString(p.name)
-			if p.typ != "" {
+			out.WriteString(p.Name)
+			if p.Typ != "" {
 				out.WriteString(": ")
-				out.WriteString(p.typ)
+				out.WriteString(p.Typ)
 			}
 		}
 		out.WriteByte(')')
@@ -614,4 +617,81 @@ func funcReturnSig(ret string) string {
 		return ""
 	}
 	return ": " + ret
+}
+
+// writeTSDecls converts parsed AST declarations into Mochi source code.
+func writeTSDecls(out *strings.Builder, decls []tsASTDecl) {
+	for _, d := range decls {
+		switch d.Kind {
+		case "var":
+			out.WriteString("let ")
+			out.WriteString(d.Name)
+			if d.Ret != "" {
+				out.WriteString(": ")
+				out.WriteString(d.Ret)
+			}
+			out.WriteByte('\n')
+		case "func":
+			out.WriteString("fun ")
+			out.WriteString(d.Name)
+			out.WriteByte('(')
+			for i, p := range d.Params {
+				if i > 0 {
+					out.WriteString(", ")
+				}
+				out.WriteString(p.Name)
+				if p.Typ != "" {
+					out.WriteString(": ")
+					out.WriteString(p.Typ)
+				}
+			}
+			out.WriteByte(')')
+			if d.Ret != "" && d.Ret != "void" {
+				out.WriteString(": ")
+				out.WriteString(d.Ret)
+			}
+			stmts := tsFunctionBody(d.Body)
+			if len(stmts) == 0 {
+				out.WriteString(" {}\n")
+			} else {
+				out.WriteString(" {\n")
+				for _, l := range stmts {
+					out.WriteString("  ")
+					out.WriteString(l)
+					out.WriteByte('\n')
+				}
+				out.WriteString("}\n")
+			}
+		case "enum":
+			out.WriteString("type ")
+			out.WriteString(d.Name)
+			out.WriteString(" {\n")
+			for _, v := range d.Variants {
+				out.WriteString("  ")
+				out.WriteString(v)
+				out.WriteByte('\n')
+			}
+			out.WriteString("}\n")
+		case "type":
+			out.WriteString("type ")
+			out.WriteString(d.Name)
+			out.WriteString(" {\n")
+			for _, f := range d.Fields {
+				out.WriteString("  ")
+				out.WriteString(f.Name)
+				if f.Typ != "" {
+					out.WriteString(": ")
+					out.WriteString(f.Typ)
+				}
+				out.WriteByte('\n')
+			}
+			out.WriteString("}\n")
+		case "alias":
+			out.WriteString("type ")
+			out.WriteString(d.Name)
+			out.WriteString(" = ")
+			out.WriteString(d.Alias)
+			out.WriteByte('\n')
+		}
+	}
 }

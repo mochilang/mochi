@@ -1,0 +1,4 @@
+fun greet(name: string): string {
+  print("Hello, " + name)
+  return "ok"
+}
