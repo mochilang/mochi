@@ -1,0 +1,6 @@
+fun id(x: any): any {
+  return x
+}
+fun main() {
+  print(id(123))
+}

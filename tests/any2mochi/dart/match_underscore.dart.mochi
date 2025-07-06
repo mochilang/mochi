@@ -1,0 +1,10 @@
+fun value_of_root(t: any): any {
+  return (() {
+  let _t = t
+  if (_t is Node) { return ((v) { return v; })((_t as Node).value); }
+  return 0
+  })()
+}
+fun main() {
+  print(value_of_root(Node(left: Leaf(), value: 5, right: Leaf())))
+}

@@ -1,0 +1,3 @@
+fun main() {
+  dynamic xs = [(-1), 0, 1]
+}

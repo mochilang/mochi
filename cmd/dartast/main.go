@@ -19,6 +19,8 @@ type dartFunc struct {
 	Params []dartParam `json:"params"`
 	Ret    string      `json:"ret"`
 	Body   []string    `json:"body"`
+	Start  int         `json:"start"`
+	End    int         `json:"end"`
 }
 
 type ast struct {
@@ -140,11 +142,15 @@ func parse(src string) []dartFunc {
 			}
 		}
 		body := src[start:bodyEnd]
+		startLine := strings.Count(src[:start], "\n") + 1
+		endLine := strings.Count(src[:bodyEnd], "\n") + 1
 		funcs = append(funcs, dartFunc{
 			Name:   name,
 			Params: parseParams(params),
 			Ret:    strings.TrimSpace(ret),
 			Body:   parseStatements(body[1:]),
+			Start:  startLine,
+			End:    endLine,
 		})
 	}
 	return funcs

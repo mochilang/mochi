@@ -1,0 +1,14 @@
+fun main() {
+  String text = "hello"
+  print(_indexString(text, (-1).toInt()))
+}
+fun _indexString(s: string, i: int): string {
+  let runes = s.runes.toList()
+  if (i < 0) {
+    i += runes.length
+  }
+  if (i < 0 || i >= runes.length) {
+    throw RangeError('index out of range')
+  }
+  return String.fromCharCode(runes[i])
+}

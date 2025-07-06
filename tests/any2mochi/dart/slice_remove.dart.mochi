@@ -1,0 +1,6 @@
+fun remove(nums: any, i: any): any {
+  return (nums.sublist(0, i) + nums.sublist((i + 1), nums.length))
+}
+fun main() {
+  print(remove([1, 2, 3, 4], 1))
+}

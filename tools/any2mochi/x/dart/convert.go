@@ -79,6 +79,8 @@ type function struct {
 	Params []param
 	Ret    string
 	Body   []string
+	Start  int
+	End    int
 }
 
 func parseDetail(detail string) ([]param, string) {
