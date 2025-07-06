@@ -1,4 +1,4 @@
-package any2mochi
+package prolog
 
 import (
 	"bytes"
@@ -8,17 +8,17 @@ import (
 	"runtime"
 )
 
-type plProgram struct {
-	Clauses []plClause `json:"clauses"`
+type Program struct {
+	Clauses []Clause `json:"clauses"`
 }
 
-type plClause struct {
+type Clause struct {
 	Name   string   `json:"name"`
 	Params []string `json:"params"`
 	Body   string   `json:"body"`
 }
 
-func parsePrologAST(src string) (*plProgram, error) {
+func parseAST(src string) (*Program, error) {
 	_, file, _, _ := runtime.Caller(0)
 	script := filepath.Join(filepath.Dir(file), "pl_ast.pl")
 	cmd := exec.Command("swipl", "-q", "-f", script, "-t", "main")
@@ -28,12 +28,12 @@ func parsePrologAST(src string) (*plProgram, error) {
 	if err := cmd.Run(); err != nil {
 		return nil, err
 	}
-	var prog plProgram
+	var prog Program
 	if err := json.Unmarshal(out.Bytes(), &prog); err != nil {
 		return nil, err
 	}
 	return &prog, nil
 }
 
-// ParsePrologASTForTest is a test helper exposing parsePrologAST.
-func ParsePrologASTForTest(src string) (*plProgram, error) { return parsePrologAST(src) }
+// ParseASTForTest is a test helper exposing parseAST.
+func ParseASTForTest(src string) (*Program, error) { return parseAST(src) }
