@@ -1,12 +1,48 @@
 program main;
 {$mode objfpc}
+
 uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
 
 type
   generic TArray<T> = array of T;
+
 type Product = record
   name: string;
   price: integer;
+end;
+
+generic function _sliceList<T>(arr: specialize TArray<T>; i, j: integer): specialize TArray<T>;
+
+var start_, end_, n: integer;
+begin
+  start_ := i;
+  end_ := j;
+  n := Length(arr);
+  if start_ < 0 then start_ := n + start_;
+  if end_ < 0 then end_ := n + end_;
+  if start_ < 0 then start_ := 0;
+  if end_ > n then end_ := n;
+  if end_ < start_ then end_ := start_;
+  Result := Copy(arr, start_ + 1, end_ - start_);
+end;
+
+generic procedure _sortBy<T>(var arr: specialize TArray<T>; keys: specialize TArray<Variant>);
+
+var i,j: integer;
+  tmp: T;
+  k: Variant;
+begin
+  for i := 0 to High(arr) - 1 do
+    for j := i + 1 to High(arr) do
+      if keys[i] > keys[j] then
+        begin
+          tmp := arr[i];
+          arr[i] := arr[j];
+          arr[j] := tmp;
+          k := keys[i];
+          keys[i] := keys[j];
+          keys[j] := k;
+        end;
 end;
 
 var
@@ -25,32 +61,6 @@ var
   item: Product;
   p: Product;
   products: specialize TArray<Product>;
-
-generic function _sliceList<T>(arr: specialize TArray<T>; i, j: integer): specialize TArray<T>;
-var start_, end_, n: integer;
-begin
-  start_ := i;
-  end_ := j;
-  n := Length(arr);
-  if start_ < 0 then start_ := n + start_;
-  if end_ < 0 then end_ := n + end_;
-  if start_ < 0 then start_ := 0;
-  if end_ > n then end_ := n;
-  if end_ < start_ then end_ := start_;
-  Result := Copy(arr, start_ + 1, end_ - start_);
-end;
-
-generic procedure _sortBy<T>(var arr: specialize TArray<T>; keys: specialize TArray<Variant>);
-var i,j: integer; tmp: T; k: Variant;
-begin
-  for i := 0 to High(arr) - 1 do
-  for j := i + 1 to High(arr) do
-    if keys[i] > keys[j] then
-    begin
-      tmp := arr[i]; arr[i] := arr[j]; arr[j] := tmp;
-      k := keys[i]; keys[i] := keys[j]; keys[j] := k;
-    end;
-end;
 
 begin
   _tmp0.name := 'Laptop';
@@ -71,17 +81,17 @@ begin
   SetLength(_tmp7, 0);
   SetLength(_tmp8, 0);
   for p in products do
-  begin
-    _tmp7 := Concat(_tmp7, [p]);
-    _tmp8 := Concat(_tmp8, [-p.price]);
-  end;
+    begin
+      _tmp7 := Concat(_tmp7, [p]);
+      _tmp8 := Concat(_tmp8, [-p.price]);
+    end;
   specialize _sortBy<Product>(_tmp7, _tmp8);
   _tmp9 := specialize _sliceList<Product>(_tmp7, 1, Length(_tmp7));
   _tmp10 := specialize _sliceList<Product>(_tmp9, 0, 3);
   expensive := _tmp10;
   writeln('--- Top products (excluding most expensive) ---');
   for item in expensive do
-  begin
-    writeln(item.name, 'costs $', item.price);
-  end;
+    begin
+      writeln(item.name, 'costs $', item.price);
+    end;
 end.

@@ -1,66 +1,81 @@
 program main;
 {$mode objfpc}
+
 uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
 
 type
   generic TArray<T> = array of T;
 
-var
-  _tmp0: specialize TFPGMap<string, integer>;
-  _tmp1: specialize TArray<integer>;
-  _tmp2: specialize TArray<specialize _Group<integer>>;
-  _tmp3: specialize TArray<specialize TFPGMap<string, integer>>;
-  g: specialize TFPGMap<string, integer>;
-  groups: specialize TArray<specialize TFPGMap<string, integer>>;
-  x: integer;
-  xs: specialize TArray<integer>;
+  generic _Group<T> = record
+    Key: Variant;
+    Items: specialize TArray<T>;
+  end;
 
-generic _Group<T> = record
-  Key: Variant;
-  Items: specialize TArray<T>;
-end;
+  generic function _group_by<T>(src: specialize TArray<T>; keyfn: function(it: T): Variant):
+                                                                                          specialize
+                                                                                             TArray<
+                                                                                          specialize
+                                                                                             _Group<
+                                                                                             T>>;
 
-generic function _group_by<T>(src: specialize TArray<T>; keyfn: function(it: T): Variant): specialize TArray<specialize _Group<T>>;
-var i,j,idx: Integer; key: Variant; ks: string;
+var i,j,idx: Integer;
+  key: Variant;
+  ks: string;
 begin
   SetLength(Result, 0);
   for i := 0 to High(src) do
-  begin
-    key := keyfn(src[i]);
-    ks := VarToStr(key);
-    idx := -1;
-    for j := 0 to High(Result) do
-      if VarToStr(Result[j].Key) = ks then begin idx := j; Break; end;
-    if idx = -1 then
     begin
-      idx := Length(Result);
-      SetLength(Result, idx + 1);
-      Result[idx].Key := key;
-      SetLength(Result[idx].Items, 0);
+      key := keyfn(src[i]);
+      ks := VarToStr(key);
+      idx := -1;
+      for j := 0 to High(Result) do
+        if VarToStr(Result[j].Key) = ks then
+          begin
+            idx := j;
+            Break;
+          end;
+      if idx = -1 then
+        begin
+          idx := Length(Result);
+          SetLength(Result, idx + 1);
+          Result[idx].Key := key;
+          SetLength(Result[idx].Items, 0);
+        end;
+      SetLength(Result[idx].Items, Length(Result[idx].Items)+1);
+      Result[idx].Items[High(Result[idx].Items)] := src[i];
     end;
-    SetLength(Result[idx].Items, Length(Result[idx].Items)+1);
-    Result[idx].Items[High(Result[idx].Items)] := src[i];
-  end;
 end;
+
+var
+  _tmp0: specialize TFPGMap<Variant, Variant>;
+  _tmp1: specialize TArray<integer>;
+  _tmp2: specialize TArray<specialize _Group<integer>>;
+  _tmp3: specialize TArray<specialize TFPGMap<string, Variant>>;
+  g: specialize TFPGMap<string, Variant>;
+  groups: specialize TArray<specialize TFPGMap<string, Variant>>;
+  x: integer;
+  xs: specialize TArray<integer>;
 
 begin
   xs := specialize TArray<integer>([1, 1, 2]);
-  _tmp0 := specialize TFPGMap<string, integer>.Create;
+  _tmp0 := specialize TFPGMap<Variant, Variant>.Create;
   _tmp0.AddOrSetData('k', g.key);
   _tmp0.AddOrSetData('c', Length(g));
   SetLength(_tmp1, 0);
   for x in xs do
-  begin
-    _tmp1 := Concat(_tmp1, [x]);
-  end;
-  _tmp2 := specialize _group_by<integer>(_tmp1, function(x: integer): Variant begin Result := x end);
-  SetLength(_tmp3, 0);
-  for g in _tmp2 do
+    begin
+      _tmp1 := Concat(_tmp1, [x]);
+    end;
+  _tmp2 := specialize _group_by<integer>(_tmp1, function(x: integer): Variant begin Result := x
+end
+);
+SetLength(_tmp3, 0);
+for g in _tmp2 do
   begin
     _tmp3 := Concat(_tmp3, [_tmp0]);
   end;
-  groups := _tmp3;
-  for g in groups do
+groups := _tmp3;
+for g in groups do
   begin
     writeln(g.k, g.c);
   end;

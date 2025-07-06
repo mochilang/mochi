@@ -1,5 +1,6 @@
 program main;
 {$mode objfpc}
+
 uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
 
 type
@@ -8,18 +9,20 @@ type
 function foo(n: integer): integer;
 begin
   if (n < 0) then
-  begin
-    result := -1;
-    exit;
-  end else if (n = 0) then
-  begin
-    result := 0;
-    exit;
-  end else
-  begin
-    result := 1;
-    exit;
-  end;
+    begin
+      result := -1;
+      exit;
+    end
+  else if (n = 0) then
+         begin
+           result := 0;
+           exit;
+         end
+  else
+    begin
+      result := 1;
+      exit;
+    end;
 end;
 
 begin

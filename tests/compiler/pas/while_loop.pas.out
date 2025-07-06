@@ -1,5 +1,6 @@
 program main;
 {$mode objfpc}
+
 uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
 
 type
@@ -11,8 +12,8 @@ var
 begin
   i := 0;
   while (i < 3) do
-  begin
-    writeln(i);
-    i := i + 1;
-  end;
+    begin
+      writeln(i);
+      i := i + 1;
+    end;
 end.

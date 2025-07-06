@@ -1,11 +1,13 @@
 program main;
 {$mode objfpc}
+
 uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
 
 type
   generic TArray<T> = array of T;
 
 function _sliceString(s: string; i, j: integer): string;
+
 var start_, end_, n: integer;
 begin
   start_ := i;

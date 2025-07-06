@@ -1,32 +1,35 @@
 program main;
 {$mode objfpc}
+
 uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
 
 type
   generic TArray<T> = array of T;
+
 type Color = (
-Red, Green, Blue);
+              Red, Green, Blue);
 
 function to_int(c: Color): integer;
+
 var
   _tmp0: integer;
   _tmp1: Color;
 begin
   _tmp1 := c;
   if _tmp1 = Red then
-  begin
-    _tmp0 := 1;
-  else if _tmp1 = Green then
-  begin
-    _tmp0 := 2;
-  else if _tmp1 = Blue then
-  begin
-    _tmp0 := 3;
-  end;
-  result := _tmp0;
-  exit;
-end;
+    begin
+      _tmp0 := 1;
+      else if _tmp1 = Green then
+             begin
+               _tmp0 := 2;
+               else if _tmp1 = Blue then
+                      begin
+                        _tmp0 := 3;
+                      end;
+               result := _tmp0;
+               exit;
+             end;
 
-begin
-  writeln(to_int(Green));
-end.
+      begin
+        writeln(to_int(Green));
+      end.

@@ -1,9 +1,11 @@
 program main;
 {$mode objfpc}
+
 uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
 
 type
   generic TArray<T> = array of T;
+
 type Person = record
   name: string;
   age: integer;
@@ -29,13 +31,13 @@ begin
   people := specialize TArray<Person>([_tmp0, _tmp1, _tmp2]);
   SetLength(_tmp3, 0);
   for p in people do
-  begin
-    if not ((p.age >= 18)) then continue;
-    _tmp3 := Concat(_tmp3, [p.name]);
-  end;
+    begin
+      if not ((p.age >= 18)) then continue;
+      _tmp3 := Concat(_tmp3, [p.name]);
+    end;
   names := _tmp3;
   for n in names do
-  begin
-    writeln(n);
-  end;
+    begin
+      writeln(n);
+    end;
 end.

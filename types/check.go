@@ -473,6 +473,11 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: FloatType{},
 		Pure:   true,
 	}, false)
+	env.SetVar("abs", FuncType{
+		Params: []Type{AnyType{}},
+		Return: AnyType{},
+		Pure:   true,
+	}, false)
 	env.SetVar("ceil", FuncType{
 		Params: []Type{AnyType{}},
 		Return: FloatType{},
@@ -2286,6 +2291,7 @@ var builtinArity = map[string]int{
 	"count":     1,
 	"exists":    1,
 	"avg":       1,
+	"abs":       1,
 	"ceil":      1,
 	"floor":     1,
 	"sum":       1,
@@ -2411,7 +2417,7 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 		default:
 			return errSumOperand(pos, a)
 		}
-	case "ceil", "floor":
+	case "abs", "ceil", "floor":
 		if len(args) != 1 {
 			return errArgCount(pos, name, 1, len(args))
 		}

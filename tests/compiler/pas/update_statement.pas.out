@@ -1,9 +1,11 @@
 program main;
 {$mode objfpc}
-uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, fpjsonrtti, jsonparser, Math;
+
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
 
 type
   generic TArray<T> = array of T;
+
 type Person = record
   name: string;
   age: integer;
@@ -20,6 +22,7 @@ var
   people: specialize TArray<Person>;
 
 procedure test_update_adult_status;
+
 var
   _tmp6: Person;
   _tmp7: Person;
@@ -38,7 +41,8 @@ begin
   _tmp9.name := 'Diana';
   _tmp9.age := 16;
   _tmp9.status := 'minor';
-  if not ((people = specialize TArray<Person>([_tmp6, _tmp7, _tmp8, _tmp9]))) then raise Exception.Create('expect failed');
+  if not ((people = specialize TArray<Person>([_tmp6, _tmp7, _tmp8, _tmp9]))) then raise Exception.
+    Create('expect failed');
 end;
 
 begin
@@ -56,14 +60,14 @@ begin
   _tmp3.status := 'minor';
   people := specialize TArray<Person>([_tmp0, _tmp1, _tmp2, _tmp3]);
   for _tmp4 := 0 to High(people) do
-  begin
-    _tmp5 := people[_tmp4];
-    if (_tmp5.age >= 18) then
     begin
-      _tmp5.status := 'adult';
-      _tmp5.age := _tmp5.age + 1;
+      _tmp5 := people[_tmp4];
+      if (_tmp5.age >= 18) then
+        begin
+          _tmp5.status := 'adult';
+          _tmp5.age := _tmp5.age + 1;
+        end;
+      people[_tmp4] := _tmp5;
     end;
-    people[_tmp4] := _tmp5;
-  end;
   test_update_adult_status;
 end.
