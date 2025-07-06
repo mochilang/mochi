@@ -1,3 +1,5 @@
+let _sum (_: 'a list) = 0.0;;
+
 exception Return_0 of int
 let rec sum n =
   try
@@ -5,5 +7,5 @@ let rec sum n =
   with Return_0 v -> v
 
 let n = 10;;
-print_endline (string_of_int (sum n));;
+print_endline (string_of_int (_sum n));;
 print_endline (string_of_int (n));;

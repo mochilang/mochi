@@ -167,6 +167,56 @@ func TestOCamlCompiler_GoldenOutput(t *testing.T) {
 			if err != nil {
 				return nil, fmt.Errorf("\u274c compile error: %w", err)
 			}
+
+			dirTmp := t.TempDir()
+			mlfile := filepath.Join(dirTmp, "prog.ml")
+			if err := os.WriteFile(mlfile, code, 0644); err != nil {
+				return nil, fmt.Errorf("write error: %w", err)
+			}
+			exe := filepath.Join(dirTmp, "prog")
+			cmdName := "ocamlc"
+			args := []string{mlfile, "-o", exe}
+			if _, err := exec.LookPath("ocamlfind"); err == nil {
+				cmdName = "ocamlfind"
+				args = []string{"ocamlc", "-package", "yojson,unix", "-linkpkg", mlfile, "-o", exe}
+			}
+			if out, err := exec.Command(cmdName, args...).CombinedOutput(); err != nil {
+				return nil, fmt.Errorf("\u274c ocamlc error: %w\n%s", err, out)
+			}
+			cmd := exec.Command(exe)
+			cmd.Dir = findRepoRoot(t)
+			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+				cmd.Stdin = bytes.NewReader(data)
+			}
+			out, err := cmd.CombinedOutput()
+			if err != nil {
+				return nil, fmt.Errorf("\u274c run error: %w\n%s", err, out)
+			}
+			res := bytes.TrimSpace(out)
+			if res == nil {
+				res = []byte{}
+			}
+
+			p, err := vm.Compile(prog, env)
+			if err != nil {
+				return nil, fmt.Errorf("\u274c vm compile error: %w", err)
+			}
+			var vmIn []byte
+			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+				vmIn = data
+			}
+			var buf bytes.Buffer
+			m := vm.NewWithIO(p, bytes.NewReader(vmIn), &buf)
+			if err := m.Run(); err != nil {
+				if ve, ok := err.(*vm.VMError); ok {
+					return nil, fmt.Errorf("\u274c vm run error:\n%s", ve.Format(p))
+				}
+				return nil, fmt.Errorf("\u274c vm run error: %v", err)
+			}
+			if strings.TrimSpace(buf.String()) != string(res) {
+				return nil, fmt.Errorf("\u274c output mismatch with VM\n-- vm --\n%s\n-- ocaml --\n%s", strings.TrimSpace(buf.String()), res)
+			}
+
 			return bytes.TrimSpace(code), nil
 		})
 	}
