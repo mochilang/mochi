@@ -588,14 +588,16 @@ func parseTSFallback(out *strings.Builder, src string) {
 		out.WriteString("}\n")
 	}
 
-	varRe := regexp.MustCompile(`(?m)^(?:let|const|var)\s+([A-Za-z_][A-Za-z0-9_]*)\s*(?::\s*([^=;]+))?`)
+	varRe := regexp.MustCompile(`(?m)^(let|const|var)\s+([A-Za-z_][A-Za-z0-9_]*)\s*(?::\s*([^=;]+))?`)
 	for _, m := range varRe.FindAllStringSubmatch(src, -1) {
-		name := m[1]
-		typ := tsToMochiType(strings.TrimSpace(m[2]))
+		kw := m[1]
+		name := m[2]
+		typ := tsToMochiType(strings.TrimSpace(m[3]))
 		if name == "" {
 			continue
 		}
-		out.WriteString("let ")
+		out.WriteString(map[string]string{"var": "var", "let": "let", "const": "let"}[kw])
+		out.WriteByte(' ')
 		out.WriteString(name)
 		if typ != "" {
 			out.WriteString(": ")

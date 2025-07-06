@@ -175,11 +175,11 @@ golden mismatch:
 ## tests/vm/valid/for_map_collection.mochi
 
 ```
-type converted error: error[T024]: cannot assign to `m` (immutable)
-  --> :3:3
+type converted error: error[T002]: undefined variable: Object
+  --> :4:12
 
 help:
-  Use `var` to declare mutable variables.
+  Check if the variable was declared in this scope.
 ```
 
 ## tests/vm/valid/fun_call.mochi
@@ -445,11 +445,7 @@ help:
 ## tests/vm/valid/list_assign.mochi
 
 ```
-type converted error: error[T024]: cannot assign to `nums` (immutable)
-  --> :3:3
-
-help:
-  Use `var` to declare mutable variables.
+vm compile error: assignment to undeclared variable: nums
 ```
 
 ## tests/vm/valid/list_index.mochi
@@ -465,11 +461,7 @@ help:
 ## tests/vm/valid/list_nested_assign.mochi
 
 ```
-type converted error: error[T024]: cannot assign to `matrix` (immutable)
-  --> :3:3
-
-help:
-  Use `var` to declare mutable variables.
+vm compile error: assignment to undeclared variable: matrix
 ```
 
 ## tests/vm/valid/list_set_ops.mochi
@@ -496,11 +488,7 @@ Charlie charlie@example.com
 ## tests/vm/valid/map_assign.mochi
 
 ```
-type converted error: error[T024]: cannot assign to `scores` (immutable)
-  --> :3:3
-
-help:
-  Use `var` to declare mutable variables.
+vm compile error: assignment to undeclared variable: scores
 ```
 
 ## tests/vm/valid/map_in_operator.mochi
@@ -536,11 +524,7 @@ help:
 ## tests/vm/valid/map_literal_dynamic.mochi
 
 ```
-type converted error: error[T024]: cannot assign to `x` (immutable)
-  --> :5:3
-
-help:
-  Use `var` to declare mutable variables.
+vm compile error: assignment to undeclared variable: x
 ```
 
 ## tests/vm/valid/map_membership.mochi
@@ -556,11 +540,7 @@ help:
 ## tests/vm/valid/map_nested_assign.mochi
 
 ```
-type converted error: error[T024]: cannot assign to `data` (immutable)
-  --> :3:3
-
-help:
-  Use `var` to declare mutable variables.
+vm compile error: assignment to undeclared variable: data
 ```
 
 ## tests/vm/valid/match_expr.mochi
@@ -946,20 +926,12 @@ help:
 ## tests/vm/valid/var_assignment.mochi
 
 ```
-type converted error: error[T024]: cannot assign to `x` (immutable)
-  --> :3:3
-
-help:
-  Use `var` to declare mutable variables.
+vm compile error: assignment to undeclared variable: x
 ```
 
 ## tests/vm/valid/while_loop.mochi
 
 ```
-type converted error: error[T024]: cannot assign to `i` (immutable)
-  --> :3:3
-
-help:
-  Use `var` to declare mutable variables.
+vm compile error: assignment to undeclared variable: i
 ```
 

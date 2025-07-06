@@ -95,8 +95,11 @@ function tsFunctionBody(src: string): string[] {
     if (/^(let|const|var) /.test(s)) {
       const end = s.indexOf(";");
       let stmt = s.slice(0, end === -1 ? undefined : end).trim();
-      stmt = stmt.replace(/^let\s+|^const\s+|^var\s+/, "");
-      lines.push(`let ${stmt.replace(/;$/, "")}`);
+      const kwMatch = stmt.match(/^(let|const|var)\s+/);
+      let kw = "let";
+      if (kwMatch && kwMatch[1] === "var") kw = "var";
+      stmt = stmt.replace(/^(let|const|var)\s+/, "");
+      lines.push(`${kw} ${stmt.replace(/;$/, "")}`);
       s = end === -1 ? "" : s.slice(end + 1);
       continue;
     }
