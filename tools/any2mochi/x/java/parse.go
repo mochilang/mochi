@@ -9,6 +9,7 @@ import (
 )
 
 type javaAST struct {
+	Package string `json:"package"`
 	Structs []struct {
 		Name   string `json:"name"`
 		Fields []struct {
@@ -28,6 +29,15 @@ type javaAST struct {
 }
 
 func parse(src string) ([]string, error) {
+	pkg := ""
+	for _, line := range strings.Split(src, "\n") {
+		t := strings.TrimSpace(line)
+		if strings.HasPrefix(t, "package ") {
+			pkg = strings.TrimSuffix(strings.TrimPrefix(t, "package "), ";")
+			break
+		}
+	}
+
 	cmd := exec.Command("mochi-javaast")
 	cmd.Stdin = strings.NewReader(src)
 	var out bytes.Buffer
@@ -62,10 +72,16 @@ func parse(src string) ([]string, error) {
 		}
 		header := fmt.Sprintf("fun %s(%s)", fn.Name, strings.Join(params, ", "))
 		rt := mapJavaType(fn.Ret)
+		isTest := strings.HasPrefix(fn.Name, "test_") && rt == "void"
 		if rt != "" && rt != "void" {
 			header += ": " + rt
 		}
-		lines = append(lines, header+" {")
+		if isTest {
+			tname := strings.ReplaceAll(strings.TrimPrefix(fn.Name, "test_"), "_", " ")
+			lines = append(lines, fmt.Sprintf("test \"%s\" {", tname))
+		} else {
+			lines = append(lines, header+" {")
+		}
 		body, err := javaBodyLines(fn.Body, structs)
 		if err != nil {
 			return nil, fmt.Errorf("%s", err)
@@ -75,15 +91,28 @@ func parse(src string) ([]string, error) {
 		}
 		lines = append(lines, "}")
 	}
+	if pkg != "" {
+		lines = append([]string{fmt.Sprintf("package %s", pkg)}, lines...)
+	}
 	return lines, nil
 }
 
 func javaBodyLines(body []string, structs map[string][]string) ([]string, error) {
 	var out []string
-	for _, line := range body {
-		l := strings.TrimSpace(line)
+	for i := 0; i < len(body); i++ {
+		l := strings.TrimSpace(body[i])
 		if l == "" {
 			continue
+		}
+		// join multi-line statements ending with '='
+		if strings.HasSuffix(l, "=") {
+			for i+1 < len(body) {
+				l += " " + strings.TrimSpace(body[i+1])
+				i++
+				if strings.HasSuffix(strings.TrimSpace(body[i]), ";") {
+					break
+				}
+			}
 		}
 		if strings.HasPrefix(l, "System.out.println(") && strings.HasSuffix(l, ");") {
 			expr := strings.TrimSuffix(strings.TrimPrefix(l, "System.out.println("), ");")
@@ -99,6 +128,11 @@ func javaBodyLines(body []string, structs map[string][]string) ([]string, error)
 			}
 			continue
 		}
+		if strings.HasPrefix(l, "expect(") && strings.HasSuffix(l, ");") {
+			expr := strings.TrimSuffix(strings.TrimPrefix(l, "expect("), ");")
+			out = append(out, "expect "+convertJavaExpr(expr, structs))
+			continue
+		}
 		if isVarAssign(l + ";") {
 			name, expr := parseVarAssign(l + ";")
 			out = append(out, "var "+name+" = "+convertJavaExpr(expr, structs))
@@ -108,7 +142,24 @@ func javaBodyLines(body []string, structs map[string][]string) ([]string, error)
 			out = append(out, left+" = "+convertJavaExpr(right, structs))
 			continue
 		}
-		return nil, fmt.Errorf("unsupported line: %s", l)
+		snippet := numberedBodySnippet(body, i)
+		return nil, fmt.Errorf("line %d: unsupported line: %s\n%s", i+1, l, snippet)
 	}
 	return out, nil
+}
+
+func numberedBodySnippet(lines []string, idx int) string {
+	start := idx - 2
+	if start < 0 {
+		start = 0
+	}
+	end := idx + 2
+	if end >= len(lines) {
+		end = len(lines) - 1
+	}
+	var b strings.Builder
+	for i := start; i <= end; i++ {
+		b.WriteString(fmt.Sprintf("%3d| %s\n", i+1, strings.TrimSpace(lines[i])))
+	}
+	return b.String()
 }
