@@ -354,7 +354,6 @@ func sanitizeExpr(code string) string {
 		return v
 	}
 	code = strings.ReplaceAll(code, ".to_vec()", "")
-	code = strings.ReplaceAll(code, ".to_string()", "")
 	return code
 }
 
