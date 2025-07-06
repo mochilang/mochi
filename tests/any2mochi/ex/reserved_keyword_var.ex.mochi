@@ -1,0 +1,5 @@
+fun main() {
+  let map = %{a: 1}
+  print(Map.get(map, "a"))
+}
+main()

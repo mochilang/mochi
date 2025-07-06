@@ -1,0 +1,4 @@
+fun main() {
+  print(to_string(123))
+}
+main()

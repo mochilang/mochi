@@ -1,0 +1,8 @@
+fun main() {
+  let left = [%{id: 1}, %{id: 2}]
+  let right = [%{id: 1}, %{id: 3}]
+  let result = for a <- left, b <- right, (a.id == b.id), do: a.id
+  for r <- result do
+  print(r)
+}
+main()

@@ -1,0 +1,5 @@
+fun main() {
+  let text = "hello"
+  print(text[-1])
+}
+main()

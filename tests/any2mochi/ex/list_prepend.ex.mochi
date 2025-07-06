@@ -1,0 +1,10 @@
+fun prepend(level, result) {
+  try do
+  let result = [level] ++ result
+  throw {:return, result}
+  catch {:return, v} -> v end
+}
+fun main() {
+  print(prepend([1, 2], [[3], [4]]))
+}
+main()

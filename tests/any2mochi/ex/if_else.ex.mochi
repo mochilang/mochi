@@ -1,0 +1,16 @@
+fun foo(n) {
+  try do
+  if (n < 0) do
+  throw {:return, -1}
+  else
+  let if (n = = 0) do
+  throw {:return, 0}
+  else
+  throw {:return, 1}
+}
+fun main() {
+  print(foo(-2))
+  print(foo(0))
+  print(foo(3))
+}
+main()

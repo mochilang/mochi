@@ -1,0 +1,4 @@
+fun main() {
+  print("hello"[-4:-1])
+}
+main()
