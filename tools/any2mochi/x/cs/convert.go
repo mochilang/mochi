@@ -61,10 +61,24 @@ func convertSimple(src string) ([]byte, error) {
 	}
 	var out strings.Builder
 	for _, t := range ast.Types {
+		if t.Doc != "" {
+			for _, ln := range strings.Split(t.Doc, "\n") {
+				out.WriteString("# ")
+				out.WriteString(strings.TrimSpace(ln))
+				out.WriteByte('\n')
+			}
+		}
 		out.WriteString("type ")
 		out.WriteString(t.Name)
 		out.WriteString(" {\n")
 		for _, f := range t.Fields {
+			if f.Doc != "" {
+				for _, ln := range strings.Split(f.Doc, "\n") {
+					out.WriteString("  # ")
+					out.WriteString(strings.TrimSpace(ln))
+					out.WriteByte('\n')
+				}
+			}
 			out.WriteString("  ")
 			out.WriteString(f.Name)
 			if ft := mapType(f.Type); ft != "" {
@@ -75,6 +89,13 @@ func convertSimple(src string) ([]byte, error) {
 		}
 		out.WriteString("}\n")
 		for _, fn := range t.Methods {
+			if fn.Doc != "" {
+				for _, ln := range strings.Split(fn.Doc, "\n") {
+					out.WriteString("# ")
+					out.WriteString(strings.TrimSpace(ln))
+					out.WriteByte('\n')
+				}
+			}
 			out.WriteString("fun ")
 			out.WriteString(t.Name)
 			out.WriteByte('.')

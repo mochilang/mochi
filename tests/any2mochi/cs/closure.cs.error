@@ -1,0 +1,7 @@
+line 10: unsupported line
+  8| 
+  9| public class Program {
+ 10|     static Func<long, long> makeAdder(long n) {
+   |                                                ^
+ 11|         return new Func<long, long>(delegate(long x) {
+ 12|     return (x + n);

@@ -2,5 +2,9 @@
 type Program {
 }
 fun Program.Main() {
-  print("Hello, world")
+  var i = 0
+  while (i < 3) {
+  print(i)
+  i = (i + 1)
+  }
 }

@@ -2,5 +2,7 @@
 type Program {
 }
 fun Program.Main() {
-  print("Hello, world")
+  print((true && false))
+  print((true || false))
+  print((!false))
 }

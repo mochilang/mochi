@@ -2,5 +2,5 @@
 type Program {
 }
 fun Program.Main() {
-  print("Hello, world")
+  print(new Dictionary<string, long> { { "a", 1 }, { "b", 2 } }.Count)
 }

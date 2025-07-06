@@ -2,5 +2,7 @@
 type Program {
 }
 fun Program.Main() {
-  print("Hello, world")
+  for i in 1..4 {
+  print(i)
+  }
 }
