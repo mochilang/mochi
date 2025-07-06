@@ -19,20 +19,35 @@ type param struct {
 }
 
 type ast struct {
-	Vars      []variable `json:"vars"`
-	Functions []function `json:"functions"`
+	Vars      []variable  `json:"vars"`
+	Structs   []structDef `json:"structs"`
+	Functions []function  `json:"functions"`
 }
 
 type variable struct {
 	Name string `json:"name"`
 	Type string `json:"type"`
+	Line int    `json:"line"`
 }
 
 type function struct {
 	Name   string   `json:"name"`
 	Params string   `json:"params"`
 	Ret    string   `json:"ret"`
+	Line   int      `json:"line"`
 	Lines  []string `json:"lines"`
+}
+
+type structDef struct {
+	Name   string  `json:"name"`
+	Line   int     `json:"line"`
+	Fields []field `json:"fields"`
+}
+
+type field struct {
+	Name string `json:"name"`
+	Type string `json:"type"`
+	Line int    `json:"line"`
 }
 
 func snippet(src string) string {
@@ -51,12 +66,20 @@ func diagnostics(src string, diags []any2mochi.Diagnostic) string {
 	var out strings.Builder
 	for _, d := range diags {
 		start := int(d.Range.Start.Line)
+		end := int(d.Range.End.Line)
 		msg := d.Message
-		line := ""
-		if start < len(lines) {
-			line = strings.TrimSpace(lines[start])
+		out.WriteString(fmt.Sprintf("line %d-%d: %s\n", start+1, end+1, msg))
+		from := start - 1
+		if from < 0 {
+			from = 0
 		}
-		out.WriteString(fmt.Sprintf("line %d: %s\n  %s\n", start+1, msg, line))
+		to := end + 1
+		if to >= len(lines) {
+			to = len(lines) - 1
+		}
+		for i := from; i <= to; i++ {
+			out.WriteString(fmt.Sprintf(" %4d| %s\n", i+1, lines[i]))
+		}
 	}
 	return strings.TrimSpace(out.String())
 }
@@ -116,6 +139,25 @@ func parseCLI(src string) (*ast, error) {
 
 func convertAST(a *ast) ([]byte, error) {
 	var out strings.Builder
+	for _, st := range a.Structs {
+		out.WriteString("type ")
+		out.WriteString(st.Name)
+		if len(st.Fields) == 0 {
+			out.WriteString(" {}\n")
+		} else {
+			out.WriteString(" {\n")
+			for _, f := range st.Fields {
+				out.WriteString("  ")
+				out.WriteString(f.Name)
+				if f.Type != "" {
+					out.WriteString(": ")
+					out.WriteString(mapType(f.Type))
+				}
+				out.WriteByte('\n')
+			}
+			out.WriteString("}\n")
+		}
+	}
 	// ignore top-level variables since imports are not needed
 	for _, fn := range a.Functions {
 		out.WriteString("fun ")
