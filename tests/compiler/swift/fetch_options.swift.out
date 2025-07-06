@@ -58,10 +58,10 @@ struct Msg {
   var message: String
 }
 
+let data: Msg = _fetch(
+  "file://tests/compiler/swift/fetch_builtin.json",
+  ["method": "GET", "headers": ["X-Test": "1"], "body": ["x": 1], "timeout": 1])
 func main() {
-  let data: Msg = _fetch(
-    "file://tests/compiler/swift/fetch_builtin.json",
-    ["method": "GET", "headers": ["X-Test": "1"], "body": ["x": 1], "timeout": 1])
   print(data.message)
 }
 main()

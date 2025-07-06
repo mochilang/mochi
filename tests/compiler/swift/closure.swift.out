@@ -10,8 +10,8 @@ func makeAdder(_ n: Int) -> (Int) -> Int {
   }
 }
 
+let add10 = makeAdder(10)
 func main() {
-  let add10 = makeAdder(10)
   print(add10(7))
 }
 main()

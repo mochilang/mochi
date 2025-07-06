@@ -8,8 +8,8 @@ struct Err: Result {
   var msg: String
 }
 
+let r: Result = Ok(value: 7)
 func main() {
-  let r: Result = Ok(value: 7)
   print(1)
 }
 main()

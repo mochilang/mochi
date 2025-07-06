@@ -1,6 +1,6 @@
 import Foundation
 
 func main() {
-  print(String(123))
+  print(String(describing: 123))
 }
 main()

@@ -44,6 +44,17 @@ func TestSwiftCompiler_JOB_Golden(t *testing.T) {
 			if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(want)) {
 				t.Errorf("generated code mismatch for %s.swift.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, bytes.TrimSpace(want))
 			}
+			vmOut, err := runMochiVM(src)
+			if err != nil {
+				t.Fatalf("vm error: %v", err)
+			}
+			swiftOut, err := compileAndRunSwift(src)
+			if err != nil {
+				t.Fatalf("swift run error: %v", err)
+			}
+			if !bytes.Equal(bytes.TrimSpace(swiftOut), bytes.TrimSpace(vmOut)) {
+				t.Fatalf("runtime mismatch for %s\n-- swift --\n%s\n\n-- vm --\n%s", q, swiftOut, vmOut)
+			}
 		})
 	}
 }

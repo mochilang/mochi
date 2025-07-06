@@ -8,8 +8,8 @@ func _index<T>(_ arr: [T], _ i: Int) -> T {
   return arr[idx]
 }
 
+let xs: [Int] = [10, 20, 30]
 func main() {
-  let xs: [Int] = [10, 20, 30]
   print(_index(xs, 1))
 }
 main()

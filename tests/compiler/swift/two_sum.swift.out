@@ -23,8 +23,8 @@ func twoSum(_ nums: [Int], _ target: Int) -> [Int] {
   return [-1, -1]
 }
 
+let result: [Int] = twoSum([2, 7, 11, 15], 9)
 func main() {
-  let result: [Int] = twoSum([2, 7, 11, 15], 9)
   print(_index(result, 0))
   print(_index(result, 1))
 }

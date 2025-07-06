@@ -5,8 +5,8 @@ struct Point {
   var y: Int
 }
 
+let p = Point(x: 1, y: 2)
 func main() {
-  let p = Point(x: 1, y: 2)
   print(p.x)
 }
 main()

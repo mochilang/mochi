@@ -115,9 +115,8 @@ struct Person {
   var email: String
 }
 
-func main() {
-  let people: [Person] = _load(nil, ["format": "json"])
-  let adults: [Person] = ({
+let people: [Person] = _load(nil, ["format": "json"])
+let adults: [Person] = ({
   var _res: [Person] = []
   for p in people {
     if !(p.age >= 18) { continue }
@@ -126,6 +125,7 @@ func main() {
   var _items = _res
   return _items
 }())
+func main() {
   _save(_toMapSlice(adults), nil, ["format": "json"])
 }
 main()

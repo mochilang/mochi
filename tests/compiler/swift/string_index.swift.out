@@ -8,8 +8,8 @@ func _indexString(_ s: String, _ i: Int) -> String {
   return String(chars[idx])
 }
 
+let text = "hello"
 func main() {
-  let text = "hello"
   print(_indexString(text, 1))
 }
 main()
