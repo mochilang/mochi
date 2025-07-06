@@ -1,0 +1,5 @@
+tests/vm/valid/dataset_sort_take_limit.go.out:65: unsupported statement *ast.TypeSwitchStmt
+>>> 64:    var out T
+65:>>> switch any(out).(type) {
+66:    case int:
+67:    switch vv := v.(type) {

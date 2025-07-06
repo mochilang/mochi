@@ -1,0 +1,5 @@
+tests/vm/valid/query_sum_select.go.out:29: unsupported statement *ast.TypeSwitchStmt
+>>> 28:    } else {
+29:>>> switch s := v.(type) {
+30:    case []any:
+31:    items = s

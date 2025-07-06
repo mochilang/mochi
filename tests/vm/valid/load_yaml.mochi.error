@@ -1,0 +1,5 @@
+tests/vm/valid/load_yaml.go.out:46: unsupported statement *ast.TypeSwitchStmt
+>>> 45:    var out T
+46:>>> switch any(out).(type) {
+47:    case int:
+48:    switch vv := v.(type) {

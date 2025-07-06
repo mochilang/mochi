@@ -1,0 +1,5 @@
+tests/vm/valid/dataset_where_filter.go.out:8: unsupported declaration
+>>> 7:    func main() {
+8:>>> type PeopleItem struct {
+9:    Name string `json:"name"`
+10:    Age  int    `json:"age"`

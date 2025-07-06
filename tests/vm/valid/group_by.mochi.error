@@ -1,0 +1,5 @@
+tests/vm/valid/group_by.go.out:90: unsupported statement *ast.TypeSwitchStmt
+>>> 89:    } else {
+90:>>> switch s := v.(type) {
+91:    case []any:
+92:    items = s

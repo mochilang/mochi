@@ -1,0 +1,8 @@
+var i = 0
+while true {
+  if !(i < 3) {
+  break
+}
+  print(str(i))
+  i = (i + 1)
+}

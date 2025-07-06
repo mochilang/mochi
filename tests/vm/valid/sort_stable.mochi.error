@@ -1,0 +1,5 @@
+tests/vm/valid/sort_stable.go.out:42: unsupported statement *ast.TypeSwitchStmt
+>>> 41:    var out T
+42:>>> switch any(out).(type) {
+43:    case int:
+44:    switch vv := v.(type) {

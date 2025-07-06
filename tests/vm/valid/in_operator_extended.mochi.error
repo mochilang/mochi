@@ -1,0 +1,5 @@
+tests/vm/valid/in_operator_extended.go.out:27: unsupported assignment
+>>> 26:    _tmp1 := m
+27:>>> _, _tmp2 := _tmp1[_tmp0]
+28:    fmt.Println(_tmp2)
+29:    _tmp3 := "b"

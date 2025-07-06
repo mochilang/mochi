@@ -1,0 +1,5 @@
+tests/vm/valid/group_by_join.go.out:9: unsupported declaration
+>>> 8:    func main() {
+9:>>> type CustomersItem struct {
+10:    Id   int    `json:"id"`
+11:    Name string `json:"name"`

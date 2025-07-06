@@ -1,0 +1,12 @@
+fun _indexString(s: string, i: int): string {
+  let runes = s
+  if i < 0 {
+  i = i + len(runes)
+}
+  if i < 0 || i >= len(runes) {
+  panic("index out of range")
+}
+  return str(runes[i])
+}
+var s = "mochi"
+print(str(_indexString(s, 1)))
