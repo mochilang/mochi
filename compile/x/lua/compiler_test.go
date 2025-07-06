@@ -16,6 +16,7 @@ import (
 	luacode "mochi/compile/x/lua"
 	"mochi/golden"
 	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -96,26 +97,45 @@ func TestLuaCompiler_SubsetPrograms(t *testing.T) {
 			if err := os.WriteFile(file, code, 0644); err != nil {
 				t.Fatalf("write error: %v", err)
 			}
-			cmd := exec.Command("lua", file)
+
+			var input []byte
 			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
-				cmd.Stdin = bytes.NewReader(data)
+				input = data
+			}
+
+			// run compiled Lua code
+			cmd := exec.Command("lua", file)
+			if len(input) > 0 {
+				cmd.Stdin = bytes.NewReader(input)
 			}
 			out, err := cmd.CombinedOutput()
 			if err != nil {
 				t.Fatalf("lua run error: %v\n%s", err, out)
 			}
 			got := bytes.TrimSpace(out)
+
+			// run original code with the VM for expected output
+			p, err := vm.Compile(prog, env)
+			if err != nil {
+				t.Fatalf("vm compile error: %v", err)
+			}
+			var vmOut bytes.Buffer
+			m := vm.NewWithIO(p, bytes.NewReader(input), &vmOut)
+			if err := m.Run(); err != nil {
+				if ve, ok := err.(*vm.VMError); ok {
+					t.Fatalf("vm run error:\n%s", ve.Format(p))
+				}
+				t.Fatalf("vm run error: %v", err)
+			}
+			want := bytes.TrimSpace(vmOut.Bytes())
+
 			wantPath := filepath.Join(dir, name+".out")
 			if update {
-				os.WriteFile(wantPath, got, 0644)
-				return
+				os.WriteFile(wantPath, want, 0644)
 			}
-			want, err := os.ReadFile(wantPath)
-			if err != nil {
-				t.Fatalf("failed to read golden: %v", err)
-			}
-			if !bytes.Equal(bytes.TrimSpace(want), got) {
-				t.Errorf("golden mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", name+".out", got, want)
+
+			if !bytes.Equal(got, want) {
+				t.Errorf("output mismatch for %s\n\n--- VM ---\n%s\n\n--- Lua ---\n%s\n", name, want, got)
 			}
 		})
 	}
