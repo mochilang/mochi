@@ -1,4 +1,4 @@
-package any2mochi
+package ocaml
 
 import (
 	"bytes"
@@ -10,18 +10,18 @@ import (
 	"strings"
 )
 
-type ocamlProgram struct {
-	Funcs  []ocamlFunc `json:"funcs"`
-	Prints []string    `json:"prints"`
+type Program struct {
+	Funcs  []Func   `json:"funcs"`
+	Prints []string `json:"prints"`
 }
 
-type ocamlFunc struct {
+type Func struct {
 	Name   string   `json:"name"`
 	Params []string `json:"params"`
 	Body   string   `json:"body"`
 }
 
-func parseOcaml(src string) (*ocamlProgram, error) {
+func parse(src string) (*Program, error) {
 	tmp, err := os.CreateTemp("", "ocaml-*.ml")
 	if err != nil {
 		return nil, err
@@ -35,7 +35,7 @@ func parseOcaml(src string) (*ocamlProgram, error) {
 	if err != nil {
 		return nil, err
 	}
-	script := filepath.Join(root, "tools", "any2mochi", "ocaml_ast.js")
+	script := filepath.Join(root, "tools", "any2mochi", "x", "ocaml", "ocaml_ast.js")
 	cmd := exec.Command("node", script, tmp.Name())
 	var out bytes.Buffer
 	var stderr bytes.Buffer
@@ -48,14 +48,14 @@ func parseOcaml(src string) (*ocamlProgram, error) {
 		}
 		return nil, fmt.Errorf("node: %s", msg)
 	}
-	var prog ocamlProgram
+	var prog Program
 	if err := json.Unmarshal(out.Bytes(), &prog); err != nil {
 		return nil, err
 	}
 	return &prog, nil
 }
 
-func formatOcamlProgram(p *ocamlProgram) []byte {
+func formatProgram(p *Program) []byte {
 	var out bytes.Buffer
 	for _, fn := range p.Funcs {
 		out.WriteString("fun ")
@@ -102,4 +102,22 @@ func formatOcamlProgram(p *ocamlProgram) []byte {
 		}
 	}
 	return out.Bytes()
+}
+
+func repoRoot() (string, error) {
+	dir, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir, nil
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	return "", os.ErrNotExist
 }
