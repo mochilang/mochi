@@ -41,7 +41,7 @@ func TestPy2Mochi(t *testing.T) {
 			if _, err := os.Stat(outPath); err != nil {
 				t.Skip("missing output for " + name)
 			}
-			cmd := exec.Command("python3", filepath.Join(root, "tools", "py2mochi", "py2mochi.py"), pyFile)
+			cmd := exec.Command("python3", filepath.Join(root, "tools", "any2mochi", "py", "py2mochi.py"), pyFile)
 			mochiCode, err := cmd.Output()
 			if err != nil {
 				t.Fatalf("py2mochi error: %v", err)
