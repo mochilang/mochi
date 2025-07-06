@@ -3,6 +3,7 @@
 package phpcode_test
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -12,6 +13,7 @@ import (
 	phpcode "mochi/compile/x/php"
 	"mochi/compile/x/testutil"
 	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -52,14 +54,31 @@ func TestPHPCompiler_JOB(t *testing.T) {
 			if err != nil {
 				t.Fatalf("php run error: %v\n%s", err, out)
 			}
+			phpOut := bytes.TrimSpace(out)
+
+			p, err := vm.Compile(prog, env)
+			if err != nil {
+				t.Fatalf("vm compile error: %v", err)
+			}
+			var vmBuf bytes.Buffer
+			m := vm.New(p, &vmBuf)
+			if err := m.Run(); err != nil {
+				if ve, ok := err.(*vm.VMError); ok {
+					t.Fatalf("vm run error:\n%s", ve.Format(p))
+				}
+				t.Fatalf("vm run error: %v", err)
+			}
+			vmOut := bytes.TrimSpace(vmBuf.Bytes())
+			if !bytes.Equal(phpOut, vmOut) {
+				t.Fatalf("vm mismatch\n\n--- PHP ---\n%s\n\n--- VM ---\n%s", phpOut, vmOut)
+			}
+
 			wantData, err := os.ReadFile(filepath.Join(root, "tests", "dataset", "job", "compiler", "php", q+".out"))
 			if err != nil {
 				t.Fatalf("read golden: %v", err)
 			}
-			got := string(out)
-			want := string(wantData)
-			if got != want {
-				t.Fatalf("unexpected output\n--- got ---\n%s\n--- want ---\n%s", got, want)
+			if string(phpOut) != string(bytes.TrimSpace(wantData)) {
+				t.Fatalf("unexpected output\n--- got ---\n%s\n--- want ---\n%s", phpOut, bytes.TrimSpace(wantData))
 			}
 		})
 	}

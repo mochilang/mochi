@@ -937,6 +937,26 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("reverse expects 1 arg")
 		}
 		return fmt.Sprintf("(is_array(%[1]s) ? array_reverse(%[1]s) : (is_string(%[1]s) ? strrev(%[1]s) : null))", args[0]), nil
+	case "append":
+		if len(args) != 2 {
+			return "", fmt.Errorf("append expects 2 args")
+		}
+		return fmt.Sprintf("array_merge(%s, [%s])", args[0], args[1]), nil
+	case "values":
+		if len(args) != 1 {
+			return "", fmt.Errorf("values expects 1 arg")
+		}
+		return fmt.Sprintf("array_values(%s)", args[0]), nil
+	case "substr", "substring":
+		if len(args) != 3 {
+			return "", fmt.Errorf("substr expects 3 args")
+		}
+		return fmt.Sprintf("substr(%s, %s, %s - %s)", args[0], args[1], args[2], args[1]), nil
+	case "exists":
+		if len(args) != 1 {
+			return "", fmt.Errorf("exists expects 1 arg")
+		}
+		return fmt.Sprintf("((is_object(%[1]s) && property_exists(%[1]s, 'Items')) ? count(%[1]s->Items) : (is_array(%[1]s) ? count(%[1]s) : (is_string(%[1]s) ? strlen(%[1]s) : 0))) > 0", args[0]), nil
 	default:
 		return fmt.Sprintf("%s(%s)", name, strings.Join(args, ", ")), nil
 	}

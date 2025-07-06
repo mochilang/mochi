@@ -15,7 +15,7 @@ foreach ((is_string($groups) ? str_split($groups) : $groups) as $g) {
 	foreach ((is_string($g['items']) ? str_split($g['items']) : $g['items']) as $x) {
 		$total = ((is_array($total) && is_array($x['val'])) ? array_merge($total, $x['val']) : ((is_string($total) || is_string($x['val'])) ? ($total . $x['val']) : ($total + $x['val'])));
 	}
-	$tmp = append($tmp, ["tag" => $g['key'], "total" => $total]);
+	$tmp = array_merge($tmp, [["tag" => $g['key'], "total" => $total]]);
 }
 $result = (function() use ($tmp) {
 	$_src = $tmp;
@@ -49,7 +49,8 @@ function _group_by($src, $keyfn) {
 function _print(...$args) {
     $parts = [];
     foreach ($args as $a) {
-        if (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+        if (is_null($a)) { $parts[] = '<nil>'; }
+        elseif (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
     }
     echo implode(' ', $parts), PHP_EOL;
 }
