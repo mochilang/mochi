@@ -1,0 +1,6 @@
+tests/compiler/php/let_and_print.php.out: no convertible symbols found
+  1: <?php
+  2: $a = 10;
+  3: $b = 20;
+  4: echo ((is_array($a) && is_array($b)) ? array_merge($a, $b) : ((is_string($a) || is_string($b)) ? ($a . $b) : ($a + $b))), PHP_EOL;
+  5:

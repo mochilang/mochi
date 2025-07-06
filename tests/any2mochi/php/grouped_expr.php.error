@@ -1,0 +1,5 @@
+tests/compiler/php/grouped_expr.php.out: no convertible symbols found
+  1: <?php
+  2: $value = ((((is_array(1) && is_array(2)) ? array_merge(1, 2) : ((is_string(1) || is_string(2)) ? (1 . 2) : (1 + 2)))) * 3);
+  3: echo $value, PHP_EOL;
+  4:

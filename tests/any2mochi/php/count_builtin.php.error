@@ -1,0 +1,4 @@
+tests/compiler/php/count_builtin.php.out: no convertible symbols found
+  1: <?php
+  2: echo (is_array([1, 2, 3]) ? count([1, 2, 3]) : strlen([1, 2, 3])), PHP_EOL;
+  3:

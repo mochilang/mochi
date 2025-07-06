@@ -1,0 +1,5 @@
+tests/compiler/php/list_index.php.out: no convertible symbols found
+  1: <?php
+  2: $xs = [10, 20, 30];
+  3: echo $xs[1], PHP_EOL;
+  4:

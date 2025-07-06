@@ -1,0 +1,6 @@
+type _Group {
+  key: any
+  Items: any
+  fun __construct(key) {}
+}
+fun _group_by(src, keyfn) {}

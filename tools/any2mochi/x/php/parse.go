@@ -2,9 +2,11 @@ package php
 
 import (
 	"fmt"
+	"strings"
 
 	pnode "github.com/z7zmey/php-parser/node"
 	"github.com/z7zmey/php-parser/node/expr"
+	"github.com/z7zmey/php-parser/node/name"
 	"github.com/z7zmey/php-parser/node/stmt"
 	"github.com/z7zmey/php-parser/php7"
 )
@@ -22,19 +24,30 @@ type ParseError struct {
 
 func (e *ParseError) Error() string { return fmt.Sprintf("%s at line %d", e.Msg, e.Line) }
 
+type Param struct {
+	Name string `json:"name"`
+	Type string `json:"type,omitempty"`
+}
+
+type Field struct {
+	Name string `json:"name"`
+	Type string `json:"type,omitempty"`
+}
+
 type Func struct {
-	Name      string   `json:"name"`
-	Params    []string `json:"params"`
-	StartLine int      `json:"start_line"`
-	EndLine   int      `json:"end_line"`
+	Name      string  `json:"name"`
+	Params    []Param `json:"params"`
+	Return    string  `json:"return,omitempty"`
+	StartLine int     `json:"start_line"`
+	EndLine   int     `json:"end_line"`
 }
 
 type Class struct {
-	Name      string   `json:"name"`
-	Fields    []string `json:"fields"`
-	Methods   []Func   `json:"methods"`
-	StartLine int      `json:"start_line"`
-	EndLine   int      `json:"end_line"`
+	Name      string  `json:"name"`
+	Fields    []Field `json:"fields"`
+	Methods   []Func  `json:"methods"`
+	StartLine int     `json:"start_line"`
+	EndLine   int     `json:"end_line"`
 }
 
 // Parse parses PHP source using the php-parser library and returns a
@@ -68,14 +81,15 @@ func Parse(src string) (*Program, error) {
 
 func funcFromFn(fn *stmt.Function) Func {
 	name := identString(fn.FunctionName)
-	var params []string
+	var params []Param
 	for _, p := range fn.Params {
 		if param, ok := p.(*pnode.Parameter); ok {
-			params = append(params, paramName(param))
+			params = append(params, paramInfo(param))
 		}
 	}
+	ret := typeString(fn.ReturnType)
 	pos := fn.GetPosition()
-	return Func{Name: name, Params: params, StartLine: pos.StartLine, EndLine: pos.EndLine}
+	return Func{Name: name, Params: params, Return: ret, StartLine: pos.StartLine, EndLine: pos.EndLine}
 }
 
 func classFromNode(c *stmt.Class) Class {
@@ -86,7 +100,7 @@ func classFromNode(c *stmt.Class) Class {
 		case *stmt.PropertyList:
 			for _, p := range n.Properties {
 				if prop, ok := p.(*stmt.Property); ok {
-					cl.Fields = append(cl.Fields, propertyName(prop))
+					cl.Fields = append(cl.Fields, fieldInfo(prop, n))
 				}
 			}
 		case *stmt.ClassMethod:
@@ -98,28 +112,33 @@ func classFromNode(c *stmt.Class) Class {
 
 func methodFromNode(m *stmt.ClassMethod) Func {
 	name := identString(m.MethodName)
-	var params []string
+	var params []Param
 	for _, p := range m.Params {
 		if param, ok := p.(*pnode.Parameter); ok {
-			params = append(params, paramName(param))
+			params = append(params, paramInfo(param))
 		}
 	}
+	ret := typeString(m.ReturnType)
 	pos := m.GetPosition()
-	return Func{Name: name, Params: params, StartLine: pos.StartLine, EndLine: pos.EndLine}
+	return Func{Name: name, Params: params, Return: ret, StartLine: pos.StartLine, EndLine: pos.EndLine}
 }
 
-func paramName(p *pnode.Parameter) string {
+func paramInfo(p *pnode.Parameter) Param {
+	name := ""
 	if v, ok := p.Variable.(*expr.Variable); ok {
-		return identString(v.VarName)
+		name = identString(v.VarName)
 	}
-	return ""
+	typ := typeString(p.VariableType)
+	return Param{Name: name, Type: typ}
 }
 
-func propertyName(p *stmt.Property) string {
+func fieldInfo(p *stmt.Property, list *stmt.PropertyList) Field {
+	name := ""
 	if v, ok := p.Variable.(*expr.Variable); ok {
-		return identString(v.VarName)
+		name = identString(v.VarName)
 	}
-	return ""
+	typ := typeString(list.Type)
+	return Field{Name: name, Type: typ}
 }
 
 func identString(n pnode.Node) string {
@@ -127,4 +146,28 @@ func identString(n pnode.Node) string {
 		return id.Value
 	}
 	return ""
+}
+
+func typeString(n pnode.Node) string {
+	switch t := n.(type) {
+	case *name.Name:
+		return joinNameParts(t.Parts)
+	case *name.FullyQualified:
+		return joinNameParts(t.Parts)
+	case *name.Relative:
+		return joinNameParts(t.Parts)
+	case *name.NamePart:
+		return t.Value
+	}
+	return ""
+}
+
+func joinNameParts(parts []pnode.Node) string {
+	var out []string
+	for _, p := range parts {
+		if np, ok := p.(*name.NamePart); ok {
+			out = append(out, np.Value)
+		}
+	}
+	return strings.Join(out, "\\")
 }

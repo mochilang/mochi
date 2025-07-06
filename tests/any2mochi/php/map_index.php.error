@@ -1,0 +1,5 @@
+tests/compiler/php/map_index.php.out: no convertible symbols found
+  1: <?php
+  2: $scores = ["Alice" => 10, "Bob" => 15];
+  3: echo $scores["Bob"], PHP_EOL;
+  4:

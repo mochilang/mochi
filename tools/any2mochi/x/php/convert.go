@@ -22,8 +22,14 @@ func Convert(src string) ([]byte, error) {
 			out.WriteString(" {\n")
 			for _, f := range c.Fields {
 				out.WriteString("  ")
-				out.WriteString(f)
-				out.WriteString(": any\n")
+				out.WriteString(f.Name)
+				if f.Type == "" {
+					out.WriteString(": any\n")
+				} else {
+					out.WriteString(": ")
+					out.WriteString(f.Type)
+					out.WriteByte('\n')
+				}
 			}
 			for _, m := range c.Methods {
 				out.WriteString("  fun ")
@@ -33,9 +39,18 @@ func Convert(src string) ([]byte, error) {
 					if i > 0 {
 						out.WriteString(", ")
 					}
-					out.WriteString(p)
+					out.WriteString(p.Name)
+					if p.Type != "" {
+						out.WriteString(": ")
+						out.WriteString(p.Type)
+					}
 				}
-				out.WriteString(") {}\n")
+				out.WriteString(")")
+				if m.Return != "" {
+					out.WriteString(": ")
+					out.WriteString(m.Return)
+				}
+				out.WriteString(" {}\n")
 			}
 			out.WriteString("}\n")
 		}
@@ -48,9 +63,18 @@ func Convert(src string) ([]byte, error) {
 			if i > 0 {
 				out.WriteString(", ")
 			}
-			out.WriteString(p)
+			out.WriteString(p.Name)
+			if p.Type != "" {
+				out.WriteString(": ")
+				out.WriteString(p.Type)
+			}
 		}
-		out.WriteString(") {}\n")
+		out.WriteString(")")
+		if f.Return != "" {
+			out.WriteString(": ")
+			out.WriteString(f.Return)
+		}
+		out.WriteString(" {}\n")
 	}
 	if out.Len() == 0 {
 		return nil, fmt.Errorf("no convertible symbols found")
@@ -113,11 +137,11 @@ func arrowSnippet(src string, line int) string {
 	}
 	var b strings.Builder
 	for i := start; i < end; i++ {
-		prefix := "    "
-		if i == line-1 {
-			prefix = ">>> "
+		mark := "   "
+		if i+1 == line {
+			mark = ">>>"
 		}
-		fmt.Fprintf(&b, "%d:%s%s\n", i+1, prefix, strings.TrimSpace(lines[i]))
+		fmt.Fprintf(&b, "%4d:%s %s\n", i+1, mark, lines[i])
 	}
 	return b.String()
 }

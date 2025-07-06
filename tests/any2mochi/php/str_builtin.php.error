@@ -1,0 +1,4 @@
+tests/compiler/php/str_builtin.php.out: no convertible symbols found
+  1: <?php
+  2: echo strval(123), PHP_EOL;
+  3:

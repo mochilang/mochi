@@ -1,0 +1,8 @@
+type Todo {
+  userId: any
+  id: any
+  title: any
+  completed: any
+  fun __construct(fields) {}
+}
+fun _fetch(url, opts) {}
