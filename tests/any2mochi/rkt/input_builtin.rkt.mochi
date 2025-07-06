@@ -1,5 +1,0 @@
-print("Enter first input:")
-let input1
-print("Enter second input:")
-let input2
-print(( format "~a ~a ~a ~a" "You entered:" input1 "," input2 ))

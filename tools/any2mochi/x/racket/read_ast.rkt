@@ -15,6 +15,7 @@
     [(list? x) (map s->jsexpr x)]
     [(vector? x) (map s->jsexpr (vector->list x))]
     [(symbol? x) (symbol->string x)]
+    [(keyword? x) (keyword->string x)]
     [else x]))
 (write-json (s->jsexpr stx))
 (newline)

@@ -1,2 +1,0 @@
-let text = "hello"
-print(( idx text ( - 1 ) ))

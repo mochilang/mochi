@@ -1,1 +1,0 @@
-print(( count ( hash "a" 1 "b" 2 ) ))

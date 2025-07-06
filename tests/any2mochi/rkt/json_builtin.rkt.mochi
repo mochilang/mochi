@@ -1,1 +1,0 @@
-print(( jsexpr->string ( to-jsexpr ( hash "a" 1 ) ) ))
