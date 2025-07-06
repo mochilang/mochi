@@ -11,12 +11,17 @@ import (
 
 // Convert converts C# source code to Mochi using the language server.
 func Convert(src string) ([]byte, error) {
+	if !any2mochi.UseLSP {
+		return convertSimple(src)
+	}
+
 	ls := any2mochi.Servers["cs"]
 	// omnisharp requires the dotnet CLI which may not be installed
 	_ = cscode.EnsureDotnet()
 	syms, diags, err := any2mochi.EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
 	if err != nil {
-		return nil, err
+		// fall back to the minimal parser when the language server is unavailable
+		return convertSimple(src)
 	}
 	if len(diags) > 0 {
 		return nil, fmt.Errorf("%s", diagnostics(src, diags))
@@ -36,6 +41,141 @@ func ConvertFile(path string) ([]byte, error) {
 		return nil, err
 	}
 	return Convert(string(data))
+}
+
+// convertSimple converts C# source code without using a language server.
+// It relies on a very small built-in parser that understands the subset of
+// C# emitted by the Mochi compiler.
+func convertSimple(src string) ([]byte, error) {
+	ast, err := parseSimple(src)
+	if err != nil {
+		return nil, err
+	}
+	var out strings.Builder
+	for _, t := range ast.Types {
+		out.WriteString("type ")
+		out.WriteString(t.Name)
+		out.WriteString(" {\n")
+		for _, f := range t.Fields {
+			out.WriteString("  ")
+			out.WriteString(f.Name)
+			if ft := mapType(f.Type); ft != "" {
+				out.WriteString(": ")
+				out.WriteString(ft)
+			}
+			out.WriteByte('\n')
+		}
+		out.WriteString("}\n")
+		for _, fn := range t.Methods {
+			out.WriteString("fun ")
+			out.WriteString(t.Name)
+			out.WriteByte('.')
+			out.WriteString(fn.Name)
+			out.WriteByte('(')
+			for i, p := range fn.Params {
+				if i > 0 {
+					out.WriteString(", ")
+				}
+				out.WriteString(p.Name)
+				if pt := mapType(p.Type); pt != "" {
+					out.WriteString(": ")
+					out.WriteString(pt)
+				}
+			}
+			out.WriteByte(')')
+			if rt := mapType(fn.Ret); rt != "" {
+				out.WriteString(": ")
+				out.WriteString(rt)
+			}
+			body := convertBodyLines(fn.Body)
+			if len(body) == 0 {
+				out.WriteString(" {}\n")
+			} else {
+				out.WriteString(" {\n")
+				for _, b := range body {
+					out.WriteString("  ")
+					out.WriteString(b)
+					out.WriteByte('\n')
+				}
+				out.WriteString("}\n")
+			}
+		}
+	}
+	if out.Len() == 0 {
+		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
+	}
+	return []byte(out.String()), nil
+}
+
+// convertBodyLines applies a very small set of translations on method body
+// lines. It mirrors the logic of convertBody but operates on a slice of
+// strings rather than a source range.
+func convertBodyLines(body []string) []string {
+	var out []string
+	for _, ln := range body {
+		l := strings.TrimSpace(ln)
+		if l == "" {
+			continue
+		}
+		if strings.HasSuffix(l, ";") {
+			l = strings.TrimSuffix(l, ";")
+		}
+		switch {
+		case strings.HasPrefix(l, "Console.WriteLine("):
+			l = "print(" + strings.TrimPrefix(strings.TrimSuffix(l, ")"), "Console.WriteLine(") + ")"
+		case strings.HasPrefix(l, "return "):
+			l = "return " + strings.TrimSpace(strings.TrimPrefix(l, "return "))
+		case strings.HasPrefix(l, "for (") && strings.Contains(l, ";") && strings.Contains(l, ")"):
+			l = strings.TrimPrefix(l, "for (")
+			l = strings.TrimSuffix(l, ") {")
+			parts := strings.Split(l, ";")
+			if len(parts) >= 2 {
+				init := strings.TrimSpace(parts[0])
+				cond := strings.TrimSpace(parts[1])
+				if strings.HasPrefix(init, "var ") {
+					init = strings.TrimPrefix(init, "var ")
+				}
+				if eq := strings.Index(init, "="); eq != -1 {
+					name := strings.TrimSpace(init[:eq])
+					startVal := strings.TrimSpace(init[eq+1:])
+					startVal = strings.TrimSuffix(startVal, "L")
+					endVal := ""
+					if idx := strings.Index(cond, "<"); idx != -1 {
+						endVal = strings.TrimSpace(cond[idx+1:])
+						endVal = strings.TrimSuffix(endVal, "L")
+					}
+					l = fmt.Sprintf("for %s in %s..%s {", name, startVal, endVal)
+				}
+			}
+		case strings.HasPrefix(l, "while ("):
+			l = strings.TrimPrefix(l, "while (")
+			l = strings.TrimSuffix(l, ") {")
+			l = strings.ReplaceAll(l, "L", "")
+			l = "while " + l + " {"
+		case strings.HasPrefix(l, "if ("):
+			l = strings.TrimPrefix(l, "if (")
+			l = strings.TrimSuffix(l, ") {")
+			l = strings.ReplaceAll(l, "L", "")
+			l = "if " + l + " {"
+		case l == "}" || l == "} else {":
+			// keep as is
+		default:
+			for _, t := range []string{"long ", "int ", "float ", "double ", "string ", "bool "} {
+				if strings.HasPrefix(l, t) {
+					l = strings.TrimPrefix(l, t)
+					if strings.HasPrefix(t, "string") {
+						l = "var " + l
+					} else {
+						l = "var " + strings.ReplaceAll(l, "L", "")
+					}
+					break
+				}
+			}
+			l = strings.ReplaceAll(l, "L", "")
+		}
+		out = append(out, l)
+	}
+	return out
 }
 
 type param struct {
