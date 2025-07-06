@@ -28,7 +28,7 @@ int main() {
   vector<Person> people =
       vector<Person>{Person{string("Alice"), 30}, Person{string("Bob"), 15},
                      Person{string("Charlie"), 65}};
-  auto names = ([&]() -> vector<string> {
+  vector<any> names = ([&]() -> vector<string> {
     vector<string> _res;
     for (auto &p : people) {
       if (p.age >= 18) {
@@ -37,7 +37,7 @@ int main() {
     }
     return _res;
   })();
-  for (const string &n : names) {
+  for (const any &n : names) {
     std::cout << (n) << std::endl;
   }
   return 0;

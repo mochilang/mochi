@@ -37,17 +37,18 @@ inline auto _count(const T &v) -> decltype(v.Items, int{}) {
 
 int main() {
   vector<int> xs = vector<int>{1, 1, 2};
-  auto groups = ([&]() -> vector<unordered_map<string, int>> {
-    auto _src = xs;
-    auto _groups = _group_by(_src, [&](auto &x) { return x; });
-    vector<unordered_map<string, int>> _res;
-    for (auto &g : _groups) {
-      _res.push_back(unordered_map<string, int>{{string("k"), g.key},
-                                                {string("c"), _count(g)}});
-    }
-    return _res;
-  })();
-  for (const unordered_map<string, any> &g : groups) {
+  vector<unordered_map<string, int>> groups =
+      ([&]() -> vector<unordered_map<string, int>> {
+        auto _src = xs;
+        auto _groups = _group_by(_src, [&](auto &x) { return x; });
+        vector<unordered_map<string, int>> _res;
+        for (auto &g : _groups) {
+          _res.push_back(unordered_map<string, int>{{string("k"), g.key},
+                                                    {string("c"), _count(g)}});
+        }
+        return _res;
+      })();
+  for (const unordered_map<string, int> &g : groups) {
     std::cout << (g["k"]) << " " << (g["c"]) << std::endl;
   }
   return 0;

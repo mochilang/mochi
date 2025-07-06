@@ -4,7 +4,7 @@ using namespace std;
 
 int main() {
   vector<int> nums = vector<int>{5, 1, 4, 3, 2};
-  auto sorted = ([&]() -> vector<int> {
+  vector<any> sorted = ([&]() -> vector<int> {
     vector<pair<int, int>> _tmp;
     for (auto &n : nums) {
       _tmp.push_back({n, n});
@@ -17,7 +17,7 @@ int main() {
       _res.push_back(_it.second);
     return _res;
   })();
-  for (int n : sorted) {
+  for (const any &n : sorted) {
     std::cout << (n) << std::endl;
   }
   return 0;
