@@ -1,0 +1,7 @@
+fun prepend(level: any, result: any): any {
+  result = ([level] + result)
+  return result
+}
+fun main() {
+  print(prepend([1, 2], [[3], [4]]))
+}

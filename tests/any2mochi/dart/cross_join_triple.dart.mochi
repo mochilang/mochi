@@ -1,0 +1,20 @@
+fun main() {
+  dynamic nums = [1, 2]
+  dynamic letters = ["A", "B"]
+  dynamic bools = [true, false]
+  dynamic combos = (() {
+  let _res = []
+  for (var n in nums) {
+    for (var l in letters) {
+      for (var b in bools) {
+        _res.add({"n": n, "l": l, "b": b})
+      }
+    }
+  }
+  return _res
+  })()
+  print("--- Cross Join of three lists ---")
+  for (var c in combos) {
+    print([c.n.toString(), c.l.toString(), c.b.toString()].join(' '))
+  }
+}

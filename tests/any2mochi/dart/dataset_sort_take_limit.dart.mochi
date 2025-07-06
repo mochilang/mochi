@@ -1,0 +1,33 @@
+fun main() {
+  dynamic products = [Product(name: "Laptop", price: 1500), Product(name: "Smartphone", price: 900), Product(name: "Tablet", price: 600), Product(name: "Monitor", price: 300), Product(name: "Keyboard", price: 100), Product(name: "Mouse", price: 50), Product(name: "Headphones", price: 200)]
+  dynamic expensive = (() {
+  let _res = []
+  for (var p in products) {
+    _res.add(p)
+  }
+  let items = List.from(_res)
+  items.sort((pA, pB) {
+  let p = pA
+  let keyA = -p.price
+  p = pB
+  let keyB = -p.price
+  return Comparable.compare(keyA, keyB)
+  })
+  let skip = 1
+  if (skip < items.length) {
+    items = items.sublist(skip)
+    } else {
+    items = []
+  }
+  let take = 3
+  if (take < items.length) {
+    items = items.sublist(0, take)
+  }
+  _res = items
+  return _res
+  })()
+  print("--- Top products (excluding most expensive) ---")
+  for (var item in expensive) {
+    print([item.name.toString(), "costs \$".toString(), item.price.toString()].join(' '))
+  }
+}

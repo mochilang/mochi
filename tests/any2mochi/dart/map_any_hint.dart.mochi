@@ -1,0 +1,10 @@
+fun Leaf(): any {
+  return {"__name": "Leaf"}
+}
+fun Node(left: any, value: any, right: any): any {
+  return {"__name": "Node", "left": left, "value": value, "right": right}
+}
+fun main() {
+  dynamic tree = Node(Leaf(), 1, Leaf())
+  print((tree["left"])["__name"])
+}

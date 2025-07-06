@@ -1,0 +1,7 @@
+fun main() {
+  print("Enter first input:")
+  dynamic input1 = stdin.readLineSync() ?? ''
+  print("Enter second input:")
+  dynamic input2 = stdin.readLineSync() ?? ''
+  print(["You entered:".toString(), input1.toString(), ",".toString(), input2.toString()].join(' '))
+}

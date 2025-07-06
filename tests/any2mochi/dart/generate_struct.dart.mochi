@@ -1,0 +1,4 @@
+fun main() {
+  Info info = _genStruct<Info>("{\"msg\": \"hello\"}", "", null)
+  print(info.msg)
+}

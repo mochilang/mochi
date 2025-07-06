@@ -1,0 +1,19 @@
+fun main() {
+  dynamic c = 0
+  for _tmp0 in 0..2 {
+    c = (c + 1)
+  }
+  for (var _tmp1 in [1, 2]) {
+    c = (c + 1)
+  }
+  let _tmp3 = "ab"
+  for (var _tmp2 in _tmp3.runes) {
+    c = (c + 1)
+  }
+  dynamic m = {"x": 1, "y": 2}
+  let _tmp5 = m
+  for (var _tmp4 in _tmp5.values) {
+    c = (c + 1)
+  }
+  print(c)
+}

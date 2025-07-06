@@ -1,0 +1,13 @@
+no convertible symbols found
+
+source snippet:
+  1: import 'dart:io';
+  2: import 'dart:convert';
+  3: 
+  4: class Msg {
+  5:         String message;
+  6:         Msg({required this.message});
+  7:         factory Msg.fromJson(Map<String,dynamic> m) {
+  8:                 return Msg(message: m['message'] as String);
+  9:         }
+ 10: }

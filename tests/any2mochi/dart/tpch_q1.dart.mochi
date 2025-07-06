@@ -1,0 +1,128 @@
+fun test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus() {
+  if (!(_equal(result, [{"returnflag": "N", "linestatus": "O", "sum_qty": 53, "sum_base_price": 3000, "sum_disc_price": (950 + 1800), "sum_charge": (((950 * 1.07)) + ((1800 * 1.05))), "avg_qty": 26.5, "avg_price": 1500, "avg_disc": 0.07500000000000001, "count_order": 2}]))) { throw Exception('expect failed'); }
+}
+fun main() {
+  int failures = 0
+  List<Map<String, dynamic>> lineitem = [{"l_quantity": 17, "l_extendedprice": 1000, "l_discount": 0.05, "l_tax": 0.07, "l_returnflag": "N", "l_linestatus": "O", "l_shipdate": "1998-08-01"}, {"l_quantity": 36, "l_extendedprice": 2000, "l_discount": 0.1, "l_tax": 0.05, "l_returnflag": "N", "l_linestatus": "O", "l_shipdate": "1998-09-01"}, {"l_quantity": 25, "l_extendedprice": 1500, "l_discount": 0, "l_tax": 0.08, "l_returnflag": "R", "l_linestatus": "F", "l_shipdate": "1998-09-03"}]
+  List<Map<String, dynamic>> result = (() {
+  let groups = <String,_Group>{}
+  let order = <String>[]
+  for (var row in lineitem) {
+    let key = {"returnflag": row.l_returnflag, "linestatus": row.l_linestatus}
+    let ks = key.toString()
+    let g = groups[ks]
+    if (g == null) {
+      g = _Group(key)
+      groups[ks] = g
+      order.add(ks)
+    }
+    g.Items.add(row)
+  }
+  let items = [for (var k in order) groups[k]!]
+  let _res = []
+  for (var g in items) {
+    _res.add({"returnflag": g.key.returnflag, "linestatus": g.key.linestatus, "sum_qty": _sum((() {
+    let _res = []
+    for (var x in g) {
+      _res.add(x.l_quantity)
+    }
+    return _res
+    })()), "sum_base_price": _sum((() {
+    let _res = []
+    for (var x in g) {
+      _res.add(x.l_extendedprice)
+    }
+    return _res
+    })()), "sum_disc_price": _sum((() {
+    let _res = []
+    for (var x in g) {
+      _res.add((x.l_extendedprice * ((1 - x.l_discount))))
+    }
+    return _res
+    })()), "sum_charge": _sum((() {
+    let _res = []
+    for (var x in g) {
+      _res.add(((x.l_extendedprice * ((1 - x.l_discount))) * ((1 + x.l_tax))))
+    }
+    return _res
+    })()), "avg_qty": _avg((() {
+    let _res = []
+    for (var x in g) {
+      _res.add(x.l_quantity)
+    }
+    return _res
+    })()), "avg_price": _avg((() {
+    let _res = []
+    for (var x in g) {
+      _res.add(x.l_extendedprice)
+    }
+    return _res
+    })()), "avg_disc": _avg((() {
+    let _res = []
+    for (var x in g) {
+      _res.add(x.l_discount)
+    }
+    return _res
+    })()), "count_order": _count(g)})
+  }
+  return _res
+  })()
+  _json(result)
+  if (!_runTest("Q1 aggregates revenue and quantity by returnflag + linestatus", test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus)) failures++
+  if (failures > 0) {
+    print("\n[FAIL] $failures test(s) failed.")
+  }
+}
+fun _avg(v: any): float {
+  List<dynamic>? list
+  if (v is List) list = v
+  else if (v is Map && v['items'] is List) list = (v['items'] as List)
+  else if (v is Map && v['Items'] is List) list = (v['Items'] as List)
+  else if (v is _Group) list = v.Items
+  else { try { var it = (v as dynamic).items; if (it is List) list = it; } catch (_) {} }
+  if (list == null || list.isEmpty) return 0
+  let s = 0.0
+  for (var n in list) s += (n as num).toDouble()
+  return s / list.length
+}
+fun _count(v: any): int {
+  if (v is String) return v.runes.length
+  if (v is List) return v.length
+  if (v is Map) return v.length
+  try { var items = (v as dynamic).Items; if (items is List) return items.length; } catch (_) {}
+  try { var items = (v as dynamic).items; if (items is List) return items.length; } catch (_) {}
+  return 0
+}
+fun _equal(a: any, b: any): bool {
+  if (a is List && b is List) {
+    if (a.length != b.length) return false
+    for (var i = 0; i < a.length; i++) { if (!_equal(a[i], b[i])) return false; }
+    return true
+  }
+  if (a is Map && b is Map) {
+    if (a.length != b.length) return false
+    for (var k in a.keys) { if (!b.containsKey(k) || !_equal(a[k], b[k])) return false; }
+    return true
+  }
+  return a == b
+}
+fun _formatDuration(d: Duration): string {
+  if (d.inMicroseconds < 1000) return '${d.inMicroseconds}µs'
+  if (d.inMilliseconds < 1000) return '${d.inMilliseconds}ms'
+  return '${(d.inMilliseconds/1000).toStringAsFixed(2)}s'
+}
+fun _json(v: any) {
+  print(jsonEncode(v))
+}
+fun _sum(v: any): float {
+  List<dynamic>? list
+  if (v is List) list = v
+  else if (v is Map && v['items'] is List) list = (v['items'] as List)
+  else if (v is Map && v['Items'] is List) list = (v['Items'] as List)
+  else if (v is _Group) list = v.Items
+  else { try { var it = (v as dynamic).items; if (it is List) list = it; } catch (_) {} }
+  if (list == null || list.isEmpty) return 0
+  let s = 0.0
+  for (var n in list) s += (n as num).toDouble()
+  return s
+}

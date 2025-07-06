@@ -1,0 +1,4 @@
+fun main() {
+  dynamic todo = {"title": "hi"}
+  print(todo.title)
+}

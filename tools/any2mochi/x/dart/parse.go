@@ -3,7 +3,10 @@ package dart
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
+	"os"
 	"os/exec"
+	"path/filepath"
 )
 
 type paramJSON struct {
@@ -16,6 +19,8 @@ type funcJSON struct {
 	Params []paramJSON `json:"params"`
 	Ret    string      `json:"ret"`
 	Body   []string    `json:"body"`
+	Start  int         `json:"start"`
+	End    int         `json:"end"`
 }
 
 type ast struct {
@@ -23,15 +28,44 @@ type ast struct {
 }
 
 func parseCLI(src string) ([]function, error) {
-	cmd := exec.Command("dartast")
+	path, err := exec.LookPath("dartast")
+	if err != nil {
+		root, rErr := repoRoot()
+		if rErr != nil {
+			return nil, rErr
+		}
+		cmd := exec.Command("go", "run", filepath.Join(root, "cmd", "dartast"))
+		cmd.Stdin = bytes.NewBufferString(src)
+		var out bytes.Buffer
+		var errBuf bytes.Buffer
+		cmd.Stdout = &out
+		cmd.Stderr = &errBuf
+		if runErr := cmd.Run(); runErr != nil {
+			if errBuf.Len() > 0 {
+				return nil, fmt.Errorf("%v: %s", runErr, errBuf.String())
+			}
+			return nil, runErr
+		}
+		return decodeFuncs(out.Bytes())
+	}
+	cmd := exec.Command(path)
 	cmd.Stdin = bytes.NewBufferString(src)
 	var out bytes.Buffer
 	cmd.Stdout = &out
+	var errBuf bytes.Buffer
+	cmd.Stderr = &errBuf
 	if err := cmd.Run(); err != nil {
+		if errBuf.Len() > 0 {
+			return nil, fmt.Errorf("%v: %s", err, errBuf.String())
+		}
 		return nil, err
 	}
+	return decodeFuncs(out.Bytes())
+}
+
+func decodeFuncs(data []byte) ([]function, error) {
 	var raw ast
-	if err := json.Unmarshal(out.Bytes(), &raw); err != nil {
+	if err := json.Unmarshal(data, &raw); err != nil {
 		return nil, err
 	}
 	funcs := make([]function, 0, len(raw.Functions))
@@ -43,4 +77,22 @@ func parseCLI(src string) ([]function, error) {
 		funcs = append(funcs, function{Name: f.Name, Params: params, Body: f.Body, Ret: toMochiType(f.Ret)})
 	}
 	return funcs, nil
+}
+
+func repoRoot() (string, error) {
+	dir, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir, nil
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	return "", os.ErrNotExist
 }

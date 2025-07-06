@@ -1,0 +1,17 @@
+fun main() {
+  dynamic customers = [Customer(id: 1, name: "Alice"), Customer(id: 2, name: "Bob"), Customer(id: 3, name: "Charlie")]
+  dynamic orders = [Order(id: 100, customerId: 1, total: 250), Order(id: 101, customerId: 2, total: 125), Order(id: 102, customerId: 1, total: 300)]
+  dynamic result = (() {
+  let _res = []
+  for (var o in orders) {
+    for (var c in customers) {
+      _res.add(PairInfo(orderId: o.id, orderCustomerId: o.customerId, pairedCustomerName: c.name, orderTotal: o.total))
+    }
+  }
+  return _res
+  })()
+  print("--- Cross Join: All order-customer pairs ---")
+  for (var entry in result) {
+    print(["Order".toString(), entry.orderId.toString(), "(customerId:".toString(), entry.orderCustomerId.toString(), ", total: \$".toString(), entry.orderTotal.toString(), ") paired with".toString(), entry.pairedCustomerName.toString()].join(' '))
+  }
+}
