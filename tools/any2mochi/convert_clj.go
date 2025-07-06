@@ -1,14 +1,37 @@
 package any2mochi
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
+	"path/filepath"
 	"strings"
 )
 
+type cljAST struct {
+	Forms []cljForm `json:"forms"`
+}
+
+type cljForm struct {
+	Type   string    `json:"type"`
+	Name   string    `json:"name,omitempty"`
+	Params []string  `json:"params,omitempty"`
+	Body   []cljNode `json:"body,omitempty"`
+	Value  cljNode   `json:"value,omitempty"`
+}
+
+type cljNode struct {
+	Atom string    `json:"atom,omitempty"`
+	List []cljNode `json:"list,omitempty"`
+}
+
 // ConvertClj converts Clojure source code to Mochi using the language server.
 func ConvertClj(src string) ([]byte, error) {
+	if ast, err := parseCljCLI(src); err == nil {
+		return convertCljAST(ast, src)
+	}
 	ls := Servers["clj"]
 	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
 	if err != nil {
@@ -239,6 +262,98 @@ func ConvertCljFile(path string) ([]byte, error) {
 		return nil, err
 	}
 	return ConvertClj(string(data))
+}
+
+func parseCljCLI(src string) (*cljAST, error) {
+	root, err := repoRoot()
+	if err != nil {
+		return nil, err
+	}
+	tmp, err := os.CreateTemp("", "cljsrc_*.clj")
+	if err != nil {
+		return nil, err
+	}
+	if _, err := tmp.WriteString(src); err != nil {
+		tmp.Close()
+		os.Remove(tmp.Name())
+		return nil, err
+	}
+	tmp.Close()
+	defer os.Remove(tmp.Name())
+	cmd := exec.Command("go", "run", filepath.Join(root, "tools", "cljast"), tmp.Name())
+	var out bytes.Buffer
+	var stderr bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &stderr
+	if err := cmd.Run(); err != nil {
+		msg := strings.TrimSpace(stderr.String())
+		if msg == "" {
+			msg = err.Error()
+		}
+		return nil, fmt.Errorf("cljast: %s", msg)
+	}
+	var ast cljAST
+	if err := json.Unmarshal(out.Bytes(), &ast); err != nil {
+		return nil, err
+	}
+	return &ast, nil
+}
+
+func cljNodeToSexpr(n cljNode) sexprNode {
+	if len(n.List) > 0 {
+		var list []sexprNode
+		for _, c := range n.List {
+			list = append(list, cljNodeToSexpr(c))
+		}
+		return list
+	}
+	return n.Atom
+}
+
+func convertCljAST(ast *cljAST, src string) ([]byte, error) {
+	var out strings.Builder
+	for _, f := range ast.Forms {
+		switch f.Type {
+		case "defn":
+			out.WriteString("fun ")
+			out.WriteString(f.Name)
+			out.WriteByte('(')
+			out.WriteString(strings.Join(f.Params, ", "))
+			out.WriteByte(')')
+			if len(f.Body) == 0 {
+				out.WriteString(" {}\n")
+			} else {
+				out.WriteString(" {\n")
+				for _, b := range f.Body {
+					if s := cljToMochi(cljNodeToSexpr(b)); s != "" {
+						out.WriteString("  ")
+						out.WriteString(s)
+						out.WriteByte('\n')
+					}
+				}
+				out.WriteString("}\n")
+			}
+		case "def":
+			out.WriteString("let ")
+			out.WriteString(f.Name)
+			if s := cljToMochi(cljNodeToSexpr(f.Value)); s != "" {
+				out.WriteString(" = ")
+				out.WriteString(s)
+			}
+			out.WriteByte('\n')
+		case "expr":
+			if len(f.Body) == 1 {
+				if s := cljToMochi(cljNodeToSexpr(f.Body[0])); s != "" {
+					out.WriteString(s)
+					out.WriteByte('\n')
+				}
+			}
+		}
+	}
+	if out.Len() == 0 {
+		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+	}
+	return []byte(out.String()), nil
 }
 
 // parseCljBody extracts and converts the body of a Clojure function defined
