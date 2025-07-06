@@ -1,16 +1,23 @@
 package racket
 
 import (
+	"bytes"
+	"encoding/json"
+	"os/exec"
+	"path/filepath"
+	"runtime"
 	"strings"
 	"unicode"
 )
 
 type item struct {
-	Kind   string   `json:"kind"`
-	Name   string   `json:"name"`
-	Params []string `json:"params,omitempty"`
-	Body   string   `json:"body,omitempty"`
-	Value  string   `json:"value,omitempty"`
+	Kind      string   `json:"kind"`
+	Name      string   `json:"name"`
+	Params    []string `json:"params,omitempty"`
+	Body      string   `json:"body,omitempty"`
+	Value     string   `json:"value,omitempty"`
+	StartLine int      `json:"start_line,omitempty"`
+	EndLine   int      `json:"end_line,omitempty"`
 }
 
 func tokenize(src string) []string {
@@ -148,7 +155,97 @@ func parseTokens(toks []string) []item {
 	return items
 }
 
+func parseOfficial(src string) ([]item, error) {
+	scriptPath := filepath.Join(filepath.Dir(currentFile()), "read_ast.rkt")
+	cmd := exec.Command("racket", scriptPath)
+	cmd.Stdin = strings.NewReader(src)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	if err := cmd.Run(); err != nil {
+		return nil, err
+	}
+	var node map[string]interface{}
+	if err := json.Unmarshal(out.Bytes(), &node); err != nil {
+		return nil, err
+	}
+	var items []item
+	if datum, ok := node["datum"].([]interface{}); ok {
+		for _, v := range datum {
+			if m, ok := v.(map[string]interface{}); ok {
+				items = append(items, walkSyntax(src, m)...)
+			}
+		}
+	}
+	return items, nil
+}
+
 func parse(src string) []item {
+	if items, err := parseOfficial(src); err == nil && len(items) > 0 {
+		return items
+	}
 	toks := tokenize(src)
 	return parseTokens(toks)
+}
+
+func currentFile() string {
+	_, file, _, _ := runtime.Caller(0)
+	return file
+}
+
+func walkSyntax(src string, node map[string]interface{}) []item {
+	datum, ok := node["datum"].([]interface{})
+	if !ok || len(datum) == 0 {
+		return nil
+	}
+	first, _ := datum[0].(map[string]interface{})
+	if first == nil {
+		return nil
+	}
+	fn, _ := first["datum"].(string)
+	start, _ := node["pos"].(float64)
+	span, _ := node["span"].(float64)
+	startLine := lineForPos(src, int(start))
+	endLine := lineForPos(src, int(start+span))
+
+	switch fn {
+	case "define":
+		if len(datum) >= 3 {
+			if nameList, ok := datum[1].(map[string]interface{}); ok {
+				if inner, ok := nameList["datum"].([]interface{}); ok && len(inner) > 0 {
+					// function definition
+					nm, _ := inner[0].(map[string]interface{})
+					fname, _ := nm["datum"].(string)
+					var params []string
+					for _, p := range inner[1:] {
+						if pm, ok := p.(map[string]interface{}); ok {
+							if ps, ok := pm["datum"].(string); ok {
+								params = append(params, ps)
+							}
+						}
+					}
+					return []item{{Kind: "func", Name: fname, Params: params, Body: "", StartLine: startLine, EndLine: endLine}}
+				}
+			}
+			// variable definition
+			if nameNode, ok := datum[1].(map[string]interface{}); ok {
+				nm, _ := nameNode["datum"].(string)
+				return []item{{Kind: "var", Name: nm, Value: "", StartLine: startLine, EndLine: endLine}}
+			}
+		}
+	}
+
+	return nil
+}
+
+func lineForPos(src string, pos int) int {
+	if pos <= 0 {
+		return 1
+	}
+	cnt := 1
+	for i := 0; i < len(src) && i < pos; i++ {
+		if src[i] == '\n' {
+			cnt++
+		}
+	}
+	return cnt
 }
