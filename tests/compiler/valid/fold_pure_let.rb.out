@@ -1,0 +1,7 @@
+def sumN(n)
+  ((n * ((n + 1))) / 2)
+end
+
+n = 10
+puts([sumN(n)].join(" "))
+puts([n].join(" "))

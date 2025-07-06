@@ -1,0 +1,2 @@
+scores = {"Alice" => 10, "Bob" => 15}
+puts([scores["Bob"]].join(" "))
