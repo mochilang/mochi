@@ -1,3 +1,5 @@
+// line 1
+let std = @import("std")
 // line 24
 type Product {
   name: string

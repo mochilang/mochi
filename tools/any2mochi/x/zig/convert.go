@@ -40,9 +40,11 @@ type ast struct {
 }
 
 type variable struct {
-	Name string `json:"name"`
-	Type string `json:"type"`
-	Line int    `json:"line"`
+	Name  string `json:"name"`
+	Type  string `json:"type"`
+	Value string `json:"value,omitempty"`
+	Const bool   `json:"const,omitempty"`
+	Line  int    `json:"line"`
 }
 
 type function struct {
@@ -84,7 +86,7 @@ func arrowSnippet(src string, line int) string {
 	if start < 0 {
 		start = 0
 	}
-	end := line + 1
+	end := line + 2
 	if end > len(lines) {
 		end = len(lines)
 	}
@@ -95,6 +97,9 @@ func arrowSnippet(src string, line int) string {
 			mark = ">>>"
 		}
 		fmt.Fprintf(&b, "%4d:%s %s\n", i+1, mark, lines[i])
+		if i+1 == line {
+			b.WriteString("     ^\n")
+		}
 	}
 	return b.String()
 }
@@ -205,6 +210,25 @@ func parseCLI(src string) (*ast, error) {
 
 func convertAST(a *ast) ([]byte, error) {
 	var out strings.Builder
+	for _, v := range a.Vars {
+		if v.Line > 0 {
+			out.WriteString("// line ")
+			out.WriteString(fmt.Sprint(v.Line))
+			out.WriteByte('\n')
+		}
+		out.WriteString("let ")
+		out.WriteString(v.Name)
+		if v.Type != "" {
+			out.WriteString(": ")
+			out.WriteString(mapType(v.Type))
+		}
+		if v.Value != "" {
+			out.WriteString(" = ")
+			out.WriteString(convertExpr(v.Value))
+		}
+		out.WriteByte('\n')
+	}
+
 	for _, st := range a.Structs {
 		if st.Line > 0 {
 			out.WriteString("// line ")
