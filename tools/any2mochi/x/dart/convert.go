@@ -1,21 +1,23 @@
-package any2mochi
+package dart
 
 import (
+	"encoding/json"
 	"fmt"
+	any2mochi "mochi/tools/any2mochi"
 	"os"
 	"regexp"
 	"strings"
 	"unicode"
 )
 
-// ConvertDart converts dart source code to Mochi.
-func ConvertDart(src string) ([]byte, error) {
-	funcs, err := parseDartCLI(src)
+// Convert converts Dart source code to Mochi.
+func Convert(src string) ([]byte, error) {
+	funcs, err := parseCLI(src)
 	if err != nil {
 		return nil, err
 	}
 	if len(funcs) == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
 	}
 	var out strings.Builder
 	for _, f := range funcs {
@@ -47,28 +49,39 @@ func ConvertDart(src string) ([]byte, error) {
 	return []byte(out.String()), nil
 }
 
-// ConvertDartFile reads the dart file and converts it to Mochi.
-func ConvertDartFile(path string) ([]byte, error) {
+// ConvertFile reads the Dart file and converts it to Mochi.
+func ConvertFile(path string) ([]byte, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return ConvertDart(string(data))
+	return Convert(string(data))
 }
 
-type dartParam struct {
+func snippet(src string) string {
+	lines := strings.Split(src, "\n")
+	if len(lines) > 10 {
+		lines = lines[:10]
+	}
+	for i, l := range lines {
+		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
+	}
+	return strings.Join(lines, "\n")
+}
+
+type param struct {
 	name string
 	typ  string
 }
 
-type dartFunc struct {
+type function struct {
 	Name   string
-	Params []dartParam
+	Params []param
 	Ret    string
 	Body   []string
 }
 
-func parseDartDetail(detail string) ([]dartParam, string) {
+func parseDetail(detail string) ([]param, string) {
 	open := strings.Index(detail, "(")
 	close := strings.LastIndex(detail, ")")
 	if open == -1 || close == -1 || close < open {
@@ -81,7 +94,7 @@ func parseDartDetail(detail string) ([]dartParam, string) {
 	} else if i := strings.Index(retPart, "->"); i != -1 {
 		retPart = strings.TrimSpace(retPart[i+2:])
 	}
-	var params []dartParam
+	var params []param
 	for _, p := range strings.Split(paramsPart, ",") {
 		p = strings.TrimSpace(strings.Trim(p, "{}[]"))
 		if p == "" {
@@ -101,19 +114,19 @@ func parseDartDetail(detail string) ([]dartParam, string) {
 		}
 		typ := ""
 		if len(fields) > 1 {
-			typ = dartToMochiType(strings.Join(fields[:len(fields)-1], " "))
+			typ = toMochiType(strings.Join(fields[:len(fields)-1], " "))
 		}
-		params = append(params, dartParam{name: name, typ: typ})
+		params = append(params, param{name: name, typ: typ})
 	}
-	return params, dartToMochiType(retPart)
+	return params, toMochiType(retPart)
 }
 
-func parseDartHover(h Hover) ([]dartParam, string) {
+func parseHover(h any2mochi.Hover) ([]param, string) {
 	text := hoverString(h)
 	for _, line := range strings.Split(text, "\n") {
 		line = strings.TrimSpace(line)
 		if strings.Contains(line, "(") && strings.Contains(line, ")") {
-			if p, r := parseDartDetail(line); len(p) > 0 || r != "" {
+			if p, r := parseDetail(line); len(p) > 0 || r != "" {
 				return p, r
 			}
 		}
@@ -121,7 +134,7 @@ func parseDartHover(h Hover) ([]dartParam, string) {
 	return nil, ""
 }
 
-func writeDartSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol, src string, ls LanguageServer) {
+func writeSymbols(out *strings.Builder, prefix []string, syms []any2mochi.DocumentSymbol, src string, ls any2mochi.LanguageServer) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
@@ -129,15 +142,15 @@ func writeDartSymbols(out *strings.Builder, prefix []string, syms []DocumentSymb
 		}
 
 		switch s.Kind {
-		case SymbolKindClass, SymbolKindInterface, SymbolKindStruct:
+		case any2mochi.SymbolKindClass, any2mochi.SymbolKindInterface, any2mochi.SymbolKindStruct:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
 			out.WriteString(" {\n")
 			for _, c := range s.Children {
-				if c.Kind == SymbolKindField || c.Kind == SymbolKindProperty || c.Kind == SymbolKindVariable {
+				if c.Kind == any2mochi.SymbolKindField || c.Kind == any2mochi.SymbolKindProperty || c.Kind == any2mochi.SymbolKindVariable {
 					out.WriteString("  ")
 					out.WriteString(c.Name)
-					if t := dartFieldType(src, c, ls); t != "" {
+					if t := fieldType(src, c, ls); t != "" {
 						out.WriteString(": ")
 						out.WriteString(t)
 					}
@@ -146,52 +159,52 @@ func writeDartSymbols(out *strings.Builder, prefix []string, syms []DocumentSymb
 			}
 			out.WriteString("}\n")
 			for _, c := range s.Children {
-				if c.Kind == SymbolKindMethod || c.Kind == SymbolKindConstructor || c.Kind == SymbolKindFunction {
-					writeDartSymbols(out, nameParts, []DocumentSymbol{c}, src, ls)
+				if c.Kind == any2mochi.SymbolKindMethod || c.Kind == any2mochi.SymbolKindConstructor || c.Kind == any2mochi.SymbolKindFunction {
+					writeSymbols(out, nameParts, []any2mochi.DocumentSymbol{c}, src, ls)
 				}
 			}
 			continue
-		case SymbolKindVariable, SymbolKindConstant:
+		case any2mochi.SymbolKindVariable, any2mochi.SymbolKindConstant:
 			if len(prefix) == 0 && s.Name != "" {
 				out.WriteString("let ")
 				out.WriteString(s.Name)
-				if t := dartFieldType(src, s, ls); t != "" {
+				if t := fieldType(src, s, ls); t != "" {
 					out.WriteString(": ")
 					out.WriteString(t)
 				}
 				out.WriteByte('\n')
 			}
-		case SymbolKindEnum:
+		case any2mochi.SymbolKindEnum:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
 			out.WriteString(" {\n")
 			for _, c := range s.Children {
-				if c.Kind == SymbolKindEnumMember {
+				if c.Kind == any2mochi.SymbolKindEnumMember {
 					fmt.Fprintf(out, "  %s\n", c.Name)
 				}
 			}
 			out.WriteString("}\n")
-			var rest []DocumentSymbol
+			var rest []any2mochi.DocumentSymbol
 			for _, c := range s.Children {
-				if c.Kind != SymbolKindEnumMember {
+				if c.Kind != any2mochi.SymbolKindEnumMember {
 					rest = append(rest, c)
 				}
 			}
 			if len(rest) > 0 {
-				writeDartSymbols(out, nameParts, rest, src, ls)
+				writeSymbols(out, nameParts, rest, src, ls)
 			}
 			continue
-		case SymbolKindFunction, SymbolKindMethod, SymbolKindConstructor:
+		case any2mochi.SymbolKindFunction, any2mochi.SymbolKindMethod, any2mochi.SymbolKindConstructor:
 			out.WriteString("fun ")
 			out.WriteString(strings.Join(nameParts, "."))
 			detail := ""
 			if s.Detail != nil {
 				detail = *s.Detail
 			}
-			params, ret := parseDartDetail(detail)
+			params, ret := parseDetail(detail)
 			if len(params) == 0 && ret == "" {
-				if hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start); err == nil {
-					if p, r := parseDartHover(hov); len(p) > 0 || r != "" {
+				if hov, err := any2mochi.EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start); err == nil {
+					if p, r := parseHover(hov); len(p) > 0 || r != "" {
 						params, ret = p, r
 					}
 				}
@@ -212,7 +225,7 @@ func writeDartSymbols(out *strings.Builder, prefix []string, syms []DocumentSymb
 				out.WriteString(": ")
 				out.WriteString(ret)
 			}
-			body := parseDartFunctionBody(src, s)
+			body := parseFunctionBody(src, s)
 			if len(body) == 0 {
 				out.WriteString(" {}\n")
 			} else {
@@ -226,27 +239,27 @@ func writeDartSymbols(out *strings.Builder, prefix []string, syms []DocumentSymb
 		}
 
 		if len(s.Children) > 0 {
-			writeDartSymbols(out, nameParts, s.Children, src, ls)
+			writeSymbols(out, nameParts, s.Children, src, ls)
 		}
 	}
 }
 
-func dartTypeFromDetail(d *string) string {
+func typeFromDetail(d *string) string {
 	if d == nil {
 		return ""
 	}
-	return dartToMochiType(strings.TrimSpace(*d))
+	return toMochiType(strings.TrimSpace(*d))
 }
 
-func dartFieldType(src string, sym DocumentSymbol, ls LanguageServer) string {
-	if t := dartTypeFromDetail(sym.Detail); t != "" && t != "any" {
+func fieldType(src string, sym any2mochi.DocumentSymbol, ls any2mochi.LanguageServer) string {
+	if t := typeFromDetail(sym.Detail); t != "" && t != "any" {
 		return t
 	}
-	return dartTypeFromHover(src, sym, ls)
+	return typeFromHover(src, sym, ls)
 }
 
-func dartTypeFromHover(src string, sym DocumentSymbol, ls LanguageServer) string {
-	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
+func typeFromHover(src string, sym any2mochi.DocumentSymbol, ls any2mochi.LanguageServer) string {
+	hov, err := any2mochi.EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err != nil {
 		return ""
 	}
@@ -256,25 +269,25 @@ func dartTypeFromHover(src string, sym DocumentSymbol, ls LanguageServer) string
 		if idx := strings.Index(l, ":"); idx != -1 {
 			t := strings.TrimSpace(l[idx+1:])
 			if t != "" {
-				return dartToMochiType(t)
+				return toMochiType(t)
 			}
 		}
 		if idx := strings.Index(l, "→"); idx != -1 {
 			t := strings.TrimSpace(l[idx+len("→"):])
 			if t != "" {
-				return dartToMochiType(t)
+				return toMochiType(t)
 			}
 		} else if idx := strings.Index(l, "->"); idx != -1 {
 			t := strings.TrimSpace(l[idx+2:])
 			if t != "" {
-				return dartToMochiType(t)
+				return toMochiType(t)
 			}
 		}
 	}
 	return ""
 }
 
-func splitDartArgs(s string) []string {
+func splitArgs(s string) []string {
 	var parts []string
 	depth := 0
 	start := 0
@@ -299,7 +312,7 @@ func splitDartArgs(s string) []string {
 	return parts
 }
 
-func dartToMochiType(t string) string {
+func toMochiType(t string) string {
 	t = strings.TrimSpace(t)
 	if strings.HasSuffix(t, "?") {
 		t = strings.TrimSuffix(t, "?")
@@ -322,23 +335,23 @@ func dartToMochiType(t string) string {
 		if open := strings.Index(t, "<"); open != -1 {
 			outer := strings.TrimSpace(t[:open])
 			inner := strings.TrimSuffix(t[open+1:], ">")
-			args := splitDartArgs(inner)
+			args := splitArgs(inner)
 			switch outer {
 			case "List", "Iterable", "Set":
 				a := "any"
 				if len(args) > 0 {
-					if at := dartToMochiType(args[0]); at != "" {
+					if at := toMochiType(args[0]); at != "" {
 						a = at
 					}
 				}
 				return "list<" + a + ">"
 			case "Map":
 				if len(args) == 2 {
-					k := dartToMochiType(args[0])
+					k := toMochiType(args[0])
 					if k == "" {
 						k = "any"
 					}
-					v := dartToMochiType(args[1])
+					v := toMochiType(args[1])
 					if v == "" {
 						v = "any"
 					}
@@ -346,7 +359,7 @@ func dartToMochiType(t string) string {
 				}
 			case "Future":
 				if len(args) == 1 {
-					return dartToMochiType(args[0])
+					return toMochiType(args[0])
 				}
 			}
 		}
@@ -354,11 +367,11 @@ func dartToMochiType(t string) string {
 	return t
 }
 
-// parseDartFunctionBody extracts the body of a Dart function symbol.
+// parseFunctionBody extracts the body of a Dart function symbol.
 // It performs a very lightweight parsing and returns each line in Mochi
 // syntax. The implementation is intentionally simple and only handles
 // a small subset of statements.
-func parseDartFunctionBody(src string, sym DocumentSymbol) []string {
+func parseFunctionBody(src string, sym any2mochi.DocumentSymbol) []string {
 	code := extractRangeText(src, sym.Range)
 	start := strings.Index(code, "{")
 	end := strings.LastIndex(code, "}")
@@ -366,10 +379,29 @@ func parseDartFunctionBody(src string, sym DocumentSymbol) []string {
 		return nil
 	}
 	body := code[start+1 : end]
-	return parseDartStatements(body)
+	return parseStatements(body)
 }
 
-func parseDartStatements(body string) []string {
+func extractRangeText(src string, r any2mochi.Range) string {
+	lines := strings.Split(src, "\n")
+	var out strings.Builder
+	for i := int(r.Start.Line); i <= int(r.End.Line) && i < len(lines); i++ {
+		line := lines[i]
+		if i == int(r.Start.Line) && int(r.Start.Character) < len(line) {
+			line = line[int(r.Start.Character):]
+		}
+		if i == int(r.End.Line) && int(r.End.Character) <= len(line) {
+			line = line[:int(r.End.Character)]
+		}
+		out.WriteString(line)
+		if i != int(r.End.Line) {
+			out.WriteByte('\n')
+		}
+	}
+	return out.String()
+}
+
+func parseStatements(body string) []string {
 	lines := strings.Split(body, "\n")
 	var out []string
 	indent := 1
@@ -427,4 +459,36 @@ func parseDartStatements(body string) []string {
 		}
 	}
 	return out
+}
+
+func hoverString(h any2mochi.Hover) string {
+	switch v := h.Contents.(type) {
+	case any2mochi.MarkupContent:
+		return v.Value
+	case any2mochi.MarkedString:
+		b, err := json.Marshal(v)
+		if err == nil {
+			var ms any2mochi.MarkedStringStruct
+			if err := json.Unmarshal(b, &ms); err == nil {
+				if ms.Value != "" {
+					return ms.Value
+				}
+			}
+			var s string
+			if err := json.Unmarshal(b, &s); err == nil {
+				return s
+			}
+		}
+		return ""
+	case []any2mochi.MarkedString:
+		parts := make([]string, 0, len(v))
+		for _, m := range v {
+			parts = append(parts, hoverString(any2mochi.Hover{Contents: m}))
+		}
+		return strings.Join(parts, "\n")
+	case string:
+		return v
+	default:
+		return fmt.Sprint(v)
+	}
 }
