@@ -18,12 +18,16 @@ type DocumentSymbol struct {
 	Kind           int              `json:"kind"`
 	Range          Range            `json:"range"`
 	SelectionRange Range            `json:"selectionRange"`
+	Deprecated     bool             `json:"deprecated,omitempty"`
+	Tags           []int            `json:"tags,omitempty"`
 	Children       []DocumentSymbol `json:"children,omitempty"`
 }
 
 type Diagnostic struct {
-	Range   Range  `json:"range"`
-	Message string `json:"message"`
+	Range    Range  `json:"range"`
+	Message  string `json:"message"`
+	Severity int    `json:"severity,omitempty"`
+	Source   string `json:"source,omitempty"`
 }
 
 type MarkupContent struct {
