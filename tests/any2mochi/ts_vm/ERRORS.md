@@ -1,14 +1,18 @@
 # Errors
 
-- append_builtin: parse error: parse error: 5:1: unexpected token "}" (expected ")")
+- append_builtin: type error: error[T024]: cannot assign to `a` (immutable)
+  --> :3:3
+
+help:
+  Use `var` to declare mutable variables.
 - avg_builtin: panic: runtime error: index out of range [1] with length 1
 - basic_compare: type error: error[T024]: cannot assign to `a` (immutable)
   --> :4:3
 
 help:
   Use `var` to declare mutable variables.
-- binary_precedence: parse error: parse error: 3:3: unexpected token "print" (expected ")")
-- bool_chain: parse error: parse error: 7:3: unexpected token "print" (expected ")")
+- binary_precedence: ok
+- bool_chain: ok
 - break_continue: type error: error[T024]: cannot assign to `numbers` (immutable)
   --> :3:3
 
@@ -21,8 +25,12 @@ help:
 help:
   Use `var` to declare mutable variables.
 - closure: parse error: parse error: 1:12: unexpected token "(" (expected TypeRef)
-- count_builtin: parse error: parse error: 7:1: unexpected token "}" (expected ")")
-- cross_join: parse error: parse error: 22:7: lexer: invalid input text "\")\n  }\n}\n"
+- count_builtin: type error: error[T003]: unknown function: _count
+  --> :2:9
+
+help:
+  Ensure the function is defined before it's called.
+- cross_join: parse error: parse error: 12:3: unexpected token "}" (expected "{" Statement* "}")
 - cross_join_filter: type error: error[T024]: cannot assign to `nums` (immutable)
   --> :5:3
 
@@ -30,7 +38,7 @@ help:
   Use `var` to declare mutable variables.
 - cross_join_triple: parse error: parse error: 15:5: unexpected token "}" (expected "{" Statement* "}")
 - dataset_sort_take_limit: panic: runtime error: index out of range [1] with length 1
-- dataset_where_filter: parse error: parse error: 13:24: lexer: invalid input text "? \" (senior)\n  }..."
+- dataset_where_filter: parse error: parse error: 13:24: lexer: invalid input text "? \" (senior)\" : ..."
 - exists_builtin: parse error: parse error: 6:16: unexpected token "where" (expected ")")
 - for_list_collection: ok
 - for_loop: ok
@@ -58,15 +66,23 @@ help:
   Use `var` to declare mutable variables.
 - if_then_else: parse error: parse error: 5:18: lexer: invalid input text "? \"yes\" : \"no\"\n ..."
 - if_then_else_nested: parse error: parse error: 5:18: lexer: invalid input text "? \"big\" : ((x > ..."
-- in_operator: parse error: parse error: 5:3: unexpected token "print" (expected ")")
+- in_operator: type error: error[T024]: cannot assign to `xs` (immutable)
+  --> :3:3
+
+help:
+  Use `var` to declare mutable variables.
 - in_operator_extended: parse error: parse error: 8:27: unexpected token ")" (expected "}")
 - inner_join: panic: runtime error: index out of range [1] with length 1
 - join_multi: panic: runtime error: index out of range [1] with length 1
 - json_builtin: panic: runtime error: index out of range [1] with length 1
 - left_join: panic: runtime error: index out of range [1] with length 1
 - left_join_multi: panic: runtime error: index out of range [1] with length 1
-- len_builtin: parse error: parse error: 6:14: unexpected token ")" (expected PostfixExpr)
-- len_map: parse error: parse error: 6:1: unexpected token "}" (expected ")")
+- len_builtin: ok
+- len_map: type error: error[T002]: undefined variable: Object
+  --> :2:9
+
+help:
+  Check if the variable was declared in this scope.
 - len_string: ok
 - let_and_print: type error: error[T024]: cannot assign to `a` (immutable)
   --> :4:3
@@ -88,14 +104,22 @@ help:
 
 help:
   Use `var` to declare mutable variables.
-- list_set_ops: parse error: parse error: 9:3: unexpected token "print" (expected ")")
+- list_set_ops: type error: error[T003]: unknown function: _union
+  --> :2:9
+
+help:
+  Ensure the function is defined before it's called.
 - load_yaml: panic: runtime error: index out of range [1] with length 1
 - map_assign: type error: error[T024]: cannot assign to `scores` (immutable)
   --> :3:3
 
 help:
   Use `var` to declare mutable variables.
-- map_in_operator: parse error: parse error: 5:3: unexpected token "print" (expected ")")
+- map_in_operator: type error: error[T024]: cannot assign to `m` (immutable)
+  --> :3:3
+
+help:
+  Use `var` to declare mutable variables.
 - map_index: type error: error[T024]: cannot assign to `m` (immutable)
   --> :3:3
 
@@ -111,7 +135,11 @@ help:
 
 help:
   Use `var` to declare mutable variables.
-- map_membership: parse error: parse error: 5:3: unexpected token "print" (expected ")")
+- map_membership: type error: error[T024]: cannot assign to `m` (immutable)
+  --> :3:3
+
+help:
+  Use `var` to declare mutable variables.
 - map_nested_assign: type error: error[T024]: cannot assign to `data` (immutable)
   --> :3:3
 
@@ -119,16 +147,36 @@ help:
   Use `var` to declare mutable variables.
 - match_expr: panic: runtime error: index out of range [1] with length 1
 - match_full: panic: runtime error: index out of range [1] with length 1
-- math_ops: parse error: parse error: 4:3: unexpected token "print" (expected ")")
-- membership: parse error: parse error: 5:3: unexpected token "print" (expected ")")
-- min_max_builtin: parse error: parse error: 5:3: unexpected token "print" (expected ")")
-- nested_function: parse error: parse error: 7:1: unexpected token "}" (expected ")")
+- math_ops: type error: error[T002]: undefined variable: Math
+  --> :3:9
+
+help:
+  Check if the variable was declared in this scope.
+- membership: type error: error[T024]: cannot assign to `nums` (immutable)
+  --> :3:3
+
+help:
+  Use `var` to declare mutable variables.
+- min_max_builtin: parse error: parse error: 8:19: unexpected token "|" (expected "}")
+- nested_function: type error: error[T002]: undefined variable: x
+  --> :3:11
+
+help:
+  Check if the variable was declared in this scope.
 - order_by_map: panic: runtime error: index out of range [1] with length 1
 - outer_join: panic: runtime error: index out of range [1] with length 1
-- partial_application: parse error: parse error: 8:1: unexpected token "}" (expected ")")
+- partial_application: type error: error[T024]: cannot assign to `add5` (immutable)
+  --> :6:3
+
+help:
+  Use `var` to declare mutable variables.
 - print_hello: ok
-- pure_fold: parse error: parse error: 6:1: unexpected token "}" (expected ")")
-- pure_global_fold: parse error: parse error: 8:1: unexpected token "}" (expected ")")
+- pure_fold: ok
+- pure_global_fold: type error: error[T024]: cannot assign to `k` (immutable)
+  --> :6:3
+
+help:
+  Use `var` to declare mutable variables.
 - query_sum_select: panic: runtime error: index out of range [1] with length 1
 - record_assign: type error: error[T009]: cannot assign int to `c` (expected Counter)
   --> :6:3
@@ -137,19 +185,27 @@ help:
   Make sure the assigned value is compatible with `c`.
 - right_join: panic: runtime error: index out of range [1] with length 1
 - save_jsonl_stdout: panic: runtime error: index out of range [1] with length 1
-- short_circuit: parse error: parse error: 7:3: unexpected token "print" (expected ")")
-- slice: parse error: parse error: 7:3: unexpected token "print" (expected ")")
+- short_circuit: ok
+- slice: parse error: parse error: 19:3: unexpected token ")" (expected "}")
 - sort_stable: panic: runtime error: index out of range [1] with length 1
 - str_builtin: ok
 - string_compare: ok
 - string_concat: ok
-- string_contains: parse error: parse error: 5:3: unexpected token "print" (expected ")")
-- string_in_operator: parse error: parse error: 5:3: unexpected token "print" (expected ")")
-- string_index: parse error: parse error: 5:1: unexpected token "}" (expected ")")
-- string_prefix_slice: parse error: parse error: 8:3: unexpected token "s2" (expected ")")
+- string_contains: type error: error[T024]: cannot assign to `s` (immutable)
+  --> :3:3
+
+help:
+  Use `var` to declare mutable variables.
+- string_in_operator: type error: error[T024]: cannot assign to `s` (immutable)
+  --> :3:3
+
+help:
+  Use `var` to declare mutable variables.
+- string_index: parse error: parse error: 8:3: unexpected token ")" (expected "}")
+- string_prefix_slice: parse error: parse error: 16:3: unexpected token ")" (expected "}")
 - substring_builtin: ok
 - sum_builtin: panic: runtime error: index out of range [1] with length 1
-- tail_recursion: parse error: parse error: 9:1: unexpected token "}" (expected ")")
+- tail_recursion: ok
 - test_block: ok
 - tree_sum: parse error: parse error: 6:3: unexpected token "left" (expected "}")
 - two-sum: panic: runtime error: index out of range [1] with length 1
@@ -163,14 +219,18 @@ help:
 
 help:
   Check if the variable was declared in this scope.
-- unary_neg: parse error: parse error: 4:1: unexpected token "}" (expected ")")
+- unary_neg: ok
 - update_stmt: panic: runtime error: index out of range [1] with length 1
 - user_type_literal: type error: error[T024]: cannot assign to `book` (immutable)
   --> :11:3
 
 help:
   Use `var` to declare mutable variables.
-- values_builtin: parse error: parse error: 5:1: unexpected token "}" (expected ")")
+- values_builtin: type error: error[T024]: cannot assign to `m` (immutable)
+  --> :3:3
+
+help:
+  Use `var` to declare mutable variables.
 - var_assignment: type error: error[T024]: cannot assign to `x` (immutable)
   --> :3:3
 
