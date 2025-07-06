@@ -1,9 +1,0 @@
-fun test_addition_works() {
-  let x = (1 + 2)
-  check((x == 3))
-}
-fun main() {
-  print("ok")
-  test_addition_works()
-}
-main()

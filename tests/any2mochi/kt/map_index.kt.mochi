@@ -1,5 +1,0 @@
-fun main() {
-  let scores = mutableMapOf("Alice" to 10, "Bob" to 15)
-  print(scores["Bob"])
-}
-main()

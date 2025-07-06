@@ -1,4 +1,0 @@
-fun main() {
-  print(((System.currentTimeMillis() * 1000000) > 0))
-}
-main()

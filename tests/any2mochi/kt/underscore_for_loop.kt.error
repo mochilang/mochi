@@ -1,0 +1,12 @@
+parse error: parse error: 12:28: unexpected token "to" (expected ")")
+
+  1| fun main() {
+  2|     var c = 0
+  3|     for (_ in 0 until 2) {
+  4|         c = (c + 1)
+  5|     }
+  6|     for (_ in listOf(1, 2)) {
+  7|         c = (c + 1)
+  8|     }
+  9|     for (_ in "ab") {
+ 10|         c = (c + 1)

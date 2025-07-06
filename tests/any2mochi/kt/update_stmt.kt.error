@@ -1,0 +1,12 @@
+parse error: parse error: 7:39: unexpected token "=" (expected ")")
+
+  1| data class Person(val name: String, val age: Int, val status: String)
+  2| 
+  3| fun test_update_adult_status() {
+  4|     check((people == listOf(Person(name = "Alice", age = 17, status = "minor"), Person(name = "Bob", age = 26, status = "adult"), Person(name = "Charlie", age = 19, status = "adult"), Person(name = "Diana", age = 16, status = "minor"))))
+  5| }
+  6| 
+  7| fun main() {
+  8|     val people: MutableList<Person> = listOf(Person(name = "Alice", age = 17, status = "minor"), Person(name = "Bob", age = 25, status = "unknown"), Person(name = "Charlie", age = 18, status = "unknown"), Person(name = "Diana", age = 16, status = "minor")).toMutableList()
+  9|     for (i in 0 until people.size) {
+ 10|         var _item = people[i]

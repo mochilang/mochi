@@ -1,0 +1,12 @@
+parse error: parse error: 19:47: lexer: invalid input text "?): List<Map<Str..."
+
+  1| data class Person(val name: String, val age: Int)
+  2| 
+  3| fun main() {
+  4|     val people = run {
+  5|         val _rows = _load(null, mutableMapOf("format" to "jsonl"))
+  6|         val _out = mutableListOf<Person>()
+  7|         for (r in _rows) {
+  8|             _out.add(_cast<Person>(r))
+  9|         }
+ 10|         _out

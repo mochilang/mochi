@@ -1,0 +1,12 @@
+parse error: parse error: 6:35: unexpected token "=" (expected ")")
+
+  1| data class Person(val name: String, val age: Int)
+  2| 
+  3| fun main() {
+  4|     val people = listOf(Person(name = "Alice", age = 30), Person(name = "Bob", age = 15), Person(name = "Charlie", age = 65))
+  5|     val names = run {
+  6|         var res = people
+  7|         res = res.filter { p -> (p.age >= 18) }
+  8|         res = res.map { p -> p.name }
+  9|         res
+ 10|     }

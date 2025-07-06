@@ -1,0 +1,12 @@
+parse error: parse error: 6:38: unexpected token "=" (expected ")")
+
+  1| data class Product(val name: String, val price: Int)
+  2| 
+  3| fun main() {
+  4|     val products = listOf(Product(name = "Laptop", price = 1500), Product(name = "Smartphone", price = 900), Product(name = "Tablet", price = 600), Product(name = "Monitor", price = 300), Product(name = "Keyboard", price = 100), Product(name = "Mouse", price = 50), Product(name = "Headphones", price = 200))
+  5|     val expensive = run {
+  6|         var res = products
+  7|         res = res.sortedBy { p -> -p.price }
+  8|         res = res.drop(1)
+  9|         res = res.take(3)
+ 10|         res = res.map { p -> p }

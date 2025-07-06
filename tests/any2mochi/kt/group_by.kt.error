@@ -1,0 +1,12 @@
+parse error: parse error: 6:35: unexpected token ">" (expected PostfixExpr)
+
+  1| fun main() {
+  2|     val xs = listOf(1, 1, 2)
+  3|     val groups = _group_by(xs) { x -> x }.map { g -> mutableMapOf("k" to g.key, "c" to g.size) }
+  4|     for (g in groups) {
+  5|         println(g.k, g.c)
+  6|     }
+  7| }
+  8| 
+  9| class _Group(var key: Any?) {
+ 10|     val Items = mutableListOf<Any?>()

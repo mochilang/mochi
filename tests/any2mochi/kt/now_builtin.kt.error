@@ -1,0 +1,10 @@
+type error: error[T002]: undefined variable: System
+  --> :2:11
+
+help:
+  Check if the variable was declared in this scope.
+
+  1| fun main() {
+  2|     println(((System.currentTimeMillis() * 1000000) > 0))
+  3| }
+  4|

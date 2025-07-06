@@ -1,0 +1,12 @@
+parse error: parse error: 12:20: lexer: invalid input text "?>) -> Boolean) ..."
+
+  1| data class Person(val id: Int, val name: String)
+  2| 
+  3| data class Purchase(val id: Int, val personId: Int, val total: Int)
+  4| 
+  5| fun main() {
+  6|     val people = listOf(Person(id = 1, name = "Alice"), Person(id = 2, name = "Bob"), Person(id = 3, name = "Charlie"))
+  7|     val purchases = listOf(Purchase(id = 1, personId = 1, total = 200), Purchase(id = 2, personId = 1, total = 50), Purchase(id = 3, personId = 2, total = 150), Purchase(id = 4, personId = 3, total = 100), Purchase(id = 5, personId = 2, total = 250))
+  8|     val result = run {
+  9|         val _src = people
+ 10|         val _rows = _query(_src, listOf(

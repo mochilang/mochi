@@ -1,0 +1,12 @@
+parse error: parse error: 9:10: unexpected token "=" (expected PostfixExpr)
+
+  1| fun main() {
+  2|     val text = "hello"
+  3|     println(_indexString(text, -1))
+  4| }
+  5| 
+  6| fun _indexString(s: String, i: Int): String {
+  7|     var idx = i
+  8|     val arr = s.toCharArray()
+  9|     if (idx < 0) idx += arr.size
+ 10|     if (idx < 0 || idx >= arr.size) throw RuntimeException("index out of range")

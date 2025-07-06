@@ -1,0 +1,16 @@
+type error: error[T003]: unknown function: check
+  --> :3:3
+
+help:
+  Ensure the function is defined before it's called.
+
+  1| fun test_addition_works() {
+  2|     val x = (1 + 2)
+  3|     check((x == 3))
+  4| }
+  5| 
+  6| fun main() {
+  7|     println("ok")
+  8|     test_addition_works()
+  9| }
+ 10|

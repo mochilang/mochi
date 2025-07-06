@@ -1,0 +1,16 @@
+type error: error[T027]: [[int]] is not a struct
+  --> :2:11
+
+help:
+  Field access is only valid on struct types.
+
+  1| fun searchMatrix(matrix: List<List<Int>>, target: Int) : Boolean {
+  2|     val m = matrix.size
+  3|     if ((m == 0)) {
+  4|         return false
+  5|     }
+  6|     val n = matrix[0].size
+  7|     var left = 0
+  8|     var right = ((m * n) - 1)
+  9|     while ((left <= right)) {
+ 10|         val mid = (left + (((right - left)) / 2))

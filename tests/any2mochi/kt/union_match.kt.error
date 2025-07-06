@@ -1,0 +1,12 @@
+parse error: parse error: 8:15: unexpected token ">" (expected PostfixExpr)
+
+  1| sealed interface Tree
+  2| data class Leaf() : Tree
+  3| data class Node(val left: Tree, val value: Int, val right: Tree) : Tree
+  4| 
+  5| fun isLeaf(t: Tree) : Boolean {
+  6|     return run {
+  7|         val _t = t
+  8|         when {
+  9|             _t is Leaf -> true
+ 10|             else -> false

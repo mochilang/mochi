@@ -1,0 +1,16 @@
+type error: error[T003]: unknown function: listOf
+  --> :5:10
+
+help:
+  Ensure the function is defined before it's called.
+
+  1| sealed interface Foo
+  2| data class Empty() : Foo
+  3| data class Node(val child: Foo) : Foo
+  4| 
+  5| fun listit() : List<Foo> {
+  6|     return listOf(Empty())
+  7| }
+  8| 
+  9| fun main() {
+ 10|     println(listit().size)

@@ -1,0 +1,12 @@
+parse error: parse error: 4:11: unexpected token "." (expected "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+
+  1| data class Person(val name: String) {
+  2|     fun greet() : String {
+  3|         return ("hi " + name)
+  4|     }
+  5| 
+  6| }
+  7| 
+  8| fun main() {
+  9|     val p = Person(name = "Ada")
+ 10|     println(p.greet())
