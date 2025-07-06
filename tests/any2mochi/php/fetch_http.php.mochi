@@ -6,3 +6,4 @@ type Todo {
   fun __construct(fields) {}
 }
 fun _fetch(url, opts) {}
+fun _print(args) {}

@@ -1,1 +1,2 @@
 fun mochi_twoSum(nums, target) {}
+fun _print(args) {}

@@ -1,4 +1,0 @@
-tests/compiler/php/float_literal_precision.php.out: no convertible symbols found
-  1: <?php
-  2: echo 9.261000000000001, PHP_EOL;
-  3:

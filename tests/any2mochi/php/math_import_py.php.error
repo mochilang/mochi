@@ -1,6 +1,0 @@
-tests/compiler/php/math_import_py.php.out: no convertible symbols found
-  1: <?php
-  2: $r = 3.0;
-  3: $area = ($math->pi * $math->pow($r, 2.0));
-  4: echo "Area:" . " " . $area, PHP_EOL;
-  5:

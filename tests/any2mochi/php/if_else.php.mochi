@@ -1,1 +1,2 @@
 fun mochi_foo(n) {}
+fun _print(args) {}

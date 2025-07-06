@@ -1,6 +1,0 @@
-tests/compiler/php/var_assignment.php.out: no convertible symbols found
-  1: <?php
-  2: $x = 1;
-  3: $x = 2;
-  4: echo $x, PHP_EOL;
-  5:

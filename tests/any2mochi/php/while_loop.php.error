@@ -1,8 +1,0 @@
-tests/compiler/php/while_loop.php.out: no convertible symbols found
-  1: <?php
-  2: $i = 0;
-  3: while (($i < 3)) {
-  4: 	echo $i, PHP_EOL;
-  5: 	$i = ((is_array($i) && is_array(1)) ? array_merge($i, 1) : ((is_string($i) || is_string(1)) ? ($i . 1) : ($i + 1)));
-  6: }
-  7:

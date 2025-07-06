@@ -1,0 +1,5 @@
+fun _print(args) {}
+let set = []
+let i = 1
+let count = 0
+print(count)

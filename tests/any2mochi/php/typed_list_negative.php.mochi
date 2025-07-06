@@ -1,1 +1,2 @@
 fun mochi_test_values() {}
+fun _print(args) {}

@@ -1,0 +1,2 @@
+fun _print(args) {}
+let scores = [10, 15]

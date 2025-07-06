@@ -1,2 +1,3 @@
 fun mochi_Leaf() {}
 fun mochi_Node(left, value, right) {}
+fun _print(args) {}

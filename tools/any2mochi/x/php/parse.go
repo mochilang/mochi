@@ -6,14 +6,18 @@ import (
 
 	pnode "github.com/z7zmey/php-parser/node"
 	"github.com/z7zmey/php-parser/node/expr"
+	"github.com/z7zmey/php-parser/node/expr/assign"
 	"github.com/z7zmey/php-parser/node/name"
+	"github.com/z7zmey/php-parser/node/scalar"
 	"github.com/z7zmey/php-parser/node/stmt"
 	"github.com/z7zmey/php-parser/php7"
 )
 
 type Program struct {
-	Functions []Func  `json:"functions"`
-	Classes   []Class `json:"classes"`
+	Functions []Func      `json:"functions"`
+	Classes   []Class     `json:"classes"`
+	Vars      []Var       `json:"vars"`
+	Prints    []PrintStmt `json:"prints"`
 }
 
 // ParseError represents a PHP parse error with line information.
@@ -32,6 +36,19 @@ type Param struct {
 type Field struct {
 	Name string `json:"name"`
 	Type string `json:"type,omitempty"`
+}
+
+type Var struct {
+	Name      string `json:"name"`
+	Value     string `json:"value,omitempty"`
+	StartLine int    `json:"start_line"`
+	EndLine   int    `json:"end_line"`
+}
+
+type PrintStmt struct {
+	Expr      string `json:"expr"`
+	StartLine int    `json:"start_line"`
+	EndLine   int    `json:"end_line"`
 }
 
 type Func struct {
@@ -74,6 +91,8 @@ func Parse(src string) (*Program, error) {
 			prog.Functions = append(prog.Functions, funcFromFn(n))
 		case *stmt.Class:
 			prog.Classes = append(prog.Classes, classFromNode(n))
+		case *stmt.Expression:
+			parseExprStmt(prog, n)
 		}
 	}
 	return prog, nil
@@ -121,6 +140,95 @@ func methodFromNode(m *stmt.ClassMethod) Func {
 	ret := typeString(m.ReturnType)
 	pos := m.GetPosition()
 	return Func{Name: name, Params: params, Return: ret, StartLine: pos.StartLine, EndLine: pos.EndLine}
+}
+
+func parseExprStmt(p *Program, st *stmt.Expression) {
+	switch e := st.Expr.(type) {
+	case *assign.Assign:
+		v, ok := e.Variable.(*expr.Variable)
+		if !ok {
+			return
+		}
+		val, ok := simpleExpr(e.Expression)
+		if !ok {
+			return
+		}
+		pos := e.GetPosition()
+		p.Vars = append(p.Vars, Var{
+			Name:      identString(v.VarName),
+			Value:     val,
+			StartLine: pos.StartLine,
+			EndLine:   pos.EndLine,
+		})
+	case *expr.FunctionCall:
+		name := nameString(e.Function)
+		if name != "_print" || e.ArgumentList == nil || len(e.ArgumentList.Arguments) != 1 {
+			return
+		}
+		argNode, ok := e.ArgumentList.Arguments[0].(*pnode.Argument)
+		if !ok {
+			return
+		}
+		val, ok := simpleExpr(argNode.Expr)
+		if !ok {
+			return
+		}
+		pos := e.GetPosition()
+		p.Prints = append(p.Prints, PrintStmt{Expr: val, StartLine: pos.StartLine, EndLine: pos.EndLine})
+	}
+}
+
+func nameString(n pnode.Node) string {
+	switch v := n.(type) {
+	case *name.Name:
+		return joinNameParts(v.Parts)
+	case *name.FullyQualified:
+		return joinNameParts(v.Parts)
+	case *name.Relative:
+		return joinNameParts(v.Parts)
+	case *name.NamePart:
+		return v.Value
+	case *expr.Variable:
+		return identString(v.VarName)
+	}
+	if id, ok := n.(*pnode.Identifier); ok {
+		return id.Value
+	}
+	return ""
+}
+
+func simpleExpr(n pnode.Node) (string, bool) {
+	switch v := n.(type) {
+	case *scalar.Lnumber:
+		return v.Value, true
+	case *scalar.Dnumber:
+		return v.Value, true
+	case *scalar.String:
+		return fmt.Sprintf("\"%s\"", v.Value), true
+	case *expr.Variable:
+		return identString(v.VarName), true
+	case *expr.Array:
+		return arrayExpr(v.Items)
+	case *expr.ShortArray:
+		return arrayExpr(v.Items)
+	}
+	return "", false
+}
+
+func arrayExpr(items []pnode.Node) (string, bool) {
+	elems := make([]string, 0, len(items))
+	for _, it := range items {
+		ai, ok := it.(*expr.ArrayItem)
+		if !ok {
+			return "", false
+		}
+		val, ok := simpleExpr(ai.Val)
+		if !ok {
+			return "", false
+		}
+		elems = append(elems, val)
+	}
+	return "[" + strings.Join(elems, ", ") + "]", true
 }
 
 func paramInfo(p *pnode.Parameter) Param {

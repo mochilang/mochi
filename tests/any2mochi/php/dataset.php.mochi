@@ -3,3 +3,4 @@ type Person {
   age: any
   fun __construct(fields) {}
 }
+fun _print(args) {}

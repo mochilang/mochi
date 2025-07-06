@@ -1,4 +1,0 @@
-tests/compiler/php/print_hello.php.out: no convertible symbols found
-  1: <?php
-  2: echo "hello", PHP_EOL;
-  3:

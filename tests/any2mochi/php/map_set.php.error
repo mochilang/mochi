@@ -1,6 +1,0 @@
-tests/compiler/php/map_set.php.out: no convertible symbols found
-  1: <?php
-  2: $scores = ["a" => 1];
-  3: $scores["b"] = 2;
-  4: echo $scores["b"], PHP_EOL;
-  5:

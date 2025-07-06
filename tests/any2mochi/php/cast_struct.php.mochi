@@ -2,3 +2,4 @@ type Todo {
   title: any
   fun __construct(fields) {}
 }
+fun _print(args) {}

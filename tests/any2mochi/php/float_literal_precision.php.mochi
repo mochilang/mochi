@@ -1,0 +1,2 @@
+fun _print(args) {}
+print(9.261000000000001)

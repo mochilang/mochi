@@ -4,3 +4,5 @@ type _Group {
   fun __construct(key) {}
 }
 fun _group_by(src, keyfn) {}
+fun _print(args) {}
+let xs = [1, 1, 2]

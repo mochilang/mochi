@@ -1,4 +1,0 @@
-tests/compiler/php/avg_builtin.php.out: no convertible symbols found
-  1: <?php
-  2: echo (count([1, 2, 3]) ? array_sum([1, 2, 3]) / count([1, 2, 3]) : 0), PHP_EOL;
-  3:
