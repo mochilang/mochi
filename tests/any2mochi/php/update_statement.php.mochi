@@ -1,0 +1,8 @@
+type Person {
+  name: any
+  age: any
+  status: any
+  fun __construct(fields) {}
+}
+fun mochi_test_update_adult_status() {}
+fun _print(args) {}

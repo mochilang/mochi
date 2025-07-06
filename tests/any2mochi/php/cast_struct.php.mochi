@@ -1,0 +1,4 @@
+type Todo {
+  title: any
+  fun __construct(fields) {}
+}

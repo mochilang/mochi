@@ -1,0 +1,11 @@
+tests/compiler/php/while_membership.php.out: no convertible symbols found
+  1: <?php
+  2: $set = [];
+  3: foreach ((is_string([1, 2, 3]) ? str_split([1, 2, 3]) : [1, 2, 3]) as $n) {
+  4: 	$set[$n] = true;
+  5: }
+  6: $i = 1;
+  7: $count = 0;
+  8: while ((is_array($set) ? (array_key_exists($i, $set) || in_array($i, $set, true)) : (is_string($set) ? strpos($set, strval($i)) !== false : false))) {
+  9: 	$i = ((is_array($i) && is_array(1)) ? array_merge($i, 1) : ((is_string($i) || is_string(1)) ? ($i . 1) : ($i + 1)));
+ 10: 	$count = ((is_array($count) && is_array(1)) ? array_merge($count, 1) : ((is_string($count) || is_string(1)) ? ($count . 1) : ($count + 1)));

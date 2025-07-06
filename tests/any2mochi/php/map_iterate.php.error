@@ -1,0 +1,11 @@
+tests/compiler/php/map_iterate.php.out: no convertible symbols found
+  1: <?php
+  2: $m = [];
+  3: $m[1] = true;
+  4: $m[2] = true;
+  5: $sum = 0;
+  6: foreach ((is_string($m) ? str_split($m) : $m) as $k) {
+  7: 	$sum = ((is_array($sum) && is_array($k)) ? array_merge($sum, $k) : ((is_string($sum) || is_string($k)) ? ($sum . $k) : ($sum + $k)));
+  8: }
+  9: echo $sum, PHP_EOL;
+ 10:

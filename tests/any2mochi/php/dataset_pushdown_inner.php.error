@@ -1,0 +1,11 @@
+tests/compiler/php/dataset_pushdown_inner.php.out: no convertible symbols found
+  1: <?php
+  2: $xs = [1, 2, 3];
+  3: $ys = [10, 20, 30];
+  4: $res = (function() use ($xs, $ys) {
+  5: 	$res = [];
+  6: 	foreach ((is_string($xs) ? str_split($xs) : $xs) as $x) {
+  7: 		foreach ((is_string($ys) ? str_split($ys) : $ys) as $y) {
+  8: 			if (!(($y > 15))) { continue; }
+  9: 			$res[] = ((is_array($x) && is_array($y)) ? array_merge($x, $y) : ((is_string($x) || is_string($y)) ? ($x . $y) : ($x + $y)));
+ 10: 		}

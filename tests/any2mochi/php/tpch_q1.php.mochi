@@ -1,0 +1,7 @@
+type _Group {
+  key: any
+  Items: any
+  fun __construct(key) {}
+}
+fun mochi_test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus() {}
+fun _group_by(src, keyfn) {}

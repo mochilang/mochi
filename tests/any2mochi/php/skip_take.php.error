@@ -1,0 +1,11 @@
+tests/compiler/php/skip_take.php.out: no convertible symbols found
+  1: <?php
+  2: $nums = [1, 2, 3, 4, 5];
+  3: $res = (function() use ($nums) {
+  4: 	$res = [];
+  5: 	foreach ((is_string($nums) ? str_split($nums) : $nums) as $n) {
+  6: 		$res[] = $n;
+  7: 	}
+  8: 	$res = array_slice($res, 1);
+  9: 	$res = array_slice($res, 0, 2);
+ 10: 	return $res;
