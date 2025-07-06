@@ -1,61 +1,88 @@
-package any2mochi
+package prolog
 
 import (
 	"fmt"
+	any2mochi "mochi/tools/any2mochi"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
 )
 
-// ConvertProlog converts Prolog source code to Mochi using the language server.
-func ConvertProlog(src string) ([]byte, error) {
-	return convertProlog(src, "")
+func snippet(src string) string {
+	lines := strings.Split(src, "\n")
+	if len(lines) > 10 {
+		lines = lines[:10]
+	}
+	for i, l := range lines {
+		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
+	}
+	return strings.Join(lines, "\n")
 }
 
-func convertProlog(src, root string) ([]byte, error) {
-	ls := Servers["prolog"]
-	if ls.Command == "" {
-		return convertPrologFallback(src)
+func diagnostics(src string, diags []any2mochi.Diagnostic) string {
+	lines := strings.Split(src, "\n")
+	var out strings.Builder
+	for _, d := range diags {
+		start := int(d.Range.Start.Line)
+		msg := d.Message
+		line := ""
+		if start < len(lines) {
+			line = strings.TrimSpace(lines[start])
+		}
+		out.WriteString(fmt.Sprintf("line %d: %s\n  %s\n", start+1, msg, line))
 	}
-	syms, diags, err := EnsureAndParseWithRoot(ls.Command, ls.Args, ls.LangID, src, root)
+	return strings.TrimSpace(out.String())
+}
+
+// Convert converts Prolog source code to Mochi using the language server.
+func Convert(src string) ([]byte, error) {
+	return convert(src, "")
+}
+
+func convert(src, root string) ([]byte, error) {
+	ls := any2mochi.Servers["prolog"]
+	if ls.Command == "" {
+		return convertFallback(src)
+	}
+	syms, diags, err := any2mochi.EnsureAndParseWithRoot(ls.Command, ls.Args, ls.LangID, src, root)
 	if err != nil {
 		// fallback to regex based parsing if the language server is missing
 		if strings.Contains(err.Error(), "not found") {
-			return convertPrologFallback(src)
+			return convertFallback(src)
 		}
 		return nil, err
 	}
 	if len(diags) > 0 {
-		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
+		return nil, fmt.Errorf("%s", diagnostics(src, diags))
 	}
 	var out strings.Builder
-	writePrologSymbols(&out, ls, src, syms, root)
+	writeSymbols(&out, ls, src, syms, root)
 	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
 	}
 	return []byte(out.String()), nil
 }
 
-// ConvertPrologFile reads the Prolog file and converts it to Mochi.
-func ConvertPrologFile(path string) ([]byte, error) {
+// ConvertFile reads the Prolog file and converts it to Mochi.
+func ConvertFile(path string) ([]byte, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return convertProlog(string(data), filepath.Dir(path))
+	return convert(string(data), filepath.Dir(path))
 }
 
-func writePrologSymbols(out *strings.Builder, ls LanguageServer, src string, syms []DocumentSymbol, root string) {
+func writeSymbols(out *strings.Builder, ls any2mochi.LanguageServer, src string, syms []any2mochi.DocumentSymbol, root string) {
 	for _, s := range syms {
 		switch s.Kind {
-		case SymbolKindFunction, SymbolKindMethod,
-			SymbolKindVariable, SymbolKindConstant:
-			params := parsePrologSignature(s.Detail)
+		case any2mochi.SymbolKindFunction, any2mochi.SymbolKindMethod,
+			any2mochi.SymbolKindVariable, any2mochi.SymbolKindConstant:
+			params := parseSignature(s.Detail)
 			if len(params) == 0 {
-				if hov, err := EnsureAndHoverWithRoot(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start, root); err == nil {
-					if mc, ok := hov.Contents.(MarkupContent); ok {
-						params = parsePrologSignature(&mc.Value)
+				if hov, err := any2mochi.EnsureAndHoverWithRoot(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start, root); err == nil {
+					if mc, ok := hov.Contents.(any2mochi.MarkupContent); ok {
+						params = parseSignature(&mc.Value)
 					}
 				}
 			}
@@ -69,20 +96,20 @@ func writePrologSymbols(out *strings.Builder, ls LanguageServer, src string, sym
 				out.WriteString(p)
 			}
 			out.WriteString(") {\n")
-			for _, line := range parsePrologBodyFromRange(src, s.Range) {
+			for _, line := range parseBodyFromRange(src, s.Range) {
 				out.WriteString(line)
 				out.WriteByte('\n')
 			}
 			out.WriteString("}\n")
 		default:
 			if len(s.Children) > 0 {
-				writePrologSymbols(out, ls, src, s.Children, root)
+				writeSymbols(out, ls, src, s.Children, root)
 			}
 		}
 	}
 }
 
-func parsePrologSignature(detail *string) []string {
+func parseSignature(detail *string) []string {
 	if detail == nil {
 		return nil
 	}
@@ -131,7 +158,7 @@ func parseInt(s string) int {
 	return n
 }
 
-func prologOffsetFromPosition(src string, pos Position) int {
+func offsetFromPosition(src string, pos any2mochi.Position) int {
 	lines := strings.Split(src, "\n")
 	if int(pos.Line) >= len(lines) {
 		return len(src)
@@ -147,9 +174,9 @@ func prologOffsetFromPosition(src string, pos Position) int {
 	return off + col
 }
 
-func parsePrologBodyFromRange(src string, rng Range) []string {
-	start := prologOffsetFromPosition(src, rng.Start)
-	end := prologOffsetFromPosition(src, rng.End)
+func parseBodyFromRange(src string, rng any2mochi.Range) []string {
+	start := offsetFromPosition(src, rng.Start)
+	end := offsetFromPosition(src, rng.End)
 	if start >= end || start < 0 || end > len(src) {
 		return nil
 	}
@@ -161,13 +188,13 @@ func parsePrologBodyFromRange(src string, rng Range) []string {
 	if strings.HasSuffix(body, ".") {
 		body = strings.TrimSuffix(body, ".")
 	}
-	return parsePrologBody(body)
+	return parseBody(body)
 }
 
-// convertPrologFallback attempts a best effort conversion using regular
+// convertFallback attempts a best effort conversion using regular
 // expressions when no language server is available.
-func convertPrologFallback(src string) ([]byte, error) {
-	if prog, err := parsePrologAST(src); err == nil {
+func convertFallback(src string) ([]byte, error) {
+	if prog, err := parseAST(src); err == nil {
 		var out strings.Builder
 		for _, c := range prog.Clauses {
 			if c.Name != "main" {
@@ -183,7 +210,7 @@ func convertPrologFallback(src string) ([]byte, error) {
 				out.WriteString(p)
 			}
 			out.WriteString(") {\n")
-			for _, line := range parsePrologBody(c.Body) {
+			for _, line := range parseBody(c.Body) {
 				out.WriteString(line)
 				out.WriteByte('\n')
 			}
@@ -194,12 +221,12 @@ func convertPrologFallback(src string) ([]byte, error) {
 		}
 	}
 
-	funcs := parsePrologFuncs(src)
+	funcs := parseFuncs(src)
 	if len(funcs) == 0 {
 		if strings.Contains(src, "main :-") || strings.Contains(src, "main:-") {
-			funcs = append(funcs, prologFunc{name: "main", body: ""})
+			funcs = append(funcs, function{name: "main", body: ""})
 		} else {
-			return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+			return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
 		}
 	}
 	var out strings.Builder
@@ -214,7 +241,7 @@ func convertPrologFallback(src string) ([]byte, error) {
 			out.WriteString(p)
 		}
 		out.WriteString(") {\n")
-		for _, line := range parsePrologBody(f.body) {
+		for _, line := range parseBody(f.body) {
 			out.WriteString(line)
 			out.WriteByte('\n')
 		}
@@ -223,15 +250,15 @@ func convertPrologFallback(src string) ([]byte, error) {
 	return []byte(out.String()), nil
 }
 
-type prologFunc struct {
+type function struct {
 	name   string
 	params []string
 	body   string
 }
 
-// parsePrologFuncs extracts top-level predicate definitions using regex.
-func parsePrologFuncs(src string) []prologFunc {
-	var funcs []prologFunc
+// parseFuncs extracts top-level predicate definitions using regex.
+func parseFuncs(src string) []function {
+	var funcs []function
 	re := regexp.MustCompile(`(?ms)^\s*(\w+)(?:\(([^)]*)\))?\s*:-\s*(.*?)\.`)
 	matches := re.FindAllStringSubmatch(src, -1)
 	for _, m := range matches {
@@ -251,13 +278,13 @@ func parsePrologFuncs(src string) []prologFunc {
 		if strings.HasSuffix(body, ".") {
 			body = strings.TrimSuffix(body, ".")
 		}
-		funcs = append(funcs, prologFunc{name: name, params: params, body: body})
+		funcs = append(funcs, function{name: name, params: params, body: body})
 	}
 	return funcs
 }
 
-// parsePrologBody splits a predicate body into Mochi statements.
-func parsePrologBody(body string) []string {
+// parseBody splits a predicate body into Mochi statements.
+func parseBody(body string) []string {
 	clauses := splitClauses(body)
 	var out []string
 	for _, c := range clauses {
