@@ -1,4 +1,0 @@
-line 16: unsupported syntax: where
-    15 | forLoop start end f = go start
-->  16 |   where
-    17 |     go i

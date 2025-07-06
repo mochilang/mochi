@@ -1,0 +1,4 @@
+fun data(Person) { Person }
+let people = [Person {name = "Alice", age = 30}, Person {name = "Bob", age = 15}, Person {name = "Charlie", age = 65}]
+let names = [name (p) | p <- filter (\p -> (age (p) >= 18)) people]
+for n in names { print(n) }

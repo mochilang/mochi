@@ -1,0 +1,4 @@
+fun foo(n: int): int {}
+print(foo (-2)
+print(foo 0)
+print(foo 3)
