@@ -5,12 +5,15 @@ package hscode_test
 import (
 	"bytes"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	hscode "mochi/compile/x/hs"
 	"mochi/compile/x/testutil"
 	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -47,7 +50,30 @@ func TestHSCompiler_TPCHQueries(t *testing.T) {
 			if err := os.WriteFile(file, code, 0644); err != nil {
 				t.Fatalf("write error: %v", err)
 			}
-			t.Skip("Haskell runtime check disabled until heterogeneous maps are supported")
+
+			cmd := exec.Command("runhaskell", file)
+			outHS, err := cmd.CombinedOutput()
+			if err != nil {
+				t.Fatalf("runhaskell error: %v\n%s", err, outHS)
+			}
+			hsRes := strings.TrimSpace(string(outHS))
+
+			p, err := vm.Compile(prog, env)
+			if err != nil {
+				t.Fatalf("vm compile error: %v", err)
+			}
+			var vmOut bytes.Buffer
+			m := vm.New(p, &vmOut)
+			if err := m.Run(); err != nil {
+				if ve, ok := err.(*vm.VMError); ok {
+					t.Fatalf("vm run error:\n%s", ve.Format(p))
+				}
+				t.Fatalf("vm run error: %v", err)
+			}
+			vmRes := strings.TrimSpace(vmOut.String())
+			if hsRes != vmRes {
+				t.Fatalf("output mismatch\n-- hs --\n%s\n-- vm --\n%s", hsRes, vmRes)
+			}
 		})
 	}
 }
