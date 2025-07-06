@@ -14,23 +14,38 @@ import (
 // ConvertLua converts lua source code to Mochi using the language server.
 func ConvertLua(src string) ([]byte, error) {
 	ls := Servers["lua"]
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
-	if err != nil {
-		return nil, err
-	}
-	if len(diags) > 0 {
-		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
-	}
-	chunk, _ := luaparse.Parse(bytes.NewReader([]byte(src)), "src.lua")
-	fnMap := map[int]*luaast.FunctionExpr{}
-	collectLuaFuncs(chunk, fnMap)
+	if UseLSP && ls.Command != "" {
+		syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+		if err != nil {
+			return nil, fmt.Errorf("convert failure: %v\n\nsource snippet:\n%s", err, numberedSnippet(src))
+		}
+		if len(diags) > 0 {
+			return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
+		}
 
-	var out strings.Builder
-	writeLuaSymbols(&out, nil, syms, src, ls, fnMap)
-	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+		chunk, _ := luaparse.Parse(bytes.NewReader([]byte(src)), "src.lua")
+		fnMap := map[int]*luaast.FunctionExpr{}
+		collectLuaFuncs(chunk, fnMap)
+
+		var out strings.Builder
+		writeLuaSymbols(&out, nil, syms, src, ls, fnMap)
+		if out.Len() == 0 {
+			return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+		}
+		return []byte(out.String()), nil
 	}
-	return []byte(out.String()), nil
+
+	if UseLSP && ls.Command == "" {
+		return nil, fmt.Errorf("convert failure: lua-language-server not found\n\nsource snippet:\n%s", numberedSnippet(src))
+	}
+
+	chunk, err := luaparse.Parse(bytes.NewReader([]byte(src)), "src.lua")
+	if err != nil {
+		return nil, fmt.Errorf("parse error: %v", err)
+	}
+	var out []string
+	out = convertLuaStmts(chunk, 0)
+	return []byte(strings.Join(out, "\n")), nil
 }
 
 func writeLuaSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol, src string, ls LanguageServer, fns map[int]*luaast.FunctionExpr) {
@@ -69,6 +84,14 @@ func writeLuaSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbo
 type luaParam struct {
 	name string
 	typ  string
+}
+
+// LuaNodeInfo holds basic information about an AST node.
+type LuaNodeInfo struct {
+	Kind      string
+	Name      string
+	StartLine int
+	EndLine   int
 }
 
 func writeLuaFunc(out *strings.Builder, name string, sym DocumentSymbol, src string, ls LanguageServer, fn *luaast.FunctionExpr) {
@@ -331,6 +354,34 @@ func collectLuaFuncs(stmts []luaast.Stmt, m map[int]*luaast.FunctionExpr) {
 	}
 }
 
+// CollectLuaNodeInfo gathers basic information about AST nodes.
+func CollectLuaNodeInfo(stmts []luaast.Stmt, info *[]LuaNodeInfo) {
+	for _, st := range stmts {
+		switch s := st.(type) {
+		case *luaast.FuncDefStmt:
+			*info = append(*info, LuaNodeInfo{Kind: "func", StartLine: s.Line() - 1, EndLine: s.LastLine() - 1})
+			CollectLuaNodeInfo(s.Func.Stmts, info)
+		case *luaast.LocalAssignStmt:
+			*info = append(*info, LuaNodeInfo{Kind: "localassign", StartLine: s.Line() - 1, EndLine: s.LastLine() - 1})
+		case *luaast.NumberForStmt:
+			*info = append(*info, LuaNodeInfo{Kind: "for", StartLine: s.Line() - 1, EndLine: s.LastLine() - 1})
+			CollectLuaNodeInfo(s.Stmts, info)
+		case *luaast.GenericForStmt:
+			*info = append(*info, LuaNodeInfo{Kind: "for", StartLine: s.Line() - 1, EndLine: s.LastLine() - 1})
+			CollectLuaNodeInfo(s.Stmts, info)
+		case *luaast.DoBlockStmt:
+			CollectLuaNodeInfo(s.Stmts, info)
+		case *luaast.WhileStmt:
+			CollectLuaNodeInfo(s.Stmts, info)
+		case *luaast.RepeatStmt:
+			CollectLuaNodeInfo(s.Stmts, info)
+		case *luaast.IfStmt:
+			CollectLuaNodeInfo(s.Then, info)
+			CollectLuaNodeInfo(s.Else, info)
+		}
+	}
+}
+
 func convertLuaStmts(stmts []luaast.Stmt, indent int) []string {
 	ind := strings.Repeat("  ", indent)
 	var out []string
@@ -377,6 +428,15 @@ func convertLuaStmts(stmts []luaast.Stmt, indent int) []string {
 			out = append(out, ind+luaExprString(s.Expr))
 		case *luaast.BreakStmt:
 			out = append(out, ind+"break")
+		case *luaast.GotoStmt:
+			if strings.HasPrefix(s.Label, "__continue") {
+				out = append(out, ind+"continue")
+			}
+		case *luaast.LabelStmt:
+			if strings.HasPrefix(s.Name, "__continue") {
+				// skip continue labels
+				continue
+			}
 		case *luaast.DoBlockStmt:
 			out = append(out, ind+"do {")
 			out = append(out, convertLuaStmts(s.Stmts, indent+1)...)
@@ -407,7 +467,16 @@ func convertLuaStmts(stmts []luaast.Stmt, indent int) []string {
 			}
 			init := luaExprString(s.Init)
 			limit := luaExprString(s.Limit)
-			out = append(out, ind+fmt.Sprintf("for %s = %s; %s <= %s; %s += %s {", s.Name, init, s.Name, limit, s.Name, step))
+			if step == "1" {
+				if aop, ok := s.Limit.(*luaast.ArithmeticOpExpr); ok && aop.Operator == "-" {
+					if num, ok2 := aop.Rhs.(*luaast.NumberExpr); ok2 && strings.TrimSpace(num.Value) == "1" {
+						limit = luaExprString(aop.Lhs)
+					}
+				}
+				out = append(out, ind+fmt.Sprintf("for %s in %s..%s {", s.Name, init, limit))
+			} else {
+				out = append(out, ind+fmt.Sprintf("for %s = %s; %s <= %s; %s += %s {", s.Name, init, s.Name, limit, s.Name, step))
+			}
 			out = append(out, convertLuaStmts(s.Stmts, indent+1)...)
 			out = append(out, ind+"}")
 		case *luaast.GenericForStmt:
@@ -436,6 +505,9 @@ func luaExprString(e luaast.Expr) string {
 	case *luaast.NilExpr:
 		return "null"
 	case *luaast.IdentExpr:
+		if v.Value == "__print" {
+			return "print"
+		}
 		return v.Value
 	case *luaast.ArithmeticOpExpr:
 		return luaExprString(v.Lhs) + " " + v.Operator + " " + luaExprString(v.Rhs)

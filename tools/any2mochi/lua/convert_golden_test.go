@@ -10,6 +10,7 @@ import (
 )
 
 func TestConvertLua_Golden(t *testing.T) {
+	any2mochi.UseLSP = false
 	root := any2mochi.FindRepoRoot(t)
 	any2mochi.RunConvertGolden(t, filepath.Join(root, "tests/compiler/lua"), "*.lua.out", any2mochi.ConvertLuaFile, "lua", ".mochi", ".error")
 }

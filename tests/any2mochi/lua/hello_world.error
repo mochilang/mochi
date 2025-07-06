@@ -1,5 +1,13 @@
-convert failure: Lua-Language-Server not found
+convert failure: lua-language-server not found
 
 source snippet:
   1: function __print(...)
-
+  2:     local args = {...}
+  3:     for i, a in ipairs(args) do
+  4:         if i > 1 then io.write(' ') end
+  5:         io.write(tostring(a))
+  6:     end
+  7:     io.write('\n')
+  8: end
+  9: __print("Hello, world")
+ 10: 
