@@ -7,6 +7,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -18,38 +20,48 @@ type Program struct {
 }
 
 type Func struct {
-	Name   string   `json:"name"`
-	Params []string `json:"params"`
-	Body   string   `json:"body"`
-	Line   int      `json:"line"`
-	Col    int      `json:"col"`
+	Name    string   `json:"name"`
+	Params  []string `json:"params"`
+	Body    string   `json:"body"`
+	Line    int      `json:"line"`
+	Col     int      `json:"col"`
+	EndLine int      `json:"endLine"`
+	EndCol  int      `json:"endCol"`
 }
 
 type Var struct {
-	Name string `json:"name"`
-	Expr string `json:"expr"`
-	Line int    `json:"line"`
-	Col  int    `json:"col"`
+	Name    string `json:"name"`
+	Expr    string `json:"expr"`
+	Line    int    `json:"line"`
+	Col     int    `json:"col"`
+	EndLine int    `json:"endLine"`
+	EndCol  int    `json:"endCol"`
 }
 
 type Print struct {
-	Expr string `json:"expr"`
-	Line int    `json:"line"`
-	Col  int    `json:"col"`
+	Expr    string `json:"expr"`
+	Line    int    `json:"line"`
+	Col     int    `json:"col"`
+	EndLine int    `json:"endLine"`
+	EndCol  int    `json:"endCol"`
 }
 
 type Type struct {
-	Name   string  `json:"name"`
-	Fields []Field `json:"fields"`
-	Line   int     `json:"line"`
-	Col    int     `json:"col"`
+	Name    string  `json:"name"`
+	Fields  []Field `json:"fields"`
+	Line    int     `json:"line"`
+	Col     int     `json:"col"`
+	EndLine int     `json:"endLine"`
+	EndCol  int     `json:"endCol"`
 }
 
 type Field struct {
-	Name string `json:"name"`
-	Type string `json:"type"`
-	Line int    `json:"line"`
-	Col  int    `json:"col"`
+	Name    string `json:"name"`
+	Type    string `json:"type"`
+	Line    int    `json:"line"`
+	Col     int    `json:"col"`
+	EndLine int    `json:"endLine"`
+	EndCol  int    `json:"endCol"`
 }
 
 func parse(src string) (*Program, error) {
@@ -62,6 +74,19 @@ func parse(src string) (*Program, error) {
 		return nil, err
 	}
 	tmp.Close()
+	if _, err := exec.LookPath("ocamlc"); err == nil {
+		obj := tmp.Name() + ".cmo"
+		cmd := exec.Command("ocamlc", "-c", "-o", obj, tmp.Name())
+		var stderr bytes.Buffer
+		cmd.Stderr = &stderr
+		if err := cmd.Run(); err != nil {
+			os.Remove(obj)
+			os.Remove(strings.TrimSuffix(obj, ".cmo") + ".cmi")
+			return nil, fmt.Errorf("%s", formatOCamlError(src, stderr.String()))
+		}
+		os.Remove(obj)
+		os.Remove(strings.TrimSuffix(obj, ".cmo") + ".cmi")
+	}
 	root, err := repoRoot()
 	if err != nil {
 		return nil, err
@@ -186,4 +211,32 @@ func repoRoot() (string, error) {
 		dir = parent
 	}
 	return "", os.ErrNotExist
+}
+
+func formatOCamlError(src, msg string) string {
+	re := regexp.MustCompile(`line ([0-9]+), characters? ([0-9]+)`)
+	lines := strings.Split(src, "\n")
+	if m := re.FindStringSubmatch(msg); m != nil {
+		ln, _ := strconv.Atoi(m[1])
+		col, _ := strconv.Atoi(m[2])
+		start := ln - 2
+		if start < 0 {
+			start = 0
+		}
+		end := ln
+		if end > len(lines) {
+			end = len(lines)
+		}
+		var b strings.Builder
+		b.WriteString(fmt.Sprintf("line %d:%d: %s", ln, col+1, strings.TrimSpace(msg)))
+		b.WriteByte('\n')
+		for i := start; i < end; i++ {
+			b.WriteString(fmt.Sprintf("%4d| %s\n", i+1, lines[i]))
+			if i+1 == ln {
+				b.WriteString("     " + strings.Repeat(" ", col) + "^\n")
+			}
+		}
+		return b.String()
+	}
+	return strings.TrimSpace(msg)
 }
