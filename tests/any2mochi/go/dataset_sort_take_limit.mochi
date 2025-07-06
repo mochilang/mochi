@@ -1,0 +1,6 @@
+type Product {
+  Name: string
+  Price: int
+}
+fun main() {}
+fun _paginate(src: []T, skip: int, take: int): []T {}

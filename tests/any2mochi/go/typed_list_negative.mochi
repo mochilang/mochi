@@ -1,0 +1,10 @@
+fun expect(cond: bool) {}
+fun formatDuration(d: time.Duration): string {}
+fun printTestStart(name: string) {}
+fun printTestPass(d: time.Duration) {}
+fun printTestFail(err: error, d: time.Duration) {}
+fun test_values() {}
+let xs: []int = [(-1), 0, 1]
+fun main() {}
+fun _cast(v: any): T {}
+fun _convertMapAny(m: map[any]any): map[string]any {}

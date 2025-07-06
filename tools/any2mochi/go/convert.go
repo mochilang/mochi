@@ -30,7 +30,7 @@ func Convert(src string) ([]byte, error) {
 		}
 	}
 	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\n%s", numberedSnippet(src))
+		return nil, fmt.Errorf("no convertible symbols found\n\n%s", detailedSnippet(src, 0))
 	}
 	return []byte(out.String()), nil
 }
@@ -156,12 +156,18 @@ func writeGenDecl(out *strings.Builder, fset *token.FileSet, d *ast.GenDecl) {
 			if vs.Type != nil {
 				typ = exprString(fset, vs.Type)
 			}
-			for _, n := range vs.Names {
+			for i, n := range vs.Names {
 				out.WriteString("let ")
 				out.WriteString(n.Name)
 				if typ != "" {
 					out.WriteString(": ")
 					out.WriteString(typ)
+				}
+				if i < len(vs.Values) {
+					if val, ok := exprToMochi(fset, vs.Values[i]); ok {
+						out.WriteString(" = ")
+						out.WriteString(val)
+					}
 				}
 				out.WriteByte('\n')
 			}
@@ -175,6 +181,42 @@ func exprString(fset *token.FileSet, e ast.Expr) string {
 	return b.String()
 }
 
+func exprToMochi(fset *token.FileSet, e ast.Expr) (string, bool) {
+	switch ex := e.(type) {
+	case *ast.BasicLit:
+		return ex.Value, true
+	case *ast.CompositeLit:
+		switch t := ex.Type.(type) {
+		case *ast.ArrayType:
+			parts := make([]string, len(ex.Elts))
+			for i, el := range ex.Elts {
+				v, ok := exprToMochi(fset, el)
+				if !ok {
+					return "", false
+				}
+				parts[i] = v
+			}
+			return "[" + strings.Join(parts, ", ") + "]", true
+		case *ast.Ident:
+			fields := make([]string, len(ex.Elts))
+			for i, el := range ex.Elts {
+				kv, ok := el.(*ast.KeyValueExpr)
+				if !ok {
+					return "", false
+				}
+				key := exprString(fset, kv.Key)
+				val, ok := exprToMochi(fset, kv.Value)
+				if !ok {
+					return "", false
+				}
+				fields[i] = fmt.Sprintf("%s: %s", key, val)
+			}
+			return fmt.Sprintf("%s { %s }", t.Name, strings.Join(fields, ", ")), true
+		}
+	}
+	return exprString(fset, e), true
+}
+
 func numberedSnippet(src string) string {
 	lines := strings.Split(src, "\n")
 	if len(lines) > 10 {
@@ -184,4 +226,26 @@ func numberedSnippet(src string) string {
 		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
 	}
 	return strings.Join(lines, "\n")
+}
+
+func detailedSnippet(src string, line int) string {
+	const ctx = 2
+	lines := strings.Split(src, "\n")
+	start := line - ctx
+	if start < 0 {
+		start = 0
+	}
+	end := line + ctx
+	if end >= len(lines) {
+		end = len(lines) - 1
+	}
+	var b strings.Builder
+	for i := start; i <= end; i++ {
+		prefix := "    "
+		if i == line {
+			prefix = ">>> "
+		}
+		fmt.Fprintf(&b, "%d:%s%s\n", i+1, prefix, strings.TrimSpace(lines[i]))
+	}
+	return b.String()
 }

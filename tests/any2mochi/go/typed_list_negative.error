@@ -1,5 +1,2 @@
-tests/compiler/go/typed_list_negative.go.out:47: unsupported declaration
->>> 46:    
-47:>>> var xs []int = []int{(-1), 0, 1}
-48:    
-49:    func main() {
+line 1: parse error: unexpected token "expect" (expected declaration)
+  fun expect(cond: bool) {}

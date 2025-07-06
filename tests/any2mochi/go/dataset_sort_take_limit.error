@@ -1,5 +1,2 @@
-tests/compiler/go/dataset_sort_take_limit.go.out:28: unsupported declaration
->>> 27:    }
-28:>>> type pair struct {
-29:    item Product
-30:    key  any
+line 6: parse error: unexpected token "[" (expected TypeRef)
+  fun _paginate(src: []T, skip: int, take: int): []T {}
