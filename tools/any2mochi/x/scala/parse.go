@@ -19,18 +19,23 @@ var parseCmd = "scalaast"
 type Field struct {
 	Name string `json:"name"`
 	Type string `json:"type,omitempty"`
+	Line int    `json:"line,omitempty"`
 }
 
 // Variant represents a case class belonging to a sealed trait.
 type Variant struct {
 	Name   string  `json:"name"`
 	Fields []Field `json:"fields"`
+	Line   int     `json:"line,omitempty"`
 }
 
 // TypeDecl holds a trait name and its case class variants.
 type TypeDecl struct {
 	Name     string    `json:"name"`
 	Variants []Variant `json:"variants"`
+	Doc      string    `json:"doc,omitempty"`
+	Line     int       `json:"line,omitempty"`
+	End      int       `json:"end,omitempty"`
 }
 
 // Func represents a top level Scala function extracted from the AST.
@@ -44,6 +49,7 @@ type Func struct {
 	Return     string   `json:"return,omitempty"`
 	Signature  string   `json:"signature,omitempty"`
 	Body       []string `json:"body"`
+	Doc        string   `json:"doc,omitempty"`
 	Line       int      `json:"line"`
 	End        int      `json:"end"`
 }
@@ -122,7 +128,8 @@ func parseSource(src string) File {
 	for i := 0; i < len(lines); i++ {
 		line := strings.TrimSpace(lines[i])
 		if m := reTrait.FindStringSubmatch(line); m != nil {
-			file.Types = append(file.Types, TypeDecl{Name: m[1]})
+			doc := collectDoc(lines, i-1)
+			file.Types = append(file.Types, TypeDecl{Name: m[1], Doc: doc, Line: i + 1})
 			continue
 		}
 		if m := reCase.FindStringSubmatch(line); m != nil {
@@ -139,24 +146,25 @@ func parseSource(src string) File {
 					name = strings.TrimSpace(p[:idx])
 					typStr = strings.TrimSpace(p[idx+1:])
 				}
-				fields = append(fields, Field{Name: name, Type: typStr})
+				fields = append(fields, Field{Name: name, Type: typStr, Line: i + 1})
 			}
 			added := false
 			for j := range file.Types {
 				if file.Types[j].Name == typ {
-					file.Types[j].Variants = append(file.Types[j].Variants, Variant{Name: m[1], Fields: fields})
+					file.Types[j].Variants = append(file.Types[j].Variants, Variant{Name: m[1], Fields: fields, Line: i + 1})
 					added = true
 					break
 				}
 			}
 			if !added {
-				file.Types = append(file.Types, TypeDecl{Name: typ, Variants: []Variant{{Name: m[1], Fields: fields}}})
+				file.Types = append(file.Types, TypeDecl{Name: typ, Variants: []Variant{{Name: m[1], Fields: fields, Line: i + 1}}, Line: i + 1})
 			}
 			continue
 		}
 		if depth == 0 {
 			if m := reHeader.FindStringSubmatch(line); m != nil {
 				header := line
+				doc := collectDoc(lines, i-1)
 				name := m[1]
 				params := []string{}
 				types := []string{}
@@ -199,9 +207,25 @@ func parseSource(src string) File {
 						body = append(body, expr)
 					}
 				}
-				file.Funcs = append(file.Funcs, Func{Name: name, Params: params, ParamTypes: types, Return: ret, Signature: header, Body: body, Line: start, End: end})
+				file.Funcs = append(file.Funcs, Func{Name: name, Params: params, ParamTypes: types, Return: ret, Signature: header, Body: body, Doc: doc, Line: start, End: end})
 			}
 		}
 	}
 	return file
+}
+
+func collectDoc(lines []string, idx int) string {
+	var docLines []string
+	for i := idx; i >= 0; i-- {
+		l := strings.TrimSpace(lines[i])
+		if strings.HasPrefix(l, "//") {
+			docLines = append([]string{strings.TrimSpace(strings.TrimPrefix(l, "//"))}, docLines...)
+			continue
+		}
+		if l == "" {
+			continue
+		}
+		break
+	}
+	return strings.Join(docLines, "\n")
 }

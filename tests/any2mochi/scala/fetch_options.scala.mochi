@@ -4,19 +4,19 @@ print(resp)
 fun _fetch(url, opts, Any]) {
   var u = url
   if opts != null && opts.contains("query") {
-    let q = opts("query").asInstanceOf[scala.collection.Map[String, Any]]
+    let q = opts("query")
     let qs = q.map { case (k, v) =>
     URLEncoder.encode(k, "UTF-8") + " = " + URLEncoder.encode(String.valueOf(v), "UTF-8")
     let sep = if (u.contains("?")) "&" else "?"
     u = u + sep + qs
   }
-  let conn = new URL(u).openConnection().asInstanceOf[HttpURLConnection]
+  let conn = new URL(u).openConnection()
   var method = "GET"
   if opts != null && opts.contains("method") {
     method = opts("method").toString
   }
   if opts != null && opts.contains("headers") {
-    let hs = opts("headers").asInstanceOf[scala.collection.Map[String, Any]]
+    let hs = opts("headers")
     hs.foreach { case (k, v) = > conn.setRequestProperty(k, v.toString) }
   }
   if opts != null && opts.contains("timeout") {

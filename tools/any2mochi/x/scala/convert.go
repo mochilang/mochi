@@ -228,6 +228,9 @@ func convertFunc(lines []string, sym any2mochi.DocumentSymbol, root string) stri
 
 func convertExpr(expr string) string {
 	expr = strings.TrimSpace(expr)
+	if idx := strings.Index(expr, ".asInstanceOf["); idx != -1 {
+		expr = strings.TrimSpace(expr[:idx])
+	}
 	if strings.HasSuffix(expr, ".toString()") {
 		expr = "str(" + strings.TrimSuffix(expr, ".toString()") + ")"
 	}

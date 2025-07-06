@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"os/exec"
+	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -30,6 +32,48 @@ func NumberedSnippet(src string) string {
 		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
 	}
 	return strings.Join(lines, "\n")
+}
+
+// ErrorWithSnippet attaches numbered source context around the line mentioned in err, if any.
+func ErrorWithSnippet(err error, src string) error {
+	if err == nil || src == "" {
+		return err
+	}
+	line := -1
+	re := regexp.MustCompile(`(?i)line\s+(\d+)`)
+	if m := re.FindStringSubmatch(err.Error()); m != nil {
+		if n, err2 := strconv.Atoi(m[1]); err2 == nil {
+			line = n
+		}
+	}
+	var snippet string
+	if line > 0 {
+		snippet = numberedContext(src, line, 2)
+	} else {
+		snippet = NumberedSnippet(src)
+	}
+	return fmt.Errorf("%v\n\n%s", err, snippet)
+}
+
+func numberedContext(src string, line, ctx int) string {
+	lines := strings.Split(src, "\n")
+	start := line - ctx - 1
+	if start < 0 {
+		start = 0
+	}
+	end := line + ctx - 1
+	if end >= len(lines) {
+		end = len(lines) - 1
+	}
+	var out []string
+	for i := start; i <= end && i < len(lines); i++ {
+		prefix := "   "
+		if i+1 == line {
+			prefix = "-> "
+		}
+		out = append(out, fmt.Sprintf("%s%3d: %s", prefix, i+1, lines[i]))
+	}
+	return strings.Join(out, "\n")
 }
 
 // formatDiagnostics returns a human readable diagnostics string.

@@ -1,7 +1,7 @@
-let people = _load("", scala.collection.mutable.Map("format" -> "json")).map(_.asInstanceOf[Person])
+let people = _load("", scala.collection.mutable.Map("format" -> "json")).map(_
 
 fun _load(path, opts, Any]) {
-  let fmt = opts.getOrElse("format", "json").asInstanceOf[String]
+  let fmt = opts.getOrElse("format", "json")
   let src = if (path == "" || path == "-") scala.io.Source.stdin else scala.io.Source.fromFile(path)
   let data = src.mkString
   match fmt {
@@ -23,7 +23,7 @@ fun _load(path, opts, Any]) {
 }
 }
 fun _save(src, path, opts, Any]) {
-  let fmt = opts.getOrElse("format", "json").asInstanceOf[String]
+  let fmt = opts.getOrElse("format", "json")
   let out = if (path == "" || path == "-") new java.io.PrintWriter(System.out) else new java.io.PrintWriter(new java.io.File(path))
   match fmt {
     "jsonl" => 

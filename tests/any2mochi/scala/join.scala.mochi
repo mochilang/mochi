@@ -22,10 +22,10 @@ fun _query(src, joins, Any]], opts, Any]) {
   var items = src.map(v => Seq[Any](v))
   for j in joins {
     let joined = scala.collection.mutable.ArrayBuffer[Seq[Any]]()
-    let jitems = j("items").asInstanceOf[Seq[Any]]
-    let on = j.get("on").map(_.asInstanceOf[Seq[Any] => Boolean])
-    let left = j.get("left").exists(_.asInstanceOf[Boolean])
-    let right = j.get("right").exists(_.asInstanceOf[Boolean])
+    let jitems = j("items")
+    let on = j.get("on").map(_
+    let left = j.get("left").exists(_
+    let right = j.get("right").exists(_
     if left && right {
       let matched = Array.fill(jitems.length)(false)
       for leftRow in items {
@@ -71,15 +71,15 @@ fun _query(src, joins, Any]], opts, Any]) {
         }
         var it = items
         opts.get("where").foreach { f = >
-        let fn = f.asInstanceOf[Seq[Any] => Boolean]
+        let fn = f
         it = it.filter(r => fn(r))
       }
       opts.get("sortKey").foreach { f = >
-      let fn = f.asInstanceOf[Seq[Any] => Any]
+      let fn = f
       it = it.sortBy(r => fn(r))(_anyOrdering)
     }
-    opts.get("skip").foreach { n = > it = it.drop(n.asInstanceOf[Int]) }
-    opts.get("take").foreach { n = > it = it.take(n.asInstanceOf[Int]) }
-    let sel = opts("select").asInstanceOf[Seq[Any] => Any]
+    opts.get("skip").foreach { n = > it = it.drop(n
+    opts.get("take").foreach { n = > it = it.take(n
+    let sel = opts("select")
     it.map(r = > sel(r))
 }

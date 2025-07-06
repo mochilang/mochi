@@ -13,6 +13,7 @@ import (
 
 	gocode "mochi/compile/go"
 	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -77,7 +78,11 @@ func runConvertCompileGolden(t *testing.T, dir, pattern string, convert func(str
 			name = strings.TrimSuffix(filepath.Base(src), filepath.Ext(src))
 		}
 		t.Run(name, func(t *testing.T) {
+			inputData, _ := os.ReadFile(src)
 			mochiSrc, err := convert(src)
+			if err != nil {
+				err = ErrorWithSnippet(err, string(inputData))
+			}
 			root := rootDir(t)
 			outDir := filepath.Join(root, "tests/any2mochi", lang)
 			outPath := filepath.Join(outDir, name+outExt)
@@ -88,14 +93,22 @@ func runConvertCompileGolden(t *testing.T, dir, pattern string, convert func(str
 			if err == nil {
 				prog, pErr := parser.ParseString(string(mochiSrc))
 				if pErr != nil {
-					err = fmt.Errorf("parse error: %w", pErr)
+					err = ErrorWithSnippet(fmt.Errorf("parse error: %w", pErr), string(mochiSrc))
 				} else {
 					env := types.NewEnv(nil)
 					if errs := types.Check(prog, env); len(errs) > 0 {
-						err = fmt.Errorf("type error: %v", errs[0])
+						err = ErrorWithSnippet(fmt.Errorf("type error: %v", errs[0]), string(mochiSrc))
 					} else {
 						if _, cErr := gocode.New(env).Compile(prog); cErr != nil {
-							err = fmt.Errorf("compile error: %w", cErr)
+							err = ErrorWithSnippet(fmt.Errorf("compile error: %w", cErr), string(mochiSrc))
+						} else if p, vmErr := vm.Compile(prog, env); vmErr != nil {
+							err = ErrorWithSnippet(fmt.Errorf("vm compile error: %w", vmErr), string(mochiSrc))
+						} else {
+							var buf bytes.Buffer
+							m := vm.New(p, &buf)
+							if rErr := m.Run(); rErr != nil {
+								err = ErrorWithSnippet(fmt.Errorf("vm run error: %w", rErr), string(mochiSrc))
+							}
 						}
 					}
 				}
