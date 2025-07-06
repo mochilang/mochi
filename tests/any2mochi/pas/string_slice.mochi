@@ -9,5 +9,5 @@ if start_ < 0 then start_ = 0
 if end_ > n then end_ = n
 if end_ < start_ then end_ = start_
 Result = Copy(s, start_ + 1, end_ - start_)
-}
 print(_sliceString('hello', 1, 4))
+}

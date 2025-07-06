@@ -33,3 +33,4 @@ _tmp5 = people[_tmp4]
 _tmp5.status = 'adult'
 _tmp5.age = _tmp5.age + 1
 }
+people[_tmp4] = _tmp5
