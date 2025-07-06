@@ -4,8 +4,10 @@ package zigcode_test
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"testing"
 
@@ -14,14 +16,21 @@ import (
 	"mochi/compile/x/testutil"
 	zigcode "mochi/compile/x/zig"
 	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
+
+func shouldUpdate() bool {
+	f := flag.Lookup("update")
+	return f != nil && f.Value.String() == "true"
+}
 
 // TestZigCompiler_TPCDS_Golden compiles a small query that
 // groups joined rows and compares the generated Zig code with
 // the golden file.
 func TestZigCompiler_TPCDS_Golden(t *testing.T) {
-	if _, err := zigcode.EnsureZig(); err != nil {
+	zigc, err := zigcode.EnsureZig()
+	if err != nil {
 		t.Skipf("zig not installed: %v", err)
 	}
 	root := testutil.FindRepoRoot(t)
@@ -41,13 +50,50 @@ func TestZigCompiler_TPCDS_Golden(t *testing.T) {
 			if err != nil {
 				t.Skipf("compile error: %v", err)
 			}
+			code = bytes.TrimSpace(code)
 			wantPath := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "zig", q+".zig.out")
-			want, err := os.ReadFile(wantPath)
-			if err != nil {
-				t.Skipf("read golden: %v", err)
+			if shouldUpdate() {
+				os.WriteFile(wantPath, append(code, '\n'), 0644)
+			} else {
+				want, err := os.ReadFile(wantPath)
+				if err != nil {
+					t.Skipf("read golden: %v", err)
+				}
+				if !bytes.Equal(code, bytes.TrimSpace(want)) {
+					t.Errorf("generated code mismatch for %s.zig.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, code, bytes.TrimSpace(want))
+				}
 			}
-			if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(want)) {
-				t.Errorf("generated code mismatch for %s.zig.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, bytes.TrimSpace(want))
+
+			tmp := t.TempDir()
+			file := filepath.Join(tmp, "main.zig")
+			if err := os.WriteFile(file, code, 0644); err != nil {
+				t.Fatalf("write error: %v", err)
+			}
+			exe := filepath.Join(tmp, "main")
+			if out, err := exec.Command(zigc, "build-exe", file, "-O", "ReleaseSafe", "-femit-bin="+exe).CombinedOutput(); err != nil {
+				t.Fatalf("zig build error: %v\n%s", err, out)
+			}
+			out, err := exec.Command(exe).CombinedOutput()
+			if err != nil {
+				t.Fatalf("run error: %v\n%s", err, out)
+			}
+			compiled := bytes.TrimSpace(out)
+
+			p, err := vm.Compile(prog, env)
+			if err != nil {
+				t.Skipf("vm compile error: %v", err)
+			}
+			var buf bytes.Buffer
+			m := vm.New(p, &buf)
+			if err := m.Run(); err != nil {
+				if ve, ok := err.(*vm.VMError); ok {
+					t.Fatalf("vm run error:\n%s", ve.Format(p))
+				}
+				t.Fatalf("vm run error: %v", err)
+			}
+			vmOut := bytes.TrimSpace(buf.Bytes())
+			if !bytes.Equal(compiled, vmOut) {
+				t.Errorf("output mismatch for %s\n\n-- zig --\n%s\n\n-- vm --\n%s\n", q, compiled, vmOut)
 			}
 		})
 	}
