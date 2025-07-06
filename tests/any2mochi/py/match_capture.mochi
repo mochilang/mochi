@@ -1,4 +1,4 @@
-fun depth(t) {
+fun depth(t: Tree): int {
   return (
   let lambda _t0 = t: ( 0 if isinstance(_t0, Leaf) else ( (lambda l, r: ((depth(l) + depth(r)) + 1))(_t0.left, _t0.right) if isinstance(_t0, Node) else None ) )
   )()

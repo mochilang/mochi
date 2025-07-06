@@ -128,8 +128,8 @@ The Python backend supports a large subset of Mochi. Highlights include:
 - LLM helpers such as `gen_text` and `fetch`
 - Basic round–tripping of Python source back to Mochi using the built in
   `any2mochi` converter. Function bodies with assignments, `print` calls,
-  `return` statements, `break`/`continue`, `elif` clauses and multi-line
-  list assignments as well as basic `if`, `for` and `while` blocks are
+  `return` statements, `break`/`continue`, `elif` clauses, `with` blocks and
+  multi-line list assignments as well as basic `if`, `for` and `while` blocks are
   parsed when converting from Python.
 
 ## Unsupported Features
