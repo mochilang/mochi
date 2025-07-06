@@ -1,0 +1,4 @@
+line 13: unsupported syntax
+    12 | 
+->  13 | forLoop :: Int -> Int -> (Int -> Maybe a) -> Maybe a
+    14 | forLoop start end f = go start

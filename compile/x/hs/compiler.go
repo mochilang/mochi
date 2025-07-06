@@ -1327,7 +1327,7 @@ func (c *Compiler) compileStructType(st types.StructType) {
 		c.writeln(line)
 	}
 	c.indent--
-	c.writeln("} deriving (Show, Generic)")
+	c.writeln("} deriving (Eq, Show, Generic)")
 	c.writeln(fmt.Sprintf("instance Aeson.FromJSON %s", name))
 	c.writeln("")
 	for _, ft := range st.Fields {
@@ -1370,7 +1370,7 @@ func (c *Compiler) compileUnionType(ut types.UnionType) {
 		c.writeln(line)
 	}
 	c.indent--
-	c.writeln("  deriving (Show, Generic)")
+	c.writeln("  deriving (Eq, Show, Generic)")
 	c.writeln(fmt.Sprintf("instance Aeson.FromJSON %s", name))
 	c.writeln("")
 	for _, st := range ut.Variants {
