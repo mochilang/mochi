@@ -1,5 +1,7 @@
 (ns main)
 
+(declare c)
+
 (defn Circle [radius]
   {:__name "Circle" :radius radius})
 

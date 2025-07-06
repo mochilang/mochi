@@ -1,5 +1,7 @@
 (ns main)
 
+(declare people names)
+
 (defn Person [name age]
   {:__name "Person" :name name :age age})
 

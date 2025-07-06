@@ -14,6 +14,7 @@ import (
 	cljcode "mochi/compile/x/clj"
 	"mochi/golden"
 	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -66,6 +67,23 @@ func TestClojureCompiler_SubsetPrograms(t *testing.T) {
 		if errs := types.Check(prog, env); len(errs) > 0 {
 			return nil, fmt.Errorf("❌ type error: %v", errs[0])
 		}
+
+		// compute expected output using the VM
+		vmProg, err := vm.CompileWithSource(prog, env, string(mustRead(src)))
+		if err != nil {
+			return nil, fmt.Errorf("❌ vm compile error: %w", err)
+		}
+		vmIn := bytes.NewReader(mustRead(strings.TrimSuffix(src, ".mochi") + ".in"))
+		var vmOut bytes.Buffer
+		m := vm.NewWithIO(vmProg, vmIn, &vmOut)
+		if err := m.Run(); err != nil {
+			if ve, ok := err.(*vm.VMError); ok {
+				return nil, fmt.Errorf("❌ vm run error:\n%s", ve.Format(vmProg))
+			}
+			return nil, fmt.Errorf("❌ vm run error: %v", err)
+		}
+		want := bytes.TrimSpace(vmOut.Bytes())
+
 		c := cljcode.New(env)
 		code, err := c.Compile(prog)
 		if err != nil {
@@ -86,6 +104,9 @@ func TestClojureCompiler_SubsetPrograms(t *testing.T) {
 			return nil, fmt.Errorf("❌ clojure run error: %w\n%s", err, out)
 		}
 		res := bytes.TrimSpace(out)
+		if !bytes.Equal(res, want) {
+			return nil, fmt.Errorf("output mismatch\n-- clj --\n%s\n-- vm --\n%s", res, want)
+		}
 		if res == nil {
 			res = []byte{}
 		}
@@ -169,4 +190,9 @@ func TestClojureCompiler_LeetCodeExamples(t *testing.T) {
 	runLeetExample(t, 8)
 	runLeetExample(t, 9)
 	runLeetExample(t, 10)
+}
+
+func mustRead(path string) []byte {
+	data, _ := os.ReadFile(path)
+	return data
 }

@@ -6,6 +6,8 @@
       (throw (ex-info "index out of range" {}))
       (nth xs idx))))
 
+(declare people)
+
 (defn Person [name age]
   {:__name "Person" :name name :age age})
 

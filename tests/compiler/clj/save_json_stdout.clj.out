@@ -1,4 +1,6 @@
-(ns main)
+(ns main
+  (:require
+   [clojure.data.json :as json]))
 
 (defn _save [rows path opts]
   (let [fmt (get opts :format "csv")
@@ -37,6 +39,8 @@
           (spit path out)))
       :else
       nil)))
+
+(declare people)
 
 (defn -main []
   (def people [{:name "Alice" :age 30} {:name "Bob" :age 25}])

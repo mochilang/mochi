@@ -14,6 +14,7 @@
     (if (empty? lst)
       0
       (/ (reduce + lst) (double (count lst)))))
+  )
 
 (defn _sum [v]
   (let [lst (cond
@@ -21,6 +22,7 @@
               (sequential? v) v
               :else (throw (ex-info "sum() expects list or group" {})))]
     (reduce + 0 lst))
+  )
 
 (defrecord _Group [key Items])
 
@@ -113,6 +115,8 @@
           it (if (contains? opts :skip) (vec (drop (:skip opts) it)) it)
           it (if (contains? opts :take) (vec (take (:take opts) it)) it)]
       (mapv #(apply (:select opts) %) it)))
+(declare lineitem result)
+
 (defn test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus []
   (assert (= result [{:returnflag "N" :linestatus "O" :sum_qty 53 :sum_base_price 3000 :sum_disc_price (+ 950.0 1800.0) :sum_charge (+ (* 950.0 1.07) (* 1800.0 1.05)) :avg_qty 26.5 :avg_price 1500 :avg_disc 0.07500000000000001 :count_order 2}]) "expect failed")
 )
@@ -122,9 +126,9 @@
   (def result (let [_src lineitem
       _rows (_query _src [
 
-      ] { :select (fn [row] [row]) :where (fn [row] (<= (:l_shipdate row) "1998-09-02")) })
+      ] { :select (fn [row] [row]) :where (fn [row] (<= (compare (:l_shipdate row) "1998-09-02") 0)) })
       _groups (_group_by _rows (fn [row] {:returnflag (:l_returnflag row) :linestatus (:l_linestatus row)}))
-  (vec (map (fn [g] {:returnflag (:returnflag (:key g)) :linestatus (:linestatus (:key g)) :sum_qty (_sum (vec (->> (for [x g] (:l_quantity x))))) :sum_base_price (_sum (vec (->> (for [x g] (:l_extendedprice x))))) :sum_disc_price (_sum (vec (->> (for [x g] (* (:l_extendedprice x) (- 1 (:l_discount x))))))) :sum_charge (_sum (vec (->> (for [x g] (* (* (:l_extendedprice x) (- 1 (:l_discount x))) (+ 1 (:l_tax x))))))) :avg_qty (_avg (vec (->> (for [x g] (:l_quantity x))))) :avg_price (_avg (vec (->> (for [x g] (:l_extendedprice x))))) :avg_disc (_avg (vec (->> (for [x g] (:l_discount x))))) :count_order (_count g)}) _groups))))
+  (vec (map (fn [g] {:returnflag (:returnflag (:key g)) :linestatus (:linestatus (:key g)) :sum_qty (_sum (vec (->> (for [x g] (:l_quantity x))))) :sum_base_price (_sum (vec (->> (for [x g] (:l_extendedprice x))))) :sum_disc_price (_sum (vec (->> (for [x g] (* (:l_extendedprice x) (- 1 (:l_discount x))))))) :sum_charge (_sum (vec (->> (for [x g] (* (* (:l_extendedprice x) (- 1 (:l_discount x))) (+ 1 (:l_tax x))))))) :avg_qty (_avg (vec (->> (for [x g] (:l_quantity x))))) :avg_price (_avg (vec (->> (for [x g] (:l_extendedprice x))))) :avg_disc (_avg (vec (->> (for [x g] (:l_discount x))))) :count_order (count (:Items g))}) _groups))))
   (_json result)
   (test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus)
 )

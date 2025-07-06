@@ -6,6 +6,8 @@
   (vec (remove (set b) a)))
 (defn _intersect [a b]
   (vec (distinct (filter (set b) a))))
+(declare a b)
+
 (defn -main []
   (def a [1 2 3])
   (def b [3 4])

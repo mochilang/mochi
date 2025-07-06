@@ -1,4 +1,6 @@
-(ns main)
+(ns main
+  (:require
+   [clojure.data.json :as json]))
 
 (defn _parse_csv [text header delim]
   (let [lines (->> (clojure.string/split-lines text)
@@ -76,6 +78,8 @@
           (spit path out)))
       :else
       nil)))
+
+(declare people)
 
 (defn Person [name age]
   {:__name "Person" :name name :age age})

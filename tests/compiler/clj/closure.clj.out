@@ -1,5 +1,7 @@
 (ns main)
 
+(declare add10)
+
 (defn makeAdder [n]
   (try
     (throw (ex-info "return" {:value (fn [x]

@@ -1,5 +1,7 @@
 (ns main)
 
+(declare i)
+
 (defn -main []
   (def i 0)
   (loop []

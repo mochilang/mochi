@@ -6,6 +6,8 @@
       (throw (ex-info "index out of range" {}))
       (nth xs idx))))
 
+(declare xs)
+
 (defn test_values []
   (assert (= (_indexList xs 0) 1) "expect failed")
   (println "done"))
