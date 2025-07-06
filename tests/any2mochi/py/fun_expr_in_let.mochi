@@ -1,2 +1,5 @@
-let square: None
-fun main() {}
+let square = None
+fun main() {
+  let square = lambda x: (x * x)
+  print(square(6))
+}

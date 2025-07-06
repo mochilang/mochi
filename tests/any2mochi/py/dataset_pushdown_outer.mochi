@@ -1,4 +1,11 @@
-let xs: list[int]
-let ys: list[int]
-let res: None
-fun main() {}
+let xs = [1, 2, 3, 4]
+let ys = [10, 20, 30]
+let res = None
+fun main() {
+  let xs = [1, 2, 3, 4]
+  let ys = [10, 20, 30]
+  let res = [(x + y) for x in xs if (x > 2) for y in ys]
+  for v in res {
+  print(v)
+}
+}

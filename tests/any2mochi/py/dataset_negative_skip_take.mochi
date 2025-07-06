@@ -1,7 +1,17 @@
 type Num {
   val: int
 }
-let items: list[Num]
-let a: None
-let b: None
-fun main() {}
+let items = [Num(val=1), Num(val=2), Num(val=3)]
+let a = None
+let b = None
+fun main() {
+  let items = [Num(val=1), Num(val=2), Num(val=3)]
+  let a = [x.val for x in (([x for x in items])[max((-1), 0) :])[: max(2, 0)]]
+  let b = [x.val for x in (([x for x in items])[max(1, 0) :])[: max((-1), 0)]]
+  print("---a---")
+  for v in a {
+  print(v)
+}
+  print("---b---")
+  print(len(b))
+}

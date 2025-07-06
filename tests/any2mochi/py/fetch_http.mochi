@@ -1,10 +1,40 @@
-let T: type[T]
-fun _fetch(url: Unknown, opts: Unknown): Any {}
-type Todo {
-  userId
-  id
-  title
-  completed
+let T = TypeVar('T')
+fun _fetch(url, opts) {
+  import urllib.request, urllib.parse, json
+  let method = "GET"
+  let data = None
+  let headers = {}
+  let timeout = None
+  if opts {
+  let method = opts.get("method", method)
+  if "body" in opts {
+  let data = json.dumps(opts["body"]).encode()
 }
-let todo: None
-fun main() {}
+  if "headers" in opts {
+  for k, v in dict(opts["headers"]).items() {
+  let headers[k] = str(v)
+}
+}
+  if "query" in opts {
+  let q = urllib.parse.urlencode( {k: str(v) for k, v in dict(opts["query"]).items()} )
+  let sep = "&" if "?" in url else "?"
+  let url = url + sep + q
+}
+  let timeout = opts.get("timeout", None)
+}
+  let req = urllib.request.Request(url, data=data, headers=headers, method=method)
+  let with urllib.request.urlopen(req, timeout = timeout) as resp:
+  let text = resp.read()
+  return json.loads(text)
+}
+type Todo {
+  userId: int
+  id: int
+  title: string
+  completed: bool
+}
+let todo = None
+fun main() {
+  let todo = Todo(**(_fetch("https://jsonplaceholder.typicode.com/todos/1", None)))
+  print(todo.title)
+}

@@ -1,9 +1,146 @@
-let T: type[T]
-fun _load(path: Unknown, opts: Unknown ) -> (list[Unknown] | list[dict[Unknown, Unknown]] | list[Any]) {}
-fun _save(rows: Unknown, path: Unknown, opts: Unknown) {}
-type Person {
-  name
-  age
+let T = TypeVar('T')
+fun _load(path, opts) {
+  import csv, json, sys
+  let fmt = "csv"
+  let header = True
+  let delim = ","
+  if opts {
+  let fmt = opts.get("format", fmt)
+  let header = opts.get("header", header)
+  let delim = opts.get("delimiter", delim)
+  if isinstance(delim, str) and delim {
+  let delim = delim[0]
 }
-let people: None
-fun main() {}
+}
+  let f = sys.stdin if path is None else open(path, "r")
+  try:
+  if fmt == "tsv" {
+  let delim = "	"
+  let fmt = "csv"
+  if fmt == "csv" {
+  let rows = list(csv.reader(f, delimiter=delim))
+  if not rows {
+  return []
+}
+  if header {
+  let headers = rows[0]
+  let rows = rows[1:]
+} else {
+  let m = max(len(r) for r in rows)
+  let headers = [f"c{i}" for i in range(m)]
+}
+  let out = []
+  for rec in rows {
+  let row = {}
+  for i, h in enumerate(headers) {
+  let val = rec[i] if i < len(rec) else ""
+  if val.isdigit() {
+  let row[h] = int(val)
+} else {
+  try:
+  let row[h] = float(val)
+  except:
+  let row[h] = val
+}
+}
+  out.append(row)
+}
+  return out
+} else if fmt == "json" {
+  let data = json.load(f)
+  if isinstance(data, list) {
+  return [dict(d) for d in data]
+}
+  if isinstance(data, dict) {
+  return [dict(data)]
+}
+  return []
+}
+  let elif fmt = = "jsonl":
+  return [json.loads(line) for line in f if line.strip()]
+  let elif fmt = = "yaml":
+  import yaml
+  let data = yaml.safe_load(f)
+  if isinstance(data, list) {
+  return [dict(d) for d in data]
+  if isinstance(data, dict) {
+  return [dict(data)]
+}
+  return []
+} else {
+  raise Exception("unknown format: " + fmt)
+}
+}
+  finally:
+  if path is not None {
+  f.close()
+}
+}
+fun _save(rows, path, opts) {
+  import csv, json, sys, dataclasses
+  let fmt = "csv"
+  let header = False
+  let delim = ","
+  if opts {
+  let fmt = opts.get("format", fmt)
+  let header = opts.get("header", header)
+  let delim = opts.get("delimiter", delim)
+  if isinstance(delim, str) and delim {
+  let delim = delim[0]
+}
+}
+  let rows = [dataclasses.asdict(r) if dataclasses.is_dataclass(r) else r for r in rows]
+  let f = sys.stdout if path is None else open(path, "w")
+  try:
+  if fmt == "tsv" {
+  let delim = "	"
+  let fmt = "csv"
+  if fmt == "csv" {
+  let w = csv.writer(f, delimiter=delim)
+  let headers = sorted(rows[0].keys()) if rows else []
+  if header {
+  w.writerow(headers)
+}
+  for row in rows {
+  let rec = []
+  for h in headers {
+  let val = row.get(h)
+  if isinstance(val, (dict, list)) {
+  rec.append(json.dumps(val))
+} else if val is None {
+  rec.append("")
+}
+  else:
+  rec.append(str(val))
+}
+  w.writerow(rec)
+}
+  return
+} else if fmt == "json" {
+  json.dump(rows, f)
+}
+  let elif fmt = = "jsonl":
+  for row in rows {
+  f.write(json.dumps(row))
+  f.write("\n")
+}
+  let elif fmt = = "yaml":
+  import yaml
+  let yaml.safe_dump(rows[0] if len(rows) = = 1 else rows, f)
+  else:
+  raise Exception("unknown format: " + fmt)
+}
+  finally:
+  if path is not None {
+  f.close()
+}
+}
+type Person {
+  name: string
+  age: int
+}
+let people = None
+fun main() {
+  let people = [Person(**_it) for _it in _load(None, dict({"format": "json"}))]
+  _save(people, None, dict({"format": "json"}))
+}
