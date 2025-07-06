@@ -13,8 +13,35 @@ parser.setLanguage(Ocaml.ocaml);
 const tree = parser.parse(source);
 function text(node) { return source.slice(node.startIndex, node.endIndex); }
 
-const prog = { funcs: [], prints: [] };
-for (const child of tree.rootNode.namedChildren) {
+const prog = { funcs: [], prints: [], types: [] };
+for (let i = 0; i < tree.rootNode.namedChildren.length; i++) {
+  const child = tree.rootNode.namedChildren[i];
+  if (child.type === 'ERROR' && child.text.trim().startsWith('type ')) {
+    const m = /^type\s+([A-Za-z0-9_']+)\s*=\s*$/.exec(child.text.trim());
+    const next = child.nextNamedSibling;
+    if (m && next && next.type === 'expression_item') {
+      const rec = next.namedChildren.find(n => n.type === 'record_expression');
+      if (rec) {
+        const fields = [];
+        for (const fld of rec.namedChildren) {
+          if (fld.type !== 'field_expression') continue;
+          const path = fld.namedChildren.find(n => n.type === 'field_path');
+          const nameNode = path ? path.namedChildren.find(n => n.type === 'field_name') : null;
+          const name = nameNode ? text(nameNode) : '';
+          const tpath = fld.namedChildren.find(n => n.type === 'type_constructor_path');
+          let ftype = '';
+          if (tpath) {
+            const tc = tpath.namedChildren.find(n => n.type === 'type_constructor');
+            if (tc) ftype = text(tc);
+          }
+          fields.push({ name, type: ftype });
+        }
+        prog.types.push({ name: m[1], fields });
+        i++; // skip following expression_item
+        continue;
+      }
+    }
+  }
   if (child.type === 'value_definition') {
     const binding = child.namedChildren.find(c => c.type === 'let_binding');
     if (!binding) continue;
@@ -40,6 +67,28 @@ for (const child of tree.rootNode.namedChildren) {
     }
   } else if (child.type === 'expression_item') {
     prog.prints.push(text(child).trim().replace(/;$/, ''));
+  } else if (child.type === 'type_definition') {
+    for (const bind of child.namedChildren) {
+      if (bind.type !== 'type_binding') continue;
+      const nameNode = bind.namedChildren.find(c => c.type === 'type_constructor');
+      const name = nameNode ? text(nameNode) : '';
+      const rec = bind.namedChildren.find(c => c.type === 'record_declaration');
+      if (!rec) continue;
+      const fields = [];
+      for (const fld of rec.namedChildren) {
+        if (fld.type !== 'field_expression' && fld.type !== 'field_declaration') continue;
+        const fnameNode = fld.namedChildren.find(n => n.type === 'field_name');
+        const fname = fnameNode ? text(fnameNode) : '';
+        const tpath = fld.namedChildren.find(n => n.type === 'type_constructor_path');
+        let ftype = '';
+        if (tpath) {
+          const tc = tpath.namedChildren.find(n => n.type === 'type_constructor');
+          if (tc) ftype = text(tc);
+        }
+        fields.push({ name: fname, type: ftype });
+      }
+      prog.types.push({ name, fields });
+    }
   }
 }
 console.log(JSON.stringify(prog));

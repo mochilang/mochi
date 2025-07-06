@@ -38,12 +38,23 @@ func formatDiagnostics(src string, diags []Diagnostic) string {
 	var out strings.Builder
 	for _, d := range diags {
 		start := int(d.Range.Start.Line)
+		col := int(d.Range.Start.Character)
 		msg := d.Message
-		line := ""
-		if start < len(lines) {
-			line = strings.TrimSpace(lines[start])
+		from := start - 1
+		if from < 0 {
+			from = 0
 		}
-		out.WriteString(fmt.Sprintf("line %d: %s\n  %s\n", start+1, msg, line))
+		to := start + 1
+		if to >= len(lines) {
+			to = len(lines) - 1
+		}
+		out.WriteString(fmt.Sprintf("line %d:%d: %s\n", start+1, col+1, msg))
+		for i := from; i <= to; i++ {
+			out.WriteString(fmt.Sprintf("%4d| %s\n", i+1, lines[i]))
+			if i == start {
+				out.WriteString("     " + strings.Repeat(" ", col) + "^\n")
+			}
+		}
 	}
 	return strings.TrimSpace(out.String())
 }
