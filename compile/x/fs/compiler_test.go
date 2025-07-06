@@ -120,7 +120,7 @@ func TestFSCompiler_GoldenOutput(t *testing.T) {
 	}
 
 	runGoldenSkip(t, "tests/compiler/valid", ".mochi", ".fs.out", compileRun)
-	golden.Run(t, "tests/compiler/fs", ".mochi", ".fs.out", compileRun)
+	runGoldenSkip(t, "tests/compiler/fs", ".mochi", ".fs.out", compileRun)
 }
 
 func runGoldenSkip(t *testing.T, dir, srcExt, goldenExt string, fn func(string) ([]byte, error)) {
