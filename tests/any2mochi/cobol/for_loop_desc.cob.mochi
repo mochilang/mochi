@@ -1,0 +1,11 @@
+fun main() {
+  if 5 < 1 {
+    for i in range(5, 1) {
+      print(i)
+    }
+  } else {
+    for i in range(5, 1) {
+      print(i)
+    }
+  }
+}

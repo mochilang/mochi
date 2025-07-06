@@ -1,0 +1,13 @@
+fun main() {
+  if 1 < 4 {
+    for i in range(1, 4) {
+      var tmp0 = i + 1
+      print(tmp0)
+    }
+  } else {
+    for i in range(1, 4) {
+      var tmp1 = i + 1
+      print(tmp1)
+    }
+  }
+}

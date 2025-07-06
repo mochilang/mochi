@@ -1,0 +1,4 @@
+syntax error at line 20: syntax error, unexpected (, expecting TO
+  19 |     COMPUTE TMP2 = TMP0 + 1
+  20 |     MOVE "hello"(TMP2:1) TO TMP3
+  21 |     MOVE TMP3 TO TMP4

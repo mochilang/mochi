@@ -1,0 +1,4 @@
+syntax error at line 19: syntax error, unexpected (, expecting TO
+  18 |     COMPUTE TMP1 = V_START + 1
+  19 |     MOVE "hello"(TMP1:TMP0) TO TMP2
+  20 |     MOVE TMP2 TO TMP3

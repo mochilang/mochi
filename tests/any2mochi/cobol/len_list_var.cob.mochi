@@ -1,0 +1,7 @@
+fun main() {
+  nums(1) = 1
+  nums(2) = 2
+  nums(3) = 3
+  var tmp0 = 3
+  print(tmp0)
+}

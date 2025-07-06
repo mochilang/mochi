@@ -1,0 +1,4 @@
+syntax error at line 31: PERFORM statement not terminated by END-PERFORM
+  30 |             MOVE 0 TO IDX2
+  31 |             PERFORM VARYING IDX2 FROM 0 BY 1 UNTIL IDX2 >= 2
+  32 |             MOVE B(IDX2 + 1) TO Y

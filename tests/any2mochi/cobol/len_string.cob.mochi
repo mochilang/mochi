@@ -1,0 +1,4 @@
+fun main() {
+  var tmp0 = FUNCTION LENGTH("hello")
+  print(tmp0)
+}

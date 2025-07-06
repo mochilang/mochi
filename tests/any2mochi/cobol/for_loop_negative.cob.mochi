@@ -1,0 +1,11 @@
+fun main() {
+  if -2 < 2 {
+    for i in range(-2, 2) {
+      print(i)
+    }
+  } else {
+    for i in range(-2, 2) {
+      print(i)
+    }
+  }
+}

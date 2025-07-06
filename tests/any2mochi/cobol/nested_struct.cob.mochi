@@ -1,0 +1,4 @@
+fun main() {
+  var x_a_b = 3
+  print(x_a_b)
+}

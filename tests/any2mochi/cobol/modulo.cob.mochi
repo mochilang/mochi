@@ -1,0 +1,4 @@
+fun main() {
+  var tmp0 = FUNCTION MOD(7,3)
+  print(tmp0)
+}

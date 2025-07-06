@@ -24,7 +24,7 @@ func ConvertLua(src string) ([]byte, error) {
 
 	chunk, pErr := luaparse.Parse(bytes.NewReader([]byte(src)), "src.lua")
 	if pErr != nil {
-		return nil, fmt.Errorf(formatLuaParseError(pErr, src))
+		return nil, fmt.Errorf("%s", formatLuaParseError(pErr, src))
 	}
 	fnMap := map[int]*luaast.FunctionExpr{}
 	collectLuaFuncs(chunk, fnMap)

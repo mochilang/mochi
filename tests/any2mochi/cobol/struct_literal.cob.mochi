@@ -1,0 +1,5 @@
+fun main() {
+  var p_x = 1
+  var p_y = 2
+  print(p_x)
+}

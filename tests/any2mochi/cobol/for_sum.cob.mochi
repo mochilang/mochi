@@ -1,0 +1,13 @@
+fun main() {
+  var total = 0
+  if 1 < 4 {
+    for i in range(1, 4) {
+      total = total + i
+    }
+  } else {
+    for i in range(1, 4) {
+      total = total + i
+    }
+  }
+  print(total)
+}

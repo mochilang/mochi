@@ -1,0 +1,4 @@
+fun main() {
+  var tmp0 = 2 + 3
+  print(tmp0)
+}

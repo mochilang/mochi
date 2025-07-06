@@ -1,0 +1,8 @@
+fun main() {
+  var tmp0 = 1 * 0
+  print(tmp0)
+  var tmp1 = FUNCTION MIN(1,1 + 0)
+  print(tmp1)
+  var tmp2 = 1 - (0)
+  print(tmp2)
+}

@@ -1,0 +1,13 @@
+fun main() {
+  var tmp0 = (1 + 1)
+  var tmp1 = (3 + 2)
+  if tmp0 < tmp1 {
+    for i in range(tmp0, tmp1) {
+      print(i)
+    }
+  } else {
+    for i in range(tmp0, tmp1) {
+      print(i)
+    }
+  }
+}

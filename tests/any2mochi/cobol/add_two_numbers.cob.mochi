@@ -1,0 +1,37 @@
+fun main() {
+  l1(1) = 2
+  l1(2) = 4
+  l1(3) = 3
+  l2(1) = 5
+  l2(2) = 6
+  l2(3) = 4
+  var len1 = 3
+  var len2 = 3
+  var i = 0
+  var j = 0
+  var carry = 0
+  var rlen = 0
+  while !(i >= len1 AND j >= len2 AND carry = 0) {
+    var xval = 0
+    if i < len1 {
+      xval = l1(i + 1)
+      i = i + 1
+    }
+    var yval = 0
+    if j < len2 {
+      yval = l2(j + 1)
+      j = j + 1
+    }
+    var sumv = xval + yval + carry
+    carry = sumv / 10
+    var digitv = sumv - (carry * 10)
+    rlen = rlen + 1
+    res(rlen) = DiGiTV
+  }
+  var tmp0 = res(0 + 1)
+  print(tmp0)
+  var tmp1 = res(1 + 1)
+  print(tmp1)
+  var tmp2 = res(2 + 1)
+  print(tmp2)
+}
