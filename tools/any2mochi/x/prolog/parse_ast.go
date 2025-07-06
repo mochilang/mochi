@@ -24,6 +24,8 @@ type clause struct {
 	StartCol  int
 	EndLine   int
 	EndCol    int
+	Type      string
+	Arity     int
 }
 
 func parseAST(src string) (*program, error) {
@@ -59,6 +61,12 @@ func parseAST(src string) (*program, error) {
 		prog.Clauses[i].StartCol = c1
 		prog.Clauses[i].EndLine = l2
 		prog.Clauses[i].EndCol = c2
+		prog.Clauses[i].Arity = len(c.Params)
+		if strings.TrimSpace(c.Body) == "true" {
+			prog.Clauses[i].Type = "fact"
+		} else {
+			prog.Clauses[i].Type = "rule"
+		}
 	}
 	return &prog, nil
 }
