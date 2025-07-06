@@ -11,6 +11,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"unicode"
 )
 
 // Convert converts Kotlin source code to Mochi. It first tries to parse the
@@ -758,13 +759,42 @@ func writeBodyLine(out *strings.Builder, line string, indent *int) {
 // literals to aid round-trip conversion.
 func convertListOf(line string) string {
 	for {
-		idx := strings.Index(line, "listOf(")
+		idx := strings.Index(line, "listOf")
 		if idx == -1 {
 			break
 		}
-		start := idx + len("listOf(")
+		// locate opening parenthesis after optional generics
+		start := idx + len("listOf")
+		for start < len(line) && unicode.IsSpace(rune(line[start])) {
+			start++
+		}
+		if start < len(line) && line[start] == '<' {
+			depth := 1
+			start++
+			for ; start < len(line) && depth > 0; start++ {
+				switch line[start] {
+				case '<':
+					depth++
+				case '>':
+					depth--
+				}
+			}
+		}
+		for start < len(line) && unicode.IsSpace(rune(line[start])) {
+			start++
+		}
+		if start >= len(line) || line[start] != '(' {
+			// not a call expression
+			idx = strings.Index(line[idx+len("listOf"):], "listOf")
+			if idx == -1 {
+				break
+			}
+			idx += idx + len("listOf")
+			continue
+		}
+		open := start
 		depth := 1
-		i := start
+		i := open + 1
 		for ; i < len(line); i++ {
 			switch line[i] {
 			case '(':
@@ -772,7 +802,7 @@ func convertListOf(line string) string {
 			case ')':
 				depth--
 				if depth == 0 {
-					inner := line[start:i]
+					inner := line[open+1 : i]
 					line = line[:idx] + "[" + inner + "]" + line[i+1:]
 					i = idx + len("[") + len(inner) + 1
 					break
