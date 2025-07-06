@@ -600,7 +600,7 @@ func convertFallback(src string) ([]byte, error) {
 			}
 			continue
 		}
-		if lower == "end." || (lower == "end;" && loopDepth == 0 && !inFunc) {
+		if lower == "end." || (lower == "end;" && loopDepth == 0) {
 			if inFunc {
 				out = append(out, "}")
 				inFunc = false
