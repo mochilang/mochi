@@ -13,12 +13,15 @@ import (
 func main() {
 	repo := findRepoRoot()
 	testDir := filepath.Join(repo, "tests", "compiler", "py")
+	outDir := filepath.Join(repo, "tests", "any2mochi", "py")
+	os.MkdirAll(outDir, 0755)
 	files, _ := filepath.Glob(filepath.Join(testDir, "*.py.out"))
 	for _, pf := range files {
 		base := strings.TrimSuffix(pf, ".py.out")
 		mochiExp := base + ".mochi"
-		outFile := base + ".mochi.out"
-		errFile := base + ".error"
+		name := filepath.Base(base)
+		outFile := filepath.Join(outDir, name+".mochi")
+		errFile := filepath.Join(outDir, name+".error")
 
 		code, err := py.ConvertFile(pf)
 		if err != nil {
