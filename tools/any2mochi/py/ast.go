@@ -28,6 +28,14 @@ type ASTNode struct {
 	Op          *ASTNode        `json:"op,omitempty"`
 	Left        *ASTNode        `json:"left,omitempty"`
 	Right       *ASTNode        `json:"right,omitempty"`
+	Attr        string          `json:"attr,omitempty"`
+	Elts        []*ASTNode      `json:"elts,omitempty"`
+	Keys        []*ASTNode      `json:"keys,omitempty"`
+	Values      []*ASTNode      `json:"values,omitempty"`
+	Slice       *ASTNode        `json:"slice,omitempty"`
+	Lower       *ASTNode        `json:"lower,omitempty"`
+	Upper       *ASTNode        `json:"upper,omitempty"`
+	Step        *ASTNode        `json:"step,omitempty"`
 	Ops         []*ASTNode      `json:"ops,omitempty"`
 	Comparators []*ASTNode      `json:"comparators,omitempty"`
 	Line        int             `json:"lineno,omitempty"`
@@ -98,8 +106,17 @@ func parseAST(src string) (*ASTNode, error) {
 	cmd := exec.CommandContext(ctx, pythonCmd, "-c", astScript)
 	cmd.Stdin = strings.NewReader(src)
 	var out bytes.Buffer
+	var errBuf bytes.Buffer
 	cmd.Stdout = &out
+	cmd.Stderr = &errBuf
 	if err := cmd.Run(); err != nil {
+		msg := strings.TrimSpace(errBuf.String())
+		if msg != "" {
+			if line := parseErrorLine(msg); line > 0 {
+				msg += "\n" + snippetAround(src, line)
+			}
+			return nil, fmt.Errorf("%v: %s", err, msg)
+		}
 		return nil, err
 	}
 	var root ASTNode
@@ -397,6 +414,77 @@ func emitExpr(b *strings.Builder, n *ASTNode, lines []string) error {
 		if err := emitExpr(b, n.Comparators[0], lines); err != nil {
 			return err
 		}
+	case "Attribute":
+		if err := emitExpr(b, n.valueNode(), lines); err != nil {
+			return err
+		}
+		b.WriteByte('.')
+		if n.Attr != "" {
+			b.WriteString(n.Attr)
+		} else {
+			b.WriteString(n.Name)
+		}
+	case "List", "Tuple":
+		open, close := '[', ']'
+		if n.Type == "Tuple" {
+			open, close = '(', ')'
+		}
+		b.WriteByte(byte(open))
+		for i, e := range n.Elts {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			if err := emitExpr(b, e, lines); err != nil {
+				return err
+			}
+		}
+		b.WriteByte(byte(close))
+	case "Dict":
+		b.WriteByte('{')
+		for i := range n.Keys {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			if err := emitExpr(b, n.Keys[i], lines); err != nil {
+				return err
+			}
+			b.WriteString(": ")
+			if err := emitExpr(b, n.Values[i], lines); err != nil {
+				return err
+			}
+		}
+		b.WriteByte('}')
+	case "Subscript":
+		if err := emitExpr(b, n.valueNode(), lines); err != nil {
+			return err
+		}
+		b.WriteByte('[')
+		if n.Slice != nil {
+			if n.Slice.Type == "Slice" {
+				if n.Slice.Lower != nil {
+					if err := emitExpr(b, n.Slice.Lower, lines); err != nil {
+						return err
+					}
+				}
+				b.WriteByte(':')
+				if n.Slice.Upper != nil {
+					if err := emitExpr(b, n.Slice.Upper, lines); err != nil {
+						return err
+					}
+				}
+				if n.Slice.Step != nil {
+					b.WriteByte(':')
+					if err := emitExpr(b, n.Slice.Step, lines); err != nil {
+						return err
+					}
+				}
+			} else {
+				if err := emitExpr(b, n.Slice, lines); err != nil {
+					return err
+				}
+			}
+		}
+		b.WriteByte(']')
 	default:
 		return newConvertError(n.Line, lines, "unhandled expression")
 	}
