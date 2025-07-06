@@ -186,21 +186,45 @@ func TestPHPCompiler_GoldenOutput(t *testing.T) {
 		if err := os.WriteFile(file, code, 0644); err != nil {
 			return nil, fmt.Errorf("write error: %w", err)
 		}
-		cmd := exec.Command("php", file)
+
+		var inData []byte
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
-			cmd.Stdin = bytes.NewReader(data)
+			inData = data
+		}
+
+		cmd := exec.Command("php", file)
+		if inData != nil {
+			cmd.Stdin = bytes.NewReader(inData)
 		}
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			return nil, fmt.Errorf("❌ php run error: %w\n%s", err, out)
 		}
+		phpOut := bytes.TrimSpace(out)
+
+		p, err := vm.Compile(prog, env)
+		if err != nil {
+			return nil, fmt.Errorf("vm compile error: %w", err)
+		}
+		var vmBuf bytes.Buffer
+		m := vm.NewWithIO(p, bytes.NewReader(inData), &vmBuf)
+		if err := m.Run(); err != nil {
+			if ve, ok := err.(*vm.VMError); ok {
+				return nil, fmt.Errorf("vm run error:\n%s", ve.Format(p))
+			}
+			return nil, fmt.Errorf("vm run error: %v", err)
+		}
+		vmOut := bytes.TrimSpace(vmBuf.Bytes())
+
+		if !bytes.Equal(phpOut, vmOut) {
+			return nil, fmt.Errorf("vm mismatch\n\n--- PHP ---\n%s\n\n--- VM ---\n%s\n", phpOut, vmOut)
+		}
 
 		outPath := strings.TrimSuffix(src, ".mochi") + ".out"
 		if want, err := os.ReadFile(outPath); err == nil {
-			got := bytes.TrimSpace(out)
 			root := repoRoot()
-			if !bytes.Equal(normalizeOutput(root, got), normalizeOutput(root, bytes.TrimSpace(want))) {
-				return nil, fmt.Errorf("runtime output mismatch\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", got, want)
+			if !bytes.Equal(normalizeOutput(root, phpOut), normalizeOutput(root, bytes.TrimSpace(want))) {
+				return nil, fmt.Errorf("runtime output mismatch\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", phpOut, want)
 			}
 		}
 

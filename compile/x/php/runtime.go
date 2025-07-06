@@ -125,7 +125,8 @@ const helperSaveJSON = "function _save_json($rows, $path) {\n" +
 const helperPrint = "function _print(...$args) {\n" +
 	"    $parts = [];\n" +
 	"    foreach ($args as $a) {\n" +
-	"        if (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }\n" +
+	"        if (is_null($a)) { $parts[] = '<nil>'; }\n" +
+	"        elseif (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }\n" +
 	"    }\n" +
 	"    echo implode(' ', $parts), PHP_EOL;\n" +
 	"}\n"
