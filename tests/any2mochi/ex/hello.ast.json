@@ -1,0 +1,11 @@
+{
+  "funcs": [
+    {
+      "name": "main",
+      "params": null,
+      "body": [
+        "IO.puts(1 + 2)"
+      ]
+    }
+  ]
+}
