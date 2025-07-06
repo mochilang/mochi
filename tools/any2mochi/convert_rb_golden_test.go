@@ -5,14 +5,16 @@ package any2mochi
 import (
 	"path/filepath"
 	"testing"
+
+	ruby "mochi/tools/any2mochi/x/ruby"
 )
 
-func TestConvertRb_Golden(t *testing.T) {
+func TestConvertRuby_Golden(t *testing.T) {
 	root := findRepoRoot(t)
-	runConvertGolden(t, filepath.Join(root, "tests/compiler/rb"), "*.rb.out", ConvertRbFile, "rb", ".mochi", ".error")
+	runConvertGolden(t, filepath.Join(root, "tests/compiler/rb"), "*.rb.out", ruby.ConvertFile, "rb", ".mochi", ".error")
 }
 
-func TestConvertRbCompile_Golden(t *testing.T) {
+func TestConvertRubyCompile_Golden(t *testing.T) {
 	root := findRepoRoot(t)
-	runConvertCompileGolden(t, filepath.Join(root, "tests/compiler/rb"), "*.rb.out", ConvertRbFile, "rb", ".mochi", ".error")
+	runConvertCompileGolden(t, filepath.Join(root, "tests/compiler/rb"), "*.rb.out", ruby.ConvertFile, "rb", ".mochi", ".error")
 }
