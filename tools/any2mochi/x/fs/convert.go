@@ -202,8 +202,14 @@ func mapType(t string) string {
 
 var indexRe = regexp.MustCompile(`(\w+)\.\[(.+)\]`)
 
+// fixIndex normalizes F# specific syntax like array indexing and array literals
+// to Mochi equivalents.
 func fixIndex(expr string) string {
-	return indexRe.ReplaceAllString(expr, `$1[$2]`)
+	expr = indexRe.ReplaceAllString(expr, `$1[$2]`)
+	expr = strings.ReplaceAll(expr, "[|", "[")
+	expr = strings.ReplaceAll(expr, "|]", "]")
+	expr = strings.ReplaceAll(expr, ";", ",")
+	return expr
 }
 
 func functionBody(src string, sym parent.DocumentSymbol) []string {
