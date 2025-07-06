@@ -354,6 +354,77 @@ func runConvertRunStatus(t *testing.T, dir, pattern string, convert func(string)
 	return status
 }
 
+func runCompileConvertRunStatus(t *testing.T, dir, pattern string,
+	compileFn func(*parser.Program, *types.Env) ([]byte, error),
+	convertFn func(string) ([]byte, error), ext string) map[string]string {
+	files, err := filepath.Glob(filepath.Join(dir, pattern))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(files) == 0 {
+		t.Fatalf("no files: %s", filepath.Join(dir, pattern))
+	}
+	status := make(map[string]string)
+	for _, src := range files {
+		name := strings.TrimSuffix(filepath.Base(src), filepath.Ext(src))
+		var errMsg string
+		t.Run(name, func(t *testing.T) {
+			prog, err := parser.Parse(src)
+			if err != nil {
+				errMsg = fmt.Sprintf("parse error: %v", err)
+				return
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				errMsg = fmt.Sprintf("type error: %v", errs[0])
+				return
+			}
+			code, err := compileFn(prog, env)
+			if err != nil {
+				errMsg = fmt.Sprintf("compile error: %v", err)
+				return
+			}
+			tmp := filepath.Join(t.TempDir(), name+"."+ext)
+			if wErr := os.WriteFile(tmp, code, 0644); wErr != nil {
+				errMsg = fmt.Sprintf("write error: %v", wErr)
+				return
+			}
+			out, err := convertFn(tmp)
+			if err != nil {
+				errMsg = fmt.Sprintf("convert error: %v", err)
+				return
+			}
+			prog2, err := parser.ParseString(string(out))
+			if err != nil {
+				errMsg = fmt.Sprintf("parse error: %v", err)
+				return
+			}
+			env2 := types.NewEnv(nil)
+			if errs := types.Check(prog2, env2); len(errs) > 0 {
+				errMsg = fmt.Sprintf("type error: %v", errs[0])
+				return
+			}
+			p2, err := vm.CompileWithSource(prog2, env2, string(out))
+			if err != nil {
+				errMsg = fmt.Sprintf("vm compile error: %v", err)
+				return
+			}
+			var buf bytes.Buffer
+			m := vm.New(p2, &buf)
+			if err := m.Run(); err != nil {
+				if ve, ok := err.(*vm.VMError); ok {
+					errMsg = fmt.Sprintf("vm run error:\n%s", ve.Format(p2))
+				} else {
+					errMsg = fmt.Sprintf("vm run error: %v", err)
+				}
+				return
+			}
+		})
+		status[name] = errMsg
+	}
+	return status
+}
+
 func rootDir(t *testing.T) string { return findRepoRoot(t) }
 
 func findRepoRoot(t *testing.T) string {
@@ -404,6 +475,15 @@ func RunConvertRunGolden(t *testing.T, dir, pattern string, convert func(string)
 // file names to error messages. A blank error indicates success.
 func RunConvertRunStatus(t *testing.T, dir, pattern string, convert func(string) ([]byte, error), lang, outExt, errExt string) map[string]string {
 	return runConvertRunStatus(t, dir, pattern, convert, lang, outExt, errExt)
+}
+
+// RunCompileConvertRunStatus compiles Mochi programs to another language,
+// converts the result back to Mochi and executes it with the VM. The returned
+// map contains an optional error message for each file, keyed by base filename.
+func RunCompileConvertRunStatus(t *testing.T, dir, pattern string,
+	compileFn func(*parser.Program, *types.Env) ([]byte, error),
+	convertFn func(string) ([]byte, error), ext string) map[string]string {
+	return runCompileConvertRunStatus(t, dir, pattern, compileFn, convertFn, ext)
 }
 
 // WriteErrorsMarkdown writes all error messages to ERRORS.md in the provided
