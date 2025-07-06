@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -21,7 +22,7 @@ func Convert(src string) ([]byte, error) {
 		ast, err = parseCLI(src)
 	}
 	if err != nil {
-		return nil, fmt.Errorf("parse error: %w\n\n%s", err, snippet(src))
+		return nil, fmt.Errorf("%s", formatParseError(err, src))
 	}
 	out, err := convertAST(ast)
 	if err != nil {
@@ -47,6 +48,37 @@ func snippet(src string) string {
 		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
 	}
 	return strings.Join(lines, "\n")
+}
+
+func formatParseError(err error, src string) string {
+	msg := err.Error()
+	ln := -1
+	if m := regexp.MustCompile(`(?i)line\s+(\d+)`).FindStringSubmatch(msg); m != nil {
+		if n, e := strconv.Atoi(m[1]); e == nil {
+			ln = n
+		}
+	}
+	if ln <= 0 {
+		return fmt.Sprintf("parse error: %s\n\n%s", msg, snippet(src))
+	}
+	lines := strings.Split(src, "\n")
+	start := ln - 2
+	if start < 0 {
+		start = 0
+	}
+	end := ln
+	if end >= len(lines) {
+		end = len(lines) - 1
+	}
+	var out strings.Builder
+	out.WriteString(fmt.Sprintf("parse error: %s\n", msg))
+	for i := start; i <= end; i++ {
+		out.WriteString(fmt.Sprintf("%3d | %s\n", i+1, lines[i]))
+		if i+1 == ln {
+			out.WriteString("    | " + strings.Repeat(" ", len(lines[i])) + "^\n")
+		}
+	}
+	return strings.TrimSpace(out.String())
 }
 
 func writeSymbols(out *strings.Builder, prefix []string, syms []any2mochi.DocumentSymbol, src string, ls any2mochi.LanguageServer) {
