@@ -130,7 +130,7 @@ func writeLuaFunc(out *strings.Builder, name string, sym DocumentSymbol, src str
 	out.WriteString(" {")
 	if fnInfo != nil && fnInfo.fn != nil {
 		out.WriteByte('\n')
-		for _, line := range convertLuaStmts(fnInfo.fn.Stmts, 1) {
+		for _, line := range convertLuaStmts(fnInfo.fn.Stmts, 1, map[string]bool{}) {
 			out.WriteString(line)
 			out.WriteByte('\n')
 		}
@@ -361,7 +361,10 @@ func collectLuaFuncs(stmts []luaast.Stmt, m map[int]*luaFuncInfo) {
 	}
 }
 
-func convertLuaStmts(stmts []luaast.Stmt, indent int) []string {
+func convertLuaStmts(stmts []luaast.Stmt, indent int, vars map[string]bool) []string {
+	if vars == nil {
+		vars = make(map[string]bool)
+	}
 	ind := strings.Repeat("  ", indent)
 	var out []string
 	for _, st := range stmts {
@@ -371,8 +374,9 @@ func convertLuaStmts(stmts []luaast.Stmt, indent int) []string {
 				if i < len(s.Exprs) {
 					if fn, ok := s.Exprs[i].(*luaast.FunctionExpr); ok {
 						out = append(out, ind+"fun "+n+luaFuncSignature(fn)+" {")
-						out = append(out, convertLuaStmts(fn.Stmts, indent+1)...)
+						out = append(out, convertLuaStmts(fn.Stmts, indent+1, map[string]bool{})...)
 						out = append(out, ind+"}")
+						vars[n] = true
 						continue
 					}
 				}
@@ -381,6 +385,7 @@ func convertLuaStmts(stmts []luaast.Stmt, indent int) []string {
 					val = luaExprString(s.Exprs[i])
 				}
 				out = append(out, ind+"let "+n+" = "+val)
+				vars[n] = true
 			}
 		case *luaast.AssignStmt:
 			for i, lh := range s.Lhs {
@@ -389,7 +394,14 @@ func convertLuaStmts(stmts []luaast.Stmt, indent int) []string {
 				if i < len(s.Rhs) {
 					val = luaExprString(s.Rhs[i])
 				}
-				out = append(out, ind+name+" = "+val)
+				if vars[name] {
+					out = append(out, ind+name+" = "+val)
+				} else if strings.ContainsAny(name, "[].") {
+					out = append(out, ind+name+" = "+val)
+				} else {
+					out = append(out, ind+"let "+name+" = "+val)
+					vars[name] = true
+				}
 			}
 		case *luaast.ReturnStmt:
 			if len(s.Exprs) == 0 {
@@ -409,16 +421,16 @@ func convertLuaStmts(stmts []luaast.Stmt, indent int) []string {
 			out = append(out, ind+"break")
 		case *luaast.DoBlockStmt:
 			out = append(out, ind+"do {")
-			out = append(out, convertLuaStmts(s.Stmts, indent+1)...)
+			out = append(out, convertLuaStmts(s.Stmts, indent+1, map[string]bool{})...)
 			out = append(out, ind+"}")
 		case *luaast.WhileStmt:
 			cond := luaExprString(s.Condition)
 			out = append(out, ind+"while "+cond+" {")
-			out = append(out, convertLuaStmts(s.Stmts, indent+1)...)
+			out = append(out, convertLuaStmts(s.Stmts, indent+1, map[string]bool{})...)
 			out = append(out, ind+"}")
 		case *luaast.RepeatStmt:
 			out = append(out, ind+"do {")
-			out = append(out, convertLuaStmts(s.Stmts, indent+1)...)
+			out = append(out, convertLuaStmts(s.Stmts, indent+1, map[string]bool{})...)
 			cond := luaExprString(s.Condition)
 			out = append(out, ind+"} while !("+cond+")")
 		case *luaast.IfStmt:
@@ -431,7 +443,7 @@ func convertLuaStmts(stmts []luaast.Stmt, indent int) []string {
 			init := luaExprString(s.Init)
 			limit := luaExprString(s.Limit)
 			out = append(out, ind+fmt.Sprintf("for %s = %s; %s <= %s; %s += %s {", s.Name, init, s.Name, limit, s.Name, step))
-			out = append(out, convertLuaStmts(s.Stmts, indent+1)...)
+			out = append(out, convertLuaStmts(s.Stmts, indent+1, map[string]bool{})...)
 			out = append(out, ind+"}")
 		case *luaast.GenericForStmt:
 			iter := ""
@@ -439,7 +451,7 @@ func convertLuaStmts(stmts []luaast.Stmt, indent int) []string {
 				iter = luaExprString(s.Exprs[0])
 			}
 			out = append(out, ind+"for "+strings.Join(s.Names, ", ")+" in "+iter+" {")
-			out = append(out, convertLuaStmts(s.Stmts, indent+1)...)
+			out = append(out, convertLuaStmts(s.Stmts, indent+1, map[string]bool{})...)
 			out = append(out, ind+"}")
 		case *luaast.FuncDefStmt:
 			origName := ""
@@ -455,7 +467,7 @@ func convertLuaStmts(stmts []luaast.Stmt, indent int) []string {
 				continue
 			}
 			out = append(out, ind+"fun "+name+luaFuncSignature(s.Func)+" {")
-			out = append(out, convertLuaStmts(s.Func.Stmts, indent+1)...)
+			out = append(out, convertLuaStmts(s.Func.Stmts, indent+1, map[string]bool{})...)
 			out = append(out, ind+"}")
 		}
 	}
@@ -465,20 +477,20 @@ func convertLuaStmts(stmts []luaast.Stmt, indent int) []string {
 func writeLuaIfStmt(out *[]string, s *luaast.IfStmt, indent int) {
 	ind := strings.Repeat("  ", indent)
 	*out = append(*out, ind+"if "+luaExprString(s.Condition)+" {")
-	*out = append(*out, convertLuaStmts(s.Then, indent+1)...)
+	*out = append(*out, convertLuaStmts(s.Then, indent+1, map[string]bool{})...)
 	cur := s
 	for {
 		if len(cur.Else) == 1 {
 			if next, ok := cur.Else[0].(*luaast.IfStmt); ok {
 				*out = append(*out, ind+"} else if "+luaExprString(next.Condition)+" {")
-				*out = append(*out, convertLuaStmts(next.Then, indent+1)...)
+				*out = append(*out, convertLuaStmts(next.Then, indent+1, map[string]bool{})...)
 				cur = next
 				continue
 			}
 		}
 		if len(cur.Else) > 0 {
 			*out = append(*out, ind+"} else {")
-			*out = append(*out, convertLuaStmts(cur.Else, indent+1)...)
+			*out = append(*out, convertLuaStmts(cur.Else, indent+1, map[string]bool{})...)
 			*out = append(*out, ind+"}")
 		} else {
 			*out = append(*out, ind+"}")
@@ -597,7 +609,7 @@ func luaExprString(e luaast.Expr) string {
 		b.WriteString("fun")
 		b.WriteString(luaFuncSignature(v))
 		b.WriteString(" {")
-		for _, line := range convertLuaStmts(v.Stmts, 1) {
+		for _, line := range convertLuaStmts(v.Stmts, 1, map[string]bool{}) {
 			b.WriteByte('\n')
 			b.WriteString("  ")
 			b.WriteString(line)
@@ -709,7 +721,7 @@ func preprocessLuaSource(src string) string {
 // It is a best-effort fallback when no language server information is
 // available.
 func writeLuaChunk(out *strings.Builder, chunk []luaast.Stmt) {
-	for _, line := range convertLuaStmts(chunk, 0) {
+	for _, line := range convertLuaStmts(chunk, 0, map[string]bool{}) {
 		if strings.HasPrefix(line, "fun __") {
 			continue
 		}
