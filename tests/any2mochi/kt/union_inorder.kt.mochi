@@ -1,9 +1,6 @@
-type Leaf {}
-type Node {
-  left: Tree
-  value: int
-  right: Tree
-}
+type Tree =
+  Leaf
+  | Node(left: Tree, value: int, right: Tree)
 fun inorder(t: Tree): list<int> {
   return run {
   let _t = t

@@ -18,6 +18,10 @@ type Program struct {
 
 type Class struct {
 	Name      string     `json:"name"`
+	Kind      string     `json:"kind,omitempty"`
+	Data      bool       `json:"data,omitempty"`
+	Sealed    bool       `json:"sealed,omitempty"`
+	Extends   string     `json:"extends,omitempty"`
 	Fields    []Field    `json:"fields"`
 	Methods   []Function `json:"methods,omitempty"`
 	StartLine int        `json:"start,omitempty"`
@@ -93,7 +97,7 @@ func main() {
 func parse(src string) Program {
 	sc := bufio.NewScanner(strings.NewReader(src))
 	funRE := regexp.MustCompile(`^fun\s+([A-Za-z0-9_]+)\s*\(([^)]*)\)(?:\s*:\s*([^\s{]+))?`)
-	classRE := regexp.MustCompile(`^(?:data\s+)?class\s+([A-Za-z0-9_]+)\s*(\(([^)]*)\))?`)
+	classRE := regexp.MustCompile(`^(?:(sealed)\s+)?(?:(data)\s+)?(class|interface)\s+([A-Za-z0-9_]+)(?:\s*\(([^)]*)\))?(?:\s*:\s*([^\s{]+))?`)
 	varRE := regexp.MustCompile(`^(val|var)\s+([A-Za-z0-9_]+)(?:\s*:\s*([^=]+))?\s*=\s*(.+)`)
 
 	var prog Program
@@ -159,7 +163,17 @@ func parse(src string) Program {
 			}
 			if classRE.MatchString(line) {
 				m := classRE.FindStringSubmatch(line)
-				cls := Class{Name: m[1], Fields: parseFields(m[3]), StartLine: lineNum, StartCol: startCol, Snippet: orig}
+				cls := Class{
+					Name:      m[4],
+					Kind:      m[3],
+					Data:      m[2] != "",
+					Sealed:    m[1] != "",
+					Extends:   strings.TrimSpace(m[6]),
+					Fields:    parseFields(m[5]),
+					StartLine: lineNum,
+					StartCol:  startCol,
+					Snippet:   orig,
+				}
 				prog.Classes = append(prog.Classes, cls)
 				classDepth = strings.Count(line, "{") - strings.Count(line, "}")
 				if classDepth > 0 {

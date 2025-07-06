@@ -359,6 +359,10 @@ type ast struct {
 
 type cls struct {
 	Name      string  `json:"name"`
+	Kind      string  `json:"kind,omitempty"`
+	Data      bool    `json:"data,omitempty"`
+	Sealed    bool    `json:"sealed,omitempty"`
+	Extends   string  `json:"extends,omitempty"`
 	Fields    []field `json:"fields"`
 	Methods   []fn    `json:"methods"`
 	StartLine int     `json:"start,omitempty"`
@@ -506,8 +510,52 @@ func convertAST(ast *ast) ([]byte, error) {
 	indent := 0
 	ind := func() string { return strings.Repeat("  ", indent) }
 	hasMain := false
+	skip := map[string]bool{}
 
 	for _, c := range ast.Classes {
+		if skip[c.Name] {
+			continue
+		}
+		if c.Sealed && c.Kind == "interface" {
+			var members []cls
+			for _, sub := range ast.Classes {
+				if sub.Extends == c.Name {
+					members = append(members, sub)
+					skip[sub.Name] = true
+				}
+			}
+			if len(members) > 0 {
+				out.WriteString(ind())
+				out.WriteString("type ")
+				out.WriteString(c.Name)
+				out.WriteString(" =\n")
+				indent++
+				for i, m := range members {
+					out.WriteString(ind())
+					if i > 0 {
+						out.WriteString("| ")
+					}
+					out.WriteString(m.Name)
+					if len(m.Fields) > 0 {
+						out.WriteByte('(')
+						for j, f := range m.Fields {
+							if j > 0 {
+								out.WriteString(", ")
+							}
+							out.WriteString(f.Name)
+							if f.Type != "" {
+								out.WriteString(": ")
+								out.WriteString(mapType(f.Type))
+							}
+						}
+						out.WriteByte(')')
+					}
+					out.WriteByte('\n')
+				}
+				indent--
+				continue
+			}
+		}
 		out.WriteString(ind())
 		out.WriteString("type ")
 		out.WriteString(c.Name)
