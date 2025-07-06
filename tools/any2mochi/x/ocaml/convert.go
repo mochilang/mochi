@@ -438,6 +438,12 @@ func cleanExpr(expr string, reNth *regexp.Regexp) string {
 	expr = strings.ReplaceAll(expr, "string_of_bool", "")
 	expr = strings.ReplaceAll(expr, "List.length", "len")
 	expr = reNth.ReplaceAllString(expr, "$1[$2]")
+	// Dereference operators in the generated OCaml code correspond to plain
+	// variable reads in Mochi. Drop the leading '!' so that expressions like
+	// `!x` become just `x` and `!(xs)` turns into `(xs)`.
+	expr = strings.ReplaceAll(expr, "!(", "(")
+	reDeref := regexp.MustCompile(`!([a-zA-Z_][a-zA-Z0-9_]*)`)
+	expr = reDeref.ReplaceAllString(expr, "$1")
 	expr = strings.ReplaceAll(expr, "not ", "!")
 	expr = strings.ReplaceAll(expr, "^", "+")
 	return strings.TrimSpace(expr)
