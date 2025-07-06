@@ -116,6 +116,17 @@ func TestFSCompiler_GoldenOutput(t *testing.T) {
 			return nil, fmt.Errorf("runtime mismatch\n\n--- F# ---\n%s\n\n--- VM ---\n%s\n", outFS, outVM)
 		}
 
+		// Check against .out golden file if present
+		outPath := strings.TrimSuffix(src, ".mochi") + ".out"
+		if want, err := os.ReadFile(outPath); err == nil {
+			root := findRepoRoot(t)
+			got := normalizeOutput(root, outFS)
+			want = bytes.TrimSpace(want)
+			if !bytes.Equal(got, normalizeOutput(root, want)) {
+				return nil, fmt.Errorf("runtime output mismatch\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", outFS, want)
+			}
+		}
+
 		return bytes.TrimSpace(code), nil
 	}
 
