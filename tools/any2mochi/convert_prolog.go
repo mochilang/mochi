@@ -15,6 +15,9 @@ func ConvertProlog(src string) ([]byte, error) {
 
 func convertProlog(src, root string) ([]byte, error) {
 	ls := Servers["prolog"]
+	if ls.Command == "" {
+		return convertPrologFallback(src)
+	}
 	syms, diags, err := EnsureAndParseWithRoot(ls.Command, ls.Args, ls.LangID, src, root)
 	if err != nil {
 		// fallback to regex based parsing if the language server is missing
@@ -164,6 +167,33 @@ func parsePrologBodyFromRange(src string, rng Range) []string {
 // convertPrologFallback attempts a best effort conversion using regular
 // expressions when no language server is available.
 func convertPrologFallback(src string) ([]byte, error) {
+	if prog, err := parsePrologAST(src); err == nil {
+		var out strings.Builder
+		for _, c := range prog.Clauses {
+			if c.Name != "main" {
+				continue
+			}
+			out.WriteString("fun ")
+			out.WriteString(c.Name)
+			out.WriteByte('(')
+			for i, p := range c.Params {
+				if i > 0 {
+					out.WriteString(", ")
+				}
+				out.WriteString(p)
+			}
+			out.WriteString(") {\n")
+			for _, line := range parsePrologBody(c.Body) {
+				out.WriteString(line)
+				out.WriteByte('\n')
+			}
+			out.WriteString("}\n")
+		}
+		if out.Len() > 0 {
+			return []byte(out.String()), nil
+		}
+	}
+
 	funcs := parsePrologFuncs(src)
 	if len(funcs) == 0 {
 		if strings.Contains(src, "main :-") || strings.Contains(src, "main:-") {
