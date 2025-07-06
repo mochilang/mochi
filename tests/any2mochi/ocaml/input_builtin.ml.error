@@ -1,4 +1,4 @@
-parse error: parse error: 5:40: lexer: invalid input text "; input1; \",\"; i..."
+parse error: parse error: 5:22: unexpected token " " (expected ")")
 
   1| let _input () = read_line ();;
   2| 

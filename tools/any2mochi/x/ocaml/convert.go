@@ -379,19 +379,41 @@ func fallbackOcaml(lines []string) []string {
 	var out []string
 	reLet := regexp.MustCompile(`^let\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(.*)`)
 	reRef := regexp.MustCompile(`^let\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*ref\s+(.*)`)
+	reAssign := regexp.MustCompile(`^([a-zA-Z_][a-zA-Z0-9_]*)\s*:=\s*(.*)`)
+	reWhile := regexp.MustCompile(`^while\s+(.*)\s+do$`)
+	reFor := regexp.MustCompile(`^for\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*([^ ]+)\s+to\s+([^ ]+)\s+do$`)
+	reDone := regexp.MustCompile(`^done;*$`)
 	reNth := regexp.MustCompile(`List\.nth\s+([^\s]+)\s+([^\s]+)`)
 	for _, line := range lines {
 		t := strings.TrimSpace(line)
+		if m := reDone.FindStringSubmatch(t); m != nil {
+			out = append(out, "}")
+			continue
+		}
+		if m := reWhile.FindStringSubmatch(t); m != nil {
+			cond := cleanExpr(m[1], reNth)
+			out = append(out, "while "+cond+" {")
+			continue
+		}
+		if m := reFor.FindStringSubmatch(t); m != nil {
+			end := strings.TrimSuffix(strings.TrimSpace(m[3]), "- 1")
+			end = strings.TrimSuffix(end, "-1")
+			out = append(out, fmt.Sprintf("for %s in %s..%s {", m[1], cleanExpr(m[2], reNth), cleanExpr(end, reNth)))
+			continue
+		}
 		if m := reRef.FindStringSubmatch(t); m != nil {
-			expr := strings.TrimSuffix(m[2], ";;")
-			expr = strings.ReplaceAll(expr, ";", ",")
+			expr := cleanExpr(strings.TrimSuffix(m[2], ";;"), reNth)
 			out = append(out, fmt.Sprintf("var %s = %s", m[1], strings.TrimSpace(expr)))
 			continue
 		}
 		if m := reLet.FindStringSubmatch(t); m != nil {
-			expr := strings.TrimSuffix(m[2], ";;")
-			expr = strings.ReplaceAll(expr, ";", ",")
+			expr := cleanExpr(strings.TrimSuffix(m[2], ";;"), reNth)
 			out = append(out, fmt.Sprintf("let %s = %s", m[1], strings.TrimSpace(expr)))
+			continue
+		}
+		if m := reAssign.FindStringSubmatch(t); m != nil {
+			expr := cleanExpr(strings.TrimSuffix(m[2], ";;"), reNth)
+			out = append(out, fmt.Sprintf("%s = %s", m[1], strings.TrimSpace(expr)))
 			continue
 		}
 		if strings.HasPrefix(t, "print_endline") || strings.HasPrefix(t, "print_string") || strings.HasPrefix(t, "print_int") || strings.HasPrefix(t, "print_float") {
@@ -399,18 +421,7 @@ func fallbackOcaml(lines []string) []string {
 			t = strings.TrimPrefix(t, "print_string")
 			t = strings.TrimPrefix(t, "print_int")
 			t = strings.TrimPrefix(t, "print_float")
-			t = strings.TrimSpace(strings.TrimSuffix(t, ";;"))
-			if strings.HasPrefix(t, "(") && strings.HasSuffix(t, ")") {
-				t = strings.TrimSuffix(strings.TrimPrefix(t, "("), ")")
-			}
-			t = strings.ReplaceAll(t, "string_of_int", "")
-			t = strings.ReplaceAll(t, "string_of_float", "")
-			t = strings.ReplaceAll(t, "string_of_bool", "")
-			t = strings.ReplaceAll(t, "List.length", "len")
-			t = reNth.ReplaceAllString(t, "$1[$2]")
-			t = strings.ReplaceAll(t, "not ", "!")
-			t = strings.ReplaceAll(t, "^", "+")
-			t = strings.TrimSpace(t)
+			t = cleanExpr(strings.TrimSpace(strings.TrimSuffix(t, ";;")), reNth)
 			if strings.HasPrefix(t, "str(") && strings.HasSuffix(t, ")") {
 				t = strings.TrimSuffix(strings.TrimPrefix(t, "str("), ")")
 			}
@@ -418,4 +429,16 @@ func fallbackOcaml(lines []string) []string {
 		}
 	}
 	return out
+}
+
+func cleanExpr(expr string, reNth *regexp.Regexp) string {
+	expr = strings.ReplaceAll(expr, ";", ",")
+	expr = strings.ReplaceAll(expr, "string_of_int", "")
+	expr = strings.ReplaceAll(expr, "string_of_float", "")
+	expr = strings.ReplaceAll(expr, "string_of_bool", "")
+	expr = strings.ReplaceAll(expr, "List.length", "len")
+	expr = reNth.ReplaceAllString(expr, "$1[$2]")
+	expr = strings.ReplaceAll(expr, "not ", "!")
+	expr = strings.ReplaceAll(expr, "^", "+")
+	return strings.TrimSpace(expr)
 }

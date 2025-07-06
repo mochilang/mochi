@@ -1,4 +1,4 @@
-parse error: parse error: 13:54: lexer: invalid input text "^ \"=\" ^ Yojson.B..."
+parse error: parse error: 14:39: lexer: invalid input text "'?' then '&' els..."
 
   1| let rec _read_all ic =
   2|   try let line = input_line ic in

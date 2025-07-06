@@ -1,4 +1,4 @@
-parse error: parse error: 2:1: unexpected token "let" (expected PostfixExpr)
+parse error: parse error: 2:1: unexpected token "}" (expected PostfixExpr)
 
   1| exception Return_0 of int list
   2| let rec twoSum nums target =
