@@ -1,28 +1,56 @@
-package any2mochi
+package c
 
 import (
 	"fmt"
 	"os"
 	"regexp"
 	"strings"
+
+	parent "mochi/tools/any2mochi"
 )
 
-// ConvertC converts c source code to Mochi using the language server.
-func ConvertC(src string) ([]byte, error) {
-	if !UseLSP {
-		return convertCSimple(src)
+func snippet(src string) string {
+	lines := strings.Split(src, "\n")
+	if len(lines) > 10 {
+		lines = lines[:10]
+	}
+	for i, l := range lines {
+		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
+	}
+	return strings.Join(lines, "\n")
+}
+
+func diagnostics(src string, diags []parent.Diagnostic) string {
+	lines := strings.Split(src, "\n")
+	var out strings.Builder
+	for _, d := range diags {
+		start := int(d.Range.Start.Line)
+		msg := d.Message
+		line := ""
+		if start < len(lines) {
+			line = strings.TrimSpace(lines[start])
+		}
+		out.WriteString(fmt.Sprintf("line %d: %s\n  %s\n", start+1, msg, line))
+	}
+	return strings.TrimSpace(out.String())
+}
+
+// Convert converts C source code to Mochi using the language server.
+func Convert(src string) ([]byte, error) {
+	if !parent.UseLSP {
+		return convertSimple(src)
 	}
 
-	ls := Servers["c"]
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+	ls := parent.Servers["c"]
+	syms, diags, err := parent.EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
 	if err != nil {
 		return nil, err
 	}
 	if len(diags) > 0 {
-		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
+		return nil, fmt.Errorf("%s", diagnostics(src, diags))
 	}
 
-	aliasForRange := make(map[Range]string)
+	aliasForRange := make(map[parent.Range]string)
 	for _, s := range syms {
 		if s.Detail != nil && *s.Detail == "type alias" {
 			aliasForRange[s.Range] = s.Name
@@ -33,9 +61,9 @@ func ConvertC(src string) ([]byte, error) {
 	matched := false
 	for _, s := range syms {
 		switch s.Kind {
-		case SymbolKindFunction:
+		case parent.SymbolKindFunction:
 			matched = true
-			ret, params := cHoverSignature(src, s, ls)
+			ret, params := hoverSignature(src, s, ls)
 
 			out.WriteString("fun ")
 			out.WriteString(s.Name)
@@ -61,7 +89,7 @@ func ConvertC(src string) ([]byte, error) {
 				out.WriteString(": ")
 				out.WriteString(ret)
 			}
-			body := cFunctionBody(src, s)
+			body := functionBody(src, s)
 			if len(body) == 0 {
 				out.WriteString(" {}\n")
 			} else {
@@ -72,23 +100,23 @@ func ConvertC(src string) ([]byte, error) {
 				}
 				out.WriteString("}\n")
 			}
-		case SymbolKindVariable, SymbolKindConstant:
+		case parent.SymbolKindVariable, parent.SymbolKindConstant:
 			matched = true
 			out.WriteString("let ")
 			out.WriteString(s.Name)
 			typ := ""
 			if s.Detail != nil {
-				typ = mapCType(*s.Detail)
+				typ = mapType(*s.Detail)
 			}
 			if typ == "" {
-				typ = cHoverFieldType(src, s, ls)
+				typ = hoverFieldType(src, s, ls)
 			}
 			if typ != "" {
 				out.WriteString(": ")
 				out.WriteString(typ)
 			}
 			out.WriteByte('\n')
-		case SymbolKindStruct, SymbolKindClass:
+		case parent.SymbolKindStruct, parent.SymbolKindClass:
 			matched = true
 			isUnion := false
 			if s.Detail != nil && strings.TrimSpace(*s.Detail) == "union" {
@@ -117,7 +145,7 @@ func ConvertC(src string) ([]byte, error) {
 				out.WriteString(" {\n")
 			}
 			for _, c := range s.Children {
-				if c.Kind != SymbolKindField {
+				if c.Kind != parent.SymbolKindField {
 					continue
 				}
 				out.WriteString("  ")
@@ -126,13 +154,13 @@ func ConvertC(src string) ([]byte, error) {
 				if c.Detail != nil {
 					raw = strings.TrimSpace(*c.Detail)
 				}
-				typ := mapCType(raw)
+				typ := mapType(raw)
 				if typ == "" {
-					typ = cHoverFieldType(src, c, ls)
+					typ = hoverFieldType(src, c, ls)
 				}
 				if strings.HasPrefix(s.Name, "list_") && c.Name == "data" {
 					inner := strings.TrimPrefix(s.Name, "list_")
-					if t := mapCType(inner); t != "" {
+					if t := mapType(inner); t != "" {
 						typ = "list<" + t + ">"
 					}
 				}
@@ -143,20 +171,20 @@ func ConvertC(src string) ([]byte, error) {
 				out.WriteByte('\n')
 			}
 			out.WriteString("}\n")
-		case SymbolKindEnum:
+		case parent.SymbolKindEnum:
 			matched = true
 			out.WriteString("type ")
 			out.WriteString(s.Name)
 			out.WriteString(" {\n")
 			for _, c := range s.Children {
-				if c.Kind == SymbolKindEnumMember {
+				if c.Kind == parent.SymbolKindEnumMember {
 					fmt.Fprintf(&out, "  %s\n", c.Name)
 				}
 			}
 			out.WriteString("}\n")
-			var rest []DocumentSymbol
+			var rest []parent.DocumentSymbol
 			for _, c := range s.Children {
-				if c.Kind != SymbolKindEnumMember {
+				if c.Kind != parent.SymbolKindEnumMember {
 					rest = append(rest, c)
 				}
 			}
@@ -168,29 +196,29 @@ func ConvertC(src string) ([]byte, error) {
 	}
 
 	if !matched {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
 	}
 	return []byte(out.String()), nil
 }
 
-// ConvertCFile reads the c file and converts it to Mochi.
-func ConvertCFile(path string) ([]byte, error) {
+// ConvertFile reads the c file and converts it to Mochi.
+func ConvertFile(path string) ([]byte, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return ConvertC(string(data))
+	return Convert(string(data))
 }
 
-// convertCSimple converts C source code without using a language server.
+// convertSimple converts C source code without using a language server.
 // It invokes clang to obtain a JSON AST and extracts top-level functions.
-func convertCSimple(src string) ([]byte, error) {
-	funcs, err := parseCFileClang(src)
+func convertSimple(src string) ([]byte, error) {
+	funcs, err := parseClangFile(src)
 	if err != nil {
 		return nil, err
 	}
 	if len(funcs) == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
 	}
 	var out strings.Builder
 	for _, fn := range funcs {
@@ -241,7 +269,7 @@ func convertCSimple(src string) ([]byte, error) {
 	return []byte(out.String()), nil
 }
 
-type cParam struct {
+type param struct {
 	name string
 	typ  string
 }
@@ -252,7 +280,7 @@ func stripCasts(s string) string {
 	return castRE.ReplaceAllString(s, "")
 }
 
-func parseCSignature(detail *string) (string, []cParam) {
+func parseSignature(detail *string) (string, []param) {
 	if detail == nil {
 		return "", nil
 	}
@@ -263,29 +291,29 @@ func parseCSignature(detail *string) (string, []cParam) {
 	open := strings.Index(sig, "(")
 	close := strings.LastIndex(sig, ")")
 	if open < 0 || close < open {
-		return mapCType(sig), nil
+		return mapType(sig), nil
 	}
 	header := strings.TrimSpace(sig[:open])
 	ret := ""
 	if parts := strings.Fields(header); len(parts) > 1 {
-		ret = mapCType(strings.Join(parts[:len(parts)-1], " "))
+		ret = mapType(strings.Join(parts[:len(parts)-1], " "))
 	} else {
-		ret = mapCType(header)
+		ret = mapType(header)
 	}
 	paramsPart := strings.TrimSpace(sig[open+1 : close])
 	if paramsPart == "" || paramsPart == "void" {
 		return ret, nil
 	}
 	parts := strings.Split(paramsPart, ",")
-	out := make([]cParam, 0, len(parts))
+	out := make([]param, 0, len(parts))
 	for _, p := range parts {
-		name, typ := parseCParam(strings.TrimSpace(p))
-		out = append(out, cParam{name: name, typ: typ})
+		name, typ := parseParam(strings.TrimSpace(p))
+		out = append(out, param{name: name, typ: typ})
 	}
 	return ret, out
 }
 
-func parseCParam(p string) (string, string) {
+func parseParam(p string) (string, string) {
 	if p == "" {
 		return "", ""
 	}
@@ -294,22 +322,22 @@ func parseCParam(p string) (string, string) {
 	}
 	fields := strings.Fields(p)
 	if len(fields) == 1 {
-		return "", mapCType(fields[0])
+		return "", mapType(fields[0])
 	}
 	name := fields[len(fields)-1]
 	typ := strings.Join(fields[:len(fields)-1], " ")
 	if strings.ContainsAny(name, "*[]") || strings.Contains(name, "[") {
 		// likely part of the type
-		return "", mapCType(p)
+		return "", mapType(p)
 	}
-	return name, mapCType(typ)
+	return name, mapType(typ)
 }
 
-func mapCType(typ string) string {
+func mapType(typ string) string {
 	typ = strings.TrimSpace(typ)
 	if open := strings.Index(typ, "["); open != -1 && strings.HasSuffix(typ, "]") {
 		base := strings.TrimSpace(typ[:open])
-		inner := mapCType(base)
+		inner := mapType(base)
 		if inner == "" {
 			inner = "any"
 		}
@@ -339,7 +367,7 @@ func mapCType(typ string) string {
 		return "string"
 	default:
 		if strings.HasPrefix(typ, "list_") {
-			inner := mapCType(strings.TrimPrefix(typ, "list_"))
+			inner := mapType(strings.TrimPrefix(typ, "list_"))
 			if inner == "" {
 				inner = "any"
 			}
@@ -349,8 +377,8 @@ func mapCType(typ string) string {
 			inner := strings.TrimPrefix(typ, "map_")
 			parts := strings.SplitN(inner, "_", 2)
 			if len(parts) == 2 {
-				k := mapCType(parts[0])
-				v := mapCType(parts[1])
+				k := mapType(parts[0])
+				v := mapType(parts[1])
 				if k == "" {
 					k = "any"
 				}
@@ -364,45 +392,45 @@ func mapCType(typ string) string {
 	}
 }
 
-// cHoverSignature obtains the function signature via hover information.
+// hoverSignature obtains the function signature via hover information.
 // It returns the return type and parameter list. If hover data is unavailable
 // it falls back to the symbol detail.
-func cHoverSignature(src string, sym DocumentSymbol, ls LanguageServer) (string, []cParam) {
-	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
+func hoverSignature(src string, sym parent.DocumentSymbol, ls parent.LanguageServer) (string, []param) {
+	hov, err := parent.EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err == nil {
-		if mc, ok := hov.Contents.(MarkupContent); ok {
+		if mc, ok := hov.Contents.(parent.MarkupContent); ok {
 			for _, line := range strings.Split(mc.Value, "\n") {
 				l := strings.TrimSpace(line)
 				if strings.Contains(l, "(") && strings.Contains(l, ")") {
-					return parseCSignature(&l)
+					return parseSignature(&l)
 				}
 			}
 		}
 	}
-	return parseCSignature(sym.Detail)
+	return parseSignature(sym.Detail)
 }
 
-// cHoverFieldType retrieves the type of a symbol using hover information.
-func cHoverFieldType(src string, sym DocumentSymbol, ls LanguageServer) string {
-	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
+// hoverFieldType retrieves the type of a symbol using hover information.
+func hoverFieldType(src string, sym parent.DocumentSymbol, ls parent.LanguageServer) string {
+	hov, err := parent.EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err != nil {
 		return ""
 	}
-	if mc, ok := hov.Contents.(MarkupContent); ok {
+	if mc, ok := hov.Contents.(parent.MarkupContent); ok {
 		for _, line := range strings.Split(mc.Value, "\n") {
 			l := strings.TrimSpace(line)
 			if l != "" {
-				return mapCType(l)
+				return mapType(l)
 			}
 		}
 	}
 	return ""
 }
 
-func cFunctionBody(src string, sym DocumentSymbol) []string {
+func functionBody(src string, sym parent.DocumentSymbol) []string {
 	lines := strings.Split(src, "\n")
-	start := cPosToOffset(lines, sym.Range.Start)
-	end := cPosToOffset(lines, sym.Range.End)
+	start := posToOffset(lines, sym.Range.Start)
+	end := posToOffset(lines, sym.Range.End)
 	if start >= len(src) || end > len(src) || start >= end {
 		return nil
 	}
@@ -413,10 +441,10 @@ func cFunctionBody(src string, sym DocumentSymbol) []string {
 		return nil
 	}
 	body := snippet[open+1 : close]
-	return parseCStatements(body)
+	return parseStatements(body)
 }
 
-func parseCStatements(body string) []string {
+func parseStatements(body string) []string {
 	var out []string
 	indent := 1
 	for _, line := range strings.Split(body, "\n") {
@@ -536,7 +564,7 @@ func parseCStatements(body string) []string {
 	return out
 }
 
-func cPosToOffset(lines []string, pos Position) int {
+func posToOffset(lines []string, pos parent.Position) int {
 	off := 0
 	for i := 0; i < int(pos.Line); i++ {
 		if i < len(lines) {
