@@ -5,6 +5,8 @@ package any2mochi
 import (
 	"path/filepath"
 	"testing"
+
+	clj "mochi/tools/any2mochi/x/clj"
 )
 
 // TestConvertOther_Golden converts sample code for a variety of languages
@@ -20,7 +22,7 @@ func TestConvertOther_Golden(t *testing.T) {
 	}{
 		{"asm", "*.s.out", ConvertAsmFile, "asm"},
 		{"c", "*.c.out", ConvertCFile, "c"},
-		{"clj", "*.clj.out", ConvertCljFile, "clj"},
+		{"clj", "*.clj.out", clj.ConvertFile, "clj"},
 		{"cobol", "*.cob.out", ConvertCobolFile, "cobol"},
 		{"cpp", "*.cpp.out", ConvertCppFile, "cpp"},
 		{"cs", "*.cs.out", ConvertCsFile, "cs"},
