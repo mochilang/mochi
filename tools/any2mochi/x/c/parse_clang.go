@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"os/exec"
 	"strings"
 	"time"
@@ -32,6 +33,19 @@ type clangPos struct {
 	Offset int `json:"offset"`
 }
 
+func offsetToLine(src string, off int) int {
+	if off < 0 {
+		return 0
+	}
+	line := 1
+	for i := 0; i < off && i < len(src); i++ {
+		if src[i] == '\n' {
+			line++
+		}
+	}
+	return line
+}
+
 // parseCFileClang parses C source code using clang's JSON AST output.
 func parseClangFile(src string) ([]function, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -39,8 +53,13 @@ func parseClangFile(src string) ([]function, error) {
 	cmd := exec.CommandContext(ctx, "clang", "-w", "-x", "c", "-", "-Xclang", "-ast-dump=json", "-fsyntax-only")
 	cmd.Stdin = strings.NewReader(src)
 	var out bytes.Buffer
+	var errBuf bytes.Buffer
 	cmd.Stdout = &out
+	cmd.Stderr = &errBuf
 	if err := cmd.Run(); err != nil {
+		if errBuf.Len() > 0 {
+			return nil, fmt.Errorf("clang: %w: %s", err, errBuf.String())
+		}
 		return nil, err
 	}
 	data := out.Bytes()
@@ -69,6 +88,7 @@ func parseClangFile(src string) ([]function, error) {
 			}
 			var params []param
 			var body []string
+			line := offsetToLine(src, n.Range.Begin.Offset)
 			for _, c := range n.Inner {
 				switch c.Kind {
 				case "ParmVarDecl":
@@ -87,7 +107,7 @@ func parseClangFile(src string) ([]function, error) {
 				}
 			}
 			if len(body) > 0 {
-				funcs = append(funcs, function{name: n.Name, ret: ret, params: params, body: body})
+				funcs = append(funcs, function{name: n.Name, ret: ret, params: params, body: body, line: line})
 			}
 		}
 		for _, c := range n.Inner {

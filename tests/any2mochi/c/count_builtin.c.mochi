@@ -1,21 +1,13 @@
 type list_int {
   len: int
-  data: int
+  *data: int
 }
-fun list_int_create(len: int): list<int> {
-  list_int l
-  l.len = len
-  l.data = (int *)malloc(sizeof(int) * len)
-  return l
-}
+
 fun _count(v: list<int>): int {
   return v.len
 }
-fun main(): int {
-  list_int _t1 = list_int_create(3)
-  _t1.data[0] = 1
-  _t1.data[1] = 2
-  _t1.data[2] = 3
-  print(_count(_t1))
-  return 0
-}
+list_int _t1 = list_int_create(3)
+_t1.data[0] = 1
+_t1.data[1] = 2
+_t1.data[2] = 3
+print(_count(_t1))

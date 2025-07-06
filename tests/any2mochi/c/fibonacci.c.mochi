@@ -1,22 +1,14 @@
 type list_int {
   len: int
-  data: int
+  *data: int
 }
-fun list_int_create(len: int): list<int> {
-  list_int l
-  l.len = len
-  l.data = (int *)malloc(sizeof(int) * len)
-  return l
-}
+
 fun fib(n: int): int {
   if ((n <= 1) {
     return n
   }
   return (fib((n - 1)) + fib((n - 2)))
 }
-fun main(): int {
-  print(fib(0))
-  print(fib(1))
-  print(fib(6))
-  return 0
-}
+print(fib(0))
+print(fib(1))
+print(fib(6))

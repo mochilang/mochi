@@ -1,19 +1,11 @@
 type list_int {
   len: int
-  data: int
+  *data: int
 }
-fun list_int_create(len: int): list<int> {
-  list_int l
-  l.len = len
-  l.data = (int *)malloc(sizeof(int) * len)
-  return l
-}
-fun main(): int {
-  for (int _t1 = 0; "hi"[_t1] != '\0'; _t1++) {
-    var ch[2]
-    ch[0] = "hi"[_t1]
-    ch[1] = '\0'
-    print(ch)
-  }
-  return 0
+
+for (int _t1 = 0; "hi"[_t1] != '\0'; _t1++) {
+var ch[2]
+ch[0] = "hi"[_t1]
+ch[1] = '\0'
+print(ch)
 }

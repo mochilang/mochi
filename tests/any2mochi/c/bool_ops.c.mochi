@@ -1,16 +1,8 @@
 type list_int {
   len: int
-  data: int
+  *data: int
 }
-fun list_int_create(len: int): list<int> {
-  list_int l
-  l.len = len
-  l.data = (int *)malloc(sizeof(int) * len)
-  return l
-}
-fun main(): int {
-  print((1 && 0))
-  print((1 || 0))
-  print((!0))
-  return 0
-}
+
+print((1 && 0))
+print((1 || 0))
+print((!0))
