@@ -12,10 +12,10 @@ help:
 
 - basic_compare: parse error: parse error: 4:10: unexpected token "=" (expected "(" (Expr ("," Expr)*)? ")")
 - binary_precedence: ok
-- bool_chain: line 13: cannot parse
-    12| exit;
-->  13| end;
+- bool_chain: line 15: cannot parse
     14| 
+->  15| begin
+    16| writeln((((1 < 2) and (2 < 3)) and (3 < 4)));
 
 - break_continue: parse error: parse error: 5:7: lexer: invalid input text "'odd number:', n..."
 - cast_string_to_int: parse error: parse error: 1:13: lexer: invalid input text "'1995'))"
@@ -24,10 +24,10 @@ help:
 ->  17| _tmp0.AddOrSetData('title', 'hi');
     18| todo := Trunc(_tmp0);
 
-- closure: line 12: cannot parse
-    11| exit;
-->  12| end;
+- closure: line 14: cannot parse
     13| 
+->  14| function _lambda0(x: integer): integer;
+    15| begin
 
 - count_builtin: line 13: cannot parse
     12| 
@@ -67,16 +67,16 @@ help:
 ->  15| _tmp0.AddOrSetData('a', 1);
     16| _tmp0.AddOrSetData('b', 2);
 
-- fun_call: line 12: cannot parse
-    11| exit;
-->  12| end;
+- fun_call: line 14: cannot parse
     13| 
+->  14| begin
+    15| writeln(add(2, 3));
 
 - fun_expr_in_let: parse error: parse error: 1:10: lexer: invalid input text "@_lambda0\nprint(..."
-- fun_three_args: line 12: cannot parse
-    11| exit;
-->  12| end;
+- fun_three_args: line 14: cannot parse
     13| 
+->  14| begin
+    15| writeln(sum3(1, 2, 3));
 
 - group_by: line 19: cannot parse
     18| 
@@ -277,31 +277,31 @@ help:
 ->  27| _tmp0.AddOrSetData('id', 1);
     28| _tmp0.AddOrSetData('name', 'Alice');
 
-- partial_application: line 12: cannot parse
-    11| exit;
-->  12| end;
+- partial_application: line 14: cannot parse
     13| 
+->  14| var
+    15| add5: function(integer): integer;
 
 - print_hello: parse error: parse error: 1:7: lexer: invalid input text "'hello')"
-- pure_fold: line 12: cannot parse
-    11| exit;
-->  12| end;
+- pure_fold: line 14: cannot parse
     13| 
+->  14| begin
+    15| writeln(triple(1 + 2));
 
-- pure_global_fold: line 12: cannot parse
-    11| exit;
-->  12| end;
+- pure_global_fold: line 14: cannot parse
     13| 
+->  14| var
+    15| k: integer;
 
 - query_sum_select: type error: error[T002]: undefined variable: specialize
   --> :1:8
 
 help:
   Check if the variable was declared in this scope.
-- record_assign: line 14: cannot parse
-    13| c := c.n + 1;
-->  14| end;
+- record_assign: line 16: cannot parse
     15| 
+->  16| var
+    17| _tmp0: Counter;
 
 - right_join: line 26: cannot parse
     25| _tmp0 := specialize TFPGMap<Variant, Variant>.Create;
@@ -313,10 +313,10 @@ help:
 ->  13| try
     14| for i := 0 to High(data) do
 
-- short_circuit: line 13: cannot parse
-    12| exit;
-->  13| end;
+- short_circuit: line 15: cannot parse
     14| 
+->  15| begin
+    16| writeln((False and boom(1, 2)));
 
 - slice: line 22: cannot parse
     21| 
@@ -342,26 +342,22 @@ help:
 ->  12| raise Exception.Create('index out of range');
     13| Result := s[i + 1];
 
-- string_prefix_slice: line 20: cannot parse
-    19| Result := Copy(s, start_ + 1, end_ - start_);
-->  20| end;
+- string_prefix_slice: line 22: cannot parse
     21| 
+->  22| var
+    23| prefix: string;
 
-- substring_builtin: line 20: cannot parse
-    19| Result := Copy(s, start_ + 1, end_ - start_);
-->  20| end;
+- substring_builtin: line 22: cannot parse
     21| 
+->  22| begin
+    23| writeln(_sliceString('mochi', 1, 1 + 4));
 
 - sum_builtin: line 17: cannot parse
     16| 
 ->  17| begin
     18| writeln(specialize _sumList<integer>(specialize TArray<integer>([1, 2, 3])));
 
-- tail_recursion: line 15: cannot parse
-    14| 
-->  15| begin
-    16| writeln(sum_rec(10, 0));
-
+- tail_recursion: parse error: parse error: 2:7: unexpected token "=" (expected "(" (Expr ("," Expr)*)? ")")
 - test_block: line 16: cannot parse
     15| 
 ->  16| begin
