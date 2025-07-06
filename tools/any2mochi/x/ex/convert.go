@@ -395,6 +395,11 @@ func translateExpr(expr string) string {
 		if len(parts) == 3 {
 			return parts[0] + "[" + parts[1] + ":" + parts[2] + "]"
 		}
+	case strings.HasPrefix(expr, "Enum.at(") && strings.HasSuffix(expr, ")"):
+		parts := splitArgs(expr[len("Enum.at(") : len(expr)-1])
+		if len(parts) == 2 {
+			return parts[0] + "[" + parts[1] + "]"
+		}
 	}
 	return expr
 }

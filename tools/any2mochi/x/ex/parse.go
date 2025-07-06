@@ -17,6 +17,7 @@ type Func struct {
 	StartLine int      `json:"start"`
 	EndLine   int      `json:"end"`
 	Header    string   `json:"header"`
+	Private   bool     `json:"private,omitempty"`
 	Doc       string   `json:"doc,omitempty"`
 	Comments  []string `json:"comments,omitempty"`
 	Raw       []string `json:"raw,omitempty"`
@@ -71,7 +72,7 @@ func newConvertError(line int, lines []string, msg string) error {
 	if start < 0 {
 		start = 0
 	}
-	end := line
+	end := line + 1
 	if end >= len(lines) {
 		end = len(lines) - 1
 	}
@@ -119,6 +120,7 @@ func Parse(src string) (*AST, error) {
 		}
 		header := strings.TrimSpace(lines[i])
 		name := m[1]
+		priv := strings.HasPrefix(line, "defp")
 		params := parseParams(m[2])
 		var docLines []string
 		for j := i - 1; j >= 0; j-- {
@@ -144,7 +146,7 @@ func Parse(src string) (*AST, error) {
 			}
 			body = append(body, l)
 		}
-		fn := Func{Name: name, Params: params, Body: body, StartLine: startLine, EndLine: endLine, Header: header}
+		fn := Func{Name: name, Params: params, Body: body, StartLine: startLine, EndLine: endLine, Header: header, Private: priv}
 		if len(docLines) > 0 {
 			fn.Doc = strings.Join(docLines, "\n")
 			fn.Comments = docLines
