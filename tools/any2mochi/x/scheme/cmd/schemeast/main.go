@@ -6,7 +6,7 @@ import (
 	"io"
 	"os"
 
-	"mochi/tools/any2mochi"
+	"mochi/tools/any2mochi/x/scheme"
 )
 
 func main() {
@@ -21,7 +21,7 @@ func main() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-	items, err := any2mochi.ParseSchemeItems(string(data))
+	items, err := scheme.ParseItems(string(data))
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)

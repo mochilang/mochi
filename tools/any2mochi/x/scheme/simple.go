@@ -1,4 +1,4 @@
-package any2mochi
+package scheme
 
 import (
 	"bytes"
@@ -9,11 +9,11 @@ import (
 	"time"
 )
 
-// convertSchemeSimple converts Scheme source code by invoking the schemeast CLI
+// convertSimple converts Scheme source code by invoking the schemeast CLI
 // to obtain a minimal AST. Only top level function definitions are translated
 // into empty Mochi stubs.
-func convertSchemeSimple(src string) ([]byte, error) {
-	items, err := runSchemeParse(src)
+func convertSimple(src string) ([]byte, error) {
+	items, err := runParse(src)
 	if err != nil {
 		return nil, err
 	}
@@ -39,27 +39,27 @@ func convertSchemeSimple(src string) ([]byte, error) {
 	return []byte(out.String()), nil
 }
 
-type schemeCLIItem struct {
+type cliItem struct {
 	Kind   string   `json:"kind"`
 	Name   string   `json:"name"`
 	Params []string `json:"params,omitempty"`
 }
 
-func runSchemeParse(src string) ([]schemeCLIItem, error) {
+func runParse(src string) ([]cliItem, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	// prefer a pre-built schemeast binary if available
 	path, err := exec.LookPath("schemeast")
 	if err != nil {
 		// fall back to 'go run' which builds the CLI on the fly
-		cmd := exec.CommandContext(ctx, "go", "run", "./tools/any2mochi/cmd/schemeast")
+		cmd := exec.CommandContext(ctx, "go", "run", "./tools/any2mochi/x/scheme/cmd/schemeast")
 		cmd.Stdin = strings.NewReader(src)
 		var out bytes.Buffer
 		cmd.Stdout = &out
 		if err := cmd.Run(); err != nil {
 			return nil, err
 		}
-		var items []schemeCLIItem
+		var items []cliItem
 		if err := json.Unmarshal(out.Bytes(), &items); err != nil {
 			return nil, err
 		}
@@ -72,7 +72,7 @@ func runSchemeParse(src string) ([]schemeCLIItem, error) {
 	if err := cmd.Run(); err != nil {
 		return nil, err
 	}
-	var items []schemeCLIItem
+	var items []cliItem
 	if err := json.Unmarshal(out.Bytes(), &items); err != nil {
 		return nil, err
 	}
