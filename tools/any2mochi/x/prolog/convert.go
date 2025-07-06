@@ -321,6 +321,29 @@ func parseBody(body string) []string {
 			} else {
 				out = append(out, "  // "+c)
 			}
+		case strings.HasPrefix(c, "dict_create("):
+			re := regexp.MustCompile(`dict_create\(([^,]+),\s*([^,]+),\s*\[([^\]]*)\]\)`)
+			m := re.FindStringSubmatch(c)
+			if len(m) == 4 {
+				varName := strings.TrimSpace(m[1])
+				typ := strings.TrimSpace(m[2])
+				fields := strings.Split(m[3], ",")
+				var parts []string
+				for _, f := range fields {
+					kv := strings.SplitN(strings.TrimSpace(f), "-", 2)
+					if len(kv) == 2 {
+						parts = append(parts, kv[0]+": "+kv[1])
+					}
+				}
+				out = append(out, "  let "+varName+" = "+strings.Title(typ)+" { "+strings.Join(parts, ", ")+" }")
+			} else {
+				out = append(out, "  // "+c)
+			}
+		case strings.Contains(c, " = [") && strings.HasSuffix(c, "]"):
+			parts := strings.SplitN(c, "=", 2)
+			name := strings.TrimSpace(parts[0])
+			list := strings.TrimSpace(parts[1])
+			out = append(out, "  let "+name+" = "+list)
 		case strings.Contains(c, " is "):
 			parts := strings.SplitN(c, " is ", 2)
 			name := strings.TrimSpace(parts[0])
