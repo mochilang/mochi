@@ -143,6 +143,49 @@ func convertPythonCmd() *cobra.Command {
 	return cmd
 }
 
+func parseExCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "parse-ex <file.ex>",
+		Short: "Parse Elixir source and output JSON AST",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			data, err := os.ReadFile(args[0])
+			if err != nil {
+				return err
+			}
+			ast, err := any2mochi.ParseExAST(string(data))
+			if err != nil {
+				return err
+			}
+			enc := json.NewEncoder(cmd.OutOrStdout())
+			enc.SetIndent("", "  ")
+			return enc.Encode(ast)
+		},
+	}
+	return cmd
+}
+
+func convertExCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "convert-ex <file.ex>",
+		Short: "Convert Elixir source to Mochi",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			data, err := os.ReadFile(args[0])
+			if err != nil {
+				return err
+			}
+			out, err := any2mochi.ConvertEx2(string(data))
+			if err != nil {
+				return err
+			}
+			_, err = cmd.OutOrStdout().Write(out)
+			return err
+		},
+	}
+	return cmd
+}
+
 func convertTSCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "convert-ts <file.ts>",
@@ -269,6 +312,8 @@ func newRootCmd() *cobra.Command {
 		convertGoCmd(),
 		convertRustCmd(),
 		convertPythonCmd(),
+		parseExCmd(),
+		convertExCmd(),
 		convertHsCmd(),
 		convertTSCmd(),
 		convertCmd(),
