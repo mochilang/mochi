@@ -44,6 +44,14 @@ func Convert(src string) ([]byte, error) {
 	ls := parent.Servers["c"]
 	syms, diags, err := parent.EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
 	if err != nil {
+		// If no language server is configured or it failed, fall back to
+		// parsing via clang.
+		if ls.Command == "" {
+			return convertSimple(src)
+		}
+		if out, cErr := convertSimple(src); cErr == nil {
+			return out, nil
+		}
 		return nil, err
 	}
 	if len(diags) > 0 {
@@ -213,14 +221,19 @@ func ConvertFile(path string) ([]byte, error) {
 // convertSimple converts C source code without using a language server.
 // It invokes clang to obtain a JSON AST and extracts top-level functions.
 func convertSimple(src string) ([]byte, error) {
+	structs := parseStructs(src)
 	funcs, err := parseClangFile(src)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%v\n\nsource snippet:\n%s", err, snippet(src))
 	}
 	if len(funcs) == 0 {
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
 	}
 	var out strings.Builder
+	for _, s := range structs {
+		out.WriteString(s)
+		out.WriteByte('\n')
+	}
 	for _, fn := range funcs {
 		if fn.name == "main" {
 			for _, ln := range fn.body {
@@ -267,11 +280,6 @@ func convertSimple(src string) ([]byte, error) {
 		}
 	}
 	return []byte(out.String()), nil
-}
-
-type param struct {
-	name string
-	typ  string
 }
 
 var castRE = regexp.MustCompile(`\([a-zA-Z_][a-zA-Z0-9_\s]*\*\)`) // matches C casts like (int *)
@@ -392,6 +400,49 @@ func mapType(typ string) string {
 	}
 }
 
+var structRE = regexp.MustCompile(`(?s)typedef\s+(struct|union)\s*\{([^}]*)\}\s*([A-Za-z_][A-Za-z0-9_]*)\s*;`)
+
+func parseStructs(src string) []string {
+	matches := structRE.FindAllStringSubmatch(src, -1)
+	var out []string
+	for _, m := range matches {
+		kind := m[1]
+		body := m[2]
+		name := strings.TrimSpace(m[3])
+		var b strings.Builder
+		b.WriteString("type ")
+		b.WriteString(name)
+		if kind == "union" {
+			b.WriteString(" union {")
+		} else {
+			b.WriteString(" {")
+		}
+		b.WriteByte('\n')
+		for _, line := range strings.Split(body, "\n") {
+			line = strings.TrimSpace(line)
+			if line == "" {
+				continue
+			}
+			fields := strings.Fields(strings.TrimSuffix(line, ";"))
+			if len(fields) < 2 {
+				continue
+			}
+			fieldName := fields[len(fields)-1]
+			fieldType := mapType(strings.Join(fields[:len(fields)-1], " "))
+			b.WriteString("  ")
+			b.WriteString(fieldName)
+			if fieldType != "" {
+				b.WriteString(": ")
+				b.WriteString(fieldType)
+			}
+			b.WriteByte('\n')
+		}
+		b.WriteString("}\n")
+		out = append(out, b.String())
+	}
+	return out
+}
+
 // hoverSignature obtains the function signature via hover information.
 // It returns the return type and parameter list. If hover data is unavailable
 // it falls back to the symbol detail.
@@ -458,6 +509,9 @@ func parseStatements(body string) []string {
 			indent++
 		case l == "}":
 			indent--
+			if indent < 0 {
+				indent = 0
+			}
 			out = append(out, strings.Repeat("  ", indent)+"}")
 		case strings.HasPrefix(l, "for ") || strings.HasPrefix(l, "for("):
 			if strings.HasSuffix(l, "{") {
@@ -494,6 +548,9 @@ func parseStatements(body string) []string {
 			}
 		case strings.HasPrefix(l, "else {"):
 			indent--
+			if indent < 0 {
+				indent = 0
+			}
 			out = append(out, strings.Repeat("  ", indent)+"else {")
 			indent++
 		case strings.HasPrefix(l, "return "):
