@@ -70,6 +70,10 @@ func convertAST(ast *AST, src string) ([]byte, error) {
 	var out strings.Builder
 	for _, s := range ast.Statements {
 		if s.Kind == "unknown" {
+			trimmed := strings.TrimSpace(s.Expr)
+			if trimmed == "" || strings.Trim(trimmed, ")]} ") == "" {
+				continue
+			}
 			return nil, fmt.Errorf("%s", formatErrorSnippet(src, s.Line, s.Column, "unsupported statement", s.Snippet))
 		}
 		writeStmt(&out, s, 0)

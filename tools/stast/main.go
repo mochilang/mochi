@@ -258,7 +258,21 @@ func parseIf(lines []string, i int) (Stmt, int) {
 	j := i + n
 	var elseBody []Stmt
 	var m2 int
-	// handle pattern "] ifFalse: ["
+	// handle pattern where "ifFalse:" appears on the same line as the closing bracket
+	if j-3 >= 0 && strings.Contains(lines[j-3], "ifFalse:") {
+		if len(thenBody) > 0 && thenBody[len(thenBody)-1].Kind == "print" {
+			// remove trailing statement belonging to else block if detected
+			thenBody = thenBody[:len(thenBody)-1]
+		}
+		if len(thenBody) > 0 && thenBody[len(thenBody)-1].Kind == "unknown" {
+			thenBody = thenBody[:len(thenBody)-1]
+		}
+		elseBody, m2 = parseBlock(lines, j-3)
+		snippet := strings.TrimSpace(strings.Join(lines[i:i+n+m2-3], "\n"))
+		col := len(lines[i]) - len(strings.TrimLeft(lines[i], " \t")) + 1
+		return Stmt{Kind: "if", Cond: cond, Body: thenBody, Else: elseBody, Column: col, Snippet: snippet, EndLine: i + n + m2 - 4, EndColumn: len(strings.TrimRight(lines[i+n+m2-4], "\n"))}, n + m2 - 3
+	}
+	// handle pattern "] ifFalse: [" on its own line
 	if strings.Contains(lines[j-1], "ifFalse:") {
 		elseBody, m2 = parseBlock(lines, j-1)
 		snippet := strings.TrimSpace(strings.Join(lines[i:i+n+m2-1], "\n"))
