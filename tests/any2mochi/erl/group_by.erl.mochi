@@ -1,4 +1,4 @@
-// line 5
+// line 5 (exported)
 fun main(_) {
   Xs = [1, 1, 2]
   Groups =

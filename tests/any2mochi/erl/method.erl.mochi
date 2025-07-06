@@ -22,7 +22,7 @@ fun circle_describe(Self) {
   V
   end
 }
-// line 23
+// line 23 (exported)
 fun main(_) {
   C = #circle{radius = 5}
   circle_describe(C)

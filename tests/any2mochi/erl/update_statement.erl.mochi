@@ -4,7 +4,7 @@ type Person {
   age: any
   status: any
 }
-// line 8
+// line 8 (exported)
 fun main(_) {
   People =
   [#person{name = "Alice", age = 17, status = "minor"},

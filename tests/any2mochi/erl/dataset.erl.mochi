@@ -3,7 +3,7 @@ type Person {
   name: any
   age: any
 }
-// line 7
+// line 7 (exported)
 fun main(_) {
   People =
   [#person{name = "Alice", age = 30},

@@ -3,7 +3,7 @@ type Product {
   name: any
   price: any
 }
-// line 7
+// line 7 (exported)
 fun main(_) {
   Products =
   [#product{name = "Laptop", price = 1500},
