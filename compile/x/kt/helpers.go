@@ -1,6 +1,7 @@
 package ktcode
 
 import (
+	"reflect"
 	"strings"
 
 	"mochi/parser"
@@ -263,3 +264,86 @@ func isFetchExpr(e *parser.Expr) bool {
 	}
 	return p.Target.Fetch != nil
 }
+
+func isEmptyListExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	if ll := e.Binary.Left.Value.Target.List; ll != nil {
+		return len(ll.Elems) == 0
+	}
+	return false
+}
+
+func isEmptyMapExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	if ml := e.Binary.Left.Value.Target.Map; ml != nil {
+		return len(ml.Items) == 0
+	}
+	return false
+}
+
+func isAny(t types.Type) bool {
+	_, ok := t.(types.AnyType)
+	return ok
+}
+
+func containsAny(t types.Type) bool {
+	switch tt := t.(type) {
+	case types.AnyType:
+		return true
+	case types.ListType:
+		return containsAny(tt.Elem)
+	case types.MapType:
+		return containsAny(tt.Key) || containsAny(tt.Value)
+	}
+	return false
+}
+
+func equalTypes(a, b types.Type) bool {
+	if _, ok := a.(types.AnyType); ok {
+		return true
+	}
+	if _, ok := b.(types.AnyType); ok {
+		return true
+	}
+	if la, ok := a.(types.ListType); ok {
+		if lb, ok := b.(types.ListType); ok {
+			return equalTypes(la.Elem, lb.Elem)
+		}
+	}
+	if ma, ok := a.(types.MapType); ok {
+		if mb, ok := b.(types.MapType); ok {
+			return equalTypes(ma.Key, mb.Key) && equalTypes(ma.Value, mb.Value)
+		}
+	}
+	if ua, ok := a.(types.UnionType); ok {
+		if sb, ok := b.(types.StructType); ok {
+			if _, ok := ua.Variants[sb.Name]; ok {
+				return true
+			}
+		}
+	}
+	if ub, ok := b.(types.UnionType); ok {
+		if sa, ok := a.(types.StructType); ok {
+			if _, ok := ub.Variants[sa.Name]; ok {
+				return true
+			}
+		}
+	}
+	if isInt64(a) && (isInt64(b) || isInt(b)) {
+		return true
+	}
+	if isInt64(b) && (isInt64(a) || isInt(a)) {
+		return true
+	}
+	if isInt(a) && isInt(b) {
+		return true
+	}
+	return reflect.DeepEqual(a, b)
+}
+
+func isInt64(t types.Type) bool { _, ok := t.(types.Int64Type); return ok }
+func isInt(t types.Type) bool   { _, ok := t.(types.IntType); return ok }

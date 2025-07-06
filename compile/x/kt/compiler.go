@@ -220,7 +220,17 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 			c.use("_cast")
 			expr = fmt.Sprintf("_cast<%s>(%s)", typ, expr)
 		}
-		c.writeln(fmt.Sprintf("val %s: %s = %s", sanitizeName(stmt.Name), typ, expr))
+		canInfer := false
+		if stmt.Value != nil && !isEmptyListExpr(stmt.Value) && !isEmptyMapExpr(stmt.Value) && !isFetchExpr(stmt.Value) {
+			if et := c.inferExprType(stmt.Value); equalTypes(t, et) && !containsAny(et) {
+				canInfer = true
+			}
+		}
+		if canInfer {
+			c.writeln(fmt.Sprintf("val %s = %s", sanitizeName(stmt.Name), expr))
+		} else {
+			c.writeln(fmt.Sprintf("val %s: %s = %s", sanitizeName(stmt.Name), typ, expr))
+		}
 		c.env.SetVar(stmt.Name, t, false)
 	} else {
 		if c.updateTargets[stmt.Name] {
@@ -254,7 +264,17 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 				value += ".toMutableList()"
 			}
 		}
-		c.writeln(fmt.Sprintf("var %s: %s = %s", sanitizeName(stmt.Name), typ, value))
+		canInfer := false
+		if stmt.Value != nil && !isEmptyListExpr(stmt.Value) && !isEmptyMapExpr(stmt.Value) && !isFetchExpr(stmt.Value) {
+			if et := c.inferExprType(stmt.Value); equalTypes(t, et) && !containsAny(et) {
+				canInfer = true
+			}
+		}
+		if canInfer {
+			c.writeln(fmt.Sprintf("var %s = %s", sanitizeName(stmt.Name), value))
+		} else {
+			c.writeln(fmt.Sprintf("var %s: %s = %s", sanitizeName(stmt.Name), typ, value))
+		}
 		c.env.SetVar(stmt.Name, t, true)
 	} else {
 		if c.updateTargets[stmt.Name] {
