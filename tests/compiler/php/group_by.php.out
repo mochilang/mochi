@@ -5,12 +5,12 @@ $groups = (function() use ($xs) {
 	$_groups = _group_by($_src, function($x) use ($xs) { return $x; });
 	$res = [];
 	foreach ($_groups as $g) {
-		$res[] = ["k" => $g->key, "c" => (is_array($g) ? count($g) : strlen($g))];
+		$res[] = ["k" => $g->key, "c" => (is_array($g->Items) ? count($g->Items) : strlen($g->Items))];
 	}
 	return $res;
 })();
 foreach ((is_string($groups) ? str_split($groups) : $groups) as $g) {
-	echo $g->k . " " . $g->c, PHP_EOL;
+	_print($g['k'], $g['c']);
 }
 
 class _Group {
@@ -23,7 +23,8 @@ function _group_by($src, $keyfn) {
     $order = [];
     foreach ($src as $it) {
         $key = $keyfn($it);
-        $ks = strval($key);
+        if (is_array($key)) { $key = (object)$key; }
+        $ks = is_object($key) ? json_encode($key) : strval($key);
         if (!isset($groups[$ks])) {
             $groups[$ks] = new _Group($key);
             $order[] = $ks;
@@ -33,4 +34,11 @@ function _group_by($src, $keyfn) {
     $res = [];
     foreach ($order as $ks) { $res[] = $groups[$ks]; }
     return $res;
+}
+function _print(...$args) {
+    $parts = [];
+    foreach ($args as $a) {
+        if (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+    }
+    echo implode(' ', $parts), PHP_EOL;
 }

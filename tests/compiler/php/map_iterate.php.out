@@ -6,4 +6,12 @@ $sum = 0;
 foreach ((is_string($m) ? str_split($m) : $m) as $k) {
 	$sum = ((is_array($sum) && is_array($k)) ? array_merge($sum, $k) : ((is_string($sum) || is_string($k)) ? ($sum . $k) : ($sum + $k)));
 }
-echo $sum, PHP_EOL;
+_print($sum);
+
+function _print(...$args) {
+    $parts = [];
+    foreach ($args as $a) {
+        if (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+    }
+    echo implode(' ', $parts), PHP_EOL;
+}

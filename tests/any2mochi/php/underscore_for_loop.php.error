@@ -9,3 +9,8 @@ tests/compiler/php/underscore_for_loop.php.out: no convertible symbols found
   8: }
   9: foreach ((is_string("ab") ? str_split("ab") : "ab") as $_) {
  10: 	$c = ((is_array($c) && is_array(1)) ? array_merge($c, 1) : ((is_string($c) || is_string(1)) ? ($c . 1) : ($c + 1)));
+ 11: }
+ 12: $m = ["x" => 1, "y" => 2];
+ 13: foreach ((is_string($m) ? str_split($m) : $m) as $_) {
+ 14: 	$c = ((is_array($c) && is_array(1)) ? array_merge($c, 1) : ((is_string($c) || is_string(1)) ? ($c . 1) : ($c + 1)));
+ 15: }

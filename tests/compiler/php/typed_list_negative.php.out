@@ -1,11 +1,19 @@
 <?php
 function mochi_test_values() {
 	global $xs;
-	if (!(($xs[0] == (-1)))) { throw new Exception('expect failed'); }
-	if (!(($xs[1] == 0))) { throw new Exception('expect failed'); }
-	if (!(($xs[2] == 1))) { throw new Exception('expect failed'); }
-	echo "done", PHP_EOL;
+	if (!(($xs[0] == (-1)))) { throw new Exception("expect failed: ($xs[0] == (-1))"); }
+	if (!(($xs[1] == 0))) { throw new Exception("expect failed: ($xs[1] == 0)"); }
+	if (!(($xs[2] == 1))) { throw new Exception("expect failed: ($xs[2] == 1)"); }
+	_print("done");
 }
 
 $xs = [(-1), 0, 1];
 mochi_test_values();
+
+function _print(...$args) {
+    $parts = [];
+    foreach ($args as $a) {
+        if (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+    }
+    echo implode(' ', $parts), PHP_EOL;
+}

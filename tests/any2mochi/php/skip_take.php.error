@@ -9,3 +9,8 @@ tests/compiler/php/skip_take.php.out: no convertible symbols found
   8: 	$res = array_slice($res, 1);
   9: 	$res = array_slice($res, 0, 2);
  10: 	return $res;
+ 11: })();
+ 12: foreach ((is_string($res) ? str_split($res) : $res) as $x) {
+ 13: 	echo $x, PHP_EOL;
+ 14: }
+ 15:

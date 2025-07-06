@@ -13,7 +13,7 @@ class Todo {
 }
 
 $todo = new Todo((array)(_fetch("https://jsonplaceholder.typicode.com/todos/1", null)));
-echo $todo->title, PHP_EOL;
+_print($todo['title']);
 
 function _fetch($url, $opts = null) {
     $args = ['-s'];
@@ -34,4 +34,11 @@ function _fetch($url, $opts = null) {
     $cmd = 'curl ' . implode(' ', $escaped);
     $data = shell_exec($cmd);
     return json_decode($data);
+}
+function _print(...$args) {
+    $parts = [];
+    foreach ($args as $a) {
+        if (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+    }
+    echo implode(' ', $parts), PHP_EOL;
 }

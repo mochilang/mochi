@@ -13,4 +13,12 @@ $m = ["x" => 1, "y" => 2];
 foreach ((is_string($m) ? str_split($m) : $m) as $_) {
 	$c = ((is_array($c) && is_array(1)) ? array_merge($c, 1) : ((is_string($c) || is_string(1)) ? ($c . 1) : ($c + 1)));
 }
-echo $c, PHP_EOL;
+_print($c);
+
+function _print(...$args) {
+    $parts = [];
+    foreach ($args as $a) {
+        if (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+    }
+    echo implode(' ', $parts), PHP_EOL;
+}

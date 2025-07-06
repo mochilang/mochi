@@ -9,3 +9,8 @@ tests/compiler/php/dataset_pushdown_outer.php.out: no convertible symbols found
   8: 		foreach ((is_string($ys) ? str_split($ys) : $ys) as $y) {
   9: 			$res[] = ((is_array($x) && is_array($y)) ? array_merge($x, $y) : ((is_string($x) || is_string($y)) ? ($x . $y) : ($x + $y)));
  10: 		}
+ 11: 	}
+ 12: 	return $res;
+ 13: })();
+ 14: foreach ((is_string($res) ? str_split($res) : $res) as $v) {
+ 15: 	echo $v, PHP_EOL;

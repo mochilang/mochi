@@ -12,11 +12,19 @@ $people = [new Person(['name' => "Alice", 'age' => 30]), new Person(['name' => "
 $names = (function() use ($people) {
 	$res = [];
 	foreach ((is_string($people) ? str_split($people) : $people) as $p) {
-		if (!(($p->age >= 18))) { continue; }
-		$res[] = $p->name;
+		if (!(($p['age'] >= 18))) { continue; }
+		$res[] = $p['name'];
 	}
 	return $res;
 })();
 foreach ((is_string($names) ? str_split($names) : $names) as $n) {
-	echo $n, PHP_EOL;
+	_print($n);
+}
+
+function _print(...$args) {
+    $parts = [];
+    foreach ($args as $a) {
+        if (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+    }
+    echo implode(' ', $parts), PHP_EOL;
 }

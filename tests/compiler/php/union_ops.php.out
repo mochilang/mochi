@@ -1,7 +1,15 @@
 <?php
 $a = [1, 2, 3];
 $b = [3, 4];
-echo (is_array(array_values(array_unique(array_merge($a, $b), SORT_REGULAR))) ? count(array_values(array_unique(array_merge($a, $b), SORT_REGULAR))) : strlen(array_values(array_unique(array_merge($a, $b), SORT_REGULAR)))), PHP_EOL;
-echo (is_array(array_merge($a, $b)) ? count(array_merge($a, $b)) : strlen(array_merge($a, $b))), PHP_EOL;
-echo (is_array(array_values(array_diff($a, $b))) ? count(array_values(array_diff($a, $b))) : strlen(array_values(array_diff($a, $b)))), PHP_EOL;
-echo (is_array(array_values(array_intersect($a, $b))) ? count(array_values(array_intersect($a, $b))) : strlen(array_values(array_intersect($a, $b)))), PHP_EOL;
+_print((is_array(array_values(array_unique(array_merge($a, $b), SORT_REGULAR))) ? count(array_values(array_unique(array_merge($a, $b), SORT_REGULAR))) : strlen(array_values(array_unique(array_merge($a, $b), SORT_REGULAR)))));
+_print((is_array(array_merge($a, $b)) ? count(array_merge($a, $b)) : strlen(array_merge($a, $b))));
+_print((is_array(array_values(array_diff($a, $b))) ? count(array_values(array_diff($a, $b))) : strlen(array_values(array_diff($a, $b)))));
+_print((is_array(array_values(array_intersect($a, $b))) ? count(array_values(array_intersect($a, $b))) : strlen(array_values(array_intersect($a, $b)))));
+
+function _print(...$args) {
+    $parts = [];
+    foreach ($args as $a) {
+        if (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+    }
+    echo implode(' ', $parts), PHP_EOL;
+}

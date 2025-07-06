@@ -1,4 +1,12 @@
 <?php
 $a = 10;
 $b = 20;
-echo ((is_array($a) && is_array($b)) ? array_merge($a, $b) : ((is_string($a) || is_string($b)) ? ($a . $b) : ($a + $b))), PHP_EOL;
+_print(((is_array($a) && is_array($b)) ? array_merge($a, $b) : ((is_string($a) || is_string($b)) ? ($a . $b) : ($a + $b))));
+
+function _print(...$args) {
+    $parts = [];
+    foreach ($args as $a) {
+        if (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+    }
+    echo implode(' ', $parts), PHP_EOL;
+}

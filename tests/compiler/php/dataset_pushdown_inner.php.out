@@ -12,5 +12,13 @@ $res = (function() use ($xs, $ys) {
 	return $res;
 })();
 foreach ((is_string($res) ? str_split($res) : $res) as $v) {
-	echo $v, PHP_EOL;
+	_print($v);
+}
+
+function _print(...$args) {
+    $parts = [];
+    foreach ($args as $a) {
+        if (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+    }
+    echo implode(' ', $parts), PHP_EOL;
 }
