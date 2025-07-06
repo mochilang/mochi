@@ -80,6 +80,23 @@ func convertGoCmd() *cobra.Command {
 	return cmd
 }
 
+func convertGoJSONCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "convert-go-json <file.go>",
+		Short: "Convert Go source to Mochi via JSON AST",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			out, err := any2mochi.ConvertGoViaJSONFile(args[0])
+			if err != nil {
+				return err
+			}
+			_, err = cmd.OutOrStdout().Write(out)
+			return err
+		},
+	}
+	return cmd
+}
+
 func convertRustCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "convert-rust <file.rs>",
@@ -267,6 +284,7 @@ func newRootCmd() *cobra.Command {
 	cmd.AddCommand(
 		parseCmd(),
 		convertGoCmd(),
+		convertGoJSONCmd(),
 		convertRustCmd(),
 		convertPythonCmd(),
 		convertHsCmd(),
