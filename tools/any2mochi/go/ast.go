@@ -7,14 +7,17 @@ import (
 	"go/token"
 	"os"
 	"reflect"
+	"strconv"
 	"strings"
 )
 
 // AST represents a simplified Go AST suitable for JSON serialization.
 type AST struct {
-	Functions []Func `json:"functions,omitempty"`
-	Types     []Type `json:"types,omitempty"`
-	Vars      []Var  `json:"vars,omitempty"`
+	Package   string   `json:"package,omitempty"`
+	Imports   []string `json:"imports,omitempty"`
+	Functions []Func   `json:"functions,omitempty"`
+	Types     []Type   `json:"types,omitempty"`
+	Vars      []Var    `json:"vars,omitempty"`
 }
 
 type Func struct {
@@ -68,7 +71,12 @@ func ParseAST(src string) (*AST, error) {
 	if err != nil {
 		return nil, err
 	}
-	out := &AST{}
+	out := &AST{Package: file.Name.Name}
+	for _, imp := range file.Imports {
+		if path, err := strconv.Unquote(imp.Path.Value); err == nil {
+			out.Imports = append(out.Imports, path)
+		}
+	}
 	for _, decl := range file.Decls {
 		switch d := decl.(type) {
 		case *ast.FuncDecl:
