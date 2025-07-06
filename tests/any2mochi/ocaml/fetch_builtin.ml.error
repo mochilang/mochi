@@ -1,0 +1,12 @@
+parse error: parse error: 13:54: lexer: invalid input text "^ \"=\" ^ Yojson.B..."
+
+  1| let rec _read_all ic =
+  2|   try let line = input_line ic in
+  3|     line ^ "\n" ^ _read_all ic
+  4|   with End_of_file -> "";;
+  5| 
+  6| let _read_input path =
+  7|   let ic = match path with
+  8|     | None -> stdin
+  9|     | Some p when p = "" || p = "-" -> stdin
+ 10|     | Some p -> open_in p in

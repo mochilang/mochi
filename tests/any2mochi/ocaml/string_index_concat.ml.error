@@ -1,0 +1,5 @@
+parse error: parse error: 2:20: unexpected token "1" (expected ")")
+
+  1| let name = "mochi";;
+  2| print_endline ((String.make 1 (String.get name 0)) ^ "!");;
+  3|

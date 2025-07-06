@@ -1,0 +1,8 @@
+parse error: parse error: 2:14: lexer: invalid input text ";)\n"
+
+  1| let i = ref 0;;
+  2| while !i < 3 do
+  3|   print_endline (string_of_int (!i));
+  4|   i := !i + 1;
+  5| done;;
+  6|

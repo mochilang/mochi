@@ -1,0 +1,10 @@
+parse error: parse error: 5:40: lexer: invalid input text "; input1; \",\"; i..."
+
+  1| let _input () = read_line ();;
+  2| 
+  3| print_endline "Enter first input:";;
+  4| let input1 = _input ();;
+  5| print_endline "Enter second input:";;
+  6| let input2 = _input ();;
+  7| print_endline (String.concat " " ["You entered:"; input1; ","; input2]);;
+  8|

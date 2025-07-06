@@ -1,0 +1,12 @@
+parse error: parse error: 2:1: unexpected token "let" (expected PostfixExpr)
+
+  1| exception Return_0 of int list
+  2| let rec twoSum nums target =
+  3|   try
+  4|     let n = List.length nums in
+  5|     for i = 0 to n - 1 do
+  6|       for j = i + 1 to n - 1 do
+  7|         if (List.nth nums i) + (List.nth nums j) = target then begin
+  8|           raise (Return_0 ([i; j]))
+  9|         end;
+ 10|       done;

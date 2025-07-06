@@ -1,0 +1,5 @@
+parse error: parse error: 1:18: unexpected token "x" (expected "(" (Param ("," Param)*)? ")" (":" TypeRef)? "=>" Expr)
+
+  1| let square = fun x -> x * x;;
+  2| print_endline (string_of_int (square 6));;
+  3|

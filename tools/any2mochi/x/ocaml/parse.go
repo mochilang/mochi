@@ -27,6 +27,7 @@ type Func struct {
 	Col     int      `json:"col"`
 	EndLine int      `json:"endLine"`
 	EndCol  int      `json:"endCol"`
+	Snippet string   `json:"snippet"`
 }
 
 type Var struct {
@@ -37,6 +38,7 @@ type Var struct {
 	Col     int    `json:"col"`
 	EndLine int    `json:"endLine"`
 	EndCol  int    `json:"endCol"`
+	Snippet string `json:"snippet"`
 }
 
 type Print struct {
@@ -45,6 +47,7 @@ type Print struct {
 	Col     int    `json:"col"`
 	EndLine int    `json:"endLine"`
 	EndCol  int    `json:"endCol"`
+	Snippet string `json:"snippet"`
 }
 
 type Type struct {
@@ -54,6 +57,7 @@ type Type struct {
 	Col     int     `json:"col"`
 	EndLine int     `json:"endLine"`
 	EndCol  int     `json:"endCol"`
+	Snippet string  `json:"snippet"`
 }
 
 type Field struct {
@@ -63,6 +67,7 @@ type Field struct {
 	Col     int    `json:"col"`
 	EndLine int    `json:"endLine"`
 	EndCol  int    `json:"endCol"`
+	Snippet string `json:"snippet"`
 }
 
 func parse(src string) (*Program, error) {

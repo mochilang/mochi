@@ -1,5 +1,0 @@
-let ic = match path with
-let txt = _read_all ic in
-let text = _read_input path in
-let oc = match path with
-let rows = _load (Some "tests/compiler/ocaml/people.json") (let tbl = Hashtbl.create 1 in Hashtbl.add tbl "format" "json", tbl)
