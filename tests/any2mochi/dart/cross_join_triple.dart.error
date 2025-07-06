@@ -1,0 +1,12 @@
+parse error: parse error: 18:65: lexer: invalid input text "' '))\n  }\n}\n"
+
+  1| void main() {
+  2| 	dynamic nums = [1, 2];
+  3| 	dynamic letters = ["A", "B"];
+  4| 	dynamic bools = [true, false];
+  5| 	dynamic combos = (() {
+  6| 	var _res = [];
+  7| 	for (var n in nums) {
+  8| 		for (var l in letters) {
+  9| 			for (var b in bools) {
+ 10| 				_res.add({"n": n, "l": l, "b": b});

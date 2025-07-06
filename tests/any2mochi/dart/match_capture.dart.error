@@ -1,0 +1,12 @@
+parse error: parse error: 4:29: lexer: invalid input text "; }\n  if (_t is ..."
+
+  1| abstract class Tree {}
+  2| class Leaf extends Tree {
+  3| 	Leaf();
+  4| }
+  5| class Node extends Tree {
+  6| 	dynamic left;
+  7| 	dynamic value;
+  8| 	dynamic right;
+  9| 	Node({this.left, this.value, this.right});
+ 10| }

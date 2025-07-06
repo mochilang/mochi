@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
 
@@ -271,6 +272,88 @@ func runConvertRunGolden(t *testing.T, dir, pattern string, convert func(string)
 	return allErrs
 }
 
+func runConvertRunStatus(t *testing.T, dir, pattern string, convert func(string) ([]byte, error), lang, outExt, errExt string) map[string]string {
+	files, err := filepath.Glob(filepath.Join(dir, pattern))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(files) == 0 {
+		t.Fatalf("no files: %s", filepath.Join(dir, pattern))
+	}
+	status := make(map[string]string)
+	for _, src := range files {
+		var name string
+		switch {
+		case strings.HasSuffix(src, ".go.out"):
+			name = strings.TrimSuffix(filepath.Base(src), ".go.out")
+		case strings.HasSuffix(src, ".py.out"):
+			name = strings.TrimSuffix(filepath.Base(src), ".py.out")
+		case strings.HasSuffix(src, ".ts.out"):
+			name = strings.TrimSuffix(filepath.Base(src), ".ts.out")
+		case strings.HasSuffix(src, ".f90.out"):
+			name = strings.TrimSuffix(filepath.Base(src), ".f90.out")
+		case strings.HasSuffix(src, ".pas.out"):
+			name = strings.TrimSuffix(filepath.Base(src), ".pas.out")
+		case strings.HasSuffix(src, ".java.out"):
+			name = strings.TrimSuffix(filepath.Base(src), ".java.out")
+		default:
+			name = strings.TrimSuffix(filepath.Base(src), filepath.Ext(src))
+		}
+
+		var errMsg string
+		t.Run(name, func(t *testing.T) {
+			out, err := convert(src)
+			root := rootDir(t)
+			outDir := filepath.Join(root, "tests/any2mochi", lang)
+			os.MkdirAll(outDir, 0755)
+			outPath := filepath.Join(outDir, name+outExt)
+			errPath := filepath.Join(outDir, name+errExt)
+			renameLegacy(outDir, lang, name, outExt)
+			renameLegacy(outDir, lang, name, errExt)
+
+			if err == nil {
+				prog, pErr := parser.ParseString(string(out))
+				if pErr != nil {
+					err = fmt.Errorf("parse error: %w", pErr)
+				} else {
+					env := types.NewEnv(nil)
+					if errs := types.Check(prog, env); len(errs) > 0 {
+						err = fmt.Errorf("type error: %v", errs[0])
+					} else if p2, vErr := vm.CompileWithSource(prog, env, string(out)); vErr != nil {
+						err = fmt.Errorf("vm compile error: %w", vErr)
+					} else {
+						var buf bytes.Buffer
+						m := vm.New(p2, &buf)
+						if rErr := m.Run(); rErr != nil {
+							if ve, ok := rErr.(*vm.VMError); ok {
+								err = fmt.Errorf("vm run error:\n%s", ve.Format(p2))
+							} else {
+								err = fmt.Errorf("vm run error: %v", rErr)
+							}
+						}
+					}
+				}
+			}
+
+			if err != nil {
+				errMsg = err.Error()
+				if *update {
+					os.WriteFile(outPath, nil, 0644)
+					msg := fmt.Sprintf("%v\n\n%s", err, snippetFromFile(src))
+					os.WriteFile(errPath, normalizeOutput(rootDir(t), []byte(msg)), 0644)
+				}
+			} else if *update {
+				os.WriteFile(errPath, nil, 0644)
+				removeIfEmpty(errPath)
+				os.WriteFile(outPath, normalizeOutput(rootDir(t), out), 0644)
+			}
+		})
+
+		status[name] = errMsg
+	}
+	return status
+}
+
 func rootDir(t *testing.T) string { return findRepoRoot(t) }
 
 func findRepoRoot(t *testing.T) string {
@@ -317,6 +400,12 @@ func RunConvertRunGolden(t *testing.T, dir, pattern string, convert func(string)
 	return runConvertRunGolden(t, dir, pattern, convert, lang, outExt, errExt)
 }
 
+// RunConvertRunStatus behaves like RunConvertRunGolden but returns a map of
+// file names to error messages. A blank error indicates success.
+func RunConvertRunStatus(t *testing.T, dir, pattern string, convert func(string) ([]byte, error), lang, outExt, errExt string) map[string]string {
+	return runConvertRunStatus(t, dir, pattern, convert, lang, outExt, errExt)
+}
+
 // WriteErrorsMarkdown writes all error messages to ERRORS.md in the provided
 // directory.
 func WriteErrorsMarkdown(dir string, errs []string) {
@@ -329,6 +418,33 @@ func WriteErrorsMarkdown(dir string, errs []string) {
 	} else {
 		for _, e := range errs {
 			buf.WriteString("- " + e + "\n")
+		}
+	}
+	_ = os.WriteFile(path, []byte(buf.String()), 0644)
+}
+
+// WriteStatusMarkdown writes conversion statuses for each file.
+// The status map should contain the base filename without extension
+// mapped to an optional error message. A missing message indicates success.
+func WriteStatusMarkdown(dir string, status map[string]string) {
+	_ = os.MkdirAll(dir, 0755)
+	path := filepath.Join(dir, "ERRORS.md")
+	var buf strings.Builder
+	buf.WriteString("# Errors\n\n")
+	if len(status) == 0 {
+		buf.WriteString("None\n")
+	} else {
+		names := make([]string, 0, len(status))
+		for n := range status {
+			names = append(names, n)
+		}
+		sort.Strings(names)
+		for _, n := range names {
+			if msg := status[n]; msg != "" {
+				buf.WriteString("- " + n + ": " + msg + "\n")
+			} else {
+				buf.WriteString("- " + n + ": ok\n")
+			}
 		}
 	}
 	_ = os.WriteFile(path, []byte(buf.String()), 0644)

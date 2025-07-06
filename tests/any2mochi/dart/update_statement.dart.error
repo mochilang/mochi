@@ -1,0 +1,12 @@
+parse error: parse error: 7:242: lexer: invalid input text "'expect failed')..."
+
+  1| import 'dart:io';
+  2| 
+  3| class Person {
+  4|   String name;
+  5|   int age;
+  6|   String status;
+  7|   Person({required this.name, required this.age, required this.status});
+  8|   factory Person.fromJson(Map<String,dynamic> m) {
+  9|     return Person(name: m['name'] as String, age: m['age'] as int, status: m['status'] as String);
+ 10|   }

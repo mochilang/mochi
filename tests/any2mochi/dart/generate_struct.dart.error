@@ -1,0 +1,12 @@
+parse error: parse error: 5:59: unexpected token "," (expected ")")
+
+  1| import 'dart:convert';
+  2| 
+  3| class Info {
+  4| 	String msg;
+  5| 	Info({required this.msg});
+  6| 	factory Info.fromJson(Map<String,dynamic> m) {
+  7| 		return Info(msg: m['msg'] as String);
+  8| 	}
+  9| }
+ 10| _structParsers['Info'] = (m) => Info.fromJson(m);

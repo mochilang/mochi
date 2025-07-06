@@ -1,6 +1,0 @@
-fun listit(): any {
-  return [Empty()]
-}
-fun main() {
-  print(listit().length)
-}

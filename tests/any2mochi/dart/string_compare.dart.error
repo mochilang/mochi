@@ -1,0 +1,13 @@
+type error: error[T004]: `` is not callable
+  --> :2:23
+
+help:
+  Use a function or closure in this position.
+
+  1| void main() {
+  2|         print(("a".compareTo("b") < 0));
+  3|         print(("a".compareTo("a") <= 0));
+  4|         print(("b".compareTo("a") > 0));
+  5|         print(("b".compareTo("b") >= 0));
+  6| }
+  7|

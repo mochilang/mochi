@@ -1,0 +1,12 @@
+parse error: parse error: 17:56: lexer: invalid input text "' '))\n  }\n}\nfun ..."
+
+  1| import 'dart:io';
+  2| import 'dart:convert';
+  3| import 'package:yaml/yaml.dart';
+  4| 
+  5| class Person {
+  6| 	String name;
+  7| 	int age;
+  8| 	String email;
+  9| 	Person({required this.name, required this.age, required this.email});
+ 10| 	factory Person.fromJson(Map<String,dynamic> m) {

@@ -1,0 +1,16 @@
+type error: error[T018]: type any does not support indexing
+  --> :9:10
+
+help:
+  Only `list<T>` and `map<K,V>` can be indexed.
+
+  1| dynamic Leaf() {
+  2| 	return {"__name": "Leaf"};
+  3| }
+  4| 
+  5| dynamic Node(left, value, right) {
+  6| 	return {"__name": "Node", "left": left, "value": value, "right": right};
+  7| }
+  8| 
+  9| void main() {
+ 10| 	dynamic tree = Node(Leaf(), 1, Leaf());

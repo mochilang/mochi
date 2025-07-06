@@ -7,6 +7,7 @@ void main() async {
   final unit = parseString(content: src).unit;
   final funcs = <Map<String, dynamic>>[];
   final classes = <Map<String, dynamic>>[];
+  final enums = <Map<String, dynamic>>[];
   for (var d in unit.declarations) {
     if (d is ClassDeclaration) {
       final name = d.name.lexeme;
@@ -27,6 +28,24 @@ void main() async {
       classes.add({
         'name': name,
         'fields': fields,
+        'start': start,
+        'end': end,
+        'doc': doc,
+      });
+    } else if (d is EnumDeclaration) {
+      final name = d.name.lexeme;
+      final members = <String>[];
+      for (var c in d.constants) {
+        members.add(c.name.lexeme);
+      }
+      final start = unit.lineInfo.getLocation(d.offset).lineNumber;
+      final end = unit.lineInfo.getLocation(d.end).lineNumber;
+      final doc = d.documentationComment?.tokens
+              .map((t) => t.toString().replaceFirst('///', '').trim())
+              .join('\n') ?? '';
+      enums.add({
+        'name': name,
+        'members': members,
         'start': start,
         'end': end,
         'doc': doc,
@@ -58,6 +77,10 @@ void main() async {
       });
     }
   }
-  final ast = {'functions': funcs, 'classes': classes};
+  final ast = {
+    'functions': funcs,
+    'classes': classes,
+    'enums': enums,
+  };
   stdout.write(JsonEncoder.withIndent('', '  ').convert(ast));
 }

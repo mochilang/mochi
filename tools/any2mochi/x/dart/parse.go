@@ -37,12 +37,29 @@ type classJSON struct {
 	Doc       string      `json:"doc,omitempty"`
 }
 
+type dartEnum struct {
+	Name      string
+	Members   []string
+	StartLine int
+	EndLine   int
+	Doc       string
+}
+
+type enumJSON struct {
+	Name      string   `json:"name"`
+	Members   []string `json:"members"`
+	StartLine int      `json:"start"`
+	EndLine   int      `json:"end"`
+	Doc       string   `json:"doc,omitempty"`
+}
+
 type ast struct {
 	Functions []funcJSON  `json:"functions"`
 	Classes   []classJSON `json:"classes"`
+	Enums     []enumJSON  `json:"enums"`
 }
 
-func parseCLI(src string) ([]function, []class, error) {
+func parseCLI(src string) ([]function, []class, []dartEnum, error) {
 	if dartPath, err := exec.LookPath("dart"); err == nil {
 		root, rErr := repoRoot()
 		if rErr == nil {
@@ -54,8 +71,8 @@ func parseCLI(src string) ([]function, []class, error) {
 			cmd.Stdout = &out
 			cmd.Stderr = &errBuf
 			if err := cmd.Run(); err == nil {
-				f, c, dErr := decodeFuncs(out.Bytes())
-				return f, c, dErr
+				f, c, e, dErr := decodeFuncs(out.Bytes())
+				return f, c, e, dErr
 			}
 		}
 	}
@@ -64,7 +81,7 @@ func parseCLI(src string) ([]function, []class, error) {
 	if err != nil {
 		root, rErr := repoRoot()
 		if rErr != nil {
-			return nil, nil, rErr
+			return nil, nil, nil, rErr
 		}
 		cmd := exec.Command("go", "run", filepath.Join(root, "cmd", "dartast"))
 		cmd.Stdin = bytes.NewBufferString(src)
@@ -74,12 +91,12 @@ func parseCLI(src string) ([]function, []class, error) {
 		cmd.Stderr = &errBuf
 		if runErr := cmd.Run(); runErr != nil {
 			if errBuf.Len() > 0 {
-				return nil, nil, fmt.Errorf("%v: %s", runErr, errBuf.String())
+				return nil, nil, nil, fmt.Errorf("%v: %s", runErr, errBuf.String())
 			}
-			return nil, nil, runErr
+			return nil, nil, nil, runErr
 		}
-		f, c, dErr := decodeFuncs(out.Bytes())
-		return f, c, dErr
+		f, c, e, dErr := decodeFuncs(out.Bytes())
+		return f, c, e, dErr
 	}
 	cmd := exec.Command(path)
 	cmd.Stdin = bytes.NewBufferString(src)
@@ -89,18 +106,18 @@ func parseCLI(src string) ([]function, []class, error) {
 	cmd.Stderr = &errBuf
 	if err := cmd.Run(); err != nil {
 		if errBuf.Len() > 0 {
-			return nil, nil, fmt.Errorf("%v: %s", err, errBuf.String())
+			return nil, nil, nil, fmt.Errorf("%v: %s", err, errBuf.String())
 		}
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
-	f, c, dErr := decodeFuncs(out.Bytes())
-	return f, c, dErr
+	f, c, e, dErr := decodeFuncs(out.Bytes())
+	return f, c, e, dErr
 }
 
-func decodeFuncs(data []byte) ([]function, []class, error) {
+func decodeFuncs(data []byte) ([]function, []class, []dartEnum, error) {
 	var raw ast
 	if err := json.Unmarshal(data, &raw); err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	funcs := make([]function, 0, len(raw.Functions))
 	for _, f := range raw.Functions {
@@ -126,7 +143,11 @@ func decodeFuncs(data []byte) ([]function, []class, error) {
 		}
 		classes = append(classes, class{Name: c.Name, Fields: fields, StartLine: c.StartLine, EndLine: c.EndLine, Doc: c.Doc})
 	}
-	return funcs, classes, nil
+	enums := make([]dartEnum, 0, len(raw.Enums))
+	for _, e := range raw.Enums {
+		enums = append(enums, dartEnum{Name: e.Name, Members: e.Members, StartLine: e.StartLine, EndLine: e.EndLine, Doc: e.Doc})
+	}
+	return funcs, classes, enums, nil
 }
 
 func repoRoot() (string, error) {

@@ -1,9 +1,0 @@
-fun main() {
-  _models["quick"] = {"provider": "openai"}
-  let x: string = _genText("hi", "quick", null)
-  print(x)
-}
-fun _genText(prompt: string, model: string, Map<String: any, params: dynamic>): string {
-  // TODO: integrate with an LLM
-  return prompt
-}

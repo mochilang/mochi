@@ -1,0 +1,12 @@
+parse error: parse error: 3:37: lexer: invalid input text "?? ''\n  print(\"E..."
+
+  1| import 'dart:io';
+  2| 
+  3| void main() {
+  4| 	print("Enter first input:");
+  5| 	dynamic input1 = stdin.readLineSync() ?? '';
+  6| 	print("Enter second input:");
+  7| 	dynamic input2 = stdin.readLineSync() ?? '';
+  8| 	print(["You entered:".toString(), input1.toString(), ",".toString(), input2.toString()].join(' '));
+  9| }
+ 10|

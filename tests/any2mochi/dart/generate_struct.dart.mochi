@@ -1,7 +1,0 @@
-type Info {
-  msg: string
-}
-fun main() {
-  let info: Info = _genStruct<Info>("{\"msg\": \"hello\"}", "", null)
-  print(info.msg)
-}

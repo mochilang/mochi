@@ -1,0 +1,11 @@
+parse error: parse error: 2:14: unexpected token "=>" (expected "}")
+
+  1| dynamic makeAdder(n) {
+  2| 	return (x) => (x + n);
+  3| }
+  4| 
+  5| void main() {
+  6| 	dynamic add10 = makeAdder(10);
+  7| 	print(add10(7));
+  8| }
+  9|

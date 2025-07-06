@@ -1,0 +1,12 @@
+parse error: parse error: 35:34: invalid quoted string "\"costs \\$\"": invalid syntax
+
+  1| class Product {
+  2| 	dynamic name;
+  3| 	dynamic price;
+  4| 	Product({this.name, this.price});
+  5| }
+  6| 
+  7| void main() {
+  8| 	dynamic products = [Product(name: "Laptop", price: 1500), Product(name: "Smartphone", price: 900), Product(name: "Tablet", price: 600), Product(name: "Monitor", price: 300), Product(name: "Keyboard", price: 100), Product(name: "Mouse", price: 50), Product(name: "Headphones", price: 200)];
+  9| 	dynamic expensive = (() {
+ 10| 	var _res = [];

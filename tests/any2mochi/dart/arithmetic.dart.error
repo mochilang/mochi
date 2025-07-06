@@ -1,0 +1,10 @@
+parse error: parse error: 5:12: lexer: invalid input text "~/ 2))\n  print((..."
+
+  1| void main() {
+  2| 	print((1 + 2));
+  3| 	print((5 - 3));
+  4| 	print((4 * 2));
+  5| 	print((8 ~/ 2));
+  6| 	print((7 % 3));
+  7| }
+  8|
