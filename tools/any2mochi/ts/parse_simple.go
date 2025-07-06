@@ -79,11 +79,18 @@ func tsFunctionBody(src string) []string {
 				end = len(s)
 			}
 			stmt := strings.TrimSpace(s[:end])
-			stmt = strings.TrimPrefix(stmt, "let ")
-			stmt = strings.TrimPrefix(stmt, "const ")
-			stmt = strings.TrimPrefix(stmt, "var ")
+			kw := "let"
+			switch {
+			case strings.HasPrefix(stmt, "var "):
+				kw = "var"
+				stmt = strings.TrimPrefix(stmt, "var ")
+			case strings.HasPrefix(stmt, "let "):
+				stmt = strings.TrimPrefix(stmt, "let ")
+			case strings.HasPrefix(stmt, "const "):
+				stmt = strings.TrimPrefix(stmt, "const ")
+			}
 			if eq := strings.Index(stmt, "="); eq != -1 {
-				lines = append(lines, "let "+strings.TrimSpace(stmt))
+				lines = append(lines, kw+" "+strings.TrimSpace(stmt))
 			} else {
 				uninit[strings.TrimSpace(stmt)] = true
 			}

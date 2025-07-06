@@ -147,9 +147,9 @@ func (c *Compiler) collectGlobals(stmts []*parser.Statement) {
 			}
 			ts := tsType(typ)
 			if ts != "" {
-				c.globals[name] = fmt.Sprintf("let %s: %s", name, ts)
+				c.globals[name] = fmt.Sprintf("var %s: %s", name, ts)
 			} else {
-				c.globals[name] = fmt.Sprintf("let %s", name)
+				c.globals[name] = fmt.Sprintf("var %s", name)
 			}
 		case s.Fetch != nil:
 			name := sanitizeName(s.Fetch.Target)
@@ -555,16 +555,16 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 	typStr := tsType(typ)
 	if c.moduleScope && c.indent == 1 {
 		if typStr != "" {
-			c.globals[name] = fmt.Sprintf("let %s: %s", name, typStr)
+			c.globals[name] = fmt.Sprintf("var %s: %s", name, typStr)
 		} else {
-			c.globals[name] = fmt.Sprintf("let %s", name)
+			c.globals[name] = fmt.Sprintf("var %s", name)
 		}
 		c.writeln(fmt.Sprintf("%s = %s", name, value))
 	} else {
 		if typStr != "" {
-			c.writeln(fmt.Sprintf("let %s: %s = %s", name, typStr, value))
+			c.writeln(fmt.Sprintf("var %s: %s = %s", name, typStr, value))
 		} else {
-			c.writeln(fmt.Sprintf("let %s = %s", name, value))
+			c.writeln(fmt.Sprintf("var %s = %s", name, value))
 		}
 	}
 	return nil
@@ -716,31 +716,31 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 		c.buf.WriteString(fmt.Sprintf("if (%s) {\n", cond))
 		c.indent++
 	}
-        for _, it := range u.Set.Items {
-                if key, ok := identName(it.Key); ok {
-                        val, err := c.compileExpr(it.Value)
-                        if err != nil {
-                                c.env = orig
-                                return err
-                        }
-                        c.writeIndent()
-                        c.buf.WriteString(fmt.Sprintf("_item.%s = %s;\n", sanitizeName(key), val))
-                        continue
-                }
+	for _, it := range u.Set.Items {
+		if key, ok := identName(it.Key); ok {
+			val, err := c.compileExpr(it.Value)
+			if err != nil {
+				c.env = orig
+				return err
+			}
+			c.writeIndent()
+			c.buf.WriteString(fmt.Sprintf("_item.%s = %s;\n", sanitizeName(key), val))
+			continue
+		}
 
-                keyExpr, err := c.compileExpr(it.Key)
-                if err != nil {
-                        c.env = orig
-                        return err
-                }
-                valExpr, err := c.compileExpr(it.Value)
-                if err != nil {
-                        c.env = orig
-                        return err
-                }
-                c.writeIndent()
-                c.buf.WriteString(fmt.Sprintf("_item[%s] = %s;\n", keyExpr, valExpr))
-        }
+		keyExpr, err := c.compileExpr(it.Key)
+		if err != nil {
+			c.env = orig
+			return err
+		}
+		valExpr, err := c.compileExpr(it.Value)
+		if err != nil {
+			c.env = orig
+			return err
+		}
+		c.writeIndent()
+		c.buf.WriteString(fmt.Sprintf("_item[%s] = %s;\n", keyExpr, valExpr))
+	}
 	if u.Where != nil {
 		c.indent--
 		c.writeIndent()
