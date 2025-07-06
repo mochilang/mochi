@@ -110,3 +110,22 @@ func writeErrors(dir string, errs []string) {
 	}
 	_ = os.WriteFile(path, []byte(b.String()), 0644)
 }
+
+func findRepoRoot(t *testing.T) string {
+	dir, err := os.Getwd()
+	if err != nil {
+		t.Fatal("cannot determine working directory")
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	t.Fatal("go.mod not found (not in Go module)")
+	return ""
+}
