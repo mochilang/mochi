@@ -50,7 +50,7 @@ func diagnostics(src string, diags []any2mochi.Diagnostic) string {
 		if from < 0 {
 			from = 0
 		}
-		to := l + 1
+		to := l + 2
 		if to >= len(lines) {
 			to = len(lines) - 1
 		}
@@ -210,7 +210,7 @@ func snippetAround(src string, line, col int) string {
 	if start < 0 {
 		start = 0
 	}
-	end := line
+	end := line + 1
 	if end > len(lines) {
 		end = len(lines)
 	}
@@ -376,6 +376,16 @@ func parseBody(body string) []string {
 			out = append(out, "  expect "+cond)
 		case strings.HasPrefix(c, "findall(") && strings.Contains(c, "grandparent"):
 			out = append(out, "  let g = query grandparent(x, z)")
+		case strings.HasPrefix(c, "findall("):
+			re := regexp.MustCompile(`findall\([^,]+,\s*([A-Za-z_][A-Za-z0-9_]*)\(([^)]*)\),\s*([^\)]+)\)`)
+			if m := re.FindStringSubmatch(c); len(m) == 4 {
+				pred := strings.TrimSpace(m[1])
+				args := strings.TrimSpace(m[2])
+				res := strings.TrimSpace(m[3])
+				out = append(out, fmt.Sprintf("  let %s = query %s(%s)", res, pred, args))
+			} else {
+				out = append(out, "  // "+c)
+			}
 		case strings.HasPrefix(c, "length("):
 			arg := strings.TrimPrefix(c, "length(")
 			arg = strings.TrimSuffix(arg, ")")
