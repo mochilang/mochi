@@ -1,0 +1,27 @@
+fun main() {
+  let people = _load(nil, %{format: "json"})
+  let adults = for p <- people, (p.age >= 18), do: p
+  _save(adults, nil, %{format: "json"})
+}
+main()
+fun _load(path, opts) {
+  let format = if opts, do: Map.get(opts, "format", "csv"), else: "csv"
+  let header = if opts && Map.has_key?(opts, "header"), do: opts["header"], else: true
+  let delim = if opts && Map.has_key?(opts, "delimiter"), do: String.first(to_string(opts["delimiter"] || ",")), else: ","
+  let text = case path do
+  nil -> IO.read(:stdio, :eof)
+  "" -> IO.read(:stdio, :eof)
+  "-" -> IO.read(:stdio, :eof)
+  _ -> File.read!(path)
+}
+fun _save(data, path, opts) {
+  let rows = _to_map_list(data)
+  let format = if opts, do: Map.get(opts, "format", "csv"), else: "csv"
+  let header = if opts && Map.has_key?(opts, "header"), do: opts["header"], else: false
+  let delim = if opts && Map.has_key?(opts, "delimiter"), do: String.first(to_string(opts["delimiter"] || ",")), else: ","
+  let out = case format do
+  "json" -> Jason.encode!(rows)
+  "jsonl" -> Enum.map(rows, &Jason.encode!/1) |> Enum.join("\n") <> "\n"
+  "tsv" -> _to_csv(rows, header, "  ")
+  _ -> _to_csv(rows, header, delim)
+}

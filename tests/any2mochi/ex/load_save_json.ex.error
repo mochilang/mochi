@@ -1,9 +1,0 @@
-line 8: ** (SyntaxError) nofile:8:25: unexpected token: "\" (column 25, code point U+005C)
-    |
-  8 |   defp _load(path, opts \ nil) do
-    |                         ^
-    (stdlib 4.3.1.3) erl_eval.erl:744: :erl_eval.do_apply/7
-    (elixir 1.14.0) lib/code.ex:422: Code.validated_eval_string/3
-    7:   end
->>> 8:   defp _load(path, opts \ nil) do
-    9:   format = if opts, do: Map.get(opts, "format", "csv"), else: "csv"

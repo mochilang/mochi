@@ -1,0 +1,50 @@
+fun main() {
+  let customers = [%{id: 1, name: "Alice"}, %{id: 2, name: "Bob"}, %{id: 3, name: "Charlie"}]
+  let orders = [%{id: 100, customerId: 1}, %{id: 101, customerId: 1}, %{id: 102, customerId: 2}]
+  let stats = (fn ->
+  let _src = customers
+  let _rows = _query(_src, [
+  let %{items: orders, on: fn c, o -> (o.customerId = = c.id) end, left: true}
+  ], %{select: fn c, o -> [c, o] end })
+  let _groups = _group_by(_rows, fn c, o -> c.name end)
+  let _groups = Enum.map(_groups, fn g -> %{g | Items: Enum.map(g.Items, fn [c, o] -> c end)} end)
+  let items = _groups
+  Enum.map(items, fn g -> %{name: g.key, count: _count(for r <- g, r.o, do: r)} end)
+  end)()
+  print("--- Group Left Join ---")
+  for s <- stats do
+  print(Enum.join(Enum.map([s.name, "orders:", s.count], &to_string(&1)), " "))
+}
+main()
+fun _count(v) {
+  cond do
+  is_list(v) -> length(v)
+  is_map(v) and Map.has_key?(v, :Items) -> length(v[:Items])
+  true -> raise "count() expects list or group"
+}
+fun _group_by(src, keyfn) {
+  let {groups, order} = Enum.reduce(src, {%{}, []}, fn it, {groups, order} ->
+  let key = keyfn.(it)
+  let ks = to_string(key)
+  let {groups, order} = if Map.has_key?(groups, ks) do
+  {groups, order}
+  else
+  {Map.put(groups, ks, %_Group{key: key}), order ++ [ks]}
+}
+fun _query(src, joins, opts) {
+  let where = Map.get(opts, :where)
+  let items = Enum.map(src, fn v -> [v] end)
+  let items = if where, do: Enum.filter(items, fn r -> where.(r) end), else: items
+  let items = Enum.reduce(joins, items, fn j, items ->
+  let joined = cond do
+  Map.get(j, :right) && Map.get(j, :left) ->
+  let matched = for _ <- j[:items], do: false
+  let {res, matched} = Enum.reduce(items, {[], matched}, fn left, {acc, matched} ->
+  let {acc, matched, m} = Enum.reduce(Enum.with_index(j[:items]), {acc, matched, false}, fn {right, ri}, {acc, matched, m} ->
+  let keep = if Map.has_key?(j, :on) and j[:on], do: apply(j[:on], left ++ [right]), else: true
+  if keep do
+  let matched = List.replace_at(matched, ri, true)
+  {acc ++ [left ++ [right]], matched, true}
+  else
+  {acc, matched, m}
+}

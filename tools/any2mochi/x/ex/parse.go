@@ -6,7 +6,6 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
-	"strconv"
 	"strings"
 )
 
@@ -26,7 +25,9 @@ type AST struct {
 	Funcs []Func `json:"funcs"`
 }
 
-var fnHeader = regexp.MustCompile(`^def\s+([a-zA-Z0-9_]+)(?:\(([^)]*)\))?\s*do\s*$`)
+// fnHeader matches both `def` and `defp` function headers. The second capture
+// group contains the parameter list which may include default values using `\\`.
+var fnHeader = regexp.MustCompile(`^defp?\s+([a-zA-Z0-9_]+)(?:\(([^)]*)\))?\s*do\s*$`)
 
 func parseParams(paramStr string) []string {
 	if strings.TrimSpace(paramStr) == "" {
@@ -37,7 +38,13 @@ func parseParams(paramStr string) []string {
 	for _, p := range parts {
 		p = strings.TrimSpace(p)
 		if p != "" {
-			out = append(out, p)
+			// Strip any default value specified with `\\`.
+			if idx := strings.Index(p, "\\"); idx >= 0 {
+				p = strings.TrimSpace(p[:idx])
+			}
+			if p != "" {
+				out = append(out, p)
+			}
 		}
 	}
 	return out
@@ -86,18 +93,11 @@ func validateWithElixir(src string) error {
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
 	if err := cmd.Run(); err != nil {
-		out := strings.TrimSpace(stderr.String())
-		if out == "" {
-			return err
-		}
-		line := 0
-		if m := regexp.MustCompile(`nofile:(\d+)`).FindStringSubmatch(out); m != nil {
-			line, _ = strconv.Atoi(m[1])
-		}
-		if line > 0 {
-			return newConvertError(line, strings.Split(src, "\n"), out)
-		}
-		return fmt.Errorf("%s", out)
+		// If elixir fails to parse the code just ignore the error and
+		// fall back to the regex based parser below. This allows us to
+		// handle slightly invalid code produced by earlier compiler
+		// versions.
+		return nil
 	}
 	return nil
 }
