@@ -12,7 +12,7 @@ import (
 // Convert converts Smalltalk source code to Mochi using the language server.
 func Convert(src string) ([]byte, error) {
 	if ast, err := parseCLI(src); err == nil {
-		if out, err := convertAST(ast); err == nil {
+		if out, err := convertAST(ast, src); err == nil {
 			return out, nil
 		}
 	}
@@ -310,6 +310,24 @@ func convertSimpleStmt(l string) string {
 		return "return " + strings.TrimSpace(strings.TrimPrefix(l, "^"))
 	}
 	return ""
+}
+
+func formatError(src string, line int, msg string) string {
+	lines := strings.Split(src, "\n")
+	start := line - 2
+	if start < 0 {
+		start = 0
+	}
+	end := line + 1
+	if end > len(lines) {
+		end = len(lines)
+	}
+	var out strings.Builder
+	out.WriteString(fmt.Sprintf("line %d: %s\n", line, msg))
+	for i := start; i < end; i++ {
+		out.WriteString(fmt.Sprintf("%3d: %s\n", i+1, lines[i]))
+	}
+	return strings.TrimSpace(out.String())
 }
 
 func numberedSnippet(src string) string {
