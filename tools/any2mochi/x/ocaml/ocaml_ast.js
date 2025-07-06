@@ -91,7 +91,10 @@ for (let i = 0; i < tree.rootNode.namedChildren.length; i++) {
     if (params.length > 0) {
       prog.funcs.push({ name, params, body: body.trim(), line, col, endLine, endCol });
     } else if (name) {
-      prog.vars.push({ name, expr: body.trim().replace(/;$/, ""), line, col, endLine, endCol });
+      const expr = body.trim().replace(/;$/, "");
+      const mutable = expr.startsWith("ref ") || expr.startsWith("ref(");
+      const cleaned = mutable ? expr.replace(/^ref\s*\(?/, '').replace(/\)?$/, '') : expr;
+      prog.vars.push({ name, expr: cleaned, mutable, line, col, endLine, endCol });
     } else {
       prog.prints.push({ expr: body.trim().replace(/;$/, ""), line, col, endLine, endCol });
     }

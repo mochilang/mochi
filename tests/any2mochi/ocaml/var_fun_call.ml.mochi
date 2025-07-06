@@ -1,0 +1,2 @@
+var double = (fun x -> x * 2)
+print((!double 3))

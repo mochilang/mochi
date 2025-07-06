@@ -1,0 +1,4 @@
+let n = List.length nums in
+let result = twoSum [2, 7, 11, 15] 9
+print(((List.nth result 0)))
+print(((List.nth result 1)))

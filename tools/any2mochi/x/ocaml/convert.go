@@ -339,15 +339,32 @@ func parseOcamlBody(lines []string, sym parent.DocumentSymbol) []string {
 	body = strings.TrimSpace(body)
 	body = strings.TrimSuffix(body, ";;")
 	body = strings.ReplaceAll(body, "print_endline", "print")
+	body = strings.ReplaceAll(body, "print_string", "print")
+	body = strings.ReplaceAll(body, "print_int", "print")
+	body = strings.ReplaceAll(body, "print_float", "print")
 	body = strings.ReplaceAll(body, "string_of_int", "str")
 	body = strings.ReplaceAll(body, "string_of_float", "str")
 	body = strings.ReplaceAll(body, "string_of_bool", "str")
 	body = strings.ReplaceAll(body, ":=", "=")
 	body = strings.ReplaceAll(body, "!", "")
+	body = strings.ReplaceAll(body, "^", "+")
 	body = strings.ReplaceAll(body, ";", "")
 	var out []string
+	reFor := regexp.MustCompile(`^for\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*([^ ]+)\s+to\s+([^ ]+)\s+do`)
+	reWhile := regexp.MustCompile(`^while\s+(.*)\s+do`)
 	for _, l := range strings.Split(body, "\n") {
 		l = strings.TrimSpace(l)
+		if m := reFor.FindStringSubmatch(l); m != nil {
+			end := strings.TrimSpace(m[3])
+			end = strings.TrimSuffix(strings.TrimSpace(end), "- 1")
+			end = strings.TrimSuffix(end, "-1")
+			l = fmt.Sprintf("for %s in %s..%s {", m[1], strings.TrimSpace(m[2]), end)
+		} else if reWhile.MatchString(l) {
+			m := reWhile.FindStringSubmatch(l)
+			l = fmt.Sprintf("while %s {", strings.TrimSpace(m[1]))
+		} else if l == "done" || l == "done;" {
+			l = "}"
+		}
 		if l != "" {
 			out = append(out, l)
 		}
@@ -358,16 +375,26 @@ func parseOcamlBody(lines []string, sym parent.DocumentSymbol) []string {
 func fallbackOcaml(lines []string) []string {
 	var out []string
 	reLet := regexp.MustCompile(`^let\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(.*)`)
+	reRef := regexp.MustCompile(`^let\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*ref\s+(.*)`)
 	for _, line := range lines {
 		t := strings.TrimSpace(line)
+		if m := reRef.FindStringSubmatch(t); m != nil {
+			expr := strings.TrimSuffix(m[2], ";;")
+			expr = strings.ReplaceAll(expr, ";", ",")
+			out = append(out, fmt.Sprintf("var %s = %s", m[1], strings.TrimSpace(expr)))
+			continue
+		}
 		if m := reLet.FindStringSubmatch(t); m != nil {
 			expr := strings.TrimSuffix(m[2], ";;")
 			expr = strings.ReplaceAll(expr, ";", ",")
 			out = append(out, fmt.Sprintf("let %s = %s", m[1], strings.TrimSpace(expr)))
 			continue
 		}
-		if strings.HasPrefix(t, "print_endline") {
+		if strings.HasPrefix(t, "print_endline") || strings.HasPrefix(t, "print_string") || strings.HasPrefix(t, "print_int") || strings.HasPrefix(t, "print_float") {
 			t = strings.TrimPrefix(t, "print_endline")
+			t = strings.TrimPrefix(t, "print_string")
+			t = strings.TrimPrefix(t, "print_int")
+			t = strings.TrimPrefix(t, "print_float")
 			t = strings.TrimSpace(strings.TrimSuffix(t, ";;"))
 			if strings.HasPrefix(t, "(") && strings.HasSuffix(t, ")") {
 				t = strings.TrimSuffix(strings.TrimPrefix(t, "("), ")")
@@ -376,6 +403,7 @@ func fallbackOcaml(lines []string) []string {
 			t = strings.ReplaceAll(t, "string_of_float", "")
 			t = strings.ReplaceAll(t, "string_of_bool", "")
 			t = strings.ReplaceAll(t, "not ", "!")
+			t = strings.ReplaceAll(t, "^", "+")
 			t = strings.TrimSpace(t)
 			if strings.HasPrefix(t, "str(") && strings.HasSuffix(t, ")") {
 				t = strings.TrimSuffix(strings.TrimPrefix(t, "str("), ")")
