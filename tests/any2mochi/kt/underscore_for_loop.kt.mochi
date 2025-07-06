@@ -3,7 +3,7 @@ fun main() {
   for _ in 0 .. 2 {
     c = (c + 1)
   }
-  for _ in listOf(1, 2 {
+  for _ in listOf(1, 2) {
     c = (c + 1)
   }
   for _ in "ab" {

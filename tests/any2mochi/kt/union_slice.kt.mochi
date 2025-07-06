@@ -1,7 +1,6 @@
-type Empty {}
-type Node {
-  child: Foo
-}
+type Foo =
+  Empty
+  | Node(child: Foo)
 fun listit(): list<Foo> {
   return listOf(Empty())
 }
