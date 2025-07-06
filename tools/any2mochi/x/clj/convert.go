@@ -12,21 +12,21 @@ import (
 	"strings"
 )
 
-type AST struct {
-	Forms []Form `json:"forms"`
+type Program struct {
+	Forms []form `json:"forms"`
 }
 
-type Form struct {
+type form struct {
 	Type   string   `json:"type"`
 	Name   string   `json:"name,omitempty"`
 	Params []string `json:"params,omitempty"`
-	Body   []Node   `json:"body,omitempty"`
-	Value  Node     `json:"value,omitempty"`
+	Body   []node   `json:"body,omitempty"`
+	Value  node     `json:"value,omitempty"`
 }
 
-type Node struct {
+type node struct {
 	Atom string `json:"atom,omitempty"`
-	List []Node `json:"list,omitempty"`
+	List []node `json:"list,omitempty"`
 }
 
 func snippet(src string) string {
@@ -75,8 +75,8 @@ func repoRoot() (string, error) {
 
 // Convert converts Clojure source code to Mochi using the language server.
 func Convert(src string) ([]byte, error) {
-	if ast, err := parseCLI(src); err == nil {
-		return convertAST(ast, src)
+	if prog, err := parseCLI(src); err == nil {
+		return programToMochi(prog, src)
 	}
 	ls := any2mochi.Servers["clj"]
 	syms, diags, err := any2mochi.EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
@@ -310,7 +310,7 @@ func ConvertFile(path string) ([]byte, error) {
 	return Convert(string(data))
 }
 
-func parseCLI(src string) (*AST, error) {
+func parseCLI(src string) (*Program, error) {
 	root, err := repoRoot()
 	if err != nil {
 		return nil, err
@@ -340,27 +340,27 @@ func parseCLI(src string) (*AST, error) {
 		}
 		return nil, fmt.Errorf("clojure: %s", msg)
 	}
-	var ast AST
+	var ast Program
 	if err := json.Unmarshal(out.Bytes(), &ast); err != nil {
 		return nil, err
 	}
 	return &ast, nil
 }
 
-func NodeToSexpr(n Node) sexprNode {
+func nodeToSexpr(n node) sexprNode {
 	if len(n.List) > 0 {
 		var list []sexprNode
 		for _, c := range n.List {
-			list = append(list, NodeToSexpr(c))
+			list = append(list, nodeToSexpr(c))
 		}
 		return list
 	}
 	return n.Atom
 }
 
-func convertAST(ast *AST, src string) ([]byte, error) {
+func programToMochi(p *Program, src string) ([]byte, error) {
 	var out strings.Builder
-	for _, f := range ast.Forms {
+	for _, f := range p.Forms {
 		switch f.Type {
 		case "defn":
 			out.WriteString("fun ")
@@ -373,7 +373,7 @@ func convertAST(ast *AST, src string) ([]byte, error) {
 			} else {
 				out.WriteString(" {\n")
 				for _, b := range f.Body {
-					if s := cljToMochi(NodeToSexpr(b)); s != "" {
+					if s := cljToMochi(nodeToSexpr(b)); s != "" {
 						out.WriteString("  ")
 						out.WriteString(s)
 						out.WriteByte('\n')
@@ -384,14 +384,14 @@ func convertAST(ast *AST, src string) ([]byte, error) {
 		case "def":
 			out.WriteString("let ")
 			out.WriteString(f.Name)
-			if s := cljToMochi(NodeToSexpr(f.Value)); s != "" {
+			if s := cljToMochi(nodeToSexpr(f.Value)); s != "" {
 				out.WriteString(" = ")
 				out.WriteString(s)
 			}
 			out.WriteByte('\n')
 		case "expr":
 			if len(f.Body) == 1 {
-				if s := cljToMochi(NodeToSexpr(f.Body[0])); s != "" {
+				if s := cljToMochi(nodeToSexpr(f.Body[0])); s != "" {
 					out.WriteString(s)
 					out.WriteByte('\n')
 				}
