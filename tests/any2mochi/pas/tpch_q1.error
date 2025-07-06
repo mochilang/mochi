@@ -1,0 +1,4 @@
+line 13: cannot parse
+    12| _tmp0 := specialize TFPGMap<string, integer>.Create;
+->  13| _tmp0.AddOrSetData('returnflag', 'N');
+    14| _tmp0.AddOrSetData('linestatus', 'O');

@@ -1,0 +1,4 @@
+line 18: cannot parse
+    17| begin
+->  18| continue;
+    19| end;

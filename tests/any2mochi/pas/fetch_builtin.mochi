@@ -1,9 +1,0 @@
-fun _fetch(url: string, opts: specialize tfpgmap<string, variant>): string {
-let client: tfphttpclient; sl: tstringlist
-sl = TStringList.Create
-Result = sl.Text
-client = TFPHTTPClient.Create(nil)
-Result = client.Get(url)
-body = _fetch('file://tests/compiler/pas/fetch_builtin.json', nil)
-print((Length(body) > 0))
-}

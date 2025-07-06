@@ -413,6 +413,27 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 	if err != nil {
 		return err
 	}
+	if len(stmt.Then) == 1 && stmt.ElseIf == nil && len(stmt.Else) == 0 {
+		var buf bytes.Buffer
+		prevBuf := c.buf
+		c.buf = buf
+		prevIndent := c.indent
+		c.indent = 0
+		if err := c.compileStmt(stmt.Then[0]); err != nil {
+			c.buf = prevBuf
+			c.indent = prevIndent
+			return err
+		}
+		line := strings.TrimSpace(buf.String())
+		c.buf = prevBuf
+		c.indent = prevIndent
+		if strings.HasSuffix(line, ";") {
+			line = strings.TrimSuffix(line, ";")
+		}
+		c.writeln("if " + cond + " then " + line + ";")
+		return nil
+	}
+
 	c.writeln("if " + cond + " then")
 	c.writeln("begin")
 	c.indent++

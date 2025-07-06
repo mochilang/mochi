@@ -1,0 +1,4 @@
+line 44: cannot parse
+    43| 
+->  44| begin
+    45| _tmp0.name := 'Alice';

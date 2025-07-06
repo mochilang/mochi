@@ -1,4 +1,0 @@
-fun double(x: int): int {
-result = x * 2
-return
-}

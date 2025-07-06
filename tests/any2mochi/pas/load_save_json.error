@@ -1,0 +1,4 @@
+line 23: cannot parse
+    22| sl := TStringList.Create;
+->  23| try
+    24| sl.LoadFromFile(path);

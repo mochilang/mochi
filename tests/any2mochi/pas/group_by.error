@@ -1,0 +1,4 @@
+line 33: cannot parse
+    32| for j := 0 to High(Result) do
+->  33| if VarToStr(Result[j].Key) = ks then begin idx := j; Break; end;
+    34| if idx = -1 then

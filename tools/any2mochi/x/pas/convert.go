@@ -462,8 +462,32 @@ func convertFallback(src string) ([]byte, error) {
 	var out []string
 	inBody := false
 	inFunc := false
-	inLoop := false
+	loopDepth := 0
+	ifDepth := 0
 	inRepeat := false
+	waitingBegin := false
+	addError := func(i int, msg string) ([]byte, error) {
+		snippet := func(idx int) string {
+			start := idx - 1
+			if start < 0 {
+				start = 0
+			}
+			end := idx + 1
+			if end >= len(lines) {
+				end = len(lines) - 1
+			}
+			var b strings.Builder
+			for j := start; j <= end; j++ {
+				prefix := "  "
+				if j == idx {
+					prefix = "->"
+				}
+				b.WriteString(fmt.Sprintf("%s %3d| %s\n", prefix, j+1, strings.TrimSpace(lines[j])))
+			}
+			return b.String()
+		}
+		return nil, fmt.Errorf("line %d: %s\n%s", i+1, msg, snippet(i))
+	}
 	for i := 0; i < len(lines); i++ {
 		l := strings.TrimSpace(lines[i])
 		lower := strings.ToLower(l)
@@ -576,14 +600,14 @@ func convertFallback(src string) ([]byte, error) {
 			}
 			continue
 		}
-		if lower == "end." || (lower == "end;" && !inLoop && !inFunc) {
+		if lower == "end." || (lower == "end;" && loopDepth == 0 && !inFunc) {
 			if inFunc {
 				out = append(out, "}")
 				inFunc = false
 			}
-			if inLoop {
+			for loopDepth > 0 {
 				out = append(out, "}")
-				inLoop = false
+				loopDepth--
 			}
 			if lower == "end." {
 				inBody = false
@@ -593,77 +617,104 @@ func convertFallback(src string) ([]byte, error) {
 		if l == "" {
 			continue
 		}
-		switch {
-		case strings.HasPrefix(lower, "for ") && strings.Contains(lower, " in ") && strings.HasSuffix(lower, " do"):
-			parts := strings.SplitN(l[len("for "):], " in ", 2)
-			varName := strings.TrimSpace(parts[0])
-			iter := strings.TrimSpace(strings.TrimSuffix(parts[1], " do"))
-			out = append(out, fmt.Sprintf("for %s in %s {", varName, iter))
-			if i+1 < len(lines) && strings.TrimSpace(strings.ToLower(lines[i+1])) == "begin" {
-				i++
+		stmts := strings.Split(l, ";")
+		for _, stmt := range stmts {
+			stmt = strings.TrimSpace(stmt)
+			if stmt == "" {
+				continue
 			}
-			inLoop = true
-		case strings.HasPrefix(lower, "for ") && strings.Contains(lower, ":=") && strings.Contains(lower, " to "):
-			varName := strings.TrimSpace(l[len("for "):strings.Index(l, ":=")])
-			rest := l[strings.Index(l, ":=")+2:]
-			toIdx := strings.Index(strings.ToLower(rest), " to ")
-			startExpr := strings.TrimSpace(rest[:toIdx])
-			rest = rest[toIdx+4:]
-			doIdx := strings.Index(strings.ToLower(rest), " do")
-			endExpr := strings.TrimSpace(rest[:doIdx])
-			out = append(out, fmt.Sprintf("for %s in %s..%s {", varName, startExpr, endExpr))
-			if i+1 < len(lines) && strings.TrimSpace(strings.ToLower(lines[i+1])) == "begin" {
-				i++
-			}
-			inLoop = true
-		case strings.HasPrefix(lower, "while ") && strings.Contains(lower, " do"):
-			doIdx := strings.LastIndex(lower, " do")
-			cond := strings.TrimSpace(l[len("while "):doIdx])
-			out = append(out, fmt.Sprintf("while %s {", cond))
-			if i+1 < len(lines) && strings.TrimSpace(strings.ToLower(lines[i+1])) == "begin" {
-				i++
-			}
-			inLoop = true
-		case lower == "repeat":
-			out = append(out, "while true {")
-			inLoop = true
-			inRepeat = true
-		case strings.HasPrefix(lower, "until ") && inRepeat:
-			cond := strings.TrimSuffix(strings.TrimSpace(l[len("until "):]), ";")
-			out = append(out, fmt.Sprintf("if %s { break }", cond))
-			out = append(out, "}")
-			inLoop = false
-			inRepeat = false
-		case lower == "end;" && inLoop:
-			out = append(out, "}")
-			inLoop = false
-		case lower == "begin" && inFunc:
-			// skip function begin
-			continue
-		case strings.HasPrefix(lower, "if ") && strings.HasSuffix(lower, " continue;"):
-			cond := strings.TrimPrefix(l, "if ")
-			cond = strings.TrimSuffix(cond, "continue;")
-			cond = strings.TrimSuffix(strings.TrimSpace(cond), "then")
-			cond = strings.TrimSpace(cond)
-			if strings.HasPrefix(strings.ToLower(cond), "not ") {
-				body := strings.TrimSpace(cond[4:])
-				for strings.HasPrefix(body, "(") && strings.HasSuffix(body, ")") {
-					body = strings.TrimSuffix(strings.TrimPrefix(body, "("), ")")
-					body = strings.TrimSpace(body)
+			lowerStmt := strings.ToLower(stmt)
+			switch {
+			case strings.HasPrefix(lowerStmt, "for ") && strings.Contains(lowerStmt, " in ") && strings.HasSuffix(lowerStmt, " do"):
+				parts := strings.SplitN(stmt[len("for "):], " in ", 2)
+				varName := strings.TrimSpace(parts[0])
+				iter := strings.TrimSpace(strings.TrimSuffix(parts[1], " do"))
+				out = append(out, fmt.Sprintf("for %s in %s {", varName, iter))
+				loopDepth++
+				waitingBegin = true
+			case strings.HasPrefix(lowerStmt, "for ") && strings.Contains(lowerStmt, ":=") && strings.Contains(lowerStmt, " to "):
+				varName := strings.TrimSpace(stmt[len("for "):strings.Index(stmt, ":=")])
+				rest := stmt[strings.Index(stmt, ":=")+2:]
+				toIdx := strings.Index(strings.ToLower(rest), " to ")
+				startExpr := strings.TrimSpace(rest[:toIdx])
+				rest = rest[toIdx+4:]
+				doIdx := strings.Index(strings.ToLower(rest), " do")
+				endExpr := strings.TrimSpace(rest[:doIdx])
+				out = append(out, fmt.Sprintf("for %s in %s..%s {", varName, startExpr, endExpr))
+				loopDepth++
+				waitingBegin = true
+			case strings.HasPrefix(lowerStmt, "while ") && strings.Contains(lowerStmt, " do"):
+				doIdx := strings.LastIndex(lowerStmt, " do")
+				cond := strings.TrimSpace(stmt[len("while "):doIdx])
+				out = append(out, fmt.Sprintf("while %s {", cond))
+				loopDepth++
+				waitingBegin = true
+			case lowerStmt == "repeat":
+				out = append(out, "while true {")
+				loopDepth++
+				inRepeat = true
+			case strings.HasPrefix(lowerStmt, "until ") && inRepeat:
+				cond := strings.TrimSpace(stmt[len("until "):])
+				if strings.HasSuffix(cond, ";") {
+					cond = strings.TrimSuffix(cond, ";")
 				}
-				cond = "!(" + body + ")"
+				out = append(out, fmt.Sprintf("if %s { break }", cond))
+				out = append(out, "}")
+				loopDepth--
+				inRepeat = false
+			case (lowerStmt == "end" || lowerStmt == "end;") && loopDepth > 0:
+				out = append(out, "}")
+				loopDepth--
+				waitingBegin = false
+			case lowerStmt == "begin" && waitingBegin:
+				waitingBegin = false
+				continue
+			case strings.HasPrefix(lowerStmt, "if ") && strings.HasSuffix(lowerStmt, " continue"):
+				cond := strings.TrimSpace(stmt[3:strings.LastIndex(lowerStmt, " continue")])
+				cond = strings.TrimSuffix(cond, " then")
+				out = append(out, fmt.Sprintf("if %s { continue }", cond))
+			case strings.HasPrefix(lowerStmt, "if ") && strings.Contains(lowerStmt, " then"):
+				cond := strings.TrimSpace(stmt[3:strings.Index(lowerStmt, " then")])
+				rest := strings.TrimSpace(stmt[strings.Index(lowerStmt, " then")+5:])
+				if rest == "" {
+					out = append(out, fmt.Sprintf("if %s {", cond))
+					ifDepth++
+					waitingBegin = true
+				} else {
+					// inline single statement
+					if strings.HasSuffix(rest, ";") {
+						rest = strings.TrimSuffix(rest, ";")
+					}
+					if strings.Contains(rest, ":=") {
+						parts := strings.SplitN(rest, ":=", 2)
+						rest = strings.TrimSpace(parts[0]) + " = " + strings.TrimSpace(parts[1])
+					}
+					out = append(out, fmt.Sprintf("if %s { %s }", cond, rest))
+				}
+			case (lowerStmt == "end" || lowerStmt == "end;") && ifDepth > 0:
+				out = append(out, "}")
+				ifDepth--
+				waitingBegin = false
+			case strings.HasPrefix(lowerStmt, "writeln("):
+				expr := strings.TrimSuffix(strings.TrimPrefix(stmt, "writeln("), ")")
+				out = append(out, fmt.Sprintf("print(%s)", expr))
+			case strings.HasPrefix(lowerStmt, "setlength("):
+				// ignore list initialisation helpers
+				continue
+			case strings.HasPrefix(lowerStmt, "generic "):
+				// skip generic helper declarations
+				waitingBegin = true
+				continue
+			case strings.Contains(stmt, ":="):
+				parts := strings.SplitN(stmt, ":=", 2)
+				name := strings.TrimSpace(parts[0])
+				expr := strings.TrimSpace(parts[1])
+				out = append(out, fmt.Sprintf("%s = %s", name, strings.TrimSuffix(expr, ";")))
+			case lowerStmt == "exit" && inFunc:
+				out = append(out, "return")
+			default:
+				return addError(i, "cannot parse")
 			}
-			out = append(out, fmt.Sprintf("if %s { continue }", cond))
-		case strings.HasPrefix(lower, "writeln("):
-			expr := strings.TrimSuffix(strings.TrimPrefix(l, "writeln("), ");")
-			out = append(out, "print("+expr+")")
-		case strings.Contains(l, ":="):
-			parts := strings.SplitN(l, ":=", 2)
-			name := strings.TrimSpace(parts[0])
-			expr := strings.TrimSpace(strings.TrimSuffix(parts[1], ";"))
-			out = append(out, name+" = "+expr)
-		case lower == "exit;" && inFunc:
-			out = append(out, "return")
 		}
 	}
 	if len(out) == 0 {

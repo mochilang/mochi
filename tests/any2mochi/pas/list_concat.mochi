@@ -1,7 +1,0 @@
-if i < 0 then i = Length(arr) + i
-Result = arr[i]
-a = Concat(specialize TArray<integer>([1, 2]), specialize TArray<integer>([3, 4]))
-print(specialize _indexList<integer>(a, 0))
-print(specialize _indexList<integer>(a, 1))
-print(specialize _indexList<integer>(a, 2))
-print(specialize _indexList<integer>(a, 3))

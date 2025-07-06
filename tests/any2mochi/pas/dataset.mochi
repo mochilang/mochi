@@ -10,7 +10,7 @@ _tmp2.name = 'Charlie'
 _tmp2.age = 65
 people = specialize TArray<Person>([_tmp0, _tmp1, _tmp2])
 for p in people {
-if !(p.age >= 18) { continue }
+if not ((p.age >= 18)) { continue }
 _tmp3 = Concat(_tmp3, [p.name])
 }
 names = _tmp3

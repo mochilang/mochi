@@ -1,0 +1,4 @@
+line 43: cannot parse
+    42| 
+->  43| generic procedure _sortBy<T>(var arr: specialize TArray<T>; keys: specialize TArray<Variant>);
+    44| var i,j: integer; tmp: T; k: Variant;
