@@ -1,0 +1,11 @@
+escript not found
+  1: #!/usr/bin/env escript
+  2: -module(main).
+  3: -export([main/1]).
+  4: 
+  5: main(_) ->
+  6:     Rows = mochi_load("", #{format => "json"}),
+  7:     mochi_save(Rows, "", #{format => "json"}).
+  8: 
+  9: 
+ 10: mochi_load(Path, Opts) ->
