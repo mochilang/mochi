@@ -45,6 +45,9 @@ func Convert(src string) ([]byte, error) {
 	for _, it := range ast.Items {
 		switch it.Kind {
 		case "func_decl":
+			if it.Name != nil && strings.HasPrefix(it.Name.BaseName.Name, "_") {
+				continue
+			}
 			out.WriteString("fun ")
 			if it.Name != nil {
 				out.WriteString(it.Name.BaseName.Name)
@@ -87,6 +90,9 @@ func Convert(src string) ([]byte, error) {
 			if it.Name == nil {
 				continue
 			}
+			if strings.HasPrefix(it.Name.BaseName.Name, "_") {
+				continue
+			}
 			out.WriteString("type ")
 			out.WriteString(it.Name.BaseName.Name)
 			out.WriteString(" {\n")
@@ -105,6 +111,9 @@ func Convert(src string) ([]byte, error) {
 			out.WriteString("}\n")
 		case "enum_decl":
 			if it.Name == nil {
+				continue
+			}
+			if strings.HasPrefix(it.Name.BaseName.Name, "_") {
 				continue
 			}
 			out.WriteString("type ")
@@ -291,6 +300,10 @@ func parseStatementsIndent(body string, indent int) []string {
 			l = strings.TrimSpace(l)
 			l = strings.TrimSuffix(l, ";")
 			l = rewriteStructLiteral(l)
+			l = strings.ReplaceAll(l, "_append(", "append(")
+			l = strings.ReplaceAll(l, "_values(", "values(")
+			l = strings.ReplaceAll(l, "_exists(", "exists(")
+			l = strings.ReplaceAll(l, "_sliceString(", "substring(")
 			switch {
 			case l == "}":
 				if indent > 0 {
