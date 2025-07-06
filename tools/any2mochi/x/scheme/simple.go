@@ -48,6 +48,9 @@ func convertNode(n Node) []string {
 	case "if":
 		return convertIf(n)
 	case "let":
+		if f := convertFor(n); f != nil {
+			return f
+		}
 		if w := convertWhile(n); w != nil {
 			return w
 		}
@@ -144,6 +147,75 @@ func convertIf(n Node) []string {
 	} else {
 		out = append(out, "}")
 	}
+	return out
+}
+
+func convertFor(n Node) []string {
+	if len(n.List) != 4 || n.List[0].Atom != "let" || n.List[1].Atom == "" {
+		return nil
+	}
+	if len(n.List[2].List) != 1 {
+		return nil
+	}
+	bind := n.List[2].List[0]
+	if len(bind.List) != 2 || bind.List[0].Atom == "" {
+		return nil
+	}
+	idx := bind.List[0].Atom
+	start := expr(bind.List[1])
+
+	bodyIf := n.List[3]
+	if bodyIf.Atom != "" || len(bodyIf.List) < 3 || bodyIf.List[0].Atom != "if" {
+		return nil
+	}
+	cond := bodyIf.List[1]
+	if cond.Atom != "" || len(cond.List) != 3 || cond.List[0].Atom != "<" || cond.List[1].Atom != idx {
+		return nil
+	}
+	end := expr(cond.List[2])
+	body := bodyIf.List[2]
+	if body.Atom != "" || len(body.List) < 1 || body.List[0].Atom != "begin" {
+		return nil
+	}
+	stmts := body.List[1:]
+	// detect optional element binding
+	name := ""
+	src := ""
+	if len(stmts) > 0 {
+		first := stmts[0]
+		if first.Atom == "" && len(first.List) >= 3 && first.List[0].Atom == "let" {
+			b := first.List[1]
+			if len(b.List) == 1 && len(b.List[0].List) == 2 && b.List[0].List[0].Atom != "" {
+				get := b.List[0].List[1]
+				if get.Atom == "" && len(get.List) == 3 && (get.List[0].Atom == "list-ref" || get.List[0].Atom == "string-ref") && get.List[2].Atom == idx {
+					name = b.List[0].List[0].Atom
+					src = expr(get.List[1])
+					inner := first.List[2]
+					if inner.Atom == "" && len(inner.List) > 0 && inner.List[0].Atom == "begin" {
+						stmts = append(inner.List[1:], stmts[1:]...)
+					} else {
+						stmts = append(inner.List, stmts[1:]...)
+					}
+				}
+			}
+		}
+	}
+	// drop recursive call
+	if len(stmts) > 0 {
+		last := stmts[len(stmts)-1]
+		if last.Atom == "" && len(last.List) >= 1 && last.List[0].Atom == n.List[1].Atom {
+			stmts = stmts[:len(stmts)-1]
+		}
+	}
+	lines := convertBegin(stmts)
+	var out []string
+	if src != "" && name != "" {
+		out = []string{"for " + name + " in " + src + " {"}
+	} else {
+		out = []string{"for " + idx + " in " + start + ".." + end + " {"}
+	}
+	out = append(out, indent(lines)...)
+	out = append(out, "}")
 	return out
 }
 

@@ -4,12 +4,15 @@ import "strings"
 
 // Node represents a parsed Scheme s-expression. When Atom is empty the node
 // contains a list of child nodes. Line and Col store the 1-indexed location of
-// the first token for better diagnostics.
+// the first token and EndLine/EndCol mark the closing token for better
+// diagnostics.
 type Node struct {
-	Atom string
-	List []Node
-	Line int
-	Col  int
+	Atom    string
+	List    []Node
+	Line    int
+	Col     int
+	EndLine int
+	EndCol  int
 }
 
 // String reconstructs the Scheme code represented by the node. It mirrors the
@@ -180,10 +183,12 @@ func tokenize(src string) []token {
 }
 
 type node struct {
-	atom string
-	list []node
-	line int
-	col  int
+	atom    string
+	list    []node
+	line    int
+	col     int
+	endLine int
+	endCol  int
 }
 
 // String reconstructs the Scheme code represented by the node. It is not
@@ -212,10 +217,15 @@ func parseList(toks []token, i int) ([]node, int, error) {
 			if err != nil {
 				return nil, 0, err
 			}
-			nodes = append(nodes, node{list: lst, line: tok.line, col: tok.col})
+			nd := node{list: lst, line: tok.line, col: tok.col}
+			if j < len(toks) {
+				nd.endLine = toks[j].line
+				nd.endCol = toks[j].col + 1
+			}
+			nodes = append(nodes, nd)
 			i = j + 1
 		case scTokAtom, scTokString:
-			nodes = append(nodes, node{atom: tok.val, line: tok.line, col: tok.col})
+			nodes = append(nodes, node{atom: tok.val, line: tok.line, col: tok.col, endLine: tok.line, endCol: tok.col + len(tok.val)})
 			i++
 		default:
 			i++
@@ -225,7 +235,7 @@ func parseList(toks []token, i int) ([]node, int, error) {
 }
 
 func toPublic(n node) Node {
-	out := Node{Atom: n.atom, Line: n.line, Col: n.col}
+	out := Node{Atom: n.atom, Line: n.line, Col: n.col, EndLine: n.endLine, EndCol: n.endCol}
 	if len(n.list) > 0 {
 		out.List = make([]Node, len(n.list))
 		for i, c := range n.list {
