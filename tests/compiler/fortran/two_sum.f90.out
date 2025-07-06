@@ -25,5 +25,5 @@ contains
     res = (/(-1_8), (-1_8)/)
     return
   end function twoSum
-
+  
 end program main

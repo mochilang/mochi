@@ -1,0 +1,25 @@
+generated code type error: error[T001]: assignment to undeclared variable: x
+  --> :2:3
+
+help:
+  Declare `x` first using `let`.
+  1: fun main() {
+  2:   x = 1.5
+  3:   y = 2.5
+  4:   print(x + y)
+  5:   print(y - x)
+  6:   print(x * y)
+  7:   print(y / x)
+  8: }
+  9: 
+
+  1| program main
+  2|   implicit none
+  3|   real :: x
+  4|   real :: y
+  5|   x = 1.5
+  6|   y = 2.5
+  7|   print *, (x + y)
+  8|   print *, (y - x)
+  9|   print *, (x * y)
+ 10|   print *, (y / x)

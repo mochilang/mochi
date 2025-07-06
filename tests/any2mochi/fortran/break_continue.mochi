@@ -1,8 +1,0 @@
-fun main() {
-  for i in 0..10 - 1 {
-    if (mod(i, 2) == 0) {
-    }
-    if (i > 5) {
-    }
-    print(i)
-}

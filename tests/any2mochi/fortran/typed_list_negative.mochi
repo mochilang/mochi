@@ -1,7 +1,0 @@
-fun main() {
-  xs = (/((-1)), 0, 1/)
-}
-fun test_values() {
-  if ! (all(xs == (/((-1)), 0, 1/))) {
-    print('expect failed')
-}

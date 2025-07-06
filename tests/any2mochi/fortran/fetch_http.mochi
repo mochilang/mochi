@@ -1,9 +1,0 @@
-fun main() {
-  body = mochi_fetch('https://jsonplaceholder.typicode.com/todos/1')
-  print(len(body) > 0)
-}
-fun mochi_fetch() {
-  cmd = 'curl -s -o mochi_fetch.tmp ' // trim(url)
-  open(newunit = u, file='mochi_fetch.tmp', access='stream', form='unformatted', action='read')
-  inquire(u, size = n)
-}

@@ -1,0 +1,21 @@
+generated code parse error: parse error: 2:17: lexer: invalid input text "'hello', 'world'..."
+  1: fun main() {
+  2:   print(first((/'hello', 'world'/)))
+  3: }
+  4: fun first(xs)() {
+  5:   res = xs((0 % len(xs)) + 1:(0 % len(xs)) + 1)
+  6:   return
+  7:   // end function first
+  8: }
+  9: 
+
+  1| program main
+  2|   implicit none
+  3|   print *, first((/'hello', 'world'/))
+  4| contains
+  5|   function first(xs) result(res)
+  6|     implicit none
+  7|     character(:), allocatable :: res
+  8|     character(len=*), intent(in) :: xs(:)
+  9|     res = xs(modulo(0_8, len(xs)) + 1:modulo(0_8, len(xs)) + 1)
+ 10|     return

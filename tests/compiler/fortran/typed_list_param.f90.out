@@ -9,5 +9,5 @@ contains
     res = xs(modulo(0_8, len(xs)) + 1:modulo(0_8, len(xs)) + 1)
     return
   end function first
-
+  
 end program main

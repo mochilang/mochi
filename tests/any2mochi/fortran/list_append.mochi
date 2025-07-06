@@ -1,5 +1,0 @@
-fun main() {
-  xs = (/1, 2/)
-  xs = (/ xs, (/3/) /)
-  print(xs(modulo(2, size(xs)) + 1))
-}

@@ -556,8 +556,13 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	c.indent++
 	for _, m := range t.Members {
 		if m.Field != nil {
-			typ := c.ftnType(m.Field.Type)
-			c.writeln(fmt.Sprintf("%s :: %s", typ, sanitizeName(m.Field.Name)))
+			if m.Field.Type != nil && m.Field.Type.Generic != nil && m.Field.Type.Generic.Name == "list" && len(m.Field.Type.Generic.Args) == 1 {
+				elem := c.ftnType(m.Field.Type.Generic.Args[0])
+				c.writeln(fmt.Sprintf("%s, allocatable :: %s(:)", elem, sanitizeName(m.Field.Name)))
+			} else {
+				typ := c.ftnType(m.Field.Type)
+				c.writeln(fmt.Sprintf("%s :: %s", typ, sanitizeName(m.Field.Name)))
+			}
 		}
 	}
 	c.indent--
@@ -566,21 +571,27 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 }
 
 func (c *Compiler) ftnType(t *parser.TypeRef) string {
-	if t == nil || t.Simple == nil {
+	if t == nil {
 		return "integer(kind=8)"
 	}
-	switch *t.Simple {
-	case "int":
-		return "integer(kind=8)"
-	case "float":
-		return "real"
-	case "string":
-		return "character(:), allocatable"
-	case "bool":
-		return "logical"
-	default:
-		return fmt.Sprintf("type(%s)", sanitizeName(*t.Simple))
+	if t.Simple != nil {
+		switch *t.Simple {
+		case "int":
+			return "integer(kind=8)"
+		case "float":
+			return "real"
+		case "string":
+			return "character(:), allocatable"
+		case "bool":
+			return "logical"
+		default:
+			return fmt.Sprintf("type(%s)", sanitizeName(*t.Simple))
+		}
 	}
+	if t.Generic != nil && t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
+		return c.ftnType(t.Generic.Args[0])
+	}
+	return "integer(kind=8)"
 }
 
 func (c *Compiler) ftnScalarType(t types.Type) string {

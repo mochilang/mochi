@@ -1,7 +1,0 @@
-fun main() {
-  print(first((/'hello', 'world'/)))
-}
-fun first() {
-  res = xs(modulo(0, len(xs)) + 1:modulo(0, len(xs)) + 1)
-  return
-}

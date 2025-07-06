@@ -1,0 +1,14 @@
+generated code parse error: parse error: 2:10: lexer: invalid input text "'hello'\n  print(..."
+  1: fun main() {
+  2:   text = 'hello'
+  3:   print(text((1 % len(text)) + 1:(1 % len(text)) + 1))
+  4: }
+  5: 
+
+  1| program main
+  2|   implicit none
+  3|   character(:), allocatable :: text
+  4|   text = 'hello'
+  5|   print *, text(modulo(1_8, len(text)) + 1:modulo(1_8, len(text)) + 1)
+  6| end program main
+  7|

@@ -1,0 +1,13 @@
+generated code parse error: parse error: 2:26: unexpected token "/" (expected PostfixExpr)
+  1: fun main() {
+  2:   print(merge(0, minval((/3, 1, 2/)), size((/3, 1, 2/)) == 0))
+  3:   print(merge(0.0, minval((/1.5, 2.5/)), size((/1.5, 2.5/)) == 0))
+  4: }
+  5: 
+
+  1| program main
+  2|   implicit none
+  3|   print *, merge(0_8, minval((/3_8, 1_8, 2_8/)), size((/3_8, 1_8, 2_8/)) == 0)
+  4|   print *, merge(0.0, minval((/1.5, 2.5/)), size((/1.5, 2.5/)) == 0)
+  5| end program main
+  6|

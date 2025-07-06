@@ -1,3 +1,4 @@
 fun main() {
+  // include 'mylib.f90'
   print(42)
 }

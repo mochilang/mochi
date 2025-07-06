@@ -1,0 +1,22 @@
+generated code parse error: parse error: 7:11: lexer: invalid input text "'expect failed')..."
+  1: fun main() {
+  2:   xs = (/((-1)), 0, 1/)
+  3:   // call test_values()
+  4: }
+  5: fun test_values()() {
+  6:   if ! (all(xs == (/((-1)), 0, 1/))) {
+  7:     print('expect failed')
+  8:     // stop 1
+  9:   }
+ 10:   print('done')
+
+  1| program main
+  2|   implicit none
+  3|   integer(kind=8), allocatable :: xs(:)
+  4|   allocate(xs(0))
+  5|   xs = (/((-1_8)), 0_8, 1_8/)
+  6|   call test_values()
+  7| contains
+  8|   subroutine test_values()
+  9|     implicit none
+ 10|     if (.not. (all(xs == (/((-1_8)), 0_8, 1_8/)))) then

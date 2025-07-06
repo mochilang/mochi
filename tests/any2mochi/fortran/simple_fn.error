@@ -1,0 +1,21 @@
+generated code parse error: parse error: 4:10: unexpected token "(" (expected "{" Statement* "}")
+  1: fun main() {
+  2:   print(id(123))
+  3: }
+  4: fun id(x)() {
+  5:   res = x
+  6:   return
+  7:   // end function id
+  8: }
+  9: 
+
+  1| program main
+  2|   implicit none
+  3|   print *, id(123_8)
+  4| contains
+  5|   function id(x) result(res)
+  6|     implicit none
+  7|     integer(kind=8) :: res
+  8|     integer(kind=8), intent(in) :: x
+  9|     res = x
+ 10|     return

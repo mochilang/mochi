@@ -1,0 +1,22 @@
+generated code parse error: parse error: 4:9: lexer: invalid input text "'hi')\n}\nfun str_..."
+  1: fun main() {
+  2:   print(str_int(42))
+  3:   print(str_float(3.5))
+  4:   print('hi')
+  5: }
+  6: fun str_int(v)() {
+  7:   // write(buf,'(I0)') v
+  8:   r = trim(buf)
+  9:   // end function str_int
+ 10:   // function str_float(v) result(r)
+
+  1| program main
+  2|   implicit none
+  3|   print *, str_int(42_8)
+  4|   print *, str_float(3.5)
+  5|   print *, 'hi'
+  6| contains
+  7| 
+  8|   function str_int(v) result(r)
+  9|     implicit none
+ 10|     integer(kind=8), intent(in) :: v

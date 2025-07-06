@@ -1,0 +1,22 @@
+generated code parse error: parse error: 7:23: lexer: invalid input text "'A', price=100),..."
+  1: type Item {
+  2:   name: string
+  3:   price: int
+  4: }
+  5: fun main() {
+  6:   // end type Item
+  7:   items = (/Item(name='A', price=100), Item(name='B', price=50), Item(name='C', price=200), Item(name='D', price=80)/)
+  8:   cheap = lambda_0(items)
+  9:   for i_c in 0..size(cheap) - 1 {
+ 10:     c = cheap((i_c % size(cheap)) + 1)
+
+  1| program main
+  2|   implicit none
+  3|   type :: Item
+  4|     character(:), allocatable :: name
+  5|     integer(kind=8) :: price
+  6|   end type Item
+  7|   integer(kind=8), allocatable :: items(:)
+  8|   integer(kind=8) :: cheap
+  9|   integer(kind=8) :: c
+ 10|   integer(kind=8) :: i_c

@@ -1,5 +1,0 @@
-fun main() {
-  for i_ch in 0..len('cat') - 1 {
-    ch = 'cat'(modulo(i_ch, len('cat')) + 1:modulo(i_ch, len('cat')) + 1)
-    print(ch)
-}
