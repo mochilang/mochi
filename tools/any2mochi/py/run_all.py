@@ -6,7 +6,7 @@ import subprocess
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 PY_DIR = os.path.join(ROOT, "tests", "compiler", "py")
-CONVERTER = os.path.join(ROOT, "tools", "py2mochi", "py2mochi.py")
+CONVERTER = os.path.join(ROOT, "tools", "any2mochi", "py", "py2mochi.py")
 
 for py_file in sorted(glob.glob(os.path.join(PY_DIR, "*.py.out"))):
     base = py_file[:-7]
