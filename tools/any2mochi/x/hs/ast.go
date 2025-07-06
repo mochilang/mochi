@@ -159,7 +159,8 @@ func Parse(src string) ([]Item, error) {
 			}
 			name := left[0]
 			switch name {
-			case "forLoop", "whileLoop", "avg", "_group_by", "_indexString", "_input", "_now", "_json", "_readInput", "_writeOutput", "_split", "_parseCSV", "_load", "_save":
+			case "forLoop", "whileLoop", "avg", "_group_by", "_indexString", "_input", "_now", "_json", "_readInput", "_writeOutput", "_split", "_parseCSV", "_load", "_save",
+				"_asInt", "_asDouble", "_asString", "_asBool", "_parseJSON", "_valueToMap", "_valueToString", "_mapToValue":
 				continue
 			}
 			params := left[1:]
@@ -290,6 +291,9 @@ func convertExpr(expr string) string {
 	if len(parts) > 1 {
 		ops := map[string]bool{"+": true, "-": true, "*": true, "/": true, "%": true, "&&": true, "||": true, "==": true, "<": true, ">": true, "<=": true, ">=": true}
 		if !ops[parts[1]] {
+			for i := 1; i < len(parts); i++ {
+				parts[i] = strings.TrimSuffix(parts[i], ",")
+			}
 			return parts[0] + "(" + strings.Join(parts[1:], ", ") + ")"
 		}
 	}
