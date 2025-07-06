@@ -1,4 +1,4 @@
-fun define() {}
-fun define() {}
-fun define() {}
-fun define() {}
+fun _union_all(a, b) {}
+fun _union(a, b) {}
+fun _except(a, b) {}
+fun _intersect(a, b) {}

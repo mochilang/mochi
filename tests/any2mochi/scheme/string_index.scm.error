@@ -1,0 +1,6 @@
+no convertible symbols found
+
+source snippet:
+  1: (define text "hello")
+  2: (begin (display (string-ref text 1)) (newline))
+  3: 

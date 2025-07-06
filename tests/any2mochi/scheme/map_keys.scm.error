@@ -2,4 +2,4 @@ no convertible symbols found
 
 source snippet:
   1: (begin (display (map car (list (cons "a" 1) (cons "b" 2)))) (newline))
-  2:
+  2: 
