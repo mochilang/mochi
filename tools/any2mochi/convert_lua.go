@@ -574,6 +574,22 @@ func luaExprString(e luaast.Expr) string {
 			if len(args) == 3 {
 				return args[0] + "[" + args[1] + ":" + args[2] + "]"
 			}
+		case "__union_all":
+			if len(args) == 2 {
+				return "(" + args[0] + " union all " + args[1] + ")"
+			}
+		case "__union":
+			if len(args) == 2 {
+				return "(" + args[0] + " union " + args[1] + ")"
+			}
+		case "__except":
+			if len(args) == 2 {
+				return "(" + args[0] + " except " + args[1] + ")"
+			}
+		case "__intersect":
+			if len(args) == 2 {
+				return "(" + args[0] + " intersect " + args[1] + ")"
+			}
 		}
 		return callee + "(" + strings.Join(args, ", ") + ")"
 	case *luaast.FunctionExpr:
@@ -678,7 +694,15 @@ func preprocessLuaSource(src string) string {
 		}
 		out.WriteByte(ch)
 	}
-	return out.String()
+	res := out.String()
+	lines := strings.Split(res, "\n")
+	for i, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if strings.HasPrefix(trimmed, "goto __continue") || strings.HasPrefix(trimmed, "::__continue") {
+			lines[i] = "--" + line
+		}
+	}
+	return strings.Join(lines, "\n")
 }
 
 // writeLuaChunk converts all statements in the parsed chunk to Mochi syntax.
