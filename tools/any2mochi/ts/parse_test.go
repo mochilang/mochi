@@ -1,18 +1,27 @@
 //go:build slow
 
-package any2mochi
+package ts
 
 import (
+	"os/exec"
 	"testing"
 
 	tscode "mochi/compile/ts"
+	parent "mochi/tools/any2mochi"
 )
+
+func requireBinary(t *testing.T, name string) {
+	t.Helper()
+	if _, err := exec.LookPath(name); err != nil {
+		t.Skipf("%s not found", name)
+	}
+}
 
 func TestParseTypeScript(t *testing.T) {
 	_ = tscode.EnsureTSLanguageServer()
 	requireBinary(t, "typescript-language-server")
 	src := "export function add(x: number, y: number): number { return x + y }"
-	syms, diags, err := ParseText("typescript-language-server", []string{"--stdio"}, "typescript", src)
+	syms, diags, err := parent.ParseText("typescript-language-server", []string{"--stdio"}, "typescript", src)
 	if err != nil {
 		t.Fatalf("parse ts: %v", err)
 	}
