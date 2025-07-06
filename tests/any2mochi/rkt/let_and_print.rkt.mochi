@@ -1,3 +1,0 @@
-let a = 10
-let b = 20
-print(( _add a b ))

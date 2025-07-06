@@ -1,2 +1,0 @@
-let xs
-print(( idx ( idx ( idx xs 0 ) 0 ) 0 ))
