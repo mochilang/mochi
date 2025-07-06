@@ -457,3 +457,44 @@ func convertCsBody(src string, r Range) []string {
 	}
 	return out
 }
+
+func splitArgs(s string) []string {
+	var parts []string
+	var b strings.Builder
+	depth := 0
+	inStr := false
+	for i := 0; i < len(s); i++ {
+		ch := s[i]
+		if inStr {
+			b.WriteByte(ch)
+			if ch == '"' {
+				inStr = false
+			}
+			continue
+		}
+		switch ch {
+		case '"':
+			inStr = true
+			b.WriteByte(ch)
+		case '(', '{', '[':
+			depth++
+			b.WriteByte(ch)
+		case ')', '}', ']':
+			depth--
+			b.WriteByte(ch)
+		case ',':
+			if depth == 0 {
+				parts = append(parts, strings.TrimSpace(b.String()))
+				b.Reset()
+			} else {
+				b.WriteByte(ch)
+			}
+		default:
+			b.WriteByte(ch)
+		}
+	}
+	if b.Len() > 0 {
+		parts = append(parts, strings.TrimSpace(b.String()))
+	}
+	return parts
+}

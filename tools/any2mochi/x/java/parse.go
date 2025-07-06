@@ -1,4 +1,4 @@
-package any2mochi
+package java
 
 import (
 	"bytes"
@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-type javaAST struct {
+type AST struct {
 	Structs []struct {
 		Name   string `json:"name"`
 		Fields []struct {
@@ -27,7 +27,7 @@ type javaAST struct {
 	} `json:"funcs"`
 }
 
-func parseJava(src string) ([]string, error) {
+func parse(src string) ([]string, error) {
 	cmd := exec.Command("mochi-javaast")
 	cmd.Stdin = strings.NewReader(src)
 	var out bytes.Buffer
@@ -35,7 +35,7 @@ func parseJava(src string) ([]string, error) {
 	if err := cmd.Run(); err != nil {
 		return nil, err
 	}
-	var ast javaAST
+	var ast AST
 	if err := json.Unmarshal(out.Bytes(), &ast); err != nil {
 		return nil, err
 	}
@@ -45,7 +45,7 @@ func parseJava(src string) ([]string, error) {
 		lines = append(lines, fmt.Sprintf("type %s {", st.Name))
 		var fields []string
 		for _, f := range st.Fields {
-			lines = append(lines, fmt.Sprintf("  %s: %s", f.Name, mapJavaType(f.Type)))
+			lines = append(lines, fmt.Sprintf("  %s: %s", f.Name, mapType(f.Type)))
 			fields = append(fields, f.Name)
 		}
 		lines = append(lines, "}")
@@ -56,17 +56,17 @@ func parseJava(src string) ([]string, error) {
 		for _, p := range fn.Params {
 			name := p.Name
 			if p.Type != "" {
-				name += ": " + mapJavaType(p.Type)
+				name += ": " + mapType(p.Type)
 			}
 			params = append(params, name)
 		}
 		header := fmt.Sprintf("fun %s(%s)", fn.Name, strings.Join(params, ", "))
-		rt := mapJavaType(fn.Ret)
+		rt := mapType(fn.Ret)
 		if rt != "" && rt != "void" {
 			header += ": " + rt
 		}
 		lines = append(lines, header+" {")
-		body, err := javaBodyLines(fn.Body, structs)
+		body, err := bodyLines(fn.Body, structs)
 		if err != nil {
 			return nil, fmt.Errorf("%s", err)
 		}
@@ -78,7 +78,7 @@ func parseJava(src string) ([]string, error) {
 	return lines, nil
 }
 
-func javaBodyLines(body []string, structs map[string][]string) ([]string, error) {
+func bodyLines(body []string, structs map[string][]string) ([]string, error) {
 	var out []string
 	for _, line := range body {
 		l := strings.TrimSpace(line)
@@ -87,7 +87,7 @@ func javaBodyLines(body []string, structs map[string][]string) ([]string, error)
 		}
 		if strings.HasPrefix(l, "System.out.println(") && strings.HasSuffix(l, ");") {
 			expr := strings.TrimSuffix(strings.TrimPrefix(l, "System.out.println("), ");")
-			out = append(out, "print("+convertJavaExpr(expr, structs)+")")
+			out = append(out, "print("+convertExpr(expr, structs)+")")
 			continue
 		}
 		if strings.HasPrefix(l, "return") {
@@ -95,17 +95,17 @@ func javaBodyLines(body []string, structs map[string][]string) ([]string, error)
 			if expr == "" {
 				out = append(out, "return")
 			} else {
-				out = append(out, "return "+convertJavaExpr(expr, structs))
+				out = append(out, "return "+convertExpr(expr, structs))
 			}
 			continue
 		}
 		if isVarAssign(l + ";") {
 			name, expr := parseVarAssign(l + ";")
-			out = append(out, "var "+name+" = "+convertJavaExpr(expr, structs))
+			out = append(out, "var "+name+" = "+convertExpr(expr, structs))
 			continue
 		}
 		if left, right, ok := parseSimpleAssign(l + ";"); ok {
-			out = append(out, left+" = "+convertJavaExpr(right, structs))
+			out = append(out, left+" = "+convertExpr(right, structs))
 			continue
 		}
 		return nil, fmt.Errorf("unsupported line: %s", l)
