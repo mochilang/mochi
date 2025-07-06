@@ -10,35 +10,44 @@ import (
 	"time"
 )
 
-// Node represents a single entry in the Python AST JSON format.
-// It roughly mirrors the structure produced by the `ast` module when
-// serialised to JSON within the helper script embedded below.
-type Node struct {
-	Type    string          `json:"_type"`
-	Name    string          `json:"name,omitempty"`
-	ID      string          `json:"id,omitempty"`
-	Body    []*Node         `json:"body,omitempty"`
-	Value   json.RawMessage `json:"value,omitempty"`
-	Func    *Node           `json:"func,omitempty"`
-	Args    json.RawMessage `json:"args,omitempty"`
-	Line    int             `json:"lineno,omitempty"`
-	EndLine int             `json:"end_lineno,omitempty"`
-	Col     int             `json:"col_offset,omitempty"`
-	EndCol  int             `json:"end_col_offset,omitempty"`
+// ASTNode represents a single entry in the Python AST JSON format. It roughly
+// mirrors the structure produced by the `ast` module when serialised to JSON
+// within the helper script embedded below.
+type ASTNode struct {
+	Type        string          `json:"_type"`
+	Name        string          `json:"name,omitempty"`
+	ID          string          `json:"id,omitempty"`
+	Body        []*ASTNode      `json:"body,omitempty"`
+	Value       json.RawMessage `json:"value,omitempty"`
+	Func        *ASTNode        `json:"func,omitempty"`
+	Args        json.RawMessage `json:"args,omitempty"`
+	Test        *ASTNode        `json:"test,omitempty"`
+	Target      *ASTNode        `json:"target,omitempty"`
+	Iter        *ASTNode        `json:"iter,omitempty"`
+	Orelse      []*ASTNode      `json:"orelse,omitempty"`
+	Op          *ASTNode        `json:"op,omitempty"`
+	Left        *ASTNode        `json:"left,omitempty"`
+	Right       *ASTNode        `json:"right,omitempty"`
+	Ops         []*ASTNode      `json:"ops,omitempty"`
+	Comparators []*ASTNode      `json:"comparators,omitempty"`
+	Line        int             `json:"lineno,omitempty"`
+	EndLine     int             `json:"end_lineno,omitempty"`
+	Col         int             `json:"col_offset,omitempty"`
+	EndCol      int             `json:"end_col_offset,omitempty"`
 }
 
-func (n *Node) valueNode() *Node {
+func (n *ASTNode) valueNode() *ASTNode {
 	if n == nil || len(n.Value) == 0 || n.Value[0] == '"' || n.Value[0] == '-' || (n.Value[0] >= '0' && n.Value[0] <= '9') {
 		return nil
 	}
-	var out Node
+	var out ASTNode
 	if err := json.Unmarshal(n.Value, &out); err != nil {
 		return nil
 	}
 	return &out
 }
 
-func (n *Node) constValue() any {
+func (n *ASTNode) constValue() any {
 	if n == nil || len(n.Value) == 0 {
 		return nil
 	}
@@ -47,16 +56,16 @@ func (n *Node) constValue() any {
 	return v
 }
 
-func (n *Node) callArgs() []*Node {
+func (n *ASTNode) callArgs() []*ASTNode {
 	if n == nil || len(n.Args) == 0 {
 		return nil
 	}
-	var arr []*Node
+	var arr []*ASTNode
 	if err := json.Unmarshal(n.Args, &arr); err == nil {
 		return arr
 	}
 	var fn struct {
-		Args []*Node `json:"args"`
+		Args []*ASTNode `json:"args"`
 	}
 	if err := json.Unmarshal(n.Args, &fn); err == nil {
 		return fn.Args
@@ -83,7 +92,7 @@ def node_to_dict(node):
 tree = ast.parse(sys.stdin.read())
 json.dump(node_to_dict(tree), sys.stdout)`
 
-func parseAST(src string) (*Node, error) {
+func parseAST(src string) (*ASTNode, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	cmd := exec.CommandContext(ctx, pythonCmd, "-c", astScript)
@@ -93,7 +102,7 @@ func parseAST(src string) (*Node, error) {
 	if err := cmd.Run(); err != nil {
 		return nil, err
 	}
-	var root Node
+	var root ASTNode
 	if err := json.Unmarshal(out.Bytes(), &root); err != nil {
 		return nil, err
 	}
@@ -120,7 +129,7 @@ func newConvertError(line int, lines []string, msg string) error {
 	return &ConvertError{Line: line, Snip: ctx, Msg: msg}
 }
 
-func emitAST(b *strings.Builder, n *Node, indent string, lines []string) error {
+func emitAST(b *strings.Builder, n *ASTNode, indent string, lines []string) error {
 	if n == nil {
 		return nil
 	}
@@ -144,6 +153,15 @@ func emitAST(b *strings.Builder, n *Node, indent string, lines []string) error {
 		}
 		b.WriteString(indent)
 		b.WriteString("}\n")
+	case "Return":
+		b.WriteString("return")
+		if v := n.valueNode(); v != nil {
+			b.WriteByte(' ')
+			if err := emitExpr(b, v, lines); err != nil {
+				return err
+			}
+		}
+		b.WriteByte('\n')
 	case "Expr":
 		if err := emitExpr(b, n.valueNode(), lines); err != nil {
 			return err
@@ -166,11 +184,73 @@ func emitAST(b *strings.Builder, n *Node, indent string, lines []string) error {
 			return err
 		}
 		b.WriteString("\n")
+	case "For":
+		b.WriteString("for ")
+		if err := emitExpr(b, n.Target, lines); err != nil {
+			return err
+		}
+		b.WriteString(" in ")
+		if err := emitExpr(b, n.Iter, lines); err != nil {
+			return err
+		}
+		b.WriteString(" {\n")
+		for _, st := range n.Body {
+			b.WriteString(indent)
+			b.WriteString("  ")
+			if err := emitAST(b, st, indent+"  ", lines); err != nil {
+				return err
+			}
+		}
+		b.WriteString(indent)
+		b.WriteString("}\n")
+	case "While":
+		b.WriteString("while ")
+		if err := emitExpr(b, n.Test, lines); err != nil {
+			return err
+		}
+		b.WriteString(" {\n")
+		for _, st := range n.Body {
+			b.WriteString(indent)
+			b.WriteString("  ")
+			if err := emitAST(b, st, indent+"  ", lines); err != nil {
+				return err
+			}
+		}
+		b.WriteString(indent)
+		b.WriteString("}\n")
+	case "If":
+		b.WriteString("if ")
+		if err := emitExpr(b, n.Test, lines); err != nil {
+			return err
+		}
+		b.WriteString(" {\n")
+		for _, st := range n.Body {
+			b.WriteString(indent)
+			b.WriteString("  ")
+			if err := emitAST(b, st, indent+"  ", lines); err != nil {
+				return err
+			}
+		}
+		b.WriteString(indent)
+		b.WriteString("}")
+		if len(n.Orelse) > 0 {
+			b.WriteString(" else {\n")
+			for _, st := range n.Orelse {
+				b.WriteString(indent)
+				b.WriteString("  ")
+				if err := emitAST(b, st, indent+"  ", lines); err != nil {
+					return err
+				}
+			}
+			b.WriteString(indent)
+			b.WriteString("}")
+		}
+		b.WriteByte('\n')
 	}
 	return nil
 }
 
-func emitExpr(b *strings.Builder, n *Node, lines []string) error {
+func emitExpr(b *strings.Builder, n *ASTNode, lines []string) error {
 	if n == nil {
 		return nil
 	}
@@ -214,6 +294,60 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 			fmt.Fprintf(b, "%q", vv)
 		default:
 			fmt.Fprintf(b, "%v", vv)
+		}
+	case "BinOp":
+		if err := emitExpr(b, n.Left, lines); err != nil {
+			return err
+		}
+		b.WriteByte(' ')
+		if n.Op != nil {
+			switch n.Op.Type {
+			case "Add":
+				b.WriteByte('+')
+			case "Sub":
+				b.WriteByte('-')
+			case "Mult":
+				b.WriteByte('*')
+			case "Div":
+				b.WriteByte('/')
+			case "Mod":
+				b.WriteByte('%')
+			default:
+				return newConvertError(n.Line, lines, "unhandled operator")
+			}
+		}
+		b.WriteByte(' ')
+		if err := emitExpr(b, n.Right, lines); err != nil {
+			return err
+		}
+	case "Compare":
+		if err := emitExpr(b, n.Left, lines); err != nil {
+			return err
+		}
+		if len(n.Ops) == 0 || len(n.Comparators) == 0 {
+			return newConvertError(n.Line, lines, "bad compare")
+		}
+		b.WriteByte(' ')
+		op := n.Ops[0]
+		switch op.Type {
+		case "Eq":
+			b.WriteString("==")
+		case "NotEq":
+			b.WriteString("!=")
+		case "Lt":
+			b.WriteString("<")
+		case "LtE":
+			b.WriteString("<=")
+		case "Gt":
+			b.WriteString(">")
+		case "GtE":
+			b.WriteString(">=")
+		default:
+			return newConvertError(n.Line, lines, "unhandled compare operator")
+		}
+		b.WriteByte(' ')
+		if err := emitExpr(b, n.Comparators[0], lines); err != nil {
+			return err
 		}
 	default:
 		return newConvertError(n.Line, lines, "unhandled expression")
