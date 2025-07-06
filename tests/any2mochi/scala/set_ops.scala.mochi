@@ -1,0 +1,6 @@
+let a = [1, 2, 3]
+let b = [3, 4]
+print((a ++ b).distinct)
+print(a.filterNot(b.contains))
+print(a.filter(b.contains).distinct)
+print((scala.collection.mutable.ArrayBuffer(1, 2) ++ scala.collection.mutable.ArrayBuffer(2, 3)).distinct)

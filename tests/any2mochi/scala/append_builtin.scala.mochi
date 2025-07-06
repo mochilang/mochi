@@ -1,0 +1,3 @@
+var xs = [1]
+append(xs, 2)
+print(xs)

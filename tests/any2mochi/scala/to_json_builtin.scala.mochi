@@ -1,0 +1,1 @@
+print(_to_json(scala.collection.mutable.Map("a" -> 1)))

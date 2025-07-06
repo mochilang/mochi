@@ -1,0 +1,5 @@
+let it1 = "hi".iterator
+while it1.hasNext {
+  let ch = it1.next().toString
+  print(ch)
+}

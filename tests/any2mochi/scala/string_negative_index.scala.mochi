@@ -1,0 +1,9 @@
+let text = "hello"
+print(_indexString(text, (-1)))
+
+fun _indexString(s, i) {
+  var idx = i
+  let chars = s.toVector
+  if (idx < 0) idx + = len(chars)
+  if (idx < 0 || idx > = chars.length) throw new RuntimeException("index out of range")
+}

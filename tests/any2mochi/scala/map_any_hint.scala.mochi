@@ -1,0 +1,8 @@
+fun Leaf() {
+  return _cast[scala.collection.mutable.Map[String, Any]](scala.collection.mutable.Map("__name" -> "Leaf"))
+}
+fun Node(left, Any], value, right, Any]) {
+  return scala.collection.mutable.Map("__name" -> "Node", "left" -> left, "value" -> value, "right" -> right)
+}
+var tree = Node(Leaf(), 1, Leaf())
+print((_cast[scala.collection.mutable.Map[String, Any]](tree("left")))("__name"))

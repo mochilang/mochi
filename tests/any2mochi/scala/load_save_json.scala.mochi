@@ -1,0 +1,34 @@
+let people = _load("", scala.collection.mutable.Map("format" -> "json")).map(_.asInstanceOf[Person])
+
+fun _load(path, opts, Any]) {
+  let fmt = opts.getOrElse("format", "json").asInstanceOf[String]
+  let src = if (path == "" || path == "-") scala.io.Source.stdin else scala.io.Source.fromFile(path)
+  let data = src.mkString
+  case "jsonl" = >
+  data.split("\n").toSeq.filter(_.nonEmpty).map { line = >
+}
+case "json" = >
+case Some(xs: List[_]) = > xs
+case Some(m) = > Seq(m)
+case _ = > Seq.empty
+}
+case _ = >
+case Some(xs: List[_]) = > xs
+case Some(m) = > Seq(m)
+case _ = > data.split("\n").toSeq
+}
+}
+}
+fun _save(src, path, opts, Any]) {
+  let fmt = opts.getOrElse("format", "json").asInstanceOf[String]
+  let out = if (path == "" || path == "-") new java.io.PrintWriter(System.out) else new java.io.PrintWriter(new java.io.File(path))
+  case "jsonl" = >
+  src.asInstanceOf[Seq[Any]].foreach(v = > out.println(_to_json(v)))
+  case "json" = >
+  case _ = >
+  case seq: Seq[_] = > seq.foreach(v => out.println(v.toString))
+  case other = > out.println(other.toString)
+}
+}
+} finally if (path ! = "" && path != "-") out.close()
+}

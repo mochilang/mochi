@@ -111,6 +111,9 @@ func convertFunc(lines []string, sym any2mochi.DocumentSymbol, root string) stri
 
 	indent := 1
 	write := func(s string) {
+		if indent < 0 {
+			indent = 0
+		}
 		b.WriteString(strings.Repeat("  ", indent))
 		b.WriteString(s)
 		b.WriteByte('\n')
@@ -174,13 +177,26 @@ func convertFunc(lines []string, sym any2mochi.DocumentSymbol, root string) stri
 			expr := strings.TrimSpace(strings.TrimPrefix(line, "return "))
 			write("return " + convertExpr(expr))
 		case strings.HasPrefix(line, "var "):
-			write("var " + strings.TrimPrefix(line, "var "))
+			content := strings.TrimPrefix(line, "var ")
+			if idx := strings.Index(content, "="); idx != -1 {
+				n := strings.Fields(strings.TrimSpace(content[:idx]))[0]
+				expr := strings.TrimSpace(content[idx+1:])
+				write("var " + n + " = " + convertExpr(expr))
+			} else {
+				write("var " + content)
+			}
 		case strings.HasPrefix(line, "val "):
 			if idx := strings.Index(line, "="); idx != -1 {
 				n := strings.Fields(strings.TrimSpace(line[4:idx]))[0]
+				n = strings.TrimSuffix(n, ":")
 				expr := strings.TrimSpace(line[idx+1:])
 				write("let " + n + " = " + convertExpr(expr))
 			}
+		case strings.Contains(line, ".append("):
+			idx := strings.Index(line, ".append(")
+			recv := strings.TrimSpace(line[:idx])
+			arg := strings.TrimSuffix(line[idx+8:], ")")
+			write("append(" + recv + ", " + convertExpr(arg) + ")")
 		case strings.Contains(line, "="):
 			parts := strings.SplitN(line, "=", 2)
 			left := strings.TrimSpace(parts[0])
@@ -204,8 +220,14 @@ func convertExpr(expr string) string {
 		inner := strings.TrimSuffix(strings.TrimPrefix(expr, prefix), ")")
 		expr = "[" + inner + "]"
 	}
+	if strings.HasSuffix(expr, ".size") {
+		expr = "len(" + strings.TrimSuffix(expr, ".size") + ")"
+	}
 	if strings.HasSuffix(expr, ".length") {
 		expr = "len(" + strings.TrimSuffix(expr, ".length") + ")"
+	}
+	if strings.HasSuffix(expr, ".sum") {
+		expr = "sum(" + strings.TrimSuffix(expr, ".sum") + ")"
 	}
 	if strings.HasPrefix(expr, "_indexList(") && strings.HasSuffix(expr, ")") {
 		inner := strings.TrimSuffix(strings.TrimPrefix(expr, "_indexList("), ")")
@@ -376,18 +398,24 @@ func convertFromAST(fn Func) string {
 			continue
 		}
 		if line == "}" {
-			indent--
+			if indent > 0 {
+				indent--
+			}
 			write("}")
 			continue
 		}
 		if m := reElseIf.FindStringSubmatch(line); m != nil {
-			indent--
+			if indent > 0 {
+				indent--
+			}
 			write("else if " + convertExpr(strings.TrimSpace(m[1])) + " {")
 			indent++
 			continue
 		}
 		if reElse.MatchString(line) {
-			indent--
+			if indent > 0 {
+				indent--
+			}
 			write("else {")
 			indent++
 			continue
@@ -418,13 +446,26 @@ func convertFromAST(fn Func) string {
 			expr := strings.TrimSpace(strings.TrimPrefix(line, "return "))
 			write("return " + convertExpr(expr))
 		case strings.HasPrefix(line, "var "):
-			write("var " + strings.TrimPrefix(line, "var "))
+			content := strings.TrimPrefix(line, "var ")
+			if idx := strings.Index(content, "="); idx != -1 {
+				n := strings.Fields(strings.TrimSpace(content[:idx]))[0]
+				expr := strings.TrimSpace(content[idx+1:])
+				write("var " + n + " = " + convertExpr(expr))
+			} else {
+				write("var " + content)
+			}
 		case strings.HasPrefix(line, "val "):
 			if idx := strings.Index(line, "="); idx != -1 {
 				n := strings.Fields(strings.TrimSpace(line[4:idx]))[0]
+				n = strings.TrimSuffix(n, ":")
 				expr := strings.TrimSpace(line[idx+1:])
 				write("let " + n + " = " + convertExpr(expr))
 			}
+		case strings.Contains(line, ".append("):
+			idx := strings.Index(line, ".append(")
+			recv := strings.TrimSpace(line[:idx])
+			arg := strings.TrimSuffix(line[idx+8:], ")")
+			write("append(" + recv + ", " + convertExpr(arg) + ")")
 		case strings.Contains(line, "="):
 			parts := strings.SplitN(line, "=", 2)
 			left := strings.TrimSpace(parts[0])
