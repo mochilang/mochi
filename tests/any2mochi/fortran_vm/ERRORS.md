@@ -1,15 +1,7 @@
 # Errors
 
 - append_builtin: ok
-- avg_builtin: generated code type error: error[T003]: unknown function: merge
-  --> :2:9
-
-help:
-  Ensure the function is defined before it's called.
-  1: fun main() {
-  2:   print(merge(0.0, sum(real([1, 2, 3])) / size([1, 2, 3]), size([1, 2, 3]) == 0))
-  3: }
-  4: 
+- avg_builtin: ok
 - basic_compare: ok
 - binary_precedence: ok
 - bool_chain: generated code parse error: parse error: 7:9: lexer: invalid input text "'boom')\n  let re..."
@@ -26,8 +18,8 @@ help:
 - break_continue: generated code parse error: parse error: 11:11: lexer: invalid input text "'odd number:', n..."
   1: fun main() {
   2:   let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-  3:   for i_n in 0..size(numbers) - 1 {
-  4:     let n = numbers((i_n % size(numbers)) + 1)
+  3:   for i_n in 0..len(numbers) - 1 {
+  4:     let n = numbers((i_n % len(numbers)) + 1)
   5:     if ((n % 2) == 0) {
   6:       continue
   7:     }
@@ -51,15 +43,7 @@ help:
   8:   // end function makeAdder
   9:   // function lambda_0(x) result(res)
  10:   res = (x + n)
-- count_builtin: generated code type error: error[T003]: unknown function: size
-  --> :2:9
-
-help:
-  Ensure the function is defined before it's called.
-  1: fun main() {
-  2:   print(size([1, 2, 3]))
-  3: }
-  4: 
+- count_builtin: ok
 - cross_join: compile error: unsupported expression
 - cross_join_filter: compile error: unsupported query expression
 - cross_join_triple: compile error: unsupported query expression
@@ -73,13 +57,13 @@ help:
   5: }
   6: fun lambda_0(vsrc)() {
   7:   let n = 0
-  8:   for i in 1..size(vsrc) {
+  8:   for i in 1..len(vsrc) {
   9:     let x = vsrc(i)
  10:     if (x == 1) {
 - for_list_collection: generated code parse error: parse error: 2:15: unexpected token "," (expected "{" Statement* "}")
   1: fun main() {
-  2:   for i_n in 0, size((/1, 2..3/)) - 1 {
-  3:     let n = [1, 2, 3]((i_n % size([1, 2, 3])) + 1)
+  2:   for i_n in 0, len((/1, 2..3/)) - 1 {
+  3:     let n = [1, 2, 3]((i_n % len([1, 2, 3])) + 1)
   4:     print(n)
   5: }
   6: 
@@ -139,17 +123,17 @@ help:
   6:     print('small')
   7: }
   8: 
-- if_then_else: generated code parse error: parse error: 3:19: lexer: invalid input text "'yes', 'no', (x ..."
+- if_then_else: generated code parse error: parse error: 3:30: lexer: invalid input text "'yes' else 'no'\n..."
   1: fun main() {
   2:   let x = 12
-  3:   let msg = merge('yes', 'no', (x > 10))
+  3:   let msg = if (x > 10) then 'yes' else 'no'
   4:   print(msg)
   5: }
   6: 
-- if_then_else_nested: generated code parse error: parse error: 3:19: lexer: invalid input text "'big', merge('me..."
+- if_then_else_nested: generated code parse error: parse error: 3:30: lexer: invalid input text "'big' else if (x..."
   1: fun main() {
   2:   let x = 8
-  3:   let msg = merge('big', merge('medium', 'small', (x > 5)), (x > 10))
+  3:   let msg = if (x > 10) then 'big' else if (x > 5) then 'medium' else 'small'
   4:   print(msg)
   5: }
   6: 
@@ -170,15 +154,7 @@ help:
 - json_builtin: compile error: unsupported expression
 - left_join: compile error: unsupported expression
 - left_join_multi: compile error: unsupported expression
-- len_builtin: generated code type error: error[T003]: unknown function: size
-  --> :2:9
-
-help:
-  Ensure the function is defined before it's called.
-  1: fun main() {
-  2:   print(size([1, 2, 3]))
-  3: }
-  4: 
+- len_builtin: ok
 - len_map: compile error: unsupported expression
 - len_string: generated code parse error: parse error: 2:13: lexer: invalid input text "'mochi'))\n}\n"
   1: fun main() {
@@ -190,7 +166,7 @@ help:
   1: fun main() {
   2:   let nums = [1, 2]
   3:   nums(1_8 + 1) = 3
-  4:   print(nums((1 % size(nums)) + 1))
+  4:   print(nums((1 % len(nums)) + 1))
   5: }
   6: 
 - list_index: generated code type error: error[T004]: `xs` is not callable
@@ -200,26 +176,26 @@ help:
   Use a function or closure in this position.
   1: fun main() {
   2:   let xs = [10, 20, 30]
-  3:   print(xs((1 % size(xs)) + 1))
+  3:   print(xs((1 % len(xs)) + 1))
   4: }
   5: 
 - list_nested_assign: generated code parse error: parse error: 2:18: unexpected token "/" (expected PostfixExpr)
   1: fun main() {
   2:   let matrix = [(/1, 2], [3, 4]/)
   3:   matrix(1_8 + 1) = 5
-  4:   print(matrix((1 % size(matrix)) + 1)((0 % size(matrix)) + 1))
+  4:   print(matrix((1 % len(matrix)) + 1)((0 % len(matrix)) + 1))
   5: }
   6: 
-- list_set_ops: generated code parse error: parse error: 5:16: unexpected token "/" (expected PostfixExpr)
+- list_set_ops: generated code parse error: parse error: 5:15: unexpected token "/" (expected PostfixExpr)
   1: fun main() {
   2:   print(union_int([1, 2], [2, 3]))
   3:   print(except_int([1, 2, 3], [2]))
   4:   print(intersect_int([1, 2, 3], [2, 4]))
-  5:   print(size([(/1, 2], [2, 3] /)))
+  5:   print(len([(/1, 2], [2, 3] /)))
   6: }
   7: fun union_int(a,() {
   8:   let n = 0
-  9:   for i in 1..size(a) {
+  9:   for i in 1..len(a) {
  10:     n = n + 1
 - load_yaml: compile error: unsupported expression
 - map_assign: compile error: unsupported expression
@@ -243,14 +219,14 @@ help:
   4:   print(any(nums == 4))
   5: }
   6: 
-- min_max_builtin: generated code type error: error[T003]: unknown function: merge
-  --> :3:9
+- min_max_builtin: generated code type error: error[T003]: unknown function: minval
+  --> :3:39
 
 help:
   Ensure the function is defined before it's called.
   1: fun main() {
   2:   let nums = [3, 1, 4]
-  3:   print(merge(0, minval(nums), size(nums) == 0))
+  3:   print(if len(nums) == 0 then 0 else minval(nums))
   4:   print(max(nums))
   5: }
   6: 
@@ -302,7 +278,7 @@ help:
   5: }
   6: fun lambda_0(vsrc)() {
   7:   let n = 0
-  8:   for i in 1..size(vsrc) {
+  8:   for i in 1..len(vsrc) {
   9:     n = vsrc(i)
  10:     if (n > 1) {
 - record_assign: generated code parse error: parse error: 6:20: unexpected token "=" (expected ")")
@@ -425,7 +401,7 @@ help:
   4:   print(result(1 + 1))
   5: }
   6: fun twoSum(nums,() {
-  7:   let n = size(nums)
+  7:   let n = len(nums)
   8:   for i in 0..n - 1 {
   9:     for j in (i + 1)..n - 1 {
  10:       if ((nums(i + 1) + nums(j + 1)) == target) {
