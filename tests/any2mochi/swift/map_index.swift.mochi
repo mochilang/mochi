@@ -1,0 +1,5 @@
+fun main() {
+    let scores = ["Alice": 10, "Bob": 15]
+    print(scores["Bob"]!)
+}
+main()

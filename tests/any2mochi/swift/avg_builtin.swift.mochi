@@ -1,0 +1,16 @@
+fun _avg(arr): float {
+    if arr.isEmpty { return 0 }
+    let sum = 0.0
+    for v in arr { sum += Double(v) }
+    return sum / Double(arr.count)
+}
+fun _avg(arr): float {
+    if arr.isEmpty { return 0 }
+    let sum = 0.0
+    for v in arr { sum += Double(v) }
+    return sum / Double(arr.count)
+}
+fun main() {
+    print(_avg([1, 2, 3].map { Double($0) }))
+}
+main()

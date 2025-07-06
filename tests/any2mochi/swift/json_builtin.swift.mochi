@@ -1,0 +1,11 @@
+fun _json(v) {
+    if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String { data: d, encoding: .utf8 }
+    {
+    print(s)
+  }
+}
+fun main() {
+    _json(["a": 1])
+}
+main()

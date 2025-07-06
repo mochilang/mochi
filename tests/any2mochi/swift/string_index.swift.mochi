@@ -1,0 +1,12 @@
+fun _indexString(s: string, i: int): string {
+    let idx = i
+    let chars = Array(s)
+    if idx < 0 { idx += chars.count }
+    if idx < 0 || idx >= chars.count { fatalError("index out of range") }
+    return String(chars[idx])
+}
+fun main() {
+    let text = "hello"
+    print(_indexString(text, 1))
+}
+main()

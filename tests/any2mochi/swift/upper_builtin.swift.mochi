@@ -1,0 +1,4 @@
+fun main() {
+    print("foo".uppercased())
+}
+main()

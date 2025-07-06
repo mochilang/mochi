@@ -1,0 +1,12 @@
+fun _index(arr, i: int) {
+    let idx = i
+    let n = arr.count
+    if idx < 0 { idx += n }
+    if idx < 0 || idx >= n { fatalError("index out of range") }
+    return arr[idx]
+}
+fun main() {
+    let xs = [10, 20, 30]
+    print(_index(xs, 1))
+}
+main()

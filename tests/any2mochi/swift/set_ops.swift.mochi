@@ -1,0 +1,24 @@
+fun _except(a, b) {
+    let res = []
+    for it in a { if !b.contains(it) { res.append(it) } }
+    return res
+}
+fun _intersect(a, b) {
+    let res = []
+    for it in a { if b.contains(it) && !res.contains(it) { res.append(it) } }
+    return res
+}
+fun _union(a, b) {
+    let res = a
+    for it in b { if !res.contains(it) { res.append(it) } }
+    return res
+}
+fun main() {
+    let a = [1, 2, 3]
+    let b = [3, 4]
+    print(_union(a, b))
+    print(_except(a, b))
+    print(_intersect(a, b))
+    print(_union([1, 2], [2, 3]))
+}
+main()

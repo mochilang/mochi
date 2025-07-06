@@ -1,0 +1,26 @@
+type A {
+  id: int
+}
+type B {
+  id: int
+}
+fun main() {
+    let left = [A(id: 1), A(id: 2)]
+    let right = [B(id: 1), B(id: 3)]
+    let result = 
+    ({
+    let _res = []
+    for a in left {
+      for b in right {
+        if !(a.id == b.id) { continue }
+        _res.append(a.id)
+      }
+    }
+    let _items = _res
+    return _items
+    }())
+    for r in result {
+      print(r)
+    }
+}
+main()

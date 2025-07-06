@@ -1,0 +1,12 @@
+fun expect(cond: bool) {
+    if !cond { fatalError("expect failed") }
+}
+fun test_addition_works() {
+    let x = 1 + 2
+    expect(x == 3)
+}
+fun main() {
+    print("ok")
+    test_addition_works()
+}
+main()

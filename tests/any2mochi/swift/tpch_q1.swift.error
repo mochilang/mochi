@@ -1,1 +1,6 @@
-parse error: parse error: 28:22: lexer: invalid input text "? JSONSerializat..."
+line 70:5: cannot find 'result' in scope
+  69|   expect(
+  70|     result == [
+    |     ^
+  71|       [
+  72|         "returnflag": "N", "linestatus": "O", "sum_qty": 53, "sum_base_price": 3000,

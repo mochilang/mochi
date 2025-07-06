@@ -1,1 +1,0 @@
-parse error: parse error: 1:5: unexpected token "expect" (expected <ident> "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")

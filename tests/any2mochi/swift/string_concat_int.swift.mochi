@@ -1,0 +1,4 @@
+fun main() {
+    print("value: " + String(7))
+}
+main()

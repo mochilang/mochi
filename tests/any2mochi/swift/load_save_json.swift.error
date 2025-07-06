@@ -1,1 +1,6 @@
-parse error: parse error: 3:18: lexer: invalid input text "? String(content..."
+line 36:28: single-quoted string literal found, use '"'
+  35|     let header = (opts?["header"] as? Bool) ?? true
+  36|     var delim: Character = ','
+    |                            ^
+  37|     if let d = opts?["delimiter"] as? String, !d.isEmpty { delim = d.first! }
+  38|     let text = _readInput(path)

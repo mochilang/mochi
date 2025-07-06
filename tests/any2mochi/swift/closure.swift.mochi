@@ -1,0 +1,12 @@
+fun makeAdder(n: int) {
+    let n = n
+    return { (x: Int) -> Int in
+    let x = x
+    return x + n
+  }
+}
+fun main() {
+    let add10 = makeAdder(10)
+    print(add10(7))
+}
+main()

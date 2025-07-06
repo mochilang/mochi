@@ -7,4 +7,3 @@ fun main() {
     print(p.x)
 }
 main()
-

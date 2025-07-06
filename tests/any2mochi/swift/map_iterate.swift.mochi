@@ -1,0 +1,11 @@
+fun main() {
+    let m = [:]
+    m[1] = true
+    m[2] = true
+    let sum = 0
+    for k in m.keys {
+      sum = sum + k
+    }
+    print(sum)
+}
+main()

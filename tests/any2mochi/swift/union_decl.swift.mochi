@@ -9,4 +9,3 @@ fun main() {
     print(1)
 }
 main()
-

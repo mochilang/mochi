@@ -1,0 +1,4 @@
+fun main() {
+    print(String(123))
+}
+main()

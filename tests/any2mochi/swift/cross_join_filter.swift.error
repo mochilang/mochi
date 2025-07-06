@@ -1,5 +1,6 @@
 line 8:18: type 'Any' does not conform to protocol 'Hashable'
    7|     ({
    8|       var _res: [[Any: Any]] = []
-    |                                  ^
+    |                  ^
    9|       for n in nums {
+  10|         if !(n % 2 == 0) { continue }

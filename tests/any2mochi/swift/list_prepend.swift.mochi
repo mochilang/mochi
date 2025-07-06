@@ -1,0 +1,10 @@
+fun prepend(level, result) {
+    let level = level
+    let result = result
+    result = [level] + result
+    return result
+}
+fun main() {
+    print(prepend([1, 2], [[3], [4]]))
+}
+main()
