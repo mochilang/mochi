@@ -207,6 +207,12 @@ func simpleExpr(n pnode.Node) (string, bool) {
 		return fmt.Sprintf("\"%s\"", v.Value), true
 	case *expr.Variable:
 		return identString(v.VarName), true
+	case *expr.UnaryMinus:
+		val, ok := simpleExpr(v.Expr)
+		if !ok {
+			return "", false
+		}
+		return "-" + val, true
 	case *expr.Array:
 		return arrayExpr(v.Items)
 	case *expr.ShortArray:

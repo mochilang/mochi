@@ -6,11 +6,27 @@ import (
 	"strings"
 )
 
+// ConvertError represents a conversion failure with line context.
+type ConvertError struct {
+	Path string
+	Line int
+	Msg  string
+	Snip string
+}
+
+func (e *ConvertError) Error() string {
+	loc := e.Path
+	if e.Line > 0 {
+		loc = fmt.Sprintf("%s:%d", e.Path, e.Line)
+	}
+	return fmt.Sprintf("%s: %s\n%s", loc, e.Msg, e.Snip)
+}
+
 // Convert parses PHP source code and emits minimal Mochi stubs.
 func Convert(src string) ([]byte, error) {
 	prog, err := Parse(src)
 	if err != nil {
-		return nil, formatParseError(src, err)
+		return nil, formatParseError("", src, err)
 	}
 	var out strings.Builder
 	for _, c := range prog.Classes {
@@ -120,23 +136,29 @@ func ConvertFile(path string) ([]byte, error) {
 	return out, nil
 }
 
-func formatParseError(src string, err error) error {
+func formatParseError(path, src string, err error) error {
 	if e, ok := err.(*ParseError); ok {
 		snippet := arrowSnippet(src, e.Line)
-		return fmt.Errorf("parse error at line %d: %s\n%s", e.Line, e.Msg, snippet)
+		return &ConvertError{Path: path, Line: e.Line, Msg: e.Msg, Snip: snippet}
 	}
-	return err
+	return &ConvertError{Path: path, Msg: err.Error(), Snip: snippet(src)}
 }
 
 func formatError(path, src string, err error) error {
+	if conv, ok := err.(*ConvertError); ok {
+		if conv.Path == "" {
+			conv.Path = path
+		}
+		return conv
+	}
 	if e, ok := err.(*ParseError); ok {
 		snippet := arrowSnippet(src, e.Line)
-		return fmt.Errorf("%s:%d: %s\n%s", path, e.Line, e.Msg, snippet)
+		return &ConvertError{Path: path, Line: e.Line, Msg: e.Msg, Snip: snippet}
 	}
 	if err.Error() == "no convertible symbols found" {
-		return fmt.Errorf("%s: %s\n%s", path, err.Error(), snippet(src))
+		return &ConvertError{Path: path, Msg: err.Error(), Snip: snippet(src)}
 	}
-	return fmt.Errorf("%s: %v", path, err)
+	return &ConvertError{Path: path, Msg: err.Error()}
 }
 
 func arrowSnippet(src string, line int) string {
