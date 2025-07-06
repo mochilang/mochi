@@ -567,7 +567,7 @@ func convertFallback(src string) ([]byte, error) {
 			}
 			continue
 		}
-		if lower == "end." || lower == "end;" {
+		if lower == "end." || (lower == "end;" && !inLoop && !inFunc) {
 			if inFunc {
 				out = append(out, "}")
 				inFunc = false
@@ -576,7 +576,9 @@ func convertFallback(src string) ([]byte, error) {
 				out = append(out, "}")
 				inLoop = false
 			}
-			inBody = false
+			if lower == "end." {
+				inBody = false
+			}
 			continue
 		}
 		if l == "" {
@@ -619,6 +621,20 @@ func convertFallback(src string) ([]byte, error) {
 		case lower == "begin" && inFunc:
 			// skip function begin
 			continue
+		case strings.HasPrefix(lower, "if ") && strings.HasSuffix(lower, " continue;"):
+			cond := strings.TrimPrefix(l, "if ")
+			cond = strings.TrimSuffix(cond, "continue;")
+			cond = strings.TrimSuffix(strings.TrimSpace(cond), "then")
+			cond = strings.TrimSpace(cond)
+			if strings.HasPrefix(strings.ToLower(cond), "not ") {
+				body := strings.TrimSpace(cond[4:])
+				for strings.HasPrefix(body, "(") && strings.HasSuffix(body, ")") {
+					body = strings.TrimSuffix(strings.TrimPrefix(body, "("), ")")
+					body = strings.TrimSpace(body)
+				}
+				cond = "!(" + body + ")"
+			}
+			out = append(out, fmt.Sprintf("if %s { continue }", cond))
 		case strings.HasPrefix(lower, "writeln("):
 			expr := strings.TrimSuffix(strings.TrimPrefix(l, "writeln("), ");")
 			out = append(out, "print("+expr+")")

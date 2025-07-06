@@ -8,5 +8,7 @@ _tmp1 = c
 _tmp0 = 1
 _tmp0 = 2
 _tmp0 = 3
-}
+result = _tmp0
+return
 print(to_int(Green))
+}

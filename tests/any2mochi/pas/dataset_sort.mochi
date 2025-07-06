@@ -12,7 +12,6 @@ if start_ < 0 then start_ = 0
 if end_ > n then end_ = n
 if end_ < start_ then end_ = start_
 Result = Copy(arr, start_ + 1, end_ - start_)
-let i,j: integer; tmp: t; k: variant
 for i in 0..High(arr) - 1 {
 for j in i + 1..High(arr) {
 tmp = arr[i]; arr[i] := arr[j]; arr[j] := tmp
@@ -37,4 +36,10 @@ for p in products {
 _tmp7 = Concat(_tmp7, [p])
 _tmp8 = Concat(_tmp8, [-p.price])
 }
+_tmp9 = specialize _sliceList<Product>(_tmp7, 1, Length(_tmp7))
+_tmp10 = specialize _sliceList<Product>(_tmp9, 0, 3)
+expensive = _tmp10
+print('--- Top products (excluding most expensive) ---')
+for item in expensive {
 print(item.name, 'costs $', item.price)
+}
