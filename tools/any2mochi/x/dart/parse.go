@@ -21,6 +21,7 @@ type funcJSON struct {
 	Body   []string    `json:"body"`
 	Start  int         `json:"start"`
 	End    int         `json:"end"`
+	Doc    string      `json:"doc,omitempty"`
 }
 
 type ast struct {
@@ -28,6 +29,22 @@ type ast struct {
 }
 
 func parseCLI(src string) ([]function, error) {
+	if dartPath, err := exec.LookPath("dart"); err == nil {
+		root, rErr := repoRoot()
+		if rErr == nil {
+			script := filepath.Join(root, "tools", "any2mochi", "x", "dart", "parser.dart")
+			cmd := exec.Command(dartPath, script)
+			cmd.Stdin = bytes.NewBufferString(src)
+			var out bytes.Buffer
+			var errBuf bytes.Buffer
+			cmd.Stdout = &out
+			cmd.Stderr = &errBuf
+			if err := cmd.Run(); err == nil {
+				return decodeFuncs(out.Bytes())
+			}
+		}
+	}
+
 	path, err := exec.LookPath("dartast")
 	if err != nil {
 		root, rErr := repoRoot()
@@ -74,7 +91,7 @@ func decodeFuncs(data []byte) ([]function, error) {
 		for _, p := range f.Params {
 			params = append(params, param{name: p.Name, typ: toMochiType(p.Type)})
 		}
-		funcs = append(funcs, function{Name: f.Name, Params: params, Body: f.Body, Ret: toMochiType(f.Ret)})
+		funcs = append(funcs, function{Name: f.Name, Params: params, Body: f.Body, Ret: toMochiType(f.Ret), Doc: f.Doc})
 	}
 	return funcs, nil
 }

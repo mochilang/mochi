@@ -23,6 +23,7 @@ type dartFunc struct {
 	Body   []string    `json:"body"`
 	Start  int         `json:"start"`
 	End    int         `json:"end"`
+	Doc    string      `json:"doc,omitempty"`
 }
 
 type ast struct {
@@ -162,6 +163,7 @@ func parse(src string) []dartFunc {
 			}
 		}
 		body := src[start:bodyEnd]
+		doc := docBefore(src, m[0])
 		startLine := strings.Count(src[:start], "\n") + 1
 		endLine := strings.Count(src[:bodyEnd], "\n") + 1
 		funcs = append(funcs, dartFunc{
@@ -171,9 +173,31 @@ func parse(src string) []dartFunc {
 			Body:   parseStatements(body[1:]),
 			Start:  startLine,
 			End:    endLine,
+			Doc:    doc,
 		})
 	}
 	return funcs
+}
+
+func docBefore(src string, idx int) string {
+	lines := strings.Split(src[:idx], "\n")
+	var doc []string
+	for i := len(lines) - 1; i >= 0; i-- {
+		l := strings.TrimSpace(lines[i])
+		if strings.HasPrefix(l, "///") {
+			doc = append([]string{strings.TrimSpace(strings.TrimPrefix(l, "///"))}, doc...)
+			continue
+		}
+		if strings.HasPrefix(l, "//") {
+			doc = append([]string{strings.TrimSpace(strings.TrimPrefix(l, "//"))}, doc...)
+			continue
+		}
+		if l == "" {
+			continue
+		}
+		break
+	}
+	return strings.Join(doc, "\n")
 }
 
 func splitArgs(s string) []string {

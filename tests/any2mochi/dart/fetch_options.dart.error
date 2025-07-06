@@ -1,6 +1,4 @@
 no convertible symbols found
-
-source snippet:
   1: import 'dart:io';
   2: import 'dart:convert';
   3: 

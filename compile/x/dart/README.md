@@ -245,6 +245,7 @@ The Dart backend currently covers most core Mochi constructs, including union ty
 - Left/right/outer joins in dataset queries
 - Set operations with `union`, `union all`, `except` and `intersect`
 - Built‑ins like `fetch`, `load`, `save` (CSV/JSON/YAML) and placeholder `generate`
+- Numeric helpers like `abs`, `min`, `max`, `sum`, `avg` and `count`
 - `json` printing and `now` timestamp helpers
 - Stream declarations and event handling with `on`/`emit`
 - Agent declarations with `intent` blocks

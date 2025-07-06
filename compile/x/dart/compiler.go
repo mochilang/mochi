@@ -1104,6 +1104,14 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		c.use("_max")
 		return fmt.Sprintf("_max(%s)", arg), nil
 	}
+	// handle abs()
+	if name == "abs" && len(call.Args) == 1 {
+		arg, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("_abs(%s)", arg), nil
+	}
 	// handle input()
 	if name == "input" && len(call.Args) == 0 {
 		c.imports["dart:io"] = true
