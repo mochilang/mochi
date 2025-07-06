@@ -37,6 +37,13 @@ func Convert(src string) ([]byte, error) {
 			return nil, formatParseErr(src, err)
 		}
 		for _, st := range structs {
+			if st.doc != "" {
+				for _, l := range strings.Split(st.doc, "\n") {
+					out.WriteString("// ")
+					out.WriteString(strings.TrimSpace(l))
+					out.WriteByte('\n')
+				}
+			}
 			out.WriteString("type ")
 			out.WriteString(st.name)
 			out.WriteString(" {\n")
@@ -404,6 +411,20 @@ func convertBody(src string, r any2mochi.Range) []string {
 				name := m[1]
 				src := strings.TrimSpace(m[2])
 				out = append(out, fmt.Sprintf("for %s in %s {", name, src))
+			} else {
+				out = append(out, l)
+			}
+		case strings.HasPrefix(l, "for (") && strings.Contains(l, ";"):
+			re := regexp.MustCompile(`^for \((?:int|size_t|auto|long|short)?\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([^;]+);\s*\1\s*([<>]=?)\s*([^;]+);\s*(?:\+\+\1|\1\+\+)\)\s*\{?$`)
+			if m := re.FindStringSubmatch(l); m != nil {
+				name := m[1]
+				start := strings.TrimSpace(m[2])
+				op := m[3]
+				end := strings.TrimSpace(m[4])
+				if op == "<=" {
+					end = end + "+1"
+				}
+				out = append(out, fmt.Sprintf("for %s in %s..%s {", name, start, end))
 			} else {
 				out = append(out, l)
 			}

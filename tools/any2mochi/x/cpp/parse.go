@@ -42,6 +42,7 @@ type structDef struct {
 	startLine int
 	endLine   int
 	snippet   string
+	doc       string
 }
 
 func convertBodyString(body string) []string {
@@ -75,6 +76,20 @@ func convertBodyString(body string) []string {
 				name := m[1]
 				src := strings.TrimSpace(m[2])
 				out = append(out, fmt.Sprintf("for %s in %s {", name, src))
+			} else {
+				out = append(out, l)
+			}
+		case strings.HasPrefix(l, "for (") && strings.Contains(l, ";"):
+			re := regexp.MustCompile(`^for \((?:int|size_t|auto|long|short)?\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([^;]+);\s*\1\s*([<>]=?)\s*([^;]+);\s*(?:\+\+\1|\1\+\+)\)\s*\{?$`)
+			if m := re.FindStringSubmatch(l); m != nil {
+				name := m[1]
+				start := strings.TrimSpace(m[2])
+				op := m[3]
+				end := strings.TrimSpace(m[4])
+				if op == "<=" {
+					end = end + "+1"
+				}
+				out = append(out, fmt.Sprintf("for %s in %s..%s {", name, start, end))
 			} else {
 				out = append(out, l)
 			}
@@ -133,7 +148,8 @@ func parseAST(src string) ([]funcDef, []enumDef, []structDef, error) {
 	var funcs []funcDef
 	var enums []enumDef
 	var structs []structDef
-	collectAST(&root, src, &funcs, &enums, &structs, "")
+	lines := strings.Split(src, "\n")
+	collectAST(&root, src, lines, &funcs, &enums, &structs, "")
 	if runErr != nil {
 		return funcs, enums, structs, fmt.Errorf("clang++: %w: %s", runErr, errBuf.String())
 	}
@@ -157,7 +173,7 @@ type astNode struct {
 	} `json:"range,omitempty"`
 }
 
-func collectAST(n *astNode, src string, funcs *[]funcDef, enums *[]enumDef, structs *[]structDef, parent string) {
+func collectAST(n *astNode, src string, lines []string, funcs *[]funcDef, enums *[]enumDef, structs *[]structDef, parent string) {
 	switch n.Kind {
 	case "FunctionDecl":
 		if n.Range == nil || n.Range.Begin.Offset < 0 || n.Range.End.Offset > len(src) {
@@ -315,6 +331,19 @@ func collectAST(n *astNode, src string, funcs *[]funcDef, enums *[]enumDef, stru
 					}
 				}
 				if len(fields) > 0 || len(methods) > 0 {
+					docLines := []string{}
+					ln := lineNumber(src, n.Range.Begin.Offset) - 1
+					for i := ln - 1; i >= 0; i-- {
+						l := strings.TrimSpace(lines[i])
+						if strings.HasPrefix(l, "//") {
+							docLines = append([]string{strings.TrimSpace(strings.TrimPrefix(l, "//"))}, docLines...)
+						} else if l == "" {
+							continue
+						} else {
+							break
+						}
+					}
+					doc := strings.Join(docLines, "\n")
 					*structs = append(*structs, structDef{
 						name:      n.Name,
 						fields:    fields,
@@ -322,6 +351,7 @@ func collectAST(n *astNode, src string, funcs *[]funcDef, enums *[]enumDef, stru
 						startLine: lineNumber(src, n.Range.Begin.Offset),
 						endLine:   lineNumber(src, n.Range.End.Offset),
 						snippet:   snippet,
+						doc:       doc,
 					})
 				}
 			}
@@ -338,6 +368,6 @@ func collectAST(n *astNode, src string, funcs *[]funcDef, enums *[]enumDef, stru
 			// already processed above
 			continue
 		}
-		collectAST(&n.Inner[i], src, funcs, enums, structs, nextParent)
+		collectAST(&n.Inner[i], src, lines, funcs, enums, structs, nextParent)
 	}
 }

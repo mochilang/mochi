@@ -313,6 +313,11 @@ func (c *Compiler) compileKeyStruct(name string, fields []string, types []string
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	if t.Doc != "" {
+		for _, l := range strings.Split(t.Doc, "\n") {
+			c.writeln("// " + strings.TrimSpace(l))
+		}
+	}
 	if len(t.Variants) > 0 {
 		names := make([]string, len(t.Variants))
 		for i, v := range t.Variants {
@@ -376,6 +381,11 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	methods := []*parser.FunStmt{}
 	for _, m := range t.Members {
 		if m.Field != nil {
+			if m.Field.Doc != "" {
+				for _, l := range strings.Split(m.Field.Doc, "\n") {
+					c.writeln("// " + strings.TrimSpace(l))
+				}
+			}
 			typ := c.cppType(m.Field.Type)
 			c.writeln(fmt.Sprintf("%s %s;", typ, m.Field.Name))
 		} else if m.Method != nil {
