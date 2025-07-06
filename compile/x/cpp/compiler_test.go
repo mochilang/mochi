@@ -149,10 +149,11 @@ func TestCPPCompiler_SubsetPrograms(t *testing.T) {
 }
 
 func TestCPPCompiler_GoldenOutput(t *testing.T) {
-	if _, err := cppcode.EnsureCPP(); err != nil {
+	cpp, err := cppcode.EnsureCPP()
+	if err != nil {
 		t.Skipf("C++ compiler not installed: %v", err)
 	}
-	golden.Run(t, "tests/compiler/valid", ".mochi", ".cpp.out", func(src string) ([]byte, error) {
+	runCompile := func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
 			return nil, fmt.Errorf("❌ parse error: %w", err)
@@ -166,25 +167,53 @@ func TestCPPCompiler_GoldenOutput(t *testing.T) {
 		if err != nil {
 			return nil, fmt.Errorf("❌ compile error: %w", err)
 		}
-		return bytes.TrimSpace(code), nil
-	})
 
-	golden.Run(t, "tests/compiler/cpp", ".mochi", ".cpp.out", func(src string) ([]byte, error) {
-		prog, err := parser.Parse(src)
+		dir := t.TempDir()
+		srcFile := filepath.Join(dir, "prog.cpp")
+		if err := os.WriteFile(srcFile, code, 0644); err != nil {
+			return nil, fmt.Errorf("write error: %w", err)
+		}
+		bin := filepath.Join(dir, "prog")
+		if out, err := exec.Command(cpp, srcFile, "-std=c++17", "-o", bin).CombinedOutput(); err != nil {
+			return nil, fmt.Errorf("❌ cpp error: %w\n%s", err, out)
+		}
+		cmd := exec.Command(bin)
+		var inData []byte
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			cmd.Stdin = bytes.NewReader(data)
+			inData = data
+		}
+		out, err := cmd.CombinedOutput()
 		if err != nil {
-			return nil, fmt.Errorf("❌ parse error: %w", err)
+			return nil, fmt.Errorf("❌ run error: %w\n%s", err, out)
 		}
-		env := types.NewEnv(nil)
-		if errs := types.Check(prog, env); len(errs) > 0 {
-			return nil, fmt.Errorf("❌ type error: %v", errs[0])
-		}
-		c := cppcode.New(env)
-		code, err := c.Compile(prog)
+		compiledOut := bytes.TrimSpace(out)
+
+		// Run using the VM for expected output.
+		srcData, _ := os.ReadFile(src)
+		p, err := vm.CompileWithSource(prog, env, string(srcData))
 		if err != nil {
-			return nil, fmt.Errorf("❌ compile error: %w", err)
+			return nil, fmt.Errorf("vm compile error: %w", err)
 		}
+		var buf bytes.Buffer
+		m := vm.NewWithIO(p, bytes.NewReader(inData), &buf)
+		if err := m.Run(); err != nil {
+			if ve, ok := err.(*vm.VMError); ok {
+				return nil, fmt.Errorf("vm run error:\n%s", ve.Format(p))
+			}
+			return nil, fmt.Errorf("vm run error: %v", err)
+		}
+		vmOut := bytes.TrimSpace(buf.Bytes())
+		if !bytes.Equal(compiledOut, vmOut) {
+			return nil, fmt.Errorf("runtime output mismatch\n\n--- VM ---\n%s\n\n--- C++ ---\n%s\n", vmOut, compiledOut)
+		}
+
 		return bytes.TrimSpace(code), nil
-	})
+	}
+
+	golden.Run(t, "tests/compiler/valid", ".mochi", ".cpp.out", runCompile)
+
+	golden.Run(t, "tests/compiler/cpp", ".mochi", ".cpp.out", runCompile)
 }
 
 // runCPPLeetExample compiles and runs the given LeetCode example directory.
