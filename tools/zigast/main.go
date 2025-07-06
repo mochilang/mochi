@@ -23,17 +23,19 @@ type Var struct {
 }
 
 type Func struct {
-	Name   string   `json:"name"`
-	Params string   `json:"params"`
-	Ret    string   `json:"ret"`
-	Line   int      `json:"line"`
-	Lines  []string `json:"lines"`
+	Name    string   `json:"name"`
+	Params  string   `json:"params"`
+	Ret     string   `json:"ret"`
+	Line    int      `json:"line"`
+	EndLine int      `json:"endLine"`
+	Lines   []string `json:"lines"`
 }
 
 type Struct struct {
-	Name   string  `json:"name"`
-	Line   int     `json:"line"`
-	Fields []Field `json:"fields"`
+	Name    string  `json:"name"`
+	Line    int     `json:"line"`
+	EndLine int     `json:"endLine"`
+	Fields  []Field `json:"fields"`
 }
 
 type Field struct {
@@ -132,6 +134,7 @@ func parse(src string) AST {
 						curFunc.Lines = append(curFunc.Lines, l)
 					}
 				}
+				curFunc.EndLine = lineNum + 1
 				curFunc = nil
 				depth = 0
 				lineNum++
@@ -154,6 +157,7 @@ func parse(src string) AST {
 						}
 					}
 				}
+				curStruct.EndLine = lineNum + 1
 				curStruct = nil
 				depth = 0
 				lineNum++

@@ -13,6 +13,20 @@ import (
 	any2mochi "mochi/tools/any2mochi"
 )
 
+// ConvertError provides detailed information suitable for golden tests.
+type ConvertError struct {
+	Line int
+	Msg  string
+	Snip string
+}
+
+func (e *ConvertError) Error() string {
+	if e.Line > 0 {
+		return fmt.Sprintf("line %d: %s\n%s", e.Line, e.Msg, e.Snip)
+	}
+	return fmt.Sprintf("%s\n%s", e.Msg, e.Snip)
+}
+
 type param struct {
 	name string
 	typ  string
@@ -118,6 +132,19 @@ func parseCLI(src string) (*ast, error) {
 	}
 	tmp.Close()
 	defer os.Remove(tmp.Name())
+
+	if _, err := exec.LookPath("zig"); err == nil {
+		cmd := exec.Command("zig", "ast-check", "--format", "json", tmp.Name())
+		var out bytes.Buffer
+		cmd.Stdout = &out
+		if err := cmd.Run(); err == nil {
+			var a ast
+			if json.Unmarshal(out.Bytes(), &a) == nil && (len(a.Functions) > 0 || len(a.Structs) > 0) {
+				return &a, nil
+			}
+		}
+	}
+
 	cmd := exec.Command("go", "run", filepath.Join(root, "tools", "zigast"), tmp.Name())
 	var out bytes.Buffer
 	var stderr bytes.Buffer
@@ -250,12 +277,12 @@ func Convert(src string) ([]byte, error) {
 		return nil, err
 	}
 	if len(diags) > 0 {
-		return nil, fmt.Errorf("%s", diagnostics(src, diags))
+		return nil, &ConvertError{Msg: "diagnostics", Snip: diagnostics(src, diags)}
 	}
 	var out strings.Builder
 	writeSymbols(&out, nil, syms, src, ls)
 	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
+		return nil, &ConvertError{Msg: "no convertible symbols found", Snip: snippet(src)}
 	}
 	return []byte(out.String()), nil
 }
@@ -366,6 +393,14 @@ func extractRange(src string, r any2mochi.Range) string {
 	return out.String()
 }
 
+func trimOuterParens(s string) string {
+	s = strings.TrimSpace(s)
+	if len(s) >= 2 && s[0] == '(' && s[len(s)-1] == ')' {
+		return strings.TrimSpace(s[1 : len(s)-1])
+	}
+	return s
+}
+
 func convertExpr(expr string) string {
 	expr = strings.TrimSpace(expr)
 	for strings.Contains(expr, "@as(") {
@@ -431,17 +466,18 @@ func parseBlockHeader(h string) string {
 	switch {
 	case strings.HasPrefix(h, "if "):
 		cond := strings.TrimSpace(strings.TrimPrefix(h, "if "))
-		cond = strings.Trim(cond, "()")
+		cond = trimOuterParens(cond)
 		return "if " + convertExpr(cond)
 	case strings.HasPrefix(h, "else if "):
 		cond := strings.TrimSpace(strings.TrimPrefix(h, "else if "))
-		cond = strings.Trim(cond, "()")
+		cond = trimOuterParens(cond)
 		return "else if " + convertExpr(cond)
 	case h == "else":
 		return "else"
 	case strings.HasPrefix(h, "while "):
-		cond := strings.TrimSpace(strings.TrimPrefix(h, "while "))
-		cond = strings.Trim(cond, "()")
+		inner := strings.TrimSpace(strings.TrimPrefix(h, "while "))
+		parts := strings.SplitN(inner, ":", 2)
+		cond := trimOuterParens(strings.TrimSpace(parts[0]))
 		return "while " + convertExpr(cond)
 	case strings.HasPrefix(h, "for "):
 		inner := strings.TrimSpace(strings.TrimPrefix(h, "for"))
@@ -475,15 +511,33 @@ func parseStmt(l string) string {
 	case strings.HasPrefix(l, "var "):
 		parts := strings.SplitN(l[4:], "=", 2)
 		if len(parts) == 2 {
-			name := strings.Fields(parts[0])[0]
+			left := strings.TrimSpace(parts[0])
+			name := left
+			typ := ""
+			if colon := strings.Index(left, ":"); colon != -1 {
+				name = strings.TrimSpace(left[:colon])
+				typ = mapType(strings.TrimSpace(left[colon+1:]))
+			}
 			expr := convertExpr(parts[1])
+			if typ != "" {
+				return "let " + name + ": " + typ + " = " + expr
+			}
 			return "let " + name + " = " + expr
 		}
 	case strings.HasPrefix(l, "const "):
 		parts := strings.SplitN(l[6:], "=", 2)
 		if len(parts) == 2 {
-			name := strings.Fields(parts[0])[0]
+			left := strings.TrimSpace(parts[0])
+			name := left
+			typ := ""
+			if colon := strings.Index(left, ":"); colon != -1 {
+				name = strings.TrimSpace(left[:colon])
+				typ = mapType(strings.TrimSpace(left[colon+1:]))
+			}
 			expr := convertExpr(parts[1])
+			if typ != "" {
+				return "let " + name + ": " + typ + " = " + expr
+			}
 			return "let " + name + " = " + expr
 		}
 	case l == "break":

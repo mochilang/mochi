@@ -10,8 +10,10 @@ This directory contains golden files for converting Zig source code to Mochi.
   - `return` statements
   - simple variable assignments
   - `if`/`else` blocks
-  - `while` and `for` loops
-  - call expressions with casts removed
+- `while` and `for` loops
+- call expressions with casts removed
+- typed variable declarations
+- improved while loop parsing
 
 ## Unsupported Features
 
