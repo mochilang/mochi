@@ -28,12 +28,23 @@ func diagnostics(src string, diags []any2mochi.Diagnostic) string {
 	var out strings.Builder
 	for _, d := range diags {
 		start := int(d.Range.Start.Line)
-		msg := d.Message
-		line := ""
-		if start < len(lines) {
-			line = strings.TrimSpace(lines[start])
+		end := int(d.Range.End.Line)
+		if end < start {
+			end = start
 		}
-		out.WriteString(fmt.Sprintf("line %d: %s\n  %s\n", start+1, msg, line))
+		msg := d.Message
+		out.WriteString(fmt.Sprintf("line %d: %s\n", start+1, msg))
+		from := start - 1
+		if from < 0 {
+			from = 0
+		}
+		to := end + 1
+		if to >= len(lines) {
+			to = len(lines) - 1
+		}
+		for i := from; i <= to && i < len(lines); i++ {
+			out.WriteString(fmt.Sprintf("%4d| %s\n", i+1, strings.TrimRight(lines[i], "")))
+		}
 	}
 	return strings.TrimSpace(out.String())
 }
@@ -231,6 +242,9 @@ func convertBody(src string, sym any2mochi.DocumentSymbol) []string {
 		}
 		ll := strings.ToLower(l)
 		switch {
+		case strings.HasPrefix(ll, "allocate"):
+			// ignore allocations
+			continue
 		case strings.HasPrefix(ll, "implicit none") || strings.Contains(l, "::"):
 			continue
 		case strings.HasPrefix(ll, "print"):
@@ -284,6 +298,8 @@ func convertBody(src string, sym any2mochi.DocumentSymbol) []string {
 				left := strings.TrimSpace(parts[0])
 				right := cleanExpr(strings.TrimSpace(parts[1]))
 				out = append(out, strings.Repeat("  ", indent)+left+" = "+right)
+			} else {
+				out = append(out, strings.Repeat("  ", indent)+"// "+l)
 			}
 		}
 	}

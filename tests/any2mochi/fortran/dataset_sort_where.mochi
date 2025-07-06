@@ -33,3 +33,4 @@ fun lambda_0() {
       tmp(min_idx) = swap_item
     }
 }
+}
