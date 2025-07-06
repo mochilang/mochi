@@ -16,6 +16,7 @@ import (
 type TSAstDecl struct {
 	Kind      string    `json:"kind"`
 	Name      string    `json:"name"`
+	Node      string    `json:"node,omitempty"`
 	Params    []TSParam `json:"params,omitempty"`
 	Ret       string    `json:"ret,omitempty"`
 	Body      string    `json:"body,omitempty"`

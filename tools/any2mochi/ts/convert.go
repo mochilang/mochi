@@ -669,6 +669,37 @@ func writeTSDecls(out *strings.Builder, decls []TSAstDecl) {
 				out.WriteString(d.Ret)
 			}
 			out.WriteByte('\n')
+		case "funcvar":
+			out.WriteString("let ")
+			out.WriteString(d.Name)
+			out.WriteString(" = fun (")
+			for i, p := range d.Params {
+				if i > 0 {
+					out.WriteString(", ")
+				}
+				out.WriteString(p.Name)
+				if p.Typ != "" {
+					out.WriteString(": ")
+					out.WriteString(p.Typ)
+				}
+			}
+			out.WriteByte(')')
+			if d.Ret != "" && d.Ret != "void" {
+				out.WriteString(": ")
+				out.WriteString(d.Ret)
+			}
+			stmts := tsFunctionBody(d.Body)
+			if len(stmts) == 0 {
+				out.WriteString(" {}\n")
+			} else {
+				out.WriteString(" {\n")
+				for _, l := range stmts {
+					out.WriteString("  ")
+					out.WriteString(l)
+					out.WriteByte('\n')
+				}
+				out.WriteString("}\n")
+			}
 		case "func":
 			out.WriteString("fun ")
 			out.WriteString(d.Name)

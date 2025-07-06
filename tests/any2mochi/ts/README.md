@@ -16,6 +16,8 @@ This directory contains golden files used by `any2mochi` tests for converting Ty
 - Type aliases and enums when reported by the language server
 - AST parser now records start and end columns along with a snippet of the
   source for richer tooling and diagnostics
+- Variable declarations assigned a function are now recognised when the
+  TypeScript AST parser is available
 
 ## Unsupported features
 
