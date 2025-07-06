@@ -1,3 +1,6 @@
+type Todo {
+  title
+}
 fun main() {
   let todo = {"title": "hi"}
   print(todo.title)

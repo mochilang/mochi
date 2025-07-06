@@ -28,7 +28,7 @@ var typedVarRe = regexp.MustCompile(`^(?:final|const)?\s*([A-Za-z_][A-Za-z0-9_<>
 
 // Convert converts Dart source code to Mochi.
 func Convert(src string) ([]byte, error) {
-	funcs, err := parseCLI(src)
+	funcs, classes, err := parseCLI(src)
 	if err != nil {
 		return nil, &ConvertError{Msg: err.Error(), Snip: any2mochi.NumberedSnippet(src)}
 	}
@@ -36,6 +36,21 @@ func Convert(src string) ([]byte, error) {
 		return nil, &ConvertError{Msg: "no convertible symbols found", Snip: any2mochi.NumberedSnippet(src)}
 	}
 	var out strings.Builder
+	for _, c := range classes {
+		out.WriteString("type ")
+		out.WriteString(c.Name)
+		out.WriteString(" {\n")
+		for _, f := range c.Fields {
+			out.WriteString("  ")
+			out.WriteString(f.name)
+			if f.typ != "" && f.typ != "any" {
+				out.WriteString(": ")
+				out.WriteString(f.typ)
+			}
+			out.WriteByte('\n')
+		}
+		out.WriteString("}\n")
+	}
 	for _, f := range funcs {
 		out.WriteString("fun ")
 		out.WriteString(f.Name)
@@ -88,6 +103,14 @@ type function struct {
 	Params    []param
 	Ret       string
 	Body      []string
+	StartLine int
+	EndLine   int
+	Doc       string
+}
+
+type class struct {
+	Name      string
+	Fields    []param
 	StartLine int
 	EndLine   int
 	Doc       string

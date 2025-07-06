@@ -1,3 +1,8 @@
+type Person {
+  name: string
+  age: int
+  email: string
+}
 fun main() {
   let people: list<Person> = _load("../clj/people.json", {"format": "json"})
   let adults: list<map<string, string>> = (() {

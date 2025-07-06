@@ -1,3 +1,7 @@
+type Person {
+  name: string
+  age: int
+}
 fun main() {
   let people: list<Person> = [Person(name: "Alice", age: 30), Person(name: "Bob", age: 15), Person(name: "Charlie", age: 65)]
   let names: list<string> = (() {

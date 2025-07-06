@@ -1,3 +1,7 @@
+type Point {
+  x: int
+  y: int
+}
 fun sumPoint(): int {
   class Point {
   let x: int
