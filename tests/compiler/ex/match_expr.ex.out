@@ -2,15 +2,20 @@
 defmodule Main do
   def main do
     x = 2
-    label = (fn ->
-  t1 = x
-  cond do
-    t1 == 1 -> "one"
-    t1 == 2 -> "two"
-    true -> "unknown"
-  end
-end)()
+
+    label =
+      (fn ->
+         t1 = x
+
+         cond do
+           t1 == 1 -> "one"
+           t1 == 2 -> "two"
+           true -> "unknown"
+         end
+       end).()
+
     IO.puts(label)
   end
-  end
+end
+
 Main.main()

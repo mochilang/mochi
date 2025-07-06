@@ -3,32 +3,39 @@ defmodule Main do
   def main do
     set = %{}
     _ = set
-    {set} = Enum.reduce([1, 2, 3], {set}, fn n, {set} ->
-      set = Map.put(set, n, true)
-      {set}
-    end)
+
+    {set} =
+      Enum.reduce([1, 2, 3], {set}, fn n, {set} ->
+        set = Map.put(set, n, true)
+        {set}
+      end)
+
     _ = set
     i = 1
     _ = i
     count = 0
     _ = count
+
     t1 = fn t1, count, i ->
       try do
-        if (if is_map(set), do: Map.has_key?(set, i), else: Enum.member?(set, i)) do
-          i = (i + 1)
-          count = (count + 1)
+        if if is_map(set), do: Map.has_key?(set, i), else: Enum.member?(set, i) do
+          i = i + 1
+          count = count + 1
           t1.(t1, count, i)
         else
           {:ok, count, i}
         end
-      catch :break ->
-        {:ok, count, i}
+      catch
+        :break ->
+          {:ok, count, i}
       end
     end
+
     {_, count, i} = t1.(t1, count, i)
     _ = count
     _ = i
     IO.puts(count)
   end
-  end
+end
+
 Main.main()

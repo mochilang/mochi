@@ -3,21 +3,26 @@ defmodule Main do
   def twoSum(nums, target) do
     try do
       n = length(nums)
+
       for i <- 0..(n - 1) do
         for j <- (i + 1)..(n - 1) do
-          if ((Enum.at(nums, i) + Enum.at(nums, j)) == target) do
-            throw {:return, [i, j]}
+          if Enum.at(nums, i) + Enum.at(nums, j) == target do
+            throw({:return, [i, j]})
           end
         end
       end
-      throw {:return, [-1, -1]}
-    catch {:return, v} -> v end
+
+      throw({:return, [-1, -1]})
+    catch
+      {:return, v} -> v
+    end
   end
-  
+
   def main do
     result = twoSum([2, 7, 11, 15], 9)
     IO.puts(Enum.at(result, 0))
     IO.puts(Enum.at(result, 1))
   end
-  end
+end
+
 Main.main()

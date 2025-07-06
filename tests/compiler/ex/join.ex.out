@@ -3,10 +3,12 @@ defmodule Main do
   def main do
     left = [%{id: 1}, %{id: 2}]
     right = [%{id: 1}, %{id: 3}]
-    result = for a <- left, b <- right, (a.id == b.id), do: a.id
+    result = for a <- left, b <- right, a.id == b.id, do: a.id
+
     for r <- result do
       IO.puts(r)
     end
   end
-  end
+end
+
 Main.main()

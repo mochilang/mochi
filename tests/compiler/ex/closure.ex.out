@@ -2,13 +2,16 @@
 defmodule Main do
   def makeAdder(n) do
     try do
-      throw {:return, fn x -> (x + n) end}
-    catch {:return, v} -> v end
+      throw({:return, fn x -> x + n end})
+    catch
+      {:return, v} -> v
+    end
   end
-  
+
   def main do
     add10 = makeAdder(10)
     IO.puts(add10.(7))
   end
-  end
+end
+
 Main.main()

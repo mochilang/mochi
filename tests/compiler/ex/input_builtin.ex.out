@@ -7,9 +7,10 @@ defmodule Main do
     input2 = _input()
     IO.puts(Enum.join(Enum.map(["You entered:", input1, ",", input2], &to_string(&1)), " "))
   end
+
   defp _input() do
-  String.trim(IO.gets(""))
+    String.trim(IO.gets(""))
+  end
 end
 
-  end
 Main.main()

@@ -4,23 +4,51 @@ defmodule Main do
     todo = _fetch("https://jsonplaceholder.typicode.com/todos/1", nil)
     IO.puts(todo.title)
   end
-  defp _fetch(url, opts \ nil) do
-  :inets.start()
-  :ssl.start()
-  method = if opts, do: Map.get(opts, "method", "GET"), else: "GET"
-  headers = if opts && Map.has_key?(opts, "headers"), do: Enum.map(opts["headers"], fn {k,v} -> {String.to_charlist(k), String.to_charlist(to_string(v))} end), else: []
-  body = if opts && Map.has_key?(opts, "body"), do: Jason.encode!(opts["body"]), else: ""
-  query = if opts && Map.has_key?(opts, "query"), do: URI.encode_query(opts["query"]), else: nil
-  full = if query, do: url <> "?" <> query, else: url
-  timeout = if opts && Map.has_key?(opts, "timeout"), do: (t = opts["timeout"]; cond do
-    is_integer(t) -> trunc(t * 1000)
-    is_float(t) -> trunc(t * 1000)
-    true -> nil
-  end), else: nil
-  http_opts = if timeout, do: [timeout: timeout], else: []
-  {{_,_,_}, _, resp} = :httpc.request(String.to_atom(String.upcase(method)), {String.to_charlist(full), headers, 'application/json', String.to_charlist(body)}, [], http_opts) |> elem(1)
-  Jason.decode!(resp, keys: :atoms)
+
+  defp _fetch(url, opts \\ nil) do
+    :inets.start()
+    :ssl.start()
+    method = if opts, do: Map.get(opts, "method", "GET"), else: "GET"
+
+    headers =
+      if opts && Map.has_key?(opts, "headers"),
+        do:
+          Enum.map(opts["headers"], fn {k, v} ->
+            {String.to_charlist(k), String.to_charlist(to_string(v))}
+          end),
+        else: []
+
+    body = if opts && Map.has_key?(opts, "body"), do: Jason.encode!(opts["body"]), else: ""
+    query = if opts && Map.has_key?(opts, "query"), do: URI.encode_query(opts["query"]), else: nil
+    full = if query, do: url <> "?" <> query, else: url
+
+    timeout =
+      if opts && Map.has_key?(opts, "timeout"),
+        do:
+          (
+            t = opts["timeout"]
+
+            cond do
+              is_integer(t) -> trunc(t * 1000)
+              is_float(t) -> trunc(t * 1000)
+              true -> nil
+            end
+          ),
+        else: nil
+
+    http_opts = if timeout, do: [timeout: timeout], else: []
+
+    {{_, _, _}, _, resp} =
+      :httpc.request(
+        String.to_atom(String.upcase(method)),
+        {String.to_charlist(full), headers, 'application/json', String.to_charlist(body)},
+        [],
+        http_opts
+      )
+      |> elem(1)
+
+    Jason.decode!(resp, keys: :atoms)
+  end
 end
 
-  end
 Main.main()
