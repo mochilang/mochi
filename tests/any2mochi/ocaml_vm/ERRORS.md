@@ -49,9 +49,9 @@ help:
 - len_map: parse error: parse error: 1:26: unexpected token "let" (expected ")")
 - len_string: parse error: parse error: 1:24: unexpected token "mochi" (expected ")")
 - let_and_print: ok
-- list_assign: parse error: parse error: 3:18: unexpected token ")" (expected "]")
+- list_assign: parse error: parse error: 3:17: unexpected token ")" (expected "]")
 - list_index: parse error: parse error: 2:15: unexpected token ")" (expected "]")
-- list_nested_assign: parse error: parse error: 3:30: unexpected token "1" (expected ")")
+- list_nested_assign: parse error: parse error: 3:29: unexpected token "1" (expected ")")
 - list_set_ops: parse error: parse error: 1:20: unexpected token "," (expected "]")
 - load_yaml: parse error: parse error: 1:21: unexpected token "with" (expected "{" MatchCase* "}")
 - map_assign: parse error: parse error: 1:15: unexpected token "let" (expected PostfixExpr)
@@ -104,4 +104,4 @@ help:
 - user_type_literal: parse error: parse error: 1:26: unexpected token "," (expected PostfixExpr)
 - values_builtin: parse error: parse error: 1:10: unexpected token "let" (expected PostfixExpr)
 - var_assignment: ok
-- while_loop: parse error: parse error: 3:15: unexpected token ")" (expected PostfixExpr)
+- while_loop: parse error: parse error: 3:14: unexpected token ")" (expected PostfixExpr)
