@@ -264,6 +264,12 @@ func convertExpr(expr string) string {
 		inner := strings.TrimSuffix(strings.TrimPrefix(expr, prefix), ")")
 		expr = "[" + inner + "]"
 	}
+	if strings.Contains(expr, ".append(") {
+		idx := strings.Index(expr, ".append(")
+		recv := strings.TrimSpace(expr[:idx])
+		arg := strings.TrimSuffix(expr[idx+8:], ")")
+		return "append(" + recv + ", " + convertExpr(arg) + ")"
+	}
 	listPrefixes := []string{"List(", "Seq(", "Vector("}
 	for _, p := range listPrefixes {
 		if strings.HasPrefix(expr, p) && strings.HasSuffix(expr, ")") {
@@ -421,6 +427,32 @@ func mapType(t string) string {
 	if idx := strings.LastIndex(t, "."); idx != -1 {
 		t = t[idx+1:]
 	}
+
+	// handle common generic containers
+	switch {
+	case strings.HasPrefix(t, "ArrayBuffer[") && strings.HasSuffix(t, "]"):
+		inner := t[len("ArrayBuffer[") : len(t)-1]
+		return "list<" + mapType(inner) + ">"
+	case strings.HasPrefix(t, "List[") && strings.HasSuffix(t, "]"):
+		inner := t[len("List[") : len(t)-1]
+		return "list<" + mapType(inner) + ">"
+	case strings.HasPrefix(t, "Seq[") && strings.HasSuffix(t, "]"):
+		inner := t[len("Seq[") : len(t)-1]
+		return "list<" + mapType(inner) + ">"
+	case strings.HasPrefix(t, "Vector[") && strings.HasSuffix(t, "]"):
+		inner := t[len("Vector[") : len(t)-1]
+		return "list<" + mapType(inner) + ">"
+	case strings.HasPrefix(t, "Map[") && strings.HasSuffix(t, "]"):
+		inner := t[len("Map[") : len(t)-1]
+		parts := splitArgs(inner)
+		if len(parts) == 2 {
+			return "map<" + mapType(parts[0]) + ", " + mapType(parts[1]) + ">"
+		}
+	case strings.HasPrefix(t, "Option[") && strings.HasSuffix(t, "]"):
+		inner := t[len("Option[") : len(t)-1]
+		return mapType(inner) + "?"
+	}
+
 	switch t {
 	case "Int", "Long", "Short", "Byte":
 		return "int"
