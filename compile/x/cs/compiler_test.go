@@ -94,6 +94,70 @@ func TestCSCompiler_GoldenOutput(t *testing.T) {
 	golden.Run(t, "tests/compiler/cs", ".mochi", ".cs.out", compile)
 }
 
+// TestCSCompiler_GoldenOutputRunnable ensures the golden C# code compiles
+// and produces the expected output when executed with dotnet.
+func TestCSCompiler_GoldenOutputRunnable(t *testing.T) {
+	if err := cscode.EnsureDotnet(); err != nil {
+		t.Skipf("dotnet not installed: %v", err)
+	}
+	if err := exec.Command("dotnet", "--version").Run(); err != nil {
+		t.Skipf("dotnet not runnable: %v", err)
+	}
+
+	root := findRepoRoot(t)
+	pattern := filepath.Join(root, "tests", "compiler", "cs", "*.cs.out")
+	files, err := filepath.Glob(pattern)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(files) == 0 {
+		t.Fatalf("no golden files: %s", pattern)
+	}
+	for _, file := range files {
+		name := strings.TrimSuffix(filepath.Base(file), ".cs.out")
+		t.Run(name, func(t *testing.T) {
+			code, err := os.ReadFile(file)
+			if err != nil {
+				t.Fatalf("read golden: %v", err)
+			}
+			dir := t.TempDir()
+			projDir := filepath.Join(dir, "app")
+			if err := os.MkdirAll(projDir, 0755); err != nil {
+				t.Fatalf("mkdir: %v", err)
+			}
+			csproj := `<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework></PropertyGroup>
+  <ItemGroup><PackageReference Include="YamlDotNet" Version="13.3.1" /></ItemGroup>
+</Project>`
+			if err := os.WriteFile(filepath.Join(projDir, "app.csproj"), []byte(csproj), 0644); err != nil {
+				t.Fatalf("write csproj: %v", err)
+			}
+			if err := os.WriteFile(filepath.Join(projDir, "Program.cs"), code, 0644); err != nil {
+				t.Fatalf("write code: %v", err)
+			}
+			cmd := exec.Command("dotnet", "run", "--project", projDir)
+			inPath := filepath.Join(root, "tests", "compiler", "cs", name+".in")
+			if data, err := os.ReadFile(inPath); err == nil {
+				cmd.Stdin = bytes.NewReader(data)
+			}
+			out, err := cmd.CombinedOutput()
+			if err != nil {
+				t.Fatalf("dotnet run error: %v\n%s", err, out)
+			}
+			got := strings.TrimSpace(string(out))
+			wantPath := filepath.Join(root, "tests", "compiler", "cs", name+".out")
+			wantData, err := os.ReadFile(wantPath)
+			if err != nil {
+				t.Fatalf("read golden output: %v", err)
+			}
+			want := strings.TrimSpace(string(wantData))
+			if got != want {
+				t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", name, got, want)
+			}
+		})
+	}
+}
+
 func TestCSCompiler_TPCHQ1(t *testing.T) {
 	if err := cscode.EnsureDotnet(); err != nil {
 		t.Skipf("dotnet not installed: %v", err)
