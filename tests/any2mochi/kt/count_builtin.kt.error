@@ -1,0 +1,10 @@
+type error: error[T003]: unknown function: listOf
+  --> :2:9
+
+help:
+  Ensure the function is defined before it's called.
+
+  1| fun main() {
+  2|     println(listOf(1, 2, 3).size)
+  3| }
+  4|

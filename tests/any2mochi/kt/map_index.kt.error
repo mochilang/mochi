@@ -1,0 +1,7 @@
+parse error: parse error: 2:37: unexpected token "to" (expected ")")
+
+  1| fun main() {
+  2|     val scores = mutableMapOf("Alice" to 10, "Bob" to 15)
+  3|     println(scores["Bob"])
+  4| }
+  5|

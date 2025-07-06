@@ -59,6 +59,7 @@ type VarDecl struct {
 
 type Function struct {
 	Name      string   `json:"name"`
+	Generics  []string `json:"generics,omitempty"`
 	Params    []Param  `json:"params"`
 	Ret       string   `json:"ret,omitempty"`
 	Lines     []string `json:"lines"`
@@ -96,7 +97,7 @@ func main() {
 
 func parse(src string) Program {
 	sc := bufio.NewScanner(strings.NewReader(src))
-	funRE := regexp.MustCompile(`^fun\s+([A-Za-z0-9_]+)\s*\(([^)]*)\)(?:\s*:\s*([^\s{]+))?`)
+	funRE := regexp.MustCompile(`^fun(?:\s*<([^>]+)>)?\s+([A-Za-z0-9_]+)\s*\(([^)]*)\)(?:\s*:\s*([^\s{]+))?`)
 	classRE := regexp.MustCompile(`^(?:(sealed)\s+)?(?:(data)\s+)?(class|interface)\s+([A-Za-z0-9_]+)(?:\s*\(([^)]*)\))?(?:\s*:\s*([^\s{]+))?`)
 	varRE := regexp.MustCompile(`^(val|var)\s+([A-Za-z0-9_]+)(?:\s*:\s*([^=]+))?\s*=\s*(.+)`)
 
@@ -139,10 +140,22 @@ func parse(src string) Program {
 			classDepth -= strings.Count(line, "}")
 			if funRE.MatchString(line) {
 				m := funRE.FindStringSubmatch(line)
-				fn := Function{Name: m[1], Params: parseParams(m[2]), Ret: strings.TrimSpace(m[3]), StartLine: lineNum, StartCol: startCol, Snippet: orig}
-				curClass.Methods = append(curClass.Methods, fn)
-				curFn = &curClass.Methods[len(curClass.Methods)-1]
-				depth = strings.Count(line, "{") - strings.Count(line, "}")
+				gens := parseGenerics(m[1])
+				body := ""
+				if eq := strings.Index(line, "="); eq != -1 {
+					body = strings.TrimSpace(line[eq+1:])
+				}
+				fn := Function{Name: m[2], Generics: gens, Params: parseParams(m[3]), Ret: strings.TrimSpace(m[4]), StartLine: lineNum, StartCol: startCol, Snippet: orig}
+				if body != "" {
+					fn.Lines = []string{"return " + body}
+					fn.EndLine = lineNum
+					fn.EndCol = endCol
+					curClass.Methods = append(curClass.Methods, fn)
+				} else {
+					curClass.Methods = append(curClass.Methods, fn)
+					curFn = &curClass.Methods[len(curClass.Methods)-1]
+					depth = strings.Count(line, "{") - strings.Count(line, "}")
+				}
 				continue
 			}
 			if classDepth <= 0 && line == "}" {
@@ -155,10 +168,22 @@ func parse(src string) Program {
 		default:
 			if funRE.MatchString(line) {
 				m := funRE.FindStringSubmatch(line)
-				fn := Function{Name: m[1], Params: parseParams(m[2]), Ret: strings.TrimSpace(m[3]), StartLine: lineNum, StartCol: startCol, Snippet: orig}
-				prog.Functions = append(prog.Functions, fn)
-				curFn = &prog.Functions[len(prog.Functions)-1]
-				depth = strings.Count(line, "{") - strings.Count(line, "}")
+				gens := parseGenerics(m[1])
+				body := ""
+				if eq := strings.Index(line, "="); eq != -1 {
+					body = strings.TrimSpace(line[eq+1:])
+				}
+				fn := Function{Name: m[2], Generics: gens, Params: parseParams(m[3]), Ret: strings.TrimSpace(m[4]), StartLine: lineNum, StartCol: startCol, Snippet: orig}
+				if body != "" {
+					fn.Lines = []string{"return " + body}
+					fn.EndLine = lineNum
+					fn.EndCol = endCol
+					prog.Functions = append(prog.Functions, fn)
+				} else {
+					prog.Functions = append(prog.Functions, fn)
+					curFn = &prog.Functions[len(prog.Functions)-1]
+					depth = strings.Count(line, "{") - strings.Count(line, "}")
+				}
 				continue
 			}
 			if classRE.MatchString(line) {
@@ -225,4 +250,16 @@ func parseParams(s string) []Param {
 		out = append(out, Param{Name: name, Type: typ})
 	}
 	return out
+}
+
+func parseGenerics(s string) []string {
+	s = strings.TrimSpace(s)
+	if s == "" {
+		return nil
+	}
+	parts := strings.Split(s, ",")
+	for i, p := range parts {
+		parts[i] = strings.TrimSpace(p)
+	}
+	return parts
 }

@@ -1,0 +1,12 @@
+parse error: parse error: 11:47: lexer: invalid input text "?): Any {\n  fun ..."
+
+  1| data class Msg(val message: String)
+  2| 
+  3| fun main() {
+  4|     val data: Msg = _cast<Msg>(_fetch("file://tests/compiler/kt/fetch_builtin.json", null))
+  5|     println(data.message)
+  6| }
+  7| 
+  8| import kotlin.reflect.full.primaryConstructor
+  9| 
+ 10| inline fun <reified T> _cast(v: Any?): T {

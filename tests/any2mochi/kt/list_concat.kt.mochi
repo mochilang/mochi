@@ -1,4 +1,0 @@
-fun main() {
-  print(_concat(listOf(1, 2), listOf(3, 4)))
-}
-main()

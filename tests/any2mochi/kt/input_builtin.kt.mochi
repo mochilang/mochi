@@ -1,8 +1,0 @@
-fun main() {
-  print("Enter first input:")
-  let input1 = readln()
-  print("Enter second input:")
-  let input2 = readln()
-  print("You entered:", input1, ",", input2)
-}
-main()

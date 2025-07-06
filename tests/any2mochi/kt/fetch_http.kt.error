@@ -1,0 +1,12 @@
+parse error: parse error: 15:47: lexer: invalid input text "?): Any {\n  fun ..."
+
+  1| data class Todo(val userId: Int, val id: Int, val title: String, val completed: Boolean)
+  2| 
+  3| fun main() {
+  4|     val todo: Todo = _cast<Todo>(_fetch("https://jsonplaceholder.typicode.com/todos/1", null))
+  5|     println(todo.title)
+  6|     println(todo.completed)
+  7| }
+  8| 
+  9| import kotlin.reflect.full.primaryConstructor
+ 10|

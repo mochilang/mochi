@@ -1,0 +1,12 @@
+parse error: parse error: 5:27: unexpected token ")" (expected "{" Statement* "}" (("else" IfStmt) | ("else" "{" Statement* "}"))?)
+
+  1| fun twoSum(nums: List<Int>, target: Int) : List<Int> {
+  2|     val n = nums.size
+  3|     for (i in 0 until n) {
+  4|         for (j in (i + 1) until n) {
+  5|             if (((nums[i] + nums[j]) == target)) {
+  6|                 return listOf(i, j)
+  7|             }
+  8|         }
+  9|     }
+ 10|     return listOf(-1, -1)

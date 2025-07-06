@@ -1,0 +1,12 @@
+parse error: parse error: 17:38: unexpected token "=" (expected ")")
+
+  1| data class Customer(val id: Int, val name: String)
+  2| 
+  3| data class Order(val id: Int, val customerId: Int, val total: Int)
+  4| 
+  5| data class PairInfo(val orderId: Int, val orderCustomerId: Int, val pairedCustomerName: String, val orderTotal: Int)
+  6| 
+  7| fun main() {
+  8|     val customers = listOf(Customer(id = 1, name = "Alice"), Customer(id = 2, name = "Bob"), Customer(id = 3, name = "Charlie"))
+  9|     val orders = listOf(Order(id = 100, customerId = 1, total = 250), Order(id = 101, customerId = 2, total = 125), Order(id = 102, customerId = 1, total = 300))
+ 10|     val result = run {

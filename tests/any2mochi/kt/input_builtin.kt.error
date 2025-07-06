@@ -1,0 +1,14 @@
+type error: error[T003]: unknown function: readln
+  --> :3:16
+
+help:
+  Ensure the function is defined before it's called.
+
+  1| fun main() {
+  2|     println("Enter first input:")
+  3|     val input1 = readln()
+  4|     println("Enter second input:")
+  5|     val input2 = readln()
+  6|     println("You entered:", input1, ",", input2)
+  7| }
+  8|

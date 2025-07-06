@@ -1,4 +1,0 @@
-fun main() {
-  print(listOf(1, 2, 3).size)
-}
-main()

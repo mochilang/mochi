@@ -1,0 +1,12 @@
+parse error: parse error: 7:45: unexpected token "," (expected PostfixExpr)
+
+  1| fun main() {
+  2|     val nums = listOf(1, 2)
+  3|     val letters = listOf("A", "B")
+  4|     val bools = listOf(true, false)
+  5|     val combos = run {
+  6|         val _src = nums
+  7|         val _res = mutableListOf<MutableMap<String, Any>>()
+  8|         for (n in _src) {
+  9|             for (l in letters) {
+ 10|                 for (b in bools) {

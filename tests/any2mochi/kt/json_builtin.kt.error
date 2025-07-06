@@ -1,0 +1,12 @@
+parse error: parse error: 5:20: lexer: invalid input text "?): String = whe..."
+
+  1| fun main() {
+  2|     _json(mutableMapOf("a" to 1))
+  3| }
+  4| 
+  5| fun _json(v: Any?) {
+  6|     fun encode(x: Any?): String = when (x) {
+  7|         null -> "null"
+  8|         is String -> \"""${x.replace("\"", "\\\"")}\"""
+  9|         is Int, is Double, is Boolean -> x.toString()
+ 10|         is List<*> -> x.joinToString(prefix = "[", postfix = "]") { encode(it) }

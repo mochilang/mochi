@@ -1,0 +1,12 @@
+type error: error[T003]: unknown function: _concat
+  --> :2:9
+
+help:
+  Ensure the function is defined before it's called.
+
+  1| fun main() {
+  2|     println(_concat(listOf(1, 2), listOf(3, 4)))
+  3| }
+  4| 
+  5| fun <T> _concat(a: List<T>, b: List<T>): List<T> = a + b
+  6|

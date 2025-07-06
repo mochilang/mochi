@@ -1,0 +1,12 @@
+parse error: parse error: 2:53: unexpected token "," (expected "}")
+
+  1| fun main() {
+  2|     var m: MutableMap<Int, Boolean> = mutableMapOf<Any, Any>()
+  3|     run {
+  4|         val _tmp = m.toMutableMap()
+  5|         _tmp[1] = true
+  6|         m = _tmp
+  7|     }
+  8|     run {
+  9|         val _tmp = m.toMutableMap()
+ 10|         _tmp[2] = true

@@ -395,6 +395,7 @@ type vdecl struct {
 
 type fn struct {
 	Name      string      `json:"name"`
+	Generics  []string    `json:"generics,omitempty"`
 	Params    []paramDecl `json:"params"`
 	Ret       string      `json:"ret,omitempty"`
 	Lines     []string    `json:"lines"`

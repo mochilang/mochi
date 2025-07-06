@@ -1,0 +1,12 @@
+parse error: parse error: 10:12: unexpected token "=" (expected PostfixExpr)
+
+  1| fun main() {
+  2|     println(_sliceString("hello", 1, 4))
+  3| }
+  4| 
+  5| fun _sliceString(s: String, i: Int, j: Int): String {
+  6|     var start = i
+  7|     var end = j
+  8|     val arr = s.toCharArray()
+  9|     val n = arr.size
+ 10|     if (start < 0) start += n

@@ -1,0 +1,12 @@
+parse error: parse error: 10:20: unexpected token "=" (expected ")")
+
+  1| sealed interface Tree
+  2| data class Leaf() : Tree
+  3| data class Node(val left: Tree, val value: Int, val right: Tree) : Tree
+  4| 
+  5| fun fromList(nums: List<Int>) : Tree {
+  6|     fun helper(lo: Int, hi: Int) : Tree {
+  7|         if ((lo >= hi)) {
+  8|             return Leaf()
+  9|         }
+ 10|         val mid = (((lo + hi)) / 2)
