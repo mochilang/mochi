@@ -1,283 +1,195 @@
 package any2mochi
 
 import (
+	"bytes"
+	"context"
+	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
+	"time"
 )
 
-// ConvertSwift converts swift source code to Mochi using the language server.
+// ConvertSwift converts Swift source code to Mochi. It invokes the Swift
+// compiler to dump the AST as JSON and then walks a minimal subset of the
+// structure to produce runnable Mochi code.
 func ConvertSwift(src string) ([]byte, error) {
-	ls := Servers["swift"]
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+	ast, err := runSwiftParse(src)
 	if err != nil {
 		return nil, err
 	}
-	if len(diags) > 0 {
-		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
-	}
 	var out strings.Builder
-	writeSwiftSymbols(&out, nil, syms, src, ls)
+	for _, it := range ast.Items {
+		switch it.Kind {
+		case "func_decl":
+			out.WriteString("fun ")
+			if it.Name != nil {
+				out.WriteString(it.Name.BaseName.Name)
+			}
+			out.WriteByte('(')
+			if it.Params != nil {
+				for i, p := range it.Params.Params {
+					if i > 0 {
+						out.WriteString(", ")
+					}
+					out.WriteString(p.Name.BaseName.Name)
+					if t := interfaceTypeToMochi(p.InterfaceType); t != "" {
+						out.WriteString(": ")
+						out.WriteString(t)
+					}
+				}
+			}
+			out.WriteByte(')')
+			if t := interfaceTypeToMochi(it.Result); t != "" {
+				out.WriteString(": ")
+				out.WriteString(t)
+			}
+			if it.Body != nil {
+				body := swiftBodyFromRange(src, it.Body.Range)
+				if len(body) == 0 {
+					out.WriteString(" {}\n")
+				} else {
+					out.WriteString(" {\n")
+					for _, st := range body {
+						out.WriteString("  ")
+						out.WriteString(st)
+						out.WriteByte('\n')
+					}
+					out.WriteString("}\n")
+				}
+			} else {
+				out.WriteString(" {}\n")
+			}
+		case "top_level_code_decl":
+			code := extractSwiftRange(src, it.Range)
+			for _, st := range parseSwiftStatementsIndent(code, 0) {
+				out.WriteString(st)
+				out.WriteByte('\n')
+			}
+		}
+	}
 	if out.Len() == 0 {
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
 	}
 	return []byte(out.String()), nil
 }
 
-func writeSwiftSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol, src string, ls LanguageServer) {
-	for _, s := range syms {
-		nameParts := prefix
-		if s.Name != "" {
-			nameParts = append(nameParts, s.Name)
-		}
-		switch s.Kind {
-		case SymbolKindFunction, SymbolKindMethod, SymbolKindConstructor:
-			out.WriteString("fun ")
-			out.WriteString(strings.Join(nameParts, "."))
-			params, ret := getSwiftSignature(src, s.SelectionRange.Start, ls)
-			out.WriteByte('(')
-			for i, p := range params {
-				if i > 0 {
-					out.WriteString(", ")
-				}
-				out.WriteString(p.name)
-				if mt := swiftTypeToMochi(p.typ); mt != "" {
-					out.WriteString(": ")
-					out.WriteString(mt)
-				}
-			}
-			out.WriteByte(')')
-			if mt := swiftTypeToMochi(ret); mt != "" {
-				out.WriteString(": ")
-				out.WriteString(mt)
-			}
-			body := swiftFunctionBody(src, s)
-			if len(body) == 0 {
-				out.WriteString(" {}\n")
-			} else {
-				out.WriteString(" {\n")
-				for _, ln := range body {
-					out.WriteString("  ")
-					out.WriteString(ln)
-					out.WriteByte('\n')
-				}
-				out.WriteString("}\n")
-			}
-		case SymbolKindClass, SymbolKindStruct:
-			out.WriteString("type ")
-			out.WriteString(strings.Join(nameParts, "."))
-			fields := []DocumentSymbol{}
-			rest := []DocumentSymbol{}
-			for _, c := range s.Children {
-				if c.Kind == SymbolKindProperty || c.Kind == SymbolKindField {
-					fields = append(fields, c)
-				} else {
-					rest = append(rest, c)
-				}
-			}
-			if len(fields) == 0 && len(rest) == 0 {
-				out.WriteString(" {}\n")
-			} else {
-				out.WriteString(" {\n")
-				for _, f := range fields {
-					out.WriteString("  ")
-					typ := getSwiftVarType(src, f.SelectionRange.Start, ls)
-					out.WriteString(f.Name)
-					if mt := swiftTypeToMochi(typ); mt != "" {
-						out.WriteString(": ")
-						out.WriteString(mt)
-					}
-					out.WriteByte('\n')
-				}
-				out.WriteString("}\n")
-				if len(rest) > 0 {
-					writeSwiftSymbols(out, nameParts, rest, src, ls)
-				}
-			}
-		case SymbolKindEnum:
-			out.WriteString("type ")
-			out.WriteString(strings.Join(nameParts, "."))
-			out.WriteString(" {\n")
-			for _, c := range s.Children {
-				if c.Kind == SymbolKindEnumMember {
-					fmt.Fprintf(out, "  %s\n", c.Name)
-				}
-			}
-			out.WriteString("}\n")
-			var rest []DocumentSymbol
-			for _, c := range s.Children {
-				if c.Kind != SymbolKindEnumMember {
-					rest = append(rest, c)
-				}
-			}
-			if len(rest) > 0 {
-				writeSwiftSymbols(out, nameParts, rest, src, ls)
-			}
-		case SymbolKindVariable, SymbolKindConstant:
-			if len(prefix) == 0 {
-				out.WriteString("let ")
-				out.WriteString(strings.Join(nameParts, "."))
-				typ := getSwiftVarType(src, s.SelectionRange.Start, ls)
-				if mt := swiftTypeToMochi(typ); mt != "" {
-					out.WriteString(": ")
-					out.WriteString(mt)
-				}
-				out.WriteByte('\n')
-			}
-		}
-		if len(s.Children) > 0 {
-			writeSwiftSymbols(out, nameParts, s.Children, src, ls)
-		}
-	}
+type swiftFile struct {
+	Items []swiftItem `json:"items"`
 }
 
-func getSwiftParams(src string, pos Position, ls LanguageServer) []string {
-	params, _ := getSwiftSignature(src, pos, ls)
-	names := make([]string, len(params))
-	for i, p := range params {
-		names[i] = p.name
-	}
-	return names
+type swiftItem struct {
+	Kind   string           `json:"_kind"`
+	Name   *swiftDeclName   `json:"name,omitempty"`
+	Params *swiftParamList  `json:"params,omitempty"`
+	Body   *swiftBody       `json:"body,omitempty"`
+	Range  swiftOffsetRange `json:"range"`
+	Result string           `json:"result,omitempty"`
 }
 
-func getSwiftSignature(src string, pos Position, ls LanguageServer) ([]swiftParam, string) {
-	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, pos)
-	if err != nil {
-		return nil, ""
-	}
-	mc, ok := hov.Contents.(MarkupContent)
-	if !ok {
-		return nil, ""
-	}
-	return parseSwiftSignature(mc.Value)
+type swiftDeclName struct {
+	BaseName swiftBaseName `json:"base_name"`
 }
 
-func getSwiftVarType(src string, pos Position, ls LanguageServer) string {
-	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, pos)
-	if err != nil {
-		return ""
-	}
-	mc, ok := hov.Contents.(MarkupContent)
-	if !ok {
-		return ""
-	}
-	_, typ := parseSwiftVarDecl(mc.Value)
-	return typ
+type swiftBaseName struct {
+	Name string `json:"name"`
 }
 
-func parseSwiftVarDecl(sig string) (string, string) {
-	sig = strings.TrimSpace(sig)
-	if strings.HasPrefix(sig, "```swift") {
-		sig = strings.TrimPrefix(sig, "```swift")
-		if i := strings.LastIndex(sig, "```"); i != -1 {
-			sig = sig[:i]
-		}
-	}
-	sig = strings.TrimSpace(sig)
-	if strings.HasPrefix(sig, "var ") {
-		sig = sig[4:]
-	} else if strings.HasPrefix(sig, "let ") {
-		sig = sig[4:]
-	}
-	parts := strings.SplitN(sig, ":", 2)
-	if len(parts) != 2 {
-		return "", ""
-	}
-	name := strings.TrimSpace(parts[0])
-	typ := strings.TrimSpace(parts[1])
-	return name, typ
-}
-
-func swiftTypeToMochi(t string) string {
-	switch strings.TrimSpace(t) {
-	case "Int", "Int32", "Int64":
-		return "int"
-	case "Double", "Float":
-		return "float"
-	case "Bool":
-		return "bool"
-	case "String":
-		return "string"
-	default:
-		return ""
-	}
+type swiftParamList struct {
+	Params []swiftParam `json:"params"`
 }
 
 type swiftParam struct {
-	name string
-	typ  string
+	Name          swiftDeclName `json:"name"`
+	InterfaceType string        `json:"interface_type,omitempty"`
 }
 
-func parseSwiftSignature(sig string) ([]swiftParam, string) {
-	sig = strings.TrimSpace(sig)
-	if strings.HasPrefix(sig, "```swift") {
-		sig = strings.TrimPrefix(sig, "```swift")
-		if i := strings.LastIndex(sig, "```"); i != -1 {
-			sig = sig[:i]
-		}
-	}
-	sig = strings.TrimSpace(sig)
-	if strings.HasPrefix(sig, "func ") {
-		sig = sig[5:]
-	}
-	open := strings.Index(sig, "(")
-	close := strings.LastIndex(sig, ")")
-	if open == -1 || close == -1 || close < open {
-		return nil, ""
-	}
-	paramsPart := sig[open+1 : close]
-	rest := strings.TrimSpace(sig[close+1:])
-	ret := ""
-	if strings.HasPrefix(rest, "->") {
-		ret = strings.TrimSpace(rest[2:])
-	}
-	var params []swiftParam
-	for _, p := range strings.Split(paramsPart, ",") {
-		p = strings.TrimSpace(p)
-		if p == "" {
-			continue
-		}
-		colon := strings.LastIndex(p, ":")
-		var name, typ string
-		if colon >= 0 {
-			namePart := strings.TrimSpace(p[:colon])
-			typ = strings.TrimSpace(p[colon+1:])
-			fields := strings.Fields(namePart)
-			if len(fields) > 1 {
-				if fields[0] == "_" {
-					name = fields[1]
-				} else {
-					name = fields[len(fields)-1]
-				}
-			} else if len(fields) == 1 {
-				name = strings.TrimSuffix(fields[0], ":")
-			}
-		} else {
-			name = strings.TrimSpace(p)
-		}
-		name = strings.TrimSuffix(name, ":")
-		if name != "" {
-			params = append(params, swiftParam{name: name, typ: typ})
-		}
-	}
-	return params, ret
+type swiftBody struct {
+	Range swiftOffsetRange `json:"range"`
 }
 
-func swiftFunctionBody(src string, sym DocumentSymbol) []string {
-	code := extractRangeText(src, sym.Range)
-	start := strings.Index(code, "{")
-	end := strings.LastIndex(code, "}")
+type swiftOffsetRange struct {
+	Start int `json:"start"`
+	End   int `json:"end"`
+}
+
+// runSwiftParse invokes swiftc to dump the AST as JSON.
+func runSwiftParse(src string) (swiftFile, error) {
+	tmp, err := os.CreateTemp("", "swift-src-*.swift")
+	if err != nil {
+		return swiftFile{}, err
+	}
+	defer os.Remove(tmp.Name())
+	if _, err := tmp.WriteString(src); err != nil {
+		tmp.Close()
+		return swiftFile{}, err
+	}
+	tmp.Close()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, "swiftc", "-dump-ast", "-dump-ast-format", "json", tmp.Name())
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	if err := cmd.Run(); err != nil {
+		return swiftFile{}, err
+	}
+	var file swiftFile
+	if err := json.Unmarshal(out.Bytes(), &file); err != nil {
+		return swiftFile{}, err
+	}
+	return file, nil
+}
+
+func extractSwiftRange(src string, r swiftOffsetRange) string {
+	if r.Start < 0 {
+		r.Start = 0
+	}
+	end := r.End
+	if end < r.Start {
+		end = r.Start
+	}
+	if end+1 > len(src) {
+		end = len(src) - 1
+	}
+	return src[r.Start : end+1]
+}
+
+func swiftBodyFromRange(src string, r swiftOffsetRange) []string {
+	text := extractSwiftRange(src, r)
+	start := strings.Index(text, "{")
+	end := strings.LastIndex(text, "}")
 	if start == -1 || end == -1 || end <= start {
 		return nil
 	}
-	body := code[start+1 : end]
-	return parseSwiftStatements(body)
+	return parseSwiftStatementsIndent(text[start+1:end], 1)
+}
+
+func interfaceTypeToMochi(t string) string {
+	if strings.HasPrefix(t, "$sS") && strings.HasSuffix(t, "D") {
+		mid := strings.TrimSuffix(strings.TrimPrefix(t, "$sS"), "D")
+		switch mid {
+		case "i":
+			return "int"
+		case "d":
+			return "float"
+		case "b":
+			return "bool"
+		case "S":
+			return "string"
+		}
+	}
+	return ""
 }
 
 func parseSwiftStatements(body string) []string {
+	return parseSwiftStatementsIndent(body, 1)
+}
+
+func parseSwiftStatementsIndent(body string, indent int) []string {
 	lines := strings.Split(body, "\n")
 	var out []string
-	indent := 1
 	for _, line := range lines {
 		l := strings.TrimSpace(line)
 		if l == "" {

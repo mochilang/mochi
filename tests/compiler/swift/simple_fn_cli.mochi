@@ -1,0 +1,8 @@
+fun id(x: int): int {
+    let x = x
+    return x
+}
+fun main() {
+    print(id(123))
+}
+main()
