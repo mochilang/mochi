@@ -1,0 +1,10 @@
+fun makeAdder(n) {
+  try do
+  throw {:return, fn x -> (x + n) end}
+  catch {:return, v} -> v end
+}
+fun main() {
+  let add10 = makeAdder(10)
+  print(add10.(7))
+}
+main()

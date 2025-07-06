@@ -1,0 +1,9 @@
+fun main() {
+  let x = 1.5
+  let y = 2.5
+  print((x + y))
+  print((y - x))
+  print((x * y))
+  print((y / x))
+}
+main()

@@ -1,0 +1,9 @@
+fun main() {
+  let m = %{}
+  let _ = m
+  let m = Map.put(m, 1, 10)
+  let m = Map.put(m, 2, 20)
+  if (if is_map(m), do: Map.has_key?(m, 1), else: Enum.member?(m, 1)) do
+  print(Map.get(m, 1))
+}
+main()

@@ -1,0 +1,10 @@
+fun main() {
+  let nums = [1, 2]
+  let letters = ["A", "B"]
+  let bools = [true, false]
+  let combos = for n <- nums, l <- letters, b <- bools, do: %{n: n, l: l, b: b}
+  print("--- Cross Join of three lists ---")
+  for c <- combos do
+  print(Enum.join(Enum.map([c.n, c.l, c.b], &to_string(&1)), " "))
+}
+main()

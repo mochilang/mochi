@@ -1,0 +1,28 @@
+fun main() {
+  let c = 0
+  let _ = c
+  let {c} = Enum.reduce(0..(2 - 1), {c}, fn _, {c} ->
+  let c = (c + 1)
+  {c}
+  end)
+  let _ = c
+  let {c} = Enum.reduce([1, 2], {c}, fn _, {c} ->
+  let c = (c + 1)
+  {c}
+  end)
+  let _ = c
+  let {c} = Enum.reduce(String.graphemes("ab"), {c}, fn _, {c} ->
+  let c = (c + 1)
+  {c}
+  end)
+  let _ = c
+  let m = %{x: 1, y: 2}
+  let _ = m
+  let {c} = Enum.reduce(Map.keys(m), {c}, fn _, {c} ->
+  let c = (c + 1)
+  {c}
+  end)
+  let _ = c
+  print(c)
+}
+main()

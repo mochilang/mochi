@@ -47,8 +47,8 @@ func Convert(src string) ([]byte, error) {
 	_ = excode.Ensure()
 	ls := any2mochi.Servers["ex"]
 	syms, diags, err := any2mochi.EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
-	if err != nil {
-		return nil, err
+	if err != nil || syms == nil {
+		return ConvertParsed(src)
 	}
 	if len(diags) > 0 {
 		lines := strings.Split(src, "\n")
@@ -177,21 +177,21 @@ func convertFunc(lines []string, sym any2mochi.DocumentSymbol, params []string, 
 			b.WriteString(strings.Repeat("  ", level) + "continue\n")
 		case strings.HasPrefix(l, "IO.puts(Enum.join(Enum.map([") && strings.HasSuffix(l, "], &to_string(&1)), \" \"))"):
 			inner := strings.TrimSuffix(strings.TrimPrefix(l, "IO.puts(Enum.join(Enum.map(["), "], &to_string(&1)), \" \"))")
-			args := strings.Split(inner, ",")
+			args := splitArgs(inner)
 			for i, a := range args {
-				args[i] = strings.TrimSpace(a)
+				args[i] = translateExpr(a)
 			}
 			b.WriteString(strings.Repeat("  ", level) + "print(" + strings.Join(args, ", ") + ")\n")
 		case strings.HasPrefix(l, "IO.puts(") && strings.HasSuffix(l, ")"):
 			expr := strings.TrimSuffix(strings.TrimPrefix(l, "IO.puts("), ")")
-			b.WriteString(strings.Repeat("  ", level) + "print(" + strings.TrimSpace(expr) + ")\n")
+			b.WriteString(strings.Repeat("  ", level) + "print(" + translateExpr(strings.TrimSpace(expr)) + ")\n")
 		case strings.Contains(l, "="):
 			parts := strings.SplitN(l, "=", 2)
 			left := strings.TrimSpace(parts[0])
-			right := strings.TrimSpace(parts[1])
+			right := translateExpr(strings.TrimSpace(parts[1]))
 			b.WriteString(strings.Repeat("  ", level) + "let " + left + " = " + right + "\n")
 		default:
-			b.WriteString(strings.Repeat("  ", level) + l + "\n")
+			b.WriteString(strings.Repeat("  ", level) + translateExpr(l) + "\n")
 		}
 	}
 	b.WriteString("}")
@@ -287,4 +287,76 @@ func hoverString(h any2mochi.Hover) string {
 	default:
 		return fmt.Sprint(v)
 	}
+}
+
+func splitArgs(s string) []string {
+	var args []string
+	depth := 0
+	start := 0
+	for i, r := range s {
+		switch r {
+		case '(', '[', '{':
+			depth++
+		case ')', ']', '}':
+			if depth > 0 {
+				depth--
+			}
+		case ',':
+			if depth == 0 {
+				args = append(args, strings.TrimSpace(s[start:i]))
+				start = i + 1
+			}
+		}
+	}
+	if start < len(s) {
+		args = append(args, strings.TrimSpace(s[start:]))
+	}
+	return args
+}
+
+func translateExpr(expr string) string {
+	expr = strings.TrimSpace(expr)
+	switch {
+	case strings.HasPrefix(expr, "_union(") && strings.HasSuffix(expr, ")"):
+		parts := splitArgs(expr[len("_union(") : len(expr)-1])
+		if len(parts) == 2 {
+			return parts[0] + " union " + parts[1]
+		}
+	case strings.HasPrefix(expr, "_except(") && strings.HasSuffix(expr, ")"):
+		parts := splitArgs(expr[len("_except(") : len(expr)-1])
+		if len(parts) == 2 {
+			return parts[0] + " except " + parts[1]
+		}
+	case strings.HasPrefix(expr, "_intersect(") && strings.HasSuffix(expr, ")"):
+		parts := splitArgs(expr[len("_intersect(") : len(expr)-1])
+		if len(parts) == 2 {
+			return parts[0] + " intersect " + parts[1]
+		}
+	case strings.HasPrefix(expr, "_count(") && strings.HasSuffix(expr, ")"):
+		parts := splitArgs(expr[len("_count(") : len(expr)-1])
+		if len(parts) == 1 {
+			return "count(" + parts[0] + ")"
+		}
+	case strings.HasPrefix(expr, "_sum(") && strings.HasSuffix(expr, ")"):
+		parts := splitArgs(expr[len("_sum(") : len(expr)-1])
+		if len(parts) == 1 {
+			return "sum(" + parts[0] + ")"
+		}
+	case strings.HasPrefix(expr, "_avg(") && strings.HasSuffix(expr, ")"):
+		parts := splitArgs(expr[len("_avg(") : len(expr)-1])
+		if len(parts) == 1 {
+			return "avg(" + parts[0] + ")"
+		}
+	case strings.HasPrefix(expr, "_index_string(") && strings.HasSuffix(expr, ")"):
+		parts := splitArgs(expr[len("_index_string(") : len(expr)-1])
+		if len(parts) == 2 {
+			return parts[0] + "[" + parts[1] + "]"
+		}
+	case strings.HasPrefix(expr, "_slice_string(") && strings.HasSuffix(expr, ")"):
+		parts := splitArgs(expr[len("_slice_string(") : len(expr)-1])
+		if len(parts) == 3 {
+			return parts[0] + "[" + parts[1] + ":" + parts[2] + "]"
+		}
+	}
+	return expr
 }

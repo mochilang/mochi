@@ -1,0 +1,5 @@
+fun main() {
+  for ch <- String.graphemes("cat") do
+  print(ch)
+}
+main()

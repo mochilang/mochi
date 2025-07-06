@@ -1,0 +1,8 @@
+fun main() {
+  print("Enter first input:")
+  let input1 = _input()
+  print("Enter second input:")
+  let input2 = _input()
+  print(Enum.join(Enum.map(["You entered:", input1, ",", input2], &to_string(&1)), " "))
+}
+main()

@@ -1,0 +1,9 @@
+fun id(x) {
+  try do
+  throw {:return, x}
+  catch {:return, v} -> v end
+}
+fun main() {
+  print(id(123))
+}
+main()

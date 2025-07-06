@@ -158,14 +158,14 @@ func translateLine(l string) string {
 	l = strings.TrimSpace(l)
 	if strings.HasPrefix(l, "IO.puts(") && strings.HasSuffix(l, ")") {
 		expr := strings.TrimSuffix(strings.TrimPrefix(l, "IO.puts("), ")")
-		return "print(" + strings.TrimSpace(expr) + ")"
+		return "print(" + translateExpr(strings.TrimSpace(expr)) + ")"
 	}
 	if idx := strings.Index(l, "="); idx > 0 {
 		left := strings.TrimSpace(l[:idx])
-		right := strings.TrimSpace(l[idx+1:])
+		right := translateExpr(strings.TrimSpace(l[idx+1:]))
 		return "let " + left + " = " + right
 	}
-	return l
+	return translateExpr(l)
 }
 
 // ConvertAST converts a parsed AST to Mochi source code.

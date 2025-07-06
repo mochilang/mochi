@@ -1,0 +1,14 @@
+fun twoSum(nums, target) {
+  try do
+  let n = length(nums)
+  for i <- 0..(n - 1) do
+  for j <- (i + 1)..(n - 1) do
+  let if ((Enum.at(nums, i) + Enum.at(nums, j)) = = target) do
+  throw {:return, [i, j]}
+}
+fun main() {
+  let result = twoSum([2, 7, 11, 15], 9)
+  print(Enum.at(result, 0))
+  print(Enum.at(result, 1))
+}
+main()
