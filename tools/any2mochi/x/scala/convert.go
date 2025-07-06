@@ -32,11 +32,22 @@ func convertWithLS(src, root string) ([]byte, error) {
 	}
 
 	lines := strings.Split(strings.ReplaceAll(src, "\r\n", "\n"), "\n")
-	var out strings.Builder
-	for _, s := range syms {
-		if s.Kind != any2mochi.SymbolKindFunction {
-			continue
+	var funcs []any2mochi.DocumentSymbol
+	var walk func([]any2mochi.DocumentSymbol)
+	walk = func(list []any2mochi.DocumentSymbol) {
+		for _, s := range list {
+			if s.Kind == any2mochi.SymbolKindFunction || s.Kind == any2mochi.SymbolKindMethod {
+				funcs = append(funcs, s)
+			}
+			if len(s.Children) > 0 {
+				walk(s.Children)
+			}
 		}
+	}
+	walk(syms)
+
+	var out strings.Builder
+	for _, s := range funcs {
 		code := convertFunc(lines, s, root)
 		if code == "" {
 			continue
@@ -75,16 +86,16 @@ func convertFunc(lines []string, sym any2mochi.DocumentSymbol, root string) stri
 	header := strings.TrimSpace(seg[0])
 
 	name := sym.Name
-	params, ret := parseSignature(header, name)
-	if len(params) == 0 && sym.Detail != nil {
-		params, ret = parseSignature(*sym.Detail, name)
+	sigParams, ret := parseSignature(header, name)
+	if len(sigParams) == 0 && sym.Detail != nil {
+		sigParams, ret = parseSignature(*sym.Detail, name)
 	}
-	if len(params) == 0 {
+	if len(sigParams) == 0 {
 		if hov, err := any2mochi.EnsureAndHoverWithRoot(any2mochi.Servers["scala"].Command, any2mochi.Servers["scala"].Args, any2mochi.Servers["scala"].LangID, strings.Join(lines, "\n"), sym.SelectionRange.Start, root); err == nil {
 			if mc, ok := hov.Contents.(any2mochi.MarkupContent); ok {
 				for _, l := range strings.Split(mc.Value, "\n") {
 					if strings.Contains(l, name+"(") {
-						params, ret = parseSignature(l, name)
+						sigParams, ret = parseSignature(l, name)
 						break
 					}
 				}
@@ -96,7 +107,7 @@ func convertFunc(lines []string, sym any2mochi.DocumentSymbol, root string) stri
 	b.WriteString("fun ")
 	b.WriteString(name)
 	b.WriteByte('(')
-	for i, p := range params {
+	for i, p := range sigParams {
 		if i > 0 {
 			b.WriteString(", ")
 		}
@@ -265,14 +276,26 @@ func parseSignature(sig, name string) ([]string, string) {
 		return nil, ""
 	}
 	open += idx
-	close := strings.Index(sig[open:], ")")
+	depth := 0
+	close := -1
+	for i := open; i < len(sig); i++ {
+		switch sig[i] {
+		case '(':
+			depth++
+		case ')':
+			depth--
+			if depth == 0 {
+				close = i
+				i = len(sig)
+			}
+		}
+	}
 	if close == -1 {
 		return nil, ""
 	}
-	close += open
 	paramsPart := sig[open+1 : close]
-	params := []string{}
-	for _, p := range strings.Split(paramsPart, ",") {
+	var params []string
+	for _, p := range splitArgs(paramsPart) {
 		p = strings.TrimSpace(p)
 		if p == "" {
 			continue
@@ -287,7 +310,7 @@ func parseSignature(sig, name string) ([]string, string) {
 	if strings.HasPrefix(rest, ":") {
 		rest = strings.TrimSpace(rest[1:])
 		if eq := strings.Index(rest, "="); eq != -1 {
-			rest = rest[:eq]
+			rest = strings.TrimSpace(rest[:eq])
 		}
 		ret = strings.TrimSpace(rest)
 	}
@@ -335,6 +358,25 @@ func splitArgs(s string) []string {
 	return parts
 }
 
+func mapType(t string) string {
+	t = strings.TrimSpace(t)
+	if idx := strings.LastIndex(t, "."); idx != -1 {
+		t = t[idx+1:]
+	}
+	switch t {
+	case "Int", "Long", "Short", "Byte":
+		return "int"
+	case "Double", "Float":
+		return "float"
+	case "Boolean":
+		return "bool"
+	case "String":
+		return "string"
+	default:
+		return t
+	}
+}
+
 // convertFallback parses Scala source using the scalaast CLI and converts
 // the resulting AST to Mochi.
 func convertFallback(src string) ([]byte, error) {
@@ -371,7 +413,8 @@ func convertFromAST(fn Func) string {
 			}
 			b.WriteString(p)
 		}
-		b.WriteString(") {")
+		b.WriteString(")")
+		b.WriteString(" {")
 		if len(fn.Body) > 0 {
 			b.WriteByte('\n')
 		}
@@ -497,12 +540,23 @@ func diagnostics(src string, diags []any2mochi.Diagnostic) string {
 	var out strings.Builder
 	for _, d := range diags {
 		start := int(d.Range.Start.Line)
+		col := int(d.Range.Start.Character)
 		msg := d.Message
-		line := ""
-		if start < len(lines) {
-			line = strings.TrimSpace(lines[start])
+		from := start - 1
+		if from < 0 {
+			from = 0
 		}
-		out.WriteString(fmt.Sprintf("line %d: %s\n  %s\n", start+1, msg, line))
+		to := start + 1
+		if to >= len(lines) {
+			to = len(lines) - 1
+		}
+		out.WriteString(fmt.Sprintf("line %d:%d: %s\n", start+1, col+1, msg))
+		for i := from; i <= to; i++ {
+			out.WriteString(fmt.Sprintf("%4d| %s\n", i+1, lines[i]))
+			if i == start {
+				out.WriteString("     " + strings.Repeat(" ", col) + "^\n")
+			}
+		}
 	}
 	return strings.TrimSpace(out.String())
 }

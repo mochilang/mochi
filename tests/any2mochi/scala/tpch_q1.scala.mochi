@@ -72,6 +72,9 @@ fun _group_by(src, keyfn) {
     append(g.Items, it)
   }
 }
+fun _json(v) {
+  print(_to_json(v))
+}
 fun _query(src, joins, Any]], opts, Any]) {
   var items = src.map(v => Seq[Any](v))
   for j in joins {
@@ -136,4 +139,6 @@ fun _query(src, joins, Any]], opts, Any]) {
     opts.get("take").foreach { n = > it = it.take(n.asInstanceOf[Int]) }
     let sel = opts("select").asInstanceOf[Seq[Any] => Any]
     it.map(r = > sel(r))
+}
+fun _to_json(v) {
 }
