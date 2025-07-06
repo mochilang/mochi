@@ -1,7 +1,0 @@
-no convertible symbols found
-
-source snippet:
-  1: print_endline (string_of_bool (true && false));;
-  2: print_endline (string_of_bool (true || false));;
-  3: print_endline (string_of_bool (not false));;
-  4: 
