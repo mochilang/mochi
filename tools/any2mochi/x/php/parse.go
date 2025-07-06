@@ -1,4 +1,4 @@
-package any2mochi
+package php
 
 import (
 	"fmt"
@@ -8,25 +8,25 @@ import (
 	"github.com/z7zmey/php-parser/php7"
 )
 
-type PhpProgram struct {
-	Functions []PhpFunc  `json:"functions"`
-	Classes   []PhpClass `json:"classes"`
+type Program struct {
+	Functions []Func  `json:"functions"`
+	Classes   []Class `json:"classes"`
 }
 
-type PhpFunc struct {
+type Func struct {
 	Name   string   `json:"name"`
 	Params []string `json:"params"`
 }
 
-type PhpClass struct {
-	Name    string    `json:"name"`
-	Fields  []string  `json:"fields"`
-	Methods []PhpFunc `json:"methods"`
+type Class struct {
+	Name    string   `json:"name"`
+	Fields  []string `json:"fields"`
+	Methods []Func   `json:"methods"`
 }
 
-// ParsePhp parses PHP source using the php-parser library and returns a
+// Parse parses PHP source using the php-parser library and returns a
 // simplified AST representation.
-func ParsePhp(src string) (*PhpProgram, error) {
+func Parse(src string) (*Program, error) {
 	parser := php7.NewParser([]byte(src), "7.4")
 	parser.Parse()
 	if errs := parser.GetErrors(); len(errs) > 0 {
@@ -36,19 +36,19 @@ func ParsePhp(src string) (*PhpProgram, error) {
 	if !ok {
 		return nil, fmt.Errorf("unexpected root")
 	}
-	prog := &PhpProgram{}
+	prog := &Program{}
 	for _, st := range root.Stmts {
 		switch n := st.(type) {
 		case *stmt.Function:
-			prog.Functions = append(prog.Functions, phpFuncFromFn(n))
+			prog.Functions = append(prog.Functions, funcFromFn(n))
 		case *stmt.Class:
-			prog.Classes = append(prog.Classes, phpClassFromNode(n))
+			prog.Classes = append(prog.Classes, classFromNode(n))
 		}
 	}
 	return prog, nil
 }
 
-func phpFuncFromFn(fn *stmt.Function) PhpFunc {
+func funcFromFn(fn *stmt.Function) Func {
 	name := identString(fn.FunctionName)
 	var params []string
 	for _, p := range fn.Params {
@@ -56,11 +56,11 @@ func phpFuncFromFn(fn *stmt.Function) PhpFunc {
 			params = append(params, paramName(param))
 		}
 	}
-	return PhpFunc{Name: name, Params: params}
+	return Func{Name: name, Params: params}
 }
 
-func phpClassFromNode(c *stmt.Class) PhpClass {
-	cl := PhpClass{Name: identString(c.ClassName)}
+func classFromNode(c *stmt.Class) Class {
+	cl := Class{Name: identString(c.ClassName)}
 	for _, st := range c.Stmts {
 		switch n := st.(type) {
 		case *stmt.PropertyList:
@@ -70,13 +70,13 @@ func phpClassFromNode(c *stmt.Class) PhpClass {
 				}
 			}
 		case *stmt.ClassMethod:
-			cl.Methods = append(cl.Methods, phpMethodFromNode(n))
+			cl.Methods = append(cl.Methods, methodFromNode(n))
 		}
 	}
 	return cl
 }
 
-func phpMethodFromNode(m *stmt.ClassMethod) PhpFunc {
+func methodFromNode(m *stmt.ClassMethod) Func {
 	name := identString(m.MethodName)
 	var params []string
 	for _, p := range m.Params {
@@ -84,7 +84,7 @@ func phpMethodFromNode(m *stmt.ClassMethod) PhpFunc {
 			params = append(params, paramName(param))
 		}
 	}
-	return PhpFunc{Name: name, Params: params}
+	return Func{Name: name, Params: params}
 }
 
 func paramName(p *pnode.Parameter) string {

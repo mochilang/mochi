@@ -1,4 +1,4 @@
-package any2mochi
+package php
 
 import (
 	"fmt"
@@ -6,9 +6,9 @@ import (
 	"strings"
 )
 
-// ConvertPhp parses PHP source using ParsePhp and emits minimal Mochi stubs.
-func ConvertPhp(src string) ([]byte, error) {
-	prog, err := ParsePhp(src)
+// Convert parses PHP source code and emits minimal Mochi stubs.
+func Convert(src string) ([]byte, error) {
+	prog, err := Parse(src)
 	if err != nil {
 		return nil, err
 	}
@@ -53,16 +53,27 @@ func ConvertPhp(src string) ([]byte, error) {
 		out.WriteString(") {}\n")
 	}
 	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
 	}
 	return []byte(out.String()), nil
 }
 
-// ConvertPhpFile reads the php file and converts it to Mochi.
-func ConvertPhpFile(path string) ([]byte, error) {
+func snippet(src string) string {
+	lines := strings.Split(src, "\n")
+	if len(lines) > 10 {
+		lines = lines[:10]
+	}
+	for i, l := range lines {
+		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
+	}
+	return strings.Join(lines, "\n")
+}
+
+// ConvertFile reads the php file and converts it to Mochi.
+func ConvertFile(path string) ([]byte, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return ConvertPhp(string(data))
+	return Convert(string(data))
 }

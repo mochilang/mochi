@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"mochi/tools/any2mochi"
+	php "mochi/tools/any2mochi/x/php"
 )
 
 func main() {
@@ -13,7 +13,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	prog, err := any2mochi.ParsePhp(string(data))
+	prog, err := php.Parse(string(data))
 	if err != nil {
 		panic(err)
 	}
