@@ -146,6 +146,9 @@ func Parse(src string) ([]Item, error) {
 				}
 			}
 		}
+		if strings.HasPrefix(l, "data ") || strings.HasPrefix(l, "newtype ") || strings.HasPrefix(l, "type ") || strings.HasPrefix(l, "instance ") {
+			continue
+		}
 		if strings.HasPrefix(l, "|") || strings.HasPrefix(l, "case ") || strings.HasPrefix(l, "of ") || l == "where" {
 			continue
 		}
@@ -266,6 +269,9 @@ func convertBody(body string) string {
 
 func convertExpr(expr string) string {
 	expr = strings.TrimSpace(expr)
+	if strings.HasPrefix(expr, "[") && strings.HasSuffix(expr, "]") {
+		return expr
+	}
 	if strings.HasPrefix(expr, "div ") {
 		parts := strings.Fields(expr)
 		if len(parts) == 3 {
