@@ -38,6 +38,7 @@ type structField struct {
 type structDef struct {
 	name      string
 	fields    []structField
+	methods   []funcDef
 	startLine int
 	endLine   int
 	snippet   string
@@ -74,6 +75,13 @@ func convertBodyString(body string) []string {
 				name := m[1]
 				src := strings.TrimSpace(m[2])
 				out = append(out, fmt.Sprintf("for %s in %s {", name, src))
+			} else {
+				out = append(out, l)
+			}
+		case strings.HasPrefix(l, "while ("):
+			if m := regexp.MustCompile(`^while \((.*)\)\s*\{?$`).FindStringSubmatch(l); m != nil {
+				cond := strings.TrimSpace(m[1])
+				out = append(out, fmt.Sprintf("while %s {", cond))
 			} else {
 				out = append(out, l)
 			}
@@ -125,7 +133,7 @@ func parseAST(src string) ([]funcDef, []enumDef, []structDef, error) {
 	var funcs []funcDef
 	var enums []enumDef
 	var structs []structDef
-	collectAST(&root, src, &funcs, &enums, &structs)
+	collectAST(&root, src, &funcs, &enums, &structs, "")
 	if runErr != nil {
 		return funcs, enums, structs, fmt.Errorf("clang++: %w: %s", runErr, errBuf.String())
 	}
@@ -149,7 +157,7 @@ type astNode struct {
 	} `json:"range,omitempty"`
 }
 
-func collectAST(n *astNode, src string, funcs *[]funcDef, enums *[]enumDef, structs *[]structDef) {
+func collectAST(n *astNode, src string, funcs *[]funcDef, enums *[]enumDef, structs *[]structDef, parent string) {
 	switch n.Kind {
 	case "FunctionDecl":
 		if n.Range == nil || n.Range.Begin.Offset < 0 || n.Range.End.Offset > len(src) {
@@ -194,6 +202,49 @@ func collectAST(n *astNode, src string, funcs *[]funcDef, enums *[]enumDef, stru
 				endLine:   lineNumber(src, n.Range.End.Offset),
 			})
 		}
+	case "CXXMethodDecl":
+		if parent == "" || n.Range == nil || n.Range.Begin.Offset < 0 || n.Range.End.Offset > len(src) {
+			break
+		}
+		var params []param
+		var body string
+		for i := range n.Inner {
+			c := &n.Inner[i]
+			switch c.Kind {
+			case "ParmVarDecl":
+				typ := ""
+				if c.Type != nil {
+					typ = mapType(c.Type.QualType)
+				}
+				params = append(params, param{name: c.Name, typ: typ})
+			case "CompoundStmt":
+				if c.Range != nil {
+					b := c.Range.Begin.Offset
+					e := c.Range.End.Offset
+					if b >= 0 && e >= b && e <= len(src) {
+						body = src[b:e]
+					}
+				}
+			}
+		}
+		ret := ""
+		if n.Type != nil {
+			qt := n.Type.QualType
+			if p := strings.Index(qt, "("); p != -1 {
+				ret = qt[:p]
+			}
+			ret = mapType(strings.TrimSpace(ret))
+		}
+		name := parent + "." + n.Name
+		fn := funcDef{
+			name:      name,
+			params:    params,
+			ret:       ret,
+			body:      body,
+			startLine: lineNumber(src, n.Range.Begin.Offset),
+			endLine:   lineNumber(src, n.Range.End.Offset),
+		}
+		*funcs = append(*funcs, fn)
 	case "EnumDecl":
 		if n.Range == nil || n.Range.Begin.Offset < 0 || n.Range.End.Offset > len(src) {
 			break
@@ -213,16 +264,61 @@ func collectAST(n *astNode, src string, funcs *[]funcDef, enums *[]enumDef, stru
 			snippet := src[n.Range.Begin.Offset:n.Range.End.Offset]
 			if strings.Contains(snippet, "struct "+n.Name) || strings.Contains(snippet, "class "+n.Name) {
 				var fields []structField
+				var methods []funcDef
 				for i := range n.Inner {
 					c := &n.Inner[i]
-					if c.Kind == "FieldDecl" && c.Type != nil {
-						fields = append(fields, structField{name: c.Name, typ: mapType(c.Type.QualType)})
+					switch c.Kind {
+					case "FieldDecl":
+						if c.Type != nil {
+							fields = append(fields, structField{name: c.Name, typ: mapType(c.Type.QualType)})
+						}
+					case "CXXMethodDecl":
+						var params []param
+						var body string
+						for j := range c.Inner {
+							ch := &c.Inner[j]
+							switch ch.Kind {
+							case "ParmVarDecl":
+								typ := ""
+								if ch.Type != nil {
+									typ = mapType(ch.Type.QualType)
+								}
+								params = append(params, param{name: ch.Name, typ: typ})
+							case "CompoundStmt":
+								if ch.Range != nil {
+									b := ch.Range.Begin.Offset
+									e := ch.Range.End.Offset
+									if b >= 0 && e >= b && e <= len(src) {
+										body = src[b:e]
+									}
+								}
+							}
+						}
+						ret := ""
+						if c.Type != nil {
+							qt := c.Type.QualType
+							if p := strings.Index(qt, "("); p != -1 {
+								ret = qt[:p]
+							}
+							ret = mapType(strings.TrimSpace(ret))
+						}
+						fn := funcDef{
+							name:      n.Name + "." + c.Name,
+							params:    params,
+							ret:       ret,
+							body:      body,
+							startLine: lineNumber(src, c.Range.Begin.Offset),
+							endLine:   lineNumber(src, c.Range.End.Offset),
+						}
+						methods = append(methods, fn)
+						*funcs = append(*funcs, fn)
 					}
 				}
-				if len(fields) > 0 {
+				if len(fields) > 0 || len(methods) > 0 {
 					*structs = append(*structs, structDef{
 						name:      n.Name,
 						fields:    fields,
+						methods:   methods,
 						startLine: lineNumber(src, n.Range.Begin.Offset),
 						endLine:   lineNumber(src, n.Range.End.Offset),
 						snippet:   snippet,
@@ -232,6 +328,16 @@ func collectAST(n *astNode, src string, funcs *[]funcDef, enums *[]enumDef, stru
 		}
 	}
 	for i := range n.Inner {
-		collectAST(&n.Inner[i], src, funcs, enums, structs)
+		nextParent := parent
+		if n.Kind == "CXXRecordDecl" || n.Kind == "RecordDecl" {
+			if n.Name != "" {
+				nextParent = n.Name
+			}
+		}
+		if n.Inner[i].Kind == "CXXMethodDecl" {
+			// already processed above
+			continue
+		}
+		collectAST(&n.Inner[i], src, funcs, enums, structs, nextParent)
 	}
 }
