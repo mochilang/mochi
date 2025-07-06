@@ -1,4 +1,0 @@
-syntax error at line 15: 'TMP0' is not a file name
-  14 |     CALL 'SYSTEM' USING TMP1
-  15 |     OPEN INPUT TMP0
-  16 |     READ TMP0 INTO TMP2

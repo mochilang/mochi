@@ -8,9 +8,17 @@ import (
 	"strings"
 )
 
+// Line represents a single line of source code with its number.
+type Line struct {
+	Num  int    `json:"num"`
+	Text string `json:"text"`
+}
+
+// Func holds the lines belonging to a procedure.
 type Func struct {
-	Name  string   `json:"name"`
-	Lines []string `json:"lines"`
+	Name      string `json:"name"`
+	StartLine int    `json:"start_line"`
+	Lines     []Line `json:"lines"`
 }
 
 // Var represents a WORKING-STORAGE declaration.
@@ -18,6 +26,7 @@ type Var struct {
 	Name    string `json:"name"`
 	Picture string `json:"picture"`
 	Occurs  int    `json:"occurs,omitempty"`
+	Line    int    `json:"line"`
 }
 
 type AST struct {
@@ -84,15 +93,36 @@ func Parse(src string) (*AST, error) {
 	lines := strings.Split(src, "\n")
 	inVars := false
 	inProc := false
+	current := -1
 	for i := 0; i < len(lines); i++ {
 		l := strings.TrimSpace(lines[i])
 		upper := strings.ToUpper(l)
 		switch {
 		case strings.HasPrefix(upper, "WORKING-STORAGE SECTION"):
 			inVars = true
+			continue
 		case strings.HasPrefix(upper, "PROCEDURE DIVISION"):
 			inVars = false
 			inProc = true
+			current = -1
+			continue
+		}
+		if strings.HasPrefix(l, "*>") {
+			if strings.Contains(strings.ToLower(l), "unsupported") {
+				start := i - 1
+				if start < 0 {
+					start = 0
+				}
+				end := i + 2
+				if end > len(lines) {
+					end = len(lines)
+				}
+				var snippet []string
+				for j := start; j < end; j++ {
+					snippet = append(snippet, fmt.Sprintf("%4d | %s", j+1, lines[j]))
+				}
+				return nil, fmt.Errorf("unsupported feature at line %d: %s\n%s", i+1, strings.TrimPrefix(l, "*>"), strings.Join(snippet, "\n"))
+			}
 			continue
 		}
 		if inVars {
@@ -111,7 +141,7 @@ func Parse(src string) (*AST, error) {
 							j++
 						}
 					}
-					ast.Vars = append(ast.Vars, Var{Name: name, Picture: pic, Occurs: occurs})
+					ast.Vars = append(ast.Vars, Var{Name: name, Picture: pic, Occurs: occurs, Line: i + 1})
 				}
 			}
 			continue
@@ -119,17 +149,30 @@ func Parse(src string) (*AST, error) {
 		if !inProc {
 			continue
 		}
-		if strings.HasPrefix(upper, "STOP RUN") {
-			if len(ast.Functions) == 0 {
-				ast.Functions = append(ast.Functions, Func{Name: "main"})
-			}
-			break
+
+		if strings.HasSuffix(upper, ".") && !strings.Contains(upper, " ") && !strings.HasPrefix(upper, "END-") && !strings.HasPrefix(upper, "STOP") {
+			name := strings.TrimSuffix(l, ".")
+			ast.Functions = append(ast.Functions, Func{Name: strings.ToLower(name), StartLine: i + 1})
+			current = len(ast.Functions) - 1
+			inProc = true
+			continue
 		}
-		if len(ast.Functions) == 0 {
-			ast.Functions = append(ast.Functions, Func{Name: "main"})
+
+		if strings.HasPrefix(upper, "STOP RUN") {
+			if current == -1 {
+				ast.Functions = append(ast.Functions, Func{Name: "main", StartLine: i + 1})
+				current = len(ast.Functions) - 1
+			}
+			inProc = false
+			continue
+		}
+
+		if current == -1 {
+			ast.Functions = append(ast.Functions, Func{Name: "main", StartLine: i + 1})
+			current = len(ast.Functions) - 1
 		}
 		if l != "" {
-			ast.Functions[0].Lines = append(ast.Functions[0].Lines, l)
+			ast.Functions[current].Lines = append(ast.Functions[current].Lines, Line{Num: i + 1, Text: l})
 		}
 	}
 	return &ast, nil

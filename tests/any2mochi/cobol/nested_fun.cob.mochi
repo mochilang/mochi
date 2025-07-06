@@ -1,4 +1,5 @@
 fun main() {
   var outer_p0 = 3
+  fouter()
   print(outer_res)
 }

@@ -27,24 +27,24 @@ type Compiler struct {
 	funcDecls     []string
 	currentFun    string
 	params        map[string]string
-        listLens      map[string]int
-        varFuncs      map[string]string
-        lambdaCounter int
-        dynamicLens   map[string]string
-       vars          map[string]string
+	listLens      map[string]int
+	varFuncs      map[string]string
+	lambdaCounter int
+	dynamicLens   map[string]string
+	vars          map[string]string
 }
 
 // New creates a new COBOL compiler instance.
 func New(env *types.Env) *Compiler {
-        return &Compiler{
-                env:         env,
-                funcs:       map[string]int{},
-                params:      map[string]string{},
-                listLens:    map[string]int{},
-                varFuncs:    map[string]string{},
-                dynamicLens: map[string]string{},
-               vars:        map[string]string{},
-        }
+	return &Compiler{
+		env:         env,
+		funcs:       map[string]int{},
+		params:      map[string]string{},
+		listLens:    map[string]int{},
+		varFuncs:    map[string]string{},
+		dynamicLens: map[string]string{},
+		vars:        map[string]string{},
+	}
 }
 
 // Compile translates prog into COBOL source code.
@@ -142,13 +142,13 @@ func (c *Compiler) compileNode(n *ast.Node) {
 	case "expect":
 		c.compileExpect(n)
 
-        case "test":
-                c.compileTest(n)
+	case "test":
+		c.compileTest(n)
 
-        case "update":
-                c.compileUpdate(n)
+	case "update":
+		c.compileUpdate(n)
 
-        }
+	}
 }
 
 func (c *Compiler) compileExpect(n *ast.Node) {
@@ -289,6 +289,7 @@ func (c *Compiler) compileFun(n *ast.Node) {
 	c.buf = bytes.Buffer{}
 	c.indent = 0
 	c.currentFun = name
+	c.writeln("*> function " + name)
 	c.writeln(section + ".")
 	c.indent++
 	for _, st := range body {
@@ -973,17 +974,17 @@ func (c *Compiler) expr(n *ast.Node) string {
 			return "1"
 		}
 		return "0"
-        case "selector":
-                full := selectorName(n)
-                if len(n.Children) == 0 {
-                        if v, ok := c.params[full]; ok {
-                                return v
-                        }
-                        if v, ok := c.vars[full]; ok {
-                                return v
-                        }
-                }
-                return full
+	case "selector":
+		full := selectorName(n)
+		if len(n.Children) == 0 {
+			if v, ok := c.params[full]; ok {
+				return v
+			}
+			if v, ok := c.vars[full]; ok {
+				return v
+			}
+		}
+		return full
 	case "struct":
 		return c.compileStructExpr(n)
 	case "load":

@@ -10,15 +10,15 @@ fun main() {
   for i in range(0, n) {
     var jstart = i
     jstart = jstart + 1
-    for j in range(jstart, n) {
-      if nUMS(i + 1) + nUMS(j + 1) = target {
+    for j in range(jSTART, n) {
+      if nums(i + 1) + nums(j + 1) = target {
         result(1) = i
         result(2) = j
         var i = n
         var j = n
       }
     }
-    if nUMS(i + 1) + nUMS(j + 1) = target {
+    if nums(i + 1) + nums(j + 1) = target {
       result(1) = i
       result(2) = j
       i = n

@@ -1,0 +1,9 @@
+fun main() {
+  tmp0(1) = "a"
+  tmp0(2) = "b"
+  var idx = 0
+  for idx in range(0, 2) {
+    var ch = tmp0(idx + 1)
+    print(ch)
+  }
+}

@@ -1,4 +1,4 @@
-syntax error at line 23: 'TMP0' is not defined
-  22 |     COMPUTE TMP0_AGE = 30
-  23 |     MOVE TMP0 TO PEOPLE(1)
-  24 |     MOVE "Bob" TO TMP1_NAME
+unsupported feature at line 45:  unsupported for-in loop
+  44 |     END-PERFORM
+  45 |     *> unsupported for-in loop
+  46 |     STOP RUN.

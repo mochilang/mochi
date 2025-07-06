@@ -1,0 +1,7 @@
+fun main() {
+  var tmp0 = 4 - 1
+  var tmp1 = 1 + 1
+  var tmp2 = "hello"(tmp1:tmp0)
+  var tmp3 = tmp2
+  print(tmp3)
+}

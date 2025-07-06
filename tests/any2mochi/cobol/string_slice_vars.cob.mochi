@@ -1,0 +1,9 @@
+fun main() {
+  var v_start = 1
+  var v_end = 4
+  var tmp0 = v_end - v_start
+  var tmp1 = v_start + 1
+  var tmp2 = "hello"(tmp1:tmp0)
+  var tmp3 = tmp2
+  print(tmp3)
+}

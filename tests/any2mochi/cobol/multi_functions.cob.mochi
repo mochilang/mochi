@@ -1,11 +1,14 @@
 fun main() {
   var plus_p0 = 1
   var plus_p1 = 2
+  fplus()
   print(plus_res)
   var sub_p0 = 9
   var sub_p1 = 3
+  fsub()
   print(sub_res)
   var mul_p0 = 2
   var mul_p1 = 3
+  fmul()
   print(mul_res)
 }

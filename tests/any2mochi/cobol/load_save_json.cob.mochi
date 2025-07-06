@@ -1,0 +1,17 @@
+fun main() {
+  var tmp0 = 0
+  var tmp1 = 0
+  var idx = 0
+  for idx in range(0, 0) {
+    var p = people(idx + 1)
+    if p_AGE >= 18 {
+      tmp1 = tmp1 + 1
+      if TMp1 > 0 {
+        if 0 = 0 OR TMp0 < 0 {
+          tmp0 = tmp0 + 1
+          adults(tmp0) = p
+        }
+      }
+    }
+  }
+}

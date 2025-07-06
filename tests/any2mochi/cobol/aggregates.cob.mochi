@@ -11,7 +11,7 @@ fun main() {
   var tmp1 = 0
   idx = 0
   for idx in range(0, 3) {
-    tmp1 = tmp1 + xs(idx + 1)
+    tmp1 = tmp1 + Xs(idx + 1)
   }
   var tmp2 = 3
   if tmp2 = 0 {

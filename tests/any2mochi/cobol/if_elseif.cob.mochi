@@ -5,6 +5,7 @@ fun main() {
   } else {
     if n = 2 {
       print("two")
+    } else {
       print("other")
     }
   }
