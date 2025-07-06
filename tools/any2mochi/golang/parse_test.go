@@ -1,6 +1,6 @@
 //go:build slow
 
-package any2mochi
+package golang
 
 import (
 	"os/exec"
