@@ -2,7 +2,7 @@
 
 This package implements a minimal Prolog frontend for the `any2mochi` tool. It converts simple Prolog predicates into Mochi functions.
 
-## Architecture
+## High Level Architecture
 
 - `convert.go` contains the high level conversion logic. It uses a language server when available and falls back to a small regex based parser.
 - `parse_ast.go` invokes a small SWI-Prolog script (`pl_ast.pl`) to extract predicate information when the language server is not present.
