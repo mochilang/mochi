@@ -1,0 +1,14 @@
+let customers = [{ "id": 1, "name": "Alice" }, { "id": 2, "name": "Bob" }]
+let orders = [{ "id": 100, "customerId": 1, "total": 250 }, { "id": 101, "customerId": 3, "total": 80 }]
+let result = fun() {
+    let _src = orders
+    return __query(_src, [{ "items": customers, "on": fun(o, c) {
+    return (o["customerId"] == c["id"])
+}, "left": true }], { "selectFn": fun(o, c) {
+    return { "orderId": o["id"], "customer": c, "total": o["total"] }
+} })
+}()
+print("--- Left Join ---")
+for _, entry in ipairs(result) {
+  print("Order", entry["orderId"], "customer", entry["customer"], "total", entry["total"])
+}

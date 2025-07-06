@@ -1,4 +1,4 @@
-fun sum3(a: int, b: int, c: int): int {
+fun sum3(a, b, c) {
   return ((a + b) + c)
 }
-print(6)
+print(sum3(1, 2, 3))

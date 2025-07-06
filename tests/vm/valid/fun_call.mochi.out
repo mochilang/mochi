@@ -1,4 +1,4 @@
-fun add(a: int, b: int): int {
+fun add(a, b) {
   return (a + b)
 }
-print(5)
+print(add(2, 3))

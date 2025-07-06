@@ -1,0 +1,39 @@
+let _Group = []
+fun _Group["new"](k) {
+  return { "key": k, "items": [] }
+}
+let customers = [{ "id": 1, "name": "Alice" }, { "id": 2, "name": "Bob" }, { "id": 3, "name": "Charlie" }]
+let orders = [{ "id": 100, "customerId": 1 }, { "id": 101, "customerId": 1 }, { "id": 102, "customerId": 2 }]
+let stats = fun() {
+    let _src = customers
+    let _rows = __query(_src, [{ "items": orders, "on": fun(c, o) {
+    return (o["customerId"] == c["id"])
+}, "left": true }], { "selectFn": fun(c, o) {
+    return [c, o]
+} })
+    let _groups = __group_by_rows(_rows, fun(c, o) {
+    return c["name"]
+}, fun(c, o) {
+    let _row = __merge(c, o)
+    _row["c"] = c
+    _row["o"] = o
+    return _row
+})
+    let _res = []
+    for _, g in ipairs(_groups) {
+      _res[len(_res) + 1] = { "name": g["key"], "count": count(fun() {
+    let _res = []
+    for _, r in ipairs(g["items"]) {
+      if r["o"] {
+        _res[len(_res) + 1] = r
+      }
+    }
+    return _res
+}()) }
+    }
+    return _res
+}()
+print("--- Group Left Join ---")
+for _, s in ipairs(stats) {
+  print(s["name"], "orders:", s["count"])
+}

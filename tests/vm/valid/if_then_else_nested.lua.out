@@ -1,0 +1,23 @@
+function __print(...)
+    local args = {...}
+    for i, a in ipairs(args) do
+        if i > 1 then io.write(' ') end
+        io.write(tostring(a))
+    end
+    io.write('\n')
+end
+x = 8
+msg = (function()
+    if (x > 10) then
+        return "big"
+    else
+        return (function()
+    if (x > 5) then
+        return "medium"
+    else
+        return "small"
+    end
+end)()
+    end
+end)()
+__print(msg)

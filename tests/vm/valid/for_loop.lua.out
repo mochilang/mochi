@@ -1,0 +1,12 @@
+function __print(...)
+    local args = {...}
+    for i, a in ipairs(args) do
+        if i > 1 then io.write(' ') end
+        io.write(tostring(a))
+    end
+    io.write('\n')
+end
+for i = 1, (4)-1 do
+    __print(i)
+    ::__continue0::
+end

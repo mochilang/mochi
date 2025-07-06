@@ -1,5 +1,5 @@
-fun add(a: int, b: int): int {
+fun add(a, b) {
   return (a + b)
 }
-var add5 = add(5)
+let add5 = add(5)
 print(add5(3))

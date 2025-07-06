@@ -1,0 +1,15 @@
+let x = 2
+let label = fun() {
+    let _t0 = x
+    if _t0 == 1 {
+      return "one"
+    }
+    if _t0 == 2 {
+      return "two"
+    }
+    if _t0 == 3 {
+      return "three"
+    }
+    return "unknown"
+}()
+print(label)

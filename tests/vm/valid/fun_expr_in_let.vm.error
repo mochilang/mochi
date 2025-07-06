@@ -1,1 +1,1 @@
-parse error: 1:32: unexpected token "{" (expected "<" TypeRef ("," TypeRef)* ">")
+parse error: 1:21: unexpected token "{" (expected "=>" Expr)

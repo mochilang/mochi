@@ -1,0 +1,25 @@
+function __add(a, b)
+    if type(a) == 'table' and type(b) == 'table' then
+        local out = {}
+        for i = 1, #a do out[#out+1] = a[i] end
+        for i = 1, #b do out[#out+1] = b[i] end
+        return out
+    elseif type(a) == 'string' or type(b) == 'string' then
+        return tostring(a) .. tostring(b)
+    else
+        return a + b
+    end
+end
+function __print(...)
+    local args = {...}
+    for i, a in ipairs(args) do
+        if i > 1 then io.write(' ') end
+        io.write(tostring(a))
+    end
+    io.write('\n')
+end
+function add(a, b)
+    return __add(a, b)
+end
+
+__print(add(2, 3))

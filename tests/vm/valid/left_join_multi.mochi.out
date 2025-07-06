@@ -1,0 +1,17 @@
+let customers = [{ "id": 1, "name": "Alice" }, { "id": 2, "name": "Bob" }]
+let orders = [{ "id": 100, "customerId": 1 }, { "id": 101, "customerId": 2 }]
+let items = [{ "orderId": 100, "sku": "a" }]
+let result = fun() {
+    let _src = orders
+    return __query(_src, [{ "items": customers, "on": fun(o, c) {
+    return (o["customerId"] == c["id"])
+} }, { "items": items, "on": fun(o, c, i) {
+    return (o["id"] == i["orderId"])
+}, "left": true }], { "selectFn": fun(o, c, i) {
+    return { "orderId": o["id"], "name": c["name"], "item": i }
+} })
+}()
+print("--- Left Join Multi ---")
+for _, r in ipairs(result) {
+  print(r["orderId"], r["name"], r["item"])
+}

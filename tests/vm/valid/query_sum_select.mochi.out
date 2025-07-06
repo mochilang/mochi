@@ -1,0 +1,11 @@
+let nums = [1, 2, 3]
+let result = fun() {
+    let _res = []
+    for _, n in ipairs(nums) {
+      if n > 1 {
+        _res[len(_res) + 1] = __sum(n)
+      }
+    }
+    return _res
+}()
+print(result)

@@ -1,7 +1,7 @@
-fun makeAdder(n: int): func(int) int {
-  return fun (x: int): int {
-  return (x + n)
+fun makeAdder(n) {
+  return fun(x) {
+    return (x + n)
 }
 }
-var add10 = makeAdder(10)
+let add10 = makeAdder(10)
 print(add10(7))

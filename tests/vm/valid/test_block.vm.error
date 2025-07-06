@@ -1,0 +1,5 @@
+error[T003]: unknown function: __run_tests
+  --> :9:1
+
+help:
+  Ensure the function is defined before it's called.

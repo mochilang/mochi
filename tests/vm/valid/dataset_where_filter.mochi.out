@@ -1,0 +1,20 @@
+let people = [{ "name": "Alice", "age": 30 }, { "name": "Bob", "age": 15 }, { "name": "Charlie", "age": 65 }, { "name": "Diana", "age": 45 }]
+let adults = fun() {
+    let _res = []
+    for _, person in ipairs(people) {
+      if person["age"] >= 18 {
+        _res[len(_res) + 1] = { "name": person["name"], "age": person["age"], "is_senior": person["age"] >= 60 }
+      }
+    }
+    return _res
+}()
+print("--- Adults ---")
+for _, person in ipairs(adults) {
+  print(person["name"], "is", person["age"], fun() {
+    if person["is_senior"] {
+      return " (senior)"
+    } else {
+      return ""
+    }
+}())
+}

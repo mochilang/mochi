@@ -1,0 +1,5 @@
+error[T003]: unknown function: pairs
+  --> :2:10
+
+help:
+  Ensure the function is defined before it's called.

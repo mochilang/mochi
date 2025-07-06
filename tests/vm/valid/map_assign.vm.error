@@ -1,0 +1,5 @@
+error[T024]: cannot assign to `scores` (immutable)
+  --> :2:1
+
+help:
+  Use `var` to declare mutable variables.

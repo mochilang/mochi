@@ -1,0 +1,11 @@
+function __print(...)
+    local args = {...}
+    for i, a in ipairs(args) do
+        if i > 1 then io.write(' ') end
+        io.write(tostring(a))
+    end
+    io.write('\n')
+end
+m = {["a"]=1, ["b"]=2}
+__print((m["a"] ~= nil))
+__print((m["c"] ~= nil))
