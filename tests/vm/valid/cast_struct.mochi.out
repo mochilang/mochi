@@ -1,9 +1,5 @@
-let Todo = []
-Todo["__index"] = Todo
-fun Todo["new"](o) {
-  let o = o || []
-  setmetatable(o, Todo)
-  return o
+type Todo {
+  title: string
 }
-let todo = Todo["new"]({ "title": "hi" })
-print(todo["title"])
+let todo = Todo {: {"title": "hi"}}
+print(todo.title)

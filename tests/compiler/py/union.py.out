@@ -4,31 +4,23 @@ from __future__ import annotations
 import dataclasses
 import typing
 
-
 class Tree:
-    pass
-
-
+	pass
 @dataclasses.dataclass
 class Leaf(Tree):
-    pass
-
-
+	pass
 @dataclasses.dataclass
 class Node(Tree):
-    left: Tree
-    value: int
-    right: Tree
-
+	left: Tree
+	value: int
+	right: Tree
 
 t = Node(left=Leaf(), value=42, right=Leaf())
 
-
 def main():
-    global t
-    t = Node(left=Leaf(), value=42, right=Leaf())
-    print(t.value)
-
+	global t
+	t = Node(left=Leaf(), value=42, right=Leaf())
+	print(t.value)
 
 if __name__ == "__main__":
-    main()
+	main()

@@ -1,19 +1,15 @@
-let items = [{ "n": 1, "v": "a" }, { "n": 1, "v": "b" }, { "n": 2, "v": "c" }]
-let result = fun() {
-    let _res = []
-    for _, i in ipairs(items) {
-      _res[len(_res) + 1] = { "__key": i["n"], "__val": i["v"] }
-    }
-    let items = _res
-    table["sort"](items, fun(a, b) {
-    return a["__key"] < b["__key"]
-})
-    let tmp = []
-    for _, it in ipairs(items) {
-      tmp[len(tmp) + 1] = it["__val"]
-    }
-    items = tmp
-    _res = items
-    return _res
-}()
-print(result)
+let T = TypeVar('T')
+let K = TypeVar('K')
+fun _sort_key(k) {
+  if isinstance(k, (list, tuple, dict)) {
+  return str(k)
+}
+  return k
+}
+let items = None
+let result = None
+fun main() {
+  let items = [{"n": 1, "v": "a"}, {"n": 1, "v": "b"}, {"n": 2, "v": "c"}]
+  let result = [ i["v"] for i in sorted([ i for i in items ], key=lambda i: _sort_key(i["n"])) ]
+  print(*result)
+}

@@ -3,12 +3,10 @@ from __future__ import annotations
 
 square = None
 
-
 def main():
-    global square
-    square = lambda x: (x * x)
-    print(square(6))
-
+	global square
+	square = (lambda x: (x * x))
+	print(square(6))
 
 if __name__ == "__main__":
-    main()
+	main()

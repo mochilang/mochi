@@ -1,1 +1,1 @@
-parse error: 2:12: unexpected token "-" (expected PostfixExpr)
+parse error: 2:11: unexpected token "-" (expected PostfixExpr)

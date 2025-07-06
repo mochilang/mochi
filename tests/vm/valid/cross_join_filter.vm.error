@@ -1,1 +1,1 @@
-parse error: 3:19: unexpected token "{" (expected "=>" Expr)
+parse error: 2:16: lexer: invalid input text "'A', 'B']\nlet pa..."

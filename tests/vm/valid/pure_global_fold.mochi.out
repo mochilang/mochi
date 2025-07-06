@@ -1,5 +1,5 @@
-fun inc(x) {
-  return (x + k)
+fun inc(x: int): int {
+  return x + k
 }
 let k = 2
 print(inc(3))

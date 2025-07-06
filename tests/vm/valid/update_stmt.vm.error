@@ -1,1 +1,1 @@
-parse error: 14:12: lexer: invalid input text "; _i0 <= len(peo..."
+parse error: 9:5: unexpected token "(" (expected <ident> "in" Expr (".." Expr)? "{" Statement* "}")

@@ -4,46 +4,37 @@ from __future__ import annotations
 import json
 import urllib.request
 
-from typing import Any, TypeVar
-
-T = TypeVar("T")
-
-
+from typing import Any, TypeVar, Generic, Callable
+T = TypeVar('T')
+K = TypeVar('K')
 def _fetch(url, opts):
     import urllib.request, urllib.parse, json
-
-    method = "GET"
+    method = 'GET'
     data = None
     headers = {}
     timeout = None
     if opts:
-        method = opts.get("method", method)
-        if "body" in opts:
-            data = json.dumps(opts["body"]).encode()
-        if "headers" in opts:
-            for k, v in dict(opts["headers"]).items():
+        method = opts.get('method', method)
+        if 'body' in opts:
+            data = json.dumps(opts['body']).encode()
+        if 'headers' in opts:
+            for k, v in dict(opts['headers']).items():
                 headers[k] = str(v)
-        if "query" in opts:
-            q = urllib.parse.urlencode(
-                {k: str(v) for k, v in dict(opts["query"]).items()}
-            )
-            sep = "&" if "?" in url else "?"
+        if 'query' in opts:
+            q = urllib.parse.urlencode({k: str(v) for k, v in dict(opts['query']).items()})
+            sep = '&' if '?' in url else '?'
             url = url + sep + q
-        timeout = opts.get("timeout", None)
+        timeout = opts.get('timeout', None)
     req = urllib.request.Request(url, data=data, headers=headers, method=method)
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         text = resp.read()
     return json.loads(text)
-
-
 data = None
 
-
 def main():
-    global data
-    data = _fetch("file:../../tests/compiler/py/fetch_builtin.json", None)
-    print(data["message"])
-
+	global data
+	data = (_fetch("file:../../tests/compiler/py/fetch_builtin.json", None))
+	print(data["message"])
 
 if __name__ == "__main__":
-    main()
+	main()

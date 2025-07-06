@@ -4,16 +4,14 @@ from __future__ import annotations
 input1 = None
 input2 = None
 
-
 def main():
-    print("Enter first input:")
-    global input1
-    input1 = input()
-    print("Enter second input:")
-    global input2
-    input2 = input()
-    print("You entered:", input1, ",", input2)
-
+	print("Enter first input:")
+	global input1
+	input1 = input()
+	print("Enter second input:")
+	global input2
+	input2 = input()
+	print("You entered:", input1, ",", input2)
 
 if __name__ == "__main__":
-    main()
+	main()

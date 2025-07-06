@@ -1,1 +1,1 @@
-parse error: 2:20: unexpected token "{" (expected "=>" Expr)
+parse error: 1:17: lexer: invalid input text "'T')\nlet K = Typ..."

@@ -1,5 +1,1 @@
-error[T008]: type mismatch: expected void, got bool
-  --> :3:10
-
-help:
-  Change the value to match the expected type.
+parse error: 5:8: unexpected token ")" (expected PostfixExpr)

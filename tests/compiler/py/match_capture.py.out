@@ -4,40 +4,22 @@ from __future__ import annotations
 import dataclasses
 import typing
 
-
 def depth(t: Tree) -> int:
-    return (
-        lambda _t0=t: (
-            0
-            if isinstance(_t0, Leaf)
-            else (
-                (lambda l, r: ((depth(l) + depth(r)) + 1))(_t0.left, _t0.right)
-                if isinstance(_t0, Node)
-                else None
-            )
-        )
-    )()
-
+	return (lambda _t0=t: 0 if isinstance(_t0, Leaf) else (lambda l, r: ((depth(l) + depth(r)) + 1))(_t0.left, _t0.right) if isinstance(_t0, Node) else None)()
 
 class Tree:
-    pass
-
-
+	pass
 @dataclasses.dataclass
 class Leaf(Tree):
-    pass
-
-
+	pass
 @dataclasses.dataclass
 class Node(Tree):
-    left: Tree
-    value: int
-    right: Tree
-
+	left: Tree
+	value: int
+	right: Tree
 
 def main():
-    print(depth(Node(left=Leaf(), value=0, right=Leaf())))
-
+	print(depth(Node(left=Leaf(), value=0, right=Leaf())))
 
 if __name__ == "__main__":
-    main()
+	main()

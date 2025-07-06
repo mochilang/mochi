@@ -1,1 +1,1 @@
-parse error: 3:12: lexer: invalid input text "; i <= n - 1; i ..."
+parse error: 1:22: unexpected token "[" (expected ")" (":" TypeRef)? "{" Statement* "}")

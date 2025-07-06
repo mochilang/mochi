@@ -1,1 +1,7 @@
-parse error: 1:10: lexer: invalid input text "; i <= 4 - 1; i ..."
+output mismatch
+-- got --
+
+-- want --
+1
+2
+3

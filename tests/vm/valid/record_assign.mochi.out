@@ -1,13 +1,8 @@
-let Counter = []
-Counter["__index"] = Counter
-fun Counter["new"](o) {
-  let o = o || []
-  setmetatable(o, Counter)
-  return o
+fun inc(c: Counter): <nil> {
+  let c = c.n + 1
 }
-fun inc(c) {
-  let c = (c["n"] + 1)
+type Counter {
+  n: int
 }
-let c = { "n": 0 }
 inc(c)
-print(c["n"])
+print(c.n)

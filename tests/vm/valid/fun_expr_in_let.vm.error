@@ -1,1 +1,5 @@
-parse error: 1:21: unexpected token "{" (expected "=>" Expr)
+output mismatch
+-- got --
+<nil>
+-- want --
+36

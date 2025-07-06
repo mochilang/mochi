@@ -1,18 +1,10 @@
 let xs = [1, 2, 3]
-let ys = fun() {
-    let _res = []
-    for _, x in ipairs(xs) {
-      if (x % 2 == 1) {
-        _res[len(_res) + 1] = x
-      }
-    }
-    return _res
-}()
-print((1 in ys))
-print((2 in ys))
-let m = { "a": 1 }
-print(m["a"] ~= null)
-print(m["b"] ~= null)
 let s = "hello"
-print(("ell" in s))
-print(("foo" in s))
+let ys = from x in xs where x % 2 == 1 select x
+print(())
+print(())
+let m = {"a": 1}
+print(())
+print(())
+print(())
+print(())

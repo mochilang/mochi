@@ -1,18 +1,134 @@
-let customers = [{ "id": 1, "name": "Alice" }, { "id": 2, "name": "Bob" }, { "id": 3, "name": "Charlie" }, { "id": 4, "name": "Diana" }]
-let orders = [{ "id": 100, "customerId": 1, "total": 250 }, { "id": 101, "customerId": 2, "total": 125 }, { "id": 102, "customerId": 1, "total": 300 }]
-let result = fun() {
-    let _src = customers
-    return __query(_src, [{ "items": orders, "on": fun(c, o) {
-    return (o["customerId"] == c["id"])
-}, "right": true }], { "selectFn": fun(c, o) {
-    return { "customerName": c["name"], "order": o }
-} })
-}()
-print("--- Right Join using syntax ---")
-for _, entry in ipairs(result) {
-  if entry["order"] {
-    print("Customer", entry["customerName"], "has order", entry["order"]["id"], "- $", entry["order"]["total"])
-  } else {
-    print("Customer", entry["customerName"], "has no orders")
-  }
+let T = TypeVar('T')
+let K = TypeVar('K')
+fun _get(obj, name) {
+  if obj is None {
+  return None
+}
+  if isinstance(obj, dict) {
+  if name in obj {
+  return obj[name]
+}
+}
+  if hasattr(obj, name) {
+  return getattr(obj, name)
+}
+  if isinstance(obj, (list, tuple)) {
+  for it in obj {
+  try:
+  return _get(it, name)
+  except Exception:
+}
+}
+  raise Exception('field not found: ' + name)
+}
+fun _query(src, joins, opts) {
+  let items = [[v] for v in src]
+  for j in joins {
+  let joined = []
+  if j.get('right') and j.get('left') {
+  let matched = [False] * len(j['items'])
+  for left in items {
+  let m = False
+  for ri, right in enumerate(j['items']) {
+  let keep = True
+  if j.get('on') {
+  let keep = j['on'](*left, right)
+}
+  if not keep {
+  continue
+}
+  let m = True; matched[ri] = True
+  joined.append(left + [right])
+}
+  if not m {
+  joined.append(left + [None])
+}
+}
+  for ri, right in enumerate(j['items']) {
+  if not matched[ri] {
+  let undef = [None] * (len(items[0]) if items else 0)
+  joined.append(undef + [right])
+} else if j.get('right') {}
+}
+  for right in j['items'] {
+  let m = False
+  for left in items {
+  let keep = True
+  if j.get('on') {
+  let keep = j['on'](*left, right)
+}
+  if not keep {
+  continue
+}
+  let m = True; joined.append(left + [right])
+}
+  if not m {
+  let undef = [None] * (len(items[0]) if items else 0)
+  joined.append(undef + [right])
+}
+}
+  for left in items {
+  let m = False
+  for right in j['items'] {
+  let keep = True
+  if j.get('on') {
+  let keep = j['on'](*left, right)
+}
+  if not keep {
+  continue
+}
+  let m = True; joined.append(left + [right])
+}
+  if j.get('left') and not m {
+  joined.append(left + [None])
+}
+}
+}
+  let items = joined
+}
+  if opts.get('where') {
+  let items = [r for r in items if opts['where'](*r)]
+}
+  if opts.get('sortKey') {
+  def _key(it):
+  let k = opts['sortKey'](*it)
+  if isinstance(k, (list, tuple, dict)) {
+  return str(k)
+  return k
+}
+  let items.sort(key = _key)
+}
+  if 'skip' in opts {
+  let n = opts['skip']
+  if n < 0 {
+  let n = 0
+}
+  let items = items[n:] if n < len(items) else []
+}
+  if 'take' in opts {
+  let n = opts['take']
+  if n < 0 {
+  let n = 0
+}
+  let items = items[:n] if n < len(items) else items
+}
+  let res = []
+  for r in items {
+  res.append(opts['select'](*r))
+}
+  return res
+}
+let customers = None
+let orders = None
+let result = None
+fun main() {
+  let customers = [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}, {"id": 3, "name": "Charlie"}, {"id": 4, "name": "Diana"}]
+  let orders = [{"id": 100, "customerId": 1, "total": 250}, {"id": 101, "customerId": 2, "total": 125}, {"id": 102, "customerId": 1, "total": 300}]
+  let result = _query(customers, [{ 'items': orders, 'on': lambda c, o: ((o["customerId"] == c["id"])), 'right': True }], { 'select': lambda c, o: {"customerName": c["name"], "order": o} })
+  print("--- Right Join using syntax ---")
+  for entry in result {}
+  if entry["order"] {}
+  print("Customer", entry["customerName"], "has order", _get(entry["order"], "id"), "- $", _get(entry["order"], "total"))
+  else:
+  print("Customer", entry["customerName"], "has no orders")
 }

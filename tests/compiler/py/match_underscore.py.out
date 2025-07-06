@@ -4,30 +4,22 @@ from __future__ import annotations
 import dataclasses
 import typing
 
-
 def value_of_root(t: Tree) -> int:
-    return (lambda _t0=t: (lambda v: v)(_t0.value) if isinstance(_t0, Node) else 0)()
-
+	return (lambda _t0=t: (lambda v: v)(_t0.value) if isinstance(_t0, Node) else 0)()
 
 class Tree:
-    pass
-
-
+	pass
 @dataclasses.dataclass
 class Leaf(Tree):
-    pass
-
-
+	pass
 @dataclasses.dataclass
 class Node(Tree):
-    left: Tree
-    value: int
-    right: Tree
-
+	left: Tree
+	value: int
+	right: Tree
 
 def main():
-    print(value_of_root(Node(left=Leaf(), value=5, right=Leaf())))
-
+	print(value_of_root(Node(left=Leaf(), value=5, right=Leaf())))
 
 if __name__ == "__main__":
-    main()
+	main()

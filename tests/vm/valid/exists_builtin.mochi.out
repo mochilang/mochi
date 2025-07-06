@@ -1,11 +1,3 @@
 let data = [1, 2]
-let flag = __exists(fun() {
-    let _res = []
-    for _, x in ipairs(data) {
-      if (x == 1) {
-        _res[len(_res) + 1] = x
-      }
-    }
-    return _res
-}())
-print(flag)
+let flag = len(from x in data where x == 1 select x) > 0
+print(())

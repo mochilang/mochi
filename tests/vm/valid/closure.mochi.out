@@ -1,7 +1,5 @@
-fun makeAdder(n) {
-  return fun(x) {
-    return (x + n)
-}
+fun makeAdder(n: int): typing.Callable[([int], int)] {
+  return
 }
 let add10 = makeAdder(10)
 print(add10(7))

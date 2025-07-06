@@ -1,1 +1,1 @@
-parse error: 2:19: unexpected token "," (expected PostfixExpr)
+parse error: 1:17: lexer: invalid input text "'T')\nlet K = Typ..."

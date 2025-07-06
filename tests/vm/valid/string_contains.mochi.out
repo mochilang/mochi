@@ -1,3 +1,29 @@
-let s = "catch"
-print(("cat" in s))
-print(("dog" in s))
+let T = TypeVar('T')
+let K = TypeVar('K')
+fun _get(obj, name) {
+  if obj is None {
+  return None
+}
+  if isinstance(obj, dict) {
+  if name in obj {
+  return obj[name]
+}
+}
+  if hasattr(obj, name) {
+  return getattr(obj, name)
+}
+  if isinstance(obj, (list, tuple)) {
+  for it in obj {
+  try:
+  return _get(it, name)
+  except Exception:
+}
+}
+  raise Exception('field not found: ' + name)
+}
+let s = 'catch'
+fun main() {
+  let s = "catch"
+  print(str(("cat" in s)).lower())
+  print(str(("dog" in s)).lower())
+}

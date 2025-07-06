@@ -1,1 +1,1 @@
-parse error: 2:12: lexer: invalid input text "~= null)\nprint(m..."
+parse error: 2:8: unexpected token ")" (expected PostfixExpr)

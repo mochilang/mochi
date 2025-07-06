@@ -1,1 +1,1 @@
-parse error: 2:16: unexpected token "{" (expected "=>" Expr)
+parse error: 3:1: unexpected token "}" (expected PostfixExpr)

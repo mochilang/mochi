@@ -1,5 +1,1 @@
-error[T024]: cannot assign to `data` (immutable)
-  --> :2:1
-
-help:
-  Use `var` to declare mutable variables.
+parse error: 2:28: unexpected token "="

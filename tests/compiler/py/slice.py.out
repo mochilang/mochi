@@ -4,14 +4,12 @@ from __future__ import annotations
 a = [1, 2, 3, 4, 5]
 sub = None
 
-
 def main():
-    global a
-    a = [1, 2, 3, 4, 5]
-    global sub
-    sub = a[1:4]
-    print(*sub)
-
+	global a
+	a = [1, 2, 3, 4, 5]
+	global sub
+	sub = a[1:4]
+	print(*sub)
 
 if __name__ == "__main__":
-    main()
+	main()

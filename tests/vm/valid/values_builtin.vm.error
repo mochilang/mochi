@@ -1,5 +1,1 @@
-error[T003]: unknown function: __values
-  --> :2:7
-
-help:
-  Ensure the function is defined before it's called.
+parse error: 1:10: lexer: invalid input text "'a': 1, 'b': 2, ..."

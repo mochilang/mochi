@@ -4,11 +4,9 @@ from __future__ import annotations
 import dataclasses
 import typing
 
-from typing import Any, TypeVar
-
-T = TypeVar("T")
-
-
+from typing import Any, TypeVar, Generic, Callable
+T = TypeVar('T')
+K = TypeVar('K')
 def _get(obj, name):
     if obj is None:
         return None
@@ -23,27 +21,22 @@ def _get(obj, name):
                 return _get(it, name)
             except Exception:
                 pass
-    raise Exception("field not found: " + name)
-
-
+    raise Exception('field not found: ' + name)
 @dataclasses.dataclass
 class Counter:
-    value: int
-
-    def inc(self) -> int:
-        self.value = self.value + 1
-        return self.value
-
+	value: int
+	
+	def inc(self) -> int:
+		self.value = (self.value + 1)
+		return self.value
 
 c = Counter(value=0)
 
-
 def main():
-    global c
-    c = Counter(value=0)
-    print(_get(c, "inc")())
-    print(_get(c, "inc")())
-
+	global c
+	c = Counter(value=0)
+	print(_get(c, "inc")())
+	print(_get(c, "inc")())
 
 if __name__ == "__main__":
-    main()
+	main()

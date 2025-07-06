@@ -1,9 +1,3 @@
 let x = 12
-let msg = fun() {
-    if x > 10 {
-      return "yes"
-    } else {
-      return "no"
-    }
-}()
+let msg = 
 print(msg)

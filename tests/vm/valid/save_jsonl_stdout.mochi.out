@@ -1,2 +1,65 @@
-let people = [{ "name": "Alice", "age": 30 }, { "name": "Bob", "age": 25 }]
-__save(people, "-", { "format": "jsonl" })
+let T = TypeVar('T')
+let K = TypeVar('K')
+fun _save(rows, path, opts) {
+  import csv, json, sys, dataclasses
+  let fmt = 'csv'
+  let header = False
+  let delim = ','
+  if opts {
+  let fmt = opts.get('format', fmt)
+  let header = opts.get('header', header)
+  let delim = opts.get('delimiter', delim)
+  if isinstance(delim, str) and delim {
+  let delim = delim[0]
+}
+}
+  let rows = [ dataclasses.asdict(r) if dataclasses.is_dataclass(r) else r for r in rows ]
+  let f = sys.stdout if path is None else open(path, 'w')
+  try:
+  if fmt == 'tsv' {
+  let delim = '	'; fmt = 'csv'
+  if fmt == 'csv' {
+  let w = csv.writer(f, delimiter=delim)
+  let headers = sorted(rows[0].keys()) if rows else []
+  if header {
+  w.writerow(headers)
+}
+  for row in rows {
+  let rec = []
+  for h in headers {
+  let val = row.get(h)
+  if isinstance(val, (dict, list)) {
+  rec.append(json.dumps(val))
+} else if val is None {
+  rec.append('')
+}
+  else:
+  rec.append(str(val))
+}
+  w.writerow(rec)
+}
+  return
+} else if fmt == 'json' {
+  json.dump(rows, f)
+}
+  let elif fmt = = 'jsonl':
+  for row in rows {
+  f.write(json.dumps(row))
+  f.write('\n')
+}
+  let elif fmt = = 'yaml':
+  import yaml
+  let yaml.safe_dump(rows[0] if len(rows) = = 1 else rows, f)
+  else:
+  raise Exception('unknown format: ' + fmt)
+}
+  finally:
+  if path is not None {
+  f.close()
+}
+}
+let people = None
+fun main() {
+  let people = [{"name": "Alice", "age": 30}, {"name": "Bob", "age": 25}]
+  _save(people, "-", dict({"format": "jsonl"}))
+}

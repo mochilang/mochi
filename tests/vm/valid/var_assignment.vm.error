@@ -1,5 +1,5 @@
-error[T024]: cannot assign to `x` (immutable)
-  --> :2:1
-
-help:
-  Use `var` to declare mutable variables.
+output mismatch
+-- got --
+1
+-- want --
+2

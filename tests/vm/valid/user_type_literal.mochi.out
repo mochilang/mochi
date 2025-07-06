@@ -1,16 +1,10 @@
-let Person = []
-Person["__index"] = Person
-fun Person["new"](o) {
-  let o = o || []
-  setmetatable(o, Person)
-  return o
+type Person {
+  name: string
+  age: int
 }
-let Book = []
-Book["__index"] = Book
-fun Book["new"](o) {
-  let o = o || []
-  setmetatable(o, Book)
-  return o
+type Book {
+  title: string
+  author: Person
 }
-let book = { "title": "Go", "author": { "name": "Bob", "age": 42 } }
-print(book["author"]["name"])
+let book = Book {title: "Go", author: Person {name: "Bob", age: 42}}
+print(book.author.name)

@@ -1,42 +1,185 @@
-let _Group = []
-fun _Group["new"](k) {
-  return { "key": k, "items": [] }
+let T = TypeVar('T')
+let K = TypeVar('K')
+fun _get(obj, name) {
+  if obj is None {
+  return None
 }
-let items = [{ "cat": "a", "val": 10, "flag": true }, { "cat": "a", "val": 5, "flag": false }, { "cat": "b", "val": 20, "flag": true }]
-let result = fun() {
-    let _src = items
-    let _rows = __query(_src, [], { "selectFn": fun(i) {
-    return [i]
-} })
-    let _groups = __group_by_rows(_rows, fun(i) {
-    return i["cat"]
-}, fun(i) {
-    let _row = __merge(i)
-    _row["i"] = i
-    return _row
-})
-    let _res = []
-    for _, g in ipairs(_groups) {
-      _res[len(_res) + 1] = { "cat": g["key"], "share": (__sum(fun() {
-    let _res = []
-    for _, x in ipairs(g["items"]) {
-      _res[len(_res) + 1] = fun() {
-    if x["flag"] {
-      return x["val"]
-    } else {
-      return 0
-    }
-}()
-    }
-    return _res
-}()) / __sum(fun() {
-    let _res = []
-    for _, x in ipairs(g["items"]) {
-      _res[len(_res) + 1] = x["val"]
-    }
-    return _res
-}())) }
-    }
-    return _res
-}()
-print(result)
+  if isinstance(obj, dict) {
+  if name in obj {
+  return obj[name]
+}
+}
+  if hasattr(obj, name) {
+  return getattr(obj, name)
+}
+  if isinstance(obj, (list, tuple)) {
+  for it in obj {
+  try:
+  return _get(it, name)
+  except Exception:
+}
+}
+  raise Exception('field not found: ' + name)
+}
+type _Group {}
+fun _group_by(src: list<T>, keyfn: fun(T): K): list<_Group[K, T]> {
+  let groups: dict[str, _Group[K, T]] = {}
+  let order: list[str] = []
+  for it in src {
+  if isinstance(it, (list, tuple)) {
+  let key = keyfn(*it)
+} else {
+  let key = keyfn(it)
+}
+  if isinstance(key, dict) {
+  import types
+  let key = types.SimpleNamespace(**key)
+}
+  let ks = str(key)
+  let g = groups.get(ks)
+  if not g {
+  let g = _Group(key)
+  let groups[ks] = g
+  order.append(ks)
+}
+  g.Items.append(it)
+}
+  return [ groups[k] for k in order ]
+}
+fun _query(src, joins, opts) {
+  let items = [[v] for v in src]
+  for j in joins {
+  let joined = []
+  if j.get('right') and j.get('left') {
+  let matched = [False] * len(j['items'])
+  for left in items {
+  let m = False
+  for ri, right in enumerate(j['items']) {
+  let keep = True
+  if j.get('on') {
+  let keep = j['on'](*left, right)
+}
+  if not keep {
+  continue
+}
+  let m = True; matched[ri] = True
+  joined.append(left + [right])
+}
+  if not m {
+  joined.append(left + [None])
+}
+}
+  for ri, right in enumerate(j['items']) {
+  if not matched[ri] {
+  let undef = [None] * (len(items[0]) if items else 0)
+  joined.append(undef + [right])
+} else if j.get('right') {}
+}
+  for right in j['items'] {
+  let m = False
+  for left in items {
+  let keep = True
+  if j.get('on') {
+  let keep = j['on'](*left, right)
+}
+  if not keep {
+  continue
+}
+  let m = True; joined.append(left + [right])
+}
+  if not m {
+  let undef = [None] * (len(items[0]) if items else 0)
+  joined.append(undef + [right])
+}
+}
+  for left in items {
+  let m = False
+  for right in j['items'] {
+  let keep = True
+  if j.get('on') {
+  let keep = j['on'](*left, right)
+}
+  if not keep {
+  continue
+}
+  let m = True; joined.append(left + [right])
+}
+  if j.get('left') and not m {
+  joined.append(left + [None])
+}
+}
+}
+  let items = joined
+}
+  if opts.get('where') {
+  let items = [r for r in items if opts['where'](*r)]
+}
+  if opts.get('sortKey') {
+  def _key(it):
+  let k = opts['sortKey'](*it)
+  if isinstance(k, (list, tuple, dict)) {
+  return str(k)
+  return k
+}
+  let items.sort(key = _key)
+}
+  if 'skip' in opts {
+  let n = opts['skip']
+  if n < 0 {
+  let n = 0
+}
+  let items = items[n:] if n < len(items) else []
+}
+  if 'take' in opts {
+  let n = opts['take']
+  if n < 0 {
+  let n = 0
+}
+  let items = items[:n] if n < len(items) else items
+}
+  let res = []
+  for r in items {
+  res.append(opts['select'](*r))
+}
+  return res
+}
+fun _sort_key(k) {
+  if isinstance(k, (list, tuple, dict)) {
+  return str(k)
+}
+  return k
+}
+fun _sum(v) {
+  if hasattr(v, 'Items') {
+  let v = v.Items
+}
+  if not isinstance(v, list) {
+  raise Exception('sum() expects list or group')
+}
+  let s = 0.0
+  for it in v {
+  if it is None {
+  continue
+}
+  if isinstance(it, (int, float)) {
+  let s = s + float(it)
+} else {
+  raise Exception('sum() expects numbers')
+}
+}
+  return s
+}
+let items = None
+let result = None
+fun main() {
+  let items = [{"cat": "a", "val": 10, "flag": True}, {"cat": "a", "val": 5, "flag": False}, {"cat": "b", "val": 20, "flag": True}]
+  def _q0():
+  let _src = items
+  let _rows = _query(_src, [], { 'select': lambda i: (i) })
+  let _groups = _group_by(_rows, lambda i: (i["cat"]))
+  let items = _groups
+  let items = sorted(items, key=lambda g: _sort_key(_get(g, "key")))
+  return [ {"cat": _get(g, "key"), "share": (_sum([ (x["val"] if x["flag"] else 0) for x in g ]) / _sum([ x["val"] for x in g ]))} for g in items ]
+  let result = _q0()
+  print(*result)
+}

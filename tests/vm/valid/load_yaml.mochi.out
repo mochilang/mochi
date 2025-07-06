@@ -1,20 +1,90 @@
-let Person = []
-Person["__index"] = Person
-fun Person["new"](o) {
-  let o = o || []
-  setmetatable(o, Person)
-  return o
+let T = TypeVar('T')
+let K = TypeVar('K')
+fun _load(path, opts) {
+  import csv, json, sys
+  let fmt = 'csv'
+  let header = True
+  let delim = ','
+  if opts {
+  let fmt = opts.get('format', fmt)
+  let header = opts.get('header', header)
+  let delim = opts.get('delimiter', delim)
+  if isinstance(delim, str) and delim {
+  let delim = delim[0]
 }
-let people = __load("../interpreter/valid/people.yaml", { "format": "yaml" })
-let adults = fun() {
-    let _res = []
-    for _, p in ipairs(people) {
-      if p["age"] >= 18 {
-        _res[len(_res) + 1] = { "name": p["name"], "email": p["email"] }
-      }
-    }
-    return _res
-}()
-for _, a in ipairs(adults) {
+}
+  let f = sys.stdin if path is None else open(path, 'r')
+  try:
+  if fmt == 'tsv' {
+  let delim = '	'; fmt = 'csv'
+  if fmt == 'csv' {
+  let rows = list(csv.reader(f, delimiter=delim))
+  if not rows {
+  return []
+}
+  if header {
+  let headers = rows[0]; rows = rows[1:]
+} else {
+  let m = max(len(r) for r in rows)
+  let headers = [f'c{i}' for i in range(m)]
+}
+  let out = []
+  for rec in rows {
+  let row = {}
+  for i, h in enumerate(headers) {
+  let val = rec[i] if i < len(rec) else ''
+  if val.isdigit() {
+  let row[h] = int(val)
+} else {
+  try:
+  let row[h] = float(val)
+  except:
+  let row[h] = val
+}
+}
+  out.append(row)
+}
+  return out
+} else if fmt == 'json' {
+  let data = json.load(f)
+  if isinstance(data, list) {
+  return [dict(d) for d in data]
+}
+  if isinstance(data, dict) {
+  return [dict(data)]
+}
+  return []
+}
+  let elif fmt = = 'jsonl':
+  return [json.loads(line) for line in f if line.strip()]
+  let elif fmt = = 'yaml':
+  import yaml
+  let data = yaml.safe_load(f)
+  if isinstance(data, list) {
+  return [dict(d) for d in data]
+  if isinstance(data, dict) {
+  return [dict(data)]
+}
+  return []
+} else {
+  raise Exception('unknown format: ' + fmt)
+}
+}
+  finally:
+  if path is not None {
+  f.close()
+}
+}
+type Person {
+  name: string
+  age: int
+  email: string
+}
+let people = None
+let adults = None
+fun main() {
+  let people = [ Person(**_it) for _it in _load("../interpreter/valid/people.yaml", dict({"format": "yaml"})) ]
+  let adults = [ {"name": p.name, "email": p.email} for p in people if (p.age >= 18) ]
+  for a in adults {}
   print(a["name"], a["email"])
 }

@@ -1,17 +1,11 @@
 let nums = [1, 2, 3]
-let letters = ["A", "B"]
-let pairs = fun() {
-    let _res = []
-    for _, n in ipairs(nums) {
-      for _, l in ipairs(letters) {
-        if (n % 2 == 0) {
-          _res[len(_res) + 1] = { "n": n, "l": l }
-        }
-      }
-    }
-    return _res
-}()
-print("--- Even pairs ---")
-for _, p in ipairs(pairs) {
+let letters = ['A', 'B']
+let pairs = None
+fun main() {
+  let nums = [1, 2, 3]
+  let letters = ["A", "B"]
+  let pairs = [ {"n": n, "l": l} for n in nums if ((n % 2) == 0) for l in letters ]
+  print("--- Even pairs ---")
+  for p in pairs {}
   print(p["n"], p["l"])
 }

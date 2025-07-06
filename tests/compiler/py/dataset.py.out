@@ -4,33 +4,21 @@ from __future__ import annotations
 import dataclasses
 import typing
 
-
 @dataclasses.dataclass
 class Person:
-    name: str
-    age: int
+	name: str
+	age: int
 
-
-people = [
-    Person(name="Alice", age=30),
-    Person(name="Bob", age=15),
-    Person(name="Charlie", age=65),
-]
+people = [Person(name="Alice", age=30), Person(name="Bob", age=15), Person(name="Charlie", age=65)]
 names = None
 
-
 def main():
-    global people
-    people = [
-        Person(name="Alice", age=30),
-        Person(name="Bob", age=15),
-        Person(name="Charlie", age=65),
-    ]
-    global names
-    names = [p.name for p in people if (p.age >= 18)]
-    for n in names:
-        print(n)
-
+	global people
+	people = [Person(name="Alice", age=30), Person(name="Bob", age=15), Person(name="Charlie", age=65)]
+	global names
+	names = [ p.name for p in people if (p.age >= 18) ]
+	for n in names:
+		print(n)
 
 if __name__ == "__main__":
-    main()
+	main()

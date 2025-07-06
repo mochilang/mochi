@@ -1,56 +1,14 @@
-fun classify(n) {
-  return fun() {
-    let _t0 = n
-    if _t0 == 0 {
-      return "zero"
-    }
-    if _t0 == 1 {
-      return "one"
-    }
-    return "many"
-}()
+fun classify(n: int): string {
+  return
 }
 let x = 2
-let label = fun() {
-    let _t1 = x
-    if _t1 == 1 {
-      return "one"
-    }
-    if _t1 == 2 {
-      return "two"
-    }
-    if _t1 == 3 {
-      return "three"
-    }
-    return "unknown"
-}()
-print(label)
 let day = "sun"
-let mood = fun() {
-    let _t2 = day
-    if _t2 == "mon" {
-      return "tired"
-    }
-    if _t2 == "fri" {
-      return "excited"
-    }
-    if _t2 == "sun" {
-      return "relaxed"
-    }
-    return "normal"
-}()
-print(mood)
 let ok = true
-let status = fun() {
-    let _t3 = ok
-    if _t3 == true {
-      return "confirmed"
-    }
-    if _t3 == false {
-      return "denied"
-    }
-    return null
-}()
+let label = 
+print(label)
+let mood = 
+print(mood)
+let status = 
 print(status)
 print(classify(0))
 print(classify(5))

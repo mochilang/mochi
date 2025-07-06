@@ -1,3 +1,3 @@
-let scores = { "alice": 1 }
-scores["bob"] = 2
+let scores = {"alice": 1}
+let scores["bob"] = 2
 print(scores["bob"])

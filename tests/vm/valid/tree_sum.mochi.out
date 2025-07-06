@@ -1,16 +1,14 @@
-fun sum_tree(t) {
-  return fun() {
-    let _t0 = t
-    if _t0["__name"] == "Leaf" {
-      return 0
-    }
-    if _t0["__name"] == "Node" {
-      return fun(left, value, right) {
-    return ((sum_tree(left) + value) + sum_tree(right))
-}(_t0["left"], _t0["value"], _t0["right"])
-    }
-    return null
-}()
+fun sum_tree(t: Tree): int {
+  return
 }
-let t = { "__name": "Node", "left": Leaf, "value": 1, "right": { "__name": "Node", "left": Leaf, "value": 2, "right": Leaf } }
+type Tree {
+}
+type Leaf {
+}
+type Node {
+  left: Tree
+  value: int
+  right: Tree
+}
+let t = Node {left: Leaf, value: 1, right: Node {left: Leaf, value: 2, right: Leaf}}
 print(sum_tree(t))

@@ -1,4 +1,2 @@
-let square = fun(x) {
-    return x * x
-}
+let square = 
 print(square(6))

@@ -1,1 +1,1 @@
-parse error: 3:9: unexpected token "[" (expected "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+parse error: 4:18: unexpected token ":" (expected "}")

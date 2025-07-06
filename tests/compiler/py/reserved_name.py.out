@@ -3,13 +3,11 @@ from __future__ import annotations
 
 _next = 0
 
-
 def main():
-    global _next
-    _next = 0
-    _next = _next + 1
-    print(_next)
-
+	global _next
+	_next = 0
+	_next = (_next + 1)
+	print(_next)
 
 if __name__ == "__main__":
-    main()
+	main()
