@@ -22,6 +22,12 @@ type cppEnumDef struct {
 
 func convertCppBodyString(body string) []string {
 	lines := strings.Split(body, "\n")
+	if len(lines) > 0 && strings.TrimSpace(lines[0]) == "{" {
+		lines = lines[1:]
+	}
+	if len(lines) > 0 && strings.TrimSpace(lines[len(lines)-1]) == "}" {
+		lines = lines[:len(lines)-1]
+	}
 	var out []string
 	for _, l := range lines {
 		l = strings.TrimSpace(l)
@@ -94,6 +100,9 @@ type astNode struct {
 func collectCppAST(n *astNode, src string, funcs *[]cppFuncDef, enums *[]cppEnumDef) {
 	switch n.Kind {
 	case "FunctionDecl":
+		if n.Range == nil || n.Range.Begin.Offset < 0 || n.Range.End.Offset > len(src) {
+			break
+		}
 		var params []cppParam
 		var body string
 		for i := range n.Inner {
@@ -123,8 +132,13 @@ func collectCppAST(n *astNode, src string, funcs *[]cppFuncDef, enums *[]cppEnum
 			}
 			ret = mapCppType(strings.TrimSpace(ret))
 		}
-		*funcs = append(*funcs, cppFuncDef{name: n.Name, params: params, ret: ret, body: body})
+		if body != "" {
+			*funcs = append(*funcs, cppFuncDef{name: n.Name, params: params, ret: ret, body: body})
+		}
 	case "EnumDecl":
+		if n.Range == nil || n.Range.Begin.Offset < 0 || n.Range.End.Offset > len(src) {
+			break
+		}
 		var vars []string
 		for i := range n.Inner {
 			c := &n.Inner[i]
@@ -132,7 +146,9 @@ func collectCppAST(n *astNode, src string, funcs *[]cppFuncDef, enums *[]cppEnum
 				vars = append(vars, c.Name)
 			}
 		}
-		*enums = append(*enums, cppEnumDef{name: n.Name, variants: vars})
+		if len(vars) > 0 && n.Name != "" {
+			*enums = append(*enums, cppEnumDef{name: n.Name, variants: vars})
+		}
 	}
 	for i := range n.Inner {
 		collectCppAST(&n.Inner[i], src, funcs, enums)

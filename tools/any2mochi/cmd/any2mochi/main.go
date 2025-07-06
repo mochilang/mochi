@@ -118,6 +118,27 @@ func convertRustCmd() *cobra.Command {
 	return cmd
 }
 
+func convertCppCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "convert-cpp <file.cpp>",
+		Short: "Convert C++ source to Mochi",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			data, err := os.ReadFile(args[0])
+			if err != nil {
+				return err
+			}
+			out, err := any2mochi.ConvertCpp(string(data))
+			if err != nil {
+				return err
+			}
+			_, err = cmd.OutOrStdout().Write(out)
+			return err
+		},
+	}
+	return cmd
+}
+
 func convertHsCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "convert-hs <file.hs>",
@@ -308,6 +329,7 @@ func newRootCmd() *cobra.Command {
 		convertGoCmd(),
 		convertGoJSONCmd(),
 		convertRustCmd(),
+		convertCppCmd(),
 		convertPythonCmd(),
 		convertHsCmd(),
 		convertTSCmd(),

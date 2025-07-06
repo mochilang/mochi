@@ -1,0 +1,6 @@
+fun main(): int {
+  print("Hello")
+  return 0
+}
+
+main()
