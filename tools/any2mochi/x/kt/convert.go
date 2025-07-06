@@ -16,7 +16,10 @@ import (
 // source using the ktast CLI which outputs a JSON AST. If that fails, it
 // falls back to a regex based parser.
 func Convert(src string) ([]byte, error) {
-	ast, err := parseCLI(src)
+	ast, err := parseKotlinc(src)
+	if err != nil {
+		ast, err = parseCLI(src)
+	}
 	if err != nil {
 		return nil, fmt.Errorf("parse error: %w\n\n%s", err, snippet(src))
 	}
@@ -323,26 +326,33 @@ type ast struct {
 }
 
 type cls struct {
-	Name    string  `json:"name"`
-	Fields  []field `json:"fields"`
-	Methods []fn    `json:"methods"`
+	Name      string  `json:"name"`
+	Fields    []field `json:"fields"`
+	Methods   []fn    `json:"methods"`
+	StartLine int     `json:"start,omitempty"`
+	EndLine   int     `json:"end,omitempty"`
 }
 
 type field struct {
-	Name string `json:"name"`
-	Type string `json:"type"`
+	Name      string `json:"name"`
+	Type      string `json:"type"`
+	StartLine int    `json:"start,omitempty"`
 }
 
 type vdecl struct {
-	Name  string `json:"name"`
-	Type  string `json:"type,omitempty"`
-	Value string `json:"value"`
+	Name      string `json:"name"`
+	Type      string `json:"type,omitempty"`
+	Value     string `json:"value"`
+	StartLine int    `json:"start,omitempty"`
 }
 
 type fn struct {
-	Name   string   `json:"name"`
-	Params []string `json:"params"`
-	Lines  []string `json:"lines"`
+	Name      string   `json:"name"`
+	Params    []string `json:"params"`
+	Ret       string   `json:"ret,omitempty"`
+	Lines     []string `json:"lines"`
+	StartLine int      `json:"start,omitempty"`
+	EndLine   int      `json:"end,omitempty"`
 }
 
 func repoRoot() (string, error) {
@@ -361,6 +371,45 @@ func repoRoot() (string, error) {
 		dir = parent
 	}
 	return "", os.ErrNotExist
+}
+
+// parseKotlinc tries to parse the source using kotlinc's -Xdump-declarations-to
+// flag which emits a JSON description of the program. If kotlinc is not
+// available or parsing fails, an error is returned.
+func parseKotlinc(src string) (*ast, error) {
+	if _, err := exec.LookPath("kotlinc"); err != nil {
+		return nil, err
+	}
+	tmp, err := os.CreateTemp("", "ktsrc_*.kt")
+	if err != nil {
+		return nil, err
+	}
+	if _, err := tmp.WriteString(src); err != nil {
+		tmp.Close()
+		os.Remove(tmp.Name())
+		return nil, err
+	}
+	tmp.Close()
+	defer os.Remove(tmp.Name())
+	outFile := tmp.Name() + ".json"
+	cmd := exec.Command("kotlinc", tmp.Name(), "-Xdump-declarations-to="+outFile)
+	if err := cmd.Run(); err != nil {
+		os.Remove(outFile)
+		return nil, err
+	}
+	defer os.Remove(outFile)
+	data, err := os.ReadFile(outFile)
+	if err != nil {
+		return nil, err
+	}
+	var ast ast
+	if err := json.Unmarshal(data, &ast); err != nil {
+		return nil, err
+	}
+	if len(ast.Classes) == 0 && len(ast.Functions) == 0 && len(ast.Vars) == 0 {
+		return nil, fmt.Errorf("no symbols found")
+	}
+	return &ast, nil
 }
 
 func parseCLI(src string) (*ast, error) {
