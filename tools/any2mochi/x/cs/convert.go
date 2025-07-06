@@ -462,6 +462,8 @@ func mapType(t string) string {
 		return "string"
 	case "bool":
 		return "bool"
+	case "dynamic", "object":
+		return "any"
 	}
 	if strings.HasSuffix(t, ">") {
 		if open := strings.Index(t, "<"); open != -1 {
