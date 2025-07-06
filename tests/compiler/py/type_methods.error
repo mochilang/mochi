@@ -1,26 +1,29 @@
 generated code does not match expected
-- import python "math" as math
+- type Counter {
 + let T = TypeVar('T')
-- 
+-   value: int
 + fun _get(obj, name) {
-- extern fun math.pow(x: float, y: float): float
+- 
 +   if obj is None {
-- extern let math.pi: float
+-   fun inc(): int {
 +   return None
-- 
+-     value = value + 1
 + }
-- let r = 3.0
+-     return value
 +   if isinstance(obj, dict) {
-- let area = math.pi * math.pow(r, 2.0)
+-   }
 +   if name in obj {
-- 
+- }
 +   return obj[name]
-- print("Area:", area)
-+ }
 - 
 + }
+- let c = Counter { value: 0 }
++ }
+- print(c.inc())
 +   if hasattr(obj, name) {
+- print(c.inc())
 +   return getattr(obj, name)
+- 
 + }
 +   if isinstance(obj, (list, tuple)) {
 +   for it in obj {
@@ -31,11 +34,10 @@ generated code does not match expected
 + }
 +   raise Exception("field not found: " + name)
 + }
-+ let r = 3
-+ let area = None
++ let c = Counter(value=0)
 + fun main() {
-+   let r = 3
-+   let area = _get(math, "pi") * _get(math, "pow")(r, 2)
-+   print("Area:", area)
++   let c = Counter(value=0)
++   print(_get(c, "inc")())
++   print(_get(c, "inc")())
 + }
 + 

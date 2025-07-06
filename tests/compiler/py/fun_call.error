@@ -1,10 +1,10 @@
 generated code does not match expected
---- expected
-+++ generated
-@@ -1,5 +1,4 @@
- fun add(a: int, b: int): int {
-   return a + b
- }
--
--print(add(2, 3))  // 5
-+print(5)
+- fun add(a: int, b: int): int {
++ fun add(a, b) {
+- 
++ fun main() {
+- print(add(2, 3))  // 5
++   print(5)
+- 
++ }
++ 

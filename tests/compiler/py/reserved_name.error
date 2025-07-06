@@ -1,0 +1,12 @@
+generated code does not match expected
+- var next = 0
++ let _next = 0
+- next = next + 1
++ fun main() {
+- print(next)
++   let _next = 0
+- 
++   let _next = _next + 1
++   print(_next)
++ }
++ 

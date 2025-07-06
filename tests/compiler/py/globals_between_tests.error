@@ -1,18 +1,27 @@
 generated code does not match expected
---- expected
-+++ generated
-@@ -1,13 +1,9 @@
- let a = 1
--
-+let b = 2
- test "first" {
-   expect a == 1
- }
--
--let b = 2
--
- test "second" {
-   expect b == 2
- }
--
- print("done")
+- 
++ let b = 2
+- test "first" {
++ fun test_first() {
+-   expect a == 1
++   let assert a = = 1
+- 
++ fun test_second() {
+- let b = 2
++   let assert b = = 2
+- 
++ }
+- test "second" {
++ fun main() {
+-   expect b == 2
++   let a = 1
+- }
++   let b = 2
+- 
++   print("done")
+- print("done")
++   test_first()
+- 
++   test_second()
++ }
++ 

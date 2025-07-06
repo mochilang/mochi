@@ -1,0 +1,25 @@
+generated code does not match expected
+- type Num { val: int }
++ let items = [Num(val=1), Num(val=2), Num(val=3)]
+- let items = [ Num { val: 1 }, Num { val: 2 }, Num { val: 3 } ]
++ let a = None
+- let a = from x in items skip -1 take 2 select x.val
++ let b = None
+- let b = from x in items skip 1 take -1 select x.val
++ fun main() {
+- print("---a---")
++   let items = [Num(val=1), Num(val=2), Num(val=3)]
+- for v in a { print(v) }
++   let a = [x.val for x in (([x for x in items])[max((-1), 0) :])[: max(2, 0)]]
+- print("---b---")
++   let b = [x.val for x in (([x for x in items])[max(1, 0) :])[: max((-1), 0)]]
+- print(len(b))
++   print("---a---")
+- 
++   for v in a {
++   print(v)
++ }
++   print("---b---")
++   print(len(b))
++ }
++ 

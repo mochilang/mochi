@@ -1,0 +1,13 @@
+generated code does not match expected
+- let a = [1,2,3,4,5]
++ let a = [1, 2, 3, 4, 5]
+- let sub = a[1:4]
++ let sub = None
+- print(sub)
++ fun main() {
+- 
++   let a = [1, 2, 3, 4, 5]
++   let sub = a[1:4]
++   print(*sub)
++ }
++ 

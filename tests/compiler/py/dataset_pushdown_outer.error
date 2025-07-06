@@ -1,0 +1,23 @@
+generated code does not match expected
+- let xs = [1,2,3,4]
++ let xs = [1, 2, 3, 4]
+- let ys = [10,20,30]
++ let ys = [10, 20, 30]
+- let res = from x in xs
++ let res = None
+-           from y in ys
++ fun main() {
+-           where x > 2
++   let xs = [1, 2, 3, 4]
+-           select x + y
++   let ys = [10, 20, 30]
+- for v in res {
++   let res = [(x + y) for x in xs if (x > 2) for y in ys]
+-   print(v)
++   for v in res {
+- }
++   print(v)
+- 
++ }
++ }
++ 
