@@ -1,2 +1,2 @@
-let y = null
+var y = nil
 print(y)

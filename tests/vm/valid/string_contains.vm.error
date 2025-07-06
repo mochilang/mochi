@@ -1,5 +1,5 @@
 error[T001]: assignment to undeclared variable: _
-  --> :5:1
+  --> :2:1
 
 help:
   Declare `_` first using `let`.

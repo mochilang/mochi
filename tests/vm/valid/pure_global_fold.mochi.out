@@ -1,5 +1,6 @@
-fun inc(x) {
+fun inc(x: int): int {
   return (x + k)
 }
-let k = 2
-print(inc(3))
+var k = 2
+_ = k
+print(5)
