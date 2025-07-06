@@ -45,7 +45,7 @@ func ConvertLua(src string) ([]byte, error) {
 		if len(diags) > 0 {
 			return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
 		}
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", NumberedSnippet(src))
 	}
 	return []byte(out.String()), nil
 }

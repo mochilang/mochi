@@ -21,7 +21,7 @@ func EnsureServer(cmd string) error {
 }
 
 // numberedSnippet formats the first few lines of src with line numbers.
-func numberedSnippet(src string) string {
+func NumberedSnippet(src string) string {
 	lines := strings.Split(src, "\n")
 	if len(lines) > 10 {
 		lines = lines[:10]
