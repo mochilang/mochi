@@ -4,7 +4,7 @@ type Node {
   value: int
   right: Tree
 }
-fun isLeaf(t) {
+fun isLeaf(t: Tree): bool {
   return run {
   let _t = t
   when {

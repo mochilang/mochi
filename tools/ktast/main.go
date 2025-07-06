@@ -30,6 +30,11 @@ type Field struct {
 	StartLine int    `json:"start,omitempty"`
 }
 
+type Param struct {
+	Name string `json:"name"`
+	Type string `json:"type,omitempty"`
+}
+
 type VarDecl struct {
 	Name      string `json:"name"`
 	Type      string `json:"type,omitempty"`
@@ -39,7 +44,7 @@ type VarDecl struct {
 
 type Function struct {
 	Name      string   `json:"name"`
-	Params    []string `json:"params"`
+	Params    []Param  `json:"params"`
 	Ret       string   `json:"ret,omitempty"`
 	Lines     []string `json:"lines"`
 	StartLine int      `json:"start,omitempty"`
@@ -79,7 +84,9 @@ func parse(src string) Program {
 
 	var prog Program
 	var curFn *Function
+	var curClass *Class
 	var depth int
+	var classDepth int
 	lineNum := 0
 	for sc.Scan() {
 		line := strings.TrimSpace(sc.Text())
@@ -100,6 +107,23 @@ func parse(src string) Program {
 				curFn = nil
 				depth = 0
 			}
+		case curClass != nil:
+			classDepth += strings.Count(line, "{")
+			classDepth -= strings.Count(line, "}")
+			if funRE.MatchString(line) {
+				m := funRE.FindStringSubmatch(line)
+				fn := Function{Name: m[1], Params: parseParams(m[2]), Ret: strings.TrimSpace(m[3]), StartLine: lineNum}
+				curClass.Methods = append(curClass.Methods, fn)
+				curFn = &curClass.Methods[len(curClass.Methods)-1]
+				depth = strings.Count(line, "{") - strings.Count(line, "}")
+				continue
+			}
+			if classDepth <= 0 && line == "}" {
+				curClass.EndLine = lineNum
+				curClass = nil
+				classDepth = 0
+				continue
+			}
 		default:
 			if funRE.MatchString(line) {
 				m := funRE.FindStringSubmatch(line)
@@ -113,6 +137,10 @@ func parse(src string) Program {
 				m := classRE.FindStringSubmatch(line)
 				cls := Class{Name: m[1], Fields: parseFields(m[3]), StartLine: lineNum}
 				prog.Classes = append(prog.Classes, cls)
+				classDepth = strings.Count(line, "{") - strings.Count(line, "}")
+				if classDepth > 0 {
+					curClass = &prog.Classes[len(prog.Classes)-1]
+				}
 				continue
 			}
 			if varRE.MatchString(line) {
@@ -143,17 +171,20 @@ func parseFields(s string) []Field {
 	return out
 }
 
-func parseParams(s string) []string {
-	var out []string
+func parseParams(s string) []Param {
+	var out []Param
 	for _, p := range strings.Split(s, ",") {
 		p = strings.TrimSpace(p)
 		if p == "" {
 			continue
 		}
+		name := p
+		typ := ""
 		if i := strings.Index(p, ":"); i != -1 {
-			p = p[:i]
+			name = strings.TrimSpace(p[:i])
+			typ = strings.TrimSpace(p[i+1:])
 		}
-		out = append(out, strings.TrimSpace(p))
+		out = append(out, Param{Name: name, Type: typ})
 	}
 	return out
 }

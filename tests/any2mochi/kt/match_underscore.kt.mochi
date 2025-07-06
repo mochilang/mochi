@@ -4,7 +4,7 @@ type Node {
   value: int
   right: Tree
 }
-fun value_of_root(t) {
+fun value_of_root(t: Tree): int {
   return run {
   let _t = t
   when {

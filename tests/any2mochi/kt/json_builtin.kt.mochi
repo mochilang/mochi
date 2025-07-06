@@ -1,7 +1,7 @@
 fun main() {
   _json(mutableMapOf("a" to 1))
 }
-fun _json(v) {
+fun _json(v: Any) {
   fun encode(x: Any?): String = when (x) {
   null -> "null"
   is String -> \"""${x.replace("\"", "\\\"")}\"""

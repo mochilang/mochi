@@ -16,7 +16,7 @@ fun main() {
 }
 print(people.size)
 }
-fun _load(path, opts, Any>?) {
+fun _load(path: string, opts: Map<String, Any>?): List<Map<String, {
   var format = opts?.get("format") as? String ?: "csv"
   var header = opts?.get("header") as? Boolean ?: true
   var delim = (opts?.get("delimiter") as? String)?.firstOrNull() ?: ','
