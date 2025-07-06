@@ -58,14 +58,17 @@ func Convert(src string) ([]byte, error) {
 		out.WriteString("}\n")
 	}
 	hasMain := false
-	for _, f := range ast.Functions {
-		if f.Name == "main" {
-			hasMain = true
-		}
-		out.WriteString("// line ")
-		out.WriteString(fmt.Sprint(f.Line))
-		out.WriteByte('\n')
-		out.WriteString("fun ")
+        for _, f := range ast.Functions {
+                if f.Name == "main" {
+                        hasMain = true
+                }
+                out.WriteString("// line ")
+                out.WriteString(fmt.Sprint(f.Line))
+                if f.Exported {
+                        out.WriteString(" (exported)")
+                }
+                out.WriteByte('\n')
+                out.WriteString("fun ")
 		if f.Name == "" {
 			out.WriteString("fun")
 		} else {

@@ -1,4 +1,4 @@
-// line 5
+// line 5 (exported)
 fun test_q1_aggregates_revenue_and_quantity_by_returnflag___linestatus() {
   mochi_expect(Result
   ==
@@ -13,7 +13,7 @@ fun test_q1_aggregates_revenue_and_quantity_by_returnflag___linestatus() {
   avg_disc => 0.07500000000000001,
   count_order => 2}])
 }
-// line 8
+// line 8 (exported)
 fun main(_) {
   Lineitem =
   [#{l_quantity => 17,
