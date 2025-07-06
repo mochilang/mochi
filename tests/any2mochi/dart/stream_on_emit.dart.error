@@ -1,0 +1,12 @@
+parse error: parse error: 11:37: lexer: invalid input text "'Sensor')\n}\nfun ..."
+
+  1| Future<void> main() async {
+  2| 	class Sensor {
+  3| 		String id;
+  4| 		double temperature;
+  5| 		Sensor({required this.id, required this.temperature});
+  6| 	}
+  7| 	
+  8| 	var _SensorStream = _Stream<Sensor>('Sensor');
+  9| 	void _handler_0(Sensor ev) {
+ 10| 		var s = ev;

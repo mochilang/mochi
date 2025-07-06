@@ -28,7 +28,7 @@ var typedVarRe = regexp.MustCompile(`^(?:final|const)?\s*([A-Za-z_][A-Za-z0-9_<>
 
 // Convert converts Dart source code to Mochi.
 func Convert(src string) ([]byte, error) {
-	funcs, classes, err := parseCLI(src)
+	funcs, classes, enums, err := parseCLI(src)
 	if err != nil {
 		return nil, &ConvertError{Msg: err.Error(), Snip: any2mochi.NumberedSnippet(src)}
 	}
@@ -36,6 +36,17 @@ func Convert(src string) ([]byte, error) {
 		return nil, &ConvertError{Msg: "no convertible symbols found", Snip: any2mochi.NumberedSnippet(src)}
 	}
 	var out strings.Builder
+	for _, e := range enums {
+		out.WriteString("type ")
+		out.WriteString(e.Name)
+		out.WriteString(" {\n")
+		for _, m := range e.Members {
+			out.WriteString("  ")
+			out.WriteString(m)
+			out.WriteByte('\n')
+		}
+		out.WriteString("}\n")
+	}
 	for _, c := range classes {
 		out.WriteString("type ")
 		out.WriteString(c.Name)

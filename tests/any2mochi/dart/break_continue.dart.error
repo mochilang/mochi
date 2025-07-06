@@ -1,0 +1,12 @@
+parse error: parse error: 10:57: lexer: invalid input text "' '))\n  }\n}\n"
+
+  1| void main() {
+  2| 	dynamic numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  3| 	for (var n in numbers) {
+  4| 		if (((n % 2) == 0)) {
+  5| 			continue;
+  6| 		}
+  7| 		if ((n > 7)) {
+  8| 			break;
+  9| 		}
+ 10| 		print(["odd number:".toString(), n.toString()].join(' '));

@@ -1,0 +1,7 @@
+parse error: parse error: 2:20: unexpected token "=>" (expected "}")
+
+  1| void main() {
+  2| 	dynamic square = (x) => (x * x);
+  3| 	print(square(6));
+  4| }
+  5|

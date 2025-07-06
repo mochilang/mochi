@@ -1,7 +1,0 @@
-fun makeAdder(n: any): any {
-  return (x) => (x + n)
-}
-fun main() {
-  let add10 = makeAdder(10)
-  print(add10(7))
-}

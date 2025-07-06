@@ -1,0 +1,16 @@
+type error: error[T002]: undefined variable: title
+  --> :2:3
+
+help:
+  Check if the variable was declared in this scope.
+
+  1| class Todo {
+  2| 	dynamic title;
+  3| 	Todo({this.title});
+  4| }
+  5| 
+  6| void main() {
+  7| 	dynamic todo = {"title": "hi"};
+  8| 	print(todo.title);
+  9| }
+ 10|

@@ -1,0 +1,12 @@
+parse error: parse error: 5:30: lexer: invalid input text "; }\n  if (_t == ..."
+
+  1| void main() {
+  2| 	dynamic x = 2;
+  3| 	dynamic label = (() {
+  4| 	var _t = x;
+  5| 	if (_t == 1) { return "one"; }
+  6| 	if (_t == 2) { return "two"; }
+  7| 	if (_t == 3) { return "three"; }
+  8| 	return "unknown";
+  9| })();
+ 10| 	print(label);

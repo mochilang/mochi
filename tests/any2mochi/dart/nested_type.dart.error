@@ -1,0 +1,12 @@
+parse error: parse error: 11:21: lexer: invalid input text "'x'] as int, y: ..."
+
+  1| int sumPoint() {
+  2| 	class Point {
+  3| 		int x;
+  4| 		int y;
+  5| 		Point({required this.x, required this.y});
+  6| 		factory Point.fromJson(Map<String,dynamic> m) {
+  7| 			return Point(x: m['x'] as int, y: m['y'] as int);
+  8| 		}
+  9| 	}
+ 10| 	_structParsers['Point'] = (m) => Point.fromJson(m);

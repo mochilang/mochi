@@ -1,0 +1,12 @@
+parse error: parse error: 6:21: lexer: invalid input text "?['format'] ?? '..."
+
+  1| import 'dart:io';
+  2| import 'dart:convert';
+  3| import 'package:yaml/yaml.dart';
+  4| 
+  5| void main() {
+  6| 	List<Map<String, dynamic>> people = [{"name": "Alice", "age": 30}, {"name": "Bob", "age": 25}];
+  7| 	_save(people, "-", {"format": "json"});
+  8| }
+  9| 
+ 10| void _save(List<Map<String,dynamic>> rows, String? path, Map<String,dynamic>? opts) {

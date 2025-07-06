@@ -1,0 +1,12 @@
+parse error: parse error: 8:41: lexer: invalid input text "; if (items is L..."
+
+  1| void main() {
+  2| 	print(_count([1, 2, 3]));
+  3| }
+  4| int _count(dynamic v) {
+  5|     if (v is String) return v.runes.length;
+  6|     if (v is List) return v.length;
+  7|     if (v is Map) return v.length;
+  8|     try { var items = (v as dynamic).Items; if (items is List) return items.length; } catch (_) {}
+  9|     try { var items = (v as dynamic).items; if (items is List) return items.length; } catch (_) {}
+ 10|     return 0;

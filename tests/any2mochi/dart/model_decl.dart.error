@@ -1,0 +1,12 @@
+parse error: parse error: 6:48: unexpected token "<" (expected ")" (":" TypeRef)? "{" Statement* "}")
+
+  1| import 'dart:convert';
+  2| 
+  3| Map<String, Map<String, dynamic>> _models = {};
+  4| 
+  5| void main() {
+  6| 	_models["quick"] = {"provider": "openai"};
+  7| 	String x = _genText("hi", "quick", null);
+  8| 	print(x);
+  9| }
+ 10|
