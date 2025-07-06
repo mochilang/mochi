@@ -14,6 +14,7 @@ import (
 	ccode "mochi/compile/x/c"
 	"mochi/compile/x/testutil"
 	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -61,6 +62,22 @@ func TestCCompiler_SLT_Golden(t *testing.T) {
 					t.Skipf("run error: %v\n%s", err, out)
 				}
 				gotOut := bytes.TrimSpace(out)
+
+				p, err := vm.Compile(prog, env)
+				if err != nil {
+					t.Errorf("vm compile error: %v", err)
+				} else {
+					var vmBuf bytes.Buffer
+					m := vm.New(p, &vmBuf)
+					if err := m.Run(); err != nil {
+						t.Errorf("vm run error: %v", err)
+					} else {
+						vmOut := bytes.TrimSpace(vmBuf.Bytes())
+						if !bytes.Equal(gotOut, vmOut) {
+							t.Errorf("vm mismatch for %s/%s\n\n--- VM ---\n%s\n\n--- C ---\n%s\n", g, caseName, vmOut, gotOut)
+						}
+					}
+				}
 				wantOutPath := filepath.Join(root, "tests", "dataset", "slt", "out", g, caseName+".out")
 				wantOut, err := os.ReadFile(wantOutPath)
 				if err != nil {

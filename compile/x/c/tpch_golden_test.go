@@ -12,6 +12,7 @@ import (
 
 	ccode "mochi/compile/x/c"
 	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -82,6 +83,22 @@ func TestCCompiler_TPCH_Golden(t *testing.T) {
 				return
 			}
 			gotOut := bytes.TrimSpace(out)
+
+			p, err := vm.Compile(prog, env)
+			if err != nil {
+				t.Errorf("vm compile error: %v", err)
+			} else {
+				var vmBuf bytes.Buffer
+				m := vm.New(p, &vmBuf)
+				if err := m.Run(); err != nil {
+					t.Errorf("vm run error: %v", err)
+				} else {
+					vmOut := bytes.TrimSpace(vmBuf.Bytes())
+					if !bytes.Equal(gotOut, vmOut) {
+						t.Errorf("vm mismatch for %s\n\n--- VM ---\n%s\n\n--- C ---\n%s\n", query, vmOut, gotOut)
+					}
+				}
+			}
 			wantOutPath := filepath.Join(root, "tests", "dataset", "tpc-h", "out", query+".out")
 			wantOut, err := os.ReadFile(wantOutPath)
 			if err != nil {

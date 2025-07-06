@@ -96,15 +96,31 @@ func TestCCompiler_SubsetPrograms(t *testing.T) {
 		if out, err := exec.Command(cc, cfile, "-o", bin).CombinedOutput(); err != nil {
 			return nil, fmt.Errorf("\u274c cc error: %w\n%s", err, out)
 		}
+		inData, _ := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in")
 		cmd := exec.Command(bin)
-		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
-			cmd.Stdin = bytes.NewReader(data)
+		if len(inData) > 0 {
+			cmd.Stdin = bytes.NewReader(inData)
 		}
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			return nil, fmt.Errorf("\u274c run error: %w\n%s", err, out)
 		}
-		return bytes.TrimSpace(out), nil
+		got := bytes.TrimSpace(out)
+
+		p, err := vm.Compile(prog, env)
+		if err != nil {
+			return nil, fmt.Errorf("\u274c vm compile error: %w", err)
+		}
+		var vmOut bytes.Buffer
+		m := vm.NewWithIO(p, bytes.NewReader(inData), &vmOut)
+		if err := m.Run(); err != nil {
+			return nil, fmt.Errorf("\u274c vm run error: %w", err)
+		}
+		want := bytes.TrimSpace(vmOut.Bytes())
+		if !bytes.Equal(got, want) {
+			return nil, fmt.Errorf("output mismatch\n\n--- VM ---\n%s\n\n--- C ---\n%s\n", want, got)
+		}
+		return got, nil
 	})
 	golden.Run(t, "tests/compiler/c", ".mochi", ".out", func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
@@ -129,15 +145,31 @@ func TestCCompiler_SubsetPrograms(t *testing.T) {
 		if out, err := exec.Command(cc, cfile, "-o", bin).CombinedOutput(); err != nil {
 			return nil, fmt.Errorf("\u274c cc error: %w\n%s", err, out)
 		}
+		inData, _ := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in")
 		cmd := exec.Command(bin)
-		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
-			cmd.Stdin = bytes.NewReader(data)
+		if len(inData) > 0 {
+			cmd.Stdin = bytes.NewReader(inData)
 		}
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			return nil, fmt.Errorf("\u274c run error: %w\n%s", err, out)
 		}
-		return bytes.TrimSpace(out), nil
+		got := bytes.TrimSpace(out)
+
+		p, err := vm.Compile(prog, env)
+		if err != nil {
+			return nil, fmt.Errorf("\u274c vm compile error: %w", err)
+		}
+		var vmOut bytes.Buffer
+		m := vm.NewWithIO(p, bytes.NewReader(inData), &vmOut)
+		if err := m.Run(); err != nil {
+			return nil, fmt.Errorf("\u274c vm run error: %w", err)
+		}
+		want := bytes.TrimSpace(vmOut.Bytes())
+		if !bytes.Equal(got, want) {
+			return nil, fmt.Errorf("output mismatch\n\n--- VM ---\n%s\n\n--- C ---\n%s\n", want, got)
+		}
+		return got, nil
 	})
 }
 
