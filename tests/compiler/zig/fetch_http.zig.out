@@ -6,19 +6,16 @@ fn _fetch(url: []const u8, opts: anytype) []const u8 {
     if (std.mem.startsWith(u8, url, "file://")) {
         return std.fs.cwd().readFileAlloc(alloc, url[7..], 1 << 20) catch unreachable;
     }
-    var child = std.ChildProcess.init(&.{ "curl", "-s", url }, alloc);
+    var child = std.ChildProcess.init(&.{"curl", "-s", url}, alloc);
     child.stdout_behavior = .Pipe;
     child.spawn() catch unreachable;
-    defer {
-        if (child.stdout) |s| {
-            s.close();
-        }
-        child.wait() catch unreachable;
-    }
+    defer { if (child.stdout) |s| { s.close(); } child.wait() catch unreachable; }
     return child.stdout.?.readToEndAlloc(alloc, 1 << 20) catch unreachable;
 }
 
+var body: i32 = undefined;
+
 pub fn main() void {
-    const body: i32 = _fetch("https://jsonplaceholder.typicode.com/todos/1", null);
-    std.debug.print("{any}\n", .{((body).len > @as(i32, @intCast(0)))});
+    body = _fetch("https://jsonplaceholder.typicode.com/todos/1", null);
+    std.debug.print("{any}\n", .{((body).len > @as(i32,@intCast(0)))});
 }

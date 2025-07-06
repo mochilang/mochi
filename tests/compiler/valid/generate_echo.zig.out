@@ -1,0 +1,8 @@
+const std = @import("std");
+
+var poem: []const u8 = undefined;
+
+pub fn main() void {
+    poem = 0;
+    std.debug.print("{s}\n", .{poem});
+}

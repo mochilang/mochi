@@ -1,0 +1,8 @@
+const std = @import("std");
+
+var text: []const u8 = undefined;
+
+pub fn main() void {
+    text = "hello";
+    std.debug.print("{any}\n", .{text[@as(i32,@intCast(1))]});
+}

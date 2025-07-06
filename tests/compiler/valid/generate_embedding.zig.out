@@ -1,0 +1,8 @@
+const std = @import("std");
+
+var vec: []const f64 = undefined;
+
+pub fn main() void {
+    vec = 0;
+    std.debug.print("{any}\n", .{(vec).len});
+}

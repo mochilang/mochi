@@ -22,5 +22,5 @@ fn _slice_string(s: []const u8, start: i32, end: i32, step: i32) []const u8 {
 }
 
 pub fn main() void {
-    std.debug.print("{any}\n", .{_slice_string("abcdef", @as(i32, @intCast(1)), @as(i32, @intCast(5)), @as(i32, @intCast(2)))});
+    std.debug.print("{any}\n", .{_slice_string("abcdef", @as(i32,@intCast(1)), @as(i32,@intCast(5)), @as(i32,@intCast(2)))});
 }

@@ -1,7 +1,10 @@
 const std = @import("std");
 
+var n: i32 = undefined;
+var label: []const u8 = undefined;
+
 pub fn main() void {
-    const n: i32 = @as(i32, @intCast(5));
-    const label: []const u8 = if ((n > @as(i32, @intCast(3)))) ("big") else ("small");
+    n = @as(i32,@intCast(5));
+    label = if ((n > @as(i32,@intCast(3)))) ("big") else ("small");
     std.debug.print("{s}\n", .{label});
 }

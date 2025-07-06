@@ -39,7 +39,9 @@ const Person = struct {
     email: []const u8,
 };
 
+var people: []const i32 = undefined;
+
 pub fn main() void {
-    const people: []const i32 = _load_json([]Person, "tests/compiler/zig/people.json");
+    people = _load_json([]Person, "tests/compiler/zig/people.json");
     _save_json(people, null);
 }

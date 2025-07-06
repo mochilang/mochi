@@ -5,5 +5,5 @@ fn show(xs: []const []const u8) void {
 }
 
 pub fn main() void {
-    show(&[_][]const u8{ "a", "b" });
+    show(&[_][]const u8{"a", "b"});
 }

@@ -5,5 +5,5 @@ fn show(xs: []const []const i32) void {
 }
 
 pub fn main() void {
-    show(&[_][]const i32{ &[_]i32{@as(i32, @intCast(1))}, &[_]i32{ @as(i32, @intCast(2)), @as(i32, @intCast(3)) } });
+    show(&[_][]const i32{&[_]i32{@as(i32,@intCast(1))}, &[_]i32{@as(i32,@intCast(2)), @as(i32,@intCast(3))}});
 }

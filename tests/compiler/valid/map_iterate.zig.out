@@ -1,0 +1,17 @@
+const std = @import("std");
+
+var m: std.AutoHashMap(i32, bool) = undefined;
+var sum: i32 = undefined;
+
+pub fn main() void {
+    m = blk0: { var m = std.AutoHashMap(i32, i32).init(std.heap.page_allocator); break :blk0 m; };
+    _ = m.put(@as(i32,@intCast(1)), true) catch unreachable;
+    _ = m.put(@as(i32,@intCast(2)), true) catch unreachable;
+    sum = @as(i32,@intCast(0));
+    var _tmp0 = m.keyIterator();
+    while (_tmp0.next()) |k_ptr| {
+        const k = k_ptr.*;
+        sum = (sum + k);
+    }
+    std.debug.print("{any}\n", .{sum});
+}

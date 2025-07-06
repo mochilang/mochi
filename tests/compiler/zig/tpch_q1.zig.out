@@ -1,44 +1,47 @@
 const std = @import("std");
 
 fn expect(cond: bool) void {
-	if (!cond) @panic("expect failed");
+    if (!cond) @panic("expect failed");
 }
 
 fn _avg_int(v: []const i32) f64 {
-	if (v.len == 0) return 0;
-	var sum: f64 = 0;
-	for (v) |it| { sum += @floatFromInt(it); }
-	return sum / @as(f64, @floatFromInt(v.len));
+    if (v.len == 0) return 0;
+    var sum: f64 = 0;
+    for (v) |it| { sum += @floatFromInt(it); }
+    return sum / @as(f64, @floatFromInt(v.len));
 }
 
 fn _sum_int(v: []const i32) i32 {
-	var sum: i32 = 0;
-	for (v) |it| { sum += it; }
-	return sum;
+    var sum: i32 = 0;
+    for (v) |it| { sum += it; }
+    return sum;
 }
 
 fn _json(v: anytype) void {
-	var buf = std.ArrayList(u8).init(std.heap.page_allocator);
-	defer buf.deinit();
-	std.json.stringify(v, .{}, buf.writer()) catch unreachable;
-	std.debug.print("{s}\n", .{buf.items});
+    var buf = std.ArrayList(u8).init(std.heap.page_allocator);
+    defer buf.deinit();
+    std.json.stringify(v, .{}, buf.writer()) catch unreachable;
+    std.debug.print("{s}\n", .{buf.items});
 }
 
 fn _equal(a: anytype, b: anytype) bool {
-	if (@TypeOf(a) != @TypeOf(b)) return false;
-	return switch (@typeInfo(@TypeOf(a))) {
-		.Struct, .Union, .Array, .Vector, .Pointer, .Slice => std.meta.eql(a, b),
-		else => a == b,
-	};
+    if (@TypeOf(a) != @TypeOf(b)) return false;
+    return switch (@typeInfo(@TypeOf(a))) {
+        .Struct, .Union, .Array, .Vector, .Pointer, .Slice => std.meta.eql(a, b),
+        else => a == b,
+    };
 }
 
+var lineitem: []const std.AutoHashMap([]const u8, i32) = undefined;
+var result: []const std.AutoHashMap([]const u8, i32) = undefined;
+
 fn test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus() void {
-	expect((result == &[_]std.AutoHashMap([]const u8, i32){blk: { var m = std.AutoHashMap(i32, []const u8).init(std.heap.page_allocator); m.put(returnflag, "N") catch unreachable; m.put(linestatus, "O") catch unreachable; m.put(sum_qty, @as(i32,@intCast(53))) catch unreachable; m.put(sum_base_price, @as(i32,@intCast(3000))) catch unreachable; m.put(sum_disc_price, (950 + 1800)) catch unreachable; m.put(sum_charge, (((950 * 1.07)) + ((1800 * 1.05)))) catch unreachable; m.put(avg_qty, 26.5) catch unreachable; m.put(avg_price, @as(i32,@intCast(1500))) catch unreachable; m.put(avg_disc, 0.07500000000000001) catch unreachable; m.put(count_order, @as(i32,@intCast(2))) catch unreachable; break :blk m; }}));
+    expect((result == &[_]std.AutoHashMap([]const u8, i32){blk0: { var m = std.AutoHashMap(i32, []const u8).init(std.heap.page_allocator); m.put("returnflag", "N") catch unreachable; m.put("linestatus", "O") catch unreachable; m.put("sum_qty", @as(i32,@intCast(53))) catch unreachable; m.put("sum_base_price", @as(i32,@intCast(3000))) catch unreachable; m.put("sum_disc_price", (950 + 1800)) catch unreachable; m.put("sum_charge", (((950 * 1.07)) + ((1800 * 1.05)))) catch unreachable; m.put("avg_qty", 26.5) catch unreachable; m.put("avg_price", @as(i32,@intCast(1500))) catch unreachable; m.put("avg_disc", 0.07500000000000001) catch unreachable; m.put("count_order", @as(i32,@intCast(2))) catch unreachable; break :blk0 m; }}));
 }
 
 pub fn main() void {
-	const lineitem: []const std.AutoHashMap([]const u8, i32) = &[_]std.AutoHashMap([]const u8, i32){blk: { var m = std.AutoHashMap(i32, i32).init(std.heap.page_allocator); m.put(l_quantity, @as(i32,@intCast(17))) catch unreachable; m.put(l_extendedprice, 1000) catch unreachable; m.put(l_discount, 0.05) catch unreachable; m.put(l_tax, 0.07) catch unreachable; m.put(l_returnflag, "N") catch unreachable; m.put(l_linestatus, "O") catch unreachable; m.put(l_shipdate, "1998-08-01") catch unreachable; break :blk m; }, blk: { var m = std.AutoHashMap(i32, i32).init(std.heap.page_allocator); m.put(l_quantity, @as(i32,@intCast(36))) catch unreachable; m.put(l_extendedprice, 2000) catch unreachable; m.put(l_discount, 0.1) catch unreachable; m.put(l_tax, 0.05) catch unreachable; m.put(l_returnflag, "N") catch unreachable; m.put(l_linestatus, "O") catch unreachable; m.put(l_shipdate, "1998-09-01") catch unreachable; break :blk m; }, blk: { var m = std.AutoHashMap(i32, i32).init(std.heap.page_allocator); m.put(l_quantity, @as(i32,@intCast(25))) catch unreachable; m.put(l_extendedprice, 1500) catch unreachable; m.put(l_discount, 0) catch unreachable; m.put(l_tax, 0.08) catch unreachable; m.put(l_returnflag, "R") catch unreachable; m.put(l_linestatus, "F") catch unreachable; m.put(l_shipdate, "1998-09-03") catch unreachable; break :blk m; }};
-	const result: []const std.AutoHashMap([]const u8, i32) = blk: { var _tmp14 = std.ArrayList(struct { key: std.AutoHashMap([]const u8, i32); Items: std.ArrayList(std.AutoHashMap([]const u8, i32)) }).init(std.heap.page_allocator); var _tmp15 = std.AutoHashMap(std.AutoHashMap([]const u8, i32), usize).init(std.heap.page_allocator); for (lineitem) |row| { if (!((row.l_shipdate <= "1998-09-02"))) continue; const _tmp16 = blk: { var m = std.AutoHashMap(i32, i32).init(std.heap.page_allocator); m.put(returnflag, row.l_returnflag) catch unreachable; m.put(linestatus, row.l_linestatus) catch unreachable; break :blk m; }; if (_tmp15.get(_tmp16)) |idx| { _tmp14.items[idx].Items.append(row) catch unreachable; } else { var g = struct { key: std.AutoHashMap([]const u8, i32); Items: std.ArrayList(std.AutoHashMap([]const u8, i32)) }{ .key = _tmp16, .Items = std.ArrayList(std.AutoHashMap([]const u8, i32)).init(std.heap.page_allocator) }; g.Items.append(row) catch unreachable; _tmp14.append(g) catch unreachable; _tmp15.put(_tmp16, _tmp14.items.len - 1) catch unreachable; } } var _tmp17 = std.ArrayList(std.AutoHashMap([]const u8, i32)).init(std.heap.page_allocator);for (_tmp14.items) |g| { _tmp17.append(blk: { var m = std.AutoHashMap(i32, i32).init(std.heap.page_allocator); m.put(returnflag, g.key.returnflag) catch unreachable; m.put(linestatus, g.key.linestatus) catch unreachable; m.put(sum_qty, _sum_int(blk: { var _tmp0 = std.ArrayList(i32).init(std.heap.page_allocator); for (g) |x| { _tmp0.append(x.l_quantity) catch unreachable; } var _tmp1 = _tmp0.toOwnedSlice() catch unreachable; break :blk _tmp1; })) catch unreachable; m.put(sum_base_price, _sum_int(blk: { var _tmp2 = std.ArrayList(i32).init(std.heap.page_allocator); for (g) |x| { _tmp2.append(x.l_extendedprice) catch unreachable; } var _tmp3 = _tmp2.toOwnedSlice() catch unreachable; break :blk _tmp3; })) catch unreachable; m.put(sum_disc_price, _sum_int(blk: { var _tmp4 = std.ArrayList(i32).init(std.heap.page_allocator); for (g) |x| { _tmp4.append((x.l_extendedprice * ((@as(i32,@intCast(1)) - x.l_discount)))) catch unreachable; } var _tmp5 = _tmp4.toOwnedSlice() catch unreachable; break :blk _tmp5; })) catch unreachable; m.put(sum_charge, _sum_int(blk: { var _tmp6 = std.ArrayList(i32).init(std.heap.page_allocator); for (g) |x| { _tmp6.append(((x.l_extendedprice * ((@as(i32,@intCast(1)) - x.l_discount))) * ((@as(i32,@intCast(1)) + x.l_tax)))) catch unreachable; } var _tmp7 = _tmp6.toOwnedSlice() catch unreachable; break :blk _tmp7; })) catch unreachable; m.put(avg_qty, _avg_int(blk: { var _tmp8 = std.ArrayList(i32).init(std.heap.page_allocator); for (g) |x| { _tmp8.append(x.l_quantity) catch unreachable; } var _tmp9 = _tmp8.toOwnedSlice() catch unreachable; break :blk _tmp9; })) catch unreachable; m.put(avg_price, _avg_int(blk: { var _tmp10 = std.ArrayList(i32).init(std.heap.page_allocator); for (g) |x| { _tmp10.append(x.l_extendedprice) catch unreachable; } var _tmp11 = _tmp10.toOwnedSlice() catch unreachable; break :blk _tmp11; })) catch unreachable; m.put(avg_disc, _avg_int(blk: { var _tmp12 = std.ArrayList(i32).init(std.heap.page_allocator); for (g) |x| { _tmp12.append(x.l_discount) catch unreachable; } var _tmp13 = _tmp12.toOwnedSlice() catch unreachable; break :blk _tmp13; })) catch unreachable; m.put(count_order, (g.Items.len)) catch unreachable; break :blk m; }) catch unreachable; } break :blk _tmp17.toOwnedSlice() catch unreachable; };
-	_json(result);
-	test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus();
+    lineitem = &[_]std.AutoHashMap([]const u8, i32){blk1: { var m = std.AutoHashMap(i32, i32).init(std.heap.page_allocator); m.put("l_quantity", @as(i32,@intCast(17))) catch unreachable; m.put("l_extendedprice", 1000) catch unreachable; m.put("l_discount", 0.05) catch unreachable; m.put("l_tax", 0.07) catch unreachable; m.put("l_returnflag", "N") catch unreachable; m.put("l_linestatus", "O") catch unreachable; m.put("l_shipdate", "1998-08-01") catch unreachable; break :blk1 m; }, blk2: { var m = std.AutoHashMap(i32, i32).init(std.heap.page_allocator); m.put("l_quantity", @as(i32,@intCast(36))) catch unreachable; m.put("l_extendedprice", 2000) catch unreachable; m.put("l_discount", 0.1) catch unreachable; m.put("l_tax", 0.05) catch unreachable; m.put("l_returnflag", "N") catch unreachable; m.put("l_linestatus", "O") catch unreachable; m.put("l_shipdate", "1998-09-01") catch unreachable; break :blk2 m; }, blk3: { var m = std.AutoHashMap(i32, i32).init(std.heap.page_allocator); m.put("l_quantity", @as(i32,@intCast(25))) catch unreachable; m.put("l_extendedprice", 1500) catch unreachable; m.put("l_discount", 0) catch unreachable; m.put("l_tax", 0.08) catch unreachable; m.put("l_returnflag", "R") catch unreachable; m.put("l_linestatus", "F") catch unreachable; m.put("l_shipdate", "1998-09-03") catch unreachable; break :blk3 m; }};
+    result = blk13: { var _tmp14 = std.ArrayList(struct { key: std.AutoHashMap([]const u8, i32), Items: std.ArrayList(std.AutoHashMap([]const u8, i32)) }).init(std.heap.page_allocator); var _tmp15 = std.AutoHashMap(std.AutoHashMap([]const u8, i32), usize).init(std.heap.page_allocator); for (lineitem) |row| { if (!((row.l_shipdate <= "1998-09-02"))) continue; const _tmp16 = blk4: { var m = std.AutoHashMap(i32, i32).init(std.heap.page_allocator); m.put("returnflag", row.l_returnflag) catch unreachable; m.put("linestatus", row.l_linestatus) catch unreachable; break :blk4 m; }; if (_tmp15.get(_tmp16)) |idx| { _tmp14.items[idx].Items.append(row) catch unreachable; } else { var g = struct { key: std.AutoHashMap([]const u8, i32), Items: std.ArrayList(std.AutoHashMap([]const u8, i32)) }{ .key = _tmp16, .Items = std.ArrayList(std.AutoHashMap([]const u8, i32)).init(std.heap.page_allocator) }; g.Items.append(row) catch unreachable; _tmp14.append(g) catch unreachable; _tmp15.put(_tmp16, _tmp14.items.len - 1) catch unreachable; } } var _tmp17 = std.ArrayList(std.AutoHashMap([]const u8, i32)).init(std.heap.page_allocator);for (_tmp14.items) |g| { _tmp17.append(blk5: { var m = std.AutoHashMap(i32, i32).init(std.heap.page_allocator); m.put("returnflag", g.key.returnflag) catch unreachable; m.put("linestatus", g.key.linestatus) catch unreachable; m.put("sum_qty", _sum_int(blk6: { var _tmp0 = std.ArrayList(i32).init(std.heap.page_allocator); for (g) |x| { _tmp0.append(x.l_quantity) catch unreachable; } const _tmp1 = _tmp0.toOwnedSlice() catch unreachable; break :blk6 _tmp1; })) catch unreachable; m.put("sum_base_price", _sum_int(blk7: { var _tmp2 = std.ArrayList(i32).init(std.heap.page_allocator); for (g) |x| { _tmp2.append(x.l_extendedprice) catch unreachable; } const _tmp3 = _tmp2.toOwnedSlice() catch unreachable; break :blk7 _tmp3; })) catch unreachable; m.put("sum_disc_price", _sum_int(blk8: { var _tmp4 = std.ArrayList(i32).init(std.heap.page_allocator); for (g) |x| { _tmp4.append((x.l_extendedprice * ((@as(i32,@intCast(1)) - x.l_discount)))) catch unreachable; } const _tmp5 = _tmp4.toOwnedSlice() catch unreachable; break :blk8 _tmp5; })) catch unreachable; m.put("sum_charge", _sum_int(blk9: { var _tmp6 = std.ArrayList(i32).init(std.heap.page_allocator); for (g) |x| { _tmp6.append(((x.l_extendedprice * ((@as(i32,@intCast(1)) - x.l_discount))) * ((@as(i32,@intCast(1)) + x.l_tax)))) catch unreachable; } const _tmp7 = _tmp6.toOwnedSlice() catch unreachable; break :blk9 _tmp7; })) catch unreachable; m.put("avg_qty", _avg_int(blk10: { var _tmp8 = std.ArrayList(i32).init(std.heap.page_allocator); for (g) |x| { _tmp8.append(x.l_quantity) catch unreachable; } const _tmp9 = _tmp8.toOwnedSlice() catch unreachable; break :blk10 _tmp9; })) catch unreachable; m.put("avg_price", _avg_int(blk11: { var _tmp10 = std.ArrayList(i32).init(std.heap.page_allocator); for (g) |x| { _tmp10.append(x.l_extendedprice) catch unreachable; } const _tmp11 = _tmp10.toOwnedSlice() catch unreachable; break :blk11 _tmp11; })) catch unreachable; m.put("avg_disc", _avg_int(blk12: { var _tmp12 = std.ArrayList(i32).init(std.heap.page_allocator); for (g) |x| { _tmp12.append(x.l_discount) catch unreachable; } const _tmp13 = _tmp12.toOwnedSlice() catch unreachable; break :blk12 _tmp13; })) catch unreachable; m.put("count_order", (g.Items.len)) catch unreachable; break :blk5 m; }) catch unreachable; } break :blk13 _tmp17.toOwnedSlice() catch unreachable; };
+    _json(result);
+    test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus();
 }

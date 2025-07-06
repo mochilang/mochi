@@ -1,0 +1,33 @@
+const std = @import("std");
+
+const Customer = struct {
+    id: i32,
+    name: []const u8,
+};
+
+const Order = struct {
+    id: i32,
+    customerId: i32,
+    total: i32,
+};
+
+const PairInfo = struct {
+    orderId: i32,
+    orderCustomerId: i32,
+    pairedCustomerName: []const u8,
+    orderTotal: i32,
+};
+
+var customers: []const i32 = undefined;
+var orders: []const i32 = undefined;
+var result: []const i32 = undefined;
+
+pub fn main() void {
+    customers = &[_]i32{Customer{ .id = @as(i32,@intCast(1)), .name = "Alice" }, Customer{ .id = @as(i32,@intCast(2)), .name = "Bob" }, Customer{ .id = @as(i32,@intCast(3)), .name = "Charlie" }};
+    orders = &[_]i32{Order{ .id = @as(i32,@intCast(100)), .customerId = @as(i32,@intCast(1)), .total = @as(i32,@intCast(250)) }, Order{ .id = @as(i32,@intCast(101)), .customerId = @as(i32,@intCast(2)), .total = @as(i32,@intCast(125)) }, Order{ .id = @as(i32,@intCast(102)), .customerId = @as(i32,@intCast(1)), .total = @as(i32,@intCast(300)) }};
+    result = blk0: { var _tmp0 = std.ArrayList(i32).init(std.heap.page_allocator); for (orders) |o| { for (customers) |c| { _tmp0.append(PairInfo{ .orderId = o.id, .orderCustomerId = o.customerId, .pairedCustomerName = c.name, .orderTotal = o.total }) catch unreachable; } } const _tmp1 = _tmp0.toOwnedSlice() catch unreachable; break :blk0 _tmp1; };
+    std.debug.print("{s}\n", .{"--- Cross Join: All order-customer pairs ---"});
+    for (result) |entry| {
+        std.debug.print("{s} {any} {s} {any} {s} {any} {s} {any}\n", .{"Order", entry.orderId, "(customerId:", entry.orderCustomerId, ", total: $", entry.orderTotal, ") paired with", entry.pairedCustomerName});
+    }
+}

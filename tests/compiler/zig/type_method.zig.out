@@ -15,7 +15,9 @@ const Person = struct {
     }
 };
 
+var p: i32 = undefined;
+
 pub fn main() void {
-    const p: i32 = Person{ .name = "Ada" };
+    p = Person{ .name = "Ada" };
     std.debug.print("{any}\n", .{p.greet()});
 }

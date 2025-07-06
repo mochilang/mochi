@@ -1,17 +1,17 @@
 const std = @import("std");
 
 fn foo(n: i32) i32 {
-    if ((n < @as(i32, @intCast(0)))) {
-        return -@as(i32, @intCast(1));
-    } else if ((n == @as(i32, @intCast(0)))) {
-        return @as(i32, @intCast(0));
+    if ((n < @as(i32,@intCast(0)))) {
+        return -@as(i32,@intCast(1));
+    } else     if ((n == @as(i32,@intCast(0)))) {
+        return @as(i32,@intCast(0));
     } else {
-        return @as(i32, @intCast(1));
+        return @as(i32,@intCast(1));
     }
 }
 
 pub fn main() void {
-    std.debug.print("{any}\n", .{foo(-@as(i32, @intCast(2)))});
-    std.debug.print("{any}\n", .{foo(@as(i32, @intCast(0)))});
-    std.debug.print("{any}\n", .{foo(@as(i32, @intCast(3)))});
+    std.debug.print("{any}\n", .{foo(-@as(i32,@intCast(2)))});
+    std.debug.print("{any}\n", .{foo(@as(i32,@intCast(0)))});
+    std.debug.print("{any}\n", .{foo(@as(i32,@intCast(3)))});
 }
