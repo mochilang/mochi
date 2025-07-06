@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -15,6 +16,8 @@ type Func struct {
 	Name   string   `json:"name"`
 	Params []string `json:"params"`
 	Body   []string `json:"body"`
+	Line   int      `json:"line"`
+	Arity  int      `json:"arity"`
 }
 
 func parseAST(src string) ([]Func, error) {
@@ -32,8 +35,19 @@ func parseAST(src string) ([]Func, error) {
 	defer cancel()
 	cmd := exec.CommandContext(ctx, "escript", script, tmp.Name())
 	var out bytes.Buffer
+	var stderr bytes.Buffer
 	cmd.Stdout = &out
+	cmd.Stderr = &stderr
 	if err := cmd.Run(); err != nil {
+		var perr struct {
+			Error string `json:"error"`
+		}
+		if jsonErr := json.Unmarshal(out.Bytes(), &perr); jsonErr == nil && perr.Error != "" {
+			return nil, fmt.Errorf("parse error: %s", perr.Error)
+		}
+		if stderr.Len() > 0 {
+			return nil, fmt.Errorf("%v: %s", err, strings.TrimSpace(stderr.String()))
+		}
 		return nil, err
 	}
 	var res struct {
