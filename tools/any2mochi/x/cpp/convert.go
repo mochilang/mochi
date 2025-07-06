@@ -1,6 +1,7 @@
 package cpp
 
 import (
+	"errors"
 	"fmt"
 	any2mochi "mochi/tools/any2mochi"
 	"os"
@@ -443,27 +444,38 @@ func diagnostics(src string, diags []any2mochi.Diagnostic) string {
 
 func formatParseErr(src string, err error) error {
 	msg := err.Error()
-	re := regexp.MustCompile(`:(\d+):`)
-	if m := re.FindStringSubmatch(msg); m != nil {
-		line, _ := strconv.Atoi(m[1])
-		lines := strings.Split(src, "\n")
-		start := line - 1
-		if start < 0 {
-			start = 0
+	re := regexp.MustCompile(`:(\d+):(\d+):`)
+	lines := strings.Split(src, "\n")
+	matches := re.FindAllStringSubmatch(msg, -1)
+	if matches == nil {
+		return err
+	}
+	var b strings.Builder
+	for _, m := range matches {
+		ln, _ := strconv.Atoi(m[1])
+		col, _ := strconv.Atoi(m[2])
+		start := ln - 1
+		if start-1 >= 0 {
+			start--
 		}
-		end := line + 1
-		if end > len(lines) {
+		end := ln
+		if end < len(lines) {
+			end++
+		} else {
 			end = len(lines)
 		}
-		var b strings.Builder
-		for i := start; i < end; i++ {
+		fmt.Fprintf(&b, "line %d:%d: %s\n", ln, col, msg)
+		for i := start; i < end && i < len(lines); i++ {
 			prefix := "   "
-			if i+1 == line {
+			if i+1 == ln {
 				prefix = ">>>"
 			}
 			fmt.Fprintf(&b, "%d:%s %s\n", i+1, prefix, lines[i])
+			if i+1 == ln {
+				pointer := strings.Repeat(" ", col-1) + "^"
+				fmt.Fprintf(&b, "    %s\n", pointer)
+			}
 		}
-		return fmt.Errorf("%s\n%s", msg, strings.TrimSpace(b.String()))
 	}
-	return err
+	return errors.New(strings.TrimSpace(b.String()))
 }
