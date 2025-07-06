@@ -3,7 +3,11 @@
 ## tests/vm/valid/append_builtin.mochi
 
 ```
-parse converted error: parse error: 5:1: unexpected token "}" (expected ")")
+type converted error: error[T024]: cannot assign to `a` (immutable)
+  --> :3:3
+
+help:
+  Use `var` to declare mutable variables.
 ```
 
 ## tests/vm/valid/avg_builtin.mochi
@@ -29,13 +33,26 @@ help:
 ## tests/vm/valid/binary_precedence.mochi
 
 ```
-parse converted error: parse error: 3:3: unexpected token "print" (expected ")")
+golden mismatch:
+-- got --
+
+-- want --
+7
+9
+7
+8
 ```
 
 ## tests/vm/valid/bool_chain.mochi
 
 ```
-parse converted error: parse error: 7:3: unexpected token "print" (expected ")")
+golden mismatch:
+-- got --
+
+-- want --
+true
+false
+false
 ```
 
 ## tests/vm/valid/break_continue.mochi
@@ -77,13 +94,17 @@ parse converted error: parse error: 1:12: unexpected token "(" (expected TypeRef
 ## tests/vm/valid/count_builtin.mochi
 
 ```
-parse converted error: parse error: 7:1: unexpected token "}" (expected ")")
+type converted error: error[T003]: unknown function: _count
+  --> :2:9
+
+help:
+  Ensure the function is defined before it's called.
 ```
 
 ## tests/vm/valid/cross_join.mochi
 
 ```
-parse converted error: parse error: 22:7: lexer: invalid input text "\")\n  }\n}\n"
+parse converted error: parse error: 12:3: unexpected token "}" (expected "{" Statement* "}")
 ```
 
 ## tests/vm/valid/cross_join_filter.mochi
@@ -118,7 +139,7 @@ Monitor costs $ 300
 ## tests/vm/valid/dataset_where_filter.mochi
 
 ```
-parse converted error: parse error: 13:24: lexer: invalid input text "? \" (senior)\n  }..."
+parse converted error: parse error: 13:24: lexer: invalid input text "? \" (senior)\" : ..."
 ```
 
 ## tests/vm/valid/exists_builtin.mochi
@@ -309,7 +330,11 @@ parse converted error: parse error: 5:18: lexer: invalid input text "? \"big\" :
 ## tests/vm/valid/in_operator.mochi
 
 ```
-parse converted error: parse error: 5:3: unexpected token "print" (expected ")")
+type converted error: error[T024]: cannot assign to `xs` (immutable)
+  --> :3:3
+
+help:
+  Use `var` to declare mutable variables.
 ```
 
 ## tests/vm/valid/in_operator_extended.mochi
@@ -380,13 +405,21 @@ golden mismatch:
 ## tests/vm/valid/len_builtin.mochi
 
 ```
-parse converted error: parse error: 6:14: unexpected token ")" (expected PostfixExpr)
+golden mismatch:
+-- got --
+
+-- want --
+3
 ```
 
 ## tests/vm/valid/len_map.mochi
 
 ```
-parse converted error: parse error: 6:1: unexpected token "}" (expected ")")
+type converted error: error[T002]: undefined variable: Object
+  --> :2:9
+
+help:
+  Check if the variable was declared in this scope.
 ```
 
 ## tests/vm/valid/len_string.mochi
@@ -442,7 +475,11 @@ help:
 ## tests/vm/valid/list_set_ops.mochi
 
 ```
-parse converted error: parse error: 9:3: unexpected token "print" (expected ")")
+type converted error: error[T003]: unknown function: _union
+  --> :2:9
+
+help:
+  Ensure the function is defined before it's called.
 ```
 
 ## tests/vm/valid/load_yaml.mochi
@@ -469,7 +506,11 @@ help:
 ## tests/vm/valid/map_in_operator.mochi
 
 ```
-parse converted error: parse error: 5:3: unexpected token "print" (expected ")")
+type converted error: error[T024]: cannot assign to `m` (immutable)
+  --> :3:3
+
+help:
+  Use `var` to declare mutable variables.
 ```
 
 ## tests/vm/valid/map_index.mochi
@@ -505,7 +546,11 @@ help:
 ## tests/vm/valid/map_membership.mochi
 
 ```
-parse converted error: parse error: 5:3: unexpected token "print" (expected ")")
+type converted error: error[T024]: cannot assign to `m` (immutable)
+  --> :3:3
+
+help:
+  Use `var` to declare mutable variables.
 ```
 
 ## tests/vm/valid/map_nested_assign.mochi
@@ -545,25 +590,37 @@ many
 ## tests/vm/valid/math_ops.mochi
 
 ```
-parse converted error: parse error: 4:3: unexpected token "print" (expected ")")
+type converted error: error[T002]: undefined variable: Math
+  --> :3:9
+
+help:
+  Check if the variable was declared in this scope.
 ```
 
 ## tests/vm/valid/membership.mochi
 
 ```
-parse converted error: parse error: 5:3: unexpected token "print" (expected ")")
+type converted error: error[T024]: cannot assign to `nums` (immutable)
+  --> :3:3
+
+help:
+  Use `var` to declare mutable variables.
 ```
 
 ## tests/vm/valid/min_max_builtin.mochi
 
 ```
-parse converted error: parse error: 5:3: unexpected token "print" (expected ")")
+parse converted error: parse error: 8:19: unexpected token "|" (expected "}")
 ```
 
 ## tests/vm/valid/nested_function.mochi
 
 ```
-parse converted error: parse error: 7:1: unexpected token "}" (expected ")")
+type converted error: error[T002]: undefined variable: x
+  --> :3:11
+
+help:
+  Check if the variable was declared in this scope.
 ```
 
 ## tests/vm/valid/order_by_map.mochi
@@ -595,7 +652,11 @@ Customer Diana has no orders
 ## tests/vm/valid/partial_application.mochi
 
 ```
-parse converted error: parse error: 8:1: unexpected token "}" (expected ")")
+type converted error: error[T024]: cannot assign to `add5` (immutable)
+  --> :6:3
+
+help:
+  Use `var` to declare mutable variables.
 ```
 
 ## tests/vm/valid/print_hello.mochi
@@ -611,13 +672,21 @@ hello
 ## tests/vm/valid/pure_fold.mochi
 
 ```
-parse converted error: parse error: 6:1: unexpected token "}" (expected ")")
+golden mismatch:
+-- got --
+
+-- want --
+9
 ```
 
 ## tests/vm/valid/pure_global_fold.mochi
 
 ```
-parse converted error: parse error: 8:1: unexpected token "}" (expected ")")
+type converted error: error[T024]: cannot assign to `k` (immutable)
+  --> :6:3
+
+help:
+  Use `var` to declare mutable variables.
 ```
 
 ## tests/vm/valid/query_sum_select.mochi
@@ -667,13 +736,18 @@ golden mismatch:
 ## tests/vm/valid/short_circuit.mochi
 
 ```
-parse converted error: parse error: 7:3: unexpected token "print" (expected ")")
+golden mismatch:
+-- got --
+
+-- want --
+false
+true
 ```
 
 ## tests/vm/valid/slice.mochi
 
 ```
-parse converted error: parse error: 7:3: unexpected token "print" (expected ")")
+parse converted error: parse error: 19:3: unexpected token ")" (expected "}")
 ```
 
 ## tests/vm/valid/sort_stable.mochi
@@ -722,25 +796,33 @@ hello world
 ## tests/vm/valid/string_contains.mochi
 
 ```
-parse converted error: parse error: 5:3: unexpected token "print" (expected ")")
+type converted error: error[T024]: cannot assign to `s` (immutable)
+  --> :3:3
+
+help:
+  Use `var` to declare mutable variables.
 ```
 
 ## tests/vm/valid/string_in_operator.mochi
 
 ```
-parse converted error: parse error: 5:3: unexpected token "print" (expected ")")
+type converted error: error[T024]: cannot assign to `s` (immutable)
+  --> :3:3
+
+help:
+  Use `var` to declare mutable variables.
 ```
 
 ## tests/vm/valid/string_index.mochi
 
 ```
-parse converted error: parse error: 5:1: unexpected token "}" (expected ")")
+parse converted error: parse error: 8:3: unexpected token ")" (expected "}")
 ```
 
 ## tests/vm/valid/string_prefix_slice.mochi
 
 ```
-parse converted error: parse error: 8:3: unexpected token "s2" (expected ")")
+parse converted error: parse error: 16:3: unexpected token ")" (expected "}")
 ```
 
 ## tests/vm/valid/substring_builtin.mochi
@@ -766,7 +848,11 @@ golden mismatch:
 ## tests/vm/valid/tail_recursion.mochi
 
 ```
-parse converted error: parse error: 9:1: unexpected token "}" (expected ")")
+golden mismatch:
+-- got --
+
+-- want --
+55
 ```
 
 ## tests/vm/valid/test_block.mochi
@@ -819,7 +905,12 @@ help:
 ## tests/vm/valid/unary_neg.mochi
 
 ```
-parse converted error: parse error: 4:1: unexpected token "}" (expected ")")
+golden mismatch:
+-- got --
+
+-- want --
+-3
+3
 ```
 
 ## tests/vm/valid/update_stmt.mochi
@@ -845,7 +936,11 @@ help:
 ## tests/vm/valid/values_builtin.mochi
 
 ```
-parse converted error: parse error: 5:1: unexpected token "}" (expected ")")
+type converted error: error[T024]: cannot assign to `m` (immutable)
+  --> :3:3
+
+help:
+  Use `var` to declare mutable variables.
 ```
 
 ## tests/vm/valid/var_assignment.mochi
