@@ -1,15 +1,6 @@
 # Errors
 
-- append_builtin: generated code type error: error[T001]: assignment to undeclared variable: a
-  --> :2:3
-
-help:
-  Declare `a` first using `let`.
-  1: fun main() {
-  2:   a = [1, 2]
-  3:   print([a, 3])
-  4: }
-  5: 
+- append_builtin: ok
 - avg_builtin: generated code type error: error[T003]: unknown function: merge
   --> :2:9
 
@@ -19,21 +10,9 @@ help:
   2:   print(merge(0.0, sum(real([1, 2, 3])) / size([1, 2, 3]), size([1, 2, 3]) == 0))
   3: }
   4: 
-- basic_compare: generated code type error: error[T001]: assignment to undeclared variable: a
-  --> :2:3
-
-help:
-  Declare `a` first using `let`.
-  1: fun main() {
-  2:   a = (10 - 3)
-  3:   b = (2 + 2)
-  4:   print(a)
-  5:   print(a == 7)
-  6:   print(b < 5)
-  7: }
-  8: 
+- basic_compare: ok
 - binary_precedence: ok
-- bool_chain: generated code parse error: parse error: 7:9: lexer: invalid input text "'boom')\n  res = ..."
+- bool_chain: generated code parse error: parse error: 7:9: lexer: invalid input text "'boom')\n  let re..."
   1: fun main() {
   2:   print((((1 < 2))  &&  ((2 < 3)))  &&  ((3 < 4)))
   3:   print((((1 < 2))  &&  ((2 > 3)))  &&  boom())
@@ -41,14 +20,14 @@ help:
   5: }
   6: fun boom()() {
   7:   print('boom')
-  8:   res = true
+  8:   let res = true
   9:   return
  10:   // end function boom
 - break_continue: generated code parse error: parse error: 11:11: lexer: invalid input text "'odd number:', n..."
   1: fun main() {
-  2:   numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+  2:   let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
   3:   for i_n in 0..size(numbers) - 1 {
-  4:     n = numbers((i_n % size(numbers)) + 1)
+  4:     let n = numbers((i_n % size(numbers)) + 1)
   5:     if ((n % 2) == 0) {
   6:       continue
   7:     }
@@ -63,11 +42,11 @@ help:
 - cast_struct: compile error: unsupported expression
 - closure: generated code parse error: parse error: 5:17: unexpected token "(" (expected "{" Statement* "}")
   1: fun main() {
-  2:   add10 = makeAdder(10)
+  2:   let add10 = makeAdder(10)
   3:   print(add10(7))
   4: }
   5: fun makeAdder(n)() {
-  6:   res = lambda_0
+  6:   let res = lambda_0
   7:   return
   8:   // end function makeAdder
   9:   // function lambda_0(x) result(res)
@@ -88,19 +67,19 @@ help:
 - dataset_where_filter: compile error: unsupported expression
 - exists_builtin: generated code parse error: parse error: 6:19: unexpected token "(" (expected "{" Statement* "}")
   1: fun main() {
-  2:   data = [1, 2]
-  3:   flag = exists(lambda_0(data))
+  2:   let data = [1, 2]
+  3:   let flag = exists(lambda_0(data))
   4:   print(flag)
   5: }
   6: fun lambda_0(vsrc)() {
-  7:   n = 0
+  7:   let n = 0
   8:   for i in 1..size(vsrc) {
-  9:     x = vsrc(i)
+  9:     let x = vsrc(i)
  10:     if (x == 1) {
 - for_list_collection: generated code parse error: parse error: 2:15: unexpected token "," (expected "{" Statement* "}")
   1: fun main() {
   2:   for i_n in 0, size((/1, 2..3/)) - 1 {
-  3:     n = [1, 2, 3]((i_n % size([1, 2, 3])) + 1)
+  3:     let n = [1, 2, 3]((i_n % size([1, 2, 3])) + 1)
   4:     print(n)
   5: }
   6: 
@@ -116,18 +95,18 @@ help:
   2:   print(add(2, 3))
   3: }
   4: fun add(a,() {
-  5:   res = (a + b)
+  5:   let res = (a + b)
   6:   return
   7:   // end function add
   8: }
   9: 
 - fun_expr_in_let: generated code parse error: parse error: 5:16: unexpected token "(" (expected "{" Statement* "}")
   1: fun main() {
-  2:   square = lambda_0
+  2:   let square = lambda_0
   3:   print(square(6))
   4: }
   5: fun lambda_0(x)() {
-  6:   res = (x * x)
+  6:   let res = (x * x)
   7:   return
   8:   // end function lambda_0
   9: }
@@ -137,7 +116,7 @@ help:
   2:   print(sum3(1, 2, 3))
   3: }
   4: fun sum3(a,() {
-  5:   res = ((a + b) + c)
+  5:   let res = ((a + b) + c)
   6:   return
   7:   // end function sum3
   8: }
@@ -153,34 +132,34 @@ help:
 - group_items_iteration: compile error: unsupported expression
 - if_else: generated code parse error: parse error: 4:11: lexer: invalid input text "'big')\n  else {\n..."
   1: fun main() {
-  2:   x = 5
+  2:   let x = 5
   3:   if (x > 3) {
   4:     print('big')
   5:   else {
   6:     print('small')
   7: }
   8: 
-- if_then_else: generated code parse error: parse error: 3:15: lexer: invalid input text "'yes', 'no', (x ..."
+- if_then_else: generated code parse error: parse error: 3:19: lexer: invalid input text "'yes', 'no', (x ..."
   1: fun main() {
-  2:   x = 12
-  3:   msg = merge('yes', 'no', (x > 10))
+  2:   let x = 12
+  3:   let msg = merge('yes', 'no', (x > 10))
   4:   print(msg)
   5: }
   6: 
-- if_then_else_nested: generated code parse error: parse error: 3:15: lexer: invalid input text "'big', merge('me..."
+- if_then_else_nested: generated code parse error: parse error: 3:19: lexer: invalid input text "'big', merge('me..."
   1: fun main() {
-  2:   x = 8
-  3:   msg = merge('big', merge('medium', 'small', (x > 5)), (x > 10))
+  2:   let x = 8
+  3:   let msg = merge('big', merge('medium', 'small', (x > 5)), (x > 10))
   4:   print(msg)
   5: }
   6: 
-- in_operator: generated code type error: error[T001]: assignment to undeclared variable: xs
-  --> :2:3
+- in_operator: generated code type error: error[T003]: unknown function: any
+  --> :3:9
 
 help:
-  Declare `xs` first using `let`.
+  Ensure the function is defined before it's called.
   1: fun main() {
-  2:   xs = [1, 2, 3]
+  2:   let xs = [1, 2, 3]
   3:   print(any(xs == 2))
   4:   print(! (any(xs == 5)))
   5: }
@@ -206,37 +185,27 @@ help:
   2:   print(len('mochi'))
   3: }
   4: 
-- let_and_print: generated code type error: error[T001]: assignment to undeclared variable: a
-  --> :2:3
-
-help:
-  Declare `a` first using `let`.
-  1: fun main() {
-  2:   a = 10
-  3:   b = 20
-  4:   print(a + b)
-  5: }
-  6: 
+- let_and_print: ok
 - list_assign: generated code parse error: parse error: 3:9: unexpected token "_8" (expected ")")
   1: fun main() {
-  2:   nums = [1, 2]
+  2:   let nums = [1, 2]
   3:   nums(1_8 + 1) = 3
   4:   print(nums((1 % size(nums)) + 1))
   5: }
   6: 
-- list_index: generated code type error: error[T001]: assignment to undeclared variable: xs
-  --> :2:3
+- list_index: generated code type error: error[T004]: `xs` is not callable
+  --> :3:9
 
 help:
-  Declare `xs` first using `let`.
+  Use a function or closure in this position.
   1: fun main() {
-  2:   xs = [10, 20, 30]
+  2:   let xs = [10, 20, 30]
   3:   print(xs((1 % size(xs)) + 1))
   4: }
   5: 
-- list_nested_assign: generated code parse error: parse error: 2:14: unexpected token "/" (expected PostfixExpr)
+- list_nested_assign: generated code parse error: parse error: 2:18: unexpected token "/" (expected PostfixExpr)
   1: fun main() {
-  2:   matrix = [(/1, 2], [3, 4]/)
+  2:   let matrix = [(/1, 2], [3, 4]/)
   3:   matrix(1_8 + 1) = 5
   4:   print(matrix((1 % size(matrix)) + 1)((0 % size(matrix)) + 1))
   5: }
@@ -249,7 +218,7 @@ help:
   5:   print(size([(/1, 2], [2, 3] /)))
   6: }
   7: fun union_int(a,() {
-  8:   n = 0
+  8:   let n = 0
   9:   for i in 1..size(a) {
  10:     n = n + 1
 - load_yaml: compile error: unsupported expression
@@ -263,24 +232,24 @@ help:
 - match_expr: compile error: unsupported expression
 - match_full: compile error: unsupported expression
 - math_ops: ok
-- membership: generated code type error: error[T001]: assignment to undeclared variable: nums
-  --> :2:3
+- membership: generated code type error: error[T003]: unknown function: any
+  --> :3:9
 
 help:
-  Declare `nums` first using `let`.
+  Ensure the function is defined before it's called.
   1: fun main() {
-  2:   nums = [1, 2, 3]
+  2:   let nums = [1, 2, 3]
   3:   print(any(nums == 2))
   4:   print(any(nums == 4))
   5: }
   6: 
-- min_max_builtin: generated code type error: error[T001]: assignment to undeclared variable: nums
-  --> :2:3
+- min_max_builtin: generated code type error: error[T003]: unknown function: merge
+  --> :3:9
 
 help:
-  Declare `nums` first using `let`.
+  Ensure the function is defined before it's called.
   1: fun main() {
-  2:   nums = [3, 1, 4]
+  2:   let nums = [3, 1, 4]
   3:   print(merge(0, minval(nums), size(nums) == 0))
   4:   print(max(nums))
   5: }
@@ -290,11 +259,11 @@ help:
 - outer_join: compile error: unsupported expression
 - partial_application: generated code parse error: parse error: 5:11: unexpected token "(" (expected Param)
   1: fun main() {
-  2:   add5 = add(5)
+  2:   let add5 = add(5)
   3:   print(add5(3))
   4: }
   5: fun add(a,() {
-  6:   res = (a + b)
+  6:   let res = (a + b)
   7:   return
   8:   // end function add
   9: }
@@ -309,54 +278,54 @@ help:
   2:   print(triple((1 + 2)))
   3: }
   4: fun triple(x)() {
-  5:   res = (x * 3)
+  5:   let res = (x * 3)
   6:   return
   7:   // end function triple
   8: }
   9: 
 - pure_global_fold: generated code parse error: parse error: 5:11: unexpected token "(" (expected "{" Statement* "}")
   1: fun main() {
-  2:   k = 2
+  2:   let k = 2
   3:   print(inc(3))
   4: }
   5: fun inc(x)() {
-  6:   res = (x + k)
+  6:   let res = (x + k)
   7:   return
   8:   // end function inc
   9: }
  10: 
 - query_sum_select: generated code parse error: parse error: 6:19: unexpected token "(" (expected "{" Statement* "}")
   1: fun main() {
-  2:   nums = [1, 2, 3]
-  3:   result = lambda_0(nums)
+  2:   let nums = [1, 2, 3]
+  3:   let result = lambda_0(nums)
   4:   print(result)
   5: }
   6: fun lambda_0(vsrc)() {
-  7:   n = 0
+  7:   let n = 0
   8:   for i in 1..size(vsrc) {
   9:     n = vsrc(i)
  10:     if (n > 1) {
-- record_assign: generated code parse error: parse error: 6:16: unexpected token "=" (expected ")")
+- record_assign: generated code parse error: parse error: 6:20: unexpected token "=" (expected ")")
   1: type Counter {
   2:   n: int
   3: }
   4: fun main() {
   5:   // end type Counter
-  6:   c = Counter(n=0)
+  6:   let c = Counter(n=0)
   7:   // inc(c)
   8:   print(c.n)
   9: }
  10: fun inc(c)() {
 - right_join: compile error: unsupported expression
 - save_jsonl_stdout: compile error: unsupported expression
-- short_circuit: generated code parse error: parse error: 6:9: lexer: invalid input text "'boom')\n  res = ..."
+- short_circuit: generated code parse error: parse error: 6:9: lexer: invalid input text "'boom')\n  let re..."
   1: fun main() {
   2:   print(false  &&  boom(1, 2))
   3:   print(true  ||  boom(1, 2))
   4: }
   5: fun boom(a,() {
   6:   print('boom')
-  7:   res = true
+  7:   let res = true
   8:   return
   9:   // end function boom
  10: }
@@ -374,7 +343,7 @@ help:
   3: }
   4: fun str_int(v)() {
   5:   // write(buf,'(I0)') v
-  6:   r = trim(buf)
+  6:   let r = trim(buf)
   7:   // end function str_int
   8: }
   9: 
@@ -391,32 +360,32 @@ help:
   2:   print(trim('hello ') // trim('world'))
   3: }
   4: 
-- string_contains: generated code parse error: parse error: 2:7: lexer: invalid input text "'catch'\n  print(..."
+- string_contains: generated code parse error: parse error: 2:11: lexer: invalid input text "'catch'\n  print(..."
   1: fun main() {
-  2:   s = 'catch'
+  2:   let s = 'catch'
   3:   print(s.contains('cat'))
   4:   print(s.contains('dog'))
   5: }
   6: 
-- string_in_operator: generated code parse error: parse error: 2:7: lexer: invalid input text "'catch'\n  print(..."
+- string_in_operator: generated code parse error: parse error: 2:11: lexer: invalid input text "'catch'\n  print(..."
   1: fun main() {
-  2:   s = 'catch'
+  2:   let s = 'catch'
   3:   print(index(s, 'cat') > 0)
   4:   print(index(s, 'dog') > 0)
   5: }
   6: 
-- string_index: generated code parse error: parse error: 2:7: lexer: invalid input text "'mochi'\n  print(..."
+- string_index: generated code parse error: parse error: 2:11: lexer: invalid input text "'mochi'\n  print(..."
   1: fun main() {
-  2:   s = 'mochi'
+  2:   let s = 'mochi'
   3:   print(s((1 % len(s)) + 1:(1 % len(s)) + 1))
   4: }
   5: 
-- string_prefix_slice: generated code parse error: parse error: 2:12: lexer: invalid input text "'fore'\n  s1 = 'f..."
+- string_prefix_slice: generated code parse error: parse error: 2:16: lexer: invalid input text "'fore'\n  let s1 ..."
   1: fun main() {
-  2:   prefix = 'fore'
-  3:   s1 = 'forest'
+  2:   let prefix = 'fore'
+  3:   let s1 = 'forest'
   4:   print(s1((0 % len(s1)) + 1:(len(prefix) % len(s1))) == prefix)
-  5:   s2 = 'desert'
+  5:   let s2 = 'desert'
   6:   print(s2((0 % len(s2)) + 1:(len(prefix) % len(s2))) == prefix)
   7: }
   8: 
@@ -432,7 +401,7 @@ help:
   3: }
   4: fun sum_rec(n,() {
   5:   if (n == 0) {
-  6:     res = acc
+  6:     let res = acc
   7:     return
   8:   }
   9:   res = sum_rec((n - 1), (acc + n))
@@ -443,7 +412,7 @@ help:
   3:   // call test_addition_works()
   4: }
   5: fun test_addition_works()() {
-  6:   x = (1 + 2)
+  6:   let x = (1 + 2)
   7:   if ! (x == 3) {
   8:     print('expect failed')
   9:     // stop 1
@@ -451,12 +420,12 @@ help:
 - tree_sum: compile error: union types not supported
 - two-sum: generated code parse error: parse error: 6:17: unexpected token "(" (expected Param)
   1: fun main() {
-  2:   result = twoSum([2, 7, 11, 15], 9)
+  2:   let result = twoSum([2, 7, 11, 15], 9)
   3:   print(result(0 + 1))
   4:   print(result(1 + 1))
   5: }
   6: fun twoSum(nums,() {
-  7:   n = size(nums)
+  7:   let n = size(nums)
   8:   for i in 0..n - 1 {
   9:     for j in (i + 1)..n - 1 {
  10:       if ((nums(i + 1) + nums(j + 1)) == target) {
@@ -482,20 +451,20 @@ help:
 - update_stmt: compile error: unsupported statement
 - user_type_literal: ok
 - values_builtin: compile error: unsupported expression
-- var_assignment: generated code type error: error[T001]: assignment to undeclared variable: x
-  --> :2:3
+- var_assignment: generated code type error: error[T024]: cannot assign to `x` (immutable)
+  --> :3:3
 
 help:
-  Declare `x` first using `let`.
+  Use `var` to declare mutable variables.
   1: fun main() {
-  2:   x = 1
+  2:   let x = 1
   3:   x = 2
   4:   print(x)
   5: }
   6: 
 - while_loop: generated code parse error: parse error: 7:1: unexpected token "<EOF>" (expected "}")
   1: fun main() {
-  2:   i = 0
+  2:   let i = 0
   3:   while (i < 3) {
   4:     print(i)
   5:     i = (i + 1)
