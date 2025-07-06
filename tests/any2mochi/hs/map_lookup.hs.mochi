@@ -1,3 +1,0 @@
-let m = Map.fromList [("a", 1), ("b", 2)]
-print(fromMaybe (error "missing") (Map.lookup "a" m)
-print(fromMaybe (error "missing") (Map.lookup "b" m)
