@@ -1,0 +1,2 @@
+let scores = Map.fromList [("Alice", 10), ("Bob", 15)]
+for k in scores { print(k) }

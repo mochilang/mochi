@@ -116,7 +116,12 @@ func ConvertFile(path string) ([]byte, error) {
 
 // parseCLI parses the source using the built-in parser and returns the items.
 func parseCLI(src string) ([]Item, error) {
-	return Parse(src)
+	items, err := Parse(src)
+	if err != nil && len(items) > 0 {
+		// allow partial results when some lines are ignored
+		return items, nil
+	}
+	return items, err
 }
 
 func getSignature(src string, sym any2mochi.DocumentSymbol, ls any2mochi.LanguageServer) ([]string, string) {

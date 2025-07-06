@@ -13,14 +13,17 @@ type Field struct {
 
 // Item represents a minimal Haskell AST item parsed from source code.
 type Item struct {
-	Kind   string   `json:"kind"`
-	Name   string   `json:"name,omitempty"`
-	Params []string `json:"params,omitempty"`
-	Body   string   `json:"body,omitempty"`
-	Type   string   `json:"type,omitempty"`
-	Fields []Field  `json:"fields,omitempty"`
-	Line   int      `json:"line"`
-	Doc    string   `json:"doc,omitempty"`
+	Kind       string   `json:"kind"`
+	Name       string   `json:"name,omitempty"`
+	Params     []string `json:"params,omitempty"`
+	Body       string   `json:"body,omitempty"`
+	Type       string   `json:"type,omitempty"`
+	Fields     []Field  `json:"fields,omitempty"`
+	Collection string   `json:"collection,omitempty"`
+	Start      string   `json:"start,omitempty"`
+	End        string   `json:"end,omitempty"`
+	Line       int      `json:"line"`
+	Doc        string   `json:"doc,omitempty"`
 }
 
 // Parse parses a very small subset of Haskell source and returns a slice
@@ -34,6 +37,9 @@ func Parse(src string) ([]Item, error) {
 	for i := 0; i < len(lines); i++ {
 		line := lines[i]
 		l := strings.TrimSpace(line)
+		if strings.HasPrefix(line, " ") || strings.HasPrefix(line, "\t") {
+			continue
+		}
 		if l == "" || strings.HasPrefix(l, "--") || strings.HasPrefix(l, "module ") || strings.HasPrefix(l, "import ") || strings.HasPrefix(l, "{-") {
 			continue
 		}
@@ -44,14 +50,41 @@ func Parse(src string) ([]Item, error) {
 		}
 		if strings.HasPrefix(l, "main =") {
 			body := strings.TrimSpace(strings.TrimPrefix(l, "main ="))
-			if body == "do" && i+1 < len(lines) {
-				next := strings.TrimSpace(lines[i+1])
-				if strings.HasPrefix(next, "putStrLn") {
-					arg := strings.TrimSpace(strings.TrimPrefix(next, "putStrLn"))
-					arg = strings.Trim(arg, "()")
-					items = append(items, Item{Kind: "print", Body: arg, Line: i + 1})
+			if body == "do" {
+				j := i + 1
+				for j < len(lines) {
+					ln := lines[j]
+					if strings.TrimSpace(ln) == "" {
+						j++
+						continue
+					}
+					if !strings.HasPrefix(ln, " ") && !strings.HasPrefix(ln, "\t") {
+						break
+					}
+					t := strings.TrimSpace(ln)
+					if strings.HasPrefix(t, "print") {
+						arg := strings.TrimSpace(strings.TrimPrefix(t, "print"))
+						arg = strings.Trim(arg, "()")
+						items = append(items, Item{Kind: "print", Body: arg, Line: j + 1})
+					} else if strings.HasPrefix(t, "putStrLn") {
+						arg := strings.TrimSpace(strings.TrimPrefix(t, "putStrLn"))
+						arg = strings.Trim(arg, "()")
+						if strings.HasPrefix(arg, "show ") {
+							arg = "str(" + strings.TrimSpace(strings.TrimPrefix(arg, "show ")) + ")"
+						}
+						items = append(items, Item{Kind: "print", Body: arg, Line: j + 1})
+					} else if strings.HasPrefix(t, "_json") {
+						arg := strings.TrimSpace(strings.TrimPrefix(t, "_json"))
+						arg = strings.Trim(arg, "()")
+						items = append(items, Item{Kind: "json", Body: arg, Line: j + 1})
+					} else if strings.HasPrefix(t, "mapM_") {
+						if it, ok := parseMapM(t, j+1); ok {
+							items = append(items, it)
+						}
+					}
+					j++
 				}
-				i++
+				i = j - 1
 				continue
 			}
 			if strings.HasPrefix(body, "putStrLn") {
@@ -92,12 +125,19 @@ func Parse(src string) ([]Item, error) {
 				}
 			}
 		}
+		if strings.HasPrefix(l, "|") || strings.HasPrefix(l, "case ") || strings.HasPrefix(l, "of ") || l == "where" {
+			continue
+		}
 		if parts := strings.SplitN(l, "=", 2); len(parts) == 2 {
 			left := strings.Fields(strings.TrimSpace(parts[0]))
 			if len(left) == 0 {
 				continue
 			}
 			name := left[0]
+			switch name {
+			case "forLoop", "whileLoop", "avg", "_group_by", "_indexString", "_input", "_now", "_json", "_readInput", "_writeOutput", "_split", "_parseCSV", "_load", "_save":
+				continue
+			}
 			params := left[1:]
 			body := strings.TrimSpace(parts[1])
 			if strings.HasPrefix(body, "do") {
@@ -137,6 +177,72 @@ func Parse(src string) ([]Item, error) {
 	return items, parseErr
 }
 
+// parseMapM parses a line using mapM_ loop syntax and returns an Item representing a for loop.
+func parseMapM(line string, lineNum int) (Item, bool) {
+	l := strings.TrimSpace(strings.TrimPrefix(line, "mapM_"))
+	if !strings.HasPrefix(l, "(\\") {
+		return Item{}, false
+	}
+	idx := strings.Index(l, "->")
+	if idx == -1 {
+		return Item{}, false
+	}
+	varName := strings.TrimSpace(l[2:idx])
+	rest := strings.TrimSpace(l[idx+2:])
+	close := -1
+	for i := 0; i < len(rest); i++ {
+		if rest[i] == ')' {
+			if i+1 >= len(rest) || rest[i+1] == ' ' || rest[i+1] == '(' || rest[i+1] == '[' {
+				close = i
+				break
+			}
+		}
+	}
+	if close == -1 {
+		close = strings.LastIndex(rest, ")")
+	}
+	if close == -1 {
+		return Item{}, false
+	}
+	body := strings.TrimSpace(rest[:close])
+	src := strings.TrimSpace(rest[close+1:])
+	if strings.HasPrefix(src, "(") && strings.HasSuffix(src, ")") {
+		src = strings.TrimSuffix(strings.TrimPrefix(src, "("), ")")
+	}
+	// handle range form [a .. b - 1]
+	if strings.HasPrefix(src, "[") && strings.HasSuffix(src, "]") {
+		s := strings.TrimSuffix(strings.TrimPrefix(src, "["), "]")
+		if parts := strings.SplitN(s, "..", 2); len(parts) == 2 {
+			start := strings.TrimSpace(parts[0])
+			end := strings.TrimSpace(parts[1])
+			end = strings.TrimSuffix(end, "- 1")
+			end = strings.TrimSpace(end)
+			return Item{Kind: "for", Name: varName, Start: start, End: end, Body: convertBody(body), Line: lineNum}, true
+		}
+	}
+	if strings.HasPrefix(src, "Map.keys ") {
+		src = strings.TrimPrefix(src, "Map.keys ")
+	}
+	return Item{Kind: "for", Name: varName, Collection: src, Body: convertBody(body), Line: lineNum}, true
+}
+
+func convertBody(body string) string {
+	if strings.HasPrefix(body, "print") {
+		arg := strings.TrimSpace(strings.TrimPrefix(body, "print"))
+		arg = strings.Trim(arg, "()")
+		return "print(" + arg + ")"
+	}
+	if strings.HasPrefix(body, "putStrLn") {
+		arg := strings.TrimSpace(strings.TrimPrefix(body, "putStrLn"))
+		arg = strings.Trim(arg, "()")
+		if strings.HasPrefix(arg, "show ") {
+			arg = "str(" + strings.TrimSpace(strings.TrimPrefix(arg, "show ")) + ")"
+		}
+		return "print(" + arg + ")"
+	}
+	return body
+}
+
 // convertItems converts the Haskell AST items to Mochi source code.
 func convertItems(items []Item) []byte {
 	var out strings.Builder
@@ -144,6 +250,10 @@ func convertItems(items []Item) []byte {
 		switch it.Kind {
 		case "print":
 			out.WriteString("print(")
+			out.WriteString(it.Body)
+			out.WriteString(")\n")
+		case "json":
+			out.WriteString("json(")
 			out.WriteString(it.Body)
 			out.WriteString(")\n")
 		case "func":
@@ -191,6 +301,20 @@ func convertItems(items []Item) []byte {
 				out.WriteString(it.Body)
 			}
 			out.WriteByte('\n')
+		case "for":
+			out.WriteString("for ")
+			out.WriteString(it.Name)
+			out.WriteString(" in ")
+			if it.Collection != "" {
+				out.WriteString(it.Collection)
+			} else {
+				out.WriteString(it.Start)
+				out.WriteString("..")
+				out.WriteString(it.End)
+			}
+			out.WriteString(" { ")
+			out.WriteString(it.Body)
+			out.WriteString(" }\n")
 		case "struct":
 			out.WriteString("type ")
 			out.WriteString(it.Name)

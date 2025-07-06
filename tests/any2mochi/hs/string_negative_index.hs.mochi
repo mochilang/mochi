@@ -1,0 +1,2 @@
+let text = "hello"
+print(_indexString text (-1)

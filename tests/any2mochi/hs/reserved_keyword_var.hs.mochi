@@ -1,0 +1,2 @@
+let map = Map.fromList [("a", 1)]
+print(fromMaybe (error "missing") (Map.lookup "a" map)

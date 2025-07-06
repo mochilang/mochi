@@ -1,0 +1,5 @@
+let input1 = _input
+let input2 = _input
+print("Enter first input:")
+print("Enter second input:")
+print(unwords ["You entered:", input1, ",", input2])
