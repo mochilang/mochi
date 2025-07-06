@@ -46,13 +46,19 @@ func ConvertFile(path string) ([]byte, error) {
 
 func snippet(src string) string {
 	lines := strings.Split(src, "\n")
-	if len(lines) > 10 {
-		lines = lines[:10]
+	n := len(lines)
+	if n > 5 {
+		n = 5
 	}
-	for i, l := range lines {
-		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
+	out := make([]string, n)
+	for i := 0; i < n; i++ {
+		prefix := "   "
+		if i == 0 {
+			prefix = "-> "
+		}
+		out[i] = fmt.Sprintf("%s%3d| %s", prefix, i+1, lines[i])
 	}
-	return strings.Join(lines, "\n")
+	return strings.Join(out, "\n")
 }
 
 func diagnostics(src string, diags []any2mochi.Diagnostic) string {
