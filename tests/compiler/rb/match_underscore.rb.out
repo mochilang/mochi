@@ -10,8 +10,7 @@ end
 def value_of_root(t)
   (begin
     _t0 = t
-    case
-    when _t0.is_a?(Node)
+    if _t0.is_a?(Node)
       ->(v) { v }.call(_t0.value)
     else
       0
