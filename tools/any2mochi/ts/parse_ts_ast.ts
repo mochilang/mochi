@@ -11,6 +11,7 @@ interface TSField {
 interface TSDecl {
   kind: string;
   name: string;
+  node?: string;
   params?: TSParam[];
   ret?: string;
   body?: string;
@@ -27,9 +28,12 @@ interface TSDecl {
 function tsToMochiType(t: string): string {
   t = t.trim();
   if (t.includes("|")) {
-    const parts = t.split("|").map((p) => p.trim()).filter((p) =>
-      p !== "null" && p !== "undefined"
-    ).map(tsToMochiType).filter(Boolean);
+    const parts = t
+      .split("|")
+      .map((p) => p.trim())
+      .filter((p) => p !== "null" && p !== "undefined")
+      .map(tsToMochiType)
+      .filter(Boolean);
     if (parts.length === 1) return parts[0];
     if (parts.length > 1) return "any";
     return "";
@@ -82,24 +86,53 @@ function parse(src: string): TSDecl[] {
     if (Node.isVariableStatement(stmt)) {
       for (const d of stmt.getDeclarationList().getDeclarations()) {
         const name = d.getName();
-        const typ = tsToMochiType(d.getTypeNode()?.getText() || "");
-        decls.push({
-          kind: "var",
-          name,
-          start,
-          startCol,
-          end,
-          endCol,
-          snippet,
-          fields: undefined,
-          params: undefined,
-          ret: undefined,
-          body: undefined,
-          alias: typ ? undefined : undefined,
-          variants: undefined,
-          ...(typ && { ret: typ }),
-        });
-        decls[decls.length - 1].ret = typ; // store type in ret field
+        const init = d.getInitializer();
+        if (
+          init &&
+          (Node.isArrowFunction(init) || Node.isFunctionExpression(init))
+        ) {
+          const params: TSParam[] = [];
+          init.getParameters().forEach((p) => {
+            params.push({
+              name: p.getName(),
+              typ: tsToMochiType(p.getTypeNode()?.getText() || ""),
+            });
+          });
+          const rt = tsToMochiType(init.getReturnType().getText());
+          decls.push({
+            kind: "funcvar",
+            name,
+            node: init.getKindName(),
+            params,
+            ret: rt,
+            body: init.getBodyText() || "",
+            start,
+            startCol,
+            end,
+            endCol,
+            snippet,
+          });
+        } else {
+          const typ = tsToMochiType(d.getTypeNode()?.getText() || "");
+          decls.push({
+            kind: "var",
+            name,
+            node: d.getKindName(),
+            start,
+            startCol,
+            end,
+            endCol,
+            snippet,
+            fields: undefined,
+            params: undefined,
+            ret: undefined,
+            body: undefined,
+            alias: typ ? undefined : undefined,
+            variants: undefined,
+            ...(typ && { ret: typ }),
+          });
+          decls[decls.length - 1].ret = typ; // store type in ret field
+        }
       }
     } else if (Node.isFunctionDeclaration(stmt)) {
       const name = stmt.getName() || "";
@@ -113,6 +146,7 @@ function parse(src: string): TSDecl[] {
       const rt = tsToMochiType(stmt.getReturnTypeNode()?.getText() || "");
       decls.push({
         kind: "func",
+        node: stmt.getKindName(),
         name,
         start,
         startCol,
@@ -127,6 +161,7 @@ function parse(src: string): TSDecl[] {
       const variants = stmt.getMembers().map((m) => m.getName());
       decls.push({
         kind: "enum",
+        node: stmt.getKindName(),
         name: stmt.getName(),
         start,
         startCol,
@@ -136,7 +171,8 @@ function parse(src: string): TSDecl[] {
         variants,
       });
     } else if (
-      Node.isClassDeclaration(stmt) || Node.isInterfaceDeclaration(stmt)
+      Node.isClassDeclaration(stmt) ||
+      Node.isInterfaceDeclaration(stmt)
     ) {
       const fields: TSField[] = [];
       stmt.getMembers().forEach((mem) => {
@@ -149,6 +185,7 @@ function parse(src: string): TSDecl[] {
       });
       decls.push({
         kind: "type",
+        node: stmt.getKindName(),
         name: stmt.getName() || "",
         start,
         startCol,
@@ -172,6 +209,7 @@ function parse(src: string): TSDecl[] {
         });
         decls.push({
           kind: "type",
+          node: stmt.getKindName(),
           name,
           start,
           startCol,
@@ -184,6 +222,7 @@ function parse(src: string): TSDecl[] {
         const alias = tsToMochiType(tn.getText());
         decls.push({
           kind: "alias",
+          node: stmt.getKindName(),
           name,
           start,
           startCol,
