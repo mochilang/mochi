@@ -1313,6 +1313,10 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			c.ensureReverseList()
 			return fmt.Sprintf("_reverse_list %s", args[0]), nil
 		}
+	case "pow":
+		if len(args) == 2 {
+			return fmt.Sprintf("Float.pow %s %s", args[0], args[1]), nil
+		}
 	case "substr":
 		if len(args) == 3 {
 			c.ensureSubstr()

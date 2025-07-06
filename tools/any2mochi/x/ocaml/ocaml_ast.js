@@ -49,6 +49,8 @@ for (let i = 0; i < tree.rootNode.namedChildren.length; i++) {
             type: ftype,
             line: fld.startPosition.row + 1,
             col: fld.startPosition.column + 1,
+            endLine: fld.endPosition.row + 1,
+            endCol: fld.endPosition.column + 1,
           });
         }
         prog.types.push({
@@ -56,6 +58,8 @@ for (let i = 0; i < tree.rootNode.namedChildren.length; i++) {
           fields,
           line: child.startPosition.row + 1,
           col: child.startPosition.column + 1,
+          endLine: child.endPosition.row + 1,
+          endCol: child.endPosition.column + 1,
         });
         i++; // skip following expression_item
         continue;
@@ -82,18 +86,22 @@ for (let i = 0; i < tree.rootNode.namedChildren.length; i++) {
     }
     const line = child.startPosition.row + 1;
     const col = child.startPosition.column + 1;
+    const endLine = child.endPosition.row + 1;
+    const endCol = child.endPosition.column + 1;
     if (params.length > 0) {
-      prog.funcs.push({ name, params, body: body.trim(), line, col });
+      prog.funcs.push({ name, params, body: body.trim(), line, col, endLine, endCol });
     } else if (name) {
-      prog.vars.push({ name, expr: body.trim().replace(/;$/, ""), line, col });
+      prog.vars.push({ name, expr: body.trim().replace(/;$/, ""), line, col, endLine, endCol });
     } else {
-      prog.prints.push({ expr: body.trim().replace(/;$/, ""), line, col });
+      prog.prints.push({ expr: body.trim().replace(/;$/, ""), line, col, endLine, endCol });
     }
   } else if (child.type === "expression_item") {
     prog.prints.push({
       expr: text(child).trim().replace(/;$/, ""),
       line: child.startPosition.row + 1,
       col: child.startPosition.column + 1,
+      endLine: child.endPosition.row + 1,
+      endCol: child.endPosition.column + 1,
     });
   } else if (child.type === "type_definition") {
     for (const bind of child.namedChildren) {
@@ -129,6 +137,8 @@ for (let i = 0; i < tree.rootNode.namedChildren.length; i++) {
           type: ftype,
           line: fld.startPosition.row + 1,
           col: fld.startPosition.column + 1,
+          endLine: fld.endPosition.row + 1,
+          endCol: fld.endPosition.column + 1,
         });
       }
       prog.types.push({
@@ -136,6 +146,8 @@ for (let i = 0; i < tree.rootNode.namedChildren.length; i++) {
         fields,
         line: bind.startPosition.row + 1,
         col: bind.startPosition.column + 1,
+        endLine: bind.endPosition.row + 1,
+        endCol: bind.endPosition.column + 1,
       });
     }
   }
