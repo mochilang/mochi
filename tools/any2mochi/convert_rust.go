@@ -578,17 +578,7 @@ func runRustAnalyzerParse(cmd, src string) (string, error) {
 	return out.String(), nil
 }
 
-// ConvertRust converts Rust source code to Mochi using rust-analyzer's parse output.
-func ConvertRust(src string) ([]byte, error) {
-	ls := Servers["rust"]
-	if err := EnsureServer(ls.Command); err != nil {
-		return nil, err
-	}
-	ast, err := runRustAnalyzerParse(ls.Command, src)
-	if err != nil {
-		return nil, err
-	}
-	tree := parseTree(ast)
+func convertRustTree(src string, tree *node) ([]byte, error) {
 	if tree == nil {
 		return nil, fmt.Errorf("parse failed")
 	}
@@ -623,7 +613,22 @@ func ConvertRust(src string) ([]byte, error) {
 				continue
 			}
 			params := convertParams(src, findChild(c, "PARAM_LIST"))
-			out = append(out, fmt.Sprintf("fun %s(%s) {", strings.TrimSpace(src[nameNode.start:nameNode.end]), strings.Join(params, ", ")))
+			ret := ""
+			if rt := findChild(c, "RET_TYPE"); rt != nil {
+				typNode := findChild(rt, "PATH_TYPE")
+				if typNode == nil {
+					typNode = findChild(rt, "REF_TYPE")
+				}
+				ret = convertRustType(src, typNode)
+				if ret == "()" {
+					ret = ""
+				}
+			}
+			header := fmt.Sprintf("fun %s(%s)", strings.TrimSpace(src[nameNode.start:nameNode.end]), strings.Join(params, ", "))
+			if ret != "" {
+				header += ": " + ret
+			}
+			out = append(out, header+" {")
 			body := findChild(findChild(c, "BLOCK_EXPR"), "STMT_LIST")
 			out = append(out, convertStmts(src, body, 1)...)
 			out = append(out, "}")
@@ -645,6 +650,28 @@ func ConvertRust(src string) ([]byte, error) {
 	return []byte(strings.Join(out, "\n")), nil
 }
 
+// ConvertRustAST converts Rust source code using an already parsed syntax tree.
+func ConvertRustAST(src string, ast *RustASTNode) ([]byte, error) {
+	return convertRustTree(src, fromRustASTNode(ast))
+}
+
+// ConvertRust converts Rust source code to Mochi using rust-analyzer's parse output.
+func ConvertRust(src string) ([]byte, error) {
+	ls := Servers["rust"]
+	if ls.Command == "" {
+		ls.Command = "rust-analyzer"
+	}
+	if err := EnsureServer(ls.Command); err != nil {
+		return nil, err
+	}
+	ast, err := runRustAnalyzerParse(ls.Command, src)
+	if err != nil {
+		return nil, err
+	}
+	tree := parseTree(ast)
+	return convertRustTree(src, tree)
+}
+
 // ConvertRustFile reads the rust file and converts it to Mochi.
 func ConvertRustFile(path string) ([]byte, error) {
 	data, err := os.ReadFile(path)
@@ -652,4 +679,17 @@ func ConvertRustFile(path string) ([]byte, error) {
 		return nil, err
 	}
 	return ConvertRust(string(data))
+}
+
+// ConvertRustASTFile parses the given Rust file and converts it using the parsed AST.
+func ConvertRustASTFile(path string) ([]byte, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	ast, err := ParseRustAST(string(data))
+	if err != nil {
+		return nil, err
+	}
+	return ConvertRustAST(string(data), ast)
 }
