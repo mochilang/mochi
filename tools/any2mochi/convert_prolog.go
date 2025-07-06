@@ -4,36 +4,39 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
-// ConvertProlog converts Prolog source code to Mochi using the language server.
+// ConvertProlog converts Prolog source code to Mochi. If a language server
+// is configured it will be used, otherwise the bundled CLI parser is
+// invoked and finally a regex parser is used as fallback.
 func ConvertProlog(src string) ([]byte, error) {
 	return convertProlog(src, "")
 }
 
 func convertProlog(src, root string) ([]byte, error) {
 	ls := Servers["prolog"]
-	syms, diags, err := EnsureAndParseWithRoot(ls.Command, ls.Args, ls.LangID, src, root)
-	if err != nil {
-		// fallback to regex based parsing if the language server is missing
-		if strings.Contains(err.Error(), "not found") {
-			return convertPrologFallback(src)
+	if ls.Command != "" {
+		syms, diags, err := EnsureAndParseWithRoot(ls.Command, ls.Args, ls.LangID, src, root)
+		if err == nil {
+			if len(diags) > 0 {
+				return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
+			}
+			var out strings.Builder
+			writePrologSymbols(&out, ls, src, syms, root)
+			if out.Len() > 0 {
+				return []byte(out.String()), nil
+			}
+			return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
 		}
-		return nil, err
+		// if the server is missing fall back to the CLI parser
+		if !strings.Contains(err.Error(), "not found") {
+			return nil, err
+		}
 	}
-	if len(diags) > 0 {
-		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
-	}
-	var out strings.Builder
-	writePrologSymbols(&out, ls, src, syms, root)
-	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
-	}
-	return []byte(out.String()), nil
+	return convertPrologFallback(src)
 }
 
 // ConvertPrologFile reads the Prolog file and converts it to Mochi.
@@ -160,16 +163,16 @@ func parsePrologBodyFromRange(src string, rng protocol.Range) []string {
 	if strings.HasSuffix(body, ".") {
 		body = strings.TrimSuffix(body, ".")
 	}
-	return parsePrologBody(body)
+	return ParsePrologBody(body)
 }
 
 // convertPrologFallback attempts a best effort conversion using regular
 // expressions when no language server is available.
 func convertPrologFallback(src string) ([]byte, error) {
-	funcs := parsePrologFuncs(src)
+	funcs := ParseProlog(src)
 	if len(funcs) == 0 {
 		if strings.Contains(src, "main :-") || strings.Contains(src, "main:-") {
-			funcs = append(funcs, prologFunc{name: "main", body: ""})
+			funcs = append(funcs, PrologFunc{Name: "main", Body: ""})
 		} else {
 			return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
 		}
@@ -177,110 +180,20 @@ func convertPrologFallback(src string) ([]byte, error) {
 	var out strings.Builder
 	for _, f := range funcs {
 		out.WriteString("fun ")
-		out.WriteString(f.name)
+		out.WriteString(f.Name)
 		out.WriteByte('(')
-		for i, p := range f.params {
+		for i, p := range f.Params {
 			if i > 0 {
 				out.WriteString(", ")
 			}
 			out.WriteString(p)
 		}
 		out.WriteString(") {\n")
-		for _, line := range parsePrologBody(f.body) {
+		for _, line := range ParsePrologBody(f.Body) {
 			out.WriteString(line)
 			out.WriteByte('\n')
 		}
 		out.WriteString("}\n")
 	}
 	return []byte(out.String()), nil
-}
-
-type prologFunc struct {
-	name   string
-	params []string
-	body   string
-}
-
-// parsePrologFuncs extracts top-level predicate definitions using regex.
-func parsePrologFuncs(src string) []prologFunc {
-	var funcs []prologFunc
-	re := regexp.MustCompile(`(?ms)^\s*(\w+)(?:\(([^)]*)\))?\s*:-\s*(.*?)\.`)
-	matches := re.FindAllStringSubmatch(src, -1)
-	for _, m := range matches {
-		name := m[1]
-		paramList := strings.TrimSpace(m[2])
-		params := []string{}
-		if paramList != "" {
-			for _, p := range strings.Split(paramList, ",") {
-				p = strings.TrimSpace(p)
-				if p != "" {
-					params = append(params, p)
-				}
-			}
-		}
-		body := strings.TrimSpace(m[3])
-		// drop trailing period
-		if strings.HasSuffix(body, ".") {
-			body = strings.TrimSuffix(body, ".")
-		}
-		funcs = append(funcs, prologFunc{name: name, params: params, body: body})
-	}
-	return funcs
-}
-
-// parsePrologBody splits a predicate body into Mochi statements.
-func parsePrologBody(body string) []string {
-	clauses := splitClauses(body)
-	var out []string
-	for _, c := range clauses {
-		c = strings.TrimSpace(c)
-		switch {
-		case c == "" || c == "true":
-			continue
-		case strings.HasPrefix(c, "write("):
-			arg := strings.TrimSuffix(strings.TrimPrefix(c, "write("), ")")
-			out = append(out, "  print("+arg+")")
-		case c == "nl":
-			// ignore newline, print adds newline automatically
-			continue
-		case strings.Contains(c, " is "):
-			parts := strings.SplitN(c, " is ", 2)
-			name := strings.TrimSpace(parts[0])
-			expr := strings.TrimSpace(parts[1])
-			out = append(out, "  let "+name+" = "+expr)
-		default:
-			out = append(out, "  // "+c)
-		}
-	}
-	if len(out) == 0 {
-		out = append(out, "  pass")
-	}
-	return out
-}
-
-// splitClauses splits a Prolog body by commas at depth 0.
-func splitClauses(body string) []string {
-	var clauses []string
-	depth := 0
-	start := 0
-	for i, r := range body {
-		switch r {
-		case '(':
-			depth++
-		case ')':
-			if depth > 0 {
-				depth--
-			}
-		case ',':
-			if depth == 0 {
-				clause := strings.TrimSpace(body[start:i])
-				clauses = append(clauses, clause)
-				start = i + 1
-			}
-		}
-	}
-	if start < len(body) {
-		clauses = append(clauses, strings.TrimSpace(body[start:]))
-	}
-	return clauses
 }
