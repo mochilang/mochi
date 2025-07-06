@@ -9,11 +9,12 @@
 
 help:
   Choose an operator that supports these operand types.
-- break_continue: line 2: unsupported line
+- break_continue: line 3: unsupported line
       1| if (((n % 2) == 0)) {
->>>   2| continue;
-      3| }
+      2| continue;
+>>>   3| }
       4| if ((n > 7)) {
+      5| break;
 
 - cast_string_to_int: line 6: unsupported line
       4| }
@@ -390,9 +391,4 @@ help:
 - user_type_literal: ok
 - values_builtin: ok
 - var_assignment: ok
-- while_loop: line 2: unsupported line
-      1| int i = 0;
->>>   2| while ((i < 3)) {
-      3| System.out.println(i);
-      4| i = (i + 1);
-
+- while_loop: ok

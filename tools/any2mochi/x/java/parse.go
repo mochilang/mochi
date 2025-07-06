@@ -287,6 +287,35 @@ func javaBodyLines(body []string, structs map[string][]string) ([]string, error)
 			out = append(out, "}")
 			continue
 		}
+
+		if strings.HasPrefix(l, "while (") && strings.HasSuffix(l, "{") {
+			header := strings.TrimSuffix(strings.TrimPrefix(l, "while"), "{")
+			header = strings.TrimSpace(header)
+			if strings.HasPrefix(header, "(") && strings.HasSuffix(header, ")") {
+				header = strings.TrimSpace(header[1 : len(header)-1])
+			}
+			var loopBody []string
+			depth := 1
+			for i+1 < len(body) {
+				i++
+				line := body[i]
+				depth += strings.Count(line, "{") - strings.Count(line, "}")
+				if depth == 0 {
+					break
+				}
+				loopBody = append(loopBody, line)
+			}
+			out = append(out, "while ("+convertJavaExpr(header, structs)+") {")
+			inner, err := javaBodyLines(loopBody, structs)
+			if err != nil {
+				return nil, err
+			}
+			for _, ln := range inner {
+				out = append(out, "  "+ln)
+			}
+			out = append(out, "}")
+			continue
+		}
 		// join multi-line statements ending with '='
 		if strings.HasSuffix(l, "=") {
 			depth := 0
@@ -305,6 +334,16 @@ func javaBodyLines(body []string, structs map[string][]string) ([]string, error)
 			out = append(out, "print("+convertJavaExpr(expr, structs)+")")
 			continue
 		}
+		if l == "break;" {
+			out = append(out, "break")
+			continue
+		}
+
+		if l == "continue;" {
+			out = append(out, "continue")
+			continue
+		}
+
 		if strings.HasPrefix(l, "return") {
 			expr := strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(l, "return"), ";"))
 			if expr == "" {
