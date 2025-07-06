@@ -12,6 +12,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"mochi/tools/any2mochi"
+	pyconv "mochi/tools/any2mochi/py"
 )
 
 var (
@@ -170,7 +171,7 @@ func convertPythonCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			out, err := any2mochi.ConvertPython(string(data))
+			out, err := pyconv.Convert(string(data))
 			if err != nil {
 				return err
 			}

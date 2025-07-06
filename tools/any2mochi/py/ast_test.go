@@ -1,4 +1,4 @@
-package any2mochi
+package py
 
 import (
 	"bytes"
@@ -10,9 +10,9 @@ import (
 	"mochi/types"
 )
 
-func TestConvertPythonAST(t *testing.T) {
+func TestConvertAST(t *testing.T) {
 	pySrc := "def main():\n    print('hi')\n\nmain()"
-	out, err := ConvertPythonAST(pySrc)
+	out, err := ConvertAST(pySrc)
 	if err != nil {
 		t.Fatalf("convert: %v", err)
 	}

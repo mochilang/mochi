@@ -1,4 +1,4 @@
-package any2mochi
+package py
 
 import (
 	"bytes"
@@ -11,56 +11,57 @@ import (
 	"time"
 
 	pycode "mochi/compile/py"
+	parent "mochi/tools/any2mochi"
 )
 
-// ConvertPython converts Python source code to a minimal Mochi representation.
+// Convert converts Python source code to a minimal Mochi representation.
 // It uses the configured language server when available, otherwise falls back to
 // a small parser that invokes Python to produce an AST as JSON.
-func ConvertPython(src string) ([]byte, error) {
-	ls := Servers["python"]
+func Convert(src string) ([]byte, error) {
+	ls := parent.Servers["python"]
 	if ls.Command != "" {
 		_ = pycode.EnsurePyright()
-		syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+		syms, diags, err := parent.EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
 		if err == nil && len(diags) == 0 {
 			var out strings.Builder
-			writePySymbols(&out, nil, syms, src, ls)
+			writeSymbols(&out, nil, syms, src, ls)
 			if out.Len() > 0 {
 				return []byte(out.String()), nil
 			}
 		}
 	}
-	return convertPythonFallback(src)
+	return convertFallback(src)
 }
 
-// ConvertPythonFile reads the Python file at path and converts it to Mochi.
-func ConvertPythonFile(path string) ([]byte, error) {
+// ConvertFile reads the Python file at path and converts it to Mochi.
+func ConvertFile(path string) ([]byte, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return ConvertPython(string(data))
+	return Convert(string(data))
 }
 
-func writePySymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol, src string, ls LanguageServer) {
+func writeSymbols(out *strings.Builder, prefix []string, syms []parent.DocumentSymbol, src string, ls parent.LanguageServer) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
 			nameParts = append(nameParts, s.Name)
 		}
 		switch s.Kind {
-		case SymbolKindFunction, SymbolKindMethod, SymbolKindConstructor:
-			writePyFunc(out, strings.Join(nameParts, "."), s, src, ls)
-		case SymbolKindClass:
-			writePyClass(out, nameParts, s, src, ls)
-		case SymbolKindVariable, SymbolKindConstant:
+		case parent.SymbolKindFunction, parent.SymbolKindMethod, parent.SymbolKindConstructor:
+			writeFunc(out, strings.Join(nameParts, "."), s, src, ls)
+		case parent.SymbolKindClass:
+			writeClass(out, nameParts, s, src, ls)
+		case parent.SymbolKindVariable, parent.SymbolKindConstant:
 			if len(prefix) == 0 {
 				out.WriteString("let ")
 				out.WriteString(strings.Join(nameParts, "."))
-				if typ := getPyVarType(src, s.SelectionRange.Start, ls); typ != "" && typ != "Unknown" {
+				if typ := getVarType(src, s.SelectionRange.Start, ls); typ != "" && typ != "Unknown" {
 					out.WriteString(": ")
 					out.WriteString(typ)
 				}
-				if val := getPyVarValue(src, s); val != "" {
+				if val := getVarValue(src, s); val != "" {
 					out.WriteString(" = ")
 					out.WriteString(val)
 				}
@@ -70,16 +71,16 @@ func writePySymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol
 	}
 }
 
-type pyParam struct {
+type param struct {
 	name string
 	typ  string
 }
 
-func writePyFunc(out *strings.Builder, name string, sym DocumentSymbol, src string, ls LanguageServer) {
-	params, ret := getPySignature(src, sym.SelectionRange.Start, ls)
+func writeFunc(out *strings.Builder, name string, sym parent.DocumentSymbol, src string, ls parent.LanguageServer) {
+	params, ret := getSignature(src, sym.SelectionRange.Start, ls)
 	if len(params) == 0 {
-		for _, p := range extractPyParams(sym) {
-			params = append(params, pyParam{name: p})
+		for _, p := range extractParams(sym) {
+			params = append(params, param{name: p})
 		}
 	}
 	out.WriteString("fun ")
@@ -100,7 +101,7 @@ func writePyFunc(out *strings.Builder, name string, sym DocumentSymbol, src stri
 		out.WriteString(": ")
 		out.WriteString(ret)
 	}
-	body := parsePyFunctionBody(src, sym)
+	body := parseFunctionBody(src, sym)
 	if len(body) == 0 {
 		out.WriteString(" {}\n")
 		return
@@ -114,13 +115,13 @@ func writePyFunc(out *strings.Builder, name string, sym DocumentSymbol, src stri
 	out.WriteString("}\n")
 }
 
-func writePyClass(out *strings.Builder, prefix []string, sym DocumentSymbol, src string, ls LanguageServer) {
+func writeClass(out *strings.Builder, prefix []string, sym parent.DocumentSymbol, src string, ls parent.LanguageServer) {
 	name := strings.Join(prefix, ".")
-	fields := extractPyFields(sym)
-	methods := make([]DocumentSymbol, 0)
+	fields := extractFields(sym)
+	methods := make([]parent.DocumentSymbol, 0)
 	for _, c := range sym.Children {
 		switch c.Kind {
-		case SymbolKindFunction, SymbolKindMethod, SymbolKindConstructor:
+		case parent.SymbolKindFunction, parent.SymbolKindMethod, parent.SymbolKindConstructor:
 			methods = append(methods, c)
 		}
 	}
@@ -134,7 +135,7 @@ func writePyClass(out *strings.Builder, prefix []string, sym DocumentSymbol, src
 	for _, f := range fields {
 		out.WriteString("  ")
 		out.WriteString(f.name)
-		if typ := getPyVarType(src, f.sym.SelectionRange.Start, ls); typ != "" && typ != "Unknown" {
+		if typ := getVarType(src, f.sym.SelectionRange.Start, ls); typ != "" && typ != "Unknown" {
 			out.WriteString(": ")
 			out.WriteString(typ)
 		}
@@ -142,7 +143,7 @@ func writePyClass(out *strings.Builder, prefix []string, sym DocumentSymbol, src
 	}
 	for _, m := range methods {
 		var b strings.Builder
-		writePyFunc(&b, m.Name, m, src, ls)
+		writeFunc(&b, m.Name, m, src, ls)
 		for _, line := range strings.Split(strings.TrimSuffix(b.String(), "\n"), "\n") {
 			out.WriteString("  ")
 			out.WriteString(line)
@@ -152,45 +153,45 @@ func writePyClass(out *strings.Builder, prefix []string, sym DocumentSymbol, src
 	out.WriteString("}\n")
 }
 
-type pyField struct {
+type field struct {
 	name string
-	sym  DocumentSymbol
+	sym  parent.DocumentSymbol
 }
 
-func extractPyFields(sym DocumentSymbol) []pyField {
-	var fields []pyField
+func extractFields(sym parent.DocumentSymbol) []field {
+	var fields []field
 	for _, c := range sym.Children {
-		if c.Kind == SymbolKindVariable || c.Kind == SymbolKindConstant {
-			fields = append(fields, pyField{name: c.Name, sym: c})
+		if c.Kind == parent.SymbolKindVariable || c.Kind == parent.SymbolKindConstant {
+			fields = append(fields, field{name: c.Name, sym: c})
 		}
 	}
 	return fields
 }
 
-func extractPyParams(sym DocumentSymbol) []string {
+func extractParams(sym parent.DocumentSymbol) []string {
 	start := sym.Range.Start.Line
 	var params []string
 	for _, c := range sym.Children {
-		if c.Kind == SymbolKindVariable && c.Range.Start.Line == start {
+		if c.Kind == parent.SymbolKindVariable && c.Range.Start.Line == start {
 			params = append(params, c.Name)
 		}
 	}
 	return params
 }
 
-func getPySignature(src string, pos Position, ls LanguageServer) ([]pyParam, string) {
-	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, pos)
+func getSignature(src string, pos parent.Position, ls parent.LanguageServer) ([]param, string) {
+	hov, err := parent.EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, pos)
 	if err != nil {
 		return nil, ""
 	}
-	mc, ok := hov.Contents.(MarkupContent)
+	mc, ok := hov.Contents.(parent.MarkupContent)
 	if !ok {
 		return nil, ""
 	}
-	return parsePySignature(mc.Value)
+	return parseSignature(mc.Value)
 }
 
-func parsePySignature(sig string) ([]pyParam, string) {
+func parseSignature(sig string) ([]param, string) {
 	sig = strings.ReplaceAll(sig, "\n", " ")
 	if i := strings.Index(sig, "def "); i != -1 {
 		sig = sig[i+4:]
@@ -204,9 +205,9 @@ func parsePySignature(sig string) ([]pyParam, string) {
 	rest := strings.TrimSpace(sig[close+1:])
 	ret := ""
 	if strings.HasPrefix(rest, "->") {
-		ret = mapPyType(strings.TrimSpace(rest[2:]))
+		ret = mapType(strings.TrimSpace(rest[2:]))
 	}
-	var params []pyParam
+	var params []param
 	if paramsPart != "" {
 		parts := strings.Split(paramsPart, ",")
 		for i, p := range parts {
@@ -222,27 +223,27 @@ func parsePySignature(sig string) ([]pyParam, string) {
 				if eq := strings.Index(typ, "="); eq != -1 {
 					typ = strings.TrimSpace(typ[:eq])
 				}
-				typ = mapPyType(typ)
+				typ = mapType(typ)
 			}
-			params = append(params, pyParam{name: name, typ: typ})
+			params = append(params, param{name: name, typ: typ})
 		}
 	}
 	return params, ret
 }
 
-func mapPyType(t string) string {
+func mapType(t string) string {
 	t = strings.TrimSpace(t)
 	if t == "" || t == "None" || t == "Any" || t == "Unknown" {
 		return ""
 	}
 	if strings.Contains(t, "|") {
 		var parts []string
-		for _, p := range splitPyArgs(strings.ReplaceAll(t, "|", ",")) {
+		for _, p := range splitArgs(strings.ReplaceAll(t, "|", ",")) {
 			p = strings.TrimSpace(p)
 			if p == "None" || p == "" {
 				continue
 			}
-			if mp := mapPyType(p); mp != "" {
+			if mp := mapType(p); mp != "" {
 				parts = append(parts, mp)
 			}
 		}
@@ -272,12 +273,12 @@ func mapPyType(t string) string {
 		if open != -1 {
 			outer := strings.TrimSpace(t[:open])
 			inner := t[open+1 : len(t)-1]
-			args := splitPyArgs(inner)
+			args := splitArgs(inner)
 			switch outer {
 			case "list", "List", "Sequence", "Iterable":
 				innerType := "any"
 				if len(args) > 0 {
-					if a := mapPyType(args[0]); a != "" {
+					if a := mapType(args[0]); a != "" {
 						innerType = a
 					}
 				}
@@ -286,12 +287,12 @@ func mapPyType(t string) string {
 				key := "any"
 				val := "any"
 				if len(args) > 0 {
-					if k := mapPyType(args[0]); k != "" {
+					if k := mapType(args[0]); k != "" {
 						key = k
 					}
 				}
 				if len(args) > 1 {
-					if v := mapPyType(args[1]); v != "" {
+					if v := mapType(args[1]); v != "" {
 						val = v
 					}
 				}
@@ -299,7 +300,7 @@ func mapPyType(t string) string {
 			case "set", "Set":
 				innerType := "any"
 				if len(args) > 0 {
-					if a := mapPyType(args[0]); a != "" {
+					if a := mapType(args[0]); a != "" {
 						innerType = a
 					}
 				}
@@ -307,7 +308,7 @@ func mapPyType(t string) string {
 			case "tuple", "Tuple":
 				var mapped []string
 				for _, a := range args {
-					mt := mapPyType(a)
+					mt := mapType(a)
 					if mt == "" {
 						mt = "any"
 					}
@@ -319,7 +320,7 @@ func mapPyType(t string) string {
 			case "Union":
 				var mapped []string
 				for _, a := range args {
-					mt := mapPyType(a)
+					mt := mapType(a)
 					if mt != "" {
 						mapped = append(mapped, mt)
 					}
@@ -333,7 +334,7 @@ func mapPyType(t string) string {
 				return ""
 			case "Optional":
 				if len(args) == 1 {
-					mt := mapPyType(args[0])
+					mt := mapType(args[0])
 					if mt == "" {
 						mt = "any"
 					}
@@ -342,11 +343,11 @@ func mapPyType(t string) string {
 			case "Callable":
 				if len(args) == 2 {
 					argList := strings.Trim(args[0], "[]")
-					ret := mapPyType(args[1])
+					ret := mapType(args[1])
 					var argTypes []string
 					if strings.TrimSpace(argList) != "" && argList != "..." {
-						for _, a := range splitPyArgs(argList) {
-							at := mapPyType(a)
+						for _, a := range splitArgs(argList) {
+							at := mapType(a)
 							if at == "" {
 								at = "any"
 							}
@@ -364,7 +365,7 @@ func mapPyType(t string) string {
 	return t
 }
 
-func splitPyArgs(s string) []string {
+func splitArgs(s string) []string {
 	var parts []string
 	depth := 0
 	start := 0
@@ -389,39 +390,39 @@ func splitPyArgs(s string) []string {
 	return parts
 }
 
-func getPyVarType(src string, pos Position, ls LanguageServer) string {
-	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, pos)
+func getVarType(src string, pos parent.Position, ls parent.LanguageServer) string {
+	hov, err := parent.EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, pos)
 	if err != nil {
 		return ""
 	}
-	mc, ok := hov.Contents.(MarkupContent)
+	mc, ok := hov.Contents.(parent.MarkupContent)
 	if !ok {
 		return ""
 	}
-	return parsePyVarType(mc.Value)
+	return parseVarType(mc.Value)
 }
 
-func parsePyVarType(hov string) string {
+func parseVarType(hov string) string {
 	if i := strings.Index(hov, "\n"); i != -1 {
 		hov = hov[:i]
 	}
 	if colon := strings.Index(hov, ":"); colon != -1 {
 		typ := strings.TrimSpace(hov[colon+1:])
-		return mapPyType(typ)
+		return mapType(typ)
 	}
 	return ""
 }
 
-func getPyVarValue(src string, sym DocumentSymbol) string {
-	code := pyExtractRange(src, sym.Range)
+func getVarValue(src string, sym parent.DocumentSymbol) string {
+	code := extractRange(src, sym.Range)
 	if idx := strings.Index(code, "="); idx != -1 {
 		return strings.TrimSpace(code[idx+1:])
 	}
 	return ""
 }
 
-func parsePyFunctionBody(src string, sym DocumentSymbol) []string {
-	code := pyExtractRange(src, sym.Range)
+func parseFunctionBody(src string, sym parent.DocumentSymbol) []string {
+	code := extractRange(src, sym.Range)
 	lines := strings.Split(code, "\n")
 	if len(lines) < 2 {
 		return nil
@@ -437,11 +438,11 @@ func parsePyFunctionBody(src string, sym DocumentSymbol) []string {
 	if indent == "" {
 		return nil
 	}
-	stmts, _ := parsePyLines(lines[1:], indent)
+	stmts, _ := parseLines(lines[1:], indent)
 	return stmts
 }
 
-func parsePyLines(lines []string, indent string) ([]string, int) {
+func parseLines(lines []string, indent string) ([]string, int) {
 	var stmts []string
 	i := 0
 	step := indent + "    "
@@ -471,7 +472,7 @@ func parsePyLines(lines []string, indent string) ([]string, int) {
 			i++
 		case strings.HasPrefix(s, "if ") && strings.HasSuffix(s, ":"):
 			cond := strings.TrimSpace(strings.TrimSuffix(s[3:], ":"))
-			body, n := parsePyLines(lines[i+1:], step)
+			body, n := parseLines(lines[i+1:], step)
 			i = i + 1 + n
 			var elseBody []string
 			if i < len(lines) {
@@ -482,15 +483,15 @@ func parsePyLines(lines []string, indent string) ([]string, int) {
 				next := strings.TrimSpace(nextLine)
 				if strings.HasPrefix(next, "else:") {
 					var m int
-					elseBody, m = parsePyLines(lines[i+1:], step)
+					elseBody, m = parseLines(lines[i+1:], step)
 					i = i + 1 + m
 				} else if strings.HasPrefix(next, "elif ") {
 					var m int
 					elifCond := strings.TrimSpace(strings.TrimSuffix(next[5:], ":"))
-					elifBody, m := parsePyLines(lines[i+1:], step)
+					elifBody, m := parseLines(lines[i+1:], step)
 					i = i + 1 + m
-					bodyBlock := formatPyBlock(body)
-					elifBlock := formatPyBlock(elifBody)
+					bodyBlock := formatBlock(body)
+					elifBlock := formatBlock(elifBody)
 					stmts = append(stmts, "if "+cond+bodyBlock+" else if "+elifCond+elifBlock)
 					continue
 				}
@@ -522,7 +523,7 @@ func parsePyLines(lines []string, indent string) ([]string, int) {
 			if idx := strings.Index(rest, " in "); idx != -1 {
 				varName := strings.TrimSpace(rest[:idx])
 				iterable := strings.TrimSpace(rest[idx+4:])
-				body, n := parsePyLines(lines[i+1:], step)
+				body, n := parseLines(lines[i+1:], step)
 				i = i + 1 + n
 				var b strings.Builder
 				b.WriteString("for ")
@@ -546,7 +547,7 @@ func parsePyLines(lines []string, indent string) ([]string, int) {
 			}
 		case strings.HasPrefix(s, "while ") && strings.HasSuffix(s, ":"):
 			cond := strings.TrimSpace(strings.TrimSuffix(s[6:], ":"))
-			body, n := parsePyLines(lines[i+1:], step)
+			body, n := parseLines(lines[i+1:], step)
 			i = i + 1 + n
 			var b strings.Builder
 			b.WriteString("while ")
@@ -591,7 +592,7 @@ func parsePyLines(lines []string, indent string) ([]string, int) {
 	return stmts, i
 }
 
-func formatPyBlock(lines []string) string {
+func formatBlock(lines []string) string {
 	if len(lines) == 0 {
 		return " {}"
 	}
@@ -620,7 +621,7 @@ func bracketDelta(s string) int {
 
 func balanced(s string) bool { return bracketDelta(s) == 0 }
 
-func pyExtractRange(src string, r Range) string {
+func extractRange(src string, r parent.Range) string {
 	lines := strings.Split(src, "\n")
 	var out strings.Builder
 	for i := int(r.Start.Line); i <= int(r.End.Line) && i < len(lines); i++ {
@@ -639,13 +640,13 @@ func pyExtractRange(src string, r Range) string {
 	return out.String()
 }
 
-var pyCmd = "python3"
+var pythonCmd = "python3"
 
-// convertPythonFallback performs a very small subset conversion of Python
+// convertFallback performs a very small subset conversion of Python
 // source without relying on a language server. Only top level function
 // definitions and simple variable assignments are handled.
-func convertPythonFallback(src string) ([]byte, error) {
-	items, err := runPyParse(src)
+func convertFallback(src string) ([]byte, error) {
+	items, err := runParse(src)
 	if err != nil {
 		return nil, err
 	}
@@ -658,7 +659,7 @@ func convertPythonFallback(src string) ([]byte, error) {
 			out.WriteByte('(')
 			out.WriteString(strings.Join(it.Params, ", "))
 			out.WriteByte(')')
-			body := extractPyBody(src, it.Start, it.End)
+			body := extractBody(src, it.Start, it.End)
 			if len(body) == 0 {
 				out.WriteString(" {}\n")
 			} else {
@@ -686,6 +687,17 @@ func convertPythonFallback(src string) ([]byte, error) {
 	return []byte(out.String()), nil
 }
 
+func numberedSnippet(src string) string {
+	lines := strings.Split(src, "\n")
+	if len(lines) > 10 {
+		lines = lines[:10]
+	}
+	for i, l := range lines {
+		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
+	}
+	return strings.Join(lines, "\n")
+}
+
 func indentOf(s string) string {
 	i := 0
 	for i < len(s) && (s[i] == ' ' || s[i] == '\t') {
@@ -694,7 +706,7 @@ func indentOf(s string) string {
 	return s[:i]
 }
 
-type pyItem struct {
+type item struct {
 	Kind   string   `json:"kind"`
 	Name   string   `json:"name"`
 	Params []string `json:"params,omitempty"`
@@ -703,7 +715,7 @@ type pyItem struct {
 	Value  string   `json:"value,omitempty"`
 }
 
-const pyParseScript = `import ast, json, sys
+const parseScript = `import ast, json, sys
 tree = ast.parse(sys.stdin.read())
 items = []
 for n in tree.body:
@@ -721,24 +733,24 @@ for n in tree.body:
             items.append({"kind": "assign", "name": n.targets[0].id, "value": val})
 json.dump(items, sys.stdout)`
 
-func runPyParse(src string) ([]pyItem, error) {
+func runParse(src string) ([]item, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	cmd := exec.CommandContext(ctx, pyCmd, "-c", pyParseScript)
+	cmd := exec.CommandContext(ctx, pythonCmd, "-c", parseScript)
 	cmd.Stdin = strings.NewReader(src)
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	if err := cmd.Run(); err != nil {
 		return nil, err
 	}
-	var items []pyItem
+	var items []item
 	if err := json.Unmarshal(out.Bytes(), &items); err != nil {
 		return nil, err
 	}
 	return items, nil
 }
 
-func extractPyBody(src string, startLine, endLine int) []string {
+func extractBody(src string, startLine, endLine int) []string {
 	lines := strings.Split(src, "\n")
 	if startLine >= len(lines) {
 		return nil
@@ -761,6 +773,6 @@ func extractPyBody(src string, startLine, endLine int) []string {
 	if indent == "" {
 		return nil
 	}
-	stmts, _ := parsePyLines(bodyLines, indent)
+	stmts, _ := parseLines(bodyLines, indent)
 	return stmts
 }
