@@ -5,7 +5,6 @@ package rktcode_test
 import (
 	"bytes"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -42,17 +41,11 @@ func TestRacketCompiler_TPCDS_Golden(t *testing.T) {
 	if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(wantCode)) {
 		t.Errorf("generated code mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, bytes.TrimSpace(wantCode))
 	}
-	tmp := t.TempDir()
-	file := filepath.Join(tmp, "main.rkt")
-	if err := os.WriteFile(file, code, 0644); err != nil {
-		t.Fatalf("write error: %v", err)
-	}
-	cmd := exec.Command("racket", file)
-	out, err := cmd.CombinedOutput()
+	gotRunBytes, err := compileRun(t, src)
 	if err != nil {
-		t.Skipf("%s failed to run: %v", q, err)
+		t.Fatalf("%s: %v", q, err)
 	}
-	gotRun := strings.TrimSpace(string(out))
+	gotRun := string(bytes.TrimSpace(gotRunBytes))
 	wantRunBytes, err := os.ReadFile(filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "rkt", q+".out"))
 	if err != nil {
 		t.Fatalf("read output golden: %v", err)
