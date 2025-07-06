@@ -15,6 +15,7 @@ import (
 	hscode "mochi/compile/x/hs"
 	"mochi/golden"
 	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -22,7 +23,7 @@ func TestHSCompiler_LeetCodeExample1(t *testing.T) {
 	if err := hscode.EnsureHaskell(); err != nil {
 		t.Skipf("haskell not installed: %v", err)
 	}
-    src := filepath.Join("..", "..", "..", "examples", "leetcode", "1", "two-sum.mochi")
+	src := filepath.Join("..", "..", "..", "examples", "leetcode", "1", "two-sum.mochi")
 	prog, err := parser.Parse(src)
 	if err != nil {
 		t.Fatalf("parse error: %v", err)
@@ -79,18 +80,45 @@ func TestHSCompiler_GoldenSubset(t *testing.T) {
 			return nil, err
 		}
 		cmd := exec.Command("runhaskell", file)
+		var inData []byte
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 			cmd.Stdin = bytes.NewReader(data)
+			inData = data
 		}
-		out, err := cmd.CombinedOutput()
+		outHS, err := cmd.CombinedOutput()
 		if err != nil {
-			return nil, fmt.Errorf("runhaskell error: %w\n%s", err, out)
+			return nil, fmt.Errorf("runhaskell error: %w\n%s", err, outHS)
 		}
-		res := bytes.TrimSpace(out)
-		if res == nil {
-			res = []byte{}
+		hsRes := strings.TrimSpace(string(outHS))
+
+		// Run with VM to get expected output
+		p, err := vm.Compile(prog, env)
+		if err != nil {
+			return nil, fmt.Errorf("vm compile error: %w", err)
 		}
-		return res, nil
+		var vmOut bytes.Buffer
+		if inData != nil {
+			m := vm.NewWithIO(p, bytes.NewReader(inData), &vmOut)
+			if err := m.Run(); err != nil {
+				if ve, ok := err.(*vm.VMError); ok {
+					return nil, fmt.Errorf("vm run error:\n%s", ve.Format(p))
+				}
+				return nil, fmt.Errorf("vm run error: %w", err)
+			}
+		} else {
+			m := vm.New(p, &vmOut)
+			if err := m.Run(); err != nil {
+				if ve, ok := err.(*vm.VMError); ok {
+					return nil, fmt.Errorf("vm run error:\n%s", ve.Format(p))
+				}
+				return nil, fmt.Errorf("vm run error: %w", err)
+			}
+		}
+		vmRes := strings.TrimSpace(vmOut.String())
+		if hsRes != vmRes {
+			return nil, fmt.Errorf("output mismatch\n-- hs --\n%s\n-- vm --\n%s", hsRes, vmRes)
+		}
+		return []byte(hsRes), nil
 	})
 }
 
@@ -116,7 +144,7 @@ func TestHSCompiler_GoldenOutput(t *testing.T) {
 // It ensures the generated Haskell code executes without error.
 func runExample(t *testing.T, id int) error {
 	t.Helper()
-    dir := filepath.Join("..", "..", "..", "examples", "leetcode", strconv.Itoa(id))
+	dir := filepath.Join("..", "..", "..", "examples", "leetcode", strconv.Itoa(id))
 	files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
 	if err != nil {
 		return err
