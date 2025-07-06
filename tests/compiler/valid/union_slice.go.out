@@ -16,6 +16,7 @@ type Node struct {
 
 func (Node) isFoo() {}
 
+// line 5
 func listit() []Foo {
 	return _convSlice[Empty, Foo]([]Empty{Empty{}})
 }
@@ -25,9 +26,9 @@ func main() {
 }
 
 func _convSlice[T any, U any](s []T) []U {
-	out := make([]U, len(s))
-	for i, v := range s {
-		out[i] = any(v).(U)
+	out := []U{}
+	for _, v := range s {
+		out = append(out, any(v).(U))
 	}
 	return out
 }

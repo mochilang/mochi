@@ -4,6 +4,7 @@ import (
 	"fmt"
 )
 
+// line 1
 func foo(m map[string]int) {
 	fmt.Println(len(m))
 }

@@ -19,6 +19,7 @@ type Node struct {
 
 func (Node) isTree() {}
 
+// line 5
 func value_of_root(t Tree) int {
 	return _cast[int](func() any {
 		_t := t
