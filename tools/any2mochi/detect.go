@@ -52,14 +52,14 @@ func DetectLanguage(name, src string) string {
 		return "hs"
 	case ".ml", ".mli":
 		return "ocaml"
-       case ".pas":
-               return "pas"
-       case ".f90", ".f95", ".f", ".for":
-               return "fortran"
-       case ".pro", ".prolog", ".plg":
-               return "prolog"
-       case ".pl":
-               return "pl"
+	case ".pas":
+		return "pas"
+	case ".f90", ".f95", ".f", ".for":
+		return "fortran"
+	case ".pro", ".prolog", ".plg":
+		return "prolog"
+	case ".pl":
+		return "pl"
 	case ".rkt":
 		return "rkt"
 	case ".zig":
@@ -70,6 +70,8 @@ func DetectLanguage(name, src string) string {
 		return "cobol"
 	case ".s":
 		return "asm"
+	case ".pho":
+		return "pho"
 	case ".scm", ".ss":
 		return "scheme"
 	case ".st":

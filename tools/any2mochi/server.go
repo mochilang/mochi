@@ -38,6 +38,7 @@ var Servers = map[string]LanguageServer{
 	"ocaml":      {Command: "ocamllsp", Args: nil, LangID: "ocaml"},
 	"pas":        {Command: "pasls", Args: nil, LangID: "pascal"},
 	"php":        {Command: "intelephense", Args: []string{"--stdio"}, LangID: "php"},
+	"pho":        {Command: "", Args: nil, LangID: "pho"},
 	"prolog":     {Command: "prolog-lsp", Args: nil, LangID: "prolog"},
 	"pl":         {Command: "perlls", Args: nil, LangID: "perl"},
 	"rb":         {Command: "solargraph", Args: []string{"stdio"}, LangID: "ruby"},
