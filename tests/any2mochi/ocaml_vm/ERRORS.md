@@ -1,0 +1,107 @@
+# Errors
+
+- append_builtin: parse error: parse error: 2:17: unexpected token "a" (expected "(" (Expr ("," Expr)*)? ")")
+- avg_builtin: parse error: parse error: 1:17: unexpected token "," (expected "]")
+- basic_compare: parse error: parse error: 4:12: unexpected token "=" (expected "(" (Expr ("," Expr)*)? ")")
+- binary_precedence: ok
+- bool_chain: parse error: parse error: 1:14: unexpected token ")" (expected PostfixExpr)
+- break_continue: parse error: parse error: 2:22: unexpected token " " (expected ")")
+- cast_string_to_int: parse error: parse error: 1:16: unexpected token ":" (expected ")")
+- cast_struct: parse error: parse error: 1:14: unexpected token "let" (expected PostfixExpr)
+- closure: parse error: parse error: 2:16: unexpected token "7" (expected "(" (Expr ("," Expr)*)? ")")
+- count_builtin: parse error: parse error: 1:16: unexpected token "," (expected "]")
+- cross_join: parse error: parse error: 1:19: unexpected token "let" (expected PostfixExpr)
+- cross_join_filter: parse error: parse error: 5:22: unexpected token " " (expected ")")
+- cross_join_triple: parse error: parse error: 6:22: unexpected token " " (expected ")")
+- dataset_sort_take_limit: parse error: parse error: 1:18: unexpected token "let" (expected PostfixExpr)
+- dataset_where_filter: compile error: unsupported expression
+- exists_builtin: type error: error[T018]: type fun(any): bool [pure] does not support indexing
+  --> :2:12
+
+help:
+  Only `list<T>` and `map<K,V>` can be indexed.
+- for_list_collection: parse error: parse error: 1:14: unexpected token ")" (expected PostfixExpr)
+- for_loop: parse error: parse error: 2:1: unexpected token "}"
+- for_map_collection: parse error: parse error: 1:10: unexpected token "let" (expected PostfixExpr)
+- fun_call: parse error: parse error: 1:14: unexpected token "2" (expected "(" (Expr ("," Expr)*)? ")")
+- fun_expr_in_let: parse error: parse error: 1:18: unexpected token "x" (expected "(" (Param ("," Param)*)? ")" (":" TypeRef)? "=>" Expr)
+- fun_three_args: parse error: parse error: 1:15: unexpected token "1" (expected "(" (Expr ("," Expr)*)? ")")
+- group_by: parse error: parse error: 1:16: unexpected token "let" (expected PostfixExpr)
+- group_by_conditional_sum: parse error: parse error: 1:15: unexpected token "let" (expected PostfixExpr)
+- group_by_having: parse error: parse error: 1:16: unexpected token "let" (expected PostfixExpr)
+- group_by_join: parse error: parse error: 1:19: unexpected token "let" (expected PostfixExpr)
+- group_by_left_join: parse error: parse error: 1:19: unexpected token "let" (expected PostfixExpr)
+- group_by_multi_join: parse error: parse error: 1:17: unexpected token "let" (expected PostfixExpr)
+- group_by_multi_join_sort: parse error: parse error: 1:16: unexpected token "let" (expected PostfixExpr)
+- group_by_sort: parse error: parse error: 1:15: unexpected token "let" (expected PostfixExpr)
+- group_items_iteration: parse error: parse error: 1:14: unexpected token "let" (expected PostfixExpr)
+- if_else: ok
+- if_then_else: compile error: unsupported expression
+- if_then_else_nested: compile error: unsupported expression
+- in_operator: parse error: parse error: 2:22: unexpected token "xs" (expected ")")
+- in_operator_extended: parse error: parse error: 3:22: unexpected token "ys" (expected ")")
+- inner_join: parse error: parse error: 1:19: unexpected token "let" (expected PostfixExpr)
+- join_multi: parse error: parse error: 1:19: unexpected token "let" (expected PostfixExpr)
+- json_builtin: parse error: parse error: 1:10: unexpected token "let" (expected PostfixExpr)
+- left_join: parse error: parse error: 1:19: unexpected token "let" (expected PostfixExpr)
+- left_join_multi: parse error: parse error: 1:19: unexpected token "let" (expected PostfixExpr)
+- len_builtin: parse error: parse error: 1:16: unexpected token "," (expected "]")
+- len_map: parse error: parse error: 1:26: unexpected token "let" (expected ")")
+- len_string: parse error: parse error: 1:24: unexpected token "mochi" (expected ")")
+- let_and_print: ok
+- list_assign: parse error: parse error: 3:18: unexpected token ")" (expected "]")
+- list_index: parse error: parse error: 2:15: unexpected token ")" (expected "]")
+- list_nested_assign: parse error: parse error: 3:30: unexpected token "1" (expected ")")
+- list_set_ops: parse error: parse error: 1:20: unexpected token "," (expected "]")
+- load_yaml: parse error: parse error: 1:21: unexpected token "with" (expected "{" MatchCase* "}")
+- map_assign: parse error: parse error: 1:15: unexpected token "let" (expected PostfixExpr)
+- map_in_operator: parse error: parse error: 1:10: unexpected token "let" (expected PostfixExpr)
+- map_index: parse error: parse error: 1:10: unexpected token "let" (expected PostfixExpr)
+- map_int_key: parse error: parse error: 1:10: unexpected token "let" (expected PostfixExpr)
+- map_literal_dynamic: parse error: parse error: 3:10: unexpected token "let" (expected PostfixExpr)
+- map_membership: parse error: parse error: 1:10: unexpected token "let" (expected PostfixExpr)
+- map_nested_assign: parse error: parse error: 1:13: unexpected token "let" (expected PostfixExpr)
+- match_expr: parse error: parse error: 2:22: unexpected token "with" (expected "{" MatchCase* "}")
+- match_full: parse error: parse error: 2:22: unexpected token "with" (expected "{" MatchCase* "}")
+- math_ops: parse error: parse error: 3:12: unexpected token "mod" (expected ")")
+- membership: parse error: parse error: 2:22: unexpected token "nums" (expected ")")
+- min_max_builtin: parse error: parse error: 2:14: unexpected token "nums" (expected "(" (Expr ("," Expr)*)? ")")
+- nested_function: parse error: parse error: 1:16: unexpected token "3" (expected "(" (Expr ("," Expr)*)? ")")
+- order_by_map: parse error: parse error: 1:14: unexpected token "let" (expected PostfixExpr)
+- outer_join: parse error: parse error: 1:19: unexpected token "let" (expected PostfixExpr)
+- partial_application: parse error: parse error: 2:15: unexpected token "3" (expected "(" (Expr ("," Expr)*)? ")")
+- print_hello: ok
+- pure_fold: parse error: parse error: 1:17: unexpected token "1" (expected "(" (Expr ("," Expr)*)? ")")
+- pure_global_fold: parse error: parse error: 2:14: unexpected token "3" (expected "(" (Expr ("," Expr)*)? ")")
+- query_sum_select: ok
+- record_assign: parse error: parse error: 1:12: unexpected token ","
+- right_join: parse error: parse error: 1:19: unexpected token "let" (expected PostfixExpr)
+- save_jsonl_stdout: parse error: parse error: 1:21: unexpected token "with" (expected "{" MatchCase* "}")
+- short_circuit: parse error: parse error: 1:14: unexpected token ")" (expected PostfixExpr)
+- slice: parse error: parse error: 1:20: unexpected token "," (expected "]")
+- sort_stable: parse error: parse error: 1:15: unexpected token "let" (expected PostfixExpr)
+- str_builtin: ok
+- string_compare: ok
+- string_concat: ok
+- string_contains: parse error: parse error: 2:20: unexpected token "cat" (expected ")")
+- string_in_operator: parse error: parse error: 2:20: unexpected token "s" (expected ")")
+- string_index: parse error: parse error: 2:20: unexpected token "s" (expected ")")
+- string_prefix_slice: parse error: parse error: 3:20: unexpected token "s1" (expected ")")
+- substring_builtin: parse error: parse error: 1:20: unexpected token "mochi" (expected "(" (Expr ("," Expr)*)? ")")
+- sum_builtin: parse error: parse error: 1:17: unexpected token "," (expected "]")
+- tail_recursion: parse error: parse error: 1:18: unexpected token "10" (expected "(" (Expr ("," Expr)*)? ")")
+- test_block: type error: error[T020]: operator `in` cannot be used on types int and void
+  --> :1:15
+
+help:
+  Choose an operator that supports these operand types.
+- tree_sum: parse error: parse error: 1:22: unexpected token "," (expected PostfixExpr)
+- two-sum: parse error: parse error: 2:1: unexpected token "}" (expected PostfixExpr)
+- typed_let: parse error: parse error: 1:10: unexpected token ")" (expected PostfixExpr)
+- typed_var: parse error: parse error: 1:10: unexpected token ")" (expected PostfixExpr)
+- unary_neg: ok
+- update_stmt: parse error: parse error: 1:31: unexpected token "," (expected PostfixExpr)
+- user_type_literal: parse error: parse error: 1:26: unexpected token "," (expected PostfixExpr)
+- values_builtin: parse error: parse error: 1:10: unexpected token "let" (expected PostfixExpr)
+- var_assignment: ok
+- while_loop: parse error: parse error: 3:15: unexpected token ")" (expected PostfixExpr)
