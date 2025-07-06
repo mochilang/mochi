@@ -4,6 +4,7 @@ package luacode_test
 
 import (
 	"flag"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -145,27 +146,65 @@ func TestLuaCompiler_GoldenOutput(t *testing.T) {
 	if err := luacode.EnsureLua(); err != nil {
 		t.Skipf("lua not installed: %v", err)
 	}
-	dirs := []string{
-		"tests/compiler/lua",
+	compileRun := func(src string) ([]byte, error) {
+		prog, err := parser.Parse(src)
+		if err != nil {
+			return nil, fmt.Errorf("❌ parse error: %w", err)
+		}
+		env := types.NewEnv(nil)
+		if errs := types.Check(prog, env); len(errs) > 0 {
+			return nil, fmt.Errorf("❌ type error: %v", errs[0])
+		}
+		c := luacode.New(env)
+		code, err := c.Compile(prog)
+		if err != nil {
+			return nil, fmt.Errorf("❌ compile error: %w", err)
+		}
+
+		tmp := t.TempDir()
+		file := filepath.Join(tmp, "main.lua")
+		if err := os.WriteFile(file, code, 0644); err != nil {
+			return nil, fmt.Errorf("write error: %w", err)
+		}
+		cmd := exec.Command("lua", file)
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			cmd.Stdin = bytes.NewReader(data)
+		}
+		outLua, err := cmd.CombinedOutput()
+		if err != nil {
+			return nil, fmt.Errorf("❌ lua error: %w\n%s", err, outLua)
+		}
+		outLua = bytes.TrimSpace(outLua)
+
+		srcData, _ := os.ReadFile(src)
+		p, err := vm.CompileWithSource(prog, env, string(srcData))
+		if err != nil {
+			return nil, fmt.Errorf("❌ vm compile error: %w", err)
+		}
+		var in io.Reader = os.Stdin
+		if f, err := os.Open(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			in = f
+			defer f.Close()
+		}
+		var buf bytes.Buffer
+		m := vm.NewWithIO(p, in, &buf)
+		if err := m.Run(); err != nil {
+			if ve, ok := err.(*vm.VMError); ok {
+				return nil, fmt.Errorf("❌ vm run error:\n%s", ve.Format(p))
+			}
+			return nil, fmt.Errorf("❌ vm run error: %v", err)
+		}
+		outVM := bytes.TrimSpace(buf.Bytes())
+
+		if !bytes.Equal(outLua, outVM) {
+			return nil, fmt.Errorf("runtime mismatch\n\n--- Lua ---\n%s\n\n--- VM ---\n%s\n", outLua, outVM)
+		}
+
+		return bytes.TrimSpace(code), nil
 	}
-	for _, dir := range dirs {
-		golden.Run(t, dir, ".mochi", ".lua.out", func(src string) ([]byte, error) {
-			prog, err := parser.Parse(src)
-			if err != nil {
-				return nil, fmt.Errorf("❌ parse error: %w", err)
-			}
-			env := types.NewEnv(nil)
-			if errs := types.Check(prog, env); len(errs) > 0 {
-				return nil, fmt.Errorf("❌ type error: %v", errs[0])
-			}
-			c := luacode.New(env)
-			code, err := c.Compile(prog)
-			if err != nil {
-				return nil, fmt.Errorf("❌ compile error: %w", err)
-			}
-			return bytes.TrimSpace(code), nil
-		})
-	}
+
+	golden.Run(t, "tests/compiler/lua", ".mochi", ".lua.out", compileRun)
+	golden.Run(t, "tests/compiler/valid", ".mochi", ".lua.out", compileRun)
 }
 
 func TestLuaCompiler_LeetCodeExamples(t *testing.T) {
