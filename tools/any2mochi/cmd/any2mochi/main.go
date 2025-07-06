@@ -59,6 +59,33 @@ func parseCmd() *cobra.Command {
 	return cmd
 }
 
+func parseLuaCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "parse-lua [file]",
+		Short: "Parse Lua source and output JSON AST",
+		Args:  cobra.MaximumNArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			var data []byte
+			var err error
+			if len(args) == 1 {
+				data, err = os.ReadFile(args[0])
+			} else {
+				data, err = io.ReadAll(cmd.InOrStdin())
+			}
+			if err != nil {
+				return err
+			}
+			out, err := any2mochi.LuaASTToJSON(string(data))
+			if err != nil {
+				return err
+			}
+			_, err = cmd.OutOrStdout().Write(out)
+			return err
+		},
+	}
+	return cmd
+}
+
 func convertGoCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "convert-go <file.go>",
@@ -112,6 +139,31 @@ func convertHsCmd() *cobra.Command {
 				return err
 			}
 			out, err := any2mochi.ConvertHs(string(data))
+			if err != nil {
+				return err
+			}
+			_, err = cmd.OutOrStdout().Write(out)
+			return err
+		},
+	}
+	return cmd
+}
+
+func convertLuaASTCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "convert-lua <file.lua>",
+		Short: "Convert Lua source to Mochi using AST parser",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			data, err := os.ReadFile(args[0])
+			if err != nil {
+				return err
+			}
+			ast, err := any2mochi.ParseLuaAST(string(data))
+			if err != nil {
+				return err
+			}
+			out, err := any2mochi.ConvertLuaAST(ast)
 			if err != nil {
 				return err
 			}
@@ -268,6 +320,8 @@ func newRootCmd() *cobra.Command {
 		parseCmd(),
 		convertGoCmd(),
 		convertRustCmd(),
+		parseLuaCmd(),
+		convertLuaASTCmd(),
 		convertPythonCmd(),
 		convertHsCmd(),
 		convertTSCmd(),

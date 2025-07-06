@@ -1,0 +1,4 @@
+fun hello() {
+  print("Hello from Lua")
+}
+hello()
