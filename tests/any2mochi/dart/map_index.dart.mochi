@@ -1,4 +1,4 @@
 fun main() {
-  dynamic scores = {"Alice": 10, "Bob": 15}
+  let scores = {"Alice": 10, "Bob": 15}
   print(scores["Bob"])
 }

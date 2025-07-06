@@ -1,5 +1,5 @@
 fun main() {
-  dynamic scores = {"a": 1}
+  let scores = {"a": 1}
   scores["b"] = 2
   print(scores["b"])
 }

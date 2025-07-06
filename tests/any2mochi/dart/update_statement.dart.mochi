@@ -2,8 +2,8 @@ fun test_update_adult_status() {
   if (!(_equal(people, [Person(name: "Alice", age: 17, status: "minor"), Person(name: "Bob", age: 26, status: "adult"), Person(name: "Charlie", age: 19, status: "adult"), Person(name: "Diana", age: 16, status: "minor")]))) { throw Exception('expect failed'); }
 }
 fun main() {
-  int failures = 0
-  List<Person> people = [Person(name: "Alice", age: 17, status: "minor"), Person(name: "Bob", age: 25, status: "unknown"), Person(name: "Charlie", age: 18, status: "unknown"), Person(name: "Diana", age: 16, status: "minor")]
+  let failures: int = 0
+  let people: list<Person> = [Person(name: "Alice", age: 17, status: "minor"), Person(name: "Bob", age: 25, status: "unknown"), Person(name: "Charlie", age: 18, status: "unknown"), Person(name: "Diana", age: 16, status: "minor")]
   for _tmp0 in 0..people.length {
     let _tmp1 = people[_tmp0]
     let name = _tmp1.name

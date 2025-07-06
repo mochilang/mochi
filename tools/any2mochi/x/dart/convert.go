@@ -10,6 +10,8 @@ import (
 	"unicode"
 )
 
+var typedVarRe = regexp.MustCompile(`^(?:final|const)?\s*([A-Za-z_][A-Za-z0-9_<>,\[\]\? ]*)\s+([A-Za-z_][A-Za-z0-9_]*)\s*(=.*)?$`)
+
 // Convert converts Dart source code to Mochi.
 func Convert(src string) ([]byte, error) {
 	funcs, err := parseCLI(src)
@@ -432,6 +434,19 @@ func parseStatements(body string) []string {
 				out = append(out, strings.Repeat("  ", indent)+"for "+head+" {")
 			}
 			indent++
+		case !strings.HasPrefix(l, "var ") && !strings.HasPrefix(l, "return ") && typedVarRe.MatchString(l):
+			m := typedVarRe.FindStringSubmatch(l)
+			typ := toMochiType(strings.TrimSpace(m[1]))
+			name := m[2]
+			val := strings.TrimSpace(strings.TrimPrefix(m[3], "="))
+			stmt := "let " + name
+			if typ != "" && typ != "any" {
+				stmt += ": " + typ
+			}
+			if val != "" {
+				stmt += " = " + val
+			}
+			out = append(out, strings.Repeat("  ", indent)+stmt)
 		case strings.HasPrefix(l, "var "):
 			stmt := strings.TrimSpace(strings.TrimPrefix(l, "var "))
 			if strings.Contains(stmt, "=") && strings.Contains(stmt, ".length") {

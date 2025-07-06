@@ -1,4 +1,4 @@
 fun main() {
-  dynamic square = (x) => (x * x)
+  let square = (x) => (x * x)
   print(square(6))
 }

@@ -1,5 +1,5 @@
 fun main() {
-  List<Person> people = _load("../tests/interpreter/valid/people.jsonl", {"format": "jsonl"})
+  let people: list<Person> = _load("../tests/interpreter/valid/people.jsonl", {"format": "jsonl"})
   _save(people, "-", {"format": "csv", "header": true})
 }
 fun _load(path: string, Map<String: any, opts: dynamic>): list<map<string, any>> {
@@ -8,7 +8,7 @@ fun _load(path: string, Map<String: any, opts: dynamic>): list<map<string, any>>
   let delim = (opts?['delimiter'] ?? ',').toString()
   if (delim.isEmpty) delim = ','
   if (format == 'tsv') delim = '	'
-  String text
+  let text: string
   if (path == null || path == '' || path == '-') {
     let lines = <String>[]
     while (true) {
@@ -38,7 +38,7 @@ fun _load(path: string, Map<String: any, opts: dynamic>): list<map<string, any>>
   if (format != 'csv') return <Map<String,dynamic>>[]
   let lines = text.trim().split(RegExp('\r?\n')).where((l) => l.isNotEmpty).toList()
   if (lines.isEmpty) return <Map<String,dynamic>>[]
-  List<String> headers
+  let headers: list<string>
   if (header) {
     headers = lines[0].split(delim)
     } else {
@@ -62,7 +62,7 @@ fun _save(List<Map<String: any, rows: dynamic>>, path: string, Map<String: any, 
   let delim = (opts?['delimiter'] ?? ',').toString()
   if (delim.isEmpty) delim = ','
   if (format == 'tsv') delim = '	'
-  String text
+  let text: string
   if (format == 'json') {
     text = jsonEncode(rows)
     } else if (format == 'jsonl') {

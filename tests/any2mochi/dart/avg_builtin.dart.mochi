@@ -2,7 +2,7 @@ fun main() {
   print(_avg([1, 2, 3]))
 }
 fun _avg(v: any): float {
-  List<dynamic>? list
+  let list: list<any>
   if (v is List) list = v
   else if (v is Map && v['items'] is List) list = (v['items'] as List)
   else if (v is Map && v['Items'] is List) list = (v['Items'] as List)

@@ -1,16 +1,16 @@
 fun searchMatrix(matrix: any, target: any): any {
-  dynamic m = matrix.length
+  let m = len(matrix)
   if ((m == 0)) {
     return false
   }
-  dynamic n = matrix[0].length
-  dynamic left = 0
-  dynamic right = ((m * n) - 1)
+  let n = len(matrix[0])
+  let left = 0
+  let right = ((m * n) - 1)
   while ((left <= right)) {
-    dynamic mid = (left + (((right - left)) ~/ 2))
-    dynamic row = (mid ~/ n)
-    dynamic col = (mid % n)
-    dynamic value = matrix[row][col]
+    let mid = (left + (((right - left)) ~/ 2))
+    let row = (mid ~/ n)
+    let col = (mid % n)
+    let value = matrix[row][col]
     if ((value == target)) {
       return true
       } else

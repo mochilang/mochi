@@ -1,8 +1,8 @@
 fun main() {
-  dynamic nums = [1, 2]
-  dynamic letters = ["A", "B"]
-  dynamic bools = [true, false]
-  dynamic combos = (() {
+  let nums = [1, 2]
+  let letters = ["A", "B"]
+  let bools = [true, false]
+  let combos = (() {
   let _res = []
   for (var n in nums) {
     for (var l in letters) {

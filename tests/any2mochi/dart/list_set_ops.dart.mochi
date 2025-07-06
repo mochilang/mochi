@@ -1,6 +1,6 @@
 fun main() {
-  List<int> a = [1, 2, 3]
-  List<int> b = [3, 4]
+  let a: list<int> = [1, 2, 3]
+  let b: list<int> = [3, 4]
   print(_union(a, b))
   print(_except(a, b))
   print(_intersect(a, b))

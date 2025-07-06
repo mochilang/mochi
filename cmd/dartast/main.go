@@ -9,6 +9,8 @@ import (
 	"strings"
 )
 
+var typedVarRe = regexp.MustCompile(`^(?:final|const)?\s*([A-Za-z_][A-Za-z0-9_<>,\[\]\? ]*)\s+([A-Za-z_][A-Za-z0-9_]*)\s*(=.*)?$`)
+
 type dartParam struct {
 	Name string `json:"name"`
 	Type string `json:"type"`
@@ -77,6 +79,24 @@ func parseStatements(body string) []string {
 				out = append(out, strings.Repeat("  ", indent)+"for "+head+" {")
 			}
 			indent++
+		case !strings.HasPrefix(l, "var ") && !strings.HasPrefix(l, "return ") && typedVarRe.MatchString(l):
+			m := typedVarRe.FindStringSubmatch(l)
+			typ := strings.TrimSpace(m[1])
+			name := m[2]
+			val := strings.TrimSpace(strings.TrimPrefix(m[3], "="))
+			stmt := "let " + name
+			mt := toMochiType(typ)
+			if mt != "" && mt != "any" {
+				stmt += ": " + mt
+			}
+			if strings.Contains(val, ".length") {
+				parts := strings.SplitN(val, ".length", 2)
+				val = "len(" + strings.TrimSpace(parts[0]) + ")"
+			}
+			if val != "" {
+				stmt += " = " + val
+			}
+			out = append(out, strings.Repeat("  ", indent)+stmt)
 		case strings.HasPrefix(l, "var "):
 			stmt := strings.TrimSpace(strings.TrimPrefix(l, "var "))
 			if strings.Contains(stmt, "=") && strings.Contains(stmt, ".length") {
@@ -154,6 +174,86 @@ func parse(src string) []dartFunc {
 		})
 	}
 	return funcs
+}
+
+func splitArgs(s string) []string {
+	var parts []string
+	depth := 0
+	start := 0
+	for i, r := range s {
+		switch r {
+		case '<':
+			depth++
+		case '>':
+			if depth > 0 {
+				depth--
+			}
+		case ',':
+			if depth == 0 {
+				parts = append(parts, strings.TrimSpace(s[start:i]))
+				start = i + 1
+			}
+		}
+	}
+	if start < len(s) {
+		parts = append(parts, strings.TrimSpace(s[start:]))
+	}
+	return parts
+}
+
+func toMochiType(t string) string {
+	t = strings.TrimSpace(t)
+	if strings.HasSuffix(t, "?") {
+		t = strings.TrimSuffix(t, "?")
+	}
+	switch t {
+	case "", "dynamic", "Object":
+		return "any"
+	case "int":
+		return "int"
+	case "double", "num":
+		return "float"
+	case "bool":
+		return "bool"
+	case "String":
+		return "string"
+	case "void":
+		return ""
+	}
+	if strings.HasSuffix(t, ">") {
+		if open := strings.Index(t, "<"); open != -1 {
+			outer := strings.TrimSpace(t[:open])
+			inner := strings.TrimSuffix(t[open+1:], ">")
+			args := splitArgs(inner)
+			switch outer {
+			case "List", "Iterable", "Set":
+				a := "any"
+				if len(args) > 0 {
+					if at := toMochiType(args[0]); at != "" {
+						a = at
+					}
+				}
+				return "list<" + a + ">"
+			case "Map":
+				if len(args) == 2 {
+					k := toMochiType(args[0])
+					if k == "" {
+						k = "any"
+					}
+					v := toMochiType(args[1])
+					if v == "" {
+						v = "any"
+					}
+					return "map<" + k + ", " + v + ">"
+				}
+			case "Future":
+				if len(args) == 1 {
+					return toMochiType(args[0])
+				}
+			}
+		}
+	}
+	return t
 }
 
 func main() {

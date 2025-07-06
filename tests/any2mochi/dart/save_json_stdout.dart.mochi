@@ -1,5 +1,5 @@
 fun main() {
-  List<Map<String, dynamic>> people = [{"name": "Alice", "age": 30}, {"name": "Bob", "age": 25}]
+  let people: list<map<string, any>> = [{"name": "Alice", "age": 30}, {"name": "Bob", "age": 25}]
   _save(people, "-", {"format": "json"})
 }
 fun _save(List<Map<String: any, rows: dynamic>>, path: string, Map<String: any, opts: dynamic>) {
@@ -8,7 +8,7 @@ fun _save(List<Map<String: any, rows: dynamic>>, path: string, Map<String: any, 
   let delim = (opts?['delimiter'] ?? ',').toString()
   if (delim.isEmpty) delim = ','
   if (format == 'tsv') delim = '	'
-  String text
+  let text: string
   if (format == 'json') {
     text = jsonEncode(rows)
     } else if (format == 'jsonl') {

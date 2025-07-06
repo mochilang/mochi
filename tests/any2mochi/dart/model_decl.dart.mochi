@@ -1,6 +1,6 @@
 fun main() {
   _models["quick"] = {"provider": "openai"}
-  String x = _genText("hi", "quick", null)
+  let x: string = _genText("hi", "quick", null)
   print(x)
 }
 fun _genText(prompt: string, model: string, Map<String: any, params: dynamic>): string {
