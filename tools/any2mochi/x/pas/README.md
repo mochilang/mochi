@@ -8,11 +8,13 @@ This package implements a minimal Pascal frontend for the `any2mochi` tools. It 
 * `ConvertFile` is a helper that reads a file and calls `Convert`.
 * The package walks the `DocumentSymbol` hierarchy returned by the language server and emits Mochi stubs.
 * Basic statement conversion is handled in `convertBody` when no language server is present.
+* A fallback regex parser supports simple loops and assignments when no server is available.
 
 ## Supported Features
 
 * Function, method and type declarations.
 * Simple variable declarations and assignments.
+* `for` ranges and `while` loops in fallback mode.
 * Basic extraction of function bodies when a language server is unavailable.
 
 ## Unsupported Features
