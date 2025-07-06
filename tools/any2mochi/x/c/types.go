@@ -11,6 +11,7 @@ type function struct {
 	startLine int    // 1-indexed line of the function definition
 	endLine   int    // 1-indexed line of the closing brace
 	source    string // full source snippet of the function
+	signature string // original clang type signature
 }
 
 type param struct {

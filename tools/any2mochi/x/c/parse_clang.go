@@ -111,12 +111,14 @@ func parseClangFile(src string) ([]function, error) {
 			}
 			if len(body) > 0 {
 				srcLines := strings.Split(src, "\n")
-				if startLn-1 >= 0 && endLn <= len(srcLines) {
-					snippet := strings.Join(srcLines[startLn-1:endLn], "\n")
-					funcs = append(funcs, function{name: n.Name, ret: ret, params: params, body: body, startLine: startLn, endLine: endLn, source: snippet})
-				} else {
-					funcs = append(funcs, function{name: n.Name, ret: ret, params: params, body: body, startLine: startLn, endLine: endLn})
+				fn := function{name: n.Name, ret: ret, params: params, body: body, startLine: startLn, endLine: endLn, signature: ""}
+				if n.Type != nil {
+					fn.signature = n.Type.QualType
 				}
+				if startLn-1 >= 0 && endLn <= len(srcLines) {
+					fn.source = strings.Join(srcLines[startLn-1:endLn], "\n")
+				}
+				funcs = append(funcs, fn)
 			}
 		}
 		for _, c := range n.Inner {
