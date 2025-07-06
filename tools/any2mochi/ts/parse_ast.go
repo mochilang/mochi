@@ -11,19 +11,23 @@ import (
 	tscode "mochi/compile/ts"
 )
 
-type tsASTDecl struct {
-	Kind     string    `json:"kind"`
-	Name     string    `json:"name"`
-	Params   []tsParam `json:"params,omitempty"`
-	Ret      string    `json:"ret,omitempty"`
-	Body     string    `json:"body,omitempty"`
-	Fields   []tsField `json:"fields,omitempty"`
-	Alias    string    `json:"alias,omitempty"`
-	Variants []string  `json:"variants,omitempty"`
+// TSAstDecl represents a top-level declaration parsed from a TypeScript source
+// file. Line numbers are 1-based and refer to the original TypeScript file.
+type TSAstDecl struct {
+	Kind      string    `json:"kind"`
+	Name      string    `json:"name"`
+	Params    []TSParam `json:"params,omitempty"`
+	Ret       string    `json:"ret,omitempty"`
+	Body      string    `json:"body,omitempty"`
+	Fields    []TSField `json:"fields,omitempty"`
+	Alias     string    `json:"alias,omitempty"`
+	Variants  []string  `json:"variants,omitempty"`
+	StartLine int       `json:"start,omitempty"`
+	EndLine   int       `json:"end,omitempty"`
 }
 
 // parseTSAST parses src using a Deno helper and returns the AST.
-func parseTSAST(src string) ([]tsASTDecl, error) {
+func parseTSAST(src string) ([]TSAstDecl, error) {
 	if err := tscode.EnsureDeno(); err != nil {
 		return nil, err
 	}
@@ -45,7 +49,7 @@ func parseTSAST(src string) ([]tsASTDecl, error) {
 	if err != nil {
 		return nil, fmt.Errorf("deno error: %w\n%s", err, out)
 	}
-	var decls []tsASTDecl
+	var decls []TSAstDecl
 	if err := json.Unmarshal(out, &decls); err != nil {
 		return nil, err
 	}

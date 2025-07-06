@@ -228,7 +228,7 @@ func writeTSFunc(out *strings.Builder, name string, sym parent.DocumentSymbol, s
 	out.WriteString("}\n")
 }
 
-func tsHoverSignature(src string, sym parent.DocumentSymbol, ls parent.LanguageServer) ([]tsParam, string) {
+func tsHoverSignature(src string, sym parent.DocumentSymbol, ls parent.LanguageServer) ([]TSParam, string) {
 	hov, err := parent.EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err != nil {
 		return nil, ""
@@ -265,14 +265,14 @@ func tsFieldType(src string, sym parent.DocumentSymbol, ls parent.LanguageServer
 	return ""
 }
 
-type tsField struct {
+type TSField struct {
 	Name string `json:"name"`
 	Typ  string `json:"typ"`
 }
 
 // tsAliasDef returns fields for a type alias object or the aliased type.
 // When neither can be determined it returns nil and empty string.
-func tsAliasDef(src string, sym parent.DocumentSymbol, ls parent.LanguageServer) ([]tsField, string) {
+func tsAliasDef(src string, sym parent.DocumentSymbol, ls parent.LanguageServer) ([]TSField, string) {
 	hov, err := parent.EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err != nil {
 		return nil, ""
@@ -280,7 +280,7 @@ func tsAliasDef(src string, sym parent.DocumentSymbol, ls parent.LanguageServer)
 	if mc, ok := hov.Contents.(parent.MarkupContent); ok {
 		lines := strings.Split(mc.Value, "\n")
 		reading := false
-		var fields []tsField
+		var fields []TSField
 		for _, l := range lines {
 			l = strings.TrimSpace(l)
 			if !reading {
@@ -302,7 +302,7 @@ func tsAliasDef(src string, sym parent.DocumentSymbol, ls parent.LanguageServer)
 				if idx := strings.Index(l, ":"); idx != -1 {
 					name := strings.TrimSpace(l[:idx])
 					typ := tsToMochiType(strings.TrimSpace(l[idx+1:]))
-					fields = append(fields, tsField{Name: name, Typ: typ})
+					fields = append(fields, TSField{Name: name, Typ: typ})
 				}
 			}
 		}
@@ -313,7 +313,7 @@ func tsAliasDef(src string, sym parent.DocumentSymbol, ls parent.LanguageServer)
 	return nil, ""
 }
 
-func writeTSAlias(out *strings.Builder, name string, fields []tsField, alias string) {
+func writeTSAlias(out *strings.Builder, name string, fields []TSField, alias string) {
 	out.WriteString("type ")
 	out.WriteString(name)
 	if len(fields) == 0 {
@@ -384,12 +384,12 @@ func formatDiagnostics(src string, diags []parent.Diagnostic) string {
 	return strings.TrimSpace(out.String())
 }
 
-type tsParam struct {
+type TSParam struct {
 	Name string `json:"name"`
 	Typ  string `json:"typ"`
 }
 
-func parseTSSignature(sig string) ([]tsParam, string) {
+func parseTSSignature(sig string) ([]TSParam, string) {
 	sig = strings.TrimSpace(sig)
 	open := strings.Index(sig, "(")
 	close := strings.LastIndex(sig, ")")
@@ -397,7 +397,7 @@ func parseTSSignature(sig string) ([]tsParam, string) {
 		return nil, tsToMochiType(strings.TrimSpace(sig))
 	}
 	paramsPart := sig[open+1 : close]
-	var params []tsParam
+	var params []TSParam
 	for _, p := range splitTSParams(paramsPart) {
 		p = strings.TrimSpace(p)
 		if p == "" {
@@ -409,7 +409,7 @@ func parseTSSignature(sig string) ([]tsParam, string) {
 			name = strings.TrimSpace(p[:colon])
 			typ = strings.TrimSpace(p[colon+1:])
 		}
-		params = append(params, tsParam{Name: name, Typ: tsToMochiType(typ)})
+		params = append(params, TSParam{Name: name, Typ: tsToMochiType(typ)})
 	}
 	rest := strings.TrimSpace(sig[close+1:])
 	if strings.HasPrefix(rest, ":") {
@@ -647,7 +647,7 @@ func funcReturnSig(ret string) string {
 }
 
 // writeTSDecls converts parsed AST declarations into Mochi source code.
-func writeTSDecls(out *strings.Builder, decls []tsASTDecl) {
+func writeTSDecls(out *strings.Builder, decls []TSAstDecl) {
 	for _, d := range decls {
 		switch d.Kind {
 		case "var":
