@@ -17,21 +17,25 @@ type Program struct {
 }
 
 type form struct {
-	Type   string   `json:"type"`
-	Name   string   `json:"name,omitempty"`
-	Params []string `json:"params,omitempty"`
-	Doc    string   `json:"doc,omitempty"`
-	Body   []node   `json:"body,omitempty"`
-	Value  node     `json:"value,omitempty"`
-	Line   int      `json:"line,omitempty"`
-	Col    int      `json:"col,omitempty"`
+	Type    string   `json:"type"`
+	Name    string   `json:"name,omitempty"`
+	Params  []string `json:"params,omitempty"`
+	Doc     string   `json:"doc,omitempty"`
+	Body    []node   `json:"body,omitempty"`
+	Value   node     `json:"value,omitempty"`
+	Line    int      `json:"line,omitempty"`
+	Col     int      `json:"col,omitempty"`
+	EndLine int      `json:"end-line,omitempty"`
+	EndCol  int      `json:"end-col,omitempty"`
 }
 
 type node struct {
-	Atom string `json:"atom,omitempty"`
-	List []node `json:"list,omitempty"`
-	Line int    `json:"line,omitempty"`
-	Col  int    `json:"col,omitempty"`
+	Atom    string `json:"atom,omitempty"`
+	List    []node `json:"list,omitempty"`
+	Line    int    `json:"line,omitempty"`
+	Col     int    `json:"col,omitempty"`
+	EndLine int    `json:"end-line,omitempty"`
+	EndCol  int    `json:"end-col,omitempty"`
 }
 
 func snippet(src string) string {
