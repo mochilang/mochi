@@ -1,5 +1,0 @@
-fun main() {
-  let data = _fetch("file://tests/compiler/ex/fetch_builtin.json", %{method: "GET", headers: %{"Accept" => "application/json"}, timeout: 1})
-  print(data.message)
-}
-main()

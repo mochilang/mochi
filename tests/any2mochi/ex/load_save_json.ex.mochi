@@ -1,6 +1,0 @@
-fun main() {
-  let people = _load(nil, %{format: "json"})
-  let adults = for p <- people, (p.age >= 18), do: p
-  _save(adults, nil, %{format: "json"})
-}
-main()

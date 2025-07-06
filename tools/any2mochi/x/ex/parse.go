@@ -7,6 +7,8 @@ import (
 	"os/exec"
 	"regexp"
 	"strings"
+
+	any2mochi "mochi/tools/any2mochi"
 )
 
 // Func represents a parsed Elixir function.
@@ -24,7 +26,8 @@ type Func struct {
 
 // AST is a collection of functions in a source file.
 type AST struct {
-	Funcs []Func `json:"funcs"`
+	Funcs  []Func `json:"funcs"`
+	Module string `json:"module,omitempty"`
 }
 
 // fnHeader matches both `def` and `defp` function headers. The second capture
@@ -111,6 +114,16 @@ func Parse(src string) (*AST, error) {
 	}
 	lines := strings.Split(src, "\n")
 	ast := &AST{}
+	for _, l := range lines {
+		l = strings.TrimSpace(l)
+		if strings.HasPrefix(l, "defmodule") {
+			parts := strings.Fields(l)
+			if len(parts) >= 2 {
+				ast.Module = strings.TrimSpace(parts[1])
+			}
+			break
+		}
+	}
 	for i := 0; i < len(lines); i++ {
 		line := strings.TrimSpace(lines[i])
 		m := fnHeader.FindStringSubmatch(line)
@@ -177,24 +190,27 @@ func translateLine(l string) string {
 // ConvertAST converts a parsed AST to Mochi source code.
 func ConvertAST(ast *AST) ([]byte, error) {
 	var out strings.Builder
+	hasMain := false
 	for _, fn := range ast.Funcs {
-		out.WriteString("fun ")
-		out.WriteString(fn.Name)
-		out.WriteByte('(')
-		out.WriteString(strings.Join(fn.Params, ", "))
-		out.WriteString(") {\n")
-		for _, l := range fn.Body {
-			if l == "" {
-				continue
-			}
-			out.WriteString("  ")
-			out.WriteString(translateLine(l))
-			out.WriteByte('\n')
+		sym := any2mochi.DocumentSymbol{
+			Name: fn.Name,
+			Range: any2mochi.Range{
+				Start: any2mochi.Position{Line: 0},
+				End:   any2mochi.Position{Line: len(fn.Raw) - 1},
+			},
 		}
-		out.WriteString("}\n")
+		code := convertFunc(fn.Raw, sym, fn.Params, "")
+		if code == "" {
+			continue
+		}
+		out.WriteString(code)
+		out.WriteByte('\n')
 		if fn.Name == "main" {
-			out.WriteString("main()\n")
+			hasMain = true
 		}
+	}
+	if hasMain {
+		out.WriteString("main()\n")
 	}
 	if out.Len() == 0 {
 		return nil, fmt.Errorf("empty ast")

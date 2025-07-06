@@ -1,5 +1,0 @@
-fun main() {
-  let xs = [10, 20, 30]
-  print(Enum.at(xs, 1))
-}
-main()

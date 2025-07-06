@@ -1,8 +1,0 @@
-fun main() {
-  let nums = [1, 2, 3]
-  let letters = ["A", "B"]
-  let combos = Enum.map(Enum.take(Enum.drop(Enum.sort_by((for n <- nums, l <- letters, do: {%{n: n, l: l}, -n}), fn {_, k} -> k end), 1), 3), fn {v, _} -> v end)
-  for c <- combos do
-  print(Enum.join(Enum.map([c.n, c.l], &to_string(&1)), " "))
-}
-main()

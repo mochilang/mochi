@@ -1,8 +1,0 @@
-fun main() {
-  let people = [%{name: "Alice", age: 30, city: "Paris"}, %{name: "Bob", age: 15, city: "Hanoi"}, %{name: "Charlie", age: 65, city: "Paris"}, %{name: "Diana", age: 45, city: "Hanoi"}, %{name: "Eve", age: 70, city: "Paris"}, %{name: "Frank", age: 22, city: "Hanoi"}]
-  let stats = Enum.map(_group_by(people, fn person -> person.city end), fn g -> %{city: g.key, count: _count(g), avg_age: _avg(for p <- g, do: p.age)} end)
-  print("--- People grouped by city ---")
-  for s <- stats do
-  print(Enum.join(Enum.map([s.city, ": count =", s.count, ", avg_age =", s.avg_age], &to_string(&1)), " "))
-}
-main()

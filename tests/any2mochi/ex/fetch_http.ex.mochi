@@ -1,5 +1,0 @@
-fun main() {
-  let todo = _fetch("https://jsonplaceholder.typicode.com/todos/1", nil)
-  print(todo.title)
-}
-main()

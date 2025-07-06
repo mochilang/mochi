@@ -1,5 +1,0 @@
-fun main() {
-  let square = fn x -> (x * x) end
-  print(square.(6))
-}
-main()
