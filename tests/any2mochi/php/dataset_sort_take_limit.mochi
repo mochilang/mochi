@@ -1,12 +1,6 @@
 type Product {
   name: any
   price: any
-  fun __construct.__construct(fields: list<any>) {}
+  fun __construct(fields) {}
 }
-fun Closure() {}
-fun Closure.Closure() {}
-fun Closure.Closure() {}
-fun _query(src, joins, opts): list<any> {}
-fun _query.Closure() {}
-fun _query.Closure() {}
-fun _query.Closure() {}
+fun _query(src, joins, opts) {}
