@@ -54,7 +54,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Expect != nil:
 		return c.compileExpect(s.Expect)
 	default:
-		return fmt.Errorf("unsupported statement")
+		return fmt.Errorf("unsupported statement at %d:%d", s.Pos.Line, s.Pos.Column)
 	}
 }
 
