@@ -549,6 +549,20 @@ func writeItems(out *strings.Builder, items []item) {
 				out.WriteString(val)
 			}
 			out.WriteByte('\n')
+		case "struct":
+			out.WriteString("type ")
+			out.WriteString(it.Name)
+			if len(it.Fields) == 0 {
+				out.WriteString(" {}\n")
+				continue
+			}
+			out.WriteString(" {\n")
+			for _, f := range it.Fields {
+				out.WriteString("  ")
+				out.WriteString(f)
+				out.WriteByte('\n')
+			}
+			out.WriteString("}\n")
 		case "print":
 			out.WriteString("print(")
 			out.WriteString(convertExpr(it.Value))

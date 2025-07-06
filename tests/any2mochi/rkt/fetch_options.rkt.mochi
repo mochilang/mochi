@@ -1,3 +1,7 @@
+type _Group {
+  key
+  Items
+}
 let opts
 let data
 print(( hash-ref data "message" ))

@@ -1,2 +1,6 @@
+type _Group {
+  key
+  Items
+}
 let xs
 let groups

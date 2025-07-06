@@ -1,3 +1,7 @@
+type _Group {
+  key
+  Items
+}
 fun test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus() {}
 let lineitem
 let result
