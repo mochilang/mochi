@@ -1,3 +1,0 @@
-var next = 0
-next = next + 1
-print(next)

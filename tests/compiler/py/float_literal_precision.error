@@ -1,7 +1,7 @@
 generated code does not match expected
-- print("value: " + 7)
+- print(9.261000000000001)
 + fun main() {
 - 
-+   print(("value: " + str(7)))
++   print(9.261000000000001)
 + }
 + 

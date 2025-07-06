@@ -1,240 +1,254 @@
 generated code does not match expected
---- expected
-+++ generated
-@@ -1,100 +1,140 @@
--let region = [
--  { r_regionkey: 1, r_name: "EUROPE" },
--  { r_regionkey: 2, r_name: "ASIA" }
--]
--
--let nation = [
--  { n_nationkey: 10, n_regionkey: 1, n_name: "FRANCE" },
--  { n_nationkey: 20, n_regionkey: 2, n_name: "CHINA" }
--]
--
--let supplier = [
--  {
--    s_suppkey: 100,
--    s_name: "BestSupplier",
--    s_address: "123 Rue",
--    s_nationkey: 10,
--    s_phone: "123",
--    s_acctbal: 1000.0,
--    s_comment: "Fast and reliable"
--  },
--  {
--    s_suppkey: 200,
--    s_name: "AltSupplier",
--    s_address: "456 Way",
--    s_nationkey: 20,
--    s_phone: "456",
--    s_acctbal: 500.0,
--    s_comment: "Slow"
-+fun _min(v: any): any {
-+  if hasattr(v, "Items") {
-+    let v = v.Items
-   }
--]
--
--let part = [
--  { p_partkey: 1000, p_type: "LARGE BRASS", p_size: 15, p_mfgr: "M1" },
--  { p_partkey: 2000, p_type: "SMALL COPPER", p_size: 15, p_mfgr: "M2" }
--]
--
--let partsupp = [
--  { ps_partkey: 1000, ps_suppkey: 100, ps_supplycost: 10.00 },
--  { ps_partkey: 1000, ps_suppkey: 200, ps_supplycost: 15.00 }
--]
--
--let europe_nations =
--  from r in region
--  join n in nation on n.n_regionkey == r.r_regionkey
--  where r.r_name == "EUROPE"
--  select n
--
--let europe_suppliers =
--  from s in supplier
--  join n in europe_nations on s.s_nationkey == n.n_nationkey
--  select { s: s, n: n }
--
--let target_parts =
--  from p in part
--  where p.p_size == 15 && p.p_type == "LARGE BRASS"
--  select p
--
--let target_partsupp =
--  from ps in partsupp
--  join p in target_parts on ps.ps_partkey == p.p_partkey
--  join s in europe_suppliers on ps.ps_suppkey == s.s.s_suppkey
--  select {
--    s_acctbal: s.s.s_acctbal,
--    s_name: s.s.s_name,
--    n_name: s.n.n_name,
--    p_partkey: p.p_partkey,
--    p_mfgr: p.p_mfgr,
--    s_address: s.s.s_address,
--    s_phone: s.s.s_phone,
--    s_comment: s.s.s_comment,
--    ps_supplycost: ps.ps_supplycost
-+  if !isinstance(v, list) {
-   }
--
--let costs = from x in target_partsupp select x.ps_supplycost
--
--let min_cost = min(costs)
--
--let result =
--  from x in target_partsupp
--  where x.ps_supplycost == min_cost
--  sort by -x.s_acctbal
--  select x
--
--json(result)
--
--test "Q2 returns only supplier with min cost in Europe for brass part" {
--  expect result == [
--    {
--      s_acctbal: 1000.0,
--      s_name: "BestSupplier",
--      n_name: "FRANCE",
--      p_partkey: 1000,
--      p_mfgr: "M1",
--      s_address: "123 Rue",
--      s_phone: "123",
--      s_comment: "Fast and reliable",
--      ps_supplycost: 10.0
-+  let vals = from it in v
-+            where it ? None
-+            select it
-+  if !vals {
-+    return 0
-+  }
-+  return min(vals)
-+}
-+fun _query(src: any, joins: any, opts: any): any {
-+  let items = from v in src
-+            select [v]
-+  for j in joins {
-+    let joined = []
-+    if j.get("right") and j.get("left") {
-+      let matched = [False] * len(j["items"])
-+      for left in items {
-+        let m = False
-+        for (ri, right) in enumerate(j["items"]) {
-+          let keep = True
-+          if j.get("on") {
-+            keep = j["on"](left, right)
-+          }
-+          if !keep {
-+          }
-+          m = True
-+          joined.append(left + [right])
-+        }
-+        if !m {
-+          joined.append(left + [None])
-+        }
-+      }
-+      for (ri, right) in enumerate(j["items"]) {
-+        if !matched[ri] {
-+          let undef = [None] * if items then len(items[0]) else 0
-+          joined.append(undef + [right])
-+        }
-+      }
-+    } else {
-+      if j.get("right") {
-+        for right in j["items"] {
-+          m = False
-+          for left in items {
-+            keep = True
-+            if j.get("on") {
-+              keep = j["on"](left, right)
-+            }
-+            if !keep {
-+            }
-+            m = True
-+            joined.append(left + [right])
-+          }
-+          if !m {
-+            joined.append(undef + [right])
-+          }
-+        }
-+      } else {
-+        for left in items {
-+          m = False
-+          for right in j["items"] {
-+            keep = True
-+            if j.get("on") {
-+              keep = j["on"](left, right)
-+            }
-+            if !keep {
-+            }
-+            m = True
-+            joined.append(left + [right])
-+          }
-+          if j.get("left") and !m {
-+            joined.append(left + [None])
-+          }
-+        }
-+      }
-     }
--  ]
-+    items = joined
-+  }
-+  if opts.get("where") {
-+    items = from r in items
-+            where opts["where"](r)
-+            select r
-+  }
-+  if opts.get("sortKey") {
-+    fun _key(it: any): any {
-+      let k = opts["sortKey"](it)
-+      if isinstance(k, (list, tuple, dict)) {
-+        return str(k)
-+      }
-+      return k
-+    }
-+    items.sort(key: _key)
-+  }
-+  if "skip" ? opts {
-+    let n = opts["skip"]
-+    if n < 0 {
-+      n = 0
-+    }
-+    items = if n < len(items) then items[n:] else []
-+  }
-+  if "take" ? opts {
-+    n = opts["take"]
-+    if n < 0 {
-+      n = 0
-+    }
-+    items = if n < len(items) then items[:n] else items
-+  }
-+  let res = []
-+  for r in items {
-+    res.append(opts["select"](r))
-+  }
-+  return res
- }
-+test "Q2_returns_only_supplier_with_min_cost_in_Europe_for_brass_part" {
-+  expect result == [{s_acctbal: 1000, s_name: "BestSupplier", n_name: "FRANCE", p_partkey: 1000, p_mfgr: "M1", s_address: "123 Rue", s_phone: "123", s_comment: "Fast and reliable", ps_supplycost: 10}]
-+}
-+let region = [{r_regionkey: 1, r_name: "EUROPE"}, {r_regionkey: 2, r_name: "ASIA"}]
-+let nation = [{n_nationkey: 10, n_regionkey: 1, n_name: "FRANCE"}, {n_nationkey: 20, n_regionkey: 2, n_name: "CHINA"}]
-+let supplier = [{s_suppkey: 100, s_name: "BestSupplier", s_address: "123 Rue", s_nationkey: 10, s_phone: "123", s_acctbal: 1000, s_comment: "Fast and reliable"}, {s_suppkey: 200, s_name: "AltSupplier", s_address: "456 Way", s_nationkey: 20, s_phone: "456", s_acctbal: 500, s_comment: "Slow"}]
-+let part = [{p_partkey: 1000, p_type: "LARGE BRASS", p_size: 15, p_mfgr: "M1"}, {p_partkey: 2000, p_type: "SMALL COPPER", p_size: 15, p_mfgr: "M2"}]
-+let partsupp = [{ps_partkey: 1000, ps_suppkey: 100, ps_supplycost: 10}, {ps_partkey: 1000, ps_suppkey: 200, ps_supplycost: 15}]
-+let europe_nations = _query(region, [{items: nation, on: fun(r, n) => n["n_regionkey"] == r["r_regionkey"]}], {select: fun(r, n) => n, where: fun(r, n) => r["r_name"] == "EUROPE"})
-+let europe_suppliers = _query(supplier, [{items: europe_nations, on: fun(s, n) => s["s_nationkey"] == n["n_nationkey"]}], {select: fun(s, n) => {s: s, n: n}})
-+let target_parts = from p in part
-+            where p["p_size"] == 15 and p["p_type"] == "LARGE BRASS"
-+            select p
-+let target_partsupp = _query(partsupp, [{items: target_parts, on: fun(ps, p) => ps["ps_partkey"] == p["p_partkey"]}, {items: europe_suppliers, on: fun(ps, p, s) => ps["ps_suppkey"] == s["s"]["s_suppkey"]}], {select: fun(ps, p, s) => {s_acctbal: s["s"]["s_acctbal"], s_name: s["s"]["s_name"], n_name: s["n"]["n_name"], p_partkey: p["p_partkey"], p_mfgr: p["p_mfgr"], s_address: s["s"]["s_address"], s_phone: s["s"]["s_phone"], s_comment: s["s"]["s_comment"], ps_supplycost: ps["ps_supplycost"]}})
-+let costs = from x in target_partsupp
-+            select x["ps_supplycost"]
-+let min_cost = _min(costs)
-+let result = from x in from x in target_partsupp
-+            where x["ps_supplycost"] == min_cost
-+            select x
-+            sort by -x["s_acctbal"]
-+            select x
-+print(json.dumps(result, default: fun(o) => vars(o)))
+- let region = [
++ let T = TypeVar('T')
+-   { r_regionkey: 1, r_name: "EUROPE" },
++ fun _min(v) {
+-   { r_regionkey: 2, r_name: "ASIA" }
++   if hasattr(v, "Items") {
+- ]
++   let v = v.Items
+- 
++ }
+- let nation = [
++   if not isinstance(v, list) {
+-   { n_nationkey: 10, n_regionkey: 1, n_name: "FRANCE" },
++   raise Exception("min() expects list or group")
+-   { n_nationkey: 20, n_regionkey: 2, n_name: "CHINA" }
++ }
+- ]
++   let vals = [it for it in v if it is not None]
+- 
++   if not vals {
+- let supplier = [
++   return 0
+-   {
++ }
+-     s_suppkey: 100,
++   return min(vals)
+-     s_name: "BestSupplier",
++ }
+-     s_address: "123 Rue",
++ fun _query(src, joins, opts) {
+-     s_nationkey: 10,
++   let items = [[v] for v in src]
+-     s_phone: "123",
++   for j in joins {
+-     s_acctbal: 1000.0,
++   let joined = []
+-     s_comment: "Fast and reliable"
++   if j.get("right") and j.get("left") {
+-   },
++   let matched = [False] * len(j["items"])
+-   {
++   for left in items {
+-     s_suppkey: 200,
++   let m = False
+-     s_name: "AltSupplier",
++   for ri, right in enumerate(j["items"]) {
+-     s_address: "456 Way",
++   let keep = True
+-     s_nationkey: 20,
++   if j.get("on") {
+-     s_phone: "456",
++   let keep = j["on"](*left, right)
+-     s_acctbal: 500.0,
++ }
+-     s_comment: "Slow"
++   if not keep {
+-   }
++   continue
+- ]
++ }
+- 
++   let m = True
+- let part = [
++   let matched[ri] = True
+-   { p_partkey: 1000, p_type: "LARGE BRASS", p_size: 15, p_mfgr: "M1" },
++   joined.append(left + [right])
+-   { p_partkey: 2000, p_type: "SMALL COPPER", p_size: 15, p_mfgr: "M2" }
++ }
+- ]
++   if not m {
+- 
++   joined.append(left + [None])
+- let partsupp = [
++ }
+-   { ps_partkey: 1000, ps_suppkey: 100, ps_supplycost: 10.00 },
++ }
+-   { ps_partkey: 1000, ps_suppkey: 200, ps_supplycost: 15.00 }
++   for ri, right in enumerate(j["items"]) {
+- ]
++   if not matched[ri] {
+- 
++   let undef = [None] * (len(items[0]) if items else 0)
+- let europe_nations =
++   joined.append(undef + [right])
+-   from r in region
++ } else if j.get("right") {}
+-   join n in nation on n.n_regionkey == r.r_regionkey
++ }
+-   where r.r_name == "EUROPE"
++   for right in j["items"] {
+-   select n
++   let m = False
+- 
++   for left in items {
+- let europe_suppliers =
++   let keep = True
+-   from s in supplier
++   if j.get("on") {
+-   join n in europe_nations on s.s_nationkey == n.n_nationkey
++   let keep = j["on"](*left, right)
+-   select { s: s, n: n }
++ }
+- 
++   if not keep {
+- let target_parts =
++   continue
+-   from p in part
++ }
+-   where p.p_size == 15 && p.p_type == "LARGE BRASS"
++   let m = True
+-   select p
++   joined.append(left + [right])
+- 
++ }
+- let target_partsupp =
++   if not m {
+-   from ps in partsupp
++   let undef = [None] * (len(items[0]) if items else 0)
+-   join p in target_parts on ps.ps_partkey == p.p_partkey
++   joined.append(undef + [right])
+-   join s in europe_suppliers on ps.ps_suppkey == s.s.s_suppkey
++ }
+-   select {
++ }
+-     s_acctbal: s.s.s_acctbal,
++   for left in items {
+-     s_name: s.s.s_name,
++   let m = False
+-     n_name: s.n.n_name,
++   for right in j["items"] {
+-     p_partkey: p.p_partkey,
++   let keep = True
+-     p_mfgr: p.p_mfgr,
++   if j.get("on") {
+-     s_address: s.s.s_address,
++   let keep = j["on"](*left, right)
+-     s_phone: s.s.s_phone,
++ }
+-     s_comment: s.s.s_comment,
++   if not keep {
+-     ps_supplycost: ps.ps_supplycost
++   continue
+-   }
++ }
+- 
++   let m = True
+- let costs = from x in target_partsupp select x.ps_supplycost
++   joined.append(left + [right])
+- 
++ }
+- let min_cost = min(costs)
++   if j.get("left") and not m {
+- 
++   joined.append(left + [None])
+- let result =
++ }
+-   from x in target_partsupp
++ }
+-   where x.ps_supplycost == min_cost
++ }
+-   sort by -x.s_acctbal
++   let items = joined
+-   select x
++ }
+- 
++   if opts.get("where") {
+- json(result)
++   let items = [r for r in items if opts["where"](*r)]
+- 
++ }
+- test "Q2 returns only supplier with min cost in Europe for brass part" {
++   if opts.get("sortKey") {
+-   expect result == [
++   def _key(it):
+-     {
++   let k = opts["sortKey"](*it)
+-       s_acctbal: 1000.0,
++   if isinstance(k, (list, tuple, dict)) {
+-       s_name: "BestSupplier",
++   return str(k)
+-       n_name: "FRANCE",
++   return k
+-       p_partkey: 1000,
++ }
+-       p_mfgr: "M1",
++   let items.sort(key = _key)
+-       s_address: "123 Rue",
++ }
+-       s_phone: "123",
++   if "skip" in opts {
+-       s_comment: "Fast and reliable",
++   let n = opts["skip"]
+-       ps_supplycost: 10.0
++   if n < 0 {
+-     }
++   let n = 0
+-   ]
++ }
+- }
++   let items = items[n:] if n < len(items) else []
+- 
++ }
++   if "take" in opts {
++   let n = opts["take"]
++   if n < 0 {
++   let n = 0
++ }
++   let items = items[:n] if n < len(items) else items
++ }
++   let res = []
++   for r in items {
++   res.append(opts["select"](*r))
++ }
++   return res
++ }
++ fun _sort_key(k) {
++   if isinstance(k, (list, tuple, dict)) {
++   return str(k)
++ }
++   return k
++ }
++ let region = None
++ let nation = None
++ let supplier = None
++ let part = None
++ let partsupp = None
++ let europe_nations = None
++ let europe_suppliers = None
++ let target_parts = None
++ let target_partsupp = None
++ let costs = None
++ let min_cost = None
++ let result = None
++ fun test_Q2_returns_only_supplier_with_min_cost_in_Europe_for_brass_part() {
++   let assert result = = [ { "s_acctbal": 1000, "s_name": "BestSupplier", "n_name": "FRANCE", "p_partkey": 1000, "p_mfgr": "M1", "s_address": "123 Rue", "s_phone": "123", "s_comment": "Fast and reliable", "ps_supplycost": 10, } ]
++ }
++ fun main() {
++   let region = [ {"r_regionkey": 1, "r_name": "EUROPE"}, {"r_regionkey": 2, "r_name": "ASIA"}, ]
++   let nation = [ {"n_nationkey": 10, "n_regionkey": 1, "n_name": "FRANCE"}, {"n_nationkey": 20, "n_regionkey": 2, "n_name": "CHINA"}, ]
++   let supplier = [ { "s_suppkey": 100, "s_name": "BestSupplier", "s_address": "123 Rue", "s_nationkey": 10, "s_phone": "123", "s_acctbal": 1000, "s_comment": "Fast and reliable", }, { "s_suppkey": 200, "s_name": "AltSupplier", "s_address": "456 Way", "s_nationkey": 20, "s_phone": "456", "s_acctbal": 500, "s_comment": "Slow", }, ]
++   let part = [ {"p_partkey": 1000, "p_type": "LARGE BRASS", "p_size": 15, "p_mfgr": "M1"}, {"p_partkey": 2000, "p_type": "SMALL COPPER", "p_size": 15, "p_mfgr": "M2"}, ]
++   let partsupp = [ {"ps_partkey": 1000, "ps_suppkey": 100, "ps_supplycost": 10}, {"ps_partkey": 1000, "ps_suppkey": 200, "ps_supplycost": 15}, ]
++   let europe_nations = _query( region, [ { "items": nation, "on": lambda r, n: ((n["n_regionkey"] == r["r_regionkey"])), } ], {"select": lambda r, n: n, "where": lambda r, n: ((r["r_name"] == "EUROPE"))}, )
++   let europe_suppliers = _query( supplier, [ { "items": europe_nations, "on": lambda s, n: ((s["s_nationkey"] == n["n_nationkey"])), } ], {"select": lambda s, n: {"s": s, "n": n}}, )
++   let target_parts = [ p for p in part if ((p["p_size"] == 15) and (p["p_type"] == "LARGE BRASS")) ]
++   let target_partsupp = _query( partsupp, [ { "items": target_parts, "on": lambda ps, p: ((ps["ps_partkey"] == p["p_partkey"])), }, { "items": europe_suppliers, "on": lambda ps, p, s: ((ps["ps_suppkey"] == s["s"]["s_suppkey"])), }, ], { "select": lambda ps, p, s: { "s_acctbal": s["s"]["s_acctbal"], "s_name": s["s"]["s_name"], "n_name": s["n"]["n_name"], "p_partkey": p["p_partkey"], "p_mfgr": p["p_mfgr"], "s_address": s["s"]["s_address"], "s_phone": s["s"]["s_phone"], "s_comment": s["s"]["s_comment"], "ps_supplycost": ps["ps_supplycost"], } }, )
++   let costs = [x["ps_supplycost"] for x in target_partsupp]
++   let min_cost = _min(costs)
++   let result = [ x for x in sorted( [x for x in target_partsupp if (x["ps_supplycost"] == min_cost)], key=lambda x: _sort_key((-x["s_acctbal"])), ) ]
++   print(json.dumps(result, default=lambda o: vars(o)))
++   test_Q2_returns_only_supplier_with_min_cost_in_Europe_for_brass_part()
++ }
++ 

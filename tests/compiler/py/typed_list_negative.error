@@ -1,13 +1,22 @@
 generated code does not match expected
---- expected
-+++ generated
-@@ -1,7 +1,6 @@
--let xs = [(-1), 0, 1] as list<int>
--
-+let xs = [-1, 0, 1]
- test "values" {
--  expect xs[0] == (-1)
-+  expect xs[0] == -1
-   expect xs[1] == 0
-   expect xs[2] == 1
-   print("done")
+- let xs = [(-1), 0, 1] as list<int>
++ let xs = [-1, 0, 1]
+- 
++ fun test_values() {
+- test "values" {
++   let assert xs[0] = = ((-1))
+-   expect xs[0] == (-1)
++   let assert xs[1] = = 0
+-   expect xs[1] == 0
++   let assert xs[2] = = 1
+-   expect xs[2] == 1
++   print("done")
+-   print("done")
++ }
+- }
++ fun main() {
+- 
++   let xs = [((-1)), 0, 1]
++   test_values()
++ }
++ 

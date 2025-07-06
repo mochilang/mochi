@@ -1,0 +1,19 @@
+generated code does not match expected
+- print("Enter first input:")
++ let input1 = None
+- let input1 = input()
++ let input2 = None
+- 
++ fun main() {
+- print("Enter second input:")
++   print("Enter first input:")
+- let input2 = input()
++   let input1 = input()
+- 
++   print("Enter second input:")
+- print("You entered:", input1, ",", input2)
++   let input2 = input()
+- 
++   print("You entered:", input1, ",", input2)
++ }
++ 

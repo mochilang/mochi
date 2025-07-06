@@ -1,23 +1,23 @@
 generated code does not match expected
---- expected
-+++ generated
-@@ -1,12 +1,7 @@
-- type Tree =
--   Leaf
--   | Node(left: Tree, value: int, right: Tree)
--
-- fun depth(t: Tree): int {
--   return match t {
--     Leaf => 0
--     Node(l, _, r) => depth(l) + depth(r) + 1
--   }
-- }
--
-- print(depth(Node { left: Leaf {}, value: 0, right: Leaf {} }))
-+type Tree =
-+  Leaf {} |
-+  Node(left: Tree, value: int, right: Tree)
-+fun depth(t: Tree): int {
-+  return fun(_t0) => if isinstance(_t0, Leaf) then 0 else if isinstance(_t0, Node) then fun(l, r) => depth(l) + depth(r) + 1(_t0.left, _t0.right) else None()
-+}
-+print(depth(Node { left: Leaf {  }, value: 0, right: Leaf {  } }))
+-  type Tree =
++ fun depth(t) {
+-    Leaf
++   return (
+-    | Node(left: Tree, value: int, right: Tree)
++   let lambda _t0 = t: ( 0 if isinstance(_t0, Leaf) else ( (lambda l, r: ((depth(l) + depth(r)) + 1))(_t0.left, _t0.right) if isinstance(_t0, Node) else None ) )
+- 
++   )()
+-  fun depth(t: Tree): int {
++ }
+-    return match t {
++ fun main() {
+-      Leaf => 0
++   print(depth(Node(left=Leaf(), value=0, right=Leaf())))
+-      Node(l, _, r) => depth(l) + depth(r) + 1
++ }
+-    }
++ 
+-  }
+- 
+-  print(depth(Node { left: Leaf {}, value: 0, right: Leaf {} }))
+- 

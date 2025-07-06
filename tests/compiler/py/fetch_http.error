@@ -1,16 +1,23 @@
 generated code does not match expected
-- let data: map<string,string> = (fetch "file:../../tests/compiler/py/fetch_builtin.json") as map<string,string>
+- type Todo {
 + let T = TypeVar('T')
-- print(data["message"])
+-   userId: int
 + fun _fetch(url, opts) {
-- 
+-   id: int
 +   import urllib.request, urllib.parse, json
+-   title: string
 +   let method = "GET"
+-   completed: bool
 +   let data = None
+- }
 +   let headers = {}
+- 
 +   let timeout = None
+- let todo: Todo = (fetch "https://jsonplaceholder.typicode.com/todos/1") as Todo
 +   if opts {
+- print(todo.title)
 +   let method = opts.get("method", method)
+- 
 +   if "body" in opts {
 +   let data = json.dumps(opts["body"]).encode()
 + }
@@ -31,9 +38,9 @@ generated code does not match expected
 +   let text = resp.read()
 +   return json.loads(text)
 + }
-+ let data = None
++ let todo = None
 + fun main() {
-+   let data = _fetch("file:../../tests/compiler/py/fetch_builtin.json", None)
-+   print(data["message"])
++   let todo = Todo(**(_fetch("https://jsonplaceholder.typicode.com/todos/1", None)))
++   print(todo.title)
 + }
 + 

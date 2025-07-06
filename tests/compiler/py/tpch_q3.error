@@ -1,236 +1,281 @@
 generated code does not match expected
---- expected
-+++ generated
-@@ -1,66 +1,169 @@
--let customer = [
--  { c_custkey: 1, c_mktsegment: "BUILDING" },
--  { c_custkey: 2, c_mktsegment: "AUTOMOBILE" }
--]
--
--let orders = [
--  { o_orderkey: 100, o_custkey: 1, o_orderdate: "1995-03-14", o_shippriority: 1 },
--  { o_orderkey: 200, o_custkey: 2, o_orderdate: "1995-03-10", o_shippriority: 2 }
--]
--
--let lineitem = [
--  { l_orderkey: 100, l_extendedprice: 1000.0, l_discount: 0.05, l_shipdate: "1995-03-16" },
--  { l_orderkey: 100, l_extendedprice: 500.0, l_discount: 0.00, l_shipdate: "1995-03-20" },
--  { l_orderkey: 200, l_extendedprice: 1000.0, l_discount: 0.10, l_shipdate: "1995-03-14" } // too early
--]
--
-+fun _group_by(src: any, keyfn: any): any {
-+  let groups = {}
-+  let order = []
-+  for it in src {
-+    if isinstance(it, (list, tuple)) {
-+      let key = keyfn(it)
-+    } else {
-+    }
-+    if isinstance(key, dict) {
-+      key = types.SimpleNamespace(key)
-+    }
-+    let ks = str(key)
-+    let g = groups.get(ks)
-+    if !g {
-+      g = _Group(key)
-+      order.append(ks)
-+    }
-+    g.Items.append(it)
-+  }
-+  return from k in order
-+            select groups[k]
-+}
-+fun _query(src: any, joins: any, opts: any): any {
-+  let items = from v in src
-+            select [v]
-+  for j in joins {
-+    let joined = []
-+    if j.get("right") and j.get("left") {
-+      let matched = [False] * len(j["items"])
-+      for left in items {
-+        let m = False
-+        for (ri, right) in enumerate(j["items"]) {
-+          let keep = True
-+          if j.get("on") {
-+            keep = j["on"](left, right)
-+          }
-+          if !keep {
-+          }
-+          m = True
-+          joined.append(left + [right])
-+        }
-+        if !m {
-+          joined.append(left + [None])
-+        }
-+      }
-+      for (ri, right) in enumerate(j["items"]) {
-+        if !matched[ri] {
-+          let undef = [None] * if items then len(items[0]) else 0
-+          joined.append(undef + [right])
-+        }
-+      }
-+    } else {
-+      if j.get("right") {
-+        for right in j["items"] {
-+          m = False
-+          for left in items {
-+            keep = True
-+            if j.get("on") {
-+              keep = j["on"](left, right)
-+            }
-+            if !keep {
-+            }
-+            m = True
-+            joined.append(left + [right])
-+          }
-+          if !m {
-+            joined.append(undef + [right])
-+          }
-+        }
-+      } else {
-+        for left in items {
-+          m = False
-+          for right in j["items"] {
-+            keep = True
-+            if j.get("on") {
-+              keep = j["on"](left, right)
-+            }
-+            if !keep {
-+            }
-+            m = True
-+            joined.append(left + [right])
-+          }
-+          if j.get("left") and !m {
-+            joined.append(left + [None])
-+          }
-+        }
-+      }
-+    }
-+    items = joined
-+  }
-+  if opts.get("where") {
-+    items = from r in items
-+            where opts["where"](r)
-+            select r
-+  }
-+  if opts.get("sortKey") {
-+    fun _key(it: any): any {
-+      let k = opts["sortKey"](it)
-+      if isinstance(k, (list, tuple, dict)) {
-+        return str(k)
-+      }
-+      return k
-+    }
-+    items.sort(key: _key)
-+  }
-+  if "skip" ? opts {
-+    let n = opts["skip"]
-+    if n < 0 {
-+      n = 0
-+    }
-+    items = if n < len(items) then items[n:] else []
-+  }
-+  if "take" ? opts {
-+    n = opts["take"]
-+    if n < 0 {
-+      n = 0
-+    }
-+    items = if n < len(items) then items[:n] else items
-+  }
-+  let res = []
-+  for r in items {
-+    res.append(opts["select"](r))
-+  }
-+  return res
-+}
-+fun _sum(v: any): any {
-+  if hasattr(v, "Items") {
-+    let v = v.Items
-+  }
-+  if !isinstance(v, list) {
-+  }
-+  let s = 0.0
-+  for it in v {
-+    if it ? None {
-+    }
-+    if isinstance(it, (int, float)) {
-+    } else {
-+    }
-+  }
-+  return s
-+}
- let cutoff = "1995-03-15"
- let segment = "BUILDING"
--
--let building_customers =
--  from c in customer
--  where c.c_mktsegment == segment
--  select c
--
--let valid_orders =
--  from o in orders
--  join c in building_customers on o.o_custkey == c.c_custkey
--  where o.o_orderdate < cutoff
--  select o
--
--let valid_lineitems =
--  from l in lineitem
--  where l.l_shipdate > cutoff
--  select l
--
--let order_line_join =
--  from o in valid_orders
--  join l in valid_lineitems on l.l_orderkey == o.o_orderkey
--  group by {
--    o_orderkey: o.o_orderkey,
--    o_orderdate: o.o_orderdate,
--    o_shippriority: o.o_shippriority
--  } into g
--  sort by [
--    -sum(from r in g select r.l.l_extendedprice * (1 - r.l.l_discount)),
--    g.key.o_orderdate
--  ]
--  select {
--    l_orderkey: g.key.o_orderkey,
--    revenue: sum(from r in g select r.l.l_extendedprice * (1 - r.l.l_discount)),
--    o_orderdate: g.key.o_orderdate,
--    o_shippriority: g.key.o_shippriority
--  }
--
-+test "Q3_returns_revenue_per_order_with_correct_priority" {
-+  expect order_line_join == [{l_orderkey: 100, revenue: 1000 * 0.95 + 500, o_orderdate: "1995-03-14", o_shippriority: 1}]
-+}
-+let customer = [{c_custkey: 1, c_mktsegment: "BUILDING"}, {c_custkey: 2, c_mktsegment: "AUTOMOBILE"}]
-+let orders = [{o_orderkey: 100, o_custkey: 1, o_orderdate: "1995-03-14", o_shippriority: 1}, {o_orderkey: 200, o_custkey: 2, o_orderdate: "1995-03-10", o_shippriority: 2}]
-+let lineitem = [{l_orderkey: 100, l_extendedprice: 1000, l_discount: 0.05, l_shipdate: "1995-03-16"}, {l_orderkey: 100, l_extendedprice: 500, l_discount: 0, l_shipdate: "1995-03-20"}, {l_orderkey: 200, l_extendedprice: 1000, l_discount: 0.1, l_shipdate: "1995-03-14"}]
-+let building_customers = from c in customer
-+            where c["c_mktsegment"] == segment
-+            select c
-+let valid_orders = _query(orders, [{items: building_customers, on: fun(o, c) => o["o_custkey"] == c["c_custkey"]}], {select: fun(o, c) => o, where: fun(o, c) => o["o_orderdate"] < cutoff})
-+let valid_lineitems = from l in lineitem
-+            where l["l_shipdate"] > cutoff
-+            select l
-+fun _q0(): any {
-+  let _src = valid_orders
-+  let _rows = _query(_src, [{items: valid_lineitems, on: fun(o, l) => l["l_orderkey"] == o["o_orderkey"]}], {select: fun(o, l) => (o, l)})
-+  let _groups = _group_by(_rows, fun(o, l) => {o_orderkey: o["o_orderkey"], o_orderdate: o["o_orderdate"], o_shippriority: o["o_shippriority"]})
-+  items = _groups
-+  items = sorted(items, key: fun(g) => _sort_key([-_sum(from r in g
-+            select r[1]["l_extendedprice"] * 1 - r[1]["l_discount"]), g.key.o_orderdate]))
-+  return from g in items
-+            select {l_orderkey: g.key.o_orderkey, revenue: _sum(from r in g
-+            select r[1]["l_extendedprice"] * 1 - r[1]["l_discount"]), o_orderdate: g.key.o_orderdate, o_shippriority: g.key.o_shippriority}
-+}
-+let order_line_join = _q0()
- print(order_line_join)
--
--test "Q3 returns revenue per order with correct priority" {
--  expect order_line_join == [
--    {
--      l_orderkey: 100,
--      revenue: 1000.0 * 0.95 + 500.0,
--      o_orderdate: "1995-03-14",
--      o_shippriority: 1
--    }
--  ]
--}
+- let customer = [
++ let T = TypeVar('T')
+-   { c_custkey: 1, c_mktsegment: "BUILDING" },
++ fun _get(obj, name) {
+-   { c_custkey: 2, c_mktsegment: "AUTOMOBILE" }
++   if obj is None {
+- ]
++   return None
+- 
++ }
+- let orders = [
++   if isinstance(obj, dict) {
+-   { o_orderkey: 100, o_custkey: 1, o_orderdate: "1995-03-14", o_shippriority: 1 },
++   if name in obj {
+-   { o_orderkey: 200, o_custkey: 2, o_orderdate: "1995-03-10", o_shippriority: 2 }
++   return obj[name]
+- ]
++ }
+- 
++ }
+- let lineitem = [
++   if hasattr(obj, name) {
+-   { l_orderkey: 100, l_extendedprice: 1000.0, l_discount: 0.05, l_shipdate: "1995-03-16" },
++   return getattr(obj, name)
+-   { l_orderkey: 100, l_extendedprice: 500.0, l_discount: 0.00, l_shipdate: "1995-03-20" },
++ }
+-   { l_orderkey: 200, l_extendedprice: 1000.0, l_discount: 0.10, l_shipdate: "1995-03-14" } // too early
++   if isinstance(obj, (list, tuple)) {
+- ]
++   for it in obj {
+- 
++   try:
+- let cutoff = "1995-03-15"
++   return _get(it, name)
+- let segment = "BUILDING"
++   except Exception:
+- 
++ }
+- let building_customers =
++ }
+-   from c in customer
++   raise Exception("field not found: " + name)
+-   where c.c_mktsegment == segment
++ }
+-   select c
++ fun _group_by(src, keyfn) {
+- 
++   let groups = {}
+- let valid_orders =
++   let order = []
+-   from o in orders
++   for it in src {
+-   join c in building_customers on o.o_custkey == c.c_custkey
++   if isinstance(it, (list, tuple)) {
+-   where o.o_orderdate < cutoff
++   let key = keyfn(*it)
+-   select o
++ } else {
+- 
++   let key = keyfn(it)
+- let valid_lineitems =
++ }
+-   from l in lineitem
++   if isinstance(key, dict) {
+-   where l.l_shipdate > cutoff
++   import types
+-   select l
++   let key = types.SimpleNamespace(**key)
+- 
++ }
+- let order_line_join =
++   let ks = str(key)
+-   from o in valid_orders
++   let g = groups.get(ks)
+-   join l in valid_lineitems on l.l_orderkey == o.o_orderkey
++   if not g {
+-   group by {
++   let g = _Group(key)
+-     o_orderkey: o.o_orderkey,
++   let groups[ks] = g
+-     o_orderdate: o.o_orderdate,
++   order.append(ks)
+-     o_shippriority: o.o_shippriority
++ }
+-   } into g
++   g.Items.append(it)
+-   sort by [
++ }
+-     -sum(from r in g select r.l.l_extendedprice * (1 - r.l.l_discount)),
++   return [groups[k] for k in order]
+-     g.key.o_orderdate
++ }
+-   ]
++ fun _query(src, joins, opts) {
+-   select {
++   let items = [[v] for v in src]
+-     l_orderkey: g.key.o_orderkey,
++   for j in joins {
+-     revenue: sum(from r in g select r.l.l_extendedprice * (1 - r.l.l_discount)),
++   let joined = []
+-     o_orderdate: g.key.o_orderdate,
++   if j.get("right") and j.get("left") {
+-     o_shippriority: g.key.o_shippriority
++   let matched = [False] * len(j["items"])
+-   }
++   for left in items {
+- 
++   let m = False
+- print(order_line_join)
++   for ri, right in enumerate(j["items"]) {
+- 
++   let keep = True
+- test "Q3 returns revenue per order with correct priority" {
++   if j.get("on") {
+-   expect order_line_join == [
++   let keep = j["on"](*left, right)
+-     {
++ }
+-       l_orderkey: 100,
++   if not keep {
+-       revenue: 1000.0 * 0.95 + 500.0,
++   continue
+-       o_orderdate: "1995-03-14",
++ }
+-       o_shippriority: 1
++   let m = True
+-     }
++   let matched[ri] = True
+-   ]
++   joined.append(left + [right])
+- 
++   if not m {
++   joined.append(left + [None])
++ }
++ }
++   for ri, right in enumerate(j["items"]) {
++   if not matched[ri] {
++   let undef = [None] * (len(items[0]) if items else 0)
++   joined.append(undef + [right])
++ } else if j.get("right") {}
++ }
++   for right in j["items"] {
++   let m = False
++   for left in items {
++   let keep = True
++   if j.get("on") {
++   let keep = j["on"](*left, right)
++ }
++   if not keep {
++   continue
++ }
++   let m = True
++   joined.append(left + [right])
++ }
++   if not m {
++   let undef = [None] * (len(items[0]) if items else 0)
++   joined.append(undef + [right])
++ }
++ }
++   for left in items {
++   let m = False
++   for right in j["items"] {
++   let keep = True
++   if j.get("on") {
++   let keep = j["on"](*left, right)
++ }
++   if not keep {
++   continue
++ }
++   let m = True
++   joined.append(left + [right])
++ }
++   if j.get("left") and not m {
++   joined.append(left + [None])
++ }
++ }
++ }
++   let items = joined
++ }
++   if opts.get("where") {
++   let items = [r for r in items if opts["where"](*r)]
++ }
++   if opts.get("sortKey") {
++   def _key(it):
++   let k = opts["sortKey"](*it)
++   if isinstance(k, (list, tuple, dict)) {
++   return str(k)
++   return k
++ }
++   let items.sort(key = _key)
++ }
++   if "skip" in opts {
++   let n = opts["skip"]
++   if n < 0 {
++   let n = 0
++ }
++   let items = items[n:] if n < len(items) else []
++ }
++   if "take" in opts {
++   let n = opts["take"]
++   if n < 0 {
++   let n = 0
++ }
++   let items = items[:n] if n < len(items) else items
++ }
++   let res = []
++   for r in items {
++   res.append(opts["select"](*r))
++ }
++   return res
++ }
++ fun _sort_key(k) {
++   if isinstance(k, (list, tuple, dict)) {
++   return str(k)
++ }
++   return k
++ }
++ fun _sum(v) {
++   if hasattr(v, "Items") {
++   let v = v.Items
++ }
++   if not isinstance(v, list) {
++   raise Exception("sum() expects list or group")
++ }
++   let s = 0.0
++   for it in v {
++   if it is None {
++   continue
++ }
++   if isinstance(it, (int, float)) {
++   let s + = float(it)
++ } else {
++   raise Exception("sum() expects numbers")
++ }
++ }
++   return s
++ }
++ let customer = None
++ let orders = None
++ let lineitem = None
++ let cutoff = '1995-03-15'
++ let segment = 'BUILDING'
++ let building_customers = None
++ let valid_orders = None
++ let valid_lineitems = None
++ let order_line_join = None
++ fun test_Q3_returns_revenue_per_order_with_correct_priority() {
++   let assert order_line_join = = [ { "l_orderkey": 100, "revenue": ((1000 * 0.95) + 500), "o_orderdate": "1995-03-14", "o_shippriority": 1, } ]
++ }
++ fun main() {
++   let customer = [ {"c_custkey": 1, "c_mktsegment": "BUILDING"}, {"c_custkey": 2, "c_mktsegment": "AUTOMOBILE"}, ]
++   let orders = [ { "o_orderkey": 100, "o_custkey": 1, "o_orderdate": "1995-03-14", "o_shippriority": 1, }, { "o_orderkey": 200, "o_custkey": 2, "o_orderdate": "1995-03-10", "o_shippriority": 2, }, ]
++   let lineitem = [ { "l_orderkey": 100, "l_extendedprice": 1000, "l_discount": 0.05, "l_shipdate": "1995-03-16", }, { "l_orderkey": 100, "l_extendedprice": 500, "l_discount": 0, "l_shipdate": "1995-03-20", }, { "l_orderkey": 200, "l_extendedprice": 1000, "l_discount": 0.1, "l_shipdate": "1995-03-14", }, ]
++   let cutoff = "1995-03-15"
++   let segment = "BUILDING"
++   let building_customers = [c for c in customer if (c["c_mktsegment"] == segment)]
++   let valid_orders = _query( orders, [ { "items": building_customers, "on": lambda o, c: ((o["o_custkey"] == c["c_custkey"])), } ], {"select": lambda o, c: o, "where": lambda o, c: ((o["o_orderdate"] < cutoff))}, )
++   let valid_lineitems = [l for l in lineitem if (l["l_shipdate"] > cutoff)]
++   def _q0():
++   let _src = valid_orders
++   let _rows = _query( _src, [ { "items": valid_lineitems, "on": lambda o, l: ((l["l_orderkey"] == o["o_orderkey"])), } ], {"select": lambda o, l: (o, l)}, )
++   let _groups = _group_by( _rows, lambda o, l: ( { "o_orderkey": o["o_orderkey"], "o_orderdate": o["o_orderdate"], "o_shippriority": o["o_shippriority"], } ), )
++   let items = _groups
++   let items = sorted( items, key=lambda g: _sort_key( [ ( -_sum( [ (r[1]["l_extendedprice"] * ((1 - r[1]["l_discount"]))) for r in g ] ) ), _get(_get(g, "key"), "o_orderdate"), ] ), )
++   return [
++   {
++   "l_orderkey": _get(_get(g, "key"), "o_orderkey"),
++   "revenue": _sum(
++   [(r[1]["l_extendedprice"] * ((1 - r[1]["l_discount"]))) for r in g]
++   ),
++   "o_orderdate": _get(_get(g, "key"), "o_orderdate"),
++   "o_shippriority": _get(_get(g, "key"), "o_shippriority"),
++   }
++   for g in items
++   ]
++   let order_line_join = _q0()
++   print(*order_line_join)
++   test_Q3_returns_revenue_per_order_with_correct_priority()
++ }
++ 

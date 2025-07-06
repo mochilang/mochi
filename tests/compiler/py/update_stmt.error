@@ -1,42 +1,71 @@
 generated code does not match expected
---- expected
-+++ generated
-@@ -3,27 +3,17 @@
-   age: int
-   status: string
- }
--
--let people: list<Person> = [
--  Person { name: "Alice", age: 17, status: "minor" },
--  Person { name: "Bob", age: 25, status: "unknown" },
--  Person { name: "Charlie", age: 18, status: "unknown" },
--  Person { name: "Diana", age: 16, status: "minor" }
--]
--
--update people
--set {
--  status: "adult",
--  age: age + 1
-+let people = [Person { name: "Alice", age: 17, status: "minor" }, Person { name: "Bob", age: 25, status: "unknown" }, Person { name: "Charlie", age: 18, status: "unknown" }, Person { name: "Diana", age: 16, status: "minor" }]
-+test "update_adult_status" {
-+  expect people == [Person { name: "Alice", age: 17, status: "minor" }, Person { name: "Bob", age: 26, status: "adult" }, Person { name: "Charlie", age: 19, status: "adult" }, Person { name: "Diana", age: 16, status: "minor" }]
- }
--where age >= 18
--
--test "update adult status" {
--  expect people == [
--    Person { name: "Alice", age: 17, status: "minor" },
--    Person { name: "Bob", age: 26, status: "adult" },
--    Person { name: "Charlie", age: 19, status: "adult" },
--    Person { name: "Diana", age: 16, status: "minor" }
--  ]
-+for (_i0, _it1) in enumerate(people) {
-+  let name = _it1.name
-+  let age = _it1.age
-+  let status = _it1.status
-+  if age >= 18 {
-+    setattr(_it1, "status", "adult")
-+    setattr(_it1, "age", age + 1)
-+  }
- }
- print("ok")
+- type Person {
++ let T = TypeVar('T')
+-   name: string
++ fun _get(obj, name) {
+-   age: int
++   if obj is None {
+-   status: string
++   return None
+- 
++   if isinstance(obj, dict) {
+- let people: list<Person> = [
++   if name in obj {
+-   Person { name: "Alice", age: 17, status: "minor" },
++   return obj[name]
+-   Person { name: "Bob", age: 25, status: "unknown" },
++ }
+-   Person { name: "Charlie", age: 18, status: "unknown" },
++ }
+-   Person { name: "Diana", age: 16, status: "minor" }
++   if hasattr(obj, name) {
+- ]
++   return getattr(obj, name)
+- 
++ }
+- update people
++   if isinstance(obj, (list, tuple)) {
+- set {
++   for it in obj {
+-   status: "adult",
++   try:
+-   age: age + 1
++   return _get(it, name)
+- }
++   except Exception:
+- where age >= 18
++ }
+- 
++ }
+- test "update adult status" {
++   raise Exception("field not found: " + name)
+-   expect people == [
++ }
+-     Person { name: "Alice", age: 17, status: "minor" },
++ let people = [Person(name='Alice', age=17, status='minor'), Person(name='Bob', age=25, status='unknown'), Person(name='Charlie', age=18, status='unknown'), Person(name='Diana', age=16, status='minor')]
+-     Person { name: "Bob", age: 26, status: "adult" },
++ fun test_update_adult_status() {
+-     Person { name: "Charlie", age: 19, status: "adult" },
++   let assert people = = [ Person(name="Alice", age=17, status="minor"), Person(name="Bob", age=26, status="adult"), Person(name="Charlie", age=19, status="adult"), Person(name="Diana", age=16, status="minor"), ]
+-     Person { name: "Diana", age: 16, status: "minor" }
++ }
+-   ]
++ fun main() {
+- }
++   let people = [ Person(name="Alice", age=17, status="minor"), Person(name="Bob", age=25, status="unknown"), Person(name="Charlie", age=18, status="unknown"), Person(name="Diana", age=16, status="minor"), ]
+- print("ok")
++   for _i0, _it1 in enumerate(people) {
+- 
++   let name = _get(_it1, "name")
++   let age = _get(_it1, "age")
++   let status = _get(_it1, "status")
++   if age >= 18 {
++   setattr(_it1, "status", "adult")
++   setattr(_it1, "age", (age + 1))
++ }
++   let people[_i0] = _it1
++ }
++   print("ok")
++   test_update_adult_status()
++ }
++ 

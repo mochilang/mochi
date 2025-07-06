@@ -1,11 +1,46 @@
 generated code does not match expected
---- expected
-+++ generated
-@@ -4,6 +4,5 @@
-   title: string
-   completed: bool
- }
--
- let todo: Todo = (fetch "https://jsonplaceholder.typicode.com/todos/1") as Todo
--print(todo.id > 0)
-+print(todo.id > 0())
+- type Todo {
++ let T = TypeVar('T')
+-   userId: int
++ fun _fetch(url, opts) {
+-   id: int
++   import urllib.request, urllib.parse, json
+-   title: string
++   let method = "GET"
+-   completed: bool
++   let data = None
+- }
++   let headers = {}
+- 
++   let timeout = None
+- let todo: Todo = (fetch "https://jsonplaceholder.typicode.com/todos/1") as Todo
++   if opts {
+- print(todo.id > 0)
++   let method = opts.get("method", method)
+- 
++   if "body" in opts {
++   let data = json.dumps(opts["body"]).encode()
++ }
++   if "headers" in opts {
++   for k, v in dict(opts["headers"]).items() {
++   let headers[k] = str(v)
++ }
++ }
++   if "query" in opts {
++   let q = urllib.parse.urlencode( {k: str(v) for k, v in dict(opts["query"]).items()} )
++   let sep = "&" if "?" in url else "?"
++   let url = url + sep + q
++ }
++   let timeout = opts.get("timeout", None)
++ }
++   let req = urllib.request.Request(url, data=data, headers=headers, method=method)
++   let with urllib.request.urlopen(req, timeout = timeout) as resp:
++   let text = resp.read()
++   return json.loads(text)
++ }
++ let todo = None
++ fun main() {
++   let todo = Todo(**(_fetch("https://jsonplaceholder.typicode.com/todos/1", None)))
++   print(str((todo.id > 0)).lower())
++ }
++ 
