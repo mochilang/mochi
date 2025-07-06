@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	rktcode "mochi/compile/x/rkt"
@@ -41,6 +42,16 @@ func TestRacketCompiler_JOB_Golden(t *testing.T) {
 		}
 		if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(want)) {
 			t.Errorf("generated code mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, bytes.TrimSpace(want))
+		}
+
+		out, err := compileRun(t, src)
+		if err != nil {
+			t.Fatalf("%s: %v", q, err)
+		}
+		if wantRun, err := os.ReadFile(filepath.Join(root, "tests", "dataset", "job", "compiler", "rkt", q+".out")); err == nil {
+			if strings.TrimSpace(string(out)) != strings.TrimSpace(string(wantRun)) {
+				t.Errorf("%s runtime mismatch\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, out, wantRun)
+			}
 		}
 	}
 }
