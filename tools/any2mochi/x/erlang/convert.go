@@ -70,6 +70,9 @@ func Convert(src string) ([]byte, error) {
 		if f.Name == "main" {
 			hasMain = true
 		}
+		if strings.HasPrefix(f.Name, "mochi_") && f.Name != "main" {
+			continue
+		}
 		out.WriteString("// line ")
 		out.WriteString(fmt.Sprint(f.Line))
 		if f.EndLine > 0 && f.EndLine != f.Line {
@@ -87,7 +90,11 @@ func Convert(src string) ([]byte, error) {
 			out.WriteString(f.Name)
 		}
 		out.WriteByte('(')
-		for i, p := range f.Params {
+		params := f.Params
+		if f.Name == "main" && len(params) == 1 && params[0] == "_" {
+			params = nil
+		}
+		for i, p := range params {
 			if i > 0 {
 				out.WriteString(", ")
 			}
@@ -101,23 +108,7 @@ func Convert(src string) ([]byte, error) {
 			for _, line := range f.Body {
 				parts := strings.Split(line, "\n")
 				for _, ln := range parts {
-					if strings.HasPrefix(ln, "io:format(") {
-						ln = "print(" + strings.TrimPrefix(ln, "io:format(")
-					} else if strings.HasPrefix(ln, "io:fwrite(") {
-						ln = "print(" + strings.TrimPrefix(ln, "io:fwrite(")
-					}
-					for _, r := range ast.Records {
-						t := strings.Title(r.Name)
-						if strings.Contains(ln, "#"+r.Name+"{") {
-							ln = strings.ReplaceAll(ln, "#"+r.Name+"{", t+" {")
-							if i := strings.Index(ln, t+" {"); i != -1 {
-								after := ln[i+len(t)+2:]
-								after = strings.ReplaceAll(after, "=", ":")
-								ln = ln[:i+len(t)+2] + after
-							}
-						}
-						ln = strings.ReplaceAll(ln, "#"+r.Name+".", ".")
-					}
+					ln = convertLine(ln, ast.Records)
 					out.WriteString("  ")
 					out.WriteString(strings.TrimSpace(ln))
 					out.WriteByte('\n')
@@ -142,6 +133,38 @@ func ConvertFile(path string) ([]byte, error) {
 		return nil, err
 	}
 	return Convert(string(data))
+}
+
+func convertLine(ln string, recs []Record) string {
+	if strings.HasPrefix(ln, "io:format(") {
+		ln = strings.TrimPrefix(ln, "io:format(")
+		ln = rewritePrintCall(ln)
+	} else if strings.HasPrefix(ln, "io:fwrite(") {
+		ln = strings.TrimPrefix(ln, "io:fwrite(")
+		ln = rewritePrintCall(ln)
+	} else if strings.HasPrefix(ln, "mochi_print([") && strings.HasSuffix(ln, "])") {
+		ln = "print(" + strings.TrimSuffix(strings.TrimPrefix(ln, "mochi_print(["), "])") + ")"
+	}
+	for _, r := range recs {
+		t := strings.Title(r.Name)
+		if strings.Contains(ln, "#"+r.Name+"{") {
+			ln = strings.ReplaceAll(ln, "#"+r.Name+"{", t+" {")
+			if i := strings.Index(ln, t+" {"); i != -1 {
+				after := ln[i+len(t)+2:]
+				after = strings.ReplaceAll(after, "=", ":")
+				ln = ln[:i+len(t)+2] + after
+			}
+		}
+		ln = strings.ReplaceAll(ln, "#"+r.Name+".", ".")
+	}
+	return ln
+}
+
+func rewritePrintCall(args string) string {
+	if strings.HasPrefix(args, "\"~s~n\", [") && strings.HasSuffix(args, "])") {
+		return "print(" + strings.TrimSuffix(strings.TrimPrefix(args, "\"~s~n\", ["), "])") + ")"
+	}
+	return "print(" + args
 }
 
 func formatParseError(src string, err error) error {
