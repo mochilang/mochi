@@ -8,11 +8,20 @@ import (
 	"strings"
 )
 
+func lineNumber(src string, offset int) int {
+	if offset > len(src) {
+		offset = len(src)
+	}
+	return strings.Count(src[:offset], "\n") + 1
+}
+
 type funcDef struct {
-	name   string
-	params []param
-	ret    string
-	body   string
+	name      string
+	params    []param
+	ret       string
+	body      string
+	startLine int
+	endLine   int
 }
 
 type enumDef struct {
@@ -26,8 +35,10 @@ type structField struct {
 }
 
 type structDef struct {
-	name   string
-	fields []structField
+	name      string
+	fields    []structField
+	startLine int
+	endLine   int
 }
 
 func convertBodyString(body string) []string {
@@ -81,18 +92,25 @@ func parseAST(src string) ([]funcDef, []enumDef, []structDef, error) {
 	var errBuf bytes.Buffer
 	cmd.Stdout = &buf
 	cmd.Stderr = &errBuf
-	if err := cmd.Run(); err != nil {
-		return nil, nil, nil, fmt.Errorf("clang++: %w: %s", err, errBuf.String())
+	runErr := cmd.Run()
+	if runErr != nil && buf.Len() == 0 {
+		return nil, nil, nil, fmt.Errorf("clang++: %w: %s", runErr, errBuf.String())
 	}
 
 	var root astNode
 	if err := json.Unmarshal(buf.Bytes(), &root); err != nil {
+		if runErr != nil {
+			return nil, nil, nil, fmt.Errorf("%v: %w", runErr, err)
+		}
 		return nil, nil, nil, err
 	}
 	var funcs []funcDef
 	var enums []enumDef
 	var structs []structDef
 	collectAST(&root, src, &funcs, &enums, &structs)
+	if runErr != nil {
+		return funcs, enums, structs, fmt.Errorf("clang++: %w: %s", runErr, errBuf.String())
+	}
 	return funcs, enums, structs, nil
 }
 
@@ -149,7 +167,14 @@ func collectAST(n *astNode, src string, funcs *[]funcDef, enums *[]enumDef, stru
 			ret = mapType(strings.TrimSpace(ret))
 		}
 		if body != "" {
-			*funcs = append(*funcs, funcDef{name: n.Name, params: params, ret: ret, body: body})
+			*funcs = append(*funcs, funcDef{
+				name:      n.Name,
+				params:    params,
+				ret:       ret,
+				body:      body,
+				startLine: lineNumber(src, n.Range.Begin.Offset),
+				endLine:   lineNumber(src, n.Range.End.Offset),
+			})
 		}
 	case "EnumDecl":
 		if n.Range == nil || n.Range.Begin.Offset < 0 || n.Range.End.Offset > len(src) {
@@ -177,7 +202,12 @@ func collectAST(n *astNode, src string, funcs *[]funcDef, enums *[]enumDef, stru
 					}
 				}
 				if len(fields) > 0 {
-					*structs = append(*structs, structDef{name: n.Name, fields: fields})
+					*structs = append(*structs, structDef{
+						name:      n.Name,
+						fields:    fields,
+						startLine: lineNumber(src, n.Range.Begin.Offset),
+						endLine:   lineNumber(src, n.Range.End.Offset),
+					})
 				}
 			}
 		}
