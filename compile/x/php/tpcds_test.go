@@ -13,6 +13,7 @@ import (
 	phpcode "mochi/compile/x/php"
 	"mochi/compile/x/testutil"
 	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -55,14 +56,32 @@ func TestPHPCompiler_TPCDSQueries(t *testing.T) {
 			if err != nil {
 				t.Fatalf("php run error: %v\n%s", err, out)
 			}
-			gotOut := bytes.TrimSpace(out)
+			phpOut := bytes.TrimSpace(out)
+
+			p, err := vm.Compile(prog, env)
+			if err != nil {
+				t.Fatalf("vm compile error: %v", err)
+			}
+			var vmBuf bytes.Buffer
+			m := vm.New(p, &vmBuf)
+			if err := m.Run(); err != nil {
+				if ve, ok := err.(*vm.VMError); ok {
+					t.Fatalf("vm run error:\n%s", ve.Format(p))
+				}
+				t.Fatalf("vm run error: %v", err)
+			}
+			vmOut := bytes.TrimSpace(vmBuf.Bytes())
+			if !bytes.Equal(phpOut, vmOut) {
+				t.Fatalf("vm mismatch\n\n--- PHP ---\n%s\n\n--- VM ---\n%s", phpOut, vmOut)
+			}
+
 			outWantPath := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "php", q+".out")
 			wantOut, err := os.ReadFile(outWantPath)
 			if err != nil {
 				t.Fatalf("read golden: %v", err)
 			}
-			if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
-				t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s", q, gotOut, bytes.TrimSpace(wantOut))
+			if !bytes.Equal(phpOut, bytes.TrimSpace(wantOut)) {
+				t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s", q, phpOut, bytes.TrimSpace(wantOut))
 			}
 		})
 	}
