@@ -13,20 +13,24 @@ import (
 )
 
 type Program struct {
-	Forms []form `json:"forms"`
+        Forms []form `json:"forms"`
 }
 
 type form struct {
-	Type   string   `json:"type"`
-	Name   string   `json:"name,omitempty"`
-	Params []string `json:"params,omitempty"`
-	Body   []node   `json:"body,omitempty"`
-	Value  node     `json:"value,omitempty"`
+        Type   string   `json:"type"`
+        Name   string   `json:"name,omitempty"`
+        Params []string `json:"params,omitempty"`
+        Body   []node   `json:"body,omitempty"`
+        Value  node     `json:"value,omitempty"`
+        Line   int      `json:"line,omitempty"`
+        Col    int      `json:"col,omitempty"`
 }
 
 type node struct {
-	Atom string `json:"atom,omitempty"`
-	List []node `json:"list,omitempty"`
+        Atom string `json:"atom,omitempty"`
+        List []node `json:"list,omitempty"`
+        Line int    `json:"line,omitempty"`
+        Col  int    `json:"col,omitempty"`
 }
 
 func snippet(src string) string {
@@ -41,18 +45,34 @@ func snippet(src string) string {
 }
 
 func diagnostics(src string, diags []any2mochi.Diagnostic) string {
-	lines := strings.Split(src, "\n")
-	var out strings.Builder
-	for _, d := range diags {
-		start := int(d.Range.Start.Line)
-		msg := d.Message
-		line := ""
-		if start < len(lines) {
-			line = strings.TrimSpace(lines[start])
-		}
-		out.WriteString(fmt.Sprintf("line %d: %s\n  %s\n", start+1, msg, line))
-	}
-	return strings.TrimSpace(out.String())
+        lines := strings.Split(src, "\n")
+        var out strings.Builder
+        for _, d := range diags {
+                ln := int(d.Range.Start.Line)
+                col := int(d.Range.Start.Character)
+                msg := d.Message
+                if ln >= len(lines) {
+                        out.WriteString(fmt.Sprintf("line %d:%d: %s\n", ln+1, col+1, msg))
+                        continue
+                }
+                out.WriteString(fmt.Sprintf("line %d:%d: %s\n", ln+1, col+1, msg))
+                start := ln - 1
+                if start < 0 {
+                        start = 0
+                }
+                end := ln + 1
+                if end >= len(lines) {
+                        end = len(lines) - 1
+                }
+                for i := start; i <= end; i++ {
+                        out.WriteString(fmt.Sprintf("%3d | %s\n", i+1, lines[i]))
+                        if i == ln {
+                                pointer := strings.Repeat(" ", col) + "^"
+                                out.WriteString("    | " + pointer + "\n")
+                        }
+                }
+        }
+        return strings.TrimSpace(out.String())
 }
 
 func repoRoot() (string, error) {
@@ -75,23 +95,23 @@ func repoRoot() (string, error) {
 
 // Convert converts Clojure source code to Mochi using the language server.
 func Convert(src string) ([]byte, error) {
-	if prog, err := parseCLI(src); err == nil {
-		return programToMochi(prog, src)
-	}
-	ls := any2mochi.Servers["clj"]
-	syms, diags, err := any2mochi.EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
-	if err != nil {
-		return nil, err
-	}
-	if len(diags) > 0 {
-		return nil, fmt.Errorf("%s", diagnostics(src, diags))
-	}
-	var out strings.Builder
-	writeCljSymbols(&out, nil, syms, ls, src)
-	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
-	}
-	return []byte(out.String()), nil
+        if prog, err := parseCLI(src); err == nil {
+                return programToMochi(prog, src)
+        }
+        ls := any2mochi.Servers["clj"]
+        syms, diags, err := any2mochi.EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+        if err != nil {
+                return convertFallback(src)
+        }
+        if len(diags) > 0 {
+                return nil, fmt.Errorf("%s", diagnostics(src, diags))
+        }
+        var out strings.Builder
+        writeCljSymbols(&out, nil, syms, ls, src)
+        if out.Len() == 0 {
+                return convertFallback(src)
+        }
+        return []byte(out.String()), nil
 }
 
 func writeCljSymbols(out *strings.Builder, prefix []string, syms []any2mochi.DocumentSymbol, ls any2mochi.LanguageServer, src string) {
@@ -327,8 +347,11 @@ func parseCLI(src string) (*Program, error) {
 	tmp.Close()
 	defer os.Remove(tmp.Name())
 
-	script := filepath.Join(root, "tools", "any2mochi", "x", "clj", "parse.clj")
-	cmd := exec.Command("clojure", script, tmp.Name())
+       script := filepath.Join(root, "tools", "any2mochi", "x", "clj", "parse.clj")
+       cmd := exec.Command("clojure", script, tmp.Name())
+       if _, err := exec.LookPath("clojure"); err != nil {
+               cmd = exec.Command("go", "run", filepath.Join(root, "tools", "cljast"), tmp.Name())
+       }
 	var out bytes.Buffer
 	var stderr bytes.Buffer
 	cmd.Stdout = &out
@@ -348,14 +371,83 @@ func parseCLI(src string) (*Program, error) {
 }
 
 func nodeToSexpr(n node) sexprNode {
-	if len(n.List) > 0 {
-		var list []sexprNode
-		for _, c := range n.List {
-			list = append(list, nodeToSexpr(c))
-		}
-		return list
-	}
-	return n.Atom
+        if len(n.List) > 0 {
+                var list []sexprNode
+                for _, c := range n.List {
+                        list = append(list, nodeToSexpr(c))
+                }
+                return list
+        }
+        return n.Atom
+}
+
+func paramList(n sexprNode) []string {
+        list, ok := n.([]sexprNode)
+        if !ok {
+                return nil
+        }
+        out := make([]string, 0, len(list))
+        for _, p := range list {
+                if s, ok := p.(string); ok {
+                        out = append(out, s)
+                }
+        }
+        return out
+}
+
+func convertFallback(src string) ([]byte, error) {
+        exprs, _ := parseClojure(src)
+        var out strings.Builder
+        for _, e := range exprs {
+                if list, ok := e.([]sexprNode); ok && len(list) > 0 {
+                        head, _ := list[0].(string)
+                        switch head {
+                        case "defn":
+                                if len(list) >= 3 {
+                                        name, _ := list[1].(string)
+                                        params := paramList(list[2])
+                                        out.WriteString("fun ")
+                                        out.WriteString(name)
+                                        out.WriteByte('(')
+                                        out.WriteString(strings.Join(params, ", "))
+                                        out.WriteByte(')')
+                                        if len(list) == 3 {
+                                                out.WriteString(" {}\n")
+                                        } else {
+                                                out.WriteString(" {\n")
+                                                for _, b := range list[3:] {
+                                                        if s := cljToMochi(b); s != "" {
+                                                                out.WriteString("  ")
+                                                                out.WriteString(s)
+                                                                out.WriteByte('\n')
+                                                        }
+                                                }
+                                                out.WriteString("}\n")
+                                        }
+                                        continue
+                                }
+                        case "def":
+                                if len(list) >= 3 {
+                                        out.WriteString("let ")
+                                        out.WriteString(cljToMochi(list[1]))
+                                        if v := cljToMochi(list[2]); v != "" {
+                                                out.WriteString(" = ")
+                                                out.WriteString(v)
+                                        }
+                                        out.WriteByte('\n')
+                                        continue
+                                }
+                        }
+                }
+                if s := cljToMochi(e); s != "" {
+                        out.WriteString(s)
+                        out.WriteByte('\n')
+                }
+        }
+        if out.Len() == 0 {
+                return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
+        }
+        return []byte(out.String()), nil
 }
 
 func programToMochi(p *Program, src string) ([]byte, error) {
@@ -575,17 +667,54 @@ func cljToMochi(n sexprNode) string {
 			return ""
 		}
 		switch head {
-		case "println":
-			var args []string
-			for _, a := range v[1:] {
-				args = append(args, cljToMochi(a))
-			}
-			return fmt.Sprintf("print(%s)", strings.Join(args, ", "))
-		case "def":
-			if len(v) >= 3 {
-				return fmt.Sprintf("let %s = %s", cljToMochi(v[1]), cljToMochi(v[2]))
-			}
-		case "+", "-", "*", "/", "mod", "quot":
+               case "println":
+                       var args []string
+                       for _, a := range v[1:] {
+                               args = append(args, cljToMochi(a))
+                       }
+                       return fmt.Sprintf("print(%s)", strings.Join(args, ", "))
+               case "if":
+                       if len(v) >= 3 {
+                               cond := cljToMochi(v[1])
+                               thenPart := cljToMochi(v[2])
+                               elsePart := ""
+                               if len(v) >= 4 {
+                                       elsePart = cljToMochi(v[3])
+                               }
+                               if elsePart == "" {
+                                       return fmt.Sprintf("if %s { %s }", cond, thenPart)
+                               }
+                               return fmt.Sprintf("if %s { %s } else { %s }", cond, thenPart, elsePart)
+                       }
+               case "when":
+                       if len(v) >= 3 {
+                               cond := cljToMochi(v[1])
+                               var body []string
+                               for _, b := range v[2:] {
+                                       if s := cljToMochi(b); s != "" {
+                                               body = append(body, s)
+                                       }
+                               }
+                               if len(body) == 0 {
+                                       return ""
+                               } else if len(body) == 1 {
+                                       return fmt.Sprintf("if %s { %s }", cond, body[0])
+                               }
+                               var sb strings.Builder
+                               sb.WriteString(fmt.Sprintf("if %s {\n", cond))
+                               for _, b := range body {
+                                       sb.WriteString("  ")
+                                       sb.WriteString(b)
+                                       sb.WriteByte('\n')
+                               }
+                               sb.WriteString("}")
+                               return sb.String()
+                       }
+               case "def":
+                       if len(v) >= 3 {
+                               return fmt.Sprintf("let %s = %s", cljToMochi(v[1]), cljToMochi(v[2]))
+                       }
+               case "+", "-", "*", "/", "mod", "quot":
 			if len(v) == 3 {
 				op := head
 				if op == "mod" {
@@ -595,11 +724,19 @@ func cljToMochi(n sexprNode) string {
 				}
 				return fmt.Sprintf("%s %s %s", cljToMochi(v[1]), op, cljToMochi(v[2]))
 			}
-		case "throw":
-			if len(v) == 2 {
-				if l2, ok := v[1].([]sexprNode); ok && len(l2) >= 3 {
-					if s, ok := l2[0].(string); ok && s == "ex-info" {
-						if str, ok := l2[1].(string); ok && strings.Trim(str, "\"") == "return" {
+               case "<", "<=", ">", ">=", "=":
+                       if len(v) == 3 {
+                               op := head
+                               if op == "=" {
+                                       op = "=="
+                               }
+                               return fmt.Sprintf("%s %s %s", cljToMochi(v[1]), op, cljToMochi(v[2]))
+                       }
+               case "throw":
+                       if len(v) == 2 {
+                               if l2, ok := v[1].([]sexprNode); ok && len(l2) >= 3 {
+                                       if s, ok := l2[0].(string); ok && s == "ex-info" {
+                                               if str, ok := l2[1].(string); ok && strings.Trim(str, "\"") == "return" {
 							if mp, ok := l2[2].([]sexprNode); ok && len(mp) >= 2 {
 								if key, ok := mp[0].(string); ok && key == ":value" {
 									return fmt.Sprintf("return %s", cljToMochi(mp[1]))
@@ -609,12 +746,12 @@ func cljToMochi(n sexprNode) string {
 					}
 				}
 			}
-		default:
-			var args []string
-			for _, a := range v[1:] {
-				args = append(args, cljToMochi(a))
-			}
-			return fmt.Sprintf("%s(%s)", head, strings.Join(args, ", "))
+               default:
+                       var args []string
+                       for _, a := range v[1:] {
+                               args = append(args, cljToMochi(a))
+                       }
+                       return fmt.Sprintf("%s(%s)", head, strings.Join(args, ", "))
 		}
 	}
 	return ""
