@@ -52,23 +52,32 @@ func diagnostics(src string, diags []any2mochi.Diagnostic) string {
 	lines := strings.Split(src, "\n")
 	var out strings.Builder
 	for _, d := range diags {
-		start := int(d.Range.Start.Line)
+		ln := int(d.Range.Start.Line)
+		col := int(d.Range.Start.Character)
+		endCol := int(d.Range.End.Character)
+		if endCol <= col {
+			endCol = col + 1
+		}
 		msg := d.Message
-		out.WriteString(fmt.Sprintf("line %d: %s\n", start+1, msg))
-		from := start - 1
+		out.WriteString(fmt.Sprintf("line %d:%d: %s\n", ln+1, col+1, msg))
+		from := ln - 1
 		if from < 0 {
 			from = 0
 		}
-		to := start + 1
+		to := ln + 1
 		if to >= len(lines) {
 			to = len(lines) - 1
 		}
 		for i := from; i <= to && i < len(lines); i++ {
 			prefix := "  "
-			if i == start {
+			if i == ln {
 				prefix = "->"
 			}
 			out.WriteString(fmt.Sprintf("%s %3d| %s\n", prefix, i+1, lines[i]))
+			if i == ln {
+				marker := strings.Repeat(" ", col) + strings.Repeat("^", endCol-col)
+				out.WriteString(fmt.Sprintf("   | %s\n", marker))
+			}
 		}
 	}
 	return strings.TrimSpace(out.String())
@@ -535,6 +544,15 @@ func convertFallback(src string) ([]byte, error) {
 			continue
 		}
 		switch {
+		case strings.HasPrefix(lower, "for ") && strings.Contains(lower, " in ") && strings.HasSuffix(lower, " do"):
+			parts := strings.SplitN(l[len("for "):], " in ", 2)
+			varName := strings.TrimSpace(parts[0])
+			iter := strings.TrimSpace(strings.TrimSuffix(parts[1], " do"))
+			out = append(out, fmt.Sprintf("for %s in %s {", varName, iter))
+			if i+1 < len(lines) && strings.TrimSpace(strings.ToLower(lines[i+1])) == "begin" {
+				i++
+			}
+			inLoop = true
 		case strings.HasPrefix(lower, "for ") && strings.Contains(lower, ":=") && strings.Contains(lower, " to "):
 			varName := strings.TrimSpace(l[len("for "):strings.Index(l, ":=")])
 			rest := l[strings.Index(l, ":=")+2:]
@@ -544,6 +562,14 @@ func convertFallback(src string) ([]byte, error) {
 			doIdx := strings.Index(strings.ToLower(rest), " do")
 			endExpr := strings.TrimSpace(rest[:doIdx])
 			out = append(out, fmt.Sprintf("for %s in %s..%s {", varName, startExpr, endExpr))
+			if i+1 < len(lines) && strings.TrimSpace(strings.ToLower(lines[i+1])) == "begin" {
+				i++
+			}
+			inLoop = true
+		case strings.HasPrefix(lower, "while ") && strings.Contains(lower, " do"):
+			doIdx := strings.LastIndex(lower, " do")
+			cond := strings.TrimSpace(l[len("while "):doIdx])
+			out = append(out, fmt.Sprintf("while %s {", cond))
 			if i+1 < len(lines) && strings.TrimSpace(strings.ToLower(lines[i+1])) == "begin" {
 				i++
 			}
