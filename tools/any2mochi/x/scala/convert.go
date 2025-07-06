@@ -612,11 +612,11 @@ func diagnostics(src string, diags []any2mochi.Diagnostic) string {
 		start := int(d.Range.Start.Line)
 		col := int(d.Range.Start.Character)
 		msg := d.Message
-		from := start - 1
+		from := start - 2
 		if from < 0 {
 			from = 0
 		}
-		to := start + 1
+		to := start + 2
 		if to >= len(lines) {
 			to = len(lines) - 1
 		}
