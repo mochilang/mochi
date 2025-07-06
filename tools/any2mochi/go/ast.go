@@ -1,4 +1,4 @@
-package any2mochi
+package goconv
 
 import (
 	"encoding/json"
