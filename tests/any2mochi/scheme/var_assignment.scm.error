@@ -1,0 +1,10 @@
+type error: error[T024]: cannot assign to `x` (immutable)
+  --> :2:1
+
+help:
+  Use `var` to declare mutable variables.
+
+  1| (define x 1)
+  2| (set! x 2)
+  3| (begin (display x) (newline))
+  4|

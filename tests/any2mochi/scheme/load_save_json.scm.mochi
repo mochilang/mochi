@@ -1,1 +1,1 @@
-fun _fetch(url, opts) {}
+fun _fetch(url: any, opts: any) {}

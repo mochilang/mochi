@@ -1,0 +1,16 @@
+type error: error[T024]: cannot assign to `xs` (immutable)
+  --> :3:1
+
+help:
+  Use `var` to declare mutable variables.
+
+  1| (define (list-set lst idx val)
+  2|     (let loop ((i idx) (l lst))
+  3|         (if (null? l)
+  4|             '()
+  5|             (if (= i 0)
+  6|                 (cons val (cdr l))
+  7|                 (cons (car l) (loop (- i 1) (cdr l))))))
+  8| )
+  9| 
+ 10| (define xs (list (list 1 2) (list 3 4)))

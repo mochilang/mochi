@@ -1,0 +1,8 @@
+type error: error[T003]: unknown function: length
+  --> :1:7
+
+help:
+  Ensure the function is defined before it's called.
+
+  1| (begin (display (length (list 1 2 3))) (newline))
+  2|

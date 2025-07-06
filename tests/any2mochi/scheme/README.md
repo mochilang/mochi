@@ -9,6 +9,9 @@ This directory stores golden files for converting Scheme source code back into M
 - Translation of common expressions including `display`, `set!`, arithmetic and indexing
 - Basic control flow such as `if` statements and simple `while` loops emitted by the compiler
 - Lambda expressions converted into `fun` literals when possible
+- `cond` forms expanded into nested `if` statements
+- Scheme identifiers are sanitized (e.g. `map-get` -> `map_get`)
+- Quoted atoms like `'name` are turned into strings
 
 ## Unsupported Features
 

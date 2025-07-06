@@ -1,0 +1,12 @@
+parse error: parse error: 5:63: lexer: invalid input text "'age) 18) (set! ..."
+
+  1| (define (map-get m k)
+  2|     (let ((p (assoc k m)))
+  3|         (if p (cdr p) '()))
+  4| )
+  5| (define (map-set m k v)
+  6|     (let ((p (assoc k m)))
+  7|         (if p
+  8|             (begin (set-cdr! p v) m)
+  9|             (cons (cons k v) m)))
+ 10| )

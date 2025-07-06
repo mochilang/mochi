@@ -1,16 +1,16 @@
-fun map-get(m, k) {}
-fun map-set(m, k, v) {}
-fun list-set(lst, idx, val) {}
+fun map_get(m: any, k: any) {}
+fun map_set(m: any, k: any, v: any) {}
+fun list_set(lst: any, idx: any, val: any) {}
 let failures = 0
-fun print-test-start(name) {}
-fun print-test-pass() {}
-fun print-test-fail(err) {}
-fun run-test(name, thunk) {}
-fun new-Person(name, age, status) {}
-let people = [[cons('name, "Alice"), cons('age, 17), cons('status, "minor")], [cons('name, "Bob"), cons('age, 25), cons('status, "unknown")], [cons('name, "Charlie"), cons('age, 18), cons('status, "unknown")], [cons('name, "Diana"), cons('age, 16), cons('status, "minor")]]
+fun print_test_start(name: any) {}
+fun print_test_pass() {}
+fun print_test_fail(err: any) {}
+fun run_test(name: any, thunk: any) {}
+fun new_Person(name: any, age: any, status: any) {}
+let people = [[["name", "Alice"], ["age", 17], ["status", "minor"]], [["name", "Bob"], ["age", 25], ["status", "unknown"]], [["name", "Charlie"], ["age", 18], ["status", "unknown"]], [["name", "Diana"], ["age", 16], ["status", "minor"]]]
 for item in people {
   if age >= 18 {
-    item = map-set(item, 'status, "adult")
+    item = map_set(item, "status", "adult")
   }
 }
 fun test_update_adult_status() {}

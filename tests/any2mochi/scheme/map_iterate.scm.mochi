@@ -1,6 +1,0 @@
-fun map-get(m, k) {}
-fun map-set(m, k, v) {}
-let m = []
-m = map-set(m, 1, #t)
-m = map-set(m, 2, #t)
-let sum = 0
