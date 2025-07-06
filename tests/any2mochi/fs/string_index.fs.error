@@ -1,0 +1,7 @@
+parse error: parse error: 2:15: unexpected token "text" (expected "(" (Expr ("," Expr)*)? ")")
+
+  1| open System
+  2| 
+  3| let text = "hello"
+  4| ignore (printfn "%A" ((string text.[1])))
+  5|

@@ -1,0 +1,6 @@
+parse error: parse error: 1:15: unexpected token "[" (expected <ident>)
+
+  1| open System
+  2| 
+  3| ignore (printfn "%A" ("hello".[(if (-4) < 0 then "hello".Length + (-4) else (-4)) .. ((if (-1) < 0 then "hello".Length + (-1) else (-1)) - 1)]))
+  4|

@@ -1,5 +1,16 @@
-unsupported syntax at line 10: failwith "unreachable"
-  9:         raise (Return_prepend (result))
- 10:         failwith "unreachable"
- 11:     with Return_prepend v -> v
- 12:
+type error: error[T002]: undefined variable: level
+  --> :2:15
+
+help:
+  Check if the variable was declared in this scope.
+
+  1| open System
+  2| 
+  3| exception Return_prepend of int[][]
+  4| let rec prepend (level: int[]) (result: int[][]) : int[][] =
+  5|     try
+  6|         let mutable level = level
+  7|         let mutable result = result
+  8|         result <- Array.append [|level|] result
+  9|         raise (Return_prepend (result))
+ 10|         failwith "unreachable"

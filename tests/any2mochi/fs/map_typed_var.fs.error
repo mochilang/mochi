@@ -1,0 +1,11 @@
+type error: error[T002]: undefined variable: Map
+  --> :1:9
+
+help:
+  Check if the variable was declared in this scope.
+
+  1| open System
+  2| 
+  3| let mutable m: Map<int,int> = Map.empty
+  4| ignore (printfn "%A" (Map.count (m)))
+  5|

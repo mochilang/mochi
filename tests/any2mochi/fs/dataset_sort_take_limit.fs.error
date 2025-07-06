@@ -1,0 +1,12 @@
+parse error: parse error: 9:34: unexpected token "," (expected PostfixExpr)
+
+  1| open System
+  2| 
+  3| type Product =
+  4|     {
+  5|         name: string;
+  6|         price: int
+  7|     }
+  8| 
+  9| type Product =
+ 10|     {

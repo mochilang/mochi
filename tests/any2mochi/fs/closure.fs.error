@@ -1,5 +1,12 @@
-unsupported syntax at line 8: failwith "unreachable"
-  7:         raise (Return_makeAdder ((fun (x: int) -> (x + n))))
-  8:         failwith "unreachable"
-  9:     with Return_makeAdder v -> v
- 10:
+parse error: parse error: 3:22: unexpected token ")" (expected "<" TypeRef ("," TypeRef)* ">")
+
+  1| open System
+  2| 
+  3| exception Return_makeAdder of (int -> int)
+  4| let rec makeAdder (n: int) : int -> int =
+  5|     try
+  6|         let mutable n = n
+  7|         raise (Return_makeAdder ((fun (x: int) -> (x + n))))
+  8|         failwith "unreachable"
+  9|     with Return_makeAdder v -> v
+ 10|

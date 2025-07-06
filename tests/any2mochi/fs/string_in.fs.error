@@ -1,0 +1,11 @@
+type error: error[T004]: `` is not callable
+  --> :1:23
+
+help:
+  Use a function or closure in this position.
+
+  1| open System
+  2| 
+  3| ignore (printfn "%A" ("catch".Contains("cat")))
+  4| ignore (printfn "%A" ("catch".Contains("dog")))
+  5|

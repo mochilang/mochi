@@ -3,3 +3,14 @@ unsupported syntax at line 116: ignore (_json result)
 116: ignore (_json result)
 117: let test_Q2_returns_only_supplier_with_min_cost_in_Europe_for_brass_part() =
 118:     if not ((result = [|Map.ofList [(s_acctbal, 1000.0); (s_name, "BestSupplier"); (n_name, "FRANCE"); (p_partkey, 1000); (p_mfgr, "M1"); (s_address, "123 Rue"); (s_phone, "123"); (s_comment, "Fast and reliable"); (ps_supplycost, 10.0)]|])) then failwith "expect failed"
+
+  1| open System
+  2| 
+  3| let r_regionkey = "r_regionkey"
+  4| let r_name = "r_name"
+  5| let n_nationkey = "n_nationkey"
+  6| let n_regionkey = "n_regionkey"
+  7| let n_name = "n_name"
+  8| let s_suppkey = "s_suppkey"
+  9| let s_name = "s_name"
+ 10| let s_address = "s_address"

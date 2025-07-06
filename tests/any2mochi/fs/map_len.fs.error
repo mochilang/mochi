@@ -1,0 +1,6 @@
+parse error: parse error: 1:34: unexpected token "," (expected ")")
+
+  1| open System
+  2| 
+  3| ignore (printfn "%A" (Map.count (Map.ofList [("a", 1); ("b", 2)])))
+  4|

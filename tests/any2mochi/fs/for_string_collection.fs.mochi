@@ -1,4 +1,0 @@
-for ch in "hi" {
-  let ch = string ch
-  print(ch)
-}

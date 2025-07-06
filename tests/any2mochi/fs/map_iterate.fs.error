@@ -1,0 +1,12 @@
+parse error: parse error: 5:19: unexpected token "m" (expected "{" Statement* "}")
+
+  1| open System
+  2| 
+  3| let mutable m: Map<int,bool> = Map.empty
+  4| m <- Map.add 1 true m
+  5| m <- Map.add 2 true m
+  6| let mutable sum = 0
+  7| for k in Map.keys m do
+  8|     sum <- (sum + k)
+  9| ignore (printfn "%A" (sum))
+ 10|

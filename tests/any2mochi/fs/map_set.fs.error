@@ -1,0 +1,8 @@
+parse error: parse error: 1:30: unexpected token "," (expected ")")
+
+  1| open System
+  2| 
+  3| let mutable scores = Map.ofList [("a", 1)]
+  4| scores <- Map.add "b" 2 scores
+  5| ignore (printfn "%A" (scores.["b"]))
+  6|

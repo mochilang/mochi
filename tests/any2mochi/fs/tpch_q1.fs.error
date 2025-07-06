@@ -3,3 +3,14 @@ unsupported syntax at line 20: type _Group<'T>(key: obj) =
  20: type _Group<'T>(key: obj) =
  21:   member val key = key with get, set
  22:   member val Items = System.Collections.Generic.List<'T>() with get
+
+  1| open System
+  2| 
+  3| let l_quantity = "l_quantity"
+  4| let l_extendedprice = "l_extendedprice"
+  5| let l_discount = "l_discount"
+  6| let l_tax = "l_tax"
+  7| let l_returnflag = "l_returnflag"
+  8| let l_linestatus = "l_linestatus"
+  9| let l_shipdate = "l_shipdate"
+ 10| let returnflag = "returnflag"

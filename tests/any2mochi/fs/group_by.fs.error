@@ -3,3 +3,14 @@ unsupported syntax at line 3: type _Group<'T>(key: obj) =
   3: type _Group<'T>(key: obj) =
   4:   member val key = key with get, set
   5:   member val Items = System.Collections.Generic.List<'T>() with get
+
+  1| open System
+  2| 
+  3| type _Group<'T>(key: obj) =
+  4|   member val key = key with get, set
+  5|   member val Items = System.Collections.Generic.List<'T>() with get
+  6|   member this.size = this.Items.Count
+  7| let _group_by (src: 'T list) (keyfn: 'T -> obj) : _Group<'T> list =
+  8|   src
+  9|   |> Seq.groupBy keyfn
+ 10|   |> Seq.map (fun (k, items) ->

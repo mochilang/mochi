@@ -1,5 +1,12 @@
-unsupported syntax at line 14: failwith "unreachable"
- 13:         raise (Return_twoSum ([|(-1); (-1)|]))
- 14:         failwith "unreachable"
- 15:     with Return_twoSum v -> v
- 16:
+parse error: parse error: 7:27: unexpected token "[" (expected <ident>)
+
+  1| open System
+  2| 
+  3| exception Return_twoSum of int[]
+  4| let rec twoSum (nums: int[]) (target: int) : int[] =
+  5|     try
+  6|         let mutable nums = nums
+  7|         let mutable target = target
+  8|         let n = nums.Length
+  9|         for i = 0 to n - 1 do
+ 10|             for j = (i + 1) to n - 1 do

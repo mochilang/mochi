@@ -1,0 +1,8 @@
+parse error: parse error: 2:11: unexpected token "=" (expected "(" (Expr ("," Expr)*)? ")")
+
+  1| open System
+  2| 
+  3| let x = (1 + 2)
+  4| if not ((x = 3)) then failwith "expect failed"
+  5| ignore (printfn "%A" ("ok"))
+  6|

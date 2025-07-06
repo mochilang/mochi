@@ -1,0 +1,6 @@
+parse error: parse error: 1:24: unexpected token "2.7" (expected ")")
+
+  1| open System
+  2| 
+  3| ignore (printfn "%A" (Math.Floor(float 2.7)))
+  4|

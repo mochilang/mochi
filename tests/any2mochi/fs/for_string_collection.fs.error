@@ -1,0 +1,12 @@
+type error: error[T002]: undefined variable: string
+  --> :2:12
+
+help:
+  Check if the variable was declared in this scope.
+
+  1| open System
+  2| 
+  3| for ch in "hi" do
+  4|     let ch = string ch
+  5|     ignore (printfn "%A" (ch))
+  6|

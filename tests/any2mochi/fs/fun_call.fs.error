@@ -1,5 +1,16 @@
-unsupported syntax at line 9: failwith "unreachable"
-  8:         raise (Return_add ((a + b)))
-  9:         failwith "unreachable"
- 10:     with Return_add v -> v
- 11:
+type error: error[T002]: undefined variable: a
+  --> :2:11
+
+help:
+  Check if the variable was declared in this scope.
+
+  1| open System
+  2| 
+  3| exception Return_add of int
+  4| let rec add (a: int) (b: int) : int =
+  5|     try
+  6|         let mutable a = a
+  7|         let mutable b = b
+  8|         raise (Return_add ((a + b)))
+  9|         failwith "unreachable"
+ 10|     with Return_add v -> v

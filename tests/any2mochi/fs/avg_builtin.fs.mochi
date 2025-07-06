@@ -1,7 +1,0 @@
-fun sum() {
-}
-fun avg() {
-}
-fun count(): int {
-}
-print(avg [|1; 2; 3|])

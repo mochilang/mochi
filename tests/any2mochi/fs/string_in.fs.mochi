@@ -1,2 +1,0 @@
-print("catch".Contains("cat"))
-print("catch".Contains("dog"))
