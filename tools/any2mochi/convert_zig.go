@@ -1,8 +1,13 @@
 package any2mochi
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
+	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -11,8 +16,146 @@ type zigParam struct {
 	typ  string
 }
 
+type zigAST struct {
+	Vars      []zigVar  `json:"vars"`
+	Functions []zigFunc `json:"functions"`
+}
+
+type zigVar struct {
+	Name string `json:"name"`
+	Type string `json:"type"`
+}
+
+type zigFunc struct {
+	Name   string   `json:"name"`
+	Params string   `json:"params"`
+	Ret    string   `json:"ret"`
+	Lines  []string `json:"lines"`
+}
+
+func parseZigCLI(src string) (*zigAST, error) {
+	root, err := repoRoot()
+	if err != nil {
+		return nil, err
+	}
+	tmp, err := os.CreateTemp("", "zigsrc_*.zig")
+	if err != nil {
+		return nil, err
+	}
+	if _, err := tmp.WriteString(src); err != nil {
+		tmp.Close()
+		os.Remove(tmp.Name())
+		return nil, err
+	}
+	tmp.Close()
+	defer os.Remove(tmp.Name())
+	cmd := exec.Command("go", "run", filepath.Join(root, "tools", "zigast"), tmp.Name())
+	var out bytes.Buffer
+	var stderr bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &stderr
+	if err := cmd.Run(); err != nil {
+		msg := strings.TrimSpace(stderr.String())
+		if msg == "" {
+			msg = err.Error()
+		}
+		return nil, fmt.Errorf("zigast: %s", msg)
+	}
+	var ast zigAST
+	if err := json.Unmarshal(out.Bytes(), &ast); err != nil {
+		return nil, err
+	}
+	return &ast, nil
+}
+
+func convertZigAST(ast *zigAST) ([]byte, error) {
+	var out strings.Builder
+	// ignore top-level variables since imports are not needed
+	for _, fn := range ast.Functions {
+		out.WriteString("fun ")
+		out.WriteString(fn.Name)
+		out.WriteByte('(')
+		params := parseZigParams(fn.Params)
+		for i, p := range params {
+			if i > 0 {
+				out.WriteString(", ")
+			}
+			out.WriteString(p.name)
+			if p.typ != "" {
+				out.WriteString(": ")
+				out.WriteString(p.typ)
+			}
+		}
+		out.WriteByte(')')
+		if fn.Ret != "" && fn.Ret != "void" {
+			out.WriteString(": ")
+			out.WriteString(mapZigType(fn.Ret))
+		}
+		body := parseZigFunctionBodyLines(fn.Lines)
+		if len(body) == 0 {
+			out.WriteString(" {}\n")
+			continue
+		}
+		out.WriteString(" {\n")
+		for _, l := range body {
+			out.WriteString("  ")
+			out.WriteString(l)
+			out.WriteByte('\n')
+		}
+		out.WriteString("}\n")
+	}
+	for _, fn := range ast.Functions {
+		if fn.Name == "main" {
+			out.WriteString("main()\n")
+			break
+		}
+	}
+	if out.Len() == 0 {
+		return nil, fmt.Errorf("no convertible symbols found")
+	}
+	return []byte(out.String()), nil
+}
+
+func parseZigFunctionBodyLines(lines []string) []string {
+	var out []string
+	indent := 0
+	for _, line := range lines {
+		l := strings.TrimSpace(line)
+		if l == "" {
+			continue
+		}
+		for strings.HasPrefix(l, "}") {
+			indent--
+			out = append(out, strings.Repeat("  ", indent)+"}")
+			l = strings.TrimSpace(strings.TrimPrefix(l, "}"))
+			if l == "" {
+				break
+			}
+		}
+		if l == "" {
+			continue
+		}
+		if strings.HasSuffix(l, "{") {
+			hdr := strings.TrimSpace(strings.TrimSuffix(l, "{"))
+			out = append(out, strings.Repeat("  ", indent)+parseZigBlockHeader(hdr)+" {")
+			indent++
+			continue
+		}
+		if l == "}" {
+			indent--
+			out = append(out, strings.Repeat("  ", indent)+"}")
+			continue
+		}
+		out = append(out, strings.Repeat("  ", indent)+parseZigStmt(l))
+	}
+	return out
+}
+
 // ConvertZig converts zig source code to Mochi using the language server.
 func ConvertZig(src string) ([]byte, error) {
+	if ast, err := parseZigCLI(src); err == nil {
+		return convertZigAST(ast)
+	}
 	ls := Servers["zig"]
 	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
 	if err != nil {
@@ -185,6 +328,13 @@ func convertZigExpr(expr string) string {
 	expr = strings.ReplaceAll(expr, "std.debug.print", "print")
 	if strings.HasPrefix(expr, ".{") && strings.HasSuffix(expr, "}") {
 		expr = "[" + strings.TrimSpace(expr[2:len(expr)-1]) + "]"
+	} else {
+		r := regexp.MustCompile(`\.{([^}]*)}`)
+		expr = r.ReplaceAllString(expr, "[$1]")
+	}
+	if strings.HasPrefix(expr, "print(\"{any}\\n\", [") && strings.HasSuffix(expr, "])") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(expr, "print(\"{any}\\n\", ["), "])")
+		expr = "print(" + inner + ")"
 	}
 	return expr
 }
