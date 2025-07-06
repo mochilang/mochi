@@ -311,6 +311,10 @@ func parseStatementsIndent(body string, indent int) []string {
 				head := strings.TrimSpace(strings.TrimSuffix(l[4:], "{"))
 				out = append(out, strings.Repeat("  ", indent)+"for "+head+" {")
 				indent++
+			case strings.HasPrefix(l, "while ") && strings.HasSuffix(l, "{"):
+				cond := strings.TrimSpace(strings.TrimSuffix(l[len("while "):], "{"))
+				out = append(out, strings.Repeat("  ", indent)+"while "+cond+" {")
+				indent++
 			case strings.HasPrefix(l, "return "):
 				expr := rewriteStructLiteral(strings.TrimSpace(l[len("return "):]))
 				out = append(out, strings.Repeat("  ", indent)+"return "+expr)
@@ -328,6 +332,10 @@ func parseStatementsIndent(body string, indent int) []string {
 					expr := rewriteStructLiteral(strings.TrimSpace(parts[1]))
 					out = append(out, strings.Repeat("  ", indent)+"let "+name+" = "+expr)
 				}
+			case l == "break":
+				out = append(out, strings.Repeat("  ", indent)+"break")
+			case l == "continue":
+				out = append(out, strings.Repeat("  ", indent)+"continue")
 			default:
 				out = append(out, strings.Repeat("  ", indent)+l)
 			}
