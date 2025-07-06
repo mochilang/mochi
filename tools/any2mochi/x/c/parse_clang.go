@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"os/exec"
+	"regexp"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -58,7 +60,7 @@ func parseClangFile(src string) ([]function, error) {
 	cmd.Stderr = &errBuf
 	if err := cmd.Run(); err != nil {
 		if errBuf.Len() > 0 {
-			return nil, fmt.Errorf("clang: %w: %s", err, errBuf.String())
+			return nil, fmt.Errorf("%s", formatClangErrors(src, errBuf.String()))
 		}
 		return nil, err
 	}
@@ -88,7 +90,8 @@ func parseClangFile(src string) ([]function, error) {
 			}
 			var params []param
 			var body []string
-			line := offsetToLine(src, n.Range.Begin.Offset)
+			startLn := offsetToLine(src, n.Range.Begin.Offset)
+			endLn := offsetToLine(src, n.Range.End.Offset)
 			for _, c := range n.Inner {
 				switch c.Kind {
 				case "ParmVarDecl":
@@ -107,7 +110,7 @@ func parseClangFile(src string) ([]function, error) {
 				}
 			}
 			if len(body) > 0 {
-				funcs = append(funcs, function{name: n.Name, ret: ret, params: params, body: body, line: line})
+				funcs = append(funcs, function{name: n.Name, ret: ret, params: params, body: body, startLine: startLn, endLine: endLn})
 			}
 		}
 		for _, c := range n.Inner {
@@ -116,4 +119,37 @@ func parseClangFile(src string) ([]function, error) {
 	}
 	walk(root)
 	return funcs, nil
+}
+
+// formatClangErrors converts clang error output into a friendlier form with
+// line numbers and code snippets. If parsing fails, the raw text is returned.
+func formatClangErrors(src, out string) string {
+	re := regexp.MustCompile(`(?m)^<stdin>:(\d+):(\d+):.*error: (.*)$`)
+	matches := re.FindAllStringSubmatch(out, -1)
+	if len(matches) == 0 {
+		return strings.TrimSpace(out)
+	}
+	lines := strings.Split(src, "\n")
+	var buf strings.Builder
+	for _, m := range matches {
+		ln, _ := strconv.Atoi(m[1])
+		col, _ := strconv.Atoi(m[2])
+		msg := m[3]
+		buf.WriteString(fmt.Sprintf("line %d:%d: %s\n", ln, col, msg))
+		start := ln - 1
+		if start < 0 {
+			start = 0
+		}
+		end := ln
+		if end >= len(lines) {
+			end = len(lines) - 1
+		}
+		for i := start; i <= end && i < len(lines); i++ {
+			buf.WriteString(fmt.Sprintf("%4d| %s\n", i+1, lines[i]))
+			if i == ln-1 {
+				buf.WriteString("     " + strings.Repeat(" ", col-1) + "^\n")
+			}
+		}
+	}
+	return strings.TrimSpace(buf.String())
 }
