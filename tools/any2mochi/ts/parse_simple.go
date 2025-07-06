@@ -10,6 +10,7 @@ import (
 // corresponding Mochi statements. Unsupported statements are ignored.
 func tsFunctionBody(src string) []string {
 	var lines []string
+	uninit := map[string]bool{}
 	s := strings.TrimSpace(src)
 	for len(s) > 0 {
 		// trim leading whitespace and semicolons
@@ -78,7 +79,11 @@ func tsFunctionBody(src string) []string {
 			stmt = strings.TrimPrefix(stmt, "let ")
 			stmt = strings.TrimPrefix(stmt, "const ")
 			stmt = strings.TrimPrefix(stmt, "var ")
-			lines = append(lines, "let "+strings.TrimSuffix(stmt, ";"))
+			if eq := strings.Index(stmt, "="); eq != -1 {
+				lines = append(lines, "let "+strings.TrimSpace(stmt))
+			} else {
+				uninit[strings.TrimSpace(stmt)] = true
+			}
 			if end < len(s) {
 				s = s[end+1:]
 			} else {
@@ -164,6 +169,34 @@ func tsFunctionBody(src string) []string {
 			lines = append(lines, "}")
 			s = s[bodyEnd+1:]
 			continue
+		case strings.Contains(s, "="):
+			end := strings.Index(s, ";")
+			if end == -1 {
+				end = len(s)
+			}
+			stmt := strings.TrimSpace(s[:end])
+			parts := strings.SplitN(stmt, "=", 2)
+			lhs := strings.TrimSpace(parts[0])
+			rhs := strings.TrimSpace(parts[1])
+			expr := strings.ReplaceAll(rhs, "\n", " ")
+			if strings.Contains(expr, ".filter(") && strings.Contains(expr, ".map(") {
+				if out := parseFilterMap(expr, lhs); len(out) > 0 {
+					lines = append(lines, out...)
+				}
+			} else {
+				if uninit[lhs] {
+					lines = append(lines, "var "+lhs+" = "+expr)
+					delete(uninit, lhs)
+				} else {
+					lines = append(lines, lhs+" = "+expr)
+				}
+			}
+			if end < len(s) {
+				s = s[end+1:]
+			} else {
+				s = ""
+			}
+			continue
 		default:
 			if idx := strings.Index(s, ";"); idx != -1 {
 				s = s[idx+1:]
@@ -208,4 +241,45 @@ func findMatch(s string, openIdx int, open, close rune) int {
 		}
 	}
 	return len(s)
+}
+
+func parseFilterMap(expr, lhs string) []string {
+	filterIdx := strings.Index(expr, ".filter(")
+	mapIdx := strings.Index(expr, ".map(")
+	if filterIdx == -1 || mapIdx == -1 || mapIdx < filterIdx {
+		return nil
+	}
+	list := strings.TrimSpace(expr[:filterIdx])
+	fStart := filterIdx + len(".filter(")
+	fEnd := findMatch(expr, fStart-1, '(', ')')
+	if fEnd <= fStart {
+		return nil
+	}
+	fPart := expr[fStart:fEnd]
+	arrow := strings.Index(fPart, "=>")
+	if arrow == -1 {
+		return nil
+	}
+	iter := strings.TrimSpace(strings.Trim(fPart[:arrow], "() "))
+	cond := strings.TrimSpace(strings.Trim(fPart[arrow+2:], "() "))
+	mStart := mapIdx + len(".map(")
+	mEnd := findMatch(expr, mStart-1, '(', ')')
+	if mEnd <= mStart {
+		return nil
+	}
+	mPart := expr[mStart:mEnd]
+	arrow = strings.Index(mPart, "=>")
+	if arrow == -1 {
+		return nil
+	}
+	iter2 := strings.TrimSpace(strings.Trim(mPart[:arrow], "() "))
+	body := strings.TrimSpace(strings.Trim(mPart[arrow+2:], "() "))
+	if iter2 != "" {
+		iter = iter2
+	}
+	var out []string
+	out = append(out, lhs+" = from "+iter+" in "+list)
+	out = append(out, "             where "+cond)
+	out = append(out, "             select "+body)
+	return out
 }
