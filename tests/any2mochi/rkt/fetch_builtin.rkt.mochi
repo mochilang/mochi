@@ -1,2 +1,6 @@
+type _Group {
+  key
+  Items
+}
 let data
 print(( hash-ref data "message" ))

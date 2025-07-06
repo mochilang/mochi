@@ -17,6 +17,7 @@ type item struct {
 	Kind      string   `json:"kind"`
 	Name      string   `json:"name"`
 	Params    []string `json:"params,omitempty"`
+	Fields    []string `json:"fields,omitempty"`
 	Body      string   `json:"body,omitempty"`
 	Value     string   `json:"value,omitempty"`
 	StartLine int      `json:"start_line,omitempty"`
@@ -76,6 +77,33 @@ func parseTokens(toks []string) []item {
 	stack := 0
 	i := 0
 	for i < len(toks) {
+		if toks[i] == "(" && i+1 < len(toks) && toks[i+1] == "struct" && stack == 0 {
+			i += 2
+			if i >= len(toks) {
+				break
+			}
+			name := toks[i]
+			i++
+			var fields []string
+			if i < len(toks) && toks[i] == "(" {
+				i++
+				for i < len(toks) && toks[i] != ")" {
+					fields = append(fields, toks[i])
+					i++
+				}
+				if i < len(toks) {
+					i++ // skip ')'
+				}
+			}
+			for i < len(toks) && toks[i] != ")" {
+				i++ // skip options
+			}
+			if i < len(toks) {
+				i++ // skip ')'
+			}
+			items = append(items, item{Kind: "struct", Name: name, Fields: fields})
+			continue
+		}
 		if toks[i] == "(" && i+1 < len(toks) && toks[i+1] == "displayln" && stack == 0 {
 			i += 2
 			start := i
@@ -275,6 +303,23 @@ func walkSyntax(src string, node map[string]interface{}) []item {
 				}
 				return []item{{Kind: "var", Name: nm, Value: val, StartLine: startLine, EndLine: endLine, StartCol: startCol, EndCol: endCol}}
 			}
+		}
+	case "struct":
+		if len(datum) >= 3 {
+			nameNode, _ := datum[1].(map[string]interface{})
+			nm, _ := nameNode["datum"].(string)
+			fieldsNode, _ := datum[2].(map[string]interface{})
+			var fields []string
+			if list, ok := fieldsNode["datum"].([]interface{}); ok {
+				for _, f := range list {
+					if fm, ok := f.(map[string]interface{}); ok {
+						if fs, ok := fm["datum"].(string); ok {
+							fields = append(fields, fs)
+						}
+					}
+				}
+			}
+			return []item{{Kind: "struct", Name: nm, Fields: fields, StartLine: startLine, EndLine: endLine, StartCol: startCol, EndCol: endCol}}
 		}
 	}
 

@@ -489,7 +489,18 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
-	// Records are represented as hash tables, so no struct definition is needed.
+	name := sanitizeName(t.Name)
+	var fields []string
+	for _, m := range t.Members {
+		if m.Field != nil {
+			fields = append(fields, sanitizeName(m.Field.Name))
+		}
+	}
+	if len(fields) == 0 {
+		c.writeln(fmt.Sprintf("(struct %s () #:transparent)", name))
+	} else {
+		c.writeln(fmt.Sprintf("(struct %s (%s) #:transparent)", name, strings.Join(fields, " ")))
+	}
 	return nil
 }
 
