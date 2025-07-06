@@ -362,13 +362,20 @@ type cls struct {
 	Fields    []field `json:"fields"`
 	Methods   []fn    `json:"methods"`
 	StartLine int     `json:"start,omitempty"`
+	StartCol  int     `json:"startCol,omitempty"`
 	EndLine   int     `json:"end,omitempty"`
+	EndCol    int     `json:"endCol,omitempty"`
+	Snippet   string  `json:"snippet,omitempty"`
 }
 
 type field struct {
 	Name      string `json:"name"`
 	Type      string `json:"type"`
 	StartLine int    `json:"start,omitempty"`
+	StartCol  int    `json:"startCol,omitempty"`
+	EndLine   int    `json:"end,omitempty"`
+	EndCol    int    `json:"endCol,omitempty"`
+	Snippet   string `json:"snippet,omitempty"`
 }
 
 type vdecl struct {
@@ -376,6 +383,10 @@ type vdecl struct {
 	Type      string `json:"type,omitempty"`
 	Value     string `json:"value"`
 	StartLine int    `json:"start,omitempty"`
+	StartCol  int    `json:"startCol,omitempty"`
+	EndLine   int    `json:"end,omitempty"`
+	EndCol    int    `json:"endCol,omitempty"`
+	Snippet   string `json:"snippet,omitempty"`
 }
 
 type fn struct {
@@ -384,7 +395,10 @@ type fn struct {
 	Ret       string      `json:"ret,omitempty"`
 	Lines     []string    `json:"lines"`
 	StartLine int         `json:"start,omitempty"`
+	StartCol  int         `json:"startCol,omitempty"`
 	EndLine   int         `json:"end,omitempty"`
+	EndCol    int         `json:"endCol,omitempty"`
+	Snippet   string      `json:"snippet,omitempty"`
 }
 
 type paramDecl struct {
@@ -619,12 +633,11 @@ func writeBodyLine(out *strings.Builder, line string, indent *int) {
 		}
 		out.WriteString(ind())
 		out.WriteString("}\n")
-	case strings.HasPrefix(line, "for (") && strings.Contains(line, " in "):
-		r := regexp.MustCompile(`for\s*\(([^ ]+)\s+in\s+([^)]+)\)`)
-		if m := r.FindStringSubmatch(line); m != nil {
+	case strings.HasPrefix(line, "for ") && strings.Contains(line, " in "):
+		if v, it, ok := parseForLine(line); ok {
 			out.WriteString(ind())
-			iter := strings.TrimSpace(strings.Replace(m[2], "until", "..", 1))
-			fmt.Fprintf(out, "for %s in %s {\n", m[1], iter)
+			it = strings.ReplaceAll(it, " until ", " .. ")
+			fmt.Fprintf(out, "for %s in %s {\n", v, strings.TrimSpace(it))
 			(*indent)++
 			return
 		}
@@ -638,11 +651,25 @@ func writeBodyLine(out *strings.Builder, line string, indent *int) {
 		fmt.Fprintf(out, "while %s {\n", cond)
 		(*indent)++
 	case strings.HasPrefix(line, "if "):
-		cond := strings.TrimPrefix(line, "if ")
-		cond = strings.Trim(cond, "(){} ")
-		out.WriteString(ind())
-		fmt.Fprintf(out, "if %s {\n", cond)
-		(*indent)++
+		if cond, stmt, ok := parseSingleIf(line); ok {
+			out.WriteString(ind())
+			fmt.Fprintf(out, "if %s {\n", cond)
+			(*indent)++
+			out.WriteString(ind())
+			out.WriteString(strings.TrimSuffix(stmt, ";"))
+			out.WriteByte('\n')
+			if *indent > 0 {
+				(*indent)--
+			}
+			out.WriteString(ind())
+			out.WriteString("}\n")
+		} else {
+			cond := strings.TrimPrefix(line, "if ")
+			cond = strings.Trim(cond, "(){} ")
+			out.WriteString(ind())
+			fmt.Fprintf(out, "if %s {\n", cond)
+			(*indent)++
+		}
 	case line == "else {":
 		if *indent > 0 {
 			(*indent)--
@@ -675,4 +702,53 @@ func writeBodyLine(out *strings.Builder, line string, indent *int) {
 		out.WriteString(strings.TrimSuffix(line, ";"))
 		out.WriteByte('\n')
 	}
+}
+
+func parseForLine(line string) (string, string, bool) {
+	line = strings.TrimSpace(line)
+	if !strings.HasPrefix(line, "for ") {
+		return "", "", false
+	}
+	rest := strings.TrimSpace(strings.TrimPrefix(line, "for "))
+	if !strings.HasPrefix(rest, "(") {
+		return "", "", false
+	}
+	rest = rest[1:]
+	depth := 1
+	i := 0
+	for ; i < len(rest); i++ {
+		switch rest[i] {
+		case '(':
+			depth++
+		case ')':
+			depth--
+			if depth == 0 {
+				inside := rest[:i]
+				parts := strings.SplitN(inside, " in ", 2)
+				if len(parts) != 2 {
+					return "", "", false
+				}
+				return strings.TrimSpace(parts[0]), strings.TrimSpace(parts[1]), true
+			}
+		}
+	}
+	return "", "", false
+}
+
+func parseSingleIf(line string) (string, string, bool) {
+	l := strings.TrimSpace(strings.TrimSuffix(line, ";"))
+	if !strings.HasPrefix(l, "if ") || strings.Contains(l, "{") {
+		return "", "", false
+	}
+	open := strings.Index(l, "(")
+	close := strings.LastIndex(l, ")")
+	if open == -1 || close == -1 || close <= open {
+		return "", "", false
+	}
+	cond := strings.TrimSpace(l[open+1 : close])
+	stmt := strings.TrimSpace(l[close+1:])
+	if stmt == "" {
+		return "", "", false
+	}
+	return cond, stmt, true
 }
