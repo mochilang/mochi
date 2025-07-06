@@ -1,0 +1,2 @@
+swipl error: exit status 2
+ERROR: /tmp/pl-run2539524793/main.pl:19: user:main get_dict/3: Type error: `dict-key' expected, found `"a"' (a string)

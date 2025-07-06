@@ -1,0 +1,9 @@
+output mismatch
+-- pl --
+boom
+false,_3866
+boom
+true;_3918
+-- vm --
+false
+true

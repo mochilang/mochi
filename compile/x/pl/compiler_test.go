@@ -5,6 +5,7 @@ package plcode_test
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -14,6 +15,7 @@ import (
 	plcode "mochi/compile/x/pl"
 	"mochi/golden"
 	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -202,6 +204,13 @@ func TestPrologCompiler_LeetCodeExamples(t *testing.T) {
 	}
 }
 
+func fileExists(path string) bool {
+	if _, err := os.Stat(path); err == nil {
+		return true
+	}
+	return false
+}
+
 func TestPrologCompiler_GoldenOutput(t *testing.T) {
 	compileFn := func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
@@ -217,8 +226,57 @@ func TestPrologCompiler_GoldenOutput(t *testing.T) {
 		if err != nil {
 			return nil, fmt.Errorf("\u274c compile error: %w", err)
 		}
+
+		// Run compiled code with SWI-Prolog
+		dir, err := os.MkdirTemp("", "mochi-pl")
+		if err != nil {
+			return nil, err
+		}
+		defer os.RemoveAll(dir)
+		file := filepath.Join(dir, "main.pl")
+		if err := os.WriteFile(file, code, 0644); err != nil {
+			return nil, fmt.Errorf("write error: %w", err)
+		}
+		cmd := exec.Command("swipl", "-q", file)
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			cmd.Stdin = bytes.NewReader(data)
+		}
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			return nil, fmt.Errorf("\u274c swipl error: %w\n%s", err, out)
+		}
+		plOut := strings.TrimSpace(string(out))
+
+		// Run program using Mochi VM for comparison
+		srcData, _ := os.ReadFile(src)
+		p, err := vm.CompileWithSource(prog, env, string(srcData))
+		if err != nil {
+			return nil, fmt.Errorf("\u274c vm compile error: %w", err)
+		}
+		var in io.Reader = os.Stdin
+		if fileExists(strings.TrimSuffix(src, ".mochi") + ".in") {
+			f, err := os.Open(strings.TrimSuffix(src, ".mochi") + ".in")
+			if err == nil {
+				defer f.Close()
+				in = f
+			}
+		}
+		var vmBuf bytes.Buffer
+		m := vm.NewWithIO(p, in, &vmBuf)
+		if err := m.Run(); err != nil {
+			if ve, ok := err.(*vm.VMError); ok {
+				return nil, fmt.Errorf("\u274c vm run error:\n%s", ve.Format(p))
+			}
+			return nil, fmt.Errorf("\u274c vm run error: %v", err)
+		}
+		vmOut := strings.TrimSpace(vmBuf.String())
+		if plOut != vmOut {
+			return nil, fmt.Errorf("output mismatch\n-- pl --\n%s\n-- vm --\n%s", plOut, vmOut)
+		}
+
 		return bytes.TrimSpace(code), nil
 	}
 
 	golden.Run(t, "tests/compiler/pl", ".mochi", ".pl.out", compileFn)
+	golden.Run(t, "tests/compiler/valid", ".mochi", ".pl.out", compileFn)
 }

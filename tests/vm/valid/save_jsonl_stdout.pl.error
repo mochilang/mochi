@@ -1,0 +1,6 @@
+output mismatch
+-- pl --
+
+-- vm --
+{"age":30,"name":"Alice"}
+{"age":25,"name":"Bob"}

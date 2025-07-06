@@ -1,0 +1,4 @@
+swipl error: exit status 2
+ERROR: /tmp/pl-run3089440667/main.pl:7:24: Syntax error: Operator expected
+ERROR: /tmp/pl-run3089440667/main.pl:8:20: Syntax error: Operand expected, unquoted comma or bar found
+ERROR: /tmp/pl-run3089440667/main.pl:24: user:main outer/2: Unknown procedure: inner/2

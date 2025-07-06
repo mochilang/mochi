@@ -1,0 +1,9 @@
+:- style_check(-singleton).
+    main :-
+    _V0 is 1 + 2,
+    _V1 is _V0 * 3,
+    Value = _V1,
+    write(Value),
+    nl
+    .
+:- initialization(main, main).

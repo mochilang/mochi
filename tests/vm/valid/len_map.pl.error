@@ -1,0 +1,2 @@
+swipl error: exit status 2
+ERROR: /tmp/pl-run2079212670/main.pl:8: user:main length/2: Type error: `list' expected, found `map{a:1,b:2}' (a dict)

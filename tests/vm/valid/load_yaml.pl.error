@@ -1,0 +1,2 @@
+swipl error: exit status 2
+ERROR: /tmp/pl-run1018026454/main.pl:52: user:main source_sink `"../interpreter/valid/people.yaml"' does not exist

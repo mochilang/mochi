@@ -1,0 +1,11 @@
+output mismatch
+-- pl --
+a@<b
+a@=<a
+b@>a
+b@>=b
+-- vm --
+true
+true
+true
+true

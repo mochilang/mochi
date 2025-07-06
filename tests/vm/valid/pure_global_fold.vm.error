@@ -1,5 +1,0 @@
-error[T001]: assignment to undeclared variable: _
-  --> :5:1
-
-help:
-  Declare `_` first using `let`.

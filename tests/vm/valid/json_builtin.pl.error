@@ -1,0 +1,5 @@
+output mismatch
+-- pl --
+{"a":1, "b":2}
+-- vm --
+{"a":1,"b":2}

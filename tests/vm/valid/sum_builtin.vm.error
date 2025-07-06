@@ -1,5 +1,0 @@
-error[T003]: unknown function: float64
-  --> :4:15
-
-help:
-  Ensure the function is defined before it's called.

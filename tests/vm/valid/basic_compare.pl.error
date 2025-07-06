@@ -1,0 +1,9 @@
+output mismatch
+-- pl --
+7
+7=7
+4<5
+-- vm --
+7
+true
+true

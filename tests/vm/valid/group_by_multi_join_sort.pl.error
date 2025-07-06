@@ -1,0 +1,2 @@
+swipl error: exit status 2
+ERROR: /tmp/pl-run4203205978/main.pl:49: user:main >=/2: Type error: `[]' expected, found `"1993-10-15"' (a string) ("x" must hold one character)

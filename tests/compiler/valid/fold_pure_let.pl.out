@@ -1,0 +1,16 @@
+:- style_check(-singleton).
+        sumn(N, Res) :-
+        _V0 is N + 1,
+        _V1 is N * _V0,
+        _V2 is _V1 / 2,
+        Res = _V2.
+
+    main :-
+    N = 10,
+    sumn(N, _V3),
+    write(_V3),
+    nl,
+    write(N),
+    nl
+    .
+:- initialization(main, main).

@@ -1,0 +1,46 @@
+:- style_check(-singleton).
+set_item(Container, Key, Val, Out) :-
+    is_dict(Container), !, (string(Key) -> atom_string(A, Key) ; A = Key), put_dict(A, Container, Val, Out).
+set_item(List, Index, Val, Out) :-
+    nth0(Index, List, _, Rest),
+    nth0(Index, Out, Val, Rest).
+
+
+map_keys(Dict, Keys) :-
+    dict_pairs(Dict, _, Pairs),
+    findall(K, member(K-_, Pairs), Keys).
+
+
+        main :-
+    dict_create(_V0, map, []),
+    nb_setval(m, _V0),
+    nb_getval(m, _V1),
+    set_item(_V1, 1, true, _V2),
+    nb_setval(m, _V2),
+    nb_getval(m, _V3),
+    set_item(_V3, 2, true, _V4),
+    nb_setval(m, _V4),
+    nb_setval(sum, 0),
+    nb_getval(m, _V5),
+    map_keys(_V5, _V6),
+    catch(
+        (
+            member(K, _V6),
+            catch(
+                (
+                    nb_getval(sum, _V7),
+                    _V8 is _V7 + K,
+                    nb_setval(sum, _V8),
+                    true
+                ), continue, true),
+                fail
+                ;
+                true
+            )
+            , break, true),
+            true,
+        nb_getval(sum, _V9),
+        write(_V9),
+        nl
+        .
+:- initialization(main, main).
