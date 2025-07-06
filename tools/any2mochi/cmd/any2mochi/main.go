@@ -12,6 +12,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"mochi/tools/any2mochi"
+	cconv "mochi/tools/any2mochi/x/c"
 )
 
 var (
@@ -192,7 +193,7 @@ func convertCCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			out, err := any2mochi.ConvertC(string(data))
+			out, err := cconv.Convert(string(data))
 			if err != nil {
 				return err
 			}
