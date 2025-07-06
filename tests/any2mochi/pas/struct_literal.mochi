@@ -1,0 +1,8 @@
+type Point {
+  x: int
+  y: int
+}
+_tmp0.x = 1
+_tmp0.y = 2
+p = _tmp0
+print(p.x)

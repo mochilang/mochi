@@ -1,0 +1,4 @@
+for _tmp0 in 1..Length('cat') {
+ch = 'cat'[_tmp0]
+print(ch)
+}

@@ -1,0 +1,5 @@
+print(1 + 2)
+print(5 - 3)
+print(4 * 2)
+print(8 div 2)
+print(7 mod 3)

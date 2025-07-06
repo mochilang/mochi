@@ -1,0 +1,42 @@
+type Customer {
+  id: int
+  name: string
+}
+type Order {
+  id: int
+  customerId: int
+  total: int
+}
+type PairInfo {
+  orderId: int
+  customerName: string
+  total: int
+}
+_tmp0.id = 1
+_tmp0.name = 'Alice'
+_tmp1.id = 2
+_tmp1.name = 'Bob'
+_tmp2.id = 3
+_tmp2.name = 'Charlie'
+customers = specialize TArray<Customer>([_tmp0, _tmp1, _tmp2])
+_tmp3.id = 100
+_tmp3.customerId = 1
+_tmp3.total = 250
+_tmp4.id = 101
+_tmp4.customerId = 2
+_tmp4.total = 125
+_tmp5.id = 102
+_tmp5.customerId = 1
+_tmp5.total = 300
+_tmp6.id = 103
+_tmp6.customerId = 4
+_tmp6.total = 80
+orders = specialize TArray<Order>([_tmp3, _tmp4, _tmp5, _tmp6])
+_tmp7.orderId = o.id
+_tmp7.customerName = c.name
+_tmp7.total = o.total
+for o in orders {
+for c in customers {
+_tmp8 = Concat(_tmp8, [_tmp7])
+}
+print('Order', entry.orderId, 'by', entry.customerName, '- $', entry.total)

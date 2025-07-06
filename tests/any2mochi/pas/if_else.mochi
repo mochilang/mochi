@@ -1,0 +1,11 @@
+fun foo(n: int): int {
+result = -1
+return
+result = 0
+return
+result = 1
+return
+}
+print(foo(-2))
+print(foo(0))
+print(foo(3))

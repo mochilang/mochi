@@ -1,0 +1,33 @@
+fun _joinStrings(parts: list<string>, sep: string): string {
+let i: int
+Result = ''
+for i in 0..High(parts) {
+if i > 0 then Result = Result + sep
+Result = Result + parts[i]
+}
+}
+fun _sliceString(s: string, i, j: int): string {
+let start_, end_, n: int
+start_ = i
+end_ = j
+n = Length(s)
+if start_ < 0 then start_ = n + start_
+if end_ < 0 then end_ = n + end_
+if start_ < 0 then start_ = 0
+if end_ > n then end_ = n
+if end_ < start_ then end_ = start_
+Result = Copy(s, start_ + 1, end_ - start_)
+}
+fun _splitString(s, sep: string): list<string> {
+let sl: tstringlist; i: integer
+sl = TStringList.Create
+sl.Delimiter = sep[1]
+sl.StrictDelimiter = True
+sl.DelimitedText = s
+for i in 0..sl.Count - 1 {
+Result[i] = sl[i]
+}
+}
+parts = _splitString('a,b,c', ',')
+sep = _sliceString('--', 0, 1)
+print(_joinStrings(parts, sep))

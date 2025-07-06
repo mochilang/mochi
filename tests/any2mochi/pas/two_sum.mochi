@@ -1,0 +1,13 @@
+fun twoSum(nums: list<int>, target: int): list<int> {
+n = Length(nums)
+for i in 0..n - 1 {
+for j in i + 1..n - 1 {
+result = specialize TArray<integer>([i, j])
+return
+}
+}
+if i < 0 then i = Length(arr) + i
+Result = arr[i]
+_result = twoSum(specialize TArray<integer>([2, 7, 11, 15]), 9)
+print(specialize _indexList<integer>(_result, 0))
+print(specialize _indexList<integer>(_result, 1))

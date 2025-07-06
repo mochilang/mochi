@@ -1,0 +1,13 @@
+fun _sliceString(s: string, i, j: int): string {
+let start_, end_, n: int
+start_ = i
+end_ = j
+n = Length(s)
+if start_ < 0 then start_ = n + start_
+if end_ < 0 then end_ = n + end_
+if start_ < 0 then start_ = 0
+if end_ > n then end_ = n
+if end_ < start_ then end_ = start_
+Result = Copy(s, start_ + 1, end_ - start_)
+}
+print(_sliceString('hello', 1, 4))

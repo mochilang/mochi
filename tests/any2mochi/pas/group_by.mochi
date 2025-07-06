@@ -1,0 +1,17 @@
+let i,j,idx: integer; key: variant; ks: string
+for i in 0..High(src) {
+key = keyfn(src[i])
+ks = VarToStr(key)
+idx = -1
+for j in 0..High(Result) {
+if VarToStr(Result[j].Key) = ks then begin idx = j; Break; end
+idx = Length(Result)
+Result[idx].Key = key
+}
+xs = specialize TArray<integer>([1, 1, 2])
+_tmp0 = specialize TFPGMap<string, integer>.Create
+for x in xs {
+_tmp1 = Concat(_tmp1, [x])
+}
+_tmp3 = Concat(_tmp3, [_tmp0])
+print(g.k, g.c)

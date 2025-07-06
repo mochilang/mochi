@@ -1,0 +1,34 @@
+_tmp0 = specialize TFPGMap<string, integer>.Create
+Result = _sumList<T>(arr) / Length(arr)
+let i,j,idx: integer; key: variant; ks: string
+for i in 0..High(src) {
+key = keyfn(src[i])
+ks = VarToStr(key)
+idx = -1
+for j in 0..High(Result) {
+if VarToStr(Result[j].Key) = ks then begin idx = j; Break; end
+idx = Length(Result)
+Result[idx].Key = key
+}
+let i: integer; s: double
+s = 0
+for i in 0..High(arr) {
+s = s + arr[i]
+Result = s
+}
+_tmp1 = specialize TFPGMap<string, integer>.Create
+_tmp2 = specialize TFPGMap<string, integer>.Create
+_tmp3 = specialize TFPGMap<string, integer>.Create
+lineitem = specialize TArray<specialize TFPGMap<string, integer>>([_tmp1, _tmp2, _tmp3])
+_tmp4 = specialize TFPGMap<string, integer>.Create
+for x in g {
+_tmp5 = Concat(_tmp5, [x.l_quantity])
+}
+_tmp6 = Concat(_tmp6, [x.l_extendedprice])
+_tmp7 = Concat(_tmp7, [x.l_extendedprice * 1 - x.l_discount])
+_tmp8 = Concat(_tmp8, [x.l_extendedprice * 1 - x.l_discount * 1 + x.l_tax])
+_tmp9 = Concat(_tmp9, [x.l_quantity])
+_tmp10 = Concat(_tmp10, [x.l_extendedprice])
+_tmp11 = Concat(_tmp11, [x.l_discount])
+_tmp13 = Concat(_tmp13, [row])
+_tmp15 = Concat(_tmp15, [_tmp12])

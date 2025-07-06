@@ -1,0 +1,40 @@
+type Product {
+  name: string
+  price: int
+}
+let start_, end_, n: int
+start_ = i
+end_ = j
+n = Length(arr)
+if start_ < 0 then start_ = n + start_
+if end_ < 0 then end_ = n + end_
+if start_ < 0 then start_ = 0
+if end_ > n then end_ = n
+if end_ < start_ then end_ = start_
+Result = Copy(arr, start_ + 1, end_ - start_)
+let i,j: integer; tmp: t; k: variant
+for i in 0..High(arr) - 1 {
+for j in i + 1..High(arr) {
+tmp = arr[i]; arr[i] := arr[j]; arr[j] := tmp
+k = keys[i]; keys[i] := keys[j]; keys[j] := k
+}
+_tmp0.name = 'Laptop'
+_tmp0.price = 1500
+_tmp1.name = 'Smartphone'
+_tmp1.price = 900
+_tmp2.name = 'Tablet'
+_tmp2.price = 600
+_tmp3.name = 'Monitor'
+_tmp3.price = 300
+_tmp4.name = 'Keyboard'
+_tmp4.price = 100
+_tmp5.name = 'Mouse'
+_tmp5.price = 50
+_tmp6.name = 'Headphones'
+_tmp6.price = 200
+products = specialize TArray<Product>([_tmp0, _tmp1, _tmp2, _tmp3, _tmp4, _tmp5, _tmp6])
+for p in products {
+_tmp7 = Concat(_tmp7, [p])
+_tmp8 = Concat(_tmp8, [-p.price])
+}
+print(item.name, 'costs $', item.price)

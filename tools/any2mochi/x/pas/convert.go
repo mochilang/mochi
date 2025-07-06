@@ -463,6 +463,45 @@ func convertFallback(src string) ([]byte, error) {
 		lower := strings.ToLower(l)
 		if !inBody {
 			switch {
+			case strings.HasPrefix(lower, "type") && strings.Contains(lower, "record"):
+				name := ""
+				if idx := strings.Index(strings.ToLower(l), "type"); idx != -1 {
+					rest := strings.TrimSpace(l[idx+len("type"):])
+					eq := strings.Index(rest, "=")
+					if eq != -1 {
+						name = strings.TrimSpace(rest[:eq])
+						rest = strings.TrimSpace(rest[eq+1:])
+					}
+					if !strings.Contains(strings.ToLower(rest), "record") && i+1 < len(lines) {
+						i++
+						rest = strings.TrimSpace(lines[i])
+					}
+				}
+				var fields []string
+				for j := i + 1; j < len(lines); j++ {
+					ln := strings.TrimSpace(lines[j])
+					if strings.ToLower(ln) == "end;" {
+						i = j
+						break
+					}
+					if idx := strings.Index(ln, ":"); idx != -1 {
+						fname := strings.TrimSpace(ln[:idx])
+						ftype := toMochiType(strings.TrimSpace(strings.TrimSuffix(ln[idx+1:], ";")))
+						if fname != "" {
+							if ftype != "" {
+								fields = append(fields, fmt.Sprintf("  %s: %s", fname, ftype))
+							} else {
+								fields = append(fields, "  "+fname)
+							}
+						}
+					}
+				}
+				if name != "" && len(fields) > 0 {
+					out = append(out, "type "+name+" {")
+					out = append(out, fields...)
+					out = append(out, "}")
+				}
+
 			case strings.HasPrefix(lower, "type") && strings.Contains(l, "("):
 				name := ""
 				if idx := strings.Index(strings.ToLower(l), "type"); idx != -1 {
@@ -593,7 +632,7 @@ func convertFallback(src string) ([]byte, error) {
 		}
 	}
 	if len(out) == 0 {
-		return nil, fmt.Errorf("convert failure: no convertible content")
+		return nil, fmt.Errorf("convert failure: no convertible content\n\nsource snippet:\n%s", snippet(src))
 	}
 	return []byte(strings.Join(out, "\n")), nil
 }
