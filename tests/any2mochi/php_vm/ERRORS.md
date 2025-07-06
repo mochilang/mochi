@@ -2,11 +2,7 @@
 
 - append_builtin: ok
 - avg_builtin: ok
-- basic_compare: type error: error[T002]: undefined variable: a
-  --> :2:7
-
-help:
-  Check if the variable was declared in this scope.
+- basic_compare: ok
 - binary_precedence: ok
 - bool_chain: ok
 - break_continue: ok
