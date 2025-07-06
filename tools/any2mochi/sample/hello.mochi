@@ -1,4 +1,8 @@
-fun greet(name: string): string {
-  print("Hello, " + name)
-  return "ok"
+type Greeter {
 }
+type person {
+}
+let ids: list<int>
+fun Greeter.Greet(name: string): string {}
+fun Sum(nums: list<int>): int {}
+fun person.Greet(name: string): string {}

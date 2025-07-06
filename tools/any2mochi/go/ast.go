@@ -111,6 +111,48 @@ func ParseAST(src string) (*AST, error) {
 						}
 						out.Types = append(out.Types, gt)
 					}
+					if iface, ok := ts.Type.(*ast.InterfaceType); ok {
+						out.Types = append(out.Types, Type{Name: ts.Name.Name})
+						for _, m := range iface.Methods.List {
+							if len(m.Names) == 0 {
+								continue
+							}
+							name := m.Names[0].Name
+							ft, ok := m.Type.(*ast.FuncType)
+							if !ok {
+								continue
+							}
+							fn := Func{Name: name, Recv: ts.Name.Name}
+							if ft.Params != nil {
+								for _, p := range ft.Params.List {
+									typ := exprString(fset, p.Type)
+									if len(p.Names) == 0 {
+										fn.Params = append(fn.Params, Param{Type: typ})
+										continue
+									}
+									for _, n := range p.Names {
+										fn.Params = append(fn.Params, Param{Name: n.Name, Type: typ})
+									}
+								}
+							}
+							if ft.Results != nil {
+								for _, r := range ft.Results.List {
+									typ := exprString(fset, r.Type)
+									if typ == "" || typ == "void" {
+										continue
+									}
+									n := len(r.Names)
+									if n == 0 {
+										n = 1
+									}
+									for i := 0; i < n; i++ {
+										fn.Results = append(fn.Results, typ)
+									}
+								}
+							}
+							out.Functions = append(out.Functions, fn)
+						}
+					}
 				}
 			case token.VAR, token.CONST:
 				for _, spec := range d.Specs {

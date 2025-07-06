@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"go/ast"
-	"go/parser"
 	"go/printer"
+	"go/scanner"
 	"go/token"
 	"os"
 	"strings"
@@ -15,24 +15,15 @@ import (
 // language server. It parses the source using the standard library
 // and emits minimal Mochi stubs.
 func Convert(src string) ([]byte, error) {
-	fset := token.NewFileSet()
-	file, err := parser.ParseFile(fset, "src.go", src, parser.SkipObjectResolution)
+	ast, err := ParseAST(src)
 	if err != nil {
-		return nil, err
+		return nil, formatParseError(src, err)
 	}
-	var out strings.Builder
-	for _, decl := range file.Decls {
-		switch d := decl.(type) {
-		case *ast.FuncDecl:
-			writeFunc(&out, fset, d)
-		case *ast.GenDecl:
-			writeGenDecl(&out, fset, d)
-		}
-	}
-	if out.Len() == 0 {
+	out := ConvertAST(ast)
+	if len(out) == 0 {
 		return nil, fmt.Errorf("no convertible symbols found\n\n%s", numberedSnippet(src))
 	}
-	return []byte(out.String()), nil
+	return out, nil
 }
 
 // ConvertFile reads the Go file at path and converts it to Mochi.
@@ -172,7 +163,7 @@ func writeGenDecl(out *strings.Builder, fset *token.FileSet, d *ast.GenDecl) {
 func exprString(fset *token.FileSet, e ast.Expr) string {
 	var b bytes.Buffer
 	printer.Fprint(&b, fset, e)
-	return b.String()
+	return simplifyType(b.String())
 }
 
 func numberedSnippet(src string) string {
@@ -184,4 +175,38 @@ func numberedSnippet(src string) string {
 		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
 	}
 	return strings.Join(lines, "\n")
+}
+
+func simplifyType(t string) string {
+	t = strings.TrimSpace(t)
+	if strings.HasPrefix(t, "*") {
+		return simplifyType(strings.TrimPrefix(t, "*"))
+	}
+	if strings.HasPrefix(t, "[]") {
+		return "list<" + simplifyType(t[2:]) + ">"
+	}
+	return t
+}
+
+func formatParseError(src string, err error) error {
+	if el, ok := err.(scanner.ErrorList); ok && len(el) > 0 {
+		e := el[0]
+		pos := e.Pos
+		lines := strings.Split(src, "\n")
+		line := int(pos.Line)
+		start := line - 2
+		if start < 0 {
+			start = 0
+		}
+		end := line + 1
+		if end > len(lines) {
+			end = len(lines)
+		}
+		var snippet strings.Builder
+		for i := start; i < end; i++ {
+			snippet.WriteString(fmt.Sprintf("%3d: %s\n", i+1, lines[i]))
+		}
+		return fmt.Errorf("parse error at %d:%d: %s\n%s", line, pos.Column, e.Msg, snippet.String())
+	}
+	return err
 }
