@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -13,6 +14,7 @@ import (
 
 	gocode "mochi/compile/go"
 	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -233,6 +235,82 @@ func normalizeOutput(root string, b []byte) []byte {
 	return []byte(out)
 }
 
+func runMochi(src []byte) error {
+	prog, err := parser.ParseString(string(src))
+	if err != nil {
+		return fmt.Errorf("parse error: %w", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		return fmt.Errorf("type error: %v", errs[0])
+	}
+	p, err := vm.Compile(prog, env)
+	if err != nil {
+		return fmt.Errorf("compile error: %w", err)
+	}
+	m := vm.New(p, io.Discard)
+	if err := m.Run(); err != nil {
+		return fmt.Errorf("runtime error: %w", err)
+	}
+	return nil
+}
+
+func runConvertExecGolden(t *testing.T, dir, pattern string, convert func(string) ([]byte, error), lang, outExt, errExt string) {
+	files, err := filepath.Glob(filepath.Join(dir, pattern))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(files) == 0 {
+		t.Fatalf("no files: %s", filepath.Join(dir, pattern))
+	}
+	for _, src := range files {
+		name := strings.TrimSuffix(filepath.Base(src), filepath.Ext(src))
+		t.Run(name, func(t *testing.T) {
+			mochiSrc, err := convert(src)
+			root := rootDir(t)
+			outDir := filepath.Join(root, "tests/any2mochi", lang)
+			outPath := filepath.Join(outDir, name+outExt)
+			errPath := filepath.Join(outDir, name+errExt)
+			renameLegacy(outDir, lang, name, outExt)
+			renameLegacy(outDir, lang, name, errExt)
+
+			if err == nil {
+				err = runMochi(mochiSrc)
+			}
+
+			if err != nil {
+				if *update {
+					os.WriteFile(outPath, nil, 0644)
+					os.WriteFile(errPath, normalizeOutput(rootDir(t), []byte(err.Error())), 0644)
+				}
+				altErr := filepath.Join(outDir, name+"."+lang+errExt)
+				want, readErr := readGolden(errPath, altErr)
+				if readErr != nil {
+					t.Fatalf("missing golden error: %v", readErr)
+				}
+				if got := normalizeOutput(rootDir(t), []byte(err.Error())); !bytes.Equal(got, normalizeOutput(rootDir(t), want)) {
+					t.Errorf("error mismatch\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", got, want)
+				}
+				return
+			}
+
+			if *update {
+				os.WriteFile(errPath, nil, 0644)
+				removeIfEmpty(errPath)
+				os.WriteFile(outPath, normalizeOutput(rootDir(t), mochiSrc), 0644)
+			}
+			altOut := filepath.Join(outDir, name+"."+lang+outExt)
+			want, readErr := readGolden(outPath, altOut)
+			if readErr != nil {
+				t.Fatalf("missing golden output: %v", readErr)
+			}
+			if got := normalizeOutput(rootDir(t), bytes.TrimSpace(mochiSrc)); !bytes.Equal(got, normalizeOutput(rootDir(t), want)) {
+				t.Errorf("golden mismatch\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", got, want)
+			}
+		})
+	}
+}
+
 // RunConvertCompileGolden is an exported wrapper for runConvertCompileGolden.
 func RunConvertCompileGolden(t *testing.T, dir, pattern string, convert func(string) ([]byte, error), lang, outExt, errExt string) {
 	runConvertCompileGolden(t, dir, pattern, convert, lang, outExt, errExt)
@@ -241,6 +319,13 @@ func RunConvertCompileGolden(t *testing.T, dir, pattern string, convert func(str
 // RunConvertGolden is an exported wrapper for runConvertGolden.
 func RunConvertGolden(t *testing.T, dir, pattern string, convert func(string) ([]byte, error), lang, outExt, errExt string) {
 	runConvertGolden(t, dir, pattern, convert, lang, outExt, errExt)
+}
+
+// RunConvertExecGolden converts using the provided function and ensures the
+// resulting Mochi code parses, type checks, compiles and executes without
+// errors using the runtime VM.
+func RunConvertExecGolden(t *testing.T, dir, pattern string, convert func(string) ([]byte, error), lang, outExt, errExt string) {
+	runConvertExecGolden(t, dir, pattern, convert, lang, outExt, errExt)
 }
 
 // FindRepoRoot is an exported wrapper for findRepoRoot.

@@ -1,10 +1,12 @@
-// line 5
+package main
+
+// line 4
 type Person {
   name: any
   age: any
   status: any
 }
-// line 8 (exported)
+// line 7-11 (exported)
 fun main(_) {
   People =
   [#person{name = "Alice", age = 17, status = "minor"},
@@ -39,23 +41,23 @@ fun main(_) {
   status = "minor"}])
   end)
 }
-// line 17
+// line 16
 fun mochi_expect(true) {
   ok
 }
-// line 20
+// line 19
 fun mochi_test_start(Name) {
   print("   test ~s ...", [Name])
 }
-// line 21
+// line 20
 fun mochi_test_pass(Dur) {
   print(" ok (~p)~n", [Dur])
 }
-// line 22
+// line 21
 fun mochi_test_fail(Err, Dur) {
   print(" fail ~p (~p)~n", [Err, Dur])
 }
-// line 24
+// line 23
 fun mochi_run_test(Name, Fun) {
   mochi_test_start(Name)
   Start = erlang:monotonic_time(millisecond)

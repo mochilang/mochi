@@ -39,6 +39,16 @@ func parseAST(src string) (*AST, error) {
 	if _, err := exec.LookPath("escript"); err != nil {
 		return nil, fmt.Errorf("escript not found")
 	}
+	// The parser expects a clean Erlang source file. Golden test files
+	// produced by the Mochi compiler start with a shebang line so strip it
+	// if present to avoid parse errors from the official parser.
+	if strings.HasPrefix(src, "#!") {
+		if i := strings.IndexByte(src, '\n'); i != -1 {
+			src = src[i+1:]
+		} else {
+			src = ""
+		}
+	}
 	tmp, err := os.CreateTemp("", "src-*.erl")
 	if err != nil {
 		return nil, err

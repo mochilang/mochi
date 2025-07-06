@@ -1,9 +1,11 @@
-// line 5
+package main
+
+// line 4
 type Person {
   name: any
   age: any
 }
-// line 7 (exported)
+// line 6-9 (exported)
 fun main(_) {
   People =
   [#person{name = "Alice", age = 30},
@@ -24,7 +26,7 @@ fun main(_) {
   end,
   Names)
 }
-// line 14
+// line 13-15
 fun mochi_print(Args) {
   Strs =
   [
@@ -33,11 +35,11 @@ fun mochi_print(Args) {
   ]
   print("~s~n", [lists:flatten(Strs)])
 }
-// line 18
+// line 17
 fun mochi_format(X) {
   integer_to_list(X)
 }
-// line 23
+// line 22
 fun mochi_foreach(F, L) {
   try
   mochi_foreach_loop(F, L)
@@ -46,7 +48,7 @@ fun mochi_foreach(F, L) {
   ok
   end
 }
-// line 26
+// line 25
 fun mochi_foreach_loop(_, _) {
   ok
 }

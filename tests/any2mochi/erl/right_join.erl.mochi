@@ -1,4 +1,6 @@
-// line 5 (exported)
+package main
+
+// line 4-9 (exported)
 fun main(_) {
   Customers =
   [#{id => 1, name => "Alice"},
@@ -42,7 +44,7 @@ fun main(_) {
   end,
   Result)
 }
-// line 19
+// line 18-20
 fun mochi_print(Args) {
   Strs =
   [
@@ -51,11 +53,11 @@ fun mochi_print(Args) {
   ]
   print("~s~n", [lists:flatten(Strs)])
 }
-// line 23
+// line 22
 fun mochi_format(X) {
   integer_to_list(X)
 }
-// line 28
+// line 27
 fun mochi_foreach(F, L) {
   try
   mochi_foreach_loop(F, L)
@@ -64,11 +66,11 @@ fun mochi_foreach(F, L) {
   ok
   end
 }
-// line 31
+// line 30
 fun mochi_foreach_loop(_, _) {
   ok
 }
-// line 39
+// line 38-40
 fun mochi_right_join_item(B, A, Fun) {
   Matches =
   [
@@ -83,7 +85,7 @@ fun mochi_right_join_item(B, A, Fun) {
   Matches
   end
 }
-// line 46
+// line 45-46
 fun mochi_right_join(L, R, Fun) {
   lists:flatmap(fun(Y) ->
   mochi_right_join_item(Y, L, Fun)

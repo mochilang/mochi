@@ -9,3 +9,4 @@ exit status 1
   8: 
   9: 
  10: mochi_load(Path, Opts) ->
+exit status 1
