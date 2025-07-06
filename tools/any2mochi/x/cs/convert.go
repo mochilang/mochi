@@ -193,6 +193,9 @@ func convertBodyLines(body []string) []string {
 		case strings.HasPrefix(l, "while ("):
 			l = strings.TrimPrefix(l, "while (")
 			l = strings.TrimSuffix(l, ") {")
+			if strings.HasSuffix(l, ")") {
+				l = strings.TrimSuffix(l, ")")
+			}
 			l = stripLong(l)
 			l = "while " + l + " {"
 		case strings.HasPrefix(l, "if ("):
@@ -655,6 +658,9 @@ func convertBody(src string, r any2mochi.Range) []string {
 		case strings.HasPrefix(l, "while ("):
 			l = strings.TrimPrefix(l, "while (")
 			l = strings.TrimSuffix(l, ") {")
+			if strings.HasSuffix(l, ")") {
+				l = strings.TrimSuffix(l, ")")
+			}
 			l = stripLong(l)
 			l = "while " + l + " {"
 		case strings.HasPrefix(l, "if ("):

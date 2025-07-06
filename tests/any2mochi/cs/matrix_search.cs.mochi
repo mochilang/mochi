@@ -9,7 +9,7 @@ fun Program.searchMatrix(matrix: list<list<int>>, target: int): bool {
   var n = _indexList(matrix, 0).Length
   var left = 0
   var right = ((m * n) - 1)
-  while (left <= right) {
+  while (left <= right {
   var mid = (left + (((right - left)) / 2))
   var row = (mid / n)
   var col = (mid % n)
