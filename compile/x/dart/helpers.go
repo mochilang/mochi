@@ -402,3 +402,14 @@ func isAny(t types.Type) bool {
 	_, ok := t.(types.AnyType)
 	return ok
 }
+
+func isLiteralExpr(e *parser.Expr) bool {
+	if e == nil || len(e.Binary.Right) != 0 || len(e.Binary.Left.Ops) != 0 {
+		return false
+	}
+	p := e.Binary.Left.Value
+	if p == nil || len(p.Ops) != 0 || p.Target == nil {
+		return false
+	}
+	return p.Target.Lit != nil
+}

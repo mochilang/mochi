@@ -470,6 +470,26 @@ func parseStatements(body string) []string {
 			cond := strings.TrimSpace(strings.TrimSuffix(l[6:], "{"))
 			out = append(out, strings.Repeat("  ", indent)+"while "+cond+" {")
 			indent++
+		case strings.HasPrefix(l, "} else if ") && strings.HasSuffix(l, "{"):
+			if indent > 0 {
+				indent--
+			}
+			cond := strings.TrimSpace(strings.TrimSuffix(l[len("} else if "):], "{"))
+			out = append(out, strings.Repeat("  ", indent)+"} else if "+cond+" {")
+			indent++
+		case strings.HasPrefix(l, "else if ") && strings.HasSuffix(l, "{"):
+			if indent > 0 {
+				indent--
+			}
+			cond := strings.TrimSpace(strings.TrimSuffix(l[len("else if "):], "{"))
+			out = append(out, strings.Repeat("  ", indent)+"else if "+cond+" {")
+			indent++
+		case l == "} else {":
+			if indent > 0 {
+				indent--
+			}
+			out = append(out, strings.Repeat("  ", indent)+"} else {")
+			indent++
 		case l == "else {":
 			if indent > 0 {
 				indent--

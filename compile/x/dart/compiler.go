@@ -2155,9 +2155,41 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	simple := true
+	for _, cs := range m.Cases {
+		if isUnderscoreExpr(cs.Pattern) {
+			continue
+		}
+		if !isLiteralExpr(cs.Pattern) {
+			simple = false
+			break
+		}
+	}
 	var b strings.Builder
 	b.WriteString("(() {\n")
 	b.WriteString("\tvar _t = " + target + ";\n")
+	if simple {
+		b.WriteString("\tswitch (_t) {\n")
+		for _, cs := range m.Cases {
+			res, err := c.compileExpr(cs.Result)
+			if err != nil {
+				return "", err
+			}
+			if isUnderscoreExpr(cs.Pattern) {
+				b.WriteString("\tdefault: return " + res + ";\n")
+				continue
+			}
+			pat, err := c.compileExpr(cs.Pattern)
+			if err != nil {
+				return "", err
+			}
+			b.WriteString("\tcase " + pat + ": return " + res + ";\n")
+		}
+		b.WriteString("\t}\n")
+		b.WriteString("\treturn null;\n")
+		b.WriteString("})()")
+		return b.String(), nil
+	}
 	for _, cs := range m.Cases {
 		res, err := c.compileExpr(cs.Result)
 		if err != nil {
