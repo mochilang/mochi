@@ -770,6 +770,15 @@ func cljToMochi(n sexprNode) string {
 				sb.WriteString("}")
 				return sb.String()
 			}
+		case "let":
+			if len(v) >= 3 {
+				if bind, ok := v[1].([]sexprNode); ok && len(bind) >= 2 {
+					name := cljToMochi(bind[0])
+					val := cljToMochi(bind[1])
+					body := cljToMochi(v[2])
+					return fmt.Sprintf("(fun(%s) => %s)(%s)", name, body, val)
+				}
+			}
 		case "def":
 			if len(v) >= 3 {
 				return fmt.Sprintf("let %s = %s", cljToMochi(v[1]), cljToMochi(v[2]))
@@ -830,6 +839,13 @@ func cljToMochi(n sexprNode) string {
 				}
 			}
 		default:
+			if isNumber(head) || strings.HasPrefix(head, "\"") || strings.HasPrefix(head, ":") {
+				elems := make([]string, 0, len(v))
+				for _, e := range v {
+					elems = append(elems, cljToMochi(e))
+				}
+				return "[" + strings.Join(elems, ", ") + "]"
+			}
 			var args []string
 			for _, a := range v[1:] {
 				args = append(args, cljToMochi(a))
