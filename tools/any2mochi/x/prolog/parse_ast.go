@@ -16,6 +16,8 @@ type clause struct {
 	Name   string   `json:"name"`
 	Params []string `json:"params"`
 	Body   string   `json:"body"`
+	Start  int      `json:"start"`
+	End    int      `json:"end"`
 }
 
 func parseAST(src string) (*program, error) {
@@ -32,7 +34,27 @@ func parseAST(src string) (*program, error) {
 	if err := json.Unmarshal(out.Bytes(), &prog); err != nil {
 		return nil, err
 	}
+	// compute line numbers from character offsets
+	lineOffsets := []int{0}
+	for i, r := range src {
+		if r == '\n' {
+			lineOffsets = append(lineOffsets, i+1)
+		}
+	}
+	for i, c := range prog.Clauses {
+		prog.Clauses[i].Start = offsetToLine(lineOffsets, c.Start)
+		prog.Clauses[i].End = offsetToLine(lineOffsets, c.End)
+	}
 	return &prog, nil
+}
+
+func offsetToLine(lines []int, off int) int {
+	for i := len(lines) - 1; i >= 0; i-- {
+		if off >= lines[i] {
+			return i + 1
+		}
+	}
+	return 1
 }
 
 // ParseASTForTest is a test helper exposing parseAST.
