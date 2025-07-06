@@ -1,4 +1,4 @@
-package any2mochi
+package zig
 
 import (
 	"bytes"
@@ -9,31 +9,77 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+
+	any2mochi "mochi/tools/any2mochi"
 )
 
-type zigParam struct {
+type param struct {
 	name string
 	typ  string
 }
 
-type zigAST struct {
-	Vars      []zigVar  `json:"vars"`
-	Functions []zigFunc `json:"functions"`
+type ast struct {
+	Vars      []variable `json:"vars"`
+	Functions []function `json:"functions"`
 }
 
-type zigVar struct {
+type variable struct {
 	Name string `json:"name"`
 	Type string `json:"type"`
 }
 
-type zigFunc struct {
+type function struct {
 	Name   string   `json:"name"`
 	Params string   `json:"params"`
 	Ret    string   `json:"ret"`
 	Lines  []string `json:"lines"`
 }
 
-func parseZigCLI(src string) (*zigAST, error) {
+func snippet(src string) string {
+	lines := strings.Split(src, "\n")
+	if len(lines) > 10 {
+		lines = lines[:10]
+	}
+	for i, l := range lines {
+		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
+	}
+	return strings.Join(lines, "\n")
+}
+
+func diagnostics(src string, diags []any2mochi.Diagnostic) string {
+	lines := strings.Split(src, "\n")
+	var out strings.Builder
+	for _, d := range diags {
+		start := int(d.Range.Start.Line)
+		msg := d.Message
+		line := ""
+		if start < len(lines) {
+			line = strings.TrimSpace(lines[start])
+		}
+		out.WriteString(fmt.Sprintf("line %d: %s\n  %s\n", start+1, msg, line))
+	}
+	return strings.TrimSpace(out.String())
+}
+
+func repoRoot() (string, error) {
+	dir, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir, nil
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	return "", os.ErrNotExist
+}
+
+func parseCLI(src string) (*ast, error) {
 	root, err := repoRoot()
 	if err != nil {
 		return nil, err
@@ -61,21 +107,21 @@ func parseZigCLI(src string) (*zigAST, error) {
 		}
 		return nil, fmt.Errorf("zigast: %s", msg)
 	}
-	var ast zigAST
+	var ast ast
 	if err := json.Unmarshal(out.Bytes(), &ast); err != nil {
 		return nil, err
 	}
 	return &ast, nil
 }
 
-func convertZigAST(ast *zigAST) ([]byte, error) {
+func convertAST(a *ast) ([]byte, error) {
 	var out strings.Builder
 	// ignore top-level variables since imports are not needed
-	for _, fn := range ast.Functions {
+	for _, fn := range a.Functions {
 		out.WriteString("fun ")
 		out.WriteString(fn.Name)
 		out.WriteByte('(')
-		params := parseZigParams(fn.Params)
+		params := parseParams(fn.Params)
 		for i, p := range params {
 			if i > 0 {
 				out.WriteString(", ")
@@ -89,9 +135,9 @@ func convertZigAST(ast *zigAST) ([]byte, error) {
 		out.WriteByte(')')
 		if fn.Ret != "" && fn.Ret != "void" {
 			out.WriteString(": ")
-			out.WriteString(mapZigType(fn.Ret))
+			out.WriteString(mapType(fn.Ret))
 		}
-		body := parseZigFunctionBodyLines(fn.Lines)
+		body := parseFunctionBodyLines(fn.Lines)
 		if len(body) == 0 {
 			out.WriteString(" {}\n")
 			continue
@@ -104,7 +150,7 @@ func convertZigAST(ast *zigAST) ([]byte, error) {
 		}
 		out.WriteString("}\n")
 	}
-	for _, fn := range ast.Functions {
+	for _, fn := range a.Functions {
 		if fn.Name == "main" {
 			out.WriteString("main()\n")
 			break
@@ -116,7 +162,7 @@ func convertZigAST(ast *zigAST) ([]byte, error) {
 	return []byte(out.String()), nil
 }
 
-func parseZigFunctionBodyLines(lines []string) []string {
+func parseFunctionBodyLines(lines []string) []string {
 	var out []string
 	indent := 0
 	for _, line := range lines {
@@ -137,7 +183,7 @@ func parseZigFunctionBodyLines(lines []string) []string {
 		}
 		if strings.HasSuffix(l, "{") {
 			hdr := strings.TrimSpace(strings.TrimSuffix(l, "{"))
-			out = append(out, strings.Repeat("  ", indent)+parseZigBlockHeader(hdr)+" {")
+			out = append(out, strings.Repeat("  ", indent)+parseBlockHeader(hdr)+" {")
 			indent++
 			continue
 		}
@@ -146,44 +192,44 @@ func parseZigFunctionBodyLines(lines []string) []string {
 			out = append(out, strings.Repeat("  ", indent)+"}")
 			continue
 		}
-		out = append(out, strings.Repeat("  ", indent)+parseZigStmt(l))
+		out = append(out, strings.Repeat("  ", indent)+parseStmt(l))
 	}
 	return out
 }
 
-// ConvertZig converts zig source code to Mochi using the language server.
-func ConvertZig(src string) ([]byte, error) {
-	if ast, err := parseZigCLI(src); err == nil {
-		return convertZigAST(ast)
+// Convert converts Zig source code to Mochi using the language server.
+func Convert(src string) ([]byte, error) {
+	if ast, err := parseCLI(src); err == nil {
+		return convertAST(ast)
 	}
-	ls := Servers["zig"]
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+	ls := any2mochi.Servers["zig"]
+	syms, diags, err := any2mochi.EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
 	if err != nil {
 		return nil, err
 	}
 	if len(diags) > 0 {
-		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
+		return nil, fmt.Errorf("%s", diagnostics(src, diags))
 	}
 	var out strings.Builder
-	writeZigSymbols(&out, nil, syms, src, ls)
+	writeSymbols(&out, nil, syms, src, ls)
 	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
 	}
 	return []byte(out.String()), nil
 }
 
-// ConvertZigFile reads the zig file and converts it to Mochi.
-func ConvertZigFile(path string) ([]byte, error) {
+// ConvertFile reads the Zig file and converts it to Mochi.
+func ConvertFile(path string) ([]byte, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return ConvertZig(string(data))
+	return Convert(string(data))
 }
 
-func parseZigParams(list string) []zigParam {
+func parseParams(list string) []param {
 	parts := strings.Split(list, ",")
-	params := make([]zigParam, 0, len(parts))
+	params := make([]param, 0, len(parts))
 	for _, p := range parts {
 		p = strings.TrimSpace(p)
 		if p == "" {
@@ -194,17 +240,17 @@ func parseZigParams(list string) []zigParam {
 		if colon := strings.Index(p, ":"); colon != -1 {
 			name = strings.TrimSpace(p[:colon])
 			typ = strings.TrimSpace(p[colon+1:])
-			typ = mapZigType(typ)
+			typ = mapType(typ)
 		}
 		if strings.HasSuffix(name, ":") {
 			name = strings.TrimSuffix(name, ":")
 		}
-		params = append(params, zigParam{name: name, typ: typ})
+		params = append(params, param{name: name, typ: typ})
 	}
 	return params
 }
 
-func parseZigDetail(detail string) ([]zigParam, string) {
+func parseDetail(detail string) ([]param, string) {
 	start := strings.Index(detail, "(")
 	end := strings.LastIndex(detail, ")")
 	if start == -1 || end == -1 || end < start {
@@ -212,28 +258,28 @@ func parseZigDetail(detail string) ([]zigParam, string) {
 	}
 	paramsPart := detail[start+1 : end]
 	retPart := strings.TrimSpace(detail[end+1:])
-	params := parseZigParams(paramsPart)
-	return params, mapZigType(retPart)
+	params := parseParams(paramsPart)
+	return params, mapType(retPart)
 }
 
-func zigHoverSignature(src string, sym DocumentSymbol, ls LanguageServer) ([]zigParam, string) {
-	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
+func hoverSignature(src string, sym any2mochi.DocumentSymbol, ls any2mochi.LanguageServer) ([]param, string) {
+	hov, err := any2mochi.EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err != nil {
 		return nil, ""
 	}
-	if mc, ok := hov.Contents.(MarkupContent); ok {
+	if mc, ok := hov.Contents.(any2mochi.MarkupContent); ok {
 		lines := strings.Split(mc.Value, "\n")
 		for i := len(lines) - 1; i >= 0; i-- {
 			l := strings.TrimSpace(lines[i])
 			if strings.HasPrefix(l, "fn") && strings.Contains(l, "(") && strings.Contains(l, ")") {
-				return parseZigDetail(l)
+				return parseDetail(l)
 			}
 		}
 	}
 	return nil, ""
 }
 
-func mapZigType(t string) string {
+func mapType(t string) string {
 	t = strings.TrimSpace(t)
 	if t == "" || t == "void" {
 		return ""
@@ -250,7 +296,7 @@ func mapZigType(t string) string {
 		return "string"
 	}
 	if strings.HasPrefix(t, "[]") {
-		inner := mapZigType(strings.TrimPrefix(t, "[]"))
+		inner := mapType(strings.TrimPrefix(t, "[]"))
 		if inner == "" {
 			inner = "any"
 		}
@@ -259,7 +305,7 @@ func mapZigType(t string) string {
 	return t
 }
 
-func extractRange(src string, r Range) string {
+func extractRange(src string, r any2mochi.Range) string {
 	lines := strings.Split(src, "\n")
 	var out strings.Builder
 	for i := int(r.Start.Line); i <= int(r.End.Line) && i < len(lines); i++ {
@@ -278,7 +324,7 @@ func extractRange(src string, r Range) string {
 	return out.String()
 }
 
-func convertZigExpr(expr string) string {
+func convertExpr(expr string) string {
 	expr = strings.TrimSpace(expr)
 	for strings.Contains(expr, "@as(") {
 		start := strings.Index(expr, "@as(")
@@ -339,22 +385,22 @@ func convertZigExpr(expr string) string {
 	return expr
 }
 
-func parseZigBlockHeader(h string) string {
+func parseBlockHeader(h string) string {
 	switch {
 	case strings.HasPrefix(h, "if "):
 		cond := strings.TrimSpace(strings.TrimPrefix(h, "if "))
 		cond = strings.Trim(cond, "()")
-		return "if " + convertZigExpr(cond)
+		return "if " + convertExpr(cond)
 	case strings.HasPrefix(h, "else if "):
 		cond := strings.TrimSpace(strings.TrimPrefix(h, "else if "))
 		cond = strings.Trim(cond, "()")
-		return "else if " + convertZigExpr(cond)
+		return "else if " + convertExpr(cond)
 	case h == "else":
 		return "else"
 	case strings.HasPrefix(h, "while "):
 		cond := strings.TrimSpace(strings.TrimPrefix(h, "while "))
 		cond = strings.Trim(cond, "()")
-		return "while " + convertZigExpr(cond)
+		return "while " + convertExpr(cond)
 	case strings.HasPrefix(h, "for "):
 		inner := strings.TrimSpace(strings.TrimPrefix(h, "for"))
 		if strings.HasPrefix(inner, "(") {
@@ -368,34 +414,34 @@ func parseZigBlockHeader(h string) string {
 						name = strings.TrimSpace(after[1 : 1+end])
 					}
 				}
-				return "for " + name + " in " + convertZigExpr(coll)
+				return "for " + name + " in " + convertExpr(coll)
 			}
 		}
-		return convertZigExpr(h)
+		return convertExpr(h)
 	}
-	return convertZigExpr(h)
+	return convertExpr(h)
 }
 
-func parseZigStmt(l string) string {
+func parseStmt(l string) string {
 	if strings.HasSuffix(l, ";") {
 		l = strings.TrimSuffix(l, ";")
 	}
 	switch {
 	case strings.HasPrefix(l, "return "):
 		expr := strings.TrimSpace(l[len("return "):])
-		return "return " + convertZigExpr(expr)
+		return "return " + convertExpr(expr)
 	case strings.HasPrefix(l, "var "):
 		parts := strings.SplitN(l[4:], "=", 2)
 		if len(parts) == 2 {
 			name := strings.Fields(parts[0])[0]
-			expr := convertZigExpr(parts[1])
+			expr := convertExpr(parts[1])
 			return "let " + name + " = " + expr
 		}
 	case strings.HasPrefix(l, "const "):
 		parts := strings.SplitN(l[6:], "=", 2)
 		if len(parts) == 2 {
 			name := strings.Fields(parts[0])[0]
-			expr := convertZigExpr(parts[1])
+			expr := convertExpr(parts[1])
 			return "let " + name + " = " + expr
 		}
 	case l == "break":
@@ -403,10 +449,10 @@ func parseZigStmt(l string) string {
 	case l == "continue":
 		return "continue"
 	}
-	return convertZigExpr(l)
+	return convertExpr(l)
 }
 
-func parseZigFunctionBody(src string, sym DocumentSymbol) []string {
+func parseFunctionBody(src string, sym any2mochi.DocumentSymbol) []string {
 	code := extractRange(src, sym.Range)
 	start := strings.Index(code, "{")
 	end := strings.LastIndex(code, "}")
@@ -435,7 +481,7 @@ func parseZigFunctionBody(src string, sym DocumentSymbol) []string {
 		}
 		if strings.HasSuffix(l, "{") {
 			hdr := strings.TrimSpace(strings.TrimSuffix(l, "{"))
-			out = append(out, strings.Repeat("  ", indent)+parseZigBlockHeader(hdr)+" {")
+			out = append(out, strings.Repeat("  ", indent)+parseBlockHeader(hdr)+" {")
 			indent++
 			continue
 		}
@@ -444,26 +490,26 @@ func parseZigFunctionBody(src string, sym DocumentSymbol) []string {
 			out = append(out, strings.Repeat("  ", indent)+"}")
 			continue
 		}
-		out = append(out, strings.Repeat("  ", indent)+parseZigStmt(l))
+		out = append(out, strings.Repeat("  ", indent)+parseStmt(l))
 	}
 	return out
 }
 
-func writeZigSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol, src string, ls LanguageServer) {
+func writeSymbols(out *strings.Builder, prefix []string, syms []any2mochi.DocumentSymbol, src string, ls any2mochi.LanguageServer) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
 			nameParts = append(nameParts, s.Name)
 		}
 		switch s.Kind {
-		case SymbolKindFunction:
+		case any2mochi.SymbolKindFunction:
 			detail := ""
 			if s.Detail != nil {
 				detail = *s.Detail
 			}
-			params, ret := parseZigDetail(detail)
+			params, ret := parseDetail(detail)
 			if len(params) == 0 {
-				p, r := zigHoverSignature(src, s, ls)
+				p, r := hoverSignature(src, s, ls)
 				if len(p) > 0 {
 					params = p
 				}
@@ -489,7 +535,7 @@ func writeZigSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbo
 				out.WriteString(": ")
 				out.WriteString(ret)
 			}
-			body := parseZigFunctionBody(src, s)
+			body := parseFunctionBody(src, s)
 			if len(body) == 0 {
 				out.WriteString(" {}\n")
 			} else {
@@ -501,7 +547,7 @@ func writeZigSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbo
 				}
 				out.WriteString("}\n")
 			}
-		case SymbolKindStruct:
+		case any2mochi.SymbolKindStruct:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
 			if len(s.Children) == 0 {
@@ -510,13 +556,13 @@ func writeZigSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbo
 			}
 			out.WriteString(" {\n")
 			for _, c := range s.Children {
-				if c.Kind != SymbolKindField {
+				if c.Kind != any2mochi.SymbolKindField {
 					continue
 				}
 				out.WriteString("  ")
 				out.WriteString(c.Name)
 				if c.Detail != nil {
-					t := mapZigType(strings.TrimSpace(*c.Detail))
+					t := mapType(strings.TrimSpace(*c.Detail))
 					if t != "" {
 						out.WriteString(": ")
 						out.WriteString(t)
@@ -525,19 +571,19 @@ func writeZigSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbo
 				out.WriteByte('\n')
 			}
 			out.WriteString("}\n")
-		case SymbolKindVariable, SymbolKindConstant:
+		case any2mochi.SymbolKindVariable, any2mochi.SymbolKindConstant:
 			out.WriteString("let ")
 			out.WriteString(strings.Join(nameParts, "."))
 			if s.Detail != nil {
-				t := mapZigType(strings.TrimSpace(*s.Detail))
+				t := mapType(strings.TrimSpace(*s.Detail))
 				if t != "" {
 					out.WriteString(": ")
 					out.WriteString(t)
 				}
 			}
 			out.WriteByte('\n')
-		case SymbolKindNamespace, SymbolKindPackage, SymbolKindModule:
-			writeZigSymbols(out, nameParts, s.Children, src, ls)
+		case any2mochi.SymbolKindNamespace, any2mochi.SymbolKindPackage, any2mochi.SymbolKindModule:
+			writeSymbols(out, nameParts, s.Children, src, ls)
 		}
 	}
 }
