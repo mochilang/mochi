@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-
-	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 // ConvertHs converts hs source code to Mochi using the language server.
@@ -41,7 +39,7 @@ func ConvertHsFile(path string) ([]byte, error) {
 	return ConvertHs(string(data))
 }
 
-func getHsSignature(src string, sym protocol.DocumentSymbol, ls LanguageServer) ([]string, string) {
+func getHsSignature(src string, sym DocumentSymbol, ls LanguageServer) ([]string, string) {
 	if sym.Detail != nil {
 		if params, ret := parseHsSigTypes(*sym.Detail); len(params) > 0 || ret != "" {
 			return params, ret
@@ -82,11 +80,11 @@ func parseHsSigTypes(sig string) ([]string, string) {
 	return params, ret
 }
 
-func extractHsParams(sym protocol.DocumentSymbol) []string {
+func extractHsParams(sym DocumentSymbol) []string {
 	start := sym.Range.Start.Line
 	var params []string
 	for _, c := range sym.Children {
-		if c.Kind == protocol.SymbolKindVariable && c.Range.Start.Line == start {
+		if c.Kind == SymbolKindVariable && c.Range.Start.Line == start {
 			params = append(params, c.Name)
 		}
 	}
@@ -133,7 +131,7 @@ func mapHsType(t string) string {
 	return t
 }
 
-func extractHsBody(src string, sym protocol.DocumentSymbol) string {
+func extractHsBody(src string, sym DocumentSymbol) string {
 	lines := strings.Split(src, "\n")
 	start := int(sym.Range.Start.Line)
 	end := int(sym.Range.End.Line)
@@ -154,17 +152,17 @@ func extractHsBody(src string, sym protocol.DocumentSymbol) string {
 	return ""
 }
 
-func writeHsSymbols(out *strings.Builder, prefix []string, syms []protocol.DocumentSymbol, src string, ls LanguageServer) {
+func writeHsSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol, src string, ls LanguageServer) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
 			nameParts = append(nameParts, s.Name)
 		}
 		switch s.Kind {
-		case protocol.SymbolKindNamespace, protocol.SymbolKindModule, protocol.SymbolKindPackage:
+		case SymbolKindNamespace, SymbolKindModule, SymbolKindPackage:
 			writeHsSymbols(out, nameParts, s.Children, src, ls)
 			continue
-		case protocol.SymbolKindFunction, protocol.SymbolKindMethod:
+		case SymbolKindFunction, SymbolKindMethod:
 			names := extractHsParams(s)
 			types, ret := getHsSignature(src, s, ls)
 			params := combineHsParams(names, types)
@@ -190,19 +188,19 @@ func writeHsSymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 				out.WriteString(body)
 				out.WriteString(" }\n")
 			}
-		case protocol.SymbolKindEnum:
+		case SymbolKindEnum:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
 			out.WriteString(" {\n")
 			for _, c := range s.Children {
-				if c.Kind == protocol.SymbolKindEnumMember || (c.Kind == protocol.SymbolKindEnum && len(c.Children) == 0) {
+				if c.Kind == SymbolKindEnumMember || (c.Kind == SymbolKindEnum && len(c.Children) == 0) {
 					fmt.Fprintf(out, "  %s\n", c.Name)
 				}
 			}
 			out.WriteString("}\n")
-			var rest []protocol.DocumentSymbol
+			var rest []DocumentSymbol
 			for _, c := range s.Children {
-				if !(c.Kind == protocol.SymbolKindEnumMember || (c.Kind == protocol.SymbolKindEnum && len(c.Children) == 0)) {
+				if !(c.Kind == SymbolKindEnumMember || (c.Kind == SymbolKindEnum && len(c.Children) == 0)) {
 					rest = append(rest, c)
 				}
 			}
@@ -210,7 +208,7 @@ func writeHsSymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 				writeHsSymbols(out, nameParts, rest, src, ls)
 			}
 			continue
-		case protocol.SymbolKindStruct, protocol.SymbolKindClass, protocol.SymbolKindInterface:
+		case SymbolKindStruct, SymbolKindClass, SymbolKindInterface:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
 			if len(s.Children) == 0 {
@@ -219,7 +217,7 @@ func writeHsSymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 			}
 			out.WriteString(" {\n")
 			for _, c := range s.Children {
-				if c.Kind != protocol.SymbolKindField {
+				if c.Kind != SymbolKindField {
 					continue
 				}
 				out.WriteString("  ")
@@ -232,7 +230,7 @@ func writeHsSymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 				out.WriteByte('\n')
 			}
 			out.WriteString("}\n")
-		case protocol.SymbolKindVariable, protocol.SymbolKindConstant:
+		case SymbolKindVariable, SymbolKindConstant:
 			if len(prefix) == 0 {
 				out.WriteString("let ")
 				out.WriteString(strings.Join(nameParts, "."))
@@ -244,13 +242,13 @@ func writeHsSymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 				out.WriteByte('\n')
 			}
 		}
-		if len(s.Children) > 0 && s.Kind != protocol.SymbolKindStruct && s.Kind != protocol.SymbolKindClass && s.Kind != protocol.SymbolKindInterface {
+		if len(s.Children) > 0 && s.Kind != SymbolKindStruct && s.Kind != SymbolKindClass && s.Kind != SymbolKindInterface {
 			writeHsSymbols(out, nameParts, s.Children, src, ls)
 		}
 	}
 }
 
-func getHsVarType(src string, sym protocol.DocumentSymbol, ls LanguageServer) string {
+func getHsVarType(src string, sym DocumentSymbol, ls LanguageServer) string {
 	if sym.Detail != nil {
 		if _, ret := parseHsSigTypes(*sym.Detail); ret != "" {
 			return ret
@@ -264,7 +262,7 @@ func getHsVarType(src string, sym protocol.DocumentSymbol, ls LanguageServer) st
 	return typ
 }
 
-func hsFieldType(src string, sym protocol.DocumentSymbol, ls LanguageServer) string {
+func hsFieldType(src string, sym DocumentSymbol, ls LanguageServer) string {
 	if sym.Detail != nil && strings.TrimSpace(*sym.Detail) != "" {
 		if t, _ := parseHsVarSig(*sym.Detail); t != "" {
 			return t

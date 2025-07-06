@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-
-	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 // ConvertFs converts F# source code to Mochi using the fsautocomplete language
@@ -47,14 +45,14 @@ type fsParam struct {
 	typ  string
 }
 
-func writeFsSymbols(out *strings.Builder, prefix []string, syms []protocol.DocumentSymbol, src string, ls LanguageServer) {
+func writeFsSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol, src string, ls LanguageServer) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
 			nameParts = append(nameParts, s.Name)
 		}
 		switch s.Kind {
-		case protocol.SymbolKindFunction, protocol.SymbolKindMethod:
+		case SymbolKindFunction, SymbolKindMethod:
 			params, ret := parseFsDetail(s.Detail)
 			if len(params) == 0 && ret == "" {
 				if hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start); err == nil {
@@ -87,11 +85,11 @@ func writeFsSymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 				}
 				out.WriteString("}\n")
 			}
-		case protocol.SymbolKindVariable, protocol.SymbolKindConstant, protocol.SymbolKindField:
+		case SymbolKindVariable, SymbolKindConstant, SymbolKindField:
 			out.WriteString("let ")
 			out.WriteString(strings.Join(nameParts, "."))
 			out.WriteByte('\n')
-		case protocol.SymbolKindStruct, protocol.SymbolKindClass, protocol.SymbolKindInterface:
+		case SymbolKindStruct, SymbolKindClass, SymbolKindInterface:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
 			out.WriteString(" {}\n")
@@ -142,7 +140,7 @@ func parseFsDetail(detail *string) ([]fsParam, string) {
 	return params, ret
 }
 
-func parseFsHover(h protocol.Hover) ([]fsParam, string) {
+func parseFsHover(h Hover) ([]fsParam, string) {
 	text := hoverString(h)
 	for _, line := range strings.Split(text, "\n") {
 		line = strings.TrimSpace(line)
@@ -186,7 +184,7 @@ func mapFsType(t string) string {
 	return ""
 }
 
-func fsFunctionBody(src string, sym protocol.DocumentSymbol) []string {
+func fsFunctionBody(src string, sym DocumentSymbol) []string {
 	lines := strings.Split(src, "\n")
 	start := fsPosToOffset(lines, sym.Range.Start)
 	end := fsPosToOffset(lines, sym.Range.End)
@@ -218,7 +216,7 @@ func fsFunctionBody(src string, sym protocol.DocumentSymbol) []string {
 	return []string{"return " + expr}
 }
 
-func fsPosToOffset(lines []string, pos protocol.Position) int {
+func fsPosToOffset(lines []string, pos Position) int {
 	off := 0
 	for i := 0; i < int(pos.Line); i++ {
 		if i < len(lines) {

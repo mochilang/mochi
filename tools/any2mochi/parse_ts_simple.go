@@ -2,8 +2,6 @@ package any2mochi
 
 import (
 	"strings"
-
-	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 // tsFunctionBody parses a subset of TypeScript statements and returns
@@ -176,7 +174,7 @@ func tsFunctionBody(src string) []string {
 }
 
 // indexForPosition converts a protocol position to a byte offset in src.
-func indexForPosition(src string, pos protocol.Position) int {
+func indexForPosition(src string, pos Position) int {
 	lines := strings.Split(src, "\n")
 	if int(pos.Line) >= len(lines) {
 		return len(src)

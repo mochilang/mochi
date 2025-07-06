@@ -5,7 +5,6 @@ import (
 	"os"
 	"strings"
 
-	protocol "github.com/tliron/glsp/protocol_3_16"
 	excode "mochi/compile/x/ex"
 )
 
@@ -30,7 +29,7 @@ func ConvertEx(src string) ([]byte, error) {
 	var out strings.Builder
 	foundMain := false
 	for _, s := range syms {
-		if s.Kind != protocol.SymbolKindFunction {
+		if s.Kind != SymbolKindFunction {
 			continue
 		}
 		params, ret := getExSignature(src, s.SelectionRange.Start, ls)
@@ -62,7 +61,7 @@ func ConvertExFile(path string) ([]byte, error) {
 	return ConvertEx(string(data))
 }
 
-func convertExFunc(lines []string, sym protocol.DocumentSymbol, params []string, ret string) string {
+func convertExFunc(lines []string, sym DocumentSymbol, params []string, ret string) string {
 	start := int(sym.Range.Start.Line)
 	end := int(sym.Range.End.Line)
 	if start < 0 || end >= len(lines) || start >= end {
@@ -167,7 +166,7 @@ func convertExFunc(lines []string, sym protocol.DocumentSymbol, params []string,
 	return b.String()
 }
 
-func getExSignature(src string, pos protocol.Position, ls LanguageServer) ([]string, string) {
+func getExSignature(src string, pos Position, ls LanguageServer) ([]string, string) {
 	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, pos)
 	if err != nil {
 		return nil, ""

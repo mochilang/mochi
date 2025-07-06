@@ -10,7 +10,6 @@ import (
 	"runtime"
 	"strings"
 
-	protocol "github.com/tliron/glsp/protocol_3_16"
 	tscode "mochi/compile/ts"
 )
 
@@ -30,8 +29,8 @@ func ConvertTypeScript(src string) ([]byte, error) {
 		parseTSFallback(&out, src)
 	}
 
-	var syms []protocol.DocumentSymbol
-	var diags []protocol.Diagnostic
+	var syms []DocumentSymbol
+	var diags []Diagnostic
 	var err error
 
 	if out.Len() == 0 && TypeScriptUseLanguageServer {
@@ -106,18 +105,18 @@ func ConvertTypeScriptFileWithJSON(path string) ([]byte, []byte, error) {
 	return ConvertTypeScriptWithJSON(string(data))
 }
 
-func writeTSSymbols(out *strings.Builder, prefix []string, syms []protocol.DocumentSymbol, src string, ls LanguageServer) {
+func writeTSSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol, src string, ls LanguageServer) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
 			nameParts = append(nameParts, s.Name)
 		}
 		switch s.Kind {
-		case protocol.SymbolKindClass, protocol.SymbolKindInterface, protocol.SymbolKindStruct:
+		case SymbolKindClass, SymbolKindInterface, SymbolKindStruct:
 			writeTSClass(out, nameParts, s, src, ls)
-		case protocol.SymbolKindEnum:
+		case SymbolKindEnum:
 			writeTSEnum(out, nameParts, s, src, ls)
-		case protocol.SymbolKindVariable, protocol.SymbolKindConstant, protocol.SymbolKindField, protocol.SymbolKindProperty:
+		case SymbolKindVariable, SymbolKindConstant, SymbolKindField, SymbolKindProperty:
 			if s.Name != "" && len(prefix) == 0 {
 				if fields, alias := tsAliasDef(src, s, ls); len(fields) > 0 || alias != "" {
 					writeTSAlias(out, s.Name, fields, alias)
@@ -132,25 +131,25 @@ func writeTSSymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 					out.WriteByte('\n')
 				}
 			}
-		case protocol.SymbolKindFunction, protocol.SymbolKindMethod, protocol.SymbolKindConstructor:
+		case SymbolKindFunction, SymbolKindMethod, SymbolKindConstructor:
 			writeTSFunc(out, strings.Join(nameParts, "."), s, src, ls)
 		}
-		if len(s.Children) > 0 && s.Kind != protocol.SymbolKindClass && s.Kind != protocol.SymbolKindInterface && s.Kind != protocol.SymbolKindStruct {
+		if len(s.Children) > 0 && s.Kind != SymbolKindClass && s.Kind != SymbolKindInterface && s.Kind != SymbolKindStruct {
 			writeTSSymbols(out, nameParts, s.Children, src, ls)
 		}
 	}
 }
 
-func writeTSClass(out *strings.Builder, nameParts []string, sym protocol.DocumentSymbol, src string, ls LanguageServer) {
+func writeTSClass(out *strings.Builder, nameParts []string, sym DocumentSymbol, src string, ls LanguageServer) {
 	out.WriteString("type ")
 	out.WriteString(strings.Join(nameParts, "."))
-	fields := []protocol.DocumentSymbol{}
-	methods := []protocol.DocumentSymbol{}
+	fields := []DocumentSymbol{}
+	methods := []DocumentSymbol{}
 	for _, c := range sym.Children {
 		switch c.Kind {
-		case protocol.SymbolKindField, protocol.SymbolKindProperty:
+		case SymbolKindField, SymbolKindProperty:
 			fields = append(fields, c)
-		case protocol.SymbolKindFunction, protocol.SymbolKindMethod, protocol.SymbolKindConstructor:
+		case SymbolKindFunction, SymbolKindMethod, SymbolKindConstructor:
 			methods = append(methods, c)
 		}
 	}
@@ -180,7 +179,7 @@ func writeTSClass(out *strings.Builder, nameParts []string, sym protocol.Documen
 	out.WriteString("}\n")
 }
 
-func writeTSFunc(out *strings.Builder, name string, sym protocol.DocumentSymbol, src string, ls LanguageServer) {
+func writeTSFunc(out *strings.Builder, name string, sym DocumentSymbol, src string, ls LanguageServer) {
 	params, ret := tsHoverSignature(src, sym, ls)
 	out.WriteString("fun ")
 	out.WriteString(name)
@@ -225,12 +224,12 @@ func writeTSFunc(out *strings.Builder, name string, sym protocol.DocumentSymbol,
 	out.WriteString("}\n")
 }
 
-func tsHoverSignature(src string, sym protocol.DocumentSymbol, ls LanguageServer) ([]tsParam, string) {
+func tsHoverSignature(src string, sym DocumentSymbol, ls LanguageServer) ([]tsParam, string) {
 	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err != nil {
 		return nil, ""
 	}
-	if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
+	if mc, ok := hov.Contents.(MarkupContent); ok {
 		lines := strings.Split(mc.Value, "\n")
 		for i := len(lines) - 1; i >= 0; i-- {
 			l := strings.TrimSpace(lines[i])
@@ -242,12 +241,12 @@ func tsHoverSignature(src string, sym protocol.DocumentSymbol, ls LanguageServer
 	return nil, ""
 }
 
-func tsFieldType(src string, sym protocol.DocumentSymbol, ls LanguageServer) string {
+func tsFieldType(src string, sym DocumentSymbol, ls LanguageServer) string {
 	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err != nil {
 		return ""
 	}
-	if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
+	if mc, ok := hov.Contents.(MarkupContent); ok {
 		lines := strings.Split(mc.Value, "\n")
 		for _, l := range lines {
 			l = strings.TrimSpace(l)
@@ -269,12 +268,12 @@ type tsField struct {
 
 // tsAliasDef returns fields for a type alias object or the aliased type.
 // When neither can be determined it returns nil and empty string.
-func tsAliasDef(src string, sym protocol.DocumentSymbol, ls LanguageServer) ([]tsField, string) {
+func tsAliasDef(src string, sym DocumentSymbol, ls LanguageServer) ([]tsField, string) {
 	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err != nil {
 		return nil, ""
 	}
-	if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
+	if mc, ok := hov.Contents.(MarkupContent); ok {
 		lines := strings.Split(mc.Value, "\n")
 		reading := false
 		var fields []tsField
@@ -332,21 +331,21 @@ func writeTSAlias(out *strings.Builder, name string, fields []tsField, alias str
 	out.WriteString("}\n")
 }
 
-func writeTSEnum(out *strings.Builder, nameParts []string, sym protocol.DocumentSymbol, src string, ls LanguageServer) {
+func writeTSEnum(out *strings.Builder, nameParts []string, sym DocumentSymbol, src string, ls LanguageServer) {
 	out.WriteString("type ")
 	out.WriteString(strings.Join(nameParts, "."))
 	out.WriteString(" {\n")
 	for _, c := range sym.Children {
-		if c.Kind == protocol.SymbolKindEnumMember {
+		if c.Kind == SymbolKindEnumMember {
 			out.WriteString("  ")
 			out.WriteString(c.Name)
 			out.WriteByte('\n')
 		}
 	}
 	out.WriteString("}\n")
-	var rest []protocol.DocumentSymbol
+	var rest []DocumentSymbol
 	for _, c := range sym.Children {
-		if c.Kind != protocol.SymbolKindEnumMember {
+		if c.Kind != SymbolKindEnumMember {
 			rest = append(rest, c)
 		}
 	}

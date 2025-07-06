@@ -6,8 +6,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
-
-	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 // ConvertPhp converts php source code to Mochi using the language server.
@@ -32,14 +30,14 @@ func convertPhp(src, root string) ([]byte, error) {
 	return []byte(out.String()), nil
 }
 
-func appendPhpSymbols(out *strings.Builder, prefix []string, syms []protocol.DocumentSymbol, src string, ls LanguageServer) {
+func appendPhpSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol, src string, ls LanguageServer) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
 			nameParts = append(nameParts, s.Name)
 		}
 		switch s.Kind {
-		case protocol.SymbolKindFunction, protocol.SymbolKindMethod, protocol.SymbolKindConstructor:
+		case SymbolKindFunction, SymbolKindMethod, SymbolKindConstructor:
 			var params []phpParam
 			var ret string
 			params, ret = phpHoverSignature(src, s.SelectionRange.Start, ls)
@@ -76,16 +74,16 @@ func appendPhpSymbols(out *strings.Builder, prefix []string, syms []protocol.Doc
 			if len(s.Children) > 0 {
 				appendPhpSymbols(out, nameParts, s.Children, src, ls)
 			}
-		case protocol.SymbolKindClass:
+		case SymbolKindClass:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
-			fields := []protocol.DocumentSymbol{}
-			methods := []protocol.DocumentSymbol{}
+			fields := []DocumentSymbol{}
+			methods := []DocumentSymbol{}
 			for _, c := range s.Children {
 				switch c.Kind {
-				case protocol.SymbolKindField, protocol.SymbolKindProperty:
+				case SymbolKindField, SymbolKindProperty:
 					fields = append(fields, c)
-				case protocol.SymbolKindFunction, protocol.SymbolKindMethod, protocol.SymbolKindConstructor:
+				case SymbolKindFunction, SymbolKindMethod, SymbolKindConstructor:
 					methods = append(methods, c)
 				}
 			}
@@ -103,7 +101,7 @@ func appendPhpSymbols(out *strings.Builder, prefix []string, syms []protocol.Doc
 				}
 				for _, m := range methods {
 					var b strings.Builder
-					appendPhpSymbols(&b, []string{m.Name}, []protocol.DocumentSymbol{m}, src, ls)
+					appendPhpSymbols(&b, []string{m.Name}, []DocumentSymbol{m}, src, ls)
 					for _, line := range strings.Split(strings.TrimSuffix(b.String(), "\n"), "\n") {
 						out.WriteString("  ")
 						out.WriteString(line)
@@ -114,11 +112,11 @@ func appendPhpSymbols(out *strings.Builder, prefix []string, syms []protocol.Doc
 			}
 			// recurse on nested symbols that aren't part of the struct body
 			for _, c := range s.Children {
-				if c.Kind != protocol.SymbolKindField && c.Kind != protocol.SymbolKindProperty && c.Kind != protocol.SymbolKindFunction && c.Kind != protocol.SymbolKindMethod && c.Kind != protocol.SymbolKindConstructor {
-					appendPhpSymbols(out, nameParts, []protocol.DocumentSymbol{c}, src, ls)
+				if c.Kind != SymbolKindField && c.Kind != SymbolKindProperty && c.Kind != SymbolKindFunction && c.Kind != SymbolKindMethod && c.Kind != SymbolKindConstructor {
+					appendPhpSymbols(out, nameParts, []DocumentSymbol{c}, src, ls)
 				}
 			}
-		case protocol.SymbolKindVariable, protocol.SymbolKindConstant:
+		case SymbolKindVariable, SymbolKindConstant:
 			if len(prefix) == 0 {
 				name := strings.TrimPrefix(s.Name, "$")
 				typ := phpFieldType(src, s.SelectionRange.Start, ls)
@@ -149,23 +147,23 @@ type phpParam struct {
 	typ  string
 }
 
-func phpHoverSignature(src string, pos protocol.Position, ls LanguageServer) ([]phpParam, string) {
+func phpHoverSignature(src string, pos Position, ls LanguageServer) ([]phpParam, string) {
 	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, pos)
 	if err != nil {
 		return nil, ""
 	}
-	if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
+	if mc, ok := hov.Contents.(MarkupContent); ok {
 		return parsePhpSignature(mc.Value)
 	}
 	return nil, ""
 }
 
-func phpFieldType(src string, pos protocol.Position, ls LanguageServer) string {
+func phpFieldType(src string, pos Position, ls LanguageServer) string {
 	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, pos)
 	if err != nil {
 		return ""
 	}
-	if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
+	if mc, ok := hov.Contents.(MarkupContent); ok {
 		return parsePhpVarType(mc.Value)
 	}
 	return ""
@@ -252,7 +250,7 @@ func mapPhpType(t string) string {
 // The language server provides the range for the entire function including
 // the body. This helper extracts the body lines and removes surrounding
 // braces. The returned string may span multiple lines but is not indented.
-func extractPhpBody(src string, r protocol.Range) []string {
+func extractPhpBody(src string, r Range) []string {
 	lines := strings.Split(src, "\n")
 	start := int(r.Start.Line)
 	end := int(r.End.Line)

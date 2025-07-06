@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-
-	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 // ConvertPas converts pas source code to Mochi using the language server.
@@ -41,14 +39,14 @@ type pasParam struct {
 	typ  string
 }
 
-func writePasSymbols(out *strings.Builder, prefix []string, syms []protocol.DocumentSymbol, src string, ls LanguageServer) {
+func writePasSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol, src string, ls LanguageServer) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
 			nameParts = append(nameParts, s.Name)
 		}
 		switch s.Kind {
-		case protocol.SymbolKindFunction, protocol.SymbolKindMethod:
+		case SymbolKindFunction, SymbolKindMethod:
 			params, ret := pasHoverSignature(src, s, ls)
 			out.WriteString("fun ")
 			out.WriteString(strings.Join(nameParts, "."))
@@ -83,16 +81,16 @@ func writePasSymbols(out *strings.Builder, prefix []string, syms []protocol.Docu
 				}
 				out.WriteString("}\n")
 			}
-		case protocol.SymbolKindStruct, protocol.SymbolKindClass, protocol.SymbolKindInterface:
+		case SymbolKindStruct, SymbolKindClass, SymbolKindInterface:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
-			fields := []protocol.DocumentSymbol{}
-			methods := []protocol.DocumentSymbol{}
+			fields := []DocumentSymbol{}
+			methods := []DocumentSymbol{}
 			for _, c := range s.Children {
 				switch c.Kind {
-				case protocol.SymbolKindField, protocol.SymbolKindProperty:
+				case SymbolKindField, SymbolKindProperty:
 					fields = append(fields, c)
-				case protocol.SymbolKindFunction, protocol.SymbolKindMethod:
+				case SymbolKindFunction, SymbolKindMethod:
 					methods = append(methods, c)
 				}
 			}
@@ -111,7 +109,7 @@ func writePasSymbols(out *strings.Builder, prefix []string, syms []protocol.Docu
 				}
 				for _, m := range methods {
 					var b strings.Builder
-					writePasSymbols(&b, []string{m.Name}, []protocol.DocumentSymbol{m}, src, ls)
+					writePasSymbols(&b, []string{m.Name}, []DocumentSymbol{m}, src, ls)
 					for _, line := range strings.Split(strings.TrimSuffix(b.String(), "\n"), "\n") {
 						out.WriteString("  ")
 						out.WriteString(line)
@@ -120,21 +118,21 @@ func writePasSymbols(out *strings.Builder, prefix []string, syms []protocol.Docu
 				}
 				out.WriteString("}\n")
 			}
-		case protocol.SymbolKindEnum:
+		case SymbolKindEnum:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
 			out.WriteString(" {\n")
 			for _, c := range s.Children {
-				if c.Kind == protocol.SymbolKindEnumMember {
+				if c.Kind == SymbolKindEnumMember {
 					out.WriteString("  ")
 					out.WriteString(c.Name)
 					out.WriteByte('\n')
 				}
 			}
 			out.WriteString("}\n")
-			var rest []protocol.DocumentSymbol
+			var rest []DocumentSymbol
 			for _, c := range s.Children {
-				if c.Kind != protocol.SymbolKindEnumMember {
+				if c.Kind != SymbolKindEnumMember {
 					rest = append(rest, c)
 				}
 			}
@@ -142,7 +140,7 @@ func writePasSymbols(out *strings.Builder, prefix []string, syms []protocol.Docu
 				writePasSymbols(out, nameParts, rest, src, ls)
 			}
 			continue
-		case protocol.SymbolKindVariable, protocol.SymbolKindConstant:
+		case SymbolKindVariable, SymbolKindConstant:
 			if len(prefix) == 0 {
 				out.WriteString("let ")
 				out.WriteString(s.Name)
@@ -153,13 +151,13 @@ func writePasSymbols(out *strings.Builder, prefix []string, syms []protocol.Docu
 				out.WriteByte('\n')
 			}
 		}
-		if len(s.Children) > 0 && s.Kind != protocol.SymbolKindStruct && s.Kind != protocol.SymbolKindClass && s.Kind != protocol.SymbolKindInterface {
+		if len(s.Children) > 0 && s.Kind != SymbolKindStruct && s.Kind != SymbolKindClass && s.Kind != SymbolKindInterface {
 			writePasSymbols(out, nameParts, s.Children, src, ls)
 		}
 	}
 }
 
-func pasHoverSignature(src string, sym protocol.DocumentSymbol, ls LanguageServer) ([]pasParam, string) {
+func pasHoverSignature(src string, sym DocumentSymbol, ls LanguageServer) ([]pasParam, string) {
 	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err != nil {
 		if sym.Detail != nil {
@@ -181,7 +179,7 @@ func pasHoverSignature(src string, sym protocol.DocumentSymbol, ls LanguageServe
 	return nil, ""
 }
 
-func pasFieldType(src string, sym protocol.DocumentSymbol, ls LanguageServer) string {
+func pasFieldType(src string, sym DocumentSymbol, ls LanguageServer) string {
 	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err != nil {
 		return ""
@@ -280,7 +278,7 @@ func pasToMochiType(t string) string {
 // convertPasBody extracts the function body for sym from src and converts a few
 // basic statements into Mochi equivalents. Only very simple constructs like
 // assignments, returns and writeln calls are handled.
-func convertPasBody(src string, sym protocol.DocumentSymbol) string {
+func convertPasBody(src string, sym DocumentSymbol) string {
 	lines := strings.Split(src, "\n")
 	start := int(sym.Range.Start.Line)
 	end := int(sym.Range.End.Line)

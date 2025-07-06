@@ -10,8 +10,6 @@ import (
 	"strings"
 	"time"
 
-	protocol "github.com/tliron/glsp/protocol_3_16"
-
 	pycode "mochi/compile/py"
 )
 
@@ -43,18 +41,18 @@ func ConvertPythonFile(path string) ([]byte, error) {
 	return ConvertPython(string(data))
 }
 
-func writePySymbols(out *strings.Builder, prefix []string, syms []protocol.DocumentSymbol, src string, ls LanguageServer) {
+func writePySymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol, src string, ls LanguageServer) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
 			nameParts = append(nameParts, s.Name)
 		}
 		switch s.Kind {
-		case protocol.SymbolKindFunction, protocol.SymbolKindMethod, protocol.SymbolKindConstructor:
+		case SymbolKindFunction, SymbolKindMethod, SymbolKindConstructor:
 			writePyFunc(out, strings.Join(nameParts, "."), s, src, ls)
-		case protocol.SymbolKindClass:
+		case SymbolKindClass:
 			writePyClass(out, nameParts, s, src, ls)
-		case protocol.SymbolKindVariable, protocol.SymbolKindConstant:
+		case SymbolKindVariable, SymbolKindConstant:
 			if len(prefix) == 0 {
 				out.WriteString("let ")
 				out.WriteString(strings.Join(nameParts, "."))
@@ -77,7 +75,7 @@ type pyParam struct {
 	typ  string
 }
 
-func writePyFunc(out *strings.Builder, name string, sym protocol.DocumentSymbol, src string, ls LanguageServer) {
+func writePyFunc(out *strings.Builder, name string, sym DocumentSymbol, src string, ls LanguageServer) {
 	params, ret := getPySignature(src, sym.SelectionRange.Start, ls)
 	if len(params) == 0 {
 		for _, p := range extractPyParams(sym) {
@@ -116,13 +114,13 @@ func writePyFunc(out *strings.Builder, name string, sym protocol.DocumentSymbol,
 	out.WriteString("}\n")
 }
 
-func writePyClass(out *strings.Builder, prefix []string, sym protocol.DocumentSymbol, src string, ls LanguageServer) {
+func writePyClass(out *strings.Builder, prefix []string, sym DocumentSymbol, src string, ls LanguageServer) {
 	name := strings.Join(prefix, ".")
 	fields := extractPyFields(sym)
-	methods := make([]protocol.DocumentSymbol, 0)
+	methods := make([]DocumentSymbol, 0)
 	for _, c := range sym.Children {
 		switch c.Kind {
-		case protocol.SymbolKindFunction, protocol.SymbolKindMethod, protocol.SymbolKindConstructor:
+		case SymbolKindFunction, SymbolKindMethod, SymbolKindConstructor:
 			methods = append(methods, c)
 		}
 	}
@@ -156,36 +154,36 @@ func writePyClass(out *strings.Builder, prefix []string, sym protocol.DocumentSy
 
 type pyField struct {
 	name string
-	sym  protocol.DocumentSymbol
+	sym  DocumentSymbol
 }
 
-func extractPyFields(sym protocol.DocumentSymbol) []pyField {
+func extractPyFields(sym DocumentSymbol) []pyField {
 	var fields []pyField
 	for _, c := range sym.Children {
-		if c.Kind == protocol.SymbolKindVariable || c.Kind == protocol.SymbolKindConstant {
+		if c.Kind == SymbolKindVariable || c.Kind == SymbolKindConstant {
 			fields = append(fields, pyField{name: c.Name, sym: c})
 		}
 	}
 	return fields
 }
 
-func extractPyParams(sym protocol.DocumentSymbol) []string {
+func extractPyParams(sym DocumentSymbol) []string {
 	start := sym.Range.Start.Line
 	var params []string
 	for _, c := range sym.Children {
-		if c.Kind == protocol.SymbolKindVariable && c.Range.Start.Line == start {
+		if c.Kind == SymbolKindVariable && c.Range.Start.Line == start {
 			params = append(params, c.Name)
 		}
 	}
 	return params
 }
 
-func getPySignature(src string, pos protocol.Position, ls LanguageServer) ([]pyParam, string) {
+func getPySignature(src string, pos Position, ls LanguageServer) ([]pyParam, string) {
 	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, pos)
 	if err != nil {
 		return nil, ""
 	}
-	mc, ok := hov.Contents.(protocol.MarkupContent)
+	mc, ok := hov.Contents.(MarkupContent)
 	if !ok {
 		return nil, ""
 	}
@@ -391,12 +389,12 @@ func splitPyArgs(s string) []string {
 	return parts
 }
 
-func getPyVarType(src string, pos protocol.Position, ls LanguageServer) string {
+func getPyVarType(src string, pos Position, ls LanguageServer) string {
 	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, pos)
 	if err != nil {
 		return ""
 	}
-	mc, ok := hov.Contents.(protocol.MarkupContent)
+	mc, ok := hov.Contents.(MarkupContent)
 	if !ok {
 		return ""
 	}
@@ -414,7 +412,7 @@ func parsePyVarType(hov string) string {
 	return ""
 }
 
-func getPyVarValue(src string, sym protocol.DocumentSymbol) string {
+func getPyVarValue(src string, sym DocumentSymbol) string {
 	code := pyExtractRange(src, sym.Range)
 	if idx := strings.Index(code, "="); idx != -1 {
 		return strings.TrimSpace(code[idx+1:])
@@ -422,7 +420,7 @@ func getPyVarValue(src string, sym protocol.DocumentSymbol) string {
 	return ""
 }
 
-func parsePyFunctionBody(src string, sym protocol.DocumentSymbol) []string {
+func parsePyFunctionBody(src string, sym DocumentSymbol) []string {
 	code := pyExtractRange(src, sym.Range)
 	lines := strings.Split(code, "\n")
 	if len(lines) < 2 {
@@ -622,7 +620,7 @@ func bracketDelta(s string) int {
 
 func balanced(s string) bool { return bracketDelta(s) == 0 }
 
-func pyExtractRange(src string, r protocol.Range) string {
+func pyExtractRange(src string, r Range) string {
 	lines := strings.Split(src, "\n")
 	var out strings.Builder
 	for i := int(r.Start.Line); i <= int(r.End.Line) && i < len(lines); i++ {

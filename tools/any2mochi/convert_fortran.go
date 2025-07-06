@@ -6,8 +6,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
-
-	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 type ftParam struct{ name, typ string }
@@ -44,12 +42,12 @@ func ConvertFortranFile(path string) ([]byte, error) {
 	return convertFortran(string(data), filepath.Dir(path))
 }
 
-func getFtSignatureWithRoot(src string, pos protocol.Position, ls LanguageServer, root string) ([]ftParam, string) {
+func getFtSignatureWithRoot(src string, pos Position, ls LanguageServer, root string) ([]ftParam, string) {
 	hov, err := EnsureAndHoverWithRoot(ls.Command, ls.Args, ls.LangID, src, pos, root)
 	if err != nil {
 		return nil, ""
 	}
-	mc, ok := hov.Contents.(protocol.MarkupContent)
+	mc, ok := hov.Contents.(MarkupContent)
 	if !ok {
 		return nil, ""
 	}
@@ -138,7 +136,7 @@ func cleanFtExpr(e string) string {
 // convertFtBody attempts to convert a small subset of Fortran statements inside
 // the given symbol's range into Mochi. It relies on the language server for the
 // outer structure and falls back to simple regex heuristics for the body.
-func convertFtBody(src string, sym protocol.DocumentSymbol) []string {
+func convertFtBody(src string, sym DocumentSymbol) []string {
 	lines := strings.Split(src, "\n")
 	start := int(sym.Range.Start.Line)
 	end := int(sym.Range.End.Line)
@@ -265,14 +263,14 @@ func convertFtBody(src string, sym protocol.DocumentSymbol) []string {
 	return out
 }
 
-func writeFtSymbols(out *strings.Builder, prefix []string, syms []protocol.DocumentSymbol, src string, ls LanguageServer, root string) {
+func writeFtSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol, src string, ls LanguageServer, root string) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
 			nameParts = append(nameParts, s.Name)
 		}
 		switch s.Kind {
-		case protocol.SymbolKindModule, protocol.SymbolKindFunction:
+		case SymbolKindModule, SymbolKindFunction:
 			out.WriteString("fun ")
 			out.WriteString(strings.Join(nameParts, "."))
 			params, ret := getFtSignatureWithRoot(src, s.SelectionRange.Start, ls, root)

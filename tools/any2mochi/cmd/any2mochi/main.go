@@ -11,7 +11,6 @@ import (
 	"github.com/charmbracelet/fang"
 	"github.com/spf13/cobra"
 
-	protocol "github.com/tliron/glsp/protocol_3_16"
 	"mochi/tools/any2mochi"
 )
 
@@ -47,8 +46,8 @@ func parseCmd() *cobra.Command {
 				return err
 			}
 			out := struct {
-				Symbols     []protocol.DocumentSymbol `json:"symbols"`
-				Diagnostics []protocol.Diagnostic     `json:"diagnostics"`
+				Symbols     []any2mochi.DocumentSymbol `json:"symbols"`
+				Diagnostics []any2mochi.Diagnostic     `json:"diagnostics"`
 			}{syms, diags}
 			enc := json.NewEncoder(cmd.OutOrStdout())
 			enc.SetIndent("", "  ")
@@ -214,7 +213,7 @@ func convertCmd() *cobra.Command {
 			}
 			var out strings.Builder
 			for _, s := range syms {
-				if s.Kind != protocol.SymbolKindFunction {
+				if s.Kind != any2mochi.SymbolKindFunction {
 					continue
 				}
 				out.WriteString("fun ")
@@ -245,7 +244,7 @@ func numberedSnippetLocal(src string) string {
 	return strings.Join(lines, "\n")
 }
 
-func formatDiagnosticsLocal(src string, diags []protocol.Diagnostic) string {
+func formatDiagnosticsLocal(src string, diags []any2mochi.Diagnostic) string {
 	lines := strings.Split(src, "\n")
 	var out strings.Builder
 	for _, d := range diags {

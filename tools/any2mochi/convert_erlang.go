@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-
-	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 // ConvertErlang converts erlang source code to Mochi using the language server.
@@ -20,13 +18,13 @@ func ConvertErlang(src string) ([]byte, error) {
 	}
 	var out strings.Builder
 	for _, s := range syms {
-		if s.Kind != protocol.SymbolKindFunction {
+		if s.Kind != SymbolKindFunction {
 			continue
 		}
 		var params []erlParam
 		var ret string
 		if hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start); err == nil {
-			if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
+			if mc, ok := hov.Contents.(MarkupContent); ok {
 				params, ret = parseErlangHover(mc.Value)
 			}
 		}
@@ -132,7 +130,7 @@ func mapErlangType(t string) string {
 	}
 }
 
-func offsetFromPosition(src string, pos protocol.Position) int {
+func offsetFromPosition(src string, pos Position) int {
 	lines := strings.Split(src, "\n")
 	if int(pos.Line) >= len(lines) {
 		return len(src)
@@ -148,7 +146,7 @@ func offsetFromPosition(src string, pos protocol.Position) int {
 	return off + col
 }
 
-func parseErlangBody(src string, rng protocol.Range) []string {
+func parseErlangBody(src string, rng Range) []string {
 	start := offsetFromPosition(src, rng.Start)
 	end := offsetFromPosition(src, rng.End)
 	if start >= end || start < 0 || end > len(src) {

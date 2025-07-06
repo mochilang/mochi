@@ -6,8 +6,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
-
-	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 // ConvertScala converts scala source code to Mochi using the language server.
@@ -28,7 +26,7 @@ func convertScala(src, root string) ([]byte, error) {
 	lines := strings.Split(strings.ReplaceAll(src, "\r\n", "\n"), "\n")
 	var out strings.Builder
 	for _, s := range syms {
-		if s.Kind != protocol.SymbolKindFunction {
+		if s.Kind != SymbolKindFunction {
 			continue
 		}
 		code := convertScalaFunc(lines, s, root)
@@ -53,7 +51,7 @@ func ConvertScalaFile(path string) ([]byte, error) {
 	return convertScala(string(data), filepath.Dir(path))
 }
 
-func convertScalaFunc(lines []string, sym protocol.DocumentSymbol, root string) string {
+func convertScalaFunc(lines []string, sym DocumentSymbol, root string) string {
 	start := int(sym.Range.Start.Line)
 	end := int(sym.Range.End.Line)
 	if start < 0 || end >= len(lines) || start >= end {
@@ -69,7 +67,7 @@ func convertScalaFunc(lines []string, sym protocol.DocumentSymbol, root string) 
 	}
 	if len(params) == 0 {
 		if hov, err := EnsureAndHoverWithRoot(Servers["scala"].Command, Servers["scala"].Args, Servers["scala"].LangID, strings.Join(lines, "\n"), sym.SelectionRange.Start, root); err == nil {
-			if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
+			if mc, ok := hov.Contents.(MarkupContent); ok {
 				for _, l := range strings.Split(mc.Value, "\n") {
 					if strings.Contains(l, name+"(") {
 						params, ret = parseScalaSignature(l, name)

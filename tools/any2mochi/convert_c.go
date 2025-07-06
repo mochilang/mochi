@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-
-	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 // ConvertC converts c source code to Mochi using the language server.
@@ -23,7 +21,7 @@ func ConvertC(src string) ([]byte, error) {
 		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
 	}
 
-	aliasForRange := make(map[protocol.Range]string)
+	aliasForRange := make(map[Range]string)
 	for _, s := range syms {
 		if s.Detail != nil && *s.Detail == "type alias" {
 			aliasForRange[s.Range] = s.Name
@@ -34,7 +32,7 @@ func ConvertC(src string) ([]byte, error) {
 	matched := false
 	for _, s := range syms {
 		switch s.Kind {
-		case protocol.SymbolKindFunction:
+		case SymbolKindFunction:
 			matched = true
 			ret, params := cHoverSignature(src, s, ls)
 
@@ -73,7 +71,7 @@ func ConvertC(src string) ([]byte, error) {
 				}
 				out.WriteString("}\n")
 			}
-		case protocol.SymbolKindVariable, protocol.SymbolKindConstant:
+		case SymbolKindVariable, SymbolKindConstant:
 			matched = true
 			out.WriteString("let ")
 			out.WriteString(s.Name)
@@ -89,7 +87,7 @@ func ConvertC(src string) ([]byte, error) {
 				out.WriteString(typ)
 			}
 			out.WriteByte('\n')
-		case protocol.SymbolKindStruct, protocol.SymbolKindClass:
+		case SymbolKindStruct, SymbolKindClass:
 			matched = true
 			isUnion := false
 			if s.Detail != nil && strings.TrimSpace(*s.Detail) == "union" {
@@ -118,7 +116,7 @@ func ConvertC(src string) ([]byte, error) {
 				out.WriteString(" {\n")
 			}
 			for _, c := range s.Children {
-				if c.Kind != protocol.SymbolKindField {
+				if c.Kind != SymbolKindField {
 					continue
 				}
 				out.WriteString("  ")
@@ -144,20 +142,20 @@ func ConvertC(src string) ([]byte, error) {
 				out.WriteByte('\n')
 			}
 			out.WriteString("}\n")
-		case protocol.SymbolKindEnum:
+		case SymbolKindEnum:
 			matched = true
 			out.WriteString("type ")
 			out.WriteString(s.Name)
 			out.WriteString(" {\n")
 			for _, c := range s.Children {
-				if c.Kind == protocol.SymbolKindEnumMember {
+				if c.Kind == SymbolKindEnumMember {
 					fmt.Fprintf(&out, "  %s\n", c.Name)
 				}
 			}
 			out.WriteString("}\n")
-			var rest []protocol.DocumentSymbol
+			var rest []DocumentSymbol
 			for _, c := range s.Children {
-				if c.Kind != protocol.SymbolKindEnumMember {
+				if c.Kind != SymbolKindEnumMember {
 					rest = append(rest, c)
 				}
 			}
@@ -351,10 +349,10 @@ func mapCType(typ string) string {
 // cHoverSignature obtains the function signature via hover information.
 // It returns the return type and parameter list. If hover data is unavailable
 // it falls back to the symbol detail.
-func cHoverSignature(src string, sym protocol.DocumentSymbol, ls LanguageServer) (string, []cParam) {
+func cHoverSignature(src string, sym DocumentSymbol, ls LanguageServer) (string, []cParam) {
 	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err == nil {
-		if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
+		if mc, ok := hov.Contents.(MarkupContent); ok {
 			for _, line := range strings.Split(mc.Value, "\n") {
 				l := strings.TrimSpace(line)
 				if strings.Contains(l, "(") && strings.Contains(l, ")") {
@@ -367,12 +365,12 @@ func cHoverSignature(src string, sym protocol.DocumentSymbol, ls LanguageServer)
 }
 
 // cHoverFieldType retrieves the type of a symbol using hover information.
-func cHoverFieldType(src string, sym protocol.DocumentSymbol, ls LanguageServer) string {
+func cHoverFieldType(src string, sym DocumentSymbol, ls LanguageServer) string {
 	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err != nil {
 		return ""
 	}
-	if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
+	if mc, ok := hov.Contents.(MarkupContent); ok {
 		for _, line := range strings.Split(mc.Value, "\n") {
 			l := strings.TrimSpace(line)
 			if l != "" {
@@ -383,7 +381,7 @@ func cHoverFieldType(src string, sym protocol.DocumentSymbol, ls LanguageServer)
 	return ""
 }
 
-func cFunctionBody(src string, sym protocol.DocumentSymbol) []string {
+func cFunctionBody(src string, sym DocumentSymbol) []string {
 	lines := strings.Split(src, "\n")
 	start := cPosToOffset(lines, sym.Range.Start)
 	end := cPosToOffset(lines, sym.Range.End)
@@ -519,7 +517,7 @@ func parseCStatements(body string) []string {
 	return out
 }
 
-func cPosToOffset(lines []string, pos protocol.Position) int {
+func cPosToOffset(lines []string, pos Position) int {
 	off := 0
 	for i := 0; i < int(pos.Line); i++ {
 		if i < len(lines) {

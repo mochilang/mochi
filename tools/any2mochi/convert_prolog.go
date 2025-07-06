@@ -6,8 +6,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
-
-	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 // ConvertProlog converts Prolog source code to Mochi using the language server.
@@ -45,15 +43,15 @@ func ConvertPrologFile(path string) ([]byte, error) {
 	return convertProlog(string(data), filepath.Dir(path))
 }
 
-func writePrologSymbols(out *strings.Builder, ls LanguageServer, src string, syms []protocol.DocumentSymbol, root string) {
+func writePrologSymbols(out *strings.Builder, ls LanguageServer, src string, syms []DocumentSymbol, root string) {
 	for _, s := range syms {
 		switch s.Kind {
-		case protocol.SymbolKindFunction, protocol.SymbolKindMethod,
-			protocol.SymbolKindVariable, protocol.SymbolKindConstant:
+		case SymbolKindFunction, SymbolKindMethod,
+			SymbolKindVariable, SymbolKindConstant:
 			params := parsePrologSignature(s.Detail)
 			if len(params) == 0 {
 				if hov, err := EnsureAndHoverWithRoot(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start, root); err == nil {
-					if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
+					if mc, ok := hov.Contents.(MarkupContent); ok {
 						params = parsePrologSignature(&mc.Value)
 					}
 				}
@@ -130,7 +128,7 @@ func parseInt(s string) int {
 	return n
 }
 
-func prologOffsetFromPosition(src string, pos protocol.Position) int {
+func prologOffsetFromPosition(src string, pos Position) int {
 	lines := strings.Split(src, "\n")
 	if int(pos.Line) >= len(lines) {
 		return len(src)
@@ -146,7 +144,7 @@ func prologOffsetFromPosition(src string, pos protocol.Position) int {
 	return off + col
 }
 
-func parsePrologBodyFromRange(src string, rng protocol.Range) []string {
+func parsePrologBodyFromRange(src string, rng Range) []string {
 	start := prologOffsetFromPosition(src, rng.Start)
 	end := prologOffsetFromPosition(src, rng.End)
 	if start >= end || start < 0 || end > len(src) {

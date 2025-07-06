@@ -5,8 +5,6 @@ import (
 	"os"
 	"strings"
 
-	protocol "github.com/tliron/glsp/protocol_3_16"
-
 	cscode "mochi/compile/x/cs"
 )
 
@@ -44,19 +42,19 @@ type csParam struct {
 	typ  string
 }
 
-func writeCsSymbols(out *strings.Builder, prefix []string, syms []protocol.DocumentSymbol, src string, ls LanguageServer) {
+func writeCsSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol, src string, ls LanguageServer) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
 			nameParts = append(nameParts, s.Name)
 		}
 		switch s.Kind {
-		case protocol.SymbolKindClass, protocol.SymbolKindStruct, protocol.SymbolKindInterface:
+		case SymbolKindClass, SymbolKindStruct, SymbolKindInterface:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
 			out.WriteString(" {\n")
 			for _, c := range s.Children {
-				if c.Kind == protocol.SymbolKindField || c.Kind == protocol.SymbolKindProperty {
+				if c.Kind == SymbolKindField || c.Kind == SymbolKindProperty {
 					typ := csFieldType(src, c, ls)
 					if typ == "" {
 						typ = "any"
@@ -65,16 +63,16 @@ func writeCsSymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 				}
 			}
 			out.WriteString("}\n")
-			var rest []protocol.DocumentSymbol
+			var rest []DocumentSymbol
 			for _, c := range s.Children {
-				if c.Kind != protocol.SymbolKindField && c.Kind != protocol.SymbolKindProperty {
+				if c.Kind != SymbolKindField && c.Kind != SymbolKindProperty {
 					rest = append(rest, c)
 				}
 			}
 			if len(rest) > 0 {
 				writeCsSymbols(out, nameParts, rest, src, ls)
 			}
-		case protocol.SymbolKindFunction, protocol.SymbolKindMethod, protocol.SymbolKindConstructor:
+		case SymbolKindFunction, SymbolKindMethod, SymbolKindConstructor:
 			params, ret := parseCsSignature(s.Detail)
 			if len(params) == 0 || ret == "" {
 				if p, r := csHoverSignature(src, s, ls); len(p) > 0 || r != "" {
@@ -119,7 +117,7 @@ func writeCsSymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 			if len(s.Children) > 0 {
 				writeCsSymbols(out, nameParts, s.Children, src, ls)
 			}
-		case protocol.SymbolKindField, protocol.SymbolKindProperty, protocol.SymbolKindVariable, protocol.SymbolKindConstant:
+		case SymbolKindField, SymbolKindProperty, SymbolKindVariable, SymbolKindConstant:
 			if len(prefix) == 0 {
 				out.WriteString("let ")
 				out.WriteString(strings.Join(nameParts, "."))
@@ -132,19 +130,19 @@ func writeCsSymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 			if len(s.Children) > 0 {
 				writeCsSymbols(out, nameParts, s.Children, src, ls)
 			}
-		case protocol.SymbolKindEnum:
+		case SymbolKindEnum:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
 			out.WriteString(" {\n")
 			for _, c := range s.Children {
-				if c.Kind == protocol.SymbolKindEnumMember {
+				if c.Kind == SymbolKindEnumMember {
 					fmt.Fprintf(out, "  %s\n", c.Name)
 				}
 			}
 			out.WriteString("}\n")
-			var rest []protocol.DocumentSymbol
+			var rest []DocumentSymbol
 			for _, c := range s.Children {
-				if c.Kind != protocol.SymbolKindEnumMember {
+				if c.Kind != SymbolKindEnumMember {
 					rest = append(rest, c)
 				}
 			}
@@ -313,12 +311,12 @@ func mapCsType(t string) string {
 	return ""
 }
 
-func csHoverSignature(src string, sym protocol.DocumentSymbol, ls LanguageServer) ([]csParam, string) {
+func csHoverSignature(src string, sym DocumentSymbol, ls LanguageServer) ([]csParam, string) {
 	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err != nil {
 		return nil, ""
 	}
-	if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
+	if mc, ok := hov.Contents.(MarkupContent); ok {
 		for _, line := range strings.Split(mc.Value, "\n") {
 			l := strings.TrimSpace(line)
 			if strings.Contains(l, "(") && strings.Contains(l, ")") {
@@ -331,7 +329,7 @@ func csHoverSignature(src string, sym protocol.DocumentSymbol, ls LanguageServer
 	return nil, ""
 }
 
-func csFieldType(src string, sym protocol.DocumentSymbol, ls LanguageServer) string {
+func csFieldType(src string, sym DocumentSymbol, ls LanguageServer) string {
 	if sym.Detail != nil {
 		if t := mapCsType(*sym.Detail); t != "" {
 			return t
@@ -339,7 +337,7 @@ func csFieldType(src string, sym protocol.DocumentSymbol, ls LanguageServer) str
 	}
 	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err == nil {
-		if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
+		if mc, ok := hov.Contents.(MarkupContent); ok {
 			for _, line := range strings.Split(mc.Value, "\n") {
 				l := strings.TrimSpace(line)
 				fields := strings.Fields(l)
@@ -364,7 +362,7 @@ func csFieldType(src string, sym protocol.DocumentSymbol, ls LanguageServer) str
 		pos := defs[0].Range.Start
 		hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, pos)
 		if err == nil {
-			if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
+			if mc, ok := hov.Contents.(MarkupContent); ok {
 				for _, line := range strings.Split(mc.Value, "\n") {
 					l := strings.TrimSpace(line)
 					if t := mapCsType(l); t != "" {
@@ -379,7 +377,7 @@ func csFieldType(src string, sym protocol.DocumentSymbol, ls LanguageServer) str
 
 // convertCsBody returns a slice of Mochi statements for the given range.
 // It performs very light-weight translation of common C# statements.
-func convertCsBody(src string, r protocol.Range) []string {
+func convertCsBody(src string, r Range) []string {
 	lines := strings.Split(src, "\n")
 	start := int(r.Start.Line)
 	end := int(r.End.Line)

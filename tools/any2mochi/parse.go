@@ -6,20 +6,18 @@ import (
 	"encoding/json"
 	"os/exec"
 	"time"
-
-	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 // ParseText invokes cmdName with args and feeds src on stdin. The command
 // is expected to output a JSON object containing "symbols" and
 // "diagnostics" fields that match the protocol types.
-func ParseText(cmdName string, args []string, langID string, src string) ([]protocol.DocumentSymbol, []protocol.Diagnostic, error) {
+func ParseText(cmdName string, args []string, langID string, src string) ([]DocumentSymbol, []Diagnostic, error) {
 	return ParseTextWithRoot(cmdName, args, langID, src, "")
 }
 
 // ParseTextWithRoot behaves like ParseText but provides a workspace root
 // directory to the called CLI via the WORKSPACE_ROOT environment variable.
-func ParseTextWithRoot(cmdName string, args []string, langID, src, root string) ([]protocol.DocumentSymbol, []protocol.Diagnostic, error) {
+func ParseTextWithRoot(cmdName string, args []string, langID, src, root string) ([]DocumentSymbol, []Diagnostic, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	cmd := exec.CommandContext(ctx, cmdName, args...)
@@ -33,8 +31,8 @@ func ParseTextWithRoot(cmdName string, args []string, langID, src, root string) 
 		return nil, nil, err
 	}
 	var res struct {
-		Symbols     []protocol.DocumentSymbol `json:"symbols"`
-		Diagnostics []protocol.Diagnostic     `json:"diagnostics"`
+		Symbols     []DocumentSymbol `json:"symbols"`
+		Diagnostics []Diagnostic     `json:"diagnostics"`
 	}
 	if err := json.Unmarshal(out.Bytes(), &res); err != nil {
 		return nil, nil, err
