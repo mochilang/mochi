@@ -19,8 +19,9 @@ type Node struct {
 
 func (Node) isTree() {}
 
+// line 5
 func inorder(t Tree) []int {
-	return func() []int {
+	return _cast[[]int](func() any {
 		_t := t
 		if _, ok := _t.(Leaf); ok {
 			return _cast[[]int]([]any{})
@@ -31,9 +32,8 @@ func inorder(t Tree) []int {
 			r := _tmp0.Right
 			return append(append([]int{}, append(append([]int{}, inorder(l)...), []int{v}...)...), inorder(r)...)
 		}
-		var _zero []int
-		return _zero
-	}()
+		return nil
+	}())
 }
 
 func main() {

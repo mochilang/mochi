@@ -18,7 +18,9 @@ type Node struct {
 
 func (Node) isTree() {}
 
+// line 7
 func fromList(nums []int) Tree {
+	// line 8
 	var helper func(int, int) Tree
 	helper = func(lo int, hi int) Tree {
 		if lo >= hi {
@@ -30,6 +32,7 @@ func fromList(nums []int) Tree {
 	return helper(0, len(nums))
 }
 
+// line 20
 func inorder(t Tree) []int {
 	return _convSlice[any, int](func() []any {
 		_t := t
@@ -58,17 +61,17 @@ func main() {
 }
 
 func _convSlice[T any, U any](s []T) []U {
-	out := make([]U, len(s))
-	for i, v := range s {
-		out[i] = any(v).(U)
+	out := []U{}
+	for _, v := range s {
+		out = append(out, any(v).(U))
 	}
 	return out
 }
 
 func _toAnySlice[T any](s []T) []any {
-	out := make([]any, len(s))
-	for i, v := range s {
-		out[i] = v
+	out := []any{}
+	for _, v := range s {
+		out = append(out, v)
 	}
 	return out
 }

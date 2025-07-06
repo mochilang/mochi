@@ -4,10 +4,12 @@ import (
 	"fmt"
 )
 
+// line 1
 func inc(x int) int {
 	return (x + 1)
 }
 
+// line 2
 func apply(f func(int) int, x int) int {
 	return f(x)
 }

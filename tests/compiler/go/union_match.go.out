@@ -18,6 +18,7 @@ type Node struct {
 
 func (Node) isTree() {}
 
+// line 5
 func isLeaf(t Tree) bool {
 	return func() bool {
 		_t := t

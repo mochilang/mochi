@@ -18,6 +18,7 @@ type Node struct {
 
 func (Node) isTree() {}
 
+// line 5
 func depth(t Tree) int {
 	return func() int {
 		_t := t

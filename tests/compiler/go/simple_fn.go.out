@@ -4,6 +4,7 @@ import (
 	"fmt"
 )
 
+// line 1
 func id(x int) int {
 	return x
 }

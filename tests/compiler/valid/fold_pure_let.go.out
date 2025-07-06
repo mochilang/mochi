@@ -4,6 +4,7 @@ import (
 	"fmt"
 )
 
+// line 1
 func sumN(n int) int {
 	return ((n * (n + 1)) / 2)
 }

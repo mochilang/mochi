@@ -4,14 +4,17 @@ import (
 	"fmt"
 )
 
+// line 1
 func add(x int, y int) int {
 	return (x + y)
 }
 
+// line 2
 func sub(x int, y int) int {
 	return (x - y)
 }
 
+// line 3
 func mul(x int, y int) int {
 	return (x * y)
 }

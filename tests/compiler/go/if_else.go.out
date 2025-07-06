@@ -4,6 +4,7 @@ import (
 	"fmt"
 )
 
+// line 1
 func foo(n int) int {
 	if n < 0 {
 		return -1

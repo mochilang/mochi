@@ -4,7 +4,9 @@ import (
 	"fmt"
 )
 
+// line 1
 func outer(a int) int {
+	// line 2
 	var inner = func(b int) int {
 		return (a + b)
 	}

@@ -5,10 +5,12 @@ import (
 	"fmt"
 )
 
+// line 1
 func Leaf() map[string]any {
 	return _cast[map[string]any](map[string]string{"__name": "Leaf"})
 }
 
+// line 5
 func Node(left map[string]any, value int, right map[string]any) map[string]any {
 	return map[string]any{
 		"__name": "Node",

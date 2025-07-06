@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"mochi/runtime/data"
 	"os"
-	"reflect"
 )
 
 type Person struct {
@@ -22,7 +21,7 @@ func main() {
 		}
 		return out
 	}()
-	fmt.Println(_count(_toAnySlice(people)))
+	fmt.Println(len(people))
 }
 
 func _cast[T any](v any) T {
@@ -83,35 +82,6 @@ func _convertMapAny(m map[any]any) map[string]any {
 		}
 	}
 	return out
-}
-
-func _count(v any) int {
-	if g, ok := v.(*data.Group); ok {
-		return len(g.Items)
-	}
-	switch s := v.(type) {
-	case []any:
-		return len(s)
-	case []int:
-		return len(s)
-	case []float64:
-		return len(s)
-	case []string:
-		return len(s)
-	case []bool:
-		return len(s)
-	case []map[string]any:
-		return len(s)
-	case map[string]any:
-		return len(s)
-	case string:
-		return len([]rune(s))
-	}
-	rv := reflect.ValueOf(v)
-	if rv.Kind() == reflect.Slice || rv.Kind() == reflect.Array {
-		return rv.Len()
-	}
-	panic("count() expects list or group")
 }
 
 func _load(path string, opts map[string]any) []map[string]any {
@@ -179,12 +149,4 @@ func _toAnyMap(m any) map[string]any {
 	default:
 		return nil
 	}
-}
-
-func _toAnySlice[T any](s []T) []any {
-	out := make([]any, len(s))
-	for i, v := range s {
-		out[i] = v
-	}
-	return out
 }

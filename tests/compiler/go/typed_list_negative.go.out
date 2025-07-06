@@ -44,10 +44,11 @@ func test_values() {
 	fmt.Println("done")
 }
 
-var xs []int = []int{(-1), 0, 1}
+var xs []int
 
 func main() {
 	failures := 0
+	xs = []int{(-1), 0, 1}
 	{
 		printTestStart("values")
 		start := time.Now()

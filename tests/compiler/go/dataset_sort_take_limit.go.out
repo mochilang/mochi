@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"sort"
 )
@@ -21,18 +22,187 @@ func main() {
 		Product{Name: "Headphones", Price: 200},
 	}
 	var expensive []Product = func() []Product {
-		items := []Product{}
-		for _, p := range products {
-			items = append(items, p)
+		src := _toAnySlice(products)
+		resAny := _query(src, []_joinSpec{}, _queryOpts{selectFn: func(_a ...any) any { p := _cast[Product](_a[0]); _ = p; return p }, sortKey: func(_a ...any) any { p := _cast[Product](_a[0]); _ = p; return -p.Price }, skip: 1, take: 3})
+		out := make([]Product, len(resAny))
+		for i, v := range resAny {
+			out[i] = _cast[Product](v)
 		}
+		return out
+	}()
+	fmt.Println("--- Top products (excluding most expensive) ---")
+	for _, item := range expensive {
+		fmt.Println(item.Name, "costs $", item.Price)
+	}
+}
+
+func _cast[T any](v any) T {
+	if tv, ok := v.(T); ok {
+		return tv
+	}
+	var out T
+	switch any(out).(type) {
+	case int:
+		switch vv := v.(type) {
+		case int:
+			return any(vv).(T)
+		case float64:
+			return any(int(vv)).(T)
+		case float32:
+			return any(int(vv)).(T)
+		}
+	case float64:
+		switch vv := v.(type) {
+		case int:
+			return any(float64(vv)).(T)
+		case float64:
+			return any(vv).(T)
+		case float32:
+			return any(float64(vv)).(T)
+		}
+	case float32:
+		switch vv := v.(type) {
+		case int:
+			return any(float32(vv)).(T)
+		case float64:
+			return any(float32(vv)).(T)
+		case float32:
+			return any(vv).(T)
+		}
+	}
+	if m, ok := v.(map[any]any); ok {
+		v = _convertMapAny(m)
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(data, &out); err != nil {
+		panic(err)
+	}
+	return out
+}
+
+func _convertMapAny(m map[any]any) map[string]any {
+	out := make(map[string]any, len(m))
+	for k, v := range m {
+		key := fmt.Sprint(k)
+		if sub, ok := v.(map[any]any); ok {
+			out[key] = _convertMapAny(sub)
+		} else {
+			out[key] = v
+		}
+	}
+	return out
+}
+
+type _joinSpec struct {
+	items []any
+	on    func(...any) bool
+	left  bool
+	right bool
+}
+type _queryOpts struct {
+	selectFn func(...any) any
+	where    func(...any) bool
+	sortKey  func(...any) any
+	skip     int
+	take     int
+}
+
+func _query(src []any, joins []_joinSpec, opts _queryOpts) []any {
+	items := make([][]any, len(src))
+	for i, v := range src {
+		items[i] = []any{v}
+	}
+	for _, j := range joins {
+		joined := [][]any{}
+		if j.right && j.left {
+			matched := make([]bool, len(j.items))
+			for _, left := range items {
+				m := false
+				for ri, right := range j.items {
+					keep := true
+					if j.on != nil {
+						args := append(append([]any(nil), left...), right)
+						keep = j.on(args...)
+					}
+					if !keep {
+						continue
+					}
+					m = true
+					matched[ri] = true
+					joined = append(joined, append(append([]any(nil), left...), right))
+				}
+				if !m {
+					joined = append(joined, append(append([]any(nil), left...), nil))
+				}
+			}
+			for ri, right := range j.items {
+				if !matched[ri] {
+					undef := make([]any, len(items[0]))
+					joined = append(joined, append(undef, right))
+				}
+			}
+		} else if j.right {
+			for _, right := range j.items {
+				m := false
+				for _, left := range items {
+					keep := true
+					if j.on != nil {
+						args := append(append([]any(nil), left...), right)
+						keep = j.on(args...)
+					}
+					if !keep {
+						continue
+					}
+					m = true
+					joined = append(joined, append(append([]any(nil), left...), right))
+				}
+				if !m {
+					undef := make([]any, len(items[0]))
+					joined = append(joined, append(undef, right))
+				}
+			}
+		} else {
+			for _, left := range items {
+				m := false
+				for _, right := range j.items {
+					keep := true
+					if j.on != nil {
+						args := append(append([]any(nil), left...), right)
+						keep = j.on(args...)
+					}
+					if !keep {
+						continue
+					}
+					m = true
+					joined = append(joined, append(append([]any(nil), left...), right))
+				}
+				if j.left && !m {
+					joined = append(joined, append(append([]any(nil), left...), nil))
+				}
+			}
+		}
+		items = joined
+	}
+	if opts.where != nil {
+		filtered := [][]any{}
+		for _, r := range items {
+			if opts.where(r...) {
+				filtered = append(filtered, r)
+			}
+		}
+		items = filtered
+	}
+	if opts.sortKey != nil {
 		type pair struct {
-			item Product
+			item []any
 			key  any
 		}
 		pairs := make([]pair, len(items))
-		for idx, it := range items {
-			p := it
-			pairs[idx] = pair{item: it, key: -p.Price}
+		for i, it := range items {
+			pairs[i] = pair{it, opts.sortKey(it...)}
 		}
 		sort.Slice(pairs, func(i, j int) bool {
 			a, b := pairs[i].key, pairs[j].key
@@ -57,32 +227,33 @@ func main() {
 			}
 			return fmt.Sprint(a) < fmt.Sprint(b)
 		})
-		for idx, p := range pairs {
-			items[idx] = p.item
+		for i, p := range pairs {
+			items[i] = p.item
 		}
-		items = _paginate[Product](items, 1, 3)
-		_res := []Product{}
-		for _, p := range items {
-			_res = append(_res, p)
-		}
-		return _res
-	}()
-	fmt.Println("--- Top products (excluding most expensive) ---")
-	for _, item := range expensive {
-		fmt.Println(item.Name, "costs $", item.Price)
 	}
+	if opts.skip >= 0 {
+		if opts.skip < len(items) {
+			items = items[opts.skip:]
+		} else {
+			items = [][]any{}
+		}
+	}
+	if opts.take >= 0 {
+		if opts.take < len(items) {
+			items = items[:opts.take]
+		}
+	}
+	res := make([]any, len(items))
+	for i, r := range items {
+		res[i] = opts.selectFn(r...)
+	}
+	return res
 }
 
-func _paginate[T any](src []T, skip, take int) []T {
-	if skip > 0 {
-		if skip < len(src) {
-			src = src[skip:]
-		} else {
-			return []T{}
-		}
+func _toAnySlice[T any](s []T) []any {
+	out := []any{}
+	for _, v := range s {
+		out = append(out, v)
 	}
-	if take >= 0 && take < len(src) {
-		src = src[:take]
-	}
-	return src
+	return out
 }
