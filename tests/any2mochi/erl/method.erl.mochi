@@ -1,0 +1,44 @@
+// line 5
+type Circle {
+  radius: any
+}
+// line 6
+fun circle_area(Self) {
+  try
+  A = 3.14 * Self#circle.radius * Self#circle.radius,
+  mochi_print(["Calculating area:", A]),
+  throw({return, A})
+  catch
+  throw:{return, V} ->
+  V
+  end
+}
+// line 15
+fun circle_describe(Self) {
+  try
+  mochi_print(["Circle with radius", Self#circle.radius])
+  catch
+  throw:{return, V} ->
+  V
+  end
+}
+// line 23
+fun main(_) {
+  C = #circle{radius = 5}
+  circle_describe(C)
+  mochi_print(["Area is", circle_area(C)])
+}
+// line 28
+fun mochi_print(Args) {
+  Strs =
+  [
+  mochi_format(A) ||
+  A <- Args
+  ]
+  print("~s~n", [lists:flatten(Strs)])
+}
+// line 32
+fun mochi_format(X) {
+  integer_to_list(X)
+}
+main()

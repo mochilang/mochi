@@ -27,20 +27,30 @@ type Record struct {
 	Line   int      `json:"line"`
 }
 
-func parseAST(src string) ([]Func, []Record, error) {
+type AST struct {
+	Module    string   `json:"module"`
+	Functions []Func   `json:"functions"`
+	Records   []Record `json:"records"`
+}
+
+func parseAST(src string) (*AST, error) {
 	if _, err := exec.LookPath("escript"); err != nil {
-		return nil, nil, fmt.Errorf("escript not found")
+		return nil, fmt.Errorf("escript not found")
 	}
 	tmp, err := os.CreateTemp("", "src-*.erl")
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 	defer os.Remove(tmp.Name())
 	if _, err := tmp.WriteString(src); err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 	tmp.Close()
-	script := filepath.Join("tools", "any2mochi", "x", "erlang", "parser", "parser.escript")
+	root, err := repoRoot()
+	if err != nil {
+		return nil, err
+	}
+	script := filepath.Join(root, "tools", "any2mochi", "x", "erlang", "parser", "parser.escript")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	cmd := exec.CommandContext(ctx, "escript", script, tmp.Name())
@@ -53,24 +63,34 @@ func parseAST(src string) ([]Func, []Record, error) {
 			Error string `json:"error"`
 		}
 		if jsonErr := json.Unmarshal(out.Bytes(), &perr); jsonErr == nil && perr.Error != "" {
-			return nil, nil, fmt.Errorf("parse error: %s", perr.Error)
+			return nil, fmt.Errorf("parse error: %s", perr.Error)
 		}
 		if stderr.Len() > 0 {
-			return nil, nil, fmt.Errorf("%v: %s", err, strings.TrimSpace(stderr.String()))
+			return nil, fmt.Errorf("%v: %s", err, strings.TrimSpace(stderr.String()))
 		}
-		return nil, nil, err
+		return nil, err
 	}
-	var res struct {
-		Functions []Func   `json:"functions"`
-		Records   []Record `json:"records"`
-	}
+	var res AST
 	if err := json.Unmarshal(out.Bytes(), &res); err != nil {
-		return nil, nil, err
+		return nil, err
 	}
-	for i := range res.Functions {
-		for j := range res.Functions[i].Body {
-			res.Functions[i].Body[j] = strings.ReplaceAll(res.Functions[i].Body[j], "\n", "\\n")
+	return &res, nil
+}
+
+func repoRoot() (string, error) {
+	dir, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir, nil
 		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
 	}
-	return res.Functions, res.Records, nil
+	return "", os.ErrNotExist
 }

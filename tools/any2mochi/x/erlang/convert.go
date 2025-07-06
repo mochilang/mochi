@@ -33,12 +33,17 @@ func (e *ConvertError) Error() string {
 }
 
 func Convert(src string) ([]byte, error) {
-	funcs, recs, err := parseAST(src)
+	ast, err := parseAST(src)
 	if err != nil {
 		return nil, formatParseError(src, err)
 	}
 	var out strings.Builder
-	for _, r := range recs {
+	if ast.Module != "" {
+		out.WriteString("package ")
+		out.WriteString(ast.Module)
+		out.WriteString("\n\n")
+	}
+	for _, r := range ast.Records {
 		out.WriteString("// line ")
 		out.WriteString(fmt.Sprint(r.Line))
 		out.WriteByte('\n')
@@ -53,7 +58,7 @@ func Convert(src string) ([]byte, error) {
 		out.WriteString("}\n")
 	}
 	hasMain := false
-	for _, f := range funcs {
+	for _, f := range ast.Functions {
 		if f.Name == "main" {
 			hasMain = true
 		}
@@ -79,14 +84,17 @@ func Convert(src string) ([]byte, error) {
 		} else {
 			out.WriteString(" {\n")
 			for _, line := range f.Body {
-				if strings.HasPrefix(line, "io:format(") {
-					line = "print(" + strings.TrimPrefix(line, "io:format(")
-				} else if strings.HasPrefix(line, "io:fwrite(") {
-					line = "print(" + strings.TrimPrefix(line, "io:fwrite(")
+				parts := strings.Split(line, "\n")
+				for _, ln := range parts {
+					if strings.HasPrefix(ln, "io:format(") {
+						ln = "print(" + strings.TrimPrefix(ln, "io:format(")
+					} else if strings.HasPrefix(ln, "io:fwrite(") {
+						ln = "print(" + strings.TrimPrefix(ln, "io:fwrite(")
+					}
+					out.WriteString("  ")
+					out.WriteString(strings.TrimSpace(ln))
+					out.WriteByte('\n')
 				}
-				out.WriteString("  ")
-				out.WriteString(line)
-				out.WriteByte('\n')
 			}
 			out.WriteString("}\n")
 		}
@@ -125,7 +133,7 @@ func formatParseError(src string, err error) error {
 		if start < 0 {
 			start = 0
 		}
-		end := line
+		end := line + 2
 		if end >= len(lines) {
 			end = len(lines) - 1
 		}

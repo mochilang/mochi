@@ -15,10 +15,14 @@ output_ast(Forms) ->
         [E] -> element(4, E);
         _ -> []
     end,
+    Module = case [M || {attribute,_,module,M} <- Forms] of
+        [N] -> atom_to_list(N);
+        _ -> ""
+    end,
     JsonFuns = [fun_to_json(F, Exports) || F <- Funs],
     JsonRecs = [record_to_json(R) || R <- Records],
-    io:format("{\"functions\":[~s],\"records\":[~s]}\n",
-              [string:join(JsonFuns, ","), string:join(JsonRecs, ",")]).
+    io:format("{\"module\":~s,\"functions\":[~s],\"records\":[~s]}\n",
+              [json_string(Module), string:join(JsonFuns, ","), string:join(JsonRecs, ",")]).
 fun_to_json({function,Line,Name,A,[Clause|_]}, Exports) ->
     {clause,_,Params,_G,Body} = Clause,
     ParamNames = [param_name(P) || P <- Params],

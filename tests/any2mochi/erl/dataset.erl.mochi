@@ -1,0 +1,53 @@
+// line 5
+type Person {
+  name: any
+  age: any
+}
+// line 7
+fun main(_) {
+  People =
+  [#person{name = "Alice", age = 30},
+  #person{name = "Bob", age = 15},
+  #person{name = "Charlie", age = 65}]
+  Names =
+  [
+  P#person.name ||
+  P <-
+  [
+  P ||
+  P <- People,
+  P#person.age >= 18
+  ]
+  ]
+  mochi_foreach(fun(N) ->
+  mochi_print([N])
+  end,
+  Names)
+}
+// line 14
+fun mochi_print(Args) {
+  Strs =
+  [
+  mochi_format(A) ||
+  A <- Args
+  ]
+  print("~s~n", [lists:flatten(Strs)])
+}
+// line 18
+fun mochi_format(X) {
+  integer_to_list(X)
+}
+// line 23
+fun mochi_foreach(F, L) {
+  try
+  mochi_foreach_loop(F, L)
+  catch
+  throw:mochi_break ->
+  ok
+  end
+}
+// line 26
+fun mochi_foreach_loop(_, _) {
+  ok
+}
+main()
