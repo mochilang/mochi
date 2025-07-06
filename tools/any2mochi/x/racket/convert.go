@@ -31,10 +31,12 @@ func Convert(src string) ([]byte, error) {
 	if out.Len() == 0 {
 		items = parse(src)
 		writeItems(&out, items)
+	} else {
+		items = parse(src)
 	}
-	if len(items) == 0 {
-		parseToplevel(&out, src)
-	}
+	// parse additional constructs like simple loops that are not handled
+	// by the parser when falling back
+	parseToplevel(&out, src)
 	if out.Len() == 0 {
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
 	}
@@ -377,27 +379,30 @@ func parseHoverVarType(h parent.Hover) string {
 // This is a best-effort regex based fallback to make the generated
 // Mochi code more complete and runnable.
 func parseToplevel(out *strings.Builder, src string) {
-	varDefine := regexp.MustCompile(`(?m)^\(define\s+([A-Za-z0-9_-]+)\s+(.+)\)$`)
-	for _, m := range varDefine.FindAllStringSubmatch(src, -1) {
-		name := m[1]
-		expr := strings.TrimSpace(m[2])
-		// Skip function definitions which start with '(' after the name
-		if strings.HasPrefix(expr, "(") {
-			continue
+	// attempt to recognise loops of the form `(for ([v coll]) (displayln expr))`
+	forIdx := strings.Index(src, "(for")
+	for forIdx != -1 {
+		close := findMatch(src, forIdx, '(', ')')
+		if close == len(src) {
+			break
 		}
-		if val := parseValue(expr); val != "" {
-			fmt.Fprintf(out, "let %s = %s\n", name, val)
-		} else {
-			fmt.Fprintf(out, "let %s\n", name)
+		snippet := src[forIdx : close+1]
+		headerRe := regexp.MustCompile(`(?s)^\(for\s*\(\s*\[([A-Za-z0-9_-]+)\s+([^\]]+)\]\s*\)\s*(.+)\)$`)
+		if hm := headerRe.FindStringSubmatch(snippet); len(hm) == 4 {
+			varName := strings.TrimSpace(hm[1])
+			collection := strings.TrimSpace(hm[2])
+			body := strings.TrimSpace(hm[3])
+			bodyPrint := regexp.MustCompile(`^\(displayln\s+(.+)\)$`)
+			if bm := bodyPrint.FindStringSubmatch(body); len(bm) == 2 {
+				expr := strings.TrimSpace(bm[1])
+				fmt.Fprintf(out, "for %s in %s {\n  print(%s)\n}\n", varName, convertExpr(collection), convertExpr(expr))
+			}
 		}
-	}
-
-	loopRe := regexp.MustCompile(`(?s)\(for\s*\(\s*\[([A-Za-z0-9_-]+)\s+([^\]]+)\]\s*\)\s*\(displayln\s+([^\)]+)\)\s*\)`)
-	for _, m := range loopRe.FindAllStringSubmatch(src, -1) {
-		varName := strings.TrimSpace(m[1])
-		collection := strings.TrimSpace(m[2])
-		bodyExpr := strings.TrimSpace(m[3])
-		fmt.Fprintf(out, "for %s in %s {\n  print(%s)\n}\n", varName, convertExpr(collection), convertExpr(bodyExpr))
+		next := strings.Index(src[close+1:], "(for")
+		if next == -1 {
+			break
+		}
+		forIdx = close + 1 + next
 	}
 }
 
@@ -514,6 +519,23 @@ func posIndex(src string, pos parent.Position) int {
 		idx += int(pos.Character)
 	}
 	return idx
+}
+
+// findMatch returns the index of the matching closing delimiter for the
+// opening delimiter at openIdx. If no match is found it returns len(s).
+func findMatch(s string, openIdx int, open, close rune) int {
+	depth := 0
+	for i, r := range s[openIdx:] {
+		if r == open {
+			depth++
+		} else if r == close {
+			depth--
+			if depth == 0 {
+				return openIdx + i
+			}
+		}
+	}
+	return len(s)
 }
 
 // ---------- Fallback parser ----------
