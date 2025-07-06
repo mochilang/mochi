@@ -1,123 +1,247 @@
 # Errors
 
-- arithmetic.dart: parse error: parse error: 5:12: lexer: invalid input text "~/ 2))\n  print((..."
-- avg_builtin.dart: parse error: parse error: 7:26: lexer: invalid input text "'items'] is List..."
-- bool_ops.dart: ok
-- break_continue.dart: parse error: parse error: 10:57: lexer: invalid input text "' '))\n  }\n}\n"
-- cast_struct.dart: type error: error[T002]: undefined variable: title
-  --> :2:3
+- append_builtin: type2 error: error[T002]: undefined variable: a
+  --> :2:16
 
 help:
   Check if the variable was declared in this scope.
-- closure.dart: parse error: parse error: 2:14: unexpected token "=>" (expected "}")
-- count_builtin.dart: parse error: parse error: 8:41: lexer: invalid input text "; if (items is L..."
-- cross_join.dart: parse error: parse error: 30:119: invalid quoted string "\", total: \\$\"": invalid syntax
-- cross_join_triple.dart: parse error: parse error: 18:65: lexer: invalid input text "' '))\n  }\n}\n"
-- dataset.dart: parse error: parse error: 6:42: unexpected token ":" (expected ")")
-- dataset_distinct.dart: parse error: parse error: 16:57: lexer: invalid input text "; }\n  res.add(it..."
-- dataset_sort_take_limit.dart: parse error: parse error: 35:34: invalid quoted string "\"costs \\$\"": invalid syntax
-- factorial.dart: ok
-- fetch_http.dart: parse error: parse error: 13:20: lexer: invalid input text "?['method']?.toS..."
-- fetch_options.dart: parse error: parse error: 10:20: lexer: invalid input text "?['method']?.toS..."
-- fibonacci.dart: ok
-- float_literal_precision.dart: ok
-- float_ops.dart: ok
-- for_loop.dart: ok
-- fun_def_infer.dart: ok
-- fun_expr_in_let.dart: parse error: parse error: 2:20: unexpected token "=>" (expected "}")
-- generate_struct.dart: parse error: parse error: 5:59: unexpected token "," (expected ")")
-- hello_world.dart: ok
-- if_else.dart: ok
-- input_builtin.dart: parse error: parse error: 3:37: lexer: invalid input text "?? ''\n  print(\"E..."
-- join.dart: parse error: parse error: 32:106: invalid quoted string "\"- \\$\"": invalid syntax
-- list_concat.dart: ok
-- list_index.dart: ok
-- list_prepend.dart: ok
-- list_set.dart: type error: error[T024]: cannot assign to `nums` (immutable)
-  --> :3:3
+- avg_builtin: parse2 error: parse error: 7:26: lexer: invalid input text "'items'] is List..."
+- basic_compare: type2 error: error[T002]: undefined variable: a
+  --> :2:9
 
 help:
-  Use `var` to declare mutable variables.
-- list_set_ops.dart: parse error: parse error: 10:13: unexpected token "<" (expected PostfixExpr)
-- list_slice.dart: type error: error[T004]: `` is not callable
-  --> :2:29
-
-help:
-  Use a function or closure in this position.
-- load_csv_to_json.dart: parse error: parse error: 10:21: lexer: invalid input text "?['format'] ?? '..."
-- load_json.dart: parse error: parse error: 17:56: lexer: invalid input text "' '))\n  }\n}\nfun ..."
-- load_jsonl_to_csv.dart: parse error: parse error: 11:21: lexer: invalid input text "?['format'] ?? '..."
-- local_recursion.dart: parse error: parse error: 7:26: lexer: invalid input text "~/ 2)\n  return N..."
-- map_any_hint.dart: type error: error[T018]: type any does not support indexing
-  --> :9:10
-
-help:
-  Only `list<T>` and `map<K,V>` can be indexed.
-- map_index.dart: ok
-- map_len.dart: ok
-- map_ops.dart: type error: error[T024]: cannot assign to `m` (immutable)
-  --> :3:3
-
-help:
-  Use `var` to declare mutable variables.
-- map_set.dart: type error: error[T024]: cannot assign to `scores` (immutable)
-  --> :3:3
-
-help:
-  Use `var` to declare mutable variables.
-- match_capture.dart: parse error: parse error: 4:29: lexer: invalid input text "; }\n  if (_t is ..."
-- match_expr.dart: parse error: parse error: 5:30: lexer: invalid input text "; }\n  if (_t == ..."
-- match_underscore.dart: parse error: parse error: 4:43: lexer: invalid input text "; })((_t as Node..."
-- matrix_search.dart: parse error: parse error: 10:41: lexer: invalid input text "~/ 2))\n    let r..."
-- model_decl.dart: parse error: parse error: 6:48: unexpected token "<" (expected ")" (":" TypeRef)? "{" Statement* "}")
-- nested_type.dart: parse error: parse error: 11:21: lexer: invalid input text "'x'] as int, y: ..."
-- package_decl.dart: ok
-- print_hello.dart: ok
-- reserved_keyword_var.dart: ok
-- save_json_stdout.dart: parse error: parse error: 6:21: lexer: invalid input text "?['format'] ?? '..."
-- simple_fn.dart: ok
-- slice_remove.dart: ok
-- str_builtin.dart: type error: error[T004]: `` is not callable
-  --> :2:21
-
-help:
-  Use a function or closure in this position.
-- stream_on_emit.dart: parse error: parse error: 11:37: lexer: invalid input text "'Sensor')\n}\nfun ..."
-- string_compare.dart: type error: error[T004]: `` is not callable
+  Check if the variable was declared in this scope.
+- binary_precedence: ok
+- bool_chain: ok
+- break_continue: parse2 error: parse error: 9:57: lexer: invalid input text "' '))\n  }\n}\nfun ..."
+- cast_string_to_int: type2 error: error[T004]: `` is not callable
   --> :2:23
 
 help:
   Use a function or closure in this position.
-- string_concat.dart: ok
-- string_escape.dart: parse error: parse error: 2:9: invalid quoted string "\"price is \\$5\\\\nnext line\"": invalid syntax
-- string_for_loop.dart: parse error: parse error: 3:7: unexpected token "(" (expected <ident> "in" Expr (".." Expr)? "{" Statement* "}")
-- string_index.dart: parse error: parse error: 11:22: lexer: invalid input text "'index out of ra..."
-- string_negative_index.dart: parse error: parse error: 11:22: lexer: invalid input text "'index out of ra..."
-- string_slice.dart: type error: error[T004]: `` is not callable
+- cast_struct: parse2 error: parse error: 5:18: lexer: invalid input text "'Todo'] = (m) =>..."
+- closure: parse2 error: parse error: 2:14: unexpected token "=>" (expected "}")
+- count_builtin: parse2 error: parse error: 8:41: lexer: invalid input text "; if (items is L..."
+- cross_join: parse2 error: parse error: 4:245: lexer: invalid input text "' '))\n  }\n}\n"
+- cross_join_filter: parse2 error: parse error: 4:49: lexer: invalid input text "' '))\n  }\n}\n"
+- cross_join_triple: parse2 error: parse error: 4:65: lexer: invalid input text "' '))\n  }\n}\n"
+- dataset_sort_take_limit: parse2 error: parse error: 4:86: lexer: invalid input text "' '))\n  }\n}\n"
+- dataset_where_filter: parse2 error: parse error: 4:94: lexer: invalid input text "? \" (senior)\" : ..."
+- exists_builtin: parse2 error: parse error: 8:11: lexer: invalid input text "'items'] is List..."
+- for_list_collection: parse2 error: parse error: 2:7: unexpected token "(" (expected <ident> "in" Expr (".." Expr)? "{" Statement* "}")
+- for_loop: ok
+- for_map_collection: parse2 error: parse error: 3:7: unexpected token "(" (expected <ident> "in" Expr (".." Expr)? "{" Statement* "}")
+- fun_call: ok
+- fun_expr_in_let: type2 error: error[T003]: unknown function: square
+  --> :2:9
+
+help:
+  Ensure the function is defined before it's called.
+- fun_three_args: ok
+- group_by: parse2 error: parse error: 7:128: lexer: invalid input text "' '))\n  }\n}\nfun ..."
+- group_by_conditional_sum: parse2 error: parse error: 10:26: lexer: invalid input text "'items'] is List..."
+- group_by_having: parse2 error: parse error: 11:41: lexer: invalid input text "; if (items is L..."
+- group_by_join: parse2 error: parse error: 7:78: lexer: invalid input text "' '))\n  }\n}\nfun ..."
+- group_by_left_join: parse2 error: parse error: 7:78: lexer: invalid input text "' '))\n  }\n}\nfun ..."
+- group_by_multi_join: parse2 error: parse error: 10:19: lexer: invalid input text "; i < a.length; ..."
+- group_by_multi_join_sort: parse2 error: parse error: 10:19: lexer: invalid input text "; i < a.length; ..."
+- group_by_sort: parse2 error: parse error: 10:26: lexer: invalid input text "'items'] is List..."
+- group_items_iteration: parse2 error: parse error: 5:7: unexpected token "(" (expected <ident> "in" Expr (".." Expr)? "{" Statement* "}")
+- if_else: ok
+- if_then_else: type2 error: error[T002]: undefined variable: msg
+  --> :2:9
+
+help:
+  Check if the variable was declared in this scope.
+- if_then_else_nested: type2 error: error[T002]: undefined variable: msg
+  --> :2:9
+
+help:
+  Check if the variable was declared in this scope.
+- in_operator: type2 error: error[T002]: undefined variable: xs
+  --> :2:10
+
+help:
+  Check if the variable was declared in this scope.
+- in_operator_extended: type2 error: error[T002]: undefined variable: ys
+  --> :2:10
+
+help:
+  Check if the variable was declared in this scope.
+- inner_join: parse2 error: parse error: 4:155: lexer: invalid input text "' '))\n  }\n}\nfun ..."
+- join_multi: parse2 error: parse error: 4:80: lexer: invalid input text "' '))\n  }\n}\nfun ..."
+- json_builtin: type2 error: error[T003]: unknown function: _json
+  --> :2:3
+
+help:
+  Ensure the function is defined before it's called.
+- left_join: parse2 error: parse error: 4:157: lexer: invalid input text "' '))\n  }\n}\nfun ..."
+- left_join_multi: parse2 error: parse error: 4:77: lexer: invalid input text "' '))\n  }\n}\nfun ..."
+- len_builtin: ok
+- len_map: ok
+- len_string: ok
+- let_and_print: type2 error: error[T002]: undefined variable: a
+  --> :2:10
+
+help:
+  Check if the variable was declared in this scope.
+- list_assign: type2 error: error[T001]: assignment to undeclared variable: nums
+  --> :2:3
+
+help:
+  Declare `nums` first using `let`.
+- list_index: type2 error: error[T002]: undefined variable: xs
+  --> :2:9
+
+help:
+  Check if the variable was declared in this scope.
+- list_nested_assign: type2 error: error[T001]: assignment to undeclared variable: matrix
+  --> :2:3
+
+help:
+  Declare `matrix` first using `let`.
+- list_set_ops: parse2 error: parse error: 8:13: unexpected token "<" (expected PostfixExpr)
+- load_yaml: parse2 error: parse error: 7:18: lexer: invalid input text "'Person'] = (m) ..."
+- map_assign: type2 error: error[T001]: assignment to undeclared variable: scores
+  --> :2:3
+
+help:
+  Declare `scores` first using `let`.
+- map_in_operator: type2 error: error[T002]: undefined variable: m
+  --> :2:10
+
+help:
+  Check if the variable was declared in this scope.
+- map_index: type2 error: error[T002]: undefined variable: m
+  --> :2:9
+
+help:
+  Check if the variable was declared in this scope.
+- map_int_key: type2 error: error[T002]: undefined variable: m
+  --> :2:9
+
+help:
+  Check if the variable was declared in this scope.
+- map_literal_dynamic: parse2 error: parse error: 2:53: lexer: invalid input text "' '))\n}\n"
+- map_membership: type2 error: error[T002]: undefined variable: m
+  --> :2:10
+
+help:
+  Check if the variable was declared in this scope.
+- map_nested_assign: type2 error: error[T001]: assignment to undeclared variable: data
+  --> :2:3
+
+help:
+  Declare `data` first using `let`.
+- match_expr: type2 error: error[T002]: undefined variable: label
+  --> :2:9
+
+help:
+  Check if the variable was declared in this scope.
+- match_full: parse2 error: parse error: 2:12: unexpected token ")" (expected PostfixExpr)
+- math_ops: parse2 error: parse error: 3:12: lexer: invalid input text "~/ 2))\n  print((..."
+- membership: type2 error: error[T002]: undefined variable: nums
+  --> :2:10
+
+help:
+  Check if the variable was declared in this scope.
+- min_max_builtin: parse2 error: parse error: 8:26: lexer: invalid input text "'items'] is List..."
+- nested_function: type2 error: error[T002]: undefined variable: x
+  --> :4:11
+
+help:
+  Check if the variable was declared in this scope.
+- order_by_map: type2 error: error[T002]: undefined variable: sorted
+  --> :2:9
+
+help:
+  Check if the variable was declared in this scope.
+- outer_join: parse2 error: parse error: 6:161: lexer: invalid input text "' '))\n        } ..."
+- partial_application: type2 error: error[T003]: unknown function: add5
+  --> :5:9
+
+help:
+  Ensure the function is defined before it's called.
+- print_hello: ok
+- pure_fold: ok
+- pure_global_fold: type2 error: error[T002]: undefined variable: k
+  --> :2:15
+
+help:
+  Check if the variable was declared in this scope.
+- query_sum_select: parse2 error: parse error: 7:26: lexer: invalid input text "'items'] is List..."
+- record_assign: parse2 error: parse error: 8:18: lexer: invalid input text "'Counter'] = (m)..."
+- right_join: parse2 error: parse error: 5:174: lexer: invalid input text "' '))\n      } el..."
+- save_jsonl_stdout: parse2 error: parse error: 5:21: lexer: invalid input text "?['format'] ?? '..."
+- short_circuit: ok
+- slice: type2 error: error[T004]: `` is not callable
   --> :2:26
 
 help:
   Use a function or closure in this position.
-- tpch_q1.dart: parse error: parse error: 5:294: lexer: invalid input text "'expect failed')..."
-- two_sum.dart: type error: error[T018]: type any does not support indexing
-  --> :14:9
+- sort_stable: type2 error: error[T002]: undefined variable: result
+  --> :2:9
 
 help:
-  Only `list<T>` and `map<K,V>` can be indexed.
-- typed_list_negative.dart: ok
-- underscore_for_loop.dart: parse error: parse error: 6:7: unexpected token "(" (expected <ident> "in" Expr (".." Expr)? "{" Statement* "}")
-- union_inorder.dart: parse error: parse error: 4:30: lexer: invalid input text "; }\n  if (_t is ..."
-- union_match.dart: parse error: parse error: 4:32: lexer: invalid input text "; }\n  return fal..."
-- union_slice.dart: type error: error[T003]: unknown function: Empty
-  --> :2:11
+  Check if the variable was declared in this scope.
+- str_builtin: type2 error: error[T004]: `` is not callable
+  --> :2:21
 
 help:
-  Ensure the function is defined before it's called.
-- update_statement.dart: parse error: parse error: 7:242: lexer: invalid input text "'expect failed')..."
-- var_assignment.dart: type error: error[T024]: cannot assign to `x` (immutable)
-  --> :3:3
+  Use a function or closure in this position.
+- string_compare: type2 error: error[T004]: `` is not callable
+  --> :2:23
 
 help:
-  Use `var` to declare mutable variables.
-- while_loop.dart: ok
-- while_membership.dart: parse error: parse error: 3:7: unexpected token "(" (expected <ident> "in" Expr (".." Expr)? "{" Statement* "}")
+  Use a function or closure in this position.
+- string_concat: ok
+- string_contains: type2 error: error[T002]: undefined variable: s
+  --> :2:9
+
+help:
+  Check if the variable was declared in this scope.
+- string_in_operator: type2 error: error[T002]: undefined variable: s
+  --> :2:10
+
+help:
+  Check if the variable was declared in this scope.
+- string_index: parse2 error: parse error: 10:22: lexer: invalid input text "'index out of ra..."
+- string_prefix_slice: type2 error: error[T002]: undefined variable: s1
+  --> :2:10
+
+help:
+  Check if the variable was declared in this scope.
+- substring_builtin: ok
+- sum_builtin: parse2 error: parse error: 7:26: lexer: invalid input text "'items'] is List..."
+- tail_recursion: ok
+- test_block: parse2 error: parse error: 3:38: lexer: invalid input text "'expect failed')..."
+- tree_sum: parse2 error: parse error: 4:29: lexer: invalid input text "; }\n  if (_t is ..."
+- two-sum: type2 error: error[T002]: undefined variable: result
+  --> :13:9
+
+help:
+  Check if the variable was declared in this scope.
+- typed_let: type2 error: error[T002]: undefined variable: y
+  --> :2:9
+
+help:
+  Check if the variable was declared in this scope.
+- typed_var: type2 error: error[T002]: undefined variable: x
+  --> :2:9
+
+help:
+  Check if the variable was declared in this scope.
+- unary_neg: ok
+- update_stmt: parse2 error: parse error: 7:242: lexer: invalid input text "'expect failed')..."
+- user_type_literal: parse2 error: parse error: 10:18: lexer: invalid input text "'Person'] = (m) ..."
+- values_builtin: type2 error: error[T002]: undefined variable: m
+  --> :2:16
+
+help:
+  Check if the variable was declared in this scope.
+- var_assignment: type2 error: error[T001]: assignment to undeclared variable: x
+  --> :2:3
+
+help:
+  Declare `x` first using `let`.
+- while_loop: vm compile error: assignment to undeclared variable: i
