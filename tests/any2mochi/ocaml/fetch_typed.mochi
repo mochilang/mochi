@@ -1,5 +1,86 @@
-fun _read_all(ic: in_channel): string {}
-fun _read_input(path: string option): string {}
-fun _load(path: string option, _: 'a): [> `List of 'b ] list {}
-fun _save(rows: 'a, path: string option, _: 'b) {}
-fun _fetch(url: string, opts: (string, 'a) Hashtbl.t option): 'b {}
+type Todo {
+  userId: int
+  id: int
+  title: string
+  completed: bool
+}
+fun _read_all(ic) {
+  try let line = input_line ic in
+    line ^ "\n" ^ _read_all ic
+  with End_of_file -> ""
+}
+fun _read_input(path) {
+  let ic = match path with
+    | None -> stdin
+    | Some p when p = "" || p = "-" -> stdin
+    | Some p -> open_in p in
+  let txt = _read_all ic in
+  if ic != stdin then close_in ic;
+  txt
+}
+fun _load(path, _) {
+  let text = _read_input path in
+  match Yojson.Basic.from_string text with
+  | `List items -> items
+  | json -> [json]
+}
+fun _save(rows, path, _) {
+  let oc = match path with
+    | None -> stdout
+    | Some p when p = "" || p = "-" -> stdout
+    | Some p -> open_out p in
+  Yojson.Basic.to_channel oc (`List rows);
+  output_char oc '\n';
+  if oc != stdout then close_out oc
+}
+fun _fetch(url, opts) {
+  let is_file =
+    (String.length url >= 7 && String.sub url 0 7 = "file://") || !(String.contains url ':') in
+  if is_file then (
+    let path = if String.length url >= 7 && String.sub url 0 7 = "file://" then String.sub url 7 (String.length url - 7) else url in
+    let txt = _read_input (Some path) in
+    Yojson.Basic.from_string txt) else (
+    let method_ =
+      match opts with
+      | None -> "GET"
+      | Some tbl ->
+        (try Yojson.Basic.Util.to_string (Hashtbl.find tbl "method") with Not_found -> "GET") in
+    let url_ref = ref url in
+    let args = ref ["curl"; "-s"; "-X"; method_] in
+    (match opts with
+     | Some tbl ->
+       (try
+          let headers = Yojson.Basic.Util.to_assoc (Hashtbl.find tbl "headers") in
+          List.iter (fun (k,v) -> args := !args @ ["-H"; k ^ ": " ^ Yojson.Basic.to_string v]) headers
+        with Not_found -> ());
+       (try
+          let q = Yojson.Basic.Util.to_assoc (Hashtbl.find tbl "query") in
+          let qs = String.concat "&" (List.map (fun (k,v) -> k ^ "=" ^ Yojson.Basic.to_string v) q) in
+          let sep = if String.contains !url_ref '?' then '&' else '?' in
+          url_ref := !url_ref ^ (String.make 1 sep) ^ qs
+        with Not_found -> ());
+       (try
+          let body = Hashtbl.find tbl "body" in
+          args := !args @ ["-d"; Yojson.Basic.to_string body]
+        with Not_found -> ());
+       (try
+          let t = Hashtbl.find tbl "timeout" in
+          args := !args @ ["--max-time"; Yojson.Basic.to_string t]
+        with Not_found -> ());
+     | None -> ());
+    args := !args @ [!url_ref];
+    let ic = Unix.open_process_in (String.concat " " !args) in
+    let txt = _read_all ic in
+    close_in ic;
+    Yojson.Basic.from_string txt)
+}
+fun decode_Todo(json) {
+  {
+  userId = Yojson.Basic.Util.to_int (Yojson.Basic.Util.member "userId" json);
+  id = Yojson.Basic.Util.to_int (Yojson.Basic.Util.member "id" json);
+  title = Yojson.Basic.Util.to_string (Yojson.Basic.Util.member "title" json);
+  completed = Yojson.Basic.Util.to_bool (Yojson.Basic.Util.member "completed" json);
+}
+}
+print(decode_Todo (_fetch "https://jsonplaceholder.typicode.com/todos/1" None))
+print(str(todo.id))

@@ -13,12 +13,23 @@ import (
 type Program struct {
 	Funcs  []Func   `json:"funcs"`
 	Prints []string `json:"prints"`
+	Types  []Type   `json:"types"`
 }
 
 type Func struct {
 	Name   string   `json:"name"`
 	Params []string `json:"params"`
 	Body   string   `json:"body"`
+}
+
+type Type struct {
+	Name   string  `json:"name"`
+	Fields []Field `json:"fields"`
+}
+
+type Field struct {
+	Name string `json:"name"`
+	Type string `json:"type"`
 }
 
 func parse(src string) (*Program, error) {
@@ -57,6 +68,25 @@ func parse(src string) (*Program, error) {
 
 func formatProgram(p *Program) []byte {
 	var out bytes.Buffer
+	for _, typ := range p.Types {
+		out.WriteString("type ")
+		out.WriteString(typ.Name)
+		if len(typ.Fields) == 0 {
+			out.WriteString(" {}\n")
+		} else {
+			out.WriteString(" {\n")
+			for _, f := range typ.Fields {
+				out.WriteString("  ")
+				out.WriteString(f.Name)
+				if f.Type != "" {
+					out.WriteString(": ")
+					out.WriteString(mapOcamlType(f.Type))
+				}
+				out.WriteByte('\n')
+			}
+			out.WriteString("}\n")
+		}
+	}
 	for _, fn := range p.Funcs {
 		out.WriteString("fun ")
 		out.WriteString(fn.Name)
