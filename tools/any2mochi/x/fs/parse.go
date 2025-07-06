@@ -54,6 +54,29 @@ type Print struct {
 
 type Stmt interface{}
 
+// Fun represents a simple function declaration parsed from the generated F# code.
+type Fun struct {
+	Name   string  `json:"name"`
+	Params []Field `json:"params"`
+	Ret    string  `json:"ret"`
+	Body   []Stmt  `json:"body"`
+	Line   int     `json:"line"`
+}
+
+// Return models a return statement which originates from a raise expression.
+type Return struct {
+	Expr string `json:"expr"`
+	Line int    `json:"line"`
+}
+
+// If represents a simple if-else statement.
+type If struct {
+	Cond string `json:"cond"`
+	Then []Stmt `json:"then"`
+	Else []Stmt `json:"else"`
+	Line int    `json:"line"`
+}
+
 type Field struct {
 	Name string `json:"name"`
 	Type string `json:"type"`
@@ -93,6 +116,12 @@ var (
 	forRangeRe    = regexp.MustCompile(`^for\s+(\w+)\s*=\s*(.+)\s+to\s+(.+)\s+do$`)
 	forInRe       = regexp.MustCompile(`^for\s+(\w+)\s+in\s+(.+)\s+do$`)
 	whileRe       = regexp.MustCompile(`^while\s*\((.+)\)\s*do$`)
+	funRe         = regexp.MustCompile(`^let\s+(?:rec\s+)?(\w+)(.*)?:\s*([^=]+)=\s*$`)
+	exceptionRe   = regexp.MustCompile(`^exception\s+Return_(\w+)\s+of\s+(.+)$`)
+	returnRe      = regexp.MustCompile(`^raise\s*\(Return_(\w+)\s*\((.*)\)\)$`)
+	ifRe          = regexp.MustCompile(`^if\s+(.+)\s+then$`)
+	elifRe        = regexp.MustCompile(`^elif\s+(.+)\s+then$`)
+	elseRe        = regexp.MustCompile(`^else$`)
 	typeRe        = regexp.MustCompile(`^type\s+(\w+)\s*=\s*$`)
 	variantRe     = regexp.MustCompile(`^\|\s*(\w+)(.*)$`)
 	fieldRe       = regexp.MustCompile(`^(\w+)\s*:\s*([^;]+);?$`)
@@ -122,6 +151,7 @@ func Parse(src string) (*Program, error) {
 	var parseErr error
 	var errLine int
 	var linesCopy []line
+	retMap := map[string]string{}
 	var parseBlock func(int) []Stmt
 	parseBlock = func(ind int) []Stmt {
 		var stmts []Stmt
@@ -168,6 +198,25 @@ func Parse(src string) (*Program, error) {
 			case expectRe.MatchString(t):
 				m := expectRe.FindStringSubmatch(t)
 				stmts = append(stmts, Expect{Cond: strings.TrimSpace(m[1]), Line: lineNum})
+			case returnRe.MatchString(t):
+				m := returnRe.FindStringSubmatch(t)
+				stmts = append(stmts, Return{Expr: strings.TrimSpace(m[2]), Line: lineNum})
+			case ifRe.MatchString(t):
+				m := ifRe.FindStringSubmatch(t)
+				thenBlock := parseBlock(ind + 4)
+				var elseBlock []Stmt
+				if idx < len(lines) && lines[idx].indent == ind {
+					if elifRe.MatchString(lines[idx].text) {
+						em := elifRe.FindStringSubmatch(lines[idx].text)
+						ln := idx + 1
+						idx++
+						elseBlock = []Stmt{If{Cond: strings.TrimSpace(em[1]), Then: parseBlock(ind + 4), Line: ln}}
+					} else if elseRe.MatchString(lines[idx].text) {
+						idx++
+						elseBlock = parseBlock(ind + 4)
+					}
+				}
+				stmts = append(stmts, If{Cond: strings.TrimSpace(m[1]), Then: thenBlock, Else: elseBlock, Line: lineNum})
 			case typeRe.MatchString(t):
 				m := typeRe.FindStringSubmatch(t)
 				name := m[1]
@@ -226,6 +275,28 @@ func Parse(src string) (*Program, error) {
 				m := whileRe.FindStringSubmatch(t)
 				body := parseBlock(ind + 4)
 				stmts = append(stmts, While{Cond: strings.TrimSpace(m[1]), Body: body, Line: lineNum})
+			case exceptionRe.MatchString(t):
+				m := exceptionRe.FindStringSubmatch(t)
+				retMap[m[1]] = strings.TrimSpace(m[2])
+			case funRe.MatchString(t):
+				m := funRe.FindStringSubmatch(t)
+				name := m[1]
+				params := parseParams(m[2])
+				ret := strings.TrimSpace(m[3])
+				if r, ok := retMap[name]; ok {
+					ret = r
+				}
+				if idx < len(lines) && strings.TrimSpace(lines[idx].text) == "try" {
+					idx++
+				}
+				body := parseBlock(ind + 8)
+				if idx < len(lines) && strings.Contains(lines[idx].text, "failwith") {
+					idx++
+				}
+				if idx < len(lines) && strings.HasPrefix(strings.TrimSpace(lines[idx].text), "with Return_"+name) {
+					idx++
+				}
+				stmts = append(stmts, Fun{Name: name, Params: params, Ret: ret, Body: body, Line: lineNum})
 			default:
 				if parseErr == nil {
 					errLine = lineNum
@@ -265,4 +336,28 @@ func Parse(src string) (*Program, error) {
 		return prog, fmt.Errorf("%s", msg)
 	}
 	return prog, nil
+}
+
+func parseParams(sig string) []Field {
+	sig = strings.TrimSpace(sig)
+	if sig == "" {
+		return nil
+	}
+	parts := strings.Fields(sig)
+	var fields []Field
+	for _, part := range parts {
+		part = strings.TrimSpace(part)
+		if !strings.HasPrefix(part, "(") || !strings.HasSuffix(part, ")") {
+			continue
+		}
+		p := strings.Trim(part, "()")
+		if idx := strings.Index(p, ":"); idx != -1 {
+			name := strings.TrimSpace(p[:idx])
+			typ := strings.TrimSpace(p[idx+1:])
+			fields = append(fields, Field{Name: name, Type: typ})
+		} else {
+			fields = append(fields, Field{Name: p})
+		}
+	}
+	return fields
 }

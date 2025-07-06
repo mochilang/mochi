@@ -1,5 +1,5 @@
-unsupported syntax at line 3: exception Return_add of int
-  2: 
-  3: exception Return_add of int
-  4: let rec add (a: int) (b: int) : int =
-  5:     try
+unsupported syntax at line 9: failwith "unreachable"
+  8:         raise (Return_add ((a + b)))
+  9:         failwith "unreachable"
+ 10:     with Return_add v -> v
+ 11:

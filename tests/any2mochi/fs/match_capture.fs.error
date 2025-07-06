@@ -1,5 +1,5 @@
-unsupported syntax at line 7: exception Return_depth of int
-  6: 
-  7: exception Return_depth of int
-  8: let rec depth (t: Tree) : int =
-  9:     try
+unsupported syntax at line 12: failwith "unreachable"
+ 11:         raise (Return_depth ((match t with | Leaf -> 0 | Node(l, _, r) -> ((depth l + depth r) + 1))))
+ 12:         failwith "unreachable"
+ 13:     with Return_depth v -> v
+ 14:
