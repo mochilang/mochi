@@ -14,7 +14,8 @@ import (
 func TestConvertSwift_Golden(t *testing.T) {
 	root := any2mochi.FindRepoRoot(t)
 	_ = swiftcode.EnsureSwift()
-	any2mochi.RunConvertGolden(t, filepath.Join(root, "tests/compiler/swift"), "*.swift.out", ConvertFile, "swift", ".mochi", ".error")
+	errs := any2mochi.RunConvertRunGolden(t, filepath.Join(root, "tests/compiler/swift"), "*.swift.out", ConvertFile, "swift", ".mochi", ".error")
+	any2mochi.WriteErrorsMarkdown(filepath.Join(root, "tests/any2mochi/swift"), errs)
 }
 
 func TestConvertSwiftCompile_Golden(t *testing.T) {

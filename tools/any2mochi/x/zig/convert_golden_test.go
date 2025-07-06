@@ -11,5 +11,6 @@ import (
 
 func TestConvertZig_Golden(t *testing.T) {
 	root := findRepoRoot(t)
-	runConvertGolden(t, filepath.Join(root, "tests/compiler/zig"), "*.zig.out", zig.ConvertFile, "zig", ".mochi", ".error")
+	errs := runConvertRunGolden(t, filepath.Join(root, "tests/compiler/zig"), "*.zig.out", zig.ConvertFile, "zig", ".mochi", ".error")
+	writeErrorsMarkdown(filepath.Join(root, "tests/any2mochi/zig"), errs)
 }

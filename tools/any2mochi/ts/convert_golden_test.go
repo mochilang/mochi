@@ -13,8 +13,10 @@ import (
 func TestConvert_Golden(t *testing.T) {
 	root := findRepoRoot(t)
 	_ = tscode.EnsureTSLanguageServer()
-	runConvertGolden(t, filepath.Join(root, "tests/compiler/ts"), "*.ts.out", ConvertFile, "ts", ".mochi", ".error")
-	runConvertGolden(t, filepath.Join(root, "tests/compiler/ts_simple"), "*.ts.out", ConvertFile, "ts", ".mochi", ".error")
+	errs := runConvertRunGolden(t, filepath.Join(root, "tests/compiler/ts"), "*.ts.out", ConvertFile, "ts", ".mochi", ".error")
+	errs2 := runConvertRunGolden(t, filepath.Join(root, "tests/compiler/ts_simple"), "*.ts.out", ConvertFile, "ts", ".mochi", ".error")
+	errs = append(errs, errs2...)
+	writeErrorsMarkdown(filepath.Join(root, "tests/any2mochi/ts"), errs)
 }
 
 func TestConvertCompile_Golden(t *testing.T) {
