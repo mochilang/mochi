@@ -13,7 +13,7 @@ parser.setLanguage(Ocaml.ocaml);
 const tree = parser.parse(source);
 function text(node) { return source.slice(node.startIndex, node.endIndex); }
 
-const prog = { funcs: [], prints: [], types: [] };
+const prog = { funcs: [], prints: [], types: [], vars: [] };
 for (let i = 0; i < tree.rootNode.namedChildren.length; i++) {
   const child = tree.rootNode.namedChildren[i];
   if (child.type === 'ERROR' && child.text.trim().startsWith('type ')) {
@@ -34,9 +34,9 @@ for (let i = 0; i < tree.rootNode.namedChildren.length; i++) {
             const tc = tpath.namedChildren.find(n => n.type === 'type_constructor');
             if (tc) ftype = text(tc);
           }
-          fields.push({ name, type: ftype });
+          fields.push({ name, type: ftype, line: fld.startPosition.row + 1 });
         }
-        prog.types.push({ name: m[1], fields });
+        prog.types.push({ name: m[1], fields, line: child.startPosition.row + 1 });
         i++; // skip following expression_item
         continue;
       }
@@ -60,13 +60,16 @@ for (let i = 0; i < tree.rootNode.namedChildren.length; i++) {
       const node = binding.children[eqIdx + 1];
       body = text({ startIndex: node.startIndex, endIndex: binding.endIndex });
     }
+    const line = child.startPosition.row + 1;
     if (params.length > 0) {
-      prog.funcs.push({ name, params, body: body.trim() });
+      prog.funcs.push({ name, params, body: body.trim(), line });
+    } else if (name) {
+      prog.vars.push({ name, expr: body.trim().replace(/;$/, ''), line });
     } else {
-      prog.prints.push(body.trim().replace(/;$/, ''));
+      prog.prints.push({ expr: body.trim().replace(/;$/, ''), line });
     }
   } else if (child.type === 'expression_item') {
-    prog.prints.push(text(child).trim().replace(/;$/, ''));
+    prog.prints.push({ expr: text(child).trim().replace(/;$/, ''), line: child.startPosition.row + 1 });
   } else if (child.type === 'type_definition') {
     for (const bind of child.namedChildren) {
       if (bind.type !== 'type_binding') continue;
@@ -85,9 +88,9 @@ for (let i = 0; i < tree.rootNode.namedChildren.length; i++) {
           const tc = tpath.namedChildren.find(n => n.type === 'type_constructor');
           if (tc) ftype = text(tc);
         }
-        fields.push({ name: fname, type: ftype });
+        fields.push({ name: fname, type: ftype, line: fld.startPosition.row + 1 });
       }
-      prog.types.push({ name, fields });
+      prog.types.push({ name, fields, line: bind.startPosition.row + 1 });
     }
   }
 }

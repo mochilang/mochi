@@ -1,1 +1,2 @@
-let name: string
+let name = "mochi"
+print((String.make1(String.getname0))^"!")

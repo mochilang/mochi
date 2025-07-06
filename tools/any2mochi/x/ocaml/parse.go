@@ -11,25 +11,40 @@ import (
 )
 
 type Program struct {
-	Funcs  []Func   `json:"funcs"`
-	Prints []string `json:"prints"`
-	Types  []Type   `json:"types"`
+        Funcs  []Func  `json:"funcs"`
+        Prints []Print `json:"prints"`
+        Types  []Type  `json:"types"`
+        Vars   []Var   `json:"vars"`
 }
 
 type Func struct {
-	Name   string   `json:"name"`
-	Params []string `json:"params"`
-	Body   string   `json:"body"`
+        Name   string   `json:"name"`
+        Params []string `json:"params"`
+        Body   string   `json:"body"`
+        Line   int      `json:"line"`
+}
+
+type Var struct {
+        Name string `json:"name"`
+        Expr string `json:"expr"`
+        Line int    `json:"line"`
+}
+
+type Print struct {
+        Expr string `json:"expr"`
+        Line int    `json:"line"`
 }
 
 type Type struct {
-	Name   string  `json:"name"`
-	Fields []Field `json:"fields"`
+        Name   string  `json:"name"`
+        Fields []Field `json:"fields"`
+        Line   int     `json:"line"`
 }
 
 type Field struct {
-	Name string `json:"name"`
-	Type string `json:"type"`
+        Name string `json:"name"`
+        Type string `json:"type"`
+        Line int    `json:"line"`
 }
 
 func parse(src string) (*Program, error) {
@@ -67,10 +82,10 @@ func parse(src string) (*Program, error) {
 }
 
 func formatProgram(p *Program) []byte {
-	var out bytes.Buffer
-	for _, typ := range p.Types {
-		out.WriteString("type ")
-		out.WriteString(typ.Name)
+        var out bytes.Buffer
+        for _, typ := range p.Types {
+                out.WriteString("type ")
+                out.WriteString(typ.Name)
 		if len(typ.Fields) == 0 {
 			out.WriteString(" {}\n")
 		} else {
@@ -86,10 +101,10 @@ func formatProgram(p *Program) []byte {
 			}
 			out.WriteString("}\n")
 		}
-	}
-	for _, fn := range p.Funcs {
-		out.WriteString("fun ")
-		out.WriteString(fn.Name)
+        }
+        for _, fn := range p.Funcs {
+                out.WriteString("fun ")
+                out.WriteString(fn.Name)
 		out.WriteByte('(')
 		for i, n := range fn.Params {
 			if i > 0 {
@@ -107,13 +122,22 @@ func formatProgram(p *Program) []byte {
 		body = strings.ReplaceAll(body, "print (", "print(")
 		body = strings.ReplaceAll(body, "not ", "!")
 		out.WriteString(body)
-		out.WriteString("\n}\n")
-	}
-	for _, pstr := range p.Prints {
-		line := strings.TrimSpace(pstr)
-		line = strings.ReplaceAll(line, "string_of_int", "str")
-		line = strings.ReplaceAll(line, "string_of_float", "str")
-		line = strings.ReplaceAll(line, "string_of_bool", "str")
+                out.WriteString("\n}\n")
+        }
+        for _, v := range p.Vars {
+                out.WriteString("let ")
+                out.WriteString(v.Name)
+                if v.Expr != "" {
+                        out.WriteString(" = ")
+                        out.WriteString(v.Expr)
+                }
+                out.WriteByte('\n')
+        }
+        for _, pstr := range p.Prints {
+                line := strings.TrimSpace(pstr.Expr)
+                line = strings.ReplaceAll(line, "string_of_int", "str")
+                line = strings.ReplaceAll(line, "string_of_float", "str")
+                line = strings.ReplaceAll(line, "string_of_bool", "str")
 		line = strings.ReplaceAll(line, "str (", "str(")
 		line = strings.ReplaceAll(line, "print (", "print(")
 		line = strings.ReplaceAll(line, "not ", "!")

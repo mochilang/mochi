@@ -1,3 +1,5 @@
-let people: (string, string) Hashtbl.t list
-let depts: (string, string) Hashtbl.t list
-let pairs: 'a list
+let people = [(let tbl = Hashtbl.create 2 in Hashtbl.add tbl "name" "Alice",Hashtbl.add tbl "age" 30, tbl), (let tbl = Hashtbl.create 2 in Hashtbl.add tbl "name" "Bob",Hashtbl.add tbl "age" 15, tbl), (let tbl = Hashtbl.create 2 in Hashtbl.add tbl "name" "Charlie",Hashtbl.add tbl "age" 65, tbl)]
+let depts = [(let tbl = Hashtbl.create 1 in Hashtbl.add tbl "name" "HR", tbl), (let tbl = Hashtbl.create 1 in Hashtbl.add tbl "name" "IT", tbl)]
+let pairs = (let _res = ref [] in
+let res = List.rev !_res in
+print(str(it));

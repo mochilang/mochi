@@ -1,3 +1,5 @@
-fun _input(): string {}
-let input1: string
-let input2: string
+print"Enterfirstinput:"
+let input1 = _input ()
+print"Entersecondinput:"
+let input2 = _input ()
+print(String.concat""["Youentered:";input1;",";input2])

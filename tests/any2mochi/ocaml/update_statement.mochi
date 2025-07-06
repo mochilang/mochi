@@ -1,13 +1,6 @@
-type Person {
-  name: string
-  age: int
-  status: string
-}
-fun decode_Person(json) {
-  {
-  name = Yojson.Basic.Util.to_string (Yojson.Basic.Util.member "name" json);
-  age = Yojson.Basic.Util.to_int (Yojson.Basic.Util.member "age" json);
-  status = Yojson.Basic.Util.to_string (Yojson.Basic.Util.member "status" json);
-}
-}
-print(if !(people = [{ name = "Alice"; age = 17; status = "minor" }; { name = "Bob"; age = 26; status = "adult" }; { name = "Charlie"; age = 19; status = "adult" }; { name = "Diana"; age = 16; status = "minor" }]) then failwith "expect failed")
+let people = [{ name = "Alice", age = 17, status = "minor" }, { name = "Bob", age = 25, status = "unknown" }, { name = "Charlie", age = 18, status = "unknown" }, { name = "Diana", age = 16, status = "minor" }]
+let people = List.map (fun _item ->
+let name = _item.name in
+let age = _item.age in
+let status = _item.status in
+print"ok"
