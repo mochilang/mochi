@@ -1,53 +1,114 @@
-package any2mochi
+package pas
 
 import (
+	any2mochi "mochi/tools/any2mochi"
+
+	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
 )
 
-// ConvertPas converts pas source code to Mochi using the language server.
-func ConvertPas(src string) ([]byte, error) {
-	ls := Servers["pas"]
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+// Convert converts Pascal source code to Mochi using the language server.
+func Convert(src string) ([]byte, error) {
+	ls := any2mochi.Servers["pas"]
+	syms, diags, err := any2mochi.EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
 	if err != nil {
 		// fall back to very small regex based parser when pasls is missing
-		return convertPasFallback(src)
+		return convertFallback(src)
 	}
 	if len(diags) > 0 {
-		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
+		return nil, fmt.Errorf("%s", diagnostics(src, diags))
 	}
 	var out strings.Builder
-	writePasSymbols(&out, nil, syms, src, ls)
+	writeSymbols(&out, nil, syms, src, ls)
 	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
 	}
 	return []byte(out.String()), nil
 }
 
-// ConvertPasFile reads the pas file and converts it to Mochi.
-func ConvertPasFile(path string) ([]byte, error) {
+// ConvertFile reads the Pascal file and converts it to Mochi.
+func ConvertFile(path string) ([]byte, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return ConvertPas(string(data))
+	return Convert(string(data))
 }
 
-type pasParam struct {
+func snippet(src string) string {
+	lines := strings.Split(src, "\n")
+	if len(lines) > 10 {
+		lines = lines[:10]
+	}
+	for i, l := range lines {
+		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
+	}
+	return strings.Join(lines, "\n")
+}
+
+func diagnostics(src string, diags []any2mochi.Diagnostic) string {
+	lines := strings.Split(src, "\n")
+	var out strings.Builder
+	for _, d := range diags {
+		start := int(d.Range.Start.Line)
+		msg := d.Message
+		line := ""
+		if start < len(lines) {
+			line = strings.TrimSpace(lines[start])
+		}
+		out.WriteString(fmt.Sprintf("line %d: %s\n  %s\n", start+1, msg, line))
+	}
+	return strings.TrimSpace(out.String())
+}
+
+func hoverString(h any2mochi.Hover) string {
+	switch v := h.Contents.(type) {
+	case any2mochi.MarkupContent:
+		return v.Value
+	case any2mochi.MarkedString:
+		b, err := json.Marshal(v)
+		if err == nil {
+			var ms any2mochi.MarkedStringStruct
+			if err := json.Unmarshal(b, &ms); err == nil {
+				if ms.Value != "" {
+					return ms.Value
+				}
+			}
+			var s string
+			if err := json.Unmarshal(b, &s); err == nil {
+				return s
+			}
+		}
+		return ""
+	case []any2mochi.MarkedString:
+		parts := make([]string, 0, len(v))
+		for _, m := range v {
+			parts = append(parts, hoverString(any2mochi.Hover{Contents: m}))
+		}
+		return strings.Join(parts, "\n")
+	case string:
+		return v
+	default:
+		return fmt.Sprint(v)
+	}
+}
+
+type param struct {
 	name string
 	typ  string
 }
 
-func writePasSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol, src string, ls LanguageServer) {
+func writeSymbols(out *strings.Builder, prefix []string, syms []any2mochi.DocumentSymbol, src string, ls any2mochi.LanguageServer) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
 			nameParts = append(nameParts, s.Name)
 		}
 		switch s.Kind {
-		case SymbolKindFunction, SymbolKindMethod:
-			params, ret := pasHoverSignature(src, s, ls)
+		case any2mochi.SymbolKindFunction, any2mochi.SymbolKindMethod:
+			params, ret := hoverSignature(src, s, ls)
 			out.WriteString("fun ")
 			out.WriteString(strings.Join(nameParts, "."))
 			out.WriteByte('(')
@@ -66,7 +127,7 @@ func writePasSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbo
 				out.WriteString(": ")
 				out.WriteString(ret)
 			}
-			body := convertPasBody(src, s)
+			body := convertBody(src, s)
 			if body == "" {
 				out.WriteString(" {}\n")
 			} else {
@@ -81,16 +142,16 @@ func writePasSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbo
 				}
 				out.WriteString("}\n")
 			}
-		case SymbolKindStruct, SymbolKindClass, SymbolKindInterface:
+		case any2mochi.SymbolKindStruct, any2mochi.SymbolKindClass, any2mochi.SymbolKindInterface:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
-			fields := []DocumentSymbol{}
-			methods := []DocumentSymbol{}
+			fields := []any2mochi.DocumentSymbol{}
+			methods := []any2mochi.DocumentSymbol{}
 			for _, c := range s.Children {
 				switch c.Kind {
-				case SymbolKindField, SymbolKindProperty:
+				case any2mochi.SymbolKindField, any2mochi.SymbolKindProperty:
 					fields = append(fields, c)
-				case SymbolKindFunction, SymbolKindMethod:
+				case any2mochi.SymbolKindFunction, any2mochi.SymbolKindMethod:
 					methods = append(methods, c)
 				}
 			}
@@ -101,7 +162,7 @@ func writePasSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbo
 				for _, f := range fields {
 					out.WriteString("  ")
 					out.WriteString(f.Name)
-					if typ := pasFieldType(src, f, ls); typ != "" {
+					if typ := fieldType(src, f, ls); typ != "" {
 						out.WriteString(": ")
 						out.WriteString(typ)
 					}
@@ -109,7 +170,7 @@ func writePasSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbo
 				}
 				for _, m := range methods {
 					var b strings.Builder
-					writePasSymbols(&b, []string{m.Name}, []DocumentSymbol{m}, src, ls)
+					writeSymbols(&b, []string{m.Name}, []any2mochi.DocumentSymbol{m}, src, ls)
 					for _, line := range strings.Split(strings.TrimSuffix(b.String(), "\n"), "\n") {
 						out.WriteString("  ")
 						out.WriteString(line)
@@ -118,50 +179,50 @@ func writePasSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbo
 				}
 				out.WriteString("}\n")
 			}
-		case SymbolKindEnum:
+		case any2mochi.SymbolKindEnum:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
 			out.WriteString(" {\n")
 			for _, c := range s.Children {
-				if c.Kind == SymbolKindEnumMember {
+				if c.Kind == any2mochi.SymbolKindEnumMember {
 					out.WriteString("  ")
 					out.WriteString(c.Name)
 					out.WriteByte('\n')
 				}
 			}
 			out.WriteString("}\n")
-			var rest []DocumentSymbol
+			var rest []any2mochi.DocumentSymbol
 			for _, c := range s.Children {
-				if c.Kind != SymbolKindEnumMember {
+				if c.Kind != any2mochi.SymbolKindEnumMember {
 					rest = append(rest, c)
 				}
 			}
 			if len(rest) > 0 {
-				writePasSymbols(out, nameParts, rest, src, ls)
+				writeSymbols(out, nameParts, rest, src, ls)
 			}
 			continue
-		case SymbolKindVariable, SymbolKindConstant:
+		case any2mochi.SymbolKindVariable, any2mochi.SymbolKindConstant:
 			if len(prefix) == 0 {
 				out.WriteString("let ")
 				out.WriteString(s.Name)
-				if typ := pasFieldType(src, s, ls); typ != "" {
+				if typ := fieldType(src, s, ls); typ != "" {
 					out.WriteString(": ")
 					out.WriteString(typ)
 				}
 				out.WriteByte('\n')
 			}
 		}
-		if len(s.Children) > 0 && s.Kind != SymbolKindStruct && s.Kind != SymbolKindClass && s.Kind != SymbolKindInterface {
-			writePasSymbols(out, nameParts, s.Children, src, ls)
+		if len(s.Children) > 0 && s.Kind != any2mochi.SymbolKindStruct && s.Kind != any2mochi.SymbolKindClass && s.Kind != any2mochi.SymbolKindInterface {
+			writeSymbols(out, nameParts, s.Children, src, ls)
 		}
 	}
 }
 
-func pasHoverSignature(src string, sym DocumentSymbol, ls LanguageServer) ([]pasParam, string) {
-	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
+func hoverSignature(src string, sym any2mochi.DocumentSymbol, ls any2mochi.LanguageServer) ([]param, string) {
+	hov, err := any2mochi.EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err != nil {
 		if sym.Detail != nil {
-			return parsePasSignature(*sym.Detail)
+			return parseSignature(*sym.Detail)
 		}
 		return nil, ""
 	}
@@ -170,17 +231,17 @@ func pasHoverSignature(src string, sym DocumentSymbol, ls LanguageServer) ([]pas
 		l = strings.TrimSpace(l)
 		lower := strings.ToLower(l)
 		if strings.HasPrefix(lower, "function") || strings.HasPrefix(lower, "procedure") {
-			return parsePasSignature(l)
+			return parseSignature(l)
 		}
 	}
 	if sym.Detail != nil {
-		return parsePasSignature(*sym.Detail)
+		return parseSignature(*sym.Detail)
 	}
 	return nil, ""
 }
 
-func pasFieldType(src string, sym DocumentSymbol, ls LanguageServer) string {
-	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
+func fieldType(src string, sym any2mochi.DocumentSymbol, ls any2mochi.LanguageServer) string {
+	hov, err := any2mochi.EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err != nil {
 		return ""
 	}
@@ -190,14 +251,14 @@ func pasFieldType(src string, sym DocumentSymbol, ls LanguageServer) string {
 		if idx := strings.Index(l, ":"); idx != -1 {
 			t := strings.TrimSpace(l[idx+1:])
 			if t != "" {
-				return pasToMochiType(t)
+				return toMochiType(t)
 			}
 		}
 	}
 	return ""
 }
 
-func parsePasSignature(sig string) ([]pasParam, string) {
+func parseSignature(sig string) ([]param, string) {
 	sig = strings.TrimSpace(sig)
 	sig = strings.TrimSuffix(sig, ";")
 	lower := strings.ToLower(sig)
@@ -214,7 +275,7 @@ func parsePasSignature(sig string) ([]pasParam, string) {
 		paramsPart = sig[open+1 : close]
 		rest = strings.TrimSpace(sig[close+1:])
 	}
-	var params []pasParam
+	var params []param
 	for _, p := range strings.Split(paramsPart, ";") {
 		p = strings.TrimSpace(p)
 		if p == "" {
@@ -225,13 +286,13 @@ func parsePasSignature(sig string) ([]pasParam, string) {
 			continue
 		}
 		names := strings.Split(p[:colon], ",")
-		typ := pasToMochiType(strings.TrimSpace(p[colon+1:]))
+		typ := toMochiType(strings.TrimSpace(p[colon+1:]))
 		for _, n := range names {
 			n = strings.TrimSpace(n)
 			if n == "" {
 				continue
 			}
-			params = append(params, pasParam{name: n, typ: typ})
+			params = append(params, param{name: n, typ: typ})
 		}
 	}
 	ret := ""
@@ -239,12 +300,12 @@ func parsePasSignature(sig string) ([]pasParam, string) {
 		if strings.HasPrefix(rest, ":") {
 			rest = strings.TrimSpace(rest[1:])
 		}
-		ret = pasToMochiType(strings.TrimSpace(rest))
+		ret = toMochiType(strings.TrimSpace(rest))
 	}
 	return params, ret
 }
 
-func pasToMochiType(t string) string {
+func toMochiType(t string) string {
 	t = strings.ToLower(strings.TrimSpace(t))
 	switch t {
 	case "", "void":
@@ -259,14 +320,14 @@ func pasToMochiType(t string) string {
 		return "string"
 	}
 	if strings.HasPrefix(t, "specialize tarray<") && strings.HasSuffix(t, ">") {
-		inner := pasToMochiType(t[len("specialize tarray<") : len(t)-1])
+		inner := toMochiType(t[len("specialize tarray<") : len(t)-1])
 		if inner == "" {
 			inner = "any"
 		}
 		return "list<" + inner + ">"
 	}
 	if strings.HasPrefix(t, "array of ") {
-		inner := pasToMochiType(strings.TrimPrefix(t, "array of "))
+		inner := toMochiType(strings.TrimPrefix(t, "array of "))
 		if inner == "" {
 			inner = "any"
 		}
@@ -278,7 +339,7 @@ func pasToMochiType(t string) string {
 // convertPasBody extracts the function body for sym from src and converts a few
 // basic statements into Mochi equivalents. Only very simple constructs like
 // assignments, returns and writeln calls are handled.
-func convertPasBody(src string, sym DocumentSymbol) string {
+func convertBody(src string, sym any2mochi.DocumentSymbol) string {
 	lines := strings.Split(src, "\n")
 	start := int(sym.Range.Start.Line)
 	end := int(sym.Range.End.Line)
@@ -330,10 +391,10 @@ func convertPasBody(src string, sym DocumentSymbol) string {
 	return strings.Join(out, "\n")
 }
 
-// convertPasFallback converts a small subset of Pascal syntax to Mochi when no
+// convertFallback converts a small subset of Pascal syntax to Mochi when no
 // language server is available. It recognises simple type declarations,
 // variable definitions and statements inside the main program block.
-func convertPasFallback(src string) ([]byte, error) {
+func convertFallback(src string) ([]byte, error) {
 	lines := strings.Split(src, "\n")
 	var out []string
 	inBody := false
@@ -382,7 +443,7 @@ func convertPasFallback(src string) ([]byte, error) {
 				rest = strings.TrimSuffix(rest, ";")
 				if idx := strings.Index(rest, ":"); idx != -1 {
 					name := strings.TrimSpace(rest[:idx])
-					typ := pasToMochiType(strings.TrimSpace(rest[idx+1:]))
+					typ := toMochiType(strings.TrimSpace(rest[idx+1:]))
 					if name != "" {
 						if typ != "" {
 							out = append(out, "let "+name+": "+typ)
