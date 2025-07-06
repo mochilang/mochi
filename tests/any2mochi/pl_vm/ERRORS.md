@@ -5,17 +5,7 @@
 
 help:
   Check if the variable was declared in this scope.
-- avg_builtin: json: cannot unmarshal array into Go struct field clause.clauses.params of type string
-  1: :- style_check(-singleton).
-  2: avg(V, R) :-
-  3:     is_dict(V), !, get_dict('Items', V, Items), avg_list(Items, R).
-  4: avg(V, R) :-
-  5:     is_list(V), !, avg_list(V, R).
-  6: avg(_, _) :- throw(error('avg expects list or group')).
-  7: avg_list([], 0).
-  8: avg_list(L, R) :- sum_list(L, S), length(L, N), N > 0, R is S / N.
-  9: 
- 10: 
+- avg_builtin: parse error: parse error: 2:20: unexpected token "!" (expected LogicCond)
 - basic_compare: parse error: parse error: 7:15: unexpected token "=" (expected ")")
 - binary_precedence: ok
 - bool_chain: parse error: parse error: 2:9: unexpected token "(" (expected ")")
@@ -40,95 +30,15 @@ help:
 - fun_call: parse error: parse error: 2:10: unexpected token "is" (expected "!=" <ident>)
 - fun_expr_in_let: parse error: parse error: 2:10: unexpected token "is" (expected "!=" <ident>)
 - fun_three_args: parse error: parse error: 2:10: unexpected token "is" (expected "!=" <ident>)
-- group_by: json: cannot unmarshal array into Go struct field clause.clauses.params of type string
-  1: :- style_check(-singleton).
-  2: to_list(Str, L) :-
-  3:     string(Str), !,
-  4:     string_chars(Str, L).
-  5: to_list(L, L).
-  6: 
-  7: 
-  8: count(V, R) :-
-  9:     is_dict(V), !, get_dict('Items', V, Items), length(Items, R).
- 10: count(V, R) :-
+- group_by: parse error: parse error: 21:41: lexer: invalid input text "'Items':[_31278]..."
 - group_by_conditional_sum: compile error: unsupported expression
-- group_by_having: json: cannot unmarshal array into Go struct field clause.clauses.params of type string
-  1: :- style_check(-singleton).
-  2: to_list(Str, L) :-
-  3:     string(Str), !,
-  4:     string_chars(Str, L).
-  5: to_list(L, L).
-  6: 
-  7: 
-  8: count(V, R) :-
-  9:     is_dict(V), !, get_dict('Items', V, Items), length(Items, R).
- 10: count(V, R) :-
-- group_by_join: json: cannot unmarshal array into Go struct field clause.clauses.params of type string
-  1: :- style_check(-singleton).
-  2: to_list(Str, L) :-
-  3:     string(Str), !,
-  4:     string_chars(Str, L).
-  5: to_list(L, L).
-  6: 
-  7: 
-  8: count(V, R) :-
-  9:     is_dict(V), !, get_dict('Items', V, Items), length(Items, R).
- 10: count(V, R) :-
-- group_by_left_join: json: cannot unmarshal array into Go struct field clause.clauses.params of type string
-  1: :- style_check(-singleton).
-  2: to_list(Str, L) :-
-  3:     string(Str), !,
-  4:     string_chars(Str, L).
-  5: to_list(L, L).
-  6: 
-  7: 
-  8: count(V, R) :-
-  9:     is_dict(V), !, get_dict('Items', V, Items), length(Items, R).
- 10: count(V, R) :-
-- group_by_multi_join: json: cannot unmarshal array into Go struct field clause.clauses.params of type string
-  1: :- style_check(-singleton).
-  2: to_list(Str, L) :-
-  3:     string(Str), !,
-  4:     string_chars(Str, L).
-  5: to_list(L, L).
-  6: 
-  7: 
-  8: sum(V, R) :-
-  9:     is_dict(V), !, get_dict('Items', V, Items), sum_list(Items, R).
- 10: sum(V, R) :-
-- group_by_multi_join_sort: json: cannot unmarshal array into Go struct field clause.clauses.params of type string
-  1: :- style_check(-singleton).
-  2: to_list(Str, L) :-
-  3:     string(Str), !,
-  4:     string_chars(Str, L).
-  5: to_list(L, L).
-  6: 
-  7: 
-  8: sum(V, R) :-
-  9:     is_dict(V), !, get_dict('Items', V, Items), sum_list(Items, R).
- 10: sum(V, R) :-
-- group_by_sort: json: cannot unmarshal array into Go struct field clause.clauses.params of type string
-  1: :- style_check(-singleton).
-  2: to_list(Str, L) :-
-  3:     string(Str), !,
-  4:     string_chars(Str, L).
-  5: to_list(L, L).
-  6: 
-  7: 
-  8: sum(V, R) :-
-  9:     is_dict(V), !, get_dict('Items', V, Items), sum_list(Items, R).
- 10: sum(V, R) :-
-- group_items_iteration: json: cannot unmarshal array into Go struct field clause.clauses.params of type string
-  1: :- style_check(-singleton).
-  2: to_list(Str, L) :-
-  3:     string(Str), !,
-  4:     string_chars(Str, L).
-  5: to_list(L, L).
-  6: 
-  7: 
-  8: group_insert(Key, Item, [], [_{key:Key, 'Items':[Item]}]).
-  9: group_insert(Key, Item, [G|Gs], [NG|Gs]) :- get_dict(key, G, Key), !, get_dict('Items', G, Items), append(Items, [Item], NItems), put_dict('Items', G, NItems, NG).
- 10: group_insert(Key, Item, [G|Gs], [G|Rs]) :- group_insert(Key, Item, Gs, Rs).
+- group_by_having: parse error: parse error: 12:41: lexer: invalid input text "'Items':[_23176]..."
+- group_by_join: parse error: parse error: 12:41: lexer: invalid input text "'Items':[_26254]..."
+- group_by_left_join: parse error: parse error: 12:41: lexer: invalid input text "'Items':[_27394]..."
+- group_by_multi_join: parse error: parse error: 10:41: lexer: invalid input text "'Items':[_25838]..."
+- group_by_multi_join_sort: parse error: parse error: 10:41: lexer: invalid input text "'Items':[_27902]..."
+- group_by_sort: parse error: parse error: 10:41: lexer: invalid input text "'Items':[_22634]..."
+- group_items_iteration: parse error: parse error: 4:41: lexer: invalid input text "'Items':[_29046]..."
 - if_else: ok
 - if_then_else: compile error: unsupported expression
 - if_then_else_nested: compile error: unsupported expression
@@ -158,17 +68,7 @@ help:
 - list_assign: parse error: parse error: 2:67: lexer: invalid input text ";_15278=_15262),..."
 - list_index: parse error: parse error: 2:67: lexer: invalid input text ";_13094=_13078),..."
 - list_nested_assign: parse error: parse error: 2:67: lexer: invalid input text ";_15902=_15886),..."
-- list_set_ops: json: cannot unmarshal array into Go struct field clause.clauses.params of type string
-  1: :- style_check(-singleton).
-  2: union(A, B, R) :- append(A, B, C), list_to_set(C, R).
-  3: 
-  4: 
-  5: except([], _, []).
-  6: except([H|T], B, R) :- memberchk(H, B), !, except(T, B, R).
-  7: except([H|T], B, [H|R]) :- except(T, B, R).
-  8: 
-  9: 
- 10: intersect(A, B, R) :- intersect(A, B, [], R).
+- list_set_ops: parse error: parse error: 13:30: lexer: invalid input text "\\+memberchk(_169..."
 - load_yaml: parse error: parse error: 5:59: lexer: invalid input text ";_21120=json), (..."
 - map_assign: parse error: parse error: 2:67: lexer: invalid input text ";_15596=_15580),..."
 - map_in_operator: parse error: parse error: 2:69: lexer: invalid input text ";_13678=false)\nr..."

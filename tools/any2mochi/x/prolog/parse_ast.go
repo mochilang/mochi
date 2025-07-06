@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 )
 
@@ -28,6 +29,36 @@ type clause struct {
 	EndCol    int
 	Type      string
 	Arity     int
+}
+
+// UnmarshalJSON decodes a clause converting any parameter values to strings.
+func (c *clause) UnmarshalJSON(data []byte) error {
+	var raw struct {
+		Name   string        `json:"name"`
+		Params []interface{} `json:"params"`
+		Body   string        `json:"body"`
+		Start  int           `json:"start"`
+		End    int           `json:"end"`
+	}
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return err
+	}
+	c.Name = raw.Name
+	c.Body = raw.Body
+	c.Start = raw.Start
+	c.End = raw.End
+	for _, p := range raw.Params {
+		switch v := p.(type) {
+		case string:
+			c.Params = append(c.Params, v)
+		case float64:
+			c.Params = append(c.Params, strconv.FormatFloat(v, 'f', -1, 64))
+		default:
+			b, _ := json.Marshal(v)
+			c.Params = append(c.Params, string(b))
+		}
+	}
+	return nil
 }
 
 func parseAST(src string) (*program, error) {
