@@ -10,10 +10,16 @@ import (
 
 // ConvertScala converts scala source code to Mochi using the language server.
 func ConvertScala(src string) ([]byte, error) {
-	return convertScala(src, "")
+	ls := Servers["scala"]
+	if ls.Command != "" {
+		if out, err := convertScalaWithLS(src, ""); err == nil {
+			return out, nil
+		}
+	}
+	return convertScalaFallback(src)
 }
 
-func convertScala(src, root string) ([]byte, error) {
+func convertScalaWithLS(src, root string) ([]byte, error) {
 	ls := Servers["scala"]
 	syms, diags, err := EnsureAndParseWithRoot(ls.Command, ls.Args, ls.LangID, src, root)
 	if err != nil {
@@ -48,7 +54,13 @@ func ConvertScalaFile(path string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return convertScala(string(data), filepath.Dir(path))
+	ls := Servers["scala"]
+	if ls.Command != "" {
+		if out, err := convertScalaWithLS(string(data), filepath.Dir(path)); err == nil {
+			return out, nil
+		}
+	}
+	return convertScalaFallback(string(data))
 }
 
 func convertScalaFunc(lines []string, sym DocumentSymbol, root string) string {
@@ -297,4 +309,131 @@ func splitArgsScala(s string) []string {
 		parts = append(parts, strings.TrimSpace(b.String()))
 	}
 	return parts
+}
+
+// convertScalaFallback parses Scala source using the scalaast CLI and converts
+// the resulting AST to Mochi.
+func convertScalaFallback(src string) ([]byte, error) {
+	funcs, err := runScalaParse(src)
+	if err != nil {
+		return nil, err
+	}
+	var out strings.Builder
+	for _, fn := range funcs {
+		code := convertScalaFromAST(fn)
+		if code == "" {
+			continue
+		}
+		out.WriteString(code)
+		out.WriteByte('\n')
+	}
+	if out.Len() == 0 {
+		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+	}
+	return []byte(strings.TrimSuffix(out.String(), "\n")), nil
+}
+
+// convertScalaFromAST converts a parsed scalaFunc into Mochi code.
+func convertScalaFromAST(fn scalaFunc) string {
+	var b strings.Builder
+	topLevel := fn.Name == "main"
+	if !topLevel {
+		b.WriteString("fun ")
+		b.WriteString(fn.Name)
+		b.WriteByte('(')
+		for i, p := range fn.Params {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			b.WriteString(p)
+		}
+		b.WriteString(") {")
+		if len(fn.Body) > 0 {
+			b.WriteByte('\n')
+		}
+	}
+	indent := 1
+	if topLevel {
+		indent = 0
+	}
+	write := func(s string) {
+		b.WriteString(strings.Repeat("  ", indent))
+		b.WriteString(s)
+		b.WriteByte('\n')
+	}
+
+	reWhile := regexp.MustCompile(`^while\s*\((.*)\)\s*{`)
+	reFor := regexp.MustCompile(`^for \(([^<-]+)<-([^\)]+)\)\s*{`)
+	reIf := regexp.MustCompile(`^if\s*\((.*)\)\s*{`)
+	reElseIf := regexp.MustCompile(`^}\s*else\s*if\s*\((.*)\)\s*{`)
+	reElse := regexp.MustCompile(`^}\s*else\s*{`)
+
+	for _, l := range fn.Body {
+		line := strings.TrimSpace(l)
+		if line == "" {
+			continue
+		}
+		if line == "}" {
+			indent--
+			write("}")
+			continue
+		}
+		if m := reElseIf.FindStringSubmatch(line); m != nil {
+			indent--
+			write("else if " + convertScalaExpr(strings.TrimSpace(m[1])) + " {")
+			indent++
+			continue
+		}
+		if reElse.MatchString(line) {
+			indent--
+			write("else {")
+			indent++
+			continue
+		}
+		if m := reWhile.FindStringSubmatch(line); m != nil {
+			write("while " + convertScalaExpr(strings.TrimSpace(m[1])) + " {")
+			indent++
+			continue
+		}
+		if m := reFor.FindStringSubmatch(line); m != nil {
+			name := strings.TrimSpace(m[1])
+			expr := convertScalaExpr(strings.TrimSpace(m[2]))
+			write("for " + name + " in " + expr + " {")
+			indent++
+			continue
+		}
+		if m := reIf.FindStringSubmatch(line); m != nil {
+			write("if " + convertScalaExpr(strings.TrimSpace(m[1])) + " {")
+			indent++
+			continue
+		}
+
+		switch {
+		case strings.HasPrefix(line, "println("):
+			expr := strings.TrimSuffix(strings.TrimPrefix(line, "println("), ")")
+			write("print(" + convertScalaExpr(expr) + ")")
+		case strings.HasPrefix(line, "return "):
+			expr := strings.TrimSpace(strings.TrimPrefix(line, "return "))
+			write("return " + convertScalaExpr(expr))
+		case strings.HasPrefix(line, "var "):
+			write("var " + strings.TrimPrefix(line, "var "))
+		case strings.HasPrefix(line, "val "):
+			if idx := strings.Index(line, "="); idx != -1 {
+				n := strings.Fields(strings.TrimSpace(line[4:idx]))[0]
+				expr := strings.TrimSpace(line[idx+1:])
+				write("let " + n + " = " + convertScalaExpr(expr))
+			}
+		case strings.Contains(line, "="):
+			parts := strings.SplitN(line, "=", 2)
+			left := strings.TrimSpace(parts[0])
+			right := strings.TrimSpace(parts[1])
+			if left != "" && right != "" {
+				write(left + " = " + convertScalaExpr(right))
+			}
+		}
+	}
+	if !topLevel {
+		b.WriteString("}")
+	}
+	return b.String()
 }
