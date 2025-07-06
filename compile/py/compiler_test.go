@@ -83,6 +83,10 @@ func TestPyCompiler_SubsetPrograms(t *testing.T) {
 }
 
 func TestPyCompiler_GoldenOutput(t *testing.T) {
+	if _, err := exec.LookPath("python3"); err != nil {
+		t.Skip("python3 not installed")
+	}
+
 	compileFn := func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
@@ -97,6 +101,30 @@ func TestPyCompiler_GoldenOutput(t *testing.T) {
 		if err != nil {
 			return nil, fmt.Errorf("❌ compile error: %w", err)
 		}
+
+		dir := t.TempDir()
+		file := filepath.Join(dir, "main.py")
+		if err := os.WriteFile(file, code, 0644); err != nil {
+			return nil, fmt.Errorf("write error: %w", err)
+		}
+		cmd := exec.Command("python3", file)
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			cmd.Stdin = bytes.NewReader(data)
+		}
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			return nil, fmt.Errorf("❌ python run error: %w\n%s", err, out)
+		}
+		gotOut := bytes.TrimSpace(out)
+		wantOutPath := strings.TrimSuffix(src, ".mochi") + ".out"
+		wantOut, err := os.ReadFile(wantOutPath)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read golden output: %w", err)
+		}
+		if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
+			return nil, fmt.Errorf("output mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", filepath.Base(wantOutPath), gotOut, bytes.TrimSpace(wantOut))
+		}
+
 		return bytes.TrimSpace(code), nil
 	}
 
