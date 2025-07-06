@@ -9,6 +9,18 @@ import (
 
 // ConvertOcaml converts ocaml source code to Mochi using the language server.
 func ConvertOcaml(src string) ([]byte, error) {
+	if !UseLSP {
+		prog, err := parseOcaml(src)
+		if err != nil {
+			return nil, err
+		}
+		code := formatOcamlProgram(prog)
+		if len(code) == 0 {
+			return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+		}
+		return code, nil
+	}
+
 	ls := Servers["ocaml"]
 	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
 	if err != nil {
