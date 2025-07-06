@@ -24,6 +24,10 @@ func ConvertScheme(src string) ([]byte, error) {
 		if len(diags) > 0 {
 			return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
 		}
+		// fall back to the simple CLI-based parser
+		if simple, err := convertSchemeSimple(src); err == nil && len(simple) > 0 {
+			return simple, nil
+		}
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
 	}
 	return []byte(out.String()), nil

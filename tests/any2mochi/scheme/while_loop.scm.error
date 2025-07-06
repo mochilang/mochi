@@ -1,0 +1,13 @@
+no convertible symbols found
+
+source snippet:
+  1: (define i 0)
+  2: (let loop ()
+  3:   (if (< i 3)
+  4:     (begin
+  5:       (begin (display i) (newline))
+  6:       (set! i (+ i 1))
+  7:       (loop)
+  8:     )
+  9:   '()
+ 10: )

@@ -1,10 +1,1 @@
-fun define() {}
-fun define() {}
-fun define() {}
-fun define() {}
-fun define() {}
-fun define() {}
-fun define() {}
-fun define() {}
-fun define() {}
-fun define() {}
+fun _fetch(url, opts) {}

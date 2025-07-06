@@ -1,0 +1,10 @@
+no convertible symbols found
+
+source snippet:
+  1: (define square (lambda (x)
+  2:   (call/cc (lambda (return)
+  3:     (return (* x x))
+  4:   ))
+  5: ))
+  6: (begin (display (square 6)) (newline))
+  7: 

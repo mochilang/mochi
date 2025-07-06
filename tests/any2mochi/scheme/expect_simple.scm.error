@@ -1,0 +1,7 @@
+no convertible symbols found
+
+source snippet:
+  1: (define x (+ 1 2))
+  2: (when (not (= x 3)) (error "expect failed"))
+  3: (begin (display "ok") (newline))
+  4: 

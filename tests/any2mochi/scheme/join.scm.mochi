@@ -1,8 +1,5 @@
-fun define() {}
-fun define() {}
-fun define() {}
-fun define() {}
-fun define() {}
-fun define() {}
-fun define() {}
-fun define() {}
+fun map-get(m, k) {}
+fun map-set(m, k, v) {}
+fun new-Customer(id, name) {}
+fun new-Order(id, customerId, total) {}
+fun new-PairInfo(orderId, customerName, total) {}

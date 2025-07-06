@@ -2,4 +2,4 @@ no convertible symbols found
 
 source snippet:
   1: (begin (display "hello") (newline))
-  2:
+  2: 

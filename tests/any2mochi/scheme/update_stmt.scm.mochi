@@ -1,11 +1,9 @@
-fun define() {}
-fun define() {}
-fun define() {}
-fun define() {}
-fun define() {}
-fun define() {}
-fun define() {}
-fun define() {}
-fun define() {}
-fun define() {}
-fun define() {}
+fun map-get(m, k) {}
+fun map-set(m, k, v) {}
+fun list-set(lst, idx, val) {}
+fun print-test-start(name) {}
+fun print-test-pass() {}
+fun print-test-fail(err) {}
+fun run-test(name, thunk) {}
+fun new-Person(name, age, status) {}
+fun test_update_adult_status() {}

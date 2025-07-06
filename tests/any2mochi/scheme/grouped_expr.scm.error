@@ -1,0 +1,6 @@
+no convertible symbols found
+
+source snippet:
+  1: (define value (* (+ 1 2) 3))
+  2: (begin (display value) (newline))
+  3: 

@@ -2,4 +2,4 @@ no convertible symbols found
 
 source snippet:
   1: (begin (display "a") (display " ") (display "b") (newline))
-  2:
+  2: 

@@ -1,4 +1,2 @@
-fun define() {}
-fun define() {}
-fun define() {}
-fun define() {}
+fun map-get(m, k) {}
+fun map-set(m, k, v) {}
