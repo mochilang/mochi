@@ -1,0 +1,12 @@
+<?php
+$xs = [1, 2, 3];
+_print((is_array($xs) ? (array_key_exists(2, $xs) || in_array(2, $xs, true)) : (is_string($xs) ? strpos($xs, strval(2)) !== false : false)));
+_print(!((is_array($xs) ? (array_key_exists(5, $xs) || in_array(5, $xs, true)) : (is_string($xs) ? strpos($xs, strval(5)) !== false : false))));
+
+function _print(...$args) {
+    $parts = [];
+    foreach ($args as $a) {
+        if (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+    }
+    echo implode(' ', $parts), PHP_EOL;
+}

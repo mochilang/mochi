@@ -1,0 +1,22 @@
+<?php
+$people = [["name" => "Alice", "age" => 30], ["name" => "Bob", "age" => 15], ["name" => "Charlie", "age" => 65], ["name" => "Diana", "age" => 45]];
+$adults = (function() use ($people) {
+	$res = [];
+	foreach ((is_string($people) ? str_split($people) : $people) as $person) {
+		if (!(($person['age'] >= 18))) { continue; }
+		$res[] = ["name" => $person['name'], "age" => $person['age'], "is_senior" => ($person['age'] >= 60)];
+	}
+	return $res;
+})();
+_print("--- Adults ---");
+foreach ((is_string($adults) ? str_split($adults) : $adults) as $person) {
+	_print($person['name'], "is", $person['age'], ($person['is_senior'] ? " (senior)" : ""));
+}
+
+function _print(...$args) {
+    $parts = [];
+    foreach ($args as $a) {
+        if (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+    }
+    echo implode(' ', $parts), PHP_EOL;
+}

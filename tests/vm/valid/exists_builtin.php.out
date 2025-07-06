@@ -1,0 +1,19 @@
+<?php
+$data = [1, 2];
+$flag = exists((function() use ($data) {
+	$res = [];
+	foreach ((is_string($data) ? str_split($data) : $data) as $x) {
+		if (!(($x == 1))) { continue; }
+		$res[] = $x;
+	}
+	return $res;
+})());
+_print($flag);
+
+function _print(...$args) {
+    $parts = [];
+    foreach ($args as $a) {
+        if (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+    }
+    echo implode(' ', $parts), PHP_EOL;
+}

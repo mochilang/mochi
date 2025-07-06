@@ -1,0 +1,23 @@
+<?php
+function mochi_inc($c) {
+	$c = ((is_array($c['n']) && is_array(1)) ? array_merge($c['n'], 1) : ((is_string($c['n']) || is_string(1)) ? ($c['n'] . 1) : ($c['n'] + 1)));
+}
+
+class Counter {
+	public $n;
+	public function __construct($fields = []) {
+		$this->n = $fields['n'] ?? null;
+	}
+}
+
+$c = new Counter(['n' => 0]);
+mochi_inc($c);
+_print($c['n']);
+
+function _print(...$args) {
+    $parts = [];
+    foreach ($args as $a) {
+        if (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+    }
+    echo implode(' ', $parts), PHP_EOL;
+}

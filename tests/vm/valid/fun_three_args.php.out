@@ -1,0 +1,14 @@
+<?php
+function mochi_sum3($a, $b, $c) {
+	return ((is_array(((is_array($a) && is_array($b)) ? array_merge($a, $b) : ((is_string($a) || is_string($b)) ? ($a . $b) : ($a + $b)))) && is_array($c)) ? array_merge(((is_array($a) && is_array($b)) ? array_merge($a, $b) : ((is_string($a) || is_string($b)) ? ($a . $b) : ($a + $b))), $c) : ((is_string(((is_array($a) && is_array($b)) ? array_merge($a, $b) : ((is_string($a) || is_string($b)) ? ($a . $b) : ($a + $b)))) || is_string($c)) ? (((is_array($a) && is_array($b)) ? array_merge($a, $b) : ((is_string($a) || is_string($b)) ? ($a . $b) : ($a + $b))) . $c) : (((is_array($a) && is_array($b)) ? array_merge($a, $b) : ((is_string($a) || is_string($b)) ? ($a . $b) : ($a + $b))) + $c)));
+}
+
+_print(mochi_sum3(1, 2, 3));
+
+function _print(...$args) {
+    $parts = [];
+    foreach ($args as $a) {
+        if (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+    }
+    echo implode(' ', $parts), PHP_EOL;
+}
