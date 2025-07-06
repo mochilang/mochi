@@ -349,6 +349,12 @@ func ConvertAST(g *AST) []byte {
 		b.WriteByte('\n')
 	}
 	for _, fn := range g.Functions {
+		// Skip functions with multiple return values. Mochi currently
+		// does not support multi-value return types and the generated
+		// signatures would fail to parse.
+		if len(fn.Results) > 1 {
+			continue
+		}
 		if fn.Doc != "" {
 			for _, ln := range strings.Split(fn.Doc, "\n") {
 				b.WriteString("// ")
