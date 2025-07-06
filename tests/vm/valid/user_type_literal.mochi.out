@@ -1,0 +1,11 @@
+type Person {
+  Name: string
+  Age: int
+}
+type Book {
+  Title: string
+  Author: Person
+}
+var book = Book { Title: "Go", Author: Person { Name: "Bob", Age: 42 } }
+_ = book
+print(str(book.Author.Name))

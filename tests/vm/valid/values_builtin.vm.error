@@ -1,0 +1,5 @@
+output mismatch
+-- got --
+[1 2 3]
+-- want --
+1 2 3

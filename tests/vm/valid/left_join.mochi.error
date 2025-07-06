@@ -1,0 +1,5 @@
+tests/vm/valid/left_join.go.out:76: unsupported statement *ast.TypeSwitchStmt
+>>> 75:    var out T
+76:>>> switch any(out).(type) {
+77:    case int:
+78:    switch vv := v.(type) {

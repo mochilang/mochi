@@ -1,0 +1,5 @@
+error[T002]: undefined variable: strings
+  --> :2:11
+
+help:
+  Check if the variable was declared in this scope.

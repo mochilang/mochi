@@ -1,0 +1,5 @@
+tests/vm/valid/save_jsonl_stdout.go.out:27: unsupported assignment
+>>> 26:    func _save(src any, path string, opts map[string]any) {
+27:>>> rows, ok := _toMapSlice(src)
+28:    if !ok {
+29:    panic("save source must be list of maps")

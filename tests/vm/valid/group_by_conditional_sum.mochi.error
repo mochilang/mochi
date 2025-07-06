@@ -1,0 +1,5 @@
+tests/vm/valid/group_by_conditional_sum.go.out:120: unsupported statement *ast.TypeSwitchStmt
+>>> 119:    var out T
+120:>>> switch any(out).(type) {
+121:    case int:
+122:    switch vv := v.(type) {

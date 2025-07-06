@@ -1,0 +1,7 @@
+fun boom(): bool {
+  print(str("boom"))
+  return true
+}
+print(str((((1 < 2) && (2 < 3)) && (3 < 4))))
+print(str((((1 < 2) && (2 > 3)) && boom())))
+print(str(((((1 < 2) && (2 < 3)) && (3 > 4)) && boom())))

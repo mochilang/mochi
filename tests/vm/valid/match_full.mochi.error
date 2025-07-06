@@ -1,0 +1,5 @@
+tests/vm/valid/match_full.go.out:70: unsupported parameter list
+>>> 69:    
+70:>>> func _equal(a, b any) bool {
+71:    av := reflect.ValueOf(a)
+72:    bv := reflect.ValueOf(b)

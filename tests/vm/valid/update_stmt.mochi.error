@@ -1,0 +1,5 @@
+tests/vm/valid/update_stmt.go.out:55: unsupported declaration
+>>> 54:    
+55:>>> var people []Person
+56:    
+57:    func main() {

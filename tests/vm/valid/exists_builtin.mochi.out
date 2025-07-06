@@ -1,0 +1,13 @@
+var data = [1, 2]
+var flag = len(fun (): list<int> {
+  let _res = []
+  for x in data {
+  if x == 1 {
+  if x == 1 {
+  _res = append(_res, x)
+}
+}
+}
+  return _res
+}()) > 0
+print(str(flag))

@@ -1,0 +1,5 @@
+tests/vm/valid/group_by_having.go.out:10: unsupported declaration
+>>> 9:    func main() {
+10:>>> type PeopleItem struct {
+11:    Name string `json:"name"`
+12:    City string `json:"city"`

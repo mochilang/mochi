@@ -1,0 +1,5 @@
+tests/vm/valid/record_assign.go.out:28: unsupported statement *ast.TypeSwitchStmt
+>>> 27:    var out T
+28:>>> switch any(out).(type) {
+29:    case int:
+30:    switch vv := v.(type) {

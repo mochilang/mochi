@@ -1,0 +1,7 @@
+fun makeAdder(n: int): func(int) int {
+  return fun (x: int): int {
+  return (x + n)
+}
+}
+var add10 = makeAdder(10)
+print(str(add10(7)))

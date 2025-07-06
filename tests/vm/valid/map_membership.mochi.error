@@ -1,0 +1,5 @@
+tests/vm/valid/map_membership.go.out:11: unsupported assignment
+>>> 10:    _tmp1 := m
+11:>>> _, _tmp2 := _tmp1[_tmp0]
+12:    fmt.Println(_tmp2)
+13:    _tmp3 := "c"
