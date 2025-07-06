@@ -14,6 +14,7 @@ import (
 	ccode "mochi/compile/x/c"
 	"mochi/golden"
 	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -171,24 +172,32 @@ func TestCCompiler_GoldenOutput(t *testing.T) {
 		if out, err := exec.Command(cc, cfile, "-o", bin).CombinedOutput(); err != nil {
 			return nil, fmt.Errorf("\u274c cc error: %w\n%s", err, out)
 		}
+		inData, _ := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in")
 
+		// run generated C binary
 		cmd := exec.Command(bin)
-		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
-			cmd.Stdin = bytes.NewReader(data)
+		if len(inData) > 0 {
+			cmd.Stdin = bytes.NewReader(inData)
 		}
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			return nil, fmt.Errorf("\u274c run error: %w\n%s", err, out)
 		}
-
-		wantPath := strings.TrimSuffix(src, ".mochi") + ".out"
-		want, err := os.ReadFile(wantPath)
-		if err != nil {
-			return nil, fmt.Errorf("read golden output: %w", err)
-		}
 		got := bytes.TrimSpace(out)
-		if !bytes.Equal(got, bytes.TrimSpace(want)) {
-			return nil, fmt.Errorf("output mismatch\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", got, bytes.TrimSpace(want))
+
+		// run program with VM to get expected output
+		p, err := vm.Compile(prog, env)
+		if err != nil {
+			return nil, fmt.Errorf("\u274c vm compile error: %w", err)
+		}
+		var vmOut bytes.Buffer
+		m := vm.NewWithIO(p, bytes.NewReader(inData), &vmOut)
+		if err := m.Run(); err != nil {
+			return nil, fmt.Errorf("\u274c vm run error: %w", err)
+		}
+		want := bytes.TrimSpace(vmOut.Bytes())
+		if !bytes.Equal(got, want) {
+			return nil, fmt.Errorf("output mismatch\n\n--- VM ---\n%s\n\n--- C ---\n%s\n", want, got)
 		}
 
 		return bytes.TrimSpace(code), nil
