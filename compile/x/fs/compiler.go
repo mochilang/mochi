@@ -544,7 +544,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			typ := fsType(s.Let.Type)
 			c.writeln(fmt.Sprintf("let %s: %s = %s", name, typ, expr))
 		} else {
-			c.writeln(fmt.Sprintf("let %s = %s", name, expr))
+			t := types.TypeOfExpr(s.Let.Value, c.env)
+			if !types.ContainsAny(t) && (isEmptyListLiteral(s.Let.Value) || isEmptyMapLiteral(s.Let.Value)) {
+				c.writeln(fmt.Sprintf("let %s: %s = %s", name, fsTypeOf(t), expr))
+			} else {
+				c.writeln(fmt.Sprintf("let %s = %s", name, expr))
+			}
 		}
 		if c.isMapExpr(s.Let.Value) {
 			c.locals[name] = true
@@ -568,7 +573,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			typ := fsType(s.Var.Type)
 			c.writeln(fmt.Sprintf("let mutable %s: %s = %s", name, typ, expr))
 		} else {
-			c.writeln(fmt.Sprintf("let mutable %s = %s", name, expr))
+			t := types.TypeOfExpr(s.Var.Value, c.env)
+			if !types.ContainsAny(t) && (isEmptyListLiteral(s.Var.Value) || isEmptyMapLiteral(s.Var.Value)) {
+				c.writeln(fmt.Sprintf("let mutable %s: %s = %s", name, fsTypeOf(t), expr))
+			} else {
+				c.writeln(fmt.Sprintf("let mutable %s = %s", name, expr))
+			}
 		}
 		if c.isMapExpr(s.Var.Value) {
 			c.locals[name] = true
