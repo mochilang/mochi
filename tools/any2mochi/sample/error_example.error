@@ -1,3 +1,11 @@
-line 1: unsupported assignment
->>> 1: x = 1
-    2: if x > 2:
+exit status 1: Traceback (most recent call last):
+  File "<string>", line 11, in <module>
+  File "/root/.pyenv/versions/3.11.12/lib/python3.11/ast.py", line 50, in parse
+    return compile(source, filename, mode, flags,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<unknown>", line 1
+    for i in range(3)
+                     ^
+SyntaxError: expected ':'
+>>> 1: for i in range(3)
+    2:     print(i)
