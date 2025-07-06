@@ -50,7 +50,11 @@ func ConvertFile(path string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return Convert(string(data))
+	out, err := Convert(string(data))
+	if err != nil {
+		return nil, formatError(path, string(data), err)
+	}
+	return out, nil
 }
 
 func writeFunc(out *strings.Builder, fset *token.FileSet, fn *ast.FuncDecl) {
@@ -210,29 +214,49 @@ func formatParseError(src string, err error) error {
 	if el, ok := err.(scanner.ErrorList); ok && len(el) > 0 {
 		e := el[0]
 		pos := e.Pos
-		lines := strings.Split(src, "\n")
 		line := int(pos.Line)
 		col := int(pos.Column)
-		start := line - 2
-		if start < 0 {
-			start = 0
-		}
-		end := line + 2
-		if end > len(lines) {
-			end = len(lines)
-		}
-		var snippet strings.Builder
-		for i := start; i < end; i++ {
-			prefix := "   "
-			if i+1 == line {
-				prefix = ">>>"
-			}
-			fmt.Fprintf(&snippet, "%s %d: %s\n", prefix, i+1, lines[i])
-			if i+1 == line {
-				snippet.WriteString("    " + strings.Repeat(" ", col-1) + "^\n")
-			}
-		}
-		return &ConvertError{Line: line, Column: col, Msg: e.Msg, Snip: strings.TrimRight(snippet.String(), "\n")}
+		return &ConvertError{Line: line, Column: col, Msg: e.Msg, Snip: arrowSnippet(src, line, col)}
 	}
 	return err
+}
+
+func arrowSnippet(src string, line, col int) string {
+	lines := strings.Split(src, "\n")
+	start := line - 3
+	if start < 0 {
+		start = 0
+	}
+	end := line + 2
+	if end > len(lines) {
+		end = len(lines)
+	}
+	var b strings.Builder
+	for i := start; i < end; i++ {
+		mark := "   "
+		if i+1 == line {
+			mark = ">>>"
+		}
+		fmt.Fprintf(&b, "%4d:%s %s\n", i+1, mark, lines[i])
+		if i+1 == line {
+			b.WriteString("     " + strings.Repeat(" ", col-1) + "^\n")
+		}
+	}
+	return strings.TrimRight(b.String(), "\n")
+}
+
+func formatError(path, src string, err error) error {
+	if ce, ok := err.(*ConvertError); ok {
+		if ce.Line > 0 {
+			return fmt.Errorf("%s:%d:%d: %s\n%s", path, ce.Line, ce.Column, ce.Msg, ce.Snip)
+		}
+		return fmt.Errorf("%s: %s\n%s", path, ce.Msg, ce.Snip)
+	}
+	if el, ok := err.(scanner.ErrorList); ok && len(el) > 0 {
+		e := el[0]
+		line := int(e.Pos.Line)
+		col := int(e.Pos.Column)
+		return fmt.Errorf("%s:%d:%d: %s\n%s", path, line, col, e.Msg, arrowSnippet(src, line, col))
+	}
+	return fmt.Errorf("%s: %v", path, err)
 }

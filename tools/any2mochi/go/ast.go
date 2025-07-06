@@ -43,10 +43,12 @@ type Type struct {
 }
 
 type Field struct {
-	Name string `json:"name,omitempty"`
-	Type string `json:"type,omitempty"`
-	Tag  string `json:"tag,omitempty"`
-	Line int    `json:"line,omitempty"`
+	Name    string `json:"name,omitempty"`
+	Type    string `json:"type,omitempty"`
+	Tag     string `json:"tag,omitempty"`
+	Doc     string `json:"doc,omitempty"`
+	EndLine int    `json:"endLine,omitempty"`
+	Line    int    `json:"line,omitempty"`
 }
 
 type Var struct {
@@ -129,12 +131,18 @@ func ParseAST(src string) (*AST, error) {
 							if f.Tag != nil {
 								tag = strings.Trim(f.Tag.Value, "`")
 							}
+							doc := ""
+							if f.Doc != nil {
+								doc = strings.TrimSpace(f.Doc.Text())
+							} else if f.Comment != nil {
+								doc = strings.TrimSpace(f.Comment.Text())
+							}
 							if len(f.Names) == 0 {
-								gt.Fields = append(gt.Fields, Field{Type: typ, Tag: tag, Line: fset.Position(f.Pos()).Line})
+								gt.Fields = append(gt.Fields, Field{Type: typ, Tag: tag, Doc: doc, Line: fset.Position(f.Pos()).Line, EndLine: fset.Position(f.End()).Line})
 								continue
 							}
 							for _, n := range f.Names {
-								gt.Fields = append(gt.Fields, Field{Name: n.Name, Type: typ, Tag: tag, Line: fset.Position(n.Pos()).Line})
+								gt.Fields = append(gt.Fields, Field{Name: n.Name, Type: typ, Tag: tag, Doc: doc, Line: fset.Position(n.Pos()).Line, EndLine: fset.Position(f.End()).Line})
 							}
 						}
 						out.Types = append(out.Types, gt)
@@ -156,6 +164,9 @@ func ParseAST(src string) (*AST, error) {
 							fn := Func{Name: name, Recv: ts.Name.Name}
 							fn.Line = fset.Position(m.Pos()).Line
 							fn.EndLine = fset.Position(m.End()).Line
+							if m.Doc != nil {
+								fn.Doc = strings.TrimSpace(m.Doc.Text())
+							}
 							if ft.Params != nil {
 								for _, p := range ft.Params.List {
 									typ := exprString(fset, p.Type)
@@ -229,6 +240,13 @@ func ParseFile(path string) (*AST, error) {
 func ConvertAST(g *AST) []byte {
 	var b strings.Builder
 	for _, t := range g.Types {
+		if t.Doc != "" {
+			for _, ln := range strings.Split(t.Doc, "\n") {
+				b.WriteString("// ")
+				b.WriteString(ln)
+				b.WriteByte('\n')
+			}
+		}
 		b.WriteString("type ")
 		b.WriteString(t.Name)
 		if t.Interface {
@@ -275,6 +293,13 @@ func ConvertAST(g *AST) []byte {
 		}
 		b.WriteString(" {\n")
 		for _, f := range t.Fields {
+			if f.Doc != "" {
+				for _, ln := range strings.Split(f.Doc, "\n") {
+					b.WriteString("  // ")
+					b.WriteString(ln)
+					b.WriteByte('\n')
+				}
+			}
 			b.WriteString("  ")
 			name := f.Name
 			if j := jsonFieldName(f.Tag); j != "" {
@@ -296,6 +321,13 @@ func ConvertAST(g *AST) []byte {
 		b.WriteString("}\n")
 	}
 	for _, v := range g.Vars {
+		if v.Doc != "" {
+			for _, ln := range strings.Split(v.Doc, "\n") {
+				b.WriteString("// ")
+				b.WriteString(ln)
+				b.WriteByte('\n')
+			}
+		}
 		b.WriteString("let ")
 		b.WriteString(v.Name)
 		if v.Type != "" {
@@ -309,6 +341,13 @@ func ConvertAST(g *AST) []byte {
 		b.WriteByte('\n')
 	}
 	for _, fn := range g.Functions {
+		if fn.Doc != "" {
+			for _, ln := range strings.Split(fn.Doc, "\n") {
+				b.WriteString("// ")
+				b.WriteString(ln)
+				b.WriteByte('\n')
+			}
+		}
 		b.WriteString("fun ")
 		if fn.Recv != "" {
 			b.WriteString(fn.Recv)
