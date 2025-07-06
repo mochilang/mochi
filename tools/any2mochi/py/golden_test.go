@@ -9,7 +9,8 @@ import (
 
 func TestConvert_Golden(t *testing.T) {
 	root := findRepoRoot(t)
-	runConvertGolden(t, filepath.Join(root, "tests/compiler/py"), "*.py.out", ConvertFile, "py", ".mochi", ".error")
+	errs := runConvertRunGolden(t, filepath.Join(root, "tests/compiler/py"), "*.py.out", ConvertFile, "py", ".mochi", ".error")
+	writeErrorsMarkdown(filepath.Join(root, "tests/any2mochi/py"), errs)
 }
 
 func TestConvertCompile_Golden(t *testing.T) {

@@ -11,5 +11,6 @@ import (
 
 func TestConvertCs_Golden(t *testing.T) {
 	root := any2mochi.FindRepoRoot(t)
-	any2mochi.RunConvertGolden(t, filepath.Join(root, "tests/compiler/cs"), "*.cs.out", ConvertFile, "cs", ".mochi", ".error")
+	errs := any2mochi.RunConvertRunGolden(t, filepath.Join(root, "tests/compiler/cs"), "*.cs.out", ConvertFile, "cs", ".mochi", ".error")
+	any2mochi.WriteErrorsMarkdown(filepath.Join(root, "tests/any2mochi/cs"), errs)
 }

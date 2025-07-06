@@ -11,5 +11,6 @@ import (
 
 func TestConvertEx_Golden(t *testing.T) {
 	root := any2mochi.FindRepoRoot(t)
-	any2mochi.RunConvertGolden(t, filepath.Join(root, "tests/compiler/ex"), "*.ex.out", ConvertFile, "ex", ".mochi", ".error")
+	errs := any2mochi.RunConvertRunGolden(t, filepath.Join(root, "tests/compiler/ex"), "*.ex.out", ConvertFile, "ex", ".mochi", ".error")
+	any2mochi.WriteErrorsMarkdown(filepath.Join(root, "tests/any2mochi/ex"), errs)
 }
