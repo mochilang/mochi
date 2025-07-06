@@ -504,16 +504,17 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		c.env.SetVar(s.Name, typ, false)
 	}
 	typStr := tsType(typ)
+	needType := s.Type != nil || s.Value == nil || (c.moduleScope && c.indent == 1)
 	if c.moduleScope && c.indent == 1 {
 		// declare at module scope
-		if typStr != "" {
+		if needType && typStr != "" {
 			c.globals[name] = fmt.Sprintf("let %s: %s", name, typStr)
 		} else {
 			c.globals[name] = fmt.Sprintf("let %s", name)
 		}
 		c.writeln(fmt.Sprintf("%s = %s", name, value))
 	} else {
-		if typStr != "" {
+		if needType && typStr != "" {
 			c.writeln(fmt.Sprintf("let %s: %s = %s", name, typStr, value))
 		} else {
 			c.writeln(fmt.Sprintf("let %s = %s", name, value))
@@ -553,15 +554,16 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 		c.env.SetVar(s.Name, typ, true)
 	}
 	typStr := tsType(typ)
+	needType := s.Type != nil || s.Value == nil || (c.moduleScope && c.indent == 1)
 	if c.moduleScope && c.indent == 1 {
-		if typStr != "" {
+		if needType && typStr != "" {
 			c.globals[name] = fmt.Sprintf("var %s: %s", name, typStr)
 		} else {
 			c.globals[name] = fmt.Sprintf("var %s", name)
 		}
 		c.writeln(fmt.Sprintf("%s = %s", name, value))
 	} else {
-		if typStr != "" {
+		if needType && typStr != "" {
 			c.writeln(fmt.Sprintf("var %s: %s = %s", name, typStr, value))
 		} else {
 			c.writeln(fmt.Sprintf("var %s = %s", name, value))
@@ -1718,6 +1720,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "avg":
 		c.use("_avg")
 		return fmt.Sprintf("_avg(%s)", argStr), nil
+	case "reduce":
+		if len(args) != 3 {
+			return "", fmt.Errorf("reduce expects 3 args")
+		}
+		c.use("_reduce")
+		return fmt.Sprintf("_reduce(%s, %s, %s)", args[0], args[1], args[2]), nil
 	case "sum":
 		c.use("_sum")
 		return fmt.Sprintf("_sum(%s)", argStr), nil

@@ -63,6 +63,13 @@ const (
 		"  return sum / list.length;\n" +
 		"}\n"
 
+	helperReduce = "function _reduce(src: any[], fn: (a: any, b: any) => any, acc: any): any {\n" +
+		"  for (const it of src) {\n" +
+		"    acc = fn(acc, it);\n" +
+		"  }\n" +
+		"  return acc;\n" +
+		"}\n"
+
 	helperSum = "function _sum(v: any): number {\n" +
 		"  let list: any[] | null = null;\n" +
 		"  if (Array.isArray(v)) list = v;\n" +
@@ -500,6 +507,7 @@ var helperMap = map[string]string{
 	"_append":      helperAppend,
 	"_count":       helperCount,
 	"_avg":         helperAvg,
+	"_reduce":      helperReduce,
 	"_sum":         helperSum,
 	"_min":         helperMin,
 	"_max":         helperMax,
