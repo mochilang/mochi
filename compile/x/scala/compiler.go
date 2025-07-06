@@ -1154,6 +1154,9 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 	}
 	switch call.Func {
 	case "print":
+		if len(args) == 1 && isListExpr(call.Args[0], c.env) {
+			return fmt.Sprintf("println(%s.mkString(\" \"))", args[0]), nil
+		}
 		return fmt.Sprintf("println(%s)", argStr), nil
 	case "len":
 		if len(args) != 1 {
@@ -1229,7 +1232,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 		if len(args) != 2 {
 			return "", fmt.Errorf("append expects 2 args")
 		}
-		return fmt.Sprintf("%s.append(%s)", args[0], args[1]), nil
+		return fmt.Sprintf("%s :+ %s", args[0], args[1]), nil
 	case "concat":
 		if len(args) == 0 {
 			return "scala.collection.mutable.ArrayBuffer()", nil

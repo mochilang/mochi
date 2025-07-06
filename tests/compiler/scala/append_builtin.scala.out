@@ -1,7 +1,7 @@
 object Main {
     def main(args: Array[String]): Unit = {
         var xs = scala.collection.mutable.ArrayBuffer(1)
-        xs.append(2)
-        println(xs)
+        xs :+ 2
+        println(xs.mkString(" "))
     }
 }
