@@ -1,0 +1,5 @@
+parse error at 5:1: expected operand, found '}'
+  4:     return x +
+  5: }
+  6: 
+
