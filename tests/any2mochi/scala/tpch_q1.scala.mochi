@@ -141,4 +141,5 @@ fun _query(src, joins, Any]], opts, Any]) {
     it.map(r = > sel(r))
 }
 fun _to_json(v) {
+  match v {
 }

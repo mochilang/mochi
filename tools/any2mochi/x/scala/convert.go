@@ -377,15 +377,62 @@ func mapType(t string) string {
 	}
 }
 
+func convertTypeDecl(t TypeDecl) string {
+	if len(t.Variants) == 0 {
+		return ""
+	}
+	var b strings.Builder
+	b.WriteString("type ")
+	b.WriteString(t.Name)
+	b.WriteString(" =\n")
+	for i, v := range t.Variants {
+		if i > 0 {
+			b.WriteString("  | ")
+		} else {
+			b.WriteString("  ")
+		}
+		b.WriteString(v.Name)
+		if len(v.Fields) > 0 {
+			b.WriteString("(")
+			for j, f := range v.Fields {
+				if j > 0 {
+					b.WriteString(", ")
+				}
+				b.WriteString(f.Name)
+				typ := f.Type
+				if typ == "Any" || typ == "" {
+					typ = t.Name
+				} else {
+					typ = mapType(typ)
+				}
+				if typ != "" {
+					b.WriteString(": ")
+					b.WriteString(typ)
+				}
+			}
+			b.WriteString(")")
+		}
+		b.WriteByte('\n')
+	}
+	return strings.TrimSuffix(b.String(), "\n")
+}
+
 // convertFallback parses Scala source using the scalaast CLI and converts
 // the resulting AST to Mochi.
 func convertFallback(src string) ([]byte, error) {
-	funcs, err := runParse(src)
+	file, err := runParse(src)
 	if err != nil {
 		return nil, err
 	}
 	var out strings.Builder
-	for _, fn := range funcs {
+	for _, t := range file.Types {
+		code := convertTypeDecl(t)
+		if code != "" {
+			out.WriteString(code)
+			out.WriteByte('\n')
+		}
+	}
+	for _, fn := range file.Funcs {
 		code := convertFromAST(fn)
 		if code == "" {
 			continue
@@ -434,17 +481,23 @@ func convertFromAST(fn Func) string {
 	reIf := regexp.MustCompile(`^if\s*\((.*)\)\s*{`)
 	reElseIf := regexp.MustCompile(`^}\s*else\s*if\s*\((.*)\)\s*{`)
 	reElse := regexp.MustCompile(`^}\s*else\s*{`)
+	reMatch := regexp.MustCompile(`^(?:return\s+)?\(?(.+)\s+match\s*{`)
+	reCase := regexp.MustCompile(`^case\s+(.+)\s+=>\s*(.*)$`)
+	inMatch := false
 
 	for _, l := range fn.Body {
 		line := strings.TrimSpace(l)
 		if line == "" {
 			continue
 		}
-		if line == "}" {
+		if line == "}" || line == "})" {
 			if indent > 0 {
 				indent--
 			}
 			write("}")
+			if line == "})" && inMatch {
+				inMatch = false
+			}
 			continue
 		}
 		if m := reElseIf.FindStringSubmatch(line); m != nil {
@@ -478,6 +531,23 @@ func convertFromAST(fn Func) string {
 		if m := reIf.FindStringSubmatch(line); m != nil {
 			write("if " + convertExpr(strings.TrimSpace(m[1])) + " {")
 			indent++
+			continue
+		}
+		if m := reMatch.FindStringSubmatch(line); m != nil {
+			expr := convertExpr(strings.TrimSpace(m[1]))
+			if strings.HasPrefix(line, "return ") {
+				write("return match " + expr + " {")
+			} else {
+				write("match " + expr + " {")
+			}
+			indent++
+			inMatch = true
+			continue
+		}
+		if m := reCase.FindStringSubmatch(line); m != nil && inMatch {
+			pat := strings.TrimSpace(m[1])
+			body := strings.TrimSpace(m[2])
+			write(pat + " => " + convertExpr(body))
 			continue
 		}
 

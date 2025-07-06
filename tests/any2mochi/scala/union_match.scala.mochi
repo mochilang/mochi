@@ -1,7 +1,11 @@
+type Tree =
+  Leaf
+  | Node(left: Tree, value: int, right: Tree)
 fun isLeaf(t) {
-  return (t match {
-  case Leaf = > true
-  case _ = > false
+  return match t {
+    Leaf => true
+    _ => false
+  }
 }
 print(isLeaf(Leaf()))
 print(isLeaf(Node(left = Leaf(), value = 1, right = Leaf())))
