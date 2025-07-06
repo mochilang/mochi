@@ -15,20 +15,22 @@ type AST struct {
 }
 
 type Stmt struct {
-	Kind       string `json:"kind"`
-	Name       string `json:"name,omitempty"`
-	Expr       string `json:"expr,omitempty"`
-	Cond       string `json:"cond,omitempty"`
-	Start      string `json:"start,omitempty"`
-	End        string `json:"end,omitempty"`
-	Collection string `json:"collection,omitempty"`
-	Body       []Stmt `json:"body,omitempty"`
-	Else       []Stmt `json:"else,omitempty"`
-	Line       int    `json:"line,omitempty"`
-	Column     int    `json:"column,omitempty"`
-	EndLine    int    `json:"endLine,omitempty"`
-	EndColumn  int    `json:"endColumn,omitempty"`
-	Snippet    string `json:"snippet,omitempty"`
+	Kind        string `json:"kind"`
+	Name        string `json:"name,omitempty"`
+	Expr        string `json:"expr,omitempty"`
+	Cond        string `json:"cond,omitempty"`
+	Start       string `json:"start,omitempty"`
+	End         string `json:"end,omitempty"`
+	Collection  string `json:"collection,omitempty"`
+	Body        []Stmt `json:"body,omitempty"`
+	Else        []Stmt `json:"else,omitempty"`
+	Line        int    `json:"line,omitempty"`
+	Column      int    `json:"column,omitempty"`
+	EndLine     int    `json:"endLine,omitempty"`
+	EndColumn   int    `json:"endColumn,omitempty"`
+	StartOffset int    `json:"startOffset,omitempty"`
+	EndOffset   int    `json:"endOffset,omitempty"`
+	Snippet     string `json:"snippet,omitempty"`
 }
 
 func parseCLI(src string) (*AST, error) {
@@ -47,6 +49,24 @@ func parseCLI(src string) (*AST, error) {
 	}
 	tmp.Close()
 	defer os.Remove(tmp.Name())
+	if parserCmd := os.Getenv("ST_PARSER_CMD"); parserCmd != "" {
+		parts := strings.Fields(parserCmd)
+		cmd := exec.Command(parts[0], append(parts[1:], tmp.Name())...)
+		var out bytes.Buffer
+		var stderr bytes.Buffer
+		cmd.Stdout = &out
+		cmd.Stderr = &stderr
+		if err := cmd.Run(); err == nil {
+			var ast AST
+			if err := json.Unmarshal(out.Bytes(), &ast); err == nil {
+				return &ast, nil
+			}
+			if msg := strings.TrimSpace(stderr.String()); msg != "" {
+				return nil, fmt.Errorf("parser: %s", msg)
+			}
+			return nil, err
+		}
+	}
 	cmd := exec.Command("go", "run", filepath.Join(root, "tools", "stast"), tmp.Name())
 	var out bytes.Buffer
 	var stderr bytes.Buffer

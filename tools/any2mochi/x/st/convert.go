@@ -282,7 +282,7 @@ func convertFallback(src string) ([]byte, error) {
 		}
 	}
 	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+		return nil, fmt.Errorf("no convertible statements found\n\nsource snippet:\n%s", numberedSnippet(src))
 	}
 	return []byte(out.String()), nil
 }
