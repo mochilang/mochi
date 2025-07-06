@@ -19,6 +19,7 @@ type Item struct {
 	Body   string   `json:"body,omitempty"`
 	Fields []Field  `json:"fields,omitempty"`
 	Line   int      `json:"line"`
+	Doc    string   `json:"doc,omitempty"`
 }
 
 // Parse parses a very small subset of Haskell source and returns a slice
@@ -103,11 +104,23 @@ func Parse(src string) ([]Item, error) {
 			continue
 		}
 		if parseErr == nil {
-			snippet := line
-			if len(snippet) > 60 {
-				snippet = snippet[:60]
+			start := i - 1
+			if start < 0 {
+				start = 0
 			}
-			parseErr = fmt.Errorf("unsupported syntax at line %d:\n  %s", i+1, strings.TrimSpace(snippet))
+			end := i + 1
+			if end >= len(lines) {
+				end = len(lines) - 1
+			}
+			var snippet []string
+			for j := start; j <= end; j++ {
+				prefix := "   "
+				if j == i {
+					prefix = "-> "
+				}
+				snippet = append(snippet, fmt.Sprintf("%s%3d | %s", prefix, j+1, lines[j]))
+			}
+			parseErr = fmt.Errorf("line %d: unsupported syntax\n%s", i+1, strings.Join(snippet, "\n"))
 		}
 	}
 	return items, parseErr

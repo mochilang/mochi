@@ -1,0 +1,4 @@
+line 20: unsupported syntax
+    19 | 
+->  20 | instance Aeson.ToJSON AnyValue where
+    21 |   toJSON (VInt n) = Aeson.toJSON n
