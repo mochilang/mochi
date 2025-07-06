@@ -1,4 +1,4 @@
-line 27: unsupported line
+line 27: unsupported line "static Object[] people ="
      25| }
      26| 
 >>>  27| static Object[] people =

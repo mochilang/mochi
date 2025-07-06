@@ -214,7 +214,7 @@ func parseLegacy(src, pkg string) ([]string, error) {
 		default:
 			if l != "" && l != "{" && l != "}" && !strings.HasPrefix(l, "public class") {
 				snippet := numberedBodySnippet(lines, i)
-				return nil, fmt.Errorf("line %d: unsupported line\n%s", i+1, snippet)
+				return nil, fmt.Errorf("line %d: unsupported line %q\n%s", i+1, strings.TrimSpace(lines[i]), snippet)
 			}
 		}
 	}
@@ -270,7 +270,7 @@ func javaBodyLines(body []string, structs map[string][]string) ([]string, error)
 			continue
 		}
 		snippet := numberedBodySnippet(body, i)
-		return nil, fmt.Errorf("line %d: unsupported line\n%s", i+1, snippet)
+		return nil, fmt.Errorf("line %d: unsupported line %q\n%s", i+1, l, snippet)
 	}
 	return out, nil
 }
