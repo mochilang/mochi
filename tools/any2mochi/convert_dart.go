@@ -3,25 +3,46 @@ package any2mochi
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 	"unicode"
 )
 
 // ConvertDart converts dart source code to Mochi.
 func ConvertDart(src string) ([]byte, error) {
-	ls := Servers["dart"]
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+	funcs, err := parseDartCLI(src)
 	if err != nil {
 		return nil, err
 	}
-	if len(diags) > 0 {
-		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
-	}
-
-	var out strings.Builder
-	writeDartSymbols(&out, nil, syms, src, ls)
-	if out.Len() == 0 {
+	if len(funcs) == 0 {
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+	}
+	var out strings.Builder
+	for _, f := range funcs {
+		out.WriteString("fun ")
+		out.WriteString(f.Name)
+		out.WriteByte('(')
+		for i, p := range f.Params {
+			if i > 0 {
+				out.WriteString(", ")
+			}
+			out.WriteString(p.name)
+			if p.typ != "" {
+				out.WriteString(": ")
+				out.WriteString(p.typ)
+			}
+		}
+		out.WriteByte(')')
+		if f.Ret != "" {
+			out.WriteString(": ")
+			out.WriteString(f.Ret)
+		}
+		out.WriteString(" {\n")
+		for _, line := range f.Body {
+			out.WriteString(line)
+			out.WriteByte('\n')
+		}
+		out.WriteString("}\n")
 	}
 	return []byte(out.String()), nil
 }
@@ -38,6 +59,13 @@ func ConvertDartFile(path string) ([]byte, error) {
 type dartParam struct {
 	name string
 	typ  string
+}
+
+type dartFunc struct {
+	Name   string
+	Params []dartParam
+	Ret    string
+	Body   []string
 }
 
 func parseDartDetail(detail string) ([]dartParam, string) {
@@ -363,8 +391,24 @@ func parseDartStatements(body string) []string {
 			indent++
 		case strings.HasPrefix(l, "for ") && strings.HasSuffix(l, "{"):
 			head := strings.TrimSpace(strings.TrimSuffix(l[4:], "{"))
-			out = append(out, strings.Repeat("  ", indent)+"for "+head+" {")
+			rep := regexp.MustCompile(`var (\w+) = ([^;]+); \w+ < ([^;]+); \w+\+\+`)
+			if m := rep.FindStringSubmatch(head); m != nil {
+				out = append(out, strings.Repeat("  ", indent)+"for "+m[1]+" in "+m[2]+".."+m[3]+" {")
+			} else {
+				out = append(out, strings.Repeat("  ", indent)+"for "+head+" {")
+			}
 			indent++
+		case strings.HasPrefix(l, "var "):
+			stmt := strings.TrimSpace(strings.TrimPrefix(l, "var "))
+			if strings.Contains(stmt, "=") && strings.Contains(stmt, ".length") {
+				parts := strings.SplitN(stmt, "=", 2)
+				name := strings.TrimSpace(parts[0])
+				rhs := strings.TrimSpace(strings.TrimSuffix(parts[1], ".length"))
+				l = "let " + name + " = len(" + rhs + ")"
+			} else {
+				l = "let " + stmt
+			}
+			out = append(out, strings.Repeat("  ", indent)+l)
 		case strings.HasPrefix(l, "while ") && strings.HasSuffix(l, "{"):
 			cond := strings.TrimSpace(strings.TrimSuffix(l[6:], "{"))
 			out = append(out, strings.Repeat("  ", indent)+"while "+cond+" {")
