@@ -256,7 +256,7 @@ func ConvertAST(g *AST) []byte {
 			}
 		}
 		b.WriteString("type ")
-		b.WriteString(t.Name)
+		b.WriteString(sanitizeName(t.Name))
 		if t.Interface {
 			b.WriteString(" interface {\n")
 			for _, m := range t.Methods {
@@ -309,9 +309,9 @@ func ConvertAST(g *AST) []byte {
 				}
 			}
 			b.WriteString("  ")
-			name := f.Name
+			name := sanitizeName(f.Name)
 			if j := jsonFieldName(f.Tag); j != "" {
-				name = j
+				name = sanitizeName(j)
 			}
 			if name != "" {
 				b.WriteString(name)
@@ -337,7 +337,7 @@ func ConvertAST(g *AST) []byte {
 			}
 		}
 		b.WriteString("let ")
-		b.WriteString(v.Name)
+		b.WriteString(sanitizeName(v.Name))
 		if v.Type != "" {
 			b.WriteString(": ")
 			b.WriteString(v.Type)
@@ -358,17 +358,17 @@ func ConvertAST(g *AST) []byte {
 		}
 		b.WriteString("fun ")
 		if fn.Recv != "" {
-			b.WriteString(fn.Recv)
+			b.WriteString(sanitizeName(fn.Recv))
 			b.WriteByte('.')
 		}
-		b.WriteString(fn.Name)
+		b.WriteString(sanitizeName(fn.Name))
 		b.WriteByte('(')
 		for i, p := range fn.Params {
 			if i > 0 {
 				b.WriteString(", ")
 			}
 			if p.Name != "" {
-				b.WriteString(p.Name)
+				b.WriteString(sanitizeName(p.Name))
 			} else {
 				b.WriteByte('_')
 			}

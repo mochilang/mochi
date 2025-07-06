@@ -9,6 +9,7 @@ import (
 	"go/token"
 	"os"
 	"strings"
+	"unicode"
 )
 
 // ConvertError provides a detailed error suitable for golden tests.
@@ -17,6 +18,39 @@ type ConvertError struct {
 	Column int
 	Msg    string
 	Snip   string
+}
+
+var mochiReserved = map[string]bool{
+	"let": true, "fun": true, "if": true, "else": true, "for": true,
+	"return": true, "true": true, "false": true, "stream": true,
+	"agent": true, "test": true, "expect": true, "on": true,
+	"intent": true, "import": true, "extern": true, "var": true,
+	"break": true, "continue": true, "while": true, "in": true,
+	"generate": true, "match": true, "fetch": true, "load": true,
+	"save": true, "package": true, "export": true, "fact": true,
+	"rule": true, "all": true, "null": true,
+}
+
+func sanitizeName(name string) string {
+	if name == "" {
+		return ""
+	}
+	var b strings.Builder
+	for i, r := range name {
+		if unicode.IsLetter(r) || r == '_' || (unicode.IsDigit(r) && i > 0) {
+			b.WriteRune(r)
+		} else {
+			b.WriteRune('_')
+		}
+	}
+	out := b.String()
+	if out == "" || !(unicode.IsLetter(rune(out[0])) || out[0] == '_') {
+		out = "_" + out
+	}
+	if mochiReserved[out] {
+		out = "_" + out
+	}
+	return out
 }
 
 func (e *ConvertError) Error() string {
@@ -61,10 +95,10 @@ func writeFunc(out *strings.Builder, fset *token.FileSet, fn *ast.FuncDecl) {
 	if fn.Name == nil {
 		return
 	}
-	name := fn.Name.Name
+	name := sanitizeName(fn.Name.Name)
 	if fn.Recv != nil && len(fn.Recv.List) > 0 {
 		recv := exprString(fset, fn.Recv.List[0].Type)
-		name = recv + "." + name
+		name = sanitizeName(recv) + "." + name
 	}
 	out.WriteString("fun ")
 	out.WriteString(name)
@@ -89,7 +123,7 @@ func writeFunc(out *strings.Builder, fset *token.FileSet, fn *ast.FuncDecl) {
 				if !first {
 					out.WriteString(", ")
 				}
-				out.WriteString(n.Name)
+				out.WriteString(sanitizeName(n.Name))
 				if typ != "" {
 					out.WriteString(": ")
 					out.WriteString(typ)
@@ -136,7 +170,7 @@ func writeGenDecl(out *strings.Builder, fset *token.FileSet, d *ast.GenDecl) {
 			}
 			if st, ok := ts.Type.(*ast.StructType); ok {
 				out.WriteString("type ")
-				out.WriteString(ts.Name.Name)
+				out.WriteString(sanitizeName(ts.Name.Name))
 				out.WriteString(" {\n")
 				for _, f := range st.Fields.List {
 					typ := exprString(fset, f.Type)
@@ -148,7 +182,7 @@ func writeGenDecl(out *strings.Builder, fset *token.FileSet, d *ast.GenDecl) {
 					}
 					for _, n := range f.Names {
 						out.WriteString("  ")
-						out.WriteString(n.Name)
+						out.WriteString(sanitizeName(n.Name))
 						if typ != "" {
 							out.WriteString(": ")
 							out.WriteString(typ)
@@ -171,7 +205,7 @@ func writeGenDecl(out *strings.Builder, fset *token.FileSet, d *ast.GenDecl) {
 			}
 			for _, n := range vs.Names {
 				out.WriteString("let ")
-				out.WriteString(n.Name)
+				out.WriteString(sanitizeName(n.Name))
 				if typ != "" {
 					out.WriteString(": ")
 					out.WriteString(typ)
@@ -206,6 +240,46 @@ func simplifyType(t string) string {
 	}
 	if strings.HasPrefix(t, "[]") {
 		return "list<" + simplifyType(t[2:]) + ">"
+	}
+	if strings.HasPrefix(t, "map[") {
+		end := strings.Index(t, "]")
+		if end > 0 {
+			key := simplifyType(t[4:end])
+			val := simplifyType(t[end+1:])
+			return fmt.Sprintf("map<%s, %s>", key, val)
+		}
+	}
+	if strings.HasPrefix(t, "func(") {
+		end := strings.LastIndex(t, ")")
+		if end > 0 {
+			paramsPart := t[len("func("):end]
+			rest := strings.TrimSpace(t[end+1:])
+			var params []string
+			if strings.TrimSpace(paramsPart) != "" {
+				for _, p := range strings.Split(paramsPart, ",") {
+					p = strings.TrimSpace(p)
+					if strings.HasPrefix(p, "...") {
+						t := simplifyType(strings.TrimSpace(p[3:]))
+						params = append(params, "list<"+t+">")
+					} else {
+						params = append(params, simplifyType(p))
+					}
+				}
+			}
+			paramStr := strings.Join(params, ", ")
+			if rest != "" {
+				ret := strings.Trim(rest, "() ")
+				ret = simplifyType(ret)
+				if strings.Contains(rest, ",") {
+					ret = "(" + ret + ")"
+				}
+				return fmt.Sprintf("fun(%s): %s", paramStr, ret)
+			}
+			return fmt.Sprintf("fun(%s)", paramStr)
+		}
+	}
+	if t == "interface{}" {
+		return "any"
 	}
 	return t
 }
