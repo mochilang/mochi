@@ -2,9 +2,9 @@ int sumN(int n) {
   return ((n * ((n + 1))) ~/ 2);
 }
 
+int n = 10;
+
 void main() {
-  int n = 10;
   print(sumN(n));
   print(n);
 }
-

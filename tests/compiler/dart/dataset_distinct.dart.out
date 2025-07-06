@@ -1,14 +1,16 @@
-void main() {
-	List<int> nums = [1, 2, 2, 3, 1, 3];
-	List<int> unique = (() {
-	var _res = [];
-	for (var n in nums) {
-		_res.add(n);
-	}
-	_res = _distinct(_res);
-	return _res;
+List<int> nums = [1, 2, 2, 3, 1, 3];
+
+List<int> unique = (() {
+  var _res = [];
+  for (var n in nums) {
+    _res.add(n);
+  }
+  _res = _distinct(_res);
+  return _res;
 })();
-	print(unique);
+
+void main() {
+  print(unique);
 }
 
 List<dynamic> _distinct(List<dynamic> items) {
@@ -19,5 +21,3 @@ List<dynamic> _distinct(List<dynamic> items) {
     }
     return res;
 }
-
-

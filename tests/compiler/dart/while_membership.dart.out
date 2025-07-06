@@ -1,13 +1,16 @@
+Map<int, bool> set = {};
+
+int i = 1;
+
+int count = 0;
+
 void main() {
-	dynamic set = {};
-	for (var n in [1, 2, 3]) {
-		set[n] = true;
-	}
-	dynamic i = 1;
-	dynamic count = 0;
-	while ((set.containsKey(i))) {
-		i = (i + 1);
-		count = (count + 1);
-	}
-	print(count);
+  for (var n in [1, 2, 3]) {
+    set[n] = true;
+  }
+  while ((set.containsKey(i))) {
+    i = ((i + 1)).toInt();
+    count = ((count + 1)).toInt();
+  }
+  print(count);
 }

@@ -1,16 +1,18 @@
+Map<String, Function> _structParsers = {};
+
 abstract class Foo {}
 class Empty extends Foo {
-	Empty();
+  Empty();
 }
 class Node extends Foo {
-	dynamic child;
-	Node({this.child});
+  Foo child;
+  Node({required this.child});
 }
 
-dynamic listit() {
-	return [Empty()];
+List<Foo> listit() {
+  return [Empty()];
 }
 
 void main() {
-	print(listit().length);
+  print(listit().length);
 }

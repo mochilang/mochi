@@ -1,6 +1,7 @@
+String text = "hello";
+
 void main() {
-	String text = "hello";
-	print(_indexString(text, (-1).toInt()));
+  print(_indexString(text, (-1).toInt()));
 }
 
 String _indexString(String s, int i) {
@@ -13,5 +14,3 @@ String _indexString(String s, int i) {
     }
     return String.fromCharCode(runes[i]);
 }
-
-

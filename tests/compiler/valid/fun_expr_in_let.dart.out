@@ -1,5 +1,5 @@
+dynamic square = (x) => (x * x);
+
 void main() {
-  dynamic square = (x) => (x * x);
   print(square(6));
 }
-

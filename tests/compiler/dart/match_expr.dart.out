@@ -1,11 +1,16 @@
-void main() {
-	dynamic x = 2;
-	dynamic label = (() {
-	var _t = x;
-	if (_t == 1) { return "one"; }
-	if (_t == 2) { return "two"; }
-	if (_t == 3) { return "three"; }
-	return "unknown";
+int x = 2;
+
+String label = (() {
+  var _t = x;
+  switch (_t) {
+  case 1: return "one";
+  case 2: return "two";
+  case 3: return "three";
+  default: return "unknown";
+  }
+  return null;
 })();
-	print(label);
+
+void main() {
+  print(label);
 }

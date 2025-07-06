@@ -1,22 +1,26 @@
 import 'dart:convert';
 import 'dart:io';
 
+Map<String, Function> _structParsers = {};
+
 class Todo {
-	int userId;
-	int id;
-	String title;
-	bool completed;
-	Todo({required this.userId, required this.id, required this.title, required this.completed});
-	factory Todo.fromJson(Map<String,dynamic> m) {
-		return Todo(userId: m['userId'] as int, id: m['id'] as int, title: m['title'] as String, completed: m['completed'] as bool);
-	}
+  int userId;
+  int id;
+  String title;
+  bool completed;
+  Todo({required this.userId, required this.id, required this.title, required this.completed});
+  factory Todo.fromJson(Map<String,dynamic> m) {
+    return Todo(userId: m['userId'] as int, id: m['id'] as int, title: m['title'] as String, completed: m['completed'] as bool);
+  }
 }
-_structParsers['Todo'] = (m) => Todo.fromJson(m);
+
+Todo todo = Todo.fromJson((await _fetch("https://jsonplaceholder.typicode.com/todos/1", null)) as Map<String,dynamic>);
 
 Future<void> main() async {
-	Todo todo = Todo.fromJson((await _fetch("https://jsonplaceholder.typicode.com/todos/1", null)) as Map<String,dynamic>);
-	print(todo.title);
-	await _waitAll();
+  _structParsers['Todo'] = (m) => Todo.fromJson(m);
+  
+  print(todo.title);
+  await _waitAll();
 }
 
 Future<dynamic> _fetch(String url, Map<String,dynamic>? opts) async {
@@ -51,5 +55,3 @@ List<Future<dynamic>> _pending = [];
 Future<void> _waitAll() async {
     await Future.wait(_pending);
 }
-
-

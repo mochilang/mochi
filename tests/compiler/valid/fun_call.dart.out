@@ -5,4 +5,3 @@ int add(int a, int b) {
 void main() {
   print(add(2, 3));
 }
-

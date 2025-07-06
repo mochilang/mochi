@@ -1,19 +1,23 @@
 import 'dart:io';
 import 'dart:convert';
 
+Map<String, Function> _structParsers = {};
+
 class Msg {
-        String message;
-        Msg({required this.message});
-        factory Msg.fromJson(Map<String,dynamic> m) {
-                return Msg(message: m['message'] as String);
-        }
+  String message;
+  Msg({required this.message});
+  factory Msg.fromJson(Map<String,dynamic> m) {
+    return Msg(message: m['message'] as String);
+  }
 }
-_structParsers['Msg'] = (m) => Msg.fromJson(m);
+
+Msg data = await _fetch("file://tests/compiler/dart/fetch_options.json", {"method": "GET", "headers": {"User-Agent": "Mochi"}, "query": {"q": "foo"}, "body": {"foo": true}, "timeout": 5});
 
 Future<void> main() async {
-        Msg data = await _fetch("file://tests/compiler/dart/fetch_options.json", {"method": "GET", "headers": {"User-Agent": "Mochi"}, "query": {"q": "foo"}, "body": {"foo": true}, "timeout": 5});
-        print(data.message);
-        await _waitAll();
+  _structParsers['Msg'] = (m) => Msg.fromJson(m);
+  
+  print(data.message);
+  await _waitAll();
 }
 
 Future<dynamic> _fetch(String url, Map<String,dynamic>? opts) async {
@@ -48,4 +52,3 @@ List<Future<dynamic>> _pending = [];
 Future<void> _waitAll() async {
     await Future.wait(_pending);
 }
-

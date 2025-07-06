@@ -1,19 +1,21 @@
+int c = 0;
+
+Map<String, int> m = {"x": 1, "y": 2};
+
 void main() {
-	dynamic c = 0;
-	for (var _tmp0 = 0; _tmp0 < 2; _tmp0++) {
-		c = (c + 1);
-	}
-	for (var _tmp1 in [1, 2]) {
-		c = (c + 1);
-	}
-	var _tmp3 = "ab";
-	for (var _tmp2 in _tmp3.runes) {
-		c = (c + 1);
-	}
-	dynamic m = {"x": 1, "y": 2};
-	var _tmp5 = m;
-	for (var _tmp4 in _tmp5.values) {
-		c = (c + 1);
-	}
-	print(c);
+  for (var _tmp0 = 0; _tmp0 < 2; _tmp0++) {
+    c = ((c + 1)).toInt();
+  }
+  for (var _tmp1 in [1, 2]) {
+    c = ((c + 1)).toInt();
+  }
+  var _tmp3 = "ab";
+  for (var _tmp4 in _tmp3.runes) {
+    c = ((c + 1)).toInt();
+  }
+  var _tmp6 = m;
+  for (var _tmp5 in _tmp6.values) {
+    c = ((c + 1)).toInt();
+  }
+  print(c);
 }
