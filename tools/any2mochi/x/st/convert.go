@@ -317,6 +317,10 @@ func convertSimpleStmt(l string) string {
 }
 
 func formatError(src string, line int, col int, msg string) string {
+	return formatErrorSnippet(src, line, col, msg, "")
+}
+
+func formatErrorSnippet(src string, line int, col int, msg, snippet string) string {
 	lines := strings.Split(src, "\n")
 	start := line - 2
 	if start < 0 {
@@ -333,6 +337,13 @@ func formatError(src string, line int, col int, msg string) string {
 		if i+1 == line && col > 0 {
 			out.WriteString(strings.Repeat(" ", col+4))
 			out.WriteString("^\n")
+		}
+	}
+	if snippet != "" {
+		out.WriteString("snippet:\n")
+		out.WriteString(snippet)
+		if !strings.HasSuffix(snippet, "\n") {
+			out.WriteByte('\n')
 		}
 	}
 	return strings.TrimSpace(out.String())
