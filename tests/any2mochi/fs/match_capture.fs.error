@@ -1,4 +1,5 @@
-unsupported syntax at line 3: type Tree =
-  2: 
-  3: type Tree =
-  4:     | Leaf
+unsupported syntax at line 7: exception Return_depth of int
+  6: 
+  7: exception Return_depth of int
+  8: let rec depth (t: Tree) : int =
+  9:     try

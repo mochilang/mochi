@@ -2,3 +2,4 @@ unsupported syntax at line 3: exception Return_add of int
   2: 
   3: exception Return_add of int
   4: let rec add (a: int) (b: int) : int =
+  5:     try

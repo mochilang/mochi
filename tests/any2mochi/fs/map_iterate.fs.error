@@ -1,4 +1,0 @@
-unsupported syntax at line 3: let mutable m: Map<int,bool> = Map.empty
-  2: 
-  3: let mutable m: Map<int,bool> = Map.empty
-  4: m <- Map.add 1 true m

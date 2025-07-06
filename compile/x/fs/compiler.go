@@ -1723,6 +1723,16 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("pow expects 2 args")
 		}
 		return fmt.Sprintf("Math.Pow(float %s, float %s)", args[0], args[1]), nil
+	case "ceil":
+		if len(args) != 1 {
+			return "", fmt.Errorf("ceil expects 1 arg")
+		}
+		return fmt.Sprintf("Math.Ceiling(float %s)", args[0]), nil
+	case "floor":
+		if len(args) != 1 {
+			return "", fmt.Errorf("floor expects 1 arg")
+		}
+		return fmt.Sprintf("Math.Floor(float %s)", args[0]), nil
 	case "now":
 		if len(args) != 0 {
 			return "", fmt.Errorf("now expects no args")

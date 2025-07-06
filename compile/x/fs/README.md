@@ -124,7 +124,7 @@ Mochi features are not yet available.
 * List concatenation using `+`
 * Membership tests with `in`
 * Query expressions with `where`, `sort`, `skip`, `take` and complex `group by`
-* Built-in helpers: `len`, `count`, `avg`, `now`, `pow`, `print`, `input`, `json`, `to_json`, `load`, `save`, `fetch`, `eval`, `_genText`, `_genEmbed`, `_genStruct`
+* Built-in helpers: `len`, `count`, `avg`, `ceil`, `floor`, `now`, `pow`, `print`, `input`, `json`, `to_json`, `load`, `save`, `fetch`, `eval`, `_genText`, `_genEmbed`, `_genStruct`
 * Dataset helpers `_load` and `_save` support CSV, TSV, JSON and JSONL formats
 * Record and union type declarations
 * Struct literals and simple `type` blocks with methods

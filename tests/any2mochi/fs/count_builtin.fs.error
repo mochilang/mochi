@@ -2,3 +2,4 @@ unsupported syntax at line 3: let inline sum (xs: seq< ^T >) : ^T =
   2: 
   3: let inline sum (xs: seq< ^T >) : ^T =
   4:   Seq.sum xs
+  5: let inline avg (xs: seq< ^T >) : ^T =

@@ -2,3 +2,4 @@ unsupported syntax at line 3: exception Return_outer of string
   2: 
   3: exception Return_outer of string
   4: let rec outer  : string =
+  5:     try

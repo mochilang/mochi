@@ -2,3 +2,4 @@ unsupported syntax at line 3: let _cast<'T> (v: obj) : 'T =
   2: 
   3: let _cast<'T> (v: obj) : 'T =
   4:   match v with
+  5:   | :? 'T as t -> t

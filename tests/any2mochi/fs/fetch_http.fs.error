@@ -2,3 +2,4 @@ unsupported syntax at line 3: let _fetch (url: string) (opts: Map<string,obj> op
   2: 
   3: let _fetch (url: string) (opts: Map<string,obj> option) : Map<string,obj> =
   4:   if url.StartsWith("file://") then
+  5:     let path = url.Substring(7)

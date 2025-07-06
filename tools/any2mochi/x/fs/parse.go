@@ -54,6 +54,23 @@ type Print struct {
 
 type Stmt interface{}
 
+type Field struct {
+	Name string `json:"name"`
+	Type string `json:"type"`
+}
+
+type Variant struct {
+	Name   string  `json:"name"`
+	Fields []Field `json:"fields"`
+}
+
+type TypeDecl struct {
+	Name     string    `json:"name"`
+	Fields   []Field   `json:"fields"`
+	Variants []Variant `json:"variants"`
+	Line     int       `json:"line"`
+}
+
 type Expect struct {
 	Cond string `json:"cond"`
 	Line int    `json:"line"`
@@ -76,6 +93,9 @@ var (
 	forRangeRe    = regexp.MustCompile(`^for\s+(\w+)\s*=\s*(.+)\s+to\s+(.+)\s+do$`)
 	forInRe       = regexp.MustCompile(`^for\s+(\w+)\s+in\s+(.+)\s+do$`)
 	whileRe       = regexp.MustCompile(`^while\s*\((.+)\)\s*do$`)
+	typeRe        = regexp.MustCompile(`^type\s+(\w+)\s*=\s*$`)
+	variantRe     = regexp.MustCompile(`^\|\s*(\w+)(.*)$`)
+	fieldRe       = regexp.MustCompile(`^(\w+)\s*:\s*([^;]+);?$`)
 )
 
 // Parse performs a very small subset of F# parsing using regular expressions.
@@ -123,6 +143,9 @@ func Parse(src string) (*Program, error) {
 			if strings.HasPrefix(t, "open ") {
 				continue
 			}
+			if strings.HasPrefix(strings.TrimSpace(t), "|]") {
+				continue
+			}
 			switch {
 			case printRe.MatchString(t):
 				m := printRe.FindStringSubmatch(t)
@@ -145,6 +168,52 @@ func Parse(src string) (*Program, error) {
 			case expectRe.MatchString(t):
 				m := expectRe.FindStringSubmatch(t)
 				stmts = append(stmts, Expect{Cond: strings.TrimSpace(m[1]), Line: lineNum})
+			case typeRe.MatchString(t):
+				m := typeRe.FindStringSubmatch(t)
+				name := m[1]
+				if idx < len(lines) && strings.TrimSpace(lines[idx].text) == "{" {
+					idx++
+					var fields []Field
+					for idx < len(lines) {
+						lt := strings.TrimSpace(lines[idx].text)
+						if lt == "}" {
+							idx++
+							break
+						}
+						if fm := fieldRe.FindStringSubmatch(lt); fm != nil {
+							fields = append(fields, Field{Name: fm[1], Type: strings.TrimSpace(fm[2])})
+						}
+						idx++
+					}
+					stmts = append(stmts, TypeDecl{Name: name, Fields: fields, Line: lineNum})
+				} else if idx < len(lines) && strings.HasPrefix(strings.TrimSpace(lines[idx].text), "|") {
+					var vars []Variant
+					for idx < len(lines) {
+						lt := strings.TrimSpace(lines[idx].text)
+						if !strings.HasPrefix(lt, "|") {
+							break
+						}
+						vm := variantRe.FindStringSubmatch(lt)
+						if vm != nil {
+							var fl []Field
+							rest := strings.TrimSpace(vm[2])
+							if rest != "" {
+								parts := strings.Split(rest, "*")
+								for _, p := range parts {
+									p = strings.TrimSpace(p)
+									if fm := fieldRe.FindStringSubmatch(p); fm != nil {
+										fl = append(fl, Field{Name: fm[1], Type: strings.TrimSpace(fm[2])})
+									}
+								}
+							}
+							vars = append(vars, Variant{Name: vm[1], Fields: fl})
+						}
+						idx++
+					}
+					stmts = append(stmts, TypeDecl{Name: name, Variants: vars, Line: lineNum})
+				} else {
+					stmts = append(stmts, TypeDecl{Name: name, Line: lineNum})
+				}
 			case forRangeRe.MatchString(t):
 				m := forRangeRe.FindStringSubmatch(t)
 				body := parseBlock(ind + 4)

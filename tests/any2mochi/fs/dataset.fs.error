@@ -1,4 +1,4 @@
-unsupported syntax at line 8: |]
-  7:     yield Map.ofList [(name, person.name); (age, person.age); (is_senior, (person.age >= 60))]
-  8: |]
-  9: for person in adults do
+unsupported syntax at line 11: if person.is_senior then
+ 10:     ignore (printfn "%A" (person.name, "is", person.age, "years old."))
+ 11:     if person.is_senior then
+ 12:         ignore (printfn "%A" (" (senior)"))
