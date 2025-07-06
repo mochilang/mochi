@@ -461,6 +461,12 @@ func parseLines(lines []string, indent string) ([]string, int) {
 			continue
 		}
 		switch {
+		case s == "break":
+			stmts = append(stmts, "break")
+			i++
+		case s == "continue":
+			stmts = append(stmts, "continue")
+			i++
 		case s == "return":
 			stmts = append(stmts, "return")
 			i++

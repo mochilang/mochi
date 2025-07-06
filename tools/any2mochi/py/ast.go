@@ -30,6 +30,8 @@ type ASTNode struct {
 	Right       *ASTNode        `json:"right,omitempty"`
 	Ops         []*ASTNode      `json:"ops,omitempty"`
 	Comparators []*ASTNode      `json:"comparators,omitempty"`
+	Operand     *ASTNode        `json:"operand,omitempty"`
+	Values      []*ASTNode      `json:"values,omitempty"`
 	Line        int             `json:"lineno,omitempty"`
 	EndLine     int             `json:"end_lineno,omitempty"`
 	Col         int             `json:"col_offset,omitempty"`
@@ -118,15 +120,23 @@ type ConvertError struct {
 }
 
 func (e *ConvertError) Error() string {
-	return fmt.Sprintf("line %d: %s\n  %s", e.Line, e.Msg, e.Snip)
+	return fmt.Sprintf("line %d: %s\n%s", e.Line, e.Msg, e.Snip)
 }
 
 func newConvertError(line int, lines []string, msg string) error {
-	ctx := ""
-	if line-1 < len(lines) && line-1 >= 0 {
-		ctx = strings.TrimSpace(lines[line-1])
+	start := line - 2
+	if start < 0 {
+		start = 0
 	}
-	return &ConvertError{Line: line, Snip: ctx, Msg: msg}
+	end := line + 1
+	if end > len(lines) {
+		end = len(lines)
+	}
+	var ctx []string
+	for i := start; i < end; i++ {
+		ctx = append(ctx, fmt.Sprintf("%3d| %s", i+1, lines[i]))
+	}
+	return &ConvertError{Line: line, Snip: strings.Join(ctx, "\n"), Msg: msg}
 }
 
 func emitAST(b *strings.Builder, n *ASTNode, indent string, lines []string) error {
@@ -184,6 +194,12 @@ func emitAST(b *strings.Builder, n *ASTNode, indent string, lines []string) erro
 			return err
 		}
 		b.WriteString("\n")
+	case "Break":
+		b.WriteString("break\n")
+	case "Continue":
+		b.WriteString("continue\n")
+	case "Pass":
+		b.WriteString("pass\n")
 	case "For":
 		b.WriteString("for ")
 		if err := emitExpr(b, n.Target, lines); err != nil {
@@ -349,6 +365,53 @@ func emitExpr(b *strings.Builder, n *ASTNode, lines []string) error {
 		if err := emitExpr(b, n.Comparators[0], lines); err != nil {
 			return err
 		}
+	case "UnaryOp":
+		if n.Op != nil {
+			switch n.Op.Type {
+			case "Not":
+				b.WriteString("not ")
+			case "USub":
+				b.WriteByte('-')
+			case "UAdd":
+				b.WriteByte('+')
+			default:
+				return newConvertError(n.Line, lines, "unhandled unary operator")
+			}
+		}
+		if err := emitExpr(b, n.Operand, lines); err != nil {
+			return err
+		}
+	case "BoolOp":
+		for i, v := range n.Values {
+			if i > 0 {
+				b.WriteByte(' ')
+				if n.Op != nil {
+					switch n.Op.Type {
+					case "And":
+						b.WriteString("and")
+					case "Or":
+						b.WriteString("or")
+					default:
+						return newConvertError(n.Line, lines, "unhandled bool operator")
+					}
+				}
+				b.WriteByte(' ')
+			}
+			if err := emitExpr(b, v, lines); err != nil {
+				return err
+			}
+		}
+	case "List":
+		b.WriteByte('[')
+		for i, v := range n.Values {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			if err := emitExpr(b, v, lines); err != nil {
+				return err
+			}
+		}
+		b.WriteByte(']')
 	default:
 		return newConvertError(n.Line, lines, "unhandled expression")
 	}
