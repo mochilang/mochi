@@ -1,7 +1,7 @@
-let std
 fun id(x: int): int {
   return x
 }
 fun main() {
-  print("{any}\n", .{id(123)})
+  print(id(123))
 }
+main()
