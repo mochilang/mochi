@@ -1,11 +1,16 @@
 package any2mochi
 
 import (
+	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
+	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 )
 
 // ConvertRkt converts Racket source code using the language server. It extracts
@@ -15,17 +20,25 @@ import (
 // used -- no regex parsing or fallbacks.
 func ConvertRkt(src string) ([]byte, error) {
 	ls := Servers["rkt"]
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
-	if err != nil {
-		return nil, err
-	}
-	if len(diags) > 0 {
-		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
-	}
-
 	var out strings.Builder
-	writeRktSymbols(&out, nil, syms, src, ls)
-	parseRktToplevel(&out, src)
+	if ls.Command != "" {
+		syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+		if err == nil && len(diags) == 0 {
+			writeRktSymbols(&out, nil, syms, src, ls)
+		}
+	}
+	var items []rktItem
+	if out.Len() == 0 {
+		var err error
+		items, err = runRktParse(src)
+		if err != nil {
+			return nil, err
+		}
+		writeRktItems(&out, items)
+	}
+	if len(items) == 0 {
+		parseRktToplevel(&out, src)
+	}
 	if out.Len() == 0 {
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
 	}
@@ -412,6 +425,12 @@ func convertRktExpr(expr string) string {
 		if len(parts) == 3 {
 			return fmt.Sprintf("%s[%s]", parts[1], strings.Trim(parts[2], `"`))
 		}
+	} else if strings.HasPrefix(expr, "(") && strings.HasSuffix(expr, ")") {
+		inner := strings.TrimSpace(expr[1 : len(expr)-1])
+		parts := strings.Fields(inner)
+		if len(parts) == 3 && (parts[0] == "+" || parts[0] == "-" || parts[0] == "*" || parts[0] == "/") {
+			return fmt.Sprintf("%s %s %s", parts[1], parts[0], parts[2])
+		}
 	}
 	return expr
 }
@@ -466,4 +485,116 @@ func rktPosIndex(src string, pos Position) int {
 		idx += int(pos.Character)
 	}
 	return idx
+}
+
+// ---------- Fallback parser ----------
+
+type rktItem struct {
+	Kind   string   `json:"kind"`
+	Name   string   `json:"name"`
+	Params []string `json:"params,omitempty"`
+	Body   string   `json:"body,omitempty"`
+	Value  string   `json:"value,omitempty"`
+}
+
+// runRktParse invokes the rktparser CLI using go run and returns parsed items.
+func runRktParse(src string) ([]rktItem, error) {
+	root, err := findRepoRoot()
+	if err != nil {
+		return nil, err
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, "go", "run", "./rktparser")
+	cmd.Dir = filepath.Join(root, "tools/any2mochi")
+	cmd.Stdin = strings.NewReader(src)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	if err := cmd.Run(); err != nil {
+		return nil, err
+	}
+	var items []rktItem
+	if err := json.Unmarshal(out.Bytes(), &items); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+// writeRktItems converts parsed rktItems to Mochi code.
+func writeRktItems(out *strings.Builder, items []rktItem) {
+	for _, it := range items {
+		switch it.Kind {
+		case "func":
+			out.WriteString("fun ")
+			out.WriteString(it.Name)
+			out.WriteByte('(')
+			if len(it.Params) > 0 {
+				out.WriteString(strings.Join(it.Params, ", "))
+			}
+			out.WriteByte(')')
+			body := rktBodyFromSnippet(it.Body)
+			if len(body) == 0 {
+				out.WriteString(" {}\n")
+			} else {
+				out.WriteString(" {\n")
+				for _, st := range body {
+					out.WriteString("  ")
+					out.WriteString(st)
+					out.WriteByte('\n')
+				}
+				out.WriteString("}\n")
+			}
+		case "var":
+			out.WriteString("let ")
+			out.WriteString(it.Name)
+			if val := parseRktValue(it.Value); val != "" {
+				out.WriteString(" = ")
+				out.WriteString(val)
+			}
+			out.WriteByte('\n')
+		case "print":
+			out.WriteString("print(")
+			out.WriteString(convertRktExpr(it.Value))
+			out.WriteString(")\n")
+		}
+	}
+}
+
+func rktBodyFromSnippet(snippet string) []string {
+	var out []string
+	lineRe := regexp.MustCompile(`\([^()]+\)`)
+	for _, m := range lineRe.FindAllString(snippet, -1) {
+		stmt := strings.TrimSpace(m)
+		if strings.HasPrefix(stmt, "(displayln") {
+			expr := strings.TrimSpace(stmt[len("(displayln") : len(stmt)-1])
+			out = append(out, "print("+convertRktExpr(expr)+")")
+		} else if strings.HasPrefix(stmt, "(return") {
+			expr := strings.TrimSpace(stmt[len("(return") : len(stmt)-1])
+			if expr != "" && expr != "(void)" {
+				out = append(out, "return "+convertRktExpr(expr))
+			} else {
+				out = append(out, "return")
+			}
+		}
+	}
+	return out
+}
+
+// findRepoRoot walks up directories to locate go.mod.
+func findRepoRoot() (string, error) {
+	dir, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir, nil
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	return "", fmt.Errorf("go.mod not found")
 }
