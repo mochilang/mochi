@@ -42,7 +42,7 @@ type Param struct {
 
 var (
 	typeRE      = regexp.MustCompile(`(?i)^\s*(?:public\s+)?(class|struct|interface|enum)\s+([A-Za-z_][A-Za-z0-9_]*)`)
-	funcRE      = regexp.MustCompile(`(?i)^\s*(?:public\s+|private\s+|protected\s+)?(?:static\s+)?([A-Za-z0-9_<>\[\]]+)\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]*)\)\s*{`)
+	funcRE      = regexp.MustCompile(`(?i)^\s*(?:public\s+|private\s+|protected\s+)?(?:static\s+)?([A-Za-z0-9_<>\[\]]+)\s+([A-Za-z_][A-Za-z0-9_]*)(?:<[^>]+>)?\s*\(([^)]*)\)\s*{`)
 	fieldRE     = regexp.MustCompile(`(?i)^\s*(?:public\s+|private\s+|protected\s+)?([A-Za-z0-9_<>\[\]]+)\s+([A-Za-z_][A-Za-z0-9_]*)`)
 	usingRE     = regexp.MustCompile(`^\s*using\s+`)
 	namespaceRE = regexp.MustCompile(`^\s*namespace\s+`)
