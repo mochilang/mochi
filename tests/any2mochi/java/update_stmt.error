@@ -1,8 +1,7 @@
-line 13: unsupported line: Person() {}
- 11| }
- 12| 
- 13| Person() {}
- 14| }
- 15| 
-
+line 27: unsupported line
+     25| }
+     26| 
+>>>  27| static Object[] people =
+     28| new Person[] {
+     29| new Person("Alice", 17, "minor"),
 

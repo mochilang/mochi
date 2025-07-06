@@ -1,7 +1,7 @@
-line 3: unsupported line: public java.util.List<Object> get() {
-  1| Object[] people = new Object[]{new java.util.HashMap<>(java.util.Map.of("name", "Alice", "age", 30)), new java.util.HashMap<>(java.util.Map.of("name", "Bob", "age", 15)), new java.util.HashMap<>(java.util.Map.of("name", "Charlie", "age", 65)), new java.util.HashMap<>(java.util.Map.of("name", "Diana", "age", 45))};
-  2| Object[] adults = (new java.util.function.Supplier<java.util.List<Object>>() {
-  3| public java.util.List<Object> get() {
-  4| java.util.List<Object> _src = _toList(people);
-  5| _src = _filter(_src, (Object person) -> { return (person.age >= 18); });
+line 3: unsupported line
+      1| Object[] people = new Object[]{new java.util.HashMap<>(java.util.Map.of("name", "Alice", "age", 30)), new java.util.HashMap<>(java.util.Map.of("name", "Bob", "age", 15)), new java.util.HashMap<>(java.util.Map.of("name", "Charlie", "age", 65)), new java.util.HashMap<>(java.util.Map.of("name", "Diana", "age", 45))};
+      2| Object[] adults = (new java.util.function.Supplier<java.util.List<Object>>() {
+>>>   3| public java.util.List<Object> get() {
+      4| java.util.List<Object> _src = _toList(people);
+      5| _src = _filter(_src, (Object person) -> { return (person.age >= 18); });
 

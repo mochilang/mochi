@@ -34,9 +34,16 @@ type funcDef struct {
 	Body   []string    `json:"body"`
 }
 
+type varDef struct {
+	Name string `json:"name"`
+	Expr string `json:"expr"`
+	Line int    `json:"line"`
+}
+
 type javaAST struct {
 	Package string      `json:"package"`
 	Structs []structDef `json:"structs"`
+	Vars    []varDef    `json:"vars"`
 	Funcs   []funcDef   `json:"funcs"`
 }
 
@@ -77,6 +84,10 @@ func astToLines(ast *javaAST, pkg string) ([]string, error) {
 		lines = append(lines, "}")
 		structs[st.Name] = fields
 	}
+	for _, v := range ast.Vars {
+		expr := convertJavaExpr(v.Expr, structs)
+		lines = append(lines, fmt.Sprintf("var %s = %s", v.Name, expr))
+	}
 	for _, fn := range ast.Funcs {
 		var params []string
 		for _, p := range fn.Params {
@@ -85,6 +96,9 @@ func astToLines(ast *javaAST, pkg string) ([]string, error) {
 				name += ": " + mapJavaType(p.Type)
 			}
 			params = append(params, name)
+		}
+		if fn.Name == "main" && len(params) == 1 && strings.HasPrefix(fn.Params[0].Type, "String") {
+			params = nil
 		}
 		header := fmt.Sprintf("fun %s(%s)", fn.Name, strings.Join(params, ", "))
 		rt := mapJavaType(fn.Ret)
@@ -121,6 +135,9 @@ func parseLegacy(src, pkg string) ([]string, error) {
 	for i := 0; i < len(lines); i++ {
 		l := strings.TrimSpace(lines[i])
 		switch {
+		case isVarAssign(l):
+			name, expr := parseVarAssign(l)
+			ast.Vars = append(ast.Vars, varDef{Name: name, Expr: expr, Line: i + 1})
 		case strings.HasPrefix(l, "static class "):
 			stName := strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(l, "static class "), "{"))
 			st := structDef{Name: stName, Line: i + 1}
@@ -153,6 +170,20 @@ func parseLegacy(src, pkg string) ([]string, error) {
 		case funcRe.MatchString(l):
 			m := funcRe.FindStringSubmatch(l)
 			fn := funcDef{Name: m[2], Line: i + 1, Ret: m[1]}
+			if strings.HasPrefix(fn.Name, "_") {
+				// skip helper implementations
+				i++
+				depth := 1
+				for i < len(lines) {
+					line := lines[i]
+					depth += strings.Count(line, "{") - strings.Count(line, "}")
+					i++
+					if depth == 0 {
+						break
+					}
+				}
+				continue
+			}
 			params := splitArgs(m[3])
 			for _, p := range params {
 				f := strings.Fields(strings.TrimSpace(p))
@@ -183,7 +214,7 @@ func parseLegacy(src, pkg string) ([]string, error) {
 		default:
 			if l != "" && l != "{" && l != "}" && !strings.HasPrefix(l, "public class") {
 				snippet := numberedBodySnippet(lines, i)
-				return nil, fmt.Errorf("line %d: unsupported line: %s\n%s", i+1, l, snippet)
+				return nil, fmt.Errorf("line %d: unsupported line\n%s", i+1, snippet)
 			}
 		}
 	}
@@ -239,7 +270,7 @@ func javaBodyLines(body []string, structs map[string][]string) ([]string, error)
 			continue
 		}
 		snippet := numberedBodySnippet(body, i)
-		return nil, fmt.Errorf("line %d: unsupported line: %s\n%s", i+1, l, snippet)
+		return nil, fmt.Errorf("line %d: unsupported line\n%s", i+1, snippet)
 	}
 	return out, nil
 }
@@ -255,7 +286,11 @@ func numberedBodySnippet(lines []string, idx int) string {
 	}
 	var b strings.Builder
 	for i := start; i <= end; i++ {
-		b.WriteString(fmt.Sprintf("%3d| %s\n", i+1, strings.TrimSpace(lines[i])))
+		prefix := "   "
+		if i == idx {
+			prefix = ">>>"
+		}
+		b.WriteString(fmt.Sprintf("%s %3d| %s\n", prefix, i+1, strings.TrimSpace(lines[i])))
 	}
 	return b.String()
 }
