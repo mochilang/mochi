@@ -14,6 +14,7 @@ import (
 	mlcode "mochi/compile/x/ocaml"
 	"mochi/golden"
 	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -117,6 +118,27 @@ func TestOCamlCompiler_SubsetPrograms(t *testing.T) {
 			res := bytes.TrimSpace(out)
 			if res == nil {
 				res = []byte{}
+			}
+
+			// Run the program using the VM to obtain the expected output
+			p, err := vm.Compile(prog, env)
+			if err != nil {
+				return nil, fmt.Errorf("\u274c vm compile error: %w", err)
+			}
+			var vmIn []byte
+			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+				vmIn = data
+			}
+			var buf bytes.Buffer
+			m := vm.NewWithIO(p, bytes.NewReader(vmIn), &buf)
+			if err := m.Run(); err != nil {
+				if ve, ok := err.(*vm.VMError); ok {
+					return nil, fmt.Errorf("\u274c vm run error:\n%s", ve.Format(p))
+				}
+				return nil, fmt.Errorf("\u274c vm run error: %v", err)
+			}
+			if strings.TrimSpace(buf.String()) != string(res) {
+				return nil, fmt.Errorf("\u274c output mismatch with VM\n-- vm --\n%s\n-- ocaml --\n%s", strings.TrimSpace(buf.String()), res)
 			}
 			return res, nil
 		})
