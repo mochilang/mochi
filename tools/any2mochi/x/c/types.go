@@ -18,3 +18,14 @@ type param struct {
 	name string
 	typ  string
 }
+
+// cStruct represents a parsed C struct or union definition.
+// Additional metadata such as source range is useful for diagnostics.
+type cStruct struct {
+	name      string
+	fields    []param
+	isUnion   bool
+	startLine int    // 1-indexed line where the definition begins
+	endLine   int    // 1-indexed line of the closing brace
+	source    string // original source snippet
+}

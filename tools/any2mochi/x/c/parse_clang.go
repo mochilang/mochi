@@ -49,7 +49,7 @@ func offsetToLine(src string, off int) int {
 }
 
 // parseCFileClang parses C source code using clang's JSON AST output.
-func parseClangFile(src string) ([]function, error) {
+func parseClangFile(src string) ([]cStruct, []function, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	cmd := exec.CommandContext(ctx, "clang", "-w", "-x", "c", "-", "-Xclang", "-ast-dump=json", "-fsyntax-only")
@@ -60,9 +60,9 @@ func parseClangFile(src string) ([]function, error) {
 	cmd.Stderr = &errBuf
 	if err := cmd.Run(); err != nil {
 		if errBuf.Len() > 0 {
-			return nil, fmt.Errorf("%s", formatClangErrors(src, errBuf.String()))
+			return nil, nil, fmt.Errorf("%s", formatClangErrors(src, errBuf.String()))
 		}
-		return nil, err
+		return nil, nil, err
 	}
 	data := out.Bytes()
 	if idx := bytes.IndexByte(data, '{'); idx > 0 {
@@ -70,9 +70,10 @@ func parseClangFile(src string) ([]function, error) {
 	}
 	var root clangNode
 	if err := json.Unmarshal(data, &root); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	var funcs []function
+	var structs []cStruct
 	var walk func(n clangNode)
 	walk = func(n clangNode) {
 		if n.Kind == "FunctionDecl" && (n.IsImplicit == nil || !*n.IsImplicit) {
@@ -121,12 +122,50 @@ func parseClangFile(src string) ([]function, error) {
 				funcs = append(funcs, fn)
 			}
 		}
+		if n.Kind == "RecordDecl" && (n.IsImplicit == nil || !*n.IsImplicit) {
+			if n.Type == nil || (!strings.Contains(n.Type.QualType, "struct") && !strings.Contains(n.Type.QualType, "union")) {
+				for _, c := range n.Inner {
+					walk(c)
+				}
+				return
+			}
+			startLn := offsetToLine(src, n.Range.Begin.Offset)
+			endLn := offsetToLine(src, n.Range.End.Offset)
+			isUnion := strings.Contains(n.Type.QualType, "union")
+			var fields []param
+			for _, c := range n.Inner {
+				if c.Kind != "FieldDecl" {
+					continue
+				}
+				fieldName := c.Name
+				fieldType := ""
+				if c.Type != nil {
+					fieldType = mapType(c.Type.QualType)
+				}
+				fields = append(fields, param{name: fieldName, typ: fieldType})
+			}
+			if len(fields) > 0 {
+				srcLines := strings.Split(src, "\n")
+				var snippet string
+				if startLn-1 >= 0 && endLn <= len(srcLines) {
+					snippet = strings.Join(srcLines[startLn-1:endLn], "\n")
+				}
+				structs = append(structs, cStruct{
+					name:      n.Name,
+					fields:    fields,
+					isUnion:   isUnion,
+					startLine: startLn,
+					endLine:   endLn,
+					source:    snippet,
+				})
+			}
+		}
 		for _, c := range n.Inner {
 			walk(c)
 		}
 	}
 	walk(root)
-	return funcs, nil
+	return structs, funcs, nil
 }
 
 // formatClangErrors converts clang error output into a friendlier form with

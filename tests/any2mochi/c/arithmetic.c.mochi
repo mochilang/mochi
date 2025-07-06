@@ -1,8 +1,3 @@
-type list_int {
-  len: int
-  *data: int
-}
-
 print((1 + 2))
 print((5 - 3))
 print((4 * 2))

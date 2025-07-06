@@ -221,17 +221,33 @@ func ConvertFile(path string) ([]byte, error) {
 // convertSimple converts C source code without using a language server.
 // It invokes clang to obtain a JSON AST and extracts top-level functions.
 func convertSimple(src string) ([]byte, error) {
-	structs := parseStructs(src)
-	funcs, err := parseClangFile(src)
+	// Parse structs and functions using clang's AST when available.
+	structs, funcs, err := parseClangFile(src)
 	if err != nil {
 		return nil, fmt.Errorf("%v\n\nsource snippet:\n%s", err, snippet(src))
 	}
-	if len(funcs) == 0 {
+	if len(funcs) == 0 && len(structs) == 0 {
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
 	}
 	var out strings.Builder
-	for _, s := range structs {
-		out.WriteString(s)
+	for _, st := range structs {
+		out.WriteString("type ")
+		out.WriteString(st.name)
+		if st.isUnion {
+			out.WriteString(" union {\n")
+		} else {
+			out.WriteString(" {\n")
+		}
+		for _, f := range st.fields {
+			out.WriteString("  ")
+			out.WriteString(f.name)
+			if f.typ != "" {
+				out.WriteString(": ")
+				out.WriteString(f.typ)
+			}
+			out.WriteByte('\n')
+		}
+		out.WriteString("}\n")
 		out.WriteByte('\n')
 	}
 	for _, fn := range funcs {
@@ -446,49 +462,6 @@ func mapType(typ string) string {
 		}
 		return typ
 	}
-}
-
-var structRE = regexp.MustCompile(`(?s)typedef\s+(struct|union)\s*\{([^}]*)\}\s*([A-Za-z_][A-Za-z0-9_]*)\s*;`)
-
-func parseStructs(src string) []string {
-	matches := structRE.FindAllStringSubmatch(src, -1)
-	var out []string
-	for _, m := range matches {
-		kind := m[1]
-		body := m[2]
-		name := strings.TrimSpace(m[3])
-		var b strings.Builder
-		b.WriteString("type ")
-		b.WriteString(name)
-		if kind == "union" {
-			b.WriteString(" union {")
-		} else {
-			b.WriteString(" {")
-		}
-		b.WriteByte('\n')
-		for _, line := range strings.Split(body, "\n") {
-			line = strings.TrimSpace(line)
-			if line == "" {
-				continue
-			}
-			fields := strings.Fields(strings.TrimSuffix(line, ";"))
-			if len(fields) < 2 {
-				continue
-			}
-			fieldName := fields[len(fields)-1]
-			fieldType := mapType(strings.Join(fields[:len(fields)-1], " "))
-			b.WriteString("  ")
-			b.WriteString(fieldName)
-			if fieldType != "" {
-				b.WriteString(": ")
-				b.WriteString(fieldType)
-			}
-			b.WriteByte('\n')
-		}
-		b.WriteString("}\n")
-		out = append(out, b.String())
-	}
-	return out
 }
 
 // hoverSignature obtains the function signature via hover information.
