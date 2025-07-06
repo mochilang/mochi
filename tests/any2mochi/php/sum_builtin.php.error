@@ -1,4 +1,0 @@
-tests/compiler/php/sum_builtin.php.out: no convertible symbols found
-  1: <?php
-  2: echo array_sum([1, 2, 3]), PHP_EOL;
-  3:

@@ -1,1 +1,4 @@
 fun mochi_sum_n(n) {}
+fun _print(args) {}
+let n = 10
+print(n)

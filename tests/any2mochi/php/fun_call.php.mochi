@@ -1,1 +1,2 @@
 fun mochi_add(a, b) {}
+fun _print(args) {}

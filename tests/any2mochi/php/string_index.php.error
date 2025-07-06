@@ -1,5 +1,0 @@
-tests/compiler/php/string_index.php.out: no convertible symbols found
-  1: <?php
-  2: $text = "hello";
-  3: echo $text[1], PHP_EOL;
-  4:

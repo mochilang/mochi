@@ -1,0 +1,2 @@
+fun _print(args) {}
+let r = 3.0

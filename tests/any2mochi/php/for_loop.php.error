@@ -1,6 +1,0 @@
-tests/compiler/php/for_loop.php.out: no convertible symbols found
-  1: <?php
-  2: for ($i = 1; $i < 4; $i++) {
-  3: 	echo $i, PHP_EOL;
-  4: }
-  5:

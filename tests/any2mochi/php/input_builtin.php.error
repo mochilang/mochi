@@ -1,8 +1,0 @@
-tests/compiler/php/input_builtin.php.out: no convertible symbols found
-  1: <?php
-  2: echo "Enter first input:", PHP_EOL;
-  3: $input1 = trim(fgets(STDIN));
-  4: echo "Enter second input:", PHP_EOL;
-  5: $input2 = trim(fgets(STDIN));
-  6: echo "You entered:" . " " . $input1 . " " . "," . " " . $input2, PHP_EOL;
-  7:

@@ -76,6 +76,20 @@ func Convert(src string) ([]byte, error) {
 		}
 		out.WriteString(" {}\n")
 	}
+	for _, v := range prog.Vars {
+		out.WriteString("let ")
+		out.WriteString(v.Name)
+		if v.Value != "" {
+			out.WriteString(" = ")
+			out.WriteString(v.Value)
+		}
+		out.WriteByte('\n')
+	}
+	for _, p := range prog.Prints {
+		out.WriteString("print(")
+		out.WriteString(p.Expr)
+		out.WriteString(")\n")
+	}
 	if out.Len() == 0 {
 		return nil, fmt.Errorf("no convertible symbols found")
 	}

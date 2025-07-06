@@ -1,6 +1,0 @@
-tests/compiler/php/for_string_collection.php.out: no convertible symbols found
-  1: <?php
-  2: foreach ((is_string("hi") ? str_split("hi") : "hi") as $ch) {
-  3: 	echo $ch, PHP_EOL;
-  4: }
-  5:
