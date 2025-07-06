@@ -222,3 +222,16 @@ func normalizeOutput(root string, b []byte) []byte {
 	}
 	return []byte(out)
 }
+
+// RunConvertCompileGolden is an exported wrapper for runConvertCompileGolden.
+func RunConvertCompileGolden(t *testing.T, dir, pattern string, convert func(string) ([]byte, error), lang, outExt, errExt string) {
+	runConvertCompileGolden(t, dir, pattern, convert, lang, outExt, errExt)
+}
+
+// RunConvertGolden is an exported wrapper for runConvertGolden.
+func RunConvertGolden(t *testing.T, dir, pattern string, convert func(string) ([]byte, error), lang, outExt, errExt string) {
+	runConvertGolden(t, dir, pattern, convert, lang, outExt, errExt)
+}
+
+// FindRepoRoot is an exported wrapper for findRepoRoot.
+func FindRepoRoot(t *testing.T) string { return findRepoRoot(t) }

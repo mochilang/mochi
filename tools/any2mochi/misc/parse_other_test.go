@@ -1,9 +1,12 @@
 //go:build slow
 
-package any2mochi
+package any2mochi_test
 
 import (
+	"os/exec"
 	"testing"
+
+	any2mochi "mochi/tools/any2mochi"
 )
 
 var parseSnippets = map[string]string{
@@ -39,15 +42,22 @@ var parseSnippets = map[string]string{
 	"zig":     "pub fn main() void {}",
 }
 
+func requireBinary(t *testing.T, name string) {
+	t.Helper()
+	if _, err := exec.LookPath(name); err != nil {
+		t.Skipf("%s not found", name)
+	}
+}
+
 func TestParseOtherLanguages(t *testing.T) {
 	for lang, src := range parseSnippets {
-		ls := Servers[lang]
-		if err := EnsureServer(ls.Command); err != nil {
+		ls := any2mochi.Servers[lang]
+		if err := any2mochi.EnsureServer(ls.Command); err != nil {
 			t.Skipf("%s: %v", lang, err)
 			continue
 		}
 		requireBinary(t, ls.Command)
-		syms, diags, err := ParseText(ls.Command, ls.Args, ls.LangID, src)
+		syms, diags, err := any2mochi.ParseText(ls.Command, ls.Args, ls.LangID, src)
 		if err != nil {
 			t.Errorf("%s parse error: %v", lang, err)
 			continue
