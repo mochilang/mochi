@@ -32,6 +32,14 @@ type clangPos struct {
 	Offset int `json:"offset"`
 }
 
+// cFunc represents a parsed C function.
+type cFunc struct {
+	name   string
+	ret    string
+	params []cParam
+	body   []string
+}
+
 // parseCFileClang parses C source code using clang's JSON AST output.
 func parseCFileClang(src string) ([]cFunc, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

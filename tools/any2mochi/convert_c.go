@@ -188,8 +188,7 @@ func ConvertCFile(path string) ([]byte, error) {
 func convertCSimple(src string) ([]byte, error) {
 	funcs, err := parseCFileClang(src)
 	if err != nil {
-		// fall back to regex parser if clang is unavailable
-		funcs = parseCFileSimple(src)
+		return nil, err
 	}
 	if len(funcs) == 0 {
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
