@@ -11,6 +11,7 @@ import (
 
 // RustASTNode represents a node in the Rust syntax tree.
 type ASTNode struct {
+	ID          int        `json:"id"`
 	Kind        string     `json:"kind"`
 	Start       int        `json:"start"`
 	End         int        `json:"end"`
@@ -38,13 +39,15 @@ func position(src string, off int) (line, col int) {
 	return
 }
 
-func toASTNode(src string, n *node, parent string) *ASTNode {
+func toASTNode(src string, n *node, parent string, id *int) *ASTNode {
 	if n == nil {
 		return nil
 	}
 	sl, sc := position(src, n.start)
 	el, ec := position(src, n.end)
+	*id = *id + 1
 	out := &ASTNode{
+		ID:          *id,
 		Kind:        n.kind,
 		Start:       n.start,
 		End:         n.end,
@@ -57,7 +60,7 @@ func toASTNode(src string, n *node, parent string) *ASTNode {
 		Snippet:     lineSnippet(src, sl),
 	}
 	for _, c := range n.children {
-		out.Children = append(out.Children, toASTNode(src, c, n.kind))
+		out.Children = append(out.Children, toASTNode(src, c, n.kind, id))
 	}
 	return out
 }
@@ -91,7 +94,8 @@ func ParseAST(src string) (*ASTNode, error) {
 	if tree == nil {
 		return nil, fmt.Errorf("parse failed")
 	}
-	return toASTNode(src, tree, ""), nil
+	id := 0
+	return toASTNode(src, tree, "", &id), nil
 }
 
 // ParseASTFile reads the Rust file and parses it to an ASTNode.

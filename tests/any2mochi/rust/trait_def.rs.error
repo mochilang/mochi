@@ -1,4 +1,4 @@
-unsupported item TRAIT at 1:1
+unsupported item TRAIT at line 1 column 1
   1 | trait Foo {
     | ^
   2 |     fn bar(&self);
