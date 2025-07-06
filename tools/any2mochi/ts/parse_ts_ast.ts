@@ -1,13 +1,15 @@
-import { Node, Project } from "npm:ts-morph";
+import * as ts from "npm:typescript";
 
 interface TSParam {
   name: string;
   typ: string;
 }
+
 interface TSField {
   name: string;
   typ: string;
 }
+
 interface TSDecl {
   kind: string;
   name: string;
@@ -23,6 +25,8 @@ interface TSDecl {
   end?: number;
   endCol?: number;
   snippet?: string;
+  startOff?: number;
+  endOff?: number;
 }
 
 function tsToMochiType(t: string): string {
@@ -72,168 +76,192 @@ function tsToMochiType(t: string): string {
   return t;
 }
 
+function pos(source: ts.SourceFile, p: number) {
+  const lc = source.getLineAndCharacterOfPosition(p);
+  return { line: lc.line + 1, col: lc.character };
+}
+
 function parse(src: string): TSDecl[] {
-  const project = new Project({ useInMemoryFileSystem: true });
-  const file = project.createSourceFile("input.ts", src);
+  const source = ts.createSourceFile(
+    "input.ts",
+    src,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.TS,
+  );
   const decls: TSDecl[] = [];
 
-  for (const stmt of file.getStatements()) {
-    const start = stmt.getStartLineNumber();
-    const end = stmt.getEndLineNumber();
-    const startCol = stmt.getStart() - stmt.getStartLinePos();
-    const endCol = stmt.getEnd() - stmt.getEndLinePos();
-    const snippet = stmt.getText();
-    if (Node.isVariableStatement(stmt)) {
-      for (const d of stmt.getDeclarationList().getDeclarations()) {
-        const name = d.getName();
-        const init = d.getInitializer();
+  source.statements.forEach((stmt) => {
+    const start = pos(source, stmt.getStart(source));
+    const end = pos(source, stmt.end);
+    const snippet = stmt.getText(source);
+    const docRanges = ts.getLeadingCommentRanges(src, stmt.pos) ?? [];
+    const doc = docRanges.map((r) => src.slice(r.pos, r.end)).join("\n");
+
+    if (ts.isVariableStatement(stmt)) {
+      stmt.declarationList.declarations.forEach((d) => {
+        const name = d.name.getText(source);
+        const init = d.initializer;
         if (
-          init &&
-          (Node.isArrowFunction(init) || Node.isFunctionExpression(init))
+          init && (ts.isArrowFunction(init) || ts.isFunctionExpression(init))
         ) {
-          const params: TSParam[] = [];
-          init.getParameters().forEach((p) => {
-            params.push({
-              name: p.getName(),
-              typ: tsToMochiType(p.getTypeNode()?.getText() || ""),
-            });
-          });
-          const rt = tsToMochiType(init.getReturnType().getText());
+          const params: TSParam[] = init.parameters.map((p) => ({
+            name: p.name.getText(source),
+            typ: tsToMochiType(p.type ? p.type.getText(source) : ""),
+          }));
+          const rt = tsToMochiType(init.type ? init.type.getText(source) : "");
+          let body = "";
+          if (ts.isBlock(init.body)) {
+            body = init.body.getText(source).slice(1, -1);
+          }
           decls.push({
             kind: "funcvar",
             name,
-            node: init.getKindName(),
+            node: ts.SyntaxKind[init.kind],
             params,
             ret: rt,
-            body: init.getBodyText() || "",
-            start,
-            startCol,
-            end,
-            endCol,
+            body,
+            start: start.line,
+            startCol: start.col,
+            end: end.line,
+            endCol: end.col,
             snippet,
+            startOff: stmt.getStart(source),
+            endOff: stmt.end,
+            doc,
           });
         } else {
-          const typ = tsToMochiType(d.getTypeNode()?.getText() || "");
+          const typ = tsToMochiType(d.type ? d.type.getText(source) : "");
           decls.push({
             kind: "var",
             name,
-            node: d.getKindName(),
-            start,
-            startCol,
-            end,
-            endCol,
+            node: ts.SyntaxKind[d.kind],
+            start: start.line,
+            startCol: start.col,
+            end: end.line,
+            endCol: end.col,
             snippet,
-            fields: undefined,
-            params: undefined,
-            ret: undefined,
-            body: undefined,
-            alias: typ ? undefined : undefined,
-            variants: undefined,
-            ...(typ && { ret: typ }),
+            ret: typ,
+            startOff: stmt.getStart(source),
+            endOff: stmt.end,
+            doc,
           });
-          decls[decls.length - 1].ret = typ; // store type in ret field
         }
-      }
-    } else if (Node.isFunctionDeclaration(stmt)) {
-      const name = stmt.getName() || "";
-      const params: TSParam[] = [];
-      stmt.getParameters().forEach((p) => {
-        params.push({
-          name: p.getName(),
-          typ: tsToMochiType(p.getTypeNode()?.getText() || ""),
-        });
       });
-      const rt = tsToMochiType(stmt.getReturnTypeNode()?.getText() || "");
+    } else if (ts.isFunctionDeclaration(stmt) && stmt.name) {
+      const name = stmt.name.getText(source);
+      const params: TSParam[] = stmt.parameters.map((p) => ({
+        name: p.name.getText(source),
+        typ: tsToMochiType(p.type ? p.type.getText(source) : ""),
+      }));
+      const rt = tsToMochiType(stmt.type ? stmt.type.getText(source) : "");
+      let body = "";
+      if (stmt.body) body = stmt.body.getText(source).slice(1, -1);
       decls.push({
         kind: "func",
-        node: stmt.getKindName(),
+        node: ts.SyntaxKind[stmt.kind],
         name,
-        start,
-        startCol,
-        end,
-        endCol,
+        start: start.line,
+        startCol: start.col,
+        end: end.line,
+        endCol: end.col,
         snippet,
         params,
         ret: rt,
-        body: stmt.getBodyText() || "",
+        body,
+        startOff: stmt.getStart(source),
+        endOff: stmt.end,
+        doc,
       });
-    } else if (Node.isEnumDeclaration(stmt)) {
-      const variants = stmt.getMembers().map((m) => m.getName());
+    } else if (ts.isEnumDeclaration(stmt)) {
+      const variants = stmt.members.map((m) => m.name.getText(source));
       decls.push({
         kind: "enum",
-        node: stmt.getKindName(),
-        name: stmt.getName(),
-        start,
-        startCol,
-        end,
-        endCol,
+        node: ts.SyntaxKind[stmt.kind],
+        name: stmt.name.getText(source),
+        start: start.line,
+        startCol: start.col,
+        end: end.line,
+        endCol: end.col,
         snippet,
         variants,
+        startOff: stmt.getStart(source),
+        endOff: stmt.end,
+        doc,
       });
-    } else if (
-      Node.isClassDeclaration(stmt) ||
-      Node.isInterfaceDeclaration(stmt)
-    ) {
+    } else if (ts.isClassDeclaration(stmt) || ts.isInterfaceDeclaration(stmt)) {
       const fields: TSField[] = [];
-      stmt.getMembers().forEach((mem) => {
-        if (Node.isPropertyDeclaration(mem) || Node.isPropertySignature(mem)) {
+      stmt.members.forEach((mem) => {
+        if (
+          ts.isPropertyDeclaration(mem) ||
+          ts.isPropertySignature(mem)
+        ) {
           fields.push({
-            name: mem.getName(),
-            typ: tsToMochiType(mem.getTypeNode()?.getText() || ""),
+            name: mem.name.getText(source),
+            typ: tsToMochiType(mem.type ? mem.type.getText(source) : ""),
           });
         }
       });
       decls.push({
         kind: "type",
-        node: stmt.getKindName(),
-        name: stmt.getName() || "",
-        start,
-        startCol,
-        end,
-        endCol,
+        node: ts.SyntaxKind[stmt.kind],
+        name: stmt.name ? stmt.name.getText(source) : "",
+        start: start.line,
+        startCol: start.col,
+        end: end.line,
+        endCol: end.col,
         snippet,
         fields,
+        startOff: stmt.getStart(source),
+        endOff: stmt.end,
+        doc,
       });
-    } else if (Node.isTypeAliasDeclaration(stmt)) {
-      const name = stmt.getName();
-      const tn = stmt.getTypeNode();
-      if (tn && Node.isTypeLiteral(tn)) {
+    } else if (ts.isTypeAliasDeclaration(stmt)) {
+      const name = stmt.name.getText(source);
+      const tn = stmt.type;
+      if (tn && ts.isTypeLiteralNode(tn)) {
         const fields: TSField[] = [];
-        tn.getMembers().forEach((m) => {
-          if (Node.isPropertySignature(m)) {
+        tn.members.forEach((m) => {
+          if (ts.isPropertySignature(m)) {
             fields.push({
-              name: m.getName(),
-              typ: tsToMochiType(m.getTypeNode()?.getText() || ""),
+              name: m.name.getText(source),
+              typ: tsToMochiType(m.type ? m.type.getText(source) : ""),
             });
           }
         });
         decls.push({
           kind: "type",
-          node: stmt.getKindName(),
+          node: ts.SyntaxKind[stmt.kind],
           name,
-          start,
-          startCol,
-          end,
-          endCol,
+          start: start.line,
+          startCol: start.col,
+          end: end.line,
+          endCol: end.col,
           snippet,
           fields,
+          startOff: stmt.getStart(source),
+          endOff: stmt.end,
+          doc,
         });
       } else if (tn) {
-        const alias = tsToMochiType(tn.getText());
+        const alias = tsToMochiType(tn.getText(source));
         decls.push({
           kind: "alias",
-          node: stmt.getKindName(),
+          node: ts.SyntaxKind[stmt.kind],
           name,
-          start,
-          startCol,
-          end,
-          endCol,
+          start: start.line,
+          startCol: start.col,
+          end: end.line,
+          endCol: end.col,
           snippet,
           alias,
+          startOff: stmt.getStart(source),
+          endOff: stmt.end,
+          doc,
         });
       }
     }
-  }
+  });
 
   return decls;
 }

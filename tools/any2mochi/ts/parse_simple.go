@@ -178,6 +178,42 @@ func tsFunctionBody(src string) []string {
 			parts := strings.SplitN(stmt, "=", 2)
 			lhs := strings.TrimSpace(parts[0])
 			rhs := strings.TrimSpace(parts[1])
+
+			// Inline simple immediately invoked arrow functions.
+			if strings.HasPrefix(rhs, "(() =>") {
+				open := strings.Index(rhs, "{")
+				close := findMatch(rhs, open, '{', '}')
+				if open != -1 && close > open {
+					body := rhs[open+1 : close]
+					bodyLines := tsFunctionBody(body)
+					ret := ""
+					if len(bodyLines) > 0 {
+						last := strings.TrimSpace(bodyLines[len(bodyLines)-1])
+						if strings.HasPrefix(last, "return ") {
+							ret = strings.TrimSpace(strings.TrimPrefix(last, "return "))
+							bodyLines = bodyLines[:len(bodyLines)-1]
+						}
+					}
+					for _, l := range bodyLines {
+						lines = append(lines, l)
+					}
+					if ret != "" {
+						if uninit[lhs] {
+							lines = append(lines, "var "+lhs+" = "+ret)
+							delete(uninit, lhs)
+						} else {
+							lines = append(lines, lhs+" = "+ret)
+						}
+					}
+					if end < len(s) {
+						s = s[end+1:]
+					} else {
+						s = ""
+					}
+					continue
+				}
+			}
+
 			expr := strings.ReplaceAll(rhs, "\n", " ")
 			if strings.Contains(expr, ".filter(") && strings.Contains(expr, ".map(") {
 				if out := parseFilterMap(expr, lhs); len(out) > 0 {
