@@ -6,8 +6,13 @@
       "body": [
         "IO.puts(1 + 2)"
       ],
-      "start": 2,
-      "end": 4
+      "start": 1,
+      "end": 3,
+      "raw": [
+        "def main do",
+        "  IO.puts(1 + 2)",
+        "end"
+      ]
     }
   ]
 }

@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -16,6 +17,8 @@ type Func struct {
 	Body      []string `json:"body"`
 	StartLine int      `json:"start"`
 	EndLine   int      `json:"end"`
+	Doc       string   `json:"doc,omitempty"`
+	Raw       []string `json:"raw,omitempty"`
 }
 
 // AST is a collection of functions in a source file.
@@ -40,6 +43,40 @@ func parseParams(paramStr string) []string {
 	return out
 }
 
+// ConvertError represents a detailed parsing or conversion error.
+type ConvertError struct {
+	Line int
+	Msg  string
+	Snip string
+}
+
+func (e *ConvertError) Error() string {
+	if e.Line > 0 {
+		return fmt.Sprintf("line %d: %s\n%s", e.Line, e.Msg, e.Snip)
+	}
+	return fmt.Sprintf("%s\n%s", e.Msg, e.Snip)
+}
+
+func newConvertError(line int, lines []string, msg string) error {
+	start := line - 2
+	if start < 0 {
+		start = 0
+	}
+	end := line
+	if end >= len(lines) {
+		end = len(lines) - 1
+	}
+	var b strings.Builder
+	for i := start; i <= end; i++ {
+		prefix := "   "
+		if i+1 == line {
+			prefix = ">>>"
+		}
+		fmt.Fprintf(&b, "%s %d: %s\n", prefix, i+1, strings.TrimRight(lines[i], "\n"))
+	}
+	return &ConvertError{Line: line, Msg: msg, Snip: strings.TrimRight(b.String(), "\n")}
+}
+
 func validateWithElixir(src string) error {
 	if _, err := exec.LookPath("elixir"); err != nil {
 		return nil
@@ -52,6 +89,13 @@ func validateWithElixir(src string) error {
 		out := strings.TrimSpace(stderr.String())
 		if out == "" {
 			return err
+		}
+		line := 0
+		if m := regexp.MustCompile(`nofile:(\d+)`).FindStringSubmatch(out); m != nil {
+			line, _ = strconv.Atoi(m[1])
+		}
+		if line > 0 {
+			return newConvertError(line, strings.Split(src, "\n"), out)
 		}
 		return fmt.Errorf("%s", out)
 	}
@@ -73,6 +117,18 @@ func Parse(src string) (*AST, error) {
 		}
 		name := m[1]
 		params := parseParams(m[2])
+		var docLines []string
+		for j := i - 1; j >= 0; j-- {
+			l := strings.TrimSpace(lines[j])
+			if strings.HasPrefix(l, "#") {
+				docLines = append([]string{strings.TrimSpace(strings.TrimPrefix(l, "#"))}, docLines...)
+				continue
+			}
+			if l == "" {
+				continue
+			}
+			break
+		}
 		var body []string
 		startLine := i + 1
 		endLine := startLine
@@ -85,10 +141,15 @@ func Parse(src string) (*AST, error) {
 			}
 			body = append(body, l)
 		}
-		ast.Funcs = append(ast.Funcs, Func{Name: name, Params: params, Body: body, StartLine: startLine, EndLine: endLine})
+		fn := Func{Name: name, Params: params, Body: body, StartLine: startLine, EndLine: endLine}
+		if len(docLines) > 0 {
+			fn.Doc = strings.Join(docLines, "\n")
+		}
+		fn.Raw = lines[startLine-1 : endLine]
+		ast.Funcs = append(ast.Funcs, fn)
 	}
 	if len(ast.Funcs) == 0 {
-		return nil, fmt.Errorf("no functions found\n\nsource snippet:\n%s", snippet(src))
+		return nil, newConvertError(1, lines, "no functions found")
 	}
 	return ast, nil
 }

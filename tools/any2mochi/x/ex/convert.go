@@ -51,7 +51,10 @@ func Convert(src string) ([]byte, error) {
 		return nil, err
 	}
 	if len(diags) > 0 {
-		return nil, fmt.Errorf("%s", diagnostics(src, diags))
+		lines := strings.Split(src, "\n")
+		d := diags[0]
+		line := int(d.Range.Start.Line) + 1
+		return nil, newConvertError(line, lines, d.Message)
 	}
 
 	lines := strings.Split(src, "\n")
@@ -76,7 +79,7 @@ func Convert(src string) ([]byte, error) {
 		out.WriteString("main()\n")
 	}
 	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
+		return nil, &ConvertError{Msg: "no convertible symbols found", Snip: snippet(src)}
 	}
 	return []byte(out.String()), nil
 }
