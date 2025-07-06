@@ -133,6 +133,19 @@ func parseLegacy(src, pkg string) ([]string, error) {
 				if isFieldLine(t) {
 					typ, name := parseFieldLine(t)
 					st.Fields = append(st.Fields, structField{Name: name, Type: typ, Line: i + 1})
+					i++
+					continue
+				}
+				if strings.HasPrefix(t, stName+"(") {
+					// skip constructor definitions
+					depth := strings.Count(t, "{") - strings.Count(t, "}")
+					for depth > 0 && i+1 < len(lines) {
+						i++
+						t = strings.TrimSpace(lines[i])
+						depth += strings.Count(t, "{") - strings.Count(t, "}")
+					}
+					i++
+					continue
 				}
 				i++
 			}
