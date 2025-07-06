@@ -14,6 +14,7 @@ import (
 	stcode "mochi/compile/x/st"
 	"mochi/golden"
 	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -31,7 +32,7 @@ func TestSTCompiler_SubsetPrograms(t *testing.T) {
 	if err := stcode.EnsureSmalltalk(); err != nil {
 		t.Skipf("smalltalk not installed: %v", err)
 	}
-	golden.Run(t, "tests/compiler/st", ".mochi", ".out", func(src string) ([]byte, error) {
+	run := func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
 			return nil, fmt.Errorf("❌ parse error: %w", err)
@@ -50,20 +51,43 @@ func TestSTCompiler_SubsetPrograms(t *testing.T) {
 		if err := os.WriteFile(file, code, 0644); err != nil {
 			return nil, fmt.Errorf("write error: %w", err)
 		}
+		inData, _ := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in")
 		cmd := exec.Command("gst", file)
-		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
-			cmd.Stdin = bytes.NewReader(data)
+		if len(inData) > 0 {
+			cmd.Stdin = bytes.NewReader(inData)
 		}
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			return nil, fmt.Errorf("❌ gst error: %w\n%s", err, out)
 		}
-		return bytes.TrimSpace(out), nil
-	})
+		got := bytes.TrimSpace(out)
+
+		p, err := vm.Compile(prog, env)
+		if err != nil {
+			return nil, fmt.Errorf("❌ vm compile error: %w", err)
+		}
+		var vmBuf bytes.Buffer
+		m := vm.NewWithIO(p, bytes.NewReader(inData), &vmBuf)
+		if err := m.Run(); err != nil {
+			return nil, fmt.Errorf("❌ vm run error: %w", err)
+		}
+		want := bytes.TrimSpace(vmBuf.Bytes())
+		if !bytes.Equal(got, want) {
+			return nil, fmt.Errorf("output mismatch\n\n--- VM ---\n%s\n\n--- ST ---\n%s\n", want, got)
+		}
+		return got, nil
+	}
+
+	golden.Run(t, "tests/compiler/st", ".mochi", ".out", run)
+	golden.Run(t, "tests/compiler/valid", ".mochi", ".out", run)
 }
 
 func TestSTCompiler_GoldenOutput(t *testing.T) {
-	golden.Run(t, "tests/compiler/st", ".mochi", ".st.out", func(src string) ([]byte, error) {
+	if err := stcode.EnsureSmalltalk(); err != nil {
+		t.Skipf("smalltalk not installed: %v", err)
+	}
+
+	run := func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
 			return nil, fmt.Errorf("❌ parse error: %w", err)
@@ -77,8 +101,42 @@ func TestSTCompiler_GoldenOutput(t *testing.T) {
 		if err != nil {
 			return nil, fmt.Errorf("❌ compile error: %w", err)
 		}
+
+		dir := t.TempDir()
+		file := filepath.Join(dir, "main.st")
+		if err := os.WriteFile(file, code, 0644); err != nil {
+			return nil, fmt.Errorf("write error: %w", err)
+		}
+		inData, _ := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in")
+		cmd := exec.Command("gst", file)
+		if len(inData) > 0 {
+			cmd.Stdin = bytes.NewReader(inData)
+		}
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			return nil, fmt.Errorf("❌ gst error: %w\n%s", err, out)
+		}
+		got := bytes.TrimSpace(out)
+
+		p, err := vm.Compile(prog, env)
+		if err != nil {
+			return nil, fmt.Errorf("❌ vm compile error: %w", err)
+		}
+		var vmBuf bytes.Buffer
+		m := vm.NewWithIO(p, bytes.NewReader(inData), &vmBuf)
+		if err := m.Run(); err != nil {
+			return nil, fmt.Errorf("❌ vm run error: %w", err)
+		}
+		want := bytes.TrimSpace(vmBuf.Bytes())
+		if !bytes.Equal(got, want) {
+			return nil, fmt.Errorf("output mismatch\n\n--- VM ---\n%s\n\n--- ST ---\n%s\n", want, got)
+		}
+
 		return bytes.TrimSpace(code), nil
-	})
+	}
+
+	golden.Run(t, "tests/compiler/st", ".mochi", ".st.out", run)
+	golden.Run(t, "tests/compiler/valid", ".mochi", ".st.out", run)
 }
 
 func runExample(t *testing.T, i int) {

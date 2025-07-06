@@ -1,3 +1,5 @@
+Smalltalk at: #xs put: nil.
+
 Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
 
 !!

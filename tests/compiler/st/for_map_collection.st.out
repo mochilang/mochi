@@ -1,8 +1,10 @@
+Smalltalk at: #m put: nil.
+
 Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
 
 !!
 m := Dictionary from: {'a' -> 1. 'b' -> 2}.
 (m) keysDo: [:k |
-	(k) displayOn: Transcript. Transcript cr.
+    (k) displayOn: Transcript. Transcript cr.
 ]
 .

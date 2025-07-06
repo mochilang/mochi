@@ -1,3 +1,6 @@
+Smalltalk at: #a put: nil.
+Smalltalk at: #b put: nil.
+
 Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
 
 !!

@@ -2,7 +2,7 @@ Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDict
 
 !Main class methodsFor: 'mochi'!
 greet
-	^ 42
+    ^ 42
 !
 
 !!

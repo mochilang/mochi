@@ -2,6 +2,6 @@ Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDict
 
 !!
 1 to: 4 - 1 do: [:i |
-	(i) displayOn: Transcript. Transcript cr.
+    (i) displayOn: Transcript. Transcript cr.
 ]
 .
