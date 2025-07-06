@@ -98,6 +98,10 @@ const (
 		"    for (var n in list) s += (n as num).toDouble();\n" +
 		"    return s;\n" +
 		"}\n"
+
+	helperAbs = "num _abs(num v) {\n" +
+		"    return v.abs();\n" +
+		"}\n"
 	helperExists = "bool _exists(dynamic v) {\n" +
 		"    if (v is String) return v.isNotEmpty;\n" +
 		"    if (v is List) return v.isNotEmpty;\n" +
@@ -440,6 +444,7 @@ var helperMap = map[string]string{
 	"_count":          helperCount,
 	"_avg":            helperAvg,
 	"_sum":            helperSum,
+	"_abs":            helperAbs,
 	"_exists":         helperExists,
 	"_min":            helperMin,
 	"_max":            helperMax,

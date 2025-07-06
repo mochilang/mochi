@@ -10,16 +10,30 @@ import (
 	"unicode"
 )
 
+// ConvertError provides more context when conversion fails.
+type ConvertError struct {
+	Line int
+	Msg  string
+	Snip string
+}
+
+func (e *ConvertError) Error() string {
+	if e.Line > 0 {
+		return fmt.Sprintf("line %d: %s\n%s", e.Line, e.Msg, e.Snip)
+	}
+	return fmt.Sprintf("%s\n%s", e.Msg, e.Snip)
+}
+
 var typedVarRe = regexp.MustCompile(`^(?:final|const)?\s*([A-Za-z_][A-Za-z0-9_<>,\[\]\? ]*)\s+([A-Za-z_][A-Za-z0-9_]*)\s*(=.*)?$`)
 
 // Convert converts Dart source code to Mochi.
 func Convert(src string) ([]byte, error) {
 	funcs, err := parseCLI(src)
 	if err != nil {
-		return nil, err
+		return nil, &ConvertError{Msg: err.Error(), Snip: any2mochi.NumberedSnippet(src)}
 	}
 	if len(funcs) == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
+		return nil, &ConvertError{Msg: "no convertible symbols found", Snip: any2mochi.NumberedSnippet(src)}
 	}
 	var out strings.Builder
 	for _, f := range funcs {
@@ -61,14 +75,7 @@ func ConvertFile(path string) ([]byte, error) {
 }
 
 func snippet(src string) string {
-	lines := strings.Split(src, "\n")
-	if len(lines) > 10 {
-		lines = lines[:10]
-	}
-	for i, l := range lines {
-		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
-	}
-	return strings.Join(lines, "\n")
+	return any2mochi.NumberedSnippet(src)
 }
 
 type param struct {
@@ -83,6 +90,7 @@ type function struct {
 	Body   []string
 	Start  int
 	End    int
+	Doc    string
 }
 
 func parseDetail(detail string) ([]param, string) {
