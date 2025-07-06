@@ -120,6 +120,10 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	}
 
 	c.writeIndent()
+	if fn.Doc != "" {
+		c.buf.WriteString(";; " + fn.Doc + "\n")
+		c.writeIndent()
+	}
 	c.buf.WriteString("(defn " + sanitizeName(fn.Name) + " [")
 	for i, p := range fn.Params {
 		if i > 0 {
@@ -324,6 +328,10 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 			}
 		}
 	}
+	if st.Doc != "" {
+		c.writeIndent()
+		c.buf.WriteString(";; " + st.Doc + "\n")
+	}
 	c.writeln(fmt.Sprintf("(def %s %s)", sanitizeName(st.Name), expr))
 	if c.env != nil {
 		var typ types.Type = types.AnyType{}
@@ -358,6 +366,10 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 				expr = fmt.Sprintf("(_cast_struct_list #'%s %s)", sanitizeName(stt.Name), expr)
 			}
 		}
+	}
+	if st.Doc != "" {
+		c.writeIndent()
+		c.buf.WriteString(";; " + st.Doc + "\n")
 	}
 	c.writeln(fmt.Sprintf("(def %s %s)", sanitizeName(st.Name), expr))
 	if c.env != nil {

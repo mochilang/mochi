@@ -23,8 +23,11 @@
       (let [[head & rest] expr]
         (cond
           (= head 'defn)
-          (let [[name params & body] rest]
-            {:type "defn" :name (str name) :params (param-list params) :body (mapv node body) :line (:line m) :col (:column m)})
+          (let [[name params & body] rest
+                [doc body] (if (string? (first body))
+                             [(first body) (rest body)]
+                             [nil body])]
+            {:type "defn" :name (str name) :params (param-list params) :doc doc :body (mapv node body) :line (:line m) :col (:column m)})
           (= head 'def)
           (let [[name value] rest]
             {:type "def" :name (str name) :value (node value) :line (:line m) :col (:column m)})
