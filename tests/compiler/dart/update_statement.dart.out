@@ -1,5 +1,7 @@
 import 'dart:io';
 
+Map<String, Function> _structParsers = {};
+
 class Person {
   String name;
   int age;
@@ -9,7 +11,8 @@ class Person {
     return Person(name: m['name'] as String, age: m['age'] as int, status: m['status'] as String);
   }
 }
-_structParsers['Person'] = (m) => Person.fromJson(m);
+
+List<Person> people = [Person(name: "Alice", age: 17, status: "minor"), Person(name: "Bob", age: 25, status: "unknown"), Person(name: "Charlie", age: 18, status: "unknown"), Person(name: "Diana", age: 16, status: "minor")];
 
 void test_update_adult_status() {
   if (!(_equal(people, [Person(name: "Alice", age: 17, status: "minor"), Person(name: "Bob", age: 26, status: "adult"), Person(name: "Charlie", age: 19, status: "adult"), Person(name: "Diana", age: 16, status: "minor")]))) { throw Exception('expect failed'); }
@@ -17,7 +20,8 @@ void test_update_adult_status() {
 
 void main() {
   int failures = 0;
-  List<Person> people = [Person(name: "Alice", age: 17, status: "minor"), Person(name: "Bob", age: 25, status: "unknown"), Person(name: "Charlie", age: 18, status: "unknown"), Person(name: "Diana", age: 16, status: "minor")];
+  _structParsers['Person'] = (m) => Person.fromJson(m);
+  
   for (var _tmp0 = 0; _tmp0 < people.length; _tmp0++) {
     var _tmp1 = people[_tmp0];
     var name = _tmp1.name;
@@ -69,5 +73,3 @@ bool _runTest(String name, void Function() f) {
         return false;
     }
 }
-
-

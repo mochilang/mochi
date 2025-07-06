@@ -1,5 +1,6 @@
+int x = 1;
+
 void main() {
-	dynamic x = 1;
-	x = 2;
-	print(x);
+  x = 2;
+  print(x);
 }

@@ -1,4 +1,5 @@
+List<int> xs = [10, 20, 30];
+
 void main() {
-        dynamic xs = [10, 20, 30];
-        print(xs[1]);
+  print(xs[1]);
 }

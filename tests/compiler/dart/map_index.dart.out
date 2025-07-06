@@ -1,4 +1,5 @@
+Map<String, int> scores = {"Alice": 10, "Bob": 15};
+
 void main() {
-	dynamic scores = {"Alice": 10, "Bob": 15};
-	print(scores["Bob"]);
+  print(scores["Bob"]);
 }

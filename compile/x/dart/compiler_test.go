@@ -8,12 +8,14 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 
 	dartcode "mochi/compile/x/dart"
 	"mochi/golden"
 	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -91,72 +93,58 @@ func TestDartCompiler_ValidGoldenOutput(t *testing.T) {
 	if err := dartcode.EnsureDart(); err != nil {
 		t.Skipf("dart not installed: %v", err)
 	}
-	files := []string{
-		"break_continue",
-		"fold_pure_let",
-		"for_list_collection",
-		"for_loop",
-		"for_string_collection",
-		"fun_expr_in_let",
-		"fun_call",
-		"fun_def_infer",
-		"grouped_expr",
-		"match_expr",
-		"if_else",
-		"len_builtin",
-		"let_and_print",
-		"list_index",
-		"list_set",
-		"map_index",
-		"map_ops",
-		"map_set",
-		"print_hello",
-		"string_index",
-		"test_block",
-		"two_sum",
-		"var_assignment",
-		"while_loop",
-		"local_recursion",
-		"union_inorder",
-		"union_match",
-		"union_slice",
-		"stream_on_emit",
-	}
-	for _, name := range files {
-		src := filepath.Join("tests", "compiler", "valid", name+".mochi")
-		runDartGolden(t, src, ".dart.out")
-	}
-}
 
-func runDartGolden(t *testing.T, src, goldenExt string) {
-	t.Helper()
-	root := findRoot(t)
-	path := filepath.Join(root, src)
-	name := strings.TrimSuffix(filepath.Base(path), filepath.Ext(path))
-	wantPath := filepath.Join(root, filepath.Dir(src), name+goldenExt)
+	runCompile := func(src string) ([]byte, error) {
+		prog, err := parser.Parse(src)
+		if err != nil {
+			return nil, fmt.Errorf("❌ parse error: %w", err)
+		}
+		env := types.NewEnv(nil)
+		if errs := types.Check(prog, env); len(errs) > 0 {
+			return nil, fmt.Errorf("❌ type error: %v", errs[0])
+		}
+		code, err := dartcode.New(env).Compile(prog)
+		if err != nil {
+			return nil, fmt.Errorf("❌ compile error: %w", err)
+		}
 
-	prog, err := parser.Parse(path)
-	if err != nil {
-		t.Fatalf("parse error: %v", err)
+		dir := t.TempDir()
+		file := filepath.Join(dir, "main.dart")
+		if err := os.WriteFile(file, code, 0644); err != nil {
+			return nil, fmt.Errorf("write error: %w", err)
+		}
+		cmd := exec.Command("dart", file)
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			cmd.Stdin = bytes.NewReader(data)
+		}
+		dartOut, err := cmd.CombinedOutput()
+		if err != nil {
+			return nil, fmt.Errorf("❌ dart run error: %w\n%s", err, dartOut)
+		}
+
+		p, err := vm.Compile(prog, env)
+		if err != nil {
+			return nil, fmt.Errorf("vm compile error: %w", err)
+		}
+		var buf bytes.Buffer
+		m := vm.New(p, &buf)
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			m = vm.NewWithIO(p, bytes.NewReader(data), &buf)
+		}
+		if err := m.Run(); err != nil {
+			if ve, ok := err.(*vm.VMError); ok {
+				return nil, fmt.Errorf("vm run error:\n%s", ve.Format(p))
+			}
+			return nil, fmt.Errorf("vm run error: %v", err)
+		}
+		root := repoRoot()
+		if !bytes.Equal(normalizeOutput(root, bytes.TrimSpace(dartOut)), normalizeOutput(root, bytes.TrimSpace(buf.Bytes()))) {
+			return nil, fmt.Errorf("runtime output mismatch\n\n--- VM ---\n%s\n\n--- Dart ---\n%s\n", buf.Bytes(), dartOut)
+		}
+		return bytes.TrimSpace(code), nil
 	}
-	env := types.NewEnv(nil)
-	if errs := types.Check(prog, env); len(errs) > 0 {
-		t.Fatalf("type error: %v", errs[0])
-	}
-	c := dartcode.New(env)
-	got, err := c.Compile(prog)
-	if err != nil {
-		t.Fatalf("compile error: %v", err)
-	}
-	got = bytes.TrimSpace(got)
-	want, err := os.ReadFile(wantPath)
-	if err != nil {
-		t.Fatalf("failed to read golden: %v", err)
-	}
-	want = bytes.TrimSpace(want)
-	if !bytes.Equal(got, want) {
-		t.Errorf("golden mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", name+goldenExt, got, want)
-	}
+
+	golden.Run(t, "tests/compiler/valid", ".mochi", ".dart.out", runCompile)
 }
 
 // runLeetExample compiles the Mochi LeetCode solution for the given ID and runs
@@ -220,4 +208,37 @@ func findRoot(t *testing.T) string {
 	}
 	t.Fatal("go.mod not found")
 	return ""
+}
+
+func repoRoot() string {
+	dir, err := os.Getwd()
+	if err != nil {
+		return ""
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	return dir
+}
+
+func normalizeOutput(root string, b []byte) []byte {
+	out := string(b)
+	out = strings.ReplaceAll(out, filepath.ToSlash(root)+"/", "")
+	out = strings.ReplaceAll(out, filepath.ToSlash(root), "")
+	out = strings.ReplaceAll(out, "github.com/mochi-lang/mochi/", "")
+	out = strings.ReplaceAll(out, "mochi/tests/", "tests/")
+	durRE := regexp.MustCompile(`\([0-9]+(\.[0-9]+)?(ns|µs|ms|s)\)`)
+	out = durRE.ReplaceAllString(out, "(X)")
+	out = strings.TrimSpace(out)
+	if !strings.HasSuffix(out, "\n") {
+		out += "\n"
+	}
+	return []byte(out)
 }

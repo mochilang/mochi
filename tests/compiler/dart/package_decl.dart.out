@@ -1,5 +1,5 @@
 library sample;
 
 void main() {
-        print(42);
+  print(42);
 }

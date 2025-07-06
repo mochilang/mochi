@@ -2,30 +2,35 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:yaml/yaml.dart';
 
+Map<String, Function> _structParsers = {};
+
 class Person {
-	String name;
-	int age;
-	String email;
-	Person({required this.name, required this.age, required this.email});
-	factory Person.fromJson(Map<String,dynamic> m) {
-		return Person(name: m['name'] as String, age: m['age'] as int, email: m['email'] as String);
-	}
+  String name;
+  int age;
+  String email;
+  Person({required this.name, required this.age, required this.email});
+  factory Person.fromJson(Map<String,dynamic> m) {
+    return Person(name: m['name'] as String, age: m['age'] as int, email: m['email'] as String);
+  }
 }
-_structParsers['Person'] = (m) => Person.fromJson(m);
+
+List<Person> people = _load("../clj/people.json", {"format": "json"});
+
+List<Map<String, String>> adults = (() {
+  var _res = [];
+  var _src = (people).where((p) => (p.age >= 18)).toList();
+  for (var p in _src) {
+    _res.add({"name": p.name, "email": p.email});
+  }
+  return _res;
+})();
 
 void main() {
-	List<Person> people = _load("../clj/people.json", {"format": "json"});
-	List<Map<String, String>> adults = (() {
-	var _res = [];
-	var _src = (people).where((p) => (p.age >= 18)).toList();
-	for (var p in _src) {
-		_res.add({"name": p.name, "email": p.email});
-	}
-	return _res;
-})();
-	for (var a in adults) {
-		print([a.name.toString(), a.email.toString()].join(' '));
-	}
+  _structParsers['Person'] = (m) => Person.fromJson(m);
+  
+  for (var a in adults) {
+    print([a.name.toString(), a.email.toString()].join(' '));
+  }
 }
 
 List<Map<String,dynamic>> _load(String? path, Map<String,dynamic>? opts) {
@@ -33,7 +38,7 @@ List<Map<String,dynamic>> _load(String? path, Map<String,dynamic>? opts) {
     var header = opts?['header'] ?? true;
     var delim = (opts?['delimiter'] ?? ',').toString();
     if (delim.isEmpty) delim = ',';
-    if (format == 'tsv') delim = '	';
+    if (format == 'tsv') delim = '  ';
     String text;
     if (path == null || path == '' || path == '-') {
         var lines = <String>[];
@@ -82,5 +87,3 @@ List<Map<String,dynamic>> _load(String? path, Map<String,dynamic>? opts) {
     }
     return out;
 }
-
-

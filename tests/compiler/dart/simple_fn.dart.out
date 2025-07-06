@@ -1,7 +1,7 @@
-dynamic id(x) {
-	return x;
+int id(int x) {
+  return x;
 }
 
 void main() {
-	print(id(123));
+  print(id(123));
 }

@@ -1,6 +1,7 @@
 void main() {
-	print(_avg([1, 2, 3]));
+  print(_avg([1, 2, 3]));
 }
+
 double _avg(dynamic v) {
     List<dynamic>? list;
     if (v is List) list = v;
@@ -13,4 +14,3 @@ double _avg(dynamic v) {
     for (var n in list) s += (n as num).toDouble();
     return s / list.length;
 }
-

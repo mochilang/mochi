@@ -1,20 +1,24 @@
+import 'dart:io';
 import 'dart:convert';
 import 'package:yaml/yaml.dart';
-import 'dart:io';
+
+Map<String, Function> _structParsers = {};
 
 class Person {
-	String name;
-	int age;
-	Person({required this.name, required this.age});
-	factory Person.fromJson(Map<String,dynamic> m) {
-		return Person(name: m['name'] as String, age: m['age'] as int);
-	}
+  String name;
+  int age;
+  Person({required this.name, required this.age});
+  factory Person.fromJson(Map<String,dynamic> m) {
+    return Person(name: m['name'] as String, age: m['age'] as int);
+  }
 }
-_structParsers['Person'] = (m) => Person.fromJson(m);
+
+List<Person> people = _load("../tests/interpreter/valid/people.csv", null);
 
 void main() {
-	List<Person> people = _load("../tests/interpreter/valid/people.csv", null);
-	_save(people, "-", {"format": "json"});
+  _structParsers['Person'] = (m) => Person.fromJson(m);
+  
+  _save(people, "-", {"format": "json"});
 }
 
 List<Map<String,dynamic>> _load(String? path, Map<String,dynamic>? opts) {
@@ -22,7 +26,7 @@ List<Map<String,dynamic>> _load(String? path, Map<String,dynamic>? opts) {
     var header = opts?['header'] ?? true;
     var delim = (opts?['delimiter'] ?? ',').toString();
     if (delim.isEmpty) delim = ',';
-    if (format == 'tsv') delim = '	';
+    if (format == 'tsv') delim = '  ';
     String text;
     if (path == null || path == '' || path == '-') {
         var lines = <String>[];
@@ -77,7 +81,7 @@ void _save(List<Map<String,dynamic>> rows, String? path, Map<String,dynamic>? op
     var header = opts?['header'] ?? false;
     var delim = (opts?['delimiter'] ?? ',').toString();
     if (delim.isEmpty) delim = ',';
-    if (format == 'tsv') delim = '	';
+    if (format == 'tsv') delim = '  ';
     String text;
     if (format == 'json') {
         text = jsonEncode(rows);
@@ -105,5 +109,3 @@ void _save(List<Map<String,dynamic>> rows, String? path, Map<String,dynamic>? op
         File(path).writeAsStringSync(text);
     }
 }
-
-

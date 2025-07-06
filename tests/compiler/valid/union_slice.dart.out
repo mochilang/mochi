@@ -1,3 +1,5 @@
+Map<String, Function> _structParsers = {};
+
 abstract class Foo {}
 class Empty extends Foo {
   Empty();
@@ -14,4 +16,3 @@ List<Foo> listit() {
 void main() {
   print(listit().length);
 }
-

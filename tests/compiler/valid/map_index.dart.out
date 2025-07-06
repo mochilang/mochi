@@ -1,5 +1,5 @@
+Map<String, int> scores = {"Alice": 10, "Bob": 15};
+
 void main() {
-  Map<String, int> scores = {"Alice": 10, "Bob": 15};
   print(scores["Bob"]);
 }
-

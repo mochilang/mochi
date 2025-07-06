@@ -1,3 +1,39 @@
+import 'dart:io';
+
+List<int> xs = ([(-1), 0, 1] as List<int>);
+
+void test_values() {
+  if (!((xs[0] == (-1)))) { throw Exception('expect failed'); }
+  if (!((xs[1] == 0))) { throw Exception('expect failed'); }
+  if (!((xs[2] == 1))) { throw Exception('expect failed'); }
+  print("done");
+}
+
 void main() {
-	dynamic xs = [(-1), 0, 1];
+  int failures = 0;
+  if (!_runTest("values", test_values)) failures++;
+  if (failures > 0) {
+    print("\n[FAIL] $failures test(s) failed.");
+  }
+}
+
+String _formatDuration(Duration d) {
+    if (d.inMicroseconds < 1000) return '${d.inMicroseconds}µs';
+    if (d.inMilliseconds < 1000) return '${d.inMilliseconds}ms';
+    return '${(d.inMilliseconds/1000).toStringAsFixed(2)}s';
+}
+
+bool _runTest(String name, void Function() f) {
+    stdout.write('   test $name ...');
+    var start = DateTime.now();
+    try {
+        f();
+        var d = DateTime.now().difference(start);
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        return true;
+    } catch (e) {
+        var d = DateTime.now().difference(start);
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        return false;
+    }
 }

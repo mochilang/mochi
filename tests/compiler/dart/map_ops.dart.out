@@ -1,9 +1,10 @@
+Map<int, int> m = {};
+
 void main() {
-	dynamic m = {};
-	m[1] = 10;
-	m[2] = 20;
-	if ((m.containsKey(1))) {
-		print(m[1]);
-	}
-	print(m[2]);
+  m[1] = 10;
+  m[2] = 20;
+  if ((m.containsKey(1))) {
+    print(m[1]);
+  }
+  print(m[2]);
 }

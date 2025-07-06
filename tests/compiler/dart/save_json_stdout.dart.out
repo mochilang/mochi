@@ -1,10 +1,11 @@
+import 'package:yaml/yaml.dart';
 import 'dart:io';
 import 'dart:convert';
-import 'package:yaml/yaml.dart';
+
+List<Map<String, dynamic>> people = [{"name": "Alice", "age": 30}, {"name": "Bob", "age": 25}];
 
 void main() {
-	List<Map<String, dynamic>> people = [{"name": "Alice", "age": 30}, {"name": "Bob", "age": 25}];
-	_save(people, "-", {"format": "json"});
+  _save(people, "-", {"format": "json"});
 }
 
 void _save(List<Map<String,dynamic>> rows, String? path, Map<String,dynamic>? opts) {
@@ -12,7 +13,7 @@ void _save(List<Map<String,dynamic>> rows, String? path, Map<String,dynamic>? op
     var header = opts?['header'] ?? false;
     var delim = (opts?['delimiter'] ?? ',').toString();
     if (delim.isEmpty) delim = ',';
-    if (format == 'tsv') delim = '	';
+    if (format == 'tsv') delim = '  ';
     String text;
     if (format == 'json') {
         text = jsonEncode(rows);
@@ -40,5 +41,3 @@ void _save(List<Map<String,dynamic>> rows, String? path, Map<String,dynamic>? op
         File(path).writeAsStringSync(text);
     }
 }
-
-
