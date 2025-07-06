@@ -1763,10 +1763,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		c.use("_input")
 		return "_input()", nil
 	case "print":
+		c.use("_print")
 		if len(args) == 1 {
-			return fmt.Sprintf("printfn \"%%A\" (%s)", args[0]), nil
+			return fmt.Sprintf("_print %s", args[0]), nil
 		}
-		return fmt.Sprintf("printfn \"%%A\" (%s)", strings.Join(args, ", ")), nil
+		return fmt.Sprintf("_print %s", strings.Join(args, " ")), nil
 	default:
 		for i, a := range args {
 			if !isSimpleIdent(a) {

@@ -99,6 +99,17 @@ const (
     printfn "FAIL (%s)" e.Message
     false`
 
+	helperPrint = `let _print([<System.ParamArray>] args: obj[]) : unit =
+  let sb = System.Text.StringBuilder()
+  let add (s:string) = if sb.Length > 0 then sb.Append(' ') |> ignore; sb.Append(s) |> ignore
+  for v in args do
+    match v with
+    | :? (obj[]) as arr ->
+        for i = 0 to arr.Length - 1 do
+          add (string arr.[i])
+    | _ -> add (string v)
+  printfn "%s" (sb.ToString())`
+
 	helperInput = `let _input () : string =
   match System.Console.ReadLine() with
   | null -> ""
@@ -302,6 +313,7 @@ var helperMap = map[string]string{
 	"_load":           helperLoad,
 	"_save":           helperSave,
 	"_run_test":       helperRunTest,
+	"_print":          helperPrint,
 	"_input":          helperInput,
 	"_fetch":          helperFetch,
 	"_fetch_json":     helperFetchTyped,
