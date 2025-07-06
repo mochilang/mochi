@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -161,7 +162,11 @@ func TestPHPCompiler_SubsetPrograms(t *testing.T) {
 }
 
 func TestPHPCompiler_GoldenOutput(t *testing.T) {
-	golden.Run(t, "tests/compiler/php", ".mochi", ".php.out", func(src string) ([]byte, error) {
+	if err := phpcode.EnsurePHP(); err != nil {
+		t.Skipf("php not installed: %v", err)
+	}
+
+	runCompile := func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
 			return nil, fmt.Errorf("❌ parse error: %w", err)
@@ -170,10 +175,71 @@ func TestPHPCompiler_GoldenOutput(t *testing.T) {
 		if errs := types.Check(prog, env); len(errs) > 0 {
 			return nil, fmt.Errorf("❌ type error: %v", errs[0])
 		}
-		code, err := phpcode.New(env).Compile(prog)
+		c := phpcode.New(env)
+		code, err := c.Compile(prog)
 		if err != nil {
 			return nil, fmt.Errorf("❌ compile error: %w", err)
 		}
+
+		dir := t.TempDir()
+		file := filepath.Join(dir, "main.php")
+		if err := os.WriteFile(file, code, 0644); err != nil {
+			return nil, fmt.Errorf("write error: %w", err)
+		}
+		cmd := exec.Command("php", file)
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			cmd.Stdin = bytes.NewReader(data)
+		}
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			return nil, fmt.Errorf("❌ php run error: %w\n%s", err, out)
+		}
+
+		outPath := strings.TrimSuffix(src, ".mochi") + ".out"
+		if want, err := os.ReadFile(outPath); err == nil {
+			got := bytes.TrimSpace(out)
+			root := repoRoot()
+			if !bytes.Equal(normalizeOutput(root, got), normalizeOutput(root, bytes.TrimSpace(want))) {
+				return nil, fmt.Errorf("runtime output mismatch\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", got, want)
+			}
+		}
+
 		return bytes.TrimSpace(code), nil
-	})
+	}
+
+	golden.Run(t, "tests/compiler/valid", ".mochi", ".php.out", runCompile)
+	golden.Run(t, "tests/compiler/php", ".mochi", ".php.out", runCompile)
+}
+
+func normalizeOutput(root string, b []byte) []byte {
+	out := string(b)
+	out = strings.ReplaceAll(out, filepath.ToSlash(root)+"/", "")
+	out = strings.ReplaceAll(out, filepath.ToSlash(root), "")
+	out = strings.ReplaceAll(out, "github.com/mochi-lang/mochi/", "")
+	out = strings.ReplaceAll(out, "mochi/tests/", "tests/")
+	durRE := regexp.MustCompile(`\([0-9]+(\.[0-9]+)?(ns|µs|ms|s)\)`)
+	out = durRE.ReplaceAllString(out, "(X)")
+	out = strings.TrimSpace(out)
+	if !strings.HasSuffix(out, "\n") {
+		out += "\n"
+	}
+	return []byte(out)
+}
+
+func repoRoot() string {
+	dir, err := os.Getwd()
+	if err != nil {
+		return ""
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	return dir
 }
