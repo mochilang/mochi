@@ -1,6 +1,5 @@
 type Person {
   name: any
   age: any
-  fun __construct.__construct(fields: list<any>) {}
+  fun __construct(fields) {}
 }
-fun Closure() {}
