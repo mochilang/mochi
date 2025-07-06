@@ -214,6 +214,9 @@ func parseCLI(src string) (*ast, error) {
 func convertAST(a *ast) ([]byte, error) {
 	var out strings.Builder
 	for _, v := range a.Vars {
+		if strings.Contains(v.Value, "@import(") {
+			continue
+		}
 		if v.Line > 0 {
 			out.WriteString("// line ")
 			out.WriteString(fmt.Sprint(v.Line))
