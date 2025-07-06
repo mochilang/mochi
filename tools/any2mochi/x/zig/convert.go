@@ -44,6 +44,7 @@ type variable struct {
 	Type  string `json:"type"`
 	Value string `json:"value,omitempty"`
 	Const bool   `json:"const,omitempty"`
+	Pub   bool   `json:"pub,omitempty"`
 	Line  int    `json:"line"`
 }
 
@@ -51,6 +52,7 @@ type function struct {
 	Name    string   `json:"name"`
 	Params  string   `json:"params"`
 	Ret     string   `json:"ret"`
+	Pub     bool     `json:"pub,omitempty"`
 	Line    int      `json:"line"`
 	EndLine int      `json:"endLine"`
 	Lines   []string `json:"lines"`
@@ -58,6 +60,7 @@ type function struct {
 
 type structDef struct {
 	Name    string  `json:"name"`
+	Pub     bool    `json:"pub,omitempty"`
 	Line    int     `json:"line"`
 	EndLine int     `json:"endLine"`
 	Fields  []field `json:"fields"`
@@ -216,7 +219,11 @@ func convertAST(a *ast) ([]byte, error) {
 			out.WriteString(fmt.Sprint(v.Line))
 			out.WriteByte('\n')
 		}
-		out.WriteString("let ")
+		if v.Const {
+			out.WriteString("let ")
+		} else {
+			out.WriteString("var ")
+		}
 		out.WriteString(v.Name)
 		if v.Type != "" {
 			out.WriteString(": ")
@@ -621,9 +628,9 @@ func parseStmt(l string) string {
 			}
 			expr := convertExpr(parts[1])
 			if typ != "" {
-				return "let " + name + ": " + typ + " = " + expr
+				return "var " + name + ": " + typ + " = " + expr
 			}
-			return "let " + name + " = " + expr
+			return "var " + name + " = " + expr
 		}
 	case strings.HasPrefix(l, "const "):
 		parts := strings.SplitN(l[6:], "=", 2)
@@ -786,7 +793,11 @@ func writeSymbols(out *strings.Builder, prefix []string, syms []any2mochi.Docume
 			}
 			out.WriteString("}\n")
 		case any2mochi.SymbolKindVariable, any2mochi.SymbolKindConstant:
-			out.WriteString("let ")
+			if s.Kind == any2mochi.SymbolKindVariable {
+				out.WriteString("var ")
+			} else {
+				out.WriteString("let ")
+			}
 			out.WriteString(strings.Join(nameParts, "."))
 			if s.Detail != nil {
 				t := mapType(strings.TrimSpace(*s.Detail))

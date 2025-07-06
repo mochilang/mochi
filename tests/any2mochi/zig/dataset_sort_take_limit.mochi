@@ -7,9 +7,9 @@ type Product {
 }
 // line 3
 fun _slice_list(comptime T: type, v: list<const T>, start: int, end: int, step: int): list<T> {
-  let s = start
-  let e = end
-  let st = step
+  var s = start
+  var e = end
+  var st = step
   let n: int = v.len
   if (s < 0) s += n
   if (e < 0) e += n
@@ -18,9 +18,9 @@ fun _slice_list(comptime T: type, v: list<const T>, start: int, end: int, step: 
   if (e > n) e = n
   if (st > 0 and e < s) e = s
   if (st < 0 and e > s) e = s
-  let res = std.ArrayList(T).init(std.heap.page_allocator)
+  var res = std.ArrayList(T).init(std.heap.page_allocator)
   defer res.deinit()
-  let i: int = s
+  var i: int = s
   while (st > 0 and i < e) or (st < 0 and i > e) {
     res.append(v[i]) catch unreachable
   i += st
