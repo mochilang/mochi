@@ -15,14 +15,17 @@ type AST struct {
 }
 
 type Stmt struct {
-	Kind  string `json:"kind"`
-	Name  string `json:"name,omitempty"`
-	Expr  string `json:"expr,omitempty"`
-	Cond  string `json:"cond,omitempty"`
-	Start string `json:"start,omitempty"`
-	End   string `json:"end,omitempty"`
-	Body  []Stmt `json:"body,omitempty"`
-	Line  int    `json:"line,omitempty"`
+	Kind       string `json:"kind"`
+	Name       string `json:"name,omitempty"`
+	Expr       string `json:"expr,omitempty"`
+	Cond       string `json:"cond,omitempty"`
+	Start      string `json:"start,omitempty"`
+	End        string `json:"end,omitempty"`
+	Collection string `json:"collection,omitempty"`
+	Body       []Stmt `json:"body,omitempty"`
+	Else       []Stmt `json:"else,omitempty"`
+	Line       int    `json:"line,omitempty"`
+	Column     int    `json:"column,omitempty"`
 }
 
 func parseCLI(src string) (*AST, error) {
@@ -64,7 +67,7 @@ func convertAST(ast *AST, src string) ([]byte, error) {
 	var out strings.Builder
 	for _, s := range ast.Statements {
 		if s.Kind == "unknown" {
-			return nil, fmt.Errorf("%s", formatError(src, s.Line, "unsupported statement"))
+			return nil, fmt.Errorf("%s", formatError(src, s.Line, s.Column, "unsupported statement"))
 		}
 		writeStmt(&out, s, 0)
 	}
@@ -120,6 +123,38 @@ func writeStmt(out *strings.Builder, s Stmt, indent int) {
 		}
 		out.WriteString(ind)
 		out.WriteString("}\n")
+	case "foreach":
+		out.WriteString(ind)
+		out.WriteString("for ")
+		out.WriteString(s.Name)
+		out.WriteString(" in ")
+		out.WriteString(s.Collection)
+		out.WriteString(" {\n")
+		for _, b := range s.Body {
+			writeStmt(out, b, indent+1)
+		}
+		out.WriteString(ind)
+		out.WriteString("}\n")
+	case "if":
+		out.WriteString(ind)
+		out.WriteString("if (")
+		out.WriteString(s.Cond)
+		out.WriteString(") {\n")
+		for _, b := range s.Body {
+			writeStmt(out, b, indent+1)
+		}
+		out.WriteString(ind)
+		out.WriteString("}")
+		if len(s.Else) > 0 {
+			out.WriteString(" else {\n")
+			for _, b := range s.Else {
+				writeStmt(out, b, indent+1)
+			}
+			out.WriteString(ind)
+			out.WriteString("}\n")
+		} else {
+			out.WriteByte('\n')
+		}
 	}
 }
 

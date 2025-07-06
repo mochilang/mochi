@@ -312,7 +312,7 @@ func convertSimpleStmt(l string) string {
 	return ""
 }
 
-func formatError(src string, line int, msg string) string {
+func formatError(src string, line int, col int, msg string) string {
 	lines := strings.Split(src, "\n")
 	start := line - 2
 	if start < 0 {
@@ -323,9 +323,13 @@ func formatError(src string, line int, msg string) string {
 		end = len(lines)
 	}
 	var out strings.Builder
-	out.WriteString(fmt.Sprintf("line %d: %s\n", line, msg))
+	out.WriteString(fmt.Sprintf("line %d:%d: %s\n", line, col, msg))
 	for i := start; i < end; i++ {
 		out.WriteString(fmt.Sprintf("%3d: %s\n", i+1, lines[i]))
+		if i+1 == line && col > 0 {
+			out.WriteString(strings.Repeat(" ", col+4))
+			out.WriteString("^\n")
+		}
 	}
 	return strings.TrimSpace(out.String())
 }

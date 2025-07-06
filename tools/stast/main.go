@@ -14,14 +14,17 @@ type Program struct {
 }
 
 type Stmt struct {
-	Kind  string `json:"kind"`
-	Name  string `json:"name,omitempty"`
-	Expr  string `json:"expr,omitempty"`
-	Cond  string `json:"cond,omitempty"`
-	Start string `json:"start,omitempty"`
-	End   string `json:"end,omitempty"`
-	Body  []Stmt `json:"body,omitempty"`
-	Line  int    `json:"line,omitempty"`
+	Kind       string `json:"kind"`
+	Name       string `json:"name,omitempty"`
+	Expr       string `json:"expr,omitempty"`
+	Cond       string `json:"cond,omitempty"`
+	Start      string `json:"start,omitempty"`
+	End        string `json:"end,omitempty"`
+	Collection string `json:"collection,omitempty"`
+	Body       []Stmt `json:"body,omitempty"`
+	Else       []Stmt `json:"else,omitempty"`
+	Line       int    `json:"line,omitempty"`
+	Column     int    `json:"column,omitempty"`
 }
 
 func main() {
@@ -73,6 +76,12 @@ func parse(src string) Program {
 			i += n - 1
 			continue
 		}
+		if stmt, n := parseIf(lines, i); n > 0 {
+			stmt.Line = i + 1
+			stmts = append(stmts, stmt)
+			i += n - 1
+			continue
+		}
 		if stmt, n := parseFor(lines, i); n > 0 {
 			stmt.Line = i + 1
 			stmts = append(stmts, stmt)
@@ -90,8 +99,10 @@ func parse(src string) Program {
 	return Program{Statements: stmts}
 }
 
-func parseSimpleStmt(l string) Stmt {
-	l = strings.TrimSpace(l)
+func parseSimpleStmt(line string) Stmt {
+	trimmed := strings.TrimLeft(line, " \t")
+	col := len(line) - len(trimmed) + 1
+	l := strings.TrimSpace(trimmed)
 	if strings.HasSuffix(l, "Transcript cr") {
 		l = strings.TrimSuffix(l, "Transcript cr")
 		l = strings.TrimSpace(strings.TrimSuffix(l, "."))
@@ -101,23 +112,26 @@ func parseSimpleStmt(l string) Stmt {
 		expr := strings.TrimSpace(parts[0])
 		expr = strings.Trim(expr, "()")
 		expr = strings.ReplaceAll(expr, "'", "\"")
-		return Stmt{Kind: "print", Expr: expr}
+		return Stmt{Kind: "print", Expr: expr, Column: col}
 	}
 	if strings.Contains(l, ":=") {
 		parts := strings.SplitN(l, ":=", 2)
 		left := strings.TrimSpace(parts[0])
 		right := strings.TrimSpace(strings.TrimSuffix(parts[1], "."))
-		return Stmt{Kind: "assign", Name: left, Expr: right}
+		return Stmt{Kind: "assign", Name: left, Expr: right, Column: col}
 	}
 	if strings.HasPrefix(l, "^") {
-		return Stmt{Kind: "return", Expr: strings.TrimSpace(strings.TrimPrefix(l, "^"))}
+		return Stmt{Kind: "return", Expr: strings.TrimSpace(strings.TrimPrefix(l, "^")), Column: col}
 	}
 	if m := regexp.MustCompile(`^Transcript\s+show:`).FindString(l); m != "" {
 		expr := strings.TrimSpace(strings.TrimPrefix(l, m))
 		expr = strings.TrimSuffix(expr, ".")
 		expr = strings.Trim(expr, "()")
 		expr = strings.ReplaceAll(expr, "'", "\"")
-		return Stmt{Kind: "print", Expr: expr}
+		return Stmt{Kind: "print", Expr: expr, Column: col}
+	}
+	if l != "" {
+		return Stmt{Kind: "unknown", Expr: l, Column: col}
 	}
 	return Stmt{}
 }
@@ -159,20 +173,32 @@ func parseFor(lines []string, i int) (Stmt, int) {
 	if !strings.Contains(l, " do:") {
 		return Stmt{}, 0
 	}
-	m := regexp.MustCompile(`^(.*)\s+to:\s+(.*)\s+do:\s+\[:([A-Za-z_][A-Za-z0-9_]*) \|$`).FindStringSubmatch(l)
-	if len(m) != 4 {
+	if m := regexp.MustCompile(`^(.*)\s+to:\s+(.*)\s+do:\s+\[:([A-Za-z_][A-Za-z0-9_]*) \|$`).FindStringSubmatch(l); len(m) == 4 {
+		start := strings.TrimSpace(m[1])
+		end := strings.TrimSpace(m[2])
+		if strings.HasSuffix(end, "- 1") {
+			end = strings.TrimSpace(strings.TrimSuffix(end, "- 1"))
+		}
+		name := strings.TrimSpace(m[3])
+		body, n := parseBlock(lines, i)
+		return Stmt{Kind: "for", Name: name, Start: start, End: end, Body: body}, n
+	}
+	m := regexp.MustCompile(`^(.*)\s+do:\s+\[:([A-Za-z_][A-Za-z0-9_]*) \|$`).FindStringSubmatch(l)
+	if len(m) != 3 {
 		return Stmt{}, 0
 	}
-	start := strings.TrimSpace(m[1])
-	end := strings.TrimSpace(m[2])
-	if strings.HasSuffix(end, "- 1") {
-		end = strings.TrimSpace(strings.TrimSuffix(end, "- 1"))
-	}
-	name := strings.TrimSpace(m[3])
+	coll := strings.TrimSpace(m[1])
+	name := strings.TrimSpace(m[2])
+	body, n := parseBlock(lines, i)
+	return Stmt{Kind: "foreach", Name: name, Collection: coll, Body: body}, n
+}
+
+func parseBlock(lines []string, i int) ([]Stmt, int) {
 	var body []Stmt
 	n := 1
 	for j := i + 1; j < len(lines); j++ {
-		line := strings.TrimSpace(lines[j])
+		raw := lines[j]
+		line := strings.TrimSpace(raw)
 		if line == "]" {
 			n = j - i + 1
 			break
@@ -180,7 +206,7 @@ func parseFor(lines []string, i int) (Stmt, int) {
 		if line == "" || line == "." {
 			continue
 		}
-		stmt := parseSimpleStmt(strings.TrimSuffix(line, "."))
+		stmt := parseSimpleStmt(strings.TrimSuffix(raw, "."))
 		if stmt.Kind != "" {
 			stmt.Line = j + 1
 			body = append(body, stmt)
@@ -188,5 +214,32 @@ func parseFor(lines []string, i int) (Stmt, int) {
 			body = append(body, Stmt{Kind: "unknown", Expr: line, Line: j + 1})
 		}
 	}
-	return Stmt{Kind: "for", Name: name, Start: start, End: end, Body: body}, n
+	return body, n
+}
+
+func parseIf(lines []string, i int) (Stmt, int) {
+	l := strings.TrimSpace(lines[i])
+	if !strings.Contains(l, "ifTrue:") {
+		return Stmt{}, 0
+	}
+	m := regexp.MustCompile(`^(.*)\s+ifTrue:\s+\[$`).FindStringSubmatch(l)
+	if len(m) != 2 {
+		return Stmt{}, 0
+	}
+	cond := strings.TrimSpace(strings.Trim(m[1], "()"))
+	thenBody, n := parseBlock(lines, i)
+	j := i + n
+	var elseBody []Stmt
+	var m2 int
+	// handle pattern "] ifFalse: ["
+	if strings.Contains(lines[j-1], "ifFalse:") {
+		elseBody, m2 = parseBlock(lines, j-1)
+		return Stmt{Kind: "if", Cond: cond, Body: thenBody, Else: elseBody}, n + m2 - 1
+	}
+	// handle next line starting with ifFalse:
+	if j < len(lines) && strings.HasPrefix(strings.TrimSpace(lines[j]), "ifFalse:") {
+		elseBody, m2 = parseBlock(lines, j)
+		return Stmt{Kind: "if", Cond: cond, Body: thenBody, Else: elseBody}, n + m2
+	}
+	return Stmt{Kind: "if", Cond: cond, Body: thenBody}, n
 }
