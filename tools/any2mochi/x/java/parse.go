@@ -1,4 +1,4 @@
-package any2mochi
+package java
 
 import (
 	"bytes"
@@ -27,7 +27,7 @@ type javaAST struct {
 	} `json:"funcs"`
 }
 
-func parseJava(src string) ([]string, error) {
+func parse(src string) ([]string, error) {
 	cmd := exec.Command("mochi-javaast")
 	cmd.Stdin = strings.NewReader(src)
 	var out bytes.Buffer
