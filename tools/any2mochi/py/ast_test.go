@@ -16,7 +16,7 @@ func TestConvertAST(t *testing.T) {
 	if err != nil {
 		t.Fatalf("convert: %v", err)
 	}
-	expected := "fun main() {\n  print(\"hi\")\n}\nmain()\n"
+	expected := "print(\"hi\")\n"
 	if string(out) != expected {
 		t.Fatalf("unexpected output:\n%s", out)
 	}

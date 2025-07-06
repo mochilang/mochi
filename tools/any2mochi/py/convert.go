@@ -32,6 +32,9 @@ func Convert(src string) ([]byte, error) {
 			}
 		}
 	}
+	if out, err := ConvertAST(src); err == nil {
+		return out, nil
+	}
 	return convertFallback(src)
 }
 
