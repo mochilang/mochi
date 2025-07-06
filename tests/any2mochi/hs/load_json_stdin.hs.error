@@ -1,4 +1,0 @@
-line 20: unsupported syntax: instance Aeson.ToJSON AnyValue where
-    19 | 
-->  20 | instance Aeson.ToJSON AnyValue where
-    21 |   toJSON (VInt n) = Aeson.toJSON n

@@ -1,0 +1,20 @@
+fun data(AnyValue) { VInt Int | VDouble Double | VString String | VBool Bool deriving (Show) }
+fun _asInt((VInt: AnyValue, n)): int { n }
+fun _asInt(v: AnyValue): int { error ("expected int, got " ++ show v) }
+fun _asDouble((VDouble: AnyValue, d)): float { d }
+fun _asDouble(v: AnyValue): float { error ("expected double, got " ++ show v) }
+fun _asString((VString: AnyValue, s)): string { s }
+fun _asString(v: AnyValue): string { error ("expected string, got " ++ show v) }
+fun _asBool((VBool: AnyValue, b)): bool { b }
+fun _asBool(v: AnyValue): bool { error ("expected bool, got " ++ show v) }
+fun _parseJSON(text: string): list<Map.Map String String> {}
+fun _valueToMap((Aeson.Object: Aeson.Value, o)): Map.Map String String {}
+fun _valueToMap(_: Aeson.Value): Map.Map String String { Map.empty }
+fun _valueToString((Aeson.String: Aeson.Value, s)): string { T.unpack s }
+fun _valueToString((Aeson.Number: Aeson.Value, n)): string { show n }
+fun _valueToString((Aeson.Bool: Aeson.Value, b)): string { if b then "true" else "false" }
+fun _valueToString(_: Aeson.Value): string { "" }
+fun _mapToValue(m: Map.Map String String): Aeson.Value {}
+fun data(Person) { Person }
+let people = _load Nothing Just (Map.fromList [("format", "json")])
+print(length people)
