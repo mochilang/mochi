@@ -7,11 +7,26 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 	"time"
 
 	any2mochi "mochi/tools/any2mochi"
 )
+
+// ConvertError provides a detailed error message for Swift conversion.
+type ConvertError struct {
+	Line int
+	Msg  string
+	Snip string
+}
+
+func (e *ConvertError) Error() string {
+	if e.Line > 0 {
+		return fmt.Sprintf("line %d: %s\n%s", e.Line, e.Msg, e.Snip)
+	}
+	return fmt.Sprintf("%s\n%s", e.Msg, e.Snip)
+}
 
 // Convert converts Swift source code to Mochi. It invokes the Swift
 // compiler to dump the AST as JSON and then walks a minimal subset of the
@@ -63,6 +78,57 @@ func Convert(src string) ([]byte, error) {
 			} else {
 				out.WriteString(" {}\n")
 			}
+		case "struct_decl", "class_decl":
+			if it.Name == nil {
+				continue
+			}
+			out.WriteString("type ")
+			out.WriteString(it.Name.BaseName.Name)
+			out.WriteString(" {\n")
+			for _, m := range it.Members {
+				if m.Kind != "var_decl" || m.Name == nil {
+					continue
+				}
+				out.WriteString("  ")
+				out.WriteString(m.Name.BaseName.Name)
+				if t := interfaceTypeToMochi(m.InterfaceType); t != "" {
+					out.WriteString(": ")
+					out.WriteString(t)
+				}
+				out.WriteByte('\n')
+			}
+			out.WriteString("}\n")
+		case "enum_decl":
+			if it.Name == nil {
+				continue
+			}
+			out.WriteString("type ")
+			out.WriteString(it.Name.BaseName.Name)
+			out.WriteString(" =\n")
+			els := gatherEnumElements(it.Members)
+			for i, el := range els {
+				if i > 0 {
+					out.WriteString("  | ")
+				} else {
+					out.WriteString("  ")
+				}
+				out.WriteString(el.Name.BaseName.Name)
+				if el.Params != nil && len(el.Params.Params) > 0 {
+					out.WriteByte('(')
+					for j, p := range el.Params.Params {
+						if j > 0 {
+							out.WriteString(", ")
+						}
+						out.WriteString(p.Name.BaseName.Name)
+						if t := interfaceTypeToMochi(p.InterfaceType); t != "" {
+							out.WriteString(": ")
+							out.WriteString(t)
+						}
+					}
+					out.WriteByte(')')
+				}
+				out.WriteByte('\n')
+			}
 		case "top_level_code_decl":
 			code := extractRange(src, it.Range)
 			for _, st := range parseStatementsIndent(code, 0) {
@@ -82,12 +148,15 @@ type file struct {
 }
 
 type item struct {
-	Kind   string      `json:"_kind"`
-	Name   *declName   `json:"name,omitempty"`
-	Params *paramList  `json:"params,omitempty"`
-	Body   *body       `json:"body,omitempty"`
-	Range  offsetRange `json:"range"`
-	Result string      `json:"result,omitempty"`
+	Kind          string      `json:"_kind"`
+	Name          *declName   `json:"name,omitempty"`
+	Params        *paramList  `json:"params,omitempty"`
+	Body          *body       `json:"body,omitempty"`
+	Range         offsetRange `json:"range"`
+	Result        string      `json:"result,omitempty"`
+	InterfaceType string      `json:"interface_type,omitempty"`
+	Members       []item      `json:"members,omitempty"`
+	Elements      []item      `json:"elements,omitempty"`
 }
 
 type declName struct {
@@ -134,11 +203,13 @@ func parse(src string) (file, error) {
 	cmd := exec.CommandContext(ctx, "swiftc", "-dump-ast", "-dump-ast-format", "json", tmp.Name())
 	var out bytes.Buffer
 	cmd.Stdout = &out
+	cmd.Stderr = &out
 	if err := cmd.Run(); err != nil {
-		return file{}, err
+		return file{}, &ConvertError{Msg: err.Error(), Snip: snippet(src)}
 	}
+	dec := json.NewDecoder(bytes.NewReader(out.Bytes()))
 	var f file
-	if err := json.Unmarshal(out.Bytes(), &f); err != nil {
+	if err := dec.Decode(&f); err != nil {
 		return file{}, err
 	}
 	return f, nil
@@ -193,50 +264,54 @@ func parseStatementsIndent(body string, indent int) []string {
 	lines := strings.Split(body, "\n")
 	var out []string
 	for _, line := range lines {
-		l := strings.TrimSpace(line)
-		if l == "" {
-			continue
-		}
-		l = strings.TrimSuffix(l, ";")
-		switch {
-		case l == "}":
-			if indent > 0 {
-				indent--
+		for _, part := range strings.Split(line, ";") {
+			l := strings.TrimSpace(part)
+			if l == "" {
+				continue
 			}
-			out = append(out, strings.Repeat("  ", indent)+"}")
-		case strings.HasPrefix(l, "if ") && strings.HasSuffix(l, "{"):
-			cond := strings.TrimSpace(strings.TrimSuffix(l[3:], "{"))
-			out = append(out, strings.Repeat("  ", indent)+"if "+cond+" {")
-			indent++
-		case l == "else {":
-			if indent > 0 {
-				indent--
-			}
-			out = append(out, strings.Repeat("  ", indent)+"else {")
-			indent++
-		case strings.HasPrefix(l, "for ") && strings.HasSuffix(l, "{"):
-			head := strings.TrimSpace(strings.TrimSuffix(l[4:], "{"))
-			out = append(out, strings.Repeat("  ", indent)+"for "+head+" {")
-			indent++
-		case strings.HasPrefix(l, "return "):
-			expr := strings.TrimSpace(l[len("return "):])
-			out = append(out, strings.Repeat("  ", indent)+"return "+expr)
-		case strings.HasPrefix(l, "let ") || strings.HasPrefix(l, "var "):
-			decl := strings.TrimPrefix(l, "let ")
-			if decl == l {
-				decl = strings.TrimPrefix(l, "var ")
-			}
-			parts := strings.SplitN(decl, "=", 2)
-			if len(parts) == 2 {
-				name := strings.TrimSpace(parts[0])
-				if colon := strings.Index(name, ":"); colon != -1 {
-					name = strings.TrimSpace(name[:colon])
+			l = strings.TrimSpace(l)
+			l = strings.TrimSuffix(l, ";")
+			l = rewriteStructLiteral(l)
+			switch {
+			case l == "}":
+				if indent > 0 {
+					indent--
 				}
-				expr := strings.TrimSpace(parts[1])
-				out = append(out, strings.Repeat("  ", indent)+"let "+name+" = "+expr)
+				out = append(out, strings.Repeat("  ", indent)+"}")
+			case strings.HasPrefix(l, "if ") && strings.HasSuffix(l, "{"):
+				cond := strings.TrimSpace(strings.TrimSuffix(l[3:], "{"))
+				out = append(out, strings.Repeat("  ", indent)+"if "+cond+" {")
+				indent++
+			case l == "else {":
+				if indent > 0 {
+					indent--
+				}
+				out = append(out, strings.Repeat("  ", indent)+"else {")
+				indent++
+			case strings.HasPrefix(l, "for ") && strings.HasSuffix(l, "{"):
+				head := strings.TrimSpace(strings.TrimSuffix(l[4:], "{"))
+				out = append(out, strings.Repeat("  ", indent)+"for "+head+" {")
+				indent++
+			case strings.HasPrefix(l, "return "):
+				expr := rewriteStructLiteral(strings.TrimSpace(l[len("return "):]))
+				out = append(out, strings.Repeat("  ", indent)+"return "+expr)
+			case strings.HasPrefix(l, "let ") || strings.HasPrefix(l, "var "):
+				decl := strings.TrimPrefix(l, "let ")
+				if decl == l {
+					decl = strings.TrimPrefix(l, "var ")
+				}
+				parts := strings.SplitN(decl, "=", 2)
+				if len(parts) == 2 {
+					name := strings.TrimSpace(parts[0])
+					if colon := strings.Index(name, ":"); colon != -1 {
+						name = strings.TrimSpace(name[:colon])
+					}
+					expr := rewriteStructLiteral(strings.TrimSpace(parts[1]))
+					out = append(out, strings.Repeat("  ", indent)+"let "+name+" = "+expr)
+				}
+			default:
+				out = append(out, strings.Repeat("  ", indent)+l)
 			}
-		default:
-			out = append(out, strings.Repeat("  ", indent)+l)
 		}
 	}
 	return out
@@ -259,6 +334,39 @@ func extractRangeText(src string, r any2mochi.Range) string {
 		}
 	}
 	return out.String()
+}
+
+var structLitRE = regexp.MustCompile(`^([A-Z][A-Za-z0-9_]*)\((.*)\)$`)
+
+func rewriteStructLiteral(expr string) string {
+	m := structLitRE.FindStringSubmatch(expr)
+	if len(m) != 3 || !strings.Contains(m[2], ":") {
+		return expr
+	}
+	name := m[1]
+	parts := strings.Split(m[2], ",")
+	var fields []string
+	for _, p := range parts {
+		kv := strings.SplitN(strings.TrimSpace(p), ":", 2)
+		if len(kv) != 2 {
+			return expr
+		}
+		fields = append(fields, fmt.Sprintf("%s: %s", strings.TrimSpace(kv[0]), strings.TrimSpace(kv[1])))
+	}
+	return name + " { " + strings.Join(fields, ", ") + " }"
+}
+
+func gatherEnumElements(ms []item) []item {
+	var out []item
+	for _, m := range ms {
+		switch m.Kind {
+		case "enum_case_decl":
+			out = append(out, m.Elements...)
+		case "enum_element_decl":
+			out = append(out, m)
+		}
+	}
+	return out
 }
 
 func snippet(src string) string {

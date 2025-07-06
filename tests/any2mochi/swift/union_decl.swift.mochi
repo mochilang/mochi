@@ -1,0 +1,12 @@
+type Ok {
+  value: int
+}
+type Err {
+  msg: string
+}
+fun main() {
+    let r = Ok { value: 7 }
+    print(1)
+}
+main()
+
