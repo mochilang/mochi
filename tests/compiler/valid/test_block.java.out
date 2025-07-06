@@ -1,0 +1,15 @@
+public class Main {
+  static void test_addition_works() {
+    int x = (1 + 2);
+    expect((x == 3));
+  }
+
+  public static void main(String[] args) {
+    test_addition_works();
+    System.out.println("ok");
+  }
+
+  static void expect(boolean cond) {
+    if (!cond) throw new RuntimeException("expect failed");
+  }
+}

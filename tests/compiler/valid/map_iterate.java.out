@@ -1,0 +1,12 @@
+public class Main {
+  public static void main(String[] args) {
+    java.util.Map<Integer, Boolean> m = new java.util.HashMap<>();
+    m.put(1, true);
+    m.put(2, true);
+    int sum = 0;
+    for (var k : m.keySet()) {
+      sum = (sum + k);
+    }
+    System.out.println(sum);
+  }
+}

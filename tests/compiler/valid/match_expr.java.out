@@ -1,0 +1,17 @@
+public class Main {
+  public static void main(String[] args) {
+    int x = 2;
+    String label =
+        (new java.util.function.Supplier<String>() {
+              public String get() {
+                Object _t = x;
+                if (java.util.Objects.equals(_t, 1)) return "one";
+                if (java.util.Objects.equals(_t, 2)) return "two";
+                if (java.util.Objects.equals(_t, 3)) return "three";
+                return "unknown";
+              }
+            })
+            .get();
+    System.out.println(label);
+  }
+}

@@ -1,0 +1,12 @@
+public class Main {
+  static java.util.function.Function<Integer, Integer> makeAdder(int n) {
+    return (x) -> {
+      return (x + n);
+    };
+  }
+
+  public static void main(String[] args) {
+    java.util.function.Function<Integer, Integer> add10 = makeAdder(10);
+    System.out.println(add10.apply(7));
+  }
+}

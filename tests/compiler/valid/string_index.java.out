@@ -1,0 +1,13 @@
+public class Main {
+  public static void main(String[] args) {
+    String text = "hello";
+    System.out.println(_indexString(text, 1));
+  }
+
+  static String _indexString(String s, int i) {
+    char[] runes = s.toCharArray();
+    if (i < 0) i += runes.length;
+    if (i < 0 || i >= runes.length) throw new RuntimeException("index out of range");
+    return String.valueOf(runes[i]);
+  }
+}
