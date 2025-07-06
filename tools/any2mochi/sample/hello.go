@@ -1,3 +1,5 @@
+//go:build ignore
+
 package sample
 
 // Greeter demonstrates interface conversion
