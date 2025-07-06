@@ -12,7 +12,7 @@ fun main() {
   print(todo.title)
   print(todo.completed)
 }
-fun _fetch(url, opts, Any>?) {
+fun _fetch(url: string, opts: Map<String, Any>?): Any {
   fun encode(x: Any?): String = when (x) {
   null -> "null"
   is String -> "\"" + x.replace("\"", "\\\"") + "\""

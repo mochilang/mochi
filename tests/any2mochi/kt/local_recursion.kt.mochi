@@ -4,7 +4,7 @@ type Node {
   value: int
   right: Tree
 }
-fun fromList(nums) {
+fun fromList(nums: list<int>): Tree {
   fun helper(lo: Int, hi: Int) : Tree {
   if lo >= hi {
     return Leaf()
@@ -14,7 +14,7 @@ fun fromList(nums) {
 }
 return helper(0, nums.size)
 }
-fun inorder(t) {
+fun inorder(t: Tree): list<int> {
   return run {
   let _t = t
   when {

@@ -1,4 +1,4 @@
-fun searchMatrix(matrix, target) {
+fun searchMatrix(matrix: list<list<int>>, target: int): bool {
   let m = matrix.size
   if m == 0 {
     return false

@@ -1,7 +1,7 @@
 fun main() {
   print(_sliceString("hello", 1, 4))
 }
-fun _sliceString(s, i, j) {
+fun _sliceString(s: string, i: int, j: int): string {
   var start = i
   var end = j
   let arr = s.toCharArray()

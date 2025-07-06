@@ -8,7 +8,7 @@ fun main() {
   let data: Msg = _cast<Msg>(_fetch("file://tests/compiler/kt/fetch_builtin.json", null))
   print(data.message)
 }
-fun _fetch(url, opts, Any>?) {
+fun _fetch(url: string, opts: Map<String, Any>?): Any {
   fun encode(x: Any?): String = when (x) {
   null -> "null"
   is String -> "\"" + x.replace("\"", "\\\"") + "\""

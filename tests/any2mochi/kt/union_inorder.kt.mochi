@@ -4,7 +4,7 @@ type Node {
   value: int
   right: Tree
 }
-fun inorder(t) {
+fun inorder(t: Tree): list<int> {
   return run {
   let _t = t
   when {

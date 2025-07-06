@@ -4,7 +4,7 @@ type Node {
   value: int
   right: Tree
 }
-fun depth(t) {
+fun depth(t: Tree): int {
   return run {
   let _t = t
   when {

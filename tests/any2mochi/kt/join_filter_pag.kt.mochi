@@ -46,7 +46,7 @@ for r in result {
   print(r.person, r.spent)
 }
 }
-fun _query(src, joins, opts) {
+fun _query(src: list<Any>, joins: list<_JoinSpec>, opts: _QueryOpts): list<Any> {
   var items = src.map { arrayOf(it) }.toMutableList()
   if opts.where != null {
     items = items.filter { opts.where.invoke(it) }.toMutableList()

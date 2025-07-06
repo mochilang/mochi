@@ -2,7 +2,7 @@ type Empty {}
 type Node {
   child: Foo
 }
-fun listit() {
+fun listit(): list<Foo> {
   return listOf(Empty())
 }
 fun main() {

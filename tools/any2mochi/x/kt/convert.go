@@ -347,12 +347,17 @@ type vdecl struct {
 }
 
 type fn struct {
-	Name      string   `json:"name"`
-	Params    []string `json:"params"`
-	Ret       string   `json:"ret,omitempty"`
-	Lines     []string `json:"lines"`
-	StartLine int      `json:"start,omitempty"`
-	EndLine   int      `json:"end,omitempty"`
+	Name      string      `json:"name"`
+	Params    []paramDecl `json:"params"`
+	Ret       string      `json:"ret,omitempty"`
+	Lines     []string    `json:"lines"`
+	StartLine int         `json:"start,omitempty"`
+	EndLine   int         `json:"end,omitempty"`
+}
+
+type paramDecl struct {
+	Name string `json:"name"`
+	Type string `json:"type,omitempty"`
 }
 
 func repoRoot() (string, error) {
@@ -483,8 +488,21 @@ func convertAST(ast *ast) ([]byte, error) {
 			out.WriteString("fun ")
 			out.WriteString(c.Name + "." + m.Name)
 			out.WriteByte('(')
-			out.WriteString(strings.Join(m.Params, ", "))
+			for i, p := range m.Params {
+				if i > 0 {
+					out.WriteString(", ")
+				}
+				out.WriteString(p.Name)
+				if p.Type != "" {
+					out.WriteString(": ")
+					out.WriteString(mapType(p.Type))
+				}
+			}
 			out.WriteByte(')')
+			if m.Ret != "" {
+				out.WriteString(": ")
+				out.WriteString(mapType(m.Ret))
+			}
 			out.WriteString(" {\n")
 			indent++
 			for _, line := range m.Lines {
@@ -525,8 +543,21 @@ func convertAST(ast *ast) ([]byte, error) {
 		out.WriteString("fun ")
 		out.WriteString(fn.Name)
 		out.WriteByte('(')
-		out.WriteString(strings.Join(fn.Params, ", "))
+		for i, p := range fn.Params {
+			if i > 0 {
+				out.WriteString(", ")
+			}
+			out.WriteString(p.Name)
+			if p.Type != "" {
+				out.WriteString(": ")
+				out.WriteString(mapType(p.Type))
+			}
+		}
 		out.WriteByte(')')
+		if fn.Ret != "" {
+			out.WriteString(": ")
+			out.WriteString(mapType(fn.Ret))
+		}
 		out.WriteString(" {\n")
 		indent++
 		for _, line := range fn.Lines {

@@ -2,7 +2,7 @@ fun main() {
   let text = "hello"
   print(_indexString(text, -1))
 }
-fun _indexString(s, i) {
+fun _indexString(s: string, i: int): string {
   var idx = i
   let arr = s.toCharArray()
   if idx < 0) idx += arr.size {

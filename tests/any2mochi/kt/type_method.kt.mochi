@@ -1,11 +1,10 @@
 type Person {
   name: string
 }
-fun greet() {
+fun Person.greet(): string {
   return ("hi " + name)
 }
-fun main() {
+fun Person.main() {
   let p = Person(name = "Ada")
   print(p.greet())
 }
-main()
