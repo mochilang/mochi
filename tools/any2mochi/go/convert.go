@@ -281,6 +281,13 @@ func simplifyType(t string) string {
 	if t == "interface{}" {
 		return "any"
 	}
+	// Replace package qualifiers in type names with underscores so that the
+	// resulting identifier is a valid Mochi type reference. This avoids
+	// parse errors for types like "time.Duration" which are emitted by the
+	// Go compiler for helper functions.
+	if strings.ContainsAny(t, "./") {
+		t = strings.NewReplacer(".", "_", "/", "_").Replace(t)
+	}
 	return t
 }
 

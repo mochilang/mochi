@@ -72,7 +72,7 @@
 - query_sum_select: ok
 - record_assign: ok
 - right_join: ok
-- save_jsonl_stdout: parse error: parse error: 4:26: unexpected token "(" (expected TypeRef)
+- save_jsonl_stdout: ok
 - short_circuit: ok
 - slice: ok
 - sort_stable: ok
@@ -86,13 +86,13 @@
 - substring_builtin: ok
 - sum_builtin: ok
 - tail_recursion: ok
-- test_block: parse error: parse error: 2:27: unexpected token "." (expected ")" (":" TypeRef)? "{" Statement* "}")
+- test_block: ok
 - tree_sum: parse error: parse error: 3:1: unexpected token "}" (expected "{" Statement* "}")
 - two-sum: ok
 - typed_let: ok
 - typed_var: ok
 - unary_neg: ok
-- update_stmt: parse error: parse error: 8:27: unexpected token "." (expected ")" (":" TypeRef)? "{" Statement* "}")
+- update_stmt: ok
 - user_type_literal: ok
 - values_builtin: ok
 - var_assignment: ok
