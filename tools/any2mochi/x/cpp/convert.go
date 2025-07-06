@@ -430,6 +430,18 @@ func convertBody(src string, r any2mochi.Range) []string {
 					break
 				}
 			}
+			if !decl {
+				// handle templated containers like vector<int> or map<string,int>
+				for _, pre := range []string{"std::vector<", "vector<", "std::map<", "std::unordered_map<", "map<", "unordered_map<", "std::set<", "set<"} {
+					if strings.HasPrefix(l, pre) {
+						if idx := strings.Index(l, ">"); idx != -1 {
+							l = strings.TrimSpace(l[idx+1:])
+							decl = true
+						}
+						break
+					}
+				}
+			}
 			if decl {
 				l = "let " + l
 			}
