@@ -306,6 +306,11 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 }
 
 func (c *Compiler) compileLet(s *parser.LetStmt) error {
+	if s.Doc != "" {
+		for _, ln := range strings.Split(s.Doc, "\n") {
+			c.writeln("// " + ln)
+		}
+	}
 	name := sanitizeName(s.Name)
 	var t types.Type = types.AnyType{}
 	if c.env != nil {
@@ -365,6 +370,11 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 }
 
 func (c *Compiler) compileVar(s *parser.VarStmt) error {
+	if s.Doc != "" {
+		for _, ln := range strings.Split(s.Doc, "\n") {
+			c.writeln("// " + ln)
+		}
+	}
 	name := sanitizeName(s.Name)
 
 	var typ types.Type = types.AnyType{}
@@ -918,6 +928,11 @@ func unexportName(name string) string {
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	if t.Doc != "" {
+		for _, ln := range strings.Split(t.Doc, "\n") {
+			c.writeln("// " + ln)
+		}
+	}
 	name := sanitizeName(t.Name)
 	if c.structs[name] {
 		return nil
@@ -934,6 +949,11 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 				fieldName := exportName(sanitizeName(f.Name))
 				rtype := c.resolveTypeRef(f.Type)
 				typ := goType(rtype)
+				if f.Doc != "" {
+					for _, ln := range strings.Split(f.Doc, "\n") {
+						c.writeln("// " + ln)
+					}
+				}
 				c.writeln(fmt.Sprintf("%s %s `json:\"%s\"`", fieldName, typ, f.Name))
 				if c.env != nil {
 					if st, ok := c.env.GetStruct(v.Name); ok {
@@ -964,6 +984,11 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		if m.Field != nil {
 			fieldName := exportName(sanitizeName(m.Field.Name))
 			typ := goType(c.resolveTypeRef(m.Field.Type))
+			if m.Field.Doc != "" {
+				for _, ln := range strings.Split(m.Field.Doc, "\n") {
+					c.writeln("// " + ln)
+				}
+			}
 			c.writeln(fmt.Sprintf("%s %s `json:\"%s\"`", fieldName, typ, m.Field.Name))
 		}
 	}
@@ -1253,6 +1278,11 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 }
 
 func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
+	if fun.Doc != "" {
+		for _, ln := range strings.Split(fun.Doc, "\n") {
+			c.writeln("// " + ln)
+		}
+	}
 	c.writeln(fmt.Sprintf("// line %d", fun.Pos.Line))
 	name := sanitizeName(fun.Name)
 	if c.env != nil {
