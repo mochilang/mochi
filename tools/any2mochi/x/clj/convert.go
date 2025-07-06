@@ -10,6 +10,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	"mochi/tools/cljast"
 )
 
 type Program struct {
@@ -22,9 +24,11 @@ type form struct {
 	Params []string `json:"params,omitempty"`
 	Body   []node   `json:"body,omitempty"`
 	Value  node     `json:"value,omitempty"`
+	Line   int      `json:"line,omitempty"`
 }
 
 type node struct {
+	Line int    `json:"line,omitempty"`
 	Atom string `json:"atom,omitempty"`
 	List []node `json:"list,omitempty"`
 }
@@ -44,13 +48,29 @@ func diagnostics(src string, diags []any2mochi.Diagnostic) string {
 	lines := strings.Split(src, "\n")
 	var out strings.Builder
 	for _, d := range diags {
-		start := int(d.Range.Start.Line)
+		ln := int(d.Range.Start.Line)
+		col := int(d.Range.Start.Character)
 		msg := d.Message
-		line := ""
-		if start < len(lines) {
-			line = strings.TrimSpace(lines[start])
+		if ln >= len(lines) {
+			out.WriteString(fmt.Sprintf("line %d:%d: %s\n", ln+1, col+1, msg))
+			continue
 		}
-		out.WriteString(fmt.Sprintf("line %d: %s\n  %s\n", start+1, msg, line))
+		out.WriteString(fmt.Sprintf("line %d:%d: %s\n", ln+1, col+1, msg))
+		start := ln - 1
+		if start < 0 {
+			start = 0
+		}
+		end := ln + 1
+		if end >= len(lines) {
+			end = len(lines) - 1
+		}
+		for i := start; i <= end; i++ {
+			out.WriteString(fmt.Sprintf("%3d | %s\n", i+1, lines[i]))
+			if i == ln {
+				pointer := strings.Repeat(" ", col) + "^"
+				out.WriteString("    | " + pointer + "\n")
+			}
+		}
 	}
 	return strings.TrimSpace(out.String())
 }
@@ -312,50 +332,48 @@ func ConvertFile(path string) ([]byte, error) {
 
 func parseCLI(src string) (*Program, error) {
 	root, err := repoRoot()
-	if err != nil {
-		return nil, err
-	}
-	tmp, err := os.CreateTemp("", "cljsrc_*.clj")
-	if err != nil {
-		return nil, err
-	}
-	if _, err := tmp.WriteString(src); err != nil {
-		tmp.Close()
-		os.Remove(tmp.Name())
-		return nil, err
-	}
-	tmp.Close()
-	defer os.Remove(tmp.Name())
+	if err == nil {
+		if _, err := exec.LookPath("clojure"); err == nil {
+			tmp, err := os.CreateTemp("", "cljsrc_*.clj")
+			if err != nil {
+				return nil, err
+			}
+			if _, err := tmp.WriteString(src); err != nil {
+				tmp.Close()
+				os.Remove(tmp.Name())
+				return nil, err
+			}
+			tmp.Close()
+			defer os.Remove(tmp.Name())
 
-	script := filepath.Join(root, "tools", "any2mochi", "x", "clj", "parse.clj")
-	cmd := exec.Command("clojure", script, tmp.Name())
-	var out bytes.Buffer
-	var stderr bytes.Buffer
-	cmd.Stdout = &out
-	cmd.Stderr = &stderr
-	if err := cmd.Run(); err != nil {
-		msg := strings.TrimSpace(stderr.String())
-		if msg == "" {
-			msg = err.Error()
+			script := filepath.Join(root, "tools", "any2mochi", "x", "clj", "parse.clj")
+			cmd := exec.Command("clojure", script, tmp.Name())
+			var out bytes.Buffer
+			var stderr bytes.Buffer
+			cmd.Stdout = &out
+			cmd.Stderr = &stderr
+			if err := cmd.Run(); err == nil {
+				var ast Program
+				if json.Unmarshal(out.Bytes(), &ast) == nil {
+					return &ast, nil
+				}
+			}
 		}
-		return nil, fmt.Errorf("clojure: %s", msg)
 	}
-	var ast Program
-	if err := json.Unmarshal(out.Bytes(), &ast); err != nil {
-		return nil, err
-	}
-	return &ast, nil
-}
 
-func nodeToSexpr(n node) sexprNode {
-	if len(n.List) > 0 {
-		var list []sexprNode
-		for _, c := range n.List {
-			list = append(list, nodeToSexpr(c))
-		}
-		return list
+	a := cljast.Parse(src)
+	prog := &Program{}
+	for _, f := range a.Forms {
+		prog.Forms = append(prog.Forms, form{
+			Type:   f.Type,
+			Name:   f.Name,
+			Params: f.Params,
+			Body:   f.Body,
+			Value:  f.Value,
+			Line:   f.Line,
+		})
 	}
-	return n.Atom
+	return prog, nil
 }
 
 func programToMochi(p *Program, src string) ([]byte, error) {
@@ -373,7 +391,7 @@ func programToMochi(p *Program, src string) ([]byte, error) {
 			} else {
 				out.WriteString(" {\n")
 				for _, b := range f.Body {
-					if s := cljToMochi(nodeToSexpr(b)); s != "" {
+					if s := cljToMochi(b); s != "" {
 						out.WriteString("  ")
 						out.WriteString(s)
 						out.WriteByte('\n')
@@ -384,14 +402,14 @@ func programToMochi(p *Program, src string) ([]byte, error) {
 		case "def":
 			out.WriteString("let ")
 			out.WriteString(f.Name)
-			if s := cljToMochi(nodeToSexpr(f.Value)); s != "" {
+			if s := cljToMochi(f.Value); s != "" {
 				out.WriteString(" = ")
 				out.WriteString(s)
 			}
 			out.WriteByte('\n')
 		case "expr":
 			if len(f.Body) == 1 {
-				if s := cljToMochi(nodeToSexpr(f.Body[0])); s != "" {
+				if s := cljToMochi(f.Body[0]); s != "" {
 					out.WriteString(s)
 					out.WriteByte('\n')
 				}
@@ -420,202 +438,194 @@ func parseBody(src string, r any2mochi.Range) []string {
 		body.WriteString(lines[i])
 		body.WriteByte('\n')
 	}
-	exprs, _ := parseClojure(body.String())
-	if len(exprs) == 1 {
-		if list, ok := exprs[0].([]sexprNode); ok && len(list) >= 3 {
-			if head, ok := list[0].(string); ok && head == "defn" {
-				exprs = list[3:]
-			}
-		}
+	ast := cljast.Parse(body.String())
+	if len(ast.Forms) == 1 && ast.Forms[0].Type == "defn" {
+		ast.Forms[0].Body = ast.Forms[0].Body
 	}
 	var stmts []string
-	for _, e := range exprs {
-		if s := cljToMochi(e); s != "" {
-			stmts = append(stmts, s)
+	for _, f := range ast.Forms {
+		switch f.Type {
+		case "expr":
+			if len(f.Body) == 1 {
+				if s := cljToMochi(f.Body[0]); s != "" {
+					stmts = append(stmts, s)
+				}
+			}
+		case "def":
+			if s := cljToMochi(f.Value); s != "" {
+				stmts = append(stmts, fmt.Sprintf("let %s = %s", f.Name, s))
+			}
+		case "defn":
+			// ignore nested function definitions
 		}
 	}
 	return stmts
 }
 
-type token struct {
-	kind int
-	val  string
-}
-
-const (
-	tLParen = iota
-	tRParen
-	tLBracket
-	tRBracket
-	tString
-	tSymbol
-)
-
-// tokenize breaks src into minimal tokens.
-func tokenize(src string) []token {
-	var toks []token
-	for i := 0; i < len(src); {
-		switch src[i] {
-		case '(', ')', '[', ']':
-			switch src[i] {
-			case '(':
-				toks = append(toks, token{tLParen, "("})
-			case ')':
-				toks = append(toks, token{tRParen, ")"})
-			case '[':
-				toks = append(toks, token{tLBracket, "["})
-			case ']':
-				toks = append(toks, token{tRBracket, "]"})
-			}
-			i++
-		case ' ', '\t', '\n', '\r':
-			i++
-		case '"':
-			j := i + 1
-			for j < len(src) && src[j] != '"' {
-				if src[j] == '\\' && j+1 < len(src) {
-					j += 2
-				} else {
-					j++
-				}
-			}
-			if j < len(src) {
-				toks = append(toks, token{tString, src[i : j+1]})
-				i = j + 1
-			} else {
-				i = j
-			}
-		default:
-			j := i
-			for j < len(src) && !strings.ContainsRune("()[] \n\t\r", rune(src[j])) {
-				j++
-			}
-			toks = append(toks, token{tSymbol, src[i:j]})
-			i = j
-		}
-	}
-	return toks
-}
-
-type sexprNode interface{}
-
-// parseClojure parses a sequence of s-expressions.
-func parseClojure(src string) ([]sexprNode, int) {
-	toks := tokenize(src)
-	var pos int
-	var list []sexprNode
-	for pos < len(toks) {
-		n, p := parseForm(toks, pos)
-		if p == pos {
-			break
-		}
-		pos = p
-		if n != nil {
-			list = append(list, n)
-		}
-	}
-	return list, pos
-}
-
-func parseForm(toks []token, i int) (sexprNode, int) {
-	if i >= len(toks) {
-		return nil, i
-	}
-	switch toks[i].kind {
-	case tLParen:
-		var list []sexprNode
-		i++
-		for i < len(toks) && toks[i].kind != tRParen {
-			var n sexprNode
-			n, i = parseForm(toks, i)
-			if n != nil {
-				list = append(list, n)
-			}
-		}
-		if i < len(toks) && toks[i].kind == tRParen {
-			i++
-		}
-		return list, i
-	case tString, tSymbol:
-		val := toks[i].val
-		i++
-		return val, i
-	case tLBracket:
-		var list []sexprNode
-		i++
-		for i < len(toks) && toks[i].kind != tRBracket {
-			var n sexprNode
-			n, i = parseForm(toks, i)
-			if n != nil {
-				list = append(list, n)
-			}
-		}
-		if i < len(toks) && toks[i].kind == tRBracket {
-			i++
-		}
-		return list, i
-	default:
-		i++
-	}
-	return nil, i
-}
-
 // cljToMochi converts a parsed s-expression into a Mochi statement or
 // expression. Only a subset of constructs are supported.
-func cljToMochi(n sexprNode) string {
-	switch v := n.(type) {
-	case string:
-		return v
-	case []sexprNode:
-		if len(v) == 0 {
-			return ""
+func cljToMochi(n node) string {
+	if n.Atom != "" && len(n.List) == 0 {
+		return n.Atom
+	}
+	if len(n.List) == 0 {
+		return ""
+	}
+	head := n.List[0].Atom
+	switch head {
+	case "println":
+		var args []string
+		for _, a := range n.List[1:] {
+			args = append(args, cljToMochi(a))
 		}
-		head, ok := v[0].(string)
-		if !ok {
-			return ""
+		return fmt.Sprintf("print(%s)", strings.Join(args, ", "))
+	case "def":
+		if len(n.List) >= 3 {
+			return fmt.Sprintf("let %s = %s", cljToMochi(n.List[1]), cljToMochi(n.List[2]))
 		}
-		switch head {
-		case "println":
-			var args []string
-			for _, a := range v[1:] {
-				args = append(args, cljToMochi(a))
+	case "+", "-", "*", "/", "mod", "quot":
+		if len(n.List) == 3 {
+			op := head
+			if op == "mod" {
+				op = "%"
+			} else if op == "quot" {
+				op = "/"
 			}
-			return fmt.Sprintf("print(%s)", strings.Join(args, ", "))
-		case "def":
-			if len(v) >= 3 {
-				return fmt.Sprintf("let %s = %s", cljToMochi(v[1]), cljToMochi(v[2]))
-			}
-		case "+", "-", "*", "/", "mod", "quot":
-			if len(v) == 3 {
-				op := head
-				if op == "mod" {
-					op = "%"
-				} else if op == "quot" {
-					op = "/"
-				}
-				return fmt.Sprintf("%s %s %s", cljToMochi(v[1]), op, cljToMochi(v[2]))
-			}
-		case "throw":
-			if len(v) == 2 {
-				if l2, ok := v[1].([]sexprNode); ok && len(l2) >= 3 {
-					if s, ok := l2[0].(string); ok && s == "ex-info" {
-						if str, ok := l2[1].(string); ok && strings.Trim(str, "\"") == "return" {
-							if mp, ok := l2[2].([]sexprNode); ok && len(mp) >= 2 {
-								if key, ok := mp[0].(string); ok && key == ":value" {
-									return fmt.Sprintf("return %s", cljToMochi(mp[1]))
-								}
-							}
-						}
+			return fmt.Sprintf("%s %s %s", cljToMochi(n.List[1]), op, cljToMochi(n.List[2]))
+		}
+	case "throw":
+		if len(n.List) == 2 {
+			l2 := n.List[1]
+			if len(l2.List) >= 3 && l2.List[0].Atom == "ex-info" {
+				if strings.Trim(l2.List[1].Atom, "\"") == "return" {
+					mp := l2.List[2]
+					if len(mp.List) >= 2 && mp.List[0].Atom == ":value" {
+						return fmt.Sprintf("return %s", cljToMochi(mp.List[1]))
 					}
 				}
 			}
-		default:
-			var args []string
-			for _, a := range v[1:] {
-				args = append(args, cljToMochi(a))
-			}
-			return fmt.Sprintf("%s(%s)", head, strings.Join(args, ", "))
 		}
+	case "vec":
+		if len(n.List) == 2 {
+			if s := parseDataset(n.List[1]); s != "" {
+				return s
+			}
+		}
+	case "->>":
+		if s := parseDataset(n); s != "" {
+			return s
+		}
+	case "loop":
+		if s := parseLoop(n); s != "" {
+			return s
+		}
+	default:
+		var args []string
+		for _, a := range n.List[1:] {
+			args = append(args, cljToMochi(a))
+		}
+		return fmt.Sprintf("%s(%s)", head, strings.Join(args, ", "))
 	}
 	return ""
+}
+
+// parseDataset converts pipeline expressions built with `for` and `->>` into
+// Mochi query comprehensions. Only a limited subset of constructs emitted by the
+// Mochi compiler are recognised.
+func parseDataset(n node) string {
+	if len(n.List) == 0 {
+		return ""
+	}
+	if n.List[0].Atom == "->>" {
+		parts := n.List[1:]
+		if len(parts) == 0 {
+			return ""
+		}
+		forExpr := parts[0]
+		if len(forExpr.List) < 3 || forExpr.List[0].Atom != "for" {
+			return ""
+		}
+		bind := forExpr.List[1]
+		if len(bind.List) < 2 {
+			return ""
+		}
+		var1 := bind.List[0].Atom
+		coll1 := cljToMochi(bind.List[1])
+		out := fmt.Sprintf("from %s in %s", var1, coll1)
+		idx := 2
+		if idx < len(bind.List) && bind.List[idx].Atom == ":when" && idx+1 < len(bind.List) {
+			cond := cljToMochi(bind.List[idx+1])
+			out += " where " + cond
+			idx += 2
+		}
+		if idx+1 < len(bind.List) {
+			var2 := bind.List[idx].Atom
+			coll2 := cljToMochi(bind.List[idx+1])
+			out += fmt.Sprintf(" join from %s in %s", var2, coll2)
+			idx += 2
+			if idx < len(bind.List) && bind.List[idx].Atom == ":when" && idx+1 < len(bind.List) {
+				cond := cljToMochi(bind.List[idx+1])
+				out += " on " + cond
+			}
+		}
+		body := cljToMochi(forExpr.List[2])
+		out += " select " + body
+		for _, op := range parts[1:] {
+			if len(op.List) == 0 {
+				continue
+			}
+			switch op.List[0].Atom {
+			case "sort-by":
+				if len(op.List) >= 2 {
+					out += "\n                sort by " + cljToMochi(op.List[1])
+				}
+			case "drop":
+				if len(op.List) == 2 {
+					out += "\n                skip " + cljToMochi(op.List[1])
+				}
+			case "take":
+				if len(op.List) == 2 {
+					out += "\n                take " + cljToMochi(op.List[1])
+				}
+			}
+		}
+		return out
+	}
+	return ""
+}
+
+// parseLoop converts the compiler-generated loop/try/cond construct into a
+// simple 'for' statement.
+func parseLoop(n node) string {
+	if len(n.List) < 3 || n.List[0].Atom != "loop" {
+		return ""
+	}
+	bind := n.List[1]
+	if len(bind.List) != 2 {
+		return ""
+	}
+	seq := bind.List[1]
+	if len(seq.List) != 2 || seq.List[0].Atom != "seq" {
+		return ""
+	}
+	coll := cljToMochi(seq.List[1])
+	body := n.List[2]
+	if len(body.List) < 3 || body.List[0].Atom != "when" {
+		return ""
+	}
+	itemLet := body.List[2]
+	if len(itemLet.List) < 3 || itemLet.List[0].Atom != "let" {
+		return ""
+	}
+	itemVar := itemLet.List[1].List[0].Atom
+	tryLet := itemLet.List[2]
+	if len(tryLet.List) < 3 || tryLet.List[0].Atom != "let" {
+		return ""
+	}
+	tryExpr := tryLet.List[2]
+	if len(tryExpr.List) < 2 || tryExpr.List[0].Atom != "try" {
+		return ""
+	}
+	stmt := cljToMochi(tryExpr.List[1])
+	return fmt.Sprintf("for %s in %s {\n  %s\n}", itemVar, coll, stmt)
 }
