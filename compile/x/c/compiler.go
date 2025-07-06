@@ -61,6 +61,7 @@ type Compiler struct {
 	listStructs   map[string]bool
 	fetchStructs  map[string]bool
 	currentStruct string
+	autoType      bool
 }
 
 func New(env *types.Env) *Compiler {
@@ -74,6 +75,14 @@ func New(env *types.Env) *Compiler {
 		fetchStructs:  map[string]bool{},
 		externObjects: []string{},
 	}
+}
+
+// NewWithAutoType creates a compiler and controls whether variable
+// declarations use GCC's __auto_type for type inference.
+func NewWithAutoType(env *types.Env, auto bool) *Compiler {
+	c := New(env)
+	c.autoType = auto
+	return c
 }
 
 func (c *Compiler) writeln(s string) {
@@ -733,6 +742,9 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 		t = types.IntType{}
 	}
 	typ := cTypeFromType(t)
+	if c.autoType && stmt.Type == nil && stmt.Value != nil {
+		typ = "__auto_type"
+	}
 	if stmt.Value != nil && isNowExpr(stmt.Value) {
 		typ = "long long"
 		if c.env != nil {
@@ -852,6 +864,9 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 		t = types.IntType{}
 	}
 	typ := cTypeFromType(t)
+	if c.autoType && stmt.Type == nil && stmt.Value != nil {
+		typ = "__auto_type"
+	}
 	if stmt.Value != nil {
 		if f := asFetchExpr(stmt.Value); f != nil {
 			if st, ok := t.(types.StructType); ok {

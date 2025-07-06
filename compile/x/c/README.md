@@ -37,6 +37,7 @@ Additional features include:
 - `if` expressions for conditional values
 - anonymous `fun` expressions (without captured variables) compiled to static functions
 - methods declared inside `type` blocks
+- variables without an explicit type use GCC `__auto_type` for inference
 - union types are translated to tagged C unions
 
 ## Building
