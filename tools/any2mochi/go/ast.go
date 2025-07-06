@@ -18,13 +18,14 @@ type AST struct {
 }
 
 type Func struct {
-	Name    string   `json:"name"`
-	Recv    string   `json:"recv,omitempty"`
-	Params  []Param  `json:"params,omitempty"`
-	Results []string `json:"results,omitempty"`
-	Doc     string   `json:"doc,omitempty"`
-	Line    int      `json:"line,omitempty"`
-	EndLine int      `json:"endLine,omitempty"`
+	Name     string   `json:"name"`
+	Recv     string   `json:"recv,omitempty"`
+	Params   []Param  `json:"params,omitempty"`
+	Results  []string `json:"results,omitempty"`
+	Exported bool     `json:"exported,omitempty"`
+	Doc      string   `json:"doc,omitempty"`
+	Line     int      `json:"line,omitempty"`
+	EndLine  int      `json:"endLine,omitempty"`
 }
 
 type Param struct {
@@ -37,6 +38,7 @@ type Type struct {
 	Fields    []Field `json:"fields,omitempty"`
 	Methods   []Func  `json:"methods,omitempty"`
 	Interface bool    `json:"interface,omitempty"`
+	Exported  bool    `json:"exported,omitempty"`
 	Doc       string  `json:"doc,omitempty"`
 	Line      int     `json:"line,omitempty"`
 	EndLine   int     `json:"endLine,omitempty"`
@@ -52,13 +54,14 @@ type Field struct {
 }
 
 type Var struct {
-	Name    string `json:"name"`
-	Type    string `json:"type,omitempty"`
-	Value   string `json:"value,omitempty"`
-	Const   bool   `json:"const,omitempty"`
-	Doc     string `json:"doc,omitempty"`
-	Line    int    `json:"line,omitempty"`
-	EndLine int    `json:"endLine,omitempty"`
+	Name     string `json:"name"`
+	Type     string `json:"type,omitempty"`
+	Value    string `json:"value,omitempty"`
+	Const    bool   `json:"const,omitempty"`
+	Exported bool   `json:"exported,omitempty"`
+	Doc      string `json:"doc,omitempty"`
+	Line     int    `json:"line,omitempty"`
+	EndLine  int    `json:"endLine,omitempty"`
 }
 
 // ParseAST parses Go source and returns the simplified AST.
@@ -75,7 +78,7 @@ func ParseAST(src string) (*AST, error) {
 			if d.Name == nil {
 				continue
 			}
-			fn := Func{Name: d.Name.Name}
+			fn := Func{Name: d.Name.Name, Exported: ast.IsExported(d.Name.Name)}
 			fn.Line = fset.Position(d.Pos()).Line
 			fn.EndLine = fset.Position(d.End()).Line
 			if d.Doc != nil {
@@ -121,7 +124,7 @@ func ParseAST(src string) (*AST, error) {
 						continue
 					}
 					if st, ok := ts.Type.(*ast.StructType); ok {
-						gt := Type{Name: ts.Name.Name, Line: fset.Position(ts.Pos()).Line, EndLine: fset.Position(ts.End()).Line}
+						gt := Type{Name: ts.Name.Name, Exported: ast.IsExported(ts.Name.Name), Line: fset.Position(ts.Pos()).Line, EndLine: fset.Position(ts.End()).Line}
 						if d.Doc != nil {
 							gt.Doc = strings.TrimSpace(d.Doc.Text())
 						}
@@ -211,7 +214,7 @@ func ParseAST(src string) (*AST, error) {
 						typ = exprString(fset, vs.Type)
 					}
 					for i, n := range vs.Names {
-						v := Var{Name: n.Name, Type: typ, Const: d.Tok == token.CONST, Line: fset.Position(n.Pos()).Line, EndLine: fset.Position(n.End()).Line}
+						v := Var{Name: n.Name, Type: typ, Const: d.Tok == token.CONST, Exported: ast.IsExported(n.Name), Line: fset.Position(n.Pos()).Line, EndLine: fset.Position(n.End()).Line}
 						if vs.Doc != nil {
 							v.Doc = strings.TrimSpace(vs.Doc.Text())
 						}

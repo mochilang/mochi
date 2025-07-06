@@ -12,9 +12,39 @@ import (
 )
 
 type converter struct {
-	fset  *token.FileSet
-	src   []byte
-	lines []string
+	fset       *token.FileSet
+	src        []byte
+	lines      []string
+	typeParams map[string]bool
+}
+
+func (c *converter) pushTypeParams(fl *ast.FieldList) {
+	if fl == nil {
+		return
+	}
+	if c.typeParams == nil {
+		c.typeParams = map[string]bool{}
+	}
+	for _, f := range fl.List {
+		for _, n := range f.Names {
+			c.typeParams[n.Name] = true
+		}
+	}
+}
+
+func (c *converter) popTypeParams(fl *ast.FieldList) {
+	if fl == nil || c.typeParams == nil {
+		return
+	}
+	for _, f := range fl.List {
+		for _, n := range f.Names {
+			delete(c.typeParams, n.Name)
+		}
+	}
+}
+
+func (c *converter) isTypeParam(name string) bool {
+	return c.typeParams != nil && c.typeParams[name]
 }
 
 func (c *converter) snippet(pos token.Pos) string {
@@ -47,7 +77,7 @@ func (c *converter) errorf(n ast.Node, format string, args ...interface{}) error
 		return fmt.Errorf("%s", msg)
 	}
 	pos := c.fset.Position(n.Pos())
-	return fmt.Errorf("%s:%d: %s\n>>> %s", pos.Filename, pos.Line, msg, c.snippet(n.Pos()))
+	return fmt.Errorf("%s:%d:%d: %s\n%s", pos.Filename, pos.Line, pos.Column, msg, c.snippet(n.Pos()))
 }
 
 // Convert reads Go source from path and returns the corresponding Mochi code.
@@ -138,8 +168,9 @@ func (c *converter) translateFunc(fn *ast.FuncDecl) (string, error) {
 	if fn.Recv != nil {
 		return "", c.errorf(fn, "unsupported method declaration")
 	}
-	// Ignore generic type parameters for now
-	// so generic functions can still be translated
+	// Track generic type parameters and map them to `any` types
+	c.pushTypeParams(fn.Type.TypeParams)
+	defer c.popTypeParams(fn.Type.TypeParams)
 	var b strings.Builder
 	b.WriteString("fun ")
 	b.WriteString(fn.Name.Name)
@@ -155,7 +186,7 @@ func (c *converter) translateFunc(fn *ast.FuncDecl) (string, error) {
 			b.WriteString(p.Names[0].Name)
 			if p.Type != nil {
 				b.WriteString(": ")
-				b.WriteString(typeString(c.fset, p.Type))
+				b.WriteString(c.typeString(p.Type))
 			}
 		}
 	}
@@ -165,7 +196,7 @@ func (c *converter) translateFunc(fn *ast.FuncDecl) (string, error) {
 			return "", c.errorf(fn.Type.Results, "unsupported multiple return values")
 		}
 		b.WriteString(": ")
-		b.WriteString(typeString(c.fset, fn.Type.Results.List[0].Type))
+		b.WriteString(c.typeString(fn.Type.Results.List[0].Type))
 	}
 	b.WriteString(" {\n")
 	for _, st := range fn.Body.List {
@@ -197,7 +228,7 @@ func (c *converter) translateTypeDecl(ts *ast.TypeSpec) (string, error) {
 			return "", c.errorf(f, "unsupported field list")
 		}
 		name := f.Names[0].Name
-		typ := typeString(c.fset, f.Type)
+		typ := c.typeString(f.Type)
 		fmt.Fprintf(&b, "  %s: %s\n", name, typ)
 	}
 	b.WriteString("}")
@@ -210,16 +241,19 @@ func nodeString(fset *token.FileSet, n ast.Node) string {
 	return buf.String()
 }
 
-func typeString(fset *token.FileSet, n ast.Expr) string {
+func (c *converter) typeString(n ast.Expr) string {
 	switch t := n.(type) {
 	case *ast.ArrayType:
-		return fmt.Sprintf("list<%s>", typeString(fset, t.Elt))
+		return fmt.Sprintf("list<%s>", c.typeString(t.Elt))
 	case *ast.Ident:
+		if c.isTypeParam(t.Name) {
+			return "any"
+		}
 		return t.Name
 	case *ast.MapType:
-		return fmt.Sprintf("map<%s, %s>", typeString(fset, t.Key), typeString(fset, t.Value))
+		return fmt.Sprintf("map<%s, %s>", c.typeString(t.Key), c.typeString(t.Value))
 	default:
-		return nodeString(fset, n)
+		return nodeString(c.fset, n)
 	}
 }
 
@@ -282,7 +316,7 @@ func (c *converter) translateStmt(s ast.Stmt) (string, error) {
 			return fmt.Sprintf("var %s = %s", name, rhs), nil
 		}
 		if len(vs.Values) == 0 && vs.Type != nil {
-			return fmt.Sprintf("var %s: %s", name, typeString(c.fset, vs.Type)), nil
+			return fmt.Sprintf("var %s: %s", name, c.typeString(vs.Type)), nil
 		}
 		return "", c.errorf(st, "unsupported var spec")
 	case *ast.ReturnStmt:
@@ -576,7 +610,7 @@ func (c *converter) translateExpr(e ast.Expr) (string, error) {
 				b.WriteString(p.Names[0].Name)
 				if p.Type != nil {
 					b.WriteString(": ")
-					b.WriteString(typeString(c.fset, p.Type))
+					b.WriteString(c.typeString(p.Type))
 				}
 			}
 		}
@@ -586,7 +620,7 @@ func (c *converter) translateExpr(e ast.Expr) (string, error) {
 				return "", c.errorf(ex.Type.Results, "unsupported multiple return values")
 			}
 			b.WriteString(": ")
-			b.WriteString(typeString(c.fset, ex.Type.Results.List[0].Type))
+			b.WriteString(c.typeString(ex.Type.Results.List[0].Type))
 		}
 		b.WriteString(" {\n")
 		for _, st := range ex.Body.List {
@@ -647,6 +681,9 @@ func (c *converter) translateExpr(e ast.Expr) (string, error) {
 	case *ast.CallExpr:
 		if idx, ok := ex.Fun.(*ast.IndexExpr); ok {
 			ex = &ast.CallExpr{Fun: idx.X, Args: ex.Args}
+		}
+		if il, ok := ex.Fun.(*ast.IndexListExpr); ok {
+			ex = &ast.CallExpr{Fun: il.X, Args: ex.Args}
 		}
 		if sel, ok := ex.Fun.(*ast.SelectorExpr); ok {
 			if pkg, ok := sel.X.(*ast.Ident); ok && pkg.Name == "fmt" && sel.Sel.Name == "Println" {

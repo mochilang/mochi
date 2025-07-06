@@ -7,6 +7,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -90,8 +91,19 @@ func runConvertCompileGolden(t *testing.T, dir, pattern string, convert func(str
 					if errs := types.Check(prog, env); len(errs) > 0 {
 						err = fmt.Errorf("type error: %v", errs[0])
 					} else {
-						if _, cErr := gocode.New(env).Compile(prog); cErr != nil {
+						code, cErr := gocode.New(env).Compile(prog)
+						if cErr != nil {
 							err = fmt.Errorf("compile error: %w", cErr)
+						} else {
+							tmp := t.TempDir()
+							file := filepath.Join(tmp, "main.go")
+							if wErr := os.WriteFile(file, code, 0644); wErr == nil {
+								cmd := exec.Command("go", "run", file)
+								cmd.Env = append(os.Environ(), "GO111MODULE=on", "LLM_PROVIDER=echo")
+								if outRun, rErr := cmd.CombinedOutput(); rErr != nil {
+									err = fmt.Errorf("run error: %w\n%s", rErr, outRun)
+								}
+							}
 						}
 					}
 				}
