@@ -1,0 +1,6 @@
+fun id(x: int): int {
+  return x
+}
+fun main(args: String[]) {
+  print(id(123))
+}
