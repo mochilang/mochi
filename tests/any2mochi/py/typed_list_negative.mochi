@@ -1,3 +1,11 @@
-let xs: list[int]
-fun test_values() {}
-fun main() {}
+let xs = [-1, 0, 1]
+fun test_values() {
+  let assert xs[0] = = ((-1))
+  let assert xs[1] = = 0
+  let assert xs[2] = = 1
+  print("done")
+}
+fun main() {
+  let xs = [((-1)), 0, 1]
+  test_values()
+}

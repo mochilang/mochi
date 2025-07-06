@@ -1,2 +1,6 @@
-let _next: Literal[0]
-fun main() {}
+let _next = 0
+fun main() {
+  let _next = 0
+  let _next = _next + 1
+  print(_next)
+}

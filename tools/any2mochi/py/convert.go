@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -705,6 +707,24 @@ func convertFallback(src string) ([]byte, error) {
 				out.WriteString(strings.ReplaceAll(it.Value, "\n", " "))
 			}
 			out.WriteByte('\n')
+		case "class":
+			out.WriteString("type ")
+			out.WriteString(it.Name)
+			if len(it.Fields) == 0 {
+				out.WriteString(" {}\n")
+			} else {
+				out.WriteString(" {\n")
+				for _, f := range it.Fields {
+					out.WriteString("  ")
+					out.WriteString(f.Name)
+					if f.Type != "" {
+						out.WriteString(": ")
+						out.WriteString(mapType(f.Type))
+					}
+					out.WriteByte('\n')
+				}
+				out.WriteString("}\n")
+			}
 		}
 	}
 	if out.Len() == 0 {
@@ -724,6 +744,32 @@ func numberedSnippet(src string) string {
 	return strings.Join(lines, "\n")
 }
 
+func snippetAround(src string, line int) string {
+	lines := strings.Split(src, "\n")
+	start := line - 2
+	if start < 0 {
+		start = 0
+	}
+	end := line + 1
+	if end > len(lines) {
+		end = len(lines)
+	}
+	for i := start; i < end; i++ {
+		lines[i] = fmt.Sprintf("%3d: %s", i+1, lines[i])
+	}
+	return strings.Join(lines[start:end], "\n")
+}
+
+func parseErrorLine(msg string) int {
+	re := regexp.MustCompile(`line (\d+)`)
+	if m := re.FindStringSubmatch(msg); len(m) == 2 {
+		if n, err := strconv.Atoi(m[1]); err == nil {
+			return n
+		}
+	}
+	return 0
+}
+
 func indentOf(s string) string {
 	i := 0
 	for i < len(s) && (s[i] == ' ' || s[i] == '\t') {
@@ -732,13 +778,19 @@ func indentOf(s string) string {
 	return s[:i]
 }
 
+type fieldItem struct {
+	Name string `json:"name"`
+	Type string `json:"type,omitempty"`
+}
+
 type item struct {
-	Kind   string   `json:"kind"`
-	Name   string   `json:"name"`
-	Params []string `json:"params,omitempty"`
-	Start  int      `json:"start,omitempty"`
-	End    int      `json:"end,omitempty"`
-	Value  string   `json:"value,omitempty"`
+	Kind   string      `json:"kind"`
+	Name   string      `json:"name"`
+	Fields []fieldItem `json:"fields,omitempty"`
+	Params []string    `json:"params,omitempty"`
+	Start  int         `json:"start,omitempty"`
+	End    int         `json:"end,omitempty"`
+	Value  string      `json:"value,omitempty"`
 }
 
 const parseScript = `import ast, json, sys
@@ -757,6 +809,18 @@ for n in tree.body:
             except Exception:
                 pass
             items.append({"kind": "assign", "name": n.targets[0].id, "value": val})
+    elif isinstance(n, ast.ClassDef):
+        fields = []
+        for b in n.body:
+            if isinstance(b, ast.AnnAssign) and isinstance(b.target, ast.Name):
+                typ = ""
+                if b.annotation is not None:
+                    try:
+                        typ = ast.unparse(b.annotation)
+                    except Exception:
+                        pass
+                fields.append({"name": b.target.id, "type": typ})
+        items.append({"kind": "class", "name": n.name, "fields": fields})
 json.dump(items, sys.stdout)`
 
 func runParse(src string) ([]item, error) {
@@ -765,8 +829,17 @@ func runParse(src string) ([]item, error) {
 	cmd := exec.CommandContext(ctx, pythonCmd, "-c", parseScript)
 	cmd.Stdin = strings.NewReader(src)
 	var out bytes.Buffer
+	var errBuf bytes.Buffer
 	cmd.Stdout = &out
+	cmd.Stderr = &errBuf
 	if err := cmd.Run(); err != nil {
+		msg := strings.TrimSpace(errBuf.String())
+		if msg != "" {
+			if line := parseErrorLine(msg); line > 0 {
+				msg += "\n" + snippetAround(src, line)
+			}
+			return nil, fmt.Errorf("%v: %s", err, msg)
+		}
 		return nil, err
 	}
 	var items []item

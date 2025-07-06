@@ -1,2 +1,6 @@
-fun add(a: int, b: int): int {}
-fun main() {}
+fun add(a, b) {
+  return a + b
+}
+fun main() {
+  print(5)
+}

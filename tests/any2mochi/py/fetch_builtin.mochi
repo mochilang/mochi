@@ -1,4 +1,34 @@
-let T: type[T]
-fun _fetch(url: Unknown, opts: Unknown): Any {}
-let data: None
-fun main() {}
+let T = TypeVar('T')
+fun _fetch(url, opts) {
+  import urllib.request, urllib.parse, json
+  let method = "GET"
+  let data = None
+  let headers = {}
+  let timeout = None
+  if opts {
+  let method = opts.get("method", method)
+  if "body" in opts {
+  let data = json.dumps(opts["body"]).encode()
+}
+  if "headers" in opts {
+  for k, v in dict(opts["headers"]).items() {
+  let headers[k] = str(v)
+}
+}
+  if "query" in opts {
+  let q = urllib.parse.urlencode( {k: str(v) for k, v in dict(opts["query"]).items()} )
+  let sep = "&" if "?" in url else "?"
+  let url = url + sep + q
+}
+  let timeout = opts.get("timeout", None)
+}
+  let req = urllib.request.Request(url, data=data, headers=headers, method=method)
+  let with urllib.request.urlopen(req, timeout = timeout) as resp:
+  let text = resp.read()
+  return json.loads(text)
+}
+let data = None
+fun main() {
+  let data = _fetch("file:../../tests/compiler/py/fetch_builtin.json", None)
+  print(data["message"])
+}

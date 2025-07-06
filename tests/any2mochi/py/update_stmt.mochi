@@ -1,10 +1,46 @@
-let T: type[T]
-fun _get(obj: Unknown, name: Unknown ) -> (Unknown | Any | None) {}
-type Person {
-  name
-  age
-  status
+let T = TypeVar('T')
+fun _get(obj, name) {
+  if obj is None {
+  return None
 }
-let people: list[Person]
-fun test_update_adult_status() {}
-fun main() {}
+  if isinstance(obj, dict) {
+  if name in obj {
+  return obj[name]
+}
+}
+  if hasattr(obj, name) {
+  return getattr(obj, name)
+}
+  if isinstance(obj, (list, tuple)) {
+  for it in obj {
+  try:
+  return _get(it, name)
+  except Exception:
+}
+}
+  raise Exception("field not found: " + name)
+}
+type Person {
+  name: string
+  age: int
+  status: string
+}
+let people = [Person(name='Alice', age=17, status='minor'), Person(name='Bob', age=25, status='unknown'), Person(name='Charlie', age=18, status='unknown'), Person(name='Diana', age=16, status='minor')]
+fun test_update_adult_status() {
+  let assert people = = [ Person(name="Alice", age=17, status="minor"), Person(name="Bob", age=26, status="adult"), Person(name="Charlie", age=19, status="adult"), Person(name="Diana", age=16, status="minor"), ]
+}
+fun main() {
+  let people = [ Person(name="Alice", age=17, status="minor"), Person(name="Bob", age=25, status="unknown"), Person(name="Charlie", age=18, status="unknown"), Person(name="Diana", age=16, status="minor"), ]
+  for _i0, _it1 in enumerate(people) {
+  let name = _get(_it1, "name")
+  let age = _get(_it1, "age")
+  let status = _get(_it1, "status")
+  if age >= 18 {
+  setattr(_it1, "status", "adult")
+  setattr(_it1, "age", (age + 1))
+}
+  let people[_i0] = _it1
+}
+  print("ok")
+  test_update_adult_status()
+}

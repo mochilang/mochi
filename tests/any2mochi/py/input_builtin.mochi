@@ -1,3 +1,9 @@
-let input1: None
-let input2: None
-fun main() {}
+let input1 = None
+let input2 = None
+fun main() {
+  print("Enter first input:")
+  let input1 = input()
+  print("Enter second input:")
+  let input2 = input()
+  print("You entered:", input1, ",", input2)
+}
