@@ -1,0 +1,3 @@
+xs = [-1, 0, 1]
+let __tests = [{ "name": "values", "fn": test_values }]
+__run_tests(__tests)

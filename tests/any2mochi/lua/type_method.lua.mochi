@@ -1,0 +1,4 @@
+Person = []
+Person["__index"] = Person
+p = Person["new"]({ "name": "Ada" })
+print(p["greet"]())

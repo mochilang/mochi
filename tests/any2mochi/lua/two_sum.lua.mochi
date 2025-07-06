@@ -1,0 +1,3 @@
+result = twoSum([2, 7, 11, 15], 9)
+print(__index(result, 0))
+print(__index(result, 1))

@@ -1,0 +1,8 @@
+nums = [1, 2]
+letters = ["A", "B"]
+bools = [true, false]
+combos = ()
+print("--- Cross Join of three lists ---")
+for _, c in ipairs(combos) {
+  print(c["n"], c["l"], c["b"])
+}

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -409,14 +410,7 @@ func convertLuaStmts(stmts []luaast.Stmt, indent int) []string {
 			cond := luaExprString(s.Condition)
 			out = append(out, ind+"} while !("+cond+")")
 		case *luaast.IfStmt:
-			cond := luaExprString(s.Condition)
-			out = append(out, ind+"if "+cond+" {")
-			out = append(out, convertLuaStmts(s.Then, indent+1)...)
-			if len(s.Else) > 0 {
-				out = append(out, ind+"} else {")
-				out = append(out, convertLuaStmts(s.Else, indent+1)...)
-			}
-			out = append(out, ind+"}")
+			writeLuaIfStmt(&out, s, indent)
 		case *luaast.NumberForStmt:
 			step := "1"
 			if s.Step != nil {
@@ -438,6 +432,31 @@ func convertLuaStmts(stmts []luaast.Stmt, indent int) []string {
 		}
 	}
 	return out
+}
+
+func writeLuaIfStmt(out *[]string, s *luaast.IfStmt, indent int) {
+	ind := strings.Repeat("  ", indent)
+	*out = append(*out, ind+"if "+luaExprString(s.Condition)+" {")
+	*out = append(*out, convertLuaStmts(s.Then, indent+1)...)
+	cur := s
+	for {
+		if len(cur.Else) == 1 {
+			if next, ok := cur.Else[0].(*luaast.IfStmt); ok {
+				*out = append(*out, ind+"} else if "+luaExprString(next.Condition)+" {")
+				*out = append(*out, convertLuaStmts(next.Then, indent+1)...)
+				cur = next
+				continue
+			}
+		}
+		if len(cur.Else) > 0 {
+			*out = append(*out, ind+"} else {")
+			*out = append(*out, convertLuaStmts(cur.Else, indent+1)...)
+			*out = append(*out, ind+"}")
+		} else {
+			*out = append(*out, ind+"}")
+		}
+		break
+	}
 }
 
 func luaExprString(e luaast.Expr) string {
@@ -546,16 +565,33 @@ func writeLuaChunk(out *strings.Builder, chunk []luaast.Stmt) {
 func formatLuaParseError(err error, src string) string {
 	msg := err.Error()
 	line := 0
-	if i := strings.Index(msg, "line:"); i != -1 {
-		fmt.Sscanf(msg[i:], "line:%d", &line)
+	col := 0
+	re := regexp.MustCompile(`line:(\d+)(?:\(column:(\d+)\))?`)
+	if m := re.FindStringSubmatch(msg); len(m) > 0 {
+		line, _ = strconv.Atoi(m[1])
+		if len(m) > 2 {
+			col, _ = strconv.Atoi(m[2])
+		}
 	}
-	ctx := ""
 	lines := strings.Split(src, "\n")
-	if line-1 >= 0 && line-1 < len(lines) {
-		ctx = strings.TrimSpace(lines[line-1])
+	if line <= 0 || line-1 >= len(lines) {
+		return msg
 	}
-	if line > 0 {
-		return fmt.Sprintf("line %d: %s\n  %s", line, msg, ctx)
+	start := line - 2
+	if start < 0 {
+		start = 0
 	}
-	return msg
+	end := line
+	if end >= len(lines) {
+		end = len(lines) - 1
+	}
+	var out strings.Builder
+	out.WriteString(fmt.Sprintf("line %d: %s\n", line, msg))
+	for i := start; i <= end; i++ {
+		out.WriteString(fmt.Sprintf("%4d| %s\n", i+1, lines[i]))
+		if i == line-1 && col > 0 {
+			out.WriteString("     " + strings.Repeat(" ", col-1) + "^\n")
+		}
+	}
+	return strings.TrimSpace(out.String())
 }

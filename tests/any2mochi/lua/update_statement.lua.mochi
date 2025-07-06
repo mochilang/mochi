@@ -1,0 +1,16 @@
+Person = []
+Person["__index"] = Person
+people = [{ "name": "Alice", "age": 17, "status": "minor" }, { "name": "Bob", "age": 25, "status": "unknown" }, { "name": "Charlie", "age": 18, "status": "unknown" }, { "name": "Diana", "age": 16, "status": "minor" }]
+for _i0 = 1; _i0 <= ; _i0 += 1 {
+  let _it0 = people._i0
+  let name = _it0["name"]
+  let age = _it0["age"]
+  let status = _it0["status"]
+  if  {
+    _it0["status"] = "adult"
+    _it0["age"] = __add(age, 1)
+  }
+  people._i0 = _it0
+}
+let __tests = [{ "name": "update adult status", "fn": test_update_adult_status }]
+__run_tests(__tests)

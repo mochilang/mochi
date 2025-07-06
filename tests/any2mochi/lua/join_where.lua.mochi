@@ -1,0 +1,13 @@
+Customer = []
+Customer["__index"] = Customer
+Order = []
+Order["__index"] = Order
+PairInfo = []
+PairInfo["__index"] = PairInfo
+customers = [{ "id": 1, "name": "Alice" }, { "id": 2, "name": "Bob" }, { "id": 3, "name": "Charlie" }]
+orders = [{ "id": 100, "customerId": 1, "total": 250 }, { "id": 101, "customerId": 2, "total": 125 }, { "id": 102, "customerId": 1, "total": 300 }, { "id": 103, "customerId": 4, "total": 80 }]
+result = ()
+print("--- Orders with customer info ---")
+for _, entry in ipairs(result) {
+  print("Order", entry["orderId"], "by", entry["customerName"], "- $", entry["total"])
+}

@@ -1,0 +1,2 @@
+print(apply(inc, 5))
+print(apply(, 7))

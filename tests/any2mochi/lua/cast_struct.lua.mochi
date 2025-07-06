@@ -1,0 +1,4 @@
+Todo = []
+Todo["__index"] = Todo
+todo = Todo["new"]({ "title": "hi" })
+print(todo["title"])

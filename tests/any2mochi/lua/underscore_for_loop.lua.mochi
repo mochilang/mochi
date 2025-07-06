@@ -1,0 +1,16 @@
+c = 0
+for _ = 0; _ <= 2 - 1; _ += 1 {
+  c = __add(c, 1)
+}
+for _ in ipairs([1, 2]) {
+  c = __add(c, 1)
+}
+let _s0 = "ab"
+for _i0 = 1; _i0 <= ; _i0 += 1 {
+  c = __add(c, 1)
+}
+m = { "x": 1, "y": 2 }
+for _ in pairs(m) {
+  c = __add(c, 1)
+}
+print(c)
