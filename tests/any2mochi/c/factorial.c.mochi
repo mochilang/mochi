@@ -1,22 +1,14 @@
 type list_int {
   len: int
-  data: int
+  *data: int
 }
-fun list_int_create(len: int): list<int> {
-  list_int l
-  l.len = len
-  l.data = (int *)malloc(sizeof(int) * len)
-  return l
-}
+
 fun factorial(n: int): int {
   if ((n <= 1) {
     return 1
   }
   return (n * factorial((n - 1)))
 }
-fun main(): int {
-  print(factorial(0))
-  print(factorial(1))
-  print(factorial(5))
-  return 0
-}
+print(factorial(0))
+print(factorial(1))
+print(factorial(5))

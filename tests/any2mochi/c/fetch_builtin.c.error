@@ -1,22 +1,47 @@
-line 15: Unknown type name 'map_string'
-  static map_string _fetch(const char *url, void *opts) {
-line 19: Call to undeclared function '_read_all'; ISO C99 and later do not support implicit function declarations
-  data = _read_all(url + 7);
-line 19: Incompatible integer to pointer conversion assigning to 'char *' from 'int'
-  data = _read_all(url + 7);
-line 21: Call to undeclared function '_read_all'; ISO C99 and later do not support implicit function declarations
-  data = _read_all(url + 5);
-line 21: Incompatible integer to pointer conversion assigning to 'char *' from 'int'
-  data = _read_all(url + 5);
-line 46: Use of undeclared identifier 'list_map_string'
-  list_map_string rows = _parse_json(data);
-line 48: Use of undeclared identifier 'rows'
-  if (rows.len > 0)
-line 49: Use of undeclared identifier 'rows'
-  return rows.data[0];
-line 50: Call to undeclared function 'map_string_create'; ISO C99 and later do not support implicit function declarations
-  return map_string_create(0);
-line 54: Member reference base type 'int' is not a structure or union
-  printf("%s\n", data.data["message"]);
-line 54: Array subscript is not an integer
-  printf("%s\n", data.data["message"]);
+clang: exit status 1: <stdin>:15:8: error: unknown type name 'map_string'
+   15 | static map_string _fetch(const char *url, void *opts) {
+      |        ^
+<stdin>:19:12: error: call to undeclared function '_read_all'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+   19 |     data = _read_all(url + 7);
+      |            ^
+<stdin>:19:10: error: incompatible integer to pointer conversion assigning to 'char *' from 'int' [-Wint-conversion]
+   19 |     data = _read_all(url + 7);
+      |          ^ ~~~~~~~~~~~~~~~~~~
+<stdin>:21:12: error: call to undeclared function '_read_all'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+   21 |     data = _read_all(url + 5);
+      |            ^
+<stdin>:21:10: error: incompatible integer to pointer conversion assigning to 'char *' from 'int' [-Wint-conversion]
+   21 |     data = _read_all(url + 5);
+      |          ^ ~~~~~~~~~~~~~~~~~~
+<stdin>:46:3: error: use of undeclared identifier 'list_map_string'
+   46 |   list_map_string rows = _parse_json(data);
+      |   ^
+<stdin>:48:7: error: use of undeclared identifier 'rows'
+   48 |   if (rows.len > 0)
+      |       ^
+<stdin>:49:12: error: use of undeclared identifier 'rows'
+   49 |     return rows.data[0];
+      |            ^
+<stdin>:50:10: error: call to undeclared function 'map_string_create'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+   50 |   return map_string_create(0);
+      |          ^
+<stdin>:54:22: error: member reference base type 'int' is not a structure or union
+   54 |   printf("%s\n", data.data["message"]);
+      |                  ~~~~^~~~~
+<stdin>:54:27: error: array subscript is not an integer
+   54 |   printf("%s\n", data.data["message"]);
+      |                           ^~~~~~~~~~
+11 errors generated.
+
+
+source snippet:
+  1: #include <stdio.h>
+  2: #include <stdlib.h>
+  3: #include <string.h>
+  4: 
+  5: typedef struct {
+  6:   int len;
+  7:   int *data;
+  8: } list_int;
+  9: static list_int list_int_create(int len) {
+ 10:   list_int l;
