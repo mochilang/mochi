@@ -1,0 +1,22 @@
+generated code parse error: parse error: 2:20: unexpected token "/" (expected PostfixExpr)
+  1: fun main() {
+  2:   result = twoSum((/2, 7, 11, 15/), 9)
+  3:   print(result(0 + 1))
+  4:   print(result(1 + 1))
+  5: }
+  6: fun twoSum(nums,() {
+  7:   n = size(nums)
+  8:   for i in 0..n - 1 {
+  9:     for j in (i + 1)..n - 1 {
+ 10:       if ((nums(i + 1) + nums(j + 1)) == target) {
+
+  1| program main
+  2|   implicit none
+  3|   integer(kind=8) :: result(2)
+  4|   result = twoSum((/2_8, 7_8, 11_8, 15_8/), 9_8)
+  5|   print *, result(0_8 + 1)
+  6|   print *, result(1_8 + 1)
+  7| contains
+  8|   function twoSum(nums, target) result(res)
+  9|     implicit none
+ 10|     integer(kind=8), intent(in) :: nums(:)

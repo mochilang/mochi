@@ -1,0 +1,22 @@
+generated code parse error: parse error: 6:11: unexpected token "(" (expected "{" Statement* "}")
+  1: fun main() {
+  2:   print(foo((-2)))
+  3:   print(foo(0))
+  4:   print(foo(3))
+  5: }
+  6: fun foo(n)() {
+  7:   if (n < 0) {
+  8:     res = (-1)
+  9:     return
+ 10:   else if (n == 0) {
+
+  1| program main
+  2|   implicit none
+  3|   print *, foo((-2_8))
+  4|   print *, foo(0_8)
+  5|   print *, foo(3_8)
+  6| contains
+  7|   function foo(n) result(res)
+  8|     implicit none
+  9|     integer(kind=8) :: res
+ 10|     integer(kind=8), intent(in) :: n

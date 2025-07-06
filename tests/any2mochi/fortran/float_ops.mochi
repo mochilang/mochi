@@ -1,8 +1,0 @@
-fun main() {
-  x = 1.5
-  y = 2.5
-  print(x + y)
-  print(y - x)
-  print(x * y)
-  print(y / x)
-}

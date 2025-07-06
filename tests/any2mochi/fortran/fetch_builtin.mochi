@@ -1,8 +1,0 @@
-fun main() {
-  v__ = mochi_fetch('file://tests/compiler/fortran/fetch_builtin.json')
-}
-fun mochi_fetch() {
-  cmd = 'curl -s -o mochi_fetch.tmp ' // trim(url)
-  open(newunit = u, file='mochi_fetch.tmp', access='stream', form='unformatted', action='read')
-  inquire(u, size = n)
-}

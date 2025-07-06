@@ -12,7 +12,7 @@ contains
     res = (x + y)
     return
   end function add
-
+  
   function sub(x, y) result(res)
     implicit none
     integer(kind=8) :: res
@@ -21,7 +21,7 @@ contains
     res = (x - y)
     return
   end function sub
-
+  
   function mul(x, y) result(res)
     implicit none
     integer(kind=8) :: res
@@ -30,5 +30,5 @@ contains
     res = (x * y)
     return
   end function mul
-
+  
 end program main

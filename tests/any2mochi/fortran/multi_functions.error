@@ -1,0 +1,22 @@
+generated code parse error: parse error: 6:11: unexpected token "(" (expected Param)
+  1: fun main() {
+  2:   print(add(1, 2))
+  3:   print(sub(10, 3))
+  4:   print(mul(4, 6))
+  5: }
+  6: fun add(x,() {
+  7:   res = (x + y)
+  8:   return
+  9:   // end function add
+ 10:   // function sub(x, y) result(res)
+
+  1| program main
+  2|   implicit none
+  3|   print *, add(1_8, 2_8)
+  4|   print *, sub(10_8, 3_8)
+  5|   print *, mul(4_8, 6_8)
+  6| contains
+  7|   function add(x, y) result(res)
+  8|     implicit none
+  9|     integer(kind=8) :: res
+ 10|     integer(kind=8), intent(in) :: x

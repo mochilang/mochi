@@ -1,0 +1,22 @@
+generated code parse error: parse error: 2:9: unexpected token "/" (expected PostfixExpr)
+  1: fun main() {
+  2:   xs = (/1, 10, 20, 5/)
+  3:   ys = lambda_0(xs)
+  4:   for i_v in 0..size(ys) - 1 {
+  5:     v = ys((i_v % size(ys)) + 1)
+  6:     print(v)
+  7:   }
+  8: }
+  9: fun lambda_0(vsrc)() {
+ 10:   n = 0
+
+  1| program main
+  2|   implicit none
+  3|   integer(kind=8), allocatable :: xs(:)
+  4|   integer(kind=8) :: ys
+  5|   integer(kind=8) :: v
+  6|   integer(kind=8) :: i_v
+  7|   allocate(xs(0))
+  8|   xs = (/1_8, 10_8, 20_8, 5_8/)
+  9|   ys = lambda_0(xs)
+ 10|   do i_v = 0, size(ys) - 1

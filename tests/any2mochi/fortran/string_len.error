@@ -1,0 +1,11 @@
+generated code parse error: parse error: 2:13: lexer: invalid input text "'hello'))\n}\n"
+  1: fun main() {
+  2:   print(len('hello'))
+  3: }
+  4: 
+
+  1| program main
+  2|   implicit none
+  3|   print *, len('hello')
+  4| end program main
+  5|

@@ -1,0 +1,22 @@
+generated code parse error: parse error: 7:29: lexer: invalid input text "'Laptop', price=..."
+  1: type Product {
+  2:   name: string
+  3:   price: int
+  4: }
+  5: fun main() {
+  6:   // end type Product
+  7:   products = (/Product(name='Laptop', price=1500), Product(name='Smartphone', price=900), Product(name='Tablet', price=600), Product(name='Monitor', price=300), Product(name='Keyboard', price=100), Product(name='Mouse', price=50), Product(name='Headphones', price=200)/)
+  8:   expensive = lambda_0(products)(1 + 1:1 + 3)
+  9:   print('--- Top products (excluding most expensive) ---')
+ 10:   for i_item in 0..size(expensive) - 1 {
+
+  1| program main
+  2|   implicit none
+  3|   type :: Product
+  4|     character(:), allocatable :: name
+  5|     integer(kind=8) :: price
+  6|   end type Product
+  7|   integer(kind=8), allocatable :: products(:)
+  8|   integer(kind=8) :: expensive
+  9|   integer(kind=8) :: item
+ 10|   integer(kind=8) :: i_item

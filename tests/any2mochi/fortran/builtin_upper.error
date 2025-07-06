@@ -1,0 +1,22 @@
+generated code parse error: parse error: 2:19: lexer: invalid input text "'hello'))\n}\nfun ..."
+  1: fun main() {
+  2:   print(str_upper('hello'))
+  3: }
+  4: fun str_upper(v)() {
+  5:   for i in 1..len(v) {
+  6:     if (iachar(v(i:i)) >= iachar('a'))  &&  (iachar(v(i:i)) <= iachar('z')) {
+  7:       r(i:i) = achar(iachar(v(i:i)) - 32)
+  8:     else {
+  9:       r(i:i) = v(i:i)
+ 10:     }
+
+  1| program main
+  2|   implicit none
+  3|   print *, str_upper('hello')
+  4| contains
+  5| 
+  6|   function str_upper(v) result(r)
+  7|     implicit none
+  8|     character(len=*), intent(in) :: v
+  9|     character(len=len(v)) :: r
+ 10|     integer :: i

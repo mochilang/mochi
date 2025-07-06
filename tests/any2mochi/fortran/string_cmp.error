@@ -1,0 +1,21 @@
+generated code parse error: parse error: 2:9: lexer: invalid input text "'a' < 'b')\n  pri..."
+  1: fun main() {
+  2:   print('a' < 'b')
+  3:   print('a' <= 'a')
+  4:   print('cat' > 'car')
+  5:   print('dog' >= 'dog')
+  6:   print('abc' == 'abc')
+  7:   print('foo' /= 'bar')
+  8: }
+  9: 
+
+  1| program main
+  2|   implicit none
+  3|   print *, ('a' < 'b')
+  4|   print *, ('a' <= 'a')
+  5|   print *, ('cat' > 'car')
+  6|   print *, ('dog' >= 'dog')
+  7|   print *, ('abc' == 'abc')
+  8|   print *, ('foo' /= 'bar')
+  9| end program main
+ 10|

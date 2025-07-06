@@ -1,0 +1,22 @@
+generated code parse error: parse error: 11:1: unexpected token "<EOF>" (expected "}")
+  1: fun main() {
+  2:   for i in 0..10 - 1 {
+  3:     if ((i % 2) == 0) {
+  4:       continue
+  5:     }
+  6:     if (i > 5) {
+  7:       break
+  8:     }
+  9:     print(i)
+ 10: }
+
+  1| program main
+  2|   implicit none
+  3|   integer(kind=8) :: i
+  4|   do i = 0_8, 10_8 - 1
+  5|     if ((mod(i, 2_8) == 0_8)) then
+  6|       cycle
+  7|     end if
+  8|     if ((i > 5_8)) then
+  9|       exit
+ 10|     end if

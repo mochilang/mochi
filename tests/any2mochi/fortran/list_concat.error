@@ -1,0 +1,11 @@
+generated code parse error: parse error: 2:9: unexpected token "/" (expected ")")
+  1: fun main() {
+  2:   print(/ (/1, 2/), (/3, 4/) /)
+  3: }
+  4: 
+
+  1| program main
+  2|   implicit none
+  3|   print *, (/ (/1_8, 2_8/), (/3_8, 4_8/) /)
+  4| end program main
+  5|

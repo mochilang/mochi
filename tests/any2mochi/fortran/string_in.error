@@ -1,0 +1,13 @@
+generated code parse error: parse error: 2:15: lexer: invalid input text "'catch', 'cat') ..."
+  1: fun main() {
+  2:   print(index('catch', 'cat') > 0)
+  3:   print(index('catch', 'dog') > 0)
+  4: }
+  5: 
+
+  1| program main
+  2|   implicit none
+  3|   print *, index('catch', 'cat') > 0
+  4|   print *, index('catch', 'dog') > 0
+  5| end program main
+  6|

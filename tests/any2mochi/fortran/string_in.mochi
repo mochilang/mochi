@@ -1,4 +1,0 @@
-fun main() {
-  print(index('catch', 'cat') > 0)
-  print(index('catch', 'dog') > 0)
-}

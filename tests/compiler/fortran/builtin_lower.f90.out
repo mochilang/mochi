@@ -1,19 +1,4 @@
 program main
   implicit none
   print *, str_lower('HELLO')
-contains
-
-  function str_lower(v) result(r)
-    implicit none
-    character(len=*), intent(in) :: v
-    character(len=len(v)) :: r
-    integer :: i
-    do i = 1, len(v)
-      if ((iachar(v(i:i)) >= iachar('A')) .and. (iachar(v(i:i)) <= iachar('Z'))) then
-        r(i:i) = achar(iachar(v(i:i)) + 32)
-      else
-        r(i:i) = v(i:i)
-      end if
-    end do
-  end function str_lower
 end program main

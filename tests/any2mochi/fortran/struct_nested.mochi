@@ -1,0 +1,11 @@
+type Point {
+  x: int
+  y: int
+}
+type Line {
+  start: Point
+  end: Point
+}
+fun main() {
+  // end type Point
+}

@@ -1,0 +1,19 @@
+generated code parse error: parse error: 7:1: unexpected token "<EOF>" (expected "}")
+  1: fun main() {
+  2:   i = 0
+  3:   while (i < 3) {
+  4:     print(i)
+  5:     i = (i + 1)
+  6: }
+  7: 
+
+  1| program main
+  2|   implicit none
+  3|   integer(kind=8) :: i
+  4|   i = 0_8
+  5|   do while ((i < 3_8))
+  6|     print *, i
+  7|     i = (i + 1_8)
+  8|   end do
+  9| end program main
+ 10|

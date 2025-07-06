@@ -1,0 +1,22 @@
+generated code parse error: parse error: 6:21: lexer: invalid input text "'file://tests/co..."
+  1: type Msg {
+  2:   message: string
+  3: }
+  4: fun main() {
+  5:   // end type Msg
+  6:   v__ = mochi_fetch('file://tests/compiler/fortran/fetch_builtin.json')
+  7: }
+  8: fun mochi_fetch(url)() {
+  9:   cmd = 'curl -s -o mochi_fetch.tmp ' // trim(url)
+ 10:   // call execute_command_line(cmd)
+
+  1| program main
+  2|   implicit none
+  3|   type :: Msg
+  4|     character(:), allocatable :: message
+  5|   end type Msg
+  6|   character(:), allocatable :: v__
+  7|   v__ = mochi_fetch('file://tests/compiler/fortran/fetch_builtin.json')
+  8| contains
+  9| 
+ 10|   function mochi_fetch(url) result(r)

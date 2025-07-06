@@ -1,8 +1,0 @@
-fun main() {
-  print('a' < 'b')
-  print('a' <= 'a')
-  print('cat' > 'car')
-  print('dog' >= 'dog')
-  print('abc' == 'abc')
-  print('foo' /= 'bar')
-}

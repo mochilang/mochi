@@ -1,0 +1,11 @@
+generated code parse error: parse error: 2:14: lexer: invalid input text "'hello ') // tri..."
+  1: fun main() {
+  2:   print(trim('hello ') // trim('world'))
+  3: }
+  4: 
+
+  1| program main
+  2|   implicit none
+  3|   print *, (trim('hello ') // trim('world'))
+  4| end program main
+  5|

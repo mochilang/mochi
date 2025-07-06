@@ -1,0 +1,17 @@
+generated code parse error: parse error: 2:9: unexpected token "/" (expected PostfixExpr)
+  1: fun main() {
+  2:   xs = (/1, 2/)
+  3:   xs = (/ xs, (/3/) /)
+  4:   print(xs((2 % size(xs)) + 1))
+  5: }
+  6: 
+
+  1| program main
+  2|   implicit none
+  3|   integer(kind=8), allocatable :: xs(:)
+  4|   allocate(xs(0))
+  5|   xs = (/1_8, 2_8/)
+  6|   xs = (/ xs, (/3_8/) /)
+  7|   print *, xs(modulo(2_8, size(xs)) + 1)
+  8| end program main
+  9|

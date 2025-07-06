@@ -212,9 +212,10 @@ func parseTypes(src string) []string {
 	lines := strings.Split(src, "\n")
 	var out []string
 	for i := 0; i < len(lines); i++ {
-		l := strings.TrimSpace(strings.ToLower(lines[i]))
+		trimmed := strings.TrimSpace(lines[i])
+		l := strings.ToLower(trimmed)
 		if strings.HasPrefix(l, "type ::") {
-			name := strings.TrimSpace(lines[i][len("type ::"):])
+			name := strings.TrimSpace(trimmed[len("type ::"):])
 			var fields []string
 			for j := i + 1; j < len(lines); j++ {
 				ll := strings.TrimSpace(lines[j])
@@ -230,9 +231,22 @@ func parseTypes(src string) []string {
 				names := strings.Split(ll[idx+2:], ",")
 				for _, n := range names {
 					n = strings.TrimSpace(n)
-					if n != "" {
-						fields = append(fields, fmt.Sprintf("  %s: %s", n, typ))
+					if n == "" {
+						continue
 					}
+					arr := false
+					if strings.HasSuffix(n, "(:)") {
+						n = strings.TrimSuffix(n, "(:)")
+						arr = true
+					} else if open := strings.Index(n, "("); open != -1 && strings.HasSuffix(n, ")") {
+						n = n[:open]
+						arr = true
+					}
+					ftyp := typ
+					if arr {
+						ftyp = fmt.Sprintf("list<%s>", typ)
+					}
+					fields = append(fields, fmt.Sprintf("  %s: %s", n, ftyp))
 				}
 			}
 			if name != "" && len(fields) > 0 {
