@@ -64,10 +64,12 @@ type Node struct {
 	Line     int
 	Col      int
 	Children []Node
+	EndLine  int
+	EndCol   int
 }
 
 func parseAST(src string) (*Node, error) {
-	cmd := exec.Command("ruby", "-e", `require 'json';require 'ripper';src=STDIN.read;ast=Ripper.sexp_raw(src);if !ast; STDERR.puts 'parse error'; exit 1; end;puts JSON.generate(ast)`)
+	cmd := exec.Command("ruby", "-e", `require 'json';require 'ripper';src=STDIN.read;b=Ripper::SexpBuilder.new(src);ast=b.parse;if b.error?; STDERR.puts b.error; exit 1; end;puts JSON.generate(ast)`)
 	cmd.Stdin = strings.NewReader(src)
 	var out bytes.Buffer
 	var errBuf bytes.Buffer
@@ -88,6 +90,9 @@ func parseAST(src string) (*Node, error) {
 }
 
 func buildNode(v interface{}) Node {
+	if s, ok := v.(string); ok {
+		return Node{Type: "@tok", Value: s, EndLine: 0, EndCol: 0}
+	}
 	arr, ok := v.([]interface{})
 	if !ok || len(arr) == 0 {
 		return Node{}
@@ -109,6 +114,8 @@ func buildNode(v interface{}) Node {
 				}
 			}
 		}
+		n.EndLine = n.Line
+		n.EndCol = n.Col
 		return n
 	}
 	for i := 1; i < len(arr); i++ {
@@ -119,6 +126,8 @@ func buildNode(v interface{}) Node {
 		}
 		if child.Type != "" {
 			n.Children = append(n.Children, child)
+			n.EndLine = child.EndLine
+			n.EndCol = child.EndCol
 		}
 	}
 	return n
@@ -275,11 +284,22 @@ func convertNode(n Node, level int, out *[]string) {
 		*out = append(*out, idt+"if "+cond+" {")
 		convertNode(n.Children[1], level+1, out)
 		if len(n.Children) > 2 {
-			e := n.Children[2]
-			if e.Type == "else" {
-				*out = append(*out, idt+"} else {")
-				convertNode(e, level+1, out)
+			handleElse := func(e Node) {}
+			handleElse = func(e Node) {
+				switch e.Type {
+				case "else":
+					*out = append(*out, idt+"} else {")
+					convertNode(e, level+1, out)
+				case "elsif":
+					cond := exprString(e.Children[0])
+					*out = append(*out, idt+"} else if "+cond+" {")
+					convertNode(e.Children[1], level+1, out)
+					if len(e.Children) > 2 {
+						handleElse(e.Children[2])
+					}
+				}
 			}
+			handleElse(n.Children[2])
 		}
 		*out = append(*out, idt+"}")
 	case "else", "bodystmt":
