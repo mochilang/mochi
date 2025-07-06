@@ -1,0 +1,10 @@
+type error: error[T004]: `` is not callable
+  --> :2:21
+
+help:
+  Use a function or closure in this position.
+
+  1| void main() {
+  2| 	print(123.toString());
+  3| }
+  4|

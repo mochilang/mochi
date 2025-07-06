@@ -1,0 +1,9 @@
+parse error: parse error: 3:7: unexpected token "(" (expected <ident> "in" Expr (".." Expr)? "{" Statement* "}")
+
+  1| void main() {
+  2| 	var _tmp0 = "cat";
+  3| 	for (var ch in _tmp0.runes) {
+  4| 		print(ch);
+  5| 	}
+  6| }
+  7|

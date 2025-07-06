@@ -1,4 +1,0 @@
-fun main() {
-  let square = (x) => (x * x)
-  print(square(6))
-}

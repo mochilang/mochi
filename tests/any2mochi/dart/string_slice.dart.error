@@ -1,0 +1,10 @@
+type error: error[T004]: `` is not callable
+  --> :2:26
+
+help:
+  Use a function or closure in this position.
+
+  1| void main() {
+  2| 	print("hello".substring(1, 4));
+  3| }
+  4|

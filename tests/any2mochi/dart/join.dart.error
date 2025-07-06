@@ -1,0 +1,12 @@
+parse error: parse error: 32:106: invalid quoted string "\"- \\$\"": invalid syntax
+
+  1| class Customer {
+  2| 	dynamic id;
+  3| 	dynamic name;
+  4| 	Customer({this.id, this.name});
+  5| }
+  6| 
+  7| class Order {
+  8| 	dynamic id;
+  9| 	dynamic customerId;
+ 10| 	dynamic total;

@@ -1,0 +1,6 @@
+parse error: parse error: 2:9: invalid quoted string "\"price is \\$5\\\\nnext line\"": invalid syntax
+
+  1| void main() {
+  2|         print("price is \$5\\nnext line");
+  3| }
+  4|

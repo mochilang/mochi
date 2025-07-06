@@ -1,0 +1,16 @@
+type error: error[T018]: type any does not support indexing
+  --> :14:9
+
+help:
+  Only `list<T>` and `map<K,V>` can be indexed.
+
+  1| dynamic twoSum(nums, target) {
+  2| 	dynamic n = nums.length;
+  3| 	for (var i = 0; i < n; i++) {
+  4| 		for (var j = (i + 1); j < n; j++) {
+  5| 			if (((nums[i] + nums[j]) == target)) {
+  6| 				return [i, j];
+  7| 			}
+  8| 		}
+  9| 	}
+ 10| 	return [-1, -1];

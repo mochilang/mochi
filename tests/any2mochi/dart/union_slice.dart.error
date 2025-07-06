@@ -1,0 +1,16 @@
+type error: error[T003]: unknown function: Empty
+  --> :2:11
+
+help:
+  Ensure the function is defined before it's called.
+
+  1| abstract class Foo {}
+  2| class Empty extends Foo {
+  3| 	Empty();
+  4| }
+  5| class Node extends Foo {
+  6| 	dynamic child;
+  7| 	Node({this.child});
+  8| }
+  9| 
+ 10| dynamic listit() {

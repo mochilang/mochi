@@ -1,0 +1,16 @@
+type error: error[T024]: cannot assign to `m` (immutable)
+  --> :3:3
+
+help:
+  Use `var` to declare mutable variables.
+
+  1| void main() {
+  2| 	dynamic m = {};
+  3| 	m[1] = 10;
+  4| 	m[2] = 20;
+  5| 	if ((m.containsKey(1))) {
+  6| 		print(m[1]);
+  7| 	}
+  8| 	print(m[2]);
+  9| }
+ 10|

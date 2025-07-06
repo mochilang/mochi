@@ -1,0 +1,12 @@
+type error: error[T024]: cannot assign to `x` (immutable)
+  --> :3:3
+
+help:
+  Use `var` to declare mutable variables.
+
+  1| void main() {
+  2| 	dynamic x = 1;
+  3| 	x = 2;
+  4| 	print(x);
+  5| }
+  6|

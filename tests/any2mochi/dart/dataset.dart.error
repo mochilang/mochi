@@ -1,0 +1,12 @@
+parse error: parse error: 6:42: unexpected token ":" (expected ")")
+
+  1| class Person {
+  2| 	String name;
+  3| 	int age;
+  4| 	Person({required this.name, required this.age});
+  5| 	factory Person.fromJson(Map<String,dynamic> m) {
+  6| 		return Person(name: m['name'] as String, age: m['age'] as int);
+  7| 	}
+  8| }
+  9| _structParsers['Person'] = (m) => Person.fromJson(m);
+ 10|

@@ -1,6 +1,0 @@
-fun main() {
-  let _tmp0 = "cat"
-  for (var ch in _tmp0.runes) {
-    print(ch)
-  }
-}
