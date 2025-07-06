@@ -12,10 +12,11 @@ type AST struct {
 }
 
 type Type struct {
-	Name    string
-	Kind    string // class, struct, interface, enum
-	Fields  []Field
-	Methods []Func
+	Name      string
+	Kind      string // class, struct, interface, enum
+	StartLine int
+	Fields    []Field
+	Methods   []Func
 }
 
 type Field struct {
@@ -25,10 +26,12 @@ type Field struct {
 }
 
 type Func struct {
-	Name   string
-	Params []Param
-	Ret    string
-	Body   []string
+	Name      string
+	Params    []Param
+	Ret       string
+	Body      []string
+	StartLine int
+	EndLine   int
 }
 
 type Param struct {
@@ -48,13 +51,14 @@ func parseSimple(src string) (*AST, error) {
 	var ast AST
 	var cur *Type
 	depth := 0
+	var unknownLine int = -1
 	for i := 0; i < len(lines); i++ {
 		l := strings.TrimSpace(lines[i])
 		if strings.HasPrefix(l, "//") || l == "" {
 			continue
 		}
 		if m := typeRE.FindStringSubmatch(l); m != nil && strings.HasSuffix(l, "{") {
-			t := &Type{Name: m[2], Kind: strings.ToLower(m[1])}
+			t := &Type{Name: m[2], Kind: strings.ToLower(m[1]), StartLine: i + 1}
 			ast.Types = append(ast.Types, *t)
 			cur = &ast.Types[len(ast.Types)-1]
 			depth++
@@ -74,7 +78,7 @@ func parseSimple(src string) (*AST, error) {
 			continue
 		}
 		if m := funcRE.FindStringSubmatch(l); m != nil {
-			fn := Func{Name: m[2], Ret: m[1]}
+			fn := Func{Name: m[2], Ret: m[1], StartLine: i + 1}
 			params := strings.Split(strings.TrimSpace(m[3]), ",")
 			for _, p := range params {
 				p = strings.TrimSpace(p)
@@ -99,6 +103,7 @@ func parseSimple(src string) (*AST, error) {
 					braces--
 					if braces == 0 {
 						i = j
+						fn.EndLine = j + 1
 						break
 					}
 				}
@@ -109,12 +114,16 @@ func parseSimple(src string) (*AST, error) {
 			continue
 		}
 		if m := fieldRE.FindStringSubmatch(l); m != nil && strings.HasSuffix(l, ";") {
-			cur.Fields = append(cur.Fields, Field{Name: m[2], Type: m[1], Line: i})
+			cur.Fields = append(cur.Fields, Field{Name: m[2], Type: m[1], Line: i + 1})
 			continue
 		}
 	}
 	if len(ast.Types) == 0 {
 		return nil, fmt.Errorf("no types found")
+	}
+	if unknownLine != -1 {
+		snippet := strings.TrimSpace(lines[unknownLine])
+		return &ast, fmt.Errorf("unsupported syntax at line %d: %s", unknownLine+1, snippet)
 	}
 	return &ast, nil
 }

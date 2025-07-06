@@ -184,14 +184,7 @@ type param struct {
 }
 
 func snippet(src string) string {
-	lines := strings.Split(src, "\n")
-	if len(lines) > 10 {
-		lines = lines[:10]
-	}
-	for i, l := range lines {
-		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
-	}
-	return strings.Join(lines, "\n")
+	return any2mochi.NumberedSnippet(src)
 }
 
 func diagnostics(src string, diags []any2mochi.Diagnostic) string {
