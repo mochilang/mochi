@@ -618,7 +618,8 @@ func convertRustTree(src string, tree *node) ([]byte, error) {
 			}
 		case "TRAIT":
 			sl, sc := position(src, c.start)
-			return nil, fmt.Errorf("unsupported item TRAIT at line %d column %d\n%s", sl, sc, snippetAt(src, sl, sc))
+			snip := snippetAt(src, sl, sc)
+			return nil, fmt.Errorf("error: unsupported TRAIT item\n--> line %d, column %d\n%s", sl, sc, snip)
 		case "FN":
 			nameNode := findChild(findChild(c, "NAME"), "IDENT")
 			if nameNode == nil {
