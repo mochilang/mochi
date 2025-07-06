@@ -5,6 +5,7 @@ import (
 
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -81,12 +82,22 @@ func Convert(src string) ([]byte, error) {
 
 func convert(src, root string) ([]byte, error) {
 	ls := any2mochi.Servers["fortran"]
-	syms, diags, err := any2mochi.EnsureAndParseWithRoot(ls.Command, ls.Args, ls.LangID, src, root)
-	if err != nil {
-		return nil, err
+	var syms []any2mochi.DocumentSymbol
+	var diags []any2mochi.Diagnostic
+	if ls.Command != "" {
+		if _, lookErr := exec.LookPath(ls.Command); lookErr == nil {
+			var err error
+			syms, diags, err = any2mochi.EnsureAndParseWithRoot(ls.Command, ls.Args, ls.LangID, src, root)
+			if err != nil {
+				return nil, err
+			}
+			if len(diags) > 0 {
+				return nil, fmt.Errorf("%s", diagnostics(src, diags))
+			}
+		}
 	}
-	if len(diags) > 0 {
-		return nil, fmt.Errorf("%s", diagnostics(src, diags))
+	if syms == nil {
+		syms = findSymbols(src)
 	}
 	var out strings.Builder
 	for _, t := range parseTypes(src) {
@@ -99,10 +110,12 @@ func convert(src, root string) ([]byte, error) {
 	code := out.String()
 	prog, pErr := parser.ParseString(code)
 	if pErr != nil {
-		return nil, fmt.Errorf("generated code parse error: %w", pErr)
+		msg := fmt.Sprintf("generated code parse error: %v\n%s", pErr, any2mochi.NumberedSnippet(code))
+		return nil, fmt.Errorf("%s", msg)
 	}
 	if errs := types.Check(prog, types.NewEnv(nil)); len(errs) > 0 {
-		return nil, fmt.Errorf("generated code type error: %v", errs[0])
+		msg := fmt.Sprintf("generated code type error: %v\n%s", errs[0], any2mochi.NumberedSnippet(code))
+		return nil, fmt.Errorf("%s", msg)
 	}
 	return []byte(code), nil
 }
@@ -230,6 +243,52 @@ func parseTypes(src string) []string {
 	return out
 }
 
+func findSymbols(src string) []any2mochi.DocumentSymbol {
+	lines := strings.Split(src, "\n")
+	var syms []any2mochi.DocumentSymbol
+	for i, l := range lines {
+		ll := strings.ToLower(strings.TrimSpace(l))
+		var name string
+		switch {
+		case strings.HasPrefix(ll, "program "):
+			name = strings.TrimSpace(l[len("program "):])
+		case strings.HasPrefix(ll, "function "):
+			fields := strings.Fields(l)
+			if len(fields) >= 2 {
+				name = fields[1]
+			}
+		case strings.HasPrefix(ll, "subroutine "):
+			fields := strings.Fields(l)
+			if len(fields) >= 2 {
+				name = fields[1]
+			}
+		}
+		if name == "" {
+			continue
+		}
+		end := i + 1
+		for ; end < len(lines); end++ {
+			ee := strings.ToLower(strings.TrimSpace(lines[end]))
+			if strings.HasPrefix(ee, "end") && strings.Contains(ee, strings.ToLower(name)) {
+				break
+			}
+		}
+		syms = append(syms, any2mochi.DocumentSymbol{
+			Name: name,
+			Kind: any2mochi.SymbolKindFunction,
+			Range: any2mochi.Range{
+				Start: any2mochi.Position{Line: i},
+				End:   any2mochi.Position{Line: end},
+			},
+			SelectionRange: any2mochi.Range{
+				Start: any2mochi.Position{Line: i},
+				End:   any2mochi.Position{Line: i},
+			},
+		})
+	}
+	return syms
+}
+
 // cleanExpr performs a few textual substitutions on simple Fortran
 // expressions so they look more like Mochi syntax.
 func cleanExpr(e string) string {
@@ -243,7 +302,10 @@ func cleanExpr(e string) string {
 		".true.", "true",
 		".false.", "false",
 	)
-	return replacer.Replace(e)
+	e = replacer.Replace(e)
+	reMod := regexp.MustCompile(`\bmod(?:ulo)?\(([^,]+),\s*([^\)]+)\)`)
+	e = reMod.ReplaceAllString(e, "($1 % $2)")
+	return e
 }
 
 // convertBody attempts to convert a small subset of Fortran statements inside
