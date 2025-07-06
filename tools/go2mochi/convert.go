@@ -32,11 +32,11 @@ func (c *converter) snippet(pos token.Pos) string {
 	}
 	var b strings.Builder
 	for i := start; i < end; i++ {
-		prefix := "    "
+		line := strings.TrimRight(c.lines[i], "\n")
+		fmt.Fprintf(&b, "%4d| %s\n", i+1, line)
 		if i == p.Line-1 {
-			prefix = ">>> "
+			b.WriteString("     " + strings.Repeat(" ", p.Column-1) + "^\n")
 		}
-		fmt.Fprintf(&b, "%d:%s%s\n", i+1, prefix, strings.TrimSpace(c.lines[i]))
 	}
 	return strings.TrimSuffix(b.String(), "\n")
 }
@@ -47,7 +47,7 @@ func (c *converter) errorf(n ast.Node, format string, args ...interface{}) error
 		return fmt.Errorf("%s", msg)
 	}
 	pos := c.fset.Position(n.Pos())
-	return fmt.Errorf("%s:%d: %s\n>>> %s", pos.Filename, pos.Line, msg, c.snippet(n.Pos()))
+	return fmt.Errorf("%s:%d:%d: %s\n%s", pos.Filename, pos.Line, pos.Column, msg, c.snippet(n.Pos()))
 }
 
 // Convert reads Go source from path and returns the corresponding Mochi code.
@@ -81,8 +81,15 @@ func (c *converter) translateFile(f *ast.File) (string, error) {
 	for _, d := range f.Decls {
 		switch decl := d.(type) {
 		case *ast.FuncDecl:
+			if decl.Recv != nil {
+				// ignore methods
+				continue
+			}
 			if decl.Name.Name == "main" {
 				mainFn = decl
+				continue
+			}
+			if strings.HasPrefix(decl.Name.Name, "_") {
 				continue
 			}
 			code, err := c.translateFunc(decl)
@@ -102,6 +109,10 @@ func (c *converter) translateFile(f *ast.File) (string, error) {
 				spec, ok := decl.Specs[0].(*ast.TypeSpec)
 				if !ok {
 					return "", c.errorf(decl, "unsupported declaration")
+				}
+				if _, ok := spec.Type.(*ast.InterfaceType); ok {
+					// skip interfaces
+					continue
 				}
 				code, err := c.translateTypeDecl(spec)
 				if err != nil {

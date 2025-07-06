@@ -1,5 +1,7 @@
-tests/compiler/go/union_slice.go.out:11: unsupported method declaration
->>> 10:    
-11:>>> func (Empty) isFoo() {}
-12:    
-13:    type Node struct {
+tests/compiler/go/union_slice.go.out:20:9: unsupported expr *ast.IndexListExpr
+  19| func listit() []Foo {
+  20| 	return _convSlice[Empty, Foo]([]Empty{Empty{}})
+             ^
+  21| }
+  22| 
+exit status 1

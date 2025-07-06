@@ -1,0 +1,24 @@
+type Leaf {
+}
+type Node {
+  Left: Tree
+  Value: int
+  Right: Tree
+}
+fun inorder(t: Tree): list<int> {
+  return fun (): list<int> {
+  let _t = t
+  if ok {
+  return _cast([])
+}
+  if ok {
+  let l = _tmp0.Left
+  let v = _tmp0.Value
+  let r = _tmp0.Right
+  return concat(concat([], concat(concat([], inorder(l)), [v])), inorder(r))
+}
+  var _zero: list<int>
+  return _zero
+}()
+}
+print(str(inorder(Node { Left: Leaf {  }, Value: 1, Right: Node { Left: Leaf {  }, Value: 2, Right: Leaf {  } } })))
