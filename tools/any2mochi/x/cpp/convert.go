@@ -398,6 +398,22 @@ func convertBody(src string, r any2mochi.Range) []string {
 			l = strings.TrimSuffix(l, "<< endl")
 			l = strings.TrimSpace(l)
 			out = append(out, "print("+l+")")
+		case strings.HasPrefix(l, "for (") && strings.Contains(l, ":"):
+			re := regexp.MustCompile(`^for \((?:const\s+)?(?:auto|[\w:<>,]+)[\s*&]*([A-Za-z_][A-Za-z0-9_]*)\s*:\s*([^\)]+)\)\s*\{?$`)
+			if m := re.FindStringSubmatch(l); m != nil {
+				name := m[1]
+				src := strings.TrimSpace(m[2])
+				out = append(out, fmt.Sprintf("for %s in %s {", name, src))
+			} else {
+				out = append(out, l)
+			}
+		case strings.HasPrefix(l, "if ("):
+			if m := regexp.MustCompile(`^if \((.*)\)\s*\{?$`).FindStringSubmatch(l); m != nil {
+				cond := strings.TrimSpace(m[1])
+				out = append(out, fmt.Sprintf("if %s {", cond))
+			} else {
+				out = append(out, l)
+			}
 		default:
 			decl := false
 			for _, pre := range []string{"int ", "float ", "double ", "bool ", "std::string ", "string ", "auto "} {
