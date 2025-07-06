@@ -1,8 +1,1 @@
-fun idx(x, i) {}
-fun slice(x, s, e) {}
-fun count(x) {}
-fun avg(x) {}
-fun _add(a, b) {}
-fun _div(a, b) {}
-fun expect(cond) {}
 let x = 2

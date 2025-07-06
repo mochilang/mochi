@@ -50,8 +50,34 @@ func ConvertFile(path string) ([]byte, error) {
 	return Convert(string(data))
 }
 
+var helperNames = map[string]bool{
+	"idx":        true,
+	"slice":      true,
+	"count":      true,
+	"avg":        true,
+	"_add":       true,
+	"_div":       true,
+	"expect":     true,
+	"_fetch":     true,
+	"_load":      true,
+	"_save":      true,
+	"_group_by":  true,
+	"_distinct":  true,
+	"union":      true,
+	"union-all":  true,
+	"except":     true,
+	"intersect":  true,
+	"to-jsexpr":  true,
+	"_genText":   true,
+	"_genEmbed":  true,
+	"_genStruct": true,
+}
+
 func writeSymbols(out *strings.Builder, prefix []string, syms []parent.DocumentSymbol, src string, ls parent.LanguageServer) {
 	for _, s := range syms {
+		if len(prefix) == 0 && helperNames[s.Name] {
+			continue
+		}
 		nameParts := prefix
 		if s.Name != "" {
 			nameParts = append(nameParts, s.Name)
@@ -347,6 +373,9 @@ func parseToplevel(out *strings.Builder, src string) {
 	varDefine := regexp.MustCompile(`(?m)^\(define\s+([A-Za-z0-9_-]+)\s+(.+)\)$`)
 	for _, m := range varDefine.FindAllStringSubmatch(src, -1) {
 		name := m[1]
+		if helperNames[name] {
+			continue
+		}
 		expr := strings.TrimSpace(m[2])
 		// Skip function definitions which start with '(' after the name
 		if strings.HasPrefix(expr, "(") {
@@ -488,6 +517,9 @@ func posIndex(src string, pos parent.Position) int {
 // writeItems converts parsed items to Mochi code.
 func writeItems(out *strings.Builder, items []item) {
 	for _, it := range items {
+		if helperNames[it.Name] {
+			continue
+		}
 		switch it.Kind {
 		case "func":
 			out.WriteString("fun ")
@@ -563,11 +595,11 @@ func formatDiagnostics(src string, diags []parent.Diagnostic) string {
 		start := int(d.Range.Start.Line)
 		col := int(d.Range.Start.Character)
 		msg := d.Message
-		from := start - 1
+		from := start - 2
 		if from < 0 {
 			from = 0
 		}
-		to := start + 1
+		to := start + 2
 		if to >= len(lines) {
 			to = len(lines) - 1
 		}

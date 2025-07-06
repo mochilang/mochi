@@ -21,6 +21,8 @@ type item struct {
 	Value     string   `json:"value,omitempty"`
 	StartLine int      `json:"start_line,omitempty"`
 	EndLine   int      `json:"end_line,omitempty"`
+	StartCol  int      `json:"start_col,omitempty"`
+	EndCol    int      `json:"end_col,omitempty"`
 }
 
 func tokenize(src string) []string {
@@ -236,6 +238,8 @@ func walkSyntax(src string, node map[string]interface{}) []item {
 	span, _ := node["span"].(float64)
 	startLine := lineForPos(src, int(start))
 	endLine := lineForPos(src, int(start+span))
+	startCol := colForPos(src, int(start))
+	endCol := colForPos(src, int(start+span))
 
 	switch fn {
 	case "define":
@@ -253,7 +257,7 @@ func walkSyntax(src string, node map[string]interface{}) []item {
 							}
 						}
 					}
-					return []item{{Kind: "func", Name: fname, Params: params, Body: "", StartLine: startLine, EndLine: endLine}}
+					return []item{{Kind: "func", Name: fname, Params: params, Body: "", StartLine: startLine, EndLine: endLine, StartCol: startCol, EndCol: endCol}}
 				}
 			}
 			// variable definition
@@ -269,7 +273,7 @@ func walkSyntax(src string, node map[string]interface{}) []item {
 						}
 					}
 				}
-				return []item{{Kind: "var", Name: nm, Value: val, StartLine: startLine, EndLine: endLine}}
+				return []item{{Kind: "var", Name: nm, Value: val, StartLine: startLine, EndLine: endLine, StartCol: startCol, EndCol: endCol}}
 			}
 		}
 	}
@@ -288,6 +292,20 @@ func lineForPos(src string, pos int) int {
 		}
 	}
 	return cnt
+}
+
+func colForPos(src string, pos int) int {
+	if pos <= 0 {
+		return 0
+	}
+	if pos > len(src) {
+		pos = len(src)
+	}
+	lastNL := strings.LastIndex(src[:pos], "\n")
+	if lastNL == -1 {
+		return pos
+	}
+	return pos - lastNL - 1
 }
 
 func snippetAround(src string, line int) string {
