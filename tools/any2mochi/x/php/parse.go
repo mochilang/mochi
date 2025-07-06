@@ -2,6 +2,7 @@ package php
 
 import (
 	"fmt"
+
 	pnode "github.com/z7zmey/php-parser/node"
 	"github.com/z7zmey/php-parser/node/expr"
 	"github.com/z7zmey/php-parser/node/stmt"
@@ -13,15 +14,27 @@ type Program struct {
 	Classes   []Class `json:"classes"`
 }
 
+// ParseError represents a PHP parse error with line information.
+type ParseError struct {
+	Msg  string
+	Line int
+}
+
+func (e *ParseError) Error() string { return fmt.Sprintf("%s at line %d", e.Msg, e.Line) }
+
 type Func struct {
-	Name   string   `json:"name"`
-	Params []string `json:"params"`
+	Name      string   `json:"name"`
+	Params    []string `json:"params"`
+	StartLine int      `json:"start_line"`
+	EndLine   int      `json:"end_line"`
 }
 
 type Class struct {
-	Name    string   `json:"name"`
-	Fields  []string `json:"fields"`
-	Methods []Func   `json:"methods"`
+	Name      string   `json:"name"`
+	Fields    []string `json:"fields"`
+	Methods   []Func   `json:"methods"`
+	StartLine int      `json:"start_line"`
+	EndLine   int      `json:"end_line"`
 }
 
 // Parse parses PHP source using the php-parser library and returns a
@@ -30,7 +43,12 @@ func Parse(src string) (*Program, error) {
 	parser := php7.NewParser([]byte(src), "7.4")
 	parser.Parse()
 	if errs := parser.GetErrors(); len(errs) > 0 {
-		return nil, fmt.Errorf("%s", errs[0].String())
+		e := errs[0]
+		line := 0
+		if e.Pos != nil {
+			line = e.Pos.StartLine
+		}
+		return nil, &ParseError{Msg: e.Msg, Line: line}
 	}
 	root, ok := parser.GetRootNode().(*pnode.Root)
 	if !ok {
@@ -56,11 +74,13 @@ func funcFromFn(fn *stmt.Function) Func {
 			params = append(params, paramName(param))
 		}
 	}
-	return Func{Name: name, Params: params}
+	pos := fn.GetPosition()
+	return Func{Name: name, Params: params, StartLine: pos.StartLine, EndLine: pos.EndLine}
 }
 
 func classFromNode(c *stmt.Class) Class {
-	cl := Class{Name: identString(c.ClassName)}
+	pos := c.GetPosition()
+	cl := Class{Name: identString(c.ClassName), StartLine: pos.StartLine, EndLine: pos.EndLine}
 	for _, st := range c.Stmts {
 		switch n := st.(type) {
 		case *stmt.PropertyList:
@@ -84,7 +104,8 @@ func methodFromNode(m *stmt.ClassMethod) Func {
 			params = append(params, paramName(param))
 		}
 	}
-	return Func{Name: name, Params: params}
+	pos := m.GetPosition()
+	return Func{Name: name, Params: params, StartLine: pos.StartLine, EndLine: pos.EndLine}
 }
 
 func paramName(p *pnode.Parameter) string {

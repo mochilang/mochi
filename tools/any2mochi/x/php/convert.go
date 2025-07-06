@@ -10,7 +10,7 @@ import (
 func Convert(src string) ([]byte, error) {
 	prog, err := Parse(src)
 	if err != nil {
-		return nil, err
+		return nil, formatParseError(src, err)
 	}
 	var out strings.Builder
 	for _, c := range prog.Classes {
@@ -53,7 +53,7 @@ func Convert(src string) ([]byte, error) {
 		out.WriteString(") {}\n")
 	}
 	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
+		return nil, fmt.Errorf("no convertible symbols found")
 	}
 	return []byte(out.String()), nil
 }
@@ -75,5 +75,49 @@ func ConvertFile(path string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return Convert(string(data))
+	out, err := Convert(string(data))
+	if err != nil {
+		return nil, formatError(path, string(data), err)
+	}
+	return out, nil
+}
+
+func formatParseError(src string, err error) error {
+	if e, ok := err.(*ParseError); ok {
+		snippet := arrowSnippet(src, e.Line)
+		return fmt.Errorf("parse error at line %d: %s\n%s", e.Line, e.Msg, snippet)
+	}
+	return err
+}
+
+func formatError(path, src string, err error) error {
+	if e, ok := err.(*ParseError); ok {
+		snippet := arrowSnippet(src, e.Line)
+		return fmt.Errorf("%s:%d: %s\n%s", path, e.Line, e.Msg, snippet)
+	}
+	if err.Error() == "no convertible symbols found" {
+		return fmt.Errorf("%s: %s\n%s", path, err.Error(), snippet(src))
+	}
+	return fmt.Errorf("%s: %v", path, err)
+}
+
+func arrowSnippet(src string, line int) string {
+	lines := strings.Split(src, "\n")
+	start := line - 2
+	if start < 0 {
+		start = 0
+	}
+	end := line + 1
+	if end > len(lines) {
+		end = len(lines)
+	}
+	var b strings.Builder
+	for i := start; i < end; i++ {
+		prefix := "    "
+		if i == line-1 {
+			prefix = ">>> "
+		}
+		fmt.Fprintf(&b, "%d:%s%s\n", i+1, prefix, strings.TrimSpace(lines[i]))
+	}
+	return b.String()
 }
