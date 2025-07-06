@@ -283,7 +283,9 @@ func convertSimple(src string) ([]byte, error) {
 }
 
 var castRE = regexp.MustCompile(`\([a-zA-Z_][a-zA-Z0-9_\s]*\*\)`) // matches C casts like (int *)
-var functionPtrRE = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_\s\*]*\(\*\)\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$`)
+var functionPtrRE = regexp.MustCompile(`^.*\(\*\s*([A-Za-z_][A-Za-z0-9_]*)\s*\)\s*\([^)]*\)\s*=\s*(.*)$`)
+var funcPtrTypeAnonRE = regexp.MustCompile(`^(.+)\(\*\)\s*\((.*)\)$`)
+var funcPtrTypeNamedRE = regexp.MustCompile(`^(.+)\(\*\s*[A-Za-z_][A-Za-z0-9_]*\s*\)\s*\((.*)\)$`)
 
 func stripCasts(s string) string {
 	return castRE.ReplaceAllString(s, "")
@@ -342,8 +344,53 @@ func parseParam(p string) (string, string) {
 	return name, mapType(typ)
 }
 
+func parseParamTypes(params string) []string {
+	params = strings.TrimSpace(params)
+	if params == "" || params == "void" {
+		return nil
+	}
+	parts := strings.Split(params, ",")
+	out := make([]string, 0, len(parts))
+	for _, p := range parts {
+		_, t := parseParam(strings.TrimSpace(p))
+		if t == "" {
+			t = "any"
+		}
+		out = append(out, t)
+	}
+	return out
+}
+
 func mapType(typ string) string {
 	typ = strings.TrimSpace(typ)
+	if m := funcPtrTypeNamedRE.FindStringSubmatch(typ); m != nil {
+		ret := mapType(strings.TrimSpace(m[1]))
+		params := parseParamTypes(m[2])
+		if len(params) == 0 {
+			if ret == "" {
+				return "fun()"
+			}
+			return fmt.Sprintf("fun(): %s", ret)
+		}
+		if ret == "" {
+			return fmt.Sprintf("fun(%s)", strings.Join(params, ", "))
+		}
+		return fmt.Sprintf("fun(%s): %s", strings.Join(params, ", "), ret)
+	}
+	if m := funcPtrTypeAnonRE.FindStringSubmatch(typ); m != nil {
+		ret := mapType(strings.TrimSpace(m[1]))
+		params := parseParamTypes(m[2])
+		if len(params) == 0 {
+			if ret == "" {
+				return "fun()"
+			}
+			return fmt.Sprintf("fun(): %s", ret)
+		}
+		if ret == "" {
+			return fmt.Sprintf("fun(%s)", strings.Join(params, ", "))
+		}
+		return fmt.Sprintf("fun(%s): %s", strings.Join(params, ", "), ret)
+	}
 	if open := strings.Index(typ, "["); open != -1 && strings.HasSuffix(typ, "]") {
 		base := strings.TrimSpace(typ[:open])
 		inner := mapType(base)
