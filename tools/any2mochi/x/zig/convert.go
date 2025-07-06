@@ -358,7 +358,10 @@ func parseFunctionBodyLines(lines []string) []string {
 			out = append(out, strings.Repeat("  ", indent)+"}")
 			continue
 		}
-		out = append(out, strings.Repeat("  ", indent)+parseStmt(l))
+		stmt := parseStmt(l)
+		if stmt != "" {
+			out = append(out, strings.Repeat("  ", indent)+stmt)
+		}
 	}
 	return out
 }
@@ -504,6 +507,7 @@ func trimOuterParens(s string) string {
 
 func convertExpr(expr string) string {
 	expr = strings.TrimSpace(expr)
+	expr = strings.ReplaceAll(expr, " catch unreachable", "")
 	for strings.Contains(expr, "@as(") {
 		start := strings.Index(expr, "@as(")
 		rest := expr[start+4:]
@@ -648,6 +652,12 @@ func parseStmt(l string) string {
 			}
 			return "let " + name + " = " + expr
 		}
+	case strings.HasPrefix(l, "break "):
+		return "break"
+	case strings.HasPrefix(l, "continue "):
+		return "continue"
+	case strings.HasPrefix(l, "defer "):
+		return ""
 	case l == "break":
 		return "break"
 	case l == "continue":
@@ -711,7 +721,10 @@ func parseFunctionBody(src string, sym any2mochi.DocumentSymbol) []string {
 			out = append(out, strings.Repeat("  ", indent)+"}")
 			continue
 		}
-		out = append(out, strings.Repeat("  ", indent)+parseStmt(l))
+		stmt := parseStmt(l)
+		if stmt != "" {
+			out = append(out, strings.Repeat("  ", indent)+stmt)
+		}
 	}
 	return out
 }
