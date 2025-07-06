@@ -1,9 +1,21 @@
 # Errors
 
-- append_builtin: parse error: parse error: 13:6: unexpected token "-" (expected PostfixExpr)
-- avg_builtin: parse error: parse error: 12:6: unexpected token "-" (expected PostfixExpr)
-- basic_compare: parse error: parse error: 16:6: unexpected token "-" (expected PostfixExpr)
-- binary_precedence: parse error: parse error: 15:6: unexpected token "-" (expected PostfixExpr)
+- append_builtin: type error: error[T001]: assignment to undeclared variable: A
+  --> :5:3
+
+help:
+  Declare `A` first using `let`.
+- avg_builtin: type error: error[T003]: unknown function: mochi_avg
+  --> :5:9
+
+help:
+  Ensure the function is defined before it's called.
+- basic_compare: type error: error[T001]: assignment to undeclared variable: A
+  --> :5:3
+
+help:
+  Declare `A` first using `let`.
+- binary_precedence: ok
 - bool_chain: parse error: parse error: 6:24: unexpected token "," (expected "}")
 - break_continue: exit status 1
   1: #!/usr/bin/env escript
@@ -16,10 +28,14 @@
   8: 				case ((N % 2) == 0) of
   9: 			true ->
  10: 				throw(mochi_continue);
-- cast_string_to_int: parse error: parse error: 12:6: unexpected token "-" (expected PostfixExpr)
+- cast_string_to_int: ok
 - cast_struct: parse error: parse error: 9:26: lexer: invalid input text "#{\"title\" => \"hi..."
 - closure: parse error: parse error: 6:16: unexpected token "," (expected PostfixExpr)
-- count_builtin: parse error: parse error: 12:6: unexpected token "-" (expected PostfixExpr)
+- count_builtin: type error: error[T003]: unknown function: mochi_count
+  --> :5:9
+
+help:
+  Ensure the function is defined before it's called.
 - cross_join: parse error: parse error: 6:4: lexer: invalid input text "#{id => 1, name ..."
 - cross_join_filter: exit status 1
   1: #!/usr/bin/env escript
@@ -64,7 +80,7 @@
 - if_else: parse error: parse error: 8:23: lexer: invalid input text ";\n  _ ->\n  mochi..."
 - if_then_else: compile error: unsupported expression
 - if_then_else_nested: compile error: unsupported expression
-- in_operator: parse error: parse error: 6:21: unexpected token ":" (expected "]")
+- in_operator: parse error: parse error: 6:14: unexpected token ":" (expected ")")
 - in_operator_extended: exit status 1
   1: #!/usr/bin/env escript
   2: -module(main).
@@ -91,14 +107,38 @@
  10: mochi_escape_json([]) -> [];
 - left_join: parse error: parse error: 5:16: lexer: invalid input text "#{id => 1, name ..."
 - left_join_multi: compile error: unsupported join side
-- len_builtin: parse error: parse error: 12:6: unexpected token "-" (expected PostfixExpr)
-- len_map: parse error: parse error: 5:23: lexer: invalid input text "#{\"a\" => 1, \"b\" ..."
-- len_string: parse error: parse error: 12:6: unexpected token "-" (expected PostfixExpr)
-- let_and_print: parse error: parse error: 14:6: unexpected token "-" (expected PostfixExpr)
-- list_assign: parse error: parse error: 28:8: lexer: invalid input text ";\n  false ->\n  N..."
-- list_index: parse error: parse error: 27:8: lexer: invalid input text ";\n  false ->\n  N..."
-- list_nested_assign: parse error: parse error: 28:8: lexer: invalid input text ";\n  false ->\n  N..."
-- list_set_ops: parse error: parse error: 8:28: unexpected token ":" (expected ")")
+- len_builtin: type error: error[T003]: unknown function: length
+  --> :5:9
+
+help:
+  Ensure the function is defined before it's called.
+- len_map: parse error: parse error: 5:16: lexer: invalid input text "#{\"a\" => 1, \"b\" ..."
+- len_string: type error: error[T003]: unknown function: length
+  --> :5:9
+
+help:
+  Ensure the function is defined before it's called.
+- let_and_print: type error: error[T001]: assignment to undeclared variable: A
+  --> :5:3
+
+help:
+  Declare `A` first using `let`.
+- list_assign: type error: error[T001]: assignment to undeclared variable: Nums
+  --> :5:3
+
+help:
+  Declare `Nums` first using `let`.
+- list_index: type error: error[T001]: assignment to undeclared variable: Xs
+  --> :5:3
+
+help:
+  Declare `Xs` first using `let`.
+- list_nested_assign: type error: error[T001]: assignment to undeclared variable: Matrix
+  --> :5:3
+
+help:
+  Declare `Matrix` first using `let`.
+- list_set_ops: parse error: parse error: 8:21: unexpected token ":" (expected ")")
 - load_yaml: exit status 1
   1: #!/usr/bin/env escript
   2: -module(main).
@@ -130,13 +170,17 @@
   8: 	mochi_print([(7 % 2)]).
   9: 
  10: mochi_print(Args) ->
-- membership: parse error: parse error: 6:21: unexpected token ":" (expected "]")
-- min_max_builtin: parse error: parse error: 14:6: unexpected token "-" (expected PostfixExpr)
+- membership: parse error: parse error: 6:14: unexpected token ":" (expected ")")
+- min_max_builtin: type error: error[T001]: assignment to undeclared variable: Nums
+  --> :5:3
+
+help:
+  Declare `Nums` first using `let`.
 - nested_function: parse error: parse error: 6:5: unexpected token "," (expected "}")
 - order_by_map: parse error: parse error: 5:11: lexer: invalid input text "#{a => 1, b => 2..."
 - outer_join: parse error: parse error: 6:4: lexer: invalid input text "#{id => 1, name ..."
 - partial_application: parse error: parse error: 6:16: unexpected token "," (expected PostfixExpr)
-- print_hello: parse error: parse error: 12:6: unexpected token "-" (expected PostfixExpr)
+- print_hello: ok
 - pure_fold: parse error: parse error: 6:16: unexpected token "," (expected PostfixExpr)
 - pure_global_fold: parse error: parse error: 6:16: unexpected token "," (expected PostfixExpr)
 - query_sum_select: parse error: parse error: 9:6: unexpected token "-" (expected PostfixExpr)
@@ -154,28 +198,60 @@
   9: 
  10: mochi_load(Path, Opts) ->
 - short_circuit: parse error: parse error: 6:24: unexpected token "," (expected "}")
-- slice: parse error: parse error: 28:8: lexer: invalid input text ";\n  false ->\n  I..."
+- slice: type error: error[T003]: unknown function: mochi_slice
+  --> :5:9
+
+help:
+  Ensure the function is defined before it's called.
 - sort_stable: parse error: parse error: 5:12: lexer: invalid input text "#{n => 1, v => \"..."
-- str_builtin: parse error: parse error: 12:6: unexpected token "-" (expected PostfixExpr)
-- string_compare: parse error: parse error: 6:20: unexpected token "=" (expected "]")
-- string_concat: parse error: parse error: 12:6: unexpected token "-" (expected PostfixExpr)
-- string_contains: parse error: parse error: 6:22: unexpected token ":" (expected "]")
-- string_in_operator: parse error: parse error: 6:22: unexpected token ":" (expected "]")
-- string_index: parse error: parse error: 27:8: lexer: invalid input text ";\n  false ->\n  N..."
-- string_prefix_slice: parse error: parse error: 30:8: lexer: invalid input text ";\n  false ->\n  I..."
-- substring_builtin: parse error: parse error: 12:6: unexpected token "-" (expected PostfixExpr)
-- sum_builtin: parse error: parse error: 12:6: unexpected token "-" (expected PostfixExpr)
+- str_builtin: type error: error[T003]: unknown function: mochi_format
+  --> :5:9
+
+help:
+  Ensure the function is defined before it's called.
+- string_compare: parse error: parse error: 6:13: unexpected token "=" (expected ")")
+- string_concat: ok
+- string_contains: parse error: parse error: 6:15: unexpected token ":" (expected ")")
+- string_in_operator: parse error: parse error: 6:15: unexpected token ":" (expected ")")
+- string_index: type error: error[T001]: assignment to undeclared variable: S
+  --> :5:3
+
+help:
+  Declare `S` first using `let`.
+- string_prefix_slice: type error: error[T001]: assignment to undeclared variable: Prefix
+  --> :5:3
+
+help:
+  Declare `Prefix` first using `let`.
+- substring_builtin: ok
+- sum_builtin: type error: error[T003]: unknown function: mochi_sum
+  --> :5:9
+
+help:
+  Ensure the function is defined before it's called.
 - tail_recursion: parse error: parse error: 8:23: lexer: invalid input text ";\n  _ ->\n  ok\n  ..."
 - test_block: parse error: parse error: 7:9: unexpected token "-" (expected "=>" Expr)
 - tree_sum: parse error: parse error: 20:4: lexer: invalid input text ";\n  Node {left :..."
 - two-sum: parse error: parse error: 18:11: lexer: invalid input text ";\n  _ ->\n  ok\n  ..."
-- typed_let: parse error: parse error: 13:6: unexpected token "-" (expected PostfixExpr)
-- typed_var: parse error: parse error: 13:6: unexpected token "-" (expected PostfixExpr)
-- unary_neg: parse error: parse error: 6:20: unexpected token "-" (expected PostfixExpr)
+- typed_let: type error: error[T002]: undefined variable: undefined
+  --> :5:7
+
+help:
+  Check if the variable was declared in this scope.
+- typed_var: type error: error[T002]: undefined variable: undefined
+  --> :5:7
+
+help:
+  Check if the variable was declared in this scope.
+- unary_neg: parse error: parse error: 6:13: unexpected token "-" (expected PostfixExpr)
 - update_stmt: parse error: parse error: 20:52: lexer: invalid input text ";\n  _ ->\n  Item\n..."
-- user_type_literal: parse error: parse error: 16:20: unexpected token ":" (expected "]")
+- user_type_literal: parse error: parse error: 16:13: unexpected token ":" (expected ")")
 - values_builtin: parse error: parse error: 5:7: lexer: invalid input text "#{\"a\" => 1, \"b\" ..."
-- var_assignment: parse error: parse error: 14:6: unexpected token "-" (expected PostfixExpr)
+- var_assignment: type error: error[T001]: assignment to undeclared variable: X
+  --> :5:3
+
+help:
+  Declare `X` first using `let`.
 - while_loop: exit status 1
   1: #!/usr/bin/env escript
   2: -module(main).
