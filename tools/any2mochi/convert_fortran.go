@@ -1,8 +1,11 @@
 package any2mochi
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -10,9 +13,29 @@ import (
 
 type ftParam struct{ name, typ string }
 
+// ftProgram and related structs mirror the JSON output of ft_ast.py
+type ftProgram struct {
+	Funcs []ftFunc `json:"funcs"`
+}
+
+type ftFunc struct {
+	Name   string   `json:"name"`
+	Params []string `json:"params"`
+	Body   []ftStmt `json:"body"`
+}
+
+type ftStmt struct {
+	Kind string `json:"kind"`
+	Var  string `json:"var,omitempty"`
+	Expr string `json:"expr,omitempty"`
+}
+
 // ConvertFortran converts Fortran source code to a minimal Mochi representation
 // using the fortls language server.
 func ConvertFortran(src string) ([]byte, error) {
+	if !UseLSP {
+		return convertFortranCLI(src)
+	}
 	return convertFortran(src, "")
 }
 
@@ -39,7 +62,87 @@ func ConvertFortranFile(path string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	if !UseLSP {
+		return convertFortranCLI(string(data))
+	}
 	return convertFortran(string(data), filepath.Dir(path))
+}
+
+// convertFortranCLI parses the source using the ft_ast.py helper and formats
+// the resulting AST as Mochi source.
+func convertFortranCLI(src string) ([]byte, error) {
+	prog, err := parseFortranCLI(src)
+	if err != nil {
+		return nil, err
+	}
+	out := formatFtProgram(prog)
+	if len(out) == 0 {
+		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+	}
+	return out, nil
+}
+
+func parseFortranCLI(src string) (*ftProgram, error) {
+	root, err := repoRoot()
+	if err != nil {
+		return nil, err
+	}
+	script := filepath.Join(root, "tools", "any2mochi", "ft_ast.py")
+	cmd := exec.Command("python3", script)
+	cmd.Stdin = strings.NewReader(src)
+	var out bytes.Buffer
+	var errBuf bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &errBuf
+	if err := cmd.Run(); err != nil {
+		msg := strings.TrimSpace(errBuf.String())
+		if msg == "" {
+			msg = err.Error()
+		}
+		return nil, fmt.Errorf("fortran parser: %s", msg)
+	}
+	var p ftProgram
+	if err := json.Unmarshal(out.Bytes(), &p); err != nil {
+		return nil, err
+	}
+	return &p, nil
+}
+
+func formatFtProgram(p *ftProgram) []byte {
+	var b strings.Builder
+	for _, fn := range p.Funcs {
+		if strings.ToLower(fn.Name) == "main" {
+			for _, st := range fn.Body {
+				switch st.Kind {
+				case "print":
+					b.WriteString("print(" + cleanFtExpr(st.Expr) + ")\n")
+				case "assign":
+					b.WriteString(st.Var + " = " + cleanFtExpr(st.Expr) + "\n")
+				}
+			}
+			continue
+		}
+		b.WriteString("fun ")
+		b.WriteString(strings.ToLower(fn.Name))
+		b.WriteByte('(')
+		for i, param := range fn.Params {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			b.WriteString(strings.ToLower(param))
+		}
+		b.WriteString(") {\n")
+		for _, st := range fn.Body {
+			switch st.Kind {
+			case "print":
+				b.WriteString("  print(" + cleanFtExpr(st.Expr) + ")\n")
+			case "assign":
+				b.WriteString("  " + st.Var + " = " + cleanFtExpr(st.Expr) + "\n")
+			}
+		}
+		b.WriteString("}\n")
+	}
+	return []byte(b.String())
 }
 
 func getFtSignatureWithRoot(src string, pos Position, ls LanguageServer, root string) ([]ftParam, string) {
