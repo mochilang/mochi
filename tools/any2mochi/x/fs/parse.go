@@ -192,12 +192,7 @@ func Parse(src string) (*Program, error) {
 			}
 			switch {
 			case strings.Contains(t, "failwith \"unreachable\""):
-				if parseErr == nil {
-					errLine = lineNum
-					linesCopy = append([]line(nil), lines...)
-					snippet := l.raw
-					parseErr = fmt.Errorf("unsupported syntax at line %d: %s", lineNum, strings.TrimSpace(snippet))
-				}
+				// Ignore failwith markers inserted by the compiler
 				continue
 			case printRe.MatchString(t):
 				m := printRe.FindStringSubmatch(t)

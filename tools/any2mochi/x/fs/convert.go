@@ -14,6 +14,19 @@ import (
 // available. It falls back to a very small regex based parser when the server
 // is unavailable.
 func Convert(src string) ([]byte, error) {
+	if parent.UseLSP {
+		if ls, ok := parent.Servers["fs"]; ok && ls.Command != "" {
+			syms, diags, err := parent.EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+			if err == nil && len(diags) == 0 {
+				var out strings.Builder
+				writeFsSymbols(&out, nil, syms, src, ls)
+				if out.Len() > 0 {
+					return []byte(out.String()), nil
+				}
+			}
+		}
+	}
+
 	ast, err := Parse(src)
 	if err != nil {
 		return nil, err
