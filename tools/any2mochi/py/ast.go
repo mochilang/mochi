@@ -14,37 +14,45 @@ import (
 // mirrors the structure produced by the `ast` module when serialised to JSON
 // within the helper script embedded below.
 type ASTNode struct {
-	Type        string          `json:"_type"`
-	Name        string          `json:"name,omitempty"`
-	ID          string          `json:"id,omitempty"`
-	Body        []*ASTNode      `json:"body,omitempty"`
-	Value       json.RawMessage `json:"value,omitempty"`
-	Func        *ASTNode        `json:"func,omitempty"`
-	Args        json.RawMessage `json:"args,omitempty"`
-	Annotation  *ASTNode        `json:"annotation,omitempty"`
-	Returns     *ASTNode        `json:"returns,omitempty"`
-	Test        *ASTNode        `json:"test,omitempty"`
-	Target      *ASTNode        `json:"target,omitempty"`
-	Iter        *ASTNode        `json:"iter,omitempty"`
-	Operand     *ASTNode        `json:"operand,omitempty"`
-	Orelse      []*ASTNode      `json:"orelse,omitempty"`
-	Op          *ASTNode        `json:"op,omitempty"`
-	Left        *ASTNode        `json:"left,omitempty"`
-	Right       *ASTNode        `json:"right,omitempty"`
-	Attr        string          `json:"attr,omitempty"`
-	Elts        []*ASTNode      `json:"elts,omitempty"`
-	Keys        []*ASTNode      `json:"keys,omitempty"`
-	Values      []*ASTNode      `json:"values,omitempty"`
-	Slice       *ASTNode        `json:"slice,omitempty"`
-	Lower       *ASTNode        `json:"lower,omitempty"`
-	Upper       *ASTNode        `json:"upper,omitempty"`
-	Step        *ASTNode        `json:"step,omitempty"`
-	Ops         []*ASTNode      `json:"ops,omitempty"`
-	Comparators []*ASTNode      `json:"comparators,omitempty"`
-	Line        int             `json:"lineno,omitempty"`
-	EndLine     int             `json:"end_lineno,omitempty"`
-	Col         int             `json:"col_offset,omitempty"`
-	EndCol      int             `json:"end_col_offset,omitempty"`
+	Type          string          `json:"_type"`
+	Name          string          `json:"name,omitempty"`
+	ID            string          `json:"id,omitempty"`
+	Arg           string          `json:"arg,omitempty"`
+	Body          []*ASTNode      `json:"body,omitempty"`
+	Targets       []*ASTNode      `json:"targets,omitempty"`
+	Value         json.RawMessage `json:"value,omitempty"`
+	Func          *ASTNode        `json:"func,omitempty"`
+	Args          json.RawMessage `json:"args,omitempty"`
+	Keywords      []*ASTNode      `json:"keywords,omitempty"`
+	Annotation    *ASTNode        `json:"annotation,omitempty"`
+	Returns       *ASTNode        `json:"returns,omitempty"`
+	Test          *ASTNode        `json:"test,omitempty"`
+	Target        *ASTNode        `json:"target,omitempty"`
+	Iter          *ASTNode        `json:"iter,omitempty"`
+	Operand       *ASTNode        `json:"operand,omitempty"`
+	Orelse        []*ASTNode      `json:"orelse,omitempty"`
+	Op            *ASTNode        `json:"op,omitempty"`
+	Left          *ASTNode        `json:"left,omitempty"`
+	Right         *ASTNode        `json:"right,omitempty"`
+	Attr          string          `json:"attr,omitempty"`
+	Elts          []*ASTNode      `json:"elts,omitempty"`
+	Keys          []*ASTNode      `json:"keys,omitempty"`
+	Values        []*ASTNode      `json:"values,omitempty"`
+	Slice         *ASTNode        `json:"slice,omitempty"`
+	Lower         *ASTNode        `json:"lower,omitempty"`
+	Upper         *ASTNode        `json:"upper,omitempty"`
+	Step          *ASTNode        `json:"step,omitempty"`
+	Ops           []*ASTNode      `json:"ops,omitempty"`
+	Comparators   []*ASTNode      `json:"comparators,omitempty"`
+	DecoratorList []*ASTNode      `json:"decorator_list,omitempty"`
+	Bases         []*ASTNode      `json:"bases,omitempty"`
+	Generators    []*ASTNode      `json:"generators,omitempty"`
+	Ifs           []*ASTNode      `json:"ifs,omitempty"`
+	Elt           *ASTNode        `json:"elt,omitempty"`
+	Line          int             `json:"lineno,omitempty"`
+	EndLine       int             `json:"end_lineno,omitempty"`
+	Col           int             `json:"col_offset,omitempty"`
+	EndCol        int             `json:"end_col_offset,omitempty"`
 }
 
 func (n *ASTNode) valueNode() *ASTNode {
@@ -161,26 +169,54 @@ func newConvertError(line int, lines []string, msg string) error {
 	return &ConvertError{Line: line, Snip: strings.TrimRight(b.String(), "\n"), Msg: msg}
 }
 
-func emitAST(b *strings.Builder, n *ASTNode, indent string, lines []string) error {
+func emitAST(b *strings.Builder, n *ASTNode, indent string, lines []string, seen map[string]bool) error {
 	if n == nil {
 		return nil
 	}
 	switch n.Type {
 	case "Module":
 		for _, c := range n.Body {
-			if err := emitAST(b, c, indent, lines); err != nil {
+			if err := emitAST(b, c, indent, lines, seen); err != nil {
 				return err
 			}
 		}
 	case "FunctionDef":
-		b.WriteString("fun ")
-		b.WriteString(n.Name)
-		b.WriteString("() {\n")
-		for _, st := range n.Body {
+		if n.Name == "main" {
+			for _, st := range n.Body {
+				if err := emitAST(b, st, indent, lines, seen); err != nil {
+					return err
+				}
+			}
+		} else {
+			b.WriteString("fun ")
+			b.WriteString(n.Name)
+			b.WriteString("() {\n")
+			for _, st := range n.Body {
+				b.WriteString(indent)
+				b.WriteString("  ")
+				if err := emitAST(b, st, indent+"  ", lines, seen); err != nil {
+					return err
+				}
+			}
 			b.WriteString(indent)
-			b.WriteString("  ")
-			if err := emitAST(b, st, indent+"  ", lines); err != nil {
-				return err
+			b.WriteString("}\n")
+		}
+	case "ClassDef":
+		b.WriteString("type ")
+		b.WriteString(n.Name)
+		b.WriteString(" {\n")
+		for _, st := range n.Body {
+			if st.Type == "AnnAssign" && st.Target != nil && st.Target.Type == "Name" {
+				b.WriteString(indent)
+				b.WriteString("  ")
+				b.WriteString(st.Target.ID)
+				if st.Annotation != nil {
+					b.WriteString(": ")
+					if err := emitExpr(b, st.Annotation, lines); err != nil {
+						return err
+					}
+				}
+				b.WriteByte('\n')
 			}
 		}
 		b.WriteString(indent)
@@ -195,6 +231,9 @@ func emitAST(b *strings.Builder, n *ASTNode, indent string, lines []string) erro
 		}
 		b.WriteByte('\n')
 	case "Expr":
+		if call := n.valueNode(); call != nil && call.Type == "Call" && call.Func != nil && call.Func.Type == "Name" && call.Func.ID == "main" {
+			return nil
+		}
 		if err := emitExpr(b, n.valueNode(), lines); err != nil {
 			return err
 		}
@@ -204,11 +243,27 @@ func emitAST(b *strings.Builder, n *ASTNode, indent string, lines []string) erro
 			return newConvertError(n.Line, lines, "complex assignment")
 		}
 		targets := n.callArgs()
+		if len(targets) == 0 && len(n.Targets) > 0 {
+			targets = n.Targets
+		}
 		if len(targets) == 0 {
 			return newConvertError(n.Line, lines, "unsupported assignment")
 		}
+		if strings.TrimSpace(string(n.Value)) == "null" {
+			return nil
+		}
+		if v := n.valueNode(); v != nil && v.Type == "Constant" && strings.TrimSpace(string(v.Value)) == "null" {
+			return nil
+		}
+		nameNode := targets[0]
+		if nameNode.Type == "Name" && seen != nil {
+			if seen[nameNode.ID] {
+				return nil
+			}
+			seen[nameNode.ID] = true
+		}
 		b.WriteString("let ")
-		if err := emitExpr(b, targets[0], lines); err != nil {
+		if err := emitExpr(b, nameNode, lines); err != nil {
 			return err
 		}
 		b.WriteString(" = ")
@@ -229,7 +284,7 @@ func emitAST(b *strings.Builder, n *ASTNode, indent string, lines []string) erro
 		for _, st := range n.Body {
 			b.WriteString(indent)
 			b.WriteString("  ")
-			if err := emitAST(b, st, indent+"  ", lines); err != nil {
+			if err := emitAST(b, st, indent+"  ", lines, seen); err != nil {
 				return err
 			}
 		}
@@ -244,13 +299,17 @@ func emitAST(b *strings.Builder, n *ASTNode, indent string, lines []string) erro
 		for _, st := range n.Body {
 			b.WriteString(indent)
 			b.WriteString("  ")
-			if err := emitAST(b, st, indent+"  ", lines); err != nil {
+			if err := emitAST(b, st, indent+"  ", lines, seen); err != nil {
 				return err
 			}
 		}
 		b.WriteString(indent)
 		b.WriteString("}\n")
 	case "If":
+		if n.Test != nil && n.Test.Type == "Compare" && len(n.Test.Ops) == 1 && n.Test.Ops[0].Type == "Eq" && n.Test.Left != nil && n.Test.Left.Type == "Name" && n.Test.Left.ID == "__name__" {
+			// skip module entrypoint check
+			return nil
+		}
 		b.WriteString("if ")
 		if err := emitExpr(b, n.Test, lines); err != nil {
 			return err
@@ -259,7 +318,7 @@ func emitAST(b *strings.Builder, n *ASTNode, indent string, lines []string) erro
 		for _, st := range n.Body {
 			b.WriteString(indent)
 			b.WriteString("  ")
-			if err := emitAST(b, st, indent+"  ", lines); err != nil {
+			if err := emitAST(b, st, indent+"  ", lines, seen); err != nil {
 				return err
 			}
 		}
@@ -270,7 +329,7 @@ func emitAST(b *strings.Builder, n *ASTNode, indent string, lines []string) erro
 			for _, st := range n.Orelse {
 				b.WriteString(indent)
 				b.WriteString("  ")
-				if err := emitAST(b, st, indent+"  ", lines); err != nil {
+				if err := emitAST(b, st, indent+"  ", lines, seen); err != nil {
 					return err
 				}
 			}
@@ -314,6 +373,9 @@ func emitAST(b *strings.Builder, n *ASTNode, indent string, lines []string) erro
 			return err
 		}
 		b.WriteByte('\n')
+	case "Global":
+		// ignore
+		return nil
 	}
 	return nil
 }
@@ -340,6 +402,22 @@ func emitExpr(b *strings.Builder, n *ASTNode, lines []string) error {
 			return nil
 		}
 		if fn != nil && fn.Type == "Name" {
+			if len(n.Keywords) > 0 && len(n.callArgs()) == 0 && strings.Title(fn.ID) == fn.ID {
+				b.WriteString(fn.ID)
+				b.WriteString(" {")
+				for i, kw := range n.Keywords {
+					if i > 0 {
+						b.WriteString(", ")
+					}
+					b.WriteString(kw.Arg)
+					b.WriteString(": ")
+					if err := emitExpr(b, kw.valueNode(), lines); err != nil {
+						return err
+					}
+				}
+				b.WriteString("}")
+				return nil
+			}
 			b.WriteString(fn.ID)
 		}
 		b.WriteString("(")
@@ -352,9 +430,26 @@ func emitExpr(b *strings.Builder, n *ASTNode, lines []string) error {
 				return err
 			}
 		}
+		for _, kw := range n.Keywords {
+			if len(args) > 0 {
+				b.WriteString(", ")
+			}
+			if kw.Arg != "" {
+				b.WriteString(kw.Arg)
+				b.WriteString(": ")
+			}
+			if err := emitExpr(b, kw.valueNode(), lines); err != nil {
+				return err
+			}
+			args = append(args, kw)
+		}
 		b.WriteString(")")
 	case "Name":
-		b.WriteString(n.ID)
+		id := n.ID
+		if id == "str" {
+			id = "string"
+		}
+		b.WriteString(id)
 	case "Constant":
 		v := n.constValue()
 		switch vv := v.(type) {
@@ -457,6 +552,30 @@ func emitExpr(b *strings.Builder, n *ASTNode, lines []string) error {
 			}
 		}
 		b.WriteByte('}')
+	case "ListComp":
+		if len(n.Generators) == 1 {
+			g := n.Generators[0]
+			b.WriteString("from ")
+			if err := emitExpr(b, g.Target, lines); err != nil {
+				return err
+			}
+			b.WriteString(" in ")
+			if err := emitExpr(b, g.Iter, lines); err != nil {
+				return err
+			}
+			if len(g.Ifs) > 0 {
+				b.WriteString(" where ")
+				if err := emitExpr(b, g.Ifs[0], lines); err != nil {
+					return err
+				}
+			}
+			b.WriteString(" select ")
+			if err := emitExpr(b, n.Elt, lines); err != nil {
+				return err
+			}
+		} else {
+			return newConvertError(n.Line, lines, "unsupported list comp")
+		}
 	case "Subscript":
 		if err := emitExpr(b, n.valueNode(), lines); err != nil {
 			return err
@@ -518,7 +637,8 @@ func ConvertAST(src string) ([]byte, error) {
 	}
 	lines := strings.Split(src, "\n")
 	var b strings.Builder
-	if err := emitAST(&b, root, "", lines); err != nil {
+	seen := map[string]bool{}
+	if err := emitAST(&b, root, "", lines, seen); err != nil {
 		return nil, err
 	}
 	out := strings.TrimSpace(b.String())
