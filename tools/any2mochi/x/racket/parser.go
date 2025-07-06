@@ -1,10 +1,6 @@
-package main
+package racket
 
 import (
-	"encoding/json"
-	"fmt"
-	"io"
-	"os"
 	"strings"
 	"unicode"
 )
@@ -152,21 +148,7 @@ func parseTokens(toks []string) []item {
 	return items
 }
 
-func parseRacket(src string) []item {
+func parse(src string) []item {
 	toks := tokenize(src)
 	return parseTokens(toks)
-}
-
-func main() {
-	data, err := io.ReadAll(os.Stdin)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
-	items := parseRacket(string(data))
-	enc := json.NewEncoder(os.Stdout)
-	if err := enc.Encode(items); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
 }
