@@ -1,4 +1,4 @@
-package any2mochi
+package c
 
 type cFunc struct {
 	name   string

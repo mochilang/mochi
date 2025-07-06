@@ -1,4 +1,4 @@
-package any2mochi
+package rust
 
 import (
 	"bytes"
@@ -9,6 +9,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	a2m "mochi/tools/any2mochi"
 )
 
 // node represents a parsed rust-analyzer syntax tree node.
@@ -650,18 +652,18 @@ func convertRustTree(src string, tree *node) ([]byte, error) {
 	return []byte(strings.Join(out, "\n")), nil
 }
 
-// ConvertRustAST converts Rust source code using an already parsed syntax tree.
-func ConvertRustAST(src string, ast *RustASTNode) ([]byte, error) {
-	return convertRustTree(src, fromRustASTNode(ast))
+// ConvertAST converts Rust source code using an already parsed syntax tree.
+func ConvertAST(src string, ast *ASTNode) ([]byte, error) {
+	return convertRustTree(src, fromASTNode(ast))
 }
 
-// ConvertRust converts Rust source code to Mochi using rust-analyzer's parse output.
-func ConvertRust(src string) ([]byte, error) {
-	ls := Servers["rust"]
+// Convert converts Rust source code to Mochi using rust-analyzer's parse output.
+func Convert(src string) ([]byte, error) {
+	ls := a2m.Servers["rust"]
 	if ls.Command == "" {
 		ls.Command = "rust-analyzer"
 	}
-	if err := EnsureServer(ls.Command); err != nil {
+	if err := a2m.EnsureServer(ls.Command); err != nil {
 		return nil, err
 	}
 	ast, err := runRustAnalyzerParse(ls.Command, src)
@@ -672,24 +674,35 @@ func ConvertRust(src string) ([]byte, error) {
 	return convertRustTree(src, tree)
 }
 
-// ConvertRustFile reads the rust file and converts it to Mochi.
-func ConvertRustFile(path string) ([]byte, error) {
+// ConvertFile reads the rust file and converts it to Mochi.
+func ConvertFile(path string) ([]byte, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return ConvertRust(string(data))
+	return Convert(string(data))
 }
 
-// ConvertRustASTFile parses the given Rust file and converts it using the parsed AST.
-func ConvertRustASTFile(path string) ([]byte, error) {
+// ConvertASTFile parses the given Rust file and converts it using the parsed AST.
+func ConvertASTFile(path string) ([]byte, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	ast, err := ParseRustAST(string(data))
+	ast, err := ParseAST(string(data))
 	if err != nil {
 		return nil, err
 	}
-	return ConvertRustAST(string(data), ast)
+	return ConvertAST(string(data), ast)
+}
+
+func numberedSnippet(src string) string {
+	lines := strings.Split(src, "\n")
+	if len(lines) > 10 {
+		lines = lines[:10]
+	}
+	for i, l := range lines {
+		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
+	}
+	return strings.Join(lines, "\n")
 }
