@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os/exec"
-	"regexp"
 	"strings"
 )
 
@@ -19,61 +18,6 @@ type cppFuncDef struct {
 type cppEnumDef struct {
 	name     string
 	variants []string
-}
-
-var cppFuncRE = regexp.MustCompile(`(?m)([A-Za-z_][A-Za-z0-9_:<>*&\s]*)\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]*)\)\s*\{`)
-var cppEnumRE = regexp.MustCompile(`(?m)enum\s+(?:class\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*\{`)
-
-func parseCppFunctions(src string) []cppFuncDef {
-	var funcs []cppFuncDef
-	idxs := cppFuncRE.FindAllStringSubmatchIndex(src, -1)
-	for _, m := range idxs {
-		retPart := strings.TrimSpace(src[m[2]:m[3]])
-		name := strings.TrimSpace(src[m[4]:m[5]])
-		paramsPart := strings.TrimSpace(src[m[6]:m[7]])
-		open := m[1] - 1
-		close := findMatch(src, open, '{', '}')
-		if close <= open {
-			continue
-		}
-		body := src[open+1 : close]
-		sig := retPart + " " + name + "(" + paramsPart + ")"
-		params, ret := parseCppSignature(sig)
-		funcs = append(funcs, cppFuncDef{name: name, params: params, ret: ret, body: body})
-	}
-	return funcs
-}
-
-func parseCppEnums(src string) []cppEnumDef {
-	var enums []cppEnumDef
-	idxs := cppEnumRE.FindAllStringSubmatchIndex(src, -1)
-	for _, m := range idxs {
-		name := strings.TrimSpace(src[m[2]:m[3]])
-		open := m[1] - 1
-		close := findMatch(src, open, '{', '}')
-		if close <= open {
-			continue
-		}
-		body := src[open+1 : close]
-		parts := strings.Split(body, ",")
-		var vars []string
-		for _, p := range parts {
-			v := strings.TrimSpace(p)
-			if v == "" {
-				continue
-			}
-			if eq := strings.Index(v, "="); eq != -1 {
-				v = strings.TrimSpace(v[:eq])
-			}
-			v = strings.TrimSuffix(v, "}")
-			v = strings.TrimSpace(v)
-			if v != "" {
-				vars = append(vars, v)
-			}
-		}
-		enums = append(enums, cppEnumDef{name: name, variants: vars})
-	}
-	return enums
 }
 
 func convertCppBodyString(body string) []string {
