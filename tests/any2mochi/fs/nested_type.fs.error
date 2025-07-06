@@ -1,5 +1,5 @@
-unsupported syntax at line 3: exception Return_outer of string
-  2: 
-  3: exception Return_outer of string
-  4: let rec outer  : string =
-  5:     try
+unsupported syntax at line 12: failwith "unreachable"
+ 11:         raise (Return_outer (p.name))
+ 12:         failwith "unreachable"
+ 13:     with Return_outer v -> v
+ 14:

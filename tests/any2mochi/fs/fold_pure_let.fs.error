@@ -1,5 +1,5 @@
-unsupported syntax at line 3: exception Return_sumN of int
-  2: 
-  3: exception Return_sumN of int
-  4: let rec sumN (n: int) : int =
-  5:     try
+unsupported syntax at line 8: failwith "unreachable"
+  7:         raise (Return_sumN (((n * ((n + 1))) / 2)))
+  8:         failwith "unreachable"
+  9:     with Return_sumN v -> v
+ 10:

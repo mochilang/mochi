@@ -1,5 +1,5 @@
-unsupported syntax at line 24: let rec _to_json (v: obj) : string =
- 23: let n = "n"
- 24: let rec _to_json (v: obj) : string =
- 25:   match v with
- 26:   | null -> "null"
+unsupported syntax at line 116: ignore (_json result)
+115:     |> Array.map snd
+116: ignore (_json result)
+117: let test_Q2_returns_only_supplier_with_min_cost_in_Europe_for_brass_part() =
+118:     if not ((result = [|Map.ofList [(s_acctbal, 1000.0); (s_name, "BestSupplier"); (n_name, "FRANCE"); (p_partkey, 1000); (p_mfgr, "M1"); (s_address, "123 Rue"); (s_phone, "123"); (s_comment, "Fast and reliable"); (ps_supplycost, 10.0)]|])) then failwith "expect failed"

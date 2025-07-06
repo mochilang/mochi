@@ -1,5 +1,5 @@
-unsupported syntax at line 7: exception Return_isLeaf of bool
-  6: 
-  7: exception Return_isLeaf of bool
-  8: let rec isLeaf (t: Tree) : bool =
-  9:     try
+unsupported syntax at line 12: failwith "unreachable"
+ 11:         raise (Return_isLeaf ((match t with | Leaf -> true | _ -> false)))
+ 12:         failwith "unreachable"
+ 13:     with Return_isLeaf v -> v
+ 14:
