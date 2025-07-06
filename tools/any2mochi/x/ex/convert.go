@@ -123,8 +123,6 @@ func convertFunc(lines []string, sym any2mochi.DocumentSymbol, params []string, 
 	b.WriteString("fun " + name + "(" + paramStr + ")")
 	if ret != "" {
 		b.WriteString(": " + ret)
-	} else {
-		b.WriteString(": any")
 	}
 	b.WriteString(" {\n")
 

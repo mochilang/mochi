@@ -1,6 +1,0 @@
-fun main() {
-  let m = %{x: 1, y: 2}
-  print(length(Map.keys(m)))
-  print(length(Map.values(m)))
-}
-main()

@@ -1,5 +1,0 @@
-fun main() {
-  defmodule Todo do
-  defstruct title: nil
-}
-main()

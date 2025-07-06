@@ -1,7 +1,0 @@
-fun main() {
-  let people = [%{name: "Alice", age: 30}, %{name: "Bob", age: 15}, %{name: "Charlie", age: 65}]
-  let names = for p <- people, (p.age >= 18), do: p.name
-  for n <- names do
-  print(n)
-}
-main()
