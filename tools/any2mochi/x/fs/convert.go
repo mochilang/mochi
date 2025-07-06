@@ -14,7 +14,15 @@ import (
 // is unavailable.
 func Convert(src string) ([]byte, error) {
 	ast, err := Parse(src)
-	if err == nil && ast != nil && (len(ast.Vars) > 0 || len(ast.Prints) > 0) {
+	if err != nil {
+		return nil, err
+	}
+	if ast != nil && len(ast.Stmts) > 0 {
+		var out strings.Builder
+		writeStmts(&out, ast.Stmts, 0)
+		return []byte(out.String()), nil
+	}
+	if ast != nil && (len(ast.Vars) > 0 || len(ast.Prints) > 0) {
 		var out strings.Builder
 		for _, v := range ast.Vars {
 			out.WriteString("let ")
@@ -34,9 +42,6 @@ func Convert(src string) ([]byte, error) {
 	// Fallback to simple regex based conversion if parsing failed.
 	if out, ferr := fallback(src); ferr == nil {
 		return out, nil
-	}
-	if err != nil {
-		return nil, err
 	}
 	return nil, fmt.Errorf("unsupported")
 }
@@ -266,6 +271,40 @@ func hoverString(h parent.Hover) string {
 		return v
 	default:
 		return fmt.Sprint(v)
+	}
+}
+
+func writeStmts(out *strings.Builder, stmts []Stmt, indent int) {
+	idt := strings.Repeat("  ", indent)
+	for _, s := range stmts {
+		switch v := s.(type) {
+		case Var:
+			kw := "let "
+			if v.Mutable {
+				kw = "var "
+			}
+			out.WriteString(idt + kw + v.Name)
+			if v.Expr != "" {
+				out.WriteString(" = " + v.Expr)
+			}
+			out.WriteByte('\n')
+		case Assign:
+			out.WriteString(idt + v.Name + " = " + v.Expr + "\n")
+		case Print:
+			out.WriteString(idt + "print(" + v.Expr + ")\n")
+		case ForRange:
+			out.WriteString(idt + "for " + v.Var + " in " + v.Start + ".." + v.End + " {\n")
+			writeStmts(out, v.Body, indent+1)
+			out.WriteString(idt + "}\n")
+		case ForIn:
+			out.WriteString(idt + "for " + v.Var + " in " + v.Expr + " {\n")
+			writeStmts(out, v.Body, indent+1)
+			out.WriteString(idt + "}\n")
+		case While:
+			out.WriteString(idt + "while " + v.Cond + " {\n")
+			writeStmts(out, v.Body, indent+1)
+			out.WriteString(idt + "}\n")
+		}
 	}
 }
 
