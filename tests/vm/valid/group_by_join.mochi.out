@@ -1,31 +1,41 @@
-let _Group = []
-fun _Group["new"](k) {
-  return { "key": k, "items": [] }
+let customers: list<map<string, any>> = [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]
+let orders: list<map<string, int>> = [{"id": 100, "customerId": 1}, {"id": 101, "customerId": 1}, {"id": 102, "customerId": 2}]
+let stats: list<map<string, any>> = (() {
+let groups = <String,_Group>{}
+let order = <String>[]
+let key = c["name"]
+let ks = key.toString()
+let g = groups[ks]
+let items = [for (var k in order) groups[k]!]
+let _res = []
+let _res: return
+type _Group {
+  key
 }
-let customers = [{ "id": 1, "name": "Alice" }, { "id": 2, "name": "Bob" }]
-let orders = [{ "id": 100, "customerId": 1 }, { "id": 101, "customerId": 1 }, { "id": 102, "customerId": 2 }]
-let stats = fun() {
-    let _src = orders
-    let _rows = __query(_src, [{ "items": customers, "on": fun(o, c) {
-    return (o["customerId"] == c["id"])
-} }], { "selectFn": fun(o, c) {
-    return [o, c]
-} })
-    let _groups = __group_by_rows(_rows, fun(o, c) {
-    return c["name"]
-}, fun(o, c) {
-    let _row = __merge(o, c)
-    _row["o"] = o
-    _row["c"] = c
-    return _row
-})
-    let _res = []
-    for _, g in ipairs(_groups) {
-      _res[len(_res) + 1] = { "name": g["key"], "count": count(g) }
-    }
-    return _res
-}()
-print("--- Orders per customer ---")
-for _, s in ipairs(stats) {
-  print(s["name"], "orders:", s["count"])
+fun main() {
+  print("--- Orders per customer ---")
+  for (var s in stats) {
+    print([s.name.toString(), "orders:".toString(), s.count.toString()].join(' '))
+  }
+}
+fun _count(v: any): int {
+  if (v is String) return v.runes.length
+  if (v is List) return v.length
+  if (v is Map) return v.length
+  try { var items = (v as dynamic).Items; if (items is List) return items.length; } catch (_) {}
+  try { var items = (v as dynamic).items; if (items is List) return items.length; } catch (_) {}
+  return 0
+}
+fun _equal(a: any, b: any): bool {
+  if (a is List && b is List) {
+    if (a.length != b.length) return false
+    for (var i = 0; i < a.length; i++) { if (!_equal(a[i], b[i])) return false; }
+    return true
+  }
+  if (a is Map && b is Map) {
+    if (a.length != b.length) return false
+    for (var k in a.keys) { if (!b.containsKey(k) || !_equal(a[k], b[k])) return false; }
+    return true
+  }
+  return a == b
 }

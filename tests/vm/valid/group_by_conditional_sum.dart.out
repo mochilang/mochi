@@ -1,0 +1,70 @@
+List<Map<String, dynamic>> items = [{"cat": "a", "val": 10, "flag": true}, {"cat": "a", "val": 5, "flag": false}, {"cat": "b", "val": 20, "flag": true}];
+
+List<Map<String, dynamic>> result = (() {
+  var groups = <String,_Group>{};
+  var order = <String>[];
+  for (var i in items) {
+    var key = i['cat'];
+    var ks = key.toString();
+    var g = groups[ks];
+    if (g == null) {
+      g = _Group(key);
+      groups[ks] = g;
+      order.add(ks);
+    }
+    g.Items.add(i);
+  }
+  var items = [for (var k in order) groups[k]!];
+  items.sort((gA, gB) {
+    var g = gA;
+    var keyA = g.key;
+    g = gB;
+    var keyB = g.key;
+    return Comparable.compare(keyA, keyB);
+  });
+  var _res = [];
+  for (var g in items) {
+    _res.add({"cat": g.key, "share": (_sum((() {
+  var _res = [];
+  for (var x in g) {
+    _res.add((x.flag ? x.val : 0));
+  }
+  return _res;
+})()) ~/ _sum((() {
+  var _res = [];
+  for (var x in g) {
+    _res.add(x.val);
+  }
+  return _res;
+})()))});
+  }
+  return _res;
+})();
+
+void main() {
+  print(result);
+}
+
+class _Group {
+    dynamic key;
+    List<dynamic> Items = [];
+    _Group(this.key);
+    int count() => _count(this);
+    double sum() => _sum(this);
+    double avg() => _avg(this);
+}
+
+double _sum(dynamic v) {
+    List<dynamic>? list;
+    if (v is List) list = v;
+    else if (v is Map && v['items'] is List) list = (v['items'] as List);
+    else if (v is Map && v['Items'] is List) list = (v['Items'] as List);
+    else if (v is _Group) list = v.Items;
+    else { try { var it = (v as dynamic).items; if (it is List) list = it; } catch (_) {} }
+    if (list == null || list.isEmpty) return 0;
+    var s = 0.0;
+    for (var n in list) s += (n as num).toDouble();
+    return s;
+}
+
+

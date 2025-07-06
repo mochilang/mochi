@@ -1,1 +1,1 @@
-parse error: 1:28: unexpected token "(" (expected "{" Statement* "}")
+parse error: 3:14: unexpected token "=>" (expected "}")

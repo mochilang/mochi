@@ -1,1 +1,1 @@
-parse error: 2:34: unexpected token "{" (expected "=>" Expr)
+parse error: 13:11: lexer: invalid input text "'items'] is List..."

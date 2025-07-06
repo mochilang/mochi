@@ -1,5 +1,1 @@
-error[T001]: assignment to undeclared variable: _
-  --> :10:1
-
-help:
-  Declare `_` first using `let`.
+parse error: 12:18: lexer: invalid input text "'Person'] = (m) ..."

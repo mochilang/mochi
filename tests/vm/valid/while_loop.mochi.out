@@ -1,8 +1,7 @@
-var i = 0
-while true {
-  if !(i < 3) {
-  break
-}
-  print(i)
-  i = (i + 1)
+let i: int = 0
+fun main() {
+  while ((i < 3)) {
+    print(i)
+    i = ((i + 1)).toInt()
+  }
 }

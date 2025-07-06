@@ -1,0 +1,18 @@
+List<Map<String, dynamic>> people = [{"name": "Alice", "age": 30}, {"name": "Bob", "age": 15}, {"name": "Charlie", "age": 65}, {"name": "Diana", "age": 45}];
+
+List<Map<String, dynamic>> adults = (() {
+  var _res = [];
+  var _src = (people).where((person) => (person['age'] >= 18)).toList();
+  for (var person in _src) {
+    _res.add({"name": person['name'], "age": person['age'], "is_senior": (person['age'] >= 60)});
+  }
+  return _res;
+})();
+
+void main() {
+  print("--- Adults ---");
+  for (var person in adults) {
+    print([person.name.toString(), "is".toString(), person.age.toString(), (person.is_senior ? " (senior)" : "").toString()].join(' '));
+  }
+}
+

@@ -1,0 +1,10 @@
+int a = (10 - 3);
+
+int b = (2 + 2);
+
+void main() {
+  print(a);
+  print((a == 7));
+  print((b < 5));
+}
+

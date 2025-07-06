@@ -1,18 +1,12 @@
-var nums = [1, 2, 3]
-var letters = ["A", "B"]
-_ = letters
-var pairs = fun (): list<map<string, any>> {
-  var _res = []
-  for n in nums {
-  if (n % 2) == 0 {
-  for l in letters {
-  _res = append(_res, {"n": n, "l": l})
-}
-}
-}
-  return _res
-}()
-print("--- Even pairs ---")
-for p in pairs {
-  print(str(p["n"]) + " " + str(p["l"]))
+let nums: list<int> = [1, 2, 3]
+let letters: list<string> = ["A", "B"]
+let pairs: list<map<string, any>> = (() {
+let _res = []
+let _src = (nums).where((n) => ((n % 2) == 0)).toList()
+let _res: return
+fun main() {
+  print("--- Even pairs ---")
+  for (var p in pairs) {
+    print([p.n.toString(), p.l.toString()].join(' '))
+  }
 }

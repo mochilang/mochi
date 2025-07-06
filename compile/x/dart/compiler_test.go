@@ -41,11 +41,11 @@ func TestDartCompiler_SubsetPrograms(t *testing.T) {
 		if errs := types.Check(prog, env); len(errs) > 0 {
 			return nil, fmt.Errorf("❌ type error: %v", errs[0])
 		}
-		c := dartcode.New(env)
-		code, err := c.Compile(prog)
+		code, err := dartcode.New(env).Compile(prog)
 		if err != nil {
 			return nil, fmt.Errorf("❌ compile error: %w", err)
 		}
+
 		dir := t.TempDir()
 		file := filepath.Join(dir, "main.dart")
 		if err := os.WriteFile(file, code, 0644); err != nil {
@@ -55,11 +55,31 @@ func TestDartCompiler_SubsetPrograms(t *testing.T) {
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 			cmd.Stdin = bytes.NewReader(data)
 		}
-		out, err := cmd.CombinedOutput()
+		dartOut, err := cmd.CombinedOutput()
 		if err != nil {
-			return nil, fmt.Errorf("❌ dart run error: %w\n%s", err, out)
+			return nil, fmt.Errorf("❌ dart run error: %w\n%s", err, dartOut)
 		}
-		res := bytes.TrimSpace(out)
+
+		p, err := vm.Compile(prog, env)
+		if err != nil {
+			return nil, fmt.Errorf("vm compile error: %w", err)
+		}
+		var buf bytes.Buffer
+		m := vm.New(p, &buf)
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			m = vm.NewWithIO(p, bytes.NewReader(data), &buf)
+		}
+		if err := m.Run(); err != nil {
+			if ve, ok := err.(*vm.VMError); ok {
+				return nil, fmt.Errorf("vm run error:\n%s", ve.Format(p))
+			}
+			return nil, fmt.Errorf("vm run error: %v", err)
+		}
+		root := repoRoot()
+		if !bytes.Equal(normalizeOutput(root, bytes.TrimSpace(dartOut)), normalizeOutput(root, bytes.TrimSpace(buf.Bytes()))) {
+			return nil, fmt.Errorf("runtime output mismatch\n\n--- VM ---\n%s\n\n--- Dart ---\n%s\n", buf.Bytes(), dartOut)
+		}
+		res := bytes.TrimSpace(dartOut)
 		if res == nil {
 			res = []byte{}
 		}

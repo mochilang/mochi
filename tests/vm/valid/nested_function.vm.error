@@ -1,1 +1,5 @@
-parse error: 2:33: unexpected token "{" (expected "<" TypeRef ("," TypeRef)* ">")
+error[T002]: undefined variable: x
+  --> :4:11
+
+help:
+  Check if the variable was declared in this scope.

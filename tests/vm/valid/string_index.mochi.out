@@ -1,12 +1,14 @@
+let s: string = "mochi"
+fun main() {
+  print(_indexString(s, 1))
+}
 fun _indexString(s: string, i: int): string {
-  var runes = s
-  if i < 0 {
-  i = i + len(runes)
+  let runes = s.runes.toList()
+  if (i < 0) {
+    i += runes.length
+  }
+  if (i < 0 || i >= runes.length) {
+    throw RangeError('index out of range')
+  }
+  return String.fromCharCode(runes[i])
 }
-  if i < 0 || i >= len(runes) {
-  panic("index out of range")
-}
-  return str(runes[i])
-}
-var s = "mochi"
-print(_indexString(s, 1))

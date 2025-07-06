@@ -1,17 +1,25 @@
-let customers = [{ "id": 1, "name": "Alice" }, { "id": 2, "name": "Bob" }]
-let orders = [{ "id": 100, "customerId": 1 }, { "id": 101, "customerId": 2 }]
-let items = [{ "orderId": 100, "sku": "a" }, { "orderId": 101, "sku": "b" }]
-let result = fun() {
-    let _src = orders
-    return __query(_src, [{ "items": customers, "on": fun(o, c) {
-    return (o["customerId"] == c["id"])
-} }, { "items": items, "on": fun(o, c, i) {
-    return (o["id"] == i["orderId"])
-} }], { "selectFn": fun(o, c, i) {
-    return { "name": c["name"], "sku": i["sku"] }
-} })
-}()
-print("--- Multi Join ---")
-for _, r in ipairs(result) {
-  print(r["name"], "bought item", r["sku"])
+let customers: list<map<string, any>> = [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]
+let orders: list<map<string, int>> = [{"id": 100, "customerId": 1}, {"id": 101, "customerId": 2}]
+let items: list<map<string, any>> = [{"orderId": 100, "sku": "a"}, {"orderId": 101, "sku": "b"}]
+let result: list<map<string, any>> = (() {
+let _res = []
+let _res: return
+fun main() {
+  print("--- Multi Join ---")
+  for (var r in result) {
+    print([r.name.toString(), "bought item".toString(), r.sku.toString()].join(' '))
+  }
+}
+fun _equal(a: any, b: any): bool {
+  if (a is List && b is List) {
+    if (a.length != b.length) return false
+    for (var i = 0; i < a.length; i++) { if (!_equal(a[i], b[i])) return false; }
+    return true
+  }
+  if (a is Map && b is Map) {
+    if (a.length != b.length) return false
+    for (var k in a.keys) { if (!b.containsKey(k) || !_equal(a[k], b[k])) return false; }
+    return true
+  }
+  return a == b
 }

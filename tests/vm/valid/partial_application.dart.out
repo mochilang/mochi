@@ -1,0 +1,10 @@
+int add(int a, int b) {
+  return (a + b);
+}
+
+dynamic add5 = add(5);
+
+void main() {
+  print(add5(3));
+}
+

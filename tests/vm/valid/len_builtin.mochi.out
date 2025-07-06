@@ -1,1 +1,3 @@
-print(len([1, 2, 3]))
+fun main() {
+  print([1, 2, 3].length)
+}

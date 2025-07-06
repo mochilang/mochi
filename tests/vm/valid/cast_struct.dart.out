@@ -1,0 +1,18 @@
+Map<String, Function> _structParsers = {};
+
+class Todo {
+  String title;
+  Todo({required this.title});
+  factory Todo.fromJson(Map<String,dynamic> m) {
+    return Todo(title: m['title'] as String);
+  }
+}
+
+Todo todo = Todo.fromJson({"title": "hi"} as Map<String,dynamic>);
+
+void main() {
+  _structParsers['Todo'] = (m) => Todo.fromJson(m);
+  
+  print(todo.title);
+}
+

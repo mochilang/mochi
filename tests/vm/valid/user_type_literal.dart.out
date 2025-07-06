@@ -1,0 +1,29 @@
+Map<String, Function> _structParsers = {};
+
+class Person {
+  String name;
+  int age;
+  Person({required this.name, required this.age});
+  factory Person.fromJson(Map<String,dynamic> m) {
+    return Person(name: m['name'] as String, age: m['age'] as int);
+  }
+}
+
+class Book {
+  String title;
+  Person author;
+  Book({required this.title, required this.author});
+  factory Book.fromJson(Map<String,dynamic> m) {
+    return Book(title: m['title'] as String, author: m['author'] as Person);
+  }
+}
+
+Book book = Book(title: "Go", author: Person(name: "Bob", age: 42));
+
+void main() {
+  _structParsers['Person'] = (m) => Person.fromJson(m);
+  _structParsers['Book'] = (m) => Book.fromJson(m);
+  
+  print(book.author.name);
+}
+

@@ -1,4 +1,6 @@
-var x = 3
-var y = 4
-var m = {"a": x, "b": y}
-print(str(m["a"]) + " " + str(m["b"]))
+let x: int = 3
+let y: int = 4
+let m: map<string, int> = {"a": x, "b": y}
+fun main() {
+  print([m["a"].toString(), m["b"].toString()].join(' '))
+}

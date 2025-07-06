@@ -1,9 +1,9 @@
-let Todo = []
-Todo["__index"] = Todo
-fun Todo["new"](o) {
-  let o = o || []
-  setmetatable(o, Todo)
-  return o
+let _structParsers: map<string, Function> = {}
+let todo: Todo = Todo.fromJson({"title": "hi"} as Map<String,dynamic>)
+type Todo {
+  title: string
 }
-let todo = Todo["new"]({ "title": "hi" })
-print(todo["title"])
+fun main() {
+  _structParsers['Todo'] = (m) => Todo.fromJson(m)
+  print(todo.title)
+}

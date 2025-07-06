@@ -1,0 +1,61 @@
+List<Map<String, dynamic>> data = [{"tag": "a", "val": 1}, {"tag": "a", "val": 2}, {"tag": "b", "val": 3}];
+
+List<_Group> groups = _group_by(data, (d) => d['tag']).map((g) => g).toList();
+
+List tmp = [];
+
+List result = (() {
+  var _res = [];
+  for (var r in tmp) {
+    _res.add(r);
+  }
+  var items = List.from(_res);
+  items.sort((rA, rB) {
+    var r = rA;
+    var keyA = r.tag;
+    r = rB;
+    var keyB = r.tag;
+    return Comparable.compare(keyA, keyB);
+  });
+  _res = items;
+  return _res;
+})();
+
+void main() {
+  for (var g in groups) {
+    int total = 0;
+    for (var x in g.items) {
+      total = ((total + x.val)).toInt();
+    }
+    tmp = append(tmp, {"tag": g.key, "total": total});
+  }
+  print(result);
+}
+
+class _Group {
+    dynamic key;
+    List<dynamic> Items = [];
+    _Group(this.key);
+    int count() => _count(this);
+    double sum() => _sum(this);
+    double avg() => _avg(this);
+}
+
+List<_Group> _group_by(List<dynamic> src, dynamic Function(dynamic) keyfn) {
+    var groups = <String,_Group>{};
+    var order = <String>[];
+    for (var it in src) {
+        var key = keyfn(it);
+        var ks = key.toString();
+        var g = groups[ks];
+        if (g == null) {
+            g = _Group(key);
+            groups[ks] = g;
+            order.add(ks);
+        }
+        g.Items.add(it);
+    }
+    return [for (var k in order) groups[k]!];
+}
+
+

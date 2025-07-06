@@ -1,11 +1,15 @@
-fun _avgOrdered(s: list<T>): float64 {
-  if len(s) == 0 {
-  return 0
+fun main() {
+  print(_avg([1, 2, 3]))
 }
-  var sum: float64
-  for v in s {
-  sum = sum + float64(v)
+fun _avg(v: any): float {
+  let list: list<any>
+  if (v is List) list = v
+  else if (v is Map && v['items'] is List) list = (v['items'] as List)
+  else if (v is Map && v['Items'] is List) list = (v['Items'] as List)
+  else if (v is _Group) list = v.Items
+  else { try { var it = (v as dynamic).items; if (it is List) list = it; } catch (_) {} }
+  if (list == null || list.isEmpty) return 0
+  let s = 0.0
+  for (var n in list) s += (n as num).toDouble()
+  return s / list.length
 }
-  return sum / float64(len(s))
-}
-print(_avgOrdered([1, 2, 3]))

@@ -1,3 +1,5 @@
-let m = { "a": 1, "b": 2 }
-print(m["a"] ~= null)
-print(m["c"] ~= null)
+let m: map<string, int> = {"a": 1, "b": 2}
+fun main() {
+  print((m.containsKey("a")))
+  print((m.containsKey("c")))
+}

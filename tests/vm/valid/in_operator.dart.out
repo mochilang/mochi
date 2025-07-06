@@ -1,0 +1,7 @@
+List<int> xs = [1, 2, 3];
+
+void main() {
+  print((xs.contains(2)));
+  print(!((xs.contains(5))));
+}
+

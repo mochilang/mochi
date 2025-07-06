@@ -1,0 +1,34 @@
+List<int> nums = [3, 1, 4];
+
+void main() {
+  print(_min(nums));
+  print(_max(nums));
+}
+
+dynamic _max(dynamic v) {
+    List<dynamic>? list;
+    if (v is List) list = v;
+    else if (v is Map && v['items'] is List) list = (v['items'] as List);
+    else if (v is Map && v['Items'] is List) list = (v['Items'] as List);
+    else if (v is _Group) list = v.Items;
+    else { try { var it = (v as dynamic).items; if (it is List) list = it; } catch (_) {} }
+    if (list == null || list.isEmpty) return 0;
+    var m = list[0];
+    for (var n in list) { if ((n as Comparable).compareTo(m) > 0) m = n; }
+    return m;
+}
+
+dynamic _min(dynamic v) {
+    List<dynamic>? list;
+    if (v is List) list = v;
+    else if (v is Map && v['items'] is List) list = (v['items'] as List);
+    else if (v is Map && v['Items'] is List) list = (v['Items'] as List);
+    else if (v is _Group) list = v.Items;
+    else { try { var it = (v as dynamic).items; if (it is List) list = it; } catch (_) {} }
+    if (list == null || list.isEmpty) return 0;
+    var m = list[0];
+    for (var n in list) { if ((n as Comparable).compareTo(m) < 0) m = n; }
+    return m;
+}
+
+

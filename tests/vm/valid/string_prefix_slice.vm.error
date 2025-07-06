@@ -1,0 +1,5 @@
+error[T027]: string is not a struct
+  --> :5:10
+
+help:
+  Field access is only valid on struct types.

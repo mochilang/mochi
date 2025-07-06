@@ -1,3 +1,5 @@
-var s = "catch"
-print(strings.Contains(s, "cat"))
-print(strings.Contains(s, "dog"))
+let s: string = "catch"
+fun main() {
+  print((s.contains("cat")))
+  print((s.contains("dog")))
+}

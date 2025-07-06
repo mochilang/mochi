@@ -1,0 +1,38 @@
+import 'dart:io';
+
+void test_addition_works() {
+  int x = (1 + 2);
+  if (!((x == 3))) { throw Exception('expect failed'); }
+}
+
+void main() {
+  int failures = 0;
+  print("ok");
+  if (!_runTest("addition works", test_addition_works)) failures++;
+  if (failures > 0) {
+    print("\n[FAIL] $failures test(s) failed.");
+  }
+}
+
+String _formatDuration(Duration d) {
+    if (d.inMicroseconds < 1000) return '${d.inMicroseconds}µs';
+    if (d.inMilliseconds < 1000) return '${d.inMilliseconds}ms';
+    return '${(d.inMilliseconds/1000).toStringAsFixed(2)}s';
+}
+
+bool _runTest(String name, void Function() f) {
+    stdout.write('   test $name ...');
+    var start = DateTime.now();
+    try {
+        f();
+        var d = DateTime.now().difference(start);
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        return true;
+    } catch (e) {
+        var d = DateTime.now().difference(start);
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        return false;
+    }
+}
+
+

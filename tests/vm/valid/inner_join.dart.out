@@ -1,0 +1,39 @@
+List<Map<String, dynamic>> customers = [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}, {"id": 3, "name": "Charlie"}];
+
+List<Map<String, int>> orders = [{"id": 100, "customerId": 1, "total": 250}, {"id": 101, "customerId": 2, "total": 125}, {"id": 102, "customerId": 1, "total": 300}, {"id": 103, "customerId": 4, "total": 80}];
+
+List<Map<String, int>> result = (() {
+  var _res = [];
+  for (var o in orders) {
+    for (var c in customers) {
+      if (!(_equal(o['customerId'], c['id']))) {
+        continue;
+      }
+      _res.add({"orderId": o['id'], "customerName": c['name'], "total": o['total']});
+    }
+  }
+  return _res;
+})();
+
+void main() {
+  print("--- Orders with customer info ---");
+  for (var entry in result) {
+    print(["Order".toString(), entry.orderId.toString(), "by".toString(), entry.customerName.toString(), "- \\$".toString(), entry.total.toString()].join(' '));
+  }
+}
+
+bool _equal(dynamic a, dynamic b) {
+    if (a is List && b is List) {
+        if (a.length != b.length) return false;
+        for (var i = 0; i < a.length; i++) { if (!_equal(a[i], b[i])) return false; }
+        return true;
+    }
+    if (a is Map && b is Map) {
+        if (a.length != b.length) return false;
+        for (var k in a.keys) { if (!b.containsKey(k) || !_equal(a[k], b[k])) return false; }
+        return true;
+    }
+    return a == b;
+}
+
+

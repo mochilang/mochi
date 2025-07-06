@@ -1,0 +1,23 @@
+List<Map<String, dynamic>> items = [{"n": 1, "v": "a"}, {"n": 1, "v": "b"}, {"n": 2, "v": "c"}];
+
+List result = (() {
+  var _res = [];
+  for (var i in items) {
+    _res.add(i['v']);
+  }
+  var items = List.from(_res);
+  items.sort((iA, iB) {
+    var i = iA;
+    var keyA = i['n'];
+    i = iB;
+    var keyB = i['n'];
+    return Comparable.compare(keyA, keyB);
+  });
+  _res = items;
+  return _res;
+})();
+
+void main() {
+  print(result);
+}
+

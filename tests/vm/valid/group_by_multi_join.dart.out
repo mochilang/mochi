@@ -1,0 +1,93 @@
+List<Map<String, dynamic>> nations = [{"id": 1, "name": "A"}, {"id": 2, "name": "B"}];
+
+List<Map<String, int>> suppliers = [{"id": 1, "nation": 1}, {"id": 2, "nation": 2}];
+
+List<Map<String, dynamic>> partsupp = [{"part": 100, "supplier": 1, "cost": 10, "qty": 2}, {"part": 100, "supplier": 2, "cost": 20, "qty": 1}, {"part": 200, "supplier": 1, "cost": 5, "qty": 3}];
+
+List<Map<String, dynamic>> filtered = (() {
+  var _res = [];
+  for (var ps in partsupp) {
+    for (var s in suppliers) {
+      if (!(_equal(s['id'], ps['supplier']))) {
+        continue;
+      }
+      for (var n in nations) {
+        if (!(_equal(n['id'], s['nation']))) {
+          continue;
+        }
+        if (!(_equal(n['name'], "A"))) {
+          continue;
+        }
+        _res.add({"part": ps['part'], "value": (ps['cost'] * ps['qty'])});
+      }
+    }
+  }
+  return _res;
+})();
+
+List<Map<String, dynamic>> grouped = _group_by(filtered, (x) => x['part']).map((g) => {"part": g.key, "total": _sum((() {
+  var _res = [];
+  for (var r in g) {
+    _res.add(r.value);
+  }
+  return _res;
+})())}).toList();
+
+void main() {
+  print(grouped);
+}
+
+class _Group {
+    dynamic key;
+    List<dynamic> Items = [];
+    _Group(this.key);
+    int count() => _count(this);
+    double sum() => _sum(this);
+    double avg() => _avg(this);
+}
+
+bool _equal(dynamic a, dynamic b) {
+    if (a is List && b is List) {
+        if (a.length != b.length) return false;
+        for (var i = 0; i < a.length; i++) { if (!_equal(a[i], b[i])) return false; }
+        return true;
+    }
+    if (a is Map && b is Map) {
+        if (a.length != b.length) return false;
+        for (var k in a.keys) { if (!b.containsKey(k) || !_equal(a[k], b[k])) return false; }
+        return true;
+    }
+    return a == b;
+}
+
+List<_Group> _group_by(List<dynamic> src, dynamic Function(dynamic) keyfn) {
+    var groups = <String,_Group>{};
+    var order = <String>[];
+    for (var it in src) {
+        var key = keyfn(it);
+        var ks = key.toString();
+        var g = groups[ks];
+        if (g == null) {
+            g = _Group(key);
+            groups[ks] = g;
+            order.add(ks);
+        }
+        g.Items.add(it);
+    }
+    return [for (var k in order) groups[k]!];
+}
+
+double _sum(dynamic v) {
+    List<dynamic>? list;
+    if (v is List) list = v;
+    else if (v is Map && v['items'] is List) list = (v['items'] as List);
+    else if (v is Map && v['Items'] is List) list = (v['Items'] as List);
+    else if (v is _Group) list = v.Items;
+    else { try { var it = (v as dynamic).items; if (it is List) list = it; } catch (_) {} }
+    if (list == null || list.isEmpty) return 0;
+    var s = 0.0;
+    for (var n in list) s += (n as num).toDouble();
+    return s;
+}
+
+

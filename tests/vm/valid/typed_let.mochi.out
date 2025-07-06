@@ -1,2 +1,4 @@
-var y = nil
-print(y)
+let y: int
+fun main() {
+  print(y)
+}

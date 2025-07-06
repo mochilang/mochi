@@ -1,0 +1,7 @@
+Map<String, int> scores = {"alice": 1};
+
+void main() {
+  scores["bob"] = 2;
+  print(scores["bob"]);
+}
+

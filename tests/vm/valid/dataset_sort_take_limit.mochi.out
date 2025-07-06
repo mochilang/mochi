@@ -1,36 +1,16 @@
-let products = [{ "name": "Laptop", "price": 1500 }, { "name": "Smartphone", "price": 900 }, { "name": "Tablet", "price": 600 }, { "name": "Monitor", "price": 300 }, { "name": "Keyboard", "price": 100 }, { "name": "Mouse", "price": 50 }, { "name": "Headphones", "price": 200 }]
-let expensive = fun() {
-    let _res = []
-    for _, p in ipairs(products) {
-      _res[len(_res) + 1] = { "__key": -p["price"], "__val": p }
-    }
-    let items = _res
-    table["sort"](items, fun(a, b) {
-    return a["__key"] < b["__key"]
-})
-    let tmp = []
-    for _, it in ipairs(items) {
-      tmp[len(tmp) + 1] = it["__val"]
-    }
-    items = tmp
-    let skip = 1
-    if skip < len(items) {
-      for i = 1; i <= skip; i += 1 {
-        table["remove"](items, 1)
-      }
-    } else {
-      let items = []
-    }
-    let take = 3
-    if take < len(items) {
-      for i = len(items); i <= take + 1; i += -1 {
-        table["remove"](items)
-      }
-    }
-    _res = items
-    return _res
-}()
-print("--- Top products (excluding most expensive) ---")
-for _, item in ipairs(expensive) {
-  print(item["name"], "costs $", item["price"])
+let products: list<map<string, any>> = [{"name": "Laptop", "price": 1500}, {"name": "Smartphone", "price": 900}, {"name": "Tablet", "price": 600}, {"name": "Monitor", "price": 300}, {"name": "Keyboard", "price": 100}, {"name": "Mouse", "price": 50}, {"name": "Headphones", "price": 200}]
+let expensive: list<map<string, any>> = (() {
+let _res = []
+let items = List.from(_res)
+let p = pA
+let keyA = -p["price"]
+let keyB = -p["price"]
+let skip = 1
+let take = 3
+let _res: return
+fun main() {
+  print("--- Top products (excluding most expensive) ---")
+  for (var item in expensive) {
+    print([item.name.toString(), "costs \\$".toString(), item.price.toString()].join(' '))
+  }
 }

@@ -1,0 +1,10 @@
+int x = 3;
+
+int y = 4;
+
+Map<String, int> m = {"a": x, "b": y};
+
+void main() {
+  print([m["a"].toString(), m["b"].toString()].join(' '));
+}
+

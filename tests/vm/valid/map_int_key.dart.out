@@ -1,0 +1,6 @@
+Map<int, String> m = {1: "a", 2: "b"};
+
+void main() {
+  print(m[1]);
+}
+

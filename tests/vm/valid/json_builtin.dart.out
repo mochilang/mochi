@@ -1,0 +1,13 @@
+import 'dart:convert';
+
+Map<String, int> m = {"a": 1, "b": 2};
+
+void main() {
+  _json(m);
+}
+
+void _json(dynamic v) {
+    print(jsonEncode(v));
+}
+
+

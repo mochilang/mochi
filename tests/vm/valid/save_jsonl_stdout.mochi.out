@@ -1,2 +1,37 @@
-let people = [{ "name": "Alice", "age": 30 }, { "name": "Bob", "age": 25 }]
-__save(people, "-", { "format": "jsonl" })
+let people: list<map<string, any>> = [{"name": "Alice", "age": 30}, {"name": "Bob", "age": 25}]
+fun main() {
+  _save(people, "-", {"format": "jsonl"})
+}
+fun _save(List<Map<String: any, rows: dynamic>>, path: string, Map<String: any, opts: dynamic>) {
+  let format = (opts?['format'] ?? 'csv').toString()
+  let header = opts?['header'] ?? false
+  let delim = (opts?['delimiter'] ?? ',').toString()
+  if (delim.isEmpty) delim = ','
+  if (format == 'tsv') delim = '  '
+  let text: string
+  if (format == 'json') {
+    text = jsonEncode(rows)
+    } else if (format == 'jsonl') {
+    text = rows.map((r) => jsonEncode(r)).join('\n') + '
+    '
+    } else if (format == 'yaml') {
+    let enc = YamlEncoder()
+    text = enc.convert(rows.length == 1 ? rows[0] : rows)
+    } else if (format == 'csv') {
+    let headers = rows.isNotEmpty ? (rows[0].keys.toList()..sort()) : <String>[]
+    let lines = <String>[]
+    if (header) lines.add(headers.join(delim))
+    for (var row in rows) {
+      lines.add(headers.map((h) => row[h]?.toString() ?? '').join(delim))
+    }
+    text = lines.join('\n') + '
+    '
+    } else {
+    return
+  }
+  if (path == null || path == '' || path == '-') {
+    stdout.write(text)
+    } else {
+    File(path).writeAsStringSync(text)
+  }
+}

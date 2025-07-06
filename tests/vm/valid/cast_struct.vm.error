@@ -1,1 +1,1 @@
-parse error: 3:9: unexpected token "[" (expected "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+parse error: 7:18: lexer: invalid input text "'Todo'] = (m) =>..."

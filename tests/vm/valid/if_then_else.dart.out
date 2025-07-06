@@ -1,0 +1,8 @@
+int x = 12;
+
+String msg = ((x > 10) ? "yes" : "no");
+
+void main() {
+  print(msg);
+}
+

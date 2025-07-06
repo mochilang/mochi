@@ -1,0 +1,7 @@
+int x = 1;
+
+void main() {
+  x = 2;
+  print(x);
+}
+

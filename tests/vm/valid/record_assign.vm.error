@@ -1,1 +1,1 @@
-parse error: 3:12: unexpected token "[" (expected "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+parse error: 10:18: lexer: invalid input text "'Counter'] = (m)..."

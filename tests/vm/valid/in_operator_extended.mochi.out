@@ -1,18 +1,15 @@
-let xs = [1, 2, 3]
-let ys = fun() {
-    let _res = []
-    for _, x in ipairs(xs) {
-      if (x % 2 == 1) {
-        _res[len(_res) + 1] = x
-      }
-    }
-    return _res
-}()
-print((1 in ys))
-print((2 in ys))
-let m = { "a": 1 }
-print(m["a"] ~= null)
-print(m["b"] ~= null)
-let s = "hello"
-print(("ell" in s))
-print(("foo" in s))
+let xs: list<int> = [1, 2, 3]
+let ys: list<int> = (() {
+let _res = []
+let _src = (xs).where((x) => ((x % 2) == 1)).toList()
+let _res: return
+let m: map<string, int> = {"a": 1}
+let s: string = "hello"
+fun main() {
+  print((ys.contains(1)))
+  print((ys.contains(2)))
+  print((m.containsKey("a")))
+  print((m.containsKey("b")))
+  print((s.contains("ell")))
+  print((s.contains("foo")))
+}

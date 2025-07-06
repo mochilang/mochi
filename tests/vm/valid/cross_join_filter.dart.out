@@ -1,0 +1,22 @@
+List<int> nums = [1, 2, 3];
+
+List<String> letters = ["A", "B"];
+
+List<Map<String, dynamic>> pairs = (() {
+  var _res = [];
+  var _src = (nums).where((n) => ((n % 2) == 0)).toList();
+  for (var n in _src) {
+    for (var l in letters) {
+      _res.add({"n": n, "l": l});
+    }
+  }
+  return _res;
+})();
+
+void main() {
+  print("--- Even pairs ---");
+  for (var p in pairs) {
+    print([p.n.toString(), p.l.toString()].join(' '));
+  }
+}
+

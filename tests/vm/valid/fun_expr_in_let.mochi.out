@@ -1,4 +1,4 @@
-var square = fun (x: int): int {
-  return (x * x)
+let square = (x) => (x * x)
+fun main() {
+  print(square(6))
 }
-print(square(6))

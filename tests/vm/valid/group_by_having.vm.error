@@ -1,1 +1,1 @@
-parse error: 2:11: unexpected token "[" (expected "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+parse error: 18:41: lexer: invalid input text "; if (items is L..."

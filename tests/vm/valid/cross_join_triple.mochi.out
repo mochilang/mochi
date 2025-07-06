@@ -1,20 +1,12 @@
-var nums = [1, 2]
-var letters = ["A", "B"]
-_ = letters
-var bools = [true, false]
-_ = bools
-var combos = fun (): list<map<string, any>> {
-  var _res = []
-  for n in nums {
-  for l in letters {
-  for b in bools {
-  _res = append(_res, {"n": n, "l": l, "b": b})
-}
-}
-}
-  return _res
-}()
-print("--- Cross Join of three lists ---")
-for c in combos {
-  print(str(c["n"]) + " " + str(c["l"]) + " " + str(c["b"]))
+let nums: list<int> = [1, 2]
+let letters: list<string> = ["A", "B"]
+let bools: list<bool> = [true, false]
+let combos: list<map<string, any>> = (() {
+let _res = []
+let _res: return
+fun main() {
+  print("--- Cross Join of three lists ---")
+  for (var c in combos) {
+    print([c.n.toString(), c.l.toString(), c.b.toString()].join(' '))
+  }
 }

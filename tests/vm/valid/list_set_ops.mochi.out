@@ -1,4 +1,33 @@
-print(([1, 2] union [2, 3]))
-print(([1, 2, 3] except [2]))
-print(([1, 2, 3] intersect [2, 4]))
-print(len(([1, 2] union all [2, 3])))
+fun main() {
+  print(_union([1, 2], [2, 3]))
+  print(_except([1, 2, 3], [2]))
+  print(_intersect([1, 2, 3], [2, 4]))
+  print(_union([1, 2], [2, 3]).length)
+}
+fun _except(a: list<any>, b: list<any>): list<any> {
+  let res = <dynamic>[]
+  for (var it in a) {
+    if (!b.contains(it)) {
+      res.add(it)
+    }
+  }
+  return res
+}
+fun _intersect(a: list<any>, b: list<any>): list<any> {
+  let res = <dynamic>[]
+  for (var it in a) {
+    if (b.contains(it) && !res.contains(it)) {
+      res.add(it)
+    }
+  }
+  return res
+}
+fun _union(a: list<any>, b: list<any>): list<any> {
+  let res = [...a]
+  for (var it in b) {
+    if (!res.contains(it)) {
+      res.add(it)
+    }
+  }
+  return res
+}

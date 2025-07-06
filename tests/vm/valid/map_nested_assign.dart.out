@@ -1,0 +1,7 @@
+Map<String, Map<String, int>> data = {"outer": {"inner": 1}};
+
+void main() {
+  data["outer"]["inner"] = 2;
+  print(data["outer"]["inner"]);
+}
+

@@ -1,11 +1,20 @@
-let nums = [1, 2, 3]
-let result = fun() {
-    let _res = []
-    for _, n in ipairs(nums) {
-      if n > 1 {
-        _res[len(_res) + 1] = __sum(n)
-      }
-    }
-    return _res
-}()
-print(result)
+let nums: list<int> = [1, 2, 3]
+let result: float = (() {
+let _res = []
+let _src = (nums).where((n) => (n > 1)).toList()
+let _res: return
+fun main() {
+  print(result)
+}
+fun _sum(v: any): float {
+  let list: list<any>
+  if (v is List) list = v
+  else if (v is Map && v['items'] is List) list = (v['items'] as List)
+  else if (v is Map && v['Items'] is List) list = (v['Items'] as List)
+  else if (v is _Group) list = v.Items
+  else { try { var it = (v as dynamic).items; if (it is List) list = it; } catch (_) {} }
+  if (list == null || list.isEmpty) return 0
+  let s = 0.0
+  for (var n in list) s += (n as num).toDouble()
+  return s
+}

@@ -1,2 +1,4 @@
-print(-3)
-print((5 + (-2)))
+fun main() {
+  print(-3)
+  print((5 + (-2)))
+}

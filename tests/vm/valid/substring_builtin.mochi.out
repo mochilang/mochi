@@ -1,1 +1,3 @@
-print("och")
+fun main() {
+  print(substring("mochi", 1, 4))
+}

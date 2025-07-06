@@ -1,0 +1,71 @@
+List<Map<String, dynamic>> customers = [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}];
+
+List<Map<String, int>> orders = [{"id": 100, "customerId": 1}, {"id": 101, "customerId": 1}, {"id": 102, "customerId": 2}];
+
+List<Map<String, dynamic>> stats = (() {
+  var groups = <String,_Group>{};
+  var order = <String>[];
+  for (var o in orders) {
+    for (var c in customers) {
+      if (!(_equal(o['customerId'], c['id']))) {
+        continue;
+      }
+      var key = c['name'];
+      var ks = key.toString();
+      var g = groups[ks];
+      if (g == null) {
+        g = _Group(key);
+        groups[ks] = g;
+        order.add(ks);
+      }
+      g.Items.add(o);
+    }
+  }
+  var items = [for (var k in order) groups[k]!];
+  var _res = [];
+  for (var g in items) {
+    _res.add({"name": g.key, "count": _count(g)});
+  }
+  return _res;
+})();
+
+void main() {
+  print("--- Orders per customer ---");
+  for (var s in stats) {
+    print([s.name.toString(), "orders:".toString(), s.count.toString()].join(' '));
+  }
+}
+
+class _Group {
+    dynamic key;
+    List<dynamic> Items = [];
+    _Group(this.key);
+    int count() => _count(this);
+    double sum() => _sum(this);
+    double avg() => _avg(this);
+}
+
+int _count(dynamic v) {
+    if (v is String) return v.runes.length;
+    if (v is List) return v.length;
+    if (v is Map) return v.length;
+    try { var items = (v as dynamic).Items; if (items is List) return items.length; } catch (_) {}
+    try { var items = (v as dynamic).items; if (items is List) return items.length; } catch (_) {}
+    return 0;
+}
+
+bool _equal(dynamic a, dynamic b) {
+    if (a is List && b is List) {
+        if (a.length != b.length) return false;
+        for (var i = 0; i < a.length; i++) { if (!_equal(a[i], b[i])) return false; }
+        return true;
+    }
+    if (a is Map && b is Map) {
+        if (a.length != b.length) return false;
+        for (var k in a.keys) { if (!b.containsKey(k) || !_equal(a[k], b[k])) return false; }
+        return true;
+    }
+    return a == b;
+}
+
+

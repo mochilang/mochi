@@ -1,5 +1,6 @@
-error[T001]: assignment to undeclared variable: _
-  --> :2:1
+output mismatch
+-- got --
 
-help:
-  Declare `_` first using `let`.
+-- want --
+true
+false

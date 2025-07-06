@@ -1,6 +1,7 @@
+let k: int = 2
 fun inc(x: int): int {
   return (x + k)
 }
-var k = 2
-_ = k
-print(5)
+fun main() {
+  print(inc(3))
+}

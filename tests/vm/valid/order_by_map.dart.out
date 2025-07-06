@@ -1,0 +1,23 @@
+List<Map<String, int>> data = [{"a": 1, "b": 2}, {"a": 1, "b": 1}, {"a": 0, "b": 5}];
+
+List<Map<String, int>> sorted = (() {
+  var _res = [];
+  for (var x in data) {
+    _res.add(x);
+  }
+  var items = List.from(_res);
+  items.sort((xA, xB) {
+    var x = xA;
+    var keyA = {"a": x['a'], "b": x['b']};
+    x = xB;
+    var keyB = {"a": x['a'], "b": x['b']};
+    return Comparable.compare(keyA, keyB);
+  });
+  _res = items;
+  return _res;
+})();
+
+void main() {
+  print(sorted);
+}
+

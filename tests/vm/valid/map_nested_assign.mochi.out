@@ -1,3 +1,5 @@
-var data = {"outer": {"inner": 1}}
-data["outer"]["inner"] = 2
-print(data["outer"]["inner"])
+let data: map<string, map<string, int>> = {"outer": {"inner": 1}}
+fun main() {
+  data["outer"]["inner"] = 2
+  print(data["outer"]["inner"])
+}

@@ -1,20 +1,11 @@
-let people = [{ "name": "Alice", "age": 30 }, { "name": "Bob", "age": 15 }, { "name": "Charlie", "age": 65 }, { "name": "Diana", "age": 45 }]
-let adults = fun() {
-    let _res = []
-    for _, person in ipairs(people) {
-      if person["age"] >= 18 {
-        _res[len(_res) + 1] = { "name": person["name"], "age": person["age"], "is_senior": person["age"] >= 60 }
-      }
-    }
-    return _res
-}()
-print("--- Adults ---")
-for _, person in ipairs(adults) {
-  print(person["name"], "is", person["age"], fun() {
-    if person["is_senior"] {
-      return " (senior)"
-    } else {
-      return ""
-    }
-}())
+let people: list<map<string, any>> = [{"name": "Alice", "age": 30}, {"name": "Bob", "age": 15}, {"name": "Charlie", "age": 65}, {"name": "Diana", "age": 45}]
+let adults: list<map<string, any>> = (() {
+let _res = []
+let _src = (people).where((person) => (person["age"] >= 18)).toList()
+let _res: return
+fun main() {
+  print("--- Adults ---")
+  for (var person in adults) {
+    print([person.name.toString(), "is".toString(), person.age.toString(), (person.is_senior ? " (senior)" : "").toString()].join(' '))
+  }
 }

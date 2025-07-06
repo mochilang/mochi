@@ -1,1 +1,3 @@
-print(5)
+fun main() {
+  print("mochi".length)
+}

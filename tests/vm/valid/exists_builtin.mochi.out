@@ -1,13 +1,20 @@
-var data = [1, 2]
-var flag = len(fun (): list<int> {
-  var _res = []
-  for x in data {
-  if x == 1 {
-  if x == 1 {
-  _res = append(_res, x)
+let data: list<int> = [1, 2]
+let flag: bool = _exists((() {
+let _res = []
+let _src = (data).where((x) => (x == 1)).toList()
+let _res: return
+fun main() {
+  print(flag)
 }
+fun _exists(v: any): bool {
+  if (v is String) return v.isNotEmpty
+  if (v is List) return v.isNotEmpty
+  if (v is Map) {
+    if (v['items'] is List) return (v['items'] as List).isNotEmpty
+    if (v['Items'] is List) return (v['Items'] as List).isNotEmpty
+    return v.isNotEmpty
+  }
+  try { var items = (v as dynamic).Items; if (items is List) return items.isNotEmpty; } catch (_) {}
+  try { var items = (v as dynamic).items; if (items is List) return items.isNotEmpty; } catch (_) {}
+  return false
 }
-}
-  return _res
-}()) > 0
-print(flag)

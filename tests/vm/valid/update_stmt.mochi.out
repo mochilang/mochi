@@ -1,27 +1,52 @@
-let Person = []
-Person["__index"] = Person
-fun Person["new"](o) {
-  let o = o || []
-  setmetatable(o, Person)
-  return o
+let _structParsers: map<string, Function> = {}
+let people: list<Person> = [Person(name: "Alice", age: 17, status: "minor"), Person(name: "Bob", age: 25, status: "unknown"), Person(name: "Charlie", age: 18, status: "unknown"), Person(name: "Diana", age: 16, status: "minor")]
+let start = DateTime.now()
+let d = DateTime.now().difference(start)
+let true: return
+let d = DateTime.now().difference(start)
+let false: return
+type Person {
+  name: string
+  age: int
+  status: string
 }
 fun test_update_adult_status() {
-  if !(people == [{ "name": "Alice", "age": 17, "status": "minor" }, { "name": "Bob", "age": 26, "status": "adult" }, { "name": "Charlie", "age": 19, "status": "adult" }, { "name": "Diana", "age": 16, "status": "minor" }]) {
-    error("expect failed")
+  if (!(_equal(people, [Person(name: "Alice", age: 17, status: "minor"), Person(name: "Bob", age: 26, status: "adult"), Person(name: "Charlie", age: 19, status: "adult"), Person(name: "Diana", age: 16, status: "minor")]))) { throw Exception('expect failed'); }
+}
+fun main() {
+  let failures: int = 0
+  _structParsers['Person'] = (m) => Person.fromJson(m)
+  for _tmp0 in 0..people.length {
+    let _tmp1 = people[_tmp0]
+    let name = _tmp1.name
+    let age = _tmp1.age
+    let status = _tmp1.status
+    if ((age >= 18)) {
+      _tmp1.status = "adult"
+      _tmp1.age = (age + 1)
+    }
+  }
+  print("ok")
+  if (!_runTest("update adult status", test_update_adult_status)) failures++
+  if (failures > 0) {
+    print("\n[FAIL] $failures test(s) failed.")
   }
 }
-let people = [{ "name": "Alice", "age": 17, "status": "minor" }, { "name": "Bob", "age": 25, "status": "unknown" }, { "name": "Charlie", "age": 18, "status": "unknown" }, { "name": "Diana", "age": 16, "status": "minor" }]
-for _i0 = 1; _i0 <= len(people); _i0 += 1 {
-  let _it0 = people._i0
-  let name = _it0["name"]
-  let age = _it0["age"]
-  let status = _it0["status"]
-  if age >= 18 {
-    _it0["status"] = "adult"
-    _it0["age"] = (age + 1)
+fun _equal(a: any, b: any): bool {
+  if (a is List && b is List) {
+    if (a.length != b.length) return false
+    for (var i = 0; i < a.length; i++) { if (!_equal(a[i], b[i])) return false; }
+    return true
   }
-  people._i0 = _it0
+  if (a is Map && b is Map) {
+    if (a.length != b.length) return false
+    for (var k in a.keys) { if (!b.containsKey(k) || !_equal(a[k], b[k])) return false; }
+    return true
+  }
+  return a == b
 }
-print("ok")
-let __tests = [{ "name": "update adult status", "fn": test_update_adult_status }]
-__run_tests(__tests)
+fun _formatDuration(d: Duration): string {
+  if (d.inMicroseconds < 1000) return '${d.inMicroseconds}µs'
+  if (d.inMilliseconds < 1000) return '${d.inMilliseconds}ms'
+  return '${(d.inMilliseconds/1000).toStringAsFixed(2)}s'
+}

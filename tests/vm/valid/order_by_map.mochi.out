@@ -1,19 +1,11 @@
-let data = [{ "a": 1, "b": 2 }, { "a": 1, "b": 1 }, { "a": 0, "b": 5 }]
-let sorted = fun() {
-    let _res = []
-    for _, x in ipairs(data) {
-      _res[len(_res) + 1] = { "__key": { "a": x["a"], "b": x["b"] }, "__val": x }
-    }
-    let items = _res
-    table["sort"](items, fun(a, b) {
-    return a["__key"] < b["__key"]
-})
-    let tmp = []
-    for _, it in ipairs(items) {
-      tmp[len(tmp) + 1] = it["__val"]
-    }
-    items = tmp
-    _res = items
-    return _res
-}()
-print(sorted)
+let data: list<map<string, int>> = [{"a": 1, "b": 2}, {"a": 1, "b": 1}, {"a": 0, "b": 5}]
+let sorted: list<map<string, int>> = (() {
+let _res = []
+let items = List.from(_res)
+let x = xA
+let keyA = {"a": x["a"], "b": x["b"]}
+let keyB = {"a": x["a"], "b": x["b"]}
+let _res: return
+fun main() {
+  print(sorted)
+}

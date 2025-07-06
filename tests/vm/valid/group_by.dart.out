@@ -1,0 +1,66 @@
+List<Map<String, dynamic>> people = [{"name": "Alice", "age": 30, "city": "Paris"}, {"name": "Bob", "age": 15, "city": "Hanoi"}, {"name": "Charlie", "age": 65, "city": "Paris"}, {"name": "Diana", "age": 45, "city": "Hanoi"}, {"name": "Eve", "age": 70, "city": "Paris"}, {"name": "Frank", "age": 22, "city": "Hanoi"}];
+
+List<Map<String, dynamic>> stats = _group_by(people, (person) => person['city']).map((g) => {"city": g.key, "count": _count(g), "avg_age": _avg((() {
+  var _res = [];
+  for (var p in g) {
+    _res.add(p.age);
+  }
+  return _res;
+})())}).toList();
+
+void main() {
+  print("--- People grouped by city ---");
+  for (var s in stats) {
+    print([s.city.toString(), ": count =".toString(), s.count.toString(), ", avg_age =".toString(), s.avg_age.toString()].join(' '));
+  }
+}
+
+class _Group {
+    dynamic key;
+    List<dynamic> Items = [];
+    _Group(this.key);
+    int count() => _count(this);
+    double sum() => _sum(this);
+    double avg() => _avg(this);
+}
+
+double _avg(dynamic v) {
+    List<dynamic>? list;
+    if (v is List) list = v;
+    else if (v is Map && v['items'] is List) list = (v['items'] as List);
+    else if (v is Map && v['Items'] is List) list = (v['Items'] as List);
+    else if (v is _Group) list = v.Items;
+    else { try { var it = (v as dynamic).items; if (it is List) list = it; } catch (_) {} }
+    if (list == null || list.isEmpty) return 0;
+    var s = 0.0;
+    for (var n in list) s += (n as num).toDouble();
+    return s / list.length;
+}
+
+int _count(dynamic v) {
+    if (v is String) return v.runes.length;
+    if (v is List) return v.length;
+    if (v is Map) return v.length;
+    try { var items = (v as dynamic).Items; if (items is List) return items.length; } catch (_) {}
+    try { var items = (v as dynamic).items; if (items is List) return items.length; } catch (_) {}
+    return 0;
+}
+
+List<_Group> _group_by(List<dynamic> src, dynamic Function(dynamic) keyfn) {
+    var groups = <String,_Group>{};
+    var order = <String>[];
+    for (var it in src) {
+        var key = keyfn(it);
+        var ks = key.toString();
+        var g = groups[ks];
+        if (g == null) {
+            g = _Group(key);
+            groups[ks] = g;
+            order.add(ks);
+        }
+        g.Items.add(it);
+    }
+    return [for (var k in order) groups[k]!];
+}
+
+

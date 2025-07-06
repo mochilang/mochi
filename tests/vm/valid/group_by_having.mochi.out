@@ -1,16 +1,24 @@
-let _Group = []
-fun _Group["new"](k) {
-  return { "key": k, "items": [] }
+let people: list<map<string, string>> = [{"name": "Alice", "city": "Paris"}, {"name": "Bob", "city": "Hanoi"}, {"name": "Charlie", "city": "Paris"}, {"name": "Diana", "city": "Hanoi"}, {"name": "Eve", "city": "Paris"}, {"name": "Frank", "city": "Hanoi"}, {"name": "George", "city": "Paris"}]
+let big: list<map<string, any>> = _group_by(people, (p) => p["city"]).map((g) => {"city": g.key, "num": _count(g)}).toList()
+let groups = <String,_Group>{}
+let order = <String>[]
+let key = keyfn(it)
+let ks = key.toString()
+let g = groups[ks]
+type _Group {
+  key
 }
-let people = [{ "name": "Alice", "city": "Paris" }, { "name": "Bob", "city": "Hanoi" }, { "name": "Charlie", "city": "Paris" }, { "name": "Diana", "city": "Hanoi" }, { "name": "Eve", "city": "Paris" }, { "name": "Frank", "city": "Hanoi" }, { "name": "George", "city": "Paris" }]
-let big = fun() {
-    let _groups = __group_by(people, fun(p) {
-    return p["city"]
-})
-    let _res = []
-    for _, g in ipairs(_groups) {
-      _res[len(_res) + 1] = { "city": g["key"], "num": count(g) }
-    }
-    return _res
-}()
-__json(big)
+fun main() {
+  _json(big)
+}
+fun _count(v: any): int {
+  if (v is String) return v.runes.length
+  if (v is List) return v.length
+  if (v is Map) return v.length
+  try { var items = (v as dynamic).Items; if (items is List) return items.length; } catch (_) {}
+  try { var items = (v as dynamic).items; if (items is List) return items.length; } catch (_) {}
+  return 0
+}
+fun _json(v: any) {
+  print(jsonEncode(v))
+}

@@ -1,1 +1,1 @@
-parse error: 4:41: unexpected token ">" (expected "<" TypeRef ("," TypeRef)* ">")
+parse error: 10:49: lexer: invalid input text "' '))\n  }\n}\n"

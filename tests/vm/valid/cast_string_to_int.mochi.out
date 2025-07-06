@@ -1,1 +1,3 @@
-print("1995")
+fun main() {
+  print(("1995").toInt())
+}

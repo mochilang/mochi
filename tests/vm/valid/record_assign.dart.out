@@ -1,0 +1,23 @@
+Map<String, Function> _structParsers = {};
+
+class Counter {
+  int n;
+  Counter({required this.n});
+  factory Counter.fromJson(Map<String,dynamic> m) {
+    return Counter(n: m['n'] as int);
+  }
+}
+
+void inc(Counter c) {
+  c = (c.n + 1);
+}
+
+Counter c = Counter(n: 0);
+
+void main() {
+  _structParsers['Counter'] = (m) => Counter.fromJson(m);
+  
+  inc(c);
+  print(c.n);
+}
+

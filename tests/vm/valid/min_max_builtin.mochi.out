@@ -1,29 +1,29 @@
-fun _maxOrdered(s: list<T>): T {
-  if len(s) == 0 {
-  var zero: T
-  return zero
+let nums: list<int> = [3, 1, 4]
+fun main() {
+  print(_min(nums))
+  print(_max(nums))
 }
-  var m = s[0]
-  for v in s[1:] {
-  if v > m {
-  m = v
-}
-}
+fun _max(v: any): any {
+  let list: list<any>
+  if (v is List) list = v
+  else if (v is Map && v['items'] is List) list = (v['items'] as List)
+  else if (v is Map && v['Items'] is List) list = (v['Items'] as List)
+  else if (v is _Group) list = v.Items
+  else { try { var it = (v as dynamic).items; if (it is List) list = it; } catch (_) {} }
+  if (list == null || list.isEmpty) return 0
+  let m = list[0]
+  for (var n in list) { if ((n as Comparable).compareTo(m) > 0) m = n; }
   return m
 }
-fun _minOrdered(s: list<T>): T {
-  if len(s) == 0 {
-  var zero: T
-  return zero
-}
-  var m = s[0]
-  for v in s[1:] {
-  if v < m {
-  m = v
-}
-}
+fun _min(v: any): any {
+  let list: list<any>
+  if (v is List) list = v
+  else if (v is Map && v['items'] is List) list = (v['items'] as List)
+  else if (v is Map && v['Items'] is List) list = (v['Items'] as List)
+  else if (v is _Group) list = v.Items
+  else { try { var it = (v as dynamic).items; if (it is List) list = it; } catch (_) {} }
+  if (list == null || list.isEmpty) return 0
+  let m = list[0]
+  for (var n in list) { if ((n as Comparable).compareTo(m) < 0) m = n; }
   return m
 }
-var nums = [3, 1, 4]
-print(_minOrdered(nums))
-print(_maxOrdered(nums))

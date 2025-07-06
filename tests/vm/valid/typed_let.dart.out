@@ -1,0 +1,6 @@
+int y;
+
+void main() {
+  print(y);
+}
+

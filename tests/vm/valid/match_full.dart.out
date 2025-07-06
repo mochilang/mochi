@@ -1,0 +1,57 @@
+String classify(int n) {
+  return (() {
+  var _t = n;
+  switch (_t) {
+  case 0: return "zero";
+  case 1: return "one";
+  default: return "many";
+  }
+  return null;
+})();
+}
+
+int x = 2;
+
+String label = (() {
+  var _t = x;
+  switch (_t) {
+  case 1: return "one";
+  case 2: return "two";
+  case 3: return "three";
+  default: return "unknown";
+  }
+  return null;
+})();
+
+String day = "sun";
+
+String mood = (() {
+  var _t = day;
+  switch (_t) {
+  case "mon": return "tired";
+  case "fri": return "excited";
+  case "sun": return "relaxed";
+  default: return "normal";
+  }
+  return null;
+})();
+
+bool ok = true;
+
+String status = (() {
+  var _t = ok;
+  switch (_t) {
+  case true: return "confirmed";
+  case false: return "denied";
+  }
+  return null;
+})();
+
+void main() {
+  print(label);
+  print(mood);
+  print(status);
+  print(classify(0));
+  print(classify(5));
+}
+

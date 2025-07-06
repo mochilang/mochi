@@ -1,5 +1,7 @@
-let prefix = "fore"
-let s1 = "forest"
-print((s1[0:len(prefix)] == prefix))
-let s2 = "desert"
-print((s2[0:len(prefix)] == prefix))
+let prefix: string = "fore"
+let s1: string = "forest"
+let s2: string = "desert"
+fun main() {
+  print((s1.substring(0, prefix.length) == prefix))
+  print((s2.substring(0, prefix.length) == prefix))
+}

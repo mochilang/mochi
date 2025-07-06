@@ -1,0 +1,10 @@
+int x = 5;
+
+void main() {
+  if ((x > 3)) {
+    print("big");
+  } else {
+    print("small");
+  }
+}
+

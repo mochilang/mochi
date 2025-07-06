@@ -1,0 +1,10 @@
+int inc(int x) {
+  return (x + k);
+}
+
+int k = 2;
+
+void main() {
+  print(inc(3));
+}
+

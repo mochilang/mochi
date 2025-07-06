@@ -1,1 +1,1 @@
-parse error: 3:20: unexpected token "{" (expected "=>" Expr)
+parse error: 10:157: lexer: invalid input text "' '))\n  }\n}\nfun ..."

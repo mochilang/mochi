@@ -1,3 +1,5 @@
-var xs = [1, 2, 3]
-print(slices.Contains(xs, 2))
-print(!(slices.Contains(xs, 5)))
+let xs: list<int> = [1, 2, 3]
+fun main() {
+  print((xs.contains(2)))
+  print(!((xs.contains(5))))
+}

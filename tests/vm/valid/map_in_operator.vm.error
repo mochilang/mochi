@@ -1,1 +1,5 @@
-parse error: 2:12: lexer: invalid input text "~= null)\nprint(m..."
+error[T027]: {int: string} is not a struct
+  --> :3:10
+
+help:
+  Field access is only valid on struct types.

@@ -1,0 +1,38 @@
+void main() {
+  print(_union([1, 2], [2, 3]));
+  print(_except([1, 2, 3], [2]));
+  print(_intersect([1, 2, 3], [2, 4]));
+  print(_union([1, 2], [2, 3]).length);
+}
+
+List<dynamic> _except(List<dynamic> a, List<dynamic> b) {
+    var res = <dynamic>[];
+    for (var it in a) {
+        if (!b.contains(it)) {
+            res.add(it);
+        }
+    }
+    return res;
+}
+
+List<dynamic> _intersect(List<dynamic> a, List<dynamic> b) {
+    var res = <dynamic>[];
+    for (var it in a) {
+        if (b.contains(it) && !res.contains(it)) {
+            res.add(it);
+        }
+    }
+    return res;
+}
+
+List<dynamic> _union(List<dynamic> a, List<dynamic> b) {
+    var res = [...a];
+    for (var it in b) {
+        if (!res.contains(it)) {
+            res.add(it);
+        }
+    }
+    return res;
+}
+
+

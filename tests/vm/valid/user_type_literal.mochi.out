@@ -1,11 +1,15 @@
+let _structParsers: map<string, Function> = {}
+let book: Book = Book(title: "Go", author: Person(name: "Bob", age: 42))
 type Person {
-  Name: string
-  Age: int
+  name: string
+  age: int
 }
 type Book {
-  Title: string
-  Author: Person
+  title: string
+  author: Person
 }
-var book = Book { Title: "Go", Author: Person { Name: "Bob", Age: 42 } }
-_ = book
-print(book.Author.Name)
+fun main() {
+  _structParsers['Person'] = (m) => Person.fromJson(m)
+  _structParsers['Book'] = (m) => Book.fromJson(m)
+  print(book.author.name)
+}

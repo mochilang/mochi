@@ -1,0 +1,6 @@
+List<int> a = [1, 2];
+
+void main() {
+  print(append(a, 3));
+}
+

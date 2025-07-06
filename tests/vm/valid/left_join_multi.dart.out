@@ -1,0 +1,120 @@
+List<Map<String, dynamic>> customers = [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}];
+
+List<Map<String, int>> orders = [{"id": 100, "customerId": 1}, {"id": 101, "customerId": 2}];
+
+List<Map<String, dynamic>> items = [{"orderId": 100, "sku": "a"}];
+
+List<Map<String, dynamic>> result = (() {
+  var src = orders;
+  var res = _query(src, [
+    {'items': customers, 'on': (o, c) => _equal(o['customerId'], c['id'])},
+    {'items': items, 'on': (o, c, i) => _equal(o['id'], i['orderId']), 'left': true},
+  ], { 'select': (o, c, i) => {"orderId": o['id'], "name": c['name'], "item": i} });
+  return res;
+})();
+
+void main() {
+  print("--- Left Join Multi ---");
+  for (var r in result) {
+    print([r.orderId.toString(), r.name.toString(), r.item.toString()].join(' '));
+  }
+}
+
+bool _equal(dynamic a, dynamic b) {
+    if (a is List && b is List) {
+        if (a.length != b.length) return false;
+        for (var i = 0; i < a.length; i++) { if (!_equal(a[i], b[i])) return false; }
+        return true;
+    }
+    if (a is Map && b is Map) {
+        if (a.length != b.length) return false;
+        for (var k in a.keys) { if (!b.containsKey(k) || !_equal(a[k], b[k])) return false; }
+        return true;
+    }
+    return a == b;
+}
+
+List<dynamic> _query(List<dynamic> src, List<Map<String,dynamic>> joins, Map<String,dynamic> opts) {
+    var items = [for (var v in src) [v]];
+    for (var j in joins) {
+        var joined = <List<dynamic>>[];
+        var jitems = (j['items'] as List).cast<dynamic>();
+        var on = j['on'];
+        var left = j['left'] == true;
+        var right = j['right'] == true;
+        if (right && left) {
+            var matched = List<bool>.filled(jitems.length, false);
+            for (var leftRow in items) {
+                var m = false;
+                for (var ri = 0; ri < jitems.length; ri++) {
+                    var rightRow = jitems[ri];
+                    var keep = true;
+                    if (on != null) keep = Function.apply(on, [...leftRow, rightRow]) as bool;
+                    if (!keep) continue;
+                    m = true; matched[ri] = true;
+                    joined.add([...leftRow, rightRow]);
+                }
+                if (!m) joined.add([...leftRow, null]);
+            }
+            for (var ri = 0; ri < jitems.length; ri++) {
+                if (!matched[ri]) {
+                    var undef = items.isNotEmpty ? List<dynamic>.filled(items[0].length, null) : <dynamic>[];
+                    joined.add([...undef, jitems[ri]]);
+                }
+            }
+        } else if (right) {
+            for (var rightRow in jitems) {
+                var m = false;
+                for (var leftRow in items) {
+                    var keep = true;
+                    if (on != null) keep = Function.apply(on, [...leftRow, rightRow]) as bool;
+                    if (!keep) continue;
+                    m = true; joined.add([...leftRow, rightRow]);
+                }
+                if (!m) {
+                    var undef = items.isNotEmpty ? List<dynamic>.filled(items[0].length, null) : <dynamic>[];
+                    joined.add([...undef, rightRow]);
+                }
+            }
+        } else {
+            for (var leftRow in items) {
+                var m = false;
+                for (var rightRow in jitems) {
+                    var keep = true;
+                    if (on != null) keep = Function.apply(on, [...leftRow, rightRow]) as bool;
+                    if (!keep) continue;
+                    m = true; joined.add([...leftRow, rightRow]);
+                }
+                if (left && !m) joined.add([...leftRow, null]);
+            }
+        }
+        items = joined;
+    }
+    if (opts['where'] != null) {
+        items = [for (var r in items) if (Function.apply(opts['where'], r) as bool) r];
+    }
+    if (opts['sortKey'] != null) {
+        var pairs = [for (var it in items) {'item': it, 'key': Function.apply(opts['sortKey'], it)}];
+        pairs.sort((a,b) {
+            var ak = a['key']; var bk = b['key'];
+            if (ak is num && bk is num) return ak.compareTo(bk);
+            if (ak is String && bk is String) return ak.compareTo(bk);
+            return ak.toString().compareTo(bk.toString());
+        });
+        items = [for (var p in pairs) p['item'] as List<dynamic>];
+    }
+    if (opts['skip'] != null) {
+        var n = opts['skip'] as int;
+        items = n < items.length ? items.sublist(n) : <List<dynamic>>[];
+    }
+    if (opts['take'] != null) {
+        var n = opts['take'] as int;
+        if (n < items.length) items = items.sublist(0, n);
+    }
+    var res = <dynamic>[];
+    for (var r in items) { res.add(Function.apply(opts['select'], r)); }
+    if (opts['distinct'] == true) res = _distinct(res);
+    return res;
+}
+
+

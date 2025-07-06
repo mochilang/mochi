@@ -1,0 +1,5 @@
+error[T024]: cannot assign to `x` (immutable)
+  --> :3:3
+
+help:
+  Use `var` to declare mutable variables.

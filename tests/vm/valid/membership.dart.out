@@ -1,0 +1,7 @@
+List<int> nums = [1, 2, 3];
+
+void main() {
+  print((nums.contains(2)));
+  print((nums.contains(4)));
+}
+

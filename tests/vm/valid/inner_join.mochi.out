@@ -1,14 +1,24 @@
-let customers = [{ "id": 1, "name": "Alice" }, { "id": 2, "name": "Bob" }, { "id": 3, "name": "Charlie" }]
-let orders = [{ "id": 100, "customerId": 1, "total": 250 }, { "id": 101, "customerId": 2, "total": 125 }, { "id": 102, "customerId": 1, "total": 300 }, { "id": 103, "customerId": 4, "total": 80 }]
-let result = fun() {
-    let _src = orders
-    return __query(_src, [{ "items": customers, "on": fun(o, c) {
-    return (o["customerId"] == c["id"])
-} }], { "selectFn": fun(o, c) {
-    return { "orderId": o["id"], "customerName": c["name"], "total": o["total"] }
-} })
-}()
-print("--- Orders with customer info ---")
-for _, entry in ipairs(result) {
-  print("Order", entry["orderId"], "by", entry["customerName"], "- $", entry["total"])
+let customers: list<map<string, any>> = [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}, {"id": 3, "name": "Charlie"}]
+let orders: list<map<string, int>> = [{"id": 100, "customerId": 1, "total": 250}, {"id": 101, "customerId": 2, "total": 125}, {"id": 102, "customerId": 1, "total": 300}, {"id": 103, "customerId": 4, "total": 80}]
+let result: list<map<string, int>> = (() {
+let _res = []
+let _res: return
+fun main() {
+  print("--- Orders with customer info ---")
+  for (var entry in result) {
+    print(["Order".toString(), entry.orderId.toString(), "by".toString(), entry.customerName.toString(), "- \\$".toString(), entry.total.toString()].join(' '))
+  }
+}
+fun _equal(a: any, b: any): bool {
+  if (a is List && b is List) {
+    if (a.length != b.length) return false
+    for (var i = 0; i < a.length; i++) { if (!_equal(a[i], b[i])) return false; }
+    return true
+  }
+  if (a is Map && b is Map) {
+    if (a.length != b.length) return false
+    for (var k in a.keys) { if (!b.containsKey(k) || !_equal(a[k], b[k])) return false; }
+    return true
+  }
+  return a == b
 }

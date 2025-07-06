@@ -1,42 +1,35 @@
-let _Group = []
-fun _Group["new"](k) {
-  return { "key": k, "items": [] }
+let items: list<map<string, any>> = [{"cat": "a", "val": 10, "flag": true}, {"cat": "a", "val": 5, "flag": false}, {"cat": "b", "val": 20, "flag": true}]
+let result: list<map<string, any>> = (() {
+let groups = <String,_Group>{}
+let order = <String>[]
+let key = i["cat"]
+let ks = key.toString()
+let g = groups[ks]
+let items = [for (var k in order) groups[k]!]
+let g = gA
+let keyA = g.key
+let keyB = g.key
+let _res = []
+let _res = []
+let _res: return
+let _res = []
+let _res: return
+let _res: return
+type _Group {
+  key
 }
-let items = [{ "cat": "a", "val": 10, "flag": true }, { "cat": "a", "val": 5, "flag": false }, { "cat": "b", "val": 20, "flag": true }]
-let result = fun() {
-    let _src = items
-    let _rows = __query(_src, [], { "selectFn": fun(i) {
-    return [i]
-} })
-    let _groups = __group_by_rows(_rows, fun(i) {
-    return i["cat"]
-}, fun(i) {
-    let _row = __merge(i)
-    _row["i"] = i
-    return _row
-})
-    let _res = []
-    for _, g in ipairs(_groups) {
-      _res[len(_res) + 1] = { "cat": g["key"], "share": (__sum(fun() {
-    let _res = []
-    for _, x in ipairs(g["items"]) {
-      _res[len(_res) + 1] = fun() {
-    if x["flag"] {
-      return x["val"]
-    } else {
-      return 0
-    }
-}()
-    }
-    return _res
-}()) / __sum(fun() {
-    let _res = []
-    for _, x in ipairs(g["items"]) {
-      _res[len(_res) + 1] = x["val"]
-    }
-    return _res
-}())) }
-    }
-    return _res
-}()
-print(result)
+fun main() {
+  print(result)
+}
+fun _sum(v: any): float {
+  let list: list<any>
+  if (v is List) list = v
+  else if (v is Map && v['items'] is List) list = (v['items'] as List)
+  else if (v is Map && v['Items'] is List) list = (v['Items'] as List)
+  else if (v is _Group) list = v.Items
+  else { try { var it = (v as dynamic).items; if (it is List) list = it; } catch (_) {} }
+  if (list == null || list.isEmpty) return 0
+  let s = 0.0
+  for (var n in list) s += (n as num).toDouble()
+  return s
+}

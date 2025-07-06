@@ -1,0 +1,7 @@
+Map<String, int> m = {"a": 1, "b": 2};
+
+void main() {
+  print((m.containsKey("a")));
+  print((m.containsKey("c")));
+}
+

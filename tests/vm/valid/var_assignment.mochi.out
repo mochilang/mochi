@@ -1,3 +1,5 @@
-var x = 1
-x = 2
-print(x)
+let x: int = 1
+fun main() {
+  x = 2
+  print(x)
+}

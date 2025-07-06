@@ -1,5 +1,1 @@
-error[T003]: unknown function: __run_tests
-  --> :9:1
-
-help:
-  Ensure the function is defined before it's called.
+parse error: 8:38: lexer: invalid input text "'expect failed')..."

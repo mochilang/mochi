@@ -1,0 +1,36 @@
+List<Map<String, dynamic>> products = [{"name": "Laptop", "price": 1500}, {"name": "Smartphone", "price": 900}, {"name": "Tablet", "price": 600}, {"name": "Monitor", "price": 300}, {"name": "Keyboard", "price": 100}, {"name": "Mouse", "price": 50}, {"name": "Headphones", "price": 200}];
+
+List<Map<String, dynamic>> expensive = (() {
+  var _res = [];
+  for (var p in products) {
+    _res.add(p);
+  }
+  var items = List.from(_res);
+  items.sort((pA, pB) {
+    var p = pA;
+    var keyA = -p['price'];
+    p = pB;
+    var keyB = -p['price'];
+    return Comparable.compare(keyA, keyB);
+  });
+  var skip = 1;
+  if (skip < items.length) {
+    items = items.sublist(skip);
+  } else {
+    items = [];
+  }
+  var take = 3;
+  if (take < items.length) {
+    items = items.sublist(0, take);
+  }
+  _res = items;
+  return _res;
+})();
+
+void main() {
+  print("--- Top products (excluding most expensive) ---");
+  for (var item in expensive) {
+    print([item.name.toString(), "costs \\$".toString(), item.price.toString()].join(' '));
+  }
+}
+

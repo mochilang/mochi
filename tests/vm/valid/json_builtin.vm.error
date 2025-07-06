@@ -1,5 +1,5 @@
-error[T003]: unknown function: __json
-  --> :2:1
+error[T003]: unknown function: _json
+  --> :3:3
 
 help:
   Ensure the function is defined before it's called.

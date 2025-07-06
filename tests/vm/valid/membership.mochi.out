@@ -1,3 +1,5 @@
-var nums = [1, 2, 3]
-print(slices.Contains(nums, 2))
-print(slices.Contains(nums, 4))
+let nums: list<int> = [1, 2, 3]
+fun main() {
+  print((nums.contains(2)))
+  print((nums.contains(4)))
+}

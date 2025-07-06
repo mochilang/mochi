@@ -1,0 +1,50 @@
+import 'dart:convert';
+
+List<Map<String, String>> people = [{"name": "Alice", "city": "Paris"}, {"name": "Bob", "city": "Hanoi"}, {"name": "Charlie", "city": "Paris"}, {"name": "Diana", "city": "Hanoi"}, {"name": "Eve", "city": "Paris"}, {"name": "Frank", "city": "Hanoi"}, {"name": "George", "city": "Paris"}];
+
+List<Map<String, dynamic>> big = _group_by(people, (p) => p['city']).map((g) => {"city": g.key, "num": _count(g)}).toList();
+
+void main() {
+  _json(big);
+}
+
+class _Group {
+    dynamic key;
+    List<dynamic> Items = [];
+    _Group(this.key);
+    int count() => _count(this);
+    double sum() => _sum(this);
+    double avg() => _avg(this);
+}
+
+int _count(dynamic v) {
+    if (v is String) return v.runes.length;
+    if (v is List) return v.length;
+    if (v is Map) return v.length;
+    try { var items = (v as dynamic).Items; if (items is List) return items.length; } catch (_) {}
+    try { var items = (v as dynamic).items; if (items is List) return items.length; } catch (_) {}
+    return 0;
+}
+
+List<_Group> _group_by(List<dynamic> src, dynamic Function(dynamic) keyfn) {
+    var groups = <String,_Group>{};
+    var order = <String>[];
+    for (var it in src) {
+        var key = keyfn(it);
+        var ks = key.toString();
+        var g = groups[ks];
+        if (g == null) {
+            g = _Group(key);
+            groups[ks] = g;
+            order.add(ks);
+        }
+        g.Items.add(it);
+    }
+    return [for (var k in order) groups[k]!];
+}
+
+void _json(dynamic v) {
+    print(jsonEncode(v));
+}
+
+

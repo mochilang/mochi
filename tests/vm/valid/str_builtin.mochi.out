@@ -1,1 +1,3 @@
-print("123")
+fun main() {
+  print(123.toString())
+}

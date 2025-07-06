@@ -1,3 +1,5 @@
-var matrix = [[1, 2], [3, 4]]
-matrix[1][0] = 5
-print(matrix[1][0])
+let matrix: list<list<int>> = [[1, 2], [3, 4]]
+fun main() {
+  matrix[1][0] = 5
+  print(matrix[1][0])
+}

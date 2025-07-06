@@ -1,0 +1,24 @@
+List<int> xs = [1, 2, 3];
+
+List<int> ys = (() {
+  var _res = [];
+  var _src = (xs).where((x) => ((x % 2) == 1)).toList();
+  for (var x in _src) {
+    _res.add(x);
+  }
+  return _res;
+})();
+
+Map<String, int> m = {"a": 1};
+
+String s = "hello";
+
+void main() {
+  print((ys.contains(1)));
+  print((ys.contains(2)));
+  print((m.containsKey("a")));
+  print((m.containsKey("b")));
+  print((s.contains("ell")));
+  print((s.contains("foo")));
+}
+

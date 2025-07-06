@@ -1,3 +1,5 @@
-var scores = {"alice": 1}
-scores["bob"] = 2
-print(scores["bob"])
+let scores: map<string, int> = {"alice": 1}
+fun main() {
+  scores["bob"] = 2
+  print(scores["bob"])
+}

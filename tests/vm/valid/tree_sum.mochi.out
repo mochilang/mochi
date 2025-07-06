@@ -1,16 +1,16 @@
-fun sum_tree(t) {
-  return fun() {
-    let _t0 = t
-    if _t0["__name"] == "Leaf" {
-      return 0
-    }
-    if _t0["__name"] == "Node" {
-      return fun(left, value, right) {
-    return ((sum_tree(left) + value) + sum_tree(right))
-}(_t0["left"], _t0["value"], _t0["right"])
-    }
-    return null
-}()
+let _structParsers: map<string, Function> = {}
+let left: Tree
+let value: int
+let right: Tree
+let t: Node = Node(left: Leaf, value: 1, right: Node(left: Leaf, value: 2, right: Leaf))
+fun sum_tree(t: Tree): int {
+  return (() {
+  let _t = t
+  if (_t is Leaf) { return 0; }
+  if (_t is Node) { return ((left, value, right) { return ((sum_tree(left) + value) + sum_tree(right)); })((_t as Node).left, (_t as Node).value, (_t as Node).right); }
+  return null
+  })()
 }
-let t = { "__name": "Node", "left": Leaf, "value": 1, "right": { "__name": "Node", "left": Leaf, "value": 2, "right": Leaf } }
-print(sum_tree(t))
+fun main() {
+  print(sum_tree(t))
+}

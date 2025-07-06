@@ -1,41 +1,28 @@
-let _Group = []
-fun _Group["new"](k) {
-  return { "key": k, "items": [] }
+let data: list<map<string, any>> = [{"tag": "a", "val": 1}, {"tag": "a", "val": 2}, {"tag": "b", "val": 3}]
+let groups: list<_Group> = _group_by(data, (d) => d["tag"]).map((g) => g).toList()
+let tmp: List = []
+let result: List = (() {
+let _res = []
+let items = List.from(_res)
+let r = rA
+let keyA = r.tag
+let keyB = r.tag
+let _res: return
+let groups = <String,_Group>{}
+let order = <String>[]
+let key = keyfn(it)
+let ks = key.toString()
+let g = groups[ks]
+type _Group {
+  key
 }
-let data = [{ "tag": "a", "val": 1 }, { "tag": "a", "val": 2 }, { "tag": "b", "val": 3 }]
-let groups = fun() {
-    let _groups = __group_by(data, fun(d) {
-    return d["tag"]
-})
-    let _res = []
-    for _, g in ipairs(_groups) {
-      _res[len(_res) + 1] = g
+fun main() {
+  for (var g in groups) {
+    let total: int = 0
+    for (var x in g.items) {
+      total = ((total + x.val)).toInt()
     }
-    return _res
-}()
-let tmp = []
-for _, g in ipairs(groups) {
-  let total = 0
-  for _, x in __iter(g["items"]) {
-    let total = (total + x["val"])
+    tmp = append(tmp, {"tag": g.key, "total": total})
   }
-  let tmp = append(tmp, { "tag": g["key"], "total": total })
+  print(result)
 }
-let result = fun() {
-    let _res = []
-    for _, r in ipairs(tmp) {
-      _res[len(_res) + 1] = { "__key": r["tag"], "__val": r }
-    }
-    let items = _res
-    table["sort"](items, fun(a, b) {
-    return a["__key"] < b["__key"]
-})
-    let tmp = []
-    for _, it in ipairs(items) {
-      tmp[len(tmp) + 1] = it["__val"]
-    }
-    items = tmp
-    _res = items
-    return _res
-}()
-print(result)

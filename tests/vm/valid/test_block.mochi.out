@@ -1,9 +1,22 @@
+let start = DateTime.now()
+let d = DateTime.now().difference(start)
+let true: return
+let d = DateTime.now().difference(start)
+let false: return
 fun test_addition_works() {
-  let x = (1 + 2)
-  if !(x == 3) {
-    error("expect failed")
+  let x: int = (1 + 2)
+  if (!((x == 3))) { throw Exception('expect failed'); }
+}
+fun main() {
+  let failures: int = 0
+  print("ok")
+  if (!_runTest("addition works", test_addition_works)) failures++
+  if (failures > 0) {
+    print("\n[FAIL] $failures test(s) failed.")
   }
 }
-print("ok")
-let __tests = [{ "name": "addition works", "fn": test_addition_works }]
-__run_tests(__tests)
+fun _formatDuration(d: Duration): string {
+  if (d.inMicroseconds < 1000) return '${d.inMicroseconds}µs'
+  if (d.inMilliseconds < 1000) return '${d.inMilliseconds}ms'
+  return '${(d.inMilliseconds/1000).toStringAsFixed(2)}s'
+}

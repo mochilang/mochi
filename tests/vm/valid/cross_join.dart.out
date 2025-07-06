@@ -1,0 +1,21 @@
+List<Map<String, dynamic>> customers = [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}, {"id": 3, "name": "Charlie"}];
+
+List<Map<String, int>> orders = [{"id": 100, "customerId": 1, "total": 250}, {"id": 101, "customerId": 2, "total": 125}, {"id": 102, "customerId": 1, "total": 300}];
+
+List<Map<String, int>> result = (() {
+  var _res = [];
+  for (var o in orders) {
+    for (var c in customers) {
+      _res.add({"orderId": o['id'], "orderCustomerId": o['customerId'], "pairedCustomerName": c['name'], "orderTotal": o['total']});
+    }
+  }
+  return _res;
+})();
+
+void main() {
+  print("--- Cross Join: All order-customer pairs ---");
+  for (var entry in result) {
+    print(["Order".toString(), entry.orderId.toString(), "(customerId:".toString(), entry.orderCustomerId.toString(), ", total: \\$".toString(), entry.orderTotal.toString(), ") paired with".toString(), entry.pairedCustomerName.toString()].join(' '));
+  }
+}
+

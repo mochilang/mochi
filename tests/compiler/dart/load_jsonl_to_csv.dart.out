@@ -1,6 +1,6 @@
+import 'package:yaml/yaml.dart';
 import 'dart:io';
 import 'dart:convert';
-import 'package:yaml/yaml.dart';
 
 Map<String, Function> _structParsers = {};
 
