@@ -1,0 +1,4 @@
+line 22: cannot parse
+    21| 
+->  22| begin
+    23| writeln(specialize _sliceList<integer>(specialize TArray<integer>([1, 2, 3, 4]), 1, 3));

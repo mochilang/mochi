@@ -1,0 +1,4 @@
+line 14: cannot parse
+    13| exit;
+->  14| end else if (n = 0) then
+    15| begin

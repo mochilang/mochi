@@ -1,0 +1,4 @@
+line 20: cannot parse
+    19| Result := Copy(s, start_ + 1, end_ - start_);
+->  20| end;
+    21|

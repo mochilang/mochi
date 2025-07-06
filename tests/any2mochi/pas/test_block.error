@@ -1,0 +1,4 @@
+line 16: cannot parse
+    15| 
+->  16| begin
+    17| writeln('ok');

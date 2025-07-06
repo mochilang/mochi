@@ -1,1 +1,2 @@
+if not ((2 + 2 = 4)) { raise Exception.Create('expect failed') }
 print('ok')

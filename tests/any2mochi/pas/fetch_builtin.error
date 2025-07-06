@@ -1,0 +1,4 @@
+line 17: cannot parse
+    16| sl := TStringList.Create;
+->  17| try
+    18| sl.LoadFromFile(Copy(url, 8, Length(url)));

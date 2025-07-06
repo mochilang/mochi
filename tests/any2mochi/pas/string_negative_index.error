@@ -1,0 +1,4 @@
+line 15: cannot parse
+    14| if (i < 0) or (i >= Length(s)) then
+->  15| raise Exception.Create('index out of range');
+    16| Result := s[i + 1];

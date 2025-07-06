@@ -1,0 +1,4 @@
+line 19: cannot parse
+    18| _tmp0 := 1;
+->  19| else if _tmp1 = Green then
+    20| begin

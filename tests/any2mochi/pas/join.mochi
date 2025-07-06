@@ -37,8 +37,9 @@ _tmp7.customerName = c.name
 _tmp7.total = o.total
 for o in orders {
 for c in customers {
-if !(o.customerId = c.id) { continue }
+if not ((o.customerId = c.id)) { continue }
 _tmp8 = Concat(_tmp8, [_tmp7])
+}
 }
 _result = _tmp8
 print('--- Orders with customer info ---')

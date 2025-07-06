@@ -1,4 +1,0 @@
-if i < 0 then i = Length(arr) + i
-Result = arr[i]
-xs = specialize TArray<integer>([10, 20, 30])
-print(specialize _indexList<integer>(xs, 1))
