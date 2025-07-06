@@ -1,0 +1,5 @@
+type Person {
+  name: any
+  age: any
+  fun __construct(fields) {}
+}

@@ -1,0 +1,6 @@
+type Product {
+  name: any
+  price: any
+  fun __construct(fields) {}
+}
+fun _query(src, joins, opts) {}
