@@ -1,5 +1,0 @@
-print("Enter first input:")
-input1 = __input()
-print("Enter second input:")
-input2 = __input()
-print("You entered:", input1, ",", input2)

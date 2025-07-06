@@ -1,9 +1,0 @@
-Msg = []
-Msg["__index"] = Msg
-fun Msg["new"](o) {
-  o = o || []
-  setmetatable(o, Msg)
-  return o
-}
-data = __fetch("file://tests/compiler/lua/fetch_builtin.json", null)
-print(data["message"])

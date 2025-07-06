@@ -1,0 +1,12 @@
+parse error: parse error: 3:9: unexpected token "[" (expected "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+
+  1| function __fetch(url, opts)
+  2|     local args = {'-s'}
+  3|     local method = 'GET'
+  4|     if opts and opts['method'] then method = tostring(opts['method']) end
+  5|     table.insert(args, '-X')
+  6|     table.insert(args, method)
+  7|     if opts and opts['headers'] then
+  8|         for k,v in pairs(opts['headers']) do
+  9|             table.insert(args, '-H')
+ 10|             table.insert(args, k .. ': ' .. tostring(v))

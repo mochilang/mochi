@@ -1,0 +1,10 @@
+type error: error[T005]: parameter `x` is missing a type
+  --> :1:1
+
+help:
+  Add a type like `x: int` to this parameter.
+
+  1| function double(x)
+  2|     return (x * 2)
+  3| end
+  4|

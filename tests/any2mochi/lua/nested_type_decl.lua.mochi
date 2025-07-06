@@ -1,8 +1,0 @@
-Person = []
-Person["__index"] = Person
-fun Person["new"](o) {
-  o = o || []
-  setmetatable(o, Person)
-  return o
-}
-print("ok")

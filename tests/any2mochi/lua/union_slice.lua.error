@@ -1,0 +1,16 @@
+type error: error[T008]: type mismatch: expected void, got [{string: string}]
+  --> :2:10
+
+help:
+  Change the value to match the expected type.
+
+  1| function __print(...)
+  2|     local args = {...}
+  3|     for i, a in ipairs(args) do
+  4|         if i > 1 then io.write(' ') end
+  5|         io.write(tostring(a))
+  6|     end
+  7|     io.write('\n')
+  8| end
+  9| function listit()
+ 10|     return {{__name="Empty"}}

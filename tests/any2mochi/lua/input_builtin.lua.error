@@ -1,0 +1,16 @@
+type error: error[T001]: assignment to undeclared variable: input1
+  --> :2:1
+
+help:
+  Declare `input1` first using `let`.
+
+  1| function __input()
+  2|     local line = io.read('*l')
+  3|     if line == nil then return '' end
+  4|     return line
+  5| end
+  6| function __print(...)
+  7|     local args = {...}
+  8|     for i, a in ipairs(args) do
+  9|         if i > 1 then io.write(' ') end
+ 10|         io.write(tostring(a))

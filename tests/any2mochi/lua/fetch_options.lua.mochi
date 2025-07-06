@@ -1,9 +1,0 @@
-Msg = []
-Msg["__index"] = Msg
-fun Msg["new"](o) {
-  o = o || []
-  setmetatable(o, Msg)
-  return o
-}
-data = __fetch("https://example.com", { "method": "POST", "headers": { "Accept": "application/json" }, "query": { "q": "1" }, "body": { "text": "hi" }, "timeout": 10.0 })
-print(data["message"])

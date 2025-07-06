@@ -1,5 +1,0 @@
-nums = [1, 2, 3, 4]
-sum = __reduce(nums, fun(acc, x) {
-    return __add(acc, x)
-}, 0)
-print(sum)

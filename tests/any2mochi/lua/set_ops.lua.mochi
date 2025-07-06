@@ -1,7 +1,0 @@
-a = [1, 2, 3]
-b = [3, 4]
-print(__union(a, b))
-print(__union_all(a, b))
-print(__except(a, b))
-print(__intersect(a, b))
-print(__union([1, 2], [2, 3]))

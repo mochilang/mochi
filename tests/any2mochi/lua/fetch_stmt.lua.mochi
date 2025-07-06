@@ -1,9 +1,0 @@
-Todo = []
-Todo["__index"] = Todo
-fun Todo["new"](o) {
-  o = o || []
-  setmetatable(o, Todo)
-  return o
-}
-todo = __fetch("https://jsonplaceholder.typicode.com/todos/1", null)
-print(todo["id"] > 0)
