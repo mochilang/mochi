@@ -1,0 +1,19 @@
+let ic = match path with
+let txt = _read_all ic in
+let text = _read_input path in
+let oc = match path with
+let is_file = 
+let path = if String.length url >= 7 && String.sub url 0 7 = "file://" then String.sub url 7 (String.length url - 7) else url in
+let txt = _read_input (Some path) in
+let method_ = 
+var url_ref = url in
+var args = ["curl", "-s", "-X", method_] in
+let headers = Yojson.Basic.Util.to_assoc (Hashtbl.find tbl "headers") in
+let q = Yojson.Basic.Util.to_assoc (Hashtbl.find tbl "query") in
+let qs = String.concat "&" (List.map (fun (k,v) -> k ^ "=" ^ Yojson.Basic.to_string v) q) in
+let sep = if String.contains !url_ref '?' then '&' else '?' in
+let body = Hashtbl.find tbl "body" in
+let t = Hashtbl.find tbl "timeout" in
+let ic = Unix.open_process_in (String.concat " " !args) in
+let txt = _read_all ic in
+let data = _fetch "https://jsonplaceholder.typicode.com/todos/1" None

@@ -32,6 +32,7 @@ type Func struct {
 type Var struct {
 	Name    string `json:"name"`
 	Expr    string `json:"expr"`
+	Mutable bool   `json:"mutable"`
 	Line    int    `json:"line"`
 	Col     int    `json:"col"`
 	EndLine int    `json:"endLine"`
@@ -155,7 +156,11 @@ func formatProgram(p *Program) []byte {
 		out.WriteString("\n}\n")
 	}
 	for _, v := range p.Vars {
-		out.WriteString("let ")
+		if v.Mutable {
+			out.WriteString("var ")
+		} else {
+			out.WriteString("let ")
+		}
 		out.WriteString(v.Name)
 		if v.Expr != "" {
 			out.WriteString(" = ")
@@ -223,7 +228,7 @@ func formatOCamlError(src, msg string) string {
 		if start < 0 {
 			start = 0
 		}
-		end := ln
+		end := ln + 2
 		if end > len(lines) {
 			end = len(lines)
 		}

@@ -1,0 +1,6 @@
+let people = [{ name = "Alice", age = 17, status = "minor" }, { name = "Bob", age = 25, status = "unknown" }, { name = "Charlie", age = 18, status = "unknown" }, { name = "Diana", age = 16, status = "minor" }]
+let people = List.map (fun _item ->
+let name = _item.name in
+let age = _item.age in
+let status = _item.status in
+print("ok")

@@ -1,0 +1,4 @@
+var set = (let tbl = Hashtbl.create 0 in tbl)
+var i = 1
+var count = 0
+print((!count))
