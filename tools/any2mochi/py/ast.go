@@ -187,20 +187,46 @@ func emitAST(b *strings.Builder, n *ASTNode, indent string, lines []string, seen
 					return err
 				}
 			}
-		} else {
-			b.WriteString("fun ")
-			b.WriteString(n.Name)
-			b.WriteString("() {\n")
-			for _, st := range n.Body {
-				b.WriteString(indent)
-				b.WriteString("  ")
-				if err := emitAST(b, st, indent+"  ", lines, seen); err != nil {
+			return nil
+		}
+		b.WriteString("fun ")
+		b.WriteString(n.Name)
+		b.WriteByte('(')
+		args := n.callArgs()
+		first := true
+		for _, a := range args {
+			if a.Arg == "self" {
+				continue
+			}
+			if !first {
+				b.WriteString(", ")
+			}
+			first = false
+			b.WriteString(a.Arg)
+			if a.Annotation != nil {
+				b.WriteString(": ")
+				if err := emitExpr(b, a.Annotation, lines); err != nil {
 					return err
 				}
 			}
-			b.WriteString(indent)
-			b.WriteString("}\n")
 		}
+		b.WriteByte(')')
+		if n.Returns != nil {
+			b.WriteString(": ")
+			if err := emitExpr(b, n.Returns, lines); err != nil {
+				return err
+			}
+		}
+		b.WriteString(" {\n")
+		for _, st := range n.Body {
+			b.WriteString(indent)
+			b.WriteString("  ")
+			if err := emitAST(b, st, indent+"  ", lines, seen); err != nil {
+				return err
+			}
+		}
+		b.WriteString(indent)
+		b.WriteString("}\n")
 	case "ClassDef":
 		b.WriteString("type ")
 		b.WriteString(n.Name)
@@ -552,6 +578,9 @@ func emitExpr(b *strings.Builder, n *ASTNode, lines []string) error {
 			}
 		}
 		b.WriteByte('}')
+	case "Lambda":
+		snippet := extractSegment(lines, n.Line, n.Col, n.EndLine, n.EndCol)
+		b.WriteString(snippet)
 	case "ListComp":
 		if len(n.Generators) == 1 {
 			g := n.Generators[0]
@@ -646,4 +675,30 @@ func ConvertAST(src string) ([]byte, error) {
 		return nil, fmt.Errorf("no output")
 	}
 	return []byte(out + "\n"), nil
+}
+
+func extractSegment(lines []string, startLine, startCol, endLine, endCol int) string {
+	if startLine < 1 {
+		startLine = 1
+	}
+	if endLine > len(lines) {
+		endLine = len(lines)
+	}
+	startIdx := startLine - 1
+	endIdx := endLine - 1
+	var out strings.Builder
+	for i := startIdx; i <= endIdx && i < len(lines); i++ {
+		line := lines[i]
+		if i == startIdx && startCol < len(line) {
+			line = line[startCol:]
+		}
+		if i == endIdx && endCol <= len(line) {
+			line = line[:endCol]
+		}
+		out.WriteString(line)
+		if i != endIdx {
+			out.WriteByte('\n')
+		}
+	}
+	return out.String()
 }
