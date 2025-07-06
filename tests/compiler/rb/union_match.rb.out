@@ -9,9 +9,14 @@ end
 
 def isLeaf(t)
   (begin
-  _t0 = t
-  _t0.is_a?(Leaf)) || false
-   end)
+    _t0 = t
+    case
+    when _t0.is_a?(Leaf)
+      true
+    else
+      false
+    end
+  end)
 end
 
 puts([isLeaf(Leaf.new)].join(" "))
