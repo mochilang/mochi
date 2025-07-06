@@ -127,7 +127,13 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 			c.writeln("global " + name)
 		}
 	}
-	c.writeln(fmt.Sprintf("%s = %s", name, value))
+	useAnn := typ != nil && !isAny(typ) && !(c.globals[name] && c.indent > 0)
+	if useAnn {
+		c.imports["typing"] = "typing"
+		c.writeln(fmt.Sprintf("%s: %s = %s", name, pyType(typ), value))
+	} else {
+		c.writeln(fmt.Sprintf("%s = %s", name, value))
+	}
 	return nil
 }
 
@@ -170,6 +176,13 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 		}
 		if c.globals[name] && c.indent > 0 {
 			c.writeln("global " + name)
+		}
+	}
+	if c.env != nil {
+		if t, err := c.env.GetVar(s.Name); err == nil && !isAny(t) && !(c.globals[name] && c.indent > 0) {
+			c.imports["typing"] = "typing"
+			c.writeln(fmt.Sprintf("%s: %s = %s", name, pyType(t), value))
+			return nil
 		}
 	}
 	c.writeln(fmt.Sprintf("%s = %s", name, value))
