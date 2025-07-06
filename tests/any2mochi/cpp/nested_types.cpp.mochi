@@ -1,0 +1,12 @@
+type Address {
+  street: string
+}
+type Person {
+  name: string
+  addr: Address
+}
+fun main(): int {
+  let p = Person{string("Bob"), Address{string("Main")}}
+  print((p.addr.street))
+  return 0
+}

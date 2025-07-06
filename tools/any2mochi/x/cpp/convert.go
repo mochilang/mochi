@@ -5,6 +5,8 @@ import (
 	any2mochi "mochi/tools/any2mochi"
 	"os"
 	"os/exec"
+	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -29,9 +31,24 @@ func Convert(src string) ([]byte, error) {
 		writeSymbols(&out, nil, syms, src, ls)
 	}
 	if out.Len() == 0 {
-		funcs, enums, err := parseAST(src)
+		funcs, enums, structs, err := parseAST(src)
 		if err != nil {
-			return nil, err
+			return nil, formatParseErr(src, err)
+		}
+		for _, st := range structs {
+			out.WriteString("type ")
+			out.WriteString(st.name)
+			out.WriteString(" {\n")
+			for _, f := range st.fields {
+				out.WriteString("  ")
+				out.WriteString(f.name)
+				if f.typ != "" {
+					out.WriteString(": ")
+					out.WriteString(f.typ)
+				}
+				out.WriteByte('\n')
+			}
+			out.WriteString("}\n")
 		}
 		for _, e := range enums {
 			out.WriteString("type ")
@@ -92,7 +109,11 @@ func ConvertFile(path string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return Convert(string(data))
+	out, convErr := Convert(string(data))
+	if convErr != nil {
+		return nil, fmt.Errorf("%s: %w", path, convErr)
+	}
+	return out, nil
 }
 
 func writeSymbols(out *strings.Builder, prefix []string, syms []any2mochi.DocumentSymbol, src string, ls any2mochi.LanguageServer) {
@@ -377,11 +398,16 @@ func convertBody(src string, r any2mochi.Range) []string {
 			l = strings.TrimSpace(l)
 			out = append(out, "print("+l+")")
 		default:
+			decl := false
 			for _, pre := range []string{"int ", "float ", "double ", "bool ", "std::string ", "string ", "auto "} {
 				if strings.HasPrefix(l, pre) {
 					l = strings.TrimPrefix(l, pre)
+					decl = true
 					break
 				}
+			}
+			if decl {
+				l = "let " + l
 			}
 			out = append(out, l)
 		}
@@ -413,4 +439,31 @@ func diagnostics(src string, diags []any2mochi.Diagnostic) string {
 		out.WriteString(fmt.Sprintf("line %d: %s\n  %s\n", start+1, msg, line))
 	}
 	return strings.TrimSpace(out.String())
+}
+
+func formatParseErr(src string, err error) error {
+	msg := err.Error()
+	re := regexp.MustCompile(`:(\d+):`)
+	if m := re.FindStringSubmatch(msg); m != nil {
+		line, _ := strconv.Atoi(m[1])
+		lines := strings.Split(src, "\n")
+		start := line - 1
+		if start < 0 {
+			start = 0
+		}
+		end := line + 1
+		if end > len(lines) {
+			end = len(lines)
+		}
+		var b strings.Builder
+		for i := start; i < end; i++ {
+			prefix := "   "
+			if i+1 == line {
+				prefix = ">>>"
+			}
+			fmt.Fprintf(&b, "%d:%s %s\n", i+1, prefix, lines[i])
+		}
+		return fmt.Errorf("%s\n%s", msg, strings.TrimSpace(b.String()))
+	}
+	return err
 }

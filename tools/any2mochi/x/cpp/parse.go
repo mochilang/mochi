@@ -20,6 +20,16 @@ type enumDef struct {
 	variants []string
 }
 
+type structField struct {
+	name string
+	typ  string
+}
+
+type structDef struct {
+	name   string
+	fields []structField
+}
+
 func convertBodyString(body string) []string {
 	lines := strings.Split(body, "\n")
 	if len(lines) > 0 && strings.TrimSpace(lines[0]) == "{" {
@@ -46,11 +56,16 @@ func convertBodyString(body string) []string {
 			l = strings.TrimSpace(l)
 			out = append(out, "print("+l+")")
 		default:
+			decl := false
 			for _, pre := range []string{"int ", "float ", "double ", "bool ", "std::string ", "string ", "auto "} {
 				if strings.HasPrefix(l, pre) {
 					l = strings.TrimPrefix(l, pre)
+					decl = true
 					break
 				}
+			}
+			if decl {
+				l = "let " + l
 			}
 			out = append(out, l)
 		}
@@ -59,7 +74,7 @@ func convertBodyString(body string) []string {
 }
 
 // parseAST uses clang++ to produce a JSON AST and extracts functions and enums.
-func parseAST(src string) ([]funcDef, []enumDef, error) {
+func parseAST(src string) ([]funcDef, []enumDef, []structDef, error) {
 	cmd := exec.Command("clang++", "-x", "c++", "-std=c++20", "-fsyntax-only", "-Xclang", "-ast-dump=json", "-")
 	cmd.Stdin = strings.NewReader(src)
 	var buf bytes.Buffer
@@ -67,17 +82,18 @@ func parseAST(src string) ([]funcDef, []enumDef, error) {
 	cmd.Stdout = &buf
 	cmd.Stderr = &errBuf
 	if err := cmd.Run(); err != nil {
-		return nil, nil, fmt.Errorf("clang++: %w: %s", err, errBuf.String())
+		return nil, nil, nil, fmt.Errorf("clang++: %w: %s", err, errBuf.String())
 	}
 
 	var root astNode
 	if err := json.Unmarshal(buf.Bytes(), &root); err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	var funcs []funcDef
 	var enums []enumDef
-	collectAST(&root, src, &funcs, &enums)
-	return funcs, enums, nil
+	var structs []structDef
+	collectAST(&root, src, &funcs, &enums, &structs)
+	return funcs, enums, structs, nil
 }
 
 type astNode struct {
@@ -97,7 +113,7 @@ type astNode struct {
 	} `json:"range,omitempty"`
 }
 
-func collectAST(n *astNode, src string, funcs *[]funcDef, enums *[]enumDef) {
+func collectAST(n *astNode, src string, funcs *[]funcDef, enums *[]enumDef, structs *[]structDef) {
 	switch n.Kind {
 	case "FunctionDecl":
 		if n.Range == nil || n.Range.Begin.Offset < 0 || n.Range.End.Offset > len(src) {
@@ -149,8 +165,24 @@ func collectAST(n *astNode, src string, funcs *[]funcDef, enums *[]enumDef) {
 		if len(vars) > 0 && n.Name != "" {
 			*enums = append(*enums, enumDef{name: n.Name, variants: vars})
 		}
+	case "CXXRecordDecl", "RecordDecl":
+		if n.Name != "" && n.Range != nil && n.Range.Begin.Offset >= 0 && n.Range.End.Offset <= len(src) {
+			snippet := src[n.Range.Begin.Offset:n.Range.End.Offset]
+			if strings.Contains(snippet, "struct "+n.Name) || strings.Contains(snippet, "class "+n.Name) {
+				var fields []structField
+				for i := range n.Inner {
+					c := &n.Inner[i]
+					if c.Kind == "FieldDecl" && c.Type != nil {
+						fields = append(fields, structField{name: c.Name, typ: mapType(c.Type.QualType)})
+					}
+				}
+				if len(fields) > 0 {
+					*structs = append(*structs, structDef{name: n.Name, fields: fields})
+				}
+			}
+		}
 	}
 	for i := range n.Inner {
-		collectAST(&n.Inner[i], src, funcs, enums)
+		collectAST(&n.Inner[i], src, funcs, enums, structs)
 	}
 }
