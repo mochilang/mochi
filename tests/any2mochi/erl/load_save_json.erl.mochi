@@ -1,0 +1,107 @@
+// line 5
+fun main(_) {
+  Rows = mochi_load("", #{format => "json"})
+  mochi_save(Rows, "", #{format => "json"})
+}
+// line 10
+fun mochi_load(Path, Opts) {
+  case file:read_file(Path) of
+  {ok, Bin} ->
+  Format =
+  case Opts of
+  undefined ->
+  undefined;
+  O ->
+  maps:get(format, O, undefined)
+  end,
+  Ext = filename:extension(Path),
+  Text = binary_to_list(Bin),
+  Data0 =
+  case {Format, Ext} of
+  {"json", _} ->
+  mochi_decode_json(Text);
+  {_, ".json"} ->
+  mochi_decode_json(Text);
+  {_, ".txt"} ->
+  Text;
+  _ ->
+  binary_to_term(Bin)
+  end,
+  Data1 = mochi_filter(Data0, Opts),
+  mochi_paginate(Data1, Opts);
+  _ ->
+  []
+  end
+}
+// line 30
+fun mochi_save(Data, Path, Opts) {
+  Format =
+  case Opts of
+  undefined ->
+  undefined;
+  O ->
+  maps:get(format, O, undefined)
+  end
+  Ext = filename:extension(Path)
+  Bin =
+  case {Format, Ext} of
+  {"json", _} ->
+  list_to_binary(mochi_to_json(Data));
+  {_, ".json"} ->
+  list_to_binary(mochi_to_json(Data));
+  {_, ".txt"} ->
+  Data;
+  _ ->
+  term_to_binary(Data)
+  end
+  ok = file:write_file(Path, Bin)
+}
+// line 44
+fun mochi_filter(Data, Opts) {
+  Data
+}
+// line 53
+fun mochi_paginate(Data, Opts) {
+  Data
+}
+// line 67
+fun mochi_decode_json(Text) {
+  {Val, _} = mochi_json_value(string:trim(Text))
+  Val
+}
+// line 77
+fun mochi_json_value(S) {
+  {Num, R} = mochi_json_number(S)
+  {Num, mochi_skip_ws(R)}
+}
+// line 81
+fun mochi_json_array(_, Acc) {
+  {lists:reverse(Acc), mochi_skip_ws(S)}
+}
+// line 91
+fun mochi_json_object(_, Acc) {
+  {Acc, mochi_skip_ws(S)}
+}
+// line 109
+fun mochi_json_number(S) {
+  {NumStr, Rest} = mochi_take_number(S, [])
+  case string:to_float(NumStr) of
+  {error, _} ->
+  {list_to_integer(NumStr), Rest};
+  {F, _} ->
+  {F, Rest}
+  end
+}
+// line 116
+fun mochi_take_number(_, Acc) {
+  mochi_take_number(S, [C | Acc])
+}
+// line 119
+fun mochi_skip_ws(_) {
+  mochi_skip_ws(S)
+}
+// line 139
+fun mochi_json(V) {
+  print("~s~n", [mochi_to_json(V)])
+}
+main()

@@ -1,0 +1,144 @@
+// line 5
+fun main(_) {
+  Customers =
+  [#{id => 1, name => "Alice"},
+  #{id => 2, name => "Bob"},
+  #{id => 3, name => "Charlie"},
+  #{id => 4, name => "Diana"}]
+  Orders =
+  [#{id => 100, customerId => 1, total => 250},
+  #{id => 101, customerId => 2, total => 125},
+  #{id => 102, customerId => 1, total => 300},
+  #{id => 103, customerId => 5, total => 80}]
+  Result =
+  [
+  #{order => O, customer => C} ||
+  {O, C} <-
+  mochi_outer_join(Orders, Customers,
+  fun(O, C) ->
+  maps:get(customerId, O)
+  ==
+  maps:get(id, C)
+  end)
+  ]
+  mochi_print(["--- Outer Join using syntax ---"])
+  mochi_foreach(fun(Row) ->
+  case maps:get(order, Row) of
+  true ->
+  case maps:get(customer, Row) of
+  true ->
+  mochi_print(["Order",
+  maps:get(id,
+  maps:get(order,
+  Row)),
+  "by",
+  maps:get(name,
+  maps:get(customer,
+  Row)),
+  "- $",
+  maps:get(total,
+  maps:get(order,
+  Row))]);
+  _ ->
+  mochi_print(["Order",
+  maps:get(id,
+  maps:get(order,
+  Row)),
+  "by",
+  "Unknown",
+  "- $",
+  maps:get(total,
+  maps:get(order,
+  Row))])
+  end;
+  _ ->
+  mochi_print(["Customer",
+  maps:get(name,
+  maps:get(customer,
+  Row)),
+  "has no orders"])
+  end
+  end,
+  Result)
+}
+// line 24
+fun mochi_print(Args) {
+  Strs =
+  [
+  mochi_format(A) ||
+  A <- Args
+  ]
+  print("~s~n", [lists:flatten(Strs)])
+}
+// line 28
+fun mochi_format(X) {
+  integer_to_list(X)
+}
+// line 33
+fun mochi_foreach(F, L) {
+  try
+  mochi_foreach_loop(F, L)
+  catch
+  throw:mochi_break ->
+  ok
+  end
+}
+// line 36
+fun mochi_foreach_loop(_, _) {
+  ok
+}
+// line 44
+fun mochi_left_join_item(A, B, Fun) {
+  Matches =
+  [
+  {A, J} ||
+  J <- B,
+  Fun(A, J)
+  ]
+  case Matches of
+  [] ->
+  [{A, undefined}];
+  _ ->
+  Matches
+  end
+}
+// line 51
+fun mochi_left_join(L, R, Fun) {
+  lists:flatmap(fun(X) ->
+  mochi_left_join_item(X, R, Fun)
+  end,
+  L)
+}
+// line 54
+fun mochi_right_join_item(B, A, Fun) {
+  Matches =
+  [
+  {I, B} ||
+  I <- A,
+  Fun(I, B)
+  ]
+  case Matches of
+  [] ->
+  [{undefined, B}];
+  _ ->
+  Matches
+  end
+}
+// line 61
+fun mochi_right_join(L, R, Fun) {
+  lists:flatmap(fun(Y) ->
+  mochi_right_join_item(Y, L, Fun)
+  end,
+  R)
+}
+// line 64
+fun mochi_outer_join(L, R, Fun) {
+  Left = mochi_left_join(L, R, Fun)
+  Right =
+  [
+  P ||
+  P = {undefined, _} <- mochi_right_join(L, R, Fun)
+  ]
+  Left ++ Right
+}
+main()
