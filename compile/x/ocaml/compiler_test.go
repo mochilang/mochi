@@ -52,8 +52,9 @@ func TestOCamlCompiler_TwoSum(t *testing.T) {
 	if out, err := exec.Command(cmdName, args...).CombinedOutput(); err != nil {
 		t.Fatalf("ocamlc error: %v\n%s", err, out)
 	}
+	rootDir := findRepoRoot(t)
 	cmd := exec.Command(exe)
-	cmd.Dir = findRepoRoot(t)
+	cmd.Dir = rootDir
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Fatalf("run error: %v\n%s", err, out)
@@ -106,8 +107,9 @@ func TestOCamlCompiler_SubsetPrograms(t *testing.T) {
 			if out, err := exec.Command(cmdName, args...).CombinedOutput(); err != nil {
 				return nil, fmt.Errorf("\u274c ocamlc error: %w\n%s", err, out)
 			}
+			rootDir := findRepoRoot(t)
 			cmd := exec.Command(exe)
-			cmd.Dir = findRepoRoot(t)
+			cmd.Dir = rootDir
 			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 				cmd.Stdin = bytes.NewReader(data)
 			}
@@ -131,7 +133,11 @@ func TestOCamlCompiler_SubsetPrograms(t *testing.T) {
 			}
 			var buf bytes.Buffer
 			m := vm.NewWithIO(p, bytes.NewReader(vmIn), &buf)
-			if err := m.Run(); err != nil {
+			cwd, _ := os.Getwd()
+			_ = os.Chdir(rootDir)
+			err = m.Run()
+			_ = os.Chdir(cwd)
+			if err != nil {
 				if ve, ok := err.(*vm.VMError); ok {
 					return nil, fmt.Errorf("\u274c vm run error:\n%s", ve.Format(p))
 				}
@@ -183,8 +189,9 @@ func TestOCamlCompiler_GoldenOutput(t *testing.T) {
 			if out, err := exec.Command(cmdName, args...).CombinedOutput(); err != nil {
 				return nil, fmt.Errorf("\u274c ocamlc error: %w\n%s", err, out)
 			}
+			rootDir := findRepoRoot(t)
 			cmd := exec.Command(exe)
-			cmd.Dir = findRepoRoot(t)
+			cmd.Dir = rootDir
 			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 				cmd.Stdin = bytes.NewReader(data)
 			}
@@ -207,7 +214,11 @@ func TestOCamlCompiler_GoldenOutput(t *testing.T) {
 			}
 			var buf bytes.Buffer
 			m := vm.NewWithIO(p, bytes.NewReader(vmIn), &buf)
-			if err := m.Run(); err != nil {
+			cwd, _ := os.Getwd()
+			_ = os.Chdir(rootDir)
+			err = m.Run()
+			_ = os.Chdir(cwd)
+			if err != nil {
 				if ve, ok := err.(*vm.VMError); ok {
 					return nil, fmt.Errorf("\u274c vm run error:\n%s", ve.Format(p))
 				}
