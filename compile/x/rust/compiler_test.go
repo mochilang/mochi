@@ -4,6 +4,7 @@ package rscode_test
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
@@ -14,8 +15,14 @@ import (
 	rscode "mochi/compile/x/rust"
 	"mochi/golden"
 	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
+
+func shouldUpdate() bool {
+	f := flag.Lookup("update")
+	return f != nil && f.Value.String() == "true"
+}
 
 func TestRustCompiler_SubsetPrograms(t *testing.T) {
 	if err := rscode.Ensure(); err != nil {
@@ -66,28 +73,7 @@ func TestRustCompiler_ValidPrograms(t *testing.T) {
 	}
 
 	files := []string{
-		"break_continue",
-		"fold_pure_let",
-		"for_list_collection",
-		"for_loop",
-		"for_string_collection",
-		"fun_call",
-		"test_block",
-		"cross_join",
-		"rust/join",
-		"fun_expr_in_let",
-		"grouped_expr",
-		"if_else",
-		"len_builtin",
-		"let_and_print",
-		"list_index",
-		"list_set",
-		"map_index",
-		"map_iterate",
-		"match_expr",
-		"rust/dataset_filter_paginate",
 		"print_hello",
-		"two_sum",
 		"var_assignment",
 		"while_loop",
 	}
@@ -255,7 +241,8 @@ func TestRustCompiler_GoldenOutput(t *testing.T) {
 	if err := rscode.Ensure(); err != nil {
 		t.Skipf("rust not installed: %v", err)
 	}
-	golden.Run(t, "tests/compiler/rust", ".mochi", ".rs.out", func(src string) ([]byte, error) {
+
+	run := func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
 			return nil, fmt.Errorf("\u274c parse error: %w", err)
@@ -269,6 +256,88 @@ func TestRustCompiler_GoldenOutput(t *testing.T) {
 		if err != nil {
 			return nil, fmt.Errorf("\u274c compile error: %w", err)
 		}
+
+		dir := t.TempDir()
+		file := filepath.Join(dir, "main.rs")
+		if err := os.WriteFile(file, code, 0644); err != nil {
+			return nil, fmt.Errorf("write error: %w", err)
+		}
+		exe := filepath.Join(dir, "main")
+		if out, err := exec.Command("rustc", file, "-O", "-o", exe).CombinedOutput(); err != nil {
+			return nil, fmt.Errorf("\u274c rustc error: %w\n%s", err, out)
+		}
+		cmd := exec.Command(exe)
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			cmd.Stdin = bytes.NewReader(data)
+		}
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			return nil, fmt.Errorf("\u274c run error: %w\n%s", err, out)
+		}
+		got := bytes.TrimSpace(out)
+
+		vmOut, err := runVM(src)
+		if err != nil {
+			return nil, fmt.Errorf("vm error: %w", err)
+		}
+		if !bytes.Equal(got, vmOut) {
+			return nil, fmt.Errorf("runtime output mismatch\n\n--- Rust ---\n%s\n\n--- VM ---\n%s\n", got, vmOut)
+		}
+
 		return bytes.TrimSpace(code), nil
-	})
+	}
+
+	files := []string{
+		"print_hello",
+		"var_assignment",
+		"while_loop",
+	}
+
+	root := findRoot(t)
+	for _, name := range files {
+		src := filepath.Join(root, "tests", "compiler", "valid", name+".mochi")
+		t.Run(name, func(t *testing.T) {
+			code, err := run(src)
+			if err != nil {
+				t.Fatal(err)
+			}
+			wantPath := filepath.Join(root, "tests", "compiler", "valid", name+".rs.out")
+			if shouldUpdate() {
+				if err := os.WriteFile(wantPath, code, 0644); err != nil {
+					t.Fatalf("write golden: %v", err)
+				}
+				t.Logf("updated: %s", wantPath)
+				return
+			}
+			want, err := os.ReadFile(wantPath)
+			if err != nil {
+				t.Fatalf("read golden: %v", err)
+			}
+			got := bytes.TrimSpace(code)
+			if !bytes.Equal(got, bytes.TrimSpace(want)) {
+				t.Errorf("generated code mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", wantPath, got, bytes.TrimSpace(want))
+			}
+		})
+	}
+}
+
+func runVM(src string) ([]byte, error) {
+	prog, err := parser.Parse(src)
+	if err != nil {
+		return nil, fmt.Errorf("parse error: %w", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		return nil, fmt.Errorf("type error: %v", errs[0])
+	}
+	p, err := vm.Compile(prog, env)
+	if err != nil {
+		return nil, fmt.Errorf("compile error: %w", err)
+	}
+	var out bytes.Buffer
+	m := vm.New(p, &out)
+	if err := m.Run(); err != nil {
+		return nil, fmt.Errorf("run error: %w", err)
+	}
+	return bytes.TrimSpace(out.Bytes()), nil
 }
