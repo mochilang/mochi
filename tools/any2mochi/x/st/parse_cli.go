@@ -15,11 +15,14 @@ type AST struct {
 }
 
 type Stmt struct {
-	Kind string `json:"kind"`
-	Name string `json:"name,omitempty"`
-	Expr string `json:"expr,omitempty"`
-	Cond string `json:"cond,omitempty"`
-	Body []Stmt `json:"body,omitempty"`
+	Kind  string `json:"kind"`
+	Name  string `json:"name,omitempty"`
+	Expr  string `json:"expr,omitempty"`
+	Cond  string `json:"cond,omitempty"`
+	Start string `json:"start,omitempty"`
+	End   string `json:"end,omitempty"`
+	Body  []Stmt `json:"body,omitempty"`
+	Line  int    `json:"line,omitempty"`
 }
 
 func parseCLI(src string) (*AST, error) {
@@ -57,13 +60,16 @@ func parseCLI(src string) (*AST, error) {
 	return &ast, nil
 }
 
-func convertAST(ast *AST) ([]byte, error) {
+func convertAST(ast *AST, src string) ([]byte, error) {
 	var out strings.Builder
 	for _, s := range ast.Statements {
+		if s.Kind == "unknown" {
+			return nil, fmt.Errorf("%s", formatError(src, s.Line, "unsupported statement"))
+		}
 		writeStmt(&out, s, 0)
 	}
 	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(""))
+		return nil, fmt.Errorf("no convertible statements found\n\nsource snippet:\n%s", numberedSnippet(src))
 	}
 	return []byte(out.String()), nil
 }
@@ -94,6 +100,20 @@ func writeStmt(out *strings.Builder, s Stmt, indent int) {
 		out.WriteString(ind)
 		out.WriteString("while ")
 		out.WriteString(s.Cond)
+		out.WriteString(" {\n")
+		for _, b := range s.Body {
+			writeStmt(out, b, indent+1)
+		}
+		out.WriteString(ind)
+		out.WriteString("}\n")
+	case "for":
+		out.WriteString(ind)
+		out.WriteString("for ")
+		out.WriteString(s.Name)
+		out.WriteString(" in ")
+		out.WriteString(s.Start)
+		out.WriteString("..")
+		out.WriteString(s.End)
 		out.WriteString(" {\n")
 		for _, b := range s.Body {
 			writeStmt(out, b, indent+1)

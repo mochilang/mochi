@@ -14,11 +14,14 @@ type Program struct {
 }
 
 type Stmt struct {
-	Kind string `json:"kind"`
-	Name string `json:"name,omitempty"`
-	Expr string `json:"expr,omitempty"`
-	Cond string `json:"cond,omitempty"`
-	Body []Stmt `json:"body,omitempty"`
+	Kind  string `json:"kind"`
+	Name  string `json:"name,omitempty"`
+	Expr  string `json:"expr,omitempty"`
+	Cond  string `json:"cond,omitempty"`
+	Start string `json:"start,omitempty"`
+	End   string `json:"end,omitempty"`
+	Body  []Stmt `json:"body,omitempty"`
+	Line  int    `json:"line,omitempty"`
 }
 
 func main() {
@@ -64,9 +67,24 @@ func parse(src string) Program {
 		if l == "" || l == "." {
 			continue
 		}
+		if stmt, n := parseWhile(lines, i); n > 0 {
+			stmt.Line = i + 1
+			stmts = append(stmts, stmt)
+			i += n - 1
+			continue
+		}
+		if stmt, n := parseFor(lines, i); n > 0 {
+			stmt.Line = i + 1
+			stmts = append(stmts, stmt)
+			i += n - 1
+			continue
+		}
 		s := parseSimpleStmt(strings.TrimSuffix(l, "."))
 		if s.Kind != "" {
+			s.Line = i + 1
 			stmts = append(stmts, s)
+		} else {
+			stmts = append(stmts, Stmt{Kind: "unknown", Expr: l, Line: i + 1})
 		}
 	}
 	return Program{Statements: stmts}
@@ -102,4 +120,73 @@ func parseSimpleStmt(l string) Stmt {
 		return Stmt{Kind: "print", Expr: expr}
 	}
 	return Stmt{}
+}
+
+func parseWhile(lines []string, i int) (Stmt, int) {
+	l := strings.TrimSpace(lines[i])
+	if !strings.Contains(l, "whileTrue:") {
+		return Stmt{}, 0
+	}
+	m := regexp.MustCompile(`^\[(.*)\]\s+whileTrue:\s+\[$`).FindStringSubmatch(l)
+	if len(m) != 2 {
+		return Stmt{}, 0
+	}
+	cond := strings.TrimSpace(m[1])
+	var body []Stmt
+	n := 1
+	for j := i + 1; j < len(lines); j++ {
+		line := strings.TrimSpace(lines[j])
+		if line == "]" {
+			n = j - i + 1
+			break
+		}
+		if line == "" || line == "." {
+			continue
+		}
+		stmt := parseSimpleStmt(strings.TrimSuffix(line, "."))
+		if stmt.Kind != "" {
+			stmt.Line = j + 1
+			body = append(body, stmt)
+		} else {
+			body = append(body, Stmt{Kind: "unknown", Expr: line, Line: j + 1})
+		}
+	}
+	return Stmt{Kind: "while", Cond: cond, Body: body}, n
+}
+
+func parseFor(lines []string, i int) (Stmt, int) {
+	l := strings.TrimSpace(lines[i])
+	if !strings.Contains(l, " do:") {
+		return Stmt{}, 0
+	}
+	m := regexp.MustCompile(`^(.*)\s+to:\s+(.*)\s+do:\s+\[:([A-Za-z_][A-Za-z0-9_]*) \|$`).FindStringSubmatch(l)
+	if len(m) != 4 {
+		return Stmt{}, 0
+	}
+	start := strings.TrimSpace(m[1])
+	end := strings.TrimSpace(m[2])
+	if strings.HasSuffix(end, "- 1") {
+		end = strings.TrimSpace(strings.TrimSuffix(end, "- 1"))
+	}
+	name := strings.TrimSpace(m[3])
+	var body []Stmt
+	n := 1
+	for j := i + 1; j < len(lines); j++ {
+		line := strings.TrimSpace(lines[j])
+		if line == "]" {
+			n = j - i + 1
+			break
+		}
+		if line == "" || line == "." {
+			continue
+		}
+		stmt := parseSimpleStmt(strings.TrimSuffix(line, "."))
+		if stmt.Kind != "" {
+			stmt.Line = j + 1
+			body = append(body, stmt)
+		} else {
+			body = append(body, Stmt{Kind: "unknown", Expr: line, Line: j + 1})
+		}
+	}
+	return Stmt{Kind: "for", Name: name, Start: start, End: end, Body: body}, n
 }
