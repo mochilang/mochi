@@ -1,4 +1,4 @@
-package any2mochi
+package st
 
 import (
 	"bytes"
@@ -10,19 +10,19 @@ import (
 	"strings"
 )
 
-type stAST struct {
-	Statements []stStmt `json:"statements"`
+type AST struct {
+	Statements []Stmt `json:"statements"`
 }
 
-type stStmt struct {
-	Kind string   `json:"kind"`
-	Name string   `json:"name,omitempty"`
-	Expr string   `json:"expr,omitempty"`
-	Cond string   `json:"cond,omitempty"`
-	Body []stStmt `json:"body,omitempty"`
+type Stmt struct {
+	Kind string `json:"kind"`
+	Name string `json:"name,omitempty"`
+	Expr string `json:"expr,omitempty"`
+	Cond string `json:"cond,omitempty"`
+	Body []Stmt `json:"body,omitempty"`
 }
 
-func parseStCLI(src string) (*stAST, error) {
+func parseCLI(src string) (*AST, error) {
 	root, err := repoRoot()
 	if err != nil {
 		return nil, err
@@ -50,17 +50,17 @@ func parseStCLI(src string) (*stAST, error) {
 		}
 		return nil, fmt.Errorf("stast: %s", msg)
 	}
-	var ast stAST
+	var ast AST
 	if err := json.Unmarshal(out.Bytes(), &ast); err != nil {
 		return nil, err
 	}
 	return &ast, nil
 }
 
-func convertStAST(ast *stAST) ([]byte, error) {
+func convertAST(ast *AST) ([]byte, error) {
 	var out strings.Builder
 	for _, s := range ast.Statements {
-		writeStStmt(&out, s, 0)
+		writeStmt(&out, s, 0)
 	}
 	if out.Len() == 0 {
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(""))
@@ -68,7 +68,7 @@ func convertStAST(ast *stAST) ([]byte, error) {
 	return []byte(out.String()), nil
 }
 
-func writeStStmt(out *strings.Builder, s stStmt, indent int) {
+func writeStmt(out *strings.Builder, s Stmt, indent int) {
 	ind := strings.Repeat("  ", indent)
 	switch s.Kind {
 	case "assign":
@@ -96,9 +96,27 @@ func writeStStmt(out *strings.Builder, s stStmt, indent int) {
 		out.WriteString(s.Cond)
 		out.WriteString(" {\n")
 		for _, b := range s.Body {
-			writeStStmt(out, b, indent+1)
+			writeStmt(out, b, indent+1)
 		}
 		out.WriteString(ind)
 		out.WriteString("}\n")
 	}
+}
+
+func repoRoot() (string, error) {
+	dir, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir, nil
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	return "", os.ErrNotExist
 }

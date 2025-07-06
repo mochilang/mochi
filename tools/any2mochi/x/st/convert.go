@@ -1,44 +1,47 @@
-package any2mochi
+package st
 
 import (
+	any2mochi "mochi/tools/any2mochi"
+
+	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
 )
 
-// ConvertSt converts st source code to Mochi using the language server.
-func ConvertSt(src string) ([]byte, error) {
-	if ast, err := parseStCLI(src); err == nil {
-		if out, err := convertStAST(ast); err == nil {
+// Convert converts Smalltalk source code to Mochi using the language server.
+func Convert(src string) ([]byte, error) {
+	if ast, err := parseCLI(src); err == nil {
+		if out, err := convertAST(ast); err == nil {
 			return out, nil
 		}
 	}
-	ls := Servers["st"]
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+	ls := any2mochi.Servers["st"]
+	syms, diags, err := any2mochi.EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
 	if err != nil {
 		// fall back to a tiny regex based converter when the language
 		// server isn't available. this only handles very small
 		// programs consisting of assignments, prints and simple loops.
-		return convertStFallback(src)
+		return convertFallback(src)
 	}
 	if len(diags) > 0 {
 		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
 	}
 
 	var out strings.Builder
-	appendStSymbols(&out, syms, src, ls)
+	appendSymbols(&out, syms, src, ls)
 
 	if out.Len() == 0 {
 		// try the lightweight fallback parser if the language server
 		// returned no symbols.
-		return convertStFallback(src)
+		return convertFallback(src)
 	}
 	return []byte(out.String()), nil
 }
 
-func appendStSymbols(out *strings.Builder, syms []DocumentSymbol, src string, ls LanguageServer) {
+func appendSymbols(out *strings.Builder, syms []any2mochi.DocumentSymbol, src string, ls any2mochi.LanguageServer) {
 	for _, s := range syms {
-		appendStSymbol(out, s, src, ls, parentNone)
+		appendSymbol(out, s, src, ls, parentNone)
 	}
 }
 
@@ -47,10 +50,10 @@ const (
 	parentClass
 )
 
-func appendStSymbol(out *strings.Builder, s DocumentSymbol, src string, ls LanguageServer, parent int) {
+func appendSymbol(out *strings.Builder, s any2mochi.DocumentSymbol, src string, ls any2mochi.LanguageServer, parent int) {
 	switch s.Kind {
-	case SymbolKindClass:
-		fields, rest := splitStFields(s.Children)
+	case any2mochi.SymbolKindClass:
+		fields, rest := splitFields(s.Children)
 		out.WriteString("type ")
 		out.WriteString(s.Name)
 		if len(fields) == 0 && len(rest) == 0 {
@@ -65,7 +68,7 @@ func appendStSymbol(out *strings.Builder, s DocumentSymbol, src string, ls Langu
 		}
 		for _, c := range rest {
 			var b strings.Builder
-			appendStSymbol(&b, c, src, ls, parentClass)
+			appendSymbol(&b, c, src, ls, parentClass)
 			for _, line := range strings.Split(strings.TrimSuffix(b.String(), "\n"), "\n") {
 				out.WriteString("  ")
 				out.WriteString(line)
@@ -73,12 +76,12 @@ func appendStSymbol(out *strings.Builder, s DocumentSymbol, src string, ls Langu
 			}
 		}
 		out.WriteString("}\n")
-	case SymbolKindMethod, SymbolKindConstructor, SymbolKindFunction:
+	case any2mochi.SymbolKindMethod, any2mochi.SymbolKindConstructor, any2mochi.SymbolKindFunction:
 		out.WriteString("fun ")
-		out.WriteString(cleanStName(s.Name))
-		params := extractStParams(s)
+		out.WriteString(cleanName(s.Name))
+		params := extractParams(s)
 		if len(params) == 0 {
-			params = getStHoverParams(src, s.SelectionRange.Start, ls)
+			params = hoverParams(src, s.SelectionRange.Start, ls)
 		}
 		out.WriteByte('(')
 		for i, p := range params {
@@ -88,7 +91,7 @@ func appendStSymbol(out *strings.Builder, s DocumentSymbol, src string, ls Langu
 			out.WriteString(p)
 		}
 		out.WriteByte(')')
-		body := convertStBody(src, s)
+		body := convertBody(src, s)
 		if body == "" {
 			out.WriteString(" {}\n")
 		} else {
@@ -104,9 +107,9 @@ func appendStSymbol(out *strings.Builder, s DocumentSymbol, src string, ls Langu
 			out.WriteString("}\n")
 		}
 		for _, c := range s.Children {
-			appendStSymbol(out, c, src, ls, parent)
+			appendSymbol(out, c, src, ls, parent)
 		}
-	case SymbolKindVariable, SymbolKindConstant:
+	case any2mochi.SymbolKindVariable, any2mochi.SymbolKindConstant:
 		if parent == parentClass {
 			out.WriteString(s.Name)
 			out.WriteByte('\n')
@@ -117,15 +120,15 @@ func appendStSymbol(out *strings.Builder, s DocumentSymbol, src string, ls Langu
 		}
 	default:
 		for _, c := range s.Children {
-			appendStSymbol(out, c, src, ls, parent)
+			appendSymbol(out, c, src, ls, parent)
 		}
 	}
 }
 
-func splitStFields(syms []DocumentSymbol) (fields, rest []DocumentSymbol) {
+func splitFields(syms []any2mochi.DocumentSymbol) (fields, rest []any2mochi.DocumentSymbol) {
 	for _, s := range syms {
 		switch s.Kind {
-		case SymbolKindField, SymbolKindVariable, SymbolKindConstant:
+		case any2mochi.SymbolKindField, any2mochi.SymbolKindVariable, any2mochi.SymbolKindConstant:
 			fields = append(fields, s)
 		default:
 			rest = append(rest, s)
@@ -134,18 +137,18 @@ func splitStFields(syms []DocumentSymbol) (fields, rest []DocumentSymbol) {
 	return
 }
 
-func cleanStName(name string) string {
+func cleanName(name string) string {
 	if i := strings.Index(name, ":"); i != -1 {
 		return name[:i]
 	}
 	return name
 }
 
-func extractStParams(sym DocumentSymbol) []string {
+func extractParams(sym any2mochi.DocumentSymbol) []string {
 	start := sym.Range.Start.Line
 	var params []string
 	for _, c := range sym.Children {
-		if c.Kind == SymbolKindVariable && c.Range.Start.Line == start {
+		if c.Kind == any2mochi.SymbolKindVariable && c.Range.Start.Line == start {
 			if c.Name != "" {
 				params = append(params, c.Name)
 			}
@@ -154,8 +157,8 @@ func extractStParams(sym DocumentSymbol) []string {
 	return params
 }
 
-func getStHoverParams(src string, pos Position, ls LanguageServer) []string {
-	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, pos)
+func hoverParams(src string, pos any2mochi.Position, ls any2mochi.LanguageServer) []string {
+	hov, err := any2mochi.EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, pos)
 	if err != nil {
 		return nil
 	}
@@ -179,18 +182,18 @@ func getStHoverParams(src string, pos Position, ls LanguageServer) []string {
 	return params
 }
 
-// ConvertStFile reads the st file and converts it to Mochi.
-func ConvertStFile(path string) ([]byte, error) {
+// ConvertFile reads the Smalltalk file and converts it to Mochi.
+func ConvertFile(path string) ([]byte, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return ConvertSt(string(data))
+	return Convert(string(data))
 }
 
-// convertStBody extracts the body for the given symbol and converts a few simple
+// convertBody extracts the body for the given symbol and converts a few simple
 // statements. Only assignments, prints and return expressions are handled.
-func convertStBody(src string, sym DocumentSymbol) string {
+func convertBody(src string, sym any2mochi.DocumentSymbol) string {
 	lines := strings.Split(src, "\n")
 	start := int(sym.Range.Start.Line)
 	end := int(sym.Range.End.Line)
@@ -210,7 +213,7 @@ func convertStBody(src string, sym DocumentSymbol) string {
 		if l == "" || strings.HasPrefix(l, "|") {
 			continue
 		}
-		if s := convertStSimpleStmt(l); s != "" {
+		if s := convertSimpleStmt(l); s != "" {
 			stmts = append(stmts, s)
 		} else {
 			stmts = append(stmts, "// "+l)
@@ -219,10 +222,10 @@ func convertStBody(src string, sym DocumentSymbol) string {
 	return strings.Join(stmts, "\n")
 }
 
-// convertStFallback performs a very small subset conversion of Smalltalk source
+// convertFallback performs a very small subset conversion of Smalltalk source
 // without relying on a language server. Only simple global statements are
 // supported: variable assignments, prints and basic loops.
-func convertStFallback(src string) ([]byte, error) {
+func convertFallback(src string) ([]byte, error) {
 	lines := strings.Split(src, "\n")
 	start := -1
 	for i, l := range lines {
@@ -268,13 +271,13 @@ func convertStFallback(src string) ([]byte, error) {
 					}
 				}
 				body = strings.Join(bodyParts, " ")
-				if b := convertStSimpleStmt(body); b != "" {
+				if b := convertSimpleStmt(body); b != "" {
 					out.WriteString("while " + cond + " {\n  " + b + "\n}\n")
 				}
 				continue
 			}
 		}
-		if stmt := convertStSimpleStmt(strings.TrimSuffix(l, ".")); stmt != "" {
+		if stmt := convertSimpleStmt(strings.TrimSuffix(l, ".")); stmt != "" {
 			out.WriteString(stmt + "\n")
 		}
 	}
@@ -284,7 +287,7 @@ func convertStFallback(src string) ([]byte, error) {
 	return []byte(out.String()), nil
 }
 
-func convertStSimpleStmt(l string) string {
+func convertSimpleStmt(l string) string {
 	if strings.HasSuffix(l, "Transcript cr") {
 		l = strings.TrimSuffix(l, "Transcript cr")
 		l = strings.TrimSpace(strings.TrimSuffix(l, "."))
@@ -307,4 +310,62 @@ func convertStSimpleStmt(l string) string {
 		return "return " + strings.TrimSpace(strings.TrimPrefix(l, "^"))
 	}
 	return ""
+}
+
+func numberedSnippet(src string) string {
+	lines := strings.Split(src, "\n")
+	if len(lines) > 10 {
+		lines = lines[:10]
+	}
+	for i, l := range lines {
+		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
+	}
+	return strings.Join(lines, "\n")
+}
+
+func formatDiagnostics(src string, diags []any2mochi.Diagnostic) string {
+	lines := strings.Split(src, "\n")
+	var out strings.Builder
+	for _, d := range diags {
+		start := int(d.Range.Start.Line)
+		msg := d.Message
+		line := ""
+		if start < len(lines) {
+			line = strings.TrimSpace(lines[start])
+		}
+		out.WriteString(fmt.Sprintf("line %d: %s\n  %s\n", start+1, msg, line))
+	}
+	return strings.TrimSpace(out.String())
+}
+
+func hoverString(h any2mochi.Hover) string {
+	switch v := h.Contents.(type) {
+	case any2mochi.MarkupContent:
+		return v.Value
+	case any2mochi.MarkedString:
+		b, err := json.Marshal(v)
+		if err == nil {
+			var ms any2mochi.MarkedStringStruct
+			if err := json.Unmarshal(b, &ms); err == nil {
+				if ms.Value != "" {
+					return ms.Value
+				}
+			}
+			var s string
+			if err := json.Unmarshal(b, &s); err == nil {
+				return s
+			}
+		}
+		return ""
+	case []any2mochi.MarkedString:
+		parts := make([]string, 0, len(v))
+		for _, m := range v {
+			parts = append(parts, hoverString(any2mochi.Hover{Contents: m}))
+		}
+		return strings.Join(parts, "\n")
+	case string:
+		return v
+	default:
+		return fmt.Sprint(v)
+	}
 }
