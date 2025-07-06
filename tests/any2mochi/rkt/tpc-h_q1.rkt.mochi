@@ -1,15 +1,3 @@
-fun idx(x, i) {}
-fun slice(x, s, e) {}
-fun count(x) {}
-fun avg(x) {}
-fun _add(a, b) {}
-fun _div(a, b) {}
-fun expect(cond) {}
-fun _fetch(url, opts) {}
-fun _load(path, opts) {}
-fun _save(rows, path, opts) {}
-fun _group_by(src, keyfn) {}
-fun to-jsexpr(v) {}
 fun test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus() {}
 let lineitem
 let result
