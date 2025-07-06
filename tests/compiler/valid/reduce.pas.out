@@ -1,0 +1,20 @@
+program main;
+{$mode objfpc}
+
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
+
+type
+  generic TArray<T> = array of T;
+
+function add(acc: integer; v: integer): integer;
+begin
+  acc + v;
+end;
+
+var
+  nums: specialize TArray<integer>;
+
+begin
+  nums := specialize TArray<integer>([1, 2, 3, 4, 5]);
+  writeln(reduce(nums, add, 0));
+end.

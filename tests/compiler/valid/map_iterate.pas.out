@@ -1,0 +1,26 @@
+program main;
+{$mode objfpc}
+
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
+
+type
+  generic TArray<T> = array of T;
+
+var
+  _tmp0: specialize TFPGMap<string, integer>;
+  k: specialize TFPGMap<integer, boolean>;
+  m: specialize TFPGMap<integer, boolean>;
+  sum: integer;
+
+begin
+  _tmp0 := specialize TFPGMap<string, integer>.Create;
+  m := _tmp0;
+  m.KeyData[1] := True;
+  m.KeyData[2] := True;
+  sum := 0;
+  for k in m do
+    begin
+      sum := sum + k;
+    end;
+  writeln(sum);
+end.

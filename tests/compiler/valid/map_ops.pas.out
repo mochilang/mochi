@@ -1,0 +1,20 @@
+program main;
+{$mode objfpc}
+
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
+
+type
+  generic TArray<T> = array of T;
+
+var
+  _tmp0: specialize TFPGMap<string, integer>;
+  m: specialize TFPGMap<integer, integer>;
+
+begin
+  _tmp0 := specialize TFPGMap<string, integer>.Create;
+  m := _tmp0;
+  m.KeyData[1] := 10;
+  m.KeyData[2] := 20;
+  if (m.IndexOf(1) >= 0) then ;
+  writeln(m.KeyData[2]);
+end.

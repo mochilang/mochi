@@ -1,0 +1,22 @@
+program main;
+{$mode objfpc}
+
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
+
+type
+  generic TArray<T> = array of T;
+
+function sumN(n: integer): integer;
+begin
+  result := n * n + 1 div 2;
+  exit;
+end;
+
+var
+  n: integer;
+
+begin
+  n := 10;
+  writeln(sumN(n));
+  writeln(n);
+end.
