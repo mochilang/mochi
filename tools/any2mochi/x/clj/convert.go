@@ -1,6 +1,8 @@
-package any2mochi
+package clj
 
 import (
+	any2mochi "mochi/tools/any2mochi"
+
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -10,58 +12,102 @@ import (
 	"strings"
 )
 
-type cljAST struct {
-	Forms []cljForm `json:"forms"`
+type AST struct {
+	Forms []Form `json:"forms"`
 }
 
-type cljForm struct {
-	Type   string    `json:"type"`
-	Name   string    `json:"name,omitempty"`
-	Params []string  `json:"params,omitempty"`
-	Body   []cljNode `json:"body,omitempty"`
-	Value  cljNode   `json:"value,omitempty"`
+type Form struct {
+	Type   string   `json:"type"`
+	Name   string   `json:"name,omitempty"`
+	Params []string `json:"params,omitempty"`
+	Body   []Node   `json:"body,omitempty"`
+	Value  Node     `json:"value,omitempty"`
 }
 
-type cljNode struct {
-	Atom string    `json:"atom,omitempty"`
-	List []cljNode `json:"list,omitempty"`
+type Node struct {
+	Atom string `json:"atom,omitempty"`
+	List []Node `json:"list,omitempty"`
 }
 
-// ConvertClj converts Clojure source code to Mochi using the language server.
-func ConvertClj(src string) ([]byte, error) {
-	if ast, err := parseCljCLI(src); err == nil {
-		return convertCljAST(ast, src)
+func snippet(src string) string {
+	lines := strings.Split(src, "\n")
+	if len(lines) > 10 {
+		lines = lines[:10]
 	}
-	ls := Servers["clj"]
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+	for i, l := range lines {
+		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
+	}
+	return strings.Join(lines, "\n")
+}
+
+func diagnostics(src string, diags []any2mochi.Diagnostic) string {
+	lines := strings.Split(src, "\n")
+	var out strings.Builder
+	for _, d := range diags {
+		start := int(d.Range.Start.Line)
+		msg := d.Message
+		line := ""
+		if start < len(lines) {
+			line = strings.TrimSpace(lines[start])
+		}
+		out.WriteString(fmt.Sprintf("line %d: %s\n  %s\n", start+1, msg, line))
+	}
+	return strings.TrimSpace(out.String())
+}
+
+func repoRoot() (string, error) {
+	dir, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir, nil
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	return "", os.ErrNotExist
+}
+
+// Convert converts Clojure source code to Mochi using the language server.
+func Convert(src string) ([]byte, error) {
+	if ast, err := parseCLI(src); err == nil {
+		return convertAST(ast, src)
+	}
+	ls := any2mochi.Servers["clj"]
+	syms, diags, err := any2mochi.EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
 	if err != nil {
 		return nil, err
 	}
 	if len(diags) > 0 {
-		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
+		return nil, fmt.Errorf("%s", diagnostics(src, diags))
 	}
 	var out strings.Builder
 	writeCljSymbols(&out, nil, syms, ls, src)
 	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
 	}
 	return []byte(out.String()), nil
 }
 
-func writeCljSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol, ls LanguageServer, src string) {
+func writeCljSymbols(out *strings.Builder, prefix []string, syms []any2mochi.DocumentSymbol, ls any2mochi.LanguageServer, src string) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
 			nameParts = append(nameParts, s.Name)
 		}
 		switch s.Kind {
-		case SymbolKindFunction, SymbolKindMethod:
+		case any2mochi.SymbolKindFunction, any2mochi.SymbolKindMethod:
 			out.WriteString("fun ")
 			out.WriteString(strings.Join(nameParts, "."))
-			params, ret := parseCljParams(s.Detail)
+			params, ret := parseParams(s.Detail)
 			if len(params) == 0 || ret == "" {
-				if hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start); err == nil {
-					p, r := parseCljHoverSignature(hov)
+				if hov, err := any2mochi.EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start); err == nil {
+					p, r := parseHoverSignature(hov)
 					if len(p) > 0 {
 						params = p
 					}
@@ -79,7 +125,7 @@ func writeCljSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbo
 				out.WriteString(": ")
 				out.WriteString(ret)
 			}
-			body := parseCljBody(src, s.Range)
+			body := parseBody(src, s.Range)
 			if len(body) == 0 {
 				out.WriteString(" {}\n")
 			} else {
@@ -91,15 +137,15 @@ func writeCljSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbo
 				}
 				out.WriteString("}\n")
 			}
-		case SymbolKindClass, SymbolKindStruct:
+		case any2mochi.SymbolKindClass, any2mochi.SymbolKindStruct:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
 			out.WriteString(" {}\n")
-		case SymbolKindVariable, SymbolKindField, SymbolKindProperty, SymbolKindConstant:
+		case any2mochi.SymbolKindVariable, any2mochi.SymbolKindField, any2mochi.SymbolKindProperty, any2mochi.SymbolKindConstant:
 			out.WriteString("var ")
 			out.WriteString(strings.Join(nameParts, "."))
 			out.WriteString("\n")
-		case SymbolKindNamespace, SymbolKindModule, SymbolKindPackage:
+		case any2mochi.SymbolKindNamespace, any2mochi.SymbolKindModule, any2mochi.SymbolKindPackage:
 			if len(s.Children) > 0 {
 				writeCljSymbols(out, nameParts, s.Children, ls, src)
 			}
@@ -111,24 +157,24 @@ func writeCljSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbo
 	}
 }
 
-func parseCljHoverParams(h Hover) []string {
+func parseHoverParams(h any2mochi.Hover) []string {
 	var text string
 	switch c := h.Contents.(type) {
-	case MarkupContent:
+	case any2mochi.MarkupContent:
 		text = c.Value
-	case MarkedString:
+	case any2mochi.MarkedString:
 		if b, err := json.Marshal(c); err == nil {
-			var m MarkedStringStruct
+			var m any2mochi.MarkedStringStruct
 			if json.Unmarshal(b, &m) == nil {
 				text = m.Value
 			} else {
 				json.Unmarshal(b, &text)
 			}
 		}
-	case []MarkedString:
+	case []any2mochi.MarkedString:
 		if len(c) > 0 {
 			if b, err := json.Marshal(c[0]); err == nil {
-				var m MarkedStringStruct
+				var m any2mochi.MarkedStringStruct
 				if json.Unmarshal(b, &m) == nil {
 					text = m.Value
 				} else {
@@ -168,24 +214,24 @@ func parseCljHoverParams(h Hover) []string {
 	return nil
 }
 
-func parseCljHoverSignature(h Hover) ([]string, string) {
+func parseHoverSignature(h any2mochi.Hover) ([]string, string) {
 	var text string
 	switch c := h.Contents.(type) {
-	case MarkupContent:
+	case any2mochi.MarkupContent:
 		text = c.Value
-	case MarkedString:
+	case any2mochi.MarkedString:
 		if b, err := json.Marshal(c); err == nil {
-			var m MarkedStringStruct
+			var m any2mochi.MarkedStringStruct
 			if json.Unmarshal(b, &m) == nil {
 				text = m.Value
 			} else {
 				json.Unmarshal(b, &text)
 			}
 		}
-	case []MarkedString:
+	case []any2mochi.MarkedString:
 		if len(c) > 0 {
 			if b, err := json.Marshal(c[0]); err == nil {
-				var m MarkedStringStruct
+				var m any2mochi.MarkedStringStruct
 				if json.Unmarshal(b, &m) == nil {
 					text = m.Value
 				} else {
@@ -226,7 +272,7 @@ func parseCljHoverSignature(h Hover) ([]string, string) {
 	return nil, ""
 }
 
-func parseCljParams(detail *string) ([]string, string) {
+func parseParams(detail *string) ([]string, string) {
 	if detail == nil {
 		return nil, ""
 	}
@@ -255,16 +301,16 @@ func parseCljParams(detail *string) ([]string, string) {
 	return params, ret
 }
 
-// ConvertCljFile reads the Clojure file and converts it to Mochi.
-func ConvertCljFile(path string) ([]byte, error) {
+// ConvertFile reads the Clojure file and converts it to Mochi.
+func ConvertFile(path string) ([]byte, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return ConvertClj(string(data))
+	return Convert(string(data))
 }
 
-func parseCljCLI(src string) (*cljAST, error) {
+func parseCLI(src string) (*AST, error) {
 	root, err := repoRoot()
 	if err != nil {
 		return nil, err
@@ -280,7 +326,9 @@ func parseCljCLI(src string) (*cljAST, error) {
 	}
 	tmp.Close()
 	defer os.Remove(tmp.Name())
-	cmd := exec.Command("go", "run", filepath.Join(root, "tools", "cljast"), tmp.Name())
+
+	script := filepath.Join(root, "tools", "any2mochi", "x", "clj", "parse.clj")
+	cmd := exec.Command("clojure", script, tmp.Name())
 	var out bytes.Buffer
 	var stderr bytes.Buffer
 	cmd.Stdout = &out
@@ -290,27 +338,27 @@ func parseCljCLI(src string) (*cljAST, error) {
 		if msg == "" {
 			msg = err.Error()
 		}
-		return nil, fmt.Errorf("cljast: %s", msg)
+		return nil, fmt.Errorf("clojure: %s", msg)
 	}
-	var ast cljAST
+	var ast AST
 	if err := json.Unmarshal(out.Bytes(), &ast); err != nil {
 		return nil, err
 	}
 	return &ast, nil
 }
 
-func cljNodeToSexpr(n cljNode) sexprNode {
+func NodeToSexpr(n Node) sexprNode {
 	if len(n.List) > 0 {
 		var list []sexprNode
 		for _, c := range n.List {
-			list = append(list, cljNodeToSexpr(c))
+			list = append(list, NodeToSexpr(c))
 		}
 		return list
 	}
 	return n.Atom
 }
 
-func convertCljAST(ast *cljAST, src string) ([]byte, error) {
+func convertAST(ast *AST, src string) ([]byte, error) {
 	var out strings.Builder
 	for _, f := range ast.Forms {
 		switch f.Type {
@@ -325,7 +373,7 @@ func convertCljAST(ast *cljAST, src string) ([]byte, error) {
 			} else {
 				out.WriteString(" {\n")
 				for _, b := range f.Body {
-					if s := cljToMochi(cljNodeToSexpr(b)); s != "" {
+					if s := cljToMochi(NodeToSexpr(b)); s != "" {
 						out.WriteString("  ")
 						out.WriteString(s)
 						out.WriteByte('\n')
@@ -336,14 +384,14 @@ func convertCljAST(ast *cljAST, src string) ([]byte, error) {
 		case "def":
 			out.WriteString("let ")
 			out.WriteString(f.Name)
-			if s := cljToMochi(cljNodeToSexpr(f.Value)); s != "" {
+			if s := cljToMochi(NodeToSexpr(f.Value)); s != "" {
 				out.WriteString(" = ")
 				out.WriteString(s)
 			}
 			out.WriteByte('\n')
 		case "expr":
 			if len(f.Body) == 1 {
-				if s := cljToMochi(cljNodeToSexpr(f.Body[0])); s != "" {
+				if s := cljToMochi(NodeToSexpr(f.Body[0])); s != "" {
 					out.WriteString(s)
 					out.WriteByte('\n')
 				}
@@ -351,18 +399,18 @@ func convertCljAST(ast *cljAST, src string) ([]byte, error) {
 		}
 	}
 	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
 	}
 	return []byte(out.String()), nil
 }
 
-// parseCljBody extracts and converts the body of a Clojure function defined
+// parseBody extracts and converts the body of a Clojure function defined
 // within the given range of the source code. It performs a very small subset of
 // Clojure parsing in pure Go and attempts to translate the forms into Mochi
 // statements. Only a handful of constructs generated by the Mochi compiler are
 // recognised. The implementation intentionally does not rely on regular
 // expressions – it tokenises the source and builds a simple s-expression tree.
-func parseCljBody(src string, r Range) []string {
+func parseBody(src string, r any2mochi.Range) []string {
 	lines := strings.Split(src, "\n")
 	if int(r.Start.Line) >= len(lines) || int(r.End.Line) >= len(lines) {
 		return nil
@@ -389,7 +437,7 @@ func parseCljBody(src string, r Range) []string {
 	return stmts
 }
 
-type cljToken struct {
+type token struct {
 	kind int
 	val  string
 }
@@ -404,20 +452,20 @@ const (
 )
 
 // tokenize breaks src into minimal tokens.
-func tokenize(src string) []cljToken {
-	var toks []cljToken
+func tokenize(src string) []token {
+	var toks []token
 	for i := 0; i < len(src); {
 		switch src[i] {
 		case '(', ')', '[', ']':
 			switch src[i] {
 			case '(':
-				toks = append(toks, cljToken{tLParen, "("})
+				toks = append(toks, token{tLParen, "("})
 			case ')':
-				toks = append(toks, cljToken{tRParen, ")"})
+				toks = append(toks, token{tRParen, ")"})
 			case '[':
-				toks = append(toks, cljToken{tLBracket, "["})
+				toks = append(toks, token{tLBracket, "["})
 			case ']':
-				toks = append(toks, cljToken{tRBracket, "]"})
+				toks = append(toks, token{tRBracket, "]"})
 			}
 			i++
 		case ' ', '\t', '\n', '\r':
@@ -432,7 +480,7 @@ func tokenize(src string) []cljToken {
 				}
 			}
 			if j < len(src) {
-				toks = append(toks, cljToken{tString, src[i : j+1]})
+				toks = append(toks, token{tString, src[i : j+1]})
 				i = j + 1
 			} else {
 				i = j
@@ -442,7 +490,7 @@ func tokenize(src string) []cljToken {
 			for j < len(src) && !strings.ContainsRune("()[] \n\t\r", rune(src[j])) {
 				j++
 			}
-			toks = append(toks, cljToken{tSymbol, src[i:j]})
+			toks = append(toks, token{tSymbol, src[i:j]})
 			i = j
 		}
 	}
@@ -469,7 +517,7 @@ func parseClojure(src string) ([]sexprNode, int) {
 	return list, pos
 }
 
-func parseForm(toks []cljToken, i int) (sexprNode, int) {
+func parseForm(toks []token, i int) (sexprNode, int) {
 	if i >= len(toks) {
 		return nil, i
 	}
