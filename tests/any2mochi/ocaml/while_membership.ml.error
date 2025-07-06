@@ -1,0 +1,12 @@
+parse error: parse error: 1:12: unexpected token "let" (expected PostfixExpr)
+
+  1| let set = ref (let tbl = Hashtbl.create 0 in tbl);;
+  2| List.iter (fun n ->
+  3|     Hashtbl.replace !set n true;
+  4|   ) [1; 2; 3];;
+  5| let i = ref 1;;
+  6| let count = ref 0;;
+  7| while Hashtbl.mem !set !i do
+  8|   i := !i + 1;
+  9|   count := !count + 1;
+ 10| done;;

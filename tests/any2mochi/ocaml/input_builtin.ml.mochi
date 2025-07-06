@@ -1,5 +1,0 @@
-print("Enter first input:")
-let input1 = _input ()
-print("Enter second input:")
-let input2 = _input ()
-print(String.concat " " ["You entered:"; input1; ","; input2])

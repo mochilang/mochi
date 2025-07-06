@@ -44,14 +44,15 @@ for (let i = 0; i < tree.rootNode.namedChildren.length; i++) {
             );
             if (tc) ftype = text(tc);
           }
-          fields.push({
-            name,
-            type: ftype,
-            line: fld.startPosition.row + 1,
-            col: fld.startPosition.column + 1,
-            endLine: fld.endPosition.row + 1,
-            endCol: fld.endPosition.column + 1,
-          });
+        fields.push({
+          name,
+          type: ftype,
+          line: fld.startPosition.row + 1,
+          col: fld.startPosition.column + 1,
+          endLine: fld.endPosition.row + 1,
+          endCol: fld.endPosition.column + 1,
+          snippet: text(fld),
+        });
         }
         prog.types.push({
           name: m[1],
@@ -60,6 +61,7 @@ for (let i = 0; i < tree.rootNode.namedChildren.length; i++) {
           col: child.startPosition.column + 1,
           endLine: child.endPosition.row + 1,
           endCol: child.endPosition.column + 1,
+          snippet: text(child),
         });
         i++; // skip following expression_item
         continue;
@@ -89,14 +91,14 @@ for (let i = 0; i < tree.rootNode.namedChildren.length; i++) {
     const endLine = child.endPosition.row + 1;
     const endCol = child.endPosition.column + 1;
     if (params.length > 0) {
-      prog.funcs.push({ name, params, body: body.trim(), line, col, endLine, endCol });
+      prog.funcs.push({ name, params, body: body.trim(), line, col, endLine, endCol, snippet: text(child) });
     } else if (name) {
       const expr = body.trim().replace(/;$/, "");
       const mutable = expr.startsWith("ref ") || expr.startsWith("ref(");
       const cleaned = mutable ? expr.replace(/^ref\s*\(?/, '').replace(/\)?$/, '') : expr;
-      prog.vars.push({ name, expr: cleaned, mutable, line, col, endLine, endCol });
+      prog.vars.push({ name, expr: cleaned, mutable, line, col, endLine, endCol, snippet: text(child) });
     } else {
-      prog.prints.push({ expr: body.trim().replace(/;$/, ""), line, col, endLine, endCol });
+      prog.prints.push({ expr: body.trim().replace(/;$/, ""), line, col, endLine, endCol, snippet: text(child) });
     }
   } else if (child.type === "expression_item") {
     prog.prints.push({
@@ -105,6 +107,7 @@ for (let i = 0; i < tree.rootNode.namedChildren.length; i++) {
       col: child.startPosition.column + 1,
       endLine: child.endPosition.row + 1,
       endCol: child.endPosition.column + 1,
+      snippet: text(child),
     });
   } else if (child.type === "type_definition") {
     for (const bind of child.namedChildren) {
@@ -142,6 +145,7 @@ for (let i = 0; i < tree.rootNode.namedChildren.length; i++) {
           col: fld.startPosition.column + 1,
           endLine: fld.endPosition.row + 1,
           endCol: fld.endPosition.column + 1,
+          snippet: text(fld),
         });
       }
       prog.types.push({
@@ -151,6 +155,7 @@ for (let i = 0; i < tree.rootNode.namedChildren.length; i++) {
         col: bind.startPosition.column + 1,
         endLine: bind.endPosition.row + 1,
         endCol: bind.endPosition.column + 1,
+        snippet: text(bind),
       });
     }
   }

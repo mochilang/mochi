@@ -1,2 +1,0 @@
-let name = "mochi"
-print((String.make 1 (String.get name 0)) + "!")

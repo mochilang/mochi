@@ -345,6 +345,9 @@ func parseOcamlBody(lines []string, sym parent.DocumentSymbol) []string {
 	body = strings.ReplaceAll(body, "string_of_int", "str")
 	body = strings.ReplaceAll(body, "string_of_float", "str")
 	body = strings.ReplaceAll(body, "string_of_bool", "str")
+	body = strings.ReplaceAll(body, "List.length", "len")
+	reNth := regexp.MustCompile(`List\.nth\s+([^\s]+)\s+([^\s]+)`)
+	body = reNth.ReplaceAllString(body, "$1[$2]")
 	body = strings.ReplaceAll(body, ":=", "=")
 	body = strings.ReplaceAll(body, "!", "")
 	body = strings.ReplaceAll(body, "^", "+")
@@ -376,6 +379,7 @@ func fallbackOcaml(lines []string) []string {
 	var out []string
 	reLet := regexp.MustCompile(`^let\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(.*)`)
 	reRef := regexp.MustCompile(`^let\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*ref\s+(.*)`)
+	reNth := regexp.MustCompile(`List\.nth\s+([^\s]+)\s+([^\s]+)`)
 	for _, line := range lines {
 		t := strings.TrimSpace(line)
 		if m := reRef.FindStringSubmatch(t); m != nil {
@@ -402,6 +406,8 @@ func fallbackOcaml(lines []string) []string {
 			t = strings.ReplaceAll(t, "string_of_int", "")
 			t = strings.ReplaceAll(t, "string_of_float", "")
 			t = strings.ReplaceAll(t, "string_of_bool", "")
+			t = strings.ReplaceAll(t, "List.length", "len")
+			t = reNth.ReplaceAllString(t, "$1[$2]")
 			t = strings.ReplaceAll(t, "not ", "!")
 			t = strings.ReplaceAll(t, "^", "+")
 			t = strings.TrimSpace(t)

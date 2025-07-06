@@ -16,6 +16,18 @@ import (
 	"mochi/types"
 )
 
+func snippetFromFile(path string) string {
+	data, _ := os.ReadFile(path)
+	lines := strings.Split(string(data), "\n")
+	if len(lines) > 10 {
+		lines = lines[:10]
+	}
+	for i, l := range lines {
+		lines[i] = fmt.Sprintf("%3d| %s", i+1, l)
+	}
+	return strings.Join(lines, "\n")
+}
+
 var update = flag.Bool("update", false, "update golden files")
 
 func readGolden(path string, alts ...string) ([]byte, error) {
@@ -104,14 +116,16 @@ func runConvertCompileGolden(t *testing.T, dir, pattern string, convert func(str
 			if err != nil {
 				if *update {
 					os.WriteFile(outPath, nil, 0644)
-					os.WriteFile(errPath, normalizeOutput(rootDir(t), []byte(err.Error())), 0644)
+					msg := fmt.Sprintf("%v\n\n%s", err, snippetFromFile(src))
+					os.WriteFile(errPath, normalizeOutput(rootDir(t), []byte(msg)), 0644)
 				}
 				altErr := filepath.Join(outDir, name+"."+lang+errExt)
 				want, readErr := readGolden(errPath, altErr)
 				if readErr != nil {
 					t.Fatalf("missing golden error: %v", readErr)
 				}
-				if got := normalizeOutput(rootDir(t), []byte(err.Error())); !bytes.Equal(got, normalizeOutput(rootDir(t), want)) {
+				msg := fmt.Sprintf("%v\n\n%s", err, snippetFromFile(src))
+				if got := normalizeOutput(rootDir(t), []byte(msg)); !bytes.Equal(got, normalizeOutput(rootDir(t), want)) {
 					t.Errorf("error mismatch\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", got, want)
 				}
 				return
@@ -173,14 +187,16 @@ func runConvertGolden(t *testing.T, dir, pattern string, convert func(string) ([
 			if err != nil {
 				if *update {
 					os.WriteFile(outPath, nil, 0644)
-					os.WriteFile(errPath, normalizeOutput(rootDir(t), []byte(err.Error())), 0644)
+					msg := fmt.Sprintf("%v\n\n%s", err, snippetFromFile(src))
+					os.WriteFile(errPath, normalizeOutput(rootDir(t), []byte(msg)), 0644)
 				}
 				altErr := filepath.Join(outDir, name+"."+lang+errExt)
 				want, readErr := readGolden(errPath, altErr)
 				if readErr != nil {
 					t.Fatalf("missing golden error: %v", readErr)
 				}
-				if got := normalizeOutput(rootDir(t), []byte(err.Error())); !bytes.Equal(got, normalizeOutput(rootDir(t), want)) {
+				msg := fmt.Sprintf("%v\n\n%s", err, snippetFromFile(src))
+				if got := normalizeOutput(rootDir(t), []byte(msg)); !bytes.Equal(got, normalizeOutput(rootDir(t), want)) {
 					t.Errorf("error mismatch\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", got, want)
 				}
 				return

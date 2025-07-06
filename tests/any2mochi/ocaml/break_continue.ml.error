@@ -1,0 +1,12 @@
+parse error: parse error: 2:40: lexer: invalid input text ";  (n)]);)\n"
+
+  1| exception BreakException of int
+  2| exception ContinueException of int
+  3| 
+  4| let numbers = [1; 2; 3; 4; 5; 6; 7; 8; 9];;
+  5| try
+  6|   List.iter (fun n ->
+  7|       try
+  8|         if n mod 2 = 0 then begin
+  9|           raise (ContinueException 0)
+ 10|         end;
