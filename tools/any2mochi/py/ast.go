@@ -1,4 +1,4 @@
-package any2mochi
+package py
 
 import (
 	"bytes"
@@ -10,28 +10,28 @@ import (
 	"time"
 )
 
-type pyNode struct {
+type node struct {
 	Type  string          `json:"_type"`
 	Name  string          `json:"name,omitempty"`
 	ID    string          `json:"id,omitempty"`
-	Body  []*pyNode       `json:"body,omitempty"`
+	Body  []*node         `json:"body,omitempty"`
 	Value json.RawMessage `json:"value,omitempty"`
-	Func  *pyNode         `json:"func,omitempty"`
+	Func  *node           `json:"func,omitempty"`
 	Args  json.RawMessage `json:"args,omitempty"`
 }
 
-func (n *pyNode) valueNode() *pyNode {
+func (n *node) valueNode() *node {
 	if n == nil || len(n.Value) == 0 || n.Value[0] == '"' || n.Value[0] == '-' || (n.Value[0] >= '0' && n.Value[0] <= '9') {
 		return nil
 	}
-	var out pyNode
+	var out node
 	if err := json.Unmarshal(n.Value, &out); err != nil {
 		return nil
 	}
 	return &out
 }
 
-func (n *pyNode) constValue() any {
+func (n *node) constValue() any {
 	if n == nil || len(n.Value) == 0 {
 		return nil
 	}
@@ -40,16 +40,16 @@ func (n *pyNode) constValue() any {
 	return v
 }
 
-func (n *pyNode) callArgs() []*pyNode {
+func (n *node) callArgs() []*node {
 	if n == nil || len(n.Args) == 0 {
 		return nil
 	}
-	var arr []*pyNode
+	var arr []*node
 	if err := json.Unmarshal(n.Args, &arr); err == nil {
 		return arr
 	}
 	var fn struct {
-		Args []*pyNode `json:"args"`
+		Args []*node `json:"args"`
 	}
 	if err := json.Unmarshal(n.Args, &fn); err == nil {
 		return fn.Args
@@ -57,7 +57,7 @@ func (n *pyNode) callArgs() []*pyNode {
 	return nil
 }
 
-const pyASTScript = `import ast, json, sys
+const astScript = `import ast, json, sys
 
 def node_to_dict(node):
     if isinstance(node, ast.AST):
@@ -73,31 +73,31 @@ def node_to_dict(node):
 tree = ast.parse(sys.stdin.read())
 json.dump(node_to_dict(tree), sys.stdout)`
 
-func parsePyAST(src string) (*pyNode, error) {
+func parseAST(src string) (*node, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	cmd := exec.CommandContext(ctx, pyCmd, "-c", pyASTScript)
+	cmd := exec.CommandContext(ctx, pythonCmd, "-c", astScript)
 	cmd.Stdin = strings.NewReader(src)
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	if err := cmd.Run(); err != nil {
 		return nil, err
 	}
-	var root pyNode
+	var root node
 	if err := json.Unmarshal(out.Bytes(), &root); err != nil {
 		return nil, err
 	}
 	return &root, nil
 }
 
-func emitPyAST(b *strings.Builder, n *pyNode, indent string) {
+func emitAST(b *strings.Builder, n *node, indent string) {
 	if n == nil {
 		return
 	}
 	switch n.Type {
 	case "Module":
 		for _, c := range n.Body {
-			emitPyAST(b, c, indent)
+			emitAST(b, c, indent)
 		}
 	case "FunctionDef":
 		b.WriteString("fun ")
@@ -106,17 +106,17 @@ func emitPyAST(b *strings.Builder, n *pyNode, indent string) {
 		for _, st := range n.Body {
 			b.WriteString(indent)
 			b.WriteString("  ")
-			emitPyAST(b, st, indent+"  ")
+			emitAST(b, st, indent+"  ")
 		}
 		b.WriteString(indent)
 		b.WriteString("}\n")
 	case "Expr":
-		emitPyExpr(b, n.valueNode())
+		emitExpr(b, n.valueNode())
 		b.WriteString("\n")
 	}
 }
 
-func emitPyExpr(b *strings.Builder, n *pyNode) {
+func emitExpr(b *strings.Builder, n *node) {
 	if n == nil {
 		return
 	}
@@ -130,7 +130,7 @@ func emitPyExpr(b *strings.Builder, n *pyNode) {
 				if i > 0 {
 					b.WriteString(", ")
 				}
-				emitPyExpr(b, a)
+				emitExpr(b, a)
 			}
 			b.WriteString(")")
 			return
@@ -144,7 +144,7 @@ func emitPyExpr(b *strings.Builder, n *pyNode) {
 			if i > 0 {
 				b.WriteString(", ")
 			}
-			emitPyExpr(b, a)
+			emitExpr(b, a)
 		}
 		b.WriteString(")")
 	case "Name":
@@ -160,14 +160,14 @@ func emitPyExpr(b *strings.Builder, n *pyNode) {
 	}
 }
 
-// ConvertPythonAST converts Python code to Mochi using a JSON AST.
-func ConvertPythonAST(src string) ([]byte, error) {
-	root, err := parsePyAST(src)
+// ConvertAST converts Python code to Mochi using a JSON AST.
+func ConvertAST(src string) ([]byte, error) {
+	root, err := parseAST(src)
 	if err != nil {
 		return nil, err
 	}
 	var b strings.Builder
-	emitPyAST(&b, root, "")
+	emitAST(&b, root, "")
 	out := strings.TrimSpace(b.String())
 	if out == "" {
 		return nil, fmt.Errorf("no output")

@@ -1,12 +1,20 @@
 //go:build slow
 
-package any2mochi
+package py
 
 import (
+	"os/exec"
 	"testing"
 
 	pycode "mochi/compile/py"
 )
+
+func requireBinary(t *testing.T, name string) {
+	t.Helper()
+	if _, err := exec.LookPath(name); err != nil {
+		t.Skipf("%s not found", name)
+	}
+}
 
 func TestParsePython(t *testing.T) {
 	_ = pycode.EnsurePyright()
