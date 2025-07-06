@@ -13,6 +13,7 @@ import (
 	cobolcode "mochi/compile/x/cobol"
 	"mochi/golden"
 	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -61,6 +62,10 @@ func TestCobolCompiler_SubsetPrograms(t *testing.T) {
 		t.Skipf("cobol not installed: %v", err)
 	}
 	golden.Run(t, "tests/compiler/cobol", ".mochi", ".out", func(src string) ([]byte, error) {
+		srcBytes, err := os.ReadFile(src)
+		if err != nil {
+			return nil, fmt.Errorf("read error: %w", err)
+		}
 		prog, err := parser.Parse(src)
 		if err != nil {
 			return nil, fmt.Errorf("\u274c parse error: %w", err)
@@ -87,11 +92,27 @@ func TestCobolCompiler_SubsetPrograms(t *testing.T) {
 		if err != nil {
 			return nil, fmt.Errorf("\u274c run error: %w\n%s", err, out)
 		}
-		res := bytes.TrimSpace(out)
-		if res == nil {
-			res = []byte{}
+		got := bytes.TrimSpace(out)
+		if got == nil {
+			got = []byte{}
 		}
-		return res, nil
+
+		// Run the Mochi program using the VM for comparison.
+		p2, err := vm.CompileWithSource(prog, env, string(srcBytes))
+		if err != nil {
+			return nil, fmt.Errorf("vm compile error: %w", err)
+		}
+		var vmOut bytes.Buffer
+		m := vm.New(p2, &vmOut)
+		if rErr := m.Run(); rErr != nil {
+			return nil, fmt.Errorf("vm run error: %w", rErr)
+		}
+		want := bytes.TrimSpace(vmOut.Bytes())
+		if !bytes.Equal(got, want) {
+			return nil, fmt.Errorf("vm output mismatch\n\n--- Cobol ---\n%s\n\n--- VM ---\n%s\n", got, want)
+		}
+
+		return got, nil
 	})
 }
 
