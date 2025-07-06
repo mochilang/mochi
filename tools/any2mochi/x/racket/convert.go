@@ -19,9 +19,13 @@ func Convert(src string) ([]byte, error) {
 	var out strings.Builder
 	if ls.Command != "" {
 		syms, diags, err := parent.EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
-		if err == nil && len(diags) == 0 {
-			writeSymbols(&out, nil, syms, src, ls)
+		if err != nil {
+			return nil, err
 		}
+		if len(diags) > 0 {
+			return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
+		}
+		writeSymbols(&out, nil, syms, src, ls)
 	}
 	var items []item
 	if out.Len() == 0 {
@@ -550,4 +554,30 @@ func numberedSnippet(src string) string {
 		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
 	}
 	return strings.Join(lines, "\n")
+}
+
+func formatDiagnostics(src string, diags []parent.Diagnostic) string {
+	lines := strings.Split(src, "\n")
+	var out strings.Builder
+	for _, d := range diags {
+		start := int(d.Range.Start.Line)
+		col := int(d.Range.Start.Character)
+		msg := d.Message
+		from := start - 1
+		if from < 0 {
+			from = 0
+		}
+		to := start + 1
+		if to >= len(lines) {
+			to = len(lines) - 1
+		}
+		out.WriteString(fmt.Sprintf("line %d:%d: %s\n", start+1, col+1, msg))
+		for i := from; i <= to; i++ {
+			out.WriteString(fmt.Sprintf("%4d| %s\n", i+1, lines[i]))
+			if i == start {
+				out.WriteString("     " + strings.Repeat(" ", col) + "^\n")
+			}
+		}
+	}
+	return strings.TrimSpace(out.String())
 }
