@@ -1,4 +1,0 @@
-syntax error at line 8: syntax error, unexpected LABEL
-   7 | 01 X PIC 9.
-   8 | 01 LABEL PIC X(100).
-   9 | 01 TMP0 PIC 9.

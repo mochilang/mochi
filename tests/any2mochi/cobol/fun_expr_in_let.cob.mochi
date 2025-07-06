@@ -1,4 +1,5 @@
 fun main() {
   var lambda0_p0 = 6
+  flambda0()
   print(lambda0_res)
 }

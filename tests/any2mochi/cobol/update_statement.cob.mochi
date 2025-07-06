@@ -1,6 +1,0 @@
-fun main() {
-  print("-- TEST update adult status --")
-  if NOT (people = 0) {
-    print("expect failed")
-  }
-}

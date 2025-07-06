@@ -1,0 +1,13 @@
+fun main() {
+  var x = 2
+  var tmp0 = x
+  if tmp0 = 1 {
+    var tmp1 = "one"
+    tmp1 = "two"
+    tmp1 = "three"
+  } else {
+    tmp1 = "unknown"
+  }
+  var label = tmp1
+  print(label)
+}

@@ -3,14 +3,13 @@ fun main() {
     for i in range(0, 5) {
       if i = 3 {
       }
+      print(i)
     }
-    if i = 3 {
+  } else {
+    for i in range(0, 5) {
+      if i = 3 {
+      }
+      print(i)
     }
-  }
-  print(i)
-  for i in range(0, 5) {
-    if i = 3 {
-    }
-    print(i)
   }
 }

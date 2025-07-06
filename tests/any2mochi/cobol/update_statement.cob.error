@@ -1,0 +1,4 @@
+unsupported feature at line 10:  unsupported update statement
+   9 | PROCEDURE DIVISION.
+  10 |     *> unsupported update statement
+  11 | DISPLAY "-- TEST update adult status --"

@@ -1,4 +1,0 @@
-syntax error at line 21: 'P_AGE' is not defined
-  20 |     MOVE PEOPLE(IDX + 1) TO P
-  21 |     IF P_AGE >= 18
-  22 |         ADD 1 TO TMP1

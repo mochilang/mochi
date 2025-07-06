@@ -1,0 +1,11 @@
+fun main() {
+  var tmp0 = -1
+  if tmp0 < 0 {
+    var tmp1 = FUNCTION LENGTH("hello")
+    tmp0 = tmp0 + tmp1
+  }
+  var tmp2 = tmp0 + 1
+  var tmp3 = "hello"(tmp2:1)
+  var tmp4 = tmp3
+  print(tmp4)
+}

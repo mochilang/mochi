@@ -3,9 +3,10 @@ fun main() {
   if x > 0 {
     if x > 3 {
       print("big")
+    } else {
+      print("mid")
     }
   } else {
-    print("mid")
+    print("neg")
   }
-  print("neg")
 }

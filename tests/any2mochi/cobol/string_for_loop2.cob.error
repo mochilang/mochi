@@ -1,4 +1,0 @@
-syntax error at line 9: syntax error, unexpected CH
-   8 | 01 IDX PIC 9.
-   9 | 01 CH PIC X.
-  10 |
