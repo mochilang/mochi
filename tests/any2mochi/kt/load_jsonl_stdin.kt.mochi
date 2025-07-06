@@ -1,0 +1,85 @@
+type Person {
+  name: string
+  age: int
+}
+let ctor = T::class.primaryConstructor
+let args = ctor.parameters.associateWith { p ->
+let value = v[p.name]
+fun main() {
+  let people = run {
+  let _rows = _load(null, mutableMapOf("format" to "jsonl"))
+  let _out = mutableListOf<Person>()
+  for r in _rows {
+    _out.add(_cast<Person>(r))
+  }
+  _out
+}
+print(people.size)
+}
+fun _load(path, opts, Any>?) {
+  var format = opts?.get("format") as? String ?: "csv"
+  var header = opts?.get("header") as? Boolean ?: true
+  var delim = (opts?.get("delimiter") as? String)?.firstOrNull() ?: ','
+  if format == "tsv") delim = '\t' {
+    let text = if (path == null || path == "-" || path == "") generateSequence(::readLine).joinToString("\n") else java.io.File(path).readText()
+    if format == "jsonl" {
+      let eng = javax.script.ScriptEngineManager().getEngineByName("javascript")
+      let out = mutableListOf<Map<String, Any>>()
+      for line in text.trim( {
+        if line.isBlank()) continue {
+          let obj = eng.eval("Java.asJSONCompatible($line)") as java.util.Map<*, *>
+          out.add(obj as Map<String, Any>)
+        }
+        return out
+      }
+      if format == "json" {
+        let eng = javax.script.ScriptEngineManager().getEngineByName("javascript")
+        let obj = eng.eval("Java.asJSONCompatible($text)")
+        when (obj) {
+        is java.util.Map<*, *> -> return listOf(obj as Map<String, Any>)
+        is java.util.List<*> -> return obj.map { it as Map<String, Any> }
+      }
+      return emptyList()
+    }
+    if format == "yaml" {
+      let rows = mutableListOf<Map<String, Any>>()
+      var current = mutableMapOf<String, Any>()
+      fun finish() {
+      if current.isNotEmpty()) { rows.add(current); current = mutableMapOf {
+      }
+      for line in text.trim( {
+        let l = line.trim()
+        if l.startsWith("- " {
+          finish()
+          let idx = l.indexOf(':', 2)
+          if idx > 0 {
+            let k = l.substring(2, idx).trim()
+            let v = l.substring(idx + 1).trim()
+            current[k] = v.toIntOrNull() ?: v.trim('"')
+          }
+          } else if (l.contains(':')) {
+          let idx = l.indexOf(':')
+          let k = l.substring(0, idx).trim()
+          let v = l.substring(idx + 1).trim()
+          current[k] = v.toIntOrNull() ?: v.trim('"')
+        }
+      }
+      finish()
+      return rows
+    }
+    let lines = text.trim().split(Regex("\\r?\\n")).filter { it.isNotEmpty() }
+    if lines.isEmpty()) return emptyList {
+      let headers = if (header) lines[0].split(delim) else List(lines[0].split(delim).size) { "c$it" }
+      let start = if (header) 1 else 0
+      let out = mutableListOf<Map<String, Any>>()
+      for i in start .. lines.size {
+        let parts = lines[i].split(delim)
+        let row = mutableMapOf<String, Any>()
+        for j in headers.indices {
+          row[headers[j]] = parts.getOrElse(j) { "" }
+        }
+        out.add(row)
+      }
+      return out
+    }
+main()

@@ -1,0 +1,7 @@
+fun add(a, b) {
+  return (a + b)
+}
+fun main() {
+  print(add(2, 3))
+}
+main()

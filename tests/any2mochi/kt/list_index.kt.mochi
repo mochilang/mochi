@@ -1,0 +1,5 @@
+fun main() {
+  let xs = listOf(10, 20, 30)
+  print(xs[1])
+}
+main()

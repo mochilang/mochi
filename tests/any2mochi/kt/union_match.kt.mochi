@@ -1,0 +1,20 @@
+type Leaf {}
+type Node {
+  left: Tree
+  value: int
+  right: Tree
+}
+fun isLeaf(t) {
+  return run {
+  let _t = t
+  when {
+  _t is Leaf -> true
+  else -> false
+}
+}
+}
+fun main() {
+  print(isLeaf(Leaf()))
+  print(isLeaf(Node(left = Leaf(), value = 1, right = Leaf())))
+}
+main()

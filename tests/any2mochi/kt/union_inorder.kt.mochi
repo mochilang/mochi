@@ -1,0 +1,24 @@
+type Leaf {}
+type Node {
+  left: Tree
+  value: int
+  right: Tree
+}
+fun inorder(t) {
+  return run {
+  let _t = t
+  when {
+  _t is Leaf -> (listOf()) as List<Int>
+  _t is Node -> {
+  let l = _t.left
+  let v = _t.value
+  let r = _t.right
+  _concat(_concat(inorder(l), listOf(v)), inorder(r))
+}
+}
+}
+}
+fun main() {
+  print(inorder(Node(left = Leaf(), value = 1, right = Node(left = Leaf(), value = 2, right = Leaf()))))
+}
+main()

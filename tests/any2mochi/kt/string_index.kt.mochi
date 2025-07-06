@@ -1,0 +1,12 @@
+fun main() {
+  let text = "hello"
+  print(_indexString(text, 1))
+}
+fun _indexString(s, i) {
+  var idx = i
+  let arr = s.toCharArray()
+  if idx < 0) idx += arr.size {
+    if idx < 0 || idx >= arr.size) throw RuntimeException("index out of range" {
+      return arr[idx].toString()
+    }
+main()

@@ -1,0 +1,6 @@
+fun main() {
+  for ch in "hi" {
+    print(ch)
+  }
+}
+main()

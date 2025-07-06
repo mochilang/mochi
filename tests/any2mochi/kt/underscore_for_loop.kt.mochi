@@ -1,0 +1,18 @@
+fun main() {
+  var c = 0
+  for _ in 0 .. 2 {
+    c = (c + 1)
+  }
+  for _ in listOf(1, 2 {
+    c = (c + 1)
+  }
+  for _ in "ab" {
+    c = (c + 1)
+  }
+  var m = mutableMapOf("x" to 1, "y" to 2)
+  for _ in m.keys {
+    c = (c + 1)
+  }
+  print(c)
+}
+main()

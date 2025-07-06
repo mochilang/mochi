@@ -1,0 +1,11 @@
+type Empty {}
+type Node {
+  child: Foo
+}
+fun listit() {
+  return listOf(Empty())
+}
+fun main() {
+  print(listit().size)
+}
+main()

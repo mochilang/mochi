@@ -1,0 +1,17 @@
+fun main() {
+  _json(mutableMapOf("a" to 1))
+}
+fun _json(v) {
+  fun encode(x: Any?): String = when (x) {
+  null -> "null"
+  is String -> \"""${x.replace("\"", "\\\"")}\"""
+  is Int, is Double, is Boolean -> x.toString()
+  is List<*> -> x.joinToString(prefix = "[", postfix = "]") { encode(it) }
+  is Map<*, *> -> x.entries.joinToString(prefix = "{", postfix = "}") { e ->
+  "\"" + e.key.toString().replace("\"", "\\\"") + "\":" + encode(e.value)
+}
+else -> \"""${x.toString().replace("\"", "\\\"")}\"""
+}
+print(encode(v))
+}
+main()

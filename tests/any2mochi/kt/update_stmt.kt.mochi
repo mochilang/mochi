@@ -1,0 +1,24 @@
+type Person {
+  name: string
+  age: int
+  status: string
+}
+fun test_update_adult_status() {
+  check((people == listOf(Person(name = "Alice", age = 17, status = "minor"), Person(name = "Bob", age = 26, status = "adult"), Person(name = "Charlie", age = 19, status = "adult"), Person(name = "Diana", age = 16, status = "minor"))))
+}
+fun main() {
+  let people: MutableList<Person> = listOf(Person(name = "Alice", age = 17, status = "minor"), Person(name = "Bob", age = 25, status = "unknown"), Person(name = "Charlie", age = 18, status = "unknown"), Person(name = "Diana", age = 16, status = "minor")).toMutableList()
+  for i in 0 .. people.size {
+    var _item = people[i]
+    let name = _item.name
+    let age = _item.age
+    let status = _item.status
+    if age >= 18 {
+      _item = _item.copy(status = "adult", age = (age + 1))
+    }
+    people[i] = _item
+  }
+  print("ok")
+  test_update_adult_status()
+}
+main()

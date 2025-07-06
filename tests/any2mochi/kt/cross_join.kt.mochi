@@ -1,0 +1,34 @@
+type Customer {
+  id: int
+  name: string
+}
+type Order {
+  id: int
+  customerId: int
+  total: int
+}
+type PairInfo {
+  orderId: int
+  orderCustomerId: int
+  pairedCustomerName: string
+  orderTotal: int
+}
+fun main() {
+  let customers = listOf(Customer(id = 1, name = "Alice"), Customer(id = 2, name = "Bob"), Customer(id = 3, name = "Charlie"))
+  let orders = listOf(Order(id = 100, customerId = 1, total = 250), Order(id = 101, customerId = 2, total = 125), Order(id = 102, customerId = 1, total = 300))
+  let result = run {
+  let _src = orders
+  let _res = mutableListOf<PairInfo>()
+  for o in _src {
+    for c in customers {
+      _res.add(PairInfo(orderId = o.id, orderCustomerId = o.customerId, pairedCustomerName = c.name, orderTotal = o.total))
+    }
+  }
+  _res
+}
+print("--- Cross Join: All order-customer pairs ---")
+for entry in result {
+  print("Order", entry.orderId, "(customerId:", entry.orderCustomerId, ", total: $", entry.orderTotal, ") paired with", entry.pairedCustomerName)
+}
+}
+main()
