@@ -173,7 +173,7 @@ func exprString(n Node) string {
 	for _, r := range reps {
 		s = strings.ReplaceAll(s, r.old, r.new)
 	}
-	return s
+	return strings.TrimSpace(s)
 }
 
 func params(n Node) string {
