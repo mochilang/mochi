@@ -372,6 +372,10 @@ func expr(n Node) string {
 			return "\"" + strings.TrimPrefix(n.Atom, "'") + "\""
 		}
 		switch n.Atom {
+		case "#t":
+			return "true"
+		case "#f":
+			return "false"
 		case "'()":
 			return "[]"
 		default:
