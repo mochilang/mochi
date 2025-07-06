@@ -1,43 +1,35 @@
-package any2mochi
+package racket
 
 import (
-	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 	"os"
-	"os/exec"
-	"path/filepath"
 	"regexp"
 	"strings"
-	"time"
+
+	parent "mochi/tools/any2mochi"
 )
 
-// ConvertRkt converts Racket source code using the language server. It extracts
-// top level definitions from the LSP symbols.  Parameter and return type
-// information is obtained from the symbol detail string or from hover text
-// provided by the server.  Only information returned by the language server is
-// used -- no regex parsing or fallbacks.
-func ConvertRkt(src string) ([]byte, error) {
-	ls := Servers["rkt"]
+// Convert converts Racket source code to Mochi. It first tries the configured
+// language server and falls back to a small parser implemented in this
+// package. Only information returned by the language server is used—no regex
+// parsing or other fallbacks.
+func Convert(src string) ([]byte, error) {
+	ls := parent.Servers["rkt"]
 	var out strings.Builder
 	if ls.Command != "" {
-		syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+		syms, diags, err := parent.EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
 		if err == nil && len(diags) == 0 {
-			writeRktSymbols(&out, nil, syms, src, ls)
+			writeSymbols(&out, nil, syms, src, ls)
 		}
 	}
-	var items []rktItem
+	var items []item
 	if out.Len() == 0 {
-		var err error
-		items, err = runRktParse(src)
-		if err != nil {
-			return nil, err
-		}
-		writeRktItems(&out, items)
+		items = parse(src)
+		writeItems(&out, items)
 	}
 	if len(items) == 0 {
-		parseRktToplevel(&out, src)
+		parseToplevel(&out, src)
 	}
 	if out.Len() == 0 {
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
@@ -45,29 +37,29 @@ func ConvertRkt(src string) ([]byte, error) {
 	return []byte(out.String()), nil
 }
 
-// ConvertRktFile reads the rkt file and converts it to Mochi.
-func ConvertRktFile(path string) ([]byte, error) {
+// ConvertFile reads the rkt file and converts it to Mochi.
+func ConvertFile(path string) ([]byte, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return ConvertRkt(string(data))
+	return Convert(string(data))
 }
 
-func writeRktSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol, src string, ls LanguageServer) {
+func writeSymbols(out *strings.Builder, prefix []string, syms []parent.DocumentSymbol, src string, ls parent.LanguageServer) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
 			nameParts = append(nameParts, s.Name)
 		}
 		switch s.Kind {
-		case SymbolKindNamespace, SymbolKindPackage, SymbolKindModule:
-			writeRktSymbols(out, nameParts, s.Children, src, ls)
-		case SymbolKindFunction:
-			params, ret := parseRktSignature(s.Detail)
+		case parent.SymbolKindNamespace, parent.SymbolKindPackage, parent.SymbolKindModule:
+			writeSymbols(out, nameParts, s.Children, src, ls)
+		case parent.SymbolKindFunction:
+			params, ret := parseSignature(s.Detail)
 			if len(params) == 0 && ret == "" {
-				if hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start); err == nil {
-					params, ret = parseRktHoverSignature(hov)
+				if hov, err := parent.EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start); err == nil {
+					params, ret = parseHoverSignature(hov)
 				}
 			}
 			out.WriteString("fun ")
@@ -81,7 +73,7 @@ func writeRktSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbo
 				out.WriteString(": ")
 				out.WriteString(ret)
 			}
-			body := rktFunctionBody(src, s)
+			body := functionBody(src, s)
 			if len(body) == 0 {
 				out.WriteString(" {}\n")
 			} else {
@@ -93,7 +85,7 @@ func writeRktSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbo
 				}
 				out.WriteString("}\n")
 			}
-		case SymbolKindStruct, SymbolKindClass:
+		case parent.SymbolKindStruct, parent.SymbolKindClass:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
 			if len(s.Children) == 0 {
@@ -102,14 +94,14 @@ func writeRktSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbo
 			}
 			out.WriteString(" {\n")
 			for _, f := range s.Children {
-				if f.Kind != SymbolKindField {
+				if f.Kind != parent.SymbolKindField {
 					continue
 				}
 				out.WriteString("  ")
 				out.WriteString(f.Name)
-				typ := parseRktVarType(f.Detail)
+				typ := parseVarType(f.Detail)
 				if typ == "" {
-					typ = getRktVarType(src, f.SelectionRange.Start, ls)
+					typ = getVarType(src, f.SelectionRange.Start, ls)
 				}
 				if typ != "" {
 					out.WriteString(": ")
@@ -118,32 +110,32 @@ func writeRktSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbo
 				out.WriteByte('\n')
 			}
 			out.WriteString("}\n")
-		case SymbolKindEnum:
+		case parent.SymbolKindEnum:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
 			out.WriteString(" {\n")
 			for _, c := range s.Children {
-				if c.Kind == SymbolKindEnumMember {
+				if c.Kind == parent.SymbolKindEnumMember {
 					fmt.Fprintf(out, "  %s\n", c.Name)
 				}
 			}
 			out.WriteString("}\n")
-			var rest []DocumentSymbol
+			var rest []parent.DocumentSymbol
 			for _, c := range s.Children {
-				if c.Kind != SymbolKindEnumMember {
+				if c.Kind != parent.SymbolKindEnumMember {
 					rest = append(rest, c)
 				}
 			}
 			if len(rest) > 0 {
-				writeRktSymbols(out, nameParts, rest, src, ls)
+				writeSymbols(out, nameParts, rest, src, ls)
 			}
-		case SymbolKindVariable, SymbolKindConstant:
+		case parent.SymbolKindVariable, parent.SymbolKindConstant:
 			if len(prefix) == 0 {
 				out.WriteString("let ")
 				out.WriteString(strings.Join(nameParts, "."))
-				typ := parseRktVarType(s.Detail)
+				typ := parseVarType(s.Detail)
 				if typ == "" {
-					typ = getRktVarType(src, s.SelectionRange.Start, ls)
+					typ = getVarType(src, s.SelectionRange.Start, ls)
 				}
 				if typ != "" {
 					out.WriteString(": ")
@@ -152,17 +144,17 @@ func writeRktSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbo
 				out.WriteByte('\n')
 			}
 			if len(s.Children) > 0 {
-				writeRktSymbols(out, nameParts, s.Children, src, ls)
+				writeSymbols(out, nameParts, s.Children, src, ls)
 			}
 		default:
 			if len(s.Children) > 0 {
-				writeRktSymbols(out, nameParts, s.Children, src, ls)
+				writeSymbols(out, nameParts, s.Children, src, ls)
 			}
 		}
 	}
 }
 
-func parseRktParams(detail *string) []string {
+func parseParams(detail *string) []string {
 	if detail == nil {
 		return nil
 	}
@@ -179,24 +171,24 @@ func parseRktParams(detail *string) []string {
 	return strings.Fields(list)
 }
 
-func parseRktHoverParams(h Hover) []string {
+func parseHoverParams(h parent.Hover) []string {
 	var text string
 	switch c := h.Contents.(type) {
-	case MarkupContent:
+	case parent.MarkupContent:
 		text = c.Value
-	case MarkedString:
+	case parent.MarkedString:
 		if b, err := json.Marshal(c); err == nil {
-			var m MarkedStringStruct
+			var m parent.MarkedStringStruct
 			if json.Unmarshal(b, &m) == nil {
 				text = m.Value
 			} else {
 				json.Unmarshal(b, &text)
 			}
 		}
-	case []MarkedString:
+	case []parent.MarkedString:
 		if len(c) > 0 {
 			if b, err := json.Marshal(c[0]); err == nil {
-				var m MarkedStringStruct
+				var m parent.MarkedStringStruct
 				if json.Unmarshal(b, &m) == nil {
 					text = m.Value
 				} else {
@@ -223,7 +215,7 @@ func parseRktHoverParams(h Hover) []string {
 	return nil
 }
 
-func parseRktSignature(detail *string) ([]string, string) {
+func parseSignature(detail *string) ([]string, string) {
 	if detail == nil {
 		return nil, ""
 	}
@@ -242,24 +234,24 @@ func parseRktSignature(detail *string) ([]string, string) {
 	return params, ret
 }
 
-func parseRktHoverSignature(h Hover) ([]string, string) {
+func parseHoverSignature(h parent.Hover) ([]string, string) {
 	var text string
 	switch c := h.Contents.(type) {
-	case MarkupContent:
+	case parent.MarkupContent:
 		text = c.Value
-	case MarkedString:
+	case parent.MarkedString:
 		if b, err := json.Marshal(c); err == nil {
-			var m MarkedStringStruct
+			var m parent.MarkedStringStruct
 			if json.Unmarshal(b, &m) == nil {
 				text = m.Value
 			} else {
 				json.Unmarshal(b, &text)
 			}
 		}
-	case []MarkedString:
+	case []parent.MarkedString:
 		if len(c) > 0 {
 			if b, err := json.Marshal(c[0]); err == nil {
-				var m MarkedStringStruct
+				var m parent.MarkedStringStruct
 				if json.Unmarshal(b, &m) == nil {
 					text = m.Value
 				} else {
@@ -291,7 +283,7 @@ func parseRktHoverSignature(h Hover) ([]string, string) {
 	return nil, ""
 }
 
-func parseRktVarType(detail *string) string {
+func parseVarType(detail *string) string {
 	if detail == nil {
 		return ""
 	}
@@ -301,32 +293,32 @@ func parseRktVarType(detail *string) string {
 	return ""
 }
 
-func getRktVarType(src string, pos Position, ls LanguageServer) string {
-	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, pos)
+func getVarType(src string, pos parent.Position, ls parent.LanguageServer) string {
+	hov, err := parent.EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, pos)
 	if err != nil {
 		return ""
 	}
-	return parseRktHoverVarType(hov)
+	return parseHoverVarType(hov)
 }
 
-func parseRktHoverVarType(h Hover) string {
+func parseHoverVarType(h parent.Hover) string {
 	var text string
 	switch c := h.Contents.(type) {
-	case MarkupContent:
+	case parent.MarkupContent:
 		text = c.Value
-	case MarkedString:
+	case parent.MarkedString:
 		if b, err := json.Marshal(c); err == nil {
-			var m MarkedStringStruct
+			var m parent.MarkedStringStruct
 			if json.Unmarshal(b, &m) == nil {
 				text = m.Value
 			} else {
 				json.Unmarshal(b, &text)
 			}
 		}
-	case []MarkedString:
+	case []parent.MarkedString:
 		if len(c) > 0 {
 			if b, err := json.Marshal(c[0]); err == nil {
-				var m MarkedStringStruct
+				var m parent.MarkedStringStruct
 				if json.Unmarshal(b, &m) == nil {
 					text = m.Value
 				} else {
@@ -343,11 +335,11 @@ func parseRktHoverVarType(h Hover) string {
 	return ""
 }
 
-// parseRktToplevel looks for simple variable definitions and loops
+// parseToplevel looks for simple variable definitions and loops
 // in the source that are not reported by the language server.
 // This is a best-effort regex based fallback to make the generated
 // Mochi code more complete and runnable.
-func parseRktToplevel(out *strings.Builder, src string) {
+func parseToplevel(out *strings.Builder, src string) {
 	varDefine := regexp.MustCompile(`(?m)^\(define\s+([A-Za-z0-9_-]+)\s+(.+)\)$`)
 	for _, m := range varDefine.FindAllStringSubmatch(src, -1) {
 		name := m[1]
@@ -356,7 +348,7 @@ func parseRktToplevel(out *strings.Builder, src string) {
 		if strings.HasPrefix(expr, "(") {
 			continue
 		}
-		if val := parseRktValue(expr); val != "" {
+		if val := parseValue(expr); val != "" {
 			fmt.Fprintf(out, "let %s = %s\n", name, val)
 		} else {
 			fmt.Fprintf(out, "let %s\n", name)
@@ -368,14 +360,14 @@ func parseRktToplevel(out *strings.Builder, src string) {
 		varName := strings.TrimSpace(m[1])
 		collection := strings.TrimSpace(m[2])
 		bodyExpr := strings.TrimSpace(m[3])
-		fmt.Fprintf(out, "for %s in %s {\n  print(%s)\n}\n", varName, convertRktExpr(collection), convertRktExpr(bodyExpr))
+		fmt.Fprintf(out, "for %s in %s {\n  print(%s)\n}\n", varName, convertExpr(collection), convertExpr(bodyExpr))
 	}
 }
 
-// parseRktValue converts simple Racket expressions into Mochi expressions.
+// parseValue converts simple Racket expressions into Mochi expressions.
 // It supports numbers, strings, lists and hashes generated by the Mochi
 // Racket backend.
-func parseRktValue(expr string) string {
+func parseValue(expr string) string {
 	expr = strings.TrimSpace(expr)
 	if strings.HasPrefix(expr, "\"") {
 		return expr
@@ -392,33 +384,33 @@ func parseRktValue(expr string) string {
 		items := itemRe.FindAllString(inner, -1)
 		var out []string
 		for _, it := range items {
-			out = append(out, parseRktHash(it))
+			out = append(out, parseHash(it))
 		}
 		if len(out) > 0 {
 			return "[" + strings.Join(out, ", ") + "]"
 		}
 	}
 	if strings.HasPrefix(expr, "(hash") && strings.HasSuffix(expr, ")") {
-		return parseRktHash(expr)
+		return parseHash(expr)
 	}
 	return ""
 }
 
-func parseRktHash(expr string) string {
+func parseHash(expr string) string {
 	inner := strings.TrimSpace(expr[len("(hash") : len(expr)-1])
 	fields := strings.Fields(inner)
 	var pairs []string
 	for i := 0; i+1 < len(fields); i += 2 {
 		key := strings.Trim(fields[i], `"`)
-		val := convertRktExpr(fields[i+1])
+		val := convertExpr(fields[i+1])
 		pairs = append(pairs, fmt.Sprintf("%s: %s", key, val))
 	}
 	return "{" + strings.Join(pairs, ", ") + "}"
 }
 
-// convertRktExpr performs a very small set of conversions from Racket
+// convertExpr performs a very small set of conversions from Racket
 // expressions to Mochi expressions.
-func convertRktExpr(expr string) string {
+func convertExpr(expr string) string {
 	expr = strings.TrimSpace(expr)
 	if strings.HasPrefix(expr, "(hash-ref") {
 		parts := strings.Fields(expr)
@@ -435,12 +427,12 @@ func convertRktExpr(expr string) string {
 	return expr
 }
 
-// rktFunctionBody extracts a very small subset of statements from the
+// functionBody extracts a very small subset of statements from the
 // function body so that common examples become runnable. Unsupported
 // statements are ignored.
-func rktFunctionBody(src string, sym DocumentSymbol) []string {
-	start := rktPosIndex(src, sym.Range.Start)
-	end := rktPosIndex(src, sym.Range.End)
+func functionBody(src string, sym parent.DocumentSymbol) []string {
+	start := posIndex(src, sym.Range.Start)
+	end := posIndex(src, sym.Range.End)
 	if start >= len(src) || end > len(src) || start >= end {
 		return nil
 	}
@@ -456,11 +448,11 @@ func rktFunctionBody(src string, sym DocumentSymbol) []string {
 		stmt := strings.TrimSpace(m)
 		if strings.HasPrefix(stmt, "(displayln") {
 			expr := strings.TrimSpace(stmt[len("(displayln") : len(stmt)-1])
-			out = append(out, "print("+convertRktExpr(expr)+")")
+			out = append(out, "print("+convertExpr(expr)+")")
 		} else if strings.HasPrefix(stmt, "(return") {
 			expr := strings.TrimSpace(stmt[len("(return") : len(stmt)-1])
 			if expr != "" && expr != "(void)" {
-				out = append(out, "return "+convertRktExpr(expr))
+				out = append(out, "return "+convertExpr(expr))
 			} else {
 				out = append(out, "return")
 			}
@@ -470,7 +462,7 @@ func rktFunctionBody(src string, sym DocumentSymbol) []string {
 }
 
 // indexForPosition converts a protocol position to a byte offset in src.
-func rktPosIndex(src string, pos Position) int {
+func posIndex(src string, pos parent.Position) int {
 	lines := strings.Split(src, "\n")
 	if int(pos.Line) >= len(lines) {
 		return len(src)
@@ -489,39 +481,8 @@ func rktPosIndex(src string, pos Position) int {
 
 // ---------- Fallback parser ----------
 
-type rktItem struct {
-	Kind   string   `json:"kind"`
-	Name   string   `json:"name"`
-	Params []string `json:"params,omitempty"`
-	Body   string   `json:"body,omitempty"`
-	Value  string   `json:"value,omitempty"`
-}
-
-// runRktParse invokes the rktparser CLI using go run and returns parsed items.
-func runRktParse(src string) ([]rktItem, error) {
-	root, err := findRepoRoot()
-	if err != nil {
-		return nil, err
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	cmd := exec.CommandContext(ctx, "go", "run", "./rktparser")
-	cmd.Dir = filepath.Join(root, "tools/any2mochi")
-	cmd.Stdin = strings.NewReader(src)
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	if err := cmd.Run(); err != nil {
-		return nil, err
-	}
-	var items []rktItem
-	if err := json.Unmarshal(out.Bytes(), &items); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-// writeRktItems converts parsed rktItems to Mochi code.
-func writeRktItems(out *strings.Builder, items []rktItem) {
+// writeItems converts parsed items to Mochi code.
+func writeItems(out *strings.Builder, items []item) {
 	for _, it := range items {
 		switch it.Kind {
 		case "func":
@@ -532,7 +493,7 @@ func writeRktItems(out *strings.Builder, items []rktItem) {
 				out.WriteString(strings.Join(it.Params, ", "))
 			}
 			out.WriteByte(')')
-			body := rktBodyFromSnippet(it.Body)
+			body := bodyFromSnippet(it.Body)
 			if len(body) == 0 {
 				out.WriteString(" {}\n")
 			} else {
@@ -547,31 +508,31 @@ func writeRktItems(out *strings.Builder, items []rktItem) {
 		case "var":
 			out.WriteString("let ")
 			out.WriteString(it.Name)
-			if val := parseRktValue(it.Value); val != "" {
+			if val := parseValue(it.Value); val != "" {
 				out.WriteString(" = ")
 				out.WriteString(val)
 			}
 			out.WriteByte('\n')
 		case "print":
 			out.WriteString("print(")
-			out.WriteString(convertRktExpr(it.Value))
+			out.WriteString(convertExpr(it.Value))
 			out.WriteString(")\n")
 		}
 	}
 }
 
-func rktBodyFromSnippet(snippet string) []string {
+func bodyFromSnippet(snippet string) []string {
 	var out []string
 	lineRe := regexp.MustCompile(`\([^()]+\)`)
 	for _, m := range lineRe.FindAllString(snippet, -1) {
 		stmt := strings.TrimSpace(m)
 		if strings.HasPrefix(stmt, "(displayln") {
 			expr := strings.TrimSpace(stmt[len("(displayln") : len(stmt)-1])
-			out = append(out, "print("+convertRktExpr(expr)+")")
+			out = append(out, "print("+convertExpr(expr)+")")
 		} else if strings.HasPrefix(stmt, "(return") {
 			expr := strings.TrimSpace(stmt[len("(return") : len(stmt)-1])
 			if expr != "" && expr != "(void)" {
-				out = append(out, "return "+convertRktExpr(expr))
+				out = append(out, "return "+convertExpr(expr))
 			} else {
 				out = append(out, "return")
 			}
@@ -580,21 +541,13 @@ func rktBodyFromSnippet(snippet string) []string {
 	return out
 }
 
-// findRepoRoot walks up directories to locate go.mod.
-func findRepoRoot() (string, error) {
-	dir, err := os.Getwd()
-	if err != nil {
-		return "", err
+func numberedSnippet(src string) string {
+	lines := strings.Split(src, "\n")
+	if len(lines) > 10 {
+		lines = lines[:10]
 	}
-	for i := 0; i < 10; i++ {
-		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
-			return dir, nil
-		}
-		parent := filepath.Dir(dir)
-		if parent == dir {
-			break
-		}
-		dir = parent
+	for i, l := range lines {
+		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
 	}
-	return "", fmt.Errorf("go.mod not found")
+	return strings.Join(lines, "\n")
 }
