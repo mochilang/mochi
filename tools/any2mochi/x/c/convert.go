@@ -286,6 +286,7 @@ var castRE = regexp.MustCompile(`\([a-zA-Z_][a-zA-Z0-9_\s]*\*\)`) // matches C c
 var functionPtrRE = regexp.MustCompile(`^.*\(\*\s*([A-Za-z_][A-Za-z0-9_]*)\s*\)\s*\([^)]*\)\s*=\s*(.*)$`)
 var funcPtrTypeAnonRE = regexp.MustCompile(`^(.+)\(\*\)\s*\((.*)\)$`)
 var funcPtrTypeNamedRE = regexp.MustCompile(`^(.+)\(\*\s*[A-Za-z_][A-Za-z0-9_]*\s*\)\s*\((.*)\)$`)
+var forRangeRE = regexp.MustCompile(`^for\s*\((?:int\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([^;]+);\s*([A-Za-z_][A-Za-z0-9_]*)\s*(<|<=)\s*([^;]+);\s*([A-Za-z_][A-Za-z0-9_]*)\+\+\s*\)$`)
 
 func stripCasts(s string) string {
 	return castRE.ReplaceAllString(s, "")
@@ -567,9 +568,31 @@ func parseStatements(body string) []string {
 			}
 			out = append(out, strings.Repeat("  ", indent)+"}")
 		case strings.HasPrefix(l, "for ") || strings.HasPrefix(l, "for("):
-			if strings.HasSuffix(l, "{") {
-				h := strings.TrimSpace(strings.TrimSuffix(l, "{"))
-				out = append(out, strings.Repeat("  ", indent)+h+" {")
+			hasBrace := strings.HasSuffix(l, "{")
+			header := strings.TrimSpace(l)
+			if hasBrace {
+				header = strings.TrimSpace(strings.TrimSuffix(header, "{"))
+			}
+			if m := forRangeRE.FindStringSubmatch(header); m != nil {
+				if m[1] == m[3] && m[1] == m[6] {
+					varName := m[1]
+					start := strings.TrimSpace(m[2])
+					op := m[4]
+					end := strings.TrimSpace(m[5])
+					if op == "<=" {
+						end = end + " + 1"
+					}
+					stmt := fmt.Sprintf("for %s in range(%s, %s) {", varName, start, end)
+					out = append(out, strings.Repeat("  ", indent)+stmt)
+					indent++
+				} else if hasBrace {
+					out = append(out, strings.Repeat("  ", indent)+header+" {")
+					indent++
+				} else {
+					out = append(out, strings.Repeat("  ", indent)+l)
+				}
+			} else if hasBrace {
+				out = append(out, strings.Repeat("  ", indent)+header+" {")
 				indent++
 			} else {
 				out = append(out, strings.Repeat("  ", indent)+l)
