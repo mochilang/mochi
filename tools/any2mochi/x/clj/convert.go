@@ -795,6 +795,9 @@ func cljToMochi(n sexprNode) string {
 				return fmt.Sprintf("!%s", cljToMochi(v[1]))
 			}
 		case "+", "-", "*", "/", "mod", "quot":
+			if len(v) == 2 && head == "-" {
+				return fmt.Sprintf("(-%s)", cljToMochi(v[1]))
+			}
 			if len(v) == 3 {
 				op := head
 				if op == "mod" {
@@ -831,7 +834,8 @@ func cljToMochi(n sexprNode) string {
 			for _, a := range v[1:] {
 				args = append(args, cljToMochi(a))
 			}
-			return fmt.Sprintf("%s(%s)", head, strings.Join(args, ", "))
+			name := sanitizeName(head)
+			return fmt.Sprintf("%s(%s)", name, strings.Join(args, ", "))
 		}
 	}
 	return ""
