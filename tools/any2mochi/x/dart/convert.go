@@ -536,9 +536,9 @@ func parseStatements(body string) []string {
 			indent++
 		case strings.HasPrefix(l, "return "):
 			expr := strings.TrimSpace(l[len("return "):])
-			out = append(out, strings.Repeat("  ", indent)+"return "+expr)
+			out = append(out, strings.Repeat("  ", indent)+"return "+convertQuotes(expr))
 		default:
-			out = append(out, strings.Repeat("  ", indent)+l)
+			out = append(out, strings.Repeat("  ", indent)+convertQuotes(l))
 		}
 	}
 	return out
@@ -603,7 +603,7 @@ func parseTopLevelVars(src string, funcs []function, classes []class, enums []da
 		}
 		l := strings.TrimSpace(strings.TrimSuffix(line, ";"))
 		if strings.HasPrefix(l, "var ") {
-			vars = append(vars, "let "+strings.TrimSpace(l[4:]))
+			vars = append(vars, convertQuotes("let "+strings.TrimSpace(l[4:])))
 			continue
 		}
 		if m := typedVarRe.FindStringSubmatch(l); m != nil {
@@ -617,8 +617,16 @@ func parseTopLevelVars(src string, funcs []function, classes []class, enums []da
 			if val != "" {
 				stmt += " = " + val
 			}
-			vars = append(vars, stmt)
+			vars = append(vars, convertQuotes(stmt))
 		}
 	}
 	return vars
+}
+
+var quoteRe = regexp.MustCompile(`'([^']*)'`)
+
+func convertQuotes(s string) string {
+	return quoteRe.ReplaceAllStringFunc(s, func(q string) string {
+		return "\"" + strings.Trim(q, "'") + "\""
+	})
 }

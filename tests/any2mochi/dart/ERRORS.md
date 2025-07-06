@@ -17,8 +17,8 @@ help:
 - cross_join: parse2 error: parse error: 9:245: lexer: invalid input text "' '))\n  }\n}\n"
 - cross_join_filter: parse2 error: parse error: 10:49: lexer: invalid input text "' '))\n  }\n}\n"
 - cross_join_triple: parse2 error: parse error: 10:65: lexer: invalid input text "' '))\n  }\n}\n"
-- dataset_sort_take_limit: parse2 error: parse error: 6:15: lexer: invalid input text "'price']\nlet key..."
-- dataset_where_filter: parse2 error: parse error: 4:47: lexer: invalid input text "'age'] >= 18)).t..."
+- dataset_sort_take_limit: parse2 error: parse error: 14:86: lexer: invalid input text "' '))\n  }\n}\n"
+- dataset_where_filter: parse2 error: parse error: 9:94: lexer: invalid input text "? \" (senior)\" : ..."
 - exists_builtin: parse2 error: parse error: 13:11: lexer: invalid input text "'items'] is List..."
 - for_list_collection: parse2 error: parse error: 2:7: unexpected token "(" (expected <ident> "in" Expr (".." Expr)? "{" Statement* "}")
 - for_loop: ok
@@ -26,15 +26,15 @@ help:
 - fun_call: ok
 - fun_expr_in_let: parse2 error: parse error: 1:18: unexpected token "=>"
 - fun_three_args: ok
-- group_by: parse2 error: parse error: 2:74: lexer: invalid input text "'city']).map((g)..."
-- group_by_conditional_sum: parse2 error: parse error: 5:13: lexer: invalid input text "'cat']\nlet ks = ..."
-- group_by_having: parse2 error: parse error: 2:62: lexer: invalid input text "'city']).map((g)..."
-- group_by_join: parse2 error: parse error: 6:13: lexer: invalid input text "'name']\nlet ks =..."
-- group_by_left_join: parse2 error: parse error: 10:13: lexer: invalid input text "'name']\nlet ks =..."
-- group_by_multi_join: parse2 error: parse error: 7:68: lexer: invalid input text "'part']).map((g)..."
-- group_by_multi_join_sort: parse2 error: parse error: 10:27: lexer: invalid input text "'c_custkey'], \"c..."
-- group_by_sort: parse2 error: parse error: 5:13: lexer: invalid input text "'cat']\nlet ks = ..."
-- group_items_iteration: parse2 error: parse error: 2:53: lexer: invalid input text "'tag']).map((g) ..."
+- group_by: parse2 error: parse error: 16:128: lexer: invalid input text "' '))\n  }\n}\nfun ..."
+- group_by_conditional_sum: parse2 error: parse error: 27:26: lexer: invalid input text "'items'] is List..."
+- group_by_having: parse2 error: parse error: 18:41: lexer: invalid input text "; if (items is L..."
+- group_by_join: parse2 error: parse error: 18:78: lexer: invalid input text "' '))\n  }\n}\nfun ..."
+- group_by_left_join: parse2 error: parse error: 25:78: lexer: invalid input text "' '))\n  }\n}\nfun ..."
+- group_by_multi_join: parse2 error: parse error: 24:19: lexer: invalid input text "; i < a.length; ..."
+- group_by_multi_join_sort: parse2 error: parse error: 34:19: lexer: invalid input text "; i < a.length; ..."
+- group_by_sort: parse2 error: parse error: 29:26: lexer: invalid input text "'items'] is List..."
+- group_items_iteration: parse2 error: parse error: 2:48: unexpected token "=>" (expected ")")
 - if_else: ok
 - if_then_else: parse2 error: parse error: 2:29: lexer: invalid input text "? \"yes\" : \"no\")\n..."
 - if_then_else_nested: parse2 error: parse error: 2:29: lexer: invalid input text "? \"big\" : ((x > ..."
@@ -107,7 +107,7 @@ help:
 
 help:
   Check if the variable was declared in this scope.
-- order_by_map: parse2 error: parse error: 6:20: lexer: invalid input text "'a'], \"b\": x['b'..."
+- order_by_map: parse2 error: parse error: 2:40: unexpected token ")" (expected PostfixExpr)
 - outer_join: parse2 error: parse error: 12:161: lexer: invalid input text "' '))\n        } ..."
 - partial_application: type2 error: error[T003]: unknown function: add
   --> :1:12
@@ -127,7 +127,7 @@ help:
 
 help:
   Use a function or closure in this position.
-- sort_stable: parse2 error: parse error: 6:14: lexer: invalid input text "'n']\nlet keyB = ..."
+- sort_stable: parse2 error: parse error: 2:22: unexpected token ")" (expected PostfixExpr)
 - str_builtin: type2 error: error[T004]: `` is not callable
   --> :2:21
 
