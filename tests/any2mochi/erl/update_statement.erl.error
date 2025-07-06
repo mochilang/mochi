@@ -1,11 +1,12 @@
-exit status 1
-  1: #!/usr/bin/env escript
-  2: -module(main).
-  3: -export([main/1]).
-  4: 
-  5: -record(person, {name, age, status}).
-  6: 
-  7: 
-  8: main(_) ->
-  9:     People = [#person{name="Alice", age=17, status="minor"}, #person{name="Bob", age=25, status="unknown"}, #person{name="Charlie", age=18, status="unknown"}, #person{name="Diana", age=16, status="minor"}],
- 10:     People_1 = [ (case (Item#person.age >= 18) of true -> Item#person{status="adult", age=(Item#person.age + 1)}; _ -> Item end) || Item <- People ]
+parse error: parse error: 20:52: lexer: invalid input text ";\n  _ ->\n  Item\n..."
+
+  1| #!/usr/bin/env escript
+  2| -module(main).
+  3| -export([main/1]).
+  4| 
+  5| -record(person, {name, age, status}).
+  6| 
+  7| 
+  8| main(_) ->
+  9|     People = [#person{name="Alice", age=17, status="minor"}, #person{name="Bob", age=25, status="unknown"}, #person{name="Charlie", age=18, status="unknown"}, #person{name="Diana", age=16, status="minor"}],
+ 10|     People_1 = [ (case (Item#person.age >= 18) of true -> Item#person{status="adult", age=(Item#person.age + 1)}; _ -> Item end) || Item <- People ]

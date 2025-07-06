@@ -106,6 +106,18 @@ func Convert(src string) ([]byte, error) {
 					} else if strings.HasPrefix(ln, "io:fwrite(") {
 						ln = "print(" + strings.TrimPrefix(ln, "io:fwrite(")
 					}
+					for _, r := range ast.Records {
+						t := strings.Title(r.Name)
+						if strings.Contains(ln, "#"+r.Name+"{") {
+							ln = strings.ReplaceAll(ln, "#"+r.Name+"{", t+" {")
+							if i := strings.Index(ln, t+" {"); i != -1 {
+								after := ln[i+len(t)+2:]
+								after = strings.ReplaceAll(after, "=", ":")
+								ln = ln[:i+len(t)+2] + after
+							}
+						}
+						ln = strings.ReplaceAll(ln, "#"+r.Name+".", ".")
+					}
 					out.WriteString("  ")
 					out.WriteString(strings.TrimSpace(ln))
 					out.WriteByte('\n')
