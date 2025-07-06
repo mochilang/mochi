@@ -1,4 +1,12 @@
 <?php
 $r = 3.0;
-$area = ($math->pi * $math->pow($r, 2.0));
-echo "Area:" . " " . $area, PHP_EOL;
+$area = ($math['pi'] * $math['pow']($r, 2.0));
+_print("Area:", $area);
+
+function _print(...$args) {
+    $parts = [];
+    foreach ($args as $a) {
+        if (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+    }
+    echo implode(' ', $parts), PHP_EOL;
+}

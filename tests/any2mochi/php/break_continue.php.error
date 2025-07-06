@@ -9,3 +9,5 @@ tests/compiler/php/break_continue.php.out: no convertible symbols found
   8: 		break;
   9: 	}
  10: 	echo "odd number:" . " " . $n, PHP_EOL;
+ 11: }
+ 12:

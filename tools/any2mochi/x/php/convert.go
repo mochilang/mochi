@@ -84,8 +84,8 @@ func Convert(src string) ([]byte, error) {
 
 func snippet(src string) string {
 	lines := strings.Split(src, "\n")
-	if len(lines) > 10 {
-		lines = lines[:10]
+	if len(lines) > 15 {
+		lines = lines[:15]
 	}
 	for i, l := range lines {
 		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
@@ -127,11 +127,11 @@ func formatError(path, src string, err error) error {
 
 func arrowSnippet(src string, line int) string {
 	lines := strings.Split(src, "\n")
-	start := line - 2
+	start := line - 3
 	if start < 0 {
 		start = 0
 	}
-	end := line + 1
+	end := line + 2
 	if end > len(lines) {
 		end = len(lines)
 	}

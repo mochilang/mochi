@@ -2,14 +2,14 @@
 $items = [["qty" => 3, "flag" => "A"], ["qty" => 5, "flag" => "A"], ["qty" => 1, "flag" => "B"]];
 $res = (function() use ($items) {
 	$_src = (is_string($items) ? str_split($items) : $items);
-	$_src = array_values(array_filter($_src, function($it) use ($items) { return (($it->qty > 2)); }));
-	$_groups = _group_by($_src, function($it) use ($items) { return $it->flag; });
+	$_src = array_values(array_filter($_src, function($it) use ($items) { return (($it['qty'] > 2)); }));
+	$_groups = _group_by($_src, function($it) use ($items) { return $it['flag']; });
 	$res = [];
 	foreach ($_groups as $g) {
 		$res[] = ["flag" => $g->key, "total" => array_sum((function() use ($g) {
 	$res = [];
-	foreach ((is_string($g) ? str_split($g) : $g) as $x) {
-		$res[] = $x->qty;
+	foreach ((is_string($g->Items) ? str_split($g->Items) : $g->Items) as $x) {
+		$res[] = $x['qty'];
 	}
 	return $res;
 })())];
@@ -28,7 +28,8 @@ function _group_by($src, $keyfn) {
     $order = [];
     foreach ($src as $it) {
         $key = $keyfn($it);
-        $ks = strval($key);
+        if (is_array($key)) { $key = (object)$key; }
+        $ks = is_object($key) ? json_encode($key) : strval($key);
         if (!isset($groups[$ks])) {
             $groups[$ks] = new _Group($key);
             $order[] = $ks;

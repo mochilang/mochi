@@ -1,6 +1,14 @@
 <?php
-echo "Enter first input:", PHP_EOL;
+_print("Enter first input:");
 $input1 = trim(fgets(STDIN));
-echo "Enter second input:", PHP_EOL;
+_print("Enter second input:");
 $input2 = trim(fgets(STDIN));
-echo "You entered:" . " " . $input1 . " " . "," . " " . $input2, PHP_EOL;
+_print("You entered:", $input1, ",", $input2);
+
+function _print(...$args) {
+    $parts = [];
+    foreach ($args as $a) {
+        if (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+    }
+    echo implode(' ', $parts), PHP_EOL;
+}

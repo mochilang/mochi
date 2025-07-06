@@ -4,5 +4,13 @@ function mochi_sum_n($n) {
 }
 
 $n = 10;
-echo mochi_sum_n($n), PHP_EOL;
-echo $n, PHP_EOL;
+_print(mochi_sum_n($n));
+_print($n);
+
+function _print(...$args) {
+    $parts = [];
+    foreach ($args as $a) {
+        if (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+    }
+    echo implode(' ', $parts), PHP_EOL;
+}
