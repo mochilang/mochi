@@ -160,6 +160,24 @@ func _sum<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
     res.append(contentsOf: b)
     return res
 }`
+	helperAppend = `func _append<T>(_ arr: [T], _ v: T) -> [T] {
+    var out = arr
+    out.append(v)
+    return out
+}`
+	helperValues = `func _values(_ m: [String: Any]) -> [Any] {
+    return Array(m.values)
+}`
+	helperExists = `func _exists(_ v: Any) -> Bool {
+    if let g = v as? _Group { return !g.Items.isEmpty }
+    if let arr = v as? [Any] { return !arr.isEmpty }
+    if let arr = v as? [Int] { return !arr.isEmpty }
+    if let arr = v as? [Double] { return !arr.isEmpty }
+    if let arr = v as? [String] { return !arr.isEmpty }
+    if let m = v as? [String: Any] { return !m.isEmpty }
+    if let s = v as? String { return !s.isEmpty }
+    return false
+}`
 	helperCast = `func _cast<T: Decodable>(_ type: T.Type, _ v: Any) -> T {
     if let tv = v as? T { return tv }
     if let data = try? JSONSerialization.data(withJSONObject: v),
@@ -372,6 +390,9 @@ var helperMap = map[string]string{
 	"_slice":       helperSlice,
 	"_sliceString": helperSliceString,
 	"_concat":      helperConcat,
+	"_append":      helperAppend,
+	"_values":      helperValues,
+	"_exists":      helperExists,
 	"_union_all":   helperUnionAll,
 	"_union":       helperUnion,
 	"_except":      helperExcept,

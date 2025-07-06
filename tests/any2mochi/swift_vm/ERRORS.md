@@ -1,17 +1,16 @@
 # Errors
 
-- append_builtin: line 5:9: cannot find 'append' in scope
-   4| func main() {
-   5|   print(append(a, 3))
-    |         ^
-   6| }
-   7| main()
-- avg_builtin: parse error: parse error: 14:39: lexer: invalid input text "$0) }))\n}\nmain()..."
+- append_builtin: ok
+- avg_builtin: parse error: parse error: 2:39: lexer: invalid input text "$0) }))\n}\nmain()..."
 - basic_compare: ok
 - binary_precedence: ok
 - bool_chain: ok
 - break_continue: ok
-- cast_string_to_int: parse error: parse error: 2:21: lexer: invalid input text "? T { return tv ..."
+- cast_string_to_int: type error: error[T003]: unknown function: _cast
+  --> :2:11
+
+help:
+  Ensure the function is defined before it's called.
 - cast_struct: line 16:12: global function '_cast' requires that 'Todo' conform to 'Decodable'
   15| 
   16| let todo = _cast(Todo.self, ["title": "hi"])
@@ -40,12 +39,11 @@
     |                         ^
   12|       _res.append([
   13|         "name": person["name"]!, "age": person["age"]!, "is_senior": person["age"]! >= 60,
-- exists_builtin: line 4:12: cannot find 'exists' in scope
-   3| let data: [Int] = [1, 2]
-   4| let flag = exists(
-    |            ^
-   5|   ({
-   6|     var _res: [Int] = []
+- exists_builtin: type error: error[T027]: [any] is not a struct
+  --> :7:3
+
+help:
+  Field access is only valid on struct types.
 - for_list_collection: ok
 - for_loop: parse error: parse error: 2:17: unexpected token "<" (expected PostfixExpr)
 - for_map_collection: parse error: parse error: 1:13: unexpected token ":" (expected "]")
@@ -100,12 +98,12 @@
     |                    ^
   25|             "total": _sum(
   26|               ({
-- group_items_iteration: line 33:63: value of type 'Any' has no subscripts
-  32| let data = [["tag": "a", "val": 1], ["tag": "a", "val": 2], ["tag": "b", "val": 3]]
-  33| let groups: [Any] = _group_by(data.map { $0 as Any }, { d in d["tag"]! }).map { g in g }
+- group_items_iteration: line 38:63: value of type 'Any' has no subscripts
+  37| let data = [["tag": "a", "val": 1], ["tag": "a", "val": 2], ["tag": "b", "val": 3]]
+  38| let groups: [Any] = _group_by(data.map { $0 as Any }, { d in d["tag"]! }).map { g in g }
     |                                                               ^
-  34| var tmp: [Any] = []
-  35| let result =
+  39| var tmp: [Any] = []
+  40| let result =
 - if_else: ok
 - if_then_else: parse error: parse error: 2:19: lexer: invalid input text "? \"yes\" : \"no\")\n..."
 - if_then_else_nested: parse error: parse error: 2:19: lexer: invalid input text "? \"big\" : (x > 5..."
@@ -127,7 +125,7 @@ help:
     |                                         ^
   12|         for i in items {
   13|           if !(o["id"]! == i["orderId"]!) { continue }
-- json_builtin: parse error: parse error: 2:19: lexer: invalid input text "? JSONSerializat..."
+- json_builtin: parse error: parse error: 1:13: unexpected token ":" (expected "]")
 - left_join: line 12:41: cannot convert value of type 'Any' to expected argument type 'Int'
   11|       for c in customers {
   12|         if !(o["customerId"]! == c["id"]!) { continue }
@@ -144,9 +142,21 @@ help:
 - len_map: parse error: parse error: 2:15: unexpected token ":" (expected "]")
 - len_string: ok
 - let_and_print: ok
-- list_assign: parse error: parse error: 4:23: unexpected token "=" (expected PostfixExpr)
-- list_index: parse error: parse error: 4:23: unexpected token "=" (expected PostfixExpr)
-- list_nested_assign: parse error: parse error: 4:23: unexpected token "=" (expected PostfixExpr)
+- list_assign: type error: error[T024]: cannot assign to `nums` (immutable)
+  --> :3:5
+
+help:
+  Use `var` to declare mutable variables.
+- list_index: type error: error[T003]: unknown function: _index
+  --> :3:11
+
+help:
+  Ensure the function is defined before it's called.
+- list_nested_assign: type error: error[T024]: cannot assign to `matrix` (immutable)
+  --> :3:5
+
+help:
+  Use `var` to declare mutable variables.
 - list_set_ops: line 22:16: binary operator '+' cannot be applied to operands of type '[Int]' and 'Int'
   21|   print(_intersect([1, 2, 3], [2, 4]))
   22|   print([1, 2] + [2, 3].count)
@@ -198,7 +208,11 @@ help:
 
 help:
   Field access is only valid on struct types.
-- min_max_builtin: parse error: parse error: 7:20: lexer: invalid input text "? _Group {\n     ..."
+- min_max_builtin: type error: error[T003]: unknown function: _min
+  --> :3:11
+
+help:
+  Ensure the function is defined before it's called.
 - nested_function: parse error: parse error: 3:18: unexpected token "y" (expected ")")
 - order_by_map: parse error: parse error: 9:21: lexer: invalid input text "? Int, let bi = ..."
 - outer_join: line 16:41: cannot convert value of type 'Any' to expected argument type 'Int'
@@ -245,22 +259,21 @@ help:
   14|     if let d = opts?["delimiter"] as? String, !d.isEmpty { delim = d.first! }
   15|     var text = ""
 - short_circuit: invalid character '4' looking for beginning of object key string
-- slice: parse error: parse error: 5:27: unexpected token "=" (expected PostfixExpr)
+- slice: type error: error[T003]: unknown function: _slice
+  --> :2:11
+
+help:
+  Ensure the function is defined before it's called.
 - sort_stable: parse error: parse error: 9:21: lexer: invalid input text "? Int, let bi = ..."
 - str_builtin: parse error: parse error: 2:28: unexpected token ":" (expected ")")
 - string_compare: ok
 - string_concat: ok
 - string_contains: parse error: parse error: 4:26: lexer: invalid input text "\"))\n}\nmain()\n"
 - string_in_operator: parse error: parse error: 4:26: lexer: invalid input text "\"))\n}\nmain()\n"
-- string_index: parse error: parse error: 8:9: lexer: invalid input text "\"\nfun main() {\n ..."
-- string_prefix_slice: parse error: parse error: 15:10: lexer: invalid input text "\"\nfun main() {\n ..."
-- substring_builtin: line 4:9: cannot find 'substring' in scope
-   3| func main() {
-   4|   print(substring("mochi", 1, 4))
-    |         ^
-   5| }
-   6| main()
-- sum_builtin: parse error: parse error: 12:39: lexer: invalid input text "$0) }))\n}\nmain()..."
+- string_index: parse error: parse error: 1:9: lexer: invalid input text "\"\nfun main() {\n ..."
+- string_prefix_slice: parse error: parse error: 3:10: lexer: invalid input text "\"\nfun main() {\n ..."
+- substring_builtin: ok
+- sum_builtin: parse error: parse error: 2:39: lexer: invalid input text "$0) }))\n}\nmain()..."
 - tail_recursion: ok
 - test_block: parse error: parse error: 1:5: unexpected token "expect" (expected <ident> "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
 - tree_sum: line 31:20: argument type 'Leaf.Type' does not conform to expected type 'Tree'
@@ -269,7 +282,7 @@ help:
     |                    ^
   32| func main() {
   33|   print(sum_tree(t))
-- two-sum: parse error: parse error: 4:23: unexpected token "=" (expected PostfixExpr)
+- two-sum: parse error: parse error: 5:17: unexpected token "<" (expected PostfixExpr)
 - typed_let: type error: error[T002]: undefined variable: y
   --> :2:11
 
@@ -288,12 +301,7 @@ help:
   16|       Person(name: "Alice", age: 17, status: "minor"),
   17|       Person(name: "Bob", age: 26, status: "adult"),
 - user_type_literal: parse error: parse error: 8:1: unexpected token "}" (expected ":" TypeRef)
-- values_builtin: line 5:9: cannot find 'values' in scope
-   4| func main() {
-   5|   print(values(m))
-    |         ^
-   6| }
-   7| main()
+- values_builtin: parse error: parse error: 1:13: unexpected token ":" (expected "]")
 - var_assignment: type error: error[T024]: cannot assign to `x` (immutable)
   --> :3:5
 

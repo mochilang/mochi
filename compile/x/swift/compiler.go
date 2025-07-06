@@ -950,6 +950,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				expr = fmt.Sprintf("_concat(%s, %s)", expr, args[i])
 			}
 			return expr, nil
+		case "append":
+			if len(args) != 2 {
+				return "", fmt.Errorf("append expects 2 args")
+			}
+			c.use("_append")
+			return fmt.Sprintf("_append(%s, %s)", args[0], args[1]), nil
 		case "avg":
 			if len(args) != 1 {
 				return "", fmt.Errorf("avg expects 1 arg")
@@ -976,6 +982,25 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			c.use("_max")
 			c.use("_Group")
 			return fmt.Sprintf("_max(%s)", args[0]), nil
+		case "values":
+			if len(args) != 1 {
+				return "", fmt.Errorf("values expects 1 arg")
+			}
+			c.use("_values")
+			return fmt.Sprintf("_values(%s)", args[0]), nil
+		case "exists":
+			if len(args) != 1 {
+				return "", fmt.Errorf("exists expects 1 arg")
+			}
+			c.use("_exists")
+			c.use("_Group")
+			return fmt.Sprintf("_exists(%s)", args[0]), nil
+		case "substring":
+			if len(args) != 3 {
+				return "", fmt.Errorf("substring expects 3 args")
+			}
+			c.use("_sliceString")
+			return fmt.Sprintf("_sliceString(%s, %s, %s)", args[0], args[1], args[2]), nil
 		case "now":
 			if len(args) != 0 {
 				return "", fmt.Errorf("now expects 0 args")
