@@ -1,6 +1,6 @@
 //go:build slow
 
-package any2mochi
+package ts
 
 import (
 	"testing"

@@ -1,12 +1,14 @@
-package any2mochi
+package ts
 
 import (
 	"strings"
+
+	a2m "mochi/tools/any2mochi"
 )
 
-// tsFunctionBody parses a subset of TypeScript statements and returns
+// typeScriptFunctionBody parses a subset of TypeScript statements and returns
 // corresponding Mochi statements. Unsupported statements are ignored.
-func tsFunctionBody(src string) []string {
+func typeScriptFunctionBody(src string) []string {
 	var lines []string
 	s := strings.TrimSpace(src)
 	for len(s) > 0 {
@@ -93,7 +95,7 @@ func tsFunctionBody(src string) []string {
 			}
 			bodyStart += condEnd + 1
 			bodyEnd := findMatch(s, bodyStart-1, '{', '}')
-			bodyLines := tsFunctionBody(s[bodyStart:bodyEnd])
+			bodyLines := typeScriptFunctionBody(s[bodyStart:bodyEnd])
 			lines = append(lines, "if "+cond+" {")
 			for _, l := range bodyLines {
 				lines = append(lines, "  "+l)
@@ -103,7 +105,7 @@ func tsFunctionBody(src string) []string {
 			if strings.HasPrefix(s, "else {") {
 				elseStart := strings.Index(s, "{") + 1
 				elseEnd := findMatch(s, elseStart-1, '{', '}')
-				elseLines := tsFunctionBody(s[elseStart:elseEnd])
+				elseLines := typeScriptFunctionBody(s[elseStart:elseEnd])
 				lines = append(lines, "else {")
 				for _, l := range elseLines {
 					lines = append(lines, "  "+l)
@@ -129,7 +131,7 @@ func tsFunctionBody(src string) []string {
 				}
 				bodyStart += parenEnd + 1
 				bodyEnd := findMatch(s, bodyStart-1, '{', '}')
-				bodyLines := tsFunctionBody(s[bodyStart:bodyEnd])
+				bodyLines := typeScriptFunctionBody(s[bodyStart:bodyEnd])
 				lines = append(lines, "for "+iter+" in "+list+" {")
 				for _, l := range bodyLines {
 					lines = append(lines, "  "+l)
@@ -154,7 +156,7 @@ func tsFunctionBody(src string) []string {
 			}
 			bodyStart += parenEnd + 1
 			bodyEnd := findMatch(s, bodyStart-1, '{', '}')
-			bodyLines := tsFunctionBody(s[bodyStart:bodyEnd])
+			bodyLines := typeScriptFunctionBody(s[bodyStart:bodyEnd])
 			lines = append(lines, "while "+cond+" {")
 			for _, l := range bodyLines {
 				lines = append(lines, "  "+l)
@@ -174,7 +176,7 @@ func tsFunctionBody(src string) []string {
 }
 
 // indexForPosition converts a protocol position to a byte offset in src.
-func indexForPosition(src string, pos Position) int {
+func indexForPosition(src string, pos a2m.Position) int {
 	lines := strings.Split(src, "\n")
 	if int(pos.Line) >= len(lines) {
 		return len(src)

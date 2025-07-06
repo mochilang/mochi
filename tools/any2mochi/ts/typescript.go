@@ -1,4 +1,4 @@
-package any2mochi
+package ts
 
 import (
 	"encoding/json"
@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	tscode "mochi/compile/ts"
+	a2m "mochi/tools/any2mochi"
 )
 
 // TypeScriptUseLanguageServer controls whether the TypeScript language server is
@@ -24,24 +25,24 @@ var TypeScriptUseLanguageServer = false
 func ConvertTypeScript(src string) ([]byte, error) {
 	var out strings.Builder
 
-	if decls, err := parseTSAST(src); err == nil && len(decls) > 0 {
-		writeTSDecls(&out, decls)
-	} else if data, err := parseTSDeno(src); err == nil && len(data) > 0 {
+	if decls, err := parseTypeScriptAST(src); err == nil && len(decls) > 0 {
+		writeTypeScriptDecls(&out, decls)
+	} else if data, err := parseTypeScriptDeno(src); err == nil && len(data) > 0 {
 		out.Write(data)
 	} else {
-		parseTSFallback(&out, src)
+		parseTypeScriptFallback(&out, src)
 	}
 
-	var syms []DocumentSymbol
-	var diags []Diagnostic
+	var syms []a2m.DocumentSymbol
+	var diags []a2m.Diagnostic
 	var err error
 
 	if out.Len() == 0 && TypeScriptUseLanguageServer {
 		_ = tscode.EnsureTSLanguageServer()
-		ls := Servers["typescript"]
-		syms, diags, err = EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+		ls := a2m.Servers["typescript"]
+		syms, diags, err = a2m.EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
 		if err == nil && len(diags) == 0 {
-			writeTSSymbols(&out, nil, syms, src, ls)
+			writeTypeScriptSymbols(&out, nil, syms, src, ls)
 		}
 	}
 
@@ -70,19 +71,19 @@ func ConvertTypeScriptFile(path string) ([]byte, error) {
 // symbols encoded as JSON.
 func ConvertTypeScriptWithJSON(src string) ([]byte, []byte, error) {
 	if !TypeScriptUseLanguageServer {
-		if data, err := parseTSDeno(src); err == nil && len(data) > 0 {
+		if data, err := parseTypeScriptDeno(src); err == nil && len(data) > 0 {
 			return data, nil, nil
 		}
 		var b strings.Builder
-		parseTSFallback(&b, src)
+		parseTypeScriptFallback(&b, src)
 		if b.Len() == 0 {
 			return nil, nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
 		}
 		return []byte(b.String()), nil, nil
 	}
 
-	ls := Servers["typescript"]
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+	ls := a2m.Servers["typescript"]
+	syms, diags, err := a2m.EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -90,7 +91,7 @@ func ConvertTypeScriptWithJSON(src string) ([]byte, []byte, error) {
 		return nil, nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
 	}
 	var out strings.Builder
-	writeTSSymbols(&out, nil, syms, src, ls)
+	writeTypeScriptSymbols(&out, nil, syms, src, ls)
 	if out.Len() == 0 {
 		return nil, nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
 	}
@@ -108,23 +109,23 @@ func ConvertTypeScriptFileWithJSON(path string) ([]byte, []byte, error) {
 	return ConvertTypeScriptWithJSON(string(data))
 }
 
-func writeTSSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol, src string, ls LanguageServer) {
+func writeTypeScriptSymbols(out *strings.Builder, prefix []string, syms []a2m.DocumentSymbol, src string, ls a2m.LanguageServer) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
 			nameParts = append(nameParts, s.Name)
 		}
 		switch s.Kind {
-		case SymbolKindClass, SymbolKindInterface, SymbolKindStruct:
-			writeTSClass(out, nameParts, s, src, ls)
-		case SymbolKindEnum:
-			writeTSEnum(out, nameParts, s, src, ls)
-		case SymbolKindVariable, SymbolKindConstant, SymbolKindField, SymbolKindProperty:
+		case a2m.SymbolKindClass, a2m.SymbolKindInterface, a2m.SymbolKindStruct:
+			writeTypeScriptClass(out, nameParts, s, src, ls)
+		case a2m.SymbolKindEnum:
+			writeTypeScriptEnum(out, nameParts, s, src, ls)
+		case a2m.SymbolKindVariable, a2m.SymbolKindConstant, a2m.SymbolKindField, a2m.SymbolKindProperty:
 			if s.Name != "" && len(prefix) == 0 {
-				if fields, alias := tsAliasDef(src, s, ls); len(fields) > 0 || alias != "" {
-					writeTSAlias(out, s.Name, fields, alias)
+				if fields, alias := typeScriptAliasDef(src, s, ls); len(fields) > 0 || alias != "" {
+					writeTypeScriptAlias(out, s.Name, fields, alias)
 				} else {
-					typ := tsFieldType(src, s, ls)
+					typ := typeScriptFieldType(src, s, ls)
 					out.WriteString("let ")
 					out.WriteString(s.Name)
 					if typ != "" {
@@ -134,25 +135,25 @@ func writeTSSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol
 					out.WriteByte('\n')
 				}
 			}
-		case SymbolKindFunction, SymbolKindMethod, SymbolKindConstructor:
-			writeTSFunc(out, strings.Join(nameParts, "."), s, src, ls)
+		case a2m.SymbolKindFunction, a2m.SymbolKindMethod, a2m.SymbolKindConstructor:
+			writeTypeScriptFunc(out, strings.Join(nameParts, "."), s, src, ls)
 		}
-		if len(s.Children) > 0 && s.Kind != SymbolKindClass && s.Kind != SymbolKindInterface && s.Kind != SymbolKindStruct {
-			writeTSSymbols(out, nameParts, s.Children, src, ls)
+		if len(s.Children) > 0 && s.Kind != a2m.SymbolKindClass && s.Kind != a2m.SymbolKindInterface && s.Kind != a2m.SymbolKindStruct {
+			writeTypeScriptSymbols(out, nameParts, s.Children, src, ls)
 		}
 	}
 }
 
-func writeTSClass(out *strings.Builder, nameParts []string, sym DocumentSymbol, src string, ls LanguageServer) {
+func writeTypeScriptClass(out *strings.Builder, nameParts []string, sym a2m.DocumentSymbol, src string, ls a2m.LanguageServer) {
 	out.WriteString("type ")
 	out.WriteString(strings.Join(nameParts, "."))
-	fields := []DocumentSymbol{}
-	methods := []DocumentSymbol{}
+	fields := []a2m.DocumentSymbol{}
+	methods := []a2m.DocumentSymbol{}
 	for _, c := range sym.Children {
 		switch c.Kind {
-		case SymbolKindField, SymbolKindProperty:
+		case a2m.SymbolKindField, a2m.SymbolKindProperty:
 			fields = append(fields, c)
-		case SymbolKindFunction, SymbolKindMethod, SymbolKindConstructor:
+		case a2m.SymbolKindFunction, a2m.SymbolKindMethod, a2m.SymbolKindConstructor:
 			methods = append(methods, c)
 		}
 	}
@@ -164,7 +165,7 @@ func writeTSClass(out *strings.Builder, nameParts []string, sym DocumentSymbol, 
 	for _, f := range fields {
 		out.WriteString("  ")
 		out.WriteString(f.Name)
-		if typ := tsFieldType(src, f, ls); typ != "" {
+		if typ := typeScriptFieldType(src, f, ls); typ != "" {
 			out.WriteString(": ")
 			out.WriteString(typ)
 		}
@@ -172,7 +173,7 @@ func writeTSClass(out *strings.Builder, nameParts []string, sym DocumentSymbol, 
 	}
 	for _, m := range methods {
 		var b strings.Builder
-		writeTSFunc(&b, m.Name, m, src, ls)
+		writeTypeScriptFunc(&b, m.Name, m, src, ls)
 		for _, line := range strings.Split(strings.TrimSuffix(b.String(), "\n"), "\n") {
 			out.WriteString("  ")
 			out.WriteString(line)
@@ -182,8 +183,8 @@ func writeTSClass(out *strings.Builder, nameParts []string, sym DocumentSymbol, 
 	out.WriteString("}\n")
 }
 
-func writeTSFunc(out *strings.Builder, name string, sym DocumentSymbol, src string, ls LanguageServer) {
-	params, ret := tsHoverSignature(src, sym, ls)
+func writeTypeScriptFunc(out *strings.Builder, name string, sym a2m.DocumentSymbol, src string, ls a2m.LanguageServer) {
+	params, ret := typeScriptHoverSignature(src, sym, ls)
 	out.WriteString("fun ")
 	out.WriteString(name)
 	out.WriteByte('(')
@@ -213,7 +214,7 @@ func writeTSFunc(out *strings.Builder, name string, sym DocumentSymbol, src stri
 			}
 		}
 	}
-	stmts := tsFunctionBody(body)
+	stmts := typeScriptFunctionBody(body)
 	if len(stmts) == 0 {
 		out.WriteString(" {}\n")
 		return
@@ -227,36 +228,36 @@ func writeTSFunc(out *strings.Builder, name string, sym DocumentSymbol, src stri
 	out.WriteString("}\n")
 }
 
-func tsHoverSignature(src string, sym DocumentSymbol, ls LanguageServer) ([]tsParam, string) {
-	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
+func typeScriptHoverSignature(src string, sym a2m.DocumentSymbol, ls a2m.LanguageServer) ([]typeScriptParam, string) {
+	hov, err := a2m.EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err != nil {
 		return nil, ""
 	}
-	if mc, ok := hov.Contents.(MarkupContent); ok {
+	if mc, ok := hov.Contents.(a2m.MarkupContent); ok {
 		lines := strings.Split(mc.Value, "\n")
 		for i := len(lines) - 1; i >= 0; i-- {
 			l := strings.TrimSpace(lines[i])
 			if strings.Contains(l, "(") && strings.Contains(l, ")") {
-				return parseTSSignature(l)
+				return parseTypeScriptSignature(l)
 			}
 		}
 	}
 	return nil, ""
 }
 
-func tsFieldType(src string, sym DocumentSymbol, ls LanguageServer) string {
-	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
+func typeScriptFieldType(src string, sym a2m.DocumentSymbol, ls a2m.LanguageServer) string {
+	hov, err := a2m.EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err != nil {
 		return ""
 	}
-	if mc, ok := hov.Contents.(MarkupContent); ok {
+	if mc, ok := hov.Contents.(a2m.MarkupContent); ok {
 		lines := strings.Split(mc.Value, "\n")
 		for _, l := range lines {
 			l = strings.TrimSpace(l)
 			if idx := strings.Index(l, ":"); idx != -1 {
 				typ := strings.TrimSpace(l[idx+1:])
 				if typ != "" {
-					return tsToMochiType(typ)
+					return typeScriptToMochiType(typ)
 				}
 			}
 		}
@@ -264,22 +265,22 @@ func tsFieldType(src string, sym DocumentSymbol, ls LanguageServer) string {
 	return ""
 }
 
-type tsField struct {
+type typeScriptField struct {
 	Name string `json:"name"`
 	Typ  string `json:"typ"`
 }
 
-// tsAliasDef returns fields for a type alias object or the aliased type.
+// typeScriptAliasDef returns fields for a type alias object or the aliased type.
 // When neither can be determined it returns nil and empty string.
-func tsAliasDef(src string, sym DocumentSymbol, ls LanguageServer) ([]tsField, string) {
-	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
+func typeScriptAliasDef(src string, sym a2m.DocumentSymbol, ls a2m.LanguageServer) ([]typeScriptField, string) {
+	hov, err := a2m.EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err != nil {
 		return nil, ""
 	}
-	if mc, ok := hov.Contents.(MarkupContent); ok {
+	if mc, ok := hov.Contents.(a2m.MarkupContent); ok {
 		lines := strings.Split(mc.Value, "\n")
 		reading := false
-		var fields []tsField
+		var fields []typeScriptField
 		for _, l := range lines {
 			l = strings.TrimSpace(l)
 			if !reading {
@@ -290,7 +291,7 @@ func tsAliasDef(src string, sym DocumentSymbol, ls LanguageServer) ([]tsField, s
 							reading = true
 							continue
 						}
-						return nil, tsToMochiType(strings.TrimSuffix(after, ";"))
+						return nil, typeScriptToMochiType(strings.TrimSuffix(after, ";"))
 					}
 				}
 			} else {
@@ -300,8 +301,8 @@ func tsAliasDef(src string, sym DocumentSymbol, ls LanguageServer) ([]tsField, s
 				l = strings.TrimSuffix(l, ";")
 				if idx := strings.Index(l, ":"); idx != -1 {
 					name := strings.TrimSpace(l[:idx])
-					typ := tsToMochiType(strings.TrimSpace(l[idx+1:]))
-					fields = append(fields, tsField{Name: name, Typ: typ})
+					typ := typeScriptToMochiType(strings.TrimSpace(l[idx+1:]))
+					fields = append(fields, typeScriptField{Name: name, Typ: typ})
 				}
 			}
 		}
@@ -312,7 +313,7 @@ func tsAliasDef(src string, sym DocumentSymbol, ls LanguageServer) ([]tsField, s
 	return nil, ""
 }
 
-func writeTSAlias(out *strings.Builder, name string, fields []tsField, alias string) {
+func writeTypeScriptAlias(out *strings.Builder, name string, fields []typeScriptField, alias string) {
 	out.WriteString("type ")
 	out.WriteString(name)
 	if len(fields) == 0 {
@@ -334,44 +335,44 @@ func writeTSAlias(out *strings.Builder, name string, fields []tsField, alias str
 	out.WriteString("}\n")
 }
 
-func writeTSEnum(out *strings.Builder, nameParts []string, sym DocumentSymbol, src string, ls LanguageServer) {
+func writeTypeScriptEnum(out *strings.Builder, nameParts []string, sym a2m.DocumentSymbol, src string, ls a2m.LanguageServer) {
 	out.WriteString("type ")
 	out.WriteString(strings.Join(nameParts, "."))
 	out.WriteString(" {\n")
 	for _, c := range sym.Children {
-		if c.Kind == SymbolKindEnumMember {
+		if c.Kind == a2m.SymbolKindEnumMember {
 			out.WriteString("  ")
 			out.WriteString(c.Name)
 			out.WriteByte('\n')
 		}
 	}
 	out.WriteString("}\n")
-	var rest []DocumentSymbol
+	var rest []a2m.DocumentSymbol
 	for _, c := range sym.Children {
-		if c.Kind != SymbolKindEnumMember {
+		if c.Kind != a2m.SymbolKindEnumMember {
 			rest = append(rest, c)
 		}
 	}
 	if len(rest) > 0 {
-		writeTSSymbols(out, nameParts, rest, src, ls)
+		writeTypeScriptSymbols(out, nameParts, rest, src, ls)
 	}
 }
 
-type tsParam struct {
+type typeScriptParam struct {
 	Name string `json:"name"`
 	Typ  string `json:"typ"`
 }
 
-func parseTSSignature(sig string) ([]tsParam, string) {
+func parseTypeScriptSignature(sig string) ([]typeScriptParam, string) {
 	sig = strings.TrimSpace(sig)
 	open := strings.Index(sig, "(")
 	close := strings.LastIndex(sig, ")")
 	if open == -1 || close == -1 || close < open {
-		return nil, tsToMochiType(strings.TrimSpace(sig))
+		return nil, typeScriptToMochiType(strings.TrimSpace(sig))
 	}
 	paramsPart := sig[open+1 : close]
-	var params []tsParam
-	for _, p := range splitTSParams(paramsPart) {
+	var params []typeScriptParam
+	for _, p := range splitTypeScriptParams(paramsPart) {
 		p = strings.TrimSpace(p)
 		if p == "" {
 			continue
@@ -382,7 +383,7 @@ func parseTSSignature(sig string) ([]tsParam, string) {
 			name = strings.TrimSpace(p[:colon])
 			typ = strings.TrimSpace(p[colon+1:])
 		}
-		params = append(params, tsParam{Name: name, Typ: tsToMochiType(typ)})
+		params = append(params, typeScriptParam{Name: name, Typ: typeScriptToMochiType(typ)})
 	}
 	rest := strings.TrimSpace(sig[close+1:])
 	if strings.HasPrefix(rest, ":") {
@@ -390,10 +391,10 @@ func parseTSSignature(sig string) ([]tsParam, string) {
 	} else if strings.HasPrefix(rest, "=>") {
 		rest = strings.TrimSpace(rest[2:])
 	}
-	return params, tsToMochiType(rest)
+	return params, typeScriptToMochiType(rest)
 }
 
-func splitTSParams(s string) []string {
+func splitTypeScriptParams(s string) []string {
 	var parts []string
 	depth := 0
 	start := 0
@@ -418,7 +419,7 @@ func splitTSParams(s string) []string {
 	return parts
 }
 
-func tsToMochiType(t string) string {
+func typeScriptToMochiType(t string) string {
 	t = strings.TrimSpace(t)
 	if strings.Contains(t, "|") {
 		parts := strings.Split(t, "|")
@@ -428,7 +429,7 @@ func tsToMochiType(t string) string {
 			if p == "null" || p == "undefined" {
 				continue
 			}
-			mp := tsToMochiType(p)
+			mp := typeScriptToMochiType(p)
 			if mp != "" {
 				keep = append(keep, mp)
 			}
@@ -454,31 +455,31 @@ func tsToMochiType(t string) string {
 		return ""
 	}
 	if strings.HasSuffix(t, "[]") {
-		inner := tsToMochiType(t[:len(t)-2])
+		inner := typeScriptToMochiType(t[:len(t)-2])
 		if inner == "" {
 			inner = "any"
 		}
 		return "list<" + inner + ">"
 	}
 	if strings.HasPrefix(t, "Array<") && strings.HasSuffix(t, ">") {
-		inner := tsToMochiType(t[len("Array<") : len(t)-1])
+		inner := typeScriptToMochiType(t[len("Array<") : len(t)-1])
 		if inner == "" {
 			inner = "any"
 		}
 		return "list<" + inner + ">"
 	}
 	if strings.HasPrefix(t, "Record<") && strings.HasSuffix(t, ">") {
-		parts := splitTSParams(t[len("Record<") : len(t)-1])
+		parts := splitTypeScriptParams(t[len("Record<") : len(t)-1])
 		key := "any"
 		val := "any"
 		if len(parts) > 0 {
-			k := tsToMochiType(parts[0])
+			k := typeScriptToMochiType(parts[0])
 			if k != "" {
 				key = k
 			}
 		}
 		if len(parts) > 1 {
-			v := tsToMochiType(parts[1])
+			v := typeScriptToMochiType(parts[1])
 			if v != "" {
 				val = v
 			}
@@ -488,12 +489,12 @@ func tsToMochiType(t string) string {
 	return t
 }
 
-func parseTSDeno(src string) ([]byte, error) {
+func parseTypeScriptDeno(src string) ([]byte, error) {
 	if err := tscode.EnsureDeno(); err != nil {
 		return nil, err
 	}
 	_, file, _, _ := runtime.Caller(0)
-	script := filepath.Join(filepath.Dir(file), "convert_ts_deno.ts")
+	script := filepath.Join(filepath.Dir(file), "convert_deno.ts")
 	temp, err := os.CreateTemp("", "tsinput-*.ts")
 	if err != nil {
 		return nil, err
@@ -513,7 +514,7 @@ func parseTSDeno(src string) ([]byte, error) {
 	return out, nil
 }
 
-func parseTSFallback(out *strings.Builder, src string) {
+func parseTypeScriptFallback(out *strings.Builder, src string) {
 	typeRe := regexp.MustCompile(`(?ms)type\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*{`)
 	for _, idx := range typeRe.FindAllStringSubmatchIndex(src, -1) {
 		name := src[idx[2]:idx[3]]
@@ -537,7 +538,7 @@ func parseTSFallback(out *strings.Builder, src string) {
 			}
 			if colon := strings.Index(l, ":"); colon != -1 {
 				field := strings.TrimSpace(l[:colon])
-				typ := tsToMochiType(strings.TrimSpace(l[colon+1:]))
+				typ := typeScriptToMochiType(strings.TrimSpace(l[colon+1:]))
 				out.WriteString("  ")
 				out.WriteString(field)
 				if typ != "" {
@@ -553,7 +554,7 @@ func parseTSFallback(out *strings.Builder, src string) {
 	varRe := regexp.MustCompile(`(?m)^(?:let|const|var)\s+([A-Za-z_][A-Za-z0-9_]*)\s*(?::\s*([^=;]+))?`)
 	for _, m := range varRe.FindAllStringSubmatch(src, -1) {
 		name := m[1]
-		typ := tsToMochiType(strings.TrimSpace(m[2]))
+		typ := typeScriptToMochiType(strings.TrimSpace(m[2]))
 		if name == "" {
 			continue
 		}
@@ -580,7 +581,7 @@ func parseTSFallback(out *strings.Builder, src string) {
 		out.WriteString("fun ")
 		out.WriteString(name)
 		out.WriteByte('(')
-		params, _ := parseTSSignature("(" + paramsPart + ")" + funcReturnSig(ret))
+		params, _ := parseTypeScriptSignature("(" + paramsPart + ")" + funcReturnSig(ret))
 		for i, p := range params {
 			if i > 0 {
 				out.WriteString(", ")
@@ -592,12 +593,12 @@ func parseTSFallback(out *strings.Builder, src string) {
 			}
 		}
 		out.WriteByte(')')
-		mappedRet := tsToMochiType(ret)
+		mappedRet := typeScriptToMochiType(ret)
 		if mappedRet != "" && mappedRet != "void" {
 			out.WriteString(": ")
 			out.WriteString(mappedRet)
 		}
-		stmts := tsFunctionBody(body)
+		stmts := typeScriptFunctionBody(body)
 		if len(stmts) == 0 {
 			out.WriteString(" {}\n")
 		} else {
@@ -619,8 +620,8 @@ func funcReturnSig(ret string) string {
 	return ": " + ret
 }
 
-// writeTSDecls converts parsed AST declarations into Mochi source code.
-func writeTSDecls(out *strings.Builder, decls []tsASTDecl) {
+// writeTypeScriptDecls converts parsed AST declarations into Mochi source code.
+func writeTypeScriptDecls(out *strings.Builder, decls []typeScriptDecl) {
 	for _, d := range decls {
 		switch d.Kind {
 		case "var":
@@ -650,7 +651,7 @@ func writeTSDecls(out *strings.Builder, decls []tsASTDecl) {
 				out.WriteString(": ")
 				out.WriteString(d.Ret)
 			}
-			stmts := tsFunctionBody(d.Body)
+			stmts := typeScriptFunctionBody(d.Body)
 			if len(stmts) == 0 {
 				out.WriteString(" {}\n")
 			} else {

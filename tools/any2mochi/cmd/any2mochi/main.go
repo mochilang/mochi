@@ -12,6 +12,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"mochi/tools/any2mochi"
+	tsconv "mochi/tools/any2mochi/ts"
 )
 
 var (
@@ -170,7 +171,7 @@ func convertTSCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			out, err := any2mochi.ConvertTypeScript(string(data))
+			out, err := tsconv.ConvertTypeScript(string(data))
 			if err != nil {
 				return err
 			}
