@@ -53,11 +53,18 @@ func (n Node) String() string {
 // the raw expression for simple variable definitions.  The expression string
 // is a very small subset of Scheme and is only used for the conversion tests
 // contained in this repository.
+// Item represents a top level definition discovered in the Scheme source.
+// Additional position information is included to aid callers in producing
+// detailed diagnostics when conversion fails.
 type Item struct {
-	Kind   string   `json:"kind"`
-	Name   string   `json:"name"`
-	Params []string `json:"params,omitempty"`
-	Expr   string   `json:"expr,omitempty"`
+	Kind    string   `json:"kind"`
+	Name    string   `json:"name"`
+	Params  []string `json:"params,omitempty"`
+	Expr    string   `json:"expr,omitempty"`
+	Line    int      `json:"line,omitempty"`
+	Col     int      `json:"col,omitempty"`
+	EndLine int      `json:"endLine,omitempty"`
+	EndCol  int      `json:"endCol,omitempty"`
 }
 
 // ParseSchemeItems parses Scheme source and returns a slice of SchemeItem.
@@ -97,14 +104,30 @@ func ParseItems(src string) ([]Item, error) {
 					params = append(params, p.atom)
 				}
 			}
-			items = append(items, Item{Kind: "func", Name: name, Params: params})
+			items = append(items, Item{
+				Kind:    "func",
+				Name:    name,
+				Params:  params,
+				Line:    n.line,
+				Col:     n.col,
+				EndLine: n.endLine,
+				EndCol:  n.endCol,
+			})
 		} else if def.atom != "" {
 			// variable definition
 			expr := ""
 			if len(n.list) >= 3 {
 				expr = n.list[2].String()
 			}
-			items = append(items, Item{Kind: "var", Name: def.atom, Expr: expr})
+			items = append(items, Item{
+				Kind:    "var",
+				Name:    def.atom,
+				Expr:    expr,
+				Line:    n.line,
+				Col:     n.col,
+				EndLine: n.endLine,
+				EndCol:  n.endCol,
+			})
 		}
 	}
 	return items, nil

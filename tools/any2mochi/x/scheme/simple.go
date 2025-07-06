@@ -49,6 +49,10 @@ func convertNode(n Node) []string {
 		return convertIf(n)
 	case "when":
 		return convertWhen(n)
+	case "cond":
+		return convertCond(n)
+	case "let*":
+		return convertLetStar(n)
 	case "let":
 		if f := convertFor(n); f != nil {
 			return f
@@ -164,6 +168,55 @@ func convertWhen(n Node) []string {
 	out = append(out, indent(bodyLines)...)
 	out = append(out, "}")
 	return out
+}
+
+func convertCond(n Node) []string {
+	if len(n.List) < 2 {
+		return nil
+	}
+	clauses := n.List[1:]
+	var out []string
+	for i, c := range clauses {
+		if len(c.List) != 2 {
+			continue
+		}
+		cond := c.List[0]
+		body := c.List[1]
+		prefix := "if "
+		if i > 0 {
+			if cond.Atom == "else" {
+				out = append(out, "else {")
+				out = append(out, indent(convertBegin([]Node{body}))...)
+				out = append(out, "}")
+				break
+			}
+			prefix = "else if "
+		}
+		lines := convertBegin([]Node{body})
+		out = append(out, prefix+expr(cond)+" {")
+		out = append(out, indent(lines)...)
+		out = append(out, "}")
+	}
+	return out
+}
+
+func convertLetStar(n Node) []string {
+	if len(n.List) < 3 {
+		return nil
+	}
+	binds := n.List[1]
+	if binds.Atom != "" {
+		return nil
+	}
+	var lines []string
+	for _, b := range binds.List {
+		if len(b.List) == 2 && b.List[0].Atom != "" {
+			lines = append(lines, "let "+b.List[0].Atom+" = "+expr(b.List[1]))
+		}
+	}
+	bodyLines := convertBegin(n.List[2:])
+	lines = append(lines, bodyLines...)
+	return lines
 }
 
 func convertFor(n Node) []string {
@@ -356,6 +409,48 @@ func expr(n Node) string {
 			if body, ok := unwrapCallCC(n.List[2]); ok {
 				return "fun(" + strings.Join(ps, ", ") + ") => " + expr(body)
 			}
+		}
+	case "let*":
+		if len(n.List) >= 3 {
+			binds := n.List[1]
+			if binds.Atom == "" {
+				var parts []string
+				for _, b := range binds.List {
+					if len(b.List) == 2 && b.List[0].Atom != "" {
+						parts = append(parts, b.List[0].Atom+" = "+expr(b.List[1]))
+					}
+				}
+				body := expr(n.List[2])
+				if body != "" {
+					parts = append(parts, body)
+				}
+				return strings.Join(parts, "; ")
+			}
+		}
+	case "cond":
+		if len(n.List) > 1 {
+			clauses := n.List[1:]
+			var out strings.Builder
+			for i, c := range clauses {
+				if len(c.List) != 2 {
+					continue
+				}
+				cond := c.List[0]
+				body := c.List[1]
+				if i > 0 {
+					out.WriteString(" else ")
+				}
+				if cond.Atom != "else" {
+					if i > 0 {
+						out.WriteString("if ")
+					}
+					out.WriteString("(")
+					out.WriteString(expr(cond))
+					out.WriteString(") ? ")
+				}
+				out.WriteString(expr(body))
+			}
+			return out.String()
 		}
 	default:
 		args := make([]string, len(n.List)-1)
