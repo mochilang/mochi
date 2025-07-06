@@ -4,6 +4,7 @@ import (
 	"fmt"
 )
 
+// line 1
 func fib(n int) int {
 	if n <= 1 {
 		return n

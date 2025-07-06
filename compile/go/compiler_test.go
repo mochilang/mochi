@@ -5,6 +5,7 @@ package gocode_test
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -15,6 +16,7 @@ import (
 	gocode "mochi/compile/go"
 	"mochi/golden"
 	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -126,14 +128,37 @@ func TestGoCompiler_GoldenOutput(t *testing.T) {
 			return nil, fmt.Errorf("❌ go run error: %w\n%s", err, out)
 		}
 
-		// If an output golden exists, ensure the program output matches.
+		goOut := bytes.TrimSpace(out)
+
+		// Execute the program using the Mochi VM for expected output
+		p, err := vm.Compile(prog, typeEnv)
+		if err != nil {
+			return nil, fmt.Errorf("vm compile error: %w", err)
+		}
+		var in io.Reader = bytes.NewReader(nil)
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			in = bytes.NewReader(data)
+		}
+		var vmOutBuf bytes.Buffer
+		m := vm.NewWithIO(p, in, &vmOutBuf)
+		if err := m.Run(); err != nil {
+			return nil, fmt.Errorf("vm run error: %w", err)
+		}
+		vmOut := bytes.TrimSpace(vmOutBuf.Bytes())
+
+		root := repoRoot()
+
+		// Ensure VM output matches golden file when present
 		outPath := strings.TrimSuffix(src, ".mochi") + ".out"
 		if want, err := os.ReadFile(outPath); err == nil {
-			got := bytes.TrimSpace(out)
-			root := repoRoot()
-			if !bytes.Equal(normalizeOutput(root, got), normalizeOutput(root, bytes.TrimSpace(want))) {
-				return nil, fmt.Errorf("runtime output mismatch\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", got, want)
+			if !bytes.Equal(normalizeOutput(root, vmOut), normalizeOutput(root, bytes.TrimSpace(want))) {
+				return nil, fmt.Errorf("runtime output mismatch\n\n--- VM ---\n%s\n\n--- Want ---\n%s\n", vmOut, want)
 			}
+		}
+
+		// Compare Go output with VM output
+		if !bytes.Equal(normalizeOutput(root, goOut), normalizeOutput(root, vmOut)) {
+			return nil, fmt.Errorf("vm mismatch\n\n--- Go ---\n%s\n\n--- VM ---\n%s\n", goOut, vmOut)
 		}
 
 		return bytes.TrimSpace(code), nil
