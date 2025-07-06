@@ -6,8 +6,8 @@ function searchMatrix(matrix: Array<Array<number>>, target: number): boolean {
     return false;
   }
   let n: number = matrix[0].length;
-  let left: number = 0;
-  let right: number = (m * n) - 1;
+  var left: number = 0;
+  var right: number = (m * n) - 1;
   while ((left <= right)) {
     let mid: number = left + Math.trunc((right - left) / 2);
     let row: number = Math.trunc(mid / n);

@@ -7,7 +7,7 @@ async function main(): Promise<void> {
     "https://example.com",
     _toAnyMap({
       "method": "POST",
-      "headers": { "Content-Type": "application/json" },
+      "headers": { "Content_Type": "application/json" },
       "query": { "q": "1" },
       "body": { "x": 1 },
       "timeout": 1.5,

@@ -18,17 +18,17 @@ function main(): void {
   console.log(_except(a, b).length);
   console.log(_intersect(a, b).length);
 }
-function _except(a: any[], b: any[]): any[] {
-  const remove = new Set<any>(b);
-  const res: any[] = [];
+function _except<T>(a: T[], b: T[]): T[] {
+  const remove = new Set<T>(b);
+  const res: T[] = [];
   for (const it of a) if (!remove.has(it)) res.push(it);
   return res;
 }
 
-function _intersect(a: any[], b: any[]): any[] {
-  const keep = new Set<any>(b);
-  const res: any[] = [];
-  const seen = new Set<any>();
+function _intersect<T>(a: T[], b: T[]): T[] {
+  const keep = new Set<T>(b);
+  const res: T[] = [];
+  const seen = new Set<T>();
   for (const it of a) {
     if (keep.has(it) && !seen.has(it)) {
       seen.add(it);
@@ -38,9 +38,9 @@ function _intersect(a: any[], b: any[]): any[] {
   return res;
 }
 
-function _union(a: any[], b: any[]): any[] {
-  const res: any[] = [];
-  const seen = new Set<any>();
+function _union<T>(a: T[], b: T[]): T[] {
+  const res: T[] = [];
+  const seen = new Set<T>();
   for (const it of a) {
     if (!seen.has(it)) {
       seen.add(it);
@@ -56,7 +56,7 @@ function _union(a: any[], b: any[]): any[] {
   return res;
 }
 
-function _union_all(a: any[], b: any[]): any[] {
+function _union_all<T>(a: T[], b: T[]): T[] {
   return a.concat(b);
 }
 
