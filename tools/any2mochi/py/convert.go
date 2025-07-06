@@ -733,6 +733,10 @@ func convertFallback(src string) ([]byte, error) {
 		case "assign":
 			out.WriteString("let ")
 			out.WriteString(it.Name)
+			if it.Type != "" {
+				out.WriteString(": ")
+				out.WriteString(mapType(it.Type))
+			}
 			if it.Value != "" {
 				out.WriteString(" = ")
 				out.WriteString(strings.ReplaceAll(it.Value, "\n", " "))
@@ -791,9 +795,35 @@ func snippetAround(src string, line int) string {
 	return strings.Join(lines[start:end], "\n")
 }
 
+func snippetDetailed(src string, line int) string {
+	lines := strings.Split(src, "\n")
+	start := line - 2
+	if start < 0 {
+		start = 0
+	}
+	end := line + 1
+	if end > len(lines) {
+		end = len(lines)
+	}
+	var out strings.Builder
+	for i := start; i < end; i++ {
+		prefix := "   "
+		if i+1 == line {
+			prefix = ">>>"
+		}
+		fmt.Fprintf(&out, "%s %d: %s\n", prefix, i+1, lines[i])
+	}
+	return strings.TrimSuffix(out.String(), "\n")
+}
+
 func parseErrorLine(msg string) int {
 	re := regexp.MustCompile(`line (\d+)`)
-	if m := re.FindStringSubmatch(msg); len(m) == 2 {
+	matches := re.FindAllStringSubmatch(msg, -1)
+	if len(matches) == 0 {
+		return 0
+	}
+	m := matches[len(matches)-1]
+	if len(m) == 2 {
 		if n, err := strconv.Atoi(m[1]); err == nil {
 			return n
 		}
@@ -828,6 +858,7 @@ type item struct {
 	Start  int         `json:"start,omitempty"`
 	End    int         `json:"end,omitempty"`
 	Value  string      `json:"value,omitempty"`
+	Type   string      `json:"type,omitempty"`
 }
 
 const parseScript = `import ast, json, sys
@@ -859,6 +890,14 @@ for n in tree.body:
             except Exception:
                 pass
             items.append({"kind": "assign", "name": n.targets[0].id, "value": val})
+    elif isinstance(n, ast.AnnAssign) and isinstance(n.target, ast.Name):
+        val = ""
+        if n.value is not None:
+            try:
+                val = ast.unparse(n.value)
+            except Exception:
+                pass
+        items.append({"kind": "assign", "name": n.target.id, "type": ann(n.annotation), "value": val})
     elif isinstance(n, ast.ClassDef):
         fields = []
         for b in n.body:
@@ -886,7 +925,7 @@ func runParse(src string) ([]item, error) {
 		msg := strings.TrimSpace(errBuf.String())
 		if msg != "" {
 			if line := parseErrorLine(msg); line > 0 {
-				msg += "\n" + snippetAround(src, line)
+				msg += "\n" + snippetDetailed(src, line)
 			}
 			return nil, fmt.Errorf("%v: %s", err, msg)
 		}
