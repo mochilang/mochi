@@ -12,8 +12,5 @@ let rec isLeaf (t: Tree) : bool =
         failwith "unreachable"
     with Return_isLeaf v -> v
 
-type Tree =
-    | Leaf
-    | Node of left: Tree * value: int * right: Tree
 ignore (printfn "%A" (isLeaf Leaf))
 ignore (printfn "%A" (isLeaf (Node(Leaf, 1, Leaf))))

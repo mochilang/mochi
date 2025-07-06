@@ -12,7 +12,4 @@ let rec depth (t: Tree) : int =
         failwith "unreachable"
     with Return_depth v -> v
 
-type Tree =
-    | Leaf
-    | Node of left: Tree * value: int * right: Tree
 ignore (printfn "%A" (depth (Node(Leaf, 0, Leaf))))
