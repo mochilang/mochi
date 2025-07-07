@@ -1,0 +1,16 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. LEN-BUILTIN.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01 NUMS PIC 9 OCCURS 3 VALUE ZEROS.
+       01 IDX PIC 9 VALUE 1.
+       01 LEN PIC 9 VALUE 0.
+       PROCEDURE DIVISION.
+           MOVE 1 TO NUMS(1)
+           MOVE 2 TO NUMS(2)
+           MOVE 3 TO NUMS(3)
+           PERFORM VARYING IDX FROM 1 BY 1 UNTIL IDX > 3
+               ADD 1 TO LEN
+           END-PERFORM
+           DISPLAY LEN
+           STOP RUN.
