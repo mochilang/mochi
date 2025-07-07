@@ -15,3 +15,6 @@ program is executed and its stdout is written to a `.out` file. Failed compilati
 - [x] string_concat.mochi
 - [x] string_compare.mochi
 - [x] math_ops.mochi
+- [x] bool_chain.mochi
+- [x] unary_neg.mochi
+- [x] while_loop.mochi
