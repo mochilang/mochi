@@ -40,6 +40,8 @@ func compileAndRun(t *testing.T, src, outDir, name string) {
 	if err != nil {
 		t.Fatalf("read error: %v", err)
 	}
+	errPath := filepath.Join(outDir, name+".error")
+	os.Remove(errPath)
 	prog, err := parser.ParseString(string(data))
 	if err != nil {
 		writeError(t, outDir, name, string(data), err)
@@ -62,6 +64,7 @@ func compileAndRun(t *testing.T, src, outDir, name string) {
 	}
 	outPath := filepath.Join(outDir, name+".out")
 	os.WriteFile(outPath, buf.Bytes(), 0644)
+	os.Remove(errPath)
 }
 
 func writeError(t *testing.T, dir, name, src string, err error) {
