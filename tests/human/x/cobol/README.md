@@ -1,8 +1,8 @@
-# Mochi to COBOL Translations
+# Mochi to COBOL Translations (41/97 translated)
 
 This directory contains hand-written COBOL versions of the Mochi programs from `tests/vm/valid`.
 
-## Checklist (40/97 translated)
+## Checklist
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -39,7 +39,7 @@ This directory contains hand-written COBOL versions of the Mochi programs from `
 - [x] dataset_sort_take_limit.mochi
 - [x] dataset_where_filter.mochi
 - [x] exists_builtin.mochi
-- [ ] group_by.mochi
+- [x] group_by.mochi
 - [ ] group_by_conditional_sum.mochi
 - [ ] group_by_having.mochi
 - [ ] group_by_join.mochi
