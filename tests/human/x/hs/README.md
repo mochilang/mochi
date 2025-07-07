@@ -46,15 +46,15 @@ This directory contains hand-written Haskell versions of some Mochi examples fro
 - `typed_var.mochi`
 - `unary_neg.mochi`
 - `values_builtin.mochi`
-- `while_loop.mochi`
+ - `while_loop.mochi`
+ - `cross_join.mochi`
+ - `cross_join_filter.mochi`
+ - `cross_join_triple.mochi`
+ - `dataset_sort_take_limit.mochi`
+ - `dataset_where_filter.mochi`
 
 
 ## Missing programs
-- `cross_join.mochi`
-- `cross_join_filter.mochi`
-- `cross_join_triple.mochi`
-- `dataset_sort_take_limit.mochi`
-- `dataset_where_filter.mochi`
 - `group_by.mochi`
 - `group_by_conditional_sum.mochi`
 - `group_by_having.mochi`
