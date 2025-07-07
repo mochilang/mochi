@@ -4,6 +4,7 @@ package pl_test
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -14,57 +15,87 @@ import (
 	"mochi/parser"
 )
 
+// TestPrologCompiler compiles every Mochi program under tests/vm/valid and
+// attempts to run the resulting Prolog code with SWI-Prolog. Generated
+// artifacts are written to tests/machine/x/pl.
 func TestPrologCompiler(t *testing.T) {
-	files := []string{
-		"print_hello.mochi",
-		"let_and_print.mochi",
-		"var_assignment.mochi",
-	}
-
 	root := findRepoRoot(t)
-	srcDir := filepath.Join(root, "tests", "vm", "valid")
+	pattern := filepath.Join(root, "tests", "vm", "valid", "*.mochi")
+	files, err := filepath.Glob(pattern)
+	if err != nil {
+		t.Fatalf("glob: %v", err)
+	}
 	outDir := filepath.Join(root, "tests", "machine", "x", "pl")
-	if err := os.MkdirAll(outDir, 0755); err != nil {
+	if err := os.MkdirAll(outDir, 0o755); err != nil {
 		t.Fatalf("mkdir: %v", err)
 	}
-
-	for _, f := range files {
-		src := filepath.Join(srcDir, f)
-		base := strings.TrimSuffix(f, ".mochi")
-		t.Run(base, func(t *testing.T) {
-			prog, err := parser.Parse(src)
-			if err != nil {
-				t.Fatalf("parse error: %v", err)
-			}
-			code, err := pl.New().Compile(prog)
-			if err != nil {
-				t.Fatalf("compile error: %v", err)
-			}
-			codePath := filepath.Join(outDir, base+".pl")
-			if err := os.WriteFile(codePath, code, 0644); err != nil {
-				t.Fatalf("write code: %v", err)
-			}
-			cmd := exec.Command("swipl", "-q", codePath)
-			var stdout, stderr bytes.Buffer
-			cmd.Stdout = &stdout
-			cmd.Stderr = &stderr
-			err = cmd.Run()
-			if err != nil {
-				errPath := filepath.Join(outDir, base+".error")
-				msg := stderr.String()
-				os.WriteFile(errPath, []byte(msg), 0644)
-				t.Fatalf("swipl error: %v", err)
-			}
-			outPath := filepath.Join(outDir, base+".out")
-			os.WriteFile(outPath, stdout.Bytes(), 0644)
-		})
+	for _, src := range files {
+		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
+		t.Run(name, func(t *testing.T) { compileAndRun(t, src, outDir, name) })
 	}
+}
+
+func compileAndRun(t *testing.T, src, outDir, name string) {
+	data, err := os.ReadFile(src)
+	if err != nil {
+		t.Fatalf("read: %v", err)
+	}
+	prog, err := parser.ParseString(string(data))
+	if err != nil {
+		writeError(outDir, name, string(data), err)
+		t.Fatalf("parse error: %v", err)
+	}
+	code, err := pl.New().Compile(prog)
+	if err != nil {
+		writeError(outDir, name, string(data), err)
+		t.Fatalf("compile error: %v", err)
+	}
+	codePath := filepath.Join(outDir, name+".pl")
+	if err := os.WriteFile(codePath, code, 0o644); err != nil {
+		t.Fatalf("write code: %v", err)
+	}
+	cmd := exec.Command("swipl", "-q", codePath)
+	var buf bytes.Buffer
+	cmd.Stdout = &buf
+	cmd.Stderr = &buf
+	if err := cmd.Run(); err != nil {
+		writeError(outDir, name, string(data), fmt.Errorf("run: %v\n%s", err, buf.String()))
+		return
+	}
+	if err := os.WriteFile(filepath.Join(outDir, name+".out"), buf.Bytes(), 0o644); err != nil {
+		t.Fatalf("write out: %v", err)
+	}
+}
+
+func writeError(dir, name, src string, err error) {
+	lines := strings.Split(src, "\n")
+	msg := err.Error()
+	ln := 0
+	if idx := strings.Index(msg, "line "); idx != -1 {
+		fmt.Sscanf(msg[idx:], "line %d", &ln)
+	}
+	var ctx string
+	if ln > 0 {
+		start := ln - 2
+		if start < 0 {
+			start = 0
+		}
+		end := ln + 1
+		if end > len(lines) {
+			end = len(lines)
+		}
+		for i := start; i < end; i++ {
+			ctx += lines[i] + "\n"
+		}
+	}
+	errPath := filepath.Join(dir, name+".error")
+	os.WriteFile(errPath, []byte(msg+"\n"+ctx), 0o644)
 }
 
 func findRepoRoot(t *testing.T) string {
 	dir, err := os.Getwd()
 	if err != nil {
-		t.Fatal("cannot determine working directory")
+		t.Fatal(err)
 	}
 	for i := 0; i < 10; i++ {
 		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
@@ -76,6 +107,6 @@ func findRepoRoot(t *testing.T) string {
 		}
 		dir = parent
 	}
-	t.Fatal("go.mod not found (not in Go module)")
+	t.Fatal("go.mod not found")
 	return ""
 }
