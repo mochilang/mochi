@@ -2,9 +2,11 @@
 
 Generated Haskell code and outputs are stored in this directory.
 
-## Checklist
+## 44/97 compiled
 
-- [ ] `append_builtin.mochi`
+### Checklist
+
+- [x] `append_builtin.mochi`
 - [x] `avg_builtin.mochi`
 - [x] `basic_compare.mochi`
 - [x] `binary_precedence.mochi`
@@ -35,7 +37,7 @@ Generated Haskell code and outputs are stored in this directory.
 - [ ] `group_by_multi_join_sort.mochi`
 - [ ] `group_by_sort.mochi`
 - [ ] `group_items_iteration.mochi`
-- [ ] `if_else.mochi`
+ - [x] `if_else.mochi`
 - [ ] `if_then_else.mochi`
 - [ ] `if_then_else_nested.mochi`
 - [x] `in_operator.mochi`
