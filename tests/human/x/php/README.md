@@ -29,8 +29,8 @@ This directory contains hand-written PHP versions of the Mochi test programs fro
 | group_by.mochi | yes |
 | group_by_conditional_sum.mochi | yes |
 | group_by_having.mochi | yes |
-| group_by_join.mochi | missing |
-| group_by_left_join.mochi | missing |
+| group_by_join.mochi | yes |
+| group_by_left_join.mochi | yes |
 | group_by_multi_join.mochi | missing |
 | group_by_multi_join_sort.mochi | missing |
 | group_by_sort.mochi | missing |
@@ -40,11 +40,11 @@ This directory contains hand-written PHP versions of the Mochi test programs fro
 | if_then_else_nested.mochi | missing |
 | in_operator.mochi | missing |
 | in_operator_extended.mochi | missing |
-| inner_join.mochi | missing |
-| join_multi.mochi | missing |
-| json_builtin.mochi | missing |
-| left_join.mochi | missing |
-| left_join_multi.mochi | missing |
+| inner_join.mochi | yes |
+| join_multi.mochi | yes |
+| json_builtin.mochi | yes |
+| left_join.mochi | yes |
+| left_join_multi.mochi | yes |
 | len_builtin.mochi | yes |
 | len_map.mochi | yes |
 | len_string.mochi | yes |
@@ -52,7 +52,7 @@ This directory contains hand-written PHP versions of the Mochi test programs fro
 | list_assign.mochi | yes |
 | list_index.mochi | yes |
 | list_nested_assign.mochi | yes |
-| list_set_ops.mochi | missing |
+| list_set_ops.mochi | yes |
 | load_yaml.mochi | missing |
 | map_assign.mochi | yes |
 | map_in_operator.mochi | missing |
