@@ -223,3 +223,11 @@ func canInferType(e *parser.Expr, t types.Type) bool {
 	}
 	return true
 }
+
+func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
+	if p == nil {
+		return types.AnyType{}
+	}
+	e := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: p}}}}
+	return c.inferExprType(e)
+}

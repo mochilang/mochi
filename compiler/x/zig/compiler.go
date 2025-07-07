@@ -3,6 +3,7 @@ package zigcode
 import (
 	"bytes"
 	"fmt"
+	"math"
 	"strconv"
 	"strings"
 
@@ -1591,7 +1592,8 @@ func (c *Compiler) compileCallOp(receiver string, call *parser.CallOp) (string, 
 func (c *Compiler) compilePrimary(p *parser.Primary, asReturn bool) (string, error) {
 	switch {
 	case p.Lit != nil:
-		return c.compileLiteral(p.Lit)
+		t := c.inferPrimaryType(p)
+		return c.compileLiteral(p.Lit, t)
 	case p.Selector != nil:
 		name := sanitizeName(p.Selector.Root)
 		if len(p.Selector.Tail) > 0 {
@@ -1851,10 +1853,14 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	return fmt.Sprintf("%s(%s)", name, strings.Join(args, ", ")), nil
 }
 
-func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
+func (c *Compiler) compileLiteral(l *parser.Literal, hint types.Type) (string, error) {
 	switch {
 	case l.Int != nil:
-		return fmt.Sprintf("@as(i32,@intCast(%d))", *l.Int), nil
+		val := *l.Int
+		if isInt64(hint) || val > math.MaxInt32 || val < math.MinInt32 {
+			return fmt.Sprintf("@as(i64,@intCast(%d))", val), nil
+		}
+		return fmt.Sprintf("@as(i32,@intCast(%d))", val), nil
 	case l.Float != nil:
 		return strconv.FormatFloat(*l.Float, 'f', -1, 64), nil
 	case l.Str != nil:
