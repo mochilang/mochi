@@ -2,7 +2,7 @@
 
 This directory contains manual Erlang translations of Mochi test programs from `tests/vm/valid`.
 
-Below is a checklist showing which programs have been translated.
+## Checklist (97/97 translated)
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -74,30 +74,30 @@ Below is a checklist showing which programs have been translated.
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
-- [ ] group_by_left_join.mochi
-- [ ] group_by_multi_join.mochi
-- [ ] group_by_multi_join_sort.mochi
-- [ ] group_by_sort.mochi
+- [x] group_by_left_join.mochi
+- [x] group_by_multi_join.mochi
+- [x] group_by_multi_join_sort.mochi
+- [x] group_by_sort.mochi
 - [x] in_operator_extended.mochi
-- [ ] inner_join.mochi
-- [ ] join_multi.mochi
+- [x] inner_join.mochi
+- [x] join_multi.mochi
 - [x] json_builtin.mochi
-- [ ] left_join.mochi
-- [ ] left_join_multi.mochi
+- [x] left_join.mochi
+- [x] left_join_multi.mochi
 - [x] list_set_ops.mochi
-- [ ] load_yaml.mochi
+- [x] load_yaml.mochi
 - [x] match_expr.mochi
 - [x] match_full.mochi
 - [x] nested_function.mochi
 - [x] order_by_map.mochi
-- [ ] outer_join.mochi
+- [x] outer_join.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
 - [x] query_sum_select.mochi
 - [x] record_assign.mochi
-- [ ] right_join.mochi
+- [x] right_join.mochi
 - [x] save_jsonl_stdout.mochi
-- [ ] sort_stable.mochi
+- [x] sort_stable.mochi
 - [x] test_block.mochi
-- [ ] update_stmt.mochi
-- [ ] user_type_literal.mochi
+- [x] update_stmt.mochi
+- [x] user_type_literal.mochi
