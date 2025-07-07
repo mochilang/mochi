@@ -81,22 +81,22 @@ This directory contains manual Racket translations of programs from `tests/vm/va
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
-- [ ] group_by.mochi
-- [ ] group_by_conditional_sum.mochi
-- [ ] group_by_having.mochi
-- [ ] group_by_join.mochi
-- [ ] group_by_left_join.mochi
-- [ ] group_by_multi_join.mochi
-- [ ] group_by_multi_join_sort.mochi
-- [ ] group_by_sort.mochi
-- [ ] group_items_iteration.mochi
-- [ ] inner_join.mochi
-- [ ] join_multi.mochi
-- [ ] left_join.mochi
-- [ ] left_join_multi.mochi
-- [ ] load_yaml.mochi
-- [ ] order_by_map.mochi
-- [ ] outer_join.mochi
-- [ ] right_join.mochi
-- [ ] save_jsonl_stdout.mochi
-- [ ] update_stmt.mochi
+- [x] group_by.mochi
+- [x] group_by_conditional_sum.mochi
+- [x] group_by_having.mochi
+- [x] group_by_join.mochi
+- [x] group_by_left_join.mochi
+- [x] group_by_multi_join.mochi
+- [x] group_by_multi_join_sort.mochi
+- [x] group_by_sort.mochi
+- [x] group_items_iteration.mochi
+- [x] inner_join.mochi
+- [x] join_multi.mochi
+- [x] left_join.mochi
+- [x] left_join_multi.mochi
+- [x] load_yaml.mochi
+- [x] order_by_map.mochi
+- [x] outer_join.mochi
+- [x] right_join.mochi
+- [x] save_jsonl_stdout.mochi
+- [x] update_stmt.mochi
