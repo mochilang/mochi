@@ -25,6 +25,11 @@ This directory contains hand-written Haskell versions of some Mochi examples fro
 - `print_hello.mochi`
 - `string_concat.mochi`
 - `var_assignment.mochi`
+- `exists_builtin.mochi`
+- `for_map_collection.mochi`
+- `fun_call.mochi`
+- `fun_expr_in_let.mochi`
+- `fun_three_args.mochi`
 
 ## Missing programs
 - `cross_join.mochi`
@@ -32,11 +37,6 @@ This directory contains hand-written Haskell versions of some Mochi examples fro
 - `cross_join_triple.mochi`
 - `dataset_sort_take_limit.mochi`
 - `dataset_where_filter.mochi`
-- `exists_builtin.mochi`
-- `for_map_collection.mochi`
-- `fun_call.mochi`
-- `fun_expr_in_let.mochi`
-- `fun_three_args.mochi`
 - `group_by.mochi`
 - `group_by_conditional_sum.mochi`
 - `group_by_having.mochi`
