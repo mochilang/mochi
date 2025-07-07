@@ -1,0 +1,5 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. LET-AND-PRINT.
+       PROCEDURE DIVISION.
+           DISPLAY 30.
+           STOP RUN.

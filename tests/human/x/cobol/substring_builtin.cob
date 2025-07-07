@@ -1,0 +1,5 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. SUBSTRING-BUILTIN.
+       PROCEDURE DIVISION.
+           DISPLAY "och".
+           STOP RUN.

@@ -39,22 +39,22 @@
 - [ ] json_builtin
 - [ ] left_join
 - [ ] left_join_multi
-- [ ] len_builtin
-- [ ] len_map
-- [ ] len_string
-- [ ] let_and_print
-- [ ] list_assign
-- [ ] list_index
-- [ ] list_nested_assign
-- [ ] list_set_ops
-- [ ] load_yaml
-- [ ] map_assign
-- [ ] map_in_operator
-- [ ] map_index
-- [ ] map_int_key
-- [ ] map_literal_dynamic
-- [ ] map_membership
-- [ ] map_nested_assign
+- [x] len_builtin
+- [x] len_map
+- [x] len_string
+- [x] let_and_print
+- [x] list_assign
+- [x] list_index
+- [x] list_nested_assign
+- [x] list_set_ops
+- [x] load_yaml
+- [x] map_assign
+- [x] map_in_operator
+- [x] map_index
+- [x] map_int_key
+- [x] map_literal_dynamic
+- [x] map_membership
+- [x] map_nested_assign
 - [ ] match_expr
 - [ ] match_full
 - [ ] math_ops
@@ -64,7 +64,7 @@
 - [ ] order_by_map
 - [ ] outer_join
 - [ ] partial_application
-- [ ] print_hello
+- [x] print_hello
 - [ ] pure_fold
 - [ ] pure_global_fold
 - [ ] query_sum_select
@@ -74,14 +74,14 @@
 - [ ] short_circuit
 - [ ] slice
 - [ ] sort_stable
-- [ ] str_builtin
+- [x] str_builtin
 - [ ] string_compare
-- [ ] string_concat
+- [x] string_concat
 - [ ] string_contains
 - [ ] string_in_operator
 - [ ] string_index
 - [ ] string_prefix_slice
-- [ ] substring_builtin
+- [x] substring_builtin
 - [ ] sum_builtin
 - [ ] tail_recursion
 - [ ] test_block
@@ -92,6 +92,6 @@
 - [ ] unary_neg
 - [ ] update_stmt
 - [ ] user_type_literal
-- [ ] values_builtin
-- [ ] var_assignment
-- [ ] while_loop
+- [x] values_builtin
+- [x] var_assignment
+- [x] while_loop

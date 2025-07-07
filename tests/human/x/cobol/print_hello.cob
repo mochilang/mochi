@@ -1,0 +1,5 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. PRINT-HELLO.
+       PROCEDURE DIVISION.
+           DISPLAY "hello".
+           STOP RUN.

@@ -1,0 +1,5 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. LEN-BUILTIN.
+       PROCEDURE DIVISION.
+           DISPLAY 3.
+           STOP RUN.

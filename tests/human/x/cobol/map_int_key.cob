@@ -1,0 +1,5 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. MAP-INT-KEY.
+       PROCEDURE DIVISION.
+           DISPLAY "a".
+           STOP RUN.

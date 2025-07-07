@@ -1,0 +1,5 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. LIST-INDEX.
+       PROCEDURE DIVISION.
+           DISPLAY 20.
+           STOP RUN.
