@@ -48,9 +48,13 @@ so far and which remain.
 - typed_let.mochi
 - typed_var.mochi
 - unary_neg.mochi
+- group_by.mochi
+- print_hello.mochi
+- tail_recursion.mochi
+- tree_sum.mochi
+- two-sum.mochi
 
 ## Missing
-- group_by.mochi
 - group_by_conditional_sum.mochi
 - group_by_having.mochi
 - group_by_join.mochi
@@ -79,7 +83,6 @@ so far and which remain.
 - order_by_map.mochi
 - outer_join.mochi
 - partial_application.mochi
-- print_hello.mochi
 - pure_fold.mochi
 - pure_global_fold.mochi
 - query_sum_select.mochi
@@ -95,10 +98,7 @@ so far and which remain.
 - string_index.mochi
 - string_prefix_slice.mochi
 - substring_builtin.mochi
-- tail_recursion.mochi
 - test_block.mochi
-- tree_sum.mochi
-- two-sum.mochi
 - update_stmt.mochi
 - user_type_literal.mochi
 - values_builtin.mochi
