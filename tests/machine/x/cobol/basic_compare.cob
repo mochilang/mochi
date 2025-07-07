@@ -1,0 +1,13 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. BASIC_COMPARE.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01 A PIC 9.
+       01 B PIC 9.
+       PROCEDURE DIVISION.
+       COMPUTE A = 10 - 3
+       COMPUTE B = 2 + 2
+       DISPLAY A
+       DISPLAY A == 7
+       DISPLAY B < 5
+       STOP RUN.
