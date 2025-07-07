@@ -76,9 +76,14 @@ This directory (`tests/human/x/python`) contains manual Python translations of t
 - values_builtin.mochi
 - var_assignment.mochi
 - while_loop.mochi
+- group_by.mochi
+- json_builtin.mochi
+- load_yaml.mochi
+- order_by_map.mochi
+- outer_join.mochi
+- sort_stable.mochi
 
 ## Missing
-- group_by.mochi
 - group_by_conditional_sum.mochi
 - group_by_having.mochi
 - group_by_join.mochi
@@ -89,16 +94,11 @@ This directory (`tests/human/x/python`) contains manual Python translations of t
 - group_items_iteration.mochi
 - inner_join.mochi
 - join_multi.mochi
-- json_builtin.mochi
 - left_join.mochi
 - left_join_multi.mochi
 - list_set_ops.mochi
-- load_yaml.mochi
 - match_full.mochi
-- order_by_map.mochi
-- outer_join.mochi
 - query_sum_select.mochi
 - right_join.mochi
 - save_jsonl_stdout.mochi
-- sort_stable.mochi
 - update_stmt.mochi
