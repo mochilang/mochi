@@ -1,0 +1,107 @@
+# Lua Translations of Mochi Programs
+
+This directory contains hand-written Lua programs corresponding to a subset of the Mochi programs found under `tests/vm/valid`.
+
+## Completed translations
+
+- append_builtin.lua
+- avg_builtin.lua
+- basic_compare.lua
+- binary_precedence.lua
+- bool_chain.lua
+- break_continue.lua
+- cast_string_to_int.lua
+- cast_struct.lua
+- closure.lua
+- count_builtin.lua
+- cross_join.lua
+- cross_join_filter.lua
+- cross_join_triple.lua
+- dataset_sort_take_limit.lua
+- dataset_where_filter.lua
+- exists_builtin.lua
+- for_list_collection.lua
+- for_loop.lua
+- for_map_collection.lua
+- fun_call.lua
+- fun_expr_in_let.lua
+- fun_three_args.lua
+
+- if_else.lua
+- len_builtin.lua
+- len_map.lua
+- len_string.lua
+- list_assign.lua
+- list_index.lua
+- map_assign.lua
+- map_index.lua
+- map_literal_dynamic.lua
+- print_hello.lua
+- pure_fold.lua
+- pure_global_fold.lua
+- record_assign.lua
+- string_concat.lua
+- string_contains.lua
+- string_in_operator.lua
+- string_index.lua
+- string_prefix_slice.lua
+- substring_builtin.lua
+- sum_builtin.lua
+- tree_sum.lua
+- two-sum.lua
+- unary_neg.lua
+- values_builtin.lua
+- var_assignment.lua
+- while_loop.lua
+## Missing translations
+
+- group_by
+- group_by_conditional_sum
+- group_by_having
+- group_by_join
+- group_by_left_join
+- group_by_multi_join
+- group_by_multi_join_sort
+- group_by_sort
+- group_items_iteration
+- if_then_else
+- if_then_else_nested
+- in_operator
+- in_operator_extended
+- inner_join
+- join_multi
+- json_builtin
+- left_join
+- left_join_multi
+- let_and_print
+- list_nested_assign
+- list_set_ops
+- load_yaml
+- map_in_operator
+- map_int_key
+- map_membership
+- map_nested_assign
+- match_expr
+- match_full
+- math_ops
+- membership
+- min_max_builtin
+- nested_function
+- order_by_map
+- outer_join
+- partial_application
+- query_sum_select
+- right_join
+- save_jsonl_stdout
+- short_circuit
+- slice
+- sort_stable
+- str_builtin
+- string_compare
+- tail_recursion
+- test_block
+- typed_let
+- typed_var
+- update_stmt
+- user_type_literal
+
