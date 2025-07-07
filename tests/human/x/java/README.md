@@ -1,4 +1,5 @@
 # Java Translations of Mochi Programs
+**86/97 translated**
 
 This folder contains hand written Java versions of each program in `tests/vm/valid`. The checklist below tracks which examples have been translated.
 
@@ -27,20 +28,20 @@ This folder contains hand written Java versions of each program in `tests/vm/val
 - [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
 - [x] group_by.mochi
-- [ ] group_by_conditional_sum.mochi
-- [ ] group_by_having.mochi
-- [ ] group_by_join.mochi
+- [x] group_by_conditional_sum.mochi
+- [x] group_by_having.mochi
+- [x] group_by_join.mochi
 - [ ] group_by_left_join.mochi
 - [ ] group_by_multi_join.mochi
 - [ ] group_by_multi_join_sort.mochi
 - [ ] group_by_sort.mochi
-- [ ] group_items_iteration.mochi
+- [x] group_items_iteration.mochi
 - [x] if_else.mochi
 - [x] if_then_else.mochi
 - [x] if_then_else_nested.mochi
 - [x] in_operator.mochi
 - [x] in_operator_extended.mochi
-- [ ] inner_join.mochi
+- [x] inner_join.mochi
 - [ ] join_multi.mochi
 - [x] json_builtin.mochi
 - [ ] left_join.mochi
@@ -52,7 +53,7 @@ This folder contains hand written Java versions of each program in `tests/vm/val
 - [x] list_assign.mochi
 - [x] list_index.mochi
 - [x] list_nested_assign.mochi
-- [ ] list_set_ops.mochi
+- [x] list_set_ops.mochi
 - [ ] load_yaml.mochi
 - [x] map_assign.mochi
 - [x] map_in_operator.mochi
@@ -67,19 +68,19 @@ This folder contains hand written Java versions of each program in `tests/vm/val
 - [x] membership.mochi
 - [x] min_max_builtin.mochi
 - [x] nested_function.mochi
-- [ ] order_by_map.mochi
+- [x] order_by_map.mochi
 - [ ] outer_join.mochi
 - [x] partial_application.mochi
 - [x] print_hello.mochi
-- [ ] pure_fold.mochi
-- [ ] pure_global_fold.mochi
-- [ ] query_sum_select.mochi
+- [x] pure_fold.mochi
+- [x] pure_global_fold.mochi
+- [x] query_sum_select.mochi
 - [x] record_assign.mochi
 - [ ] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
 - [x] slice.mochi
-- [ ] sort_stable.mochi
+- [x] sort_stable.mochi
 - [x] str_builtin.mochi
 - [x] string_compare.mochi
 - [x] string_concat.mochi
@@ -90,13 +91,13 @@ This folder contains hand written Java versions of each program in `tests/vm/val
 - [x] substring_builtin.mochi
 - [x] sum_builtin.mochi
 - [x] tail_recursion.mochi
-- [ ] test_block.mochi
+- [x] test_block.mochi
 - [x] tree_sum.mochi
 - [x] two-sum.mochi
 - [x] typed_let.mochi
 - [x] typed_var.mochi
 - [x] unary_neg.mochi
-- [ ] update_stmt.mochi
+- [x] update_stmt.mochi
 - [x] user_type_literal.mochi
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
