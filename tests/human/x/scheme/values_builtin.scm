@@ -1,0 +1,8 @@
+(define m '(("a" . 1) ("b" . 2) ("c" . 3)))
+(define vals (map cdr m))
+(display (car vals))
+(for-each (lambda (v)
+            (display " ")
+            (display v))
+          (cdr vals))
+(newline)

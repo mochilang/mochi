@@ -1,0 +1,5 @@
+(define m '((1 . "a") (2 . "b")))
+(display (if (assoc 1 m) "true" "false"))
+(newline)
+(display (if (assoc 3 m) "true" "false"))
+(newline)
