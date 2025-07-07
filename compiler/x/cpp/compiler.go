@@ -48,6 +48,8 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.writeln("template<typename T> vector<T> mochi_append(vector<T> v, T x) { v.push_back(x); return v; }")
 	c.writeln("template<typename T> T mochi_sum(const vector<T>& v) { T s{}; for(const auto& x: v) s += x; return s; }")
 	c.writeln("template<typename T> double mochi_avg(const vector<T>& v) { if(v.empty()) return 0; return static_cast<double>(mochi_sum(v)) / v.size(); }")
+	c.writeln("template<typename T> void mochi_print(const T& v) { cout << v << endl; }")
+	c.writeln("template<typename T> void mochi_print(const vector<T>& v) { for(size_t i=0;i<v.size();++i){ if(i) cout << ' '; cout << v[i]; } cout << endl; }")
 	c.writeln("")
 
 	for _, st := range p.Statements {
@@ -313,7 +315,9 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, error) {
 				}
 				args = append(args, s)
 			}
-			if expr == "print" {
+			if expr == "print" && len(args) == 1 {
+				expr = fmt.Sprintf("mochi_print(%s)", args[0])
+			} else if expr == "print" {
 				e := "(cout"
 				for _, a := range args {
 					e += " << " + a
@@ -353,6 +357,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			args = append(args, s)
 		}
 		fn := p.Call.Func
+		if fn == "print" && len(args) == 1 {
+			return fmt.Sprintf("mochi_print(%s)", args[0]), nil
+		}
 		if fn == "print" {
 			out := "(cout"
 			for _, a := range args {
@@ -411,7 +418,7 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 		return "false", nil
 	}
 	if l.Str != nil {
-		return *l.Str, nil
+		return fmt.Sprintf("%q", *l.Str), nil
 	}
 	if l.Null {
 		return "nullptr", nil
