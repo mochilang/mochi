@@ -13,6 +13,13 @@ This directory contains hand-written Haskell versions of some Mochi examples fro
 - `cast_struct.mochi`
 - `closure.mochi`
 - `count_builtin.mochi`
+- `for_list_collection.mochi`
+- `for_loop.mochi`
+- `if_else.mochi`
+- `len_builtin.mochi`
+- `print_hello.mochi`
+- `string_concat.mochi`
+- `var_assignment.mochi`
 
 ## Missing programs
 - `cross_join.mochi`
@@ -21,8 +28,6 @@ This directory contains hand-written Haskell versions of some Mochi examples fro
 - `dataset_sort_take_limit.mochi`
 - `dataset_where_filter.mochi`
 - `exists_builtin.mochi`
-- `for_list_collection.mochi`
-- `for_loop.mochi`
 - `for_map_collection.mochi`
 - `fun_call.mochi`
 - `fun_expr_in_let.mochi`
@@ -36,7 +41,6 @@ This directory contains hand-written Haskell versions of some Mochi examples fro
 - `group_by_multi_join_sort.mochi`
 - `group_by_sort.mochi`
 - `group_items_iteration.mochi`
-- `if_else.mochi`
 - `if_then_else.mochi`
 - `if_then_else_nested.mochi`
 - `in_operator.mochi`
@@ -46,7 +50,6 @@ This directory contains hand-written Haskell versions of some Mochi examples fro
 - `json_builtin.mochi`
 - `left_join.mochi`
 - `left_join_multi.mochi`
-- `len_builtin.mochi`
 - `len_map.mochi`
 - `len_string.mochi`
 - `let_and_print.mochi`
@@ -71,7 +74,6 @@ This directory contains hand-written Haskell versions of some Mochi examples fro
 - `order_by_map.mochi`
 - `outer_join.mochi`
 - `partial_application.mochi`
-- `print_hello.mochi`
 - `pure_fold.mochi`
 - `pure_global_fold.mochi`
 - `query_sum_select.mochi`
@@ -83,7 +85,6 @@ This directory contains hand-written Haskell versions of some Mochi examples fro
 - `sort_stable.mochi`
 - `str_builtin.mochi`
 - `string_compare.mochi`
-- `string_concat.mochi`
 - `string_contains.mochi`
 - `string_in_operator.mochi`
 - `string_index.mochi`
@@ -100,5 +101,4 @@ This directory contains hand-written Haskell versions of some Mochi examples fro
 - `update_stmt.mochi`
 - `user_type_literal.mochi`
 - `values_builtin.mochi`
-- `var_assignment.mochi`
 - `while_loop.mochi`
