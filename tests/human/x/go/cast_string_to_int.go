@@ -1,11 +1,13 @@
+//go:build ignore
+
 package main
 
 import (
-    "fmt"
-    "strconv"
+	"fmt"
+	"strconv"
 )
 
 func main() {
-    n, _ := strconv.Atoi("1995")
-    fmt.Println(n)
+	n, _ := strconv.Atoi("1995")
+	fmt.Println(n)
 }
