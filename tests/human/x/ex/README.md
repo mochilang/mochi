@@ -28,10 +28,10 @@ for_map_collection|Done
 fun_call|Done
 fun_expr_in_let|Done
 fun_three_args|Done
-group_by|Missing
-group_by_conditional_sum|Missing
-group_by_having|Missing
-group_by_join|Missing
+group_by|Done
+group_by_conditional_sum|Done
+group_by_having|Done
+group_by_join|Done
 group_by_left_join|Missing
 group_by_multi_join|Missing
 group_by_multi_join_sort|Missing
