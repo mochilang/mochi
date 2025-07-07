@@ -6,6 +6,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -31,19 +33,20 @@ func TestGenerateMachineOutput(t *testing.T) {
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
 		t.Run(name, func(t *testing.T) {
+			data, _ := os.ReadFile(src)
 			prog, err := parser.Parse(src)
 			if err != nil {
-				writeError(outDir, name, err)
+				writeError(outDir, name, data, err)
 				t.Fatalf("parse error: %v", err)
 			}
 			env := types.NewEnv(nil)
 			if errs := types.Check(prog, env); len(errs) > 0 {
-				writeError(outDir, name, errs[0])
+				writeError(outDir, name, data, errs[0])
 				t.Fatalf("type error: %v", errs[0])
 			}
 			code, err := tscode.New(env, filepath.Dir(src)).Compile(prog)
 			if err != nil {
-				writeError(outDir, name, err)
+				writeError(outDir, name, data, err)
 				t.Fatalf("compile error: %v", err)
 			}
 			codePath := filepath.Join(outDir, name+".ts")
@@ -57,7 +60,7 @@ func TestGenerateMachineOutput(t *testing.T) {
 			}
 			out, err := cmd.CombinedOutput()
 			if err != nil {
-				writeError(outDir, name, fmt.Errorf("run error: %w\n%s", err, out))
+				writeError(outDir, name, code, fmt.Errorf("run error: %w\n%s", err, out))
 				t.Fatalf("run error: %v", err)
 			}
 			out = bytes.TrimSpace(out)
@@ -68,9 +71,39 @@ func TestGenerateMachineOutput(t *testing.T) {
 	}
 }
 
-func writeError(dir, name string, err error) {
+func writeError(dir, name string, src []byte, err error) {
+	line := extractLine(err.Error())
+	var context string
+	if line > 0 {
+		lines := bytes.Split(src, []byte("\n"))
+		start := line - 2
+		if start < 1 {
+			start = 1
+		}
+		end := line + 1
+		if end > len(lines) {
+			end = len(lines)
+		}
+		var b strings.Builder
+		for i := start; i <= end; i++ {
+			fmt.Fprintf(&b, "%4d: %s\n", i, lines[i-1])
+		}
+		context = b.String()
+	}
+	msg := fmt.Sprintf("line: %d\nerror: %v\n%s", line, err, context)
 	path := filepath.Join(dir, name+".error")
-	_ = os.WriteFile(path, []byte(err.Error()), 0644)
+	_ = os.WriteFile(path, []byte(msg), 0644)
+}
+
+var lineRE = regexp.MustCompile(`:(\d+):`)
+
+func extractLine(msg string) int {
+	if m := lineRE.FindStringSubmatch(msg); m != nil {
+		if n, err := strconv.Atoi(m[1]); err == nil {
+			return n
+		}
+	}
+	return 0
 }
 
 func findRepoRoot3(t *testing.T) string {
