@@ -325,7 +325,19 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, error) {
 				e += " << endl)"
 				expr = e
 			} else if expr == "len" && len(args) == 1 {
+				if strings.HasPrefix(args[0], "\"") {
+					expr = fmt.Sprintf("((int)string(%s).size())", args[0])
+				} else {
+					expr = fmt.Sprintf("((int)%s.size())", args[0])
+				}
+			} else if expr == "count" && len(args) == 1 {
 				expr = fmt.Sprintf("((int)%s.size())", args[0])
+			} else if expr == "min" && len(args) == 1 {
+				expr = fmt.Sprintf("(*min_element(%s.begin(), %s.end()))", args[0], args[0])
+			} else if expr == "max" && len(args) == 1 {
+				expr = fmt.Sprintf("(*max_element(%s.begin(), %s.end()))", args[0], args[0])
+			} else if expr == "str" && len(args) == 1 {
+				expr = fmt.Sprintf("to_string(%s)", args[0])
 			} else if expr == "append" && len(args) == 2 {
 				expr = fmt.Sprintf("mochi_append(%s, %s)", args[0], args[1])
 			} else if expr == "sum" && len(args) == 1 {
@@ -337,6 +349,16 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, error) {
 			}
 		} else if op.Field != nil {
 			expr = fmt.Sprintf("%s.%s", expr, op.Field.Name)
+		} else if op.Cast != nil {
+			typ, err := c.compileType(op.Cast.Type)
+			if err != nil {
+				return "", err
+			}
+			if typ == "int" && strings.HasPrefix(expr, "\"") {
+				expr = fmt.Sprintf("stoi(%s)", expr)
+			} else {
+				expr = fmt.Sprintf("(%s)(%s)", typ, expr)
+			}
 		} else {
 			return "", fmt.Errorf("unsupported postfix op")
 		}
@@ -369,7 +391,22 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return out, nil
 		}
 		if fn == "len" && len(args) == 1 {
+			if strings.HasPrefix(args[0], "\"") {
+				return fmt.Sprintf("((int)string(%s).size())", args[0]), nil
+			}
 			return fmt.Sprintf("((int)%s.size())", args[0]), nil
+		}
+		if fn == "count" && len(args) == 1 {
+			return fmt.Sprintf("((int)%s.size())", args[0]), nil
+		}
+		if fn == "min" && len(args) == 1 {
+			return fmt.Sprintf("(*min_element(%s.begin(), %s.end()))", args[0], args[0]), nil
+		}
+		if fn == "max" && len(args) == 1 {
+			return fmt.Sprintf("(*max_element(%s.begin(), %s.end()))", args[0], args[0]), nil
+		}
+		if fn == "str" && len(args) == 1 {
+			return fmt.Sprintf("to_string(%s)", args[0]), nil
 		}
 		if fn == "append" && len(args) == 2 {
 			return fmt.Sprintf("mochi_append(%s, %s)", args[0], args[1]), nil
@@ -424,4 +461,19 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 		return "nullptr", nil
 	}
 	return "", fmt.Errorf("unknown literal")
+}
+
+func (c *Compiler) compileType(t *parser.TypeRef) (string, error) {
+	if t == nil {
+		return "auto", nil
+	}
+	if t.Simple != nil {
+		switch *t.Simple {
+		case "int":
+			return "int", nil
+		case "string":
+			return "string", nil
+		}
+	}
+	return "auto", fmt.Errorf("unsupported type")
 }
