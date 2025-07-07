@@ -1,0 +1,12 @@
+error: /workspace/mochi/tests/machine/x/rb/query_sum_select.rb:3:in `_sum': uninitialized constant MGroup (NameError)
+
+  if v.is_a?(MGroup)
+             ^^^^^^
+	from /workspace/mochi/tests/machine/x/rb/query_sum_select.rb:17:in `block in <main>'
+	from /workspace/mochi/tests/machine/x/rb/query_sum_select.rb:17:in `map'
+	from /workspace/mochi/tests/machine/x/rb/query_sum_select.rb:17:in `<main>'
+1: def _sum(v)
+2:   list = nil
+3:   if v.is_a?(MGroup)
+4:     list = v.Items
+5:   elsif v.is_a?(Array)
