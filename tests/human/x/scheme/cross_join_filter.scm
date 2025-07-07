@@ -1,0 +1,15 @@
+(define nums '(1 2 3))
+(define letters '("A" "B"))
+(display "--- Even pairs ---")
+(newline)
+(for-each
+ (lambda (n)
+   (when (even? n)
+     (for-each
+      (lambda (l)
+        (display n)
+        (display " ")
+        (display l)
+        (newline))
+      letters)))
+ nums)

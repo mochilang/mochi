@@ -1,25 +1,18 @@
 # Scheme translations of Mochi VM tests
 
-This directory contains manual Scheme implementations of selected programs from `tests/vm/valid`.
+This directory contains manual Scheme implementations of programs from `tests/vm/valid`.
 
 ## Translated
-- append_builtin.mochi -> append_builtin.scm
-- avg_builtin.mochi -> avg_builtin.scm
-- basic_compare.mochi -> basic_compare.scm
-- bool_chain.mochi -> bool_chain.scm
-- break_continue.mochi -> break_continue.scm
-- cast_string_to_int.mochi -> cast_string_to_int.scm
-- cast_struct.mochi -> cast_struct.scm
-- closure.mochi -> closure.scm
-- count_builtin.mochi -> count_builtin.scm
-- let_and_print.mochi -> let_and_print.scm
-- list_assign.mochi -> list_assign.scm
-- list_index.mochi -> list_index.scm
-- tree_sum.mochi -> tree_sum.scm
-- while_loop.mochi -> while_loop.scm
-
-## Missing
+- append_builtin.mochi
+- avg_builtin.mochi
+- basic_compare.mochi
 - binary_precedence.mochi
+- bool_chain.mochi
+- break_continue.mochi
+- cast_string_to_int.mochi
+- cast_struct.mochi
+- closure.mochi
+- count_builtin.mochi
 - cross_join.mochi
 - cross_join_filter.mochi
 - cross_join_triple.mochi
@@ -32,6 +25,13 @@ This directory contains manual Scheme implementations of selected programs from 
 - fun_call.mochi
 - fun_expr_in_let.mochi
 - fun_three_args.mochi
+- let_and_print.mochi
+- list_assign.mochi
+- list_index.mochi
+- tree_sum.mochi
+- while_loop.mochi
+
+## Missing
 - group_by.mochi
 - group_by_conditional_sum.mochi
 - group_by_having.mochi
