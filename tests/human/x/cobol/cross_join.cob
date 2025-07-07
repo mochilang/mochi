@@ -1,0 +1,41 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. CROSS-JOIN.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01 CUSTOMER-IDS OCCURS 3 TIMES PIC 9.
+       01 CUSTOMER-NAMES OCCURS 3 TIMES PIC X(7).
+       01 ORDER-IDS OCCURS 3 TIMES PIC 999.
+       01 ORDER-CUSTOMER-IDS OCCURS 3 TIMES PIC 9.
+       01 ORDER-TOTALS OCCURS 3 TIMES PIC 999.
+       01 I PIC 9.
+       01 J PIC 9.
+       PROCEDURE DIVISION.
+           MOVE 1 TO CUSTOMER-IDS(1)
+           MOVE 2 TO CUSTOMER-IDS(2)
+           MOVE 3 TO CUSTOMER-IDS(3)
+           MOVE 'Alice'  TO CUSTOMER-NAMES(1)
+           MOVE 'Bob'    TO CUSTOMER-NAMES(2)
+           MOVE 'Charlie' TO CUSTOMER-NAMES(3)
+           MOVE 100 TO ORDER-IDS(1)
+           MOVE 101 TO ORDER-IDS(2)
+           MOVE 102 TO ORDER-IDS(3)
+           MOVE 1 TO ORDER-CUSTOMER-IDS(1)
+           MOVE 2 TO ORDER-CUSTOMER-IDS(2)
+           MOVE 1 TO ORDER-CUSTOMER-IDS(3)
+           MOVE 250 TO ORDER-TOTALS(1)
+           MOVE 125 TO ORDER-TOTALS(2)
+           MOVE 300 TO ORDER-TOTALS(3)
+           DISPLAY '--- Cross Join: All order-customer pairs ---'
+           PERFORM VARYING I FROM 1 BY 1 UNTIL I > 3
+               PERFORM VARYING J FROM 1 BY 1 UNTIL J > 3
+                   DISPLAY 'Order ' WITH NO ADVANCING
+                   DISPLAY ORDER-IDS(I) WITH NO ADVANCING
+                   DISPLAY ' (customerId: ' WITH NO ADVANCING
+                   DISPLAY ORDER-CUSTOMER-IDS(I) WITH NO ADVANCING
+                   DISPLAY ', total: $' WITH NO ADVANCING
+                   DISPLAY ORDER-TOTALS(I) WITH NO ADVANCING
+                   DISPLAY ') paired with ' WITH NO ADVANCING
+                   DISPLAY CUSTOMER-NAMES(J)
+               END-PERFORM
+           END-PERFORM
+           STOP RUN.
