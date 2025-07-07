@@ -106,6 +106,36 @@ func contains(sl []string, s string) bool {
 	return false
 }
 
+// cljTypeOf returns a human friendly type string for t.
+func cljTypeOf(t types.Type) string {
+	switch tt := t.(type) {
+	case types.IntType, types.Int64Type:
+		return "int"
+	case types.FloatType:
+		return "float"
+	case types.StringType:
+		return "string"
+	case types.BoolType:
+		return "bool"
+	case types.ListType:
+		return "list of " + cljTypeOf(tt.Elem)
+	case types.MapType:
+		return "map of " + cljTypeOf(tt.Key) + " to " + cljTypeOf(tt.Value)
+	case types.StructType:
+		return sanitizeName(tt.Name)
+	case types.UnionType:
+		return sanitizeName(tt.Name)
+	case types.FuncType:
+		return "function"
+	case types.VoidType:
+		return "void"
+	case types.AnyType:
+		return "any"
+	default:
+		return "any"
+	}
+}
+
 // varsInExpr returns the set of root variable names referenced in e.
 func varsInExpr(e *parser.Expr) map[string]bool {
 	vars := map[string]bool{}

@@ -124,6 +124,32 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		c.buf.WriteString(";; " + fn.Doc + "\n")
 		c.writeIndent()
 	}
+	paramInfo := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		var pt types.Type = types.AnyType{}
+		if p.Type != nil {
+			pt = c.resolveTypeRef(p.Type)
+		} else if origEnv != nil {
+			if t, err := origEnv.GetVar(fn.Name); err == nil {
+				if ft, ok := t.(types.FuncType); ok {
+					if i < len(ft.Params) {
+						pt = ft.Params[i]
+					}
+				}
+			}
+		}
+		paramInfo[i] = fmt.Sprintf("%s: %s", sanitizeName(p.Name), cljTypeOf(pt))
+	}
+	retType := "any"
+	if fn.Return != nil {
+		retType = cljTypeOf(c.resolveTypeRef(fn.Return))
+	}
+	if len(paramInfo) > 0 {
+		c.buf.WriteString(fmt.Sprintf(";; Function %s takes [%s] and returns %s\n", sanitizeName(fn.Name), strings.Join(paramInfo, ", "), retType))
+	} else {
+		c.buf.WriteString(fmt.Sprintf(";; Function %s returns %s\n", sanitizeName(fn.Name), retType))
+	}
+	c.writeIndent()
 	c.buf.WriteString("(defn " + sanitizeName(fn.Name) + " [")
 	for i, p := range fn.Params {
 		if i > 0 {
@@ -332,14 +358,14 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 		c.writeIndent()
 		c.buf.WriteString(";; " + st.Doc + "\n")
 	}
-	c.writeln(fmt.Sprintf("(def %s %s)", sanitizeName(st.Name), expr))
+	var typ types.Type = types.AnyType{}
+	if st.Type != nil {
+		typ = c.resolveTypeRef(st.Type)
+	} else {
+		typ = c.exprType(st.Value)
+	}
+	c.writeln(fmt.Sprintf("(def %s %s) ;; %s", sanitizeName(st.Name), expr, cljTypeOf(typ)))
 	if c.env != nil {
-		var typ types.Type = types.AnyType{}
-		if st.Type != nil {
-			typ = c.resolveTypeRef(st.Type)
-		} else {
-			typ = c.exprType(st.Value)
-		}
 		c.env.SetVar(st.Name, typ, true)
 	}
 	return nil
@@ -371,14 +397,14 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 		c.writeIndent()
 		c.buf.WriteString(";; " + st.Doc + "\n")
 	}
-	c.writeln(fmt.Sprintf("(def %s %s)", sanitizeName(st.Name), expr))
+	var typ types.Type = types.AnyType{}
+	if st.Type != nil {
+		typ = c.resolveTypeRef(st.Type)
+	} else if st.Value != nil {
+		typ = c.exprType(st.Value)
+	}
+	c.writeln(fmt.Sprintf("(def %s %s) ;; %s", sanitizeName(st.Name), expr, cljTypeOf(typ)))
 	if c.env != nil {
-		var typ types.Type = types.AnyType{}
-		if st.Type != nil {
-			typ = c.resolveTypeRef(st.Type)
-		} else if st.Value != nil {
-			typ = c.exprType(st.Value)
-		}
 		c.env.SetVar(st.Name, typ, true)
 	}
 	return nil
@@ -405,9 +431,9 @@ func (c *Compiler) compileAssign(st *parser.AssignStmt) error {
 		return err
 	}
 	if len(st.Index) == 0 {
-		c.writeln(fmt.Sprintf("(def %s %s)", name, rhs))
+		typ := c.exprType(st.Value)
+		c.writeln(fmt.Sprintf("(def %s %s) ;; %s", name, rhs, cljTypeOf(typ)))
 		if c.env != nil {
-			typ := c.exprType(st.Value)
 			c.env.SetVar(st.Name, typ, true)
 		}
 		return nil
@@ -421,9 +447,11 @@ func (c *Compiler) compileAssign(st *parser.AssignStmt) error {
 		idxs[i] = v
 	}
 	if len(idxs) == 1 {
-		c.writeln(fmt.Sprintf("(def %s (assoc %s %s %s))", name, name, idxs[0], rhs))
+		typ := c.exprType(st.Value)
+		c.writeln(fmt.Sprintf("(def %s (assoc %s %s %s)) ;; %s", name, name, idxs[0], rhs, cljTypeOf(typ)))
 	} else {
-		c.writeln(fmt.Sprintf("(def %s (assoc-in %s [%s] %s))", name, name, strings.Join(idxs, " "), rhs))
+		typ := c.exprType(st.Value)
+		c.writeln(fmt.Sprintf("(def %s (assoc-in %s [%s] %s)) ;; %s", name, name, strings.Join(idxs, " "), rhs, cljTypeOf(typ)))
 	}
 	if c.env != nil {
 		if t, err := c.env.GetVar(st.Name); err == nil {
