@@ -32,12 +32,19 @@ This directory contains hand-written Clojure versions of the Mochi examples foun
 - list_assign.mochi
 - list_index.mochi
 - map_assign.mochi
+- map_in_operator.mochi
 - membership.mochi
+- min_max_builtin.mochi
 - print_hello.mochi
 - pure_fold.mochi
 - short_circuit.mochi
 - str_builtin.mochi
+- string_compare.mochi
+- string_contains.mochi
 - string_concat.mochi
+- string_in_operator.mochi
+- string_index.mochi
+- string_prefix_slice.mochi
 - substring_builtin.mochi
 - var_assignment.mochi
 - while_loop.mochi
@@ -67,7 +74,6 @@ This directory contains hand-written Clojure versions of the Mochi examples foun
 - list_nested_assign.mochi
 - list_set_ops.mochi
 - load_yaml.mochi
-- map_in_operator.mochi
 - map_index.mochi
 - map_int_key.mochi
 - map_literal_dynamic.mochi
@@ -76,7 +82,6 @@ This directory contains hand-written Clojure versions of the Mochi examples foun
 - match_expr.mochi
 - match_full.mochi
 - math_ops.mochi
-- min_max_builtin.mochi
 - nested_function.mochi
 - order_by_map.mochi
 - outer_join.mochi
@@ -88,11 +93,6 @@ This directory contains hand-written Clojure versions of the Mochi examples foun
 - save_jsonl_stdout.mochi
 - slice.mochi
 - sort_stable.mochi
-- string_compare.mochi
-- string_contains.mochi
-- string_in_operator.mochi
-- string_index.mochi
-- string_prefix_slice.mochi
 - sum_builtin.mochi
 - tail_recursion.mochi
 - test_block.mochi
