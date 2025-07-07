@@ -1,0 +1,5 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. TEST-BLOCK.
+       PROCEDURE DIVISION.
+           DISPLAY 'ok'
+           STOP RUN.

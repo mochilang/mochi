@@ -1,4 +1,4 @@
-# Mochi to COBOL Translations (60/97 translated)
+# Mochi to COBOL Translations (70/97 translated)
 
 This directory contains hand-written COBOL versions of the Mochi programs from `tests/vm/valid`.
 
@@ -64,7 +64,7 @@ This directory contains hand-written COBOL versions of the Mochi programs from `
 - [x] map_int_key.mochi
 - [x] map_literal_dynamic.mochi
 - [x] map_membership.mochi
-- [ ] map_nested_assign.mochi
+- [x] map_nested_assign.mochi
 - [ ] match_expr.mochi
 - [ ] match_full.mochi
 - [x] math_ops.mochi
@@ -73,15 +73,15 @@ This directory contains hand-written COBOL versions of the Mochi programs from `
 - [ ] nested_function.mochi
 - [ ] order_by_map.mochi
 - [ ] outer_join.mochi
-- [ ] partial_application.mochi
-- [ ] pure_fold.mochi
-- [ ] pure_global_fold.mochi
-- [ ] query_sum_select.mochi
-- [ ] record_assign.mochi
+- [x] partial_application.mochi
+- [x] pure_fold.mochi
+- [x] pure_global_fold.mochi
+- [x] query_sum_select.mochi
+- [x] record_assign.mochi
 - [ ] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
-- [ ] short_circuit.mochi
-- [ ] slice.mochi
+- [x] short_circuit.mochi
+- [x] slice.mochi
 - [ ] sort_stable.mochi
 - [x] str_builtin.mochi
 - [x] string_compare.mochi
@@ -93,10 +93,10 @@ This directory contains hand-written COBOL versions of the Mochi programs from `
 - [x] substring_builtin.mochi
 - [x] sum_builtin.mochi
 - [x] tail_recursion.mochi
-- [ ] test_block.mochi
+- [x] test_block.mochi
 - [ ] tree_sum.mochi
 - [x] two-sum.mochi
 - [x] typed_let.mochi
 - [x] typed_var.mochi
 - [ ] update_stmt.mochi
-- [ ] user_type_literal.mochi
+- [x] user_type_literal.mochi
