@@ -3,6 +3,7 @@ package cpp
 import (
 	"bytes"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"mochi/parser"
@@ -409,7 +410,7 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 		return "false", nil
 	}
 	if l.Str != nil {
-		return *l.Str, nil
+		return strconv.Quote(*l.Str), nil
 	}
 	if l.Null {
 		return "nullptr", nil
