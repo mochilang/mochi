@@ -31,8 +31,8 @@ The table below shows which Mochi examples have been translated (`[x]`) and whic
 - [x] group_by_having.mochi
 - [x] group_by_join.mochi
 - [x] group_by_left_join.mochi
-- [ ] group_by_multi_join.mochi
-- [ ] group_by_multi_join_sort.mochi
+- [x] group_by_multi_join.mochi
+- [x] group_by_multi_join_sort.mochi
 - [x] group_by_sort.mochi
 - [x] group_items_iteration.mochi
 - [x] if_else.mochi
@@ -53,7 +53,7 @@ The table below shows which Mochi examples have been translated (`[x]`) and whic
 - [x] list_index.mochi
 - [x] list_nested_assign.mochi
 - [x] list_set_ops.mochi
-- [ ] load_yaml.mochi
+- [x] load_yaml.mochi
 - [x] map_assign.mochi
 - [x] map_in_operator.mochi
 - [x] map_index.mochi
