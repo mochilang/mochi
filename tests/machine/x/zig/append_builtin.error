@@ -1,0 +1,6 @@
+Error on line 7: zig build error: exit status 1
+/workspace/mochi/tests/machine/x/zig/append_builtin.zig:7:34: error: use of undeclared identifier 'append'
+
+6:     a = &[_]i32{@as(i32,@intCast(1)), @as(i32,@intCast(2))};
+7:     std.debug.print("{any}\n", .{append(a, @as(i32,@intCast(3)))});
+8: }
