@@ -100,3 +100,5 @@ This directory (`tests/human/x/scala`) contains hand-written Scala versions of t
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
+
+All programs listed above currently have Scala translations.
