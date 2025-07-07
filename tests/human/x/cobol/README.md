@@ -2,7 +2,7 @@
 
 This directory contains hand-written COBOL versions of the Mochi programs from `tests/vm/valid`.
 
-## Checklist (31/97 translated)
+## Checklist (40/97 translated)
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -10,7 +10,7 @@ This directory contains hand-written COBOL versions of the Mochi programs from `
 - [x] bool_chain.mochi
 - [x] break_continue.mochi
 - [x] cast_string_to_int.mochi
-- [ ] cast_struct.mochi
+- [x] cast_struct.mochi
 - [x] closure.mochi
 - [x] count_builtin.mochi
 - [x] for_list_collection.mochi
@@ -35,10 +35,10 @@ This directory contains hand-written COBOL versions of the Mochi programs from `
 - [x] while_loop.mochi
 - [x] cross_join.mochi
 - [x] cross_join_filter.mochi
-- [ ] cross_join_triple.mochi
-- [ ] dataset_sort_take_limit.mochi
-- [ ] dataset_where_filter.mochi
-- [ ] exists_builtin.mochi
+- [x] cross_join_triple.mochi
+- [x] dataset_sort_take_limit.mochi
+- [x] dataset_where_filter.mochi
+- [x] exists_builtin.mochi
 - [ ] group_by.mochi
 - [ ] group_by_conditional_sum.mochi
 - [ ] group_by_having.mochi
@@ -54,13 +54,13 @@ This directory contains hand-written COBOL versions of the Mochi programs from `
 - [ ] json_builtin.mochi
 - [ ] left_join.mochi
 - [ ] left_join_multi.mochi
-- [ ] len_map.mochi
+- [x] len_map.mochi
 - [ ] list_nested_assign.mochi
 - [ ] list_set_ops.mochi
 - [ ] load_yaml.mochi
-- [ ] map_assign.mochi
-- [ ] map_in_operator.mochi
-- [ ] map_index.mochi
+- [x] map_assign.mochi
+- [x] map_in_operator.mochi
+- [x] map_index.mochi
 - [ ] map_int_key.mochi
 - [ ] map_literal_dynamic.mochi
 - [ ] map_membership.mochi
