@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	rack "mochi/compiler/x/racket"
@@ -18,57 +19,76 @@ func TestRacketCompiler(t *testing.T) {
 	if err := rack.EnsureRacket(); err != nil {
 		t.Skipf("racket not available: %v", err)
 	}
-	examples := []string{"print_hello", "for_loop", "typed_let"}
-	for _, name := range examples {
+	root := findRoot(t)
+	pattern := filepath.Join(root, "tests", "vm", "valid", "*.mochi")
+	files, err := filepath.Glob(pattern)
+	if err != nil {
+		t.Fatalf("glob error: %v", err)
+	}
+	outDir := filepath.Join(root, "tests", "machine", "x", "racket")
+	os.MkdirAll(outDir, 0755)
+	for _, src := range files {
+		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
 		t.Run(name, func(t *testing.T) {
-			runExample(t, name)
+			compileAndRun(t, src, outDir, name)
 		})
 	}
 }
 
-func runExample(t *testing.T, name string) {
-	root := findRoot(t)
-	srcPath := filepath.Join(root, "tests", "vm", "valid", name+".mochi")
-	prog, err := parser.Parse(srcPath)
+func compileAndRun(t *testing.T, src, outDir, name string) {
+	data, err := os.ReadFile(src)
 	if err != nil {
-		t.Fatalf("parse error: %v", err)
+		t.Fatalf("read error: %v", err)
 	}
-	c := rack.New()
-	code, err := c.Compile(prog)
+	errPath := filepath.Join(outDir, name+".error")
+	os.Remove(errPath)
+	prog, err := parser.ParseString(string(data))
 	if err != nil {
-		writeError(t, name, 0, err)
-		t.Fatalf("compile error: %v", err)
+		writeError(t, outDir, name, string(data), err)
+		return
+	}
+	code, err := rack.New().Compile(prog)
+	if err != nil {
+		writeError(t, outDir, name, string(data), err)
+		return
 	}
 	code = rack.Format(code)
-	outDir := filepath.Join(root, "tests", "machine", "x", "racket")
-	os.MkdirAll(outDir, 0755)
 	codePath := filepath.Join(outDir, name+".rkt")
-	if err := os.WriteFile(codePath, code, 0644); err != nil {
-		t.Fatalf("write error: %v", err)
-	}
+	os.WriteFile(codePath, code, 0644)
 	cmd := exec.Command("racket", codePath)
-	var stdout bytes.Buffer
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stdout
+	var buf bytes.Buffer
+	cmd.Stdout = &buf
+	cmd.Stderr = &buf
 	if err := cmd.Run(); err != nil {
-		writeError(t, name, 0, err)
-		t.Fatalf("run error: %v", err)
+		writeError(t, outDir, name, string(data), fmt.Errorf("run: %v\n%s", err, buf.String()))
+		return
 	}
-	outPath := filepath.Join(outDir, name+".out")
-	if err := os.WriteFile(outPath, stdout.Bytes(), 0644); err != nil {
-		t.Fatalf("write out: %v", err)
-	}
+	os.WriteFile(filepath.Join(outDir, name+".out"), buf.Bytes(), 0644)
 }
 
-func writeError(t *testing.T, name string, line int, err error) {
-	outDir := filepath.Join("tests", "machine", "x", "racket")
-	os.MkdirAll(outDir, 0755)
-	path := filepath.Join(outDir, name+".error")
-	msg := []byte(err.Error())
-	if line > 0 {
-		msg = append([]byte(fmt.Sprintf("line %d:\n", line)), msg...)
+func writeError(t *testing.T, dir, name, src string, err error) {
+	lines := strings.Split(src, "\n")
+	msg := err.Error()
+	ln := 0
+	if idx := strings.Index(msg, "line "); idx != -1 {
+		fmt.Sscanf(msg[idx:], "line %d", &ln)
 	}
-	_ = os.WriteFile(path, msg, 0644)
+	var ctx string
+	if ln > 0 {
+		start := ln - 2
+		if start < 0 {
+			start = 0
+		}
+		end := ln + 1
+		if end > len(lines) {
+			end = len(lines)
+		}
+		for i := start; i < end; i++ {
+			ctx += lines[i] + "\n"
+		}
+	}
+	errPath := filepath.Join(dir, name+".error")
+	os.WriteFile(errPath, []byte(msg+"\n"+ctx), 0644)
 }
 
 func findRoot(t *testing.T) string {
