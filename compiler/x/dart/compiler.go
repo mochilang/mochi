@@ -401,6 +401,62 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 		args[i] = s
 	}
+	// handle simple builtins so the generated Dart code is runnable without
+	// additional support libraries
+	switch call.Func {
+	case "append":
+		if len(args) != 2 {
+			return "", fmt.Errorf("append expects 2 args")
+		}
+		return fmt.Sprintf("List.from(%s)..add(%s)", args[0], args[1]), nil
+	case "avg":
+		if len(args) != 1 {
+			return "", fmt.Errorf("avg expects 1 arg")
+		}
+		a := args[0]
+		return fmt.Sprintf("(%s.isEmpty ? 0 : %s.reduce((a, b) => a + b) / %s.length)", a, a, a), nil
+	case "count", "len":
+		if len(args) != 1 {
+			return "", fmt.Errorf("%s expects 1 arg", call.Func)
+		}
+		return fmt.Sprintf("%s.length", args[0]), nil
+	case "sum":
+		if len(args) != 1 {
+			return "", fmt.Errorf("sum expects 1 arg")
+		}
+		a := args[0]
+		return fmt.Sprintf("%s.reduce((a, b) => a + b)", a), nil
+	case "min":
+		if len(args) != 1 {
+			return "", fmt.Errorf("min expects 1 arg")
+		}
+		a := args[0]
+		return fmt.Sprintf("%s.reduce((a, b) => a < b ? a : b)", a), nil
+	case "max":
+		if len(args) != 1 {
+			return "", fmt.Errorf("max expects 1 arg")
+		}
+		a := args[0]
+		return fmt.Sprintf("%s.reduce((a, b) => a > b ? a : b)", a), nil
+	case "str":
+		if len(args) != 1 {
+			return "", fmt.Errorf("str expects 1 arg")
+		}
+		return fmt.Sprintf("%s.toString()", args[0]), nil
+	case "substring":
+		if len(args) == 2 {
+			return fmt.Sprintf("%s.substring(%s)", args[0], args[1]), nil
+		} else if len(args) == 3 {
+			return fmt.Sprintf("%s.substring(%s, %s)", args[0], args[1], args[2]), nil
+		}
+		return "", fmt.Errorf("substring expects 2 or 3 args")
+	case "values":
+		if len(args) != 1 {
+			return "", fmt.Errorf("values expects 1 arg")
+		}
+		return fmt.Sprintf("%s.values.toList()", args[0]), nil
+	}
+
 	return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ", ")), nil
 }
 
