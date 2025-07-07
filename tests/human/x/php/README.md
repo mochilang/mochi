@@ -26,9 +26,9 @@ This directory contains hand-written PHP versions of the Mochi test programs fro
 | fun_call.mochi | yes |
 | fun_expr_in_let.mochi | yes |
 | fun_three_args.mochi | yes |
-| group_by.mochi | missing |
-| group_by_conditional_sum.mochi | missing |
-| group_by_having.mochi | missing |
+| group_by.mochi | yes |
+| group_by_conditional_sum.mochi | yes |
+| group_by_having.mochi | yes |
 | group_by_join.mochi | missing |
 | group_by_left_join.mochi | missing |
 | group_by_multi_join.mochi | missing |
