@@ -4,10 +4,10 @@
 #include <stdlib.h>
 
 int main() {
-    int i = 0;
-    while ((i < 3)) {
-        printf("%d\n", i);
-        i = (i + 1);
-    }
+    int a = (10 - 3);
+    int b = (2 + 2);
+    printf("%d\n", a);
+    printf("%d\n", (a == 7));
+    printf("%d\n", (b < 5));
     return 0;
 }

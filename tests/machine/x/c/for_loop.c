@@ -4,10 +4,8 @@
 #include <stdlib.h>
 
 int main() {
-    int i = 0;
-    while ((i < 3)) {
+    for (int i = 1; i < 4; i++) {
         printf("%d\n", i);
-        i = (i + 1);
     }
     return 0;
 }

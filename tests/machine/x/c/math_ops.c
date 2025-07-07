@@ -4,10 +4,8 @@
 #include <stdlib.h>
 
 int main() {
-    int i = 0;
-    while ((i < 3)) {
-        printf("%d\n", i);
-        i = (i + 1);
-    }
+    printf("%d\n", (6 * 7));
+    printf("%d\n", (7 / 2));
+    printf("%d\n", (7 % 2));
     return 0;
 }
