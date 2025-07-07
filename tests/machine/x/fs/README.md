@@ -9,16 +9,16 @@ resulting code and program output are stored here.
 The list below shows every Mochi program and whether it compiled and ran
 successfully in F#.
 
-- [x] append_builtin
-- [x] avg_builtin
-- [x] basic_compare
-- [x] binary_precedence
-- [x] bool_chain
-- [x] break_continue
-- [x] cast_string_to_int
-- [x] cast_struct
-- [x] closure
-- [x] count_builtin
+- [ ] append_builtin
+- [ ] avg_builtin
+- [ ] basic_compare
+- [ ] binary_precedence
+- [ ] bool_chain
+- [ ] break_continue
+- [ ] cast_string_to_int
+- [ ] cast_struct
+- [ ] closure
+- [ ] count_builtin
 - [x] cross_join
 - [x] cross_join_filter
 - [x] cross_join_triple
