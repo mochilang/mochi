@@ -67,6 +67,18 @@ This directory contains hand-written Lua programs corresponding to a subset of t
 - typed_let.lua
 - typed_var.lua
 - user_type_literal.lua
+- map_in_operator.lua
+- map_int_key.lua
+- map_membership.lua
+- map_nested_assign.lua
+- match_expr.lua
+- math_ops.lua
+- membership.lua
+- min_max_builtin.lua
+- nested_function.lua
+- order_by_map.lua
+- partial_application.lua
+- query_sum_select.lua
 ## Missing translations
 
 - group_by
@@ -87,20 +99,8 @@ This directory contains hand-written Lua programs corresponding to a subset of t
 - list_nested_assign
 - list_set_ops
 - load_yaml
-- map_in_operator
-- map_int_key
-- map_membership
-- map_nested_assign
-- match_expr
 - match_full
-- math_ops
-- membership
-- min_max_builtin
-- nested_function
-- order_by_map
 - outer_join
-- partial_application
-- query_sum_select
 - right_join
 - save_jsonl_stdout
 - update_stmt
