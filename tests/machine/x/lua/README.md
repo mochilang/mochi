@@ -4,6 +4,10 @@ This directory stores Lua code and execution results produced by the automated
 compiler tests. Each entry corresponds to a Mochi program from
 `tests/vm/valid`.
 
+## Summary
+
+0/97 files compiled successfully
+
 ## Compilation Checklist
 
 - [x] append_builtin.mochi
