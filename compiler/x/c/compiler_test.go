@@ -73,15 +73,18 @@ func compileAndRun(t *testing.T, src string, ccPath string) {
 	}
 }
 
-func TestCCompiler_BasicPrograms(t *testing.T) {
+func TestCCompiler_AllPrograms(t *testing.T) {
 	cc := ensureCC(t)
-	cases := []string{
-		filepath.Join("tests", "vm", "valid", "print_hello.mochi"),
-		filepath.Join("tests", "vm", "valid", "while_loop.mochi"),
+	root := repoRoot()
+	pattern := filepath.Join(root, "tests", "vm", "valid", "*.mochi")
+	files, err := filepath.Glob(pattern)
+	if err != nil {
+		t.Fatalf("glob error: %v", err)
 	}
-	for _, src := range cases {
+	for _, src := range files {
+		rel, _ := filepath.Rel(root, src)
 		t.Run(filepath.Base(src), func(t *testing.T) {
-			compileAndRun(t, src, cc)
+			compileAndRun(t, rel, cc)
 		})
 	}
 }
