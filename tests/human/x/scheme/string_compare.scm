@@ -1,0 +1,8 @@
+(display (if (string<? "a" "b") "true" "false"))
+(newline)
+(display (if (string<=? "a" "a") "true" "false"))
+(newline)
+(display (if (string>? "b" "a") "true" "false"))
+(newline)
+(display (if (string>=? "b" "b") "true" "false"))
+(newline)

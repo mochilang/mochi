@@ -3,7 +3,7 @@
 This directory contains manual Scheme implementations of the programs found in
 `tests/vm/valid`.
 
-## Checklist (47/97 translated)
+## Checklist (49/97 translated)
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -39,7 +39,7 @@ This directory contains manual Scheme implementations of the programs found in
 - [x] if_else.mochi
 - [x] if_then_else.mochi
 - [x] if_then_else_nested.mochi
-- [ ] in_operator.mochi
+- [x] in_operator.mochi
 - [ ] in_operator_extended.mochi
 - [ ] inner_join.mochi
 - [ ] join_multi.mochi
@@ -82,7 +82,7 @@ This directory contains manual Scheme implementations of the programs found in
 - [ ] slice.mochi
 - [ ] sort_stable.mochi
 - [ ] str_builtin.mochi
-- [ ] string_compare.mochi
+- [x] string_compare.mochi
 - [x] string_concat.mochi
 - [x] string_contains.mochi
 - [x] string_in_operator.mochi

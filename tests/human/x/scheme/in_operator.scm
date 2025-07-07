@@ -1,0 +1,5 @@
+(define xs '(1 2 3))
+(display (if (member 2 xs) "true" "false"))
+(newline)
+(display (if (not (member 5 xs)) "true" "false"))
+(newline)
