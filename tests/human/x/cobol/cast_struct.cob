@@ -1,0 +1,10 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. CAST-STRUCT.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01 TODO-REC.
+           05 TITLE PIC X(20).
+       PROCEDURE DIVISION.
+           MOVE "hi" TO TITLE
+           DISPLAY TITLE
+           STOP RUN.
