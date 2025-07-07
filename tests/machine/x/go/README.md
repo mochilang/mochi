@@ -10,7 +10,18 @@ The following programs currently compile and run successfully:
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
 - [x] binary_precedence.mochi
+- [x] break_continue.mochi
 - [x] cast_string_to_int.mochi
+- [x] cast_struct.mochi
+- [x] for_list_collection.mochi
+- [x] for_loop.mochi
+- [x] for_map_collection.mochi
+- [x] if_else.mochi
+- [x] if_then_else.mochi
+- [x] if_then_else_nested.mochi
+- [x] len_builtin.mochi
+- [x] len_map.mochi
+- [x] len_string.mochi
 - [x] let_and_print.mochi
 - [x] math_ops.mochi
 - [x] print_hello.mochi
@@ -19,4 +30,6 @@ The following programs currently compile and run successfully:
 - [x] typed_let.mochi
 - [x] typed_var.mochi
 - [x] unary_neg.mochi
+- [x] user_type_literal.mochi
 - [x] var_assignment.mochi
+- [x] while_loop.mochi
