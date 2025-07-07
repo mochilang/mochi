@@ -1,0 +1,1 @@
+(println (count "mochi"))
