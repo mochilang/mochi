@@ -9,11 +9,18 @@ import (
 )
 
 type Compiler struct {
-	buf    bytes.Buffer
-	indent int
+	buf      bytes.Buffer
+	indent   int
+	tmpCount int
 }
 
 func New() *Compiler { return &Compiler{} }
+
+func (c *Compiler) newTmp() string {
+	name := fmt.Sprintf("_V%d", c.tmpCount)
+	c.tmpCount++
+	return name
+}
 
 func (c *Compiler) writeln(s string) {
 	for i := 0; i < c.indent; i++ {
@@ -78,6 +85,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return err
 		}
 		c.writeln(fmt.Sprintf("nb_setval(%s, %s),", sanitizeAtom(s.Assign.Name), val))
+	case s.If != nil:
+		return c.compileIf(s.If)
+	case s.While != nil:
+		return c.compileWhile(s.While)
+	case s.For != nil:
+		return c.compileFor(s.For)
 	case s.Expr != nil:
 		if call := getPrintCall(s.Expr.Expr); call != nil {
 			if len(call.Args) != 1 {
@@ -95,6 +108,79 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	default:
 		return fmt.Errorf("unsupported statement")
 	}
+	return nil
+}
+
+func (c *Compiler) compileIf(ifst *parser.IfStmt) error {
+	cond, err := c.compileExpr(ifst.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("(%s ->", cond))
+	c.indent++
+	for _, st := range ifst.Then {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	if len(ifst.Else) > 0 {
+		c.writeln(";")
+		c.indent++
+		for _, st := range ifst.Else {
+			if err := c.compileStmt(st); err != nil {
+				return err
+			}
+		}
+		c.indent--
+	}
+	c.writeln("),")
+	return nil
+}
+
+func (c *Compiler) compileWhile(ws *parser.WhileStmt) error {
+	cond, err := c.compileExpr(ws.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln("repeat,")
+	c.writeln(fmt.Sprintf("(%s ->", cond))
+	c.indent++
+	for _, st := range ws.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.writeln("fail")
+	c.indent--
+	c.writeln("; !),")
+	return nil
+}
+
+func (c *Compiler) compileFor(fs *parser.ForStmt) error {
+	if fs.RangeEnd == nil {
+		return fmt.Errorf("for without range not supported")
+	}
+	start, err := c.compileExpr(fs.Source)
+	if err != nil {
+		return err
+	}
+	end, err := c.compileExpr(fs.RangeEnd)
+	if err != nil {
+		return err
+	}
+	tmp := c.newTmp()
+	c.writeln(fmt.Sprintf("%s is %s - 1,", tmp, end))
+	c.writeln(fmt.Sprintf("(between(%s, %s, %s),", start, tmp, sanitizeVar(fs.Name)))
+	c.indent++
+	for _, st := range fs.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.writeln("fail")
+	c.indent--
+	c.writeln("; true),")
 	return nil
 }
 
@@ -136,6 +222,24 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 		switch op.Op {
 		case "+", "-", "*", "/":
 			return fmt.Sprintf("(%s %s %s)", left, op.Op, right), nil
+		case "%":
+			return fmt.Sprintf("(%s mod %s)", left, right), nil
+		case "==":
+			return fmt.Sprintf("(%s =:= %s)", left, right), nil
+		case "!=":
+			return fmt.Sprintf("(%s =\\= %s)", left, right), nil
+		case "<":
+			return fmt.Sprintf("(%s < %s)", left, right), nil
+		case "<=":
+			return fmt.Sprintf("(%s =< %s)", left, right), nil
+		case ">":
+			return fmt.Sprintf("(%s > %s)", left, right), nil
+		case ">=":
+			return fmt.Sprintf("(%s >= %s)", left, right), nil
+		case "&&":
+			return fmt.Sprintf("(%s, %s)", left, right), nil
+		case "||":
+			return fmt.Sprintf("(%s ; %s)", left, right), nil
 		}
 	}
 	return "", fmt.Errorf("unsupported expression")
@@ -173,6 +277,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return sanitizeVar(p.Selector.Root), nil
 	case p.Group != nil:
 		return c.compileExpr(p.Group)
+	case p.List != nil:
+		elems := make([]string, len(p.List.Elems))
+		for i, e := range p.List.Elems {
+			s, err := c.compileExpr(e)
+			if err != nil {
+				return "", err
+			}
+			elems[i] = s
+		}
+		return "[" + strings.Join(elems, ", ") + "]", nil
 	}
 	return "", fmt.Errorf("unsupported primary")
 }
