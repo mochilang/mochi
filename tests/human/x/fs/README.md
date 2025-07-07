@@ -79,9 +79,6 @@ This directory contains F# programs that replicate the behavior of the `.mochi` 
 - values_builtin
 - var_assignment
 - while_loop
-
-## Missing translations
-
 - group_by
 - group_by_conditional_sum
 - group_by_having
