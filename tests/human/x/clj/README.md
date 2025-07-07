@@ -59,13 +59,14 @@ This directory contains hand-written Clojure versions of the Mochi examples foun
 - var_assignment.mochi
 - while_loop.mochi
 
-## Missing programs
-
 - cross_join.mochi
 - cross_join_filter.mochi
 - cross_join_triple.mochi
 - dataset_sort_take_limit.mochi
 - dataset_where_filter.mochi
+
+## Missing programs
+
 - group_by.mochi
 - group_by_conditional_sum.mochi
 - group_by_having.mochi
