@@ -33,14 +33,14 @@ so far and which remain.
 - list_assign.mochi
 - list_index.mochi
 - list_nested_assign.mochi
-
-## Missing
 - cross_join.mochi
 - cross_join_filter.mochi
 - cross_join_triple.mochi
 - dataset_sort_take_limit.mochi
 - dataset_where_filter.mochi
 - exists_builtin.mochi
+
+## Missing
 - group_by.mochi
 - group_by_conditional_sum.mochi
 - group_by_having.mochi
