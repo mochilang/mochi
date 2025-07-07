@@ -1,0 +1,14 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. USER-TYPE-LITERAL.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01 BOOK.
+           05 TITLE  PIC X(10).
+           05 AUTHOR-NAME PIC X(10).
+           05 AUTHOR-AGE  PIC 99.
+       PROCEDURE DIVISION.
+           MOVE 'Go' TO TITLE
+           MOVE 'Bob' TO AUTHOR-NAME
+           MOVE 42   TO AUTHOR-AGE
+           DISPLAY AUTHOR-NAME
+           STOP RUN.
