@@ -28,6 +28,18 @@ This folder contains hand-written Smalltalk versions of programs from `tests/vm/
 - typed_var.mochi
 - unary_neg.mochi
 - while_loop.mochi
+- len_map.mochi
+- len_string.mochi
+- math_ops.mochi
+- membership.mochi
+- min_max_builtin.mochi
+- str_builtin.mochi
+- string_compare.mochi
+- string_concat.mochi
+- string_contains.mochi
+- string_in_operator.mochi
+- string_index.mochi
+- string_prefix_slice.mochi
 
 ## Missing programs
 - cross_join.mochi
@@ -54,8 +66,6 @@ This folder contains hand-written Smalltalk versions of programs from `tests/vm/
 - json_builtin.mochi
 - left_join.mochi
 - left_join_multi.mochi
-- len_map.mochi
-- len_string.mochi
 - let_and_print.mochi
 - list_assign.mochi
 - list_index.mochi
@@ -71,9 +81,6 @@ This folder contains hand-written Smalltalk versions of programs from `tests/vm/
 - map_nested_assign.mochi
 - match_expr.mochi
 - match_full.mochi
-- math_ops.mochi
-- membership.mochi
-- min_max_builtin.mochi
 - nested_function.mochi
 - order_by_map.mochi
 - outer_join.mochi
@@ -87,13 +94,6 @@ This folder contains hand-written Smalltalk versions of programs from `tests/vm/
 - short_circuit.mochi
 - slice.mochi
 - sort_stable.mochi
-- str_builtin.mochi
-- string_compare.mochi
-- string_concat.mochi
-- string_contains.mochi
-- string_in_operator.mochi
-- string_index.mochi
-- string_prefix_slice.mochi
 - tail_recursion.mochi
 - test_block.mochi
 - tree_sum.mochi
