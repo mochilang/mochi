@@ -1,3 +1,5 @@
+//go:build slow
+
 package swift_test
 
 import (

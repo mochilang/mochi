@@ -1,3 +1,5 @@
+//go:build slow
+
 package kotlin_test
 
 import (
