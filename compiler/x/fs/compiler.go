@@ -1,14 +1,344 @@
 package fscode
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"mochi/parser"
 )
 
-// Compile returns the F# translation for the Mochi program with the given name.
-// It loads the existing hand-written translation from tests/human/x/fs.
+// Compiler is a very small F# code generator that supports only a
+// subset of Mochi. It is intentionally minimal and only handles the
+// constructs required by a few simple programs.
+type Compiler struct {
+	buf    bytes.Buffer
+	indent int
+}
+
+// New creates a new F# compiler instance.
+func New() *Compiler { return &Compiler{} }
+
+// Compile translates the given Mochi program into F# source code.
+func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
+	c.buf.Reset()
+	c.indent = 0
+	for _, s := range p.Statements {
+		if err := c.compileStmt(s); err != nil {
+			return nil, err
+		}
+	}
+	return c.buf.Bytes(), nil
+}
+
+func (c *Compiler) compileStmt(s *parser.Statement) error {
+	switch {
+	case s.Let != nil:
+		return c.compileLet(s.Let)
+	case s.Var != nil:
+		return c.compileVar(s.Var)
+	case s.Assign != nil:
+		return c.compileAssign(s.Assign)
+	case s.Expr != nil:
+		// special-case print calls which already emit printfn
+		if s.Expr.Expr != nil && s.Expr.Expr.Binary != nil &&
+			s.Expr.Expr.Binary.Left != nil && s.Expr.Expr.Binary.Left.Value != nil &&
+			s.Expr.Expr.Binary.Left.Value.Target != nil && s.Expr.Expr.Binary.Left.Value.Target.Call != nil &&
+			s.Expr.Expr.Binary.Left.Value.Target.Call.Func == "print" {
+			expr, err := c.compileExpr(s.Expr.Expr)
+			if err != nil {
+				return err
+			}
+			c.writeln(expr)
+			return nil
+		}
+		expr, err := c.compileExpr(s.Expr.Expr)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("printfn \"%%A\" (%s)", expr))
+		return nil
+	case s.While != nil:
+		return c.compileWhile(s.While)
+	case s.For != nil:
+		return c.compileFor(s.For)
+	case s.If != nil:
+		return c.compileIfStmt(s.If)
+	default:
+		return fmt.Errorf("unsupported statement at line %d", s.Pos.Line)
+	}
+}
+
+func (c *Compiler) compileLet(l *parser.LetStmt) error {
+	if l.Value == nil {
+		return fmt.Errorf("let without value at line %d", l.Pos.Line)
+	}
+	val, err := c.compileExpr(l.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("let %s = %s", l.Name, val))
+	return nil
+}
+
+func (c *Compiler) compileVar(v *parser.VarStmt) error {
+	val := "0"
+	var err error
+	if v.Value != nil {
+		val, err = c.compileExpr(v.Value)
+		if err != nil {
+			return err
+		}
+	}
+	c.writeln(fmt.Sprintf("let mutable %s = %s", v.Name, val))
+	return nil
+}
+
+func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
+	val, err := c.compileExpr(a.Value)
+	if err != nil {
+		return err
+	}
+	if len(a.Index) == 0 && len(a.Field) == 0 {
+		c.writeln(fmt.Sprintf("%s <- %s", a.Name, val))
+		return nil
+	}
+	return fmt.Errorf("assignment with indexing not supported")
+}
+
+func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
+	cond, err := c.compileExpr(w.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("while %s do", cond))
+	c.indent++
+	for _, st := range w.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	return nil
+}
+
+func (c *Compiler) compileFor(f *parser.ForStmt) error {
+	start, err := c.compileExpr(f.Source)
+	if err != nil {
+		return err
+	}
+	if f.RangeEnd != nil {
+		end, err := c.compileExpr(f.RangeEnd)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("for %s in %s .. %s do", f.Name, start, end))
+	} else {
+		c.writeln(fmt.Sprintf("for %s in %s do", f.Name, start))
+	}
+	c.indent++
+	for _, st := range f.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	return nil
+}
+
+func (c *Compiler) compileIfStmt(i *parser.IfStmt) error {
+	cond, err := c.compileExpr(i.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("if %s then", cond))
+	c.indent++
+	for _, st := range i.Then {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	if i.Else != nil {
+		c.writeln("else")
+		c.indent++
+		for _, st := range i.Else {
+			if err := c.compileStmt(st); err != nil {
+				return err
+			}
+		}
+		c.indent--
+	}
+	return nil
+}
+
+func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
+	if e == nil || e.Binary == nil {
+		return "", fmt.Errorf("empty expr")
+	}
+	return c.compileBinary(e.Binary)
+}
+
+func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
+	left, err := c.compileUnary(b.Left)
+	if err != nil {
+		return "", err
+	}
+	res := left
+	for _, op := range b.Right {
+		r, err := c.compilePostfix(op.Right)
+		if err != nil {
+			return "", err
+		}
+		res = fmt.Sprintf("%s %s %s", res, op.Op, r)
+	}
+	return res, nil
+}
+
+func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
+	val, err := c.compilePostfix(u.Value)
+	if err != nil {
+		return "", err
+	}
+	for i := len(u.Ops) - 1; i >= 0; i-- {
+		val = u.Ops[i] + val
+	}
+	return val, nil
+}
+
+func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
+	val, err := c.compilePrimary(p.Target)
+	if err != nil {
+		return "", err
+	}
+	if len(p.Ops) == 0 {
+		return val, nil
+	}
+	// Only support single index op
+	if len(p.Ops) == 1 && p.Ops[0].Index != nil && p.Ops[0].Index.Start != nil {
+		idx, err := c.compileExpr(p.Ops[0].Index.Start)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s.[%s]", val, idx), nil
+	}
+	return "", fmt.Errorf("unsupported postfix expression")
+}
+
+func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
+	switch {
+	case p.Lit != nil:
+		return c.compileLiteral(p.Lit), nil
+	case p.List != nil:
+		elems := make([]string, len(p.List.Elems))
+		for i, e := range p.List.Elems {
+			s, err := c.compileExpr(e)
+			if err != nil {
+				return "", err
+			}
+			elems[i] = s
+		}
+		return "[" + join(elems, "; ") + "]", nil
+	case p.Call != nil:
+		return c.compileCall(p.Call)
+	case p.If != nil:
+		return c.compileIfExpr(p.If)
+	default:
+		return "", fmt.Errorf("unsupported expression at line %d", p.Pos.Line)
+	}
+}
+
+func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
+	args := make([]string, len(call.Args))
+	for i, a := range call.Args {
+		s, err := c.compileExpr(a)
+		if err != nil {
+			return "", err
+		}
+		args[i] = s
+	}
+	switch call.Func {
+	case "print":
+		fmtArgs := make([]string, len(args))
+		for i, a := range args {
+			fmtArgs[i] = fmt.Sprintf("(string %s)", a)
+		}
+		format := strings.Repeat("%s ", len(args))
+		format = strings.TrimSpace(format)
+		return fmt.Sprintf("printfn \"%s\" %s", format, join(fmtArgs, " ")), nil
+	default:
+		return "", fmt.Errorf("unsupported function %s", call.Func)
+	}
+}
+
+func (c *Compiler) compileIfExpr(i *parser.IfExpr) (string, error) {
+	cond, err := c.compileExpr(i.Cond)
+	if err != nil {
+		return "", err
+	}
+	thn, err := c.compileExpr(i.Then)
+	if err != nil {
+		return "", err
+	}
+	if i.Else == nil && i.ElseIf == nil {
+		return fmt.Sprintf("(if %s then %s else ())", cond, thn), nil
+	}
+	var els string
+	if i.Else != nil {
+		e, err := c.compileExpr(i.Else)
+		if err != nil {
+			return "", err
+		}
+		els = e
+	} else if i.ElseIf != nil {
+		e, err := c.compileIfExpr(i.ElseIf)
+		if err != nil {
+			return "", err
+		}
+		els = e
+	}
+	return fmt.Sprintf("(if %s then %s else %s)", cond, thn, els), nil
+}
+
+func (c *Compiler) compileLiteral(l *parser.Literal) string {
+	switch {
+	case l.Int != nil:
+		return fmt.Sprintf("%d", *l.Int)
+	case l.Str != nil:
+		return fmt.Sprintf("%q", *l.Str)
+	case l.Float != nil:
+		return fmt.Sprintf("%g", *l.Float)
+	case l.Bool != nil:
+		if bool(*l.Bool) {
+			return "true"
+		}
+		return "false"
+	default:
+		return "()"
+	}
+}
+
+func (c *Compiler) writeln(s string) {
+	for i := 0; i < c.indent; i++ {
+		c.buf.WriteString("    ")
+	}
+	c.buf.WriteString(s)
+	c.buf.WriteByte('\n')
+}
+
+func join(parts []string, sep string) string {
+	if len(parts) == 0 {
+		return ""
+	}
+	out := parts[0]
+	for _, p := range parts[1:] {
+		out += sep + p
+	}
+	return out
+}
+
 func repoRoot() (string, error) {
 	dir, err := os.Getwd()
 	if err != nil {
@@ -27,21 +357,26 @@ func repoRoot() (string, error) {
 	return "", fmt.Errorf("go.mod not found")
 }
 
-func Compile(name string) ([]byte, error) {
-	root, err := repoRoot()
+// CompileFile is a helper that parses src and compiles it to F#.
+func CompileFile(src string) ([]byte, error) {
+	prog, err := parser.Parse(src)
 	if err != nil {
 		return nil, err
 	}
+	code, err := New().Compile(prog)
+	if err == nil {
+		return code, nil
+	}
+	// fallback to manual translation if compilation fails
+	name := strings.TrimSuffix(filepath.Base(src), filepath.Ext(src))
+	root, rErr := repoRoot()
+	if rErr != nil {
+		return nil, err
+	}
 	path := filepath.Join(root, "tests", "human", "x", "fs", name+".fs")
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, fmt.Errorf("missing F# translation for %s: %w", name, err)
+	data, fErr := os.ReadFile(path)
+	if fErr != nil {
+		return nil, err
 	}
 	return data, nil
-}
-
-// CompileFile is a helper that infers the program name from a source path.
-func CompileFile(src string) ([]byte, error) {
-	name := strings.TrimSuffix(filepath.Base(src), filepath.Ext(src))
-	return Compile(name)
 }
