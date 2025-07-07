@@ -30,6 +30,24 @@ This directory contains hand-written Haskell versions of some Mochi examples fro
 - `fun_call.mochi`
 - `fun_expr_in_let.mochi`
 - `fun_three_args.mochi`
+- `if_then_else.mochi`
+- `if_then_else_nested.mochi`
+- `str_builtin.mochi`
+- `string_compare.mochi`
+- `string_contains.mochi`
+- `string_in_operator.mochi`
+- `string_index.mochi`
+- `string_prefix_slice.mochi`
+- `substring_builtin.mochi`
+- `sum_builtin.mochi`
+- `tree_sum.mochi`
+- `two-sum.mochi`
+- `typed_let.mochi`
+- `typed_var.mochi`
+- `unary_neg.mochi`
+- `values_builtin.mochi`
+- `while_loop.mochi`
+
 
 ## Missing programs
 - `cross_join.mochi`
@@ -46,8 +64,6 @@ This directory contains hand-written Haskell versions of some Mochi examples fro
 - `group_by_multi_join_sort.mochi`
 - `group_by_sort.mochi`
 - `group_items_iteration.mochi`
-- `if_then_else.mochi`
-- `if_then_else_nested.mochi`
 - `in_operator.mochi`
 - `in_operator_extended.mochi`
 - `inner_join.mochi`
@@ -83,22 +99,7 @@ This directory contains hand-written Haskell versions of some Mochi examples fro
 - `short_circuit.mochi`
 - `slice.mochi`
 - `sort_stable.mochi`
-- `str_builtin.mochi`
-- `string_compare.mochi`
-- `string_contains.mochi`
-- `string_in_operator.mochi`
-- `string_index.mochi`
-- `string_prefix_slice.mochi`
-- `substring_builtin.mochi`
-- `sum_builtin.mochi`
 - `tail_recursion.mochi`
 - `test_block.mochi`
-- `tree_sum.mochi`
-- `two-sum.mochi`
-- `typed_let.mochi`
-- `typed_var.mochi`
-- `unary_neg.mochi`
 - `update_stmt.mochi`
 - `user_type_literal.mochi`
-- `values_builtin.mochi`
-- `while_loop.mochi`
