@@ -454,6 +454,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	case "avg":
 		c.needsAvg = true
 		return fmt.Sprintf("avg(%s)", argStr), nil
+	case "count":
+		if len(args) != 1 {
+			return "", fmt.Errorf("count expects 1 arg")
+		}
+		return fmt.Sprintf("len(%s)", args[0]), nil
 	default:
 		return fmt.Sprintf("%s(%s)", call.Func, argStr), nil
 	}

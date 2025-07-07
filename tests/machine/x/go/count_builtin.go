@@ -7,5 +7,5 @@ import (
 )
 
 func main() {
-    fmt.Println(count([]int{1, 2, 3}))
+    fmt.Println(len([]int{1, 2, 3}))
 }
