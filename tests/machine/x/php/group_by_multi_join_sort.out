@@ -1,0 +1,28 @@
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 29
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 29
+PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 29
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 21
+PHP Warning:  Trying to access array offset on null in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 21
+PHP Warning:  Trying to access array offset on null in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 21
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 21
+PHP Warning:  Trying to access array offset on null in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 21
+PHP Warning:  Trying to access array offset on null in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 21
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 23
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 23
+PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 23
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 27
+PHP Warning:  Trying to access array offset on null in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 27
+PHP Warning:  Trying to access array offset on null in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 27
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 27
+PHP Warning:  Trying to access array offset on null in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 27
+PHP Warning:  Trying to access array offset on null in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 27
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 27
+PHP Warning:  Trying to access array offset on null in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 27
+PHP Warning:  Trying to access array offset on null in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 27
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 27
+PHP Warning:  Trying to access array offset on null in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 27
+PHP Warning:  Trying to access array offset on null in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 27
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 27
+PHP Warning:  Trying to access array offset on null in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 27
+PHP Warning:  Trying to access array offset on null in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 27
+[{"c_custkey":null,"c_name":null,"revenue":0,"c_acctbal":null,"n_name":null,"c_address":null,"c_phone":null,"c_comment":null}]

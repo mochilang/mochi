@@ -1,0 +1,33 @@
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 16
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 16
+PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 16
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 16
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 16
+PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 16
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 16
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 16
+PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 16
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 16
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 16
+PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 16
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 8
+PHP Warning:  Trying to access array offset on null in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 8
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 10
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 10
+PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 10
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 8
+PHP Warning:  Trying to access array offset on null in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 8
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 10
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 10
+PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 10
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 8
+PHP Warning:  Trying to access array offset on null in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 8
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 10
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 10
+PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 10
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 8
+PHP Warning:  Trying to access array offset on null in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 8
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 10
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 10
+PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 10
+[{"cat":null,"total":0},{"cat":null,"total":0},{"cat":null,"total":0},{"cat":null,"total":0}]

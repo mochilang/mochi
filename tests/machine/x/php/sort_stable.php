@@ -1,0 +1,98 @@
+<?php
+// items: [{string: any}]
+$items = [["n" => 1, "v" => "a"], ["n" => 1, "v" => "b"], ["n" => 2, "v" => "c"]];
+// result: [any]
+$result = (function() use ($items) {
+	$_src = $items;
+	return _query($_src, [
+	], [ 'select' => function($i) use ($items) { return $i['v']; }, 'sortKey' => function($i) use ($items) { return ($i['n']); } ]);
+})();
+_print($result);
+
+function _print(...$args) {
+    $parts = [];
+    foreach ($args as $a) {
+        if (is_null($a)) { $parts[] = '<nil>'; }
+        elseif (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+    }
+    echo implode(' ', $parts), PHP_EOL;
+}
+function _query($src, $joins, $opts) {
+    $items = array_map(fn($v) => [$v], $src);
+    foreach ($joins as $j) {
+        $joined = [];
+        if (!empty($j['right']) && !empty($j['left'])) {
+            $matched = array_fill(0, count($j['items']), false);
+            foreach ($items as $left) {
+                $m = false;
+                foreach ($j['items'] as $ri => $right) {
+                    $keep = true;
+                    if (isset($j['on'])) { $args = array_merge($left, [$right]); $keep = $j['on'](...$args); }
+                    if (!$keep) continue;
+                    $m = true; $matched[$ri] = true;
+                    $joined[] = array_merge($left, [$right]);
+                }
+                if (!$m) { $joined[] = array_merge($left, [null]); }
+            }
+            foreach ($j['items'] as $ri => $right) {
+                if (!$matched[$ri]) {
+                    $undef = count($items) > 0 ? array_fill(0, count($items[0]), null) : [];
+                    $joined[] = array_merge($undef, [$right]);
+                }
+            }
+        } elseif (!empty($j['right'])) {
+            foreach ($j['items'] as $right) {
+                $m = false;
+                foreach ($items as $left) {
+                    $keep = true;
+                    if (isset($j['on'])) { $args = array_merge($left, [$right]); $keep = $j['on'](...$args); }
+                    if (!$keep) continue;
+                    $m = true; $joined[] = array_merge($left, [$right]);
+                }
+                if (!$m) {
+                    $undef = count($items) > 0 ? array_fill(0, count($items[0]), null) : [];
+                    $joined[] = array_merge($undef, [$right]);
+                }
+            }
+        } else {
+            foreach ($items as $left) {
+                $m = false;
+                foreach ($j['items'] as $right) {
+                    $keep = true;
+                    if (isset($j['on'])) { $args = array_merge($left, [$right]); $keep = $j['on'](...$args); }
+                    if (!$keep) continue;
+                    $m = true; $joined[] = array_merge($left, [$right]);
+                }
+                if (!empty($j['left']) && !$m) { $joined[] = array_merge($left, [null]); }
+            }
+        }
+        $items = $joined;
+    }
+    if (isset($opts['where'])) {
+        $filtered = [];
+        foreach ($items as $r) { if ($opts['where'](...$r)) $filtered[] = $r; }
+        $items = $filtered;
+    }
+    if (isset($opts['sortKey'])) {
+        $pairs = [];
+        foreach ($items as $it) { $pairs[] = ['item' => $it, 'key' => $opts['sortKey'](...$it)]; }
+        usort($pairs, function($a, $b) {
+            $ak = $a['key']; $bk = $b['key'];
+            if (is_int($ak) && is_int($bk)) return $ak <=> $bk;
+            if (is_string($ak) && is_string($bk)) return $ak <=> $bk;
+            return strcmp(strval($ak), strval($bk));
+        });
+        $items = array_map(fn($p) => $p['item'], $pairs);
+    }
+    if (array_key_exists('skip', $opts)) {
+        $n = $opts['skip'];
+        $items = $n < count($items) ? array_slice($items, $n) : [];
+    }
+    if (array_key_exists('take', $opts)) {
+        $n = $opts['take'];
+        if ($n < count($items)) $items = array_slice($items, 0, $n);
+    }
+    $res = [];
+    foreach ($items as $r) { $res[] = $opts['select'](...$r); }
+    return $res;
+}

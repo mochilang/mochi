@@ -1,0 +1,11 @@
+<?php
+_print((is_array(["a" => 1, "b" => 2]) ? count(["a" => 1, "b" => 2]) : strlen(["a" => 1, "b" => 2])));
+
+function _print(...$args) {
+    $parts = [];
+    foreach ($args as $a) {
+        if (is_null($a)) { $parts[] = '<nil>'; }
+        elseif (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+    }
+    echo implode(' ', $parts), PHP_EOL;
+}

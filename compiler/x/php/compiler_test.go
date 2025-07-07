@@ -23,12 +23,14 @@ func TestCompileValidPrograms(t *testing.T) {
 		t.Skipf("php not installed: %v", err)
 	}
 
-	outDir := filepath.Join("tests", "machine", "x", "php")
+	root := findRepoRoot(t)
+	outDir := filepath.Join(root, "tests", "machine", "x", "php")
 	if err := os.MkdirAll(outDir, 0o755); err != nil {
 		t.Fatalf("mkdir: %v", err)
 	}
 
-	files, err := filepath.Glob(filepath.Join("tests", "vm", "valid", "*.mochi"))
+	pattern := filepath.Join(root, "tests", "vm", "valid", "*.mochi")
+	files, err := filepath.Glob(pattern)
 	if err != nil {
 		t.Fatalf("glob: %v", err)
 	}
@@ -79,6 +81,7 @@ func compileOne(t *testing.T, src, outDir, name string) {
 	if err := os.WriteFile(outFile, out, 0644); err != nil {
 		t.Fatalf("write out: %v", err)
 	}
+	_ = os.Remove(filepath.Join(outDir, name+".error"))
 }
 
 func writeError(dir, name string, src []byte, err error) {
@@ -118,4 +121,23 @@ func extractLine(msg string) int {
 		}
 	}
 	return 0
+}
+
+func findRepoRoot(t *testing.T) string {
+	dir, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	t.Fatal("go.mod not found")
+	return ""
 }
