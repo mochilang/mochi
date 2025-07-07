@@ -1,0 +1,105 @@
+# Scheme translations for Mochi programs
+
+The following checklist tracks which `tests/vm/valid/*.mochi` programs have been
+manually rewritten in Scheme. Checked items have a corresponding `.scm` file in
+this directory.
+
+## Status
+
+- [x] append_builtin.mochi
+- [x] avg_builtin.mochi
+- [x] basic_compare.mochi
+- [x] binary_precedence.mochi
+- [x] bool_chain.mochi
+- [x] cast_string_to_int.mochi
+- [x] closure.mochi
+- [x] count_builtin.mochi
+- [x] for_list_collection.mochi
+- [x] for_loop.mochi
+- [x] fun_call.mochi
+- [x] print_hello.mochi
+- [x] str_builtin.mochi
+- [x] string_concat.mochi
+- [x] string_contains.mochi
+- [x] string_index.mochi
+- [x] substring_builtin.mochi
+- [x] sum_builtin.mochi
+- [x] tail_recursion.mochi
+- [x] typed_let.mochi
+- [x] typed_var.mochi
+- [x] unary_neg.mochi
+- [x] var_assignment.mochi
+- [x] while_loop.mochi
+- [ ] break_continue.mochi
+- [ ] cast_struct.mochi
+- [ ] cross_join.mochi
+- [ ] cross_join_filter.mochi
+- [ ] cross_join_triple.mochi
+- [ ] dataset_sort_take_limit.mochi
+- [ ] dataset_where_filter.mochi
+- [ ] exists_builtin.mochi
+- [ ] for_map_collection.mochi
+- [ ] fun_expr_in_let.mochi
+- [ ] fun_three_args.mochi
+- [ ] group_by.mochi
+- [ ] group_by_conditional_sum.mochi
+- [ ] group_by_having.mochi
+- [ ] group_by_join.mochi
+- [ ] group_by_left_join.mochi
+- [ ] group_by_multi_join.mochi
+- [ ] group_by_multi_join_sort.mochi
+- [ ] group_by_sort.mochi
+- [ ] group_items_iteration.mochi
+- [ ] if_else.mochi
+- [ ] if_then_else.mochi
+- [ ] if_then_else_nested.mochi
+- [ ] in_operator.mochi
+- [ ] in_operator_extended.mochi
+- [ ] inner_join.mochi
+- [ ] join_multi.mochi
+- [ ] json_builtin.mochi
+- [ ] left_join.mochi
+- [ ] left_join_multi.mochi
+- [ ] len_builtin.mochi
+- [ ] len_map.mochi
+- [ ] len_string.mochi
+- [ ] let_and_print.mochi
+- [ ] list_assign.mochi
+- [ ] list_index.mochi
+- [ ] list_nested_assign.mochi
+- [ ] list_set_ops.mochi
+- [ ] load_yaml.mochi
+- [ ] map_assign.mochi
+- [ ] map_in_operator.mochi
+- [ ] map_index.mochi
+- [ ] map_int_key.mochi
+- [ ] map_literal_dynamic.mochi
+- [ ] map_membership.mochi
+- [ ] map_nested_assign.mochi
+- [ ] match_expr.mochi
+- [ ] match_full.mochi
+- [ ] math_ops.mochi
+- [ ] membership.mochi
+- [ ] min_max_builtin.mochi
+- [ ] nested_function.mochi
+- [ ] order_by_map.mochi
+- [ ] outer_join.mochi
+- [ ] partial_application.mochi
+- [ ] pure_fold.mochi
+- [ ] pure_global_fold.mochi
+- [ ] query_sum_select.mochi
+- [ ] record_assign.mochi
+- [ ] right_join.mochi
+- [ ] save_jsonl_stdout.mochi
+- [ ] short_circuit.mochi
+- [ ] slice.mochi
+- [ ] sort_stable.mochi
+- [ ] string_compare.mochi
+- [ ] string_in_operator.mochi
+- [ ] string_prefix_slice.mochi
+- [ ] test_block.mochi
+- [ ] tree_sum.mochi
+- [ ] two-sum.mochi
+- [ ] update_stmt.mochi
+- [ ] user_type_literal.mochi
+- [ ] values_builtin.mochi

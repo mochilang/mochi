@@ -1,0 +1,6 @@
+(define (displayln x) (display x) (newline))
+(define (bool->string b) (if b "true" "false"))
+(define (boom) (display "boom") (newline) #t)
+(displayln (bool->string (and (< 1 2) (< 2 3) (< 3 4))))
+(displayln (bool->string (and (< 1 2) (> 2 3) (boom))))
+(displayln (bool->string (and (< 1 2) (< 2 3) (> 3 4) (boom))))

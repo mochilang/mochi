@@ -1,0 +1,6 @@
+(define (loop i)
+  (when (< i 3)
+    (display i)
+    (newline)
+    (loop (+ i 1))))
+(loop 0)
