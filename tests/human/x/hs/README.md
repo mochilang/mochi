@@ -1,105 +1,106 @@
-# Haskell Translations of Mochi Programs
+# Haskell Translations
 
-This directory contains hand-written Haskell versions of some Mochi examples from `tests/vm/valid`.
+This directory contains hand-written Haskell versions of Mochi programs.
 
-## Translated programs
-- `append_builtin.mochi`
-- `avg_builtin.mochi`
-- `basic_compare.mochi`
-- `binary_precedence.mochi`
-- `bool_chain.mochi`
-- `break_continue.mochi`
-- `cast_string_to_int.mochi`
-- `cast_struct.mochi`
-- `closure.mochi`
-- `count_builtin.mochi`
-- `for_list_collection.mochi`
-- `for_loop.mochi`
-- `if_else.mochi`
-- `len_builtin.mochi`
-- `len_map.mochi`
-- `len_string.mochi`
-- `let_and_print.mochi`
-- `map_assign.mochi`
-- `map_index.mochi`
-- `print_hello.mochi`
-- `string_concat.mochi`
-- `var_assignment.mochi`
-- `exists_builtin.mochi`
-- `for_map_collection.mochi`
-- `fun_call.mochi`
-- `fun_expr_in_let.mochi`
-- `fun_three_args.mochi`
-- `if_then_else.mochi`
-- `if_then_else_nested.mochi`
-- `str_builtin.mochi`
-- `string_compare.mochi`
-- `string_contains.mochi`
-- `string_in_operator.mochi`
-- `string_index.mochi`
-- `string_prefix_slice.mochi`
-- `substring_builtin.mochi`
-- `sum_builtin.mochi`
-- `tree_sum.mochi`
-- `two-sum.mochi`
-- `typed_let.mochi`
-- `typed_var.mochi`
-- `unary_neg.mochi`
-- `values_builtin.mochi`
- - `while_loop.mochi`
- - `cross_join.mochi`
- - `cross_join_filter.mochi`
- - `cross_join_triple.mochi`
- - `dataset_sort_take_limit.mochi`
- - `dataset_where_filter.mochi`
+## 54/97 translated
 
+### Translated
+- [x] `append_builtin.mochi`
+- [x] `avg_builtin.mochi`
+- [x] `basic_compare.mochi`
+- [x] `binary_precedence.mochi`
+- [x] `bool_chain.mochi`
+- [x] `break_continue.mochi`
+- [x] `cast_string_to_int.mochi`
+- [x] `cast_struct.mochi`
+- [x] `closure.mochi`
+- [x] `count_builtin.mochi`
+- [x] `cross_join.mochi`
+- [x] `cross_join_filter.mochi`
+- [x] `cross_join_triple.mochi`
+- [x] `dataset_sort_take_limit.mochi`
+- [x] `dataset_where_filter.mochi`
+- [x] `exists_builtin.mochi`
+- [x] `for_list_collection.mochi`
+- [x] `for_loop.mochi`
+- [x] `for_map_collection.mochi`
+- [x] `fun_call.mochi`
+- [x] `fun_expr_in_let.mochi`
+- [x] `fun_three_args.mochi`
+- [x] `if_else.mochi`
+- [x] `if_then_else.mochi`
+- [x] `if_then_else_nested.mochi`
+- [x] `json_builtin.mochi`
+- [x] `len_builtin.mochi`
+- [x] `len_map.mochi`
+- [x] `len_string.mochi`
+- [x] `let_and_print.mochi`
+- [x] `list_assign.mochi`
+- [x] `list_index.mochi`
+- [x] `list_nested_assign.mochi`
+- [x] `map_assign.mochi`
+- [x] `map_index.mochi`
+- [x] `map_int_key.mochi`
+- [x] `print_hello.mochi`
+- [x] `str_builtin.mochi`
+- [x] `string_compare.mochi`
+- [x] `string_concat.mochi`
+- [x] `string_contains.mochi`
+- [x] `string_in_operator.mochi`
+- [x] `string_index.mochi`
+- [x] `string_prefix_slice.mochi`
+- [x] `substring_builtin.mochi`
+- [x] `sum_builtin.mochi`
+- [x] `tree_sum.mochi`
+- [x] `two-sum.mochi`
+- [x] `typed_let.mochi`
+- [x] `typed_var.mochi`
+- [x] `unary_neg.mochi`
+- [x] `values_builtin.mochi`
+- [x] `var_assignment.mochi`
+- [x] `while_loop.mochi`
 
-## Missing programs
-- `group_by.mochi`
-- `group_by_conditional_sum.mochi`
-- `group_by_having.mochi`
-- `group_by_join.mochi`
-- `group_by_left_join.mochi`
-- `group_by_multi_join.mochi`
-- `group_by_multi_join_sort.mochi`
-- `group_by_sort.mochi`
-- `group_items_iteration.mochi`
-- `in_operator.mochi`
-- `in_operator_extended.mochi`
-- `inner_join.mochi`
-- `join_multi.mochi`
-- `json_builtin.mochi`
-- `left_join.mochi`
-- `left_join_multi.mochi`
-- `list_assign.mochi`
-- `list_index.mochi`
-- `list_nested_assign.mochi`
-- `list_set_ops.mochi`
-- `load_yaml.mochi`
-- `map_in_operator.mochi`
-- `map_int_key.mochi`
-- `map_literal_dynamic.mochi`
-- `map_membership.mochi`
-- `map_nested_assign.mochi`
-- `match_expr.mochi`
-- `match_full.mochi`
-- `math_ops.mochi`
-- `membership.mochi`
-- `min_max_builtin.mochi`
-- `nested_function.mochi`
-- `order_by_map.mochi`
-- `outer_join.mochi`
-- `partial_application.mochi`
-- `pure_fold.mochi`
-- `pure_global_fold.mochi`
-- `query_sum_select.mochi`
-- `record_assign.mochi`
-- `right_join.mochi`
-- `save_jsonl_stdout.mochi`
-- `short_circuit.mochi`
-- `slice.mochi`
-- `sort_stable.mochi`
-- `tail_recursion.mochi`
-- `test_block.mochi`
-- `update_stmt.mochi`
-- `user_type_literal.mochi`
+### Missing
+- [ ] `group_by.mochi`
+- [ ] `group_by_conditional_sum.mochi`
+- [ ] `group_by_having.mochi`
+- [ ] `group_by_join.mochi`
+- [ ] `group_by_left_join.mochi`
+- [ ] `group_by_multi_join.mochi`
+- [ ] `group_by_multi_join_sort.mochi`
+- [ ] `group_by_sort.mochi`
+- [ ] `group_items_iteration.mochi`
+- [ ] `in_operator.mochi`
+- [ ] `in_operator_extended.mochi`
+- [ ] `inner_join.mochi`
+- [ ] `join_multi.mochi`
+- [ ] `left_join.mochi`
+- [ ] `left_join_multi.mochi`
+- [ ] `list_set_ops.mochi`
+- [ ] `load_yaml.mochi`
+- [ ] `map_in_operator.mochi`
+- [ ] `map_literal_dynamic.mochi`
+- [ ] `map_membership.mochi`
+- [ ] `map_nested_assign.mochi`
+- [ ] `match_expr.mochi`
+- [ ] `match_full.mochi`
+- [ ] `math_ops.mochi`
+- [ ] `membership.mochi`
+- [ ] `min_max_builtin.mochi`
+- [ ] `nested_function.mochi`
+- [ ] `order_by_map.mochi`
+- [ ] `outer_join.mochi`
+- [ ] `partial_application.mochi`
+- [ ] `pure_fold.mochi`
+- [ ] `pure_global_fold.mochi`
+- [ ] `query_sum_select.mochi`
+- [ ] `record_assign.mochi`
+- [ ] `right_join.mochi`
+- [ ] `save_jsonl_stdout.mochi`
+- [ ] `short_circuit.mochi`
+- [ ] `slice.mochi`
+- [ ] `sort_stable.mochi`
+- [ ] `tail_recursion.mochi`
+- [ ] `test_block.mochi`
+- [ ] `update_stmt.mochi`
+- [ ] `user_type_literal.mochi`
