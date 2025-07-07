@@ -138,6 +138,8 @@ func (c *Compiler) compileStmt(s *parser.Statement, ret string) error {
 			return err
 		}
 		name := sanitizeVar(s.Let.Name)
+		t := c.inferExprType(s.Let.Value)
+		c.writeln(fmt.Sprintf("%% %s :: %s", name, t.String()))
 		for _, line := range val.code {
 			c.writeln(line)
 		}
@@ -196,13 +198,13 @@ func (c *Compiler) compileStmt(s *parser.Statement, ret string) error {
 		}
 	case s.Fun != nil:
 		return c.compileFun(s.Fun)
-        case s.For != nil:
-                return c.compileFor(s.For, ret)
-       case s.Update != nil:
-               return c.compileUpdate(s.Update)
-        case s.Break != nil:
-                c.writeln("throw(break)")
-                return nil
+	case s.For != nil:
+		return c.compileFor(s.For, ret)
+	case s.Update != nil:
+		return c.compileUpdate(s.Update)
+	case s.Break != nil:
+		c.writeln("throw(break)")
+		return nil
 	case s.Continue != nil:
 		c.writeln("throw(continue)")
 		return nil
@@ -350,13 +352,15 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt, ret string, trailing bool) err
 }
 
 func (c *Compiler) compileVar(v *parser.VarStmt) error {
-       name := sanitizeAtom(v.Name)
-       c.vars[v.Name] = name
+	name := sanitizeAtom(v.Name)
+	c.vars[v.Name] = name
 	if v.Value != nil {
 		val, err := c.compileExpr(v.Value)
 		if err != nil {
 			return err
 		}
+		t := c.inferExprType(v.Value)
+		c.writeln(fmt.Sprintf("%% %s :: %s", name, t.String()))
 		for _, line := range val.code {
 			c.writeln(line)
 		}
@@ -631,74 +635,74 @@ func (c *Compiler) compileWhile(stmt *parser.WhileStmt, ret string) error {
 }
 
 func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
-       name, ok := c.vars[u.Target]
-       if !ok {
-               return fmt.Errorf("update of immutable variable not supported")
-       }
-       cur := c.newVar()
-       c.writeln(fmt.Sprintf("nb_getval(%s, %s),", name, cur))
-       listVar := c.newVar()
-       c.use("tolist")
-       c.writeln(fmt.Sprintf("to_list(%s, %s),", cur, listVar))
+	name, ok := c.vars[u.Target]
+	if !ok {
+		return fmt.Errorf("update of immutable variable not supported")
+	}
+	cur := c.newVar()
+	c.writeln(fmt.Sprintf("nb_getval(%s, %s),", name, cur))
+	listVar := c.newVar()
+	c.use("tolist")
+	c.writeln(fmt.Sprintf("to_list(%s, %s),", cur, listVar))
 
-       itemVar := c.newVar()
-       newItem := c.newVar()
-       resultVar := c.newVar()
+	itemVar := c.newVar()
+	newItem := c.newVar()
+	resultVar := c.newVar()
 
-       parts := []string{fmt.Sprintf("member(%s, %s)", itemVar, listVar)}
-       if c.env != nil {
-               if typ, err := c.env.GetVar(u.Target); err == nil {
-                       if lt, ok := typ.(types.ListType); ok {
-                               if st, ok := lt.Elem.(types.StructType); ok {
-                                       for _, f := range st.Order {
-                                               parts = append(parts, fmt.Sprintf("get_dict(%s, %s, %s)", sanitizeAtom(f), itemVar, sanitizeVar(f)))
-                                       }
-                               }
-                       }
-               }
-       }
+	parts := []string{fmt.Sprintf("member(%s, %s)", itemVar, listVar)}
+	if c.env != nil {
+		if typ, err := c.env.GetVar(u.Target); err == nil {
+			if lt, ok := typ.(types.ListType); ok {
+				if st, ok := lt.Elem.(types.StructType); ok {
+					for _, f := range st.Order {
+						parts = append(parts, fmt.Sprintf("get_dict(%s, %s, %s)", sanitizeAtom(f), itemVar, sanitizeVar(f)))
+					}
+				}
+			}
+		}
+	}
 
-       var condStr string
-       if u.Where != nil {
-               condRes, err := c.compileExpr(u.Where)
-               if err != nil {
-                       return err
-               }
-               for _, line := range condRes.code {
-                       parts = append(parts, strings.TrimSuffix(line, ","))
-               }
-               condStr = condRes.val
-       }
+	var condStr string
+	if u.Where != nil {
+		condRes, err := c.compileExpr(u.Where)
+		if err != nil {
+			return err
+		}
+		for _, line := range condRes.code {
+			parts = append(parts, strings.TrimSuffix(line, ","))
+		}
+		condStr = condRes.val
+	}
 
-       curItem := itemVar
-       updateParts := []string{}
-       for _, it := range u.Set.Items {
-               valRes, err := c.compileExpr(it.Value)
-               if err != nil {
-                       return err
-               }
-               for _, line := range valRes.code {
-                       updateParts = append(updateParts, strings.TrimSuffix(line, ","))
-               }
-               key, _ := identName(it.Key)
-               tmp := c.newVar()
-               c.use("setitem")
-               updateParts = append(updateParts, fmt.Sprintf("set_item(%s, %s, %s, %s)", curItem, sanitizeAtom(key), valRes.val, tmp))
-               curItem = tmp
-       }
-       updateParts = append(updateParts, fmt.Sprintf("%s = %s", newItem, curItem))
-       updateBody := strings.Join(updateParts, ", ")
+	curItem := itemVar
+	updateParts := []string{}
+	for _, it := range u.Set.Items {
+		valRes, err := c.compileExpr(it.Value)
+		if err != nil {
+			return err
+		}
+		for _, line := range valRes.code {
+			updateParts = append(updateParts, strings.TrimSuffix(line, ","))
+		}
+		key, _ := identName(it.Key)
+		tmp := c.newVar()
+		c.use("setitem")
+		updateParts = append(updateParts, fmt.Sprintf("set_item(%s, %s, %s, %s)", curItem, sanitizeAtom(key), valRes.val, tmp))
+		curItem = tmp
+	}
+	updateParts = append(updateParts, fmt.Sprintf("%s = %s", newItem, curItem))
+	updateBody := strings.Join(updateParts, ", ")
 
-       if u.Where != nil {
-               parts = append(parts, fmt.Sprintf("(%s -> %s ; %s = %s)", condStr, updateBody, newItem, itemVar))
-       } else {
-               parts = append(parts, updateBody)
-       }
+	if u.Where != nil {
+		parts = append(parts, fmt.Sprintf("(%s -> %s ; %s = %s)", condStr, updateBody, newItem, itemVar))
+	} else {
+		parts = append(parts, updateBody)
+	}
 
-       goal := strings.Join(parts, ", ")
-       c.writeln(fmt.Sprintf("findall(%s, (%s), %s),", newItem, goal, resultVar))
-       c.writeln(fmt.Sprintf("nb_setval(%s, %s),", name, resultVar))
-       return nil
+	goal := strings.Join(parts, ", ")
+	c.writeln(fmt.Sprintf("findall(%s, (%s), %s),", newItem, goal, resultVar))
+	c.writeln(fmt.Sprintf("nb_setval(%s, %s),", name, resultVar))
+	return nil
 }
 
 func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
