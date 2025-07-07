@@ -1,9 +1,8 @@
-# Elixir translations of Mochi examples
+# Mochi to Elixir Translations
 
-This directory contains hand-written Elixir programs equivalent to the Mochi examples under `tests/vm/valid`.
+This directory (`tests/human/x/ex`) contains hand-written Elixir versions of the Mochi programs in `tests/vm/valid`. Each Elixir script corresponds to a `.mochi` file with the same name and was written without using the Mochi compiler.
 
-The checklist below shows which programs have been translated.
-
+## Translated
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -101,3 +100,6 @@ The checklist below shows which programs have been translated.
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
+
+## Missing
+None
