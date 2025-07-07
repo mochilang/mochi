@@ -11,11 +11,16 @@ import (
 )
 
 type Compiler struct {
-	buf    bytes.Buffer
-	indent int
+	buf         bytes.Buffer
+	indent      int
+	needsAppend bool
+	needsSum    bool
+	needsAvg    bool
 }
 
-func New() *Compiler { return &Compiler{} }
+func New() *Compiler {
+	return &Compiler{}
+}
 
 func (c *Compiler) writeln(s string) {
 	for i := 0; i < c.indent; i++ {
@@ -26,6 +31,29 @@ func (c *Compiler) writeln(s string) {
 }
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
+	c.buf.Reset()
+	c.indent = 0
+	c.needsAppend = false
+	c.needsSum = false
+	c.needsAvg = false
+
+	// dry run to determine required helper functions
+	tmp := &Compiler{}
+	for _, s := range prog.Statements {
+		if s.Fun != nil {
+			if err := tmp.compileFun(s.Fun); err != nil {
+				return nil, err
+			}
+		} else {
+			if err := tmp.compileStmt(s); err != nil {
+				// ignore errors in dry run
+			}
+		}
+	}
+	c.needsAppend = tmp.needsAppend
+	c.needsSum = tmp.needsSum
+	c.needsAvg = tmp.needsAvg
+
 	c.writeln("public class Main {")
 	c.indent++
 	// emit function declarations first
@@ -36,6 +64,34 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			}
 		}
 	}
+
+	if c.needsAppend {
+		c.writeln("static java.util.List<Integer> append(java.util.List<Integer> l, int v) {")
+		c.indent++
+		c.writeln("java.util.List<Integer> out = new java.util.ArrayList<>(l);")
+		c.writeln("out.add(v);")
+		c.writeln("return out;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.needsSum {
+		c.writeln("static int sum(java.util.List<Integer> nums) {")
+		c.indent++
+		c.writeln("int s = 0;")
+		c.writeln("for (int n : nums) s += n;")
+		c.writeln("return s;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.needsAvg {
+		c.writeln("static double avg(java.util.List<Integer> nums) {")
+		c.indent++
+		c.writeln("if (nums.isEmpty()) return 0;")
+		c.writeln("return (double)sum(nums) / nums.size();")
+		c.indent--
+		c.writeln("}")
+	}
+
 	c.writeln("public static void main(String[] args) {")
 	c.indent++
 	for _, s := range prog.Statements {
@@ -113,7 +169,13 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	if err != nil {
 		return err
 	}
+	if v.Type == nil && v.Value != nil {
+		typ = "var"
+	}
 	if v.Value == nil {
+		if typ == "var" {
+			typ = "int"
+		}
 		c.writeln(fmt.Sprintf("%s %s = %s;", typ, v.Name, c.defaultValue(typ)))
 	} else {
 		c.writeln(fmt.Sprintf("%s %s = %s;", typ, v.Name, expr))
@@ -127,7 +189,13 @@ func (c *Compiler) compileLet(v *parser.LetStmt) error {
 	if err != nil {
 		return err
 	}
+	if v.Type == nil && v.Value != nil {
+		typ = "var"
+	}
 	if v.Value == nil {
+		if typ == "var" {
+			typ = "int"
+		}
 		c.writeln(fmt.Sprintf("%s %s = %s;", typ, v.Name, c.defaultValue(typ)))
 	} else {
 		c.writeln(fmt.Sprintf("%s %s = %s;", typ, v.Name, expr))
@@ -329,16 +397,6 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return p.Selector.Root, nil
 	case p.Call != nil:
-		if p.Call.Func == "print" {
-			if len(p.Call.Args) != 1 {
-				return "", fmt.Errorf("print expects one argument at line %d", p.Pos.Line)
-			}
-			arg, err := c.compileExpr(p.Call.Args[0])
-			if err != nil {
-				return "", err
-			}
-			return fmt.Sprintf("System.out.println(%s)", arg), nil
-		}
 		var args []string
 		for _, a := range p.Call.Args {
 			arg, err := c.compileExpr(a)
@@ -347,13 +405,84 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			args = append(args, arg)
 		}
-		return fmt.Sprintf("%s(%s)", p.Call.Func, strings.Join(args, ", ")), nil
+		switch p.Call.Func {
+		case "print":
+			if len(args) != 1 {
+				return "", fmt.Errorf("print expects one argument at line %d", p.Pos.Line)
+			}
+			return fmt.Sprintf("System.out.println(%s)", args[0]), nil
+		case "len", "count":
+			if len(args) != 1 {
+				return "", fmt.Errorf("len expects one argument at line %d", p.Pos.Line)
+			}
+			return args[0] + ".size()", nil
+		case "str":
+			if len(args) != 1 {
+				return "", fmt.Errorf("str expects one argument at line %d", p.Pos.Line)
+			}
+			return fmt.Sprintf("String.valueOf(%s)", args[0]), nil
+		case "append":
+			if len(args) != 2 {
+				return "", fmt.Errorf("append expects two arguments at line %d", p.Pos.Line)
+			}
+			c.needsAppend = true
+			return fmt.Sprintf("append(%s, %s)", args[0], args[1]), nil
+		case "sum":
+			if len(args) != 1 {
+				return "", fmt.Errorf("sum expects one argument at line %d", p.Pos.Line)
+			}
+			c.needsSum = true
+			return fmt.Sprintf("sum(%s)", args[0]), nil
+		case "avg":
+			if len(args) != 1 {
+				return "", fmt.Errorf("avg expects one argument at line %d", p.Pos.Line)
+			}
+			c.needsSum = true
+			c.needsAvg = true
+			return fmt.Sprintf("avg(%s)", args[0]), nil
+		case "min":
+			if len(args) != 1 {
+				return "", fmt.Errorf("min expects one argument at line %d", p.Pos.Line)
+			}
+			return fmt.Sprintf("java.util.Collections.min(%s)", args[0]), nil
+		case "max":
+			if len(args) != 1 {
+				return "", fmt.Errorf("max expects one argument at line %d", p.Pos.Line)
+			}
+			return fmt.Sprintf("java.util.Collections.max(%s)", args[0]), nil
+		default:
+			return fmt.Sprintf("%s(%s)", p.Call.Func, strings.Join(args, ",")), nil
+		}
 	case p.Group != nil:
 		expr, err := c.compileExpr(p.Group)
 		if err != nil {
 			return "", err
 		}
 		return "(" + expr + ")", nil
+	case p.List != nil:
+		var elems []string
+		for _, e := range p.List.Elems {
+			s, err := c.compileExpr(e)
+			if err != nil {
+				return "", err
+			}
+			elems = append(elems, s)
+		}
+		return fmt.Sprintf("new java.util.ArrayList<>(java.util.Arrays.asList(%s))", strings.Join(elems, ",")), nil
+	case p.Map != nil:
+		var parts []string
+		for _, it := range p.Map.Items {
+			k, err := c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", err
+			}
+			parts = append(parts, fmt.Sprintf("%s, %s", k, v))
+		}
+		return fmt.Sprintf("new java.util.LinkedHashMap<>(java.util.Map.of(%s))", strings.Join(parts, ",")), nil
 	}
 	return "", fmt.Errorf("expression unsupported at line %d", p.Pos.Line)
 }
