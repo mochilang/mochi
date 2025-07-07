@@ -1,0 +1,13 @@
+#lang racket
+(require racket/list racket/string)
+(define xs '(1 2 3))
+(define ys (filter odd? xs))
+(define (in-list? x lst) (if (member x lst) #t #f))
+(displayln (in-list? 1 ys))
+(displayln (in-list? 2 ys))
+(define m (hash 'a 1))
+(displayln (hash-has-key? m 'a))
+(displayln (hash-has-key? m 'b))
+(define s "hello")
+(displayln (string-contains? s "ell"))
+(displayln (string-contains? s "foo"))
