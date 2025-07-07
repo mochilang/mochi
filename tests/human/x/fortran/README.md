@@ -44,6 +44,11 @@
 - substring_builtin
 - sum_builtin
 - tail_recursion
+- len_map
+- list_nested_assign
+- map_nested_assign
+- match_expr
+- record_assign
 - typed_let
 - typed_var
 - two-sum
@@ -75,15 +80,11 @@
 - json_builtin
 - left_join
 - left_join_multi
-- len_map
-- list_nested_assign
 - list_set_ops
 - load_yaml
 - map_in_operator
 - map_literal_dynamic
 - map_membership
-- map_nested_assign
-- match_expr
 - match_full
 - nested_function
 - order_by_map
@@ -92,7 +93,6 @@
 - pure_fold
 - pure_global_fold
 - query_sum_select
-- record_assign
 - right_join
 - save_jsonl_stdout
 - sort_stable
