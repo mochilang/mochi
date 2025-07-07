@@ -2,7 +2,7 @@
 
 This directory contains hand-written Haskell versions of Mochi programs.
 
-## 54/97 translated
+## 69/97 translated
 
 ### Translated
 - [x] `append_builtin.mochi`
@@ -27,6 +27,9 @@ This directory contains hand-written Haskell versions of Mochi programs.
 - [x] `fun_call.mochi`
 - [x] `fun_expr_in_let.mochi`
 - [x] `fun_three_args.mochi`
+- [x] `group_by.mochi`
+- [x] `group_by_conditional_sum.mochi`
+- [x] `group_by_having.mochi`
 - [x] `if_else.mochi`
 - [x] `if_then_else.mochi`
 - [x] `if_then_else_nested.mochi`
@@ -38,9 +41,21 @@ This directory contains hand-written Haskell versions of Mochi programs.
 - [x] `list_assign.mochi`
 - [x] `list_index.mochi`
 - [x] `list_nested_assign.mochi`
+- [x] `list_set_ops.mochi`
 - [x] `map_assign.mochi`
 - [x] `map_index.mochi`
 - [x] `map_int_key.mochi`
+- [x] `match_expr.mochi`
+- [x] `match_full.mochi`
+- [x] `math_ops.mochi`
+- [x] `membership.mochi`
+- [x] `min_max_builtin.mochi`
+- [x] `pure_fold.mochi`
+- [x] `pure_global_fold.mochi`
+- [x] `query_sum_select.mochi`
+- [x] `record_assign.mochi`
+- [x] `tail_recursion.mochi`
+- [x] `user_type_literal.mochi`
 - [x] `print_hello.mochi`
 - [x] `str_builtin.mochi`
 - [x] `string_compare.mochi`
@@ -61,9 +76,6 @@ This directory contains hand-written Haskell versions of Mochi programs.
 - [x] `while_loop.mochi`
 
 ### Missing
-- [ ] `group_by.mochi`
-- [ ] `group_by_conditional_sum.mochi`
-- [ ] `group_by_having.mochi`
 - [ ] `group_by_join.mochi`
 - [ ] `group_by_left_join.mochi`
 - [ ] `group_by_multi_join.mochi`
@@ -76,31 +88,19 @@ This directory contains hand-written Haskell versions of Mochi programs.
 - [ ] `join_multi.mochi`
 - [ ] `left_join.mochi`
 - [ ] `left_join_multi.mochi`
-- [ ] `list_set_ops.mochi`
 - [ ] `load_yaml.mochi`
 - [ ] `map_in_operator.mochi`
 - [ ] `map_literal_dynamic.mochi`
 - [ ] `map_membership.mochi`
 - [ ] `map_nested_assign.mochi`
-- [ ] `match_expr.mochi`
-- [ ] `match_full.mochi`
-- [ ] `math_ops.mochi`
-- [ ] `membership.mochi`
-- [ ] `min_max_builtin.mochi`
 - [ ] `nested_function.mochi`
 - [ ] `order_by_map.mochi`
 - [ ] `outer_join.mochi`
 - [ ] `partial_application.mochi`
-- [ ] `pure_fold.mochi`
-- [ ] `pure_global_fold.mochi`
-- [ ] `query_sum_select.mochi`
-- [ ] `record_assign.mochi`
 - [ ] `right_join.mochi`
 - [ ] `save_jsonl_stdout.mochi`
 - [ ] `short_circuit.mochi`
 - [ ] `slice.mochi`
 - [ ] `sort_stable.mochi`
-- [ ] `tail_recursion.mochi`
 - [ ] `test_block.mochi`
 - [ ] `update_stmt.mochi`
-- [ ] `user_type_literal.mochi`
