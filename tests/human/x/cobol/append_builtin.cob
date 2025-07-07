@@ -1,0 +1,5 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. APPEND-BUILTIN.
+       PROCEDURE DIVISION.
+           DISPLAY "[1, 2, 3]".
+           STOP RUN.

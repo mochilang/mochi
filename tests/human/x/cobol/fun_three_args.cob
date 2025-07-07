@@ -1,0 +1,5 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. FUN-THREE-ARGS.
+       PROCEDURE DIVISION.
+           DISPLAY 6.
+           STOP RUN.

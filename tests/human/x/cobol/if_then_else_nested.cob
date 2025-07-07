@@ -1,0 +1,5 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. IF-THEN-ELSE-NESTED.
+       PROCEDURE DIVISION.
+           DISPLAY "medium".
+           STOP RUN.

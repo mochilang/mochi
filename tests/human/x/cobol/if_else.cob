@@ -1,0 +1,5 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. IF-ELSE.
+       PROCEDURE DIVISION.
+           DISPLAY "big".
+           STOP RUN.

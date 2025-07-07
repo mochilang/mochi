@@ -1,0 +1,6 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. FOR-MAP-COLLECTION.
+       PROCEDURE DIVISION.
+           DISPLAY "a".
+           DISPLAY "b".
+           STOP RUN.

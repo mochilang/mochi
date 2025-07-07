@@ -1,0 +1,7 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. FOR-LIST-COLLECTION.
+       PROCEDURE DIVISION.
+           DISPLAY 1.
+           DISPLAY 2.
+           DISPLAY 3.
+           STOP RUN.

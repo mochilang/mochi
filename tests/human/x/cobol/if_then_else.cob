@@ -1,0 +1,5 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. IF-THEN-ELSE.
+       PROCEDURE DIVISION.
+           DISPLAY "yes".
+           STOP RUN.

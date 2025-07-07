@@ -1,0 +1,5 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. AVG-BUILTIN.
+       PROCEDURE DIVISION.
+           DISPLAY 2.
+           STOP RUN.
