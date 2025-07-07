@@ -1,0 +1,10 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. SUBSTRING-BUILTIN.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01 S PIC X(5) VALUE "mochi".
+       01 SUB PIC X(3).
+       PROCEDURE DIVISION.
+           MOVE S(2:3) TO SUB
+           DISPLAY SUB
+           STOP RUN.

@@ -1,4 +1,4 @@
-# Mochi to COBOL Translations (41/97 translated)
+# Mochi to COBOL Translations (54/97 translated)
 
 This directory contains hand-written COBOL versions of the Mochi programs from `tests/vm/valid`.
 
@@ -83,20 +83,20 @@ This directory contains hand-written COBOL versions of the Mochi programs from `
 - [ ] short_circuit.mochi
 - [ ] slice.mochi
 - [ ] sort_stable.mochi
-- [ ] str_builtin.mochi
-- [ ] string_compare.mochi
-- [ ] string_concat.mochi
-- [ ] string_contains.mochi
-- [ ] string_in_operator.mochi
-- [ ] string_index.mochi
-- [ ] string_prefix_slice.mochi
-- [ ] substring_builtin.mochi
-- [ ] sum_builtin.mochi
-- [ ] tail_recursion.mochi
+- [x] str_builtin.mochi
+- [x] string_compare.mochi
+- [x] string_concat.mochi
+- [x] string_contains.mochi
+- [x] string_in_operator.mochi
+- [x] string_index.mochi
+- [x] string_prefix_slice.mochi
+- [x] substring_builtin.mochi
+- [x] sum_builtin.mochi
+- [x] tail_recursion.mochi
 - [ ] test_block.mochi
 - [ ] tree_sum.mochi
-- [ ] two-sum.mochi
-- [ ] typed_let.mochi
-- [ ] typed_var.mochi
+- [x] two-sum.mochi
+- [x] typed_let.mochi
+- [x] typed_var.mochi
 - [ ] update_stmt.mochi
 - [ ] user_type_literal.mochi
