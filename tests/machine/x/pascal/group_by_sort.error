@@ -1,0 +1,21 @@
+fpc error: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/machine/x/pascal/group_by_sort.pas
+group_by_sort.pas(67,12) Error: Illegal type conversion: "{Array Of Const/Constant Open} Array of TFPGMap$2$crcA49C6E68" to "TArray$1$crc09D74DF2"
+group_by_sort.pas(69,29) Error: Identifier not found "g"
+group_by_sort.pas(71,12) Error: Identifier not found "g"
+group_by_sort.pas(73,33) Error: Illegal qualifier
+group_by_sort.pas(73,16) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of TArray$1$crcE41905E8", expected "{Open} Array Of Pointer"
+group_by_sort.pas(71,12) Error: Cannot find an enumerator for the type "<erroneous type>"
+group_by_sort.pas(77,12) Error: Identifier not found "g"
+group_by_sort.pas(79,33) Error: Illegal qualifier
+group_by_sort.pas(79,16) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of TArray$1$crcE41905E8", expected "{Open} Array Of Pointer"
+group_by_sort.pas(77,12) Error: Cannot find an enumerator for the type "<erroneous type>"
+group_by_sort.pas(85,37) Error: Incompatible types: got "{Array Of Const/Constant Open} Array of TFPGMap$2$crcA49C6E68" expected "TArray$1$crc09D74DF2"
+group_by_sort.pas(85,31) Error: Incompatible types: got "TFPGMap<System.Variant,System.Variant>" expected "TFPGMap<System.ShortString,System.Variant>"
+group_by_sort.pas(90,18) Error: Can't read or write variables of this type
+group_by_sort.pas(92) Fatal: There were 13 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

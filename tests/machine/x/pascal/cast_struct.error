@@ -1,0 +1,12 @@
+fpc error: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/machine/x/pascal/cast_struct.pas
+cast_struct.pas(15,7) Error: Duplicate identifier "Todo"
+cast_struct.pas(15,13) Error: Error in type definition
+cast_struct.pas(20,22) Error: Incompatible type for arg no. 1: Got "TFPGMap<System.ShortString,System.Variant>", expected "Extended"
+cast_struct.pas(21,16) Error: Illegal qualifier
+cast_struct.pas(23) Fatal: There were 4 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

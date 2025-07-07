@@ -1,0 +1,11 @@
+fpc error: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/machine/x/pascal/group_by.pas
+group_by.pas(17,24) Error: Identifier not found "_sumList"
+group_by.pas(17,41) Error: Operator is not overloaded: "TArray$1$crc90DE1C48" / "Int64"
+group_by.pas(20,65) Error: Type identifier expected
+group_by.pas(20,65) Fatal: Syntax error, ")" expected but "FUNCTION" found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

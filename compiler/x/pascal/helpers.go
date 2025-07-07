@@ -393,6 +393,29 @@ func (c *Compiler) listElemType(p *parser.Primary) string {
 	return "integer"
 }
 
+// elemTypeOfExpr returns the Pascal type string of the element type if e is a list expression.
+func (c *Compiler) elemTypeOfExpr(e *parser.Expr) string {
+	if t := types.TypeOfExpr(e, c.env); t != nil {
+		if lt, ok := t.(types.ListType); ok {
+			elem := typeString(lt.Elem)
+			if elem != "Variant" {
+				return elem
+			}
+		}
+	}
+	// try to infer from append-like call
+	if e != nil && e.Binary != nil {
+		u := e.Binary.Left
+		if len(u.Ops) == 0 && u.Value != nil && u.Value.Target != nil && u.Value.Target.Call != nil {
+			call := u.Value.Target.Call
+			if (call.Func == "append" || call.Func == "push") && len(call.Args) > 0 {
+				return c.elemTypeOfExpr(call.Args[0])
+			}
+		}
+	}
+	return "Variant"
+}
+
 // selectorName returns the identifier name if e is a bare selector
 // expression like `foo` with no postfix operations.
 func selectorName(e *parser.Expr) (string, bool) {
