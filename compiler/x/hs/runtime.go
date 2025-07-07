@@ -49,8 +49,6 @@ _input = getLine
 _now :: IO Int
 _now = fmap round getPOSIXTime
 
-_json :: Aeson.ToJSON a => a -> IO ()
-_json v = BSL.putStrLn (Aeson.encode v)
 
 _readInput :: Maybe String -> IO String
 _readInput Nothing = getContents
@@ -84,7 +82,13 @@ _parseCSV text header delim =
              let parts = _split delim line
              in Map.fromList [ (heads !! j, if j < length parts then parts !! j else "")
                              | j <- [0 .. length heads - 1] ]
-       in map row (drop start ls)
+      in map row (drop start ls)
+
+`
+
+const jsonHelper = `
+_json :: Aeson.ToJSON a => a -> IO ()
+_json v = BSL.putStrLn (Aeson.encode v)
 
 `
 
