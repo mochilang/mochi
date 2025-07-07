@@ -28,7 +28,7 @@ The table below shows which Mochi examples have been translated (`[x]`) and whic
 - [x] fun_three_args.mochi
 - [x] group_by.mochi
 - [x] group_by_conditional_sum.mochi
-- [ ] group_by_having.mochi
+- [x] group_by_having.mochi
 - [ ] group_by_join.mochi
 - [ ] group_by_left_join.mochi
 - [ ] group_by_multi_join.mochi
@@ -65,7 +65,7 @@ The table below shows which Mochi examples have been translated (`[x]`) and whic
 - [x] match_full.mochi
 - [x] math_ops.mochi
 - [x] membership.mochi
- - [x] min_max_builtin.mochi
+- [x] min_max_builtin.mochi
 - [x] nested_function.mochi
 - [x] order_by_map.mochi
 - [ ] outer_join.mochi
