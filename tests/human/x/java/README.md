@@ -26,7 +26,7 @@ This folder contains hand written Java versions of each program in `tests/vm/val
 - [x] fun_call.mochi
 - [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
-- [ ] group_by.mochi
+- [x] group_by.mochi
 - [ ] group_by_conditional_sum.mochi
 - [ ] group_by_having.mochi
 - [ ] group_by_join.mochi
@@ -62,14 +62,14 @@ This folder contains hand written Java versions of each program in `tests/vm/val
 - [x] map_membership.mochi
 - [x] map_nested_assign.mochi
 - [x] match_expr.mochi
-- [ ] match_full.mochi
+- [x] match_full.mochi
 - [x] math_ops.mochi
 - [x] membership.mochi
 - [x] min_max_builtin.mochi
 - [x] nested_function.mochi
 - [ ] order_by_map.mochi
 - [ ] outer_join.mochi
-- [ ] partial_application.mochi
+- [x] partial_application.mochi
 - [x] print_hello.mochi
 - [ ] pure_fold.mochi
 - [ ] pure_global_fold.mochi
