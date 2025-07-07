@@ -25,6 +25,11 @@ This folder contains handwritten Scheme versions of selected Mochi programs from
 - fun_call
 - fun_expr_in_let
 - fun_three_args
+- print_hello
+- typed_let
+- typed_var
+- var_assignment
+- while_loop
 
 ## Missing Programs
 - group_by
@@ -71,7 +76,6 @@ This folder contains handwritten Scheme versions of selected Mochi programs from
 - order_by_map
 - outer_join
 - partial_application
-- print_hello
 - pure_fold
 - pure_global_fold
 - query_sum_select
@@ -94,11 +98,7 @@ This folder contains handwritten Scheme versions of selected Mochi programs from
 - test_block
 - tree_sum
 - two-sum
-- typed_let
-- typed_var
 - unary_neg
 - update_stmt
 - user_type_literal
 - values_builtin
-- var_assignment
-- while_loop
