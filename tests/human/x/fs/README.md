@@ -14,6 +14,12 @@ This directory contains F# programs that replicate the behavior of the `.mochi` 
 - cast_struct
 - closure
 - count_builtin
+- cross_join
+- cross_join_filter
+- cross_join_triple
+- dataset_sort_take_limit
+- dataset_where_filter
+- exists_builtin
 - for_list_collection
 - for_loop
 - for_map_collection
@@ -76,12 +82,6 @@ This directory contains F# programs that replicate the behavior of the `.mochi` 
 
 ## Missing translations
 
-- cross_join
-- cross_join_filter
-- cross_join_triple
-- dataset_sort_take_limit
-- dataset_where_filter
-- exists_builtin
 - group_by
 - group_by_conditional_sum
 - group_by_having
