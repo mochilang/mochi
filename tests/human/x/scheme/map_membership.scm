@@ -1,0 +1,5 @@
+(define m '(("a" . 1) ("b" . 2)))
+(display (if (assoc "a" m) #t #f))
+(newline)
+(display (if (assoc "c" m) #t #f))
+(newline)
