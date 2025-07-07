@@ -1,0 +1,2 @@
+line 1: exit status 1
+print(len("mochi"))

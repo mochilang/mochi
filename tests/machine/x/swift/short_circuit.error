@@ -1,0 +1,4 @@
+line 5: exit status 1
+}
+print(false && boom(1, 2))
+print(true || boom(1, 2))
