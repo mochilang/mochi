@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	phpcode "mochi/compile/x/php"
+	phpcode "mochi/archived/x/php"
 	"mochi/parser"
 	any2mochi "mochi/tools/any2mochi"
 	"mochi/types"

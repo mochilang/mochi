@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	excode "mochi/compile/x/ex"
+	excode "mochi/archived/x/ex"
 	"mochi/parser"
 	any2mochi "mochi/tools/any2mochi"
 	"mochi/types"

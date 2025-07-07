@@ -5,7 +5,7 @@ package golang
 import (
 	"testing"
 
-	gocode "mochi/compile/go"
+	gocode "mochi/archived/go"
 )
 
 func TestConvert(t *testing.T) {

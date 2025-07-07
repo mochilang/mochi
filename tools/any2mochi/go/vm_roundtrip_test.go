@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	gocode "mochi/compile/go"
+	gocode "mochi/archived/go"
 	"mochi/parser"
 	vm "mochi/runtime/vm"
 	"mochi/types"

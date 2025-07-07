@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	gocode "mochi/compile/go"
+	gocode "mochi/archived/go"
 	"mochi/parser"
 	"mochi/runtime/vm"
 	any2mochi "mochi/tools/any2mochi"

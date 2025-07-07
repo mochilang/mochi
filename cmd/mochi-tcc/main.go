@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	ccode "mochi/compile/x/c"
+	ccode "mochi/archived/x/c"
 	"mochi/parser"
 	"mochi/tools/tcc"
 	"mochi/types"

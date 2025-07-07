@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	dartcode "mochi/compile/x/dart"
+	dartcode "mochi/archived/x/dart"
 	"mochi/parser"
 	"mochi/runtime/vm"
 	any2mochi "mochi/tools/any2mochi"

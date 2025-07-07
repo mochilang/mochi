@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	schemecode "mochi/compile/x/scheme"
+	schemecode "mochi/archived/x/scheme"
 	"mochi/parser"
 	"mochi/types"
 )

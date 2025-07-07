@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	scalacode "mochi/compile/x/scala"
+	scalacode "mochi/archived/x/scala"
 	"mochi/parser"
 	vm "mochi/runtime/vm"
 	any2mochi "mochi/tools/any2mochi"

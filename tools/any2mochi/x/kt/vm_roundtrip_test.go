@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	ktcode "mochi/compile/x/kt"
+	ktcode "mochi/archived/x/kt"
 	"mochi/parser"
 	any2mochi "mochi/tools/any2mochi"
 	"mochi/types"

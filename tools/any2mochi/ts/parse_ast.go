@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"runtime"
 
-	tscode "mochi/compile/ts"
+	tscode "mochi/archived/ts"
 )
 
 // TSAstDecl represents a top-level declaration parsed from a TypeScript source

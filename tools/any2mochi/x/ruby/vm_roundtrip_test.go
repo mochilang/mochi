@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	rbcode "mochi/compile/x/rb"
+	rbcode "mochi/archived/x/rb"
 	"mochi/parser"
 	any2mochi "mochi/tools/any2mochi"
 	"mochi/types"

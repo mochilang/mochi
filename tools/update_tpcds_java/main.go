@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	javacode "mochi/compile/x/java"
+	javacode "mochi/archived/x/java"
 	"mochi/parser"
 	"mochi/types"
 )

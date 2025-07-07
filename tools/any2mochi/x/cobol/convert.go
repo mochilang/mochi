@@ -76,10 +76,10 @@ func parseStatements(lines []string, vars map[string]bool, lineBase int) ([]stri
 			parts := strings.Split(rest, " TO ")
 			if len(parts) == 2 {
 				expr := normalizeExpr(strings.TrimSpace(parts[0]), vars)
-               dest := strings.ToLower(strings.TrimSpace(parts[1]))
-               dest = strings.ReplaceAll(dest, "(", "[")
-               dest = strings.ReplaceAll(dest, ")", "]")
-               baseVar := strings.Split(dest, "[")[0]
+				dest := strings.ToLower(strings.TrimSpace(parts[1]))
+				dest = strings.ReplaceAll(dest, "(", "[")
+				dest = strings.ReplaceAll(dest, ")", "]")
+				baseVar := strings.Split(dest, "[")[0]
 				if _, ok := vars[baseVar]; !ok {
 					vars[baseVar] = true
 				}
@@ -98,11 +98,11 @@ func parseStatements(lines []string, vars map[string]bool, lineBase int) ([]stri
 			expr := strings.TrimSpace(strings.TrimPrefix(ll, "COMPUTE "))
 			if strings.Contains(expr, "=") {
 				parts := strings.SplitN(expr, "=", 2)
-               dest := strings.ToLower(strings.TrimSpace(parts[0]))
-               dest = strings.ReplaceAll(dest, "(", "[")
-               dest = strings.ReplaceAll(dest, ")", "]")
-               rhs := normalizeExpr(strings.TrimSpace(parts[1]), vars)
-               baseVar := strings.Split(dest, "[")[0]
+				dest := strings.ToLower(strings.TrimSpace(parts[0]))
+				dest = strings.ReplaceAll(dest, "(", "[")
+				dest = strings.ReplaceAll(dest, ")", "]")
+				rhs := normalizeExpr(strings.TrimSpace(parts[1]), vars)
+				baseVar := strings.Split(dest, "[")[0]
 				if _, ok := vars[baseVar]; !ok {
 					vars[baseVar] = true
 				}
@@ -124,10 +124,10 @@ func parseStatements(lines []string, vars map[string]bool, lineBase int) ([]stri
 			parts := strings.Split(rest, " TO ")
 			if len(parts) == 2 {
 				val := normalizeExpr(strings.TrimSpace(parts[0]), vars)
-               dest := strings.ToLower(strings.TrimSpace(parts[1]))
-               dest = strings.ReplaceAll(dest, "(", "[")
-               dest = strings.ReplaceAll(dest, ")", "]")
-               baseVar := strings.Split(dest, "[")[0]
+				dest := strings.ToLower(strings.TrimSpace(parts[1]))
+				dest = strings.ReplaceAll(dest, "(", "[")
+				dest = strings.ReplaceAll(dest, ")", "]")
+				baseVar := strings.Split(dest, "[")[0]
 				if _, ok := vars[baseVar]; !ok {
 					vars[baseVar] = true
 				}
@@ -292,18 +292,18 @@ func parseStatements(lines []string, vars map[string]bool, lineBase int) ([]stri
 }
 
 func normalizeExpr(expr string, vars map[string]bool) string {
-       for name := range vars {
-               upper := strings.ToUpper(name)
-               // convert array access like FOO(1) to foo[1]
-               reIdx := regexp.MustCompile(`\b` + regexp.QuoteMeta(upper) + `\(([^)]+)\)`)
-               expr = reIdx.ReplaceAllString(expr, name+`[$1]`)
-       }
-       for name := range vars {
-               upper := strings.ToUpper(name)
-               re := regexp.MustCompile(`\b` + regexp.QuoteMeta(upper) + `\b`)
-               expr = re.ReplaceAllString(expr, name)
-       }
-       return expr
+	for name := range vars {
+		upper := strings.ToUpper(name)
+		// convert array access like FOO(1) to foo[1]
+		reIdx := regexp.MustCompile(`\b` + regexp.QuoteMeta(upper) + `\(([^)]+)\)`)
+		expr = reIdx.ReplaceAllString(expr, name+`[$1]`)
+	}
+	for name := range vars {
+		upper := strings.ToUpper(name)
+		re := regexp.MustCompile(`\b` + regexp.QuoteMeta(upper) + `\b`)
+		expr = re.ReplaceAllString(expr, name)
+	}
+	return expr
 }
 
 func snippet(lines []string, idx, start int) string {

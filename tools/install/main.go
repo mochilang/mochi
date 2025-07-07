@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 
-	"mochi/compile/go"
-	"mochi/compile/py"
-	"mochi/compile/ts"
+	"mochi/archived/go"
+	"mochi/archived/py"
+	"mochi/archived/ts"
 )
 
 func main() {

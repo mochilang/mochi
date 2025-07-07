@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	luacode "mochi/compile/x/lua"
+	luacode "mochi/archived/x/lua"
 	"mochi/parser"
 	any2mochi "mochi/tools/any2mochi"
 	"mochi/types"

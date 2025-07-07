@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	hscode "mochi/compile/x/hs"
+	hscode "mochi/archived/x/hs"
 	"mochi/parser"
 	any2mochi "mochi/tools/any2mochi"
 	"mochi/types"

@@ -6,7 +6,7 @@ import (
 	"os/exec"
 	"testing"
 
-	tscode "mochi/compile/ts"
+	tscode "mochi/archived/ts"
 	parent "mochi/tools/any2mochi"
 )
 

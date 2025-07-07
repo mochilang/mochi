@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	pycode "mochi/compile/py"
+	pycode "mochi/archived/py"
 	parent "mochi/tools/any2mochi"
 )
 

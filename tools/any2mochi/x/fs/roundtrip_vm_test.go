@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	fscode "mochi/compile/x/fs"
+	fscode "mochi/archived/x/fs"
 	"mochi/parser"
 	"mochi/runtime/vm"
 	any2mochi "mochi/tools/any2mochi"

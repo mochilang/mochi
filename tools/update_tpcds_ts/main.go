@@ -7,7 +7,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	tscode "mochi/compile/ts"
+	tscode "mochi/archived/ts"
 	"mochi/parser"
 	mod "mochi/runtime/mod"
 	"mochi/types"

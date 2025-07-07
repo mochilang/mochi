@@ -5,7 +5,7 @@ package main
 import (
 	"log"
 
-	cpp "mochi/compile/x/cpp"
+	cpp "mochi/archived/x/cpp"
 )
 
 func main() {

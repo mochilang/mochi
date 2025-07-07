@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	dartcode "mochi/compile/x/dart"
+	dartcode "mochi/archived/x/dart"
 	"mochi/parser"
 	"mochi/types"
 )

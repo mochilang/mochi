@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	cljcode "mochi/compile/x/clj"
+	cljcode "mochi/archived/x/clj"
 	"mochi/parser"
 	"mochi/runtime/vm"
 	any2mochi "mochi/tools/any2mochi"

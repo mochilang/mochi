@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	cscode "mochi/compile/x/cs"
+	cscode "mochi/archived/x/cs"
 	"mochi/parser"
 	vm "mochi/runtime/vm"
 	"mochi/types"

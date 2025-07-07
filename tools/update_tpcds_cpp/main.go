@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	cppcode "mochi/compile/x/cpp"
+	cppcode "mochi/archived/x/cpp"
 	"mochi/parser"
 	"mochi/types"
 )

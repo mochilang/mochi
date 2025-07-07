@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	stcode "mochi/compile/x/st"
+	stcode "mochi/archived/x/st"
 	"mochi/parser"
 	"mochi/types"
 )

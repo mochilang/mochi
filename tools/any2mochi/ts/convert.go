@@ -10,7 +10,7 @@ import (
 	"runtime"
 	"strings"
 
-	tscode "mochi/compile/ts"
+	tscode "mochi/archived/ts"
 	parent "mochi/tools/any2mochi"
 )
 

@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	cppcode "mochi/compile/x/cpp"
+	cppcode "mochi/archived/x/cpp"
 	"mochi/parser"
 	any2mochi "mochi/tools/any2mochi"
 	"mochi/types"

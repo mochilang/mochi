@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	schemecode "mochi/compile/x/scheme"
+	schemecode "mochi/archived/x/scheme"
 	"mochi/parser"
 	"mochi/runtime/vm"
 	any2mochi "mochi/tools/any2mochi"

@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	erlcode "mochi/compile/x/erlang"
+	erlcode "mochi/archived/x/erlang"
 	"mochi/parser"
 	any2mochi "mochi/tools/any2mochi"
 	"mochi/types"

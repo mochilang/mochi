@@ -5,7 +5,7 @@ package main
 import (
 	"log"
 
-	zig "mochi/compile/x/zig"
+	zig "mochi/archived/x/zig"
 )
 
 func main() {

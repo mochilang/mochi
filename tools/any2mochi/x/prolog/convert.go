@@ -260,11 +260,11 @@ func parseBodyFromRange(src string, rng any2mochi.Range) []string {
 func convertFallback(src string) ([]byte, error) {
 	if prog, err := parseAST(src); err == nil {
 		var out strings.Builder
-               for _, c := range prog.Clauses {
-                       if c.Name == ":-" || c.Name == "style_check" || c.Name == "initialization" {
-                               continue
-                       }
-                       if c.Name == "main" {
+		for _, c := range prog.Clauses {
+			if c.Name == ":-" || c.Name == "style_check" || c.Name == "initialization" {
+				continue
+			}
+			if c.Name == "main" {
 				out.WriteString("fun main() {\n")
 				for _, line := range parseBody(c.Body) {
 					out.WriteString(line)
