@@ -20,6 +20,38 @@ type Compiler struct {
 	indent int
 }
 
+func defaultValue(typ string) string {
+	switch typ {
+	case "int":
+		return "0"
+	case "float":
+		return "0.0"
+	case "string":
+		return "\"\""
+	case "bool":
+		return "false"
+	default:
+		return "()"
+	}
+}
+
+func (c *Compiler) compileType(t *parser.TypeRef) (string, error) {
+	if t == nil {
+		return "", fmt.Errorf("unsupported type")
+	}
+	if t.Simple != nil {
+		switch *t.Simple {
+		case "int", "float", "string", "bool":
+			return *t.Simple, nil
+		case "void":
+			return "unit", nil
+		default:
+			return *t.Simple, nil
+		}
+	}
+	return "", fmt.Errorf("unsupported type")
+}
+
 // New creates a new F# compiler instance.
 func New() *Compiler { return &Compiler{} }
 
@@ -27,6 +59,8 @@ func New() *Compiler { return &Compiler{} }
 func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.indent = 0
+	c.writeln("open System")
+	c.writeln("")
 	for _, s := range p.Statements {
 		if err := c.compileStmt(s); err != nil {
 			return nil, err
@@ -78,27 +112,57 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 }
 
 func (c *Compiler) compileLet(l *parser.LetStmt) error {
-	if l.Value == nil {
-		return fmt.Errorf("let without value at line %d", l.Pos.Line)
+	var typ string
+	var err error
+	if l.Type != nil {
+		typ, err = c.compileType(l.Type)
+		if err != nil {
+			return err
+		}
 	}
-	val, err := c.compileExpr(l.Value)
-	if err != nil {
-		return err
+	var val string
+	if l.Value != nil {
+		val, err = c.compileExpr(l.Value)
+		if err != nil {
+			return err
+		}
+	} else {
+		if typ == "" {
+			return fmt.Errorf("let without value at line %d", l.Pos.Line)
+		}
+		val = defaultValue(typ)
 	}
-	c.writeln(fmt.Sprintf("let %s = %s", l.Name, val))
+	if typ != "" {
+		c.writeln(fmt.Sprintf("let %s: %s = %s", l.Name, typ, val))
+	} else {
+		c.writeln(fmt.Sprintf("let %s = %s", l.Name, val))
+	}
 	return nil
 }
 
 func (c *Compiler) compileVar(v *parser.VarStmt) error {
-	val := "0"
+	var typ string
 	var err error
+	if v.Type != nil {
+		typ, err = c.compileType(v.Type)
+		if err != nil {
+			return err
+		}
+	}
+	var val string = "0"
 	if v.Value != nil {
 		val, err = c.compileExpr(v.Value)
 		if err != nil {
 			return err
 		}
+	} else if typ != "" {
+		val = defaultValue(typ)
 	}
-	c.writeln(fmt.Sprintf("let mutable %s = %s", v.Name, val))
+	if typ != "" {
+		c.writeln(fmt.Sprintf("let mutable %s: %s = %s", v.Name, typ, val))
+	} else {
+		c.writeln(fmt.Sprintf("let mutable %s = %s", v.Name, val))
+	}
 	return nil
 }
 
@@ -234,7 +298,14 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		res = fmt.Sprintf("%s %s %s", res, op.Op, r)
+		oper := op.Op
+		switch op.Op {
+		case "==":
+			oper = "="
+		case "!=":
+			oper = "<>"
+		}
+		res = fmt.Sprintf("%s %s %s", res, oper, r)
 	}
 	return res, nil
 }
@@ -245,7 +316,12 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 		return "", err
 	}
 	for i := len(u.Ops) - 1; i >= 0; i-- {
-		val = u.Ops[i] + val
+		op := u.Ops[i]
+		if op == "!" {
+			val = "not " + val
+		} else {
+			val = op + val
+		}
 	}
 	return val, nil
 }
