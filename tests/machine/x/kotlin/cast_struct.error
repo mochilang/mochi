@@ -1,0 +1,5 @@
+line 0:
+Exception in thread "main" java.lang.ClassCastException: class java.util.LinkedHashMap cannot be cast to class Todo (java.util.LinkedHashMap is in module java.base of loader 'bootstrap'; Todo is in unnamed module of loader 'app')
+	at Cast_structKt.main(cast_struct.kt:64)
+	at Cast_structKt.main(cast_struct.kt)
+

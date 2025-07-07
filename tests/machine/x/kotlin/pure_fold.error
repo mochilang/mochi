@@ -1,0 +1,9 @@
+line 61:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/pure_fold.kt:61:12: error: a type annotation is required on a value parameter
+fun triple(x): Int {
+           ^
+
+ 60: 
+ 61: fun triple(x): Int {
+ 62:     return x * 3
