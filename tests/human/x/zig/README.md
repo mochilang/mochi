@@ -13,6 +13,11 @@ This directory contains hand-written Zig translations of examples from `tests/vm
 - cast_struct.mochi
 - closure.mochi
 - count_builtin.mochi
+- cross_join.mochi
+- cross_join_filter.mochi
+- cross_join_triple.mochi
+- dataset_sort_take_limit.mochi
+- dataset_where_filter.mochi
 - for_list_collection.mochi
 - for_loop.mochi
 - for_map_collection.mochi
@@ -53,11 +58,6 @@ This directory contains hand-written Zig translations of examples from `tests/vm
 - while_loop.mochi
 
 ## Missing
-- cross_join.mochi
-- cross_join_filter.mochi
-- cross_join_triple.mochi
-- dataset_sort_take_limit.mochi
-- dataset_where_filter.mochi
 - exists_builtin.mochi
 - fun_expr_in_let.mochi
 - group_by.mochi
