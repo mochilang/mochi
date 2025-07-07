@@ -1,31 +1,42 @@
 using System;
 
-class Program {
-    static string Classify(int n) => n switch { 0 => "zero", 1 => "one", _ => "many" };
+class Program
+{
+    static string Classify(int n) =>
+        n switch
+        {
+            0 => "zero",
+            1 => "one",
+            _ => "many",
+        };
 
-    static void Main() {
+    static void Main()
+    {
         int x = 2;
-        string label = x switch {
+        string label = x switch
+        {
             1 => "one",
             2 => "two",
             3 => "three",
-            _ => "unknown"
+            _ => "unknown",
         };
         Console.WriteLine(label);
 
         string day = "sun";
-        string mood = day switch {
+        string mood = day switch
+        {
             "mon" => "tired",
             "fri" => "excited",
             "sun" => "relaxed",
-            _ => "normal"
+            _ => "normal",
         };
         Console.WriteLine(mood);
 
         bool ok = true;
-        string status = ok switch {
+        string status = ok switch
+        {
             true => "confirmed",
-            false => "denied"
+            false => "denied",
         };
         Console.WriteLine(status);
 

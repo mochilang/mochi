@@ -1,2 +1,9 @@
 using System;
-class Program{static void Main(){Console.WriteLine("hello");}}
+
+class Program
+{
+    static void Main()
+    {
+        Console.WriteLine("hello");
+    }
+}

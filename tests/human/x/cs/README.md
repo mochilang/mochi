@@ -101,3 +101,4 @@ This folder contains manually crafted C# versions of the `tests/vm/valid` Mochi 
 | values_builtin.mochi | ✅ |
 | var_assignment.mochi | ✅ |
 | while_loop.mochi | ✅ |
+\nAll C# translations are formatted using `csharpier` for readability.
