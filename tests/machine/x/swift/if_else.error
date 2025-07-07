@@ -1,0 +1,4 @@
+line 4: exit status 1
+    print("big")
+else {
+    print("small")

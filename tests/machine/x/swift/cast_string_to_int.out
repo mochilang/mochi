@@ -1,1 +1,8 @@
-mochi swift compiler stub
+/workspace/mochi/tests/machine/x/swift/cast_string_to_int.swift:1:7: warning: expression implicitly coerced from 'Int?' to 'Any'
+1 | print(Int("1995"))
+  |       |- warning: expression implicitly coerced from 'Int?' to 'Any'
+  |       |- note: provide a default value to avoid this warning
+  |       |- note: force-unwrap the value to avoid this warning
+  |       `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+2 | 
+Optional(1995)

@@ -1,0 +1,3 @@
+line 4: exit status 1
+}
+print(triple(1 + 2))
