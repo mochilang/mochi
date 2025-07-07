@@ -1,0 +1,4 @@
+line 0: compile error: expression unsupported at line 2
+
+  1| print(-3)
+  2| print(5 + (-2))

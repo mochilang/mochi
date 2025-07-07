@@ -1,0 +1,4 @@
+line 0: compile error: unsupported statement at line 1
+
+  1| fun outer(x: int): int {
+  2|   fun inner(y: int): int {

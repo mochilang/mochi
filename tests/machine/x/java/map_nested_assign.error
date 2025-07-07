@@ -1,0 +1,4 @@
+line 0: compile error: expression unsupported at line 1
+
+  1| var data = {"outer": {"inner": 1}}
+  2| data["outer"]["inner"] = 2

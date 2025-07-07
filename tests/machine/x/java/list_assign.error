@@ -1,0 +1,4 @@
+line 0: compile error: expression unsupported at line 1
+
+  1| var nums = [1, 2]
+  2| nums[1] = 3
