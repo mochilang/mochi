@@ -1,0 +1,3 @@
+run: exit status 2
+ERROR: /workspace/mochi/tests/machine/x/pl/while_loop.pl:12: user:main </2: Arguments are not sufficiently instantiated
+
