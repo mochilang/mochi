@@ -348,6 +348,10 @@ func (c *Compiler) compileMainStmt(s *parser.Statement) error {
 			c.writeln(fmt.Sprintf("mapM_ (\\%s -> %s) %s", name, body, iter))
 		}
 		c.env = orig
+	case s.If != nil:
+		if err := c.compileIfMain(s.If); err != nil {
+			return err
+		}
 	case s.While != nil:
 		body, err := c.simpleBodyExpr(s.While.Body)
 		if err != nil {
@@ -367,6 +371,41 @@ func (c *Compiler) compileMainStmt(s *parser.Statement) error {
 		c.writeln(fmt.Sprintf("expect (%s)", expr))
 	default:
 		return fmt.Errorf("unsupported statement in main")
+	}
+	return nil
+}
+
+func (c *Compiler) compileIfMain(stmt *parser.IfStmt) error {
+	cond, err := c.compileExpr(stmt.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("if %s then do", cond))
+	c.indent++
+	for _, st := range stmt.Then {
+		if err := c.compileMainStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	if stmt.ElseIf != nil {
+		c.writeln("else")
+		c.indent++
+		if err := c.compileIfMain(stmt.ElseIf); err != nil {
+			return err
+		}
+		c.indent--
+	} else if len(stmt.Else) > 0 {
+		c.writeln("else do")
+		c.indent++
+		for _, st := range stmt.Else {
+			if err := c.compileMainStmt(st); err != nil {
+				return err
+			}
+		}
+		c.indent--
+	} else {
+		c.writeln("else return ()")
 	}
 	return nil
 }
