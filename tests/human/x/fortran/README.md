@@ -14,6 +14,7 @@
 - cross_join
 - cross_join_filter
 - cross_join_triple
+- dataset_sort_take_limit
 - dataset_where_filter
 - exists_builtin
 - for_list_collection
@@ -64,7 +65,6 @@
 - while_loop
 
 ## Missing
-- dataset_sort_take_limit
 - group_by
 - group_by_conditional_sum
 - group_by_having
