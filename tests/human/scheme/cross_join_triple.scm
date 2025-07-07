@@ -1,0 +1,20 @@
+(define nums '(1 2))
+(define letters '("A" "B"))
+(define bools '(#t #f))
+(display "--- Cross Join of three lists ---")
+(newline)
+(for-each
+ (lambda (n)
+   (for-each
+    (lambda (l)
+      (for-each
+       (lambda (b)
+         (display n)
+         (display " ")
+         (display l)
+         (display " ")
+         (display b)
+         (newline))
+       bools))
+    letters))
+ nums)

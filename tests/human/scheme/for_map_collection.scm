@@ -1,0 +1,5 @@
+(define m '(("a" . 1) ("b" . 2)))
+(for-each (lambda (pair)
+            (display (car pair))
+            (newline))
+          m)
