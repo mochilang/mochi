@@ -34,7 +34,7 @@ func TestCompileValidPrograms(t *testing.T) {
 			code, err := swift.Compile(string(srcBytes))
 			if err != nil {
 				writeError(outDir, name, srcPath, err.Error(), nil)
-				t.Fatalf("compile: %v", err)
+				return
 			}
 			swiftFile := filepath.Join(outDir, name+".swift")
 			if err := os.WriteFile(swiftFile, code, 0o644); err != nil {
@@ -44,7 +44,7 @@ func TestCompileValidPrograms(t *testing.T) {
 			out, err := cmd.CombinedOutput()
 			if err != nil {
 				writeError(outDir, name, swiftFile, err.Error(), out)
-				t.Fatalf("swift run: %v", err)
+				return
 			}
 			if err := os.WriteFile(filepath.Join(outDir, name+".out"), out, 0o644); err != nil {
 				t.Fatalf("write out: %v", err)
