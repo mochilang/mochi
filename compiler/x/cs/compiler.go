@@ -2117,23 +2117,32 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				typ = t
 			}
 		}
-		if mt, ok := typ.(types.MapType); ok && len(p.Selector.Tail) > 0 {
-			key := p.Selector.Tail[0]
-			expr = fmt.Sprintf("%s[%q]", expr, key)
-			typ = mt.Value
-			for _, f := range p.Selector.Tail[1:] {
-				expr += "." + sanitizeName(f)
-				if st, ok := typ.(types.StructType); ok {
-					if ft, ok := st.Fields[f]; ok {
-						typ = ft
+		if len(p.Selector.Tail) > 0 {
+			if mt, ok := typ.(types.MapType); ok {
+				key := p.Selector.Tail[0]
+				expr = fmt.Sprintf("%s[%q]", expr, key)
+				typ = mt.Value
+				for _, f := range p.Selector.Tail[1:] {
+					expr += "." + sanitizeName(f)
+					if st, ok := typ.(types.StructType); ok {
+						if ft, ok := st.Fields[f]; ok {
+							typ = ft
+						} else {
+							typ = types.AnyType{}
+						}
 					} else {
 						typ = types.AnyType{}
 					}
-				} else {
-					typ = types.AnyType{}
 				}
+				return expr, nil
 			}
-			return expr, nil
+			if _, ok := typ.(types.AnyType); ok {
+				expr = fmt.Sprintf("%s[%q]", expr, p.Selector.Tail[0])
+				for _, f := range p.Selector.Tail[1:] {
+					expr += fmt.Sprintf("[%q]", f)
+				}
+				return expr, nil
+			}
 		}
 		if ut, ok := typ.(types.UnionType); ok && len(p.Selector.Tail) > 0 {
 			field := p.Selector.Tail[0]
