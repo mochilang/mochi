@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	st "mochi/compiler/x/smalltalk"
+	"mochi/parser"
 )
 
 // TestCompilePrograms compiles each Mochi program under tests/vm/valid to
@@ -29,7 +30,15 @@ func TestCompilePrograms(t *testing.T) {
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
 		t.Run(name, func(t *testing.T) {
-			code, err := c.Compile(src)
+			data, err := os.ReadFile(src)
+			if err != nil {
+				t.Fatalf("read error: %v", err)
+			}
+			prog, err := parser.ParseString(string(data))
+			if err != nil {
+				t.Fatalf("parse error: %v", err)
+			}
+			code, err := c.Compile(prog)
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
 			}

@@ -1,6 +1,8 @@
 # Smalltalk Compiler Tests
 
-This directory stores generated Smalltalk code and outputs for Mochi programs compiled to Smalltalk.
+This directory stores generated Smalltalk code and outputs for Mochi programs
+compiled to Smalltalk. The compiler currently supports only a very small subset
+of the language, so most programs fail to compile or run.
 
 ## Status
 
