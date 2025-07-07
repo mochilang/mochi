@@ -78,26 +78,26 @@ Below is a checklist showing which programs have been translated.
 - [ ] group_by_multi_join.mochi
 - [ ] group_by_multi_join_sort.mochi
 - [ ] group_by_sort.mochi
-- [ ] in_operator_extended.mochi
+- [x] in_operator_extended.mochi
 - [ ] inner_join.mochi
 - [ ] join_multi.mochi
-- [ ] json_builtin.mochi
+- [x] json_builtin.mochi
 - [ ] left_join.mochi
 - [ ] left_join_multi.mochi
-- [ ] list_set_ops.mochi
+- [x] list_set_ops.mochi
 - [ ] load_yaml.mochi
-- [ ] match_expr.mochi
-- [ ] match_full.mochi
-- [ ] nested_function.mochi
-- [ ] order_by_map.mochi
+- [x] match_expr.mochi
+- [x] match_full.mochi
+- [x] nested_function.mochi
+- [x] order_by_map.mochi
 - [ ] outer_join.mochi
-- [ ] pure_fold.mochi
-- [ ] pure_global_fold.mochi
-- [ ] query_sum_select.mochi
-- [ ] record_assign.mochi
+- [x] pure_fold.mochi
+- [x] pure_global_fold.mochi
+- [x] query_sum_select.mochi
+- [x] record_assign.mochi
 - [ ] right_join.mochi
-- [ ] save_jsonl_stdout.mochi
+- [x] save_jsonl_stdout.mochi
 - [ ] sort_stable.mochi
-- [ ] test_block.mochi
+- [x] test_block.mochi
 - [ ] update_stmt.mochi
 - [ ] user_type_literal.mochi
