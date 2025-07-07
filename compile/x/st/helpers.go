@@ -2,6 +2,7 @@ package stcode
 
 import (
 	"mochi/parser"
+	"mochi/types"
 	"strings"
 )
 
@@ -28,4 +29,21 @@ func typeName(t *parser.TypeRef) string {
 		return *t.Simple
 	}
 	return ""
+}
+
+func typeString(t types.Type) string {
+	if t == nil {
+		return ""
+	}
+	return t.String()
+}
+
+func filterEmpty(list []string) []string {
+	out := make([]string, 0, len(list))
+	for _, s := range list {
+		if s != "" {
+			out = append(out, s)
+		}
+	}
+	return out
 }
