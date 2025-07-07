@@ -1,9 +1,0 @@
-line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramstyped_let1340619871/001/Main.java:3: error: illegal start of expression
-		int y = ;
-		        ^
-1 error
-
-
-  1| let y: int
-  2| print(y)
