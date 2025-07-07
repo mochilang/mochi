@@ -70,21 +70,21 @@
 - [ ] pure_fold.mochi
 - [ ] pure_global_fold.mochi
 - [ ] query_sum_select.mochi
-- [ ] record_assign.mochi
+- [x] record_assign.mochi
 - [ ] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
 - [ ] short_circuit.mochi
 - [x] slice.mochi
 - [ ] sort_stable.mochi
-- [ ] str_builtin.mochi
+- [x] str_builtin.mochi
 - [ ] string_compare.mochi
 - [x] string_concat.mochi
 - [x] string_contains.mochi
 - [ ] string_in_operator.mochi
 - [x] string_index.mochi
 - [x] string_prefix_slice.mochi
-- [ ] substring_builtin.mochi
-- [ ] sum_builtin.mochi
+- [x] substring_builtin.mochi
+- [x] sum_builtin.mochi
 - [ ] tail_recursion.mochi
 - [ ] test_block.mochi
 - [ ] tree_sum.mochi
@@ -94,6 +94,6 @@
 - [x] unary_neg.mochi
 - [ ] update_stmt.mochi
 - [x] user_type_literal.mochi
-- [ ] values_builtin.mochi
+- [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [ ] while_loop.mochi
