@@ -1,0 +1,14 @@
+
+/workspace/mochi/tests/machine/x/hs/append_builtin.hs:106:10: error:
+    Variable not in scope: append :: [a0] -> t0 -> a1
+    Suggested fix: Perhaps use ‘mappend’ (imported from Prelude)
+    |
+106 |   print (append a 3)
+    |          ^^^^^^
+
+
+Context around line 106:
+  104| main :: IO ()
+  105| main = do
+  106|   print (append a 3)
+  107| 

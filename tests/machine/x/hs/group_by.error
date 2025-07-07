@@ -1,0 +1,191 @@
+
+/workspace/mochi/tests/machine/x/hs/group_by.hs:105:34: error:
+    Data constructor not in scope: VString :: String -> a
+    |
+105 | people = [Map.fromList [("name", VString ("Alice")), ("age", VInt (30)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Bob")), ("age", VInt (15)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Charlie")), ("age", VInt (65)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Diana")), ("age", VInt (45)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Eve")), ("age", VInt (70)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Frank")), ("age", VInt (22)), ("city", VString ("Hanoi"))]]
+    |                                  ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by.hs:105:62: error:
+    Data constructor not in scope: VInt :: t8 -> a
+    |
+105 | people = [Map.fromList [("name", VString ("Alice")), ("age", VInt (30)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Bob")), ("age", VInt (15)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Charlie")), ("age", VInt (65)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Diana")), ("age", VInt (45)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Eve")), ("age", VInt (70)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Frank")), ("age", VInt (22)), ("city", VString ("Hanoi"))]]
+    |                                                              ^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by.hs:105:83: error:
+    Data constructor not in scope: VString :: String -> a
+    |
+105 | people = [Map.fromList [("name", VString ("Alice")), ("age", VInt (30)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Bob")), ("age", VInt (15)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Charlie")), ("age", VInt (65)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Diana")), ("age", VInt (45)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Eve")), ("age", VInt (70)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Frank")), ("age", VInt (22)), ("city", VString ("Hanoi"))]]
+    |                                                                                   ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by.hs:105:127: error:
+    Data constructor not in scope: VString :: String -> a
+    |
+105 | people = [Map.fromList [("name", VString ("Alice")), ("age", VInt (30)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Bob")), ("age", VInt (15)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Charlie")), ("age", VInt (65)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Diana")), ("age", VInt (45)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Eve")), ("age", VInt (70)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Frank")), ("age", VInt (22)), ("city", VString ("Hanoi"))]]
+    |                                                                                                                               ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by.hs:105:153: error:
+    Data constructor not in scope: VInt :: t7 -> a
+    |
+105 | people = [Map.fromList [("name", VString ("Alice")), ("age", VInt (30)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Bob")), ("age", VInt (15)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Charlie")), ("age", VInt (65)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Diana")), ("age", VInt (45)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Eve")), ("age", VInt (70)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Frank")), ("age", VInt (22)), ("city", VString ("Hanoi"))]]
+    |                                                                                                                                                         ^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by.hs:105:174: error:
+    Data constructor not in scope: VString :: String -> a
+    |
+105 | people = [Map.fromList [("name", VString ("Alice")), ("age", VInt (30)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Bob")), ("age", VInt (15)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Charlie")), ("age", VInt (65)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Diana")), ("age", VInt (45)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Eve")), ("age", VInt (70)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Frank")), ("age", VInt (22)), ("city", VString ("Hanoi"))]]
+    |                                                                                                                                                                              ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by.hs:105:218: error:
+    Data constructor not in scope: VString :: String -> a
+    |
+105 | people = [Map.fromList [("name", VString ("Alice")), ("age", VInt (30)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Bob")), ("age", VInt (15)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Charlie")), ("age", VInt (65)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Diana")), ("age", VInt (45)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Eve")), ("age", VInt (70)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Frank")), ("age", VInt (22)), ("city", VString ("Hanoi"))]]
+    |                                                                                                                                                                                                                          ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by.hs:105:248: error:
+    Data constructor not in scope: VInt :: t6 -> a
+    |
+105 | people = [Map.fromList [("name", VString ("Alice")), ("age", VInt (30)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Bob")), ("age", VInt (15)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Charlie")), ("age", VInt (65)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Diana")), ("age", VInt (45)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Eve")), ("age", VInt (70)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Frank")), ("age", VInt (22)), ("city", VString ("Hanoi"))]]
+    |                                                                                                                                                                                                                                                        ^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by.hs:105:269: error:
+    Data constructor not in scope: VString :: String -> a
+    |
+105 | people = [Map.fromList [("name", VString ("Alice")), ("age", VInt (30)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Bob")), ("age", VInt (15)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Charlie")), ("age", VInt (65)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Diana")), ("age", VInt (45)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Eve")), ("age", VInt (70)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Frank")), ("age", VInt (22)), ("city", VString ("Hanoi"))]]
+    |                                                                                                                                                                                                                                                                             ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by.hs:105:313: error:
+    Data constructor not in scope: VString :: String -> a
+    |
+105 | people = [Map.fromList [("name", VString ("Alice")), ("age", VInt (30)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Bob")), ("age", VInt (15)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Charlie")), ("age", VInt (65)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Diana")), ("age", VInt (45)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Eve")), ("age", VInt (70)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Frank")), ("age", VInt (22)), ("city", VString ("Hanoi"))]]
+    |                                                                                                                                                                                                                                                                                                                         ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by.hs:105:341: error:
+    Data constructor not in scope: VInt :: t5 -> a
+    |
+105 | people = [Map.fromList [("name", VString ("Alice")), ("age", VInt (30)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Bob")), ("age", VInt (15)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Charlie")), ("age", VInt (65)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Diana")), ("age", VInt (45)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Eve")), ("age", VInt (70)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Frank")), ("age", VInt (22)), ("city", VString ("Hanoi"))]]
+    |                                                                                                                                                                                                                                                                                                                                                     ^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by.hs:105:362: error:
+    Data constructor not in scope: VString :: String -> a
+    |
+105 | people = [Map.fromList [("name", VString ("Alice")), ("age", VInt (30)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Bob")), ("age", VInt (15)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Charlie")), ("age", VInt (65)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Diana")), ("age", VInt (45)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Eve")), ("age", VInt (70)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Frank")), ("age", VInt (22)), ("city", VString ("Hanoi"))]]
+    |                                                                                                                                                                                                                                                                                                                                                                          ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by.hs:105:406: error:
+    Data constructor not in scope: VString :: String -> a
+    |
+105 | people = [Map.fromList [("name", VString ("Alice")), ("age", VInt (30)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Bob")), ("age", VInt (15)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Charlie")), ("age", VInt (65)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Diana")), ("age", VInt (45)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Eve")), ("age", VInt (70)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Frank")), ("age", VInt (22)), ("city", VString ("Hanoi"))]]
+    |                                                                                                                                                                                                                                                                                                                                                                                                                      ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by.hs:105:432: error:
+    Data constructor not in scope: VInt :: t4 -> a
+    |
+105 | people = [Map.fromList [("name", VString ("Alice")), ("age", VInt (30)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Bob")), ("age", VInt (15)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Charlie")), ("age", VInt (65)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Diana")), ("age", VInt (45)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Eve")), ("age", VInt (70)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Frank")), ("age", VInt (22)), ("city", VString ("Hanoi"))]]
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                ^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by.hs:105:453: error:
+    Data constructor not in scope: VString :: String -> a
+    |
+105 | people = [Map.fromList [("name", VString ("Alice")), ("age", VInt (30)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Bob")), ("age", VInt (15)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Charlie")), ("age", VInt (65)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Diana")), ("age", VInt (45)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Eve")), ("age", VInt (70)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Frank")), ("age", VInt (22)), ("city", VString ("Hanoi"))]]
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by.hs:105:497: error:
+    Data constructor not in scope: VString :: String -> a
+    |
+105 | people = [Map.fromList [("name", VString ("Alice")), ("age", VInt (30)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Bob")), ("age", VInt (15)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Charlie")), ("age", VInt (65)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Diana")), ("age", VInt (45)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Eve")), ("age", VInt (70)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Frank")), ("age", VInt (22)), ("city", VString ("Hanoi"))]]
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by.hs:105:525: error:
+    Data constructor not in scope: VInt :: t3 -> a
+    |
+105 | people = [Map.fromList [("name", VString ("Alice")), ("age", VInt (30)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Bob")), ("age", VInt (15)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Charlie")), ("age", VInt (65)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Diana")), ("age", VInt (45)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Eve")), ("age", VInt (70)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Frank")), ("age", VInt (22)), ("city", VString ("Hanoi"))]]
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             ^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by.hs:105:546: error:
+    Data constructor not in scope: VString :: String -> a
+    |
+105 | people = [Map.fromList [("name", VString ("Alice")), ("age", VInt (30)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Bob")), ("age", VInt (15)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Charlie")), ("age", VInt (65)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Diana")), ("age", VInt (45)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Eve")), ("age", VInt (70)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Frank")), ("age", VInt (22)), ("city", VString ("Hanoi"))]]
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by.hs:107:33: error:
+    Data constructor not in scope: VString :: t10 -> a
+    |
+107 | stats = [Map.fromList [("city", VString (key (g))), ("count", VInt (length (items g))), ("avg_age", VDouble (avg [fromMaybe (error "missing") (Map.lookup "age" (p)) | p <- g]))] | g <- _group_by people (\person -> fromMaybe (error "missing") (Map.lookup "city" person)), let g = g]
+    |                                 ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by.hs:107:63: error:
+    Data constructor not in scope: VInt :: Int -> a
+    |
+107 | stats = [Map.fromList [("city", VString (key (g))), ("count", VInt (length (items g))), ("avg_age", VDouble (avg [fromMaybe (error "missing") (Map.lookup "age" (p)) | p <- g]))] | g <- _group_by people (\person -> fromMaybe (error "missing") (Map.lookup "city" person)), let g = g]
+    |                                                               ^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by.hs:107:101: error:
+    Data constructor not in scope: VDouble :: t9 -> a
+    |
+107 | stats = [Map.fromList [("city", VString (key (g))), ("count", VInt (length (items g))), ("avg_age", VDouble (avg [fromMaybe (error "missing") (Map.lookup "age" (p)) | p <- g]))] | g <- _group_by people (\person -> fromMaybe (error "missing") (Map.lookup "city" person)), let g = g]
+    |                                                                                                     ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by.hs:112:35: error:
+    • Couldn't match expected type: t0 -> Maybe a0 -> String
+                  with actual type: [Char]
+    • The function ‘show’ is applied to three value arguments,
+        but its type ‘(a1 -> Maybe a1 -> a1) -> [Char]’ has only one
+      In the expression:
+        show fromMaybe (error "missing") (Map.lookup "city" s)
+      In the first argument of ‘unwords’, namely
+        ‘[show fromMaybe (error "missing") (Map.lookup "city" s),
+          ": count =",
+          show fromMaybe (error "missing") (Map.lookup "count" s),
+          ", avg_age =", ....]’
+    • Relevant bindings include
+        s :: Map.Map String a0
+          (bound at /workspace/mochi/tests/machine/x/hs/group_by.hs:112:11)
+    |
+112 |   mapM_ (\s -> putStrLn (unwords [show fromMaybe (error "missing") (Map.lookup "city" s), ": count =", show fromMaybe (error "missing") (Map.lookup "count" s), ", avg_age =", show fromMaybe (error "missing") (Map.lookup "avg_age" s)])) stats
+    |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by.hs:112:104: error:
+    • Couldn't match expected type: t1 -> Maybe a0 -> String
+                  with actual type: [Char]
+    • The function ‘show’ is applied to three value arguments,
+        but its type ‘(a2 -> Maybe a2 -> a2) -> [Char]’ has only one
+      In the expression:
+        show fromMaybe (error "missing") (Map.lookup "count" s)
+      In the first argument of ‘unwords’, namely
+        ‘[show fromMaybe (error "missing") (Map.lookup "city" s),
+          ": count =",
+          show fromMaybe (error "missing") (Map.lookup "count" s),
+          ", avg_age =", ....]’
+    • Relevant bindings include
+        s :: Map.Map String a0
+          (bound at /workspace/mochi/tests/machine/x/hs/group_by.hs:112:11)
+    |
+112 |   mapM_ (\s -> putStrLn (unwords [show fromMaybe (error "missing") (Map.lookup "city" s), ": count =", show fromMaybe (error "missing") (Map.lookup "count" s), ", avg_age =", show fromMaybe (error "missing") (Map.lookup "avg_age" s)])) stats
+    |                                                                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by.hs:112:176: error:
+    • Couldn't match expected type: t2 -> Maybe a0 -> String
+                  with actual type: [Char]
+    • The function ‘show’ is applied to three value arguments,
+        but its type ‘(a3 -> Maybe a3 -> a3) -> [Char]’ has only one
+      In the expression:
+        show fromMaybe (error "missing") (Map.lookup "avg_age" s)
+      In the first argument of ‘unwords’, namely
+        ‘[show fromMaybe (error "missing") (Map.lookup "city" s),
+          ": count =",
+          show fromMaybe (error "missing") (Map.lookup "count" s),
+          ", avg_age =", ....]’
+    • Relevant bindings include
+        s :: Map.Map String a0
+          (bound at /workspace/mochi/tests/machine/x/hs/group_by.hs:112:11)
+    |
+112 |   mapM_ (\s -> putStrLn (unwords [show fromMaybe (error "missing") (Map.lookup "city" s), ": count =", show fromMaybe (error "missing") (Map.lookup "count" s), ", avg_age =", show fromMaybe (error "missing") (Map.lookup "avg_age" s)])) stats
+    |                                                                                                                                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+Context around line 105:
+  103|            in map row (drop start ls)
+  104| 
+  105| people = [Map.fromList [("name", VString ("Alice")), ("age", VInt (30)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Bob")), ("age", VInt (15)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Charlie")), ("age", VInt (65)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Diana")), ("age", VInt (45)), ("city", VString ("Hanoi"))], Map.fromList [("name", VString ("Eve")), ("age", VInt (70)), ("city", VString ("Paris"))], Map.fromList [("name", VString ("Frank")), ("age", VInt (22)), ("city", VString ("Hanoi"))]]
+  106| 
+  107| stats = [Map.fromList [("city", VString (key (g))), ("count", VInt (length (items g))), ("avg_age", VDouble (avg [fromMaybe (error "missing") (Map.lookup "age" (p)) | p <- g]))] | g <- _group_by people (\person -> fromMaybe (error "missing") (Map.lookup "city" person)), let g = g]

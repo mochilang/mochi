@@ -1,0 +1,197 @@
+
+/workspace/mochi/tests/machine/x/hs/right_join.hs:105:35: error:
+    Data constructor not in scope: VInt :: t3 -> a
+    |
+105 | customers = [Map.fromList [("id", VInt (1)), ("name", VString ("Alice"))], Map.fromList [("id", VInt (2)), ("name", VString ("Bob"))], Map.fromList [("id", VInt (3)), ("name", VString ("Charlie"))], Map.fromList [("id", VInt (4)), ("name", VString ("Diana"))]]
+    |                                   ^^^^
+
+/workspace/mochi/tests/machine/x/hs/right_join.hs:105:55: error:
+    Data constructor not in scope: VString :: String -> a
+    |
+105 | customers = [Map.fromList [("id", VInt (1)), ("name", VString ("Alice"))], Map.fromList [("id", VInt (2)), ("name", VString ("Bob"))], Map.fromList [("id", VInt (3)), ("name", VString ("Charlie"))], Map.fromList [("id", VInt (4)), ("name", VString ("Diana"))]]
+    |                                                       ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/right_join.hs:105:97: error:
+    Data constructor not in scope: VInt :: t2 -> a
+    |
+105 | customers = [Map.fromList [("id", VInt (1)), ("name", VString ("Alice"))], Map.fromList [("id", VInt (2)), ("name", VString ("Bob"))], Map.fromList [("id", VInt (3)), ("name", VString ("Charlie"))], Map.fromList [("id", VInt (4)), ("name", VString ("Diana"))]]
+    |                                                                                                 ^^^^
+
+/workspace/mochi/tests/machine/x/hs/right_join.hs:105:117: error:
+    Data constructor not in scope: VString :: String -> a
+    |
+105 | customers = [Map.fromList [("id", VInt (1)), ("name", VString ("Alice"))], Map.fromList [("id", VInt (2)), ("name", VString ("Bob"))], Map.fromList [("id", VInt (3)), ("name", VString ("Charlie"))], Map.fromList [("id", VInt (4)), ("name", VString ("Diana"))]]
+    |                                                                                                                     ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/right_join.hs:105:157: error:
+    Data constructor not in scope: VInt :: t1 -> a
+    |
+105 | customers = [Map.fromList [("id", VInt (1)), ("name", VString ("Alice"))], Map.fromList [("id", VInt (2)), ("name", VString ("Bob"))], Map.fromList [("id", VInt (3)), ("name", VString ("Charlie"))], Map.fromList [("id", VInt (4)), ("name", VString ("Diana"))]]
+    |                                                                                                                                                             ^^^^
+
+/workspace/mochi/tests/machine/x/hs/right_join.hs:105:177: error:
+    Data constructor not in scope: VString :: String -> a
+    |
+105 | customers = [Map.fromList [("id", VInt (1)), ("name", VString ("Alice"))], Map.fromList [("id", VInt (2)), ("name", VString ("Bob"))], Map.fromList [("id", VInt (3)), ("name", VString ("Charlie"))], Map.fromList [("id", VInt (4)), ("name", VString ("Diana"))]]
+    |                                                                                                                                                                                 ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/right_join.hs:105:221: error:
+    Data constructor not in scope: VInt :: t0 -> a
+    |
+105 | customers = [Map.fromList [("id", VInt (1)), ("name", VString ("Alice"))], Map.fromList [("id", VInt (2)), ("name", VString ("Bob"))], Map.fromList [("id", VInt (3)), ("name", VString ("Charlie"))], Map.fromList [("id", VInt (4)), ("name", VString ("Diana"))]]
+    |                                                                                                                                                                                                                             ^^^^
+
+/workspace/mochi/tests/machine/x/hs/right_join.hs:105:241: error:
+    Data constructor not in scope: VString :: String -> a
+    |
+105 | customers = [Map.fromList [("id", VInt (1)), ("name", VString ("Alice"))], Map.fromList [("id", VInt (2)), ("name", VString ("Bob"))], Map.fromList [("id", VInt (3)), ("name", VString ("Charlie"))], Map.fromList [("id", VInt (4)), ("name", VString ("Diana"))]]
+    |                                                                                                                                                                                                                                                 ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/right_join.hs:109:42: error:
+    Data constructor not in scope: VString :: a0 -> a
+    |
+109 | result = [Map.fromList [("customerName", VString (fromMaybe (error "missing") (Map.lookup "name" c))), ("order", VString (o))] | c <- customers, o <- orders, (fromMaybe (error "missing") (Map.lookup "customerId" (o)) == fromMaybe (error "missing") (Map.lookup "id" (c)))]
+    |                                          ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/right_join.hs:109:114: error:
+    Data constructor not in scope: VString :: Map.Map String a0 -> a
+    |
+109 | result = [Map.fromList [("customerName", VString (fromMaybe (error "missing") (Map.lookup "name" c))), ("order", VString (o))] | c <- customers, o <- orders, (fromMaybe (error "missing") (Map.lookup "customerId" (o)) == fromMaybe (error "missing") (Map.lookup "id" (c)))]
+    |                                                                                                                  ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/right_join.hs:114:30: error:
+    • Couldn't match expected type ‘IO b0’ with actual type ‘()’
+    • In the first argument of ‘fromMaybe’, namely ‘()’
+      In the expression:
+        fromMaybe
+          ()
+          (if fromMaybe (error "missing") (Map.lookup "order" entry) then
+               (let _ = putStrLn (unwords ["Customer", ....]) in Nothing)
+           else
+               (let _ = putStrLn (unwords ["Customer", ....]) in Nothing))
+      In the first argument of ‘mapM_’, namely
+        ‘(\ entry
+            -> fromMaybe
+                 ()
+                 (if fromMaybe (error "missing") (Map.lookup "order" entry) then
+                      (let _ = putStrLn (unwords [...]) in Nothing)
+                  else
+                      (let _ = putStrLn (unwords [...]) in Nothing)))’
+    |
+114 |   mapM_ (\entry -> fromMaybe () (if fromMaybe (error "missing") (Map.lookup "order" entry) then (let _ = putStrLn (unwords ["Customer", show fromMaybe (error "missing") (Map.lookup "customerName" entry), "has order", show fromMaybe (error "missing") (Map.lookup "id" (fromMaybe (error "missing") (Map.lookup "order" entry))), "- $", show fromMaybe (error "missing") (Map.lookup "total" (fromMaybe (error "missing") (Map.lookup "order" entry)))]) in Nothing) else (let _ = putStrLn (unwords ["Customer", show fromMaybe (error "missing") (Map.lookup "customerName" entry), "has no orders"]) in Nothing))) result
+    |                              ^^
+
+/workspace/mochi/tests/machine/x/hs/right_join.hs:114:137: error:
+    • Couldn't match expected type: t4 -> Maybe Bool -> String
+                  with actual type: [Char]
+    • The function ‘show’ is applied to three value arguments,
+        but its type ‘(a3 -> Maybe a3 -> a3) -> [Char]’ has only one
+      In the expression:
+        show fromMaybe (error "missing") (Map.lookup "customerName" entry)
+      In the first argument of ‘unwords’, namely
+        ‘["Customer",
+          show fromMaybe (error "missing") (Map.lookup "customerName" entry),
+          "has order",
+          show
+            fromMaybe (error "missing")
+            (Map.lookup
+               "id" (fromMaybe (error "missing") (Map.lookup "order" entry))),
+          ....]’
+    |
+114 |   mapM_ (\entry -> fromMaybe () (if fromMaybe (error "missing") (Map.lookup "order" entry) then (let _ = putStrLn (unwords ["Customer", show fromMaybe (error "missing") (Map.lookup "customerName" entry), "has order", show fromMaybe (error "missing") (Map.lookup "id" (fromMaybe (error "missing") (Map.lookup "order" entry))), "- $", show fromMaybe (error "missing") (Map.lookup "total" (fromMaybe (error "missing") (Map.lookup "order" entry)))]) in Nothing) else (let _ = putStrLn (unwords ["Customer", show fromMaybe (error "missing") (Map.lookup "customerName" entry), "has no orders"]) in Nothing))) result
+    |                                                                                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/right_join.hs:114:218: error:
+    • Couldn't match expected type: t5 -> Maybe a1 -> String
+                  with actual type: [Char]
+    • The function ‘show’ is applied to three value arguments,
+        but its type ‘(a4 -> Maybe a4 -> a4) -> [Char]’ has only one
+      In the expression:
+        show
+          fromMaybe (error "missing")
+          (Map.lookup
+             "id" (fromMaybe (error "missing") (Map.lookup "order" entry)))
+      In the first argument of ‘unwords’, namely
+        ‘["Customer",
+          show fromMaybe (error "missing") (Map.lookup "customerName" entry),
+          "has order",
+          show
+            fromMaybe (error "missing")
+            (Map.lookup
+               "id" (fromMaybe (error "missing") (Map.lookup "order" entry))),
+          ....]’
+    |
+114 |   mapM_ (\entry -> fromMaybe () (if fromMaybe (error "missing") (Map.lookup "order" entry) then (let _ = putStrLn (unwords ["Customer", show fromMaybe (error "missing") (Map.lookup "customerName" entry), "has order", show fromMaybe (error "missing") (Map.lookup "id" (fromMaybe (error "missing") (Map.lookup "order" entry))), "- $", show fromMaybe (error "missing") (Map.lookup "total" (fromMaybe (error "missing") (Map.lookup "order" entry)))]) in Nothing) else (let _ = putStrLn (unwords ["Customer", show fromMaybe (error "missing") (Map.lookup "customerName" entry), "has no orders"]) in Nothing))) result
+    |                                                                                                                                                                                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/right_join.hs:114:317: error:
+    • Couldn't match type ‘Bool’ with ‘Map.Map String a1’
+      Expected: Map.Map String (Map.Map String a1)
+        Actual: Map.Map String Bool
+    • In the second argument of ‘Map.lookup’, namely ‘entry’
+      In the second argument of ‘fromMaybe’, namely
+        ‘(Map.lookup "order" entry)’
+      In the second argument of ‘Map.lookup’, namely
+        ‘(fromMaybe (error "missing") (Map.lookup "order" entry))’
+    |
+114 |   mapM_ (\entry -> fromMaybe () (if fromMaybe (error "missing") (Map.lookup "order" entry) then (let _ = putStrLn (unwords ["Customer", show fromMaybe (error "missing") (Map.lookup "customerName" entry), "has order", show fromMaybe (error "missing") (Map.lookup "id" (fromMaybe (error "missing") (Map.lookup "order" entry))), "- $", show fromMaybe (error "missing") (Map.lookup "total" (fromMaybe (error "missing") (Map.lookup "order" entry)))]) in Nothing) else (let _ = putStrLn (unwords ["Customer", show fromMaybe (error "missing") (Map.lookup "customerName" entry), "has no orders"]) in Nothing))) result
+    |                                                                                                                                                                                                                                                                                                                             ^^^^^
+
+/workspace/mochi/tests/machine/x/hs/right_join.hs:114:334: error:
+    • Couldn't match expected type: t6 -> Maybe a2 -> String
+                  with actual type: [Char]
+    • The function ‘show’ is applied to three value arguments,
+        but its type ‘(a5 -> Maybe a5 -> a5) -> [Char]’ has only one
+      In the expression:
+        show
+          fromMaybe (error "missing")
+          (Map.lookup
+             "total" (fromMaybe (error "missing") (Map.lookup "order" entry)))
+      In the first argument of ‘unwords’, namely
+        ‘["Customer",
+          show fromMaybe (error "missing") (Map.lookup "customerName" entry),
+          "has order",
+          show
+            fromMaybe (error "missing")
+            (Map.lookup
+               "id" (fromMaybe (error "missing") (Map.lookup "order" entry))),
+          ....]’
+    |
+114 |   mapM_ (\entry -> fromMaybe () (if fromMaybe (error "missing") (Map.lookup "order" entry) then (let _ = putStrLn (unwords ["Customer", show fromMaybe (error "missing") (Map.lookup "customerName" entry), "has order", show fromMaybe (error "missing") (Map.lookup "id" (fromMaybe (error "missing") (Map.lookup "order" entry))), "- $", show fromMaybe (error "missing") (Map.lookup "total" (fromMaybe (error "missing") (Map.lookup "order" entry)))]) in Nothing) else (let _ = putStrLn (unwords ["Customer", show fromMaybe (error "missing") (Map.lookup "customerName" entry), "has no orders"]) in Nothing))) result
+    |                                                                                                                                                                                                                                                                                                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/right_join.hs:114:436: error:
+    • Couldn't match type ‘Bool’ with ‘Map.Map String a2’
+      Expected: Map.Map String (Map.Map String a2)
+        Actual: Map.Map String Bool
+    • In the second argument of ‘Map.lookup’, namely ‘entry’
+      In the second argument of ‘fromMaybe’, namely
+        ‘(Map.lookup "order" entry)’
+      In the second argument of ‘Map.lookup’, namely
+        ‘(fromMaybe (error "missing") (Map.lookup "order" entry))’
+    |
+114 |   mapM_ (\entry -> fromMaybe () (if fromMaybe (error "missing") (Map.lookup "order" entry) then (let _ = putStrLn (unwords ["Customer", show fromMaybe (error "missing") (Map.lookup "customerName" entry), "has order", show fromMaybe (error "missing") (Map.lookup "id" (fromMaybe (error "missing") (Map.lookup "order" entry))), "- $", show fromMaybe (error "missing") (Map.lookup "total" (fromMaybe (error "missing") (Map.lookup "order" entry)))]) in Nothing) else (let _ = putStrLn (unwords ["Customer", show fromMaybe (error "missing") (Map.lookup "customerName" entry), "has no orders"]) in Nothing))) result
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                    ^^^^^
+
+/workspace/mochi/tests/machine/x/hs/right_join.hs:114:504: error:
+    • Couldn't match expected type: t7 -> Maybe Bool -> String
+                  with actual type: [Char]
+    • The function ‘show’ is applied to three value arguments,
+        but its type ‘(a6 -> Maybe a6 -> a6) -> [Char]’ has only one
+      In the expression:
+        show fromMaybe (error "missing") (Map.lookup "customerName" entry)
+      In the first argument of ‘unwords’, namely
+        ‘["Customer",
+          show fromMaybe (error "missing") (Map.lookup "customerName" entry),
+          "has no orders"]’
+    |
+114 |   mapM_ (\entry -> fromMaybe () (if fromMaybe (error "missing") (Map.lookup "order" entry) then (let _ = putStrLn (unwords ["Customer", show fromMaybe (error "missing") (Map.lookup "customerName" entry), "has order", show fromMaybe (error "missing") (Map.lookup "id" (fromMaybe (error "missing") (Map.lookup "order" entry))), "- $", show fromMaybe (error "missing") (Map.lookup "total" (fromMaybe (error "missing") (Map.lookup "order" entry)))]) in Nothing) else (let _ = putStrLn (unwords ["Customer", show fromMaybe (error "missing") (Map.lookup "customerName" entry), "has no orders"]) in Nothing))) result
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+Context around line 105:
+  103|            in map row (drop start ls)
+  104| 
+  105| customers = [Map.fromList [("id", VInt (1)), ("name", VString ("Alice"))], Map.fromList [("id", VInt (2)), ("name", VString ("Bob"))], Map.fromList [("id", VInt (3)), ("name", VString ("Charlie"))], Map.fromList [("id", VInt (4)), ("name", VString ("Diana"))]]
+  106| 
+  107| orders = [Map.fromList [("id", 100), ("customerId", 1), ("total", 250)], Map.fromList [("id", 101), ("customerId", 2), ("total", 125)], Map.fromList [("id", 102), ("customerId", 1), ("total", 300)]]

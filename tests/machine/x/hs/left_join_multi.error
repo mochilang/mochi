@@ -1,0 +1,16 @@
+
+/workspace/mochi/tests/machine/x/hs/left_join_multi.hs:109:1: error:
+    Multiple declarations of ‘items’
+    Declared at: /workspace/mochi/tests/machine/x/hs/left_join_multi.hs:36:37
+                 /workspace/mochi/tests/machine/x/hs/left_join_multi.hs:109:1
+    |
+109 | items = [Map.fromList [("orderId", VInt (100)), ("sku", VString ("a"))]]
+    | ^^^^^
+
+
+Context around line 109:
+  107| orders = [Map.fromList [("id", 100), ("customerId", 1)], Map.fromList [("id", 101), ("customerId", 2)]]
+  108| 
+  109| items = [Map.fromList [("orderId", VInt (100)), ("sku", VString ("a"))]]
+  110| 
+  111| result = [Map.fromList [("orderId", VInt (fromMaybe (error "missing") (Map.lookup "id" o))), ("name", VString (fromMaybe (error "missing") (Map.lookup "name" c))), ("item", VString (i))] | o <- orders, c <- customers, i <- items, (fromMaybe (error "missing") (Map.lookup "customerId" (o)) == fromMaybe (error "missing") (Map.lookup "id" (c))), (fromMaybe (error "missing") (Map.lookup "id" (o)) == fromMaybe (error "missing") (Map.lookup "orderId" (i)))]

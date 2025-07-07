@@ -1,0 +1,117 @@
+{-# LANGUAGE DeriveGeneric #-}
+
+module Main where
+
+import Data.List (intercalate, isPrefixOf)
+import qualified Data.List as List
+import qualified Data.Map as Map
+import Data.Maybe (fromMaybe)
+import Data.Time.Clock.POSIX (getPOSIXTime)
+
+forLoop :: Int -> Int -> (Int -> Maybe a) -> Maybe a
+forLoop start end f = go start
+  where
+    go i
+      | i < end =
+          case f i of
+            Just v -> Just v
+            Nothing -> go (i + 1)
+      | otherwise = Nothing
+
+whileLoop :: (() -> Bool) -> (() -> Maybe a) -> Maybe a
+whileLoop cond body = go ()
+  where
+    go _
+      | cond () =
+          case body () of
+            Just v -> Just v
+            Nothing -> go ()
+      | otherwise = Nothing
+
+avg :: (Integral a) => [a] -> a
+avg xs
+  | null xs = 0
+  | otherwise = div (sum xs) (fromIntegral (length xs))
+
+data MGroup k a = MGroup {key :: k, items :: [a]} deriving (Show)
+
+_group_by :: (Ord k) => [a] -> (a -> k) -> [MGroup k a]
+_group_by src keyfn =
+  let go [] m order = (m, order)
+      go (x : xs) m order =
+        let k = keyfn x
+         in case Map.lookup k m of
+              Just is -> go xs (Map.insert k (is ++ [x]) m) order
+              Nothing -> go xs (Map.insert k [x] m) (order ++ [k])
+      (m, order) = go src Map.empty []
+   in [MGroup k (fromMaybe [] (Map.lookup k m)) | k <- order]
+
+_indexString :: String -> Int -> String
+_indexString s i =
+  let idx = if i < 0 then i + length s else i
+   in if idx < 0 || idx >= length s
+        then error "index out of range"
+        else [s !! idx]
+
+_append :: [a] -> a -> [a]
+_append xs x = xs ++ [x]
+
+_input :: IO String
+_input = getLine
+
+_now :: IO Int
+_now = fmap round getPOSIXTime
+
+_readInput :: Maybe String -> IO String
+_readInput Nothing = getContents
+_readInput (Just p)
+  | null p || p == "-" = getContents
+  | otherwise = readFile p
+
+_writeOutput :: Maybe String -> String -> IO ()
+_writeOutput mp text = case mp of
+  Nothing -> putStr text
+  Just p
+    | null p || p == "-" -> putStr text
+    | otherwise -> writeFile p text
+
+_split :: Char -> String -> [String]
+_split _ "" = [""]
+_split d s =
+  let (h, t) = break (== d) s
+   in h : case t of
+        [] -> []
+        (_ : rest) -> _split d rest
+
+_parseCSV :: String -> Bool -> Char -> [Map.Map String String]
+_parseCSV text header delim =
+  let ls = filter (not . null) (lines text)
+   in if null ls
+        then []
+        else
+          let heads =
+                if header
+                  then _split delim (head ls)
+                  else ["c" ++ show i | i <- [0 .. length (_split delim (head ls)) - 1]]
+              start = if header then 1 else 0
+              row line =
+                let parts = _split delim line
+                 in Map.fromList
+                      [ (heads !! j, if j < length parts then parts !! j else "")
+                        | j <- [0 .. length heads - 1]
+                      ]
+           in map row (drop start ls)
+
+nations = [Map.fromList [("id", VInt (1)), ("name", VString ("A"))], Map.fromList [("id", VInt (2)), ("name", VString ("B"))]]
+
+suppliers = [Map.fromList [("id", 1), ("nation", 1)], Map.fromList [("id", 2), ("nation", 2)]]
+
+partsupp = [Map.fromList [("part", VInt (100)), ("supplier", VInt (1)), ("cost", VDouble (10.0)), ("qty", VInt (2))], Map.fromList [("part", VInt (100)), ("supplier", VInt (2)), ("cost", VDouble (20.0)), ("qty", VInt (1))], Map.fromList [("part", VInt (200)), ("supplier", VInt (1)), ("cost", VDouble (5.0)), ("qty", VInt (3))]]
+
+filtered = [Map.fromList [("part", VString (fromMaybe (error "missing") (Map.lookup "part" ps))), ("value", VString ((fromMaybe (error "missing") (Map.lookup "cost" ps) * fromMaybe (error "missing") (Map.lookup "qty" ps))))] | ps <- partsupp, s <- suppliers, n <- nations, (fromMaybe (error "missing") (Map.lookup "id" (s)) == fromMaybe (error "missing") (Map.lookup "supplier" (ps))), (fromMaybe (error "missing") (Map.lookup "id" (n)) == fromMaybe (error "missing") (Map.lookup "nation" (s))), (fromMaybe (error "missing") (Map.lookup "name" n) == "A")]
+
+grouped = [Map.fromList [("part", VString (key (g))), ("total", VDouble (sum [fromMaybe (error "missing") (Map.lookup "value" (r)) | r <- g]))] | g <- _group_by filtered (\x -> fromMaybe (error "missing") (Map.lookup "part" x)), let g = g]
+
+main :: IO ()
+main = do
+  print (grouped)
