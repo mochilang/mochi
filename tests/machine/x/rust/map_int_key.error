@@ -1,0 +1,2 @@
+line 0: unsupported expression at line 1
+let m = {1: "a", 2: "b"}

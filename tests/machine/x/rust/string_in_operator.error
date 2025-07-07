@@ -1,0 +1,17 @@
+line 0: compile: exit status 1
+error: expected one of `,`, `.`, `?`, or an operator, found keyword `in`
+ --> /workspace/mochi/tests/machine/x/rust/string_in_operator.rs:3:28
+  |
+3 |     println!("{:?}", "cat" in s);
+  |                            ^^ expected one of `,`, `.`, `?`, or an operator
+
+error: expected one of `,`, `.`, `?`, or an operator, found keyword `in`
+ --> /workspace/mochi/tests/machine/x/rust/string_in_operator.rs:4:28
+  |
+4 |     println!("{:?}", "dog" in s);
+  |                            ^^ expected one of `,`, `.`, `?`, or an operator
+
+error: aborting due to 2 previous errors
+
+
+fn main() {

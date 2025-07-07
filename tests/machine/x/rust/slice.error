@@ -1,0 +1,2 @@
+line 0: postfix operations not supported
+print([1,2,3][1:3])
