@@ -7,6 +7,6 @@ void main() {
     if (n > 7) {
       break;
     }
-    print('odd number: \$n');
+    print(['odd number:', n].join(' '));
   }
 }

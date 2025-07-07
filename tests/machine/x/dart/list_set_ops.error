@@ -1,1 +1,4 @@
-exec: "dart": executable file not found in $PATH
+line 2: exit status 254
+void main() {
+  print([1, 2] union [2, 3]);
+  print([1, 2, 3] except [2]);

@@ -1,5 +1,5 @@
 void main() {
   var xs = [1, 2, 3];
-  print(xs.contains(2));
-  print(!xs.contains(5));
+  print(2 in xs);
+  print(!(5 in xs));
 }

@@ -404,6 +404,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	// handle simple builtins so the generated Dart code is runnable without
 	// additional support libraries
 	switch call.Func {
+	case "print":
+		if len(args) == 1 {
+			return fmt.Sprintf("print(%s)", args[0]), nil
+		}
+		return fmt.Sprintf("print([%s].join(' '))", strings.Join(args, ", ")), nil
 	case "append":
 		if len(args) != 2 {
 			return "", fmt.Errorf("append expects 2 args")
