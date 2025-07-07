@@ -1,0 +1,10 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. BINARY_PRECEDENCE.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       PROCEDURE DIVISION.
+       DISPLAY 1 + 2 * 3
+       DISPLAY (1 + 2) * 3
+       DISPLAY 2 * 3 + 1
+       DISPLAY 2 * (3 + 1)
+       STOP RUN.

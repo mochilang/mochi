@@ -362,6 +362,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileLiteral(p.Lit), nil
 	case p.Call != nil:
 		return c.compileCall(p.Call)
+	case p.Group != nil:
+		expr, err := c.compileExpr(p.Group)
+		if err != nil {
+			return "", err
+		}
+		return "(" + expr + ")", nil
 	case p.Selector != nil:
 		return strings.ToUpper(p.Selector.Root), nil
 	default:
