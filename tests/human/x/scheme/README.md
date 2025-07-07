@@ -3,7 +3,7 @@
 This directory contains manual Scheme implementations of the programs found in
 `tests/vm/valid`.
 
-## Checklist (65/97 translated)
+## Checklist (70/97 translated)
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -30,7 +30,7 @@ This directory contains manual Scheme implementations of the programs found in
 - [x] group_by.mochi
 - [ ] group_by_conditional_sum.mochi
 - [x] group_by_having.mochi
-- [ ] group_by_join.mochi
+- [x] group_by_join.mochi
 - [ ] group_by_left_join.mochi
 - [ ] group_by_multi_join.mochi
 - [ ] group_by_multi_join_sort.mochi
@@ -62,12 +62,12 @@ This directory contains manual Scheme implementations of the programs found in
 - [x] map_literal_dynamic.mochi
 - [x] map_membership.mochi
 - [x] map_nested_assign.mochi
-- [ ] match_expr.mochi
+- [x] match_expr.mochi
 - [ ] match_full.mochi
 - [ ] math_ops.mochi
 - [x] membership.mochi
-- [ ] min_max_builtin.mochi
-- [ ] nested_function.mochi
+- [x] min_max_builtin.mochi
+- [x] nested_function.mochi
 - [ ] order_by_map.mochi
 - [ ] outer_join.mochi
 - [ ] partial_application.mochi
@@ -79,7 +79,7 @@ This directory contains manual Scheme implementations of the programs found in
 - [ ] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
-- [ ] slice.mochi
+- [x] slice.mochi
 - [ ] sort_stable.mochi
 - [x] str_builtin.mochi
 - [x] string_compare.mochi

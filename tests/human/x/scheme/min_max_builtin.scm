@@ -1,0 +1,5 @@
+(define nums '(3 1 4))
+(display (apply min nums))
+(newline)
+(display (apply max nums))
+(newline)
