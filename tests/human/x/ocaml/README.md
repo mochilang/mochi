@@ -27,17 +27,17 @@ The table below shows which Mochi examples have been translated (`[x]`) and whic
 - [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
 - [x] group_by.mochi
-- [ ] group_by_conditional_sum.mochi
+- [x] group_by_conditional_sum.mochi
 - [ ] group_by_having.mochi
 - [ ] group_by_join.mochi
 - [ ] group_by_left_join.mochi
 - [ ] group_by_multi_join.mochi
 - [ ] group_by_multi_join_sort.mochi
-- [ ] group_by_sort.mochi
-- [ ] group_items_iteration.mochi
+- [x] group_by_sort.mochi
+- [x] group_items_iteration.mochi
 - [x] if_else.mochi
 - [x] if_then_else.mochi
-- [ ] if_then_else_nested.mochi
+- [x] if_then_else_nested.mochi
 - [x] in_operator.mochi
 - [x] in_operator_extended.mochi
 - [ ] inner_join.mochi
@@ -76,7 +76,7 @@ The table below shows which Mochi examples have been translated (`[x]`) and whic
 - [x] query_sum_select.mochi
 - [x] record_assign.mochi
 - [ ] right_join.mochi
-- [ ] save_jsonl_stdout.mochi
+- [x] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
 - [x] slice.mochi
 - [x] sort_stable.mochi
