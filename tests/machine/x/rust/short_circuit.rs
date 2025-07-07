@@ -1,5 +1,5 @@
 fn main() {
-    fn boom(a: i32, b: i32) -> i32 {
+    fn boom(a: i32, b: i32) -> bool {
         println!("{:?}", "boom");
         return true;
     }

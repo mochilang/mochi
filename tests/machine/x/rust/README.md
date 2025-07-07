@@ -3,10 +3,10 @@
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
-- [ ] binary_precedence.mochi
-- [ ] bool_chain.mochi
+- [x] binary_precedence.mochi
+- [x] bool_chain.mochi
 - [x] break_continue.mochi
-- [ ] cast_string_to_int.mochi
+- [x] cast_string_to_int.mochi
 - [ ] cast_struct.mochi
 - [ ] closure.mochi
 - [ ] count_builtin.mochi
@@ -73,7 +73,7 @@
 - [ ] record_assign.mochi
 - [ ] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
-- [ ] short_circuit.mochi
+- [x] short_circuit.mochi
 - [ ] slice.mochi
 - [ ] sort_stable.mochi
 - [ ] str_builtin.mochi
@@ -91,11 +91,11 @@
 - [ ] two-sum.mochi
 - [ ] typed_let.mochi
 - [ ] typed_var.mochi
-- [ ] unary_neg.mochi
+- [x] unary_neg.mochi
 - [ ] update_stmt.mochi
 - [ ] user_type_literal.mochi
 - [ ] values_builtin.mochi
 - [ ] var_assignment.mochi
 - [ ] while_loop.mochi
 
-Compiled 15/97 programs.
+Compiled 20/97 programs.

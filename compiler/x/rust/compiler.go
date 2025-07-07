@@ -174,9 +174,10 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 func (c *Compiler) compileFun(f *parser.FunStmt) error {
 	params := make([]string, len(f.Params))
 	for i, p := range f.Params {
-		params[i] = fmt.Sprintf("%s: i32", p.Name)
+		params[i] = fmt.Sprintf("%s: %s", p.Name, rustType(p.Type))
 	}
-	c.writeln(fmt.Sprintf("fn %s(%s) -> i32 {", f.Name, strings.Join(params, ", ")))
+	retTy := rustType(f.Return)
+	c.writeln(fmt.Sprintf("fn %s(%s) -> %s {", f.Name, strings.Join(params, ", "), retTy))
 	c.indent++
 	for _, s := range f.Body {
 		if err := c.compileStmt(s); err != nil {
@@ -227,8 +228,19 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if len(p.Ops) > 0 {
-		return "", fmt.Errorf("postfix operations not supported")
+	for _, op := range p.Ops {
+		switch {
+		case op.Cast != nil:
+			rustTy := rustType(op.Cast.Type)
+			switch rustTy {
+			case "i32":
+				val = fmt.Sprintf("%s.parse::<i32>().unwrap()", val)
+			default:
+				return "", fmt.Errorf("unsupported cast to %s", rustTy)
+			}
+		default:
+			return "", fmt.Errorf("postfix operations not supported")
+		}
 	}
 	return val, nil
 }
@@ -256,6 +268,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return p.Selector.Root + "." + strings.Join(p.Selector.Tail, "."), nil
 	case p.FunExpr != nil:
 		return "0", fmt.Errorf("fun expr not supported")
+	case p.Group != nil:
+		expr, err := c.compileExpr(p.Group)
+		if err != nil {
+			return "", err
+		}
+		return "(" + expr + ")", nil
 	default:
 		return "", fmt.Errorf("unsupported expression at line %d", p.Pos.Line)
 	}
@@ -308,6 +326,25 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 	default:
 		return "()"
 	}
+}
+
+func rustType(t *parser.TypeRef) string {
+	if t == nil {
+		return "i32"
+	}
+	if t.Simple != nil {
+		switch *t.Simple {
+		case "int":
+			return "i32"
+		case "bool":
+			return "bool"
+		case "float":
+			return "f64"
+		case "string":
+			return "String"
+		}
+	}
+	return "i32"
 }
 
 func (c *Compiler) writeln(s string) {
