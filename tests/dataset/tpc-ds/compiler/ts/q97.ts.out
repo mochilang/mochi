@@ -10,12 +10,14 @@ type CatalogSale = {
   cs_item_sk: number;
 };
 
-let catalog_sales: Array<Record<string, number>>;
-let csci: Array<Record<string, any>>;
-let joined: Array<Record<string, number>>;
+let both: number;
+let catalog_only: number;
+let catalog_sales: Record<string, number>[];
+let csci: Record<string, any>[];
 let result: Record<string, number>;
-let ssci: Array<Record<string, any>>;
-let store_sales: Array<Record<string, number>>;
+let ssci: Record<string, any>[];
+let store_only: number;
+let store_sales: Record<string, number>[];
 
 function test_TPCDS_Q97_overlap(): void {
   if (
@@ -103,7 +105,7 @@ function main(): void {
     }
     return _res;
   })();
-  joined = (() => {
+  both = _count((() => {
     const _src = ssci;
     return _query(_src, [
       {
@@ -113,37 +115,46 @@ function main(): void {
           c,
         ) => (_equal(s.customer_sk, c.customer_sk) &&
           _equal(s.item_sk, c.item_sk)),
-        left: true,
-        right: true,
       },
-    ], {
-      select: (s, c) => ({
-        "store_only":
-          ((!_equal(s.customer_sk, null) &&
-              (_equal(c, null) || _equal(c.customer_sk, null)))
-            ? 1
-            : 0),
-        "catalog_only":
-          ((((_equal(s, null) || _equal(s.customer_sk, null)) &&
-              !_equal(c, null)) && !_equal(c.customer_sk, null))
-            ? 1
-            : 0),
-        "both":
-          (((!_equal(s.customer_sk, null) && !_equal(c, null)) &&
-              !_equal(c.customer_sk, null))
-            ? 1
-            : 0),
-      }),
-    });
-  })();
+    ], { select: (s, c) => 1 });
+  })());
+  store_only = _count(
+    ssci.filter(
+      (s) => (!(_exists(
+        csci.filter(
+          (c) => (_equal(s.customer_sk, c.customer_sk) &&
+            _equal(s.item_sk, c.item_sk))
+        ).map((c) => c),
+      )))
+    ).map((s) => 1),
+  );
+  catalog_only = _count(
+    csci.filter(
+      (c) => (!(_exists(
+        ssci.filter(
+          (s) => (_equal(s.customer_sk, c.customer_sk) &&
+            _equal(s.item_sk, c.item_sk))
+        ).map((s) => s),
+      )))
+    ).map((c) => 1),
+  );
   result = {
-    "store_only": _sum(joined.map((x) => x.store_only)),
-    "catalog_only": _sum(joined.map((x) => x.catalog_only)),
-    "store_and_catalog": _sum(joined.map((x) => x.both)),
+    "store_only": store_only,
+    "catalog_only": catalog_only,
+    "store_and_catalog": both,
   };
   console.log(_json(result));
   test_TPCDS_Q97_overlap();
 }
+function _count(v: any): number {
+  if (Array.isArray(v)) return v.length;
+  if (v && typeof v === "object") {
+    if (Array.isArray((v as any).items)) return (v as any).items.length;
+    if (Array.isArray((v as any).Items)) return (v as any).Items.length;
+  }
+  return 0;
+}
+
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
@@ -162,6 +173,17 @@ function _equal(a: any, b: any): boolean {
     return true;
   }
   return a === b;
+}
+
+function _exists(v: any): boolean {
+  if (Array.isArray(v)) return v.length > 0;
+  if (v && typeof v === "object") {
+    if (Array.isArray((v as any).items)) return (v as any).items.length > 0;
+    if (Array.isArray((v as any).Items)) return (v as any).Items.length > 0;
+    return Object.keys(v).length > 0;
+  }
+  if (typeof v === "string") return v.length > 0;
+  return false;
 }
 
 function _json(v: any): string {
@@ -266,19 +288,6 @@ function _query(src: any[], joins: any[], opts: any): any {
   const res = [];
   for (const r of items) res.push(opts.select(...r));
   return res;
-}
-
-function _sum(v: any): number {
-  let list: any[] | null = null;
-  if (Array.isArray(v)) list = v;
-  else if (v && typeof v === "object") {
-    if (Array.isArray((v as any).items)) list = (v as any).items;
-    else if (Array.isArray((v as any).Items)) list = (v as any).Items;
-  }
-  if (!list || list.length === 0) return 0;
-  let sum = 0;
-  for (const n of list) sum += Number(n);
-  return sum;
 }
 
 main();

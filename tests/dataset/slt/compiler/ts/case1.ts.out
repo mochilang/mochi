@@ -8,9 +8,9 @@ type t1Row = {
   e: number;
 };
 
-let result: Array<number>;
+var result: number[];
 let sub0: number;
-let t1: Array<t1Row>;
+let t1: t1Row[];
 
 function test_case1(): void {
   if (

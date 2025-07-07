@@ -42,13 +42,13 @@ type Item = {
   i_item_desc: string;
 };
 
-let catalog_sales: Array<Record<string, any>>;
-let date_dim: Array<Record<string, number>>;
-let item: Array<Record<string, any>>;
-let result: Array<Record<string, any>>;
-let store: Array<Record<string, any>>;
-let store_returns: Array<Record<string, any>>;
-let store_sales: Array<Record<string, any>>;
+let catalog_sales: Record<string, any>[];
+let date_dim: Record<string, number>[];
+let item: Record<string, any>[];
+let result: Record<string, any>[];
+let store: Record<string, any>[];
+let store_returns: Record<string, any>[];
+let store_sales: Record<string, any>[];
 
 function test_TPCDS_Q25_aggregated_profit(): void {
   if (
@@ -61,6 +61,15 @@ function test_TPCDS_Q25_aggregated_profit(): void {
         "store_sales_profit": 50,
         "store_returns_loss": 10,
         "catalog_sales_profit": 30,
+      },
+      {
+        "i_item_id": "ITEM2",
+        "i_item_desc": "Desc2",
+        "s_store_id": "S1",
+        "s_store_name": "Store1",
+        "store_sales_profit": 20,
+        "store_returns_loss": 5,
+        "catalog_sales_profit": 15,
       },
     ]))
   ) throw new Error("expect failed");

@@ -20,12 +20,12 @@ type DateDim = {
   d_date: string;
 };
 
-let date_dim: Array<Record<string, any>>;
-let grouped: Array<Record<string, any>>;
-let item: Array<Record<string, any>>;
-let result: Array<Record<string, any>>;
-let store_sales: Array<Record<string, any>>;
-let totals: Array<Record<string, any>>;
+let date_dim: Record<string, any>[];
+let grouped: Record<string, any>[];
+let item: Record<string, any>[];
+let result: Record<string, any>[];
+let store_sales: Record<string, any>[];
+let totals: Record<string, any>[];
 
 function test_TPCDS_Q98_revenue(): void {
   if (
@@ -172,6 +172,11 @@ function main(): void {
         "itemrevenue": g.itemrevenue,
         "revenueratio": ((g.itemrevenue * 100) / t.total),
       }),
+      sortKey: (g, t) => [
+        g.i_category,
+        g.i_class,
+        g.i_item_id,
+      ],
     });
   })();
   console.log(_json(result));

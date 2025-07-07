@@ -11,7 +11,7 @@ type _Node = {
 
 type Foo = Empty | _Node;
 
-function listit(): Array<Foo> {
+function listit(): Foo[] {
   return [{ __name: "Empty" }];
 }
 

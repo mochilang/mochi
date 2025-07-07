@@ -29,8 +29,8 @@ type CatalogReturn = {
   cr_order_number: number;
 };
 
-function distinct(xs: Array<any>): Array<any> {
-  let out: Array<any> = [];
+function distinct(xs: any[]): any[] {
+  var out: any[] = [];
   for (const x of xs) {
     if ((!_contains(out, x))) {
       out = _append(out, x);
@@ -39,12 +39,12 @@ function distinct(xs: Array<any>): Array<any> {
   return out;
 }
 
-let call_center: Array<Record<string, any>>;
-let catalog_returns: Array<any>;
-let catalog_sales: Array<Record<string, any>>;
-let customer_address: Array<Record<string, any>>;
-let date_dim: Array<Record<string, any>>;
-let filtered: Array<Record<string, any>>;
+let call_center: Record<string, any>[];
+let catalog_returns: any[];
+let catalog_sales: Record<string, any>[];
+let customer_address: Record<string, any>[];
+let date_dim: Record<string, any>[];
+let filtered: Record<string, any>[];
 
 function test_TPCDS_Q16_shipping(): void {
   if (
@@ -184,7 +184,7 @@ function main(): void {
   console.log(_json(filtered));
   test_TPCDS_Q16_shipping();
 }
-function _append(lst: any[] | null, v: any): any[] {
+function _append<T>(lst: T[] | null, v: T): T[] {
   const out = lst ? lst.slice() : [];
   out.push(v);
   return out;

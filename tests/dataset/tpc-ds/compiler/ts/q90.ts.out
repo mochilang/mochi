@@ -7,12 +7,12 @@ type WebSale = {
 };
 
 let amc: number;
-let household_demographics: Array<Record<string, number>>;
+let household_demographics: Record<string, number>[];
 let pmc: number;
 let result: number;
-let time_dim: Array<Record<string, number>>;
-let web_page: Array<Record<string, number>>;
-let web_sales: Array<Record<string, number>>;
+let time_dim: Record<string, number>[];
+let web_page: Record<string, number>[];
+let web_sales: Record<string, number>[];
 
 function test_TPCDS_Q90_ratio(): void {
   if (!(result == 2)) throw new Error("expect failed");

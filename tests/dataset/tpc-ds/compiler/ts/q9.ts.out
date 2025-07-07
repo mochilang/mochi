@@ -5,9 +5,9 @@ let bucket2: number;
 let bucket3: number;
 let bucket4: number;
 let bucket5: number;
-let reason: Array<Record<string, number>>;
-let result: Array<Record<string, number>>;
-let store_sales: Array<Record<string, any>>;
+let reason: Record<string, number>[];
+let result: Record<string, number>[];
+let store_sales: Record<string, any>[];
 
 function test_TPCDS_Q9_result(): void {
   if (

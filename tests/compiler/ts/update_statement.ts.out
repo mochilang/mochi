@@ -6,7 +6,7 @@ type Person = {
   status: string;
 };
 
-let people: Array<Person>;
+let people: Person[];
 
 function test_update_adult_status(): void {
   if (

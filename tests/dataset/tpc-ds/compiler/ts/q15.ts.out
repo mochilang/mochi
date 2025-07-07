@@ -23,11 +23,11 @@ type DateDim = {
   d_year: number;
 };
 
-let catalog_sales: Array<Record<string, any>>;
-let customer: Array<Record<string, number>>;
-let customer_address: Array<Record<string, any>>;
-let date_dim: Array<Record<string, number>>;
-let filtered: Array<Record<string, any>>;
+let catalog_sales: Record<string, any>[];
+let customer: Record<string, number>[];
+let customer_address: Record<string, any>[];
+let date_dim: Record<string, number>[];
+let filtered: Record<string, any>[];
 
 function test_TPCDS_Q15_zip(): void {
   if (

@@ -44,14 +44,14 @@ type Item = {
   i_item_id: string;
 };
 
-let catalog_sales: Array<Record<string, any>>;
-let customer: Array<Record<string, number>>;
-let customer_address: Array<Record<string, any>>;
-let customer_demographics: Array<Record<string, any>>;
-let date_dim: Array<Record<string, number>>;
-let item: Array<Record<string, any>>;
-let joined: Array<Record<string, any>>;
-let result: Array<Record<string, any>>;
+let catalog_sales: Record<string, any>[];
+let customer: Record<string, number>[];
+let customer_address: Record<string, any>[];
+let customer_demographics: Record<string, any>[];
+let date_dim: Record<string, number>[];
+let item: Record<string, any>[];
+let joined: Record<string, any>[];
+let result: Record<string, any>[];
 
 function test_TPCDS_Q18_averages(): void {
   if (

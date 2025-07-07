@@ -13,7 +13,7 @@ type _Node = {
 
 type Tree = Leaf | _Node;
 
-function inorder(t: Tree): Array<number> {
+function inorder(t: Tree): number[] {
   return (() => {
     const _t = t;
     if (_t.__name === "Leaf") return [];

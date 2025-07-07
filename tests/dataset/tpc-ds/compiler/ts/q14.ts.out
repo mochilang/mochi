@@ -35,14 +35,14 @@ type DateDim = {
 };
 
 let avg_sales: number;
-let catalog_sales: Array<Record<string, any>>;
-let cross_items: Array<Record<string, number>>;
-let date_dim: Array<Record<string, number>>;
-let item: Array<Record<string, number>>;
-let result: Array<Record<string, any>>;
-let store_filtered: Array<Record<string, any>>;
-let store_sales: Array<Record<string, any>>;
-let web_sales: Array<Record<string, any>>;
+let catalog_sales: Record<string, any>[];
+let cross_items: Record<string, number>[];
+let date_dim: Record<string, number>[];
+let item: Record<string, number>[];
+let result: Record<string, any>[];
+let store_filtered: Record<string, any>[];
+let store_sales: Record<string, any>[];
+let web_sales: Record<string, any>[];
 
 function test_TPCDS_Q14_cross_channel(): void {
   if (
