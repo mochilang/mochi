@@ -1,0 +1,5 @@
+(define s "catch")
+(display (if (string-contains s "cat") "true" "false"))
+(newline)
+(display (if (string-contains s "dog") "true" "false"))
+(newline)
