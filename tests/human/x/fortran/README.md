@@ -76,27 +76,27 @@
 - [ ] group_by_sort
 - [ ] group_items_iteration
 - [ ] in_operator_extended
-- [ ] inner_join
-- [ ] join_multi
-- [ ] json_builtin
-- [ ] left_join
+- [x] inner_join
+- [x] join_multi
+- [x] json_builtin
+- [x] left_join
 - [ ] left_join_multi
-- [ ] list_set_ops
+- [x] list_set_ops
 - [ ] load_yaml
-- [ ] map_in_operator
-- [ ] map_literal_dynamic
-- [ ] map_membership
-- [ ] match_full
-- [ ] nested_function
-- [ ] order_by_map
-- [ ] outer_join
-- [ ] partial_application
-- [ ] pure_fold
-- [ ] pure_global_fold
-- [ ] query_sum_select
-- [ ] right_join
-- [ ] save_jsonl_stdout
-- [ ] sort_stable
-- [ ] test_block
-- [ ] update_stmt
-- [ ] user_type_literal
+- [x] map_in_operator
+- [x] map_literal_dynamic
+- [x] map_membership
+- [x] match_full
+- [x] nested_function
+- [x] order_by_map
+- [x] outer_join
+- [x] partial_application
+- [x] pure_fold
+- [x] pure_global_fold
+- [x] query_sum_select
+- [x] right_join
+- [x] save_jsonl_stdout
+- [x] sort_stable
+- [x] test_block
+- [x] update_stmt
+- [x] user_type_literal
