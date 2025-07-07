@@ -92,6 +92,7 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 			typ = c.inferExprType(stmt.Value)
 		}
 		c.env.SetVar(stmt.Name, typ, false)
+		c.locals[stmt.Name] = typ
 	}
 	return nil
 }
@@ -130,6 +131,7 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 			typ = c.inferExprType(stmt.Value)
 		}
 		c.env.SetVar(stmt.Name, typ, true)
+		c.locals[stmt.Name] = typ
 	}
 	return nil
 }
@@ -187,6 +189,7 @@ func (c *Compiler) compileAssign(stmt *parser.AssignStmt) error {
 		typ := c.inferExprType(stmt.Value)
 		mut, _ := c.env.IsMutable(stmt.Name)
 		c.env.SetVar(stmt.Name, typ, mut)
+		c.locals[stmt.Name] = typ
 	}
 	return nil
 }
@@ -334,6 +337,7 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 		c.writeln(fmt.Sprintf("for %s in %s..%s {", name, start, end))
 		if c.env != nil {
 			c.env.SetVar(stmt.Name, types.IntType{}, true)
+			c.locals[stmt.Name] = types.IntType{}
 		}
 		c.indent++
 	} else {
@@ -342,6 +346,7 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 			c.writeln(fmt.Sprintf("for %s in %s.chars() {", tmp, start))
 			if c.env != nil {
 				c.env.SetVar(stmt.Name, types.StringType{}, true)
+				c.locals[stmt.Name] = types.StringType{}
 			}
 			c.indent++
 			c.writeln(fmt.Sprintf("let %s = %s.to_string();", name, tmp))
@@ -352,8 +357,10 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 				srcType := c.inferExprType(stmt.Source)
 				if mt, ok := srcType.(types.MapType); ok {
 					c.env.SetVar(stmt.Name, mt.Key, true)
+					c.locals[stmt.Name] = mt.Key
 				} else {
 					c.env.SetVar(stmt.Name, types.AnyType{}, true)
+					c.locals[stmt.Name] = types.AnyType{}
 				}
 			}
 			c.indent++
@@ -364,10 +371,13 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 				srcType := c.inferExprType(stmt.Source)
 				if lt, ok := srcType.(types.ListType); ok {
 					c.env.SetVar(stmt.Name, lt.Elem, true)
+					c.locals[stmt.Name] = lt.Elem
 				} else if gt, ok := srcType.(types.GroupType); ok {
 					c.env.SetVar(stmt.Name, gt.Elem, true)
+					c.locals[stmt.Name] = gt.Elem
 				} else {
 					c.env.SetVar(stmt.Name, types.AnyType{}, true)
+					c.locals[stmt.Name] = types.AnyType{}
 				}
 			}
 			c.indent++
@@ -459,11 +469,15 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	c.buf.WriteString(" {\n")
 	origEnv := c.env
 	origRet := c.retType
+	origLocals := c.locals
+	c.locals = map[string]types.Type{}
 	c.retType = ret
 	if c.env != nil {
 		child := types.NewEnv(c.env)
 		for _, p := range fun.Params {
-			child.SetVar(p.Name, c.resolveTypeRef(p.Type), true)
+			t := c.resolveTypeRef(p.Type)
+			child.SetVar(p.Name, t, true)
+			c.locals[p.Name] = t
 		}
 		c.env = child
 	}
@@ -477,6 +491,7 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	c.indent--
 	c.env = origEnv
 	c.retType = origRet
+	c.locals = origLocals
 	c.writeln("}")
 	return nil
 }
@@ -498,6 +513,8 @@ func (c *Compiler) compileMethod(structName string, fun *parser.FunStmt) error {
 	c.buf.WriteString(" {\n")
 	origEnv := c.env
 	origRet := c.retType
+	origLocals := c.locals
+	c.locals = map[string]types.Type{}
 	c.retType = ret
 	if c.env != nil {
 		child := types.NewEnv(c.env)
@@ -506,10 +523,13 @@ func (c *Compiler) compileMethod(structName string, fun *parser.FunStmt) error {
 			for fname, ft := range st.Fields {
 				child.SetVar(fname, ft, true)
 				c.methodFields[fname] = true
+				c.locals[fname] = ft
 			}
 		}
 		for _, p := range fun.Params {
-			child.SetVar(p.Name, c.resolveTypeRef(p.Type), true)
+			t := c.resolveTypeRef(p.Type)
+			child.SetVar(p.Name, t, true)
+			c.locals[p.Name] = t
 		}
 		c.env = child
 	}
@@ -524,6 +544,7 @@ func (c *Compiler) compileMethod(structName string, fun *parser.FunStmt) error {
 	c.indent--
 	c.env = origEnv
 	c.retType = origRet
+	c.locals = origLocals
 	c.methodFields = nil
 	c.writeln("}")
 	return nil
