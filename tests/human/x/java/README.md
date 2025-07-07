@@ -36,9 +36,21 @@ This directory contains hand-written Java versions of programs from `tests/vm/va
 - dataset_sort_take_limit
 - dataset_where_filter
 - exists_builtin
+- fun_three_args
+- if_else
+- if_then_else
+- if_then_else_nested
+- map_literal_dynamic
+- map_membership
+- map_nested_assign
+- string_concat
+- string_contains
+- string_index
+- string_prefix_slice
+- typed_var
+- var_assignment
 
 ## Missing
-- fun_three_args
 - group_by
 - group_by_conditional_sum
 - group_by_having
@@ -48,9 +60,6 @@ This directory contains hand-written Java versions of programs from `tests/vm/va
 - group_by_multi_join_sort
 - group_by_sort
 - group_items_iteration
-- if_else
-- if_then_else
-- if_then_else_nested
 - in_operator
 - in_operator_extended
 - inner_join
@@ -61,9 +70,6 @@ This directory contains hand-written Java versions of programs from `tests/vm/va
 - let_and_print
 - list_set_ops
 - load_yaml
-- map_literal_dynamic
-- map_membership
-- map_nested_assign
 - match_expr
 - match_full
 - math_ops
@@ -83,11 +89,7 @@ This directory contains hand-written Java versions of programs from `tests/vm/va
 - sort_stable
 - str_builtin
 - string_compare
-- string_concat
-- string_contains
 - string_in_operator
-- string_index
-- string_prefix_slice
 - substring_builtin
 - sum_builtin
 - tail_recursion
@@ -95,10 +97,8 @@ This directory contains hand-written Java versions of programs from `tests/vm/va
 - tree_sum
 - two-sum
 - typed_let
-- typed_var
 - unary_neg
 - update_stmt
 - user_type_literal
 - values_builtin
-- var_assignment
 - while_loop
