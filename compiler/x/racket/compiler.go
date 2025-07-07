@@ -65,6 +65,18 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			expr = v
 		}
 		c.writeln(fmt.Sprintf("(define %s %s)", name, expr))
+	case s.Fun != nil:
+		return c.compileFun(s.Fun)
+	case s.Return != nil:
+		val, err := c.compileExpr(s.Return.Value)
+		if err != nil {
+			return err
+		}
+		c.writeln(val)
+	case s.If != nil:
+		return c.compileIf(s.If)
+	case s.While != nil:
+		return c.compileWhile(s.While)
 	case s.Expr != nil:
 		e, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -227,7 +239,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			return fmt.Sprintf("(number->string %s)", args[0]), nil
 		default:
-			return "", fmt.Errorf("unsupported call")
+			return fmt.Sprintf("(%s %s)", p.Call.Func, strings.Join(args, " ")), nil
 		}
 	case p.If != nil:
 		cond, err := c.compileExpr(p.If.Cond)
@@ -258,6 +270,27 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems[i] = v
 		}
 		return fmt.Sprintf("'(%s)", strings.Join(elems, " ")), nil
+	case p.FunExpr != nil:
+		params := make([]string, len(p.FunExpr.Params))
+		for i, pa := range p.FunExpr.Params {
+			params[i] = pa.Name
+		}
+		if p.FunExpr.ExprBody != nil {
+			body, err := c.compileExpr(p.FunExpr.ExprBody)
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("(lambda (%s) %s)", strings.Join(params, " "), body), nil
+		}
+		var buf bytes.Buffer
+		buf.WriteString(fmt.Sprintf("(lambda (%s)", strings.Join(params, " ")))
+		for _, st := range p.FunExpr.BlockBody {
+			if err := c.compileStmt(st); err != nil {
+				return "", err
+			}
+		}
+		buf.WriteString(")")
+		return buf.String(), nil
 	default:
 		return "", fmt.Errorf("unsupported primary")
 	}
@@ -307,6 +340,70 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		}
 	}
 	c.writeln(")")
+	return nil
+}
+
+func (c *Compiler) compileFun(f *parser.FunStmt) error {
+	params := make([]string, len(f.Params))
+	for i, p := range f.Params {
+		params[i] = p.Name
+	}
+	c.writeln(fmt.Sprintf("(define (%s %s)", f.Name, strings.Join(params, " ")))
+	for _, st := range f.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.writeln(")")
+	return nil
+}
+
+func (c *Compiler) compileIf(st *parser.IfStmt) error {
+	cond, err := c.compileExpr(st.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("(if %s", cond))
+	c.writeln("  (begin")
+	for _, s := range st.Then {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	c.writeln("  )")
+	if st.ElseIf != nil {
+		// else if handled recursively
+		if err := c.compileIf(st.ElseIf); err != nil {
+			return err
+		}
+	} else if len(st.Else) > 0 {
+		c.writeln("  (begin")
+		for _, s := range st.Else {
+			if err := c.compileStmt(s); err != nil {
+				return err
+			}
+		}
+		c.writeln("  )")
+	} else {
+		c.writeln("  (void)")
+	}
+	c.writeln(")")
+	return nil
+}
+
+func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
+	cond, err := c.compileExpr(w.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln("(let loop ()")
+	c.writeln(fmt.Sprintf("  (when %s", cond))
+	for _, st := range w.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.writeln("    (loop)))")
 	return nil
 }
 

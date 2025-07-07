@@ -1,1 +1,7 @@
-unsupported call
+run: exit status 1
+min: contract violation
+  expected: real?
+  given: '(3 1 4)
+  context...:
+   body of "/workspace/mochi/tests/machine/x/racket/min_max_builtin.rkt"
+
