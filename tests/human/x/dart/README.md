@@ -3,7 +3,6 @@
 This directory contains hand-written Dart versions of the programs found in `tests/vm/valid`.
 
 ## Translated programs
-
 - append_builtin.mochi
 - avg_builtin.mochi
 - basic_compare.mochi
@@ -14,6 +13,12 @@ This directory contains hand-written Dart versions of the programs found in `tes
 - cast_struct.mochi
 - closure.mochi
 - count_builtin.mochi
+- cross_join.mochi
+- cross_join_filter.mochi
+- cross_join_triple.mochi
+- dataset_sort_take_limit.mochi
+- dataset_where_filter.mochi
+- exists_builtin.mochi
 - for_list_collection.mochi
 - for_loop.mochi
 - for_map_collection.mochi
@@ -42,13 +47,6 @@ This directory contains hand-written Dart versions of the programs found in `tes
 - while_loop.mochi
 
 ## Missing translations
-
-- cross_join.mochi
-- cross_join_filter.mochi
-- cross_join_triple.mochi
-- dataset_sort_take_limit.mochi
-- dataset_where_filter.mochi
-- exists_builtin.mochi
 - group_by.mochi
 - group_by_conditional_sum.mochi
 - group_by_having.mochi
