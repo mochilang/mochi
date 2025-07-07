@@ -413,7 +413,31 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 }
 
 func (c *Compiler) compileFun(fun *parser.FunStmt) error {
-	ret := c.cType(fun.Return)
+	oldEnv := c.env
+	var bodyEnv *types.Env
+	if c.env != nil {
+		bodyEnv = types.NewEnv(c.env)
+		for _, p := range fun.Params {
+			if p.Type != nil {
+				bodyEnv.SetVar(p.Name, resolveTypeRef(p.Type, c.env), true)
+			} else {
+				bodyEnv.SetVar(p.Name, types.IntType{}, true)
+			}
+		}
+	}
+	var retType types.Type
+	if fun.Return != nil {
+		retType = resolveTypeRef(fun.Return, c.env)
+	} else {
+		if c.env != nil {
+			c.env = bodyEnv
+			retType = c.inferFunReturnType(fun.Body)
+			c.env = oldEnv
+		} else {
+			retType = types.VoidType{}
+		}
+	}
+	ret := cTypeFromType(retType)
 	c.buf.WriteString(ret + " ")
 	c.buf.WriteString(sanitizeName(fun.Name))
 	c.buf.WriteByte('(')
@@ -439,14 +463,9 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	}
 	c.buf.WriteString("){\n")
 	c.indent++
-	oldEnv := c.env
+	prevEnv := c.env
 	if c.env != nil {
-		c.env = types.NewEnv(c.env)
-		for _, p := range fun.Params {
-			if p.Type != nil {
-				c.env.SetVar(p.Name, resolveTypeRef(p.Type, oldEnv), true)
-			}
-		}
+		c.env = bodyEnv
 	}
 	for _, st := range fun.Body {
 		if err := c.compileStmt(st); err != nil {
@@ -454,7 +473,7 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 		}
 	}
 	if c.env != nil {
-		c.env = oldEnv
+		c.env = prevEnv
 	}
 	c.indent--
 	c.writeln("}")
@@ -462,7 +481,39 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 }
 
 func (c *Compiler) compileTypeMethod(structName string, fun *parser.FunStmt) error {
-	ret := c.cType(fun.Return)
+	oldEnv := c.env
+	var bodyEnv *types.Env
+	if c.env != nil {
+		bodyEnv = types.NewEnv(c.env)
+		if st, ok := oldEnv.GetStruct(structName); ok {
+			for name, ft := range st.Fields {
+				bodyEnv.SetVar(name, ft, true)
+			}
+			for name, m := range st.Methods {
+				bodyEnv.SetVar(name, m.Type, true)
+			}
+		}
+		for _, p := range fun.Params {
+			if p.Type != nil {
+				bodyEnv.SetVar(p.Name, resolveTypeRef(p.Type, oldEnv), true)
+			} else {
+				bodyEnv.SetVar(p.Name, types.IntType{}, true)
+			}
+		}
+	}
+	var retType types.Type
+	if fun.Return != nil {
+		retType = resolveTypeRef(fun.Return, c.env)
+	} else {
+		if c.env != nil {
+			c.env = bodyEnv
+			retType = c.inferFunReturnType(fun.Body)
+			c.env = oldEnv
+		} else {
+			retType = types.VoidType{}
+		}
+	}
+	ret := cTypeFromType(retType)
 	c.buf.WriteString(ret + " ")
 	c.buf.WriteString(sanitizeName(structName) + "_" + sanitizeName(fun.Name))
 	c.buf.WriteByte('(')
@@ -475,23 +526,10 @@ func (c *Compiler) compileTypeMethod(structName string, fun *parser.FunStmt) err
 	}
 	c.buf.WriteString("){\n")
 	c.indent++
-	oldEnv := c.env
+	prevEnv := c.env
 	oldStruct := c.currentStruct
 	if c.env != nil {
-		c.env = types.NewEnv(c.env)
-		if st, ok := oldEnv.GetStruct(structName); ok {
-			for name, ft := range st.Fields {
-				c.env.SetVar(name, ft, true)
-			}
-			for name, m := range st.Methods {
-				c.env.SetVar(name, m.Type, true)
-			}
-		}
-		for _, p := range fun.Params {
-			if p.Type != nil {
-				c.env.SetVar(p.Name, resolveTypeRef(p.Type, oldEnv), true)
-			}
-		}
+		c.env = bodyEnv
 	}
 	c.currentStruct = structName
 	for _, st := range fun.Body {
@@ -501,7 +539,7 @@ func (c *Compiler) compileTypeMethod(structName string, fun *parser.FunStmt) err
 	}
 	c.currentStruct = oldStruct
 	if c.env != nil {
-		c.env = oldEnv
+		c.env = prevEnv
 	}
 	c.indent--
 	c.writeln("}")
@@ -611,9 +649,21 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 					params = append(params, types.IntType{})
 				}
 			}
-			var ret types.Type = types.VoidType{}
+			var ret types.Type
 			if s.Fun.Return != nil {
 				ret = resolveTypeRef(s.Fun.Return, c.env)
+			} else {
+				bodyEnv := types.NewEnv(c.env)
+				for i, p := range s.Fun.Params {
+					bodyEnv.SetVar(p.Name, params[i], true)
+				}
+				prev := c.env
+				c.env = bodyEnv
+				ret = c.inferFunReturnType(s.Fun.Body)
+				c.env = prev
+			}
+			if ret == nil {
+				ret = types.VoidType{}
 			}
 			ft := types.FuncType{Params: params, Return: ret}
 			c.env.SetVar(s.Fun.Name, ft, true)
