@@ -1,3 +1,5 @@
+//go:build archived && slow
+
 package py
 
 import (
