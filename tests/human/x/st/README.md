@@ -3,8 +3,22 @@
 This folder contains hand-written Smalltalk versions of programs from `tests/vm/valid`.
 
 ## Translated programs
+- append_builtin.mochi
+- avg_builtin.mochi
+- basic_compare.mochi
+- binary_precedence.mochi
+- bool_chain.mochi
+- break_continue.mochi
+- cast_string_to_int.mochi
+- cast_struct.mochi
+- closure.mochi
+- count_builtin.mochi
+- for_list_collection.mochi
 - for_loop.mochi
+- for_map_collection.mochi
 - fun_call.mochi
+- fun_expr_in_let.mochi
+- fun_three_args.mochi
 - if_else.mochi
 - len_builtin.mochi
 - print_hello.mochi
@@ -16,26 +30,12 @@ This folder contains hand-written Smalltalk versions of programs from `tests/vm/
 - while_loop.mochi
 
 ## Missing programs
-- append_builtin.mochi
-- avg_builtin.mochi
-- basic_compare.mochi
-- binary_precedence.mochi
-- bool_chain.mochi
-- break_continue.mochi
-- cast_string_to_int.mochi
-- cast_struct.mochi
-- closure.mochi
-- count_builtin.mochi
 - cross_join.mochi
 - cross_join_filter.mochi
 - cross_join_triple.mochi
 - dataset_sort_take_limit.mochi
 - dataset_where_filter.mochi
 - exists_builtin.mochi
-- for_list_collection.mochi
-- for_map_collection.mochi
-- fun_expr_in_let.mochi
-- fun_three_args.mochi
 - group_by.mochi
 - group_by_conditional_sum.mochi
 - group_by_having.mochi
