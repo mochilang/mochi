@@ -1,0 +1,9 @@
+line 62:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/pure_global_fold.kt:62:16: error: unresolved reference: k
+    return x + k
+               ^
+
+ 61: fun inc(x: Int): Int {
+ 62:     return x + k
+ 63: }

@@ -1,0 +1,15 @@
+line 61:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/fun_three_args.kt:61:10: error: a type annotation is required on a value parameter
+fun sum3(a, b, c): Int {
+         ^
+/workspace/mochi/tests/machine/x/kotlin/fun_three_args.kt:61:13: error: a type annotation is required on a value parameter
+fun sum3(a, b, c): Int {
+            ^
+/workspace/mochi/tests/machine/x/kotlin/fun_three_args.kt:61:16: error: a type annotation is required on a value parameter
+fun sum3(a, b, c): Int {
+               ^
+
+ 60: 
+ 61: fun sum3(a, b, c): Int {
+ 62:     return a + b + c

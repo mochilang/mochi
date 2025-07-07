@@ -88,7 +88,15 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln(runtime)
 	c.writeln("")
 
-	// emit function declarations first
+	// emit type and function declarations first
+	for _, s := range prog.Statements {
+		if s.Type != nil {
+			if err := c.typeDecl(s.Type); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
 			if err := c.funDecl(s.Fun); err != nil {
@@ -116,23 +124,58 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 func (c *Compiler) stmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
-		v, err := c.expr(s.Let.Value)
-		if err != nil {
-			return err
+		val := "null"
+		typ := ""
+		if s.Let.Type != nil {
+			typName := c.typeNameNullable(s.Let.Type)
+			typ = ": " + typName
+			val = c.zeroValue(s.Let.Type)
 		}
-		c.writeln(fmt.Sprintf("val %s = %s", s.Let.Name, v))
+		if s.Let.Value != nil {
+			v, err := c.expr(s.Let.Value)
+			if err != nil {
+				return err
+			}
+			val = v
+		}
+		c.writeln(fmt.Sprintf("val %s%s = %s", s.Let.Name, typ, val))
 	case s.Var != nil:
-		v, err := c.expr(s.Var.Value)
-		if err != nil {
-			return err
+		val := "null"
+		typ := ""
+		if s.Var.Type != nil {
+			typName := c.typeNameNullable(s.Var.Type)
+			typ = ": " + typName
+			val = c.zeroValue(s.Var.Type)
 		}
-		c.writeln(fmt.Sprintf("var %s = %s", s.Var.Name, v))
+		if s.Var.Value != nil {
+			v, err := c.expr(s.Var.Value)
+			if err != nil {
+				return err
+			}
+			val = v
+		}
+		c.writeln(fmt.Sprintf("var %s%s = %s", s.Var.Name, typ, val))
 	case s.Assign != nil:
 		v, err := c.expr(s.Assign.Value)
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("%s = %s", s.Assign.Name, v))
+		target := s.Assign.Name
+		for i, idx := range s.Assign.Index {
+			idxVal, err := c.expr(idx.Start)
+			if err != nil {
+				return err
+			}
+			if i < len(s.Assign.Index)-1 || len(s.Assign.Field) > 0 {
+				target += fmt.Sprintf("[%s]!!", idxVal)
+			} else {
+				target += fmt.Sprintf("[%s]", idxVal)
+			}
+		}
+		for _, f := range s.Assign.Field {
+			target += "." + f.Name
+		}
+		c.writeln(fmt.Sprintf("%s = %s", target, v))
 	case s.Return != nil:
 		v, err := c.expr(s.Return.Value)
 		if err != nil {
@@ -150,7 +193,8 @@ func (c *Compiler) stmt(s *parser.Statement) error {
 	case s.Continue != nil:
 		c.writeln("continue")
 	case s.Type != nil:
-		return c.typeDecl(s.Type)
+		// type declarations are emitted before main
+		return nil
 	case s.Expr != nil:
 		e, err := c.expr(s.Expr.Expr)
 		if err != nil {
@@ -166,7 +210,11 @@ func (c *Compiler) stmt(s *parser.Statement) error {
 func (c *Compiler) funDecl(f *parser.FunStmt) error {
 	params := make([]string, len(f.Params))
 	for i, p := range f.Params {
-		params[i] = p.Name
+		if p.Type != nil {
+			params[i] = fmt.Sprintf("%s: %s", p.Name, c.typeName(p.Type))
+		} else {
+			params[i] = p.Name
+		}
 	}
 	ret := "Unit"
 	if f.Return != nil {
@@ -301,6 +349,32 @@ func (c *Compiler) typeName(t *parser.TypeRef) string {
 	return "Any"
 }
 
+func (c *Compiler) typeNameNullable(t *parser.TypeRef) string {
+	name := c.typeName(t)
+	if name == "Any" {
+		return "Any?"
+	}
+	return name + "?"
+}
+
+func (c *Compiler) zeroValue(t *parser.TypeRef) string {
+	if t == nil || t.Simple == nil {
+		return "null"
+	}
+	switch *t.Simple {
+	case "int":
+		return "0"
+	case "float":
+		return "0.0"
+	case "string":
+		return "\"\""
+	case "bool":
+		return "false"
+	default:
+		return "null"
+	}
+}
+
 func (c *Compiler) expr(e *parser.Expr) (string, error) {
 	if e == nil || e.Binary == nil {
 		return "", fmt.Errorf("empty expr")
@@ -340,7 +414,7 @@ func (c *Compiler) postfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	for _, op := range p.Ops {
+	for i, op := range p.Ops {
 		switch {
 		case op.Call != nil:
 			args := make([]string, len(op.Call.Args))
@@ -357,7 +431,11 @@ func (c *Compiler) postfix(p *parser.PostfixExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			val = fmt.Sprintf("%s[%s]", val, idx)
+			if i < len(p.Ops)-1 {
+				val = fmt.Sprintf("%s[%s]!!", val, idx)
+			} else {
+				val = fmt.Sprintf("%s[%s]", val, idx)
+			}
 		case op.Field != nil:
 			val = fmt.Sprintf("%s.%s", val, op.Field.Name)
 		case op.Cast != nil:

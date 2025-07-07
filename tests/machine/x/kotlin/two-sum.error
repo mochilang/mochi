@@ -1,0 +1,34 @@
+line 65:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/two-sum.kt:65:17: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out Int, ???>.get(key: Int): ??? defined in kotlin.collections
+            if (nums[i] + nums[j] == target) {
+                ^
+/workspace/mochi/tests/machine/x/kotlin/two-sum.kt:65:21: error: no get method providing array access
+            if (nums[i] + nums[j] == target) {
+                    ^
+/workspace/mochi/tests/machine/x/kotlin/two-sum.kt:65:27: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out Int, ???>.get(key: Int): ??? defined in kotlin.collections
+            if (nums[i] + nums[j] == target) {
+                          ^
+/workspace/mochi/tests/machine/x/kotlin/two-sum.kt:65:31: error: no get method providing array access
+            if (nums[i] + nums[j] == target) {
+                              ^
+/workspace/mochi/tests/machine/x/kotlin/two-sum.kt:75:13: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out Int, ???>.get(key: Int): ??? defined in kotlin.collections
+    println(result[0])
+            ^
+/workspace/mochi/tests/machine/x/kotlin/two-sum.kt:75:19: error: no get method providing array access
+    println(result[0])
+                  ^
+/workspace/mochi/tests/machine/x/kotlin/two-sum.kt:76:13: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out Int, ???>.get(key: Int): ??? defined in kotlin.collections
+    println(result[1])
+            ^
+/workspace/mochi/tests/machine/x/kotlin/two-sum.kt:76:19: error: no get method providing array access
+    println(result[1])
+                  ^
+
+ 64:         for (j in i + 1 until n) {
+ 65:             if (nums[i] + nums[j] == target) {
+ 66:                 return mutableListOf(i, j)

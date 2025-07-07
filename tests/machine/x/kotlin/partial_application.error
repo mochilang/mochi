@@ -1,0 +1,12 @@
+line 66:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/partial_application.kt:66:21: error: no value passed for parameter 'b'
+    val add5 = add(5)
+                    ^
+/workspace/mochi/tests/machine/x/kotlin/partial_application.kt:67:13: error: expression 'add5' of type 'Int' cannot be invoked as a function. The function 'invoke()' is not found
+    println(add5(3))
+            ^
+
+ 65: fun main() {
+ 66:     val add5 = add(5)
+ 67:     println(add5(3))

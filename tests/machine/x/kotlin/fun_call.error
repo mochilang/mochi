@@ -1,0 +1,12 @@
+line 61:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/fun_call.kt:61:9: error: a type annotation is required on a value parameter
+fun add(a, b): Int {
+        ^
+/workspace/mochi/tests/machine/x/kotlin/fun_call.kt:61:12: error: a type annotation is required on a value parameter
+fun add(a, b): Int {
+           ^
+
+ 60: 
+ 61: fun add(a, b): Int {
+ 62:     return a + b

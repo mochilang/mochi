@@ -1,0 +1,9 @@
+line 63:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/list_set_ops.kt:63:36: error: unresolved reference: except
+    println(mutableListOf(1, 2, 3) except mutableListOf(2))
+                                   ^
+
+ 62:     println(mutableListOf(1, 2) union mutableListOf(2, 3))
+ 63:     println(mutableListOf(1, 2, 3) except mutableListOf(2))
+ 64:     println(mutableListOf(1, 2, 3) intersect mutableListOf(2, 4))
