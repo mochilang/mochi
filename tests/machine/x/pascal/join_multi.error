@@ -1,0 +1,23 @@
+fpc error: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/machine/x/pascal/join_multi.pas
+join_multi.pas(32,16) Error: Illegal type conversion: "{Array Of Const/Constant Open} Array of TFPGMap$2$crcA49C6E68" to "TArray$1$crcE0B4E8C7"
+join_multi.pas(39,13) Error: Illegal type conversion: "{Array Of Const/Constant Open} Array of TFPGMap$2$crcDFB44C97" to "TArray$1$crc7ED07D64"
+join_multi.pas(46,12) Error: Illegal type conversion: "{Array Of Const/Constant Open} Array of TFPGMap$2$crcA49C6E68" to "TArray$1$crcE0B4E8C7"
+join_multi.pas(48,30) Error: Identifier not found "c"
+join_multi.pas(49,29) Error: Identifier not found "i"
+join_multi.pas(53,11) Error: Identifier not found "c"
+join_multi.pas(55,22) Error: identifier idents no member "customerId"
+join_multi.pas(55,35) Error: Identifier not found "c"
+join_multi.pas(56,15) Error: Identifier not found "i"
+join_multi.pas(58,26) Error: identifier idents no member "id"
+join_multi.pas(58,31) Error: Identifier not found "i"
+join_multi.pas(59,45) Error: Incompatible types: got "{Array Of Const/Constant Open} Array of TFPGMap$2$crcA49C6E68" expected "TArray$1$crcE0B4E8C7"
+join_multi.pas(59,39) Error: Incompatible types: got "TFPGMap<System.Variant,System.Variant>" expected "TFPGMap<System.ShortString,System.Variant>"
+join_multi.pas(67,17) Error: identifier idents no member "name"
+join_multi.pas(67,50) Error: identifier idents no member "sku"
+join_multi.pas(70) Fatal: There were 15 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode
