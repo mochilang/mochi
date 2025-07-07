@@ -23,6 +23,7 @@
 - fun_call
 - fun_expr_in_let
 - fun_three_args
+- group_by
 - if_else
 - if_then_else
 - if_then_else_nested
@@ -65,7 +66,6 @@
 - while_loop
 
 ## Missing
-- group_by
 - group_by_conditional_sum
 - group_by_having
 - group_by_join
