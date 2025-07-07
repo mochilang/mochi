@@ -1,0 +1,11 @@
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/machine/x/fs/tail_recursion.fs(6,5): error FS0039: The value or constructor 'sum_rec' is not defined
+
+/workspace/mochi/tests/machine/x/fs/tail_recursion.fs(6,17): error FS0003: This value is not a function and cannot be applied
+
+/workspace/mochi/tests/machine/x/fs/tail_recursion.fs(7,26): error FS0001: This expression was expected to have type
+    unit    
+but here has type
+    int    

@@ -1,0 +1,4 @@
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/machine/x/fs/in_operator.fs(4,17): error FS0010: Unexpected keyword 'in' in expression
