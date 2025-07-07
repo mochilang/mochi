@@ -20,6 +20,16 @@ This directory contains manual Go translations of some Mochi test programs from 
 - dataset_where_filter.mochi
 - exists_builtin.mochi
 - for_loop.mochi
+- for_list_collection.mochi
+- for_map_collection.mochi
+- fun_call.mochi
+- fun_expr_in_let.mochi
+- fun_three_args.mochi
+- if_else.mochi
+- if_then_else.mochi
+- if_then_else_nested.mochi
+- in_operator.mochi
+- in_operator_extended.mochi
 - print_hello.mochi
 
 - len_builtin.mochi
@@ -52,11 +62,6 @@ This directory contains manual Go translations of some Mochi test programs from 
 - var_assignment.mochi
 - while_loop.mochi
 ## Missing
-- for_list_collection.mochi
-- for_map_collection.mochi
-- fun_call.mochi
-- fun_expr_in_let.mochi
-- fun_three_args.mochi
 - group_by.mochi
 - group_by_conditional_sum.mochi
 - group_by_having.mochi
@@ -66,11 +71,6 @@ This directory contains manual Go translations of some Mochi test programs from 
 - group_by_multi_join_sort.mochi
 - group_by_sort.mochi
 - group_items_iteration.mochi
-- if_else.mochi
-- if_then_else.mochi
-- if_then_else_nested.mochi
-- in_operator.mochi
-- in_operator_extended.mochi
 - inner_join.mochi
 - join_multi.mochi
 - json_builtin.mochi
