@@ -5,11 +5,7 @@ people = [
     {"name": "Diana", "age": 45},
 ]
 adults = [
-    {
-        "name": p["name"],
-        "age": p["age"],
-        "is_senior": p["age"] >= 60,
-    }
+    {"name": p["name"], "age": p["age"], "is_senior": p["age"] >= 60}
     for p in people
     if p["age"] >= 18
 ]

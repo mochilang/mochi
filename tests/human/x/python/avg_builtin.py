@@ -1,2 +1,2 @@
-values = [1, 2, 3]
-print(sum(values) / len(values))
+nums = [1, 2, 3]
+print(sum(nums) / len(nums))
