@@ -40,10 +40,10 @@ false
 
 ```
 php run error: exit status 255
-PHP Fatal error:  Uncaught Error: Cannot use object of type Todo as array in /tmp/php_run2848440466/main.php:10
+PHP Fatal error:  Uncaught Error: Cannot use object of type Todo as array in /tmp/php_run2756163692/main.php:10
 Stack trace:
 #0 {main}
-  thrown in /tmp/php_run2848440466/main.php on line 10
+  thrown in /tmp/php_run2756163692/main.php on line 10
 
 ```
 
@@ -129,34 +129,34 @@ Hanoi : count = 3 , avg_age = 27.333333333333332
 
 ```
 php run error: exit status 255
-PHP Warning:  Undefined variable $g in /tmp/php_run3233809951/main.php on line 42
-PHP Warning:  Trying to access array offset on null in /tmp/php_run3233809951/main.php on line 42
-PHP Warning:  Undefined variable $g in /tmp/php_run3233809951/main.php on line 42
-PHP Warning:  Trying to access array offset on null in /tmp/php_run3233809951/main.php on line 42
-PHP Warning:  Undefined variable $g in /tmp/php_run3233809951/main.php on line 42
-PHP Warning:  Trying to access array offset on null in /tmp/php_run3233809951/main.php on line 42
-PHP Warning:  Undefined variable $g in /tmp/php_run3233809951/main.php on line 6
-PHP Warning:  Trying to access array offset on null in /tmp/php_run3233809951/main.php on line 6
-PHP Warning:  Undefined variable $g in /tmp/php_run3233809951/main.php on line 8
-PHP Warning:  Undefined variable $g in /tmp/php_run3233809951/main.php on line 8
-PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run3233809951/main.php on line 8
-PHP Warning:  Undefined variable $g in /tmp/php_run3233809951/main.php on line 14
-PHP Warning:  Undefined variable $g in /tmp/php_run3233809951/main.php on line 14
-PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run3233809951/main.php on line 14
-PHP Warning:  Undefined variable $g in /tmp/php_run3233809951/main.php on line 20
-PHP Warning:  Undefined variable $g in /tmp/php_run3233809951/main.php on line 20
-PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run3233809951/main.php on line 20
-PHP Warning:  Undefined variable $g in /tmp/php_run3233809951/main.php on line 26
-PHP Warning:  Undefined variable $g in /tmp/php_run3233809951/main.php on line 26
-PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run3233809951/main.php on line 26
-PHP Fatal error:  Uncaught DivisionByZeroError: Division by zero in /tmp/php_run3233809951/main.php:18
+PHP Warning:  Undefined variable $g in /tmp/php_run370558060/main.php on line 42
+PHP Warning:  Trying to access array offset on null in /tmp/php_run370558060/main.php on line 42
+PHP Warning:  Undefined variable $g in /tmp/php_run370558060/main.php on line 42
+PHP Warning:  Trying to access array offset on null in /tmp/php_run370558060/main.php on line 42
+PHP Warning:  Undefined variable $g in /tmp/php_run370558060/main.php on line 42
+PHP Warning:  Trying to access array offset on null in /tmp/php_run370558060/main.php on line 42
+PHP Warning:  Undefined variable $g in /tmp/php_run370558060/main.php on line 6
+PHP Warning:  Trying to access array offset on null in /tmp/php_run370558060/main.php on line 6
+PHP Warning:  Undefined variable $g in /tmp/php_run370558060/main.php on line 8
+PHP Warning:  Undefined variable $g in /tmp/php_run370558060/main.php on line 8
+PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run370558060/main.php on line 8
+PHP Warning:  Undefined variable $g in /tmp/php_run370558060/main.php on line 14
+PHP Warning:  Undefined variable $g in /tmp/php_run370558060/main.php on line 14
+PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run370558060/main.php on line 14
+PHP Warning:  Undefined variable $g in /tmp/php_run370558060/main.php on line 20
+PHP Warning:  Undefined variable $g in /tmp/php_run370558060/main.php on line 20
+PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run370558060/main.php on line 20
+PHP Warning:  Undefined variable $g in /tmp/php_run370558060/main.php on line 26
+PHP Warning:  Undefined variable $g in /tmp/php_run370558060/main.php on line 26
+PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run370558060/main.php on line 26
+PHP Fatal error:  Uncaught DivisionByZeroError: Division by zero in /tmp/php_run370558060/main.php:18
 Stack trace:
-#0 /tmp/php_run3233809951/main.php(18): intdiv()
-#1 /tmp/php_run3233809951/main.php(130): {closure}()
-#2 /tmp/php_run3233809951/main.php(5): _query()
-#3 /tmp/php_run3233809951/main.php(43): {closure}()
+#0 /tmp/php_run370558060/main.php(18): intdiv()
+#1 /tmp/php_run370558060/main.php(130): {closure}()
+#2 /tmp/php_run370558060/main.php(5): _query()
+#3 /tmp/php_run370558060/main.php(43): {closure}()
 #4 {main}
-  thrown in /tmp/php_run3233809951/main.php on line 18
+  thrown in /tmp/php_run370558060/main.php on line 18
 
 ```
 
@@ -175,18 +175,18 @@ output mismatch
 ```
 output mismatch
 -- php --
-PHP Warning:  Undefined variable $g in /tmp/php_run2910525598/main.php on line 8
-PHP Warning:  Trying to access array offset on null in /tmp/php_run2910525598/main.php on line 8
-PHP Warning:  Undefined variable $g in /tmp/php_run2910525598/main.php on line 8
-PHP Warning:  Undefined variable $g in /tmp/php_run2910525598/main.php on line 8
-PHP Warning:  Undefined variable $g in /tmp/php_run2910525598/main.php on line 8
-PHP Warning:  Trying to access array offset on null in /tmp/php_run2910525598/main.php on line 8
-PHP Warning:  Undefined variable $g in /tmp/php_run2910525598/main.php on line 8
-PHP Warning:  Undefined variable $g in /tmp/php_run2910525598/main.php on line 8
-PHP Warning:  Undefined variable $g in /tmp/php_run2910525598/main.php on line 8
-PHP Warning:  Trying to access array offset on null in /tmp/php_run2910525598/main.php on line 8
-PHP Warning:  Undefined variable $g in /tmp/php_run2910525598/main.php on line 8
-PHP Warning:  Undefined variable $g in /tmp/php_run2910525598/main.php on line 8
+PHP Warning:  Undefined variable $g in /tmp/php_run1321917873/main.php on line 8
+PHP Warning:  Trying to access array offset on null in /tmp/php_run1321917873/main.php on line 8
+PHP Warning:  Undefined variable $g in /tmp/php_run1321917873/main.php on line 8
+PHP Warning:  Undefined variable $g in /tmp/php_run1321917873/main.php on line 8
+PHP Warning:  Undefined variable $g in /tmp/php_run1321917873/main.php on line 8
+PHP Warning:  Trying to access array offset on null in /tmp/php_run1321917873/main.php on line 8
+PHP Warning:  Undefined variable $g in /tmp/php_run1321917873/main.php on line 8
+PHP Warning:  Undefined variable $g in /tmp/php_run1321917873/main.php on line 8
+PHP Warning:  Undefined variable $g in /tmp/php_run1321917873/main.php on line 8
+PHP Warning:  Trying to access array offset on null in /tmp/php_run1321917873/main.php on line 8
+PHP Warning:  Undefined variable $g in /tmp/php_run1321917873/main.php on line 8
+PHP Warning:  Undefined variable $g in /tmp/php_run1321917873/main.php on line 8
 --- Orders per customer ---
 <nil> orders: 0
 <nil> orders: 0
@@ -202,38 +202,38 @@ Bob orders: 1
 ```
 output mismatch
 -- php --
-PHP Warning:  Undefined variable $g in /tmp/php_run551964208/main.php on line 8
-PHP Warning:  Trying to access array offset on null in /tmp/php_run551964208/main.php on line 8
-PHP Warning:  Undefined variable $g in /tmp/php_run551964208/main.php on line 10
-PHP Warning:  Undefined variable $g in /tmp/php_run551964208/main.php on line 10
-PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run551964208/main.php on line 10
-PHP Warning:  Undefined variable $g in /tmp/php_run551964208/main.php on line 17
-PHP Warning:  Undefined variable $g in /tmp/php_run551964208/main.php on line 17
-PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run551964208/main.php on line 17
-PHP Warning:  Undefined variable $g in /tmp/php_run551964208/main.php on line 8
-PHP Warning:  Trying to access array offset on null in /tmp/php_run551964208/main.php on line 8
-PHP Warning:  Undefined variable $g in /tmp/php_run551964208/main.php on line 10
-PHP Warning:  Undefined variable $g in /tmp/php_run551964208/main.php on line 10
-PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run551964208/main.php on line 10
-PHP Warning:  Undefined variable $g in /tmp/php_run551964208/main.php on line 17
-PHP Warning:  Undefined variable $g in /tmp/php_run551964208/main.php on line 17
-PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run551964208/main.php on line 17
-PHP Warning:  Undefined variable $g in /tmp/php_run551964208/main.php on line 8
-PHP Warning:  Trying to access array offset on null in /tmp/php_run551964208/main.php on line 8
-PHP Warning:  Undefined variable $g in /tmp/php_run551964208/main.php on line 10
-PHP Warning:  Undefined variable $g in /tmp/php_run551964208/main.php on line 10
-PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run551964208/main.php on line 10
-PHP Warning:  Undefined variable $g in /tmp/php_run551964208/main.php on line 17
-PHP Warning:  Undefined variable $g in /tmp/php_run551964208/main.php on line 17
-PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run551964208/main.php on line 17
-PHP Warning:  Undefined variable $g in /tmp/php_run551964208/main.php on line 8
-PHP Warning:  Trying to access array offset on null in /tmp/php_run551964208/main.php on line 8
-PHP Warning:  Undefined variable $g in /tmp/php_run551964208/main.php on line 10
-PHP Warning:  Undefined variable $g in /tmp/php_run551964208/main.php on line 10
-PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run551964208/main.php on line 10
-PHP Warning:  Undefined variable $g in /tmp/php_run551964208/main.php on line 17
-PHP Warning:  Undefined variable $g in /tmp/php_run551964208/main.php on line 17
-PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run551964208/main.php on line 17
+PHP Warning:  Undefined variable $g in /tmp/php_run3191732796/main.php on line 8
+PHP Warning:  Trying to access array offset on null in /tmp/php_run3191732796/main.php on line 8
+PHP Warning:  Undefined variable $g in /tmp/php_run3191732796/main.php on line 10
+PHP Warning:  Undefined variable $g in /tmp/php_run3191732796/main.php on line 10
+PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run3191732796/main.php on line 10
+PHP Warning:  Undefined variable $g in /tmp/php_run3191732796/main.php on line 17
+PHP Warning:  Undefined variable $g in /tmp/php_run3191732796/main.php on line 17
+PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run3191732796/main.php on line 17
+PHP Warning:  Undefined variable $g in /tmp/php_run3191732796/main.php on line 8
+PHP Warning:  Trying to access array offset on null in /tmp/php_run3191732796/main.php on line 8
+PHP Warning:  Undefined variable $g in /tmp/php_run3191732796/main.php on line 10
+PHP Warning:  Undefined variable $g in /tmp/php_run3191732796/main.php on line 10
+PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run3191732796/main.php on line 10
+PHP Warning:  Undefined variable $g in /tmp/php_run3191732796/main.php on line 17
+PHP Warning:  Undefined variable $g in /tmp/php_run3191732796/main.php on line 17
+PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run3191732796/main.php on line 17
+PHP Warning:  Undefined variable $g in /tmp/php_run3191732796/main.php on line 8
+PHP Warning:  Trying to access array offset on null in /tmp/php_run3191732796/main.php on line 8
+PHP Warning:  Undefined variable $g in /tmp/php_run3191732796/main.php on line 10
+PHP Warning:  Undefined variable $g in /tmp/php_run3191732796/main.php on line 10
+PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run3191732796/main.php on line 10
+PHP Warning:  Undefined variable $g in /tmp/php_run3191732796/main.php on line 17
+PHP Warning:  Undefined variable $g in /tmp/php_run3191732796/main.php on line 17
+PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run3191732796/main.php on line 17
+PHP Warning:  Undefined variable $g in /tmp/php_run3191732796/main.php on line 8
+PHP Warning:  Trying to access array offset on null in /tmp/php_run3191732796/main.php on line 8
+PHP Warning:  Undefined variable $g in /tmp/php_run3191732796/main.php on line 10
+PHP Warning:  Undefined variable $g in /tmp/php_run3191732796/main.php on line 10
+PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run3191732796/main.php on line 10
+PHP Warning:  Undefined variable $g in /tmp/php_run3191732796/main.php on line 17
+PHP Warning:  Undefined variable $g in /tmp/php_run3191732796/main.php on line 17
+PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run3191732796/main.php on line 17
 --- Group Left Join ---
 <nil> orders: 0
 <nil> orders: 0
@@ -261,33 +261,33 @@ map[part:100 total:20] map[part:200 total:15]
 ```
 output mismatch
 -- php --
-PHP Warning:  Undefined variable $g in /tmp/php_run3136869074/main.php on line 22
-PHP Warning:  Undefined variable $g in /tmp/php_run3136869074/main.php on line 22
-PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run3136869074/main.php on line 22
-PHP Warning:  Undefined variable $g in /tmp/php_run3136869074/main.php on line 14
-PHP Warning:  Trying to access array offset on null in /tmp/php_run3136869074/main.php on line 14
-PHP Warning:  Trying to access array offset on null in /tmp/php_run3136869074/main.php on line 14
-PHP Warning:  Undefined variable $g in /tmp/php_run3136869074/main.php on line 14
-PHP Warning:  Trying to access array offset on null in /tmp/php_run3136869074/main.php on line 14
-PHP Warning:  Trying to access array offset on null in /tmp/php_run3136869074/main.php on line 14
-PHP Warning:  Undefined variable $g in /tmp/php_run3136869074/main.php on line 16
-PHP Warning:  Undefined variable $g in /tmp/php_run3136869074/main.php on line 16
-PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run3136869074/main.php on line 16
-PHP Warning:  Undefined variable $g in /tmp/php_run3136869074/main.php on line 20
-PHP Warning:  Trying to access array offset on null in /tmp/php_run3136869074/main.php on line 20
-PHP Warning:  Trying to access array offset on null in /tmp/php_run3136869074/main.php on line 20
-PHP Warning:  Undefined variable $g in /tmp/php_run3136869074/main.php on line 20
-PHP Warning:  Trying to access array offset on null in /tmp/php_run3136869074/main.php on line 20
-PHP Warning:  Trying to access array offset on null in /tmp/php_run3136869074/main.php on line 20
-PHP Warning:  Undefined variable $g in /tmp/php_run3136869074/main.php on line 20
-PHP Warning:  Trying to access array offset on null in /tmp/php_run3136869074/main.php on line 20
-PHP Warning:  Trying to access array offset on null in /tmp/php_run3136869074/main.php on line 20
-PHP Warning:  Undefined variable $g in /tmp/php_run3136869074/main.php on line 20
-PHP Warning:  Trying to access array offset on null in /tmp/php_run3136869074/main.php on line 20
-PHP Warning:  Trying to access array offset on null in /tmp/php_run3136869074/main.php on line 20
-PHP Warning:  Undefined variable $g in /tmp/php_run3136869074/main.php on line 20
-PHP Warning:  Trying to access array offset on null in /tmp/php_run3136869074/main.php on line 20
-PHP Warning:  Trying to access array offset on null in /tmp/php_run3136869074/main.php on line 20
+PHP Warning:  Undefined variable $g in /tmp/php_run3728038330/main.php on line 22
+PHP Warning:  Undefined variable $g in /tmp/php_run3728038330/main.php on line 22
+PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run3728038330/main.php on line 22
+PHP Warning:  Undefined variable $g in /tmp/php_run3728038330/main.php on line 14
+PHP Warning:  Trying to access array offset on null in /tmp/php_run3728038330/main.php on line 14
+PHP Warning:  Trying to access array offset on null in /tmp/php_run3728038330/main.php on line 14
+PHP Warning:  Undefined variable $g in /tmp/php_run3728038330/main.php on line 14
+PHP Warning:  Trying to access array offset on null in /tmp/php_run3728038330/main.php on line 14
+PHP Warning:  Trying to access array offset on null in /tmp/php_run3728038330/main.php on line 14
+PHP Warning:  Undefined variable $g in /tmp/php_run3728038330/main.php on line 16
+PHP Warning:  Undefined variable $g in /tmp/php_run3728038330/main.php on line 16
+PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run3728038330/main.php on line 16
+PHP Warning:  Undefined variable $g in /tmp/php_run3728038330/main.php on line 20
+PHP Warning:  Trying to access array offset on null in /tmp/php_run3728038330/main.php on line 20
+PHP Warning:  Trying to access array offset on null in /tmp/php_run3728038330/main.php on line 20
+PHP Warning:  Undefined variable $g in /tmp/php_run3728038330/main.php on line 20
+PHP Warning:  Trying to access array offset on null in /tmp/php_run3728038330/main.php on line 20
+PHP Warning:  Trying to access array offset on null in /tmp/php_run3728038330/main.php on line 20
+PHP Warning:  Undefined variable $g in /tmp/php_run3728038330/main.php on line 20
+PHP Warning:  Trying to access array offset on null in /tmp/php_run3728038330/main.php on line 20
+PHP Warning:  Trying to access array offset on null in /tmp/php_run3728038330/main.php on line 20
+PHP Warning:  Undefined variable $g in /tmp/php_run3728038330/main.php on line 20
+PHP Warning:  Trying to access array offset on null in /tmp/php_run3728038330/main.php on line 20
+PHP Warning:  Trying to access array offset on null in /tmp/php_run3728038330/main.php on line 20
+PHP Warning:  Undefined variable $g in /tmp/php_run3728038330/main.php on line 20
+PHP Warning:  Trying to access array offset on null in /tmp/php_run3728038330/main.php on line 20
+PHP Warning:  Trying to access array offset on null in /tmp/php_run3728038330/main.php on line 20
 [{"c_custkey":null,"c_name":null,"revenue":0,"c_acctbal":null,"n_name":null,"c_address":null,"c_phone":null,"c_comment":null}]
 -- vm --
 map[c_acctbal:100 c_address:123 St c_comment:Loyal c_custkey:1 c_name:Alice c_phone:123-456 n_name:BRAZIL revenue:900]
@@ -298,38 +298,38 @@ map[c_acctbal:100 c_address:123 St c_comment:Loyal c_custkey:1 c_name:Alice c_ph
 ```
 output mismatch
 -- php --
-PHP Warning:  Undefined variable $g in /tmp/php_run4134217594/main.php on line 14
-PHP Warning:  Undefined variable $g in /tmp/php_run4134217594/main.php on line 14
-PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run4134217594/main.php on line 14
-PHP Warning:  Undefined variable $g in /tmp/php_run4134217594/main.php on line 14
-PHP Warning:  Undefined variable $g in /tmp/php_run4134217594/main.php on line 14
-PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run4134217594/main.php on line 14
-PHP Warning:  Undefined variable $g in /tmp/php_run4134217594/main.php on line 14
-PHP Warning:  Undefined variable $g in /tmp/php_run4134217594/main.php on line 14
-PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run4134217594/main.php on line 14
-PHP Warning:  Undefined variable $g in /tmp/php_run4134217594/main.php on line 14
-PHP Warning:  Undefined variable $g in /tmp/php_run4134217594/main.php on line 14
-PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run4134217594/main.php on line 14
-PHP Warning:  Undefined variable $g in /tmp/php_run4134217594/main.php on line 6
-PHP Warning:  Trying to access array offset on null in /tmp/php_run4134217594/main.php on line 6
-PHP Warning:  Undefined variable $g in /tmp/php_run4134217594/main.php on line 8
-PHP Warning:  Undefined variable $g in /tmp/php_run4134217594/main.php on line 8
-PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run4134217594/main.php on line 8
-PHP Warning:  Undefined variable $g in /tmp/php_run4134217594/main.php on line 6
-PHP Warning:  Trying to access array offset on null in /tmp/php_run4134217594/main.php on line 6
-PHP Warning:  Undefined variable $g in /tmp/php_run4134217594/main.php on line 8
-PHP Warning:  Undefined variable $g in /tmp/php_run4134217594/main.php on line 8
-PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run4134217594/main.php on line 8
-PHP Warning:  Undefined variable $g in /tmp/php_run4134217594/main.php on line 6
-PHP Warning:  Trying to access array offset on null in /tmp/php_run4134217594/main.php on line 6
-PHP Warning:  Undefined variable $g in /tmp/php_run4134217594/main.php on line 8
-PHP Warning:  Undefined variable $g in /tmp/php_run4134217594/main.php on line 8
-PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run4134217594/main.php on line 8
-PHP Warning:  Undefined variable $g in /tmp/php_run4134217594/main.php on line 6
-PHP Warning:  Trying to access array offset on null in /tmp/php_run4134217594/main.php on line 6
-PHP Warning:  Undefined variable $g in /tmp/php_run4134217594/main.php on line 8
-PHP Warning:  Undefined variable $g in /tmp/php_run4134217594/main.php on line 8
-PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run4134217594/main.php on line 8
+PHP Warning:  Undefined variable $g in /tmp/php_run629455291/main.php on line 14
+PHP Warning:  Undefined variable $g in /tmp/php_run629455291/main.php on line 14
+PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run629455291/main.php on line 14
+PHP Warning:  Undefined variable $g in /tmp/php_run629455291/main.php on line 14
+PHP Warning:  Undefined variable $g in /tmp/php_run629455291/main.php on line 14
+PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run629455291/main.php on line 14
+PHP Warning:  Undefined variable $g in /tmp/php_run629455291/main.php on line 14
+PHP Warning:  Undefined variable $g in /tmp/php_run629455291/main.php on line 14
+PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run629455291/main.php on line 14
+PHP Warning:  Undefined variable $g in /tmp/php_run629455291/main.php on line 14
+PHP Warning:  Undefined variable $g in /tmp/php_run629455291/main.php on line 14
+PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run629455291/main.php on line 14
+PHP Warning:  Undefined variable $g in /tmp/php_run629455291/main.php on line 6
+PHP Warning:  Trying to access array offset on null in /tmp/php_run629455291/main.php on line 6
+PHP Warning:  Undefined variable $g in /tmp/php_run629455291/main.php on line 8
+PHP Warning:  Undefined variable $g in /tmp/php_run629455291/main.php on line 8
+PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run629455291/main.php on line 8
+PHP Warning:  Undefined variable $g in /tmp/php_run629455291/main.php on line 6
+PHP Warning:  Trying to access array offset on null in /tmp/php_run629455291/main.php on line 6
+PHP Warning:  Undefined variable $g in /tmp/php_run629455291/main.php on line 8
+PHP Warning:  Undefined variable $g in /tmp/php_run629455291/main.php on line 8
+PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run629455291/main.php on line 8
+PHP Warning:  Undefined variable $g in /tmp/php_run629455291/main.php on line 6
+PHP Warning:  Trying to access array offset on null in /tmp/php_run629455291/main.php on line 6
+PHP Warning:  Undefined variable $g in /tmp/php_run629455291/main.php on line 8
+PHP Warning:  Undefined variable $g in /tmp/php_run629455291/main.php on line 8
+PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run629455291/main.php on line 8
+PHP Warning:  Undefined variable $g in /tmp/php_run629455291/main.php on line 6
+PHP Warning:  Trying to access array offset on null in /tmp/php_run629455291/main.php on line 6
+PHP Warning:  Undefined variable $g in /tmp/php_run629455291/main.php on line 8
+PHP Warning:  Undefined variable $g in /tmp/php_run629455291/main.php on line 8
+PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run629455291/main.php on line 8
 [{"cat":null,"total":0},{"cat":null,"total":0},{"cat":null,"total":0},{"cat":null,"total":0}]
 -- vm --
 map[cat:b total:7] map[cat:a total:4]
@@ -340,14 +340,14 @@ map[cat:b total:7] map[cat:a total:4]
 ```
 output mismatch
 -- php --
-PHP Warning:  Undefined array key "items" in /tmp/php_run3109445982/main.php on line 15
-PHP Warning:  Undefined array key "items" in /tmp/php_run3109445982/main.php on line 15
-PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run3109445982/main.php on line 15
-PHP Warning:  Undefined array key "key" in /tmp/php_run3109445982/main.php on line 18
-PHP Warning:  Undefined array key "items" in /tmp/php_run3109445982/main.php on line 15
-PHP Warning:  Undefined array key "items" in /tmp/php_run3109445982/main.php on line 15
-PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run3109445982/main.php on line 15
-PHP Warning:  Undefined array key "key" in /tmp/php_run3109445982/main.php on line 18
+PHP Warning:  Undefined array key "items" in /tmp/php_run1481977561/main.php on line 15
+PHP Warning:  Undefined array key "items" in /tmp/php_run1481977561/main.php on line 15
+PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run1481977561/main.php on line 15
+PHP Warning:  Undefined array key "key" in /tmp/php_run1481977561/main.php on line 18
+PHP Warning:  Undefined array key "items" in /tmp/php_run1481977561/main.php on line 15
+PHP Warning:  Undefined array key "items" in /tmp/php_run1481977561/main.php on line 15
+PHP Warning:  foreach() argument must be of type array|object, null given in /tmp/php_run1481977561/main.php on line 15
+PHP Warning:  Undefined array key "key" in /tmp/php_run1481977561/main.php on line 18
 [{"tag":null,"total":0},{"tag":null,"total":0}]
 -- vm --
 map[tag:a total:3] map[tag:b total:3]
@@ -432,12 +432,12 @@ output mismatch
 
 ```
 php run error: exit status 255
-PHP Warning:  fopen(../interpreter/valid/people.yaml): Failed to open stream: No such file or directory in /tmp/php_run3682030502/main.php on line 27
-PHP Fatal error:  Uncaught Exception: cannot open ../interpreter/valid/people.yaml in /tmp/php_run3682030502/main.php:28
+PHP Warning:  fopen(../interpreter/valid/people.yaml): Failed to open stream: No such file or directory in /tmp/php_run29642777/main.php on line 27
+PHP Fatal error:  Uncaught Exception: cannot open ../interpreter/valid/people.yaml in /tmp/php_run29642777/main.php:28
 Stack trace:
-#0 /tmp/php_run3682030502/main.php(13): _load_json()
+#0 /tmp/php_run29642777/main.php(13): _load_json()
 #1 {main}
-  thrown in /tmp/php_run3682030502/main.php on line 28
+  thrown in /tmp/php_run29642777/main.php on line 28
 
 ```
 
@@ -505,10 +505,10 @@ false
 ```
 output mismatch
 -- php --
-PHP Warning:  Array to string conversion in /tmp/php_run574951552/main.php on line 81
-PHP Warning:  Array to string conversion in /tmp/php_run574951552/main.php on line 81
-PHP Warning:  Array to string conversion in /tmp/php_run574951552/main.php on line 81
-PHP Warning:  Array to string conversion in /tmp/php_run574951552/main.php on line 81
+PHP Warning:  Array to string conversion in /tmp/php_run1428397263/main.php on line 81
+PHP Warning:  Array to string conversion in /tmp/php_run1428397263/main.php on line 81
+PHP Warning:  Array to string conversion in /tmp/php_run1428397263/main.php on line 81
+PHP Warning:  Array to string conversion in /tmp/php_run1428397263/main.php on line 81
 [{"a":1,"b":2},{"a":1,"b":1},{"a":0,"b":5}]
 -- vm --
 map[a:0 b:5] map[a:1 b:1] map[a:1 b:2]
@@ -518,11 +518,11 @@ map[a:0 b:5] map[a:1 b:1] map[a:1 b:2]
 
 ```
 php run error: exit status 255
-PHP Fatal error:  Uncaught ArgumentCountError: Too few arguments to function mochi_add(), 1 passed in /tmp/php_run554233850/main.php on line 6 and exactly 2 expected in /tmp/php_run554233850/main.php:2
+PHP Fatal error:  Uncaught ArgumentCountError: Too few arguments to function mochi_add(), 1 passed in /tmp/php_run1987030199/main.php on line 6 and exactly 2 expected in /tmp/php_run1987030199/main.php:2
 Stack trace:
-#0 /tmp/php_run554233850/main.php(6): mochi_add()
+#0 /tmp/php_run1987030199/main.php(6): mochi_add()
 #1 {main}
-  thrown in /tmp/php_run554233850/main.php on line 2
+  thrown in /tmp/php_run1987030199/main.php on line 2
 
 ```
 
@@ -531,8 +531,8 @@ Stack trace:
 ```
 output mismatch
 -- php --
-PHP Warning:  Undefined variable $k in /tmp/php_run3678698791/main.php on line 3
-PHP Warning:  Undefined variable $k in /tmp/php_run3678698791/main.php on line 3
+PHP Warning:  Undefined variable $k in /tmp/php_run975266148/main.php on line 3
+PHP Warning:  Undefined variable $k in /tmp/php_run975266148/main.php on line 3
 3
 -- vm --
 5
@@ -542,12 +542,12 @@ PHP Warning:  Undefined variable $k in /tmp/php_run3678698791/main.php on line 3
 
 ```
 php run error: exit status 255
-PHP Fatal error:  Uncaught TypeError: array_sum(): Argument #1 ($array) must be of type array, int given in /tmp/php_run92210235/main.php:7
+PHP Fatal error:  Uncaught TypeError: array_sum(): Argument #1 ($array) must be of type array, int given in /tmp/php_run1132098921/main.php:7
 Stack trace:
-#0 /tmp/php_run92210235/main.php(7): array_sum()
-#1 /tmp/php_run92210235/main.php(10): {closure}()
+#0 /tmp/php_run1132098921/main.php(7): array_sum()
+#1 /tmp/php_run1132098921/main.php(10): {closure}()
 #2 {main}
-  thrown in /tmp/php_run92210235/main.php on line 7
+  thrown in /tmp/php_run1132098921/main.php on line 7
 
 ```
 
@@ -555,11 +555,11 @@ Stack trace:
 
 ```
 php run error: exit status 255
-PHP Fatal error:  Uncaught Error: Cannot use object of type Counter as array in /tmp/php_run319900752/main.php:3
+PHP Fatal error:  Uncaught Error: Cannot use object of type Counter as array in /tmp/php_run3712213194/main.php:3
 Stack trace:
-#0 /tmp/php_run319900752/main.php(14): mochi_inc()
+#0 /tmp/php_run3712213194/main.php(14): mochi_inc()
 #1 {main}
-  thrown in /tmp/php_run319900752/main.php on line 3
+  thrown in /tmp/php_run3712213194/main.php on line 3
 
 ```
 
@@ -680,10 +680,10 @@ stack trace:
 
 ```
 php run error: exit status 255
-PHP Fatal error:  Uncaught Error: Cannot use object of type Book as array in /tmp/php_run1572847811/main.php:21
+PHP Fatal error:  Uncaught Error: Cannot use object of type Book as array in /tmp/php_run2964299774/main.php:21
 Stack trace:
 #0 {main}
-  thrown in /tmp/php_run1572847811/main.php on line 21
+  thrown in /tmp/php_run2964299774/main.php on line 21
 
 ```
 
