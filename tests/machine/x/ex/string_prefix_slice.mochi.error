@@ -1,0 +1,20 @@
+line 8
+warning: the call to length/1 will fail with ArgumentError
+  /workspace/mochi/tests/machine/x/ex/string_prefix_slice.mochi.exs:8
+
+warning: the call to length/1 will fail with ArgumentError
+  /workspace/mochi/tests/machine/x/ex/string_prefix_slice.mochi.exs:11
+
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a list
+
+    :erlang.length("fore")
+    /workspace/mochi/tests/machine/x/ex/string_prefix_slice.mochi.exs:8: Main.main/0
+    (elixir 1.14.0) lib/code.ex:1245: Code.require_file/2
+
+    # s1 :: String.t()
+    s1 = "forest"
+    IO.puts(_slice_string(s1, 0, length(prefix)) == prefix)
+    # s2 :: String.t()
+    s2 = "desert"

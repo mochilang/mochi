@@ -1,0 +1,10 @@
+warning: variable "name" is unused (if the variable is not meant to be used, prefix it with an underscore)
+  /workspace/mochi/tests/machine/x/ex/update_stmt.mochi.exs:14: Main.main/0
+
+warning: variable "status" is unused (if the variable is not meant to be used, prefix it with an underscore)
+  /workspace/mochi/tests/machine/x/ex/update_stmt.mochi.exs:14: Main.main/0
+
+warning: variable "people" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+  /workspace/mochi/tests/machine/x/ex/update_stmt.mochi.exs:12: Main.main/0
+
+ok
