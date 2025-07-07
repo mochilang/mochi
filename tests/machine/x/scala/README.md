@@ -6,8 +6,8 @@ Mochi programs under `tests/vm/valid`.
 ## Checklist
 - [ ] append_builtin.mochi
 - [ ] avg_builtin.mochi
-- [ ] basic_compare.mochi
-- [ ] binary_precedence.mochi
+- [x] basic_compare.mochi
+- [x] binary_precedence.mochi
 - [ ] bool_chain.mochi
 - [ ] break_continue.mochi
 - [ ] cast_string_to_int.mochi
@@ -70,7 +70,7 @@ Mochi programs under `tests/vm/valid`.
 - [ ] order_by_map.mochi
 - [ ] outer_join.mochi
 - [ ] partial_application.mochi
-- [ ] print_hello.mochi
+- [x] print_hello.mochi
 - [ ] pure_fold.mochi
 - [ ] pure_global_fold.mochi
 - [ ] query_sum_select.mochi
@@ -93,11 +93,11 @@ Mochi programs under `tests/vm/valid`.
 - [ ] test_block.mochi
 - [ ] tree_sum.mochi
 - [ ] two-sum.mochi
-- [ ] typed_let.mochi
-- [ ] typed_var.mochi
-- [ ] unary_neg.mochi
+- [x] typed_let.mochi
+- [x] typed_var.mochi
+- [x] unary_neg.mochi
 - [ ] update_stmt.mochi
 - [ ] user_type_literal.mochi
 - [ ] values_builtin.mochi
-- [ ] var_assignment.mochi
+- [x] var_assignment.mochi
 - [ ] while_loop.mochi
