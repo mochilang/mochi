@@ -4,11 +4,36 @@ import "sort"
 
 // Runtime helper functions injected into generated Lua programs.
 const (
-	helperPrint = "function __print(...)\n" +
-		"    local args = {...}\n" +
-		"    for i, a in ipairs(args) do\n" +
-		"        if i > 1 then io.write(' ') end\n" +
-		"        io.write(tostring(a))\n" +
+	helperPrint = "function __tostring(v)\n" +
+		"    local t = type(v)\n" +
+		"    if t == 'number' then\n" +
+		"        if v % 1 == 0 then return string.format('%d', v) end\n" +
+		"        return string.format('%.16g', v)\n" +
+		"    elseif t == 'table' then\n" +
+		"        if v[1] ~= nil or #v > 0 then\n" +
+		"            local parts = {}\n" +
+		"            for i=1,#v do parts[#parts+1] = __tostring(v[i]) end\n" +
+		"            return table.concat(parts, ' ')\n" +
+		"        else\n" +
+		"            local keys = {}\n" +
+		"            for k in pairs(v) do keys[#keys+1] = k end\n" +
+		"            table.sort(keys, function(a,b) return tostring(a)<tostring(b) end)\n" +
+		"            local parts = {}\n" +
+		"            for i,k in ipairs(keys) do parts[#parts+1] = tostring(k)..':'..__tostring(v[k]) end\n" +
+		"            return 'map['..table.concat(parts, ' ')..']'\n" +
+		"        end\n" +
+		"    else\n" +
+		"        return tostring(v)\n" +
+		"    end\n" +
+		"end\n" +
+		"function __print(...)\n" +
+		"    local first = true\n" +
+		"    for i=1,select('#', ...) do\n" +
+		"        local a = select(i, ...)\n" +
+		"        local s = __tostring(a)\n" +
+		"        if not first then io.write(' ') end\n" +
+		"        io.write(s)\n" +
+		"        first = false\n" +
 		"    end\n" +
 		"    io.write('\\n')\n" +
 		"end\n"
@@ -63,9 +88,6 @@ const (
 		"end\n"
 
 	helperDiv = "function __div(a, b)\n" +
-		"    if math.type and math.type(a) == 'integer' and math.type(b) == 'integer' then\n" +
-		"        return a // b\n" +
-		"    end\n" +
 		"    return a / b\n" +
 		"end\n"
 
