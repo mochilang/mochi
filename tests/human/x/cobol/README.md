@@ -39,12 +39,12 @@
 - [ ] json_builtin
 - [ ] left_join
 - [ ] left_join_multi
-- [ ] len_builtin
+- [x] len_builtin
 - [ ] len_map
-- [ ] len_string
-- [ ] let_and_print
-- [ ] list_assign
-- [ ] list_index
+- [x] len_string
+- [x] let_and_print
+- [x] list_assign
+- [x] list_index
 - [ ] list_nested_assign
 - [ ] list_set_ops
 - [ ] load_yaml
@@ -64,7 +64,7 @@
 - [ ] order_by_map
 - [ ] outer_join
 - [ ] partial_application
-- [ ] print_hello
+ - [x] print_hello
 - [ ] pure_fold
 - [ ] pure_global_fold
 - [ ] query_sum_select
@@ -89,9 +89,9 @@
 - [ ] two-sum
 - [ ] typed_let
 - [ ] typed_var
-- [ ] unary_neg
-- [ ] update_stmt
-- [ ] user_type_literal
-- [ ] values_builtin
-- [ ] var_assignment
-- [ ] while_loop
+ - [x] unary_neg
+ - [ ] update_stmt
+ - [ ] user_type_literal
+ - [x] values_builtin
+ - [x] var_assignment
+ - [x] while_loop
