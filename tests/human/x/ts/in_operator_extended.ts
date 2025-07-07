@@ -1,0 +1,10 @@
+const xs = [1, 2, 3];
+const ys = xs.filter(x => x % 2 === 1);
+console.log(ys.includes(1));
+console.log(ys.includes(2));
+const m: Record<string, number> = { a: 1 };
+console.log(Object.prototype.hasOwnProperty.call(m, "a"));
+console.log(Object.prototype.hasOwnProperty.call(m, "b"));
+const s = "hello";
+console.log(s.includes("ell"));
+console.log(s.includes("foo"));
