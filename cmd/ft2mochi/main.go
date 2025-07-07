@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	ft "mochi/tools/any2mochi/x/fortran"
+	ft "mochi/archived/tools/any2mochi/x/fortran"
 )
 
 func main() {
