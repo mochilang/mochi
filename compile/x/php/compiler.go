@@ -200,6 +200,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	params := make([]string, len(fn.Params))
 	muts := mutatedVars(fn.Body)
+	doc := []string{}
 	for i, p := range fn.Params {
 		name := "$" + sanitizeName(p.Name)
 		if muts[p.Name] {
@@ -208,7 +209,23 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 			}
 		}
 		params[i] = name
+		var pt types.Type = types.AnyType{}
+		if p.Type != nil {
+			pt = types.ResolveTypeRef(p.Type, c.env)
+		}
+		doc = append(doc, fmt.Sprintf(" * @param %s $%s", typeString(pt), sanitizeName(p.Name)))
 	}
+	retType := "void"
+	if fn.Return != nil {
+		rt := types.ResolveTypeRef(fn.Return, c.env)
+		retType = typeString(rt)
+	}
+	c.writeln("/**")
+	for _, d := range doc {
+		c.writeln(d)
+	}
+	c.writeln(" * @return " + retType)
+	c.writeln(" */")
 	c.writeln(fmt.Sprintf("function %s%s(%s) {", funcPrefix, sanitizeName(fn.Name), strings.Join(params, ", ")))
 	oldLocals := c.locals
 	c.locals = map[string]bool{}
@@ -273,6 +290,13 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 		}
 		val = v
 	}
+	var typ types.Type = types.AnyType{}
+	if l.Type != nil {
+		typ = types.ResolveTypeRef(l.Type, c.env)
+	} else if l.Value != nil {
+		typ = c.inferExprType(l.Value)
+	}
+	c.writeln(fmt.Sprintf("// %s: %s", sanitizeName(l.Name), typeString(typ)))
 	c.writeln(fmt.Sprintf("%s = %s;", name, val))
 	c.locals[l.Name] = true
 	if c.env != nil {
@@ -304,6 +328,13 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 		}
 		val = valExpr
 	}
+	var typ types.Type = types.AnyType{}
+	if v.Type != nil {
+		typ = types.ResolveTypeRef(v.Type, c.env)
+	} else if v.Value != nil {
+		typ = c.inferExprType(v.Value)
+	}
+	c.writeln(fmt.Sprintf("// %s: %s", sanitizeName(v.Name), typeString(typ)))
 	c.writeln(fmt.Sprintf("%s = %s;", name, val))
 	c.locals[v.Name] = true
 	if c.env != nil {
