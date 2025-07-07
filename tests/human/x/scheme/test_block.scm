@@ -1,0 +1,7 @@
+(let ((x (+ 1 2)))
+  (if (= x 3)
+      (display "test passed")
+      (display "test failed"))
+  (newline))
+(display "ok")
+(newline)

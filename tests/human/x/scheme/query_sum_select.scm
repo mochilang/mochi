@@ -1,0 +1,5 @@
+(define nums '(1 2 3))
+(define filtered (filter (lambda (n) (> n 1)) nums))
+(define result (apply + filtered))
+(display result)
+(newline)
