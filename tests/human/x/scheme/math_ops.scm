@@ -1,0 +1,6 @@
+(display (* 6 7))
+(newline)
+(display (/ 7 2))
+(newline)
+(display (modulo 7 2))
+(newline)
