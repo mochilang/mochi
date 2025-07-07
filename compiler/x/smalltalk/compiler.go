@@ -244,30 +244,84 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 }
 
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
-	left, err := c.compileUnary(b.Left)
+	// Convert the flat list of operations into a precedence aware expression
+	// using the same precedence levels as the interpreter. This ensures
+	// results match Mochi's semantics when translated to Smalltalk which has
+	// different operator precedence rules.
+
+	if b == nil {
+		return "", fmt.Errorf("nil binary expression")
+	}
+
+	operands := []string{}
+	ops := []string{}
+
+	first, err := c.compileUnary(b.Left)
 	if err != nil {
 		return "", err
 	}
-	res := left
-	for _, op := range b.Right {
-		r, err := c.compilePostfix(op.Right)
+	operands = append(operands, first)
+	for _, p := range b.Right {
+		o, err := c.compilePostfix(p.Right)
 		if err != nil {
 			return "", err
 		}
-		switch op.Op {
+		op := p.Op
+		if p.All {
+			op = op + "_all"
+		}
+		ops = append(ops, op)
+		operands = append(operands, o)
+	}
+
+	levels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+		{"union", "union_all", "except", "intersect"},
+	}
+
+	apply := func(left string, op string, right string) string {
+		switch op {
 		case "&&":
-			res = fmt.Sprintf("(%s and: [%s])", res, r)
+			return fmt.Sprintf("(%s and: [%s])", left, right)
 		case "||":
-			res = fmt.Sprintf("(%s or: [%s])", res, r)
+			return fmt.Sprintf("(%s or: [%s])", left, right)
 		case "==":
-			res = fmt.Sprintf("%s = %s", res, r)
+			return fmt.Sprintf("(%s = %s)", left, right)
 		case "!=":
-			res = fmt.Sprintf("%s ~= %s", res, r)
+			return fmt.Sprintf("(%s ~= %s)", left, right)
 		default:
-			res = fmt.Sprintf("%s %s %s", res, op.Op, r)
+			return fmt.Sprintf("(%s %s %s)", left, op, right)
 		}
 	}
-	return res, nil
+
+	for _, level := range levels {
+		for i := 0; i < len(ops); {
+			matched := false
+			for _, t := range level {
+				if ops[i] == t {
+					res := apply(operands[i], ops[i], operands[i+1])
+					operands[i] = res
+					operands = append(operands[:i+1], operands[i+2:]...)
+					ops = append(ops[:i], ops[i+1:]...)
+					matched = true
+					break
+				}
+			}
+			if !matched {
+				i++
+			}
+		}
+	}
+
+	if len(operands) != 1 {
+		return "", fmt.Errorf("expression reduction failed")
+	}
+	return operands[0], nil
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
@@ -292,7 +346,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		return "", err
 	}
 	for _, op := range p.Ops {
-		if op.Call != nil {
+		switch {
+		case op.Call != nil:
 			args := make([]string, len(op.Call.Args))
 			for i, a := range op.Call.Args {
 				s, err := c.compileExpr(a)
@@ -302,10 +357,14 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				args[i] = s
 			}
 			if val == "print" {
-				if len(args) != 1 {
-					return "", fmt.Errorf("print expects 1 arg")
+				if len(args) == 0 {
+					return "", fmt.Errorf("print expects at least 1 arg")
 				}
-				val = fmt.Sprintf("Transcript show: (%s) printString; cr", args[0])
+				stmt := fmt.Sprintf("Transcript show: (%s) printString", args[0])
+				for _, a := range args[1:] {
+					stmt += fmt.Sprintf("; show: ' '; show: (%s) printString", a)
+				}
+				val = stmt + "; cr"
 			} else {
 				call := val
 				for _, a := range args {
@@ -313,7 +372,31 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 				val = call
 			}
-		} else {
+		case op.Index != nil:
+			idx, err := c.compileExpr(op.Index.Start)
+			if err != nil {
+				return "", err
+			}
+			val = fmt.Sprintf("%s at: %s", val, idx)
+		case op.Field != nil:
+			// treat field access like dictionary lookup
+			val = fmt.Sprintf("%s at: %q", val, op.Field.Name)
+		case op.Cast != nil:
+			var tname string
+			if op.Cast.Type.Simple != nil {
+				tname = *op.Cast.Type.Simple
+			}
+			switch tname {
+			case "int":
+				val = fmt.Sprintf("%s asInteger", val)
+			case "float":
+				val = fmt.Sprintf("%s asFloat", val)
+			case "string":
+				val = fmt.Sprintf("%s asString", val)
+			default:
+				// unsupported cast, keep value as is
+			}
+		default:
 			return "", fmt.Errorf("unsupported postfix expression")
 		}
 	}
@@ -340,6 +423,62 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems[i] = s
 		}
 		return "{" + strings.Join(elems, ". ") + "}", nil
+	case p.Group != nil:
+		return c.compileExpr(p.Group)
+	case p.Map != nil:
+		pairs := make([]string, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			k, err := c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", err
+			}
+			pairs[i] = fmt.Sprintf("%s -> %s", k, v)
+		}
+		return "Dictionary newFrom: {" + strings.Join(pairs, ". ") + "}", nil
+	case p.FunExpr != nil:
+		params := make([]string, len(p.FunExpr.Params))
+		for i, pa := range p.FunExpr.Params {
+			params[i] = ":" + pa.Name
+		}
+		var body string
+		if p.FunExpr.ExprBody != nil {
+			b, err := c.compileExpr(p.FunExpr.ExprBody)
+			if err != nil {
+				return "", err
+			}
+			body = b
+		} else {
+			b, err := c.blockString(p.FunExpr.BlockBody)
+			if err != nil {
+				return "", err
+			}
+			body = b
+		}
+		return "[" + strings.Join(params, " ") + " | " + body + " ]", nil
+	case p.If != nil:
+		cond, err := c.compileExpr(p.If.Cond)
+		if err != nil {
+			return "", err
+		}
+		th, err := c.compileExpr(p.If.Then)
+		if err != nil {
+			return "", err
+		}
+		el := ""
+		if p.If.Else != nil {
+			el, err = c.compileExpr(p.If.Else)
+			if err != nil {
+				return "", err
+			}
+		}
+		if el == "" {
+			return fmt.Sprintf("(%s) ifTrue: [%s]", cond, th), nil
+		}
+		return fmt.Sprintf("(%s) ifTrue: [%s] ifFalse: [%s]", cond, th, el), nil
 	case p.Call != nil:
 		args := make([]string, len(p.Call.Args))
 		for i, a := range p.Call.Args {
@@ -350,10 +489,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			args[i] = s
 		}
 		if p.Call.Func == "print" {
-			if len(args) != 1 {
-				return "", fmt.Errorf("print expects 1 arg")
+			if len(args) == 0 {
+				return "", fmt.Errorf("print expects at least 1 arg")
 			}
-			return fmt.Sprintf("Transcript show: (%s) printString; cr", args[0]), nil
+			stmt := fmt.Sprintf("Transcript show: (%s) printString", args[0])
+			for _, a := range args[1:] {
+				stmt += fmt.Sprintf("; show: ' '; show: (%s) printString", a)
+			}
+			return stmt + "; cr", nil
 		}
 		call := p.Call.Func
 		for _, a := range args {
