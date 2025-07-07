@@ -106,3 +106,10 @@ func (c *Compiler) emitRuntime() {
 		}
 	}
 }
+
+func typeString(t types.Type) string {
+	if t == nil {
+		return "any"
+	}
+	return t.String()
+}
