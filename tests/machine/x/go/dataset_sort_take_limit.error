@@ -1,0 +1,4 @@
+unsupported expression at line 3
+let products = [
+  { name: "Laptop", price: 1500 },
+  { name: "Smartphone", price: 900 },

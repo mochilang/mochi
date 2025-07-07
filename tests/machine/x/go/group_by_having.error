@@ -1,0 +1,4 @@
+unsupported expression at line 2
+let people = [
+  { name: "Alice", city: "Paris" },
+  { name: "Bob", city: "Hanoi" },

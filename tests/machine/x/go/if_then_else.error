@@ -1,0 +1,4 @@
+unsupported expression at line 2
+let x = 12
+let msg = if x > 10 then "yes" else "no"
+print(msg)

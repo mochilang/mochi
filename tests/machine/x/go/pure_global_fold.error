@@ -1,0 +1,5 @@
+run: exit status 1
+# command-line-arguments
+../../../tests/machine/x/go/pure_global_fold.go:10:16: undefined: k
+../../../tests/machine/x/go/pure_global_fold.go:15:5: declared and not used: k
+

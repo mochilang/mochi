@@ -1,0 +1,4 @@
+unsupported expression at line 2
+let nation = [
+  { n_nationkey: 1, n_name: "BRAZIL" }
+]

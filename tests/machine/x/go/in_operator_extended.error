@@ -1,0 +1,4 @@
+unsupported expression at line 2
+let xs = [1, 2, 3]
+let ys = from x in xs where x % 2 == 1 select x
+print(1 in ys)

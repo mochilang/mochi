@@ -1,0 +1,4 @@
+unsupported statement at line 5
+
+type Tree =
+  Leaf
