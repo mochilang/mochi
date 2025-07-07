@@ -1,0 +1,6 @@
+exit status 1
+Syntax error reading source at (/workspace/mochi/tests/machine/x/clj/group_by_multi_join_sort.clj:99:346).
+Unmatched delimiter: )
+
+Full report at:
+/tmp/clojure-12361807773257795107.edn

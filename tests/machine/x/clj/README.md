@@ -4,7 +4,7 @@
 - [x] binary_precedence.mochi
 - [x] bool_chain.mochi
 - [x] break_continue.mochi
-- [ ] cast_string_to_int.mochi
+ - [x] cast_string_to_int.mochi
 - [x] cast_struct.mochi
 - [x] closure.mochi
 - [x] count_builtin.mochi
