@@ -28,7 +28,20 @@ func (c *Compiler) writeln(s string) {
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("public class Main {")
 	c.indent++
-	// emit function declarations first
+	// emit global variable declarations first
+	for _, s := range prog.Statements {
+		switch {
+		case s.Var != nil:
+			if err := c.compileGlobalVar(s.Var); err != nil {
+				return nil, err
+			}
+		case s.Let != nil:
+			if err := c.compileGlobalLet(s.Let); err != nil {
+				return nil, err
+			}
+		}
+	}
+	// emit function declarations next
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
 			if err := c.compileFun(s.Fun); err != nil {
@@ -39,7 +52,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("public static void main(String[] args) {")
 	c.indent++
 	for _, s := range prog.Statements {
-		if s.Fun != nil {
+		if s.Fun != nil || s.Var != nil || s.Let != nil {
 			continue
 		}
 		if err := c.compileStmt(s); err != nil {
@@ -105,6 +118,62 @@ func (c *Compiler) defaultValue(typ string) string {
 	default:
 		return "0"
 	}
+}
+
+func (c *Compiler) compileGlobalVar(v *parser.VarStmt) error {
+	typ := c.typeName(v.Type)
+	expr, err := c.compileExpr(v.Value)
+	if err != nil {
+		return err
+	}
+	if v.Value == nil {
+		c.writeln(fmt.Sprintf("static %s %s = %s;", typ, v.Name, c.defaultValue(typ)))
+	} else {
+		c.writeln(fmt.Sprintf("static %s %s = %s;", typ, v.Name, expr))
+	}
+	return nil
+}
+
+func (c *Compiler) compileGlobalLet(v *parser.LetStmt) error {
+	typ := c.typeName(v.Type)
+	expr, err := c.compileExpr(v.Value)
+	if err != nil {
+		return err
+	}
+	if v.Value == nil {
+		c.writeln(fmt.Sprintf("static %s %s = %s;", typ, v.Name, c.defaultValue(typ)))
+	} else {
+		c.writeln(fmt.Sprintf("static %s %s = %s;", typ, v.Name, expr))
+	}
+	return nil
+}
+
+func (c *Compiler) compileList(l *parser.ListLiteral) (string, error) {
+	var elems []string
+	for _, e := range l.Elems {
+		s, err := c.compileExpr(e)
+		if err != nil {
+			return "", err
+		}
+		elems = append(elems, s)
+	}
+	return fmt.Sprintf("java.util.Arrays.asList(%s)", strings.Join(elems, ", ")), nil
+}
+
+func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
+	var items []string
+	for _, it := range m.Items {
+		k, err := c.compileExpr(it.Key)
+		if err != nil {
+			return "", err
+		}
+		v, err := c.compileExpr(it.Value)
+		if err != nil {
+			return "", err
+		}
+		items = append(items, fmt.Sprintf("%s, %s", k, v))
+	}
+	return fmt.Sprintf("java.util.Map.of(%s)", strings.Join(items, ", ")), nil
 }
 
 func (c *Compiler) compileVar(v *parser.VarStmt) error {
@@ -328,8 +397,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return "", fmt.Errorf("selectors unsupported at line %d", p.Pos.Line)
 		}
 		return p.Selector.Root, nil
+	case p.List != nil:
+		return c.compileList(p.List)
+	case p.Map != nil:
+		return c.compileMap(p.Map)
 	case p.Call != nil:
-		if p.Call.Func == "print" {
+		switch p.Call.Func {
+		case "print":
 			if len(p.Call.Args) != 1 {
 				return "", fmt.Errorf("print expects one argument at line %d", p.Pos.Line)
 			}
@@ -338,6 +412,48 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", err
 			}
 			return fmt.Sprintf("System.out.println(%s)", arg), nil
+		case "len":
+			if len(p.Call.Args) != 1 {
+				return "", fmt.Errorf("len expects one argument at line %d", p.Pos.Line)
+			}
+			a := p.Call.Args[0]
+			expr, err := c.compileExpr(a)
+			if err != nil {
+				return "", err
+			}
+			if isString(expr) {
+				return fmt.Sprintf("%s.length()", expr), nil
+			}
+			return fmt.Sprintf("%s.size()", expr), nil
+		case "str":
+			if len(p.Call.Args) != 1 {
+				return "", fmt.Errorf("str expects one argument at line %d", p.Pos.Line)
+			}
+			arg, err := c.compileExpr(p.Call.Args[0])
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("String.valueOf(%s)", arg), nil
+		case "substring":
+			if len(p.Call.Args) < 2 || len(p.Call.Args) > 3 {
+				return "", fmt.Errorf("substring expects 2 or 3 arguments at line %d", p.Pos.Line)
+			}
+			target, err := c.compileExpr(p.Call.Args[0])
+			if err != nil {
+				return "", err
+			}
+			start, err := c.compileExpr(p.Call.Args[1])
+			if err != nil {
+				return "", err
+			}
+			if len(p.Call.Args) == 3 {
+				end, err := c.compileExpr(p.Call.Args[2])
+				if err != nil {
+					return "", err
+				}
+				return fmt.Sprintf("%s.substring(%s, %s)", target, start, end), nil
+			}
+			return fmt.Sprintf("%s.substring(%s)", target, start), nil
 		}
 		var args []string
 		for _, a := range p.Call.Args {
