@@ -1,0 +1,13 @@
+(define (list-slice lst start end)
+  (let loop ((i 0) (xs lst) (acc '()))
+    (cond ((or (null? xs) (>= i end)) (reverse acc))
+          ((>= i start) (loop (+ i 1) (cdr xs) (cons (car xs) acc)))
+          (else (loop (+ i 1) (cdr xs) acc)))))
+
+(define lst '(1 2 3))
+(display (list-slice lst 1 3))
+(newline)
+(display (list-slice lst 0 2))
+(newline)
+(display (substring "hello" 1 4))
+(newline)

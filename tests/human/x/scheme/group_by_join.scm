@@ -1,0 +1,25 @@
+(define customers '((1 . "Alice") (2 . "Bob")))
+(define orders '((100 . 1) (101 . 1) (102 . 2)))
+
+(define counts '())
+
+(for-each (lambda (o)
+            (let* ((cid (cdr o))
+                   (name (cdr (assoc cid customers)))
+                   (entry (assoc name counts)))
+              (if entry
+                  (set-cdr! entry (+ 1 (cdr entry)))
+                  (set! counts (append counts (list (cons name 1)))))))
+          orders)
+
+(display "--- Orders per customer ---")
+(newline)
+(for-each (lambda (c)
+            (let* ((name (cdr c))
+                   (count (let ((e (assoc name counts)))
+                            (if e (cdr e) 0))))
+              (display name)
+              (display " orders: ")
+              (display count)
+              (newline)))
+          customers)
