@@ -41,6 +41,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileVar(s.Var)
 	case s.Assign != nil:
 		return c.compileAssign(s.Assign)
+	case s.Fun != nil:
+		return c.compileFun(s.Fun)
+	case s.Return != nil:
+		return c.compileReturn(s.Return)
 	case s.Expr != nil:
 		// special-case print calls which already emit printfn
 		if s.Expr.Expr != nil && s.Expr.Expr.Binary != nil &&
@@ -148,6 +152,42 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileFun(f *parser.FunStmt) error {
+	params := make([]string, len(f.Params))
+	for i, p := range f.Params {
+		params[i] = fmt.Sprintf("(%s)", p.Name)
+	}
+	header := fmt.Sprintf("let %s %s =", f.Name, strings.Join(params, " "))
+	c.writeln(header)
+	c.indent++
+	for i, st := range f.Body {
+		if i == len(f.Body)-1 {
+			if st.Return != nil {
+				val, err := c.compileExpr(st.Return.Value)
+				if err != nil {
+					return err
+				}
+				c.writeln(val)
+				continue
+			}
+		}
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	return nil
+}
+
+func (c *Compiler) compileReturn(r *parser.ReturnStmt) error {
+	val, err := c.compileExpr(r.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(val)
+	return nil
+}
+
 func (c *Compiler) compileIfStmt(i *parser.IfStmt) error {
 	cond, err := c.compileExpr(i.Cond)
 	if err != nil {
@@ -243,6 +283,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "[" + join(elems, "; ") + "]", nil
 	case p.Call != nil:
 		return c.compileCall(p.Call)
+	case p.FunExpr != nil:
+		return c.compileFunExpr(p.FunExpr)
 	case p.If != nil:
 		return c.compileIfExpr(p.If)
 	default:
@@ -269,7 +311,8 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		format = strings.TrimSpace(format)
 		return fmt.Sprintf("printfn \"%s\" %s", format, join(fmtArgs, " ")), nil
 	default:
-		return "", fmt.Errorf("unsupported function %s", call.Func)
+		argStr := strings.Join(args, " ")
+		return fmt.Sprintf("%s %s", call.Func, argStr), nil
 	}
 }
 
@@ -300,6 +343,21 @@ func (c *Compiler) compileIfExpr(i *parser.IfExpr) (string, error) {
 		els = e
 	}
 	return fmt.Sprintf("(if %s then %s else %s)", cond, thn, els), nil
+}
+
+func (c *Compiler) compileFunExpr(f *parser.FunExpr) (string, error) {
+	params := make([]string, len(f.Params))
+	for i, p := range f.Params {
+		params[i] = p.Name
+	}
+	if f.ExprBody != nil {
+		body, err := c.compileExpr(f.ExprBody)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("fun %s -> %s", strings.Join(params, " "), body), nil
+	}
+	return "fun _ -> ()", nil
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) string {
@@ -363,20 +421,5 @@ func CompileFile(src string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	code, err := New().Compile(prog)
-	if err == nil {
-		return code, nil
-	}
-	// fallback to manual translation if compilation fails
-	name := strings.TrimSuffix(filepath.Base(src), filepath.Ext(src))
-	root, rErr := repoRoot()
-	if rErr != nil {
-		return nil, err
-	}
-	path := filepath.Join(root, "tests", "human", "x", "fs", name+".fs")
-	data, fErr := os.ReadFile(path)
-	if fErr != nil {
-		return nil, err
-	}
-	return data, nil
+	return New().Compile(prog)
 }
