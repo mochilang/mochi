@@ -1,5 +1,21 @@
 # 📦 CHANGELOG.md
 
+## [0.10.18] – 2025-07-07T08:14:56+07:00
+
+### Added
+
+* Manual translations for example programs across languages such as Haskell, C, Zig, Swift, Smalltalk, Scheme, Scala, Prolog, PHP, Pascal, OCaml, Kotlin, Lua, F#, Fortran, Elixir, Clojure, Dart, C#, C++, TypeScript and Python
+* VM roundtrip tools compare compiler outputs with the Mochi VM
+
+### Changed
+
+* Improved type inference across C, Rust, Zig and Pascal compilers with extra hints
+* Golden tests regenerated and validated via the VM
+
+### Fixed
+
+* Minor translation and dataset comparison issues
+
 ## [0.10.17] – 2025-07-06T14:31:29+07:00
 
 ### Added
