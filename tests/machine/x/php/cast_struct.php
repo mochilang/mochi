@@ -1,0 +1,20 @@
+<?php
+class Todo {
+	public $title;
+	public function __construct($fields = []) {
+		$this->title = $fields['title'] ?? null;
+	}
+}
+
+// todo: Todo
+$todo = new Todo((array)["title" => "hi"]);
+_print($todo['title']);
+
+function _print(...$args) {
+    $parts = [];
+    foreach ($args as $a) {
+        if (is_null($a)) { $parts[] = '<nil>'; }
+        elseif (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+    }
+    echo implode(' ', $parts), PHP_EOL;
+}

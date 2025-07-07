@@ -1,0 +1,17 @@
+line: 23
+error: run error: exit status 255
+PHP Warning:  Undefined variable $Leaf in /workspace/mochi/tests/machine/x/php/tree_sum.php on line 23
+PHP Warning:  Undefined variable $Leaf in /workspace/mochi/tests/machine/x/php/tree_sum.php on line 23
+PHP Warning:  Undefined variable $Leaf in /workspace/mochi/tests/machine/x/php/tree_sum.php on line 23
+PHP Warning:  Undefined variable $Leaf in /workspace/mochi/tests/machine/x/php/tree_sum.php on line 7
+PHP Fatal error:  Uncaught Error: Call to undefined function Node() in /workspace/mochi/tests/machine/x/php/tree_sum.php:7
+Stack trace:
+#0 /workspace/mochi/tests/machine/x/php/tree_sum.php(24): mochi_sum_tree()
+#1 {main}
+  thrown in /workspace/mochi/tests/machine/x/php/tree_sum.php on line 7
+
+  21:     value: 2,
+  22:     right: Leaf
+  23:   }
+  24: }
+  25: 

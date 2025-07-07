@@ -1,0 +1,21 @@
+<?php
+/**
+ * @return bool
+ */
+function mochi_boom() {
+	_print("boom");
+	return true;
+}
+
+_print(((((1 < 2)) && ((2 < 3))) && ((3 < 4))));
+_print(((((1 < 2)) && ((2 > 3))) && mochi_boom()));
+_print((((((1 < 2)) && ((2 < 3))) && ((3 > 4))) && mochi_boom()));
+
+function _print(...$args) {
+    $parts = [];
+    foreach ($args as $a) {
+        if (is_null($a)) { $parts[] = '<nil>'; }
+        elseif (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+    }
+    echo implode(' ', $parts), PHP_EOL;
+}

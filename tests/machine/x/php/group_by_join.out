@@ -1,0 +1,16 @@
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_join.php on line 11
+PHP Warning:  Trying to access array offset on null in /workspace/mochi/tests/machine/x/php/group_by_join.php on line 11
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_join.php on line 11
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_join.php on line 11
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_join.php on line 11
+PHP Warning:  Trying to access array offset on null in /workspace/mochi/tests/machine/x/php/group_by_join.php on line 11
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_join.php on line 11
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_join.php on line 11
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_join.php on line 11
+PHP Warning:  Trying to access array offset on null in /workspace/mochi/tests/machine/x/php/group_by_join.php on line 11
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_join.php on line 11
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_join.php on line 11
+--- Orders per customer ---
+<nil> orders: 0
+<nil> orders: 0
+<nil> orders: 0

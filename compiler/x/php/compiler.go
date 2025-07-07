@@ -531,6 +531,30 @@ func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
 	return fmt.Sprintf("(%s ? %s : %s)", cond, thenVal, elseVal), nil
 }
 
+func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
+	target, err := c.compileExpr(m.Target)
+	if err != nil {
+		return "", err
+	}
+	var parts []string
+	for _, cs := range m.Cases {
+		res, err := c.compileExpr(cs.Result)
+		if err != nil {
+			return "", err
+		}
+		if isUnderscoreExpr(cs.Pattern) {
+			parts = append(parts, "default => "+res)
+			continue
+		}
+		pat, err := c.compileExpr(cs.Pattern)
+		if err != nil {
+			return "", err
+		}
+		parts = append(parts, pat+" => "+res)
+	}
+	return fmt.Sprintf("match (%s) { %s }", target, strings.Join(parts, ", ")), nil
+}
+
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	if len(t.Variants) > 0 {
 		return nil
@@ -881,6 +905,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileQueryExpr(p.Query)
 	case p.If != nil:
 		return c.compileIfExpr(p.If)
+	case p.Match != nil:
+		return c.compileMatchExpr(p.Match)
 	case p.Fetch != nil:
 		return c.compileFetchExpr(p.Fetch)
 	case p.Load != nil:
@@ -903,6 +929,21 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", err
 		}
 		args[i] = v
+	}
+	if fn, ok := c.env.GetFunc(name); ok && len(call.Args) < len(fn.Params) {
+		missing := fn.Params[len(call.Args):]
+		params := make([]string, len(missing))
+		for i, p := range missing {
+			params[i] = "$" + sanitizeName(p.Name)
+		}
+		callArgs := append(append([]string{}, args...), params...)
+		callName := name
+		if c.locals[name] {
+			callName = "$" + sanitizeName(name)
+		} else if c.funcs[name] {
+			callName = funcPrefix + sanitizeName(name)
+		}
+		return fmt.Sprintf("function(%s) { return %s(%s); }", strings.Join(params, ", "), callName, strings.Join(callArgs, ", ")), nil
 	}
 	if c.locals[name] {
 		return fmt.Sprintf("$%s(%s)", sanitizeName(name), strings.Join(args, ", ")), nil

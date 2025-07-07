@@ -1,0 +1,123 @@
+<?php
+// nation: [{string: any}]
+$nation = [["n_nationkey" => 1, "n_name" => "BRAZIL"]];
+// customer: [{string: any}]
+$customer = [["c_custkey" => 1, "c_name" => "Alice", "c_acctbal" => 100.0, "c_nationkey" => 1, "c_address" => "123 St", "c_phone" => "123-456", "c_comment" => "Loyal"]];
+// orders: [{string: any}]
+$orders = [["o_orderkey" => 1000, "o_custkey" => 1, "o_orderdate" => "1993-10-15"], ["o_orderkey" => 2000, "o_custkey" => 1, "o_orderdate" => "1994-01-02"]];
+// lineitem: [{string: any}]
+$lineitem = [["l_orderkey" => 1000, "l_returnflag" => "R", "l_extendedprice" => 1000.0, "l_discount" => 0.1], ["l_orderkey" => 2000, "l_returnflag" => "N", "l_extendedprice" => 500.0, "l_discount" => 0.0]];
+// start_date: string
+$start_date = "1993-10-01";
+// end_date: string
+$end_date = "1994-01-01";
+// result: [{string: any}]
+$result = (function() use ($customer, $end_date, $lineitem, $nation, $orders, $start_date) {
+	$_src = $customer;
+	return _query($_src, [
+		[ 'items' => $orders, 'on' => function($c, $o) use ($customer, $end_date, $lineitem, $nation, $orders, $start_date) { return ($o['o_custkey'] == $c['c_custkey']); } ],
+		[ 'items' => $lineitem, 'on' => function($c, $o, $l) use ($customer, $end_date, $lineitem, $nation, $orders, $start_date) { return ($l['l_orderkey'] == $o['o_orderkey']); } ],
+		[ 'items' => $nation, 'on' => function($c, $o, $l, $n) use ($customer, $end_date, $lineitem, $nation, $orders, $start_date) { return ($n['n_nationkey'] == $c['c_nationkey']); } ]
+	], [ 'select' => function($c, $o, $l, $n) use ($customer, $end_date, $lineitem, $nation, $orders, $start_date) { return ["c_custkey" => $g['key']['c_custkey'], "c_name" => $g['key']['c_name'], "revenue" => array_sum((function() {
+	$res = [];
+	foreach ((is_string($g) ? str_split($g) : $g) as $x) {
+		$res[] = ($x['l']['l_extendedprice'] * ((1 - $x['l']['l_discount'])));
+	}
+	return $res;
+})()), "c_acctbal" => $g['key']['c_acctbal'], "n_name" => $g['key']['n_name'], "c_address" => $g['key']['c_address'], "c_phone" => $g['key']['c_phone'], "c_comment" => $g['key']['c_comment']]; }, 'where' => function($c, $o, $l, $n) use ($customer, $end_date, $lineitem, $nation, $orders, $start_date) { return (((($o['o_orderdate'] >= $start_date) && ($o['o_orderdate'] < $end_date)) && ($l['l_returnflag'] == "R"))); }, 'sortKey' => function($c, $o, $l, $n) use ($customer, $end_date, $lineitem, $nation, $orders, $start_date) { return (-array_sum((function() {
+	$res = [];
+	foreach ((is_string($g) ? str_split($g) : $g) as $x) {
+		$res[] = ($x['l']['l_extendedprice'] * ((1 - $x['l']['l_discount'])));
+	}
+	return $res;
+})())); } ]);
+})();
+_print($result);
+
+function _print(...$args) {
+    $parts = [];
+    foreach ($args as $a) {
+        if (is_null($a)) { $parts[] = '<nil>'; }
+        elseif (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+    }
+    echo implode(' ', $parts), PHP_EOL;
+}
+function _query($src, $joins, $opts) {
+    $items = array_map(fn($v) => [$v], $src);
+    foreach ($joins as $j) {
+        $joined = [];
+        if (!empty($j['right']) && !empty($j['left'])) {
+            $matched = array_fill(0, count($j['items']), false);
+            foreach ($items as $left) {
+                $m = false;
+                foreach ($j['items'] as $ri => $right) {
+                    $keep = true;
+                    if (isset($j['on'])) { $args = array_merge($left, [$right]); $keep = $j['on'](...$args); }
+                    if (!$keep) continue;
+                    $m = true; $matched[$ri] = true;
+                    $joined[] = array_merge($left, [$right]);
+                }
+                if (!$m) { $joined[] = array_merge($left, [null]); }
+            }
+            foreach ($j['items'] as $ri => $right) {
+                if (!$matched[$ri]) {
+                    $undef = count($items) > 0 ? array_fill(0, count($items[0]), null) : [];
+                    $joined[] = array_merge($undef, [$right]);
+                }
+            }
+        } elseif (!empty($j['right'])) {
+            foreach ($j['items'] as $right) {
+                $m = false;
+                foreach ($items as $left) {
+                    $keep = true;
+                    if (isset($j['on'])) { $args = array_merge($left, [$right]); $keep = $j['on'](...$args); }
+                    if (!$keep) continue;
+                    $m = true; $joined[] = array_merge($left, [$right]);
+                }
+                if (!$m) {
+                    $undef = count($items) > 0 ? array_fill(0, count($items[0]), null) : [];
+                    $joined[] = array_merge($undef, [$right]);
+                }
+            }
+        } else {
+            foreach ($items as $left) {
+                $m = false;
+                foreach ($j['items'] as $right) {
+                    $keep = true;
+                    if (isset($j['on'])) { $args = array_merge($left, [$right]); $keep = $j['on'](...$args); }
+                    if (!$keep) continue;
+                    $m = true; $joined[] = array_merge($left, [$right]);
+                }
+                if (!empty($j['left']) && !$m) { $joined[] = array_merge($left, [null]); }
+            }
+        }
+        $items = $joined;
+    }
+    if (isset($opts['where'])) {
+        $filtered = [];
+        foreach ($items as $r) { if ($opts['where'](...$r)) $filtered[] = $r; }
+        $items = $filtered;
+    }
+    if (isset($opts['sortKey'])) {
+        $pairs = [];
+        foreach ($items as $it) { $pairs[] = ['item' => $it, 'key' => $opts['sortKey'](...$it)]; }
+        usort($pairs, function($a, $b) {
+            $ak = $a['key']; $bk = $b['key'];
+            if (is_int($ak) && is_int($bk)) return $ak <=> $bk;
+            if (is_string($ak) && is_string($bk)) return $ak <=> $bk;
+            return strcmp(strval($ak), strval($bk));
+        });
+        $items = array_map(fn($p) => $p['item'], $pairs);
+    }
+    if (array_key_exists('skip', $opts)) {
+        $n = $opts['skip'];
+        $items = $n < count($items) ? array_slice($items, $n) : [];
+    }
+    if (array_key_exists('take', $opts)) {
+        $n = $opts['take'];
+        if ($n < count($items)) $items = array_slice($items, 0, $n);
+    }
+    $res = [];
+    foreach ($items as $r) { $res[] = $opts['select'](...$r); }
+    return $res;
+}
