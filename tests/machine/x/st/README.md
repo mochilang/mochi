@@ -6,6 +6,8 @@ of the language, so most programs fail to compile or run.
 
 ## Status
 
+0/97 files compiled successfully
+
 The table below tracks which programs from `tests/vm/valid` have been compiled and executed successfully.
 - [ ] append_builtin
 - [ ] avg_builtin
