@@ -1,0 +1,11 @@
+(define (boom)
+  (display "boom")
+  (newline)
+  #t)
+
+(display (and (< 1 2) (< 2 3) (< 3 4)))
+(newline)
+(display (and (< 1 2) (> 2 3) (boom)))
+(newline)
+(display (and (< 1 2) (< 2 3) (> 3 4) (boom)))
+(newline)
