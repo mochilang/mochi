@@ -25,7 +25,7 @@ The following checklist tracks which programs from `tests/vm/valid` have manual 
 - [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
 - [x] group_by.mochi
-- [ ] group_by_conditional_sum.mochi
+- [x] group_by_conditional_sum.mochi
 - [ ] group_by_having.mochi
 - [ ] group_by_join.mochi
 - [ ] group_by_left_join.mochi
@@ -51,7 +51,7 @@ The following checklist tracks which programs from `tests/vm/valid` have manual 
 - [x] list_index.mochi
 - [x] list_nested_assign.mochi
 - [x] list_set_ops.mochi
-- [ ] load_yaml.mochi
+- [x] load_yaml.mochi
 - [x] map_assign.mochi
 - [x] map_in_operator.mochi
 - [x] map_index.mochi
@@ -69,8 +69,8 @@ The following checklist tracks which programs from `tests/vm/valid` have manual 
 - [ ] outer_join.mochi
 - [x] partial_application.mochi
 - [x] print_hello.mochi
-- [ ] pure_fold.mochi
-- [ ] pure_global_fold.mochi
+- [x] pure_fold.mochi
+- [x] pure_global_fold.mochi
 - [ ] query_sum_select.mochi
 - [x] record_assign.mochi
 - [ ] right_join.mochi
@@ -94,7 +94,7 @@ The following checklist tracks which programs from `tests/vm/valid` have manual 
 - [x] typed_let.mochi
 - [x] typed_var.mochi
 - [x] unary_neg.mochi
-- [ ] update_stmt.mochi
+- [x] update_stmt.mochi
 - [x] user_type_literal.mochi
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
