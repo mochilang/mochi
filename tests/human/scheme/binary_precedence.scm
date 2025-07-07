@@ -1,0 +1,8 @@
+(display (+ 1 (* 2 3)))
+(newline)
+(display (* (+ 1 2) 3))
+(newline)
+(display (+ (* 2 3) 1))
+(newline)
+(display (* 2 (+ 3 1)))
+(newline)
