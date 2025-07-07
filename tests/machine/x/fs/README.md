@@ -6,19 +6,21 @@ resulting code and program output are stored here.
 
 ## Compilation Checklist
 
+7/97 programs compiled successfully
+
 The list below shows every Mochi program and whether it compiled and ran
 successfully in F#.
 
-- [ ] append_builtin
-- [ ] avg_builtin
-- [ ] basic_compare
-- [ ] binary_precedence
-- [ ] bool_chain
+ - [x] append_builtin
+ - [x] avg_builtin
+ - [ ] basic_compare
+ - [ ] binary_precedence
+ - [x] bool_chain
 - [ ] break_continue
 - [ ] cast_string_to_int
 - [ ] cast_struct
-- [ ] closure
-- [ ] count_builtin
+ - [ ] closure
+ - [x] count_builtin
 - [x] cross_join
 - [x] cross_join_filter
 - [x] cross_join_triple

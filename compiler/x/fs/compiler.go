@@ -223,7 +223,11 @@ func (c *Compiler) compileFun(f *parser.FunStmt) error {
 	for i, p := range f.Params {
 		params[i] = fmt.Sprintf("(%s)", p.Name)
 	}
-	header := fmt.Sprintf("let %s %s =", f.Name, strings.Join(params, " "))
+	paramStr := strings.Join(params, " ")
+	if len(params) == 0 {
+		paramStr = "()"
+	}
+	header := fmt.Sprintf("let %s %s =", f.Name, paramStr)
 	c.writeln(header)
 	c.indent++
 	for i, st := range f.Body {
@@ -361,6 +365,18 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "[" + join(elems, "; ") + "]", nil
 	case p.Call != nil:
 		return c.compileCall(p.Call)
+	case p.Selector != nil:
+		name := p.Selector.Root
+		for _, t := range p.Selector.Tail {
+			name += "." + t
+		}
+		return name, nil
+	case p.Group != nil:
+		inner, err := c.compileExpr(p.Group)
+		if err != nil {
+			return "", err
+		}
+		return "(" + inner + ")", nil
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
 	case p.If != nil:
@@ -371,6 +387,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 }
 
 func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
+	var argAST *parser.Expr
+	if len(call.Args) > 0 {
+		argAST = call.Args[0]
+	}
+
 	args := make([]string, len(call.Args))
 	for i, a := range call.Args {
 		s, err := c.compileExpr(a)
@@ -381,17 +402,50 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	}
 	switch call.Func {
 	case "print":
-		fmtArgs := make([]string, len(args))
-		for i, a := range args {
-			fmtArgs[i] = fmt.Sprintf("(string %s)", a)
+		if len(args) == 1 {
+			if argAST != nil && argAST.Binary != nil && argAST.Binary.Left != nil && argAST.Binary.Left.Value != nil && argAST.Binary.Left.Value.Target != nil {
+				t := argAST.Binary.Left.Value.Target
+				if t.Call != nil && t.Call.Func == "append" {
+					return fmt.Sprintf("printfn \"%%s\" (String.concat \" \" (List.map string (%s)))", args[0]), nil
+				}
+				if t.List != nil {
+					return fmt.Sprintf("printfn \"%%s\" (String.concat \" \" (List.map string %s))", args[0]), nil
+				}
+			}
+			return fmt.Sprintf("printfn \"%%A\" (%s)", args[0]), nil
 		}
-		format := strings.Repeat("%s ", len(args))
-		format = strings.TrimSpace(format)
-		return fmt.Sprintf("printfn \"%s\" %s", format, join(fmtArgs, " ")), nil
+		return fmt.Sprintf("printfn \"%%A\" (%s)", strings.Join(args, ", ")), nil
+	case "append":
+		if len(args) == 2 {
+			return fmt.Sprintf("%s @ [%s]", args[0], args[1]), nil
+		}
+	case "avg":
+		if len(args) == 1 {
+			return fmt.Sprintf("(List.sum %s / List.length %s)", args[0], args[0]), nil
+		}
+	case "count":
+		if len(args) == 1 {
+			return fmt.Sprintf("List.length %s", args[0]), nil
+		}
+	case "exists":
+		if len(args) == 2 {
+			return fmt.Sprintf("List.contains %s %s", args[1], args[0]), nil
+		}
+	case "len":
+		if len(args) == 1 {
+			if strings.HasPrefix(args[0], "\"") {
+				return fmt.Sprintf("%s.Length", args[0]), nil
+			}
+			return fmt.Sprintf("List.length %s", args[0]), nil
+		}
 	default:
 		argStr := strings.Join(args, " ")
+		if argStr == "" {
+			return fmt.Sprintf("%s()", call.Func), nil
+		}
 		return fmt.Sprintf("%s %s", call.Func, argStr), nil
 	}
+	return "", fmt.Errorf("unsupported call %s", call.Func)
 }
 
 func (c *Compiler) compileIfExpr(i *parser.IfExpr) (string, error) {

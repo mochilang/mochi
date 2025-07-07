@@ -1,0 +1,10 @@
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/machine/x/fs/list_set_ops.fs(3,34): error FS0003: This value is not a function and cannot be applied
+
+/workspace/mochi/tests/machine/x/fs/list_set_ops.fs(4,34): error FS0003: This value is not a function and cannot be applied
+
+/workspace/mochi/tests/machine/x/fs/list_set_ops.fs(5,34): error FS0003: This value is not a function and cannot be applied
+
+/workspace/mochi/tests/machine/x/fs/list_set_ops.fs(6,15): error FS0003: This value is not a function and cannot be applied

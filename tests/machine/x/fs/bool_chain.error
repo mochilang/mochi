@@ -1,0 +1,12 @@
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/machine/x/fs/bool_chain.fs(7,37): error FS0001: This expression was expected to have type
+    bool    
+but here has type
+    unit -> bool    
+
+/workspace/mochi/tests/machine/x/fs/bool_chain.fs(8,48): error FS0001: This expression was expected to have type
+    bool    
+but here has type
+    unit -> bool    
