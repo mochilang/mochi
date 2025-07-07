@@ -28,14 +28,24 @@ func New(env *types.Env) *Compiler { return &Compiler{env: env} }
 // is a hand written translation under tests/human/x/dart it is returned.
 // Otherwise the program is compiled using the small subset supported here.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
-	src := prog.Pos.Filename
-	_ = src
-
+	// compile function declarations first so that they appear before main
 	c.buf.Reset()
 	c.indent = 0
+	for _, st := range prog.Statements {
+		if st.Fun != nil {
+			if err := c.compileFun(st.Fun); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
+
 	c.writeln("void main() {")
 	c.indent++
 	for _, st := range prog.Statements {
+		if st.Fun != nil {
+			continue
+		}
 		if err := c.compileStmt(st); err != nil {
 			return nil, err
 		}
@@ -51,6 +61,25 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileLet(s.Let)
 	case s.Var != nil:
 		return c.compileVar(s.Var)
+	case s.Assign != nil:
+		return c.compileAssign(s.Assign)
+	case s.Return != nil:
+		return c.compileReturn(s.Return)
+	case s.If != nil:
+		return c.compileIf(s.If)
+	case s.While != nil:
+		return c.compileWhile(s.While)
+	case s.For != nil:
+		return c.compileFor(s.For)
+	case s.Break != nil:
+		c.writeln("break;")
+		return nil
+	case s.Continue != nil:
+		c.writeln("continue;")
+		return nil
+	case s.Fun != nil:
+		// handled earlier
+		return nil
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -103,6 +132,145 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
+	target := a.Name
+	for _, idx := range a.Index {
+		if idx.Colon != nil || idx.Colon2 != nil || idx.End != nil || idx.Step != nil {
+			return fmt.Errorf("slice assignment not supported")
+		}
+		if idx.Start == nil {
+			return fmt.Errorf("missing index expression")
+		}
+		expr, err := c.compileExpr(idx.Start)
+		if err != nil {
+			return err
+		}
+		target += fmt.Sprintf("[%s]", expr)
+	}
+	for _, f := range a.Field {
+		target += "." + f.Name
+	}
+	val, err := c.compileExpr(a.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("%s = %s;", target, val))
+	return nil
+}
+
+func (c *Compiler) compileReturn(r *parser.ReturnStmt) error {
+	val, err := c.compileExpr(r.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln("return " + val + ";")
+	return nil
+}
+
+func (c *Compiler) compileFun(f *parser.FunStmt) error {
+	ret := dartType(f.Return)
+	if ret == "" {
+		ret = "void"
+	}
+	params := make([]string, len(f.Params))
+	for i, p := range f.Params {
+		pt := dartType(p.Type)
+		if pt == "" {
+			pt = "dynamic"
+		}
+		params[i] = fmt.Sprintf("%s %s", pt, p.Name)
+	}
+	c.writeln(fmt.Sprintf("%s %s(%s) {", ret, f.Name, strings.Join(params, ", ")))
+	c.indent++
+	for _, st := range f.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileIf(s *parser.IfStmt) error {
+	cond, err := c.compileExpr(s.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln("if (" + cond + ") {")
+	c.indent++
+	for _, st := range s.Then {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	if s.ElseIf != nil {
+		c.writeln("else ")
+		if err := c.compileIf(s.ElseIf); err != nil {
+			return err
+		}
+	} else if s.Else != nil {
+		c.writeln("else {")
+		c.indent++
+		for _, st := range s.Else {
+			if err := c.compileStmt(st); err != nil {
+				return err
+			}
+		}
+		c.indent--
+		c.writeln("}")
+	}
+	return nil
+}
+
+func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
+	cond, err := c.compileExpr(w.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln("while (" + cond + ") {")
+	c.indent++
+	for _, st := range w.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileFor(f *parser.ForStmt) error {
+	if f.RangeEnd != nil {
+		start, err := c.compileExpr(f.Source)
+		if err != nil {
+			return err
+		}
+		end, err := c.compileExpr(f.RangeEnd)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("for (var %s = %s; %s < %s; %s++) {", f.Name, start, f.Name, end, f.Name))
+	} else {
+		src, err := c.compileExpr(f.Source)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("for (var %s in %s) {", f.Name, src))
+	}
+	c.indent++
+	for _, st := range f.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 	if e == nil || e.Binary == nil {
 		return "", fmt.Errorf("empty expression")
@@ -142,8 +310,35 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if len(p.Ops) > 0 {
-		return "", fmt.Errorf("postfix operations not supported")
+	for _, op := range p.Ops {
+		switch {
+		case op.Index != nil:
+			if op.Index.Colon != nil || op.Index.Colon2 != nil || op.Index.End != nil || op.Index.Step != nil {
+				return "", fmt.Errorf("slices not supported")
+			}
+			if op.Index.Start == nil {
+				return "", fmt.Errorf("missing index expression")
+			}
+			idx, err := c.compileExpr(op.Index.Start)
+			if err != nil {
+				return "", err
+			}
+			val = fmt.Sprintf("%s[%s]", val, idx)
+		case op.Field != nil:
+			val += "." + op.Field.Name
+		case op.Call != nil:
+			args := make([]string, len(op.Call.Args))
+			for i, a := range op.Call.Args {
+				s, err := c.compileExpr(a)
+				if err != nil {
+					return "", err
+				}
+				args[i] = s
+			}
+			val = fmt.Sprintf("%s(%s)", val, strings.Join(args, ", "))
+		case op.Cast != nil:
+			return "", fmt.Errorf("casts not supported")
+		}
 	}
 	return val, nil
 }
@@ -162,6 +357,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems[i] = s
 		}
 		return "[" + strings.Join(elems, ", ") + "]", nil
+	case p.Map != nil:
+		items := make([]string, len(p.Map.Items))
+		for i, m := range p.Map.Items {
+			k, err := c.compileExpr(m.Key)
+			if err != nil {
+				return "", err
+			}
+			v, err := c.compileExpr(m.Value)
+			if err != nil {
+				return "", err
+			}
+			items[i] = fmt.Sprintf("%s: %s", k, v)
+		}
+		return "{" + strings.Join(items, ", ") + "}", nil
 	case p.Selector != nil:
 		s := p.Selector.Root
 		if len(p.Selector.Tail) > 0 {
