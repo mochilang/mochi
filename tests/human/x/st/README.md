@@ -77,28 +77,29 @@ This folder contains hand-written Smalltalk versions of programs from `tests/vm/
 - [x] user_type_literal.mochi
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
+- [x] group_by.mochi
+- [x] group_by_conditional_sum.mochi
+- [x] group_by_having.mochi
+- [x] group_by_join.mochi
+- [x] group_by_left_join.mochi
+- [x] group_by_multi_join.mochi
+- [x] group_by_multi_join_sort.mochi
+- [x] group_by_sort.mochi
+- [x] group_items_iteration.mochi
+- [x] inner_join.mochi
+- [x] join_multi.mochi
+- [x] json_builtin.mochi
+- [x] left_join.mochi
+- [x] left_join_multi.mochi
+- [x] load_yaml.mochi
+- [x] outer_join.mochi
+- [x] query_sum_select.mochi
+- [x] right_join.mochi
+- [x] save_jsonl_stdout.mochi
+- [x] test_block.mochi
+- [x] tree_sum.mochi
+- [x] two-sum.mochi
+- [x] update_stmt.mochi
 
 ## Missing
-- [ ] group_by.mochi
-- [ ] group_by_conditional_sum.mochi
-- [ ] group_by_having.mochi
-- [ ] group_by_join.mochi
-- [ ] group_by_left_join.mochi
-- [ ] group_by_multi_join.mochi
-- [ ] group_by_multi_join_sort.mochi
-- [ ] group_by_sort.mochi
-- [ ] group_items_iteration.mochi
-- [ ] inner_join.mochi
-- [ ] join_multi.mochi
-- [ ] json_builtin.mochi
-- [ ] left_join.mochi
-- [ ] left_join_multi.mochi
-- [ ] load_yaml.mochi
-- [ ] outer_join.mochi
-- [ ] query_sum_select.mochi
-- [ ] right_join.mochi
-- [ ] save_jsonl_stdout.mochi
-- [ ] test_block.mochi
-- [ ] tree_sum.mochi
-- [ ] two-sum.mochi
-- [ ] update_stmt.mochi
+- [ ] None
