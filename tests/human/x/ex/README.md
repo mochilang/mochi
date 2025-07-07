@@ -16,11 +16,11 @@ cast_string_to_int|Done
 cast_struct|Done
 closure|Done
 count_builtin|Done
-cross_join|Missing
-cross_join_filter|Missing
-cross_join_triple|Missing
-dataset_sort_take_limit|Missing
-dataset_where_filter|Missing
+cross_join|Done
+cross_join_filter|Done
+cross_join_triple|Done
+dataset_sort_take_limit|Done
+dataset_where_filter|Done
 exists_builtin|Done
 for_list_collection|Done
 for_loop|Done
