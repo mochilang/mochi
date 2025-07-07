@@ -1,0 +1,9 @@
+run error: exit status 1
+[0m[1m[31merror[0m: Uncaught (in promise) NotFound: No such file or directory (os error 2): readfile '../interpreter/valid/people.yaml'
+  return Deno.readTextFileSync(path);
+[0m[31m              ^[0m
+    at [0m[1m[3mObject.readTextFileSync[0m ([0m[36mext:deno_fs/30_fs.js[0m:[0m[33m770[0m:[0m[33m10[0m)
+    at [0m[1m[3m_readInput[0m ([0m[36mfile:///workspace/mochi/tests/machine/x/ts/load_yaml.ts[0m:[0m[33m35[0m:[0m[33m15[0m)
+    at [0m[1m[3m_load[0m ([0m[36mfile:///workspace/mochi/tests/machine/x/ts/load_yaml.ts[0m:[0m[33m74[0m:[0m[33m16[0m)
+    at [0m[1m[3mmain[0m ([0m[36mfile:///workspace/mochi/tests/machine/x/ts/load_yaml.ts[0m:[0m[33m13[0m:[0m[33m12[0m)
+    at [0m[36mfile:///workspace/mochi/tests/machine/x/ts/load_yaml.ts[0m:[0m[33m164[0m:[0m[33m1[0m
