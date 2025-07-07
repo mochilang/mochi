@@ -25,6 +25,17 @@ This directory contains manual Erlang translations of some Mochi test programs f
 - fun_call.mochi
 - fun_expr_in_let.mochi
 - fun_three_args.mochi
+- if_else.mochi
+- if_then_else.mochi
+- if_then_else_nested.mochi
+- in_operator.mochi
+- len_builtin.mochi
+- len_map.mochi
+- len_string.mochi
+- let_and_print.mochi
+- print_hello.mochi
+- str_builtin.mochi
+- values_builtin.mochi
 
 ## Missing
 - group_by.mochi
@@ -36,20 +47,12 @@ This directory contains manual Erlang translations of some Mochi test programs f
 - group_by_multi_join_sort.mochi
 - group_by_sort.mochi
 - group_items_iteration.mochi
-- if_else.mochi
-- if_then_else.mochi
-- if_then_else_nested.mochi
-- in_operator.mochi
 - in_operator_extended.mochi
 - inner_join.mochi
 - join_multi.mochi
 - json_builtin.mochi
 - left_join.mochi
 - left_join_multi.mochi
-- len_builtin.mochi
-- len_map.mochi
-- len_string.mochi
-- let_and_print.mochi
 - list_assign.mochi
 - list_index.mochi
 - list_nested_assign.mochi
@@ -71,7 +74,6 @@ This directory contains manual Erlang translations of some Mochi test programs f
 - order_by_map.mochi
 - outer_join.mochi
 - partial_application.mochi
-- print_hello.mochi
 - pure_fold.mochi
 - pure_global_fold.mochi
 - query_sum_select.mochi
@@ -81,7 +83,6 @@ This directory contains manual Erlang translations of some Mochi test programs f
 - short_circuit.mochi
 - slice.mochi
 - sort_stable.mochi
-- str_builtin.mochi
 - string_compare.mochi
 - string_concat.mochi
 - string_contains.mochi
@@ -99,6 +100,5 @@ This directory contains manual Erlang translations of some Mochi test programs f
 - unary_neg.mochi
 - update_stmt.mochi
 - user_type_literal.mochi
-- values_builtin.mochi
 - var_assignment.mochi
 - while_loop.mochi
