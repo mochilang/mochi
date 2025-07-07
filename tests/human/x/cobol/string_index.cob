@@ -1,0 +1,8 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. STRING-INDEX.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01 S PIC X(5) VALUE "mochi".
+       PROCEDURE DIVISION.
+           DISPLAY S(2:1)
+           STOP RUN.

@@ -1,0 +1,16 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. SUM-BUILTIN.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01 NUMS OCCURS 3 TIMES PIC 9 VALUE 0.
+       01 I PIC 9.
+       01 TOTAL PIC 99 VALUE 0.
+       PROCEDURE DIVISION.
+           MOVE 1 TO NUMS(1)
+           MOVE 2 TO NUMS(2)
+           MOVE 3 TO NUMS(3)
+           PERFORM VARYING I FROM 1 BY 1 UNTIL I > 3
+               ADD NUMS(I) TO TOTAL
+           END-PERFORM
+           DISPLAY TOTAL
+           STOP RUN.
