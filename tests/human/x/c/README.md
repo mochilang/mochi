@@ -1,4 +1,4 @@
-# Mochi to C Translations (89/97 translated)
+# Mochi to C Translations (97/97 translated)
 
 This directory (`tests/human/x/c`) contains hand-written C programs that mirror the behavior of the Mochi examples in `tests/vm/valid`. Each `.c` file was written manually without using the Mochi compiler.
 
@@ -29,12 +29,12 @@ This directory (`tests/human/x/c`) contains hand-written C programs that mirror 
 - [x] group_by.mochi
 - [x] group_by_conditional_sum.mochi
 - [x] group_by_having.mochi
-- [ ] group_by_join.mochi
-- [ ] group_by_left_join.mochi
-- [ ] group_by_multi_join.mochi
-- [ ] group_by_multi_join_sort.mochi
+- [x] group_by_join.mochi
+- [x] group_by_left_join.mochi
+- [x] group_by_multi_join.mochi
+- [x] group_by_multi_join_sort.mochi
 - [x] group_by_sort.mochi
-- [ ] group_items_iteration.mochi
+- [x] group_items_iteration.mochi
 - [x] if_else.mochi
 - [x] if_then_else.mochi
 - [x] if_then_else_nested.mochi
@@ -44,7 +44,7 @@ This directory (`tests/human/x/c`) contains hand-written C programs that mirror 
 - [x] join_multi.mochi
 - [x] json_builtin.mochi
 - [x] left_join.mochi
-- [ ] left_join_multi.mochi
+- [x] left_join_multi.mochi
 - [x] len_builtin.mochi
 - [x] len_map.mochi
 - [x] len_string.mochi
@@ -53,7 +53,7 @@ This directory (`tests/human/x/c`) contains hand-written C programs that mirror 
 - [x] list_index.mochi
 - [x] list_nested_assign.mochi
 - [x] list_set_ops.mochi
-- [ ] load_yaml.mochi
+- [x] load_yaml.mochi
 - [x] map_assign.mochi
 - [x] map_in_operator.mochi
 - [x] map_index.mochi
@@ -96,7 +96,7 @@ This directory (`tests/human/x/c`) contains hand-written C programs that mirror 
 - [x] typed_let.mochi
 - [x] typed_var.mochi
 - [x] unary_neg.mochi
-- [ ] update_stmt.mochi
+- [x] update_stmt.mochi
 - [x] user_type_literal.mochi
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
