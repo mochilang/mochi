@@ -3,7 +3,6 @@
 This directory contains manual C++ versions of sample Mochi programs from `tests/vm/valid`.
 
 ## Translated programs
-
 - `append_builtin`
 - `avg_builtin`
 - `basic_compare`
@@ -26,56 +25,6 @@ This directory contains manual C++ versions of sample Mochi programs from `tests
 - `fun_call`
 - `fun_expr_in_let`
 - `fun_three_args`
-- `if_else`
-- `if_then_else`
-- `if_then_else_nested`
-- `in_operator`
-- `in_operator_extended`
-- `len_builtin`
-- `len_map`
-- `len_string`
-- `list_assign`
-- `list_index`
-- `map_assign`
-- `map_index`
-- `map_int_key`
-- `map_membership`
-- `map_nested_assign`
-- `match_expr`
-- `match_full`
-- `math_ops`
-- `membership`
-- `min_max_builtin`
-- `nested_function`
-- `partial_application`
-- `print_hello`
-- `pure_fold`
-- `pure_global_fold`
-- `query_sum_select`
-- `record_assign`
-- `short_circuit`
-- `slice`
-- `str_builtin`
-- `string_compare`
-- `string_concat`
-- `string_contains`
-- `string_in_operator`
-- `string_index`
-- `substring_builtin`
-- `sum_builtin`
-- `tail_recursion`
-- `tree_sum`
-- `two-sum`
-- `typed_let`
-- `typed_var`
-- `unary_neg`
-- `user_type_literal`
-- `values_builtin`
-- `var_assignment`
-- `while_loop`
-
-## Missing programs
-
 - `group_by`
 - `group_by_conditional_sum`
 - `group_by_having`
@@ -85,22 +34,73 @@ This directory contains manual C++ versions of sample Mochi programs from `tests
 - `group_by_multi_join_sort`
 - `group_by_sort`
 - `group_items_iteration`
+- `if_else`
+- `if_then_else`
+- `if_then_else_nested`
+- `in_operator`
+- `in_operator_extended`
 - `inner_join`
 - `join_multi`
 - `json_builtin`
 - `left_join`
 - `left_join_multi`
+- `len_builtin`
+- `len_map`
+- `len_string`
 - `let_and_print`
+- `list_assign`
+- `list_index`
 - `list_nested_assign`
 - `list_set_ops`
 - `load_yaml`
+- `map_assign`
 - `map_in_operator`
+- `map_index`
+- `map_int_key`
 - `map_literal_dynamic`
+- `map_membership`
+- `map_nested_assign`
+- `match_expr`
+- `match_full`
+- `math_ops`
+- `membership`
+- `min_max_builtin`
+- `nested_function`
 - `order_by_map`
 - `outer_join`
+- `partial_application`
+- `print_hello`
+- `pure_fold`
+- `pure_global_fold`
+- `query_sum_select`
+- `record_assign`
 - `right_join`
 - `save_jsonl_stdout`
+- `short_circuit`
+- `slice`
 - `sort_stable`
+- `str_builtin`
+- `string_compare`
+- `string_concat`
+- `string_contains`
+- `string_in_operator`
+- `string_index`
 - `string_prefix_slice`
+- `substring_builtin`
+- `sum_builtin`
+- `tail_recursion`
 - `test_block`
+- `tree_sum`
+- `two-sum`
+- `typed_let`
+- `typed_var`
+- `unary_neg`
 - `update_stmt`
+- `user_type_literal`
+- `values_builtin`
+- `var_assignment`
+- `while_loop`
+
+## Missing programs
+
+None
