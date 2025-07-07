@@ -1,3 +1,5 @@
+//go:build slow
+
 package pycode_test
 
 import (
