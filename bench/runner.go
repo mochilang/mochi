@@ -1,3 +1,5 @@
+//go:build archived
+
 package bench
 
 import (

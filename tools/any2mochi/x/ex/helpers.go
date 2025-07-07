@@ -1,3 +1,5 @@
+//go:build archived
+
 package ex
 
 var skipFuncs = map[string]bool{
