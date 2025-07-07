@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	mlcode "mochi/compile/x/ocaml"
+	mlcode "mochi/archived/x/ocaml"
 	"mochi/parser"
 	any2mochi "mochi/tools/any2mochi"
 	"mochi/types"

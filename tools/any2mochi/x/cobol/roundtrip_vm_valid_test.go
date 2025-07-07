@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	cobolcode "mochi/compile/x/cobol"
+	cobolcode "mochi/archived/x/cobol"
 	"mochi/parser"
 	"mochi/runtime/vm"
 	any2mochi "mochi/tools/any2mochi"

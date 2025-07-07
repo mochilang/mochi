@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	cscode "mochi/compile/x/cs"
+	cscode "mochi/archived/x/cs"
 	"mochi/parser"
 	"mochi/types"
 )

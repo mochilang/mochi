@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	rscode "mochi/compile/x/rust"
+	rscode "mochi/archived/x/rust"
 	"mochi/parser"
 	any2mochi "mochi/tools/any2mochi"
 	"mochi/types"

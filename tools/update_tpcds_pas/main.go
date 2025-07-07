@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	pascode "mochi/compile/x/pas"
+	pascode "mochi/archived/x/pas"
 	"mochi/parser"
 	"mochi/types"
 )

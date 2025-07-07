@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	cscode "mochi/compile/x/cs"
+	cscode "mochi/archived/x/cs"
 	any2mochi "mochi/tools/any2mochi"
 )
 

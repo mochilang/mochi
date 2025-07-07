@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	tscode "mochi/compile/ts"
+	tscode "mochi/archived/ts"
 	"mochi/parser"
 	"mochi/runtime/mod"
 	"mochi/runtime/vm"

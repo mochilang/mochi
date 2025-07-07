@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	excode "mochi/compile/x/ex"
+	excode "mochi/archived/x/ex"
 	"mochi/parser"
 	"mochi/types"
 )

@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	gocode "mochi/compile/go"
+	gocode "mochi/archived/go"
 	"mochi/parser"
 	"mochi/types"
 )

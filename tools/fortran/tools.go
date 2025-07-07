@@ -5,7 +5,7 @@ package main
 import (
 	"log"
 
-	ftncode "mochi/compile/x/fortran"
+	ftncode "mochi/archived/x/fortran"
 )
 
 func main() {

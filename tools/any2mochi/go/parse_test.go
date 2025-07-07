@@ -6,7 +6,7 @@ import (
 	"os/exec"
 	"testing"
 
-	gocode "mochi/compile/go"
+	gocode "mochi/archived/go"
 	any2mochi "mochi/tools/any2mochi"
 )
 

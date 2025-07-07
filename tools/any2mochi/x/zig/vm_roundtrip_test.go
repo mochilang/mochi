@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	zigcode "mochi/compile/x/zig"
+	zigcode "mochi/archived/x/zig"
 	"mochi/parser"
 	"mochi/runtime/vm"
 	"mochi/types"

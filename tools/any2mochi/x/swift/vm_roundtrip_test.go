@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	swiftcode "mochi/compile/x/swift"
+	swiftcode "mochi/archived/x/swift"
 	"mochi/parser"
 	any2mochi "mochi/tools/any2mochi"
 	"mochi/types"

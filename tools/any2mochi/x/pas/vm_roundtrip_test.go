@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	pascode "mochi/compile/x/pas"
+	pascode "mochi/archived/x/pas"
 	"mochi/parser"
 	any2mochi "mochi/tools/any2mochi"
 	"mochi/types"

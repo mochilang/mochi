@@ -6,7 +6,7 @@ import (
 	"os/exec"
 	"testing"
 
-	pycode "mochi/compile/py"
+	pycode "mochi/archived/py"
 )
 
 func requireBinary(t *testing.T, name string) {

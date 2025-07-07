@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	scalacode "mochi/compile/x/scala"
+	scalacode "mochi/archived/x/scala"
 	"mochi/parser"
 	"mochi/types"
 )

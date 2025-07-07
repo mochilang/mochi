@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	gocode "mochi/compile/go"
+	gocode "mochi/archived/go"
 )
 
 func TestConvert_Golden(t *testing.T) {

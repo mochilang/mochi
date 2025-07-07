@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	gocode "mochi/compile/go"
-	swiftcode "mochi/compile/x/swift"
+	gocode "mochi/archived/go"
+	swiftcode "mochi/archived/x/swift"
 	any2mochi "mochi/tools/any2mochi"
 )
 

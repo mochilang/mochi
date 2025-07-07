@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	ftncode "mochi/compile/x/fortran"
+	ftncode "mochi/archived/x/fortran"
 	"mochi/parser"
 	any2mochi "mochi/tools/any2mochi"
 	"mochi/types"

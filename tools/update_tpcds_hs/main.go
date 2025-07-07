@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	hscode "mochi/compile/x/hs"
+	hscode "mochi/archived/x/hs"
 	"mochi/parser"
 	"mochi/types"
 )

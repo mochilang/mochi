@@ -15,10 +15,10 @@ import (
 
 	"github.com/fatih/color"
 
-	gocode "mochi/compile/go"
-	pycode "mochi/compile/py"
-	tscode "mochi/compile/ts"
-	ccode "mochi/compile/x/c"
+	gocode "mochi/archived/go"
+	pycode "mochi/archived/py"
+	tscode "mochi/archived/ts"
+	ccode "mochi/archived/x/c"
 	"mochi/parser"
 	"mochi/runtime/vm"
 	"mochi/types"

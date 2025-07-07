@@ -4,7 +4,7 @@ package racket
 
 import (
 	"fmt"
-	rktcode "mochi/compile/x/rkt"
+	rktcode "mochi/archived/x/rkt"
 	"mochi/parser"
 	any2mochi "mochi/tools/any2mochi"
 	"mochi/types"

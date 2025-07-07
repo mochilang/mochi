@@ -8,7 +8,7 @@ import (
 	"os"
 	"strings"
 
-	excode "mochi/compile/x/ex"
+	excode "mochi/archived/x/ex"
 )
 
 func snippet(src string) string {

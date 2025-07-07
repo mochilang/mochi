@@ -52,9 +52,9 @@ type Value struct {
 	Float float64
 	Str   string
 	Bool  bool
-        List  []Value
-        Map   map[string]Value
-        Func  any
+	List  []Value
+	Map   map[string]Value
+	Func  any
 }
 
 // Truthy returns the boolean interpretation of v.
@@ -136,10 +136,10 @@ func anyToValue(v any) Value {
 			return Value{Tag: TagMap, Map: m}
 		}
 		return Value{Tag: TagNull}
-        case Closure:
-                return Value{Tag: TagFunc, Func: &val}
-        case *Closure:
-                return Value{Tag: TagFunc, Func: val}
+	case Closure:
+		return Value{Tag: TagFunc, Func: &val}
+	case *Closure:
+		return Value{Tag: TagFunc, Func: val}
 	}
 }
 
