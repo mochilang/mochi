@@ -28,9 +28,21 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("")
 	c.writeln("import \"fmt\"")
 	c.writeln("")
+	// first pass: function declarations
+	for _, s := range prog.Statements {
+		if s.Fun != nil {
+			if err := c.compileFun(s.Fun); err != nil {
+				return nil, err
+			}
+		}
+	}
+	c.writeln("")
 	c.writeln("func main() {")
 	c.indent++
 	for _, s := range prog.Statements {
+		if s.Fun != nil {
+			continue
+		}
 		if err := c.compileStmt(s); err != nil {
 			return nil, err
 		}
@@ -44,6 +56,18 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
 		return c.compileLet(s.Let)
+	case s.Return != nil:
+		return c.compileReturn(s.Return)
+	case s.If != nil:
+		return c.compileIf(s.If)
+	case s.For != nil:
+		return c.compileFor(s.For)
+	case s.Break != nil:
+		c.writeln("break")
+		return nil
+	case s.Continue != nil:
+		c.writeln("continue")
+		return nil
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -66,6 +90,139 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 	}
 	c.writeln(fmt.Sprintf("%s := %s", l.Name, val))
 	return nil
+}
+
+func (c *Compiler) compileFun(f *parser.FunStmt) error {
+	params := make([]string, len(f.Params))
+	for i, p := range f.Params {
+		typ := "interface{}"
+		if p.Type != nil {
+			typ = c.typeString(p.Type)
+		}
+		params[i] = fmt.Sprintf("%s %s", p.Name, typ)
+	}
+	ret := ""
+	if f.Return != nil {
+		ret = " " + c.typeString(f.Return)
+	}
+	c.writeln(fmt.Sprintf("func %s(%s)%s {", f.Name, join(params, ", "), ret))
+	c.indent++
+	for _, s := range f.Body {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileReturn(r *parser.ReturnStmt) error {
+	val, err := c.compileExpr(r.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln("return " + val)
+	return nil
+}
+
+func (c *Compiler) compileIf(i *parser.IfStmt) error {
+	cond, err := c.compileExpr(i.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln("if " + cond + " {")
+	c.indent++
+	for _, s := range i.Then {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.write("}")
+	if i.ElseIf != nil {
+		nextCond, err := c.compileExpr(i.ElseIf.Cond)
+		if err != nil {
+			return err
+		}
+		c.buf.WriteString(" else if " + nextCond + " {")
+		c.buf.WriteByte('\n')
+		c.indent++
+		for _, s := range i.ElseIf.Then {
+			if err := c.compileStmt(s); err != nil {
+				return err
+			}
+		}
+		c.indent--
+		c.write("}")
+		if len(i.ElseIf.Else) > 0 {
+			c.buf.WriteString(" else {\n")
+			c.indent++
+			for _, s := range i.ElseIf.Else {
+				if err := c.compileStmt(s); err != nil {
+					return err
+				}
+			}
+			c.indent--
+			c.writeln("}")
+		} else {
+			c.writeln("")
+		}
+		return nil
+	}
+	if len(i.Else) > 0 {
+		c.buf.WriteString(" else {\n")
+		c.indent++
+		for _, s := range i.Else {
+			if err := c.compileStmt(s); err != nil {
+				return err
+			}
+		}
+		c.indent--
+		c.writeln("}")
+		return nil
+	}
+	c.writeln("")
+	return nil
+}
+
+func (c *Compiler) compileFor(f *parser.ForStmt) error {
+	if f.RangeEnd != nil {
+		start, err := c.compileExpr(f.Source)
+		if err != nil {
+			return err
+		}
+		end, err := c.compileExpr(f.RangeEnd)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("for %s := %s; %s < %s; %s++ {", f.Name, start, f.Name, end, f.Name))
+	} else {
+		src, err := c.compileExpr(f.Source)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("for _, %s := range %s {", f.Name, src))
+	}
+	c.indent++
+	for _, s := range f.Body {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) typeString(t *parser.TypeRef) string {
+	if t == nil {
+		return "interface{}"
+	}
+	if t.Simple != nil {
+		return *t.Simple
+	}
+	return "interface{}"
 }
 
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
@@ -129,6 +286,18 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "[]int{" + join(elems, ", ") + "}", nil
 	case p.Call != nil:
 		return c.compileCall(p.Call)
+	case p.Group != nil:
+		expr, err := c.compileExpr(p.Group)
+		if err != nil {
+			return "", err
+		}
+		return "(" + expr + ")", nil
+	case p.Selector != nil:
+		name := p.Selector.Root
+		if len(p.Selector.Tail) > 0 {
+			name += "." + join(p.Selector.Tail, ".")
+		}
+		return name, nil
 	default:
 		return "", fmt.Errorf("unsupported expression at line %d", p.Pos.Line)
 	}
@@ -147,8 +316,12 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	switch call.Func {
 	case "print":
 		return fmt.Sprintf("fmt.Println(%s)", argStr), nil
+	case "append":
+		return fmt.Sprintf("append(%s)", argStr), nil
+	case "len":
+		return fmt.Sprintf("len(%s)", argStr), nil
 	default:
-		return "", fmt.Errorf("unsupported function %s", call.Func)
+		return fmt.Sprintf("%s(%s)", call.Func, argStr), nil
 	}
 }
 
@@ -173,6 +346,13 @@ func (c *Compiler) writeln(s string) {
 	}
 	c.buf.WriteString(s)
 	c.buf.WriteByte('\n')
+}
+
+func (c *Compiler) write(s string) {
+	for i := 0; i < c.indent; i++ {
+		c.buf.WriteString("    ")
+	}
+	c.buf.WriteString(s)
 }
 
 func join(parts []string, sep string) string {
