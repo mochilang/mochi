@@ -2,7 +2,7 @@
 
 This directory contains hand-written COBOL versions of the Mochi programs from `tests/vm/valid`.
 
-## Checklist (30/97 translated)
+## Checklist (31/97 translated)
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -10,7 +10,7 @@ This directory contains hand-written COBOL versions of the Mochi programs from `
 - [x] bool_chain.mochi
 - [x] break_continue.mochi
 - [x] cast_string_to_int.mochi
-- [x] cast_struct.mochi
+- [ ] cast_struct.mochi
 - [x] closure.mochi
 - [x] count_builtin.mochi
 - [x] for_list_collection.mochi
@@ -33,8 +33,8 @@ This directory contains hand-written COBOL versions of the Mochi programs from `
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
-- [ ] cross_join.mochi
-- [ ] cross_join_filter.mochi
+- [x] cross_join.mochi
+- [x] cross_join_filter.mochi
 - [ ] cross_join_triple.mochi
 - [ ] dataset_sort_take_limit.mochi
 - [ ] dataset_where_filter.mochi
