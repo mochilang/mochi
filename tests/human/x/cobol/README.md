@@ -1,4 +1,4 @@
-# Mochi to COBOL Translations (54/97 translated)
+# Mochi to COBOL Translations (55/97 translated)
 
 This directory contains hand-written COBOL versions of the Mochi programs from `tests/vm/valid`.
 
@@ -7,7 +7,7 @@ This directory contains hand-written COBOL versions of the Mochi programs from `
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
 - [x] binary_precedence.mochi
-- [x] bool_chain.mochi
+- [ ] bool_chain.mochi
 - [x] break_continue.mochi
 - [x] cast_string_to_int.mochi
 - [x] cast_struct.mochi
@@ -68,8 +68,8 @@ This directory contains hand-written COBOL versions of the Mochi programs from `
 - [ ] match_expr.mochi
 - [ ] match_full.mochi
 - [ ] math_ops.mochi
-- [ ] membership.mochi
-- [ ] min_max_builtin.mochi
+- [x] membership.mochi
+- [x] min_max_builtin.mochi
 - [ ] nested_function.mochi
 - [ ] order_by_map.mochi
 - [ ] outer_join.mochi
