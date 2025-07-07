@@ -1,5 +1,9 @@
 # Java Translations of Mochi Programs
 
+This folder contains hand written Java versions of each program in `tests/vm/valid`. The checklist below tracks which examples have been translated.
+
+## Checklist
+
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -73,7 +77,7 @@
 - [x] record_assign.mochi
 - [ ] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
-- [ ] short_circuit.mochi
+- [x] short_circuit.mochi
 - [x] slice.mochi
 - [ ] sort_stable.mochi
 - [x] str_builtin.mochi
@@ -85,10 +89,10 @@
 - [x] string_prefix_slice.mochi
 - [x] substring_builtin.mochi
 - [x] sum_builtin.mochi
-- [ ] tail_recursion.mochi
+- [x] tail_recursion.mochi
 - [ ] test_block.mochi
-- [ ] tree_sum.mochi
-- [ ] two-sum.mochi
+- [x] tree_sum.mochi
+- [x] two-sum.mochi
 - [x] typed_let.mochi
 - [x] typed_var.mochi
 - [x] unary_neg.mochi
