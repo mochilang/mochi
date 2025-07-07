@@ -210,3 +210,16 @@ func isFloat(t types.Type) bool  { _, ok := t.(types.FloatType); return ok }
 func isBool(t types.Type) bool   { _, ok := t.(types.BoolType); return ok }
 func isString(t types.Type) bool { _, ok := t.(types.StringType); return ok }
 func isList(t types.Type) bool   { _, ok := t.(types.ListType); return ok }
+
+func canInferType(e *parser.Expr, t types.Type) bool {
+	if e == nil {
+		return false
+	}
+	if isEmptyListExpr(e) || isEmptyMapExpr(e) {
+		return false
+	}
+	if _, ok := t.(types.AnyType); ok {
+		return false
+	}
+	return true
+}

@@ -468,7 +468,11 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 				val = v
 			}
 		}
-		c.writeln(fmt.Sprintf("const %s: %s = %s;", name, zigTypeOf(typ), val))
+		if s.Let.Type == nil && canInferType(s.Let.Value, typ) {
+			c.writeln(fmt.Sprintf("const %s = %s;", name, val))
+		} else {
+			c.writeln(fmt.Sprintf("const %s: %s = %s;", name, zigTypeOf(typ), val))
+		}
 		return nil
 	case s.Var != nil:
 		return c.compileVar(s.Var, inFun)
@@ -1229,7 +1233,11 @@ func (c *Compiler) compileVar(st *parser.VarStmt, inFun bool) error {
 		}
 		val = v
 	}
-	c.writeln(fmt.Sprintf("var %s: %s = %s;", name, zigTypeOf(typ), val))
+	if st.Type == nil && st.Value != nil && canInferType(st.Value, typ) {
+		c.writeln(fmt.Sprintf("var %s = %s;", name, val))
+	} else {
+		c.writeln(fmt.Sprintf("var %s: %s = %s;", name, zigTypeOf(typ), val))
+	}
 	return nil
 }
 
