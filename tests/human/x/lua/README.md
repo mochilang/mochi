@@ -79,29 +79,30 @@ This directory contains hand-written Lua programs corresponding to a subset of t
 - order_by_map.lua
 - partial_application.lua
 - query_sum_select.lua
+- group_by.lua
+- group_by_conditional_sum.lua
+- group_by_having.lua
+- group_by_join.lua
+- group_by_left_join.lua
+- group_by_multi_join.lua
+- group_by_multi_join_sort.lua
+- group_by_sort.lua
+- group_items_iteration.lua
+- inner_join.lua
+- join_multi.lua
+- json_builtin.lua
+- left_join.lua
+- left_join_multi.lua
+- let_and_print.lua
+- list_nested_assign.lua
+- list_set_ops.lua
+- load_yaml.lua
+- match_full.lua
+- outer_join.lua
+- right_join.lua
+- save_jsonl_stdout.lua
+- update_stmt.lua
 ## Missing translations
 
-- group_by
-- group_by_conditional_sum
-- group_by_having
-- group_by_join
-- group_by_left_join
-- group_by_multi_join
-- group_by_multi_join_sort
-- group_by_sort
-- group_items_iteration
-- inner_join
-- join_multi
-- json_builtin
-- left_join
-- left_join_multi
-- let_and_print
-- list_nested_assign
-- list_set_ops
-- load_yaml
-- match_full
-- outer_join
-- right_join
-- save_jsonl_stdout
-- update_stmt
+None
 
