@@ -75,8 +75,6 @@ This folder contains manual TypeScript translations of the Mochi programs from `
 - values_builtin
 - var_assignment
 - while_loop
-
-## Missing
 - cross_join
 - cross_join_filter
 - cross_join_triple
@@ -102,3 +100,6 @@ This folder contains manual TypeScript translations of the Mochi programs from `
 - outer_join
 - right_join
 - update_stmt
+
+## Missing
+None
