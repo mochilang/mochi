@@ -20,11 +20,11 @@ The table below shows which Mochi examples have been translated (`[x]`) and whic
 - [ ] dataset_sort_take_limit.mochi
 - [ ] dataset_where_filter.mochi
 - [ ] exists_builtin.mochi
-- [ ] for_list_collection.mochi
-- [ ] for_loop.mochi
-- [ ] for_map_collection.mochi
-- [ ] fun_call.mochi
-- [ ] fun_expr_in_let.mochi
+- [x] for_list_collection.mochi
+- [x] for_loop.mochi
+- [x] for_map_collection.mochi
+- [x] fun_call.mochi
+- [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
 - [ ] group_by.mochi
 - [ ] group_by_conditional_sum.mochi
@@ -35,7 +35,7 @@ The table below shows which Mochi examples have been translated (`[x]`) and whic
 - [ ] group_by_multi_join_sort.mochi
 - [ ] group_by_sort.mochi
 - [ ] group_items_iteration.mochi
-- [ ] if_else.mochi
+- [x] if_else.mochi
 - [x] if_then_else.mochi
 - [ ] if_then_else_nested.mochi
 - [ ] in_operator.mochi
@@ -48,7 +48,7 @@ The table below shows which Mochi examples have been translated (`[x]`) and whic
 - [x] len_builtin.mochi
 - [x] len_map.mochi
 - [x] len_string.mochi
-- [ ] let_and_print.mochi
+- [x] let_and_print.mochi
 - [x] list_assign.mochi
 - [x] list_index.mochi
 - [x] list_nested_assign.mochi
@@ -82,10 +82,10 @@ The table below shows which Mochi examples have been translated (`[x]`) and whic
 - [ ] sort_stable.mochi
 - [x] str_builtin.mochi
 - [ ] string_compare.mochi
-- [ ] string_concat.mochi
-- [ ] string_contains.mochi
+- [x] string_concat.mochi
+- [x] string_contains.mochi
 - [ ] string_in_operator.mochi
-- [ ] string_index.mochi
+- [x] string_index.mochi
 - [ ] string_prefix_slice.mochi
 - [x] substring_builtin.mochi
 - [ ] sum_builtin.mochi
@@ -93,12 +93,12 @@ The table below shows which Mochi examples have been translated (`[x]`) and whic
 - [ ] test_block.mochi
 - [x] tree_sum.mochi
 - [ ] two-sum.mochi
-- [ ] typed_let.mochi
-- [ ] typed_var.mochi
+- [x] typed_let.mochi
+- [x] typed_var.mochi
 - [x] unary_neg.mochi
 - [ ] update_stmt.mochi
 - [ ] user_type_literal.mochi
 - [ ] values_builtin.mochi
-- [ ] var_assignment.mochi
+- [x] var_assignment.mochi
 - [x] while_loop.mochi
 
