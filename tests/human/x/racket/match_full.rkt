@@ -1,0 +1,17 @@
+#lang racket
+(define x 2)
+(define label (match x [1 "one"] [2 "two"] [3 "three"] [_ "unknown"]))
+(displayln label)
+
+(define day "sun")
+(define mood (match day ["mon" "tired"] ["fri" "excited"] ["sun" "relaxed"] [_ "normal"]))
+(displayln mood)
+
+(define ok #t)
+(define status (match ok [#t "confirmed"] [#f "denied"]))
+(displayln status)
+
+(define (classify n)
+  (match n [0 "zero"] [1 "one"] [_ "many"]))
+(displayln (classify 0))
+(displayln (classify 5))
