@@ -8,9 +8,9 @@ type t1Row = {
   e: number;
 };
 
-let flatResult: Array<any>;
-let result: Array<Array<number>>;
-let t1: Array<t1Row>;
+var flatResult: any[];
+var result: number[][];
+let t1: t1Row[];
 
 function test_case3(): void {
   if (
@@ -374,7 +374,7 @@ function main(): void {
   }
   test_case3();
 }
-function _append(lst: any[] | null, v: any): any[] {
+function _append<T>(lst: T[] | null, v: T): T[] {
   const out = lst ? lst.slice() : [];
   out.push(v);
   return out;

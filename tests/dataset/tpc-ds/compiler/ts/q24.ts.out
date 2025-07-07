@@ -46,14 +46,14 @@ type CustomerAddress = {
 };
 
 let avg_paid: number;
-let customer: Array<Record<string, any>>;
-let customer_address: Array<Record<string, any>>;
-let item: Array<Record<string, any>>;
-let result: Array<Record<string, any>>;
-let ssales: Array<Record<string, any>>;
-let store: Array<Record<string, any>>;
-let store_returns: Array<Record<string, number>>;
-let store_sales: Array<Record<string, any>>;
+let customer: Record<string, any>[];
+let customer_address: Record<string, any>[];
+let item: Record<string, any>[];
+let result: Record<string, any>[];
+let ssales: Record<string, any>[];
+let store: Record<string, any>[];
+let store_returns: Record<string, number>[];
+let store_sales: Record<string, any>[];
 
 function test_TPCDS_Q24_customer_net_paid(): void {
   if (

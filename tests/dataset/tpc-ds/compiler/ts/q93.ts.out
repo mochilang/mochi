@@ -20,11 +20,11 @@ type Reason = {
   r_reason_desc: string;
 };
 
-let reason: Array<Record<string, any>>;
-let result: Array<Record<string, any>>;
-let store_returns: Array<Record<string, number>>;
-let store_sales: Array<Record<string, any>>;
-let t: Array<Record<string, any>>;
+let reason: Record<string, any>[];
+let result: Record<string, any>[];
+let store_returns: Record<string, number>[];
+let store_sales: Record<string, any>[];
+let t: Record<string, any>[];
 
 function test_TPCDS_Q93_active_sales(): void {
   if (
@@ -32,6 +32,10 @@ function test_TPCDS_Q93_active_sales(): void {
       {
         "ss_customer_sk": 1,
         "sumsales": 40,
+      },
+      {
+        "ss_customer_sk": 2,
+        "sumsales": 60,
       },
     ]))
   ) throw new Error("expect failed");
@@ -82,7 +86,12 @@ function main(): void {
       },
       {
         items: reason,
-        on: (ss, sr, r) => (_equal(sr.sr_reason_sk, r.r_reason_sk)),
+        on: (
+          ss,
+          sr,
+          r,
+        ) => (!_equal(sr, null) && _equal(sr.sr_reason_sk, r.r_reason_sk)),
+        left: true,
       },
     ], {
       select: (ss, sr, r) => ({
@@ -91,7 +100,11 @@ function main(): void {
           ? ((ss.ss_quantity - sr.sr_return_quantity) * ss.ss_sales_price)
           : (ss.ss_quantity * ss.ss_sales_price)),
       }),
-      where: (ss, sr, r) => (_equal(r.r_reason_desc, "ReasonA")),
+      where: (
+        ss,
+        sr,
+        r,
+      ) => (_equal(r, null) || _equal(r.r_reason_desc, "ReasonA")),
     });
   })();
   result = (() => {
@@ -111,8 +124,31 @@ function main(): void {
       _g.items.push({ ...x, x: x });
     }
     let _groups = _order.map((k) => _map.get(k)!);
+    var _items = _groups;
+    let _pairs = _items.map((it) => {
+      const g = it;
+      return {
+        item: it,
+        key: [
+          _sum(g.items.map((y) => y.act_sales)),
+          g.key,
+        ],
+      };
+    });
+    _pairs.sort((a, b) => {
+      const ak = a.key;
+      const bk = b.key;
+      if (typeof ak === "number" && typeof bk === "number") return ak - bk;
+      if (typeof ak === "string" && typeof bk === "string") {
+        return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0);
+      }
+      return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);
+    });
+    _items = _pairs.map((p) => p.item);
     const _res = [];
-    for (const g of _groups) {
+    for (const g of _items) {
       _res.push({
         "ss_customer_sk": g.key,
         "sumsales": _sum(g.items.map((y) => y.act_sales)),

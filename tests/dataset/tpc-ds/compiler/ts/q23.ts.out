@@ -34,18 +34,18 @@ type WebSale = {
   ws_list_price: number;
 };
 
-let best_ss_customer: Array<any>;
-let catalog: Array<any>;
-let catalog_sales: Array<Record<string, any>>;
-let customer_totals: Array<Record<string, any>>;
-let date_dim: Array<Record<string, number>>;
-let frequent_ss_items: Array<any>;
-let item: Array<Record<string, number>>;
+let best_ss_customer: any[];
+let catalog: any[];
+let catalog_sales: Record<string, any>[];
+let customer_totals: Record<string, any>[];
+let date_dim: Record<string, number>[];
+let frequent_ss_items: any[];
+let item: Record<string, number>[];
 let max_sales: any;
 let result: number;
-let store_sales: Array<Record<string, any>>;
-let web: Array<any>;
-let web_sales: Array<Record<string, any>>;
+let store_sales: Record<string, any>[];
+let web: any[];
+let web_sales: Record<string, any>[];
 
 function test_TPCDS_Q23_cross_channel_sales(): void {
   if (!(result == 50)) throw new Error("expect failed");

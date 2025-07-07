@@ -29,8 +29,8 @@ type WebSite = {
   web_company_name: string;
 };
 
-function distinct(xs: Array<any>): Array<any> {
-  let out: Array<any> = [];
+function distinct(xs: any[]): any[] {
+  var out: any[] = [];
   for (const x of xs) {
     if ((!_contains(out, x))) {
       out = _append(out, x);
@@ -39,14 +39,14 @@ function distinct(xs: Array<any>): Array<any> {
   return out;
 }
 
-let customer_address: Array<Record<string, any>>;
-let date_dim: Array<Record<string, any>>;
-let filtered: Array<Record<string, any>>;
+let customer_address: Record<string, any>[];
+let date_dim: Record<string, any>[];
+let filtered: Record<string, any>[];
 let result: Record<string, any>;
-let web_returns: Array<Record<string, number>>;
-let web_sales: Array<Record<string, any>>;
-let web_site: Array<Record<string, any>>;
-let ws_wh: Array<Record<string, any>>;
+let web_returns: Record<string, number>[];
+let web_sales: Record<string, any>[];
+let web_site: Record<string, any>[];
+let ws_wh: Record<string, any>[];
 
 function test_TPCDS_Q95_shipping_returns(): void {
   if (
@@ -149,7 +149,7 @@ function main(): void {
   console.log(_json(result));
   test_TPCDS_Q95_shipping_returns();
 }
-function _append(lst: any[] | null, v: any): any[] {
+function _append<T>(lst: T[] | null, v: T): T[] {
   const out = lst ? lst.slice() : [];
   out.push(v);
   return out;

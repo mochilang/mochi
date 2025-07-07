@@ -34,15 +34,15 @@ type DateDim = {
   d_moy: number;
 };
 
-let active: Array<Record<string, any>>;
-let catalog_sales: Array<any>;
-let customer: Array<Record<string, number>>;
-let customer_address: Array<Record<string, any>>;
-let customer_demographics: Array<Record<string, any>>;
-let date_dim: Array<Record<string, number>>;
-let result: Array<Record<string, any>>;
-let store_sales: Array<Record<string, number>>;
-let web_sales: Array<any>;
+let active: Record<string, any>[];
+let catalog_sales: any[];
+let customer: Record<string, number>[];
+let customer_address: Record<string, any>[];
+let customer_demographics: Record<string, any>[];
+let date_dim: Record<string, number>[];
+let result: Record<string, any>[];
+let store_sales: Record<string, number>[];
+let web_sales: any[];
 
 function test_TPCDS_Q10_demographics_count(): void {
   if (

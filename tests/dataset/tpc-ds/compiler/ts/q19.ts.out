@@ -38,13 +38,13 @@ type Store = {
   s_zip: string;
 };
 
-let customer: Array<Record<string, number>>;
-let customer_address: Array<Record<string, any>>;
-let date_dim: Array<Record<string, number>>;
-let item: Array<Record<string, any>>;
-let result: Array<Record<string, any>>;
-let store: Array<Record<string, any>>;
-let store_sales: Array<Record<string, any>>;
+let customer: Record<string, number>[];
+let customer_address: Record<string, any>[];
+let date_dim: Record<string, number>[];
+let item: Record<string, any>[];
+let result: Record<string, any>[];
+let store: Record<string, any>[];
+let store_sales: Record<string, any>[];
 
 function test_TPCDS_Q19_brand(): void {
   if (

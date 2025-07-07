@@ -7,10 +7,10 @@ type StoreSale = {
   ss_wholesale_cost: number;
 };
 
-let bucket1: Array<Record<string, any>>;
-let bucket2: Array<Record<string, any>>;
+let bucket1: Record<string, any>[];
+let bucket2: Record<string, any>[];
 let result: Record<string, any>;
-let store_sales: Array<Record<string, any>>;
+let store_sales: Record<string, any>[];
 
 function test_TPCDS_Q28_buckets(): void {
   if (

@@ -23,11 +23,11 @@ type CallCenter = {
   cc_name: string;
 };
 
-let call_center: Array<Record<string, any>>;
-let catalog_sales: Array<Record<string, number>>;
-let grouped: Array<Record<string, any>>;
-let ship_mode: Array<Record<string, any>>;
-let warehouse: Array<Record<string, any>>;
+let call_center: Record<string, any>[];
+let catalog_sales: Record<string, number>[];
+let grouped: Record<string, any>[];
+let ship_mode: Record<string, any>[];
+let warehouse: Record<string, any>[];
 
 function test_TPCDS_Q99_buckets(): void {
   if (

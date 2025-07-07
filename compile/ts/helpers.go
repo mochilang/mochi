@@ -219,8 +219,13 @@ func tsType(t types.Type) string {
 		return "string"
 	case types.BoolType:
 		return "boolean"
-	case types.ListType:
-		return "Array<" + tsType(tt.Elem) + ">"
+       case types.ListType:
+               elem := tsType(tt.Elem)
+               // Use [] notation for simple array types to improve readability.
+               if elem == "any" {
+                       return "any[]"
+               }
+               return elem + "[]"
 	case types.MapType:
 		return "Record<" + tsType(tt.Key) + ", " + tsType(tt.Value) + ">"
 	case types.StructType:

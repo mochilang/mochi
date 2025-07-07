@@ -19,10 +19,10 @@ type Item = {
   i_category: string;
 };
 
-let date_dim: Array<Record<string, number>>;
-let inventory: Array<Record<string, number>>;
-let item: Array<Record<string, any>>;
-let qoh: Array<Record<string, any>>;
+let date_dim: Record<string, number>[];
+let inventory: Record<string, number>[];
+let item: Record<string, any>[];
+let qoh: Record<string, any>[];
 
 function test_TPCDS_Q22_average_inventory(): void {
   if (

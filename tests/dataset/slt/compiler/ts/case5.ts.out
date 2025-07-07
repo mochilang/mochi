@@ -8,9 +8,9 @@ type t1Row = {
   e: number;
 };
 
-let flatResult: Array<any>;
-let result: Array<Array<number>>;
-let t1: Array<t1Row>;
+var flatResult: any[];
+var result: number[][];
+let t1: t1Row[];
 
 function test_case5(): void {
   if (
@@ -270,13 +270,19 @@ function main(): void {
         key: [
           (row.a < 0) ? (-(row.a)) : row.a,
           row.e,
-          ((row.a + 1) == row.b)
+          ((!_equal(row.a + 1, null) && !_equal(row.b, null)) &&
+              ((row.a + 1) == row.b))
             ? 111
-            : (((row.a + 1) == row.c)
+            : (((!_equal(row.a + 1, null) && !_equal(row.c, null)) &&
+                ((row.a + 1) == row.c))
               ? 222
-              : (((row.a + 1) == row.d)
+              : (((!_equal(row.a + 1, null) && !_equal(row.d, null)) &&
+                  ((row.a + 1) == row.d))
                 ? 333
-                : (((row.a + 1) == row.e) ? 444 : 555))),
+                : (((!_equal(row.a + 1, null) && !_equal(row.e, null)) &&
+                    ((row.a + 1) == row.e))
+                  ? 444
+                  : 555))),
           ((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4),
           Math.trunc(((((row.a + row.b) + row.c) + row.d) + row.e) / 5),
           row.d,
@@ -302,13 +308,19 @@ function main(): void {
         Math.trunc(((((row.a + row.b) + row.c) + row.d) + row.e) / 5),
         (row.a < 0) ? (-(row.a)) : row.a,
         row.e,
-        ((row.a + 1) == row.b)
+        ((!_equal(row.a + 1, null) && !_equal(row.b, null)) &&
+            ((row.a + 1) == row.b))
           ? 111
-          : (((row.a + 1) == row.c)
+          : (((!_equal(row.a + 1, null) && !_equal(row.c, null)) &&
+              ((row.a + 1) == row.c))
             ? 222
-            : (((row.a + 1) == row.d)
+            : (((!_equal(row.a + 1, null) && !_equal(row.d, null)) &&
+                ((row.a + 1) == row.d))
               ? 333
-              : (((row.a + 1) == row.e) ? 444 : 555))),
+              : (((!_equal(row.a + 1, null) && !_equal(row.e, null)) &&
+                  ((row.a + 1) == row.e))
+                ? 444
+                : 555))),
         row.d,
       ]);
     }
@@ -325,7 +337,7 @@ function main(): void {
   }
   test_case5();
 }
-function _append(lst: any[] | null, v: any): any[] {
+function _append<T>(lst: T[] | null, v: T): T[] {
   const out = lst ? lst.slice() : [];
   out.push(v);
   return out;

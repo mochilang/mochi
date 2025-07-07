@@ -20,12 +20,12 @@ type DateDim = {
   d_date: string;
 };
 
-let catalog_sales: Array<Record<string, any>>;
-let class_totals: Array<Record<string, any>>;
-let date_dim: Array<Record<string, any>>;
-let filtered: Array<Record<string, any>>;
-let item: Array<Record<string, any>>;
-let result: Array<Record<string, any>>;
+let catalog_sales: Record<string, any>[];
+let class_totals: Record<string, any>[];
+let date_dim: Record<string, any>[];
+let filtered: Record<string, any>[];
+let item: Record<string, any>[];
+let result: Record<string, any>[];
 
 function test_TPCDS_Q20_revenue_ratio(): void {
   if (

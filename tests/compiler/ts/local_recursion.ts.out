@@ -13,7 +13,7 @@ type _Node = {
 
 type Tree = Leaf | _Node;
 
-function fromList(nums: Array<number>): Tree {
+function fromList(nums: number[]): Tree {
   function helper(lo: number, hi: number): Tree {
     if ((lo >= hi)) {
       return { __name: "Leaf" };
@@ -29,7 +29,7 @@ function fromList(nums: Array<number>): Tree {
   return helper(0, nums.length);
 }
 
-function inorder(t: Tree): Array<number> {
+function inorder(t: Tree): number[] {
   return (() => {
     const _t = t;
     if (_t.__name === "Leaf") return [];

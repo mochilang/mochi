@@ -29,8 +29,8 @@ type WebSite = {
   web_company_name: string;
 };
 
-function distinct(xs: Array<any>): Array<any> {
-  let out: Array<any> = [];
+function distinct(xs: any[]): any[] {
+  var out: any[] = [];
   for (const x of xs) {
     if ((!_contains(out, x))) {
       out = _append(out, x);
@@ -39,13 +39,13 @@ function distinct(xs: Array<any>): Array<any> {
   return out;
 }
 
-let customer_address: Array<Record<string, any>>;
-let date_dim: Array<Record<string, any>>;
-let filtered: Array<Record<string, any>>;
+let customer_address: Record<string, any>[];
+let date_dim: Record<string, any>[];
+let filtered: Record<string, any>[];
 let result: Record<string, any>;
-let web_returns: Array<Record<string, number>>;
-let web_sales: Array<Record<string, any>>;
-let web_site: Array<Record<string, any>>;
+let web_returns: Record<string, number>[];
+let web_sales: Record<string, any>[];
+let web_site: Record<string, any>[];
 
 function test_TPCDS_Q94_shipping(): void {
   if (
@@ -69,9 +69,18 @@ function main(): void {
       "ws_ext_ship_cost": 2,
     },
     {
-      "ws_order_number": 2,
+      "ws_order_number": 1,
       "ws_ship_date_sk": 1,
       "ws_warehouse_sk": 2,
+      "ws_ship_addr_sk": 1,
+      "ws_web_site_sk": 1,
+      "ws_net_profit": 0,
+      "ws_ext_ship_cost": 0,
+    },
+    {
+      "ws_order_number": 2,
+      "ws_ship_date_sk": 1,
+      "ws_warehouse_sk": 3,
       "ws_ship_addr_sk": 1,
       "ws_web_site_sk": 1,
       "ws_net_profit": 3,
@@ -119,7 +128,13 @@ function main(): void {
         d,
         ca,
         w,
-      ) => ((_equal(ca.ca_state, "CA") && _equal(w.web_company_name, "pri")) &&
+      ) => (((_equal(ca.ca_state, "CA") && _equal(w.web_company_name, "pri")) &&
+        _exists(
+          web_sales.filter(
+            (ws2) => (_equal(ws.ws_order_number, ws2.ws_order_number) &&
+              !_equal(ws.ws_warehouse_sk, ws2.ws_warehouse_sk))
+          ).map((ws2) => ws2),
+        )) &&
         (_exists(
           web_returns.filter(
             (wr) => (_equal(wr.wr_order_number, ws.ws_order_number))
@@ -135,7 +150,7 @@ function main(): void {
   console.log(_json(result));
   test_TPCDS_Q94_shipping();
 }
-function _append(lst: any[] | null, v: any): any[] {
+function _append<T>(lst: T[] | null, v: T): T[] {
   const out = lst ? lst.slice() : [];
   out.push(v);
   return out;

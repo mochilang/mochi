@@ -5,8 +5,8 @@ type Product = {
   price: number;
 };
 
-let expensive: Array<Product>;
-let products: Array<Product>;
+let expensive: Product[];
+let products: Product[];
 
 function main(): void {
   products = [

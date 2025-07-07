@@ -2,13 +2,13 @@
 
 const math = { sqrt: Math.sqrt };
 
-let date_dim: Array<Record<string, number>>;
-let grouped: Record<string, Record<string, any>>;
-let inventory: Array<Record<string, number>>;
-let item: Array<Record<string, number>>;
-let monthly: Array<Record<string, any>>;
-let summary: Array<any>;
-let warehouse: Array<Record<string, any>>;
+let date_dim: Record<string, number>[];
+var grouped: Record<string, Record<string, any>>;
+let inventory: Record<string, number>[];
+let item: Record<string, number>[];
+let monthly: Record<string, any>[];
+var summary: any[];
+let warehouse: Record<string, any>[];
 
 function test_TPCDS_Q39_simplified(): void {
   if (
@@ -133,11 +133,11 @@ function main(): void {
   summary = [];
   for (const g of _values(grouped)) {
     let mean: number = _avg(g.qtys);
-    let sumsq: number = 0;
+    var sumsq: number = 0;
     for (const q of _iter(g.qtys)) {
       sumsq = sumsq + ((q - mean) * (q - mean));
     }
-    let variance: any = Math.trunc(
+    let variance: number = Math.trunc(
       sumsq / ((Array.isArray(g.qtys) || typeof g.qtys === "string"
         ? (g.qtys as any).length
         : (g.qtys && typeof g.qtys === "object"
@@ -156,7 +156,7 @@ function main(): void {
   console.log(_json(summary));
   test_TPCDS_Q39_simplified();
 }
-function _append(lst: any[] | null, v: any): any[] {
+function _append<T>(lst: T[] | null, v: T): T[] {
   const out = lst ? lst.slice() : [];
   out.push(v);
   return out;
@@ -195,13 +195,15 @@ function _equal(a: any, b: any): boolean {
   return a === b;
 }
 
-function _iter(v: any): any {
+function _iter<T>(
+  v: Iterable<T> | Record<string, T> | any,
+): Iterable<T | string> {
   if (
     v && typeof v === "object" && !Array.isArray(v) && !(Symbol.iterator in v)
   ) {
     return Object.keys(v);
   }
-  return v;
+  return v as Iterable<T>;
 }
 
 function _json(v: any): string {
@@ -321,7 +323,7 @@ function _sum(v: any): number {
   return sum;
 }
 
-function _values(m: any): any[] {
+function _values<T>(m: Record<string, T>): T[] {
   if (m && typeof m === "object" && !Array.isArray(m)) {
     return Object.values(m);
   }

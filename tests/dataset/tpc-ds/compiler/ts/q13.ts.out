@@ -40,14 +40,14 @@ type DateDim = {
   d_year: number;
 };
 
-let customer_address: Array<Record<string, any>>;
-let customer_demographics: Array<Record<string, any>>;
-let date_dim: Array<Record<string, number>>;
-let filtered: Array<Record<string, any>>;
-let household_demographics: Array<Record<string, number>>;
-let result: Array<Record<string, number>>;
-let store: Array<Record<string, any>>;
-let store_sales: Array<Record<string, any>>;
+let customer_address: Record<string, any>[];
+let customer_demographics: Record<string, any>[];
+let date_dim: Record<string, number>[];
+let filtered: Record<string, any>[];
+let household_demographics: Record<string, number>[];
+let result: Record<string, number>[];
+let store: Record<string, any>[];
+let store_sales: Record<string, any>[];
 
 function test_TPCDS_Q13_averages(): void {
   if (

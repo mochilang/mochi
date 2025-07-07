@@ -22,11 +22,11 @@ type Store = {
   s_store_name: string;
 };
 
-let household_demographics: Array<Record<string, number>>;
+let household_demographics: Record<string, number>[];
 let result: number;
-let store: Array<Record<string, any>>;
-let store_sales: Array<Record<string, number>>;
-let time_dim: Array<Record<string, number>>;
+let store: Record<string, any>[];
+let store_sales: Record<string, number>[];
+let time_dim: Record<string, number>[];
 
 function test_TPCDS_Q96_count(): void {
   if (!(result == 3)) throw new Error("expect failed");

@@ -22,18 +22,24 @@ type DateDim = {
   d_date: string;
 };
 
-let after: Array<Record<string, any>>;
-let before: Array<Record<string, any>>;
-let date_dim: Array<Record<string, any>>;
-let inventory: Array<Record<string, number>>;
-let item: Array<Record<string, any>>;
-let joined: Array<Record<string, any>>;
-let result: Array<Record<string, any>>;
-let warehouse: Array<Record<string, any>>;
+let after: Record<string, any>[];
+let before: Record<string, any>[];
+let date_dim: Record<string, any>[];
+let inventory: Record<string, number>[];
+let item: Record<string, any>[];
+let joined: Record<string, any>[];
+let result: Record<string, any>[];
+let warehouse: Record<string, any>[];
 
 function test_TPCDS_Q21_inventory_ratio(): void {
   if (
     !(_equal(result, [
+      {
+        "w_warehouse_name": "Backup",
+        "i_item_id": "ITEM2",
+        "inv_before": 20,
+        "inv_after": 20,
+      },
       {
         "w_warehouse_name": "Main",
         "i_item_id": "ITEM1",

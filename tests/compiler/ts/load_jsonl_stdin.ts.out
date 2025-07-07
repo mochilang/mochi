@@ -5,7 +5,7 @@ type Person = {
   age: number;
 };
 
-let people: Array<Person>;
+let people: Person[];
 
 function main(): void {
   people = _load(null, _toAnyMap({ "format": "jsonl" })) as Array<Person>;

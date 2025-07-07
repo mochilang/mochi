@@ -42,14 +42,14 @@ type Item = {
   i_item_desc: string;
 };
 
-let base: Array<Record<string, any>>;
-let catalog_sales: Array<Record<string, number>>;
-let date_dim: Array<Record<string, number>>;
-let item: Array<Record<string, any>>;
-let result: Array<Record<string, any>>;
-let store: Array<Record<string, any>>;
-let store_returns: Array<Record<string, number>>;
-let store_sales: Array<Record<string, number>>;
+let base: Record<string, any>[];
+let catalog_sales: Record<string, number>[];
+let date_dim: Record<string, number>[];
+let item: Record<string, any>[];
+let result: Record<string, any>[];
+let store: Record<string, any>[];
+let store_returns: Record<string, number>[];
+let store_sales: Record<string, number>[];
 
 function test_TPCDS_Q29_quantity_summary(): void {
   if (

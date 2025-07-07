@@ -18,9 +18,9 @@ type PairInfo = {
   orderTotal: number;
 };
 
-let customers: Array<Customer>;
-let orders: Array<Order>;
-let result: Array<PairInfo>;
+let customers: Customer[];
+let orders: Order[];
+let result: PairInfo[];
 
 function main(): void {
   customers = [

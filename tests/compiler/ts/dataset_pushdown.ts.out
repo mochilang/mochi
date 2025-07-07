@@ -5,7 +5,7 @@ type Person = {
   age: number;
 };
 
-let names: Array<string>;
+let names: string[];
 
 function main(): void {
   names = _load(

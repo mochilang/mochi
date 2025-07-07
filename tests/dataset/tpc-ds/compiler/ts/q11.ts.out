@@ -19,13 +19,13 @@ type WebSale = {
   ws_ext_list_price: number;
 };
 
-let customer: Array<Record<string, any>>;
+let customer: Record<string, any>[];
 let growth_ok: boolean;
 let result: any;
 let ss98: number;
 let ss99: number;
-let store_sales: Array<Record<string, any>>;
-let web_sales: Array<Record<string, any>>;
+let store_sales: Record<string, any>[];
+let web_sales: Record<string, any>[];
 let ws98: number;
 let ws99: number;
 
