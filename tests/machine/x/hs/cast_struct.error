@@ -1,0 +1,15 @@
+
+/workspace/mochi/tests/machine/x/hs/cast_struct.hs:111:10: error:
+    Not in scope: type constructor or class ‘Aeson.FromJSON’
+    NB: no module named ‘Aeson’ is imported.
+    |
+111 | instance Aeson.FromJSON Todo
+    |          ^^^^^^^^^^^^^^
+
+
+Context around line 111:
+  109|   deriving (Eq, Show, Generic)
+  110| 
+  111| instance Aeson.FromJSON Todo
+  112| 
+  113| todo = Map.fromList [("title", "hi")]

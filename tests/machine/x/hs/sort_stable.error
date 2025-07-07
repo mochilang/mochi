@@ -1,0 +1,16 @@
+
+/workspace/mochi/tests/machine/x/hs/sort_stable.hs:105:1: error:
+    Multiple declarations of ‘items’
+    Declared at: /workspace/mochi/tests/machine/x/hs/sort_stable.hs:36:37
+                 /workspace/mochi/tests/machine/x/hs/sort_stable.hs:105:1
+    |
+105 | items = [Map.fromList [("n", VInt (1)), ("v", VString ("a"))], Map.fromList [("n", VInt (1)), ("v", VString ("b"))], Map.fromList [("n", VInt (2)), ("v", VString ("c"))]]
+    | ^^^^^
+
+
+Context around line 105:
+  103|            in map row (drop start ls)
+  104| 
+  105| items = [Map.fromList [("n", VInt (1)), ("v", VString ("a"))], Map.fromList [("n", VInt (1)), ("v", VString ("b"))], Map.fromList [("n", VInt (2)), ("v", VString ("c"))]]
+  106| 
+  107| result = map snd (List.sortOn fst [(fromMaybe (error "missing") (Map.lookup "n" (i)), fromMaybe (error "missing") (Map.lookup "v" i)) | i <- items])

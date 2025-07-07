@@ -1,0 +1,15 @@
+
+/workspace/mochi/tests/machine/x/hs/record_assign.hs:111:10: error:
+    Not in scope: type constructor or class ‘Aeson.FromJSON’
+    NB: no module named ‘Aeson’ is imported.
+    |
+111 | instance Aeson.FromJSON Counter
+    |          ^^^^^^^^^^^^^^
+
+
+Context around line 111:
+  109|   deriving (Eq, Show, Generic)
+  110| 
+  111| instance Aeson.FromJSON Counter
+  112| 
+  113| inc :: Counter -> ()

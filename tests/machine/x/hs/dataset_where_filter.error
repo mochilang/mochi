@@ -1,0 +1,110 @@
+
+/workspace/mochi/tests/machine/x/hs/dataset_where_filter.hs:105:34: error:
+    Data constructor not in scope: VString :: String -> a
+    |
+105 | people = [Map.fromList [("name", VString ("Alice")), ("age", VInt (30))], Map.fromList [("name", VString ("Bob")), ("age", VInt (15))], Map.fromList [("name", VString ("Charlie")), ("age", VInt (65))], Map.fromList [("name", VString ("Diana")), ("age", VInt (45))]]
+    |                                  ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/dataset_where_filter.hs:105:62: error:
+    Data constructor not in scope: VInt :: t5 -> a
+    |
+105 | people = [Map.fromList [("name", VString ("Alice")), ("age", VInt (30))], Map.fromList [("name", VString ("Bob")), ("age", VInt (15))], Map.fromList [("name", VString ("Charlie")), ("age", VInt (65))], Map.fromList [("name", VString ("Diana")), ("age", VInt (45))]]
+    |                                                              ^^^^
+
+/workspace/mochi/tests/machine/x/hs/dataset_where_filter.hs:105:98: error:
+    Data constructor not in scope: VString :: String -> a
+    |
+105 | people = [Map.fromList [("name", VString ("Alice")), ("age", VInt (30))], Map.fromList [("name", VString ("Bob")), ("age", VInt (15))], Map.fromList [("name", VString ("Charlie")), ("age", VInt (65))], Map.fromList [("name", VString ("Diana")), ("age", VInt (45))]]
+    |                                                                                                  ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/dataset_where_filter.hs:105:124: error:
+    Data constructor not in scope: VInt :: t4 -> a
+    |
+105 | people = [Map.fromList [("name", VString ("Alice")), ("age", VInt (30))], Map.fromList [("name", VString ("Bob")), ("age", VInt (15))], Map.fromList [("name", VString ("Charlie")), ("age", VInt (65))], Map.fromList [("name", VString ("Diana")), ("age", VInt (45))]]
+    |                                                                                                                            ^^^^
+
+/workspace/mochi/tests/machine/x/hs/dataset_where_filter.hs:105:160: error:
+    Data constructor not in scope: VString :: String -> a
+    |
+105 | people = [Map.fromList [("name", VString ("Alice")), ("age", VInt (30))], Map.fromList [("name", VString ("Bob")), ("age", VInt (15))], Map.fromList [("name", VString ("Charlie")), ("age", VInt (65))], Map.fromList [("name", VString ("Diana")), ("age", VInt (45))]]
+    |                                                                                                                                                                ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/dataset_where_filter.hs:105:190: error:
+    Data constructor not in scope: VInt :: t3 -> a
+    |
+105 | people = [Map.fromList [("name", VString ("Alice")), ("age", VInt (30))], Map.fromList [("name", VString ("Bob")), ("age", VInt (15))], Map.fromList [("name", VString ("Charlie")), ("age", VInt (65))], Map.fromList [("name", VString ("Diana")), ("age", VInt (45))]]
+    |                                                                                                                                                                                              ^^^^
+
+/workspace/mochi/tests/machine/x/hs/dataset_where_filter.hs:105:226: error:
+    Data constructor not in scope: VString :: String -> a
+    |
+105 | people = [Map.fromList [("name", VString ("Alice")), ("age", VInt (30))], Map.fromList [("name", VString ("Bob")), ("age", VInt (15))], Map.fromList [("name", VString ("Charlie")), ("age", VInt (65))], Map.fromList [("name", VString ("Diana")), ("age", VInt (45))]]
+    |                                                                                                                                                                                                                                  ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/dataset_where_filter.hs:105:254: error:
+    Data constructor not in scope: VInt :: t2 -> a
+    |
+105 | people = [Map.fromList [("name", VString ("Alice")), ("age", VInt (30))], Map.fromList [("name", VString ("Bob")), ("age", VInt (15))], Map.fromList [("name", VString ("Charlie")), ("age", VInt (65))], Map.fromList [("name", VString ("Diana")), ("age", VInt (45))]]
+    |                                                                                                                                                                                                                                                              ^^^^
+
+/workspace/mochi/tests/machine/x/hs/dataset_where_filter.hs:107:34: error:
+    Data constructor not in scope: VString :: a3 -> a
+    |
+107 | adults = [Map.fromList [("name", VString (fromMaybe (error "missing") (Map.lookup "name" person))), ("age", VString (fromMaybe (error "missing") (Map.lookup "age" person))), ("is_senior", VBool ((fromMaybe (error "missing") (Map.lookup "age" person) >= 60)))] | person <- filter (\person -> (fromMaybe (error "missing") (Map.lookup "age" person) >= 18)) people]
+    |                                  ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/dataset_where_filter.hs:107:109: error:
+    Data constructor not in scope: VString :: a3 -> a
+    |
+107 | adults = [Map.fromList [("name", VString (fromMaybe (error "missing") (Map.lookup "name" person))), ("age", VString (fromMaybe (error "missing") (Map.lookup "age" person))), ("is_senior", VBool ((fromMaybe (error "missing") (Map.lookup "age" person) >= 60)))] | person <- filter (\person -> (fromMaybe (error "missing") (Map.lookup "age" person) >= 18)) people]
+    |                                                                                                             ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/dataset_where_filter.hs:107:189: error:
+    Data constructor not in scope: VBool :: Bool -> a
+    |
+107 | adults = [Map.fromList [("name", VString (fromMaybe (error "missing") (Map.lookup "name" person))), ("age", VString (fromMaybe (error "missing") (Map.lookup "age" person))), ("is_senior", VBool ((fromMaybe (error "missing") (Map.lookup "age" person) >= 60)))] | person <- filter (\person -> (fromMaybe (error "missing") (Map.lookup "age" person) >= 18)) people]
+    |                                                                                                                                                                                             ^^^^^
+
+/workspace/mochi/tests/machine/x/hs/dataset_where_filter.hs:112:40: error:
+    • Couldn't match expected type: t0 -> Maybe a0 -> String
+                  with actual type: [Char]
+    • The function ‘show’ is applied to three value arguments,
+        but its type ‘(a1 -> Maybe a1 -> a1) -> [Char]’ has only one
+      In the expression:
+        show fromMaybe (error "missing") (Map.lookup "name" person)
+      In the first argument of ‘unwords’, namely
+        ‘[show fromMaybe (error "missing") (Map.lookup "name" person),
+          "is", show fromMaybe (error "missing") (Map.lookup "age" person),
+          0]’
+    • Relevant bindings include
+        person :: Map.Map String a0
+          (bound at /workspace/mochi/tests/machine/x/hs/dataset_where_filter.hs:112:11)
+    |
+112 |   mapM_ (\person -> putStrLn (unwords [show fromMaybe (error "missing") (Map.lookup "name" person), "is", show fromMaybe (error "missing") (Map.lookup "age" person), 0])) adults
+    |                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/dataset_where_filter.hs:112:107: error:
+    • Couldn't match expected type: t1 -> Maybe a0 -> String
+                  with actual type: [Char]
+    • The function ‘show’ is applied to three value arguments,
+        but its type ‘(a2 -> Maybe a2 -> a2) -> [Char]’ has only one
+      In the expression:
+        show fromMaybe (error "missing") (Map.lookup "age" person)
+      In the first argument of ‘unwords’, namely
+        ‘[show fromMaybe (error "missing") (Map.lookup "name" person),
+          "is", show fromMaybe (error "missing") (Map.lookup "age" person),
+          0]’
+    • Relevant bindings include
+        person :: Map.Map String a0
+          (bound at /workspace/mochi/tests/machine/x/hs/dataset_where_filter.hs:112:11)
+    |
+112 |   mapM_ (\person -> putStrLn (unwords [show fromMaybe (error "missing") (Map.lookup "name" person), "is", show fromMaybe (error "missing") (Map.lookup "age" person), 0])) adults
+    |                                                                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+Context around line 105:
+  103|            in map row (drop start ls)
+  104| 
+  105| people = [Map.fromList [("name", VString ("Alice")), ("age", VInt (30))], Map.fromList [("name", VString ("Bob")), ("age", VInt (15))], Map.fromList [("name", VString ("Charlie")), ("age", VInt (65))], Map.fromList [("name", VString ("Diana")), ("age", VInt (45))]]
+  106| 
+  107| adults = [Map.fromList [("name", VString (fromMaybe (error "missing") (Map.lookup "name" person))), ("age", VString (fromMaybe (error "missing") (Map.lookup "age" person))), ("is_senior", VBool ((fromMaybe (error "missing") (Map.lookup "age" person) >= 60)))] | person <- filter (\person -> (fromMaybe (error "missing") (Map.lookup "age" person) >= 18)) people]

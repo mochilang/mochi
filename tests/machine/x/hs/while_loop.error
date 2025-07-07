@@ -1,0 +1,28 @@
+
+/workspace/mochi/tests/machine/x/hs/while_loop.hs:109:68: error:
+    • Couldn't match expected type ‘Maybe b0’ with actual type ‘()’
+    • In the first argument of ‘fromMaybe’, namely ‘()’
+      In the second argument of ‘(<$)’, namely
+        ‘(fromMaybe
+            ()
+            (case (let _ = print (i) in Nothing) of
+               Just v -> Just v
+               Nothing -> (let i = (i + 1) in Nothing)))’
+      In the expression:
+        Nothing
+          <$
+            (fromMaybe
+               ()
+               (case (let _ = print (i) in Nothing) of
+                  Just v -> Just v
+                  Nothing -> (let i = (i + 1) in Nothing)))
+    |
+109 |   let _ = whileLoop (\() -> (i < 3)) (\() -> Nothing <$ (fromMaybe () (case (let _ = print (i) in Nothing) of Just v -> Just v; Nothing -> (let i = (i + 1) in Nothing)))) in return ()
+    |                                                                    ^^
+
+
+Context around line 109:
+  107| main :: IO ()
+  108| main = do
+  109|   let _ = whileLoop (\() -> (i < 3)) (\() -> Nothing <$ (fromMaybe () (case (let _ = print (i) in Nothing) of Just v -> Just v; Nothing -> (let i = (i + 1) in Nothing)))) in return ()
+  110| 

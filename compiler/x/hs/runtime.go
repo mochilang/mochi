@@ -21,9 +21,9 @@ whileLoop cond body = go ()
               Nothing -> go ()
          | otherwise = Nothing
 
-avg :: Real a => [a] -> Double
+avg :: Integral a => [a] -> a
 avg xs | null xs = 0
-      | otherwise = sum (map realToFrac xs) / fromIntegral (length xs)
+       | otherwise = div (sum xs) (fromIntegral (length xs))
 
 data MGroup k a = MGroup { key :: k, items :: [a] } deriving (Show)
 
@@ -44,6 +44,9 @@ _indexString s i =
   in if idx < 0 || idx >= length s
        then error "index out of range"
        else [s !! idx]
+
+_append :: [a] -> a -> [a]
+_append xs x = xs ++ [x]
 
 _input :: IO String
 _input = getLine

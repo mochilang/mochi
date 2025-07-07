@@ -915,6 +915,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if p.Call.Func == "push" && len(args) == 2 {
 			return fmt.Sprintf("(%s ++ [%s])", args[0], args[1]), nil
 		}
+		if p.Call.Func == "append" && len(args) == 2 {
+			return fmt.Sprintf("_append %s %s", args[0], args[1]), nil
+		}
 		if p.Call.Func == "keys" && len(args) == 1 {
 			c.usesMap = true
 			return fmt.Sprintf("(Map.keys %s)", args[0]), nil
