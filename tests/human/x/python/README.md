@@ -82,8 +82,6 @@ This directory (`tests/human/x/python`) contains manual Python translations of t
 - order_by_map.mochi
 - outer_join.mochi
 - sort_stable.mochi
-
-## Missing
 - group_by_conditional_sum.mochi
 - group_by_having.mochi
 - group_by_join.mochi
@@ -102,3 +100,6 @@ This directory (`tests/human/x/python`) contains manual Python translations of t
 - right_join.mochi
 - save_jsonl_stdout.mochi
 - update_stmt.mochi
+
+## Missing
+None
