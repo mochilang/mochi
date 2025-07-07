@@ -61,8 +61,14 @@ This directory contains manual Go translations of some Mochi test programs from 
 - values_builtin.mochi
 - var_assignment.mochi
 - while_loop.mochi
-## Missing
 - group_by.mochi
+- match_expr.mochi
+- match_full.mochi
+- short_circuit.mochi
+- slice.mochi
+- tree_sum.mochi
+- two-sum.mochi
+## Missing
 - group_by_conditional_sum.mochi
 - group_by_having.mochi
 - group_by_join.mochi
@@ -78,8 +84,6 @@ This directory contains manual Go translations of some Mochi test programs from 
 - left_join_multi.mochi
 - list_set_ops.mochi
 - load_yaml.mochi
-- match_expr.mochi
-- match_full.mochi
 - math_ops.mochi
 - membership.mochi
 - min_max_builtin.mochi
@@ -93,12 +97,8 @@ This directory contains manual Go translations of some Mochi test programs from 
 - record_assign.mochi
 - right_join.mochi
 - save_jsonl_stdout.mochi
-- short_circuit.mochi
-- slice.mochi
 - sort_stable.mochi
 - str_builtin.mochi
 - test_block.mochi
-- tree_sum.mochi
-- two-sum.mochi
 - update_stmt.mochi
 - user_type_literal.mochi
