@@ -1396,19 +1396,38 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			case types.GroupType:
 				elem := typeString(tt.Elem)
 				c.use("_avgList")
+				c.use("_sumList")
 				return fmt.Sprintf("specialize _avgList<%s>(%s.Items)", elem, args[0]), nil
 			case types.ListType:
 				elem := typeString(tt.Elem)
 				c.use("_avgList")
+				c.use("_sumList")
 				return fmt.Sprintf("specialize _avgList<%s>(%s)", elem, args[0]), nil
 			default:
 				return "0", nil
 			}
+		case "append":
+			if len(args) != 2 {
+				return "", fmt.Errorf("append expects 2 arguments")
+			}
+			if lt, ok := types.TypeOfExpr(p.Call.Args[0], c.env).(types.ListType); ok {
+				elem := typeString(lt.Elem)
+				c.use("_appendList")
+				return fmt.Sprintf("specialize _appendList<%s>(%s, %s)", elem, args[0], args[1]), nil
+			}
+			return "", fmt.Errorf("append on non-list not supported")
 		case "len":
 			return fmt.Sprintf("Length(%s)", argStr), nil
 		case "print":
 			if len(args) == 0 {
 				return "writeln()", nil
+			}
+			if len(args) == 1 {
+				if _, ok := types.TypeOfExpr(p.Call.Args[0], c.env).(types.ListType); ok {
+					elem := c.elemTypeOfExpr(p.Call.Args[0])
+					c.use("_printList")
+					return fmt.Sprintf("specialize _printList<%s>(%s)", elem, args[0]), nil
+				}
 			}
 			withSpaces := make([]string, 0, len(args)*2-1)
 			withSpaces = append(withSpaces, args[0])
@@ -2130,6 +2149,18 @@ func (c *Compiler) emitHelpers() {
 		names = append(names, n)
 	}
 	sort.Strings(names)
+	// ensure helper dependencies appear before their dependents
+	var iAvg, iSum = -1, -1
+	for i, n := range names {
+		if n == "_avgList" {
+			iAvg = i
+		} else if n == "_sumList" {
+			iSum = i
+		}
+	}
+	if iAvg >= 0 && iSum >= 0 && iSum > iAvg {
+		names[iAvg], names[iSum] = names[iSum], names[iAvg]
+	}
 	for _, n := range names {
 		switch n {
 		case "_fetch":
@@ -2462,6 +2493,35 @@ func (c *Compiler) emitHelpers() {
 			c.writeln("SetLength(Result, Length(arr));")
 			c.writeln("for i := 0 to High(arr) do")
 			c.writeln("  Result[i] := arr[High(arr) - i];")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_printList":
+			c.writeln("generic procedure _printList<T>(arr: specialize TArray<T>);")
+			c.writeln("var i: Integer;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("for i := 0 to High(arr) do")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("if i > 0 then Write(' ');")
+			c.writeln("Write(arr[i]);")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("writeln();")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_appendList":
+			c.writeln("generic function _appendList<T>(arr: specialize TArray<T>; val: T): specialize TArray<T>;")
+			c.writeln("var i,n: Integer;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("n := Length(arr);")
+			c.writeln("SetLength(Result, n + 1);")
+			c.writeln("for i := 0 to n - 1 do")
+			c.writeln("  Result[i] := arr[i];")
+			c.writeln("Result[n] := val;")
 			c.indent--
 			c.writeln("end;")
 			c.writeln("")
