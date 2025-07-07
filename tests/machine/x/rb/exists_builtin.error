@@ -1,0 +1,10 @@
+error: /workspace/mochi/tests/machine/x/rb/exists_builtin.rb:2:in `<main>': undefined local variable or method `exists' for main:Object (NameError)
+
+flag = exists.call((((data)).select { |x| (x == 1) }).map { |x| x })
+       ^^^^^^
+Did you mean?  exit
+               exit!
+1: data = [1, 2]
+2: flag = exists.call((((data)).select { |x| (x == 1) }).map { |x| x })
+3: puts([flag].join(" "))
+4: 

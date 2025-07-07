@@ -1,0 +1,10 @@
+error: /workspace/mochi/tests/machine/x/rb/tree_sum.rb:23:in `method': undefined method `Leaf' for class `#<Class:#<Object:0x00007f93b936ccf8>>' (NameError)
+
+t = Node.new(left: method(:Leaf), value: 1, right: Node.new(left: method(:Leaf), value: 2, right: method(:Leaf)))
+                   ^^^^^^
+	from /workspace/mochi/tests/machine/x/rb/tree_sum.rb:23:in `<main>'
+21: end
+22: 
+23: t = Node.new(left: method(:Leaf), value: 1, right: Node.new(left: method(:Leaf), value: 2, right: method(:Leaf)))
+24: puts([sum_tree(t)].join(" "))
+25: 
