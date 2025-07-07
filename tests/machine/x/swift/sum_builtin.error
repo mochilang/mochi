@@ -1,2 +1,2 @@
-line: 0
-error: unsupported expression at line 1
+line 1: exit status 1
+print(sum([1, 2, 3]))

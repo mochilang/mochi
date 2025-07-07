@@ -1,2 +1,4 @@
-line: 0
-error: unsupported expression at line 1
+line 2: exit status 1
+let nums = [3, 1, 4]
+print(min(nums))
+print(max(nums))

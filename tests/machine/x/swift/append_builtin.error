@@ -1,2 +1,3 @@
-line: 0
-error: unsupported expression at line 1
+line 2: exit status 1
+let a = [1, 2]
+print(append(a, 3))
