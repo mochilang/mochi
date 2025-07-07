@@ -2,7 +2,7 @@
 
 This directory contains Go source files generated from Mochi programs.
 
-## Progress: 27/97
+## Progress: 28/97
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -13,7 +13,7 @@ This directory contains Go source files generated from Mochi programs.
 - [x] cast_string_to_int.mochi
 - [ ] cast_struct.mochi
 - [ ] closure.mochi
-- [ ] count_builtin.mochi
+- [x] count_builtin.mochi
 - [ ] cross_join.mochi
 - [ ] cross_join_filter.mochi
 - [ ] cross_join_triple.mochi
