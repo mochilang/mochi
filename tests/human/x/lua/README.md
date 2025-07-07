@@ -53,6 +53,20 @@ This directory contains hand-written Lua programs corresponding to a subset of t
 - values_builtin.lua
 - var_assignment.lua
 - while_loop.lua
+- if_then_else.lua
+- if_then_else_nested.lua
+- in_operator.lua
+- in_operator_extended.lua
+- short_circuit.lua
+- slice.lua
+- sort_stable.lua
+- str_builtin.lua
+- string_compare.lua
+- tail_recursion.lua
+- test_block.lua
+- typed_let.lua
+- typed_var.lua
+- user_type_literal.lua
 ## Missing translations
 
 - group_by
@@ -64,10 +78,6 @@ This directory contains hand-written Lua programs corresponding to a subset of t
 - group_by_multi_join_sort
 - group_by_sort
 - group_items_iteration
-- if_then_else
-- if_then_else_nested
-- in_operator
-- in_operator_extended
 - inner_join
 - join_multi
 - json_builtin
@@ -93,15 +103,5 @@ This directory contains hand-written Lua programs corresponding to a subset of t
 - query_sum_select
 - right_join
 - save_jsonl_stdout
-- short_circuit
-- slice
-- sort_stable
-- str_builtin
-- string_compare
-- tail_recursion
-- test_block
-- typed_let
-- typed_var
 - update_stmt
-- user_type_literal
 
