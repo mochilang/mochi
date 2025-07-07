@@ -96,7 +96,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 		c.indent--
 		c.writeln("}")
-		c.writeln("__run_tests(__tests)")
+		// tests are defined but not executed automatically
 	}
 
 	bodyBytes := append([]byte(nil), c.buf.Bytes()...)
