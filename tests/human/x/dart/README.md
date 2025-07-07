@@ -25,6 +25,10 @@ This directory contains hand-written Dart versions of the programs found in `tes
 - fun_call.mochi
 - fun_expr_in_let.mochi
 - fun_three_args.mochi
+- group_by.mochi
+- group_by_conditional_sum.mochi
+- group_by_having.mochi
+- group_by_join.mochi
 - if_else.mochi
 - if_then_else.mochi
 - if_then_else_nested.mochi
@@ -65,10 +69,6 @@ This directory contains hand-written Dart versions of the programs found in `tes
 - while_loop.mochi
 
 ## Missing translations
-- group_by.mochi
-- group_by_conditional_sum.mochi
-- group_by_having.mochi
-- group_by_join.mochi
 - group_by_left_join.mochi
 - group_by_multi_join.mochi
 - group_by_multi_join_sort.mochi
