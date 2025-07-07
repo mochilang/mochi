@@ -50,6 +50,33 @@ This folder contains hand-written Smalltalk versions of programs from `tests/vm/
 - [x] typed_var.mochi
 - [x] unary_neg.mochi
 - [x] while_loop.mochi
+- [x] let_and_print.mochi
+- [x] list_assign.mochi
+- [x] list_index.mochi
+- [x] list_nested_assign.mochi
+- [x] list_set_ops.mochi
+- [x] map_assign.mochi
+- [x] map_in_operator.mochi
+- [x] map_index.mochi
+- [x] map_int_key.mochi
+- [x] map_literal_dynamic.mochi
+- [x] map_membership.mochi
+- [x] map_nested_assign.mochi
+- [x] match_expr.mochi
+- [x] match_full.mochi
+- [x] nested_function.mochi
+- [x] order_by_map.mochi
+- [x] partial_application.mochi
+- [x] pure_fold.mochi
+- [x] pure_global_fold.mochi
+- [x] record_assign.mochi
+- [x] short_circuit.mochi
+- [x] slice.mochi
+- [x] sort_stable.mochi
+- [x] tail_recursion.mochi
+- [x] user_type_literal.mochi
+- [x] values_builtin.mochi
+- [x] var_assignment.mochi
 
 ## Missing
 - [ ] group_by.mochi
@@ -66,39 +93,12 @@ This folder contains hand-written Smalltalk versions of programs from `tests/vm/
 - [ ] json_builtin.mochi
 - [ ] left_join.mochi
 - [ ] left_join_multi.mochi
-- [ ] let_and_print.mochi
-- [ ] list_assign.mochi
-- [ ] list_index.mochi
-- [ ] list_nested_assign.mochi
-- [ ] list_set_ops.mochi
 - [ ] load_yaml.mochi
-- [ ] map_assign.mochi
-- [ ] map_in_operator.mochi
-- [ ] map_index.mochi
-- [ ] map_int_key.mochi
-- [ ] map_literal_dynamic.mochi
-- [ ] map_membership.mochi
-- [ ] map_nested_assign.mochi
-- [ ] match_expr.mochi
-- [ ] match_full.mochi
-- [ ] nested_function.mochi
-- [ ] order_by_map.mochi
 - [ ] outer_join.mochi
-- [ ] partial_application.mochi
-- [ ] pure_fold.mochi
-- [ ] pure_global_fold.mochi
 - [ ] query_sum_select.mochi
-- [ ] record_assign.mochi
 - [ ] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
-- [ ] short_circuit.mochi
-- [ ] slice.mochi
-- [ ] sort_stable.mochi
-- [ ] tail_recursion.mochi
 - [ ] test_block.mochi
 - [ ] tree_sum.mochi
 - [ ] two-sum.mochi
 - [ ] update_stmt.mochi
-- [ ] user_type_literal.mochi
-- [ ] values_builtin.mochi
-- [ ] var_assignment.mochi
