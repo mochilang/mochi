@@ -1,0 +1,31 @@
+line 0: compile: exit status 1
+error[E0308]: mismatched types
+ --> /workspace/mochi/tests/machine/x/rust/short_circuit.rs:6:31
+  |
+6 |     println!("{:?}", false && boom(1, 2));
+  |                      -----    ^^^^^^^^^^ expected `bool`, found `i32`
+  |                      |
+  |                      expected because this is `bool`
+
+error[E0308]: mismatched types
+ --> /workspace/mochi/tests/machine/x/rust/short_circuit.rs:7:30
+  |
+7 |     println!("{:?}", true || boom(1, 2));
+  |                      ----    ^^^^^^^^^^ expected `bool`, found `i32`
+  |                      |
+  |                      expected because this is `bool`
+
+error[E0308]: mismatched types
+ --> /workspace/mochi/tests/machine/x/rust/short_circuit.rs:4:16
+  |
+2 |     fn boom(a: i32, b: i32) -> i32 {
+  |                                --- expected `i32` because of return type
+3 |         println!("{:?}", "boom");
+4 |         return true;
+  |                ^^^^ expected `i32`, found `bool`
+
+error: aborting due to 3 previous errors
+
+For more information about this error, try `rustc --explain E0308`.
+
+fn main() {

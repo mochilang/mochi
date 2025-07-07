@@ -1,0 +1,18 @@
+line 0: compile: exit status 1
+error[E0425]: cannot find function `len` in this scope
+ --> /workspace/mochi/tests/machine/x/rust/len_string.rs:2:22
+  |
+2 |     println!("{:?}", len("mochi"));
+  |                      ^^^ not found in this scope
+  |
+help: use the `.` operator to call the method `len` on `&str`
+  |
+2 -     println!("{:?}", len("mochi"));
+2 +     println!("{:?}", "mochi".len());
+  |
+
+error: aborting due to 1 previous error
+
+For more information about this error, try `rustc --explain E0425`.
+
+fn main() {

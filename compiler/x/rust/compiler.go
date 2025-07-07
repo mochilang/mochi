@@ -247,6 +247,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "vec![" + strings.Join(elems, ", ") + "]", nil
 	case p.Call != nil:
 		return c.compileCall(p.Call)
+	case p.Selector != nil:
+		if len(p.Selector.Tail) == 0 {
+			return p.Selector.Root, nil
+		}
+		return p.Selector.Root + "." + strings.Join(p.Selector.Tail, "."), nil
 	case p.FunExpr != nil:
 		return "0", fmt.Errorf("fun expr not supported")
 	default:
@@ -265,7 +270,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	}
 	switch call.Func {
 	case "print":
-		fmtStr := strings.TrimSpace(strings.Repeat("{} ", len(args)))
+		fmtStr := strings.TrimSpace(strings.Repeat("{:?} ", len(args)))
 		return fmt.Sprintf("println!(\"%s\", %s)", fmtStr, strings.Join(args, ", ")), nil
 	case "append":
 		c.helpers["append"] = true
