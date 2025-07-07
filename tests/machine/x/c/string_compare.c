@@ -4,10 +4,9 @@
 #include <stdlib.h>
 
 int main() {
-    int i = 0;
-    while ((i < 3)) {
-        printf("%d\n", i);
-        i = (i + 1);
-    }
+    printf("%d\n", ("a" < "b"));
+    printf("%d\n", ("a" <= "a"));
+    printf("%d\n", ("b" > "a"));
+    printf("%d\n", ("b" >= "b"));
     return 0;
 }

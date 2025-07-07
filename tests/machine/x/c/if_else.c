@@ -4,10 +4,11 @@
 #include <stdlib.h>
 
 int main() {
-    int i = 0;
-    while ((i < 3)) {
-        printf("%d\n", i);
-        i = (i + 1);
+    int x = 5;
+    if ((x > 3)) {
+        printf("%s\n", "big");
+    } else {
+        printf("%s\n", "small");
     }
     return 0;
 }

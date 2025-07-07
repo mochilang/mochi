@@ -3,11 +3,11 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+int triple(int x) {
+    return (x * 3);
+}
+
 int main() {
-    int i = 0;
-    while ((i < 3)) {
-        printf("%d\n", i);
-        i = (i + 1);
-    }
+    printf("%d\n", triple((1 + 2)));
     return 0;
 }

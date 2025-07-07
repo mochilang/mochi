@@ -5,5 +5,24 @@ Each program is compiled and executed during testing.
 
 ## Checklist
 
+- [x] basic_compare.mochi
+- [x] binary_precedence.mochi
+- [x] bool_chain.mochi
+- [x] cast_string_to_int.mochi
+- [x] for_list_collection.mochi
+- [x] for_loop.mochi
+- [x] fun_call.mochi
+- [x] fun_three_args.mochi
+- [x] if_else.mochi
+- [x] let_and_print.mochi
+- [x] math_ops.mochi
 - [x] print_hello.mochi
+- [x] pure_fold.mochi
+- [x] short_circuit.mochi
+- [x] string_compare.mochi
+- [x] tail_recursion.mochi
+- [x] typed_let.mochi
+- [x] typed_var.mochi
+- [x] unary_neg.mochi
+- [x] var_assignment.mochi
 - [x] while_loop.mochi
