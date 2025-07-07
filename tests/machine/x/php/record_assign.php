@@ -4,7 +4,7 @@
  * @return void
  */
 function mochi_inc($c) {
-	$c = ((is_array($c['n']) && is_array(1)) ? array_merge($c['n'], 1) : ((is_string($c['n']) || is_string(1)) ? ($c['n'] . 1) : ($c['n'] + 1)));
+	$c = ((is_array($c->n) && is_array(1)) ? array_merge($c->n, 1) : ((is_string($c->n) || is_string(1)) ? ($c->n . 1) : ($c->n + 1)));
 }
 
 class Counter {
@@ -17,7 +17,7 @@ class Counter {
 // c: Counter
 $c = new Counter(['n' => 0]);
 mochi_inc($c);
-_print($c['n']);
+_print($c->n);
 
 function _print(...$args) {
     $parts = [];

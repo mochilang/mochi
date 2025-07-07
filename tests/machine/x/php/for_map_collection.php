@@ -1,7 +1,7 @@
 <?php
 // m: {string: int}
 $m = ["a" => 1, "b" => 2];
-foreach ((is_string($m) ? str_split($m) : $m) as $k) {
+foreach (array_keys($m) as $k) {
 	_print($k);
 }
 

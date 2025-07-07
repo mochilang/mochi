@@ -230,11 +230,23 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	c.writeln(" */")
 	c.writeln(fmt.Sprintf("function %s%s(%s) {", funcPrefix, sanitizeName(fn.Name), strings.Join(params, ", ")))
 	oldLocals := c.locals
+	oldEnv := c.env
 	c.locals = map[string]bool{}
+	if c.env != nil {
+		c.env = types.NewEnv(c.env)
+	}
 	for _, p := range fn.Params {
 		c.locals[p.Name] = true
 		if c.env != nil {
-			c.env.SetVar(p.Name, types.AnyType{}, true)
+			var pt types.Type = types.AnyType{}
+			if p.Type != nil {
+				pt = types.ResolveTypeRef(p.Type, oldEnv)
+			} else if oldEnv != nil {
+				if ft, err := oldEnv.GetVar(p.Name); err == nil {
+					pt = ft
+				}
+			}
+			c.env.SetVar(p.Name, pt, true)
 		}
 	}
 	c.indent++
@@ -247,6 +259,9 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	c.indent--
 	c.writeln("}")
 	c.locals = oldLocals
+	if c.env != nil {
+		c.env = oldEnv
+	}
 	return nil
 }
 
@@ -302,7 +317,7 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 	c.writeln(fmt.Sprintf("%s = %s;", name, val))
 	c.locals[l.Name] = true
 	if c.env != nil {
-		c.env.SetVar(l.Name, types.AnyType{}, true)
+		c.env.SetVar(l.Name, typ, false)
 	}
 	return nil
 }
@@ -340,7 +355,7 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	c.writeln(fmt.Sprintf("%s = %s;", name, val))
 	c.locals[v.Name] = true
 	if c.env != nil {
-		c.env.SetVar(v.Name, types.AnyType{}, true)
+		c.env.SetVar(v.Name, typ, true)
 	}
 	return nil
 }
@@ -1461,7 +1476,15 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	for i, p := range fn.Params {
 		params[i] = "$" + sanitizeName(p.Name)
 	}
-	sub := &Compiler{env: types.NewEnv(c.env)}
+	subEnv := types.NewEnv(c.env)
+	for _, p := range fn.Params {
+		var pt types.Type = types.AnyType{}
+		if p.Type != nil {
+			pt = types.ResolveTypeRef(p.Type, c.env)
+		}
+		subEnv.SetVar(p.Name, pt, true)
+	}
+	sub := &Compiler{env: subEnv}
 	var body bytes.Buffer
 	sub.buf = body
 	if fn.ExprBody != nil {

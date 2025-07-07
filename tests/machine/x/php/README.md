@@ -4,6 +4,10 @@ This directory contains PHP code compiled from Mochi programs by the PHP backend
 
 Each file in `tests/vm/valid` is compiled and executed. Successful runs produce a `.out` file with the program output. Failures result in an `.error` file capturing the line number and context of the error.
 
+## Summary
+
+93/97 files compiled successfully
+
 ## Checklist
 
 - [x] append_builtin.mochi
@@ -13,7 +17,7 @@ Each file in `tests/vm/valid` is compiled and executed. Successful runs produce 
 - [x] bool_chain.mochi
 - [x] break_continue.mochi
 - [x] cast_string_to_int.mochi
-- [ ] cast_struct.mochi
+- [x] cast_struct.mochi
 - [x] closure.mochi
 - [x] count_builtin.mochi
 - [x] cross_join.mochi
@@ -76,7 +80,7 @@ Each file in `tests/vm/valid` is compiled and executed. Successful runs produce 
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
 - [ ] query_sum_select.mochi
-- [ ] record_assign.mochi
+- [x] record_assign.mochi
 - [x] right_join.mochi
 - [x] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
@@ -99,7 +103,7 @@ Each file in `tests/vm/valid` is compiled and executed. Successful runs produce 
 - [x] typed_var.mochi
 - [x] unary_neg.mochi
 - [x] update_stmt.mochi
-- [ ] user_type_literal.mochi
+- [x] user_type_literal.mochi
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi

@@ -1,7 +1,7 @@
 <?php
 // xs: [int]
 $xs = [1, 2, 3];
-// ys: [any]
+// ys: [int]
 $ys = (function() use ($xs) {
 	$res = [];
 	foreach ((is_string($xs) ? str_split($xs) : $xs) as $x) {

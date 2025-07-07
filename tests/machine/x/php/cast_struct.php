@@ -8,7 +8,7 @@ class Todo {
 
 // todo: Todo
 $todo = new Todo((array)["title" => "hi"]);
-_print($todo['title']);
+_print($todo->title);
 
 function _print(...$args) {
     $parts = [];
