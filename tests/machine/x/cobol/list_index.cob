@@ -1,0 +1,11 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. LIST-INDEX.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01 XS.
+           05 X1 PIC 99 VALUE 10.
+           05 X2 PIC 99 VALUE 20.
+           05 X3 PIC 99 VALUE 30.
+       PROCEDURE DIVISION.
+           DISPLAY X2
+           STOP RUN.

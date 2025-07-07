@@ -1,0 +1,11 @@
+error: cobc error: exit status 1
+/workspace/mochi/tests/machine/x/cobol/cast_struct.cob:9: error: syntax error, unexpected TITLE, expecting (
+
+
+source:
+type Todo {
+  title: string
+}
+
+let todo = {"title": "hi"} as Todo
+print(todo.title)

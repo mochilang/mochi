@@ -1,0 +1,6 @@
+error: no cobol translation for min_max_builtin
+
+source:
+let nums = [3,1,4]
+print(min(nums))
+print(max(nums))

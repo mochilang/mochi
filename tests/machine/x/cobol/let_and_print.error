@@ -1,0 +1,11 @@
+error: cobc error: exit status 1
+/workspace/mochi/tests/machine/x/cobol/let_and_print.cob:7: error: syntax error, unexpected SUM
+/workspace/mochi/tests/machine/x/cobol/let_and_print.cob:5: warning: value size exceeds data size
+/workspace/mochi/tests/machine/x/cobol/let_and_print.cob:9: error: syntax error, unexpected SUM
+/workspace/mochi/tests/machine/x/cobol/let_and_print.cob:10: error: syntax error, unexpected SUM, expecting (
+
+
+source:
+let a = 10
+let b: int = 20
+print(a + b)

@@ -1,0 +1,14 @@
+error: cobc error: exit status 1
+/workspace/mochi/tests/machine/x/cobol/fun_call.cob:7: error: syntax error, unexpected USING
+/workspace/mochi/tests/machine/x/cobol/fun_call.cob: in paragraph 'ADD-FN':
+/workspace/mochi/tests/machine/x/cobol/fun_call.cob:12: error: syntax error, unexpected PROCEDURE
+/workspace/mochi/tests/machine/x/cobol/fun_call.cob:13: error: 'A' is not defined
+/workspace/mochi/tests/machine/x/cobol/fun_call.cob:13: error: 'B' is not defined
+
+
+source:
+fun add(a: int, b: int): int {
+  return a + b
+}
+
+print(add(2, 3))  // 5

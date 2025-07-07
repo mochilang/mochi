@@ -1,0 +1,14 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. FUN-CALL.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01 RESULT PIC 99.
+       PROCEDURE DIVISION.
+           PERFORM ADD-FN USING 2 3
+           DISPLAY RESULT
+           STOP RUN.
+
+       ADD-FN.
+           PROCEDURE DIVISION USING A B.
+               COMPUTE RESULT = A + B
+               EXIT.

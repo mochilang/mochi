@@ -1,0 +1,6 @@
+error: no cobol translation for map_nested_assign
+
+source:
+var data = {"outer": {"inner": 1}}
+data["outer"]["inner"] = 2
+print(data["outer"]["inner"])

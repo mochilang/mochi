@@ -1,0 +1,9 @@
+error: no cobol translation for partial_application
+
+source:
+fun add(a: int, b: int): int {
+  return a + b
+}
+
+let add5 = add(5)
+print(add5(3))

@@ -1,0 +1,13 @@
+error: no cobol translation for order_by_map
+
+source:
+let data = [
+  {a:1, b:2},
+  {a:1, b:1},
+  {a:0, b:5}
+]
+let sorted =
+  from x in data
+  sort by { a: x.a, b: x.b }
+  select x
+print(sorted)

@@ -1,0 +1,27 @@
+error: no cobol translation for join_multi
+
+source:
+let customers = [
+  { id: 1, name: "Alice" },
+  { id: 2, name: "Bob" }
+]
+
+let orders = [
+  { id: 100, customerId: 1 },
+  { id: 101, customerId: 2 }
+]
+
+let items = [
+  { orderId: 100, sku: "a" },
+  { orderId: 101, sku: "b" }
+]
+
+let result = from o in orders
+             join from c in customers on o.customerId == c.id
+             join from i in items on o.id == i.orderId
+             select { name: c.name, sku: i.sku }
+
+print("--- Multi Join ---")
+for r in result {
+  print(r.name, "bought item", r.sku)
+}

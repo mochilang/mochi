@@ -1,0 +1,26 @@
+error: cobc error: exit status 1
+/workspace/mochi/tests/machine/x/cobol/dataset_sort_take_limit.cob:26: error: syntax error, unexpected *
+/workspace/mochi/tests/machine/x/cobol/dataset_sort_take_limit.cob:26: error: syntax error, unexpected BY, expecting Identifier
+/workspace/mochi/tests/machine/x/cobol/dataset_sort_take_limit.cob:26: error: syntax error, unexpected ), expecting Identifier
+
+
+source:
+// dataset-sort-take-limit.mochi
+let products = [
+  { name: "Laptop", price: 1500 },
+  { name: "Smartphone", price: 900 },
+  { name: "Tablet", price: 600 },
+  { name: "Monitor", price: 300 },
+  { name: "Keyboard", price: 100 },
+  { name: "Mouse", price: 50 },
+  { name: "Headphones", price: 200 }
+]
+let expensive = from p in products
+                sort by -p.price
+                skip 1
+                take 3
+                select p
+print("--- Top products (excluding most expensive) ---")
+for item in expensive {
+  print(item.name, "costs $", item.price)
+}

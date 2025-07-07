@@ -1,0 +1,7 @@
+error: no cobol translation for map_literal_dynamic
+
+source:
+var x = 3
+var y = 4
+var m = {"a": x, "b": y}
+print(m["a"], m["b"])

@@ -1,0 +1,12 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. UNARY-NEG.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01 A PIC S9 VALUE -3.
+       01 B PIC S9 VALUE -2.
+       01 RESULT PIC S9.
+       PROCEDURE DIVISION.
+           DISPLAY A
+           COMPUTE RESULT = 5 + B
+           DISPLAY RESULT
+           STOP RUN.

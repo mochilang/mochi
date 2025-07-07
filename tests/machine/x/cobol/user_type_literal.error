@@ -1,0 +1,19 @@
+error: no cobol translation for user_type_literal
+
+source:
+type Person {
+  name: string
+  age: int
+}
+
+type Book {
+  title: string
+  author: Person
+}
+
+let book = Book {
+  title: "Go",
+  author: Person { name: "Bob", age: 42 },
+}
+
+print(book.author.name)

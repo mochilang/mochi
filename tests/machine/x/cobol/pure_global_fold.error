@@ -1,0 +1,8 @@
+error: no cobol translation for pure_global_fold
+
+source:
+let k = 2
+fun inc(x: int): int {
+  return x + k
+}
+print(inc(3))

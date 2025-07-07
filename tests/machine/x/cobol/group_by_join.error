@@ -1,0 +1,24 @@
+error: no cobol translation for group_by_join
+
+source:
+// group_by_join.mochi
+let customers = [
+  { id: 1, name: "Alice" },
+  { id: 2, name: "Bob" }
+]
+let orders = [
+  { id: 100, customerId: 1 },
+  { id: 101, customerId: 1 },
+  { id: 102, customerId: 2 }
+]
+let stats = from o in orders
+            join from c in customers on o.customerId == c.id
+            group by c.name into g
+            select {
+              name: g.key,
+              count: count(g)
+            }
+print("--- Orders per customer ---")
+for s in stats {
+  print(s.name, "orders:", s.count)
+}

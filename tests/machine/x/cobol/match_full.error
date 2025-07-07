@@ -1,0 +1,44 @@
+error: no cobol translation for match_full
+
+source:
+let x = 2
+
+let label = match x {
+  1 => "one"
+  2 => "two"
+  3 => "three"
+  _ => "unknown"
+}
+
+print(label)
+
+let day = "sun"
+
+let mood = match day {
+  "mon" => "tired"
+  "fri" => "excited"
+  "sun" => "relaxed"
+  _     => "normal"
+}
+
+print(mood)
+
+let ok = true
+
+let status = match ok {
+  true => "confirmed"
+  false => "denied"
+}
+
+print(status)
+
+fun classify(n: int): string {
+  return match n {
+    0 => "zero"
+    1 => "one"
+    _ => "many"
+  }
+}
+
+print(classify(0))
+print(classify(5))

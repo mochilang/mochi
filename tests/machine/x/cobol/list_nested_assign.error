@@ -1,0 +1,6 @@
+error: no cobol translation for list_nested_assign
+
+source:
+var matrix = [[1,2],[3,4]]
+matrix[1][0] = 5
+print(matrix[1][0])

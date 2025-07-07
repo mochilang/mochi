@@ -1,0 +1,11 @@
+error: no cobol translation for nested_function
+
+source:
+fun outer(x: int): int {
+  fun inner(y: int): int {
+    return x + y
+  }
+  return inner(5)
+}
+
+print(outer(3))  // 8

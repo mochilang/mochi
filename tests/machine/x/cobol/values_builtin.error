@@ -1,0 +1,12 @@
+error: cobc error: exit status 1
+/workspace/mochi/tests/machine/x/cobol/values_builtin.cob:5: error: syntax error, unexpected OCCURS
+/workspace/mochi/tests/machine/x/cobol/values_builtin.cob:8: error: syntax error, unexpected VALUE
+/workspace/mochi/tests/machine/x/cobol/values_builtin.cob:9: error: syntax error, unexpected VALUE
+/workspace/mochi/tests/machine/x/cobol/values_builtin.cob:10: error: syntax error, unexpected VALUE
+/workspace/mochi/tests/machine/x/cobol/values_builtin.cob:12: error: syntax error, unexpected VALUE, expecting (
+/workspace/mochi/tests/machine/x/cobol/values_builtin.cob:15: warning: alphanumeric literal has zero length; a SPACE will be assumed
+
+
+source:
+let m = {"a":1, "b":2, "c":3}
+print(values(m))

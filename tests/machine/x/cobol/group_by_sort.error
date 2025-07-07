@@ -1,0 +1,18 @@
+error: no cobol translation for group_by_sort
+
+source:
+let items = [
+  { cat: "a", val: 3 },
+  { cat: "a", val: 1 },
+  { cat: "b", val: 5 },
+  { cat: "b", val: 2 }
+]
+let grouped =
+  from i in items
+  group by i.cat into g
+  sort by -sum(from x in g select x.val)
+  select {
+    cat: g.key,
+    total: sum(from x in g select x.val)
+  }
+print(grouped)

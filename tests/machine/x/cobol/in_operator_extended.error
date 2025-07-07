@@ -1,0 +1,15 @@
+error: no cobol translation for in_operator_extended
+
+source:
+let xs = [1, 2, 3]
+let ys = from x in xs where x % 2 == 1 select x
+print(1 in ys)
+print(2 in ys)
+
+let m = {a: 1}
+print("a" in m)
+print("b" in m)
+
+let s = "hello"
+print("ell" in s)
+print("foo" in s)

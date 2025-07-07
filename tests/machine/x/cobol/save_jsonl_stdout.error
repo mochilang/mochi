@@ -1,0 +1,9 @@
+error: no cobol translation for save_jsonl_stdout
+
+source:
+let people = [
+  { name: "Alice", age: 30 },
+  { name: "Bob", age: 25 }
+]
+
+save people to "-" with { format: "jsonl" }

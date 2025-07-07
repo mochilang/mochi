@@ -1,0 +1,12 @@
+error: no cobol translation for record_assign
+
+source:
+type Counter { n: int }
+
+fun inc(c: Counter) {
+  c.n = c.n + 1
+}
+
+var c = Counter { n: 0 }
+inc(c)
+print(c.n)

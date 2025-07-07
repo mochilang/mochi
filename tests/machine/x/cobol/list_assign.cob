@@ -1,0 +1,11 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. LIST-ASSIGN.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01 NUMS.
+           05 N1 PIC 9 VALUE 1.
+           05 N2 PIC 9 VALUE 2.
+       PROCEDURE DIVISION.
+           MOVE 3 TO N2
+           DISPLAY N2
+           STOP RUN.

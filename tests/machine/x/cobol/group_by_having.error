@@ -1,0 +1,20 @@
+error: no cobol translation for group_by_having
+
+source:
+let people = [
+  { name: "Alice", city: "Paris" },
+  { name: "Bob", city: "Hanoi" },
+  { name: "Charlie", city: "Paris" },
+  { name: "Diana", city: "Hanoi" },
+  { name: "Eve", city: "Paris" },
+  { name: "Frank", city: "Hanoi" },
+  { name: "George", city: "Paris" }
+]
+
+let big =
+  from p in people
+  group by p.city into g
+  having count(g) >= 4
+  select { city: g.key, num: count(g) }
+
+json(big)

@@ -1,0 +1,5 @@
+error: no cobol translation for map_int_key
+
+source:
+let m = {1: "a", 2: "b"}
+print(m[1])

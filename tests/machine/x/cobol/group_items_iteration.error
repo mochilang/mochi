@@ -1,0 +1,19 @@
+error: no cobol translation for group_items_iteration
+
+source:
+let data = [
+  {tag: "a", val: 1},
+  {tag: "a", val: 2},
+  {tag: "b", val: 3}
+]
+let groups = from d in data group by d.tag into g select g
+var tmp = []
+for g in groups {
+  var total = 0
+  for x in g.items {
+    total = total + x.val
+  }
+  tmp = append(tmp, {tag: g.key, total: total})
+}
+let result = from r in tmp sort by r.tag select r
+print(result)

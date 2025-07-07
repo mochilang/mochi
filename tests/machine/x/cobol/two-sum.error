@@ -1,0 +1,23 @@
+error: cobc error: exit status 1
+/workspace/mochi/tests/machine/x/cobol/two-sum.cob:17: error: syntax error, unexpected +, expecting UNTIL
+/workspace/mochi/tests/machine/x/cobol/two-sum.cob:24: error: syntax error, unexpected END-PERFORM
+/workspace/mochi/tests/machine/x/cobol/two-sum.cob:25: error: syntax error, unexpected Identifier
+/workspace/mochi/tests/machine/x/cobol/two-sum.cob:21: error: 'DONE' is not defined
+
+
+source:
+fun twoSum(nums: list<int>, target: int): list<int> {
+  let n = len(nums)
+  for i in 0..n {
+    for j in i+1..n {
+      if nums[i] + nums[j] == target {
+        return [i, j]
+      }
+    }
+  }
+  return [-1, -1]
+}
+
+let result = twoSum([2,7,11,15], 9)
+print(result[0])
+print(result[1])

@@ -1,0 +1,9 @@
+error: cobc error: exit status 1
+/workspace/mochi/tests/machine/x/cobol/avg_builtin.cob:7: error: syntax error, unexpected SUM
+/workspace/mochi/tests/machine/x/cobol/avg_builtin.cob:14: error: syntax error, unexpected SUM
+/workspace/mochi/tests/machine/x/cobol/avg_builtin.cob:16: error: syntax error, unexpected SUM
+/workspace/mochi/tests/machine/x/cobol/avg_builtin.cob:13: error: PERFORM statement not terminated by END-PERFORM
+
+
+source:
+print(avg([1,2,3]))

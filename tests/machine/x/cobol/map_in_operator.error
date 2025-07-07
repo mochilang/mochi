@@ -1,0 +1,11 @@
+error: cobc error: exit status 1
+/workspace/mochi/tests/machine/x/cobol/map_in_operator.cob:6: error: syntax error, unexpected OCCURS
+/workspace/mochi/tests/machine/x/cobol/map_in_operator.cob:6: error: PICTURE clause required for 'FILLER 1'
+/workspace/mochi/tests/machine/x/cobol/map_in_operator.cob:11: error: syntax error, unexpected VALUE
+/workspace/mochi/tests/machine/x/cobol/map_in_operator.cob:13: error: syntax error, unexpected VALUE
+
+
+source:
+let m = {1: "a", 2: "b"}
+print(1 in m)
+print(3 in m)
