@@ -16,17 +16,25 @@ This directory contains hand-written Java versions of programs from `tests/vm/va
 - cross_join
 - cross_join_filter
 - cross_join_triple
-- print_hello
-
-## Missing
-- dataset_sort_take_limit
-- dataset_where_filter
-- exists_builtin
 - for_list_collection
 - for_loop
 - for_map_collection
 - fun_call
 - fun_expr_in_let
+- list_assign
+- list_index
+- list_nested_assign
+- map_assign
+- map_in_operator
+- map_index
+- map_int_key
+- print_hello
+- slice
+
+## Missing
+- dataset_sort_take_limit
+- dataset_where_filter
+- exists_builtin
 - fun_three_args
 - group_by
 - group_by_conditional_sum
@@ -51,15 +59,8 @@ This directory contains hand-written Java versions of programs from `tests/vm/va
 - len_map
 - len_string
 - let_and_print
-- list_assign
-- list_index
-- list_nested_assign
 - list_set_ops
 - load_yaml
-- map_assign
-- map_in_operator
-- map_index
-- map_int_key
 - map_literal_dynamic
 - map_membership
 - map_nested_assign
@@ -79,7 +80,6 @@ This directory contains hand-written Java versions of programs from `tests/vm/va
 - right_join
 - save_jsonl_stdout
 - short_circuit
-- slice
 - sort_stable
 - str_builtin
 - string_compare
