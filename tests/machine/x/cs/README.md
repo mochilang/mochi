@@ -2,6 +2,8 @@
 
 This checklist tracks which Mochi programs from `tests/vm/valid` have been compiled to C# and executed successfully.
 
+**28/97 files compiled**
+
 - [ ] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -12,9 +14,9 @@ This checklist tracks which Mochi programs from `tests/vm/valid` have been compi
 - [x] cast_struct.mochi
 - [x] closure.mochi
 - [x] count_builtin.mochi
-- [ ] cross_join.mochi
-- [ ] cross_join_filter.mochi
-- [ ] cross_join_triple.mochi
+- [x] cross_join.mochi
+- [x] cross_join_filter.mochi
+- [x] cross_join_triple.mochi
 - [ ] dataset_sort_take_limit.mochi
 - [x] dataset_where_filter.mochi
 - [ ] exists_builtin.mochi

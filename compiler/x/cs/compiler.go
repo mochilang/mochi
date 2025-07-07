@@ -571,19 +571,42 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		loopVar = c.newVar()
 	}
 	t := c.inferExprType(f.Source)
+	var elemType types.Type = types.AnyType{}
+	switch tt := t.(type) {
+	case types.ListType:
+		elemType = tt.Elem
+	case types.MapType:
+		elemType = tt.Key
+	case types.StringType:
+		elemType = types.StringType{}
+	}
 	if _, ok := t.(types.MapType); ok {
 		c.writeln(fmt.Sprintf("foreach (var %s in %s.Keys) {", loopVar, src))
 	} else {
 		c.writeln(fmt.Sprintf("foreach (var %s in %s) {", loopVar, src))
 	}
+	origEnv := c.env
+	child := types.NewEnv(c.env)
+	child.SetVar(f.Name, elemType, true)
+	c.env = child
+	origVars := c.varTypes
+	c.varTypes = make(map[string]string)
+	for k, v := range origVars {
+		c.varTypes[k] = v
+	}
+	c.varTypes[name] = csTypeOf(elemType)
 	c.indent++
 	for _, s := range f.Body {
 		if err := c.compileStmt(s); err != nil {
+			c.env = origEnv
+			c.varTypes = origVars
 			return err
 		}
 	}
 	c.indent--
 	c.writeln("}")
+	c.env = origEnv
+	c.varTypes = origVars
 	return nil
 }
 
