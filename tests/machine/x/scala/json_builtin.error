@@ -1,0 +1,11 @@
+exit status 1
+/workspace/mochi/tests/machine/x/scala/json_builtin.scala:3: error: not found: value a
+    val m = Map(a -> 1, b -> 2)
+                ^
+/workspace/mochi/tests/machine/x/scala/json_builtin.scala:3: error: not found: value b
+    val m = Map(a -> 1, b -> 2)
+                        ^
+/workspace/mochi/tests/machine/x/scala/json_builtin.scala:4: error: not found: value json
+    json(m)
+    ^
+three errors found

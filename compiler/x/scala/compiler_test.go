@@ -16,16 +16,36 @@ import (
 	"mochi/types"
 )
 
+func findRepoRoot(t *testing.T) string {
+	dir, err := os.Getwd()
+	if err != nil {
+		t.Fatal("cannot determine working directory")
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	t.Fatal("go.mod not found (not in Go module)")
+	return ""
+}
+
 func TestScalaCompilerMachine(t *testing.T) {
 	if _, err := exec.LookPath("scalac"); err != nil {
 		t.Skip("scalac not installed")
 	}
-	root := filepath.Join("tests", "vm", "valid")
-	files, err := filepath.Glob(filepath.Join(root, "*.mochi"))
+	root := findRepoRoot(t)
+	srcDir := filepath.Join(root, "tests", "vm", "valid")
+	files, err := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	if err != nil {
 		t.Fatalf("glob: %v", err)
 	}
-	outDir := filepath.Join("tests", "machine", "x", "scala")
+	outDir := filepath.Join(root, "tests", "machine", "x", "scala")
 	os.MkdirAll(outDir, 0755)
 
 	for _, src := range files {
@@ -55,7 +75,7 @@ func TestScalaCompilerMachine(t *testing.T) {
 				os.WriteFile(errPath, append([]byte(err.Error()+"\n"), out...), 0644)
 				t.Skip("scalac failed")
 			}
-			cmd := exec.Command("scala", "-cp", tmp, "Main")
+			cmd := exec.Command("scala", "-cp", tmp, name)
 			var runOut bytes.Buffer
 			cmd.Stdout = &runOut
 			cmd.Stderr = &runOut
