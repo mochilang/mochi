@@ -9,3 +9,9 @@ program is executed and its stdout is written to a `.out` file. Failed compilati
 
 - [x] print_hello.mochi
 - [x] var_assignment.mochi
+- [x] typed_var.mochi
+- [x] typed_let.mochi
+- [x] for_loop.mochi
+- [x] string_concat.mochi
+- [x] string_compare.mochi
+- [x] math_ops.mochi

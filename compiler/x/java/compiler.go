@@ -58,21 +58,62 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	}
 }
 
+func (c *Compiler) typeName(t *parser.TypeRef) string {
+	if t == nil || t.Simple == nil {
+		return "int"
+	}
+	switch *t.Simple {
+	case "int":
+		return "int"
+	case "string":
+		return "String"
+	case "bool":
+		return "boolean"
+	case "float":
+		return "double"
+	default:
+		return "Object"
+	}
+}
+
+func (c *Compiler) defaultValue(typ string) string {
+	switch typ {
+	case "String":
+		return "\"\""
+	case "boolean":
+		return "false"
+	case "double":
+		return "0.0"
+	default:
+		return "0"
+	}
+}
+
 func (c *Compiler) compileVar(v *parser.VarStmt) error {
+	typ := c.typeName(v.Type)
 	expr, err := c.compileExpr(v.Value)
 	if err != nil {
 		return err
 	}
-	c.writeln(fmt.Sprintf("int %s = %s;", v.Name, expr))
+	if v.Value == nil {
+		c.writeln(fmt.Sprintf("%s %s = %s;", typ, v.Name, c.defaultValue(typ)))
+	} else {
+		c.writeln(fmt.Sprintf("%s %s = %s;", typ, v.Name, expr))
+	}
 	return nil
 }
 
 func (c *Compiler) compileLet(v *parser.LetStmt) error {
+	typ := c.typeName(v.Type)
 	expr, err := c.compileExpr(v.Value)
 	if err != nil {
 		return err
 	}
-	c.writeln(fmt.Sprintf("int %s = %s;", v.Name, expr))
+	if v.Value == nil {
+		c.writeln(fmt.Sprintf("%s %s = %s;", typ, v.Name, c.defaultValue(typ)))
+	} else {
+		c.writeln(fmt.Sprintf("%s %s = %s;", typ, v.Name, expr))
+	}
 	return nil
 }
 
@@ -164,9 +205,18 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		expr = fmt.Sprintf("%s %s %s", expr, op.Op, right)
+		if (op.Op == "<" || op.Op == "<=" || op.Op == ">" || op.Op == ">=") &&
+			isString(expr) && isString(right) {
+			expr = fmt.Sprintf("%s.compareTo(%s) %s 0", expr, right, op.Op)
+		} else {
+			expr = fmt.Sprintf("%s %s %s", expr, op.Op, right)
+		}
 	}
 	return expr, nil
+}
+
+func isString(s string) bool {
+	return len(s) >= 2 && s[0] == '"' && s[len(s)-1] == '"'
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
