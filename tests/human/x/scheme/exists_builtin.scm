@@ -1,0 +1,8 @@
+(define data '(1 2))
+(define (any pred lst)
+  (cond ((null? lst) #f)
+        ((pred (car lst)) #t)
+        (else (any pred (cdr lst)))))
+(define flag (any (lambda (x) (= x 1)) data))
+(display flag)
+(newline)
