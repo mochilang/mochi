@@ -1,5 +1,5 @@
 void main() {
   var s = 'catch';
-  print(s.contains('cat'));
-  print(s.contains('dog'));
+  print('cat' in s);
+  print('dog' in s);
 }

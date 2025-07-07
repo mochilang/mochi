@@ -1,1 +1,4 @@
-exec: "dart": executable file not found in $PATH
+line 4: exit status 254
+void main() {
+  var m = {a: 1, b: 2};
+  jsonEncode(m);

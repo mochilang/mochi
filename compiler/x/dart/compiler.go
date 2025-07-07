@@ -18,9 +18,10 @@ import (
 // translation is incomplete, but it is sufficient for simple examples such as
 // variable declarations and basic arithmetic/print statements.
 type Compiler struct {
-	env    *types.Env
-	buf    bytes.Buffer
-	indent int
+	env       *types.Env
+	buf       bytes.Buffer
+	indent    int
+	needsJSON bool
 }
 
 // New creates a new Dart compiler instance.
@@ -33,6 +34,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	// compile function declarations first so that they appear before main
 	c.buf.Reset()
 	c.indent = 0
+	c.needsJSON = false
 	for _, st := range prog.Statements {
 		if st.Fun != nil {
 			if err := c.compileFun(st.Fun); err != nil {
@@ -54,7 +56,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.indent--
 	c.writeln("}")
-	return c.buf.Bytes(), nil
+	code := c.buf.Bytes()
+	if c.needsJSON {
+		code = append([]byte("import 'dart:convert';\n\n"), code...)
+	}
+	return code, nil
 }
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
@@ -401,7 +407,78 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 		args[i] = s
 	}
-	return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ", ")), nil
+	argStr := strings.Join(args, ", ")
+	switch call.Func {
+	case "print":
+		return fmt.Sprintf("print(%s)", argStr), nil
+	case "append":
+		if len(args) != 2 {
+			return "", fmt.Errorf("append expects 2 args")
+		}
+		return fmt.Sprintf("List.from(%s)..add(%s)", args[0], args[1]), nil
+	case "avg":
+		if len(args) != 1 {
+			return "", fmt.Errorf("avg expects 1 arg")
+		}
+		arr := args[0]
+		return fmt.Sprintf("%s.reduce((a, b) => a + b) / %s.length", arr, arr), nil
+	case "count":
+		if len(args) != 1 {
+			return "", fmt.Errorf("count expects 1 arg")
+		}
+		return fmt.Sprintf("%s.length", args[0]), nil
+	case "exists":
+		if len(args) != 2 {
+			return "", fmt.Errorf("exists expects 2 args")
+		}
+		return fmt.Sprintf("%s.any((x) => x == %s)", args[0], args[1]), nil
+	case "json":
+		if len(args) != 1 {
+			return "", fmt.Errorf("json expects 1 arg")
+		}
+		c.needsJSON = true
+		return fmt.Sprintf("jsonEncode(%s)", args[0]), nil
+	case "len":
+		if len(args) != 1 {
+			return "", fmt.Errorf("len expects 1 arg")
+		}
+		return fmt.Sprintf("%s.length", args[0]), nil
+	case "min":
+		if len(args) != 1 {
+			return "", fmt.Errorf("min expects 1 arg")
+		}
+		arr := args[0]
+		return fmt.Sprintf("%s.reduce((a, b) => a < b ? a : b)", arr), nil
+	case "max":
+		if len(args) != 1 {
+			return "", fmt.Errorf("max expects 1 arg")
+		}
+		arr := args[0]
+		return fmt.Sprintf("%s.reduce((a, b) => a > b ? a : b)", arr), nil
+	case "str":
+		if len(args) != 1 {
+			return "", fmt.Errorf("str expects 1 arg")
+		}
+		return fmt.Sprintf("%s.toString()", args[0]), nil
+	case "substring":
+		if len(args) != 3 {
+			return "", fmt.Errorf("substring expects 3 args")
+		}
+		return fmt.Sprintf("%s.substring(%s, %s)", args[0], args[1], args[2]), nil
+	case "sum":
+		if len(args) != 1 {
+			return "", fmt.Errorf("sum expects 1 arg")
+		}
+		arr := args[0]
+		return fmt.Sprintf("%s.reduce((a, b) => a + b)", arr), nil
+	case "values":
+		if len(args) != 1 {
+			return "", fmt.Errorf("values expects 1 arg")
+		}
+		return fmt.Sprintf("%s.values.toList()", args[0]), nil
+	default:
+		return fmt.Sprintf("%s(%s)", call.Func, argStr), nil
+	}
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) string {

@@ -1,1 +1,4 @@
-exec: "dart": executable file not found in $PATH
+line 5: exit status 254
+  var m = {'a': x, 'b': y};
+  print(m['a'], m['b']);
+}
