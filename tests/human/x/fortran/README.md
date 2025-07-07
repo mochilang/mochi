@@ -65,24 +65,22 @@
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
-
-## Missing
-- [ ] group_by_conditional_sum
-- [ ] group_by_having
-- [ ] group_by_join
-- [ ] group_by_left_join
-- [ ] group_by_multi_join
-- [ ] group_by_multi_join_sort
-- [ ] group_by_sort
-- [ ] group_items_iteration
-- [ ] in_operator_extended
+- [x] group_by_conditional_sum
+- [x] group_by_having
+- [x] group_by_join
+- [x] group_by_left_join
+- [x] group_by_multi_join
+- [x] group_by_multi_join_sort
+- [x] group_by_sort
+- [x] group_items_iteration
+- [x] in_operator_extended
+- [x] left_join_multi
+- [x] load_yaml
 - [x] inner_join
 - [x] join_multi
 - [x] json_builtin
 - [x] left_join
-- [ ] left_join_multi
 - [x] list_set_ops
-- [ ] load_yaml
 - [x] map_in_operator
 - [x] map_literal_dynamic
 - [x] map_membership
@@ -100,3 +98,6 @@
 - [x] test_block
 - [x] update_stmt
 - [x] user_type_literal
+
+## Missing
+*(none)*
