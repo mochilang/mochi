@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	pascode "mochi/compiler/x/pascal"
+	"mochi/compiler/x/testutil"
 	"mochi/parser"
 	"mochi/types"
 )
@@ -21,12 +22,14 @@ func TestCompileValidPrograms(t *testing.T) {
 		t.Skipf("fpc not installed: %v", err)
 	}
 
-	files, err := filepath.Glob("../../tests/vm/valid/*.mochi")
+	root := testutil.FindRepoRoot(t)
+	pattern := filepath.Join(root, "tests", "vm", "valid", "*.mochi")
+	files, err := filepath.Glob(pattern)
 	if err != nil {
 		t.Fatalf("glob: %v", err)
 	}
 
-	outDir := filepath.Join("../../tests/machine/x/pascal")
+	outDir := filepath.Join(root, "tests", "machine", "x", "pascal")
 	_ = os.MkdirAll(outDir, 0755)
 
 	for _, src := range files {
