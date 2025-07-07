@@ -13,8 +13,6 @@ This directory contains manual Racket translations of programs from `tests/vm/va
 - cast_struct.mochi
 - closure.mochi
 - count_builtin.mochi
-
-## Missing
 - cross_join.mochi
 - cross_join_filter.mochi
 - cross_join_triple.mochi
@@ -27,6 +25,8 @@ This directory contains manual Racket translations of programs from `tests/vm/va
 - fun_call.mochi
 - fun_expr_in_let.mochi
 - fun_three_args.mochi
+
+## Missing
 - group_by.mochi
 - group_by_conditional_sum.mochi
 - group_by_having.mochi
