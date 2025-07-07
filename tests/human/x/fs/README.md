@@ -1,0 +1,106 @@
+# F# Translations of Mochi VM Examples
+
+This directory contains F# programs that replicate the behavior of the `.mochi` files found in `../../vm/valid`.
+
+## Translated programs
+
+- append_builtin
+- avg_builtin
+- basic_compare
+- binary_precedence
+- bool_chain
+- break_continue
+- cast_string_to_int
+- cast_struct
+- closure
+- count_builtin
+- len_builtin
+- len_string
+- let_and_print
+- list_assign
+- list_index
+- math_ops
+- min_max_builtin
+- print_hello
+- record_assign
+- str_builtin
+- string_concat
+- string_contains
+- string_index
+- string_prefix_slice
+- substring_builtin
+- sum_builtin
+- test_block
+- tree_sum
+- two-sum
+- typed_let
+- typed_var
+- unary_neg
+- user_type_literal
+- values_builtin
+- var_assignment
+- while_loop
+
+## Missing translations
+
+- cross_join
+- cross_join_filter
+- cross_join_triple
+- dataset_sort_take_limit
+- dataset_where_filter
+- exists_builtin
+- for_list_collection
+- for_loop
+- for_map_collection
+- fun_call
+- fun_expr_in_let
+- fun_three_args
+- group_by
+- group_by_conditional_sum
+- group_by_having
+- group_by_join
+- group_by_left_join
+- group_by_multi_join
+- group_by_multi_join_sort
+- group_by_sort
+- group_items_iteration
+- if_else
+- if_then_else
+- if_then_else_nested
+- in_operator
+- in_operator_extended
+- inner_join
+- join_multi
+- json_builtin
+- left_join
+- left_join_multi
+- len_map
+- list_nested_assign
+- list_set_ops
+- load_yaml
+- map_assign
+- map_in_operator
+- map_index
+- map_int_key
+- map_literal_dynamic
+- map_membership
+- map_nested_assign
+- match_expr
+- match_full
+- membership
+- nested_function
+- order_by_map
+- outer_join
+- partial_application
+- pure_fold
+- pure_global_fold
+- query_sum_select
+- right_join
+- save_jsonl_stdout
+- short_circuit
+- slice
+- sort_stable
+- string_compare
+- string_in_operator
+- tail_recursion
+- update_stmt
