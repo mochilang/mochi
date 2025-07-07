@@ -1,6 +1,8 @@
 package cobol_test
 
 import (
+	"bytes"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -26,48 +28,72 @@ func repoRoot() string {
 	return filepath.Clean(filepath.Join(filepath.Dir(file), "..", "..", ".."))
 }
 
-func compileAndRun(t *testing.T, src, cobcPath string) {
-	abs := filepath.Join(repoRoot(), src)
-	prog, err := parser.Parse(abs)
-	if err != nil {
-		t.Fatalf("parse error: %v", err)
-	}
-	env := types.NewEnv(nil)
-	if errs := types.Check(prog, env); len(errs) > 0 {
-		t.Fatalf("type error: %v", errs[0])
-	}
-	comp := cobol.New(env)
-	code, err := comp.Compile(prog)
-	if err != nil {
-		t.Fatalf("compile error: %v", err)
-	}
-	outDir := filepath.Join(repoRoot(), "tests", "machine", "x", "cobol")
-	os.MkdirAll(outDir, 0755)
-	base := strings.TrimSuffix(filepath.Base(src), ".mochi")
-	srcFile := filepath.Join(outDir, base+".cob")
-	os.WriteFile(srcFile, code, 0644)
-	bin := filepath.Join(outDir, base)
-	if out, err := exec.Command(cobcPath, "-x", "-o", bin, srcFile).CombinedOutput(); err != nil {
-		os.WriteFile(filepath.Join(outDir, base+".error"), out, 0644)
-		t.Fatalf("cobc error: %v", err)
-	}
-	out, err := exec.Command(bin).CombinedOutput()
-	if err != nil {
-		os.WriteFile(filepath.Join(outDir, base+".error"), out, 0644)
-		t.Fatalf("run error: %v", err)
-	}
-	os.WriteFile(filepath.Join(outDir, base+".out"), out, 0644)
-}
-
-func TestCobolCompiler_BasicPrograms(t *testing.T) {
+func TestCobolCompiler_Programs(t *testing.T) {
 	cobc := ensureCobc(t)
-	cases := []string{
-		filepath.Join("tests", "vm", "valid", "print_hello.mochi"),
-		filepath.Join("tests", "vm", "valid", "while_loop.mochi"),
+	root := repoRoot()
+	pattern := filepath.Join(root, "tests", "vm", "valid", "*.mochi")
+	files, err := filepath.Glob(pattern)
+	if err != nil {
+		t.Fatalf("glob: %v", err)
 	}
-	for _, src := range cases {
-		t.Run(filepath.Base(src), func(t *testing.T) {
-			compileAndRun(t, src, cobc)
+	outDir := filepath.Join(root, "tests", "machine", "x", "cobol")
+	os.MkdirAll(outDir, 0755)
+	for _, src := range files {
+		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
+		t.Run(name, func(t *testing.T) {
+			data, _ := os.ReadFile(src)
+			errPath := filepath.Join(outDir, name+".error")
+			os.Remove(errPath)
+			prog, err := parser.Parse(src)
+			if err != nil {
+				writeError(outDir, name, string(data), err)
+				return
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				writeError(outDir, name, string(data), errs[0])
+				return
+			}
+			code, err := cobol.New(env).Compile(prog)
+			if err != nil {
+				writeError(outDir, name, string(data), err)
+				return
+			}
+			srcFile := filepath.Join(outDir, name+".cob")
+			os.WriteFile(srcFile, code, 0644)
+			bin := filepath.Join(outDir, name)
+			if out, err := exec.Command(cobc, "-x", "-o", bin, srcFile).CombinedOutput(); err != nil {
+				writeError(outDir, name, string(code), fmt.Errorf("cobc: %v\n%s", err, out))
+				return
+			}
+			out, err := exec.Command(bin).CombinedOutput()
+			if err != nil {
+				writeError(outDir, name, string(code), fmt.Errorf("run: %v\n%s", err, out))
+				return
+			}
+			os.WriteFile(filepath.Join(outDir, name+".out"), bytes.TrimSpace(out), 0644)
 		})
 	}
+}
+
+func writeError(dir, name, src string, err error) {
+	lines := strings.Split(src, "\n")
+	msg := err.Error()
+	ln := 0
+	if idx := strings.Index(msg, "line "); idx != -1 {
+		fmt.Sscanf(msg[idx:], "line %d", &ln)
+	}
+	var ctx string
+	if ln > 0 {
+		start := ln - 2
+		if start < 0 {
+			start = 0
+		}
+		end := ln + 1
+		if end > len(lines) {
+			end = len(lines)
+		}
+		ctx = strings.Join(lines[start:end], "\n")
+	}
+	os.WriteFile(filepath.Join(dir, name+".error"), []byte(msg+"\n"+ctx), 0644)
 }
