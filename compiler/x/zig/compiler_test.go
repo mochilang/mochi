@@ -24,13 +24,13 @@ func TestZigCompiler_ValidPrograms(t *testing.T) {
 		t.Skipf("zig compiler not installed: %v", err)
 	}
 
-	srcDir := filepath.Join("tests", "vm", "valid")
+	srcDir := filepath.Join("..", "..", "..", "tests", "vm", "valid")
 	files, err := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	if err != nil {
 		t.Fatalf("glob error: %v", err)
 	}
 
-	outDir := filepath.Join("tests", "machine", "x", "zig")
+	outDir := filepath.Join("..", "..", "..", "tests", "machine", "x", "zig")
 	if err := os.MkdirAll(outDir, 0o755); err != nil {
 		t.Fatalf("mkout: %v", err)
 	}
