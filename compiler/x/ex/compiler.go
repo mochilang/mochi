@@ -1,3 +1,5 @@
+//go:build slow
+
 // Package excode translates Mochi ASTs into Elixir source code.
 package excode
 

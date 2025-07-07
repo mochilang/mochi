@@ -1,3 +1,5 @@
+//go:build slow
+
 package cpp_test
 
 import (

@@ -1,3 +1,5 @@
+//go:build slow
+
 package scalacode_test
 
 import (

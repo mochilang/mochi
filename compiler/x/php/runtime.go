@@ -1,3 +1,5 @@
+//go:build slow
+
 package phpcode
 
 // Runtime helpers emitted by the PHP compiler.

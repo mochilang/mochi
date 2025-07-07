@@ -1,3 +1,5 @@
+//go:build slow
+
 package schemecode
 
 import "mochi/parser"

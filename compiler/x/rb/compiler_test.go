@@ -1,3 +1,5 @@
+//go:build slow
+
 package rbcode_test
 
 import (

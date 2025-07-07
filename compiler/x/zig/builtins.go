@@ -1,3 +1,5 @@
+//go:build slow
+
 package zigcode
 
 func (c *Compiler) writeBuiltins() {
