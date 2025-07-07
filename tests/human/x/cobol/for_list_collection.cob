@@ -1,7 +1,14 @@
        IDENTIFICATION DIVISION.
        PROGRAM-ID. FOR-LIST-COLLECTION.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01 NUMS OCCURS 3 TIMES PIC 9.
+       01 IDX PIC 9.
        PROCEDURE DIVISION.
-           DISPLAY 1.
-           DISPLAY 2.
-           DISPLAY 3.
+           MOVE 1 TO NUMS(1)
+           MOVE 2 TO NUMS(2)
+           MOVE 3 TO NUMS(3)
+           PERFORM VARYING IDX FROM 1 BY 1 UNTIL IDX > 3
+               DISPLAY NUMS(IDX)
+           END-PERFORM
            STOP RUN.
