@@ -15,6 +15,9 @@ This directory contains hand-written Rust versions of some programs from `tests/
 - count_builtin.mochi
 - print_hello.mochi
 - while_loop.mochi
+- for_list_collection.mochi
+- for_loop.mochi
+- for_map_collection.mochi
 
 ## Missing
 - cross_join.mochi
@@ -23,9 +26,6 @@ This directory contains hand-written Rust versions of some programs from `tests/
 - dataset_sort_take_limit.mochi
 - dataset_where_filter.mochi
 - exists_builtin.mochi
-- for_list_collection.mochi
-- for_loop.mochi
-- for_map_collection.mochi
 - fun_call.mochi
 - fun_expr_in_let.mochi
 - fun_three_args.mochi
