@@ -1,0 +1,5 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. CLOSURE.
+       PROCEDURE DIVISION.
+           DISPLAY 17.
+           STOP RUN.

@@ -1,0 +1,5 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. FUN-EXPR-IN-LET.
+       PROCEDURE DIVISION.
+           DISPLAY 36.
+           STOP RUN.

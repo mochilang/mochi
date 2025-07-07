@@ -1,0 +1,5 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. FUN-CALL.
+       PROCEDURE DIVISION.
+           DISPLAY 5.
+           STOP RUN.

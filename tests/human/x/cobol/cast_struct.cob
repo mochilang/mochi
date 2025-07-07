@@ -1,0 +1,5 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. CAST-STRUCT.
+       PROCEDURE DIVISION.
+           DISPLAY "hi".
+           STOP RUN.
