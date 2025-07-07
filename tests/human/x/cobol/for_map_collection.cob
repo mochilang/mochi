@@ -1,6 +1,13 @@
        IDENTIFICATION DIVISION.
        PROGRAM-ID. FOR-MAP-COLLECTION.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01 KEYS OCCURS 2 TIMES PIC X.
+       01 IDX PIC 9.
        PROCEDURE DIVISION.
-           DISPLAY "a".
-           DISPLAY "b".
+           MOVE 'a' TO KEYS(1)
+           MOVE 'b' TO KEYS(2)
+           PERFORM VARYING IDX FROM 1 BY 1 UNTIL IDX > 2
+               DISPLAY KEYS(IDX)
+           END-PERFORM
            STOP RUN.

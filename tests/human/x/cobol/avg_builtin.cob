@@ -1,5 +1,18 @@
        IDENTIFICATION DIVISION.
        PROGRAM-ID. AVG-BUILTIN.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01 NUMS OCCURS 3 TIMES PIC 9.
+       01 IDX PIC 9.
+       01 SUM PIC 9 VALUE 0.
+       01 AVG PIC 9.
        PROCEDURE DIVISION.
-           DISPLAY 2.
+           MOVE 1 TO NUMS(1)
+           MOVE 2 TO NUMS(2)
+           MOVE 3 TO NUMS(3)
+           PERFORM VARYING IDX FROM 1 BY 1 UNTIL IDX > 3
+               ADD NUMS(IDX) TO SUM
+           END-PERFORM
+           COMPUTE AVG = SUM / 3
+           DISPLAY AVG
            STOP RUN.

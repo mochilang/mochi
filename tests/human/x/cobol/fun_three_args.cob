@@ -1,5 +1,14 @@
        IDENTIFICATION DIVISION.
        PROGRAM-ID. FUN-THREE-ARGS.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01 RESULT PIC 99.
        PROCEDURE DIVISION.
-           DISPLAY 6.
+           PERFORM SUM3 USING 1 2 3
+           DISPLAY RESULT
            STOP RUN.
+
+       SUM3.
+           PROCEDURE DIVISION USING A B C.
+               COMPUTE RESULT = A + B + C
+               EXIT.

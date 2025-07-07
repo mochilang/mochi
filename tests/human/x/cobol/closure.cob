@@ -1,5 +1,14 @@
        IDENTIFICATION DIVISION.
        PROGRAM-ID. CLOSURE.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01 RESULT PIC 99.
        PROCEDURE DIVISION.
-           DISPLAY 17.
+           PERFORM ADDER USING 7 10
+           DISPLAY RESULT
            STOP RUN.
+
+       ADDER.
+           PROCEDURE DIVISION USING X Y.
+               COMPUTE RESULT = X + Y
+               EXIT.

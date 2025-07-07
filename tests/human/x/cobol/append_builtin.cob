@@ -1,5 +1,18 @@
        IDENTIFICATION DIVISION.
        PROGRAM-ID. APPEND-BUILTIN.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01 A OCCURS 3 TIMES PIC 9.
+       01 LEN PIC 9 VALUE 2.
+       01 IDX PIC 9.
        PROCEDURE DIVISION.
-           DISPLAY "[1, 2, 3]".
+           MOVE 1 TO A(1)
+           MOVE 2 TO A(2)
+           ADD 1 TO LEN
+           MOVE 3 TO A(LEN)
+           PERFORM VARYING IDX FROM 1 BY 1 UNTIL IDX > LEN
+               DISPLAY A(IDX) WITH NO ADVANCING
+               IF IDX < LEN THEN DISPLAY ' ' WITH NO ADVANCING END-IF
+           END-PERFORM
+           DISPLAY ''
            STOP RUN.
