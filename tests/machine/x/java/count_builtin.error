@@ -1,0 +1,4 @@
+line 0: compile error: calls unsupported at line 1
+
+  1| print(count([1,2,3]))
+  2| 

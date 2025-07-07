@@ -1,0 +1,4 @@
+line 0: compile error: selectors unsupported at line 2
+
+  1| let s = "catch"
+  2| print(s.contains("cat"))

@@ -1,0 +1,4 @@
+line 0: compile error: expression unsupported at line 1
+
+  1| let items = [
+  2|   { n: 1, v: "a" },

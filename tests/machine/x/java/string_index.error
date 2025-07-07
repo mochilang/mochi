@@ -1,0 +1,4 @@
+line 0: compile error: postfix operations unsupported
+
+  1| let s = "mochi"
+  2| print(s[1])

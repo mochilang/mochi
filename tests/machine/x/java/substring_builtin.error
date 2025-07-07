@@ -1,0 +1,4 @@
+line 0: compile error: calls unsupported at line 1
+
+  1| print(substring("mochi", 1, 4))
+  2| 
