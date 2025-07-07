@@ -15,8 +15,9 @@ import (
 
 // Compiler translates a subset of Mochi to Python source code.
 type Compiler struct {
-	buf    bytes.Buffer
-	indent int
+	buf       bytes.Buffer
+	indent    int
+	needsJSON bool
 }
 
 // New creates a new Python compiler.
@@ -26,12 +27,28 @@ func New(env *types.Env) *Compiler { return &Compiler{} }
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.indent = 0
+	c.needsJSON = false
+	var body bytes.Buffer
 	for _, s := range prog.Statements {
-		if err := c.compileStmt(s); err != nil {
+		if err := c.compileStmtTo(&body, s); err != nil {
 			return nil, err
 		}
 	}
+	if c.needsJSON {
+		c.writeln("import json")
+		c.writeln("")
+	}
+	c.buf.Write(body.Bytes())
 	return c.buf.Bytes(), nil
+}
+
+func (c *Compiler) compileStmtTo(buf *bytes.Buffer, s *parser.Statement) error {
+	old := c.buf
+	c.buf = *buf
+	err := c.compileStmt(s)
+	*buf = c.buf
+	c.buf = old
+	return err
 }
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
@@ -40,6 +57,22 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileLet(s.Let)
 	case s.Var != nil:
 		return c.compileVar(s.Var)
+	case s.Fun != nil:
+		return c.compileFun(s.Fun)
+	case s.Return != nil:
+		return c.compileReturn(s.Return)
+	case s.If != nil:
+		return c.compileIf(s.If)
+	case s.While != nil:
+		return c.compileWhile(s.While)
+	case s.For != nil:
+		return c.compileFor(s.For)
+	case s.Break != nil:
+		c.writeln("break")
+		return nil
+	case s.Continue != nil:
+		c.writeln("continue")
+		return nil
 	case s.Assign != nil:
 		return c.compileAssign(s.Assign)
 	case s.Expr != nil:
@@ -60,6 +93,124 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 
 func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	return c.compileVarStmt(v.Name, v.Type, v.Value)
+}
+
+func (c *Compiler) compileFun(fn *parser.FunStmt) error {
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		params[i] = p.Name
+	}
+	c.writeln(fmt.Sprintf("def %s(%s):", fn.Name, strings.Join(params, ", ")))
+	c.indent++
+	for _, s := range fn.Body {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	if len(fn.Body) == 0 {
+		c.writeln("pass")
+	}
+	c.indent--
+	return nil
+}
+
+func (c *Compiler) compileReturn(ret *parser.ReturnStmt) error {
+	val, err := c.compileExpr(ret.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln("return " + val)
+	return nil
+}
+
+func (c *Compiler) compileIf(ifst *parser.IfStmt) error {
+	return c.compileIfChain("if", ifst)
+}
+
+func (c *Compiler) compileIfChain(keyword string, ifst *parser.IfStmt) error {
+	cond, err := c.compileExpr(ifst.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln(keyword + " " + cond + ":")
+	c.indent++
+	for _, s := range ifst.Then {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	if len(ifst.Then) == 0 {
+		c.writeln("pass")
+	}
+	c.indent--
+	if ifst.ElseIf != nil {
+		if err := c.compileIfChain("elif", ifst.ElseIf); err != nil {
+			return err
+		}
+	} else if ifst.Else != nil {
+		c.writeln("else:")
+		c.indent++
+		for _, s := range ifst.Else {
+			if err := c.compileStmt(s); err != nil {
+				return err
+			}
+		}
+		if len(ifst.Else) == 0 {
+			c.writeln("pass")
+		}
+		c.indent--
+	}
+	return nil
+}
+
+func (c *Compiler) compileWhile(ws *parser.WhileStmt) error {
+	cond, err := c.compileExpr(ws.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln("while " + cond + ":")
+	c.indent++
+	for _, s := range ws.Body {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	if len(ws.Body) == 0 {
+		c.writeln("pass")
+	}
+	c.indent--
+	return nil
+}
+
+func (c *Compiler) compileFor(fs *parser.ForStmt) error {
+	if fs.RangeEnd != nil {
+		start, err := c.compileExpr(fs.Source)
+		if err != nil {
+			return err
+		}
+		end, err := c.compileExpr(fs.RangeEnd)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("for %s in range(%s, (%s)+1):", fs.Name, start, end))
+	} else {
+		src, err := c.compileExpr(fs.Source)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("for %s in %s:", fs.Name, src))
+	}
+	c.indent++
+	for _, s := range fs.Body {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	if len(fs.Body) == 0 {
+		c.writeln("pass")
+	}
+	c.indent--
+	return nil
 }
 
 func (c *Compiler) compileVarStmt(name string, t *parser.TypeRef, val *parser.Expr) error {
@@ -180,6 +331,34 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileLiteral(p.Lit), nil
 	case p.Call != nil:
 		return c.compileCall(p.Call)
+	case p.List != nil:
+		elems := make([]string, len(p.List.Elems))
+		for i, e := range p.List.Elems {
+			s, err := c.compileExpr(e)
+			if err != nil {
+				return "", err
+			}
+			elems[i] = s
+		}
+		return "[" + strings.Join(elems, ", ") + "]", nil
+	case p.Map != nil:
+		parts := make([]string, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			k, err := c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", err
+			}
+			parts[i] = fmt.Sprintf("%s: %s", k, v)
+		}
+		return "{" + strings.Join(parts, ", ") + "}", nil
+	case p.FunExpr != nil:
+		return c.compileFunExpr(p.FunExpr)
+	case p.If != nil:
+		return c.compileIfExpr(p.If)
 	case p.Group != nil:
 		expr, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -206,7 +385,82 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 		args[i] = s
 	}
-	return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ", ")), nil
+	switch call.Func {
+	case "append":
+		if len(args) != 2 {
+			return "", fmt.Errorf("append expects 2 args")
+		}
+		return fmt.Sprintf("%s + [%s]", args[0], args[1]), nil
+	case "avg":
+		if len(args) != 1 {
+			return "", fmt.Errorf("avg expects 1 arg")
+		}
+		return fmt.Sprintf("(sum(%s) / len(%s))", args[0], args[0]), nil
+	case "count":
+		if len(args) != 1 {
+			return "", fmt.Errorf("count expects 1 arg")
+		}
+		return fmt.Sprintf("len(%s)", args[0]), nil
+	case "values":
+		if len(args) != 1 {
+			return "", fmt.Errorf("values expects 1 arg")
+		}
+		return fmt.Sprintf("list(%s.values())", args[0]), nil
+	case "substring":
+		if len(args) != 3 {
+			return "", fmt.Errorf("substring expects 3 args")
+		}
+		return fmt.Sprintf("%s[%s:%s]", args[0], args[1], args[2]), nil
+	case "json":
+		c.needsJSON = true
+		if len(args) != 1 {
+			return "", fmt.Errorf("json expects 1 arg")
+		}
+		return fmt.Sprintf("json.dumps(%s)", args[0]), nil
+	default:
+		return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ", ")), nil
+	}
+}
+
+func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		params[i] = p.Name
+	}
+	if fn.ExprBody != nil {
+		body, err := c.compileExpr(fn.ExprBody)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("lambda %s: %s", strings.Join(params, ", "), body), nil
+	}
+	return "", fmt.Errorf("block function expressions not supported")
+}
+
+func (c *Compiler) compileIfExpr(ix *parser.IfExpr) (string, error) {
+	cond, err := c.compileExpr(ix.Cond)
+	if err != nil {
+		return "", err
+	}
+	thenExpr, err := c.compileExpr(ix.Then)
+	if err != nil {
+		return "", err
+	}
+	if ix.ElseIf != nil {
+		elseExpr, err := c.compileIfExpr(ix.ElseIf)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("(%s if %s else %s)", thenExpr, cond, elseExpr), nil
+	}
+	elseCode := "None"
+	if ix.Else != nil {
+		elseCode, err = c.compileExpr(ix.Else)
+		if err != nil {
+			return "", err
+		}
+	}
+	return fmt.Sprintf("(%s if %s else %s)", thenExpr, cond, elseCode), nil
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) string {
