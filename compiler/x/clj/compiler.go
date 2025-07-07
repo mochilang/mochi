@@ -1349,6 +1349,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 					return "(_count " + args[0] + ")", nil
 				}
 			}
+		case "exists":
+			if len(args) == 1 {
+				return "(boolean (seq " + args[0] + "))", nil
+			}
 		case "avg":
 			if len(args) == 1 {
 				argT := c.exprType(p.Call.Args[0])
