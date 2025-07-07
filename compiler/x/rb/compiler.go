@@ -1656,6 +1656,11 @@ func (c *Compiler) compileBuiltinCall(name string, args []string, origArgs []*pa
 		}
 		c.use("_joinStrings")
 		return fmt.Sprintf("_joinStrings(%s, %s)", args[0], args[1]), true, nil
+	case "values":
+		if len(args) != 1 {
+			return "", true, fmt.Errorf("values expects 1 arg")
+		}
+		return fmt.Sprintf("(%s).values", args[0]), true, nil
 	case "str":
 		if len(args) != 1 {
 			return "", true, fmt.Errorf("str expects 1 arg")
@@ -1682,6 +1687,11 @@ func (c *Compiler) compileBuiltinCall(name string, args []string, origArgs []*pa
 		}
 		c.use("_sum")
 		return fmt.Sprintf("_sum(%s)", args[0]), true, nil
+	case "exists":
+		if len(args) != 1 {
+			return "", true, fmt.Errorf("exists expects 1 arg")
+		}
+		return fmt.Sprintf("!(%s).empty?", args[0]), true, nil
 	case "min":
 		if len(args) != 1 {
 			return "", true, fmt.Errorf("min expects 1 arg")

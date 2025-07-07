@@ -17,7 +17,7 @@ This directory contains generated Ruby code and test outputs.
 - [x] cross_join_triple.mochi
 - [x] dataset_sort_take_limit.mochi
 - [x] dataset_where_filter.mochi
-- [ ] exists_builtin.mochi
+- [x] exists_builtin.mochi
 - [x] for_list_collection.mochi
 - [x] for_loop.mochi
 - [x] for_map_collection.mochi
@@ -71,7 +71,7 @@ This directory contains generated Ruby code and test outputs.
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [ ] pure_global_fold.mochi
-- [ ] query_sum_select.mochi
+- [x] query_sum_select.mochi
 - [x] record_assign.mochi
 - [x] right_join.mochi
 - [x] save_jsonl_stdout.mochi
@@ -86,7 +86,7 @@ This directory contains generated Ruby code and test outputs.
 - [x] string_index.mochi
 - [x] string_prefix_slice.mochi
 - [x] substring_builtin.mochi
-- [ ] sum_builtin.mochi
+- [x] sum_builtin.mochi
 - [x] tail_recursion.mochi
 - [x] test_block.mochi
 - [ ] tree_sum.mochi
@@ -96,8 +96,8 @@ This directory contains generated Ruby code and test outputs.
 - [x] unary_neg.mochi
 - [ ] update_stmt.mochi
 - [x] user_type_literal.mochi
-- [ ] values_builtin.mochi
+- [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
 
-Compiled 81/97 programs successfully.
+Compiled 85/97 programs successfully.

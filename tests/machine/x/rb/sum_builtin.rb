@@ -1,6 +1,6 @@
 def _sum(v)
   list = nil
-  if v.is_a?(MGroup)
+  if defined?(MGroup) && v.is_a?(MGroup)
     list = v.Items
   elsif v.is_a?(Array)
     list = v

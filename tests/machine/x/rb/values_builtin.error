@@ -1,7 +1,0 @@
-error: /workspace/mochi/tests/machine/x/rb/values_builtin.rb:2:in `<main>': undefined local variable or method `values' for main:Object (NameError)
-
-puts([values.call(m)].join(" "))
-      ^^^^^^
-1: m = {"a" => 1, "b" => 2, "c" => 3}
-2: puts([values.call(m)].join(" "))
-3: 
