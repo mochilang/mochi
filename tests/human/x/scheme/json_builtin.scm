@@ -1,0 +1,5 @@
+(define m '((a . 1) (b . 2)))
+(define json (string-append "{" "\"a\":" (number->string (cdr (assoc 'a m)))
+                           ",\"b\":" (number->string (cdr (assoc 'b m))) "}"))
+(display json)
+(newline)
