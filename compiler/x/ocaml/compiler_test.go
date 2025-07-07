@@ -1,0 +1,93 @@
+package ocaml_test
+
+import (
+	"bytes"
+	"fmt"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"regexp"
+	"strconv"
+	"strings"
+	"testing"
+
+	"mochi/compiler/x/ocaml"
+	"mochi/parser"
+	"mochi/types"
+)
+
+// writeError writes a detailed error report.
+func writeError(dir, base string, src []byte, stage string, errOut []byte) {
+	line := 0
+	re := regexp.MustCompile(`line ([0-9]+)`)
+	if m := re.FindSubmatch(errOut); m != nil {
+		line, _ = strconv.Atoi(string(m[1]))
+	}
+	var context strings.Builder
+	lines := strings.Split(string(src), "\n")
+	if line > 0 {
+		start := line - 3
+		if start < 0 {
+			start = 0
+		}
+		end := line + 2
+		if end > len(lines) {
+			end = len(lines)
+		}
+		for i := start; i < end; i++ {
+			fmt.Fprintf(&context, "%4d | %s\n", i+1, lines[i])
+		}
+	}
+	msg := fmt.Sprintf("stage: %s\nerror:\n%s\n\nContext (around line %d):\n%s", stage, errOut, line, context.String())
+	_ = os.WriteFile(filepath.Join(dir, base+".error"), []byte(msg), 0644)
+}
+
+func TestPrograms(t *testing.T) {
+	if _, err := exec.LookPath("ocamlc"); err != nil {
+		t.Skipf("ocamlc not installed: %v", err)
+	}
+	files, err := filepath.Glob(filepath.Join("tests", "vm", "valid", "*.mochi"))
+	if err != nil {
+		t.Fatalf("glob error: %v", err)
+	}
+	outDir := filepath.Join("tests", "machine", "x", "ocaml")
+	_ = os.MkdirAll(outDir, 0755)
+	for _, f := range files {
+		base := strings.TrimSuffix(filepath.Base(f), ".mochi")
+		t.Run(base, func(t *testing.T) {
+			prog, err := parser.Parse(f)
+			if err != nil {
+				t.Fatalf("parse error: %v", err)
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				t.Fatalf("type error: %v", errs[0])
+			}
+			code, err := ocaml.New(env).Compile(prog, f)
+			if err != nil {
+				t.Fatalf("compile error: %v", err)
+			}
+			mlPath := filepath.Join(outDir, base+".ml")
+			if err := os.WriteFile(mlPath, code, 0644); err != nil {
+				t.Fatalf("write ml: %v", err)
+			}
+			exe := filepath.Join(outDir, base)
+			cmd := exec.Command("ocamlc", mlPath, "-o", exe)
+			if out, err := cmd.CombinedOutput(); err != nil {
+				writeError(outDir, base, code, "compile", out)
+				t.Fatalf("ocamlc error: %v", err)
+			}
+			runCmd := exec.Command(exe)
+			var out bytes.Buffer
+			runCmd.Stdout = &out
+			runCmd.Stderr = &out
+			if err := runCmd.Run(); err != nil {
+				writeError(outDir, base, code, "run", out.Bytes())
+				t.Fatalf("run error: %v", err)
+			}
+			if err := os.WriteFile(filepath.Join(outDir, base+".out"), out.Bytes(), 0644); err != nil {
+				t.Fatalf("write out: %v", err)
+			}
+		})
+	}
+}
