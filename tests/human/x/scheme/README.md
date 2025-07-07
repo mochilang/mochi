@@ -1,8 +1,9 @@
 # Scheme translations of Mochi VM tests
 
-This directory contains manual Scheme implementations of the programs found in `tests/vm/valid`. The list below shows which programs have been translated so far.
+This directory contains manual Scheme implementations of the programs found in
+`tests/vm/valid`.
 
-## Status
+## Checklist (47/97 translated)
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -36,8 +37,8 @@ This directory contains manual Scheme implementations of the programs found in `
 - [ ] group_by_sort.mochi
 - [ ] group_items_iteration.mochi
 - [x] if_else.mochi
-- [ ] if_then_else.mochi
-- [ ] if_then_else_nested.mochi
+- [x] if_then_else.mochi
+- [x] if_then_else_nested.mochi
 - [ ] in_operator.mochi
 - [ ] in_operator_extended.mochi
 - [ ] inner_join.mochi
@@ -83,9 +84,9 @@ This directory contains manual Scheme implementations of the programs found in `
 - [ ] str_builtin.mochi
 - [ ] string_compare.mochi
 - [x] string_concat.mochi
-- [ ] string_contains.mochi
-- [ ] string_in_operator.mochi
-- [ ] string_index.mochi
+- [x] string_contains.mochi
+- [x] string_in_operator.mochi
+- [x] string_index.mochi
 - [x] string_prefix_slice.mochi
 - [ ] substring_builtin.mochi
 - [x] sum_builtin.mochi
