@@ -33,11 +33,11 @@ This directory contains hand-written Java versions of programs from `tests/vm/va
 - map_int_key
 - print_hello
 - slice
-
-## Missing
 - dataset_sort_take_limit
 - dataset_where_filter
 - exists_builtin
+
+## Missing
 - fun_three_args
 - group_by
 - group_by_conditional_sum
