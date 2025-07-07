@@ -195,11 +195,22 @@ func (c *Compiler) compileMainStmts(prog *parser.Program, tests []string) ([]byt
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	header := fn.Name
 	names := make([]string, len(fn.Params))
+	typeParts := make([]string, len(fn.Params))
 	if len(fn.Params) > 0 {
 		header += ": " + fn.Params[0].Name
+		if t, err := c.env.GetVar(fn.Params[0].Name); err == nil {
+			typeParts[0] = fmt.Sprintf("%s: %s", fn.Params[0].Name, typeString(t))
+		} else {
+			typeParts[0] = fn.Params[0].Name
+		}
 		names[0] = fn.Params[0].Name
 		for i, p := range fn.Params[1:] {
 			header += " " + p.Name + ": " + p.Name
+			if t, err := c.env.GetVar(p.Name); err == nil {
+				typeParts[i+1] = fmt.Sprintf("%s: %s", p.Name, typeString(t))
+			} else {
+				typeParts[i+1] = p.Name
+			}
 			names[i+1] = p.Name
 		}
 	}
@@ -208,6 +219,8 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	if c.indent > 0 {
 		vars = append(vars, fn.Name)
 	}
+
+	comment := strings.Join(filterEmpty(typeParts), ", ")
 
 	if c.indent > 0 {
 		blockHeader := "["
@@ -225,7 +238,11 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 				blockHeader += " | " + strings.Join(vars, " ") + " |"
 			}
 		}
-		c.writeln(fmt.Sprintf("%s := %s", fn.Name, blockHeader))
+		if comment != "" {
+			c.writeln(fmt.Sprintf("%s := %s \"%s\"", fn.Name, blockHeader, comment))
+		} else {
+			c.writeln(fmt.Sprintf("%s := %s", fn.Name, blockHeader))
+		}
 		c.indent++
 		for _, st := range fn.Body {
 			if err := c.compileStmt(st); err != nil {
@@ -238,11 +255,14 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	}
 
 	c.writeln("!Main class methodsFor: 'mochi'!")
+	line := header
 	if len(vars) > 0 {
-		c.writeln(header + " | " + strings.Join(vars, " ") + " |")
-	} else {
-		c.writeln(header)
+		line += " | " + strings.Join(vars, " ") + " |"
 	}
+	if comment != "" {
+		line += " \"" + comment + "\""
+	}
+	c.writeln(line)
 	c.indent++
 	for _, st := range fn.Body {
 		if err := c.compileStmt(st); err != nil {
@@ -385,7 +405,15 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("%s := %s.", s.Let.Name, val))
+		typeStr := ""
+		if t, err := c.env.GetVar(s.Let.Name); err == nil {
+			typeStr = typeString(t)
+		}
+		if typeStr != "" {
+			c.writeln(fmt.Sprintf("%s := %s. \"%s\"", s.Let.Name, val, typeStr))
+		} else {
+			c.writeln(fmt.Sprintf("%s := %s.", s.Let.Name, val))
+		}
 	case s.Var != nil:
 		if err := c.compileVar(s.Var); err != nil {
 			return err
@@ -665,7 +693,15 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 		}
 		val = expr
 	}
-	c.writeln(fmt.Sprintf("%s := %s.", v.Name, val))
+	typeStr := ""
+	if t, err := c.env.GetVar(v.Name); err == nil {
+		typeStr = typeString(t)
+	}
+	if typeStr != "" {
+		c.writeln(fmt.Sprintf("%s := %s. \"%s\"", v.Name, val, typeStr))
+	} else {
+		c.writeln(fmt.Sprintf("%s := %s.", v.Name, val))
+	}
 	return nil
 }
 
