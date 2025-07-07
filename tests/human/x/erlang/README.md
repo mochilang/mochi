@@ -52,12 +52,11 @@ This directory contains manual Erlang translations of some Mochi test programs f
 - unary_neg.mochi
 - tree_sum.mochi
 - two-sum.mochi
-
-## Missing
 - group_by.mochi
 - group_by_conditional_sum.mochi
 - group_by_having.mochi
 - group_by_join.mochi
+## Missing
 - group_by_left_join.mochi
 - group_by_multi_join.mochi
 - group_by_multi_join_sort.mochi
