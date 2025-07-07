@@ -13,16 +13,17 @@ This directory contains manual Go translations of some Mochi test programs from 
 - cast_struct.mochi
 - closure.mochi
 - count_builtin.mochi
-
-## Missing
 - cross_join.mochi
 - cross_join_filter.mochi
 - cross_join_triple.mochi
 - dataset_sort_take_limit.mochi
 - dataset_where_filter.mochi
 - exists_builtin.mochi
-- for_list_collection.mochi
 - for_loop.mochi
+- print_hello.mochi
+
+## Missing
+- for_list_collection.mochi
 - for_map_collection.mochi
 - fun_call.mochi
 - fun_expr_in_let.mochi
@@ -71,7 +72,6 @@ This directory contains manual Go translations of some Mochi test programs from 
 - order_by_map.mochi
 - outer_join.mochi
 - partial_application.mochi
-- print_hello.mochi
 - pure_fold.mochi
 - pure_global_fold.mochi
 - query_sum_select.mochi
