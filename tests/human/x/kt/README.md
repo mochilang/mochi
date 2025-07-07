@@ -2,102 +2,100 @@
 
 This folder contains Kotlin equivalents for programs in `tests/vm/valid`.
 
-| Mochi File | Kotlin |
-|-----------|--------|
-| `append_builtin.mochi` | `append_builtin.kt` |
-| `avg_builtin.mochi` | `avg_builtin.kt` |
-| `basic_compare.mochi` | `basic_compare.kt` |
-| `binary_precedence.mochi` | `binary_precedence.kt` |
-| `bool_chain.mochi` | `bool_chain.kt` |
-| `break_continue.mochi` | `break_continue.kt` |
-| `cast_string_to_int.mochi` | `cast_string_to_int.kt` |
-| `cast_struct.mochi` | `cast_struct.kt` |
-| `closure.mochi` | `closure.kt` |
-| `count_builtin.mochi` | `count_builtin.kt` |
-| `cross_join.mochi` | `cross_join.kt` |
-| `cross_join_filter.mochi` | `cross_join_filter.kt` |
-| `cross_join_triple.mochi` | `cross_join_triple.kt` |
-| `dataset_sort_take_limit.mochi` | `dataset_sort_take_limit.kt` |
-| `dataset_where_filter.mochi` | `dataset_where_filter.kt` |
-| `exists_builtin.mochi` | `exists_builtin.kt` |
-| `for_list_collection.mochi` | `for_list_collection.kt` |
-| `for_loop.mochi` | `for_loop.kt` |
-| `for_map_collection.mochi` | `for_map_collection.kt` |
-| `fun_call.mochi` | `fun_call.kt` |
-| `fun_expr_in_let.mochi` | `fun_expr_in_let.kt` |
-| `fun_three_args.mochi` | `fun_three_args.kt` |
-| `group_by.mochi` | `group_by.kt` |
-| `group_by_conditional_sum.mochi` | `group_by_conditional_sum.kt` |
-| `group_by_having.mochi` | `group_by_having.kt` |
-| `group_by_join.mochi` | `group_by_join.kt` |
-| `group_by_left_join.mochi` | `group_by_left_join.kt` |
-| `group_by_multi_join.mochi` | `group_by_multi_join.kt` |
-| `group_by_multi_join_sort.mochi` | `group_by_multi_join_sort.kt` |
-| `group_by_sort.mochi` | `group_by_sort.kt` |
-| `group_items_iteration.mochi` | `group_items_iteration.kt` |
-| `if_else.mochi` | `if_else.kt` |
-| `if_then_else.mochi` | `if_then_else.kt` |
-| `if_then_else_nested.mochi` | `if_then_else_nested.kt` |
-| `in_operator.mochi` | `in_operator.kt` |
-| `in_operator_extended.mochi` | `in_operator_extended.kt` |
-| `inner_join.mochi` | `inner_join.kt` |
-| `join_multi.mochi` | `join_multi.kt` |
-| `json_builtin.mochi` | `json_builtin.kt` |
-| `left_join.mochi` | `left_join.kt` |
-| `left_join_multi.mochi` | `left_join_multi.kt` |
-| `len_builtin.mochi` | `len_builtin.kt` |
-| `len_map.mochi` | `len_map.kt` |
-| `len_string.mochi` | `len_string.kt` |
-| `let_and_print.mochi` | `let_and_print.kt` |
-| `list_assign.mochi` | `list_assign.kt` |
-| `list_index.mochi` | `list_index.kt` |
-| `list_nested_assign.mochi` | `list_nested_assign.kt` |
-| `list_set_ops.mochi` | `list_set_ops.kt` |
-| `load_yaml.mochi` | `load_yaml.kt` |
-| `map_assign.mochi` | `map_assign.kt` |
-| `map_in_operator.mochi` | `map_in_operator.kt` |
-| `map_index.mochi` | `map_index.kt` |
-| `map_int_key.mochi` | `map_int_key.kt` |
-| `map_literal_dynamic.mochi` | `map_literal_dynamic.kt` |
-| `map_membership.mochi` | `map_membership.kt` |
-| `map_nested_assign.mochi` | `map_nested_assign.kt` |
-| `match_expr.mochi` | `match_expr.kt` |
-| `match_full.mochi` | `match_full.kt` |
-| `math_ops.mochi` | `math_ops.kt` |
-| `membership.mochi` | `membership.kt` |
-| `min_max_builtin.mochi` | `min_max_builtin.kt` |
-| `nested_function.mochi` | `nested_function.kt` |
-| `order_by_map.mochi` | `order_by_map.kt` |
-| `outer_join.mochi` | `outer_join.kt` |
-| `partial_application.mochi` | `partial_application.kt` |
-| `print_hello.mochi` | `print_hello.kt` |
-| `pure_fold.mochi` | `pure_fold.kt` |
-| `pure_global_fold.mochi` | `pure_global_fold.kt` |
-| `query_sum_select.mochi` | `query_sum_select.kt` |
-| `record_assign.mochi` | `record_assign.kt` |
-| `right_join.mochi` | `right_join.kt` |
-| `save_jsonl_stdout.mochi` | `save_jsonl_stdout.kt` |
-| `short_circuit.mochi` | `short_circuit.kt` |
-| `slice.mochi` | `slice.kt` |
-| `sort_stable.mochi` | `sort_stable.kt` |
-| `str_builtin.mochi` | `str_builtin.kt` |
-| `string_compare.mochi` | `string_compare.kt` |
-| `string_concat.mochi` | `string_concat.kt` |
-| `string_contains.mochi` | `string_contains.kt` |
-| `string_in_operator.mochi` | `string_in_operator.kt` |
-| `string_index.mochi` | `string_index.kt` |
-| `string_prefix_slice.mochi` | `string_prefix_slice.kt` |
-| `substring_builtin.mochi` | `substring_builtin.kt` |
-| `sum_builtin.mochi` | `sum_builtin.kt` |
-| `tail_recursion.mochi` | `tail_recursion.kt` |
-| `test_block.mochi` | `test_block.kt` |
-| `tree_sum.mochi` | `tree_sum.kt` |
-| `two-sum.mochi` | `two-sum.kt` |
-| `typed_let.mochi` | `typed_let.kt` |
-| `typed_var.mochi` | `typed_var.kt` |
-| `unary_neg.mochi` | `unary_neg.kt` |
-| `update_stmt.mochi` | `update_stmt.kt` |
-| `user_type_literal.mochi` | `user_type_literal.kt` |
-| `values_builtin.mochi` | `values_builtin.kt` |
-| `var_assignment.mochi` | `var_assignment.kt` |
-| `while_loop.mochi` | `while_loop.kt` |
+- [x] append_builtin.mochi
+- [x] avg_builtin.mochi
+- [x] basic_compare.mochi
+- [x] binary_precedence.mochi
+- [x] bool_chain.mochi
+- [x] break_continue.mochi
+- [x] cast_string_to_int.mochi
+- [x] cast_struct.mochi
+- [x] closure.mochi
+- [x] count_builtin.mochi
+- [x] cross_join.mochi
+- [x] cross_join_filter.mochi
+- [x] cross_join_triple.mochi
+- [x] dataset_sort_take_limit.mochi
+- [x] dataset_where_filter.mochi
+- [x] exists_builtin.mochi
+- [x] for_list_collection.mochi
+- [x] for_loop.mochi
+- [x] for_map_collection.mochi
+- [x] fun_call.mochi
+- [x] fun_expr_in_let.mochi
+- [x] fun_three_args.mochi
+- [x] group_by.mochi
+- [x] group_by_conditional_sum.mochi
+- [x] group_by_having.mochi
+- [x] group_by_join.mochi
+- [x] group_by_left_join.mochi
+- [x] group_by_multi_join.mochi
+- [x] group_by_multi_join_sort.mochi
+- [x] group_by_sort.mochi
+- [x] group_items_iteration.mochi
+- [x] if_else.mochi
+- [x] if_then_else.mochi
+- [x] if_then_else_nested.mochi
+- [x] in_operator.mochi
+- [x] in_operator_extended.mochi
+- [x] inner_join.mochi
+- [x] join_multi.mochi
+- [x] json_builtin.mochi
+- [x] left_join.mochi
+- [x] left_join_multi.mochi
+- [x] len_builtin.mochi
+- [x] len_map.mochi
+- [x] len_string.mochi
+- [x] let_and_print.mochi
+- [x] list_assign.mochi
+- [x] list_index.mochi
+- [x] list_nested_assign.mochi
+- [x] list_set_ops.mochi
+- [x] load_yaml.mochi
+- [x] map_assign.mochi
+- [x] map_in_operator.mochi
+- [x] map_index.mochi
+- [x] map_int_key.mochi
+- [x] map_literal_dynamic.mochi
+- [x] map_membership.mochi
+- [x] map_nested_assign.mochi
+- [x] match_expr.mochi
+- [x] match_full.mochi
+- [x] math_ops.mochi
+- [x] membership.mochi
+- [x] min_max_builtin.mochi
+- [x] nested_function.mochi
+- [x] order_by_map.mochi
+- [x] outer_join.mochi
+- [x] partial_application.mochi
+- [x] print_hello.mochi
+- [x] pure_fold.mochi
+- [x] pure_global_fold.mochi
+- [x] query_sum_select.mochi
+- [x] record_assign.mochi
+- [x] right_join.mochi
+- [x] save_jsonl_stdout.mochi
+- [x] short_circuit.mochi
+- [x] slice.mochi
+- [x] sort_stable.mochi
+- [x] str_builtin.mochi
+- [x] string_compare.mochi
+- [x] string_concat.mochi
+- [x] string_contains.mochi
+- [x] string_in_operator.mochi
+- [x] string_index.mochi
+- [x] string_prefix_slice.mochi
+- [x] substring_builtin.mochi
+- [x] sum_builtin.mochi
+- [x] tail_recursion.mochi
+- [x] test_block.mochi
+- [x] tree_sum.mochi
+- [x] two-sum.mochi
+- [x] typed_let.mochi
+- [x] typed_var.mochi
+- [x] unary_neg.mochi
+- [x] update_stmt.mochi
+- [x] user_type_literal.mochi
+- [x] values_builtin.mochi
+- [x] var_assignment.mochi
+- [x] while_loop.mochi
