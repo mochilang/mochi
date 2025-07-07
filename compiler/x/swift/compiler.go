@@ -69,6 +69,12 @@ func (c *compiler) stmt(s *parser.Statement) error {
 		return c.ifStmt(s.If)
 	case s.While != nil:
 		return c.whileStmt(s.While)
+	case s.For != nil:
+		return c.forStmt(s.For)
+	case s.Break != nil:
+		return c.breakStmt(s.Break)
+	case s.Continue != nil:
+		return c.continueStmt(s.Continue)
 	case s.Expr != nil:
 		expr, err := c.expr(s.Expr.Expr)
 		if err != nil {
@@ -247,6 +253,47 @@ func (c *compiler) whileStmt(w *parser.WhileStmt) error {
 	return nil
 }
 
+func (c *compiler) forStmt(f *parser.ForStmt) error {
+	var header string
+	if f.RangeEnd != nil {
+		start, err := c.expr(f.Source)
+		if err != nil {
+			return err
+		}
+		end, err := c.expr(f.RangeEnd)
+		if err != nil {
+			return err
+		}
+		header = fmt.Sprintf("for %s in %s..<%s {", f.Name, start, end)
+	} else {
+		src, err := c.expr(f.Source)
+		if err != nil {
+			return err
+		}
+		header = fmt.Sprintf("for %s in %s {", f.Name, src)
+	}
+	c.writeln(header)
+	c.indent++
+	for _, st := range f.Body {
+		if err := c.stmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
+func (c *compiler) breakStmt(_ *parser.BreakStmt) error {
+	c.writeln("break")
+	return nil
+}
+
+func (c *compiler) continueStmt(_ *parser.ContinueStmt) error {
+	c.writeln("continue")
+	return nil
+}
+
 func (c *compiler) expr(e *parser.Expr) (string, error) {
 	if e == nil || e.Binary == nil {
 		return "", fmt.Errorf("empty expression")
@@ -327,6 +374,16 @@ func (c *compiler) primary(p *parser.Primary) (string, error) {
 		return literal(p.Lit), nil
 	case p.Call != nil:
 		return c.callExpr(p.Call)
+	case p.List != nil:
+		elems := make([]string, len(p.List.Elems))
+		for i, e := range p.List.Elems {
+			s, err := c.expr(e)
+			if err != nil {
+				return "", err
+			}
+			elems[i] = s
+		}
+		return "[" + strings.Join(elems, ", ") + "]", nil
 	case p.Selector != nil:
 		return selector(p.Selector), nil
 	case p.Group != nil:
