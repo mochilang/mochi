@@ -1,104 +1,105 @@
 # Go Translations of Mochi Programs
 
-This directory contains manual Go translations of some Mochi test programs from `tests/vm/valid`.
+This directory contains Go implementations of the example Mochi programs found in `tests/vm/valid`. Each Go file replicates the behavior of the corresponding `.mochi` source.
 
-## Translated
-- append_builtin.mochi
-- avg_builtin.mochi
-- basic_compare.mochi
-- binary_precedence.mochi
-- bool_chain.mochi
-- break_continue.mochi
-- cast_string_to_int.mochi
-- cast_struct.mochi
-- closure.mochi
-- count_builtin.mochi
-- cross_join.mochi
-- cross_join_filter.mochi
-- cross_join_triple.mochi
-- dataset_sort_take_limit.mochi
-- dataset_where_filter.mochi
-- exists_builtin.mochi
-- for_loop.mochi
-- print_hello.mochi
+## Translation Status
 
-## Missing
-- for_list_collection.mochi
-- for_map_collection.mochi
-- fun_call.mochi
-- fun_expr_in_let.mochi
-- fun_three_args.mochi
-- group_by.mochi
-- group_by_conditional_sum.mochi
-- group_by_having.mochi
-- group_by_join.mochi
-- group_by_left_join.mochi
-- group_by_multi_join.mochi
-- group_by_multi_join_sort.mochi
-- group_by_sort.mochi
-- group_items_iteration.mochi
-- if_else.mochi
-- if_then_else.mochi
-- if_then_else_nested.mochi
-- in_operator.mochi
-- in_operator_extended.mochi
-- inner_join.mochi
-- join_multi.mochi
-- json_builtin.mochi
-- left_join.mochi
-- left_join_multi.mochi
-- len_builtin.mochi
-- len_map.mochi
-- len_string.mochi
-- let_and_print.mochi
-- list_assign.mochi
-- list_index.mochi
-- list_nested_assign.mochi
-- list_set_ops.mochi
-- load_yaml.mochi
-- map_assign.mochi
-- map_in_operator.mochi
-- map_index.mochi
-- map_int_key.mochi
-- map_literal_dynamic.mochi
-- map_membership.mochi
-- map_nested_assign.mochi
-- match_expr.mochi
-- match_full.mochi
-- math_ops.mochi
-- membership.mochi
-- min_max_builtin.mochi
-- nested_function.mochi
-- order_by_map.mochi
-- outer_join.mochi
-- partial_application.mochi
-- pure_fold.mochi
-- pure_global_fold.mochi
-- query_sum_select.mochi
-- record_assign.mochi
-- right_join.mochi
-- save_jsonl_stdout.mochi
-- short_circuit.mochi
-- slice.mochi
-- sort_stable.mochi
-- str_builtin.mochi
-- string_compare.mochi
-- string_concat.mochi
-- string_contains.mochi
-- string_in_operator.mochi
-- string_index.mochi
-- string_prefix_slice.mochi
-- substring_builtin.mochi
-- sum_builtin.mochi
-- tail_recursion.mochi
-- test_block.mochi
-- tree_sum.mochi
-- two-sum.mochi
-- typed_let.mochi
-- typed_var.mochi
-- unary_neg.mochi
-- update_stmt.mochi
-- user_type_literal.mochi
-- values_builtin.mochi
-- var_assignment.mochi
-- while_loop.mochi
+| Mochi program | Go translation |
+|---------------|----------------|
+| append_builtin.mochi | append_builtin.go |
+| avg_builtin.mochi | avg_builtin.go |
+| basic_compare.mochi | basic_compare.go |
+| binary_precedence.mochi | binary_precedence.go |
+| bool_chain.mochi | bool_chain.go |
+| break_continue.mochi | break_continue.go |
+| cast_string_to_int.mochi | cast_string_to_int.go |
+| cast_struct.mochi | cast_struct.go |
+| closure.mochi | closure.go |
+| count_builtin.mochi | count_builtin.go |
+| cross_join.mochi | cross_join.go |
+| cross_join_filter.mochi | cross_join_filter.go |
+| cross_join_triple.mochi | cross_join_triple.go |
+| dataset_sort_take_limit.mochi | dataset_sort_take_limit.go |
+| dataset_where_filter.mochi | dataset_where_filter.go |
+| exists_builtin.mochi | exists_builtin.go |
+| for_list_collection.mochi | for_list_collection.go |
+| for_loop.mochi | for_loop.go |
+| for_map_collection.mochi | for_map_collection.go |
+| fun_call.mochi | fun_call.go |
+| fun_expr_in_let.mochi | fun_expr_in_let.go |
+| fun_three_args.mochi | fun_three_args.go |
+| group_by.mochi | group_by.go |
+| group_by_conditional_sum.mochi | group_by_conditional_sum.go |
+| group_by_having.mochi | group_by_having.go |
+| group_by_join.mochi | group_by_join.go |
+| group_by_left_join.mochi | group_by_left_join.go |
+| group_by_multi_join.mochi | group_by_multi_join.go |
+| group_by_multi_join_sort.mochi | group_by_multi_join_sort.go |
+| group_by_sort.mochi | group_by_sort.go |
+| group_items_iteration.mochi | group_items_iteration.go |
+| if_else.mochi | if_else.go |
+| if_then_else.mochi | if_then_else.go |
+| if_then_else_nested.mochi | if_then_else_nested.go |
+| in_operator.mochi | in_operator.go |
+| in_operator_extended.mochi | in_operator_extended.go |
+| inner_join.mochi | inner_join.go |
+| join_multi.mochi | join_multi.go |
+| json_builtin.mochi | json_builtin.go |
+| left_join.mochi | left_join.go |
+| left_join_multi.mochi | left_join_multi.go |
+| len_builtin.mochi | len_builtin.go |
+| len_map.mochi | len_map.go |
+| len_string.mochi | len_string.go |
+| let_and_print.mochi | let_and_print.go |
+| list_assign.mochi | list_assign.go |
+| list_index.mochi | list_index.go |
+| list_nested_assign.mochi | list_nested_assign.go |
+| list_set_ops.mochi | list_set_ops.go |
+| load_yaml.mochi | load_yaml.go |
+| map_assign.mochi | map_assign.go |
+| map_in_operator.mochi | map_in_operator.go |
+| map_index.mochi | map_index.go |
+| map_int_key.mochi | map_int_key.go |
+| map_literal_dynamic.mochi | map_literal_dynamic.go |
+| map_membership.mochi | map_membership.go |
+| map_nested_assign.mochi | map_nested_assign.go |
+| match_expr.mochi | match_expr.go |
+| match_full.mochi | match_full.go |
+| math_ops.mochi | math_ops.go |
+| membership.mochi | membership.go |
+| min_max_builtin.mochi | min_max_builtin.go |
+| nested_function.mochi | nested_function.go |
+| order_by_map.mochi | order_by_map.go |
+| outer_join.mochi | outer_join.go |
+| partial_application.mochi | partial_application.go |
+| print_hello.mochi | print_hello.go |
+| pure_fold.mochi | pure_fold.go |
+| pure_global_fold.mochi | pure_global_fold.go |
+| query_sum_select.mochi | query_sum_select.go |
+| record_assign.mochi | record_assign.go |
+| right_join.mochi | right_join.go |
+| save_jsonl_stdout.mochi | save_jsonl_stdout.go |
+| short_circuit.mochi | short_circuit.go |
+| slice.mochi | slice.go |
+| sort_stable.mochi | sort_stable.go |
+| str_builtin.mochi | str_builtin.go |
+| string_compare.mochi | string_compare.go |
+| string_concat.mochi | string_concat.go |
+| string_contains.mochi | string_contains.go |
+| string_in_operator.mochi | string_in_operator.go |
+| string_index.mochi | string_index.go |
+| string_prefix_slice.mochi | string_prefix_slice.go |
+| substring_builtin.mochi | substring_builtin.go |
+| sum_builtin.mochi | sum_builtin.go |
+| tail_recursion.mochi | tail_recursion.go |
+| test_block.mochi | test_block.go |
+| tree_sum.mochi | tree_sum.go |
+| two-sum.mochi | two-sum.go |
+| typed_let.mochi | typed_let.go |
+| typed_var.mochi | typed_var.go |
+| unary_neg.mochi | unary_neg.go |
+| update_stmt.mochi | update_stmt.go |
+| user_type_literal.mochi | user_type_literal.go |
+| values_builtin.mochi | values_builtin.go |
+| var_assignment.mochi | var_assignment.go |
+| while_loop.mochi | while_loop.go |

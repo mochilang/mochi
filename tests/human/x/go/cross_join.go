@@ -1,43 +1,61 @@
 package main
 
-import "fmt"
-
-type Customer struct {
-    ID   int
-    Name string
-}
-
-type Order struct {
-    ID         int
-    CustomerID int
-    Total      int
-}
+import (
+	"fmt"
+)
 
 func main() {
-    customers := []Customer{{1, "Alice"}, {2, "Bob"}, {3, "Charlie"}}
-    orders := []Order{{100, 1, 250}, {101, 2, 125}, {102, 1, 300}}
+	type CustomersItem struct {
+		Id   int    `json:"id"`
+		Name string `json:"name"`
+	}
 
-    var result []struct {
-        OrderID         int
-        OrderCustomerID int
-        PairedCustomer  string
-        OrderTotal      int
-    }
+	var customers []CustomersItem = []CustomersItem{CustomersItem{
+		Id:   1,
+		Name: "Alice",
+	}, CustomersItem{
+		Id:   2,
+		Name: "Bob",
+	}, CustomersItem{
+		Id:   3,
+		Name: "Charlie",
+	}}
+	_ = customers
+	type OrdersItem struct {
+		Id         int `json:"id"`
+		CustomerId int `json:"customerId"`
+		Total      int `json:"total"`
+	}
 
-    for _, o := range orders {
-        for _, c := range customers {
-            result = append(result, struct {
-                OrderID         int
-                OrderCustomerID int
-                PairedCustomer  string
-                OrderTotal      int
-            }{o.ID, o.CustomerID, c.Name, o.Total})
-        }
-    }
-
-    fmt.Println("--- Cross Join: All order-customer pairs ---")
-    for _, entry := range result {
-        fmt.Printf("Order %d (customerId: %d, total: $%d) paired with %s\n",
-            entry.OrderID, entry.OrderCustomerID, entry.OrderTotal, entry.PairedCustomer)
-    }
+	var orders []OrdersItem = []OrdersItem{OrdersItem{
+		Id:         100,
+		CustomerId: 1,
+		Total:      250,
+	}, OrdersItem{
+		Id:         101,
+		CustomerId: 2,
+		Total:      125,
+	}, OrdersItem{
+		Id:         102,
+		CustomerId: 1,
+		Total:      300,
+	}}
+	var result []map[string]any = func() []map[string]any {
+		_res := []map[string]any{}
+		for _, o := range orders {
+			for _, c := range customers {
+				_res = append(_res, map[string]any{
+					"orderId":            o.Id,
+					"orderCustomerId":    o.CustomerId,
+					"pairedCustomerName": c.Name,
+					"orderTotal":         o.Total,
+				})
+			}
+		}
+		return _res
+	}()
+	fmt.Println("--- Cross Join: All order-customer pairs ---")
+	for _, entry := range result {
+		fmt.Println("Order", entry["orderId"], "(customerId:", entry["orderCustomerId"], ", total: $", entry["orderTotal"], ") paired with", entry["pairedCustomerName"])
+	}
 }
