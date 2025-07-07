@@ -1191,20 +1191,30 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		}
 		if op.Cast != nil {
 			if op.Cast.Type != nil {
-				t := c.resolveTypeRef(op.Cast.Type)
-				switch tt := t.(type) {
+				nt := c.resolveTypeRef(op.Cast.Type)
+				switch tt := nt.(type) {
 				case types.FloatType:
 					expr = fmt.Sprintf("(double %s)", expr)
+					t = types.FloatType{}
 				case types.IntType:
-					expr = fmt.Sprintf("(int %s)", expr)
+					// If the source looks like a string, use
+					// Integer/parseInt instead of int cast.
+					if _, ok := t.(types.StringType); ok || c.isStringExpr(expr) {
+						expr = fmt.Sprintf("(Integer/parseInt %s)", expr)
+					} else {
+						expr = fmt.Sprintf("(int %s)", expr)
+					}
+					t = types.IntType{}
 				case types.StructType:
 					c.use("_cast_struct")
 					expr = fmt.Sprintf("(_cast_struct %s %s)", sanitizeName(tt.Name), expr)
+					t = tt
 				case types.ListType:
 					if st, ok := tt.Elem.(types.StructType); ok {
 						c.use("_cast_struct_list")
 						expr = fmt.Sprintf("(_cast_struct_list %s %s)", sanitizeName(st.Name), expr)
 					}
+					t = tt
 				}
 			}
 			continue

@@ -1,0 +1,6 @@
+exit status 1
+Execution error (ArityException) at main/-main (partial_application.clj:17).
+Wrong number of args (1) passed to: main/add
+
+Full report at:
+/tmp/clojure-16033456399227433487.edn
