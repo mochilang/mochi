@@ -3,7 +3,7 @@
 $x = 3;
 // y: int
 $y = 4;
-// m: {string: any}
+// m: {string: int}
 $m = ["a" => $x, "b" => $y];
 _print($m["a"], $m["b"]);
 

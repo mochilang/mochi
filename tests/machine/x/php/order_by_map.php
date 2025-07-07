@@ -1,7 +1,7 @@
 <?php
 // data: [{string: int}]
 $data = [["a" => 1, "b" => 2], ["a" => 1, "b" => 1], ["a" => 0, "b" => 5]];
-// sorted: [any]
+// sorted: [{string: int}]
 $sorted = (function() use ($data) {
 	$_src = $data;
 	return _query($_src, [

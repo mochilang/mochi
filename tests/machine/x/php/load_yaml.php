@@ -12,7 +12,7 @@ class Person {
 
 // people: [Person]
 $people = _load_json("../interpreter/valid/people.yaml");
-// adults: [{string: any}]
+// adults: [{string: string}]
 $adults = (function() use ($people) {
 	$res = [];
 	foreach ((is_string($people) ? str_split($people) : $people) as $p) {

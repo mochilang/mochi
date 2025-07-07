@@ -1,7 +1,0 @@
-line: 11
-error: run error: exit status 255
-PHP Fatal error:  Uncaught Error: Cannot use object of type Todo as array in /workspace/mochi/tests/machine/x/php/cast_struct.php:11
-Stack trace:
-#0 {main}
-  thrown in /workspace/mochi/tests/machine/x/php/cast_struct.php on line 11
-

@@ -19,7 +19,7 @@ class Book {
 
 // book: Book
 $book = new Book(['title' => "Go", 'author' => new Person(['name' => "Bob", 'age' => 42])]);
-_print($book['author']['name']);
+_print($book->author->name);
 
 function _print(...$args) {
     $parts = [];
