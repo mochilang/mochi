@@ -38,7 +38,7 @@
 - [x] in_operator_extended.mochi
 - [ ] inner_join.mochi
 - [ ] join_multi.mochi
-- [ ] json_builtin.mochi
+- [x] json_builtin.mochi
 - [ ] left_join.mochi
 - [ ] left_join_multi.mochi
 - [x] len_builtin.mochi
@@ -57,12 +57,12 @@
 - [x] map_literal_dynamic.mochi
 - [x] map_membership.mochi
 - [x] map_nested_assign.mochi
-- [ ] match_expr.mochi
+- [x] match_expr.mochi
 - [ ] match_full.mochi
-- [ ] math_ops.mochi
-- [ ] membership.mochi
-- [ ] min_max_builtin.mochi
-- [ ] nested_function.mochi
+- [x] math_ops.mochi
+- [x] membership.mochi
+- [x] min_max_builtin.mochi
+- [x] nested_function.mochi
 - [ ] order_by_map.mochi
 - [ ] outer_join.mochi
 - [ ] partial_application.mochi
@@ -77,10 +77,10 @@
 - [x] slice.mochi
 - [ ] sort_stable.mochi
 - [x] str_builtin.mochi
-- [ ] string_compare.mochi
+- [x] string_compare.mochi
 - [x] string_concat.mochi
 - [x] string_contains.mochi
-- [ ] string_in_operator.mochi
+- [x] string_in_operator.mochi
 - [x] string_index.mochi
 - [x] string_prefix_slice.mochi
 - [x] substring_builtin.mochi
@@ -96,4 +96,4 @@
 - [x] user_type_literal.mochi
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
-- [ ] while_loop.mochi
+- [x] while_loop.mochi
