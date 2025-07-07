@@ -64,10 +64,12 @@ This directory contains hand-written Clojure versions of the Mochi examples foun
 - cross_join_triple.mochi
 - dataset_sort_take_limit.mochi
 - dataset_where_filter.mochi
+- group_by.mochi
+- map_index.mochi
+- slice.mochi
 
 ## Missing programs
 
-- group_by.mochi
 - group_by_conditional_sum.mochi
 - group_by_having.mochi
 - group_by_join.mochi
@@ -85,7 +87,6 @@ This directory contains hand-written Clojure versions of the Mochi examples foun
 - list_nested_assign.mochi
 - list_set_ops.mochi
 - load_yaml.mochi
-- map_index.mochi
 - map_int_key.mochi
 - map_literal_dynamic.mochi
 - map_membership.mochi
@@ -102,6 +103,5 @@ This directory contains hand-written Clojure versions of the Mochi examples foun
 - record_assign.mochi
 - right_join.mochi
 - save_jsonl_stdout.mochi
-- slice.mochi
 - sort_stable.mochi
 - update_stmt.mochi
