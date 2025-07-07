@@ -1,0 +1,6 @@
+exit status 1
+Execution error (ExceptionInfo) at main/-sum (query_sum_select.clj:7).
+sum() expects list or group
+
+Full report at:
+/tmp/clojure-5263598055377170368.edn

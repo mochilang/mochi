@@ -1,0 +1,6 @@
+exit status 1
+Syntax error reading source at (/workspace/mochi/tests/machine/x/clj/group_items_iteration.clj:84:34).
+Unmatched delimiter: )
+
+Full report at:
+/tmp/clojure-11614904297147466193.edn
