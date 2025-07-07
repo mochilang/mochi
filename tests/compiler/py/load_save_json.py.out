@@ -4,43 +4,38 @@ from __future__ import annotations
 import dataclasses
 import typing
 
-from typing import Any, TypeVar
-
-T = TypeVar("T")
-
-
+from typing import Any, TypeVar, Generic, Callable
+T = TypeVar('T')
+K = TypeVar('K')
 def _load(path, opts):
     import csv, json, sys
-
-    fmt = "csv"
+    fmt = 'csv'
     header = True
-    delim = ","
+    delim = ','
     if opts:
-        fmt = opts.get("format", fmt)
-        header = opts.get("header", header)
-        delim = opts.get("delimiter", delim)
+        fmt = opts.get('format', fmt)
+        header = opts.get('header', header)
+        delim = opts.get('delimiter', delim)
         if isinstance(delim, str) and delim:
             delim = delim[0]
-    f = sys.stdin if path is None else open(path, "r")
+    f = sys.stdin if path is None else open(path, 'r')
     try:
-        if fmt == "tsv":
-            delim = "	"
-            fmt = "csv"
-        if fmt == "csv":
+        if fmt == 'tsv':
+            delim = '	'; fmt = 'csv'
+        if fmt == 'csv':
             rows = list(csv.reader(f, delimiter=delim))
             if not rows:
                 return []
             if header:
-                headers = rows[0]
-                rows = rows[1:]
+                headers = rows[0]; rows = rows[1:]
             else:
                 m = max(len(r) for r in rows)
-                headers = [f"c{i}" for i in range(m)]
+                headers = [f'c{i}' for i in range(m)]
             out = []
             for rec in rows:
                 row = {}
                 for i, h in enumerate(headers):
-                    val = rec[i] if i < len(rec) else ""
+                    val = rec[i] if i < len(rec) else ''
                     if val.isdigit():
                         row[h] = int(val)
                     else:
@@ -50,18 +45,17 @@ def _load(path, opts):
                             row[h] = val
                 out.append(row)
             return out
-        elif fmt == "json":
+        elif fmt == 'json':
             data = json.load(f)
             if isinstance(data, list):
                 return [dict(d) for d in data]
             if isinstance(data, dict):
                 return [dict(data)]
             return []
-        elif fmt == "jsonl":
+        elif fmt == 'jsonl':
             return [json.loads(line) for line in f if line.strip()]
-        elif fmt == "yaml":
+        elif fmt == 'yaml':
             import yaml
-
             data = yaml.safe_load(f)
             if isinstance(data, list):
                 return [dict(d) for d in data]
@@ -69,31 +63,27 @@ def _load(path, opts):
                 return [dict(data)]
             return []
         else:
-            raise Exception("unknown format: " + fmt)
+            raise Exception('unknown format: ' + fmt)
     finally:
         if path is not None:
             f.close()
-
-
 def _save(rows, path, opts):
     import csv, json, sys, dataclasses
-
-    fmt = "csv"
+    fmt = 'csv'
     header = False
-    delim = ","
+    delim = ','
     if opts:
-        fmt = opts.get("format", fmt)
-        header = opts.get("header", header)
-        delim = opts.get("delimiter", delim)
+        fmt = opts.get('format', fmt)
+        header = opts.get('header', header)
+        delim = opts.get('delimiter', delim)
         if isinstance(delim, str) and delim:
             delim = delim[0]
-    rows = [dataclasses.asdict(r) if dataclasses.is_dataclass(r) else r for r in rows]
-    f = sys.stdout if path is None else open(path, "w")
+    rows = [ dataclasses.asdict(r) if dataclasses.is_dataclass(r) else r for r in rows ]
+    f = sys.stdout if path is None else open(path, 'w')
     try:
-        if fmt == "tsv":
-            delim = "	"
-            fmt = "csv"
-        if fmt == "csv":
+        if fmt == 'tsv':
+            delim = '	'; fmt = 'csv'
+        if fmt == 'csv':
             w = csv.writer(f, delimiter=delim)
             headers = sorted(rows[0].keys()) if rows else []
             if header:
@@ -105,42 +95,36 @@ def _save(rows, path, opts):
                     if isinstance(val, (dict, list)):
                         rec.append(json.dumps(val))
                     elif val is None:
-                        rec.append("")
+                        rec.append('')
                     else:
                         rec.append(str(val))
                 w.writerow(rec)
             return
-        elif fmt == "json":
+        elif fmt == 'json':
             json.dump(rows, f)
-        elif fmt == "jsonl":
+        elif fmt == 'jsonl':
             for row in rows:
                 f.write(json.dumps(row))
-                f.write("\n")
-        elif fmt == "yaml":
+                f.write('\n')
+        elif fmt == 'yaml':
             import yaml
-
             yaml.safe_dump(rows[0] if len(rows) == 1 else rows, f)
         else:
-            raise Exception("unknown format: " + fmt)
+            raise Exception('unknown format: ' + fmt)
     finally:
         if path is not None:
             f.close()
-
-
 @dataclasses.dataclass
 class Person:
-    name: str
-    age: int
+	name: str
+	age: int
 
-
-people = None
-
+people: list[Person] = None
 
 def main():
-    global people
-    people = [Person(**_it) for _it in _load(None, dict({"format": "json"}))]
-    _save(people, None, dict({"format": "json"}))
-
+	global people
+	people = [ Person(**_it) for _it in _load(None, dict({"format": "json"})) ]
+	_save(people, None, dict({"format": "json"}))
 
 if __name__ == "__main__":
-    main()
+	main()

@@ -148,14 +148,28 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 					useExpr = true
 				}
 			}
+			var typ types.Type
+			if c.env != nil {
+				if t, err := c.env.GetVar(s.Let.Name); err == nil {
+					typ = t
+				}
+			}
 			if useExpr {
 				expr, err := c.compileExpr(s.Let.Value)
 				if err != nil {
 					return nil, err
 				}
-				c.writeln(fmt.Sprintf("%s = %s", name, expr))
+				if typ != nil && !isAny(typ) {
+					c.writeln(fmt.Sprintf("%s: %s = %s", name, pyType(typ), expr))
+				} else {
+					c.writeln(fmt.Sprintf("%s = %s", name, expr))
+				}
 			} else {
-				c.writeln(fmt.Sprintf("%s = None", name))
+				if typ != nil && !isAny(typ) {
+					c.writeln(fmt.Sprintf("%s: %s = None", name, pyType(typ)))
+				} else {
+					c.writeln(fmt.Sprintf("%s = None", name))
+				}
 			}
 			wrotePlaceholder = true
 		case s.Var != nil:
@@ -173,14 +187,28 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 					useExpr = true
 				}
 			}
+			var typ types.Type
+			if c.env != nil {
+				if t, err := c.env.GetVar(s.Var.Name); err == nil {
+					typ = t
+				}
+			}
 			if useExpr {
 				expr, err := c.compileExpr(s.Var.Value)
 				if err != nil {
 					return nil, err
 				}
-				c.writeln(fmt.Sprintf("%s = %s", name, expr))
+				if typ != nil && !isAny(typ) {
+					c.writeln(fmt.Sprintf("%s: %s = %s", name, pyType(typ), expr))
+				} else {
+					c.writeln(fmt.Sprintf("%s = %s", name, expr))
+				}
 			} else {
-				c.writeln(fmt.Sprintf("%s = None", name))
+				if typ != nil && !isAny(typ) {
+					c.writeln(fmt.Sprintf("%s: %s = None", name, pyType(typ)))
+				} else {
+					c.writeln(fmt.Sprintf("%s = None", name))
+				}
 			}
 			wrotePlaceholder = true
 		}

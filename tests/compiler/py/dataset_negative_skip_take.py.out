@@ -4,30 +4,26 @@ from __future__ import annotations
 import dataclasses
 import typing
 
-
 @dataclasses.dataclass
 class Num:
-    val: int
+	val: int
 
-
-items = [Num(val=1), Num(val=2), Num(val=3)]
-a = None
-b = None
-
+items: list[Num] = [Num(val=1), Num(val=2), Num(val=3)]
+a: list[int] = None
+b: list[int] = None
 
 def main():
-    global items
-    items = [Num(val=1), Num(val=2), Num(val=3)]
-    global a
-    a = [x.val for x in (([x for x in items])[max((-1), 0) :])[: max(2, 0)]]
-    global b
-    b = [x.val for x in (([x for x in items])[max(1, 0) :])[: max((-1), 0)]]
-    print("---a---")
-    for v in a:
-        print(v)
-    print("---b---")
-    print(len(b))
-
+	global items
+	items = [Num(val=1), Num(val=2), Num(val=3)]
+	global a
+	a = [ x.val for x in (([ x for x in items ])[max((-1), 0):])[:max(2, 0)] ]
+	global b
+	b = [ x.val for x in (([ x for x in items ])[max(1, 0):])[:max((-1), 0)] ]
+	print("---a---")
+	for v in a:
+		print(v)
+	print("---b---")
+	print(len(b))
 
 if __name__ == "__main__":
-    main()
+	main()
