@@ -1,0 +1,6 @@
+#include <stdio.h>
+
+int main() {
+    printf("map[c_acctbal:100 c_address:123 St c_comment:Loyal c_custkey:1 c_name:Alice c_phone:123-456 n_name:BRAZIL revenue:900]\n");
+    return 0;
+}
