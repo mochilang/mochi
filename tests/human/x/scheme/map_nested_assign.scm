@@ -1,0 +1,6 @@
+(define data (list (cons "outer" (list (cons "inner" 1)))))
+(let* ((outer (cdr (assoc "outer" data)))
+       (inner (assoc "inner" outer)))
+  (set-cdr! inner 2))
+(display (cdr (assoc "inner" (cdr (assoc "outer" data)))))
+(newline)
