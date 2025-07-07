@@ -11,6 +11,66 @@ import (
 	"mochi/types"
 )
 
+const runtime = `
+fun <T> append(list: MutableList<T>, item: T): MutableList<T> {
+    val res = list.toMutableList()
+    res.add(item)
+    return res
+}
+
+fun avg(list: List<Number>): Double {
+    if (list.isEmpty()) return 0.0
+    var s = 0.0
+    for (n in list) s += n.toDouble()
+    return s / list.size
+}
+
+fun count(list: Collection<Any?>): Int = list.size
+
+fun len(v: Any?): Int = when (v) {
+    is String -> v.length
+    is Collection<*> -> v.size
+    is Map<*, *> -> v.size
+    else -> 0
+}
+
+fun max(list: List<Int>): Int {
+    var m = Int.MIN_VALUE
+    for (n in list) if (n > m) m = n
+    return if (m == Int.MIN_VALUE) 0 else m
+}
+
+fun min(list: List<Int>): Int {
+    var m = Int.MAX_VALUE
+    for (n in list) if (n < m) m = n
+    return if (m == Int.MAX_VALUE) 0 else m
+}
+
+fun sum(list: List<Int>): Int = list.sum()
+
+fun str(v: Any?): String = v.toString()
+
+fun substring(s: String, start: Int, end: Int): String = s.substring(start, end)
+
+fun <T> union(a: MutableList<T>, b: MutableList<T>): MutableList<T> {
+    val res = a.toMutableList()
+    for (x in b) if (!res.contains(x)) res.add(x)
+    return res
+}
+
+fun <T> except(a: MutableList<T>, b: MutableList<T>): MutableList<T> {
+    val res = mutableListOf<T>()
+    for (x in a) if (!b.contains(x)) res.add(x)
+    return res
+}
+
+fun <T> intersect(a: MutableList<T>, b: MutableList<T>): MutableList<T> {
+    val res = mutableListOf<T>()
+    for (x in a) if (b.contains(x)) res.add(x)
+    return res
+}
+`
+
 // Compiler converts a subset of Mochi programs to Kotlin source code.
 type Compiler struct {
 	buf    bytes.Buffer
@@ -25,6 +85,8 @@ func New(env *types.Env, _ string) *Compiler { return &Compiler{env: env} }
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.indent = 0
+	c.writeln(runtime)
+	c.writeln("")
 
 	// emit function declarations first
 	for _, s := range prog.Statements {
@@ -71,6 +133,24 @@ func (c *Compiler) stmt(s *parser.Statement) error {
 			return err
 		}
 		c.writeln(fmt.Sprintf("%s = %s", s.Assign.Name, v))
+	case s.Return != nil:
+		v, err := c.expr(s.Return.Value)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("return %s", v))
+	case s.If != nil:
+		return c.ifStmt(s.If)
+	case s.While != nil:
+		return c.whileStmt(s.While)
+	case s.For != nil:
+		return c.forStmt(s.For)
+	case s.Break != nil:
+		c.writeln("break")
+	case s.Continue != nil:
+		c.writeln("continue")
+	case s.Type != nil:
+		return c.typeDecl(s.Type)
 	case s.Expr != nil:
 		e, err := c.expr(s.Expr.Expr)
 		if err != nil {
@@ -88,7 +168,11 @@ func (c *Compiler) funDecl(f *parser.FunStmt) error {
 	for i, p := range f.Params {
 		params[i] = p.Name
 	}
-	c.writeln(fmt.Sprintf("fun %s(%s) {", f.Name, strings.Join(params, ", ")))
+	ret := "Unit"
+	if f.Return != nil {
+		ret = c.typeName(f.Return)
+	}
+	c.writeln(fmt.Sprintf("fun %s(%s): %s {", f.Name, strings.Join(params, ", "), ret))
 	c.indent++
 	for _, st := range f.Body {
 		if err := c.stmt(st); err != nil {
@@ -98,6 +182,123 @@ func (c *Compiler) funDecl(f *parser.FunStmt) error {
 	c.indent--
 	c.writeln("}")
 	return nil
+}
+
+func (c *Compiler) ifStmt(i *parser.IfStmt) error {
+	cond, err := c.expr(i.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln("if (" + cond + ") {")
+	c.indent++
+	for _, st := range i.Then {
+		if err := c.stmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	if i.ElseIf != nil {
+		c.writeln("else")
+		return c.ifStmt(i.ElseIf)
+	}
+	if len(i.Else) > 0 {
+		c.writeln("else {")
+		c.indent++
+		for _, st := range i.Else {
+			if err := c.stmt(st); err != nil {
+				return err
+			}
+		}
+		c.indent--
+		c.writeln("}")
+	}
+	return nil
+}
+
+func (c *Compiler) whileStmt(w *parser.WhileStmt) error {
+	cond, err := c.expr(w.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln("while (" + cond + ") {")
+	c.indent++
+	for _, st := range w.Body {
+		if err := c.stmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) forStmt(f *parser.ForStmt) error {
+	if f.RangeEnd != nil {
+		start, err := c.expr(f.Source)
+		if err != nil {
+			return err
+		}
+		end, err := c.expr(f.RangeEnd)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("for (%s in %s until %s) {", f.Name, start, end))
+	} else {
+		src, err := c.expr(f.Source)
+		if err != nil {
+			return err
+		}
+		t := types.TypeOfExprBasic(f.Source, c.env)
+		if types.IsMapType(t) {
+			c.writeln(fmt.Sprintf("for (%s in %s.keys) {", f.Name, src))
+		} else {
+			c.writeln(fmt.Sprintf("for (%s in %s) {", f.Name, src))
+		}
+	}
+	c.indent++
+	for _, st := range f.Body {
+		if err := c.stmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) typeDecl(t *parser.TypeDecl) error {
+	if len(t.Members) == 0 {
+		return nil
+	}
+	fields := make([]string, 0, len(t.Members))
+	for _, m := range t.Members {
+		if m.Field != nil {
+			fields = append(fields, fmt.Sprintf("var %s: %s", m.Field.Name, c.typeName(m.Field.Type)))
+		}
+	}
+	c.writeln(fmt.Sprintf("data class %s(%s)", t.Name, strings.Join(fields, ", ")))
+	return nil
+}
+
+func (c *Compiler) typeName(t *parser.TypeRef) string {
+	if t == nil {
+		return "Any"
+	}
+	if t.Simple != nil {
+		switch *t.Simple {
+		case "int":
+			return "Int"
+		case "float":
+			return "Double"
+		case "string":
+			return "String"
+		case "bool":
+			return "Boolean"
+		}
+		return strings.Title(*t.Simple)
+	}
+	return "Any"
 }
 
 func (c *Compiler) expr(e *parser.Expr) (string, error) {
@@ -159,6 +360,15 @@ func (c *Compiler) postfix(p *parser.PostfixExpr) (string, error) {
 			val = fmt.Sprintf("%s[%s]", val, idx)
 		case op.Field != nil:
 			val = fmt.Sprintf("%s.%s", val, op.Field.Name)
+		case op.Cast != nil:
+			typ := c.typeName(op.Cast.Type)
+			if typ == "Int" {
+				val = fmt.Sprintf("(%s).toInt()", val)
+			} else if typ == "String" {
+				val = fmt.Sprintf("%s.toString()", val)
+			} else {
+				val = fmt.Sprintf("%s as %s", val, typ)
+			}
 		default:
 			return "", fmt.Errorf("unsupported postfix")
 		}
@@ -194,6 +404,30 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 			parts[i] = s
 		}
 		return "mutableListOf(" + strings.Join(parts, ", ") + ")", nil
+	case p.Map != nil:
+		items := make([]string, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			k, err := c.expr(it.Key)
+			if err != nil {
+				return "", err
+			}
+			v, err := c.expr(it.Value)
+			if err != nil {
+				return "", err
+			}
+			items[i] = fmt.Sprintf("%s to %s", k, v)
+		}
+		return "mutableMapOf(" + strings.Join(items, ", ") + ")", nil
+	case p.Struct != nil:
+		fields := make([]string, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			v, err := c.expr(f.Value)
+			if err != nil {
+				return "", err
+			}
+			fields[i] = fmt.Sprintf("%s = %s", f.Name, v)
+		}
+		return fmt.Sprintf("%s(%s)", p.Struct.Name, strings.Join(fields, ", ")), nil
 	default:
 		return "", fmt.Errorf("unsupported expression")
 	}
@@ -209,7 +443,10 @@ func (c *Compiler) callExpr(call *parser.CallExpr) (string, error) {
 		args[i] = s
 	}
 	if call.Func == "print" {
-		return fmt.Sprintf("println(%s)", strings.Join(args, ", ")), nil
+		if len(args) == 1 {
+			return fmt.Sprintf("println(%s)", args[0]), nil
+		}
+		return fmt.Sprintf("println(listOf(%s).joinToString(\" \"))", strings.Join(args, ", ")), nil
 	}
 	return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ", ")), nil
 }
