@@ -1,1 +1,1 @@
-print("mochi"[1:4])
+print(substring("mochi", 1, 4))
