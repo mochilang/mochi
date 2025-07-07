@@ -46,6 +46,16 @@ This directory contains hand-written Clojure versions of the Mochi examples foun
 - string_index.mochi
 - string_prefix_slice.mochi
 - substring_builtin.mochi
+- sum_builtin.mochi
+- tail_recursion.mochi
+- test_block.mochi
+- tree_sum.mochi
+- two-sum.mochi
+- typed_let.mochi
+- typed_var.mochi
+- unary_neg.mochi
+- user_type_literal.mochi
+- values_builtin.mochi
 - var_assignment.mochi
 - while_loop.mochi
 
@@ -93,14 +103,4 @@ This directory contains hand-written Clojure versions of the Mochi examples foun
 - save_jsonl_stdout.mochi
 - slice.mochi
 - sort_stable.mochi
-- sum_builtin.mochi
-- tail_recursion.mochi
-- test_block.mochi
-- tree_sum.mochi
-- two-sum.mochi
-- typed_let.mochi
-- typed_var.mochi
-- unary_neg.mochi
 - update_stmt.mochi
-- user_type_literal.mochi
-- values_builtin.mochi
