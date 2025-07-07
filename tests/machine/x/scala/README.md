@@ -1,6 +1,6 @@
 # Scala Compiler Machine Tests
 
-Currently 43/97 programs compile successfully.
+Currently 44/97 programs compile successfully.
 
 This directory stores generated Scala source files and their outputs from compiling
 Mochi programs under `tests/vm/valid`.
@@ -74,7 +74,7 @@ Mochi programs under `tests/vm/valid`.
 - [ ] outer_join.mochi
 - [ ] partial_application.mochi
 - [x] print_hello.mochi
-- [ ] pure_fold.mochi
+- [x] pure_fold.mochi
 - [ ] pure_global_fold.mochi
 - [ ] query_sum_select.mochi
 - [ ] record_assign.mochi
