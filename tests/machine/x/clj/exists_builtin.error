@@ -1,6 +1,0 @@
-exit status 1
-Syntax error compiling at (/workspace/mochi/tests/machine/x/clj/exists_builtin.clj:7:13).
-Unable to resolve symbol: exists in this context
-
-Full report at:
-/tmp/clojure-8237178470580292871.edn

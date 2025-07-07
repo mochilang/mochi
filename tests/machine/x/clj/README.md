@@ -1,3 +1,7 @@
+- # Clojure Compiler Results
+
+76/97 files compiled
+
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -13,7 +17,7 @@
 - [x] cross_join_triple.mochi
 - [x] dataset_sort_take_limit.mochi
 - [x] dataset_where_filter.mochi
-- [ ] exists_builtin.mochi
+- [x] exists_builtin.mochi
 - [x] for_list_collection.mochi
 - [x] for_loop.mochi
 - [x] for_map_collection.mochi
