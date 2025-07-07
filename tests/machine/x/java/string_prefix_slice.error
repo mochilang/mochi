@@ -1,0 +1,4 @@
+line 0: compile error: postfix operations unsupported
+
+  1| let prefix = "fore"
+  2| let s1 = "forest"

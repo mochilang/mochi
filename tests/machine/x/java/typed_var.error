@@ -1,0 +1,9 @@
+line 0: javac error: exit status 1
+/tmp/TestCompileValidProgramstyped_var2410492042/001/Main.java:3: error: illegal start of expression
+		int x = ;
+		        ^
+1 error
+
+
+  1| var x: int
+  2| print(x)

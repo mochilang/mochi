@@ -1,0 +1,4 @@
+line 0: compile error: expression unsupported at line 2
+
+  1| let x = 8
+  2| let msg = if x > 10 then "big" else if x > 5 then "medium" else "small"

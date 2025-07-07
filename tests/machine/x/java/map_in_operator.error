@@ -1,0 +1,4 @@
+line 0: compile error: expression unsupported at line 1
+
+  1| let m = {1: "a", 2: "b"}
+  2| print(1 in m)

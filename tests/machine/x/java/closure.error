@@ -1,0 +1,4 @@
+line 0: compile error: unsupported statement at line 1
+
+  1| fun makeAdder(n: int): fun(int): int {
+  2|   return fun(x: int): int => x + n
