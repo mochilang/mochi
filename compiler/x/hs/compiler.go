@@ -42,7 +42,7 @@ func (c *Compiler) hsType(t types.Type) string {
 	case types.ListType:
 		return "[" + c.hsType(tt.Elem) + "]"
 	case types.MapType:
-		c.usesMap = true
+		c.usesMap = false
 		return "Map.Map " + c.hsType(tt.Key) + " " + c.hsType(tt.Value)
 	case types.VoidType:
 		return "()"
@@ -74,7 +74,7 @@ func New(env *types.Env) *Compiler {
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.structs = make(map[string]bool)
-	c.usesMap = true
+	c.usesMap = false
 	c.usesList = false
 	c.usesJSON = false
 	c.usesLoad = false
@@ -105,22 +105,42 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	for _, s := range prog.Statements {
 		if s.Fun == nil && s.Type == nil && s.Test == nil {
 			if s.Let != nil {
-				val, err := c.compileExpr(s.Let.Value)
-				if err != nil {
-					return nil, err
+				if s.Let.Value == nil && s.Let.Type != nil {
+					typ := c.hsType(c.resolveTypeRef(s.Let.Type))
+					name := sanitizeName(s.Let.Name)
+					c.writeln(fmt.Sprintf("%s :: Maybe %s", name, typ))
+					c.writeln(fmt.Sprintf("%s = Nothing", name))
+				} else {
+					var val string
+					if s.Let.Value != nil {
+						v, err := c.compileExpr(s.Let.Value)
+						if err != nil {
+							return nil, err
+						}
+						val = v
+					} else {
+						val = "()"
+					}
+					c.writeln(fmt.Sprintf("%s = %s", sanitizeName(s.Let.Name), val))
 				}
-				c.writeln(fmt.Sprintf("%s = %s", sanitizeName(s.Let.Name), val))
 				c.writeln("")
 			} else if s.Var != nil {
-				val := "()"
-				if s.Var.Value != nil {
-					v, err := c.compileExpr(s.Var.Value)
-					if err != nil {
-						return nil, err
+				if s.Var.Value == nil && s.Var.Type != nil {
+					typ := c.hsType(c.resolveTypeRef(s.Var.Type))
+					name := sanitizeName(s.Var.Name)
+					c.writeln(fmt.Sprintf("%s :: Maybe %s", name, typ))
+					c.writeln(fmt.Sprintf("%s = Nothing", name))
+				} else {
+					val := "()"
+					if s.Var.Value != nil {
+						v, err := c.compileExpr(s.Var.Value)
+						if err != nil {
+							return nil, err
+						}
+						val = v
 					}
-					val = v
+					c.writeln(fmt.Sprintf("%s = %s", sanitizeName(s.Var.Name), val))
 				}
-				c.writeln(fmt.Sprintf("%s = %s", sanitizeName(s.Var.Name), val))
 				c.writeln("")
 			}
 		}
@@ -168,11 +188,13 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	header.WriteString("import qualified Data.Map as Map\n")
 	header.WriteString("import Data.List (intercalate, isPrefixOf)\n")
 	header.WriteString("import qualified Data.List as List\n")
-	header.WriteString("import qualified Data.Aeson as Aeson\n")
+	if c.usesJSON || c.usesLoad || c.usesSave || c.usesFetch {
+		header.WriteString("import qualified Data.Aeson as Aeson\n")
+	}
 	if len(c.structs) > 0 {
 		header.WriteString("import GHC.Generics (Generic)\n")
 	}
-	if c.usesLoad || c.usesSave || c.usesFetch || c.usesMap {
+	if c.usesLoad || c.usesSave || c.usesFetch {
 		header.WriteString("import qualified Data.Aeson.KeyMap as KeyMap\n")
 		header.WriteString("import qualified Data.Aeson.Key as Key\n")
 		header.WriteString("import qualified Data.Vector as V\n")
@@ -181,10 +203,15 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if c.usesFetch {
 		header.WriteString("import System.Process (readProcess)\n")
 	}
-	header.WriteString("import qualified Data.ByteString.Lazy.Char8 as BSL\n")
+	if c.usesJSON || c.usesLoad || c.usesSave || c.usesFetch {
+		header.WriteString("import qualified Data.ByteString.Lazy.Char8 as BSL\n")
+	}
 	header.WriteString("\n")
 	header.WriteString(runtime)
-	if c.usesLoad || c.usesSave || c.usesFetch || c.usesMap {
+	if c.usesJSON {
+		header.WriteString(jsonHelper)
+	}
+	if c.usesLoad || c.usesSave || c.usesFetch {
 		header.WriteString(loadRuntime)
 	}
 	if c.usesExpect {
@@ -227,22 +254,42 @@ func (c *Compiler) compileMainStmt(s *parser.Statement) error {
 			}
 			c.writeln(fmt.Sprintf("%s <- %s", sanitizeName(s.Let.Name), val))
 		} else {
-			val, err := c.compileExpr(s.Let.Value)
-			if err != nil {
-				return err
+			if s.Let.Value == nil && s.Let.Type != nil {
+				typ := c.hsType(c.resolveTypeRef(s.Let.Type))
+				name := sanitizeName(s.Let.Name)
+				c.writeln(fmt.Sprintf("let %s :: Maybe %s", name, typ))
+				c.writeln(fmt.Sprintf("    %s = Nothing", name))
+			} else {
+				var val string
+				if s.Let.Value != nil {
+					v, err := c.compileExpr(s.Let.Value)
+					if err != nil {
+						return err
+					}
+					val = v
+				} else {
+					val = "()"
+				}
+				c.writeln(fmt.Sprintf("let %s = %s", sanitizeName(s.Let.Name), val))
 			}
-			c.writeln(fmt.Sprintf("let %s = %s", sanitizeName(s.Let.Name), val))
 		}
 	case s.Var != nil:
-		val := "()"
-		if s.Var.Value != nil {
-			v, err := c.compileExpr(s.Var.Value)
-			if err != nil {
-				return err
+		if s.Var.Value == nil && s.Var.Type != nil {
+			typ := c.hsType(c.resolveTypeRef(s.Var.Type))
+			name := sanitizeName(s.Var.Name)
+			c.writeln(fmt.Sprintf("let %s :: Maybe %s", name, typ))
+			c.writeln(fmt.Sprintf("    %s = Nothing", name))
+		} else {
+			val := "()"
+			if s.Var.Value != nil {
+				v, err := c.compileExpr(s.Var.Value)
+				if err != nil {
+					return err
+				}
+				val = v
 			}
-			val = v
+			c.writeln(fmt.Sprintf("let %s = %s", sanitizeName(s.Var.Name), val))
 		}
-		c.writeln(fmt.Sprintf("let %s = %s", sanitizeName(s.Var.Name), val))
 	case s.Fun != nil:
 		expr, err := c.compileFunExpr(&parser.FunExpr{Params: s.Fun.Params, Return: s.Fun.Return, BlockBody: s.Fun.Body})
 		if err != nil {
