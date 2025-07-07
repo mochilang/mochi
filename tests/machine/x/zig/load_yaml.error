@@ -1,0 +1,11 @@
+Error on line 35: zig build error: exit status 1
+/workspace/mochi/tests/machine/x/zig/load_yaml.zig:35:24: error: expected type '[]const i32', found '[][]load_yaml.Person'
+/workspace/mochi/tests/machine/x/zig/load_yaml.zig:35:24: note: pointer type child '[]load_yaml.Person' cannot cast into pointer type child 'i32'
+/workspace/mochi/tests/machine/x/zig/load_yaml.zig:22:74: error: error union type 'error{OutOfMemory,Overflow,InvalidCharacter,UnexpectedToken,InvalidNumber,InvalidEnumTag,DuplicateField,UnknownField,MissingField,LengthMismatch,SyntaxError,UnexpectedEndOfInput,BufferUnderrun,ValueTooLong}!json.static.Parsed([]load_yaml.Person)' does not support field access
+/workspace/mochi/tests/machine/x/zig/load_yaml.zig:22:74: note: consider using 'try', 'catch', or 'if'
+/workspace/mochi/tests/machine/x/zig/load_yaml.zig:6:33: error: no field or member function named 'readAllAlloc' in 'fs.File'
+/usr/local/zig-0.12.1/lib/std/fs/File.zig:1:1: note: struct declared here
+
+34: pub fn main() void {
+35:     people = _load_json([]Person, "../interpreter/valid/people.yaml");
+36:     adults = blk1: {

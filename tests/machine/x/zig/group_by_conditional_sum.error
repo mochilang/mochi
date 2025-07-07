@@ -1,0 +1,9 @@
+Error on line 25: zig build error: exit status 1
+/workspace/mochi/tests/machine/x/zig/group_by_conditional_sum.zig:25:15: error: expected type 'i32', found '*const [3:0]u8'
+/usr/local/zig-0.12.1/lib/std/hash_map.zig:551:38: note: parameter type declared here
+/usr/local/zig-0.12.1/lib/std/hash_map.zig:14:13: error: std.auto_hash.autoHash does not allow slices here ([]const u8) because the intent is unclear. Consider using std.StringHashMap for hashing the contents of []const u8. Alternatively, consider using std.auto_hash.hash or providing your own hash function instead.
+/usr/local/zig-0.12.1/lib/std/hash_map.zig:55:39: note: called from here
+
+24:         var m = std.AutoHashMap(i32, []const u8).init(std.heap.page_allocator);
+25:         m.put("cat", "a") catch unreachable;
+26:         m.put("val", @as(i32, @intCast(10))) catch unreachable;

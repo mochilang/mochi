@@ -1,0 +1,11 @@
+const std = @import("std");
+
+var i: i32 = undefined;
+
+pub fn main() void {
+    i = @as(i32, @intCast(0));
+    while ((i < @as(i32, @intCast(3)))) {
+        std.debug.print("{any}\n", .{i});
+        i = (i + @as(i32, @intCast(1)));
+    }
+}

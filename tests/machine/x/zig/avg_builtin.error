@@ -1,0 +1,6 @@
+Error on line 0: output mismatch
+-- got --
+2e0
+-- want --
+2
+1: const std = @import("std");

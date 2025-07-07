@@ -1,0 +1,9 @@
+Error on line 3: zig build error: exit status 1
+/workspace/mochi/tests/machine/x/zig/values_builtin.zig:3:52: error: function parameter shadows declaration of 'm'
+/workspace/mochi/tests/machine/x/zig/values_builtin.zig:13:1: note: declared here
+/workspace/mochi/tests/machine/x/zig/values_builtin.zig:17:13: error: local variable shadows declaration of 'm'
+/workspace/mochi/tests/machine/x/zig/values_builtin.zig:13:1: note: declared here
+
+2: 
+3: fn _map_values(comptime K: type, comptime V: type, m: std.AutoHashMap(K, V)) []V {
+4:     var res = std.ArrayList(V).init(std.heap.page_allocator);

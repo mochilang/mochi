@@ -1,0 +1,6 @@
+Error on line 5: zig build error: exit status 1
+/workspace/mochi/tests/machine/x/zig/nested_function.zig:5:23: error: expected ',' after initializer
+
+4:     const inner = fn (y: i32) i32 {
+5:         return (x + y);
+6: };

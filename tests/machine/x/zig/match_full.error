@@ -1,0 +1,10 @@
+Error on line 30: zig build error: exit status 1
+/workspace/mochi/tests/machine/x/zig/match_full.zig:30:92: error: expected type '[]const u8', found 'comptime_int'
+/workspace/mochi/tests/machine/x/zig/match_full.zig:6:54: error: no field named 'Slice' in enum '@typeInfo(builtin.Type).Union.tag_type.?'
+/usr/local/zig-0.12.1/lib/std/builtin.zig:256:18: note: enum declared here
+/workspace/mochi/tests/machine/x/zig/match_full.zig:6:54: error: no field named 'Slice' in enum '@typeInfo(builtin.Type).Union.tag_type.?'
+/usr/local/zig-0.12.1/lib/std/builtin.zig:256:18: note: enum declared here
+
+29:     ok = true;
+30:     status = if (_equal(ok, true)) "confirmed" else (if (_equal(ok, false)) "denied" else (0));
+31:     std.debug.print("{s}\n", .{status});

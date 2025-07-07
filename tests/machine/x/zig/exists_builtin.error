@@ -1,0 +1,6 @@
+Error on line 8: zig build error: exit status 1
+/workspace/mochi/tests/machine/x/zig/exists_builtin.zig:8:12: error: use of undeclared identifier 'exists'
+
+7:     data = &[_]i32{ @as(i32, @intCast(1)), @as(i32, @intCast(2)) };
+8:     flag = exists(blk0: {
+9:         var _tmp0 = std.ArrayList(i32).init(std.heap.page_allocator);

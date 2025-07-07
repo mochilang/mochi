@@ -1,0 +1,6 @@
+Error on line 7: zig build error: exit status 1
+/workspace/mochi/tests/machine/x/zig/list_assign.zig:7:10: error: no member named 'items' in '[]const i32'
+
+6:     nums = &[_]i32{ @as(i32, @intCast(1)), @as(i32, @intCast(2)) };
+7:     nums.items[@as(i32, @intCast(1))] = @as(i32, @intCast(3));
+8:     std.debug.print("{any}\n", .{nums[@as(i32, @intCast(1))]});
