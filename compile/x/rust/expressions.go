@@ -1039,7 +1039,7 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		}
 		return fmt.Sprintf("Box::new(move |%s| %s)", strings.Join(params, ", "), expr), nil
 	}
-	sub := &Compiler{env: c.env, helpers: c.helpers, structs: c.structs}
+	sub := &Compiler{env: c.env, helpers: c.helpers, structs: c.structs, locals: map[string]types.Type{}}
 	sub.indent = 1
 	for _, s := range fn.BlockBody {
 		if err := sub.compileStmt(s); err != nil {

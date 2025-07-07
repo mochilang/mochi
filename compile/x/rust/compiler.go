@@ -20,11 +20,12 @@ type Compiler struct {
 	methodFields  map[string]bool
 	externs       []string
 	externObjects []string
+	locals        map[string]types.Type
 }
 
 // New creates a new Rust compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, helpers: make(map[string]bool), structs: make(map[string]bool), methodFields: nil, externs: []string{}, externObjects: []string{}}
+	return &Compiler{env: env, helpers: make(map[string]bool), structs: make(map[string]bool), methodFields: nil, externs: []string{}, externObjects: []string{}, locals: map[string]types.Type{}}
 }
 
 func (c *Compiler) writeIndent() {
