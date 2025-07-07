@@ -1,0 +1,6 @@
+Error on line 7: zig build error: exit status 1
+/workspace/mochi/tests/machine/x/zig/string_contains.zig:7:35: error: no field or member function named 'contains' in '[]const u8'
+
+6:     s = "catch";
+7:     std.debug.print("{any}\n", .{s.contains("cat")});
+8:     std.debug.print("{any}\n", .{s.contains("dog")});

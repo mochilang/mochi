@@ -1,0 +1,53 @@
+const std = @import("std");
+
+fn _read_input(path: ?[]const u8) []const u8 {
+    const alloc = std.heap.page_allocator;
+    if (path == null or std.mem.eql(u8, path.?, "-")) {
+        return std.io.getStdIn().readAllAlloc(alloc, 1 << 20) catch unreachable;
+    } else {
+        return std.fs.cwd().readFileAlloc(alloc, path.?, 1 << 20) catch unreachable;
+    }
+}
+
+fn _write_output(path: ?[]const u8, data: []const u8) void {
+    if (path == null or std.mem.eql(u8, path.?, "-")) {
+        std.io.getStdOut().writeAll(data) catch unreachable;
+    } else {
+        std.fs.cwd().writeFile(path.?, data) catch unreachable;
+    }
+}
+
+fn _load_json(comptime T: type, path: ?[]const u8) []T {
+    const text = _read_input(path);
+    return std.json.parseFromSlice(T, std.heap.page_allocator, text, .{}).value;
+}
+
+const Person = struct {
+    name: []const u8,
+    age: i32,
+    email: []const u8,
+};
+
+var people: []const i32 = undefined;
+var adults: []const std.AutoHashMap([]const u8, []const u8) = undefined;
+
+pub fn main() void {
+    people = _load_json([]Person, "../interpreter/valid/people.yaml");
+    adults = blk1: {
+        var _tmp0 = std.ArrayList(std.AutoHashMap([]const u8, []const u8)).init(std.heap.page_allocator);
+        for (people) |p| {
+            if (!((p.age >= @as(i32, @intCast(18))))) continue;
+            _tmp0.append(blk0: {
+                var m = std.AutoHashMap(i32, i32).init(std.heap.page_allocator);
+                m.put("name", p.name) catch unreachable;
+                m.put("email", p.email) catch unreachable;
+                break :blk0 m;
+            }) catch unreachable;
+        }
+        const _tmp1 = _tmp0.toOwnedSlice() catch unreachable;
+        break :blk1 _tmp1;
+    };
+    for (adults) |a| {
+        std.debug.print("{any} {any}\n", .{ a.name, a.email });
+    }
+}

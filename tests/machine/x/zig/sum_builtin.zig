@@ -1,0 +1,13 @@
+const std = @import("std");
+
+fn _sum_int(v: []const i32) i32 {
+    var sum: i32 = 0;
+    for (v) |it| {
+        sum += it;
+    }
+    return sum;
+}
+
+pub fn main() void {
+    std.debug.print("{any}\n", .{_sum_int(&[_]i32{ @as(i32, @intCast(1)), @as(i32, @intCast(2)), @as(i32, @intCast(3)) })});
+}

@@ -1,0 +1,7 @@
+Error on line 26: zig build error: exit status 1
+/workspace/mochi/tests/machine/x/zig/update_stmt.zig:26:13: error: redeclaration of local variable 'name'
+/workspace/mochi/tests/machine/x/zig/update_stmt.zig:23:13: note: previous declaration here
+
+25:         var status: u8 = _tmp1.status;
+26:         var name: u8 = _tmp1.name;
+27:         var age: i32 = _tmp1.age;

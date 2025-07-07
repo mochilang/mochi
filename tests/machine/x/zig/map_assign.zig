@@ -1,0 +1,13 @@
+const std = @import("std");
+
+var scores: std.AutoHashMap([]const u8, i32) = undefined;
+
+pub fn main() void {
+    scores = blk0: {
+        var m = std.AutoHashMap([]const u8, i32).init(std.heap.page_allocator);
+        m.put("alice", @as(i32, @intCast(1))) catch unreachable;
+        break :blk0 m;
+    };
+    _ = scores.put("bob", @as(i32, @intCast(2))) catch unreachable;
+    std.debug.print("{any}\n", .{scores["bob"]});
+}

@@ -1,0 +1,8 @@
+Error on line 31: zig build error: exit status 1
+/workspace/mochi/tests/machine/x/zig/string_prefix_slice.zig:31:99: error: expected type 'i32', found 'usize'
+/workspace/mochi/tests/machine/x/zig/string_prefix_slice.zig:31:99: note: signed 32-bit int cannot represent all possible unsigned 64-bit values
+/workspace/mochi/tests/machine/x/zig/string_prefix_slice.zig:3:50: note: parameter type declared here
+
+30:     s1 = "forest";
+31:     std.debug.print("{any}\n", .{std.mem.eql(u8, _slice_string(s1, @as(i32, @intCast(0)), (prefix).len, 1), prefix)});
+32:     s2 = "desert";

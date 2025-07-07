@@ -1,0 +1,6 @@
+Error on line 80: zig build error: exit status 1
+/workspace/mochi/tests/machine/x/zig/group_by.zig:80:23: error: use of undeclared identifier 'count'
+
+79:                 m.put("city", g.key) catch unreachable;
+80:                 m.put(count, (g.Items.len)) catch unreachable;
+81:                 m.put("avg_age", _avg_int(blk7: {

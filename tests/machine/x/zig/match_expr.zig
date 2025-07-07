@@ -1,0 +1,18 @@
+const std = @import("std");
+
+fn _equal(a: anytype, b: anytype) bool {
+    if (@TypeOf(a) != @TypeOf(b)) return false;
+    return switch (@typeInfo(@TypeOf(a))) {
+        .Struct, .Union, .Array, .Vector, .Pointer, .Slice => std.meta.eql(a, b),
+        else => a == b,
+    };
+}
+
+var x: i32 = undefined;
+var label: []const u8 = undefined;
+
+pub fn main() void {
+    x = @as(i32, @intCast(2));
+    label = if (_equal(x, @as(i32, @intCast(1)))) "one" else (if (_equal(x, @as(i32, @intCast(2)))) "two" else (if (_equal(x, @as(i32, @intCast(3)))) "three" else ("unknown")));
+    std.debug.print("{s}\n", .{label});
+}

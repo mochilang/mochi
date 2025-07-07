@@ -1,0 +1,6 @@
+Error on line 4: zig build error: exit status 1
+/workspace/mochi/tests/machine/x/zig/substring_builtin.zig:4:34: error: use of undeclared identifier 'substring'
+
+3: pub fn main() void {
+4:     std.debug.print("{any}\n", .{substring("mochi", @as(i32, @intCast(1)), @as(i32, @intCast(4)))});
+5: }
