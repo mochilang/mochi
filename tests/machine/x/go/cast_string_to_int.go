@@ -8,5 +8,5 @@ import (
 )
 
 func main() {
-fmt.Println(func() int { v, _ := strconv.Atoi("1995"); return v }())
+    fmt.Println(func() int { v, _ := strconv.Atoi("1995"); return v }())
 }

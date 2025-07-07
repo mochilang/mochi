@@ -1,0 +1,4 @@
+unsupported expression at line 4
+let bools = [true, false]
+let combos = from n in nums
+             from l in letters

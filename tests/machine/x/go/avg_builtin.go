@@ -18,5 +18,5 @@ func avg(nums []int) int {
 }
 
 func main() {
-fmt.Println(avg([]int{1, 2, 3}))
+    fmt.Println(avg([]int{1, 2, 3}))
 }

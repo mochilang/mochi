@@ -1,0 +1,4 @@
+unsupported expression at line 2
+let items = [
+  { cat: "a", val: 3 },
+  { cat: "a", val: 1 },

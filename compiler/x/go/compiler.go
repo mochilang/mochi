@@ -30,11 +30,20 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.needsAvg = false
 	c.needsStrconv = false
 
+	var funcs bytes.Buffer
 	var body bytes.Buffer
-	// compile statements into body buffer
 	for _, s := range prog.Statements {
-		if err := c.compileStmtTo(&body, s); err != nil {
-			return nil, err
+		if s.Fun != nil {
+			if err := c.compileFunTo(&funcs, s.Fun); err != nil {
+				return nil, err
+			}
+			funcs.WriteByte('\n')
+		} else {
+			c.indent = 1
+			if err := c.compileStmtTo(&body, s); err != nil {
+				return nil, err
+			}
+			c.indent = 0
 		}
 	}
 
@@ -73,6 +82,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("")
 	}
 
+	c.buf.Write(funcs.Bytes())
+	if funcs.Len() > 0 {
+		c.writeln("")
+	}
+
 	c.writeln("func main() {")
 	c.indent++
 	c.buf.Write(body.Bytes())
@@ -94,6 +108,22 @@ func (c *Compiler) compileStmtTo(buf *bytes.Buffer, s *parser.Statement) error {
 		return c.compileVar(buf, s.Var)
 	case s.Assign != nil:
 		return c.compileAssign(buf, s.Assign)
+	case s.Fun != nil:
+		return c.compileFun(s.Fun)
+	case s.Return != nil:
+		return c.compileReturn(buf, s.Return)
+	case s.If != nil:
+		return c.compileIf(buf, s.If)
+	case s.While != nil:
+		return c.compileWhile(buf, s.While)
+	case s.For != nil:
+		return c.compileFor(buf, s.For)
+	case s.Break != nil:
+		c.writeLine(buf, "break")
+		return nil
+	case s.Continue != nil:
+		c.writeLine(buf, "continue")
+		return nil
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -171,6 +201,143 @@ func (c *Compiler) compileAssign(buf *bytes.Buffer, a *parser.AssignStmt) error 
 		return err
 	}
 	c.writeLine(buf, fmt.Sprintf("%s = %s", a.Name, val))
+	return nil
+}
+
+func (c *Compiler) compileFun(f *parser.FunStmt) error {
+	return c.compileFunTo(&c.buf, f)
+}
+
+func (c *Compiler) compileFunTo(buf *bytes.Buffer, f *parser.FunStmt) error {
+	var params []string
+	for _, p := range f.Params {
+		typ, err := c.compileType(p.Type)
+		if err != nil {
+			return err
+		}
+		params = append(params, fmt.Sprintf("%s %s", p.Name, typ))
+	}
+	ret := ""
+	if f.Return != nil {
+		t, err := c.compileType(f.Return)
+		if err != nil {
+			return err
+		}
+		ret = " " + t
+	}
+	c.writeto(buf, fmt.Sprintf("func %s(%s)%s {", f.Name, strings.Join(params, ", "), ret))
+	c.indent++
+	for _, st := range f.Body {
+		if err := c.compileStmtTo(buf, st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeto(buf, "}")
+	return nil
+}
+
+func (c *Compiler) compileReturn(buf *bytes.Buffer, r *parser.ReturnStmt) error {
+	if r.Value != nil {
+		val, err := c.compileExpr(r.Value)
+		if err != nil {
+			return err
+		}
+		c.writeLine(buf, fmt.Sprintf("return %s", val))
+	} else {
+		c.writeLine(buf, "return")
+	}
+	return nil
+}
+
+func (c *Compiler) compileIf(buf *bytes.Buffer, i *parser.IfStmt) error {
+	cond, err := c.compileExpr(i.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeLine(buf, fmt.Sprintf("if %s {", cond))
+	c.indent++
+	for _, st := range i.Then {
+		if err := c.compileStmtTo(buf, st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	if i.ElseIf != nil {
+		c.writeLine(buf, "} else {")
+		c.indent++
+		if err := c.compileIf(buf, i.ElseIf); err != nil {
+			return err
+		}
+		c.indent--
+		c.writeLine(buf, "}")
+	} else if len(i.Else) > 0 {
+		c.writeLine(buf, "} else {")
+		c.indent++
+		for _, st := range i.Else {
+			if err := c.compileStmtTo(buf, st); err != nil {
+				return err
+			}
+		}
+		c.indent--
+		c.writeLine(buf, "}")
+	} else {
+		c.writeLine(buf, "}")
+	}
+	return nil
+}
+
+func (c *Compiler) compileWhile(buf *bytes.Buffer, w *parser.WhileStmt) error {
+	cond, err := c.compileExpr(w.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeLine(buf, fmt.Sprintf("for %s {", cond))
+	c.indent++
+	for _, st := range w.Body {
+		if err := c.compileStmtTo(buf, st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeLine(buf, "}")
+	return nil
+}
+
+func (c *Compiler) compileFor(buf *bytes.Buffer, fr *parser.ForStmt) error {
+	if fr.RangeEnd != nil {
+		start, err := c.compileExpr(fr.Source)
+		if err != nil {
+			return err
+		}
+		end, err := c.compileExpr(fr.RangeEnd)
+		if err != nil {
+			return err
+		}
+		c.writeLine(buf, fmt.Sprintf("for %s := %s; %s < %s; %s++ {", fr.Name, start, fr.Name, end, fr.Name))
+		c.indent++
+		for _, st := range fr.Body {
+			if err := c.compileStmtTo(buf, st); err != nil {
+				return err
+			}
+		}
+		c.indent--
+		c.writeLine(buf, "}")
+		return nil
+	}
+	src, err := c.compileExpr(fr.Source)
+	if err != nil {
+		return err
+	}
+	c.writeLine(buf, fmt.Sprintf("for _, %s := range %s {", fr.Name, src))
+	c.indent++
+	for _, st := range fr.Body {
+		if err := c.compileStmtTo(buf, st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeLine(buf, "}")
 	return nil
 }
 
@@ -288,7 +455,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		c.needsAvg = true
 		return fmt.Sprintf("avg(%s)", argStr), nil
 	default:
-		return "", fmt.Errorf("unsupported function %s", call.Func)
+		return fmt.Sprintf("%s(%s)", call.Func, argStr), nil
 	}
 }
 
@@ -313,6 +480,14 @@ func (c *Compiler) writeln(s string) {
 	}
 	c.buf.WriteString(s)
 	c.buf.WriteByte('\n')
+}
+
+func (c *Compiler) writeto(buf *bytes.Buffer, s string) {
+	for i := 0; i < c.indent; i++ {
+		buf.WriteString("    ")
+	}
+	buf.WriteString(s)
+	buf.WriteByte('\n')
 }
 
 func (c *Compiler) writeLine(buf *bytes.Buffer, s string) {
