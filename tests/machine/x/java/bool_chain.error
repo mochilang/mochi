@@ -1,4 +1,0 @@
-line 0: compile error: unsupported statement at line 1
-
-  1| fun boom(): bool {
-  2|   print("boom")

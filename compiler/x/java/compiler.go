@@ -3,6 +3,7 @@ package javacode
 import (
 	"bytes"
 	"fmt"
+	"strings"
 
 	"mochi/parser"
 )
@@ -25,9 +26,20 @@ func (c *Compiler) writeln(s string) {
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("public class Main {")
 	c.indent++
+	// emit function declarations first
+	for _, s := range prog.Statements {
+		if s.Fun != nil {
+			if err := c.compileFun(s.Fun); err != nil {
+				return nil, err
+			}
+		}
+	}
 	c.writeln("public static void main(String[] args) {")
 	c.indent++
 	for _, s := range prog.Statements {
+		if s.Fun != nil {
+			continue
+		}
 		if err := c.compileStmt(s); err != nil {
 			return nil, err
 		}
@@ -47,6 +59,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileLet(s.Let)
 	case s.Assign != nil:
 		return c.compileAssign(s.Assign)
+	case s.Return != nil:
+		return c.compileReturn(s.Return)
+	case s.While != nil:
+		return c.compileWhile(s.While)
 	case s.For != nil:
 		return c.compileFor(s.For)
 	case s.If != nil:
@@ -178,6 +194,50 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
+	cond, err := c.compileExpr(w.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln("while (" + cond + ") {")
+	c.indent++
+	for _, s := range w.Body {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileFun(f *parser.FunStmt) error {
+	ret := c.typeName(f.Return)
+	var params []string
+	for _, p := range f.Params {
+		params = append(params, fmt.Sprintf("%s %s", c.typeName(p.Type), p.Name))
+	}
+	c.writeln(fmt.Sprintf("static %s %s(%s) {", ret, f.Name, strings.Join(params, ", ")))
+	c.indent++
+	for _, s := range f.Body {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileReturn(r *parser.ReturnStmt) error {
+	val, err := c.compileExpr(r.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln("return " + val + ";")
+	return nil
+}
+
 func (c *Compiler) compileExprStmt(e *parser.ExprStmt) error {
 	expr, err := c.compileExpr(e.Expr)
 	if err != nil {
@@ -277,7 +337,21 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			return fmt.Sprintf("System.out.println(%s)", arg), nil
 		}
-		return "", fmt.Errorf("calls unsupported at line %d", p.Pos.Line)
+		var args []string
+		for _, a := range p.Call.Args {
+			arg, err := c.compileExpr(a)
+			if err != nil {
+				return "", err
+			}
+			args = append(args, arg)
+		}
+		return fmt.Sprintf("%s(%s)", p.Call.Func, strings.Join(args, ", ")), nil
+	case p.Group != nil:
+		expr, err := c.compileExpr(p.Group)
+		if err != nil {
+			return "", err
+		}
+		return "(" + expr + ")", nil
 	}
 	return "", fmt.Errorf("expression unsupported at line %d", p.Pos.Line)
 }

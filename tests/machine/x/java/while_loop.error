@@ -1,4 +1,0 @@
-line 0: compile error: unsupported statement at line 2
-
-  1| var i = 0
-  2| while i < 3 {
