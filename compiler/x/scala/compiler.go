@@ -234,7 +234,15 @@ func (c *Compiler) compileFor(s *parser.ForStmt) error {
 		}
 		loop = fmt.Sprintf("%s to %s", start, end)
 	}
-	c.writeln(fmt.Sprintf("for(%s <- %s) {", s.Name, loop))
+	if t := types.ExprType(s.Source, c.env); t != nil {
+		if _, ok := t.(types.MapType); ok {
+			c.writeln(fmt.Sprintf("for((%s, _) <- %s) {", s.Name, loop))
+		} else {
+			c.writeln(fmt.Sprintf("for(%s <- %s) {", s.Name, loop))
+		}
+	} else {
+		c.writeln(fmt.Sprintf("for(%s <- %s) {", s.Name, loop))
+	}
 	c.indent += indentStep
 	for _, st := range s.Body {
 		if err := c.compileStmt(st); err != nil {
@@ -321,8 +329,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	typ := types.TypeOfPrimary(p.Target, c.env)
 	for _, op := range p.Ops {
-		if op.Call != nil {
+		switch {
+		case op.Call != nil:
 			args := make([]string, len(op.Call.Args))
 			for i, a := range op.Call.Args {
 				val, err := c.compileExpr(a)
@@ -332,7 +342,68 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				args[i] = val
 			}
 			s = fmt.Sprintf("%s(%s)", s, strings.Join(args, ", "))
-		} else {
+			if ft, ok := typ.(types.FuncType); ok {
+				typ = ft.Return
+			} else {
+				typ = types.AnyType{}
+			}
+		case op.Index != nil:
+			idx := op.Index
+			if idx.Colon != nil {
+				start := "0"
+				if idx.Start != nil {
+					start, err = c.compileExpr(idx.Start)
+					if err != nil {
+						return "", err
+					}
+				}
+				end := fmt.Sprintf("%s.length", s)
+				if idx.End != nil {
+					end, err = c.compileExpr(idx.End)
+					if err != nil {
+						return "", err
+					}
+				}
+				if _, ok := typ.(types.StringType); ok {
+					s = fmt.Sprintf("%s.substring(%s, %s)", s, start, end)
+					typ = types.StringType{}
+				} else {
+					s = fmt.Sprintf("%s.slice(%s, %s)", s, start, end)
+				}
+			} else {
+				idxExpr, err := c.compileExpr(idx.Start)
+				if err != nil {
+					return "", err
+				}
+				if _, ok := typ.(types.StringType); ok {
+					s = fmt.Sprintf("%s.charAt(%s)", s, idxExpr)
+					typ = types.StringType{}
+				} else {
+					s = fmt.Sprintf("%s(%s)", s, idxExpr)
+					switch tt := typ.(type) {
+					case types.ListType:
+						typ = tt.Elem
+					case types.MapType:
+						typ = tt.Value
+					default:
+						typ = types.AnyType{}
+					}
+				}
+			}
+		case op.Cast != nil:
+			tstr := c.typeString(op.Cast.Type)
+			switch tstr {
+			case "Int":
+				s = fmt.Sprintf("%s.toInt", s)
+			case "Double":
+				s = fmt.Sprintf("%s.toDouble", s)
+			case "String":
+				s = fmt.Sprintf("%s.toString", s)
+			default:
+				s = fmt.Sprintf("%s.asInstanceOf[%s]", s, tstr)
+			}
+			typ = types.ResolveTypeRef(op.Cast.Type, c.env)
+		default:
 			return "", fmt.Errorf("postfix operations not supported")
 		}
 	}
@@ -349,6 +420,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileCall(p.Call)
 	case p.List != nil:
 		return c.compileList(p.List)
+	case p.Map != nil:
+		return c.compileMap(p.Map)
 	case p.Selector != nil:
 		return c.compileSelector(p.Selector), nil
 	case p.Group != nil:
@@ -403,11 +476,57 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("append expects 2 args")
 		}
 		return fmt.Sprintf("%s :+ %s", args[0], args[1]), nil
+	case "avg":
+		if len(args) != 1 {
+			return "", fmt.Errorf("avg expects 1 arg")
+		}
+		return fmt.Sprintf("%s.sum.toDouble / %s.size", args[0], args[0]), nil
 	case "count":
 		if len(args) != 1 {
 			return "", fmt.Errorf("count expects 1 arg")
 		}
 		return fmt.Sprintf("%s.size", args[0]), nil
+	case "len":
+		if len(args) != 1 {
+			return "", fmt.Errorf("len expects 1 arg")
+		}
+		t := types.ExprType(call.Args[0], c.env)
+		switch t.(type) {
+		case types.MapType:
+			return fmt.Sprintf("%s.size", args[0]), nil
+		default:
+			return fmt.Sprintf("%s.length", args[0]), nil
+		}
+	case "min":
+		if len(args) != 1 {
+			return "", fmt.Errorf("min expects 1 arg")
+		}
+		return fmt.Sprintf("%s.min", args[0]), nil
+	case "max":
+		if len(args) != 1 {
+			return "", fmt.Errorf("max expects 1 arg")
+		}
+		return fmt.Sprintf("%s.max", args[0]), nil
+	case "sum":
+		if len(args) != 1 {
+			return "", fmt.Errorf("sum expects 1 arg")
+		}
+		return fmt.Sprintf("%s.sum", args[0]), nil
+	case "str":
+		if len(args) != 1 {
+			return "", fmt.Errorf("str expects 1 arg")
+		}
+		return fmt.Sprintf("%s.toString", args[0]), nil
+	case "substring":
+		if len(args) != 3 {
+			return "", fmt.Errorf("substring expects 3 args")
+		}
+		return fmt.Sprintf("%s.substring(%s, %s)", args[0], args[1], args[2]), nil
+	case "values":
+		if len(args) != 1 {
+			return "", fmt.Errorf("values expects 1 arg")
+		}
+		return fmt.Sprintf("%s.values.toList", args[0]), nil
 	default:
 		return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ", ")), nil
 	}
@@ -423,6 +542,22 @@ func (c *Compiler) compileList(l *parser.ListLiteral) (string, error) {
 		elems[i] = s
 	}
 	return fmt.Sprintf("List(%s)", strings.Join(elems, ", ")), nil
+}
+
+func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
+	items := make([]string, len(m.Items))
+	for i, it := range m.Items {
+		k, err := c.compileExpr(it.Key)
+		if err != nil {
+			return "", err
+		}
+		v, err := c.compileExpr(it.Value)
+		if err != nil {
+			return "", err
+		}
+		items[i] = fmt.Sprintf("%s -> %s", k, v)
+	}
+	return fmt.Sprintf("Map(%s)", strings.Join(items, ", ")), nil
 }
 
 func (c *Compiler) typeString(t *parser.TypeRef) string {
