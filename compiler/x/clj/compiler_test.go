@@ -17,9 +17,9 @@ import (
 )
 
 // compileAndRun compiles src file to Clojure, writes output or error.
-func compileAndRun(t *testing.T, src string) {
+func compileAndRun(t *testing.T, root, src string) {
 	base := strings.TrimSuffix(filepath.Base(src), ".mochi")
-	outDir := filepath.Join("tests", "machine", "x", "clj")
+	outDir := filepath.Join(root, "tests", "machine", "x", "clj")
 	if err := os.MkdirAll(outDir, 0o755); err != nil {
 		t.Fatalf("mkdir: %v", err)
 	}
@@ -76,14 +76,34 @@ func TestCompileValidPrograms(t *testing.T) {
 	if err := cljcode.EnsureClojure(); err != nil {
 		t.Skipf("clojure not installed: %v", err)
 	}
-	files, err := filepath.Glob(filepath.Join("..", "..", "..", "tests", "vm", "valid", "*.mochi"))
+	root := findRepoRoot(t)
+	files, err := filepath.Glob(filepath.Join(root, "tests", "vm", "valid", "*.mochi"))
 	if err != nil {
 		t.Fatalf("glob: %v", err)
 	}
 	for _, f := range files {
 		f := f
 		t.Run(filepath.Base(f), func(t *testing.T) {
-			compileAndRun(t, f)
+			compileAndRun(t, root, f)
 		})
 	}
+}
+
+func findRepoRoot(t *testing.T) string {
+	dir, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	t.Fatal("go.mod not found")
+	return ""
 }

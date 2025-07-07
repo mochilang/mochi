@@ -1421,6 +1421,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 		case "str":
 			return "(str " + strings.Join(args, " ") + ")", nil
+		case "append":
+			if len(args) == 2 {
+				return "(conj " + args[0] + " " + args[1] + ")", nil
+			}
 		case "upper":
 			if len(args) == 1 {
 				return "(clojure.string/upper-case " + args[0] + ")", nil
