@@ -24,6 +24,9 @@ This directory contains hand-written Java versions of programs from `tests/vm/va
 - list_assign
 - list_index
 - list_nested_assign
+- len_builtin
+- len_map
+- len_string
 - map_assign
 - map_in_operator
 - map_index
@@ -55,9 +58,6 @@ This directory contains hand-written Java versions of programs from `tests/vm/va
 - json_builtin
 - left_join
 - left_join_multi
-- len_builtin
-- len_map
-- len_string
 - let_and_print
 - list_set_ops
 - load_yaml
