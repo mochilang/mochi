@@ -1,6 +1,7 @@
 # Mochi VM Translations to C++
 
-This directory contains manual C++ versions of sample Mochi programs from `tests/vm/valid`.
+This directory contains manual C++ versions of sample Mochi programs from
+`tests/vm/valid`. A total of 97 examples have been translated by hand.
 
 ## Translated programs
 - `append_builtin`
