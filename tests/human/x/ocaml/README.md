@@ -14,19 +14,19 @@ The table below shows which Mochi examples have been translated (`[x]`) and whic
 - [x] cast_struct.mochi
 - [x] closure.mochi
 - [x] count_builtin.mochi
-- [ ] cross_join.mochi
-- [ ] cross_join_filter.mochi
-- [ ] cross_join_triple.mochi
-- [ ] dataset_sort_take_limit.mochi
-- [ ] dataset_where_filter.mochi
-- [ ] exists_builtin.mochi
+- [x] cross_join.mochi
+- [x] cross_join_filter.mochi
+- [x] cross_join_triple.mochi
+- [x] dataset_sort_take_limit.mochi
+- [x] dataset_where_filter.mochi
+- [x] exists_builtin.mochi
 - [x] for_list_collection.mochi
 - [x] for_loop.mochi
 - [x] for_map_collection.mochi
 - [x] fun_call.mochi
 - [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
-- [ ] group_by.mochi
+- [x] group_by.mochi
 - [ ] group_by_conditional_sum.mochi
 - [ ] group_by_having.mochi
 - [ ] group_by_join.mochi
@@ -65,7 +65,7 @@ The table below shows which Mochi examples have been translated (`[x]`) and whic
 - [ ] match_full.mochi
 - [x] math_ops.mochi
 - [ ] membership.mochi
-- [ ] min_max_builtin.mochi
+ - [x] min_max_builtin.mochi
 - [ ] nested_function.mochi
 - [ ] order_by_map.mochi
 - [ ] outer_join.mochi
@@ -88,17 +88,17 @@ The table below shows which Mochi examples have been translated (`[x]`) and whic
 - [x] string_index.mochi
 - [ ] string_prefix_slice.mochi
 - [x] substring_builtin.mochi
-- [ ] sum_builtin.mochi
-- [ ] tail_recursion.mochi
-- [ ] test_block.mochi
+- [x] sum_builtin.mochi
+- [x] tail_recursion.mochi
+- [x] test_block.mochi
 - [x] tree_sum.mochi
-- [ ] two-sum.mochi
+- [x] two-sum.mochi
 - [x] typed_let.mochi
 - [x] typed_var.mochi
 - [x] unary_neg.mochi
 - [ ] update_stmt.mochi
 - [ ] user_type_literal.mochi
-- [ ] values_builtin.mochi
+- [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
 
