@@ -1,5 +1,5 @@
 # Java Translations of Mochi Programs
-**86/97 translated**
+**97/97 translated**
 
 This folder contains hand written Java versions of each program in `tests/vm/valid`. The checklist below tracks which examples have been translated.
 
@@ -31,10 +31,10 @@ This folder contains hand written Java versions of each program in `tests/vm/val
 - [x] group_by_conditional_sum.mochi
 - [x] group_by_having.mochi
 - [x] group_by_join.mochi
-- [ ] group_by_left_join.mochi
-- [ ] group_by_multi_join.mochi
-- [ ] group_by_multi_join_sort.mochi
-- [ ] group_by_sort.mochi
+- [x] group_by_left_join.mochi
+- [x] group_by_multi_join.mochi
+- [x] group_by_multi_join_sort.mochi
+- [x] group_by_sort.mochi
 - [x] group_items_iteration.mochi
 - [x] if_else.mochi
 - [x] if_then_else.mochi
@@ -42,10 +42,10 @@ This folder contains hand written Java versions of each program in `tests/vm/val
 - [x] in_operator.mochi
 - [x] in_operator_extended.mochi
 - [x] inner_join.mochi
-- [ ] join_multi.mochi
+- [x] join_multi.mochi
 - [x] json_builtin.mochi
-- [ ] left_join.mochi
-- [ ] left_join_multi.mochi
+- [x] left_join.mochi
+- [x] left_join_multi.mochi
 - [x] len_builtin.mochi
 - [x] len_map.mochi
 - [x] len_string.mochi
@@ -54,7 +54,7 @@ This folder contains hand written Java versions of each program in `tests/vm/val
 - [x] list_index.mochi
 - [x] list_nested_assign.mochi
 - [x] list_set_ops.mochi
-- [ ] load_yaml.mochi
+- [x] load_yaml.mochi
 - [x] map_assign.mochi
 - [x] map_in_operator.mochi
 - [x] map_index.mochi
@@ -69,15 +69,15 @@ This folder contains hand written Java versions of each program in `tests/vm/val
 - [x] min_max_builtin.mochi
 - [x] nested_function.mochi
 - [x] order_by_map.mochi
-- [ ] outer_join.mochi
+- [x] outer_join.mochi
 - [x] partial_application.mochi
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
 - [x] query_sum_select.mochi
 - [x] record_assign.mochi
-- [ ] right_join.mochi
-- [ ] save_jsonl_stdout.mochi
+- [x] right_join.mochi
+- [x] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
 - [x] slice.mochi
 - [x] sort_stable.mochi
