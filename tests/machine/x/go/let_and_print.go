@@ -3,11 +3,11 @@
 package main
 
 import (
-    "fmt"
+	"fmt"
 )
 
 func main() {
-a := 10
-var b int = 20
-fmt.Println(a + b)
+	a := 10
+	var b int = 20
+	fmt.Println(a + b)
 }

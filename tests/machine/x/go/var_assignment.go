@@ -3,11 +3,11 @@
 package main
 
 import (
-    "fmt"
+	"fmt"
 )
 
 func main() {
-x := 1
-x = 2
-fmt.Println(x)
+	x := 1
+	x = 2
+	fmt.Println(x)
 }

@@ -1,0 +1,4 @@
+unsupported expression at line 3
+let flag = exists(
+  from x in data
+  where x == 1

@@ -1,0 +1,5 @@
+run: exit status 1
+# command-line-arguments
+../../../tests/machine/x/go/string_contains.go:11:19: s.contains undefined (type string has no field or method contains)
+../../../tests/machine/x/go/string_contains.go:12:19: s.contains undefined (type string has no field or method contains)
+

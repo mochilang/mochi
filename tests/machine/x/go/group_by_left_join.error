@@ -1,0 +1,4 @@
+unsupported expression at line 11
+]
+let stats = from c in customers
+            left join o in orders on o.customerId == c.id

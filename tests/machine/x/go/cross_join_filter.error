@@ -1,0 +1,4 @@
+unsupported expression at line 3
+let letters = ["A", "B"]
+let pairs = from n in nums
+            from l in letters

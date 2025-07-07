@@ -1,0 +1,6 @@
+run: exit status 1
+# command-line-arguments
+../../../tests/machine/x/go/map_nested_assign.go:10:37: cannot use map[string]int{…} (value of type map[string]int) as int value in map literal
+../../../tests/machine/x/go/map_nested_assign.go:11:18: invalid operation: cannot index data["outer"] (map index expression of type int)
+../../../tests/machine/x/go/map_nested_assign.go:12:30: invalid operation: cannot index data["outer"] (map index expression of type int)
+

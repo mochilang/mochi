@@ -1,0 +1,4 @@
+unsupported expression at line 11
+]
+let expensive = from p in products
+                sort by -p.price

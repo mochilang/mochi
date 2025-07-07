@@ -1,0 +1,6 @@
+run: exit status 1
+# command-line-arguments
+../../../tests/machine/x/go/map_int_key.go:10:25: cannot use 1 (untyped int constant) as string value in map literal
+../../../tests/machine/x/go/map_int_key.go:10:33: cannot use 2 (untyped int constant) as string value in map literal
+../../../tests/machine/x/go/map_int_key.go:11:19: cannot use 1 (untyped int constant) as string value in map index
+
