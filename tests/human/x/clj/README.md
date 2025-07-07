@@ -67,6 +67,11 @@ This directory contains hand-written Clojure versions of the Mochi examples foun
 - group_by.mochi
 - map_index.mochi
 - slice.mochi
+- map_membership.mochi
+- match_full.mochi
+- math_ops.mochi
+- partial_application.mochi
+- pure_global_fold.mochi
 
 ## Missing programs
 
@@ -89,16 +94,11 @@ This directory contains hand-written Clojure versions of the Mochi examples foun
 - load_yaml.mochi
 - map_int_key.mochi
 - map_literal_dynamic.mochi
-- map_membership.mochi
 - map_nested_assign.mochi
 - match_expr.mochi
-- match_full.mochi
-- math_ops.mochi
 - nested_function.mochi
 - order_by_map.mochi
 - outer_join.mochi
-- partial_application.mochi
-- pure_global_fold.mochi
 - query_sum_select.mochi
 - record_assign.mochi
 - right_join.mochi
