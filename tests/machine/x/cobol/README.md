@@ -7,3 +7,11 @@ Each program is compiled and executed if a COBOL compiler is available.
 
 - [ ] print_hello.mochi
 - [ ] while_loop.mochi
+- [ ] var_assignment.mochi
+- [ ] typed_var.mochi
+- [ ] typed_let.mochi
+- [ ] let_and_print.mochi
+- [ ] basic_compare.mochi
+- [ ] binary_precedence.mochi
+- [ ] unary_neg.mochi
+- [ ] if_else.mochi

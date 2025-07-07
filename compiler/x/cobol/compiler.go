@@ -14,6 +14,7 @@ type Compiler struct {
 	buf    bytes.Buffer
 	indent int
 	vars   []varDecl
+	init   []string
 	env    *types.Env
 }
 
@@ -31,15 +32,21 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.indent = 7
 	c.vars = nil
+	c.init = nil
 
 	name := strings.TrimSuffix(filepath.Base(prog.Pos.Filename), filepath.Ext(prog.Pos.Filename))
 	name = strings.ReplaceAll(name, "-", "_")
 	name = strings.ToUpper(name)
 
-	// collect variable declarations
+	// collect variable and constant declarations
 	for _, st := range prog.Statements {
-		if st.Var != nil {
-			if err := c.addVar(st.Var); err != nil {
+		switch {
+		case st.Var != nil:
+			if err := c.addVar(st.Var.Name, st.Var.Type, st.Var.Value, st.Var.Pos.Line); err != nil {
+				return nil, err
+			}
+		case st.Let != nil:
+			if err := c.addVar(st.Let.Name, st.Let.Type, st.Let.Value, st.Let.Pos.Line); err != nil {
 				return nil, err
 			}
 		}
@@ -59,8 +66,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln(line)
 	}
 	c.writeln("PROCEDURE DIVISION.")
+	for _, line := range c.init {
+		c.writeln(line)
+	}
 	for _, st := range prog.Statements {
-		if st.Var != nil {
+		if st.Var != nil || st.Let != nil {
 			// already handled in declarations
 			continue
 		}
@@ -72,20 +82,47 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	return c.buf.Bytes(), nil
 }
 
-func (c *Compiler) addVar(v *parser.VarStmt) error {
-	if v.Value == nil {
-		return fmt.Errorf("var without value at line %d", v.Pos.Line)
-	}
+func (c *Compiler) addVar(name string, typ *parser.TypeRef, value *parser.Expr, line int) error {
 	pic := "PIC 9"
-	val, err := c.compileExpr(v.Value)
-	if err != nil {
-		return err
+	val := ""
+	if typ != nil && typ.Simple != nil {
+		switch *typ.Simple {
+		case "string":
+			pic = "PIC X"
+		case "bool":
+			pic = "PIC X(5)"
+		default:
+			pic = "PIC 9"
+		}
 	}
-	// determine PIC for strings based on literal length
+	if value != nil && isLiteralExpr(value) {
+		v, err := c.compileExpr(value)
+		if err != nil {
+			return err
+		}
+		val = v
+	} else if value == nil {
+		switch {
+		case typ != nil && typ.Simple != nil && *typ.Simple == "string":
+			val = "\"\""
+		case typ != nil && typ.Simple != nil && *typ.Simple == "bool":
+			val = "FALSE"
+		default:
+			val = "0"
+		}
+	} else if value != nil {
+		expr, err := c.compileExpr(value)
+		if err != nil {
+			return err
+		}
+		c.init = append(c.init, fmt.Sprintf("COMPUTE %s = %s", strings.ToUpper(name), expr))
+	}
 	if strings.HasPrefix(val, "\"") && strings.HasSuffix(val, "\"") {
 		pic = fmt.Sprintf("PIC X(%d)", len(strings.Trim(val, "\"")))
+	} else if strings.HasPrefix(val, "-") {
+		pic = "PIC S9"
 	}
-	c.vars = append(c.vars, varDecl{name: v.Name, pic: pic, val: val})
+	c.vars = append(c.vars, varDecl{name: name, pic: pic, val: val})
 	return nil
 }
 
@@ -99,6 +136,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		c.writeln(expr)
 	case s.Assign != nil:
 		return c.compileAssign(s.Assign)
+	case s.If != nil:
+		return c.compileIf(s.If)
 	case s.While != nil:
 		return c.compileWhile(s.While)
 	default:
@@ -114,6 +153,60 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 	}
 	name := strings.ToUpper(a.Name)
 	c.writeln(fmt.Sprintf("COMPUTE %s = %s", name, val))
+	return nil
+}
+
+func isLiteralExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	if len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 1 {
+		return false
+	}
+	if len(u.Ops) == 1 && u.Ops[0] != "-" {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return false
+	}
+	return p.Target != nil && p.Target.Lit != nil
+}
+
+func (c *Compiler) compileIf(i *parser.IfStmt) error {
+	cond, err := c.compileExpr(i.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln("IF " + cond)
+	c.indent += 4
+	for _, st := range i.Then {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent -= 4
+	if i.ElseIf != nil || len(i.Else) > 0 {
+		c.writeln("ELSE")
+		c.indent += 4
+		if i.ElseIf != nil {
+			if err := c.compileIf(i.ElseIf); err != nil {
+				return err
+			}
+		} else {
+			for _, st := range i.Else {
+				if err := c.compileStmt(st); err != nil {
+					return err
+				}
+			}
+		}
+		c.indent -= 4
+	}
+	c.writeln("END-IF")
 	return nil
 }
 
