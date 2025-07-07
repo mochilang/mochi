@@ -1,3 +1,5 @@
+//go:build slow
+
 package cobol
 
 import (
@@ -22,6 +24,35 @@ type varDecl struct {
 	name string
 	pic  string
 	val  string
+}
+
+func (c *Compiler) hasVar(name string) bool {
+	for _, v := range c.vars {
+		if v.name == name {
+			return true
+		}
+	}
+	return false
+}
+
+func (c *Compiler) collectForVars(st []*parser.Statement) {
+	for _, s := range st {
+		switch {
+		case s.For != nil:
+			if !c.hasVar(s.For.Name) {
+				c.vars = append(c.vars, varDecl{name: s.For.Name, pic: "PIC 9", val: "0"})
+			}
+			c.collectForVars(s.For.Body)
+		case s.If != nil:
+			c.collectForVars(s.If.Then)
+			if s.If.ElseIf != nil {
+				c.collectForVars([]*parser.Statement{{If: s.If.ElseIf}})
+			}
+			c.collectForVars(s.If.Else)
+		case s.While != nil:
+			c.collectForVars(s.While.Body)
+		}
+	}
 }
 
 func New(env *types.Env) *Compiler {
@@ -51,6 +82,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			}
 		}
 	}
+	c.collectForVars(prog.Statements)
 
 	c.writeln("IDENTIFICATION DIVISION.")
 	c.writeln(fmt.Sprintf("PROGRAM-ID. %s.", name))
@@ -140,6 +172,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileIf(s.If)
 	case s.While != nil:
 		return c.compileWhile(s.While)
+	case s.For != nil:
+		return c.compileFor(s.For)
 	default:
 		return fmt.Errorf("unsupported statement at line %d", s.Pos.Line)
 	}
@@ -243,6 +277,31 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 	c.writeln("PERFORM UNTIL " + neg)
 	c.indent += 4
 	for _, st := range w.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent -= 4
+	c.writeln("END-PERFORM")
+	return nil
+}
+
+func (c *Compiler) compileFor(f *parser.ForStmt) error {
+	if f.RangeEnd == nil {
+		return fmt.Errorf("only range for loops supported")
+	}
+	start, err := c.compileExpr(f.Source)
+	if err != nil {
+		return err
+	}
+	end, err := c.compileExpr(f.RangeEnd)
+	if err != nil {
+		return err
+	}
+	name := strings.ToUpper(f.Name)
+	c.writeln(fmt.Sprintf("PERFORM VARYING %s FROM %s BY 1 UNTIL %s > %s", name, start, name, end))
+	c.indent += 4
+	for _, st := range f.Body {
 		if err := c.compileStmt(st); err != nil {
 			return err
 		}
