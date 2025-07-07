@@ -150,15 +150,23 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			c.buf.WriteString(";\n")
 		}
 	case s.Assign != nil:
-		if len(s.Assign.Index) > 0 || len(s.Assign.Field) > 0 {
-			return fmt.Errorf("complex assignment not supported")
-		}
 		c.writeIndent()
 		val, err := c.compileExpr(s.Assign.Value)
 		if err != nil {
 			return err
 		}
-		c.buf.WriteString(s.Assign.Name)
+		target := s.Assign.Name
+		if len(s.Assign.Field) > 0 {
+			return fmt.Errorf("field assignment not supported")
+		}
+		for _, idx := range s.Assign.Index {
+			i, err := c.compileExpr(idx.Start)
+			if err != nil {
+				return err
+			}
+			target += fmt.Sprintf("[%s]", i)
+		}
+		c.buf.WriteString(target)
 		c.buf.WriteString(" = ")
 		c.buf.WriteString(val)
 		c.buf.WriteString(";\n")
@@ -364,6 +372,15 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			} else {
 				expr = fmt.Sprintf("(%s)(%s)", typ, expr)
 			}
+		case op.Index != nil:
+			if op.Index.Start == nil || op.Index.Colon != nil {
+				return "", fmt.Errorf("complex indexing not supported")
+			}
+			idx, err := c.compileExpr(op.Index.Start)
+			if err != nil {
+				return "", err
+			}
+			expr = fmt.Sprintf("%s[%s]", expr, idx)
 		default:
 			return "", fmt.Errorf("postfix operations not supported")
 		}
@@ -410,14 +427,21 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		args[i] = s
 	}
 	if call.Func == "print" {
-		if len(args) != 1 {
-			return "", fmt.Errorf("print expects one argument")
+		switch len(args) {
+		case 1:
+			arg := args[0]
+			if strings.HasPrefix(arg, "\"") {
+				return fmt.Sprintf("printf(\"%s\\n\", %s)", "%s", arg), nil
+			}
+			return fmt.Sprintf("printf(\"%s\\n\", %s)", "%d", arg), nil
+		case 2:
+			if strings.HasPrefix(args[0], "\"") {
+				return fmt.Sprintf("printf(\"%%s %%d\\n\", %s, %s)", args[0], args[1]), nil
+			}
+			return "", fmt.Errorf("print unsupported arguments")
+		default:
+			return "", fmt.Errorf("print expects one or two arguments")
 		}
-		arg := args[0]
-		if strings.HasPrefix(arg, "\"") {
-			return fmt.Sprintf("printf(\"%s\\n\", %s)", "%s", arg), nil
-		}
-		return fmt.Sprintf("printf(\"%s\\n\", %s)", "%d", arg), nil
 	}
 	return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ", ")), nil
 }

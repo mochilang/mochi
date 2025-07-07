@@ -26,3 +26,8 @@ Each program is compiled and executed during testing.
 - [x] unary_neg.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
+- [x] break_continue.mochi
+- [x] list_assign.mochi
+- [x] list_index.mochi
+
+Compiled 24/97 programs.
