@@ -1,0 +1,9 @@
+line 14
+** (CompileError) /workspace/mochi/tests/machine/x/ex/partial_application.mochi.exs:14: undefined function add/1 (expected Main to define such a function or for it to be imported, but none are available)
+
+
+  def main do
+    # add5 :: fun((integer()) -> integer())
+    add5 = add(5)
+    IO.puts(add5.(3))
+  end

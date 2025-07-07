@@ -1,0 +1,12 @@
+line 4
+warning: variable "substring" does not exist and is being expanded to "substring()", please use parentheses to remove the ambiguity or change the variable name
+  /workspace/mochi/tests/machine/x/ex/substring_builtin.mochi.exs:4: Main.main/0
+
+** (CompileError) /workspace/mochi/tests/machine/x/ex/substring_builtin.mochi.exs:4: undefined function substring/0 (expected Main to define such a function or for it to be imported, but none are available)
+
+
+defmodule Main do
+  def main do
+    IO.puts(substring.("mochi", 1, 4))
+  end
+end
