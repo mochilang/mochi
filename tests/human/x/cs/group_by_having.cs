@@ -3,18 +3,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 
-class Person { public string name; public string city; }
+class Person
+{
+    public string name;
+    public string city;
+}
 
-class Program {
-    static void Main() {
-        var people = new List<Person> {
-            new Person{ name="Alice", city="Paris" },
-            new Person{ name="Bob", city="Hanoi" },
-            new Person{ name="Charlie", city="Paris" },
-            new Person{ name="Diana", city="Hanoi" },
-            new Person{ name="Eve", city="Paris" },
-            new Person{ name="Frank", city="Hanoi" },
-            new Person{ name="George", city="Paris" }
+class Program
+{
+    static void Main()
+    {
+        var people = new List<Person>
+        {
+            new Person { name = "Alice", city = "Paris" },
+            new Person { name = "Bob", city = "Hanoi" },
+            new Person { name = "Charlie", city = "Paris" },
+            new Person { name = "Diana", city = "Hanoi" },
+            new Person { name = "Eve", city = "Paris" },
+            new Person { name = "Frank", city = "Hanoi" },
+            new Person { name = "George", city = "Paris" },
         };
 
         var big = people
