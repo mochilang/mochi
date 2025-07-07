@@ -208,7 +208,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			} else if floatVars[name] {
 				c.writeln(fmt.Sprintf("real, allocatable :: %s(:)", name))
 			} else {
-				c.writeln(fmt.Sprintf("integer(kind=8), allocatable :: %s(:)", name))
+				c.writeln(fmt.Sprintf("integer, allocatable :: %s(:)", name))
 			}
 			allocs = append(allocs, fmt.Sprintf("allocate(%s(0))", name))
 		}
@@ -229,7 +229,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	sort.Strings(names)
 	for _, name := range names {
 		if name == "result" {
-			c.writeln("integer(kind=8) :: result(2)")
+			c.writeln("integer :: result(2)")
 			continue
 		}
 		if listVars[name] {
@@ -240,7 +240,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		} else if floatVars[name] {
 			c.writeln(fmt.Sprintf("real :: %s", name))
 		} else {
-			c.writeln("integer(kind=8) :: " + name)
+			c.writeln("integer :: " + name)
 		}
 	}
 	loopVars := map[string]bool{}
@@ -266,7 +266,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		if loopStrVars[name] {
 			c.writeln(fmt.Sprintf("character(:), allocatable :: %s", name))
 		} else {
-			c.writeln("integer(kind=8) :: " + name)
+			c.writeln("integer :: " + name)
 		}
 	}
 	for _, a := range allocs {
@@ -335,12 +335,12 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		c.writeln(fmt.Sprintf("function %s(nums, target) result(%s)", sanitizeName(fn.Name), resVar))
 		c.indent++
 		c.writeln("implicit none")
-		c.writeln("integer(kind=8), intent(in) :: nums(:)")
-		c.writeln("integer(kind=8), intent(in) :: target")
-		c.writeln("integer(kind=8) :: n")
-		c.writeln("integer(kind=8) :: i")
-		c.writeln("integer(kind=8) :: j")
-		c.writeln("integer(kind=8) :: res(2)")
+		c.writeln("integer, intent(in) :: nums(:)")
+		c.writeln("integer, intent(in) :: target")
+		c.writeln("integer :: n")
+		c.writeln("integer :: i")
+		c.writeln("integer :: j")
+		c.writeln("integer :: res(2)")
 		for _, st := range fn.Body {
 			if err := c.compileStmt(st, resVar); err != nil {
 				return err
@@ -358,13 +358,13 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		c.indent++
 		c.writeln("implicit none")
 		c.writeln("character(len=*), intent(in) :: s")
-		c.writeln("integer(kind=8), intent(in) :: numRows")
+		c.writeln("integer, intent(in) :: numRows")
 		c.writeln("character(:), allocatable :: res")
 		c.writeln("character(len=len(s)), allocatable :: rows(:)")
-		c.writeln("integer(kind=8) :: i")
-		c.writeln("integer(kind=8) :: curr")
-		c.writeln("integer(kind=8) :: step")
-		c.writeln("integer(kind=8) :: i_row")
+		c.writeln("integer :: i")
+		c.writeln("integer :: curr")
+		c.writeln("integer :: step")
+		c.writeln("integer :: i_row")
 		c.writeln("if ((numRows <= 1) .or. (numRows >= len(s))) then")
 		c.indent++
 		c.writeln("res = s")
@@ -425,10 +425,10 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 				c.writeln(fmt.Sprintf("real, allocatable :: %s(:)", resVar))
 				c.floatVars[resVar] = true
 			default:
-				c.writeln(fmt.Sprintf("integer(kind=8), allocatable :: %s(:)", resVar))
+				c.writeln(fmt.Sprintf("integer, allocatable :: %s(:)", resVar))
 			}
 		} else {
-			c.writeln(fmt.Sprintf("integer(kind=8), allocatable :: %s(:)", resVar))
+			c.writeln(fmt.Sprintf("integer, allocatable :: %s(:)", resVar))
 		}
 	} else if fn.Return != nil && fn.Return.Simple != nil && *fn.Return.Simple == "float" {
 		c.writeln(fmt.Sprintf("real :: %s", resVar))
@@ -438,7 +438,7 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	} else if fn.Return != nil && fn.Return.Simple != nil && !isBuiltin(*fn.Return.Simple) {
 		c.writeln(fmt.Sprintf("type(%s) :: %s", sanitizeName(*fn.Return.Simple), resVar))
 	} else {
-		c.writeln(fmt.Sprintf("integer(kind=8) :: %s", resVar))
+		c.writeln(fmt.Sprintf("integer :: %s", resVar))
 	}
 	for _, p := range fn.Params {
 		name := sanitizeName(p.Name)
@@ -453,11 +453,11 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 					c.writeln(fmt.Sprintf("real, intent(in) :: %s(:)", name))
 					c.listVars[name] = true
 				default:
-					c.writeln(fmt.Sprintf("integer(kind=8), intent(in) :: %s(:)", name))
+					c.writeln(fmt.Sprintf("integer, intent(in) :: %s(:)", name))
 					c.listVars[name] = true
 				}
 			} else {
-				c.writeln(fmt.Sprintf("integer(kind=8), intent(in) :: %s(:)", name))
+				c.writeln(fmt.Sprintf("integer, intent(in) :: %s(:)", name))
 				c.listVars[name] = true
 			}
 		} else if p.Type != nil && p.Type.Simple != nil && *p.Type.Simple == "string" {
@@ -468,7 +468,7 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		} else if p.Type != nil && p.Type.Simple != nil && !isBuiltin(*p.Type.Simple) {
 			c.writeln(fmt.Sprintf("type(%s), intent(in) :: %s", sanitizeName(*p.Type.Simple), name))
 		} else {
-			c.writeln(fmt.Sprintf("integer(kind=8), intent(in) :: %s", name))
+			c.writeln(fmt.Sprintf("integer, intent(in) :: %s", name))
 		}
 	}
 	vars := map[string]bool{}
@@ -512,7 +512,7 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 			} else if floatVars[name] {
 				c.writeln(fmt.Sprintf("real, allocatable :: %s(:)", name))
 			} else {
-				c.writeln(fmt.Sprintf("integer(kind=8), allocatable :: %s(:)", name))
+				c.writeln(fmt.Sprintf("integer, allocatable :: %s(:)", name))
 			}
 			allocs = append(allocs, fmt.Sprintf("allocate(%s(0))", name))
 		}
@@ -531,7 +531,7 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		} else if floatVars[name] {
 			c.writeln(fmt.Sprintf("real :: %s", name))
 		} else {
-			c.writeln("integer(kind=8) :: " + name)
+			c.writeln("integer :: " + name)
 		}
 	}
 	for _, a := range allocs {
@@ -572,12 +572,12 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 
 func (c *Compiler) ftnType(t *parser.TypeRef) string {
 	if t == nil {
-		return "integer(kind=8)"
+		return "integer"
 	}
 	if t.Simple != nil {
 		switch *t.Simple {
 		case "int":
-			return "integer(kind=8)"
+			return "integer"
 		case "float":
 			return "real"
 		case "string":
@@ -591,7 +591,7 @@ func (c *Compiler) ftnType(t *parser.TypeRef) string {
 	if t.Generic != nil && t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
 		return c.ftnType(t.Generic.Args[0])
 	}
-	return "integer(kind=8)"
+	return "integer"
 }
 
 func (c *Compiler) ftnScalarType(t types.Type) string {
@@ -603,7 +603,7 @@ func (c *Compiler) ftnScalarType(t types.Type) string {
 	case types.StructType:
 		return fmt.Sprintf("type(%s)", sanitizeName(v.Name))
 	default:
-		return "integer(kind=8)"
+		return "integer"
 	}
 }
 
@@ -923,7 +923,7 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 		} else if floatVars[name] {
 			c.writeln(fmt.Sprintf("real, allocatable :: %s(:)", name))
 		} else {
-			c.writeln(fmt.Sprintf("integer(kind=8), allocatable :: %s(:)", name))
+			c.writeln(fmt.Sprintf("integer, allocatable :: %s(:)", name))
 		}
 		allocs = append(allocs, fmt.Sprintf("allocate(%s(0))", name))
 		vars[name] = true
@@ -942,7 +942,7 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 		} else if floatVars[name] {
 			c.writeln(fmt.Sprintf("real :: %s", name))
 		} else {
-			c.writeln("integer(kind=8) :: " + name)
+			c.writeln("integer :: " + name)
 		}
 	}
 	for _, a := range allocs {
@@ -1361,9 +1361,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileStructLiteral(p.Struct)
 	case p.Lit != nil:
 		if p.Lit.Int != nil {
-			// Emit 64-bit integer literals to match the default
-			// INTEGER(KIND=8) type used throughout the backend.
-			return fmt.Sprintf("%d_8", *p.Lit.Int), nil
+			// Emit integer literals without explicit kind to keep
+			// the generated code readable. The backend uses the
+			// default INTEGER type which is typically 32 or 64 bit.
+			return fmt.Sprintf("%d", *p.Lit.Int), nil
 		}
 		if p.Lit.Float != nil {
 			return fmt.Sprintf("%g", *p.Lit.Float), nil
@@ -1381,7 +1382,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "", fmt.Errorf("unknown literal")
 	case p.List != nil:
 		if len(p.List.Elems) == 0 {
-			return "reshape([0_8], [0])", nil
+			return "reshape([0], [0])", nil
 		}
 		elems := make([]string, len(p.List.Elems))
 		for i, e := range p.List.Elems {
@@ -1521,7 +1522,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr, recv string) (string, 
 			if types.IsFloatExprVars(call.Args[0], sanitizeName, c.floatVars, c.funReturnFloat) {
 				return fmt.Sprintf("merge(0.0, minval(%[1]s), size(%[1]s) == 0)", v), nil
 			}
-			return fmt.Sprintf("merge(0_8, minval(%[1]s), size(%[1]s) == 0)", v), nil
+			return fmt.Sprintf("merge(0, minval(%[1]s), size(%[1]s) == 0)", v), nil
 		}
 		return args[0], nil
 	case "upper":
@@ -1740,9 +1741,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			}
 		default:
 			if intent {
-				c.writeln(fmt.Sprintf("integer(kind=8)%s :: %s(:)", in, name))
+				c.writeln(fmt.Sprintf("integer%s :: %s(:)", in, name))
 			} else {
-				c.writeln(fmt.Sprintf("integer(kind=8), allocatable :: %s(:)", name))
+				c.writeln(fmt.Sprintf("integer, allocatable :: %s(:)", name))
 			}
 		}
 	}
@@ -1759,20 +1760,20 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	case types.StringType:
 		c.writeln("character(len=len(vsrc)) :: " + sanitizeName(q.Var))
 	default:
-		c.writeln("integer(kind=8) :: " + sanitizeName(q.Var))
+		c.writeln("integer :: " + sanitizeName(q.Var))
 	}
-	c.writeln("integer(kind=8) :: n")
-	c.writeln("integer(kind=8) :: i")
+	c.writeln("integer :: n")
+	c.writeln("integer :: i")
 	if q.Sort != nil {
-		c.writeln("integer(kind=8) :: j")
-		c.writeln("integer(kind=8) :: min_idx")
+		c.writeln("integer :: j")
+		c.writeln("integer :: min_idx")
 		switch sortType.(type) {
 		case types.FloatType:
 			c.writeln("real :: sort_key")
 			c.writeln("real :: swap_key")
 		default:
-			c.writeln("integer(kind=8) :: sort_key")
-			c.writeln("integer(kind=8) :: swap_key")
+			c.writeln("integer :: sort_key")
+			c.writeln("integer :: swap_key")
 		}
 		switch rt := resType.(type) {
 		case types.FloatType:
@@ -1782,7 +1783,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		case types.StructType:
 			c.writeln(fmt.Sprintf("type(%s) :: swap_item", sanitizeName(rt.Name)))
 		default:
-			c.writeln("integer(kind=8) :: swap_item")
+			c.writeln("integer :: swap_item")
 		}
 	}
 	c.writeln("allocate(tmp(size(vsrc)))")
@@ -1872,12 +1873,12 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("function union_int(a, b) result(r)")
 		c.indent++
 		c.writeln("implicit none")
-		c.writeln("integer(kind=8), intent(in) :: a(:)")
-		c.writeln("integer(kind=8), intent(in) :: b(:)")
-		c.writeln("integer(kind=8), allocatable :: r(:)")
-		c.writeln("integer(kind=8), allocatable :: tmp(:)")
-		c.writeln("integer(kind=8) :: i")
-		c.writeln("integer(kind=8) :: n")
+		c.writeln("integer, intent(in) :: a(:)")
+		c.writeln("integer, intent(in) :: b(:)")
+		c.writeln("integer, allocatable :: r(:)")
+		c.writeln("integer, allocatable :: tmp(:)")
+		c.writeln("integer :: i")
+		c.writeln("integer :: n")
 		c.writeln("allocate(tmp(size(a)+size(b)))")
 		c.writeln("n = 0")
 		c.writeln("do i = 1, size(a)")
@@ -1910,8 +1911,8 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("real, intent(in) :: b(:)")
 		c.writeln("real, allocatable :: r(:)")
 		c.writeln("real, allocatable :: tmp(:)")
-		c.writeln("integer(kind=8) :: i")
-		c.writeln("integer(kind=8) :: n")
+		c.writeln("integer :: i")
+		c.writeln("integer :: n")
 		c.writeln("allocate(tmp(size(a)+size(b)))")
 		c.writeln("n = 0")
 		c.writeln("do i = 1, size(a)")
@@ -1944,8 +1945,8 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("character(len=*), intent(in) :: b(:)")
 		c.writeln("character(len=:), allocatable :: r(:)")
 		c.writeln("character(len=:), allocatable :: tmp(:)")
-		c.writeln("integer(kind=8) :: i")
-		c.writeln("integer(kind=8) :: n")
+		c.writeln("integer :: i")
+		c.writeln("integer :: n")
 		c.writeln("allocate(character(len=max(len(a),len(b))) :: tmp(size(a)+size(b)))")
 		c.writeln("n = 0")
 		c.writeln("do i = 1, size(a)")
@@ -1974,12 +1975,12 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("function except_int(a, b) result(r)")
 		c.indent++
 		c.writeln("implicit none")
-		c.writeln("integer(kind=8), intent(in) :: a(:)")
-		c.writeln("integer(kind=8), intent(in) :: b(:)")
-		c.writeln("integer(kind=8), allocatable :: r(:)")
-		c.writeln("integer(kind=8), allocatable :: tmp(:)")
-		c.writeln("integer(kind=8) :: i")
-		c.writeln("integer(kind=8) :: n")
+		c.writeln("integer, intent(in) :: a(:)")
+		c.writeln("integer, intent(in) :: b(:)")
+		c.writeln("integer, allocatable :: r(:)")
+		c.writeln("integer, allocatable :: tmp(:)")
+		c.writeln("integer :: i")
+		c.writeln("integer :: n")
 		c.writeln("allocate(tmp(size(a)))")
 		c.writeln("n = 0")
 		c.writeln("do i = 1, size(a)")
@@ -2006,8 +2007,8 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("real, intent(in) :: b(:)")
 		c.writeln("real, allocatable :: r(:)")
 		c.writeln("real, allocatable :: tmp(:)")
-		c.writeln("integer(kind=8) :: i")
-		c.writeln("integer(kind=8) :: n")
+		c.writeln("integer :: i")
+		c.writeln("integer :: n")
 		c.writeln("allocate(tmp(size(a)))")
 		c.writeln("n = 0")
 		c.writeln("do i = 1, size(a)")
@@ -2034,8 +2035,8 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("character(len=*), intent(in) :: b(:)")
 		c.writeln("character(len=:), allocatable :: r(:)")
 		c.writeln("character(len=:), allocatable :: tmp(:)")
-		c.writeln("integer(kind=8) :: i")
-		c.writeln("integer(kind=8) :: n")
+		c.writeln("integer :: i")
+		c.writeln("integer :: n")
 		c.writeln("allocate(character(len=len(a)) :: tmp(size(a)))")
 		c.writeln("n = 0")
 		c.writeln("do i = 1, size(a)")
@@ -2058,12 +2059,12 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("function intersect_int(a, b) result(r)")
 		c.indent++
 		c.writeln("implicit none")
-		c.writeln("integer(kind=8), intent(in) :: a(:)")
-		c.writeln("integer(kind=8), intent(in) :: b(:)")
-		c.writeln("integer(kind=8), allocatable :: r(:)")
-		c.writeln("integer(kind=8), allocatable :: tmp(:)")
-		c.writeln("integer(kind=8) :: i")
-		c.writeln("integer(kind=8) :: n")
+		c.writeln("integer, intent(in) :: a(:)")
+		c.writeln("integer, intent(in) :: b(:)")
+		c.writeln("integer, allocatable :: r(:)")
+		c.writeln("integer, allocatable :: tmp(:)")
+		c.writeln("integer :: i")
+		c.writeln("integer :: n")
 		c.writeln("allocate(tmp(min(size(a),size(b))))")
 		c.writeln("n = 0")
 		c.writeln("do i = 1, size(a)")
@@ -2094,8 +2095,8 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("real, intent(in) :: b(:)")
 		c.writeln("real, allocatable :: r(:)")
 		c.writeln("real, allocatable :: tmp(:)")
-		c.writeln("integer(kind=8) :: i")
-		c.writeln("integer(kind=8) :: n")
+		c.writeln("integer :: i")
+		c.writeln("integer :: n")
 		c.writeln("allocate(tmp(min(size(a),size(b))))")
 		c.writeln("n = 0")
 		c.writeln("do i = 1, size(a)")
@@ -2126,8 +2127,8 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("character(len=*), intent(in) :: b(:)")
 		c.writeln("character(len=:), allocatable :: r(:)")
 		c.writeln("character(len=:), allocatable :: tmp(:)")
-		c.writeln("integer(kind=8) :: i")
-		c.writeln("integer(kind=8) :: n")
+		c.writeln("integer :: i")
+		c.writeln("integer :: n")
 		c.writeln("allocate(character(len=len(a)) :: tmp(min(size(a),size(b))))")
 		c.writeln("n = 0")
 		c.writeln("do i = 1, size(a)")
@@ -2154,7 +2155,7 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("function str_int(v) result(r)")
 		c.indent++
 		c.writeln("implicit none")
-		c.writeln("integer(kind=8), intent(in) :: v")
+		c.writeln("integer, intent(in) :: v")
 		c.writeln("character(:), allocatable :: r")
 		c.writeln("character(len=32) :: buf")
 		c.writeln("write(buf,'(I0)') v")
@@ -2232,7 +2233,7 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("implicit none")
 		c.writeln("character(len=*), intent(in) :: v(:)")
 		c.writeln("character(len=len(v(1))) :: r")
-		c.writeln("integer(kind=8) :: i")
+		c.writeln("integer :: i")
 		c.writeln("if (size(v) == 0) then")
 		c.indent++
 		c.writeln("r = ''")
@@ -2255,11 +2256,11 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("function mochi_now() result(r)")
 		c.indent++
 		c.writeln("implicit none")
-		c.writeln("integer(kind=8) :: r")
-		c.writeln("integer(kind=8) :: cnt")
-		c.writeln("integer(kind=8) :: rate")
+		c.writeln("integer :: r")
+		c.writeln("integer :: cnt")
+		c.writeln("integer :: rate")
 		c.writeln("call system_clock(cnt, rate)")
-		c.writeln("r = cnt * 1000000000_8 / rate")
+		c.writeln("r = cnt * 1000000000 / rate")
 		c.indent--
 		c.writeln("end function mochi_now")
 	}
@@ -2298,7 +2299,7 @@ func (c *Compiler) writeHelpers() {
 			case "float":
 				c.writeln("real, allocatable :: res(:)")
 			case "int":
-				c.writeln("integer(kind=8), allocatable :: res(:)")
+				c.writeln("integer, allocatable :: res(:)")
 			default:
 				c.writeln(fmt.Sprintf("type(%s), allocatable :: res(:)", typ))
 			}
@@ -2320,7 +2321,7 @@ func (c *Compiler) writeHelpers() {
 			case "float":
 				c.writeln("real, intent(in) :: rows(:)")
 			case "int":
-				c.writeln("integer(kind=8), intent(in) :: rows(:)")
+				c.writeln("integer, intent(in) :: rows(:)")
 			default:
 				c.writeln(fmt.Sprintf("type(%s), intent(in) :: rows(:)", typ))
 			}
