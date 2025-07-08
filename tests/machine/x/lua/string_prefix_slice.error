@@ -1,3 +1,0 @@
-line 0: postfix operations not supported
-   1 | let prefix = "fore"
-   2 | let s1 = "forest"

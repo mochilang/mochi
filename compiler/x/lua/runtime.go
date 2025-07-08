@@ -1,4 +1,4 @@
-//go:build slowfull
+//go:build slow
 
 package luacode
 
@@ -8,9 +8,23 @@ import "sort"
 const (
 	helperPrint = "function __print(...)\n" +
 		"    local args = {...}\n" +
+		"    local function to_str(v)\n" +
+		"        if v == nil then return '<nil>' end\n" +
+		"        if type(v) == 'table' then\n" +
+		"            if v[1] ~= nil or #v > 0 then\n" +
+		"                local parts = {}\n" +
+		"                for i,x in ipairs(v) do parts[#parts+1] = tostring(x) end\n" +
+		"                return table.concat(parts, ' ')\n" +
+		"            end\n" +
+		"        end\n" +
+		"        if type(v) == 'number' and v == math.floor(v) then\n" +
+		"            return tostring(math.floor(v))\n" +
+		"        end\n" +
+		"        return tostring(v)\n" +
+		"    end\n" +
 		"    for i, a in ipairs(args) do\n" +
 		"        if i > 1 then io.write(' ') end\n" +
-		"        io.write(tostring(a))\n" +
+		"        io.write(to_str(a))\n" +
 		"    end\n" +
 		"    io.write('\\n')\n" +
 		"end\n"

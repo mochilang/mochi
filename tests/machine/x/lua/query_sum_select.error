@@ -1,3 +1,9 @@
-line 0: unsupported expression at line 2
-   1 | let nums = [1,2,3]
-   2 | let result = from n in nums where n > 1 select sum(n)
+line 30: run error: exit status 1
+lua: /workspace/mochi/tests/machine/x/lua/query_sum_select.lua:30: sum() expects list or group
+stack traceback:
+	[C]: in function 'error'
+	/workspace/mochi/tests/machine/x/lua/query_sum_select.lua:30: in function '__sum'
+	/workspace/mochi/tests/machine/x/lua/query_sum_select.lua:41: in function </workspace/mochi/tests/machine/x/lua/query_sum_select.lua:37>
+	/workspace/mochi/tests/machine/x/lua/query_sum_select.lua:37: in main chunk
+	[C]: in ?
+
