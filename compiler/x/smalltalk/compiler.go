@@ -174,6 +174,16 @@ func (c *Compiler) compileIf(i *parser.IfStmt) error {
 		}
 	}
 	c.indent--
+	if i.ElseIf != nil {
+		c.writeln("] ifFalse: [")
+		c.indent++
+		if err := c.compileIf(i.ElseIf); err != nil {
+			return err
+		}
+		c.indent--
+		c.writeln("].")
+		return nil
+	}
 	if i.Else == nil {
 		c.writeln("] .")
 		return nil
