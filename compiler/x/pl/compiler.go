@@ -13,6 +13,7 @@ type Compiler struct {
 	indent int
 	tmp    int
 	vars   map[string]string
+	retVar string
 }
 
 func New() *Compiler {
@@ -45,6 +46,14 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.tmp = 0
 	c.vars = make(map[string]string)
 
+	c.writeln(":- style_check(-singleton).")
+	for _, st := range p.Statements {
+		if st.Fun != nil {
+			if err := c.compileFun(st.Fun); err != nil {
+				return nil, err
+			}
+		}
+	}
 	c.writeln(":- initialization(main, main).")
 	c.writeln("main :-")
 	c.indent++
@@ -59,6 +68,50 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.writeln("true.")
 	c.indent--
 	return c.buf.Bytes(), nil
+}
+
+func (c *Compiler) compileFun(fn *parser.FunStmt) error {
+	oldVars := c.vars
+	oldTmp := c.tmp
+	c.vars = make(map[string]string)
+	c.tmp = 0
+
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		name := sanitizeVar(p.Name)
+		params[i] = name
+		c.vars[p.Name] = name
+	}
+	resVar := "_Res"
+	c.retVar = resVar
+	c.writeln(fmt.Sprintf("%s(%s, %s) :-", sanitizeVar(fn.Name), strings.Join(params, ", "), resVar))
+	c.indent++
+	for i, st := range fn.Body {
+		if i == len(fn.Body)-1 && st.Return != nil {
+			val, arith, err := c.compileExpr(st.Return.Value)
+			if err != nil {
+				return err
+			}
+			if arith {
+				c.writeln(fmt.Sprintf("%s is %s.", resVar, val))
+			} else {
+				c.writeln(fmt.Sprintf("%s = %s.", resVar, val))
+			}
+		} else {
+			if err := c.compileStmt(st); err != nil {
+				return err
+			}
+		}
+	}
+	if len(fn.Body) == 0 {
+		c.writeln(fmt.Sprintf("%s = true.", resVar))
+	}
+	c.indent--
+	c.writeln("")
+	c.vars = oldVars
+	c.tmp = oldTmp
+	c.retVar = ""
+	return nil
 }
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
@@ -101,6 +154,22 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		} else {
 			c.writeln(fmt.Sprintf("%s = %s,", name, val))
 		}
+	case s.Return != nil:
+		if c.retVar == "" {
+			return fmt.Errorf("return outside function")
+		}
+		val, arith, err := c.compileExpr(s.Return.Value)
+		if err != nil {
+			return err
+		}
+		if arith {
+			c.writeln(fmt.Sprintf("%s is %s.", c.retVar, val))
+		} else {
+			c.writeln(fmt.Sprintf("%s = %s.", c.retVar, val))
+		}
+		return nil
+	case s.If != nil:
+		return c.compileIf(s.If)
 	case s.For != nil:
 		return c.compileFor(s.For)
 	case s.Expr != nil:
@@ -126,6 +195,38 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	default:
 		return fmt.Errorf("unsupported statement")
 	}
+	return nil
+}
+
+func (c *Compiler) compileIf(is *parser.IfStmt) error {
+	if is.ElseIf != nil {
+		return fmt.Errorf("else-if not supported")
+	}
+	cond, _, err := c.compileExpr(is.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("(%s ->", cond))
+	c.indent++
+	for _, st := range is.Then {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	if len(is.Else) > 0 {
+		c.writeln(";")
+		c.indent++
+		for _, st := range is.Else {
+			if err := c.compileStmt(st); err != nil {
+				return err
+			}
+		}
+		c.indent--
+	} else {
+		c.writeln("; true")
+	}
+	c.writeln("),")
 	return nil
 }
 
@@ -258,10 +359,40 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, bool, error) {
 			elems = append(elems, s)
 		}
 		return "[" + strings.Join(elems, ", ") + "]", false, nil
+	case p.If != nil:
+		return c.compileIfExpr(p.If)
 	case p.Call != nil:
 		return c.compileCall(p.Call)
 	}
 	return "", false, fmt.Errorf("unsupported primary")
+}
+
+func (c *Compiler) compileIfExpr(ix *parser.IfExpr) (string, bool, error) {
+	cond, _, err := c.compileExpr(ix.Cond)
+	if err != nil {
+		return "", false, err
+	}
+	thenV, thenA, err := c.compileExpr(ix.Then)
+	if err != nil {
+		return "", false, err
+	}
+	var elseV string
+	var elseA bool
+	if ix.ElseIf != nil {
+		elseV, elseA, err = c.compileIfExpr(ix.ElseIf)
+		if err != nil {
+			return "", false, err
+		}
+	} else if ix.Else != nil {
+		elseV, elseA, err = c.compileExpr(ix.Else)
+		if err != nil {
+			return "", false, err
+		}
+	} else {
+		elseV = "true"
+	}
+	ar := thenA && elseA
+	return fmt.Sprintf("(%s -> %s ; %s)", cond, thenV, elseV), ar, nil
 }
 
 func (c *Compiler) compileCall(call *parser.CallExpr) (string, bool, error) {
@@ -345,8 +476,29 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, bool, error) {
 			c.writeln(fmt.Sprintf("length(%s, %s),", arg, tmp))
 		}
 		return tmp, true, nil
+	case "count":
+		if len(call.Args) != 1 {
+			return "", false, fmt.Errorf("count expects 1 arg")
+		}
+		arg, _, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", false, err
+		}
+		tmp := c.newTmp()
+		c.writeln(fmt.Sprintf("length(%s, %s),", arg, tmp))
+		return tmp, true, nil
 	default:
-		return "", false, fmt.Errorf("unsupported call")
+		args := make([]string, len(call.Args))
+		for i, a := range call.Args {
+			s, _, err := c.compileExpr(a)
+			if err != nil {
+				return "", false, err
+			}
+			args[i] = s
+		}
+		tmp := c.newTmp()
+		c.writeln(fmt.Sprintf("%s(%s, %s),", sanitizeVar(call.Func), strings.Join(args, ", "), tmp))
+		return tmp, false, nil
 	}
 }
 

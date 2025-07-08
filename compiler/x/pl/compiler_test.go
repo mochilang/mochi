@@ -31,6 +31,15 @@ var supported = map[string]bool{
 	"len_string":          true,
 	"sum_builtin":         true,
 	"min_max_builtin":     true,
+	"count_builtin":       true,
+	"bool_chain":          true,
+	"fun_call":            true,
+	"fun_three_args":      true,
+	"typed_var":           true,
+	"typed_let":           true,
+	"if_then_else":        true,
+	"if_then_else_nested": true,
+	"if_else":             true,
 }
 
 func TestPrologCompiler(t *testing.T) {
