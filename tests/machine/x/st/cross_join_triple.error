@@ -1,7 +1,2 @@
-line: 4
-error: unsupported expression at line 4
-   2: let letters = ["A", "B"]
-   3: let bools = [true, false]
-   4: let combos = from n in nums
-   5:              from l in letters
-   6:              from b in bools
+line: 0
+error: gst interpreter not available

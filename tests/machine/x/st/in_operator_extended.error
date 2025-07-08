@@ -1,6 +1,2 @@
-line: 2
-error: unsupported expression at line 2
-   1: let xs = [1, 2, 3]
-   2: let ys = from x in xs where x % 2 == 1 select x
-   3: print(1 in ys)
-   4: print(2 in ys)
+line: 0
+error: gst interpreter not available

@@ -1,7 +1,2 @@
-line: 15
-error: unsupported expression at line 15
-  13: ]
-  14: 
-  15: let result = from o in orders
-  16:              outer join c in customers on o.customerId == c.id
-  17:              select {
+line: 0
+error: query features not supported

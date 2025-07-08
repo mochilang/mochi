@@ -1,7 +1,2 @@
-line: 7
-error: unsupported expression at line 7
-   5: ]
-   6: let sorted =
-   7:   from x in data
-   8:   sort by { a: x.a, b: x.b }
-   9:   select x
+line: 0
+error: gst interpreter not available

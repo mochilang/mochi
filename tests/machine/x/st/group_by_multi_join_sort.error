@@ -1,7 +1,2 @@
-line: 41
-error: unsupported expression at line 41
-  39: 
-  40: let result =
-  41:   from c in customer
-  42:   join o in orders on o.o_custkey == c.c_custkey
-  43:   join l in lineitem on l.l_orderkey == o.o_orderkey
+line: 0
+error: query features not supported
