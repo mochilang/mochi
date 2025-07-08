@@ -2,7 +2,7 @@
 
 This directory contains machine-generated Elixir source from compiling Mochi programs.
 
-**68/97 programs compiled and ran successfully.**
+**71/97 programs compiled and ran successfully.**
 
 ## Checklist
 - [x] append_builtin.mochi
@@ -70,7 +70,7 @@ This directory contains machine-generated Elixir source from compiling Mochi pro
 - [x] nested_function.mochi
 - [ ] order_by_map.mochi
 - [x] outer_join.mochi
-- [ ] partial_application.mochi
+ - [x] partial_application.mochi
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [ ] pure_global_fold.mochi
@@ -88,13 +88,13 @@ This directory contains machine-generated Elixir source from compiling Mochi pro
 - [x] string_in_operator.mochi
 - [x] string_index.mochi
 - [x] string_prefix_slice.mochi
-- [ ] substring_builtin.mochi
+ - [x] substring_builtin.mochi
 - [x] sum_builtin.mochi
 - [x] tail_recursion.mochi
 - [x] test_block.mochi
 - [ ] tree_sum.mochi
 - [x] two-sum.mochi
-- [ ] typed_let.mochi
+ - [x] typed_let.mochi
 - [x] typed_var.mochi
 - [x] unary_neg.mochi
 - [x] update_stmt.mochi

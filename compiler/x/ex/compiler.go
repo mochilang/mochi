@@ -291,9 +291,15 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
-		val, err := c.compileExpr(s.Let.Value)
-		if err != nil {
-			return err
+		var val string
+		var err error
+		if s.Let.Value != nil {
+			val, err = c.compileExpr(s.Let.Value)
+			if err != nil {
+				return err
+			}
+		} else {
+			val = "nil"
 		}
 		name := sanitizeName(s.Let.Name)
 		if c.env != nil {
