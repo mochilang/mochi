@@ -1477,6 +1477,52 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 }
 
 func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 &&
+		q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		src, err := c.compileExpr(q.Source)
+		if err != nil {
+			return "", err
+		}
+		origEnv := c.env
+		child := types.NewEnv(c.env)
+		var qElem types.Type = types.AnyType{}
+		if st := c.exprType(q.Source); st != nil {
+			switch tt := st.(type) {
+			case types.ListType:
+				qElem = tt.Elem
+			case types.GroupType:
+				qElem = tt.Elem
+				src = fmt.Sprintf("(:Items %s)", src)
+			}
+		}
+		child.SetVar(q.Var, qElem, true)
+		c.env = child
+		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
+		if err != nil {
+			c.env = origEnv
+			return "", err
+		}
+		genv := types.NewEnv(child)
+		var gElem types.Type
+		gElem, _ = child.GetVar(q.Var)
+		if gElem == nil {
+			gElem = types.AnyType{}
+		}
+		genv.SetVar(q.Group.Name, types.GroupType{Elem: gElem}, true)
+		c.env = genv
+		valExpr, err := c.compileExpr(q.Select)
+		if err != nil {
+			c.env = origEnv
+			return "", err
+		}
+		c.env = origEnv
+		c.use("_Group")
+		c.use("_group_by")
+		expr := fmt.Sprintf("(map (fn [%s] %s) (_group_by %s (fn [%s] %s)))",
+			sanitizeName(q.Group.Name), valExpr, src, sanitizeName(q.Var), keyExpr)
+		return expr, nil
+	}
+
 	useHelper := false
 	if q.Group != nil {
 		useHelper = true
@@ -1497,8 +1543,12 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	child := types.NewEnv(c.env)
 	var qElem types.Type = types.AnyType{}
 	if st := c.exprType(q.Source); st != nil {
-		if lt, ok := st.(types.ListType); ok {
-			qElem = lt.Elem
+		switch tt := st.(type) {
+		case types.ListType:
+			qElem = tt.Elem
+		case types.GroupType:
+			qElem = tt.Elem
+			src = fmt.Sprintf("(:Items %s)", src)
 		}
 	}
 	child.SetVar(q.Var, qElem, true)
@@ -2129,6 +2179,7 @@ func (c *Compiler) compileQueryHelper(q *parser.QueryExpr) (string, error) {
 		}
 		c.env = origEnv
 		b.WriteString("  (vec (map (fn [" + sanitizeName(q.Group.Name) + "] " + valExpr + ") _groups))")
+		b.WriteString(")")
 		c.use("_query")
 		c.use("_group_by")
 		c.use("_Group")
