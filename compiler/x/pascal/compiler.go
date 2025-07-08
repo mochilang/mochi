@@ -27,6 +27,7 @@ type Compiler struct {
 	helpers      map[string]bool
 	lambdas      []string
 	replacements map[string]string
+	funcTypes    map[string]string
 }
 
 // New creates a new Pascal compiler instance.
@@ -38,6 +39,7 @@ func New(env *types.Env) *Compiler {
 		helpers:      make(map[string]bool),
 		lambdas:      []string{},
 		replacements: make(map[string]string),
+		funcTypes:    make(map[string]string),
 	}
 }
 
@@ -47,6 +49,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.tempVars = make(map[string]string)
 	c.lambdas = nil
 	c.replacements = make(map[string]string)
+	c.funcTypes = make(map[string]string)
+	collectFuncTypes(prog.Statements, c)
 	name := "main"
 	if prog.Package != "" {
 		name = sanitizeName(prog.Package)
@@ -59,6 +63,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.indent++
 	c.writeln("generic TArray<T> = array of T;")
 	c.indent--
+	c.emitFuncTypes()
 
 	// Compile package imports first
 	for _, s := range prog.Statements {
@@ -97,15 +102,6 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
-	// Emit generated lambda functions
-	for _, code := range c.lambdas {
-		c.buf.WriteString(code)
-		if !strings.HasSuffix(code, "\n") {
-			c.writeln("")
-		}
-		c.writeln("")
-	}
-
 	// Compile main body first to gather temporaries
 	var body bytes.Buffer
 	prevBuf := c.buf
@@ -125,6 +121,15 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	body = c.buf
 	c.buf = prevBuf
 	c.indent = prevIndent
+
+	// Emit generated lambda functions
+	for _, code := range c.lambdas {
+		c.buf.WriteString(code)
+		if !strings.HasSuffix(code, "\n") {
+			c.writeln("")
+		}
+		c.writeln("")
+	}
 
 	c.emitHelpers()
 
@@ -147,7 +152,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 		sort.Strings(names)
 		for _, n := range names {
-			c.writeln(fmt.Sprintf("%s: %s;", sanitizeName(n), vars[n]))
+			name := sanitizeName(n)
+			if rep, ok := c.replacements[n]; ok {
+				name = rep
+			}
+			c.writeln(fmt.Sprintf("%s: %s;", name, vars[n]))
 		}
 		c.indent--
 		c.writeln("")
@@ -201,14 +210,19 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if t == nil {
 			t = resolveSimpleTypeRef(s.Let.Type)
 		}
+		name := sanitizeName(s.Let.Name)
+		if st, ok := t.(types.StructType); ok && strings.EqualFold(name, sanitizeName(st.Name)) {
+			name = name + "_"
+			c.replacements[s.Let.Name] = name
+		}
 		if s.Let.Value == nil {
-			c.writeln(fmt.Sprintf("%s := %s;", sanitizeName(s.Let.Name), defaultValue(t)))
+			c.writeln(fmt.Sprintf("%s := %s;", name, defaultValue(t)))
 		} else {
 			val, err := c.compileExprWith(t, s.Let.Value)
 			if err != nil {
 				return err
 			}
-			c.writeln(fmt.Sprintf("%s := %s;", sanitizeName(s.Let.Name), val))
+			c.writeln(fmt.Sprintf("%s := %s;", name, val))
 		}
 	case s.Var != nil:
 		var t types.Type
@@ -227,14 +241,19 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if t == nil {
 			t = resolveSimpleTypeRef(s.Var.Type)
 		}
+		name := sanitizeName(s.Var.Name)
+		if st, ok := t.(types.StructType); ok && strings.EqualFold(name, sanitizeName(st.Name)) {
+			name = name + "_"
+			c.replacements[s.Var.Name] = name
+		}
 		if s.Var.Value == nil {
-			c.writeln(fmt.Sprintf("%s := %s;", sanitizeName(s.Var.Name), defaultValue(t)))
+			c.writeln(fmt.Sprintf("%s := %s;", name, defaultValue(t)))
 		} else {
 			val, err := c.compileExprWith(t, s.Var.Value)
 			if err != nil {
 				return err
 			}
-			c.writeln(fmt.Sprintf("%s := %s;", sanitizeName(s.Var.Name), val))
+			c.writeln(fmt.Sprintf("%s := %s;", name, val))
 		}
 	case s.Return != nil:
 		val, err := c.compileExpr(s.Return.Value)
@@ -666,16 +685,30 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	retType := c.typeRef(fun.Return)
 
 	// Compile body first so that temporaries are collected
-	var body bytes.Buffer
+	var body, nested bytes.Buffer
 	prevBuf := c.buf
 	prevIndent := c.indent
 	c.buf = bytes.Buffer{}
 	c.indent = prevIndent + 1
 	for _, st := range fun.Body {
-		if err := c.compileStmt(st); err != nil {
-			c.buf = prevBuf
-			c.indent = prevIndent
-			return err
+		if st.Fun != nil {
+			tmpBuf := c.buf
+			c.buf = nested
+			if err := c.compileFun(st.Fun); err != nil {
+				c.buf = prevBuf
+				c.indent = prevIndent
+				return err
+			}
+			if !strings.HasSuffix(nested.String(), "\n") {
+				c.writeln("")
+			}
+			c.buf = tmpBuf
+		} else {
+			if err := c.compileStmt(st); err != nil {
+				c.buf = prevBuf
+				c.indent = prevIndent
+				return err
+			}
 		}
 	}
 	body = c.buf
@@ -713,10 +746,15 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 		}
 		sort.Strings(names)
 		for _, n := range names {
-			c.writeln(fmt.Sprintf("%s: %s;", sanitizeName(n), vars[n]))
+			name := sanitizeName(n)
+			if rep, ok := c.replacements[n]; ok {
+				name = rep
+			}
+			c.writeln(fmt.Sprintf("%s: %s;", name, vars[n]))
 		}
 		c.indent--
 	}
+	c.buf.Write(nested.Bytes())
 	c.writeln("begin")
 	c.indent++
 	c.buf.Write(body.Bytes())
@@ -823,14 +861,27 @@ func (c *Compiler) typeRef(t *parser.TypeRef) string {
 	}
 	if t.Fun != nil {
 		params := make([]string, len(t.Fun.Params))
+		declParts := make([]string, len(t.Fun.Params))
 		for i, p := range t.Fun.Params {
-			params[i] = c.typeRef(p)
+			pt := c.typeRef(p)
+			params[i] = pt
+			declParts[i] = fmt.Sprintf("p%d: %s", i, pt)
 		}
 		ret := c.typeRef(t.Fun.Return)
+		var decl string
 		if ret == "" || ret == "void" {
-			return fmt.Sprintf("procedure(%s)", strings.Join(params, "; "))
+			decl = fmt.Sprintf("procedure(%s)", strings.Join(declParts, "; "))
+		} else {
+			decl = fmt.Sprintf("function(%s): %s", strings.Join(declParts, "; "), ret)
 		}
-		return fmt.Sprintf("function(%s): %s", strings.Join(params, "; "), ret)
+		for name, d := range c.funcTypes {
+			if d == decl {
+				return name
+			}
+		}
+		fname := fmt.Sprintf("TFunc%d", len(c.funcTypes))
+		c.funcTypes[fname] = decl
+		return fname
 	}
 	if t.Generic != nil {
 		if t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
@@ -1064,6 +1115,112 @@ func collectQueryVars(e *parser.Expr, env *types.Env, vars map[string]string) {
 	}
 }
 
+// collectFuncTypes scans statements for function type references so that
+// aliases can be emitted before use.
+func collectFuncTypes(stmts []*parser.Statement, c *Compiler) {
+	for _, s := range stmts {
+		switch {
+		case s.Fun != nil:
+			for _, p := range s.Fun.Params {
+				c.typeRef(p.Type)
+			}
+			c.typeRef(s.Fun.Return)
+			collectFuncTypes(s.Fun.Body, c)
+		case s.Let != nil:
+			c.typeRef(s.Let.Type)
+			collectFuncTypesExpr(s.Let.Value, c)
+		case s.Var != nil:
+			c.typeRef(s.Var.Type)
+			collectFuncTypesExpr(s.Var.Value, c)
+		case s.For != nil:
+			collectFuncTypes(s.For.Body, c)
+		case s.While != nil:
+			collectFuncTypes(s.While.Body, c)
+		case s.If != nil:
+			collectFuncTypes(s.If.Then, c)
+			if s.If.ElseIf != nil {
+				collectFuncTypes([]*parser.Statement{{If: s.If.ElseIf}}, c)
+			}
+			collectFuncTypes(s.If.Else, c)
+		case s.Test != nil:
+			collectFuncTypes(s.Test.Body, c)
+		}
+	}
+}
+
+func collectFuncTypesExpr(e *parser.Expr, c *Compiler) {
+	if e == nil || e.Binary == nil {
+		return
+	}
+	var scanUnary func(u *parser.Unary)
+	var scanPrimary func(p *parser.Primary)
+	var scanPostfix func(p *parser.PostfixExpr)
+
+	scanUnary = func(u *parser.Unary) {
+		if u == nil {
+			return
+		}
+		scanPostfix(u.Value)
+	}
+	scanPostfix = func(p *parser.PostfixExpr) {
+		if p == nil {
+			return
+		}
+		scanPrimary(p.Target)
+		for _, op := range p.Ops {
+			if op.Call != nil {
+				for _, a := range op.Call.Args {
+					collectFuncTypesExpr(a, c)
+				}
+			} else if op.Index != nil {
+				collectFuncTypesExpr(op.Index.Start, c)
+				collectFuncTypesExpr(op.Index.End, c)
+				collectFuncTypesExpr(op.Index.Step, c)
+			} else if op.Cast != nil {
+				c.typeRef(op.Cast.Type)
+			}
+		}
+	}
+	scanPrimary = func(p *parser.Primary) {
+		if p == nil {
+			return
+		}
+		switch {
+		case p.FunExpr != nil:
+			for _, prm := range p.FunExpr.Params {
+				c.typeRef(prm.Type)
+			}
+			c.typeRef(p.FunExpr.Return)
+			for _, st := range p.FunExpr.BlockBody {
+				collectFuncTypes([]*parser.Statement{st}, c)
+			}
+			collectFuncTypesExpr(p.FunExpr.ExprBody, c)
+		case p.List != nil:
+			for _, el := range p.List.Elems {
+				collectFuncTypesExpr(el, c)
+			}
+		case p.Map != nil:
+			for _, it := range p.Map.Items {
+				collectFuncTypesExpr(it.Key, c)
+				collectFuncTypesExpr(it.Value, c)
+			}
+		case p.Struct != nil:
+			for _, f := range p.Struct.Fields {
+				collectFuncTypesExpr(f.Value, c)
+			}
+		case p.If != nil:
+			collectFuncTypesExpr(p.If.Cond, c)
+			collectFuncTypesExpr(p.If.Then, c)
+			collectFuncTypesExpr(p.If.Else, c)
+		}
+	}
+
+	scanUnary(e.Binary.Left)
+	for _, part := range e.Binary.Right {
+		scanPostfix(part.Right)
+	}
+}
+
 func (c *Compiler) compileExprWith(expected types.Type, e *parser.Expr) (string, error) {
 	old := c.expected
 	c.expected = expected
@@ -1237,6 +1394,14 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 }
 
 func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
+	if len(p.Ops) == 1 && p.Ops[0].Cast != nil && p.Target.Map != nil {
+		if p.Ops[0].Cast.Type != nil && p.Ops[0].Cast.Type.Simple != nil {
+			name := *p.Ops[0].Cast.Type.Simple
+			if _, ok := c.env.GetStruct(name); ok {
+				return c.mapLiteralToStruct(name, p.Target.Map)
+			}
+		}
+	}
 	expr, err := c.compilePrimary(p.Target)
 	if err != nil {
 		return "", err
@@ -1319,6 +1484,23 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	return expr, nil
 }
 
+func (c *Compiler) mapLiteralToStruct(name string, m *parser.MapLiteral) (string, error) {
+	typ := sanitizeName(name)
+	tmp := c.newTypedVar(typ)
+	for _, it := range m.Items {
+		key, ok := stringKey(it.Key)
+		if !ok {
+			continue
+		}
+		val, err := c.compileExpr(it.Value)
+		if err != nil {
+			return "", err
+		}
+		c.writeln(fmt.Sprintf("%s.%s := %s;", tmp, sanitizeName(key), val))
+	}
+	return tmp, nil
+}
+
 func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	switch {
 	case p.Lit != nil:
@@ -1343,8 +1525,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 	case p.Selector != nil:
 		name := sanitizeName(p.Selector.Root)
-		if rep, ok := c.replacements[name]; ok && len(p.Selector.Tail) == 0 {
-			return rep, nil
+		if rep, ok := c.replacements[name]; ok {
+			name = rep
 		}
 		if c.packages != nil {
 			if c.packages[name] {
@@ -2158,6 +2340,24 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 }
 
 func (c *Compiler) use(name string) { c.helpers[name] = true }
+
+func (c *Compiler) emitFuncTypes() {
+	if len(c.funcTypes) == 0 {
+		return
+	}
+	c.writeln("type")
+	c.indent++
+	names := make([]string, 0, len(c.funcTypes))
+	for n := range c.funcTypes {
+		names = append(names, n)
+	}
+	sort.Strings(names)
+	for _, n := range names {
+		c.writeln(fmt.Sprintf("%s = %s;", n, c.funcTypes[n]))
+	}
+	c.indent--
+	c.writeln("")
+}
 
 func (c *Compiler) emitHelpers() {
 	if len(c.helpers) == 0 {
