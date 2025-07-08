@@ -1,6 +1,7 @@
 PHP Warning:  Undefined variable $a in /workspace/mochi/tests/machine/x/php/json_builtin.php on line 2
 PHP Warning:  Undefined variable $b in /workspace/mochi/tests/machine/x/php/json_builtin.php on line 2
-PHP Fatal error:  Uncaught Error: Call to undefined function json() in /workspace/mochi/tests/machine/x/php/json_builtin.php:3
+PHP Warning:  Undefined variable $json in /workspace/mochi/tests/machine/x/php/json_builtin.php on line 3
+PHP Fatal error:  Uncaught Error: Value of type null is not callable in /workspace/mochi/tests/machine/x/php/json_builtin.php:3
 Stack trace:
 #0 {main}
   thrown in /workspace/mochi/tests/machine/x/php/json_builtin.php on line 3

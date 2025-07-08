@@ -1,4 +1,5 @@
-PHP Fatal error:  Uncaught Error: Call to undefined function str() in /workspace/mochi/tests/machine/x/php/str_builtin.php:2
+PHP Warning:  Undefined variable $str in /workspace/mochi/tests/machine/x/php/str_builtin.php on line 2
+PHP Fatal error:  Uncaught Error: Value of type null is not callable in /workspace/mochi/tests/machine/x/php/str_builtin.php:2
 Stack trace:
 #0 {main}
   thrown in /workspace/mochi/tests/machine/x/php/str_builtin.php on line 2

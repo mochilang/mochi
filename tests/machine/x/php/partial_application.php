@@ -3,7 +3,7 @@ function add($a, $b) {
     return $a + $b;
 }
 $add5 = add(5);
-_print(add5(3));
+_print($add5(3));
 function _print(...$args) {
     $parts = [];
     foreach ($args as $a) {

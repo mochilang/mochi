@@ -156,9 +156,24 @@ func (c *Compiler) compileIf(st *parser.IfStmt) error {
 		c.writeln("//pass")
 	}
 	c.indent--
-	if st.ElseIf != nil {
-		c.writeln("} elseif (" + cond + ") {/*unsupported*/}")
-		return fmt.Errorf("elseif not supported")
+	curElseIf := st.ElseIf
+	for curElseIf != nil {
+		cond2, err := c.compileExpr(curElseIf.Cond)
+		if err != nil {
+			return err
+		}
+		c.writeln("} elseif (" + cond2 + ") {")
+		c.indent++
+		for _, s := range curElseIf.Then {
+			if err := c.compileStmt(s); err != nil {
+				return err
+			}
+		}
+		if len(curElseIf.Then) == 0 {
+			c.writeln("//pass")
+		}
+		c.indent--
+		curElseIf = curElseIf.ElseIf
 	}
 	if len(st.Else) > 0 {
 		c.writeln("} else {")
@@ -356,6 +371,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileCall(p.Call)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
+	case p.Group != nil:
+		inner, err := c.compileExpr(p.Group)
+		if err != nil {
+			return "", err
+		}
+		return "(" + inner + ")", nil
 	default:
 		return "", fmt.Errorf("unsupported expression at line %d", p.Pos.Line)
 	}
@@ -394,13 +415,37 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("avg expects 1 arg")
 		}
 		return fmt.Sprintf("(count(%[1]s) ? array_sum(%[1]s)/count(%[1]s) : 0)", args[0]), nil
+	case "sum":
+		if len(args) != 1 {
+			return "", fmt.Errorf("sum expects 1 arg")
+		}
+		return fmt.Sprintf("array_sum(%s)", args[0]), nil
+	case "min":
+		if len(args) != 1 {
+			return "", fmt.Errorf("min expects 1 arg")
+		}
+		return fmt.Sprintf("min(%s)", args[0]), nil
+	case "max":
+		if len(args) != 1 {
+			return "", fmt.Errorf("max expects 1 arg")
+		}
+		return fmt.Sprintf("max(%s)", args[0]), nil
 	case "substring":
 		if len(args) != 3 {
 			return "", fmt.Errorf("substring expects 3 args")
 		}
 		return fmt.Sprintf("substr(%s, %s, %s)", args[0], args[1], args[2]), nil
 	default:
-		return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ", ")), nil
+		name := sanitizeName(call.Func)
+		if c.env != nil {
+			if _, ok := c.env.GetFunc(call.Func); ok {
+				return fmt.Sprintf("%s(%s)", name, strings.Join(args, ", ")), nil
+			}
+			if _, err := c.env.GetVar(call.Func); err == nil {
+				return fmt.Sprintf("$%s(%s)", name, strings.Join(args, ", ")), nil
+			}
+		}
+		return fmt.Sprintf("%s(%s)", name, strings.Join(args, ", ")), nil
 	}
 }
 

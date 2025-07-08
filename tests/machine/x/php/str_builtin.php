@@ -1,5 +1,5 @@
 <?php
-_print(str(123));
+_print($str(123));
 function _print(...$args) {
     $parts = [];
     foreach ($args as $a) {

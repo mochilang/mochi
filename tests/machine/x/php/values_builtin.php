@@ -1,6 +1,6 @@
 <?php
 $m = ["a" => 1, "b" => 2, "c" => 3];
-_print(values($m));
+_print($values($m));
 function _print(...$args) {
     $parts = [];
     foreach ($args as $a) {
