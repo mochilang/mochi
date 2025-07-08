@@ -1,3 +1,0 @@
-line 0: postfix operations not supported
-   1 | let xs = [10, 20, 30]
-   2 | print(xs[1])
