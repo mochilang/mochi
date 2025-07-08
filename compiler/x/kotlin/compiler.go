@@ -608,6 +608,8 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 		return c.queryExpr(p.Query)
 	case p.If != nil:
 		return c.ifExpr(p.If)
+	case p.Match != nil:
+		return c.matchExpr(p.Match)
 	default:
 		return "", fmt.Errorf("unsupported expression")
 	}
@@ -690,6 +692,35 @@ func (c *Compiler) ifExpr(ix *parser.IfExpr) (string, error) {
 		}
 	}
 	return fmt.Sprintf("if (%s) %s else %s", cond, thenExpr, elseCode), nil
+}
+
+func (c *Compiler) matchExpr(m *parser.MatchExpr) (string, error) {
+	target, err := c.expr(m.Target)
+	if err != nil {
+		return "", err
+	}
+	var b strings.Builder
+	b.WriteString("run {\n")
+	b.WriteString("    val __t = " + target + "\n")
+	b.WriteString("    when (__t) {\n")
+	for _, cse := range m.Cases {
+		res, err := c.expr(cse.Result)
+		if err != nil {
+			return "", err
+		}
+		if name, ok := identName(cse.Pattern); ok && name == "_" {
+			b.WriteString("        else -> " + res + "\n")
+			continue
+		}
+		pat, err := c.expr(cse.Pattern)
+		if err != nil {
+			return "", err
+		}
+		b.WriteString("        " + pat + " -> " + res + "\n")
+	}
+	b.WriteString("    }\n")
+	b.WriteString("}")
+	return b.String(), nil
 }
 
 func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
