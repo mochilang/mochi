@@ -23,6 +23,7 @@ type Compiler struct {
 	needsSum      bool
 	needsMin      bool
 	needsMax      bool
+	needsExists   bool
 	needsContains bool
 	needsReflect  bool
 	needsStrconv  bool
@@ -44,6 +45,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.needsSum = false
 	c.needsMin = false
 	c.needsMax = false
+	c.needsExists = false
 	c.needsContains = false
 	c.needsReflect = false
 	c.needsStrconv = false
@@ -187,6 +189,37 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.indent--
 		c.writeln("}")
 		c.writeln("return m")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+
+	if c.needsExists {
+		c.needsReflect = true
+		c.writeln("func exists(v interface{}) bool {")
+		c.indent++
+		c.writeln("val := reflect.ValueOf(v)")
+		c.writeln("switch val.Kind() {")
+		c.indent++
+		c.writeln("case reflect.String, reflect.Slice, reflect.Array, reflect.Map:")
+		c.indent++
+		c.writeln("return val.Len() > 0")
+		c.indent--
+		c.writeln("case reflect.Struct:")
+		c.indent++
+		c.writeln("f := val.FieldByName(\"Items\")")
+		c.writeln("if f.IsValid() && (f.Kind() == reflect.Slice || f.Kind() == reflect.Array) {")
+		c.indent++
+		c.writeln("return f.Len() > 0")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return false")
+		c.indent--
+		c.writeln("default:")
+		c.indent++
+		c.writeln("return v != nil")
+		c.indent--
+		c.writeln("}")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")
@@ -708,6 +741,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 				c.needsContains = true
 				val = fmt.Sprintf("contains(%s, %s)", args[0], args[1])
+			case "exists":
+				if len(args) != 1 {
+					return "", fmt.Errorf("exists expects 1 arg")
+				}
+				c.needsExists = true
+				val = fmt.Sprintf("exists(%s)", args[0])
 			default:
 				if (strings.HasSuffix(val, ".contains") || strings.HasSuffix(val, ".Contains")) && len(args) == 1 {
 					c.needsStrings = true
@@ -798,6 +837,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 }
 
 func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
+	if call.Func == "exists" && len(call.Args) == 1 {
+		if call.Args[0] != nil && call.Args[0].Binary != nil && call.Args[0].Binary.Left != nil && call.Args[0].Binary.Left.Value != nil && call.Args[0].Binary.Left.Value.Target != nil && call.Args[0].Binary.Left.Value.Target.Query != nil {
+			return c.compileExistsQuery(call.Args[0].Binary.Left.Value.Target.Query)
+		}
+	}
 	args := make([]string, len(call.Args))
 	for i, a := range call.Args {
 		s, err := c.compileExpr(a)
@@ -843,6 +887,12 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 		c.needsStrconv = true
 		return fmt.Sprintf("strconv.Itoa(%s)", args[0]), nil
+	case "exists":
+		if len(args) != 1 {
+			return "", fmt.Errorf("exists expects 1 arg")
+		}
+		c.needsExists = true
+		return fmt.Sprintf("exists(%s)", args[0]), nil
 	default:
 		if sig, ok := c.funSigs[call.Func]; ok && len(args) < len(sig.params) {
 			return c.partialFunc(call.Func, sig, args)
@@ -1076,6 +1126,43 @@ func (c *Compiler) compileType(t *parser.TypeRef) (string, error) {
 		return fmt.Sprintf("struct{ %s }", strings.Join(fields, "; ")), nil
 	}
 	return "", fmt.Errorf("unsupported type")
+}
+
+func (c *Compiler) compileExistsQuery(q *parser.QueryExpr) (string, error) {
+	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+		return "", fmt.Errorf("unsupported query")
+	}
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	var cond string
+	if q.Where != nil {
+		cond, err = c.compileExpr(q.Where)
+		if err != nil {
+			return "", err
+		}
+	}
+	var buf bytes.Buffer
+	buf.WriteString("func() bool {\n")
+	c.indent++
+	c.writeto(&buf, fmt.Sprintf("for _, %s := range %s {", q.Var, src))
+	c.indent++
+	if cond != "" {
+		c.writeto(&buf, fmt.Sprintf("if %s {", cond))
+		c.indent++
+	}
+	c.writeto(&buf, "return true")
+	if cond != "" {
+		c.indent--
+		c.writeto(&buf, "}")
+	}
+	c.indent--
+	c.writeto(&buf, "}")
+	c.writeto(&buf, "return false")
+	c.indent--
+	c.writeto(&buf, "}()")
+	return strings.TrimSuffix(buf.String(), "\n"), nil
 }
 
 func isListLiteral(e *parser.Expr) bool {
