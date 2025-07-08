@@ -1,0 +1,21 @@
+line 70:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/left_join_multi.kt:70:64: error: unresolved reference: c
+        __res.add(mutableMapOf("orderId" to o["id"], "name" to c.name, "item" to i))
+                                                               ^
+/workspace/mochi/tests/machine/x/kotlin/left_join_multi.kt:70:82: error: unresolved reference: i
+        __res.add(mutableMapOf("orderId" to o["id"], "name" to c.name, "item" to i))
+                                                                                 ^
+/workspace/mochi/tests/machine/x/kotlin/left_join_multi.kt:78:26: error: unresolved reference: orderId
+        println(listOf(r.orderId, r.name, r.item).joinToString(" "))
+                         ^
+/workspace/mochi/tests/machine/x/kotlin/left_join_multi.kt:78:37: error: unresolved reference: name
+        println(listOf(r.orderId, r.name, r.item).joinToString(" "))
+                                    ^
+/workspace/mochi/tests/machine/x/kotlin/left_join_multi.kt:78:45: error: unresolved reference: item
+        println(listOf(r.orderId, r.name, r.item).joinToString(" "))
+                                            ^
+
+ 69:     for (o in orders) {
+ 70:         __res.add(mutableMapOf("orderId" to o["id"], "name" to c.name, "item" to i))
+ 71:     }

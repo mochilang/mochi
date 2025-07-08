@@ -1,0 +1,52 @@
+line 68:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/group_by_left_join.kt:68:42: error: unresolved reference: g
+        __res.add(mutableMapOf("name" to g.key, "count" to count(run {
+                                         ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_left_join.kt:70:15: error: unresolved reference: g
+    for (r in g) {
+              ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_left_join.kt:84:26: error: unresolved reference: name
+        println(listOf(s.name, "orders:", s.count).joinToString(" "))
+                         ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_left_join.kt:84:45: error: function invocation 'count(...)' expected
+        println(listOf(s.name, "orders:", s.count).joinToString(" "))
+                                            ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_left_join.kt:84:45: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline fun <T> Array<out ???>.count(): Int defined in kotlin.collections
+public inline fun <T> Array<out ???>.count(predicate: (???) -> Boolean): Int defined in kotlin.collections
+@InlineOnly public inline fun BooleanArray.count(): Int defined in kotlin.collections
+public inline fun BooleanArray.count(predicate: (Boolean) -> Boolean): Int defined in kotlin.collections
+@InlineOnly public inline fun ByteArray.count(): Int defined in kotlin.collections
+public inline fun ByteArray.count(predicate: (Byte) -> Boolean): Int defined in kotlin.collections
+@InlineOnly public inline fun CharArray.count(): Int defined in kotlin.collections
+public inline fun CharArray.count(predicate: (Char) -> Boolean): Int defined in kotlin.collections
+@InlineOnly public inline fun CharSequence.count(): Int defined in kotlin.text
+public inline fun CharSequence.count(predicate: (Char) -> Boolean): Int defined in kotlin.text
+@InlineOnly public inline fun DoubleArray.count(): Int defined in kotlin.collections
+public inline fun DoubleArray.count(predicate: (Double) -> Boolean): Int defined in kotlin.collections
+@InlineOnly public inline fun FloatArray.count(): Int defined in kotlin.collections
+public inline fun FloatArray.count(predicate: (Float) -> Boolean): Int defined in kotlin.collections
+@InlineOnly public inline fun IntArray.count(): Int defined in kotlin.collections
+public inline fun IntArray.count(predicate: (Int) -> Boolean): Int defined in kotlin.collections
+@InlineOnly public inline fun LongArray.count(): Int defined in kotlin.collections
+public inline fun LongArray.count(predicate: (Long) -> Boolean): Int defined in kotlin.collections
+@InlineOnly public inline fun ShortArray.count(): Int defined in kotlin.collections
+public inline fun ShortArray.count(predicate: (Short) -> Boolean): Int defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline fun UByteArray.count(predicate: (UByte) -> Boolean): Int defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline fun UIntArray.count(predicate: (UInt) -> Boolean): Int defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline fun ULongArray.count(predicate: (ULong) -> Boolean): Int defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline fun UShortArray.count(predicate: (UShort) -> Boolean): Int defined in kotlin.collections
+@InlineOnly public inline fun <T> Collection<???>.count(): Int defined in kotlin.collections
+public fun <T> Iterable<???>.count(): Int defined in kotlin.collections
+public inline fun <T> Iterable<???>.count(predicate: (???) -> Boolean): Int defined in kotlin.collections
+@InlineOnly public inline fun <K, V> Map<out ???, ???>.count(): Int defined in kotlin.collections
+public inline fun <K, V> Map<out ???, ???>.count(predicate: (Map.Entry<???, ???>) -> Boolean): Int defined in kotlin.collections
+public fun <T> Sequence<???>.count(): Int defined in kotlin.sequences
+public inline fun <T> Sequence<???>.count(predicate: (???) -> Boolean): Int defined in kotlin.sequences
+        println(listOf(s.name, "orders:", s.count).joinToString(" "))
+                                            ^
+
+ 67:     for (c in customers) {
+ 68:         __res.add(mutableMapOf("name" to g.key, "count" to count(run {
+ 69:     val __res = mutableListOf<Any>()

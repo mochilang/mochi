@@ -1,0 +1,9 @@
+line 64:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/json_builtin.kt:64:5: error: unresolved reference: json
+    json(m)
+    ^
+
+ 63: fun main() {
+ 64:     json(m)
+ 65: }

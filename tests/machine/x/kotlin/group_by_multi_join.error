@@ -1,0 +1,24 @@
+line 70:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join.kt:70:13: error: unresolved reference: n
+        if (n.name == "A") {
+            ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join.kt:71:80: error: operator call corresponds to a dot-qualified call 'ps["cost"].times(ps["qty"])' which is not allowed on a nullable receiver 'ps["cost"]'.
+            __res.add(mutableMapOf("part" to ps["part"], "value" to ps["cost"] * ps["qty"]))
+                                                                               ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join.kt:71:82: error: type mismatch: inferred type is Int? but Int was expected
+            __res.add(mutableMapOf("part" to ps["part"], "value" to ps["cost"] * ps["qty"]))
+                                                                                 ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join.kt:80:42: error: unresolved reference: g
+        __res.add(mutableMapOf("part" to g.key, "total" to sum(run {
+                                         ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join.kt:80:64: error: type inference failed. Expected type mismatch: inferred type is MutableList<Any> but List<Int> was expected
+        __res.add(mutableMapOf("part" to g.key, "total" to sum(run {
+                                                               ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join.kt:82:15: error: unresolved reference: g
+    for (r in g) {
+              ^
+
+ 69:     for (ps in partsupp) {
+ 70:         if (n.name == "A") {
+ 71:             __res.add(mutableMapOf("part" to ps["part"], "value" to ps["cost"] * ps["qty"]))

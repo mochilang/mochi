@@ -1,0 +1,61 @@
+line 66:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/group_by.kt:66:42: error: unresolved reference: g
+        __res.add(mutableMapOf("city" to g.key, "count" to count(g), "avg_age" to avg(run {
+                                         ^
+/workspace/mochi/tests/machine/x/kotlin/group_by.kt:66:66: error: unresolved reference: g
+        __res.add(mutableMapOf("city" to g.key, "count" to count(g), "avg_age" to avg(run {
+                                                                 ^
+/workspace/mochi/tests/machine/x/kotlin/group_by.kt:66:87: error: type inference failed. Expected type mismatch: inferred type is MutableList<Any> but List<Number> was expected
+        __res.add(mutableMapOf("city" to g.key, "count" to count(g), "avg_age" to avg(run {
+                                                                                      ^
+/workspace/mochi/tests/machine/x/kotlin/group_by.kt:68:15: error: unresolved reference: g
+    for (p in g) {
+              ^
+/workspace/mochi/tests/machine/x/kotlin/group_by.kt:80:26: error: unresolved reference: city
+        println(listOf(s.city, ": count =", s.count, ", avg_age =", s.avg_age).joinToString(" "))
+                         ^
+/workspace/mochi/tests/machine/x/kotlin/group_by.kt:80:47: error: function invocation 'count(...)' expected
+        println(listOf(s.city, ": count =", s.count, ", avg_age =", s.avg_age).joinToString(" "))
+                                              ^
+/workspace/mochi/tests/machine/x/kotlin/group_by.kt:80:47: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline fun <T> Array<out ???>.count(): Int defined in kotlin.collections
+public inline fun <T> Array<out ???>.count(predicate: (???) -> Boolean): Int defined in kotlin.collections
+@InlineOnly public inline fun BooleanArray.count(): Int defined in kotlin.collections
+public inline fun BooleanArray.count(predicate: (Boolean) -> Boolean): Int defined in kotlin.collections
+@InlineOnly public inline fun ByteArray.count(): Int defined in kotlin.collections
+public inline fun ByteArray.count(predicate: (Byte) -> Boolean): Int defined in kotlin.collections
+@InlineOnly public inline fun CharArray.count(): Int defined in kotlin.collections
+public inline fun CharArray.count(predicate: (Char) -> Boolean): Int defined in kotlin.collections
+@InlineOnly public inline fun CharSequence.count(): Int defined in kotlin.text
+public inline fun CharSequence.count(predicate: (Char) -> Boolean): Int defined in kotlin.text
+@InlineOnly public inline fun DoubleArray.count(): Int defined in kotlin.collections
+public inline fun DoubleArray.count(predicate: (Double) -> Boolean): Int defined in kotlin.collections
+@InlineOnly public inline fun FloatArray.count(): Int defined in kotlin.collections
+public inline fun FloatArray.count(predicate: (Float) -> Boolean): Int defined in kotlin.collections
+@InlineOnly public inline fun IntArray.count(): Int defined in kotlin.collections
+public inline fun IntArray.count(predicate: (Int) -> Boolean): Int defined in kotlin.collections
+@InlineOnly public inline fun LongArray.count(): Int defined in kotlin.collections
+public inline fun LongArray.count(predicate: (Long) -> Boolean): Int defined in kotlin.collections
+@InlineOnly public inline fun ShortArray.count(): Int defined in kotlin.collections
+public inline fun ShortArray.count(predicate: (Short) -> Boolean): Int defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline fun UByteArray.count(predicate: (UByte) -> Boolean): Int defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline fun UIntArray.count(predicate: (UInt) -> Boolean): Int defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline fun ULongArray.count(predicate: (ULong) -> Boolean): Int defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline fun UShortArray.count(predicate: (UShort) -> Boolean): Int defined in kotlin.collections
+@InlineOnly public inline fun <T> Collection<???>.count(): Int defined in kotlin.collections
+public fun <T> Iterable<???>.count(): Int defined in kotlin.collections
+public inline fun <T> Iterable<???>.count(predicate: (???) -> Boolean): Int defined in kotlin.collections
+@InlineOnly public inline fun <K, V> Map<out ???, ???>.count(): Int defined in kotlin.collections
+public inline fun <K, V> Map<out ???, ???>.count(predicate: (Map.Entry<???, ???>) -> Boolean): Int defined in kotlin.collections
+public fun <T> Sequence<???>.count(): Int defined in kotlin.sequences
+public inline fun <T> Sequence<???>.count(predicate: (???) -> Boolean): Int defined in kotlin.sequences
+        println(listOf(s.city, ": count =", s.count, ", avg_age =", s.avg_age).joinToString(" "))
+                                              ^
+/workspace/mochi/tests/machine/x/kotlin/group_by.kt:80:71: error: unresolved reference: avg_age
+        println(listOf(s.city, ": count =", s.count, ", avg_age =", s.avg_age).joinToString(" "))
+                                                                      ^
+
+ 65:     for (person in people) {
+ 66:         __res.add(mutableMapOf("city" to g.key, "count" to count(g), "avg_age" to avg(run {
+ 67:     val __res = mutableListOf<Any>()
