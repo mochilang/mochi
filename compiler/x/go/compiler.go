@@ -1145,6 +1145,17 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 		} else {
 			c.buf.WriteString(fmt.Sprintf("for range %s {\n", src))
 		}
+	case types.AnyType:
+		c.writeIndent()
+		c.use("_toAnySlice")
+		if useVar {
+			c.buf.WriteString(fmt.Sprintf("for _, %s := range _toAnySlice(%s) {\n", name, src))
+			if c.env != nil {
+				c.env.SetVar(stmt.Name, types.AnyType{}, true)
+			}
+		} else {
+			c.buf.WriteString(fmt.Sprintf("for range _toAnySlice(%s) {\n", src))
+		}
 	default:
 		return fmt.Errorf("cannot iterate over type %s", t)
 	}
