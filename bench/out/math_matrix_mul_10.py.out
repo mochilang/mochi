@@ -35,11 +35,11 @@ def matmul(a, b):
     n = len(a)
     m = len(b[0])
     p = len(b)
-    result = []
+    result: list[list[int]] = []
     for i in range(0, n):
-        row = []
+        row: list[int] = []
         for j in range(0, m):
-            sum = 0
+            sum: typing.Callable[[typing.Any], float] = 0
             for k in range(0, p):
                 sum = sum + a[i][k] * b[k][j]
             row = row + [sum]
