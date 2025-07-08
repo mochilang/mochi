@@ -695,6 +695,9 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 			}
 			args[i] = s
 		}
+		if arity, ok := c.funParams[p.Call.Func]; ok && len(args) < arity {
+			return fmt.Sprintf("(...args) => %s(%s, ...args)", p.Call.Func, strings.Join(args, ", ")), nil
+		}
 		switch p.Call.Func {
 		case "print":
 			if len(args) == 1 {
