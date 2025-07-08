@@ -17,7 +17,7 @@ func Compile(src string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	c := &Compiler{}
+	c := New(nil)
 	return c.Compile(prog)
 }
 
@@ -27,7 +27,12 @@ type Compiler struct {
 }
 
 // New creates a new Compiler instance.
-func New(env *types.Env) *Compiler { return &Compiler{} }
+func New(env *types.Env) *Compiler {
+	return &Compiler{compiler: compiler{
+		structs: make(map[string][]string),
+		inout:   make(map[string][]bool),
+	}}
+}
 
 // Compile generates Swift code for the given program.
 func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
@@ -40,8 +45,10 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 }
 
 type compiler struct {
-	buf    strings.Builder
-	indent int
+	buf     strings.Builder
+	indent  int
+	structs map[string][]string
+	inout   map[string][]bool
 }
 
 func (c *compiler) program(p *parser.Program) error {
@@ -63,6 +70,8 @@ func (c *compiler) stmt(s *parser.Statement) error {
 		return c.assignStmt(s.Assign)
 	case s.Fun != nil:
 		return c.funStmt(s.Fun)
+	case s.Type != nil:
+		return c.typeDecl(s.Type)
 	case s.Return != nil:
 		return c.returnStmt(s.Return)
 	case s.If != nil:
@@ -159,11 +168,35 @@ func (c *compiler) assignStmt(a *parser.AssignStmt) error {
 	return nil
 }
 
+func (c *compiler) typeDecl(t *parser.TypeDecl) error {
+	if len(t.Variants) > 0 {
+		return fmt.Errorf("variant types not supported")
+	}
+	c.structs[t.Name] = []string{}
+	c.writeln(fmt.Sprintf("struct %s {", t.Name))
+	c.indent++
+	for _, m := range t.Members {
+		if m.Field == nil || m.Method != nil {
+			return fmt.Errorf("unsupported type member at line %d", t.Pos.Line)
+		}
+		typ, err := c.typeRef(m.Field.Type)
+		if err != nil {
+			return err
+		}
+		c.structs[t.Name] = append(c.structs[t.Name], m.Field.Name)
+		c.writeln(fmt.Sprintf("var %s: %s", m.Field.Name, typ))
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
 func (c *compiler) funStmt(f *parser.FunStmt) error {
 	c.writeIndent()
 	c.buf.WriteString("func ")
 	c.buf.WriteString(f.Name)
 	c.buf.WriteString("(")
+	c.inout[f.Name] = make([]bool, len(f.Params))
 	for i, p := range f.Params {
 		if i > 0 {
 			c.buf.WriteString(", ")
@@ -178,6 +211,10 @@ func (c *compiler) funStmt(f *parser.FunStmt) error {
 		c.buf.WriteString("_ ")
 		c.buf.WriteString(p.Name)
 		c.buf.WriteString(": ")
+		if !isBuiltinType(typ) {
+			c.buf.WriteString("inout ")
+			c.inout[f.Name][i] = true
+		}
 		c.buf.WriteString(typ)
 	}
 	c.buf.WriteString(")")
@@ -356,6 +393,17 @@ func (c *compiler) unary(u *parser.Unary) (string, error) {
 }
 
 func (c *compiler) postfix(p *parser.PostfixExpr) (string, error) {
+	// special case: map literal cast to struct
+	if len(p.Ops) == 1 && p.Ops[0].Cast != nil && p.Target.Map != nil {
+		typ, err := c.typeRef(p.Ops[0].Cast.Type)
+		if err != nil {
+			return "", err
+		}
+		if _, ok := c.structs[typ]; ok {
+			return c.mapToStruct(p.Target.Map, typ)
+		}
+	}
+
 	val, err := c.primary(p.Target)
 	if err != nil {
 		return "", err
@@ -424,6 +472,8 @@ func (c *compiler) primary(p *parser.Primary) (string, error) {
 			items[i] = fmt.Sprintf("%s: %s", k, v)
 		}
 		return "[" + strings.Join(items, ", ") + "]", nil
+	case p.Struct != nil:
+		return c.structLiteral(p.Struct)
 	case p.If != nil:
 		return c.ifExpr(p.If)
 	case p.Selector != nil:
@@ -502,6 +552,14 @@ func (c *compiler) callExpr(call *parser.CallExpr) (string, error) {
 		end := fmt.Sprintf("%s.index(%s.startIndex, offsetBy: %s)", s, s, args[2])
 		return fmt.Sprintf("String(%s[%s..<%s])", s, start, end), nil
 	default:
+		if flags, ok := c.inout[call.Func]; ok {
+			for i := range flags {
+				if flags[i] && i < len(args) {
+					args[i] = "&" + args[i]
+				}
+			}
+			joined = strings.Join(args, ", ")
+		}
 		return fmt.Sprintf("%s(%s)", call.Func, joined), nil
 	}
 }
@@ -575,6 +633,45 @@ func (c *compiler) ifExpr(i *parser.IfExpr) (string, error) {
 	return fmt.Sprintf("%s ? %s : %s", cond, thenVal, elseVal), nil
 }
 
+func (c *compiler) structLiteral(s *parser.StructLiteral) (string, error) {
+	fields := make([]string, len(s.Fields))
+	for i, f := range s.Fields {
+		v, err := c.expr(f.Value)
+		if err != nil {
+			return "", err
+		}
+		fields[i] = fmt.Sprintf("%s: %s", f.Name, v)
+	}
+	return fmt.Sprintf("%s(%s)", s.Name, strings.Join(fields, ", ")), nil
+}
+
+func (c *compiler) mapToStruct(m *parser.MapLiteral, name string) (string, error) {
+	fields := make([]string, len(m.Items))
+	for i, it := range m.Items {
+		key, ok := stringLiteral(it.Key)
+		if !ok {
+			return "", fmt.Errorf("struct field must be string literal")
+		}
+		v, err := c.expr(it.Value)
+		if err != nil {
+			return "", err
+		}
+		fields[i] = fmt.Sprintf("%s: %s", key, v)
+	}
+	return fmt.Sprintf("%s(%s)", name, strings.Join(fields, ", ")), nil
+}
+
+func stringLiteral(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil {
+		return "", false
+	}
+	p := e.Binary.Left.Value.Target
+	if p.Lit != nil && p.Lit.Str != nil {
+		return *p.Lit.Str, true
+	}
+	return "", false
+}
+
 func selector(s *parser.SelectorExpr) string {
 	if len(s.Tail) == 0 {
 		return s.Root
@@ -641,7 +738,7 @@ func (c *compiler) typeRef(t *parser.TypeRef) (string, error) {
 	case "bool":
 		return "Bool", nil
 	default:
-		return "", fmt.Errorf("unknown type %s", *t.Simple)
+		return *t.Simple, nil
 	}
 }
 
@@ -657,6 +754,15 @@ func defaultValue(typ string) string {
 		return "\"\""
 	default:
 		return "nil"
+	}
+}
+
+func isBuiltinType(typ string) bool {
+	switch typ {
+	case "Int", "Double", "Bool", "String":
+		return true
+	default:
+		return false
 	}
 }
 
