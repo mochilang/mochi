@@ -201,29 +201,35 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if t == nil {
 			t = resolveSimpleTypeRef(s.Let.Type)
 		}
-		val, err := c.compileExprWith(t, s.Let.Value)
-		if err != nil {
-			return err
+		if s.Let.Value == nil {
+			c.writeln(fmt.Sprintf("%s := %s;", sanitizeName(s.Let.Name), defaultValue(t)))
+		} else {
+			val, err := c.compileExprWith(t, s.Let.Value)
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("%s := %s;", sanitizeName(s.Let.Name), val))
 		}
-		c.writeln(fmt.Sprintf("%s := %s;", sanitizeName(s.Let.Name), val))
 	case s.Var != nil:
-		if s.Var.Value != nil {
-			var t types.Type
-			if c.env != nil {
-				if tt, err := c.env.GetVar(s.Var.Name); err == nil {
-					t = tt
+		var t types.Type
+		if c.env != nil {
+			if tt, err := c.env.GetVar(s.Var.Name); err == nil {
+				t = tt
+			}
+		}
+		if t == nil {
+			if c.varTypes != nil {
+				if sType, ok := c.varTypes[s.Var.Name]; ok {
+					t = parsePasType(sType)
 				}
 			}
-			if t == nil {
-				if c.varTypes != nil {
-					if sType, ok := c.varTypes[s.Var.Name]; ok {
-						t = parsePasType(sType)
-					}
-				}
-			}
-			if t == nil {
-				t = resolveSimpleTypeRef(s.Var.Type)
-			}
+		}
+		if t == nil {
+			t = resolveSimpleTypeRef(s.Var.Type)
+		}
+		if s.Var.Value == nil {
+			c.writeln(fmt.Sprintf("%s := %s;", sanitizeName(s.Var.Name), defaultValue(t)))
+		} else {
 			val, err := c.compileExprWith(t, s.Var.Value)
 			if err != nil {
 				return err
