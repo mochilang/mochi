@@ -254,6 +254,16 @@ func (c *Compiler) defaultValue(typ string) string {
 }
 
 func (c *Compiler) inferType(e *parser.Expr) string {
+	// handle cast expressions first
+	if e != nil && e.Binary != nil && e.Binary.Left != nil && e.Binary.Left.Value != nil {
+		u := e.Binary.Left.Value
+		if len(u.Ops) > 0 {
+			if cast := u.Ops[len(u.Ops)-1].Cast; cast != nil {
+				typ := c.typeName(cast.Type)
+				return typ
+			}
+		}
+	}
 	if l := isListLiteral(e); l != nil {
 		et := "Object"
 		if len(l.Elems) > 0 {
@@ -353,6 +363,17 @@ func isMapLiteral(e *parser.Expr) *parser.MapLiteral {
 	return nil
 }
 
+func isMapLitCastToStructExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil {
+		return false
+	}
+	p := e.Binary.Left.Value
+	if p.Target != nil && p.Target.Map != nil && len(p.Ops) == 1 && p.Ops[0].Cast != nil {
+		return true
+	}
+	return false
+}
+
 func (c *Compiler) exprIsMap(e *parser.Expr) bool {
 	if isMapLiteral(e) != nil {
 		return true
@@ -375,7 +396,7 @@ func (c *Compiler) compileGlobalVar(v *parser.VarStmt) error {
 		typ = c.inferType(v.Value)
 		if isListLiteral(v.Value) != nil {
 			expr = fmt.Sprintf("new ArrayList<>(%s)", expr)
-		} else if isMapLiteral(v.Value) != nil {
+		} else if isMapLiteral(v.Value) != nil && !isMapLitCastToStructExpr(v.Value) {
 			expr = fmt.Sprintf("new HashMap<>(%s)", expr)
 		}
 	}
@@ -401,7 +422,7 @@ func (c *Compiler) compileGlobalLet(v *parser.LetStmt) error {
 		typ = c.inferType(v.Value)
 		if isListLiteral(v.Value) != nil {
 			expr = fmt.Sprintf("new ArrayList<>(%s)", expr)
-		} else if isMapLiteral(v.Value) != nil {
+		} else if isMapLiteral(v.Value) != nil && !isMapLitCastToStructExpr(v.Value) {
 			expr = fmt.Sprintf("new HashMap<>(%s)", expr)
 		}
 	}
@@ -542,7 +563,7 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 		typ = c.inferType(v.Value)
 		if isListLiteral(v.Value) != nil {
 			expr = fmt.Sprintf("new ArrayList<>(%s)", expr)
-		} else if isMapLiteral(v.Value) != nil {
+		} else if isMapLiteral(v.Value) != nil && !isMapLitCastToStructExpr(v.Value) {
 			expr = fmt.Sprintf("new HashMap<>(%s)", expr)
 		}
 	}
@@ -565,7 +586,7 @@ func (c *Compiler) compileLet(v *parser.LetStmt) error {
 		typ = c.inferType(v.Value)
 		if isListLiteral(v.Value) != nil {
 			expr = fmt.Sprintf("new ArrayList<>(%s)", expr)
-		} else if isMapLiteral(v.Value) != nil {
+		} else if isMapLiteral(v.Value) != nil && !isMapLitCastToStructExpr(v.Value) {
 			expr = fmt.Sprintf("new HashMap<>(%s)", expr)
 		}
 	}
