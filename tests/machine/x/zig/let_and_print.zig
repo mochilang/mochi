@@ -1,10 +1,8 @@
 const std = @import("std");
 
-var a: i32 = undefined;
-var b: i32 = undefined;
+const a = 10;
+const b = 20;
 
 pub fn main() void {
-    a = 10;
-    b = 20;
-    std.debug.print("{any}\n", .{(a + b)});
+    std.debug.print("{d}\n", .{(a + b)});
 }
