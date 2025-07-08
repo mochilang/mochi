@@ -163,6 +163,7 @@ func (c *compiler) funStmt(f *parser.FunStmt) error {
 		if typ == "" {
 			return fmt.Errorf("parameter %s missing type", p.Name)
 		}
+		c.buf.WriteString("_ ")
 		c.buf.WriteString(p.Name)
 		c.buf.WriteString(": ")
 		c.buf.WriteString(typ)
@@ -369,6 +370,8 @@ func (c *compiler) postfix(p *parser.PostfixExpr) (string, error) {
 
 func (c *compiler) primary(p *parser.Primary) (string, error) {
 	switch {
+	case p.FunExpr != nil:
+		return c.funExpr(p.FunExpr)
 	case p.Lit != nil:
 		return literal(p.Lit), nil
 	case p.Call != nil:
@@ -398,22 +401,7 @@ func (c *compiler) primary(p *parser.Primary) (string, error) {
 		}
 		return "[" + strings.Join(items, ", ") + "]", nil
 	case p.If != nil:
-		cond, err := c.expr(p.If.Cond)
-		if err != nil {
-			return "", err
-		}
-		thenVal, err := c.expr(p.If.Then)
-		if err != nil {
-			return "", err
-		}
-		elseVal := ""
-		if p.If.Else != nil {
-			elseVal, err = c.expr(p.If.Else)
-			if err != nil {
-				return "", err
-			}
-		}
-		return fmt.Sprintf("%s ? %s : %s", cond, thenVal, elseVal), nil
+		return c.ifExpr(p.If)
 	case p.Selector != nil:
 		return selector(p.Selector), nil
 	case p.Group != nil:
@@ -494,6 +482,75 @@ func (c *compiler) callExpr(call *parser.CallExpr) (string, error) {
 	}
 }
 
+func (c *compiler) funExpr(f *parser.FunExpr) (string, error) {
+	var b strings.Builder
+	b.WriteString("{ ")
+	if len(f.Params) > 0 {
+		b.WriteString("(")
+		for i, p := range f.Params {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			typ, err := c.typeRef(p.Type)
+			if err != nil {
+				return "", err
+			}
+			b.WriteString(p.Name)
+			if typ != "" {
+				b.WriteString(": ")
+				b.WriteString(typ)
+			}
+		}
+		b.WriteString(") ")
+	}
+	if f.Return != nil {
+		rt, err := c.typeRef(f.Return)
+		if err != nil {
+			return "", err
+		}
+		if rt != "" {
+			b.WriteString("-> ")
+			b.WriteString(rt)
+			b.WriteString(" ")
+		}
+	}
+	b.WriteString("in ")
+	if f.ExprBody == nil {
+		return "", fmt.Errorf("block closures not supported")
+	}
+	expr, err := c.expr(f.ExprBody)
+	if err != nil {
+		return "", err
+	}
+	b.WriteString(expr)
+	b.WriteString(" }")
+	return b.String(), nil
+}
+
+func (c *compiler) ifExpr(i *parser.IfExpr) (string, error) {
+	cond, err := c.expr(i.Cond)
+	if err != nil {
+		return "", err
+	}
+	thenVal, err := c.expr(i.Then)
+	if err != nil {
+		return "", err
+	}
+	var elseVal string
+	if i.ElseIf != nil {
+		elseVal, err = c.ifExpr(i.ElseIf)
+		if err != nil {
+			return "", err
+		}
+	} else if i.Else != nil {
+		elseVal, err = c.expr(i.Else)
+		if err != nil {
+			return "", err
+		}
+	}
+	return fmt.Sprintf("%s ? %s : %s", cond, thenVal, elseVal), nil
+}
+
 func selector(s *parser.SelectorExpr) string {
 	if len(s.Tail) == 0 {
 		return s.Root
@@ -522,6 +579,30 @@ func literal(l *parser.Literal) string {
 func (c *compiler) typeRef(t *parser.TypeRef) (string, error) {
 	if t == nil {
 		return "", nil
+	}
+	if t.Fun != nil {
+		params := make([]string, len(t.Fun.Params))
+		for i, p := range t.Fun.Params {
+			pt, err := c.typeRef(p)
+			if err != nil {
+				return "", err
+			}
+			if pt == "" {
+				return "", fmt.Errorf("unsupported func param type")
+			}
+			params[i] = pt
+		}
+		ret := "Void"
+		if t.Fun.Return != nil {
+			rt, err := c.typeRef(t.Fun.Return)
+			if err != nil {
+				return "", err
+			}
+			if rt != "" {
+				ret = rt
+			}
+		}
+		return "(" + strings.Join(params, ", ") + ") -> " + ret, nil
 	}
 	if t.Simple == nil {
 		return "", fmt.Errorf("unsupported type reference")

@@ -1,4 +1,4 @@
-func boom(a: Int, b: Int) -> Bool {
+func boom(_ a: Int, _ b: Int) -> Bool {
     print("boom")
     return true
 }
