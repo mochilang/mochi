@@ -54,6 +54,7 @@ func TestGenerateMachineOutput(t *testing.T) {
 			}
 			cmd := exec.Command("deno", "run", "--quiet", "--allow-net", "--allow-read", codePath)
 			cmd.Env = append(os.Environ(), "DENO_TLS_CA_STORE=system")
+			cmd.Dir = filepath.Dir(src)
 			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 				cmd.Stdin = bytes.NewReader(data)
 			}

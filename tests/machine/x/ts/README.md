@@ -4,7 +4,7 @@ This directory contains TypeScript source files compiled from Mochi programs.
 
 ## Summary
 
-94/97 files compiled successfully
+96/97 files compiled successfully
 
 ## Checklist
 - [x] append_builtin.mochi
@@ -56,7 +56,7 @@ This directory contains TypeScript source files compiled from Mochi programs.
 - [x] list_index.mochi
 - [x] list_nested_assign.mochi
 - [x] list_set_ops.mochi
-- [ ] load_yaml.mochi
+ - [ ] load_yaml.mochi
 - [x] map_assign.mochi
 - [x] map_in_operator.mochi
 - [x] map_index.mochi
@@ -72,7 +72,7 @@ This directory contains TypeScript source files compiled from Mochi programs.
 - [x] nested_function.mochi
 - [x] order_by_map.mochi
 - [x] outer_join.mochi
-- [ ] partial_application.mochi
+ - [x] partial_application.mochi
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
@@ -94,7 +94,7 @@ This directory contains TypeScript source files compiled from Mochi programs.
 - [x] sum_builtin.mochi
 - [x] tail_recursion.mochi
 - [x] test_block.mochi
-- [ ] tree_sum.mochi
+ - [x] tree_sum.mochi
 - [x] two-sum.mochi
 - [x] typed_let.mochi
 - [x] typed_var.mochi

@@ -7,7 +7,7 @@ function add(a: number, b: number): number {
 let add5: number;
 
 function main(): void {
-  add5 = add(5);
+  add5 = (b) => add(5, b);
   console.log(add5(3));
 }
 main();

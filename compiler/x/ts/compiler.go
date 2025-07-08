@@ -1576,6 +1576,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return "(" + expr + ")", nil
 	case p.Selector != nil:
+		if c.env != nil && len(p.Selector.Tail) == 0 {
+			if _, ok := c.env.FindUnionByVariant(p.Selector.Root); ok {
+				return fmt.Sprintf("{ __name: \"%s\" }", p.Selector.Root), nil
+			}
+		}
 		expr := sanitizeName(p.Selector.Root)
 		for _, s := range p.Selector.Tail {
 			expr += "." + sanitizeName(s)
@@ -1770,6 +1775,17 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		c.use("_json")
 		return fmt.Sprintf("console.log(_json(%s))", argStr), nil
 	default:
+		if fn, ok := c.env.GetFunc(call.Func); ok {
+			if len(call.Args) < len(fn.Params) {
+				missing := fn.Params[len(call.Args):]
+				vars := make([]string, len(missing))
+				for i, p := range missing {
+					vars[i] = sanitizeName(p.Name)
+				}
+				allArgs := append(args, vars...)
+				return fmt.Sprintf("(%s) => %s(%s)", strings.Join(vars, ", "), sanitizeName(call.Func), strings.Join(allArgs, ", ")), nil
+			}
+		}
 		return fmt.Sprintf("%s(%s)", sanitizeName(call.Func), argStr), nil
 	}
 }
