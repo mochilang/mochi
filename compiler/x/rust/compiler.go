@@ -804,6 +804,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("exists expects 1 arg")
 		}
 		return fmt.Sprintf("(%s.len() > 0)", args[0]), nil
+	case "values":
+		if len(args) != 1 {
+			return "", fmt.Errorf("values expects 1 arg")
+		}
+		return fmt.Sprintf("%s.values().cloned().collect::<Vec<_>>()", args[0]), nil
 	default:
 		return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ", ")), nil
 	}
