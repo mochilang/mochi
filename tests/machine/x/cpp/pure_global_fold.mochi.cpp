@@ -12,8 +12,12 @@ inline string mochi_slice(const string& s, int st, int ed) { return s.substr(st,
 template<typename T> bool mochi_contains(const vector<T>& v, const T& x) { return find(v.begin(), v.end(), x) != v.end(); }
 inline bool mochi_contains(const string& s, const string& sub) { return s.find(sub) != string::npos; }
 
+auto inc(auto x) {
+	return (x + k);
+}
+
 int main() {
-	auto xs = vector<int>{10, 20, 30};
-	mochi_print(xs[1]);
+	auto k = 2;
+	mochi_print(inc(3));
 	return 0;
 }

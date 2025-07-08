@@ -52,6 +52,8 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.writeln("template<typename T> void mochi_print(const vector<T>& v) { for(size_t i=0;i<v.size();++i){ if(i) cout << ' '; cout << v[i]; } cout << endl; }")
 	c.writeln("template<typename T> vector<T> mochi_slice(const vector<T>& v, int s, int e) { return vector<T>(v.begin()+s, v.begin()+e); }")
 	c.writeln("inline string mochi_slice(const string& s, int st, int ed) { return s.substr(st, ed - st); }")
+	c.writeln("template<typename T> bool mochi_contains(const vector<T>& v, const T& x) { return find(v.begin(), v.end(), x) != v.end(); }")
+	c.writeln("inline bool mochi_contains(const string& s, const string& sub) { return s.find(sub) != string::npos; }")
 	c.writeln("")
 
 	for _, st := range p.Statements {
@@ -108,7 +110,11 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
 		c.writeIndent()
-		c.buf.WriteString("auto ")
+		typ, err := c.compileType(s.Let.Type)
+		if err != nil && typ == "auto" {
+			return err
+		}
+		c.buf.WriteString(typ + " ")
 		c.buf.WriteString(s.Let.Name)
 		if s.Let.Value != nil {
 			c.buf.WriteString(" = ")
@@ -117,11 +123,21 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				return err
 			}
 			c.buf.WriteString(expr)
+		} else if s.Let.Type != nil {
+			if typ == "int" {
+				c.buf.WriteString(" = 0")
+			} else if typ == "string" {
+				c.buf.WriteString(" = \"\"")
+			}
 		}
 		c.buf.WriteString(";\n")
 	case s.Var != nil:
 		c.writeIndent()
-		c.buf.WriteString("auto ")
+		typ, err := c.compileType(s.Var.Type)
+		if err != nil && typ == "auto" {
+			return err
+		}
+		c.buf.WriteString(typ + " ")
 		c.buf.WriteString(s.Var.Name)
 		if s.Var.Value != nil {
 			c.buf.WriteString(" = ")
@@ -130,6 +146,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				return err
 			}
 			c.buf.WriteString(expr)
+		} else if s.Var.Type != nil {
+			if typ == "int" {
+				c.buf.WriteString(" = 0")
+			} else if typ == "string" {
+				c.buf.WriteString(" = \"\"")
+			}
 		}
 		c.buf.WriteString(";\n")
 	case s.Assign != nil:
@@ -275,7 +297,11 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			out = fmt.Sprintf("(%s %s %s)", out, op.Op, rhs)
+			if op.Op == "in" {
+				out = fmt.Sprintf("mochi_contains(%s, %s)", rhs, out)
+			} else {
+				out = fmt.Sprintf("(%s %s %s)", out, op.Op, rhs)
+			}
 		}
 		return out, nil
 	}

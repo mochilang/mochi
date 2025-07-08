@@ -13,7 +13,9 @@ template<typename T> bool mochi_contains(const vector<T>& v, const T& x) { retur
 inline bool mochi_contains(const string& s, const string& sub) { return s.find(sub) != string::npos; }
 
 int main() {
-	auto xs = vector<int>{10, 20, 30};
-	mochi_print(xs[1]);
+	mochi_print((vector<int>{1, 2} union vector<int>{2, 3}));
+	mochi_print((vector<int>{1, 2, 3} except vector<int>{2}));
+	mochi_print((vector<int>{1, 2, 3} intersect vector<int>{2, 4}));
+	mochi_print(((int)(vector<int>{1, 2} union vector<int>{2, 3}).size()));
 	return 0;
 }
