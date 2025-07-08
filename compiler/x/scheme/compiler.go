@@ -638,13 +638,9 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			}
 		}
 	case s.Var != nil:
-		expr := "()"
-		if s.Var.Value != nil {
-			v, err := c.compileExpr(s.Var.Value)
-			if err != nil {
-				return err
-			}
-			expr = v
+		expr, err := c.compileExpr(s.Var.Value)
+		if err != nil {
+			return err
 		}
 		name := sanitizeName(s.Var.Name)
 		if c.inFun {
@@ -745,7 +741,7 @@ func (c *Compiler) compileIndexedSet(name string, idx []*parser.IndexOp, rhs str
 
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 	if e == nil {
-		return "()", nil
+		return "'()", nil
 	}
 	return c.compileBinary(e.Binary)
 }

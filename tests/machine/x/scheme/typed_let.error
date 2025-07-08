@@ -1,8 +1,0 @@
-error running typed_let:
-ERROR on line 1 of file /workspace/mochi/tests/machine/x/scheme/typed_let.scm: empty application in source: ()
-  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
-  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
-
-context (line 1):
-(define y ())
-(begin (display y) (newline))
