@@ -1,0 +1,11 @@
+line 16: ../../../tests/machine/x/cpp/string_contains.cpp: In function ‘int main()’:
+../../../tests/machine/x/cpp/string_contains.cpp:16:13: error: request for member ‘contains’ in ‘s’, which is of non-class type ‘const char*’
+   16 |     print(s.contains("cat"));
+      |             ^~~~~~~~
+../../../tests/machine/x/cpp/string_contains.cpp:17:13: error: request for member ‘contains’ in ‘s’, which is of non-class type ‘const char*’
+   17 |     print(s.contains("dog"));
+      |             ^~~~~~~~
+
+ 15 |     auto s = "catch";
+ 16 |     print(s.contains("cat"));
+ 17 |     print(s.contains("dog"));
