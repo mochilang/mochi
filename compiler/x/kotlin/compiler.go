@@ -333,6 +333,17 @@ func (c *Compiler) typeName(t *parser.TypeRef) string {
 	if t == nil {
 		return "Any"
 	}
+	if t.Fun != nil {
+		params := make([]string, len(t.Fun.Params))
+		for i, p := range t.Fun.Params {
+			params[i] = c.typeName(p)
+		}
+		ret := "Unit"
+		if t.Fun.Return != nil {
+			ret = c.typeName(t.Fun.Return)
+		}
+		return fmt.Sprintf("(%s) -> %s", strings.Join(params, ", "), ret)
+	}
 	if t.Simple != nil {
 		switch *t.Simple {
 		case "int":
@@ -525,6 +536,10 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 			fields[i] = fmt.Sprintf("%s = %s", f.Name, v)
 		}
 		return fmt.Sprintf("%s(%s)", p.Struct.Name, strings.Join(fields, ", ")), nil
+	case p.FunExpr != nil:
+		return c.funExpr(p.FunExpr)
+	case p.If != nil:
+		return c.ifExpr(p.If)
 	default:
 		return "", fmt.Errorf("unsupported expression")
 	}
@@ -562,6 +577,51 @@ func (c *Compiler) literal(l *parser.Literal) string {
 		return "null"
 	}
 	return "null"
+}
+
+func (c *Compiler) funExpr(fn *parser.FunExpr) (string, error) {
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		if p.Type != nil {
+			params[i] = fmt.Sprintf("%s: %s", p.Name, c.typeName(p.Type))
+		} else {
+			params[i] = p.Name
+		}
+	}
+	if fn.ExprBody != nil {
+		body, err := c.expr(fn.ExprBody)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("{ %s -> %s }", strings.Join(params, ", "), body), nil
+	}
+	return "", fmt.Errorf("block function expressions not supported")
+}
+
+func (c *Compiler) ifExpr(ix *parser.IfExpr) (string, error) {
+	cond, err := c.expr(ix.Cond)
+	if err != nil {
+		return "", err
+	}
+	thenExpr, err := c.expr(ix.Then)
+	if err != nil {
+		return "", err
+	}
+	if ix.ElseIf != nil {
+		elseExpr, err := c.ifExpr(ix.ElseIf)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("if (%s) %s else %s", cond, thenExpr, elseExpr), nil
+	}
+	elseCode := "Unit"
+	if ix.Else != nil {
+		elseCode, err = c.expr(ix.Else)
+		if err != nil {
+			return "", err
+		}
+	}
+	return fmt.Sprintf("if (%s) %s else %s", cond, thenExpr, elseCode), nil
 }
 
 func (c *Compiler) writeln(s string) {
