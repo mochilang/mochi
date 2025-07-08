@@ -439,6 +439,25 @@ func (c *Compiler) postfix(p *parser.PostfixExpr) (string, error) {
 		case op.Field != nil:
 			val = fmt.Sprintf("%s.%s", val, op.Field.Name)
 		case op.Cast != nil:
+			// special case: casting a map literal to a struct type
+			if op.Cast.Type.Simple != nil {
+				if _, ok := c.env.GetStruct(*op.Cast.Type.Simple); ok && p.Target.Map != nil && len(p.Ops) == 1 {
+					fields := make([]string, len(p.Target.Map.Items))
+					for i, it := range p.Target.Map.Items {
+						k, err := c.expr(it.Key)
+						if err != nil {
+							return "", err
+						}
+						v, err := c.expr(it.Value)
+						if err != nil {
+							return "", err
+						}
+						fields[i] = fmt.Sprintf("%s = %s", strings.Trim(k, "\""), v)
+					}
+					val = fmt.Sprintf("%s(%s)", *op.Cast.Type.Simple, strings.Join(fields, ", "))
+					break
+				}
+			}
 			typ := c.typeName(op.Cast.Type)
 			if typ == "Int" {
 				val = fmt.Sprintf("(%s).toInt()", val)

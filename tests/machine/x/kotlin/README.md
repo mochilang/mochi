@@ -2,7 +2,7 @@
 
 This checklist tracks which Mochi programs from `tests/vm/valid` have been compiled to Kotlin and executed successfully.
 
-## Progress: 52/97
+## Progress: 53/97
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -11,7 +11,7 @@ This checklist tracks which Mochi programs from `tests/vm/valid` have been compi
 - [x] bool_chain.mochi
 - [x] break_continue.mochi
 - [x] cast_string_to_int.mochi
-- [ ] cast_struct.mochi
+- [x] cast_struct.mochi
 - [ ] closure.mochi
 - [x] count_builtin.mochi
 - [ ] cross_join.mochi
