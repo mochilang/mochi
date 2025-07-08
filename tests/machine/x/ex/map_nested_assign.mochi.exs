@@ -5,7 +5,7 @@ defmodule Main do
     data = %{outer: %{inner: 1}}
     _ = data
     data = Map.put(data, "outer", 2)
-    IO.puts(Map.get(Map.get(data, "outer"), "inner"))
+    IO.inspect(Map.get(Map.get(data, "outer"), "inner"))
   end
 end
 

@@ -3,7 +3,7 @@ defmodule Main do
   def main do
     # s :: String.t()
     s = "mochi"
-    IO.puts(_index_string(s, 1))
+    IO.inspect(_index_string(s, 1))
   end
 
   defp _index_string(s, i) do

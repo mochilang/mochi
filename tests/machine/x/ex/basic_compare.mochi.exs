@@ -5,9 +5,9 @@ defmodule Main do
     a = 10 - 3
     # b :: integer()
     b = 2 + 2
-    IO.puts(a)
-    IO.puts(a == 7)
-    IO.puts(b < 5)
+    IO.inspect(a)
+    IO.inspect(a == 7)
+    IO.inspect(b < 5)
   end
 end
 

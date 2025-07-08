@@ -5,7 +5,7 @@ defmodule Main do
     items = [%{n: 1, v: "a"}, %{n: 1, v: "b"}, %{n: 2, v: "c"}]
     # result :: list(any())
     result = for i <- Enum.sort_by(items, fn i -> i.n end), do: i.v
-    IO.puts(result)
+    IO.inspect(result)
   end
 end
 

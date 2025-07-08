@@ -18,7 +18,7 @@ defmodule Main do
           o.customerId == c.id,
           do: %{orderId: o.id, customerName: c.name, total: o.total}
 
-    IO.puts("--- Orders with customer info ---")
+    IO.inspect("--- Orders with customer info ---")
 
     for entry <- result do
       IO.puts(

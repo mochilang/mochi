@@ -23,7 +23,7 @@ defmodule Main do
   def main do
     # t :: Node
     t = %{left: Leaf, value: 1, right: %{left: Leaf, value: 2, right: Leaf}}
-    IO.puts(sum_tree(t))
+    IO.inspect(sum_tree(t))
   end
 end
 

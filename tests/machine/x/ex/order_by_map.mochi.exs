@@ -5,7 +5,7 @@ defmodule Main do
     data = [%{a: 1, b: 2}, %{a: 1, b: 1}, %{a: 0, b: 5}]
     # sorted :: list(map())
     sorted = for x <- Enum.sort_by(data, fn x -> %{a: x.a, b: x.b} end), do: x
-    IO.puts(sorted)
+    IO.inspect(sorted)
   end
 end
 

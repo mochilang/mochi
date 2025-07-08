@@ -36,7 +36,7 @@ defmodule Main do
          end
        end).()
 
-    IO.puts(label)
+    IO.inspect(label)
     # day :: String.t()
     day = "sun"
     # mood :: String.t()
@@ -52,7 +52,7 @@ defmodule Main do
          end
        end).()
 
-    IO.puts(mood)
+    IO.inspect(mood)
     # ok :: boolean()
     ok = true
     # status :: String.t()
@@ -67,9 +67,9 @@ defmodule Main do
          end
        end).()
 
-    IO.puts(status)
-    IO.puts(classify(0))
-    IO.puts(classify(5))
+    IO.inspect(status)
+    IO.inspect(classify(0))
+    IO.inspect(classify(5))
   end
 end
 

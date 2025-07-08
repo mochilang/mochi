@@ -7,7 +7,7 @@ defmodule Main do
 
     # todo :: Todo
     todo = _structify(Todo, %{title: "hi"})
-    IO.puts(todo.title)
+    IO.inspect(todo.title)
   end
 
   defp _structify(mod, v) do

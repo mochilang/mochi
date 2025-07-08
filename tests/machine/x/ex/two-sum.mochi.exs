@@ -22,8 +22,8 @@ defmodule Main do
   def main do
     # result :: list(integer())
     result = twoSum([2, 7, 11, 15], 9)
-    IO.puts(Enum.at(result, 0))
-    IO.puts(Enum.at(result, 1))
+    IO.inspect(Enum.at(result, 0))
+    IO.inspect(Enum.at(result, 1))
   end
 end
 

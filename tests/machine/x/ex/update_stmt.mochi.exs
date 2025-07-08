@@ -20,7 +20,7 @@ defmodule Main do
         end
       end)
 
-    IO.puts("ok")
+    IO.inspect("ok")
   end
 end
 

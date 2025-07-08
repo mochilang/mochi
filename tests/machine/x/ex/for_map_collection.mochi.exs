@@ -6,7 +6,7 @@ defmodule Main do
     _ = m
 
     for k <- Map.keys(m) do
-      IO.puts(k)
+      IO.inspect(k)
     end
   end
 end

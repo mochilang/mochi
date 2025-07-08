@@ -31,7 +31,7 @@ defmodule Main do
          )
        end).()
 
-    IO.puts("--- Outer Join using syntax ---")
+    IO.inspect("--- Outer Join using syntax ---")
 
     for row <- result do
       if row.order do

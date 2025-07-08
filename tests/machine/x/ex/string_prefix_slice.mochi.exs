@@ -5,10 +5,10 @@ defmodule Main do
     prefix = "fore"
     # s1 :: String.t()
     s1 = "forest"
-    IO.puts(_slice_string(s1, 0, String.length(prefix)) == prefix)
+    IO.inspect(_slice_string(s1, 0, String.length(prefix)) == prefix)
     # s2 :: String.t()
     s2 = "desert"
-    IO.puts(_slice_string(s2, 0, String.length(prefix)) == prefix)
+    IO.inspect(_slice_string(s2, 0, String.length(prefix)) == prefix)
   end
 
   defp _slice_string(s, i, j) do

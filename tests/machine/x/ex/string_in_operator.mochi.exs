@@ -3,8 +3,8 @@ defmodule Main do
   def main do
     # s :: String.t()
     s = "catch"
-    IO.puts(String.contains?(s, "cat"))
-    IO.puts(String.contains?(s, "dog"))
+    IO.inspect(String.contains?(s, "cat"))
+    IO.inspect(String.contains?(s, "dog"))
   end
 end
 

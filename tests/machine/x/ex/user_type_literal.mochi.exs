@@ -3,7 +3,7 @@ defmodule Main do
   def main do
     # book :: Book
     book = %{title: "Go", author: %{name: "Bob", age: 42}}
-    IO.puts(book.author.name)
+    IO.inspect(book.author.name)
   end
 end
 

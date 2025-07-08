@@ -5,7 +5,7 @@ defmodule Main do
     a = 10
     # b :: integer()
     b = 20
-    IO.puts(a + b)
+    IO.inspect(a + b)
   end
 end
 

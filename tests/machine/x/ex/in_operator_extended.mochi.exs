@@ -5,16 +5,16 @@ defmodule Main do
     xs = [1, 2, 3]
     # ys :: list(integer())
     ys = for x <- xs, rem(x, 2) == 1, do: x
-    IO.puts(if is_map(ys), do: Map.has_key?(ys, 1), else: Enum.member?(ys, 1))
-    IO.puts(if is_map(ys), do: Map.has_key?(ys, 2), else: Enum.member?(ys, 2))
+    IO.inspect(if is_map(ys), do: Map.has_key?(ys, 1), else: Enum.member?(ys, 1))
+    IO.inspect(if is_map(ys), do: Map.has_key?(ys, 2), else: Enum.member?(ys, 2))
     # m :: map()
     m = %{a: 1}
-    IO.puts(String.contains?(m, "a"))
-    IO.puts(String.contains?(m, "b"))
+    IO.inspect(String.contains?(m, "a"))
+    IO.inspect(String.contains?(m, "b"))
     # s :: String.t()
     s = "hello"
-    IO.puts(String.contains?(s, "ell"))
-    IO.puts(String.contains?(s, "foo"))
+    IO.inspect(String.contains?(s, "ell"))
+    IO.inspect(String.contains?(s, "foo"))
   end
 end
 

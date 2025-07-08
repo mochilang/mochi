@@ -9,7 +9,7 @@ defmodule Main do
     bools = [true, false]
     # combos :: list(map())
     combos = for n <- nums, l <- letters, b <- bools, do: %{n: n, l: l, b: b}
-    IO.puts("--- Cross Join of three lists ---")
+    IO.inspect("--- Cross Join of three lists ---")
 
     for c <- combos do
       IO.puts(Enum.join(Enum.map([c.n, c.l, c.b], &to_string(&1)), " "))

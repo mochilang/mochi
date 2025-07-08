@@ -15,7 +15,7 @@ defmodule Main do
           person.age >= 18,
           do: %{name: person.name, age: person.age, is_senior: person.age >= 60}
 
-    IO.puts("--- Adults ---")
+    IO.inspect("--- Adults ---")
 
     for person <- adults do
       IO.puts(

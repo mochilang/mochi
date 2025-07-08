@@ -2,7 +2,7 @@
 defmodule Main do
   def main do
     for i <- 1..(4 - 1) do
-      IO.puts(i)
+      IO.inspect(i)
     end
   end
 end

@@ -3,7 +3,7 @@ defmodule Main do
   def main do
     # m :: map()
     m = %{1 => "a", 2 => "b"}
-    IO.puts(Map.get(m, 1))
+    IO.inspect(Map.get(m, 1))
   end
 end
 

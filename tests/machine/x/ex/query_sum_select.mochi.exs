@@ -5,7 +5,7 @@ defmodule Main do
     nums = [1, 2, 3]
     # result :: float()
     result = for n <- nums, n > 1, do: _sum(n)
-    IO.puts(result)
+    IO.inspect(result)
   end
 
   defp _sum(v) do

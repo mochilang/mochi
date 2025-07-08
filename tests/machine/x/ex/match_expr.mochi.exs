@@ -16,7 +16,7 @@ defmodule Main do
          end
        end).()
 
-    IO.puts(label)
+    IO.inspect(label)
   end
 end
 

@@ -19,7 +19,7 @@ defmodule Main do
          )
        end).()
 
-    IO.puts("--- Left Join ---")
+    IO.inspect("--- Left Join ---")
 
     for entry <- result do
       IO.puts(

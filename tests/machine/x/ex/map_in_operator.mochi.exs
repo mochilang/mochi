@@ -3,8 +3,8 @@ defmodule Main do
   def main do
     # m :: map()
     m = %{1 => "a", 2 => "b"}
-    IO.puts(if is_map(m), do: Map.has_key?(m, 1), else: Enum.member?(m, 1))
-    IO.puts(if is_map(m), do: Map.has_key?(m, 3), else: Enum.member?(m, 3))
+    IO.inspect(if is_map(m), do: Map.has_key?(m, 1), else: Enum.member?(m, 1))
+    IO.inspect(if is_map(m), do: Map.has_key?(m, 3), else: Enum.member?(m, 3))
   end
 end
 

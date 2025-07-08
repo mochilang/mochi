@@ -5,7 +5,7 @@ defmodule Main do
     x = 1
     _ = x
     x = 2
-    IO.puts(x)
+    IO.inspect(x)
   end
 end
 

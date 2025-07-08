@@ -5,7 +5,7 @@ defmodule Main do
     data = [1, 2]
     # flag :: boolean()
     flag = _exists(for x <- data, x == 1, do: x)
-    IO.puts(flag)
+    IO.inspect(flag)
   end
 
   defp _exists(v) do

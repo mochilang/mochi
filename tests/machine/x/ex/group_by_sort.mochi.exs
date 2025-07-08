@@ -21,7 +21,7 @@ defmodule Main do
          Enum.map(items, fn g -> %{cat: g.key, total: _sum(for x <- g.items, do: x.val)} end)
        end).()
 
-    IO.puts(grouped)
+    IO.inspect(grouped)
   end
 
   defmodule Group do

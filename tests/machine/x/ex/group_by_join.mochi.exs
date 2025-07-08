@@ -28,7 +28,7 @@ defmodule Main do
          Enum.map(items, fn g -> %{name: g.key, count: _count(g)} end)
        end).()
 
-    IO.puts("--- Orders per customer ---")
+    IO.inspect("--- Orders per customer ---")
 
     for s <- stats do
       IO.puts(Enum.join(Enum.map([s.name, "orders:", s.count], &to_string(&1)), " "))

@@ -4,7 +4,7 @@ defmodule Main do
     # x :: integer()
     x = nil
     _ = x
-    IO.puts(x)
+    IO.inspect(x)
   end
 end
 
