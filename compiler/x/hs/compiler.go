@@ -305,6 +305,9 @@ func (c *Compiler) compileMainStmt(s *parser.Statement) error {
 		}
 		c.writeln(expr)
 	case s.For != nil:
+		if hasBreakOrContinue(s.For.Body) {
+			return c.compileForLoopBC(s.For)
+		}
 		orig := c.env
 		var vType types.Type = types.AnyType{}
 		if s.For.RangeEnd != nil {
@@ -1547,6 +1550,118 @@ func (c *Compiler) compileUnionType(ut types.UnionType) {
 			}
 		}
 	}
+}
+
+func hasBreakOrContinue(stmts []*parser.Statement) bool {
+	for _, s := range stmts {
+		switch {
+		case s.Break != nil || s.Continue != nil:
+			return true
+		case s.If != nil:
+			if hasBreakOrContinueIf(s.If) {
+				return true
+			}
+		case s.For != nil:
+			if hasBreakOrContinue(s.For.Body) {
+				return true
+			}
+		case s.While != nil:
+			if hasBreakOrContinue(s.While.Body) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func hasBreakOrContinueIf(st *parser.IfStmt) bool {
+	if hasBreakOrContinue(st.Then) || hasBreakOrContinue(st.Else) {
+		return true
+	}
+	if st.ElseIf != nil {
+		return hasBreakOrContinueIf(st.ElseIf)
+	}
+	return false
+}
+
+func (c *Compiler) compileForLoopBC(loop *parser.ForStmt) error {
+	orig := c.env
+	var vType types.Type = types.AnyType{}
+	if loop.RangeEnd != nil {
+		vType = types.IntType{}
+	} else {
+		t := c.inferExprType(loop.Source)
+		switch tt := t.(type) {
+		case types.ListType:
+			vType = tt.Elem
+		case types.MapType:
+			vType = tt.Key
+		}
+	}
+	child := types.NewEnv(c.env)
+	child.SetVar(loop.Name, vType, true)
+	c.env = child
+	name := sanitizeName(loop.Name)
+	rest := name + "Rest"
+	guards, body := c.extractGuards(loop.Body, name, rest)
+	src, err := c.compileExpr(loop.Source)
+	if err != nil {
+		c.env = orig
+		return err
+	}
+	c.writeln("let")
+	c.indent++
+	c.writeln("loop [] = return ()")
+	c.writeln(fmt.Sprintf("loop (%s:%s)", name, rest))
+	c.indent++
+	for _, g := range guards {
+		c.writeln(g)
+	}
+	if len(body) == 0 {
+		c.writeln(fmt.Sprintf("| otherwise = loop %s", rest))
+	} else {
+		c.writeln("| otherwise = do")
+		c.indent++
+		for _, st := range body {
+			if err := c.compileMainStmt(st); err != nil {
+				c.env = orig
+				return err
+			}
+		}
+		c.writeln(fmt.Sprintf("loop %s", rest))
+		c.indent--
+	}
+	c.indent--
+	c.indent--
+	c.writeln(fmt.Sprintf("loop %s", src))
+	c.env = orig
+	return nil
+}
+
+func (c *Compiler) extractGuards(stmts []*parser.Statement, name, rest string) ([]string, []*parser.Statement) {
+	var guards []string
+	i := 0
+	for i < len(stmts) {
+		s := stmts[i]
+		if s.If != nil && len(s.If.Then) == 1 && s.If.ElseIf == nil && len(s.If.Else) == 0 {
+			cond, err := c.compileExpr(s.If.Cond)
+			if err != nil {
+				break
+			}
+			if s.If.Then[0].Continue != nil {
+				guards = append(guards, fmt.Sprintf("| %s = loop %s", cond, rest))
+				i++
+				continue
+			}
+			if s.If.Then[0].Break != nil {
+				guards = append(guards, fmt.Sprintf("| %s = return ()", cond))
+				i++
+				continue
+			}
+		}
+		break
+	}
+	return guards, stmts[i:]
 }
 
 func isInputCall(e *parser.Expr) bool {

@@ -106,4 +106,11 @@ numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 main :: IO ()
 main = do
-  mapM_ (\n -> fromMaybe () (case if ((n `mod` 2) == 0) then Nothing else Nothing of Just v -> Just v; Nothing -> case if (n > 7) then Just () else Nothing of Just v -> Just v; Nothing -> (let _ = putStrLn (unwords ["odd number:", show n]) in Nothing))) numbers
+  let loop [] = return ()
+      loop (n : nRest)
+        | ((n `mod` 2) == 0) = loop nRest
+        | (n > 7) = return ()
+        | otherwise = do
+            putStrLn (unwords ["odd number:", show n])
+            loop nRest
+  loop numbers
