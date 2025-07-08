@@ -1,4 +1,4 @@
-# Scheme Machine Results (72/97 compiled and ran)
+# Scheme Machine Results (75/97 compiled and ran)
 
 ## Success
 - [x] append_builtin.mochi
@@ -73,9 +73,9 @@
 - [x] user_type_literal.mochi
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
+- [x] dataset_sort_take_limit.mochi
 
 ## Failed
-- [ ] dataset_sort_take_limit.mochi
 - [ ] exists_builtin.mochi
 - [ ] group_by_left_join.mochi
 - [ ] group_by_multi_join_sort.mochi
@@ -90,11 +90,11 @@
 - [ ] record_assign.mochi
 - [ ] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
-- [ ] slice.mochi
+- [x] slice.mochi
 - [ ] str_builtin.mochi
 - [ ] string_compare.mochi
 - [ ] string_in_operator.mochi
-- [ ] string_prefix_slice.mochi
+- [x] string_prefix_slice.mochi
 - [ ] tree_sum.mochi
 - [ ] typed_let.mochi
 - [ ] typed_var.mochi

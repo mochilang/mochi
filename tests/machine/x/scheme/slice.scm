@@ -15,7 +15,7 @@
               (loop (+ idx 1) (cdr xs)
                     (if (>= idx start)
                         (cons (car xs) out)
-                        out))))))
+                        out)))))))
 
 (begin (display (_slice (list 1 2 3) 1 3)) (newline))
 (begin (display (_slice (list 1 2 3) 0 2)) (newline))
