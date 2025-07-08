@@ -1,0 +1,7 @@
+line: 3
+error: unsupported primary at line 3
+   1: // dataset-sort-take-limit.mochi
+   2: let products = [
+   3:   { name: "Laptop", price: 1500 },
+   4:   { name: "Smartphone", price: 900 },
+   5:   { name: "Tablet", price: 600 },

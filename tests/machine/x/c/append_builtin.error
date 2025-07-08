@@ -1,0 +1,10 @@
+line: 8
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/append_builtin.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/append_builtin.c:8:20: warning: implicit declaration of function ‘append’ [-Wimplicit-function-declaration]
+    8 |     printf("%d\n", append(a, 3));
+      |                    ^~~~~~
+/usr/bin/ld: /tmp/ccTl77Qv.o: in function `main':
+append_builtin.c:(.text+0x3b): undefined reference to `append'
+collect2: error: ld returned 1 exit status
+

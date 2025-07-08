@@ -1,0 +1,9 @@
+line: 7
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/string_concat.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/string_concat.c:7:30: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+    7 |     printf("%d\n", ("hello " + "world"));
+      |                     ~~~~~~~~ ^
+      |                     |        |
+      |                     char *   char *
+

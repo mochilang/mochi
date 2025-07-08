@@ -1,0 +1,11 @@
+line: 7
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/len_builtin.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/len_builtin.c:7:20: warning: implicit declaration of function ‘len’; did you mean ‘mblen’? [-Wimplicit-function-declaration]
+    7 |     printf("%d\n", len((int[]){1, 2, 3}));
+      |                    ^~~
+      |                    mblen
+/usr/bin/ld: /tmp/ccs04tWP.o: in function `main':
+len_builtin.c:(.text+0x3d): undefined reference to `len'
+collect2: error: ld returned 1 exit status
+

@@ -1,0 +1,6 @@
+line: 2
+error: unsupported primary at line 2
+   1: let data = [
+   2:   {tag: "a", val: 1},
+   3:   {tag: "a", val: 2},
+   4:   {tag: "b", val: 3}

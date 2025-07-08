@@ -1,0 +1,7 @@
+line: 5
+error: unsupported primary at line 5
+   3: 
+   4: let customers = [
+   5:   { id: 1, name: "Alice" },
+   6:   { id: 2, name: "Bob" },
+   7:   { id: 3, name: "Charlie" },

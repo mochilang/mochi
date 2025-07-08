@@ -1,0 +1,5 @@
+line: 1
+error: unsupported primary at line 1
+   1: let m = {"a": 1, "b": 2}
+   2: print("a" in m)
+   3: print("c" in m)

@@ -1,0 +1,7 @@
+line: 3
+error: unsupported primary at line 3
+   1: var x = 3
+   2: var y = 4
+   3: var m = {"a": x, "b": y}
+   4: print(m["a"], m["b"])
+   5: 

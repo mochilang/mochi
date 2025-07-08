@@ -1,0 +1,6 @@
+line: 2
+error: unsupported primary at line 2
+   1: let items = [
+   2:   { cat: "a", val: 3 },
+   3:   { cat: "a", val: 1 },
+   4:   { cat: "b", val: 5 },

@@ -1,0 +1,10 @@
+line: 7
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/pure_global_fold.c: In function ‘inc’:
+/workspace/mochi/tests/machine/x/c/pure_global_fold.c:7:17: error: ‘k’ undeclared (first use in this function)
+    7 |     return (x + k);
+      |                 ^
+/workspace/mochi/tests/machine/x/c/pure_global_fold.c:7:17: note: each undeclared identifier is reported only once for each function it appears in
+
+   5: print(inc(3))
+   6: 

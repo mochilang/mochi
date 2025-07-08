@@ -1,0 +1,39 @@
+line: 7
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/two-sum.c: In function ‘twoSum’:
+/workspace/mochi/tests/machine/x/c/two-sum.c:7:37: error: subscripted value is neither array nor pointer nor vector
+    7 |     int n = sizeof(nums)/sizeof(nums[0]);
+      |                                     ^
+/workspace/mochi/tests/machine/x/c/two-sum.c:10:23: error: subscripted value is neither array nor pointer nor vector
+   10 |             if (((nums[i] + nums[j]) == target)) {
+      |                       ^
+/workspace/mochi/tests/machine/x/c/two-sum.c:10:33: error: subscripted value is neither array nor pointer nor vector
+   10 |             if (((nums[i] + nums[j]) == target)) {
+      |                                 ^
+/workspace/mochi/tests/machine/x/c/two-sum.c:11:24: warning: returning ‘int *’ from a function with return type ‘int’ makes integer from pointer without a cast [-Wint-conversion]
+   11 |                 return (int[]){i, j};
+      |                        ^
+/workspace/mochi/tests/machine/x/c/two-sum.c:15:12: warning: returning ‘int *’ from a function with return type ‘int’ makes integer from pointer without a cast [-Wint-conversion]
+   15 |     return (int[]){(-1), (-1)};
+      |            ^
+/workspace/mochi/tests/machine/x/c/two-sum.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/two-sum.c:19:32: warning: passing argument 1 of ‘twoSum’ makes integer from pointer without a cast [-Wint-conversion]
+   19 |     int result = twoSum((int[]){2, 7, 11, 15}, 9);
+      |                                ^~~~~~~~~~~~~~
+      |                                |
+      |                                int *
+/workspace/mochi/tests/machine/x/c/two-sum.c:6:16: note: expected ‘int’ but argument is of type ‘int *’
+    6 | int twoSum(int nums, int target) {
+      |            ~~~~^~~~
+/workspace/mochi/tests/machine/x/c/two-sum.c:20:26: error: subscripted value is neither array nor pointer nor vector
+   20 |     printf("%d\n", result[0]);
+      |                          ^
+/workspace/mochi/tests/machine/x/c/two-sum.c:21:26: error: subscripted value is neither array nor pointer nor vector
+   21 |     printf("%d\n", result[1]);
+      |                          ^
+
+   5:       if nums[i] + nums[j] == target {
+   6:         return [i, j]
+   7:       }
+   8:     }
+   9:   }

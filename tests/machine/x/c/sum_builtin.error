@@ -1,0 +1,10 @@
+line: 7
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/sum_builtin.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/sum_builtin.c:7:20: warning: implicit declaration of function ‘sum’ [-Wimplicit-function-declaration]
+    7 |     printf("%d\n", sum((int[]){1, 2, 3}));
+      |                    ^~~
+/usr/bin/ld: /tmp/cczLNGTi.o: in function `main':
+sum_builtin.c:(.text+0x3d): undefined reference to `sum'
+collect2: error: ld returned 1 exit status
+

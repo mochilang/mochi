@@ -1,0 +1,45 @@
+line: 12
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/string_in_operator.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/string_in_operator.c:12:13: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+   12 |     int s = "catch";
+      |             ^~~~~~~
+/workspace/mochi/tests/machine/x/c/string_in_operator.c:13:54: error: subscripted value is neither array nor pointer nor vector
+   13 |     printf("%d\n", contains_int(s, sizeof(s)/sizeof(s[0]), "cat"));
+      |                                                      ^
+/workspace/mochi/tests/machine/x/c/string_in_operator.c:13:33: warning: passing argument 1 of ‘contains_int’ makes pointer from integer without a cast [-Wint-conversion]
+   13 |     printf("%d\n", contains_int(s, sizeof(s)/sizeof(s[0]), "cat"));
+      |                                 ^
+      |                                 |
+      |                                 int
+/workspace/mochi/tests/machine/x/c/string_in_operator.c:6:36: note: expected ‘const int *’ but argument is of type ‘int’
+    6 | static int contains_int(const int *arr, int n, int v) {
+      |                         ~~~~~~~~~~~^~~
+/workspace/mochi/tests/machine/x/c/string_in_operator.c:13:60: warning: passing argument 3 of ‘contains_int’ makes integer from pointer without a cast [-Wint-conversion]
+   13 |     printf("%d\n", contains_int(s, sizeof(s)/sizeof(s[0]), "cat"));
+      |                                                            ^~~~~
+      |                                                            |
+      |                                                            char *
+/workspace/mochi/tests/machine/x/c/string_in_operator.c:6:52: note: expected ‘int’ but argument is of type ‘char *’
+    6 | static int contains_int(const int *arr, int n, int v) {
+      |                                                ~~~~^
+/workspace/mochi/tests/machine/x/c/string_in_operator.c:14:54: error: subscripted value is neither array nor pointer nor vector
+   14 |     printf("%d\n", contains_int(s, sizeof(s)/sizeof(s[0]), "dog"));
+      |                                                      ^
+/workspace/mochi/tests/machine/x/c/string_in_operator.c:14:33: warning: passing argument 1 of ‘contains_int’ makes pointer from integer without a cast [-Wint-conversion]
+   14 |     printf("%d\n", contains_int(s, sizeof(s)/sizeof(s[0]), "dog"));
+      |                                 ^
+      |                                 |
+      |                                 int
+/workspace/mochi/tests/machine/x/c/string_in_operator.c:6:36: note: expected ‘const int *’ but argument is of type ‘int’
+    6 | static int contains_int(const int *arr, int n, int v) {
+      |                         ~~~~~~~~~~~^~~
+/workspace/mochi/tests/machine/x/c/string_in_operator.c:14:60: warning: passing argument 3 of ‘contains_int’ makes integer from pointer without a cast [-Wint-conversion]
+   14 |     printf("%d\n", contains_int(s, sizeof(s)/sizeof(s[0]), "dog"));
+      |                                                            ^~~~~
+      |                                                            |
+      |                                                            char *
+/workspace/mochi/tests/machine/x/c/string_in_operator.c:6:52: note: expected ‘int’ but argument is of type ‘char *’
+    6 | static int contains_int(const int *arr, int n, int v) {
+      |                                                ~~~~^
+

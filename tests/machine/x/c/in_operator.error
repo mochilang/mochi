@@ -1,0 +1,12 @@
+line: 8
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/in_operator.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/in_operator.c:8:22: error: expected ‘)’ before ‘in’
+    8 |     printf("%d\n", (2 in xs));
+      |                    ~ ^~~
+      |                      )
+/workspace/mochi/tests/machine/x/c/in_operator.c:9:24: error: expected ‘)’ before ‘in’
+    9 |     printf("%d\n", (!(5 in xs)));
+      |                      ~ ^~~
+      |                        )
+

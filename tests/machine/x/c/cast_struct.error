@@ -1,0 +1,5 @@
+line: 1
+error: unsupported statement at line 1
+   1: type Todo {
+   2:   title: string
+   3: }

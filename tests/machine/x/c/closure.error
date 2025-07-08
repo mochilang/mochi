@@ -1,0 +1,6 @@
+line: 2
+error: unsupported primary at line 2
+   1: fun makeAdder(n: int): fun(int): int {
+   2:   return fun(x: int): int => x + n
+   3: }
+   4: 

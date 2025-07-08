@@ -1,0 +1,10 @@
+line: 7
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/substring_builtin.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/substring_builtin.c:7:20: warning: implicit declaration of function ‘substring’ [-Wimplicit-function-declaration]
+    7 |     printf("%d\n", substring("mochi", 1, 4));
+      |                    ^~~~~~~~~
+/usr/bin/ld: /tmp/ccJIdfga.o: in function `main':
+substring_builtin.c:(.text+0x22): undefined reference to `substring'
+collect2: error: ld returned 1 exit status
+

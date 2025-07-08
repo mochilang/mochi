@@ -1,0 +1,10 @@
+line: 7
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/str_builtin.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/str_builtin.c:7:20: warning: implicit declaration of function ‘str’ [-Wimplicit-function-declaration]
+    7 |     printf("%d\n", str(123));
+      |                    ^~~
+/usr/bin/ld: /tmp/cclGIsCf.o: in function `main':
+str_builtin.c:(.text+0x13): undefined reference to `str'
+collect2: error: ld returned 1 exit status
+

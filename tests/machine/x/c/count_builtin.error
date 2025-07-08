@@ -1,0 +1,10 @@
+line: 7
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/count_builtin.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/count_builtin.c:7:20: warning: implicit declaration of function ‘count’ [-Wimplicit-function-declaration]
+    7 |     printf("%d\n", count((int[]){1, 2, 3}));
+      |                    ^~~~~
+/usr/bin/ld: /tmp/ccn5rUfC.o: in function `main':
+count_builtin.c:(.text+0x3d): undefined reference to `count'
+collect2: error: ld returned 1 exit status
+

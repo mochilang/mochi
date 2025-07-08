@@ -1,0 +1,16 @@
+line: 11
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/partial_application.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/partial_application.c:11:16: error: too few arguments to function ‘add’
+   11 |     int add5 = add(5);
+      |                ^~~
+/workspace/mochi/tests/machine/x/c/partial_application.c:6:5: note: declared here
+    6 | int add(int a, int b) {
+      |     ^~~
+/workspace/mochi/tests/machine/x/c/partial_application.c:12:20: error: called object ‘add5’ is not a function or function pointer
+   12 |     printf("%d\n", add5(3));
+      |                    ^~~~
+/workspace/mochi/tests/machine/x/c/partial_application.c:11:9: note: declared here
+   11 |     int add5 = add(5);
+      |         ^~~~
+

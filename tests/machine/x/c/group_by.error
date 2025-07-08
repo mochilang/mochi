@@ -1,0 +1,7 @@
+line: 3
+error: unsupported primary at line 3
+   1: // group-by.mochi
+   2: let people = [
+   3:   { name: "Alice", age: 30, city: "Paris" },
+   4:   { name: "Bob", age: 15, city: "Hanoi" },
+   5:   { name: "Charlie", age: 65, city: "Paris" },

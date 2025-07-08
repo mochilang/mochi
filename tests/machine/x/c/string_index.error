@@ -1,0 +1,10 @@
+line: 7
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/string_index.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/string_index.c:7:13: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+    7 |     int s = "mochi";
+      |             ^~~~~~~
+/workspace/mochi/tests/machine/x/c/string_index.c:8:21: error: subscripted value is neither array nor pointer nor vector
+    8 |     printf("%d\n", s[1]);
+      |                     ^
+

@@ -1,0 +1,49 @@
+line: 7
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/list_set_ops.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/list_set_ops.c:7:34: error: expected ‘)’ before ‘union’
+    7 |     printf("%d\n", ((int[]){1, 2} union (int[]){2, 3}));
+      |                    ~             ^~~~~~
+      |                                  )
+/workspace/mochi/tests/machine/x/c/list_set_ops.c:7:14: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘int *’ [-Wformat=]
+    7 |     printf("%d\n", ((int[]){1, 2} union (int[]){2, 3}));
+      |             ~^     ~~~~~~~~~~~~~~~~~~~~
+      |              |     |
+      |              int   int *
+      |             %ls
+/workspace/mochi/tests/machine/x/c/list_set_ops.c:8:37: error: expected ‘)’ before ‘except’
+    8 |     printf("%d\n", ((int[]){1, 2, 3} except (int[]){2}));
+      |                    ~                ^~~~~~~
+      |                                     )
+/workspace/mochi/tests/machine/x/c/list_set_ops.c:8:14: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘int *’ [-Wformat=]
+    8 |     printf("%d\n", ((int[]){1, 2, 3} except (int[]){2}));
+      |             ~^     ~~~~~~~~~~~~~~~~~~~~~~~~
+      |              |     |
+      |              int   int *
+      |             %ls
+/workspace/mochi/tests/machine/x/c/list_set_ops.c:9:37: error: expected ‘)’ before ‘intersect’
+    9 |     printf("%d\n", ((int[]){1, 2, 3} intersect (int[]){2, 4}));
+      |                    ~                ^~~~~~~~~~
+      |                                     )
+/workspace/mochi/tests/machine/x/c/list_set_ops.c:9:14: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘int *’ [-Wformat=]
+    9 |     printf("%d\n", ((int[]){1, 2, 3} intersect (int[]){2, 4}));
+      |             ~^     ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |              |     |
+      |              int   int *
+      |             %ls
+/workspace/mochi/tests/machine/x/c/list_set_ops.c:10:41: error: expected ‘)’ before ‘union’
+   10 |     printf("%d\n", sizeof(((int[]){1, 2} union (int[]){2, 3}))/sizeof(((int[]){1, 2} union (int[]){2, 3})[0]));
+      |                           ~             ^~~~~~
+      |                                         )
+/workspace/mochi/tests/machine/x/c/list_set_ops.c:10:85: error: expected ‘)’ before ‘union’
+   10 |     printf("%d\n", sizeof(((int[]){1, 2} union (int[]){2, 3}))/sizeof(((int[]){1, 2} union (int[]){2, 3})[0]));
+      |                                                                       ~             ^~~~~~
+      |                                                                                     )
+/workspace/mochi/tests/machine/x/c/list_set_ops.c:10:14: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘long unsigned int’ [-Wformat=]
+   10 |     printf("%d\n", sizeof(((int[]){1, 2} union (int[]){2, 3}))/sizeof(((int[]){1, 2} union (int[]){2, 3})[0]));
+      |             ~^     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |              |     |
+      |              int   long unsigned int
+      |             %ld
+
+   5: 

@@ -1,0 +1,6 @@
+line: 2
+error: unsupported primary at line 2
+   1: let people = [
+   2:   { name: "Alice", city: "Paris" },
+   3:   { name: "Bob", city: "Hanoi" },
+   4:   { name: "Charlie", city: "Paris" },

@@ -1,0 +1,11 @@
+line: 7
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/len_string.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/len_string.c:7:20: warning: implicit declaration of function ‘len’; did you mean ‘mblen’? [-Wimplicit-function-declaration]
+    7 |     printf("%d\n", len("mochi"));
+      |                    ^~~
+      |                    mblen
+/usr/bin/ld: /tmp/ccirbn74.o: in function `main':
+len_string.c:(.text+0x18): undefined reference to `len'
+collect2: error: ld returned 1 exit status
+

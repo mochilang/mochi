@@ -1,0 +1,5 @@
+line: 1
+error: unsupported primary at line 1
+   1: let square = fun(x: int): int => x * x
+   2: print(square(6))  // 36
+   3: 

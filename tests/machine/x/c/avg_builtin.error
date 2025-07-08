@@ -1,0 +1,10 @@
+line: 7
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/avg_builtin.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/avg_builtin.c:7:20: warning: implicit declaration of function ‘avg’ [-Wimplicit-function-declaration]
+    7 |     printf("%d\n", avg((int[]){1, 2, 3}));
+      |                    ^~~
+/usr/bin/ld: /tmp/cc2jC523.o: in function `main':
+avg_builtin.c:(.text+0x3d): undefined reference to `avg'
+collect2: error: ld returned 1 exit status
+

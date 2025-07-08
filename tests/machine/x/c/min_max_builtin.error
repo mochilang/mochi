@@ -1,0 +1,15 @@
+line: 8
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/min_max_builtin.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/min_max_builtin.c:8:20: warning: implicit declaration of function ‘min’; did you mean ‘main’? [-Wimplicit-function-declaration]
+    8 |     printf("%d\n", min(nums));
+      |                    ^~~
+      |                    main
+/workspace/mochi/tests/machine/x/c/min_max_builtin.c:9:20: warning: implicit declaration of function ‘max’ [-Wimplicit-function-declaration]
+    9 |     printf("%d\n", max(nums));
+      |                    ^~~
+/usr/bin/ld: /tmp/cclKgnKY.o: in function `main':
+min_max_builtin.c:(.text+0x3d): undefined reference to `min'
+/usr/bin/ld: min_max_builtin.c:(.text+0x64): undefined reference to `max'
+collect2: error: ld returned 1 exit status
+

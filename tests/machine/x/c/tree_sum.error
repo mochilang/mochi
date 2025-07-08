@@ -1,0 +1,7 @@
+line: 10
+error: unsupported primary at line 10
+   8: 
+   9: fun sum_tree(t: Tree): int {
+  10:   return match t {
+  11:     Leaf => 0
+  12:     Node(left, value, right) => sum_tree(left) + value + sum_tree(right)
