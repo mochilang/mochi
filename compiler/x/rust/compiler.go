@@ -53,16 +53,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		out.WriteString("    v.push(item);\n    v\n}\n\n")
 	}
 	if c.helpers["avg"] {
-		out.WriteString("fn avg(v: Vec<i32>) -> f64 {\n    let sum: i32 = v.iter().sum();\n    sum as f64 / v.len() as f64\n}\n\n")
+		out.WriteString("fn avg(v: &[i32]) -> f64 {\n    let sum: i32 = v.iter().sum();\n    sum as f64 / v.len() as f64\n}\n\n")
 	}
 	if c.helpers["sum"] {
-		out.WriteString("fn sum(v: Vec<i32>) -> i32 {\n    v.iter().sum()\n}\n\n")
+		out.WriteString("fn sum(v: &[i32]) -> i32 {\n    v.iter().sum()\n}\n\n")
 	}
 	if c.helpers["min"] {
-		out.WriteString("fn min(v: Vec<i32>) -> i32 {\n    *v.iter().min().unwrap()\n}\n\n")
+		out.WriteString("fn min(v: &[i32]) -> i32 {\n    *v.iter().min().unwrap()\n}\n\n")
 	}
 	if c.helpers["max"] {
-		out.WriteString("fn max(v: Vec<i32>) -> i32 {\n    *v.iter().max().unwrap()\n}\n\n")
+		out.WriteString("fn max(v: &[i32]) -> i32 {\n    *v.iter().max().unwrap()\n}\n\n")
 	}
 	if c.helpers["_union"] {
 		out.WriteString("fn _union<T: Eq + std::hash::Hash + Clone>(a: Vec<T>, b: Vec<T>) -> Vec<T> {\n    use std::collections::HashSet;\n    let mut set: HashSet<T> = a.into_iter().collect();\n    set.extend(b.into_iter());\n    set.into_iter().collect()\n}\n\n")
@@ -407,22 +407,45 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				return "", fmt.Errorf("unsupported cast to %s", rustTy)
 			}
 		case op.Index != nil:
-			if op.Index.Colon != nil || op.Index.End != nil || op.Index.Colon2 != nil || op.Index.Step != nil {
-				return "", fmt.Errorf("slicing not supported")
-			}
-			if op.Index.Start == nil {
-				return "", fmt.Errorf("missing index")
-			}
-			idxVal, err := c.compileExpr(op.Index.Start)
-			if err != nil {
-				return "", err
-			}
 			prefix := &parser.Unary{Value: &parser.PostfixExpr{Target: p.Target, Ops: p.Ops[:opIndex]}}
 			t := types.TypeOfPostfixBasic(prefix, c.env)
-			if types.IsMapType(t) {
-				val = fmt.Sprintf("%s[%s]", val, idxVal)
+			if op.Index.Colon != nil || op.Index.End != nil || op.Index.Colon2 != nil || op.Index.Step != nil {
+				start := "0"
+				if op.Index.Start != nil {
+					s, err := c.compileExpr(op.Index.Start)
+					if err != nil {
+						return "", err
+					}
+					start = s
+				}
+				end := ""
+				if op.Index.End != nil {
+					e, err := c.compileExpr(op.Index.End)
+					if err != nil {
+						return "", err
+					}
+					end = e
+				} else {
+					end = fmt.Sprintf("%s.len()", val)
+				}
+				if types.IsStringType(t) {
+					val = fmt.Sprintf("&%s[%s as usize..%s as usize]", val, start, end)
+				} else {
+					val = fmt.Sprintf("%s[%s as usize..%s as usize].to_vec()", val, start, end)
+				}
 			} else {
-				val = fmt.Sprintf("%s[%s as usize]", val, idxVal)
+				if op.Index.Start == nil {
+					return "", fmt.Errorf("missing index")
+				}
+				idxVal, err := c.compileExpr(op.Index.Start)
+				if err != nil {
+					return "", err
+				}
+				if types.IsMapType(t) {
+					val = fmt.Sprintf("%s[%s]", val, idxVal)
+				} else {
+					val = fmt.Sprintf("%s[%s as usize]", val, idxVal)
+				}
 			}
 		case op.Field != nil:
 			val = fmt.Sprintf("%s.%s", val, op.Field.Name)
@@ -775,7 +798,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("avg expects 1 arg")
 		}
-		return fmt.Sprintf("avg(%s)", args[0]), nil
+		return fmt.Sprintf("avg(&%s)", args[0]), nil
 	case "len", "count":
 		if len(args) != 1 {
 			return "", fmt.Errorf("%s expects 1 arg", call.Func)
@@ -786,19 +809,19 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("sum expects 1 arg")
 		}
-		return fmt.Sprintf("sum(%s)", args[0]), nil
+		return fmt.Sprintf("sum(&%s)", args[0]), nil
 	case "min":
 		c.helpers["min"] = true
 		if len(args) != 1 {
 			return "", fmt.Errorf("min expects 1 arg")
 		}
-		return fmt.Sprintf("min(%s)", args[0]), nil
+		return fmt.Sprintf("min(&%s)", args[0]), nil
 	case "max":
 		c.helpers["max"] = true
 		if len(args) != 1 {
 			return "", fmt.Errorf("max expects 1 arg")
 		}
-		return fmt.Sprintf("max(%s)", args[0]), nil
+		return fmt.Sprintf("max(&%s)", args[0]), nil
 	case "exists":
 		if len(args) != 1 {
 			return "", fmt.Errorf("exists expects 1 arg")
@@ -809,6 +832,21 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("values expects 1 arg")
 		}
 		return fmt.Sprintf("%s.values().cloned().collect::<Vec<_>>()", args[0]), nil
+	case "str":
+		if len(args) != 1 {
+			return "", fmt.Errorf("str expects 1 arg")
+		}
+		return fmt.Sprintf("%s.to_string()", args[0]), nil
+	case "substring":
+		if len(args) != 3 {
+			return "", fmt.Errorf("substring expects 3 args")
+		}
+		return fmt.Sprintf("&%s[%s as usize..%s as usize]", args[0], args[1], args[2]), nil
+	case "json":
+		if len(args) != 1 {
+			return "", fmt.Errorf("json expects 1 arg")
+		}
+		return fmt.Sprintf("println!(\"{:?}\", %s)", args[0]), nil
 	default:
 		return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ", ")), nil
 	}
@@ -847,6 +885,8 @@ func rustType(t *parser.TypeRef) string {
 			return "f64"
 		case "string":
 			return "&'static str"
+		default:
+			return *t.Simple
 		}
 	}
 	if t.Fun != nil {
