@@ -522,6 +522,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileStructLiteral(p.Struct)
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
+	case p.Match != nil:
+		return c.compileMatchExpr(p.Match)
 	case p.Call != nil:
 		return c.compileCall(p.Call)
 	case p.If != nil:
@@ -781,7 +783,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		buf.WriteString("    $result = array_values(array_unique($result, SORT_REGULAR));\n")
 	}
 	buf.WriteString("    return $result;\n")
-	buf.WriteString("})();")
+	buf.WriteString("})()")
 
 	return buf.String(), nil
 }
@@ -822,6 +824,32 @@ func (c *Compiler) compileIfExpr(ix *parser.IfExpr) (string, error) {
 		}
 	}
 	return fmt.Sprintf("(%s ? %s : %s)", cond, thenExpr, elseCode), nil
+}
+
+func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
+	target, err := c.compileExpr(m.Target)
+	if err != nil {
+		return "", err
+	}
+	var buf bytes.Buffer
+	buf.WriteString("match(" + target + ") {")
+	buf.WriteByte('\n')
+	for _, cs := range m.Cases {
+		pat, err := c.compileExpr(cs.Pattern)
+		if err != nil {
+			return "", err
+		}
+		res, err := c.compileExpr(cs.Result)
+		if err != nil {
+			return "", err
+		}
+		if pat == "_" {
+			pat = "default"
+		}
+		buf.WriteString("    " + pat + " => " + res + ",\n")
+	}
+	buf.WriteString("}")
+	return buf.String(), nil
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) string {
