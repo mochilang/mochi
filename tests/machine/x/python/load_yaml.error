@@ -6,7 +6,7 @@ Traceback (most recent call last):
     for _it in _load("../interpreter/valid/people.yaml", dict({"format": "yaml"}))
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/workspace/mochi/tests/machine/x/python/load_yaml.py", line 27, in _load
-    f = sys.stdin if path is None else open(path, "r")
-                                       ^^^^^^^^^^^^^^^
+    f = sys.stdin if path is None or path == "-" else open(path, "r")
+                                                      ^^^^^^^^^^^^^^^
 FileNotFoundError: [Errno 2] No such file or directory: '/workspace/mochi/tests/machine/x/python/../interpreter/valid/people.yaml'
 

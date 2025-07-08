@@ -22,7 +22,7 @@ def _save(rows, path, opts):
         if isinstance(delim, str) and delim:
             delim = delim[0]
     rows = [dataclasses.asdict(r) if dataclasses.is_dataclass(r) else r for r in rows]
-    f = sys.stdout if path is None else open(path, "w")
+    f = sys.stdout if path is None or path == "-" else open(path, "w")
     try:
         if fmt == "tsv":
             delim = "	"
@@ -57,7 +57,7 @@ def _save(rows, path, opts):
         else:
             raise Exception("unknown format: " + fmt)
     finally:
-        if path is not None:
+        if path is not None and path != "-":
             f.close()
 
 

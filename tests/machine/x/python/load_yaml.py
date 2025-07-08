@@ -24,7 +24,7 @@ def _load(path, opts):
             delim = delim[0]
     if path is not None and not os.path.isabs(path):
         path = os.path.join(os.path.dirname(__file__), path)
-    f = sys.stdin if path is None else open(path, "r")
+    f = sys.stdin if path is None or path == "-" else open(path, "r")
     try:
         if fmt == "tsv":
             delim = "	"
@@ -74,7 +74,7 @@ def _load(path, opts):
         else:
             raise Exception("unknown format: " + fmt)
     finally:
-        if path is not None:
+        if path is not None and path != "-":
             f.close()
 
 

@@ -147,7 +147,7 @@ var helperLoad = "def _load(path, opts):\n" +
 	"            delim = delim[0]\n" +
 	"    if path is not None and not os.path.isabs(path):\n" +
 	"        path = os.path.join(os.path.dirname(__file__), path)\n" +
-	"    f = sys.stdin if path is None else open(path, 'r')\n" +
+	"    f = sys.stdin if path is None or path == '-' else open(path, 'r')\n" +
 	"    try:\n" +
 	"        if fmt == 'tsv':\n" +
 	"            delim = '\t'; fmt = 'csv'\n" +
@@ -194,7 +194,7 @@ var helperLoad = "def _load(path, opts):\n" +
 	"        else:\n" +
 	"            raise Exception('unknown format: ' + fmt)\n" +
 	"    finally:\n" +
-	"        if path is not None:\n" +
+	"        if path is not None and path != '-':\n" +
 	"            f.close()\n"
 
 var helperSave = "def _save(rows, path, opts):\n" +
@@ -209,7 +209,7 @@ var helperSave = "def _save(rows, path, opts):\n" +
 	"        if isinstance(delim, str) and delim:\n" +
 	"            delim = delim[0]\n" +
 	"    rows = [ dataclasses.asdict(r) if dataclasses.is_dataclass(r) else r for r in rows ]\n" +
-	"    f = sys.stdout if path is None else open(path, 'w')\n" +
+	"    f = sys.stdout if path is None or path == '-' else open(path, 'w')\n" +
 	"    try:\n" +
 	"        if fmt == 'tsv':\n" +
 	"            delim = '\t'; fmt = 'csv'\n" +
@@ -242,7 +242,7 @@ var helperSave = "def _save(rows, path, opts):\n" +
 	"        else:\n" +
 	"            raise Exception('unknown format: ' + fmt)\n" +
 	"    finally:\n" +
-	"        if path is not None:\n" +
+	"        if path is not None and path != '-':\n" +
 	"            f.close()\n"
 
 var helperSlice = "def _slice(obj: list[T] | str, i: int, j: int) -> list[T] | str:\n" +
