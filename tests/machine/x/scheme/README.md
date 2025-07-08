@@ -1,4 +1,4 @@
-# Scheme Machine Results (72/97 compiled and ran)
+# Scheme Machine Results (73/97 compiled and ran)
 
 ## Success
 - [x] append_builtin.mochi
@@ -15,6 +15,7 @@
 - [x] cross_join_filter.mochi
 - [x] cross_join_triple.mochi
 - [x] dataset_where_filter.mochi
+- [x] dataset_sort_take_limit.mochi
 - [x] for_list_collection.mochi
 - [x] for_loop.mochi
 - [x] for_map_collection.mochi
@@ -75,7 +76,6 @@
 - [x] var_assignment.mochi
 
 ## Failed
-- [ ] dataset_sort_take_limit.mochi
 - [ ] exists_builtin.mochi
 - [ ] group_by_left_join.mochi
 - [ ] group_by_multi_join_sort.mochi

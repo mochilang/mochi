@@ -15,7 +15,7 @@
               (loop (+ idx 1) (cdr xs)
                     (if (>= idx start)
                         (cons (car xs) out)
-                        out))))))
+                        out)))))))
 
 (define prefix "fore")
 (define s1 "forest")

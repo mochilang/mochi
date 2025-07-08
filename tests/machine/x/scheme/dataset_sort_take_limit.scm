@@ -93,7 +93,7 @@
               (loop (+ idx 1) (cdr xs)
                     (if (>= idx start)
                         (cons (car xs) out)
-                        out))))))
+                        out)))))))
 
 (define products (list (list (cons "name" "Laptop") (cons "price" 1500)) (list (cons "name" "Smartphone") (cons "price" 900)) (list (cons "name" "Tablet") (cons "price" 600)) (list (cons "name" "Monitor") (cons "price" 300)) (list (cons "name" "Keyboard") (cons "price" 100)) (list (cons "name" "Mouse") (cons "price" 50)) (list (cons "name" "Headphones") (cons "price" 200))))
 (define expensive (let ((_res '()) (_tmp '()))
