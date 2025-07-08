@@ -1806,6 +1806,13 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return fmt.Sprintf("_map_values(%s, %s, %s)", kt, vt, arg), nil
 		}
 	}
+	if name == "exists" && len(call.Args) == 1 {
+		arg, err := c.compileExpr(call.Args[0], false)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("(%s).len != 0", arg), nil
+	}
 	if name == "avg" && len(call.Args) == 1 {
 		arg, err := c.compileExpr(call.Args[0], false)
 		if err != nil {
