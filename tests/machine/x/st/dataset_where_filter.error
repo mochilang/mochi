@@ -1,0 +1,7 @@
+line: 7
+error: unsupported expression at line 7
+   5:   { name: "Diana", age: 45 }
+   6: ]
+   7: let adults = from person in people
+   8:              where person.age >= 18
+   9:              select {
