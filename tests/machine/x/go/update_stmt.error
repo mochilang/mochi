@@ -1,3 +1,1 @@
-unsupported statement at line 1
-type Person {
-  name: string
+unsupported type

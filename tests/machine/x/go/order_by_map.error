@@ -1,4 +1,4 @@
-unsupported expression at line 2
-let data = [
-  {a:1, b:2},
-  {a:1, b:1},
+unsupported expression at line 7
+let sorted =
+  from x in data
+  sort by { a: x.a, b: x.b }

@@ -1,4 +1,4 @@
-unsupported expression at line 2
-let items = [
-  { n: 1, v: "a" },
-  { n: 1, v: "b" },
+unsupported expression at line 6
+]
+let result = from i in items sort by i.n select i.v
+print(result)

@@ -1,3 +1,0 @@
-unsupported expression at line 1
-let m = {1: "a", 2: "b"}
-print(1 in m)

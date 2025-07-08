@@ -1,4 +1,4 @@
-unsupported statement at line 5
-
-type Tree =
-  Leaf
+unsupported expression at line 10
+fun sum_tree(t: Tree): int {
+  return match t {
+    Leaf => 0

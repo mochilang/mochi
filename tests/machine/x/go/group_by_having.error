@@ -1,4 +1,4 @@
-unsupported expression at line 2
-let people = [
-  { name: "Alice", city: "Paris" },
-  { name: "Bob", city: "Hanoi" },
+unsupported expression at line 12
+let big =
+  from p in people
+  group by p.city into g

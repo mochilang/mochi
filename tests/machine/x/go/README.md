@@ -2,7 +2,7 @@
 
 This directory contains Go source files generated from Mochi programs.
 
-## Progress: 41/97
+## Progress: 59/97
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -11,8 +11,8 @@ This directory contains Go source files generated from Mochi programs.
 - [x] bool_chain.mochi
 - [x] break_continue.mochi
 - [x] cast_string_to_int.mochi
-- [ ] cast_struct.mochi
-- [ ] closure.mochi
+- [x] cast_struct.mochi
+- [x] closure.mochi
 - [x] count_builtin.mochi
 - [ ] cross_join.mochi
 - [ ] cross_join_filter.mochi
@@ -22,9 +22,9 @@ This directory contains Go source files generated from Mochi programs.
 - [ ] exists_builtin.mochi
 - [x] for_list_collection.mochi
 - [x] for_loop.mochi
-- [ ] for_map_collection.mochi
+- [x] for_map_collection.mochi
 - [x] fun_call.mochi
-- [ ] fun_expr_in_let.mochi
+- [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
 - [ ] group_by.mochi
 - [ ] group_by_conditional_sum.mochi
@@ -36,8 +36,8 @@ This directory contains Go source files generated from Mochi programs.
 - [ ] group_by_sort.mochi
 - [ ] group_items_iteration.mochi
 - [x] if_else.mochi
-- [ ] if_then_else.mochi
-- [ ] if_then_else_nested.mochi
+- [x] if_then_else.mochi
+- [x] if_then_else_nested.mochi
 - [x] in_operator.mochi
 - [ ] in_operator_extended.mochi
 - [ ] inner_join.mochi
@@ -46,7 +46,7 @@ This directory contains Go source files generated from Mochi programs.
 - [ ] left_join.mochi
 - [ ] left_join_multi.mochi
 - [x] len_builtin.mochi
-- [ ] len_map.mochi
+- [x] len_map.mochi
 - [x] len_string.mochi
 - [x] let_and_print.mochi
 - [x] list_assign.mochi
@@ -54,13 +54,13 @@ This directory contains Go source files generated from Mochi programs.
 - [x] list_nested_assign.mochi
 - [ ] list_set_ops.mochi
 - [ ] load_yaml.mochi
-- [ ] map_assign.mochi
-- [ ] map_in_operator.mochi
-- [ ] map_index.mochi
-- [ ] map_int_key.mochi
-- [ ] map_literal_dynamic.mochi
-- [ ] map_membership.mochi
-- [ ] map_nested_assign.mochi
+- [x] map_assign.mochi
+- [x] map_in_operator.mochi
+- [x] map_index.mochi
+- [x] map_int_key.mochi
+- [x] map_literal_dynamic.mochi
+- [x] map_membership.mochi
+- [x] map_nested_assign.mochi
 - [ ] match_expr.mochi
 - [ ] match_full.mochi
 - [x] math_ops.mochi
@@ -74,7 +74,7 @@ This directory contains Go source files generated from Mochi programs.
 - [x] pure_fold.mochi
 - [ ] pure_global_fold.mochi
 - [ ] query_sum_select.mochi
-- [ ] record_assign.mochi
+- [x] record_assign.mochi
 - [ ] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
@@ -84,7 +84,7 @@ This directory contains Go source files generated from Mochi programs.
 - [x] string_compare.mochi
 - [x] string_concat.mochi
 - [x] string_contains.mochi
-- [ ] string_in_operator.mochi
+- [x] string_in_operator.mochi
 - [x] string_index.mochi
 - [x] string_prefix_slice.mochi
 - [x] substring_builtin.mochi
@@ -97,7 +97,7 @@ This directory contains Go source files generated from Mochi programs.
 - [x] typed_var.mochi
 - [x] unary_neg.mochi
 - [ ] update_stmt.mochi
-- [ ] user_type_literal.mochi
-- [ ] values_builtin.mochi
+- [x] user_type_literal.mochi
+- [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi

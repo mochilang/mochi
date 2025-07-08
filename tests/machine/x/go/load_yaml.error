@@ -1,3 +1,4 @@
-unsupported statement at line 1
-type Person {
-  name: string
+unsupported expression at line 7
+
+let people = load "../interpreter/valid/people.yaml" as Person with { format: "yaml" }
+let adults = from p in people

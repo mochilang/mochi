@@ -1,4 +1,4 @@
-unsupported expression at line 2
-let data = [
-  {tag: "a", val: 1},
-  {tag: "a", val: 2},
+unsupported expression at line 6
+]
+let groups = from d in data group by d.tag into g select g
+var tmp = []
