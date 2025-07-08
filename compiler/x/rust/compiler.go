@@ -18,11 +18,12 @@ type Compiler struct {
 	helpers map[string]bool
 	tmp     int
 	env     *types.Env
+	structs map[string]types.StructType
 }
 
 // New returns a new Compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{helpers: make(map[string]bool), env: env}
+	return &Compiler{helpers: make(map[string]bool), env: env, structs: make(map[string]types.StructType)}
 }
 
 // Compile converts a parsed Mochi program into Rust source code.
@@ -68,6 +69,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileLet(s.Let)
 	case s.Var != nil:
 		return c.compileVar(s.Var)
+	case s.Type != nil:
+		return c.compileTypeDecl(s.Type)
 	case s.Assign != nil:
 		return c.compileAssign(s.Assign)
 	case s.Return != nil:
@@ -148,14 +151,30 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 }
 
 func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
-	if len(a.Index) > 0 || len(a.Field) > 0 {
-		return fmt.Errorf("assignment with index or field not supported")
-	}
 	val, err := c.compileExpr(a.Value)
 	if err != nil {
 		return err
 	}
-	c.writeln(fmt.Sprintf("%s = %s;", a.Name, val))
+	target := a.Name
+	prefix := &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Selector: &parser.SelectorExpr{Root: a.Name}}}}
+	for _, idx := range a.Index {
+		idxStr, err := c.compileExpr(idx.Start)
+		if err != nil {
+			return err
+		}
+		t := types.TypeOfPostfixBasic(prefix, c.env)
+		if types.IsMapType(t) {
+			target = fmt.Sprintf("%s[%s]", target, idxStr)
+		} else {
+			target = fmt.Sprintf("%s[%s as usize]", target, idxStr)
+		}
+		prefix.Value.Ops = append(prefix.Value.Ops, &parser.PostfixOp{Index: idx})
+	}
+	for _, f := range a.Field {
+		target = fmt.Sprintf("%s.%s", target, f.Name)
+		prefix.Value.Ops = append(prefix.Value.Ops, &parser.PostfixOp{Field: f})
+	}
+	c.writeln(fmt.Sprintf("%s = %s;", target, val))
 	return nil
 }
 
@@ -230,6 +249,28 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileTypeDecl(td *parser.TypeDecl) error {
+	if len(td.Variants) > 0 {
+		return fmt.Errorf("variant types not supported")
+	}
+	st := types.StructType{Name: td.Name, Fields: map[string]types.Type{}, Order: []string{}}
+	c.writeln(fmt.Sprintf("struct %s {", td.Name))
+	c.indent++
+	for _, m := range td.Members {
+		if m.Field == nil {
+			return fmt.Errorf("unsupported type member")
+		}
+		typ := rustType(m.Field.Type)
+		st.Fields[m.Field.Name] = types.ResolveTypeRef(m.Field.Type, c.env)
+		st.Order = append(st.Order, m.Field.Name)
+		c.writeln(fmt.Sprintf("%s: %s,", m.Field.Name, typ))
+	}
+	c.indent--
+	c.writeln("}")
+	c.structs[td.Name] = st
+	return nil
+}
+
 func (c *Compiler) compileFun(f *parser.FunStmt) error {
 	params := make([]string, len(f.Params))
 	for i, p := range f.Params {
@@ -269,11 +310,21 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		}
 		switch op.Op {
 		case "in":
-			if c.env != nil && types.IsStringType(types.TypeOfPostfix(op.Right, c.env)) {
-				if !c.unaryIsString(leftAST) {
-					return "", fmt.Errorf("in type mismatch")
+			if c.env != nil {
+				rt := types.TypeOfPostfix(op.Right, c.env)
+				switch {
+				case types.IsStringType(rt):
+					if !c.unaryIsString(leftAST) {
+						return "", fmt.Errorf("in type mismatch")
+					}
+					res = fmt.Sprintf("%s.contains(%s)", r, res)
+				case types.IsListType(rt):
+					res = fmt.Sprintf("%s.contains(&%s)", r, res)
+				case types.IsMapType(rt):
+					res = fmt.Sprintf("%s.contains_key(&%s)", r, res)
+				default:
+					return "", fmt.Errorf("in unsupported")
 				}
-				res = fmt.Sprintf("%s.contains(%s)", r, res)
 			} else {
 				return "", fmt.Errorf("in unsupported")
 			}
@@ -307,10 +358,17 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	for _, op := range p.Ops {
+	for opIndex, op := range p.Ops {
 		switch {
 		case op.Cast != nil:
 			rustTy := rustType(op.Cast.Type)
+			if p.Target.Map != nil && opIndex == 0 && len(p.Ops) == 1 && op.Cast.Type.Simple != nil {
+				lit, err := c.compileStructLiteralFromMap(*op.Cast.Type.Simple, p.Target.Map)
+				if err == nil {
+					val = lit
+					break
+				}
+			}
 			switch rustTy {
 			case "i32":
 				val = fmt.Sprintf("%s.parse::<i32>().unwrap()", val)
@@ -324,11 +382,17 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if op.Index.Start == nil {
 				return "", fmt.Errorf("missing index")
 			}
-			idx, err := c.compileExpr(op.Index.Start)
+			idxVal, err := c.compileExpr(op.Index.Start)
 			if err != nil {
 				return "", err
 			}
-			val = fmt.Sprintf("%s[%s as usize]", val, idx)
+			prefix := &parser.Unary{Value: &parser.PostfixExpr{Target: p.Target, Ops: p.Ops[:opIndex]}}
+			t := types.TypeOfPostfixBasic(prefix, c.env)
+			if types.IsMapType(t) {
+				val = fmt.Sprintf("%s[%s]", val, idxVal)
+			} else {
+				val = fmt.Sprintf("%s[%s as usize]", val, idxVal)
+			}
 		case op.Field != nil:
 			val = fmt.Sprintf("%s.%s", val, op.Field.Name)
 		case op.Call != nil:
@@ -364,6 +428,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems[i] = s
 		}
 		return "vec![" + strings.Join(elems, ", ") + "]", nil
+	case p.Map != nil:
+		return c.compileMapLiteral(p.Map)
+	case p.Struct != nil:
+		return c.compileStructLiteral(p.Struct)
 	case p.Call != nil:
 		return c.compileCall(p.Call)
 	case p.Selector != nil:
@@ -441,6 +509,71 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		return fmt.Sprintf("Box::new(move |%s| %s)", strings.Join(params, ", "), body), nil
 	}
 	return "", fmt.Errorf("block function expressions not supported")
+}
+
+func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
+	var b strings.Builder
+	b.WriteString("{ let mut m = std::collections::HashMap::new();")
+	for _, it := range m.Items {
+		k, err := c.compileExpr(it.Key)
+		if err != nil {
+			return "", err
+		}
+		v, err := c.compileExpr(it.Value)
+		if err != nil {
+			return "", err
+		}
+		fmt.Fprintf(&b, " m.insert(%s, %s);", k, v)
+	}
+	b.WriteString(" m }")
+	return b.String(), nil
+}
+
+func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error) {
+	fields := make([]string, len(sl.Fields))
+	for i, f := range sl.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return "", err
+		}
+		fields[i] = fmt.Sprintf("%s: %s", f.Name, v)
+	}
+	return fmt.Sprintf("%s { %s }", sl.Name, strings.Join(fields, ", ")), nil
+}
+
+func (c *Compiler) compileStructLiteralFromMap(name string, m *parser.MapLiteral) (string, error) {
+	st, ok := c.structs[name]
+	if !ok {
+		if c.env != nil {
+			if s, ok2 := c.env.GetStruct(name); ok2 {
+				st = s
+				c.structs[name] = st
+				ok = true
+			}
+		}
+	}
+	if !ok {
+		return "", fmt.Errorf("unknown struct %s", name)
+	}
+	fieldMap := map[string]*parser.Expr{}
+	for _, it := range m.Items {
+		if str, ok := c.simpleString(it.Key); ok {
+			fieldMap[str] = it.Value
+		}
+	}
+	fields := make([]string, len(st.Order))
+	for i, f := range st.Order {
+		expr, ok := fieldMap[f]
+		if !ok {
+			return "", fmt.Errorf("missing field %s", f)
+		}
+		v, err := c.compileExpr(expr)
+		if err != nil {
+			return "", err
+		}
+		fields[i] = fmt.Sprintf("%s: %s", f, v)
+	}
+	return fmt.Sprintf("%s { %s }", name, strings.Join(fields, ", ")), nil
 }
 
 func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
@@ -528,7 +661,7 @@ func rustType(t *parser.TypeRef) string {
 		case "float":
 			return "f64"
 		case "string":
-			return "String"
+			return "&'static str"
 		}
 	}
 	if t.Fun != nil {
@@ -550,11 +683,26 @@ func rustDefault(typ string) string {
 		return "false"
 	case "f64":
 		return "0.0"
-	case "String":
-		return "String::new()"
+	case "&'static str":
+		return "\"\""
 	default:
 		return fmt.Sprintf("%s::default()", typ)
 	}
+}
+
+func (c *Compiler) simpleString(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 {
+		return "", false
+	}
+	p := u.Value
+	if p.Target == nil || p.Target.Lit == nil || p.Target.Lit.Str == nil || len(p.Ops) > 0 {
+		return "", false
+	}
+	return *p.Target.Lit.Str, true
 }
 
 func (c *Compiler) writeln(s string) {
