@@ -1,6 +1,3 @@
-    func inner(y int) int {
-        return x + y
-    }
 //go:build ignore
 
 package main
@@ -10,6 +7,9 @@ import (
 )
 
 func outer(x int) int {
+    inner := func(y int) int {
+        return x + y
+    }
     return inner(5)
 }
 

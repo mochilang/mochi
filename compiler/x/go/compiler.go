@@ -291,6 +291,9 @@ func (c *Compiler) compileStmtTo(buf *bytes.Buffer, s *parser.Statement) error {
 	case s.Assign != nil:
 		return c.compileAssign(buf, s.Assign)
 	case s.Fun != nil:
+		if buf != &c.buf {
+			return c.compileNestedFun(buf, s.Fun)
+		}
 		return c.compileFun(s.Fun)
 	case s.Return != nil:
 		return c.compileReturn(buf, s.Return)
@@ -450,6 +453,15 @@ func (c *Compiler) compileAssign(buf *bytes.Buffer, a *parser.AssignStmt) error 
 
 func (c *Compiler) compileFun(f *parser.FunStmt) error {
 	return c.compileFunTo(&c.buf, f)
+}
+
+func (c *Compiler) compileNestedFun(buf *bytes.Buffer, f *parser.FunStmt) error {
+	lit, err := c.compileFunExpr(&parser.FunExpr{Params: f.Params, Return: f.Return, BlockBody: f.Body})
+	if err != nil {
+		return err
+	}
+	c.writeLine(buf, fmt.Sprintf("%s := %s", f.Name, lit))
+	return nil
 }
 
 func (c *Compiler) compileFunTo(buf *bytes.Buffer, f *parser.FunStmt) error {
@@ -970,6 +982,7 @@ func (c *Compiler) compileFunExpr(f *parser.FunExpr) (string, error) {
 	}
 	var buf bytes.Buffer
 	buf.WriteString("func(" + strings.Join(params, ", ") + ")" + ret + " {")
+	buf.WriteByte('\n')
 	c.indent++
 	if f.ExprBody != nil {
 		expr, err := c.compileExpr(f.ExprBody)

@@ -4,8 +4,8 @@ This directory contains Go source code generated from Mochi programs and the cor
 
 ## Summary
 
-- 60/97 programs compiled and executed successfully.
-- 37 programs failed to compile or run.
+- 61/97 programs compiled and executed successfully.
+- 36 programs failed to compile or run.
 
 ### Successful
 - append_builtin
@@ -46,6 +46,7 @@ This directory contains Go source code generated from Mochi programs and the cor
 - math_ops
 - membership
 - min_max_builtin
+- nested_function
 - partial_application
 - print_hello
 - pure_fold
@@ -94,7 +95,6 @@ This directory contains Go source code generated from Mochi programs and the cor
 - load_yaml
 - match_expr
 - match_full
-- nested_function
 - order_by_map
 - outer_join
 - pure_global_fold
