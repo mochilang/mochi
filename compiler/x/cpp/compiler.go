@@ -110,6 +110,8 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 
 func (c *Compiler) compileStmt(st *parser.Statement) error {
 	switch {
+	case st.Type != nil:
+		return c.compileTypeDecl(st.Type)
 	case st.Fun != nil:
 		lambda, err := c.compileLambda(st.Fun.Params, nil, st.Fun.Body)
 		if err != nil {
@@ -157,6 +159,26 @@ func (c *Compiler) compileStmt(st *parser.Statement) error {
 	default:
 		return fmt.Errorf("unsupported statement at %v", st.Pos)
 	}
+}
+
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	if len(t.Members) == 0 {
+		return nil
+	}
+	c.writeln(fmt.Sprintf("struct %s {", t.Name))
+	c.indent++
+	for _, m := range t.Members {
+		if m.Field != nil {
+			typ, err := c.compileType(m.Field.Type)
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("%s %s;", typ, m.Field.Name))
+		}
+	}
+	c.indent--
+	c.writeln("};")
+	return nil
 }
 
 func (c *Compiler) compileLet(st *parser.LetStmt) error {
@@ -414,6 +436,17 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 }
 
 func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, error) {
+	// special case: map literal cast to struct
+	if len(pf.Ops) > 0 && pf.Ops[0].Cast != nil && pf.Target.Map != nil {
+		t, err := c.compileType(pf.Ops[0].Cast.Type)
+		if err != nil {
+			return "", err
+		}
+		if t != "int" && t != "std::string" {
+			return c.structFromMapLiteral(t, pf.Target.Map)
+		}
+	}
+
 	base, err := c.compilePrimary(pf.Target)
 	if err != nil {
 		return "", err
@@ -470,7 +503,7 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, error) {
 			} else if t == "std::string" {
 				expr = fmt.Sprintf("std::to_string(%s)", expr)
 			} else {
-				expr = fmt.Sprintf("(%s)(%s)", t, expr)
+				// unknown types are ignored
 			}
 		}
 	}
@@ -481,6 +514,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	switch {
 	case p.Lit != nil:
 		return c.compileLiteral(p.Lit)
+	case p.Struct != nil:
+		return c.compileStructLiteral(p.Struct)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
 	case p.List != nil:
@@ -652,6 +687,61 @@ func (c *Compiler) compileMatchExpr(mx *parser.MatchExpr) (string, error) {
 	buf.WriteString("return ")
 	buf.WriteString(elseExpr)
 	buf.WriteString("; })()")
+	return buf.String(), nil
+}
+
+func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error) {
+	var buf strings.Builder
+	buf.WriteString("([&]() { ")
+	buf.WriteString(sl.Name)
+	buf.WriteString(" __v; ")
+	for _, f := range sl.Fields {
+		val, err := c.compileExpr(f.Value)
+		if err != nil {
+			return "", err
+		}
+		buf.WriteString(fmt.Sprintf("__v.%s = %s; ", f.Name, val))
+	}
+	buf.WriteString("return __v; })()")
+	return buf.String(), nil
+}
+
+func stringLiteral(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) > 0 {
+		return "", false
+	}
+	pf := u.Value
+	if pf == nil || len(pf.Ops) > 0 || pf.Target == nil {
+		return "", false
+	}
+	p := pf.Target
+	if p.Lit != nil && p.Lit.Str != nil {
+		return *p.Lit.Str, true
+	}
+	return "", false
+}
+
+func (c *Compiler) structFromMapLiteral(typ string, m *parser.MapLiteral) (string, error) {
+	var buf strings.Builder
+	buf.WriteString("([&]() { ")
+	buf.WriteString(typ)
+	buf.WriteString(" __v; ")
+	for _, it := range m.Items {
+		keyLit, ok := stringLiteral(it.Key)
+		if !ok {
+			continue
+		}
+		val, err := c.compileExpr(it.Value)
+		if err != nil {
+			return "", err
+		}
+		buf.WriteString(fmt.Sprintf("__v.%s = %s; ", keyLit, val))
+	}
+	buf.WriteString("return __v; })()")
 	return buf.String(), nil
 }
 

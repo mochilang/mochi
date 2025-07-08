@@ -1,9 +1,0 @@
-line 15: ../../../tests/machine/x/cpp/str_builtin.cpp: In function ‘int main()’:
-../../../tests/machine/x/cpp/str_builtin.cpp:15:11: error: ‘str’ was not declared in this scope; did you mean ‘std’?
-   15 |     print(str(123));
-      |           ^~~
-      |           std
-
- 14 | int main() {
- 15 |     print(str(123));
- 16 |     return 0;
