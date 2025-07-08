@@ -1,0 +1,16 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/tail_recursion.ml", line 5, characters 2-9:
+5 |   sum_rec (n - 1) (acc + n)
+      ^^^^^^^
+Error: This expression has type int -> ('a -> 'b -> 'c -> 'd) -> 'e
+       but an expression was expected of type 'a
+       The type variable 'a occurs inside int -> ('a -> 'b -> 'c -> 'd) -> 'e
+
+
+Context (around line 5):
+   3 |     acc
+   4 |   )
+   5 |   sum_rec (n - 1) (acc + n)
+   6 | 
+   7 | 

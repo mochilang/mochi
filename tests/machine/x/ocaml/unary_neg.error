@@ -1,0 +1,15 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/unary_neg.ml", line 3, characters 2-15:
+3 |   print_endline -3
+      ^^^^^^^^^^^^^
+Error: This expression has type string -> unit
+       but an expression was expected of type int
+
+
+Context (around line 3):
+   1 | 
+   2 | let () =
+   3 |   print_endline -3
+   4 |   print_endline (5 + (-2))
+   5 | 

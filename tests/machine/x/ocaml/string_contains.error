@@ -1,0 +1,15 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/string_contains.ml", line 4, characters 2-15:
+4 |   print_endline s.contains "cat"
+      ^^^^^^^^^^^^^
+Error: This function has type string -> unit
+       It is applied to too many arguments; maybe you forgot a `;'.
+
+
+Context (around line 4):
+   2 | 
+   3 | let () =
+   4 |   print_endline s.contains "cat"
+   5 |   print_endline s.contains "dog"
+   6 | 

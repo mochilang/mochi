@@ -1,0 +1,14 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/typed_var.ml", line 4, characters 16-18:
+4 |   print_endline !x
+                    ^^
+Error: This expression has type int but an expression was expected of type
+         string
+
+
+Context (around line 4):
+   2 | 
+   3 | let () =
+   4 |   print_endline !x
+   5 | 

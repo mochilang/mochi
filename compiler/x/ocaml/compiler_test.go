@@ -18,6 +18,25 @@ import (
 	"mochi/types"
 )
 
+func repoRoot(t *testing.T) string {
+	dir, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	t.Fatal("go.mod not found")
+	return ""
+}
+
 // writeError writes a detailed error report.
 func writeError(dir, base string, src []byte, stage string, errOut []byte) {
 	line := 0
@@ -48,11 +67,12 @@ func TestPrograms(t *testing.T) {
 	if _, err := exec.LookPath("ocamlc"); err != nil {
 		t.Skipf("ocamlc not installed: %v", err)
 	}
-	files, err := filepath.Glob(filepath.Join("tests", "vm", "valid", "*.mochi"))
+	root := repoRoot(t)
+	files, err := filepath.Glob(filepath.Join(root, "tests", "vm", "valid", "*.mochi"))
 	if err != nil {
 		t.Fatalf("glob error: %v", err)
 	}
-	outDir := filepath.Join("tests", "machine", "x", "ocaml")
+	outDir := filepath.Join(root, "tests", "machine", "x", "ocaml")
 	_ = os.MkdirAll(outDir, 0755)
 	for _, f := range files {
 		base := strings.TrimSuffix(filepath.Base(f), ".mochi")

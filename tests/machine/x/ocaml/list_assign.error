@@ -1,0 +1,15 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/list_assign.ml", line 4, characters 10-11:
+4 |   nums := 3
+              ^
+Error: This expression has type int
+       This is not a function; it cannot be applied.
+
+
+Context (around line 4):
+   2 | 
+   3 | let () =
+   4 |   nums := 3
+   5 |   print_endline List.nth !nums 1
+   6 | 

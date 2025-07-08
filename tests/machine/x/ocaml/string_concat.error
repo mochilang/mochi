@@ -1,0 +1,14 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/string_concat.ml", line 3, characters 17-25:
+3 |   print_endline ("hello " + "world")
+                     ^^^^^^^^
+Error: This expression has type string but an expression was expected of type
+         int
+
+
+Context (around line 3):
+   1 | 
+   2 | let () =
+   3 |   print_endline ("hello " + "world")
+   4 | 
