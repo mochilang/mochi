@@ -1,0 +1,6 @@
+exit status 1
+Execution error (NullPointerException) at main/-sum (group_by_sort.clj:8).
+Cannot invoke "Object.getClass()" because "x" is null
+
+Full report at:
+/tmp/clojure-11374113186545421257.edn
