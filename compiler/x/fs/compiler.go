@@ -178,11 +178,22 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 	if err != nil {
 		return err
 	}
-	if len(a.Index) == 0 && len(a.Field) == 0 {
-		c.writeln(fmt.Sprintf("%s <- %s", a.Name, val))
-		return nil
+	target := a.Name
+	for _, idx := range a.Index {
+		if idx.Start == nil {
+			return fmt.Errorf("complex indexing not supported")
+		}
+		s, err := c.compileExpr(idx.Start)
+		if err != nil {
+			return err
+		}
+		target = fmt.Sprintf("%s.[%s]", target, s)
 	}
-	return fmt.Errorf("assignment with indexing not supported")
+	for _, f := range a.Field {
+		target = fmt.Sprintf("%s.%s", target, f.Name)
+	}
+	c.writeln(fmt.Sprintf("%s <- %s", target, val))
+	return nil
 }
 
 func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
@@ -343,6 +354,21 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			oper = "="
 		case "!=":
 			oper = "<>"
+		case "in":
+			if strings.HasPrefix(r, "\"") {
+				res = fmt.Sprintf("%s.Contains(%s)", r, res)
+				continue
+			}
+			if strings.HasPrefix(r, "[") {
+				res = fmt.Sprintf("List.contains %s %s", res, r)
+				continue
+			}
+			if strings.HasPrefix(r, "dict [") {
+				res = fmt.Sprintf("%s.ContainsKey %s", r, res)
+				continue
+			}
+			res = fmt.Sprintf("List.contains %s %s", res, r)
+			continue
 		}
 		res = fmt.Sprintf("%s %s %s", res, oper, r)
 	}
@@ -407,7 +433,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return "[" + join(elems, "; ") + "]", nil
 	case p.Map != nil:
-		return "", fmt.Errorf("unsupported map literal")
+		return c.compileMap(p.Map)
 	case p.Struct != nil:
 		return c.compileStruct(p.Struct)
 	case p.Call != nil:
@@ -494,6 +520,10 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			}
 			return fmt.Sprintf("List.length %s", args[0]), nil
 		}
+	case "values":
+		if len(args) == 1 {
+			return fmt.Sprintf("Seq.toList (%s.Values)", args[0]), nil
+		}
 	default:
 		argStr := strings.Join(args, " ")
 		if argStr == "" {
@@ -546,6 +576,22 @@ func (c *Compiler) compileFunExpr(f *parser.FunExpr) (string, error) {
 		return fmt.Sprintf("fun %s -> %s", strings.Join(params, " "), body), nil
 	}
 	return "fun _ -> ()", nil
+}
+
+func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
+	items := make([]string, len(m.Items))
+	for i, it := range m.Items {
+		k, err := c.compileExpr(it.Key)
+		if err != nil {
+			return "", err
+		}
+		v, err := c.compileExpr(it.Value)
+		if err != nil {
+			return "", err
+		}
+		items[i] = fmt.Sprintf("(%s, %s)", k, v)
+	}
+	return "dict [" + strings.Join(items, "; ") + "]", nil
 }
 
 func (c *Compiler) compileStruct(s *parser.StructLiteral) (string, error) {
