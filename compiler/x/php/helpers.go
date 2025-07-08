@@ -78,6 +78,21 @@ func (c *Compiler) use(name string) {
 	c.helpers[name] = true
 }
 
+func isUnderscoreExpr(e *parser.Expr) bool {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return false
+	}
+	return p.Target.Selector != nil && p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0
+}
+
 func (c *Compiler) emitRuntime() {
 	names := make([]string, 0, len(c.helpers))
 	for n := range c.helpers {

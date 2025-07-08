@@ -835,16 +835,17 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	buf.WriteString("match(" + target + ") {")
 	buf.WriteByte('\n')
 	for _, cs := range m.Cases {
-		pat, err := c.compileExpr(cs.Pattern)
-		if err != nil {
-			return "", err
-		}
 		res, err := c.compileExpr(cs.Result)
 		if err != nil {
 			return "", err
 		}
-		if pat == "_" {
-			pat = "default"
+		if isUnderscoreExpr(cs.Pattern) {
+			buf.WriteString("    default => " + res + ",\n")
+			continue
+		}
+		pat, err := c.compileExpr(cs.Pattern)
+		if err != nil {
+			return "", err
 		}
 		buf.WriteString("    " + pat + " => " + res + ",\n")
 	}
