@@ -6,7 +6,7 @@ compiler tests. Each entry corresponds to a Mochi program from
 
 ## Summary
 
-21/97 files compiled successfully
+34/97 files compiled successfully
 
 ## Compilation Checklist
 
@@ -26,8 +26,8 @@ compiler tests. Each entry corresponds to a Mochi program from
 - [ ] dataset_sort_take_limit.mochi
 - [ ] dataset_where_filter.mochi
 - [ ] exists_builtin.mochi
-- [ ] for_list_collection.mochi
-- [ ] for_loop.mochi
+- [x] for_list_collection.mochi
+- [x] for_loop.mochi
 - [ ] for_map_collection.mochi
 - [x] fun_call.mochi
 - [ ] fun_expr_in_let.mochi
@@ -51,13 +51,13 @@ compiler tests. Each entry corresponds to a Mochi program from
 - [ ] json_builtin.mochi
 - [ ] left_join.mochi
 - [ ] left_join_multi.mochi
-- [ ] len_builtin.mochi
+- [x] len_builtin.mochi
 - [ ] len_map.mochi
-- [ ] len_string.mochi
+- [x] len_string.mochi
 - [x] let_and_print.mochi
-- [ ] list_assign.mochi
-- [ ] list_index.mochi
-- [ ] list_nested_assign.mochi
+- [x] list_assign.mochi
+- [x] list_index.mochi
+- [x] list_nested_assign.mochi
 - [ ] list_set_ops.mochi
 - [ ] load_yaml.mochi
 - [ ] map_assign.mochi
@@ -88,22 +88,22 @@ compiler tests. Each entry corresponds to a Mochi program from
 - [ ] sort_stable.mochi
 - [ ] str_builtin.mochi
 - [x] string_compare.mochi
-- [ ] string_concat.mochi
+- [x] string_concat.mochi
 - [ ] string_contains.mochi
 - [ ] string_in_operator.mochi
-- [ ] string_index.mochi
+- [x] string_index.mochi
 - [ ] string_prefix_slice.mochi
 - [ ] substring_builtin.mochi
 - [ ] sum_builtin.mochi
 - [x] tail_recursion.mochi
 - [ ] test_block.mochi
 - [ ] tree_sum.mochi
-- [ ] two-sum.mochi
+- [x] two-sum.mochi
 - [x] typed_let.mochi
-- [ ] typed_var.mochi
+- [x] typed_var.mochi
 - [x] unary_neg.mochi
 - [ ] update_stmt.mochi
 - [ ] user_type_literal.mochi
 - [ ] values_builtin.mochi
-- [ ] var_assignment.mochi
-- [ ] while_loop.mochi
+- [x] var_assignment.mochi
+- [x] while_loop.mochi

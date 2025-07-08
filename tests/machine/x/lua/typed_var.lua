@@ -18,4 +18,5 @@ local function print_value(v)
 	end
 end
 
-print_value(#{1, 2, 3})
+local x = nil
+print_value(x)

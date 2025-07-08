@@ -18,4 +18,6 @@ local function print_value(v)
 	end
 end
 
-print_value(#{1, 2, 3})
+for _, n in ipairs({1, 2, 3}) do
+	print_value(n)
+end

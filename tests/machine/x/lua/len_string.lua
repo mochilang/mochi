@@ -18,4 +18,4 @@ local function print_value(v)
 	end
 end
 
-print_value(len("mochi"))
+print_value(#"mochi")

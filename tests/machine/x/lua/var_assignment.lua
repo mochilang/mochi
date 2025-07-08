@@ -18,4 +18,6 @@ local function print_value(v)
 	end
 end
 
-print_value(#{1, 2, 3})
+local x = 1
+x = 2
+print_value(x)

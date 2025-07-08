@@ -18,4 +18,6 @@ local function print_value(v)
 	end
 end
 
-print_value(#{1, 2, 3})
+for i=1,(4)-1 do
+	print_value(i)
+end
