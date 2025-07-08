@@ -212,6 +212,7 @@ func (c *compiler) ifStmt(i *parser.IfStmt) error {
 		}
 	}
 	c.indent--
+	c.writeln("}")
 	if i.ElseIf != nil {
 		c.writeIndent()
 		c.buf.WriteString("else ")
@@ -230,9 +231,7 @@ func (c *compiler) ifStmt(i *parser.IfStmt) error {
 		}
 		c.indent--
 		c.writeln("}")
-		return nil
 	}
-	c.writeln("}")
 	return nil
 }
 
@@ -384,6 +383,37 @@ func (c *compiler) primary(p *parser.Primary) (string, error) {
 			elems[i] = s
 		}
 		return "[" + strings.Join(elems, ", ") + "]", nil
+	case p.Map != nil:
+		items := make([]string, len(p.Map.Items))
+		for i, m := range p.Map.Items {
+			k, err := c.expr(m.Key)
+			if err != nil {
+				return "", err
+			}
+			v, err := c.expr(m.Value)
+			if err != nil {
+				return "", err
+			}
+			items[i] = fmt.Sprintf("%s: %s", k, v)
+		}
+		return "[" + strings.Join(items, ", ") + "]", nil
+	case p.If != nil:
+		cond, err := c.expr(p.If.Cond)
+		if err != nil {
+			return "", err
+		}
+		thenVal, err := c.expr(p.If.Then)
+		if err != nil {
+			return "", err
+		}
+		elseVal := ""
+		if p.If.Else != nil {
+			elseVal, err = c.expr(p.If.Else)
+			if err != nil {
+				return "", err
+			}
+		}
+		return fmt.Sprintf("%s ? %s : %s", cond, thenVal, elseVal), nil
 	case p.Selector != nil:
 		return selector(p.Selector), nil
 	case p.Group != nil:
@@ -415,6 +445,50 @@ func (c *compiler) callExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("str expects 1 argument at line %d", call.Pos.Line)
 		}
 		return fmt.Sprintf("String(%s)", joined), nil
+	case "append":
+		if len(args) != 2 {
+			return "", fmt.Errorf("append expects 2 arguments at line %d", call.Pos.Line)
+		}
+		return fmt.Sprintf("%s + [%s]", args[0], args[1]), nil
+	case "avg":
+		if len(args) != 1 {
+			return "", fmt.Errorf("avg expects 1 argument at line %d", call.Pos.Line)
+		}
+		a := args[0]
+		return fmt.Sprintf("(%s.reduce(0, +) / %s.count)", a, a), nil
+	case "count", "len":
+		if len(args) != 1 {
+			return "", fmt.Errorf("%s expects 1 argument at line %d", call.Func, call.Pos.Line)
+		}
+		return fmt.Sprintf("%s.count", args[0]), nil
+	case "min":
+		if len(args) != 1 {
+			return "", fmt.Errorf("min expects 1 argument at line %d", call.Pos.Line)
+		}
+		return fmt.Sprintf("%s.min()!", args[0]), nil
+	case "max":
+		if len(args) != 1 {
+			return "", fmt.Errorf("max expects 1 argument at line %d", call.Pos.Line)
+		}
+		return fmt.Sprintf("%s.max()!", args[0]), nil
+	case "sum":
+		if len(args) != 1 {
+			return "", fmt.Errorf("sum expects 1 argument at line %d", call.Pos.Line)
+		}
+		return fmt.Sprintf("%s.reduce(0, +)", args[0]), nil
+	case "values":
+		if len(args) != 1 {
+			return "", fmt.Errorf("values expects 1 argument at line %d", call.Pos.Line)
+		}
+		return fmt.Sprintf("Array(%s.values)", args[0]), nil
+	case "substring":
+		if len(args) != 3 {
+			return "", fmt.Errorf("substring expects 3 arguments at line %d", call.Pos.Line)
+		}
+		s := args[0]
+		start := fmt.Sprintf("%s.index(%s.startIndex, offsetBy: %s)", s, s, args[1])
+		end := fmt.Sprintf("%s.index(%s.startIndex, offsetBy: %s)", s, s, args[2])
+		return fmt.Sprintf("String(%s[%s..<%s])", s, start, end), nil
 	default:
 		return fmt.Sprintf("%s(%s)", call.Func, joined), nil
 	}

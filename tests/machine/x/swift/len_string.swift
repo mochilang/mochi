@@ -1,1 +1,1 @@
-print(len("mochi"))
+print("mochi".count)
