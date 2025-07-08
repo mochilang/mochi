@@ -89,7 +89,8 @@
 
       ] { :select (fn [i] [i]) })
       _groups (_group_by _rows (fn [i] (:cat i)))
-  (vec (map (fn [g] {:cat (:key g) :share (/ (_sum (vec (->> (for [x g] (if (:flag x) (:val x) 0))))) (_sum (vec (->> (for [x g] (:val x))))))}) _groups)))) ;; list of map of string to any
+      ]
+  (vec (map (fn [g] {:cat (:key g) :share (/ (_sum (vec (->> (for [x (:Items g)] (if (:flag x) (:val x) 0))))) (_sum (vec (->> (for [x (:Items g)] (:val x))))))}) _groups)))) ;; list of map of string to any
   (println result)
 )
 

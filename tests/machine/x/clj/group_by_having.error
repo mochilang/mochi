@@ -1,6 +1,0 @@
-exit status 1
-Syntax error reading source at (/workspace/mochi/tests/machine/x/clj/group_by_having.clj:109:73).
-Unmatched delimiter: )
-
-Full report at:
-/tmp/clojure-10368982566873586152.edn

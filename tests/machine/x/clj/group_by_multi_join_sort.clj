@@ -96,7 +96,8 @@
         {:items nation :on (fn [c o l n] (= (:n_nationkey n) (:c_nationkey c)))}
       ] { :select (fn [c o l n] [c o l n]) :where (fn [c o l n] (and (and (>= (compare (:o_orderdate o) start_date) 0) (< (compare (:o_orderdate o) end_date) 0)) (= (:l_returnflag l) "R"))) })
       _groups (_group_by _rows (fn [c o l n] {:c_custkey (:c_custkey c) :c_name (:c_name c) :c_acctbal (:c_acctbal c) :c_address (:c_address c) :c_phone (:c_phone c) :c_comment (:c_comment c) :n_name (:n_name n)}))
-  (vec (map (fn [g] {:c_custkey (:c_custkey (:key g)) :c_name (:c_name (:key g)) :revenue (_sum (vec (->> (for [x g] (* (:l_extendedprice (:l x)) (- 1 (:l_discount (:l x)))))))) :c_acctbal (:c_acctbal (:key g)) :n_name (:n_name (:key g)) :c_address (:c_address (:key g)) :c_phone (:c_phone (:key g)) :c_comment (:c_comment (:key g))}) _groups)))) ;; list of map of string to any
+      ]
+  (vec (map (fn [g] {:c_custkey (:c_custkey (:key g)) :c_name (:c_name (:key g)) :revenue (_sum (vec (->> (for [x (:Items g)] (* (:l_extendedprice (:l x)) (- 1 (:l_discount (:l x)))))))) :c_acctbal (:c_acctbal (:key g)) :n_name (:n_name (:key g)) :c_address (:c_address (:key g)) :c_phone (:c_phone (:key g)) :c_comment (:c_comment (:key g))}) _groups)))) ;; list of map of string to any
   (println result)
 )
 
