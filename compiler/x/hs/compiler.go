@@ -811,7 +811,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	for _, op := range p.Ops {
+	for i, op := range p.Ops {
 		if op.Call != nil {
 			args := make([]string, len(op.Call.Args))
 			for i, a := range op.Call.Args {
@@ -859,6 +859,36 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					expr = fmt.Sprintf("_indexString %s %s", expr, idx)
 				} else {
 					expr = fmt.Sprintf("(%s !! %s)", expr, idx)
+				}
+			}
+		} else if op.Cast != nil {
+			typ := c.resolveTypeRef(op.Cast.Type)
+			switch tt := typ.(type) {
+			case types.IntType, types.Int64Type:
+				expr = fmt.Sprintf("(read %s :: Int)", expr)
+			case types.FloatType:
+				expr = fmt.Sprintf("(read %s :: Double)", expr)
+			case types.StringType:
+				expr = fmt.Sprintf("show %s", expr)
+			case types.BoolType:
+				expr = fmt.Sprintf("(read %s :: Bool)", expr)
+			case types.StructType:
+				if i == 0 && p.Target != nil && p.Target.Map != nil {
+					parts := make([]string, len(p.Target.Map.Items))
+					for j, it := range p.Target.Map.Items {
+						key, ok := simpleStringKey(it.Key)
+						if !ok {
+							return "", fmt.Errorf("unsupported struct cast key")
+						}
+						v, err := c.compileExpr(it.Value)
+						if err != nil {
+							return "", err
+						}
+						parts[j] = fmt.Sprintf("%s = %s", sanitizeName(key), v)
+					}
+					expr = fmt.Sprintf("%s { %s }", sanitizeName(tt.Name), strings.Join(parts, ", "))
+				} else {
+					return "", fmt.Errorf("unsupported cast to struct")
 				}
 			}
 		}
@@ -1423,7 +1453,6 @@ func (c *Compiler) compileStructType(st types.StructType) {
 	}
 	c.indent--
 	c.writeln("} deriving (Eq, Show, Generic)")
-	c.writeln(fmt.Sprintf("instance Aeson.FromJSON %s", name))
 	c.writeln("")
 	for _, ft := range st.Fields {
 		if sub, ok := ft.(types.StructType); ok {
@@ -1466,7 +1495,6 @@ func (c *Compiler) compileUnionType(ut types.UnionType) {
 	}
 	c.indent--
 	c.writeln("  deriving (Eq, Show, Generic)")
-	c.writeln(fmt.Sprintf("instance Aeson.FromJSON %s", name))
 	c.writeln("")
 	for _, st := range ut.Variants {
 		for _, ft := range st.Fields {
