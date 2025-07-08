@@ -1,5 +1,3 @@
-//go:build archived
-
 package pycode
 
 import "sort"

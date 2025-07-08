@@ -1,5 +1,3 @@
-//go:build archived
-
 package pycode
 
 // Helper functions used by the Python compiler. Splitting them into this file

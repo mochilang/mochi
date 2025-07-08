@@ -1,4 +1,4 @@
-//go:build archived && slow
+//go:build slow
 
 package pycode_test
 
@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	pycode "mochi/archived/py"
+	pycode "mochi/compiler/x/python"
 	"mochi/golden"
 	"mochi/parser"
 	"mochi/types"
@@ -447,6 +447,91 @@ func TestPyCompiler_SLTQueries(t *testing.T) {
 			}
 		})
 	}
+}
+
+// TestCompilePrograms compiles each Mochi file under tests/vm/valid
+// and runs the resulting Python program. Generated files and outputs
+// are written to tests/machine/x/python.
+func TestCompilePrograms(t *testing.T) {
+	if _, err := exec.LookPath("python3"); err != nil {
+		t.Skip("python3 not installed")
+	}
+	root := findRepoRoot(t)
+	pattern := filepath.Join(root, "tests", "vm", "valid", "*.mochi")
+	files, err := filepath.Glob(pattern)
+	if err != nil {
+		t.Fatalf("glob error: %v", err)
+	}
+	outDir := filepath.Join(root, "tests", "machine", "x", "python")
+	os.MkdirAll(outDir, 0o755)
+	for _, src := range files {
+		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
+		t.Run(name, func(t *testing.T) {
+			compileAndRun(t, src, outDir, name)
+		})
+	}
+}
+
+func compileAndRun(t *testing.T, src, outDir, name string) {
+	data, err := os.ReadFile(src)
+	if err != nil {
+		t.Fatalf("read error: %v", err)
+	}
+	errPath := filepath.Join(outDir, name+".error")
+	os.Remove(errPath)
+	prog, err := parser.ParseString(string(data))
+	if err != nil {
+		writeError(t, outDir, name, string(data), err)
+		return
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		writeError(t, outDir, name, string(data), fmt.Errorf("type error: %v", errs[0]))
+		return
+	}
+	code, err := pycode.New(env).Compile(prog)
+	if err != nil {
+		writeError(t, outDir, name, string(data), err)
+		return
+	}
+	codePath := filepath.Join(outDir, name+".py")
+	os.WriteFile(codePath, code, 0o644)
+	cmd := exec.Command("python3", codePath)
+	var buf bytes.Buffer
+	cmd.Stdout = &buf
+	cmd.Stderr = &buf
+	if err := cmd.Run(); err != nil {
+		writeError(t, outDir, name, string(data), fmt.Errorf("run: %v\n%s", err, buf.String()))
+		return
+	}
+	outPath := filepath.Join(outDir, name+".out")
+	os.WriteFile(outPath, buf.Bytes(), 0o644)
+	os.Remove(errPath)
+}
+
+func writeError(t *testing.T, dir, name, src string, err error) {
+	lines := strings.Split(src, "\n")
+	msg := err.Error()
+	ln := 0
+	if idx := strings.Index(msg, "line "); idx != -1 {
+		fmt.Sscanf(msg[idx:], "line %d", &ln)
+	}
+	var ctx string
+	if ln > 0 {
+		start := ln - 2
+		if start < 0 {
+			start = 0
+		}
+		end := ln + 1
+		if end > len(lines) {
+			end = len(lines)
+		}
+		for i := start; i < end; i++ {
+			ctx += lines[i] + "\n"
+		}
+	}
+	errPath := filepath.Join(dir, name+".error")
+	os.WriteFile(errPath, []byte(msg+"\n"+ctx), 0o644)
 }
 
 func findRepoRoot(t *testing.T) string {
