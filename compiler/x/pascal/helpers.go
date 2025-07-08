@@ -66,6 +66,24 @@ func (c *Compiler) newVar() string {
 	return c.newTypedVar("integer")
 }
 
+// defaultValue returns a zero value literal for the given type.
+func defaultValue(t types.Type) string {
+	switch t.(type) {
+	case types.IntType, types.Int64Type:
+		return "0"
+	case types.FloatType:
+		return "0.0"
+	case types.StringType:
+		return "\"\""
+	case types.BoolType:
+		return "False"
+	case types.ListType, types.MapType, types.AnyType, types.StructType, types.UnionType, types.FuncType:
+		return "nil"
+	default:
+		return "0"
+	}
+}
+
 func isUnderscoreExpr(e *parser.Expr) bool {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
 		return false
