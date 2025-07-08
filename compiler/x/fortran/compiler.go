@@ -47,14 +47,23 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("implicit none")
 
 	var globals []*parser.LetStmt
+	var typesDecl []*parser.TypeDecl
 	for _, st := range prog.Statements {
 		switch {
 		case st.Fun != nil:
 			c.functions = append(c.functions, st.Fun)
+		case st.Type != nil:
+			typesDecl = append(typesDecl, st.Type)
 		case st.Let != nil:
 			globals = append(globals, st.Let)
 		case st.Var != nil:
 			globals = append(globals, &parser.LetStmt{Name: st.Var.Name, Value: st.Var.Value, Type: st.Var.Type})
+		}
+	}
+
+	for _, td := range typesDecl {
+		if err := c.compileTypeDecl(td); err != nil {
+			return nil, err
 		}
 	}
 
@@ -65,7 +74,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 
 	for _, st := range prog.Statements {
-		if st.Fun != nil {
+		if st.Fun != nil || st.Type != nil {
 			continue
 		}
 		if err := c.compileStmt(st); err != nil {
@@ -189,6 +198,21 @@ func (c *Compiler) compileLetDecl(l *parser.LetStmt) error {
 		c.writelnDecl(fmt.Sprintf("%s :: %s", typ, l.Name))
 	}
 	c.declared[l.Name] = true
+	return nil
+}
+
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	st, ok := c.env.GetStruct(t.Name)
+	if !ok {
+		return fmt.Errorf("unknown struct %s", t.Name)
+	}
+	c.writelnDecl(fmt.Sprintf("type :: %s", t.Name))
+	c.indent++
+	for _, f := range st.Order {
+		c.writelnDecl(fmt.Sprintf("%s :: %s", typeNameFromTypes(st.Fields[f]), f))
+	}
+	c.indent--
+	c.writelnDecl(fmt.Sprintf("end type %s", t.Name))
 	return nil
 }
 
@@ -471,6 +495,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				return "", err
 			}
 			res = fmt.Sprintf("%s(%s)", res, v)
+		case op.Field != nil:
+			res = fmt.Sprintf("%s%%%s", res, op.Field.Name)
 		case op.Cast != nil:
 			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
 				switch *op.Cast.Type.Simple {
@@ -485,6 +511,30 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				case "float":
 					res = fmt.Sprintf("real(%s)", res)
 				default:
+					if st, ok := c.env.GetStruct(*op.Cast.Type.Simple); ok {
+						if ml := mapLiteralPrimary(p.Target); ml != nil {
+							fields := make([]string, len(st.Order))
+							for i, f := range st.Order {
+								var val *parser.Expr
+								for _, it := range ml.Items {
+									if keyName(it.Key) == f {
+										val = it.Value
+										break
+									}
+								}
+								if val == nil {
+									return "", fmt.Errorf("missing field %s", f)
+								}
+								v, err := c.compileExpr(val)
+								if err != nil {
+									return "", err
+								}
+								fields[i] = v
+							}
+							res = fmt.Sprintf("%s(%s)", st.Name, strings.Join(fields, ","))
+							continue
+						}
+					}
 					return "", fmt.Errorf("unsupported cast")
 				}
 			} else {
@@ -514,10 +564,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return fmt.Sprintf("(/%s/)", strings.Join(elems, ",")), nil
 	case p.Selector != nil:
-		if len(p.Selector.Tail) != 0 {
-			return "", fmt.Errorf("selector not supported at line %d", p.Pos.Line)
+		res := p.Selector.Root
+		for _, t := range p.Selector.Tail {
+			res += "%" + t
 		}
-		return p.Selector.Root, nil
+		return res, nil
 	case p.Group != nil:
 		inner, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -695,6 +746,37 @@ func literalStringPrimary(p *parser.Primary) *string {
 	return p.Lit.Str
 }
 
+func mapLiteralPrimary(p *parser.Primary) *parser.MapLiteral {
+	if p == nil {
+		return nil
+	}
+	return p.Map
+}
+
+func keyName(e *parser.Expr) string {
+	if e == nil || e.Binary == nil {
+		return ""
+	}
+	if len(e.Binary.Right) != 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return ""
+	}
+	v := u.Value
+	if len(v.Ops) != 0 || v.Target == nil {
+		return ""
+	}
+	if v.Target.Lit != nil && v.Target.Lit.Str != nil {
+		return *v.Target.Lit.Str
+	}
+	if v.Target.Selector != nil && len(v.Target.Selector.Tail) == 0 {
+		return v.Target.Selector.Root
+	}
+	return ""
+}
+
 func typeName(t *parser.TypeRef) string {
 	if t == nil {
 		return "integer"
@@ -709,6 +791,8 @@ func typeName(t *parser.TypeRef) string {
 			return "character(len=100)"
 		case "float":
 			return "real"
+		default:
+			return *t.Simple
 		}
 	}
 	return "integer"
@@ -724,6 +808,9 @@ func typeNameFromTypes(t types.Type) string {
 		return "character(len=100)"
 	case types.FloatType:
 		return "real"
+	case types.StructType:
+		st := t.(types.StructType)
+		return st.Name
 	default:
 		return "integer"
 	}
