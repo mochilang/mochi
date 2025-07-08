@@ -1,0 +1,7 @@
+Error on line 18: zig build error: exit status 1
+/workspace/mochi/tests/machine/x/zig/in_operator_extended.zig:18:21: error: local variable shadows declaration of 'm'
+/workspace/mochi/tests/machine/x/zig/in_operator_extended.zig:10:1: note: declared here
+
+17:     std.debug.print("{any}\n", .{_contains_list_int(ys, 2)});
+18:     m = blk1: { var m = std.AutoHashMap(i32, i32).init(std.heap.page_allocator); m.put("a", 1) catch unreachable; break :blk1 m; };
+19:     std.debug.print("{s}\n", .{m.contains("a")});
