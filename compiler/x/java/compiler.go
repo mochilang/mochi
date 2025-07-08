@@ -11,14 +11,17 @@ import (
 )
 
 type Compiler struct {
-	buf     *bytes.Buffer
-	indent  int
-	helpers map[string]bool
-	vars    map[string]string
+	buf             *bytes.Buffer
+	indent          int
+	helpers         map[string]bool
+	vars            map[string]string
+	funRet          map[string]string
+	types           map[string]*parser.TypeDecl
+	needFuncImports bool
 }
 
 func New() *Compiler {
-	return &Compiler{buf: new(bytes.Buffer), helpers: make(map[string]bool), vars: make(map[string]string)}
+	return &Compiler{buf: new(bytes.Buffer), helpers: make(map[string]bool), vars: make(map[string]string), funRet: make(map[string]string), types: make(map[string]*parser.TypeDecl)}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -52,7 +55,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			c.vars[s.Let.Name] = typ
 			continue
 		}
+		if s.Type != nil {
+			c.types[s.Type.Name] = s.Type
+			continue
+		}
 		if s.Fun != nil {
+			c.funRet[s.Fun.Name] = c.typeName(s.Fun.Return)
 			continue
 		}
 		if err := c.compileStmt(s); err != nil {
@@ -64,6 +72,15 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.indent = 0
 	c.writeln("import java.util.*;")
+	if c.needFuncImports {
+		c.writeln("import java.util.function.*;")
+	}
+	// user defined types
+	for _, tdecl := range c.types {
+		if err := c.compileTypeDecl(tdecl); err != nil {
+			return nil, err
+		}
+	}
 	c.writeln("public class Main {")
 	c.indent++
 	// global declarations
@@ -194,8 +211,18 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 }
 
 func (c *Compiler) typeName(t *parser.TypeRef) string {
-	if t == nil || t.Simple == nil {
+	if t == nil {
 		return "int"
+	}
+	if t.Fun != nil {
+		if len(t.Fun.Params) == 1 && t.Fun.Return != nil && t.Fun.Return.Simple != nil && *t.Fun.Return.Simple == "int" && t.Fun.Params[0].Simple != nil && *t.Fun.Params[0].Simple == "int" {
+			c.needFuncImports = true
+			return "IntUnaryOperator"
+		}
+		return "Object"
+	}
+	if t.Simple == nil {
+		return "Object"
 	}
 	switch *t.Simple {
 	case "int":
@@ -207,7 +234,7 @@ func (c *Compiler) typeName(t *parser.TypeRef) string {
 	case "float":
 		return "double"
 	default:
-		return "Object"
+		return *t.Simple
 	}
 }
 
@@ -215,12 +242,14 @@ func (c *Compiler) defaultValue(typ string) string {
 	switch typ {
 	case "String":
 		return "\"\""
+	case "int":
+		return "0"
 	case "boolean":
 		return "false"
 	case "double":
 		return "0.0"
 	default:
-		return "0"
+		return "null"
 	}
 }
 
@@ -243,6 +272,18 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 	p := rootPrimary(e)
 	if p != nil && p.Lit != nil {
 		return c.typeName(&parser.TypeRef{Simple: litTypeName(p)})
+	}
+	if p != nil && p.Call != nil {
+		if t, ok := c.funRet[p.Call.Func]; ok {
+			return t
+		}
+	}
+	if p != nil && p.FunExpr != nil {
+		if len(p.FunExpr.Params) == 1 && p.FunExpr.Return != nil && p.FunExpr.Return.Simple != nil && *p.FunExpr.Return.Simple == "int" && p.FunExpr.Params[0].Type != nil && p.FunExpr.Params[0].Type.Simple != nil && *p.FunExpr.Params[0].Type.Simple == "int" {
+			c.needFuncImports = true
+			return "IntUnaryOperator"
+		}
+		return "Object"
 	}
 	return "var"
 }
@@ -338,6 +379,9 @@ func (c *Compiler) compileGlobalVar(v *parser.VarStmt) error {
 			expr = fmt.Sprintf("new HashMap<>(%s)", expr)
 		}
 	}
+	if typ == "var" {
+		typ = "Object"
+	}
 	if v.Value == nil {
 		c.writeln(fmt.Sprintf("static %s %s = %s;", typ, v.Name, c.defaultValue(typ)))
 	} else {
@@ -361,12 +405,46 @@ func (c *Compiler) compileGlobalLet(v *parser.LetStmt) error {
 			expr = fmt.Sprintf("new HashMap<>(%s)", expr)
 		}
 	}
+	if typ == "var" {
+		typ = "Object"
+	}
 	if v.Value == nil {
 		c.writeln(fmt.Sprintf("static %s %s = %s;", typ, v.Name, c.defaultValue(typ)))
 	} else {
 		c.writeln(fmt.Sprintf("static %s %s = %s;", typ, v.Name, expr))
 	}
 	c.vars[v.Name] = typ
+	return nil
+}
+
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	if len(t.Variants) > 0 {
+		return fmt.Errorf("variants not supported")
+	}
+	c.writeln(fmt.Sprintf("class %s {", t.Name))
+	c.indent++
+	var params []string
+	for _, m := range t.Members {
+		if m.Field != nil {
+			typ := c.typeName(m.Field.Type)
+			c.writeln(fmt.Sprintf("%s %s;", typ, m.Field.Name))
+			params = append(params, fmt.Sprintf("%s %s", typ, m.Field.Name))
+		}
+	}
+	if len(params) > 0 {
+		c.writeln(fmt.Sprintf("%s(%s) {", t.Name, strings.Join(params, ", ")))
+		c.indent++
+		for _, m := range t.Members {
+			if m.Field != nil {
+				name := m.Field.Name
+				c.writeln(fmt.Sprintf("this.%s = %s;", name, name))
+			}
+		}
+		c.indent--
+		c.writeln("}")
+	}
+	c.indent--
+	c.writeln("}")
 	return nil
 }
 
@@ -396,6 +474,62 @@ func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
 		items = append(items, fmt.Sprintf("%s, %s", k, v))
 	}
 	return fmt.Sprintf("java.util.Map.of(%s)", strings.Join(items, ", ")), nil
+}
+
+func (c *Compiler) compileStructLiteral(s *parser.StructLiteral) (string, error) {
+	var args []string
+	for _, f := range s.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return "", err
+		}
+		args = append(args, v)
+	}
+	return fmt.Sprintf("new %s(%s)", s.Name, strings.Join(args, ", ")), nil
+}
+
+func (c *Compiler) compileFunExpr(f *parser.FunExpr) (string, error) {
+	if len(f.Params) == 1 && f.Return != nil && f.Return.Simple != nil && *f.Return.Simple == "int" && f.Params[0].Type != nil && f.Params[0].Type.Simple != nil && *f.Params[0].Type.Simple == "int" {
+		c.needFuncImports = true
+	}
+	var params []string
+	for _, p := range f.Params {
+		params = append(params, p.Name)
+	}
+	body, err := c.compileExpr(f.ExprBody)
+	if err != nil {
+		return "", err
+	}
+	if len(params) == 1 {
+		return fmt.Sprintf("%s -> %s", params[0], body), nil
+	}
+	return fmt.Sprintf("(%s) -> %s", strings.Join(params, ", "), body), nil
+}
+
+func (c *Compiler) compileIfExpr(e *parser.IfExpr) (string, error) {
+	cond, err := c.compileExpr(e.Cond)
+	if err != nil {
+		return "", err
+	}
+	thenExpr, err := c.compileExpr(e.Then)
+	if err != nil {
+		return "", err
+	}
+	var elseExpr string
+	if e.ElseIf != nil {
+		elseExpr, err = c.compileIfExpr(e.ElseIf)
+		if err != nil {
+			return "", err
+		}
+	} else if e.Else != nil {
+		elseExpr, err = c.compileExpr(e.Else)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		elseExpr = "null"
+	}
+	return fmt.Sprintf("(%s ? %s : %s)", cond, thenExpr, elseExpr), nil
 }
 
 func (c *Compiler) compileVar(v *parser.VarStmt) error {
@@ -658,19 +792,41 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	}
 	for _, op := range p.Ops {
 		switch {
+		case op.Call != nil:
+			var args []string
+			for _, a := range op.Call.Args {
+				arg, err := c.compileExpr(a)
+				if err != nil {
+					return "", err
+				}
+				args = append(args, arg)
+			}
+			val = fmt.Sprintf("%s(%s)", val, strings.Join(args, ", "))
 		case op.Cast != nil:
 			t := c.typeName(op.Cast.Type)
-			switch t {
-			case "int":
-				val = fmt.Sprintf("Integer.parseInt(%s)", val)
-			case "double":
-				val = fmt.Sprintf("Double.parseDouble(%s)", val)
-			case "String":
-				val = fmt.Sprintf("String.valueOf(%s)", val)
-			case "boolean":
-				val = fmt.Sprintf("Boolean.parseBoolean(%s)", val)
-			default:
-				return "", fmt.Errorf("unsupported cast to %s", t)
+			if _, ok := c.types[t]; ok && p.Target.Map != nil {
+				var args []string
+				for _, it := range p.Target.Map.Items {
+					a, err := c.compileExpr(it.Value)
+					if err != nil {
+						return "", err
+					}
+					args = append(args, a)
+				}
+				val = fmt.Sprintf("new %s(%s)", t, strings.Join(args, ", "))
+			} else {
+				switch t {
+				case "int":
+					val = fmt.Sprintf("Integer.parseInt(%s)", val)
+				case "double":
+					val = fmt.Sprintf("Double.parseDouble(%s)", val)
+				case "String":
+					val = fmt.Sprintf("String.valueOf(%s)", val)
+				case "boolean":
+					val = fmt.Sprintf("Boolean.parseBoolean(%s)", val)
+				default:
+					return "", fmt.Errorf("unsupported cast to %s", t)
+				}
 			}
 		case op.Index != nil:
 			if op.Index.Start == nil || op.Index.Colon != nil {
@@ -713,10 +869,21 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return "null", nil
 		}
 	case p.Selector != nil:
+		s := p.Selector.Root
 		if len(p.Selector.Tail) > 0 {
-			return "", fmt.Errorf("selectors unsupported at line %d", p.Pos.Line)
+			s += "." + strings.Join(p.Selector.Tail, ".")
 		}
-		return p.Selector.Root, nil
+		return s, nil
+	case p.Struct != nil:
+		return c.compileStructLiteral(p.Struct)
+	case p.FunExpr != nil:
+		expr, err := c.compileFunExpr(p.FunExpr)
+		if err != nil {
+			return "", err
+		}
+		return expr, nil
+	case p.If != nil:
+		return c.compileIfExpr(p.If)
 	case p.List != nil:
 		return c.compileList(p.List)
 	case p.Map != nil:
@@ -864,6 +1031,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", err
 			}
 			args = append(args, arg)
+		}
+		if t, ok := c.vars[p.Call.Func]; ok && t == "IntUnaryOperator" {
+			return fmt.Sprintf("%s.applyAsInt(%s)", p.Call.Func, strings.Join(args, ", ")), nil
 		}
 		return fmt.Sprintf("%s(%s)", p.Call.Func, strings.Join(args, ", ")), nil
 	case p.Group != nil:

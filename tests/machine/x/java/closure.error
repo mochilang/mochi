@@ -1,4 +1,0 @@
-line 0: compile error: expression unsupported at line 2
-
-  1| fun makeAdder(n: int): fun(int): int {
-  2|   return fun(x: int): int => x + n

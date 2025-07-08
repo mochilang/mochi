@@ -1,4 +1,0 @@
-line 0: compile error: expression unsupported at line 2
-
-  1| let x = 12
-  2| let msg = if x > 10 then "yes" else "no"
