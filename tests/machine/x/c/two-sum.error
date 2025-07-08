@@ -1,2 +1,25 @@
-line: 0
-error: len unsupported
+line: 7
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/two-sum.c:7:4: error: expected identifier or ‘(’ before ‘[’ token
+    7 | int[] twoSum(int[] nums, int target) {
+      |    ^
+/workspace/mochi/tests/machine/x/c/two-sum.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/two-sum.c:21:4: error: expected identifier or ‘(’ before ‘[’ token
+   21 | int[] result = twoSum((int[]){2, 7, 11, 15}, 9);
+      |    ^
+/workspace/mochi/tests/machine/x/c/two-sum.c:21:44: error: expected expression before ‘,’ token
+   21 | int[] result = twoSum((int[]){2, 7, 11, 15}, 9);
+      |                                            ^
+/workspace/mochi/tests/machine/x/c/two-sum.c:21:47: error: expected statement before ‘)’ token
+   21 | int[] result = twoSum((int[]){2, 7, 11, 15}, 9);
+      |                                               ^
+/workspace/mochi/tests/machine/x/c/two-sum.c:22:16: error: ‘result’ undeclared (first use in this function)
+   22 | printf("%d\n", result[0]);
+      |                ^~~~~~
+/workspace/mochi/tests/machine/x/c/two-sum.c:22:16: note: each undeclared identifier is reported only once for each function it appears in
+
+   5:       if nums[i] + nums[j] == target {
+   6:         return [i, j]
+   7:       }
+   8:     }
+   9:   }
