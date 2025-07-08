@@ -1,3 +1,3 @@
 open System
 
-printfn "%A" (substring "mochi" 1 4)
+printfn "%s" ("mochi".Substring(1, 4 - 1))

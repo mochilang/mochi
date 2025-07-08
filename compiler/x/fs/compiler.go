@@ -308,6 +308,15 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			oper = "="
 		case "!=":
 			oper = "<>"
+		case "in":
+			if strings.HasPrefix(left, "\"") && !strings.HasPrefix(r, "[") {
+				res = fmt.Sprintf("%s.Contains(%s)", r, res)
+				left = res
+				continue
+			}
+			res = fmt.Sprintf("List.contains %s %s", res, r)
+			left = res
+			continue
 		}
 		res = fmt.Sprintf("%s %s %s", res, oper, r)
 	}
@@ -335,18 +344,49 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if len(p.Ops) == 0 {
-		return val, nil
-	}
-	// Only support single index op
-	if len(p.Ops) == 1 && p.Ops[0].Index != nil && p.Ops[0].Index.Start != nil {
-		idx, err := c.compileExpr(p.Ops[0].Index.Start)
-		if err != nil {
-			return "", err
+	for _, op := range p.Ops {
+		switch {
+		case op.Index != nil:
+			if op.Index.Start == nil {
+				return "", fmt.Errorf("unsupported slice expression")
+			}
+			idx, err := c.compileExpr(op.Index.Start)
+			if err != nil {
+				return "", err
+			}
+			val = fmt.Sprintf("%s.[%s]", val, idx)
+		case op.Field != nil:
+			name := op.Field.Name
+			if name == "contains" {
+				name = "Contains"
+			}
+			val = fmt.Sprintf("%s.%s", val, name)
+		case op.Call != nil:
+			args := make([]string, len(op.Call.Args))
+			for i, a := range op.Call.Args {
+				s, err := c.compileExpr(a)
+				if err != nil {
+					return "", err
+				}
+				args[i] = s
+			}
+			val = fmt.Sprintf("%s(%s)", val, strings.Join(args, ", "))
+		case op.Cast != nil:
+			t, err := c.compileType(op.Cast.Type)
+			if err != nil {
+				return "", err
+			}
+			switch t {
+			case "int", "float", "string", "bool":
+				val = fmt.Sprintf("%s %s", t, val)
+			default:
+				val = fmt.Sprintf("(%s : %s)", val, t)
+			}
+		default:
+			return "", fmt.Errorf("unsupported postfix expression")
 		}
-		return fmt.Sprintf("%s.[%s]", val, idx), nil
 	}
-	return "", fmt.Errorf("unsupported postfix expression")
+	return val, nil
 }
 
 func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
@@ -368,7 +408,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Selector != nil:
 		name := p.Selector.Root
 		for _, t := range p.Selector.Tail {
-			name += "." + t
+			if t == "contains" {
+				name += ".Contains"
+			} else {
+				name += "." + t
+			}
 		}
 		return name, nil
 	case p.Group != nil:
@@ -409,8 +453,13 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			}
 			if argAST != nil && argAST.Binary != nil && argAST.Binary.Left != nil && argAST.Binary.Left.Value != nil && argAST.Binary.Left.Value.Target != nil {
 				t := argAST.Binary.Left.Value.Target
-				if t.Call != nil && t.Call.Func == "append" {
-					return fmt.Sprintf("printfn \"%%s\" (String.concat \" \" (List.map string (%s)))", args[0]), nil
+				if t.Call != nil {
+					if t.Call.Func == "append" {
+						return fmt.Sprintf("printfn \"%%s\" (String.concat \" \" (List.map string (%s)))", args[0]), nil
+					}
+					if t.Call.Func == "substring" {
+						return fmt.Sprintf("printfn \"%%s\" (%s)", args[0]), nil
+					}
 				}
 				if t.List != nil {
 					return fmt.Sprintf("printfn \"%%s\" (String.concat \" \" (List.map string %s))", args[0]), nil
@@ -430,6 +479,14 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	case "count":
 		if len(args) == 1 {
 			return fmt.Sprintf("List.length %s", args[0]), nil
+		}
+	case "str":
+		if len(args) == 1 {
+			return fmt.Sprintf("string %s", args[0]), nil
+		}
+	case "substring":
+		if len(args) == 3 {
+			return fmt.Sprintf("%s.Substring(%s, %s - %s)", args[0], args[1], args[2], args[1]), nil
 		}
 	case "exists":
 		if len(args) == 2 {

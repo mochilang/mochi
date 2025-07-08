@@ -6,7 +6,7 @@ resulting code and program output are stored here.
 
 ## Compilation Checklist
 
-8/97 programs compiled successfully
+43/97 programs compiled successfully
 
 The list below shows every Mochi program and whether it compiled and ran
 successfully in F#.
@@ -17,7 +17,7 @@ successfully in F#.
  - [ ] binary_precedence
  - [x] bool_chain
 - [ ] break_continue
-- [ ] cast_string_to_int
+ - [x] cast_string_to_int
 - [ ] cast_struct
  - [ ] closure
  - [x] count_builtin
