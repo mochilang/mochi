@@ -1,0 +1,39 @@
+line 69:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/group_by_conditional_sum.kt:69:37: error: expecting property name or receiver type
+        __res.add(if (x.flag) x.val else 0)
+                                    ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_conditional_sum.kt:69:41: error: expecting ','
+        __res.add(if (x.flag) x.val else 0)
+                                        ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_conditional_sum.kt:75:24: error: expecting property name or receiver type
+        __res.add(x.val)
+                       ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_conditional_sum.kt:75:25: error: expecting ')'
+        __res.add(x.val)
+                        ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_conditional_sum.kt:66:41: error: unresolved reference: g
+        __res.add(mutableMapOf("cat" to g.key, "share" to sum(run {
+                                        ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_conditional_sum.kt:66:63: error: type inference failed. Expected type mismatch: inferred type is MutableList<Any> but List<Int> was expected
+        __res.add(mutableMapOf("cat" to g.key, "share" to sum(run {
+                                                              ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_conditional_sum.kt:68:15: error: unresolved reference: g
+    for (x in g) {
+              ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_conditional_sum.kt:69:19: error: 'if' must have both main and 'else' branches if used as an expression
+        __res.add(if (x.flag) x.val else 0)
+                  ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_conditional_sum.kt:72:10: error: type inference failed. Expected type mismatch: inferred type is MutableList<Any> but List<Int> was expected
+}) / sum(run {
+         ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_conditional_sum.kt:74:15: error: unresolved reference: g
+    for (x in g) {
+              ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_conditional_sum.kt:81:14: error: unresolved reference: g
+}.sortedBy { g.key }
+             ^
+
+ 68:     for (x in g) {
+ 69:         __res.add(if (x.flag) x.val else 0)
+ 70:     }

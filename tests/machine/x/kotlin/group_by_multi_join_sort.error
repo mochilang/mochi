@@ -1,0 +1,48 @@
+line 76:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:76:13: error: unresolved reference: o
+        if (o.o_orderdate >= start_date && o.o_orderdate < end_date && l.l_returnflag == "R") {
+            ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:76:44: error: unresolved reference: o
+        if (o.o_orderdate >= start_date && o.o_orderdate < end_date && l.l_returnflag == "R") {
+                                           ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:76:72: error: unresolved reference: l
+        if (o.o_orderdate >= start_date && o.o_orderdate < end_date && l.l_returnflag == "R") {
+                                                                       ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:77:51: error: unresolved reference: g
+            __res.add(mutableMapOf("c_custkey" to g.key.c_custkey, "c_name" to g.key.c_name, "revenue" to sum(run {
+                                                  ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:77:80: error: unresolved reference: g
+            __res.add(mutableMapOf("c_custkey" to g.key.c_custkey, "c_name" to g.key.c_name, "revenue" to sum(run {
+                                                                               ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:77:111: error: type inference failed. Expected type mismatch: inferred type is MutableList<Any> but List<Int> was expected
+            __res.add(mutableMapOf("c_custkey" to g.key.c_custkey, "c_name" to g.key.c_name, "revenue" to sum(run {
+                                                                                                              ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:79:15: error: unresolved reference: g
+    for (x in g) {
+              ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:83:20: error: unresolved reference: g
+}), "c_acctbal" to g.key.c_acctbal, "n_name" to g.key.n_name, "c_address" to g.key.c_address, "c_phone" to g.key.c_phone, "c_comment" to g.key.c_comment))
+                   ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:83:49: error: unresolved reference: g
+}), "c_acctbal" to g.key.c_acctbal, "n_name" to g.key.n_name, "c_address" to g.key.c_address, "c_phone" to g.key.c_phone, "c_comment" to g.key.c_comment))
+                                                ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:83:78: error: unresolved reference: g
+}), "c_acctbal" to g.key.c_acctbal, "n_name" to g.key.n_name, "c_address" to g.key.c_address, "c_phone" to g.key.c_phone, "c_comment" to g.key.c_comment))
+                                                                             ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:83:108: error: unresolved reference: g
+}), "c_acctbal" to g.key.c_acctbal, "n_name" to g.key.n_name, "c_address" to g.key.c_address, "c_phone" to g.key.c_phone, "c_comment" to g.key.c_comment))
+                                                                                                           ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:83:138: error: unresolved reference: g
+}), "c_acctbal" to g.key.c_acctbal, "n_name" to g.key.n_name, "c_address" to g.key.c_address, "c_phone" to g.key.c_phone, "c_comment" to g.key.c_comment))
+                                                                                                                                         ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:87:28: error: type inference failed. Expected type mismatch: inferred type is MutableList<Any> but List<Int> was expected
+}.sortedByDescending { sum(run {
+                           ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:89:15: error: unresolved reference: g
+    for (x in g) {
+              ^
+
+ 75:     for (c in customer) {
+ 76:         if (o.o_orderdate >= start_date && o.o_orderdate < end_date && l.l_returnflag == "R") {
+ 77:             __res.add(mutableMapOf("c_custkey" to g.key.c_custkey, "c_name" to g.key.c_name, "revenue" to sum(run {

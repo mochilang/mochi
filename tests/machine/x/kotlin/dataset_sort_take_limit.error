@@ -1,0 +1,15 @@
+line 69:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/dataset_sort_take_limit.kt:69:24: error: unresolved reference: p
+}.sortedByDescending { p["price"] }.drop(1).take(3)
+                       ^
+/workspace/mochi/tests/machine/x/kotlin/dataset_sort_take_limit.kt:74:29: error: unresolved reference: name
+        println(listOf(item.name, "costs $", item.price).joinToString(" "))
+                            ^
+/workspace/mochi/tests/machine/x/kotlin/dataset_sort_take_limit.kt:74:51: error: unresolved reference: price
+        println(listOf(item.name, "costs $", item.price).joinToString(" "))
+                                                  ^
+
+ 68:     __res
+ 69: }.sortedByDescending { p["price"] }.drop(1).take(3)
+ 70: 

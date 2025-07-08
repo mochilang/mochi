@@ -1,0 +1,18 @@
+line 68:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/inner_join.kt:68:72: error: unresolved reference: c
+        __res.add(mutableMapOf("orderId" to o["id"], "customerName" to c.name, "total" to o["total"]))
+                                                                       ^
+/workspace/mochi/tests/machine/x/kotlin/inner_join.kt:76:39: error: unresolved reference: orderId
+        println(listOf("Order", entry.orderId, "by", entry.customerName, "- $", entry.total).joinToString(" "))
+                                      ^
+/workspace/mochi/tests/machine/x/kotlin/inner_join.kt:76:60: error: unresolved reference: customerName
+        println(listOf("Order", entry.orderId, "by", entry.customerName, "- $", entry.total).joinToString(" "))
+                                                           ^
+/workspace/mochi/tests/machine/x/kotlin/inner_join.kt:76:87: error: unresolved reference: total
+        println(listOf("Order", entry.orderId, "by", entry.customerName, "- $", entry.total).joinToString(" "))
+                                                                                      ^
+
+ 67:     for (o in orders) {
+ 68:         __res.add(mutableMapOf("orderId" to o["id"], "customerName" to c.name, "total" to o["total"]))
+ 69:     }

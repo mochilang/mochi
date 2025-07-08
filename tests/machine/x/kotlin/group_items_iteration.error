@@ -1,0 +1,26 @@
+line 85:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/group_items_iteration.kt:85:34: error: expecting property name or receiver type
+            total = total + x.val
+                                 ^
+/workspace/mochi/tests/machine/x/kotlin/group_items_iteration.kt:66:19: error: unresolved reference: g
+        __res.add(g)
+                  ^
+/workspace/mochi/tests/machine/x/kotlin/group_items_iteration.kt:71:11: error: type inference failed: Not enough information to infer parameter T in inline fun <T> mutableListOf(): MutableList<T>
+Please specify it explicitly.
+
+var tmp = mutableListOf()
+          ^
+/workspace/mochi/tests/machine/x/kotlin/group_items_iteration.kt:79:14: error: unresolved reference: r
+}.sortedBy { r.tag }
+             ^
+/workspace/mochi/tests/machine/x/kotlin/group_items_iteration.kt:84:21: error: unresolved reference: items
+        for (x in g.items) {
+                    ^
+/workspace/mochi/tests/machine/x/kotlin/group_items_iteration.kt:87:51: error: unresolved reference: key
+        tmp = append(tmp, mutableMapOf("tag" to g.key, "total" to total))
+                                                  ^
+
+ 84:         for (x in g.items) {
+ 85:             total = total + x.val
+ 86:         }
