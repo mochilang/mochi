@@ -1,0 +1,22 @@
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/machine/x/fs/group_items_iteration.fs(6,32): error FS0010: Unexpected keyword 'val' in expression
+
+/workspace/mochi/tests/machine/x/fs/group_items_iteration.fs(6,31): error FS0583: Unmatched '('
+
+/workspace/mochi/tests/machine/x/fs/group_items_iteration.fs(6,61): error FS0010: Unexpected keyword 'val' in expression
+
+/workspace/mochi/tests/machine/x/fs/group_items_iteration.fs(6,60): error FS0583: Unmatched '('
+
+/workspace/mochi/tests/machine/x/fs/group_items_iteration.fs(6,90): error FS0010: Unexpected keyword 'val' in expression
+
+/workspace/mochi/tests/machine/x/fs/group_items_iteration.fs(6,89): error FS0583: Unmatched '('
+
+/workspace/mochi/tests/machine/x/fs/group_items_iteration.fs(7,40): error FS0010: Unexpected symbol ']' in expression. Expected '->' or other token.
+
+/workspace/mochi/tests/machine/x/fs/group_items_iteration.fs(16,43): error FS0599: Missing qualification after '.'
+
+/workspace/mochi/tests/machine/x/fs/group_items_iteration.fs(16,44): error FS0010: Unexpected keyword 'val' in expression. Expected 'finally', 'with' or other token.
+
+/workspace/mochi/tests/machine/x/fs/group_items_iteration.fs(22,39): error FS0010: Unexpected symbol ']' in expression. Expected '->' or other token.

@@ -1,0 +1,28 @@
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(6,33): error FS0010: Unexpected keyword 'val' in expression
+
+/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(6,32): error FS0583: Unmatched '('
+
+/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(6,77): error FS0010: Unexpected keyword 'val' in expression
+
+/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(6,76): error FS0583: Unmatched '('
+
+/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(6,121): error FS0010: Unexpected keyword 'val' in expression
+
+/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(6,120): error FS0583: Unmatched '('
+
+/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(7,109): error FS0599: Missing qualification after '.'
+
+/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(7,110): error FS0010: Unexpected keyword 'val' in if/then/else expression. Expected incomplete structured construct at or before this point or other token.
+
+/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(7,92): error FS0583: Unmatched '('
+
+/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(7,73): error FS3123: Missing 'do' in 'for' expression. Expected 'for <pat> in <expr> do <expr>'.
+
+/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(7,152): error FS0599: Missing qualification after '.'
+
+/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(7,153): error FS0010: Unexpected keyword 'val' in expression. Expected '->' or other token.
+
+/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(7,161): error FS0010: Unexpected symbol ']' in expression. Expected '->' or other token.

@@ -1,0 +1,8 @@
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/machine/x/fs/group_by.fs(7,136): error FS0010: Unexpected symbol ']' in expression. Expected '->' or other token.
+
+/workspace/mochi/tests/machine/x/fs/group_by.fs(7,179): error FS0010: Unexpected symbol ']' in expression. Expected '->' or other token.
+
+/workspace/mochi/tests/machine/x/fs/group_by.fs(7,184): error FS0010: Unexpected symbol ']' in expression. Expected '->' or other token.

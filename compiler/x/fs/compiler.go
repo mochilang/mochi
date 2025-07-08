@@ -113,6 +113,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileContinue(s.Continue)
 	case s.If != nil:
 		return c.compileIfStmt(s.If)
+	case s.Type != nil:
+		return c.compileTypeDecl(s.Type)
 	default:
 		return fmt.Errorf("unsupported statement at line %d", s.Pos.Line)
 	}
@@ -330,6 +332,32 @@ func (c *Compiler) compileIfStmt(i *parser.IfStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	if len(t.Variants) > 0 {
+		return fmt.Errorf("variant types not supported")
+	}
+	c.writeln(fmt.Sprintf("type %s = {", t.Name))
+	c.indent++
+	for idx, m := range t.Members {
+		if m.Field == nil {
+			continue
+		}
+		ft, err := c.compileType(m.Field.Type)
+		if err != nil {
+			return err
+		}
+		line := fmt.Sprintf("%s: %s", m.Field.Name, ft)
+		if idx < len(t.Members)-1 {
+			c.writeln(line)
+		} else {
+			c.writeln(line)
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 	if e == nil || e.Binary == nil {
 		return "", fmt.Errorf("empty expr")
@@ -410,7 +438,29 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			continue
 		}
 		if op.Cast != nil {
-			// ignore type casts
+			if p.Target != nil && p.Target.Map != nil && len(p.Target.Map.Items) > 0 {
+				allSimple := true
+				fields := make([]string, len(p.Target.Map.Items))
+				for i, it := range p.Target.Map.Items {
+					keyName, ok := c.simpleIdentifier(it.Key)
+					if !ok {
+						keyName, ok = stringLiteral(it.Key)
+					}
+					if !ok {
+						allSimple = false
+						break
+					}
+					v, err := c.compileExpr(it.Value)
+					if err != nil {
+						return "", err
+					}
+					fields[i] = fmt.Sprintf("%s = %s", keyName, v)
+				}
+				if allSimple && op.Cast.Type != nil && op.Cast.Type.Simple != nil {
+					val = fmt.Sprintf("{ %s }", strings.Join(fields, "; "))
+					continue
+				}
+			}
 			continue
 		}
 		return "", fmt.Errorf("unsupported postfix expression")
@@ -495,7 +545,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 					return fmt.Sprintf("printfn \"%%s\" (String.concat \" \" (List.map string %s))", args[0]), nil
 				}
 			}
-			return fmt.Sprintf("printfn \"%%A\" (%s)", args[0]), nil
+			return fmt.Sprintf("printfn \"%%s\" (string %s)", args[0]), nil
 		}
 		conv := make([]string, len(args))
 		for i, a := range args {
@@ -588,8 +638,12 @@ func (c *Compiler) compileFunExpr(f *parser.FunExpr) (string, error) {
 
 func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
 	items := make([]string, len(m.Items))
+	allSimple := true
 	for i, it := range m.Items {
-		k, err := c.compileExpr(it.Key)
+		if _, ok := c.simpleIdentifier(it.Key); !ok {
+			allSimple = false
+		}
+		k, err := c.compileMapKey(it.Key)
 		if err != nil {
 			return "", err
 		}
@@ -598,6 +652,18 @@ func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
 			return "", err
 		}
 		items[i] = fmt.Sprintf("(%s, %s)", k, v)
+	}
+	if allSimple {
+		fields := make([]string, len(m.Items))
+		for i, it := range m.Items {
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", err
+			}
+			name, _ := c.simpleIdentifier(it.Key)
+			fields[i] = fmt.Sprintf("%s = %s", name, v)
+		}
+		return "{| " + strings.Join(fields, "; ") + " |}", nil
 	}
 	return "dict [" + strings.Join(items, "; ") + "]", nil
 }
@@ -615,6 +681,43 @@ func (c *Compiler) compileStruct(s *parser.StructLiteral) (string, error) {
 		return fmt.Sprintf("{ %s }", strings.Join(fields, "; ")), nil
 	}
 	return fmt.Sprintf("{| %s |}", strings.Join(fields, "; ")), nil
+}
+
+func (c *Compiler) compileMapKey(e *parser.Expr) (string, error) {
+	if name, ok := c.simpleIdentifier(e); ok {
+		return fmt.Sprintf("\"%s\"", name), nil
+	}
+	return c.compileExpr(e)
+}
+
+func (c *Compiler) simpleIdentifier(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) > 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Selector == nil || len(p.Target.Selector.Tail) > 0 {
+		return "", false
+	}
+	return p.Target.Selector.Root, true
+}
+
+func stringLiteral(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) > 0 || u.Value == nil || u.Value.Target == nil {
+		return "", false
+	}
+	p := u.Value.Target
+	if p.Lit == nil || p.Lit.Str == nil {
+		return "", false
+	}
+	return *p.Lit.Str, true
 }
 
 func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
@@ -646,12 +749,13 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	b.WriteString("[ ")
 	for i, l := range loops {
 		if i > 0 {
-			b.WriteByte(' ')
+			b.WriteByte('\n')
+			b.WriteString("  ")
 		}
 		b.WriteString(l)
 	}
+	b.WriteByte(' ')
 	if cond != "" {
-		b.WriteByte(' ')
 		b.WriteString(cond)
 	}
 	b.WriteString("yield ")
@@ -725,6 +829,21 @@ func join(parts []string, sep string) string {
 		out += sep + p
 	}
 	return out
+}
+
+func rootPrimary(e *parser.Expr) *parser.Primary {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil {
+		return nil
+	}
+	return e.Binary.Left.Value.Target
+}
+
+func isMapLiteral(e *parser.Expr) *parser.MapLiteral {
+	p := rootPrimary(e)
+	if p != nil && p.Map != nil && len(e.Binary.Right) == 0 {
+		return p.Map
+	}
+	return nil
 }
 
 func repoRoot() (string, error) {
