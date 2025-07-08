@@ -20,6 +20,7 @@ type Book struct {
 	Author Person `json:"author"`
 }
 
+
 func main() {
 	book := Book{Title: "Go", Author: Person{Name: "Bob", Age: 42}}
 	_ = book

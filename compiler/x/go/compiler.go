@@ -212,6 +212,9 @@ func (c *Compiler) writeImports() {
 			c.writeln(fmt.Sprintf("\"%s\"", imp))
 		}
 	}
+	if c.needsJSON {
+		c.writeln("\"encoding/json\"")
+	}
 	c.indent--
 	c.writeln(")")
 	c.writeln("")
@@ -5387,4 +5390,27 @@ func (c *Compiler) addImport(im *parser.ImportStmt) error {
 		return fmt.Errorf("unsupported import language: %s", *im.Lang)
 	}
 	return nil
+}
+
+// simpleStringKey returns the identifier or string literal value of e if it is a simple
+// expression suitable for use as a map key.
+func simpleStringKey(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return *p.Target.Lit.Str, true
+	}
+	return "", false
 }
