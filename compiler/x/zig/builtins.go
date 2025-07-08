@@ -4,12 +4,12 @@ package zigcode
 
 func (c *Compiler) writeBuiltins() {
 	if c.needsAvgInt {
-		c.writeln("fn _avg_int(v: []const i32) f64 {")
+		c.writeln("fn _avg_int(v: []const i32) i32 {")
 		c.indent++
 		c.writeln("if (v.len == 0) return 0;")
-		c.writeln("var sum: f64 = 0;")
-		c.writeln("for (v) |it| { sum += @floatFromInt(it); }")
-		c.writeln("return sum / @as(f64, @floatFromInt(v.len));")
+		c.writeln("var sum: i32 = 0;")
+		c.writeln("for (v) |it| { sum += it; }")
+		c.writeln("return @divTrunc(sum, @as(i32, @intCast(v.len)));")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")
