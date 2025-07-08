@@ -1,0 +1,11 @@
+line: 0
+error: fpc error: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/machine/x/pascal/load_yaml.pas
+load_yaml.pas(23,21) Warning: function result variable of a managed type does not seem to be initialized
+load_yaml.pas(40,19) Fatal: illegal character "'"'" ($22)
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode
+
