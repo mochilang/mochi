@@ -1,4 +1,6 @@
-line 1: unsupported expression at line 1
-   1: let customers = [
-   2:   { id: 1, name: "Alice" },
-   3:   { id: 2, name: "Bob" }
+line 9: unsupported expression at line 9
+   7:   { id: 101, customerId: 3, total: 80 }
+   8: ]
+   9: let result = from o in orders
+  10:              left join c in customers on o.customerId == c.id
+  11:              select {

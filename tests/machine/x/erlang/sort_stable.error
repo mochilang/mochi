@@ -1,4 +1,6 @@
-line 1: unsupported expression at line 1
-   1: let items = [
-   2:   { n: 1, v: "a" },
-   3:   { n: 1, v: "b" },
+line 6: unsupported expression at line 6
+   4:   { n: 2, v: "c" }
+   5: ]
+   6: let result = from i in items sort by i.n select i.v
+   7: print(result)
+   8: 

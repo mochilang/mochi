@@ -1,6 +1,1 @@
-line 3: unsupported expression at line 3
-   1: var x = 3
-   2: var y = 4
-   3: var m = {"a": x, "b": y}
-   4: print(m["a"], m["b"])
-   5: 
+line 0: print expects one argument

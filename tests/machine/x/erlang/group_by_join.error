@@ -1,5 +1,6 @@
-line 2: unsupported expression at line 2
-   1: // group_by_join.mochi
-   2: let customers = [
-   3:   { id: 1, name: "Alice" },
-   4:   { id: 2, name: "Bob" }
+line 11: unsupported expression at line 11
+   9:   { id: 102, customerId: 2 }
+  10: ]
+  11: let stats = from o in orders
+  12:             join from c in customers on o.customerId == c.id
+  13:             group by c.name into g

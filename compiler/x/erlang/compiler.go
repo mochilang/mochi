@@ -264,8 +264,25 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if len(p.Ops) > 0 {
-		return "", fmt.Errorf("postfix operations not supported")
+	for _, op := range p.Ops {
+		switch {
+		case op.Index != nil:
+			idxOp := op.Index
+			if idxOp.Start == nil || idxOp.Colon != nil || idxOp.End != nil || idxOp.Colon2 != nil || idxOp.Step != nil {
+				return "", fmt.Errorf("complex indexing not supported")
+			}
+			idx, err := c.compileExpr(idxOp.Start)
+			if err != nil {
+				return "", err
+			}
+			if isIntLiteral(idxOp.Start) {
+				val = fmt.Sprintf("lists:nth((%s)+1, %s)", idx, val)
+			} else {
+				val = fmt.Sprintf("maps:get(%s, %s)", idx, val)
+			}
+		default:
+			return "", fmt.Errorf("unsupported postfix at line %d", p.Target.Pos.Line)
+		}
 	}
 	return val, nil
 }
@@ -281,6 +298,30 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.refVar(p.Selector.Root), nil
 	case p.Call != nil:
 		return c.compileCall(p.Call)
+	case p.List != nil:
+		elems := make([]string, len(p.List.Elems))
+		for i, e := range p.List.Elems {
+			s, err := c.compileExpr(e)
+			if err != nil {
+				return "", err
+			}
+			elems[i] = s
+		}
+		return "[" + strings.Join(elems, ", ") + "]", nil
+	case p.Map != nil:
+		parts := make([]string, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			k, err := c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", err
+			}
+			parts[i] = fmt.Sprintf("%s => %s", k, v)
+		}
+		return "#{" + strings.Join(parts, ", ") + "}", nil
 	case p.Group != nil:
 		expr, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -293,7 +334,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 }
 
 func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
-	if call.Func == "print" {
+	switch call.Func {
+	case "print":
 		if len(call.Args) != 1 {
 			return "", fmt.Errorf("print expects one argument")
 		}
@@ -302,8 +344,22 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", err
 		}
 		return fmt.Sprintf("io:format(\"~p~n\", [%s])", arg), nil
+	case "len":
+		if len(call.Args) != 1 {
+			return "", fmt.Errorf("len expects 1 argument")
+		}
+		argExpr := call.Args[0]
+		arg, err := c.compileExpr(argExpr)
+		if err != nil {
+			return "", err
+		}
+		if isMapLiteralExpr(argExpr) {
+			return fmt.Sprintf("maps:size(%s)", arg), nil
+		}
+		return fmt.Sprintf("length(%s)", arg), nil
+	default:
+		return "", fmt.Errorf("unsupported function %s", call.Func)
 	}
-	return "", fmt.Errorf("unsupported function %s", call.Func)
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) string {
@@ -357,4 +413,27 @@ func capitalize(s string) string {
 		return s
 	}
 	return strings.ToUpper(s[:1]) + s[1:]
+}
+
+func isIntLiteral(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || len(u.Value.Ops) > 0 {
+		return false
+	}
+	lit := u.Value.Target.Lit
+	return lit != nil && lit.Int != nil
+}
+
+func isMapLiteralExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || len(u.Value.Ops) > 0 {
+		return false
+	}
+	return u.Value.Target.Map != nil
 }

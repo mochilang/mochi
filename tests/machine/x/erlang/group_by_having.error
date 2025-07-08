@@ -1,4 +1,6 @@
-line 1: unsupported expression at line 1
-   1: let people = [
-   2:   { name: "Alice", city: "Paris" },
-   3:   { name: "Bob", city: "Hanoi" },
+line 12: unsupported expression at line 12
+  10: 
+  11: let big =
+  12:   from p in people
+  13:   group by p.city into g
+  14:   having count(g) >= 4

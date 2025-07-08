@@ -1,5 +1,6 @@
-line 2: unsupported expression at line 2
-   1: // dataset-sort-take-limit.mochi
-   2: let products = [
-   3:   { name: "Laptop", price: 1500 },
-   4:   { name: "Smartphone", price: 900 },
+line 11: unsupported expression at line 11
+   9:   { name: "Headphones", price: 200 }
+  10: ]
+  11: let expensive = from p in products
+  12:                 sort by -p.price
+  13:                 skip 1
