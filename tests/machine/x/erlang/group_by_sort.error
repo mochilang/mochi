@@ -1,0 +1,6 @@
+line 8: unsupported expression at line 8
+   6: ]
+   7: let grouped =
+   8:   from i in items
+   9:   group by i.cat into g
+  10:   sort by -sum(from x in g select x.val)

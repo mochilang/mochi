@@ -1,0 +1,10 @@
+exit status 127
+/workspace/mochi/tests/machine/x/erlang/pure_global_fold.erl:5:10: variable 'K' is unbound
+/workspace/mochi/tests/machine/x/erlang/pure_global_fold.erl:8:5: Warning: variable 'K' is unused
+escript: There were compilation errors.
+
+   3: 
+   4: inc(X) ->
+   5:     (X + K).
+   6: 
+   7: main(_) ->
