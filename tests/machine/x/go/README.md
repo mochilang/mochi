@@ -2,7 +2,7 @@
 
 This directory contains Go source files generated from Mochi programs.
 
-## Progress: 59/97
+## Progress: 60/97
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -69,7 +69,7 @@ This directory contains Go source files generated from Mochi programs.
 - [ ] nested_function.mochi
 - [ ] order_by_map.mochi
 - [ ] outer_join.mochi
-- [ ] partial_application.mochi
+ - [x] partial_application.mochi
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [ ] pure_global_fold.mochi

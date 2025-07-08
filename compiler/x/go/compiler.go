@@ -10,6 +10,11 @@ import (
 	"mochi/parser"
 )
 
+type funSig struct {
+	params []*parser.Param
+	ret    *parser.TypeRef
+}
+
 // Compiler translates a subset of Mochi to Go source code.
 type Compiler struct {
 	buf           bytes.Buffer
@@ -23,11 +28,12 @@ type Compiler struct {
 	needsStrconv  bool
 	needsStrings  bool
 	structTypes   map[string]bool
+	funSigs       map[string]*funSig
 }
 
 // New creates a new Go compiler.
 func New() *Compiler {
-	return &Compiler{structTypes: make(map[string]bool)}
+	return &Compiler{structTypes: make(map[string]bool), funSigs: make(map[string]*funSig)}
 }
 
 // Compile translates the given program to Go.
@@ -43,6 +49,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.needsStrconv = false
 	c.needsStrings = false
 	c.structTypes = make(map[string]bool)
+	c.funSigs = make(map[string]*funSig)
 
 	var types bytes.Buffer
 	var funcs bytes.Buffer
@@ -51,6 +58,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	for _, s := range prog.Statements {
 		if s.Type != nil {
 			c.structTypes[s.Type.Name] = true
+		} else if s.Fun != nil {
+			c.funSigs[s.Fun.Name] = &funSig{params: s.Fun.Params, ret: s.Fun.Return}
 		}
 	}
 
@@ -690,6 +699,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					c.needsStrings = true
 					base := strings.TrimSuffix(val, ".contains")
 					val = fmt.Sprintf("strings.Contains(%s, %s)", base, args[0])
+				} else if sig, ok := c.funSigs[val]; ok && len(args) < len(sig.params) {
+					expr, err := c.partialFunc(val, sig, args)
+					if err != nil {
+						return "", err
+					}
+					val = expr
 				} else {
 					val = fmt.Sprintf("%s(%s)", val, join(args, ", "))
 				}
@@ -806,6 +821,9 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		c.needsStrconv = true
 		return fmt.Sprintf("strconv.Itoa(%s)", args[0]), nil
 	default:
+		if sig, ok := c.funSigs[call.Func]; ok && len(args) < len(sig.params) {
+			return c.partialFunc(call.Func, sig, args)
+		}
 		return fmt.Sprintf("%s(%s)", call.Func, argStr), nil
 	}
 }
@@ -880,6 +898,42 @@ func (c *Compiler) compileFunExpr(f *parser.FunExpr) (string, error) {
 	c.indent--
 	c.writeto(&buf, "}")
 	return strings.TrimSuffix(buf.String(), "\n"), nil
+}
+
+func (c *Compiler) partialFunc(name string, sig *funSig, args []string) (string, error) {
+	remain := sig.params[len(args):]
+	params := make([]string, len(remain))
+	for i, p := range remain {
+		typ, err := c.compileType(p.Type)
+		if err != nil {
+			return "", err
+		}
+		if c.structTypes[typ] {
+			typ = "*" + typ
+		}
+		params[i] = fmt.Sprintf("%s %s", p.Name, typ)
+	}
+	callArgs := append(append([]string{}, args...), paramNames(remain)...)
+	ret := ""
+	if sig.ret != nil {
+		t, err := c.compileType(sig.ret)
+		if err != nil {
+			return "", err
+		}
+		if c.structTypes[t] {
+			t = "*" + t
+		}
+		ret = " " + t
+	}
+	return fmt.Sprintf("func(%s)%s { return %s(%s) }", strings.Join(params, ", "), ret, name, strings.Join(callArgs, ", ")), nil
+}
+
+func paramNames(ps []*parser.Param) []string {
+	out := make([]string, len(ps))
+	for i, p := range ps {
+		out[i] = p.Name
+	}
+	return out
 }
 
 func (c *Compiler) compileIfExpr(i *parser.IfExpr) (string, error) {
