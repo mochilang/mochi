@@ -310,6 +310,14 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 						} else {
 							return AnyType{}
 						}
+					case GroupType:
+						if field == "items" {
+							cur = ListType{Elem: tt.Elem}
+						} else if field == "key" {
+							cur = AnyType{}
+						} else {
+							cur = AnyType{}
+						}
 					default:
 						return AnyType{}
 					}
@@ -482,10 +490,16 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 			}
 			child.SetVar(j.Var, je, true)
 		}
-		orig := env
-		env = child
-		elem := ExprType(p.Query.Select, env)
-		env = orig
+		var elem Type
+		if p.Query.Group != nil {
+			// evaluate group key for side effects
+			_ = ExprType(p.Query.Group.Exprs[0], child)
+			genv := NewEnv(child)
+			genv.SetVar(p.Query.Group.Name, GroupType{Elem: elemType}, true)
+			elem = ExprType(p.Query.Select, genv)
+		} else {
+			elem = ExprType(p.Query.Select, child)
+		}
 		return ListType{Elem: elem}
 	case p.Map != nil:
 		var keyType Type = AnyType{}
@@ -916,7 +930,46 @@ func TypeOfPrimaryBasic(p *parser.Primary, env *Env) Type {
 				}
 			}
 			if t, err := env.GetVar(p.Selector.Root); err == nil {
-				return t
+				cur := t
+				for i, field := range p.Selector.Tail {
+					last := i == len(p.Selector.Tail)-1
+					switch tt := cur.(type) {
+					case StructType:
+						if ft, ok := tt.Fields[field]; ok {
+							cur = ft
+						} else {
+							return AnyType{}
+						}
+					case MapType:
+						cur = tt.Value
+					case ListType:
+						if field == "contains" {
+							cur = FuncType{Params: []Type{tt.Elem}, Return: BoolType{}}
+						} else {
+							cur = tt.Elem
+						}
+					case StringType:
+						if field == "contains" {
+							cur = FuncType{Params: []Type{StringType{}}, Return: BoolType{}}
+						} else {
+							return AnyType{}
+						}
+					case GroupType:
+						if field == "items" {
+							cur = ListType{Elem: tt.Elem}
+						} else if field == "key" {
+							cur = AnyType{}
+						} else {
+							cur = AnyType{}
+						}
+					default:
+						return AnyType{}
+					}
+					if last {
+						return cur
+					}
+				}
+				return cur
 			}
 		}
 	}

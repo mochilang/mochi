@@ -1,1 +1,6 @@
-cannot iterate over type any
+Error on line 0: output mismatch
+-- got --
+[map[tag:a total:3] map[tag:b total:3]]
+-- want --
+map[tag:a total:3] map[tag:b total:3]
+1: //go:build ignore

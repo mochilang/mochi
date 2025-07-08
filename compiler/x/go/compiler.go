@@ -1998,7 +1998,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 						base = fmt.Sprintf("%s.Key", base)
 						typ = types.AnyType{}
 					} else if field == "items" {
-						base = fmt.Sprintf("%s.Items", base)
+						c.use("_convSlice")
+						base = fmt.Sprintf("_convSlice[any,%s](%s.Items)", goType(tt.Elem), base)
 						typ = types.ListType{Elem: tt.Elem}
 					} else {
 						base = fmt.Sprintf("%s[%q]", base, field)

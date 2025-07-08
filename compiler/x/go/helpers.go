@@ -56,6 +56,10 @@ var goReserved = map[string]bool{
 	"continue": true, "for": true, "import": true, "return": true, "var": true,
 }
 
+var goImportNames = map[string]bool{
+	"data": true,
+}
+
 func sanitizeName(name string) string {
 	if name == "_" {
 		return "v"
@@ -74,7 +78,7 @@ func sanitizeName(name string) string {
 	if sanitized == "" || !((sanitized[0] >= 'A' && sanitized[0] <= 'Z') || (sanitized[0] >= 'a' && sanitized[0] <= 'z') || sanitized[0] == '_') {
 		sanitized = "_" + sanitized
 	}
-	if goReserved[sanitized] {
+	if goReserved[sanitized] || goImportNames[sanitized] {
 		sanitized = "_" + sanitized
 	}
 	return sanitized

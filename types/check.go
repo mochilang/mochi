@@ -1516,8 +1516,18 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 				}
 				return nil, errUnknownField(p.Pos, field, t)
 			case GroupType:
-				typ = AnyType{}
-				continue
+				gt := t
+				switch field {
+				case "items":
+					typ = ListType{Elem: gt.Elem}
+					continue
+				case "key":
+					typ = AnyType{}
+					continue
+				default:
+					typ = AnyType{}
+					continue
+				}
 			case StringType:
 				if field == "contains" {
 					typ = FuncType{Params: []Type{StringType{}}, Return: BoolType{}}
