@@ -44,6 +44,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileLet(s.Let)
 	case s.Var != nil:
 		return c.compileVar(s.Var)
+	case s.Type != nil:
+		return c.compileTypeDecl(s.Type)
 	case s.Assign != nil:
 		return c.compileAssign(s.Assign)
 	case s.Fun != nil:
@@ -148,6 +150,32 @@ func (c *Compiler) compileReturn(r *parser.ReturnStmt) error {
 		val = v
 	}
 	c.writeln("return " + val + ";")
+	return nil
+}
+
+func (c *Compiler) compileTypeDecl(td *parser.TypeDecl) error {
+	if len(td.Variants) > 0 {
+		return fmt.Errorf("variant types not supported")
+	}
+	c.writeln(fmt.Sprintf("class %s {", sanitizeName(td.Name)))
+	c.indent++
+	for _, m := range td.Members {
+		if m.Field != nil {
+			c.writeln(fmt.Sprintf("public $%s;", sanitizeName(m.Field.Name)))
+		}
+	}
+	c.writeln("public function __construct($fields = []) {")
+	c.indent++
+	for _, m := range td.Members {
+		if m.Field != nil {
+			orig := m.Field.Name
+			c.writeln(fmt.Sprintf("$this->%s = $fields['%s'] ?? null;", sanitizeName(orig), orig))
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	c.indent--
+	c.writeln("}")
 	return nil
 }
 
@@ -333,23 +361,61 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		op := p.Ops[i]
 		switch {
 		case op.Index != nil:
-			if op.Index.Start == nil || op.Index.Colon != nil {
-				return "", fmt.Errorf("complex indexing not supported")
-			}
-			idx, err := c.compileExpr(op.Index.Start)
-			if err != nil {
-				return "", err
-			}
-			val = fmt.Sprintf("%s[%s]", val, idx)
-			switch tt := t.(type) {
-			case types.ListType:
-				t = tt.Elem
-			case types.MapType:
-				t = tt.Value
-			case types.StringType:
-				t = types.StringType{}
-			default:
-				t = types.AnyType{}
+			if op.Index.Colon != nil || op.Index.Colon2 != nil || op.Index.Step != nil {
+				start := "0"
+				if op.Index.Start != nil {
+					s, err := c.compileExpr(op.Index.Start)
+					if err != nil {
+						return "", err
+					}
+					start = s
+				}
+				length := ""
+				if op.Index.End != nil {
+					e, err := c.compileExpr(op.Index.End)
+					if err != nil {
+						return "", err
+					}
+					length = fmt.Sprintf("%s - %s", e, start)
+				}
+				if _, ok := t.(types.StringType); ok {
+					if length == "" {
+						val = fmt.Sprintf("substr(%s, %s)", val, start)
+					} else {
+						val = fmt.Sprintf("substr(%s, %s, %s)", val, start, length)
+					}
+					t = types.StringType{}
+				} else {
+					if length == "" {
+						val = fmt.Sprintf("array_slice(%s, %s)", val, start)
+					} else {
+						val = fmt.Sprintf("array_slice(%s, %s, %s)", val, start, length)
+					}
+					if lt, ok := t.(types.ListType); ok {
+						t = lt.Elem
+					} else {
+						t = types.AnyType{}
+					}
+				}
+			} else {
+				if op.Index.Start == nil {
+					return "", fmt.Errorf("empty index")
+				}
+				idx, err := c.compileExpr(op.Index.Start)
+				if err != nil {
+					return "", err
+				}
+				val = fmt.Sprintf("%s[%s]", val, idx)
+				switch tt := t.(type) {
+				case types.ListType:
+					t = tt.Elem
+				case types.MapType:
+					t = tt.Value
+				case types.StringType:
+					t = types.StringType{}
+				default:
+					t = types.AnyType{}
+				}
 			}
 		case op.Field != nil:
 			name := op.Field.Name
@@ -389,7 +455,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			case "string":
 				val = fmt.Sprintf("(string)(%s)", val)
 			default:
-				val = fmt.Sprintf("(%s)(%s)", typ, val)
+				val = fmt.Sprintf("new %s(%s)", sanitizeName(typ), val)
 			}
 			t = types.AnyType{}
 		default:
@@ -435,6 +501,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return name, nil
 	case p.Call != nil:
 		return c.compileCall(p.Call)
+	case p.If != nil:
+		return c.compileIfExpr(p.If)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
 	case p.Group != nil:
@@ -469,6 +537,9 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("len expects 1 arg")
 		}
+		if types.IsStringType(types.TypeOfExprBasic(call.Args[0], c.env)) {
+			return fmt.Sprintf("strlen(%s)", args[0]), nil
+		}
 		return fmt.Sprintf("count(%s)", args[0]), nil
 	case "count":
 		if len(args) != 1 {
@@ -500,10 +571,35 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("substring expects 3 args")
 		}
 		return fmt.Sprintf("substr(%s, %s, %s)", args[0], args[1], args[2]), nil
+	case "str":
+		if len(args) != 1 {
+			return "", fmt.Errorf("str expects 1 arg")
+		}
+		return fmt.Sprintf("strval(%s)", args[0]), nil
+	case "json":
+		if len(args) != 1 {
+			return "", fmt.Errorf("json expects 1 arg")
+		}
+		return fmt.Sprintf("json_encode(%s)", args[0]), nil
+	case "values":
+		if len(args) != 1 {
+			return "", fmt.Errorf("values expects 1 arg")
+		}
+		return fmt.Sprintf("array_values(%s)", args[0]), nil
 	default:
 		name := sanitizeName(call.Func)
 		if c.env != nil {
-			if _, ok := c.env.GetFunc(call.Func); ok {
+			if fn, ok := c.env.GetFunc(call.Func); ok {
+				if len(call.Args) < len(fn.Params) {
+					missing := fn.Params[len(call.Args):]
+					params := make([]string, len(missing))
+					for i, p := range missing {
+						params[i] = "$" + sanitizeName(p.Name)
+					}
+					bodyArgs := append(append([]string{}, args...), params...)
+					return fmt.Sprintf("function(%s) { return %s(%s); }",
+						strings.Join(params, ", "), name, strings.Join(bodyArgs, ", ")), nil
+				}
 				return fmt.Sprintf("%s(%s)", name, strings.Join(args, ", ")), nil
 			}
 			if _, err := c.env.GetVar(call.Func); err == nil {
@@ -527,6 +623,32 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		return fmt.Sprintf("function(%s) { return %s; }", strings.Join(params, ", "), body), nil
 	}
 	return "", fmt.Errorf("block function expressions not supported")
+}
+
+func (c *Compiler) compileIfExpr(ix *parser.IfExpr) (string, error) {
+	cond, err := c.compileExpr(ix.Cond)
+	if err != nil {
+		return "", err
+	}
+	thenExpr, err := c.compileExpr(ix.Then)
+	if err != nil {
+		return "", err
+	}
+	if ix.ElseIf != nil {
+		elseExpr, err := c.compileIfExpr(ix.ElseIf)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("(%s ? %s : %s)", cond, thenExpr, elseExpr), nil
+	}
+	elseCode := "null"
+	if ix.Else != nil {
+		elseCode, err = c.compileExpr(ix.Else)
+		if err != nil {
+			return "", err
+		}
+	}
+	return fmt.Sprintf("(%s ? %s : %s)", cond, thenExpr, elseCode), nil
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) string {

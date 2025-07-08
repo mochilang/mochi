@@ -1,18 +1,7 @@
 <?php
 function boom($a, $b) {
-    _print("boom");
+    var_dump("boom");
     return true;
 }
-_print(false && boom(1, 2));
-_print(true || boom(1, 2));
-function _print(...$args) {
-    $parts = [];
-    foreach ($args as $a) {
-        if (is_array($a) || is_object($a)) {
-            $parts[] = json_encode($a);
-        } else {
-            $parts[] = strval($a);
-        }
-    }
-    echo implode(' ', $parts), PHP_EOL;
-}
+var_dump(false && boom(1, 2));
+var_dump(true || boom(1, 2));
