@@ -1,2 +1,0 @@
-line 0: slicing not supported
-print([1,2,3][1:3])
