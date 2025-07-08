@@ -170,6 +170,12 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 			val = fmt.Sprintf("(and %s %s)", val, rhs)
 		case "||":
 			val = fmt.Sprintf("(or %s %s)", val, rhs)
+		case "in":
+			if rightStr || isStrLeft {
+				val = fmt.Sprintf("(regexp-match? (regexp %s) %s)", val, rhs)
+			} else {
+				val = fmt.Sprintf("(if (member %s %s) #t #f)", val, rhs)
+			}
 		default:
 			return "", fmt.Errorf("unsupported operator %s", operator)
 		}
@@ -249,11 +255,35 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", fmt.Errorf("sum expects 1 arg")
 			}
 			return fmt.Sprintf("(apply + %s)", args[0]), nil
+		case "count":
+			if len(args) != 1 {
+				return "", fmt.Errorf("count expects 1 arg")
+			}
+			return fmt.Sprintf("(length %s)", args[0]), nil
 		case "len":
 			if len(args) != 1 {
 				return "", fmt.Errorf("len expects 1 arg")
 			}
+			// string-length for strings, length for lists
+			if isStringExpr(p.Call.Args[0]) {
+				return fmt.Sprintf("(string-length %s)", args[0]), nil
+			}
 			return fmt.Sprintf("(length %s)", args[0]), nil
+		case "min":
+			if len(args) != 1 {
+				return "", fmt.Errorf("min expects 1 arg")
+			}
+			return fmt.Sprintf("(apply min %s)", args[0]), nil
+		case "max":
+			if len(args) != 1 {
+				return "", fmt.Errorf("max expects 1 arg")
+			}
+			return fmt.Sprintf("(apply max %s)", args[0]), nil
+		case "values":
+			if len(args) != 1 {
+				return "", fmt.Errorf("values expects 1 arg")
+			}
+			return fmt.Sprintf("(hash-values %s)", args[0]), nil
 		case "str":
 			if len(args) != 1 {
 				return "", fmt.Errorf("str expects 1 arg")
@@ -486,4 +516,11 @@ func isStringPostfix(p *parser.PostfixExpr) bool {
 
 func isStringUnary(u *parser.Unary) bool {
 	return isStringPostfix(u.Value)
+}
+
+func isStringExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	return isStringUnary(e.Binary.Left)
 }

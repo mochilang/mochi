@@ -1,2 +1,2 @@
 #lang racket
-(displayln (length "mochi"))
+(displayln (string-length "mochi"))

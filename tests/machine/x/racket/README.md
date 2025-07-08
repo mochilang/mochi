@@ -1,6 +1,6 @@
 # Machine Generated Racket Programs
 
-32/97 programs compiled
+36/97 programs compiled
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -11,7 +11,7 @@
 - [x] cast_string_to_int.mochi
 - [ ] cast_struct.mochi
 - [x] closure.mochi
-- [ ] count_builtin.mochi
+- [x] count_builtin.mochi
 - [ ] cross_join.mochi
 - [ ] cross_join_filter.mochi
 - [ ] cross_join_triple.mochi
@@ -36,7 +36,7 @@
 - [x] if_else.mochi
 - [x] if_then_else.mochi
 - [ ] if_then_else_nested.mochi
-- [ ] in_operator.mochi
+- [x] in_operator.mochi
 - [ ] in_operator_extended.mochi
 - [ ] inner_join.mochi
 - [ ] join_multi.mochi
@@ -45,7 +45,7 @@
 - [ ] left_join_multi.mochi
 - [x] len_builtin.mochi
 - [ ] len_map.mochi
-- [ ] len_string.mochi
+- [x] len_string.mochi
 - [x] let_and_print.mochi
 - [ ] list_assign.mochi
 - [ ] list_index.mochi
@@ -63,7 +63,7 @@
 - [ ] match_full.mochi
 - [x] math_ops.mochi
 - [ ] membership.mochi
-- [ ] min_max_builtin.mochi
+- [x] min_max_builtin.mochi
 - [x] nested_function.mochi
 - [ ] order_by_map.mochi
 - [ ] outer_join.mochi
@@ -82,7 +82,7 @@
 - [x] string_compare.mochi
 - [x] string_concat.mochi
 - [ ] string_contains.mochi
-- [ ] string_in_operator.mochi
+- [x] string_in_operator.mochi
 - [ ] string_index.mochi
 - [ ] string_prefix_slice.mochi
 - [x] substring_builtin.mochi
