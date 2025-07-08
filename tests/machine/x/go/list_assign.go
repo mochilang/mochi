@@ -7,5 +7,7 @@ import (
 )
 
 func main() {
-    fmt.Println(string([]rune("mochi")[1:4]))
+    nums := []int{1, 2}
+    nums[1] = 3
+    fmt.Println(nums[1])
 }

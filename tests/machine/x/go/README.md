@@ -2,7 +2,7 @@
 
 This directory contains Go source files generated from Mochi programs.
 
-## Progress: 28/97
+## Progress: 41/97
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -38,7 +38,7 @@ This directory contains Go source files generated from Mochi programs.
 - [x] if_else.mochi
 - [ ] if_then_else.mochi
 - [ ] if_then_else_nested.mochi
-- [ ] in_operator.mochi
+- [x] in_operator.mochi
 - [ ] in_operator_extended.mochi
 - [ ] inner_join.mochi
 - [ ] join_multi.mochi
@@ -49,9 +49,9 @@ This directory contains Go source files generated from Mochi programs.
 - [ ] len_map.mochi
 - [x] len_string.mochi
 - [x] let_and_print.mochi
-- [ ] list_assign.mochi
-- [ ] list_index.mochi
-- [ ] list_nested_assign.mochi
+- [x] list_assign.mochi
+- [x] list_index.mochi
+- [x] list_nested_assign.mochi
 - [ ] list_set_ops.mochi
 - [ ] load_yaml.mochi
 - [ ] map_assign.mochi
@@ -64,8 +64,8 @@ This directory contains Go source files generated from Mochi programs.
 - [ ] match_expr.mochi
 - [ ] match_full.mochi
 - [x] math_ops.mochi
-- [ ] membership.mochi
-- [ ] min_max_builtin.mochi
+- [x] membership.mochi
+- [x] min_max_builtin.mochi
 - [ ] nested_function.mochi
 - [ ] order_by_map.mochi
 - [ ] outer_join.mochi
@@ -78,17 +78,17 @@ This directory contains Go source files generated from Mochi programs.
 - [ ] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
-- [ ] slice.mochi
+- [x] slice.mochi
 - [ ] sort_stable.mochi
-- [ ] str_builtin.mochi
+- [x] str_builtin.mochi
 - [x] string_compare.mochi
 - [x] string_concat.mochi
-- [ ] string_contains.mochi
+- [x] string_contains.mochi
 - [ ] string_in_operator.mochi
-- [ ] string_index.mochi
-- [ ] string_prefix_slice.mochi
-- [ ] substring_builtin.mochi
-- [ ] sum_builtin.mochi
+- [x] string_index.mochi
+- [x] string_prefix_slice.mochi
+- [x] substring_builtin.mochi
+- [x] sum_builtin.mochi
 - [x] tail_recursion.mochi
 - [ ] test_block.mochi
 - [ ] tree_sum.mochi
