@@ -47,6 +47,7 @@ type Compiler struct {
 
 	aliases     map[string]string
 	lambdaCount int
+	tmp         int
 	lastType    string
 	returnType  string
 	funRet      map[string]string
@@ -64,6 +65,11 @@ func New(env *types.Env) *Compiler {
 		aliases:  make(map[string]string),
 		funRet:   make(map[string]string),
 	}
+}
+
+func (c *Compiler) newTmp() string {
+	c.tmp++
+	return fmt.Sprintf("__tmp%d", c.tmp)
 }
 
 // Compile translates the parsed program into C code.
@@ -907,6 +913,11 @@ func simpleMapKey(e *parser.Expr) string {
 }
 
 func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
+	if call.Func == "exists" && len(call.Args) == 1 {
+		if q := getQueryArg(call.Args[0]); q != nil {
+			return c.compileExistsQuery(q)
+		}
+	}
 	args := make([]string, len(call.Args))
 	for i, a := range call.Args {
 		s, err := c.compileExpr(a)
@@ -1300,6 +1311,17 @@ func simpleIdent(e *parser.Expr) string {
 	return ""
 }
 
+func getQueryArg(e *parser.Expr) *parser.QueryExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || len(u.Value.Ops) > 0 {
+		return nil
+	}
+	return u.Value.Target.Query
+}
+
 func primaryIdent(p *parser.Primary) string {
 	if p == nil || p.Selector == nil || len(p.Selector.Tail) > 0 {
 		return ""
@@ -1506,6 +1528,41 @@ func mapLiteral(e *parser.Expr) *parser.MapLiteral {
 		return nil
 	}
 	return u.Value.Target.Map
+}
+
+func (c *Compiler) compileExistsQuery(q *parser.QueryExpr) (string, error) {
+	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
+		return "", fmt.Errorf("unsupported query")
+	}
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	length, err := c.compileLenExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	cond := "true"
+	if q.Where != nil {
+		old := c.vars[q.Var]
+		c.vars[q.Var] = "int"
+		cond, err = c.compileExpr(q.Where)
+		if old == "" {
+			delete(c.vars, q.Var)
+		} else {
+			c.vars[q.Var] = old
+		}
+		if err != nil {
+			return "", err
+		}
+	}
+	name := fmt.Sprintf("exists_query_%d", c.lambdaCount)
+	c.lambdaCount++
+	fmt.Fprintf(&c.prelude, "static bool %s(const int* arr, int n) {\n", name)
+	fmt.Fprintf(&c.prelude, "    for (int i = 0; i < n; i++) { int %s = arr[i]; if (%s) return true; }\n", q.Var, cond)
+	fmt.Fprintf(&c.prelude, "    return false;\n}\n\n")
+	c.lastType = "int"
+	return fmt.Sprintf("%s(%s, %s)", name, src, length), nil
 }
 
 func (c *Compiler) compileInOp(left *parser.Unary, right *parser.PostfixExpr, leftStr, rightStr string) (string, error) {
