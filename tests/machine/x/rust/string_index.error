@@ -1,0 +1,17 @@
+line 0: compile: exit status 1
+error[E0277]: the type `str` cannot be indexed by `usize`
+ --> /workspace/mochi/tests/machine/x/rust/string_index.rs:3:24
+  |
+3 |     println!("{:?}", s[1 as usize]);
+  |                        ^^^^^^^^^^ string indices are ranges of `usize`
+  |
+  = help: the trait `SliceIndex<str>` is not implemented for `usize`
+          but trait `SliceIndex<[_]>` is implemented for it
+  = help: for that trait implementation, expected `[_]`, found `str`
+  = note: required for `str` to implement `Index<usize>`
+
+error: aborting due to 1 previous error
+
+For more information about this error, try `rustc --explain E0277`.
+
+fn main() {

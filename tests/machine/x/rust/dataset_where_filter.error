@@ -1,0 +1,111 @@
+line 0: compile: exit status 1
+error[E0308]: mismatched types
+ --> /workspace/mochi/tests/machine/x/rust/dataset_where_filter.rs:2:114
+  |
+2 | ...collections::HashMap::new(); m.insert("name", "Alice"); m.insert("age", 30); m }, { let mut m = std::collections::HashMap::new(); m.in...
+  |                                 -                -------     ------        ^^ expected `&str`, found integer
+  |                                 |                |           |
+  |                                 |                |           arguments to this method are incorrect
+  |                                 |                this argument has type `&str`...
+  |                                 ... which causes `m` to have type `HashMap<&str, &str>`
+  |
+help: the return type of this call is `{integer}` due to the type of the argument passed
+ --> /workspace/mochi/tests/machine/x/rust/dataset_where_filter.rs:2:98
+  |
+2 | ...(); m.insert("name", "Alice"); m.insert("age", 30); m }, { let mut m = std::collections::HashMap::new(); m.insert("name", "Bob"); m.in...
+  |                                   ^^^^^^^^^^^^^^^^--^
+  |                                                   |
+  |                                                   this argument influences the return type of `insert`
+note: method defined here
+ --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0308]: mismatched types
+ --> /workspace/mochi/tests/machine/x/rust/dataset_where_filter.rs:2:213
+  |
+2 | ...:collections::HashMap::new(); m.insert("name", "Bob"); m.insert("age", 15); m }, { let mut m = std::collections::HashMap::new(); m.ins...
+  |                                  -                -----     ------        ^^ expected `&str`, found integer
+  |                                  |                |         |
+  |                                  |                |         arguments to this method are incorrect
+  |                                  |                this argument has type `&str`...
+  |                                  ... which causes `m` to have type `HashMap<&str, &str>`
+  |
+help: the return type of this call is `{integer}` due to the type of the argument passed
+ --> /workspace/mochi/tests/machine/x/rust/dataset_where_filter.rs:2:197
+  |
+2 | ...ew(); m.insert("name", "Bob"); m.insert("age", 15); m }, { let mut m = std::collections::HashMap::new(); m.insert("name", "Charlie"); ...
+  |                                   ^^^^^^^^^^^^^^^^--^
+  |                                                   |
+  |                                                   this argument influences the return type of `insert`
+note: method defined here
+ --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0308]: mismatched types
+ --> /workspace/mochi/tests/machine/x/rust/dataset_where_filter.rs:2:316
+  |
+2 | ...ollections::HashMap::new(); m.insert("name", "Charlie"); m.insert("age", 65); m }, { let mut m = std::collections::HashMap::new(); m.i...
+  |                                -                ---------     ------        ^^ expected `&str`, found integer
+  |                                |                |             |
+  |                                |                |             arguments to this method are incorrect
+  |                                |                this argument has type `&str`...
+  |                                ... which causes `m` to have type `HashMap<&str, &str>`
+  |
+help: the return type of this call is `{integer}` due to the type of the argument passed
+ --> /workspace/mochi/tests/machine/x/rust/dataset_where_filter.rs:2:300
+  |
+2 | ...; m.insert("name", "Charlie"); m.insert("age", 65); m }, { let mut m = std::collections::HashMap::new(); m.insert("name", "Diana"); m....
+  |                                   ^^^^^^^^^^^^^^^^--^
+  |                                                   |
+  |                                                   this argument influences the return type of `insert`
+note: method defined here
+ --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0308]: mismatched types
+ --> /workspace/mochi/tests/machine/x/rust/dataset_where_filter.rs:2:417
+  |
+2 | ...collections::HashMap::new(); m.insert("name", "Diana"); m.insert("age", 45); m }];
+  |                                 -                -------     ------        ^^ expected `&str`, found integer
+  |                                 |                |           |
+  |                                 |                |           arguments to this method are incorrect
+  |                                 |                this argument has type `&str`...
+  |                                 ... which causes `m` to have type `HashMap<&str, &str>`
+  |
+help: the return type of this call is `{integer}` due to the type of the argument passed
+ --> /workspace/mochi/tests/machine/x/rust/dataset_where_filter.rs:2:401
+  |
+2 | ...(); m.insert("name", "Diana"); m.insert("age", 45); m }];
+  |                                   ^^^^^^^^^^^^^^^^--^
+  |                                                   |
+  |                                                   this argument influences the return type of `insert`
+note: method defined here
+ --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0609]: no field `age` on type `&HashMap<&str, &str>`
+ --> /workspace/mochi/tests/machine/x/rust/dataset_where_filter.rs:3:82
+  |
+3 |     let adults = { let mut tmp1 = Vec::new();for person in &people { if !(person.age >= 18) { continue; } tmp1.push({ let mut m = std::co...
+  |                                                                                  ^^^ unknown field
+
+error[E0609]: no field `name` on type `&HashMap<&str, &str>`
+ --> /workspace/mochi/tests/machine/x/rust/dataset_where_filter.rs:3:189
+  |
+3 | ...std::collections::HashMap::new(); m.insert("name", person.name); m.insert("age", person.age); m.insert("is_senior", person.age >= 60);...
+  |                                                              ^^^^ unknown field
+
+error[E0609]: no field `age` on type `&HashMap<&str, &str>`
+ --> /workspace/mochi/tests/machine/x/rust/dataset_where_filter.rs:3:219
+  |
+3 | ...(); m.insert("name", person.name); m.insert("age", person.age); m.insert("is_senior", person.age >= 60); m }); } tmp1 };
+  |                                                              ^^^ unknown field
+
+error[E0609]: no field `age` on type `&HashMap<&str, &str>`
+ --> /workspace/mochi/tests/machine/x/rust/dataset_where_filter.rs:3:254
+  |
+3 | ...m.insert("age", person.age); m.insert("is_senior", person.age >= 60); m }); } tmp1 };
+  |                                                              ^^^ unknown field
+
+error: aborting due to 8 previous errors
+
+Some errors have detailed explanations: E0308, E0609.
+For more information about an error, try `rustc --explain E0308`.
+
+fn main() {

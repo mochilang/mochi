@@ -1,0 +1,28 @@
+line 0: compile: exit status 1
+error[E0382]: use of moved value: `nums`
+  --> /workspace/mochi/tests/machine/x/rust/min_max_builtin.rs:12:26
+   |
+10 |     let nums = vec![3, 1, 4];
+   |         ---- move occurs because `nums` has type `Vec<i32>`, which does not implement the `Copy` trait
+11 |     println!("{:?}", min(nums));
+   |                          ---- value moved here
+12 |     println!("{:?}", max(nums));
+   |                          ^^^^ value used here after move
+   |
+note: consider changing this parameter type in function `min` to borrow instead if owning the value isn't necessary
+  --> /workspace/mochi/tests/machine/x/rust/min_max_builtin.rs:1:11
+   |
+1  | fn min(v: Vec<i32>) -> i32 {
+   |    ---    ^^^^^^^^ this parameter takes ownership of the value
+   |    |
+   |    in this function
+help: consider cloning the value if the performance cost is acceptable
+   |
+11 |     println!("{:?}", min(nums.clone()));
+   |                              ++++++++
+
+error: aborting due to 1 previous error
+
+For more information about this error, try `rustc --explain E0382`.
+
+fn min(v: Vec<i32>) -> i32 {
