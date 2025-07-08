@@ -18,10 +18,14 @@ import (
 type Compiler struct {
 	buf    bytes.Buffer
 	indent int
+	env    *types.Env
+	vars   map[string]string
 }
 
 // New creates a new Compiler instance.
-func New(env *types.Env) *Compiler { return &Compiler{} }
+func New(env *types.Env) *Compiler {
+	return &Compiler{env: env, vars: make(map[string]string)}
+}
 
 // Compile translates the parsed program into C code.
 func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
@@ -31,6 +35,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.writeln("#include <stdio.h>")
 	c.writeln("#include <stdbool.h>")
 	c.writeln("#include <stdlib.h>")
+	c.writeln("#include <string.h>")
 	c.writeln("")
 
 	for _, st := range p.Statements {
@@ -74,26 +79,35 @@ func (c *Compiler) writeIndent() {
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
+	old := c.vars
+	c.vars = make(map[string]string)
 	c.writeIndent()
-	c.buf.WriteString("int ")
+	ret, _ := c.compileType(fn.Return)
+	c.buf.WriteString(ret)
+	c.buf.WriteByte(' ')
 	c.buf.WriteString(fn.Name)
 	c.buf.WriteString("(")
 	for i, p := range fn.Params {
 		if i > 0 {
 			c.buf.WriteString(", ")
 		}
-		c.buf.WriteString("int ")
+		pt, _ := c.compileType(p.Type)
+		c.buf.WriteString(pt)
+		c.buf.WriteByte(' ')
 		c.buf.WriteString(p.Name)
+		c.vars[p.Name] = pt
 	}
 	c.buf.WriteString(") {\n")
 	c.indent++
 	for _, st := range fn.Body {
 		if err := c.compileStmt(st); err != nil {
+			c.vars = old
 			return err
 		}
 	}
 	c.indent--
 	c.writeln("}")
+	c.vars = old
 	return nil
 }
 
@@ -111,8 +125,14 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				elems[i] = s
 			}
 			fmt.Fprintf(&c.buf, "int %s[] = {%s};\n", s.Let.Name, strings.Join(elems, ", "))
+			c.vars[s.Let.Name] = "int[]"
 		} else {
-			c.buf.WriteString("int ")
+			typ, _ := c.compileType(s.Let.Type)
+			if typ == "int" && isStringLiteral(s.Let.Value) {
+				typ = "const char*"
+			}
+			c.buf.WriteString(typ)
+			c.buf.WriteByte(' ')
 			c.buf.WriteString(s.Let.Name)
 			if s.Let.Value != nil {
 				val, err := c.compileExpr(s.Let.Value)
@@ -123,6 +143,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				c.buf.WriteString(val)
 			}
 			c.buf.WriteString(";\n")
+			c.vars[s.Let.Name] = typ
 		}
 	case s.Var != nil:
 		c.writeIndent()
@@ -136,8 +157,14 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				elems[i] = s
 			}
 			fmt.Fprintf(&c.buf, "int %s[] = {%s};\n", s.Var.Name, strings.Join(elems, ", "))
+			c.vars[s.Var.Name] = "int[]"
 		} else {
-			c.buf.WriteString("int ")
+			typ, _ := c.compileType(s.Var.Type)
+			if typ == "int" && isStringLiteral(s.Var.Value) {
+				typ = "const char*"
+			}
+			c.buf.WriteString(typ)
+			c.buf.WriteByte(' ')
 			c.buf.WriteString(s.Var.Name)
 			if s.Var.Value != nil {
 				val, err := c.compileExpr(s.Var.Value)
@@ -148,6 +175,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				c.buf.WriteString(val)
 			}
 			c.buf.WriteString(";\n")
+			c.vars[s.Var.Name] = typ
 		}
 	case s.Assign != nil:
 		c.writeIndent()
@@ -430,7 +458,10 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		switch len(args) {
 		case 1:
 			arg := args[0]
-			if strings.HasPrefix(arg, "\"") {
+			if isStringIndex(call.Args[0], c) {
+				return fmt.Sprintf("printf(\"%%c\\n\", %s)", arg), nil
+			}
+			if strings.HasPrefix(arg, "\"") || c.exprIsString(call.Args[0]) {
 				return fmt.Sprintf("printf(\"%s\\n\", %s)", "%s", arg), nil
 			}
 			return fmt.Sprintf("printf(\"%s\\n\", %s)", "%d", arg), nil
@@ -442,6 +473,25 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		default:
 			return "", fmt.Errorf("print expects one or two arguments")
 		}
+	} else if call.Func == "len" {
+		if len(args) != 1 {
+			return "", fmt.Errorf("len expects 1 arg")
+		}
+		if lst := listLiteral(call.Args[0]); lst != nil {
+			return fmt.Sprintf("%d", len(lst.Elems)), nil
+		}
+		if name := simpleIdent(call.Args[0]); name != "" {
+			if c.vars[name] == "int[]" {
+				return fmt.Sprintf("sizeof(%s)/sizeof(%s[0])", name, name), nil
+			}
+			if c.vars[name] == "const char*" {
+				return fmt.Sprintf("strlen(%s)", name), nil
+			}
+		}
+		if c.exprIsString(call.Args[0]) {
+			return fmt.Sprintf("strlen(%s)", args[0]), nil
+		}
+		return "", fmt.Errorf("len unsupported")
 	}
 	return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ", ")), nil
 }
@@ -477,6 +527,61 @@ func (c *Compiler) compileType(t *parser.TypeRef) (string, error) {
 		}
 	}
 	return "int", nil
+}
+
+func isStringLiteral(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if u.Value == nil || len(u.Ops) > 0 || len(u.Value.Ops) > 0 {
+		return false
+	}
+	return u.Value.Target.Lit != nil && u.Value.Target.Lit.Str != nil
+}
+
+func simpleIdent(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || len(u.Value.Ops) > 0 {
+		return ""
+	}
+	if u.Value.Target.Selector != nil && len(u.Value.Target.Selector.Tail) == 0 {
+		return u.Value.Target.Selector.Root
+	}
+	return ""
+}
+
+func (c *Compiler) exprIsString(e *parser.Expr) bool {
+	t := types.TypeOfExpr(e, c.env)
+	return types.IsStringType(t)
+}
+
+func isStringIndex(e *parser.Expr, c *Compiler) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if u.Value == nil || len(u.Value.Ops) != 1 {
+		return false
+	}
+	idx := u.Value.Ops[0]
+	if idx.Index == nil || idx.Index.Start == nil || idx.Index.Colon != nil {
+		return false
+	}
+	base := u.Value.Target
+	if base.Lit != nil && base.Lit.Str != nil {
+		return true
+	}
+	if base.Selector != nil {
+		name := base.Selector.Root
+		if c.vars[name] == "const char*" {
+			return true
+		}
+	}
+	return false
 }
 
 func listLiteral(e *parser.Expr) *parser.ListLiteral {
