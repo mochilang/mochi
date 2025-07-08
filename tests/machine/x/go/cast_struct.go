@@ -3,14 +3,15 @@
 package main
 
 import (
-	"fmt"
+    "fmt"
 )
 
 type Todo struct {
-	Title string
+    Title string
 }
 
+
 func main() {
-	todo := &(Todo)(map[interface{}]interface{}{"title": "hi"})
-	fmt.Println(todo.Title)
+    todo := &Todo{Title: "hi"}
+    fmt.Println(todo.Title)
 }

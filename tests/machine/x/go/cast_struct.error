@@ -1,4 +1,0 @@
-run: exit status 1
-# command-line-arguments
-../../../tests/machine/x/go/cast_struct.go:15:21: cannot convert map[interface{}]interface{}{…} (value of type map[interface{}]interface{}) to type Todo
-

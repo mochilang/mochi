@@ -617,6 +617,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	curr := p.Target
 	for _, op := range p.Ops {
 		switch {
 		case op.Index != nil:
@@ -645,6 +646,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					val = fmt.Sprintf("%s[%s]", val, idx)
 				}
 			}
+			curr = nil
 		case op.Call != nil:
 			args := make([]string, len(op.Call.Args))
 			for i, a := range op.Call.Args {
@@ -695,9 +697,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				c.needsContains = true
 				val = fmt.Sprintf("contains(%s, %s)", args[0], args[1])
 			default:
-				if strings.HasSuffix(val, ".contains") && len(args) == 1 {
+				if (strings.HasSuffix(val, ".contains") || strings.HasSuffix(val, ".Contains")) && len(args) == 1 {
 					c.needsStrings = true
-					base := strings.TrimSuffix(val, ".contains")
+					base := strings.TrimSuffix(strings.TrimSuffix(val, ".contains"), ".Contains")
 					val = fmt.Sprintf("strings.Contains(%s, %s)", base, args[0])
 				} else if sig, ok := c.funSigs[val]; ok && len(args) < len(sig.params) {
 					expr, err := c.partialFunc(val, sig, args)
@@ -709,19 +711,28 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					val = fmt.Sprintf("%s(%s)", val, join(args, ", "))
 				}
 			}
+			curr = nil
 		case op.Cast != nil:
 			typ, err := c.compileType(op.Cast.Type)
 			if err != nil {
 				return "", err
 			}
-			if typ == "int" && strings.HasPrefix(val, "\"") {
+			if c.structTypes[typ] && curr != nil && curr.Map != nil {
+				sv, err := c.mapToStructLiteral(curr.Map, typ)
+				if err != nil {
+					return "", err
+				}
+				val = sv
+			} else if typ == "int" && strings.HasPrefix(val, "\"") {
 				c.needsStrconv = true
 				val = fmt.Sprintf("func() int { v, _ := strconv.Atoi(%s); return v }()", val)
 			} else {
 				val = fmt.Sprintf("(%s)(%s)", typ, val)
 			}
+			curr = nil
 		case op.Field != nil:
 			val = fmt.Sprintf("%s.%s", val, strings.Title(op.Field.Name))
+			curr = nil
 		default:
 			return "", fmt.Errorf("postfix operations not supported")
 		}
@@ -854,6 +865,22 @@ func (c *Compiler) compileStructLiteral(s *parser.StructLiteral) (string, error)
 		fields[i] = fmt.Sprintf("%s: %s", strings.Title(f.Name), val)
 	}
 	return fmt.Sprintf("%s{%s}", s.Name, join(fields, ", ")), nil
+}
+
+func (c *Compiler) mapToStructLiteral(m *parser.MapLiteral, typ string) (string, error) {
+	fields := make([]string, len(m.Items))
+	for i, it := range m.Items {
+		if it.Key == nil || it.Key.Binary == nil || it.Key.Binary.Left == nil || it.Key.Binary.Left.Value == nil || it.Key.Binary.Left.Value.Target == nil || it.Key.Binary.Left.Value.Target.Lit == nil || it.Key.Binary.Left.Value.Target.Lit.Str == nil {
+			return "", fmt.Errorf("unsupported struct field key")
+		}
+		name := strings.Title(*it.Key.Binary.Left.Value.Target.Lit.Str)
+		val, err := c.compileExpr(it.Value)
+		if err != nil {
+			return "", err
+		}
+		fields[i] = fmt.Sprintf("%s: %s", name, val)
+	}
+	return fmt.Sprintf("%s{%s}", typ, join(fields, ", ")), nil
 }
 
 func (c *Compiler) compileFunExpr(f *parser.FunExpr) (string, error) {
