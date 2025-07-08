@@ -1,5 +1,5 @@
 fn main() {
-    let mut x = 5;
+    let x = 5;
     if x > 3 {
         println!("{:?}", "big");
     } else {

@@ -89,13 +89,13 @@
 - [ ] test_block.mochi
 - [ ] tree_sum.mochi
 - [ ] two-sum.mochi
-- [ ] typed_let.mochi
-- [ ] typed_var.mochi
+- [x] typed_let.mochi
+- [x] typed_var.mochi
 - [x] unary_neg.mochi
 - [ ] update_stmt.mochi
 - [ ] user_type_literal.mochi
 - [ ] values_builtin.mochi
-- [ ] var_assignment.mochi
-- [ ] while_loop.mochi
+- [x] var_assignment.mochi
+- [x] while_loop.mochi
 
-Compiled 20/97 programs.
+Compiled 24/97 programs.

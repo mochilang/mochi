@@ -1,5 +1,5 @@
 fn main() {
-    let mut s = "catch";
+    let s = "catch";
     println!("{:?}", "cat" in s);
     println!("{:?}", "dog" in s);
 }
