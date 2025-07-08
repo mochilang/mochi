@@ -1,0 +1,11 @@
+line 15: ../../../tests/machine/x/cpp/string_concat.cpp: In function ‘int main()’:
+../../../tests/machine/x/cpp/string_concat.cpp:15:21: error: invalid operands of types ‘const char [7]’ and ‘const char [6]’ to binary ‘operator+’
+   15 |     print(("hello " + "world"));
+      |            ~~~~~~~~ ^ ~~~~~~~
+      |            |          |
+      |            |          const char [6]
+      |            const char [7]
+
+ 14 | int main() {
+ 15 |     print(("hello " + "world"));
+ 16 |     return 0;

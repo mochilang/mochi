@@ -26,7 +26,7 @@ func TestCompilePrograms(t *testing.T) {
 	os.MkdirAll(outDir, 0755)
 
 	for _, f := range files {
-		name := filepath.Base(f)
+		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		t.Run(name, func(t *testing.T) {
 			data, err := os.ReadFile(f)
 			if err != nil {
@@ -47,7 +47,7 @@ func TestCompilePrograms(t *testing.T) {
 			if err := os.WriteFile(srcFile, code, 0644); err != nil {
 				t.Fatal(err)
 			}
-			bin := filepath.Join(outDir, name+".bin")
+			bin := filepath.Join(t.TempDir(), name)
 			cmd := exec.Command("g++", srcFile, "-std=c++17", "-o", bin)
 			if out, err := cmd.CombinedOutput(); err != nil {
 				parseLine := extractLine(string(out))

@@ -1,0 +1,8 @@
+line 16: ../../../tests/machine/x/cpp/values_builtin.cpp: In function ‘int main()’:
+../../../tests/machine/x/cpp/values_builtin.cpp:16:11: error: ‘values’ was not declared in this scope
+   16 |     print(values(m));
+      |           ^~~~~~
+
+ 15 |     auto m = std::unordered_map<std::string,int>{{"a", 1}, {"b", 2}, {"c", 3}};
+ 16 |     print(values(m));
+ 17 |     return 0;

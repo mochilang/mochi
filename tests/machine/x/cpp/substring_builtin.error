@@ -1,0 +1,8 @@
+line 15: ../../../tests/machine/x/cpp/substring_builtin.cpp: In function ‘int main()’:
+../../../tests/machine/x/cpp/substring_builtin.cpp:15:11: error: ‘substring’ was not declared in this scope
+   15 |     print(substring("mochi", 1, 4));
+      |           ^~~~~~~~~
+
+ 14 | int main() {
+ 15 |     print(substring("mochi", 1, 4));
+ 16 |     return 0;

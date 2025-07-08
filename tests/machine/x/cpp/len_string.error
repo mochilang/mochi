@@ -1,0 +1,8 @@
+line 15: ../../../tests/machine/x/cpp/len_string.cpp: In function ‘int main()’:
+../../../tests/machine/x/cpp/len_string.cpp:15:19: error: request for member ‘size’ in ‘"mochi"’, which is of non-class type ‘const char [6]’
+   15 |     print("mochi".size());
+      |                   ^~~~
+
+ 14 | int main() {
+ 15 |     print("mochi".size());
+ 16 |     return 0;

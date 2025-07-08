@@ -1,0 +1,23 @@
+line 16: ../../../tests/machine/x/cpp/map_membership.cpp: In function ‘int main()’:
+../../../tests/machine/x/cpp/map_membership.cpp:16:26: error: request for member ‘begin’ in ‘"a"’, which is of non-class type ‘const char [2]’
+   16 |     print((std::find("a".begin(), "a".end(), m) != "a".end()));
+      |                          ^~~~~
+../../../tests/machine/x/cpp/map_membership.cpp:16:39: error: request for member ‘end’ in ‘"a"’, which is of non-class type ‘const char [2]’
+   16 |     print((std::find("a".begin(), "a".end(), m) != "a".end()));
+      |                                       ^~~
+../../../tests/machine/x/cpp/map_membership.cpp:16:56: error: request for member ‘end’ in ‘"a"’, which is of non-class type ‘const char [2]’
+   16 |     print((std::find("a".begin(), "a".end(), m) != "a".end()));
+      |                                                        ^~~
+../../../tests/machine/x/cpp/map_membership.cpp:17:26: error: request for member ‘begin’ in ‘"c"’, which is of non-class type ‘const char [2]’
+   17 |     print((std::find("c".begin(), "c".end(), m) != "c".end()));
+      |                          ^~~~~
+../../../tests/machine/x/cpp/map_membership.cpp:17:39: error: request for member ‘end’ in ‘"c"’, which is of non-class type ‘const char [2]’
+   17 |     print((std::find("c".begin(), "c".end(), m) != "c".end()));
+      |                                       ^~~
+../../../tests/machine/x/cpp/map_membership.cpp:17:56: error: request for member ‘end’ in ‘"c"’, which is of non-class type ‘const char [2]’
+   17 |     print((std::find("c".begin(), "c".end(), m) != "c".end()));
+      |                                                        ^~~
+
+ 15 |     auto m = std::unordered_map<std::string,int>{{"a", 1}, {"b", 2}};
+ 16 |     print((std::find("a".begin(), "a".end(), m) != "a".end()));
+ 17 |     print((std::find("c".begin(), "c".end(), m) != "c".end()));
