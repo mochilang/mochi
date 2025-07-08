@@ -1,5 +1,3 @@
-//go:build archived
-
 package ccode
 
 // Runtime helper functions injected into generated C programs.
