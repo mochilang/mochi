@@ -360,9 +360,19 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if len(args) == 0 {
 					return "", fmt.Errorf("print expects at least 1 arg")
 				}
-				stmt := fmt.Sprintf("Transcript show: (%s) printString", args[0])
-				for _, a := range args[1:] {
-					stmt += fmt.Sprintf("; show: ' '; show: (%s) printString", a)
+				stmt := "Transcript show: "
+				if isStringLiteral(op.Call.Args[0]) {
+					stmt += args[0]
+				} else {
+					stmt += fmt.Sprintf("(%s) printString", args[0])
+				}
+				for i, a := range args[1:] {
+					stmt += "; show: ' '; show: "
+					if isStringLiteral(op.Call.Args[i+1]) {
+						stmt += a
+					} else {
+						stmt += fmt.Sprintf("(%s) printString", a)
+					}
 				}
 				val = stmt + "; cr"
 			} else {
@@ -492,9 +502,19 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if len(args) == 0 {
 				return "", fmt.Errorf("print expects at least 1 arg")
 			}
-			stmt := fmt.Sprintf("Transcript show: (%s) printString", args[0])
-			for _, a := range args[1:] {
-				stmt += fmt.Sprintf("; show: ' '; show: (%s) printString", a)
+			stmt := "Transcript show: "
+			if isStringLiteral(p.Call.Args[0]) {
+				stmt += args[0]
+			} else {
+				stmt += fmt.Sprintf("(%s) printString", args[0])
+			}
+			for i, a := range args[1:] {
+				stmt += "; show: ' '; show: "
+				if isStringLiteral(p.Call.Args[i+1]) {
+					stmt += a
+				} else {
+					stmt += fmt.Sprintf("(%s) printString", a)
+				}
 			}
 			return stmt + "; cr", nil
 		}
@@ -513,7 +533,8 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 	case l.Int != nil:
 		return fmt.Sprintf("%d", *l.Int)
 	case l.Str != nil:
-		return fmt.Sprintf("%q", *l.Str)
+		s := strings.ReplaceAll(*l.Str, "'", "''")
+		return fmt.Sprintf("'%s'", s)
 	case l.Float != nil:
 		return fmt.Sprintf("%g", *l.Float)
 	case l.Bool != nil:
@@ -524,6 +545,17 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 	default:
 		return "nil"
 	}
+}
+
+func isStringLiteral(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || len(u.Value.Ops) > 0 {
+		return false
+	}
+	return u.Value.Target != nil && u.Value.Target.Lit != nil && u.Value.Target.Lit.Str != nil
 }
 
 func (c *Compiler) blockString(stmts []*parser.Statement) (string, error) {
