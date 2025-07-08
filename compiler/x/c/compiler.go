@@ -35,8 +35,10 @@ type Compiler struct {
 	needsMin       bool
 	needsMax       bool
 	needsSubstr    bool
-	needsConcat    bool
-	needsToStr     bool
+
+	needsConcat bool
+	needsToStr  bool
+	needsNow    bool
 
 	needsSliceList bool
 
@@ -128,6 +130,9 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.writeln("#include <stdbool.h>")
 	c.writeln("#include <stdlib.h>")
 	c.writeln("#include <string.h>")
+	if c.needsNow {
+		c.writeln("#include <time.h>")
+	}
 	c.writeln("")
 
 	c.buf.Write(typeBuf.Bytes())
@@ -1230,6 +1235,46 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 		c.needsSubstr = true
 		return fmt.Sprintf("substr(%s, %s, %s)", args[0], args[1], args[2]), nil
+	} else if call.Func == "now" {
+		if len(args) != 0 {
+			return "", fmt.Errorf("now expects no args")
+		}
+		c.needsNow = true
+		return "_now()", nil
+	} else if call.Func == "json" {
+		if len(args) != 1 {
+			return "", fmt.Errorf("json expects 1 arg")
+		}
+		if ml := mapLiteral(call.Args[0]); ml != nil {
+			var fmtStr strings.Builder
+			fmtStr.WriteString("printf(\"{")
+			vals := make([]string, len(ml.Items))
+			for i, it := range ml.Items {
+				if i > 0 {
+					fmtStr.WriteString(",")
+				}
+				key := simpleMapKey(it.Key)
+				if key == "" {
+					return "", fmt.Errorf("json key unsupported")
+				}
+				key = strings.ReplaceAll(key, "\"", "\\\"")
+				fmtStr.WriteString("\\\"" + key + "\\\":%d")
+				v, err := c.compileExpr(it.Value)
+				if err != nil {
+					return "", err
+				}
+				vals[i] = v
+			}
+			fmtStr.WriteString("}\\n\"")
+			for _, v := range vals {
+				fmtStr.WriteString(", ")
+				fmtStr.WriteString(v)
+			}
+			fmtStr.WriteString(");")
+			c.writeln(fmtStr.String())
+			return "", nil
+		}
+		return "", fmt.Errorf("json unsupported")
 	} else if call.Func == "values" {
 		if len(args) != 1 {
 			return "", fmt.Errorf("values expects 1 arg")
@@ -1763,6 +1808,16 @@ func (c *Compiler) compileInOp(left *parser.Unary, right *parser.PostfixExpr, le
 }
 
 func (c *Compiler) writeHelpers() {
+	if c.needsNow {
+		c.writeln("long long _now() {")
+		c.indent++
+		c.writeln("struct timespec ts;")
+		c.writeln("clock_gettime(CLOCK_REALTIME, &ts);")
+		c.writeln("return (long long)ts.tv_sec * 1000000000LL + ts.tv_nsec;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
 	if c.needsGetSI || c.needsContainsSI {
 		c.writeln("typedef struct { const char* key; int value; } EntrySI;")
 		c.writeln("")
