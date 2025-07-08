@@ -1,0 +1,70 @@
+
+/workspace/mochi/tests/machine/x/hs/load_yaml.hs:187:10: error:
+    • Couldn't match expected type: (a0 -> Maybe a0)
+                                    -> Map.Map String String -> t
+                  with actual type: IO [Map.Map String String]
+    • The function ‘_load’ is applied to four value arguments,
+        but its type ‘Maybe String
+                      -> Maybe (Map.Map String String) -> IO [Map.Map String String]’
+        has only two
+      In the expression:
+        _load
+          Just "../interpreter/valid/people.yaml" Just
+          (Map.fromList [("format", "yaml")])
+      In an equation for ‘people’:
+          people
+            = _load
+                Just "../interpreter/valid/people.yaml" Just
+                (Map.fromList [("format", "yaml")])
+    • Relevant bindings include
+        people :: t
+          (bound at /workspace/mochi/tests/machine/x/hs/load_yaml.hs:187:1)
+    |
+187 | people = _load Just "../interpreter/valid/people.yaml" Just (Map.fromList [("format", "yaml")])
+    |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/load_yaml.hs:187:16: error:
+    • Couldn't match expected type: Maybe String
+                  with actual type: a1 -> Maybe a1
+    • Probable cause: ‘Just’ is applied to too few arguments
+      In the first argument of ‘_load’, namely ‘Just’
+      In the expression:
+        _load
+          Just "../interpreter/valid/people.yaml" Just
+          (Map.fromList [("format", "yaml")])
+      In an equation for ‘people’:
+          people
+            = _load
+                Just "../interpreter/valid/people.yaml" Just
+                (Map.fromList [("format", "yaml")])
+    |
+187 | people = _load Just "../interpreter/valid/people.yaml" Just (Map.fromList [("format", "yaml")])
+    |                ^^^^
+
+/workspace/mochi/tests/machine/x/hs/load_yaml.hs:187:21: error:
+    • Couldn't match type: [Char]
+                     with: Maybe (Map.Map String String)
+      Expected: Maybe (Map.Map String String)
+        Actual: String
+    • In the second argument of ‘_load’, namely
+        ‘"../interpreter/valid/people.yaml"’
+      In the expression:
+        _load
+          Just "../interpreter/valid/people.yaml" Just
+          (Map.fromList [("format", "yaml")])
+      In an equation for ‘people’:
+          people
+            = _load
+                Just "../interpreter/valid/people.yaml" Just
+                (Map.fromList [("format", "yaml")])
+    |
+187 | people = _load Just "../interpreter/valid/people.yaml" Just (Map.fromList [("format", "yaml")])
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+Context around line 187:
+  185|   deriving (Eq, Show, Generic)
+  186| 
+  187| people = _load Just "../interpreter/valid/people.yaml" Just (Map.fromList [("format", "yaml")])
+  188| 
+  189| adults = [Map.fromList [("name", name (p)), ("email", email (p))] | p <- filter (\p -> (age (p) >= 18)) people]

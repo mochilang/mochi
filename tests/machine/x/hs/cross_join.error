@@ -1,69 +1,22 @@
 
-/workspace/mochi/tests/machine/x/hs/cross_join.hs:105:35: error:
-    Data constructor not in scope: VInt :: t6 -> a
+/workspace/mochi/tests/machine/x/hs/cross_join.hs:183:258: error:
+    • Couldn't match type ‘AnyValue’ with ‘[Char]’
+      Expected: Map.Map String String
+        Actual: Map.Map String AnyValue
+    • In the second argument of ‘Map.lookup’, namely ‘c’
+      In the second argument of ‘fromMaybe’, namely
+        ‘(Map.lookup "name" c)’
+      In the first argument of ‘VString’, namely
+        ‘(fromMaybe (error "missing") (Map.lookup "name" c))’
     |
-105 | customers = [Map.fromList [("id", VInt (1)), ("name", VString ("Alice"))], Map.fromList [("id", VInt (2)), ("name", VString ("Bob"))], Map.fromList [("id", VInt (3)), ("name", VString ("Charlie"))]]
-    |                                   ^^^^
+183 | result = [Map.fromList [("orderId", VInt (fromMaybe (error "missing") (Map.lookup "id" o))), ("orderCustomerId", VInt (fromMaybe (error "missing") (Map.lookup "customerId" o))), ("pairedCustomerName", VString (fromMaybe (error "missing") (Map.lookup "name" c))), ("orderTotal", VInt (fromMaybe (error "missing") (Map.lookup "total" o)))] | o <- orders, c <- customers]
+    |                                                                                                                                                                                                                                                                  ^
 
-/workspace/mochi/tests/machine/x/hs/cross_join.hs:105:55: error:
-    Data constructor not in scope: VString :: String -> a
-    |
-105 | customers = [Map.fromList [("id", VInt (1)), ("name", VString ("Alice"))], Map.fromList [("id", VInt (2)), ("name", VString ("Bob"))], Map.fromList [("id", VInt (3)), ("name", VString ("Charlie"))]]
-    |                                                       ^^^^^^^
-
-/workspace/mochi/tests/machine/x/hs/cross_join.hs:105:97: error:
-    Data constructor not in scope: VInt :: t5 -> a
-    |
-105 | customers = [Map.fromList [("id", VInt (1)), ("name", VString ("Alice"))], Map.fromList [("id", VInt (2)), ("name", VString ("Bob"))], Map.fromList [("id", VInt (3)), ("name", VString ("Charlie"))]]
-    |                                                                                                 ^^^^
-
-/workspace/mochi/tests/machine/x/hs/cross_join.hs:105:117: error:
-    Data constructor not in scope: VString :: String -> a
-    |
-105 | customers = [Map.fromList [("id", VInt (1)), ("name", VString ("Alice"))], Map.fromList [("id", VInt (2)), ("name", VString ("Bob"))], Map.fromList [("id", VInt (3)), ("name", VString ("Charlie"))]]
-    |                                                                                                                     ^^^^^^^
-
-/workspace/mochi/tests/machine/x/hs/cross_join.hs:105:157: error:
-    Data constructor not in scope: VInt :: t4 -> a
-    |
-105 | customers = [Map.fromList [("id", VInt (1)), ("name", VString ("Alice"))], Map.fromList [("id", VInt (2)), ("name", VString ("Bob"))], Map.fromList [("id", VInt (3)), ("name", VString ("Charlie"))]]
-    |                                                                                                                                                             ^^^^
-
-/workspace/mochi/tests/machine/x/hs/cross_join.hs:105:177: error:
-    Data constructor not in scope: VString :: String -> a
-    |
-105 | customers = [Map.fromList [("id", VInt (1)), ("name", VString ("Alice"))], Map.fromList [("id", VInt (2)), ("name", VString ("Bob"))], Map.fromList [("id", VInt (3)), ("name", VString ("Charlie"))]]
-    |                                                                                                                                                                                 ^^^^^^^
-
-/workspace/mochi/tests/machine/x/hs/cross_join.hs:109:37: error:
-    Data constructor not in scope: VInt :: a5 -> a
-    |
-109 | result = [Map.fromList [("orderId", VInt (fromMaybe (error "missing") (Map.lookup "id" o))), ("orderCustomerId", VInt (fromMaybe (error "missing") (Map.lookup "customerId" o))), ("pairedCustomerName", VString (fromMaybe (error "missing") (Map.lookup "name" c))), ("orderTotal", VInt (fromMaybe (error "missing") (Map.lookup "total" o)))] | o <- orders, c <- customers]
-    |                                     ^^^^
-
-/workspace/mochi/tests/machine/x/hs/cross_join.hs:109:114: error:
-    Data constructor not in scope: VInt :: a5 -> a
-    |
-109 | result = [Map.fromList [("orderId", VInt (fromMaybe (error "missing") (Map.lookup "id" o))), ("orderCustomerId", VInt (fromMaybe (error "missing") (Map.lookup "customerId" o))), ("pairedCustomerName", VString (fromMaybe (error "missing") (Map.lookup "name" c))), ("orderTotal", VInt (fromMaybe (error "missing") (Map.lookup "total" o)))] | o <- orders, c <- customers]
-    |                                                                                                                  ^^^^
-
-/workspace/mochi/tests/machine/x/hs/cross_join.hs:109:202: error:
-    Data constructor not in scope: VString :: t7 -> a
-    |
-109 | result = [Map.fromList [("orderId", VInt (fromMaybe (error "missing") (Map.lookup "id" o))), ("orderCustomerId", VInt (fromMaybe (error "missing") (Map.lookup "customerId" o))), ("pairedCustomerName", VString (fromMaybe (error "missing") (Map.lookup "name" c))), ("orderTotal", VInt (fromMaybe (error "missing") (Map.lookup "total" o)))] | o <- orders, c <- customers]
-    |                                                                                                                                                                                                          ^^^^^^^
-
-/workspace/mochi/tests/machine/x/hs/cross_join.hs:109:279: error:
-    Data constructor not in scope: VInt :: a5 -> a
-    |
-109 | result = [Map.fromList [("orderId", VInt (fromMaybe (error "missing") (Map.lookup "id" o))), ("orderCustomerId", VInt (fromMaybe (error "missing") (Map.lookup "customerId" o))), ("pairedCustomerName", VString (fromMaybe (error "missing") (Map.lookup "name" c))), ("orderTotal", VInt (fromMaybe (error "missing") (Map.lookup "total" o)))] | o <- orders, c <- customers]
-    |                                                                                                                                                                                                                                                                                       ^^^^
-
-/workspace/mochi/tests/machine/x/hs/cross_join.hs:114:48: error:
-    • Couldn't match expected type: t0 -> Maybe a0 -> String
+/workspace/mochi/tests/machine/x/hs/cross_join.hs:188:48: error:
+    • Couldn't match expected type: t0 -> Maybe AnyValue -> String
                   with actual type: [Char]
     • The function ‘show’ is applied to three value arguments,
-        but its type ‘(a1 -> Maybe a1 -> a1) -> [Char]’ has only one
+        but its type ‘(a0 -> Maybe a0 -> a0) -> [Char]’ has only one
       In the expression:
         show fromMaybe (error "missing") (Map.lookup "orderId" entry)
       In the first argument of ‘unwords’, namely
@@ -73,18 +26,15 @@
           show
             fromMaybe (error "missing") (Map.lookup "orderCustomerId" entry),
           ....]’
-    • Relevant bindings include
-        entry :: Map.Map String a0
-          (bound at /workspace/mochi/tests/machine/x/hs/cross_join.hs:114:11)
     |
-114 |   mapM_ (\entry -> putStrLn (unwords ["Order", show fromMaybe (error "missing") (Map.lookup "orderId" entry), "(customerId:", show fromMaybe (error "missing") (Map.lookup "orderCustomerId" entry), ", total: $", show fromMaybe (error "missing") (Map.lookup "orderTotal" entry), ") paired with", show fromMaybe (error "missing") (Map.lookup "pairedCustomerName" entry)])) result
+188 |   mapM_ (\entry -> putStrLn (unwords ["Order", show fromMaybe (error "missing") (Map.lookup "orderId" entry), "(customerId:", show fromMaybe (error "missing") (Map.lookup "orderCustomerId" entry), ", total: $", show fromMaybe (error "missing") (Map.lookup "orderTotal" entry), ") paired with", show fromMaybe (error "missing") (Map.lookup "pairedCustomerName" entry)])) result
     |                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-/workspace/mochi/tests/machine/x/hs/cross_join.hs:114:127: error:
-    • Couldn't match expected type: t1 -> Maybe a0 -> String
+/workspace/mochi/tests/machine/x/hs/cross_join.hs:188:127: error:
+    • Couldn't match expected type: t1 -> Maybe AnyValue -> String
                   with actual type: [Char]
     • The function ‘show’ is applied to three value arguments,
-        but its type ‘(a2 -> Maybe a2 -> a2) -> [Char]’ has only one
+        but its type ‘(a1 -> Maybe a1 -> a1) -> [Char]’ has only one
       In the expression:
         show
           fromMaybe (error "missing") (Map.lookup "orderCustomerId" entry)
@@ -95,18 +45,15 @@
           show
             fromMaybe (error "missing") (Map.lookup "orderCustomerId" entry),
           ....]’
-    • Relevant bindings include
-        entry :: Map.Map String a0
-          (bound at /workspace/mochi/tests/machine/x/hs/cross_join.hs:114:11)
     |
-114 |   mapM_ (\entry -> putStrLn (unwords ["Order", show fromMaybe (error "missing") (Map.lookup "orderId" entry), "(customerId:", show fromMaybe (error "missing") (Map.lookup "orderCustomerId" entry), ", total: $", show fromMaybe (error "missing") (Map.lookup "orderTotal" entry), ") paired with", show fromMaybe (error "missing") (Map.lookup "pairedCustomerName" entry)])) result
+188 |   mapM_ (\entry -> putStrLn (unwords ["Order", show fromMaybe (error "missing") (Map.lookup "orderId" entry), "(customerId:", show fromMaybe (error "missing") (Map.lookup "orderCustomerId" entry), ", total: $", show fromMaybe (error "missing") (Map.lookup "orderTotal" entry), ") paired with", show fromMaybe (error "missing") (Map.lookup "pairedCustomerName" entry)])) result
     |                                                                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-/workspace/mochi/tests/machine/x/hs/cross_join.hs:114:212: error:
-    • Couldn't match expected type: t2 -> Maybe a0 -> String
+/workspace/mochi/tests/machine/x/hs/cross_join.hs:188:212: error:
+    • Couldn't match expected type: t2 -> Maybe AnyValue -> String
                   with actual type: [Char]
     • The function ‘show’ is applied to three value arguments,
-        but its type ‘(a3 -> Maybe a3 -> a3) -> [Char]’ has only one
+        but its type ‘(a2 -> Maybe a2 -> a2) -> [Char]’ has only one
       In the expression:
         show fromMaybe (error "missing") (Map.lookup "orderTotal" entry)
       In the first argument of ‘unwords’, namely
@@ -116,18 +63,15 @@
           show
             fromMaybe (error "missing") (Map.lookup "orderCustomerId" entry),
           ....]’
-    • Relevant bindings include
-        entry :: Map.Map String a0
-          (bound at /workspace/mochi/tests/machine/x/hs/cross_join.hs:114:11)
     |
-114 |   mapM_ (\entry -> putStrLn (unwords ["Order", show fromMaybe (error "missing") (Map.lookup "orderId" entry), "(customerId:", show fromMaybe (error "missing") (Map.lookup "orderCustomerId" entry), ", total: $", show fromMaybe (error "missing") (Map.lookup "orderTotal" entry), ") paired with", show fromMaybe (error "missing") (Map.lookup "pairedCustomerName" entry)])) result
+188 |   mapM_ (\entry -> putStrLn (unwords ["Order", show fromMaybe (error "missing") (Map.lookup "orderId" entry), "(customerId:", show fromMaybe (error "missing") (Map.lookup "orderCustomerId" entry), ", total: $", show fromMaybe (error "missing") (Map.lookup "orderTotal" entry), ") paired with", show fromMaybe (error "missing") (Map.lookup "pairedCustomerName" entry)])) result
     |                                                                                                                                                                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-/workspace/mochi/tests/machine/x/hs/cross_join.hs:114:295: error:
-    • Couldn't match expected type: t3 -> Maybe a0 -> String
+/workspace/mochi/tests/machine/x/hs/cross_join.hs:188:295: error:
+    • Couldn't match expected type: t3 -> Maybe AnyValue -> String
                   with actual type: [Char]
     • The function ‘show’ is applied to three value arguments,
-        but its type ‘(a4 -> Maybe a4 -> a4) -> [Char]’ has only one
+        but its type ‘(a3 -> Maybe a3 -> a3) -> [Char]’ has only one
       In the expression:
         show
           fromMaybe (error "missing") (Map.lookup "pairedCustomerName" entry)
@@ -138,17 +82,14 @@
           show
             fromMaybe (error "missing") (Map.lookup "orderCustomerId" entry),
           ....]’
-    • Relevant bindings include
-        entry :: Map.Map String a0
-          (bound at /workspace/mochi/tests/machine/x/hs/cross_join.hs:114:11)
     |
-114 |   mapM_ (\entry -> putStrLn (unwords ["Order", show fromMaybe (error "missing") (Map.lookup "orderId" entry), "(customerId:", show fromMaybe (error "missing") (Map.lookup "orderCustomerId" entry), ", total: $", show fromMaybe (error "missing") (Map.lookup "orderTotal" entry), ") paired with", show fromMaybe (error "missing") (Map.lookup "pairedCustomerName" entry)])) result
+188 |   mapM_ (\entry -> putStrLn (unwords ["Order", show fromMaybe (error "missing") (Map.lookup "orderId" entry), "(customerId:", show fromMaybe (error "missing") (Map.lookup "orderCustomerId" entry), ", total: $", show fromMaybe (error "missing") (Map.lookup "orderTotal" entry), ") paired with", show fromMaybe (error "missing") (Map.lookup "pairedCustomerName" entry)])) result
     |                                                                                                                                                                                                                                                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-Context around line 105:
-  103|            in map row (drop start ls)
-  104| 
-  105| customers = [Map.fromList [("id", VInt (1)), ("name", VString ("Alice"))], Map.fromList [("id", VInt (2)), ("name", VString ("Bob"))], Map.fromList [("id", VInt (3)), ("name", VString ("Charlie"))]]
-  106| 
-  107| orders = [Map.fromList [("id", 100), ("customerId", 1), ("total", 250)], Map.fromList [("id", 101), ("customerId", 2), ("total", 125)], Map.fromList [("id", 102), ("customerId", 1), ("total", 300)]]
+Context around line 183:
+  181| orders = [Map.fromList [("id", 100), ("customerId", 1), ("total", 250)], Map.fromList [("id", 101), ("customerId", 2), ("total", 125)], Map.fromList [("id", 102), ("customerId", 1), ("total", 300)]]
+  182| 
+  183| result = [Map.fromList [("orderId", VInt (fromMaybe (error "missing") (Map.lookup "id" o))), ("orderCustomerId", VInt (fromMaybe (error "missing") (Map.lookup "customerId" o))), ("pairedCustomerName", VString (fromMaybe (error "missing") (Map.lookup "name" c))), ("orderTotal", VInt (fromMaybe (error "missing") (Map.lookup "total" o)))] | o <- orders, c <- customers]
+  184| 
+  185| main :: IO ()

@@ -190,13 +190,13 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	header.WriteString("import qualified Data.Map as Map\n")
 	header.WriteString("import Data.List (intercalate, isPrefixOf)\n")
 	header.WriteString("import qualified Data.List as List\n")
-	if c.usesJSON || c.usesLoad || c.usesSave || c.usesFetch {
+	if c.usesJSON || c.usesLoad || c.usesSave || c.usesFetch || c.usesMap {
 		header.WriteString("import qualified Data.Aeson as Aeson\n")
 	}
 	if len(c.structs) > 0 {
 		header.WriteString("import GHC.Generics (Generic)\n")
 	}
-	if c.usesLoad || c.usesSave || c.usesFetch {
+	if c.usesLoad || c.usesSave || c.usesFetch || c.usesMap {
 		header.WriteString("import qualified Data.Aeson.KeyMap as KeyMap\n")
 		header.WriteString("import qualified Data.Aeson.Key as Key\n")
 		header.WriteString("import qualified Data.Vector as V\n")
@@ -205,7 +205,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if c.usesFetch {
 		header.WriteString("import System.Process (readProcess)\n")
 	}
-	if c.usesJSON || c.usesLoad || c.usesSave || c.usesFetch {
+	if c.usesJSON || c.usesLoad || c.usesSave || c.usesFetch || c.usesMap {
 		header.WriteString("import qualified Data.ByteString.Lazy.Char8 as BSL\n")
 	}
 	header.WriteString("\n")
@@ -213,7 +213,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if c.usesJSON {
 		header.WriteString(jsonHelper)
 	}
-	if c.usesLoad || c.usesSave || c.usesFetch {
+	if c.usesLoad || c.usesSave || c.usesFetch || c.usesMap {
 		header.WriteString(loadRuntime)
 	}
 	if c.usesExpect {

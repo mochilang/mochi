@@ -1,80 +1,214 @@
 
-/workspace/mochi/tests/machine/x/hs/group_by_join.hs:105:35: error:
-    Data constructor not in scope: VInt :: t3 -> a
+/workspace/mochi/tests/machine/x/hs/group_by_join.hs:107:10: error:
+    Not in scope: type constructor or class ‘Aeson.ToJSON’
+    NB: no module named ‘Aeson’ is imported.
     |
-105 | customers = [Map.fromList [("id", VInt (1)), ("name", VString ("Alice"))], Map.fromList [("id", VInt (2)), ("name", VString ("Bob"))]]
-    |                                   ^^^^
+107 | instance Aeson.ToJSON AnyValue where
+    |          ^^^^^^^^^^^^
 
-/workspace/mochi/tests/machine/x/hs/group_by_join.hs:105:55: error:
-    Data constructor not in scope: VString :: String -> a
+/workspace/mochi/tests/machine/x/hs/group_by_join.hs:108:21: error:
+    Not in scope: ‘Aeson.toJSON’
+    NB: no module named ‘Aeson’ is imported.
     |
-105 | customers = [Map.fromList [("id", VInt (1)), ("name", VString ("Alice"))], Map.fromList [("id", VInt (2)), ("name", VString ("Bob"))]]
-    |                                                       ^^^^^^^
+108 |   toJSON (VInt n) = Aeson.toJSON n
+    |                     ^^^^^^^^^^^^
 
-/workspace/mochi/tests/machine/x/hs/group_by_join.hs:105:97: error:
-    Data constructor not in scope: VInt :: t2 -> a
+/workspace/mochi/tests/machine/x/hs/group_by_join.hs:109:24: error:
+    Not in scope: ‘Aeson.toJSON’
+    NB: no module named ‘Aeson’ is imported.
     |
-105 | customers = [Map.fromList [("id", VInt (1)), ("name", VString ("Alice"))], Map.fromList [("id", VInt (2)), ("name", VString ("Bob"))]]
-    |                                                                                                 ^^^^
+109 |   toJSON (VDouble d) = Aeson.toJSON d
+    |                        ^^^^^^^^^^^^
 
-/workspace/mochi/tests/machine/x/hs/group_by_join.hs:105:117: error:
-    Data constructor not in scope: VString :: String -> a
+/workspace/mochi/tests/machine/x/hs/group_by_join.hs:110:24: error:
+    Not in scope: ‘Aeson.toJSON’
+    NB: no module named ‘Aeson’ is imported.
     |
-105 | customers = [Map.fromList [("id", VInt (1)), ("name", VString ("Alice"))], Map.fromList [("id", VInt (2)), ("name", VString ("Bob"))]]
-    |                                                                                                                     ^^^^^^^
+110 |   toJSON (VString s) = Aeson.toJSON s
+    |                        ^^^^^^^^^^^^
 
-/workspace/mochi/tests/machine/x/hs/group_by_join.hs:109:33: error:
-    Data constructor not in scope: VString :: t4 -> a
+/workspace/mochi/tests/machine/x/hs/group_by_join.hs:111:22: error:
+    Not in scope: ‘Aeson.toJSON’
+    NB: no module named ‘Aeson’ is imported.
     |
-109 | stats = [Map.fromList [("name", VString (key (g))), ("count", VInt (length (items g)))] | g <- _group_by [(o, c) | o <- orders, c <- customers, (fromMaybe (error "missing") (Map.lookup "customerId" (o)) == fromMaybe (error "missing") (Map.lookup "id" (c)))] (\(o, c) -> fromMaybe (error "missing") (Map.lookup "name" c)), let g = g]
-    |                                 ^^^^^^^
+111 |   toJSON (VBool b) = Aeson.toJSON b
+    |                      ^^^^^^^^^^^^
 
-/workspace/mochi/tests/machine/x/hs/group_by_join.hs:109:63: error:
-    Data constructor not in scope: VInt :: Int -> a
+/workspace/mochi/tests/machine/x/hs/group_by_join.hs:131:8: error:
+    Not in scope: ‘Aeson.decode’
+    NB: no module named ‘Aeson’ is imported.
     |
-109 | stats = [Map.fromList [("name", VString (key (g))), ("count", VInt (length (items g)))] | g <- _group_by [(o, c) | o <- orders, c <- customers, (fromMaybe (error "missing") (Map.lookup "customerId" (o)) == fromMaybe (error "missing") (Map.lookup "id" (c)))] (\(o, c) -> fromMaybe (error "missing") (Map.lookup "name" c)), let g = g]
-    |                                                               ^^^^
+131 |   case Aeson.decode (BSL.pack text) of
+    |        ^^^^^^^^^^^^
 
-/workspace/mochi/tests/machine/x/hs/group_by_join.hs:114:35: error:
-    • Couldn't match expected type: t0 -> Maybe a0 -> String
-                  with actual type: [Char]
-    • The function ‘show’ is applied to three value arguments,
-        but its type ‘(a1 -> Maybe a1 -> a1) -> [Char]’ has only one
-      In the expression:
-        show fromMaybe (error "missing") (Map.lookup "name" s)
-      In the first argument of ‘unwords’, namely
-        ‘[show fromMaybe (error "missing") (Map.lookup "name" s),
-          "orders:",
-          show fromMaybe (error "missing") (Map.lookup "count" s)]’
-    • Relevant bindings include
-        s :: Map.Map String a0
-          (bound at /workspace/mochi/tests/machine/x/hs/group_by_join.hs:114:11)
+/workspace/mochi/tests/machine/x/hs/group_by_join.hs:131:22: error:
+    Not in scope: ‘BSL.pack’
+    NB: no module named ‘BSL’ is imported.
     |
-114 |   mapM_ (\s -> putStrLn (unwords [show fromMaybe (error "missing") (Map.lookup "name" s), "orders:", show fromMaybe (error "missing") (Map.lookup "count" s)])) stats
-    |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+131 |   case Aeson.decode (BSL.pack text) of
+    |                      ^^^^^^^^
 
-/workspace/mochi/tests/machine/x/hs/group_by_join.hs:114:102: error:
-    • Couldn't match expected type: t1 -> Maybe a0 -> String
-                  with actual type: [Char]
-    • The function ‘show’ is applied to three value arguments,
-        but its type ‘(a2 -> Maybe a2 -> a2) -> [Char]’ has only one
-      In the expression:
-        show fromMaybe (error "missing") (Map.lookup "count" s)
-      In the first argument of ‘unwords’, namely
-        ‘[show fromMaybe (error "missing") (Map.lookup "name" s),
-          "orders:",
-          show fromMaybe (error "missing") (Map.lookup "count" s)]’
-    • Relevant bindings include
-        s :: Map.Map String a0
-          (bound at /workspace/mochi/tests/machine/x/hs/group_by_join.hs:114:11)
+/workspace/mochi/tests/machine/x/hs/group_by_join.hs:132:11: error:
+    Not in scope: data constructor ‘Aeson.Array’
+    NB: no module named ‘Aeson’ is imported.
     |
-114 |   mapM_ (\s -> putStrLn (unwords [show fromMaybe (error "missing") (Map.lookup "name" s), "orders:", show fromMaybe (error "missing") (Map.lookup "count" s)])) stats
-    |                                                                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+132 |     Just (Aeson.Array arr) -> map _valueToMap (V.toList arr)
+    |           ^^^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_join.hs:132:48: error:
+    Not in scope: ‘V.toList’
+    NB: no module named ‘V’ is imported.
+    |
+132 |     Just (Aeson.Array arr) -> map _valueToMap (V.toList arr)
+    |                                                ^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_join.hs:136:16: error:
+    Not in scope: type constructor or class ‘Aeson.Value’
+    NB: no module named ‘Aeson’ is imported.
+    |
+136 | _valueToMap :: Aeson.Value -> Map.Map String String
+    |                ^^^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_join.hs:137:14: error:
+    Not in scope: data constructor ‘Aeson.Object’
+    NB: no module named ‘Aeson’ is imported.
+    |
+137 | _valueToMap (Aeson.Object o) =
+    |              ^^^^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_join.hs:138:18: error:
+    Not in scope: ‘T.unpack’
+    NB: no module named ‘T’ is imported.
+    |
+138 |   Map.fromList [(T.unpack (Key.toText k), _valueToString v) | (k, v) <- KeyMap.toList o]
+    |                  ^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_join.hs:138:28: error:
+    Not in scope: ‘Key.toText’
+    NB: no module named ‘Key’ is imported.
+    |
+138 |   Map.fromList [(T.unpack (Key.toText k), _valueToString v) | (k, v) <- KeyMap.toList o]
+    |                            ^^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_join.hs:138:73: error:
+    Not in scope: ‘KeyMap.toList’
+    NB: no module named ‘KeyMap’ is imported.
+    Suggested fix: Perhaps use ‘Map.toList’ (imported from Data.Map)
+    |
+138 |   Map.fromList [(T.unpack (Key.toText k), _valueToString v) | (k, v) <- KeyMap.toList o]
+    |                                                                         ^^^^^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_join.hs:141:19: error:
+    Not in scope: type constructor or class ‘Aeson.Value’
+    NB: no module named ‘Aeson’ is imported.
+    |
+141 | _valueToString :: Aeson.Value -> String
+    |                   ^^^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_join.hs:142:17: error:
+    Not in scope: data constructor ‘Aeson.String’
+    NB: no module named ‘Aeson’ is imported.
+    |
+142 | _valueToString (Aeson.String s) = T.unpack s
+    |                 ^^^^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_join.hs:142:35: error:
+    Not in scope: ‘T.unpack’
+    NB: no module named ‘T’ is imported.
+    |
+142 | _valueToString (Aeson.String s) = T.unpack s
+    |                                   ^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_join.hs:143:17: error:
+    Not in scope: data constructor ‘Aeson.Number’
+    NB: no module named ‘Aeson’ is imported.
+    |
+143 | _valueToString (Aeson.Number n) = show n
+    |                 ^^^^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_join.hs:144:17: error:
+    Not in scope: data constructor ‘Aeson.Bool’
+    NB: no module named ‘Aeson’ is imported.
+    |
+144 | _valueToString (Aeson.Bool b) = if b then "true" else "false"
+    |                 ^^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_join.hs:147:41: error:
+    Not in scope: type constructor or class ‘Aeson.Value’
+    NB: no module named ‘Aeson’ is imported.
+    |
+147 | _mapToValue :: Map.Map String String -> Aeson.Value
+    |                                         ^^^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_join.hs:149:3: error:
+    Not in scope: data constructor ‘Aeson.Object’
+    NB: no module named ‘Aeson’ is imported.
+    |
+149 |   Aeson.Object $ KeyMap.fromList [(Key.fromString k, Aeson.String (T.pack v)) | (k, v) <- Map.toList m]
+    |   ^^^^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_join.hs:149:18: error:
+    Not in scope: ‘KeyMap.fromList’
+    NB: no module named ‘KeyMap’ is imported.
+    Suggested fix: Perhaps use ‘Map.fromList’ (imported from Data.Map)
+    |
+149 |   Aeson.Object $ KeyMap.fromList [(Key.fromString k, Aeson.String (T.pack v)) | (k, v) <- Map.toList m]
+    |                  ^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_join.hs:149:36: error:
+    Not in scope: ‘Key.fromString’
+    NB: no module named ‘Key’ is imported.
+    |
+149 |   Aeson.Object $ KeyMap.fromList [(Key.fromString k, Aeson.String (T.pack v)) | (k, v) <- Map.toList m]
+    |                                    ^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_join.hs:149:54: error:
+    Not in scope: data constructor ‘Aeson.String’
+    NB: no module named ‘Aeson’ is imported.
+    |
+149 |   Aeson.Object $ KeyMap.fromList [(Key.fromString k, Aeson.String (T.pack v)) | (k, v) <- Map.toList m]
+    |                                                      ^^^^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_join.hs:149:68: error:
+    Not in scope: ‘T.pack’
+    NB: no module named ‘T’ is imported.
+    |
+149 |   Aeson.Object $ KeyMap.fromList [(Key.fromString k, Aeson.String (T.pack v)) | (k, v) <- Map.toList m]
+    |                                                                    ^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_join.hs:165:61: error:
+    Not in scope: data constructor ‘Aeson.Array’
+    NB: no module named ‘Aeson’ is imported.
+    |
+165 |               val = if length objs == 1 then head objs else Aeson.Array (V.fromList objs)
+    |                                                             ^^^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_join.hs:165:74: error:
+    Not in scope: ‘V.fromList’
+    NB: no module named ‘V’ is imported.
+    Suggested fix: Perhaps use ‘Map.fromList’ (imported from Data.Map)
+    |
+165 |               val = if length objs == 1 then head objs else Aeson.Array (V.fromList objs)
+    |                                                                          ^^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_join.hs:166:34: error:
+    Not in scope: ‘BSL.unpack’
+    NB: no module named ‘BSL’ is imported.
+    |
+166 |            in _writeOutput path (BSL.unpack (Aeson.encode val))
+    |                                  ^^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_join.hs:166:46: error:
+    Not in scope: ‘Aeson.encode’
+    NB: no module named ‘Aeson’ is imported.
+    |
+166 |            in _writeOutput path (BSL.unpack (Aeson.encode val))
+    |                                              ^^^^^^^^^^^^
 
 
-Context around line 105:
-  103|            in map row (drop start ls)
-  104| 
-  105| customers = [Map.fromList [("id", VInt (1)), ("name", VString ("Alice"))], Map.fromList [("id", VInt (2)), ("name", VString ("Bob"))]]
+Context around line 107:
+  105| data AnyValue = VInt Int | VDouble Double | VString String | VBool Bool deriving (Show)
   106| 
-  107| orders = [Map.fromList [("id", 100), ("customerId", 1)], Map.fromList [("id", 101), ("customerId", 1)], Map.fromList [("id", 102), ("customerId", 2)]]
+  107| instance Aeson.ToJSON AnyValue where
+  108|   toJSON (VInt n) = Aeson.toJSON n
+  109|   toJSON (VDouble d) = Aeson.toJSON d
