@@ -1,0 +1,10 @@
+(define i 0)
+(let loop ()
+  (if (< i 3)
+    (begin
+      (begin (display i) (newline))
+      (set! i (+ i 1))
+      (loop)
+    )
+  '()
+)

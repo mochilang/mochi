@@ -1,0 +1,12 @@
+(define m (list (cons "a" 1) (cons "b" 2)))
+(let loop ((k_idx 0))
+  (if (< k_idx (length (map car m)))
+    (begin
+      (let ((k (list-ref (map car m) k_idx)))
+        (begin (display k) (newline))
+      )
+      (loop (+ k_idx 1))
+    )
+  '()
+  )
+)

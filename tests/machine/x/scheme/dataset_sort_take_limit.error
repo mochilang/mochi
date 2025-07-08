@@ -1,0 +1,7 @@
+error running dataset_sort_take_limit:
+ERROR on line 120 of file /workspace/mochi/tests/machine/x/scheme/dataset_sort_take_limit.scm: missing trailing ')' started on line: 79
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+
+context (line 120):
+)
+

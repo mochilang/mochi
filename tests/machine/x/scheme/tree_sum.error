@@ -1,0 +1,11 @@
+error running tree_sum:
+ERROR on line 8 of file /workspace/mochi/tests/machine/x/scheme/tree_sum.scm: undefined variable: Leaf
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+Searching for modules exporting Leaf ...
+... none found.
+
+context (line 8):
+
+(define t (list (cons 'left Leaf) (cons 'value 1) (cons 'right (list (cons 'left Leaf) (cons 'value 2) (cons 'right Leaf)))))
+(begin (display (sum_tree t)) (newline))
