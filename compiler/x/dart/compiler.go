@@ -36,9 +36,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.indent = 0
 	c.useIn = false
 
-	var body bytes.Buffer
+	// compile function declarations into a separate buffer so they appear
+	// before the main entry point
+	var fnBuf bytes.Buffer
 	old := c.buf
-	c.buf = body
+	c.buf.Reset()
 
 	for _, st := range prog.Statements {
 		if st.Fun != nil {
@@ -48,6 +50,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			c.writeln("")
 		}
 	}
+	fnBuf.Write(c.buf.Bytes())
+	c.buf.Reset()
 
 	c.writeln("void main() {")
 	c.indent++
@@ -62,7 +66,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.indent--
 	c.writeln("}")
 
-	bodyBytes := body.Bytes()
+	mainBytes := c.buf.Bytes()
 	c.buf = old
 
 	if c.useIn {
@@ -76,7 +80,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("")
 	}
 
-	c.buf.Write(bodyBytes)
+	// prepend function declarations then main body
+	c.buf.Write(fnBuf.Bytes())
+	c.buf.Write(mainBytes)
 	return c.buf.Bytes(), nil
 }
 
@@ -585,6 +591,9 @@ func (c *Compiler) writeln(s string) {
 func dartType(t *parser.TypeRef) string {
 	if t == nil {
 		return ""
+	}
+	if t.Fun != nil {
+		return "Function"
 	}
 	if t.Simple != nil {
 		switch *t.Simple {
