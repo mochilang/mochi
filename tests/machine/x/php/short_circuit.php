@@ -1,22 +1,18 @@
 <?php
-/**
- * @param int $a
- * @param int $b
- * @return bool
- */
-function mochi_boom($a, $b) {
-	_print("boom");
-	return true;
+function boom($a, $b) {
+    _print("boom");
+    return true;
 }
-
-_print((false && mochi_boom(1, 2)));
-_print((true || mochi_boom(1, 2)));
-
+_print(false && boom(1, 2));
+_print(true || boom(1, 2));
 function _print(...$args) {
     $parts = [];
     foreach ($args as $a) {
-        if (is_null($a)) { $parts[] = '<nil>'; }
-        elseif (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+        if (is_array($a) || is_object($a)) {
+            $parts[] = json_encode($a);
+        } else {
+            $parts[] = strval($a);
+        }
     }
     echo implode(' ', $parts), PHP_EOL;
 }

@@ -3,23 +3,12 @@
 package phpcode
 
 import (
-	"mochi/parser"
-	"mochi/types"
 	"sort"
 	"strings"
+
+	"mochi/parser"
+	"mochi/types"
 )
-
-func (c *Compiler) writeln(s string) {
-	c.writeIndent()
-	c.buf.WriteString(s)
-	c.buf.WriteByte('\n')
-}
-
-func (c *Compiler) writeIndent() {
-	for i := 0; i < c.indent; i++ {
-		c.buf.WriteByte('\t')
-	}
-}
 
 func sanitizeName(name string) string {
 	if name == "" {
@@ -40,57 +29,6 @@ func sanitizeName(name string) string {
 	return s
 }
 
-func isUnderscoreExpr(e *parser.Expr) bool {
-	if e == nil || len(e.Binary.Right) != 0 {
-		return false
-	}
-	u := e.Binary.Left
-	if len(u.Ops) != 0 {
-		return false
-	}
-	p := u.Value
-	if len(p.Ops) != 0 {
-		return false
-	}
-	return p.Target.Selector != nil && p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0
-}
-
-func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
-	if e == nil || len(e.Binary.Right) != 0 {
-		return nil, false
-	}
-	u := e.Binary.Left
-	if len(u.Ops) != 0 {
-		return nil, false
-	}
-	p := u.Value
-	if len(p.Ops) != 0 || p.Target.Call == nil {
-		return nil, false
-	}
-	return p.Target.Call, true
-}
-
-func identName(e *parser.Expr) (string, bool) {
-	if e == nil {
-		return "", false
-	}
-	if len(e.Binary.Right) != 0 {
-		return "", false
-	}
-	u := e.Binary.Left
-	if len(u.Ops) != 0 {
-		return "", false
-	}
-	p := u.Value
-	if len(p.Ops) != 0 {
-		return "", false
-	}
-	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
-		return p.Target.Selector.Root, true
-	}
-	return "", false
-}
-
 func (c *Compiler) isMapExpr(e *parser.Expr) bool {
 	if e == nil {
 		return false
@@ -109,10 +47,14 @@ func (c *Compiler) isMapExpr(e *parser.Expr) bool {
 	if p.Target.Map != nil {
 		return true
 	}
-	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 && c.env != nil {
-		if t, err := c.env.GetVar(p.Target.Selector.Root); err == nil {
-			if _, ok := t.(types.MapType); ok {
-				return true
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		if c != nil && c.needsJSON { /*no-op*/
+		}
+		if c != nil && c.env != nil {
+			if t, err := c.env.GetVar(p.Target.Selector.Root); err == nil {
+				if _, ok := t.(types.MapType); ok {
+					return true
+				}
 			}
 		}
 	}
@@ -137,11 +79,4 @@ func (c *Compiler) emitRuntime() {
 			c.buf.WriteString(code)
 		}
 	}
-}
-
-func typeString(t types.Type) string {
-	if t == nil {
-		return "any"
-	}
-	return t.String()
 }

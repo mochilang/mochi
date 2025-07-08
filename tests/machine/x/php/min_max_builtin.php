@@ -1,14 +1,15 @@
 <?php
-// nums: [int]
 $nums = [3, 1, 4];
 _print(min($nums));
-_print((count($nums) ? max($nums) : 0));
-
+_print(max($nums));
 function _print(...$args) {
     $parts = [];
     foreach ($args as $a) {
-        if (is_null($a)) { $parts[] = '<nil>'; }
-        elseif (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+        if (is_array($a) || is_object($a)) {
+            $parts[] = json_encode($a);
+        } else {
+            $parts[] = strval($a);
+        }
     }
     echo implode(' ', $parts), PHP_EOL;
 }

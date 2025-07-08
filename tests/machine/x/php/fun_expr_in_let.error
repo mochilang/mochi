@@ -1,0 +1,4 @@
+PHP Fatal error:  Uncaught Error: Call to undefined function square() in /workspace/mochi/tests/machine/x/php/fun_expr_in_let.php:3
+Stack trace:
+#0 {main}
+  thrown in /workspace/mochi/tests/machine/x/php/fun_expr_in_let.php on line 3

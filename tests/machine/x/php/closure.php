@@ -1,23 +1,17 @@
 <?php
-/**
- * @param int $n
- * @return fun(int): int
- */
-function mochi_makeAdder($n) {
-	return function ($x) use ($n) {
-	return ((is_array($x) && is_array($n)) ? array_merge($x, $n) : ((is_string($x) || is_string($n)) ? ($x . $n) : ($x + $n)));
-};
+function makeAdder($n) {
+    return function($x) { return $x + $n; };
 }
-
-// add10: fun(int): int
-$add10 = mochi_makeAdder(10);
-_print($add10(7));
-
+$add10 = makeAdder(10);
+_print(add10(7));
 function _print(...$args) {
     $parts = [];
     foreach ($args as $a) {
-        if (is_null($a)) { $parts[] = '<nil>'; }
-        elseif (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+        if (is_array($a) || is_object($a)) {
+            $parts[] = json_encode($a);
+        } else {
+            $parts[] = strval($a);
+        }
     }
     echo implode(' ', $parts), PHP_EOL;
 }

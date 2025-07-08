@@ -1,23 +1,19 @@
 <?php
-/**
- * @param int $n
- * @param int $acc
- * @return int
- */
-function mochi_sum_rec($n, $acc) {
-	if (($n == 0)) {
-		return $acc;
-	}
-	return mochi_sum_rec(($n - 1), ((is_array($acc) && is_array($n)) ? array_merge($acc, $n) : ((is_string($acc) || is_string($n)) ? ($acc . $n) : ($acc + $n))));
+function sum_rec($n, $acc) {
+    if ($n == 0) {
+        return $acc;
+    }
+    return sum_rec($n - 1, $acc + $n);
 }
-
-_print(mochi_sum_rec(10, 0));
-
+_print(sum_rec(10, 0));
 function _print(...$args) {
     $parts = [];
     foreach ($args as $a) {
-        if (is_null($a)) { $parts[] = '<nil>'; }
-        elseif (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+        if (is_array($a) || is_object($a)) {
+            $parts[] = json_encode($a);
+        } else {
+            $parts[] = strval($a);
+        }
     }
     echo implode(' ', $parts), PHP_EOL;
 }

@@ -1,0 +1,4 @@
+PHP Fatal error:  Uncaught TypeError: Unsupported operand types: string + string in /workspace/mochi/tests/machine/x/php/string_concat.php:2
+Stack trace:
+#0 {main}
+  thrown in /workspace/mochi/tests/machine/x/php/string_concat.php on line 2

@@ -1,1 +1,2 @@
-8
+PHP Warning:  Undefined variable $x in /workspace/mochi/tests/machine/x/php/nested_function.php on line 4
+5

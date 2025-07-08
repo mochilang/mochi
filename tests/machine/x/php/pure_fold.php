@@ -1,19 +1,16 @@
 <?php
-/**
- * @param int $x
- * @return int
- */
-function mochi_triple($x) {
-	return ($x * 3);
+function triple($x) {
+    return $x * 3;
 }
-
-_print(mochi_triple(((is_array(1) && is_array(2)) ? array_merge(1, 2) : ((is_string(1) || is_string(2)) ? (1 . 2) : (1 + 2)))));
-
+_print(triple(1 + 2));
 function _print(...$args) {
     $parts = [];
     foreach ($args as $a) {
-        if (is_null($a)) { $parts[] = '<nil>'; }
-        elseif (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+        if (is_array($a) || is_object($a)) {
+            $parts[] = json_encode($a);
+        } else {
+            $parts[] = strval($a);
+        }
     }
     echo implode(' ', $parts), PHP_EOL;
 }

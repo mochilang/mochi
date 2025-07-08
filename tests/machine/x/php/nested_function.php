@@ -1,23 +1,19 @@
 <?php
-/**
- * @param int $x
- * @return int
- */
-function mochi_outer($x) {
-	$inner = null;
-	$inner = function ($y) use (&$x, &$inner) {
-		return ((is_array($x) && is_array($y)) ? array_merge($x, $y) : ((is_string($x) || is_string($y)) ? ($x . $y) : ($x + $y)));
-	};
-	return $inner(5);
+function outer($x) {
+    function inner($y) {
+        return $x + $y;
+    }
+    return inner(5);
 }
-
-_print(mochi_outer(3));
-
+_print(outer(3));
 function _print(...$args) {
     $parts = [];
     foreach ($args as $a) {
-        if (is_null($a)) { $parts[] = '<nil>'; }
-        elseif (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+        if (is_array($a) || is_object($a)) {
+            $parts[] = json_encode($a);
+        } else {
+            $parts[] = strval($a);
+        }
     }
     echo implode(' ', $parts), PHP_EOL;
 }
