@@ -17,12 +17,12 @@ defmodule Main do
         {total} =
           Enum.reduce(_iter(g.items), {total}, fn x, {total} ->
             total = total + x.val
-            {total}
+            {:cont, {total}}
           end)
 
         _ = total
-        tmp = append.(tmp, %{tag: g.key, total: total})
-        {tmp}
+        tmp = tmp ++ [%{tag: g.key, total: total}]
+        {:cont, {tmp}}
       end)
 
     _ = tmp

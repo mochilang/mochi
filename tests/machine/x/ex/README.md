@@ -2,18 +2,18 @@
 
 This directory contains machine-generated Elixir source from compiling Mochi programs.
 
-**65/97 programs compiled and ran successfully.**
+**68/97 programs compiled and ran successfully.**
 
 ## Checklist
-- [ ] append_builtin.mochi
+- [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
 - [x] binary_precedence.mochi
 - [x] bool_chain.mochi
-- [ ] break_continue.mochi
+- [x] break_continue.mochi
 - [x] cast_string_to_int.mochi
 - [x] cast_struct.mochi
-- [ ] closure.mochi
+- [x] closure.mochi
 - [x] count_builtin.mochi
 - [x] cross_join.mochi
 - [x] cross_join_filter.mochi
@@ -47,8 +47,8 @@ This directory contains machine-generated Elixir source from compiling Mochi pro
 - [ ] left_join.mochi
 - [ ] left_join_multi.mochi
 - [x] len_builtin.mochi
-- [ ] len_map.mochi
-- [ ] len_string.mochi
+- [x] len_map.mochi
+- [x] len_string.mochi
 - [x] let_and_print.mochi
 - [ ] list_assign.mochi
 - [x] list_index.mochi
@@ -87,7 +87,7 @@ This directory contains machine-generated Elixir source from compiling Mochi pro
 - [x] string_contains.mochi
 - [x] string_in_operator.mochi
 - [x] string_index.mochi
-- [ ] string_prefix_slice.mochi
+- [x] string_prefix_slice.mochi
 - [ ] substring_builtin.mochi
 - [x] sum_builtin.mochi
 - [x] tail_recursion.mochi

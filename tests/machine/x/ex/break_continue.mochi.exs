@@ -4,17 +4,24 @@ defmodule Main do
     # numbers :: list(integer())
     numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-    for n <- numbers do
-      if rem(n, 2) == 0 do
-        throw(:continue)
-      end
+    _ =
+      Enum.reduce_while(numbers, :ok, fn n, _acc ->
+        try do
+          if rem(n, 2) == 0 do
+            throw(:continue)
+          end
 
-      if n > 7 do
-        throw(:break)
-      end
+          if n > 7 do
+            throw(:break)
+          end
 
-      IO.puts(Enum.join(Enum.map(["odd number:", n], &to_string(&1)), " "))
-    end
+          IO.puts(Enum.join(Enum.map(["odd number:", n], &to_string(&1)), " "))
+          {:cont, :ok}
+        catch
+          :break -> {:halt, :ok}
+          :continue -> {:cont, :ok}
+        end
+      end)
   end
 end
 

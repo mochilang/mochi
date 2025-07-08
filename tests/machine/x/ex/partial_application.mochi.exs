@@ -10,7 +10,7 @@ defmodule Main do
   end
 
   def main do
-    # add5 :: fun((integer()) -> integer())
+    # add5 :: (integer() -> integer())
     add5 = add(5)
     IO.puts(add5.(3))
   end
