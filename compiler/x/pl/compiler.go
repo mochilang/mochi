@@ -14,9 +14,10 @@ type Compiler struct {
 	buf      bytes.Buffer
 	indent   int
 	tmpCount int
+	vars     map[string]string
 }
 
-func New() *Compiler { return &Compiler{} }
+func New() *Compiler { return &Compiler{vars: make(map[string]string)} }
 
 func (c *Compiler) newTmp() string {
 	name := fmt.Sprintf("_V%d", c.tmpCount)
@@ -50,10 +51,26 @@ func sanitizeAtom(name string) string {
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
+	c.vars = make(map[string]string)
 	c.writeln(":- style_check(-singleton).")
+
+	// compile function definitions first
+	for _, st := range prog.Statements {
+		if st.Fun != nil {
+			if err := c.compileFun(st.Fun); err != nil {
+				c.writeln("% unsupported fun: " + err.Error())
+			}
+			c.writeln("")
+		}
+	}
+
+	// main body
 	c.writeln("main :-")
 	c.indent++
 	for _, s := range prog.Statements {
+		if s.Fun != nil {
+			continue
+		}
 		if err := c.compileStmt(s); err != nil {
 			c.writeln("% unsupported: " + err.Error())
 		}
@@ -66,12 +83,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
+	case s.Fun != nil:
+		return c.compileFun(s.Fun)
 	case s.Let != nil:
 		val, err := c.compileExpr(s.Let.Value)
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("%s = %s,", sanitizeVar(s.Let.Name), val))
+		name := sanitizeVar(s.Let.Name)
+		c.writeln(fmt.Sprintf("%s is %s,", name, val))
+		c.vars[s.Let.Name] = name
 	case s.Var != nil:
 		if s.Var.Value == nil {
 			return fmt.Errorf("var without init")
@@ -80,13 +101,17 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("nb_setval(%s, %s),", sanitizeAtom(s.Var.Name), val))
+		tmp := c.newTmp()
+		c.writeln(fmt.Sprintf("%s is %s,", tmp, val))
+		c.vars[s.Var.Name] = tmp
 	case s.Assign != nil:
 		val, err := c.compileExpr(s.Assign.Value)
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("nb_setval(%s, %s),", sanitizeAtom(s.Assign.Name), val))
+		tmp := c.newTmp()
+		c.writeln(fmt.Sprintf("%s is %s,", tmp, val))
+		c.vars[s.Assign.Name] = tmp
 	case s.If != nil:
 		return c.compileIf(s.If)
 	case s.While != nil:
@@ -161,7 +186,21 @@ func (c *Compiler) compileWhile(ws *parser.WhileStmt) error {
 
 func (c *Compiler) compileFor(fs *parser.ForStmt) error {
 	if fs.RangeEnd == nil {
-		return fmt.Errorf("for without range not supported")
+		src, err := c.compileExpr(fs.Source)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("(member(%s, %s),", sanitizeVar(fs.Name), src))
+		c.indent++
+		for _, st := range fs.Body {
+			if err := c.compileStmt(st); err != nil {
+				return err
+			}
+		}
+		c.writeln("fail")
+		c.indent--
+		c.writeln("; true),")
+		return nil
 	}
 	start, err := c.compileExpr(fs.Source)
 	if err != nil {
@@ -208,43 +247,41 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 	if e == nil {
 		return "0", nil
 	}
-	if len(e.Binary.Right) == 0 {
-		return c.compileUnary(e.Binary.Left)
+	res, err := c.compileUnary(e.Binary.Left)
+	if err != nil {
+		return "", err
 	}
-	if len(e.Binary.Right) == 1 {
-		left, err := c.compileUnary(e.Binary.Left)
-		if err != nil {
-			return "", err
-		}
-		op := e.Binary.Right[0]
-		right, err := c.compilePostfix(op.Right)
+	for _, op := range e.Binary.Right {
+		rhs, err := c.compilePostfix(op.Right)
 		if err != nil {
 			return "", err
 		}
 		switch op.Op {
 		case "+", "-", "*", "/":
-			return fmt.Sprintf("(%s %s %s)", left, op.Op, right), nil
+			res = fmt.Sprintf("(%s %s %s)", res, op.Op, rhs)
 		case "%":
-			return fmt.Sprintf("(%s mod %s)", left, right), nil
+			res = fmt.Sprintf("(%s mod %s)", res, rhs)
 		case "==":
-			return fmt.Sprintf("(%s =:= %s)", left, right), nil
+			res = fmt.Sprintf("(%s =:= %s)", res, rhs)
 		case "!=":
-			return fmt.Sprintf("(%s =\\= %s)", left, right), nil
+			res = fmt.Sprintf("(%s =\\= %s)", res, rhs)
 		case "<":
-			return fmt.Sprintf("(%s < %s)", left, right), nil
+			res = fmt.Sprintf("(%s < %s)", res, rhs)
 		case "<=":
-			return fmt.Sprintf("(%s =< %s)", left, right), nil
+			res = fmt.Sprintf("(%s =< %s)", res, rhs)
 		case ">":
-			return fmt.Sprintf("(%s > %s)", left, right), nil
+			res = fmt.Sprintf("(%s > %s)", res, rhs)
 		case ">=":
-			return fmt.Sprintf("(%s >= %s)", left, right), nil
+			res = fmt.Sprintf("(%s >= %s)", res, rhs)
 		case "&&":
-			return fmt.Sprintf("(%s, %s)", left, right), nil
+			res = fmt.Sprintf("(%s, %s)", res, rhs)
 		case "||":
-			return fmt.Sprintf("(%s ; %s)", left, right), nil
+			res = fmt.Sprintf("(%s ; %s)", res, rhs)
+		default:
+			return "", fmt.Errorf("unsupported op")
 		}
 	}
-	return "", fmt.Errorf("unsupported expression")
+	return res, nil
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
@@ -276,6 +313,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Lit != nil:
 		return c.compileLiteral(p.Lit)
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
+		if v, ok := c.vars[p.Selector.Root]; ok {
+			return v, nil
+		}
 		return sanitizeVar(p.Selector.Root), nil
 	case p.Group != nil:
 		return c.compileExpr(p.Group)
@@ -309,4 +349,38 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 	default:
 		return "", fmt.Errorf("unsupported literal")
 	}
+}
+
+func (c *Compiler) compileFun(fn *parser.FunStmt) error {
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		params[i] = sanitizeVar(p.Name)
+	}
+	ret := c.newTmp()
+	oldVars := c.vars
+	c.vars = make(map[string]string)
+	for i, p := range fn.Params {
+		c.vars[p.Name] = params[i]
+	}
+	c.writeln(fmt.Sprintf("%s(%s, %s) :-", sanitizeAtom(fn.Name), strings.Join(params, ", "), ret))
+	c.indent++
+	for _, st := range fn.Body {
+		if st.Return != nil {
+			val, err := c.compileExpr(st.Return.Value)
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("%s = %s.", ret, val))
+			c.indent--
+			c.vars = oldVars
+			return nil
+		}
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.writeln("true.")
+	c.indent--
+	c.vars = oldVars
+	return nil
 }
