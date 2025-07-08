@@ -1,15 +1,15 @@
 # Generated OCaml Programs
 
 This directory stores OCaml source files produced by the experimental Mochi to OCaml compiler under `compiler/x/ocaml`. Each entry corresponds to a program in `tests/vm/valid`.
-Compiled programs: 2/97
+Compiled programs: 7/97
 
 The checklist below indicates which programs compiled and ran successfully (`[x]`).
 
-- [ ] append_builtin.mochi
-- [ ] avg_builtin.mochi
-- [ ] basic_compare.mochi
-- [ ] binary_precedence.mochi
-- [ ] bool_chain.mochi
+- [x] append_builtin.mochi
+- [x] avg_builtin.mochi
+- [x] basic_compare.mochi
+- [x] binary_precedence.mochi
+- [x] bool_chain.mochi
 - [ ] break_continue.mochi
 - [ ] cast_string_to_int.mochi
 - [ ] cast_struct.mochi
