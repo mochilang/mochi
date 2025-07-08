@@ -1,0 +1,15 @@
+line 82:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/cross_join_triple.kt:82:26: error: unresolved reference: n
+        println(listOf(c.n, c.l, c.b).joinToString(" "))
+                         ^
+/workspace/mochi/tests/machine/x/kotlin/cross_join_triple.kt:82:31: error: unresolved reference: l
+        println(listOf(c.n, c.l, c.b).joinToString(" "))
+                              ^
+/workspace/mochi/tests/machine/x/kotlin/cross_join_triple.kt:82:36: error: unresolved reference: b
+        println(listOf(c.n, c.l, c.b).joinToString(" "))
+                                   ^
+
+ 81:     for (c in combos) {
+ 82:         println(listOf(c.n, c.l, c.b).joinToString(" "))
+ 83:     }
