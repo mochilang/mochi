@@ -13,6 +13,7 @@ let pairs = (() => {
 })()
 ;
 console.log("--- Even pairs ---");
-for (const p of pairs) {
+const _tmp2 = pairs;
+for (const p of (Array.isArray(_tmp2) ? _tmp2 : Object.keys(_tmp2))) {
   console.log(p.n, p.l);
 }

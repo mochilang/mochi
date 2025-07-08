@@ -1,7 +1,0 @@
-line 0: run: exit status 1
-[0m[1m[31merror[0m: Uncaught (in promise) ReferenceError: values is not defined
-console.log(values(m));
-[0m[31m        ^[0m
-    at [0m[36mfile:///workspace/mochi/tests/machine/x/ts/values_builtin.ts[0m:[0m[33m2[0m:[0m[33m9[0m
-
-let m = {a: 1, b: 2, c: 3};

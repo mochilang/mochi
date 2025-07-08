@@ -1,2 +1,2 @@
-line 0: unsupported statement at line 1
+line 0: unsupported statement at line 4
 type Counter { n: int }

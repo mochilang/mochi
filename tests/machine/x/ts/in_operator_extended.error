@@ -1,2 +1,9 @@
-line 0: unsupported expression at line 2
-let xs = [1, 2, 3]
+line 0: run: exit status 1
+true
+false
+[0m[1m[31merror[0m: Uncaught (in promise) TypeError: m.includes is not a function
+console.log((m.includes("a")));
+[0m[31m               ^[0m
+    at [0m[36mfile:///workspace/mochi/tests/machine/x/ts/in_operator_extended.ts[0m:[0m[33m15[0m:[0m[33m16[0m
+
+let xs = [1, 2, 3];

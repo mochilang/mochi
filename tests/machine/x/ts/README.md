@@ -4,7 +4,7 @@ This directory stores the generated TypeScript code and execution results for Mo
 
 ## Summary
 
-37/97 files compiled
+66/97 files compiled
 
 ## Checklist
 
@@ -13,20 +13,20 @@ This directory stores the generated TypeScript code and execution results for Mo
 - [x] basic_compare.mochi
 - [x] binary_precedence.mochi
 - [x] bool_chain.mochi
-- [ ] break_continue.mochi
+ - [x] break_continue.mochi
 - [x] cast_string_to_int.mochi
-- [ ] cast_struct.mochi
-- [ ] closure.mochi
-- [ ] count_builtin.mochi
+ - [x] cast_struct.mochi
+ - [x] closure.mochi
+ - [x] count_builtin.mochi
 - [x] cross_join.mochi
 - [x] cross_join_filter.mochi
 - [x] cross_join_triple.mochi
 - [x] dataset_sort_take_limit.mochi
 - [x] dataset_where_filter.mochi
-- [ ] exists_builtin.mochi
+ - [x] exists_builtin.mochi
 - [x] for_list_collection.mochi
 - [x] for_loop.mochi
-- [ ] for_map_collection.mochi
+ - [x] for_map_collection.mochi
 - [x] fun_call.mochi
 - [ ] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
@@ -49,9 +49,9 @@ This directory stores the generated TypeScript code and execution results for Mo
 - [ ] json_builtin.mochi
 - [ ] left_join.mochi
 - [ ] left_join_multi.mochi
-- [ ] len_builtin.mochi
-- [ ] len_map.mochi
-- [ ] len_string.mochi
+ - [x] len_builtin.mochi
+ - [x] len_map.mochi
+ - [x] len_string.mochi
 - [x] let_and_print.mochi
 - [ ] list_assign.mochi
 - [x] list_index.mochi
@@ -84,15 +84,15 @@ This directory stores the generated TypeScript code and execution results for Mo
 - [x] short_circuit.mochi
 - [x] slice.mochi
 - [ ] sort_stable.mochi
-- [ ] str_builtin.mochi
+ - [x] str_builtin.mochi
 - [x] string_compare.mochi
 - [x] string_concat.mochi
 - [ ] string_contains.mochi
 - [x] string_in_operator.mochi
 - [x] string_index.mochi
 - [x] string_prefix_slice.mochi
-- [ ] substring_builtin.mochi
-- [ ] sum_builtin.mochi
+ - [x] substring_builtin.mochi
+ - [x] sum_builtin.mochi
 - [x] tail_recursion.mochi
 - [ ] test_block.mochi
 - [ ] tree_sum.mochi
@@ -102,6 +102,6 @@ This directory stores the generated TypeScript code and execution results for Mo
 - [x] unary_neg.mochi
 - [ ] update_stmt.mochi
 - [ ] user_type_literal.mochi
-- [ ] values_builtin.mochi
+ - [x] values_builtin.mochi
 - [ ] var_assignment.mochi
 - [ ] while_loop.mochi

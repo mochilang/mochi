@@ -1,1 +1,1 @@
-console.log(len("mochi"));
+console.log("mochi".length);

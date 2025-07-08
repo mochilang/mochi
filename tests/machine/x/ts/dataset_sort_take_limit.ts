@@ -11,6 +11,7 @@ let expensive = (() => {
 })()
 ;
 console.log("--- Top products (excluding most expensive) ---");
-for (const item of expensive) {
+const _tmp2 = expensive;
+for (const item of (Array.isArray(_tmp2) ? _tmp2 : Object.keys(_tmp2))) {
   console.log(item.name, "costs $", item.price);
 }

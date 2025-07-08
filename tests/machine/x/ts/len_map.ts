@@ -1,1 +1,1 @@
-console.log(len({a: 1, b: 2}));
+console.log({a: 1, b: 2}.length);
