@@ -1,8 +1,0 @@
-line 16: run error: exit status 1
-lua: /workspace/mochi/tests/machine/x/lua/save_jsonl_stdout.lua:16: json library not found
-stack traceback:
-	[C]: in function 'error'
-	/workspace/mochi/tests/machine/x/lua/save_jsonl_stdout.lua:16: in function '__save'
-	/workspace/mochi/tests/machine/x/lua/save_jsonl_stdout.lua:41: in main chunk
-	[C]: in ?
-

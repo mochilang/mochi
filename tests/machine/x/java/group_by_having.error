@@ -1,4 +1,0 @@
-line 0: compile error: expression unsupported at line 12
-
-  1| let people = [
-  2|   { name: "Alice", city: "Paris" },

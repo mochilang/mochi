@@ -1,1 +1,0 @@
-Transcript show: 'hello'; cr.

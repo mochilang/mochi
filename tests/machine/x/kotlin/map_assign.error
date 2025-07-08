@@ -1,9 +1,0 @@
-line 63:
-OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
-/workspace/mochi/tests/machine/x/kotlin/map_assign.kt:63:14: error: the integer literal does not conform to the expected type MutableMap<String, Int>
-    scores = 2
-             ^
-
- 62:     var scores = mutableMapOf("alice" to 1)
- 63:     scores = 2
- 64:     println(scores["bob"])

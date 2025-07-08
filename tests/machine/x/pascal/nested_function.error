@@ -1,9 +1,0 @@
-fpc error: exit status 1
-Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
-Copyright (c) 1993-2021 by Florian Klaempfl and others
-Target OS: Linux for x86-64
-Compiling /workspace/mochi/tests/machine/x/pascal/nested_function.pas
-nested_function.pas(11,3) Error: Illegal expression
-nested_function.pas(11,12) Fatal: Syntax error, ";" expected but "identifier INNER" found
-Fatal: Compilation aborted
-Error: /usr/bin/ppcx64 returned an error exitcode

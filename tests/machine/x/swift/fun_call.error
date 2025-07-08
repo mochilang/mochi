@@ -1,3 +1,0 @@
-line 4: exit status 1
-}
-print(add(2, 3))

@@ -1,8 +1,0 @@
-cobc: exit status 1
-/workspace/mochi/tests/machine/x/cobol/short_circuit.cob:7: error: syntax error, unexpected USING
-/workspace/mochi/tests/machine/x/cobol/short_circuit.cob:8: error: syntax error, unexpected AND
-/workspace/mochi/tests/machine/x/cobol/short_circuit.cob:9: error: syntax error, unexpected USING
-/workspace/mochi/tests/machine/x/cobol/short_circuit.cob:10: error: syntax error, unexpected OR
-/workspace/mochi/tests/machine/x/cobol/short_circuit.cob: in paragraph 'BOOM':
-/workspace/mochi/tests/machine/x/cobol/short_circuit.cob:14: error: syntax error, unexpected PROCEDURE
-

@@ -1,9 +1,0 @@
-Error on line 14: zig build error: exit status 1
-/workspace/mochi/tests/machine/x/zig/string_in_operator.zig:14:51: error: expected type '[]const i32', found '[]const u8'
-/workspace/mochi/tests/machine/x/zig/string_in_operator.zig:14:51: note: pointer type child 'u8' cannot cast into pointer type child 'i32'
-/workspace/mochi/tests/machine/x/zig/string_in_operator.zig:14:51: note: signed 32-bit int cannot represent all possible unsigned 8-bit values
-/workspace/mochi/tests/machine/x/zig/string_in_operator.zig:3:26: note: parameter type declared here
-
-13:     s = "catch";
-14:     std.debug.print("{s}\n", .{_contains_list_int(s, "cat")});
-15:     std.debug.print("{s}\n", .{_contains_list_int(s, "dog")});

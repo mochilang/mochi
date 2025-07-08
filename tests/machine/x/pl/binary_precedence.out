@@ -1,9 +1,0 @@
-Warning: /workspace/mochi/tests/machine/x/pl/binary_precedence.pl:2:
-Warning:    Singleton-marked variable appears more than once: _V0
-Warning:    Singleton-marked variable appears more than once: _V1
-Warning:    Singleton-marked variable appears more than once: _V2
-Warning:    Singleton-marked variable appears more than once: _V3
-9
-9
-7
-8

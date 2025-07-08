@@ -1,4 +1,0 @@
-unsupported expression at line 7
-
-var c = Counter { n: 0 }
-inc(c)

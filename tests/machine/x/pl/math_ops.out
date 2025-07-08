@@ -1,7 +1,0 @@
-Warning: /workspace/mochi/tests/machine/x/pl/math_ops.pl:2:
-Warning:    Singleton-marked variable appears more than once: _V0
-Warning:    Singleton-marked variable appears more than once: _V1
-Warning:    Singleton-marked variable appears more than once: _V2
-42
-3.5
-1

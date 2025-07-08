@@ -1,4 +1,0 @@
-line 6: exit status 254
-      if (nums[i] + nums[j] == target) {
-        return [i, j];
-      }

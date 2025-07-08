@@ -1,4 +1,0 @@
-cobc: exit status 1
-/workspace/mochi/tests/machine/x/cobol/string_in_operator.cob:7: error: syntax error, unexpected IN
-/workspace/mochi/tests/machine/x/cobol/string_in_operator.cob:8: error: syntax error, unexpected IN
-

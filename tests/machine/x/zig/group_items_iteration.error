@@ -1,6 +1,0 @@
-Error on line 59: zig build error: exit status 1
-/workspace/mochi/tests/machine/x/zig/group_items_iteration.zig:59:15: error: use of undeclared identifier 'append'
-
-58:         }
-59:         tmp = append(tmp, blk4: {
-60:             var m = std.AutoHashMap(i32, i32).init(std.heap.page_allocator);

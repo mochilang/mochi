@@ -1,4 +1,0 @@
-Warning: /workspace/mochi/tests/machine/x/pl/sum_builtin.pl:2:
-Warning:    Singleton-marked variable appears more than once: _V0
-Warning:    Singleton-marked variable appears more than once: _V1
-6

@@ -1,9 +1,0 @@
-Error on line 18: zig build error: exit status 1
-/workspace/mochi/tests/machine/x/zig/cross_join_filter.zig:18:27: error: expected type 'i32', found '[]const u8'
-/usr/local/zig-0.12.1/lib/std/hash_map.zig:551:38: note: parameter type declared here
-/usr/local/zig-0.12.1/lib/std/hash_map.zig:14:13: error: std.auto_hash.autoHash does not allow slices here ([]const u8) because the intent is unclear. Consider using std.StringHashMap for hashing the contents of []const u8. Alternatively, consider using std.auto_hash.hash or providing your own hash function instead.
-/usr/local/zig-0.12.1/lib/std/hash_map.zig:55:39: note: called from here
-
-17:                     m.put(n, n) catch unreachable;
-18:                     m.put(l, l) catch unreachable;
-19:                     break :blk0 m;

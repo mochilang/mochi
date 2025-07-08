@@ -1,3 +1,0 @@
-for n in [1, 2, 3]
-	puts([n].join(" "))
-end

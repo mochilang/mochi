@@ -1,8 +1,0 @@
-error running join_multi:
-ERROR on line 37 of file /workspace/mochi/tests/machine/x/scheme/join_multi.scm: missing trailing ')' started on line: 27
-  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
---- Multi Join ---
-
-context (line 37):
-)
-

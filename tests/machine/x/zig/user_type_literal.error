@@ -1,7 +1,0 @@
-Error on line 16: zig build error: exit status 1
-/workspace/mochi/tests/machine/x/zig/user_type_literal.zig:16:41: error: expected type 'i32', found 'user_type_literal.Person'
-/workspace/mochi/tests/machine/x/zig/user_type_literal.zig:3:16: note: struct declared here
-
-15: pub fn main() void {
-16:     book = Book{ .title = "Go", .author = Person{ .name = "Bob", .age = @as(i32, @intCast(42)) } };
-17:     std.debug.print("{any}\n", .{book.author.name});

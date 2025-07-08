@@ -1,4 +1,0 @@
-unsupported expression at line 2
-// cross_join.mochi
-let customers = [
-  { id: 1, name: "Alice" },

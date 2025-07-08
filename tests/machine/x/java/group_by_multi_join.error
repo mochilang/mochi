@@ -1,4 +1,0 @@
-line 0: compile error: expression unsupported at line 15
-
-  1| let nations = [
-  2|   { id: 1, name: "A" },

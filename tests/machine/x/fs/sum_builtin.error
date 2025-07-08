@@ -1,4 +1,0 @@
-F# Compiler for F# 4.0 (Open Source Edition)
-Freely distributed under the Apache 2.0 Open Source License
-
-/workspace/mochi/tests/machine/x/fs/sum_builtin.fs(3,15): error FS0039: The value or constructor 'sum' is not defined

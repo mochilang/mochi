@@ -1,9 +1,0 @@
-line 288
-** (UndefinedFunctionError) function Main.Group.fetch/2 is undefined (Main.Group does not implement the Access behaviour. If you are using get_in/put_in/update_in, you can specify the field to be accessed using Access.key!/1)
-    Main.Group.fetch(%Main.Group{key: "Paris", items: [%{city: "Paris", name: "Alice"}, %{city: "Paris", name: "Charlie"}, %{city: "Paris", name: "Eve"}, %{city: "Paris", name: "George"}]}, :items)
-    (elixir 1.14.0) lib/access.ex:288: Access.get/3
-    /workspace/mochi/tests/machine/x/ex/group_by_having.mochi.exs:25: Main._count/1
-    /workspace/mochi/tests/machine/x/ex/group_by_having.mochi.exs:17: anonymous fn/1 in Main.main/0
-    (elixir 1.14.0) lib/enum.ex:1658: Enum."-map/2-lists^map/1-0-"/2
-    /workspace/mochi/tests/machine/x/ex/group_by_having.mochi.exs:17: Main.main/0
-

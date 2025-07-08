@@ -1,6 +1,0 @@
-exit status 1
-Syntax error reading source at (/workspace/mochi/tests/machine/x/clj/group_by_left_join.clj:112:1).
-EOF while reading, starting at line 42
-
-Full report at:
-/tmp/clojure-6089414754464165075.edn

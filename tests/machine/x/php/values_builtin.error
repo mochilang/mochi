@@ -1,5 +1,0 @@
-PHP Warning:  Undefined variable $values in /workspace/mochi/tests/machine/x/php/values_builtin.php on line 3
-PHP Fatal error:  Uncaught Error: Value of type null is not callable in /workspace/mochi/tests/machine/x/php/values_builtin.php:3
-Stack trace:
-#0 {main}
-  thrown in /workspace/mochi/tests/machine/x/php/values_builtin.php on line 3

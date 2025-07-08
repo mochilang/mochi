@@ -1,6 +1,0 @@
-Error on line 65: zig build error: exit status 1
-/workspace/mochi/tests/machine/x/zig/group_by_join.zig:65:23: error: use of undeclared identifier 'count'
-
-64:                 m.put("name", g.key) catch unreachable;
-65:                 m.put(count, (g.Items.len)) catch unreachable;
-66:                 break :blk5 m;

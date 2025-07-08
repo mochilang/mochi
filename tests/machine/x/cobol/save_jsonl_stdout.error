@@ -1,3 +1,0 @@
-unsupported expression at line 1
-let people = [
-  { name: "Alice", age: 30 },

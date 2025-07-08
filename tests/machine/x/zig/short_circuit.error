@@ -1,7 +1,0 @@
-Error on line 3: zig build error: exit status 1
-/workspace/mochi/tests/machine/x/zig/short_circuit.zig:3:17: error: unused function parameter
-/workspace/mochi/tests/machine/x/zig/short_circuit.zig:3:9: error: unused function parameter
-
-2: 
-3: fn boom(a: i32, b: i32) bool {
-4:     std.debug.print("{s}\n", .{"boom"});

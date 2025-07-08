@@ -1,4 +1,0 @@
-line 0: compile error: expression unsupported at line 7
-
-  1| let data = [
-  2|   {a:1, b:2},

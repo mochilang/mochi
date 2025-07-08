@@ -1,6 +1,0 @@
-line 3: unsupported statement at line 3
-   1: let x = 5
-   2: 
-   3: if x > 3 {
-   4:   print("big")
-   5: } else {

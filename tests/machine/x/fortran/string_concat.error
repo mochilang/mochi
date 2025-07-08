@@ -1,7 +1,0 @@
-error: gfortran: exit status 1
-/workspace/mochi/tests/machine/x/fortran/string_concat.f90:3:12:
-
-    3 |   print *, ("hello " + "world")
-      |            1
-Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(6)/CHARACTER(5)
-

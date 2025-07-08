@@ -1,3 +1,0 @@
-error: unsupported expression at line 1
-   1| var data = {"outer": {"inner": 1}}
-   2| data["outer"]["inner"] = 2

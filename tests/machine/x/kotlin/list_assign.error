@@ -1,9 +1,0 @@
-line 63:
-OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
-/workspace/mochi/tests/machine/x/kotlin/list_assign.kt:63:12: error: the integer literal does not conform to the expected type MutableList<Int>
-    nums = 3
-           ^
-
- 62:     var nums = mutableListOf(1, 2)
- 63:     nums = 3
- 64:     println(nums[1])

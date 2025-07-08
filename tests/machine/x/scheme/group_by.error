@@ -1,8 +1,0 @@
-error running group_by:
-ERROR on line 102 of file /workspace/mochi/tests/machine/x/scheme/group_by.scm: missing trailing ')' started on line: 92
-  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
---- People grouped by city ---
-
-context (line 102):
-)
-

@@ -1,4 +1,0 @@
-line 0: compile error: print expects one argument at line 18
-
-  1| // inner_join.mochi
-  2| let customers = [

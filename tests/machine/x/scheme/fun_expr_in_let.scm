@@ -1,6 +1,0 @@
-(define square (lambda (x)
-  (call/cc (lambda (return)
-    (return (* x x))
-  ))
-))
-(begin (display (square 6)) (newline))

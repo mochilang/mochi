@@ -1,4 +1,0 @@
-line 0: compile error: print expects one argument at line 9
-
-  1| let nums = [1, 2, 3]
-  2| let letters = ["A", "B"]

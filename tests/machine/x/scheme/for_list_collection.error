@@ -1,7 +1,0 @@
-error running for_list_collection:
-ERROR on line 11 of file /workspace/mochi/tests/machine/x/scheme/for_list_collection.scm: missing trailing ')' started on line: 1
-  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
-
-context (line 11):
-)
-

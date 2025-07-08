@@ -1,4 +1,0 @@
-line 1: unsupported statement at line 1
-   1: fun add(a: int, b: int): int {
-   2:   return a + b
-   3: }

@@ -1,9 +1,0 @@
-line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramstwo-sum1065047018/001/Main.java:3: error: 'var' is not allowed here
-	static var result = twoSum(java.util.Arrays.asList(2, 7, 11, 15), 9);
-	       ^
-1 error
-
-
-  1| fun twoSum(nums: list<int>, target: int): list<int> {
-  2|   let n = len(nums)

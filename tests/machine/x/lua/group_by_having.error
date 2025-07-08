@@ -1,3 +1,0 @@
-line 0: unsupported expression at line 2
-   1 | let people = [
-   2 |   { name: "Alice", city: "Paris" },

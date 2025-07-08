@@ -1,4 +1,0 @@
-unsupported expression at line 9
-]
-let result = from o in orders
-             left join c in customers on o.customerId == c.id

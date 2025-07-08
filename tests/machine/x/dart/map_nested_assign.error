@@ -1,4 +1,0 @@
-line 3: exit status 254
-  var data = {'outer': {'inner': 1}};
-  data['outer']['inner'] = 2;
-  print(data['outer']['inner']);

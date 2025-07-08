@@ -1,8 +1,0 @@
-line 99
-** (ArgumentError) errors were found at the given arguments:
-
-  * 2nd argument: not valid character data (an iodata term)
-
-    (stdlib 4.3.1.3) io.erl:99: :io.put_chars(:standard_io, [[%{part: 100, total: 20}, %{part: 200, total: 15}], 10])
-    (elixir 1.14.0) lib/code.ex:1245: Code.require_file/2
-

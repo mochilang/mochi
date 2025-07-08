@@ -1,4 +1,0 @@
-error: unsupported expression at line 4
-   3| 
-   4| let customers = [
-   5|   { id: 1, name: "Alice" },

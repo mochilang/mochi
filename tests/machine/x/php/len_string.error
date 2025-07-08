@@ -1,4 +1,0 @@
-PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, string given in /workspace/mochi/tests/machine/x/php/len_string.php:2
-Stack trace:
-#0 {main}
-  thrown in /workspace/mochi/tests/machine/x/php/len_string.php on line 2

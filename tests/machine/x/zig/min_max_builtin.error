@@ -1,6 +1,0 @@
-Error on line 17: zig build error: exit status 1
-/workspace/mochi/tests/machine/x/zig/min_max_builtin.zig:17:34: error: use of undeclared identifier 'max'
-
-16:     std.debug.print("{any}\n", .{_min_int(nums)});
-17:     std.debug.print("{any}\n", .{max(nums)});
-18: }

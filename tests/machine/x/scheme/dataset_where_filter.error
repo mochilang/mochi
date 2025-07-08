@@ -1,8 +1,0 @@
-error running dataset_where_filter:
-ERROR on line 31 of file /workspace/mochi/tests/machine/x/scheme/dataset_where_filter.scm: missing trailing ')' started on line: 21
-  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
---- Adults ---
-
-context (line 31):
-)
-

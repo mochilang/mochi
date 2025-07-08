@@ -1,9 +1,0 @@
-line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramspartial_application2615533609/001/Main.java:3: error: 'var' is not allowed here
-	static var add5 = add(5);
-	       ^
-1 error
-
-
-  1| fun add(a: int, b: int): int {
-  2|   return a + b

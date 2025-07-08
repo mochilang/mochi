@@ -1,5 +1,0 @@
-line 2: unsupported statement at line 2
-   1: let k = 2
-   2: fun inc(x: int): int {
-   3:   return x + k
-   4: }

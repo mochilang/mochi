@@ -1,4 +1,0 @@
-unsupported expression at line 7
-let sorted =
-  from x in data
-  sort by { a: x.a, b: x.b }

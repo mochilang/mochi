@@ -1,3 +1,0 @@
-unsupported expression at line 1
-let xs = [10, 20, 30]
-print(xs[1])

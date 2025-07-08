@@ -1,6 +1,0 @@
-cobc: exit status 1
-/workspace/mochi/tests/machine/x/cobol/pure_fold.cob:7: error: syntax error, unexpected USING
-/workspace/mochi/tests/machine/x/cobol/pure_fold.cob: in paragraph 'TRIPLE':
-/workspace/mochi/tests/machine/x/cobol/pure_fold.cob:12: error: syntax error, unexpected PROCEDURE
-/workspace/mochi/tests/machine/x/cobol/pure_fold.cob:13: error: 'X' cannot be used here
-

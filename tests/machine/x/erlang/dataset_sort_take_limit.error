@@ -1,6 +1,0 @@
-line 11: unsupported expression at line 11
-   9:   { name: "Headphones", price: 200 }
-  10: ]
-  11: let expensive = from p in products
-  12:                 sort by -p.price
-  13:                 skip 1

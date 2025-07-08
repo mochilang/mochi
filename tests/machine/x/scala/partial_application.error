@@ -1,6 +1,0 @@
-exit status 1
-/workspace/mochi/tests/machine/x/scala/partial_application.scala:7: error: not enough arguments for method add: (a: Int, b: Int)Int.
-Unspecified value parameter b.
-    val add5 = add(5)
-                  ^
-one error found

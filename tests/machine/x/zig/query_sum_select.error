@@ -1,7 +1,0 @@
-Error on line 20: zig build error: exit status 1
-/workspace/mochi/tests/machine/x/zig/query_sum_select.zig:20:35: error: expected type '[]const i32', found 'i32'
-/workspace/mochi/tests/machine/x/zig/query_sum_select.zig:3:16: note: parameter type declared here
-
-19:             if (!((n > @as(i32, @intCast(1))))) continue;
-20:             _tmp0.append(_sum_int(n)) catch unreachable;
-21:         }

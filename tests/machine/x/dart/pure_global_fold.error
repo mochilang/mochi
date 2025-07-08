@@ -1,4 +1,0 @@
-line 2: exit status 254
-int inc(int x) {
-  return x + k;
-}

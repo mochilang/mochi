@@ -1,3 +1,0 @@
-error: unsupported expression at line 1
-   1| let nums = [1,2,3]
-   2| let result = from n in nums where n > 1 select sum(n)

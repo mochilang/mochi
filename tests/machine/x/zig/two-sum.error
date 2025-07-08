@@ -1,7 +1,0 @@
-Error on line 10: zig build error: exit status 1
-/workspace/mochi/tests/machine/x/zig/two-sum.zig:10:32: error: expected type 'i32', found 'usize'
-/workspace/mochi/tests/machine/x/zig/two-sum.zig:10:32: note: signed 32-bit int cannot represent all possible unsigned 64-bit values
-
-9:             if (((nums[i] + nums[j]) == target)) {
-10:                 return [_]i32{ i, j };
-11:             }

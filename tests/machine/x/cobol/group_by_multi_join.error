@@ -1,3 +1,0 @@
-unsupported expression at line 1
-let nations = [
-  { id: 1, name: "A" },

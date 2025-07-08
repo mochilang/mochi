@@ -1,8 +1,0 @@
-F# Compiler for F# 4.0 (Open Source Edition)
-Freely distributed under the Apache 2.0 Open Source License
-
-/workspace/mochi/tests/machine/x/fs/math_ops.fs(3,26): error FS0001: The type 'int' does not match the type 'string'
-
-/workspace/mochi/tests/machine/x/fs/math_ops.fs(4,26): error FS0001: The type 'int' does not match the type 'string'
-
-/workspace/mochi/tests/machine/x/fs/math_ops.fs(5,26): error FS0001: The type 'int' does not match the type 'string'

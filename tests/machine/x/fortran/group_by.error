@@ -1,4 +1,0 @@
-error: unsupported expression at line 2
-   1| // group-by.mochi
-   2| let people = [
-   3|   { name: "Alice", age: 30, city: "Paris" },

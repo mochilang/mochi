@@ -1,7 +1,0 @@
-Warning: /workspace/mochi/tests/machine/x/pl/min_max_builtin.pl:2:
-Warning:    Singleton-marked variable appears more than once: _V0
-Warning:    Singleton-marked variable appears more than once: _V1
-Warning:    Singleton-marked variable appears more than once: _V2
-Warning:    Singleton-marked variable appears more than once: _V3
-1
-4

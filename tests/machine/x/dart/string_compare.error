@@ -1,4 +1,0 @@
-line 2: exit status 254
-void main() {
-  print('a' < 'b');
-  print('a' <= 'a');

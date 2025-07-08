@@ -1,3 +1,0 @@
-unsupported expression at line 1
-let customers = [
-  { id: 1, name: "Alice" },

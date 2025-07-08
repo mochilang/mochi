@@ -1,3 +1,0 @@
---- Left Join ---
-Order 100 customer #<OpenStruct id=1, name="Alice"> total 250
-Order 101 customer  total 80

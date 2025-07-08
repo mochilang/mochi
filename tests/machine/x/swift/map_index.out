@@ -1,9 +1,0 @@
-/workspace/mochi/tests/machine/x/swift/map_index.swift:2:7: warning: expression implicitly coerced from 'Int?' to 'Any'
-1 | let m = ["a": 1, "b": 2]
-2 | print(m["b"])
-  |       ||- note: provide a default value to avoid this warning
-  |       ||- note: force-unwrap the value to avoid this warning
-  |       |`- note: explicitly cast to 'Any' with 'as Any' to silence this warning
-  |       `- warning: expression implicitly coerced from 'Int?' to 'Any'
-3 | 
-Optional(2)

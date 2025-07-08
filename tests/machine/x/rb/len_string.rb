@@ -1,1 +1,0 @@
-puts([("mochi").length].join(" "))

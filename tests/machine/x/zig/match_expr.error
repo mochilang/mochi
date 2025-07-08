@@ -1,7 +1,0 @@
-Error on line 6: zig build error: exit status 1
-/workspace/mochi/tests/machine/x/zig/match_expr.zig:6:54: error: no field named 'Slice' in enum '@typeInfo(builtin.Type).Union.tag_type.?'
-/usr/local/zig-0.12.1/lib/std/builtin.zig:256:18: note: enum declared here
-
-5:     return switch (@typeInfo(@TypeOf(a))) {
-6:         .Struct, .Union, .Array, .Vector, .Pointer, .Slice => std.meta.eql(a, b),
-7:         else => a == b,

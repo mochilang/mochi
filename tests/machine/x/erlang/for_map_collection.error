@@ -1,5 +1,0 @@
-line 2: unsupported statement at line 2
-   1: var m = {"a": 1, "b": 2}
-   2: for k in m {
-   3:   print(k)
-   4: }

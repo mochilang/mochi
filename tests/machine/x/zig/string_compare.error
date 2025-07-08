@@ -1,6 +1,0 @@
-Error on line 4: zig build error: exit status 1
-/workspace/mochi/tests/machine/x/zig/string_compare.zig:4:37: error: operator < not allowed for type '*const [1:0]u8'
-
-3: pub fn main() void {
-4:     std.debug.print("{s}\n", .{("a" < "b")});
-5:     std.debug.print("{s}\n", .{("a" <= "a")});

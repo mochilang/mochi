@@ -1,2 +1,0 @@
-line 1: exit status 1
-print(avg([1, 2, 3]))

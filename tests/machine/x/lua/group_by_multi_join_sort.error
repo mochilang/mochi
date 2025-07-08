@@ -1,3 +1,0 @@
-line 0: unsupported expression at line 2
-   1 | let nation = [
-   2 |   { n_nationkey: 1, n_name: "BRAZIL" }

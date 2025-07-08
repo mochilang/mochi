@@ -1,7 +1,0 @@
-error: gfortran: exit status 1
-/workspace/mochi/tests/machine/x/fortran/var_assignment.f90:3:3:
-
-    3 |   x = 1
-      |   1
-Error: Symbol ‘x’ at (1) has no IMPLICIT type
-

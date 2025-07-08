@@ -1,2 +1,0 @@
-line 0: postfix operations not supported
-fun twoSum(nums: list<int>, target: int): list<int> {

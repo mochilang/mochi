@@ -1,3 +1,0 @@
-Warning: /workspace/mochi/tests/machine/x/pl/append_builtin.pl:2:
-Warning:    Singleton-marked variable appears more than once: _V0
-[1,2,3]

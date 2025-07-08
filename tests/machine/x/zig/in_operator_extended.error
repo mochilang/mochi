@@ -1,7 +1,0 @@
-Error on line 29: zig build error: exit status 1
-/workspace/mochi/tests/machine/x/zig/in_operator_extended.zig:29:13: error: local variable shadows declaration of 'm'
-/workspace/mochi/tests/machine/x/zig/in_operator_extended.zig:12:1: note: declared here
-
-28:     m = blk1: {
-29:         var m = std.AutoHashMap(i32, i32).init(std.heap.page_allocator);
-30:         m.put("a", @as(i32, @intCast(1))) catch unreachable;

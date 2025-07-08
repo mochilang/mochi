@@ -1,3 +1,0 @@
-line 5: exit status 1
-}
-print(inc(3))

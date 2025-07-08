@@ -1,7 +1,0 @@
-error: gfortran: exit status 1
-/workspace/mochi/tests/machine/x/fortran/substring_builtin.f90:3:10:
-
-    3 |   print *, substring("mochi",1,4)
-      |          1
-Error: Function ‘substring’ at (1) has no IMPLICIT type
-

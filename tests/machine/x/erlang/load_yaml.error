@@ -1,4 +1,0 @@
-line 1: unsupported statement at line 1
-   1: type Person {
-   2:   name: string
-   3:   age: int

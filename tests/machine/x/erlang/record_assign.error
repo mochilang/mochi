@@ -1,4 +1,0 @@
-line 1: unsupported statement at line 1
-   1: type Counter { n: int }
-   2: 
-   3: fun inc(c: Counter) {

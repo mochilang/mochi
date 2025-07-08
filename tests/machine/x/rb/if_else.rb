@@ -1,6 +1,0 @@
-x = 5
-if (x > 3)
-	puts(["big"].join(" "))
-else
-	puts(["small"].join(" "))
-end

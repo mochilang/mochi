@@ -1,7 +1,0 @@
-error running two-sum:
-ERROR on line 32 of file /workspace/mochi/tests/machine/x/scheme/two-sum.scm: missing trailing ')' started on line: 2
-  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
-
-context (line 32):
-(begin (display (list-ref result 1)) (newline))
-

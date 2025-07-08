@@ -1,6 +1,0 @@
-Error on line 70: zig build error: exit status 1
-/workspace/mochi/tests/machine/x/zig/group_by_left_join.zig:70:23: error: use of undeclared identifier 'count'
-
-69:                 m.put("name", g.key) catch unreachable;
-70:                 m.put(count, (blk7: {
-71:                     var _tmp0 = std.ArrayList(i32).init(std.heap.page_allocator);

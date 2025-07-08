@@ -1,9 +1,0 @@
-const std = @import("std");
-
-var nums: []const i32 = undefined;
-
-pub fn main() void {
-    nums = &[_]i32{ @as(i32, @intCast(1)), @as(i32, @intCast(2)) };
-    nums.items[@as(i32, @intCast(1))] = @as(i32, @intCast(3));
-    std.debug.print("{any}\n", .{nums[@as(i32, @intCast(1))]});
-}

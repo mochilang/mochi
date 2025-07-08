@@ -1,8 +1,0 @@
-line 14: ../../../tests/machine/x/cpp/values_builtin.mochi.cpp: In function ‘int main()’:
-../../../tests/machine/x/cpp/values_builtin.mochi.cpp:14:11: error: ‘values’ was not declared in this scope
-   14 |     print(values(m));
-      |           ^~~~~~
-
- 13 |     auto m = std::unordered_map<std::string,int>{{"a", 1}, {"b", 2}, {"c", 3}};
- 14 |     print(values(m));
- 15 |     return 0;

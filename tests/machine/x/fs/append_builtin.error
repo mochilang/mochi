@@ -1,7 +1,0 @@
-F# Compiler for F# 4.0 (Open Source Edition)
-Freely distributed under the Apache 2.0 Open Source License
-
-/workspace/mochi/tests/machine/x/fs/append_builtin.fs(4,15): error FS0001: This expression was expected to have type
-    string    
-but here has type
-    'a list    

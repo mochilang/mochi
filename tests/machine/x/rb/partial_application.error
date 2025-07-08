@@ -1,5 +1,0 @@
-error: /workspace/mochi/tests/machine/x/rb/partial_application.rb:1:in `add': wrong number of arguments (given 1, expected 2) (ArgumentError)
-	from /workspace/mochi/tests/machine/x/rb/partial_application.rb:5:in `<main>'
-1: def add(a, b)
-2: 	return (a + b)
-3: end

@@ -1,9 +1,0 @@
-fpc error: exit status 1
-Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
-Copyright (c) 1993-2021 by Florian Klaempfl and others
-Target OS: Linux for x86-64
-Compiling /workspace/mochi/tests/machine/x/pascal/json_builtin.pas
-json_builtin.pas(22,8) Error: Incompatible types: got "TFPGMap<System.Variant,System.LongInt>" expected "TFPGMap<System.ShortString,System.LongInt>"
-json_builtin.pas(25) Fatal: There were 1 errors compiling module, stopping
-Fatal: Compilation aborted
-Error: /usr/bin/ppcx64 returned an error exitcode

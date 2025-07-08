@@ -1,5 +1,0 @@
-(define a (- 10 3))
-(define b (+ 2 2))
-(begin (display a) (newline))
-(begin (display (equal? a 7)) (newline))
-(begin (display (< b 5)) (newline))

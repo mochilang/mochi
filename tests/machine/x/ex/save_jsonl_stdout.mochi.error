@@ -1,7 +1,0 @@
-line 323
-** (ArgumentError) cannot pipe Enum.map(rows, &Jason.encode!/1) into Enum.join("\n") <> "\n", the :<> operator can only take two arguments
-    (elixir 1.14.0) lib/macro.ex:323: Macro.pipe/3
-    (stdlib 4.3.1.3) lists.erl:1350: :lists.foldl/3
-    (elixir 1.14.0) expanding macro: Kernel.|>/2
-    /workspace/mochi/tests/machine/x/ex/save_jsonl_stdout.mochi.exs:22: Main._save/3
-

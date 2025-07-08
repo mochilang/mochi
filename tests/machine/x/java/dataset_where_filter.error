@@ -1,4 +1,0 @@
-line 0: compile error: print expects one argument at line 16
-
-  1| let people = [
-  2|   { name: "Alice", age: 30 },

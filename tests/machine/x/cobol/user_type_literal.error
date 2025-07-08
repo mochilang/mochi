@@ -1,4 +1,0 @@
-unsupported expression at line 11
-
-let book = Book {
-  title: "Go",

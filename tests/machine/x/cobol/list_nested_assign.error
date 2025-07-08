@@ -1,3 +1,0 @@
-unsupported expression at line 1
-var matrix = [[1,2],[3,4]]
-matrix[1][0] = 5

@@ -1,7 +1,0 @@
-void main() {
-  var a = 10 - 3;
-  var b = 2 + 2;
-  print(a);
-  print(a == 7);
-  print(b < 5);
-}
