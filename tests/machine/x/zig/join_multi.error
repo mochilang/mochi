@@ -1,0 +1,9 @@
+Error on line 9: zig build error: exit status 1
+/workspace/mochi/tests/machine/x/zig/join_multi.zig:9:133: error: expected type 'i32', found '*const [2:0]u8'
+/tmp/zig-0.12.0/lib/std/hash_map.zig:551:38: note: parameter type declared here
+/tmp/zig-0.12.0/lib/std/hash_map.zig:14:13: error: std.auto_hash.autoHash does not allow slices here ([]const u8) because the intent is unclear. Consider using std.StringHashMap for hashing the contents of []const u8. Alternatively, consider using std.auto_hash.hash or providing your own hash function instead.
+/tmp/zig-0.12.0/lib/std/hash_map.zig:55:39: note: called from here
+
+8: pub fn main() void {
+9:     customers = &[_]std.AutoHashMap([]const u8, i32){blk0: { var m = std.AutoHashMap(i32, i32).init(std.heap.page_allocator); m.put("id", 1) catch unreachable; m.put("name", "Alice") catch unreachable; break :blk0 m; }, blk1: { var m = std.AutoHashMap(i32, i32).init(std.heap.page_allocator); m.put("id", 2) catch unreachable; m.put("name", "Bob") catch unreachable; break :blk1 m; }};
+10:     orders = &[_]std.AutoHashMap([]const u8, i32){blk2: { var m = std.AutoHashMap(i32, i32).init(std.heap.page_allocator); m.put("id", 100) catch unreachable; m.put("customerId", 1) catch unreachable; break :blk2 m; }, blk3: { var m = std.AutoHashMap(i32, i32).init(std.heap.page_allocator); m.put("id", 101) catch unreachable; m.put("customerId", 2) catch unreachable; break :blk3 m; }};
