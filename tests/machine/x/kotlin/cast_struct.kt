@@ -61,6 +61,6 @@ fun <T> intersect(a: MutableList<T>, b: MutableList<T>): MutableList<T> {
 data class Todo(var title: String)
 
 fun main() {
-    val todo = mutableMapOf("title" to "hi") as Todo
+    val todo = Todo(title = "hi")
     println(todo.title)
 }
