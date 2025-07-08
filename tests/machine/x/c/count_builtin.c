@@ -4,11 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-int sum3(int a, int b, int c) {
-    return ((a + b) + c);
-}
-
 int main() {
-    printf("%d\n", sum3(1, 2, 3));
+    printf("%d\n", 3);
     return 0;
 }

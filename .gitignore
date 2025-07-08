@@ -306,3 +306,8 @@ tools/playground/wasm_exec.js
 *.class
 tools/tcc/tcc/
 tools/tcc/tools/
+tests/machine/x/c/*
+!tests/machine/x/c/*.c
+!tests/machine/x/c/*.out
+!tests/machine/x/c/*.error
+!tests/machine/x/c/README.md

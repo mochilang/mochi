@@ -4,11 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-int sum3(int a, int b, int c) {
-    return ((a + b) + c);
-}
-
 int main() {
-    printf("%d\n", sum3(1, 2, 3));
+    const char* s = "catch";
+    printf("%d\n", (strstr(s, "cat") != NULL));
+    printf("%d\n", (strstr(s, "dog") != NULL));
     return 0;
 }

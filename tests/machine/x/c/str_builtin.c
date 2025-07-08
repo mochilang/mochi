@@ -4,11 +4,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-int sum3(int a, int b, int c) {
-    return ((a + b) + c);
+static const char* str_int(int v) {
+    static char buf[32];
+    sprintf(buf, "%d", v);
+    return buf;
 }
 
 int main() {
-    printf("%d\n", sum3(1, 2, 3));
+    printf("%s\n", str_int(123));
     return 0;
 }
