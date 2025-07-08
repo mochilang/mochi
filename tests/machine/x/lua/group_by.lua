@@ -1,0 +1,103 @@
+_Group = {}
+function _Group.new(k)
+    return {key = k, items = {}}
+end
+function __group_by(src, keyfn)
+    local groups = {}
+    local order = {}
+    for _, it in ipairs(src) do
+        local key = keyfn(it)
+        local ks
+        if type(key) == 'table' then
+            local fields = {}
+            for k,_ in pairs(key) do fields[#fields+1] = k end
+            table.sort(fields)
+            local parts = {}
+            for _,k in ipairs(fields) do parts[#parts+1] = tostring(k)..'='..tostring(key[k]) end
+            ks = table.concat(parts, ',')
+        else
+            ks = tostring(key)
+        end
+        local g = groups[ks]
+        if not g then
+            g = _Group.new(key)
+            groups[ks] = g
+            order[#order+1] = ks
+        end
+        table.insert(g.items, it)
+    end
+    local res = {}
+    for _, ks in ipairs(order) do
+        res[#res+1] = groups[ks]
+    end
+    return res
+end
+function __avg(v)
+    local items
+    if type(v) == 'table' and v.items ~= nil then
+        items = v.items
+    elseif type(v) == 'table' then
+        items = v
+    else
+        error('avg() expects list or group')
+    end
+    if #items == 0 then return 0 end
+    local sum = 0
+    for _, it in ipairs(items) do sum = sum + it end
+    return sum / #items
+end
+function __count(v)
+    if type(v) == 'table' then
+        if v.items ~= nil then return #v.items end
+        if v[1] ~= nil or #v > 0 then return #v end
+        local n = 0
+        for _ in pairs(v) do n = n + 1 end
+        return n
+    elseif type(v) == 'string' then
+        return #v
+    else
+        error('count() expects list or group')
+    end
+end
+function __print(...)
+    local args = {...}
+    local function to_str(v)
+        if v == nil then return '<nil>' end
+        if type(v) == 'table' then
+            if v[1] ~= nil or #v > 0 then
+                local parts = {}
+                for i,x in ipairs(v) do parts[#parts+1] = tostring(x) end
+                return table.concat(parts, ' ')
+            end
+        end
+        if type(v) == 'number' and v == math.floor(v) then
+            return tostring(math.floor(v))
+        end
+        return tostring(v)
+    end
+    for i, a in ipairs(args) do
+        if i > 1 then io.write(' ') end
+        io.write(to_str(a))
+    end
+    io.write('\n')
+end
+people = {{["name"]="Alice", ["age"]=30, ["city"]="Paris"}, {["name"]="Bob", ["age"]=15, ["city"]="Hanoi"}, {["name"]="Charlie", ["age"]=65, ["city"]="Paris"}, {["name"]="Diana", ["age"]=45, ["city"]="Hanoi"}, {["name"]="Eve", ["age"]=70, ["city"]="Paris"}, {["name"]="Frank", ["age"]=22, ["city"]="Hanoi"}}
+stats = (function()
+    local _groups = __group_by(people, function(person) return person.city end)
+    local _res = {}
+    for _, g in ipairs(_groups) do
+        _res[#_res+1] = {["city"]=g.key, ["count"]=__count(g), ["avg_age"]=__avg((function()
+    local _res = {}
+    for _, p in ipairs(g.items) do
+        _res[#_res+1] = p.age
+    end
+    return _res
+end)())}
+    end
+    return _res
+end)()
+__print("--- People grouped by city ---")
+for _, s in ipairs(stats) do
+    __print(s.city, ": count =", s.count, ", avg_age =", s.avg_age)
+    ::__continue0::
+end

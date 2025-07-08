@@ -1,3 +1,0 @@
-line 0: unsupported expression at line 2
-   1 | fun makeAdder(n: int): fun(int): int {
-   2 |   return fun(x: int): int => x + n

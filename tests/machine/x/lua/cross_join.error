@@ -1,3 +1,0 @@
-line 0: unsupported expression at line 3
-   1 | // cross_join.mochi
-   2 | let customers = [
