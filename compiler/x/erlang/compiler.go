@@ -426,18 +426,41 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		opStr, err := c.mapBinOp(op.Op)
-		if err != nil {
-			return "", err
+		switch op.Op {
+		case "in":
+			typ := c.typeOfPostfix(op.Right)
+			switch typ {
+			case "map":
+				res = fmt.Sprintf("maps:is_key(%s, %s)", res, r)
+			case "string":
+				res = fmt.Sprintf("string:str(%s, %s) > 0", r, res)
+			default:
+				res = fmt.Sprintf("lists:member(%s, %s)", res, r)
+			}
+		case "union":
+			if op.All {
+				res = fmt.Sprintf("(%s ++ %s)", res, r)
+			} else {
+				res = fmt.Sprintf("ordsets:union(%s, %s)", res, r)
+			}
+		case "except":
+			res = fmt.Sprintf("ordsets:subtract(%s, %s)", res, r)
+		case "intersect":
+			res = fmt.Sprintf("ordsets:intersection(%s, %s)", res, r)
+		default:
+			opStr, err := c.mapBinOp(op.Op)
+			if err != nil {
+				return "", err
+			}
+			rightIsStr := isStringPostfix(op.Right)
+			if op.Op == "+" && (leftIsStr || rightIsStr) {
+				opStr = "++"
+				leftIsStr = true
+			} else {
+				leftIsStr = false
+			}
+			res = fmt.Sprintf("(%s %s %s)", res, opStr, r)
 		}
-		rightIsStr := isStringPostfix(op.Right)
-		if op.Op == "+" && (leftIsStr || rightIsStr) {
-			opStr = "++"
-			leftIsStr = true
-		} else {
-			leftIsStr = false
-		}
-		res = fmt.Sprintf("(%s %s %s)", res, opStr, r)
 	}
 	return res, nil
 }
@@ -870,6 +893,13 @@ func (c *Compiler) typeOfPrimary(p *parser.Primary) string {
 	default:
 		return ""
 	}
+}
+
+func (c *Compiler) typeOfPostfix(p *parser.PostfixExpr) string {
+	if len(p.Ops) > 0 {
+		return ""
+	}
+	return c.typeOfPrimary(p.Target)
 }
 
 func isStringUnary(u *parser.Unary) bool {
