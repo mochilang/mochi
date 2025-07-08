@@ -50,6 +50,8 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.writeln("template<typename T> double mochi_avg(const vector<T>& v) { if(v.empty()) return 0; return static_cast<double>(mochi_sum(v)) / v.size(); }")
 	c.writeln("template<typename T> void mochi_print(const T& v) { cout << v << endl; }")
 	c.writeln("template<typename T> void mochi_print(const vector<T>& v) { for(size_t i=0;i<v.size();++i){ if(i) cout << ' '; cout << v[i]; } cout << endl; }")
+	c.writeln("template<typename T> vector<T> mochi_slice(const vector<T>& v, int s, int e) { return vector<T>(v.begin()+s, v.begin()+e); }")
+	c.writeln("inline string mochi_slice(const string& s, int st, int ed) { return s.substr(st, ed - st); }")
 	c.writeln("")
 
 	for _, st := range p.Statements {
@@ -299,13 +301,22 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, error) {
 	for _, op := range pf.Ops {
 		if op.Index != nil {
 			if op.Index.Colon != nil {
-				return "", fmt.Errorf("slice not supported")
+				start, err := c.compileExpr(op.Index.Start)
+				if err != nil {
+					return "", err
+				}
+				end, err := c.compileExpr(op.Index.End)
+				if err != nil {
+					return "", err
+				}
+				expr = fmt.Sprintf("mochi_slice(%s, %s, %s)", expr, start, end)
+			} else {
+				idx, err := c.compileExpr(op.Index.Start)
+				if err != nil {
+					return "", err
+				}
+				expr = fmt.Sprintf("%s[%s]", expr, idx)
 			}
-			idx, err := c.compileExpr(op.Index.Start)
-			if err != nil {
-				return "", err
-			}
-			expr = fmt.Sprintf("%s[%s]", expr, idx)
 		} else if op.Call != nil {
 			args := []string{}
 			for _, a := range op.Call.Args {
@@ -344,6 +355,11 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, error) {
 				expr = fmt.Sprintf("mochi_sum(%s)", args[0])
 			} else if expr == "avg" && len(args) == 1 {
 				expr = fmt.Sprintf("mochi_avg(%s)", args[0])
+			} else if expr == "substring" && len(args) == 3 {
+				expr = fmt.Sprintf("%s.substr(%s, %s - %s)", args[0], args[1], args[2], args[1])
+			} else if strings.HasSuffix(expr, ".contains") && len(args) == 1 {
+				base := strings.TrimSuffix(expr, ".contains")
+				expr = fmt.Sprintf("(%s.find(%s) != string::npos)", base, args[0])
 			} else {
 				expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
 			}
@@ -417,6 +433,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if fn == "avg" && len(args) == 1 {
 			return fmt.Sprintf("mochi_avg(%s)", args[0]), nil
 		}
+		if fn == "substring" && len(args) == 3 {
+			return fmt.Sprintf("%s.substr(%s, %s - %s)", args[0], args[1], args[2], args[1]), nil
+		}
 		return fn + "(" + strings.Join(args, ", ") + ")", nil
 	case p.List != nil:
 		elems := []string{}
@@ -455,7 +474,7 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 		return "false", nil
 	}
 	if l.Str != nil {
-		return fmt.Sprintf("%q", *l.Str), nil
+		return fmt.Sprintf("std::string(%q)", *l.Str), nil
 	}
 	if l.Null {
 		return "nullptr", nil

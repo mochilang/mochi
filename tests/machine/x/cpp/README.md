@@ -4,7 +4,7 @@ This directory stores machine generated C++ translations of programs from
 `tests/vm/valid`. Each entry is compiled and executed during tests. If a program
 fails to compile or run, a `.error` file will contain the diagnostic details.
 
-Checklist of programs that currently compile and run (31/97):
+Checklist of programs that currently compile and run (35/97):
 
 - [x] append_builtin
 - [x] avg_builtin
@@ -28,9 +28,13 @@ Checklist of programs that currently compile and run (31/97):
 - [x] print_hello
 - [x] pure_fold
 - [x] short_circuit
+- [x] slice
 - [x] str_builtin
 - [x] string_compare
+- [x] string_contains
 - [x] string_index
+- [x] string_prefix_slice
+- [x] substring_builtin
 - [x] sum_builtin
 - [x] tail_recursion
 - [x] two-sum

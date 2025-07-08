@@ -7,11 +7,13 @@ template<typename T> T mochi_sum(const vector<T>& v) { T s{}; for(const auto& x:
 template<typename T> double mochi_avg(const vector<T>& v) { if(v.empty()) return 0; return static_cast<double>(mochi_sum(v)) / v.size(); }
 template<typename T> void mochi_print(const T& v) { cout << v << endl; }
 template<typename T> void mochi_print(const vector<T>& v) { for(size_t i=0;i<v.size();++i){ if(i) cout << ' '; cout << v[i]; } cout << endl; }
+template<typename T> vector<T> mochi_slice(const vector<T>& v, int s, int e) { return vector<T>(v.begin()+s, v.begin()+e); }
+inline string mochi_slice(const string& s, int st, int ed) { return s.substr(st, ed - st); }
 
 int main() {
-	mochi_print(("a" < "b"));
-	mochi_print(("a" <= "a"));
-	mochi_print(("b" > "a"));
-	mochi_print(("b" >= "b"));
+	mochi_print((std::string("a") < std::string("b")));
+	mochi_print((std::string("a") <= std::string("a")));
+	mochi_print((std::string("b") > std::string("a")));
+	mochi_print((std::string("b") >= std::string("b")));
 	return 0;
 }
