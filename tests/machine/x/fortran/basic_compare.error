@@ -1,0 +1,12 @@
+error: gfortran: exit status 1
+/workspace/mochi/tests/machine/x/fortran/basic_compare.f90:5:14:
+
+    5 |   integer :: b
+      |              1
+Error: Unexpected data declaration statement at (1)
+/workspace/mochi/tests/machine/x/fortran/basic_compare.f90:6:3:
+
+    6 |   b = (2 + 2)
+      |   1
+Error: Symbol ‘b’ at (1) has no IMPLICIT type
+
