@@ -308,7 +308,7 @@ func (c *Compiler) compilePrint(call *parser.CallExpr) error {
 		c.writeln(fmt.Sprintf("DISPLAY %s", val))
 		return nil
 	}
-	if isComparisonExpr(arg) {
+	if isComparisonExpr(arg) || isBoolExpr(arg) {
 		cond, err := c.compileExpr(arg)
 		if err != nil {
 			return err
@@ -635,6 +635,19 @@ func isSimpleExpr(e *parser.Expr) bool {
 	}
 	p := u.Value
 	return len(p.Ops) == 0 && p.Target != nil && (p.Target.Lit != nil || p.Target.Selector != nil)
+}
+
+func isBoolExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	for _, op := range e.Binary.Right {
+		switch op.Op {
+		case "&&", "||", "==", "!=", "<", "<=", ">", ">=":
+			return true
+		}
+	}
+	return false
 }
 
 func (c *Compiler) ensureTmpVar() string {
