@@ -112,8 +112,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("")
 		c.emitRuntime()
 	}
-	code := c.buf.Bytes()
-	return FormatPHP(code), nil
+	code := FormatPHP(c.buf.Bytes())
+	if err := ValidatePHP(code); err != nil {
+		return code, err
+	}
+	return code, nil
 }
 
 // --- Statements ---

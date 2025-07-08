@@ -4,11 +4,13 @@ package phpcode
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"os"
 	"os/exec"
 	"runtime"
+	"strings"
 )
 
 // EnsurePHP ensures the php command is available, attempting installation if missing.
@@ -150,4 +152,25 @@ func FormatPHP(src []byte) []byte {
 		src = append(src, '\n')
 	}
 	return src
+}
+
+// ValidatePHP runs "php -l" on the given source to ensure it is syntactically
+// valid. If php is unavailable, validation is skipped.
+func ValidatePHP(src []byte) error {
+	if err := EnsurePHP(); err != nil {
+		return nil
+	}
+	cmd := exec.Command("php", "-l")
+	cmd.Stdin = bytes.NewReader(src)
+	cmd.Stdout = io.Discard
+	var stderr bytes.Buffer
+	cmd.Stderr = &stderr
+	if err := cmd.Run(); err != nil {
+		msg := strings.TrimSpace(stderr.String())
+		if msg == "" {
+			msg = err.Error()
+		}
+		return errors.New(msg)
+	}
+	return nil
 }
