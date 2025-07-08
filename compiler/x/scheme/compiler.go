@@ -126,7 +126,7 @@ const sliceHelper = `(define (_slice obj i j)
               (loop (+ idx 1) (cdr xs)
                     (if (>= idx start)
                         (cons (car xs) out)
-                        out))))))`
+                        out)))))))`
 
 const groupHelpers = `(define (_count v)
   (cond
