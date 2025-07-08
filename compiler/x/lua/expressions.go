@@ -419,6 +419,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.helpers["append"] = true
 		return fmt.Sprintf("__append(%s, %s)", args[0], args[1]), nil
+	case "substring":
+		if len(args) != 3 {
+			return "", fmt.Errorf("substring expects 3 args")
+		}
+		c.helpers["slice"] = true
+		return fmt.Sprintf("__slice(%s, %s, %s)", args[0], args[1], args[2]), nil
 	case "values":
 		if len(args) != 1 {
 			return "", fmt.Errorf("values expects 1 arg")
@@ -443,6 +449,13 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		return fmt.Sprintf("__eval(%s)", argStr), nil
 	default:
+		if c.env != nil {
+			if fn, ok := c.env.GetFunc(call.Func); ok {
+				if len(args) < len(fn.Params) {
+					return c.partialFunc(name, fn, args)
+				}
+			}
+		}
 		return fmt.Sprintf("%s(%s)", name, argStr), nil
 	}
 }
@@ -1139,4 +1152,18 @@ func isStringLiteral(e *parser.Expr) bool {
 		return false
 	}
 	return true
+}
+
+// partialFunc generates a closure implementing a partially applied call.
+// name is the function being called, fn is its declaration, and args are the
+// already provided argument expressions.
+func (c *Compiler) partialFunc(name string, fn *parser.FunStmt, args []string) (string, error) {
+	remain := fn.Params[len(args):]
+	paramNames := make([]string, len(remain))
+	for i, p := range remain {
+		paramNames[i] = sanitizeName(p.Name)
+	}
+	callArgs := append(append([]string{}, args...), paramNames...)
+	return fmt.Sprintf("function(%s) return %s(%s) end",
+		strings.Join(paramNames, ", "), sanitizeName(name), strings.Join(callArgs, ", ")), nil
 }
