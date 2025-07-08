@@ -4,7 +4,7 @@ This directory contains TypeScript code compiled from Mochi programs in `tests/v
 
 ## Progress
 
-Compiled: 71/97 programs
+Compiled: 76/97 programs
 
 ## Checklist
 
@@ -30,15 +30,15 @@ Compiled: 71/97 programs
 - [x] fun_call.mochi
 - [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
-- [ ] group_by.mochi
-- [ ] group_by_conditional_sum.mochi
-- [ ] group_by_having.mochi
+ - [x] group_by.mochi
+ - [x] group_by_conditional_sum.mochi
+ - [x] group_by_having.mochi
 - [ ] group_by_join.mochi
 - [ ] group_by_left_join.mochi
 - [ ] group_by_multi_join.mochi
 - [ ] group_by_multi_join_sort.mochi
-- [ ] group_by_sort.mochi
-- [ ] group_items_iteration.mochi
+ - [x] group_by_sort.mochi
+ - [x] group_items_iteration.mochi
 - [x] if_else.mochi
 - [x] if_then_else.mochi
 - [x] if_then_else_nested.mochi

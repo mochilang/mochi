@@ -257,8 +257,8 @@ func (c *Compiler) funExpr(fe *parser.FunExpr) (string, error) {
 }
 
 func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
-	if q.Group != nil || len(q.Joins) > 0 {
-		return "", fmt.Errorf("query features not supported")
+	if len(q.Joins) > 0 {
+		return "", fmt.Errorf("query joins not supported")
 	}
 	src, err := c.expr(q.Source)
 	if err != nil {
@@ -314,28 +314,81 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	res := c.newTmp()
 	writeln("(() => {")
 	indent++
-	writeln("const " + res + " = [];")
-	writeln(fmt.Sprintf("for (const %s of %s) {", q.Var, src))
-	indent++
-	for i, fs := range fromSrcs {
-		writeln(fmt.Sprintf("for (const %s of %s) {", q.Froms[i].Var, fs))
+
+	if q.Group != nil {
+		if len(q.Group.Exprs) != 1 {
+			return "", fmt.Errorf("group by multiple expressions not supported")
+		}
+		keyStr, err := c.expr(q.Group.Exprs[0])
+		if err != nil {
+			return "", err
+		}
+		var havingStr string
+		if q.Group.Having != nil {
+			havingStr, err = c.expr(q.Group.Having)
+			if err != nil {
+				return "", err
+			}
+		}
+		writeln("const groups = {};")
+		writeln(fmt.Sprintf("for (const %s of %s) {", q.Var, src))
 		indent++
-	}
-	if whereStr != "" {
-		writeln("if (!(" + whereStr + ")) continue;")
-	}
-	if sortStr != "" {
-		writeln(res + ".push({item: " + sel + ", key: " + sortStr + "});")
-	} else {
-		writeln(res + ".push(" + sel + ");")
-	}
-	for range q.Froms {
+		for i, fs := range fromSrcs {
+			writeln(fmt.Sprintf("for (const %s of %s) {", q.Froms[i].Var, fs))
+			indent++
+		}
+		if whereStr != "" {
+			writeln("if (!(" + whereStr + ")) continue;")
+		}
+		writeln(fmt.Sprintf("const _k = JSON.stringify(%s);", keyStr))
+		writeln("let g = groups[_k];")
+		writeln(fmt.Sprintf("if (!g) { g = []; g.key = %s; g.items = g; groups[_k] = g; }", keyStr))
+		writeln(fmt.Sprintf("g.push(%s);", q.Var))
+		for range q.Froms {
+			indent--
+			writeln("}")
+		}
 		indent--
 		writeln("}")
+		writeln("let res = [];")
+		writeln("for (const _k in groups) {")
+		indent++
+		writeln("const g = groups[_k];")
+		if havingStr != "" {
+			writeln("if (!(" + havingStr + ")) continue;")
+		}
+		if sortStr != "" {
+			writeln("res.push({item: " + sel + ", key: " + sortStr + "});")
+		} else {
+			writeln("res.push(" + sel + ");")
+		}
+		indent--
+		writeln("}")
+	} else {
+		writeln("const " + res + " = [];")
+		writeln(fmt.Sprintf("for (const %s of %s) {", q.Var, src))
+		indent++
+		for i, fs := range fromSrcs {
+			writeln(fmt.Sprintf("for (const %s of %s) {", q.Froms[i].Var, fs))
+			indent++
+		}
+		if whereStr != "" {
+			writeln("if (!(" + whereStr + ")) continue;")
+		}
+		if sortStr != "" {
+			writeln(res + ".push({item: " + sel + ", key: " + sortStr + "});")
+		} else {
+			writeln(res + ".push(" + sel + ");")
+		}
+		for range q.Froms {
+			indent--
+			writeln("}")
+		}
+		indent--
+		writeln("}")
+		writeln("let res = " + res + ";")
 	}
-	indent--
-	writeln("}")
-	writeln("let res = " + res + ";")
+
 	if sortStr != "" {
 		writeln("res = res.sort((a,b)=> a.key < b.key ? -1 : a.key > b.key ? 1 : 0).map(x=>x.item);")
 	}
@@ -659,6 +712,11 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 				return fmt.Sprintf("%s.substring(%s, %s)", args[0], args[1], args[2]), nil
 			}
 			return "", fmt.Errorf("substring expects 3 args")
+		case "json":
+			if len(args) == 1 {
+				return fmt.Sprintf("console.log(JSON.stringify(%s))", args[0]), nil
+			}
+			return "", fmt.Errorf("json expects 1 arg")
 		case "min":
 			if len(args) == 1 {
 				return fmt.Sprintf("Math.min(...%s)", args[0]), nil
