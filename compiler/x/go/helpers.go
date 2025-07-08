@@ -1,5 +1,3 @@
-//go:build archived
-
 package gocode
 
 import (
@@ -267,6 +265,20 @@ func contains(ops []string, op string) bool {
 
 func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
 	return types.ResolveTypeRef(t, c.env)
+}
+
+func (c *Compiler) castExpr(expr string, from, to types.Type) string {
+	fromGo := goType(from)
+	toGo := goType(to)
+	if toGo == "" || toGo == fromGo || equalTypes(from, to) {
+		return expr
+	}
+	if isNumeric(from) && isNumeric(to) {
+		return fmt.Sprintf("%s(%s)", toGo, expr)
+	}
+	c.use("_cast")
+	c.imports["encoding/json"] = true
+	return fmt.Sprintf("_cast[%s](%s)", toGo, expr)
 }
 
 func isUnderscoreExpr(e *parser.Expr) bool {

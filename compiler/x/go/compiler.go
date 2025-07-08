@@ -1,5 +1,3 @@
-//go:build archived
-
 package gocode
 
 import (
@@ -97,6 +95,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	// Restore buffer and write final output with updated imports.
 	c.buf = oldBuf
 	c.indent = 0
+	c.writeln("//go:build ignore")
+	c.writeln("")
 	c.writeln("package main")
 	c.writeln("")
 	c.writeImports()
@@ -239,8 +239,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 						expr = fmt.Sprintf("_convSlice[%s,%s](%s)", goType(el.Elem), goType(rl.Elem), expr)
 					}
 				} else if retGo != exprGo || !equalTypes(retT, exprT) || isAny(exprT) {
-					c.use("_cast")
-					expr = fmt.Sprintf("_cast[%s](%s)", retGo, expr)
+					expr = c.castExpr(expr, exprT, retT)
 				}
 			} else if retGo != exprGo || !equalTypes(retT, exprT) || isAny(exprT) {
 				if ut, ok := retT.(types.UnionType); ok {
@@ -249,16 +248,13 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 							// struct variant implements union interface
 							// no cast needed
 						} else {
-							c.use("_cast")
-							expr = fmt.Sprintf("_cast[%s](%s)", retGo, expr)
+							expr = c.castExpr(expr, exprT, retT)
 						}
 					} else {
-						c.use("_cast")
-						expr = fmt.Sprintf("_cast[%s](%s)", retGo, expr)
+						expr = c.castExpr(expr, exprT, retT)
 					}
 				} else {
-					c.use("_cast")
-					expr = fmt.Sprintf("_cast[%s](%s)", retGo, expr)
+					expr = c.castExpr(expr, exprT, retT)
 				}
 			}
 		}
@@ -509,9 +505,7 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 			exprGo := goType(exprT)
 			typGo := goType(typ)
 			if typGo != "" && typGo != exprGo && (isAny(exprT) || !equalTypes(typ, exprT)) {
-				c.use("_cast")
-				c.imports["encoding/json"] = true
-				value = fmt.Sprintf("_cast[%s](%s)", typGo, value)
+				value = c.castExpr(value, exprT, typ)
 			}
 		}
 		typ = targetType
@@ -523,9 +517,7 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 		typGo := goType(finalTyp)
 		if typGo != "" && typGo != exprGo && (isAny(exprT) || !equalTypes(finalTyp, exprT)) {
 			if !strings.HasPrefix(value, fmt.Sprintf("_cast[%s](", typGo)) {
-				c.use("_cast")
-				c.imports["encoding/json"] = true
-				value = fmt.Sprintf("_cast[%s](%s)", typGo, value)
+				value = c.castExpr(value, exprT, finalTyp)
 			}
 		}
 	}
