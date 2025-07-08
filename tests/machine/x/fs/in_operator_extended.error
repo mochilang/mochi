@@ -1,0 +1,24 @@
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/machine/x/fs/in_operator_extended.fs(10,16): error FS0039: The value or constructor 'a' is not defined
+
+/workspace/mochi/tests/machine/x/fs/in_operator_extended.fs(11,33): error FS0001: This expression was expected to have type
+    string list    
+but here has type
+    Collections.Generic.IDictionary<'a,int>    
+
+/workspace/mochi/tests/machine/x/fs/in_operator_extended.fs(12,33): error FS0001: This expression was expected to have type
+    string list    
+but here has type
+    Collections.Generic.IDictionary<'a,int>    
+
+/workspace/mochi/tests/machine/x/fs/in_operator_extended.fs(14,35): error FS0001: This expression was expected to have type
+    string list    
+but here has type
+    string    
+
+/workspace/mochi/tests/machine/x/fs/in_operator_extended.fs(15,35): error FS0001: This expression was expected to have type
+    string list    
+but here has type
+    string    

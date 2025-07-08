@@ -1,0 +1,6 @@
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/machine/x/fs/group_by_multi_join.fs(10,105): error FS0010: Unexpected symbol ']' in expression. Expected '->' or other token.
+
+/workspace/mochi/tests/machine/x/fs/group_by_multi_join.fs(10,109): error FS0010: Unexpected symbol ']' in expression. Expected '->' or other token.

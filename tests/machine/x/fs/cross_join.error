@@ -1,0 +1,18 @@
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/machine/x/fs/cross_join.fs(6,19): error FS0010: Unexpected symbol '|' in expression
+
+/workspace/mochi/tests/machine/x/fs/cross_join.fs(6,18): error FS0604: Unmatched '{'
+
+/workspace/mochi/tests/machine/x/fs/cross_join.fs(7,16): error FS0010: Unexpected symbol '|' in expression
+
+/workspace/mochi/tests/machine/x/fs/cross_join.fs(7,15): error FS0604: Unmatched '{'
+
+/workspace/mochi/tests/machine/x/fs/cross_join.fs(9,3): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (8:16). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/cross_join.fs(9,3): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (8:16). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/cross_join.fs(9,32): error FS0010: Unexpected symbol '|' in expression
+
+/workspace/mochi/tests/machine/x/fs/cross_join.fs(9,31): error FS0604: Unmatched '{'

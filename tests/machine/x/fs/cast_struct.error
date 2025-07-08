@@ -1,0 +1,8 @@
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/machine/x/fs/cast_struct.fs(10,15): error FS0193: Type constraint mismatch. The type 
+    Collections.Generic.IDictionary<string,string>    
+is not compatible with type
+    Todo    
+The type 'Collections.Generic.IDictionary<string,string>' is not compatible with the type 'Todo'
