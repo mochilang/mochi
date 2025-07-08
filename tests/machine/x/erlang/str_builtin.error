@@ -1,0 +1,8 @@
+exit status 127
+/workspace/mochi/tests/machine/x/erlang/str_builtin.erl:5:24: function str/1 undefined
+escript: There were compilation errors.
+
+   3: 
+   4: main(_) ->
+   5:     io:format("~p~n", [str(123)]).
+   6: 

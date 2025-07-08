@@ -1,0 +1,6 @@
+line 7: unsupported expression at line 7
+   5: ]
+   6: let result =
+   7:   from i in items
+   8:   group by i.cat into g
+   9:   sort by g.key

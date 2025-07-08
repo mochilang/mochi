@@ -1,0 +1,6 @@
+line 16: unsupported expression at line 16
+  14: ]
+  15: 
+  16: let result = from o in orders
+  17:              join from c in customers on o.customerId == c.id
+  18:              join from i in items on o.id == i.orderId

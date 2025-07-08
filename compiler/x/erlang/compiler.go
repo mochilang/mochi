@@ -611,6 +611,33 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", err
 		}
 		return fmt.Sprintf("length(%s)", a0), nil
+	case "sum":
+		if len(call.Args) != 1 {
+			return "", fmt.Errorf("sum expects 1 arg")
+		}
+		a0, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("lists:sum(%s)", a0), nil
+	case "min":
+		if len(call.Args) != 1 {
+			return "", fmt.Errorf("min expects 1 arg")
+		}
+		a0, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("lists:min(%s)", a0), nil
+	case "max":
+		if len(call.Args) != 1 {
+			return "", fmt.Errorf("max expects 1 arg")
+		}
+		a0, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("lists:max(%s)", a0), nil
 	case "values":
 		if len(call.Args) != 1 {
 			return "", fmt.Errorf("values expects 1 arg")
@@ -638,7 +665,15 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 		return fmt.Sprintf("string:substr(%s, (%s)+1, (%s)-(%s))", str, start, end, start), nil
 	default:
-		return "", fmt.Errorf("unsupported function %s", call.Func)
+		args := make([]string, len(call.Args))
+		for i, a := range call.Args {
+			s, err := c.compileExpr(a)
+			if err != nil {
+				return "", err
+			}
+			args[i] = s
+		}
+		return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ", ")), nil
 	}
 }
 
