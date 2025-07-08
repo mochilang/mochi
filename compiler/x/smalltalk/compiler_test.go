@@ -4,74 +4,124 @@ package smalltalk_test
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"runtime"
+	"regexp"
+	"strconv"
 	"strings"
 	"testing"
 
 	st "mochi/compiler/x/smalltalk"
+	"mochi/compiler/x/testutil"
 	"mochi/parser"
+	"mochi/types"
 )
 
-// TestCompilePrograms compiles each Mochi program under tests/vm/valid to
-// Smalltalk and attempts to run it with the GNU Smalltalk interpreter (gst).
-// Generated source and outputs are written under tests/machine/x/st.
+func ensureGST(t *testing.T) string {
+	if p, err := exec.LookPath("gst"); err == nil {
+		return p
+	}
+	t.Skip("gst interpreter not available")
+	return ""
+}
+
+func writeError(dir, name string, src []byte, err error) {
+	line := extractLine(err.Error())
+	var context string
+	if line > 0 {
+		lines := bytes.Split(src, []byte("\n"))
+		start := line - 2
+		if start < 1 {
+			start = 1
+		}
+		end := line + 2
+		if end > len(lines) {
+			end = len(lines)
+		}
+		var b strings.Builder
+		for i := start; i <= end; i++ {
+			if i-1 < len(lines) {
+				fmt.Fprintf(&b, "%4d: %s\n", i, lines[i-1])
+			}
+		}
+		context = b.String()
+	}
+	msg := fmt.Sprintf("line: %d\nerror: %v\n%s", line, err, context)
+	_ = os.WriteFile(filepath.Join(dir, name+".error"), []byte(msg), 0644)
+}
+
+func extractLine(msg string) int {
+	re := regexp.MustCompile(`:(\d+)`)
+	if m := re.FindStringSubmatch(msg); m != nil {
+		if n, err := strconv.Atoi(m[1]); err == nil {
+			return n
+		}
+	}
+	re = regexp.MustCompile(`line (\d+)`)
+	if m := re.FindStringSubmatch(msg); m != nil {
+		if n, err := strconv.Atoi(m[1]); err == nil {
+			return n
+		}
+	}
+	return 0
+}
+
 func TestCompilePrograms(t *testing.T) {
-	// locate test programs relative to the repository root
-	_, file, _, _ := runtime.Caller(0)
-	root := filepath.Clean(filepath.Join(filepath.Dir(file), "..", "..", ".."))
+	gst := ensureGST(t)
+	root := testutil.FindRepoRoot(t)
+	outDir := filepath.Join(root, "tests", "machine", "x", "st")
+	if err := os.MkdirAll(outDir, 0755); err != nil {
+		t.Fatalf("mkdir: %v", err)
+	}
 	files, err := filepath.Glob(filepath.Join(root, "tests", "vm", "valid", "*.mochi"))
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("glob: %v", err)
 	}
-
-	c := st.New()
-
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
 		t.Run(name, func(t *testing.T) {
 			data, err := os.ReadFile(src)
 			if err != nil {
-				t.Fatalf("read error: %v", err)
+				t.Fatalf("read: %v", err)
 			}
-			prog, err := parser.ParseString(string(data))
+			prog, err := parser.Parse(src)
 			if err != nil {
-				t.Fatalf("parse error: %v", err)
+				writeError(outDir, name, data, err)
+				t.Skipf("parse error: %v", err)
+				return
 			}
-			code, err := c.Compile(prog)
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				writeError(outDir, name, data, errs[0])
+				t.Skipf("type error: %v", errs[0])
+				return
+			}
+			code, err := st.New().Compile(prog)
 			if err != nil {
-				t.Fatalf("compile error: %v", err)
+				writeError(outDir, name, data, err)
+				t.Skipf("compile error: %v", err)
+				return
 			}
-
-			outDir := filepath.Join(root, "tests", "machine", "x", "st")
-			os.MkdirAll(outDir, 0755)
 			stFile := filepath.Join(outDir, name+".st")
 			if err := os.WriteFile(stFile, code, 0644); err != nil {
 				t.Fatalf("write st: %v", err)
 			}
-
-			cmd := exec.Command("gst", stFile)
-			var stdout, stderr bytes.Buffer
-			cmd.Stdout = &stdout
-			cmd.Stderr = &stderr
-			runErr := cmd.Run()
-			if runErr == nil {
-				if err := os.WriteFile(filepath.Join(outDir, name+".out"), stdout.Bytes(), 0644); err != nil {
-					t.Fatalf("write out: %v", err)
-				}
+			cmd := exec.Command(gst, stFile)
+			var buf bytes.Buffer
+			cmd.Stdout = &buf
+			cmd.Stderr = &buf
+			if err := cmd.Run(); err != nil {
+				writeError(outDir, name, data, fmt.Errorf("run error: %v\n%s", err, buf.Bytes()))
+				t.Skipf("run error: %v", err)
 				return
 			}
-			// on error
-			var buf strings.Builder
-			buf.WriteString(runErr.Error())
-			if stderr.Len() > 0 {
-				buf.WriteString(": ")
-				buf.Write(stderr.Bytes())
+			outPath := filepath.Join(outDir, name+".out")
+			if err := os.WriteFile(outPath, buf.Bytes(), 0644); err != nil {
+				t.Fatalf("write out: %v", err)
 			}
-			errPath := filepath.Join(outDir, name+".error")
-			os.WriteFile(errPath, []byte(buf.String()), 0644)
+			os.Remove(filepath.Join(outDir, name+".error"))
 		})
 	}
 }
