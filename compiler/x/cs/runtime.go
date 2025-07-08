@@ -22,6 +22,23 @@ func (c *Compiler) emitRuntime() {
 				c.writeln("throw new Exception(\"count() expects list or string\");")
 				c.indent--
 				c.writeln("}")
+			case "_append":
+				c.writeln("static List<dynamic> _append(IEnumerable<dynamic> a, dynamic b) {")
+				c.indent++
+				c.writeln("var res = new List<dynamic>();")
+				c.writeln("if (a != null) foreach (var it in a) res.Add(it);")
+				c.writeln("res.Add(b);")
+				c.writeln("return res;")
+				c.indent--
+				c.writeln("}")
+			case "_values":
+				c.writeln("static List<dynamic> _values(IDictionary<dynamic, dynamic> m) {")
+				c.indent++
+				c.writeln("var res = new List<dynamic>();")
+				c.writeln("foreach (System.Collections.DictionaryEntry kv in m) res.Add(kv.Value);")
+				c.writeln("return res;")
+				c.indent--
+				c.writeln("}")
 			case "_avg":
 				c.writeln("static double _avg(dynamic v) {")
 				c.indent++

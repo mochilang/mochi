@@ -2259,6 +2259,18 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.use("_count")
 		return fmt.Sprintf("_count(%s)", argStr), nil
+	case "append":
+		if len(args) != 2 {
+			return "", fmt.Errorf("append expects 2 args")
+		}
+		c.use("_append")
+		return fmt.Sprintf("_append(%s, %s)", args[0], args[1]), nil
+	case "values":
+		if len(args) != 1 {
+			return "", fmt.Errorf("values expects 1 arg")
+		}
+		c.use("_values")
+		return fmt.Sprintf("_values(%s)", args[0]), nil
 	case "exists":
 		if len(args) != 1 {
 			return "", fmt.Errorf("exists() expects 1 arg")
