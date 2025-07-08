@@ -292,6 +292,12 @@ func (c *Compiler) compileMainStmt(s *parser.Statement) error {
 			}
 			c.writeln(fmt.Sprintf("let %s = %s", sanitizeName(s.Var.Name), val))
 		}
+	case s.Assign != nil:
+		val, err := c.compileExpr(s.Assign.Value)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("let %s = %s", sanitizeName(s.Assign.Name), val))
 	case s.Fun != nil:
 		expr, err := c.compileFunExpr(&parser.FunExpr{Params: s.Fun.Params, Return: s.Fun.Return, BlockBody: s.Fun.Body})
 		if err != nil {
@@ -1037,6 +1043,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if p.Call.Func == "keys" && len(args) == 1 {
 			c.usesMap = true
 			return fmt.Sprintf("(Map.keys %s)", args[0]), nil
+		}
+		if p.Call.Func == "values" && len(args) == 1 {
+			c.usesMap = true
+			return fmt.Sprintf("(Map.elems %s)", args[0]), nil
 		}
 		if p.Call.Func == "now" {
 			c.usesTime = true

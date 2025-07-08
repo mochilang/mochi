@@ -102,8 +102,9 @@ _parseCSV text header delim =
                       ]
            in map row (drop start ls)
 
-m = Map.fromList [("a", 1), ("b", 2), ("c", 3)]
+x = 1
 
 main :: IO ()
 main = do
-  print ((Map.elems m))
+  let x = 2
+  print (x)
