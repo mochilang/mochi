@@ -29,8 +29,9 @@ type Compiler struct {
 // New creates a new Compiler instance.
 func New(env *types.Env) *Compiler {
 	return &Compiler{compiler: compiler{
-		structs: make(map[string][]string),
-		inout:   make(map[string][]bool),
+		structs:  make(map[string][]string),
+		inout:    make(map[string][]bool),
+		varTypes: make(map[string]string),
 	}}
 }
 
@@ -45,10 +46,11 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 }
 
 type compiler struct {
-	buf     strings.Builder
-	indent  int
-	structs map[string][]string
-	inout   map[string][]bool
+	buf      strings.Builder
+	indent   int
+	structs  map[string][]string
+	inout    map[string][]bool
+	varTypes map[string]string
 }
 
 func (c *compiler) program(p *parser.Program) error {
@@ -111,12 +113,14 @@ func (c *compiler) letStmt(l *parser.LetStmt) error {
 		} else {
 			c.writeln(fmt.Sprintf("let %s = %s", l.Name, val))
 		}
+		c.varTypes[l.Name] = c.inferType(l.Type, l.Value)
 		return nil
 	}
 	if typ == "" {
 		return fmt.Errorf("let without value or type at line %d", l.Pos.Line)
 	}
 	c.writeln(fmt.Sprintf("let %s: %s = %s", l.Name, typ, defaultValue(typ)))
+	c.varTypes[l.Name] = c.inferType(l.Type, nil)
 	return nil
 }
 
@@ -135,12 +139,14 @@ func (c *compiler) varStmt(v *parser.VarStmt) error {
 		} else {
 			c.writeln(fmt.Sprintf("var %s = %s", v.Name, val))
 		}
+		c.varTypes[v.Name] = c.inferType(v.Type, v.Value)
 		return nil
 	}
 	if typ == "" {
 		return fmt.Errorf("var without value or type at line %d", v.Pos.Line)
 	}
 	c.writeln(fmt.Sprintf("var %s: %s = %s", v.Name, typ, defaultValue(typ)))
+	c.varTypes[v.Name] = c.inferType(v.Type, nil)
 	return nil
 }
 
@@ -165,6 +171,9 @@ func (c *compiler) assignStmt(a *parser.AssignStmt) error {
 		return err
 	}
 	c.writeln(fmt.Sprintf("%s = %s", lhs, val))
+	if len(a.Index) == 0 && len(a.Field) == 0 {
+		c.varTypes[a.Name] = c.inferType(nil, a.Value)
+	}
 	return nil
 }
 
@@ -364,14 +373,18 @@ func (c *compiler) binary(b *parser.BinaryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		res = fmt.Sprintf("%s %s %s", res, op.Op, r)
+		if op.Op == "in" {
+			res = fmt.Sprintf("%s.contains(%s)", r, res)
+		} else {
+			res = fmt.Sprintf("%s %s %s", res, op.Op, r)
+		}
 	}
 	return res, nil
 }
 
 func supportedOp(op string) bool {
 	switch op {
-	case "+", "-", "*", "/", "%", "<", "<=", ">", ">=", "==", "!=", "&&", "||":
+	case "+", "-", "*", "/", "%", "<", "<=", ">", ">=", "==", "!=", "&&", "||", "in":
 		return true
 	}
 	return false
@@ -412,16 +425,57 @@ func (c *compiler) postfix(p *parser.PostfixExpr) (string, error) {
 		switch {
 		case op.Index != nil:
 			idx := op.Index
-			if idx.Colon != nil || idx.Colon2 != nil || idx.End != nil || idx.Step != nil || idx.Start == nil {
-				return "", fmt.Errorf("unsupported index at line %d", idx.Pos.Line)
+			if idx.Colon != nil || idx.Colon2 != nil || idx.End != nil || idx.Step != nil {
+				start := "0"
+				end := fmt.Sprintf("%s.count", val)
+				if idx.Start != nil {
+					start, err = c.expr(idx.Start)
+					if err != nil {
+						return "", err
+					}
+				}
+				if idx.End != nil {
+					end, err = c.expr(idx.End)
+					if err != nil {
+						return "", err
+					}
+				}
+				typ := c.primaryType(p.Target)
+				if typ == "string" {
+					startIdx := fmt.Sprintf("%s.index(%s.startIndex, offsetBy: %s)", val, val, start)
+					endIdx := fmt.Sprintf("%s.index(%s.startIndex, offsetBy: %s)", val, val, end)
+					val = fmt.Sprintf("String(%s[%s..<%s])", val, startIdx, endIdx)
+				} else {
+					val = fmt.Sprintf("Array(%s[%s..<%s])", val, start, end)
+				}
+			} else {
+				if idx.Start == nil {
+					return "", fmt.Errorf("empty index")
+				}
+				s, err := c.expr(idx.Start)
+				if err != nil {
+					return "", err
+				}
+				typ := c.primaryType(p.Target)
+				if typ == "string" {
+					pos := fmt.Sprintf("%s.index(%s.startIndex, offsetBy: %s)", val, val, s)
+					val = fmt.Sprintf("%s[%s]", val, pos)
+				} else {
+					val = fmt.Sprintf("%s[%s]", val, s)
+				}
 			}
-			s, err := c.expr(idx.Start)
-			if err != nil {
-				return "", err
-			}
-			val = fmt.Sprintf("%s[%s]", val, s)
 		case op.Field != nil:
 			val = fmt.Sprintf("%s.%s", val, op.Field.Name)
+		case op.Call != nil:
+			parts := make([]string, len(op.Call.Args))
+			for i, a := range op.Call.Args {
+				s, err := c.expr(a)
+				if err != nil {
+					return "", err
+				}
+				parts[i] = s
+			}
+			val = fmt.Sprintf("%s(%s)", val, strings.Join(parts, ", "))
 		case op.Cast != nil:
 			typ, err := c.typeRef(op.Cast.Type)
 			if err != nil {
@@ -778,4 +832,77 @@ func (c *compiler) writeIndent() {
 	for i := 0; i < c.indent; i++ {
 		c.buf.WriteString("    ")
 	}
+}
+
+func (c *compiler) inferType(t *parser.TypeRef, val *parser.Expr) string {
+	if t != nil && t.Simple != nil {
+		switch strings.ToLower(*t.Simple) {
+		case "string":
+			return "string"
+		case "int", "float", "bool":
+			return "number"
+		}
+	}
+	if val != nil && val.Binary != nil && val.Binary.Left != nil {
+		p := val.Binary.Left.Value
+		if len(val.Binary.Right) == 0 && len(p.Ops) == 0 {
+			switch {
+			case p.Target.Lit != nil && p.Target.Lit.Str != nil:
+				return "string"
+			case p.Target.List != nil:
+				return "list"
+			case p.Target.Map != nil:
+				return "map"
+			}
+		}
+	}
+	return ""
+}
+
+func (c *compiler) exprType(e *parser.Expr) string {
+	if e == nil || e.Binary == nil {
+		return ""
+	}
+	u := e.Binary.Left
+	if u == nil {
+		return ""
+	}
+	p := u.Value
+	if p == nil || p.Target == nil {
+		return ""
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		if typ, ok := c.varTypes[p.Target.Selector.Root]; ok {
+			return typ
+		}
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return "string"
+	}
+	if p.Target.List != nil {
+		return "list"
+	}
+	if p.Target.Map != nil {
+		return "map"
+	}
+	return ""
+}
+
+func (c *compiler) primaryType(p *parser.Primary) string {
+	if p == nil {
+		return ""
+	}
+	switch {
+	case p.Selector != nil && len(p.Selector.Tail) == 0:
+		if typ, ok := c.varTypes[p.Selector.Root]; ok {
+			return typ
+		}
+	case p.Lit != nil && p.Lit.Str != nil:
+		return "string"
+	case p.List != nil:
+		return "list"
+	case p.Map != nil:
+		return "map"
+	}
+	return ""
 }
