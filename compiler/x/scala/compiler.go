@@ -369,12 +369,20 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 
 func (c *Compiler) compileExprStmt(s *parser.ExprStmt) error {
 	call, ok := callPattern(s.Expr)
-	if ok && call.Func == "print" && len(call.Args) == 1 {
-		arg, err := c.compileExpr(call.Args[0])
-		if err != nil {
-			return err
+	if ok && call.Func == "print" {
+		args := make([]string, len(call.Args))
+		for i, a := range call.Args {
+			v, err := c.compileExpr(a)
+			if err != nil {
+				return err
+			}
+			args[i] = v
 		}
-		c.writeln(fmt.Sprintf("println(%s)", arg))
+		if len(args) == 1 {
+			c.writeln(fmt.Sprintf("println(%s)", args[0]))
+		} else {
+			c.writeln(fmt.Sprintf("println(%s)", strings.Join(args, " + \" \" + ")))
+		}
 		return nil
 	}
 	expr, err := c.compileExpr(s.Expr)
