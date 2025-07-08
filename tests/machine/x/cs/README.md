@@ -4,8 +4,8 @@ This directory contains C# source code generated from Mochi programs and the cor
 
 ## Summary
 
-- 16/97 programs compiled and executed successfully.
-- 81 programs failed to compile or run or were not yet tested.
+- 19/97 programs compiled and executed successfully.
+- 78 programs failed to compile or run or were not yet tested.
 
 ### Successful
 - append_builtin
@@ -24,6 +24,9 @@ This directory contains C# source code generated from Mochi programs and the cor
 - cross_join_triple
 - dataset_sort_take_limit
 - dataset_where_filter
+- for_list_collection
+- for_loop
+- print_hello
 
 ### Failed
 - (others pending)
