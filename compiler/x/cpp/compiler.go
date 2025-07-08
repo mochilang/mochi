@@ -50,6 +50,15 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.writeln("")
 
 	for _, st := range p.Statements {
+		if st.Type != nil {
+			if err := c.compileTypeDecl(st.Type); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
+
+	for _, st := range p.Statements {
 		if st.Fun != nil {
 			if err := c.compileFun(st.Fun); err != nil {
 				return nil, err
@@ -97,6 +106,58 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	c.indent--
 	c.writeln("}")
 	return nil
+}
+
+func (c *Compiler) compileTypeDecl(td *parser.TypeDecl) error {
+	if len(td.Variants) > 0 {
+		return fmt.Errorf("sum types not supported")
+	}
+	c.writeIndent()
+	c.buf.WriteString("struct ")
+	c.buf.WriteString(td.Name)
+	c.buf.WriteString(" {\n")
+	c.indent++
+	for _, m := range td.Members {
+		if m.Field == nil {
+			return fmt.Errorf("methods in type not supported")
+		}
+		typ, err := c.compileType(m.Field.Type)
+		if err != nil && typ == "auto" {
+			return err
+		}
+		c.writeIndent()
+		c.buf.WriteString(fmt.Sprintf("%s %s;\n", typ, m.Field.Name))
+	}
+	c.indent--
+	c.writeln("};")
+	return nil
+}
+
+func (c *Compiler) compileFunExpr(fe *parser.FunExpr) (string, error) {
+	params := []string{}
+	for _, p := range fe.Params {
+		typ, err := c.compileType(p.Type)
+		if err != nil && typ == "auto" {
+			return "", err
+		}
+		params = append(params, fmt.Sprintf("%s %s", typ, p.Name))
+	}
+	ret := ""
+	if fe.Return != nil {
+		typ, err := c.compileType(fe.Return)
+		if err != nil && typ == "auto" {
+			return "", err
+		}
+		ret = " -> " + typ
+	}
+	if fe.ExprBody == nil {
+		return "", fmt.Errorf("lambda block body not supported")
+	}
+	body, err := c.compileExpr(fe.ExprBody)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("([=](%s)%s { return %s; })", strings.Join(params, ", "), ret, body), nil
 }
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
@@ -456,6 +517,18 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return fmt.Sprintf("%s.substr(%s, %s - %s)", args[0], args[1], args[2], args[1]), nil
 		}
 		return fn + "(" + strings.Join(args, ", ") + ")", nil
+	case p.FunExpr != nil:
+		return c.compileFunExpr(p.FunExpr)
+	case p.Struct != nil:
+		fields := []string{}
+		for _, f := range p.Struct.Fields {
+			s, err := c.compileExpr(f.Value)
+			if err != nil {
+				return "", err
+			}
+			fields = append(fields, s)
+		}
+		return p.Struct.Name + "{" + strings.Join(fields, ", ") + "}", nil
 	case p.List != nil:
 		elems := []string{}
 		for _, e := range p.List.Elems {
@@ -511,6 +584,8 @@ func (c *Compiler) compileType(t *parser.TypeRef) (string, error) {
 			return "int", nil
 		case "string":
 			return "string", nil
+		default:
+			return *t.Simple, nil
 		}
 	}
 	return "auto", fmt.Errorf("unsupported type")
