@@ -1,0 +1,4 @@
+line 14: exit status 254
+    if (entry.order) {
+      print(['Customer', entry.customerName, 'has order', entry.order.id, '- $', entry.order.total].join(' '));
+    }

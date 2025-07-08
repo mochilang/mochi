@@ -1,0 +1,4 @@
+line 8: exit status 254
+  for (var p in people) {
+    _q0.add({'city': g.key, 'num': g.length});
+  }

@@ -1,0 +1,4 @@
+line 2: exit status 254
+int outer(int x) {
+  return inner(5);
+}

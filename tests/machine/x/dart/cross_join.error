@@ -1,0 +1,4 @@
+line 15: exit status 254
+  for (var entry in result) {
+    print(['Order', entry.orderId, '(customerId:', entry.orderCustomerId, ', total: $', entry.orderTotal, ') paired with', entry.pairedCustomerName].join(' '));
+  }

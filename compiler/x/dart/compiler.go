@@ -46,8 +46,14 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 
 	for _, st := range prog.Statements {
-		if st.Fun != nil {
+		switch {
+		case st.Fun != nil:
 			if err := c.compileFun(st.Fun); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		case st.Type != nil:
+			if err := c.compileType(st.Type); err != nil {
 				return nil, err
 			}
 			c.writeln("")
@@ -205,6 +211,28 @@ func (c *Compiler) compileReturn(r *parser.ReturnStmt) error {
 		return err
 	}
 	c.writeln("return " + val + ";")
+	return nil
+}
+
+func (c *Compiler) compileType(td *parser.TypeDecl) error {
+	st, ok := c.env.GetStruct(td.Name)
+	if !ok {
+		return nil
+	}
+	c.writeln(fmt.Sprintf("class %s {", td.Name))
+	c.indent++
+	fields := make([]string, len(st.Order))
+	for i, name := range st.Order {
+		typ := dartTypeFromType(st.Fields[name])
+		if typ == "" {
+			typ = "dynamic"
+		}
+		c.writeln(fmt.Sprintf("%s %s;", typ, name))
+		fields[i] = "this." + name
+	}
+	c.writeln(fmt.Sprintf("%s(%s);", td.Name, strings.Join(fields, ", ")))
+	c.indent--
+	c.writeln("}")
 	return nil
 }
 
@@ -440,7 +468,19 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			case "bool":
 				val = fmt.Sprintf("(%s ? true : false)", val)
 			default:
-				return "", fmt.Errorf("casts not supported")
+				if st, ok := c.env.GetStruct(typ); ok {
+					args := make([]string, len(st.Order))
+					for i, name := range st.Order {
+						ftyp := dartTypeFromType(st.Fields[name])
+						if ftyp == "" {
+							ftyp = "dynamic"
+						}
+						args[i] = fmt.Sprintf("(%s['%s'] as %s)", val, name, ftyp)
+					}
+					val = fmt.Sprintf("%s(%s)", typ, strings.Join(args, ", "))
+				} else {
+					return "", fmt.Errorf("casts not supported")
+				}
 			}
 		}
 	}
@@ -741,6 +781,39 @@ func (c *Compiler) writeln(s string) {
 	}
 	c.buf.WriteString(s)
 	c.buf.WriteByte('\n')
+}
+
+func dartTypeFromType(t types.Type) string {
+	switch tt := t.(type) {
+	case types.IntType, types.Int64Type:
+		return "int"
+	case types.FloatType:
+		return "double"
+	case types.StringType:
+		return "String"
+	case types.BoolType:
+		return "bool"
+	case types.ListType:
+		elem := dartTypeFromType(tt.Elem)
+		if elem == "" {
+			elem = "dynamic"
+		}
+		return fmt.Sprintf("List<%s>", elem)
+	case types.MapType:
+		k := dartTypeFromType(tt.Key)
+		if k == "" {
+			k = "dynamic"
+		}
+		v := dartTypeFromType(tt.Value)
+		if v == "" {
+			v = "dynamic"
+		}
+		return fmt.Sprintf("Map<%s, %s>", k, v)
+	case types.StructType:
+		return tt.Name
+	default:
+		return ""
+	}
 }
 
 func dartType(t *parser.TypeRef) string {

@@ -1,0 +1,4 @@
+line 15: exit status 254
+  for (var item in expensive) {
+    print([item.name, 'costs $', item.price].join(' '));
+  }

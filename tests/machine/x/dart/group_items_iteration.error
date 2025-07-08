@@ -1,0 +1,4 @@
+line 6: exit status 254
+  for (var d in data) {
+    _q0.add(g);
+  }
