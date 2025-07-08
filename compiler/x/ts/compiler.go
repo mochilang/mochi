@@ -386,6 +386,71 @@ func (c *Compiler) ifExpr(i *parser.IfExpr) (string, error) {
 	return fmt.Sprintf("(%s ? %s : %s)", cond, thenVal, elseVal), nil
 }
 
+func (c *Compiler) matchExpr(m *parser.MatchExpr) (string, error) {
+	target, err := c.expr(m.Target)
+	if err != nil {
+		return "", err
+	}
+	var b bytes.Buffer
+	indent := 0
+	writeln := func(s string) {
+		for i := 0; i < indent; i++ {
+			b.WriteString("  ")
+		}
+		b.WriteString(s)
+		b.WriteByte('\n')
+	}
+	tmp := c.newTmp()
+	writeln("(() => {")
+	indent++
+	writeln(fmt.Sprintf("const %s = %s;", tmp, target))
+	writeln("let _res;")
+	writeln(fmt.Sprintf("switch (%s) {", tmp))
+	indent++
+	hasDefault := false
+	for _, cs := range m.Cases {
+		if isUnderscoreExpr(cs.Pattern) {
+			res, err := c.expr(cs.Result)
+			if err != nil {
+				return "", err
+			}
+			writeln("default:")
+			indent++
+			writeln(fmt.Sprintf("_res = %s;", res))
+			writeln("break;")
+			indent--
+			hasDefault = true
+			continue
+		}
+		pat, err := c.expr(cs.Pattern)
+		if err != nil {
+			return "", err
+		}
+		res, err := c.expr(cs.Result)
+		if err != nil {
+			return "", err
+		}
+		writeln(fmt.Sprintf("case %s:", pat))
+		indent++
+		writeln(fmt.Sprintf("_res = %s;", res))
+		writeln("break;")
+		indent--
+	}
+	if !hasDefault {
+		writeln("default:")
+		indent++
+		writeln("_res = undefined;")
+		writeln("break;")
+		indent--
+	}
+	indent--
+	writeln("}")
+	writeln("return _res;")
+	indent--
+	writeln("})()")
+	return b.String(), nil
+}
+
 func (c *Compiler) expr(e *parser.Expr) (string, error) {
 	if e == nil {
 		return "", nil
@@ -526,6 +591,8 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 		return "(" + v + ")", nil
 	case p.FunExpr != nil:
 		return c.funExpr(p.FunExpr)
+	case p.Match != nil:
+		return c.matchExpr(p.Match)
 	case p.Call != nil:
 		args := make([]string, len(p.Call.Args))
 		for i, a := range p.Call.Args {
@@ -613,4 +680,19 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 		return strings.Join(append([]string{p.Selector.Root}, p.Selector.Tail...), "."), nil
 	}
 	return "", fmt.Errorf("unsupported expression at line %d", p.Pos.Line)
+}
+
+func isUnderscoreExpr(e *parser.Expr) bool {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if p == nil || len(p.Ops) != 0 || p.Target == nil || p.Target.Selector == nil {
+		return false
+	}
+	return p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0
 }

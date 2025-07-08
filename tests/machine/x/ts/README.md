@@ -4,7 +4,7 @@ This directory stores the generated TypeScript code and execution results for Mo
 
 ## Summary
 
-69/97 files compiled
+71/97 files compiled
 
 ## Checklist
 
@@ -65,8 +65,8 @@ This directory stores the generated TypeScript code and execution results for Mo
 - [x] map_literal_dynamic.mochi
 - [x] map_membership.mochi
  - [x] map_nested_assign.mochi
-- [ ] match_expr.mochi
-- [ ] match_full.mochi
+ - [x] match_expr.mochi
+ - [x] match_full.mochi
 - [x] math_ops.mochi
 - [x] membership.mochi
  - [x] min_max_builtin.mochi
