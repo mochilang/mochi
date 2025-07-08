@@ -1,0 +1,3 @@
+run: exit status 2
+ERROR: /workspace/mochi/tests/machine/x/pl/exists_builtin.pl:8: user:main is/2: Type error: `[]' expected, found `[1,2]' (a list) ("x" must hold one character)
+

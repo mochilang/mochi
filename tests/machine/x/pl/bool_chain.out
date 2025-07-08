@@ -1,0 +1,2 @@
+ERROR: /workspace/mochi/tests/machine/x/pl/bool_chain.pl:2:5: Syntax error: Operand expected, unquoted comma or bar found
+(1<2,2<3),3<4
