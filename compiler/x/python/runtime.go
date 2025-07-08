@@ -135,7 +135,7 @@ var helperFetch = "def _fetch(url, opts):\n" +
 	"    return json.loads(text)\n"
 
 var helperLoad = "def _load(path, opts):\n" +
-	"    import csv, json, sys\n" +
+	"    import csv, json, sys, os\n" +
 	"    fmt = 'csv'\n" +
 	"    header = True\n" +
 	"    delim = ','\n" +
@@ -145,6 +145,8 @@ var helperLoad = "def _load(path, opts):\n" +
 	"        delim = opts.get('delimiter', delim)\n" +
 	"        if isinstance(delim, str) and delim:\n" +
 	"            delim = delim[0]\n" +
+	"    if path is not None and not os.path.isabs(path):\n" +
+	"        path = os.path.join(os.path.dirname(__file__), path)\n" +
 	"    f = sys.stdin if path is None else open(path, 'r')\n" +
 	"    try:\n" +
 	"        if fmt == 'tsv':\n" +

@@ -1,1 +1,11 @@
-line 0: query features not supported
+run: exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/machine/x/python/group_items_iteration.py", line 178, in <module>
+    main()
+  File "/workspace/mochi/tests/machine/x/python/group_items_iteration.py", line 167, in main
+    for x in _get(g, "items"):
+             ^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/machine/x/python/group_items_iteration.py", line 26, in _get
+    raise Exception("field not found: " + name)
+Exception: field not found: items
+
