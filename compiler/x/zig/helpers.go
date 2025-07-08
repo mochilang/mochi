@@ -5,6 +5,7 @@ package zigcode
 import (
 	"fmt"
 	"reflect"
+	"sort"
 	"strings"
 
 	"mochi/parser"
@@ -234,4 +235,145 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 	}
 	e := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: p}}}}
 	return c.inferExprType(e)
+}
+
+func freeVars(fn *parser.FunExpr, params []string) []string {
+	vars := map[string]struct{}{}
+	scanExpr(fn.ExprBody, vars)
+	for _, st := range fn.BlockBody {
+		scanStmt(st, vars)
+	}
+	outMap := map[string]struct{}{}
+	for v := range vars {
+		skip := false
+		for _, p := range params {
+			if p == sanitizeName(v) {
+				skip = true
+				break
+			}
+		}
+		if !skip {
+			outMap[sanitizeName(v)] = struct{}{}
+		}
+	}
+	out := make([]string, 0, len(outMap))
+	for k := range outMap {
+		out = append(out, k)
+	}
+	sort.Strings(out)
+	return out
+}
+
+func scanStmt(s *parser.Statement, vars map[string]struct{}) {
+	switch {
+	case s.Let != nil:
+		scanExpr(s.Let.Value, vars)
+	case s.Var != nil:
+		scanExpr(s.Var.Value, vars)
+	case s.Assign != nil:
+		scanExpr(s.Assign.Value, vars)
+	case s.Return != nil:
+		scanExpr(s.Return.Value, vars)
+	case s.Expr != nil:
+		scanExpr(s.Expr.Expr, vars)
+	case s.For != nil:
+		scanExpr(s.For.Source, vars)
+		scanExpr(s.For.RangeEnd, vars)
+		for _, st := range s.For.Body {
+			scanStmt(st, vars)
+		}
+	case s.While != nil:
+		scanExpr(s.While.Cond, vars)
+		for _, st := range s.While.Body {
+			scanStmt(st, vars)
+		}
+	case s.If != nil:
+		scanExpr(s.If.Cond, vars)
+		for _, st := range s.If.Then {
+			scanStmt(st, vars)
+		}
+		if s.If.ElseIf != nil {
+			scanStmt(&parser.Statement{If: s.If.ElseIf}, vars)
+		}
+		for _, st := range s.If.Else {
+			scanStmt(st, vars)
+		}
+	case s.Test != nil:
+		for _, st := range s.Test.Body {
+			scanStmt(st, vars)
+		}
+	case s.Expect != nil:
+		scanExpr(s.Expect.Value, vars)
+	}
+}
+
+func scanExpr(e *parser.Expr, vars map[string]struct{}) {
+	if e == nil {
+		return
+	}
+	scanUnary(e.Binary.Left, vars)
+	for _, op := range e.Binary.Right {
+		scanPostfix(op.Right, vars)
+	}
+}
+
+func scanUnary(u *parser.Unary, vars map[string]struct{}) {
+	if u == nil {
+		return
+	}
+	scanPostfix(u.Value, vars)
+}
+
+func scanPostfix(p *parser.PostfixExpr, vars map[string]struct{}) {
+	if p == nil {
+		return
+	}
+	scanPrimary(p.Target, vars)
+	for _, op := range p.Ops {
+		if op.Index != nil {
+			scanExpr(op.Index.Start, vars)
+			scanExpr(op.Index.End, vars)
+		}
+		if op.Call != nil {
+			for _, a := range op.Call.Args {
+				scanExpr(a, vars)
+			}
+		}
+	}
+}
+
+func scanPrimary(p *parser.Primary, vars map[string]struct{}) {
+	if p == nil {
+		return
+	}
+	if p.Selector != nil {
+		vars[p.Selector.Root] = struct{}{}
+	}
+	if p.Group != nil {
+		scanExpr(p.Group, vars)
+	}
+	if p.FunExpr != nil {
+		scanExpr(p.FunExpr.ExprBody, vars)
+		for _, st := range p.FunExpr.BlockBody {
+			scanStmt(st, vars)
+		}
+	}
+	if p.List != nil {
+		for _, e := range p.List.Elems {
+			scanExpr(e, vars)
+		}
+	}
+	if p.Map != nil {
+		for _, it := range p.Map.Items {
+			if _, ok := types.SimpleStringKey(it.Key); !ok {
+				scanExpr(it.Key, vars)
+			}
+			scanExpr(it.Value, vars)
+		}
+	}
+	if p.Call != nil {
+		for _, a := range p.Call.Args {
+			scanExpr(a, vars)
+		}
+	}
 }
