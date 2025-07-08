@@ -200,6 +200,7 @@ func (c *Compiler) compileWhile(ws *parser.WhileStmt) error {
 }
 
 func (c *Compiler) compileFor(fs *parser.ForStmt) error {
+	var elemType types.Type = types.AnyType{}
 	if fs.RangeEnd != nil {
 		start, err := c.compileExpr(fs.Source)
 		if err != nil {
@@ -210,12 +211,25 @@ func (c *Compiler) compileFor(fs *parser.ForStmt) error {
 			return err
 		}
 		c.writeln(fmt.Sprintf("for %s in range(%s, (%s)+1):", fs.Name, start, end))
+		elemType = types.IntType{}
 	} else {
 		src, err := c.compileExpr(fs.Source)
 		if err != nil {
 			return err
 		}
 		c.writeln(fmt.Sprintf("for %s in %s:", fs.Name, src))
+		if c.env != nil {
+			if lt, ok := types.TypeOfExprBasic(fs.Source, c.env).(types.ListType); ok {
+				elemType = lt.Elem
+			}
+		}
+	}
+	oldEnv := c.env
+	if c.env != nil {
+		child := types.NewEnv(c.env)
+		child.SetVar(fs.Name, elemType, true)
+		c.env = child
+		defer func() { c.env = oldEnv }()
 	}
 	c.indent++
 	for _, s := range fs.Body {
@@ -420,7 +434,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				prefix := &parser.PostfixExpr{Target: p.Target, Ops: p.Ops[:idx]}
 				u := &parser.Unary{Value: prefix}
 				t := types.TypeOfPostfixBasic(u, c.env)
-				if types.IsMapType(t) {
+				if types.IsMapType(t) || types.IsMapPostfix(prefix, c.env) {
 					val = fmt.Sprintf("%s[%q]", val, op.Field.Name)
 				} else {
 					val = fmt.Sprintf("%s.%s", val, op.Field.Name)
@@ -497,6 +511,29 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return fmt.Sprintf("(%s)", expr), nil
 	case p.Selector != nil:
 		name := p.Selector.Root
+		if c.env != nil {
+			t, err := c.env.GetVar(p.Selector.Root)
+			if err == nil {
+				for _, field := range p.Selector.Tail {
+					if mt, ok := t.(types.MapType); ok && types.IsStringType(mt.Key) {
+						name += fmt.Sprintf("[%q]", field)
+						t = mt.Value
+					} else {
+						name += "." + field
+						if st, ok := t.(types.StructType); ok {
+							if ft, ok2 := st.Fields[field]; ok2 {
+								t = ft
+							} else {
+								t = types.AnyType{}
+							}
+						} else {
+							t = types.AnyType{}
+						}
+					}
+				}
+				return name, nil
+			}
+		}
 		for _, t := range p.Selector.Tail {
 			name += "." + t
 		}
