@@ -96,14 +96,25 @@ func (c *Compiler) compileVarStmt(name string, val *parser.Expr) error {
 }
 
 func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
-	if len(a.Index) > 0 || len(a.Field) > 0 {
-		return fmt.Errorf("complex assignment not supported")
+	target := "$" + sanitizeName(a.Name)
+	for _, idx := range a.Index {
+		if idx.Start == nil || idx.Colon != nil {
+			return fmt.Errorf("complex indexing not supported")
+		}
+		iv, err := c.compileExpr(idx.Start)
+		if err != nil {
+			return err
+		}
+		target = fmt.Sprintf("%s[%s]", target, iv)
+	}
+	for _, f := range a.Field {
+		target = fmt.Sprintf("%s->%s", target, sanitizeName(f.Name))
 	}
 	val, err := c.compileExpr(a.Value)
 	if err != nil {
 		return err
 	}
-	c.writeln(fmt.Sprintf("$%s = %s;", sanitizeName(a.Name), val))
+	c.writeln(fmt.Sprintf("%s = %s;", target, val))
 	return nil
 }
 
@@ -252,12 +263,14 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	leftType := types.TypeOfUnary(b.Left, c.env)
 	res := left
 	for _, op := range b.Right {
 		r, err := c.compilePostfix(op.Right)
 		if err != nil {
 			return "", err
 		}
+		rightType := types.TypeOfPostfix(op.Right, c.env)
 		opStr := op.Op
 		switch opStr {
 		case "&&":
@@ -265,9 +278,26 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		case "||":
 			opStr = "||"
 		case "in":
-			res = fmt.Sprintf("in_array(%s, %s)", left, r)
+			switch {
+			case isStringType(rightType):
+				res = fmt.Sprintf("strpos(%s, %s) !== false", r, left)
+			case isMapType(rightType):
+				res = fmt.Sprintf("array_key_exists(%s, %s)", left, r)
+			default:
+				res = fmt.Sprintf("in_array(%s, %s)", left, r)
+			}
 			left = res
+			leftType = types.BoolType{}
 			continue
+		case "+":
+			if isStringType(leftType) || isStringType(rightType) {
+				opStr = "."
+				leftType = types.StringType{}
+			} else {
+				leftType = types.AnyType{}
+			}
+		default:
+			leftType = types.AnyType{}
 		}
 		res = fmt.Sprintf("%s %s %s", res, opStr, r)
 		left = res
@@ -298,7 +328,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	for _, op := range p.Ops {
+	t := types.TypeOfPrimary(p.Target, c.env)
+	for i := 0; i < len(p.Ops); i++ {
+		op := p.Ops[i]
 		switch {
 		case op.Index != nil:
 			if op.Index.Start == nil || op.Index.Colon != nil {
@@ -309,8 +341,41 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				return "", err
 			}
 			val = fmt.Sprintf("%s[%s]", val, idx)
+			switch tt := t.(type) {
+			case types.ListType:
+				t = tt.Elem
+			case types.MapType:
+				t = tt.Value
+			case types.StringType:
+				t = types.StringType{}
+			default:
+				t = types.AnyType{}
+			}
 		case op.Field != nil:
-			val = fmt.Sprintf("%s->%s", val, sanitizeName(op.Field.Name))
+			name := op.Field.Name
+			val = fmt.Sprintf("%s->%s", val, sanitizeName(name))
+			t = types.AnyType{}
+		case op.Call != nil:
+			if strings.HasSuffix(val, "->contains") && len(op.Call.Args) == 1 {
+				base := strings.TrimSuffix(val, "->contains")
+				arg, err := c.compileExpr(op.Call.Args[0])
+				if err != nil {
+					return "", err
+				}
+				val = fmt.Sprintf("strpos(%s, %s) !== false", base, arg)
+				t = types.BoolType{}
+				continue
+			}
+			args := make([]string, len(op.Call.Args))
+			for j, a := range op.Call.Args {
+				s, err := c.compileExpr(a)
+				if err != nil {
+					return "", err
+				}
+				args[j] = s
+			}
+			val = fmt.Sprintf("%s(%s)", val, strings.Join(args, ", "))
+			t = types.AnyType{}
 		case op.Cast != nil:
 			if op.Cast.Type.Simple == nil {
 				return "", fmt.Errorf("unsupported cast")
@@ -326,6 +391,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			default:
 				val = fmt.Sprintf("(%s)(%s)", typ, val)
 			}
+			t = types.AnyType{}
 		default:
 			return "", fmt.Errorf("unsupported postfix")
 		}
