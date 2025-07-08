@@ -29,6 +29,7 @@ type Compiler struct {
 	usesSliceStr bool
 	usesExpect   bool
 	usesFetch    bool
+	usesAny      bool
 }
 
 func (c *Compiler) hsType(t types.Type) string {
@@ -85,6 +86,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.usesSliceStr = false
 	c.usesExpect = false
 	c.usesFetch = false
+	c.usesAny = false
 
 	for _, s := range prog.Statements {
 		if s.Type != nil {
@@ -190,13 +192,13 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	header.WriteString("import qualified Data.Map as Map\n")
 	header.WriteString("import Data.List (intercalate, isPrefixOf)\n")
 	header.WriteString("import qualified Data.List as List\n")
-	if c.usesJSON || c.usesLoad || c.usesSave || c.usesFetch {
+	if c.usesJSON || c.usesLoad || c.usesSave || c.usesFetch || c.usesAny {
 		header.WriteString("import qualified Data.Aeson as Aeson\n")
 	}
 	if len(c.structs) > 0 {
 		header.WriteString("import GHC.Generics (Generic)\n")
 	}
-	if c.usesLoad || c.usesSave || c.usesFetch {
+	if c.usesLoad || c.usesSave || c.usesFetch || c.usesAny {
 		header.WriteString("import qualified Data.Aeson.KeyMap as KeyMap\n")
 		header.WriteString("import qualified Data.Aeson.Key as Key\n")
 		header.WriteString("import qualified Data.Vector as V\n")
@@ -205,7 +207,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if c.usesFetch {
 		header.WriteString("import System.Process (readProcess)\n")
 	}
-	if c.usesJSON || c.usesLoad || c.usesSave || c.usesFetch {
+	if c.usesJSON || c.usesLoad || c.usesSave || c.usesFetch || c.usesAny {
 		header.WriteString("import qualified Data.ByteString.Lazy.Char8 as BSL\n")
 	}
 	header.WriteString("\n")
@@ -213,7 +215,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if c.usesJSON {
 		header.WriteString(jsonHelper)
 	}
-	if c.usesLoad || c.usesSave || c.usesFetch {
+	if c.usesLoad || c.usesSave || c.usesFetch || c.usesAny {
 		header.WriteString(loadRuntime)
 	}
 	if c.usesExpect {
@@ -965,6 +967,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		anyVal := false
 		if _, ok := mt.Value.(types.AnyType); ok {
 			anyVal = true
+			c.usesAny = true
 		}
 		items := make([]string, len(p.Map.Items))
 		for i, it := range p.Map.Items {
@@ -1177,7 +1180,7 @@ func (c *Compiler) compilePrint(ca callArgs) (string, error) {
 		if strings.HasPrefix(a, "\"") || strings.HasPrefix(a, "_indexString") || c.isStringExpr(ca.exprs[i]) {
 			parts[i] = a
 		} else {
-			parts[i] = fmt.Sprintf("show %s", a)
+			parts[i] = fmt.Sprintf("show (%s)", a)
 		}
 	}
 	return fmt.Sprintf("putStrLn (unwords [%s])", strings.Join(parts, ", ")), nil
