@@ -1,0 +1,1 @@
+print("mochi".count)
