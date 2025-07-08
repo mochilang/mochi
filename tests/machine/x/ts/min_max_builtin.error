@@ -1,0 +1,7 @@
+line 0: run: exit status 1
+[0m[1m[31merror[0m: Uncaught (in promise) ReferenceError: min is not defined
+console.log(min(nums));
+[0m[31m        ^[0m
+    at [0m[36mfile:///workspace/mochi/tests/machine/x/ts/min_max_builtin.ts[0m:[0m[33m2[0m:[0m[33m9[0m
+
+let nums = [3, 1, 4];

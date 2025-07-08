@@ -1,0 +1,7 @@
+line 0: run: exit status 1
+[0m[1m[31merror[0m: Uncaught (in promise) ReferenceError: count is not defined
+console.log(count([1, 2, 3]));
+[0m[31m        ^[0m
+    at [0m[36mfile:///workspace/mochi/tests/machine/x/ts/count_builtin.ts[0m:[0m[33m1[0m:[0m[33m9[0m
+
+console.log(count([1, 2, 3]));

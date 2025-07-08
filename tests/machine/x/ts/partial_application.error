@@ -1,6 +1,7 @@
-run error: exit status 1
+line 0: run: exit status 1
 [0m[1m[31merror[0m: Uncaught (in promise) TypeError: add5 is not a function
-  console.log(add5(3));
-[0m[31m              ^[0m
-    at [0m[1m[3mmain[0m ([0m[36mfile:///workspace/mochi/tests/machine/x/ts/partial_application.ts[0m:[0m[33m11[0m:[0m[33m15[0m)
-    at [0m[36mfile:///workspace/mochi/tests/machine/x/ts/partial_application.ts[0m:[0m[33m13[0m:[0m[33m1[0m
+console.log(add5(3));
+[0m[31m            ^[0m
+    at [0m[36mfile:///workspace/mochi/tests/machine/x/ts/partial_application.ts[0m:[0m[33m5[0m:[0m[33m13[0m
+
+function add(a, b) {

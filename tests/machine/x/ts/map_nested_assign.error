@@ -1,0 +1,2 @@
+line 0: unsupported statement at line 2
+var data = {"outer": {"inner": 1}}

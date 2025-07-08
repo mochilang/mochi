@@ -1,0 +1,2 @@
+line 0: unsupported expression at line 1
+let square = fun(x: int): int => x * x
