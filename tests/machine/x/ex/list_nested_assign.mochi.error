@@ -1,0 +1,13 @@
+line 7
+warning: map update will fail with a 'badmap' exception
+  /workspace/mochi/tests/machine/x/ex/list_nested_assign.mochi.exs:7
+
+** (BadMapError) expected a map, got: [[1, 2], [3, 4]]
+    /workspace/mochi/tests/machine/x/ex/list_nested_assign.mochi.exs:7: Main.main/0
+    (elixir 1.14.0) lib/code.ex:1245: Code.require_file/2
+
+    matrix = [[1, 2], [3, 4]]
+    _ = matrix
+    matrix = Map.put(matrix, 1, 5)
+    IO.inspect(Enum.at(Enum.at(matrix, 1), 0))
+  end
