@@ -34,6 +34,25 @@ func (c *Compiler) writeln(s string) {
 	c.buf.WriteByte('\n')
 }
 
+func sanitizeName(name string) string {
+	if name == "" {
+		return ""
+	}
+	var b strings.Builder
+	for i, r := range name {
+		if r == '_' || ('0' <= r && r <= '9' && i > 0) || ('A' <= r && r <= 'Z') || ('a' <= r && r <= 'z') {
+			b.WriteRune(r)
+		} else {
+			b.WriteRune('_')
+		}
+	}
+	s := b.String()
+	if s == "" || !((s[0] >= 'A' && s[0] <= 'Z') || (s[0] >= 'a' && s[0] <= 'z') || s[0] == '_') {
+		s = "_" + s
+	}
+	return s
+}
+
 func (c *Compiler) writeIndent() {
 	for i := 0; i < c.indent; i++ {
 		c.buf.WriteString("    ")
@@ -527,21 +546,47 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			elems = append(elems, s)
 		}
-		return "std::vector<int>{" + strings.Join(elems, ", ") + "}", nil
+		elemType := "int"
+		if len(elems) > 0 {
+			elemType = fmt.Sprintf("decltype(%s)", elems[0])
+		}
+		return fmt.Sprintf("std::vector<%s>{%s}", elemType, strings.Join(elems, ", ")), nil
 	case p.Map != nil:
-		keys := []string{}
+		names := []string{}
 		vals := []string{}
+		simple := true
 		for _, it := range p.Map.Items {
-			k, err := c.compileExpr(it.Key)
-			if err != nil {
-				return "", err
+			if n, ok := c.simpleIdentifier(it.Key); ok {
+				names = append(names, sanitizeName(n))
+			} else {
+				simple = false
 			}
 			v, err := c.compileExpr(it.Value)
 			if err != nil {
 				return "", err
 			}
-			keys = append(keys, k)
 			vals = append(vals, v)
+		}
+		if simple {
+			var buf strings.Builder
+			buf.WriteString("([&]() { struct {")
+			for i, n := range names {
+				buf.WriteString("decltype(" + vals[i] + ") " + n + "; ")
+			}
+			buf.WriteString("} __v{" + strings.Join(vals, ", ") + "}; return __v; })()")
+			return buf.String(), nil
+		}
+		keys := []string{}
+		for _, it := range p.Map.Items {
+			if n, ok := c.simpleIdentifier(it.Key); ok {
+				keys = append(keys, fmt.Sprintf("std::string(\"%s\")", sanitizeName(n)))
+			} else {
+				k, err := c.compileExpr(it.Key)
+				if err != nil {
+					return "", err
+				}
+				keys = append(keys, k)
+			}
 		}
 		keyType := "int"
 		valType := "int"
