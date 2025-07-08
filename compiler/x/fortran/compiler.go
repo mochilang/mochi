@@ -17,6 +17,7 @@ import (
 // Unsupported syntax results in a compilation error.
 type Compiler struct {
 	buf         bytes.Buffer
+	decl        bytes.Buffer
 	indent      int
 	functions   []*parser.FunStmt
 	currentFunc string
@@ -26,12 +27,17 @@ type Compiler struct {
 }
 
 // New creates a new compiler instance.
-func New(env *types.Env) *Compiler { return &Compiler{env: env, declared: make(map[string]bool)} }
+func New(env *types.Env) *Compiler {
+	return &Compiler{env: env, declared: make(map[string]bool)}
+}
 
 // Compile converts a parsed Mochi program into Fortran source code.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
+	c.decl.Reset()
 	c.functions = nil
+	c.declared = make(map[string]bool)
+	c.tmpIndex = 0
 	name := "main"
 	if prog.Package != "" {
 		name = sanitize(prog.Package)
@@ -40,9 +46,26 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.indent++
 	c.writeln("implicit none")
 
+	var globals []*parser.LetStmt
+	for _, st := range prog.Statements {
+		switch {
+		case st.Fun != nil:
+			c.functions = append(c.functions, st.Fun)
+		case st.Let != nil:
+			globals = append(globals, st.Let)
+		case st.Var != nil:
+			globals = append(globals, &parser.LetStmt{Name: st.Var.Name, Value: st.Var.Value, Type: st.Var.Type})
+		}
+	}
+
+	for _, g := range globals {
+		if err := c.compileLetDecl(g); err != nil {
+			return nil, err
+		}
+	}
+
 	for _, st := range prog.Statements {
 		if st.Fun != nil {
-			c.functions = append(c.functions, st.Fun)
 			continue
 		}
 		if err := c.compileStmt(st); err != nil {
@@ -61,7 +84,23 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	c.indent--
 	c.writeln(fmt.Sprintf("end program %s", name))
-	return c.buf.Bytes(), nil
+
+	body := c.buf.Bytes()
+	var out bytes.Buffer
+	first := bytes.IndexByte(body, '\n')
+	if first < 0 {
+		return body, nil
+	}
+	second := bytes.IndexByte(body[first+1:], '\n')
+	if second >= 0 {
+		second += first + 1
+		out.Write(body[:second+1])
+		out.Write(c.decl.Bytes())
+		out.Write(body[second+1:])
+	} else {
+		out.Write(body)
+	}
+	return out.Bytes(), nil
 }
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
@@ -139,6 +178,20 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileLetDecl(l *parser.LetStmt) error {
+	if c.declared[l.Name] {
+		return nil
+	}
+	typ := typeName(l.Type)
+	if lst := listLiteral(l.Value); lst != nil {
+		c.writelnDecl(fmt.Sprintf("%s, dimension(%d) :: %s", typ, len(lst.Elems), l.Name))
+	} else {
+		c.writelnDecl(fmt.Sprintf("%s :: %s", typ, l.Name))
+	}
+	c.declared[l.Name] = true
+	return nil
+}
+
 func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	return c.compileLet(&parser.LetStmt{Name: v.Name, Value: v.Value, Type: v.Type})
 }
@@ -168,14 +221,14 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 
 func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	if !c.declared[f.Name] {
-		c.writeln(fmt.Sprintf("integer :: %s", f.Name))
+		c.writelnDecl(fmt.Sprintf("integer :: %s", f.Name))
 		c.declared[f.Name] = true
 	}
 	if f.RangeEnd == nil {
 		lst := listLiteral(f.Source)
 		if lst != nil {
-			arr := fmt.Sprintf("_arr_%d", c.tmpIndex)
-			idx := fmt.Sprintf("_i%d", c.tmpIndex)
+			arr := fmt.Sprintf("arr%d", c.tmpIndex)
+			idx := fmt.Sprintf("i%d", c.tmpIndex)
 			c.tmpIndex++
 			elems := make([]string, len(lst.Elems))
 			for i, e := range lst.Elems {
@@ -185,8 +238,8 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 				}
 				elems[i] = v
 			}
-			c.writeln(fmt.Sprintf("integer, dimension(%d) :: %s = (/%s/)", len(lst.Elems), arr, strings.Join(elems, ",")))
-			c.writeln(fmt.Sprintf("integer :: %s", idx))
+			c.writelnDecl(fmt.Sprintf("integer, dimension(%d) :: %s = (/%s/)", len(lst.Elems), arr, strings.Join(elems, ",")))
+			c.writelnDecl(fmt.Sprintf("integer :: %s", idx))
 			c.writeln(fmt.Sprintf("do %s = 1, %d", idx, len(lst.Elems)))
 			c.indent++
 			c.writeln(fmt.Sprintf("%s = %s(%s)", f.Name, arr, idx))
@@ -203,9 +256,9 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		if err != nil {
 			return err
 		}
-		idx := fmt.Sprintf("_i%d", c.tmpIndex)
+		idx := fmt.Sprintf("i%d", c.tmpIndex)
 		c.tmpIndex++
-		c.writeln(fmt.Sprintf("integer :: %s", idx))
+		c.writelnDecl(fmt.Sprintf("integer :: %s", idx))
 		c.writeln(fmt.Sprintf("do %s = 1, size(%s)", idx, src))
 		c.indent++
 		c.writeln(fmt.Sprintf("%s = %s(%s)", f.Name, src, idx))
@@ -505,9 +558,9 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 		arr := args[0]
 		elem := args[1]
-		tmp := fmt.Sprintf("_app_%d", c.tmpIndex)
+		tmp := fmt.Sprintf("app%d", c.tmpIndex)
 		c.tmpIndex++
-		c.writeln(fmt.Sprintf("integer, dimension(size(%s)+1) :: %s", arr, tmp))
+		c.writelnDecl(fmt.Sprintf("integer, dimension(size(%s)+1) :: %s", arr, tmp))
 		c.writeln(fmt.Sprintf("%s(1:size(%s)) = %s", tmp, arr, arr))
 		c.writeln(fmt.Sprintf("%s(size(%s)+1) = %s", tmp, arr, elem))
 		return tmp, nil
@@ -540,6 +593,14 @@ func (c *Compiler) writeln(s string) {
 	}
 	c.buf.WriteString(s)
 	c.buf.WriteByte('\n')
+}
+
+func (c *Compiler) writelnDecl(s string) {
+	for i := 0; i < c.indent; i++ {
+		c.decl.WriteString("  ")
+	}
+	c.decl.WriteString(s)
+	c.decl.WriteByte('\n')
 }
 
 func sanitize(name string) string {
