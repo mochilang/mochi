@@ -1,0 +1,6 @@
+line 11: unsupported expression at line 11
+   9:   { id: 102, customerId: 2 }
+  10: ]
+  11: let stats = from o in orders
+  12:             join from c in customers on o.customerId == c.id
+  13:             group by c.name into g
