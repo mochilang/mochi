@@ -4,8 +4,8 @@ This directory contains C# source code generated from Mochi programs and the cor
 
 ## Summary
 
-- 15/97 programs compiled and executed successfully.
-- 82 programs failed to compile or run or were not yet tested.
+- 16/97 programs compiled and executed successfully.
+- 81 programs failed to compile or run or were not yet tested.
 
 ### Successful
 - append_builtin
@@ -18,6 +18,7 @@ This directory contains C# source code generated from Mochi programs and the cor
 - cast_struct
 - closure
 - count_builtin
+- exists_builtin
 - cross_join
 - cross_join_filter
 - cross_join_triple

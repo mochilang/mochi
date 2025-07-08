@@ -1540,7 +1540,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		parts = append(parts, fmt.Sprintf("Take(%s)", takeExpr))
 	}
 	parts = append(parts, fmt.Sprintf("Select(%s => %s)", v, sel))
-	return fmt.Sprintf("new List<%s>(%s)", resultType, strings.Join(parts, ".")), nil
+	return strings.Join(parts, "."), nil
 }
 
 func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
@@ -2285,8 +2285,16 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("exists() expects 1 arg")
 		}
-		tmp := c.newVar()
-		return fmt.Sprintf("(new Func<bool>(() => {var %s=%s;if(%s is string s) return s.Length>0;if(%s is System.Collections.IEnumerable e) return e.GetEnumerator().MoveNext();return %s!=null;}))()", tmp, args[0], tmp, tmp, tmp), nil
+		t := c.inferExprType(call.Args[0])
+		switch t.(type) {
+		case types.StringType:
+			return fmt.Sprintf("%s.Length > 0", args[0]), nil
+		case types.ListType, types.MapType:
+			c.useLinq = true
+			return fmt.Sprintf("Enumerable.Any(%s)", args[0]), nil
+		default:
+			return fmt.Sprintf("%s != null", args[0]), nil
+		}
 	case "avg":
 		if len(args) != 1 {
 			return "", fmt.Errorf("avg() expects 1 arg")
