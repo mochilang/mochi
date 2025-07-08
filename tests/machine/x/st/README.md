@@ -1,16 +1,105 @@
-# Smalltalk Machine Output
+# Mochi to Smalltalk Machine Outputs (0/97 compiled)
 
-This directory contains generated Smalltalk source code from Mochi programs and any resulting outputs or errors.
+This directory contains Smalltalk source code generated from the Mochi programs in `tests/vm/valid`. A checkbox indicates the program compiled and executed successfully during tests. Because the `gst` interpreter is not available, all programs currently fail at runtime.
 
-## Summary
+## Checklist
+- [ ] append_builtin.mochi
+- [ ] avg_builtin.mochi
+- [ ] basic_compare.mochi
+- [ ] binary_precedence.mochi
+- [ ] bool_chain.mochi
+- [ ] break_continue.mochi
+- [ ] cast_string_to_int.mochi
+- [ ] cast_struct.mochi
+- [ ] closure.mochi
+- [ ] count_builtin.mochi
+- [ ] cross_join.mochi
+- [ ] cross_join_filter.mochi
+- [ ] cross_join_triple.mochi
+- [ ] dataset_sort_take_limit.mochi
+- [ ] dataset_where_filter.mochi
+- [ ] exists_builtin.mochi
+- [ ] for_list_collection.mochi
+- [ ] for_loop.mochi
+- [ ] for_map_collection.mochi
+- [ ] fun_call.mochi
+- [ ] fun_expr_in_let.mochi
+- [ ] fun_three_args.mochi
+- [ ] if_else.mochi
+- [ ] if_then_else.mochi
+- [ ] if_then_else_nested.mochi
+- [ ] in_operator.mochi
+- [ ] in_operator_extended.mochi
+- [ ] len_builtin.mochi
+- [ ] len_map.mochi
+- [ ] len_string.mochi
+- [ ] math_ops.mochi
+- [ ] membership.mochi
+- [ ] min_max_builtin.mochi
+- [ ] print_hello.mochi
+- [ ] str_builtin.mochi
+- [ ] string_compare.mochi
+- [ ] string_concat.mochi
+- [ ] string_contains.mochi
+- [ ] string_in_operator.mochi
+- [ ] string_index.mochi
+- [ ] string_prefix_slice.mochi
+- [ ] substring_builtin.mochi
+- [ ] sum_builtin.mochi
+- [ ] typed_let.mochi
+- [ ] typed_var.mochi
+- [ ] unary_neg.mochi
+- [ ] while_loop.mochi
+- [ ] let_and_print.mochi
+- [ ] list_assign.mochi
+- [ ] list_index.mochi
+- [ ] list_nested_assign.mochi
+- [ ] list_set_ops.mochi
+- [ ] map_assign.mochi
+- [ ] map_in_operator.mochi
+- [ ] map_index.mochi
+- [ ] map_int_key.mochi
+- [ ] map_literal_dynamic.mochi
+- [ ] map_membership.mochi
+- [ ] map_nested_assign.mochi
+- [ ] match_expr.mochi
+- [ ] match_full.mochi
+- [ ] nested_function.mochi
+- [ ] order_by_map.mochi
+- [ ] partial_application.mochi
+- [ ] pure_fold.mochi
+- [ ] pure_global_fold.mochi
+- [ ] record_assign.mochi
+- [ ] short_circuit.mochi
+- [ ] slice.mochi
+- [ ] sort_stable.mochi
+- [ ] tail_recursion.mochi
+- [ ] user_type_literal.mochi
+- [ ] values_builtin.mochi
+- [ ] var_assignment.mochi
+- [ ] group_by.mochi
+- [ ] group_by_conditional_sum.mochi
+- [ ] group_by_having.mochi
+- [ ] group_by_join.mochi
+- [ ] group_by_left_join.mochi
+- [ ] group_by_multi_join.mochi
+- [ ] group_by_multi_join_sort.mochi
+- [ ] group_by_sort.mochi
+- [ ] group_items_iteration.mochi
+- [ ] inner_join.mochi
+- [ ] join_multi.mochi
+- [ ] json_builtin.mochi
+- [ ] left_join.mochi
+- [ ] left_join_multi.mochi
+- [ ] load_yaml.mochi
+- [ ] outer_join.mochi
+- [ ] query_sum_select.mochi
+- [ ] right_join.mochi
+- [ ] save_jsonl_stdout.mochi
+- [ ] test_block.mochi
+- [ ] tree_sum.mochi
+- [ ] two-sum.mochi
+- [ ] update_stmt.mochi
+- [ ] None
 
-- 0/97 programs compiled and executed successfully.
-- 97 programs failed due to missing Smalltalk interpreter.
-
-### Successful
-
-_None_
-
-### Failed
-
-All programs could not be executed because the `gst` interpreter was not available in the test environment.
+All programs fail because gst is not installed.
