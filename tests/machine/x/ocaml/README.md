@@ -1,7 +1,7 @@
 # Generated OCaml Programs
 
 This directory stores OCaml source files produced by the experimental Mochi to OCaml compiler under `compiler/x/ocaml`. Each entry corresponds to a program in `tests/vm/valid`.
-Compiled programs: 13/97
+Compiled programs: 18/97
 
 The checklist below indicates which programs compiled and ran successfully (`[x]`).
 
@@ -14,7 +14,7 @@ The checklist below indicates which programs compiled and ran successfully (`[x]
 - [ ] cast_string_to_int.mochi
 - [ ] cast_struct.mochi
 - [ ] closure.mochi
-- [ ] count_builtin.mochi
+- [x] count_builtin.mochi
 - [ ] cross_join.mochi
 - [ ] cross_join_filter.mochi
 - [ ] cross_join_triple.mochi
@@ -48,7 +48,7 @@ The checklist below indicates which programs compiled and ran successfully (`[x]
 - [ ] left_join_multi.mochi
 - [ ] len_builtin.mochi
 - [ ] len_map.mochi
-- [ ] len_string.mochi
+- [x] len_string.mochi
 - [ ] let_and_print.mochi
 - [ ] list_assign.mochi
 - [ ] list_index.mochi
@@ -65,7 +65,7 @@ The checklist below indicates which programs compiled and ran successfully (`[x]
 - [ ] match_expr.mochi
 - [ ] match_full.mochi
 - [ ] math_ops.mochi
-- [ ] membership.mochi
+- [x] membership.mochi
 - [ ] min_max_builtin.mochi
 - [ ] nested_function.mochi
 - [ ] order_by_map.mochi
@@ -82,8 +82,8 @@ The checklist below indicates which programs compiled and ran successfully (`[x]
 - [ ] slice.mochi
 - [ ] sort_stable.mochi
  - [x] str_builtin.mochi
-- [ ] string_compare.mochi
-- [ ] string_concat.mochi
+- [x] string_compare.mochi
+- [x] string_concat.mochi
 - [ ] string_contains.mochi
 - [ ] string_in_operator.mochi
 - [ ] string_index.mochi
@@ -96,7 +96,7 @@ The checklist below indicates which programs compiled and ran successfully (`[x]
 - [ ] two-sum.mochi
  - [x] typed_let.mochi
  - [x] typed_var.mochi
-- [ ] unary_neg.mochi
+- [x] unary_neg.mochi
 - [ ] update_stmt.mochi
 - [ ] user_type_literal.mochi
 - [ ] values_builtin.mochi
