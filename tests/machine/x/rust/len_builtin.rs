@@ -1,3 +1,3 @@
 fn main() {
-    println!("{:?}", len(vec![1, 2, 3]));
+    println!("{:?}", vec![1, 2, 3].len());
 }

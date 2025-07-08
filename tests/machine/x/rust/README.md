@@ -8,8 +8,8 @@
 - [x] break_continue.mochi
 - [x] cast_string_to_int.mochi
 - [ ] cast_struct.mochi
-- [ ] closure.mochi
-- [ ] count_builtin.mochi
+- [x] closure.mochi
+- [x] count_builtin.mochi
 - [ ] cross_join.mochi
 - [ ] cross_join_filter.mochi
 - [ ] cross_join_triple.mochi
@@ -20,7 +20,7 @@
 - [x] for_loop.mochi
 - [ ] for_map_collection.mochi
 - [x] fun_call.mochi
-- [ ] fun_expr_in_let.mochi
+- [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
 - [ ] group_by.mochi
 - [ ] group_by_conditional_sum.mochi
@@ -41,9 +41,9 @@
 - [ ] json_builtin.mochi
 - [ ] left_join.mochi
 - [ ] left_join_multi.mochi
-- [ ] len_builtin.mochi
+ - [x] len_builtin.mochi
 - [ ] len_map.mochi
-- [ ] len_string.mochi
+ - [x] len_string.mochi
 - [x] let_and_print.mochi
 - [ ] list_assign.mochi
 - [ ] list_index.mochi
@@ -98,4 +98,4 @@
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
 
-Compiled 28/97 programs.
+Compiled 36/97 programs.

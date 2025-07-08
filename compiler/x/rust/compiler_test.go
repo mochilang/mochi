@@ -108,6 +108,9 @@ func TestCompilePrograms(t *testing.T) {
 			}
 			outPath := filepath.Join(outDir, name+".out")
 			os.WriteFile(outPath, bytes.TrimSpace(out), 0644)
+			os.Remove(bin)
+			errFile := filepath.Join(outDir, name+".error")
+			os.Remove(errFile)
 		})
 	}
 }
