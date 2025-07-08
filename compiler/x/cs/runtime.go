@@ -148,11 +148,13 @@ func (c *Compiler) emitRuntime() {
 				c.writeln("static T _cast<T>(dynamic v) {")
 				c.indent++
 				c.writeln("if (v is T tv) return tv;")
-				c.writeln("if (typeof(T) == typeof(int)) {")
+				c.writeln("if (typeof(T) == typeof(long)) {")
 				c.indent++
-				c.writeln("if (v is int) return (T)v;")
-				c.writeln("if (v is double) return (T)(object)(int)(double)v;")
-				c.writeln("if (v is float) return (T)(object)(int)(float)v;")
+				c.writeln("if (v is long) return (T)v;")
+				c.writeln("if (v is int) return (T)(object)(long)(int)v;")
+				c.writeln("if (v is double) return (T)(object)(long)(double)v;")
+				c.writeln("if (v is float) return (T)(object)(long)(float)v;")
+				c.writeln("if (v is string) return (T)(object)long.Parse((string)v);")
 				c.indent--
 				c.writeln("}")
 				c.writeln("if (typeof(T) == typeof(double)) {")
@@ -160,6 +162,7 @@ func (c *Compiler) emitRuntime() {
 				c.writeln("if (v is int) return (T)(object)(double)(int)v;")
 				c.writeln("if (v is double) return (T)v;")
 				c.writeln("if (v is float) return (T)(object)(double)(float)v;")
+				c.writeln("if (v is string) return (T)(object)double.Parse((string)v);")
 				c.indent--
 				c.writeln("}")
 				c.writeln("if (typeof(T) == typeof(float)) {")
@@ -167,6 +170,7 @@ func (c *Compiler) emitRuntime() {
 				c.writeln("if (v is int) return (T)(object)(float)(int)v;")
 				c.writeln("if (v is double) return (T)(object)(float)(double)v;")
 				c.writeln("if (v is float) return (T)v;")
+				c.writeln("if (v is string) return (T)(object)float.Parse((string)v);")
 				c.indent--
 				c.writeln("}")
 				c.writeln("if (typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition() == typeof(Dictionary<,>) && v is System.Collections.IDictionary d) {")

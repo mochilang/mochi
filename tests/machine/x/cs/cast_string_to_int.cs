@@ -16,23 +16,27 @@ public class Program
     static T _cast<T>(dynamic v)
     {
         if (v is T tv) return tv;
-        if (typeof(T) == typeof(int))
+        if (typeof(T) == typeof(long))
         {
-            if (v is int) return (T)v;
-            if (v is double) return (T)(object)(int)(double)v;
-            if (v is float) return (T)(object)(int)(float)v;
+            if (v is long) return (T)v;
+            if (v is int) return (T)(object)(long)(int)v;
+            if (v is double) return (T)(object)(long)(double)v;
+            if (v is float) return (T)(object)(long)(float)v;
+            if (v is string) return (T)(object)long.Parse((string)v);
         }
         if (typeof(T) == typeof(double))
         {
             if (v is int) return (T)(object)(double)(int)v;
             if (v is double) return (T)v;
             if (v is float) return (T)(object)(double)(float)v;
+            if (v is string) return (T)(object)double.Parse((string)v);
         }
         if (typeof(T) == typeof(float))
         {
             if (v is int) return (T)(object)(float)(int)v;
             if (v is double) return (T)(object)(float)(double)v;
             if (v is float) return (T)v;
+            if (v is string) return (T)(object)float.Parse((string)v);
         }
         if (typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition() == typeof(Dictionary<,>) && v is System.Collections.IDictionary d)
         {
