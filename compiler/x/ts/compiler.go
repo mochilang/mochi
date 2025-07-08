@@ -14,11 +14,17 @@ import (
 type Compiler struct {
 	buf    bytes.Buffer
 	indent int
+	tmp    int
 }
 
 // New returns a new Compiler.
 func New() *Compiler {
 	return &Compiler{}
+}
+
+func (c *Compiler) newTmp() string {
+	c.tmp++
+	return fmt.Sprintf("_tmp%d", c.tmp)
 }
 
 // Compile converts the parsed Mochi program into TypeScript source code.
@@ -87,6 +93,12 @@ func (c *Compiler) stmt(s *parser.Statement) error {
 		return c.forStmt(s.For)
 	case s.Fun != nil:
 		return c.funStmt(s.Fun)
+	case s.Break != nil:
+		c.writeln("break;")
+	case s.Continue != nil:
+		c.writeln("continue;")
+	case s.Type != nil:
+		return c.typeDecl(s.Type)
 	default:
 		return fmt.Errorf("unsupported statement at line %d", s.Pos.Line)
 	}
@@ -162,6 +174,165 @@ func (c *Compiler) funStmt(f *parser.FunStmt) error {
 	c.indent--
 	c.writeln("}")
 	return nil
+}
+
+func (c *Compiler) typeDecl(td *parser.TypeDecl) error {
+	if len(td.Members) > 0 && len(td.Variants) == 0 {
+		fields := make([]string, 0, len(td.Members))
+		for _, m := range td.Members {
+			if m.Field != nil {
+				fields = append(fields, fmt.Sprintf("%s: any;", m.Field.Name))
+			}
+		}
+		c.writeln(fmt.Sprintf("type %s = { %s };", td.Name, strings.Join(fields, " ")))
+		return nil
+	}
+	return fmt.Errorf("unsupported type declaration")
+}
+
+func (c *Compiler) funExpr(fe *parser.FunExpr) (string, error) {
+	params := make([]string, len(fe.Params))
+	for i, p := range fe.Params {
+		params[i] = p.Name
+	}
+	if fe.ExprBody != nil {
+		body, err := c.expr(fe.ExprBody)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("(%s) => %s", strings.Join(params, ", "), body), nil
+	}
+	return "", fmt.Errorf("unsupported function literal")
+}
+
+func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
+	if q.Group != nil || len(q.Joins) > 0 {
+		return "", fmt.Errorf("query features not supported")
+	}
+	src, err := c.expr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	fromSrcs := make([]string, len(q.Froms))
+	for i, f := range q.Froms {
+		fs, err := c.expr(f.Src)
+		if err != nil {
+			return "", err
+		}
+		fromSrcs[i] = fs
+	}
+	sel, err := c.expr(q.Select)
+	if err != nil {
+		return "", err
+	}
+	var whereStr, sortStr, skipStr, takeStr string
+	if q.Where != nil {
+		whereStr, err = c.expr(q.Where)
+		if err != nil {
+			return "", err
+		}
+	}
+	if q.Sort != nil {
+		sortStr, err = c.expr(q.Sort)
+		if err != nil {
+			return "", err
+		}
+	}
+	if q.Skip != nil {
+		skipStr, err = c.expr(q.Skip)
+		if err != nil {
+			return "", err
+		}
+	}
+	if q.Take != nil {
+		takeStr, err = c.expr(q.Take)
+		if err != nil {
+			return "", err
+		}
+	}
+
+	var b bytes.Buffer
+	indent := 0
+	writeln := func(s string) {
+		for i := 0; i < indent; i++ {
+			b.WriteString("  ")
+		}
+		b.WriteString(s)
+		b.WriteByte('\n')
+	}
+	res := c.newTmp()
+	writeln("(() => {")
+	indent++
+	writeln("const " + res + " = [];")
+	writeln(fmt.Sprintf("for (const %s of %s) {", q.Var, src))
+	indent++
+	for i, fs := range fromSrcs {
+		writeln(fmt.Sprintf("for (const %s of %s) {", q.Froms[i].Var, fs))
+		indent++
+	}
+	if whereStr != "" {
+		writeln("if (!(" + whereStr + ")) continue;")
+	}
+	if sortStr != "" {
+		writeln(res + ".push({item: " + sel + ", key: " + sortStr + "});")
+	} else {
+		writeln(res + ".push(" + sel + ");")
+	}
+	for range q.Froms {
+		indent--
+		writeln("}")
+	}
+	indent--
+	writeln("}")
+	writeln("let res = " + res + ";")
+	if sortStr != "" {
+		writeln("res = res.sort((a,b)=> a.key < b.key ? -1 : a.key > b.key ? 1 : 0).map(x=>x.item);")
+	}
+	if skipStr != "" || takeStr != "" {
+		start := "0"
+		if skipStr != "" {
+			start = skipStr
+		}
+		end := "res.length"
+		if takeStr != "" {
+			if skipStr != "" {
+				end = "(" + skipStr + " + " + takeStr + ")"
+			} else {
+				end = takeStr
+			}
+		}
+		writeln(fmt.Sprintf("res = res.slice(%s, %s);", start, end))
+	}
+	writeln("return res;")
+	indent--
+	writeln("})()")
+	return b.String(), nil
+}
+
+func (c *Compiler) ifExpr(i *parser.IfExpr) (string, error) {
+	cond, err := c.expr(i.Cond)
+	if err != nil {
+		return "", err
+	}
+	thenVal, err := c.expr(i.Then)
+	if err != nil {
+		return "", err
+	}
+	var elseVal string
+	if i.ElseIf != nil {
+		elseVal, err = c.ifExpr(i.ElseIf)
+		if err != nil {
+			return "", err
+		}
+	} else if i.Else != nil {
+		elseVal, err = c.expr(i.Else)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		elseVal = "undefined"
+	}
+	return fmt.Sprintf("(%s ? %s : %s)", cond, thenVal, elseVal), nil
 }
 
 func (c *Compiler) expr(e *parser.Expr) (string, error) {
@@ -293,6 +464,8 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 			return "", err
 		}
 		return "(" + v + ")", nil
+	case p.FunExpr != nil:
+		return c.funExpr(p.FunExpr)
 	case p.Call != nil:
 		args := make([]string, len(p.Call.Args))
 		for i, a := range p.Call.Args {
@@ -318,9 +491,18 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 				return fmt.Sprintf("(%s.reduce((a,b)=>a+b,0)/%s.length)", args[0], args[0]), nil
 			}
 			return "", fmt.Errorf("avg expects 1 arg")
+		case "sum":
+			if len(args) == 1 {
+				return fmt.Sprintf("(%s.reduce((a,b)=>a+b,0))", args[0]), nil
+			}
+			return "", fmt.Errorf("sum expects 1 arg")
 		default:
 			return fmt.Sprintf("%s(%s)", p.Call.Func, strings.Join(args, ", ")), nil
 		}
+	case p.Query != nil:
+		return c.queryExpr(p.Query)
+	case p.If != nil:
+		return c.ifExpr(p.If)
 	case p.Selector != nil:
 		return strings.Join(append([]string{p.Selector.Root}, p.Selector.Tail...), "."), nil
 	}

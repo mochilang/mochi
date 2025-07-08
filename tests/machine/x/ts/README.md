@@ -4,7 +4,7 @@ This directory stores the generated TypeScript code and execution results for Mo
 
 ## Summary
 
-32/97 files compiled
+37/97 files compiled
 
 ## Checklist
 
@@ -18,11 +18,11 @@ This directory stores the generated TypeScript code and execution results for Mo
 - [ ] cast_struct.mochi
 - [ ] closure.mochi
 - [ ] count_builtin.mochi
-- [ ] cross_join.mochi
-- [ ] cross_join_filter.mochi
-- [ ] cross_join_triple.mochi
-- [ ] dataset_sort_take_limit.mochi
-- [ ] dataset_where_filter.mochi
+- [x] cross_join.mochi
+- [x] cross_join_filter.mochi
+- [x] cross_join_triple.mochi
+- [x] dataset_sort_take_limit.mochi
+- [x] dataset_where_filter.mochi
 - [ ] exists_builtin.mochi
 - [x] for_list_collection.mochi
 - [x] for_loop.mochi
