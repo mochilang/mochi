@@ -296,6 +296,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 		}
 	}
 
+	// main body
 	c.writeln("int main() {")
 	c.indent++
 	c.scope++
@@ -3793,10 +3794,7 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 		return "false", nil
 	}
 	if l.Str != nil {
-		return fmt.Sprintf("std::string(%q)", *l.Str), nil
-	}
-	if l.Null {
-		return "nullptr", nil
+		return fmt.Sprintf("\"%s\"", *l.Str), nil
 	}
 	return "", fmt.Errorf("unknown literal")
 }
