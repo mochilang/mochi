@@ -4,8 +4,8 @@ This directory contains Go source code generated from Mochi programs and the cor
 
 ## Summary
 
-- 60/97 programs compiled and executed successfully.
-- 37 programs failed to compile or run.
+- 63/97 programs compiled and executed successfully.
+- 34 programs failed to compile or run.
 
 ### Successful
 - append_builtin
@@ -18,6 +18,9 @@ This directory contains Go source code generated from Mochi programs and the cor
 - cast_struct
 - closure
 - count_builtin
+- cross_join
+- cross_join_filter
+- cross_join_triple
 - exists_builtin
 - for_list_collection
 - for_loop
@@ -70,9 +73,6 @@ This directory contains Go source code generated from Mochi programs and the cor
 - while_loop
 
 ### Failed
-- cross_join
-- cross_join_filter
-- cross_join_triple
 - dataset_sort_take_limit
 - dataset_where_filter
 - group_by

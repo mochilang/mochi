@@ -264,6 +264,33 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("")
 	}
 
+	if c.needsReflect && c.needsStrings {
+		c.writeln("func getField(v interface{}, name string) interface{} {")
+		c.indent++
+		c.writeln("if m, ok := v.(map[interface{}]interface{}); ok {")
+		c.indent++
+		c.writeln("return m[name]")
+		c.indent--
+		c.writeln("}")
+		c.writeln("val := reflect.ValueOf(v)")
+		c.writeln("name = strings.Title(name)")
+		c.writeln("if val.Kind() == reflect.Pointer {")
+		c.indent++
+		c.writeln("val = val.Elem()")
+		c.indent--
+		c.writeln("}")
+		c.writeln("f := val.FieldByName(name)")
+		c.writeln("if f.IsValid() {")
+		c.indent++
+		c.writeln("return f.Interface()")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return nil")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+
 	c.buf.Write(funcs.Bytes())
 	if funcs.Len() > 0 {
 		c.writeln("")
@@ -782,7 +809,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 			curr = nil
 		case op.Field != nil:
-			val = fmt.Sprintf("%s.%s", val, strings.Title(op.Field.Name))
+			c.needsReflect = true
+			c.needsStrings = true
+			val = fmt.Sprintf("getField(%s, \"%s\")", val, op.Field.Name)
 			curr = nil
 		default:
 			return "", fmt.Errorf("postfix operations not supported")
@@ -796,6 +825,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Lit != nil:
 		return c.compileLiteral(p.Lit), nil
 	case p.Selector != nil:
+		if len(p.Selector.Tail) > 0 && len(p.Selector.Root) > 0 && strings.ToLower(p.Selector.Root[:1]) == p.Selector.Root[:1] {
+			c.needsReflect = true
+			c.needsStrings = true
+			expr := p.Selector.Root
+			for _, t := range p.Selector.Tail {
+				expr = fmt.Sprintf("getField(%s, \"%s\")", expr, t)
+			}
+			return expr, nil
+		}
 		name := p.Selector.Root
 		for _, t := range p.Selector.Tail {
 			name += "." + strings.Title(t)
@@ -810,9 +848,18 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			elems[i] = s
 		}
-		typ := "[]int"
-		if len(p.List.Elems) > 0 && isListLiteral(p.List.Elems[0]) {
-			typ = "[][]int"
+		typ := "[]interface{}"
+		allInt := true
+		for _, e := range p.List.Elems {
+			if !isIntLiteral(e) {
+				allInt = false
+				break
+			}
+		}
+		if allInt {
+			typ = "[]int"
+		} else if len(p.List.Elems) > 0 && isListLiteral(p.List.Elems[0]) {
+			typ = "[][]interface{}"
 		}
 		return typ + "{" + join(elems, ", ") + "}", nil
 	case p.Call != nil:
@@ -827,6 +874,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileMapLiteral(p.Map)
 	case p.Struct != nil:
 		return c.compileStructLiteral(p.Struct)
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
 	case p.If != nil:
@@ -904,7 +953,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 	elems := make([]string, len(m.Items))
 	for i, it := range m.Items {
-		k, err := c.compileExpr(it.Key)
+		k, err := c.compileMapKey(it.Key)
 		if err != nil {
 			return "", err
 		}
@@ -915,6 +964,19 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 		elems[i] = fmt.Sprintf("%s: %s", k, v)
 	}
 	return "map[interface{}]interface{}{" + join(elems, ", ") + "}", nil
+}
+
+func (c *Compiler) compileMapKey(e *parser.Expr) (string, error) {
+	if e != nil && e.Binary != nil && e.Binary.Left != nil && e.Binary.Left.Value != nil && e.Binary.Left.Value.Target != nil {
+		tgt := e.Binary.Left.Value.Target
+		if tgt.Lit != nil && tgt.Lit.Str != nil {
+			return fmt.Sprintf("\"%s\"", *tgt.Lit.Str), nil
+		}
+		if tgt.Selector != nil && len(tgt.Selector.Tail) == 0 {
+			return fmt.Sprintf("\"%s\"", tgt.Selector.Root), nil
+		}
+	}
+	return c.compileExpr(e)
 }
 
 func (c *Compiler) compileStructLiteral(s *parser.StructLiteral) (string, error) {
@@ -1163,6 +1225,108 @@ func (c *Compiler) compileExistsQuery(q *parser.QueryExpr) (string, error) {
 	c.indent--
 	c.writeto(&buf, "}()")
 	return strings.TrimSuffix(buf.String(), "\n"), nil
+}
+
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	if len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+		return "", fmt.Errorf("unsupported query")
+	}
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	fromSrcs := make([]string, len(q.Froms))
+	for i, f := range q.Froms {
+		fs, err := c.compileExpr(f.Src)
+		if err != nil {
+			return "", err
+		}
+		fromSrcs[i] = fs
+	}
+	var selType string
+	var selExpr string
+	if q.Select != nil && q.Select.Binary != nil && q.Select.Binary.Left != nil && q.Select.Binary.Left.Value != nil && q.Select.Binary.Left.Value.Target != nil && q.Select.Binary.Left.Value.Target.Map != nil {
+		typ, lit, err := c.mapToAnonStruct(q.Select.Binary.Left.Value.Target.Map)
+		if err != nil {
+			return "", err
+		}
+		selType = typ
+		selExpr = lit
+	} else {
+		se, err := c.compileExpr(q.Select)
+		if err != nil {
+			return "", err
+		}
+		selType = "interface{}"
+		selExpr = se
+	}
+	cond := ""
+	if q.Where != nil {
+		cnd, err := c.compileExpr(q.Where)
+		if err != nil {
+			return "", err
+		}
+		cond = cnd
+	}
+
+	var buf bytes.Buffer
+	buf.WriteString("func() []" + selType + " {\n")
+	c.indent++
+	c.writeto(&buf, "var _res []"+selType)
+	c.writeto(&buf, fmt.Sprintf("for _, %s := range %s {", q.Var, src))
+	c.indent++
+	for i, f := range q.Froms {
+		c.writeto(&buf, fmt.Sprintf("for _, %s := range %s {", f.Var, fromSrcs[i]))
+		c.indent++
+	}
+	if cond != "" {
+		c.writeto(&buf, fmt.Sprintf("if %s {", cond))
+		c.indent++
+	}
+	c.writeto(&buf, fmt.Sprintf("_res = append(_res, %s)", selExpr))
+	if cond != "" {
+		c.indent--
+		c.writeto(&buf, "}")
+	}
+	for range q.Froms {
+		c.indent--
+		c.writeto(&buf, "}")
+	}
+	c.indent--
+	c.writeto(&buf, "}")
+	c.writeto(&buf, "return _res")
+	c.indent--
+	c.writeto(&buf, "}()")
+	return strings.TrimSuffix(buf.String(), "\n"), nil
+}
+
+func (c *Compiler) mapToAnonStruct(m *parser.MapLiteral) (string, string, error) {
+	fields := make([]string, len(m.Items))
+	vals := make([]string, len(m.Items))
+	for i, it := range m.Items {
+		if it.Key == nil || it.Key.Binary == nil || it.Key.Binary.Left == nil || it.Key.Binary.Left.Value == nil || it.Key.Binary.Left.Value.Target == nil {
+			return "", "", fmt.Errorf("unsupported struct field key")
+		}
+		var keyName string
+		tgt := it.Key.Binary.Left.Value.Target
+		if tgt.Lit != nil && tgt.Lit.Str != nil {
+			keyName = *tgt.Lit.Str
+		} else if tgt.Selector != nil && len(tgt.Selector.Tail) == 0 {
+			keyName = tgt.Selector.Root
+		} else {
+			return "", "", fmt.Errorf("unsupported struct field key")
+		}
+		name := strings.Title(keyName)
+		v, err := c.compileExpr(it.Value)
+		if err != nil {
+			return "", "", err
+		}
+		fields[i] = fmt.Sprintf("%s interface{}", name)
+		vals[i] = fmt.Sprintf("%s: %s", name, v)
+	}
+	typ := fmt.Sprintf("struct{ %s }", strings.Join(fields, "; "))
+	lit := fmt.Sprintf("%s{%s}", typ, strings.Join(vals, ", "))
+	return typ, lit, nil
 }
 
 func isListLiteral(e *parser.Expr) bool {
