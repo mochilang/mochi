@@ -1,4 +1,4 @@
-//go:build slow
+//go:build archived
 
 package pycode
 
@@ -18,7 +18,7 @@ func EnsurePython() error {
 	switch runtime.GOOS {
 	case "darwin":
 		if _, err := exec.LookPath("brew"); err == nil {
-			fmt.Println("🐍 Installing Python3 via Homebrew...")
+			fmt.Println("\U0001F40D Installing Python3 via Homebrew...")
 			cmd := exec.Command("brew", "install", "python")
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
@@ -26,7 +26,7 @@ func EnsurePython() error {
 		}
 	case "linux":
 		if _, err := exec.LookPath("apt-get"); err == nil {
-			fmt.Println("🐍 Installing Python3...")
+			fmt.Println("\U0001F40D Installing Python3...")
 			cmd := exec.Command("apt-get", "update")
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
@@ -67,7 +67,7 @@ func EnsurePyPy() error {
 	switch runtime.GOOS {
 	case "darwin":
 		if _, err := exec.LookPath("brew"); err == nil {
-			fmt.Println("🐍 Installing PyPy via Homebrew...")
+			fmt.Println("\U0001F40D Installing PyPy via Homebrew...")
 			cmd := exec.Command("brew", "install", "pypy3")
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
@@ -75,7 +75,7 @@ func EnsurePyPy() error {
 		}
 	case "linux":
 		if _, err := exec.LookPath("apt-get"); err == nil {
-			fmt.Println("🐍 Installing PyPy3...")
+			fmt.Println("\U0001F40D Installing PyPy3...")
 			cmd := exec.Command("apt-get", "update")
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
@@ -110,7 +110,7 @@ func EnsureCython() error {
 	switch runtime.GOOS {
 	case "darwin":
 		if _, err := exec.LookPath("brew"); err == nil {
-			fmt.Println("🐍 Installing Cython via Homebrew...")
+			fmt.Println("\U0001F40D Installing Cython via Homebrew...")
 			cmd := exec.Command("brew", "install", "cython")
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
@@ -118,7 +118,7 @@ func EnsureCython() error {
 		}
 	case "linux":
 		if _, err := exec.LookPath("apt-get"); err == nil {
-			fmt.Println("🐍 Installing Cython...")
+			fmt.Println("\U0001F40D Installing Cython...")
 			cmd := exec.Command("apt-get", "update")
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
@@ -150,10 +150,11 @@ func EnsureBlack() error {
 	if _, err := exec.LookPath("black"); err == nil {
 		return nil
 	}
+	// attempt installation via pip
 	installers := []string{"pip3", "pip"}
 	for _, bin := range installers {
 		if _, err := exec.LookPath(bin); err == nil {
-			fmt.Println("🐍 Installing Black via", bin, "...")
+			fmt.Println("\U0001F40D Installing Black via", bin, "...")
 			cmd := exec.Command(bin, "install", "--user", "black")
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
@@ -167,8 +168,8 @@ func EnsureBlack() error {
 	return fmt.Errorf("black not found")
 }
 
-// EnsurePyright installs the Pyright language server if needed.
-// It attempts installation using npm or pip.
+// EnsurePyright installs the Pyright language server if needed. It attempts
+// installation using npm or pip.
 func EnsurePyright() error {
 	if _, err := exec.LookPath("pyright-langserver"); err == nil {
 		return nil
@@ -183,7 +184,7 @@ func EnsurePyright() error {
 	}
 	for _, inst := range installers {
 		if _, err := exec.LookPath(inst.bin); err == nil {
-			fmt.Println("🐍 Installing Pyright via", inst.bin, "...")
+			fmt.Println("\U0001F40D Installing Pyright via", inst.bin, "...")
 			cmd := exec.Command(inst.bin, inst.args...)
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
