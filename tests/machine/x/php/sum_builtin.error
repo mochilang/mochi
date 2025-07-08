@@ -1,0 +1,4 @@
+PHP Fatal error:  Uncaught Error: Call to undefined function sum() in /workspace/mochi/tests/machine/x/php/sum_builtin.php:2
+Stack trace:
+#0 {main}
+  thrown in /workspace/mochi/tests/machine/x/php/sum_builtin.php on line 2

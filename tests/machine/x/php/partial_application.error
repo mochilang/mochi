@@ -1,0 +1,5 @@
+PHP Fatal error:  Uncaught ArgumentCountError: Too few arguments to function add(), 1 passed in /workspace/mochi/tests/machine/x/php/partial_application.php on line 5 and exactly 2 expected in /workspace/mochi/tests/machine/x/php/partial_application.php:2
+Stack trace:
+#0 /workspace/mochi/tests/machine/x/php/partial_application.php(5): add()
+#1 {main}
+  thrown in /workspace/mochi/tests/machine/x/php/partial_application.php on line 2
