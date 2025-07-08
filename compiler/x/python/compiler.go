@@ -25,11 +25,12 @@ type Compiler struct {
 	structTypes  map[string]bool
 	env          *types.Env
 	tmp          int
+	bindings     map[string]string
 }
 
 // New creates a new Python compiler.
 func New(env *types.Env) *Compiler {
-	return &Compiler{structTypes: make(map[string]bool), env: env}
+	return &Compiler{structTypes: make(map[string]bool), env: env, bindings: make(map[string]string)}
 }
 
 func (c *Compiler) newTmp() string {
@@ -328,13 +329,13 @@ func (c *Compiler) compileTypeDecl(td *parser.TypeDecl) error {
 }
 
 func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
-        c.writeln(fmt.Sprintf("# test %q", t.Name))
-       for _, st := range t.Body {
-               if err := c.compileStmt(st); err != nil {
-                       return err
-               }
-       }
-       return nil
+	c.writeln(fmt.Sprintf("# test %q", t.Name))
+	for _, st := range t.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
@@ -585,6 +586,18 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return fmt.Sprintf("(%s)", expr), nil
 	case p.Selector != nil:
+		if c.env != nil && len(p.Selector.Tail) == 0 {
+			if st, ok := c.env.GetStruct(p.Selector.Root); ok && len(st.Order) == 0 {
+				if val, ok2 := c.bindings[p.Selector.Root]; ok2 {
+					return val, nil
+				}
+				return p.Selector.Root + "()", nil
+			}
+		}
+		// variable or field access
+		if val, ok := c.bindings[p.Selector.Root]; ok && len(p.Selector.Tail) == 0 {
+			return val, nil
+		}
 		name := p.Selector.Root
 		if c.env != nil {
 			t, err := c.env.GetVar(p.Selector.Root)
@@ -607,6 +620,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 					}
 				}
 				return name, nil
+			}
+			if st, ok := c.env.GetStruct(p.Selector.Root); ok && len(st.Order) == 0 && len(p.Selector.Tail) == 0 {
+				return name + "()", nil
 			}
 		}
 		for _, t := range p.Selector.Tail {
@@ -828,23 +844,68 @@ func (c *Compiler) compileMatchExpr(mx *parser.MatchExpr) (string, error) {
 	elseExpr := "None"
 	expr := ""
 	for i := len(mx.Cases) - 1; i >= 0; i-- {
-		patStr, patIsIdent := c.simpleIdentifier(mx.Cases[i].Pattern)
-		res, err := c.compileExpr(mx.Cases[i].Result)
-		if err != nil {
-			return "", err
-		}
-		if patIsIdent && patStr == "_" {
+		cs := mx.Cases[i]
+		if name, ok := identName(cs.Pattern); ok && name == "_" {
+			res, err := c.compileExpr(cs.Result)
+			if err != nil {
+				return "", err
+			}
 			elseExpr = res
 			continue
 		}
-		pat, err := c.compileExpr(mx.Cases[i].Pattern)
+
+		cond := ""
+		var binds []string
+		var vals []string
+
+		if call, ok := callPattern(cs.Pattern); ok {
+			if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
+				st := ut.Variants[call.Func]
+				cond = fmt.Sprintf("isinstance(%s, %s)", target, call.Func)
+				for idx, arg := range call.Args {
+					if id, ok := identName(arg); ok && id != "_" {
+						if idx < len(st.Order) {
+							binds = append(binds, id)
+							vals = append(vals, fmt.Sprintf("%s.%s", target, st.Order[idx]))
+						}
+					}
+				}
+			}
+		} else if ident, ok := identName(cs.Pattern); ok {
+			if _, ok := c.env.FindUnionByVariant(ident); ok {
+				cond = fmt.Sprintf("isinstance(%s, %s)", target, ident)
+			}
+		}
+
+		if cond == "" {
+			pat, err := c.compileExpr(cs.Pattern)
+			if err != nil {
+				return "", err
+			}
+			cond = fmt.Sprintf("%s == %s", target, pat)
+		}
+
+		old := c.bindings
+		if len(binds) > 0 {
+			c.bindings = copyMap(c.bindings)
+			for idx, b := range binds {
+				c.bindings[b] = vals[idx]
+			}
+		}
+		res, err := c.compileExpr(cs.Result)
+		if len(binds) > 0 {
+			c.bindings = old
+		}
 		if err != nil {
 			return "", err
 		}
+		if len(binds) > 0 {
+			res = fmt.Sprintf("(lambda %s: %s)(%s)", strings.Join(binds, ", "), res, strings.Join(vals, ", "))
+		}
 		if expr == "" {
-			expr = fmt.Sprintf("(%s if %s == %s else %s)", res, target, pat, elseExpr)
+			expr = fmt.Sprintf("(%s if %s else %s)", res, cond, elseExpr)
 		} else {
-			expr = fmt.Sprintf("(%s if %s == %s else %s)", res, target, pat, expr)
+			expr = fmt.Sprintf("(%s if %s else %s)", res, cond, expr)
 		}
 	}
 	if expr == "" {
@@ -936,6 +997,36 @@ func (c *Compiler) simpleIdentifier(e *parser.Expr) (string, bool) {
 	return p.Target.Selector.Root, true
 }
 
+func identName(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) > 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Selector == nil || len(p.Target.Selector.Tail) > 0 {
+		return "", false
+	}
+	return p.Target.Selector.Root, true
+}
+
+func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Call == nil {
+		return nil, false
+	}
+	return p.Target.Call, true
+}
+
 func (c *Compiler) compileLiteral(l *parser.Literal) string {
 	switch {
 	case l.Int != nil:
@@ -995,4 +1086,12 @@ func findRepoRoot() string {
 		dir = parent
 	}
 	return ""
+}
+
+func copyMap(m map[string]string) map[string]string {
+	cp := make(map[string]string, len(m))
+	for k, v := range m {
+		cp[k] = v
+	}
+	return cp
 }
