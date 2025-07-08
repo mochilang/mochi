@@ -104,4 +104,4 @@ _parseCSV text header delim =
 
 main :: IO ()
 main = do
-  putStrLn ("1995")
+  print ((read "1995" :: Int))

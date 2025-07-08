@@ -108,9 +108,7 @@ data Todo = Todo
   }
   deriving (Eq, Show, Generic)
 
-instance Aeson.FromJSON Todo
-
-todo = Map.fromList [("title", "hi")]
+todo = Todo {title = "hi"}
 
 main :: IO ()
 main = do

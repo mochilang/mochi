@@ -2,7 +2,7 @@
 
 Generated Haskell code and outputs are stored in this directory.
 
-## 44/97 compiled
+## 45/97 compiled
 
 ### Checklist
 
@@ -13,7 +13,7 @@ Generated Haskell code and outputs are stored in this directory.
 - [x] `bool_chain.mochi`
 - [ ] `break_continue.mochi`
 - [x] `cast_string_to_int.mochi`
-- [ ] `cast_struct.mochi`
+- [x] `cast_struct.mochi`
 - [x] `closure.mochi`
 - [x] `count_builtin.mochi`
 - [ ] `cross_join.mochi`
