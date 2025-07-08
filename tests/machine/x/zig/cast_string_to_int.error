@@ -1,6 +1,0 @@
-Error on line 4: zig build error: exit status 1
-/workspace/mochi/tests/machine/x/zig/cast_string_to_int.zig:4:43: error: expected type 'i32', found '*const [4:0]u8'
-
-3: pub fn main() void {
-4:     std.debug.print("{any}\n", .{@as(i32, "1995")});
-5: }

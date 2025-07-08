@@ -47,6 +47,8 @@ type Compiler struct {
 	needsFetch        bool
 	needsFetchJSON    bool
 	needsExpect       bool
+	needsAppend       bool
+	needsPrintList    bool
 	tests             []string
 	globals           map[string]bool
 	labelCount        int
@@ -1573,7 +1575,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr, asReturn bool) (string,
 			}
 		} else if op.Cast != nil {
 			typ := c.zigType(op.Cast.Type)
-			expr = fmt.Sprintf("@as(%s, %s)", typ, expr)
+			if _, ok := c.resolveTypeRef(op.Cast.Type).(types.IntType); ok && c.isStringPrimary(p.Target) {
+				expr = fmt.Sprintf("std.fmt.parseInt(%s, %s, 10) catch unreachable", typ, expr)
+			} else {
+				expr = fmt.Sprintf("@as(%s, %s)", typ, expr)
+			}
 		}
 	}
 	return expr, nil
@@ -1770,6 +1776,19 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		c.needsSumInt = true
 		return fmt.Sprintf("_sum_int(%s)", arg), nil
 	}
+	if name == "append" && len(call.Args) == 2 {
+		listArg, err := c.compileExpr(call.Args[0], false)
+		if err != nil {
+			return "", err
+		}
+		elemArg, err := c.compileExpr(call.Args[1], false)
+		if err != nil {
+			return "", err
+		}
+		elem := c.listElemTypeUnary(call.Args[0].Binary.Left)
+		c.needsAppend = true
+		return fmt.Sprintf("_append(%s, %s, %s)", elem, listArg, elemArg), nil
+	}
 	if name == "min" && len(call.Args) == 1 {
 		arg, err := c.compileExpr(call.Args[0], false)
 		if err != nil {
@@ -1825,6 +1844,17 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		return fmt.Sprintf("_json(%s)", arg), nil
 	}
 	if name == "print" {
+		if len(call.Args) == 1 {
+			if lt, ok := c.inferExprType(call.Args[0]).(types.ListType); ok {
+				arg, err := c.compileExpr(call.Args[0], false)
+				if err != nil {
+					return "", err
+				}
+				elem := zigTypeOf(lt.Elem)
+				c.needsPrintList = true
+				return fmt.Sprintf("_print_list(%s, %s)", elem, arg), nil
+			}
+		}
 		args := make([]string, len(call.Args))
 		for i, a := range call.Args {
 			v, err := c.compileExpr(a, false)

@@ -4,17 +4,17 @@ This directory contains Zig source code produced by the Mochi compiler tests. Ea
 
 ## Summary
 
-28/97 programs compile and run successfully.
+30/97 programs compile and run successfully.
 
 ## Checklist
 
-- [ ] append_builtin.mochi
+- [x] append_builtin.mochi
 - [ ] avg_builtin.mochi
 - [x] basic_compare.mochi
 - [x] binary_precedence.mochi
 - [x] bool_chain.mochi
 - [x] break_continue.mochi
-- [ ] cast_string_to_int.mochi
+- [x] cast_string_to_int.mochi
 - [ ] cast_struct.mochi
 - [ ] closure.mochi
 - [x] count_builtin.mochi
