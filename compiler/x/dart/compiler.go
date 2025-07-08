@@ -18,17 +18,20 @@ import (
 // translation is incomplete, but it is sufficient for simple examples such as
 // variable declarations and basic arithmetic/print statements.
 type Compiler struct {
-	env     *types.Env
-	buf     bytes.Buffer
-	indent  int
-	useIn   bool
-	useJSON bool
-	tmp     int
-	mapVars map[string]bool
+	env       *types.Env
+	buf       bytes.Buffer
+	indent    int
+	useIn     bool
+	useJSON   bool
+	tmp       int
+	mapVars   map[string]bool
+	groupKeys map[string]string
 }
 
 // New creates a new Dart compiler instance.
-func New(env *types.Env) *Compiler { return &Compiler{env: env, mapVars: make(map[string]bool)} }
+func New(env *types.Env) *Compiler {
+	return &Compiler{env: env, mapVars: make(map[string]bool), groupKeys: make(map[string]string)}
+}
 
 // Compile translates the given Mochi program into Dart source code.  If there
 // is a hand written translation under tests/human/x/dart it is returned.
@@ -40,6 +43,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.useIn = false
 	c.useJSON = false
 	c.mapVars = make(map[string]bool)
+	c.groupKeys = make(map[string]string)
 
 	// compile function declarations into a separate buffer so they appear
 	// before the main entry point
@@ -603,6 +607,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 	w("(() {\n")
 	w(fmt.Sprintf("  var %s = <dynamic>[];\n", tmp))
+	grpVar := ""
+	groups := ""
+	keyVar := ""
+	if q.Group != nil {
+		groups = fmt.Sprintf("_g%d", c.tmp)
+		c.tmp++
+		w(fmt.Sprintf("  var %s = <dynamic, List<dynamic>>{};\n", groups))
+	}
 
 	loops := []string{fmt.Sprintf("var %s in %s", q.Var, c.mustExpr(q.Source))}
 	// mark main variable type
@@ -634,15 +646,44 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 
 	sel := c.mustExpr(q.Select)
-	if q.Sort != nil {
-		key := c.mustExpr(q.Sort)
-		w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("%s.add([%s, %s]);\n", tmp, key, sel))
+	if q.Group != nil {
+		keyVar = fmt.Sprintf("_k%d", c.tmp)
+		c.tmp++
+		keyExpr := c.mustExpr(q.Group.Exprs[0])
+		grpVar = q.Group.Name
+		c.groupKeys[grpVar] = keyVar
+		c.mapVars[grpVar] = true
+		w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("var %s = %s;\n", keyVar, keyExpr))
+		w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("%s.putIfAbsent(%s, () => <dynamic>[]).add(%s);\n", groups, keyVar, q.Var))
 	} else {
-		w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("%s.add(%s);\n", tmp, sel))
+		if q.Sort != nil {
+			key := c.mustExpr(q.Sort)
+			w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("%s.add([%s, %s]);\n", tmp, key, sel))
+		} else {
+			w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("%s.add(%s);\n", tmp, sel))
+		}
 	}
 
 	for i := len(loops) - 1; i >= 0; i-- {
 		w(strings.Repeat("  ", i+1) + "}\n")
+	}
+
+	if q.Group != nil {
+		w(fmt.Sprintf("  for (var entry in %s.entries) {\n", groups))
+		w(fmt.Sprintf("    var %s = entry.value;\n", grpVar))
+		w(fmt.Sprintf("    var %s = entry.key;\n", keyVar))
+		if q.Group.Having != nil {
+			cond := c.mustExpr(q.Group.Having)
+			w(fmt.Sprintf("    if (!(%s)) continue;\n", cond))
+		}
+		sel := c.mustExpr(q.Select)
+		if q.Sort != nil {
+			key := c.mustExpr(q.Sort)
+			w(fmt.Sprintf("    %s.add([%s, %s]);\n", tmp, key, sel))
+		} else {
+			w(fmt.Sprintf("    %s.add(%s);\n", tmp, sel))
+		}
+		w("  }\n")
 	}
 
 	if q.Sort != nil {
@@ -703,6 +744,11 @@ func (c *Compiler) simpleIdentifier(e *parser.Expr) (string, bool) {
 
 func (c *Compiler) compileSelector(sel *parser.SelectorExpr) string {
 	root := sel.Root
+	if key, ok := c.groupKeys[root]; ok {
+		if len(sel.Tail) == 1 && sel.Tail[0] == "key" {
+			return key
+		}
+	}
 	typ, _ := c.env.GetVar(root)
 	if ok := c.mapVars[root]; ok {
 		typ = types.MapType{}
