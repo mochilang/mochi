@@ -29,6 +29,28 @@ func (c *Compiler) newTmp() string {
 	return fmt.Sprintf("_tmp%d", c.tmp)
 }
 
+// detectAggCall returns the name and argument of a simple aggregator call like
+// sum(x) or count(x). If the expression is not such a call, ok is false.
+func detectAggCall(e *parser.Expr) (name string, arg *parser.Expr, ok bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return "", nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil || len(u.Value.Ops) != 0 {
+		return "", nil, false
+	}
+	pr := u.Value.Target
+	if pr == nil || pr.Call == nil || len(pr.Call.Args) != 1 {
+		return "", nil, false
+	}
+	switch pr.Call.Func {
+	case "sum", "count", "avg", "min", "max":
+		return pr.Call.Func, pr.Call.Args[0], true
+	default:
+		return "", nil, false
+	}
+}
+
 // Compile converts the parsed Mochi program into TypeScript source code.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
@@ -387,28 +409,102 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		indent--
 		writeln("}")
 	} else {
-		writeln("const " + res + " = [];")
-		writeln(fmt.Sprintf("for (const %s of %s) {", q.Var, src))
-		indent++
-		for i, fs := range fromSrcs {
-			writeln(fmt.Sprintf("for (const %s of %s) {", q.Froms[i].Var, fs))
-			indent++
-		}
-		if whereStr != "" {
-			writeln("if (!(" + whereStr + ")) continue;")
-		}
-		if sortStr != "" {
-			writeln(res + ".push({item: " + sel + ", key: " + sortStr + "});")
+		if agg, arg, ok := detectAggCall(q.Select); ok && len(q.Froms) == 0 && sortStr == "" && skipStr == "" && takeStr == "" {
+			argStr, err := c.expr(arg)
+			if err != nil {
+				return "", err
+			}
+			switch agg {
+			case "sum", "count", "avg", "min", "max":
+			default:
+				ok = false
+			}
+			if ok {
+				switch agg {
+				case "sum", "count":
+					writeln(fmt.Sprintf("let %s = 0;", res))
+				case "avg":
+					writeln("let _sum = 0;")
+					writeln("let _count = 0;")
+				case "min":
+					writeln(fmt.Sprintf("let %s = Infinity;", res))
+				case "max":
+					writeln(fmt.Sprintf("let %s = -Infinity;", res))
+				}
+				writeln(fmt.Sprintf("for (const %s of %s) {", q.Var, src))
+				indent++
+				if whereStr != "" {
+					writeln("if (!(" + whereStr + ")) continue;")
+				}
+				switch agg {
+				case "sum":
+					writeln(fmt.Sprintf("%s += %s;", res, argStr))
+				case "count":
+					writeln(fmt.Sprintf("%s++;", res))
+				case "avg":
+					writeln(fmt.Sprintf("_sum += %s;", argStr))
+					writeln("_count++;")
+				case "min":
+					writeln(fmt.Sprintf("if (%s < %s) %s = %s;", argStr, res, res, argStr))
+				case "max":
+					writeln(fmt.Sprintf("if (%s > %s) %s = %s;", argStr, res, res, argStr))
+				}
+				indent--
+				writeln("}")
+				if agg == "avg" {
+					writeln("let res = _count == 0 ? 0 : _sum / _count;")
+				} else {
+					writeln(fmt.Sprintf("let res = %s;", res))
+				}
+			} else {
+				// fallback generic
+				writeln("const " + res + " = [];")
+				writeln(fmt.Sprintf("for (const %s of %s) {", q.Var, src))
+				indent++
+				for i, fs := range fromSrcs {
+					writeln(fmt.Sprintf("for (const %s of %s) {", q.Froms[i].Var, fs))
+					indent++
+				}
+				if whereStr != "" {
+					writeln("if (!(" + whereStr + ")) continue;")
+				}
+				if sortStr != "" {
+					writeln(res + ".push({item: " + sel + ", key: " + sortStr + "});")
+				} else {
+					writeln(res + ".push(" + sel + ");")
+				}
+				for range q.Froms {
+					indent--
+					writeln("}")
+				}
+				indent--
+				writeln("}")
+				writeln("let res = " + res + ";")
+			}
 		} else {
-			writeln(res + ".push(" + sel + ");")
-		}
-		for range q.Froms {
+			writeln("const " + res + " = [];")
+			writeln(fmt.Sprintf("for (const %s of %s) {", q.Var, src))
+			indent++
+			for i, fs := range fromSrcs {
+				writeln(fmt.Sprintf("for (const %s of %s) {", q.Froms[i].Var, fs))
+				indent++
+			}
+			if whereStr != "" {
+				writeln("if (!(" + whereStr + ")) continue;")
+			}
+			if sortStr != "" {
+				writeln(res + ".push({item: " + sel + ", key: " + sortStr + "});")
+			} else {
+				writeln(res + ".push(" + sel + ");")
+			}
+			for range q.Froms {
+				indent--
+				writeln("}")
+			}
 			indent--
 			writeln("}")
+			writeln("let res = " + res + ";")
 		}
-		indent--
-		writeln("}")
-		writeln("let res = " + res + ";")
 	}
 
 	if sortStr != "" {
