@@ -508,7 +508,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			args[i] = s
 		}
-		if p.Call.Func == "print" {
+		switch p.Call.Func {
+		case "print":
 			if len(args) == 0 {
 				return "", fmt.Errorf("print expects at least 1 arg")
 			}
@@ -527,12 +528,53 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				}
 			}
 			return stmt + "; cr", nil
+		case "append":
+			if len(args) != 2 {
+				return "", fmt.Errorf("append expects 2 args")
+			}
+			return fmt.Sprintf("%s copyWith: %s", args[0], args[1]), nil
+		case "count", "len":
+			if len(args) != 1 {
+				return "", fmt.Errorf("%s expects 1 arg", p.Call.Func)
+			}
+			return fmt.Sprintf("(%s size)", args[0]), nil
+		case "values":
+			if len(args) != 1 {
+				return "", fmt.Errorf("values expects 1 arg")
+			}
+			return fmt.Sprintf("(%s values)", args[0]), nil
+		case "sum":
+			if len(args) != 1 {
+				return "", fmt.Errorf("sum expects 1 arg")
+			}
+			return fmt.Sprintf("(%s inject: 0 into: [:s :x | s + x])", args[0]), nil
+		case "min":
+			if len(args) != 1 {
+				return "", fmt.Errorf("min expects 1 arg")
+			}
+			return fmt.Sprintf("(%s min)", args[0]), nil
+		case "max":
+			if len(args) != 1 {
+				return "", fmt.Errorf("max expects 1 arg")
+			}
+			return fmt.Sprintf("(%s max)", args[0]), nil
+		case "str":
+			if len(args) != 1 {
+				return "", fmt.Errorf("str expects 1 arg")
+			}
+			return fmt.Sprintf("(%s asString)", args[0]), nil
+		case "substring", "substr":
+			if len(args) != 3 {
+				return "", fmt.Errorf("substring expects 3 args")
+			}
+			return fmt.Sprintf("(%s copyFrom: %s to: %s)", args[0], args[1], args[2]), nil
+		default:
+			call := p.Call.Func
+			for _, a := range args {
+				call += " value: " + a
+			}
+			return call, nil
 		}
-		call := p.Call.Func
-		for _, a := range args {
-			call += " value: " + a
-		}
-		return call, nil
 	default:
 		return "", fmt.Errorf("unsupported expression at line %d", p.Pos.Line)
 	}
