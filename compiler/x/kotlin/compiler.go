@@ -88,7 +88,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln(runtime)
 	c.writeln("")
 
-	// emit type and function declarations first
+	// emit type declarations first
 	for _, s := range prog.Statements {
 		if s.Type != nil {
 			if err := c.typeDecl(s.Type); err != nil {
@@ -97,6 +97,20 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			c.writeln("")
 		}
 	}
+	// emit global variable declarations before functions so they are
+	// visible to all functions
+	for _, s := range prog.Statements {
+		if s.Type != nil || s.Fun != nil {
+			continue
+		}
+		if s.Let != nil || s.Var != nil {
+			if err := c.stmt(s); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
+
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
 			if err := c.funDecl(s.Fun); err != nil {
@@ -109,7 +123,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("fun main() {")
 	c.indent++
 	for _, s := range prog.Statements {
-		if s.Fun != nil {
+		if s.Fun != nil || s.Type != nil {
+			continue
+		}
+		if s.Let != nil || s.Var != nil {
+			// already emitted as global variable
 			continue
 		}
 		if err := c.stmt(s); err != nil {

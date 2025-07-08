@@ -1,15 +1,9 @@
-line 62:
+line 64:
 OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
-/workspace/mochi/tests/machine/x/kotlin/json_builtin.kt:62:26: error: unresolved reference: a
-    val m = mutableMapOf(a to 1, b to 2)
-                         ^
-/workspace/mochi/tests/machine/x/kotlin/json_builtin.kt:62:34: error: unresolved reference: b
-    val m = mutableMapOf(a to 1, b to 2)
-                                 ^
-/workspace/mochi/tests/machine/x/kotlin/json_builtin.kt:63:5: error: unresolved reference: json
+/workspace/mochi/tests/machine/x/kotlin/json_builtin.kt:64:5: error: unresolved reference: json
     json(m)
     ^
 
- 61: fun main() {
- 62:     val m = mutableMapOf(a to 1, b to 2)
- 63:     json(m)
+ 63: fun main() {
+ 64:     json(m)
+ 65: }
