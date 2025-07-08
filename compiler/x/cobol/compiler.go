@@ -453,7 +453,31 @@ func (c *Compiler) addVar(name string, typ *parser.TypeRef, value *parser.Expr, 
 			pic = "PIC X(5)"
 		}
 	}
-	if value != nil && isLiteralExpr(value) {
+	if lst := listLiteral(value); lst != nil {
+		vals := make([]string, len(lst.Elems))
+		for i, e := range lst.Elems {
+			v, err := c.compileExpr(e)
+			if err != nil {
+				return err
+			}
+			vals[i] = strings.Trim(v, "\"")
+		}
+		c.listVals[name] = vals
+		c.lens[name] = len(vals)
+		return nil
+	} else if mp := mapLiteral(value); mp != nil {
+		vals := make([]string, len(mp.Items))
+		for i, it := range mp.Items {
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				return err
+			}
+			vals[i] = strings.Trim(v, "\"")
+		}
+		c.mapVals[name] = vals
+		c.lens[name] = len(vals)
+		return nil
+	} else if value != nil && isLiteralExpr(value) {
 		v, err := c.compileExpr(value)
 		if err != nil {
 			return err
@@ -1540,6 +1564,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if p.Call.Func == "print" {
 			return "", fmt.Errorf("print used as expression")
 		}
+		if isBuiltinCall(p.Call.Func) {
+			return c.compileBuiltin(p.Call)
+		}
 		val, err := c.compileUserCall(p.Call)
 		if err != nil {
 			return "", err
@@ -1676,7 +1703,21 @@ func isSimpleExpr(e *parser.Expr) bool {
 		return false
 	}
 	p := u.Value
-	return len(p.Ops) == 0 && p.Target != nil && (p.Target.Lit != nil || p.Target.Selector != nil)
+	if len(p.Ops) != 0 || p.Target == nil {
+		return false
+	}
+	if p.Target.Lit != nil || p.Target.Selector != nil {
+		return true
+	}
+	if call := p.Target.Call; call != nil && isBuiltinCall(call.Func) {
+		for _, a := range call.Args {
+			if !(isSimpleExpr(a) || isLiteralExpr(a) || simpleIdent(a) != "") {
+				return false
+			}
+		}
+		return true
+	}
+	return false
 }
 
 func (c *Compiler) ensureTmpVar() string {
