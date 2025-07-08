@@ -37,9 +37,14 @@ let t: _Node;
 function main(): void {
   t = {
     __name: "Node",
-    left: Leaf,
+    left: { __name: "Leaf" },
     value: 1,
-    right: { __name: "Node", left: Leaf, value: 2, right: Leaf },
+    right: {
+      __name: "Node",
+      left: { __name: "Leaf" },
+      value: 2,
+      right: { __name: "Leaf" },
+    },
   };
   console.log(sum_tree(t));
 }
