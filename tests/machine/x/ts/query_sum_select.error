@@ -1,0 +1,8 @@
+line 0: run: exit status 1
+[0m[1m[31merror[0m: Uncaught (in promise) TypeError: n.reduce is not a function
+    _tmp1.push((n.reduce((a,b)=>a+b,0)));
+[0m[31m                  ^[0m
+    at [0m[36mfile:///workspace/mochi/tests/machine/x/ts/query_sum_select.ts[0m:[0m[33m6[0m:[0m[33m19[0m
+    at [0m[36mfile:///workspace/mochi/tests/machine/x/ts/query_sum_select.ts[0m:[0m[33m10[0m:[0m[33m2[0m
+
+let nums = [1, 2, 3];

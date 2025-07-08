@@ -1,0 +1,7 @@
+line 0: run: exit status 1
+[0m[1m[31merror[0m: Uncaught (in promise) ReferenceError: json is not defined
+json(m);
+[0m[31m^[0m
+    at [0m[36mfile:///workspace/mochi/tests/machine/x/ts/json_builtin.ts[0m:[0m[33m2[0m:[0m[33m1[0m
+
+let m = {a: 1, b: 2};
