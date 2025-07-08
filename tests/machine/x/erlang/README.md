@@ -1,6 +1,6 @@
 # Erlang Compiler Results
 
-Compiled programs: 9/97
+Compiled programs: 15/97
 
 - [ ] append_builtin.mochi
 - [ ] avg_builtin.mochi
@@ -43,18 +43,18 @@ Compiled programs: 9/97
 - [ ] json_builtin.mochi
 - [ ] left_join.mochi
 - [ ] left_join_multi.mochi
-- [ ] len_builtin.mochi
-- [ ] len_map.mochi
-- [ ] len_string.mochi
+- [x] len_builtin.mochi
+- [x] len_map.mochi
+- [x] len_string.mochi
 - [x] let_and_print.mochi
 - [ ] list_assign.mochi
-- [ ] list_index.mochi
+- [x] list_index.mochi
 - [ ] list_nested_assign.mochi
 - [ ] list_set_ops.mochi
 - [ ] load_yaml.mochi
 - [ ] map_assign.mochi
 - [ ] map_in_operator.mochi
-- [ ] map_index.mochi
+- [x] map_index.mochi
 - [ ] map_int_key.mochi
 - [ ] map_literal_dynamic.mochi
 - [ ] map_membership.mochi
@@ -83,7 +83,7 @@ Compiled programs: 9/97
 - [ ] string_concat.mochi
 - [ ] string_contains.mochi
 - [ ] string_in_operator.mochi
-- [ ] string_index.mochi
+- [x] string_index.mochi
 - [ ] string_prefix_slice.mochi
 - [ ] substring_builtin.mochi
 - [ ] sum_builtin.mochi

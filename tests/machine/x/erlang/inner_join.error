@@ -1,5 +1,6 @@
-line 2: unsupported expression at line 2
-   1: // inner_join.mochi
-   2: let customers = [
-   3:   { id: 1, name: "Alice" },
-   4:   { id: 2, name: "Bob" },
+line 13: unsupported expression at line 13
+  11:   { id: 103, customerId: 4, total: 80 }
+  12: ]
+  13: let result = from o in orders
+  14:              join from c in customers on o.customerId == c.id
+  15:              select { orderId: o.id, customerName: c.name, total: o.total }

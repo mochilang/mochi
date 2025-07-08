@@ -1,4 +1,1 @@
-line 1: unsupported expression at line 1
-   1: let xs = [1, 2, 3]
-   2: print(2 in xs)
-   3: print(!(5 in xs))
+line 0: unsupported operator in

@@ -1,4 +1,6 @@
-line 1: unsupported expression at line 1
-   1: let data = [
-   2:   {a:1, b:2},
-   3:   {a:1, b:1},
+line 7: unsupported expression at line 7
+   5: ]
+   6: let sorted =
+   7:   from x in data
+   8:   sort by { a: x.a, b: x.b }
+   9:   select x

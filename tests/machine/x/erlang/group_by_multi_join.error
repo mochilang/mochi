@@ -1,4 +1,6 @@
-line 1: unsupported expression at line 1
-   1: let nations = [
-   2:   { id: 1, name: "A" },
-   3:   { id: 2, name: "B" }
+line 15: unsupported expression at line 15
+  13: ]
+  14: let filtered =
+  15:   from ps in partsupp
+  16:   join s in suppliers on s.id == ps.supplier
+  17:   join n in nations on n.id == s.nation

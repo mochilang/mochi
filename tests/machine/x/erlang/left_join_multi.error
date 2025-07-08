@@ -1,4 +1,6 @@
-line 1: unsupported expression at line 1
-   1: let customers = [
-   2:   { id: 1, name: "Alice" },
-   3:   { id: 2, name: "Bob" }
+line 15: unsupported expression at line 15
+  13: ]
+  14: 
+  15: let result = from o in orders
+  16:              join from c in customers on o.customerId == c.id
+  17:              left join i in items on o.id == i.orderId
