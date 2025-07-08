@@ -2,10 +2,11 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 
 int main() {
-    int x = 1;
-    x = 2;
-    printf("%d\n", x);
+int x = 1;
+x = 2;
+printf("%d\n", x);
     return 0;
 }

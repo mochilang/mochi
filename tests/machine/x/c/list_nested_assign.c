@@ -4,14 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-int sum_rec(int n, int acc) {
-    if ((n == 0)) {
-        return acc;
-    }
-    return sum_rec((n - 1), (acc + n));
-}
-
 int main() {
-printf("%d\n", sum_rec(10, 0));
+int matrix[] = {(int[]){1, 2}, (int[]){3, 4}};
+matrix[1][0] = 5;
+printf("%d\n", matrix[1][0]);
     return 0;
 }

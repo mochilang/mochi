@@ -13,5 +13,6 @@ char* substr(const char* s, int start, int end) {
 }
 
 int main() {
+printf("%s\n", substr("mochi", 1, 4));
     return 0;
 }

@@ -5,7 +5,7 @@
 #include <string.h>
 
 int main() {
-    const char* s = "mochi";
-    printf("%c\n", s[1]);
+const char* s = "mochi";
+printf("%c\n", s[1]);
     return 0;
 }

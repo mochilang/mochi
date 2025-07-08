@@ -4,14 +4,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-int sum_rec(int n, int acc) {
-    if ((n == 0)) {
-        return acc;
-    }
-    return sum_rec((n - 1), (acc + n));
+char* to_str(int n) {
+    char buf[32];
+    snprintf(buf, sizeof(buf), "%d", n);
+    return strdup(buf);
 }
 
 int main() {
-printf("%d\n", sum_rec(10, 0));
+printf("%s\n", to_str(123));
     return 0;
 }

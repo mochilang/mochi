@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 
 int boom() {
     printf("%s\n", "boom");
@@ -9,8 +10,8 @@ int boom() {
 }
 
 int main() {
-    printf("%d\n", (((1 < 2) && (2 < 3)) && (3 < 4)));
-    printf("%d\n", (((1 < 2) && (2 > 3)) && boom()));
-    printf("%d\n", ((((1 < 2) && (2 < 3)) && (3 > 4)) && boom()));
+printf("%d\n", (((1 < 2) && (2 < 3)) && (3 < 4)));
+printf("%d\n", (((1 < 2) && (2 > 3)) && boom()));
+printf("%d\n", ((((1 < 2) && (2 < 3)) && (3 > 4)) && boom()));
     return 0;
 }

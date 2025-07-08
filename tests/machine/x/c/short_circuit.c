@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 
 int boom(int a, int b) {
     printf("%s\n", "boom");
@@ -9,7 +10,7 @@ int boom(int a, int b) {
 }
 
 int main() {
-    printf("%d\n", (0 && boom(1, 2)));
-    printf("%d\n", (1 || boom(1, 2)));
+printf("%d\n", (0 && boom(1, 2)));
+printf("%d\n", (1 || boom(1, 2)));
     return 0;
 }

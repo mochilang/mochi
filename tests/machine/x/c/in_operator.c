@@ -12,5 +12,8 @@ bool contains(const int* arr, int n, int val) {
 }
 
 int main() {
+int xs[] = {1, 2, 3};
+printf("%d\n", contains(xs, 3, 2));
+printf("%d\n", (!contains(xs, 3, 5)));
     return 0;
 }
