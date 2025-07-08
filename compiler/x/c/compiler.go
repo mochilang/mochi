@@ -774,6 +774,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "(int[]){" + strings.Join(elems, ", ") + "}", nil
 	case p.Map != nil:
 		return c.compileMapLiteral(p.Map, false)
+	case p.Struct != nil:
+		return c.compileStructLiteral(p.Struct)
 	case p.If != nil:
 		return c.compileIfExpr(p.If)
 	case p.Group != nil:
@@ -866,6 +868,19 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral, forceMap bool) (strin
 	}
 	c.lastType = entryType + "[]"
 	return "{" + strings.Join(items, ", ") + "}", nil
+}
+
+func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error) {
+	fields := make([]string, len(sl.Fields))
+	for i, f := range sl.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return "", err
+		}
+		fields[i] = fmt.Sprintf(".%s = %s", f.Name, v)
+	}
+	c.lastType = sl.Name
+	return fmt.Sprintf("(%s){ %s }", sl.Name, strings.Join(fields, ", ")), nil
 }
 
 func simpleMapKey(e *parser.Expr) string {
