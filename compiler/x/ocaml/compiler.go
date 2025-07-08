@@ -296,6 +296,13 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			opStr = "<>"
 		case "%":
 			opStr = "mod"
+		case "in":
+			res = fmt.Sprintf("(List.mem %s %s)", res, r)
+			continue
+		}
+		// use string concatenation operator if both sides look like strings
+		if opStr == "+" && strings.HasPrefix(res, "\"") && strings.HasSuffix(r, "\"") {
+			opStr = "^"
 		}
 		res = fmt.Sprintf("(%s %s %s)", res, opStr, r)
 	}
@@ -410,6 +417,14 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	case "len":
 		if len(args) != 1 {
 			return "", fmt.Errorf("len expects 1 arg")
+		}
+		if strings.HasPrefix(args[0], "\"") && strings.HasSuffix(args[0], "\"") {
+			return fmt.Sprintf("String.length %s", args[0]), nil
+		}
+		return fmt.Sprintf("List.length %s", args[0]), nil
+	case "count":
+		if len(args) != 1 {
+			return "", fmt.Errorf("count expects 1 arg")
 		}
 		return fmt.Sprintf("List.length %s", args[0]), nil
 	case "avg":
