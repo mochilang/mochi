@@ -1,0 +1,11 @@
+line 0: javac error: exit status 1
+/tmp/TestCompileValidProgramsuser_type_literal3512464138/001/Main.java:21: error: cannot find symbol
+	System.out.println(book.author.name);
+	                       ^
+  symbol:   variable author
+  location: variable book of type Object
+1 error
+
+
+  1| type Person {
+  2|   name: string
