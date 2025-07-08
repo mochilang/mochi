@@ -5,7 +5,7 @@
 #include <string.h>
 
 int main() {
-int matrix[] = {(int[]){1, 2}, (int[]){3, 4}};
+int matrix[][ 2 ] = {{1, 2}, {3, 4}};
 matrix[1][0] = 5;
 printf("%d\n", matrix[1][0]);
     return 0;
