@@ -49,8 +49,34 @@ func WriteFile(srcPath, dstPath string) error {
 	return os.WriteFile(dstPath, code, 0o755)
 }
 
+// repoRoot searches upward from the current directory to locate the repository root
+// containing go.mod. An empty string is returned if not found.
+func repoRoot() string {
+	dir, err := os.Getwd()
+	if err != nil {
+		return ""
+	}
+	for i := 0; i < 10; i++ {
+		if exists(filepath.Join(dir, "go.mod")) {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	return ""
+}
+
+// ListPrograms returns all Mochi programs under tests/vm/valid.
 func ListPrograms() ([]string, error) {
-	return filepath.Glob(filepath.Join("tests", "vm", "valid", "*.mochi"))
+	root := repoRoot()
+	if root == "" {
+		return nil, fmt.Errorf("repo root not found")
+	}
+	pattern := filepath.Join(root, "tests", "vm", "valid", "*.mochi")
+	return filepath.Glob(pattern)
 }
 
 func exists(path string) bool {
