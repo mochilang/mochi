@@ -1184,6 +1184,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if len(args) == 1 {
 					expr = fmt.Sprintf("(clojure.string/lower-case %s)", args[0])
 				}
+			case "substring":
+				if len(args) == 3 {
+					expr = fmt.Sprintf("(.substring %s %s %s)", args[0], args[1], args[2])
+				} else if len(args) == 2 {
+					expr = fmt.Sprintf("(.substring %s %s)", args[0], args[1])
+				}
 			default:
 				expr = fmt.Sprintf("(%s %s)", name, strings.Join(args, " "))
 			}
@@ -1448,6 +1454,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		case "lower":
 			if len(args) == 1 {
 				return "(clojure.string/lower-case " + args[0] + ")", nil
+			}
+		case "substring":
+			if len(args) == 3 {
+				return "(.substring " + args[0] + " " + args[1] + " " + args[2] + ")", nil
+			}
+			if len(args) == 2 {
+				return "(.substring " + args[0] + " " + args[1] + ")", nil
 			}
 		}
 		return "(" + name + " " + strings.Join(args, " ") + ")", nil
