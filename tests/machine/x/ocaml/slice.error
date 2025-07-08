@@ -1,0 +1,14 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/slice.ml", line 22, characters 34-41:
+22 |   print_endline (__show (List.nth "hello" 1));
+                                       ^^^^^^^
+Error: This expression has type string but an expression was expected of type
+         'a list
+
+
+Context (around line 22):
+  20 |   print_endline (__show (List.nth [1;2;3] 1));
+  21 |   print_endline (__show (List.nth [1;2;3] 0));
+  22 |   print_endline (__show (List.nth "hello" 1));
+  23 | 

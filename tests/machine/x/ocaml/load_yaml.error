@@ -1,0 +1,10 @@
+stage: compile
+error:
+unsupported expression at line 7
+
+Context (around line 7):
+   5 | }
+   6 | 
+   7 | let people = load "../interpreter/valid/people.yaml" as Person with { format: "yaml" }
+   8 | let adults = from p in people
+   9 |              where p.age >= 18

@@ -296,8 +296,15 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			opStr = "<>"
 		case "%":
 			opStr = "mod"
+		case "in":
+			res = fmt.Sprintf("(List.mem %s %s)", res, r)
+			continue
 		}
-		res = fmt.Sprintf("(%s %s %s)", res, opStr, r)
+		if opStr == "+" && isStringUnary(b.Left) && isStringExprExpr(op.Right) {
+			res = fmt.Sprintf("(%s ^ %s)", res, r)
+		} else {
+			res = fmt.Sprintf("(%s %s %s)", res, opStr, r)
+		}
 	}
 	return res, nil
 }
@@ -374,6 +381,32 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems[i] = s
 		}
 		return "[" + strings.Join(elems, ";") + "]", nil
+	case p.FunExpr != nil:
+		params := make([]string, len(p.FunExpr.Params))
+		for i, p2 := range p.FunExpr.Params {
+			params[i] = p2.Name
+		}
+		if p.FunExpr.ExprBody != nil {
+			body, err := c.compileExpr(p.FunExpr.ExprBody)
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("fun %s -> %s", strings.Join(params, " "), body), nil
+		}
+		if len(p.FunExpr.BlockBody) > 0 {
+			var buf bytes.Buffer
+			buf.WriteString("(fun " + strings.Join(params, " ") + " ->\n")
+			c.indent++
+			for _, st := range p.FunExpr.BlockBody {
+				if err := c.compileStmt(st); err != nil {
+					return "", err
+				}
+			}
+			c.indent--
+			buf.WriteString(")")
+			return buf.String(), nil
+		}
+		return "fun _ -> ()", nil
 	case p.Call != nil:
 		return c.compileCall(p.Call)
 	case p.Group != nil:
@@ -410,6 +443,14 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	case "len":
 		if len(args) != 1 {
 			return "", fmt.Errorf("len expects 1 arg")
+		}
+		if isStringLiteralExpr(call.Args[0]) {
+			return fmt.Sprintf("String.length %s", args[0]), nil
+		}
+		return fmt.Sprintf("List.length %s", args[0]), nil
+	case "count":
+		if len(args) != 1 {
+			return "", fmt.Errorf("count expects 1 arg")
 		}
 		return fmt.Sprintf("List.length %s", args[0]), nil
 	case "avg":
@@ -472,4 +513,66 @@ func (c *Compiler) writeln(s string) {
 	}
 	c.buf.WriteString(s)
 	c.buf.WriteByte('\n')
+}
+
+func isStringLiteralExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || u.Value.Target == nil {
+		return false
+	}
+	if u.Value.Target.Lit != nil && u.Value.Target.Lit.Str != nil {
+		return true
+	}
+	return false
+}
+
+func isStringCall(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || u.Value.Target == nil {
+		return false
+	}
+	if u.Value.Target.Call != nil && u.Value.Target.Call.Func == "str" {
+		return true
+	}
+	return false
+}
+
+func isStringExpr(e *parser.Expr) bool {
+	return isStringLiteralExpr(e) || isStringCall(e)
+}
+
+func isStringExprExpr(p *parser.PostfixExpr) bool {
+	if p == nil || p.Target == nil {
+		return false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return true
+	}
+	if p.Target.Call != nil && p.Target.Call.Func == "str" {
+		return true
+	}
+	return false
+}
+
+func isStringUnary(u *parser.Unary) bool {
+	if u == nil || len(u.Ops) > 0 || u.Value == nil {
+		return false
+	}
+	p := u.Value.Target
+	if p == nil {
+		return false
+	}
+	if p.Lit != nil && p.Lit.Str != nil {
+		return true
+	}
+	if p.Call != nil && p.Call.Func == "str" {
+		return true
+	}
+	return false
 }

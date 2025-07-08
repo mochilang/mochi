@@ -1,0 +1,9 @@
+stage: compile
+error:
+unsupported expression at line 2
+
+Context (around line 2):
+   1 | let customers = [
+   2 |   { id: 1, name: "Alice" },
+   3 |   { id: 2, name: "Bob" },
+   4 |   { id: 3, name: "Charlie" } // No orders

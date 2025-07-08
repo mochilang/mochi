@@ -1,0 +1,13 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/substring_builtin.ml", line 20, characters 25-34:
+20 |   print_endline (__show (substring "mochi" 1 4));
+                              ^^^^^^^^^
+Error: Unbound value substring
+
+
+Context (around line 20):
+  18 | 
+  19 | let () =
+  20 |   print_endline (__show (substring "mochi" 1 4));
+  21 | 

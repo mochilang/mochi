@@ -306,3 +306,12 @@ tools/playground/wasm_exec.js
 *.class
 tools/tcc/tcc/
 tools/tcc/tools/
+
+# OCaml machine artifacts
+/tests/machine/x/ocaml/*.cmi
+/tests/machine/x/ocaml/*.cmo
+/tests/machine/x/ocaml/*
+!/tests/machine/x/ocaml/*.ml
+!/tests/machine/x/ocaml/*.out
+!/tests/machine/x/ocaml/*.error
+!/tests/machine/x/ocaml/README.md

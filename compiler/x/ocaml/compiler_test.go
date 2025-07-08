@@ -77,17 +77,23 @@ func TestPrograms(t *testing.T) {
 	for _, f := range files {
 		base := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		t.Run(base, func(t *testing.T) {
+			src, _ := os.ReadFile(f)
+			errPath := filepath.Join(outDir, base+".error")
+			os.Remove(errPath)
 			prog, err := parser.Parse(f)
 			if err != nil {
-				t.Fatalf("parse error: %v", err)
+				writeError(outDir, base, src, "parse", []byte(err.Error()))
+				return
 			}
 			env := types.NewEnv(nil)
 			if errs := types.Check(prog, env); len(errs) > 0 {
-				t.Fatalf("type error: %v", errs[0])
+				writeError(outDir, base, src, "type", []byte(errs[0].Error()))
+				return
 			}
 			code, err := ocaml.New(env).Compile(prog, f)
 			if err != nil {
-				t.Fatalf("compile error: %v", err)
+				writeError(outDir, base, src, "compile", []byte(err.Error()))
+				return
 			}
 			mlPath := filepath.Join(outDir, base+".ml")
 			if err := os.WriteFile(mlPath, code, 0644); err != nil {
@@ -97,7 +103,7 @@ func TestPrograms(t *testing.T) {
 			cmd := exec.Command("ocamlc", mlPath, "-o", exe)
 			if out, err := cmd.CombinedOutput(); err != nil {
 				writeError(outDir, base, code, "compile", out)
-				t.Fatalf("ocamlc error: %v", err)
+				return
 			}
 			runCmd := exec.Command(exe)
 			var out bytes.Buffer
@@ -105,11 +111,12 @@ func TestPrograms(t *testing.T) {
 			runCmd.Stderr = &out
 			if err := runCmd.Run(); err != nil {
 				writeError(outDir, base, code, "run", out.Bytes())
-				t.Fatalf("run error: %v", err)
+				return
 			}
 			if err := os.WriteFile(filepath.Join(outDir, base+".out"), out.Bytes(), 0644); err != nil {
 				t.Fatalf("write out: %v", err)
 			}
+			os.Remove(errPath)
 		})
 	}
 }
