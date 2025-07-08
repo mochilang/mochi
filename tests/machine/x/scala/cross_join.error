@@ -1,0 +1,14 @@
+exit status 1
+/workspace/mochi/tests/machine/x/scala/cross_join.scala:8: error: value orderId is not a member of scala.collection.immutable.Map[String,Any]
+      println("Order" + " " + entry.orderId + " " + "(customerId:" + " " + entry.orderCustomerId + " " + ", total: $" + " " + entry.orderTotal + " " + ") paired with" + " " + entry.pairedCustomerName)
+                                    ^
+/workspace/mochi/tests/machine/x/scala/cross_join.scala:8: error: value orderCustomerId is not a member of scala.collection.immutable.Map[String,Any]
+      println("Order" + " " + entry.orderId + " " + "(customerId:" + " " + entry.orderCustomerId + " " + ", total: $" + " " + entry.orderTotal + " " + ") paired with" + " " + entry.pairedCustomerName)
+                                                                                 ^
+/workspace/mochi/tests/machine/x/scala/cross_join.scala:8: error: value orderTotal is not a member of scala.collection.immutable.Map[String,Any]
+      println("Order" + " " + entry.orderId + " " + "(customerId:" + " " + entry.orderCustomerId + " " + ", total: $" + " " + entry.orderTotal + " " + ") paired with" + " " + entry.pairedCustomerName)
+                                                                                                                                    ^
+/workspace/mochi/tests/machine/x/scala/cross_join.scala:8: error: value pairedCustomerName is not a member of scala.collection.immutable.Map[String,Any]
+      println("Order" + " " + entry.orderId + " " + "(customerId:" + " " + entry.orderCustomerId + " " + ", total: $" + " " + entry.orderTotal + " " + ") paired with" + " " + entry.pairedCustomerName)
+                                                                                                                                                                                     ^
+four errors found

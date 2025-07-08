@@ -320,23 +320,34 @@ func (c *Compiler) compileFor(s *parser.ForStmt) error {
 		}
 		loop = fmt.Sprintf("%s to %s", start, end)
 	}
+	var elemType types.Type = types.AnyType{}
 	if t := types.ExprType(s.Source, c.env); t != nil {
-		if _, ok := t.(types.MapType); ok {
+		if mt, ok := t.(types.MapType); ok {
 			c.writeln(fmt.Sprintf("for((%s, _) <- %s) {", s.Name, loop))
+			elemType = mt.Key
 		} else {
 			c.writeln(fmt.Sprintf("for(%s <- %s) {", s.Name, loop))
+			if lt, ok := t.(types.ListType); ok {
+				elemType = lt.Elem
+			}
 		}
 	} else {
 		c.writeln(fmt.Sprintf("for(%s <- %s) {", s.Name, loop))
 	}
+	child := types.NewEnv(c.env)
+	child.SetVar(s.Name, elemType, false)
+	oldEnv := c.env
+	c.env = child
 	c.indent += indentStep
 	for _, st := range s.Body {
 		if err := c.compileStmt(st); err != nil {
+			c.env = oldEnv
 			return err
 		}
 	}
 	c.indent -= indentStep
 	c.writeln("}")
+	c.env = oldEnv
 	return nil
 }
 
@@ -556,6 +567,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileStructLit(p.Struct)
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
 	case p.Selector != nil:
 		return c.compileSelector(p.Selector), nil
 	case p.Group != nil:
@@ -590,6 +603,18 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
 	if len(s.Tail) == 0 {
 		return s.Root
+	}
+	if t, err := c.env.GetVar(s.Root); err == nil {
+		if _, ok := t.(types.MapType); ok {
+			base := s.Root
+			for i, f := range s.Tail {
+				base = fmt.Sprintf("%s(%q)", base, f)
+				if i < len(s.Tail)-1 {
+					// after indexing into map, assume value is map
+				}
+			}
+			return base
+		}
 	}
 	parts := append([]string{s.Root}, s.Tail...)
 	return strings.Join(parts, ".")
@@ -685,9 +710,15 @@ func (c *Compiler) compileList(l *parser.ListLiteral, mutable bool) (string, err
 func (c *Compiler) compileMap(m *parser.MapLiteral, mutable bool) (string, error) {
 	items := make([]string, len(m.Items))
 	for i, it := range m.Items {
-		k, err := c.compileExpr(it.Key)
-		if err != nil {
-			return "", err
+		var k string
+		if name, ok := simpleIdent(it.Key); ok {
+			k = fmt.Sprintf("%q", name)
+		} else {
+			var err error
+			k, err = c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
 		}
 		v, err := c.compileExpr(it.Value)
 		if err != nil {
@@ -742,6 +773,52 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	}
 	buf.WriteString("}")
 	return buf.String(), nil
+}
+
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	if len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+		return "", fmt.Errorf("line %d: query features not supported", q.Pos.Line)
+	}
+	parts := []string{}
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	parts = append(parts, fmt.Sprintf("%s <- %s", q.Var, src))
+
+	child := types.NewEnv(c.env)
+	if lt, ok := types.ExprType(q.Source, c.env).(types.ListType); ok {
+		child.SetVar(q.Var, lt.Elem, false)
+	}
+
+	for _, f := range q.Froms {
+		s, err := c.compileExpr(f.Src)
+		if err != nil {
+			return "", err
+		}
+		parts = append(parts, fmt.Sprintf("%s <- %s", f.Var, s))
+		if lt, ok := types.ExprType(f.Src, c.env).(types.ListType); ok {
+			child.SetVar(f.Var, lt.Elem, false)
+		}
+	}
+
+	oldEnv := c.env
+	c.env = child
+	if q.Where != nil {
+		cond, err := c.compileExpr(q.Where)
+		if err != nil {
+			c.env = oldEnv
+			return "", err
+		}
+		parts = append(parts, fmt.Sprintf("if %s", cond))
+	}
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.env = oldEnv
+		return "", err
+	}
+	c.env = oldEnv
+	return fmt.Sprintf("for { %s } yield %s", strings.Join(parts, "; "), sel), nil
 }
 
 func (c *Compiler) mapToStruct(name string, st types.StructType, m *parser.MapLiteral) (string, error) {
@@ -817,4 +894,19 @@ func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
 		return nil, false
 	}
 	return p.Target.Call, true
+}
+
+func simpleIdent(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Selector == nil || len(p.Target.Selector.Tail) > 0 {
+		return "", false
+	}
+	return p.Target.Selector.Root, true
 }
