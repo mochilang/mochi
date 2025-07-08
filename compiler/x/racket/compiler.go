@@ -85,7 +85,7 @@ func (c *Compiler) compileStmtWithLabels(s *parser.Statement, breakLbl, contLbl 
 		}
 		c.writeln(val)
 	case s.If != nil:
-		return c.compileIf(s.If)
+		return c.compileIfWithLabels(s.If, breakLbl, contLbl)
 	case s.While != nil:
 		return c.compileWhile(s.While)
 	case s.Expr != nil:
@@ -235,10 +235,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		switch p.Call.Func {
 		case "print":
-			if len(args) != 1 {
-				return "", fmt.Errorf("print expects 1 arg")
+			if len(args) == 0 {
+				return "", fmt.Errorf("print expects at least 1 arg")
 			}
-			return fmt.Sprintf("(displayln %s)", args[0]), nil
+			if len(args) == 1 {
+				return fmt.Sprintf("(displayln %s)", args[0]), nil
+			}
+			return fmt.Sprintf("(displayln (string-join (map ~a (list %s)) \" \"))",
+				strings.Join(args, " ")), nil
 		case "append":
 			if len(args) != 2 {
 				return "", fmt.Errorf("append expects 2 args")
@@ -426,7 +430,7 @@ func (c *Compiler) compileForWithLabels(f *parser.ForStmt, breakLbl, contLbl str
 	}
 	if useBC {
 		c.writeln(fmt.Sprintf("%s)", indent(useBC, 2)))
-		c.writeln(fmt.Sprintf("%s))", indent(useBC, 1)))
+		c.writeln(fmt.Sprintf("%s)", indent(useBC, 1)))
 		c.writeln(")")
 	} else {
 		c.writeln(")")
@@ -450,6 +454,10 @@ func (c *Compiler) compileFun(f *parser.FunStmt) error {
 }
 
 func (c *Compiler) compileIf(st *parser.IfStmt) error {
+	return c.compileIfWithLabels(st, "", "")
+}
+
+func (c *Compiler) compileIfWithLabels(st *parser.IfStmt, breakLbl, contLbl string) error {
 	cond, err := c.compileExpr(st.Cond)
 	if err != nil {
 		return err
@@ -457,20 +465,19 @@ func (c *Compiler) compileIf(st *parser.IfStmt) error {
 	c.writeln(fmt.Sprintf("(if %s", cond))
 	c.writeln("  (begin")
 	for _, s := range st.Then {
-		if err := c.compileStmt(s); err != nil {
+		if err := c.compileStmtWithLabels(s, breakLbl, contLbl); err != nil {
 			return err
 		}
 	}
 	c.writeln("  )")
 	if st.ElseIf != nil {
-		// else if handled recursively
-		if err := c.compileIf(st.ElseIf); err != nil {
+		if err := c.compileIfWithLabels(st.ElseIf, breakLbl, contLbl); err != nil {
 			return err
 		}
 	} else if len(st.Else) > 0 {
 		c.writeln("  (begin")
 		for _, s := range st.Else {
-			if err := c.compileStmt(s); err != nil {
+			if err := c.compileStmtWithLabels(s, breakLbl, contLbl); err != nil {
 				return err
 			}
 		}
