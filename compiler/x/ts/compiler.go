@@ -16,11 +16,12 @@ type Compiler struct {
 	indent             int
 	tmp                int
 	needContainsHelper bool
+	funParams          map[string]int
 }
 
 // New returns a new Compiler.
 func New() *Compiler {
-	return &Compiler{}
+	return &Compiler{funParams: make(map[string]int)}
 }
 
 func (c *Compiler) newTmp() string {
@@ -33,6 +34,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.indent = 0
 	c.needContainsHelper = false
+	c.funParams = make(map[string]int)
+	for _, st := range prog.Statements {
+		if st.Fun != nil {
+			c.funParams[st.Fun.Name] = len(st.Fun.Params)
+		}
+	}
 	for _, st := range prog.Statements {
 		if err := c.stmt(st); err != nil {
 			return nil, err
@@ -504,6 +511,16 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 			elems[i] = s
 		}
 		return "[" + strings.Join(elems, ", ") + "]", nil
+	case p.Struct != nil:
+		items := make([]string, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			v, err := c.expr(f.Value)
+			if err != nil {
+				return "", err
+			}
+			items[i] = fmt.Sprintf("%s: %s", f.Name, v)
+		}
+		return "{" + strings.Join(items, ", ") + "}", nil
 	case p.Map != nil:
 		items := make([]string, len(p.Map.Items))
 		for i, m := range p.Map.Items {
@@ -576,6 +593,11 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 				return fmt.Sprintf("Object.values(%s)", args[0]), nil
 			}
 			return "", fmt.Errorf("values expects 1 arg")
+		case "json":
+			if len(args) == 1 {
+				return fmt.Sprintf("console.log(JSON.stringify(%s))", args[0]), nil
+			}
+			return "", fmt.Errorf("json expects 1 arg")
 		case "contains":
 			if len(args) == 2 {
 				c.needContainsHelper = true
@@ -603,6 +625,14 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 			}
 			return "", fmt.Errorf("max expects 1 arg")
 		default:
+			if n, ok := c.funParams[p.Call.Func]; ok && len(args) < n {
+				params := make([]string, n-len(args))
+				for i := range params {
+					params[i] = fmt.Sprintf("_p%d", i)
+				}
+				callArgs := append(append([]string{}, args...), params...)
+				return fmt.Sprintf("(%s) => %s(%s)", strings.Join(params, ", "), p.Call.Func, strings.Join(callArgs, ", ")), nil
+			}
 			return fmt.Sprintf("%s(%s)", p.Call.Func, strings.Join(args, ", ")), nil
 		}
 	case p.Query != nil:

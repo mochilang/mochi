@@ -4,7 +4,7 @@ This directory stores the generated TypeScript code and execution results for Mo
 
 ## Summary
 
-69/97 files compiled
+73/97 files compiled
 
 ## Checklist
 
@@ -46,7 +46,7 @@ This directory stores the generated TypeScript code and execution results for Mo
 - [x] in_operator_extended.mochi
 - [ ] inner_join.mochi
 - [ ] join_multi.mochi
-- [ ] json_builtin.mochi
+ - [x] json_builtin.mochi
 - [ ] left_join.mochi
 - [ ] left_join_multi.mochi
  - [x] len_builtin.mochi
@@ -73,12 +73,12 @@ This directory stores the generated TypeScript code and execution results for Mo
 - [x] nested_function.mochi
 - [x] order_by_map.mochi
 - [ ] outer_join.mochi
-- [ ] partial_application.mochi
+ - [x] partial_application.mochi
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
 - [ ] query_sum_select.mochi
-- [ ] record_assign.mochi
+ - [x] record_assign.mochi
 - [ ] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
@@ -101,7 +101,7 @@ This directory stores the generated TypeScript code and execution results for Mo
  - [x] typed_var.mochi
 - [x] unary_neg.mochi
 - [ ] update_stmt.mochi
-- [ ] user_type_literal.mochi
+ - [x] user_type_literal.mochi
  - [x] values_builtin.mochi
  - [x] var_assignment.mochi
  - [x] while_loop.mochi
