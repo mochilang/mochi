@@ -1,9 +1,0 @@
-fpc error: exit status 1
-Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
-Copyright (c) 1993-2021 by Florian Klaempfl and others
-Target OS: Linux for x86-64
-Compiling /workspace/mochi/tests/machine/x/pascal/cast_string_to_int.pas
-cast_string_to_int.pas(10,23) Error: Incompatible type for arg no. 1: Got "Constant String", expected "Extended"
-cast_string_to_int.pas(12) Fatal: There were 1 errors compiling module, stopping
-Fatal: Compilation aborted
-Error: /usr/bin/ppcx64 returned an error exitcode

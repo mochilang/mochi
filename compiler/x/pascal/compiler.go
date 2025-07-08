@@ -1309,6 +1309,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			typ := c.typeRef(op.Cast.Type)
 			if typ == "double" {
 				expr = fmt.Sprintf("Double(%s)", expr)
+			} else if typ == "integer" && c.isStringPostfix(&parser.PostfixExpr{Target: p.Target}) {
+				expr = fmt.Sprintf("StrToInt(%s)", expr)
 			} else {
 				expr = fmt.Sprintf("Trunc(%s)", expr)
 			}

@@ -7,5 +7,5 @@ type
   generic TArray<T> = array of T;
 
 begin
-  writeln(Trunc('1995'));
+  writeln(StrToInt('1995'));
 end.
