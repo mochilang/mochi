@@ -2108,6 +2108,7 @@ func (c *Compiler) compileQueryHelper(q *parser.QueryExpr) (string, error) {
 		}
 		b.WriteString(" })\n")
 		b.WriteString("      _groups (_group_by _rows (fn [" + allParams + "] " + groupKey + "))\n")
+		b.WriteString("      ]\n")
 		genv := types.NewEnv(child)
 		var gElem types.Type
 		gElem, _ = child.GetVar(q.Var)
