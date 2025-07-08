@@ -1,6 +1,6 @@
 # Machine-generated Swift Outputs
 
-Compiled programs: 63/97
+Compiled programs: 64/97
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -90,7 +90,7 @@ Compiled programs: 63/97
 - [x] tail_recursion.mochi
 - [ ] test_block.mochi
 - [ ] tree_sum.mochi
-- [ ] two-sum.mochi
+- [x] two-sum.mochi
 - [x] typed_let.mochi
 - [x] typed_var.mochi
 - [x] unary_neg.mochi

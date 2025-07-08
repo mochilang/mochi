@@ -755,6 +755,40 @@ func (c *compiler) typeRef(t *parser.TypeRef) (string, error) {
 	if t == nil {
 		return "", nil
 	}
+	if t.Generic != nil {
+		name := strings.ToLower(t.Generic.Name)
+		switch name {
+		case "list":
+			if len(t.Generic.Args) != 1 {
+				return "", fmt.Errorf("list requires 1 type arg")
+			}
+			et, err := c.typeRef(t.Generic.Args[0])
+			if err != nil {
+				return "", err
+			}
+			if et == "" {
+				return "", fmt.Errorf("unsupported list element type")
+			}
+			return "[" + et + "]", nil
+		case "map":
+			if len(t.Generic.Args) != 2 {
+				return "", fmt.Errorf("map requires 2 type args")
+			}
+			kt, err := c.typeRef(t.Generic.Args[0])
+			if err != nil {
+				return "", err
+			}
+			vt, err := c.typeRef(t.Generic.Args[1])
+			if err != nil {
+				return "", err
+			}
+			if kt == "" || vt == "" {
+				return "", fmt.Errorf("unsupported map type")
+			}
+			return "[" + kt + ": " + vt + "]", nil
+		}
+		return "", fmt.Errorf("unsupported generic type %s", t.Generic.Name)
+	}
 	if t.Fun != nil {
 		params := make([]string, len(t.Fun.Params))
 		for i, p := range t.Fun.Params {
@@ -815,9 +849,11 @@ func isBuiltinType(typ string) bool {
 	switch typ {
 	case "Int", "Double", "Bool", "String":
 		return true
-	default:
-		return false
 	}
+	if strings.HasPrefix(typ, "[") && strings.HasSuffix(typ, "]") {
+		return true
+	}
+	return false
 }
 
 func (c *compiler) writeln(s string) {
