@@ -1,4 +1,4 @@
-unsupported expression at line 2
-let nations = [
-  { id: 1, name: "A" },
-  { id: 2, name: "B" }
+unsupported expression at line 15
+let filtered =
+  from ps in partsupp
+  join s in suppliers on s.id == ps.supplier

@@ -1,4 +1,4 @@
-unsupported expression at line 5
-let customers = [
-  { id: 1, name: "Alice" },
-  { id: 2, name: "Bob" },
+unsupported expression at line 17
+
+let result = from c in customers
+             right join o in orders on o.customerId == c.id

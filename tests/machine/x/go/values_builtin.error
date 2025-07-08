@@ -1,3 +1,4 @@
-unsupported expression at line 1
-let m = {"a":1, "b":2, "c":3}
-print(values(m))
+run: exit status 1
+# command-line-arguments
+../../../tests/machine/x/go/values_builtin.go:11:17: undefined: values
+

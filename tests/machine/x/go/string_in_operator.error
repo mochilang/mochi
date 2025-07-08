@@ -1,5 +1,0 @@
-run: exit status 1
-# command-line-arguments
-../../../tests/machine/x/go/string_in_operator.go:11:23: syntax error: unexpected name in in argument list; possibly missing comma or )
-../../../tests/machine/x/go/string_in_operator.go:12:23: syntax error: unexpected name in in argument list; possibly missing comma or )
-
