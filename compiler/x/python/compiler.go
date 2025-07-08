@@ -20,11 +20,12 @@ type Compiler struct {
 	needsJSON   bool
 	needsData   bool
 	structTypes map[string]bool
+	env         *types.Env
 }
 
 // New creates a new Python compiler.
 func New(env *types.Env) *Compiler {
-	return &Compiler{structTypes: make(map[string]bool)}
+	return &Compiler{structTypes: make(map[string]bool), env: env}
 }
 
 // Compile converts the parsed Mochi program into Python code.
@@ -452,6 +453,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileStructLiteral(p.Struct)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
 	case p.If != nil:
 		return c.compileIfExpr(p.If)
 	case p.Group != nil:
@@ -461,9 +464,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return fmt.Sprintf("(%s)", expr), nil
 	case p.Selector != nil:
-		name := p.Selector.Root
+		root := p.Selector.Root
+		typ, _ := c.env.GetVar(root)
+		_, isStruct := typ.(types.StructType)
+		name := root
 		for _, t := range p.Selector.Tail {
-			name += "." + t
+			if isStruct {
+				name += "." + t
+			} else {
+				name += fmt.Sprintf("[%q]", t)
+			}
 		}
 		return name, nil
 	default:
@@ -513,6 +523,15 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 		return fmt.Sprintf("json.dumps(%s)", args[0]), nil
 	default:
+		if fn, ok := c.env.GetFunc(call.Func); ok && len(args) < len(fn.Params) {
+			missing := fn.Params[len(args):]
+			names := make([]string, len(missing))
+			for i, p := range missing {
+				names[i] = p.Name
+			}
+			allArgs := append(append([]string{}, args...), names...)
+			return fmt.Sprintf("lambda %s: %s(%s)", strings.Join(names, ", "), call.Func, strings.Join(allArgs, ", ")), nil
+		}
 		return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ", ")), nil
 	}
 }
@@ -556,6 +575,74 @@ func (c *Compiler) compileIfExpr(ix *parser.IfExpr) (string, error) {
 		}
 	}
 	return fmt.Sprintf("(%s if %s else %s)", thenExpr, cond, elseCode), nil
+}
+
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	if len(q.Joins) > 0 || q.Group != nil || q.Distinct {
+		return "", fmt.Errorf("query features not supported")
+	}
+	loops := []string{}
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	loops = append(loops, fmt.Sprintf("%s in %s", q.Var, src))
+	for _, f := range q.Froms {
+		fs, err := c.compileExpr(f.Src)
+		if err != nil {
+			return "", err
+		}
+		loops = append(loops, fmt.Sprintf("%s in %s", f.Var, fs))
+	}
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		return "", err
+	}
+	var cond string
+	if q.Where != nil {
+		cond, err = c.compileExpr(q.Where)
+		if err != nil {
+			return "", err
+		}
+	}
+	comp := fmt.Sprintf("[%s", sel)
+	for i, lp := range loops {
+		if i == 0 {
+			comp += " for " + lp
+		} else {
+			comp += " for " + lp
+		}
+	}
+	if cond != "" {
+		comp += " if " + cond
+	}
+	comp += "]"
+	if q.Sort != nil {
+		sortKey, err := c.compileExpr(q.Sort)
+		if err != nil {
+			return "", err
+		}
+		comp = fmt.Sprintf("sorted(%s, key=lambda %s: %s)", comp, q.Var, sortKey)
+	}
+	if q.Skip != nil || q.Take != nil {
+		start := "0"
+		if q.Skip != nil {
+			start, err = c.compileExpr(q.Skip)
+			if err != nil {
+				return "", err
+			}
+		}
+		end := ""
+		if q.Take != nil {
+			t, err := c.compileExpr(q.Take)
+			if err != nil {
+				return "", err
+			}
+			end = fmt.Sprintf("(%s)+%s", start, t)
+		}
+		comp += fmt.Sprintf("[%s:%s]", start, end)
+	}
+	return comp, nil
 }
 
 func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error) {
