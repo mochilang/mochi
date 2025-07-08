@@ -353,15 +353,59 @@ func (c *Compiler) compileMainStmt(s *parser.Statement) error {
 			return err
 		}
 	case s.While != nil:
-		body, err := c.simpleBodyExpr(s.While.Body)
-		if err != nil {
-			return err
+		// Special case simple counting loops where the body ends with an
+		// assignment to a variable used in the condition. Translate
+		// these to a recursive function so the variable value is
+		// threaded through iterations.
+		if n := len(s.While.Body); n > 0 && s.While.Body[n-1].Assign != nil {
+			asn := s.While.Body[n-1].Assign
+			orig := c.env
+			if t, err := c.env.GetVar(asn.Name); err == nil {
+				child := types.NewEnv(c.env)
+				child.SetVar(asn.Name, t, true)
+				c.env = child
+			}
+			cond, err := c.compileExpr(s.While.Cond)
+			if err != nil {
+				c.env = orig
+				return err
+			}
+			c.writeln("let")
+			c.indent++
+			param := sanitizeName(asn.Name)
+			c.writeln(fmt.Sprintf("loop %s = do", param))
+			c.indent++
+			c.writeln(fmt.Sprintf("if %s then do", cond))
+			c.indent++
+			for _, st := range s.While.Body[:n-1] {
+				if err := c.compileMainStmt(st); err != nil {
+					c.env = orig
+					return err
+				}
+			}
+			val, err := c.compileExpr(asn.Value)
+			if err != nil {
+				c.env = orig
+				return err
+			}
+			c.writeln(fmt.Sprintf("loop (%s)", val))
+			c.indent--
+			c.writeln("else return ()")
+			c.indent--
+			c.indent--
+			c.writeln(fmt.Sprintf("loop %s", param))
+			c.env = orig
+		} else {
+			body, err := c.simpleBodyExpr(s.While.Body)
+			if err != nil {
+				return err
+			}
+			cond, err := c.compileExpr(s.While.Cond)
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("let _ = whileLoop (\\() -> %s) (\\() -> Nothing <$ (%s)) in return ()", cond, body))
 		}
-		cond, err := c.compileExpr(s.While.Cond)
-		if err != nil {
-			return err
-		}
-		c.writeln(fmt.Sprintf("let _ = whileLoop (\\() -> %s) (\\() -> Nothing <$ (%s)) in return ()", cond, body))
 	case s.Expect != nil:
 		expr, err := c.compileExpr(s.Expect.Value)
 		if err != nil {

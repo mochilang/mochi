@@ -2,7 +2,7 @@
 
 Generated Haskell code and outputs are stored in this directory.
 
-## 45/97 compiled
+## 46/97 compiled
 
 ### Checklist
 
@@ -102,4 +102,4 @@ Generated Haskell code and outputs are stored in this directory.
 - [ ] `user_type_literal.mochi`
 - [ ] `values_builtin.mochi`
 - [ ] `var_assignment.mochi`
-- [ ] `while_loop.mochi`
+- [x] `while_loop.mochi`
