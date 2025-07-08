@@ -4,8 +4,8 @@ This directory contains Python source code generated from Mochi programs and the
 
 ## Summary
 
-- 80/97 programs compiled and executed successfully.
-- 17 programs failed to compile or run.
+- 81/97 programs compiled and executed successfully.
+- 16 programs failed to compile or run.
 
 ### Successful
 - append_builtin
@@ -84,6 +84,7 @@ This directory contains Python source code generated from Mochi programs and the
 - typed_let
 - typed_var
 - unary_neg
+- update_stmt
 - user_type_literal
 - values_builtin
 - var_assignment
@@ -106,4 +107,3 @@ This directory contains Python source code generated from Mochi programs and the
 - load_yaml
 - outer_join
 - right_join
-- update_stmt

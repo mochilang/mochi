@@ -109,6 +109,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileWhile(s.While)
 	case s.For != nil:
 		return c.compileFor(s.For)
+	case s.Update != nil:
+		return c.compileUpdate(s.Update)
 	case s.Type != nil:
 		return c.compileTypeDecl(s.Type)
 	case s.Test != nil:
@@ -271,6 +273,74 @@ func (c *Compiler) compileFor(fs *parser.ForStmt) error {
 	if len(fs.Body) == 0 {
 		c.writeln("pass")
 	}
+	c.indent--
+	return nil
+}
+
+func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
+	list := u.Target
+	idxVar := c.newTmp()
+	itemVar := c.newTmp()
+
+	c.writeln(fmt.Sprintf("for %s, %s in enumerate(%s):", idxVar, itemVar, list))
+	c.indent++
+
+	var st types.StructType
+	if c.env != nil {
+		if t, err := c.env.GetVar(u.Target); err == nil {
+			if lt, ok := t.(types.ListType); ok {
+				if s, ok := lt.Elem.(types.StructType); ok {
+					st = s
+				}
+			}
+		}
+	}
+
+	var orig *types.Env
+	if st.Name != "" {
+		child := types.NewEnv(c.env)
+		for _, f := range st.Order {
+			c.writeln(fmt.Sprintf("%s = %s.%s", f, itemVar, f))
+			child.SetVar(f, st.Fields[f], true)
+		}
+		orig = c.env
+		c.env = child
+	}
+
+	if u.Where != nil {
+		cond, err := c.compileExpr(u.Where)
+		if err != nil {
+			if orig != nil {
+				c.env = orig
+			}
+			return err
+		}
+		c.writeln("if " + cond + ":")
+		c.indent++
+	}
+
+	for _, it := range u.Set.Items {
+		field, _ := identName(it.Key)
+		val, err := c.compileExpr(it.Value)
+		if err != nil {
+			if orig != nil {
+				c.env = orig
+			}
+			return err
+		}
+		c.writeln(fmt.Sprintf("%s.%s = %s", itemVar, field, val))
+	}
+
+	if u.Where != nil {
+		c.indent--
+	}
+
+	c.writeln(fmt.Sprintf("%s[%s] = %s", list, idxVar, itemVar))
+
+	if orig != nil {
+		c.env = orig
+	}
+
 	c.indent--
 	return nil
 }
