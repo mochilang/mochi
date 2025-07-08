@@ -12,15 +12,13 @@ import (
 
 // EnsureDeno verifies that the Deno binary is installed and attempts to
 // install it if missing. It is safe to call from tests.
-func EnsureDeno() error {
-	return ensureDeno()
-}
+func EnsureDeno() error { return ensureDeno() }
 
 func ensureDeno() error {
 	if _, err := exec.LookPath("deno"); err == nil {
 		return nil
 	}
-	fmt.Println("\U0001F985 Installing Deno...")
+	fmt.Println("🦕 Installing Deno...")
 	if runtime.GOOS == "windows" {
 		if _, err := exec.LookPath("choco"); err == nil {
 			cmd := exec.Command("choco", "install", "-y", "deno")
@@ -95,7 +93,7 @@ func EnsureTSLanguageServer() error {
 	}
 	for _, inst := range installers {
 		if _, err := exec.LookPath(inst.bin); err == nil {
-			fmt.Println("\U0001F985 Installing TS language server via", inst.bin, "...")
+			fmt.Println("🦕 Installing TS language server via", inst.bin, "...")
 			cmd := exec.Command(inst.bin, inst.args...)
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
