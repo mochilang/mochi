@@ -110,39 +110,29 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("#!/usr/bin/env escript")
 	c.writeln(fmt.Sprintf("%% %s.erl - generated from %s", base, filepath.Base(c.srcPath)))
 	c.writeln("")
+
+	var body []*parser.Statement
+	for _, st := range prog.Statements {
+		if st.Fun != nil {
+			if err := c.compileFun(st.Fun); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+			continue
+		}
+		body = append(body, st)
+	}
+
 	c.writeln("main(_) ->")
 	c.indent++
 
 	var lines []string
-	for _, st := range prog.Statements {
-		switch {
-		case st.Let != nil:
-			l, err := c.compileLet(st.Let)
-			if err != nil {
-				return nil, err
-			}
-			lines = append(lines, l)
-		case st.Var != nil:
-			l, err := c.compileVar(st.Var)
-			if err != nil {
-				return nil, err
-			}
-			lines = append(lines, l)
-		case st.Assign != nil:
-			l, err := c.compileAssign(st.Assign)
-			if err != nil {
-				return nil, err
-			}
-			lines = append(lines, l)
-		case st.Expr != nil:
-			e, err := c.compileExpr(st.Expr.Expr)
-			if err != nil {
-				return nil, err
-			}
-			lines = append(lines, e)
-		default:
-			return nil, fmt.Errorf("unsupported statement at line %d", st.Pos.Line)
+	for _, st := range body {
+		l, err := c.compileStmtLine(st)
+		if err != nil {
+			return nil, err
 		}
+		lines = append(lines, l)
 	}
 
 	for i, l := range lines {
@@ -234,6 +224,182 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) (string, error) {
 	}
 	name := c.newVarName(a.Name)
 	return fmt.Sprintf("%s = %s", name, val), nil
+}
+
+func (c *Compiler) compileStmtLine(st *parser.Statement) (string, error) {
+	switch {
+	case st.Let != nil:
+		return c.compileLet(st.Let)
+	case st.Var != nil:
+		return c.compileVar(st.Var)
+	case st.Assign != nil:
+		return c.compileAssign(st.Assign)
+	case st.Return != nil:
+		return c.compileReturn(st.Return)
+	case st.Expr != nil:
+		return c.compileExpr(st.Expr.Expr)
+	case st.If != nil:
+		return c.compileIfStmt(st.If)
+	case st.For != nil:
+		return c.compileFor(st.For)
+	default:
+		return "", fmt.Errorf("unsupported statement at line %d", st.Pos.Line)
+	}
+}
+
+func (c *Compiler) compileFun(fn *parser.FunStmt) error {
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		params[i] = capitalize(p.Name)
+	}
+	c.writeln(fmt.Sprintf("%s(%s) ->", fn.Name, strings.Join(params, ", ")))
+	c.indent++
+	var lines []string
+	for _, st := range fn.Body {
+		l, err := c.compileStmtLine(st)
+		if err != nil {
+			return err
+		}
+		lines = append(lines, l)
+	}
+	for i, l := range lines {
+		if i == len(lines)-1 {
+			c.writeln(l + ".")
+		} else {
+			c.writeln(l + ",")
+		}
+	}
+	c.indent--
+	return nil
+}
+
+func (c *Compiler) compileReturn(ret *parser.ReturnStmt) (string, error) {
+	val, err := c.compileExpr(ret.Value)
+	if err != nil {
+		return "", err
+	}
+	return val, nil
+}
+
+func (c *Compiler) compileIfStmt(ifst *parser.IfStmt) (string, error) {
+	cond, err := c.compileExpr(ifst.Cond)
+	if err != nil {
+		return "", err
+	}
+	thenLines := make([]string, len(ifst.Then))
+	for i, s := range ifst.Then {
+		l, err := c.compileStmtLine(s)
+		if err != nil {
+			return "", err
+		}
+		thenLines[i] = l
+	}
+	thenCode := strings.Join(thenLines, ", ")
+	if thenCode == "" {
+		thenCode = "ok"
+	}
+	elseCode := "ok"
+	if ifst.ElseIf != nil {
+		ec, err := c.compileIfStmt(ifst.ElseIf)
+		if err != nil {
+			return "", err
+		}
+		elseCode = ec
+	} else if len(ifst.Else) > 0 {
+		parts := make([]string, len(ifst.Else))
+		for i, s := range ifst.Else {
+			l, err := c.compileStmtLine(s)
+			if err != nil {
+				return "", err
+			}
+			parts[i] = l
+		}
+		elseCode = strings.Join(parts, ", ")
+		if elseCode == "" {
+			elseCode = "ok"
+		}
+	}
+	return fmt.Sprintf("(if %s -> %s; true -> %s end)", cond, thenCode, elseCode), nil
+}
+
+func (c *Compiler) compileFor(fr *parser.ForStmt) (string, error) {
+	bodyParts := make([]string, len(fr.Body))
+	for i, s := range fr.Body {
+		l, err := c.compileStmtLine(s)
+		if err != nil {
+			return "", err
+		}
+		bodyParts[i] = l
+	}
+	body := strings.Join(bodyParts, ", ")
+	if body == "" {
+		body = "ok"
+	}
+	if fr.RangeEnd != nil {
+		start, err := c.compileExpr(fr.Source)
+		if err != nil {
+			return "", err
+		}
+		end, err := c.compileExpr(fr.RangeEnd)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("lists:foreach(fun(%s) -> %s end, lists:seq(%s, (%s)-1))", capitalize(fr.Name), body, start, end), nil
+	}
+	src, err := c.compileExpr(fr.Source)
+	if err != nil {
+		return "", err
+	}
+	typ := c.inferExprType(fr.Source)
+	if typ == "" && fr.Source.Binary != nil {
+		u := fr.Source.Binary.Left
+		if u.Value != nil && u.Value.Target.Selector != nil {
+			typ = c.types[u.Value.Target.Selector.Root]
+		}
+	}
+	if typ == "map" {
+		return fmt.Sprintf("lists:foreach(fun({%s,_}) -> %s end, maps:to_list(%s))", capitalize(fr.Name), body, src), nil
+	}
+	return fmt.Sprintf("lists:foreach(fun(%s) -> %s end, %s)", capitalize(fr.Name), body, src), nil
+}
+
+func (c *Compiler) compileIfExpr(ix *parser.IfExpr) (string, error) {
+	cond, err := c.compileExpr(ix.Cond)
+	if err != nil {
+		return "", err
+	}
+	thenExpr, err := c.compileExpr(ix.Then)
+	if err != nil {
+		return "", err
+	}
+	elseExpr := "undefined"
+	if ix.ElseIf != nil {
+		elseExpr, err = c.compileIfExpr(ix.ElseIf)
+		if err != nil {
+			return "", err
+		}
+	} else if ix.Else != nil {
+		elseExpr, err = c.compileExpr(ix.Else)
+		if err != nil {
+			return "", err
+		}
+	}
+	return fmt.Sprintf("(if %s -> %s; true -> %s end)", cond, thenExpr, elseExpr), nil
+}
+
+func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		params[i] = capitalize(p.Name)
+	}
+	if fn.ExprBody != nil {
+		body, err := c.compileExpr(fn.ExprBody)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("fun(%s) -> %s end", strings.Join(params, ", "), body), nil
+	}
+	return "", fmt.Errorf("block function expressions not supported")
 }
 
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
@@ -351,6 +517,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.refVar(p.Selector.Root), nil
 	case p.Call != nil:
 		return c.compileCall(p.Call)
+	case p.FunExpr != nil:
+		return c.compileFunExpr(p.FunExpr)
+	case p.If != nil:
+		return c.compileIfExpr(p.If)
 	case p.List != nil:
 		elems := make([]string, len(p.List.Elems))
 		for i, e := range p.List.Elems {
@@ -410,6 +580,63 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return fmt.Sprintf("maps:size(%s)", arg), nil
 		}
 		return fmt.Sprintf("length(%s)", arg), nil
+	case "append":
+		if len(call.Args) != 2 {
+			return "", fmt.Errorf("append expects 2 args")
+		}
+		a0, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", err
+		}
+		a1, err := c.compileExpr(call.Args[1])
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s ++ [%s]", a0, a1), nil
+	case "avg":
+		if len(call.Args) != 1 {
+			return "", fmt.Errorf("avg expects 1 arg")
+		}
+		a0, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("(lists:sum(%s) / length(%s))", a0, a0), nil
+	case "count":
+		if len(call.Args) != 1 {
+			return "", fmt.Errorf("count expects 1 arg")
+		}
+		a0, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("length(%s)", a0), nil
+	case "values":
+		if len(call.Args) != 1 {
+			return "", fmt.Errorf("values expects 1 arg")
+		}
+		a0, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("maps:values(%s)", a0), nil
+	case "substring":
+		if len(call.Args) != 3 {
+			return "", fmt.Errorf("substring expects 3 args")
+		}
+		str, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", err
+		}
+		start, err := c.compileExpr(call.Args[1])
+		if err != nil {
+			return "", err
+		}
+		end, err := c.compileExpr(call.Args[2])
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("string:substr(%s, (%s)+1, (%s)-(%s))", str, start, end, start), nil
 	default:
 		return "", fmt.Errorf("unsupported function %s", call.Func)
 	}
