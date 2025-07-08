@@ -2,7 +2,7 @@
 
 This directory contains Go source files generated from Mochi programs.
 
-## Progress: 59/97
+## Progress: 60/97
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -42,7 +42,7 @@ This directory contains Go source files generated from Mochi programs.
 - [ ] in_operator_extended.mochi
 - [ ] inner_join.mochi
 - [ ] join_multi.mochi
-- [ ] json_builtin.mochi
+- [x] json_builtin.mochi
 - [ ] left_join.mochi
 - [ ] left_join_multi.mochi
 - [x] len_builtin.mochi

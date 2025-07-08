@@ -3,10 +3,11 @@
 package main
 
 import (
-	"fmt"
+    "fmt"
+    "encoding/json"
 )
 
 func main() {
-	m := map[interface{}]interface{}{a: 1, b: 2}
-	json(m)
+    m := map[string]interface{}{"a": 1, "b": 2}
+    func() { b, _ := json.Marshal(m); fmt.Println(string(b)) }()
 }

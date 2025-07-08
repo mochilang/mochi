@@ -3,11 +3,11 @@
 package main
 
 import (
-	"fmt"
+    "fmt"
 )
 
 func main() {
-	scores := map[interface{}]interface{}{"alice": 1}
-	scores["bob"] = 2
-	fmt.Println(scores["bob"])
+    scores := map[string]interface{}{"alice": 1}
+    scores["bob"] = 2
+    fmt.Println(scores["bob"])
 }

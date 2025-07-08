@@ -3,9 +3,9 @@
 package main
 
 import (
-	"fmt"
+    "fmt"
 )
 
 func main() {
-	fmt.Println(len(map[interface{}]interface{}{"a": 1, "b": 2}))
+    fmt.Println(len(map[string]interface{}{"a": 1, "b": 2}))
 }

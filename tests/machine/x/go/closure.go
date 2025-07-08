@@ -3,16 +3,16 @@
 package main
 
 import (
-	"fmt"
+    "fmt"
 )
 
 func makeAdder(n int) func(int) int {
-	return func(x int) int {
-		return x + n
-	}
+    return func(x int) int {        return x + n
+    }
 }
 
+
 func main() {
-	add10 := makeAdder(10)
-	fmt.Println(add10(7))
+    add10 := makeAdder(10)
+    fmt.Println(add10(7))
 }

@@ -3,11 +3,11 @@
 package main
 
 import (
-	"fmt"
+    "fmt"
 )
 
 func main() {
-	data := map[interface{}]interface{}{"outer": map[interface{}]interface{}{"inner": 1}}
-	data["outer"].(map[interface{}]interface{})["inner"] = 2
-	fmt.Println(data["outer"].(map[interface{}]interface{})["inner"])
+    data := map[string]interface{}{"outer": map[string]interface{}{"inner": 1}}
+    data["outer"].(map[string]interface{})["inner"] = 2
+    fmt.Println(data["outer"].(map[interface{}]interface{})["inner"])
 }

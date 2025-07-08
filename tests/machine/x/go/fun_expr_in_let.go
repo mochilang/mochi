@@ -3,12 +3,11 @@
 package main
 
 import (
-	"fmt"
+    "fmt"
 )
 
 func main() {
-	square := func(x int) int {
-		return x * x
-	}
-	fmt.Println(square(6))
+    square := func(x int) int {        return x * x
+    }
+    fmt.Println(square(6))
 }

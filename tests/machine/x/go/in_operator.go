@@ -4,10 +4,31 @@ package main
 
 import (
     "fmt"
+    "reflect"
 )
 
-func main() {
+func contains(coll interface{}, v interface{}) bool {
+    val := reflect.ValueOf(coll)
+    switch val.Kind() {
+        case reflect.Slice, reflect.Array:
+            for i := 0; i < val.Len(); i++ {
+                if reflect.DeepEqual(val.Index(i).Interface(), v) {
+                    return true
+                }
+            }
+            return false
+        case reflect.Map:
+            if val.MapIndex(reflect.ValueOf(v)).IsValid() {
+                return true
+            }
+            return false
+        default:
+            return false
+        }
+    }
+    
+    func main() {
     xs := []int{1, 2, 3}
-    fmt.Println(2 in xs)
-    fmt.Println(!(5 in xs))
-}
+    fmt.Println(contains(xs, 2))
+    fmt.Println(!(contains(xs, 5)))
+    }

@@ -27,6 +27,7 @@ type Compiler struct {
 	needsReflect  bool
 	needsStrconv  bool
 	needsStrings  bool
+	needsJSON     bool
 	structTypes   map[string]bool
 	funSigs       map[string]*funSig
 }
@@ -48,6 +49,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.needsReflect = false
 	c.needsStrconv = false
 	c.needsStrings = false
+	c.needsJSON = false
 	c.structTypes = make(map[string]bool)
 	c.funSigs = make(map[string]*funSig)
 
@@ -99,6 +101,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	if c.needsReflect {
 		c.writeln("\"reflect\"")
+	}
+	if c.needsJSON {
+		c.writeln("\"encoding/json\"")
 	}
 	c.indent--
 	c.writeln(")")
@@ -398,7 +403,11 @@ func (c *Compiler) compileAssign(buf *bytes.Buffer, a *parser.AssignStmt) error 
 				return err
 			}
 			if idxNum < len(a.Index)-1 && !isIntLiteral(idx.Start) {
-				target = fmt.Sprintf("%s[%s].(map[interface{}]interface{})", target, idxStr)
+				if _, ok := simpleStringKey(idx.Start); ok {
+					target = fmt.Sprintf("%s[%s].(map[string]interface{})", target, idxStr)
+				} else {
+					target = fmt.Sprintf("%s[%s].(map[interface{}]interface{})", target, idxStr)
+				}
 			} else {
 				target = fmt.Sprintf("%s[%s]", target, idxStr)
 			}
@@ -843,6 +852,12 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 		c.needsStrconv = true
 		return fmt.Sprintf("strconv.Itoa(%s)", args[0]), nil
+	case "json":
+		if len(args) != 1 {
+			return "", fmt.Errorf("json expects 1 arg")
+		}
+		c.needsJSON = true
+		return fmt.Sprintf("func() { b, _ := json.Marshal(%s); fmt.Println(string(b)) }()", args[0]), nil
 	default:
 		if sig, ok := c.funSigs[call.Func]; ok && len(args) < len(sig.params) {
 			return c.partialFunc(call.Func, sig, args)
@@ -852,11 +867,28 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 }
 
 func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
+	simple := true
+	for _, it := range m.Items {
+		if _, ok := simpleStringKey(it.Key); !ok {
+			simple = false
+			break
+		}
+	}
+	typ := "map[interface{}]interface{}"
+	if simple {
+		typ = "map[string]interface{}"
+	}
 	elems := make([]string, len(m.Items))
 	for i, it := range m.Items {
-		k, err := c.compileExpr(it.Key)
-		if err != nil {
-			return "", err
+		var k string
+		if s, ok := simpleStringKey(it.Key); ok {
+			k = fmt.Sprintf("%q", s)
+		} else {
+			var err error
+			k, err = c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
 		}
 		v, err := c.compileExpr(it.Value)
 		if err != nil {
@@ -864,7 +896,7 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 		}
 		elems[i] = fmt.Sprintf("%s: %s", k, v)
 	}
-	return "map[interface{}]interface{}{" + join(elems, ", ") + "}", nil
+	return typ + "{" + join(elems, ", ") + "}", nil
 }
 
 func (c *Compiler) compileStructLiteral(s *parser.StructLiteral) (string, error) {
@@ -1142,4 +1174,27 @@ func structNameFromExpr(e *parser.Expr) string {
 		}
 	}
 	return ""
+}
+
+// simpleStringKey returns the identifier or string literal value of e if it is a simple
+// expression suitable for use as a map key.
+func simpleStringKey(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return *p.Target.Lit.Str, true
+	}
+	return "", false
 }
