@@ -1016,6 +1016,24 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				args = append(args, v)
 			}
 			name := expr
+			if v, err := c.env.GetVar(name); err == nil {
+				if ft, ok := v.(types.FuncType); ok {
+					if len(args) < len(ft.Params) {
+						missing := len(ft.Params) - len(args)
+						params := make([]string, missing)
+						for i := range params {
+							params[i] = c.newTemp()
+						}
+						callArgs := append(append([]string{}, args...), params...)
+						expr = fmt.Sprintf("(fn [%s] (%s %s))",
+							strings.Join(params, " "), name,
+							strings.Join(callArgs, " "))
+						t = types.FuncType{Params: ft.Params[len(args):], Return: ft.Return}
+						continue
+					}
+				}
+			}
+			// method call like obj.foo() or obj.bar.baz()
 			// method call like obj.foo() or obj.bar.baz()
 			if p.Target.Selector != nil && len(p.Target.Selector.Tail) >= 1 {
 				method := p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1]
@@ -1058,6 +1076,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					case "keys":
 						if len(args) == 0 {
 							expr = fmt.Sprintf("(vec (keys %s))", sanitizeName(root))
+							t = types.ListType{Elem: types.AnyType{}}
+							continue
+						}
+					case "values":
+						if len(args) == 0 {
+							expr = fmt.Sprintf("(vec (vals %s))", sanitizeName(root))
 							t = types.ListType{Elem: types.AnyType{}}
 							continue
 						}
@@ -1440,6 +1464,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		case "keys":
 			if len(args) == 1 {
 				return "(vec (keys " + args[0] + "))", nil
+			}
+		case "values":
+			if len(args) == 1 {
+				return "(vec (vals " + args[0] + "))", nil
 			}
 		case "str":
 			return "(str " + strings.Join(args, " ") + ")", nil
