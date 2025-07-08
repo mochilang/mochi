@@ -18,4 +18,4 @@ local function print_value(v)
 	end
 end
 
-print_value(("hello " + "world"))
+print_value(("hello " .. "world"))

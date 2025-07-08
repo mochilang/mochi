@@ -18,4 +18,8 @@ local function print_value(v)
 	end
 end
 
-print_value(#{1, 2, 3})
+local i = 0
+while (i < 3) do
+	print_value(i)
+	i = (i + 1)
+end

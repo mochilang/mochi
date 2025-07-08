@@ -18,4 +18,17 @@ local function print_value(v)
 	end
 end
 
-print_value(#{1, 2, 3})
+local function index(obj, i)
+	if type(obj)=='string' then
+		local len=#obj
+		if i<0 then i=len+i+1 else i=i+1 end
+		return string.sub(obj,i,i)
+	elseif type(obj)=='table' then
+		return obj[i+1]
+	else
+		return nil
+	end
+end
+
+local s = "mochi"
+print_value(index(s, 1))

@@ -73,6 +73,18 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 		out.WriteString("\t\tprint(v)\n")
 		out.WriteString("\tend\nend\n\n")
 	}
+	if c.used["index"] {
+		out.WriteString("local function index(obj, i)\n")
+		out.WriteString("\tif type(obj)=='string' then\n")
+		out.WriteString("\t\tlocal len=#obj\n")
+		out.WriteString("\t\tif i<0 then i=len+i+1 else i=i+1 end\n")
+		out.WriteString("\t\treturn string.sub(obj,i,i)\n")
+		out.WriteString("\telseif type(obj)=='table' then\n")
+		out.WriteString("\t\treturn obj[i+1]\n")
+		out.WriteString("\telse\n")
+		out.WriteString("\t\treturn nil\n")
+		out.WriteString("\tend\nend\n\n")
+	}
 	out.Write(c.buf.Bytes())
 	return out.Bytes(), nil
 }
@@ -85,6 +97,16 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return err
 		}
 		c.writeln(fmt.Sprintf("local %s = %s", s.Let.Name, val))
+	case s.Var != nil:
+		val := "nil"
+		if s.Var.Value != nil {
+			v, err := c.compileExpr(s.Var.Value)
+			if err != nil {
+				return err
+			}
+			val = v
+		}
+		c.writeln(fmt.Sprintf("local %s = %s", s.Var.Name, val))
 	case s.Fun != nil:
 		params := make([]string, len(s.Fun.Params))
 		for i, p := range s.Fun.Params {
@@ -107,6 +129,14 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return err
 		}
 		c.writeln("return " + val)
+	case s.Assign != nil:
+		return c.compileAssign(s.Assign)
+	case s.While != nil:
+		return c.compileWhile(s.While)
+	case s.For != nil:
+		return c.compileFor(s.For)
+	case s.Break != nil:
+		c.writeln("break")
 	case s.Expr != nil:
 		val, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -128,9 +158,11 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	leftIsStr := isStringUnary(e.Binary.Left)
 
 	operands := []string{left}
 	ops := []string{}
+	isStr := []bool{leftIsStr}
 	for _, part := range e.Binary.Right {
 		r, err := c.compilePostfix(part.Right)
 		if err != nil {
@@ -138,6 +170,7 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 		}
 		operands = append(operands, r)
 		ops = append(ops, part.Op)
+		isStr = append(isStr, isStringPostfix(part.Right))
 	}
 
 	prec := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!="}, {"&&"}, {"||"}}
@@ -153,12 +186,21 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 					expr = fmt.Sprintf("(%s and %s)", l, r)
 				case "||":
 					expr = fmt.Sprintf("(%s or %s)", l, r)
+				case "+":
+					if isStr[i] || isStr[i+1] {
+						expr = fmt.Sprintf("(%s .. %s)", l, r)
+					} else {
+						expr = fmt.Sprintf("(%s + %s)", l, r)
+					}
 				default:
 					expr = fmt.Sprintf("(%s %s %s)", l, op, r)
 				}
 				operands[i] = expr
 				operands = append(operands[:i+1], operands[i+2:]...)
 				ops = append(ops[:i], ops[i+1:]...)
+				val := isStr[i] || isStr[i+1]
+				isStr[i] = val
+				isStr = append(isStr[:i+1], isStr[i+2:]...)
 			} else {
 				i++
 			}
@@ -188,10 +230,42 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 }
 
 func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
-	if len(p.Ops) > 0 {
-		return "", fmt.Errorf("postfix operations not supported")
+	expr, err := c.compilePrimary(p.Target)
+	if err != nil {
+		return "", err
 	}
-	return c.compilePrimary(p.Target)
+	for _, op := range p.Ops {
+		switch {
+		case op.Index != nil:
+			if op.Index.Colon != nil {
+				return "", fmt.Errorf("slices not supported")
+			}
+			if op.Index.Start == nil {
+				return "", fmt.Errorf("empty index")
+			}
+			idx, err := c.compileExpr(op.Index.Start)
+			if err != nil {
+				return "", err
+			}
+			c.used["index"] = true
+			expr = fmt.Sprintf("index(%s, %s)", expr, idx)
+		case op.Call != nil:
+			args := make([]string, len(op.Call.Args))
+			for i, a := range op.Call.Args {
+				s, err := c.compileExpr(a)
+				if err != nil {
+					return "", err
+				}
+				args[i] = s
+			}
+			expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
+		case op.Field != nil:
+			expr = fmt.Sprintf("%s.%s", expr, op.Field.Name)
+		default:
+			return "", fmt.Errorf("unsupported postfix operation")
+		}
+	}
+	return expr, nil
 }
 
 func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
@@ -247,6 +321,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		case "print":
 			c.used["print_value"] = true
 			return fmt.Sprintf("print_value(%s)", argStr), nil
+		case "len":
+			if len(args) != 1 {
+				return "", fmt.Errorf("len expects 1 arg")
+			}
+			return fmt.Sprintf("#%s", args[0]), nil
 		case "append":
 			c.used["append"] = true
 			return fmt.Sprintf("append(%s)", argStr), nil
@@ -337,6 +416,104 @@ func (c *Compiler) compileIfExpr(e *parser.IfExpr) (string, error) {
 	return fmt.Sprintf("(%s and %s or %s)", cond, thenExpr, elseExpr), nil
 }
 
+func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
+	val, err := c.compileExpr(a.Value)
+	if err != nil {
+		return err
+	}
+	target := a.Name
+	for _, idx := range a.Index {
+		if idx.Colon != nil {
+			return fmt.Errorf("slices not supported")
+		}
+		if idx.Start == nil {
+			return fmt.Errorf("empty index")
+		}
+		v, err := c.compileExpr(idx.Start)
+		if err != nil {
+			return err
+		}
+		if isStringLiteral(idx.Start) {
+			target += fmt.Sprintf("[%s]", v)
+		} else {
+			target += fmt.Sprintf("[%s+1]", v)
+		}
+	}
+	for _, f := range a.Field {
+		target += "." + f.Name
+	}
+	c.writeln(fmt.Sprintf("%s = %s", target, val))
+	return nil
+}
+
+func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
+	cond, err := c.compileExpr(w.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln("while " + cond + " do")
+	c.indent++
+	for _, st := range w.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("end")
+	return nil
+}
+
+func (c *Compiler) compileFor(f *parser.ForStmt) error {
+	name := f.Name
+	if f.RangeEnd != nil {
+		start, err := c.compileExpr(f.Source)
+		if err != nil {
+			return err
+		}
+		end, err := c.compileExpr(f.RangeEnd)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("for %s=%s,(%s)-1 do", name, start, end))
+	} else if isListLiteralExpr(f.Source) {
+		// inline list literal iteration
+		lst := f.Source.Binary.Left.Value.Target.List
+		elems := make([]string, len(lst.Elems))
+		for i, e := range lst.Elems {
+			v, err := c.compileExpr(e)
+			if err != nil {
+				return err
+			}
+			elems[i] = v
+		}
+		tmp := "{" + strings.Join(elems, ", ") + "}"
+		if name == "_" {
+			c.writeln(fmt.Sprintf("for _ in ipairs(%s) do", tmp))
+		} else {
+			c.writeln(fmt.Sprintf("for _, %s in ipairs(%s) do", name, tmp))
+		}
+	} else {
+		src, err := c.compileExpr(f.Source)
+		if err != nil {
+			return err
+		}
+		if name == "_" {
+			c.writeln(fmt.Sprintf("for _ in pairs(%s) do", src))
+		} else {
+			c.writeln(fmt.Sprintf("for _, %s in pairs(%s) do", name, src))
+		}
+	}
+	c.indent++
+	for _, st := range f.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("end")
+	return nil
+}
+
 func contains(list []string, s string) bool {
 	for _, v := range list {
 		if v == s {
@@ -344,6 +521,50 @@ func contains(list []string, s string) bool {
 		}
 	}
 	return false
+}
+
+func isStringUnary(u *parser.Unary) bool {
+	if u == nil || len(u.Ops) > 0 {
+		return false
+	}
+	return isStringPostfix(u.Value)
+}
+
+func isStringPostfix(p *parser.PostfixExpr) bool {
+	if p == nil || len(p.Ops) > 0 {
+		return false
+	}
+	if p.Target == nil || p.Target.Lit == nil {
+		return false
+	}
+	return p.Target.Lit.Str != nil
+}
+
+func isStringLiteral(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) > 0 {
+		return false
+	}
+	p := u.Value
+	if p == nil || p.Target == nil || p.Target.Lit == nil {
+		return false
+	}
+	return p.Target.Lit.Str != nil
+}
+
+func isListLiteralExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) > 0 {
+		return false
+	}
+	p := u.Value
+	return p != nil && p.Target != nil && p.Target.List != nil
 }
 
 func init() {}
