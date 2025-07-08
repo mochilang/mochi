@@ -2,7 +2,7 @@
 
 This directory contains Go source files generated from Mochi programs.
 
-## Progress: 58/97
+## Progress: 59/97
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -60,7 +60,7 @@ This directory contains Go source files generated from Mochi programs.
 - [x] map_int_key.mochi
 - [x] map_literal_dynamic.mochi
 - [x] map_membership.mochi
- - [ ] map_nested_assign.mochi
+- [x] map_nested_assign.mochi
 - [ ] match_expr.mochi
 - [ ] match_full.mochi
 - [x] math_ops.mochi
