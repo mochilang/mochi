@@ -1,0 +1,22 @@
+error: gfortran: exit status 1
+/workspace/mochi/tests/machine/x/fortran/list_set_ops.f90:3:20:
+
+    3 |   print *, ((/1,2/) union (/2,3/))
+      |                    1
+Error: Expected a right parenthesis in expression at (1)
+/workspace/mochi/tests/machine/x/fortran/list_set_ops.f90:4:22:
+
+    4 |   print *, ((/1,2,3/) except (/2/))
+      |                      1
+Error: Expected a right parenthesis in expression at (1)
+/workspace/mochi/tests/machine/x/fortran/list_set_ops.f90:5:22:
+
+    5 |   print *, ((/1,2,3/) intersect (/2,4/))
+      |                      1
+Error: Expected a right parenthesis in expression at (1)
+/workspace/mochi/tests/machine/x/fortran/list_set_ops.f90:6:25:
+
+    6 |   print *, size(((/1,2/) union (/2,3/)))
+      |                         1
+Error: Expected a right parenthesis in expression at (1)
+

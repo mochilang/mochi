@@ -427,6 +427,9 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				}
 			}
 			return "", fmt.Errorf("unsupported cast")
+		case "in":
+			res = fmt.Sprintf("any(%s == %s)", r, res)
+			continue
 		}
 		res = fmt.Sprintf("(%s %s %s)", res, opStr, r)
 	}
@@ -468,6 +471,25 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				return "", err
 			}
 			res = fmt.Sprintf("%s(%s)", res, v)
+		case op.Cast != nil:
+			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
+				switch *op.Cast.Type.Simple {
+				case "int":
+					if lit := literalStringPrimary(p.Target); lit != nil {
+						if iv, err := strconv.Atoi(*lit); err == nil {
+							res = fmt.Sprintf("%d", iv)
+							continue
+						}
+					}
+					res = fmt.Sprintf("int(%s)", res)
+				case "float":
+					res = fmt.Sprintf("real(%s)", res)
+				default:
+					return "", fmt.Errorf("unsupported cast")
+				}
+			} else {
+				return "", fmt.Errorf("unsupported cast")
+			}
 		default:
 			return "", fmt.Errorf("postfix operations not supported")
 		}
@@ -547,6 +569,20 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 		arr := args[0]
 		return fmt.Sprintf("(sum(%s)/real(size(%s)))", arr, arr), nil
+	case "count":
+		if len(call.Args) != 1 {
+			return "", fmt.Errorf("count expects 1 arg")
+		}
+		return fmt.Sprintf("size(%s)", args[0]), nil
+	case "str":
+		if len(call.Args) != 1 {
+			return "", fmt.Errorf("str expects 1 arg")
+		}
+		tmp := fmt.Sprintf("s%d", c.tmpIndex)
+		c.tmpIndex++
+		c.writelnDecl(fmt.Sprintf("character(len=100) :: %s", tmp))
+		c.writeln(fmt.Sprintf("write(%s,'(G0)') %s", tmp, args[0]))
+		return tmp, nil
 	case "substring":
 		if len(call.Args) != 3 {
 			return "", fmt.Errorf("substring expects 3 args")
@@ -650,6 +686,13 @@ func literalString(e *parser.Unary) *string {
 		return lit.Str
 	}
 	return nil
+}
+
+func literalStringPrimary(p *parser.Primary) *string {
+	if p == nil || p.Lit == nil || p.Lit.Str == nil {
+		return nil
+	}
+	return p.Lit.Str
 }
 
 func typeName(t *parser.TypeRef) string {
