@@ -12,10 +12,10 @@ def fib(n: int) -> int:
     return fib((n - 1)) + fib((n - 2))
 
 
-n = 20
-start = time.time_ns()
-result = None
-duration = None
+n: int = 20
+start: int = time.time_ns()
+result: int = None
+duration: int = None
 
 
 def main():

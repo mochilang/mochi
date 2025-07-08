@@ -12,11 +12,11 @@ def fact_rec(n: int) -> int:
     return n * fact_rec((n - 1))
 
 
-n = 30
-repeat = 1000
-last = 0
-start = time.time_ns()
-duration = None
+n: int = 30
+repeat: int = 1000
+last: int = 0
+start: int = time.time_ns()
+duration: int = None
 
 
 def main():

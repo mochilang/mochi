@@ -117,7 +117,7 @@ L8:
   // let duration = (end - start) / 1000
   SubInt       r45, r44, r37
   Const        r46, 1000
-  DivInt       r47, r45, r46
+  DivFloat     r47, r45, r46
   // "duration_us": duration,
   Const        r48, "duration_us"
   // "output": last[0][0], // last[0][0] type any does not support indexing
