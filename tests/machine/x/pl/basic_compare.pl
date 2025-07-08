@@ -1,12 +1,10 @@
-:- style_check(-singleton).
+:- initialization(main, main).
 main :-
     A is (10 - 3),
     B is (2 + 2),
-    write(A),
-    nl,
-    write((A =:= 7)),
-    nl,
-    write((B < 5)),
-    nl,
+    writeln(A),
+    ((A =:= 7) -> _V0 = true ; _V0 = false),
+    writeln(_V0),
+    ((B < 5) -> _V1 = true ; _V1 = false),
+    writeln(_V1),
     true.
-:- initialization(main, main).

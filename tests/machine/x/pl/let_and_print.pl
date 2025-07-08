@@ -1,8 +1,7 @@
-:- style_check(-singleton).
-main :-
-    A = 10,
-    B = 20,
-    write((A + B)),
-    nl,
-    true.
 :- initialization(main, main).
+main :-
+    A is 10,
+    B is 20,
+    _V0 is (A + B),
+    writeln(_V0),
+    true.
