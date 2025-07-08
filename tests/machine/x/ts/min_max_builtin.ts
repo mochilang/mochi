@@ -1,3 +1,3 @@
 let nums = [3, 1, 4];
-console.log(min(nums));
-console.log(max(nums));
+console.log(Math.min(...nums));
+console.log(Math.max(...nums));

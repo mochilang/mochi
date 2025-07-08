@@ -12,9 +12,10 @@ import (
 
 // Compiler translates a limited subset of Mochi into TypeScript.
 type Compiler struct {
-	buf    bytes.Buffer
-	indent int
-	tmp    int
+	buf                bytes.Buffer
+	indent             int
+	tmp                int
+	needContainsHelper bool
 }
 
 // New returns a new Compiler.
@@ -31,12 +32,21 @@ func (c *Compiler) newTmp() string {
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.indent = 0
+	c.needContainsHelper = false
 	for _, st := range prog.Statements {
 		if err := c.stmt(st); err != nil {
 			return nil, err
 		}
 	}
-	return c.buf.Bytes(), nil
+	code := c.buf.Bytes()
+	if c.needContainsHelper {
+		helper := "function contains(a: any, b: any) {\n" +
+			"  if (Array.isArray(a) || typeof a === \"string\") return a.includes(b);\n" +
+			"  return Object.prototype.hasOwnProperty.call(a, b);\n" +
+			"}\n"
+		code = append([]byte(helper), code...)
+	}
+	return code, nil
 }
 
 func (c *Compiler) writeln(s string) {
@@ -402,7 +412,8 @@ func (c *Compiler) binary(b *parser.BinaryExpr) (string, error) {
 		case "intersect":
 			return "", fmt.Errorf("intersect not supported")
 		case "in":
-			result = fmt.Sprintf("(%s.includes(%s))", r, result)
+			c.needContainsHelper = true
+			result = fmt.Sprintf("contains(%s, %s)", r, result)
 		default:
 			result = fmt.Sprintf("(%s %s %s)", result, op.Op, r)
 		}
@@ -567,7 +578,8 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 			return "", fmt.Errorf("values expects 1 arg")
 		case "contains":
 			if len(args) == 2 {
-				return fmt.Sprintf("%s.includes(%s)", args[0], args[1]), nil
+				c.needContainsHelper = true
+				return fmt.Sprintf("contains(%s, %s)", args[0], args[1]), nil
 			}
 			return "", fmt.Errorf("contains expects 2 args")
 		case "str":

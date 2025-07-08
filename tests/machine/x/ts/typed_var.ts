@@ -1,2 +1,2 @@
-let x = ;
+let x = null;
 console.log(x);

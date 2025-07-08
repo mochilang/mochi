@@ -1,3 +1,3 @@
 let s = "catch";
-console.log(s.contains("cat"));
-console.log(s.contains("dog"));
+console.log(s.includes("cat"));
+console.log(s.includes("dog"));

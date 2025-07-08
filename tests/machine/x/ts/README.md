@@ -4,7 +4,7 @@ This directory stores the generated TypeScript code and execution results for Mo
 
 ## Summary
 
-64/97 files compiled
+69/97 files compiled
 
 ## Checklist
 
@@ -43,7 +43,7 @@ This directory stores the generated TypeScript code and execution results for Mo
  - [x] if_then_else.mochi
  - [x] if_then_else_nested.mochi
 - [x] in_operator.mochi
-- [ ] in_operator_extended.mochi
+- [x] in_operator_extended.mochi
 - [ ] inner_join.mochi
 - [ ] join_multi.mochi
 - [ ] json_builtin.mochi
@@ -59,11 +59,11 @@ This directory stores the generated TypeScript code and execution results for Mo
 - [ ] list_set_ops.mochi
 - [ ] load_yaml.mochi
  - [x] map_assign.mochi
-- [ ] map_in_operator.mochi
+- [x] map_in_operator.mochi
 - [x] map_index.mochi
 - [x] map_int_key.mochi
 - [x] map_literal_dynamic.mochi
-- [ ] map_membership.mochi
+- [x] map_membership.mochi
  - [x] map_nested_assign.mochi
 - [ ] match_expr.mochi
 - [ ] match_full.mochi
@@ -71,7 +71,7 @@ This directory stores the generated TypeScript code and execution results for Mo
 - [x] membership.mochi
  - [x] min_max_builtin.mochi
 - [x] nested_function.mochi
-- [ ] order_by_map.mochi
+- [x] order_by_map.mochi
 - [ ] outer_join.mochi
 - [ ] partial_application.mochi
 - [x] print_hello.mochi
@@ -83,7 +83,7 @@ This directory stores the generated TypeScript code and execution results for Mo
 - [ ] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
 - [x] slice.mochi
-- [ ] sort_stable.mochi
+- [x] sort_stable.mochi
  - [x] str_builtin.mochi
 - [x] string_compare.mochi
 - [x] string_concat.mochi
