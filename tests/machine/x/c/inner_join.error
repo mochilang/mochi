@@ -1,0 +1,7 @@
+line: 13
+error: unsupported primary at line 13
+  11:   { id: 103, customerId: 4, total: 80 }
+  12: ]
+  13: let result = from o in orders
+  14:              join from c in customers on o.customerId == c.id
+  15:              select { orderId: o.id, customerName: c.name, total: o.total }

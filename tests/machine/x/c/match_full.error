@@ -1,0 +1,7 @@
+line: 33
+error: unsupported primary at line 33
+  31: 
+  32: fun classify(n: int): string {
+  33:   return match n {
+  34:     0 => "zero"
+  35:     1 => "one"
