@@ -1,0 +1,9 @@
+line 30: run error: exit status 1
+lua: /workspace/mochi/tests/machine/x/lua/query_sum_select.lua:30: sum() expects list or group
+stack traceback:
+	[C]: in function 'error'
+	/workspace/mochi/tests/machine/x/lua/query_sum_select.lua:30: in function '__sum'
+	/workspace/mochi/tests/machine/x/lua/query_sum_select.lua:41: in function </workspace/mochi/tests/machine/x/lua/query_sum_select.lua:37>
+	/workspace/mochi/tests/machine/x/lua/query_sum_select.lua:37: in main chunk
+	[C]: in ?
+

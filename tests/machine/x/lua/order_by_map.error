@@ -1,0 +1,9 @@
+line 30: run error: exit status 1
+lua: /workspace/mochi/tests/machine/x/lua/order_by_map.lua:30: attempt to compare two table values
+stack traceback:
+	/workspace/mochi/tests/machine/x/lua/order_by_map.lua:30: in function </workspace/mochi/tests/machine/x/lua/order_by_map.lua:30>
+	[C]: in function 'table.sort'
+	/workspace/mochi/tests/machine/x/lua/order_by_map.lua:30: in function </workspace/mochi/tests/machine/x/lua/order_by_map.lua:24>
+	/workspace/mochi/tests/machine/x/lua/order_by_map.lua:24: in main chunk
+	[C]: in ?
+
