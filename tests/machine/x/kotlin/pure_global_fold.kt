@@ -58,11 +58,12 @@ fun <T> intersect(a: MutableList<T>, b: MutableList<T>): MutableList<T> {
 }
 
 
+val k = 2
+
 fun inc(x: Int): Int {
     return x + k
 }
 
 fun main() {
-    val k = 2
     println(inc(3))
 }

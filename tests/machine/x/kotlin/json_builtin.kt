@@ -58,7 +58,8 @@ fun <T> intersect(a: MutableList<T>, b: MutableList<T>): MutableList<T> {
 }
 
 
+val m = mutableMapOf("a" to 1, "b" to 2)
+
 fun main() {
-    val m = mutableMapOf(a to 1, b to 2)
     json(m)
 }

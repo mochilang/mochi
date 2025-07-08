@@ -2,7 +2,7 @@
 
 This checklist tracks which Mochi programs from `tests/vm/valid` have been compiled to Kotlin and executed successfully.
 
-## Progress: 56/97
+## Progress: 57/97
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -72,7 +72,7 @@ This checklist tracks which Mochi programs from `tests/vm/valid` have been compi
 - [ ] partial_application.mochi
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
-- [ ] pure_global_fold.mochi
+ - [x] pure_global_fold.mochi
 - [ ] query_sum_select.mochi
 - [x] record_assign.mochi
 - [ ] right_join.mochi
