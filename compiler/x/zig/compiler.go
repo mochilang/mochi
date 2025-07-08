@@ -48,22 +48,24 @@ type Compiler struct {
 	needsExpect       bool
 	needsAppend       bool
 	needsPrintList    bool
-	tests             []string
-	globals           map[string]bool
-	labelCount        int
-	locals            map[string]types.Type
-	funcRet           types.Type
+        tests             []string
+        globals           map[string]bool
+       constGlobals      map[string]bool
+        labelCount        int
+        locals            map[string]types.Type
+        funcRet           types.Type
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{
-		env:     env,
-		imports: map[string]string{},
-		structs: map[string]bool{},
-		tests:   []string{},
-		globals: map[string]bool{},
-		locals:  map[string]types.Type{},
-	}
+       return &Compiler{
+               env:     env,
+               imports: map[string]string{},
+               structs: map[string]bool{},
+               tests:   []string{},
+               globals: map[string]bool{},
+               constGlobals: map[string]bool{},
+               locals:  map[string]types.Type{},
+       }
 }
 
 func (c *Compiler) writeln(s string) {
@@ -112,10 +114,13 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("pub fn main() void {")
 	c.indent++
 	for _, s := range prog.Statements {
-		if s.Fun != nil || s.Test != nil || s.Type != nil {
-			continue
-		}
-		if s.Let != nil && c.globals[sanitizeName(s.Let.Name)] {
+                if s.Fun != nil || s.Test != nil || s.Type != nil {
+                        continue
+                }
+                if s.Let != nil && c.constGlobals[sanitizeName(s.Let.Name)] {
+                        continue
+                }
+                if s.Let != nil && c.globals[sanitizeName(s.Let.Name)] {
 			val := "0"
 			if s.Let.Value != nil {
 				v, err := c.compileExpr(s.Let.Value, false)
@@ -311,21 +316,34 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 	for _, s := range prog.Statements {
 		switch {
-		case s.Let != nil:
-			name := sanitizeName(s.Let.Name)
-			var typ types.Type = types.AnyType{}
-			if c.env != nil {
-				if s.Let.Type != nil {
-					typ = c.resolveTypeRef(s.Let.Type)
-				} else if s.Let.Value != nil {
-					typ = c.inferExprType(s.Let.Value)
-				} else if old, err := c.env.GetVar(s.Let.Name); err == nil {
-					typ = old
-				}
-				c.env.SetVar(s.Let.Name, typ, false)
-			}
-			c.globals[name] = true
-			c.writeln(fmt.Sprintf("var %s: %s = undefined;", name, zigTypeOf(typ)))
+                case s.Let != nil:
+                        name := sanitizeName(s.Let.Name)
+                        var typ types.Type = types.AnyType{}
+                        if c.env != nil {
+                                if s.Let.Type != nil {
+                                        typ = c.resolveTypeRef(s.Let.Type)
+                                } else if s.Let.Value != nil {
+                                        typ = c.inferExprType(s.Let.Value)
+                                } else if old, err := c.env.GetVar(s.Let.Name); err == nil {
+                                        typ = old
+                                }
+                                c.env.SetVar(s.Let.Name, typ, false)
+                        }
+                        if s.Let.Value != nil && isFunExpr(s.Let.Value) {
+                                v, err := c.compileExpr(s.Let.Value, false)
+                                if err != nil {
+                                        return err
+                                }
+                                if s.Let.Type == nil || canInferType(s.Let.Value, typ) {
+                                        c.writeln(fmt.Sprintf("const %s = %s;", name, v))
+                                } else {
+                                        c.writeln(fmt.Sprintf("const %s: %s = %s;", name, zigTypeOf(typ), v))
+                                }
+                                c.constGlobals[name] = true
+                                continue
+                        }
+                        c.globals[name] = true
+                        c.writeln(fmt.Sprintf("var %s: %s = undefined;", name, zigTypeOf(typ)))
 		case s.Var != nil:
 			name := sanitizeName(s.Var.Name)
 			var typ types.Type = types.AnyType{}
@@ -456,28 +474,32 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 			c.writeln(fmt.Sprintf("var %s = std.AutoHashMap(%s, %s).init(std.heap.page_allocator);", name, keyT, valT))
 			return nil
 		}
-		val := "0"
-		if s.Let.Value != nil {
-			if f := fetchExprOnly(s.Let.Value); f != nil && typ != (types.AnyType{}) {
-				v, err := c.compileFetchExprTyped(f, typ)
-				if err != nil {
-					return err
-				}
-				val = v
-			} else {
-				v, err := c.compileExpr(s.Let.Value, false)
-				if err != nil {
-					return err
-				}
-				val = v
-			}
-		}
-		if s.Let.Type == nil && canInferType(s.Let.Value, typ) {
-			c.writeln(fmt.Sprintf("const %s = %s;", name, val))
-		} else {
-			c.writeln(fmt.Sprintf("const %s: %s = %s;", name, zigTypeOf(typ), val))
-		}
-		return nil
+                val := "0"
+                if s.Let.Value != nil {
+                        if f := fetchExprOnly(s.Let.Value); f != nil && typ != (types.AnyType{}) {
+                                v, err := c.compileFetchExprTyped(f, typ)
+                                if err != nil {
+                                        return err
+                                }
+                                val = v
+                        } else {
+                                v, err := c.compileExpr(s.Let.Value, false)
+                                if err != nil {
+                                        return err
+                                }
+                                val = v
+                        }
+                }
+                if isFunExpr(s.Let.Value) {
+                        c.writeln(fmt.Sprintf("const %s = %s;", name, val))
+                        return nil
+                }
+                if s.Let.Type == nil && canInferType(s.Let.Value, typ) {
+                        c.writeln(fmt.Sprintf("const %s = %s;", name, val))
+                } else {
+                        c.writeln(fmt.Sprintf("const %s: %s = %s;", name, zigTypeOf(typ), val))
+                }
+                return nil
 	case s.Var != nil:
 		return c.compileVar(s.Var, inFun)
 	case s.Import != nil:
@@ -2018,24 +2040,24 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 			}
 		}
 	}
-	body := indentBlock(sub.buf.String(), 1)
-	ret := "void"
-	if fn.Return != nil {
-		ret = c.zigType(fn.Return)
-	} else if fn.ExprBody != nil {
-		t := c.inferExprType(fn.ExprBody)
-		ret = zigTypeOf(t)
-	} else if n := len(fn.BlockBody); n > 0 {
-		last := fn.BlockBody[n-1]
-		if last.Return != nil {
-			t := c.inferExprType(last.Return.Value)
-			ret = zigTypeOf(t)
-		} else if last.Expr != nil {
-			t := c.inferExprType(last.Expr.Expr)
-			ret = zigTypeOf(t)
-		}
-	}
-	return fmt.Sprintf("fn (%s) %s {\n%s}", strings.Join(params, ", "), ret, body), nil
+        body := indentBlock(sub.buf.String(), 1)
+        ret := "void"
+        if fn.Return != nil {
+                ret = c.zigType(fn.Return)
+        } else if fn.ExprBody != nil {
+                t := c.inferExprType(fn.ExprBody)
+                ret = zigTypeOf(t)
+        } else if n := len(fn.BlockBody); n > 0 {
+                last := fn.BlockBody[n-1]
+                if last.Return != nil {
+                        t := c.inferExprType(last.Return.Value)
+                        ret = zigTypeOf(t)
+                } else if last.Expr != nil {
+                        t := c.inferExprType(last.Expr.Expr)
+                        ret = zigTypeOf(t)
+                }
+        }
+        return fmt.Sprintf("struct { fn call(%s) %s {\n%s} }.call", strings.Join(params, ", "), ret, body), nil
 }
 
 func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
@@ -2177,6 +2199,20 @@ func fetchExprOnly(e *parser.Expr) *parser.FetchExpr {
 		return nil
 	}
 	return u.Value.Target.Fetch
+}
+
+func isFunExpr(e *parser.Expr) bool {
+        if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+                return false
+        }
+        u := e.Binary.Left
+        if len(u.Ops) > 0 {
+                return false
+        }
+        if u.Value == nil || u.Value.Target == nil || len(u.Value.Ops) > 0 {
+                return false
+        }
+        return u.Value.Target.FunExpr != nil
 }
 
 func isSelfAppend(st *parser.AssignStmt) (*parser.Expr, bool) {

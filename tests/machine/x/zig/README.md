@@ -4,7 +4,7 @@ This directory contains Zig source code produced by the Mochi compiler tests. Ea
 
 ## Summary
 
-31/97 programs compile and run successfully.
+32/97 programs compile and run successfully.
 
 ## Checklist
 
@@ -28,7 +28,7 @@ This directory contains Zig source code produced by the Mochi compiler tests. Ea
 - [x] for_loop.mochi
 - [ ] for_map_collection.mochi
 - [x] fun_call.mochi
-- [ ] fun_expr_in_let.mochi
+- [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
 - [ ] group_by.mochi
 - [ ] group_by_conditional_sum.mochi
