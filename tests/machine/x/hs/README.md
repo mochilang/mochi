@@ -1,0 +1,104 @@
+# Haskell Machine-Compiled Programs
+
+44/97 programs compiled
+
+## Compiled
+- [x] append_builtin.mochi
+- [x] avg_builtin.mochi
+- [x] basic_compare.mochi
+- [x] binary_precedence.mochi
+- [x] bool_chain.mochi
+- [x] break_continue.mochi
+- [x] cast_string_to_int.mochi
+- [x] cast_struct.mochi
+- [x] closure.mochi
+- [x] count_builtin.mochi
+- [x] cross_join.mochi
+- [x] cross_join_filter.mochi
+- [x] cross_join_triple.mochi
+- [x] dataset_sort_take_limit.mochi
+- [x] dataset_where_filter.mochi
+- [x] exists_builtin.mochi
+- [x] for_list_collection.mochi
+- [x] for_loop.mochi
+- [x] for_map_collection.mochi
+- [x] fun_call.mochi
+- [x] fun_expr_in_let.mochi
+- [x] fun_three_args.mochi
+- [x] group_by.mochi
+- [x] group_by_conditional_sum.mochi
+- [x] group_by_having.mochi
+- [x] group_by_join.mochi
+- [x] group_by_left_join.mochi
+- [x] group_by_multi_join.mochi
+- [x] group_by_multi_join_sort.mochi
+- [x] group_by_sort.mochi
+- [x] group_items_iteration.mochi
+- [x] if_else.mochi
+- [x] if_then_else.mochi
+- [x] if_then_else_nested.mochi
+- [x] in_operator.mochi
+- [x] in_operator_extended.mochi
+- [x] inner_join.mochi
+- [x] join_multi.mochi
+- [x] json_builtin.mochi
+- [x] left_join.mochi
+- [x] left_join_multi.mochi
+- [x] len_builtin.mochi
+- [x] len_map.mochi
+- [x] len_string.mochi
+
+## Missing
+- [ ] let_and_print.mochi
+- [ ] list_assign.mochi
+- [ ] list_index.mochi
+- [ ] list_nested_assign.mochi
+- [ ] list_set_ops.mochi
+- [ ] load_yaml.mochi
+- [ ] map_assign.mochi
+- [ ] map_in_operator.mochi
+- [ ] map_index.mochi
+- [ ] map_int_key.mochi
+- [ ] map_literal_dynamic.mochi
+- [ ] map_membership.mochi
+- [ ] map_nested_assign.mochi
+- [ ] match_expr.mochi
+- [ ] match_full.mochi
+- [ ] math_ops.mochi
+- [ ] membership.mochi
+- [ ] min_max_builtin.mochi
+- [ ] nested_function.mochi
+- [ ] order_by_map.mochi
+- [ ] outer_join.mochi
+- [ ] partial_application.mochi
+- [ ] print_hello.mochi
+- [ ] pure_fold.mochi
+- [ ] pure_global_fold.mochi
+- [ ] query_sum_select.mochi
+- [ ] record_assign.mochi
+- [ ] right_join.mochi
+- [ ] save_jsonl_stdout.mochi
+- [ ] short_circuit.mochi
+- [ ] slice.mochi
+- [ ] sort_stable.mochi
+- [ ] str_builtin.mochi
+- [ ] string_compare.mochi
+- [ ] string_concat.mochi
+- [ ] string_contains.mochi
+- [ ] string_in_operator.mochi
+- [ ] string_index.mochi
+- [ ] string_prefix_slice.mochi
+- [ ] substring_builtin.mochi
+- [ ] sum_builtin.mochi
+- [ ] tail_recursion.mochi
+- [ ] test_block.mochi
+- [ ] tree_sum.mochi
+- [ ] two-sum.mochi
+- [ ] typed_let.mochi
+- [ ] typed_var.mochi
+- [ ] unary_neg.mochi
+- [ ] update_stmt.mochi
+- [ ] user_type_literal.mochi
+- [ ] values_builtin.mochi
+- [ ] var_assignment.mochi
+- [ ] while_loop.mochi

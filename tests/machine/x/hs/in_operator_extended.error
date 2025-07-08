@@ -1,0 +1,30 @@
+
+/workspace/mochi/tests/machine/x/hs/in_operator_extended.hs:119:21: error:
+    • Couldn't match type ‘Char’ with ‘[Char]’
+      Expected: [String]
+        Actual: String
+    • In the second argument of ‘elem’, namely ‘s’
+      In the first argument of ‘print’, namely ‘(elem "ell" s)’
+      In a stmt of a 'do' block: print (elem "ell" s)
+    |
+119 |   print (elem "ell" s)
+    |                     ^
+
+/workspace/mochi/tests/machine/x/hs/in_operator_extended.hs:120:21: error:
+    • Couldn't match type ‘Char’ with ‘[Char]’
+      Expected: [String]
+        Actual: String
+    • In the second argument of ‘elem’, namely ‘s’
+      In the first argument of ‘print’, namely ‘(elem "foo" s)’
+      In a stmt of a 'do' block: print (elem "foo" s)
+    |
+120 |   print (elem "foo" s)
+    |                     ^
+
+
+Context around line 119:
+  117|   print (Map.member "a" m)
+  118|   print (Map.member "b" m)
+  119|   print (elem "ell" s)
+  120|   print (elem "foo" s)
+  121| 

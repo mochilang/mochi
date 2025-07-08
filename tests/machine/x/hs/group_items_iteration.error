@@ -1,0 +1,14 @@
+
+/workspace/mochi/tests/machine/x/hs/group_items_iteration.hs:99:6: error:
+    parse error on input ‘=’
+   |
+99 | data = [Map.fromList [("tag", VString ("a")), ("val", VInt (1))], Map.fromList [("tag", VString ("a")), ("val", VInt (2))], Map.fromList [("tag", VString ("b")), ("val", VInt (3))]]
+   |      ^
+
+
+Context around line 99:
+   97| 
+   98| 
+   99| data = [Map.fromList [("tag", VString ("a")), ("val", VInt (1))], Map.fromList [("tag", VString ("a")), ("val", VInt (2))], Map.fromList [("tag", VString ("b")), ("val", VInt (3))]]
+  100| 
+  101| groups = [ g | g <- _group_by data (\d -> fromMaybe (error "missing") (Map.lookup "tag" d)), let g = g ]
