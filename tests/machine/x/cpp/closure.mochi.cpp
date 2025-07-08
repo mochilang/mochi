@@ -9,9 +9,14 @@ template<typename T> void print(const T& v){ std::cout << v; }
 void print(const std::vector<int>& v){ for(size_t i=0;i<v.size();++i){ if(i) std::cout<<' '; std::cout<<v[i]; }}
 void print(bool b){ std::cout<<(b?"true":"false"); }
 
+auto makeAdder(auto n) {
+    return [=](int x) {
+    return (x + n);
+};
+}
+
 int main() {
-    auto a = 10;
-    int b = 20;
-    print((a + b));
+    auto add10 = makeAdder(10);
+    print(add10(7));
     return 0;
 }

@@ -107,6 +107,18 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 
 func (c *Compiler) compileStmt(st *parser.Statement) error {
 	switch {
+	case st.Fun != nil:
+		lambda, err := c.compileLambda(st.Fun.Params, nil, st.Fun.Body)
+		if err != nil {
+			return err
+		}
+		c.writeIndent()
+		c.buf.WriteString("auto ")
+		c.buf.WriteString(st.Fun.Name)
+		c.buf.WriteString(" = ")
+		c.buf.WriteString(lambda)
+		c.buf.WriteString(";\n")
+		return nil
 	case st.Let != nil:
 		return c.compileLet(st.Let)
 	case st.Var != nil:
@@ -146,7 +158,12 @@ func (c *Compiler) compileStmt(st *parser.Statement) error {
 
 func (c *Compiler) compileLet(st *parser.LetStmt) error {
 	c.writeIndent()
-	c.buf.WriteString("auto ")
+	typ, err := c.compileType(st.Type)
+	if err != nil {
+		return err
+	}
+	c.buf.WriteString(typ)
+	c.buf.WriteByte(' ')
 	c.buf.WriteString(st.Name)
 	if st.Value != nil {
 		expr, err := c.compileExpr(st.Value)
@@ -155,6 +172,13 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 		}
 		c.buf.WriteString(" = ")
 		c.buf.WriteString(expr)
+	} else if st.Type != nil {
+		switch typ {
+		case "int":
+			c.buf.WriteString(" = 0")
+		case "std::string":
+			c.buf.WriteString(" = \"\"")
+		}
 	}
 	c.buf.WriteString(";\n")
 	return nil
@@ -162,7 +186,12 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 
 func (c *Compiler) compileVar(st *parser.VarStmt) error {
 	c.writeIndent()
-	c.buf.WriteString("auto ")
+	typ, err := c.compileType(st.Type)
+	if err != nil {
+		return err
+	}
+	c.buf.WriteString(typ)
+	c.buf.WriteByte(' ')
 	c.buf.WriteString(st.Name)
 	if st.Value != nil {
 		expr, err := c.compileExpr(st.Value)
@@ -171,6 +200,13 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 		}
 		c.buf.WriteString(" = ")
 		c.buf.WriteString(expr)
+	} else if st.Type != nil {
+		switch typ {
+		case "int":
+			c.buf.WriteString(" = 0")
+		case "std::string":
+			c.buf.WriteString(" = \"\"")
+		}
 	}
 	c.buf.WriteString(";\n")
 	return nil
@@ -419,6 +455,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	switch {
 	case p.Lit != nil:
 		return c.compileLiteral(p.Lit)
+	case p.FunExpr != nil:
+		return c.compileFunExpr(p.FunExpr)
 	case p.List != nil:
 		elems := []string{}
 		for _, e := range p.List.Elems {
@@ -617,4 +655,51 @@ func (c *Compiler) compileType(t *parser.TypeRef) (string, error) {
 		}
 	}
 	return "auto", nil
+}
+
+// compileFunExpr converts an anonymous function expression to a C++ lambda.
+func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
+	return c.compileLambda(fn.Params, fn.ExprBody, fn.BlockBody)
+}
+
+// compileLambda builds a C++ lambda from the given parameters and body.
+func (c *Compiler) compileLambda(params []*parser.Param, exprBody *parser.Expr, stmts []*parser.Statement) (string, error) {
+	var buf strings.Builder
+	buf.WriteString("[=](")
+	for i, p := range params {
+		if i > 0 {
+			buf.WriteString(", ")
+		}
+		typ, err := c.compileType(p.Type)
+		if err != nil {
+			return "", err
+		}
+		buf.WriteString(typ)
+		buf.WriteByte(' ')
+		buf.WriteString(p.Name)
+	}
+	buf.WriteString(") {")
+
+	sub := &Compiler{indent: 1, tmp: c.tmp}
+	if exprBody != nil {
+		e, err := sub.compileExpr(exprBody)
+		if err != nil {
+			return "", err
+		}
+		sub.writeln("return " + e + ";")
+	} else {
+		for _, st := range stmts {
+			if err := sub.compileStmt(st); err != nil {
+				return "", err
+			}
+		}
+	}
+	body := sub.buf.String()
+	if body != "" {
+		buf.WriteByte('\n')
+		buf.WriteString(body)
+	}
+	buf.WriteString("}")
+	c.tmp = sub.tmp
+	return buf.String(), nil
 }

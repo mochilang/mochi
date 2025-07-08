@@ -10,8 +10,9 @@ void print(const std::vector<int>& v){ for(size_t i=0;i<v.size();++i){ if(i) std
 void print(bool b){ std::cout<<(b?"true":"false"); }
 
 int main() {
-    auto a = 10;
-    int b = 20;
-    print((a + b));
+    auto square = [=](int x) {
+    return (x * x);
+};
+    print(square(6));
     return 0;
 }

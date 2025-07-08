@@ -1,8 +1,0 @@
-line 13: ../../../tests/machine/x/cpp/typed_var.mochi.cpp: In function ‘int main()’:
-../../../tests/machine/x/cpp/typed_var.mochi.cpp:13:5: error: declaration of ‘auto x’ has no initializer
-   13 |     auto x;
-      |     ^~~~
-
- 12 | int main() {
- 13 |     auto x;
- 14 |     print(x);
