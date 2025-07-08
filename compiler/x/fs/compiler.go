@@ -478,14 +478,18 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	switch call.Func {
 	case "print":
 		if len(args) == 1 {
-			// use %s when the argument looks like a string literal
 			if strings.HasPrefix(args[0], "\"") && strings.HasSuffix(args[0], "\"") {
 				return fmt.Sprintf("printfn \"%%s\" %s", args[0]), nil
 			}
 			if argAST != nil && argAST.Binary != nil && argAST.Binary.Left != nil && argAST.Binary.Left.Value != nil && argAST.Binary.Left.Value.Target != nil {
 				t := argAST.Binary.Left.Value.Target
-				if t.Call != nil && t.Call.Func == "append" {
-					return fmt.Sprintf("printfn \"%%s\" (String.concat \" \" (List.map string (%s)))", args[0]), nil
+				if t.Call != nil {
+					if t.Call.Func == "append" {
+						return fmt.Sprintf("printfn \"%%s\" (String.concat \" \" (List.map string (%s)))", args[0]), nil
+					}
+					if t.Call.Func == "values" {
+						return fmt.Sprintf("printfn \"%%s\" (String.concat \" \" (List.map string (%s)))", args[0]), nil
+					}
 				}
 				if t.List != nil {
 					return fmt.Sprintf("printfn \"%%s\" (String.concat \" \" (List.map string %s))", args[0]), nil
@@ -493,7 +497,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			}
 			return fmt.Sprintf("printfn \"%%A\" (%s)", args[0]), nil
 		}
-		return fmt.Sprintf("printfn \"%%A\" (%s)", strings.Join(args, ", ")), nil
+		conv := make([]string, len(args))
+		for i, a := range args {
+			conv[i] = fmt.Sprintf("string %s", a)
+		}
+		return fmt.Sprintf("printfn \"%%s\" (String.concat \" \" [%s])", strings.Join(conv, "; ")), nil
 	case "append":
 		if len(args) == 2 {
 			return fmt.Sprintf("%s @ [%s]", args[0], args[1]), nil
