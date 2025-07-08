@@ -61,6 +61,9 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.indent = 0
 	c.writeln("open System")
 	c.writeln("")
+	c.writeln("exception Break")
+	c.writeln("exception Continue")
+	c.writeln("")
 	for _, s := range p.Statements {
 		if err := c.compileStmt(s); err != nil {
 			return nil, err
@@ -104,6 +107,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileWhile(s.While)
 	case s.For != nil:
 		return c.compileFor(s.For)
+	case s.Break != nil:
+		return c.compileBreak(s.Break)
+	case s.Continue != nil:
+		return c.compileContinue(s.Continue)
 	case s.If != nil:
 		return c.compileIfStmt(s.If)
 	default:
@@ -183,7 +190,11 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 	if err != nil {
 		return err
 	}
+	c.writeln("try")
+	c.indent++
 	c.writeln(fmt.Sprintf("while %s do", cond))
+	c.indent++
+	c.writeln("try")
 	c.indent++
 	for _, st := range w.Body {
 		if err := c.compileStmt(st); err != nil {
@@ -191,6 +202,10 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 		}
 	}
 	c.indent--
+	c.writeln("with Continue -> ()")
+	c.indent--
+	c.indent--
+	c.writeln("with Break -> ()")
 	return nil
 }
 
@@ -204,10 +219,16 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		if err != nil {
 			return err
 		}
+		c.writeln("try")
+		c.indent++
 		c.writeln(fmt.Sprintf("for %s in %s .. %s do", f.Name, start, end))
 	} else {
+		c.writeln("try")
+		c.indent++
 		c.writeln(fmt.Sprintf("for %s in %s do", f.Name, start))
 	}
+	c.indent++
+	c.writeln("try")
 	c.indent++
 	for _, st := range f.Body {
 		if err := c.compileStmt(st); err != nil {
@@ -215,6 +236,10 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		}
 	}
 	c.indent--
+	c.writeln("with Continue -> ()")
+	c.indent--
+	c.indent--
+	c.writeln("with Break -> ()")
 	return nil
 }
 
@@ -255,6 +280,16 @@ func (c *Compiler) compileReturn(r *parser.ReturnStmt) error {
 		return err
 	}
 	c.writeln(val)
+	return nil
+}
+
+func (c *Compiler) compileBreak(_ *parser.BreakStmt) error {
+	c.writeln("raise Break")
+	return nil
+}
+
+func (c *Compiler) compileContinue(_ *parser.ContinueStmt) error {
+	c.writeln("raise Continue")
 	return nil
 }
 
@@ -338,15 +373,23 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if len(p.Ops) == 0 {
 		return val, nil
 	}
-	// Only support single index op
-	if len(p.Ops) == 1 && p.Ops[0].Index != nil && p.Ops[0].Index.Start != nil {
-		idx, err := c.compileExpr(p.Ops[0].Index.Start)
-		if err != nil {
-			return "", err
+	// handle sequence of ops but only support index and cast
+	for _, op := range p.Ops {
+		if op.Index != nil && op.Index.Start != nil {
+			idx, err := c.compileExpr(op.Index.Start)
+			if err != nil {
+				return "", err
+			}
+			val = fmt.Sprintf("%s.[%s]", val, idx)
+			continue
 		}
-		return fmt.Sprintf("%s.[%s]", val, idx), nil
+		if op.Cast != nil {
+			// ignore type casts
+			continue
+		}
+		return "", fmt.Errorf("unsupported postfix expression")
 	}
-	return "", fmt.Errorf("unsupported postfix expression")
+	return val, nil
 }
 
 func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
@@ -363,8 +406,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems[i] = s
 		}
 		return "[" + join(elems, "; ") + "]", nil
+	case p.Map != nil:
+		return "", fmt.Errorf("unsupported map literal")
+	case p.Struct != nil:
+		return c.compileStruct(p.Struct)
 	case p.Call != nil:
 		return c.compileCall(p.Call)
+	case p.Query != nil:
+		return c.compileQuery(p.Query)
 	case p.Selector != nil:
 		name := p.Selector.Root
 		for _, t := range p.Selector.Tail {
@@ -435,6 +484,9 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) == 2 {
 			return fmt.Sprintf("List.contains %s %s", args[1], args[0]), nil
 		}
+		if len(args) == 1 {
+			return fmt.Sprintf("not (List.isEmpty %s)", args[0]), nil
+		}
 	case "len":
 		if len(args) == 1 {
 			if strings.HasPrefix(args[0], "\"") {
@@ -494,6 +546,94 @@ func (c *Compiler) compileFunExpr(f *parser.FunExpr) (string, error) {
 		return fmt.Sprintf("fun %s -> %s", strings.Join(params, " "), body), nil
 	}
 	return "fun _ -> ()", nil
+}
+
+func (c *Compiler) compileStruct(s *parser.StructLiteral) (string, error) {
+	fields := make([]string, len(s.Fields))
+	for i, f := range s.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return "", err
+		}
+		fields[i] = fmt.Sprintf("%s = %s", f.Name, v)
+	}
+	if s.Name != "" {
+		return fmt.Sprintf("{ %s }", strings.Join(fields, "; ")), nil
+	}
+	return fmt.Sprintf("{| %s |}", strings.Join(fields, "; ")), nil
+}
+
+func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	loops := []string{fmt.Sprintf("for %s in %s do", q.Var, src)}
+	for _, fr := range q.Froms {
+		s, err := c.compileExpr(fr.Src)
+		if err != nil {
+			return "", err
+		}
+		loops = append(loops, fmt.Sprintf("for %s in %s do", fr.Var, s))
+	}
+	var cond string
+	if q.Where != nil {
+		cnd, err := c.compileExpr(q.Where)
+		if err != nil {
+			return "", err
+		}
+		cond = fmt.Sprintf("if %s then ", cnd)
+	}
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		return "", err
+	}
+	var b strings.Builder
+	b.WriteString("[ ")
+	for i, l := range loops {
+		if i > 0 {
+			b.WriteByte(' ')
+		}
+		b.WriteString(l)
+	}
+	if cond != "" {
+		b.WriteByte(' ')
+		b.WriteString(cond)
+	}
+	b.WriteString("yield ")
+	b.WriteString(sel)
+	b.WriteString(" ]")
+	expr := b.String()
+	if q.Sort != nil {
+		s, err := c.compileExpr(q.Sort)
+		if err != nil {
+			return "", err
+		}
+		if strings.HasPrefix(s, "-") {
+			s = strings.TrimPrefix(s, "-")
+			expr = fmt.Sprintf("%s |> List.sortByDescending (fun _ -> %s)", expr, s)
+		} else {
+			expr = fmt.Sprintf("%s |> List.sortBy (fun _ -> %s)", expr, s)
+		}
+	}
+	if q.Skip != nil {
+		sk, err := c.compileExpr(q.Skip)
+		if err != nil {
+			return "", err
+		}
+		expr = fmt.Sprintf("%s |> List.skip %s", expr, sk)
+	}
+	if q.Take != nil {
+		tk, err := c.compileExpr(q.Take)
+		if err != nil {
+			return "", err
+		}
+		expr = fmt.Sprintf("%s |> List.take %s", expr, tk)
+	}
+	if q.Distinct {
+		expr = fmt.Sprintf("%s |> List.distinct", expr)
+	}
+	return expr, nil
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) string {
