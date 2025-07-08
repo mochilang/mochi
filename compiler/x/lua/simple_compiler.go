@@ -1,0 +1,237 @@
+//go:build slow
+
+package luacode
+
+import (
+	"bytes"
+	"fmt"
+	"strings"
+
+	"mochi/parser"
+	"mochi/types"
+)
+
+// Compiler translates a small subset of Mochi into Lua.
+type Compiler struct {
+	buf    bytes.Buffer
+	indent int
+	used   map[string]bool
+}
+
+// New creates a new Compiler.
+func New(_ *types.Env) *Compiler { return &Compiler{used: make(map[string]bool)} }
+
+func (c *Compiler) writeln(s string) {
+	for i := 0; i < c.indent; i++ {
+		c.buf.WriteByte('\t')
+	}
+	c.buf.WriteString(s)
+	c.buf.WriteByte('\n')
+}
+
+// Compile converts the parsed program into Lua code.
+func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
+	c.buf.Reset()
+	c.indent = 0
+	c.used = make(map[string]bool)
+	for _, st := range p.Statements {
+		if err := c.compileStmt(st); err != nil {
+			return nil, err
+		}
+	}
+	var out bytes.Buffer
+	if c.used["append"] {
+		out.WriteString("local function append(lst, v)\n")
+		out.WriteString("\tlocal out = {}\n")
+		out.WriteString("\tfor i=1,#lst do out[#out+1]=lst[i] end\n")
+		out.WriteString("\tout[#out+1]=v\n")
+		out.WriteString("\treturn out\nend\n\n")
+	}
+	if c.used["avg"] {
+		out.WriteString("local function avg(lst)\n")
+		out.WriteString("\tlocal sum = 0\n")
+		out.WriteString("\tfor _, v in ipairs(lst) do sum = sum + v end\n")
+		out.WriteString("\treturn sum / #lst\nend\n\n")
+	}
+	if c.used["print_value"] {
+		out.WriteString("local function print_value(v)\n")
+		out.WriteString("\tif v == nil then\n")
+		out.WriteString("\t\tprint('<nil>')\n")
+		out.WriteString("\t\treturn\n")
+		out.WriteString("\tend\n")
+		out.WriteString("\tif type(v)=='number' and v == math.floor(v) then\n")
+		out.WriteString("\t\tprint(math.floor(v))\n")
+		out.WriteString("\t\treturn\n")
+		out.WriteString("\tend\n")
+		out.WriteString("\tif type(v)=='table' then\n")
+		out.WriteString("\t\tfor i,x in ipairs(v) do\n")
+		out.WriteString("\t\t\tio.write(x)\n")
+		out.WriteString("\t\t\tif i < #v then io.write(' ') end\n")
+		out.WriteString("\t\tend\n")
+		out.WriteString("\t\tio.write('\\n')\n")
+		out.WriteString("\telse\n")
+		out.WriteString("\t\tprint(v)\n")
+		out.WriteString("\tend\nend\n\n")
+	}
+	out.Write(c.buf.Bytes())
+	return out.Bytes(), nil
+}
+
+func (c *Compiler) compileStmt(s *parser.Statement) error {
+	switch {
+	case s.Let != nil:
+		val, err := c.compileExpr(s.Let.Value)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("local %s = %s", s.Let.Name, val))
+	case s.Fun != nil:
+		params := make([]string, len(s.Fun.Params))
+		for i, p := range s.Fun.Params {
+			params[i] = p.Name
+		}
+		c.writeln(fmt.Sprintf("local function %s(%s)", s.Fun.Name, strings.Join(params, ", ")))
+		c.indent++
+		for _, st := range s.Fun.Body {
+			if err := c.compileStmt(st); err != nil {
+				return err
+			}
+		}
+		c.indent--
+		c.writeln("end")
+	case s.Return != nil:
+		val, err := c.compileExpr(s.Return.Value)
+		if err != nil {
+			return err
+		}
+		c.writeln("return " + val)
+	case s.Expr != nil:
+		val, err := c.compileExpr(s.Expr.Expr)
+		if err != nil {
+			return err
+		}
+		c.writeln(val)
+	default:
+		return fmt.Errorf("unsupported statement at line %d", s.Pos.Line)
+	}
+	return nil
+}
+
+func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
+	if e == nil {
+		return "nil", nil
+	}
+	left, err := c.compileUnary(e.Binary.Left)
+	if err != nil {
+		return "", err
+	}
+	cur := left
+	for _, op := range e.Binary.Right {
+		right, err := c.compilePostfix(op.Right)
+		if err != nil {
+			return "", err
+		}
+		switch op.Op {
+		case "+", "-", "*", "/", "<", ">", "<=", ">=", "==", "!=":
+			cur = fmt.Sprintf("(%s %s %s)", cur, op.Op, right)
+		case "&&":
+			cur = fmt.Sprintf("(%s and %s)", cur, right)
+		case "||":
+			cur = fmt.Sprintf("(%s or %s)", cur, right)
+		default:
+			return "", fmt.Errorf("unsupported operator %s", op.Op)
+		}
+	}
+	return cur, nil
+}
+
+func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
+	v, err := c.compilePostfix(u.Value)
+	if err != nil {
+		return "", err
+	}
+	for i := len(u.Ops) - 1; i >= 0; i-- {
+		op := u.Ops[i]
+		if op == "-" {
+			v = fmt.Sprintf("(-%s)", v)
+		} else if op == "!" {
+			v = fmt.Sprintf("not %s", v)
+		}
+	}
+	return v, nil
+}
+
+func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
+	if len(p.Ops) > 0 {
+		return "", fmt.Errorf("postfix operations not supported")
+	}
+	return c.compilePrimary(p.Target)
+}
+
+func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
+	switch {
+	case p.Lit != nil:
+		if p.Lit.Int != nil {
+			return fmt.Sprintf("%d", *p.Lit.Int), nil
+		}
+		if p.Lit.Float != nil {
+			return fmt.Sprintf("%g", *p.Lit.Float), nil
+		}
+		if p.Lit.Bool != nil {
+			if bool(*p.Lit.Bool) {
+				return "true", nil
+			}
+			return "false", nil
+		}
+		if p.Lit.Str != nil {
+			return fmt.Sprintf("%q", *p.Lit.Str), nil
+		}
+		if p.Lit.Null {
+			return "nil", nil
+		}
+		return "nil", nil
+	case p.List != nil:
+		elems := make([]string, len(p.List.Elems))
+		for i, e := range p.List.Elems {
+			s, err := c.compileExpr(e)
+			if err != nil {
+				return "", err
+			}
+			elems[i] = s
+		}
+		return "{" + strings.Join(elems, ", ") + "}", nil
+	case p.Call != nil:
+		args := make([]string, len(p.Call.Args))
+		for i, a := range p.Call.Args {
+			s, err := c.compileExpr(a)
+			if err != nil {
+				return "", err
+			}
+			args[i] = s
+		}
+		name := p.Call.Func
+		argStr := strings.Join(args, ", ")
+		switch name {
+		case "print":
+			c.used["print_value"] = true
+			return fmt.Sprintf("print_value(%s)", argStr), nil
+		case "append":
+			c.used["append"] = true
+			return fmt.Sprintf("append(%s)", argStr), nil
+		case "avg":
+			c.used["avg"] = true
+			return fmt.Sprintf("avg(%s)", argStr), nil
+		default:
+			return fmt.Sprintf("%s(%s)", name, argStr), nil
+		}
+	case p.Selector != nil:
+		if len(p.Selector.Tail) == 0 {
+			return p.Selector.Root, nil
+		}
+		return "", fmt.Errorf("field access not supported")
+	default:
+		return "", fmt.Errorf("unsupported expression at line %d", p.Pos.Line)
+	}
+}
+
+func init() {}
