@@ -22,6 +22,7 @@ type Compiler struct {
 	buf    bytes.Buffer
 	indent int
 	useIn  bool
+	tmp    int
 }
 
 // New creates a new Dart compiler instance.
@@ -168,7 +169,7 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 
 func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 	target := a.Name
-	for _, idx := range a.Index {
+	for i, idx := range a.Index {
 		if idx.Colon != nil || idx.Colon2 != nil || idx.End != nil || idx.Step != nil {
 			return fmt.Errorf("slice assignment not supported")
 		}
@@ -179,7 +180,11 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 		if err != nil {
 			return err
 		}
-		target += fmt.Sprintf("[%s]", expr)
+		if i < len(a.Index)-1 || len(a.Field) > 0 {
+			target = fmt.Sprintf("(%s[%s] as Map)", target, expr)
+		} else {
+			target += fmt.Sprintf("[%s]", expr)
+		}
 	}
 	for _, f := range a.Field {
 		target += "." + f.Name
@@ -323,11 +328,39 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		if op.Op == "in" {
+		cur := res
+		switch op.Op {
+		case "in":
 			c.useIn = true
 			res = fmt.Sprintf("_in(%s, %s)", res, r)
-		} else {
-			res = fmt.Sprintf("%s %s %s", res, op.Op, r)
+		case "union":
+			if op.All {
+				res = fmt.Sprintf("List.from(%s)..addAll(%s)", res, r)
+			} else {
+				res = fmt.Sprintf("{...%s, ...%s}.toList()", res, r)
+			}
+		case "except":
+			res = fmt.Sprintf("List.from(%s)..removeWhere((x) => %s.contains(x))", res, r)
+		case "intersect":
+			res = fmt.Sprintf("%s.where((x) => %s.contains(x)).toList()", res, r)
+		default:
+			// string comparison
+			if (op.Op == "<" || op.Op == "<=" || op.Op == ">" || op.Op == ">=") &&
+				strings.HasPrefix(cur, "'") && strings.HasPrefix(r, "'") {
+				cmp := fmt.Sprintf("%s.compareTo(%s)", cur, r)
+				switch op.Op {
+				case "<":
+					res = fmt.Sprintf("%s < 0", cmp)
+				case "<=":
+					res = fmt.Sprintf("%s <= 0", cmp)
+				case ">":
+					res = fmt.Sprintf("%s > 0", cmp)
+				case ">=":
+					res = fmt.Sprintf("%s >= 0", cmp)
+				}
+			} else {
+				res = fmt.Sprintf("%s %s %s", res, op.Op, r)
+			}
 		}
 	}
 	return res, nil
@@ -353,18 +386,36 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		switch {
 		case op.Index != nil:
 			if op.Index.Colon != nil || op.Index.Colon2 != nil || op.Index.End != nil || op.Index.Step != nil {
-				return "", fmt.Errorf("slices not supported")
+				if op.Index.Step != nil || op.Index.Colon2 != nil {
+					return "", fmt.Errorf("slices not supported")
+				}
+				start := "0"
+				if op.Index.Start != nil {
+					start, err = c.compileExpr(op.Index.Start)
+					if err != nil {
+						return "", err
+					}
+				}
+				end := fmt.Sprintf("%s.length", val)
+				if op.Index.End != nil {
+					end, err = c.compileExpr(op.Index.End)
+					if err != nil {
+						return "", err
+					}
+				}
+				val = fmt.Sprintf("((%s is String) ? %s.substring(%s, %s) : (%s as List).sublist(%s, %s))", val, val, start, end, val, start, end)
+			} else {
+				if op.Index.Start == nil {
+					return "", fmt.Errorf("missing index expression")
+				}
+				idx, err := c.compileExpr(op.Index.Start)
+				if err != nil {
+					return "", err
+				}
+				val = fmt.Sprintf("%s[%s]", val, idx)
 			}
-			if op.Index.Start == nil {
-				return "", fmt.Errorf("missing index expression")
-			}
-			idx, err := c.compileExpr(op.Index.Start)
-			if err != nil {
-				return "", err
-			}
-			val = fmt.Sprintf("%s[%s]", val, idx)
 		case op.Field != nil:
-			val += "." + op.Field.Name
+			val += fmt.Sprintf("['%s']", op.Field.Name)
 		case op.Call != nil:
 			args := make([]string, len(op.Call.Args))
 			for i, a := range op.Call.Args {
@@ -411,7 +462,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Map != nil:
 		items := make([]string, len(p.Map.Items))
 		for i, m := range p.Map.Items {
-			k, err := c.compileExpr(m.Key)
+			k, err := c.compileMapKey(m.Key)
 			if err != nil {
 				return "", err
 			}
@@ -434,6 +485,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileFunExpr(p.FunExpr)
 	case p.Call != nil:
 		return c.compileCall(p.Call)
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
 	case p.Group != nil:
 		e, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -484,6 +537,100 @@ func (c *Compiler) compileIfExpr(ix *parser.IfExpr) (string, error) {
 		}
 	}
 	return fmt.Sprintf("(%s ? %s : %s)", cond, thenExpr, elseCode), nil
+}
+
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	var b bytes.Buffer
+	tmp := fmt.Sprintf("_q%d", c.tmp)
+	c.tmp++
+
+	w := func(s string) {
+		b.WriteString(s)
+	}
+
+	w("(() {\n")
+	w(fmt.Sprintf("  var %s = <dynamic>[];\n", tmp))
+
+	loops := []string{fmt.Sprintf("var %s in %s", q.Var, c.mustExpr(q.Source))}
+	for _, f := range q.Froms {
+		loops = append(loops, fmt.Sprintf("var %s in %s", f.Var, c.mustExpr(f.Src)))
+	}
+
+	for i, loop := range loops {
+		w(strings.Repeat("  ", i+1) + "for (" + loop + ") {\n")
+	}
+
+	if q.Where != nil {
+		cond := c.mustExpr(q.Where)
+		w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("if (!(%s)) continue;\n", cond))
+	}
+
+	sel := c.mustExpr(q.Select)
+	if q.Sort != nil {
+		key := c.mustExpr(q.Sort)
+		w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("%s.add([%s, %s]);\n", tmp, key, sel))
+	} else {
+		w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("%s.add(%s);\n", tmp, sel))
+	}
+
+	for i := len(loops) - 1; i >= 0; i-- {
+		w(strings.Repeat("  ", i+1) + "}\n")
+	}
+
+	if q.Sort != nil {
+		w(fmt.Sprintf("  %s.sort((a,b) => (a[0] as Comparable).compareTo(b[0]));\n", tmp))
+		w(fmt.Sprintf("  %s = [for (var x in %s) x[1]];\n", tmp, tmp))
+	}
+	if q.Skip != nil || q.Take != nil {
+		start := "0"
+		if q.Skip != nil {
+			start = c.mustExpr(q.Skip)
+		}
+		end := fmt.Sprintf("%s.length", tmp)
+		if q.Take != nil {
+			end = c.mustExpr(q.Take)
+			if q.Skip != nil {
+				end = fmt.Sprintf("(%s)+(%s)", start, end)
+			}
+		}
+		w(fmt.Sprintf("  %s = %s.sublist(%s, %s);\n", tmp, tmp, start, end))
+	}
+	if q.Distinct {
+		w(fmt.Sprintf("  %s = %s.toSet().toList();\n", tmp, tmp))
+	}
+	w(fmt.Sprintf("  return %s;\n", tmp))
+	w("})()")
+	return b.String(), nil
+}
+
+func (c *Compiler) mustExpr(e *parser.Expr) string {
+	s, err := c.compileExpr(e)
+	if err != nil {
+		return "null"
+	}
+	return s
+}
+
+func (c *Compiler) compileMapKey(e *parser.Expr) (string, error) {
+	if name, ok := c.simpleIdentifier(e); ok {
+		return fmt.Sprintf("'%s'", name), nil
+	}
+	return c.compileExpr(e)
+}
+
+func (c *Compiler) simpleIdentifier(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) > 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Selector == nil || len(p.Target.Selector.Tail) > 0 {
+		return "", false
+	}
+	return p.Target.Selector.Root, true
 }
 
 func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
@@ -608,6 +755,28 @@ func dartType(t *parser.TypeRef) string {
 		}
 		return *t.Simple
 	}
+	if t.Generic != nil {
+		name := t.Generic.Name
+		if name == "list" && len(t.Generic.Args) == 1 {
+			elem := dartType(t.Generic.Args[0])
+			if elem == "" {
+				elem = "dynamic"
+			}
+			return fmt.Sprintf("List<%s>", elem)
+		}
+		if name == "map" && len(t.Generic.Args) == 2 {
+			k := dartType(t.Generic.Args[0])
+			if k == "" {
+				k = "dynamic"
+			}
+			v := dartType(t.Generic.Args[1])
+			if v == "" {
+				v = "dynamic"
+			}
+			return fmt.Sprintf("Map<%s, %s>", k, v)
+		}
+		return name
+	}
 	return ""
 }
 
@@ -622,6 +791,12 @@ func defaultValue(typ string) string {
 	case "bool":
 		return "false"
 	default:
+		if strings.HasPrefix(typ, "List<") {
+			return "[]"
+		}
+		if strings.HasPrefix(typ, "Map<") {
+			return "{}"
+		}
 		return "null"
 	}
 }

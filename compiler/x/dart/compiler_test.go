@@ -86,6 +86,9 @@ func writeCompileError(dir, name, file string, output []byte, err error) {
 		if end > len(lines) {
 			end = len(lines)
 		}
+		if start > len(lines) {
+			start = len(lines)
+		}
 		ctx := strings.Join(lines[start:end], "\n")
 		msg = fmt.Sprintf("line %d: %v\n%s", line, err, ctx)
 	}
