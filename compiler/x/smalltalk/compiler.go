@@ -99,6 +99,11 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileWhile(s.While)
 	case s.For != nil:
 		return c.compileFor(s.For)
+	case s.Type != nil:
+		// type declarations have no runtime effect
+		return nil
+	case s.ExternType != nil:
+		return nil
 	case s.Return != nil:
 		expr, err := c.compileExpr(s.Return.Value)
 		if err != nil {
@@ -136,14 +141,41 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 }
 
 func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
-	if len(a.Index) > 0 || len(a.Field) > 0 {
-		return fmt.Errorf("complex assignment not supported")
-	}
 	val, err := c.compileExpr(a.Value)
 	if err != nil {
 		return err
 	}
-	c.writeln(fmt.Sprintf("%s := %s.", a.Name, val))
+
+	target := a.Name
+
+	// handle field access chain
+	if len(a.Field) > 0 {
+		for i, f := range a.Field {
+			if i == len(a.Field)-1 && len(a.Index) == 0 {
+				// final field assignment
+				c.writeln(fmt.Sprintf("%s at: %q put: %s.", target, f.Name, val))
+				return nil
+			}
+			target = fmt.Sprintf("%s at: %q", target, f.Name)
+		}
+	}
+
+	if len(a.Index) > 0 {
+		for i, idx := range a.Index {
+			idxVal, err := c.compileExpr(idx.Start)
+			if err != nil {
+				return err
+			}
+			idxStr := fmt.Sprintf("(%s) + 1", idxVal)
+			if i == len(a.Index)-1 {
+				c.writeln(fmt.Sprintf("%s at: %s put: %s.", target, idxStr, val))
+				return nil
+			}
+			target = fmt.Sprintf("%s at: %s", target, idxStr)
+		}
+	}
+
+	c.writeln(fmt.Sprintf("%s := %s.", target, val))
 	return nil
 }
 
