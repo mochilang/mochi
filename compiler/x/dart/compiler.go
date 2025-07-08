@@ -458,11 +458,13 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		return "", err
 	}
 	res := left
+	leftType := types.TypeOfUnary(b.Left, c.env)
 	for _, op := range b.Right {
 		r, err := c.compilePostfix(op.Right)
 		if err != nil {
 			return "", err
 		}
+		rightType := types.TypeOfPostfix(op.Right, c.env)
 		cur := res
 		switch op.Op {
 		case "in":
@@ -494,9 +496,20 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 					res = fmt.Sprintf("%s >= 0", cmp)
 				}
 			} else {
-				res = fmt.Sprintf("%s %s %s", res, op.Op, r)
+				l := res
+				rr := r
+				if isNumericOp(op.Op) {
+					if !isNumericType(leftType) {
+						l = fmt.Sprintf("(%s as num)", l)
+					}
+					if !isNumericType(rightType) {
+						rr = fmt.Sprintf("(%s as num)", rr)
+					}
+				}
+				res = fmt.Sprintf("%s %s %s", l, op.Op, rr)
 			}
 		}
+		leftType = types.ResultType(op.Op, leftType, rightType)
 	}
 	return res, nil
 }
@@ -506,8 +519,16 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	t := types.TypeOfPostfix(u.Value, c.env)
 	for i := len(u.Ops) - 1; i >= 0; i-- {
-		val = u.Ops[i] + val
+		op := u.Ops[i]
+		if op == "-" {
+			if !isNumericType(t) {
+				val = fmt.Sprintf("-(%s as num)", val)
+				continue
+			}
+		}
+		val = op + val
 	}
 	return val, nil
 }
@@ -1087,6 +1108,24 @@ func defaultValue(typ string) string {
 			return "{}"
 		}
 		return "null"
+	}
+}
+
+func isNumericType(t types.Type) bool {
+	switch t.(type) {
+	case types.IntType, types.Int64Type, types.FloatType:
+		return true
+	default:
+		return false
+	}
+}
+
+func isNumericOp(op string) bool {
+	switch op {
+	case "+", "-", "*", "/", "%", "<", "<=", ">", ">=":
+		return true
+	default:
+		return false
 	}
 }
 
