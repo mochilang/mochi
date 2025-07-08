@@ -464,6 +464,16 @@ const (
 		"    return res\n" +
 		"}\n"
 
+	helperUnionSimple = "func _unionSimple[T comparable](a, b []T) []T {\n" +
+		"    res := append([]T{}, a...)\n" +
+		"    for _, it := range b {\n" +
+		"        found := false\n" +
+		"        for _, v := range res { if v == it { found = true; break } }\n" +
+		"        if !found { res = append(res, it) }\n" +
+		"    }\n" +
+		"    return res\n" +
+		"}\n"
+
 	helperConcat = "func _concat[T any](a, b []T) []T {\n" +
 		"    res := make([]T, 0, len(a)+len(b))\n" +
 		"    res = append(res, a...)\n" +
@@ -517,6 +527,16 @@ const (
 		"    return res\n" +
 		"}\n"
 
+	helperExceptSimple = "func _exceptSimple[T comparable](a, b []T) []T {\n" +
+		"    res := []T{}\n" +
+		"    for _, x := range a {\n" +
+		"        keep := true\n" +
+		"        for _, y := range b { if x == y { keep = false; break } }\n" +
+		"        if keep { res = append(res, x) }\n" +
+		"    }\n" +
+		"    return res\n" +
+		"}\n"
+
 	helperIntersect = "func _intersect[T any](a, b []T) []T {\n" +
 		"    res := []T{}\n" +
 		"    for _, x := range a {\n" +
@@ -525,6 +545,20 @@ const (
 		"        if inB {\n" +
 		"            exists := false\n" +
 		"            for _, r := range res { if _equal(x, r) { exists = true; break } }\n" +
+		"            if !exists { res = append(res, x) }\n" +
+		"        }\n" +
+		"    }\n" +
+		"    return res\n" +
+		"}\n"
+
+	helperIntersectSimple = "func _intersectSimple[T comparable](a, b []T) []T {\n" +
+		"    res := []T{}\n" +
+		"    for _, x := range a {\n" +
+		"        inB := false\n" +
+		"        for _, y := range b { if x == y { inB = true; break } }\n" +
+		"        if inB {\n" +
+		"            exists := false\n" +
+		"            for _, r := range res { if r == x { exists = true; break } }\n" +
 		"            if !exists { res = append(res, x) }\n" +
 		"        }\n" +
 		"    }\n" +
@@ -783,47 +817,50 @@ const (
 )
 
 var helperMap = map[string]string{
-	"_indexString":   helperIndexString,
-	"_sliceString":   helperSliceString,
-	"_count":         helperCount,
-	"_exists":        helperExists,
-	"_avg":           helperAvg,
-	"_sum":           helperSum,
-	"_min":           helperMin,
-	"_max":           helperMax,
-	"_minOrdered":    helperMinOrdered,
-	"_maxOrdered":    helperMaxOrdered,
-	"_avgOrdered":    helperAvgOrdered,
-	"_sumOrdered":    helperSumOrdered,
-	"_firstSlice":    helperFirstSlice,
-	"_first":         helperFirst,
-	"_input":         helperInput,
-	"_genText":       helperGenText,
-	"_genEmbed":      helperGenEmbed,
-	"_genStruct":     helperGenStruct,
-	"_fetch":         helperFetch,
-	"_toAnyMap":      helperToAnyMap,
-	"_toAnySlice":    helperToAnySlice,
-	"_convSlice":     helperConvSlice,
-	"_contains":      helperContains,
-	"_union_all":     helperUnionAll,
-	"_union":         helperUnion,
-	"_concat":        helperConcat,
-	"_reduce":        helperReduce,
-	"_reverseSlice":  helperReverseSlice,
-	"_reverseString": helperReverseString,
-	"_lower":         helperLower,
-	"_upper":         helperUpper,
-	"_except":        helperExcept,
-	"_intersect":     helperIntersect,
-	"_cast":          helperCast,
-	"_convertMapAny": helperConvertMapAny,
-	"_equal":         helperEqual,
-	"_query":         helperQuery,
-	"_paginate":      helperPaginate,
-	"_load":          helperLoad,
-	"_save":          helperSave,
-	"_toMapSlice":    helperToMapSlice,
+	"_indexString":     helperIndexString,
+	"_sliceString":     helperSliceString,
+	"_count":           helperCount,
+	"_exists":          helperExists,
+	"_avg":             helperAvg,
+	"_sum":             helperSum,
+	"_min":             helperMin,
+	"_max":             helperMax,
+	"_minOrdered":      helperMinOrdered,
+	"_maxOrdered":      helperMaxOrdered,
+	"_avgOrdered":      helperAvgOrdered,
+	"_sumOrdered":      helperSumOrdered,
+	"_firstSlice":      helperFirstSlice,
+	"_first":           helperFirst,
+	"_input":           helperInput,
+	"_genText":         helperGenText,
+	"_genEmbed":        helperGenEmbed,
+	"_genStruct":       helperGenStruct,
+	"_fetch":           helperFetch,
+	"_toAnyMap":        helperToAnyMap,
+	"_toAnySlice":      helperToAnySlice,
+	"_convSlice":       helperConvSlice,
+	"_contains":        helperContains,
+	"_union_all":       helperUnionAll,
+	"_union":           helperUnion,
+	"_unionSimple":     helperUnionSimple,
+	"_concat":          helperConcat,
+	"_reduce":          helperReduce,
+	"_reverseSlice":    helperReverseSlice,
+	"_reverseString":   helperReverseString,
+	"_lower":           helperLower,
+	"_upper":           helperUpper,
+	"_except":          helperExcept,
+	"_exceptSimple":    helperExceptSimple,
+	"_intersect":       helperIntersect,
+	"_intersectSimple": helperIntersectSimple,
+	"_cast":            helperCast,
+	"_convertMapAny":   helperConvertMapAny,
+	"_equal":           helperEqual,
+	"_query":           helperQuery,
+	"_paginate":        helperPaginate,
+	"_load":            helperLoad,
+	"_save":            helperSave,
+	"_toMapSlice":      helperToMapSlice,
 }
 
 func (c *Compiler) use(name string) {

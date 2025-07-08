@@ -1710,6 +1710,21 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 				c.use("_convSlice")
 				right = fmt.Sprintf("_convSlice[%s,%s](%s)", goType(rt.Elem), goType(lt.Elem), right)
 			}
+			if isComparableSimple(lt.Elem) {
+				switch op {
+				case "union":
+					c.use("_unionSimple")
+					expr = fmt.Sprintf("_unionSimple[%s](%s, %s)", elemGo, left, right)
+				case "except":
+					c.use("_exceptSimple")
+					expr = fmt.Sprintf("_exceptSimple[%s](%s, %s)", elemGo, left, right)
+				case "intersect":
+					c.use("_intersectSimple")
+					expr = fmt.Sprintf("_intersectSimple[%s](%s, %s)", elemGo, left, right)
+				}
+				next = lt
+				return expr, next, nil
+			}
 		} else {
 			c.use("_toAnySlice")
 			if !isAny(lt.Elem) {
