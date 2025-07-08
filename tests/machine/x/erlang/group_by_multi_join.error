@@ -1,0 +1,4 @@
+line 1: unsupported expression at line 1
+   1: let nations = [
+   2:   { id: 1, name: "A" },
+   3:   { id: 2, name: "B" }

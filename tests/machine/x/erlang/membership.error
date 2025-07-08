@@ -1,0 +1,4 @@
+line 1: unsupported expression at line 1
+   1: let nums = [1, 2, 3]
+   2: print(2 in nums)
+   3: print(4 in nums)

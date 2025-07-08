@@ -1,0 +1,4 @@
+line 1: unsupported expression at line 1
+   1: var m = {"a": 1, "b": 2}
+   2: for k in m {
+   3:   print(k)

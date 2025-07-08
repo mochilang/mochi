@@ -1,0 +1,4 @@
+line 1: unsupported expression at line 1
+   1: let data = [
+   2:   {tag: "a", val: 1},
+   3:   {tag: "a", val: 2},

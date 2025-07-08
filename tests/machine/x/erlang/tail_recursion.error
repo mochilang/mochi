@@ -1,0 +1,4 @@
+line 1: unsupported statement at line 1
+   1: fun sum_rec(n: int, acc: int): int {
+   2:   if n == 0 {
+   3:     return acc

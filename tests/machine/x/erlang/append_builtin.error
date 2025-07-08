@@ -1,0 +1,4 @@
+line 1: unsupported expression at line 1
+   1: let a = [1,2]
+   2: print(append(a, 3))
+   3: 

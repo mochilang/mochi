@@ -1,0 +1,4 @@
+line 1: unsupported statement at line 1
+   1: for i in 1..4 {
+   2:   print(i)
+   3: }

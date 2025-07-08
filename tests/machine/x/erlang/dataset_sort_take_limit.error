@@ -1,0 +1,5 @@
+line 2: unsupported expression at line 2
+   1: // dataset-sort-take-limit.mochi
+   2: let products = [
+   3:   { name: "Laptop", price: 1500 },
+   4:   { name: "Smartphone", price: 900 },

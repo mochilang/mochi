@@ -1,0 +1,4 @@
+line 1: unsupported statement at line 1
+   1: fun sum3(a: int, b: int, c: int): int {
+   2:   return a + b + c
+   3: }

@@ -1,0 +1,9 @@
+exit status 127
+/workspace/mochi/tests/machine/x/erlang/string_compare.erl:6:29: syntax error before: '<='
+escript: There were compilation errors.
+
+   4: main(_) ->
+   5:     io:format("~p~n", [("a" < "b")]),
+   6:     io:format("~p~n", [("a" <= "a")]),
+   7:     io:format("~p~n", [("b" > "a")]),
+   8:     io:format("~p~n", [("b" >= "b")]).

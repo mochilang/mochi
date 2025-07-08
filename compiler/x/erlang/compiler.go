@@ -281,6 +281,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.refVar(p.Selector.Root), nil
 	case p.Call != nil:
 		return c.compileCall(p.Call)
+	case p.Group != nil:
+		expr, err := c.compileExpr(p.Group)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("(%s)", expr), nil
 	default:
 		return "", fmt.Errorf("unsupported expression at line %d", p.Pos.Line)
 	}
