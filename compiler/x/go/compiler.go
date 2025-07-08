@@ -27,6 +27,7 @@ type Compiler struct {
 	needsReflect  bool
 	needsStrconv  bool
 	needsStrings  bool
+	needsValues   bool
 	structTypes   map[string]bool
 	funSigs       map[string]*funSig
 }
@@ -48,6 +49,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.needsReflect = false
 	c.needsStrconv = false
 	c.needsStrings = false
+	c.needsValues = false
 	c.structTypes = make(map[string]bool)
 	c.funSigs = make(map[string]*funSig)
 
@@ -226,6 +228,21 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("return false")
 		c.indent--
 		c.writeln("}")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+
+	if c.needsValues {
+		c.writeln("func values(m map[string]int) []int {")
+		c.indent++
+		c.writeln("vals := make([]int, 0, len(m))")
+		c.writeln("for _, v := range m {")
+		c.indent++
+		c.writeln("vals = append(vals, v)")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return vals")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")
@@ -820,6 +837,17 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 		c.needsStrconv = true
 		return fmt.Sprintf("strconv.Itoa(%s)", args[0]), nil
+	case "values":
+		if len(args) != 1 {
+			return "", fmt.Errorf("values expects 1 arg")
+		}
+		c.needsValues = true
+		return fmt.Sprintf("values(%s)", args[0]), nil
+	case "exists":
+		if len(args) != 1 {
+			return "", fmt.Errorf("exists expects 1 arg")
+		}
+		return fmt.Sprintf("len(%s) > 0", args[0]), nil
 	default:
 		if sig, ok := c.funSigs[call.Func]; ok && len(args) < len(sig.params) {
 			return c.partialFunc(call.Func, sig, args)
