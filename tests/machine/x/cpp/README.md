@@ -4,17 +4,19 @@ This directory stores machine generated C++ translations of programs from `tests
 Each entry is compiled and executed during tests. If a program fails to compile or run,
 a `.error` file will contain the diagnostic details.
 
-Checklist of programs that currently compile and run (34/97):
+Checklist of programs that currently compile and run (39/97):
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
 - [x] binary_precedence
 - [x] bool_chain
 - [x] cast_string_to_int
+- [x] closure
 - [x] count_builtin
 - [x] for_list_collection
 - [x] for_loop
 - [x] fun_call
+- [x] fun_expr_in_let
 - [x] fun_three_args
 - [x] if_else
 - [x] len_builtin
@@ -28,6 +30,7 @@ Checklist of programs that currently compile and run (34/97):
 - [x] match_full
 - [x] math_ops
 - [x] min_max_builtin
+- [x] nested_function
 - [x] print_hello
 - [x] pure_fold
 - [x] short_circuit
@@ -35,6 +38,8 @@ Checklist of programs that currently compile and run (34/97):
 - [x] string_compare
 - [x] string_index
 - [x] tail_recursion
+- [x] typed_let
+- [x] typed_var
 - [x] two-sum
 - [x] unary_neg
 - [x] var_assignment
