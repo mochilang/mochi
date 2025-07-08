@@ -1,0 +1,4 @@
+cobc: exit status 1
+/workspace/mochi/tests/machine/x/cobol/string_concat.cob:7: error: 'literal "hello "' is not a numeric value
+/workspace/mochi/tests/machine/x/cobol/string_concat.cob:7: error: 'literal "world"' is not a numeric value
+

@@ -1,0 +1,4 @@
+unsupported expression at line 4
+
+let customers = [
+  { id: 1, name: "Alice" },

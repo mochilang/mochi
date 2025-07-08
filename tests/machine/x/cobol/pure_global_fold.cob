@@ -1,0 +1,16 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. PURE_GLOBAL_FOLD.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01 K PIC 9 VALUE 2.
+       01 INC_RES PIC 9 VALUE 0.
+       01 TMP PIC 9 VALUE 0.
+       PROCEDURE DIVISION.
+       PERFORM INC USING 3
+       DISPLAY INC_RES
+       STOP RUN.
+       
+       INC.
+           PROCEDURE DIVISION USING X.
+               COMPUTE INC_RES = X + K
+               EXIT.

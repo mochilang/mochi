@@ -1,0 +1,6 @@
+cobc: exit status 1
+/workspace/mochi/tests/machine/x/cobol/partial_application.cob:1: error: PROGRAM-ID header missing
+/workspace/mochi/tests/machine/x/cobol/partial_application.cob:1: error: PROCEDURE DIVISION header missing
+/workspace/mochi/tests/machine/x/cobol/partial_application.cob:1: error: syntax error, unexpected USING
+/workspace/mochi/tests/machine/x/cobol/partial_application.cob:1: error: PERFORM statement not terminated by END-PERFORM
+
