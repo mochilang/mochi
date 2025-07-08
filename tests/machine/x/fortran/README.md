@@ -5,6 +5,8 @@ compiler tests. Each Mochi program from `tests/vm/valid` is compiled to a
 Fortran `.f90` file. Successful runs have a corresponding `.out` file.
 If compilation or execution fails, an `.error` file is written.
 
+Compiled programs: 0/97
+
 Checklist:
 
 - [ ] append_builtin
