@@ -1,0 +1,32 @@
+line 0: compile: exit status 1
+error[E0308]: mismatched types
+ --> /workspace/mochi/tests/machine/x/rust/in_operator_extended.rs:4:34
+  |
+4 |     println!("{:?}", ys.contains(&1));
+  |                         -------- ^^ expected `&&{integer}`, found `&{integer}`
+  |                         |
+  |                         arguments to this method are incorrect
+  |
+  = note: expected reference `&&{integer}`
+             found reference `&{integer}`
+note: method defined here
+ --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/slice/mod.rs:2549:12
+
+error[E0308]: mismatched types
+ --> /workspace/mochi/tests/machine/x/rust/in_operator_extended.rs:5:34
+  |
+5 |     println!("{:?}", ys.contains(&2));
+  |                         -------- ^^ expected `&&{integer}`, found `&{integer}`
+  |                         |
+  |                         arguments to this method are incorrect
+  |
+  = note: expected reference `&&{integer}`
+             found reference `&{integer}`
+note: method defined here
+ --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/slice/mod.rs:2549:12
+
+error: aborting due to 2 previous errors
+
+For more information about this error, try `rustc --explain E0308`.
+
+fn main() {

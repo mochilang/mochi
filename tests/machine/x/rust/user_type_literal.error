@@ -1,0 +1,19 @@
+line 0: compile: exit status 1
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/machine/x/rust/user_type_literal.rs:10:44
+   |
+10 |     let book = Book { title: "Go", author: Person { name: "Bob", age: 42 } };
+   |                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `i32`, found `Person`
+
+error[E0610]: `i32` is a primitive type and therefore doesn't have fields
+  --> /workspace/mochi/tests/machine/x/rust/user_type_literal.rs:11:34
+   |
+11 |     println!("{:?}", book.author.name);
+   |                                  ^^^^
+
+error: aborting due to 2 previous errors
+
+Some errors have detailed explanations: E0308, E0610.
+For more information about an error, try `rustc --explain E0308`.
+
+fn main() {

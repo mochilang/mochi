@@ -1,0 +1,55 @@
+# Mochi to Rust Machine Outputs
+
+This directory stores machine generated Rust translations of programs from `tests/vm/valid`. Each entry is compiled and executed during tests. If a program fails to compile or run, a `.error` file contains the diagnostic details.
+
+Checklist of programs that currently compile and run (49/97):
+- [x] append_builtin
+- [x] avg_builtin
+- [x] basic_compare
+- [x] binary_precedence
+- [x] bool_chain
+- [x] break_continue
+- [x] cast_string_to_int
+- [x] cast_struct
+- [x] closure
+- [x] count_builtin
+- [x] for_list_collection
+- [x] for_loop
+- [x] for_map_collection
+- [x] fun_call
+- [x] fun_expr_in_let
+- [x] fun_three_args
+- [x] if_else
+- [x] if_then_else
+- [x] if_then_else_nested
+- [x] in_operator
+- [x] len_builtin
+- [x] len_map
+- [x] len_string
+- [x] let_and_print
+- [x] list_assign
+- [x] list_index
+- [x] list_nested_assign
+- [x] list_set_ops
+- [x] map_in_operator
+- [x] map_index
+- [x] map_literal_dynamic
+- [x] map_membership
+- [x] math_ops
+- [x] membership
+- [x] partial_application
+- [x] print_hello
+- [x] pure_fold
+- [x] short_circuit
+- [x] string_compare
+- [x] string_concat
+- [x] string_contains
+- [x] string_in_operator
+- [x] sum_builtin
+- [x] tail_recursion
+- [x] typed_let
+- [x] typed_var
+- [x] unary_neg
+- [x] var_assignment
+- [x] while_loop
+

@@ -1,0 +1,22 @@
+line 0: compile: exit status 1
+error[E0434]: can't capture dynamic environment in a fn item
+ --> /workspace/mochi/tests/machine/x/rust/pure_global_fold.rs:4:20
+  |
+4 |         return x + k;
+  |                    ^
+  |
+  = help: use the `|| { ... }` closure form instead
+
+warning: unused variable: `k`
+ --> /workspace/mochi/tests/machine/x/rust/pure_global_fold.rs:2:9
+  |
+2 |     let k = 2;
+  |         ^ help: if this is intentional, prefix it with an underscore: `_k`
+  |
+  = note: `#[warn(unused_variables)]` on by default
+
+error: aborting due to 1 previous error; 1 warning emitted
+
+For more information about this error, try `rustc --explain E0434`.
+
+fn main() {

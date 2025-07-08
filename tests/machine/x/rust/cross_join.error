@@ -1,0 +1,91 @@
+line 0: compile: exit status 1
+error[E0308]: mismatched types
+ --> /workspace/mochi/tests/machine/x/rust/cross_join.rs:2:110
+  |
+2 | ...:collections::HashMap::new(); m.insert("id", 1); m.insert("name", "Alice"); m }, { let mut m = std::collections::HashMap::new(); m.ins...
+  |                                  -              -     ------         ^^^^^^^ expected integer, found `&str`
+  |                                  |              |     |
+  |                                  |              |     arguments to this method are incorrect
+  |                                  |              this argument has type `{integer}`...
+  |                                  ... which causes `m` to have type `HashMap<&str, {integer}>`
+  |
+help: the return type of this call is `&'static str` due to the type of the argument passed
+ --> /workspace/mochi/tests/machine/x/rust/cross_join.rs:2:93
+  |
+2 | ...::new(); m.insert("id", 1); m.insert("name", "Alice"); m }, { let mut m = std::collections::HashMap::new(); m.insert("id", 2); m.inser...
+  |                                ^^^^^^^^^^^^^^^^^-------^
+  |                                                 |
+  |                                                 this argument influences the return type of `insert`
+note: method defined here
+ --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0308]: mismatched types
+ --> /workspace/mochi/tests/machine/x/rust/cross_join.rs:2:209
+  |
+2 | ...::collections::HashMap::new(); m.insert("id", 2); m.insert("name", "Bob"); m }, { let mut m = std::collections::HashMap::new(); m.inse...
+  |                                   -              -     ------         ^^^^^ expected integer, found `&str`
+  |                                   |              |     |
+  |                                   |              |     arguments to this method are incorrect
+  |                                   |              this argument has type `{integer}`...
+  |                                   ... which causes `m` to have type `HashMap<&str, {integer}>`
+  |
+help: the return type of this call is `&'static str` due to the type of the argument passed
+ --> /workspace/mochi/tests/machine/x/rust/cross_join.rs:2:192
+  |
+2 | ...p::new(); m.insert("id", 2); m.insert("name", "Bob"); m }, { let mut m = std::collections::HashMap::new(); m.insert("id", 3); m.insert...
+  |                                 ^^^^^^^^^^^^^^^^^-----^
+  |                                                  |
+  |                                                  this argument influences the return type of `insert`
+note: method defined here
+ --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0308]: mismatched types
+ --> /workspace/mochi/tests/machine/x/rust/cross_join.rs:2:306
+  |
+2 | ...collections::HashMap::new(); m.insert("id", 3); m.insert("name", "Charlie"); m }];
+  |                                 -              -     ------         ^^^^^^^^^ expected integer, found `&str`
+  |                                 |              |     |
+  |                                 |              |     arguments to this method are incorrect
+  |                                 |              this argument has type `{integer}`...
+  |                                 ... which causes `m` to have type `HashMap<&str, {integer}>`
+  |
+help: the return type of this call is `&'static str` due to the type of the argument passed
+ --> /workspace/mochi/tests/machine/x/rust/cross_join.rs:2:289
+  |
+2 | ...:new(); m.insert("id", 3); m.insert("name", "Charlie"); m }];
+  |                               ^^^^^^^^^^^^^^^^^---------^
+  |                                                |
+  |                                                this argument influences the return type of `insert`
+note: method defined here
+ --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0609]: no field `id` on type `&HashMap<&str, {integer}>`
+ --> /workspace/mochi/tests/machine/x/rust/cross_join.rs:4:167
+  |
+4 | ... = std::collections::HashMap::new(); m.insert("orderId", o.id); m.insert("orderCustomerId", o.customerId); m.insert("pairedCustomerNam...
+  |                                                               ^^ unknown field
+
+error[E0609]: no field `customerId` on type `&HashMap<&str, {integer}>`
+ --> /workspace/mochi/tests/machine/x/rust/cross_join.rs:4:202
+  |
+4 | ...insert("orderId", o.id); m.insert("orderCustomerId", o.customerId); m.insert("pairedCustomerName", c.name); m.insert("orderTotal", o.t...
+  |                                                           ^^^^^^^^^^ unknown field
+
+error[E0609]: no field `name` on type `&HashMap<&str, {integer}>`
+ --> /workspace/mochi/tests/machine/x/rust/cross_join.rs:4:248
+  |
+4 | ...tomerId", o.customerId); m.insert("pairedCustomerName", c.name); m.insert("orderTotal", o.total); m }); } } tmp1 };
+  |                                                              ^^^^ unknown field
+
+error[E0609]: no field `total` on type `&HashMap<&str, {integer}>`
+ --> /workspace/mochi/tests/machine/x/rust/cross_join.rs:4:280
+  |
+4 | ...("pairedCustomerName", c.name); m.insert("orderTotal", o.total); m }); } } tmp1 };
+  |                                                             ^^^^^ unknown field
+
+error: aborting due to 7 previous errors
+
+Some errors have detailed explanations: E0308, E0609.
+For more information about an error, try `rustc --explain E0308`.
+
+fn main() {

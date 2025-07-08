@@ -1,0 +1,35 @@
+line 0: compile: exit status 1
+warning: variable does not need to be mutable
+ --> /workspace/mochi/tests/machine/x/rust/map_nested_assign.rs:2:9
+  |
+2 |     let mut data = { let mut m = std::collections::HashMap::new(); m.insert("outer", { let mut m = std::collections::HashMap::new(); m.in...
+  |         ----^^^^
+  |         |
+  |         help: remove this `mut`
+  |
+  = note: `#[warn(unused_mut)]` on by default
+
+error[E0594]: cannot assign to data in an index of `HashMap<&str, i32>`
+ --> /workspace/mochi/tests/machine/x/rust/map_nested_assign.rs:3:5
+  |
+3 |     data["outer"]["inner"] = 2;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^ cannot assign
+  |
+  = help: trait `IndexMut` is required to modify indexed content, but it is not implemented for `HashMap<&str, i32>`
+help: use `.insert()` to insert a value into a `HashMap<&str, i32>`, `.get_mut()` to modify it, or the entry API for more flexibility
+  |
+3 -     data["outer"]["inner"] = 2;
+3 +     data["outer"].insert("inner", 2);
+  |
+3 -     data["outer"]["inner"] = 2;
+3 +     if let Some(val) = data["outer"].get_mut("inner") { *val = 2; };
+  |
+3 -     data["outer"]["inner"] = 2;
+3 +     let val = data["outer"].entry("inner").or_insert(2);
+  |
+
+error: aborting due to 1 previous error; 1 warning emitted
+
+For more information about this error, try `rustc --explain E0594`.
+
+fn main() {

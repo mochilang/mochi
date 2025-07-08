@@ -749,6 +749,17 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 		args[i] = s
 	}
+	if typ, err := c.env.GetVar(call.Func); err == nil {
+		if ft, ok := typ.(types.FuncType); ok && !ft.Variadic && len(args) < len(ft.Params) {
+			missing := len(ft.Params) - len(args)
+			params := make([]string, missing)
+			for i := range params {
+				params[i] = c.newTmp()
+			}
+			callArgs := append(append([]string{}, args...), params...)
+			return fmt.Sprintf("|%s| %s(%s)", strings.Join(params, ", "), call.Func, strings.Join(callArgs, ", ")), nil
+		}
+	}
 	switch call.Func {
 	case "print":
 		fmtStr := strings.TrimSpace(strings.Repeat("{:?} ", len(args)))
