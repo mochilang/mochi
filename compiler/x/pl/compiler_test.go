@@ -21,6 +21,9 @@ var supported = map[string]bool{
 	"var_assignment":      true,
 	"for_loop":            true,
 	"for_list_collection": true,
+	"append_builtin":      true,
+	"avg_builtin":         true,
+	"basic_compare":       true,
 }
 
 func TestPrologCompiler(t *testing.T) {

@@ -19,6 +19,18 @@ func New() *Compiler {
 	return &Compiler{vars: make(map[string]string)}
 }
 
+func (c *Compiler) newVar(base string) string {
+	name := sanitizeVar(base)
+	if _, ok := c.vars[base]; !ok {
+		c.vars[base] = name
+		return name
+	}
+	tmp := fmt.Sprintf("%s_%d", name, c.tmp)
+	c.tmp++
+	c.vars[base] = tmp
+	return tmp
+}
+
 func (c *Compiler) writeln(s string) {
 	for i := 0; i < c.indent; i++ {
 		c.buf.WriteString("    ")
@@ -64,23 +76,26 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		c.vars[s.Let.Name] = name
 	case s.Var != nil:
+		name := c.newVar(s.Var.Name)
+		if s.Var.Value == nil {
+			c.writeln(fmt.Sprintf("%s = _,", name))
+			return nil
+		}
 		val, arith, err := c.compileExpr(s.Var.Value)
 		if err != nil {
 			return err
 		}
-		name := sanitizeVar(s.Var.Name)
 		if arith {
 			c.writeln(fmt.Sprintf("%s is %s,", name, val))
 		} else {
 			c.writeln(fmt.Sprintf("%s = %s,", name, val))
 		}
-		c.vars[s.Var.Name] = name
 	case s.Assign != nil:
+		name := c.newVar(s.Assign.Name)
 		val, arith, err := c.compileExpr(s.Assign.Value)
 		if err != nil {
 			return err
 		}
-		name := c.lookupVar(s.Assign.Name)
 		if arith {
 			c.writeln(fmt.Sprintf("%s is %s,", name, val))
 		} else {
@@ -90,11 +105,21 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileFor(s.For)
 	case s.Expr != nil:
 		if call := getPrintCall(s.Expr.Expr); call != nil {
-			arg, _, err := c.compileExpr(call.Args[0])
+			arg, arith, err := c.compileExpr(call.Args[0])
 			if err != nil {
 				return err
 			}
-			c.writeln(fmt.Sprintf("writeln(%s),", arg))
+			if arith {
+				tmp := c.newTmp()
+				c.writeln(fmt.Sprintf("%s is %s,", tmp, arg))
+				c.writeln(fmt.Sprintf("writeln(%s),", tmp))
+			} else if isBoolExpr(arg) {
+				tmp := c.newTmp()
+				c.writeln(fmt.Sprintf("(%s -> %s = true ; %s = false),", arg, tmp, tmp))
+				c.writeln(fmt.Sprintf("writeln(%s),", tmp))
+			} else {
+				c.writeln(fmt.Sprintf("writeln(%s),", arg))
+			}
 			return nil
 		}
 		return fmt.Errorf("unsupported expression statement")
@@ -166,10 +191,13 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, bool, error) {
 			res = fmt.Sprintf("(%s mod %s)", res, rhs)
 		} else if op.Op == "==" {
 			res = fmt.Sprintf("(%s =:= %s)", res, rhs)
+			arith = false
 		} else if op.Op == "!=" {
 			res = fmt.Sprintf("(%s =\\= %s)", res, rhs)
+			arith = false
 		} else if op.Op == "<" || op.Op == "<=" || op.Op == ">" || op.Op == ">=" {
 			res = fmt.Sprintf("(%s %s %s)", res, op.Op, rhs)
+			arith = false
 		} else if op.Op == "&&" {
 			res = fmt.Sprintf("(%s, %s)", res, rhs)
 			arith = false
@@ -230,8 +258,48 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, bool, error) {
 			elems = append(elems, s)
 		}
 		return "[" + strings.Join(elems, ", ") + "]", false, nil
+	case p.Call != nil:
+		return c.compileCall(p.Call)
 	}
 	return "", false, fmt.Errorf("unsupported primary")
+}
+
+func (c *Compiler) compileCall(call *parser.CallExpr) (string, bool, error) {
+	switch call.Func {
+	case "append":
+		if len(call.Args) != 2 {
+			return "", false, fmt.Errorf("append expects 2 args")
+		}
+		list, _, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", false, err
+		}
+		elem, _, err := c.compileExpr(call.Args[1])
+		if err != nil {
+			return "", false, err
+		}
+		tmp := c.newTmp()
+		c.writeln(fmt.Sprintf("append(%s, [%s], %s),", list, elem, tmp))
+		return tmp, false, nil
+	case "avg":
+		if len(call.Args) != 1 {
+			return "", false, fmt.Errorf("avg expects 1 arg")
+		}
+		arg, _, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", false, err
+		}
+		s := c.newTmp()
+		n := c.newTmp()
+		tmp := c.newTmp()
+		c.writeln(fmt.Sprintf("sum_list(%s, %s),", arg, s))
+		c.writeln(fmt.Sprintf("length(%s, %s),", arg, n))
+		c.writeln(fmt.Sprintf("%s > 0,", n))
+		c.writeln(fmt.Sprintf("%s is %s / %s,", tmp, s, n))
+		return tmp, true, nil
+	default:
+		return "", false, fmt.Errorf("unsupported call")
+	}
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) (string, bool, error) {
@@ -292,4 +360,14 @@ func getPrintCall(e *parser.Expr) *parser.CallExpr {
 		return p.Target.Call
 	}
 	return nil
+}
+
+func isBoolExpr(s string) bool {
+	ops := []string{"=:=", "=\\=", "<", "<=", ">", ">="}
+	for _, op := range ops {
+		if strings.Contains(s, op) {
+			return true
+		}
+	}
+	return false
 }
