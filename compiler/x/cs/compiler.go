@@ -2349,7 +2349,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 	switch {
 	case l.Int != nil:
-		return fmt.Sprintf("%dL", *l.Int), nil
+		return fmt.Sprintf("%d", *l.Int), nil
 	case l.Float != nil:
 		return fmt.Sprintf("%f", *l.Float), nil
 	case l.Bool != nil:
