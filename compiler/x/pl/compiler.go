@@ -172,6 +172,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileIf(s.If)
 	case s.For != nil:
 		return c.compileFor(s.For)
+	case s.Break != nil:
+		c.writeln("throw(break),")
+		return nil
+	case s.Continue != nil:
+		c.writeln("throw(continue),")
+		return nil
 	case s.Expr != nil:
 		if call := getPrintCall(s.Expr.Expr); call != nil {
 			arg, arith, err := c.compileExpr(call.Args[0])
@@ -232,6 +238,8 @@ func (c *Compiler) compileIf(is *parser.IfStmt) error {
 
 func (c *Compiler) compileFor(fs *parser.ForStmt) error {
 	v := sanitizeVar(fs.Name)
+	c.writeln("catch(")
+	c.indent++
 	if fs.RangeEnd != nil {
 		start, _, err := c.compileExpr(fs.Source)
 		if err != nil {
@@ -244,31 +252,31 @@ func (c *Compiler) compileFor(fs *parser.ForStmt) error {
 		tmp := c.newTmp()
 		c.writeln(fmt.Sprintf("%s is %s - 1,", tmp, end))
 		c.writeln(fmt.Sprintf("(between(%s, %s, %s),", start, tmp, v))
-		c.indent++
-		for _, st := range fs.Body {
-			if err := c.compileStmt(st); err != nil {
-				return err
-			}
+	} else {
+		src, _, err := c.compileExpr(fs.Source)
+		if err != nil {
+			return err
 		}
-		c.writeln("fail")
-		c.indent--
-		c.writeln("; true),")
-		return nil
+		c.writeln(fmt.Sprintf("(member(%s, %s),", v, src))
 	}
-	src, _, err := c.compileExpr(fs.Source)
-	if err != nil {
-		return err
-	}
-	c.writeln(fmt.Sprintf("(member(%s, %s),", v, src))
+	c.indent++
+	c.writeln("catch(")
+	c.indent++
+	c.writeln("(")
 	c.indent++
 	for _, st := range fs.Body {
 		if err := c.compileStmt(st); err != nil {
 			return err
 		}
 	}
+	c.writeln("true")
+	c.indent--
+	c.writeln("), continue, true),")
 	c.writeln("fail")
 	c.indent--
-	c.writeln("; true),")
+	c.writeln("; true)")
+	c.indent--
+	c.writeln(", break, true),")
 	return nil
 }
 
