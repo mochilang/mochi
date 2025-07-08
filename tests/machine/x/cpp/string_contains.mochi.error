@@ -1,0 +1,11 @@
+line 6: ../../../tests/machine/x/cpp/string_contains.mochi.cpp: In function ‘int main()’:
+../../../tests/machine/x/cpp/string_contains.mochi.cpp:6:20: error: request for member ‘contains’ in ‘s’, which is of non-class type ‘const char*’
+    6 |         (cout << s.contains("cat"));
+      |                    ^~~~~~~~
+../../../tests/machine/x/cpp/string_contains.mochi.cpp:7:20: error: request for member ‘contains’ in ‘s’, which is of non-class type ‘const char*’
+    7 |         (cout << s.contains("dog"));
+      |                    ^~~~~~~~
+
+  5 | 	auto s = "catch";
+  6 | 	(cout << s.contains("cat"));
+  7 | 	(cout << s.contains("dog"));

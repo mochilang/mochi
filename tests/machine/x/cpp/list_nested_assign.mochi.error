@@ -1,11 +1,11 @@
-line 11: ../../../tests/machine/x/cpp/list_nested_assign.mochi.cpp: In function ‘int main()’:
-../../../tests/machine/x/cpp/list_nested_assign.mochi.cpp:11:71: error: no matching function for call to ‘std::vector<int>::vector(<brace-enclosed initializer list>)’
-   11 |         auto matrix = vector<int>{vector<int>{1, 2}, vector<int>{3, 4}};
+line 5: ../../../tests/machine/x/cpp/list_nested_assign.mochi.cpp: In function ‘int main()’:
+../../../tests/machine/x/cpp/list_nested_assign.mochi.cpp:5:71: error: no matching function for call to ‘std::vector<int>::vector(<brace-enclosed initializer list>)’
+    5 |         auto matrix = vector<int>{vector<int>{1, 2}, vector<int>{3, 4}};
       |                                                                       ^
 In file included from /usr/include/c++/13/vector:66,
                  from /usr/include/c++/13/functional:64,
                  from /usr/include/x86_64-linux-gnu/c++/13/bits/stdc++.h:53,
-                 from ../../../tests/machine/x/cpp/list_nested_assign.mochi.cpp:2:
+                 from ../../../tests/machine/x/cpp/list_nested_assign.mochi.cpp:1:
 /usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = int; _Alloc = std::allocator<int>]’
   707 |         vector(_InputIterator __first, _InputIterator __last,
       |         ^~~~~~
@@ -73,6 +73,6 @@ In file included from /usr/include/c++/13/bits/stl_algobase.h:65,
       |       ^~~~~~
 /usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 2 provided
 
- 10 | int main() {
- 11 | 	auto matrix = vector<int>{vector<int>{1, 2}, vector<int>{3, 4}};
- 12 | 	matrix[1][0] = 5;
+  4 | int main() {
+  5 | 	auto matrix = vector<int>{vector<int>{1, 2}, vector<int>{3, 4}};
+  6 | 	matrix[1][0] = 5;

@@ -1,0 +1,25 @@
+line 6: ../../../tests/machine/x/cpp/membership.mochi.cpp:6:35: error: exponent has no digits
+    6 |         (cout << (find(2.begin(), 2.end(), nums) != 2.end()));
+      |                                   ^~~~~
+../../../tests/machine/x/cpp/membership.mochi.cpp:6:53: error: exponent has no digits
+    6 |         (cout << (find(2.begin(), 2.end(), nums) != 2.end()));
+      |                                                     ^~~~~
+../../../tests/machine/x/cpp/membership.mochi.cpp:7:35: error: exponent has no digits
+    7 |         (cout << (find(4.begin(), 4.end(), nums) != 4.end()));
+      |                                   ^~~~~
+../../../tests/machine/x/cpp/membership.mochi.cpp:7:53: error: exponent has no digits
+    7 |         (cout << (find(4.begin(), 4.end(), nums) != 4.end()));
+      |                                                     ^~~~~
+../../../tests/machine/x/cpp/membership.mochi.cpp: In function ‘int main()’:
+../../../tests/machine/x/cpp/membership.mochi.cpp:6:24: error: unable to find numeric literal operator ‘operator""begin’
+    6 |         (cout << (find(2.begin(), 2.end(), nums) != 2.end()));
+      |                        ^~~~~~~
+../../../tests/machine/x/cpp/membership.mochi.cpp:6:24: note: use ‘-fext-numeric-literals’ to enable more built-in suffixes
+../../../tests/machine/x/cpp/membership.mochi.cpp:7:24: error: unable to find numeric literal operator ‘operator""begin’
+    7 |         (cout << (find(4.begin(), 4.end(), nums) != 4.end()));
+      |                        ^~~~~~~
+../../../tests/machine/x/cpp/membership.mochi.cpp:7:24: note: use ‘-fext-numeric-literals’ to enable more built-in suffixes
+
+  5 | 	auto nums = vector<int>{1, 2, 3};
+  6 | 	(cout << (find(2.begin(), 2.end(), nums) != 2.end()));
+  7 | 	(cout << (find(4.begin(), 4.end(), nums) != 4.end()));

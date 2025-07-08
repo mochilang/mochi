@@ -1,0 +1,36 @@
+line 11: ../../../tests/machine/x/cpp/list_set_ops.mochi.cpp: In function ‘int main()’:
+../../../tests/machine/x/cpp/list_set_ops.mochi.cpp:11:215: error: expected ‘)’ before ‘union’
+   11 |         ([&](const auto& __v){ if constexpr(has_size<decay_t<decltype(__v)>>::value){ for(size_t i=0;i<__v.size();++i){ if(i) cout<<' '; cout<<__v[i]; } cout<<endl; } else { cout<<__v<<endl; } })((vector<int>{1, 2} union vector<int>{2, 3}));
+      |                                                                                                                                                                                                     ~                 ^~~~~~
+      |                                                                                                                                                                                                                       )
+../../../tests/machine/x/cpp/list_set_ops.mochi.cpp:11:240: error: expected ‘;’ before ‘)’ token
+   11 |         ([&](const auto& __v){ if constexpr(has_size<decay_t<decltype(__v)>>::value){ for(size_t i=0;i<__v.size();++i){ if(i) cout<<' '; cout<<__v[i]; } cout<<endl; } else { cout<<__v<<endl; } })((vector<int>{1, 2} union vector<int>{2, 3}));
+      |                                                                                                                                                                                                                                                ^
+      |                                                                                                                                                                                                                                                ;
+../../../tests/machine/x/cpp/list_set_ops.mochi.cpp:12:218: error: expected ‘)’ before ‘except’
+   12 |         ([&](const auto& __v){ if constexpr(has_size<decay_t<decltype(__v)>>::value){ for(size_t i=0;i<__v.size();++i){ if(i) cout<<' '; cout<<__v[i]; } cout<<endl; } else { cout<<__v<<endl; } })((vector<int>{1, 2, 3} except vector<int>{2}));
+      |                                                                                                                                                                                                     ~                    ^~~~~~~
+      |                                                                                                                                                                                                                          )
+../../../tests/machine/x/cpp/list_set_ops.mochi.cpp:12:241: error: expected ‘;’ before ‘)’ token
+   12 |         ([&](const auto& __v){ if constexpr(has_size<decay_t<decltype(__v)>>::value){ for(size_t i=0;i<__v.size();++i){ if(i) cout<<' '; cout<<__v[i]; } cout<<endl; } else { cout<<__v<<endl; } })((vector<int>{1, 2, 3} except vector<int>{2}));
+      |                                                                                                                                                                                                                                                 ^
+      |                                                                                                                                                                                                                                                 ;
+../../../tests/machine/x/cpp/list_set_ops.mochi.cpp:13:218: error: expected ‘)’ before ‘intersect’
+   13 |         ([&](const auto& __v){ if constexpr(has_size<decay_t<decltype(__v)>>::value){ for(size_t i=0;i<__v.size();++i){ if(i) cout<<' '; cout<<__v[i]; } cout<<endl; } else { cout<<__v<<endl; } })((vector<int>{1, 2, 3} intersect vector<int>{2, 4}));
+      |                                                                                                                                                                                                     ~                    ^~~~~~~~~~
+      |                                                                                                                                                                                                                          )
+../../../tests/machine/x/cpp/list_set_ops.mochi.cpp:13:247: error: expected ‘;’ before ‘)’ token
+   13 |         ([&](const auto& __v){ if constexpr(has_size<decay_t<decltype(__v)>>::value){ for(size_t i=0;i<__v.size();++i){ if(i) cout<<' '; cout<<__v[i]; } cout<<endl; } else { cout<<__v<<endl; } })((vector<int>{1, 2, 3} intersect vector<int>{2, 4}));
+      |                                                                                                                                                                                                                                                       ^
+      |                                                                                                                                                                                                                                                       ;
+../../../tests/machine/x/cpp/list_set_ops.mochi.cpp:14:221: error: expected ‘)’ before ‘union’
+   14 |         ([&](const auto& __v){ if constexpr(has_size<decay_t<decltype(__v)>>::value){ for(size_t i=0;i<__v.size();++i){ if(i) cout<<' '; cout<<__v[i]; } cout<<endl; } else { cout<<__v<<endl; } })(((int)(vector<int>{1, 2} union vector<int>{2, 3}).size()));
+      |                                                                                                                                                                                                           ~                 ^~~~~~
+      |                                                                                                                                                                                                                             )
+../../../tests/machine/x/cpp/list_set_ops.mochi.cpp:14:198: error: invalid cast from type ‘std::vector<int>’ to type ‘int’
+   14 |         ([&](const auto& __v){ if constexpr(has_size<decay_t<decltype(__v)>>::value){ for(size_t i=0;i<__v.size();++i){ if(i) cout<<' '; cout<<__v[i]; } cout<<endl; } else { cout<<__v<<endl; } })(((int)(vector<int>{1, 2} union vector<int>{2, 3}).size()));
+      |                                                                                                                                                                                                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ 10 | int main() {
+ 11 | 	([&](const auto& __v){ if constexpr(has_size<decay_t<decltype(__v)>>::value){ for(size_t i=0;i<__v.size();++i){ if(i) cout<<' '; cout<<__v[i]; } cout<<endl; } else { cout<<__v<<endl; } })((vector<int>{1, 2} union vector<int>{2, 3}));
+ 12 | 	([&](const auto& __v){ if constexpr(has_size<decay_t<decltype(__v)>>::value){ for(size_t i=0;i<__v.size();++i){ if(i) cout<<' '; cout<<__v[i]; } cout<<endl; } else { cout<<__v<<endl; } })((vector<int>{1, 2, 3} except vector<int>{2}));

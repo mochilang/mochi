@@ -1,0 +1,9 @@
+line 8: ../../../tests/machine/x/cpp/map_literal_dynamic.mochi.cpp: In function ‘int main()’:
+../../../tests/machine/x/cpp/map_literal_dynamic.mochi.cpp:8:9: error: ‘print’ was not declared in this scope; did you mean ‘rint’?
+    8 |         print(m["a"], m["b"]);
+      |         ^~~~~
+      |         rint
+
+  7 | 	auto m = unordered_map<string,int>{{"a", x}, {"b", y}};
+  8 | 	print(m["a"], m["b"]);
+  9 | 	return 0;

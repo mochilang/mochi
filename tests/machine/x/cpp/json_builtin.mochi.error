@@ -1,100 +1,100 @@
-line 11: ../../../tests/machine/x/cpp/json_builtin.mochi.cpp: In function ‘int main()’:
-../../../tests/machine/x/cpp/json_builtin.mochi.cpp:11:43: error: ‘a’ was not declared in this scope
-   11 |         auto m = unordered_map<int, int>{{a, 1}, {b, 2}};
-      |                                           ^
-../../../tests/machine/x/cpp/json_builtin.mochi.cpp:11:51: error: ‘b’ was not declared in this scope
-   11 |         auto m = unordered_map<int, int>{{a, 1}, {b, 2}};
-      |                                                   ^
-../../../tests/machine/x/cpp/json_builtin.mochi.cpp:11:56: error: no matching function for call to ‘std::unordered_map<int, int>::unordered_map(<brace-enclosed initializer list>)’
-   11 |         auto m = unordered_map<int, int>{{a, 1}, {b, 2}};
-      |                                                        ^
+line 5: ../../../tests/machine/x/cpp/json_builtin.mochi.cpp: In function ‘int main()’:
+../../../tests/machine/x/cpp/json_builtin.mochi.cpp:5:45: error: ‘a’ was not declared in this scope
+    5 |         auto m = unordered_map<string,int>{{a, 1}, {b, 2}};
+      |                                             ^
+../../../tests/machine/x/cpp/json_builtin.mochi.cpp:5:53: error: ‘b’ was not declared in this scope
+    5 |         auto m = unordered_map<string,int>{{a, 1}, {b, 2}};
+      |                                                     ^
+../../../tests/machine/x/cpp/json_builtin.mochi.cpp:5:58: error: no matching function for call to ‘std::unordered_map<std::__cxx11::basic_string<char>, int>::unordered_map(<brace-enclosed initializer list>)’
+    5 |         auto m = unordered_map<string,int>{{a, 1}, {b, 2}};
+      |                                                          ^
 In file included from /usr/include/c++/13/unordered_map:41,
                  from /usr/include/c++/13/functional:63,
                  from /usr/include/x86_64-linux-gnu/c++/13/bits/stdc++.h:53,
-                 from ../../../tests/machine/x/cpp/json_builtin.mochi.cpp:2:
-/usr/include/c++/13/bits/unordered_map.h:259:9: note: candidate: ‘template<class _InputIterator> std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>::unordered_map(_InputIterator, _InputIterator, size_type, const hasher&, const allocator_type&) [with _Key = int; _Tp = int; _Hash = std::hash<int>; _Pred = std::equal_to<int>; _Alloc = std::allocator<std::pair<const int, int> >]’
+                 from ../../../tests/machine/x/cpp/json_builtin.mochi.cpp:1:
+/usr/include/c++/13/bits/unordered_map.h:259:9: note: candidate: ‘template<class _InputIterator> std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>::unordered_map(_InputIterator, _InputIterator, size_type, const hasher&, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = int; _Hash = std::hash<std::__cxx11::basic_string<char> >; _Pred = std::equal_to<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, int> >]’
   259 |         unordered_map(_InputIterator __first, _InputIterator __last,
       |         ^~~~~~~~~~~~~
 /usr/include/c++/13/bits/unordered_map.h:259:9: note:   template argument deduction/substitution failed:
-../../../tests/machine/x/cpp/json_builtin.mochi.cpp:11:56: note:   candidate expects 5 arguments, 2 provided
-   11 |         auto m = unordered_map<int, int>{{a, 1}, {b, 2}};
-      |                                                        ^
-/usr/include/c++/13/bits/unordered_map.h:252:9: note: candidate: ‘template<class _InputIterator> std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>::unordered_map(_InputIterator, _InputIterator, size_type, const allocator_type&) [with _Key = int; _Tp = int; _Hash = std::hash<int>; _Pred = std::equal_to<int>; _Alloc = std::allocator<std::pair<const int, int> >]’
+../../../tests/machine/x/cpp/json_builtin.mochi.cpp:5:58: note:   candidate expects 5 arguments, 2 provided
+    5 |         auto m = unordered_map<string,int>{{a, 1}, {b, 2}};
+      |                                                          ^
+/usr/include/c++/13/bits/unordered_map.h:252:9: note: candidate: ‘template<class _InputIterator> std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>::unordered_map(_InputIterator, _InputIterator, size_type, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = int; _Hash = std::hash<std::__cxx11::basic_string<char> >; _Pred = std::equal_to<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, int> >]’
   252 |         unordered_map(_InputIterator __first, _InputIterator __last,
       |         ^~~~~~~~~~~~~
 /usr/include/c++/13/bits/unordered_map.h:252:9: note:   template argument deduction/substitution failed:
-../../../tests/machine/x/cpp/json_builtin.mochi.cpp:11:56: note:   candidate expects 4 arguments, 2 provided
-   11 |         auto m = unordered_map<int, int>{{a, 1}, {b, 2}};
-      |                                                        ^
-/usr/include/c++/13/bits/unordered_map.h:179:9: note: candidate: ‘template<class _InputIterator> std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>::unordered_map(_InputIterator, _InputIterator, size_type, const hasher&, const key_equal&, const allocator_type&) [with _Key = int; _Tp = int; _Hash = std::hash<int>; _Pred = std::equal_to<int>; _Alloc = std::allocator<std::pair<const int, int> >]’
+../../../tests/machine/x/cpp/json_builtin.mochi.cpp:5:58: note:   candidate expects 4 arguments, 2 provided
+    5 |         auto m = unordered_map<string,int>{{a, 1}, {b, 2}};
+      |                                                          ^
+/usr/include/c++/13/bits/unordered_map.h:179:9: note: candidate: ‘template<class _InputIterator> std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>::unordered_map(_InputIterator, _InputIterator, size_type, const hasher&, const key_equal&, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = int; _Hash = std::hash<std::__cxx11::basic_string<char> >; _Pred = std::equal_to<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, int> >]’
   179 |         unordered_map(_InputIterator __first, _InputIterator __last,
       |         ^~~~~~~~~~~~~
 /usr/include/c++/13/bits/unordered_map.h:179:9: note:   template argument deduction/substitution failed:
-../../../tests/machine/x/cpp/json_builtin.mochi.cpp:11:56: note:   couldn’t deduce template parameter ‘_InputIterator’
-   11 |         auto m = unordered_map<int, int>{{a, 1}, {b, 2}};
-      |                                                        ^
-/usr/include/c++/13/bits/unordered_map.h:271:7: note: candidate: ‘std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>::unordered_map(std::initializer_list<typename std::_Hashtable<_Key, std::pair<const _Key, _Val>, _Alloc, std::__detail::_Select1st, _Pred, _Hash, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<std::__not_<std::__and_<std::__is_fast_hash<_Hash>, std::__is_nothrow_invocable<const _Hash&, const _Key&> > >::value, false, true> >::value_type>, size_type, const hasher&, const allocator_type&) [with _Key = int; _Tp = int; _Hash = std::hash<int>; _Pred = std::equal_to<int>; _Alloc = std::allocator<std::pair<const int, int> >; typename std::_Hashtable<_Key, std::pair<const _Key, _Val>, _Alloc, std::__detail::_Select1st, _Pred, _Hash, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<std::__not_<std::__and_<std::__is_fast_hash<_Hash>, std::__is_nothrow_invocable<const _Hash&, const _Key&> > >::value, false, true> >::value_type = std::pair<const int, int>; size_type = long unsigned int; hasher = std::hash<int>; allocator_type = std::allocator<std::pair<const int, int> >]’
+../../../tests/machine/x/cpp/json_builtin.mochi.cpp:5:58: note:   couldn’t deduce template parameter ‘_InputIterator’
+    5 |         auto m = unordered_map<string,int>{{a, 1}, {b, 2}};
+      |                                                          ^
+/usr/include/c++/13/bits/unordered_map.h:271:7: note: candidate: ‘std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>::unordered_map(std::initializer_list<typename std::_Hashtable<_Key, std::pair<const _Key, _Val>, _Alloc, std::__detail::_Select1st, _Pred, _Hash, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<std::__not_<std::__and_<std::__is_fast_hash<_Hash>, std::__is_nothrow_invocable<const _Hash&, const _Key&> > >::value, false, true> >::value_type>, size_type, const hasher&, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = int; _Hash = std::hash<std::__cxx11::basic_string<char> >; _Pred = std::equal_to<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, int> >; typename std::_Hashtable<_Key, std::pair<const _Key, _Val>, _Alloc, std::__detail::_Select1st, _Pred, _Hash, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<std::__not_<std::__and_<std::__is_fast_hash<_Hash>, std::__is_nothrow_invocable<const _Hash&, const _Key&> > >::value, false, true> >::value_type = std::pair<const std::__cxx11::basic_string<char>, int>; size_type = long unsigned int; hasher = std::hash<std::__cxx11::basic_string<char> >; allocator_type = std::allocator<std::pair<const std::__cxx11::basic_string<char>, int> >]’
   271 |       unordered_map(initializer_list<value_type> __l,
       |       ^~~~~~~~~~~~~
 /usr/include/c++/13/bits/unordered_map.h:271:7: note:   candidate expects 4 arguments, 2 provided
-/usr/include/c++/13/bits/unordered_map.h:265:7: note: candidate: ‘std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>::unordered_map(std::initializer_list<typename std::_Hashtable<_Key, std::pair<const _Key, _Val>, _Alloc, std::__detail::_Select1st, _Pred, _Hash, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<std::__not_<std::__and_<std::__is_fast_hash<_Hash>, std::__is_nothrow_invocable<const _Hash&, const _Key&> > >::value, false, true> >::value_type>, size_type, const allocator_type&) [with _Key = int; _Tp = int; _Hash = std::hash<int>; _Pred = std::equal_to<int>; _Alloc = std::allocator<std::pair<const int, int> >; typename std::_Hashtable<_Key, std::pair<const _Key, _Val>, _Alloc, std::__detail::_Select1st, _Pred, _Hash, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<std::__not_<std::__and_<std::__is_fast_hash<_Hash>, std::__is_nothrow_invocable<const _Hash&, const _Key&> > >::value, false, true> >::value_type = std::pair<const int, int>; size_type = long unsigned int; allocator_type = std::allocator<std::pair<const int, int> >]’
+/usr/include/c++/13/bits/unordered_map.h:265:7: note: candidate: ‘std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>::unordered_map(std::initializer_list<typename std::_Hashtable<_Key, std::pair<const _Key, _Val>, _Alloc, std::__detail::_Select1st, _Pred, _Hash, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<std::__not_<std::__and_<std::__is_fast_hash<_Hash>, std::__is_nothrow_invocable<const _Hash&, const _Key&> > >::value, false, true> >::value_type>, size_type, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = int; _Hash = std::hash<std::__cxx11::basic_string<char> >; _Pred = std::equal_to<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, int> >; typename std::_Hashtable<_Key, std::pair<const _Key, _Val>, _Alloc, std::__detail::_Select1st, _Pred, _Hash, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<std::__not_<std::__and_<std::__is_fast_hash<_Hash>, std::__is_nothrow_invocable<const _Hash&, const _Key&> > >::value, false, true> >::value_type = std::pair<const std::__cxx11::basic_string<char>, int>; size_type = long unsigned int; allocator_type = std::allocator<std::pair<const std::__cxx11::basic_string<char>, int> >]’
   265 |       unordered_map(initializer_list<value_type> __l,
       |       ^~~~~~~~~~~~~
 /usr/include/c++/13/bits/unordered_map.h:265:7: note:   candidate expects 3 arguments, 2 provided
-/usr/include/c++/13/bits/unordered_map.h:246:7: note: candidate: ‘std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>::unordered_map(size_type, const hasher&, const allocator_type&) [with _Key = int; _Tp = int; _Hash = std::hash<int>; _Pred = std::equal_to<int>; _Alloc = std::allocator<std::pair<const int, int> >; size_type = long unsigned int; hasher = std::hash<int>; allocator_type = std::allocator<std::pair<const int, int> >]’
+/usr/include/c++/13/bits/unordered_map.h:246:7: note: candidate: ‘std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>::unordered_map(size_type, const hasher&, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = int; _Hash = std::hash<std::__cxx11::basic_string<char> >; _Pred = std::equal_to<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, int> >; size_type = long unsigned int; hasher = std::hash<std::__cxx11::basic_string<char> >; allocator_type = std::allocator<std::pair<const std::__cxx11::basic_string<char>, int> >]’
   246 |       unordered_map(size_type __n, const hasher& __hf,
       |       ^~~~~~~~~~~~~
 /usr/include/c++/13/bits/unordered_map.h:246:7: note:   candidate expects 3 arguments, 2 provided
-/usr/include/c++/13/bits/unordered_map.h:242:7: note: candidate: ‘std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>::unordered_map(size_type, const allocator_type&) [with _Key = int; _Tp = int; _Hash = std::hash<int>; _Pred = std::equal_to<int>; _Alloc = std::allocator<std::pair<const int, int> >; size_type = long unsigned int; allocator_type = std::allocator<std::pair<const int, int> >]’
+/usr/include/c++/13/bits/unordered_map.h:242:7: note: candidate: ‘std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>::unordered_map(size_type, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = int; _Hash = std::hash<std::__cxx11::basic_string<char> >; _Pred = std::equal_to<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, int> >; size_type = long unsigned int; allocator_type = std::allocator<std::pair<const std::__cxx11::basic_string<char>, int> >]’
   242 |       unordered_map(size_type __n, const allocator_type& __a)
       |       ^~~~~~~~~~~~~
-/usr/include/c++/13/bits/unordered_map.h:242:31: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘std::unordered_map<int, int>::size_type’ {aka ‘long unsigned int’}
+/usr/include/c++/13/bits/unordered_map.h:242:31: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘std::unordered_map<std::__cxx11::basic_string<char>, int>::size_type’ {aka ‘long unsigned int’}
   242 |       unordered_map(size_type __n, const allocator_type& __a)
       |                     ~~~~~~~~~~^~~
-/usr/include/c++/13/bits/unordered_map.h:234:7: note: candidate: ‘std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>::unordered_map(std::initializer_list<typename std::_Hashtable<_Key, std::pair<const _Key, _Val>, _Alloc, std::__detail::_Select1st, _Pred, _Hash, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<std::__not_<std::__and_<std::__is_fast_hash<_Hash>, std::__is_nothrow_invocable<const _Hash&, const _Key&> > >::value, false, true> >::value_type>, size_type, const hasher&, const key_equal&, const allocator_type&) [with _Key = int; _Tp = int; _Hash = std::hash<int>; _Pred = std::equal_to<int>; _Alloc = std::allocator<std::pair<const int, int> >; typename std::_Hashtable<_Key, std::pair<const _Key, _Val>, _Alloc, std::__detail::_Select1st, _Pred, _Hash, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<std::__not_<std::__and_<std::__is_fast_hash<_Hash>, std::__is_nothrow_invocable<const _Hash&, const _Key&> > >::value, false, true> >::value_type = std::pair<const int, int>; size_type = long unsigned int; hasher = std::hash<int>; key_equal = std::equal_to<int>; allocator_type = std::allocator<std::pair<const int, int> >]’
+/usr/include/c++/13/bits/unordered_map.h:234:7: note: candidate: ‘std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>::unordered_map(std::initializer_list<typename std::_Hashtable<_Key, std::pair<const _Key, _Val>, _Alloc, std::__detail::_Select1st, _Pred, _Hash, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<std::__not_<std::__and_<std::__is_fast_hash<_Hash>, std::__is_nothrow_invocable<const _Hash&, const _Key&> > >::value, false, true> >::value_type>, size_type, const hasher&, const key_equal&, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = int; _Hash = std::hash<std::__cxx11::basic_string<char> >; _Pred = std::equal_to<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, int> >; typename std::_Hashtable<_Key, std::pair<const _Key, _Val>, _Alloc, std::__detail::_Select1st, _Pred, _Hash, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<std::__not_<std::__and_<std::__is_fast_hash<_Hash>, std::__is_nothrow_invocable<const _Hash&, const _Key&> > >::value, false, true> >::value_type = std::pair<const std::__cxx11::basic_string<char>, int>; size_type = long unsigned int; hasher = std::hash<std::__cxx11::basic_string<char> >; key_equal = std::equal_to<std::__cxx11::basic_string<char> >; allocator_type = std::allocator<std::pair<const std::__cxx11::basic_string<char>, int> >]’
   234 |       unordered_map(initializer_list<value_type> __l,
       |       ^~~~~~~~~~~~~
-/usr/include/c++/13/bits/unordered_map.h:234:50: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘std::initializer_list<std::pair<const int, int> >’
+/usr/include/c++/13/bits/unordered_map.h:234:50: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘std::initializer_list<std::pair<const std::__cxx11::basic_string<char>, int> >’
   234 |       unordered_map(initializer_list<value_type> __l,
       |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
-/usr/include/c++/13/bits/unordered_map.h:217:7: note: candidate: ‘std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>::unordered_map(std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>&&, const allocator_type&) [with _Key = int; _Tp = int; _Hash = std::hash<int>; _Pred = std::equal_to<int>; _Alloc = std::allocator<std::pair<const int, int> >; allocator_type = std::allocator<std::pair<const int, int> >]’
+/usr/include/c++/13/bits/unordered_map.h:217:7: note: candidate: ‘std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>::unordered_map(std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>&&, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = int; _Hash = std::hash<std::__cxx11::basic_string<char> >; _Pred = std::equal_to<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, int> >; allocator_type = std::allocator<std::pair<const std::__cxx11::basic_string<char>, int> >]’
   217 |       unordered_map(unordered_map&& __umap,
       |       ^~~~~~~~~~~~~
-/usr/include/c++/13/bits/unordered_map.h:217:37: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘std::unordered_map<int, int>&&’
+/usr/include/c++/13/bits/unordered_map.h:217:37: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘std::unordered_map<std::__cxx11::basic_string<char>, int>&&’
   217 |       unordered_map(unordered_map&& __umap,
       |                     ~~~~~~~~~~~~~~~~^~~~~~
-/usr/include/c++/13/bits/unordered_map.h:207:7: note: candidate: ‘std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>::unordered_map(const std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>&, const allocator_type&) [with _Key = int; _Tp = int; _Hash = std::hash<int>; _Pred = std::equal_to<int>; _Alloc = std::allocator<std::pair<const int, int> >; allocator_type = std::allocator<std::pair<const int, int> >]’
+/usr/include/c++/13/bits/unordered_map.h:207:7: note: candidate: ‘std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>::unordered_map(const std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>&, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = int; _Hash = std::hash<std::__cxx11::basic_string<char> >; _Pred = std::equal_to<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, int> >; allocator_type = std::allocator<std::pair<const std::__cxx11::basic_string<char>, int> >]’
   207 |       unordered_map(const unordered_map& __umap,
       |       ^~~~~~~~~~~~~
-/usr/include/c++/13/bits/unordered_map.h:207:42: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘const std::unordered_map<int, int>&’
+/usr/include/c++/13/bits/unordered_map.h:207:42: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘const std::unordered_map<std::__cxx11::basic_string<char>, int>&’
   207 |       unordered_map(const unordered_map& __umap,
       |                     ~~~~~~~~~~~~~~~~~~~~~^~~~~~
-/usr/include/c++/13/bits/unordered_map.h:198:7: note: candidate: ‘std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>::unordered_map(const allocator_type&) [with _Key = int; _Tp = int; _Hash = std::hash<int>; _Pred = std::equal_to<int>; _Alloc = std::allocator<std::pair<const int, int> >; allocator_type = std::allocator<std::pair<const int, int> >]’
+/usr/include/c++/13/bits/unordered_map.h:198:7: note: candidate: ‘std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>::unordered_map(const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = int; _Hash = std::hash<std::__cxx11::basic_string<char> >; _Pred = std::equal_to<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, int> >; allocator_type = std::allocator<std::pair<const std::__cxx11::basic_string<char>, int> >]’
   198 |       unordered_map(const allocator_type& __a)
       |       ^~~~~~~~~~~~~
 /usr/include/c++/13/bits/unordered_map.h:198:7: note:   candidate expects 1 argument, 2 provided
-/usr/include/c++/13/bits/unordered_map.h:191:7: note: candidate: ‘std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>::unordered_map(std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>&&) [with _Key = int; _Tp = int; _Hash = std::hash<int>; _Pred = std::equal_to<int>; _Alloc = std::allocator<std::pair<const int, int> >]’
+/usr/include/c++/13/bits/unordered_map.h:191:7: note: candidate: ‘std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>::unordered_map(std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>&&) [with _Key = std::__cxx11::basic_string<char>; _Tp = int; _Hash = std::hash<std::__cxx11::basic_string<char> >; _Pred = std::equal_to<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, int> >]’
   191 |       unordered_map(unordered_map&&) = default;
       |       ^~~~~~~~~~~~~
 /usr/include/c++/13/bits/unordered_map.h:191:7: note:   candidate expects 1 argument, 2 provided
-/usr/include/c++/13/bits/unordered_map.h:188:7: note: candidate: ‘std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>::unordered_map(const std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>&) [with _Key = int; _Tp = int; _Hash = std::hash<int>; _Pred = std::equal_to<int>; _Alloc = std::allocator<std::pair<const int, int> >]’
+/usr/include/c++/13/bits/unordered_map.h:188:7: note: candidate: ‘std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>::unordered_map(const std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>&) [with _Key = std::__cxx11::basic_string<char>; _Tp = int; _Hash = std::hash<std::__cxx11::basic_string<char> >; _Pred = std::equal_to<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, int> >]’
   188 |       unordered_map(const unordered_map&) = default;
       |       ^~~~~~~~~~~~~
 /usr/include/c++/13/bits/unordered_map.h:188:7: note:   candidate expects 1 argument, 2 provided
-/usr/include/c++/13/bits/unordered_map.h:158:7: note: candidate: ‘std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>::unordered_map(size_type, const hasher&, const key_equal&, const allocator_type&) [with _Key = int; _Tp = int; _Hash = std::hash<int>; _Pred = std::equal_to<int>; _Alloc = std::allocator<std::pair<const int, int> >; size_type = long unsigned int; hasher = std::hash<int>; key_equal = std::equal_to<int>; allocator_type = std::allocator<std::pair<const int, int> >]’
+/usr/include/c++/13/bits/unordered_map.h:158:7: note: candidate: ‘std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>::unordered_map(size_type, const hasher&, const key_equal&, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = int; _Hash = std::hash<std::__cxx11::basic_string<char> >; _Pred = std::equal_to<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, int> >; size_type = long unsigned int; hasher = std::hash<std::__cxx11::basic_string<char> >; key_equal = std::equal_to<std::__cxx11::basic_string<char> >; allocator_type = std::allocator<std::pair<const std::__cxx11::basic_string<char>, int> >]’
   158 |       unordered_map(size_type __n,
       |       ^~~~~~~~~~~~~
-/usr/include/c++/13/bits/unordered_map.h:158:31: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘std::unordered_map<int, int>::size_type’ {aka ‘long unsigned int’}
+/usr/include/c++/13/bits/unordered_map.h:158:31: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘std::unordered_map<std::__cxx11::basic_string<char>, int>::size_type’ {aka ‘long unsigned int’}
   158 |       unordered_map(size_type __n,
       |                     ~~~~~~~~~~^~~
-/usr/include/c++/13/bits/unordered_map.h:148:7: note: candidate: ‘std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>::unordered_map() [with _Key = int; _Tp = int; _Hash = std::hash<int>; _Pred = std::equal_to<int>; _Alloc = std::allocator<std::pair<const int, int> >]’
+/usr/include/c++/13/bits/unordered_map.h:148:7: note: candidate: ‘std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>::unordered_map() [with _Key = std::__cxx11::basic_string<char>; _Tp = int; _Hash = std::hash<std::__cxx11::basic_string<char> >; _Pred = std::equal_to<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, int> >]’
   148 |       unordered_map() = default;
       |       ^~~~~~~~~~~~~
 /usr/include/c++/13/bits/unordered_map.h:148:7: note:   candidate expects 0 arguments, 2 provided
-../../../tests/machine/x/cpp/json_builtin.mochi.cpp:12:9: error: ‘json’ was not declared in this scope
-   12 |         json(m);
+../../../tests/machine/x/cpp/json_builtin.mochi.cpp:6:9: error: ‘json’ was not declared in this scope
+    6 |         json(m);
       |         ^~~~
 
- 10 | int main() {
- 11 | 	auto m = unordered_map<int, int>{{a, 1}, {b, 2}};
- 12 | 	json(m);
+  4 | int main() {
+  5 | 	auto m = unordered_map<string,int>{{a, 1}, {b, 2}};
+  6 | 	json(m);
