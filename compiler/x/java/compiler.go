@@ -1044,6 +1044,19 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", err
 			}
 			return fmt.Sprintf("values(%s)", a1), nil
+		case "exists":
+			if len(p.Call.Args) != 1 {
+				return "", fmt.Errorf("exists expects 1 argument at line %d", p.Pos.Line)
+			}
+			// Special handling when argument is a query expression
+			if q := p.Call.Args[0].Binary; q != nil && q.Left != nil && q.Left.Value != nil && q.Left.Value.Target != nil && q.Left.Value.Target.Query != nil {
+				return c.compileExistsQuery(q.Left.Value.Target.Query)
+			}
+			a1, err := c.compileExpr(p.Call.Args[0])
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("!%s.isEmpty()", a1), nil
 		}
 		var args []string
 		for _, a := range p.Call.Args {
@@ -1073,4 +1086,26 @@ func copyMap(src map[string]string) map[string]string {
 		dst[k] = v
 	}
 	return dst
+}
+
+func (c *Compiler) compileExistsQuery(q *parser.QueryExpr) (string, error) {
+	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+		return "", fmt.Errorf("unsupported query")
+	}
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	cond := "true"
+	if q.Where != nil {
+		oldVars := c.vars
+		c.vars = copyMap(c.vars)
+		c.vars[q.Var] = "var"
+		cond, err = c.compileExpr(q.Where)
+		c.vars = oldVars
+		if err != nil {
+			return "", err
+		}
+	}
+	return fmt.Sprintf("%s.stream().anyMatch(%s -> %s)", src, q.Var, cond), nil
 }
