@@ -2,9 +2,7 @@
 
 (declare t)
 
-(defn Leaf []
-  {:__name "Leaf"}
-)
+(def Leaf {:__name "Leaf"})
 
 (defn Node [left value right]
   {:__name "Node" :left left :value value :right right}

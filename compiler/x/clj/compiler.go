@@ -1859,6 +1859,11 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	if len(t.Variants) > 0 {
 		for _, v := range t.Variants {
 			c.writeIndent()
+			if len(v.Fields) == 0 {
+				c.writeln("(def " + sanitizeName(v.Name) + " {:__name \"" + v.Name + "\"})")
+				c.writeln("")
+				continue
+			}
 			c.buf.WriteString("(defn " + sanitizeName(v.Name) + " [")
 			for i, f := range v.Fields {
 				if i > 0 {
@@ -2123,7 +2128,7 @@ func (c *Compiler) compileQueryHelper(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		c.env = origEnv
-		b.WriteString("  (vec (map (fn [" + sanitizeName(q.Group.Name) + "] " + valExpr + ") _groups)))")
+		b.WriteString("  (vec (map (fn [" + sanitizeName(q.Group.Name) + "] " + valExpr + ") _groups))")
 		c.use("_query")
 		c.use("_group_by")
 		c.use("_Group")

@@ -1,6 +1,6 @@
 - # Clojure Compiler Results
 
-77/97 files compiled
+78/97 files compiled
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -89,7 +89,7 @@
 - [x] sum_builtin.mochi
 - [x] tail_recursion.mochi
 - [x] test_block.mochi
-- [ ] tree_sum.mochi
+ - [x] tree_sum.mochi
 - [x] two-sum.mochi
 - [x] typed_let.mochi
 - [x] typed_var.mochi
