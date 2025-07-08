@@ -21,6 +21,11 @@ type Compiler struct {
 	structs map[string]types.StructType
 }
 
+func (c *Compiler) newTmp() string {
+	c.tmp++
+	return fmt.Sprintf("tmp%d", c.tmp)
+}
+
 // New returns a new Compiler instance.
 func New(env *types.Env) *Compiler {
 	return &Compiler{helpers: make(map[string]bool), env: env, structs: make(map[string]types.StructType)}
@@ -58,6 +63,18 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	if c.helpers["max"] {
 		out.WriteString("fn max(v: Vec<i32>) -> i32 {\n    *v.iter().max().unwrap()\n}\n\n")
+	}
+	if c.helpers["_union"] {
+		out.WriteString("fn _union<T: Eq + std::hash::Hash + Clone>(a: Vec<T>, b: Vec<T>) -> Vec<T> {\n    use std::collections::HashSet;\n    let mut set: HashSet<T> = a.into_iter().collect();\n    set.extend(b.into_iter());\n    set.into_iter().collect()\n}\n\n")
+	}
+	if c.helpers["_union_all"] {
+		out.WriteString("fn _union_all<T: Clone>(mut a: Vec<T>, b: Vec<T>) -> Vec<T> {\n    a.extend(b);\n    a\n}\n\n")
+	}
+	if c.helpers["_except"] {
+		out.WriteString("fn _except<T: Eq + std::hash::Hash + Clone>(a: Vec<T>, b: Vec<T>) -> Vec<T> {\n    use std::collections::HashSet;\n    let set: HashSet<T> = b.into_iter().collect();\n    a.into_iter().filter(|x| !set.contains(x)).collect()\n}\n\n")
+	}
+	if c.helpers["_intersect"] {
+		out.WriteString("fn _intersect<T: Eq + std::hash::Hash + Clone>(a: Vec<T>, b: Vec<T>) -> Vec<T> {\n    use std::collections::HashSet;\n    let set: HashSet<T> = b.into_iter().collect();\n    a.into_iter().filter(|x| set.contains(x)).collect()\n}\n\n")
 	}
 	out.Write(c.buf.Bytes())
 	return out.Bytes(), nil
@@ -334,6 +351,20 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			} else {
 				res = fmt.Sprintf("%s + %s", res, r)
 			}
+		case "union":
+			if op.All {
+				c.helpers["_union_all"] = true
+				res = fmt.Sprintf("_union_all(%s, %s)", res, r)
+			} else {
+				c.helpers["_union"] = true
+				res = fmt.Sprintf("_union(%s, %s)", res, r)
+			}
+		case "except":
+			c.helpers["_except"] = true
+			res = fmt.Sprintf("_except(%s, %s)", res, r)
+		case "intersect":
+			c.helpers["_intersect"] = true
+			res = fmt.Sprintf("_intersect(%s, %s)", res, r)
 		default:
 			res = fmt.Sprintf("%s %s %s", res, op.Op, r)
 		}
@@ -434,6 +465,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileStructLiteral(p.Struct)
 	case p.Call != nil:
 		return c.compileCall(p.Call)
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
 	case p.Selector != nil:
 		if len(p.Selector.Tail) == 0 {
 			return p.Selector.Root, nil
@@ -511,13 +544,144 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	return "", fmt.Errorf("block function expressions not supported")
 }
 
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	if q.Group != nil || len(q.Joins) > 0 {
+		return "", fmt.Errorf("query features not supported")
+	}
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	child := types.NewEnv(c.env)
+	if lt, ok := types.TypeOfExprBasic(q.Source, c.env).(types.ListType); ok {
+		child.SetVar(q.Var, lt.Elem, true)
+	} else {
+		child.SetVar(q.Var, types.AnyType{}, true)
+	}
+	fromSrcs := make([]string, len(q.Froms))
+	for i, f := range q.Froms {
+		s, err := c.compileExpr(f.Src)
+		if err != nil {
+			return "", err
+		}
+		fromSrcs[i] = s
+		if lt, ok := types.TypeOfExprBasic(f.Src, c.env).(types.ListType); ok {
+			child.SetVar(f.Var, lt.Elem, true)
+		} else {
+			child.SetVar(f.Var, types.AnyType{}, true)
+		}
+	}
+	orig := c.env
+	c.env = child
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+	var cond, sortExpr, skipExpr, takeExpr string
+	if q.Where != nil {
+		cond, err = c.compileExpr(q.Where)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Sort != nil {
+		sortExpr, err = c.compileExpr(q.Sort)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Skip != nil {
+		skipExpr, err = c.compileExpr(q.Skip)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Take != nil {
+		takeExpr, err = c.compileExpr(q.Take)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	c.env = orig
+
+	tmp := c.newTmp()
+	var b strings.Builder
+	b.WriteString("{ let mut ")
+	b.WriteString(tmp)
+	b.WriteString(" = Vec::new();")
+	b.WriteString(fmt.Sprintf("for %s in &%s {", q.Var, src))
+	for i, fs := range fromSrcs {
+		b.WriteString(fmt.Sprintf(" for %s in &%s {", q.Froms[i].Var, fs))
+	}
+	if cond != "" {
+		b.WriteString(" if !(" + cond + ") { continue; }")
+	}
+	if sortExpr != "" {
+		item := c.newTmp()
+		key := c.newTmp()
+		b.WriteString(" let " + item + " = " + sel + ";")
+		b.WriteString(" let " + key + " = " + sortExpr + ";")
+		b.WriteString(" " + tmp + ".push((" + key + ", " + item + "));")
+	} else {
+		b.WriteString(" " + tmp + ".push(" + sel + ");")
+	}
+	for range fromSrcs {
+		b.WriteString(" }")
+	}
+	b.WriteString(" }")
+	if sortExpr != "" {
+		b.WriteString(" " + tmp + ".sort_by(|a,b| a.0.partial_cmp(&b.0).unwrap());")
+		res := c.newTmp()
+		b.WriteString(" let mut " + res + " = Vec::new();")
+		b.WriteString(" for p in " + tmp + " { " + res + ".push(p.1); }")
+		tmp = res
+	}
+	if skipExpr != "" || takeExpr != "" {
+		start := "0usize"
+		if skipExpr != "" {
+			start = skipExpr + " as usize"
+		}
+		end := ""
+		if takeExpr != "" {
+			if skipExpr != "" {
+				end = "(" + skipExpr + " + " + takeExpr + ") as usize"
+			} else {
+				end = takeExpr + " as usize"
+			}
+		} else {
+			end = tmp + ".len()"
+		}
+		b.WriteString(" let " + tmp + " = " + tmp + "[" + start + ".." + end + "].to_vec();")
+	}
+	if q.Distinct {
+		uniq := c.newTmp()
+		b.WriteString(" let mut set = std::collections::HashSet::new();")
+		b.WriteString(" let mut " + uniq + " = Vec::new();")
+		b.WriteString(" for v in " + tmp + ".into_iter() { if set.insert(v.clone()) { " + uniq + ".push(v); } }")
+		b.WriteString(" let " + tmp + " = " + uniq + ";")
+	}
+	b.WriteString(" " + tmp + " }")
+	return b.String(), nil
+}
+
 func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 	var b strings.Builder
 	b.WriteString("{ let mut m = std::collections::HashMap::new();")
 	for _, it := range m.Items {
-		k, err := c.compileExpr(it.Key)
-		if err != nil {
-			return "", err
+		var k string
+		if name, ok := c.simpleIdent(it.Key); ok {
+			k = fmt.Sprintf("\"%s\"", name)
+		} else {
+			var err error
+			k, err = c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
 		}
 		v, err := c.compileExpr(it.Value)
 		if err != nil {
@@ -624,6 +788,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("max expects 1 arg")
 		}
 		return fmt.Sprintf("max(%s)", args[0]), nil
+	case "exists":
+		if len(args) != 1 {
+			return "", fmt.Errorf("exists expects 1 arg")
+		}
+		return fmt.Sprintf("(%s.len() > 0)", args[0]), nil
 	default:
 		return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ", ")), nil
 	}
@@ -703,6 +872,21 @@ func (c *Compiler) simpleString(e *parser.Expr) (string, bool) {
 		return "", false
 	}
 	return *p.Target.Lit.Str, true
+}
+
+func (c *Compiler) simpleIdent(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) > 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Selector == nil || len(p.Target.Selector.Tail) > 0 {
+		return "", false
+	}
+	return p.Target.Selector.Root, true
 }
 
 func (c *Compiler) writeln(s string) {
