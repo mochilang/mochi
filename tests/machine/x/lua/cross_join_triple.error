@@ -1,3 +1,0 @@
-line 0: unsupported expression at line 4
-   1 | let nums = [1, 2]
-   2 | let letters = ["A", "B"]

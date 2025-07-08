@@ -1,3 +1,0 @@
-line 0: unsupported expression at line 1
-   1 | let square = fun(x: int): int => x * x
-   2 | print(square(6))  // 36

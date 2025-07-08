@@ -1,3 +1,0 @@
-line 0: invalid expression
-   1 | let s = "catch"
-   2 | print("cat" in s)

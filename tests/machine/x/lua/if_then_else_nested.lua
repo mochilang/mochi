@@ -1,23 +1,37 @@
-local function print_value(v)
-	if v == nil then
-		print('<nil>')
-		return
-	end
-	if type(v)=='number' and v == math.floor(v) then
-		print(math.floor(v))
-		return
-	end
-	if type(v)=='table' then
-		for i,x in ipairs(v) do
-			io.write(x)
-			if i < #v then io.write(' ') end
-		end
-		io.write('\n')
-	else
-		print(v)
-	end
+function __print(...)
+    local args = {...}
+    local function to_str(v)
+        if v == nil then return '<nil>' end
+        if type(v) == 'table' then
+            if v[1] ~= nil or #v > 0 then
+                local parts = {}
+                for i,x in ipairs(v) do parts[#parts+1] = tostring(x) end
+                return table.concat(parts, ' ')
+            end
+        end
+        if type(v) == 'number' and v == math.floor(v) then
+            return tostring(math.floor(v))
+        end
+        return tostring(v)
+    end
+    for i, a in ipairs(args) do
+        if i > 1 then io.write(' ') end
+        io.write(to_str(a))
+    end
+    io.write('\n')
 end
-
-local x = 8
-local msg = ((x > 10) and "big" or ((x > 5) and "medium" or "small"))
-print_value(msg)
+x = 8
+msg = (function()
+    if (x > 10) then
+        return "big"
+    else
+        return (function()
+    if (x > 5) then
+        return "medium"
+    else
+        return "small"
+    end
+end)()
+    end
+end)()
+__print(msg)

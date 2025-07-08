@@ -1,4 +1,4 @@
-//go:build slow
+//go:build ignore
 
 package luacode
 
