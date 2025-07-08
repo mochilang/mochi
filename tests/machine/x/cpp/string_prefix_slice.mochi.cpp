@@ -2,21 +2,14 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-template<typename T> vector<T> mochi_append(vector<T> v, T x) { v.push_back(x); return v; }
-template<typename T> T mochi_sum(const vector<T>& v) { T s{}; for(const auto& x: v) s += x; return s; }
-template<typename T> double mochi_avg(const vector<T>& v) { if(v.empty()) return 0; return static_cast<double>(mochi_sum(v)) / v.size(); }
-template<typename T> void mochi_print(const T& v) { cout << v << endl; }
-template<typename T> void mochi_print(const vector<T>& v) { for(size_t i=0;i<v.size();++i){ if(i) cout << ' '; cout << v[i]; } cout << endl; }
-template<typename T> vector<T> mochi_slice(const vector<T>& v, int s, int e) { return vector<T>(v.begin()+s, v.begin()+e); }
-inline string mochi_slice(const string& s, int st, int ed) { return s.substr(st, ed - st); }
-template<typename T> bool mochi_contains(const vector<T>& v, const T& x) { return find(v.begin(), v.end(), x) != v.end(); }
-inline bool mochi_contains(const string& s, const string& sub) { return s.find(sub) != string::npos; }
+template<typename T, typename=void> struct has_size : false_type {};
+template<typename T> struct has_size<T, void_t<decltype(declval<T>().size()), decltype(declval<T>()[0])>> : true_type {};
 
 int main() {
 	auto prefix = std::string("fore");
 	auto s1 = std::string("forest");
-	mochi_print((mochi_slice(s1, 0, ((int)prefix.size())) == prefix));
+	([&](const auto& __v){ if constexpr(has_size<decay_t<decltype(__v)>>::value){ for(size_t i=0;i<__v.size();++i){ if(i) cout<<' '; cout<<__v[i]; } cout<<endl; } else { cout<<__v<<endl; } })((([&](const auto& __v){ using V=decay_t<decltype(__v)>; if constexpr(is_same_v<V,string>) return __v.substr(0, ((int)prefix.size())-0); else return vector<typename V::value_type>(__v.begin()+0, __v.begin()+((int)prefix.size())); })(s1) == prefix));
 	auto s2 = std::string("desert");
-	mochi_print((mochi_slice(s2, 0, ((int)prefix.size())) == prefix));
+	([&](const auto& __v){ if constexpr(has_size<decay_t<decltype(__v)>>::value){ for(size_t i=0;i<__v.size();++i){ if(i) cout<<' '; cout<<__v[i]; } cout<<endl; } else { cout<<__v<<endl; } })((([&](const auto& __v){ using V=decay_t<decltype(__v)>; if constexpr(is_same_v<V,string>) return __v.substr(0, ((int)prefix.size())-0); else return vector<typename V::value_type>(__v.begin()+0, __v.begin()+((int)prefix.size())); })(s2) == prefix));
 	return 0;
 }

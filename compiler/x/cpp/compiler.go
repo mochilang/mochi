@@ -44,16 +44,9 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.writeln("using namespace std;")
 	c.writeln("")
 
-	// helpers for a few builtins
-	c.writeln("template<typename T> vector<T> mochi_append(vector<T> v, T x) { v.push_back(x); return v; }")
-	c.writeln("template<typename T> T mochi_sum(const vector<T>& v) { T s{}; for(const auto& x: v) s += x; return s; }")
-	c.writeln("template<typename T> double mochi_avg(const vector<T>& v) { if(v.empty()) return 0; return static_cast<double>(mochi_sum(v)) / v.size(); }")
-	c.writeln("template<typename T> void mochi_print(const T& v) { cout << v << endl; }")
-	c.writeln("template<typename T> void mochi_print(const vector<T>& v) { for(size_t i=0;i<v.size();++i){ if(i) cout << ' '; cout << v[i]; } cout << endl; }")
-	c.writeln("template<typename T> vector<T> mochi_slice(const vector<T>& v, int s, int e) { return vector<T>(v.begin()+s, v.begin()+e); }")
-	c.writeln("inline string mochi_slice(const string& s, int st, int ed) { return s.substr(st, ed - st); }")
-	c.writeln("template<typename T> bool mochi_contains(const vector<T>& v, const T& x) { return find(v.begin(), v.end(), x) != v.end(); }")
-	c.writeln("inline bool mochi_contains(const string& s, const string& sub) { return s.find(sub) != string::npos; }")
+	// small helpers for type traits
+	c.writeln("template<typename T, typename=void> struct has_size : false_type {};")
+	c.writeln("template<typename T> struct has_size<T, void_t<decltype(declval<T>().size()), decltype(declval<T>()[0])>> : true_type {};")
 	c.writeln("")
 
 	for _, st := range p.Statements {
@@ -298,7 +291,7 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 				return "", err
 			}
 			if op.Op == "in" {
-				out = fmt.Sprintf("mochi_contains(%s, %s)", rhs, out)
+				out = fmt.Sprintf("([&](const auto& __c,const auto& __e){ using C=decay_t<decltype(__c)>; if constexpr(is_same_v<C,string>) return __c.find(__e) != string::npos; else return find(__c.begin(), __c.end(), __e) != __c.end(); })(%s,%s)", rhs, out)
 			} else {
 				out = fmt.Sprintf("(%s %s %s)", out, op.Op, rhs)
 			}
@@ -335,7 +328,7 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				expr = fmt.Sprintf("mochi_slice(%s, %s, %s)", expr, start, end)
+				expr = fmt.Sprintf("([&](const auto& __v){ using V=decay_t<decltype(__v)>; if constexpr(is_same_v<V,string>) return __v.substr(%s, %s-%s); else return vector<typename V::value_type>(__v.begin()+%s, __v.begin()+%s); })(%s)", start, end, start, start, end, expr)
 			} else {
 				idx, err := c.compileExpr(op.Index.Start)
 				if err != nil {
@@ -353,13 +346,13 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, error) {
 				args = append(args, s)
 			}
 			if expr == "print" && len(args) == 1 {
-				expr = fmt.Sprintf("mochi_print(%s)", args[0])
+				expr = fmt.Sprintf("([&](const auto& __v){ if constexpr(has_size<decay_t<decltype(__v)>>::value){ for(size_t i=0;i<__v.size();++i){ if(i) cout<<' '; cout<<__v[i]; } cout<<endl; } else { cout<<__v<<endl; } })(%s)", args[0])
 			} else if expr == "print" {
-				e := "(cout"
+				e := "([&](){ cout"
 				for _, a := range args {
 					e += " << " + a
 				}
-				e += " << endl)"
+				e += " << endl; })()"
 				expr = e
 			} else if expr == "len" && len(args) == 1 {
 				if strings.HasPrefix(args[0], "\"") {
@@ -376,11 +369,11 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, error) {
 			} else if expr == "str" && len(args) == 1 {
 				expr = fmt.Sprintf("to_string(%s)", args[0])
 			} else if expr == "append" && len(args) == 2 {
-				expr = fmt.Sprintf("mochi_append(%s, %s)", args[0], args[1])
+				expr = fmt.Sprintf("([&](auto __v){ __v.push_back(%s); return __v; })(%s)", args[1], args[0])
 			} else if expr == "sum" && len(args) == 1 {
-				expr = fmt.Sprintf("mochi_sum(%s)", args[0])
+				expr = fmt.Sprintf("([&](const auto& __v){ typename decay_t<decltype(__v)>::value_type __s{}; for(const auto& __x: __v) __s += __x; return __s; })(%s)", args[0])
 			} else if expr == "avg" && len(args) == 1 {
-				expr = fmt.Sprintf("mochi_avg(%s)", args[0])
+				expr = fmt.Sprintf("([&](const auto& __v){ typename decay_t<decltype(__v)>::value_type __s{}; for(const auto& __x: __v) __s += __x; return __v.empty()?0:static_cast<double>(__s)/__v.size(); })(%s)", args[0])
 			} else if expr == "substring" && len(args) == 3 {
 				expr = fmt.Sprintf("%s.substr(%s, %s - %s)", args[0], args[1], args[2], args[1])
 			} else if strings.HasSuffix(expr, ".contains") && len(args) == 1 {
@@ -396,7 +389,7 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			if typ == "int" && strings.HasPrefix(expr, "\"") {
+			if typ == "int" {
 				expr = fmt.Sprintf("stoi(%s)", expr)
 			} else {
 				expr = fmt.Sprintf("(%s)(%s)", typ, expr)
@@ -422,14 +415,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		fn := p.Call.Func
 		if fn == "print" && len(args) == 1 {
-			return fmt.Sprintf("mochi_print(%s)", args[0]), nil
+			return fmt.Sprintf("([&](const auto& __v){ if constexpr(has_size<decay_t<decltype(__v)>>::value){ for(size_t i=0;i<__v.size();++i){ if(i) cout<<' '; cout<<__v[i]; } cout<<endl; } else { cout<<__v<<endl; } })(%s)", args[0]), nil
 		}
 		if fn == "print" {
-			out := "(cout"
+			out := "([&](){ cout"
 			for _, a := range args {
 				out += " << " + a
 			}
-			out += " << endl)"
+			out += " << endl; })()"
 			return out, nil
 		}
 		if fn == "len" && len(args) == 1 {
@@ -451,13 +444,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return fmt.Sprintf("to_string(%s)", args[0]), nil
 		}
 		if fn == "append" && len(args) == 2 {
-			return fmt.Sprintf("mochi_append(%s, %s)", args[0], args[1]), nil
+			return fmt.Sprintf("([&](auto __v){ __v.push_back(%s); return __v; })(%s)", args[1], args[0]), nil
 		}
 		if fn == "sum" && len(args) == 1 {
-			return fmt.Sprintf("mochi_sum(%s)", args[0]), nil
+			return fmt.Sprintf("([&](const auto& __v){ typename decay_t<decltype(__v)>::value_type __s{}; for(const auto& __x: __v) __s += __x; return __s; })(%s)", args[0]), nil
 		}
 		if fn == "avg" && len(args) == 1 {
-			return fmt.Sprintf("mochi_avg(%s)", args[0]), nil
+			return fmt.Sprintf("([&](const auto& __v){ typename decay_t<decltype(__v)>::value_type __s{}; for(const auto& __x: __v) __s += __x; return __v.empty()?0:static_cast<double>(__s)/__v.size(); })(%s)", args[0]), nil
 		}
 		if fn == "substring" && len(args) == 3 {
 			return fmt.Sprintf("%s.substr(%s, %s - %s)", args[0], args[1], args[2], args[1]), nil
