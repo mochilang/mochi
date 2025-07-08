@@ -1,6 +1,6 @@
 # C Compiler Results
 
-Compiled programs: 56/97
+Compiled programs: 57/97
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -76,7 +76,7 @@ Compiled programs: 56/97
 - [ ] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
-- [ ] slice.mochi
+ - [x] slice.mochi
 - [ ] sort_stable.mochi
 - [x] str_builtin.mochi
 - [x] string_compare.mochi
