@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"mochi/parser"
@@ -21,6 +22,10 @@ type Compiler struct {
 	funs   []funDecl
 	curFun *funDecl
 	tmpVar string
+
+	lens     map[string]int
+	listVals map[string][]string
+	mapVals  map[string][]string
 }
 
 type varDecl struct {
@@ -66,7 +71,12 @@ func (c *Compiler) collectForVars(st []*parser.Statement) {
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env}
+	return &Compiler{
+		env:      env,
+		lens:     make(map[string]int),
+		listVals: make(map[string][]string),
+		mapVals:  make(map[string][]string),
+	}
 }
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
@@ -77,6 +87,15 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.funs = nil
 	c.curFun = nil
 	c.tmpVar = ""
+	for k := range c.lens {
+		delete(c.lens, k)
+	}
+	for k := range c.listVals {
+		delete(c.listVals, k)
+	}
+	for k := range c.mapVals {
+		delete(c.mapVals, k)
+	}
 
 	name := strings.TrimSuffix(filepath.Base(prog.Pos.Filename), filepath.Ext(prog.Pos.Filename))
 	name = strings.ReplaceAll(name, "-", "_")
@@ -173,7 +192,31 @@ func (c *Compiler) addVar(name string, typ *parser.TypeRef, value *parser.Expr, 
 			pic = "PIC 9"
 		}
 	}
-	if value != nil && isLiteralExpr(value) {
+	if lst := listLiteral(value); lst != nil {
+		vals := make([]string, len(lst.Elems))
+		for i, e := range lst.Elems {
+			v, err := c.compileExpr(e)
+			if err != nil {
+				return err
+			}
+			vals[i] = strings.Trim(v, "\"")
+		}
+		c.listVals[name] = vals
+		c.lens[name] = len(vals)
+		return nil
+	} else if mp := mapLiteral(value); mp != nil {
+		vals := make([]string, len(mp.Items))
+		for i, it := range mp.Items {
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				return err
+			}
+			vals[i] = strings.Trim(v, "\"")
+		}
+		c.mapVals[name] = vals
+		c.lens[name] = len(vals)
+		return nil
+	} else if value != nil && isLiteralExpr(value) {
 		v, err := c.compileExpr(value)
 		if err != nil {
 			return err
@@ -300,7 +343,15 @@ func (c *Compiler) compilePrint(call *parser.CallExpr) error {
 		return fmt.Errorf("print expects 1 arg")
 	}
 	arg := call.Args[0]
-	if fc, ok := isCallTo(arg, ""); ok { // user defined function
+	if fc, ok := isCallTo(arg, ""); ok {
+		if isBuiltinCall(fc.Func) {
+			val, err := c.compileBuiltin(fc)
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("DISPLAY %s", val))
+			return nil
+		}
 		val, err := c.compileUserCall(fc)
 		if err != nil {
 			return err
@@ -558,6 +609,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if p.Call.Func == "print" {
 			return "", fmt.Errorf("print used as expression")
 		}
+		if isBuiltinCall(p.Call.Func) {
+			return c.compileBuiltin(p.Call)
+		}
 		val, err := c.compileUserCall(p.Call)
 		if err != nil {
 			return "", err
@@ -634,7 +688,21 @@ func isSimpleExpr(e *parser.Expr) bool {
 		return false
 	}
 	p := u.Value
-	return len(p.Ops) == 0 && p.Target != nil && (p.Target.Lit != nil || p.Target.Selector != nil)
+	if len(p.Ops) != 0 || p.Target == nil {
+		return false
+	}
+	if p.Target.Lit != nil || p.Target.Selector != nil {
+		return true
+	}
+	if call := p.Target.Call; call != nil && isBuiltinCall(call.Func) {
+		for _, a := range call.Args {
+			if !(isSimpleExpr(a) || isLiteralExpr(a) || simpleIdent(a) != "") {
+				return false
+			}
+		}
+		return true
+	}
+	return false
 }
 
 func (c *Compiler) ensureTmpVar() string {
@@ -676,4 +744,227 @@ func needsTmpVar(st []*parser.Statement) bool {
 		}
 	}
 	return false
+}
+
+func isBuiltinCall(name string) bool {
+	switch name {
+	case "len", "count", "sum", "min", "max", "avg", "append", "str", "substring", "values":
+		return true
+	default:
+		return false
+	}
+}
+
+func (c *Compiler) compileBuiltin(call *parser.CallExpr) (string, error) {
+	args := make([]string, len(call.Args))
+	for i, a := range call.Args {
+		s, err := c.compileExpr(a)
+		if err != nil {
+			return "", err
+		}
+		args[i] = s
+	}
+	switch call.Func {
+	case "len", "count":
+		if lst := listLiteral(call.Args[0]); lst != nil {
+			return fmt.Sprintf("%d", len(lst.Elems)), nil
+		}
+		if name := simpleIdent(call.Args[0]); name != "" {
+			if l, ok := c.lens[name]; ok {
+				return fmt.Sprintf("%d", l), nil
+			}
+		}
+		if str, ok := stringLiteral(call.Args[0]); ok {
+			return fmt.Sprintf("%d", len(str)), nil
+		}
+		return "", fmt.Errorf("%s unsupported", call.Func)
+	case "sum", "avg", "min", "max":
+		lst := listLiteral(call.Args[0])
+		if lst == nil {
+			if name := simpleIdent(call.Args[0]); name != "" {
+				if vals, ok := c.listVals[name]; ok {
+					lst = &parser.ListLiteral{Elems: make([]*parser.Expr, len(vals))}
+					for i, v := range vals {
+						lst.Elems[i] = &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Lit: &parser.Literal{Int: intPtr(v)}}}}}}
+					}
+				}
+			}
+		}
+		if lst == nil {
+			return "", fmt.Errorf("%s unsupported", call.Func)
+		}
+		nums := []int{}
+		for _, e := range lst.Elems {
+			n, ok := intLiteral(e)
+			if !ok {
+				return "", fmt.Errorf("%s unsupported", call.Func)
+			}
+			nums = append(nums, n)
+		}
+		switch call.Func {
+		case "sum":
+			s := 0
+			for _, n := range nums {
+				s += n
+			}
+			return fmt.Sprintf("%d", s), nil
+		case "avg":
+			s := 0
+			for _, n := range nums {
+				s += n
+			}
+			if len(nums) == 0 {
+				return "0", nil
+			}
+			return fmt.Sprintf("%d", s/len(nums)), nil
+		case "min":
+			m := nums[0]
+			for _, n := range nums[1:] {
+				if n < m {
+					m = n
+				}
+			}
+			return fmt.Sprintf("%d", m), nil
+		case "max":
+			m := nums[0]
+			for _, n := range nums[1:] {
+				if n > m {
+					m = n
+				}
+			}
+			return fmt.Sprintf("%d", m), nil
+		}
+	case "append":
+		var vals []string
+		if lst := listLiteral(call.Args[0]); lst != nil {
+			for _, e := range lst.Elems {
+				v, err := c.compileExpr(e)
+				if err != nil {
+					return "", err
+				}
+				vals = append(vals, strings.Trim(v, "\""))
+			}
+		} else if name := simpleIdent(call.Args[0]); name != "" {
+			if v, ok := c.listVals[name]; ok {
+				vals = append(vals, v...)
+			} else {
+				return "", fmt.Errorf("append unsupported")
+			}
+		} else {
+			return "", fmt.Errorf("append unsupported")
+		}
+		v, err := c.compileExpr(call.Args[1])
+		if err != nil {
+			return "", err
+		}
+		vals = append(vals, strings.Trim(v, "\""))
+		return fmt.Sprintf("\"%s\"", strings.Join(vals, " ")), nil
+	case "str":
+		if iv, ok := intLiteral(call.Args[0]); ok {
+			return fmt.Sprintf("\"%d\"", iv), nil
+		}
+		return "", fmt.Errorf("str unsupported")
+	case "substring":
+		if str, ok := stringLiteral(call.Args[0]); ok {
+			start, ok1 := intLiteral(call.Args[1])
+			end, ok2 := intLiteral(call.Args[2])
+			if ok1 && ok2 && start >= 0 && end <= len(str) && start <= end {
+				return fmt.Sprintf("\"%s\"", str[start:end]), nil
+			}
+		}
+		return "", fmt.Errorf("substring unsupported")
+	case "values":
+		var vals []string
+		if mp := mapLiteral(call.Args[0]); mp != nil {
+			for _, it := range mp.Items {
+				v, err := c.compileExpr(it.Value)
+				if err != nil {
+					return "", err
+				}
+				vals = append(vals, strings.Trim(v, "\""))
+			}
+		} else if name := simpleIdent(call.Args[0]); name != "" {
+			if v, ok := c.mapVals[name]; ok {
+				vals = append(vals, v...)
+			} else {
+				return "", fmt.Errorf("values unsupported")
+			}
+		} else {
+			return "", fmt.Errorf("values unsupported")
+		}
+		return fmt.Sprintf("\"%s\"", strings.Join(vals, " ")), nil
+	}
+	return "", fmt.Errorf("unsupported builtin %s", call.Func)
+}
+
+func intPtr(s string) *int {
+	n, _ := strconv.Atoi(s)
+	return &n
+}
+
+func listLiteral(e *parser.Expr) *parser.ListLiteral {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || len(u.Value.Ops) > 0 {
+		return nil
+	}
+	return u.Value.Target.List
+}
+
+func mapLiteral(e *parser.Expr) *parser.MapLiteral {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || len(u.Value.Ops) > 0 {
+		return nil
+	}
+	return u.Value.Target.Map
+}
+
+func stringLiteral(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Lit == nil || p.Target.Lit.Str == nil {
+		return "", false
+	}
+	return *p.Target.Lit.Str, true
+}
+
+func intLiteral(e *parser.Expr) (int, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return 0, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return 0, false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Lit == nil || p.Target.Lit.Int == nil {
+		return 0, false
+	}
+	return int(*p.Target.Lit.Int), true
+}
+
+func simpleIdent(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return ""
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Selector == nil || len(p.Target.Selector.Tail) > 0 {
+		return ""
+	}
+	return p.Target.Selector.Root
 }
