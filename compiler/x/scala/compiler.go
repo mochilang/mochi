@@ -402,7 +402,7 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 		case "+", "-", "*", "/", "%", "==", "!=", "<", "<=", ">", ">=", "&&", "||":
 			s = fmt.Sprintf("%s %s %s", s, op.Op, r)
 		case "in":
-			ct := types.ExprType(op.Right, c.env)
+			ct := types.TypeOfPostfix(op.Right, c.env)
 			switch ct.(type) {
 			case types.MapType, types.ListType, types.StringType:
 				s = fmt.Sprintf("%s.contains(%s)", r, s)
