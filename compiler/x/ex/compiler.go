@@ -94,6 +94,50 @@ func assignedVars(stmts []*parser.Statement) []string {
 	return vars
 }
 
+func usesLoopControl(stmts []*parser.Statement) bool {
+	var walkIf func(*parser.IfStmt) bool
+	var walk func([]*parser.Statement) bool
+
+	walkIf = func(ifst *parser.IfStmt) bool {
+		if ifst == nil {
+			return false
+		}
+		if walk(ifst.Then) {
+			return true
+		}
+		if walk(ifst.Else) {
+			return true
+		}
+		return walkIf(ifst.ElseIf)
+	}
+
+	walk = func(st []*parser.Statement) bool {
+		for _, s := range st {
+			if s.Break != nil || s.Continue != nil {
+				return true
+			}
+			if s.For != nil {
+				if walk(s.For.Body) {
+					return true
+				}
+			}
+			if s.While != nil {
+				if walk(s.While.Body) {
+					return true
+				}
+			}
+			if s.If != nil {
+				if walkIf(s.If) {
+					return true
+				}
+			}
+		}
+		return false
+	}
+
+	return walk(stmts)
+}
+
 func New(env *types.Env) *Compiler {
 	return &Compiler{env: env, helpers: make(map[string]bool), funcs: make(map[string]bool), structs: make(map[string]types.StructType), Module: "Main"}
 }
@@ -141,7 +185,7 @@ func (c *Compiler) typeSpec(t types.Type) string {
 		for i, p := range tt.Params {
 			params[i] = c.typeSpec(p)
 		}
-		return "fun((" + strings.Join(params, ", ") + ") -> " + c.typeSpec(tt.Return) + ")"
+		return "(" + strings.Join(params, ", ") + " -> " + c.typeSpec(tt.Return) + ")"
 	case types.VoidType:
 		return "nil"
 	default:
@@ -420,7 +464,9 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 		}
 	}
 
-	if len(mutated) == 0 {
+	needCtrl := usesLoopControl(stmt.Body)
+
+	if len(mutated) == 0 && !needCtrl {
 		c.writeln(fmt.Sprintf("for %s <- %s do", sanitizeName(name), srcExpr))
 		c.indent++
 		for _, s := range stmt.Body {
@@ -434,14 +480,50 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	}
 
 	tuple := strings.Join(mutated, ", ")
-	c.writeln(fmt.Sprintf("{%s} = Enum.reduce(%s, {%s}, fn %s, {%s} ->", tuple, srcExpr, tuple, sanitizeName(name), tuple))
+	accInit := ":ok"
+	accPat := "_acc"
+	if len(mutated) > 0 {
+		accInit = fmt.Sprintf("{%s}", tuple)
+		accPat = fmt.Sprintf("{%s}", tuple)
+	}
+	reduce := "Enum.reduce"
+	if needCtrl {
+		reduce = "Enum.reduce_while"
+	}
+	if len(mutated) > 0 {
+		c.writeln(fmt.Sprintf("%s = %s(%s, %s, fn %s, %s ->", accPat, reduce, srcExpr, accInit, sanitizeName(name), accPat))
+	} else {
+		c.writeln(fmt.Sprintf("_ = %s(%s, %s, fn %s, %s ->", reduce, srcExpr, accInit, sanitizeName(name), accPat))
+	}
 	c.indent++
+	if needCtrl {
+		c.writeln("try do")
+		c.indent++
+	}
 	for _, s := range stmt.Body {
 		if err := c.compileStmt(s); err != nil {
 			return err
 		}
 	}
-	c.writeln(fmt.Sprintf("{%s}", tuple))
+	if len(mutated) > 0 {
+		c.writeln(fmt.Sprintf("{:cont, {%s}}", tuple))
+	} else {
+		c.writeln("{:cont, :ok}")
+	}
+	if needCtrl {
+		c.indent--
+		c.writeln("catch")
+		c.indent++
+		if len(mutated) > 0 {
+			c.writeln(fmt.Sprintf(":break -> {:halt, {%s}}", tuple))
+			c.writeln(fmt.Sprintf(":continue -> {:cont, {%s}}", tuple))
+		} else {
+			c.writeln(":break -> {:halt, :ok}")
+			c.writeln(":continue -> {:cont, :ok}")
+		}
+		c.indent--
+		c.writeln("end")
+	}
 	c.indent--
 	c.writeln("end)")
 	for _, v := range mutated {

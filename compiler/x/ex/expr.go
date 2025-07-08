@@ -295,7 +295,18 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 						res = fmt.Sprintf("IO.puts(Enum.join(Enum.map([%s], &to_string(&1)), \" \"))", argStr)
 					}
 				case "len":
-					res = fmt.Sprintf("length(%s)", argStr)
+					if len(args) != 1 {
+						return "", fmt.Errorf("len expects 1 arg")
+					}
+					t := c.inferExprType(op.Call.Args[0])
+					switch t.(type) {
+					case types.StringType:
+						res = fmt.Sprintf("String.length(%s)", args[0])
+					case types.MapType:
+						res = fmt.Sprintf("map_size(%s)", args[0])
+					default:
+						res = fmt.Sprintf("length(%s)", args[0])
+					}
 				case "count":
 					c.use("_count")
 					res = fmt.Sprintf("_count(%s)", argStr)
@@ -435,7 +446,18 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			return fmt.Sprintf("IO.puts(Enum.join(Enum.map([%s], &to_string(&1)), \" \"))", argStr), nil
 		case "len":
-			return fmt.Sprintf("length(%s)", argStr), nil
+			if len(args) != 1 {
+				return "", fmt.Errorf("len expects 1 arg")
+			}
+			t := c.inferExprType(p.Call.Args[0])
+			switch t.(type) {
+			case types.StringType:
+				return fmt.Sprintf("String.length(%s)", args[0]), nil
+			case types.MapType:
+				return fmt.Sprintf("map_size(%s)", args[0]), nil
+			default:
+				return fmt.Sprintf("length(%s)", args[0]), nil
+			}
 		case "count":
 			c.use("_count")
 			return fmt.Sprintf("_count(%s)", argStr), nil
@@ -470,6 +492,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				expr = fmt.Sprintf("_concat(%s, %s)", expr, args[i])
 			}
 			return expr, nil
+		case "append":
+			if len(args) != 2 {
+				return "", fmt.Errorf("append expects 2 args")
+			}
+			return fmt.Sprintf("%s ++ [%s]", args[0], args[1]), nil
 		case "substr":
 			if len(args) != 3 {
 				return "", fmt.Errorf("substr expects 3 args")
