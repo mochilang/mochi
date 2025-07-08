@@ -1,5 +1,5 @@
 Function makeAdder(int n) {
-  return (int x) => x + n;
+  return (x) => x + n;
 }
 
 void main() {
