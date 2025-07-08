@@ -5,7 +5,6 @@ package zigcode
 import (
 	"bytes"
 	"fmt"
-	"math"
 	"strconv"
 	"strings"
 
@@ -1888,11 +1887,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 func (c *Compiler) compileLiteral(l *parser.Literal, hint types.Type) (string, error) {
 	switch {
 	case l.Int != nil:
-		val := *l.Int
-		if isInt64(hint) || val > math.MaxInt32 || val < math.MinInt32 {
-			return fmt.Sprintf("@as(i64,@intCast(%d))", val), nil
-		}
-		return fmt.Sprintf("@as(i32,@intCast(%d))", val), nil
+		return strconv.Itoa(*l.Int), nil
 	case l.Float != nil:
 		return strconv.FormatFloat(*l.Float, 'f', -1, 64), nil
 	case l.Str != nil:
