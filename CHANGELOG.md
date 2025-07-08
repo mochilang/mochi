@@ -1,5 +1,25 @@
 # 📦 CHANGELOG.md
 
+## [0.10.19] – 2025-07-08T08:40:55+07:00
+
+### Added
+
+* Simplified Lua compiler with initial outputs
+* Basic query and loop support for the F# compiler
+* Extensive translations for dataset and join programs across languages
+
+### Changed
+
+* Go, Haskell, Swift, PHP, Erlang and Dart compilers handle loops, indexing and closures
+* C, C++, C# and PHP backends inline builtins with string helpers
+* READMEs converted to checklists with updated translation progress
+
+### Fixed
+
+* Dart compiler buffer logic and function types
+* Elixir print output and Zig average builtin
+* Miscellaneous dataset and test updates across languages
+
 ## [0.10.18] – 2025-07-07T08:14:56+07:00
 
 ### Added
