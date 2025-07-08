@@ -1,6 +1,6 @@
 import java.util.*;
 public class Main {
-	static int a = java.util.Arrays.asList(1, 2);
+	static List<Integer> a = new ArrayList<>(java.util.Arrays.asList(1, 2));
 	static <T> List<T> append(List<T> list, T item) {
 		List<T> res = new ArrayList<>(list);
 		res.add(item);

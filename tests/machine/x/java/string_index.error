@@ -1,11 +1,10 @@
 line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramsstring_index3897767112/001/Main.java:3: error: incompatible types: String cannot be converted to int
-	static int s = "mochi";
-	               ^
-/tmp/TestCompileValidProgramsstring_index3897767112/001/Main.java:5: error: int cannot be dereferenced
+/tmp/TestCompileValidProgramsstring_index742629540/001/Main.java:5: error: cannot find symbol
 	System.out.println(s.get(1));
 	                    ^
-2 errors
+  symbol:   method get(int)
+  location: variable s of type String
+1 error
 
 
   1| let s = "mochi"

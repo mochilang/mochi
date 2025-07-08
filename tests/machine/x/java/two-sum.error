@@ -1,36 +1,8 @@
 line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramstwo-sum3461601777/001/Main.java:3: error: incompatible types: no instance(s) of type variable(s) T exist so that List<T> conforms to int
-	static int result = twoSum(java.util.Arrays.asList(2, 7, 11, 15), 9);
-	                    ^
-  where T is a type-variable:
-    T extends Object declared in method <T>asList(T...)
-/tmp/TestCompileValidProgramstwo-sum3461601777/001/Main.java:5: error: int cannot be dereferenced
-		int n = nums.size();
-		            ^
-/tmp/TestCompileValidProgramstwo-sum3461601777/001/Main.java:8: error: int cannot be dereferenced
-				if (nums.get(i) + nums.get(j) == target) {
-				        ^
-/tmp/TestCompileValidProgramstwo-sum3461601777/001/Main.java:8: error: int cannot be dereferenced
-				if (nums.get(i) + nums.get(j) == target) {
-				                      ^
-/tmp/TestCompileValidProgramstwo-sum3461601777/001/Main.java:9: error: incompatible types: no instance(s) of type variable(s) T exist so that List<T> conforms to int
-					return java.util.Arrays.asList(i, j);
-					                              ^
-  where T is a type-variable:
-    T extends Object declared in method <T>asList(T...)
-/tmp/TestCompileValidProgramstwo-sum3461601777/001/Main.java:13: error: incompatible types: no instance(s) of type variable(s) T exist so that List<T> conforms to int
-		return java.util.Arrays.asList(-1, -1);
-		                              ^
-  where T is a type-variable:
-    T extends Object declared in method <T>asList(T...)
-/tmp/TestCompileValidProgramstwo-sum3461601777/001/Main.java:16: error: int cannot be dereferenced
-	System.out.println(result.get(0));
-	                         ^
-/tmp/TestCompileValidProgramstwo-sum3461601777/001/Main.java:17: error: int cannot be dereferenced
-	System.out.println(result.get(1));
-	                         ^
-Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
-8 errors
+/tmp/TestCompileValidProgramstwo-sum1065047018/001/Main.java:3: error: 'var' is not allowed here
+	static var result = twoSum(java.util.Arrays.asList(2, 7, 11, 15), 9);
+	       ^
+1 error
 
 
   1| fun twoSum(nums: list<int>, target: int): list<int> {

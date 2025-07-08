@@ -5,7 +5,7 @@ Each `.java` file is the output from the compiler under `compiler/x/java`. For s
 program is executed and its stdout is written to a `.out` file. Failed compilations or executions produce a
 `.error` file containing the error message and surrounding source context.
 
-## Completed Examples (31/97)
+## Completed Examples (44/97)
 
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -38,3 +38,16 @@ program is executed and its stdout is written to a `.out` file. Failed compilati
 - [x] unary_neg.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
+- [x] append_builtin.mochi
+- [x] in_operator.mochi
+- [x] list_assign.mochi
+- [x] list_index.mochi
+- [x] map_assign.mochi
+- [x] map_in_operator.mochi
+- [x] map_index.mochi
+- [x] map_int_key.mochi
+- [x] map_membership.mochi
+- [x] membership.mochi
+- [x] min_max_builtin.mochi
+- [x] string_in_operator.mochi
+- [x] values_builtin.mochi

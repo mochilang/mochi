@@ -1,8 +1,8 @@
 import java.util.*;
 public class Main {
-	static int result = twoSum(java.util.Arrays.asList(2, 7, 11, 15), 9);
+	static var result = twoSum(java.util.Arrays.asList(2, 7, 11, 15), 9);
 	static int twoSum(int nums, int target) {
-		int n = nums.size();
+		var n = nums.size();
 		for (int i = 0; i < n; i++) {
 			for (int j = i + 1; j < n; j++) {
 				if (nums.get(i) + nums.get(j) == target) {

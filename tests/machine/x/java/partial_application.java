@@ -1,6 +1,6 @@
 import java.util.*;
 public class Main {
-	static int add5 = add(5);
+	static var add5 = add(5);
 	static int add(int a, int b) {
 		return a + b;
 	}

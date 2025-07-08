@@ -1,16 +1,8 @@
 line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramspartial_application3877667681/001/Main.java:3: error: method add in class Main cannot be applied to given types;
-	static int add5 = add(5);
-	                  ^
-  required: int,int
-  found:    int
-  reason: actual and formal argument lists differ in length
-/tmp/TestCompileValidProgramspartial_application3877667681/001/Main.java:8: error: cannot find symbol
-	System.out.println(add5(3));
-	                   ^
-  symbol:   method add5(int)
-  location: class Main
-2 errors
+/tmp/TestCompileValidProgramspartial_application2615533609/001/Main.java:3: error: 'var' is not allowed here
+	static var add5 = add(5);
+	       ^
+1 error
 
 
   1| fun add(a: int, b: int): int {

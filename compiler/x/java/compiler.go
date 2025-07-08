@@ -125,6 +125,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.indent--
 		c.writeln("}")
 	}
+	if c.helpers["in"] {
+		c.writeln("static boolean inOp(Object item, Object collection) {")
+		c.indent++
+		c.writeln("if (collection instanceof Map<?,?> m) return m.containsKey(item);")
+		c.writeln("if (collection instanceof Collection<?> c) return c.contains(item);")
+		c.writeln("if (collection instanceof String s) return s.contains(String.valueOf(item));")
+		c.writeln("return false;")
+		c.indent--
+		c.writeln("}")
+	}
 	c.writeln("public static void main(String[] args) {")
 	c.indent++
 	c.buf.Write(body.Bytes())
@@ -195,11 +205,107 @@ func (c *Compiler) defaultValue(typ string) string {
 	}
 }
 
+func (c *Compiler) inferType(e *parser.Expr) string {
+	if l := isListLiteral(e); l != nil {
+		et := "Object"
+		if len(l.Elems) > 0 {
+			et = c.litType(l.Elems[0])
+		}
+		return fmt.Sprintf("List<%s>", et)
+	}
+	if m := isMapLiteral(e); m != nil {
+		kt, vt := "Object", "Object"
+		if len(m.Items) > 0 {
+			kt = c.litType(m.Items[0].Key)
+			vt = c.litType(m.Items[0].Value)
+		}
+		return fmt.Sprintf("Map<%s,%s>", kt, vt)
+	}
+	p := rootPrimary(e)
+	if p != nil && p.Lit != nil {
+		return c.typeName(&parser.TypeRef{Simple: litTypeName(p)})
+	}
+	return "var"
+}
+
+func (c *Compiler) litType(e *parser.Expr) string {
+	p := rootPrimary(e)
+	if p == nil || p.Lit == nil {
+		return "Object"
+	}
+	switch {
+	case p.Lit.Int != nil:
+		return "Integer"
+	case p.Lit.Float != nil:
+		return "Double"
+	case p.Lit.Str != nil:
+		return "String"
+	case p.Lit.Bool != nil:
+		return "Boolean"
+	default:
+		return "Object"
+	}
+}
+
+func rootPrimary(e *parser.Expr) *parser.Primary {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil {
+		return nil
+	}
+	return e.Binary.Left.Value.Target
+}
+
+func litTypeName(p *parser.Primary) *string {
+	if p.Lit == nil {
+		return nil
+	}
+	if p.Lit.Int != nil {
+		s := "int"
+		return &s
+	}
+	if p.Lit.Float != nil {
+		s := "float"
+		return &s
+	}
+	if p.Lit.Str != nil {
+		s := "string"
+		return &s
+	}
+	if p.Lit.Bool != nil {
+		s := "bool"
+		return &s
+	}
+	return nil
+}
+
+func isListLiteral(e *parser.Expr) *parser.ListLiteral {
+	p := rootPrimary(e)
+	if p != nil && p.List != nil && len(e.Binary.Right) == 0 {
+		return p.List
+	}
+	return nil
+}
+
+func isMapLiteral(e *parser.Expr) *parser.MapLiteral {
+	p := rootPrimary(e)
+	if p != nil && p.Map != nil && len(e.Binary.Right) == 0 {
+		return p.Map
+	}
+	return nil
+}
+
 func (c *Compiler) compileGlobalVar(v *parser.VarStmt) error {
 	typ := c.typeName(v.Type)
 	expr, err := c.compileExpr(v.Value)
 	if err != nil {
 		return err
+	}
+	if v.Type == nil && v.Value != nil {
+		typ = c.inferType(v.Value)
+		if isListLiteral(v.Value) != nil {
+			expr = fmt.Sprintf("new ArrayList<>(%s)", expr)
+		} else if isMapLiteral(v.Value) != nil {
+			expr = fmt.Sprintf("new HashMap<>(%s)", expr)
+		}
 	}
 	if v.Value == nil {
 		c.writeln(fmt.Sprintf("static %s %s = %s;", typ, v.Name, c.defaultValue(typ)))
@@ -214,6 +320,14 @@ func (c *Compiler) compileGlobalLet(v *parser.LetStmt) error {
 	expr, err := c.compileExpr(v.Value)
 	if err != nil {
 		return err
+	}
+	if v.Type == nil && v.Value != nil {
+		typ = c.inferType(v.Value)
+		if isListLiteral(v.Value) != nil {
+			expr = fmt.Sprintf("new ArrayList<>(%s)", expr)
+		} else if isMapLiteral(v.Value) != nil {
+			expr = fmt.Sprintf("new HashMap<>(%s)", expr)
+		}
 	}
 	if v.Value == nil {
 		c.writeln(fmt.Sprintf("static %s %s = %s;", typ, v.Name, c.defaultValue(typ)))
@@ -257,6 +371,14 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	if err != nil {
 		return err
 	}
+	if v.Type == nil && v.Value != nil {
+		typ = c.inferType(v.Value)
+		if isListLiteral(v.Value) != nil {
+			expr = fmt.Sprintf("new ArrayList<>(%s)", expr)
+		} else if isMapLiteral(v.Value) != nil {
+			expr = fmt.Sprintf("new HashMap<>(%s)", expr)
+		}
+	}
 	if v.Value == nil {
 		c.writeln(fmt.Sprintf("%s %s = %s;", typ, v.Name, c.defaultValue(typ)))
 	} else {
@@ -271,6 +393,14 @@ func (c *Compiler) compileLet(v *parser.LetStmt) error {
 	if err != nil {
 		return err
 	}
+	if v.Type == nil && v.Value != nil {
+		typ = c.inferType(v.Value)
+		if isListLiteral(v.Value) != nil {
+			expr = fmt.Sprintf("new ArrayList<>(%s)", expr)
+		} else if isMapLiteral(v.Value) != nil {
+			expr = fmt.Sprintf("new HashMap<>(%s)", expr)
+		}
+	}
 	if v.Value == nil {
 		c.writeln(fmt.Sprintf("%s %s = %s;", typ, v.Name, c.defaultValue(typ)))
 	} else {
@@ -284,7 +414,29 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 	if err != nil {
 		return err
 	}
-	c.writeln(fmt.Sprintf("%s = %s;", a.Name, expr))
+	if len(a.Index) == 0 {
+		c.writeln(fmt.Sprintf("%s = %s;", a.Name, expr))
+		return nil
+	}
+	target := a.Name
+	for i, idx := range a.Index {
+		if idx.Start == nil || idx.Colon != nil {
+			return fmt.Errorf("complex indexing not supported")
+		}
+		ix, err := c.compileExpr(idx.Start)
+		if err != nil {
+			return err
+		}
+		if i == len(a.Index)-1 {
+			if strings.HasPrefix(ix, "\"") {
+				c.writeln(fmt.Sprintf("%s.put(%s, %s);", target, ix, expr))
+			} else {
+				c.writeln(fmt.Sprintf("%s.set(%s, %s);", target, ix, expr))
+			}
+		} else {
+			target = fmt.Sprintf("%s.get(%s)", target, ix)
+		}
+	}
 	return nil
 }
 
@@ -423,6 +575,11 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 		right, err := c.compilePostfix(op.Right)
 		if err != nil {
 			return "", err
+		}
+		if op.Op == "in" {
+			c.helpers["in"] = true
+			expr = fmt.Sprintf("inOp(%s, %s)", expr, right)
+			continue
 		}
 		if (op.Op == "<" || op.Op == "<=" || op.Op == ">" || op.Op == ">=") &&
 			isString(expr) && isString(right) {
