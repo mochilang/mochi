@@ -29,6 +29,7 @@ type Compiler struct {
 	usesSliceStr bool
 	usesExpect   bool
 	usesFetch    bool
+	usesAnyValue bool
 }
 
 func (c *Compiler) hsType(t types.Type) string {
@@ -85,6 +86,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.usesSliceStr = false
 	c.usesExpect = false
 	c.usesFetch = false
+	c.usesAnyValue = false
 
 	for _, s := range prog.Statements {
 		if s.Type != nil {
@@ -215,6 +217,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	if c.usesLoad || c.usesSave || c.usesFetch {
 		header.WriteString(loadRuntime)
+	} else if c.usesAnyValue {
+		header.WriteString(anyValueRuntime)
 	}
 	if c.usesExpect {
 		header.WriteString(expectHelper)
@@ -965,6 +969,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		anyVal := false
 		if _, ok := mt.Value.(types.AnyType); ok {
 			anyVal = true
+			c.usesAnyValue = true
 		}
 		items := make([]string, len(p.Map.Items))
 		for i, it := range p.Map.Items {
@@ -1087,6 +1092,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				if i == len(p.Selector.Tail)-1 {
 					if _, ok := tt.Value.(types.AnyType); ok {
 						ft := c.inferPrimaryType(&parser.Primary{Selector: &parser.SelectorExpr{Root: p.Selector.Root, Tail: p.Selector.Tail}})
+						c.usesAnyValue = true
 						switch ft.(type) {
 						case types.IntType, types.Int64Type:
 							expr = fmt.Sprintf("_asInt (%s)", expr)

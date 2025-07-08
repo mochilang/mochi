@@ -97,6 +97,26 @@ _json v = BSL.putStrLn (Aeson.encode v)
 
 `
 
+const anyValueRuntime = `
+data AnyValue = VInt Int | VDouble Double | VString String | VBool Bool deriving (Show)
+
+_asInt :: AnyValue -> Int
+_asInt (VInt n) = n
+_asInt v = error ("expected int, got " ++ show v)
+
+_asDouble :: AnyValue -> Double
+_asDouble (VDouble d) = d
+_asDouble v = error ("expected double, got " ++ show v)
+
+_asString :: AnyValue -> String
+_asString (VString s) = s
+_asString v = error ("expected string, got " ++ show v)
+
+_asBool :: AnyValue -> Bool
+_asBool (VBool b) = b
+_asBool v = error ("expected bool, got " ++ show v)
+`
+
 const expectHelper = `
 expect :: Bool -> IO ()
 expect True = pure ()
