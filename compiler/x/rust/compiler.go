@@ -614,9 +614,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	b.WriteString("{ let mut ")
 	b.WriteString(tmp)
 	b.WriteString(" = Vec::new();")
-	b.WriteString(fmt.Sprintf("for %s in &%s {", q.Var, src))
+	b.WriteString(fmt.Sprintf("for &%s in &%s {", q.Var, src))
 	for i, fs := range fromSrcs {
-		b.WriteString(fmt.Sprintf(" for %s in &%s {", q.Froms[i].Var, fs))
+		b.WriteString(fmt.Sprintf(" for &%s in &%s {", q.Froms[i].Var, fs))
 	}
 	if cond != "" {
 		b.WriteString(" if !(" + cond + ") { continue; }")
