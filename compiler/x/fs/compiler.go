@@ -545,7 +545,10 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 					return fmt.Sprintf("printfn \"%%s\" (String.concat \" \" (List.map string %s))", args[0]), nil
 				}
 			}
-			return fmt.Sprintf("printfn \"%%s\" (string %s)", args[0]), nil
+			if isBoolExpr(argAST) {
+				return fmt.Sprintf("printfn \"%%b\" (%s)", args[0]), nil
+			}
+			return fmt.Sprintf("printfn \"%%A\" (%s)", args[0]), nil
 		}
 		conv := make([]string, len(args))
 		for i, a := range args {
@@ -844,6 +847,33 @@ func isMapLiteral(e *parser.Expr) *parser.MapLiteral {
 		return p.Map
 	}
 	return nil
+}
+
+func isBoolExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	if e.Binary.Left != nil {
+		if len(e.Binary.Left.Ops) > 0 {
+			for _, op := range e.Binary.Left.Ops {
+				if op == "!" {
+					return true
+				}
+			}
+		}
+		if e.Binary.Left.Value != nil && e.Binary.Left.Value.Target != nil {
+			if lit := e.Binary.Left.Value.Target.Lit; lit != nil && lit.Bool != nil {
+				return true
+			}
+		}
+	}
+	for _, r := range e.Binary.Right {
+		switch r.Op {
+		case "==", "!=", "<", "<=", ">", ">=", "&&", "||", "in":
+			return true
+		}
+	}
+	return false
 }
 
 func repoRoot() (string, error) {
