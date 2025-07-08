@@ -14,9 +14,12 @@ type Compiler struct {
 	buf     *bytes.Buffer
 	indent  int
 	helpers map[string]bool
+	vars    map[string]string
 }
 
-func New() *Compiler { return &Compiler{buf: new(bytes.Buffer), helpers: make(map[string]bool)} }
+func New() *Compiler {
+	return &Compiler{buf: new(bytes.Buffer), helpers: make(map[string]bool), vars: make(map[string]string)}
+}
 
 func (c *Compiler) writeln(s string) {
 	for i := 0; i < c.indent; i++ {
@@ -33,7 +36,23 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf = body
 	c.indent = 1
 	for _, s := range prog.Statements {
-		if s.Fun != nil || s.Var != nil || s.Let != nil {
+		if s.Var != nil {
+			typ := c.typeName(s.Var.Type)
+			if s.Var.Type == nil && s.Var.Value != nil {
+				typ = c.inferType(s.Var.Value)
+			}
+			c.vars[s.Var.Name] = typ
+			continue
+		}
+		if s.Let != nil {
+			typ := c.typeName(s.Let.Type)
+			if s.Let.Type == nil && s.Let.Value != nil {
+				typ = c.inferType(s.Let.Value)
+			}
+			c.vars[s.Let.Name] = typ
+			continue
+		}
+		if s.Fun != nil {
 			continue
 		}
 		if err := c.compileStmt(s); err != nil {
@@ -293,6 +312,18 @@ func isMapLiteral(e *parser.Expr) *parser.MapLiteral {
 	return nil
 }
 
+func (c *Compiler) exprIsMap(e *parser.Expr) bool {
+	if isMapLiteral(e) != nil {
+		return true
+	}
+	if p := rootPrimary(e); p != nil && p.Selector != nil && len(p.Selector.Tail) == 0 {
+		if t, ok := c.vars[p.Selector.Root]; ok {
+			return strings.HasPrefix(t, "Map")
+		}
+	}
+	return false
+}
+
 func (c *Compiler) compileGlobalVar(v *parser.VarStmt) error {
 	typ := c.typeName(v.Type)
 	expr, err := c.compileExpr(v.Value)
@@ -312,6 +343,7 @@ func (c *Compiler) compileGlobalVar(v *parser.VarStmt) error {
 	} else {
 		c.writeln(fmt.Sprintf("static %s %s = %s;", typ, v.Name, expr))
 	}
+	c.vars[v.Name] = typ
 	return nil
 }
 
@@ -334,6 +366,7 @@ func (c *Compiler) compileGlobalLet(v *parser.LetStmt) error {
 	} else {
 		c.writeln(fmt.Sprintf("static %s %s = %s;", typ, v.Name, expr))
 	}
+	c.vars[v.Name] = typ
 	return nil
 }
 
@@ -384,6 +417,7 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	} else {
 		c.writeln(fmt.Sprintf("%s %s = %s;", typ, v.Name, expr))
 	}
+	c.vars[v.Name] = typ
 	return nil
 }
 
@@ -406,6 +440,7 @@ func (c *Compiler) compileLet(v *parser.LetStmt) error {
 	} else {
 		c.writeln(fmt.Sprintf("%s %s = %s;", typ, v.Name, expr))
 	}
+	c.vars[v.Name] = typ
 	return nil
 }
 
@@ -474,7 +509,11 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("for (var %s : %s) {", f.Name, src))
+		if c.exprIsMap(f.Source) {
+			c.writeln(fmt.Sprintf("for (var %s : %s.keySet()) {", f.Name, src))
+		} else {
+			c.writeln(fmt.Sprintf("for (var %s : %s) {", f.Name, src))
+		}
 		c.indent++
 		for _, s := range f.Body {
 			if err := c.compileStmt(s); err != nil {
@@ -529,6 +568,11 @@ func (c *Compiler) compileFun(f *parser.FunStmt) error {
 		params = append(params, fmt.Sprintf("%s %s", c.typeName(p.Type), p.Name))
 	}
 	c.writeln(fmt.Sprintf("static %s %s(%s) {", ret, f.Name, strings.Join(params, ", ")))
+	origVars := c.vars
+	c.vars = copyMap(origVars)
+	for _, p := range f.Params {
+		c.vars[p.Name] = c.typeName(p.Type)
+	}
 	c.indent++
 	for _, s := range f.Body {
 		if err := c.compileStmt(s); err != nil {
@@ -537,6 +581,7 @@ func (c *Compiler) compileFun(f *parser.FunStmt) error {
 	}
 	c.indent--
 	c.writeln("}")
+	c.vars = origVars
 	return nil
 }
 
@@ -679,14 +724,22 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Call != nil:
 		switch p.Call.Func {
 		case "print":
-			if len(p.Call.Args) != 1 {
-				return "", fmt.Errorf("print expects one argument at line %d", p.Pos.Line)
+			if len(p.Call.Args) == 0 {
+				return "", fmt.Errorf("print expects at least one argument at line %d", p.Pos.Line)
 			}
-			arg, err := c.compileExpr(p.Call.Args[0])
-			if err != nil {
-				return "", err
+			var parts []string
+			for _, a := range p.Call.Args {
+				arg, err := c.compileExpr(a)
+				if err != nil {
+					return "", err
+				}
+				parts = append(parts, arg)
 			}
-			return fmt.Sprintf("System.out.println(%s)", arg), nil
+			expr := parts[0]
+			for i := 1; i < len(parts); i++ {
+				expr += " + \" \" + " + parts[i]
+			}
+			return fmt.Sprintf("System.out.println(%s)", expr), nil
 		case "len":
 			if len(p.Call.Args) != 1 {
 				return "", fmt.Errorf("len expects one argument at line %d", p.Pos.Line)
@@ -821,4 +874,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "(" + expr + ")", nil
 	}
 	return "", fmt.Errorf("expression unsupported at line %d", p.Pos.Line)
+}
+
+func copyMap(src map[string]string) map[string]string {
+	dst := make(map[string]string, len(src))
+	for k, v := range src {
+		dst[k] = v
+	}
+	return dst
 }
