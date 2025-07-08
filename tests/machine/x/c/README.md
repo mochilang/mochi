@@ -1,6 +1,6 @@
 # C Compiler Results
 
-Compiled programs: 53/97
+Compiled programs: 56/97
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -34,8 +34,8 @@ Compiled programs: 53/97
 - [ ] group_by_sort.mochi
 - [ ] group_items_iteration.mochi
 - [x] if_else.mochi
-- [ ] if_then_else.mochi
-- [ ] if_then_else_nested.mochi
+- [x] if_then_else.mochi
+- [x] if_then_else_nested.mochi
 - [x] in_operator.mochi
 - [ ] in_operator_extended.mochi
 - [ ] inner_join.mochi
@@ -95,7 +95,7 @@ Compiled programs: 53/97
 - [x] typed_var.mochi
 - [x] unary_neg.mochi
 - [ ] update_stmt.mochi
-- [ ] user_type_literal.mochi
+- [x] user_type_literal.mochi
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
