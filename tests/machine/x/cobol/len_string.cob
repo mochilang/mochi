@@ -3,6 +3,5 @@
        DATA DIVISION.
        WORKING-STORAGE SECTION.
        PROCEDURE DIVISION.
-       PERFORM LEN USING "mochi"
-       DISPLAY LEN_RES
+       DISPLAY 5
        STOP RUN.

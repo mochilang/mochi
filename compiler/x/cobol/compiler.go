@@ -292,13 +292,30 @@ func (c *Compiler) compilePrint(call *parser.CallExpr) error {
 		return fmt.Errorf("print expects 1 arg")
 	}
 	arg := call.Args[0]
-	if fc, ok := isCallTo(arg, ""); ok { // user defined function
-		val, err := c.compileUserCall(fc)
-		if err != nil {
-			return err
+	if fc, ok := isCallTo(arg, ""); ok {
+		switch fc.Func {
+		case "len":
+			val, err := c.compileLen(fc)
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("DISPLAY %s", val))
+			return nil
+		case "str":
+			val, err := c.compileStr(fc)
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("DISPLAY %s", val))
+			return nil
+		default:
+			val, err := c.compileUserCall(fc)
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("DISPLAY %s", val))
+			return nil
 		}
-		c.writeln(fmt.Sprintf("DISPLAY %s", val))
-		return nil
 	}
 	expr, err := c.compileExpr(arg)
 	if err != nil {
@@ -326,6 +343,23 @@ func (c *Compiler) compileUserCall(call *parser.CallExpr) (string, error) {
 	return name + "_RES", nil
 }
 
+func (c *Compiler) compileLen(call *parser.CallExpr) (string, error) {
+	if len(call.Args) != 1 {
+		return "", fmt.Errorf("len expects 1 arg")
+	}
+	if n, ok := literalLength(call.Args[0]); ok {
+		return fmt.Sprintf("%d", n), nil
+	}
+	return "", fmt.Errorf("unsupported len argument at line %d", call.Pos.Line)
+}
+
+func (c *Compiler) compileStr(call *parser.CallExpr) (string, error) {
+	if len(call.Args) != 1 {
+		return "", fmt.Errorf("str expects 1 arg")
+	}
+	return c.compileExpr(call.Args[0])
+}
+
 func isLiteralExpr(e *parser.Expr) bool {
 	if e == nil || e.Binary == nil {
 		return false
@@ -345,6 +379,30 @@ func isLiteralExpr(e *parser.Expr) bool {
 		return false
 	}
 	return p.Target != nil && p.Target.Lit != nil
+}
+
+func literalLength(e *parser.Expr) (int, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return 0, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return 0, false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return 0, false
+	}
+	switch {
+	case p.Target != nil && p.Target.Lit != nil && p.Target.Lit.Str != nil:
+		return len(*p.Target.Lit.Str), true
+	case p.Target != nil && p.Target.List != nil:
+		return len(p.Target.List.Elems), true
+	case p.Target != nil && p.Target.Map != nil:
+		return len(p.Target.Map.Items), true
+	default:
+		return 0, false
+	}
 }
 
 func (c *Compiler) compileIf(i *parser.IfStmt) error {
@@ -520,14 +578,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Lit != nil:
 		return c.compileLiteral(p.Lit), nil
 	case p.Call != nil:
-		if p.Call.Func == "print" {
+		switch p.Call.Func {
+		case "print":
 			return "", fmt.Errorf("print used as expression")
+		case "len":
+			return c.compileLen(p.Call)
+		case "str":
+			return c.compileStr(p.Call)
+		default:
+			val, err := c.compileUserCall(p.Call)
+			if err != nil {
+				return "", err
+			}
+			return val, nil
 		}
-		val, err := c.compileUserCall(p.Call)
-		if err != nil {
-			return "", err
-		}
-		return val, nil
 	case p.Group != nil:
 		expr, err := c.compileExpr(p.Group)
 		if err != nil {

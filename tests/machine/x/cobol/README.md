@@ -5,7 +5,7 @@ The files listed below are produced from the Mochi sources in
 `tests/vm/valid`. A COBOL compiler is not available in CI so the programs
 have not been executed.
 
-Compiled programs: **8/97**
+Compiled programs: **12/97**
 
 ## Checklist
 
@@ -17,3 +17,7 @@ Compiled programs: **8/97**
 - [x] typed_var.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
+- [x] len_builtin.mochi
+- [x] len_map.mochi
+- [x] len_string.mochi
+- [x] str_builtin.mochi
