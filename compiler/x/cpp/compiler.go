@@ -21,7 +21,7 @@ func New() *Compiler { return &Compiler{} }
 
 func (c *Compiler) writeln(s string) {
 	for i := 0; i < c.indent; i++ {
-		c.buf.WriteByte('\t')
+		c.buf.WriteString("    ")
 	}
 	c.buf.WriteString(s)
 	c.buf.WriteByte('\n')
@@ -29,15 +29,24 @@ func (c *Compiler) writeln(s string) {
 
 func (c *Compiler) writeIndent() {
 	for i := 0; i < c.indent; i++ {
-		c.buf.WriteByte('\t')
+		c.buf.WriteString("    ")
 	}
 }
 
 // Compile converts a parsed Mochi program to C++ source code.
 func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.buf.Reset()
-	c.writeln("#include <bits/stdc++.h>")
-	c.writeln("using namespace std;")
+	c.writeln("#include <iostream>")
+	c.writeln("#include <vector>")
+	c.writeln("#include <unordered_map>")
+	c.writeln("#include <map>")
+	c.writeln("#include <algorithm>")
+	c.writeln("#include <numeric>")
+	c.writeln("")
+
+	c.writeln("template<typename T> void print(const T& v){ std::cout << v; }")
+	c.writeln("void print(const std::vector<int>& v){ for(size_t i=0;i<v.size();++i){ if(i) std::cout<<' '; std::cout<<v[i]; }}")
+	c.writeln("void print(bool b){ std::cout<<(b?\"true\":\"false\"); }")
 	c.writeln("")
 
 	// first generate function declarations
@@ -267,19 +276,58 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	expr := left
-	for _, op := range b.Right {
-		rhs, err := c.compilePostfix(op.Right)
+	operands := []string{left}
+	ops := []string{}
+	for _, part := range b.Right {
+		rhs, err := c.compilePostfix(part.Right)
 		if err != nil {
 			return "", err
 		}
-		if op.Op == "in" {
-			expr = fmt.Sprintf("(find(%s.begin(), %s.end(), %s) != %s.end())", left, left, rhs, left)
-		} else {
-			expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, rhs)
+		operands = append(operands, rhs)
+		ops = append(ops, part.Op)
+	}
+
+	prec := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+		{"union", "union_all", "except", "intersect"},
+	}
+	contains := func(list []string, s string) bool {
+		for _, v := range list {
+			if v == s {
+				return true
+			}
+		}
+		return false
+	}
+
+	for _, level := range prec {
+		for i := 0; i < len(ops); {
+			if contains(level, ops[i]) {
+				l := operands[i]
+				r := operands[i+1]
+				var combined string
+				if ops[i] == "in" {
+					combined = fmt.Sprintf("(std::find(%s.begin(), %s.end(), %s) != %s.end())", l, l, r, l)
+				} else {
+					combined = fmt.Sprintf("(%s %s %s)", l, ops[i], r)
+				}
+				operands[i] = combined
+				operands = append(operands[:i+1], operands[i+2:]...)
+				ops = append(ops[:i], ops[i+1:]...)
+			} else {
+				i++
+			}
 		}
 	}
-	return expr, nil
+	if len(operands) != 1 {
+		return "", fmt.Errorf("unexpected state after binary expression")
+	}
+	return operands[0], nil
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
@@ -311,20 +359,24 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, error) {
 			}
 			if base == "print" {
 				if len(args) == 1 {
-					expr = fmt.Sprintf("(cout << %s)", args[0])
+					expr = fmt.Sprintf("print(%s)", args[0])
 				} else {
-					expr = "cout"
+					expr = "print(0)" // unreachable
 				}
 			} else if base == "len" && len(args) == 1 {
 				expr = fmt.Sprintf("(%s.size())", args[0])
 			} else if base == "append" && len(args) == 2 {
 				expr = fmt.Sprintf("([&](auto v){ v.push_back(%s); return v; })(%s)", args[1], args[0])
 			} else if base == "sum" && len(args) == 1 {
-				expr = fmt.Sprintf("accumulate(%s.begin(), %s.end(), 0)", args[0], args[0])
+				expr = fmt.Sprintf("std::accumulate(%s.begin(), %s.end(), 0)", args[0], args[0])
 			} else if base == "avg" && len(args) == 1 {
 				expr = fmt.Sprintf("([&](auto v){ int s=0; for(auto x:v) s+=x; return v.empty()?0:(double)s/v.size(); })(%s)", args[0])
 			} else if base == "count" && len(args) == 1 {
 				expr = fmt.Sprintf("((int)%s.size())", args[0])
+			} else if base == "min" && len(args) == 1 {
+				expr = fmt.Sprintf("(*std::min_element(%s.begin(), %s.end()))", args[0], args[0])
+			} else if base == "max" && len(args) == 1 {
+				expr = fmt.Sprintf("(*std::max_element(%s.begin(), %s.end()))", args[0], args[0])
 			} else {
 				expr = base + "(" + strings.Join(args, ", ") + ")"
 			}
@@ -345,7 +397,13 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			expr = fmt.Sprintf("(%s)(%s)", t, expr)
+			if t == "int" {
+				expr = fmt.Sprintf("std::stoi(%s)", expr)
+			} else if t == "std::string" {
+				expr = fmt.Sprintf("std::to_string(%s)", expr)
+			} else {
+				expr = fmt.Sprintf("(%s)(%s)", t, expr)
+			}
 		}
 	}
 	return expr, nil
@@ -364,7 +422,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			elems = append(elems, s)
 		}
-		return "vector<int>{" + strings.Join(elems, ", ") + "}", nil
+		return "std::vector<int>{" + strings.Join(elems, ", ") + "}", nil
 	case p.Map != nil:
 		pairs := []string{}
 		for _, it := range p.Map.Items {
@@ -378,7 +436,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			pairs = append(pairs, fmt.Sprintf("{%s, %s}", k, v))
 		}
-		return "unordered_map<string,int>{" + strings.Join(pairs, ", ") + "}", nil
+		return "std::unordered_map<std::string,int>{" + strings.Join(pairs, ", ") + "}", nil
 	case p.Selector != nil:
 		name := p.Selector.Root
 		for _, t := range p.Selector.Tail {
@@ -395,13 +453,47 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			args = append(args, s)
 		}
-		if name == "print" && len(args) == 1 {
-			return fmt.Sprintf("(cout << %s)", args[0]), nil
-		}
-		if name == "len" && len(args) == 1 {
-			return fmt.Sprintf("%s.size()", args[0]), nil
+		switch name {
+		case "print":
+			if len(args) == 1 {
+				return fmt.Sprintf("print(%s)", args[0]), nil
+			}
+		case "len":
+			if len(args) == 1 {
+				return fmt.Sprintf("%s.size()", args[0]), nil
+			}
+		case "append":
+			if len(args) == 2 {
+				return fmt.Sprintf("([&](auto v){ v.push_back(%s); return v; })(%s)", args[1], args[0]), nil
+			}
+		case "sum":
+			if len(args) == 1 {
+				return fmt.Sprintf("std::accumulate(%s.begin(), %s.end(), 0)", args[0], args[0]), nil
+			}
+		case "avg":
+			if len(args) == 1 {
+				return fmt.Sprintf("([&](auto v){ int s=0; for(auto x:v) s+=x; return v.empty()?0:(double)s/v.size(); })(%s)", args[0]), nil
+			}
+		case "count":
+			if len(args) == 1 {
+				return fmt.Sprintf("((int)%s.size())", args[0]), nil
+			}
+		case "min":
+			if len(args) == 1 {
+				return fmt.Sprintf("(*std::min_element(%s.begin(), %s.end()))", args[0], args[0]), nil
+			}
+		case "max":
+			if len(args) == 1 {
+				return fmt.Sprintf("(*std::max_element(%s.begin(), %s.end()))", args[0], args[0]), nil
+			}
 		}
 		return name + "(" + strings.Join(args, ", ") + ")", nil
+	case p.Group != nil:
+		expr, err := c.compileExpr(p.Group)
+		if err != nil {
+			return "", err
+		}
+		return "(" + expr + ")", nil
 	default:
 		return "", fmt.Errorf("unsupported primary at %v", p.Pos)
 	}
@@ -438,7 +530,7 @@ func (c *Compiler) compileType(t *parser.TypeRef) (string, error) {
 		case "int":
 			return "int", nil
 		case "string":
-			return "string", nil
+			return "std::string", nil
 		default:
 			return *t.Simple, nil
 		}

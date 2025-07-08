@@ -1,9 +1,9 @@
-line 5: ../../../tests/machine/x/cpp/str_builtin.mochi.cpp: In function ‘int main()’:
-../../../tests/machine/x/cpp/str_builtin.mochi.cpp:5:18: error: ‘str’ was not declared in this scope; did you mean ‘std’?
-    5 |         (cout << str(123));
-      |                  ^~~
-      |                  std
+line 13: ../../../tests/machine/x/cpp/str_builtin.mochi.cpp: In function ‘int main()’:
+../../../tests/machine/x/cpp/str_builtin.mochi.cpp:13:11: error: ‘str’ was not declared in this scope; did you mean ‘std’?
+   13 |     print(str(123));
+      |           ^~~
+      |           std
 
-  4 | int main() {
-  5 | 	(cout << str(123));
-  6 | 	return 0;
+ 12 | int main() {
+ 13 |     print(str(123));
+ 14 |     return 0;

@@ -1,18 +1,21 @@
-line 5: ../../../tests/machine/x/cpp/list_nested_assign.mochi.cpp: In function ‘int main()’:
-../../../tests/machine/x/cpp/list_nested_assign.mochi.cpp:5:71: error: no matching function for call to ‘std::vector<int>::vector(<brace-enclosed initializer list>)’
-    5 |         auto matrix = vector<int>{vector<int>{1, 2}, vector<int>{3, 4}};
-      |                                                                       ^
+line 13: ../../../tests/machine/x/cpp/list_nested_assign.mochi.cpp: In function ‘int main()’:
+../../../tests/machine/x/cpp/list_nested_assign.mochi.cpp:13:82: error: no matching function for call to ‘std::vector<int>::vector(<brace-enclosed initializer list>)’
+   13 |     auto matrix = std::vector<int>{std::vector<int>{1, 2}, std::vector<int>{3, 4}};
+      |                                                                                  ^
 In file included from /usr/include/c++/13/vector:66,
-                 from /usr/include/c++/13/functional:64,
-                 from /usr/include/x86_64-linux-gnu/c++/13/bits/stdc++.h:53,
-                 from ../../../tests/machine/x/cpp/list_nested_assign.mochi.cpp:1:
+                 from ../../../tests/machine/x/cpp/list_nested_assign.mochi.cpp:2:
 /usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = int; _Alloc = std::allocator<int>]’
   707 |         vector(_InputIterator __first, _InputIterator __last,
       |         ^~~~~~
 /usr/include/c++/13/bits/stl_vector.h:707:9: note:   template argument deduction/substitution failed:
-In file included from /usr/include/c++/13/bits/stl_algobase.h:65,
-                 from /usr/include/c++/13/algorithm:60,
-                 from /usr/include/x86_64-linux-gnu/c++/13/bits/stdc++.h:51:
+In file included from /usr/include/c++/13/bits/stl_iterator_base_funcs.h:66,
+                 from /usr/include/c++/13/string:47,
+                 from /usr/include/c++/13/bits/locale_classes.h:40,
+                 from /usr/include/c++/13/bits/ios_base.h:41,
+                 from /usr/include/c++/13/ios:44,
+                 from /usr/include/c++/13/ostream:40,
+                 from /usr/include/c++/13/iostream:41,
+                 from ../../../tests/machine/x/cpp/list_nested_assign.mochi.cpp:1:
 /usr/include/c++/13/bits/stl_iterator_base_types.h: In substitution of ‘template<class _InIter> using std::_RequireInputIter = std::__enable_if_t<std::is_convertible<typename std::iterator_traits< <template-parameter-1-1> >::iterator_category, std::input_iterator_tag>::value> [with _InIter = std::vector<int>]’:
 /usr/include/c++/13/bits/stl_vector.h:705:9:   required from here
 /usr/include/c++/13/bits/stl_iterator_base_types.h:250:11: error: no type named ‘iterator_category’ in ‘struct std::iterator_traits<std::vector<int> >’
@@ -73,6 +76,6 @@ In file included from /usr/include/c++/13/bits/stl_algobase.h:65,
       |       ^~~~~~
 /usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 2 provided
 
-  4 | int main() {
-  5 | 	auto matrix = vector<int>{vector<int>{1, 2}, vector<int>{3, 4}};
-  6 | 	matrix[1][0] = 5;
+ 12 | int main() {
+ 13 |     auto matrix = std::vector<int>{std::vector<int>{1, 2}, std::vector<int>{3, 4}};
+ 14 |     matrix[1][0] = 5;

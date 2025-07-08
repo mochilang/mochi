@@ -10,6 +10,9 @@ void print(const std::vector<int>& v){ for(size_t i=0;i<v.size();++i){ if(i) std
 void print(bool b){ std::cout<<(b?"true":"false"); }
 
 int main() {
-    print(str(123));
+    print((1 + (2 * 3)));
+    print((((1 + 2)) * 3));
+    print(((2 * 3) + 1));
+    print((2 * ((3 + 1))));
     return 0;
 }

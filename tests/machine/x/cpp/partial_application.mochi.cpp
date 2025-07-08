@@ -1,12 +1,20 @@
-#include <bits/stdc++.h>
-using namespace std;
+#include <iostream>
+#include <vector>
+#include <unordered_map>
+#include <map>
+#include <algorithm>
+#include <numeric>
+
+template<typename T> void print(const T& v){ std::cout << v; }
+void print(const std::vector<int>& v){ for(size_t i=0;i<v.size();++i){ if(i) std::cout<<' '; std::cout<<v[i]; }}
+void print(bool b){ std::cout<<(b?"true":"false"); }
 
 auto add(auto a, auto b) {
-	return (a + b);
+    return (a + b);
 }
 
 int main() {
-	auto add5 = add(5);
-	(cout << add5(3));
-	return 0;
+    auto add5 = add(5);
+    print(add5(3));
+    return 0;
 }
