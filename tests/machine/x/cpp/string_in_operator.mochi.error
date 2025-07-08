@@ -1,0 +1,23 @@
+line 6: ../../../tests/machine/x/cpp/string_in_operator.mochi.cpp: In function ‘int main()’:
+../../../tests/machine/x/cpp/string_in_operator.mochi.cpp:6:30: error: request for member ‘begin’ in ‘"cat"’, which is of non-class type ‘const char [4]’
+    6 |         (cout << (find("cat".begin(), "cat".end(), s) != "cat".end()));
+      |                              ^~~~~
+../../../tests/machine/x/cpp/string_in_operator.mochi.cpp:6:45: error: request for member ‘end’ in ‘"cat"’, which is of non-class type ‘const char [4]’
+    6 |         (cout << (find("cat".begin(), "cat".end(), s) != "cat".end()));
+      |                                             ^~~
+../../../tests/machine/x/cpp/string_in_operator.mochi.cpp:6:64: error: request for member ‘end’ in ‘"cat"’, which is of non-class type ‘const char [4]’
+    6 |         (cout << (find("cat".begin(), "cat".end(), s) != "cat".end()));
+      |                                                                ^~~
+../../../tests/machine/x/cpp/string_in_operator.mochi.cpp:7:30: error: request for member ‘begin’ in ‘"dog"’, which is of non-class type ‘const char [4]’
+    7 |         (cout << (find("dog".begin(), "dog".end(), s) != "dog".end()));
+      |                              ^~~~~
+../../../tests/machine/x/cpp/string_in_operator.mochi.cpp:7:45: error: request for member ‘end’ in ‘"dog"’, which is of non-class type ‘const char [4]’
+    7 |         (cout << (find("dog".begin(), "dog".end(), s) != "dog".end()));
+      |                                             ^~~
+../../../tests/machine/x/cpp/string_in_operator.mochi.cpp:7:64: error: request for member ‘end’ in ‘"dog"’, which is of non-class type ‘const char [4]’
+    7 |         (cout << (find("dog".begin(), "dog".end(), s) != "dog".end()));
+      |                                                                ^~~
+
+  5 | 	auto s = "catch";
+  6 | 	(cout << (find("cat".begin(), "cat".end(), s) != "cat".end()));
+  7 | 	(cout << (find("dog".begin(), "dog".end(), s) != "dog".end()));

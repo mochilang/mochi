@@ -1,0 +1,11 @@
+line 5: ../../../tests/machine/x/cpp/string_concat.mochi.cpp: In function ‘int main()’:
+../../../tests/machine/x/cpp/string_concat.mochi.cpp:5:28: error: invalid operands of types ‘const char [7]’ and ‘const char [6]’ to binary ‘operator+’
+    5 |         (cout << ("hello " + "world"));
+      |                   ~~~~~~~~ ^ ~~~~~~~
+      |                   |          |
+      |                   |          const char [6]
+      |                   const char [7]
+
+  4 | int main() {
+  5 | 	(cout << ("hello " + "world"));
+  6 | 	return 0;

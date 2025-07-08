@@ -1,0 +1,9 @@
+line 13: ../../../tests/machine/x/cpp/break_continue.mochi.cpp: In function ‘int main()’:
+../../../tests/machine/x/cpp/break_continue.mochi.cpp:13:17: error: ‘print’ was not declared in this scope; did you mean ‘rint’?
+   13 |                 print("odd number:", n);
+      |                 ^~~~~
+      |                 rint
+
+ 12 | 		}
+ 13 | 		print("odd number:", n);
+ 14 | 	}
