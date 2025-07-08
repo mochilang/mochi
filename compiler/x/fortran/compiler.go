@@ -560,7 +560,8 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		elem := args[1]
 		tmp := fmt.Sprintf("app%d", c.tmpIndex)
 		c.tmpIndex++
-		c.writelnDecl(fmt.Sprintf("integer, dimension(size(%s)+1) :: %s", arr, tmp))
+		c.writelnDecl(fmt.Sprintf("integer, allocatable, dimension(:) :: %s", tmp))
+		c.writeln(fmt.Sprintf("allocate(%s(size(%s)+1))", tmp, arr))
 		c.writeln(fmt.Sprintf("%s(1:size(%s)) = %s", tmp, arr, arr))
 		c.writeln(fmt.Sprintf("%s(size(%s)+1) = %s", tmp, arr, elem))
 		return tmp, nil

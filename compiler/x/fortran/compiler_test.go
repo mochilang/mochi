@@ -72,7 +72,7 @@ func compileOne(t *testing.T, src, outDir, name, gfortran string) {
 		t.Fatalf("write f90: %v", err)
 	}
 	exe := filepath.Join(outDir, name)
-	if out, err := exec.Command(gfortran, f90, "-o", exe).CombinedOutput(); err != nil {
+	if out, err := exec.Command(gfortran, f90, "-static", "-o", exe).CombinedOutput(); err != nil {
 		writeError(outDir, name, code, fmt.Errorf("gfortran: %v\n%s", err, out))
 		t.Skipf("gfortran: %v", err)
 		return
