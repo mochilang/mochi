@@ -1,0 +1,4 @@
+error: unsupported expression at line 3
+   2| let products = [
+   3|   { name: "Laptop", price: 1500 },
+   4|   { name: "Smartphone", price: 900 },
