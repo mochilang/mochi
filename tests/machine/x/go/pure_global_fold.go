@@ -1,17 +1,16 @@
-//go:build ignore
-
 package main
 
 import (
-    "fmt"
+	"fmt"
 )
 
+// line 2
 func inc(x int) int {
-    return x + k
+	return (x + k)
 }
 
-
 func main() {
-    k := 2
-    fmt.Println(inc(3))
+	var k int = 2
+	_ = k
+	fmt.Println(5)
 }

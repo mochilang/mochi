@@ -1,20 +1,21 @@
-//go:build ignore
-
 package main
 
 import (
-    "fmt"
+	"fmt"
 )
 
 func main() {
-    data := []int{1, 2}
-    flag := func() bool {
-        for _, x := range data {
-            if x == 1 {
-                return true
-            }
-        }
-        return false
-    }()
-    fmt.Println(flag)
+	var data []int = []int{1, 2}
+	var flag bool = len(func() []int {
+		_res := []int{}
+		for _, x := range data {
+			if x == 1 {
+				if x == 1 {
+					_res = append(_res, x)
+				}
+			}
+		}
+		return _res
+	}()) > 0
+	fmt.Println(flag)
 }

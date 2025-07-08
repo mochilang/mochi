@@ -1,14 +1,12 @@
-//go:build ignore
-
 package main
 
 import (
-    "fmt"
+	"fmt"
 )
 
 func main() {
-    m := map[interface{}]interface{}{"a": 1, "b": 2}
-    for _, k := range m {
-        fmt.Println(k)
-    }
+	var m map[string]int = map[string]int{"a": 1, "b": 2}
+	for k := range m {
+		fmt.Println(k)
+	}
 }

@@ -1,4 +1,0 @@
-unsupported expression at line 15
-let filtered =
-  from ps in partsupp
-  join s in suppliers on s.id == ps.supplier
