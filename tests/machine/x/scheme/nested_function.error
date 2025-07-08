@@ -1,0 +1,13 @@
+error running nested_function:
+ERROR on line 3 of file /workspace/mochi/tests/machine/x/scheme/nested_function.scm: undefined variable: inner
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 7 of file /workspace/mochi/tests/machine/x/scheme/nested_function.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+Searching for modules exporting inner ...
+... none found.
+
+context (line 3):
+  (call/cc (lambda (return)
+    (return (inner 5))
+  ))

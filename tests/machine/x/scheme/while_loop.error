@@ -1,0 +1,7 @@
+error running while_loop:
+ERROR on line 11 of file /workspace/mochi/tests/machine/x/scheme/while_loop.scm: missing trailing ')' started on line: 2
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+
+context (line 11):
+)
+
