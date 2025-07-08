@@ -1,5 +1,3 @@
-//go:build slow
-
 package gocode
 
 import (
