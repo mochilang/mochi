@@ -1,0 +1,11 @@
+line 0: javac error: exit status 1
+/tmp/TestCompileValidProgramsstring_index473975345/001/Main.java:5: error: cannot find symbol
+	System.out.println(s.get(1));
+	                    ^
+  symbol:   method get(int)
+  location: variable s of type String
+1 error
+
+
+  1| let s = "mochi"
+  2| print(s[1])

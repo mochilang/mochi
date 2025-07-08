@@ -1,0 +1,18 @@
+line 0: javac error: exit status 1
+/tmp/TestCompileValidProgramsrecord_assign2462752429/001/Main.java:11: error: incompatible types: int cannot be converted to Counter
+		c = c.n + 1;
+		        ^
+/tmp/TestCompileValidProgramsrecord_assign2462752429/001/Main.java:14: error: incompatible types: Object cannot be converted to Counter
+	inc(c);
+	    ^
+/tmp/TestCompileValidProgramsrecord_assign2462752429/001/Main.java:15: error: cannot find symbol
+	System.out.println(c.n);
+	                    ^
+  symbol:   variable n
+  location: variable c of type Object
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+3 errors
+
+
+  1| type Counter { n: int }
+  2| 

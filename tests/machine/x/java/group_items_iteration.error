@@ -1,0 +1,4 @@
+line 0: compile error: expression unsupported at line 6
+
+  1| let data = [
+  2|   {tag: "a", val: 1},

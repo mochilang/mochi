@@ -1,0 +1,4 @@
+line 0: compile error: expression unsupported at line 11
+
+  1| let customers = [
+  2|   { id: 1, name: "Alice" },
