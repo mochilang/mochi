@@ -24,10 +24,11 @@ type Compiler struct {
 	useIn   bool
 	useJSON bool
 	tmp     int
+	mapVars map[string]bool
 }
 
 // New creates a new Dart compiler instance.
-func New(env *types.Env) *Compiler { return &Compiler{env: env} }
+func New(env *types.Env) *Compiler { return &Compiler{env: env, mapVars: make(map[string]bool)} }
 
 // Compile translates the given Mochi program into Dart source code.  If there
 // is a hand written translation under tests/human/x/dart it is returned.
@@ -38,6 +39,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.indent = 0
 	c.useIn = false
 	c.useJSON = false
+	c.mapVars = make(map[string]bool)
 
 	// compile function declarations into a separate buffer so they appear
 	// before the main entry point
@@ -323,11 +325,24 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		}
 		c.writeln(fmt.Sprintf("for (var %s = %s; %s < %s; %s++) {", f.Name, start, f.Name, end, f.Name))
 	} else {
-		src, err := c.compileExpr(f.Source)
+		srcExpr := f.Source
+		src, err := c.compileExpr(srcExpr)
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("for (var %s in %s) {", f.Name, src))
+		iterVar := fmt.Sprintf("_iter%d", c.tmp)
+		c.tmp++
+		c.writeln(fmt.Sprintf("var %s = %s;", iterVar, src))
+
+		// mark loop variable as map-backed if the source is a list of maps
+		t := types.TypeOfExpr(srcExpr, c.env)
+		if lt, ok := t.(types.ListType); ok {
+			if _, ok := lt.Elem.(types.MapType); ok {
+				c.mapVars[f.Name] = true
+			}
+		}
+
+		c.writeln(fmt.Sprintf("for (var %s in (%s is Map ? (%s as Map).keys : %s) as Iterable) {", f.Name, iterVar, iterVar, iterVar))
 	}
 	c.indent++
 	for _, st := range f.Body {
@@ -516,11 +531,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return "{" + strings.Join(items, ", ") + "}", nil
 	case p.Selector != nil:
-		s := p.Selector.Root
-		if len(p.Selector.Tail) > 0 {
-			s += "." + strings.Join(p.Selector.Tail, ".")
-		}
-		return s, nil
+		return c.compileSelector(p.Selector), nil
 	case p.If != nil:
 		return c.compileIfExpr(p.If)
 	case p.FunExpr != nil:
@@ -594,8 +605,23 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	w(fmt.Sprintf("  var %s = <dynamic>[];\n", tmp))
 
 	loops := []string{fmt.Sprintf("var %s in %s", q.Var, c.mustExpr(q.Source))}
+	// mark main variable type
+	if t := types.TypeOfExpr(q.Source, c.env); t != nil {
+		if lt, ok := t.(types.ListType); ok {
+			if _, ok := lt.Elem.(types.MapType); ok {
+				c.mapVars[q.Var] = true
+			}
+		}
+	}
 	for _, f := range q.Froms {
 		loops = append(loops, fmt.Sprintf("var %s in %s", f.Var, c.mustExpr(f.Src)))
+		if t := types.TypeOfExpr(f.Src, c.env); t != nil {
+			if lt, ok := t.(types.ListType); ok {
+				if _, ok := lt.Elem.(types.MapType); ok {
+					c.mapVars[f.Var] = true
+				}
+			}
+		}
 	}
 
 	for i, loop := range loops {
@@ -673,6 +699,26 @@ func (c *Compiler) simpleIdentifier(e *parser.Expr) (string, bool) {
 		return "", false
 	}
 	return p.Target.Selector.Root, true
+}
+
+func (c *Compiler) compileSelector(sel *parser.SelectorExpr) string {
+	root := sel.Root
+	typ, _ := c.env.GetVar(root)
+	if ok := c.mapVars[root]; ok {
+		typ = types.MapType{}
+	}
+	if _, ok := typ.(types.MapType); ok {
+		s := root
+		for _, part := range sel.Tail {
+			s += fmt.Sprintf("['%s']", part)
+		}
+		return s
+	}
+	s := root
+	if len(sel.Tail) > 0 {
+		s += "." + strings.Join(sel.Tail, ".")
+	}
+	return s
 }
 
 func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
@@ -767,6 +813,7 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 		return "false"
 	case l.Str != nil:
 		s := strings.ReplaceAll(*l.Str, "'", "\\'")
+		s = strings.ReplaceAll(s, "$", "\\$")
 		return "'" + strings.Trim(s, "\"") + "'"
 	case l.Null:
 		return "null"
