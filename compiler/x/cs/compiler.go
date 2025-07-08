@@ -1034,7 +1034,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	resultType := csTypeOf(c.inferExprType(q.Select))
 	orig := c.env
 	child := types.NewEnv(c.env)
 	var elemT types.Type = types.AnyType{}
@@ -1043,6 +1042,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	child.SetVar(q.Var, elemT, true)
 	c.env = child
+	resultType := csTypeOf(c.inferExprType(q.Select))
 	sel, err := c.compileExpr(q.Select)
 	if err != nil {
 		c.env = orig
@@ -1527,8 +1527,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	c.env = orig
 
 	parts := []string{src}
+	whereParts := []string{}
+	if flt, ok := aliasFilters[v]; ok {
+		whereParts = append(whereParts, strings.Join(flt, " && "))
+	}
 	if cond != "" {
-		parts = append(parts, fmt.Sprintf("Where(%s => %s)", v, cond))
+		whereParts = append(whereParts, cond)
+	}
+	if len(whereParts) > 0 {
+		parts = append(parts, fmt.Sprintf("Where(%s => %s)", v, strings.Join(whereParts, " && ")))
 	}
 	if sortExpr != "" {
 		parts = append(parts, fmt.Sprintf("OrderBy(%s => %s)", v, sortExpr))
@@ -2286,7 +2293,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("exists() expects 1 arg")
 		}
 		tmp := c.newVar()
-		return fmt.Sprintf("(new Func<bool>(() => {var %s=%s;if(%s is string s) return s.Length>0;if(%s is System.Collections.IEnumerable e) return e.GetEnumerator().MoveNext();return %s!=null;}))()", tmp, args[0], tmp, tmp, tmp), nil
+		return fmt.Sprintf("(new Func<bool>(() => {object %s=%s;if(%s is string s) return s.Length>0;if(%s is System.Collections.IEnumerable e) return e.GetEnumerator().MoveNext();return %s!=null;}))()", tmp, args[0], tmp, tmp, tmp), nil
 	case "avg":
 		if len(args) != 1 {
 			return "", fmt.Errorf("avg() expects 1 arg")

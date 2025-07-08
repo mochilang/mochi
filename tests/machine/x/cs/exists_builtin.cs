@@ -11,21 +11,8 @@ public class Program
 {
     public static void Main()
     {
-        long[] data = new long[] { 1L, 2L };
-        bool flag = _exists(new List<dynamic>(data.Select(x => x)));
+        long[] data = new long[] { 1, 2 };
+        bool flag = (new Func<bool>(() => { object _tmp0 = new List<long>(data.Where(x => (x == 1)).Select(x => x)); if (_tmp0 is string s) return s.Length > 0; if (_tmp0 is System.Collections.IEnumerable e) return e.GetEnumerator().MoveNext(); return _tmp0 != null; }))();
         Console.WriteLine(flag);
     }
-    static bool _exists(dynamic v)
-    {
-        if (v is _Group g) v = g.Items;
-        if (v is string s) return s.Length > 0;
-        if (v is System.Collections.IDictionary d) return d.Count > 0;
-        if (v is System.Collections.IEnumerable e)
-        {
-            foreach (var _ in e) return true;
-            return false;
-        }
-        return v != null;
-    }
-
 }
