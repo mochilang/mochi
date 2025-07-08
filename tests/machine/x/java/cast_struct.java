@@ -6,7 +6,7 @@ class Todo {
 	}
 }
 public class Main {
-	static Map<String,String> todo = new HashMap<>(new Todo("hi"));
+	static Todo todo = new Todo("hi");
 	public static void main(String[] args) {
 	System.out.println(todo.title);
 	}
