@@ -424,7 +424,7 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, error) {
 				args = append(args, s)
 			}
 			if expr == "print" && len(args) == 1 {
-				expr = fmt.Sprintf("([&](const auto& __v){ if constexpr(has_size<decay_t<decltype(__v)>>::value){ for(size_t i=0;i<__v.size();++i){ if(i) cout<<' '; cout<<__v[i]; } cout<<endl; } else { cout<<__v<<endl; } })(%s)", args[0])
+				expr = fmt.Sprintf("([&](const auto& __v){ if constexpr(has_size<decay_t<decltype(__v)>>::value && !is_same_v<decay_t<decltype(__v)>, string>){ for(size_t i=0;i<__v.size();++i){ if(i) cout<<' '; cout<<__v[i]; } cout<<endl; } else { cout<<__v<<endl; } })(%s)", args[0])
 			} else if expr == "print" {
 				e := "([&](){ cout"
 				for _, a := range args {
@@ -469,7 +469,17 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			if typ == "int" {
+			if pf.Target != nil && pf.Target.Map != nil && op.Cast.Type.Simple != nil {
+				fields := make([]string, len(pf.Target.Map.Items))
+				for i, it := range pf.Target.Map.Items {
+					v, err := c.compileExpr(it.Value)
+					if err != nil {
+						return "", err
+					}
+					fields[i] = v
+				}
+				expr = fmt.Sprintf("%s{%s}", typ, strings.Join(fields, ", "))
+			} else if typ == "int" {
 				expr = fmt.Sprintf("stoi(%s)", expr)
 			} else {
 				expr = fmt.Sprintf("(%s)(%s)", typ, expr)
@@ -495,7 +505,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		fn := p.Call.Func
 		if fn == "print" && len(args) == 1 {
-			return fmt.Sprintf("([&](const auto& __v){ if constexpr(has_size<decay_t<decltype(__v)>>::value){ for(size_t i=0;i<__v.size();++i){ if(i) cout<<' '; cout<<__v[i]; } cout<<endl; } else { cout<<__v<<endl; } })(%s)", args[0]), nil
+			return fmt.Sprintf("([&](const auto& __v){ if constexpr(has_size<decay_t<decltype(__v)>>::value && !is_same_v<decay_t<decltype(__v)>, string>){ for(size_t i=0;i<__v.size();++i){ if(i) cout<<' '; cout<<__v[i]; } cout<<endl; } else { cout<<__v<<endl; } })(%s)", args[0]), nil
 		}
 		if fn == "print" {
 			out := "([&](){ cout"
