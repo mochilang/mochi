@@ -484,21 +484,49 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			name += "." + t
 		}
 		return name, nil
-	case p.List != nil:
-		elems := make([]string, len(p.List.Elems))
-		for i, e := range p.List.Elems {
-			s, err := c.compileExpr(e)
-			if err != nil {
-				return "", err
-			}
-			elems[i] = s
-		}
-		return "(int[]){" + strings.Join(elems, ", ") + "}", nil
-	case p.Group != nil:
-		return c.compileExpr(p.Group)
-	default:
-		return "", fmt.Errorf("unsupported primary at line %d", p.Pos.Line)
-	}
+       case p.List != nil:
+               elems := make([]string, len(p.List.Elems))
+               for i, e := range p.List.Elems {
+                       s, err := c.compileExpr(e)
+                       if err != nil {
+                               return "", err
+                       }
+                       elems[i] = s
+               }
+               return "(int[]){" + strings.Join(elems, ", ") + "}", nil
+       case p.If != nil:
+               return c.compileIfExpr(p.If)
+       case p.Group != nil:
+               return c.compileExpr(p.Group)
+       default:
+               return "", fmt.Errorf("unsupported primary at line %d", p.Pos.Line)
+       }
+}
+
+func (c *Compiler) compileIfExpr(ix *parser.IfExpr) (string, error) {
+       cond, err := c.compileExpr(ix.Cond)
+       if err != nil {
+               return "", err
+       }
+       thenExpr, err := c.compileExpr(ix.Then)
+       if err != nil {
+               return "", err
+       }
+       var elseExpr string
+       if ix.ElseIf != nil {
+               elseExpr, err = c.compileIfExpr(ix.ElseIf)
+               if err != nil {
+                       return "", err
+               }
+       } else if ix.Else != nil {
+               elseExpr, err = c.compileExpr(ix.Else)
+               if err != nil {
+                       return "", err
+               }
+       } else {
+               elseExpr = "0"
+       }
+       return fmt.Sprintf("(%s ? %s : %s)", cond, thenExpr, elseExpr), nil
 }
 
 func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
