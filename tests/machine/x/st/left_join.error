@@ -1,7 +1,2 @@
-line: 9
-error: unsupported expression at line 9
-   7:   { id: 101, customerId: 3, total: 80 }
-   8: ]
-   9: let result = from o in orders
-  10:              left join c in customers on o.customerId == c.id
-  11:              select {
+line: 0
+error: query features not supported

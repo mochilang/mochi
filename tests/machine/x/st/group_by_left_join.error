@@ -1,7 +1,2 @@
-line: 11
-error: unsupported expression at line 11
-   9:   { id: 102, customerId: 2 }
-  10: ]
-  11: let stats = from c in customers
-  12:             left join o in orders on o.customerId == c.id
-  13:             group by c.name into g
+line: 0
+error: query features not supported
