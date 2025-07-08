@@ -393,6 +393,20 @@ func (c *Compiler) listElemType(p *parser.Primary) string {
 	return "integer"
 }
 
+func (c *Compiler) elemTypeOfUnary(u *parser.Unary) string {
+	if u == nil || len(u.Ops) != 0 || u.Value == nil {
+		return "Variant"
+	}
+	return c.listElemType(u.Value.Target)
+}
+
+func (c *Compiler) elemTypeOfPostfix(p *parser.PostfixExpr) string {
+	if p == nil || len(p.Ops) != 0 {
+		return "Variant"
+	}
+	return c.listElemType(p.Target)
+}
+
 // elemTypeOfExpr returns the Pascal type string of the element type if e is a list expression.
 func (c *Compiler) elemTypeOfExpr(e *parser.Expr) string {
 	if t := types.TypeOfExpr(e, c.env); t != nil {
