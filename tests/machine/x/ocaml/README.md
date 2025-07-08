@@ -1,7 +1,7 @@
 # Generated OCaml Programs
 
 This directory stores OCaml source files produced by the experimental Mochi to OCaml compiler under `compiler/x/ocaml`. Each entry corresponds to a program in `tests/vm/valid`.
-Compiled programs: 7/97
+Compiled programs: 13/97
 
 The checklist below indicates which programs compiled and ran successfully (`[x]`).
 
@@ -22,7 +22,7 @@ The checklist below indicates which programs compiled and ran successfully (`[x]
 - [ ] dataset_where_filter.mochi
 - [ ] exists_builtin.mochi
 - [ ] for_list_collection.mochi
-- [ ] for_loop.mochi
+ - [x] for_loop.mochi
 - [ ] for_map_collection.mochi
 - [ ] fun_call.mochi
 - [ ] fun_expr_in_let.mochi
@@ -81,7 +81,7 @@ The checklist below indicates which programs compiled and ran successfully (`[x]
 - [ ] short_circuit.mochi
 - [ ] slice.mochi
 - [ ] sort_stable.mochi
-- [ ] str_builtin.mochi
+ - [x] str_builtin.mochi
 - [ ] string_compare.mochi
 - [ ] string_concat.mochi
 - [ ] string_contains.mochi
@@ -94,11 +94,11 @@ The checklist below indicates which programs compiled and ran successfully (`[x]
 - [ ] test_block.mochi
 - [ ] tree_sum.mochi
 - [ ] two-sum.mochi
-- [ ] typed_let.mochi
-- [ ] typed_var.mochi
+ - [x] typed_let.mochi
+ - [x] typed_var.mochi
 - [ ] unary_neg.mochi
 - [ ] update_stmt.mochi
 - [ ] user_type_literal.mochi
 - [ ] values_builtin.mochi
-- [ ] var_assignment.mochi
-- [ ] while_loop.mochi
+ - [x] var_assignment.mochi
+ - [x] while_loop.mochi

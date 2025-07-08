@@ -129,6 +129,17 @@ func (c *Compiler) compileGlobalLet(l *parser.LetStmt) error {
 		if err != nil {
 			return err
 		}
+	} else if l.Type != nil && l.Type.Simple != nil {
+		switch *l.Type.Simple {
+		case "int":
+			val = "0"
+		case "float":
+			val = "0.0"
+		case "bool":
+			val = "false"
+		case "string":
+			val = "\"\""
+		}
 	}
 	c.writeln(fmt.Sprintf("let %s = %s", l.Name, val))
 	return nil
@@ -406,6 +417,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("avg expects 1 arg")
 		}
 		return fmt.Sprintf("(List.fold_left (+) 0 %s / List.length %s)", args[0], args[0]), nil
+	case "str":
+		if len(args) != 1 {
+			return "", fmt.Errorf("str expects 1 arg")
+		}
+		return fmt.Sprintf("__show (%s)", args[0]), nil
 	default:
 		return fmt.Sprintf("%s %s", call.Func, strings.Join(args, " ")), nil
 	}
