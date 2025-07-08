@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"mochi/parser"
@@ -15,13 +16,15 @@ import (
 
 // Compiler translates a subset of Mochi to Python source code.
 type Compiler struct {
-	buf         bytes.Buffer
-	indent      int
-	needsJSON   bool
-	needsData   bool
-	structTypes map[string]bool
-	env         *types.Env
-	tmp         int
+	buf          bytes.Buffer
+	indent       int
+	needsJSON    bool
+	needsData    bool
+	needsPartial bool
+	needsSave    bool
+	structTypes  map[string]bool
+	env          *types.Env
+	tmp          int
 }
 
 // New creates a new Python compiler.
@@ -49,9 +52,32 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("import json")
 		c.writeln("")
 	}
+	if c.needsPartial {
+		c.writeln("from functools import partial")
+		c.writeln("")
+	}
 	if c.needsData {
 		c.writeln("from dataclasses import dataclass")
 		c.writeln("")
+	}
+	if c.needsSave {
+		c.writeln("import sys")
+		c.writeln("def _save(rows, path, opts):")
+		oldIndent := c.indent
+		c.indent++
+		c.writeln("fmt = opts.get('format') if opts else 'jsonl'")
+		c.writeln("f = sys.stdout if path in ('', '-') else open(path, 'w')")
+		c.writeln("if fmt == 'jsonl':")
+		c.indent++
+		c.writeln("import json")
+		c.writeln("for r in rows:")
+		c.indent++
+		c.writeln("print(json.dumps(r), file=f)")
+		c.indent--
+		c.indent--
+		c.indent--
+		c.writeln("")
+		c.indent = oldIndent
 	}
 	c.buf.Write(body.Bytes())
 	return c.buf.Bytes(), nil
@@ -84,6 +110,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileFor(s.For)
 	case s.Type != nil:
 		return c.compileTypeDecl(s.Type)
+	case s.Test != nil:
+		return c.compileTestBlock(s.Test)
+	case s.Expect != nil:
+		return c.compileExpect(s.Expect)
 	case s.Break != nil:
 		c.writeln("break")
 		return nil
@@ -246,7 +276,31 @@ func (c *Compiler) compileFor(fs *parser.ForStmt) error {
 
 func (c *Compiler) compileTypeDecl(td *parser.TypeDecl) error {
 	if len(td.Variants) > 0 {
-		return fmt.Errorf("variant types not supported")
+		c.needsData = true
+		c.writeln(fmt.Sprintf("class %s:", td.Name))
+		c.indent++
+		c.writeln("pass")
+		c.indent--
+		for _, v := range td.Variants {
+			c.structTypes[v.Name] = true
+			c.writeln("@dataclass")
+			c.writeln(fmt.Sprintf("class %s(%s):", v.Name, td.Name))
+			c.indent++
+			if len(v.Fields) == 0 {
+				c.writeln("pass")
+			} else {
+				for _, f := range v.Fields {
+					typ, _ := c.compileType(f.Type)
+					if typ == "" {
+						typ = "object"
+					}
+					c.writeln(fmt.Sprintf("%s: %s", f.Name, typ))
+				}
+			}
+			c.indent--
+		}
+		c.writeln("")
+		return nil
 	}
 	c.needsData = true
 	c.structTypes[td.Name] = true
@@ -270,6 +324,25 @@ func (c *Compiler) compileTypeDecl(td *parser.TypeDecl) error {
 	}
 	c.indent--
 	c.writeln("")
+	return nil
+}
+
+func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+        c.writeln(fmt.Sprintf("# test %q", t.Name))
+       for _, st := range t.Body {
+               if err := c.compileStmt(st); err != nil {
+                       return err
+               }
+       }
+       return nil
+}
+
+func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
+	expr, err := c.compileExpr(e.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln("assert " + expr)
 	return nil
 }
 
@@ -499,6 +572,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileFunExpr(p.FunExpr)
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	case p.If != nil:
 		return c.compileIfExpr(p.If)
 	case p.Match != nil:
@@ -590,6 +665,14 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 		return fmt.Sprintf("(len(%s) > 0)", args[0]), nil
 	default:
+		if c.env != nil {
+			if fn, ok := c.env.GetFunc(call.Func); ok {
+				if len(call.Args) < len(fn.Params) {
+					c.needsPartial = true
+					return fmt.Sprintf("partial(%s, %s)", call.Func, strings.Join(args, ", ")), nil
+				}
+			}
+		}
 		return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ", ")), nil
 	}
 }
@@ -650,17 +733,40 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		cond = " if " + cnd
 	}
+	selCall := q.Select.Binary.Left.Value.Target.Call
+	if selCall != nil && selCall.Func == "sum" && len(selCall.Args) == 1 {
+		arg, err := c.compileExpr(selCall.Args[0])
+		if err != nil {
+			return "", err
+		}
+		expr := fmt.Sprintf("sum(%s for %s%s)", arg, loopStr, cond)
+		return expr, nil
+	}
 	sel, err := c.compileExpr(q.Select)
 	if err != nil {
 		return "", err
 	}
 	expr := fmt.Sprintf("[%s for %s%s]", sel, loopStr, cond)
 	if q.Sort != nil {
-		key, err := c.compileExpr(q.Sort)
-		if err != nil {
-			return "", err
+		keyExpr := q.Sort
+		if m, ok := isMapLiteral(keyExpr); ok {
+			parts := make([]string, len(m.Items))
+			for i, it := range m.Items {
+				v, err := c.compileExpr(it.Value)
+				if err != nil {
+					return "", err
+				}
+				parts[i] = v
+			}
+			key := "(" + strings.Join(parts, ", ") + ")"
+			expr = fmt.Sprintf("sorted([%s for %s%s], key=lambda x: %s)", sel, loopStr, cond, key)
+		} else {
+			key, err := c.compileExpr(keyExpr)
+			if err != nil {
+				return "", err
+			}
+			expr = fmt.Sprintf("[x[1] for x in sorted([( %s, %s ) for %s%s], key=lambda x: x[0])]", key, sel, loopStr, cond)
 		}
-		expr = fmt.Sprintf("[x[1] for x in sorted([( %s, %s ) for %s%s], key=lambda x: x[0])]", key, sel, loopStr, cond)
 	}
 	if q.Skip != nil || q.Take != nil {
 		start := "0"
@@ -747,6 +853,27 @@ func (c *Compiler) compileMatchExpr(mx *parser.MatchExpr) (string, error) {
 	return expr, nil
 }
 
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
+	src, err := c.compileExpr(s.Src)
+	if err != nil {
+		return "", err
+	}
+	path := "\"\""
+	if s.Path != nil {
+		path = strconv.Quote(*s.Path)
+	}
+	opts := "{}"
+	if s.With != nil {
+		v, err := c.compileExpr(s.With)
+		if err != nil {
+			return "", err
+		}
+		opts = v
+	}
+	c.needsSave = true
+	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts), nil
+}
+
 func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error) {
 	fields := make([]string, len(sl.Fields))
 	for i, f := range sl.Fields {
@@ -764,6 +891,34 @@ func (c *Compiler) compileMapKey(e *parser.Expr) (string, error) {
 		return fmt.Sprintf("%q", name), nil
 	}
 	return c.compileExpr(e)
+}
+
+func isMapLiteral(e *parser.Expr) (*parser.MapLiteral, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) > 0 {
+		return nil, false
+	}
+	if u.Value.Target != nil && u.Value.Target.Map != nil {
+		return u.Value.Target.Map, true
+	}
+	return nil, false
+}
+
+func isStructLiteral(e *parser.Expr) (*parser.StructLiteral, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) > 0 {
+		return nil, false
+	}
+	if u.Value.Target != nil && u.Value.Target.Struct != nil {
+		return u.Value.Target.Struct, true
+	}
+	return nil, false
 }
 
 func (c *Compiler) simpleIdentifier(e *parser.Expr) (string, bool) {
