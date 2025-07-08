@@ -12,6 +12,6 @@ func add(a int, b int) int {
 
 
 func main() {
-    add5 := add(5)
+    add5 := func(b int) int { return add(5, b) }
     fmt.Println(add5(3))
 }
