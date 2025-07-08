@@ -2273,20 +2273,20 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			elem = csTypeOf(lt.Elem)
 		}
 		expr := fmt.Sprintf("new List<%s>(%s)", elem, args[0])
-		return fmt.Sprintf("(()=>{var %s=%s;%s.Add(%s);return %s;})()", tmp, expr, tmp, args[1], tmp), nil
+		return fmt.Sprintf("(new Func<List<%s>>(() => {var %s=%s;%s.Add(%s);return %s;}))()", elem, tmp, expr, tmp, args[1], tmp), nil
 	case "values":
 		if len(args) != 1 {
 			return "", fmt.Errorf("values expects 1 arg")
 		}
 		tmp := c.newVar()
 		c.useLinq = true
-		return fmt.Sprintf("(()=>{var %s=new List<dynamic>();foreach(System.Collections.DictionaryEntry kv in %s){%s.Add(kv.Value);}return %s;})()", tmp, args[0], tmp, tmp), nil
+		return fmt.Sprintf("(new Func<List<dynamic>>(() => {var %s=new List<dynamic>();foreach(System.Collections.DictionaryEntry kv in %s){%s.Add(kv.Value);}return %s;}))()", tmp, args[0], tmp, tmp), nil
 	case "exists":
 		if len(args) != 1 {
 			return "", fmt.Errorf("exists() expects 1 arg")
 		}
 		tmp := c.newVar()
-		return fmt.Sprintf("(()=>{var %s=%s;if(%s is string s) return s.Length>0;if(%s is System.Collections.IEnumerable e) return e.GetEnumerator().MoveNext();return %s!=null;})()", tmp, args[0], tmp, tmp, tmp), nil
+		return fmt.Sprintf("(new Func<bool>(() => {var %s=%s;if(%s is string s) return s.Length>0;if(%s is System.Collections.IEnumerable e) return e.GetEnumerator().MoveNext();return %s!=null;}))()", tmp, args[0], tmp, tmp, tmp), nil
 	case "avg":
 		if len(args) != 1 {
 			return "", fmt.Errorf("avg() expects 1 arg")
