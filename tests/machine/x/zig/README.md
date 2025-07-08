@@ -4,7 +4,7 @@ This directory contains Zig source code produced by the Mochi compiler tests. Ea
 
 ## Summary
 
-32/97 programs compile and run successfully.
+33/97 programs compile and run successfully.
 
 ## Checklist
 
@@ -15,7 +15,7 @@ This directory contains Zig source code produced by the Mochi compiler tests. Ea
 - [x] bool_chain.mochi
 - [x] break_continue.mochi
 - [x] cast_string_to_int.mochi
-- [ ] cast_struct.mochi
+ - [x] cast_struct.mochi
 - [ ] closure.mochi
 - [x] count_builtin.mochi
 - [ ] cross_join.mochi
