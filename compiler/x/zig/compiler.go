@@ -49,7 +49,6 @@ type Compiler struct {
 	needsAppend       bool
 	needsPrintList    bool
 	tests             []string
-	globals           map[string]bool
 	constGlobals      map[string]bool
 	labelCount        int
 	locals            map[string]types.Type
@@ -63,7 +62,6 @@ func New(env *types.Env) *Compiler {
 		imports:      map[string]string{},
 		structs:      map[string]bool{},
 		tests:        []string{},
-		globals:      map[string]bool{},
 		constGlobals: map[string]bool{},
 		locals:       map[string]types.Type{},
 		captures:     map[string]string{},
@@ -122,30 +120,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		if s.Let != nil && c.constGlobals[sanitizeName(s.Let.Name)] {
 			continue
 		}
-		if s.Let != nil && c.globals[sanitizeName(s.Let.Name)] {
-			val := "0"
-			if s.Let.Value != nil {
-				v, err := c.compileExpr(s.Let.Value, false)
-				if err != nil {
-					return nil, err
-				}
-				val = v
-			}
-			c.writeln(fmt.Sprintf("%s = %s;", sanitizeName(s.Let.Name), val))
-		} else if s.Var != nil && c.globals[sanitizeName(s.Var.Name)] {
-			val := "0"
-			if s.Var.Value != nil {
-				v, err := c.compileExpr(s.Var.Value, false)
-				if err != nil {
-					return nil, err
-				}
-				val = v
-			}
-			c.writeln(fmt.Sprintf("%s = %s;", sanitizeName(s.Var.Name), val))
-		} else {
-			if err := c.compileStmt(s, false); err != nil {
-				return nil, err
-			}
+		if s.Var != nil && c.constGlobals[sanitizeName(s.Var.Name)] {
+			continue
+		}
+		if err := c.compileStmt(s, false); err != nil {
+			return nil, err
 		}
 	}
 	for _, name := range c.tests {
@@ -331,31 +310,22 @@ func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 				}
 				c.env.SetVar(s.Let.Name, typ, false)
 			}
-			if s.Let.Value != nil && isFunExpr(s.Let.Value) {
+			if s.Let.Value != nil {
 				v, err := c.compileExpr(s.Let.Value, false)
 				if err != nil {
 					return err
 				}
-				if s.Let.Type == nil || canInferType(s.Let.Value, typ) {
+				if isFunExpr(s.Let.Value) || s.Let.Type == nil || canInferType(s.Let.Value, typ) {
 					c.writeln(fmt.Sprintf("const %s = %s;", name, v))
 				} else {
 					c.writeln(fmt.Sprintf("const %s: %s = %s;", name, zigTypeOf(typ), v))
 				}
 				c.constGlobals[name] = true
-				continue
-			} else if s.Let.Value != nil {
-				if _, ok := typ.(types.FuncType); ok {
-					v, err := c.compileExpr(s.Let.Value, false)
-					if err != nil {
-						return err
-					}
-					c.writeln(fmt.Sprintf("const %s = %s;", name, v))
-					c.constGlobals[name] = true
-					continue
-				}
+			} else {
+				c.writeln(fmt.Sprintf("var %s: %s = undefined;", name, zigTypeOf(typ)))
+				c.constGlobals[name] = true
 			}
-			c.globals[name] = true
-			c.writeln(fmt.Sprintf("var %s: %s = undefined;", name, zigTypeOf(typ)))
+			continue
 		case s.Var != nil:
 			name := sanitizeName(s.Var.Name)
 			var typ types.Type = types.AnyType{}
@@ -369,11 +339,24 @@ func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 				}
 				c.env.SetVar(s.Var.Name, typ, true)
 			}
-			c.globals[name] = true
-			c.writeln(fmt.Sprintf("var %s: %s = undefined;", name, zigTypeOf(typ)))
+			if s.Var.Value != nil {
+				v, err := c.compileExpr(s.Var.Value, false)
+				if err != nil {
+					return err
+				}
+				if s.Var.Type == nil || canInferType(s.Var.Value, typ) {
+					c.writeln(fmt.Sprintf("var %s = %s;", name, v))
+				} else {
+					c.writeln(fmt.Sprintf("var %s: %s = %s;", name, zigTypeOf(typ), v))
+				}
+			} else {
+				c.writeln(fmt.Sprintf("var %s: %s = undefined;", name, zigTypeOf(typ)))
+			}
+			c.constGlobals[name] = true
+			continue
 		}
 	}
-	if len(c.globals) > 0 {
+	if len(c.constGlobals) > 0 {
 		c.writeln("")
 	}
 	return nil
@@ -1934,18 +1917,22 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			}
 		}
 		args := make([]string, len(call.Args))
+		fmtParts := make([]string, len(call.Args))
 		for i, a := range call.Args {
 			v, err := c.compileExpr(a, false)
 			if err != nil {
 				return "", err
 			}
 			args[i] = v
-		}
-		fmtParts := make([]string, len(args))
-		for i := range args {
-			if c.isStringExpr(call.Args[i]) {
+
+			switch c.inferExprType(a).(type) {
+			case types.StringType:
 				fmtParts[i] = "{s}"
-			} else {
+			case types.IntType, types.Int64Type:
+				fmtParts[i] = "{d}"
+			case types.BoolType:
+				fmtParts[i] = "{}"
+			default:
 				fmtParts[i] = "{any}"
 			}
 		}
