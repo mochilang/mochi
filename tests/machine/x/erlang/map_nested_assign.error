@@ -1,0 +1,4 @@
+line 1: unsupported expression at line 1
+   1: var data = {"outer": {"inner": 1}}
+   2: data["outer"]["inner"] = 2
+   3: print(data["outer"]["inner"])

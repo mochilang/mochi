@@ -1,0 +1,4 @@
+line 1: unsupported expression at line 1
+   1: let people = [
+   2:   { name: "Alice", age: 30 },
+   3:   { name: "Bob", age: 25 }

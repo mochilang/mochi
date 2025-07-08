@@ -1,0 +1,4 @@
+line 1: unsupported statement at line 1
+   1: fun twoSum(nums: list<int>, target: int): list<int> {
+   2:   let n = len(nums)
+   3:   for i in 0..n {

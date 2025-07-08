@@ -1,0 +1,4 @@
+line 1: unsupported expression at line 1
+   1: let m = {"a": 1, "b": 2}
+   2: print("a" in m)
+   3: print("c" in m)

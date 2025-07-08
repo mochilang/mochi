@@ -1,0 +1,4 @@
+line 1: unsupported expression at line 1
+   1: var scores = {"alice": 1}
+   2: scores["bob"] = 2
+   3: print(scores["bob"])

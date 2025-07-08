@@ -1,0 +1,4 @@
+line 1: unsupported expression at line 1
+   1: let items = [
+   2:   { n: 1, v: "a" },
+   3:   { n: 1, v: "b" },

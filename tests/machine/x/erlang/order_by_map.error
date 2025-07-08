@@ -1,0 +1,4 @@
+line 1: unsupported expression at line 1
+   1: let data = [
+   2:   {a:1, b:2},
+   3:   {a:1, b:1},

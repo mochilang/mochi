@@ -1,0 +1,4 @@
+line 1: unsupported expression at line 1
+   1: let nums = [1, 2, 3]
+   2: let letters = ["A", "B"]
+   3: let pairs = from n in nums

@@ -1,0 +1,4 @@
+line 1: unsupported statement at line 1
+   1: fun boom(a: int, b: int): bool {
+   2:   print("boom")
+   3:   return true
