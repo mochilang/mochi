@@ -5,7 +5,7 @@ The files listed below are produced from the Mochi sources in
 `tests/vm/valid`. A COBOL compiler is not available in CI so the programs
 have not been executed.
 
-Compiled programs: **13/97**
+Compiled programs: **28/97**
 
 ## Checklist
 
@@ -16,9 +16,24 @@ Compiled programs: **13/97**
 - [x] basic_compare.mochi
 - [x] binary_precedence.mochi
 - [x] let_and_print.mochi
-- [x] string_compare.mochi
+- [x] bool_chain.mochi
+- [x] fun_call.mochi
+- [x] fun_three_args.mochi
+- [x] len_string.mochi
+- [x] math_ops.mochi
+- [x] nested_function.mochi
+- [x] partial_application.mochi
+- [x] pure_fold.mochi
+- [x] pure_global_fold.mochi
+- [x] short_circuit.mochi
 - [x] typed_let.mochi
 - [x] typed_var.mochi
+- [x] str_builtin.mochi
 - [x] unary_neg.mochi
+- [x] string_concat.mochi
+- [x] string_in_operator.mochi
+- [x] substring_builtin.mochi
+- [x] string_compare.mochi
+- [x] tail_recursion.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
