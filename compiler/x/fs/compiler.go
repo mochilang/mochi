@@ -403,6 +403,10 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	switch call.Func {
 	case "print":
 		if len(args) == 1 {
+			// use %s when the argument looks like a string literal
+			if strings.HasPrefix(args[0], "\"") && strings.HasSuffix(args[0], "\"") {
+				return fmt.Sprintf("printfn \"%%s\" %s", args[0]), nil
+			}
 			if argAST != nil && argAST.Binary != nil && argAST.Binary.Left != nil && argAST.Binary.Left.Value != nil && argAST.Binary.Left.Value.Target != nil {
 				t := argAST.Binary.Left.Value.Target
 				if t.Call != nil && t.Call.Func == "append" {
