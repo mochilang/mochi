@@ -1,0 +1,5 @@
+a = (10 - 3)
+b = (2 + 2)
+puts([a].join(" "))
+puts([(a == 7)].join(" "))
+puts([(b < 5)].join(" "))
