@@ -120,6 +120,11 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileWhile(s.While)
 	case s.For != nil:
 		return c.compileFor(s.For)
+	case s.Update != nil:
+		return c.compileUpdate(s.Update)
+	case s.Test != nil:
+		// test blocks are ignored
+		return nil
 	case s.Break != nil:
 		c.writeln("break;")
 		return nil
@@ -359,6 +364,87 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
+	list := u.Target
+	idxVar := fmt.Sprintf("_i%d", c.tmp)
+	c.tmp++
+	itemVar := fmt.Sprintf("_it%d", c.tmp)
+	c.tmp++
+
+	c.writeln(fmt.Sprintf("for (var %s = 0; %s < %s.length; %s++) {", idxVar, idxVar, list, idxVar))
+	c.indent++
+	c.writeln(fmt.Sprintf("var %s = %s[%s];", itemVar, list, idxVar))
+
+	var st types.StructType
+	if c.env != nil {
+		if t, err := c.env.GetVar(u.Target); err == nil {
+			if lt, ok := t.(types.ListType); ok {
+				if s, ok := lt.Elem.(types.StructType); ok {
+					st = s
+				}
+			}
+		}
+	}
+
+	origEnv := c.env
+	if st.Name != "" {
+		child := types.NewEnv(c.env)
+		for _, f := range st.Order {
+			c.writeln(fmt.Sprintf("var %s = %s.%s;", f, itemVar, f))
+			child.SetVar(f, st.Fields[f], true)
+		}
+		c.env = child
+	}
+
+	if u.Where != nil {
+		cond, err := c.compileExpr(u.Where)
+		if err != nil {
+			c.env = origEnv
+			return err
+		}
+		c.writeln(fmt.Sprintf("if (%s) {", cond))
+		c.indent++
+	}
+
+	for _, it := range u.Set.Items {
+		if st.Name != "" {
+			if key, ok := c.simpleIdentifier(it.Key); ok {
+				val, err := c.compileExpr(it.Value)
+				if err != nil {
+					c.env = origEnv
+					return err
+				}
+				c.writeln(fmt.Sprintf("%s.%s = %s;", itemVar, key, val))
+				continue
+			}
+		}
+		keyExpr, err := c.compileExpr(it.Key)
+		if err != nil {
+			c.env = origEnv
+			return err
+		}
+		valExpr, err := c.compileExpr(it.Value)
+		if err != nil {
+			c.env = origEnv
+			return err
+		}
+		c.writeln(fmt.Sprintf("%s[%s] = %s;", itemVar, keyExpr, valExpr))
+	}
+
+	if u.Where != nil {
+		c.indent--
+		c.writeln("}")
+	}
+
+	c.writeln(fmt.Sprintf("%s[%s] = %s;", list, idxVar, itemVar))
+	if st.Name != "" {
+		c.env = origEnv
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 	if e == nil || e.Binary == nil {
 		return "", fmt.Errorf("empty expression")
@@ -534,6 +620,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			items[i] = fmt.Sprintf("%s: %s", k, v)
 		}
 		return "{" + strings.Join(items, ", ") + "}", nil
+	case p.Struct != nil:
+		return c.compileStructLiteral(p.Struct)
 	case p.Selector != nil:
 		return c.compileSelector(p.Selector), nil
 	case p.If != nil:
@@ -710,6 +798,33 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	w(fmt.Sprintf("  return %s;\n", tmp))
 	w("})()")
 	return b.String(), nil
+}
+
+func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error) {
+	fieldMap := make(map[string]string)
+	for _, f := range sl.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return "", err
+		}
+		fieldMap[f.Name] = v
+	}
+	if st, ok := c.env.GetStruct(sl.Name); ok {
+		args := make([]string, len(st.Order))
+		for i, name := range st.Order {
+			if v, ok := fieldMap[name]; ok {
+				args[i] = v
+			} else {
+				args[i] = defaultValue(dartTypeFromType(st.Fields[name]))
+			}
+		}
+		return fmt.Sprintf("%s(%s)", sl.Name, strings.Join(args, ", ")), nil
+	}
+	items := make([]string, 0, len(sl.Fields))
+	for name, v := range fieldMap {
+		items = append(items, fmt.Sprintf("'%s': %s", name, v))
+	}
+	return "{" + strings.Join(items, ", ") + "}", nil
 }
 
 func (c *Compiler) mustExpr(e *parser.Expr) string {
