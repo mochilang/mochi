@@ -2,9 +2,14 @@
        PROGRAM-ID. BINARY_PRECEDENCE.
        DATA DIVISION.
        WORKING-STORAGE SECTION.
+       01 TMP PIC 9 VALUE 0.
        PROCEDURE DIVISION.
-       DISPLAY 1 + 2 * 3
-       DISPLAY (1 + 2) * 3
-       DISPLAY 2 * 3 + 1
-       DISPLAY 2 * (3 + 1)
+       COMPUTE TMP = 1 + 2 * 3
+       DISPLAY TMP
+       COMPUTE TMP = (1 + 2) * 3
+       DISPLAY TMP
+       COMPUTE TMP = 2 * 3 + 1
+       DISPLAY TMP
+       COMPUTE TMP = 2 * (3 + 1)
+       DISPLAY TMP
        STOP RUN.

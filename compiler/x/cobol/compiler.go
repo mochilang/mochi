@@ -20,6 +20,7 @@ type Compiler struct {
 	env    *types.Env
 	funs   []funDecl
 	curFun *funDecl
+	tmpVar string
 }
 
 type varDecl struct {
@@ -75,6 +76,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.init = nil
 	c.funs = nil
 	c.curFun = nil
+	c.tmpVar = ""
 
 	name := strings.TrimSuffix(filepath.Base(prog.Pos.Filename), filepath.Ext(prog.Pos.Filename))
 	name = strings.ReplaceAll(name, "-", "_")
@@ -98,6 +100,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 	c.collectForVars(prog.Statements)
+	if needsTmpVar(prog.Statements) {
+		c.tmpVar = "TMP"
+		if !c.hasVar(c.tmpVar) {
+			c.vars = append(c.vars, varDecl{name: c.tmpVar, pic: "PIC 9", val: "0"})
+		}
+	}
 
 	c.writeln("IDENTIFICATION DIVISION.")
 	c.writeln(fmt.Sprintf("PROGRAM-ID. %s.", name))
@@ -300,11 +308,34 @@ func (c *Compiler) compilePrint(call *parser.CallExpr) error {
 		c.writeln(fmt.Sprintf("DISPLAY %s", val))
 		return nil
 	}
+	if isComparisonExpr(arg) {
+		cond, err := c.compileExpr(arg)
+		if err != nil {
+			return err
+		}
+		c.writeln("IF " + cond)
+		c.indent += 4
+		c.writeln("DISPLAY \"true\"")
+		c.indent -= 4
+		c.writeln("ELSE")
+		c.indent += 4
+		c.writeln("DISPLAY \"false\"")
+		c.indent -= 4
+		c.writeln("END-IF")
+		return nil
+	}
+
 	expr, err := c.compileExpr(arg)
 	if err != nil {
 		return err
 	}
-	c.writeln(fmt.Sprintf("DISPLAY %s", expr))
+	if isSimpleExpr(arg) {
+		c.writeln(fmt.Sprintf("DISPLAY %s", expr))
+		return nil
+	}
+	tmp := c.ensureTmpVar()
+	c.writeln(fmt.Sprintf("COMPUTE %s = %s", tmp, expr))
+	c.writeln(fmt.Sprintf("DISPLAY %s", tmp))
 	return nil
 }
 
@@ -471,6 +502,10 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			opStr = "AND"
 		case "||":
 			opStr = "OR"
+		case "==":
+			opStr = "="
+		case "!=":
+			opStr = "<>"
 		}
 		res = fmt.Sprintf("%s %s %s", res, opStr, r)
 	}
@@ -576,4 +611,69 @@ func (c *Compiler) writeln(s string) {
 	}
 	c.buf.WriteString(s)
 	c.buf.WriteByte('\n')
+}
+
+func isComparisonExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 1 {
+		return false
+	}
+	switch e.Binary.Right[0].Op {
+	case "==", "!=", "<", "<=", ">", ">=":
+		return true
+	default:
+		return false
+	}
+}
+
+func isSimpleExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	return len(p.Ops) == 0 && p.Target != nil && (p.Target.Lit != nil || p.Target.Selector != nil)
+}
+
+func (c *Compiler) ensureTmpVar() string {
+	if c.tmpVar == "" {
+		c.tmpVar = "TMP"
+		if !c.hasVar(c.tmpVar) {
+			c.vars = append(c.vars, varDecl{name: c.tmpVar, pic: "PIC 9", val: "0"})
+		}
+	}
+	return c.tmpVar
+}
+
+func needsTmpVar(st []*parser.Statement) bool {
+	for _, s := range st {
+		switch {
+		case s.Expr != nil:
+			if call, ok := isCallTo(s.Expr.Expr, "print"); ok {
+				arg := call.Args[0]
+				if !isComparisonExpr(arg) && !isSimpleExpr(arg) {
+					return true
+				}
+			}
+		case s.If != nil:
+			if needsTmpVar(s.If.Then) || (s.If.ElseIf != nil && needsTmpVar([]*parser.Statement{{If: s.If.ElseIf}})) || needsTmpVar(s.If.Else) {
+				return true
+			}
+		case s.While != nil:
+			if needsTmpVar(s.While.Body) {
+				return true
+			}
+		case s.For != nil:
+			if needsTmpVar(s.For.Body) {
+				return true
+			}
+		case s.Fun != nil:
+			if needsTmpVar(s.Fun.Body) {
+				return true
+			}
+		}
+	}
+	return false
 }

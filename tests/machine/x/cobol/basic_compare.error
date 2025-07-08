@@ -1,4 +1,0 @@
-cobc: exit status 1
-/workspace/mochi/tests/machine/x/cobol/basic_compare.cob:11: error: syntax error, unexpected =
-/workspace/mochi/tests/machine/x/cobol/basic_compare.cob:12: error: syntax error, unexpected <
-

@@ -4,6 +4,8 @@
        WORKING-STORAGE SECTION.
        01 A PIC 9 VALUE 10.
        01 B PIC 9 VALUE 20.
+       01 TMP PIC 9 VALUE 0.
        PROCEDURE DIVISION.
-       DISPLAY A + B
+       COMPUTE TMP = A + B
+       DISPLAY TMP
        STOP RUN.

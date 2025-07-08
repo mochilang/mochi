@@ -8,6 +8,14 @@
        COMPUTE A = 10 - 3
        COMPUTE B = 2 + 2
        DISPLAY A
-       DISPLAY A == 7
-       DISPLAY B < 5
+       IF A = 7
+           DISPLAY "true"
+       ELSE
+           DISPLAY "false"
+       END-IF
+       IF B < 5
+           DISPLAY "true"
+       ELSE
+           DISPLAY "false"
+       END-IF
        STOP RUN.
