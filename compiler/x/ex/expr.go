@@ -497,7 +497,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", fmt.Errorf("append expects 2 args")
 			}
 			return fmt.Sprintf("%s ++ [%s]", args[0], args[1]), nil
-		case "substr":
+		case "substr", "substring":
 			if len(args) != 3 {
 				return "", fmt.Errorf("substr expects 3 args")
 			}
@@ -522,11 +522,31 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return fmt.Sprintf("Map.values(%s)", argStr), nil
 		default:
 			if c.funcs[p.Call.Func] {
+				if c.env != nil {
+					if t, err := c.env.GetVar(p.Call.Func); err == nil {
+						if ft, ok := t.(types.FuncType); ok && len(args) < len(ft.Params) {
+							params := make([]string, len(ft.Params)-len(args))
+							for i := range params {
+								params[i] = fmt.Sprintf("p%d", i)
+							}
+							allArgs := append(append([]string{}, args...), params...)
+							return fmt.Sprintf("fn %s -> %s(%s) end", strings.Join(params, ", "), sanitizeName(p.Call.Func), strings.Join(allArgs, ", ")), nil
+						}
+					}
+				}
 				return fmt.Sprintf("%s(%s)", sanitizeName(p.Call.Func), argStr), nil
 			}
 			if c.env != nil {
 				if t, err := c.env.GetVar(p.Call.Func); err == nil {
-					if _, ok := t.(types.FuncType); ok {
+					if ft, ok := t.(types.FuncType); ok {
+						if len(args) < len(ft.Params) {
+							params := make([]string, len(ft.Params)-len(args))
+							for i := range params {
+								params[i] = fmt.Sprintf("p%d", i)
+							}
+							allArgs := append(append([]string{}, args...), params...)
+							return fmt.Sprintf("fn %s -> %s.(%s) end", strings.Join(params, ", "), sanitizeName(p.Call.Func), strings.Join(allArgs, ", ")), nil
+						}
 						return fmt.Sprintf("%s.(%s)", sanitizeName(p.Call.Func), argStr), nil
 					}
 				}
