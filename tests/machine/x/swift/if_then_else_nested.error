@@ -1,2 +1,4 @@
-line: 0
-error: unsupported expression at line 2
+line 2: exit status 1
+let x = 8
+let msg = x > 10 ? "big" : 
+print(msg)
