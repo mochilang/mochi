@@ -182,10 +182,43 @@ func (c *Compiler) compileVar(v *parser.VarStmt) (string, error) {
 }
 
 func (c *Compiler) compileAssign(a *parser.AssignStmt) (string, error) {
-	if len(a.Field) > 0 || len(a.Index) > 1 {
+	if len(a.Field) > 0 || len(a.Index) > 2 {
 		return "", fmt.Errorf("complex assignment not supported")
 	}
 
+	if len(a.Index) == 2 {
+		a0 := a.Index[0]
+		a1 := a.Index[1]
+		if a0.Start == nil || a0.Colon != nil || a0.End != nil || a0.Colon2 != nil || a0.Step != nil {
+			return "", fmt.Errorf("complex indexing not supported")
+		}
+		if a1.Start == nil || a1.Colon != nil || a1.End != nil || a1.Colon2 != nil || a1.Step != nil {
+			return "", fmt.Errorf("complex indexing not supported")
+		}
+		idx0, err := c.compileExpr(a0.Start)
+		if err != nil {
+			return "", err
+		}
+		idx1, err := c.compileExpr(a1.Start)
+		if err != nil {
+			return "", err
+		}
+		val, err := c.compileExpr(a.Value)
+		if err != nil {
+			return "", err
+		}
+		prev := c.refVar(a.Name)
+		inner := c.newVarName(a.Name + "Inner")
+		updated := c.newVarName(a.Name + "InnerUpd")
+		name := c.newVarName(a.Name)
+		typ := c.types[a.Name]
+		if typ == "map" || (!isIntLiteral(a0.Start)) {
+			c.types[a.Name] = "map"
+			return fmt.Sprintf("%s = maps:get(%s, %s), %s = maps:put(%s, %s, %s), %s = %s#{%s => %s}", inner, idx0, prev, updated, idx1, val, inner, name, prev, idx0, updated), nil
+		}
+		// list of lists
+		return fmt.Sprintf("%s = lists:nth((%s)+1, %s), %s = lists:sublist(%s, %s) ++ [%s] ++ lists:nthtail((%s)+1, %s), %s = lists:sublist(%s, %s) ++ [%s] ++ lists:nthtail((%s)+1, %s)", inner, idx0, prev, updated, inner, idx1, val, idx1, inner, name, prev, idx0, updated, idx0, prev), nil
+	}
 	if len(a.Index) == 1 {
 		idxOp := a.Index[0]
 		if idxOp.Start == nil || idxOp.Colon != nil || idxOp.End != nil || idxOp.Colon2 != nil || idxOp.Step != nil {
@@ -392,6 +425,26 @@ func (c *Compiler) compileIfExpr(ix *parser.IfExpr) (string, error) {
 	return fmt.Sprintf("(if %s -> %s; true -> %s end)", cond, thenExpr, elseExpr), nil
 }
 
+func (c *Compiler) compileMatchExpr(mx *parser.MatchExpr) (string, error) {
+	target, err := c.compileExpr(mx.Target)
+	if err != nil {
+		return "", err
+	}
+	parts := make([]string, len(mx.Cases))
+	for i, cs := range mx.Cases {
+		pat, err := c.compileExpr(cs.Pattern)
+		if err != nil {
+			return "", err
+		}
+		res, err := c.compileExpr(cs.Result)
+		if err != nil {
+			return "", err
+		}
+		parts[i] = fmt.Sprintf("%s -> %s", pat, res)
+	}
+	return fmt.Sprintf("(case %s of %s end)", target, strings.Join(parts, "; ")), nil
+}
+
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
@@ -581,6 +634,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileFunExpr(p.FunExpr)
 	case p.If != nil:
 		return c.compileIfExpr(p.If)
+	case p.Match != nil:
+		return c.compileMatchExpr(p.Match)
 	case p.List != nil:
 		elems := make([]string, len(p.List.Elems))
 		for i, e := range p.List.Elems {
