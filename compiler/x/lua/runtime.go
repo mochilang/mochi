@@ -6,11 +6,39 @@ import "sort"
 
 // Runtime helper functions injected into generated Lua programs.
 const (
+	helperWriteVal = "local function __write_val(v)\n" +
+		"    if type(v) == 'number' and v == math.floor(v) then\n" +
+		"        io.write(tostring(math.floor(v)))\n" +
+		"    elseif type(v) == 'table' then\n" +
+		"        local is_list = true\n" +
+		"        local n = 0\n" +
+		"        for k,_ in pairs(v) do\n" +
+		"            if type(k) ~= 'number' or k < 1 then is_list = false break end\n" +
+		"            if k > n then n = k end\n" +
+		"        end\n" +
+		"        if is_list and n == #v then\n" +
+		"            for i=1,#v do\n" +
+		"                if i > 1 then io.write(' ') end\n" +
+		"                __write_val(v[i])\n" +
+		"            end\n" +
+		"        else\n" +
+		"            local parts = {}\n" +
+		"            for k,val in pairs(v) do\n" +
+		"                parts[#parts+1] = tostring(k)..':'..tostring(val)\n" +
+		"            end\n" +
+		"            table.sort(parts)\n" +
+		"            io.write('map['..table.concat(parts,' ')..']')\n" +
+		"        end\n" +
+		"    else\n" +
+		"        io.write(tostring(v))\n" +
+		"    end\n" +
+		"end\n"
+
 	helperPrint = "function __print(...)\n" +
 		"    local args = {...}\n" +
 		"    for i, a in ipairs(args) do\n" +
 		"        if i > 1 then io.write(' ') end\n" +
-		"        io.write(tostring(a))\n" +
+		"        __write_val(a)\n" +
 		"    end\n" +
 		"    io.write('\\n')\n" +
 		"end\n"
@@ -816,6 +844,7 @@ const (
 )
 
 var helperMap = map[string]string{
+	"write_val":      helperWriteVal,
 	"print":          helperPrint,
 	"run_tests":      helperRunTests,
 	"iter":           helperIter,

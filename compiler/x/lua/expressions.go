@@ -320,6 +320,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
+		at := c.inferExprType(call.Args[0])
+		if isMap(at) || isString(at) {
+			c.helpers["count"] = true
+			return fmt.Sprintf("__count(%s)", arg), nil
+		}
 		return fmt.Sprintf("#%s", arg), nil
 	}
 	args := make([]string, len(call.Args))
@@ -334,6 +339,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	switch name {
 	case "print":
 		c.helpers["print"] = true
+		c.helpers["write_val"] = true
 		return fmt.Sprintf("__print(%s)", argStr), nil
 	case "str":
 		if len(args) == 1 {
