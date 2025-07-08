@@ -64,6 +64,7 @@ func TestCompilePrograms(t *testing.T) {
 			if err := os.WriteFile(filepath.Join(outDir, name+".out"), buf.Bytes(), 0644); err != nil {
 				t.Fatal(err)
 			}
+			os.Remove(filepath.Join(outDir, name+".error"))
 		})
 	}
 }

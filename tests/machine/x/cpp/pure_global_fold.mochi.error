@@ -1,11 +1,11 @@
-line 8: ../../../tests/machine/x/cpp/pure_global_fold.mochi.cpp:8:10: warning: use of ‘auto’ in parameter declaration only available with ‘-std=c++20’ or ‘-fconcepts’
-    8 | auto inc(auto x) {
+line 10: ../../../tests/machine/x/cpp/pure_global_fold.mochi.cpp:10:10: warning: use of ‘auto’ in parameter declaration only available with ‘-std=c++20’ or ‘-fconcepts’
+   10 | auto inc(auto x) {
       |          ^~~~
 ../../../tests/machine/x/cpp/pure_global_fold.mochi.cpp: In function ‘auto inc(auto:28)’:
-../../../tests/machine/x/cpp/pure_global_fold.mochi.cpp:9:21: error: ‘k’ was not declared in this scope
-    9 |         return (x + k);
+../../../tests/machine/x/cpp/pure_global_fold.mochi.cpp:11:21: error: ‘k’ was not declared in this scope
+   11 |         return (x + k);
       |                     ^
 
-  7 | 
-  8 | auto inc(auto x) {
-  9 | 	return (x + k);
+  9 | 
+ 10 | auto inc(auto x) {
+ 11 | 	return (x + k);

@@ -4,7 +4,7 @@ This directory stores machine generated C++ translations of programs from
 `tests/vm/valid`. Each entry is compiled and executed during tests. If a program
 fails to compile or run, a `.error` file will contain the diagnostic details.
 
-Checklist of programs that currently compile and run (43/97):
+Checklist of programs that currently compile and run (54/97):
 
 - [x] append_builtin
 - [x] avg_builtin
@@ -49,4 +49,15 @@ Checklist of programs that currently compile and run (43/97):
 - [x] unary_neg
 - [x] var_assignment
 - [x] while_loop
+- [x] len_map
+- [x] list_assign
+- [x] map_assign
+- [x] map_in_operator
+- [x] map_index
+- [x] map_int_key
+- [x] map_literal_dynamic
+- [x] map_membership
+- [x] map_nested_assign
+- [x] user_type_literal
+- [x] values_builtin
 

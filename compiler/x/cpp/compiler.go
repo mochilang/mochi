@@ -47,6 +47,8 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	// small helpers for type traits
 	c.writeln("template<typename T, typename=void> struct has_size : false_type {};")
 	c.writeln("template<typename T> struct has_size<T, void_t<decltype(declval<T>().size()), decltype(declval<T>()[0])>> : true_type {};")
+	c.writeln("template<typename T, typename=void> struct has_key_type : false_type {};")
+	c.writeln("template<typename T> struct has_key_type<T, void_t<typename T::key_type>> : true_type {};")
 	c.writeln("")
 
 	for _, st := range p.Statements {
@@ -70,7 +72,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.writeln("int main() {")
 	c.indent++
 	for _, st := range p.Statements {
-		if st.Fun != nil {
+		if st.Fun != nil || st.Type != nil {
 			continue
 		}
 		if err := c.compileStmt(st); err != nil {
@@ -209,15 +211,30 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		c.buf.WriteString(";\n")
 	case s.Assign != nil:
-		if len(s.Assign.Index) > 0 || len(s.Assign.Field) > 0 {
-			return fmt.Errorf("complex assignment not supported")
-		}
 		c.writeIndent()
 		rhs, err := c.compileExpr(s.Assign.Value)
 		if err != nil {
 			return err
 		}
-		c.buf.WriteString(s.Assign.Name + " = " + rhs + ";\n")
+		if len(s.Assign.Index) > 0 && len(s.Assign.Field) == 0 {
+			lhs := s.Assign.Name
+			for i := 0; i < len(s.Assign.Index)-1; i++ {
+				idx, err := c.compileExpr(s.Assign.Index[i].Start)
+				if err != nil {
+					return err
+				}
+				lhs = fmt.Sprintf("%s[%s]", lhs, idx)
+			}
+			idx, err := c.compileExpr(s.Assign.Index[len(s.Assign.Index)-1].Start)
+			if err != nil {
+				return err
+			}
+			c.buf.WriteString(fmt.Sprintf("%s[%s] = %s;\n", lhs, idx, rhs))
+		} else if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
+			c.buf.WriteString(s.Assign.Name + " = " + rhs + ";\n")
+		} else {
+			return fmt.Errorf("complex assignment not supported")
+		}
 	case s.Return != nil:
 		c.writeIndent()
 		expr, err := c.compileExpr(s.Return.Value)
@@ -352,7 +369,7 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 				return "", err
 			}
 			if op.Op == "in" {
-				out = fmt.Sprintf("([&](const auto& __c,const auto& __e){ using C=decay_t<decltype(__c)>; if constexpr(is_same_v<C,string>) return __c.find(__e) != string::npos; else return find(__c.begin(), __c.end(), __e) != __c.end(); })(%s,%s)", rhs, out)
+				out = fmt.Sprintf("([&](const auto& __c,const auto& __e){ using C=decay_t<decltype(__c)>; if constexpr(is_same_v<C,string>) return __c.find(__e) != string::npos; else if constexpr(has_key_type<C>::value) return __c.find(__e) != __c.end(); else return find(__c.begin(), __c.end(), __e) != __c.end(); })(%s,%s)", rhs, out)
 			} else {
 				out = fmt.Sprintf("(%s %s %s)", out, op.Op, rhs)
 			}
@@ -437,6 +454,8 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, error) {
 				expr = fmt.Sprintf("([&](const auto& __v){ typename decay_t<decltype(__v)>::value_type __s{}; for(const auto& __x: __v) __s += __x; return __v.empty()?0:static_cast<double>(__s)/__v.size(); })(%s)", args[0])
 			} else if expr == "substring" && len(args) == 3 {
 				expr = fmt.Sprintf("%s.substr(%s, %s - %s)", args[0], args[1], args[2], args[1])
+			} else if expr == "values" && len(args) == 1 {
+				expr = fmt.Sprintf("([&](const auto& __m){ vector<decltype(__m.begin()->second)> __v; for(const auto& __kv: __m) __v.push_back(__kv.second); return __v; })(%s)", args[0])
 			} else if strings.HasSuffix(expr, ".contains") && len(args) == 1 {
 				base := strings.TrimSuffix(expr, ".contains")
 				expr = fmt.Sprintf("(%s.find(%s) != string::npos)", base, args[0])
@@ -516,6 +535,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if fn == "substring" && len(args) == 3 {
 			return fmt.Sprintf("%s.substr(%s, %s - %s)", args[0], args[1], args[2], args[1]), nil
 		}
+		if fn == "values" && len(args) == 1 {
+			return fmt.Sprintf("([&](const auto& __m){ vector<decltype(__m.begin()->second)> __v; for(const auto& __kv: __m) __v.push_back(__kv.second); return __v; })(%s)", args[0]), nil
+		}
 		return fn + "(" + strings.Join(args, ", ") + ")", nil
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
@@ -539,6 +561,36 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems = append(elems, s)
 		}
 		return "vector<int>{" + strings.Join(elems, ", ") + "}", nil
+	case p.Map != nil:
+		pairs := []string{}
+		keyType := "string"
+		valType := "int"
+		for i, it := range p.Map.Items {
+			k, err := c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", err
+			}
+			if i == 0 {
+				if strings.HasPrefix(k, "std::string") || strings.HasPrefix(k, "\"") {
+					keyType = "string"
+				} else {
+					keyType = "int"
+				}
+				if strings.HasPrefix(v, "std::string") || strings.HasPrefix(v, "\"") {
+					valType = "string"
+				} else if strings.HasPrefix(v, "unordered_map") {
+					valType = v[:strings.Index(v, ">")+1]
+				} else {
+					valType = "int"
+				}
+			}
+			pairs = append(pairs, fmt.Sprintf("{%s, %s}", k, v))
+		}
+		return fmt.Sprintf("unordered_map<%s, %s>{%s}", keyType, valType, strings.Join(pairs, ", ")), nil
 	case p.Selector != nil:
 		name := p.Selector.Root
 		for _, t := range p.Selector.Tail {
