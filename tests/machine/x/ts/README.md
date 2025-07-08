@@ -4,7 +4,7 @@ This directory contains TypeScript source files compiled from Mochi programs.
 
 ## Summary
 
-96/97 files compiled successfully
+97/97 files compiled successfully
 
 ## Checklist
 - [x] append_builtin.mochi
@@ -56,7 +56,7 @@ This directory contains TypeScript source files compiled from Mochi programs.
 - [x] list_index.mochi
 - [x] list_nested_assign.mochi
 - [x] list_set_ops.mochi
- - [ ] load_yaml.mochi
+- [x] load_yaml.mochi
 - [x] map_assign.mochi
 - [x] map_in_operator.mochi
 - [x] map_index.mochi
