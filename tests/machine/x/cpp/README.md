@@ -4,8 +4,8 @@ This directory contains C++ source code generated from Mochi programs and the co
 
 ## Summary
 
-- 41/97 programs compiled and executed successfully.
-- 56 programs failed to compile or run.
+- 55/97 programs compiled and executed successfully.
+- 42 programs failed to compile or run.
 
 ### Successful
 - append_builtin
