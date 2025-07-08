@@ -10,6 +10,7 @@ let adults = (() => {
 })()
 ;
 console.log("--- Adults ---");
-for (const person of adults) {
+const _tmp2 = adults;
+for (const person of (Array.isArray(_tmp2) ? _tmp2 : Object.keys(_tmp2))) {
   console.log(person.name, "is", person.age, (person.is_senior ? " (senior)" : ""));
 }

@@ -146,7 +146,9 @@ func (c *Compiler) forStmt(f *parser.ForStmt) error {
 		}
 		c.writeln(fmt.Sprintf("for (let %s = %s; %s < %s; %s++) {", f.Name, src, f.Name, end, f.Name))
 	} else {
-		c.writeln(fmt.Sprintf("for (const %s of %s) {", f.Name, src))
+		tmp := c.newTmp()
+		c.writeln(fmt.Sprintf("const %s = %s;", tmp, src))
+		c.writeln(fmt.Sprintf("for (const %s of (Array.isArray(%s) ? %s : Object.keys(%s))) {", f.Name, tmp, tmp, tmp))
 	}
 	c.indent++
 	for _, st := range f.Body {
@@ -496,6 +498,36 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 				return fmt.Sprintf("(%s.reduce((a,b)=>a+b,0))", args[0]), nil
 			}
 			return "", fmt.Errorf("sum expects 1 arg")
+		case "count":
+			if len(args) == 1 {
+				return fmt.Sprintf("%s.length", args[0]), nil
+			}
+			return "", fmt.Errorf("count expects 1 arg")
+		case "exists":
+			if len(args) == 1 {
+				return fmt.Sprintf("(%s.length > 0)", args[0]), nil
+			}
+			return "", fmt.Errorf("exists expects 1 arg")
+		case "len":
+			if len(args) == 1 {
+				return fmt.Sprintf("%s.length", args[0]), nil
+			}
+			return "", fmt.Errorf("len expects 1 arg")
+		case "values":
+			if len(args) == 1 {
+				return fmt.Sprintf("Object.values(%s)", args[0]), nil
+			}
+			return "", fmt.Errorf("values expects 1 arg")
+		case "str":
+			if len(args) == 1 {
+				return fmt.Sprintf("String(%s)", args[0]), nil
+			}
+			return "", fmt.Errorf("str expects 1 arg")
+		case "substring":
+			if len(args) == 3 {
+				return fmt.Sprintf("%s.substring(%s, %s)", args[0], args[1], args[2]), nil
+			}
+			return "", fmt.Errorf("substring expects 3 args")
 		default:
 			return fmt.Sprintf("%s(%s)", p.Call.Func, strings.Join(args, ", ")), nil
 		}

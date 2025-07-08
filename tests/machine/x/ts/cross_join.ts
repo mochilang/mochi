@@ -12,6 +12,7 @@ let result = (() => {
 })()
 ;
 console.log("--- Cross Join: All order-customer pairs ---");
-for (const entry of result) {
+const _tmp2 = result;
+for (const entry of (Array.isArray(_tmp2) ? _tmp2 : Object.keys(_tmp2))) {
   console.log("Order", entry.orderId, "(customerId:", entry.orderCustomerId, ", total: $", entry.orderTotal, ") paired with", entry.pairedCustomerName);
 }

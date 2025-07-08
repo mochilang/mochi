@@ -15,6 +15,7 @@ let combos = (() => {
 })()
 ;
 console.log("--- Cross Join of three lists ---");
-for (const c of combos) {
+const _tmp2 = combos;
+for (const c of (Array.isArray(_tmp2) ? _tmp2 : Object.keys(_tmp2))) {
   console.log(c.n, c.l, c.b);
 }
