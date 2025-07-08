@@ -1,0 +1,3 @@
+cobc: exit status 1
+/workspace/mochi/tests/machine/x/cobol/string_concat.cob:6: error: syntax error, unexpected +
+

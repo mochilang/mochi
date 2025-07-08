@@ -1,0 +1,10 @@
+cobc: exit status 1
+/workspace/mochi/tests/machine/x/cobol/tail_recursion.cob:7: error: syntax error, unexpected USING
+/workspace/mochi/tests/machine/x/cobol/tail_recursion.cob: in paragraph 'SUM_REC':
+/workspace/mochi/tests/machine/x/cobol/tail_recursion.cob:12: error: syntax error, unexpected PROCEDURE
+/workspace/mochi/tests/machine/x/cobol/tail_recursion.cob:13: error: 'N' is not defined
+/workspace/mochi/tests/machine/x/cobol/tail_recursion.cob:13: error: invalid expression
+/workspace/mochi/tests/machine/x/cobol/tail_recursion.cob:14: error: 'ACC' is not defined
+/workspace/mochi/tests/machine/x/cobol/tail_recursion.cob:16: error: syntax error, unexpected END-IF
+/workspace/mochi/tests/machine/x/cobol/tail_recursion.cob:17: error: syntax error, unexpected USING
+
