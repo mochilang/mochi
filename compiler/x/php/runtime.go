@@ -119,6 +119,17 @@ const helperLoadJSON = "function _load_json($path) {\n" +
 	"    return $val;\n" +
 	"}\n"
 
+const helperLoadYAML = "function _load_yaml($path) {\n" +
+	"    $f = ($path === '' || $path === '-') ? fopen('php://stdin', 'r') : fopen($path, 'r');\n" +
+	"    if (!$f) { throw new Exception('cannot open ' . $path); }\n" +
+	"    $data = stream_get_contents($f);\n" +
+	"    if ($path !== '' && $path !== '-') fclose($f);\n" +
+	"    $val = yaml_parse($data);\n" +
+	"    if ($val === false || $val === null) return [];\n" +
+	"    if (array_keys($val) !== range(0, count($val) - 1)) { return [$val]; }\n" +
+	"    return $val;\n" +
+	"}\n"
+
 const helperSaveJSON = "function _save_json($rows, $path) {\n" +
 	"    $out = json_encode($rows);\n" +
 	"    if ($path === '' || $path === '-') { fwrite(STDOUT, $out . PHP_EOL); } else { file_put_contents($path, $out); }\n" +
@@ -175,6 +186,7 @@ var helperMap = map[string]string{
 	"_group_by":   helperGroupBy,
 	"_fetch":      helperFetch,
 	"_load_json":  helperLoadJSON,
+	"_load_yaml":  helperLoadYAML,
 	"_save_json":  helperSaveJSON,
 	"_gen_text":   helperGenText,
 	"_gen_embed":  helperGenEmbed,

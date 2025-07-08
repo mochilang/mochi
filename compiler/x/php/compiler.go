@@ -5,6 +5,7 @@ package phpcode
 import (
 	"bytes"
 	"fmt"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -20,6 +21,7 @@ type Compiler struct {
 	buf          bytes.Buffer
 	indent       int
 	env          *types.Env
+	baseDir      string
 	locals       map[string]bool
 	funcs        map[string]bool
 	methodFields map[string]bool
@@ -29,9 +31,10 @@ type Compiler struct {
 }
 
 // New creates a new PHP compiler instance.
-func New(env *types.Env) *Compiler {
+func New(env *types.Env, dir string) *Compiler {
 	return &Compiler{
 		env:          env,
+		baseDir:      dir,
 		locals:       map[string]bool{},
 		funcs:        map[string]bool{},
 		methodFields: nil,
@@ -1195,6 +1198,86 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.env = orig
 			return "", err
 		}
+		if arg, ok := isSumCall(q.Select); ok && q.Group == nil && q.Skip == nil && q.Take == nil {
+			sumExpr, err := c.compileExpr(arg)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			var cond string
+			var outerCond string
+			fromConds := make([]string, len(q.Froms))
+			if q.Where != nil {
+				cond, err = c.compileExpr(q.Where)
+				if err != nil {
+					c.env = orig
+					return "", err
+				}
+				vars := exprVarSet(q.Where)
+				if len(vars) == 1 {
+					if vars[q.Var] {
+						outerCond = cond
+						cond = ""
+					} else {
+						for i, f := range q.Froms {
+							if vars[f.Var] {
+								fromConds[i] = cond
+								cond = ""
+								break
+							}
+						}
+					}
+				}
+			}
+			fromSrcs := make([]string, len(q.Froms))
+			for i, f := range q.Froms {
+				fs, err := c.compileExpr(f.Src)
+				if err != nil {
+					c.env = orig
+					return "", err
+				}
+				fromSrcs[i] = fs
+			}
+			capture := queryFreeVars(q, orig)
+			c.env = orig
+
+			var b strings.Builder
+			use := ""
+			if len(capture) > 0 {
+				use = " use (" + strings.Join(capture, ", ") + ")"
+			}
+			b.WriteString("(function()" + use + " {\n")
+			b.WriteString("\t$sum = 0;\n")
+			b.WriteString(fmt.Sprintf("\tforeach ((is_string(%[1]s) ? str_split(%[1]s) : %[1]s) as $%s) {\n", src, sanitizeName(q.Var)))
+			if outerCond != "" {
+				b.WriteString("\t\tif (!(" + outerCond + ")) { continue; }\n")
+			}
+			indent := "\t\t"
+			for i, fs := range fromSrcs {
+				b.WriteString(fmt.Sprintf(indent+"foreach ((is_string(%[1]s) ? str_split(%[1]s) : %[1]s) as $%s) {\n", fs, sanitizeName(q.Froms[i].Var)))
+				indent += "\t"
+				if fromConds[i] != "" {
+					b.WriteString(indent + "if (!(" + fromConds[i] + ")) { continue; }\n")
+				}
+			}
+			if cond != "" {
+				b.WriteString(indent + "if (" + cond + ") {\n")
+				indent += "\t"
+			}
+			b.WriteString(indent + "$sum += " + sumExpr + ";\n")
+			if cond != "" {
+				indent = indent[:len(indent)-1]
+				b.WriteString(indent + "}\n")
+			}
+			for range fromSrcs {
+				indent = indent[:len(indent)-1]
+				b.WriteString(indent + "}\n")
+			}
+			b.WriteString("\t}\n")
+			b.WriteString("\treturn $sum;\n")
+			b.WriteString("})()")
+			return b.String(), nil
+		}
 		var cond string
 		var skipExpr string
 		var takeExpr string
@@ -1762,10 +1845,34 @@ func isCompositeParam(p *parser.Param) bool {
 func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 	path := "\"\""
 	if l.Path != nil {
-		path = fmt.Sprintf("%q", *l.Path)
+		p := *l.Path
+		if c.baseDir != "" && !strings.HasPrefix(p, "/") {
+			p = filepath.Join(c.baseDir, p)
+		}
+		path = fmt.Sprintf("%q", p)
 	}
-	c.use("_load_json")
-	return fmt.Sprintf("_load_json(%s)", path), nil
+	fn := "_load_json"
+	if l.With != nil {
+		v := l.With.Binary.Left.Value
+		if len(v.Ops) == 0 && v.Target.Map != nil {
+			for _, it := range v.Target.Map.Items {
+				key, ok := types.SimpleStringKey(it.Key)
+				if !ok {
+					continue
+				}
+				if key == "format" && it.Value != nil {
+					mv := it.Value.Binary.Left.Value
+					if len(mv.Ops) == 0 && mv.Target.Lit != nil && mv.Target.Lit.Str != nil {
+						if *mv.Target.Lit.Str == "yaml" {
+							fn = "_load_yaml"
+						}
+					}
+				}
+			}
+		}
+	}
+	c.use(fn)
+	return fmt.Sprintf("%s(%s)", fn, path), nil
 }
 
 func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
@@ -1857,4 +1964,26 @@ func exprVarSet(e *parser.Expr) map[string]bool {
 		res[v] = true
 	}
 	return res
+}
+
+func isSumCall(e *parser.Expr) (*parser.Expr, bool) {
+	if e == nil {
+		return nil, false
+	}
+	if len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target.Call == nil {
+		return nil, false
+	}
+	call := p.Target.Call
+	if call.Func != "sum" || len(call.Args) != 1 {
+		return nil, false
+	}
+	return call.Args[0], true
 }

@@ -1,9 +1,0 @@
-line: 29
-error: run error: exit status 255
-PHP Warning:  fopen(../interpreter/valid/people.yaml): Failed to open stream: No such file or directory in /workspace/mochi/tests/machine/x/php/load_yaml.php on line 29
-PHP Fatal error:  Uncaught Exception: cannot open ../interpreter/valid/people.yaml in /workspace/mochi/tests/machine/x/php/load_yaml.php:30
-Stack trace:
-#0 /workspace/mochi/tests/machine/x/php/load_yaml.php(14): _load_json()
-#1 {main}
-  thrown in /workspace/mochi/tests/machine/x/php/load_yaml.php on line 30
-

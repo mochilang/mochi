@@ -19,8 +19,8 @@ function mochi_test_update_adult_status() {
 $people = [new Person(['name' => "Alice", 'age' => 17, 'status' => "minor"]), new Person(['name' => "Bob", 'age' => 25, 'status' => "unknown"]), new Person(['name' => "Charlie", 'age' => 18, 'status' => "unknown"]), new Person(['name' => "Diana", 'age' => 16, 'status' => "minor"])];
 for ($_i = 0; $_i < count($people); $_i++) {
 	$_item = $people[$_i];
-	$age = is_array($_item) ? ($_item['age'] ?? null) : $_item->age;
 	$status = is_array($_item) ? ($_item['status'] ?? null) : $_item->status;
+	$age = is_array($_item) ? ($_item['age'] ?? null) : $_item->age;
 	if (($age >= 18)) {
 		if (is_array($_item)) { $_item['status'] = "adult"; } else { $_item->status = "adult"; }
 		if (is_array($_item)) { $_item['age'] = ((is_array($age) && is_array(1)) ? array_merge($age, 1) : ((is_string($age) || is_string(1)) ? ($age . 1) : ($age + 1))); } else { $_item->age = ((is_array($age) && is_array(1)) ? array_merge($age, 1) : ((is_string($age) || is_string(1)) ? ($age . 1) : ($age + 1))); }
