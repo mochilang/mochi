@@ -1,0 +1,8 @@
+line: 33
+error: run error: exit status 255
+PHP Fatal error:  Uncaught Error: Call to undefined function yaml_parse() in /workspace/mochi/tests/machine/x/php/load_yaml.php:33
+Stack trace:
+#0 /workspace/mochi/tests/machine/x/php/load_yaml.php(14): _load_yaml()
+#1 {main}
+  thrown in /workspace/mochi/tests/machine/x/php/load_yaml.php on line 33
+
