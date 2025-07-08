@@ -1,9 +1,23 @@
-line 13: ../../../tests/machine/x/cpp/break_continue.mochi.cpp: In function ‘int main()’:
-../../../tests/machine/x/cpp/break_continue.mochi.cpp:13:17: error: ‘print’ was not declared in this scope; did you mean ‘rint’?
-   13 |                 print("odd number:", n);
-      |                 ^~~~~
-      |                 rint
+line 21: ../../../tests/machine/x/cpp/break_continue.mochi.cpp: In function ‘int main()’:
+../../../tests/machine/x/cpp/break_continue.mochi.cpp:21:14: error: no matching function for call to ‘print(const char [12], int&)’
+   21 |         print("odd number:", n);
+      |         ~~~~~^~~~~~~~~~~~~~~~~~
+../../../tests/machine/x/cpp/break_continue.mochi.cpp:8:27: note: candidate: ‘template<class T> void print(const T&)’
+    8 | template<typename T> void print(const T& v){ std::cout << v; }
+      |                           ^~~~~
+../../../tests/machine/x/cpp/break_continue.mochi.cpp:8:27: note:   template argument deduction/substitution failed:
+../../../tests/machine/x/cpp/break_continue.mochi.cpp:21:14: note:   candidate expects 1 argument, 2 provided
+   21 |         print("odd number:", n);
+      |         ~~~~~^~~~~~~~~~~~~~~~~~
+../../../tests/machine/x/cpp/break_continue.mochi.cpp:9:6: note: candidate: ‘void print(const std::vector<int>&)’
+    9 | void print(const std::vector<int>& v){ for(size_t i=0;i<v.size();++i){ if(i) std::cout<<' '; std::cout<<v[i]; }}
+      |      ^~~~~
+../../../tests/machine/x/cpp/break_continue.mochi.cpp:9:6: note:   candidate expects 1 argument, 2 provided
+../../../tests/machine/x/cpp/break_continue.mochi.cpp:10:6: note: candidate: ‘void print(bool)’
+   10 | void print(bool b){ std::cout<<(b?"true":"false"); }
+      |      ^~~~~
+../../../tests/machine/x/cpp/break_continue.mochi.cpp:10:6: note:   candidate expects 1 argument, 2 provided
 
- 12 | 		}
- 13 | 		print("odd number:", n);
- 14 | 	}
+ 20 |         }
+ 21 |         print("odd number:", n);
+ 22 |     }

@@ -1,8 +1,8 @@
-line 5: ../../../tests/machine/x/cpp/substring_builtin.mochi.cpp: In function ‘int main()’:
-../../../tests/machine/x/cpp/substring_builtin.mochi.cpp:5:18: error: ‘substring’ was not declared in this scope
-    5 |         (cout << substring("mochi", 1, 4));
-      |                  ^~~~~~~~~
+line 13: ../../../tests/machine/x/cpp/substring_builtin.mochi.cpp: In function ‘int main()’:
+../../../tests/machine/x/cpp/substring_builtin.mochi.cpp:13:11: error: ‘substring’ was not declared in this scope
+   13 |     print(substring("mochi", 1, 4));
+      |           ^~~~~~~~~
 
-  4 | int main() {
-  5 | 	(cout << substring("mochi", 1, 4));
-  6 | 	return 0;
+ 12 | int main() {
+ 13 |     print(substring("mochi", 1, 4));
+ 14 |     return 0;

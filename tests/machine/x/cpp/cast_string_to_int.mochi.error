@@ -1,8 +1,0 @@
-line 5: ../../../tests/machine/x/cpp/cast_string_to_int.mochi.cpp: In function ‘int main()’:
-../../../tests/machine/x/cpp/cast_string_to_int.mochi.cpp:5:18: error: cast from ‘const char*’ to ‘int’ loses precision [-fpermissive]
-    5 |         (cout << (int)("1995"));
-      |                  ^~~~~~~~~~~~~
-
-  4 | int main() {
-  5 | 	(cout << (int)("1995"));
-  6 | 	return 0;

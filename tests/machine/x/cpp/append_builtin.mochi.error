@@ -1,8 +1,0 @@
-line 6: ../../../tests/machine/x/cpp/append_builtin.mochi.cpp: In function ‘int main()’:
-../../../tests/machine/x/cpp/append_builtin.mochi.cpp:6:18: error: ‘append’ was not declared in this scope
-    6 |         (cout << append(a, 3));
-      |                  ^~~~~~
-
-  5 | 	auto a = vector<int>{1, 2};
-  6 | 	(cout << append(a, 3));
-  7 | 	return 0;

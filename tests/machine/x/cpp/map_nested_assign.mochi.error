@@ -1,32 +1,30 @@
-line 5: ../../../tests/machine/x/cpp/map_nested_assign.mochi.cpp: In function ‘int main()’:
-../../../tests/machine/x/cpp/map_nested_assign.mochi.cpp:5:97: error: no matching function for call to ‘std::unordered_map<std::__cxx11::basic_string<char>, int>::unordered_map(<brace-enclosed initializer list>)’
-    5 |         auto data = unordered_map<string,int>{{"outer", unordered_map<string,int>{{"inner", 1}}}};
-      |                                                                                                 ^
+line 13: ../../../tests/machine/x/cpp/map_nested_assign.mochi.cpp: In function ‘int main()’:
+../../../tests/machine/x/cpp/map_nested_assign.mochi.cpp:13:113: error: no matching function for call to ‘std::unordered_map<std::__cxx11::basic_string<char>, int>::unordered_map(<brace-enclosed initializer list>)’
+   13 |     auto data = std::unordered_map<std::string,int>{{"outer", std::unordered_map<std::string,int>{{"inner", 1}}}};
+      |                                                                                                                 ^
 In file included from /usr/include/c++/13/unordered_map:41,
-                 from /usr/include/c++/13/functional:63,
-                 from /usr/include/x86_64-linux-gnu/c++/13/bits/stdc++.h:53,
-                 from ../../../tests/machine/x/cpp/map_nested_assign.mochi.cpp:1:
+                 from ../../../tests/machine/x/cpp/map_nested_assign.mochi.cpp:3:
 /usr/include/c++/13/bits/unordered_map.h:259:9: note: candidate: ‘template<class _InputIterator> std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>::unordered_map(_InputIterator, _InputIterator, size_type, const hasher&, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = int; _Hash = std::hash<std::__cxx11::basic_string<char> >; _Pred = std::equal_to<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, int> >]’
   259 |         unordered_map(_InputIterator __first, _InputIterator __last,
       |         ^~~~~~~~~~~~~
 /usr/include/c++/13/bits/unordered_map.h:259:9: note:   template argument deduction/substitution failed:
-../../../tests/machine/x/cpp/map_nested_assign.mochi.cpp:5:97: note:   candidate expects 5 arguments, 1 provided
-    5 |         auto data = unordered_map<string,int>{{"outer", unordered_map<string,int>{{"inner", 1}}}};
-      |                                                                                                 ^
+../../../tests/machine/x/cpp/map_nested_assign.mochi.cpp:13:113: note:   candidate expects 5 arguments, 1 provided
+   13 |     auto data = std::unordered_map<std::string,int>{{"outer", std::unordered_map<std::string,int>{{"inner", 1}}}};
+      |                                                                                                                 ^
 /usr/include/c++/13/bits/unordered_map.h:252:9: note: candidate: ‘template<class _InputIterator> std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>::unordered_map(_InputIterator, _InputIterator, size_type, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = int; _Hash = std::hash<std::__cxx11::basic_string<char> >; _Pred = std::equal_to<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, int> >]’
   252 |         unordered_map(_InputIterator __first, _InputIterator __last,
       |         ^~~~~~~~~~~~~
 /usr/include/c++/13/bits/unordered_map.h:252:9: note:   template argument deduction/substitution failed:
-../../../tests/machine/x/cpp/map_nested_assign.mochi.cpp:5:97: note:   candidate expects 4 arguments, 1 provided
-    5 |         auto data = unordered_map<string,int>{{"outer", unordered_map<string,int>{{"inner", 1}}}};
-      |                                                                                                 ^
+../../../tests/machine/x/cpp/map_nested_assign.mochi.cpp:13:113: note:   candidate expects 4 arguments, 1 provided
+   13 |     auto data = std::unordered_map<std::string,int>{{"outer", std::unordered_map<std::string,int>{{"inner", 1}}}};
+      |                                                                                                                 ^
 /usr/include/c++/13/bits/unordered_map.h:179:9: note: candidate: ‘template<class _InputIterator> std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>::unordered_map(_InputIterator, _InputIterator, size_type, const hasher&, const key_equal&, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = int; _Hash = std::hash<std::__cxx11::basic_string<char> >; _Pred = std::equal_to<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, int> >]’
   179 |         unordered_map(_InputIterator __first, _InputIterator __last,
       |         ^~~~~~~~~~~~~
 /usr/include/c++/13/bits/unordered_map.h:179:9: note:   template argument deduction/substitution failed:
-../../../tests/machine/x/cpp/map_nested_assign.mochi.cpp:5:97: note:   candidate expects 6 arguments, 1 provided
-    5 |         auto data = unordered_map<string,int>{{"outer", unordered_map<string,int>{{"inner", 1}}}};
-      |                                                                                                 ^
+../../../tests/machine/x/cpp/map_nested_assign.mochi.cpp:13:113: note:   candidate expects 6 arguments, 1 provided
+   13 |     auto data = std::unordered_map<std::string,int>{{"outer", std::unordered_map<std::string,int>{{"inner", 1}}}};
+      |                                                                                                                 ^
 /usr/include/c++/13/bits/unordered_map.h:271:7: note: candidate: ‘std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>::unordered_map(std::initializer_list<typename std::_Hashtable<_Key, std::pair<const _Key, _Val>, _Alloc, std::__detail::_Select1st, _Pred, _Hash, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<std::__not_<std::__and_<std::__is_fast_hash<_Hash>, std::__is_nothrow_invocable<const _Hash&, const _Key&> > >::value, false, true> >::value_type>, size_type, const hasher&, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = int; _Hash = std::hash<std::__cxx11::basic_string<char> >; _Pred = std::equal_to<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, int> >; typename std::_Hashtable<_Key, std::pair<const _Key, _Val>, _Alloc, std::__detail::_Select1st, _Pred, _Hash, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<std::__not_<std::__and_<std::__is_fast_hash<_Hash>, std::__is_nothrow_invocable<const _Hash&, const _Key&> > >::value, false, true> >::value_type = std::pair<const std::__cxx11::basic_string<char>, int>; size_type = long unsigned int; hasher = std::hash<std::__cxx11::basic_string<char> >; allocator_type = std::allocator<std::pair<const std::__cxx11::basic_string<char>, int> >]’
   271 |       unordered_map(initializer_list<value_type> __l,
       |       ^~~~~~~~~~~~~
@@ -86,6 +84,6 @@ In file included from /usr/include/c++/13/unordered_map:41,
       |       ^~~~~~~~~~~~~
 /usr/include/c++/13/bits/unordered_map.h:148:7: note:   candidate expects 0 arguments, 1 provided
 
-  4 | int main() {
-  5 | 	auto data = unordered_map<string,int>{{"outer", unordered_map<string,int>{{"inner", 1}}}};
-  6 | 	data["outer"]["inner"] = 2;
+ 12 | int main() {
+ 13 |     auto data = std::unordered_map<std::string,int>{{"outer", std::unordered_map<std::string,int>{{"inner", 1}}}};
+ 14 |     data["outer"]["inner"] = 2;

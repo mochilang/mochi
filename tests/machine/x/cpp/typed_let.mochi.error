@@ -1,8 +1,8 @@
-line 5: ../../../tests/machine/x/cpp/typed_let.mochi.cpp: In function ‘int main()’:
-../../../tests/machine/x/cpp/typed_let.mochi.cpp:5:9: error: declaration of ‘auto y’ has no initializer
-    5 |         auto y;
-      |         ^~~~
+line 13: ../../../tests/machine/x/cpp/typed_let.mochi.cpp: In function ‘int main()’:
+../../../tests/machine/x/cpp/typed_let.mochi.cpp:13:5: error: declaration of ‘auto y’ has no initializer
+   13 |     auto y;
+      |     ^~~~
 
-  4 | int main() {
-  5 | 	auto y;
-  6 | 	(cout << y);
+ 12 | int main() {
+ 13 |     auto y;
+ 14 |     print(y);

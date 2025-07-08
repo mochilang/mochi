@@ -1,9 +1,23 @@
-line 8: ../../../tests/machine/x/cpp/map_literal_dynamic.mochi.cpp: In function ‘int main()’:
-../../../tests/machine/x/cpp/map_literal_dynamic.mochi.cpp:8:9: error: ‘print’ was not declared in this scope; did you mean ‘rint’?
-    8 |         print(m["a"], m["b"]);
-      |         ^~~~~
-      |         rint
+line 16: ../../../tests/machine/x/cpp/map_literal_dynamic.mochi.cpp: In function ‘int main()’:
+../../../tests/machine/x/cpp/map_literal_dynamic.mochi.cpp:16:10: error: no matching function for call to ‘print(std::unordered_map<std::__cxx11::basic_string<char>, int>::mapped_type&, std::unordered_map<std::__cxx11::basic_string<char>, int>::mapped_type&)’
+   16 |     print(m["a"], m["b"]);
+      |     ~~~~~^~~~~~~~~~~~~~~~
+../../../tests/machine/x/cpp/map_literal_dynamic.mochi.cpp:8:27: note: candidate: ‘template<class T> void print(const T&)’
+    8 | template<typename T> void print(const T& v){ std::cout << v; }
+      |                           ^~~~~
+../../../tests/machine/x/cpp/map_literal_dynamic.mochi.cpp:8:27: note:   template argument deduction/substitution failed:
+../../../tests/machine/x/cpp/map_literal_dynamic.mochi.cpp:16:10: note:   candidate expects 1 argument, 2 provided
+   16 |     print(m["a"], m["b"]);
+      |     ~~~~~^~~~~~~~~~~~~~~~
+../../../tests/machine/x/cpp/map_literal_dynamic.mochi.cpp:9:6: note: candidate: ‘void print(const std::vector<int>&)’
+    9 | void print(const std::vector<int>& v){ for(size_t i=0;i<v.size();++i){ if(i) std::cout<<' '; std::cout<<v[i]; }}
+      |      ^~~~~
+../../../tests/machine/x/cpp/map_literal_dynamic.mochi.cpp:9:6: note:   candidate expects 1 argument, 2 provided
+../../../tests/machine/x/cpp/map_literal_dynamic.mochi.cpp:10:6: note: candidate: ‘void print(bool)’
+   10 | void print(bool b){ std::cout<<(b?"true":"false"); }
+      |      ^~~~~
+../../../tests/machine/x/cpp/map_literal_dynamic.mochi.cpp:10:6: note:   candidate expects 1 argument, 2 provided
 
-  7 | 	auto m = unordered_map<string,int>{{"a", x}, {"b", y}};
-  8 | 	print(m["a"], m["b"]);
-  9 | 	return 0;
+ 15 |     auto m = std::unordered_map<std::string,int>{{"a", x}, {"b", y}};
+ 16 |     print(m["a"], m["b"]);
+ 17 |     return 0;

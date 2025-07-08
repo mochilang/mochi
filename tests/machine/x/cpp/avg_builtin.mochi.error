@@ -1,8 +1,0 @@
-line 5: ../../../tests/machine/x/cpp/avg_builtin.mochi.cpp: In function ‘int main()’:
-../../../tests/machine/x/cpp/avg_builtin.mochi.cpp:5:18: error: ‘avg’ was not declared in this scope
-    5 |         (cout << avg(vector<int>{1, 2, 3}));
-      |                  ^~~
-
-  4 | int main() {
-  5 | 	(cout << avg(vector<int>{1, 2, 3}));
-  6 | 	return 0;
