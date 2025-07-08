@@ -2,7 +2,7 @@
 
 This checklist tracks which Mochi programs from `tests/vm/valid` have been compiled to Kotlin and executed successfully.
 
-## Progress: 53/97
+## Progress: 56/97
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -24,7 +24,7 @@ This checklist tracks which Mochi programs from `tests/vm/valid` have been compi
 - [x] for_loop.mochi
 - [x] for_map_collection.mochi
 - [x] fun_call.mochi
-- [ ] fun_expr_in_let.mochi
+- [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
 - [ ] group_by.mochi
 - [ ] group_by_conditional_sum.mochi
@@ -36,8 +36,8 @@ This checklist tracks which Mochi programs from `tests/vm/valid` have been compi
 - [ ] group_by_sort.mochi
 - [ ] group_items_iteration.mochi
 - [x] if_else.mochi
-- [ ] if_then_else.mochi
-- [ ] if_then_else_nested.mochi
+- [x] if_then_else.mochi
+- [x] if_then_else_nested.mochi
 - [x] in_operator.mochi
 - [ ] in_operator_extended.mochi
 - [ ] inner_join.mochi

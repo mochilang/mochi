@@ -1,0 +1,9 @@
+line 67:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/closure.kt:67:13: error: expression 'add10' of type 'Any' cannot be invoked as a function. The function 'invoke()' is not found
+    println(add10(7))
+            ^
+
+ 66:     val add10 = makeAdder(10)
+ 67:     println(add10(7))
+ 68: }

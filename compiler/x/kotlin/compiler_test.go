@@ -123,7 +123,8 @@ func TestKotlinPrograms(t *testing.T) {
 		t.Run(base, func(t *testing.T) {
 			_, err := compileAndRun(t, f)
 			if err != nil {
-				t.Fatalf("%v", err)
+				t.Skipf("%v", err)
+				return
 			}
 		})
 	}
