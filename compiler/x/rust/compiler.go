@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"mochi/parser"
+	"mochi/types"
 )
 
 // Compiler translates a subset of Mochi to Rust source code.
@@ -16,11 +17,12 @@ type Compiler struct {
 	indent  int
 	helpers map[string]bool
 	tmp     int
+	env     *types.Env
 }
 
 // New returns a new Compiler instance.
-func New() *Compiler {
-	return &Compiler{helpers: make(map[string]bool)}
+func New(env *types.Env) *Compiler {
+	return &Compiler{helpers: make(map[string]bool), env: env}
 }
 
 // Compile converts a parsed Mochi program into Rust source code.
@@ -250,12 +252,32 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		return "", err
 	}
 	res := left
+	leftAST := b.Left
 	for _, op := range b.Right {
 		r, err := c.compilePostfix(op.Right)
 		if err != nil {
 			return "", err
 		}
-		res = fmt.Sprintf("%s %s %s", res, op.Op, r)
+		switch op.Op {
+		case "in":
+			if c.env != nil && types.IsStringType(types.TypeOfPostfix(op.Right, c.env)) {
+				if !c.unaryIsString(leftAST) {
+					return "", fmt.Errorf("in type mismatch")
+				}
+				res = fmt.Sprintf("%s.contains(%s)", r, res)
+			} else {
+				return "", fmt.Errorf("in unsupported")
+			}
+		case "+":
+			if c.unaryIsString(leftAST) || c.postfixIsString(op.Right) {
+				res = fmt.Sprintf("format!(\"{}{}\", %s, %s)", res, r)
+			} else {
+				res = fmt.Sprintf("%s + %s", res, r)
+			}
+		default:
+			res = fmt.Sprintf("%s %s %s", res, op.Op, r)
+		}
+		leftAST = &parser.Unary{Value: op.Right}
 	}
 	return res, nil
 }
@@ -297,6 +319,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	switch {
 	case p.Lit != nil:
 		return c.compileLiteral(p.Lit), nil
+	case p.If != nil:
+		return c.compileIfExpr(p.If)
 	case p.List != nil:
 		elems := make([]string, len(p.List.Elems))
 		for i, e := range p.List.Elems {
@@ -325,6 +349,50 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	default:
 		return "", fmt.Errorf("unsupported expression at line %d", p.Pos.Line)
 	}
+}
+
+func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
+	cond, err := c.compileExpr(ie.Cond)
+	if err != nil {
+		return "", err
+	}
+	thenExpr, err := c.compileExpr(ie.Then)
+	if err != nil {
+		return "", err
+	}
+	var b strings.Builder
+	fmt.Fprintf(&b, "if %s { %s }", cond, thenExpr)
+	if ie.ElseIf != nil {
+		elseStr, err := c.compileIfExpr(ie.ElseIf)
+		if err != nil {
+			return "", err
+		}
+		b.WriteString(" else ")
+		b.WriteString(elseStr)
+	} else if ie.Else != nil {
+		elseExpr, err := c.compileExpr(ie.Else)
+		if err != nil {
+			return "", err
+		}
+		fmt.Fprintf(&b, " else { %s }", elseExpr)
+	}
+	return b.String(), nil
+}
+
+func (c *Compiler) unaryIsString(u *parser.Unary) bool {
+	if c.env == nil {
+		return false
+	}
+	t := types.TypeOfUnary(u, c.env)
+	return types.IsStringType(t)
+}
+
+func (c *Compiler) postfixIsString(pf *parser.PostfixExpr) bool {
+	if c.env == nil {
+		return false
+	}
+	t := types.TypeOfPostfix(pf, c.env)
+	return types.IsStringType(t)
 }
 
 func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {

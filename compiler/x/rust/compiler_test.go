@@ -13,6 +13,7 @@ import (
 
 	rustcode "mochi/compiler/x/rust"
 	"mochi/parser"
+	"mochi/types"
 )
 
 // findRepoRoot walks up directories until go.mod is found.
@@ -79,7 +80,12 @@ func TestCompilePrograms(t *testing.T) {
 				writeError(outDir, name, string(data), err)
 				return
 			}
-			code, err := rustcode.New().Compile(prog)
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				writeError(outDir, name, string(data), errs[0])
+				return
+			}
+			code, err := rustcode.New(env).Compile(prog)
 			if err != nil {
 				writeError(outDir, name, string(data), err)
 				return
