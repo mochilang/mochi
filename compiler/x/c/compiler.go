@@ -252,18 +252,41 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Let != nil:
 		c.writeIndent()
 		if lst := listLiteral(s.Let.Value); lst != nil {
-			elems := make([]string, len(lst.Elems))
-			for i, e := range lst.Elems {
-				s, err := c.compileExpr(e)
-				if err != nil {
-					return err
+			if len(lst.Elems) > 0 && listLiteral(lst.Elems[0]) != nil {
+				inner := listLiteral(lst.Elems[0])
+				cols := len(inner.Elems)
+				rows := make([]string, len(lst.Elems))
+				for i, r := range lst.Elems {
+					rl := listLiteral(r)
+					if rl == nil || len(rl.Elems) != cols {
+						return fmt.Errorf("unsupported nested list")
+					}
+					elems := make([]string, cols)
+					for j, e := range rl.Elems {
+						s, err := c.compileExpr(e)
+						if err != nil {
+							return err
+						}
+						elems[j] = s
+					}
+					rows[i] = fmt.Sprintf("{%s}", strings.Join(elems, ", "))
 				}
-				elems[i] = s
+				fmt.Fprintf(&c.buf, "int %s[][ %d ] = {%s};\n", s.Let.Name, cols, strings.Join(rows, ", "))
+				c.vars[s.Let.Name] = "int[][]"
+			} else {
+				elems := make([]string, len(lst.Elems))
+				for i, e := range lst.Elems {
+					s, err := c.compileExpr(e)
+					if err != nil {
+						return err
+					}
+					elems[i] = s
+				}
+				fmt.Fprintf(&c.buf, "int %s[] = {%s};\n", s.Let.Name, strings.Join(elems, ", "))
+				c.vars[s.Let.Name] = "int[]"
+				c.lens[s.Let.Name] = len(lst.Elems)
+				c.listVals[s.Let.Name] = elems
 			}
-			fmt.Fprintf(&c.buf, "int %s[] = {%s};\n", s.Let.Name, strings.Join(elems, ", "))
-			c.vars[s.Let.Name] = "int[]"
-			c.lens[s.Let.Name] = len(lst.Elems)
-			c.listVals[s.Let.Name] = elems
 		} else if mp := mapLiteral(s.Let.Value); mp != nil {
 			val, err := c.compileMapLiteral(mp, true)
 			if err != nil {
@@ -320,18 +343,41 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Var != nil:
 		c.writeIndent()
 		if lst := listLiteral(s.Var.Value); lst != nil {
-			elems := make([]string, len(lst.Elems))
-			for i, e := range lst.Elems {
-				s, err := c.compileExpr(e)
-				if err != nil {
-					return err
+			if len(lst.Elems) > 0 && listLiteral(lst.Elems[0]) != nil {
+				inner := listLiteral(lst.Elems[0])
+				cols := len(inner.Elems)
+				rows := make([]string, len(lst.Elems))
+				for i, r := range lst.Elems {
+					rl := listLiteral(r)
+					if rl == nil || len(rl.Elems) != cols {
+						return fmt.Errorf("unsupported nested list")
+					}
+					elems := make([]string, cols)
+					for j, e := range rl.Elems {
+						s, err := c.compileExpr(e)
+						if err != nil {
+							return err
+						}
+						elems[j] = s
+					}
+					rows[i] = fmt.Sprintf("{%s}", strings.Join(elems, ", "))
 				}
-				elems[i] = s
+				fmt.Fprintf(&c.buf, "int %s[][ %d ] = {%s};\n", s.Var.Name, cols, strings.Join(rows, ", "))
+				c.vars[s.Var.Name] = "int[][]"
+			} else {
+				elems := make([]string, len(lst.Elems))
+				for i, e := range lst.Elems {
+					s, err := c.compileExpr(e)
+					if err != nil {
+						return err
+					}
+					elems[i] = s
+				}
+				fmt.Fprintf(&c.buf, "int %s[] = {%s};\n", s.Var.Name, strings.Join(elems, ", "))
+				c.vars[s.Var.Name] = "int[]"
+				c.lens[s.Var.Name] = len(lst.Elems)
+				c.listVals[s.Var.Name] = elems
 			}
-			fmt.Fprintf(&c.buf, "int %s[] = {%s};\n", s.Var.Name, strings.Join(elems, ", "))
-			c.vars[s.Var.Name] = "int[]"
-			c.lens[s.Var.Name] = len(lst.Elems)
-			c.listVals[s.Var.Name] = elems
 		} else if mp := mapLiteral(s.Var.Value); mp != nil {
 			val, err := c.compileMapLiteral(mp, true)
 			if err != nil {
@@ -1043,7 +1089,18 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			if strings.HasPrefix(args[0], "\"") {
 				return fmt.Sprintf("printf(\"%%s %%d\\n\", %s, %s)", args[0], args[1]), nil
 			}
-			return "", fmt.Errorf("print unsupported arguments")
+			str0 := c.exprIsString(call.Args[0])
+			str1 := c.exprIsString(call.Args[1])
+			switch {
+			case str0 && str1:
+				return fmt.Sprintf("printf(\"%%s %%s\\n\", %s, %s)", args[0], args[1]), nil
+			case str0 && !str1:
+				return fmt.Sprintf("printf(\"%%s %%d\\n\", %s, %s)", args[0], args[1]), nil
+			case !str0 && str1:
+				return fmt.Sprintf("printf(\"%%d %%s\\n\", %s, %s)", args[0], args[1]), nil
+			default:
+				return fmt.Sprintf("printf(\"%%d %%d\\n\", %s, %s)", args[0], args[1]), nil
+			}
 		default:
 			return "", fmt.Errorf("print expects one or two arguments")
 		}
