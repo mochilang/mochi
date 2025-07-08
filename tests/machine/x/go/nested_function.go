@@ -1,7 +1,8 @@
-    func inner(y int) int {
-        return x + y
-    }
 //go:build ignore
+
+func inner(y int) int {
+    return x + y
+}
 
 package main
 
