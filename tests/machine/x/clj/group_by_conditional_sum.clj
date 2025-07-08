@@ -23,74 +23,14 @@
     )
     (map (fn [k] (@groups k)) @order)))
 
-(defn _query [src joins opts]
-  (let [items (atom (mapv vector src))]
-    (doseq [j joins]
-      (let [joined (atom [])]
-        (cond
-          (and (:right j) (:left j))
-            (let [matched (boolean-array (count (:items j)))]
-              (doseq [left @items]
-                (let [m (atom false)]
-                  (doseq [[ri right] (map-indexed vector (:items j))]
-                    (let [keep (if-let [f (:on j)]
-                                 (apply f (conj left right))
-                                 true)]
-                      (when keep
-                        (reset! m true)
-                        (aset matched ri true)
-                        (swap! joined conj (conj left right))))
-                  (when-not @m
-                    (swap! joined conj (conj left nil))))
-              (doseq [[ri right] (map-indexed vector (:items j))]
-                (when-not (aget matched ri)
-                  (swap! joined conj (vec (concat (repeat (count (first (or @items []))) nil) [right])))))
-            (reset! items @joined)
-          (:right j)
-            (do
-              (doseq [right (:items j)]
-                (let [m (atom false)]
-                  (doseq [left @items]
-                    (let [keep (if-let [f (:on j)]
-                                 (apply f (conj left right))
-                                 true)]
-                      (when keep
-                        (reset! m true)
-                        (swap! joined conj (conj left right))))
-                  (when-not @m
-                    (swap! joined conj (vec (concat (repeat (count (first (or @items []))) nil) [right])))))
-              (reset! items @joined))
-          :else
-            (do
-              (doseq [left @items]
-                (let [m (atom false)]
-                  (doseq [right (:items j)]
-                    (let [keep (if-let [f (:on j)]
-                                 (apply f (conj left right))
-                                 true)]
-                      (when keep
-                        (reset! m true)
-                        (swap! joined conj (conj left right))))
-                  (when (and (:left j) (not @m))
-                    (swap! joined conj (conj left nil))))
-              (reset! items @joined))))
-    (let [it @items
-          it (if-let [w (:where opts)] (vec (filter #(apply w %) it)) it)
-          it (if-let [sk (:sortKey opts)] (vec (sort-by #(apply sk %) it)) it)
-          it (if (contains? opts :skip) (vec (drop (:skip opts) it)) it)
-          it (if (contains? opts :take) (vec (take (:take opts) it)) it)]
-      (mapv #(apply (:select opts) %) it)))
 (declare items result)
 
 (defn -main []
   (def items [{:cat "a" :val 10 :flag true} {:cat "a" :val 5 :flag false} {:cat "b" :val 20 :flag true}]) ;; list of map of string to any
   (def result (let [_src items
-      _rows (_query _src [
-
-      ] { :select (fn [i] [i]) })
-      _groups (_group_by _rows (fn [i] (:cat i)))
+      _groups (_group_by _src (fn [i] (:cat i)))
       ]
-  (vec (map (fn [g] {:cat (:key g) :share (/ (_sum (vec (->> (for [x (:Items g)] (if (:flag x) (:val x) 0))))) (_sum (vec (->> (for [x (:Items g)] (:val x))))))}) _groups)))) ;; list of map of string to any
+  (->> _groups (sort-by (fn [g] (:key g))) (map (fn [g] {:cat (:key g) :share (/ (_sum (vec (->> (for [x (:Items g)] (if (:flag x) (:val x) 0))))) (_sum (vec (->> (for [x (:Items g)] (:val x))))))})) vec))) ;; list of map of string to any
   (println result)
 )
 

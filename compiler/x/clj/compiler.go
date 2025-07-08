@@ -1523,6 +1523,13 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		return expr, nil
 	}
 
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 {
+		expr, err := c.compileSimpleGroup(q)
+		if err == nil {
+			return expr, nil
+		}
+	}
+
 	useHelper := false
 	if q.Group != nil {
 		useHelper = true
@@ -2001,6 +2008,104 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 		c.imports["json"] = "clojure.data.json"
 	}
 	return fmt.Sprintf("(_fetch %s %s)", url, opts), nil
+}
+
+// compileSimpleGroup handles grouping queries without joins using a simpler
+// translation than the generic helper. It supports optional sort, skip and take
+// clauses.
+func (c *Compiler) compileSimpleGroup(q *parser.QueryExpr) (string, error) {
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	origEnv := c.env
+	child := types.NewEnv(c.env)
+	var qElem types.Type = types.AnyType{}
+	if st := c.exprType(q.Source); st != nil {
+		switch tt := st.(type) {
+		case types.ListType:
+			qElem = tt.Elem
+		case types.GroupType:
+			qElem = tt.Elem
+			src = fmt.Sprintf("(:Items %s)", src)
+		}
+	}
+	child.SetVar(q.Var, qElem, true)
+	c.env = child
+	keyExpr, err := c.compileExpr(q.Group.Exprs[0])
+	if err != nil {
+		c.env = origEnv
+		return "", err
+	}
+	whereExpr := ""
+	if q.Where != nil {
+		whereExpr, err = c.compileExpr(q.Where)
+		if err != nil {
+			c.env = origEnv
+			return "", err
+		}
+	}
+	sortExpr := ""
+	if q.Sort != nil {
+		sortExpr, err = c.compileExpr(q.Sort)
+		if err != nil {
+			c.env = origEnv
+			return "", err
+		}
+	}
+	skipExpr := ""
+	if q.Skip != nil {
+		skipExpr, err = c.compileExpr(q.Skip)
+		if err != nil {
+			c.env = origEnv
+			return "", err
+		}
+	}
+	takeExpr := ""
+	if q.Take != nil {
+		takeExpr, err = c.compileExpr(q.Take)
+		if err != nil {
+			c.env = origEnv
+			return "", err
+		}
+	}
+	genv := types.NewEnv(child)
+	var gElem types.Type
+	gElem, _ = child.GetVar(q.Var)
+	if gElem == nil {
+		gElem = types.AnyType{}
+	}
+	genv.SetVar(q.Group.Name, types.GroupType{Elem: gElem}, true)
+	c.env = genv
+	valExpr, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.env = origEnv
+		return "", err
+	}
+	c.env = origEnv
+	c.use("_Group")
+	c.use("_group_by")
+	var b strings.Builder
+	b.WriteString("(let [_src " + src + "\n")
+	if whereExpr != "" {
+		b.WriteString("      _filtered (vec (filter (fn [" + sanitizeName(q.Var) + "] " + whereExpr + ") _src))\n")
+		b.WriteString("      _groups (_group_by _filtered (fn [" + sanitizeName(q.Var) + "] " + keyExpr + "))\n")
+	} else {
+		b.WriteString("      _groups (_group_by _src (fn [" + sanitizeName(q.Var) + "] " + keyExpr + "))\n")
+	}
+	b.WriteString("      ]\n")
+	b.WriteString("  (->> _groups")
+	if sortExpr != "" {
+		b.WriteString(" (sort-by (fn [" + sanitizeName(q.Group.Name) + "] " + sortExpr + "))")
+	}
+	if skipExpr != "" {
+		b.WriteString(" (drop " + skipExpr + ")")
+	}
+	if takeExpr != "" {
+		b.WriteString(" (take " + takeExpr + ")")
+	}
+	b.WriteString(" (map (fn [" + sanitizeName(q.Group.Name) + "] " + valExpr + ")) vec))")
+	return b.String(), nil
 }
 
 func (c *Compiler) compileQueryHelper(q *parser.QueryExpr) (string, error) {
