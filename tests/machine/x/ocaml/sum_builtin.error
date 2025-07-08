@@ -1,0 +1,13 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/sum_builtin.ml", line 20, characters 25-28:
+20 |   print_endline (__show (sum [1;2;3]));
+                              ^^^
+Error: Unbound value sum
+
+
+Context (around line 20):
+  18 | 
+  19 | let () =
+  20 |   print_endline (__show (sum [1;2;3]));
+  21 | 

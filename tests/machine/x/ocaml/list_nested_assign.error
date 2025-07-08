@@ -1,0 +1,15 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/list_nested_assign.ml", line 21, characters 12-13:
+21 |   matrix := 5;
+                 ^
+Error: This expression has type int but an expression was expected of type
+         int list list
+
+
+Context (around line 21):
+  19 | 
+  20 | let () =
+  21 |   matrix := 5;
+  22 |   print_endline (__show (List.nth List.nth !matrix 1 0));
+  23 | 

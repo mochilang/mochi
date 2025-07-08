@@ -1,0 +1,9 @@
+stage: compile
+error:
+unsupported statement at line 2
+
+Context (around line 2):
+   1 | fun outer(x: int): int {
+   2 |   fun inner(y: int): int {
+   3 |     return x + y
+   4 |   }

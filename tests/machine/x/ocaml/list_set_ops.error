@@ -1,0 +1,15 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/list_set_ops.ml", line 20, characters 26-31:
+20 |   print_endline (__show (([1;2] union [2;3])));
+                               ^^^^^
+Error: This expression has type int list
+       This is not a function; it cannot be applied.
+
+
+Context (around line 20):
+  18 | 
+  19 | let () =
+  20 |   print_endline (__show (([1;2] union [2;3])));
+  21 |   print_endline (__show (([1;2;3] except [2])));
+  22 |   print_endline (__show (([1;2;3] intersect [2;4])));

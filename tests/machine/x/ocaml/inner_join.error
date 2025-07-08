@@ -1,0 +1,10 @@
+stage: compile
+error:
+unsupported expression at line 3
+
+Context (around line 3):
+   1 | // inner_join.mochi
+   2 | let customers = [
+   3 |   { id: 1, name: "Alice" },
+   4 |   { id: 2, name: "Bob" },
+   5 |   { id: 3, name: "Charlie" }

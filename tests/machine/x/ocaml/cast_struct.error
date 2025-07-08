@@ -1,0 +1,10 @@
+stage: compile
+error:
+unsupported expression at line 5
+
+Context (around line 5):
+   3 | }
+   4 | 
+   5 | let todo = {"title": "hi"} as Todo
+   6 | print(todo.title)
+   7 | 
