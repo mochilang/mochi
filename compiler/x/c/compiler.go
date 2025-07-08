@@ -454,7 +454,13 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 		if i > 0 {
 			c.buf.WriteString(", ")
 		}
-		c.buf.WriteString(c.cType(p.Type))
+		typ := c.cType(p.Type)
+		if p.Type != nil {
+			if _, ok := resolveTypeRef(p.Type, c.env).(types.StructType); ok {
+				typ += "*"
+			}
+		}
+		c.buf.WriteString(typ)
 		c.buf.WriteByte(' ')
 		c.buf.WriteString(sanitizeName(p.Name))
 		if p.Type != nil {
@@ -706,6 +712,9 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		for _, idx := range s.Assign.Index {
 			ix := c.compileExpr(idx.Start)
 			target = fmt.Sprintf("%s.data[%s]", target, ix)
+		}
+		for _, f := range s.Assign.Field {
+			target = fmt.Sprintf("%s.%s", target, sanitizeName(f.Name))
 		}
 		val := c.compileExpr(s.Assign.Value)
 		c.writeln(fmt.Sprintf("%s = %s;", target, val))
@@ -2164,7 +2173,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		}
 		args := make([]string, len(p.Call.Args))
 		for i, a := range p.Call.Args {
-			args[i] = c.compileExpr(a)
+			arg := c.compileExpr(a)
+			if _, ok := c.exprType(a).(types.StructType); ok {
+				arg = "&" + arg
+			}
+			args[i] = arg
 		}
 		return fmt.Sprintf("%s(%s)", sanitizeName(p.Call.Func), strings.Join(args, ", "))
 	case p.If != nil:
