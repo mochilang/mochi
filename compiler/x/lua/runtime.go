@@ -7,6 +7,7 @@ import "sort"
 // Runtime helper functions injected into generated Lua programs.
 const (
 	helperPrint = "function __print(...)\n" +
+		"    local n = select('#', ...)\n" +
 		"    local args = {...}\n" +
 		"    local function to_str(v)\n" +
 		"        if v == nil then return '<nil>' end\n" +
@@ -23,7 +24,13 @@ const (
 		"        return tostring(v)\n" +
 		"    end\n" +
 		"    for i, a in ipairs(args) do\n" +
-		"        if i > 1 then io.write(' ') end\n" +
+		"        if i > 1 then\n" +
+		"            if i == n and (a == '' or a == nil) then\n" +
+		"                -- no extra space before empty last arg\n" +
+		"            else\n" +
+		"                io.write(' ')\n" +
+		"            end\n" +
+		"        end\n" +
 		"        io.write(to_str(a))\n" +
 		"    end\n" +
 		"    io.write('\\n')\n" +
