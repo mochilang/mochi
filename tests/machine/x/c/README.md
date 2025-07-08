@@ -1,6 +1,6 @@
 # C Compiler Results
 
-Compiled programs: 42/97
+Compiled programs: 43/97
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -9,7 +9,7 @@ Compiled programs: 42/97
 - [x] bool_chain.mochi
 - [x] break_continue.mochi
 - [x] cast_string_to_int.mochi
-- [ ] cast_struct.mochi
+- [x] cast_struct.mochi
 - [ ] closure.mochi
 - [x] count_builtin.mochi
 - [ ] cross_join.mochi
