@@ -61,6 +61,16 @@ func (c *Compiler) isMapExpr(e *parser.Expr) bool {
 	return false
 }
 
+func isStringType(t types.Type) bool {
+	_, ok := t.(types.StringType)
+	return ok
+}
+
+func isMapType(t types.Type) bool {
+	_, ok := t.(types.MapType)
+	return ok
+}
+
 func (c *Compiler) use(name string) {
 	if c.helpers == nil {
 		c.helpers = map[string]bool{}

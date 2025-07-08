@@ -3,7 +3,7 @@
 This directory stores PHP code produced by the compiler tests. Each Mochi program from `tests/vm/valid` is compiled and executed. On success a `.out` file is written. Failures generate a `.error` file.
 
 ## Summary
-45/97 files compiled successfully
+51/97 files compiled successfully
 
 ## Checklist
 - [x] append_builtin.mochi
@@ -51,18 +51,18 @@ This directory stores PHP code produced by the compiler tests. Each Mochi progra
 - [x] len_map.mochi
 - [ ] len_string.mochi
 - [x] let_and_print.mochi
-- [ ] list_assign.mochi
+- [x] list_assign.mochi
 - [x] list_index.mochi
 - [ ] list_nested_assign.mochi
 - [ ] list_set_ops.mochi
 - [ ] load_yaml.mochi
-- [ ] map_assign.mochi
+- [x] map_assign.mochi
 - [x] map_in_operator.mochi
 - [x] map_index.mochi
 - [x] map_int_key.mochi
 - [x] map_literal_dynamic.mochi
 - [x] map_membership.mochi
-- [ ] map_nested_assign.mochi
+- [x] map_nested_assign.mochi
 - [ ] match_expr.mochi
 - [ ] match_full.mochi
 - [x] math_ops.mochi
@@ -84,9 +84,9 @@ This directory stores PHP code produced by the compiler tests. Each Mochi progra
 - [ ] sort_stable.mochi
 - [ ] str_builtin.mochi
 - [x] string_compare.mochi
-- [ ] string_concat.mochi
-- [ ] string_contains.mochi
-- [ ] string_in_operator.mochi
+- [x] string_concat.mochi
+- [x] string_contains.mochi
+- [x] string_in_operator.mochi
 - [x] string_index.mochi
 - [ ] string_prefix_slice.mochi
 - [x] substring_builtin.mochi
