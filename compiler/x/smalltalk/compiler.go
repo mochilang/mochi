@@ -575,9 +575,36 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			return call, nil
 		}
+	case p.Match != nil:
+		return c.compileMatchExpr(p.Match)
 	default:
 		return "", fmt.Errorf("unsupported expression at line %d", p.Pos.Line)
 	}
+}
+
+func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
+	target, err := c.compileExpr(m.Target)
+	if err != nil {
+		return "", err
+	}
+	expr := "nil"
+	for i := len(m.Cases) - 1; i >= 0; i-- {
+		cs := m.Cases[i]
+		res, err := c.compileExpr(cs.Result)
+		if err != nil {
+			return "", err
+		}
+		if isUnderscoreExpr(cs.Pattern) {
+			expr = res
+			continue
+		}
+		pat, err := c.compileExpr(cs.Pattern)
+		if err != nil {
+			return "", err
+		}
+		expr = fmt.Sprintf("(%s = %s) ifTrue: [%s] ifFalse: [%s]", target, pat, res, expr)
+	}
+	return expr, nil
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) string {
@@ -618,6 +645,18 @@ func (c *Compiler) blockString(stmts []*parser.Statement) (string, error) {
 		}
 	}
 	return strings.TrimSpace(sub.buf.String()), nil
+}
+
+func isUnderscoreExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil || len(u.Value.Ops) != 0 {
+		return false
+	}
+	return u.Value.Target != nil && u.Value.Target.Selector != nil &&
+		u.Value.Target.Selector.Root == "_" && len(u.Value.Target.Selector.Tail) == 0
 }
 
 func (c *Compiler) writeln(s string) {
