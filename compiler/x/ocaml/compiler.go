@@ -28,6 +28,31 @@ func (c *Compiler) Compile(prog *parser.Program, _ string) ([]byte, error) {
 	c.buf.Reset()
 	c.indent = 0
 
+	// helper pretty printer for `print` builtin
+	c.writeln("let rec __show v =")
+	c.indent++
+	c.writeln("let open Obj in")
+	c.writeln("let rec list_aux o =")
+	c.indent++
+	c.writeln("if is_int o && (magic (obj o) : int) = 0 then \"\" else")
+	c.writeln(" let hd = field o 0 in")
+	c.writeln(" let tl = field o 1 in")
+	c.writeln(" let rest = list_aux tl in")
+	c.writeln(" if rest = \"\" then __show (obj hd) else __show (obj hd) ^ \"; \" ^ rest")
+	c.indent--
+	c.writeln("in")
+	c.writeln("let r = repr v in")
+	c.writeln("if is_int r then string_of_int (magic v) else")
+	c.writeln("match tag r with")
+	c.indent++
+	c.writeln("| 0 -> if size r = 0 then \"[]\" else \"[\" ^ list_aux r ^ \"]\"")
+	c.writeln("| 252 -> (magic v : string)")
+	c.writeln("| 253 -> string_of_float (magic v)")
+	c.writeln("| _ -> \"<value>\"")
+	c.indent--
+	c.indent--
+	c.buf.WriteByte('\n')
+
 	// first emit function and variable declarations
 	for _, s := range prog.Statements {
 		switch {
@@ -76,7 +101,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if err != nil {
 			return err
 		}
-		c.writeln(expr)
+		c.writeln(expr + ";")
 		return nil
 	case s.If != nil:
 		return c.compileIf(s.If)
@@ -129,7 +154,7 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 		return err
 	}
 	if c.vars[a.Name] {
-		c.writeln(fmt.Sprintf("%s := %s", a.Name, val))
+		c.writeln(fmt.Sprintf("%s := %s;", a.Name, val))
 	} else {
 		c.writeln(fmt.Sprintf("(* assignment to %s unsupported *)", a.Name))
 	}
@@ -365,7 +390,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("print expects 1 arg")
 		}
-		return fmt.Sprintf("print_endline %s", args[0]), nil
+		return fmt.Sprintf("print_endline (__show (%s))", args[0]), nil
 	case "append":
 		if len(args) != 2 {
 			return "", fmt.Errorf("append expects 2 args")
