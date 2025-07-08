@@ -16,7 +16,7 @@ defmodule Main do
     expensive =
       for p <- Enum.take(Enum.drop(Enum.sort_by(products, fn p -> -p.price end), 1), 3), do: p
 
-    IO.puts("--- Top products (excluding most expensive) ---")
+    IO.inspect("--- Top products (excluding most expensive) ---")
 
     for item <- expensive do
       IO.puts(Enum.join(Enum.map([item.name, "costs $", item.price], &to_string(&1)), " "))

@@ -3,7 +3,7 @@ defmodule Main do
   def main do
     # y :: integer()
     y = nil
-    IO.puts(y)
+    IO.inspect(y)
   end
 end
 

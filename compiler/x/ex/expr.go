@@ -290,7 +290,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				switch res {
 				case "print":
 					if len(args) == 1 {
-						res = fmt.Sprintf("IO.puts(%s)", argStr)
+						res = fmt.Sprintf("IO.inspect(%s)", argStr)
 					} else {
 						res = fmt.Sprintf("IO.puts(Enum.join(Enum.map([%s], &to_string(&1)), \" \"))", argStr)
 					}
@@ -442,7 +442,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		switch p.Call.Func {
 		case "print":
 			if len(args) == 1 {
-				return fmt.Sprintf("IO.puts(%s)", argStr), nil
+				return fmt.Sprintf("IO.inspect(%s)", argStr), nil
 			}
 			return fmt.Sprintf("IO.puts(Enum.join(Enum.map([%s], &to_string(&1)), \" \"))", argStr), nil
 		case "len":

@@ -21,7 +21,7 @@ defmodule Main do
             orderTotal: o.total
           }
 
-    IO.puts("--- Cross Join: All order-customer pairs ---")
+    IO.inspect("--- Cross Join: All order-customer pairs ---")
 
     for entry <- result do
       IO.puts(

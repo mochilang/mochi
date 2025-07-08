@@ -28,7 +28,7 @@ defmodule Main do
          Enum.map(items, fn g -> %{name: g.key, count: _count(for r <- g.items, r.o, do: r)} end)
        end).()
 
-    IO.puts("--- Group Left Join ---")
+    IO.inspect("--- Group Left Join ---")
 
     for s <- stats do
       IO.puts(Enum.join(Enum.map([s.name, "orders:", s.count], &to_string(&1)), " "))

@@ -30,7 +30,7 @@ defmodule Main do
          )
        end).()
 
-    IO.puts("--- Right Join using syntax ---")
+    IO.inspect("--- Right Join using syntax ---")
 
     for entry <- result do
       if entry.order do

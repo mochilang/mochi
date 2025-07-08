@@ -10,7 +10,7 @@ defmodule Main do
   end
 
   def main do
-    IO.puts(add(2, 3))
+    IO.inspect(add(2, 3))
   end
 end
 

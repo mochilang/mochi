@@ -5,9 +5,9 @@ defmodule Main do
     x = 5
 
     if x > 3 do
-      IO.puts("big")
+      IO.inspect("big")
     else
-      IO.puts("small")
+      IO.inspect("small")
     end
   end
 end

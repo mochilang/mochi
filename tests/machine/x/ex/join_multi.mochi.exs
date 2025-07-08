@@ -15,7 +15,7 @@ defmodule Main do
           o.customerId == c.id && o.id == i.orderId,
           do: %{name: c.name, sku: i.sku}
 
-    IO.puts("--- Multi Join ---")
+    IO.inspect("--- Multi Join ---")
 
     for r <- result do
       IO.puts(Enum.join(Enum.map([r.name, "bought item", r.sku], &to_string(&1)), " "))

@@ -14,7 +14,7 @@ defmodule Main do
   end
 
   def main do
-    IO.puts(outer(3))
+    IO.inspect(outer(3))
   end
 end
 

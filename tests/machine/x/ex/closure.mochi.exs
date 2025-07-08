@@ -12,7 +12,7 @@ defmodule Main do
   def main do
     # add10 :: (integer() -> integer())
     add10 = makeAdder(10)
-    IO.puts(add10.(7))
+    IO.inspect(add10.(7))
   end
 end
 

@@ -3,7 +3,7 @@ defmodule Main do
   def main do
     # square :: (integer() -> integer())
     square = fn x -> x * x end
-    IO.puts(square.(6))
+    IO.inspect(square.(6))
   end
 end
 

@@ -3,7 +3,7 @@ defmodule Main do
   def main do
     # xs :: list(integer())
     xs = [10, 20, 30]
-    IO.puts(Enum.at(xs, 1))
+    IO.inspect(Enum.at(xs, 1))
   end
 end
 

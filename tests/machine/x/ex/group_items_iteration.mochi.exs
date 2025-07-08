@@ -28,7 +28,7 @@ defmodule Main do
     _ = tmp
     # result :: list(any())
     result = for r <- Enum.sort_by(tmp, fn r -> r.tag end), do: r
-    IO.puts(result)
+    IO.inspect(result)
   end
 
   defmodule Group do

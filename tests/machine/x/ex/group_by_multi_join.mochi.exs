@@ -26,7 +26,7 @@ defmodule Main do
         %{part: g.key, total: _sum(for r <- g.items, do: r.value)}
       end)
 
-    IO.puts(grouped)
+    IO.inspect(grouped)
   end
 
   defmodule Group do

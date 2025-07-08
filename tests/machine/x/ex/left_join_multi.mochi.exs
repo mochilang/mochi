@@ -22,7 +22,7 @@ defmodule Main do
          )
        end).()
 
-    IO.puts("--- Left Join Multi ---")
+    IO.inspect("--- Left Join Multi ---")
 
     for r <- result do
       IO.puts(Enum.join(Enum.map([r.orderId, r.name, r.item], &to_string(&1)), " "))

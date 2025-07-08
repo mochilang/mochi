@@ -3,7 +3,7 @@ defmodule Main do
   def main do
     # a :: list(integer())
     a = [1, 2]
-    IO.puts(a ++ [3])
+    IO.inspect(a ++ [3])
   end
 end
 

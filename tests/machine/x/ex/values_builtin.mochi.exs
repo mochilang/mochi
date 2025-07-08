@@ -3,7 +3,7 @@ defmodule Main do
   def main do
     # m :: map()
     m = %{a: 1, b: 2, c: 3}
-    IO.puts(Map.values(m))
+    IO.inspect(Map.values(m))
   end
 end
 

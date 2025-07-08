@@ -3,8 +3,8 @@ defmodule Main do
   def main do
     # m :: map()
     m = %{a: 1, b: 2}
-    IO.puts(String.contains?(m, "a"))
-    IO.puts(String.contains?(m, "c"))
+    IO.inspect(String.contains?(m, "a"))
+    IO.inspect(String.contains?(m, "c"))
   end
 end
 

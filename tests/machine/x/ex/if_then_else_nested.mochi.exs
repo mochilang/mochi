@@ -19,7 +19,7 @@ defmodule Main do
          end
        end).()
 
-    IO.puts(msg)
+    IO.inspect(msg)
   end
 end
 

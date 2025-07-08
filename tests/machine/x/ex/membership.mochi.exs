@@ -3,8 +3,8 @@ defmodule Main do
   def main do
     # nums :: list(integer())
     nums = [1, 2, 3]
-    IO.puts(if is_map(nums), do: Map.has_key?(nums, 2), else: Enum.member?(nums, 2))
-    IO.puts(if is_map(nums), do: Map.has_key?(nums, 4), else: Enum.member?(nums, 4))
+    IO.inspect(if is_map(nums), do: Map.has_key?(nums, 2), else: Enum.member?(nums, 2))
+    IO.inspect(if is_map(nums), do: Map.has_key?(nums, 4), else: Enum.member?(nums, 4))
   end
 end
 

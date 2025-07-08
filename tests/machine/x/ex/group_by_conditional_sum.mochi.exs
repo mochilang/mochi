@@ -37,7 +37,7 @@ defmodule Main do
          end)
        end).()
 
-    IO.puts(result)
+    IO.inspect(result)
   end
 
   defmodule Group do

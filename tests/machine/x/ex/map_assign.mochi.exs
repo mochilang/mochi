@@ -5,7 +5,7 @@ defmodule Main do
     scores = %{alice: 1}
     _ = scores
     scores = Map.put(scores, "bob", 2)
-    IO.puts(Map.get(scores, "bob"))
+    IO.inspect(Map.get(scores, "bob"))
   end
 end
 

@@ -8,7 +8,7 @@ defmodule Main do
     t1 = fn t1, i ->
       try do
         if i < 3 do
-          IO.puts(i)
+          IO.inspect(i)
           i = i + 1
           t1.(t1, i)
         else

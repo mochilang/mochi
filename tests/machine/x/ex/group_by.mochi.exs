@@ -17,7 +17,7 @@ defmodule Main do
         %{city: g.key, count: _count(g), avg_age: _avg(for p <- g.items, do: p.age)}
       end)
 
-    IO.puts("--- People grouped by city ---")
+    IO.inspect("--- People grouped by city ---")
 
     for s <- stats do
       IO.puts(

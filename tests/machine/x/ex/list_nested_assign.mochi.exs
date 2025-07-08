@@ -5,7 +5,7 @@ defmodule Main do
     matrix = [[1, 2], [3, 4]]
     _ = matrix
     matrix = Map.put(matrix, 1, 5)
-    IO.puts(Enum.at(Enum.at(matrix, 1), 0))
+    IO.inspect(Enum.at(Enum.at(matrix, 1), 0))
   end
 end
 

@@ -18,7 +18,7 @@ defmodule Main do
     c = _structify(Counter, %{n: 0})
     _ = c
     inc(c)
-    IO.puts(c.n)
+    IO.inspect(c.n)
   end
 
   defp _structify(mod, v) do

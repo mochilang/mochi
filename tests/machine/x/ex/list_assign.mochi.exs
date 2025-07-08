@@ -5,7 +5,7 @@ defmodule Main do
     nums = [1, 2]
     _ = nums
     nums = Map.put(nums, 1, 3)
-    IO.puts(Enum.at(nums, 1))
+    IO.inspect(Enum.at(nums, 1))
   end
 end
 

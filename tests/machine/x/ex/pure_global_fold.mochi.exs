@@ -12,7 +12,7 @@ defmodule Main do
   def main do
     # k :: integer()
     k = 2
-    IO.puts(inc(3))
+    IO.inspect(inc(3))
   end
 end
 

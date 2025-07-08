@@ -3,8 +3,8 @@ defmodule Main do
   def main do
     # nums :: list(integer())
     nums = [3, 1, 4]
-    IO.puts(_min(nums))
-    IO.puts(_max(nums))
+    IO.inspect(_min(nums))
+    IO.inspect(_max(nums))
   end
 
   defp _max(v) do

@@ -10,7 +10,7 @@ defmodule Main do
   end
 
   def main do
-    IO.puts(triple(1 + 2))
+    IO.inspect(triple(1 + 2))
   end
 end
 
