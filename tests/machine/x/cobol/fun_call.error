@@ -1,0 +1,8 @@
+cobc: exit status 1
+/workspace/mochi/tests/machine/x/cobol/fun_call.cob:7: error: syntax error, unexpected USING
+/workspace/mochi/tests/machine/x/cobol/fun_call.cob:7: error: PERFORM statement not terminated by END-PERFORM
+/workspace/mochi/tests/machine/x/cobol/fun_call.cob:11: error: syntax error, unexpected .
+/workspace/mochi/tests/machine/x/cobol/fun_call.cob:12: error: syntax error, unexpected PROCEDURE
+/workspace/mochi/tests/machine/x/cobol/fun_call.cob:13: error: 'A' is not defined
+/workspace/mochi/tests/machine/x/cobol/fun_call.cob:13: error: 'B' is not defined
+

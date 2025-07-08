@@ -318,7 +318,11 @@ func (c *Compiler) compileUserCall(call *parser.CallExpr) (string, error) {
 		}
 		args[i] = s
 	}
-	c.writeln(fmt.Sprintf("PERFORM %s USING %s", name, strings.Join(args, " ")))
+	line := fmt.Sprintf("PERFORM %s", name)
+	if len(args) > 0 {
+		line += " USING " + strings.Join(args, " ")
+	}
+	c.writeln(line)
 	return name + "_RES", nil
 }
 
@@ -461,7 +465,14 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		res = fmt.Sprintf("%s %s %s", res, op.Op, r)
+		opStr := op.Op
+		switch op.Op {
+		case "&&":
+			opStr = "AND"
+		case "||":
+			opStr = "OR"
+		}
+		res = fmt.Sprintf("%s %s %s", res, opStr, r)
 	}
 	return res, nil
 }
@@ -482,8 +493,24 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if len(p.Ops) > 0 {
-		return "", fmt.Errorf("postfix operations not supported")
+	for _, op := range p.Ops {
+		switch {
+		case op.Cast != nil:
+			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
+				switch *op.Cast.Type.Simple {
+				case "int":
+					val = fmt.Sprintf("FUNCTION NUMVAL(%s)", val)
+				case "string":
+					val = fmt.Sprintf("FUNCTION NUMVAL-C(%s)", val)
+				default:
+					return "", fmt.Errorf("unsupported cast to %s", *op.Cast.Type.Simple)
+				}
+			} else {
+				return "", fmt.Errorf("unsupported cast")
+			}
+		default:
+			return "", fmt.Errorf("postfix operations not supported")
+		}
 	}
 	return val, nil
 }
@@ -496,7 +523,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if p.Call.Func == "print" {
 			return "", fmt.Errorf("print used as expression")
 		}
-		return "", fmt.Errorf("call to %s not supported in expression", p.Call.Func)
+		val, err := c.compileUserCall(p.Call)
+		if err != nil {
+			return "", err
+		}
+		return val, nil
 	case p.Group != nil:
 		expr, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -531,9 +562,9 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 		return fmt.Sprintf("%g", *l.Float)
 	case l.Bool != nil:
 		if *l.Bool {
-			return "TRUE"
+			return "1"
 		}
-		return "FALSE"
+		return "0"
 	default:
 		return ""
 	}

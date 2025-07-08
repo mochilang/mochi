@@ -1,0 +1,5 @@
+cobc: exit status 1
+/workspace/mochi/tests/machine/x/cobol/str_builtin.cob:6: error: syntax error, unexpected USING
+/workspace/mochi/tests/machine/x/cobol/str_builtin.cob:7: error: 'STR_RES' is not defined
+/workspace/mochi/tests/machine/x/cobol/str_builtin.cob:6: error: 'STR' is not defined
+

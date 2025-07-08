@@ -1,0 +1,5 @@
+cobc: exit status 1
+/workspace/mochi/tests/machine/x/cobol/len_string.cob:6: error: syntax error, unexpected USING
+/workspace/mochi/tests/machine/x/cobol/len_string.cob:7: error: 'LEN_RES' is not defined
+/workspace/mochi/tests/machine/x/cobol/len_string.cob:6: error: 'LEN' is not defined
+

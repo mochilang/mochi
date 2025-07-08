@@ -1,0 +1,5 @@
+cobc: exit status 1
+/workspace/mochi/tests/machine/x/cobol/let_and_print.cob:5: warning: value size exceeds data size
+/workspace/mochi/tests/machine/x/cobol/let_and_print.cob:6: warning: value size exceeds data size
+/workspace/mochi/tests/machine/x/cobol/let_and_print.cob:8: error: syntax error, unexpected +
+

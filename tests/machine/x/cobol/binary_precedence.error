@@ -1,0 +1,6 @@
+cobc: exit status 1
+/workspace/mochi/tests/machine/x/cobol/binary_precedence.cob:6: error: syntax error, unexpected +
+/workspace/mochi/tests/machine/x/cobol/binary_precedence.cob:7: error: syntax error, unexpected ), expecting comma delimiter
+/workspace/mochi/tests/machine/x/cobol/binary_precedence.cob:8: error: syntax error, unexpected *
+/workspace/mochi/tests/machine/x/cobol/binary_precedence.cob:9: error: syntax error, unexpected *
+

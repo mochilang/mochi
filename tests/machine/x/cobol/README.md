@@ -5,20 +5,15 @@ The files listed below are produced from the Mochi sources in
 `tests/vm/valid`. A COBOL compiler is not available in CI so the programs
 have not been executed.
 
-Compiled programs: **13/97**
+Compiled programs: **8/97**
 
 ## Checklist
 
-- [x] print_hello.mochi
-- [x] while_loop.mochi
-- [x] var_assignment.mochi
-- [x] typed_var.mochi
-- [x] typed_let.mochi
-- [x] let_and_print.mochi
-- [x] basic_compare.mochi
-- [x] binary_precedence.mochi
-- [x] unary_neg.mochi
-- [x] if_else.mochi
+- [x] cast_string_to_int.mochi
 - [x] for_loop.mochi
-- [x] fun_call.mochi
-- [x] fun_three_args.mochi
+- [x] if_else.mochi
+- [x] print_hello.mochi
+- [x] typed_let.mochi
+- [x] typed_var.mochi
+- [x] var_assignment.mochi
+- [x] while_loop.mochi
