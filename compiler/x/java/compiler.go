@@ -11,11 +11,12 @@ import (
 )
 
 type Compiler struct {
-	buf    bytes.Buffer
-	indent int
+	buf     *bytes.Buffer
+	indent  int
+	helpers map[string]bool
 }
 
-func New() *Compiler { return &Compiler{} }
+func New() *Compiler { return &Compiler{buf: new(bytes.Buffer), helpers: make(map[string]bool)} }
 
 func (c *Compiler) writeln(s string) {
 	for i := 0; i < c.indent; i++ {
@@ -26,9 +27,27 @@ func (c *Compiler) writeln(s string) {
 }
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
+	// compile main body first so we know which helpers are needed
+	body := new(bytes.Buffer)
+	origBuf := c.buf
+	c.buf = body
+	c.indent = 1
+	for _, s := range prog.Statements {
+		if s.Fun != nil || s.Var != nil || s.Let != nil {
+			continue
+		}
+		if err := c.compileStmt(s); err != nil {
+			return nil, err
+		}
+	}
+	// restore buffer for final output
+	c.buf = origBuf
+	c.buf.Reset()
+	c.indent = 0
+	c.writeln("import java.util.*;")
 	c.writeln("public class Main {")
 	c.indent++
-	// emit global variable declarations first
+	// global declarations
 	for _, s := range prog.Statements {
 		switch {
 		case s.Var != nil:
@@ -41,7 +60,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			}
 		}
 	}
-	// emit function declarations next
+	// function declarations
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
 			if err := c.compileFun(s.Fun); err != nil {
@@ -49,16 +68,66 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			}
 		}
 	}
+	// helper methods
+	if c.helpers["append"] {
+		c.writeln("static <T> List<T> append(List<T> list, T item) {")
+		c.indent++
+		c.writeln("List<T> res = new ArrayList<>(list);")
+		c.writeln("res.add(item);")
+		c.writeln("return res;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.helpers["count"] {
+		c.writeln("static int count(Collection<?> c) {")
+		c.indent++
+		c.writeln("return c.size();")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.helpers["sum"] {
+		c.writeln("static int sum(List<Integer> v) {")
+		c.indent++
+		c.writeln("int s = 0;")
+		c.writeln("for (int n : v) s += n;")
+		c.writeln("return s;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.helpers["avg"] {
+		c.writeln("static double avg(List<Integer> v) {")
+		c.indent++
+		c.writeln("if (v.isEmpty()) return 0;")
+		c.writeln("int s = 0;")
+		c.writeln("for (int n : v) s += n;")
+		c.writeln("return (double)s / v.size();")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.helpers["min"] {
+		c.writeln("static int min(List<Integer> v) {")
+		c.indent++
+		c.writeln("return Collections.min(v);")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.helpers["max"] {
+		c.writeln("static int max(List<Integer> v) {")
+		c.indent++
+		c.writeln("return Collections.max(v);")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.helpers["values"] {
+		c.writeln("static <K,V> List<V> values(Map<K,V> m) {")
+		c.indent++
+		c.writeln("return new ArrayList<>(m.values());")
+		c.indent--
+		c.writeln("}")
+	}
 	c.writeln("public static void main(String[] args) {")
 	c.indent++
-	for _, s := range prog.Statements {
-		if s.Fun != nil || s.Var != nil || s.Let != nil {
-			continue
-		}
-		if err := c.compileStmt(s); err != nil {
-			return nil, err
-		}
-	}
+	c.buf.Write(body.Bytes())
 	c.indent--
 	c.writeln("}")
 	c.indent--
@@ -82,6 +151,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileFor(s.For)
 	case s.If != nil:
 		return c.compileIf(s.If)
+	case s.Break != nil:
+		c.writeln("break;")
+		return nil
+	case s.Continue != nil:
+		c.writeln("continue;")
+		return nil
 	case s.Expr != nil:
 		return c.compileExprStmt(s.Expr)
 	default:
@@ -243,7 +318,20 @@ func (c *Compiler) compileIf(i *parser.IfStmt) error {
 
 func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	if f.RangeEnd == nil {
-		return fmt.Errorf("for range over collections not supported at line %d", f.Pos.Line)
+		src, err := c.compileExpr(f.Source)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("for (var %s : %s) {", f.Name, src))
+		c.indent++
+		for _, s := range f.Body {
+			if err := c.compileStmt(s); err != nil {
+				return err
+			}
+		}
+		c.indent--
+		c.writeln("}")
+		return nil
 	}
 	start, err := c.compileExpr(f.Source)
 	if err != nil {
@@ -362,14 +450,44 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 }
 
 func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
-	s, err := c.compilePrimary(p.Target)
+	val, err := c.compilePrimary(p.Target)
 	if err != nil {
 		return "", err
 	}
-	if len(p.Ops) > 0 {
-		return "", fmt.Errorf("postfix operations unsupported")
+	for _, op := range p.Ops {
+		switch {
+		case op.Cast != nil:
+			t := c.typeName(op.Cast.Type)
+			switch t {
+			case "int":
+				val = fmt.Sprintf("Integer.parseInt(%s)", val)
+			case "double":
+				val = fmt.Sprintf("Double.parseDouble(%s)", val)
+			case "String":
+				val = fmt.Sprintf("String.valueOf(%s)", val)
+			case "boolean":
+				val = fmt.Sprintf("Boolean.parseBoolean(%s)", val)
+			default:
+				return "", fmt.Errorf("unsupported cast to %s", t)
+			}
+		case op.Index != nil:
+			if op.Index.Start == nil || op.Index.Colon != nil {
+				return "", fmt.Errorf("complex indexing not supported")
+			}
+			idx, err := c.compileExpr(op.Index.Start)
+			if err != nil {
+				return "", err
+			}
+			if isString(val) {
+				val = fmt.Sprintf("%s.charAt(%s)", val, idx)
+			} else {
+				val = fmt.Sprintf("%s.get(%s)", val, idx)
+			}
+		default:
+			return "", fmt.Errorf("postfix operations unsupported")
+		}
 	}
-	return s, nil
+	return val, nil
 }
 
 func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
@@ -454,6 +572,80 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return fmt.Sprintf("%s.substring(%s, %s)", target, start, end), nil
 			}
 			return fmt.Sprintf("%s.substring(%s)", target, start), nil
+		case "append":
+			if len(p.Call.Args) != 2 {
+				return "", fmt.Errorf("append expects 2 arguments at line %d", p.Pos.Line)
+			}
+			c.helpers["append"] = true
+			a1, err := c.compileExpr(p.Call.Args[0])
+			if err != nil {
+				return "", err
+			}
+			a2, err := c.compileExpr(p.Call.Args[1])
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("append(%s, %s)", a1, a2), nil
+		case "count":
+			if len(p.Call.Args) != 1 {
+				return "", fmt.Errorf("count expects 1 argument at line %d", p.Pos.Line)
+			}
+			c.helpers["count"] = true
+			a1, err := c.compileExpr(p.Call.Args[0])
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("count(%s)", a1), nil
+		case "sum":
+			if len(p.Call.Args) != 1 {
+				return "", fmt.Errorf("sum expects 1 argument at line %d", p.Pos.Line)
+			}
+			c.helpers["sum"] = true
+			a1, err := c.compileExpr(p.Call.Args[0])
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("sum(%s)", a1), nil
+		case "avg":
+			if len(p.Call.Args) != 1 {
+				return "", fmt.Errorf("avg expects 1 argument at line %d", p.Pos.Line)
+			}
+			c.helpers["avg"] = true
+			a1, err := c.compileExpr(p.Call.Args[0])
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("avg(%s)", a1), nil
+		case "min":
+			if len(p.Call.Args) != 1 {
+				return "", fmt.Errorf("min expects 1 argument at line %d", p.Pos.Line)
+			}
+			c.helpers["min"] = true
+			a1, err := c.compileExpr(p.Call.Args[0])
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("min(%s)", a1), nil
+		case "max":
+			if len(p.Call.Args) != 1 {
+				return "", fmt.Errorf("max expects 1 argument at line %d", p.Pos.Line)
+			}
+			c.helpers["max"] = true
+			a1, err := c.compileExpr(p.Call.Args[0])
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("max(%s)", a1), nil
+		case "values":
+			if len(p.Call.Args) != 1 {
+				return "", fmt.Errorf("values expects 1 argument at line %d", p.Pos.Line)
+			}
+			c.helpers["values"] = true
+			a1, err := c.compileExpr(p.Call.Args[0])
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("values(%s)", a1), nil
 		}
 		var args []string
 		for _, a := range p.Call.Args {

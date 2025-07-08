@@ -1,4 +1,4 @@
-line 0: compile error: expression unsupported at line 4
+line 0: compile error: selectors unsupported at line 26
 
   1| // right_join.mochi
   2| // Right join: keep all customers, include orders if any

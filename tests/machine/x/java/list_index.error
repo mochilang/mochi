@@ -1,4 +1,14 @@
-line 0: compile error: expression unsupported at line 1
+line 0: javac error: exit status 1
+/tmp/TestCompileValidProgramslist_index3002593920/001/Main.java:3: error: incompatible types: no instance(s) of type variable(s) T exist so that List<T> conforms to int
+	static int xs = java.util.Arrays.asList(10, 20, 30);
+	                                       ^
+  where T is a type-variable:
+    T extends Object declared in method <T>asList(T...)
+/tmp/TestCompileValidProgramslist_index3002593920/001/Main.java:5: error: int cannot be dereferenced
+	System.out.println(xs.get(1));
+	                     ^
+2 errors
+
 
   1| let xs = [10, 20, 30]
   2| print(xs[1])

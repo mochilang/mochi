@@ -1,4 +1,4 @@
-line 0: compile error: expression unsupported at line 3
+line 0: compile error: print expects one argument at line 4
 
   1| var x = 3
   2| var y = 4

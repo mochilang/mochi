@@ -1,4 +1,15 @@
-line 0: compile error: expression unsupported at line 1
+line 0: javac error: exit status 1
+/tmp/TestCompileValidProgramsmap_int_key875610979/001/Main.java:3: error: incompatible types: no instance(s) of type variable(s) K,V exist so that Map<K,V> conforms to int
+	static int m = java.util.Map.of(1, "a", 2, "b");
+	                               ^
+  where K,V are type-variables:
+    K extends Object declared in method <K,V>of(K,V,K,V)
+    V extends Object declared in method <K,V>of(K,V,K,V)
+/tmp/TestCompileValidProgramsmap_int_key875610979/001/Main.java:5: error: int cannot be dereferenced
+	System.out.println(m.get(1));
+	                    ^
+2 errors
+
 
   1| let m = {1: "a", 2: "b"}
   2| print(m[1])

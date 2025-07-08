@@ -1,4 +1,4 @@
-line 0: compile error: expression unsupported at line 2
+line 0: compile error: print expects one argument at line 20
 
   1| // group_by_join.mochi
   2| let customers = [

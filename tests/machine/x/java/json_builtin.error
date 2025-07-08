@@ -1,4 +1,21 @@
-line 0: compile error: expression unsupported at line 1
+line 0: javac error: exit status 1
+/tmp/TestCompileValidProgramsjson_builtin1746617166/001/Main.java:3: error: cannot find symbol
+	static int m = java.util.Map.of(a, 1, b, 2);
+	                                ^
+  symbol:   variable a
+  location: class Main
+/tmp/TestCompileValidProgramsjson_builtin1746617166/001/Main.java:3: error: cannot find symbol
+	static int m = java.util.Map.of(a, 1, b, 2);
+	                                      ^
+  symbol:   variable b
+  location: class Main
+/tmp/TestCompileValidProgramsjson_builtin1746617166/001/Main.java:5: error: cannot find symbol
+	json(m);
+	^
+  symbol:   method json(int)
+  location: class Main
+3 errors
+
 
   1| let m = {a: 1, b: 2}
   2| json(m)

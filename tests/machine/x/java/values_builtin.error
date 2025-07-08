@@ -1,4 +1,22 @@
-line 0: compile error: expression unsupported at line 1
+line 0: javac error: exit status 1
+/tmp/TestCompileValidProgramsvalues_builtin4243247061/001/Main.java:3: error: incompatible types: no instance(s) of type variable(s) K,V exist so that Map<K,V> conforms to int
+	static int m = java.util.Map.of("a", 1, "b", 2, "c", 3);
+	                               ^
+  where K,V are type-variables:
+    K extends Object declared in method <K,V>of(K,V,K,V,K,V)
+    V extends Object declared in method <K,V>of(K,V,K,V,K,V)
+/tmp/TestCompileValidProgramsvalues_builtin4243247061/001/Main.java:8: error: method values in class Main cannot be applied to given types;
+	System.out.println(values(m));
+	                   ^
+  required: Map<K,V>
+  found:    int
+  reason: cannot infer type-variable(s) K,V
+    (argument mismatch; int cannot be converted to Map<K,V>)
+  where K,V are type-variables:
+    K extends Object declared in method <K,V>values(Map<K,V>)
+    V extends Object declared in method <K,V>values(Map<K,V>)
+2 errors
+
 
   1| let m = {"a":1, "b":2, "c":3}
   2| print(values(m))
