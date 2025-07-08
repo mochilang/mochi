@@ -990,6 +990,15 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 		args[i] = s
 	}
+	if fn, ok := c.env.GetFunc(call.Func); ok {
+		if len(call.Args) < len(fn.Params) {
+			out, err := c.compilePartialCall(call, fn, args)
+			if err != nil {
+				return "", err
+			}
+			return out, nil
+		}
+	}
 	if t, ok := c.vars[call.Func]; ok && strings.HasPrefix(t, "lambda") {
 		return fmt.Sprintf("%s_apply(&%s, %s)", t, call.Func, strings.Join(args, ", ")), nil
 	}
@@ -1305,6 +1314,25 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		c.lastType = ""
 	}
 	return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ", ")), nil
+}
+
+func (c *Compiler) compilePartialCall(call *parser.CallExpr, fn *parser.FunStmt, args []string) (string, error) {
+	// only support simple partial application of a two-argument function
+	if len(fn.Params)-len(args) != 1 || len(args) != 1 {
+		return "", fmt.Errorf("partial application unsupported")
+	}
+	capType, _ := c.compileType(fn.Params[0].Type)
+	rem := fn.Params[1]
+	remType, _ := c.compileType(rem.Type)
+	retType, _ := c.compileType(fn.Return)
+	name := fmt.Sprintf("lambda_partial_%d", c.lambdaCount)
+	c.lambdaCount++
+	fmt.Fprintf(&c.prelude, "typedef struct { %s %s; } %s;\n", capType, fn.Params[0].Name, name)
+	fmt.Fprintf(&c.prelude, "static %s %s_apply(%s* __env, %s %s) {\n", retType, name, name, remType, rem.Name)
+	fmt.Fprintf(&c.prelude, "    return %s(__env->%s, %s);\n", call.Func, fn.Params[0].Name, rem.Name)
+	c.prelude.WriteString("}\n\n")
+	c.lastType = name
+	return fmt.Sprintf("(%s){ .%s = %s }", name, fn.Params[0].Name, args[0]), nil
 }
 
 func (c *Compiler) compileLenExpr(e *parser.Expr) (string, error) {

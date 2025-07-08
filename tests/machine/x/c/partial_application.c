@@ -4,13 +4,19 @@
 #include <stdlib.h>
 #include <string.h>
 
+typedef struct { int a; } lambda_partial_0;
+static int lambda_partial_0_apply(lambda_partial_0* __env, int b) {
+    return add(__env->a, b);
+}
+
+
 int add(int a, int b) {
 return (a + b);
 }
 
 
 int main() {
-int add5 = add(5);
-printf("%d\n", add5(3));
+lambda_partial_0 add5 = (lambda_partial_0){ .a = 5 };
+printf("%d\n", lambda_partial_0_apply(&add5, 3));
     return 0;
 }
