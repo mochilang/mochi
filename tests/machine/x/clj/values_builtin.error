@@ -1,0 +1,6 @@
+exit status 1
+Syntax error compiling at (/workspace/mochi/tests/machine/x/clj/values_builtin.clj:7:12).
+Unable to resolve symbol: values in this context
+
+Full report at:
+/tmp/clojure-3078590537992658949.edn

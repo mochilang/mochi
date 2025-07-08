@@ -1,0 +1,6 @@
+exit status 1
+Syntax error (ClassNotFoundException) compiling new at (/workspace/mochi/tests/machine/x/clj/save_jsonl_stdout.clj:35:20).
+org.yaml.snakeyaml.Yaml
+
+Full report at:
+/tmp/clojure-6990816920473326047.edn

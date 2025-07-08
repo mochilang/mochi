@@ -1,0 +1,6 @@
+exit status 1
+Syntax error (ClassNotFoundException) compiling at (/workspace/mochi/tests/machine/x/clj/load_yaml.clj:25:20).
+clojure.data.json
+
+Full report at:
+/tmp/clojure-7963873017260354221.edn

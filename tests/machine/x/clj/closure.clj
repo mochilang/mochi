@@ -1,0 +1,29 @@
+(ns main)
+
+(declare add10)
+
+;; Function makeAdder takes [n: int] and returns function
+(defn makeAdder [n]
+  (try
+    (throw (ex-info "return" {:value (fn [x]
+  (try
+    (throw (ex-info "return" {:value (+ x n)}))
+  (catch clojure.lang.ExceptionInfo e
+    (if (= (.getMessage e) "return")
+      (:value (ex-data e))
+    (throw e)))
+  )
+)}))
+  (catch clojure.lang.ExceptionInfo e
+    (if (= (.getMessage e) "return")
+      (:value (ex-data e))
+    (throw e)))
+  )
+)
+
+(defn -main []
+  (def add10 (makeAdder 10)) ;; function
+  (println (add10 7))
+)
+
+(-main)
