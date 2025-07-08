@@ -50,9 +50,11 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.writeln("#include <numeric>")
 	c.writeln("")
 
-	c.writeln("template<typename T> void print(const T& v){ std::cout << v; }")
-	c.writeln("void print(const std::vector<int>& v){ for(size_t i=0;i<v.size();++i){ if(i) std::cout<<' '; std::cout<<v[i]; }}")
-	c.writeln("void print(bool b){ std::cout<<(b?\"true\":\"false\"); }")
+	c.writeln("template<typename T> void print_val(const T& v){ std::cout << v; }")
+	c.writeln("void print_val(const std::vector<int>& v){ for(size_t i=0;i<v.size();++i){ if(i) std::cout<<' '; std::cout<<v[i]; }}")
+	c.writeln("void print_val(bool b){ std::cout<<(b?\"true\":\"false\"); }")
+	c.writeln("void print(){ std::cout<<std::endl; }")
+	c.writeln("template<typename First, typename... Rest> void print(const First& first, const Rest&... rest){ print_val(first); if constexpr(sizeof...(rest)>0){ std::cout<<' '; print(rest...); } else { std::cout<<std::endl; }}")
 	c.writeln("")
 
 	// first generate function declarations
@@ -400,11 +402,7 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, error) {
 				args = append(args, s)
 			}
 			if base == "print" {
-				if len(args) == 1 {
-					expr = fmt.Sprintf("print(%s)", args[0])
-				} else {
-					expr = "print(0)" // unreachable
-				}
+				expr = fmt.Sprintf("print(%s)", strings.Join(args, ", "))
 			} else if base == "len" && len(args) == 1 {
 				expr = fmt.Sprintf("(%s.size())", args[0])
 			} else if base == "append" && len(args) == 2 {
@@ -501,9 +499,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		switch name {
 		case "print":
-			if len(args) == 1 {
-				return fmt.Sprintf("print(%s)", args[0]), nil
-			}
+			return fmt.Sprintf("print(%s)", strings.Join(args, ", ")), nil
 		case "len":
 			if len(args) == 1 {
 				return fmt.Sprintf("%s.size()", args[0]), nil
