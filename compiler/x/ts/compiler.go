@@ -16,11 +16,12 @@ type Compiler struct {
 	indent             int
 	tmp                int
 	needContainsHelper bool
+	funParams          map[string]int
 }
 
 // New returns a new Compiler.
 func New() *Compiler {
-	return &Compiler{}
+	return &Compiler{funParams: make(map[string]int)}
 }
 
 func (c *Compiler) newTmp() string {
@@ -33,6 +34,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.indent = 0
 	c.needContainsHelper = false
+	c.funParams = make(map[string]int)
+	for _, st := range prog.Statements {
+		if st.Fun != nil {
+			c.funParams[st.Fun.Name] = len(st.Fun.Params)
+		}
+	}
 	for _, st := range prog.Statements {
 		if err := c.stmt(st); err != nil {
 			return nil, err
@@ -125,6 +132,21 @@ func (c *Compiler) stmt(s *parser.Statement) error {
 			return err
 		}
 		c.writeln(fmt.Sprintf("%s = %s;", target, val))
+	case s.Test != nil:
+		for _, st := range s.Test.Body {
+			if st.Expect != nil {
+				exp, err := c.expr(st.Expect.Value)
+				if err != nil {
+					return err
+				}
+				msg := fmt.Sprintf("%s failed", s.Test.Name)
+				c.writeln(fmt.Sprintf("if (!(%s)) { throw new Error(%q); }", exp, msg))
+			} else {
+				if err := c.stmt(st); err != nil {
+					return err
+				}
+			}
+		}
 	case s.Type != nil:
 		return c.typeDecl(s.Type)
 	default:
@@ -471,11 +493,15 @@ func (c *Compiler) binary(b *parser.BinaryExpr) (string, error) {
 		}
 		switch op.Op {
 		case "union":
-			result = fmt.Sprintf("%s.concat(%s)", result, r)
+			if op.All {
+				result = fmt.Sprintf("%s.concat(%s)", result, r)
+			} else {
+				result = fmt.Sprintf("Array.from(new Set([...%s, ...%s]))", result, r)
+			}
 		case "except":
-			return "", fmt.Errorf("except not supported")
+			result = fmt.Sprintf("%s.filter(x => !%s.includes(x))", result, r)
 		case "intersect":
-			return "", fmt.Errorf("intersect not supported")
+			result = fmt.Sprintf("%s.filter(x => %s.includes(x))", result, r)
 		case "in":
 			c.needContainsHelper = true
 			result = fmt.Sprintf("contains(%s, %s)", r, result)
@@ -526,7 +552,11 @@ func (c *Compiler) postfix(p *parser.PostfixExpr) (string, error) {
 				}
 				args[i] = s
 			}
-			val = fmt.Sprintf("%s(%s)", val, strings.Join(args, ", "))
+			if arity, ok := c.funParams[val]; ok && len(args) < arity {
+				val = fmt.Sprintf("(...args) => %s(%s, ...args)", val, strings.Join(args, ", "))
+			} else {
+				val = fmt.Sprintf("%s(%s)", val, strings.Join(args, ", "))
+			}
 		} else if op.Index != nil {
 			idx, err := c.expr(op.Index.Start)
 			if err != nil {
@@ -583,6 +613,16 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 			items[i] = fmt.Sprintf("%s: %s", strings.Trim(k, "\""), v)
 		}
 		return "{" + strings.Join(items, ", ") + "}", nil
+	case p.Struct != nil:
+		fields := make([]string, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			v, err := c.expr(f.Value)
+			if err != nil {
+				return "", err
+			}
+			fields[i] = fmt.Sprintf("%s: %s", f.Name, v)
+		}
+		return "{" + strings.Join(fields, ", ") + "}", nil
 	case p.Group != nil:
 		v, err := c.expr(p.Group)
 		if err != nil {
