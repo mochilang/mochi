@@ -1894,6 +1894,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		child.SetVar(j.Var, jt, true)
 	}
 	c.env = child
+	resultType := csTypeOf(c.inferExprType(q.Select))
 	sel, err := c.compileExpr(q.Select)
 	if err != nil {
 		c.env = orig
@@ -2493,8 +2494,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	c.env = orig
 
 	parts := []string{src}
+	whereParts := []string{}
+	if flt, ok := aliasFilters[v]; ok {
+		whereParts = append(whereParts, strings.Join(flt, " && "))
+	}
 	if cond != "" {
-		parts = append(parts, fmt.Sprintf("Where(%s => %s)", v, cond))
+		whereParts = append(whereParts, cond)
+	}
+	if len(whereParts) > 0 {
+		parts = append(parts, fmt.Sprintf("Where(%s => %s)", v, strings.Join(whereParts, " && ")))
 	}
 	if sortExpr != "" {
 		parts = append(parts, fmt.Sprintf("OrderBy(%s => %s)", v, sortExpr))
