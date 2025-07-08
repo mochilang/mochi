@@ -3,7 +3,7 @@
 This directory stores PHP code produced by the compiler tests. Each Mochi program from `tests/vm/valid` is compiled and executed. On success a `.out` file is written. Failures generate a `.error` file.
 
 ## Summary
-51/97 files compiled successfully
+62/97 files compiled successfully
 
 ## Checklist
 - [x] append_builtin.mochi
@@ -13,7 +13,7 @@ This directory stores PHP code produced by the compiler tests. Each Mochi progra
 - [x] bool_chain.mochi
 - [x] break_continue.mochi
 - [x] cast_string_to_int.mochi
-- [ ] cast_struct.mochi
+- [x] cast_struct.mochi
 - [x] closure.mochi
 - [x] count_builtin.mochi
 - [ ] cross_join.mochi
@@ -38,22 +38,22 @@ This directory stores PHP code produced by the compiler tests. Each Mochi progra
 - [ ] group_by_sort.mochi
 - [ ] group_items_iteration.mochi
 - [x] if_else.mochi
-- [ ] if_then_else.mochi
-- [ ] if_then_else_nested.mochi
+- [x] if_then_else.mochi
+- [x] if_then_else_nested.mochi
 - [x] in_operator.mochi
 - [ ] in_operator_extended.mochi
 - [ ] inner_join.mochi
 - [ ] join_multi.mochi
-- [ ] json_builtin.mochi
+- [x] json_builtin.mochi
 - [ ] left_join.mochi
 - [ ] left_join_multi.mochi
 - [x] len_builtin.mochi
 - [x] len_map.mochi
-- [ ] len_string.mochi
+- [x] len_string.mochi
 - [x] let_and_print.mochi
 - [x] list_assign.mochi
 - [x] list_index.mochi
-- [ ] list_nested_assign.mochi
+- [x] list_nested_assign.mochi
 - [ ] list_set_ops.mochi
 - [ ] load_yaml.mochi
 - [x] map_assign.mochi
@@ -71,7 +71,7 @@ This directory stores PHP code produced by the compiler tests. Each Mochi progra
 - [x] nested_function.mochi
 - [ ] order_by_map.mochi
 - [ ] outer_join.mochi
-- [ ] partial_application.mochi
+- [x] partial_application.mochi
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
@@ -80,15 +80,15 @@ This directory stores PHP code produced by the compiler tests. Each Mochi progra
 - [ ] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
-- [ ] slice.mochi
+- [x] slice.mochi
 - [ ] sort_stable.mochi
-- [ ] str_builtin.mochi
+- [x] str_builtin.mochi
 - [x] string_compare.mochi
 - [x] string_concat.mochi
 - [x] string_contains.mochi
 - [x] string_in_operator.mochi
 - [x] string_index.mochi
-- [ ] string_prefix_slice.mochi
+- [x] string_prefix_slice.mochi
 - [x] substring_builtin.mochi
 - [x] sum_builtin.mochi
 - [x] tail_recursion.mochi
@@ -100,6 +100,6 @@ This directory stores PHP code produced by the compiler tests. Each Mochi progra
 - [x] unary_neg.mochi
 - [ ] update_stmt.mochi
 - [ ] user_type_literal.mochi
-- [ ] values_builtin.mochi
+- [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
