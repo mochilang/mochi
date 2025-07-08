@@ -4,6 +4,7 @@
 #include <map>
 #include <algorithm>
 #include <numeric>
+#include <utility>
 
 template<typename T> void print_val(const T& v){ std::cout << v; }
 void print_val(const std::vector<int>& v){ for(size_t i=0;i<v.size();++i){ if(i) std::cout<<' '; std::cout<<v[i]; }}
@@ -11,14 +12,17 @@ void print_val(bool b){ std::cout<<(b?"true":"false"); }
 void print(){ std::cout<<std::endl; }
 template<typename First, typename... Rest> void print(const First& first, const Rest&... rest){ print_val(first); if constexpr(sizeof...(rest)>0){ std::cout<<' '; print(rest...); } else { std::cout<<std::endl; }}
 
+struct __struct1 {decltype(1) id; decltype(std::string("Alice")) name; };
+struct __struct2 {decltype(100) id; decltype(1) customerId; decltype(250) total; };
+struct __struct3 {decltype(std::declval<__struct2>().id) orderId; decltype(std::declval<__struct2>().customerId) orderCustomerId; decltype(std::declval<__struct1>().name) pairedCustomerName; decltype(std::declval<__struct2>().total) orderTotal; };
 int main() {
-    auto customers = std::vector<int>{std::unordered_map<int,int>{{id, 1}, {name, std::string("Alice")}}, std::unordered_map<int,int>{{id, 2}, {name, std::string("Bob")}}, std::unordered_map<int,int>{{id, 3}, {name, std::string("Charlie")}}};
-    auto orders = std::vector<int>{std::unordered_map<int,int>{{id, 100}, {customerId, 1}, {total, 250}}, std::unordered_map<int,int>{{id, 101}, {customerId, 2}, {total, 125}}, std::unordered_map<int,int>{{id, 102}, {customerId, 1}, {total, 300}}};
+    auto customers = std::vector<decltype(__struct1{1, std::string("Alice")})>{__struct1{1, std::string("Alice")}, __struct1{2, std::string("Bob")}, __struct1{3, std::string("Charlie")}};
+    auto orders = std::vector<decltype(__struct2{100, 1, 250})>{__struct2{100, 1, 250}, __struct2{101, 2, 125}, __struct2{102, 1, 300}};
     auto result = ([&]() {
-    std::vector<decltype(std::unordered_map<int,int>{{orderId, o.id}, {orderCustomerId, o.customerId}, {pairedCustomerName, c.name}, {orderTotal, o.total}})> __items;
+    std::vector<__struct3> __items;
     for (auto o : orders) {
         for (auto c : customers) {
-            __items.push_back(std::unordered_map<int,int>{{orderId, o.id}, {orderCustomerId, o.customerId}, {pairedCustomerName, c.name}, {orderTotal, o.total}});
+            __items.push_back(__struct3{o.id, o.customerId, c.name, o.total});
         }
     }
     return __items;
