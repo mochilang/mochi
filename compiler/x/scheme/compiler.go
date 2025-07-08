@@ -940,7 +940,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					case "float":
 						expr = fmt.Sprintf("(exact->inexact %s)", expr)
 					case "int":
-						expr = fmt.Sprintf("(inexact->exact %s)", expr)
+						if c.isStringPrimary(p.Target) {
+							expr = fmt.Sprintf("(string->number %s)", expr)
+						} else {
+							expr = fmt.Sprintf("(inexact->exact %s)", expr)
+						}
 					case "string":
 						expr = fmt.Sprintf("(number->string %s)", expr)
 					default:
