@@ -1,4 +1,0 @@
-unsupported expression at line 10
-fun sum_tree(t: Tree): int {
-  return match t {
-    Leaf => 0

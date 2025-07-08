@@ -1,4 +1,0 @@
-run: exit status 1
-# command-line-arguments
-../../../tests/machine/x/go/values_builtin.go:11:17: undefined: values
-

@@ -1,4 +1,0 @@
-unsupported expression at line 12
-let big =
-  from p in people
-  group by p.city into g

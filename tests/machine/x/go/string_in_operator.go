@@ -1,34 +1,12 @@
-//go:build ignore
-
 package main
 
 import (
-    "fmt"
-    "reflect"
+	"fmt"
+	"strings"
 )
 
-func contains(coll interface{}, v interface{}) bool {
-    val := reflect.ValueOf(coll)
-    switch val.Kind() {
-        case reflect.Slice, reflect.Array:
-            for i := 0; i < val.Len(); i++ {
-                if reflect.DeepEqual(val.Index(i).Interface(), v) {
-                    return true
-                }
-            }
-            return false
-        case reflect.Map:
-            if val.MapIndex(reflect.ValueOf(v)).IsValid() {
-                return true
-            }
-            return false
-        default:
-            return false
-        }
-    }
-    
-    func main() {
-    s := "catch"
-    fmt.Println(contains(s, "cat"))
-    fmt.Println(contains(s, "dog"))
-    }
+func main() {
+	var s string = "catch"
+	fmt.Println(strings.Contains(s, "cat"))
+	fmt.Println(strings.Contains(s, "dog"))
+}

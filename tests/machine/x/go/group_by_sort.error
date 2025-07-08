@@ -1,4 +1,0 @@
-unsupported expression at line 8
-let grouped =
-  from i in items
-  group by i.cat into g

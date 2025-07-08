@@ -1,16 +1,14 @@
-//go:build ignore
-
 package main
 
 import (
-    "fmt"
+	"fmt"
 )
 
+// line 1
 func triple(x int) int {
-    return x * 3
+	return (x * 3)
 }
 
-
 func main() {
-    fmt.Println(triple(1 + 2))
+	fmt.Println(triple((1 + 2)))
 }

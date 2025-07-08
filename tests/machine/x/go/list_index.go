@@ -1,12 +1,10 @@
-//go:build ignore
-
 package main
 
 import (
-    "fmt"
+	"fmt"
 )
 
 func main() {
-    xs := []int{10, 20, 30}
-    fmt.Println(xs[1])
+	var xs []int = []int{10, 20, 30}
+	fmt.Println(xs[1])
 }

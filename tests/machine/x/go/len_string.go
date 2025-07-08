@@ -1,11 +1,9 @@
-//go:build ignore
-
 package main
 
 import (
-    "fmt"
+	"fmt"
 )
 
 func main() {
-    fmt.Println(len("mochi"))
+	fmt.Println(5)
 }

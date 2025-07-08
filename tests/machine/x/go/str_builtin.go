@@ -1,12 +1,9 @@
-//go:build ignore
-
 package main
 
 import (
-    "fmt"
-    "strconv"
+	"fmt"
 )
 
 func main() {
-    fmt.Println(strconv.Itoa(123))
+	fmt.Println("123")
 }

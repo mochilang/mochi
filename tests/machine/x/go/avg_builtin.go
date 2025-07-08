@@ -1,22 +1,22 @@
-//go:build ignore
-
 package main
 
 import (
-    "fmt"
+	"fmt"
+
+	"golang.org/x/exp/constraints"
 )
 
-func avg(nums []int) int {
-    if len(nums) == 0 {
-        return 0
-    }
-    var sum int
-    for _, n := range nums {
-        sum += n
-    }
-    return sum / len(nums)
+func main() {
+	fmt.Println(_avgOrdered[int]([]int{1, 2, 3}))
 }
 
-func main() {
-    fmt.Println(avg([]int{1, 2, 3}))
+func _avgOrdered[T constraints.Integer | constraints.Float](s []T) float64 {
+	if len(s) == 0 {
+		return 0
+	}
+	var sum float64
+	for _, v := range s {
+		sum += float64(v)
+	}
+	return sum / float64(len(s))
 }
