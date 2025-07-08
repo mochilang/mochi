@@ -99,6 +99,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		c.indent--
 		c.writeln("end")
+	case s.If != nil:
+		return c.compileIf(s.If)
 	case s.Return != nil:
 		val, err := c.compileExpr(s.Return.Value)
 		if err != nil {
@@ -254,6 +256,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		default:
 			return fmt.Sprintf("%s(%s)", name, argStr), nil
 		}
+	case p.If != nil:
+		return c.compileIfExpr(p.If)
 	case p.Selector != nil:
 		if len(p.Selector.Tail) == 0 {
 			return p.Selector.Root, nil
@@ -262,6 +266,75 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	default:
 		return "", fmt.Errorf("unsupported expression at line %d", p.Pos.Line)
 	}
+}
+
+func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
+	cond, err := c.compileExpr(stmt.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln("if " + cond + " then")
+	c.indent++
+	for _, st := range stmt.Then {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	cur := stmt
+	for cur.ElseIf != nil {
+		cond, err := c.compileExpr(cur.ElseIf.Cond)
+		if err != nil {
+			return err
+		}
+		c.writeln("elseif " + cond + " then")
+		c.indent++
+		for _, st := range cur.ElseIf.Then {
+			if err := c.compileStmt(st); err != nil {
+				return err
+			}
+		}
+		c.indent--
+		cur = cur.ElseIf
+	}
+	if len(cur.Else) > 0 {
+		c.writeln("else")
+		c.indent++
+		for _, st := range cur.Else {
+			if err := c.compileStmt(st); err != nil {
+				return err
+			}
+		}
+		c.indent--
+	}
+	c.writeln("end")
+	return nil
+}
+
+func (c *Compiler) compileIfExpr(e *parser.IfExpr) (string, error) {
+	cond, err := c.compileExpr(e.Cond)
+	if err != nil {
+		return "", err
+	}
+	thenExpr, err := c.compileExpr(e.Then)
+	if err != nil {
+		return "", err
+	}
+	var elseExpr string
+	if e.Else != nil {
+		elseExpr, err = c.compileExpr(e.Else)
+		if err != nil {
+			return "", err
+		}
+	} else if e.ElseIf != nil {
+		elseExpr, err = c.compileIfExpr(e.ElseIf)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		elseExpr = "nil"
+	}
+	return fmt.Sprintf("(%s and %s or %s)", cond, thenExpr, elseExpr), nil
 }
 
 func contains(list []string, s string) bool {

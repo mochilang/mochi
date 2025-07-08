@@ -1,0 +1,6 @@
+line 22: run error: exit status 1
+lua: /workspace/mochi/tests/machine/x/lua/min_max_builtin.lua:22: attempt to call a nil value (global 'min')
+stack traceback:
+	/workspace/mochi/tests/machine/x/lua/min_max_builtin.lua:22: in main chunk
+	[C]: in ?
+

@@ -1,0 +1,3 @@
+line 0: postfix operations not supported
+   1 | print("1995" as int)
+   2 | 

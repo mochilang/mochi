@@ -1,0 +1,3 @@
+line 0: unsupported statement at line 1
+   1 | var matrix = [[1,2],[3,4]]
+   2 | matrix[1][0] = 5

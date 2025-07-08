@@ -1,0 +1,3 @@
+line 0: postfix operations not supported
+   1 | let s = "catch"
+   2 | print(s.contains("cat"))

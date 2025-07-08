@@ -1,0 +1,3 @@
+line 0: unsupported statement at line 1
+   1 | var scores = {"alice": 1}
+   2 | scores["bob"] = 2

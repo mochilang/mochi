@@ -1,0 +1,3 @@
+line 0: unsupported expression at line 2
+   1 | let customers = [
+   2 |   { id: 1, name: "Alice" },
