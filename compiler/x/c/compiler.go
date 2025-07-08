@@ -38,6 +38,8 @@ type Compiler struct {
 	needsConcat    bool
 	needsToStr     bool
 
+	needsSliceList bool
+
 	needsGetSI      bool
 	needsGetIS      bool
 	needsContainsSI bool
@@ -702,6 +704,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if types.IsStringType(t) {
 					c.needsSubstr = true
 					expr = fmt.Sprintf("substr(%s, %s, %s)", expr, startStr, endStr)
+				} else if types.IsListType(t) {
+					c.needsSliceList = true
+					expr = fmt.Sprintf("list_slice(%s, %s, %s)", expr, startStr, endStr)
+					c.lastType = "int[]"
 				} else {
 					return "", fmt.Errorf("slice unsupported")
 				}
@@ -995,6 +1001,13 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 					return fmt.Sprintf("print_list(%s, %d)", name, l), nil
 				}
 			}
+			if c.exprIsList(call.Args[0]) {
+				length, err := c.compileLenExpr(call.Args[0])
+				if err == nil {
+					c.needsPrintList = true
+					return fmt.Sprintf("print_list(%s, %s)", arg, length), nil
+				}
+			}
 			if isStringIndex(call.Args[0], c) {
 				return fmt.Sprintf("printf(\"%%c\\n\", %s)", arg), nil
 			}
@@ -1014,29 +1027,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("len expects 1 arg")
 		}
-		if lst := listLiteral(call.Args[0]); lst != nil {
-			return fmt.Sprintf("%d", len(lst.Elems)), nil
-		}
-		if mp := mapLiteral(call.Args[0]); mp != nil {
-			return fmt.Sprintf("%d", len(mp.Items)), nil
-		}
-		if name := simpleIdent(call.Args[0]); name != "" {
-			if c.vars[name] == "int[]" {
-				return fmt.Sprintf("sizeof(%s)/sizeof(%s[0])", name, name), nil
-			}
-			if c.vars[name] == "const char*" {
-				return fmt.Sprintf("strlen(%s)", name), nil
-			}
-			if _, ok := c.mapTypes[name]; ok {
-				if l, ok := c.lens[name]; ok {
-					return fmt.Sprintf("%d", l), nil
-				}
-			}
-		}
-		if c.exprIsString(call.Args[0]) {
-			return fmt.Sprintf("strlen(%s)", args[0]), nil
-		}
-		return "", fmt.Errorf("len unsupported")
+		return c.compileLenExpr(call.Args[0])
 	} else if call.Func == "append" {
 		if len(args) != 2 {
 			return "", fmt.Errorf("append expects 2 args")
@@ -1188,6 +1179,62 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		c.lastType = ""
 	}
 	return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ", ")), nil
+}
+
+func (c *Compiler) compileLenExpr(e *parser.Expr) (string, error) {
+	if lst := listLiteral(e); lst != nil {
+		return fmt.Sprintf("%d", len(lst.Elems)), nil
+	}
+	if mp := mapLiteral(e); mp != nil {
+		return fmt.Sprintf("%d", len(mp.Items)), nil
+	}
+	if name := simpleIdent(e); name != "" {
+		if c.vars[name] == "int[]" {
+			return fmt.Sprintf("sizeof(%s)/sizeof(%s[0])", name, name), nil
+		}
+		if c.vars[name] == "const char*" {
+			return fmt.Sprintf("strlen(%s)", name), nil
+		}
+		if _, ok := c.mapTypes[name]; ok {
+			if l, ok := c.lens[name]; ok {
+				return fmt.Sprintf("%d", l), nil
+			}
+		}
+	}
+	if sliceLen, ok := sliceLength(e, c); ok {
+		return sliceLen, nil
+	}
+	if c.exprIsString(e) {
+		expr, err := c.compileExpr(e)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("strlen(%s)", expr), nil
+	}
+	return "", fmt.Errorf("len unsupported")
+}
+
+func sliceLength(e *parser.Expr, c *Compiler) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if u.Value == nil || len(u.Value.Ops) != 1 {
+		return "", false
+	}
+	op := u.Value.Ops[0]
+	if op.Index == nil || op.Index.Colon == nil || op.Index.Start == nil || op.Index.End == nil {
+		return "", false
+	}
+	startStr, err := c.compileExpr(op.Index.Start)
+	if err != nil {
+		return "", false
+	}
+	endStr, err := c.compileExpr(op.Index.End)
+	if err != nil {
+		return "", false
+	}
+	return fmt.Sprintf("(%s - %s)", endStr, startStr), true
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) string {
@@ -1548,6 +1595,17 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("char* out = malloc(n + 1);")
 		c.writeln("strncpy(out, s + start, n);")
 		c.writeln("out[n] = '\\0';")
+		c.writeln("return out;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.needsSliceList {
+		c.writeln("int* list_slice(const int* arr, int start, int end) {")
+		c.indent++
+		c.writeln("int n = end - start;")
+		c.writeln("int* out = malloc(sizeof(int) * n);")
+		c.writeln("for (int i = 0; i < n; i++) out[i] = arr[start + i];")
 		c.writeln("return out;")
 		c.indent--
 		c.writeln("}")
