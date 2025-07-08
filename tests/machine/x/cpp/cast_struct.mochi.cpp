@@ -12,7 +12,7 @@ struct Todo {
 };
 
 int main() {
-	auto todo = (Todo)(unordered_map<string, string>{{std::string("title"), std::string("hi")}});
-	([&](const auto& __v){ if constexpr(has_size<decay_t<decltype(__v)>>::value){ for(size_t i=0;i<__v.size();++i){ if(i) cout<<' '; cout<<__v[i]; } cout<<endl; } else { cout<<__v<<endl; } })(todo.title);
+	auto todo = Todo{std::string("hi")};
+	([&](const auto& __v){ if constexpr(has_size<decay_t<decltype(__v)>>::value && !is_same_v<decay_t<decltype(__v)>, string>){ for(size_t i=0;i<__v.size();++i){ if(i) cout<<' '; cout<<__v[i]; } cout<<endl; } else { cout<<__v<<endl; } })(todo.title);
 	return 0;
 }
