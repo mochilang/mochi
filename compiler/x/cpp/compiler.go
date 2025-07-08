@@ -558,6 +558,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			pairs = append(pairs, fmt.Sprintf("{%s, %s}", keys[i], vals[i]))
 		}
 		return fmt.Sprintf("std::unordered_map<%s,%s>{%s}", keyType, valType, strings.Join(pairs, ", ")), nil
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
 	case p.Selector != nil:
@@ -742,6 +744,116 @@ func (c *Compiler) structFromMapLiteral(typ string, m *parser.MapLiteral) (strin
 		buf.WriteString(fmt.Sprintf("__v.%s = %s; ", keyLit, val))
 	}
 	buf.WriteString("return __v; })()")
+	return buf.String(), nil
+}
+
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	if q.Group != nil || len(q.Joins) > 0 {
+		return "", fmt.Errorf("query features not supported")
+	}
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	fromSrcs := make([]string, len(q.Froms))
+	for i, f := range q.Froms {
+		s, err := c.compileExpr(f.Src)
+		if err != nil {
+			return "", err
+		}
+		fromSrcs[i] = s
+	}
+	var where string
+	if q.Where != nil {
+		where, err = c.compileExpr(q.Where)
+		if err != nil {
+			return "", err
+		}
+	}
+	val, err := c.compileExpr(q.Select)
+	if err != nil {
+		return "", err
+	}
+	key := ""
+	if q.Sort != nil {
+		key, err = c.compileExpr(q.Sort)
+		if err != nil {
+			return "", err
+		}
+	}
+	skip := ""
+	if q.Skip != nil {
+		skip, err = c.compileExpr(q.Skip)
+		if err != nil {
+			return "", err
+		}
+	}
+	take := ""
+	if q.Take != nil {
+		take, err = c.compileExpr(q.Take)
+		if err != nil {
+			return "", err
+		}
+	}
+
+	var buf strings.Builder
+	buf.WriteString("([&]() {\n")
+	indent := func(n int) {
+		for i := 0; i < n; i++ {
+			buf.WriteString("    ")
+		}
+	}
+	buf.WriteString("    std::vector<")
+	if key != "" || skip != "" || take != "" {
+		buf.WriteString("std::pair<decltype(" + key + "), decltype(" + val + ")>>")
+	} else {
+		buf.WriteString("decltype(" + val + ")")
+	}
+	buf.WriteString("> __items;\n")
+	indentLevel := 1
+	indent(indentLevel)
+	buf.WriteString("for (auto " + q.Var + " : " + src + ") {\n")
+	indentLevel++
+	for i, fs := range fromSrcs {
+		indent(indentLevel)
+		buf.WriteString("for (auto " + q.Froms[i].Var + " : " + fs + ") {\n")
+		indentLevel++
+	}
+	if where != "" {
+		indent(indentLevel)
+		buf.WriteString("if (!(" + where + ")) continue;\n")
+	}
+	indent(indentLevel)
+	if key != "" || skip != "" || take != "" {
+		buf.WriteString("__items.push_back({" + key + ", " + val + "});\n")
+	} else {
+		buf.WriteString("__items.push_back(" + val + ");\n")
+	}
+	for i := len(fromSrcs) - 1; i >= 0; i-- {
+		indentLevel--
+		indent(indentLevel)
+		buf.WriteString("}\n")
+	}
+	indentLevel--
+	indent(indentLevel)
+	buf.WriteString("}\n")
+	if key != "" {
+		buf.WriteString("    std::sort(__items.begin(), __items.end(), [](auto &a, auto &b){ return a.first < b.first; });\n")
+	}
+	if skip != "" {
+		buf.WriteString("    if ((size_t)" + skip + " < __items.size()) __items.erase(__items.begin(), __items.begin()+" + skip + ");\n")
+	}
+	if take != "" {
+		buf.WriteString("    if ((size_t)" + take + " < __items.size()) __items.resize(" + take + ");\n")
+	}
+	if key != "" || skip != "" || take != "" {
+		buf.WriteString("    std::vector<decltype(" + val + ")> __res;\n")
+		buf.WriteString("    for (auto &p : __items) __res.push_back(p.second);\n")
+		buf.WriteString("    return __res;\n")
+	} else {
+		buf.WriteString("    return __items;\n")
+	}
+	buf.WriteString("})()")
 	return buf.String(), nil
 }
 
