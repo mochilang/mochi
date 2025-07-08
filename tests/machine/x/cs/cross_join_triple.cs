@@ -11,7 +11,7 @@ public class Program
 {
     public static void Main()
     {
-        long[] nums = new long[] { 1L, 2L };
+        long[] nums = new long[] { 1, 2 };
         string[] letters = new string[] { "A", "B" };
         bool[] bools = new bool[] { true, false };
         var combos = new Func<List<Dictionary<string, dynamic>>>(() =>
@@ -32,7 +32,7 @@ public class Program
         Console.WriteLine("--- Cross Join of three lists ---");
         foreach (var c in combos)
         {
-            Console.WriteLine(string.Join(" ", new[] { Convert.ToString(c.n), Convert.ToString(c.l), Convert.ToString(c.b) }));
+            Console.WriteLine(string.Join(" ", new[] { Convert.ToString(c["n"]), Convert.ToString(c["l"]), Convert.ToString(c["b"]) }));
         }
     }
 }

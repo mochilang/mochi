@@ -11,8 +11,8 @@ public class Program
 {
     public static void Main()
     {
-        var customers = new Dictionary<string, dynamic>[] { new Dictionary<string, dynamic> { { "id", 1L }, { "name", "Alice" } }, new Dictionary<string, dynamic> { { "id", 2L }, { "name", "Bob" } }, new Dictionary<string, dynamic> { { "id", 3L }, { "name", "Charlie" } } };
-        Dictionary<string, long>[] orders = new Dictionary<string, long>[] { new Dictionary<string, long> { { "id", 100L }, { "customerId", 1L }, { "total", 250L } }, new Dictionary<string, long> { { "id", 101L }, { "customerId", 2L }, { "total", 125L } }, new Dictionary<string, long> { { "id", 102L }, { "customerId", 1L }, { "total", 300L } } };
+        var customers = new Dictionary<string, dynamic>[] { new Dictionary<string, dynamic> { { "id", 1 }, { "name", "Alice" } }, new Dictionary<string, dynamic> { { "id", 2 }, { "name", "Bob" } }, new Dictionary<string, dynamic> { { "id", 3 }, { "name", "Charlie" } } };
+        Dictionary<string, long>[] orders = new Dictionary<string, long>[] { new Dictionary<string, long> { { "id", 100 }, { "customerId", 1 }, { "total", 250 } }, new Dictionary<string, long> { { "id", 101 }, { "customerId", 2 }, { "total", 125 } }, new Dictionary<string, long> { { "id", 102 }, { "customerId", 1 }, { "total", 300 } } };
         var result = new Func<List<Dictionary<string, dynamic>>>(() =>
         {
             var _res = new List<Dictionary<string, dynamic>>();
@@ -28,7 +28,7 @@ public class Program
         Console.WriteLine("--- Cross Join: All order-customer pairs ---");
         foreach (var entry in result)
         {
-            Console.WriteLine(string.Join(" ", new[] { Convert.ToString("Order"), Convert.ToString(entry.orderId), Convert.ToString("(customerId:"), Convert.ToString(entry.orderCustomerId), Convert.ToString(", total: $"), Convert.ToString(entry.orderTotal), Convert.ToString(") paired with"), Convert.ToString(entry.pairedCustomerName) }));
+            Console.WriteLine(string.Join(" ", new[] { Convert.ToString("Order"), Convert.ToString(entry["orderId"]), Convert.ToString("(customerId:"), Convert.ToString(entry["orderCustomerId"]), Convert.ToString(", total: $"), Convert.ToString(entry["orderTotal"]), Convert.ToString(") paired with"), Convert.ToString(entry["pairedCustomerName"]) }));
         }
     }
 }
