@@ -17,5 +17,8 @@ int max_val(const int* arr, int n) {
 }
 
 int main() {
+int nums[] = {3, 1, 4};
+printf("%d\n", min_val(nums, 3));
+printf("%d\n", max_val(nums, 3));
     return 0;
 }

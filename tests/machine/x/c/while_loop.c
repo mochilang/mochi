@@ -2,12 +2,13 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 
 int main() {
-    int i = 0;
-    while ((i < 3)) {
-        printf("%d\n", i);
-        i = (i + 1);
-    }
+int i = 0;
+while ((i < 3)) {
+    printf("%d\n", i);
+    i = (i + 1);
+}
     return 0;
 }

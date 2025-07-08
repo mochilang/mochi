@@ -2,11 +2,12 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 
 int main() {
-    for (int __i = 0; __i < 3; __i++) {
-        int n = (int[]){1, 2, 3}[__i];
-        printf("%d\n", n);
-    }
+for (int __i = 0; __i < 3; __i++) {
+    int n = (int[]){1, 2, 3}[__i];
+    printf("%d\n", n);
+}
     return 0;
 }

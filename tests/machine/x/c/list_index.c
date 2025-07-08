@@ -2,9 +2,10 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 
 int main() {
-    int xs[] = {10, 20, 30};
-    printf("%d\n", xs[1]);
+int xs[] = {10, 20, 30};
+printf("%d\n", xs[1]);
     return 0;
 }

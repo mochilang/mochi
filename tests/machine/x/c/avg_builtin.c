@@ -12,5 +12,6 @@ int avg(const int* arr, int n) {
 }
 
 int main() {
+printf("%d\n", avg((int[]){1, 2, 3}, 3));
     return 0;
 }

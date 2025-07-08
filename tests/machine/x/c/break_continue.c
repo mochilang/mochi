@@ -2,18 +2,19 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 
 int main() {
-    int numbers[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-    for (int __i = 0; __i < sizeof(numbers)/sizeof(numbers[0]); __i++) {
-        int n = numbers[__i];
-        if (((n % 2) == 0)) {
-            continue;
-        }
-        if ((n > 7)) {
-            break;
-        }
-        printf("%s %d\n", "odd number:", n);
+int numbers[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+for (int __i = 0; __i < sizeof(numbers)/sizeof(numbers[0]); __i++) {
+    int n = numbers[__i];
+    if (((n % 2) == 0)) {
+        continue;
     }
+    if ((n > 7)) {
+        break;
+    }
+    printf("%s %d\n", "odd number:", n);
+}
     return 0;
 }

@@ -11,5 +11,6 @@ int sum(const int* arr, int n) {
 }
 
 int main() {
+printf("%d\n", sum((int[]){1, 2, 3}, 3));
     return 0;
 }

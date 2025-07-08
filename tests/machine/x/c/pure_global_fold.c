@@ -4,14 +4,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-int sum_rec(int n, int acc) {
-    if ((n == 0)) {
-        return acc;
-    }
-    return sum_rec((n - 1), (acc + n));
+int inc(int x) {
+    return (x + k);
 }
 
 int main() {
-printf("%d\n", sum_rec(10, 0));
+int k = 2;
+printf("%d\n", inc(3));
     return 0;
 }

@@ -2,13 +2,14 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 
 int main() {
-    int x = 5;
-    if ((x > 3)) {
-        printf("%s\n", "big");
-    } else {
-        printf("%s\n", "small");
-    }
+int x = 5;
+if ((x > 3)) {
+    printf("%s\n", "big");
+} else {
+    printf("%s\n", "small");
+}
     return 0;
 }

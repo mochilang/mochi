@@ -2,11 +2,12 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 
 int main() {
-    printf("%d\n", ("a" < "b"));
-    printf("%d\n", ("a" <= "a"));
-    printf("%d\n", ("b" > "a"));
-    printf("%d\n", ("b" >= "b"));
+printf("%d\n", ("a" < "b"));
+printf("%d\n", ("a" <= "a"));
+printf("%d\n", ("b" > "a"));
+printf("%d\n", ("b" >= "b"));
     return 0;
 }

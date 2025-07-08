@@ -40,7 +40,9 @@ Each program is compiled and executed during testing.
 - [x] membership.mochi
 - [x] min_max_builtin.mochi
 - [x] string_in_operator.mochi
+- [x] string_contains.mochi
 - [x] substring_builtin.mochi
+- [x] str_builtin.mochi
 - [x] sum_builtin.mochi
 
-Compiled 36/97 programs.
+Compiled 38/97 programs.

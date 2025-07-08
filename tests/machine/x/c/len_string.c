@@ -5,6 +5,6 @@
 #include <string.h>
 
 int main() {
-    printf("%d\n", strlen("mochi"));
+printf("%d\n", strlen("mochi"));
     return 0;
 }

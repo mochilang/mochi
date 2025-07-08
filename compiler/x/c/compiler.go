@@ -31,6 +31,7 @@ type Compiler struct {
 	needsMax       bool
 	needsSubstr    bool
 	needsConcat    bool
+	needsToStr     bool
 }
 
 // New creates a new Compiler instance.
@@ -69,6 +70,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 			c.buf = oldBuf
 			return nil, err
 		}
+		body = c.buf
 		c.buf = oldBuf
 	}
 
@@ -427,6 +429,23 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	}
 	for _, op := range p.Ops {
 		switch {
+		case op.Field != nil:
+			expr = fmt.Sprintf("%s.%s", expr, op.Field.Name)
+		case op.Call != nil:
+			args := make([]string, len(op.Call.Args))
+			for i, a := range op.Call.Args {
+				s, err := c.compileExpr(a)
+				if err != nil {
+					return "", err
+				}
+				args[i] = s
+			}
+			if strings.HasSuffix(expr, ".contains") && len(args) == 1 {
+				base := strings.TrimSuffix(expr, ".contains")
+				expr = fmt.Sprintf("(strstr(%s, %s) != NULL)", base, args[0])
+			} else {
+				expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
+			}
 		case op.Cast != nil:
 			typ, err := c.compileType(op.Cast.Type)
 			if err != nil {
@@ -688,6 +707,16 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("max unsupported")
 		}
 		return fmt.Sprintf("max_val(%s, %s)", args[0], length), nil
+	} else if call.Func == "str" {
+		if len(args) != 1 {
+			return "", fmt.Errorf("str expects 1 arg")
+		}
+		t := types.TypeOfExpr(call.Args[0], c.env)
+		if types.IsStringType(t) {
+			return args[0], nil
+		}
+		c.needsToStr = true
+		return fmt.Sprintf("to_str(%s)", args[0]), nil
 	} else if call.Func == "substring" {
 		if len(args) != 3 {
 			return "", fmt.Errorf("substring expects 3 args")
@@ -849,6 +878,16 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("strcpy(res, a);")
 		c.writeln("strcat(res, b);")
 		c.writeln("return res;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.needsToStr {
+		c.writeln("char* to_str(int n) {")
+		c.indent++
+		c.writeln("char buf[32];")
+		c.writeln("snprintf(buf, sizeof(buf), \"%d\", n);")
+		c.writeln("return strdup(buf);")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")

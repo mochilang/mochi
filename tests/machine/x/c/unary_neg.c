@@ -2,9 +2,10 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 
 int main() {
-    printf("%d\n", (-3));
-    printf("%d\n", (5 + (-2)));
+printf("%d\n", (-3));
+printf("%d\n", (5 + (-2)));
     return 0;
 }

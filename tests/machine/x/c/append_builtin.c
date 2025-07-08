@@ -13,5 +13,7 @@ void print_list(const int* arr, int n) {
 }
 
 int main() {
+int a[] = {1, 2};
+print_list((int[]){1, 2, 3}, 3);
     return 0;
 }
