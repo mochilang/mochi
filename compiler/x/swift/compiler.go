@@ -136,14 +136,26 @@ func (c *compiler) varStmt(v *parser.VarStmt) error {
 }
 
 func (c *compiler) assignStmt(a *parser.AssignStmt) error {
-	if len(a.Index) > 0 || len(a.Field) > 0 {
-		return fmt.Errorf("complex assignment not supported")
+	lhs := a.Name
+	for _, idx := range a.Index {
+		if idx.Colon != nil || idx.Colon2 != nil || idx.End != nil || idx.Step != nil || idx.Start == nil {
+			return fmt.Errorf("complex assignment not supported")
+		}
+		expr, err := c.expr(idx.Start)
+		if err != nil {
+			return err
+		}
+		lhs += fmt.Sprintf("[%s]", expr)
 	}
+	for _, f := range a.Field {
+		lhs += "." + f.Name
+	}
+
 	val, err := c.expr(a.Value)
 	if err != nil {
 		return err
 	}
-	c.writeln(fmt.Sprintf("%s = %s", a.Name, val))
+	c.writeln(fmt.Sprintf("%s = %s", lhs, val))
 	return nil
 }
 
@@ -350,6 +362,18 @@ func (c *compiler) postfix(p *parser.PostfixExpr) (string, error) {
 	}
 	for _, op := range p.Ops {
 		switch {
+		case op.Index != nil:
+			idx := op.Index
+			if idx.Colon != nil || idx.Colon2 != nil || idx.End != nil || idx.Step != nil || idx.Start == nil {
+				return "", fmt.Errorf("unsupported index at line %d", idx.Pos.Line)
+			}
+			s, err := c.expr(idx.Start)
+			if err != nil {
+				return "", err
+			}
+			val = fmt.Sprintf("%s[%s]", val, s)
+		case op.Field != nil:
+			val = fmt.Sprintf("%s.%s", val, op.Field.Name)
 		case op.Cast != nil:
 			typ, err := c.typeRef(op.Cast.Type)
 			if err != nil {

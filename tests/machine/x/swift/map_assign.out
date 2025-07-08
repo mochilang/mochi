@@ -1,1 +1,10 @@
-mochi swift compiler stub
+/workspace/mochi/tests/machine/x/swift/map_assign.swift:3:7: warning: expression implicitly coerced from 'Int?' to 'Any'
+1 | var scores = ["alice": 1]
+2 | scores["bob"] = 2
+3 | print(scores["bob"])
+  |       |     |- note: provide a default value to avoid this warning
+  |       |     |- note: force-unwrap the value to avoid this warning
+  |       |     `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+  |       `- warning: expression implicitly coerced from 'Int?' to 'Any'
+4 | 
+Optional(2)

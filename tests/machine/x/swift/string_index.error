@@ -1,2 +1,3 @@
-line: 0
-error: postfix operations not supported
+line 2: exit status 1
+let s = "mochi"
+print(s[1])
