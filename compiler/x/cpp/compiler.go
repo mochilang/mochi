@@ -12,14 +12,27 @@ import (
 
 // Compiler translates a subset of Mochi to simple C++17 code.
 type Compiler struct {
+	header bytes.Buffer
 	buf    bytes.Buffer
 	indent int
 	tmp    int
 	vars   map[string]string
+
+	structMap   map[string]string
+	structCount int
+	varStruct   map[string]string
+	elemType    map[string]string
 }
 
 // New returns a new compiler instance.
-func New() *Compiler { return &Compiler{vars: map[string]string{}} }
+func New() *Compiler {
+	return &Compiler{
+		vars:      map[string]string{},
+		structMap: map[string]string{},
+		varStruct: map[string]string{},
+		elemType:  map[string]string{},
+	}
+}
 
 func (c *Compiler) newTmp() string {
 	c.tmp++
@@ -32,6 +45,11 @@ func (c *Compiler) writeln(s string) {
 	}
 	c.buf.WriteString(s)
 	c.buf.WriteByte('\n')
+}
+
+func (c *Compiler) headerWriteln(s string) {
+	c.header.WriteString(s)
+	c.header.WriteByte('\n')
 }
 
 func sanitizeName(name string) string {
@@ -62,20 +80,24 @@ func (c *Compiler) writeIndent() {
 // Compile converts a parsed Mochi program to C++ source code.
 func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.buf.Reset()
-	c.writeln("#include <iostream>")
-	c.writeln("#include <vector>")
-	c.writeln("#include <unordered_map>")
-	c.writeln("#include <map>")
-	c.writeln("#include <algorithm>")
-	c.writeln("#include <numeric>")
-	c.writeln("")
+	c.header.Reset()
+	c.structMap = map[string]string{}
+	c.structCount = 0
+	c.headerWriteln("#include <iostream>")
+	c.headerWriteln("#include <vector>")
+	c.headerWriteln("#include <unordered_map>")
+	c.headerWriteln("#include <map>")
+	c.headerWriteln("#include <algorithm>")
+	c.headerWriteln("#include <numeric>")
+	c.headerWriteln("#include <utility>")
+	c.headerWriteln("")
 
-	c.writeln("template<typename T> void print_val(const T& v){ std::cout << v; }")
-	c.writeln("void print_val(const std::vector<int>& v){ for(size_t i=0;i<v.size();++i){ if(i) std::cout<<' '; std::cout<<v[i]; }}")
-	c.writeln("void print_val(bool b){ std::cout<<(b?\"true\":\"false\"); }")
-	c.writeln("void print(){ std::cout<<std::endl; }")
-	c.writeln("template<typename First, typename... Rest> void print(const First& first, const Rest&... rest){ print_val(first); if constexpr(sizeof...(rest)>0){ std::cout<<' '; print(rest...); } else { std::cout<<std::endl; }}")
-	c.writeln("")
+	c.headerWriteln("template<typename T> void print_val(const T& v){ std::cout << v; }")
+	c.headerWriteln("void print_val(const std::vector<int>& v){ for(size_t i=0;i<v.size();++i){ if(i) std::cout<<' '; std::cout<<v[i]; }}")
+	c.headerWriteln("void print_val(bool b){ std::cout<<(b?\"true\":\"false\"); }")
+	c.headerWriteln("void print(){ std::cout<<std::endl; }")
+	c.headerWriteln("template<typename First, typename... Rest> void print(const First& first, const Rest&... rest){ print_val(first); if constexpr(sizeof...(rest)>0){ std::cout<<' '; print(rest...); } else { std::cout<<std::endl; }}")
+	c.headerWriteln("")
 
 	// first generate function declarations
 	for _, st := range p.Statements {
@@ -100,7 +122,10 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.writeln("return 0;")
 	c.indent--
 	c.writeln("}")
-	return c.buf.Bytes(), nil
+	var out bytes.Buffer
+	out.Write(c.header.Bytes())
+	out.Write(c.buf.Bytes())
+	return out.Bytes(), nil
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
@@ -234,6 +259,12 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 	} else {
 		c.vars[st.Name] = c.inferType(exprStr)
 	}
+	if s := extractVectorStruct(exprStr); s != "" {
+		c.varStruct[st.Name] = s
+	}
+	if et := extractVectorElemType(exprStr); et != "" {
+		c.elemType[st.Name] = et
+	}
 	return nil
 }
 
@@ -270,6 +301,12 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 		}
 	} else {
 		c.vars[st.Name] = c.inferType(exprStr)
+	}
+	if s := extractVectorStruct(exprStr); s != "" {
+		c.varStruct[st.Name] = s
+	}
+	if et := extractVectorElemType(exprStr); et != "" {
+		c.elemType[st.Name] = et
 	}
 	return nil
 }
@@ -356,6 +393,14 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 		c.writeln(fmt.Sprintf("for (int %s = %s; %s < %s; ++%s) {", st.Name, startExpr, st.Name, endExpr, st.Name))
 	} else {
 		c.writeln(fmt.Sprintf("for (auto %s : %s) {", st.Name, src))
+		if t := c.varStruct[src]; t != "" {
+			c.varStruct[st.Name] = t
+		}
+		if et := c.elemType[src]; et != "" {
+			if strings.Contains(et, "std::string") {
+				c.vars[st.Name] = "string"
+			}
+		}
 	}
 	c.indent++
 	for _, s := range st.Body {
@@ -568,13 +613,29 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			vals = append(vals, v)
 		}
 		if simple {
-			var buf strings.Builder
-			buf.WriteString("([&]() { struct {")
-			for i, n := range names {
-				buf.WriteString("decltype(" + vals[i] + ") " + n + "; ")
+			sig := strings.Join(names, ",")
+			name, ok := c.structMap[sig]
+			if !ok {
+				c.structCount++
+				name = fmt.Sprintf("__struct%d", c.structCount)
+				c.structMap[sig] = name
+				var def strings.Builder
+				def.WriteString("struct " + name + " {")
+				for i, n := range names {
+					ftype := fmt.Sprintf("decltype(%s)", vals[i])
+					if dot := strings.Index(vals[i], "."); dot != -1 {
+						v := vals[i][:dot]
+						fld := vals[i][dot+1:]
+						if t := c.varStruct[v]; t != "" {
+							ftype = fmt.Sprintf("decltype(std::declval<%s>().%s)", t, fld)
+						}
+					}
+					def.WriteString(ftype + " " + n + "; ")
+				}
+				def.WriteString("};")
+				c.headerWriteln(def.String())
 			}
-			buf.WriteString("} __v{" + strings.Join(vals, ", ") + "}; return __v; })()")
-			return buf.String(), nil
+			return fmt.Sprintf("%s{%s}", name, strings.Join(vals, ", ")), nil
 		}
 		keys := []string{}
 		for _, it := range p.Map.Items {
@@ -738,19 +799,43 @@ func (c *Compiler) compileMatchExpr(mx *parser.MatchExpr) (string, error) {
 }
 
 func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error) {
-	var buf strings.Builder
-	buf.WriteString("([&]() { ")
-	buf.WriteString(sl.Name)
-	buf.WriteString(" __v; ")
-	for _, f := range sl.Fields {
+	fieldNames := make([]string, len(sl.Fields))
+	fieldTypes := make([]string, len(sl.Fields))
+	inits := make([]string, len(sl.Fields))
+	for i, f := range sl.Fields {
 		val, err := c.compileExpr(f.Value)
 		if err != nil {
 			return "", err
 		}
-		buf.WriteString(fmt.Sprintf("__v.%s = %s; ", f.Name, val))
+		fieldNames[i] = f.Name
+		ftype := fmt.Sprintf("decltype(%s)", val)
+		if dot := strings.Index(val, "."); dot != -1 {
+			v := val[:dot]
+			fld := val[dot+1:]
+			if t := c.varStruct[v]; t != "" {
+				ftype = fmt.Sprintf("decltype(std::declval<%s>().%s)", t, fld)
+			}
+		} else if c.vars[val] == "string" {
+			ftype = "std::string"
+		}
+		fieldTypes[i] = ftype
+		inits[i] = val
 	}
-	buf.WriteString("return __v; })()")
-	return buf.String(), nil
+	sig := sl.Name + ":" + strings.Join(fieldNames, ",")
+	name, ok := c.structMap[sig]
+	if !ok {
+		c.structCount++
+		name = fmt.Sprintf("__struct%d", c.structCount)
+		c.structMap[sig] = name
+		var def strings.Builder
+		def.WriteString("struct " + name + " {")
+		for i := range fieldNames {
+			def.WriteString(fieldTypes[i] + " " + fieldNames[i] + "; ")
+		}
+		def.WriteString("};")
+		c.headerWriteln(def.String())
+	}
+	return fmt.Sprintf("%s{%s}", name, strings.Join(inits, ", ")), nil
 }
 
 func stringLiteral(e *parser.Expr) (string, bool) {
@@ -773,10 +858,7 @@ func stringLiteral(e *parser.Expr) (string, bool) {
 }
 
 func (c *Compiler) structFromMapLiteral(typ string, m *parser.MapLiteral) (string, error) {
-	var buf strings.Builder
-	buf.WriteString("([&]() { ")
-	buf.WriteString(typ)
-	buf.WriteString(" __v; ")
+	assignments := []string{}
 	for _, it := range m.Items {
 		keyLit, ok := stringLiteral(it.Key)
 		if !ok {
@@ -786,10 +868,9 @@ func (c *Compiler) structFromMapLiteral(typ string, m *parser.MapLiteral) (strin
 		if err != nil {
 			return "", err
 		}
-		buf.WriteString(fmt.Sprintf("__v.%s = %s; ", keyLit, val))
+		assignments = append(assignments, fmt.Sprintf(".%s=%s", keyLit, val))
 	}
-	buf.WriteString("return __v; })()")
-	return buf.String(), nil
+	return fmt.Sprintf("%s{%s}", typ, strings.Join(assignments, ",")), nil
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
@@ -800,6 +881,17 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	backup := map[string]string{}
+	if t := c.varStruct[src]; t != "" {
+		backup[q.Var] = c.varStruct[q.Var]
+		c.varStruct[q.Var] = t
+	}
+	if et := c.elemType[src]; et != "" {
+		c.vars[q.Var] = ""
+		if strings.Contains(et, "std::string") {
+			c.vars[q.Var] = "string"
+		}
+	}
 	fromSrcs := make([]string, len(q.Froms))
 	for i, f := range q.Froms {
 		s, err := c.compileExpr(f.Src)
@@ -807,6 +899,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		fromSrcs[i] = s
+		if t := c.varStruct[s]; t != "" {
+			backup[f.Var] = c.varStruct[f.Var]
+			c.varStruct[f.Var] = t
+		}
+		if et := c.elemType[s]; et != "" {
+			if strings.Contains(et, "std::string") {
+				c.vars[f.Var] = "string"
+			}
+		}
 	}
 	var where string
 	if q.Where != nil {
@@ -818,6 +919,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	val, err := c.compileExpr(q.Select)
 	if err != nil {
 		return "", err
+	}
+	itemType := fmt.Sprintf("decltype(%s)", val)
+	if t := structLiteralType(val); t != "" {
+		itemType = t
 	}
 	key := ""
 	if q.Sort != nil {
@@ -840,6 +945,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 	}
+	for k, v := range backup {
+		if v == "" {
+			delete(c.varStruct, k)
+		} else {
+			c.varStruct[k] = v
+		}
+	}
 
 	var buf strings.Builder
 	buf.WriteString("([&]() {\n")
@@ -850,9 +962,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	buf.WriteString("    std::vector<")
 	if key != "" || skip != "" || take != "" {
-		buf.WriteString("std::pair<decltype(" + key + "), decltype(" + val + ")>>")
+		buf.WriteString("std::pair<decltype(" + key + "), " + itemType + ")>")
 	} else {
-		buf.WriteString("decltype(" + val + ")")
+		buf.WriteString(itemType)
 	}
 	buf.WriteString("> __items;\n")
 	indentLevel := 1
@@ -892,7 +1004,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		buf.WriteString("    if ((size_t)" + take + " < __items.size()) __items.resize(" + take + ");\n")
 	}
 	if key != "" || skip != "" || take != "" {
-		buf.WriteString("    std::vector<decltype(" + val + ")> __res;\n")
+		buf.WriteString("    std::vector<" + itemType + "> __res;\n")
 		buf.WriteString("    for (auto &p : __items) __res.push_back(p.second);\n")
 		buf.WriteString("    return __res;\n")
 	} else {
@@ -965,6 +1077,57 @@ func (c *Compiler) inferType(expr string) string {
 	}
 	if strings.HasPrefix(expr, "std::vector") {
 		return "vector"
+	}
+	return ""
+}
+
+func extractVectorStruct(expr string) string {
+	start := strings.Index(expr, "std::vector<decltype(")
+	if start == -1 {
+		return ""
+	}
+	start += len("std::vector<decltype(")
+	end := strings.Index(expr[start:], "{")
+	if end == -1 {
+		return ""
+	}
+	inner := expr[start : start+end]
+	if strings.HasPrefix(inner, "__struct") {
+		return inner
+	}
+	return ""
+}
+
+func extractVectorElemType(expr string) string {
+	if !strings.HasPrefix(expr, "std::vector<") {
+		return ""
+	}
+	inner := expr[len("std::vector<"):]
+	idx := strings.Index(inner, ">")
+	if idx == -1 {
+		return ""
+	}
+	typ := inner[:idx]
+	if strings.Contains(typ, "std::string") {
+		return "std::string"
+	}
+	if strings.HasPrefix(typ, "decltype(") {
+		texpr := strings.TrimSuffix(strings.TrimPrefix(typ, "decltype("), ")")
+		if strings.HasPrefix(texpr, "__struct") {
+			return texpr
+		}
+		if strings.Contains(texpr, "std::string") {
+			return "std::string"
+		}
+	}
+	return ""
+}
+
+func structLiteralType(expr string) string {
+	if strings.HasPrefix(expr, "__struct") {
+		if idx := strings.Index(expr, "{"); idx != -1 {
+			return expr[:idx]
+		}
 	}
 	return ""
 }
