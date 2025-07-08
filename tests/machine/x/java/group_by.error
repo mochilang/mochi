@@ -1,0 +1,4 @@
+line 0: compile error: expression unsupported at line 10
+
+  1| // group-by.mochi
+  2| let people = [

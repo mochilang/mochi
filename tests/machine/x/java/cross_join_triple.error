@@ -1,0 +1,4 @@
+line 0: compile error: expression unsupported at line 4
+
+  1| let nums = [1, 2]
+  2| let letters = ["A", "B"]

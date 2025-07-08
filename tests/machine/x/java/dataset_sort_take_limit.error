@@ -1,0 +1,4 @@
+line 0: compile error: expression unsupported at line 11
+
+  1| // dataset-sort-take-limit.mochi
+  2| let products = [

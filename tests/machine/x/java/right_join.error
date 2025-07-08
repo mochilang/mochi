@@ -1,0 +1,4 @@
+line 0: compile error: expression unsupported at line 17
+
+  1| // right_join.mochi
+  2| // Right join: keep all customers, include orders if any

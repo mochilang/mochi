@@ -1,0 +1,4 @@
+line 0: compile error: complex indexing not supported
+
+  1| let prefix = "fore"
+  2| let s1 = "forest"
