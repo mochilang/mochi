@@ -1573,11 +1573,35 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr, asReturn bool) (string,
 				return "", err
 			}
 		} else if op.Cast != nil {
-			typ := c.zigType(op.Cast.Type)
-			if _, ok := c.resolveTypeRef(op.Cast.Type).(types.IntType); ok && c.isStringPrimary(p.Target) {
-				expr = fmt.Sprintf("std.fmt.parseInt(%s, %s, 10) catch unreachable", typ, expr)
-			} else {
-				expr = fmt.Sprintf("@as(%s, %s)", typ, expr)
+			rt := c.resolveTypeRef(op.Cast.Type)
+			handled := false
+			if st, ok := rt.(types.StructType); ok && p.Target.Map != nil {
+				fields := make([]string, 0, len(p.Target.Map.Items))
+				okFields := true
+				for _, it := range p.Target.Map.Items {
+					key, ok := simpleStringKey(it.Key)
+					if !ok {
+						okFields = false
+						break
+					}
+					val, err := c.compileExpr(it.Value, false)
+					if err != nil {
+						return "", err
+					}
+					fields = append(fields, fmt.Sprintf(".%s = %s", sanitizeName(key), val))
+				}
+				if okFields {
+					expr = fmt.Sprintf("%s{ %s }", sanitizeName(st.Name), strings.Join(fields, ", "))
+					handled = true
+				}
+			}
+			if !handled {
+				typ := c.zigType(op.Cast.Type)
+				if _, ok := rt.(types.IntType); ok && c.isStringPrimary(p.Target) {
+					expr = fmt.Sprintf("std.fmt.parseInt(%s, %s, 10) catch unreachable", typ, expr)
+				} else {
+					expr = fmt.Sprintf("@as(%s, %s)", typ, expr)
+				}
 			}
 		}
 	}
@@ -2214,6 +2238,22 @@ func (c *Compiler) isStringPrimary(p *parser.Primary) bool {
 	if p.Selector != nil && c.env != nil {
 		if t, err := c.env.GetVar(p.Selector.Root); err == nil {
 			if _, ok := t.(types.StringType); ok {
+				return true
+			}
+			ft := t
+			for _, name := range p.Selector.Tail {
+				st, ok := ft.(types.StructType)
+				if !ok {
+					ft = types.AnyType{}
+					break
+				}
+				if val, ok2 := st.Fields[name]; ok2 {
+					ft = val
+				} else {
+					ft = types.AnyType{}
+				}
+			}
+			if _, ok := ft.(types.StringType); ok {
 				return true
 			}
 		}
