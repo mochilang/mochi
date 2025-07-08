@@ -4,8 +4,9 @@ package main
 
 import (
     "fmt"
+    "strconv"
 )
 
 func main() {
-    fmt.Println(str(123))
+    fmt.Println(strconv.Itoa(123))
 }

@@ -7,5 +7,6 @@ import (
 )
 
 func main() {
-    fmt.Println(string([]rune("mochi")[1:4]))
+    xs := []int{10, 20, 30}
+    fmt.Println(xs[1])
 }
