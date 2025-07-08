@@ -1,0 +1,25 @@
+line 16: /workspace/mochi/tests/machine/x/cpp/in_operator.cpp:16:33: error: exponent has no digits
+   16 |     print((std::find(2.begin(), 2.end(), xs) != 2.end()));
+      |                                 ^~~~~
+/workspace/mochi/tests/machine/x/cpp/in_operator.cpp:16:49: error: exponent has no digits
+   16 |     print((std::find(2.begin(), 2.end(), xs) != 2.end()));
+      |                                                 ^~~~~
+/workspace/mochi/tests/machine/x/cpp/in_operator.cpp:17:36: error: exponent has no digits
+   17 |     print((!((std::find(5.begin(), 5.end(), xs) != 5.end()))));
+      |                                    ^~~~~
+/workspace/mochi/tests/machine/x/cpp/in_operator.cpp:17:52: error: exponent has no digits
+   17 |     print((!((std::find(5.begin(), 5.end(), xs) != 5.end()))));
+      |                                                    ^~~~~
+/workspace/mochi/tests/machine/x/cpp/in_operator.cpp: In function ‘int main()’:
+/workspace/mochi/tests/machine/x/cpp/in_operator.cpp:16:22: error: unable to find numeric literal operator ‘operator""begin’
+   16 |     print((std::find(2.begin(), 2.end(), xs) != 2.end()));
+      |                      ^~~~~~~
+/workspace/mochi/tests/machine/x/cpp/in_operator.cpp:16:22: note: use ‘-fext-numeric-literals’ to enable more built-in suffixes
+/workspace/mochi/tests/machine/x/cpp/in_operator.cpp:17:25: error: unable to find numeric literal operator ‘operator""begin’
+   17 |     print((!((std::find(5.begin(), 5.end(), xs) != 5.end()))));
+      |                         ^~~~~~~
+/workspace/mochi/tests/machine/x/cpp/in_operator.cpp:17:25: note: use ‘-fext-numeric-literals’ to enable more built-in suffixes
+
+ 15 |     auto xs = std::vector<int>{1, 2, 3};
+ 16 |     print((std::find(2.begin(), 2.end(), xs) != 2.end()));
+ 17 |     print((!((std::find(5.begin(), 5.end(), xs) != 5.end()))));

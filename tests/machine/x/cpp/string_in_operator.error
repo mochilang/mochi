@@ -1,0 +1,23 @@
+line 16: /workspace/mochi/tests/machine/x/cpp/string_in_operator.cpp: In function ‘int main()’:
+/workspace/mochi/tests/machine/x/cpp/string_in_operator.cpp:16:28: error: request for member ‘begin’ in ‘"cat"’, which is of non-class type ‘const char [4]’
+   16 |     print((std::find("cat".begin(), "cat".end(), s) != "cat".end()));
+      |                            ^~~~~
+/workspace/mochi/tests/machine/x/cpp/string_in_operator.cpp:16:43: error: request for member ‘end’ in ‘"cat"’, which is of non-class type ‘const char [4]’
+   16 |     print((std::find("cat".begin(), "cat".end(), s) != "cat".end()));
+      |                                           ^~~
+/workspace/mochi/tests/machine/x/cpp/string_in_operator.cpp:16:62: error: request for member ‘end’ in ‘"cat"’, which is of non-class type ‘const char [4]’
+   16 |     print((std::find("cat".begin(), "cat".end(), s) != "cat".end()));
+      |                                                              ^~~
+/workspace/mochi/tests/machine/x/cpp/string_in_operator.cpp:17:28: error: request for member ‘begin’ in ‘"dog"’, which is of non-class type ‘const char [4]’
+   17 |     print((std::find("dog".begin(), "dog".end(), s) != "dog".end()));
+      |                            ^~~~~
+/workspace/mochi/tests/machine/x/cpp/string_in_operator.cpp:17:43: error: request for member ‘end’ in ‘"dog"’, which is of non-class type ‘const char [4]’
+   17 |     print((std::find("dog".begin(), "dog".end(), s) != "dog".end()));
+      |                                           ^~~
+/workspace/mochi/tests/machine/x/cpp/string_in_operator.cpp:17:62: error: request for member ‘end’ in ‘"dog"’, which is of non-class type ‘const char [4]’
+   17 |     print((std::find("dog".begin(), "dog".end(), s) != "dog".end()));
+      |                                                              ^~~
+
+ 15 |     auto s = "catch";
+ 16 |     print((std::find("cat".begin(), "cat".end(), s) != "cat".end()));
+ 17 |     print((std::find("dog".begin(), "dog".end(), s) != "dog".end()));

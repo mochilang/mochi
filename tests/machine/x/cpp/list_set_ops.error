@@ -1,0 +1,36 @@
+line 15: /workspace/mochi/tests/machine/x/cpp/list_set_ops.cpp: In function ‘int main()’:
+/workspace/mochi/tests/machine/x/cpp/list_set_ops.cpp:15:34: error: expected ‘)’ before ‘union’
+   15 |     print((std::vector<int>{1, 2} union std::vector<int>{2, 3}));
+      |           ~                      ^~~~~~
+      |                                  )
+/workspace/mochi/tests/machine/x/cpp/list_set_ops.cpp:15:64: error: expected ‘;’ before ‘)’ token
+   15 |     print((std::vector<int>{1, 2} union std::vector<int>{2, 3}));
+      |                                                                ^
+      |                                                                ;
+/workspace/mochi/tests/machine/x/cpp/list_set_ops.cpp:16:37: error: expected ‘)’ before ‘except’
+   16 |     print((std::vector<int>{1, 2, 3} except std::vector<int>{2}));
+      |           ~                         ^~~~~~~
+      |                                     )
+/workspace/mochi/tests/machine/x/cpp/list_set_ops.cpp:16:65: error: expected ‘;’ before ‘)’ token
+   16 |     print((std::vector<int>{1, 2, 3} except std::vector<int>{2}));
+      |                                                                 ^
+      |                                                                 ;
+/workspace/mochi/tests/machine/x/cpp/list_set_ops.cpp:17:37: error: expected ‘)’ before ‘intersect’
+   17 |     print((std::vector<int>{1, 2, 3} intersect std::vector<int>{2, 4}));
+      |           ~                         ^~~~~~~~~~
+      |                                     )
+/workspace/mochi/tests/machine/x/cpp/list_set_ops.cpp:17:71: error: expected ‘;’ before ‘)’ token
+   17 |     print((std::vector<int>{1, 2, 3} intersect std::vector<int>{2, 4}));
+      |                                                                       ^
+      |                                                                       ;
+/workspace/mochi/tests/machine/x/cpp/list_set_ops.cpp:18:34: error: expected ‘)’ before ‘union’
+   18 |     print((std::vector<int>{1, 2} union std::vector<int>{2, 3}).size());
+      |           ~                      ^~~~~~
+      |                                  )
+/workspace/mochi/tests/machine/x/cpp/list_set_ops.cpp:18:10: error: invalid use of ‘void’
+   18 |     print((std::vector<int>{1, 2} union std::vector<int>{2, 3}).size());
+      |     ~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ 14 | int main() {
+ 15 |     print((std::vector<int>{1, 2} union std::vector<int>{2, 3}));
+ 16 |     print((std::vector<int>{1, 2, 3} except std::vector<int>{2}));
