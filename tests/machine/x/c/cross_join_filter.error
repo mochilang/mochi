@@ -1,0 +1,7 @@
+line: 3
+error: unsupported primary at line 3
+   1: let nums = [1, 2, 3]
+   2: let letters = ["A", "B"]
+   3: let pairs = from n in nums
+   4:             from l in letters
+   5:             where n % 2 == 0

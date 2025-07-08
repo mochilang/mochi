@@ -1,0 +1,7 @@
+line: 6
+error: unsupported primary at line 6
+   4:   { n: 2, v: "c" }
+   5: ]
+   6: let result = from i in items sort by i.n select i.v
+   7: print(result)
+   8: 

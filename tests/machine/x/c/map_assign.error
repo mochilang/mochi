@@ -1,0 +1,7 @@
+line: 16
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/map_assign.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/map_assign.c:16:7: error: array subscript is not an integer
+   16 | scores["bob"] = 2;
+      |       ^
+

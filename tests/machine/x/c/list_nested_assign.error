@@ -1,0 +1,18 @@
+line: 8
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/list_nested_assign.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/list_nested_assign.c:8:17: warning: initialization of ‘int’ from ‘int *’ makes integer from pointer without a cast [-Wint-conversion]
+    8 | int matrix[] = {(int[]){1, 2}, (int[]){3, 4}};
+      |                 ^
+/workspace/mochi/tests/machine/x/c/list_nested_assign.c:8:17: note: (near initialization for ‘matrix[0]’)
+/workspace/mochi/tests/machine/x/c/list_nested_assign.c:8:32: warning: initialization of ‘int’ from ‘int *’ makes integer from pointer without a cast [-Wint-conversion]
+    8 | int matrix[] = {(int[]){1, 2}, (int[]){3, 4}};
+      |                                ^
+/workspace/mochi/tests/machine/x/c/list_nested_assign.c:8:32: note: (near initialization for ‘matrix[1]’)
+/workspace/mochi/tests/machine/x/c/list_nested_assign.c:9:10: error: subscripted value is neither array nor pointer nor vector
+    9 | matrix[1][0] = 5;
+      |          ^
+/workspace/mochi/tests/machine/x/c/list_nested_assign.c:10:25: error: subscripted value is neither array nor pointer nor vector
+   10 | printf("%d\n", matrix[1][0]);
+      |                         ^
+
