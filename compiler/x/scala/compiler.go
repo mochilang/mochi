@@ -41,6 +41,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if name == "" {
 		name = "Main"
 	}
+	// emit user-defined types before the main object
+	for _, s := range prog.Statements {
+		if s.Type != nil {
+			if err := c.compileTypeDecl(s.Type); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
+
 	c.writeln(fmt.Sprintf("object %s {", name))
 	c.indent += indentStep
 	for _, s := range prog.Statements {
@@ -74,6 +84,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
+	case s.Type != nil:
+		return c.compileTypeDecl(s.Type)
 	case s.Fun != nil:
 		return c.compileFun(s.Fun)
 	case s.Return != nil:
@@ -90,6 +102,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileVar(s.Var)
 	case s.Assign != nil:
 		return c.compileAssign(s.Assign)
+	case s.Break != nil:
+		c.writeln("return")
+		return nil
+	case s.Continue != nil:
+		c.writeln("// continue")
+		return nil
 	case s.Expr != nil:
 		return c.compileExprStmt(s.Expr)
 	default:
@@ -137,6 +155,24 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 	} else {
 		c.writeln(fmt.Sprintf("var %s = %s", s.Name, rhs))
 	}
+	return nil
+}
+
+func (c *Compiler) compileTypeDecl(td *parser.TypeDecl) error {
+	if len(td.Variants) > 0 {
+		return fmt.Errorf("line %d: union types not supported", td.Pos.Line)
+	}
+	fields := []string{}
+	for _, m := range td.Members {
+		if m.Field != nil {
+			f := m.Field
+			fields = append(fields, fmt.Sprintf("%s: %s", f.Name, c.typeString(f.Type)))
+		}
+	}
+	if len(fields) == 0 {
+		return fmt.Errorf("line %d: empty type", td.Pos.Line)
+	}
+	c.writeln(fmt.Sprintf("case class %s(%s)", td.Name, strings.Join(fields, ", ")))
 	return nil
 }
 
@@ -465,17 +501,26 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 		case op.Cast != nil:
 			tstr := c.typeString(op.Cast.Type)
-			switch tstr {
-			case "Int":
-				s = fmt.Sprintf("%s.toInt", s)
-			case "Double":
-				s = fmt.Sprintf("%s.toDouble", s)
-			case "String":
-				s = fmt.Sprintf("%s.toString", s)
-			default:
-				s = fmt.Sprintf("%s.asInstanceOf[%s]", s, tstr)
+			if st, ok := c.env.GetStruct(tstr); ok && p.Target.Map != nil {
+				str, err := c.mapToStruct(tstr, st, p.Target.Map)
+				if err != nil {
+					return "", err
+				}
+				s = str
+				typ = st
+			} else {
+				switch tstr {
+				case "Int":
+					s = fmt.Sprintf("%s.toInt", s)
+				case "Double":
+					s = fmt.Sprintf("%s.toDouble", s)
+				case "String":
+					s = fmt.Sprintf("%s.toString", s)
+				default:
+					s = fmt.Sprintf("%s.asInstanceOf[%s]", s, tstr)
+				}
+				typ = types.ResolveTypeRef(op.Cast.Type, c.env)
 			}
-			typ = types.ResolveTypeRef(op.Cast.Type, c.env)
 		default:
 			return "", fmt.Errorf("postfix operations not supported")
 		}
@@ -499,6 +544,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileList(p.List, false)
 	case p.Map != nil:
 		return c.compileMap(p.Map, false)
+	case p.Struct != nil:
+		return c.compileStructLit(p.Struct)
+	case p.Match != nil:
+		return c.compileMatchExpr(p.Match)
 	case p.Selector != nil:
 		return c.compileSelector(p.Selector), nil
 	case p.Group != nil:
@@ -645,6 +694,70 @@ func (c *Compiler) compileMap(m *parser.MapLiteral, mutable bool) (string, error
 	return fmt.Sprintf("%s(%s)", prefix, strings.Join(items, ", ")), nil
 }
 
+func (c *Compiler) compileStructLit(st *parser.StructLiteral) (string, error) {
+	args := make([]string, len(st.Fields))
+	for i, f := range st.Fields {
+		val, err := c.compileExpr(f.Value)
+		if err != nil {
+			return "", err
+		}
+		args[i] = fmt.Sprintf("%s = %s", f.Name, val)
+	}
+	return fmt.Sprintf("%s(%s)", st.Name, strings.Join(args, ", ")), nil
+}
+
+func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
+	target, err := c.compileExpr(m.Target)
+	if err != nil {
+		return "", err
+	}
+	var buf bytes.Buffer
+	buf.WriteString(target + " match {\n")
+	c.indent += indentStep
+	for _, cs := range m.Cases {
+		pat, err := c.compileExpr(cs.Pattern)
+		if err != nil {
+			return "", err
+		}
+		res, err := c.compileExpr(cs.Result)
+		if err != nil {
+			return "", err
+		}
+		for i := 0; i < c.indent; i++ {
+			buf.WriteString(" ")
+		}
+		buf.WriteString(fmt.Sprintf("case %s => %s\n", pat, res))
+	}
+	c.indent -= indentStep
+	for i := 0; i < c.indent; i++ {
+		buf.WriteString(" ")
+	}
+	buf.WriteString("}")
+	return buf.String(), nil
+}
+
+func (c *Compiler) mapToStruct(name string, st types.StructType, m *parser.MapLiteral) (string, error) {
+	args := make([]string, len(st.Order))
+	for i, field := range st.Order {
+		var expr *parser.Expr
+		for _, it := range m.Items {
+			if lit := it.Key.Binary.Left.Value.Target.Lit; lit != nil && lit.Str != nil && *lit.Str == field {
+				expr = it.Value
+				break
+			}
+		}
+		if expr == nil {
+			return "", fmt.Errorf("missing field %s", field)
+		}
+		val, err := c.compileExpr(expr)
+		if err != nil {
+			return "", err
+		}
+		args[i] = fmt.Sprintf("%s = %s", field, val)
+	}
+	return fmt.Sprintf("%s(%s)", name, strings.Join(args, ", ")), nil
+}
+
 func (c *Compiler) typeString(t *parser.TypeRef) string {
 	if t == nil {
 		return "Any"
@@ -663,6 +776,22 @@ func (c *Compiler) typeString(t *parser.TypeRef) string {
 		default:
 			return id
 		}
+	}
+	if t.Generic != nil {
+		g := t.Generic
+		args := make([]string, len(g.Args))
+		for i, a := range g.Args {
+			args[i] = c.typeString(a)
+		}
+		return fmt.Sprintf("%s[%s]", g.Name, strings.Join(args, ", "))
+	}
+	if t.Fun != nil {
+		parts := make([]string, len(t.Fun.Params))
+		for i, p := range t.Fun.Params {
+			parts[i] = c.typeString(p)
+		}
+		ret := c.typeString(t.Fun.Return)
+		return fmt.Sprintf("(%s) => %s", strings.Join(parts, ", "), ret)
 	}
 	return "Any"
 }
