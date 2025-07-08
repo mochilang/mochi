@@ -86,6 +86,28 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Fun != nil:
 		return c.compileFun(s.Fun)
 	case s.Let != nil:
+		if call := getSimpleCall(s.Let.Value); call != nil && call.Func == "exists" && len(call.Args) == 1 {
+			if q := getQuery(call.Args[0]); q != nil {
+				if err := c.compileExists(s.Let.Name, q); err != nil {
+					return err
+				}
+				return nil
+			}
+		}
+		if call := getSimpleCall(s.Let.Value); call != nil && call.Func == "append" && len(call.Args) == 2 {
+			listExpr, err := c.compileExpr(call.Args[0])
+			if err != nil {
+				return err
+			}
+			elemExpr, err := c.compileExpr(call.Args[1])
+			if err != nil {
+				return err
+			}
+			name := sanitizeVar(s.Let.Name)
+			c.writeln(fmt.Sprintf("append(%s, [%s], %s),", listExpr, elemExpr, name))
+			c.vars[s.Let.Name] = name
+			return nil
+		}
 		val, err := c.compileExpr(s.Let.Value)
 		if err != nil {
 			return err
@@ -97,6 +119,20 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if s.Var.Value == nil {
 			return fmt.Errorf("var without init")
 		}
+		if call := getSimpleCall(s.Var.Value); call != nil && call.Func == "append" && len(call.Args) == 2 {
+			listExpr, err := c.compileExpr(call.Args[0])
+			if err != nil {
+				return err
+			}
+			elemExpr, err := c.compileExpr(call.Args[1])
+			if err != nil {
+				return err
+			}
+			tmp := c.newTmp()
+			c.writeln(fmt.Sprintf("append(%s, [%s], %s),", listExpr, elemExpr, tmp))
+			c.vars[s.Var.Name] = tmp
+			return nil
+		}
 		val, err := c.compileExpr(s.Var.Value)
 		if err != nil {
 			return err
@@ -105,6 +141,20 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		c.writeln(fmt.Sprintf("%s is %s,", tmp, val))
 		c.vars[s.Var.Name] = tmp
 	case s.Assign != nil:
+		if call := getSimpleCall(s.Assign.Value); call != nil && call.Func == "append" && len(call.Args) == 2 {
+			listExpr, err := c.compileExpr(call.Args[0])
+			if err != nil {
+				return err
+			}
+			elemExpr, err := c.compileExpr(call.Args[1])
+			if err != nil {
+				return err
+			}
+			tmp := c.newTmp()
+			c.writeln(fmt.Sprintf("append(%s, [%s], %s),", listExpr, elemExpr, tmp))
+			c.vars[s.Assign.Name] = tmp
+			return nil
+		}
 		val, err := c.compileExpr(s.Assign.Value)
 		if err != nil {
 			return err
@@ -122,6 +172,21 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if call := getPrintCall(s.Expr.Expr); call != nil {
 			if len(call.Args) != 1 {
 				return fmt.Errorf("print with one arg supported")
+			}
+			if acall := getSimpleCall(call.Args[0]); acall != nil && acall.Func == "append" && len(acall.Args) == 2 {
+				listExpr, err := c.compileExpr(acall.Args[0])
+				if err != nil {
+					return err
+				}
+				elemExpr, err := c.compileExpr(acall.Args[1])
+				if err != nil {
+					return err
+				}
+				tmp := c.newTmp()
+				c.writeln(fmt.Sprintf("append(%s, [%s], %s),", listExpr, elemExpr, tmp))
+				c.writeln(fmt.Sprintf("write(%s),", tmp))
+				c.writeln("nl,")
+				return nil
 			}
 			arg, err := c.compileExpr(call.Args[0])
 			if err != nil {
@@ -240,6 +305,66 @@ func getPrintCall(e *parser.Expr) *parser.CallExpr {
 	if p.Target != nil && p.Target.Call != nil && p.Target.Call.Func == "print" {
 		return p.Target.Call
 	}
+	return nil
+}
+
+func getSimpleCall(e *parser.Expr) *parser.CallExpr {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return nil
+	}
+	if p.Target != nil && p.Target.Call != nil {
+		return p.Target.Call
+	}
+	return nil
+}
+
+func getQuery(e *parser.Expr) *parser.QueryExpr {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return nil
+	}
+	return p.Target.Query
+}
+
+func (c *Compiler) compileExists(name string, q *parser.QueryExpr) error {
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return err
+	}
+	varName := sanitizeVar(q.Var)
+	old := c.vars
+	c.vars = make(map[string]string)
+	for k, v := range old {
+		c.vars[k] = v
+	}
+	c.vars[q.Var] = varName
+	cond := "true"
+	if q.Where != nil {
+		cond, err = c.compileExpr(q.Where)
+		if err != nil {
+			c.vars = old
+			return err
+		}
+	}
+	c.vars = old
+	target := sanitizeVar(name)
+	c.writeln(fmt.Sprintf("(once((member(%s, %s), %s)) -> %s = true ; %s = false),", varName, src, cond, target, target))
+	c.vars[name] = target
 	return nil
 }
 
