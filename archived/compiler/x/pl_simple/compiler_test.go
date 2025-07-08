@@ -15,14 +15,9 @@ import (
 	"mochi/parser"
 )
 
-var supported = map[string]bool{
-	"print_hello":         true,
-	"let_and_print":       true,
-	"var_assignment":      true,
-	"for_loop":            true,
-	"for_list_collection": true,
-}
-
+// TestPrologCompiler compiles every Mochi program under tests/vm/valid and
+// attempts to run the resulting Prolog code with SWI-Prolog. Generated
+// artifacts are written to tests/machine/x/pl.
 func TestPrologCompiler(t *testing.T) {
 	root := findRepoRoot(t)
 	pattern := filepath.Join(root, "tests", "vm", "valid", "*.mochi")
@@ -31,13 +26,11 @@ func TestPrologCompiler(t *testing.T) {
 		t.Fatalf("glob: %v", err)
 	}
 	outDir := filepath.Join(root, "tests", "machine", "x", "pl")
-	os.MkdirAll(outDir, 0o755)
+	if err := os.MkdirAll(outDir, 0o755); err != nil {
+		t.Fatalf("mkdir: %v", err)
+	}
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		if !supported[name] {
-			t.Logf("skip %s", name)
-			continue
-		}
 		t.Run(name, func(t *testing.T) { compileAndRun(t, src, outDir, name) })
 	}
 }
@@ -67,9 +60,11 @@ func compileAndRun(t *testing.T, src, outDir, name string) {
 	cmd.Stderr = &buf
 	if err := cmd.Run(); err != nil {
 		writeError(outDir, name, string(data), fmt.Errorf("run: %v\n%s", err, buf.String()))
-		t.Fatalf("run error: %v", err)
+		return
 	}
-	os.WriteFile(filepath.Join(outDir, name+".out"), buf.Bytes(), 0o644)
+	if err := os.WriteFile(filepath.Join(outDir, name+".out"), buf.Bytes(), 0o644); err != nil {
+		t.Fatalf("write out: %v", err)
+	}
 }
 
 func writeError(dir, name, src string, err error) {
