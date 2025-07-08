@@ -1,0 +1,3 @@
+run: exit status 1
+../../../tests/machine/x/go/nested_function.go:1:5: expected 'package', found 'func'
+

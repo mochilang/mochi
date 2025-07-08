@@ -1,0 +1,4 @@
+unsupported expression at line 12
+]
+let result = from o in orders
+             from c in customers

@@ -1,0 +1,4 @@
+run: exit status 1
+# command-line-arguments
+../../../tests/machine/x/go/list_set_ops.go:10:29: syntax error: unexpected name union in argument list; possibly missing comma or )
+

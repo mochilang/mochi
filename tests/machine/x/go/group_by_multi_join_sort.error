@@ -1,0 +1,4 @@
+unsupported expression at line 41
+let result =
+  from c in customer
+  join o in orders on o.o_custkey == c.c_custkey
