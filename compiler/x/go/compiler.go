@@ -381,7 +381,7 @@ func (c *Compiler) compileVar(buf *bytes.Buffer, v *parser.VarStmt) error {
 
 func (c *Compiler) compileAssign(buf *bytes.Buffer, a *parser.AssignStmt) error {
 	target := a.Name
-	for _, idx := range a.Index {
+	for idxNum, idx := range a.Index {
 		if idx.Colon != nil {
 			start, err := c.compileExpr(idx.Start)
 			if err != nil {
@@ -393,11 +393,15 @@ func (c *Compiler) compileAssign(buf *bytes.Buffer, a *parser.AssignStmt) error 
 			}
 			target = fmt.Sprintf("%s[%s:%s]", target, start, end)
 		} else {
-			i, err := c.compileExpr(idx.Start)
+			idxStr, err := c.compileExpr(idx.Start)
 			if err != nil {
 				return err
 			}
-			target = fmt.Sprintf("%s[%s]", target, i)
+			if idxNum < len(a.Index)-1 && !isIntLiteral(idx.Start) {
+				target = fmt.Sprintf("%s[%s].(map[interface{}]interface{})", target, idxStr)
+			} else {
+				target = fmt.Sprintf("%s[%s]", target, idxStr)
+			}
 		}
 	}
 	for _, f := range a.Field {
@@ -618,7 +622,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		return "", err
 	}
 	curr := p.Target
-	for _, op := range p.Ops {
+	for i, op := range p.Ops {
 		switch {
 		case op.Index != nil:
 			if op.Index.Colon != nil {
@@ -636,14 +640,22 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					val = fmt.Sprintf("%s[%s:%s]", val, start, end)
 				}
 			} else {
-				idx, err := c.compileExpr(op.Index.Start)
+				idxStr, err := c.compileExpr(op.Index.Start)
 				if err != nil {
 					return "", err
 				}
-				if strings.HasPrefix(val, "\"") {
-					val = fmt.Sprintf("string([]rune(%s)[%s])", val, idx)
+				if i < len(p.Ops)-1 && p.Ops[i+1].Index != nil && !isIntLiteral(op.Index.Start) {
+					if strings.HasPrefix(val, "\"") {
+						val = fmt.Sprintf("string([]rune(%s)[%s])", val, idxStr)
+					} else {
+						val = fmt.Sprintf("%s[%s].(map[interface{}]interface{})", val, idxStr)
+					}
 				} else {
-					val = fmt.Sprintf("%s[%s]", val, idx)
+					if strings.HasPrefix(val, "\"") {
+						val = fmt.Sprintf("string([]rune(%s)[%s])", val, idxStr)
+					} else {
+						val = fmt.Sprintf("%s[%s]", val, idxStr)
+					}
 				}
 			}
 			curr = nil
@@ -1085,6 +1097,17 @@ func join(parts []string, sep string) string {
 		out += sep + p
 	}
 	return out
+}
+
+func isIntLiteral(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil {
+		return false
+	}
+	tgt := e.Binary.Left.Value.Target
+	if tgt != nil && tgt.Lit != nil && tgt.Lit.Int != nil {
+		return true
+	}
+	return false
 }
 
 func isStructLiteralExpr(e *parser.Expr) bool {
