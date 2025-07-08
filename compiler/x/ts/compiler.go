@@ -752,6 +752,11 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 				return fmt.Sprintf("%s.substring(%s, %s)", args[0], args[1], args[2]), nil
 			}
 			return "", fmt.Errorf("substring expects 3 args")
+		case "now":
+			// performance.now() returns milliseconds as a float.
+			// Multiply by 1e6 so the result matches Go's time in
+			// nanoseconds used by the benchmarks.
+			return "performance.now() * 1000000", nil
 		case "json":
 			if len(args) == 1 {
 				return fmt.Sprintf("console.log(JSON.stringify(%s))", args[0]), nil
