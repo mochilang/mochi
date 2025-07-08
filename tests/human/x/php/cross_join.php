@@ -20,20 +20,8 @@ foreach ($orders as $o) {
         ];
     }
 }
-_print("--- Cross Join: All order-customer pairs ---");
+var_dump("--- Cross Join: All order-customer pairs ---");
 foreach ($result as $entry) {
-    _print("Order", $entry['orderId'], "(customerId:", $entry['orderCustomerId'], ", total: $", $entry['orderTotal'], ") paired with", $entry['pairedCustomerName']);
-}
-
-function _print(...$args) {
-    $parts = [];
-    foreach ($args as $a) {
-        if (is_array($a) || is_object($a)) {
-            $parts[] = json_encode($a);
-        } else {
-            $parts[] = strval($a);
-        }
-    }
-    echo implode(' ', $parts), PHP_EOL;
+    var_dump("Order", $entry['orderId'], "(customerId:", $entry['orderCustomerId'], ", total: $", $entry['orderTotal'], ") paired with", $entry['pairedCustomerName']);
 }
 ?>

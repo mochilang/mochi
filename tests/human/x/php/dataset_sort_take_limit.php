@@ -10,20 +10,8 @@ $products = [
 ];
 usort($products,function($a,$b){return $b['price'] <=> $a['price'];});
 $expensive = array_slice($products,1,3);
-_print("--- Top products (excluding most expensive) ---");
+var_dump("--- Top products (excluding most expensive) ---");
 foreach ($expensive as $item) {
-    _print($item['name'], "costs $", $item['price']);
-}
-
-function _print(...$args) {
-    $parts = [];
-    foreach ($args as $a) {
-        if (is_array($a) || is_object($a)) {
-            $parts[] = json_encode($a);
-        } else {
-            $parts[] = strval($a);
-        }
-    }
-    echo implode(' ', $parts), PHP_EOL;
+    var_dump($item['name'], "costs $", $item['price']);
 }
 ?>

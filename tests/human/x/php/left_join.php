@@ -22,20 +22,8 @@ foreach ($orders as $o) {
         'total' => $o['total']
     ];
 }
-_print("--- Left Join ---");
+var_dump("--- Left Join ---");
 foreach ($result as $entry) {
-    _print("Order", $entry['orderId'], "customer", $entry['customer'], "total", $entry['total']);
-}
-
-function _print(...$args) {
-    $parts = [];
-    foreach ($args as $a) {
-        if (is_array($a) || is_object($a)) {
-            $parts[] = json_encode($a);
-        } else {
-            $parts[] = strval($a);
-        }
-    }
-    echo implode(' ', $parts), PHP_EOL;
+    var_dump("Order", $entry['orderId'], "customer", $entry['customer'], "total", $entry['total']);
 }
 ?>

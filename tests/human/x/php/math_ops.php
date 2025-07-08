@@ -1,17 +1,5 @@
 <?php
-_print(6 * 7);
-_print(7 / 2);
-_print(7 % 2);
-
-function _print(...$args) {
-    $parts = [];
-    foreach ($args as $a) {
-        if (is_array($a) || is_object($a)) {
-            $parts[] = json_encode($a);
-        } else {
-            $parts[] = strval($a);
-        }
-    }
-    echo implode(' ', $parts), PHP_EOL;
-}
+var_dump(6 * 7);
+var_dump(7 / 2);
+var_dump(7 % 2);
 ?>

@@ -10,20 +10,8 @@ foreach ($nums as $n) {
         }
     }
 }
-_print("--- Cross Join of three lists ---");
+var_dump("--- Cross Join of three lists ---");
 foreach ($combos as $c) {
-    _print($c['n'], $c['l'], $c['b'] ? 'true' : 'false');
-}
-
-function _print(...$args) {
-    $parts = [];
-    foreach ($args as $a) {
-        if (is_array($a) || is_object($a)) {
-            $parts[] = json_encode($a);
-        } else {
-            $parts[] = strval($a);
-        }
-    }
-    echo implode(' ', $parts), PHP_EOL;
+    var_dump($c['n'], $c['l'], $c['b'] ? 'true' : 'false');
 }
 ?>

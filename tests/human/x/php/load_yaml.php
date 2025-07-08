@@ -21,18 +21,6 @@ foreach ($lines as $line) {
 if ($current) $people[] = $current;
 $adults = array_filter($people, fn($p) => $p['age'] >= 18);
 foreach ($adults as $a) {
-    _print($a['name'], $a['email']);
-}
-
-function _print(...$args) {
-    $parts = [];
-    foreach ($args as $a) {
-        if (is_array($a) || is_object($a)) {
-            $parts[] = json_encode($a);
-        } else {
-            $parts[] = strval($a);
-        }
-    }
-    echo implode(' ', $parts), PHP_EOL;
+    var_dump($a['name'], $a['email']);
 }
 ?>

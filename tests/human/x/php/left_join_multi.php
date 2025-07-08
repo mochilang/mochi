@@ -27,20 +27,8 @@ foreach ($orders as $o) {
         }
     }
 }
-_print("--- Left Join Multi ---");
+var_dump("--- Left Join Multi ---");
 foreach ($result as $r) {
-    _print($r['orderId'], $r['name'], $r['item']);
-}
-
-function _print(...$args) {
-    $parts = [];
-    foreach ($args as $a) {
-        if (is_array($a) || is_object($a)) {
-            $parts[] = json_encode($a);
-        } else {
-            $parts[] = strval($a);
-        }
-    }
-    echo implode(' ', $parts), PHP_EOL;
+    var_dump($r['orderId'], $r['name'], $r['item']);
 }
 ?>
