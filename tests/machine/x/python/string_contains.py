@@ -1,3 +1,3 @@
 s = "catch"
-print("cat" in s)
-print("dog" in s)
+print(("cat" in s))
+print(("dog" in s))

@@ -18,10 +18,11 @@ type Compiler struct {
 	buf       bytes.Buffer
 	indent    int
 	needsJSON bool
+	env       *types.Env
 }
 
 // New creates a new Python compiler.
-func New(env *types.Env) *Compiler { return &Compiler{} }
+func New(env *types.Env) *Compiler { return &Compiler{env: env} }
 
 // Compile converts the parsed Mochi program into Python code.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
@@ -237,14 +238,25 @@ func (c *Compiler) compileVarStmt(name string, t *parser.TypeRef, val *parser.Ex
 }
 
 func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
-	if len(a.Index) > 0 || len(a.Field) > 0 {
-		return fmt.Errorf("assignment with index or field not supported")
+	target := a.Name
+	for _, idx := range a.Index {
+		if idx.Colon != nil || idx.Colon2 != nil || idx.Step != nil || idx.Start == nil {
+			return fmt.Errorf("complex indexing not supported")
+		}
+		iv, err := c.compileExpr(idx.Start)
+		if err != nil {
+			return err
+		}
+		target = fmt.Sprintf("%s[%s]", target, iv)
+	}
+	for _, f := range a.Field {
+		target = fmt.Sprintf("%s.%s", target, f.Name)
 	}
 	val, err := c.compileExpr(a.Value)
 	if err != nil {
 		return err
 	}
-	c.writeln(fmt.Sprintf("%s = %s", a.Name, val))
+	c.writeln(fmt.Sprintf("%s = %s", target, val))
 	return nil
 }
 
@@ -272,6 +284,18 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			opStr = "and"
 		case "||":
 			opStr = "or"
+		case "union_all":
+			res = fmt.Sprintf("(%s + %s)", res, r)
+			continue
+		case "union":
+			res = fmt.Sprintf("list(set(%s) | set(%s))", res, r)
+			continue
+		case "except":
+			res = fmt.Sprintf("[x for x in %s if x not in %s]", res, r)
+			continue
+		case "intersect":
+			res = fmt.Sprintf("[x for x in %s if x in set(%s)]", res, r)
+			continue
 		}
 		res = fmt.Sprintf("%s %s %s", res, opStr, r)
 	}
@@ -309,15 +333,63 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				return "", err
 			}
 			val = fmt.Sprintf("%s(%s)", typ, val)
+		case op.Call != nil:
+			args := make([]string, len(op.Call.Args))
+			for i, a := range op.Call.Args {
+				s, err := c.compileExpr(a)
+				if err != nil {
+					return "", err
+				}
+				args[i] = s
+			}
+			if strings.HasSuffix(val, ".contains") {
+				base := strings.TrimSuffix(val, ".contains")
+				if len(args) != 1 {
+					return "", fmt.Errorf("contains expects 1 arg")
+				}
+				val = fmt.Sprintf("(%s in %s)", args[0], base)
+			} else if val == "print" {
+				val = fmt.Sprintf("print(%s)", strings.Join(args, ", "))
+			} else if val == "len" {
+				if len(args) != 1 {
+					return "", fmt.Errorf("len() expects 1 arg")
+				}
+				val = fmt.Sprintf("len(%s)", args[0])
+			} else {
+				val = fmt.Sprintf("%s(%s)", val, strings.Join(args, ", "))
+			}
 		case op.Index != nil:
-			if op.Index.Start == nil || op.Index.Colon != nil {
-				return "", fmt.Errorf("complex indexing not supported")
+			if op.Index.Colon != nil || op.Index.Colon2 != nil {
+				if op.Index.Step != nil || op.Index.Colon2 != nil {
+					return "", fmt.Errorf("complex slicing not supported")
+				}
+				start := ""
+				if op.Index.Start != nil {
+					s, err := c.compileExpr(op.Index.Start)
+					if err != nil {
+						return "", err
+					}
+					start = s
+				}
+				end := ""
+				if op.Index.End != nil {
+					e, err := c.compileExpr(op.Index.End)
+					if err != nil {
+						return "", err
+					}
+					end = e
+				}
+				val = fmt.Sprintf("%s[%s:%s]", val, start, end)
+			} else {
+				if op.Index.Start == nil {
+					return "", fmt.Errorf("index expression missing")
+				}
+				idx, err := c.compileExpr(op.Index.Start)
+				if err != nil {
+					return "", err
+				}
+				val = fmt.Sprintf("%s[%s]", val, idx)
 			}
-			idx, err := c.compileExpr(op.Index.Start)
-			if err != nil {
-				return "", err
-			}
-			val = fmt.Sprintf("%s[%s]", val, idx)
 		default:
 			return "", fmt.Errorf("unsupported postfix at line %d", p.Target.Pos.Line)
 		}
@@ -331,6 +403,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileLiteral(p.Lit), nil
 	case p.Call != nil:
 		return c.compileCall(p.Call)
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
 	case p.List != nil:
 		elems := make([]string, len(p.List.Elems))
 		for i, e := range p.List.Elems {
@@ -347,6 +421,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			k, err := c.compileExpr(it.Key)
 			if err != nil {
 				return "", err
+			}
+			if isIdentifier(k) {
+				k = fmt.Sprintf("%q", k)
 			}
 			v, err := c.compileExpr(it.Value)
 			if err != nil {
@@ -367,8 +444,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return fmt.Sprintf("(%s)", expr), nil
 	case p.Selector != nil:
 		name := p.Selector.Root
-		for _, t := range p.Selector.Tail {
-			name += "." + t
+		for i, t := range p.Selector.Tail {
+			if i == len(p.Selector.Tail)-1 && t == "contains" {
+				name += ".contains"
+			} else {
+				name = fmt.Sprintf("%s[%q]", name, t)
+			}
 		}
 		return name, nil
 	default:
@@ -384,6 +465,17 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", err
 		}
 		args[i] = s
+	}
+	if fn, ok := c.env.GetFunc(call.Func); ok {
+		if len(call.Args) < len(fn.Params) {
+			missing := fn.Params[len(call.Args):]
+			names := make([]string, len(missing))
+			for i, p := range missing {
+				names[i] = p.Name
+			}
+			allArgs := append(append([]string{}, args...), names...)
+			return fmt.Sprintf("lambda %s: %s(%s)", strings.Join(names, ", "), call.Func, strings.Join(allArgs, ", ")), nil
+		}
 	}
 	switch call.Func {
 	case "append":
@@ -411,6 +503,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("substring expects 3 args")
 		}
 		return fmt.Sprintf("%s[%s:%s]", args[0], args[1], args[2]), nil
+	case "exists":
+		if len(args) != 1 {
+			return "", fmt.Errorf("exists expects 1 arg")
+		}
+		return fmt.Sprintf("any(%s)", args[0]), nil
 	case "json":
 		c.needsJSON = true
 		if len(args) != 1 {
@@ -463,6 +560,60 @@ func (c *Compiler) compileIfExpr(ix *parser.IfExpr) (string, error) {
 	return fmt.Sprintf("(%s if %s else %s)", thenExpr, cond, elseCode), nil
 }
 
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	if len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+		return "", fmt.Errorf("complex query not supported")
+	}
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	vars := []string{fmt.Sprintf("%s in %s", q.Var, src)}
+	for _, f := range q.Froms {
+		s, err := c.compileExpr(f.Src)
+		if err != nil {
+			return "", err
+		}
+		vars = append(vars, fmt.Sprintf("%s in %s", f.Var, s))
+	}
+	var cond string
+	if q.Where != nil {
+		cond, err = c.compileExpr(q.Where)
+		if err != nil {
+			return "", err
+		}
+	}
+	val, err := c.compileExpr(q.Select)
+	if err != nil {
+		return "", err
+	}
+	var b strings.Builder
+	if strings.HasPrefix(val, "sum(") && val == fmt.Sprintf("sum(%s)", q.Var) {
+		b.WriteString("sum(")
+		b.WriteString("[")
+		b.WriteString(q.Var)
+		b.WriteString(" for ")
+		b.WriteString(strings.Join(vars, " for "))
+		if cond != "" {
+			b.WriteString(" if ")
+			b.WriteString(cond)
+		}
+		b.WriteString("]")
+		b.WriteString(")")
+		return b.String(), nil
+	}
+	b.WriteString("[")
+	b.WriteString(val)
+	b.WriteString(" for ")
+	b.WriteString(strings.Join(vars, " for "))
+	if cond != "" {
+		b.WriteString(" if ")
+		b.WriteString(cond)
+	}
+	b.WriteString("]")
+	return b.String(), nil
+}
+
 func (c *Compiler) compileLiteral(l *parser.Literal) string {
 	switch {
 	case l.Int != nil:
@@ -488,6 +639,24 @@ func (c *Compiler) compileType(t *parser.TypeRef) (string, error) {
 		return "", fmt.Errorf("unsupported type")
 	}
 	return *t.Simple, nil
+}
+
+func isIdentifier(s string) bool {
+	if s == "" {
+		return false
+	}
+	for i, r := range s {
+		if i == 0 {
+			if !((r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || r == '_') {
+				return false
+			}
+		} else {
+			if !((r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9') || r == '_' || r == '.') {
+				return false
+			}
+		}
+	}
+	return true
 }
 
 func (c *Compiler) writeln(s string) {

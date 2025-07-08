@@ -1,7 +1,4 @@
-from functools import partial
-
-def add(a: int, b: int) -> int:
+def add(a, b):
     return a + b
-
-add5 = partial(add, 5)
+add5 = lambda b: add(5, b)
 print(add5(3))
