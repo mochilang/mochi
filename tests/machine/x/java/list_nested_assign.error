@@ -1,12 +1,14 @@
 line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramslist_nested_assign315063815/001/Main.java:3: error: incompatible types: no instance(s) of type variable(s) T,T,T exist so that List<T> conforms to int
-	static int matrix = java.util.Arrays.asList(java.util.Arrays.asList(1, 2), java.util.Arrays.asList(3, 4));
-	                                           ^
-  where T is a type-variable:
-    T extends Object declared in method <T>asList(T...)
-/tmp/TestCompileValidProgramslist_nested_assign315063815/001/Main.java:6: error: int cannot be dereferenced
+/tmp/TestCompileValidProgramslist_nested_assign2802158450/001/Main.java:5: error: cannot find symbol
+	matrix.get(1).set(0, 5);
+	             ^
+  symbol:   method set(int,int)
+  location: class Object
+/tmp/TestCompileValidProgramslist_nested_assign2802158450/001/Main.java:6: error: cannot find symbol
 	System.out.println(matrix.get(1).get(0));
-	                         ^
+	                                ^
+  symbol:   method get(int)
+  location: class Object
 2 errors
 
 

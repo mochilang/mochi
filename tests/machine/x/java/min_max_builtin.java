@@ -1,6 +1,6 @@
 import java.util.*;
 public class Main {
-	static int nums = java.util.Arrays.asList(3, 1, 4);
+	static List<Integer> nums = new ArrayList<>(java.util.Arrays.asList(3, 1, 4));
 	static int min(List<Integer> v) {
 		return Collections.min(v);
 	}

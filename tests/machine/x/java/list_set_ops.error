@@ -1,38 +1,38 @@
 line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramslist_set_ops944514804/001/Main.java:4: error: ')' or ',' expected
+/tmp/TestCompileValidProgramslist_set_ops2916856832/001/Main.java:4: error: ')' or ',' expected
 	System.out.println(java.util.Arrays.asList(1, 2) union java.util.Arrays.asList(2, 3));
 	                                                ^
-/tmp/TestCompileValidProgramslist_set_ops944514804/001/Main.java:4: error: ';' expected
+/tmp/TestCompileValidProgramslist_set_ops2916856832/001/Main.java:4: error: ';' expected
 	System.out.println(java.util.Arrays.asList(1, 2) union java.util.Arrays.asList(2, 3));
 	                                                           ^
-/tmp/TestCompileValidProgramslist_set_ops944514804/001/Main.java:4: error: ';' expected
+/tmp/TestCompileValidProgramslist_set_ops2916856832/001/Main.java:4: error: ';' expected
 	System.out.println(java.util.Arrays.asList(1, 2) union java.util.Arrays.asList(2, 3));
 	                                                                                    ^
-/tmp/TestCompileValidProgramslist_set_ops944514804/001/Main.java:5: error: ')' or ',' expected
+/tmp/TestCompileValidProgramslist_set_ops2916856832/001/Main.java:5: error: ')' or ',' expected
 	System.out.println(java.util.Arrays.asList(1, 2, 3) except java.util.Arrays.asList(2));
 	                                                   ^
-/tmp/TestCompileValidProgramslist_set_ops944514804/001/Main.java:5: error: ';' expected
+/tmp/TestCompileValidProgramslist_set_ops2916856832/001/Main.java:5: error: ';' expected
 	System.out.println(java.util.Arrays.asList(1, 2, 3) except java.util.Arrays.asList(2));
 	                                                               ^
-/tmp/TestCompileValidProgramslist_set_ops944514804/001/Main.java:5: error: ';' expected
+/tmp/TestCompileValidProgramslist_set_ops2916856832/001/Main.java:5: error: ';' expected
 	System.out.println(java.util.Arrays.asList(1, 2, 3) except java.util.Arrays.asList(2));
 	                                                                                     ^
-/tmp/TestCompileValidProgramslist_set_ops944514804/001/Main.java:6: error: ')' or ',' expected
+/tmp/TestCompileValidProgramslist_set_ops2916856832/001/Main.java:6: error: ')' or ',' expected
 	System.out.println(java.util.Arrays.asList(1, 2, 3) intersect java.util.Arrays.asList(2, 4));
 	                                                   ^
-/tmp/TestCompileValidProgramslist_set_ops944514804/001/Main.java:6: error: ';' expected
+/tmp/TestCompileValidProgramslist_set_ops2916856832/001/Main.java:6: error: ';' expected
 	System.out.println(java.util.Arrays.asList(1, 2, 3) intersect java.util.Arrays.asList(2, 4));
 	                                                                  ^
-/tmp/TestCompileValidProgramslist_set_ops944514804/001/Main.java:6: error: ';' expected
+/tmp/TestCompileValidProgramslist_set_ops2916856832/001/Main.java:6: error: ';' expected
 	System.out.println(java.util.Arrays.asList(1, 2, 3) intersect java.util.Arrays.asList(2, 4));
 	                                                                                           ^
-/tmp/TestCompileValidProgramslist_set_ops944514804/001/Main.java:7: error: ')' or ',' expected
+/tmp/TestCompileValidProgramslist_set_ops2916856832/001/Main.java:7: error: ')' or ',' expected
 	System.out.println(java.util.Arrays.asList(1, 2) union java.util.Arrays.asList(2, 3).size());
 	                                                ^
-/tmp/TestCompileValidProgramslist_set_ops944514804/001/Main.java:7: error: ';' expected
+/tmp/TestCompileValidProgramslist_set_ops2916856832/001/Main.java:7: error: ';' expected
 	System.out.println(java.util.Arrays.asList(1, 2) union java.util.Arrays.asList(2, 3).size());
 	                                                           ^
-/tmp/TestCompileValidProgramslist_set_ops944514804/001/Main.java:7: error: ';' expected
+/tmp/TestCompileValidProgramslist_set_ops2916856832/001/Main.java:7: error: ';' expected
 	System.out.println(java.util.Arrays.asList(1, 2) union java.util.Arrays.asList(2, 3).size());
 	                                                                                           ^
 12 errors
