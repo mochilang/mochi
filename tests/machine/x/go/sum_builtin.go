@@ -1,19 +1,19 @@
-//go:build ignore
-
 package main
 
 import (
-    "fmt"
+	"fmt"
+
+	"golang.org/x/exp/constraints"
 )
 
-func sum(nums []int) int {
-    var s int
-    for _, n := range nums {
-        s += n
-    }
-    return s
+func main() {
+	fmt.Println(_sumOrdered[int]([]int{1, 2, 3}))
 }
 
-func main() {
-    fmt.Println(sum([]int{1, 2, 3}))
+func _sumOrdered[T constraints.Integer | constraints.Float](s []T) float64 {
+	var sum float64
+	for _, v := range s {
+		sum += float64(v)
+	}
+	return sum
 }

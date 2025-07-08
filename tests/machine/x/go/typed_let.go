@@ -1,12 +1,10 @@
-//go:build ignore
-
 package main
 
 import (
-    "fmt"
+	"fmt"
 )
 
 func main() {
-    var y int
-    fmt.Println(y)
+	var y int = nil
+	fmt.Println(y)
 }

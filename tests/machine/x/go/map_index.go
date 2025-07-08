@@ -1,12 +1,10 @@
-//go:build ignore
-
 package main
 
 import (
-    "fmt"
+	"fmt"
 )
 
 func main() {
-    m := map[interface{}]interface{}{"a": 1, "b": 2}
-    fmt.Println(m["b"])
+	var m map[string]int = map[string]int{"a": 1, "b": 2}
+	fmt.Println(m["b"])
 }

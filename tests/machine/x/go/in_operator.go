@@ -1,34 +1,12 @@
-//go:build ignore
-
 package main
 
 import (
-    "fmt"
-    "reflect"
+	"fmt"
+	"slices"
 )
 
-func contains(coll interface{}, v interface{}) bool {
-    val := reflect.ValueOf(coll)
-    switch val.Kind() {
-        case reflect.Slice, reflect.Array:
-            for i := 0; i < val.Len(); i++ {
-                if reflect.DeepEqual(val.Index(i).Interface(), v) {
-                    return true
-                }
-            }
-            return false
-        case reflect.Map:
-            if val.MapIndex(reflect.ValueOf(v)).IsValid() {
-                return true
-            }
-            return false
-        default:
-            return false
-        }
-    }
-    
-    func main() {
-    xs := []int{1, 2, 3}
-    fmt.Println(contains(xs, 2))
-    fmt.Println(!(contains(xs, 5)))
-    }
+func main() {
+	var xs []int = []int{1, 2, 3}
+	fmt.Println(slices.Contains(xs, 2))
+	fmt.Println(!(slices.Contains(xs, 5)))
+}

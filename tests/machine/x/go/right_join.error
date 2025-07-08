@@ -1,4 +1,0 @@
-unsupported expression at line 17
-
-let result = from c in customers
-             right join o in orders on o.customerId == c.id

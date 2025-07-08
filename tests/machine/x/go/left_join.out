@@ -1,0 +1,3 @@
+--- Left Join ---
+Order 100 customer {1 Alice} total 250
+Order 101 customer {0 } total 80

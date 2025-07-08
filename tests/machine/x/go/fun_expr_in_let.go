@@ -1,14 +1,12 @@
-//go:build ignore
-
 package main
 
 import (
-    "fmt"
+	"fmt"
 )
 
 func main() {
-    square := func(x int) int {
-        return x * x
-    }
-    fmt.Println(square(6))
+	var square func(int) int = func(x int) int {
+		return (x * x)
+	}
+	fmt.Println(square(6))
 }

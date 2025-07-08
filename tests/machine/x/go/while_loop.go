@@ -1,15 +1,16 @@
-//go:build ignore
-
 package main
 
 import (
-    "fmt"
+	"fmt"
 )
 
 func main() {
-    i := 0
-    for i < 3 {
-        fmt.Println(i)
-        i = i + 1
-    }
+	var i int = 0
+	for {
+		if !(i < 3) {
+			break
+		}
+		fmt.Println(i)
+		i = (i + 1)
+	}
 }

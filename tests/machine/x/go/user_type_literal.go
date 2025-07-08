@@ -1,23 +1,21 @@
-//go:build ignore
-
 package main
 
 import (
-    "fmt"
+	"fmt"
 )
 
 type Person struct {
-    Name string
-    Age int
+	Name string `json:"name"`
+	Age  int    `json:"age"`
 }
 
 type Book struct {
-    Title string
-    Author Person
+	Title  string `json:"title"`
+	Author Person `json:"author"`
 }
 
-
 func main() {
-    book := &Book{Title: "Go", Author: Person{Name: "Bob", Age: 42}}
-    fmt.Println(book.Author.Name)
+	var book Book = Book{Title: "Go", Author: Person{Name: "Bob", Age: 42}}
+	_ = book
+	fmt.Println(book.Author.Name)
 }
