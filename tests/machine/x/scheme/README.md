@@ -1,4 +1,4 @@
-# Scheme Machine Results (75/97 compiled and ran)
+# Scheme Machine Results (77/97 compiled and ran)
 
 ## Success
 - [x] append_builtin.mochi
@@ -96,7 +96,7 @@
 - [ ] string_in_operator.mochi
 - [x] string_prefix_slice.mochi
 - [ ] tree_sum.mochi
-- [ ] typed_let.mochi
-- [ ] typed_var.mochi
+- [x] typed_let.mochi
+- [x] typed_var.mochi
 - [ ] update_stmt.mochi
 - [ ] while_loop.mochi

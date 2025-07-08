@@ -1,2 +1,2 @@
-(define x ())
+(define x '())
 (begin (display x) (newline))
