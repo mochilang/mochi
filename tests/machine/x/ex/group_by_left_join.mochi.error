@@ -1,0 +1,21 @@
+line 22
+warning: variable "o" is unused (if the variable is not meant to be used, prefix it with an underscore)
+  /workspace/mochi/tests/machine/x/ex/group_by_left_join.mochi.exs:22: Main.main/0
+
+warning: variable "o" is unused (if the variable is not meant to be used, prefix it with an underscore)
+  /workspace/mochi/tests/machine/x/ex/group_by_left_join.mochi.exs:25: Main.main/0
+
+warning: default values for the optional arguments in _query/3 are never used
+  /workspace/mochi/tests/machine/x/ex/group_by_left_join.mochi.exs:70
+
+** (BadArityError) #Function<8.44627808/2 in Main.main/0> with arity 2 called with 1 argument ([%{id: 1, name: "Alice"}, %{customerId: 1, id: 100}])
+    /workspace/mochi/tests/machine/x/ex/group_by_left_join.mochi.exs:53: anonymous fn/3 in Main._group_by/2
+    (elixir 1.14.0) lib/enum.ex:2468: Enum."-reduce/3-lists^foldl/2-0-"/3
+    /workspace/mochi/tests/machine/x/ex/group_by_left_join.mochi.exs:52: Main._group_by/2
+    /workspace/mochi/tests/machine/x/ex/group_by_left_join.mochi.exs:22: Main.main/0
+
+           )
+
+         groups = _group_by(rows, fn c, o -> c.name end)
+
+         groups =
