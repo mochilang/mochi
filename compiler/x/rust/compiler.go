@@ -55,6 +55,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
 		return c.compileLet(s.Let)
+	case s.Var != nil:
+		return c.compileVar(s.Var)
+	case s.Assign != nil:
+		return c.compileAssign(s.Assign)
 	case s.Return != nil:
 		val, err := c.compileExpr(s.Return.Value)
 		if err != nil {
@@ -90,13 +94,57 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 
 func (c *Compiler) compileLet(l *parser.LetStmt) error {
 	if l.Value == nil {
-		return fmt.Errorf("let without value at line %d", l.Pos.Line)
+		if l.Type == nil {
+			return fmt.Errorf("let without value at line %d", l.Pos.Line)
+		}
+		typ := rustType(l.Type)
+		c.writeln(fmt.Sprintf("let %s: %s = %s;", l.Name, typ, rustDefault(typ)))
+		return nil
 	}
 	val, err := c.compileExpr(l.Value)
 	if err != nil {
 		return err
 	}
-	c.writeln(fmt.Sprintf("let mut %s = %s;", l.Name, val))
+	if l.Type != nil {
+		typ := rustType(l.Type)
+		c.writeln(fmt.Sprintf("let %s: %s = %s;", l.Name, typ, val))
+	} else {
+		c.writeln(fmt.Sprintf("let %s = %s;", l.Name, val))
+	}
+	return nil
+}
+
+func (c *Compiler) compileVar(v *parser.VarStmt) error {
+	if v.Value == nil {
+		if v.Type == nil {
+			return fmt.Errorf("var without value at line %d", v.Pos.Line)
+		}
+		typ := rustType(v.Type)
+		c.writeln(fmt.Sprintf("let mut %s: %s = %s;", v.Name, typ, rustDefault(typ)))
+		return nil
+	}
+	val, err := c.compileExpr(v.Value)
+	if err != nil {
+		return err
+	}
+	if v.Type != nil {
+		typ := rustType(v.Type)
+		c.writeln(fmt.Sprintf("let mut %s: %s = %s;", v.Name, typ, val))
+	} else {
+		c.writeln(fmt.Sprintf("let mut %s = %s;", v.Name, val))
+	}
+	return nil
+}
+
+func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
+	if len(a.Index) > 0 || len(a.Field) > 0 {
+		return fmt.Errorf("assignment with index or field not supported")
+	}
+	val, err := c.compileExpr(a.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("%s = %s;", a.Name, val))
 	return nil
 }
 
@@ -345,6 +393,21 @@ func rustType(t *parser.TypeRef) string {
 		}
 	}
 	return "i32"
+}
+
+func rustDefault(typ string) string {
+	switch typ {
+	case "i32":
+		return "0"
+	case "bool":
+		return "false"
+	case "f64":
+		return "0.0"
+	case "String":
+		return "String::new()"
+	default:
+		return fmt.Sprintf("%s::default()", typ)
+	}
 }
 
 func (c *Compiler) writeln(s string) {

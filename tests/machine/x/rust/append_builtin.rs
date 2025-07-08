@@ -4,6 +4,6 @@ fn append<T: Clone>(mut v: Vec<T>, item: T) -> Vec<T> {
 }
 
 fn main() {
-    let mut a = vec![1, 2];
+    let a = vec![1, 2];
     println!("{:?}", append(a, 3));
 }
