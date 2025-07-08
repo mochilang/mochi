@@ -4,6 +4,8 @@ using namespace std;
 
 template<typename T, typename=void> struct has_size : false_type {};
 template<typename T> struct has_size<T, void_t<decltype(declval<T>().size()), decltype(declval<T>()[0])>> : true_type {};
+template<typename T, typename=void> struct has_key_type : false_type {};
+template<typename T> struct has_key_type<T, void_t<typename T::key_type>> : true_type {};
 
 auto sum_rec(auto n, auto acc) {
 	if((n == 0)) {

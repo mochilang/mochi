@@ -1,1 +1,16 @@
-line 0: compile error: unsupported statement at 1:1
+line 15: ../../../tests/machine/x/cpp/cast_struct.mochi.cpp: In function ‘int main()’:
+../../../tests/machine/x/cpp/cast_struct.mochi.cpp:15:100: error: no matching function for call to ‘Todo::Todo(std::unordered_map<std::__cxx11::basic_string<char>, std::__cxx11::basic_string<char> >)’
+   15 |         auto todo = (Todo)(unordered_map<string, string>{{std::string("title"), std::string("hi")}});
+      |                                                                                                    ^
+../../../tests/machine/x/cpp/cast_struct.mochi.cpp:10:8: note: candidate: ‘Todo::Todo()’
+   10 | struct Todo {
+      |        ^~~~
+../../../tests/machine/x/cpp/cast_struct.mochi.cpp:10:8: note:   candidate expects 0 arguments, 1 provided
+../../../tests/machine/x/cpp/cast_struct.mochi.cpp:10:8: note: candidate: ‘Todo::Todo(const Todo&)’
+../../../tests/machine/x/cpp/cast_struct.mochi.cpp:10:8: note:   no known conversion for argument 1 from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::__cxx11::basic_string<char> >’ to ‘const Todo&’
+../../../tests/machine/x/cpp/cast_struct.mochi.cpp:10:8: note: candidate: ‘Todo::Todo(Todo&&)’
+../../../tests/machine/x/cpp/cast_struct.mochi.cpp:10:8: note:   no known conversion for argument 1 from ‘std::unordered_map<std::__cxx11::basic_string<char>, std::__cxx11::basic_string<char> >’ to ‘Todo&&’
+
+ 14 | int main() {
+ 15 | 	auto todo = (Todo)(unordered_map<string, string>{{std::string("title"), std::string("hi")}});
+ 16 | 	([&](const auto& __v){ if constexpr(has_size<decay_t<decltype(__v)>>::value){ for(size_t i=0;i<__v.size();++i){ if(i) cout<<' '; cout<<__v[i]; } cout<<endl; } else { cout<<__v<<endl; } })(todo.title);
