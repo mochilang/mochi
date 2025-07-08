@@ -1,1 +1,1 @@
-(begin (display (inexact->exact "1995")) (newline))
+(begin (display (string->number "1995")) (newline))
