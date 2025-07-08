@@ -6,7 +6,7 @@ resulting code and program output are stored here.
 
 ## Compilation Checklist
 
-7/97 programs compiled successfully
+8/97 programs compiled successfully
 
 The list below shows every Mochi program and whether it compiled and ran
 successfully in F#.

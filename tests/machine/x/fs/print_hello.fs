@@ -1,3 +1,3 @@
 open System
 
-printfn "%A" ("hello")
+printfn "%s" "hello"
