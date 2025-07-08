@@ -1,5 +1,3 @@
-//go:build archived
-
 package gocode
 
 import "sort"
