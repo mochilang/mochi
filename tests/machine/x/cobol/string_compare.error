@@ -1,6 +1,0 @@
-cobc: exit status 1
-/workspace/mochi/tests/machine/x/cobol/string_compare.cob:6: error: syntax error, unexpected <
-/workspace/mochi/tests/machine/x/cobol/string_compare.cob:7: error: syntax error, unexpected LESS OR EQUAL
-/workspace/mochi/tests/machine/x/cobol/string_compare.cob:8: error: syntax error, unexpected >
-/workspace/mochi/tests/machine/x/cobol/string_compare.cob:9: error: syntax error, unexpected GREATER OR EQUAL
-

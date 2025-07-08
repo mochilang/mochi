@@ -2,7 +2,10 @@
        PROGRAM-ID. UNARY_NEG.
        DATA DIVISION.
        WORKING-STORAGE SECTION.
+       01 TMP PIC 9 VALUE 0.
        PROCEDURE DIVISION.
-       DISPLAY - 3
-       DISPLAY 5 + (- 2)
+       COMPUTE TMP = - 3
+       DISPLAY TMP
+       COMPUTE TMP = 5 + (- 2)
+       DISPLAY TMP
        STOP RUN.

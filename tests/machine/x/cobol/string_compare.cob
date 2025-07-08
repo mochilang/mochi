@@ -3,8 +3,24 @@
        DATA DIVISION.
        WORKING-STORAGE SECTION.
        PROCEDURE DIVISION.
-       DISPLAY "a" < "b"
-       DISPLAY "a" <= "a"
-       DISPLAY "b" > "a"
-       DISPLAY "b" >= "b"
+       IF "a" < "b"
+           DISPLAY "true"
+       ELSE
+           DISPLAY "false"
+       END-IF
+       IF "a" <= "a"
+           DISPLAY "true"
+       ELSE
+           DISPLAY "false"
+       END-IF
+       IF "b" > "a"
+           DISPLAY "true"
+       ELSE
+           DISPLAY "false"
+       END-IF
+       IF "b" >= "b"
+           DISPLAY "true"
+       ELSE
+           DISPLAY "false"
+       END-IF
        STOP RUN.

@@ -1,4 +1,0 @@
-cobc: exit status 1
-/workspace/mochi/tests/machine/x/cobol/unary_neg.cob:6: error: syntax error, unexpected -, expecting (
-/workspace/mochi/tests/machine/x/cobol/unary_neg.cob:7: error: syntax error, unexpected +
-
