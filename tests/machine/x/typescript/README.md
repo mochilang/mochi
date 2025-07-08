@@ -4,7 +4,7 @@ This directory contains TypeScript code compiled from Mochi programs in `tests/v
 
 ## Progress
 
-Compiled: 82/97 programs
+Compiled: 83/97 programs
 
 ## Checklist
 - [x] append_builtin.mochi
@@ -76,7 +76,7 @@ Compiled: 82/97 programs
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
-- [ ] query_sum_select.mochi
+ - [x] query_sum_select.mochi
 - [x] record_assign.mochi
 - [ ] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
