@@ -1,0 +1,8 @@
+error running cross_join_filter:
+ERROR on line 34 of file /workspace/mochi/tests/machine/x/scheme/cross_join_filter.scm: missing trailing ')' started on line: 24
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+--- Even pairs ---
+
+context (line 34):
+)
+

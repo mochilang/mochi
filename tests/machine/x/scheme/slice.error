@@ -1,0 +1,7 @@
+error running slice:
+ERROR on line 23 of file /workspace/mochi/tests/machine/x/scheme/slice.scm: missing trailing ')' started on line: 1
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+
+context (line 23):
+(begin (display (_slice "hello" 1 4)) (newline))
+

@@ -1,0 +1,7 @@
+error running for_map_collection:
+ERROR on line 12 of file /workspace/mochi/tests/machine/x/scheme/for_map_collection.scm: missing trailing ')' started on line: 2
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+
+context (line 12):
+)
+

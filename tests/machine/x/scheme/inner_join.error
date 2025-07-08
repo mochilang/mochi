@@ -1,0 +1,8 @@
+error running inner_join:
+ERROR on line 33 of file /workspace/mochi/tests/machine/x/scheme/inner_join.scm: missing trailing ')' started on line: 23
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+--- Orders with customer info ---
+
+context (line 33):
+)
+

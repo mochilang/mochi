@@ -1,0 +1,8 @@
+error running group_by_join:
+ERROR on line 102 of file /workspace/mochi/tests/machine/x/scheme/group_by_join.scm: missing trailing ')' started on line: 92
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+--- Orders per customer ---
+
+context (line 102):
+)
+

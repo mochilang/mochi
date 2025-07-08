@@ -1,0 +1,6 @@
+error running cast_string_to_int:
+ERROR in "inexact->exact": invalid type, expected Flonum: "1995"
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+
+context (line 1292):

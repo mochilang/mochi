@@ -1,0 +1,7 @@
+error running group_items_iteration:
+ERROR on line 185 of file /workspace/mochi/tests/machine/x/scheme/group_items_iteration.scm: missing trailing ')' started on line: 157
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+
+context (line 185):
+(begin (display result) (newline))
+

@@ -1,0 +1,10 @@
+(define (boom )
+  (call/cc (lambda (return)
+    (begin (display "boom") (newline))
+    (return #t)
+  ))
+)
+
+(begin (display (and (and (< 1 2) (< 2 3)) (< 3 4))) (newline))
+(begin (display (and (and (< 1 2) (> 2 3)) (boom ))) (newline))
+(begin (display (and (and (and (< 1 2) (< 2 3)) (> 3 4)) (boom ))) (newline))

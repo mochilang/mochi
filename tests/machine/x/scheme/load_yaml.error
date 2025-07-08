@@ -1,0 +1,10 @@
+error running load_yaml:
+ERROR in "open-input-file": couldn't open input file: "../interpreter/valid/people.yaml"
+  called from <anonymous> on line 84 of file /workspace/mochi/tests/machine/x/scheme/load_yaml.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+
+context (line 84):
+
+(define people (_load "../interpreter/valid/people.yaml" (list (cons "format" "yaml"))))
+(define adults (let ((_res '()))

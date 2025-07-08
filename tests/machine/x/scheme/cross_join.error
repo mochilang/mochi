@@ -1,0 +1,8 @@
+error running cross_join:
+ERROR on line 32 of file /workspace/mochi/tests/machine/x/scheme/cross_join.scm: missing trailing ')' started on line: 22
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+--- Cross Join: All order-customer pairs ---
+
+context (line 32):
+)
+
