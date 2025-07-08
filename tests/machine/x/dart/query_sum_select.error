@@ -1,0 +1,4 @@
+line 7: exit status 254
+    if (!(n > 1)) continue;
+    _q0.add(n.reduce((a, b) => a + b));
+  }

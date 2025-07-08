@@ -1,0 +1,4 @@
+line 8: exit status 254
+  for (var o in orders) {
+    _q0.add({'name': c.name, 'sku': i.sku});
+  }

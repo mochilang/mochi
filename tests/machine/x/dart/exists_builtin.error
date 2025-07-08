@@ -1,0 +1,4 @@
+line 3: exit status 254
+  var data = [1, 2];
+  var flag = exists((() {
+  var _q0 = <dynamic>[];
