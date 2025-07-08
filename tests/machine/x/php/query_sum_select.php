@@ -3,12 +3,12 @@
 $nums = [1, 2, 3];
 // result: [float]
 $result = (function() use ($nums) {
-	$res = [];
+	$sum = 0;
 	foreach ((is_string($nums) ? str_split($nums) : $nums) as $n) {
 		if (!(($n > 1))) { continue; }
-		$res[] = array_sum($n);
+		$sum += $n;
 	}
-	return $res;
+	return $sum;
 })();
 _print($result);
 

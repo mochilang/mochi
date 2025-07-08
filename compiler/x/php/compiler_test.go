@@ -56,7 +56,7 @@ func compileOne(t *testing.T, src, outDir, name string) {
 		writeError(outDir, name, data, errs[0])
 		return
 	}
-	c := phpcode.New(env)
+	c := phpcode.New(env, filepath.Dir(filepath.Dir(src)))
 	code, err := c.Compile(prog)
 	if err != nil {
 		writeError(outDir, name, data, err)
@@ -69,6 +69,7 @@ func compileOne(t *testing.T, src, outDir, name string) {
 	}
 
 	cmd := exec.Command("php", phpPath)
+	cmd.Dir = filepath.Dir(src)
 	if inData, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 		cmd.Stdin = bytes.NewReader(inData)
 	}

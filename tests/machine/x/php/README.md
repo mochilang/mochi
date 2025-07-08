@@ -6,7 +6,7 @@ Each file in `tests/vm/valid` is compiled and executed. Successful runs produce 
 
 ## Summary
 
-93/97 files compiled successfully
+95/97 files compiled successfully
 
 ## Checklist
 
@@ -59,7 +59,7 @@ Each file in `tests/vm/valid` is compiled and executed. Successful runs produce 
 - [x] list_index.mochi
 - [x] list_nested_assign.mochi
 - [x] list_set_ops.mochi
-- [ ] load_yaml.mochi
+- [x] load_yaml.mochi
 - [x] map_assign.mochi
 - [x] map_in_operator.mochi
 - [x] map_index.mochi
@@ -79,7 +79,7 @@ Each file in `tests/vm/valid` is compiled and executed. Successful runs produce 
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
-- [ ] query_sum_select.mochi
+- [x] query_sum_select.mochi
 - [x] record_assign.mochi
 - [x] right_join.mochi
 - [x] save_jsonl_stdout.mochi
