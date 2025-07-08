@@ -1,9 +1,7 @@
-Warning: /workspace/mochi/tests/machine/x/pl/binary_precedence.pl:2:
+Warning: /workspace/mochi/tests/machine/x/pl/min_max_builtin.pl:2:
 Warning:    Singleton-marked variable appears more than once: _V0
 Warning:    Singleton-marked variable appears more than once: _V1
 Warning:    Singleton-marked variable appears more than once: _V2
 Warning:    Singleton-marked variable appears more than once: _V3
-9
-9
-7
-8
+1
+4

@@ -24,6 +24,13 @@ var supported = map[string]bool{
 	"append_builtin":      true,
 	"avg_builtin":         true,
 	"basic_compare":       true,
+	"binary_precedence":   true,
+	"math_ops":            true,
+	"unary_neg":           true,
+	"len_builtin":         true,
+	"len_string":          true,
+	"sum_builtin":         true,
+	"min_max_builtin":     true,
 }
 
 func TestPrologCompiler(t *testing.T) {

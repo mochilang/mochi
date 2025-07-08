@@ -297,6 +297,54 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, bool, error) {
 		c.writeln(fmt.Sprintf("%s > 0,", n))
 		c.writeln(fmt.Sprintf("%s is %s / %s,", tmp, s, n))
 		return tmp, true, nil
+	case "sum":
+		if len(call.Args) != 1 {
+			return "", false, fmt.Errorf("sum expects 1 arg")
+		}
+		arg, _, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", false, err
+		}
+		tmp := c.newTmp()
+		c.writeln(fmt.Sprintf("sum_list(%s, %s),", arg, tmp))
+		return tmp, true, nil
+	case "min":
+		if len(call.Args) != 1 {
+			return "", false, fmt.Errorf("min expects 1 arg")
+		}
+		arg, _, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", false, err
+		}
+		tmp := c.newTmp()
+		c.writeln(fmt.Sprintf("min_list(%s, %s),", arg, tmp))
+		return tmp, true, nil
+	case "max":
+		if len(call.Args) != 1 {
+			return "", false, fmt.Errorf("max expects 1 arg")
+		}
+		arg, _, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", false, err
+		}
+		tmp := c.newTmp()
+		c.writeln(fmt.Sprintf("max_list(%s, %s),", arg, tmp))
+		return tmp, true, nil
+	case "len":
+		if len(call.Args) != 1 {
+			return "", false, fmt.Errorf("len expects 1 arg")
+		}
+		arg, _, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", false, err
+		}
+		tmp := c.newTmp()
+		if strings.HasPrefix(arg, "\"") {
+			c.writeln(fmt.Sprintf("string_length(%s, %s),", arg, tmp))
+		} else {
+			c.writeln(fmt.Sprintf("length(%s, %s),", arg, tmp))
+		}
+		return tmp, true, nil
 	default:
 		return "", false, fmt.Errorf("unsupported call")
 	}

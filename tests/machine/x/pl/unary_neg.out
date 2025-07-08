@@ -1,0 +1,5 @@
+Warning: /workspace/mochi/tests/machine/x/pl/unary_neg.pl:2:
+Warning:    Singleton-marked variable appears more than once: _V0
+Warning:    Singleton-marked variable appears more than once: _V1
+-3
+3
