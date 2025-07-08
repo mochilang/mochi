@@ -1,6 +1,0 @@
-exit status 1
-Syntax error compiling at (/workspace/mochi/tests/machine/x/clj/substring_builtin.clj:4:12).
-Unable to resolve symbol: substring in this context
-
-Full report at:
-/tmp/clojure-10192264272636276785.edn

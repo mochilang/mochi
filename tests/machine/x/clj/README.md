@@ -1,6 +1,6 @@
 - # Clojure Compiler Results
 
-76/97 files compiled
+77/97 files compiled
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -85,7 +85,7 @@
 - [x] string_in_operator.mochi
 - [x] string_index.mochi
 - [x] string_prefix_slice.mochi
-- [ ] substring_builtin.mochi
+- [x] substring_builtin.mochi
 - [x] sum_builtin.mochi
 - [x] tail_recursion.mochi
 - [x] test_block.mochi
