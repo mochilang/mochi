@@ -11,12 +11,12 @@ public class Program
 {
     public static void Main()
     {
-        var products = new Dictionary<string, dynamic>[] { new Dictionary<string, dynamic> { { "name", "Laptop" }, { "price", 1500L } }, new Dictionary<string, dynamic> { { "name", "Smartphone" }, { "price", 900L } }, new Dictionary<string, dynamic> { { "name", "Tablet" }, { "price", 600L } }, new Dictionary<string, dynamic> { { "name", "Monitor" }, { "price", 300L } }, new Dictionary<string, dynamic> { { "name", "Keyboard" }, { "price", 100L } }, new Dictionary<string, dynamic> { { "name", "Mouse" }, { "price", 50L } }, new Dictionary<string, dynamic> { { "name", "Headphones" }, { "price", 200L } } };
-        var expensive = new List<dynamic>(products.OrderBy(p => (-p["price"])).Skip(1L).Take(3L).Select(p => p));
+        var products = new Dictionary<string, dynamic>[] { new Dictionary<string, dynamic> { { "name", "Laptop" }, { "price", 1500 } }, new Dictionary<string, dynamic> { { "name", "Smartphone" }, { "price", 900 } }, new Dictionary<string, dynamic> { { "name", "Tablet" }, { "price", 600 } }, new Dictionary<string, dynamic> { { "name", "Monitor" }, { "price", 300 } }, new Dictionary<string, dynamic> { { "name", "Keyboard" }, { "price", 100 } }, new Dictionary<string, dynamic> { { "name", "Mouse" }, { "price", 50 } }, new Dictionary<string, dynamic> { { "name", "Headphones" }, { "price", 200 } } };
+        var expensive = new List<dynamic>(products.OrderBy(p => (-p["price"])).Skip(1).Take(3).Select(p => p));
         Console.WriteLine("--- Top products (excluding most expensive) ---");
         foreach (var item in expensive)
         {
-            Console.WriteLine(string.Join(" ", new[] { Convert.ToString(item.name), Convert.ToString("costs $"), Convert.ToString(item.price) }));
+            Console.WriteLine(string.Join(" ", new[] { Convert.ToString(item["name"]), Convert.ToString("costs $"), Convert.ToString(item["price"]) }));
         }
     }
 }
