@@ -54,6 +54,7 @@ type Compiler struct {
 	labelCount        int
 	locals            map[string]types.Type
 	funcRet           types.Type
+	captures          map[string]string
 }
 
 func New(env *types.Env) *Compiler {
@@ -65,6 +66,7 @@ func New(env *types.Env) *Compiler {
 		globals:      map[string]bool{},
 		constGlobals: map[string]bool{},
 		locals:       map[string]types.Type{},
+		captures:     map[string]string{},
 	}
 }
 
@@ -341,6 +343,16 @@ func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 				}
 				c.constGlobals[name] = true
 				continue
+			} else if s.Let.Value != nil {
+				if _, ok := typ.(types.FuncType); ok {
+					v, err := c.compileExpr(s.Let.Value, false)
+					if err != nil {
+						return err
+					}
+					c.writeln(fmt.Sprintf("const %s = %s;", name, v))
+					c.constGlobals[name] = true
+					continue
+				}
 			}
 			c.globals[name] = true
 			c.writeln(fmt.Sprintf("var %s: %s = undefined;", name, zigTypeOf(typ)))
@@ -1660,6 +1672,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary, asReturn bool) (string, err
 		return c.compileLiteral(p.Lit, t)
 	case p.Selector != nil:
 		name := sanitizeName(p.Selector.Root)
+		if alias, ok := c.captures[name]; ok {
+			name = alias
+		}
 		if len(p.Selector.Tail) > 0 {
 			name += "." + strings.Join(p.Selector.Tail, ".")
 		} else if c.env != nil {
@@ -2050,18 +2065,21 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	captured := freeVars(fn, paramNames)
 	fieldDecls := make([]string, len(captured))
 	fieldInits := make([]string, len(captured))
+	sub := &Compiler{env: child, locals: map[string]types.Type{}, captures: map[string]string{}}
 	for i, name := range captured {
 		typ := "i32"
 		if c.env != nil {
 			if t, err := c.env.GetVar(name); err == nil {
 				typ = zigTypeOf(t)
+				child.SetVar(name, t, true)
+				sub.locals[name] = t
 			}
 		}
 		sn := sanitizeName(name)
 		fieldDecls[i] = fmt.Sprintf("%s: %s,", sn, typ)
 		fieldInits[i] = fmt.Sprintf(".%s = %s", sn, sn)
+		sub.captures[sn] = "self." + sn
 	}
-	sub := &Compiler{env: child, locals: map[string]types.Type{}}
 	sub.indent = 1
 	if fn.ExprBody != nil {
 		expr, err := sub.compileExpr(fn.ExprBody, false)
@@ -2105,7 +2123,7 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 			callParams = "self: @This()"
 		}
 	}
-	return fmt.Sprintf("struct { %sfn call(%s) %s {\n%s} }{ %s }.call", decl, callParams, ret, body, init), nil
+	return fmt.Sprintf("(struct { %sfn call(%s) %s {\n%s} }{ %s }).call", decl, callParams, ret, body, init), nil
 }
 
 func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
