@@ -1,0 +1,9 @@
+line: 0
+error: run error: exit status 1
+[0m[1m[31merror[0m: Uncaught (in promise) ReferenceError: append is not defined
+console.log(append(a, 3));
+[0m[31m        ^[0m
+    at [0m[36mfile:///workspace/mochi/tests/machine/x/ts/append_builtin.ts[0m:[0m[33m2[0m:[0m[33m9[0m
+
+   1: let a = [1, 2];
+   2: console.log(append(a, 3));

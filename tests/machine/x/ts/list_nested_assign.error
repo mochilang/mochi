@@ -1,0 +1,9 @@
+line: 0
+error: run error: exit status 1
+[0m[1m[31merror[0m: Uncaught (in promise) TypeError: Cannot read properties of undefined (reading '0')
+console.log(matrix[1][0]);
+[0m[31m                     ^[0m
+    at [0m[36mfile:///workspace/mochi/tests/machine/x/ts/list_nested_assign.ts[0m:[0m[33m3[0m:[0m[33m22[0m
+
+   1: let matrix = [[1, 2], [3, 4]];
+   2: matrix = 5;

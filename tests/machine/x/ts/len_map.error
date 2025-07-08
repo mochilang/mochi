@@ -1,0 +1,4 @@
+line: 1
+error: unsupported primary at line 1
+   1: print(len({"a":1, "b":2}))
+   2: 

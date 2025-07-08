@@ -1,0 +1,5 @@
+line: 1
+error: unsupported primary at line 1
+   1: var m = {"a": 1, "b": 2}
+   2: for k in m {
+   3:   print(k)

@@ -1,0 +1,6 @@
+line: 2
+error: unsupported primary at line 2
+   1: let data = [
+   2:   {a:1, b:2},
+   3:   {a:1, b:1},
+   4:   {a:0, b:5}

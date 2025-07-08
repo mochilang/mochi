@@ -1,0 +1,10 @@
+line: 1
+error: run error: exit status 1
+[0m[1m[31merror[0m: The module's source code could not be parsed: Expected ',', got 'union' at file:///workspace/mochi/tests/machine/x/ts/list_set_ops.ts:1:21
+
+  console.log(([1, 2] union [2, 3]));
+                      ~~~~~
+
+   1: console.log(([1, 2] union [2, 3]));
+   2: console.log(([1, 2, 3] except [2]));
+   3: console.log(([1, 2, 3] intersect [2, 4]));

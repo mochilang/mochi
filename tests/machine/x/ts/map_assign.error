@@ -1,0 +1,5 @@
+line: 1
+error: unsupported primary at line 1
+   1: var scores = {"alice": 1}
+   2: scores["bob"] = 2
+   3: print(scores["bob"])
