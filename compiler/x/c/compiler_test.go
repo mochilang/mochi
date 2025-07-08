@@ -1,6 +1,6 @@
-//go:build slow
+//go:build archived && slow
 
-package c_test
+package ccode_test
 
 import (
 	"bytes"
@@ -8,132 +8,233 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"regexp"
-	"strconv"
 	"strings"
 	"testing"
 
-	c "mochi/compiler/x/c"
-	"mochi/compiler/x/testutil"
+	ccode "mochi/archived/x/c"
+	"mochi/golden"
 	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 
-// ensureCC returns the path to a C compiler or skips the test.
-func ensureCC(t *testing.T) string {
-	if env := os.Getenv("CC"); env != "" {
-		if p, err := exec.LookPath(env); err == nil {
-			return p
-		}
-	}
-	for _, cc := range []string{"cc", "gcc", "clang"} {
-		if p, err := exec.LookPath(cc); err == nil {
-			return p
-		}
-	}
-	t.Skip("C compiler not found")
-	return ""
-}
-
-func writeError(dir, name string, src []byte, err error) {
-	line := extractLine(err.Error())
-	var context string
-	if line > 0 {
-		lines := bytes.Split(src, []byte("\n"))
-		start := line - 2
-		if start < 1 {
-			start = 1
-		}
-		end := line + 2
-		if end > len(lines) {
-			end = len(lines)
-		}
-		var b strings.Builder
-		for i := start; i <= end; i++ {
-			if i-1 < len(lines) {
-				fmt.Fprintf(&b, "%4d: %s\n", i, lines[i-1])
-			}
-		}
-		context = b.String()
-	}
-	msg := fmt.Sprintf("line: %d\nerror: %v\n%s", line, err, context)
-	_ = os.WriteFile(filepath.Join(dir, name+".error"), []byte(msg), 0644)
-}
-
-func extractLine(msg string) int {
-	re := regexp.MustCompile(`:(\d+):`)
-	if m := re.FindStringSubmatch(msg); m != nil {
-		if n, err := strconv.Atoi(m[1]); err == nil {
-			return n
-		}
-	}
-	re = regexp.MustCompile(`line (\d+)`)
-	if m := re.FindStringSubmatch(msg); m != nil {
-		if n, err := strconv.Atoi(m[1]); err == nil {
-			return n
-		}
-	}
-	return 0
-}
-
-func TestCompilePrograms(t *testing.T) {
-	cc := ensureCC(t)
-	root := testutil.FindRepoRoot(t)
-	outDir := filepath.Join(root, "tests", "machine", "x", "c")
-	if err := os.MkdirAll(outDir, 0755); err != nil {
-		t.Fatalf("mkdir: %v", err)
-	}
-	files, err := filepath.Glob(filepath.Join(root, "tests", "vm", "valid", "*.mochi"))
+// TestCCompiler_TwoSum compiles the LeetCode example to C and runs it.
+func TestCCompiler_TwoSum(t *testing.T) {
+	cc, err := ccode.EnsureCC()
 	if err != nil {
-		t.Fatalf("glob: %v", err)
+		t.Skipf("C compiler not installed: %v", err)
 	}
-	for _, src := range files {
-		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		t.Run(name, func(t *testing.T) { compileOne(t, src, outDir, name, cc) })
-	}
-}
-
-func compileOne(t *testing.T, src, outDir, name, cc string) {
-	data, err := os.ReadFile(src)
-	if err != nil {
-		t.Fatalf("read: %v", err)
-	}
+	src := filepath.Join("..", "..", "..", "examples", "leetcode", "1", "two-sum.mochi")
 	prog, err := parser.Parse(src)
 	if err != nil {
-		writeError(outDir, name, data, err)
-		t.Skipf("parse error: %v", err)
-		return
+		t.Fatalf("parse error: %v", err)
 	}
 	env := types.NewEnv(nil)
 	if errs := types.Check(prog, env); len(errs) > 0 {
-		writeError(outDir, name, data, errs[0])
-		t.Skipf("type error: %v", errs[0])
-		return
+		t.Fatalf("type error: %v", errs[0])
 	}
-	code, err := c.New(env).Compile(prog)
+	c := ccode.New(env)
+	code, err := c.Compile(prog)
 	if err != nil {
-		writeError(outDir, name, data, err)
-		t.Skipf("compile error: %v", err)
-		return
+		t.Fatalf("compile error: %v", err)
 	}
-	cpath := filepath.Join(outDir, name+".c")
-	if err := os.WriteFile(cpath, code, 0644); err != nil {
-		t.Fatalf("write c: %v", err)
+	goldenPath := filepath.Join("..", "..", "..", "tests", "compiler", "valid", "two_sum.c.out")
+	golden, err := os.ReadFile(goldenPath)
+	if err != nil {
+		t.Fatalf("read golden: %v", err)
 	}
-	bin := filepath.Join(outDir, name)
-	if out, err := exec.Command(cc, cpath, "-o", bin).CombinedOutput(); err != nil {
-		writeError(outDir, name, data, fmt.Errorf("cc error: %v\n%s", err, out))
-		t.Skipf("cc error: %v", err)
-		return
+	gotSrc := strings.TrimSpace(string(code))
+	wantSrc := strings.TrimSpace(string(golden))
+	if gotSrc != wantSrc {
+		t.Fatalf("generated C mismatch\n--- got ---\n%s\n--- want ---\n%s", gotSrc, wantSrc)
+	}
+	dir := t.TempDir()
+	cfile := filepath.Join(dir, "prog.c")
+	if err := os.WriteFile(cfile, code, 0644); err != nil {
+		t.Fatalf("write error: %v", err)
+	}
+	bin := filepath.Join(dir, "prog")
+	if out, err := exec.Command(cc, cfile, "-o", bin).CombinedOutput(); err != nil {
+		t.Fatalf("cc error: %v\n%s", err, out)
 	}
 	out, err := exec.Command(bin).CombinedOutput()
 	if err != nil {
-		writeError(outDir, name, data, fmt.Errorf("run error: %v\n%s", err, out))
-		t.Skipf("run error: %v", err)
-		return
+		t.Fatalf("run error: %v\n%s", err, out)
 	}
-	outFile := filepath.Join(outDir, name+".out")
-	if err := os.WriteFile(outFile, out, 0644); err != nil {
-		t.Fatalf("write out: %v", err)
+	got := strings.TrimSpace(string(out))
+	want := "0\n1"
+	if got != want {
+		t.Fatalf("unexpected output\nwant:\n%s\n got:\n%s", want, got)
 	}
+}
+
+func TestCCompiler_SubsetPrograms(t *testing.T) {
+	cc, err := ccode.EnsureCC()
+	if err != nil {
+		t.Skipf("C compiler not installed: %v", err)
+	}
+	golden.Run(t, "tests/compiler/valid", ".mochi", ".out", func(src string) ([]byte, error) {
+		prog, err := parser.Parse(src)
+		if err != nil {
+			return nil, fmt.Errorf("\u274c parse error: %w", err)
+		}
+		env := types.NewEnv(nil)
+		if errs := types.Check(prog, env); len(errs) > 0 {
+			return nil, fmt.Errorf("\u274c type error: %v", errs[0])
+		}
+		c := ccode.New(env)
+		code, err := c.Compile(prog)
+		if err != nil {
+			return nil, fmt.Errorf("\u274c compile error: %w", err)
+		}
+		dir := t.TempDir()
+		cfile := filepath.Join(dir, "prog.c")
+		if err := os.WriteFile(cfile, code, 0644); err != nil {
+			return nil, fmt.Errorf("write error: %w", err)
+		}
+		bin := filepath.Join(dir, "prog")
+		if out, err := exec.Command(cc, cfile, "-o", bin).CombinedOutput(); err != nil {
+			return nil, fmt.Errorf("\u274c cc error: %w\n%s", err, out)
+		}
+		inData, _ := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in")
+		cmd := exec.Command(bin)
+		if len(inData) > 0 {
+			cmd.Stdin = bytes.NewReader(inData)
+		}
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			return nil, fmt.Errorf("\u274c run error: %w\n%s", err, out)
+		}
+		got := bytes.TrimSpace(out)
+
+		p, err := vm.Compile(prog, env)
+		if err != nil {
+			return nil, fmt.Errorf("\u274c vm compile error: %w", err)
+		}
+		var vmOut bytes.Buffer
+		m := vm.NewWithIO(p, bytes.NewReader(inData), &vmOut)
+		if err := m.Run(); err != nil {
+			return nil, fmt.Errorf("\u274c vm run error: %w", err)
+		}
+		want := bytes.TrimSpace(vmOut.Bytes())
+		if !bytes.Equal(got, want) {
+			return nil, fmt.Errorf("output mismatch\n\n--- VM ---\n%s\n\n--- C ---\n%s\n", want, got)
+		}
+		return got, nil
+	})
+	golden.Run(t, "tests/compiler/c", ".mochi", ".out", func(src string) ([]byte, error) {
+		prog, err := parser.Parse(src)
+		if err != nil {
+			return nil, fmt.Errorf("\u274c parse error: %w", err)
+		}
+		env := types.NewEnv(nil)
+		if errs := types.Check(prog, env); len(errs) > 0 {
+			return nil, fmt.Errorf("\u274c type error: %v", errs[0])
+		}
+		c := ccode.New(env)
+		code, err := c.Compile(prog)
+		if err != nil {
+			return nil, fmt.Errorf("\u274c compile error: %w", err)
+		}
+		dir := t.TempDir()
+		cfile := filepath.Join(dir, "prog.c")
+		if err := os.WriteFile(cfile, code, 0644); err != nil {
+			return nil, fmt.Errorf("write error: %w", err)
+		}
+		bin := filepath.Join(dir, "prog")
+		if out, err := exec.Command(cc, cfile, "-o", bin).CombinedOutput(); err != nil {
+			return nil, fmt.Errorf("\u274c cc error: %w\n%s", err, out)
+		}
+		inData, _ := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in")
+		cmd := exec.Command(bin)
+		if len(inData) > 0 {
+			cmd.Stdin = bytes.NewReader(inData)
+		}
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			return nil, fmt.Errorf("\u274c run error: %w\n%s", err, out)
+		}
+		got := bytes.TrimSpace(out)
+
+		p, err := vm.Compile(prog, env)
+		if err != nil {
+			return nil, fmt.Errorf("\u274c vm compile error: %w", err)
+		}
+		var vmOut bytes.Buffer
+		m := vm.NewWithIO(p, bytes.NewReader(inData), &vmOut)
+		if err := m.Run(); err != nil {
+			return nil, fmt.Errorf("\u274c vm run error: %w", err)
+		}
+		want := bytes.TrimSpace(vmOut.Bytes())
+		if !bytes.Equal(got, want) {
+			return nil, fmt.Errorf("output mismatch\n\n--- VM ---\n%s\n\n--- C ---\n%s\n", want, got)
+		}
+		return got, nil
+	})
+}
+
+func TestCCompiler_GoldenOutput(t *testing.T) {
+	cc, err := ccode.EnsureCC()
+	if err != nil {
+		t.Skipf("C compiler not installed: %v", err)
+	}
+
+	run := func(src string) ([]byte, error) {
+		prog, err := parser.Parse(src)
+		if err != nil {
+			return nil, fmt.Errorf("\u274c parse error: %w", err)
+		}
+		env := types.NewEnv(nil)
+		if errs := types.Check(prog, env); len(errs) > 0 {
+			return nil, fmt.Errorf("\u274c type error: %v", errs[0])
+		}
+		c := ccode.New(env)
+		code, err := c.Compile(prog)
+		if err != nil {
+			return nil, fmt.Errorf("\u274c compile error: %w", err)
+		}
+
+		// write C source to temp dir
+		dir := t.TempDir()
+		cfile := filepath.Join(dir, "prog.c")
+		if err := os.WriteFile(cfile, code, 0644); err != nil {
+			return nil, fmt.Errorf("write error: %w", err)
+		}
+		bin := filepath.Join(dir, "prog")
+		if out, err := exec.Command(cc, cfile, "-o", bin).CombinedOutput(); err != nil {
+			return nil, fmt.Errorf("\u274c cc error: %w\n%s", err, out)
+		}
+		inData, _ := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in")
+
+		// run generated C binary
+		cmd := exec.Command(bin)
+		if len(inData) > 0 {
+			cmd.Stdin = bytes.NewReader(inData)
+		}
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			return nil, fmt.Errorf("\u274c run error: %w\n%s", err, out)
+		}
+		got := bytes.TrimSpace(out)
+
+		// run program with VM to get expected output
+		p, err := vm.Compile(prog, env)
+		if err != nil {
+			return nil, fmt.Errorf("\u274c vm compile error: %w", err)
+		}
+		var vmOut bytes.Buffer
+		m := vm.NewWithIO(p, bytes.NewReader(inData), &vmOut)
+		if err := m.Run(); err != nil {
+			return nil, fmt.Errorf("\u274c vm run error: %w", err)
+		}
+		want := bytes.TrimSpace(vmOut.Bytes())
+		if !bytes.Equal(got, want) {
+			return nil, fmt.Errorf("output mismatch\n\n--- VM ---\n%s\n\n--- C ---\n%s\n", want, got)
+		}
+
+		return bytes.TrimSpace(code), nil
+	}
+
+	golden.Run(t, "tests/compiler/valid", ".mochi", ".c.out", run)
+	golden.Run(t, "tests/compiler/c", ".mochi", ".c.out", run)
 }
