@@ -317,6 +317,25 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			left = res
 			leftType = types.BoolType{}
 			continue
+		case "union":
+			if op.All {
+				res = fmt.Sprintf("array_merge(%s, %s)", res, r)
+			} else {
+				res = fmt.Sprintf("array_values(array_unique(array_merge(%s, %s), SORT_REGULAR))", res, r)
+			}
+			left = res
+			leftType = types.AnyType{}
+			continue
+		case "except":
+			res = fmt.Sprintf("array_values(array_diff(%s, %s))", res, r)
+			left = res
+			leftType = types.AnyType{}
+			continue
+		case "intersect":
+			res = fmt.Sprintf("array_values(array_intersect(%s, %s))", res, r)
+			left = res
+			leftType = types.AnyType{}
+			continue
 		case "+":
 			if isStringType(leftType) || isStringType(rightType) {
 				opStr = "."
@@ -499,6 +518,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			name += "->" + sanitizeName(t)
 		}
 		return name, nil
+	case p.Struct != nil:
+		return c.compileStructLiteral(p.Struct)
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
 	case p.Call != nil:
 		return c.compileCall(p.Call)
 	case p.If != nil:
@@ -586,6 +609,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("values expects 1 arg")
 		}
 		return fmt.Sprintf("array_values(%s)", args[0]), nil
+	case "exists":
+		if len(args) != 1 {
+			return "", fmt.Errorf("exists expects 1 arg")
+		}
+		return fmt.Sprintf("count(%s) > 0", args[0]), nil
 	default:
 		name := sanitizeName(call.Func)
 		if c.env != nil {
@@ -623,6 +651,151 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		return fmt.Sprintf("function(%s) { return %s; }", strings.Join(params, ", "), body), nil
 	}
 	return "", fmt.Errorf("block function expressions not supported")
+}
+
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	if q.Group != nil || len(q.Joins) > 0 {
+		return "", fmt.Errorf("query features not supported")
+	}
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	child := types.NewEnv(c.env)
+	if lt, ok := types.TypeOfExprBasic(q.Source, c.env).(types.ListType); ok {
+		child.SetVar(q.Var, lt.Elem, true)
+	} else {
+		child.SetVar(q.Var, types.AnyType{}, true)
+	}
+	for _, f := range q.Froms {
+		if lt, ok := types.TypeOfExprBasic(f.Src, c.env).(types.ListType); ok {
+			child.SetVar(f.Var, lt.Elem, true)
+		} else {
+			child.SetVar(f.Var, types.AnyType{}, true)
+		}
+	}
+	oldEnv := c.env
+	c.env = child
+	defer func() { c.env = oldEnv }()
+
+	var buf bytes.Buffer
+	buf.WriteString("(function() {")
+	buf.WriteString("\n")
+	buf.WriteString("    $result = [];")
+	buf.WriteString("\n")
+
+	loops := []string{fmt.Sprintf("foreach (%s as $%s)", src, sanitizeName(q.Var))}
+	for _, f := range q.Froms {
+		s, err := c.compileExpr(f.Src)
+		if err != nil {
+			return "", err
+		}
+		loops = append(loops, fmt.Sprintf("foreach (%s as $%s)", s, sanitizeName(f.Var)))
+	}
+
+	indent := 1
+	for _, l := range loops {
+		for i := 0; i < indent; i++ {
+			buf.WriteString("    ")
+		}
+		buf.WriteString(l + " {")
+		buf.WriteString("\n")
+		indent++
+	}
+
+	if q.Where != nil {
+		cond, err := c.compileExpr(q.Where)
+		if err != nil {
+			return "", err
+		}
+		for i := 0; i < indent; i++ {
+			buf.WriteString("    ")
+		}
+		buf.WriteString("if (" + cond + ") {")
+		buf.WriteString("\n")
+		indent++
+	}
+
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		return "", err
+	}
+
+	keyExpr := ""
+	if q.Sort != nil {
+		keyExpr, err = c.compileExpr(q.Sort)
+		if err != nil {
+			return "", err
+		}
+	}
+	for i := 0; i < indent; i++ {
+		buf.WriteString("    ")
+	}
+	if keyExpr != "" {
+		buf.WriteString(fmt.Sprintf("$result[] = [%s, %s];", keyExpr, sel))
+	} else {
+		buf.WriteString(fmt.Sprintf("$result[] = %s;", sel))
+	}
+	buf.WriteString("\n")
+
+	if q.Where != nil {
+		indent--
+		for i := 0; i < indent; i++ {
+			buf.WriteString("    ")
+		}
+		buf.WriteString("}")
+		buf.WriteString("\n")
+	}
+
+	for i := len(loops) - 1; i >= 0; i-- {
+		indent--
+		for j := 0; j < indent; j++ {
+			buf.WriteString("    ")
+		}
+		buf.WriteString("}")
+		buf.WriteString("\n")
+	}
+
+	if q.Sort != nil {
+		buf.WriteString("    usort($result, function($a, $b) { return $a[0] <=> $b[0]; });\n")
+		buf.WriteString("    $result = array_map(fn($r) => $r[1], $result);\n")
+	}
+	if q.Skip != nil || q.Take != nil {
+		start := "0"
+		if q.Skip != nil {
+			start, err = c.compileExpr(q.Skip)
+			if err != nil {
+				return "", err
+			}
+		}
+		length := "null"
+		if q.Take != nil {
+			length, err = c.compileExpr(q.Take)
+			if err != nil {
+				return "", err
+			}
+		}
+		buf.WriteString(fmt.Sprintf("    $result = array_slice($result, %s, %s);\n", start, length))
+	}
+	if q.Distinct {
+		buf.WriteString("    $result = array_values(array_unique($result, SORT_REGULAR));\n")
+	}
+	buf.WriteString("    return $result;\n")
+	buf.WriteString("})();")
+
+	return buf.String(), nil
+}
+
+func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error) {
+	fields := make([]string, len(sl.Fields))
+	for i, f := range sl.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return "", err
+		}
+		fields[i] = fmt.Sprintf("'%s' => %s", f.Name, v)
+	}
+	return fmt.Sprintf("new %s([%s])", sanitizeName(sl.Name), strings.Join(fields, ", ")), nil
 }
 
 func (c *Compiler) compileIfExpr(ix *parser.IfExpr) (string, error) {

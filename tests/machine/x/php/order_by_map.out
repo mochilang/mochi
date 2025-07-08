@@ -1,0 +1,10 @@
+PHP Warning:  Undefined variable $a in /workspace/mochi/tests/machine/x/php/order_by_map.php on line 2
+PHP Warning:  Undefined variable $b in /workspace/mochi/tests/machine/x/php/order_by_map.php on line 2
+PHP Warning:  Undefined variable $a in /workspace/mochi/tests/machine/x/php/order_by_map.php on line 2
+PHP Warning:  Undefined variable $b in /workspace/mochi/tests/machine/x/php/order_by_map.php on line 2
+PHP Warning:  Undefined variable $a in /workspace/mochi/tests/machine/x/php/order_by_map.php on line 2
+PHP Warning:  Undefined variable $b in /workspace/mochi/tests/machine/x/php/order_by_map.php on line 2
+PHP Warning:  Undefined variable $data in /workspace/mochi/tests/machine/x/php/order_by_map.php on line 5
+PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/order_by_map.php on line 5
+array(0) {
+}

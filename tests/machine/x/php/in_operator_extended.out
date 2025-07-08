@@ -1,0 +1,9 @@
+PHP Warning:  Undefined variable $xs in /workspace/mochi/tests/machine/x/php/in_operator_extended.php on line 5
+PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/in_operator_extended.php on line 5
+bool(false)
+bool(false)
+PHP Warning:  Undefined variable $a in /workspace/mochi/tests/machine/x/php/in_operator_extended.php on line 14
+bool(false)
+bool(false)
+bool(true)
+bool(false)
