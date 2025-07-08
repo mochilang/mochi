@@ -106,4 +106,10 @@ i = 0
 
 main :: IO ()
 main = do
-  let _ = whileLoop (\() -> (i < 3)) (\() -> Nothing <$ (fromMaybe () (case (let _ = print (i) in Nothing) of Just v -> Just v; Nothing -> (let i = (i + 1) in Nothing)))) in return ()
+  let loop i = do
+        if (i < 3)
+          then do
+            print (i)
+            loop ((i + 1))
+          else return ()
+  loop i
