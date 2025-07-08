@@ -2,7 +2,7 @@
 
 This checklist tracks which Mochi programs from `tests/vm/valid` have been compiled to C# and executed successfully.
 
-**31/97 files compiled**
+**32/97 files compiled**
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -10,7 +10,7 @@ This checklist tracks which Mochi programs from `tests/vm/valid` have been compi
 - [x] binary_precedence.mochi
 - [x] bool_chain.mochi
 - [x] break_continue.mochi
-- [ ] cast_string_to_int.mochi
+- [x] cast_string_to_int.mochi
 - [x] cast_struct.mochi
 - [x] closure.mochi
 - [x] count_builtin.mochi
