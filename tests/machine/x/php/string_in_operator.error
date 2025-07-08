@@ -1,5 +1,0 @@
-PHP Fatal error:  Uncaught TypeError: in_array(): Argument #2 ($haystack) must be of type array, string given in /workspace/mochi/tests/machine/x/php/string_in_operator.php:3
-Stack trace:
-#0 /workspace/mochi/tests/machine/x/php/string_in_operator.php(3): in_array()
-#1 {main}
-  thrown in /workspace/mochi/tests/machine/x/php/string_in_operator.php on line 3
