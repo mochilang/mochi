@@ -22,20 +22,8 @@ foreach ($orders as $o) {
         }
     }
 }
-_print("--- Orders with customer info ---");
+var_dump("--- Orders with customer info ---");
 foreach ($result as $entry) {
-    _print("Order", $entry['orderId'], "by", $entry['customerName'], "- $", $entry['total']);
-}
-
-function _print(...$args) {
-    $parts = [];
-    foreach ($args as $a) {
-        if (is_array($a) || is_object($a)) {
-            $parts[] = json_encode($a);
-        } else {
-            $parts[] = strval($a);
-        }
-    }
-    echo implode(' ', $parts), PHP_EOL;
+    var_dump("Order", $entry['orderId'], "by", $entry['customerName'], "- $", $entry['total']);
 }
 ?>

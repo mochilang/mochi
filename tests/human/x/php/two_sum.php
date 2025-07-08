@@ -11,13 +11,6 @@ function twoSum($nums,$target){
     return [-1,-1];
 }
 $result=twoSum([2,7,11,15],9);
-_print($result[0]);
-_print($result[1]);
-
-function _print(...$args){
-    $parts=[];
-    foreach($args as $a){
-        if(is_array($a)||is_object($a)){$parts[]=json_encode($a);}else{$parts[]=strval($a);} }
-    echo implode(' ',$parts),PHP_EOL;
-}
+var_dump($result[0]);
+var_dump($result[1]);
 ?>

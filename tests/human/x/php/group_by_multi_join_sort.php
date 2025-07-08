@@ -34,7 +34,7 @@ foreach($map as $k=>$rev){$key=json_decode($k,true);$result[]=[
   'c_phone'=>$key['c_phone'],
   'c_comment'=>$key['c_comment']];}
 usort($result,function($a,$b){return $b['revenue']<=>$a['revenue'];});
-_print($result);
+var_dump($result);
 
-function _print(...$args){$parts=[];foreach($args as $a){if(is_array($a)||is_object($a)){$parts[]=json_encode($a);}else{$parts[]=strval($a);}}echo implode(' ',$parts),PHP_EOL;}
+function var_dump(...$args){$parts=[];foreach($args as $a){if(is_array($a)||is_object($a)){$parts[]=json_encode($a);}else{$parts[]=strval($a);}}echo implode(' ',$parts),PHP_EOL;}
 ?>

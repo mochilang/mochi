@@ -10,12 +10,5 @@ usort($items,function($x,$y){
     return $x['n'] <=> $y['n'];
 });
 $result = array_map(fn($x)=>$x['v'],$items);
-_print($result);
-
-function _print(...$args){
-    $parts=[];
-    foreach($args as $a){
-        if(is_array($a)||is_object($a)){$parts[]=json_encode($a);}else{$parts[]=strval($a);} }
-    echo implode(' ',$parts),PHP_EOL;
-}
+var_dump($result);
 ?>

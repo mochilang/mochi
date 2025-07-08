@@ -6,12 +6,5 @@ function sum_tree($t){
     return sum_tree($t->left)+$t->value+sum_tree($t->right);
 }
 $t = new Node(new Leaf(),1,new Node(new Leaf(),2,new Leaf()));
-_print(sum_tree($t));
-
-function _print(...$args){
-    $parts=[];
-    foreach($args as $a){
-        if(is_array($a)||is_object($a)){$parts[]=json_encode($a);}else{$parts[]=strval($a);} }
-    echo implode(' ',$parts),PHP_EOL;
-}
+var_dump(sum_tree($t));
 ?>

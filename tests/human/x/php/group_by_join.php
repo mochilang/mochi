@@ -21,20 +21,8 @@ $stats = [];
 foreach ($groups as $name => $ordersFor) {
     $stats[] = ['name'=>$name, 'count'=>count($ordersFor)];
 }
-_print("--- Orders per customer ---");
+var_dump("--- Orders per customer ---");
 foreach ($stats as $s) {
-    _print($s['name'], "orders:", $s['count']);
-}
-
-function _print(...$args) {
-    $parts = [];
-    foreach ($args as $a) {
-        if (is_array($a) || is_object($a)) {
-            $parts[] = json_encode($a);
-        } else {
-            $parts[] = strval($a);
-        }
-    }
-    echo implode(' ', $parts), PHP_EOL;
+    var_dump($s['name'], "orders:", $s['count']);
 }
 ?>

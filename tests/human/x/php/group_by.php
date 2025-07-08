@@ -20,20 +20,8 @@ foreach ($groups as $city => $persons) {
     $avg = $total / count($persons);
     $stats[] = ["city" => $city, "count" => count($persons), "avg_age" => $avg];
 }
-_print("--- People grouped by city ---");
+var_dump("--- People grouped by city ---");
 foreach ($stats as $s) {
-    _print($s['city'], ": count =", $s['count'], ", avg_age =", $s['avg_age']);
-}
-
-function _print(...$args) {
-    $parts = [];
-    foreach ($args as $a) {
-        if (is_array($a) || is_object($a)) {
-            $parts[] = json_encode($a);
-        } else {
-            $parts[] = strval($a);
-        }
-    }
-    echo implode(' ', $parts), PHP_EOL;
+    var_dump($s['city'], ": count =", $s['count'], ", avg_age =", $s['avg_age']);
 }
 ?>

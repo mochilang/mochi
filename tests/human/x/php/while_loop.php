@@ -1,19 +1,7 @@
 <?php
 $i = 0;
 while ($i < 3) {
-    _print($i);
+    var_dump($i);
     $i = $i + 1;
-}
-
-function _print(...$args) {
-    $parts = [];
-    foreach ($args as $a) {
-        if (is_array($a) || is_object($a)) {
-            $parts[] = json_encode($a);
-        } else {
-            $parts[] = strval($a);
-        }
-    }
-    echo implode(' ', $parts), PHP_EOL;
 }
 ?>

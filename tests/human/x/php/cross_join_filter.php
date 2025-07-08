@@ -9,20 +9,8 @@ foreach ($nums as $n) {
         }
     }
 }
-_print("--- Even pairs ---");
+var_dump("--- Even pairs ---");
 foreach ($pairs as $p) {
-    _print($p['n'], $p['l']);
-}
-
-function _print(...$args) {
-    $parts = [];
-    foreach ($args as $a) {
-        if (is_array($a) || is_object($a)) {
-            $parts[] = json_encode($a);
-        } else {
-            $parts[] = strval($a);
-        }
-    }
-    echo implode(' ', $parts), PHP_EOL;
+    var_dump($p['n'], $p['l']);
 }
 ?>

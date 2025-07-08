@@ -23,20 +23,8 @@ foreach ($orders as $o) {
         }
     }
 }
-_print("--- Multi Join ---");
+var_dump("--- Multi Join ---");
 foreach ($result as $r) {
-    _print($r['name'], "bought item", $r['sku']);
-}
-
-function _print(...$args) {
-    $parts = [];
-    foreach ($args as $a) {
-        if (is_array($a) || is_object($a)) {
-            $parts[] = json_encode($a);
-        } else {
-            $parts[] = strval($a);
-        }
-    }
-    echo implode(' ', $parts), PHP_EOL;
+    var_dump($r['name'], "bought item", $r['sku']);
 }
 ?>

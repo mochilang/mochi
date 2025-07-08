@@ -15,21 +15,9 @@ foreach ($people as $person) {
         ];
     }
 }
-_print("--- Adults ---");
+var_dump("--- Adults ---");
 foreach ($adults as $person) {
     $extra = $person['is_senior'] ? " (senior)" : "";
-    _print($person['name'], "is", $person['age'] . $extra);
-}
-
-function _print(...$args) {
-    $parts = [];
-    foreach ($args as $a) {
-        if (is_array($a) || is_object($a)) {
-            $parts[] = json_encode($a);
-        } else {
-            $parts[] = strval($a);
-        }
-    }
-    echo implode(' ', $parts), PHP_EOL;
+    var_dump($person['name'], "is", $person['age'] . $extra);
 }
 ?>

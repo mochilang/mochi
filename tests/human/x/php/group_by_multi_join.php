@@ -21,7 +21,7 @@ foreach($filtered as $x){
 }
 $grouped=[];
 foreach($groups as $p=>$tot){$grouped[]=['part'=>$p,'total'=>$tot];}
-_print($grouped);
+var_dump($grouped);
 
-function _print(...$args){$parts=[];foreach($args as $a){if(is_array($a)||is_object($a)){$parts[]=json_encode($a);}else{$parts[]=strval($a);}}echo implode(' ',$parts),PHP_EOL;}
+function var_dump(...$args){$parts=[];foreach($args as $a){if(is_array($a)||is_object($a)){$parts[]=json_encode($a);}else{$parts[]=strval($a);}}echo implode(' ',$parts),PHP_EOL;}
 ?>

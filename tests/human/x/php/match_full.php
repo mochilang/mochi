@@ -6,7 +6,7 @@ $label = match($x) {
     3 => "three",
     default => "unknown",
 };
-_print($label);
+var_dump($label);
 
 $day = "sun";
 $mood = match($day) {
@@ -15,11 +15,11 @@ $mood = match($day) {
     "sun" => "relaxed",
     default => "normal",
 };
-_print($mood);
+var_dump($mood);
 
 $ok = true;
 $status = $ok ? "confirmed" : "denied";
-_print($status);
+var_dump($status);
 
 function classify($n) {
     return match($n) {
@@ -28,18 +28,6 @@ function classify($n) {
         default => "many",
     };
 }
-_print(classify(0));
-_print(classify(5));
-
-function _print(...$args) {
-    $parts = [];
-    foreach ($args as $a) {
-        if (is_array($a) || is_object($a)) {
-            $parts[] = json_encode($a);
-        } else {
-            $parts[] = strval($a);
-        }
-    }
-    echo implode(' ', $parts), PHP_EOL;
-}
+var_dump(classify(0));
+var_dump(classify(5));
 ?>
