@@ -24,6 +24,8 @@ type Compiler struct {
 	lens     map[string]int
 	listVals map[string][]string
 
+	mapVals map[string][]string
+
 	mapTypes map[string]string
 
 	needsContains  bool
@@ -55,6 +57,7 @@ func New(env *types.Env) *Compiler {
 		vars:     make(map[string]string),
 		lens:     make(map[string]int),
 		listVals: make(map[string][]string),
+		mapVals:  make(map[string][]string),
 		mapTypes: make(map[string]string),
 		aliases:  make(map[string]string),
 		funRet:   make(map[string]string),
@@ -264,7 +267,24 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			c.vars[s.Let.Name] = typ
 			c.lens[s.Let.Name] = len(mp.Items)
 			c.mapTypes[s.Let.Name] = entry
+			vals := make([]string, len(mp.Items))
+			for i, it := range mp.Items {
+				v, err := c.compileExpr(it.Value)
+				if err != nil {
+					return err
+				}
+				vals[i] = v
+			}
+			c.mapVals[s.Let.Name] = vals
 		} else {
+			var val string
+			var err error
+			if s.Let.Value != nil {
+				val, err = c.compileExpr(s.Let.Value)
+				if err != nil {
+					return err
+				}
+			}
 			typ, _ := c.compileType(s.Let.Type)
 			if s.Let.Type == nil && c.lastType != "" {
 				typ = c.lastType
@@ -283,10 +303,6 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			c.buf.WriteByte(' ')
 			c.buf.WriteString(s.Let.Name)
 			if s.Let.Value != nil {
-				val, err := c.compileExpr(s.Let.Value)
-				if err != nil {
-					return err
-				}
 				c.buf.WriteString(" = ")
 				c.buf.WriteString(val)
 			}
@@ -319,7 +335,24 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			c.vars[s.Var.Name] = typ
 			c.lens[s.Var.Name] = len(mp.Items)
 			c.mapTypes[s.Var.Name] = entry
+			vals := make([]string, len(mp.Items))
+			for i, it := range mp.Items {
+				v, err := c.compileExpr(it.Value)
+				if err != nil {
+					return err
+				}
+				vals[i] = v
+			}
+			c.mapVals[s.Var.Name] = vals
 		} else {
+			var val string
+			var err error
+			if s.Var.Value != nil {
+				val, err = c.compileExpr(s.Var.Value)
+				if err != nil {
+					return err
+				}
+			}
 			typ, _ := c.compileType(s.Var.Type)
 			if s.Var.Type == nil && c.lastType != "" {
 				typ = c.lastType
@@ -338,10 +371,6 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			c.buf.WriteByte(' ')
 			c.buf.WriteString(s.Var.Name)
 			if s.Var.Value != nil {
-				val, err := c.compileExpr(s.Var.Value)
-				if err != nil {
-					return err
-				}
 				c.buf.WriteString(" = ")
 				c.buf.WriteString(val)
 			}
@@ -457,6 +486,8 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 			} else if op.Op == "+" && (c.unaryIsString(leftAST) || c.postfixIsString(op.Right)) {
 				c.needsConcat = true
 				out = fmt.Sprintf("str_concat(%s, %s)", out, rhs)
+			} else if (op.Op == "==" || op.Op == "!=" || op.Op == "<" || op.Op == "<=" || op.Op == ">" || op.Op == ">=") && (c.unaryIsString(leftAST) || c.postfixIsString(op.Right)) {
+				out = fmt.Sprintf("(strcmp(%s, %s) %s 0)", out, rhs, op.Op)
 			} else {
 				out = fmt.Sprintf("(%s %s %s)", out, op.Op, rhs)
 			}
@@ -654,7 +685,29 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				expr = fmt.Sprintf("(%s)(%s)", typ, expr)
 			}
 		case op.Index != nil:
-			if op.Index.Start == nil || op.Index.Colon != nil {
+			if op.Index.Colon != nil {
+				if op.Index.Start == nil || op.Index.End == nil {
+					return "", fmt.Errorf("complex indexing not supported")
+				}
+				startStr, err := c.compileExpr(op.Index.Start)
+				if err != nil {
+					return "", err
+				}
+				endStr, err := c.compileExpr(op.Index.End)
+				if err != nil {
+					return "", err
+				}
+				prefix := &parser.PostfixExpr{Target: p.Target, Ops: p.Ops[:i]}
+				t := types.TypeOfPostfix(prefix, c.env)
+				if types.IsStringType(t) {
+					c.needsSubstr = true
+					expr = fmt.Sprintf("substr(%s, %s, %s)", expr, startStr, endStr)
+				} else {
+					return "", fmt.Errorf("slice unsupported")
+				}
+				continue
+			}
+			if op.Index.Start == nil {
 				return "", fmt.Errorf("complex indexing not supported")
 			}
 			idxStr, err := c.compileExpr(op.Index.Start)
@@ -851,6 +904,31 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			if call.Args[0].Binary != nil {
 				u := call.Args[0].Binary.Left
 				if len(call.Args[0].Binary.Right) == 0 && len(u.Ops) == 0 && u.Value != nil && len(u.Value.Ops) == 0 {
+					if sub := u.Value.Target.Call; sub != nil && sub.Func == "values" {
+						if mp := mapLiteral(sub.Args[0]); mp != nil {
+							arr, err := c.compileCall(sub)
+							if err != nil {
+								return "", err
+							}
+							c.needsPrintList = true
+							return fmt.Sprintf("print_list(%s, %d)", arr, len(mp.Items)), nil
+						}
+						if name := simpleIdent(sub.Args[0]); name != "" {
+							if vals, ok := c.mapVals[name]; ok {
+								arr, err := c.compileCall(sub)
+								if err != nil {
+									return "", err
+								}
+								c.needsPrintList = true
+								return fmt.Sprintf("print_list(%s, %d)", arr, len(vals)), nil
+							}
+						}
+					}
+				}
+			}
+			if call.Args[0].Binary != nil {
+				u := call.Args[0].Binary.Left
+				if len(call.Args[0].Binary.Right) == 0 && len(u.Ops) == 0 && u.Value != nil && len(u.Value.Ops) == 0 {
 					if ap := u.Value.Target.Call; ap != nil && ap.Func == "append" {
 						if len(ap.Args) == 2 {
 							base := ap.Args[0]
@@ -924,12 +1002,20 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if lst := listLiteral(call.Args[0]); lst != nil {
 			return fmt.Sprintf("%d", len(lst.Elems)), nil
 		}
+		if mp := mapLiteral(call.Args[0]); mp != nil {
+			return fmt.Sprintf("%d", len(mp.Items)), nil
+		}
 		if name := simpleIdent(call.Args[0]); name != "" {
 			if c.vars[name] == "int[]" {
 				return fmt.Sprintf("sizeof(%s)/sizeof(%s[0])", name, name), nil
 			}
 			if c.vars[name] == "const char*" {
 				return fmt.Sprintf("strlen(%s)", name), nil
+			}
+			if _, ok := c.mapTypes[name]; ok {
+				if l, ok := c.lens[name]; ok {
+					return fmt.Sprintf("%d", l), nil
+				}
 			}
 		}
 		if c.exprIsString(call.Args[0]) {
@@ -1057,6 +1143,29 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 		c.needsSubstr = true
 		return fmt.Sprintf("substr(%s, %s, %s)", args[0], args[1], args[2]), nil
+	} else if call.Func == "values" {
+		if len(args) != 1 {
+			return "", fmt.Errorf("values expects 1 arg")
+		}
+		if mp := mapLiteral(call.Args[0]); mp != nil {
+			vals := make([]string, len(mp.Items))
+			for i, it := range mp.Items {
+				v, err := c.compileExpr(it.Value)
+				if err != nil {
+					return "", err
+				}
+				vals[i] = v
+			}
+			c.lastType = "int[]"
+			return fmt.Sprintf("(int[]){%s}", strings.Join(vals, ", ")), nil
+		}
+		if name := simpleIdent(call.Args[0]); name != "" {
+			if vals, ok := c.mapVals[name]; ok {
+				c.lastType = "int[]"
+				return fmt.Sprintf("(int[]){%s}", strings.Join(vals, ", ")), nil
+			}
+		}
+		return "", fmt.Errorf("values unsupported")
 	}
 	if t, ok := c.funRet[call.Func]; ok {
 		c.lastType = t
@@ -1256,16 +1365,25 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 			break
 		}
 	}
-	if capture == "" {
-		return "", fmt.Errorf("no capture support")
-	}
-	capType := c.vars[capture]
 	retType, _ := c.compileType(fn.Return)
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
 		pt, _ := c.compileType(p.Type)
 		params[i] = fmt.Sprintf("%s %s", pt, p.Name)
 	}
+	if capture == "" {
+		body, err := c.compileExpr(fn.ExprBody)
+		if err != nil {
+			return "", err
+		}
+		fmt.Fprintf(&c.prelude, "typedef struct {} %s;\n", name)
+		fmt.Fprintf(&c.prelude, "static %s %s_apply(%s* __env, %s) {\n", retType, name, name, strings.Join(params, ", "))
+		fmt.Fprintf(&c.prelude, "    return %s;\n", body)
+		fmt.Fprintf(&c.prelude, "}\n\n")
+		c.lastType = name
+		return fmt.Sprintf("(%s){ }", name), nil
+	}
+	capType := c.vars[capture]
 	oldAliases := c.aliases
 	c.aliases = map[string]string{capture: "__env->" + capture}
 	body, err := c.compileExpr(fn.ExprBody)

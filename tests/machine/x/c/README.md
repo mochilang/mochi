@@ -1,6 +1,6 @@
 # C Compiler Results
 
-Compiled programs: 49/97
+Compiled programs: 53/97
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -22,7 +22,7 @@ Compiled programs: 49/97
 - [x] for_loop.mochi
  - [x] for_map_collection.mochi
 - [x] fun_call.mochi
-- [ ] fun_expr_in_let.mochi
+- [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
 - [ ] group_by.mochi
 - [ ] group_by_conditional_sum.mochi
@@ -44,7 +44,7 @@ Compiled programs: 49/97
 - [ ] left_join.mochi
 - [ ] left_join_multi.mochi
 - [x] len_builtin.mochi
-- [ ] len_map.mochi
+- [x] len_map.mochi
 - [x] len_string.mochi
 - [x] let_and_print.mochi
 - [x] list_assign.mochi
@@ -84,7 +84,7 @@ Compiled programs: 49/97
 - [x] string_contains.mochi
 - [x] string_in_operator.mochi
 - [x] string_index.mochi
-- [ ] string_prefix_slice.mochi
+- [x] string_prefix_slice.mochi
 - [x] substring_builtin.mochi
 - [x] sum_builtin.mochi
 - [x] tail_recursion.mochi
@@ -96,6 +96,6 @@ Compiled programs: 49/97
 - [x] unary_neg.mochi
 - [ ] update_stmt.mochi
 - [ ] user_type_literal.mochi
-- [ ] values_builtin.mochi
+- [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
