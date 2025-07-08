@@ -1,5 +1,3 @@
-//go:build archived
-
 package ccode
 
 // Helper requirement keys used by the compiler.
