@@ -19,10 +19,13 @@ type Compiler struct {
 	indent      int
 	functions   []*parser.FunStmt
 	currentFunc string
+	env         *types.Env
+	declared    map[string]bool
+	tmpIndex    int
 }
 
 // New creates a new compiler instance.
-func New(_ *types.Env) *Compiler { return &Compiler{} }
+func New(env *types.Env) *Compiler { return &Compiler{env: env, declared: make(map[string]bool)} }
 
 // Compile converts a parsed Mochi program into Fortran source code.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
@@ -107,15 +110,31 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 }
 
 func (c *Compiler) compileLet(l *parser.LetStmt) error {
-	if l.Value == nil && l.Type != nil {
-		c.writeln(fmt.Sprintf("integer :: %s", l.Name))
-		return nil
+	if !c.declared[l.Name] {
+		typ := typeName(l.Type)
+		if lst := listLiteral(l.Value); lst != nil {
+			elems := make([]string, len(lst.Elems))
+			for i, e := range lst.Elems {
+				v, err := c.compileExpr(e)
+				if err != nil {
+					return err
+				}
+				elems[i] = v
+			}
+			c.writeln(fmt.Sprintf("%s, dimension(%d) :: %s = (/%s/)", typ, len(lst.Elems), l.Name, strings.Join(elems, ",")))
+			c.declared[l.Name] = true
+			return nil
+		}
+		c.writeln(fmt.Sprintf("%s :: %s", typ, l.Name))
+		c.declared[l.Name] = true
 	}
-	val, err := c.compileExpr(l.Value)
-	if err != nil {
-		return err
+	if l.Value != nil {
+		val, err := c.compileExpr(l.Value)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("%s = %s", l.Name, val))
 	}
-	c.writeln(fmt.Sprintf("%s = %s", l.Name, val))
 	return nil
 }
 
@@ -124,20 +143,62 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 }
 
 func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
-	if len(a.Index) > 0 || len(a.Field) > 0 {
-		return fmt.Errorf("assignment with index or field not supported")
+	if len(a.Field) > 0 {
+		return fmt.Errorf("assignment with field not supported")
 	}
 	val, err := c.compileExpr(a.Value)
 	if err != nil {
 		return err
 	}
-	c.writeln(fmt.Sprintf("%s = %s", a.Name, val))
+	target := a.Name
+	for _, idx := range a.Index {
+		if idx.Colon != nil || idx.Colon2 != nil {
+			return fmt.Errorf("slices not supported")
+		}
+		v, err := c.compileExpr(idx.Start)
+		if err != nil {
+			return err
+		}
+		target += fmt.Sprintf("(%s)", v)
+	}
+	c.writeln(fmt.Sprintf("%s = %s", target, val))
 	return nil
 }
 
 func (c *Compiler) compileFor(f *parser.ForStmt) error {
+	if !c.declared[f.Name] {
+		c.writeln(fmt.Sprintf("integer :: %s", f.Name))
+		c.declared[f.Name] = true
+	}
 	if f.RangeEnd == nil {
-		return fmt.Errorf("only numeric ranges supported")
+		lst := listLiteral(f.Source)
+		if lst == nil {
+			return fmt.Errorf("only numeric ranges or list literals supported")
+		}
+		arr := fmt.Sprintf("_arr_%d", c.tmpIndex)
+		idx := fmt.Sprintf("_i%d", c.tmpIndex)
+		c.tmpIndex++
+		elems := make([]string, len(lst.Elems))
+		for i, e := range lst.Elems {
+			v, err := c.compileExpr(e)
+			if err != nil {
+				return err
+			}
+			elems[i] = v
+		}
+		c.writeln(fmt.Sprintf("integer, dimension(%d) :: %s = (/%s/)", len(lst.Elems), arr, strings.Join(elems, ",")))
+		c.writeln(fmt.Sprintf("integer :: %s", idx))
+		c.writeln(fmt.Sprintf("do %s = 1, %d", idx, len(lst.Elems)))
+		c.indent++
+		c.writeln(fmt.Sprintf("%s = %s(%s)", f.Name, arr, idx))
+		for _, st := range f.Body {
+			if err := c.compileStmt(st); err != nil {
+				return err
+			}
+		}
+		c.indent--
+		c.writeln("end do")
+		return nil
 	}
 	start, err := c.compileExpr(f.Source)
 	if err != nil {
@@ -231,10 +292,12 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	for i, p := range fn.Params {
 		params[i] = p.Name
 	}
-	c.writeln(fmt.Sprintf("integer function %s(%s)", fn.Name, strings.Join(params, ",")))
+	retType := typeName(fn.Return)
+	c.writeln(fmt.Sprintf("%s function %s(%s)", retType, fn.Name, strings.Join(params, ",")))
 	c.indent++
 	for _, p := range fn.Params {
-		c.writeln(fmt.Sprintf("integer, intent(in) :: %s", p.Name))
+		c.writeln(fmt.Sprintf("%s, intent(in) :: %s", typeName(p.Type), p.Name))
+		c.declared[p.Name] = true
 	}
 	prev := c.currentFunc
 	c.currentFunc = fn.Name
@@ -303,10 +366,27 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 }
 
 func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
-	if len(p.Ops) > 0 {
-		return "", fmt.Errorf("postfix operations not supported")
+	base, err := c.compilePrimary(p.Target)
+	if err != nil {
+		return "", err
 	}
-	return c.compilePrimary(p.Target)
+	res := base
+	for _, op := range p.Ops {
+		switch {
+		case op.Index != nil:
+			if op.Index.Colon != nil || op.Index.Colon2 != nil {
+				return "", fmt.Errorf("slices not supported")
+			}
+			v, err := c.compileExpr(op.Index.Start)
+			if err != nil {
+				return "", err
+			}
+			res = fmt.Sprintf("%s(%s)", res, v)
+		default:
+			return "", fmt.Errorf("postfix operations not supported")
+		}
+	}
+	return res, nil
 }
 
 func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
@@ -315,6 +395,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileLiteral(p.Lit), nil
 	case p.Call != nil:
 		return c.compileCall(p.Call)
+	case p.List != nil:
+		elems := make([]string, len(p.List.Elems))
+		for i, e := range p.List.Elems {
+			v, err := c.compileExpr(e)
+			if err != nil {
+				return "", err
+			}
+			elems[i] = v
+		}
+		return fmt.Sprintf("(/%s/)", strings.Join(elems, ",")), nil
 	case p.Selector != nil:
 		if len(p.Selector.Tail) != 0 {
 			return "", fmt.Errorf("selector not supported at line %d", p.Pos.Line)
@@ -390,4 +480,38 @@ func callExpr(e *parser.Expr) *parser.CallExpr {
 		return v.Target.Call
 	}
 	return nil
+}
+
+func listLiteral(e *parser.Expr) *parser.ListLiteral {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return nil
+	}
+	v := u.Value
+	if len(v.Ops) != 0 || v.Target == nil {
+		return nil
+	}
+	return v.Target.List
+}
+
+func typeName(t *parser.TypeRef) string {
+	if t == nil {
+		return "integer"
+	}
+	if t.Simple != nil {
+		switch *t.Simple {
+		case "int":
+			return "integer"
+		case "bool":
+			return "logical"
+		case "string":
+			return "character(len=100)"
+		case "float":
+			return "real"
+		}
+	}
+	return "integer"
 }
