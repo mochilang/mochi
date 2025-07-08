@@ -18,12 +18,21 @@ type Compiler struct {
 	vars   []varDecl
 	init   []string
 	env    *types.Env
+	funs   []funDecl
+	curFun *funDecl
 }
 
 type varDecl struct {
 	name string
 	pic  string
 	val  string
+}
+
+type funDecl struct {
+	name   string
+	result string
+	params []string
+	body   []*parser.Statement
 }
 
 func (c *Compiler) hasVar(name string) bool {
@@ -64,6 +73,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.indent = 7
 	c.vars = nil
 	c.init = nil
+	c.funs = nil
+	c.curFun = nil
 
 	name := strings.TrimSuffix(filepath.Base(prog.Pos.Filename), filepath.Ext(prog.Pos.Filename))
 	name = strings.ReplaceAll(name, "-", "_")
@@ -78,6 +89,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			}
 		case st.Let != nil:
 			if err := c.addVar(st.Let.Name, st.Let.Type, st.Let.Value, st.Let.Pos.Line); err != nil {
+				return nil, err
+			}
+		case st.Fun != nil:
+			if err := c.addFun(st.Fun); err != nil {
 				return nil, err
 			}
 		}
@@ -102,7 +117,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln(line)
 	}
 	for _, st := range prog.Statements {
-		if st.Var != nil || st.Let != nil {
+		if st.Var != nil || st.Let != nil || st.Fun != nil {
 			// already handled in declarations
 			continue
 		}
@@ -111,6 +126,29 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 	c.writeln("STOP RUN.")
+	for _, fn := range c.funs {
+		c.writeln("")
+		c.writeln(fmt.Sprintf("%s.", fn.name))
+		old := c.indent
+		c.indent += 4
+		using := ""
+		if len(fn.params) > 0 {
+			using = " USING " + strings.Join(fn.params, " ")
+		}
+		c.writeln("PROCEDURE DIVISION" + using + ".")
+		c.indent += 4
+		c.curFun = &fn
+		for _, st := range fn.body {
+			if err := c.compileStmt(st); err != nil {
+				return nil, err
+			}
+		}
+		if len(fn.body) == 0 || fn.body[len(fn.body)-1].Return == nil {
+			c.writeln("EXIT.")
+		}
+		c.curFun = nil
+		c.indent = old
+	}
 	return c.buf.Bytes(), nil
 }
 
@@ -158,9 +196,29 @@ func (c *Compiler) addVar(name string, typ *parser.TypeRef, value *parser.Expr, 
 	return nil
 }
 
+func (c *Compiler) addFun(fn *parser.FunStmt) error {
+	name := strings.ToUpper(strings.ReplaceAll(fn.Name, "-", "_"))
+	res := name + "_RES"
+	if !c.hasVar(res) {
+		c.vars = append(c.vars, varDecl{name: res, pic: "PIC 9", val: "0"})
+	}
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		params[i] = strings.ToUpper(p.Name)
+	}
+	c.funs = append(c.funs, funDecl{name: name, result: res, params: params, body: fn.Body})
+	return nil
+}
+
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
+	case s.Fun != nil:
+		// handled in declaration pass
+		return nil
 	case s.Expr != nil:
+		if call, ok := isCallTo(s.Expr.Expr, "print"); ok {
+			return c.compilePrint(call)
+		}
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
 			return err
@@ -174,6 +232,14 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileWhile(s.While)
 	case s.For != nil:
 		return c.compileFor(s.For)
+	case s.Return != nil:
+		return c.compileReturn(s.Return)
+	case s.Break != nil:
+		c.writeln("EXIT PERFORM")
+		return nil
+	case s.Continue != nil:
+		c.writeln("CONTINUE")
+		return nil
 	default:
 		return fmt.Errorf("unsupported statement at line %d", s.Pos.Line)
 	}
@@ -188,6 +254,72 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 	name := strings.ToUpper(a.Name)
 	c.writeln(fmt.Sprintf("COMPUTE %s = %s", name, val))
 	return nil
+}
+
+func (c *Compiler) compileReturn(r *parser.ReturnStmt) error {
+	if c.curFun == nil {
+		return fmt.Errorf("return outside function")
+	}
+	val, err := c.compileExpr(r.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("COMPUTE %s = %s", c.curFun.result, val))
+	c.writeln("EXIT.")
+	return nil
+}
+
+func isCallTo(e *parser.Expr, name string) (*parser.CallExpr, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Call == nil {
+		return nil, false
+	}
+	if name != "" && p.Target.Call.Func != name {
+		return nil, false
+	}
+	return p.Target.Call, true
+}
+
+func (c *Compiler) compilePrint(call *parser.CallExpr) error {
+	if len(call.Args) != 1 {
+		return fmt.Errorf("print expects 1 arg")
+	}
+	arg := call.Args[0]
+	if fc, ok := isCallTo(arg, ""); ok { // user defined function
+		val, err := c.compileUserCall(fc)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("DISPLAY %s", val))
+		return nil
+	}
+	expr, err := c.compileExpr(arg)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("DISPLAY %s", expr))
+	return nil
+}
+
+func (c *Compiler) compileUserCall(call *parser.CallExpr) (string, error) {
+	name := strings.ToUpper(strings.ReplaceAll(call.Func, "-", "_"))
+	args := make([]string, len(call.Args))
+	for i, a := range call.Args {
+		s, err := c.compileExpr(a)
+		if err != nil {
+			return "", err
+		}
+		args[i] = s
+	}
+	c.writeln(fmt.Sprintf("PERFORM %s USING %s", name, strings.Join(args, " ")))
+	return name + "_RES", nil
 }
 
 func isLiteralExpr(e *parser.Expr) bool {
@@ -361,7 +493,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Lit != nil:
 		return c.compileLiteral(p.Lit), nil
 	case p.Call != nil:
-		return c.compileCall(p.Call)
+		if p.Call.Func == "print" {
+			return "", fmt.Errorf("print used as expression")
+		}
+		return "", fmt.Errorf("call to %s not supported in expression", p.Call.Func)
 	case p.Group != nil:
 		expr, err := c.compileExpr(p.Group)
 		if err != nil {
