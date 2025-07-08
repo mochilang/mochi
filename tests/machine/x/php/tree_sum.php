@@ -4,9 +4,16 @@
  * @return int
  */
 function mochi_sum_tree($t) {
-	return match ($t) { $Leaf => 0, Node($left, $value, $right) => ((is_array(((is_array(mochi_sum_tree($left)) && is_array($value)) ? array_merge(mochi_sum_tree($left), $value) : ((is_string(mochi_sum_tree($left)) || is_string($value)) ? (mochi_sum_tree($left) . $value) : (mochi_sum_tree($left) + $value)))) && is_array(mochi_sum_tree($right))) ? array_merge(((is_array(mochi_sum_tree($left)) && is_array($value)) ? array_merge(mochi_sum_tree($left), $value) : ((is_string(mochi_sum_tree($left)) || is_string($value)) ? (mochi_sum_tree($left) . $value) : (mochi_sum_tree($left) + $value))), mochi_sum_tree($right)) : ((is_string(((is_array(mochi_sum_tree($left)) && is_array($value)) ? array_merge(mochi_sum_tree($left), $value) : ((is_string(mochi_sum_tree($left)) || is_string($value)) ? (mochi_sum_tree($left) . $value) : (mochi_sum_tree($left) + $value)))) || is_string(mochi_sum_tree($right))) ? (((is_array(mochi_sum_tree($left)) && is_array($value)) ? array_merge(mochi_sum_tree($left), $value) : ((is_string(mochi_sum_tree($left)) || is_string($value)) ? (mochi_sum_tree($left) . $value) : (mochi_sum_tree($left) + $value))) . mochi_sum_tree($right)) : (((is_array(mochi_sum_tree($left)) && is_array($value)) ? array_merge(mochi_sum_tree($left), $value) : ((is_string(mochi_sum_tree($left)) || is_string($value)) ? (mochi_sum_tree($left) . $value) : (mochi_sum_tree($left) + $value))) + mochi_sum_tree($right)))) };
+	return (function($_t) {
+	if ($_t instanceof Leaf) return 0;
+	if ($_t instanceof Node) return (function($left, $value, $right) { return ((is_array(((is_array(mochi_sum_tree($left)) && is_array($value)) ? array_merge(mochi_sum_tree($left), $value) : ((is_string(mochi_sum_tree($left)) || is_string($value)) ? (mochi_sum_tree($left) . $value) : (mochi_sum_tree($left) + $value)))) && is_array(mochi_sum_tree($right))) ? array_merge(((is_array(mochi_sum_tree($left)) && is_array($value)) ? array_merge(mochi_sum_tree($left), $value) : ((is_string(mochi_sum_tree($left)) || is_string($value)) ? (mochi_sum_tree($left) . $value) : (mochi_sum_tree($left) + $value))), mochi_sum_tree($right)) : ((is_string(((is_array(mochi_sum_tree($left)) && is_array($value)) ? array_merge(mochi_sum_tree($left), $value) : ((is_string(mochi_sum_tree($left)) || is_string($value)) ? (mochi_sum_tree($left) . $value) : (mochi_sum_tree($left) + $value)))) || is_string(mochi_sum_tree($right))) ? (((is_array(mochi_sum_tree($left)) && is_array($value)) ? array_merge(mochi_sum_tree($left), $value) : ((is_string(mochi_sum_tree($left)) || is_string($value)) ? (mochi_sum_tree($left) . $value) : (mochi_sum_tree($left) + $value))) . mochi_sum_tree($right)) : (((is_array(mochi_sum_tree($left)) && is_array($value)) ? array_merge(mochi_sum_tree($left), $value) : ((is_string(mochi_sum_tree($left)) || is_string($value)) ? (mochi_sum_tree($left) . $value) : (mochi_sum_tree($left) + $value))) + mochi_sum_tree($right)))); })($_t->left, $_t->value, $_t->right);
+	return null;
+})($t);
 }
 
+class Leaf {
+	public function __construct() {}
+}
 
 class Node {
 	public $left;
@@ -19,8 +26,9 @@ class Node {
 	}
 }
 
+
 // t: Node
-$t = new Node(['left' => $Leaf, 'value' => 1, 'right' => new Node(['left' => $Leaf, 'value' => 2, 'right' => $Leaf])]);
+$t = new Node(['left' => new Leaf(), 'value' => 1, 'right' => new Node(['left' => new Leaf(), 'value' => 2, 'right' => new Leaf()])]);
 _print(mochi_sum_tree($t));
 
 function _print(...$args) {

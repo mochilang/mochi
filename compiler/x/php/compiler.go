@@ -556,27 +556,88 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	var parts []string
+	var b strings.Builder
+	b.WriteString("(function($_t) {\n")
 	for _, cs := range m.Cases {
 		res, err := c.compileExpr(cs.Result)
 		if err != nil {
 			return "", err
 		}
 		if isUnderscoreExpr(cs.Pattern) {
-			parts = append(parts, "default => "+res)
-			continue
+			b.WriteString("\treturn " + res + ";\n")
+			b.WriteString("})(" + target + ")")
+			return b.String(), nil
 		}
-		pat, err := c.compileExpr(cs.Pattern)
-		if err != nil {
-			return "", err
+		cond := ""
+		if call, ok := callPattern(cs.Pattern); ok {
+			if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
+				st := ut.Variants[call.Func]
+				cond = fmt.Sprintf("$_t instanceof %s", sanitizeName(call.Func))
+				names := []string{}
+				values := []string{}
+				for idx, arg := range call.Args {
+					if id, ok := identName(arg); ok {
+						if id == "_" {
+							continue
+						}
+						names = append(names, "$"+sanitizeName(id))
+						field := sanitizeName(st.Order[idx])
+						values = append(values, fmt.Sprintf("$_t->%s", field))
+					}
+				}
+				if len(names) > 0 {
+					res = fmt.Sprintf("(function(%s) { return %s; })(%s)", strings.Join(names, ", "), res, strings.Join(values, ", "))
+				}
+			}
+		} else if ident, ok := identName(cs.Pattern); ok {
+			if _, ok := c.env.FindUnionByVariant(ident); ok {
+				cond = fmt.Sprintf("$_t instanceof %s", sanitizeName(ident))
+			}
 		}
-		parts = append(parts, pat+" => "+res)
+		if cond == "" {
+			p, err := c.compileExpr(cs.Pattern)
+			if err != nil {
+				return "", err
+			}
+			cond = fmt.Sprintf("$_t === %s", p)
+		}
+		b.WriteString(fmt.Sprintf("\tif (%s) return %s;\n", cond, res))
 	}
-	return fmt.Sprintf("match (%s) { %s }", target, strings.Join(parts, ", ")), nil
+	b.WriteString("\treturn null;\n")
+	b.WriteString("})(" + target + ")")
+	return b.String(), nil
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	if len(t.Variants) > 0 {
+		for _, v := range t.Variants {
+			name := sanitizeName(v.Name)
+			if c.structs[name] {
+				continue
+			}
+			c.structs[name] = true
+			c.writeln(fmt.Sprintf("class %s {", name))
+			c.indent++
+			if len(v.Fields) > 0 {
+				fields := make([]string, len(v.Fields))
+				for i, f := range v.Fields {
+					fields[i] = f.Name
+					c.writeln(fmt.Sprintf("public $%s;", sanitizeName(f.Name)))
+				}
+				c.writeln("public function __construct($fields = []) {")
+				c.indent++
+				for _, f := range fields {
+					c.writeln(fmt.Sprintf("$this->%s = $fields['%s'] ?? null;", sanitizeName(f), f))
+				}
+				c.indent--
+				c.writeln("}")
+			} else {
+				c.writeln("public function __construct() {}")
+			}
+			c.indent--
+			c.writeln("}")
+			c.writeln("")
+		}
 		return nil
 	}
 	name := sanitizeName(t.Name)
@@ -895,6 +956,18 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			} else {
 				name += "->" + strings.Join(p.Selector.Tail, "->")
 			}
+			return name, nil
+		}
+		if c.env != nil {
+			if ut, ok := c.env.FindUnionByVariant(p.Selector.Root); ok {
+				st := ut.Variants[p.Selector.Root]
+				if len(st.Order) == 0 {
+					if !c.typeNames[st.Name] {
+						c.compileStructType(st)
+					}
+					return fmt.Sprintf("new %s()", sanitizeName(p.Selector.Root)), nil
+				}
+			}
 		}
 		return name, nil
 	case p.Struct != nil:
@@ -1132,7 +1205,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 
-	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Sort == nil && q.Skip == nil && q.Take == nil {
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Skip == nil && q.Take == nil {
 		orig := c.env
 		child := types.NewEnv(c.env)
 		child.SetVar(q.Var, types.AnyType{}, true)
@@ -1159,6 +1232,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.env = orig
 			return "", err
 		}
+		var sortExpr string
+		if q.Sort != nil {
+			s, err := c.compileExpr(q.Sort)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			sortExpr = s
+		}
 		capture := queryFreeVars(q, orig)
 		c.env = orig
 
@@ -1173,6 +1255,19 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			b.WriteString(fmt.Sprintf("\t$_src = array_values(array_filter($_src, function($%s)%s { return (%s); }));\n", sanitizeName(q.Var), use, cond))
 		}
 		b.WriteString(fmt.Sprintf("\t$_groups = _group_by($_src, function($%s)%s { return %s; });\n", sanitizeName(q.Var), use, keyExpr))
+		if sortExpr != "" {
+			b.WriteString("\t$pairs = [];\n")
+			b.WriteString(fmt.Sprintf("\tforeach ($_groups as $%s) {\n", sanitizeName(q.Group.Name)))
+			b.WriteString(fmt.Sprintf("\t\t$pairs[] = ['item' => $%s, 'key' => %s];\n", sanitizeName(q.Group.Name), sortExpr))
+			b.WriteString("\t}\n")
+			b.WriteString("\tusort($pairs, function($a, $b) {\n")
+			b.WriteString("\t\t$ak = $a['key']; $bk = $b['key'];\n")
+			b.WriteString("\t\tif (is_int($ak) && is_int($bk)) return $ak <=> $bk;\n")
+			b.WriteString("\t\tif (is_string($ak) && is_string($bk)) return $ak <=> $bk;\n")
+			b.WriteString("\t\treturn strcmp(strval($ak), strval($bk));\n")
+			b.WriteString("\t});\n")
+			b.WriteString("\t$_groups = array_map(fn($p) => $p['item'], $pairs);\n")
+		}
 		b.WriteString("\t$res = [];\n")
 		b.WriteString(fmt.Sprintf("\tforeach ($_groups as $%s) {\n", sanitizeName(q.Group.Name)))
 		b.WriteString(fmt.Sprintf("\t\t$res[] = %s;\n", valExpr))

@@ -4,23 +4,41 @@
  * @return string
  */
 function mochi_classify($n) {
-	return match ($n) { 0 => "zero", 1 => "one", default => "many" };
+	return (function($_t) {
+	if ($_t === 0) return "zero";
+	if ($_t === 1) return "one";
+	return "many";
+})($n);
 }
 
 // x: int
 $x = 2;
 // label: string
-$label = match ($x) { 1 => "one", 2 => "two", 3 => "three", default => "unknown" };
+$label = (function($_t) {
+	if ($_t === 1) return "one";
+	if ($_t === 2) return "two";
+	if ($_t === 3) return "three";
+	return "unknown";
+})($x);
 _print($label);
 // day: string
 $day = "sun";
 // mood: string
-$mood = match ($day) { "mon" => "tired", "fri" => "excited", "sun" => "relaxed", default => "normal" };
+$mood = (function($_t) {
+	if ($_t === "mon") return "tired";
+	if ($_t === "fri") return "excited";
+	if ($_t === "sun") return "relaxed";
+	return "normal";
+})($day);
 _print($mood);
 // ok: bool
 $ok = true;
 // status: string
-$status = match ($ok) { true => "confirmed", false => "denied" };
+$status = (function($_t) {
+	if ($_t === true) return "confirmed";
+	if ($_t === false) return "denied";
+	return null;
+})($ok);
 _print($status);
 _print(mochi_classify(0));
 _print(mochi_classify(5));
