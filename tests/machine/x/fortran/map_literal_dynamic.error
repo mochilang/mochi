@@ -1,0 +1,4 @@
+error: unsupported expression at line 3
+   2| var y = 4
+   3| var m = {"a": x, "b": y}
+   4| print(m["a"], m["b"])

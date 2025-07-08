@@ -1,0 +1,7 @@
+error: gfortran: exit status 1
+/workspace/mochi/tests/machine/x/fortran/tail_recursion.f90:12:5:
+
+   12 |     sum_rec = sum_rec((n - 1),(acc + n))
+      |     1
+Error: Unclassifiable statement at (1)
+

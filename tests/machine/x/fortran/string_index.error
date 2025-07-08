@@ -1,0 +1,12 @@
+error: gfortran: exit status 1
+/workspace/mochi/tests/machine/x/fortran/string_index.f90:5:13:
+
+    5 |   print *, s(1)
+      |             1
+Error: Syntax error in PRINT statement at (1)
+/workspace/mochi/tests/machine/x/fortran/string_index.f90:4:6:
+
+    4 |   s = "mochi"
+      |      1
+Error: Cannot convert CHARACTER(5) to INTEGER(4) at (1)
+

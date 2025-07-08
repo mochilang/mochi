@@ -1,0 +1,17 @@
+error: gfortran: exit status 1
+/workspace/mochi/tests/machine/x/fortran/string_in_operator.f90:4:6:
+
+    4 |   s = "catch"
+      |      1
+Error: Cannot convert CHARACTER(5) to INTEGER(4) at (1)
+/workspace/mochi/tests/machine/x/fortran/string_in_operator.f90:5:15:
+
+    5 |   print *, any(s == "cat")
+      |               1
+Error: Operands of comparison operator ‘==’ at (1) are INTEGER(4)/CHARACTER(3)
+/workspace/mochi/tests/machine/x/fortran/string_in_operator.f90:6:15:
+
+    6 |   print *, any(s == "dog")
+      |               1
+Error: Operands of comparison operator ‘==’ at (1) are INTEGER(4)/CHARACTER(3)
+
