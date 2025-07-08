@@ -1,0 +1,4 @@
+/workspace/mochi/tests/machine/x/erlang/short_circuit.erl:4:6: Warning: variable 'A' is unused
+/workspace/mochi/tests/machine/x/erlang/short_circuit.erl:4:9: Warning: variable 'B' is unused
+false
+true

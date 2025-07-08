@@ -1,0 +1,6 @@
+line 6: unsupported expression at line 6
+   4:   {tag: "b", val: 3}
+   5: ]
+   6: let groups = from d in data group by d.tag into g select g
+   7: var tmp = []
+   8: for g in groups {
