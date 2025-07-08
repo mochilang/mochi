@@ -29,6 +29,12 @@ func New(env *types.Env) *Compiler {
 	return &Compiler{env: env, helpers: make(map[string]bool), structs: make(map[string]bool)}
 }
 
+func (c *Compiler) newTmp() string {
+	name := fmt.Sprintf("_t%d", c.tmpCount)
+	c.tmpCount++
+	return name
+}
+
 // Compile generates Ruby code for prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
@@ -1380,7 +1386,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if len(p.Selector.Tail) == 0 {
 			if c.env != nil {
 				if vt, err := c.env.GetVar(p.Selector.Root); err == nil {
-					if _, ok := vt.(types.FuncType); ok {
+					if ft, ok := vt.(types.FuncType); ok {
+						if len(ft.Params) == 0 {
+							return fmt.Sprintf("%s.new", name), nil
+						}
 						return fmt.Sprintf("method(:%s)", name), nil
 					}
 					return name, nil
@@ -1410,6 +1419,21 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return builtin, nil
 		}
 		argStr := strings.Join(args, ", ")
+		if c.env != nil {
+			if vt, err := c.env.GetVar(p.Call.Func); err == nil {
+				if ft, ok := vt.(types.FuncType); ok {
+					if len(p.Call.Args) < len(ft.Params) {
+						missing := len(ft.Params) - len(p.Call.Args)
+						names := make([]string, missing)
+						for i := range names {
+							names[i] = c.newTmp()
+						}
+						callArgs := append(append([]string(nil), args...), names...)
+						return fmt.Sprintf("->(%s){ %s(%s) }", strings.Join(names, ", "), name, strings.Join(callArgs, ", ")), nil
+					}
+				}
+			}
+		}
 		if c.env != nil {
 			if _, ok := c.env.GetFunc(p.Call.Func); ok {
 				return fmt.Sprintf("%s(%s)", name, argStr), nil

@@ -1,0 +1,12 @@
+error: /workspace/mochi/tests/machine/x/rb/group_items_iteration.rb:43:in `block in <main>': undefined method `items' for #<MGroup:0x00007f4ae758bab8 @key="a", @Items=[#<OpenStruct tag="a", val=1>, #<OpenStruct tag="a", val=2>]> (NoMethodError)
+
+	for x in g.items
+	          ^^^^^^
+Did you mean?  Items
+	from /workspace/mochi/tests/machine/x/rb/group_items_iteration.rb:41:in `each'
+	from /workspace/mochi/tests/machine/x/rb/group_items_iteration.rb:41:in `<main>'
+41: for g in groups
+42: 	total = 0
+43: 	for x in g.items
+44: 		total = (total + x.val)
+45: 	end
