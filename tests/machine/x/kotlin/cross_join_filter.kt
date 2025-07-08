@@ -77,6 +77,6 @@ val pairs = run {
 fun main() {
     println("--- Even pairs ---")
     for (p in pairs) {
-        println(listOf(p.n, p.l).joinToString(" "))
+        println(listOf((p as MutableMap<*, *>)["n"], (p as MutableMap<*, *>)["l"]).joinToString(" "))
     }
 }

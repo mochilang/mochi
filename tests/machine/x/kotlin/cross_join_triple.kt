@@ -79,6 +79,6 @@ val combos = run {
 fun main() {
     println("--- Cross Join of three lists ---")
     for (c in combos) {
-        println(listOf(c.n, c.l, c.b).joinToString(" "))
+        println(listOf((c as MutableMap<*, *>)["n"], (c as MutableMap<*, *>)["l"], (c as MutableMap<*, *>)["b"]).joinToString(" "))
     }
 }
