@@ -461,6 +461,19 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Continue != nil:
 		c.writeIndent()
 		c.buf.WriteString("continue;\n")
+	case s.Fun != nil:
+		fe := &parser.FunExpr{Params: s.Fun.Params, Return: s.Fun.Return, BlockBody: s.Fun.Body}
+		oldRet := c.returnType
+		val, err := c.compileFunExpr(fe)
+		c.returnType = oldRet
+		if err != nil {
+			return err
+		}
+		typ := c.lastType
+		c.writeIndent()
+		fmt.Fprintf(&c.buf, "%s %s = %s;\n", typ, s.Fun.Name, val)
+		c.vars[s.Fun.Name] = typ
+		c.lastType = ""
 	case s.Type != nil:
 		return c.compileTypeDecl(s.Type)
 	default:
@@ -1283,6 +1296,22 @@ func (c *Compiler) compileType(t *parser.TypeRef) (string, error) {
 			}
 		}
 	}
+	if t.Generic != nil {
+		if t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
+			elem, _ := c.compileType(t.Generic.Args[0])
+			return elem + "[]", nil
+		}
+		if t.Generic.Name == "map" && len(t.Generic.Args) == 2 {
+			key, _ := c.compileType(t.Generic.Args[0])
+			val, _ := c.compileType(t.Generic.Args[1])
+			if key == "const char*" && val == "int" {
+				return "EntrySI[]", nil
+			}
+			if key == "int" && val == "const char*" {
+				return "EntryIS[]", nil
+			}
+		}
+	}
 	return "int", nil
 }
 
@@ -1393,6 +1422,39 @@ func collectIdentsPrimary(p *parser.Primary, m map[string]bool) {
 	}
 }
 
+func collectIdentsStmts(sts []*parser.Statement, m map[string]bool) {
+	for _, st := range sts {
+		switch {
+		case st.Return != nil:
+			collectIdentsExpr(st.Return.Value, m)
+		case st.Expr != nil:
+			collectIdentsExpr(st.Expr.Expr, m)
+		case st.Let != nil:
+			collectIdentsExpr(st.Let.Value, m)
+		case st.Assign != nil:
+			collectIdentsExpr(st.Assign.Value, m)
+		case st.If != nil:
+			collectIdentsExpr(st.If.Cond, m)
+			collectIdentsStmts(st.If.Then, m)
+			if st.If.ElseIf != nil {
+				tmp := &parser.IfStmt{Cond: st.If.ElseIf.Cond, Then: st.If.ElseIf.Then, Else: st.If.ElseIf.Else, ElseIf: st.If.ElseIf.ElseIf}
+				collectIdentsExpr(tmp.Cond, m)
+				collectIdentsStmts(tmp.Then, m)
+			}
+			collectIdentsStmts(st.If.Else, m)
+		case st.While != nil:
+			collectIdentsExpr(st.While.Cond, m)
+			collectIdentsStmts(st.While.Body, m)
+		case st.For != nil:
+			collectIdentsExpr(st.For.Source, m)
+			if st.For.RangeEnd != nil {
+				collectIdentsExpr(st.For.RangeEnd, m)
+			}
+			collectIdentsStmts(st.For.Body, m)
+		}
+	}
+}
+
 func (c *Compiler) exprIsString(e *parser.Expr) bool {
 	if name := simpleIdent(e); name != "" {
 		if t, ok := c.vars[name]; ok && t == "const char*" {
@@ -1431,14 +1493,17 @@ func (c *Compiler) postfixIsString(p *parser.PostfixExpr) bool {
 }
 
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
-	if fn.BlockBody != nil {
-		return "", fmt.Errorf("lambda block body not supported")
-	}
 	name := fmt.Sprintf("lambda%d", c.lambdaCount)
 	c.lambdaCount++
+
 	// collect captured vars (simple identifiers)
 	vars := make(map[string]bool)
-	collectIdentsExpr(fn.ExprBody, vars)
+	if fn.ExprBody != nil {
+		collectIdentsExpr(fn.ExprBody, vars)
+	}
+	if fn.BlockBody != nil {
+		collectIdentsStmts(fn.BlockBody, vars)
+	}
 	for _, p := range fn.Params {
 		delete(vars, p.Name)
 	}
@@ -1449,37 +1514,63 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 			break
 		}
 	}
+
 	retType, _ := c.compileType(fn.Return)
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
 		pt, _ := c.compileType(p.Type)
 		params[i] = fmt.Sprintf("%s %s", pt, p.Name)
 	}
+
 	if capture == "" {
+		fmt.Fprintf(&c.prelude, "typedef struct {} %s;\n", name)
+	} else {
+		capType := c.vars[capture]
+		fmt.Fprintf(&c.prelude, "typedef struct { %s %s; } %s;\n", capType, capture, name)
+	}
+	var body bytes.Buffer
+	oldBuf := c.buf
+	c.buf = body
+	c.indent++
+	var oldAliases map[string]string
+	if capture != "" {
+		oldAliases = c.aliases
+		c.aliases = map[string]string{capture: "__env->" + capture}
+	}
+	if fn.ExprBody != nil {
 		body, err := c.compileExpr(fn.ExprBody)
 		if err != nil {
+			c.buf = oldBuf
+			if capture != "" {
+				c.aliases = oldAliases
+			}
 			return "", err
 		}
-		fmt.Fprintf(&c.prelude, "typedef struct {} %s;\n", name)
-		fmt.Fprintf(&c.prelude, "static %s %s_apply(%s* __env, %s) {\n", retType, name, name, strings.Join(params, ", "))
-		fmt.Fprintf(&c.prelude, "    return %s;\n", body)
-		fmt.Fprintf(&c.prelude, "}\n\n")
-		c.lastType = name
+		c.writeln(fmt.Sprintf("return %s;", body))
+	} else {
+		for _, st := range fn.BlockBody {
+			if err := c.compileStmt(st); err != nil {
+				c.buf = oldBuf
+				if capture != "" {
+					c.aliases = oldAliases
+				}
+				return "", err
+			}
+		}
+	}
+	if capture != "" {
+		c.aliases = oldAliases
+	}
+	bodyOut := c.buf.Bytes()
+	c.buf = oldBuf
+	c.indent--
+	fmt.Fprintf(&c.prelude, "static %s %s_apply(%s* __env, %s) {\n", retType, name, name, strings.Join(params, ", "))
+	c.prelude.Write(bodyOut)
+	c.prelude.WriteString("}\n\n")
+	c.lastType = name
+	if capture == "" {
 		return fmt.Sprintf("(%s){ }", name), nil
 	}
-	capType := c.vars[capture]
-	oldAliases := c.aliases
-	c.aliases = map[string]string{capture: "__env->" + capture}
-	body, err := c.compileExpr(fn.ExprBody)
-	c.aliases = oldAliases
-	if err != nil {
-		return "", err
-	}
-	fmt.Fprintf(&c.prelude, "typedef struct { %s %s; } %s;\n", capType, capture, name)
-	fmt.Fprintf(&c.prelude, "static %s %s_apply(%s* __env, %s) {\n", retType, name, name, strings.Join(params, ", "))
-	fmt.Fprintf(&c.prelude, "    return %s;\n", body)
-	fmt.Fprintf(&c.prelude, "}\n\n")
-	c.lastType = name
 	return fmt.Sprintf("(%s){ .%s = %s }", name, capture, capture), nil
 }
 
