@@ -15,12 +15,12 @@ def is_prime(n: int) -> bool:
     return True
 
 
-n = 30
-repeat = 100
-last = 0
-start = time.time_ns()
-end = time.time_ns()
-duration = None
+n: int = 30
+repeat: int = 100
+last: int = 0
+start: int = time.time_ns()
+end: int = time.time_ns()
+duration: int = None
 
 
 def main():
@@ -33,7 +33,7 @@ def main():
     global start
     start = time.time_ns()
     for r in range(0, repeat):
-        count = 0
+        count: typing.Callable[[typing.Any], int] = 0
         for i in range(2, n):
             if is_prime(i):
                 count = count + 1

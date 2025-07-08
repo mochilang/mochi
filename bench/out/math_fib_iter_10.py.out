@@ -7,8 +7,8 @@ import typing
 
 
 def fib(n: int) -> int:
-    a = 0
-    b = 1
+    a: int = 0
+    b: int = 1
     for i in range(0, n):
         tmp = a + b
         a = b
@@ -16,11 +16,11 @@ def fib(n: int) -> int:
     return a
 
 
-n = 10
-repeat = 1000
-last = 0
-start = time.time_ns()
-duration = None
+n: int = 10
+repeat: int = 1000
+last: int = 0
+start: int = time.time_ns()
+duration: int = None
 
 
 def main():

@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// line 1
 func mul(n int) int {
 	var result int = 1
 	for i := 1; i < n; i++ {

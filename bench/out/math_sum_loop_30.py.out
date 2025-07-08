@@ -7,17 +7,17 @@ import typing
 
 
 def sum_loop(n: int) -> int:
-    total = 0
+    total: int = 0
     for i in range(1, n):
         total = total + i
     return total
 
 
-n = 30
-repeat = 1000
-last = 0
-start = time.time_ns()
-duration = None
+n: int = 30
+repeat: int = 1000
+last: int = 0
+start: int = time.time_ns()
+duration: int = None
 
 
 def main():

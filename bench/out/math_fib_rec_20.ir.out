@@ -11,7 +11,7 @@ func main (regs=15)
   Now          r4
   SubInt       r5, r4, r1
   Const        r6, 1000
-  DivInt       r7, r5, r6
+  DivFloat     r7, r5, r6
   // "duration_us": duration,
   Const        r8, "duration_us"
   // "output": result,
