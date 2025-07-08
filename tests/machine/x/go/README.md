@@ -4,8 +4,8 @@ This directory contains Go source code generated from Mochi programs and the cor
 
 ## Summary
 
-- 97/97 programs compiled and executed successfully.
-- 0 programs failed to compile or run.
+- 96/97 programs compiled and executed successfully.
+- 1 program failed to compile or run.
 
 ### Successful
 - append_builtin
@@ -82,7 +82,6 @@ This directory contains Go source code generated from Mochi programs and the cor
 - group_by_multi_join
 - group_by_multi_join_sort
 - group_by_sort
-- group_items_iteration
 - in_operator_extended
 - inner_join
 - join_multi
@@ -106,3 +105,6 @@ This directory contains Go source code generated from Mochi programs and the cor
 - update_stmt
 - values_builtin
 
+### Failed
+
+- group_items_iteration
