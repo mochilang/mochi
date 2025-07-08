@@ -1,0 +1,7 @@
+error: /workspace/mochi/tests/machine/x/rb/order_by_map.rb:4:in `sort_by': comparison of OpenStruct with OpenStruct failed (ArgumentError)
+	from /workspace/mochi/tests/machine/x/rb/order_by_map.rb:4:in `<main>'
+2: 
+3: data = [OpenStruct.new(a: 1, b: 2), OpenStruct.new(a: 1, b: 1), OpenStruct.new(a: 0, b: 5)]
+4: sorted = (((data)).sort_by { |x| OpenStruct.new(a: x.a, b: x.b) }).map { |x| x }
+5: puts([sorted].join(" "))
+6: 

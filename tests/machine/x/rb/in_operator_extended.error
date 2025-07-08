@@ -1,0 +1,8 @@
+error: /workspace/mochi/tests/machine/x/rb/in_operator_extended.rb:8:in `<main>': undefined method `key?' for #<OpenStruct a=1> (NoMethodError)
+true
+false
+6: puts([(ys.include?(2))].join(" "))
+7: m = OpenStruct.new(a: 1)
+8: puts([(m.key?("a"))].join(" "))
+9: puts([(m.key?("b"))].join(" "))
+10: s = "hello"
