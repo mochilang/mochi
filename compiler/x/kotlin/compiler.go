@@ -438,14 +438,47 @@ func (c *Compiler) postfix(p *parser.PostfixExpr) (string, error) {
 			}
 			val = fmt.Sprintf("%s(%s)", val, strings.Join(args, ", "))
 		case op.Index != nil:
-			idx, err := c.expr(op.Index.Start)
-			if err != nil {
-				return "", err
-			}
-			if i < len(p.Ops)-1 {
-				val = fmt.Sprintf("%s[%s]!!", val, idx)
+			if op.Index.Colon != nil {
+				start := "0"
+				if op.Index.Start != nil {
+					s, err := c.expr(op.Index.Start)
+					if err != nil {
+						return "", err
+					}
+					start = s
+				}
+				end := ""
+				if op.Index.End != nil {
+					e, err := c.expr(op.Index.End)
+					if err != nil {
+						return "", err
+					}
+					end = e
+				}
+				t := types.TypeOfPrimaryBasic(p.Target, c.env)
+				if types.IsStringType(t) {
+					if end == "" {
+						end = fmt.Sprintf("%s.length", val)
+					}
+					val = fmt.Sprintf("%s.substring(%s, %s)", val, start, end)
+				} else if types.IsListType(t) {
+					if end == "" {
+						end = fmt.Sprintf("%s.size", val)
+					}
+					val = fmt.Sprintf("%s.subList(%s, %s)", val, start, end)
+				} else {
+					return "", fmt.Errorf("unsupported slice type")
+				}
 			} else {
-				val = fmt.Sprintf("%s[%s]", val, idx)
+				idx, err := c.expr(op.Index.Start)
+				if err != nil {
+					return "", err
+				}
+				if i < len(p.Ops)-1 {
+					val = fmt.Sprintf("%s[%s]!!", val, idx)
+				} else {
+					val = fmt.Sprintf("%s[%s]", val, idx)
+				}
 			}
 		case op.Field != nil:
 			val = fmt.Sprintf("%s.%s", val, op.Field.Name)
@@ -490,8 +523,15 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 		return c.literal(p.Lit), nil
 	case p.Selector != nil:
 		name := p.Selector.Root
-		if len(p.Selector.Tail) > 0 {
-			name += "." + strings.Join(p.Selector.Tail, ".")
+		t, _ := c.env.GetVar(p.Selector.Root)
+		if types.IsMapType(t) {
+			for _, part := range p.Selector.Tail {
+				name += fmt.Sprintf("[%q]", part)
+			}
+		} else {
+			if len(p.Selector.Tail) > 0 {
+				name += "." + strings.Join(p.Selector.Tail, ".")
+			}
 		}
 		return name, nil
 	case p.Call != nil:
@@ -515,9 +555,17 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 	case p.Map != nil:
 		items := make([]string, len(p.Map.Items))
 		for i, it := range p.Map.Items {
-			k, err := c.expr(it.Key)
-			if err != nil {
-				return "", err
+			var k string
+			if name, ok := identName(it.Key); ok {
+				k = fmt.Sprintf("%q", name)
+			} else if it.Key.Binary.Left.Value.Target.Lit != nil && it.Key.Binary.Left.Value.Target.Lit.Str != nil {
+				k = fmt.Sprintf("%q", *it.Key.Binary.Left.Value.Target.Lit.Str)
+			} else {
+				var err error
+				k, err = c.expr(it.Key)
+				if err != nil {
+					return "", err
+				}
 			}
 			v, err := c.expr(it.Value)
 			if err != nil {
@@ -538,6 +586,8 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 		return fmt.Sprintf("%s(%s)", p.Struct.Name, strings.Join(fields, ", ")), nil
 	case p.FunExpr != nil:
 		return c.funExpr(p.FunExpr)
+	case p.Query != nil:
+		return c.queryExpr(p.Query)
 	case p.If != nil:
 		return c.ifExpr(p.If)
 	default:
@@ -622,6 +672,131 @@ func (c *Compiler) ifExpr(ix *parser.IfExpr) (string, error) {
 		}
 	}
 	return fmt.Sprintf("if (%s) %s else %s", cond, thenExpr, elseCode), nil
+}
+
+func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
+	var b strings.Builder
+	indent := func(n int) string { return strings.Repeat("    ", n) }
+	lvl := 1
+
+	src, err := c.expr(q.Source)
+	if err != nil {
+		return "", err
+	}
+
+	child := types.NewEnv(c.env)
+	if lt, ok := types.TypeOfExprBasic(q.Source, c.env).(types.ListType); ok {
+		child.SetVar(q.Var, lt.Elem, true)
+	} else {
+		child.SetVar(q.Var, types.AnyType{}, true)
+	}
+	for _, f := range q.Froms {
+		if lt, ok := types.TypeOfExprBasic(f.Src, c.env).(types.ListType); ok {
+			child.SetVar(f.Var, lt.Elem, true)
+		} else {
+			child.SetVar(f.Var, types.AnyType{}, true)
+		}
+	}
+	oldEnv := c.env
+	c.env = child
+
+	b.WriteString("run {\n")
+	b.WriteString(indent(lvl))
+	b.WriteString("val __res = mutableListOf<Any>()\n")
+	b.WriteString(indent(lvl))
+	b.WriteString(fmt.Sprintf("for (%s in %s) {\n", q.Var, src))
+	lvl++
+	for _, f := range q.Froms {
+		s, err := c.expr(f.Src)
+		if err != nil {
+			return "", err
+		}
+		b.WriteString(indent(lvl))
+		b.WriteString(fmt.Sprintf("for (%s in %s) {\n", f.Var, s))
+		lvl++
+	}
+	if q.Where != nil {
+		cond, err := c.expr(q.Where)
+		if err != nil {
+			return "", err
+		}
+		b.WriteString(indent(lvl))
+		b.WriteString(fmt.Sprintf("if (%s) {\n", cond))
+		lvl++
+	}
+	sel, err := c.expr(q.Select)
+	if err != nil {
+		return "", err
+	}
+	b.WriteString(indent(lvl))
+	b.WriteString(fmt.Sprintf("__res.add(%s)\n", sel))
+	if q.Where != nil {
+		lvl--
+		b.WriteString(indent(lvl))
+		b.WriteString("}\n")
+	}
+	for range q.Froms {
+		lvl--
+		b.WriteString(indent(lvl))
+		b.WriteString("}\n")
+	}
+	lvl--
+	b.WriteString(indent(lvl))
+	b.WriteString("}\n")
+	b.WriteString(indent(lvl))
+	b.WriteString("__res\n")
+	b.WriteString("}")
+
+	res := b.String()
+	if q.Sort != nil {
+		sortExpr, err := c.expr(q.Sort)
+		if err != nil {
+			return "", err
+		}
+		if strings.HasPrefix(sortExpr, "-") {
+			sortExpr = strings.TrimPrefix(sortExpr, "-")
+			res += fmt.Sprintf(".sortedByDescending { %s }", sortExpr)
+		} else {
+			res += fmt.Sprintf(".sortedBy { %s }", sortExpr)
+		}
+	}
+	if q.Skip != nil {
+		skip, err := c.expr(q.Skip)
+		if err != nil {
+			return "", err
+		}
+		res += fmt.Sprintf(".drop(%s)", skip)
+	}
+	if q.Take != nil {
+		take, err := c.expr(q.Take)
+		if err != nil {
+			return "", err
+		}
+		res += fmt.Sprintf(".take(%s)", take)
+	}
+	if q.Distinct {
+		res += ".distinct()"
+	}
+	c.env = oldEnv
+	return res, nil
+}
+
+func identName(e *parser.Expr) (string, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
 }
 
 func (c *Compiler) writeln(s string) {
