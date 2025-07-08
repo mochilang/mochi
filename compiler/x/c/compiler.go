@@ -3077,3 +3077,194 @@ func (c *Compiler) inferStructFromList(ll *parser.ListLiteral, name string) (typ
 	st := types.StructType{Name: stName, Fields: fields, Order: order}
 	return st, true
 }
+
+// --- SimpleCompiler -------------------------------------------------------
+
+// SimpleCompiler emits small and easy to read C code for a narrow subset of
+// Mochi. It is used by tests that only cover basic language features.
+type SimpleCompiler struct {
+	buf    bytes.Buffer
+	indent int
+}
+
+// NewSimple returns a new SimpleCompiler instance.
+func NewSimple() *SimpleCompiler { return &SimpleCompiler{} }
+
+func (c *SimpleCompiler) writeln(s string) {
+	for i := 0; i < c.indent; i++ {
+		c.buf.WriteString("    ")
+	}
+	c.buf.WriteString(s)
+	c.buf.WriteByte('\n')
+}
+
+// Compile translates the given program to C source code.
+func (c *SimpleCompiler) Compile(p *parser.Program) ([]byte, error) {
+	c.buf.Reset()
+	c.writeln("#include <stdio.h>")
+	c.writeln("")
+	c.writeln("int main() {")
+	c.indent++
+	for _, st := range p.Statements {
+		if err := c.compileStmt(st); err != nil {
+			return nil, err
+		}
+	}
+	c.writeln("return 0;")
+	c.indent--
+	c.writeln("}")
+	return c.buf.Bytes(), nil
+}
+
+func (c *SimpleCompiler) compileStmt(s *parser.Statement) error {
+	switch {
+	case s.Var != nil:
+		name := sanitizeName(s.Var.Name)
+		typ := "int"
+		if s.Var.Type != nil && s.Var.Type.Simple != nil && *s.Var.Type.Simple != "int" {
+			typ = *s.Var.Type.Simple
+		}
+		val := "0"
+		if s.Var.Value != nil {
+			v, err := c.compileExpr(s.Var.Value)
+			if err != nil {
+				return err
+			}
+			val = v
+		}
+		c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+	case s.Let != nil:
+		name := sanitizeName(s.Let.Name)
+		typ := "int"
+		if s.Let.Type != nil && s.Let.Type.Simple != nil && *s.Let.Type.Simple != "int" {
+			typ = *s.Let.Type.Simple
+		}
+		val := "0"
+		if s.Let.Value != nil {
+			v, err := c.compileExpr(s.Let.Value)
+			if err != nil {
+				return err
+			}
+			val = v
+		}
+		c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+	case s.Assign != nil:
+		val, err := c.compileExpr(s.Assign.Value)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("%s = %s;", sanitizeName(s.Assign.Name), val))
+	case s.While != nil:
+		cond, err := c.compileExpr(s.While.Cond)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("while (%s) {", cond))
+		c.indent++
+		for _, st := range s.While.Body {
+			if err := c.compileStmt(st); err != nil {
+				return err
+			}
+		}
+		c.indent--
+		c.writeln("}")
+	case s.For != nil && s.For.RangeEnd != nil:
+		start, err := c.compileExpr(s.For.Source)
+		if err != nil {
+			return err
+		}
+		end, err := c.compileExpr(s.For.RangeEnd)
+		if err != nil {
+			return err
+		}
+		name := sanitizeName(s.For.Name)
+		c.writeln(fmt.Sprintf("for (int %s = %s; %s < %s; %s++) {", name, start, name, end, name))
+		c.indent++
+		for _, st := range s.For.Body {
+			if err := c.compileStmt(st); err != nil {
+				return err
+			}
+		}
+		c.indent--
+		c.writeln("}")
+	case s.Expr != nil:
+		return c.compileExprStmt(s.Expr)
+	default:
+		return fmt.Errorf("unsupported statement")
+	}
+	return nil
+}
+
+func (c *SimpleCompiler) compileExprStmt(es *parser.ExprStmt) error {
+	if es.Expr == nil {
+		return nil
+	}
+	if call := es.Expr.Binary.Left.Value.Target.Call; call != nil && call.Func == "print" {
+		if len(call.Args) != 1 {
+			return fmt.Errorf("print with %d args unsupported", len(call.Args))
+		}
+		arg, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("printf(\"%s\\n\", %s);", "%d", arg))
+		return nil
+	}
+	expr, err := c.compileExpr(es.Expr)
+	if err != nil {
+		return err
+	}
+	c.writeln(expr + ";")
+	return nil
+}
+
+func (c *SimpleCompiler) compileExpr(e *parser.Expr) (string, error) {
+	if e == nil {
+		return "0", nil
+	}
+	left, err := c.compileUnary(e.Binary.Left)
+	if err != nil {
+		return "", err
+	}
+	res := left
+	for _, op := range e.Binary.Right {
+		right, err := c.compilePostfix(op.Right)
+		if err != nil {
+			return "", err
+		}
+		res = fmt.Sprintf("(%s %s %s)", res, op.Op, right)
+	}
+	return res, nil
+}
+
+func (c *SimpleCompiler) compileUnary(u *parser.Unary) (string, error) {
+	val, err := c.compilePostfix(u.Value)
+	if err != nil {
+		return "", err
+	}
+	for i := len(u.Ops) - 1; i >= 0; i-- {
+		val = fmt.Sprintf("(%s%s)", u.Ops[i], val)
+	}
+	return val, nil
+}
+
+func (c *SimpleCompiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
+	res, err := c.compilePrimary(p.Target)
+	if err != nil {
+		return "", err
+	}
+	return res, nil
+}
+
+func (c *SimpleCompiler) compilePrimary(p *parser.Primary) (string, error) {
+	switch {
+	case p.Lit != nil && p.Lit.Int != nil:
+		return strconv.Itoa(*p.Lit.Int), nil
+	case p.Lit != nil && p.Lit.Str != nil:
+		return fmt.Sprintf("%q", *p.Lit.Str), nil
+	case p.Selector != nil && len(p.Selector.Tail) == 0:
+		return sanitizeName(p.Selector.Root), nil
+	default:
+		return "", fmt.Errorf("unsupported primary")
+	}
+}
