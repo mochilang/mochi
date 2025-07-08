@@ -2,7 +2,7 @@
 
 This checklist tracks which Mochi programs from `tests/vm/valid` have been compiled to Kotlin and executed successfully.
 
-## Progress: 57/97
+## Progress: 59/97
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -61,8 +61,8 @@ This checklist tracks which Mochi programs from `tests/vm/valid` have been compi
 - [x] map_literal_dynamic.mochi
 - [x] map_membership.mochi
 - [x] map_nested_assign.mochi
-- [ ] match_expr.mochi
-- [ ] match_full.mochi
+ - [x] match_expr.mochi
+ - [x] match_full.mochi
 - [x] math_ops.mochi
 - [x] membership.mochi
 - [x] min_max_builtin.mochi
