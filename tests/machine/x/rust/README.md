@@ -32,8 +32,8 @@
 - [ ] group_by_sort.mochi
 - [ ] group_items_iteration.mochi
 - [x] if_else.mochi
-- [ ] if_then_else.mochi
-- [ ] if_then_else_nested.mochi
+- [x] if_then_else.mochi
+- [x] if_then_else_nested.mochi
 - [ ] in_operator.mochi
 - [ ] in_operator_extended.mochi
 - [ ] inner_join.mochi
@@ -78,9 +78,9 @@
 - [ ] sort_stable.mochi
 - [ ] str_builtin.mochi
 - [x] string_compare.mochi
-- [ ] string_concat.mochi
+- [x] string_concat.mochi
 - [ ] string_contains.mochi
-- [ ] string_in_operator.mochi
+- [x] string_in_operator.mochi
 - [ ] string_index.mochi
 - [ ] string_prefix_slice.mochi
 - [ ] substring_builtin.mochi
@@ -98,4 +98,4 @@
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
 
-Compiled 24/97 programs.
+Compiled 28/97 programs.

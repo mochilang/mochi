@@ -1,5 +1,5 @@
 fn main() {
     let s = "catch";
-    println!("{:?}", "cat" in s);
-    println!("{:?}", "dog" in s);
+    println!("{:?}", s.contains("cat"));
+    println!("{:?}", s.contains("dog"));
 }
