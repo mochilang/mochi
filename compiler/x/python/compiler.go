@@ -705,6 +705,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if c.env != nil {
 			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
 				typ = t
+			} else if u, ok := c.env.FindUnionByVariant(p.Selector.Root); ok {
+				if vt, ok := u.Variants[p.Selector.Root]; ok && len(vt.Fields) == 0 && len(p.Selector.Tail) == 0 {
+					return fmt.Sprintf("%s()", expr), nil
+				}
 			}
 		}
 		if c.methodFields != nil && c.methodFields[p.Selector.Root] {
@@ -814,6 +818,15 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		args[i] = v
 	}
 	argStr := strings.Join(args, ", ")
+
+	if len(paramTypes) > 0 && len(args) < len(paramTypes) {
+		// Partial application
+		c.imports["functools"] = "functools"
+		if len(args) == 0 {
+			return fmt.Sprintf("functools.partial(%s)", sanitizeName(call.Func)), nil
+		}
+		return fmt.Sprintf("functools.partial(%s, %s)", sanitizeName(call.Func), argStr), nil
+	}
 	switch call.Func {
 	case "print":
 		for i, a := range call.Args {
@@ -1172,7 +1185,12 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 	var pathStr string
 	if l.Path != nil {
-		pathStr = fmt.Sprintf("%q", *l.Path)
+		p := *l.Path
+		if strings.HasPrefix(p, "./") || strings.HasPrefix(p, "../") {
+			base := filepath.Dir(l.Pos.Filename)
+			p = filepath.Join(base, p)
+		}
+		pathStr = fmt.Sprintf("%q", p)
 	} else {
 		pathStr = "None"
 	}
@@ -1408,18 +1426,20 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.writeln(fmt.Sprintf("_src = %s", src))
 			c.writeln(fmt.Sprintf("_rows = _query(_src, [%s], %s)", joinStr, opts))
 			c.writeln(fmt.Sprintf("_groups = _group_by(_rows, lambda %s: (%s))", allParams, keyExpr))
-			c.writeln("items = _groups")
+			tmpItems := fmt.Sprintf("_items%d", c.tmpCount)
+			c.tmpCount++
+			c.writeln(fmt.Sprintf("%s = _groups", tmpItems))
 			if sortExpr != "" {
 				c.use("_sort_key")
-				c.writeln(fmt.Sprintf("items = sorted(items, key=lambda %s: _sort_key(%s))", sanitizeName(q.Group.Name), sortExpr))
+				c.writeln(fmt.Sprintf("%s = sorted(%s, key=lambda %s: _sort_key(%s))", tmpItems, tmpItems, sanitizeName(q.Group.Name), sortExpr))
 			}
 			if skipExpr != "" {
-				c.writeln(fmt.Sprintf("items = (items)[max(%s, 0):]", skipExpr))
+				c.writeln(fmt.Sprintf("%s = (%s)[max(%s, 0):]", tmpItems, tmpItems, skipExpr))
 			}
 			if takeExpr != "" {
-				c.writeln(fmt.Sprintf("items = (items)[:max(%s, 0)]", takeExpr))
+				c.writeln(fmt.Sprintf("%s = (%s)[:max(%s, 0)]", tmpItems, tmpItems, takeExpr))
 			}
-			c.writeln(fmt.Sprintf("return [ %s for %s in items ]", val, sanitizeName(q.Group.Name)))
+			c.writeln(fmt.Sprintf("return [ %s for %s in %s ]", val, sanitizeName(q.Group.Name), tmpItems))
 			c.indent--
 			c.writeln("")
 

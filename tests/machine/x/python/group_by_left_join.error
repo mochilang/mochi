@@ -1,1 +1,15 @@
-line 0: query features not supported
+run: exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/machine/x/python/group_by_left_join.py", line 148, in <module>
+    main()
+  File "/workspace/mochi/tests/machine/x/python/group_by_left_join.py", line 126, in main
+    stats = _query(
+            ^^^^^^^
+  File "/workspace/mochi/tests/machine/x/python/group_by_left_join.py", line 103, in _query
+    res.append(opts["select"](*r))
+               ^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/machine/x/python/group_by_left_join.py", line 137, in <lambda>
+    "name": _get(g, "key"),
+                 ^
+NameError: name 'g' is not defined
+

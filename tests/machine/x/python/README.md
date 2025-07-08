@@ -4,8 +4,8 @@ This directory contains Python source code generated from Mochi programs and the
 
 ## Summary
 
-- 81/97 programs compiled and executed successfully.
-- 16 programs failed to compile or run.
+- 92/97 programs compiled and executed successfully.
+- 5 programs failed to compile or run.
 
 ### Successful
 - append_builtin
@@ -58,11 +58,23 @@ This directory contains Python source code generated from Mochi programs and the
 - min_max_builtin
 - nested_function
 - order_by_map
+- group_by
+- group_by_conditional_sum
+- group_by_having
+- group_by_join
+- group_by_multi_join
+- group_by_multi_join_sort
+- group_by_sort
+- inner_join
+- join_multi
+- left_join
+- left_join_multi
+- outer_join
+- right_join
 - partial_application
 - print_hello
 - pure_fold
 - pure_global_fold
-- query_sum_select
 - record_assign
 - save_jsonl_stdout
 - short_circuit
@@ -79,7 +91,6 @@ This directory contains Python source code generated from Mochi programs and the
 - sum_builtin
 - tail_recursion
 - test_block
-- tree_sum
 - two-sum
 - typed_let
 - typed_var
@@ -91,19 +102,8 @@ This directory contains Python source code generated from Mochi programs and the
 - while_loop
 
 ### Failed
-- group_by
-- group_by_conditional_sum
-- group_by_having
-- group_by_join
 - group_by_left_join
-- group_by_multi_join
-- group_by_multi_join_sort
-- group_by_sort
 - group_items_iteration
-- inner_join
-- join_multi
-- left_join
-- left_join_multi
 - load_yaml
-- outer_join
-- right_join
+- query_sum_select
+- tree_sum
