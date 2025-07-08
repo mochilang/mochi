@@ -66,7 +66,7 @@ val result = run {
     val __res = mutableListOf<Any>()
     for (o in orders) {
         for (c in customers) {
-            __res.add(mutableMapOf("orderId" to o["id"], "orderCustomerId" to o["customerId"], "pairedCustomerName" to c["name"], "orderTotal" to o["total"]))
+            __res.add(mutableMapOf("orderId" to (o as MutableMap<*, *>)["id"], "orderCustomerId" to (o as MutableMap<*, *>)["customerId"], "pairedCustomerName" to (c as MutableMap<*, *>)["name"], "orderTotal" to (o as MutableMap<*, *>)["total"]))
         }
     }
     __res
@@ -75,6 +75,6 @@ val result = run {
 fun main() {
     println("--- Cross Join: All order-customer pairs ---")
     for (entry in result) {
-        println(listOf("Order", entry.orderId, "(customerId:", entry.orderCustomerId, ", total: $", entry.orderTotal, ") paired with", entry.pairedCustomerName).joinToString(" "))
+        println(listOf("Order", (entry as MutableMap<*, *>)["orderId"], "(customerId:", (entry as MutableMap<*, *>)["orderCustomerId"], ", total: $", (entry as MutableMap<*, *>)["orderTotal"], ") paired with", (entry as MutableMap<*, *>)["pairedCustomerName"]).joinToString(" "))
     }
 }

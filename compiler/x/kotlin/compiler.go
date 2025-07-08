@@ -300,6 +300,7 @@ func (c *Compiler) whileStmt(w *parser.WhileStmt) error {
 }
 
 func (c *Compiler) forStmt(f *parser.ForStmt) error {
+	var elem types.Type
 	if f.RangeEnd != nil {
 		start, err := c.expr(f.Source)
 		if err != nil {
@@ -310,6 +311,7 @@ func (c *Compiler) forStmt(f *parser.ForStmt) error {
 			return err
 		}
 		c.writeln(fmt.Sprintf("for (%s in %s until %s) {", f.Name, start, end))
+		elem = types.IntType{}
 	} else {
 		src, err := c.expr(f.Source)
 		if err != nil {
@@ -318,18 +320,38 @@ func (c *Compiler) forStmt(f *parser.ForStmt) error {
 		t := types.TypeOfExprBasic(f.Source, c.env)
 		if types.IsMapType(t) {
 			c.writeln(fmt.Sprintf("for (%s in %s.keys) {", f.Name, src))
+			if mt, ok := t.(types.MapType); ok {
+				elem = mt.Key
+			}
 		} else {
 			c.writeln(fmt.Sprintf("for (%s in %s) {", f.Name, src))
+			if lt, ok := t.(types.ListType); ok {
+				elem = lt.Elem
+			}
 		}
 	}
+
+	oldEnv := c.env
+	if elem != nil {
+		c.env = types.NewEnv(c.env)
+		c.env.SetVar(f.Name, elem, true)
+	}
+
 	c.indent++
 	for _, st := range f.Body {
 		if err := c.stmt(st); err != nil {
+			if elem != nil {
+				c.env = oldEnv
+			}
 			return err
 		}
 	}
 	c.indent--
 	c.writeln("}")
+
+	if elem != nil {
+		c.env = oldEnv
+	}
 	return nil
 }
 
@@ -543,6 +565,7 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 		name := p.Selector.Root
 		t, _ := c.env.GetVar(p.Selector.Root)
 		if types.IsMapType(t) {
+			name = fmt.Sprintf("(%s as MutableMap<*, *>)", name)
 			for _, part := range p.Selector.Tail {
 				name += fmt.Sprintf("[%q]", part)
 			}
