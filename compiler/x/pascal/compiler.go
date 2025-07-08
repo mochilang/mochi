@@ -1107,6 +1107,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	operands := []string{}
 	lists := []bool{}
 	maps := []bool{}
+	elemType := c.elemTypeOfExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: b.Left}})
 
 	left, err := c.compileUnary(b.Left)
 	if err != nil {
@@ -1132,7 +1133,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		operators = append(operators, op)
 	}
 
-	levels := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!=", "in"}, {"&&"}, {"||"}, {"union_all"}, {"intersect"}}
+	levels := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!=", "in"}, {"&&"}, {"||"}, {"union", "union_all", "except", "intersect"}}
 
 	for _, level := range levels {
 		for i := 0; i < len(operators); {
@@ -1183,9 +1184,17 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				case "union_all":
 					res = fmt.Sprintf("Concat(%s, %s)", l, r)
 					isList = true
+				case "union":
+					c.use("_union")
+					res = fmt.Sprintf("specialize _union<%s>(%s, %s)", elemType, l, r)
+					isList = true
+				case "except":
+					c.use("_except")
+					res = fmt.Sprintf("specialize _except<%s>(%s, %s)", elemType, l, r)
+					isList = true
 				case "intersect":
 					c.use("_intersect")
-					res = fmt.Sprintf("specialize _intersect<Variant>(%s, %s)", l, r)
+					res = fmt.Sprintf("specialize _intersect<%s>(%s, %s)", elemType, l, r)
 					isList = true
 				}
 				operands[i] = res
@@ -2538,6 +2547,69 @@ func (c *Compiler) emitHelpers() {
 			c.writeln("n := Length(a);")
 			c.writeln("for i := 0 to High(b) do")
 			c.writeln("  Result[n + i] := b[i];")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_union":
+			c.writeln("generic function _union<T>(a, b: specialize TArray<T>): specialize TArray<T>;")
+			c.writeln("var i,j: Integer; exists: Boolean;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("SetLength(Result, 0);")
+			c.writeln("for i := 0 to High(a) do")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("exists := False;")
+			c.writeln("for j := 0 to High(Result) do")
+			c.writeln("  if a[i] = Result[j] then begin exists := True; Break; end;")
+			c.writeln("if not exists then")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("SetLength(Result, Length(Result)+1);")
+			c.writeln("Result[High(Result)] := a[i];")
+			c.indent--
+			c.writeln("end;")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("for i := 0 to High(b) do")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("exists := False;")
+			c.writeln("for j := 0 to High(Result) do")
+			c.writeln("  if b[i] = Result[j] then begin exists := True; Break; end;")
+			c.writeln("if not exists then")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("SetLength(Result, Length(Result)+1);")
+			c.writeln("Result[High(Result)] := b[i];")
+			c.indent--
+			c.writeln("end;")
+			c.indent--
+			c.writeln("end;")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_except":
+			c.writeln("generic function _except<T>(a, b: specialize TArray<T>): specialize TArray<T>;")
+			c.writeln("var i,j: Integer; inB: Boolean;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("SetLength(Result, 0);")
+			c.writeln("for i := 0 to High(a) do")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("inB := False;")
+			c.writeln("for j := 0 to High(b) do")
+			c.writeln("  if a[i] = b[j] then begin inB := True; Break; end;")
+			c.writeln("if not inB then")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("SetLength(Result, Length(Result)+1);")
+			c.writeln("Result[High(Result)] := a[i];")
+			c.indent--
+			c.writeln("end;")
+			c.indent--
+			c.writeln("end;")
 			c.indent--
 			c.writeln("end;")
 			c.writeln("")
