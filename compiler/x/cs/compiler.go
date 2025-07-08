@@ -2257,50 +2257,62 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("count() expects 1 arg")
 		}
-		c.use("_count")
-		return fmt.Sprintf("_count(%s)", argStr), nil
+		t := c.inferExprType(call.Args[0])
+		if _, ok := t.(types.StringType); ok {
+			return fmt.Sprintf("%s.Length", args[0]), nil
+		}
+		c.useLinq = true
+		return fmt.Sprintf("Enumerable.Count(%s)", args[0]), nil
 	case "append":
 		if len(args) != 2 {
 			return "", fmt.Errorf("append expects 2 args")
 		}
-		c.use("_append")
-		return fmt.Sprintf("_append(%s, %s)", args[0], args[1]), nil
+		tmp := c.newVar()
+		elem := "dynamic"
+		if lt, ok := c.inferExprType(call.Args[0]).(types.ListType); ok {
+			elem = csTypeOf(lt.Elem)
+		}
+		expr := fmt.Sprintf("new List<%s>(%s)", elem, args[0])
+		return fmt.Sprintf("(()=>{var %s=%s;%s.Add(%s);return %s;})()", tmp, expr, tmp, args[1], tmp), nil
 	case "values":
 		if len(args) != 1 {
 			return "", fmt.Errorf("values expects 1 arg")
 		}
-		c.use("_values")
-		return fmt.Sprintf("_values(%s)", args[0]), nil
+		tmp := c.newVar()
+		c.useLinq = true
+		return fmt.Sprintf("(()=>{var %s=new List<dynamic>();foreach(System.Collections.DictionaryEntry kv in %s){%s.Add(kv.Value);}return %s;})()", tmp, args[0], tmp, tmp), nil
 	case "exists":
 		if len(args) != 1 {
 			return "", fmt.Errorf("exists() expects 1 arg")
 		}
-		c.use("_exists")
-		return fmt.Sprintf("_exists(%s)", argStr), nil
+		tmp := c.newVar()
+		return fmt.Sprintf("(()=>{var %s=%s;if(%s is string s) return s.Length>0;if(%s is System.Collections.IEnumerable e) return e.GetEnumerator().MoveNext();return %s!=null;})()", tmp, args[0], tmp, tmp, tmp), nil
 	case "avg":
 		if len(args) != 1 {
 			return "", fmt.Errorf("avg() expects 1 arg")
 		}
-		c.use("_avg")
-		return fmt.Sprintf("_avg(%s)", argStr), nil
+		c.useLinq = true
+		v := c.newVar()
+		return fmt.Sprintf("Enumerable.Average(%s.Select(%s=>Convert.ToDouble(%s)))", args[0], v, v), nil
 	case "sum":
 		if len(args) != 1 {
 			return "", fmt.Errorf("sum() expects 1 arg")
 		}
-		c.use("_sum")
-		return fmt.Sprintf("_sum(%s)", argStr), nil
+		c.useLinq = true
+		v := c.newVar()
+		return fmt.Sprintf("Enumerable.Sum(%s.Select(%s=>Convert.ToDouble(%s)))", args[0], v, v), nil
 	case "min":
 		if len(args) != 1 {
 			return "", fmt.Errorf("min() expects 1 arg")
 		}
-		c.use("_min")
-		return fmt.Sprintf("_min(%s)", argStr), nil
+		c.useLinq = true
+		return fmt.Sprintf("Enumerable.Min(%s)", args[0]), nil
 	case "max":
 		if len(args) != 1 {
 			return "", fmt.Errorf("max() expects 1 arg")
 		}
-		c.use("_max")
-		return fmt.Sprintf("_max(%s)", argStr), nil
+		c.useLinq = true
+		return fmt.Sprintf("Enumerable.Max(%s)", args[0]), nil
 	case "str":
 		if len(args) != 1 {
 			return "", fmt.Errorf("str() expects 1 arg")
