@@ -15,13 +15,17 @@ import (
 
 // Compiler translates a subset of Mochi to Python source code.
 type Compiler struct {
-	buf       bytes.Buffer
-	indent    int
-	needsJSON bool
+	buf         bytes.Buffer
+	indent      int
+	needsJSON   bool
+	needsData   bool
+	structTypes map[string]bool
 }
 
 // New creates a new Python compiler.
-func New(env *types.Env) *Compiler { return &Compiler{} }
+func New(env *types.Env) *Compiler {
+	return &Compiler{structTypes: make(map[string]bool)}
+}
 
 // Compile converts the parsed Mochi program into Python code.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
@@ -36,6 +40,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	if c.needsJSON {
 		c.writeln("import json")
+		c.writeln("")
+	}
+	if c.needsData {
+		c.writeln("from dataclasses import dataclass")
 		c.writeln("")
 	}
 	c.buf.Write(body.Bytes())
@@ -67,6 +75,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileWhile(s.While)
 	case s.For != nil:
 		return c.compileFor(s.For)
+	case s.Type != nil:
+		return c.compileTypeDecl(s.Type)
 	case s.Break != nil:
 		c.writeln("break")
 		return nil
@@ -213,6 +223,35 @@ func (c *Compiler) compileFor(fs *parser.ForStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileTypeDecl(td *parser.TypeDecl) error {
+	if len(td.Variants) > 0 {
+		return fmt.Errorf("variant types not supported")
+	}
+	c.needsData = true
+	c.structTypes[td.Name] = true
+	c.writeln("@dataclass")
+	c.writeln(fmt.Sprintf("class %s:", td.Name))
+	c.indent++
+	if len(td.Members) == 0 {
+		c.writeln("pass")
+		c.indent--
+		c.writeln("")
+		return nil
+	}
+	for _, m := range td.Members {
+		if m.Field != nil {
+			typ, _ := c.compileType(m.Field.Type)
+			if typ == "" {
+				typ = "object"
+			}
+			c.writeln(fmt.Sprintf("%s: %s", m.Field.Name, typ))
+		}
+	}
+	c.indent--
+	c.writeln("")
+	return nil
+}
+
 func (c *Compiler) compileVarStmt(name string, t *parser.TypeRef, val *parser.Expr) error {
 	var value string
 	var err error
@@ -237,14 +276,28 @@ func (c *Compiler) compileVarStmt(name string, t *parser.TypeRef, val *parser.Ex
 }
 
 func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
-	if len(a.Index) > 0 || len(a.Field) > 0 {
-		return fmt.Errorf("assignment with index or field not supported")
-	}
 	val, err := c.compileExpr(a.Value)
 	if err != nil {
 		return err
 	}
-	c.writeln(fmt.Sprintf("%s = %s", a.Name, val))
+	target := a.Name
+	for _, idx := range a.Index {
+		if idx.Colon != nil {
+			return fmt.Errorf("complex indexing not supported")
+		}
+		if idx.Start == nil {
+			return fmt.Errorf("empty index")
+		}
+		iv, err := c.compileExpr(idx.Start)
+		if err != nil {
+			return err
+		}
+		target += fmt.Sprintf("[%s]", iv)
+	}
+	for _, f := range a.Field {
+		target += "." + f.Name
+	}
+	c.writeln(fmt.Sprintf("%s = %s", target, val))
 	return nil
 }
 
@@ -308,16 +361,56 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			val = fmt.Sprintf("%s(%s)", typ, val)
+			if c.structTypes[typ] {
+				val = fmt.Sprintf("%s(**%s)", typ, val)
+			} else {
+				val = fmt.Sprintf("%s(%s)", typ, val)
+			}
 		case op.Index != nil:
-			if op.Index.Start == nil || op.Index.Colon != nil {
-				return "", fmt.Errorf("complex indexing not supported")
+			if op.Index.Colon != nil || op.Index.Colon2 != nil || op.Index.Step != nil {
+				start := ""
+				end := ""
+				if op.Index.Start != nil {
+					s, err := c.compileExpr(op.Index.Start)
+					if err != nil {
+						return "", err
+					}
+					start = s
+				}
+				if op.Index.End != nil {
+					e, err := c.compileExpr(op.Index.End)
+					if err != nil {
+						return "", err
+					}
+					end = e
+				}
+				val = fmt.Sprintf("%s[%s:%s]", val, start, end)
+			} else {
+				if op.Index.Start == nil {
+					return "", fmt.Errorf("empty index")
+				}
+				idx, err := c.compileExpr(op.Index.Start)
+				if err != nil {
+					return "", err
+				}
+				val = fmt.Sprintf("%s[%s]", val, idx)
 			}
-			idx, err := c.compileExpr(op.Index.Start)
-			if err != nil {
-				return "", err
+		case op.Field != nil:
+			val = fmt.Sprintf("%s.%s", val, op.Field.Name)
+		case op.Call != nil:
+			parts := make([]string, len(op.Call.Args))
+			for i, a := range op.Call.Args {
+				s, err := c.compileExpr(a)
+				if err != nil {
+					return "", err
+				}
+				parts[i] = s
 			}
-			val = fmt.Sprintf("%s[%s]", val, idx)
+			if strings.HasSuffix(val, ".contains") && len(parts) == 1 {
+				val = fmt.Sprintf("%s in %s", parts[0], strings.TrimSuffix(val, ".contains"))
+			} else {
+				val = fmt.Sprintf("%s(%s)", val, strings.Join(parts, ", "))
+			}
 		default:
 			return "", fmt.Errorf("unsupported postfix at line %d", p.Target.Pos.Line)
 		}
@@ -344,7 +437,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Map != nil:
 		parts := make([]string, len(p.Map.Items))
 		for i, it := range p.Map.Items {
-			k, err := c.compileExpr(it.Key)
+			k, err := c.compileMapKey(it.Key)
 			if err != nil {
 				return "", err
 			}
@@ -355,6 +448,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			parts[i] = fmt.Sprintf("%s: %s", k, v)
 		}
 		return "{" + strings.Join(parts, ", ") + "}", nil
+	case p.Struct != nil:
+		return c.compileStructLiteral(p.Struct)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
 	case p.If != nil:
@@ -463,6 +558,40 @@ func (c *Compiler) compileIfExpr(ix *parser.IfExpr) (string, error) {
 	return fmt.Sprintf("(%s if %s else %s)", thenExpr, cond, elseCode), nil
 }
 
+func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error) {
+	fields := make([]string, len(sl.Fields))
+	for i, f := range sl.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return "", err
+		}
+		fields[i] = fmt.Sprintf("%s=%s", f.Name, v)
+	}
+	return fmt.Sprintf("%s(%s)", sl.Name, strings.Join(fields, ", ")), nil
+}
+
+func (c *Compiler) compileMapKey(e *parser.Expr) (string, error) {
+	if name, ok := c.simpleIdentifier(e); ok {
+		return fmt.Sprintf("%q", name), nil
+	}
+	return c.compileExpr(e)
+}
+
+func (c *Compiler) simpleIdentifier(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) > 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Selector == nil || len(p.Target.Selector.Tail) > 0 {
+		return "", false
+	}
+	return p.Target.Selector.Root, true
+}
+
 func (c *Compiler) compileLiteral(l *parser.Literal) string {
 	switch {
 	case l.Int != nil:
@@ -487,7 +616,18 @@ func (c *Compiler) compileType(t *parser.TypeRef) (string, error) {
 	if t == nil || t.Simple == nil {
 		return "", fmt.Errorf("unsupported type")
 	}
-	return *t.Simple, nil
+	switch *t.Simple {
+	case "int":
+		return "int", nil
+	case "string":
+		return "str", nil
+	case "float":
+		return "float", nil
+	case "bool":
+		return "bool", nil
+	default:
+		return *t.Simple, nil
+	}
 }
 
 func (c *Compiler) writeln(s string) {
