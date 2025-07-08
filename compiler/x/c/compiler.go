@@ -52,6 +52,14 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 
 	var body bytes.Buffer
 	for _, st := range p.Statements {
+		if st.Type != nil {
+			if err := c.compileTypeDecl(st.Type); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
+	for _, st := range p.Statements {
 		if st.Fun != nil {
 			if err := c.compileFun(st.Fun); err != nil {
 				return nil, err
@@ -61,7 +69,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	}
 
 	for _, st := range p.Statements {
-		if st.Fun != nil {
+		if st.Fun != nil || st.Type != nil {
 			continue
 		}
 		oldBuf := c.buf
@@ -98,6 +106,27 @@ func (c *Compiler) writeIndent() {
 	for i := 0; i < c.indent; i++ {
 		c.buf.WriteString("    ")
 	}
+}
+
+func (c *Compiler) compileTypeDecl(td *parser.TypeDecl) error {
+	// Only simple struct types without methods are supported.
+	if len(td.Members) == 0 {
+		return fmt.Errorf("unsupported type decl")
+	}
+	c.writeIndent()
+	fmt.Fprintf(&c.buf, "typedef struct {\n")
+	c.indent++
+	for _, m := range td.Members {
+		if m.Field == nil {
+			return fmt.Errorf("unsupported type member")
+		}
+		ft, _ := c.compileType(m.Field.Type)
+		c.writeIndent()
+		fmt.Fprintf(&c.buf, "%s %s;\n", ft, m.Field.Name)
+	}
+	c.indent--
+	c.writeln("} " + td.Name + ";")
+	return nil
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
@@ -154,6 +183,13 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			typ, _ := c.compileType(s.Let.Type)
 			if typ == "int" && isStringLiteral(s.Let.Value) {
 				typ = "const char*"
+			} else if typ == "int" && s.Let.Value != nil {
+				t := types.TypeOfExpr(s.Let.Value, c.env)
+				if st, ok := t.(types.StructType); ok {
+					typ = st.Name
+				} else if types.IsStringType(t) {
+					typ = "const char*"
+				}
 			}
 			c.buf.WriteString(typ)
 			c.buf.WriteByte(' ')
@@ -188,6 +224,13 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			typ, _ := c.compileType(s.Var.Type)
 			if typ == "int" && isStringLiteral(s.Var.Value) {
 				typ = "const char*"
+			} else if typ == "int" && s.Var.Value != nil {
+				t := types.TypeOfExpr(s.Var.Value, c.env)
+				if st, ok := t.(types.StructType); ok {
+					typ = st.Name
+				} else if types.IsStringType(t) {
+					typ = "const char*"
+				}
 			}
 			c.buf.WriteString(typ)
 			c.buf.WriteByte(' ')
@@ -276,6 +319,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Continue != nil:
 		c.writeIndent()
 		c.buf.WriteString("continue;\n")
+	case s.Type != nil:
+		return c.compileTypeDecl(s.Type)
 	default:
 		return fmt.Errorf("unsupported statement at line %d", s.Pos.Line)
 	}
@@ -453,6 +498,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 			if typ == "int" && strings.HasPrefix(expr, "\"") {
 				expr = fmt.Sprintf("atoi(%s)", expr)
+			} else if _, ok := c.env.GetStruct(typ); ok && strings.HasPrefix(strings.TrimSpace(expr), "{") {
+				expr = fmt.Sprintf("(%s)%s", typ, expr)
 			} else {
 				expr = fmt.Sprintf("(%s)(%s)", typ, expr)
 			}
@@ -484,49 +531,84 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			name += "." + t
 		}
 		return name, nil
-       case p.List != nil:
-               elems := make([]string, len(p.List.Elems))
-               for i, e := range p.List.Elems {
-                       s, err := c.compileExpr(e)
-                       if err != nil {
-                               return "", err
-                       }
-                       elems[i] = s
-               }
-               return "(int[]){" + strings.Join(elems, ", ") + "}", nil
-       case p.If != nil:
-               return c.compileIfExpr(p.If)
-       case p.Group != nil:
-               return c.compileExpr(p.Group)
-       default:
-               return "", fmt.Errorf("unsupported primary at line %d", p.Pos.Line)
-       }
+	case p.List != nil:
+		elems := make([]string, len(p.List.Elems))
+		for i, e := range p.List.Elems {
+			s, err := c.compileExpr(e)
+			if err != nil {
+				return "", err
+			}
+			elems[i] = s
+		}
+		return "(int[]){" + strings.Join(elems, ", ") + "}", nil
+	case p.Map != nil:
+		return c.compileMapLiteral(p.Map)
+	case p.If != nil:
+		return c.compileIfExpr(p.If)
+	case p.Group != nil:
+		return c.compileExpr(p.Group)
+	default:
+		return "", fmt.Errorf("unsupported primary at line %d", p.Pos.Line)
+	}
 }
 
 func (c *Compiler) compileIfExpr(ix *parser.IfExpr) (string, error) {
-       cond, err := c.compileExpr(ix.Cond)
-       if err != nil {
-               return "", err
-       }
-       thenExpr, err := c.compileExpr(ix.Then)
-       if err != nil {
-               return "", err
-       }
-       var elseExpr string
-       if ix.ElseIf != nil {
-               elseExpr, err = c.compileIfExpr(ix.ElseIf)
-               if err != nil {
-                       return "", err
-               }
-       } else if ix.Else != nil {
-               elseExpr, err = c.compileExpr(ix.Else)
-               if err != nil {
-                       return "", err
-               }
-       } else {
-               elseExpr = "0"
-       }
-       return fmt.Sprintf("(%s ? %s : %s)", cond, thenExpr, elseExpr), nil
+	cond, err := c.compileExpr(ix.Cond)
+	if err != nil {
+		return "", err
+	}
+	thenExpr, err := c.compileExpr(ix.Then)
+	if err != nil {
+		return "", err
+	}
+	var elseExpr string
+	if ix.ElseIf != nil {
+		elseExpr, err = c.compileIfExpr(ix.ElseIf)
+		if err != nil {
+			return "", err
+		}
+	} else if ix.Else != nil {
+		elseExpr, err = c.compileExpr(ix.Else)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		elseExpr = "0"
+	}
+	return fmt.Sprintf("(%s ? %s : %s)", cond, thenExpr, elseExpr), nil
+}
+
+func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
+	fields := make([]string, len(m.Items))
+	for i, item := range m.Items {
+		name := simpleMapKey(item.Key)
+		if name == "" {
+			return "", fmt.Errorf("unsupported map key")
+		}
+		val, err := c.compileExpr(item.Value)
+		if err != nil {
+			return "", err
+		}
+		fields[i] = fmt.Sprintf(".%s = %s", name, val)
+	}
+	return "{" + strings.Join(fields, ", ") + "}", nil
+}
+
+func simpleMapKey(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if u.Value == nil || len(u.Ops) > 0 || len(u.Value.Ops) > 0 {
+		return ""
+	}
+	if lit := u.Value.Target.Lit; lit != nil && lit.Str != nil {
+		return *lit.Str
+	}
+	if sel := u.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 {
+		return sel.Root
+	}
+	return ""
 }
 
 func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
@@ -783,6 +865,11 @@ func (c *Compiler) compileType(t *parser.TypeRef) (string, error) {
 			return "int", nil
 		case "string":
 			return "const char*", nil
+		default:
+			if st, ok := c.env.GetStruct(*t.Simple); ok {
+				_ = st // avoid unused
+				return *t.Simple, nil
+			}
 		}
 	}
 	return "int", nil
