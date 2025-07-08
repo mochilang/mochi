@@ -2,7 +2,7 @@
 
 Generated Haskell code and outputs are stored in this directory.
 
-## 46/97 compiled
+## 48/97 compiled
 
 ### Checklist
 
@@ -11,7 +11,7 @@ Generated Haskell code and outputs are stored in this directory.
 - [x] `basic_compare.mochi`
 - [x] `binary_precedence.mochi`
 - [x] `bool_chain.mochi`
-- [ ] `break_continue.mochi`
+- [x] `break_continue.mochi`
 - [x] `cast_string_to_int.mochi`
 - [x] `cast_struct.mochi`
 - [x] `closure.mochi`
@@ -99,7 +99,7 @@ Generated Haskell code and outputs are stored in this directory.
 - [x] `typed_var.mochi`
 - [x] `unary_neg.mochi`
 - [ ] `update_stmt.mochi`
-- [ ] `user_type_literal.mochi`
+- [x] `user_type_literal.mochi`
 - [ ] `values_builtin.mochi`
 - [ ] `var_assignment.mochi`
 - [x] `while_loop.mochi`
