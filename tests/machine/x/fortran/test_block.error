@@ -1,0 +1,3 @@
+error: unsupported statement at line 1
+   1| test "addition works" {
+   2|   let x = 1 + 2

@@ -1,0 +1,17 @@
+error: gfortran: exit status 1
+/workspace/mochi/tests/machine/x/fortran/partial_application.f90:4:16:
+
+    4 |   print *, add5(3)
+      |                1
+Error: Syntax error in PRINT statement at (1)
+/workspace/mochi/tests/machine/x/fortran/partial_application.f90:3:6:
+
+    3 |   add5 = add(5)
+      |      1
+Error: Symbol ‘add5’ at (1) has no IMPLICIT type; did you mean ‘add’?
+/workspace/mochi/tests/machine/x/fortran/partial_application.f90:3:9:
+
+    3 |   add5 = add(5)
+      |         1
+Error: Missing actual argument for argument ‘b’ at (1)
+

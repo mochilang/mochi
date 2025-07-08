@@ -1,0 +1,7 @@
+error: gfortran: exit status 1
+/workspace/mochi/tests/machine/x/fortran/while_loop.f90:3:3:
+
+    3 |   i = 0
+      |   1
+Error: Symbol ‘i’ at (1) has no IMPLICIT type
+
