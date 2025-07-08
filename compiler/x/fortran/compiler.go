@@ -107,6 +107,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 }
 
 func (c *Compiler) compileLet(l *parser.LetStmt) error {
+	if l.Value == nil && l.Type != nil {
+		c.writeln(fmt.Sprintf("integer :: %s", l.Name))
+		return nil
+	}
 	val, err := c.compileExpr(l.Value)
 	if err != nil {
 		return err
@@ -116,7 +120,7 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 }
 
 func (c *Compiler) compileVar(v *parser.VarStmt) error {
-	return c.compileLet(&parser.LetStmt{Name: v.Name, Value: v.Value})
+	return c.compileLet(&parser.LetStmt{Name: v.Name, Value: v.Value, Type: v.Type})
 }
 
 func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
@@ -311,6 +315,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileLiteral(p.Lit), nil
 	case p.Call != nil:
 		return c.compileCall(p.Call)
+	case p.Selector != nil:
+		if len(p.Selector.Tail) != 0 {
+			return "", fmt.Errorf("selector not supported at line %d", p.Pos.Line)
+		}
+		return p.Selector.Root, nil
 	case p.Group != nil:
 		inner, err := c.compileExpr(p.Group)
 		if err != nil {

@@ -1,0 +1,7 @@
+error: gfortran: exit status 1
+/workspace/mochi/tests/machine/x/fortran/if_else.f90:3:3:
+
+    3 |   x = 5
+      |   1
+Error: Symbol ‘x’ at (1) has no IMPLICIT type
+

@@ -1,0 +1,17 @@
+error: gfortran: exit status 1
+/workspace/mochi/tests/machine/x/fortran/string_in_operator.f90:4:18:
+
+    4 |   print *, ("cat" in s)
+      |                  1
+Error: Expected a right parenthesis in expression at (1)
+/workspace/mochi/tests/machine/x/fortran/string_in_operator.f90:5:18:
+
+    5 |   print *, ("dog" in s)
+      |                  1
+Error: Expected a right parenthesis in expression at (1)
+/workspace/mochi/tests/machine/x/fortran/string_in_operator.f90:3:3:
+
+    3 |   s = "catch"
+      |   1
+Error: Symbol ‘s’ at (1) has no IMPLICIT type
+
