@@ -4,7 +4,7 @@ This directory stores machine generated C++ translations of programs from `tests
 Each entry is compiled and executed during tests. If a program fails to compile or run,
 a `.error` file will contain the diagnostic details.
 
-Checklist of programs that currently compile and run (32/97):
+Checklist of programs that currently compile and run (34/97):
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -24,6 +24,8 @@ Checklist of programs that currently compile and run (32/97):
 - [x] list_index
 - [x] map_assign
 - [x] map_index
+- [x] match_expr
+- [x] match_full
 - [x] math_ops
 - [x] min_max_builtin
 - [x] print_hello

@@ -14,10 +14,16 @@ import (
 type Compiler struct {
 	buf    bytes.Buffer
 	indent int
+	tmp    int
 }
 
 // New returns a new compiler instance.
 func New() *Compiler { return &Compiler{} }
+
+func (c *Compiler) newTmp() string {
+	c.tmp++
+	return fmt.Sprintf("__tmp%d", c.tmp)
+}
 
 func (c *Compiler) writeln(s string) {
 	for i := 0; i < c.indent; i++ {
@@ -437,6 +443,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			pairs = append(pairs, fmt.Sprintf("{%s, %s}", k, v))
 		}
 		return "std::unordered_map<std::string,int>{" + strings.Join(pairs, ", ") + "}", nil
+	case p.Match != nil:
+		return c.compileMatchExpr(p.Match)
 	case p.Selector != nil:
 		name := p.Selector.Root
 		for _, t := range p.Selector.Tail {
@@ -497,6 +505,79 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	default:
 		return "", fmt.Errorf("unsupported primary at %v", p.Pos)
 	}
+}
+
+func (c *Compiler) compileMatchExpr(mx *parser.MatchExpr) (string, error) {
+	target, err := c.compileExpr(mx.Target)
+	if err != nil {
+		return "", err
+	}
+	elseExpr := ""
+	cases := make([]*parser.MatchCase, 0, len(mx.Cases))
+	for _, cs := range mx.Cases {
+		if name, ok := c.simpleIdentifier(cs.Pattern); ok && name == "_" {
+			e, err := c.compileExpr(cs.Result)
+			if err != nil {
+				return "", err
+			}
+			elseExpr = e
+		} else {
+			cases = append(cases, cs)
+		}
+	}
+	if elseExpr == "" {
+		if len(cases) > 0 {
+			first, err := c.compileExpr(cases[0].Result)
+			if err != nil {
+				return "", err
+			}
+			elseExpr = fmt.Sprintf("decltype(%s){}", first)
+		} else {
+			elseExpr = "0"
+		}
+	}
+	var buf strings.Builder
+	buf.WriteString("([&]() { auto __v = ")
+	buf.WriteString(target)
+	buf.WriteString("; ")
+	for i, cs := range cases {
+		pat, err := c.compileExpr(cs.Pattern)
+		if err != nil {
+			return "", err
+		}
+		res, err := c.compileExpr(cs.Result)
+		if err != nil {
+			return "", err
+		}
+		if i == 0 {
+			buf.WriteString("if (__v == ")
+		} else {
+			buf.WriteString("else if (__v == ")
+		}
+		buf.WriteString(pat)
+		buf.WriteString(") return ")
+		buf.WriteString(res)
+		buf.WriteString("; ")
+	}
+	buf.WriteString("return ")
+	buf.WriteString(elseExpr)
+	buf.WriteString("; })()")
+	return buf.String(), nil
+}
+
+func (c *Compiler) simpleIdentifier(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) > 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Selector == nil || len(p.Target.Selector.Tail) > 0 {
+		return "", false
+	}
+	return p.Target.Selector.Root, true
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
