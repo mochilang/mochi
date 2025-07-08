@@ -50,17 +50,25 @@ func (c *Compiler) writeln(s string) {
 func (c *Compiler) stmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
-		val, err := c.expr(s.Let.Value)
-		if err != nil {
-			return err
+		if s.Let.Value == nil {
+			c.writeln(fmt.Sprintf("let %s = null;", s.Let.Name))
+		} else {
+			val, err := c.expr(s.Let.Value)
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("let %s = %s;", s.Let.Name, val))
 		}
-		c.writeln(fmt.Sprintf("let %s = %s;", s.Let.Name, val))
 	case s.Var != nil:
-		val, err := c.expr(s.Var.Value)
-		if err != nil {
-			return err
+		if s.Var.Value == nil {
+			c.writeln(fmt.Sprintf("let %s = null;", s.Var.Name))
+		} else {
+			val, err := c.expr(s.Var.Value)
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("let %s = %s;", s.Var.Name, val))
 		}
-		c.writeln(fmt.Sprintf("let %s = %s;", s.Var.Name, val))
 	case s.Return != nil:
 		val, err := c.expr(s.Return.Value)
 		if err != nil {
@@ -97,6 +105,16 @@ func (c *Compiler) stmt(s *parser.Statement) error {
 		c.writeln("break;")
 	case s.Continue != nil:
 		c.writeln("continue;")
+	case s.Assign != nil:
+		target, err := c.assignTarget(s.Assign)
+		if err != nil {
+			return err
+		}
+		val, err := c.expr(s.Assign.Value)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("%s = %s;", target, val))
 	case s.Type != nil:
 		return c.typeDecl(s.Type)
 	default:
@@ -190,6 +208,27 @@ func (c *Compiler) typeDecl(td *parser.TypeDecl) error {
 		return nil
 	}
 	return fmt.Errorf("unsupported type declaration")
+}
+
+func (c *Compiler) assignTarget(a *parser.AssignStmt) (string, error) {
+	target := a.Name
+	for _, idx := range a.Index {
+		if idx.Colon != nil || idx.End != nil || idx.Colon2 != nil || idx.Step != nil {
+			return "", fmt.Errorf("slice assignment not supported")
+		}
+		if idx.Start == nil {
+			return "", fmt.Errorf("missing index expression")
+		}
+		v, err := c.expr(idx.Start)
+		if err != nil {
+			return "", err
+		}
+		target = fmt.Sprintf("%s[%s]", target, v)
+	}
+	for _, f := range a.Field {
+		target = fmt.Sprintf("%s.%s", target, f.Name)
+	}
+	return target, nil
 }
 
 func (c *Compiler) funExpr(fe *parser.FunExpr) (string, error) {
@@ -393,8 +432,16 @@ func (c *Compiler) postfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	for _, op := range p.Ops {
+	for i := 0; i < len(p.Ops); i++ {
+		op := p.Ops[i]
+		if op.Field != nil && op.Field.Name == "contains" && i+1 < len(p.Ops) && p.Ops[i+1].Call != nil {
+			val = fmt.Sprintf("%s.includes", val)
+			continue
+		}
 		if op.Call != nil {
+			if strings.HasSuffix(val, ".contains") {
+				val = strings.TrimSuffix(val, ".contains") + ".includes"
+			}
 			args := make([]string, len(op.Call.Args))
 			for i, a := range op.Call.Args {
 				s, err := c.expr(a)
@@ -518,6 +565,11 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 				return fmt.Sprintf("Object.values(%s)", args[0]), nil
 			}
 			return "", fmt.Errorf("values expects 1 arg")
+		case "contains":
+			if len(args) == 2 {
+				return fmt.Sprintf("%s.includes(%s)", args[0], args[1]), nil
+			}
+			return "", fmt.Errorf("contains expects 2 args")
 		case "str":
 			if len(args) == 1 {
 				return fmt.Sprintf("String(%s)", args[0]), nil
@@ -528,6 +580,16 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 				return fmt.Sprintf("%s.substring(%s, %s)", args[0], args[1], args[2]), nil
 			}
 			return "", fmt.Errorf("substring expects 3 args")
+		case "min":
+			if len(args) == 1 {
+				return fmt.Sprintf("Math.min(...%s)", args[0]), nil
+			}
+			return "", fmt.Errorf("min expects 1 arg")
+		case "max":
+			if len(args) == 1 {
+				return fmt.Sprintf("Math.max(...%s)", args[0]), nil
+			}
+			return "", fmt.Errorf("max expects 1 arg")
 		default:
 			return fmt.Sprintf("%s(%s)", p.Call.Func, strings.Join(args, ", ")), nil
 		}
