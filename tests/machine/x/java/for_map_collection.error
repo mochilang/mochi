@@ -1,4 +1,17 @@
-line 0: compile error: expression unsupported at line 1
+line 0: javac error: exit status 1
+/tmp/TestCompileValidProgramsfor_map_collection1856335730/001/Main.java:3: error: incompatible types: no instance(s) of type variable(s) K,V exist so that Map<K,V> conforms to int
+	static int m = java.util.Map.of("a", 1, "b", 2);
+	                               ^
+  where K,V are type-variables:
+    K extends Object declared in method <K,V>of(K,V,K,V)
+    V extends Object declared in method <K,V>of(K,V,K,V)
+/tmp/TestCompileValidProgramsfor_map_collection1856335730/001/Main.java:5: error: for-each not applicable to expression type
+	for (var k : m) {
+	             ^
+  required: array or java.lang.Iterable
+  found:    int
+2 errors
+
 
   1| var m = {"a": 1, "b": 2}
   2| for k in m {

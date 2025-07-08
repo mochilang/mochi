@@ -1,4 +1,18 @@
-line 0: compile error: expression unsupported at line 1
+line 0: javac error: exit status 1
+/tmp/TestCompileValidProgramsmap_membership105860861/001/Main.java:5: error: ')' or ',' expected
+	System.out.println("a" in m);
+	                      ^
+/tmp/TestCompileValidProgramsmap_membership105860861/001/Main.java:5: error: ';' expected
+	System.out.println("a" in m);
+	                           ^
+/tmp/TestCompileValidProgramsmap_membership105860861/001/Main.java:6: error: ')' or ',' expected
+	System.out.println("c" in m);
+	                      ^
+/tmp/TestCompileValidProgramsmap_membership105860861/001/Main.java:6: error: ';' expected
+	System.out.println("c" in m);
+	                           ^
+4 errors
+
 
   1| let m = {"a": 1, "b": 2}
   2| print("a" in m)

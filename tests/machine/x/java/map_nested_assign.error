@@ -1,4 +1,15 @@
-line 0: compile error: expression unsupported at line 1
+line 0: javac error: exit status 1
+/tmp/TestCompileValidProgramsmap_nested_assign999227707/001/Main.java:3: error: incompatible types: no instance(s) of type variable(s) K,V,K,V exist so that Map<K,V> conforms to int
+	static int data = java.util.Map.of("outer", java.util.Map.of("inner", 1));
+	                                  ^
+  where K,V are type-variables:
+    K extends Object declared in method <K,V>of(K,V)
+    V extends Object declared in method <K,V>of(K,V)
+/tmp/TestCompileValidProgramsmap_nested_assign999227707/001/Main.java:6: error: int cannot be dereferenced
+	System.out.println(data.get("outer").get("inner"));
+	                       ^
+2 errors
+
 
   1| var data = {"outer": {"inner": 1}}
   2| data["outer"]["inner"] = 2

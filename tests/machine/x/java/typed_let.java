@@ -1,6 +1,7 @@
+import java.util.*;
 public class Main {
+	static int y = 0;
 	public static void main(String[] args) {
-		int y = 0;
-		System.out.println(y);
+	System.out.println(y);
 	}
 }

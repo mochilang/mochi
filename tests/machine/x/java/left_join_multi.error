@@ -1,4 +1,4 @@
-line 0: compile error: expression unsupported at line 1
+line 0: compile error: print expects one argument at line 22
 
   1| let customers = [
   2|   { id: 1, name: "Alice" },

@@ -1,4 +1,18 @@
-line 0: compile error: expression unsupported at line 1
+line 0: javac error: exit status 1
+/tmp/TestCompileValidProgramsin_operator2515263159/001/Main.java:5: error: ')' or ',' expected
+	System.out.println(2 in xs);
+	                    ^
+/tmp/TestCompileValidProgramsin_operator2515263159/001/Main.java:5: error: ';' expected
+	System.out.println(2 in xs);
+	                          ^
+/tmp/TestCompileValidProgramsin_operator2515263159/001/Main.java:6: error: ')' expected
+	System.out.println(!(5 in xs));
+	                      ^
+/tmp/TestCompileValidProgramsin_operator2515263159/001/Main.java:6: error: ';' expected
+	System.out.println(!(5 in xs));
+	                            ^
+4 errors
+
 
   1| let xs = [1, 2, 3]
   2| print(2 in xs)

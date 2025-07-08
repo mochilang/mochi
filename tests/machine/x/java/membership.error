@@ -1,4 +1,18 @@
-line 0: compile error: expression unsupported at line 1
+line 0: javac error: exit status 1
+/tmp/TestCompileValidProgramsmembership132464396/001/Main.java:5: error: ')' or ',' expected
+	System.out.println(2 in nums);
+	                    ^
+/tmp/TestCompileValidProgramsmembership132464396/001/Main.java:5: error: ';' expected
+	System.out.println(2 in nums);
+	                            ^
+/tmp/TestCompileValidProgramsmembership132464396/001/Main.java:6: error: ')' or ',' expected
+	System.out.println(4 in nums);
+	                    ^
+/tmp/TestCompileValidProgramsmembership132464396/001/Main.java:6: error: ';' expected
+	System.out.println(4 in nums);
+	                            ^
+4 errors
+
 
   1| let nums = [1, 2, 3]
   2| print(2 in nums)

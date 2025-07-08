@@ -1,4 +1,4 @@
-line 0: compile error: expression unsupported at line 1
+line 0: compile error: expression unsupported at line 2
 
   1| let xs = [1, 2, 3]
   2| let ys = from x in xs where x % 2 == 1 select x

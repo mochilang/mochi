@@ -1,4 +1,4 @@
-line 0: compile error: expression unsupported at line 1
+line 0: compile error: expression unsupported at line 8
 
   1| let items = [
   2|   { cat: "a", val: 3 },

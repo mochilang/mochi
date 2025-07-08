@@ -1,4 +1,4 @@
-line 0: compile error: expression unsupported at line 1
+line 0: compile error: expression unsupported at line 6
 
   1| let people = [
   2|   { name: "Alice", age: 30 },

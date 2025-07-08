@@ -1,4 +1,0 @@
-line 0: compile error: postfix operations unsupported
-
-  1| print("1995" as int)
-  2| 
