@@ -24,6 +24,8 @@ type Compiler struct {
 	lens     map[string]int
 	listVals map[string][]string
 
+	mapTypes map[string]string
+
 	needsContains  bool
 	needsPrintList bool
 	needsAvg       bool
@@ -33,6 +35,11 @@ type Compiler struct {
 	needsSubstr    bool
 	needsConcat    bool
 	needsToStr     bool
+
+	needsGetSI      bool
+	needsGetIS      bool
+	needsContainsSI bool
+	needsContainsIS bool
 
 	aliases     map[string]string
 	lambdaCount int
@@ -48,6 +55,7 @@ func New(env *types.Env) *Compiler {
 		vars:     make(map[string]string),
 		lens:     make(map[string]int),
 		listVals: make(map[string][]string),
+		mapTypes: make(map[string]string),
 		aliases:  make(map[string]string),
 		funRet:   make(map[string]string),
 	}
@@ -245,6 +253,17 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			c.vars[s.Let.Name] = "int[]"
 			c.lens[s.Let.Name] = len(lst.Elems)
 			c.listVals[s.Let.Name] = elems
+		} else if mp := mapLiteral(s.Let.Value); mp != nil {
+			val, err := c.compileMapLiteral(mp, true)
+			if err != nil {
+				return err
+			}
+			typ := c.lastType
+			entry := strings.TrimSuffix(typ, "[]")
+			fmt.Fprintf(&c.buf, "%s %s[] = %s;\n", entry, s.Let.Name, val)
+			c.vars[s.Let.Name] = typ
+			c.lens[s.Let.Name] = len(mp.Items)
+			c.mapTypes[s.Let.Name] = entry
 		} else {
 			typ, _ := c.compileType(s.Let.Type)
 			if s.Let.Type == nil && c.lastType != "" {
@@ -289,6 +308,17 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			c.vars[s.Var.Name] = "int[]"
 			c.lens[s.Var.Name] = len(lst.Elems)
 			c.listVals[s.Var.Name] = elems
+		} else if mp := mapLiteral(s.Var.Value); mp != nil {
+			val, err := c.compileMapLiteral(mp, true)
+			if err != nil {
+				return err
+			}
+			typ := c.lastType
+			entry := strings.TrimSuffix(typ, "[]")
+			fmt.Fprintf(&c.buf, "%s %s[] = %s;\n", entry, s.Var.Name, val)
+			c.vars[s.Var.Name] = typ
+			c.lens[s.Var.Name] = len(mp.Items)
+			c.mapTypes[s.Var.Name] = entry
 		} else {
 			typ, _ := c.compileType(s.Var.Type)
 			if s.Var.Type == nil && c.lastType != "" {
@@ -509,6 +539,45 @@ func (c *Compiler) compileFor(fr *parser.ForStmt) error {
 	if err != nil {
 		return err
 	}
+	t := types.TypeOfExpr(fr.Source, c.env)
+	if mt, ok := t.(types.MapType); ok {
+		var lenExpr string
+		if srcP.Target.Map != nil {
+			lenExpr = fmt.Sprintf("%d", len(srcP.Target.Map.Items))
+		} else if srcP.Target.Selector != nil {
+			name := srcP.Target.Selector.Root
+			if l, ok := c.lens[name]; ok {
+				lenExpr = fmt.Sprintf("%d", l)
+			} else {
+				return fmt.Errorf("unknown length for %s", name)
+			}
+		}
+		idx := "__i"
+		keyType := "int"
+		if _, ok := mt.Key.(types.StringType); ok {
+			keyType = "const char*"
+		}
+		c.writeIndent()
+		fmt.Fprintf(&c.buf, "for (int %s = 0; %s < %s; %s++) {\n", idx, idx, lenExpr, idx)
+		c.indent++
+		c.writeIndent()
+		fmt.Fprintf(&c.buf, "%s %s = %s[%s].key;\n", keyType, fr.Name, arrExpr, idx)
+		oldVar := c.vars[fr.Name]
+		c.vars[fr.Name] = keyType
+		for _, st := range fr.Body {
+			if err := c.compileStmt(st); err != nil {
+				return err
+			}
+		}
+		if oldVar == "" {
+			delete(c.vars, fr.Name)
+		} else {
+			c.vars[fr.Name] = oldVar
+		}
+		c.indent--
+		c.writeln("}")
+		return nil
+	}
 	var lenExpr string
 	if srcP.Target.List != nil {
 		lenExpr = fmt.Sprintf("%d", len(srcP.Target.List.Elems))
@@ -547,7 +616,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	for _, op := range p.Ops {
+	for i, op := range p.Ops {
 		switch {
 		case op.Field != nil:
 			expr = fmt.Sprintf("%s.%s", expr, op.Field.Name)
@@ -588,11 +657,34 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if op.Index.Start == nil || op.Index.Colon != nil {
 				return "", fmt.Errorf("complex indexing not supported")
 			}
-			idx, err := c.compileExpr(op.Index.Start)
+			idxStr, err := c.compileExpr(op.Index.Start)
 			if err != nil {
 				return "", err
 			}
-			expr = fmt.Sprintf("%s[%s]", expr, idx)
+			prefix := &parser.PostfixExpr{Target: p.Target, Ops: p.Ops[:i]}
+			t := types.TypeOfPostfix(prefix, c.env)
+			if mt, ok := t.(types.MapType); ok {
+				var length string
+				if prefix.Target.Map != nil {
+					length = fmt.Sprintf("%d", len(prefix.Target.Map.Items))
+				} else if prefix.Target.Selector != nil {
+					name := prefix.Target.Selector.Root
+					if l, ok := c.lens[name]; ok {
+						length = fmt.Sprintf("%d", l)
+					} else {
+						return "", fmt.Errorf("unknown length for %s", name)
+					}
+				}
+				if _, ok := mt.Key.(types.StringType); ok {
+					c.needsGetSI = true
+					expr = fmt.Sprintf("map_get_str_int(%s, %s, %s)", expr, length, idxStr)
+				} else {
+					c.needsGetIS = true
+					expr = fmt.Sprintf("map_get_int_str(%s, %s, %s)", expr, length, idxStr)
+				}
+			} else {
+				expr = fmt.Sprintf("%s[%s]", expr, idxStr)
+			}
 		default:
 			return "", fmt.Errorf("postfix operations not supported")
 		}
@@ -628,7 +720,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return "(int[]){" + strings.Join(elems, ", ") + "}", nil
 	case p.Map != nil:
-		return c.compileMapLiteral(p.Map)
+		return c.compileMapLiteral(p.Map, false)
 	case p.If != nil:
 		return c.compileIfExpr(p.If)
 	case p.Group != nil:
@@ -664,20 +756,63 @@ func (c *Compiler) compileIfExpr(ix *parser.IfExpr) (string, error) {
 	return fmt.Sprintf("(%s ? %s : %s)", cond, thenExpr, elseExpr), nil
 }
 
-func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
-	fields := make([]string, len(m.Items))
+func (c *Compiler) compileMapLiteral(m *parser.MapLiteral, forceMap bool) (string, error) {
+	if len(m.Items) == 0 {
+		return "{}", nil
+	}
+	simple := true
+	keys := make([]string, len(m.Items))
 	for i, item := range m.Items {
 		name := simpleMapKey(item.Key)
 		if name == "" {
-			return "", fmt.Errorf("unsupported map key")
+			simple = false
+			break
 		}
-		val, err := c.compileExpr(item.Value)
+		keys[i] = name
+	}
+	if simple && !forceMap {
+		fields := make([]string, len(m.Items))
+		for i, item := range m.Items {
+			val, err := c.compileExpr(item.Value)
+			if err != nil {
+				return "", err
+			}
+			fields[i] = fmt.Sprintf(".%s = %s", keys[i], val)
+		}
+		return "{" + strings.Join(fields, ", ") + "}", nil
+	}
+
+	keyT := types.TypeOfExpr(m.Items[0].Key, c.env)
+	valT := types.TypeOfExpr(m.Items[0].Value, c.env)
+	var entryType string
+	if _, ok := keyT.(types.StringType); ok {
+		if _, ok := valT.(types.IntType); ok {
+			entryType = "EntrySI"
+			c.needsGetSI = true
+		}
+	} else if _, ok := keyT.(types.IntType); ok {
+		if _, ok := valT.(types.StringType); ok {
+			entryType = "EntryIS"
+			c.needsGetIS = true
+		}
+	}
+	if entryType == "" {
+		return "", fmt.Errorf("unsupported map types")
+	}
+	items := make([]string, len(m.Items))
+	for i, item := range m.Items {
+		k, err := c.compileExpr(item.Key)
 		if err != nil {
 			return "", err
 		}
-		fields[i] = fmt.Sprintf(".%s = %s", name, val)
+		v, err := c.compileExpr(item.Value)
+		if err != nil {
+			return "", err
+		}
+		items[i] = fmt.Sprintf("{%s, %s}", k, v)
 	}
-	return "{" + strings.Join(fields, ", ") + "}", nil
+	c.lastType = entryType + "[]"
+	return "{" + strings.Join(items, ", ") + "}", nil
 }
 
 func simpleMapKey(e *parser.Expr) string {
@@ -1066,6 +1201,11 @@ func collectIdentsPrimary(p *parser.Primary, m map[string]bool) {
 }
 
 func (c *Compiler) exprIsString(e *parser.Expr) bool {
+	if name := simpleIdent(e); name != "" {
+		if t, ok := c.vars[name]; ok && t == "const char*" {
+			return true
+		}
+	}
 	t := types.TypeOfExpr(e, c.env)
 	return types.IsStringType(t)
 }
@@ -1076,11 +1216,23 @@ func (c *Compiler) exprIsList(e *parser.Expr) bool {
 }
 
 func (c *Compiler) unaryIsString(u *parser.Unary) bool {
+	if len(u.Ops) == 0 && u.Value != nil && len(u.Value.Ops) == 0 {
+		if sel := u.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 {
+			if t, ok := c.vars[sel.Root]; ok && t == "const char*" {
+				return true
+			}
+		}
+	}
 	t := types.TypeOfUnary(u, c.env)
 	return types.IsStringType(t)
 }
 
 func (c *Compiler) postfixIsString(p *parser.PostfixExpr) bool {
+	if id := primaryIdent(p.Target); id != "" {
+		if t, ok := c.vars[id]; ok && t == "const char*" {
+			return true
+		}
+	}
 	t := types.TypeOfPostfix(p, c.env)
 	return types.IsStringType(t)
 }
@@ -1165,6 +1317,17 @@ func listLiteral(e *parser.Expr) *parser.ListLiteral {
 	return u.Value.Target.List
 }
 
+func mapLiteral(e *parser.Expr) *parser.MapLiteral {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || len(u.Value.Ops) > 0 {
+		return nil
+	}
+	return u.Value.Target.Map
+}
+
 func (c *Compiler) compileInOp(left *parser.Unary, right *parser.PostfixExpr, leftStr, rightStr string) (string, error) {
 	rType := types.TypeOfPostfix(right, c.env)
 	if types.IsListType(rType) {
@@ -1190,10 +1353,39 @@ func (c *Compiler) compileInOp(left *parser.Unary, right *parser.PostfixExpr, le
 		}
 		return fmt.Sprintf("(strstr(%s, %s) != NULL)", rightStr, leftStr), nil
 	}
+	if mt, ok := rType.(types.MapType); ok {
+		var length string
+		if right.Target.Map != nil {
+			length = fmt.Sprintf("%d", len(right.Target.Map.Items))
+		} else if right.Target.Selector != nil {
+			name := right.Target.Selector.Root
+			if l, ok := c.lens[name]; ok {
+				length = fmt.Sprintf("%d", l)
+			} else {
+				return "", fmt.Errorf("unknown length for %s", name)
+			}
+		} else {
+			return "", fmt.Errorf("in unsupported")
+		}
+		if _, ok := mt.Key.(types.StringType); ok {
+			c.needsContainsSI = true
+			return fmt.Sprintf("map_contains_str_int(%s, %s, %s)", rightStr, length, leftStr), nil
+		}
+		c.needsContainsIS = true
+		return fmt.Sprintf("map_contains_int_str(%s, %s, %s)", rightStr, length, leftStr), nil
+	}
 	return "", fmt.Errorf("in unsupported")
 }
 
 func (c *Compiler) writeHelpers() {
+	if c.needsGetSI || c.needsContainsSI {
+		c.writeln("typedef struct { const char* key; int value; } EntrySI;")
+		c.writeln("")
+	}
+	if c.needsGetIS || c.needsContainsIS {
+		c.writeln("typedef struct { int key; const char* value; } EntryIS;")
+		c.writeln("")
+	}
 	if c.needsConcat {
 		c.writeln("char* str_concat(const char* a, const char* b) {")
 		c.indent++
@@ -1292,6 +1484,42 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("int m = arr[0];")
 		c.writeln("for (int i = 1; i < n; i++) if (arr[i] > m) m = arr[i];")
 		c.writeln("return m;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.needsGetSI {
+		c.writeln("int map_get_str_int(const EntrySI* m, int n, const char* key) {")
+		c.indent++
+		c.writeln("for (int i = 0; i < n; i++) if (strcmp(m[i].key, key) == 0) return m[i].value;")
+		c.writeln("return 0;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.needsGetIS {
+		c.writeln("const char* map_get_int_str(const EntryIS* m, int n, int key) {")
+		c.indent++
+		c.writeln("for (int i = 0; i < n; i++) if (m[i].key == key) return m[i].value;")
+		c.writeln("return \"\";")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.needsContainsSI {
+		c.writeln("bool map_contains_str_int(const EntrySI* m, int n, const char* key) {")
+		c.indent++
+		c.writeln("for (int i = 0; i < n; i++) if (strcmp(m[i].key, key) == 0) return true;")
+		c.writeln("return false;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.needsContainsIS {
+		c.writeln("bool map_contains_int_str(const EntryIS* m, int n, int key) {")
+		c.indent++
+		c.writeln("for (int i = 0; i < n; i++) if (m[i].key == key) return true;")
+		c.writeln("return false;")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")
