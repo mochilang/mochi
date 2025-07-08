@@ -1,3 +1,3 @@
 let s = "catch";
-console.log((s.includes("cat")));
-console.log((s.includes("dog")));
+console.log((Array.isArray(s) || typeof s === 'string' ? s.includes("cat") : Object.prototype.hasOwnProperty.call(s, "cat")));
+console.log((Array.isArray(s) || typeof s === 'string' ? s.includes("dog") : Object.prototype.hasOwnProperty.call(s, "dog")));

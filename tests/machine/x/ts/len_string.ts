@@ -1,1 +1,1 @@
-console.log(len("mochi"));
+console.log((Array.isArray("mochi") || typeof "mochi" === 'string' ? "mochi".length : Object.keys("mochi").length));

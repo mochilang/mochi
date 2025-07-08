@@ -1,8 +1,0 @@
-line 0: run: exit status 1
-[0m[1m[31merror[0m: Uncaught (in promise) ReferenceError: len is not defined
-  let n = len(nums);
-[0m[31m          ^[0m
-    at [0m[1m[3mtwoSum[0m ([0m[36mfile:///workspace/mochi/tests/machine/x/ts/two-sum.ts[0m:[0m[33m2[0m:[0m[33m11[0m)
-    at [0m[36mfile:///workspace/mochi/tests/machine/x/ts/two-sum.ts[0m:[0m[33m12[0m:[0m[33m14[0m
-
-function twoSum(nums, target) {

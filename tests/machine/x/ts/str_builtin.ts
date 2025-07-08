@@ -1,1 +1,1 @@
-console.log(str(123));
+console.log(String(123));

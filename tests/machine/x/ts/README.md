@@ -4,7 +4,7 @@ This directory stores the generated TypeScript code and execution results for Mo
 
 ## Summary
 
-37/97 files compiled
+61/97 files compiled
 
 ## Checklist
 
@@ -13,22 +13,22 @@ This directory stores the generated TypeScript code and execution results for Mo
 - [x] basic_compare.mochi
 - [x] binary_precedence.mochi
 - [x] bool_chain.mochi
-- [ ] break_continue.mochi
+- [x] break_continue.mochi
 - [x] cast_string_to_int.mochi
-- [ ] cast_struct.mochi
-- [ ] closure.mochi
-- [ ] count_builtin.mochi
+- [x] cast_struct.mochi
+- [x] closure.mochi
+- [x] count_builtin.mochi
 - [x] cross_join.mochi
 - [x] cross_join_filter.mochi
 - [x] cross_join_triple.mochi
 - [x] dataset_sort_take_limit.mochi
 - [x] dataset_where_filter.mochi
-- [ ] exists_builtin.mochi
+- [x] exists_builtin.mochi
 - [x] for_list_collection.mochi
 - [x] for_loop.mochi
 - [ ] for_map_collection.mochi
 - [x] fun_call.mochi
-- [ ] fun_expr_in_let.mochi
+- [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
 - [ ] group_by.mochi
 - [ ] group_by_conditional_sum.mochi
@@ -40,18 +40,18 @@ This directory stores the generated TypeScript code and execution results for Mo
 - [ ] group_by_sort.mochi
 - [ ] group_items_iteration.mochi
 - [x] if_else.mochi
-- [ ] if_then_else.mochi
-- [ ] if_then_else_nested.mochi
+- [x] if_then_else.mochi
+- [x] if_then_else_nested.mochi
 - [x] in_operator.mochi
-- [ ] in_operator_extended.mochi
+- [x] in_operator_extended.mochi
 - [ ] inner_join.mochi
 - [ ] join_multi.mochi
-- [ ] json_builtin.mochi
+- [x] json_builtin.mochi
 - [ ] left_join.mochi
 - [ ] left_join_multi.mochi
-- [ ] len_builtin.mochi
-- [ ] len_map.mochi
-- [ ] len_string.mochi
+- [x] len_builtin.mochi
+- [x] len_map.mochi
+- [x] len_string.mochi
 - [x] let_and_print.mochi
 - [ ] list_assign.mochi
 - [x] list_index.mochi
@@ -59,19 +59,19 @@ This directory stores the generated TypeScript code and execution results for Mo
 - [ ] list_set_ops.mochi
 - [ ] load_yaml.mochi
 - [ ] map_assign.mochi
-- [ ] map_in_operator.mochi
+- [x] map_in_operator.mochi
 - [x] map_index.mochi
 - [x] map_int_key.mochi
 - [x] map_literal_dynamic.mochi
-- [ ] map_membership.mochi
+- [x] map_membership.mochi
 - [ ] map_nested_assign.mochi
 - [ ] match_expr.mochi
 - [ ] match_full.mochi
 - [x] math_ops.mochi
 - [x] membership.mochi
-- [ ] min_max_builtin.mochi
+- [x] min_max_builtin.mochi
 - [x] nested_function.mochi
-- [ ] order_by_map.mochi
+- [x] order_by_map.mochi
 - [ ] outer_join.mochi
 - [ ] partial_application.mochi
 - [x] print_hello.mochi
@@ -83,25 +83,25 @@ This directory stores the generated TypeScript code and execution results for Mo
 - [ ] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
 - [x] slice.mochi
-- [ ] sort_stable.mochi
-- [ ] str_builtin.mochi
+- [x] sort_stable.mochi
+- [x] str_builtin.mochi
 - [x] string_compare.mochi
 - [x] string_concat.mochi
-- [ ] string_contains.mochi
+- [x] string_contains.mochi
 - [x] string_in_operator.mochi
 - [x] string_index.mochi
 - [x] string_prefix_slice.mochi
-- [ ] substring_builtin.mochi
-- [ ] sum_builtin.mochi
+- [x] substring_builtin.mochi
+- [x] sum_builtin.mochi
 - [x] tail_recursion.mochi
 - [ ] test_block.mochi
 - [ ] tree_sum.mochi
-- [ ] two-sum.mochi
+- [x] two-sum.mochi
 - [ ] typed_let.mochi
 - [ ] typed_var.mochi
 - [x] unary_neg.mochi
 - [ ] update_stmt.mochi
 - [ ] user_type_literal.mochi
-- [ ] values_builtin.mochi
+- [x] values_builtin.mochi
 - [ ] var_assignment.mochi
 - [ ] while_loop.mochi

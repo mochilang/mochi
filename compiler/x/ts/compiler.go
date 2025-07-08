@@ -361,7 +361,8 @@ func (c *Compiler) binary(b *parser.BinaryExpr) (string, error) {
 		case "intersect":
 			return "", fmt.Errorf("intersect not supported")
 		case "in":
-			result = fmt.Sprintf("(%s.includes(%s))", r, result)
+			result = fmt.Sprintf("(Array.isArray(%s) || typeof %s === 'string' ? %s.includes(%s) : Object.prototype.hasOwnProperty.call(%s, %s))",
+				r, r, r, result, r, result)
 		default:
 			result = fmt.Sprintf("(%s %s %s)", result, op.Op, r)
 		}
@@ -401,7 +402,12 @@ func (c *Compiler) postfix(p *parser.PostfixExpr) (string, error) {
 				}
 				args[i] = s
 			}
-			val = fmt.Sprintf("%s(%s)", val, strings.Join(args, ", "))
+			if strings.HasSuffix(val, ".contains") {
+				val = strings.TrimSuffix(val, ".contains")
+				val = fmt.Sprintf("%s.includes(%s)", val, strings.Join(args, ", "))
+			} else {
+				val = fmt.Sprintf("%s(%s)", val, strings.Join(args, ", "))
+			}
 		} else if op.Index != nil {
 			idx, err := c.expr(op.Index.Start)
 			if err != nil {
@@ -496,6 +502,46 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 				return fmt.Sprintf("(%s.reduce((a,b)=>a+b,0))", args[0]), nil
 			}
 			return "", fmt.Errorf("sum expects 1 arg")
+		case "count", "len":
+			if len(args) == 1 {
+				return fmt.Sprintf("(Array.isArray(%s) || typeof %s === 'string' ? %s.length : Object.keys(%s).length)", args[0], args[0], args[0], args[0]), nil
+			}
+			return "", fmt.Errorf("%s expects 1 arg", p.Call.Func)
+		case "values":
+			if len(args) == 1 {
+				return fmt.Sprintf("Object.values(%s)", args[0]), nil
+			}
+			return "", fmt.Errorf("values expects 1 arg")
+		case "exists":
+			if len(args) == 1 {
+				return fmt.Sprintf("(%s.length > 0)", args[0]), nil
+			}
+			return "", fmt.Errorf("exists expects 1 arg")
+		case "substring":
+			if len(args) == 3 {
+				return fmt.Sprintf("%s.substring(%s, %s)", args[0], args[1], args[2]), nil
+			}
+			return "", fmt.Errorf("substring expects 3 args")
+		case "str":
+			if len(args) == 1 {
+				return fmt.Sprintf("String(%s)", args[0]), nil
+			}
+			return "", fmt.Errorf("str expects 1 arg")
+		case "json":
+			if len(args) == 1 {
+				return fmt.Sprintf("console.log(JSON.stringify(%s))", args[0]), nil
+			}
+			return "", fmt.Errorf("json expects 1 arg")
+		case "min":
+			if len(args) == 1 {
+				return fmt.Sprintf("Math.min(...%s)", args[0]), nil
+			}
+			return "", fmt.Errorf("min expects 1 arg")
+		case "max":
+			if len(args) == 1 {
+				return fmt.Sprintf("Math.max(...%s)", args[0]), nil
+			}
+			return "", fmt.Errorf("max expects 1 arg")
 		default:
 			return fmt.Sprintf("%s(%s)", p.Call.Func, strings.Join(args, ", ")), nil
 		}

@@ -1,1 +1,1 @@
-console.log(substring("mochi", 1, 4));
+console.log("mochi".substring(1, 4));
