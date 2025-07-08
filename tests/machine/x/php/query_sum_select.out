@@ -1,0 +1,4 @@
+PHP Warning:  Undefined variable $nums in /workspace/mochi/tests/machine/x/php/query_sum_select.php on line 5
+PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/query_sum_select.php on line 5
+array(0) {
+}

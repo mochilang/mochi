@@ -1,0 +1,2 @@
+PHP Warning:  Undefined variable $n in /workspace/mochi/tests/machine/x/php/closure.php on line 3
+int(7)

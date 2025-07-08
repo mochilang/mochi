@@ -1,0 +1,2 @@
+PHP Warning:  Undefined variable $k in /workspace/mochi/tests/machine/x/php/pure_global_fold.php on line 4
+int(3)

@@ -1,0 +1,17 @@
+PHP Warning:  Undefined variable $name in /workspace/mochi/tests/machine/x/php/dataset_sort_take_limit.php on line 2
+PHP Warning:  Undefined variable $price in /workspace/mochi/tests/machine/x/php/dataset_sort_take_limit.php on line 2
+PHP Warning:  Undefined variable $name in /workspace/mochi/tests/machine/x/php/dataset_sort_take_limit.php on line 2
+PHP Warning:  Undefined variable $price in /workspace/mochi/tests/machine/x/php/dataset_sort_take_limit.php on line 2
+PHP Warning:  Undefined variable $name in /workspace/mochi/tests/machine/x/php/dataset_sort_take_limit.php on line 2
+PHP Warning:  Undefined variable $price in /workspace/mochi/tests/machine/x/php/dataset_sort_take_limit.php on line 2
+PHP Warning:  Undefined variable $name in /workspace/mochi/tests/machine/x/php/dataset_sort_take_limit.php on line 2
+PHP Warning:  Undefined variable $price in /workspace/mochi/tests/machine/x/php/dataset_sort_take_limit.php on line 2
+PHP Warning:  Undefined variable $name in /workspace/mochi/tests/machine/x/php/dataset_sort_take_limit.php on line 2
+PHP Warning:  Undefined variable $price in /workspace/mochi/tests/machine/x/php/dataset_sort_take_limit.php on line 2
+PHP Warning:  Undefined variable $name in /workspace/mochi/tests/machine/x/php/dataset_sort_take_limit.php on line 2
+PHP Warning:  Undefined variable $price in /workspace/mochi/tests/machine/x/php/dataset_sort_take_limit.php on line 2
+PHP Warning:  Undefined variable $name in /workspace/mochi/tests/machine/x/php/dataset_sort_take_limit.php on line 2
+PHP Warning:  Undefined variable $price in /workspace/mochi/tests/machine/x/php/dataset_sort_take_limit.php on line 2
+PHP Warning:  Undefined variable $products in /workspace/mochi/tests/machine/x/php/dataset_sort_take_limit.php on line 5
+PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/dataset_sort_take_limit.php on line 5
+string(47) "--- Top products (excluding most expensive) ---"
