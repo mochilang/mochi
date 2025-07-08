@@ -1,0 +1,3 @@
+line 0: unsupported expression at line 1
+   1 | print(len({"a":1, "b":2}))
+   2 | 

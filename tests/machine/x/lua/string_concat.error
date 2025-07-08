@@ -1,0 +1,7 @@
+line 21: run error: exit status 1
+lua: /workspace/mochi/tests/machine/x/lua/string_concat.lua:21: attempt to add a 'string' with a 'string'
+stack traceback:
+	[C]: in metamethod 'add'
+	/workspace/mochi/tests/machine/x/lua/string_concat.lua:21: in main chunk
+	[C]: in ?
+

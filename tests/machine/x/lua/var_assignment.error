@@ -1,0 +1,3 @@
+line 0: unsupported statement at line 1
+   1 | var x = 1
+   2 | x = 2

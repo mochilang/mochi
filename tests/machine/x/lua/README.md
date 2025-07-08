@@ -6,7 +6,7 @@ compiler tests. Each entry corresponds to a Mochi program from
 
 ## Summary
 
-5/97 files compiled successfully
+21/97 files compiled successfully
 
 ## Compilation Checklist
 
@@ -29,9 +29,9 @@ compiler tests. Each entry corresponds to a Mochi program from
 - [ ] for_list_collection.mochi
 - [ ] for_loop.mochi
 - [ ] for_map_collection.mochi
-- [ ] fun_call.mochi
+- [x] fun_call.mochi
 - [ ] fun_expr_in_let.mochi
-- [ ] fun_three_args.mochi
+- [x] fun_three_args.mochi
 - [ ] group_by.mochi
 - [ ] group_by_conditional_sum.mochi
 - [ ] group_by_having.mochi
@@ -41,9 +41,9 @@ compiler tests. Each entry corresponds to a Mochi program from
 - [ ] group_by_multi_join_sort.mochi
 - [ ] group_by_sort.mochi
 - [ ] group_items_iteration.mochi
-- [ ] if_else.mochi
-- [ ] if_then_else.mochi
-- [ ] if_then_else_nested.mochi
+- [x] if_else.mochi
+- [x] if_then_else.mochi
+- [x] if_then_else_nested.mochi
 - [ ] in_operator.mochi
 - [ ] in_operator_extended.mochi
 - [ ] inner_join.mochi
@@ -54,7 +54,7 @@ compiler tests. Each entry corresponds to a Mochi program from
 - [ ] len_builtin.mochi
 - [ ] len_map.mochi
 - [ ] len_string.mochi
-- [ ] let_and_print.mochi
+- [x] let_and_print.mochi
 - [ ] list_assign.mochi
 - [ ] list_index.mochi
 - [ ] list_nested_assign.mochi
@@ -69,25 +69,25 @@ compiler tests. Each entry corresponds to a Mochi program from
 - [ ] map_nested_assign.mochi
 - [ ] match_expr.mochi
 - [ ] match_full.mochi
-- [ ] math_ops.mochi
+- [x] math_ops.mochi
 - [ ] membership.mochi
 - [ ] min_max_builtin.mochi
-- [ ] nested_function.mochi
+- [x] nested_function.mochi
 - [ ] order_by_map.mochi
 - [ ] outer_join.mochi
 - [ ] partial_application.mochi
-- [ ] print_hello.mochi
-- [ ] pure_fold.mochi
-- [ ] pure_global_fold.mochi
+- [x] print_hello.mochi
+- [x] pure_fold.mochi
+- [x] pure_global_fold.mochi
 - [ ] query_sum_select.mochi
 - [ ] record_assign.mochi
 - [ ] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
-- [ ] short_circuit.mochi
+- [x] short_circuit.mochi
 - [ ] slice.mochi
 - [ ] sort_stable.mochi
 - [ ] str_builtin.mochi
-- [ ] string_compare.mochi
+- [x] string_compare.mochi
 - [ ] string_concat.mochi
 - [ ] string_contains.mochi
 - [ ] string_in_operator.mochi
@@ -95,13 +95,13 @@ compiler tests. Each entry corresponds to a Mochi program from
 - [ ] string_prefix_slice.mochi
 - [ ] substring_builtin.mochi
 - [ ] sum_builtin.mochi
-- [ ] tail_recursion.mochi
+- [x] tail_recursion.mochi
 - [ ] test_block.mochi
 - [ ] tree_sum.mochi
 - [ ] two-sum.mochi
-- [ ] typed_let.mochi
+- [x] typed_let.mochi
 - [ ] typed_var.mochi
-- [ ] unary_neg.mochi
+- [x] unary_neg.mochi
 - [ ] update_stmt.mochi
 - [ ] user_type_literal.mochi
 - [ ] values_builtin.mochi

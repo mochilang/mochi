@@ -1,0 +1,3 @@
+line 0: invalid expression
+   1 | let nums = [1, 2, 3]
+   2 | print(2 in nums)
