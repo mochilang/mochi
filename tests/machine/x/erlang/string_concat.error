@@ -1,5 +1,0 @@
-exit status 127
-escript: exception error: an error occurred when evaluating an arithmetic expression
-  in operator  +/2
-     called as "hello " + "world"
-

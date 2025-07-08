@@ -1,6 +1,6 @@
 # Erlang Compiler Results
 
-Compiled programs: 15/97
+Compiled programs: 19/97
 
 - [ ] append_builtin.mochi
 - [ ] avg_builtin.mochi
@@ -47,15 +47,15 @@ Compiled programs: 15/97
 - [x] len_map.mochi
 - [x] len_string.mochi
 - [x] let_and_print.mochi
-- [ ] list_assign.mochi
+ - [x] list_assign.mochi
 - [x] list_index.mochi
 - [ ] list_nested_assign.mochi
 - [ ] list_set_ops.mochi
 - [ ] load_yaml.mochi
-- [ ] map_assign.mochi
+ - [x] map_assign.mochi
 - [ ] map_in_operator.mochi
 - [x] map_index.mochi
-- [ ] map_int_key.mochi
+ - [x] map_int_key.mochi
 - [ ] map_literal_dynamic.mochi
 - [ ] map_membership.mochi
 - [ ] map_nested_assign.mochi
@@ -80,7 +80,7 @@ Compiled programs: 15/97
 - [ ] sort_stable.mochi
 - [ ] str_builtin.mochi
 - [ ] string_compare.mochi
-- [ ] string_concat.mochi
+ - [x] string_concat.mochi
 - [ ] string_contains.mochi
 - [ ] string_in_operator.mochi
 - [x] string_index.mochi
