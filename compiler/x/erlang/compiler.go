@@ -22,10 +22,11 @@ type Compiler struct {
 	varVers map[string]int
 	lets    map[string]bool
 	types   map[string]string
+	funs    map[string]int
 }
 
 func New(srcPath string) *Compiler {
-	return &Compiler{srcPath: srcPath, varVers: make(map[string]int), lets: make(map[string]bool), types: make(map[string]string)}
+	return &Compiler{srcPath: srcPath, varVers: make(map[string]int), lets: make(map[string]bool), types: make(map[string]string), funs: make(map[string]int)}
 }
 
 // CompileFile compiles the Mochi source file at path.
@@ -105,6 +106,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.varVers = make(map[string]int)
 	c.lets = make(map[string]bool)
 	c.types = make(map[string]string)
+	c.funs = make(map[string]int)
 
 	base := strings.TrimSuffix(filepath.Base(c.srcPath), filepath.Ext(c.srcPath))
 	c.writeln("#!/usr/bin/env escript")
@@ -242,6 +244,8 @@ func (c *Compiler) compileStmtLine(st *parser.Statement) (string, error) {
 		return c.compileIfStmt(st.If)
 	case st.For != nil:
 		return c.compileFor(st.For)
+	case st.Type != nil:
+		return "", nil
 	default:
 		return "", fmt.Errorf("unsupported statement at line %d", st.Pos.Line)
 	}
@@ -252,6 +256,7 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	for i, p := range fn.Params {
 		params[i] = capitalize(p.Name)
 	}
+	c.funs[fn.Name] = len(fn.Params)
 	c.writeln(fmt.Sprintf("%s(%s) ->", fn.Name, strings.Join(params, ", ")))
 	c.indent++
 	var lines []string
@@ -486,19 +491,51 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		switch {
 		case op.Index != nil:
 			idxOp := op.Index
-			if idxOp.Start == nil || idxOp.Colon != nil || idxOp.End != nil || idxOp.Colon2 != nil || idxOp.Step != nil {
-				return "", fmt.Errorf("complex indexing not supported")
-			}
-			idx, err := c.compileExpr(idxOp.Start)
-			if err != nil {
-				return "", err
-			}
-			if typ == "map" || (typ == "" && !isIntLiteral(idxOp.Start)) {
-				val = fmt.Sprintf("maps:get(%s, %s)", idx, val)
+			if idxOp.Colon != nil || idxOp.End != nil || idxOp.Colon2 != nil || idxOp.Step != nil {
+				start := "0"
+				if idxOp.Start != nil {
+					s, err := c.compileExpr(idxOp.Start)
+					if err != nil {
+						return "", err
+					}
+					start = s
+				}
+				end := "length(" + val + ")"
+				if idxOp.End != nil {
+					e, err := c.compileExpr(idxOp.End)
+					if err != nil {
+						return "", err
+					}
+					end = e
+				}
+				if typ == "string" {
+					val = fmt.Sprintf("string:substr(%s, (%s)+1, (%s)-(%s))", val, start, end, start)
+				} else {
+					val = fmt.Sprintf("lists:sublist(%s, (%s)+1, (%s)-(%s))", val, start, end, start)
+				}
 			} else {
-				val = fmt.Sprintf("lists:nth((%s)+1, %s)", idx, val)
+				if idxOp.Start == nil {
+					return "", fmt.Errorf("complex indexing not supported")
+				}
+				idx, err := c.compileExpr(idxOp.Start)
+				if err != nil {
+					return "", err
+				}
+				if typ == "map" || (typ == "" && !isIntLiteral(idxOp.Start)) {
+					val = fmt.Sprintf("maps:get(%s, %s)", idx, val)
+				} else {
+					val = fmt.Sprintf("lists:nth((%s)+1, %s)", idx, val)
+				}
 			}
 			typ = ""
+		case op.Cast != nil:
+			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
+				t := *op.Cast.Type.Simple
+				if t == "int" && typ == "string" {
+					val = fmt.Sprintf("list_to_integer(%s)", val)
+					typ = "int"
+				}
+			}
 		default:
 			return "", fmt.Errorf("unsupported postfix at line %d", p.Target.Pos.Line)
 		}
@@ -559,14 +596,21 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	switch call.Func {
 	case "print":
-		if len(call.Args) != 1 {
-			return "", fmt.Errorf("print expects one argument")
+		if len(call.Args) == 0 {
+			return "", fmt.Errorf("print expects at least one argument")
 		}
-		arg, err := c.compileExpr(call.Args[0])
-		if err != nil {
-			return "", err
+		parts := make([]string, len(call.Args))
+		args := make([]string, len(call.Args))
+		for i, a := range call.Args {
+			s, err := c.compileExpr(a)
+			if err != nil {
+				return "", err
+			}
+			parts[i] = "~p"
+			args[i] = s
 		}
-		return fmt.Sprintf("io:format(\"~p~n\", [%s])", arg), nil
+		fmtStr := strings.Join(parts, " ") + "~n"
+		return fmt.Sprintf("io:format(\"%s\", [%s])", fmtStr, strings.Join(args, ", ")), nil
 	case "len":
 		if len(call.Args) != 1 {
 			return "", fmt.Errorf("len expects 1 argument")
@@ -673,7 +717,20 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			}
 			args[i] = s
 		}
-		return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ", ")), nil
+		name := call.Func
+		if ar, ok := c.funs[name]; ok && len(args) < ar {
+			missing := ar - len(args)
+			params := make([]string, missing)
+			for i := 0; i < missing; i++ {
+				params[i] = fmt.Sprintf("P%d", i)
+			}
+			callArgs := append(append([]string{}, args...), params...)
+			return fmt.Sprintf("fun(%s) -> %s(%s) end", strings.Join(params, ", "), name, strings.Join(callArgs, ", ")), nil
+		}
+		if c.lets[name] || c.varVers[name] > 0 {
+			name = c.refVar(name)
+		}
+		return fmt.Sprintf("%s(%s)", name, strings.Join(args, ", ")), nil
 	}
 }
 
