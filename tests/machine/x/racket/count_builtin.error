@@ -1,9 +1,0 @@
-run: exit status 1
-count: arity mismatch;
- the expected number of arguments does not match the given number
-  expected: at least 2
-  given: 1
-  context...:
-   /workspace/mochi/tests/machine/x/racket/count_builtin.rkt:2:0
-   body of "/workspace/mochi/tests/machine/x/racket/count_builtin.rkt"
-
