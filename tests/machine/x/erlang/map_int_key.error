@@ -1,3 +1,0 @@
-exit status 127
-escript: exception error: no function clause matching lists:nth(2,#{1 => "a",2 => "b"}) (lists.erl, line 198)
-

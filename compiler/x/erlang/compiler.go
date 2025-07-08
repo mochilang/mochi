@@ -21,10 +21,11 @@ type Compiler struct {
 
 	varVers map[string]int
 	lets    map[string]bool
+	types   map[string]string
 }
 
 func New(srcPath string) *Compiler {
-	return &Compiler{srcPath: srcPath, varVers: make(map[string]int), lets: make(map[string]bool)}
+	return &Compiler{srcPath: srcPath, varVers: make(map[string]int), lets: make(map[string]bool), types: make(map[string]string)}
 }
 
 // CompileFile compiles the Mochi source file at path.
@@ -103,6 +104,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.indent = 0
 	c.varVers = make(map[string]int)
 	c.lets = make(map[string]bool)
+	c.types = make(map[string]string)
 
 	base := strings.TrimSuffix(filepath.Base(c.srcPath), filepath.Ext(c.srcPath))
 	c.writeln("#!/usr/bin/env escript")
@@ -164,6 +166,9 @@ func (c *Compiler) compileLet(l *parser.LetStmt) (string, error) {
 			return "", err
 		}
 		val = v
+		if t := c.inferExprType(l.Value); t != "" {
+			c.types[l.Name] = t
+		}
 	}
 	return fmt.Sprintf("%s = %s", capitalize(l.Name), val), nil
 }
@@ -177,17 +182,55 @@ func (c *Compiler) compileVar(v *parser.VarStmt) (string, error) {
 			return "", err
 		}
 		val = s
+		if t := c.inferExprType(v.Value); t != "" {
+			c.types[v.Name] = t
+		}
 	}
 	return fmt.Sprintf("%s = %s", name, val), nil
 }
 
 func (c *Compiler) compileAssign(a *parser.AssignStmt) (string, error) {
-	if len(a.Index) > 0 || len(a.Field) > 0 {
+	if len(a.Field) > 0 || len(a.Index) > 1 {
 		return "", fmt.Errorf("complex assignment not supported")
 	}
+
+	if len(a.Index) == 1 {
+		idxOp := a.Index[0]
+		if idxOp.Start == nil || idxOp.Colon != nil || idxOp.End != nil || idxOp.Colon2 != nil || idxOp.Step != nil {
+			return "", fmt.Errorf("complex indexing not supported")
+		}
+		idx, err := c.compileExpr(idxOp.Start)
+		if err != nil {
+			return "", err
+		}
+		val, err := c.compileExpr(a.Value)
+		if err != nil {
+			return "", err
+		}
+		prev := c.refVar(a.Name)
+		name := c.newVarName(a.Name)
+		typ := c.types[a.Name]
+		switch typ {
+		case "map":
+			c.types[a.Name] = "map"
+			return fmt.Sprintf("%s = maps:put(%s, %s, %s)", name, idx, val, prev), nil
+		case "list":
+			c.types[a.Name] = "list"
+			return fmt.Sprintf("%s = lists:sublist(%s, %s) ++ [%s] ++ lists:nthtail((%s)+1, %s)", name, prev, idx, val, idx, prev), nil
+		default:
+			if isIntLiteral(idxOp.Start) {
+				return fmt.Sprintf("%s = lists:sublist(%s, %s) ++ [%s] ++ lists:nthtail((%s)+1, %s)", name, prev, idx, val, idx, prev), nil
+			}
+			return fmt.Sprintf("%s = maps:put(%s, %s, %s)", name, idx, val, prev), nil
+		}
+	}
+
 	val, err := c.compileExpr(a.Value)
 	if err != nil {
 		return "", err
+	}
+	if t := c.inferExprType(a.Value); t != "" {
+		c.types[a.Name] = t
 	}
 	name := c.newVarName(a.Name)
 	return fmt.Sprintf("%s = %s", name, val), nil
@@ -206,6 +249,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		return "", err
 	}
 	res := left
+	leftIsStr := isStringUnary(b.Left)
 	for _, op := range b.Right {
 		r, err := c.compilePostfix(op.Right)
 		if err != nil {
@@ -214,6 +258,13 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		opStr, err := c.mapBinOp(op.Op)
 		if err != nil {
 			return "", err
+		}
+		rightIsStr := isStringPostfix(op.Right)
+		if op.Op == "+" && (leftIsStr || rightIsStr) {
+			opStr = "++"
+			leftIsStr = true
+		} else {
+			leftIsStr = false
 		}
 		res = fmt.Sprintf("(%s %s %s)", res, opStr, r)
 	}
@@ -264,6 +315,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	typ := c.typeOfPrimary(p.Target)
 	for _, op := range p.Ops {
 		switch {
 		case op.Index != nil:
@@ -275,11 +327,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			if isIntLiteral(idxOp.Start) {
-				val = fmt.Sprintf("lists:nth((%s)+1, %s)", idx, val)
-			} else {
+			if typ == "map" || (typ == "" && !isIntLiteral(idxOp.Start)) {
 				val = fmt.Sprintf("maps:get(%s, %s)", idx, val)
+			} else {
+				val = fmt.Sprintf("lists:nth((%s)+1, %s)", idx, val)
 			}
+			typ = ""
 		default:
 			return "", fmt.Errorf("unsupported postfix at line %d", p.Target.Pos.Line)
 		}
@@ -436,4 +489,82 @@ func isMapLiteralExpr(e *parser.Expr) bool {
 		return false
 	}
 	return u.Value.Target.Map != nil
+}
+
+func isListLiteralExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || len(u.Value.Ops) > 0 {
+		return false
+	}
+	return u.Value.Target.List != nil
+}
+
+func isStringLiteralExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || len(u.Value.Ops) > 0 {
+		return false
+	}
+	lit := u.Value.Target.Lit
+	return lit != nil && lit.Str != nil
+}
+
+func isLiteralExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || len(u.Value.Ops) > 0 {
+		return false
+	}
+	return u.Value.Target.Lit != nil
+}
+
+func (c *Compiler) inferExprType(e *parser.Expr) string {
+	switch {
+	case isMapLiteralExpr(e):
+		return "map"
+	case isListLiteralExpr(e):
+		return "list"
+	case isStringLiteralExpr(e):
+		return "string"
+	default:
+		return ""
+	}
+}
+
+func (c *Compiler) typeOfPrimary(p *parser.Primary) string {
+	switch {
+	case p.Map != nil:
+		return "map"
+	case p.List != nil:
+		return "list"
+	case p.Lit != nil && p.Lit.Str != nil:
+		return "string"
+	case p.Selector != nil:
+		return c.types[p.Selector.Root]
+	default:
+		return ""
+	}
+}
+
+func isStringUnary(u *parser.Unary) bool {
+	if len(u.Ops) > 0 || u.Value == nil || len(u.Value.Ops) > 0 {
+		return false
+	}
+	t := u.Value.Target
+	return t.Lit != nil && t.Lit.Str != nil
+}
+
+func isStringPostfix(p *parser.PostfixExpr) bool {
+	if len(p.Ops) > 0 {
+		return false
+	}
+	t := p.Target
+	return t.Lit != nil && t.Lit.Str != nil
 }

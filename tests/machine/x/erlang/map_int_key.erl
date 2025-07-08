@@ -3,4 +3,4 @@
 
 main(_) ->
     M = #{1 => "a", 2 => "b"},
-    io:format("~p~n", [lists:nth((1)+1, M)]).
+    io:format("~p~n", [maps:get(1, M)]).
