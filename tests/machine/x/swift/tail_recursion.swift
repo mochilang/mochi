@@ -1,4 +1,4 @@
-func sum_rec(n: Int, acc: Int) -> Int {
+func sum_rec(_ n: Int, _ acc: Int) -> Int {
     if n == 0 {
         return acc
     }

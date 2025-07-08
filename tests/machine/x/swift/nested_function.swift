@@ -1,5 +1,5 @@
-func outer(x: Int) -> Int {
-    func inner(y: Int) -> Int {
+func outer(_ x: Int) -> Int {
+    func inner(_ y: Int) -> Int {
         return x + y
     }
     return inner(5)
