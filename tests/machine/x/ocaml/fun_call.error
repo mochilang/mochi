@@ -1,0 +1,14 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/fun_call.ml", line 6, characters 2-15:
+6 |   print_endline add 2 3
+      ^^^^^^^^^^^^^
+Error: This function has type string -> unit
+       It is applied to too many arguments; maybe you forgot a `;'.
+
+
+Context (around line 6):
+   4 | 
+   5 | let () =
+   6 |   print_endline add 2 3
+   7 | 

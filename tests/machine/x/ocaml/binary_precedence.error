@@ -1,0 +1,15 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/binary_precedence.ml", line 3, characters 2-15:
+3 |   print_endline ((1 + 2) * 3)
+      ^^^^^^^^^^^^^
+Error: This function has type string -> unit
+       It is applied to too many arguments; maybe you forgot a `;'.
+
+
+Context (around line 3):
+   1 | 
+   2 | let () =
+   3 |   print_endline ((1 + 2) * 3)
+   4 |   print_endline (((1 + 2)) * 3)
+   5 |   print_endline ((2 * 3) + 1)

@@ -1,0 +1,18 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/in_operator.ml", line 4, characters 19-21:
+4 |   print_endline (2 in xs)
+                       ^^
+Error: Syntax error: ')' expected
+File "/workspace/mochi/tests/machine/x/ocaml/in_operator.ml", line 4, characters 16-17:
+4 |   print_endline (2 in xs)
+                    ^
+  This '(' might be unmatched
+
+
+Context (around line 4):
+   2 | 
+   3 | let () =
+   4 |   print_endline (2 in xs)
+   5 |   print_endline not ((5 in xs))
+   6 | 

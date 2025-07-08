@@ -1,0 +1,14 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/str_builtin.ml", line 3, characters 2-15:
+3 |   print_endline str 123
+      ^^^^^^^^^^^^^
+Error: This function has type string -> unit
+       It is applied to too many arguments; maybe you forgot a `;'.
+
+
+Context (around line 3):
+   1 | 
+   2 | let () =
+   3 |   print_endline str 123
+   4 | 

@@ -1,0 +1,14 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/append_builtin.ml", line 4, characters 16-25:
+4 |   print_endline (a @ [3])
+                    ^^^^^^^^^
+Error: This expression has type int list
+       but an expression was expected of type string
+
+
+Context (around line 4):
+   2 | 
+   3 | let () =
+   4 |   print_endline (a @ [3])
+   5 | 

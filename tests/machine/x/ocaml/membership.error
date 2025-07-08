@@ -1,0 +1,18 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/membership.ml", line 4, characters 19-21:
+4 |   print_endline (2 in nums)
+                       ^^
+Error: Syntax error: ')' expected
+File "/workspace/mochi/tests/machine/x/ocaml/membership.ml", line 4, characters 16-17:
+4 |   print_endline (2 in nums)
+                    ^
+  This '(' might be unmatched
+
+
+Context (around line 4):
+   2 | 
+   3 | let () =
+   4 |   print_endline (2 in nums)
+   5 |   print_endline (4 in nums)
+   6 | 

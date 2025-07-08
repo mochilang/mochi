@@ -1,0 +1,14 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/typed_let.ml", line 4, characters 16-17:
+4 |   print_endline y
+                    ^
+Error: This expression has type unit but an expression was expected of type
+         string
+
+
+Context (around line 4):
+   2 | 
+   3 | let () =
+   4 |   print_endline y
+   5 | 
