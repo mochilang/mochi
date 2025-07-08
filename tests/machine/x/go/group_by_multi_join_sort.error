@@ -1,4 +1,4 @@
-unsupported expression at line 2
-let nation = [
-  { n_nationkey: 1, n_name: "BRAZIL" }
-]
+unsupported expression at line 41
+let result =
+  from c in customer
+  join o in orders on o.o_custkey == c.c_custkey

@@ -2,7 +2,7 @@
 
 This directory contains Go source files generated from Mochi programs.
 
-## Progress: 28/97
+## Progress: 49/97
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -22,7 +22,7 @@ This directory contains Go source files generated from Mochi programs.
 - [ ] exists_builtin.mochi
 - [x] for_list_collection.mochi
 - [x] for_loop.mochi
-- [ ] for_map_collection.mochi
+ - [x] for_map_collection.mochi
 - [x] fun_call.mochi
 - [ ] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
@@ -38,7 +38,7 @@ This directory contains Go source files generated from Mochi programs.
 - [x] if_else.mochi
 - [ ] if_then_else.mochi
 - [ ] if_then_else_nested.mochi
-- [ ] in_operator.mochi
+ - [x] in_operator.mochi
 - [ ] in_operator_extended.mochi
 - [ ] inner_join.mochi
 - [ ] join_multi.mochi
@@ -46,26 +46,26 @@ This directory contains Go source files generated from Mochi programs.
 - [ ] left_join.mochi
 - [ ] left_join_multi.mochi
 - [x] len_builtin.mochi
-- [ ] len_map.mochi
+ - [x] len_map.mochi
 - [x] len_string.mochi
 - [x] let_and_print.mochi
-- [ ] list_assign.mochi
-- [ ] list_index.mochi
+ - [x] list_assign.mochi
+ - [x] list_index.mochi
 - [ ] list_nested_assign.mochi
 - [ ] list_set_ops.mochi
 - [ ] load_yaml.mochi
-- [ ] map_assign.mochi
-- [ ] map_in_operator.mochi
-- [ ] map_index.mochi
-- [ ] map_int_key.mochi
-- [ ] map_literal_dynamic.mochi
-- [ ] map_membership.mochi
-- [ ] map_nested_assign.mochi
+ - [x] map_assign.mochi
+ - [x] map_in_operator.mochi
+ - [x] map_index.mochi
+ - [x] map_int_key.mochi
+ - [x] map_literal_dynamic.mochi
+ - [x] map_membership.mochi
+ - [x] map_nested_assign.mochi
 - [ ] match_expr.mochi
 - [ ] match_full.mochi
 - [x] math_ops.mochi
-- [ ] membership.mochi
-- [ ] min_max_builtin.mochi
+ - [x] membership.mochi
+ - [x] min_max_builtin.mochi
 - [ ] nested_function.mochi
 - [ ] order_by_map.mochi
 - [ ] outer_join.mochi
@@ -78,17 +78,17 @@ This directory contains Go source files generated from Mochi programs.
 - [ ] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
-- [ ] slice.mochi
-- [ ] sort_stable.mochi
-- [ ] str_builtin.mochi
+ - [x] slice.mochi
+ - [ ] sort_stable.mochi
+ - [x] str_builtin.mochi
 - [x] string_compare.mochi
 - [x] string_concat.mochi
 - [ ] string_contains.mochi
-- [ ] string_in_operator.mochi
-- [ ] string_index.mochi
-- [ ] string_prefix_slice.mochi
-- [ ] substring_builtin.mochi
-- [ ] sum_builtin.mochi
+ - [x] string_in_operator.mochi
+ - [x] string_index.mochi
+ - [x] string_prefix_slice.mochi
+ - [x] substring_builtin.mochi
+ - [x] sum_builtin.mochi
 - [x] tail_recursion.mochi
 - [ ] test_block.mochi
 - [ ] tree_sum.mochi

@@ -12,15 +12,18 @@ import (
 
 // Compiler translates a subset of Mochi to Go source code.
 type Compiler struct {
-	buf          bytes.Buffer
-	indent       int
-	needsAvg     bool
-	needsStrconv bool
+	buf           bytes.Buffer
+	indent        int
+	needsAvg      bool
+	needsStrconv  bool
+	needsStrings  bool
+	needsContains bool
+	types         map[string]string
 }
 
 // New creates a new Go compiler.
 func New() *Compiler {
-	return &Compiler{}
+	return &Compiler{types: make(map[string]string)}
 }
 
 // Compile translates the given program to Go.
@@ -29,6 +32,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.indent = 0
 	c.needsAvg = false
 	c.needsStrconv = false
+	c.needsStrings = false
+	c.needsContains = false
+	c.types = make(map[string]string)
 
 	var funcs bytes.Buffer
 	var body bytes.Buffer
@@ -58,6 +64,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if c.needsStrconv {
 		c.writeln("\"strconv\"")
 	}
+	if c.needsStrings {
+		c.writeln("\"strings\"")
+	}
 	c.indent--
 	c.writeln(")")
 	c.writeln("")
@@ -77,6 +86,23 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.indent--
 		c.writeln("}")
 		c.writeln("return sum / len(nums)")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.needsContains {
+		c.writeln("func contains(slice []int, v int) bool {")
+		c.indent++
+		c.writeln("for _, n := range slice {")
+		c.indent++
+		c.writeln("if n == v {")
+		c.indent++
+		c.writeln("return true")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return false")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")
@@ -152,6 +178,9 @@ func (c *Compiler) compileLet(buf *bytes.Buffer, l *parser.LetStmt) error {
 	if err != nil {
 		return err
 	}
+	if t := c.exprType(l.Value); t != "" {
+		c.types[l.Name] = t
+	}
 	if l.Type != nil {
 		typ, err := c.compileType(l.Type)
 		if err != nil {
@@ -180,6 +209,9 @@ func (c *Compiler) compileVar(buf *bytes.Buffer, v *parser.VarStmt) error {
 	if err != nil {
 		return err
 	}
+	if t := c.exprType(v.Value); t != "" {
+		c.types[v.Name] = t
+	}
 	if v.Type != nil {
 		typ, err := c.compileType(v.Type)
 		if err != nil {
@@ -193,14 +225,22 @@ func (c *Compiler) compileVar(buf *bytes.Buffer, v *parser.VarStmt) error {
 }
 
 func (c *Compiler) compileAssign(buf *bytes.Buffer, a *parser.AssignStmt) error {
-	if len(a.Index) > 0 || len(a.Field) > 0 {
-		return fmt.Errorf("assignment with index/field not supported")
+	target := a.Name
+	for _, idx := range a.Index {
+		s, err := c.compileIndexOp(idx)
+		if err != nil {
+			return err
+		}
+		target += s
+	}
+	for _, f := range a.Field {
+		target += "." + f.Name
 	}
 	val, err := c.compileExpr(a.Value)
 	if err != nil {
 		return err
 	}
-	c.writeLine(buf, fmt.Sprintf("%s = %s", a.Name, val))
+	c.writeLine(buf, fmt.Sprintf("%s = %s", target, val))
 	return nil
 }
 
@@ -349,17 +389,35 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 }
 
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
-	left, err := c.compileUnary(b.Left)
+	leftVal, err := c.compileUnary(b.Left)
 	if err != nil {
 		return "", err
 	}
-	res := left
+	res := leftVal
 	for _, op := range b.Right {
 		r, err := c.compilePostfix(op.Right)
 		if err != nil {
 			return "", err
 		}
-		res = fmt.Sprintf("%s %s %s", res, op.Op, r)
+		if op.Op == "in" {
+			// determine container type if possible
+			var rightName string
+			if op.Right.Target.Selector != nil && len(op.Right.Ops) == 0 {
+				rightName = op.Right.Target.Selector.Root
+			}
+			contType := c.types[rightName]
+			if contType == "string" || strings.HasPrefix(contType, "string") {
+				c.needsStrings = true
+				res = fmt.Sprintf("strings.Contains(%s, %s)", r, res)
+			} else if strings.HasPrefix(contType, "map[") {
+				res = fmt.Sprintf("func() bool { _, ok := %s[%s]; return ok }()", r, res)
+			} else {
+				c.needsContains = true
+				res = fmt.Sprintf("contains(%s, %s)", r, res)
+			}
+		} else {
+			res = fmt.Sprintf("%s %s %s", res, op.Op, r)
+		}
 	}
 	return res, nil
 }
@@ -393,11 +451,68 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			} else {
 				val = fmt.Sprintf("(%s)(%s)", typ, val)
 			}
+		case op.Index != nil:
+			idx, err := c.compileIndexOp(op.Index)
+			if err != nil {
+				return "", err
+			}
+			val += idx
 		default:
 			return "", fmt.Errorf("postfix operations not supported")
 		}
 	}
 	return val, nil
+}
+
+func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, string) {
+	keyT, valT := mapLitTypes(m)
+	items := make([]string, len(m.Items))
+	for i, it := range m.Items {
+		k, err := c.compileExpr(it.Key)
+		if err != nil {
+			return "", ""
+		}
+		v, err := c.compileExpr(it.Value)
+		if err != nil {
+			return "", ""
+		}
+		items[i] = fmt.Sprintf("%s: %s", k, v)
+	}
+	expr := fmt.Sprintf("map[%s]%s{%s}", keyT, valT, strings.Join(items, ", "))
+	return expr, fmt.Sprintf("map[%s]%s", keyT, valT)
+}
+
+func (c *Compiler) compileIndexOp(i *parser.IndexOp) (string, error) {
+	if i == nil {
+		return "", fmt.Errorf("nil index")
+	}
+	if i.Colon != nil {
+		start := ""
+		if i.Start != nil {
+			s, err := c.compileExpr(i.Start)
+			if err != nil {
+				return "", err
+			}
+			start = s
+		}
+		end := ""
+		if i.End != nil {
+			s, err := c.compileExpr(i.End)
+			if err != nil {
+				return "", err
+			}
+			end = s
+		}
+		return fmt.Sprintf("[%s:%s]", start, end), nil
+	}
+	if i.Start == nil {
+		return "[]", nil
+	}
+	s, err := c.compileExpr(i.Start)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("[%s]", s), nil
 }
 
 func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
@@ -420,6 +535,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems[i] = s
 		}
 		return "[]int{" + join(elems, ", ") + "}", nil
+	case p.Map != nil:
+		expr, typ := c.compileMapLiteral(p.Map)
+		_ = typ
+		return expr, nil
 	case p.Call != nil:
 		return c.compileCall(p.Call)
 	case p.Group != nil:
@@ -459,6 +578,32 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("count expects 1 arg")
 		}
 		return fmt.Sprintf("len(%s)", args[0]), nil
+	case "str":
+		if len(args) != 1 {
+			return "", fmt.Errorf("str expects 1 arg")
+		}
+		c.needsStrconv = true
+		return fmt.Sprintf("strconv.Itoa(%s)", args[0]), nil
+	case "substring":
+		if len(args) != 3 {
+			return "", fmt.Errorf("substring expects 3 args")
+		}
+		return fmt.Sprintf("%s[%s:%s]", args[0], args[1], args[2]), nil
+	case "sum":
+		if len(args) != 1 {
+			return "", fmt.Errorf("sum expects 1 arg")
+		}
+		return fmt.Sprintf("func() int { s := 0; for _, n := range %s { s += n }; return s }()", args[0]), nil
+	case "min":
+		if len(args) != 1 {
+			return "", fmt.Errorf("min expects 1 arg")
+		}
+		return fmt.Sprintf("func() int { m := %s[0]; for _, v := range %s[1:] { if v < m { m = v } }; return m }()", args[0], args[0]), nil
+	case "max":
+		if len(args) != 1 {
+			return "", fmt.Errorf("max expects 1 arg")
+		}
+		return fmt.Sprintf("func() int { m := %s[0]; for _, v := range %s[1:] { if v > m { m = v } }; return m }()", args[0], args[0]), nil
 	default:
 		return fmt.Sprintf("%s(%s)", call.Func, argStr), nil
 	}
@@ -519,4 +664,78 @@ func join(parts []string, sep string) string {
 		out += sep + p
 	}
 	return out
+}
+
+func (c *Compiler) exprType(e *parser.Expr) string {
+	if e == nil || e.Binary == nil {
+		return ""
+	}
+	return c.unaryType(e.Binary.Left)
+}
+
+func (c *Compiler) unaryType(u *parser.Unary) string {
+	return c.postfixType(u.Value)
+}
+
+func (c *Compiler) postfixType(p *parser.PostfixExpr) string {
+	if len(p.Ops) > 0 {
+		return ""
+	}
+	return c.primaryType(p.Target)
+}
+
+func (c *Compiler) primaryType(p *parser.Primary) string {
+	switch {
+	case p.Lit != nil:
+		if p.Lit.Str != nil {
+			return "string"
+		}
+		if p.Lit.Int != nil {
+			return "int"
+		}
+	case p.List != nil:
+		return "[]int"
+	case p.Map != nil:
+		keyT, valT := mapLitTypes(p.Map)
+		return fmt.Sprintf("map[%s]%s", keyT, valT)
+	}
+	return ""
+}
+
+func mapLitTypes(m *parser.MapLiteral) (string, string) {
+	if len(m.Items) == 0 {
+		return "string", "int"
+	}
+	kp := m.Items[0].Key.Binary.Left.Value.Target
+	vp := m.Items[0].Value.Binary.Left.Value.Target
+
+	keyT := primaryPrimitiveType(kp)
+	if keyT == "" {
+		keyT = "string"
+	}
+	var valT string
+	if vp.Map != nil {
+		k2, v2 := mapLitTypes(vp.Map)
+		valT = fmt.Sprintf("map[%s]%s", k2, v2)
+	} else if vp.List != nil {
+		valT = "[]int"
+	} else {
+		valT = primaryPrimitiveType(vp)
+		if valT == "" {
+			valT = "int"
+		}
+	}
+	return keyT, valT
+}
+
+func primaryPrimitiveType(p *parser.Primary) string {
+	if p.Lit != nil {
+		if p.Lit.Str != nil {
+			return "string"
+		}
+		if p.Lit.Int != nil {
+			return "int"
+		}
+	}
+	return ""
 }

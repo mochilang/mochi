@@ -7,5 +7,5 @@ import (
 )
 
 func main() {
-    fmt.Println(substring("mochi", 1, 4))
+    fmt.Println("mochi"[1:4])
 }

@@ -1,5 +1,0 @@
-run: exit status 1
-# command-line-arguments
-../../../tests/machine/x/go/min_max_builtin.go:11:21: invalid argument: nums (variable of type []int) cannot be ordered
-../../../tests/machine/x/go/min_max_builtin.go:12:21: invalid argument: nums (variable of type []int) cannot be ordered
-

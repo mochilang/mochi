@@ -1,1 +1,6 @@
-assignment with index/field not supported
+run: exit status 1
+# command-line-arguments
+../../../tests/machine/x/go/list_nested_assign.go:10:21: cannot use []int{…} (value of type []int) as int value in array or slice literal
+../../../tests/machine/x/go/list_nested_assign.go:11:14: invalid operation: cannot index matrix[1] (variable of type int)
+../../../tests/machine/x/go/list_nested_assign.go:12:26: invalid operation: cannot index matrix[1] (variable of type int)
+

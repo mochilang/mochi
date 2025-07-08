@@ -4,10 +4,11 @@ package main
 
 import (
     "fmt"
+    "strings"
 )
 
 func main() {
     s := "catch"
-    fmt.Println("cat" in s)
-    fmt.Println("dog" in s)
+    fmt.Println(strings.Contains(s, "cat"))
+    fmt.Println(strings.Contains(s, "dog"))
 }

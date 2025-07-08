@@ -1,4 +1,4 @@
-unsupported expression at line 2
-let people = [
-  { name: "Alice", age: 30 },
-  { name: "Bob", age: 15 },
+unsupported expression at line 7
+]
+let adults = from person in people
+             where person.age >= 18

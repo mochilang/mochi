@@ -1,4 +1,4 @@
-unsupported expression at line 2
-let people = [
-  { name: "Alice", age: 30 },
-  { name: "Bob", age: 25 }
+unsupported expression at line 6
+
+save people to "-" with { format: "jsonl" }
+

@@ -1,3 +1,7 @@
-unsupported expression at line 1
-let m = {a: 1, b: 2}
-json(m)
+run: exit status 1
+# command-line-arguments
+../../../tests/machine/x/go/json_builtin.go:6:5: "fmt" imported and not used
+../../../tests/machine/x/go/json_builtin.go:10:25: undefined: a
+../../../tests/machine/x/go/json_builtin.go:10:31: undefined: b
+../../../tests/machine/x/go/json_builtin.go:11:5: undefined: json
+

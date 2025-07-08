@@ -7,5 +7,5 @@ import (
 )
 
 func main() {
-    fmt.Println(sum([]int{1, 2, 3}))
+    fmt.Println(func() int { s := 0; for _, n := range []int{1, 2, 3} { s += n }; return s }())
 }

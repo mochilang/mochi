@@ -1,4 +1,4 @@
-unsupported expression at line 2
-let items = [
-  { cat: "a", val: 3 },
-  { cat: "a", val: 1 },
+unsupported expression at line 8
+let grouped =
+  from i in items
+  group by i.cat into g
