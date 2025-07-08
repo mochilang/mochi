@@ -577,6 +577,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
 	default:
 		return "", fmt.Errorf("unsupported expression at line %d", p.Pos.Line)
 	}
@@ -605,6 +607,109 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 		expr = fmt.Sprintf("(%s = %s) ifTrue: [%s] ifFalse: [%s]", target, pat, res, expr)
 	}
 	return expr, nil
+}
+
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	if q.Group != nil || len(q.Joins) > 0 {
+		return "", fmt.Errorf("query features not supported")
+	}
+
+	srcs := make([]string, 1+len(q.Froms))
+	vars := make([]string, 1+len(q.Froms))
+
+	s, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	srcs[0] = s
+	vars[0] = q.Var
+
+	for i, f := range q.Froms {
+		fs, err := c.compileExpr(f.Src)
+		if err != nil {
+			return "", err
+		}
+		srcs[i+1] = fs
+		vars[i+1] = f.Var
+	}
+
+	cond := ""
+	if q.Where != nil {
+		cond, err = c.compileExpr(q.Where)
+		if err != nil {
+			return "", err
+		}
+	}
+
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		return "", err
+	}
+
+	var b strings.Builder
+	b.WriteString("[ | tmp |\n")
+	b.WriteString("  tmp := OrderedCollection new.\n")
+
+	var loop func(int, string)
+	loop = func(i int, indent string) {
+		b.WriteString(indent + srcs[i] + " do: [:" + vars[i] + " |\n")
+		next := indent + "  "
+		if i+1 < len(srcs) {
+			loop(i+1, next)
+		} else {
+			if cond != "" {
+				b.WriteString(next + "(" + cond + ") ifTrue: [\n")
+				b.WriteString(next + "  tmp add: " + sel + ".\n")
+				b.WriteString(next + "].\n")
+			} else {
+				b.WriteString(next + "tmp add: " + sel + ".\n")
+			}
+		}
+		b.WriteString(indent + "].\n")
+	}
+	loop(0, "  ")
+
+	if q.Sort != nil {
+		key, err := c.compileExpr(q.Sort)
+		if err != nil {
+			return "", err
+		}
+		keyA := strings.ReplaceAll(key, vars[0], "a")
+		keyB := strings.ReplaceAll(key, vars[0], "b")
+		b.WriteString("  tmp := tmp asSortedCollection: [:a :b | " + keyA + " < " + keyB + "].\n")
+	}
+
+	if q.Skip != nil || q.Take != nil {
+		start := "1"
+		if q.Skip != nil {
+			st, err := c.compileExpr(q.Skip)
+			if err != nil {
+				return "", err
+			}
+			start = "(" + st + ") + 1"
+		}
+		end := "tmp size"
+		if q.Take != nil {
+			tk, err := c.compileExpr(q.Take)
+			if err != nil {
+				return "", err
+			}
+			if q.Skip != nil {
+				end = "(" + start + " - 1 + " + tk + ")"
+			} else {
+				end = tk
+			}
+		}
+		b.WriteString("  tmp := tmp copyFrom: " + start + " to: " + end + ".\n")
+	}
+
+	if q.Distinct {
+		b.WriteString("  tmp := tmp asSet asOrderedCollection.\n")
+	}
+
+	b.WriteString("  tmp\n")
+	b.WriteString("] value")
+	return b.String(), nil
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) string {
