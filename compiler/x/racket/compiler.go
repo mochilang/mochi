@@ -11,22 +11,30 @@ import (
 )
 
 type Compiler struct {
-	buf bytes.Buffer
+	buf         bytes.Buffer
+	needListLib bool
 }
 
 func New() *Compiler { return &Compiler{} }
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
-	c.writeln("#lang racket")
+	c.buf.Reset()
+	c.needListLib = false
 	for _, st := range prog.Statements {
 		if err := c.compileStmt(st); err != nil {
 			return nil, err
 		}
 	}
-	if c.buf.Len() == 0 {
-		c.writeln("")
+	var out bytes.Buffer
+	out.WriteString("#lang racket\n")
+	if c.needListLib {
+		out.WriteString("(require racket/list)\n")
 	}
-	return c.buf.Bytes(), nil
+	out.Write(c.buf.Bytes())
+	if out.Len() == 0 || out.Bytes()[out.Len()-1] != '\n' {
+		out.WriteByte('\n')
+	}
+	return out.Bytes(), nil
 }
 
 func (c *Compiler) write(s string)   { c.buf.WriteString(s) }
@@ -57,7 +65,19 @@ func (c *Compiler) compileStmtWithLabels(s *parser.Statement, breakLbl, contLbl 
 		}
 		c.writeln(fmt.Sprintf("(define %s %s)", name, expr))
 	case s.Assign != nil:
-		if len(s.Assign.Index) > 0 || len(s.Assign.Field) > 0 {
+		if len(s.Assign.Index) > 0 {
+			rhs, err := c.compileExpr(s.Assign.Value)
+			if err != nil {
+				return err
+			}
+			expr, err := c.compileIndexedSet(s.Assign.Name, s.Assign.Index, rhs)
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("(set! %s %s)", s.Assign.Name, expr))
+			return nil
+		}
+		if len(s.Assign.Field) > 0 {
 			return fmt.Errorf("complex assignment not supported")
 		}
 		val, err := c.compileExpr(s.Assign.Value)
@@ -143,13 +163,13 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 			if isStrLeft || rightStr {
 				val = fmt.Sprintf("(string=? %s %s)", val, rhs)
 			} else {
-				val = fmt.Sprintf("(= %s %s)", val, rhs)
+				val = fmt.Sprintf("(equal? %s %s)", val, rhs)
 			}
 		case "!=":
 			if isStrLeft || rightStr {
 				val = fmt.Sprintf("(not (string=? %s %s))", val, rhs)
 			} else {
-				val = fmt.Sprintf("(not (= %s %s))", val, rhs)
+				val = fmt.Sprintf("(not (equal? %s %s))", val, rhs)
 			}
 		case "<", "<=", ">", ">=":
 			cmpOp := operator
@@ -213,6 +233,41 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			} else {
 				return "", fmt.Errorf("unsupported cast")
 			}
+		case op.Index != nil:
+			if op.Index.Colon != nil || op.Index.Colon2 != nil || op.Index.Step != nil {
+				start := "0"
+				if op.Index.Start != nil {
+					s, err := c.compileExpr(op.Index.Start)
+					if err != nil {
+						return "", err
+					}
+					start = s
+				}
+				end := ""
+				if op.Index.End != nil {
+					e, err := c.compileExpr(op.Index.End)
+					if err != nil {
+						return "", err
+					}
+					end = e
+				} else {
+					end = fmt.Sprintf("(if (string? %s) (string-length %s) (length %s))", val, val, val)
+				}
+				val = fmt.Sprintf("(if (string? %s) (substring %s %s %s) (take (drop %s %s) (- %s %s)))", val, val, start, end, val, start, end, start)
+			} else {
+				if op.Index.Start == nil {
+					return "", fmt.Errorf("empty index")
+				}
+				idx, err := c.compileExpr(op.Index.Start)
+				if err != nil {
+					return "", err
+				}
+				if isStringExpr(op.Index.Start) {
+					val = fmt.Sprintf("(hash-ref %s %s)", val, idx)
+				} else {
+					val = fmt.Sprintf("(if (string? %s) (string-ref %s %s) (list-ref %s %s))", val, val, idx, val, idx)
+				}
+			}
 		default:
 			return "", fmt.Errorf("unsupported postfix operation")
 		}
@@ -268,11 +323,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if len(args) != 1 {
 				return "", fmt.Errorf("len expects 1 arg")
 			}
-			// string-length for strings, length for lists
-			if isStringExpr(p.Call.Args[0]) {
-				return fmt.Sprintf("(string-length %s)", args[0]), nil
-			}
-			return fmt.Sprintf("(length %s)", args[0]), nil
+			return fmt.Sprintf("(if (string? %s) (string-length %s) (length %s))", args[0], args[0], args[0]), nil
 		case "min":
 			if len(args) != 1 {
 				return "", fmt.Errorf("min expects 1 arg")
@@ -325,6 +376,21 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems[i] = v
 		}
 		return fmt.Sprintf("'(%s)", strings.Join(elems, " ")), nil
+	case p.Map != nil:
+		parts := make([]string, len(p.Map.Items)*2)
+		for i, it := range p.Map.Items {
+			k, err := c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", err
+			}
+			parts[i*2] = k
+			parts[i*2+1] = v
+		}
+		return fmt.Sprintf("(hash %s)", strings.Join(parts, " ")), nil
 	case p.FunExpr != nil:
 		params := make([]string, len(p.FunExpr.Params))
 		for i, pa := range p.FunExpr.Params {
@@ -511,6 +577,29 @@ func (c *Compiler) compileWhileWithLabels(w *parser.WhileStmt, breakLbl, contLbl
 	c.writeln("      (loop)))")
 	c.writeln(")")
 	return nil
+}
+
+func (c *Compiler) compileIndexedSet(name string, idx []*parser.IndexOp, rhs string) (string, error) {
+	if len(idx) == 0 {
+		return rhs, nil
+	}
+	ie, err := c.compileExpr(idx[0].Start)
+	if err != nil {
+		return "", err
+	}
+	if len(idx) == 1 {
+		if isStringExpr(idx[0].Start) {
+			return fmt.Sprintf("(hash-set %s %s %s)", name, ie, rhs), nil
+		}
+		c.needListLib = true
+		return fmt.Sprintf("(list-set %s %s %s)", name, ie, rhs), nil
+	}
+	inner, err := c.compileIndexedSet(fmt.Sprintf("(list-ref %s %s)", name, ie), idx[1:], rhs)
+	if err != nil {
+		return "", err
+	}
+	c.needListLib = true
+	return fmt.Sprintf("(list-set %s %s %s)", name, ie, inner), nil
 }
 
 func isStringPrimary(p *parser.Primary) bool {
