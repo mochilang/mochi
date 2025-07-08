@@ -7,7 +7,8 @@ import (
 )
 
 func main() {
-    square := func(x int) int {        return x * x
+    square := func(x int) int {
+        return x * x
     }
     fmt.Println(square(6))
 }
