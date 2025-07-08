@@ -1,0 +1,4 @@
+unsupported expression at line 6
+]
+let result = from i in items sort by i.n select i.v
+print(result)

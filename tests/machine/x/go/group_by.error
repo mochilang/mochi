@@ -1,0 +1,4 @@
+unsupported expression at line 10
+]
+let stats = from person in people
+            group by person.city into g
