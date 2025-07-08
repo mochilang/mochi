@@ -1,3 +1,0 @@
-line 0: unsupported expression at line 6
-   1 | fun boom(): bool {
-   2 |   print("boom")
