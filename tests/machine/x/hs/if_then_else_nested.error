@@ -1,0 +1,16 @@
+
+/workspace/mochi/tests/machine/x/hs/if_then_else_nested.hs:107:7: error:
+    • No instance for (Num String) arising from the literal ‘0’
+    • In the expression: 0
+      In an equation for ‘msg’: msg = 0
+    |
+107 | msg = 0
+    |       ^
+
+
+Context around line 107:
+  105| x = 8
+  106| 
+  107| msg = 0
+  108| 
+  109| main :: IO ()

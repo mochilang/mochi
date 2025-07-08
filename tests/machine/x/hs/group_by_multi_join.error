@@ -1,0 +1,128 @@
+
+/workspace/mochi/tests/machine/x/hs/group_by_multi_join.hs:105:33: error:
+    Data constructor not in scope: VInt :: t13 -> a
+    |
+105 | nations = [Map.fromList [("id", VInt (1)), ("name", VString ("A"))], Map.fromList [("id", VInt (2)), ("name", VString ("B"))]]
+    |                                 ^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_multi_join.hs:105:53: error:
+    Data constructor not in scope: VString :: String -> a
+    |
+105 | nations = [Map.fromList [("id", VInt (1)), ("name", VString ("A"))], Map.fromList [("id", VInt (2)), ("name", VString ("B"))]]
+    |                                                     ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_multi_join.hs:105:91: error:
+    Data constructor not in scope: VInt :: t12 -> a
+    |
+105 | nations = [Map.fromList [("id", VInt (1)), ("name", VString ("A"))], Map.fromList [("id", VInt (2)), ("name", VString ("B"))]]
+    |                                                                                           ^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_multi_join.hs:105:111: error:
+    Data constructor not in scope: VString :: String -> a
+    |
+105 | nations = [Map.fromList [("id", VInt (1)), ("name", VString ("A"))], Map.fromList [("id", VInt (2)), ("name", VString ("B"))]]
+    |                                                                                                               ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_multi_join.hs:109:36: error:
+    Data constructor not in scope: VInt :: t11 -> a
+    |
+109 | partsupp = [Map.fromList [("part", VInt (100)), ("supplier", VInt (1)), ("cost", VDouble (10.0)), ("qty", VInt (2))], Map.fromList [("part", VInt (100)), ("supplier", VInt (2)), ("cost", VDouble (20.0)), ("qty", VInt (1))], Map.fromList [("part", VInt (200)), ("supplier", VInt (1)), ("cost", VDouble (5.0)), ("qty", VInt (3))]]
+    |                                    ^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_multi_join.hs:109:62: error:
+    Data constructor not in scope: VInt :: t10 -> a
+    |
+109 | partsupp = [Map.fromList [("part", VInt (100)), ("supplier", VInt (1)), ("cost", VDouble (10.0)), ("qty", VInt (2))], Map.fromList [("part", VInt (100)), ("supplier", VInt (2)), ("cost", VDouble (20.0)), ("qty", VInt (1))], Map.fromList [("part", VInt (200)), ("supplier", VInt (1)), ("cost", VDouble (5.0)), ("qty", VInt (3))]]
+    |                                                              ^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_multi_join.hs:109:82: error:
+    Data constructor not in scope: VDouble :: t9 -> a
+    |
+109 | partsupp = [Map.fromList [("part", VInt (100)), ("supplier", VInt (1)), ("cost", VDouble (10.0)), ("qty", VInt (2))], Map.fromList [("part", VInt (100)), ("supplier", VInt (2)), ("cost", VDouble (20.0)), ("qty", VInt (1))], Map.fromList [("part", VInt (200)), ("supplier", VInt (1)), ("cost", VDouble (5.0)), ("qty", VInt (3))]]
+    |                                                                                  ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_multi_join.hs:109:107: error:
+    Data constructor not in scope: VInt :: t8 -> a
+    |
+109 | partsupp = [Map.fromList [("part", VInt (100)), ("supplier", VInt (1)), ("cost", VDouble (10.0)), ("qty", VInt (2))], Map.fromList [("part", VInt (100)), ("supplier", VInt (2)), ("cost", VDouble (20.0)), ("qty", VInt (1))], Map.fromList [("part", VInt (200)), ("supplier", VInt (1)), ("cost", VDouble (5.0)), ("qty", VInt (3))]]
+    |                                                                                                           ^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_multi_join.hs:109:142: error:
+    Data constructor not in scope: VInt :: t7 -> a
+    |
+109 | partsupp = [Map.fromList [("part", VInt (100)), ("supplier", VInt (1)), ("cost", VDouble (10.0)), ("qty", VInt (2))], Map.fromList [("part", VInt (100)), ("supplier", VInt (2)), ("cost", VDouble (20.0)), ("qty", VInt (1))], Map.fromList [("part", VInt (200)), ("supplier", VInt (1)), ("cost", VDouble (5.0)), ("qty", VInt (3))]]
+    |                                                                                                                                              ^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_multi_join.hs:109:168: error:
+    Data constructor not in scope: VInt :: t6 -> a
+    |
+109 | partsupp = [Map.fromList [("part", VInt (100)), ("supplier", VInt (1)), ("cost", VDouble (10.0)), ("qty", VInt (2))], Map.fromList [("part", VInt (100)), ("supplier", VInt (2)), ("cost", VDouble (20.0)), ("qty", VInt (1))], Map.fromList [("part", VInt (200)), ("supplier", VInt (1)), ("cost", VDouble (5.0)), ("qty", VInt (3))]]
+    |                                                                                                                                                                        ^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_multi_join.hs:109:188: error:
+    Data constructor not in scope: VDouble :: t5 -> a
+    |
+109 | partsupp = [Map.fromList [("part", VInt (100)), ("supplier", VInt (1)), ("cost", VDouble (10.0)), ("qty", VInt (2))], Map.fromList [("part", VInt (100)), ("supplier", VInt (2)), ("cost", VDouble (20.0)), ("qty", VInt (1))], Map.fromList [("part", VInt (200)), ("supplier", VInt (1)), ("cost", VDouble (5.0)), ("qty", VInt (3))]]
+    |                                                                                                                                                                                            ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_multi_join.hs:109:213: error:
+    Data constructor not in scope: VInt :: t4 -> a
+    |
+109 | partsupp = [Map.fromList [("part", VInt (100)), ("supplier", VInt (1)), ("cost", VDouble (10.0)), ("qty", VInt (2))], Map.fromList [("part", VInt (100)), ("supplier", VInt (2)), ("cost", VDouble (20.0)), ("qty", VInt (1))], Map.fromList [("part", VInt (200)), ("supplier", VInt (1)), ("cost", VDouble (5.0)), ("qty", VInt (3))]]
+    |                                                                                                                                                                                                                     ^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_multi_join.hs:109:248: error:
+    Data constructor not in scope: VInt :: t3 -> a
+    |
+109 | partsupp = [Map.fromList [("part", VInt (100)), ("supplier", VInt (1)), ("cost", VDouble (10.0)), ("qty", VInt (2))], Map.fromList [("part", VInt (100)), ("supplier", VInt (2)), ("cost", VDouble (20.0)), ("qty", VInt (1))], Map.fromList [("part", VInt (200)), ("supplier", VInt (1)), ("cost", VDouble (5.0)), ("qty", VInt (3))]]
+    |                                                                                                                                                                                                                                                        ^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_multi_join.hs:109:274: error:
+    Data constructor not in scope: VInt :: t2 -> a
+    |
+109 | partsupp = [Map.fromList [("part", VInt (100)), ("supplier", VInt (1)), ("cost", VDouble (10.0)), ("qty", VInt (2))], Map.fromList [("part", VInt (100)), ("supplier", VInt (2)), ("cost", VDouble (20.0)), ("qty", VInt (1))], Map.fromList [("part", VInt (200)), ("supplier", VInt (1)), ("cost", VDouble (5.0)), ("qty", VInt (3))]]
+    |                                                                                                                                                                                                                                                                                  ^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_multi_join.hs:109:294: error:
+    Data constructor not in scope: VDouble :: t1 -> a
+    |
+109 | partsupp = [Map.fromList [("part", VInt (100)), ("supplier", VInt (1)), ("cost", VDouble (10.0)), ("qty", VInt (2))], Map.fromList [("part", VInt (100)), ("supplier", VInt (2)), ("cost", VDouble (20.0)), ("qty", VInt (1))], Map.fromList [("part", VInt (200)), ("supplier", VInt (1)), ("cost", VDouble (5.0)), ("qty", VInt (3))]]
+    |                                                                                                                                                                                                                                                                                                      ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_multi_join.hs:109:318: error:
+    Data constructor not in scope: VInt :: t0 -> a
+    |
+109 | partsupp = [Map.fromList [("part", VInt (100)), ("supplier", VInt (1)), ("cost", VDouble (10.0)), ("qty", VInt (2))], Map.fromList [("part", VInt (100)), ("supplier", VInt (2)), ("cost", VDouble (20.0)), ("qty", VInt (1))], Map.fromList [("part", VInt (200)), ("supplier", VInt (1)), ("cost", VDouble (5.0)), ("qty", VInt (3))]]
+    |                                                                                                                                                                                                                                                                                                                              ^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_multi_join.hs:111:36: error:
+    Data constructor not in scope: VString :: String -> a
+    |
+111 | filtered = [Map.fromList [("part", VString (fromMaybe (error "missing") (Map.lookup "part" ps))), ("value", VString ((fromMaybe (error "missing") (Map.lookup "cost" ps) * fromMaybe (error "missing") (Map.lookup "qty" ps))))] | ps <- partsupp, s <- suppliers, n <- nations, (fromMaybe (error "missing") (Map.lookup "id" (s)) == fromMaybe (error "missing") (Map.lookup "supplier" (ps))), (fromMaybe (error "missing") (Map.lookup "id" (n)) == fromMaybe (error "missing") (Map.lookup "nation" (s))), (fromMaybe (error "missing") (Map.lookup "name" n) == "A")]
+    |                                    ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_multi_join.hs:111:109: error:
+    Data constructor not in scope: VString :: String -> a
+    |
+111 | filtered = [Map.fromList [("part", VString (fromMaybe (error "missing") (Map.lookup "part" ps))), ("value", VString ((fromMaybe (error "missing") (Map.lookup "cost" ps) * fromMaybe (error "missing") (Map.lookup "qty" ps))))] | ps <- partsupp, s <- suppliers, n <- nations, (fromMaybe (error "missing") (Map.lookup "id" (s)) == fromMaybe (error "missing") (Map.lookup "supplier" (ps))), (fromMaybe (error "missing") (Map.lookup "id" (n)) == fromMaybe (error "missing") (Map.lookup "nation" (s))), (fromMaybe (error "missing") (Map.lookup "name" n) == "A")]
+    |                                                                                                             ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_multi_join.hs:113:35: error:
+    Data constructor not in scope: VString :: t15 -> a
+    |
+113 | grouped = [Map.fromList [("part", VString (key (g))), ("total", VDouble (sum [fromMaybe (error "missing") (Map.lookup "value" (r)) | r <- g]))] | g <- _group_by filtered (\x -> fromMaybe (error "missing") (Map.lookup "part" x)), let g = g]
+    |                                   ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_multi_join.hs:113:65: error:
+    Data constructor not in scope: VDouble :: t14 -> a
+    |
+113 | grouped = [Map.fromList [("part", VString (key (g))), ("total", VDouble (sum [fromMaybe (error "missing") (Map.lookup "value" (r)) | r <- g]))] | g <- _group_by filtered (\x -> fromMaybe (error "missing") (Map.lookup "part" x)), let g = g]
+    |                                                                 ^^^^^^^
+
+
+Context around line 105:
+  103|            in map row (drop start ls)
+  104| 
+  105| nations = [Map.fromList [("id", VInt (1)), ("name", VString ("A"))], Map.fromList [("id", VInt (2)), ("name", VString ("B"))]]
+  106| 
+  107| suppliers = [Map.fromList [("id", 1), ("nation", 1)], Map.fromList [("id", 2), ("nation", 2)]]

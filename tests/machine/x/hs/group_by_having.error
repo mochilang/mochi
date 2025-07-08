@@ -1,0 +1,22 @@
+
+/workspace/mochi/tests/machine/x/hs/group_by_having.hs:112:31: error:
+    Data constructor not in scope: VString :: t0 -> a
+    Suggested fix:
+      Perhaps use ‘Aeson.String’ (imported from Data.Aeson)
+    |
+112 | big = [Map.fromList [("city", VString (key (g))), ("num", VInt (length (items g)))] | g <- _group_by people (\p -> fromMaybe (error "missing") (Map.lookup "city" p)), let g = g]
+    |                               ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_having.hs:112:59: error:
+    Data constructor not in scope: VInt :: Int -> a
+    |
+112 | big = [Map.fromList [("city", VString (key (g))), ("num", VInt (length (items g)))] | g <- _group_by people (\p -> fromMaybe (error "missing") (Map.lookup "city" p)), let g = g]
+    |                                                           ^^^^
+
+
+Context around line 112:
+  110| people = [Map.fromList [("name", "Alice"), ("city", "Paris")], Map.fromList [("name", "Bob"), ("city", "Hanoi")], Map.fromList [("name", "Charlie"), ("city", "Paris")], Map.fromList [("name", "Diana"), ("city", "Hanoi")], Map.fromList [("name", "Eve"), ("city", "Paris")], Map.fromList [("name", "Frank"), ("city", "Hanoi")], Map.fromList [("name", "George"), ("city", "Paris")]]
+  111| 
+  112| big = [Map.fromList [("city", VString (key (g))), ("num", VInt (length (items g)))] | g <- _group_by people (\p -> fromMaybe (error "missing") (Map.lookup "city" p)), let g = g]
+  113| 
+  114| main :: IO ()

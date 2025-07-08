@@ -1,0 +1,20 @@
+
+/workspace/mochi/tests/machine/x/hs/len_map.hs:107:10: error:
+    • Couldn't match expected type ‘[(String, b0)] -> a0’
+                  with actual type ‘Int’
+    • The function ‘length’ is applied to two value arguments,
+        but its type ‘([(k0, a1)] -> Map.Map k0 a1) -> Int’ has only one
+      In the first argument of ‘print’, namely
+        ‘(length Map.fromList [("a", 1), ("b", 2)])’
+      In a stmt of a 'do' block:
+        print (length Map.fromList [("a", 1), ("b", 2)])
+    |
+107 |   print (length Map.fromList [("a", 1), ("b", 2)])
+    |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+Context around line 107:
+  105| main :: IO ()
+  106| main = do
+  107|   print (length Map.fromList [("a", 1), ("b", 2)])
+  108| 

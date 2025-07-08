@@ -1,0 +1,80 @@
+
+/workspace/mochi/tests/machine/x/hs/cross_join_triple.hs:111:31: error:
+    Data constructor not in scope: VInt :: a4 -> a
+    |
+111 | combos = [Map.fromList [("n", VInt (n)), ("l", VString (l)), ("b", VBool (b))] | n <- nums, l <- letters, b <- bools]
+    |                               ^^^^
+
+/workspace/mochi/tests/machine/x/hs/cross_join_triple.hs:111:48: error:
+    Data constructor not in scope: VString :: String -> a
+    |
+111 | combos = [Map.fromList [("n", VInt (n)), ("l", VString (l)), ("b", VBool (b))] | n <- nums, l <- letters, b <- bools]
+    |                                                ^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/cross_join_triple.hs:111:68: error:
+    Data constructor not in scope: VBool :: Bool -> a
+    |
+111 | combos = [Map.fromList [("n", VInt (n)), ("l", VString (l)), ("b", VBool (b))] | n <- nums, l <- letters, b <- bools]
+    |                                                                    ^^^^^
+
+/workspace/mochi/tests/machine/x/hs/cross_join_triple.hs:116:35: error:
+    • Couldn't match expected type: t0 -> Maybe a0 -> String
+                  with actual type: [Char]
+    • The function ‘show’ is applied to three value arguments,
+        but its type ‘(a1 -> Maybe a1 -> a1) -> [Char]’ has only one
+      In the expression:
+        show fromMaybe (error "missing") (Map.lookup "n" c)
+      In the first argument of ‘unwords’, namely
+        ‘[show fromMaybe (error "missing") (Map.lookup "n" c),
+          show fromMaybe (error "missing") (Map.lookup "l" c),
+          show fromMaybe (error "missing") (Map.lookup "b" c)]’
+    • Relevant bindings include
+        c :: Map.Map String a0
+          (bound at /workspace/mochi/tests/machine/x/hs/cross_join_triple.hs:116:11)
+    |
+116 |   mapM_ (\c -> putStrLn (unwords [show fromMaybe (error "missing") (Map.lookup "n" c), show fromMaybe (error "missing") (Map.lookup "l" c), show fromMaybe (error "missing") (Map.lookup "b" c)])) combos
+    |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/cross_join_triple.hs:116:88: error:
+    • Couldn't match expected type: t1 -> Maybe a0 -> String
+                  with actual type: [Char]
+    • The function ‘show’ is applied to three value arguments,
+        but its type ‘(a2 -> Maybe a2 -> a2) -> [Char]’ has only one
+      In the expression:
+        show fromMaybe (error "missing") (Map.lookup "l" c)
+      In the first argument of ‘unwords’, namely
+        ‘[show fromMaybe (error "missing") (Map.lookup "n" c),
+          show fromMaybe (error "missing") (Map.lookup "l" c),
+          show fromMaybe (error "missing") (Map.lookup "b" c)]’
+    • Relevant bindings include
+        c :: Map.Map String a0
+          (bound at /workspace/mochi/tests/machine/x/hs/cross_join_triple.hs:116:11)
+    |
+116 |   mapM_ (\c -> putStrLn (unwords [show fromMaybe (error "missing") (Map.lookup "n" c), show fromMaybe (error "missing") (Map.lookup "l" c), show fromMaybe (error "missing") (Map.lookup "b" c)])) combos
+    |                                                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/cross_join_triple.hs:116:141: error:
+    • Couldn't match expected type: t2 -> Maybe a0 -> String
+                  with actual type: [Char]
+    • The function ‘show’ is applied to three value arguments,
+        but its type ‘(a3 -> Maybe a3 -> a3) -> [Char]’ has only one
+      In the expression:
+        show fromMaybe (error "missing") (Map.lookup "b" c)
+      In the first argument of ‘unwords’, namely
+        ‘[show fromMaybe (error "missing") (Map.lookup "n" c),
+          show fromMaybe (error "missing") (Map.lookup "l" c),
+          show fromMaybe (error "missing") (Map.lookup "b" c)]’
+    • Relevant bindings include
+        c :: Map.Map String a0
+          (bound at /workspace/mochi/tests/machine/x/hs/cross_join_triple.hs:116:11)
+    |
+116 |   mapM_ (\c -> putStrLn (unwords [show fromMaybe (error "missing") (Map.lookup "n" c), show fromMaybe (error "missing") (Map.lookup "l" c), show fromMaybe (error "missing") (Map.lookup "b" c)])) combos
+    |                                                                                                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+Context around line 111:
+  109| bools = [True, False]
+  110| 
+  111| combos = [Map.fromList [("n", VInt (n)), ("l", VString (l)), ("b", VBool (b))] | n <- nums, l <- letters, b <- bools]
+  112| 
+  113| main :: IO ()
