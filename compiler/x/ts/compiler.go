@@ -12,14 +12,15 @@ import (
 
 // Compiler translates a limited subset of Mochi into TypeScript.
 type Compiler struct {
-	buf    bytes.Buffer
-	indent int
-	tmp    int
+	buf      bytes.Buffer
+	indent   int
+	tmp      int
+	funArity map[string]int
 }
 
 // New returns a new Compiler.
 func New() *Compiler {
-	return &Compiler{}
+	return &Compiler{funArity: make(map[string]int)}
 }
 
 func (c *Compiler) newTmp() string {
@@ -31,6 +32,12 @@ func (c *Compiler) newTmp() string {
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.indent = 0
+	c.funArity = make(map[string]int)
+	for _, st := range prog.Statements {
+		if st.Fun != nil {
+			c.funArity[st.Fun.Name] = len(st.Fun.Params)
+		}
+	}
 	for _, st := range prog.Statements {
 		if err := c.stmt(st); err != nil {
 			return nil, err
@@ -591,6 +598,14 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 			}
 			return "", fmt.Errorf("max expects 1 arg")
 		default:
+			if ar, ok := c.funArity[p.Call.Func]; ok && len(args) < ar {
+				params := make([]string, ar-len(args))
+				for i := range params {
+					params[i] = fmt.Sprintf("p%d", i)
+				}
+				all := append(append([]string{}, args...), params...)
+				return fmt.Sprintf("(%s) => %s(%s)", strings.Join(params, ", "), p.Call.Func, strings.Join(all, ", ")), nil
+			}
 			return fmt.Sprintf("%s(%s)", p.Call.Func, strings.Join(args, ", ")), nil
 		}
 	case p.Query != nil:

@@ -4,7 +4,7 @@ This directory stores the generated TypeScript code and execution results for Mo
 
 ## Summary
 
-64/97 files compiled
+66/97 files compiled
 
 ## Checklist
 
@@ -73,7 +73,7 @@ This directory stores the generated TypeScript code and execution results for Mo
 - [x] nested_function.mochi
 - [ ] order_by_map.mochi
 - [ ] outer_join.mochi
-- [ ] partial_application.mochi
+- [x] partial_application.mochi
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
@@ -83,7 +83,7 @@ This directory stores the generated TypeScript code and execution results for Mo
 - [ ] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
 - [x] slice.mochi
-- [ ] sort_stable.mochi
+- [x] sort_stable.mochi
  - [x] str_builtin.mochi
 - [x] string_compare.mochi
 - [x] string_concat.mochi
