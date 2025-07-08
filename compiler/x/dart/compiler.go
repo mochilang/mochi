@@ -18,11 +18,12 @@ import (
 // translation is incomplete, but it is sufficient for simple examples such as
 // variable declarations and basic arithmetic/print statements.
 type Compiler struct {
-	env    *types.Env
-	buf    bytes.Buffer
-	indent int
-	useIn  bool
-	tmp    int
+	env     *types.Env
+	buf     bytes.Buffer
+	indent  int
+	useIn   bool
+	useJSON bool
+	tmp     int
 }
 
 // New creates a new Dart compiler instance.
@@ -36,6 +37,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.indent = 0
 	c.useIn = false
+	c.useJSON = false
 
 	// compile function declarations into a separate buffer so they appear
 	// before the main entry point
@@ -70,21 +72,21 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	mainBytes := c.buf.Bytes()
 	c.buf = old
 
+	var out bytes.Buffer
+	if c.useJSON {
+		out.WriteString("import 'dart:convert';\n\n")
+	}
 	if c.useIn {
-		c.writeln("bool _in(dynamic item, dynamic col) {")
-		c.indent++
-		c.writeln("if (col is Map) return col.containsKey(item);")
-		c.writeln("if (col is Iterable || col is String) return col.contains(item);")
-		c.writeln("return false;")
-		c.indent--
-		c.writeln("}")
-		c.writeln("")
+		out.WriteString("bool _in(dynamic item, dynamic col) {\n")
+		out.WriteString("  if (col is Map) return col.containsKey(item);\n")
+		out.WriteString("  if (col is Iterable || col is String) return col.contains(item);\n")
+		out.WriteString("  return false;\n")
+		out.WriteString("}\n\n")
 	}
 
-	// prepend function declarations then main body
-	c.buf.Write(fnBuf.Bytes())
-	c.buf.Write(mainBytes)
-	return c.buf.Bytes(), nil
+	out.Write(fnBuf.Bytes())
+	out.Write(mainBytes)
+	return out.Bytes(), nil
 }
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
@@ -701,6 +703,12 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("values expects 1 arg")
 		}
 		return fmt.Sprintf("%s.values.toList()", args[0]), nil
+	case "json":
+		if len(args) != 1 {
+			return "", fmt.Errorf("json expects 1 arg")
+		}
+		c.useJSON = true
+		return fmt.Sprintf("print(jsonEncode(%s))", args[0]), nil
 	}
 
 	return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ", ")), nil
