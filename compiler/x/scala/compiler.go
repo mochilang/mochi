@@ -119,7 +119,14 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 	rhs := "0"
 	if s.Value != nil {
 		var err error
-		rhs, err = c.compileExpr(s.Value)
+		// use mutable collections when assigning list or map literals
+		if lst := s.Value.Binary.Left.Value.Target.List; lst != nil {
+			rhs, err = c.compileList(lst, true)
+		} else if mp := s.Value.Binary.Left.Value.Target.Map; mp != nil {
+			rhs, err = c.compileMap(mp, true)
+		} else {
+			rhs, err = c.compileExpr(s.Value)
+		}
 		if err != nil {
 			return err
 		}
@@ -204,6 +211,49 @@ func (c *Compiler) compileIf(s *parser.IfStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileIfExpr(e *parser.IfExpr) (string, error) {
+	cond, err := c.compileExpr(e.Cond)
+	if err != nil {
+		return "", err
+	}
+	thenExpr, err := c.compileExpr(e.Then)
+	if err != nil {
+		return "", err
+	}
+	elseExpr := "()"
+	if e.ElseIf != nil {
+		elseExpr, err = c.compileIfExpr(e.ElseIf)
+		if err != nil {
+			return "", err
+		}
+	} else if e.Else != nil {
+		elseExpr, err = c.compileExpr(e.Else)
+		if err != nil {
+			return "", err
+		}
+	}
+	return fmt.Sprintf("if (%s) %s else %s", cond, thenExpr, elseExpr), nil
+}
+
+func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		if p.Type != nil {
+			params[i] = fmt.Sprintf("%s: %s", p.Name, c.typeString(p.Type))
+		} else {
+			params[i] = p.Name
+		}
+	}
+	if fn.ExprBody == nil {
+		return "", fmt.Errorf("line %d: block lambdas not supported", fn.Pos.Line)
+	}
+	body, err := c.compileExpr(fn.ExprBody)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("(%s) => %s", strings.Join(params, ", "), body), nil
+}
+
 func (c *Compiler) compileWhile(s *parser.WhileStmt) error {
 	cond, err := c.compileExpr(s.Cond)
 	if err != nil {
@@ -259,10 +309,25 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 	if err != nil {
 		return err
 	}
-	if len(s.Index) != 0 || len(s.Field) != 0 {
-		return fmt.Errorf("line %d: complex assignment unsupported", s.Pos.Line)
+	target := s.Name
+	for _, idx := range s.Index {
+		if idx.Colon != nil || idx.Colon2 != nil {
+			return fmt.Errorf("line %d: slice assignment unsupported", s.Pos.Line)
+		}
+		idxExpr := "0"
+		if idx.Start != nil {
+			var err error
+			idxExpr, err = c.compileExpr(idx.Start)
+			if err != nil {
+				return err
+			}
+		}
+		target = fmt.Sprintf("%s(%s)", target, idxExpr)
 	}
-	c.writeln(fmt.Sprintf("%s = %s", s.Name, expr))
+	for _, f := range s.Field {
+		target += "." + f.Name
+	}
+	c.writeln(fmt.Sprintf("%s = %s", target, expr))
 	return nil
 }
 
@@ -300,6 +365,14 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 		switch op.Op {
 		case "+", "-", "*", "/", "%", "==", "!=", "<", "<=", ">", ">=", "&&", "||":
 			s = fmt.Sprintf("%s %s %s", s, op.Op, r)
+		case "in":
+			ct := types.ExprType(op.Right, c.env)
+			switch ct.(type) {
+			case types.MapType, types.ListType, types.StringType:
+				s = fmt.Sprintf("%s.contains(%s)", r, s)
+			default:
+				return "", fmt.Errorf("line %d: unsupported operator %s", op.Pos.Line, op.Op)
+			}
 		default:
 			return "", fmt.Errorf("line %d: unsupported operator %s", op.Pos.Line, op.Op)
 		}
@@ -418,10 +491,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileLiteral(p.Lit), nil
 	case p.Call != nil:
 		return c.compileCall(p.Call)
+	case p.If != nil:
+		return c.compileIfExpr(p.If)
+	case p.FunExpr != nil:
+		return c.compileFunExpr(p.FunExpr)
 	case p.List != nil:
-		return c.compileList(p.List)
+		return c.compileList(p.List, false)
 	case p.Map != nil:
-		return c.compileMap(p.Map)
+		return c.compileMap(p.Map, false)
 	case p.Selector != nil:
 		return c.compileSelector(p.Selector), nil
 	case p.Group != nil:
@@ -532,7 +609,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	}
 }
 
-func (c *Compiler) compileList(l *parser.ListLiteral) (string, error) {
+func (c *Compiler) compileList(l *parser.ListLiteral, mutable bool) (string, error) {
 	elems := make([]string, len(l.Elems))
 	for i, e := range l.Elems {
 		s, err := c.compileExpr(e)
@@ -541,10 +618,14 @@ func (c *Compiler) compileList(l *parser.ListLiteral) (string, error) {
 		}
 		elems[i] = s
 	}
-	return fmt.Sprintf("List(%s)", strings.Join(elems, ", ")), nil
+	prefix := "List"
+	if mutable {
+		prefix = "scala.collection.mutable.ArrayBuffer"
+	}
+	return fmt.Sprintf("%s(%s)", prefix, strings.Join(elems, ", ")), nil
 }
 
-func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
+func (c *Compiler) compileMap(m *parser.MapLiteral, mutable bool) (string, error) {
 	items := make([]string, len(m.Items))
 	for i, it := range m.Items {
 		k, err := c.compileExpr(it.Key)
@@ -557,7 +638,11 @@ func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
 		}
 		items[i] = fmt.Sprintf("%s -> %s", k, v)
 	}
-	return fmt.Sprintf("Map(%s)", strings.Join(items, ", ")), nil
+	prefix := "Map"
+	if mutable {
+		prefix = "scala.collection.mutable.Map"
+	}
+	return fmt.Sprintf("%s(%s)", prefix, strings.Join(items, ", ")), nil
 }
 
 func (c *Compiler) typeString(t *parser.TypeRef) string {
