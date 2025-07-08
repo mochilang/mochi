@@ -1,9 +1,0 @@
-Error on line 13: zig build error: exit status 1
-/workspace/mochi/tests/machine/x/zig/cast_struct.zig:13:21: error: expected type 'i32', found 'hash_map.HashMap([]const u8,[]const u8,hash_map.AutoContext([]const u8),80)'
-/usr/local/zig-0.12.1/lib/std/hash_map.zig:366:12: note: struct declared here
-/usr/local/zig-0.12.1/lib/std/hash_map.zig:14:13: error: std.auto_hash.autoHash does not allow slices here ([]const u8) because the intent is unclear. Consider using std.StringHashMap for hashing the contents of []const u8. Alternatively, consider using std.auto_hash.hash or providing your own hash function instead.
-/usr/local/zig-0.12.1/lib/std/hash_map.zig:55:39: note: called from here
-
-12:         m.put("title", "hi") catch unreachable;
-13:         break :blk0 m;
-14:     });
