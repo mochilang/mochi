@@ -6,15 +6,15 @@ compiler tests. Each entry corresponds to a Mochi program from
 
 ## Summary
 
-3/97 files compiled successfully
+5/97 files compiled successfully
 
 ## Compilation Checklist
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
-- [ ] binary_precedence.mochi
-- [ ] bool_chain.mochi
+ - [x] binary_precedence.mochi
+ - [x] bool_chain.mochi
 - [ ] break_continue.mochi
 - [ ] cast_string_to_int.mochi
 - [ ] cast_struct.mochi

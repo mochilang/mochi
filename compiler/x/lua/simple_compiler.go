@@ -121,28 +121,52 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 	if e == nil {
 		return "nil", nil
 	}
+
 	left, err := c.compileUnary(e.Binary.Left)
 	if err != nil {
 		return "", err
 	}
-	cur := left
-	for _, op := range e.Binary.Right {
-		right, err := c.compilePostfix(op.Right)
+
+	operands := []string{left}
+	ops := []string{}
+	for _, part := range e.Binary.Right {
+		r, err := c.compilePostfix(part.Right)
 		if err != nil {
 			return "", err
 		}
-		switch op.Op {
-		case "+", "-", "*", "/", "<", ">", "<=", ">=", "==", "!=":
-			cur = fmt.Sprintf("(%s %s %s)", cur, op.Op, right)
-		case "&&":
-			cur = fmt.Sprintf("(%s and %s)", cur, right)
-		case "||":
-			cur = fmt.Sprintf("(%s or %s)", cur, right)
-		default:
-			return "", fmt.Errorf("unsupported operator %s", op.Op)
+		operands = append(operands, r)
+		ops = append(ops, part.Op)
+	}
+
+	prec := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!="}, {"&&"}, {"||"}}
+	for _, level := range prec {
+		for i := 0; i < len(ops); {
+			if contains(level, ops[i]) {
+				l := operands[i]
+				r := operands[i+1]
+				op := ops[i]
+				var expr string
+				switch op {
+				case "&&":
+					expr = fmt.Sprintf("(%s and %s)", l, r)
+				case "||":
+					expr = fmt.Sprintf("(%s or %s)", l, r)
+				default:
+					expr = fmt.Sprintf("(%s %s %s)", l, op, r)
+				}
+				operands[i] = expr
+				operands = append(operands[:i+1], operands[i+2:]...)
+				ops = append(ops[:i], ops[i+1:]...)
+			} else {
+				i++
+			}
 		}
 	}
-	return cur, nil
+
+	if len(operands) != 1 {
+		return "", fmt.Errorf("invalid expression")
+	}
+	return operands[0], nil
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
@@ -200,6 +224,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems[i] = s
 		}
 		return "{" + strings.Join(elems, ", ") + "}", nil
+	case p.Group != nil:
+		inner, err := c.compileExpr(p.Group)
+		if err != nil {
+			return "", err
+		}
+		return "(" + inner + ")", nil
 	case p.Call != nil:
 		args := make([]string, len(p.Call.Args))
 		for i, a := range p.Call.Args {
@@ -232,6 +262,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	default:
 		return "", fmt.Errorf("unsupported expression at line %d", p.Pos.Line)
 	}
+}
+
+func contains(list []string, s string) bool {
+	for _, v := range list {
+		if v == s {
+			return true
+		}
+	}
+	return false
 }
 
 func init() {}
