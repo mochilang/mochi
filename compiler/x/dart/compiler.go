@@ -21,6 +21,7 @@ type Compiler struct {
 	env    *types.Env
 	buf    bytes.Buffer
 	indent int
+	useIn  bool
 }
 
 // New creates a new Dart compiler instance.
@@ -33,6 +34,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	// compile function declarations first so that they appear before main
 	c.buf.Reset()
 	c.indent = 0
+	c.useIn = false
+
+	var body bytes.Buffer
+	old := c.buf
+	c.buf = body
+
 	for _, st := range prog.Statements {
 		if st.Fun != nil {
 			if err := c.compileFun(st.Fun); err != nil {
@@ -54,6 +61,22 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.indent--
 	c.writeln("}")
+
+	bodyBytes := body.Bytes()
+	c.buf = old
+
+	if c.useIn {
+		c.writeln("bool _in(dynamic item, dynamic col) {")
+		c.indent++
+		c.writeln("if (col is Map) return col.containsKey(item);")
+		c.writeln("if (col is Iterable || col is String) return col.contains(item);")
+		c.writeln("return false;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+
+	c.buf.Write(bodyBytes)
 	return c.buf.Bytes(), nil
 }
 
@@ -63,6 +86,9 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileLet(s.Let)
 	case s.Var != nil:
 		return c.compileVar(s.Var)
+	case s.Type != nil:
+		// type declarations are ignored in generated code
+		return nil
 	case s.Assign != nil:
 		return c.compileAssign(s.Assign)
 	case s.Return != nil:
@@ -291,7 +317,12 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		res = fmt.Sprintf("%s %s %s", res, op.Op, r)
+		if op.Op == "in" {
+			c.useIn = true
+			res = fmt.Sprintf("_in(%s, %s)", res, r)
+		} else {
+			res = fmt.Sprintf("%s %s %s", res, op.Op, r)
+		}
 	}
 	return res, nil
 }
@@ -339,7 +370,19 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 			val = fmt.Sprintf("%s(%s)", val, strings.Join(args, ", "))
 		case op.Cast != nil:
-			return "", fmt.Errorf("casts not supported")
+			typ := dartType(op.Cast.Type)
+			switch typ {
+			case "int":
+				val = fmt.Sprintf("int.parse(%s)", val)
+			case "double":
+				val = fmt.Sprintf("double.parse(%s)", val)
+			case "String":
+				val = fmt.Sprintf("%s.toString()", val)
+			case "bool":
+				val = fmt.Sprintf("(%s ? true : false)", val)
+			default:
+				return "", fmt.Errorf("casts not supported")
+			}
 		}
 	}
 	return val, nil
@@ -379,6 +422,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			s += "." + strings.Join(p.Selector.Tail, ".")
 		}
 		return s, nil
+	case p.If != nil:
+		return c.compileIfExpr(p.If)
+	case p.FunExpr != nil:
+		return c.compileFunExpr(p.FunExpr)
 	case p.Call != nil:
 		return c.compileCall(p.Call)
 	case p.Group != nil:
@@ -390,6 +437,47 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	default:
 		return "", fmt.Errorf("unsupported expression at line %d", p.Pos.Line)
 	}
+}
+
+func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		params[i] = p.Name
+	}
+	if fn.ExprBody != nil {
+		body, err := c.compileExpr(fn.ExprBody)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("(%s) => %s", strings.Join(params, ", "), body), nil
+	}
+	return "", fmt.Errorf("block function expressions not supported")
+}
+
+func (c *Compiler) compileIfExpr(ix *parser.IfExpr) (string, error) {
+	cond, err := c.compileExpr(ix.Cond)
+	if err != nil {
+		return "", err
+	}
+	thenExpr, err := c.compileExpr(ix.Then)
+	if err != nil {
+		return "", err
+	}
+	if ix.ElseIf != nil {
+		elseExpr, err := c.compileIfExpr(ix.ElseIf)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("(%s ? %s : %s)", cond, thenExpr, elseExpr), nil
+	}
+	elseCode := "null"
+	if ix.Else != nil {
+		elseCode, err = c.compileExpr(ix.Else)
+		if err != nil {
+			return "", err
+		}
+	}
+	return fmt.Sprintf("(%s ? %s : %s)", cond, thenExpr, elseCode), nil
 }
 
 func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
