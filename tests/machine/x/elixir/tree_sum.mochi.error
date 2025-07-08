@@ -1,0 +1,18 @@
+line 13
+warning: variable "left" does not exist and is being expanded to "left()", please use parentheses to remove the ambiguity or change the variable name
+  /workspace/mochi/tests/machine/x/ex/tree_sum.mochi.exs:13: Main.sum_tree/1
+
+warning: variable "value" does not exist and is being expanded to "value()", please use parentheses to remove the ambiguity or change the variable name
+  /workspace/mochi/tests/machine/x/ex/tree_sum.mochi.exs:13: Main.sum_tree/1
+
+warning: variable "right" does not exist and is being expanded to "right()", please use parentheses to remove the ambiguity or change the variable name
+  /workspace/mochi/tests/machine/x/ex/tree_sum.mochi.exs:13: Main.sum_tree/1
+
+** (CompileError) /workspace/mochi/tests/machine/x/ex/tree_sum.mochi.exs:13: invalid function call :Elixir.Node.()
+    (stdlib 4.3.1.3) lists.erl:1462: :lists.mapfoldl_1/3
+
+            cond do
+              t1 == Leaf -> 0
+              t1 == Node.(left, value, right) -> sum_tree(left) + value + sum_tree(right)
+              true -> nil
+            end
