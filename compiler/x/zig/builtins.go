@@ -78,6 +78,18 @@ func (c *Compiler) writeBuiltins() {
 		c.writeln("}")
 		c.writeln("")
 	}
+	if c.needsAppend {
+		c.writeln("fn _append(comptime T: type, v: []const T, x: T) []T {")
+		c.indent++
+		c.writeln("var res = std.ArrayList(T).init(std.heap.page_allocator);")
+		c.writeln("defer res.deinit();")
+		c.writeln("for (v) |it| { res.append(it) catch unreachable; }")
+		c.writeln("res.append(x) catch unreachable;")
+		c.writeln("return res.toOwnedSlice() catch unreachable;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
 	if c.needsInListInt {
 		c.writeln("fn _contains_list_int(v: []const i32, item: i32) bool {")
 		c.indent++
@@ -382,6 +394,20 @@ func (c *Compiler) writeBuiltins() {
 		c.writeln("var it = m.valueIterator();")
 		c.writeln("while (it.next()) |v_ptr| { res.append(v_ptr.*) catch unreachable; }")
 		c.writeln("return res.toOwnedSlice() catch unreachable;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.needsPrintList {
+		c.writeln("fn _print_list(comptime T: type, v: []const T) void {")
+		c.indent++
+		c.writeln("for (v, 0..) |it, i| {")
+		c.indent++
+		c.writeln("if (i > 0) std.debug.print(\" \", .{});")
+		c.writeln("std.debug.print(\"{any}\", .{it});")
+		c.indent--
+		c.writeln("}")
+		c.writeln("std.debug.print(\"\\n\", .{});")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")
