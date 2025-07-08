@@ -15,10 +15,11 @@ type Compiler struct {
 	buf    bytes.Buffer
 	indent int
 	tmp    int
+	vars   map[string]string
 }
 
 // New returns a new compiler instance.
-func New() *Compiler { return &Compiler{} }
+func New() *Compiler { return &Compiler{vars: map[string]string{}} }
 
 func (c *Compiler) newTmp() string {
 	c.tmp++
@@ -167,13 +168,15 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 	c.buf.WriteString(typ)
 	c.buf.WriteByte(' ')
 	c.buf.WriteString(st.Name)
+	var exprStr string
 	if st.Value != nil {
-		expr, err := c.compileExpr(st.Value)
+		var err error
+		exprStr, err = c.compileExpr(st.Value)
 		if err != nil {
 			return err
 		}
 		c.buf.WriteString(" = ")
-		c.buf.WriteString(expr)
+		c.buf.WriteString(exprStr)
 	} else if st.Type != nil {
 		switch typ {
 		case "int":
@@ -183,6 +186,13 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 		}
 	}
 	c.buf.WriteString(";\n")
+	if st.Type != nil {
+		if typ == "std::string" {
+			c.vars[st.Name] = "string"
+		}
+	} else {
+		c.vars[st.Name] = c.inferType(exprStr)
+	}
 	return nil
 }
 
@@ -195,13 +205,15 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 	c.buf.WriteString(typ)
 	c.buf.WriteByte(' ')
 	c.buf.WriteString(st.Name)
+	var exprStr string
 	if st.Value != nil {
-		expr, err := c.compileExpr(st.Value)
+		var err error
+		exprStr, err = c.compileExpr(st.Value)
 		if err != nil {
 			return err
 		}
 		c.buf.WriteString(" = ")
-		c.buf.WriteString(expr)
+		c.buf.WriteString(exprStr)
 	} else if st.Type != nil {
 		switch typ {
 		case "int":
@@ -211,6 +223,13 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 		}
 	}
 	c.buf.WriteString(";\n")
+	if st.Type != nil {
+		if typ == "std::string" {
+			c.vars[st.Name] = "string"
+		}
+	} else {
+		c.vars[st.Name] = c.inferType(exprStr)
+	}
 	return nil
 }
 
@@ -356,7 +375,16 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				r := operands[i+1]
 				var combined string
 				if ops[i] == "in" {
-					combined = fmt.Sprintf("(std::find(%s.begin(), %s.end(), %s) != %s.end())", l, l, r, l)
+					container := r
+					elem := l
+					typ := c.vars[container]
+					if typ == "string" || strings.HasPrefix(container, "std::string") {
+						combined = fmt.Sprintf("(%s.find(%s) != std::string::npos)", container, elem)
+					} else if typ == "map" {
+						combined = fmt.Sprintf("(%s.count(%s) > 0)", container, elem)
+					} else {
+						combined = fmt.Sprintf("(std::find(%s.begin(), %s.end(), %s) != %s.end())", container, container, elem, container)
+					}
 				} else {
 					combined = fmt.Sprintf("(%s %s %s)", l, ops[i], r)
 				}
@@ -466,7 +494,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return "std::vector<int>{" + strings.Join(elems, ", ") + "}", nil
 	case p.Map != nil:
-		pairs := []string{}
+		keys := []string{}
+		vals := []string{}
 		for _, it := range p.Map.Items {
 			k, err := c.compileExpr(it.Key)
 			if err != nil {
@@ -476,9 +505,24 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			pairs = append(pairs, fmt.Sprintf("{%s, %s}", k, v))
+			keys = append(keys, k)
+			vals = append(vals, v)
 		}
-		return "std::unordered_map<std::string,int>{" + strings.Join(pairs, ", ") + "}", nil
+		keyType := "int"
+		valType := "int"
+		if len(keys) > 0 {
+			if strings.HasPrefix(keys[0], "std::string") {
+				keyType = "std::string"
+			}
+			if strings.HasPrefix(vals[0], "std::string") {
+				valType = "std::string"
+			}
+		}
+		pairs := []string{}
+		for i := range keys {
+			pairs = append(pairs, fmt.Sprintf("{%s, %s}", keys[i], vals[i]))
+		}
+		return fmt.Sprintf("std::unordered_map<%s,%s>{%s}", keyType, valType, strings.Join(pairs, ", ")), nil
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
 	case p.Selector != nil:
@@ -527,6 +571,18 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		case "max":
 			if len(args) == 1 {
 				return fmt.Sprintf("(*std::max_element(%s.begin(), %s.end()))", args[0], args[0]), nil
+			}
+		case "str":
+			if len(args) == 1 {
+				return fmt.Sprintf("std::to_string(%s)", args[0]), nil
+			}
+		case "substring":
+			if len(args) == 3 {
+				return fmt.Sprintf("std::string(%s).substr(%s, (%s)-(%s))", args[0], args[1], args[2], args[1]), nil
+			}
+		case "values":
+			if len(args) == 1 {
+				return fmt.Sprintf("([&](){ std::vector<int> v; for(auto &p : %s) v.push_back(p.second); return v; })()", args[0]), nil
 			}
 		}
 		return name + "(" + strings.Join(args, ", ") + ")", nil
@@ -628,7 +684,7 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 		return "false", nil
 	}
 	if l.Str != nil {
-		return fmt.Sprintf("\"%s\"", *l.Str), nil
+		return fmt.Sprintf("std::string(%q)", *l.Str), nil
 	}
 	if l.Null {
 		return "nullptr", nil
@@ -651,6 +707,19 @@ func (c *Compiler) compileType(t *parser.TypeRef) (string, error) {
 		}
 	}
 	return "auto", nil
+}
+
+func (c *Compiler) inferType(expr string) string {
+	if strings.HasPrefix(expr, "std::string") {
+		return "string"
+	}
+	if strings.HasPrefix(expr, "std::unordered_map") || strings.HasPrefix(expr, "std::map") {
+		return "map"
+	}
+	if strings.HasPrefix(expr, "std::vector") {
+		return "vector"
+	}
+	return ""
 }
 
 // compileFunExpr converts an anonymous function expression to a C++ lambda.
@@ -676,7 +745,15 @@ func (c *Compiler) compileLambda(params []*parser.Param, exprBody *parser.Expr, 
 	}
 	buf.WriteString(") {")
 
-	sub := &Compiler{indent: 1, tmp: c.tmp}
+	sub := &Compiler{indent: 1, tmp: c.tmp, vars: map[string]string{}}
+	for _, p := range params {
+		if p.Type != nil {
+			typ, _ := c.compileType(p.Type)
+			if typ == "std::string" {
+				sub.vars[p.Name] = "string"
+			}
+		}
+	}
 	if exprBody != nil {
 		e, err := sub.compileExpr(exprBody)
 		if err != nil {
