@@ -1,0 +1,15 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. FUN_CALL.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01 ADD_RES PIC 9 VALUE 0.
+       01 TMP PIC 9 VALUE 0.
+       PROCEDURE DIVISION.
+       PERFORM ADD USING 2 3
+       DISPLAY ADD_RES
+       STOP RUN.
+       
+       ADD.
+           PROCEDURE DIVISION USING A B.
+               COMPUTE ADD_RES = A + B
+               EXIT.

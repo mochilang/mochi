@@ -1,0 +1,6 @@
+cobc: exit status 1
+/workspace/mochi/tests/machine/x/cobol/string_in_operator.cob:8: error: 'literal "cat"' is not a numeric value
+/workspace/mochi/tests/machine/x/cobol/string_in_operator.cob:8: error: syntax error, unexpected IN
+/workspace/mochi/tests/machine/x/cobol/string_in_operator.cob:10: error: 'literal "dog"' is not a numeric value
+/workspace/mochi/tests/machine/x/cobol/string_in_operator.cob:10: error: syntax error, unexpected IN
+

@@ -1,0 +1,12 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. STRING_IN_OPERATOR.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01 S PIC X(5) VALUE "catch".
+       01 TMP PIC 9 VALUE 0.
+       PROCEDURE DIVISION.
+       COMPUTE TMP = "cat" in S
+       DISPLAY TMP
+       COMPUTE TMP = "dog" in S
+       DISPLAY TMP
+       STOP RUN.

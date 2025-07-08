@@ -1,0 +1,20 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. SHORT_CIRCUIT.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01 BOOM_RES PIC 9 VALUE 0.
+       01 TMP PIC 9 VALUE 0.
+       PROCEDURE DIVISION.
+       PERFORM BOOM USING 1 2
+       COMPUTE TMP = 0 AND BOOM_RES
+       DISPLAY TMP
+       PERFORM BOOM USING 1 2
+       COMPUTE TMP = 1 OR BOOM_RES
+       DISPLAY TMP
+       STOP RUN.
+       
+       BOOM.
+           PROCEDURE DIVISION USING A B.
+               DISPLAY "boom"
+               COMPUTE BOOM_RES = 1
+               EXIT.
