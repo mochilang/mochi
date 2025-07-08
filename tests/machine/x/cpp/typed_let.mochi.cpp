@@ -13,7 +13,7 @@ template<typename T> bool mochi_contains(const vector<T>& v, const T& x) { retur
 inline bool mochi_contains(const string& s, const string& sub) { return s.find(sub) != string::npos; }
 
 int main() {
-	auto xs = vector<int>{10, 20, 30};
-	mochi_print(xs[1]);
+	int y = 0;
+	mochi_print(y);
 	return 0;
 }

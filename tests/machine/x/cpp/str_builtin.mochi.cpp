@@ -9,6 +9,8 @@ template<typename T> void mochi_print(const T& v) { cout << v << endl; }
 template<typename T> void mochi_print(const vector<T>& v) { for(size_t i=0;i<v.size();++i){ if(i) cout << ' '; cout << v[i]; } cout << endl; }
 template<typename T> vector<T> mochi_slice(const vector<T>& v, int s, int e) { return vector<T>(v.begin()+s, v.begin()+e); }
 inline string mochi_slice(const string& s, int st, int ed) { return s.substr(st, ed - st); }
+template<typename T> bool mochi_contains(const vector<T>& v, const T& x) { return find(v.begin(), v.end(), x) != v.end(); }
+inline bool mochi_contains(const string& s, const string& sub) { return s.find(sub) != string::npos; }
 
 int main() {
 	mochi_print(to_string(123));
