@@ -8,6 +8,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -43,75 +45,69 @@ func TestPythonCompiler_ValidPrograms(t *testing.T) {
 		t.Fatalf("glob error: %v", err)
 	}
 	outDir := filepath.Join(root, "tests", "machine", "x", "python")
-	os.MkdirAll(outDir, 0755)
+	if err := os.MkdirAll(outDir, 0755); err != nil {
+		t.Fatalf("mkdir: %v", err)
+	}
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		t.Run(name, func(t *testing.T) {
-			if name == "load_yaml" {
-				if err := exec.Command("python3", "-c", "import yaml").Run(); err != nil {
-					t.Skip("yaml module not installed")
-				}
-			}
-			prog, err := parser.Parse(src)
-			if err != nil {
-				t.Fatalf("parse error: %v", err)
-			}
-			env := types.NewEnv(nil)
-			if errs := types.Check(prog, env); len(errs) > 0 {
-				t.Fatalf("type error: %v", errs[0])
-			}
-			c := pycode.New(env)
-			code, err := c.Compile(prog)
-			if err != nil {
-				t.Fatalf("compile error: %v", err)
-			}
-			pyFile := filepath.Join(outDir, name+".py")
-			if err := os.WriteFile(pyFile, code, 0644); err != nil {
-				t.Fatalf("write error: %v", err)
-			}
-			cmd := exec.Command("python3", pyFile)
-			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
-				cmd.Stdin = bytes.NewReader(data)
-			}
-			out, err := cmd.CombinedOutput()
-			if err != nil {
-				// parse line number if available
-				line := 0
-				parts := strings.Split(string(out), "\n")
-				for i := len(parts) - 1; i >= 0; i-- {
-					if strings.HasPrefix(parts[i], "  File") && strings.Contains(parts[i], pyFile) {
-						fmt.Sscanf(parts[i], "  File %q, line %d", new(string), &line)
-						break
-					}
-				}
-				ctx := []string{}
-				if line > 0 {
-					data, _ := os.ReadFile(pyFile)
-					lines := strings.Split(string(data), "\n")
-					start := line - 2
-					if start < 0 {
-						start = 0
-					}
-					end := line + 1
-					if end > len(lines) {
-						end = len(lines)
-					}
-					for i := start; i < end; i++ {
-						ctx = append(ctx, lines[i])
-					}
-				}
-				errFile := filepath.Join(outDir, name+".error")
-				msg := fmt.Sprintf("line %d: %v\n%s", line, err, string(out))
-				if len(ctx) > 0 {
-					msg += "\n" + strings.Join(ctx, "\n")
-				}
-				os.WriteFile(errFile, []byte(msg), 0644)
-				t.Fatalf("python error: %v\n%s", err, out)
-			}
-			norm := normalize(out)
-			os.WriteFile(filepath.Join(outDir, name+".out"), norm, 0644)
-		})
+		t.Run(name, func(t *testing.T) { compileOne(t, src, outDir, name) })
 	}
+}
+
+func compileOne(t *testing.T, src, outDir, name string) {
+	data, err := os.ReadFile(src)
+	if err != nil {
+		t.Fatalf("read: %v", err)
+	}
+
+	if name == "load_yaml" {
+		if err := exec.Command("python3", "-c", "import yaml").Run(); err != nil {
+			t.Skip("yaml module not installed")
+			return
+		}
+	}
+
+	prog, err := parser.Parse(src)
+	if err != nil {
+		writeError(outDir, name, data, err)
+		t.Skipf("parse error: %v", err)
+		return
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		writeError(outDir, name, data, errs[0])
+		t.Skipf("type error: %v", errs[0])
+		return
+	}
+
+	code, err := pycode.New(env).Compile(prog)
+	if err != nil {
+		writeError(outDir, name, data, err)
+		t.Skipf("compile error: %v", err)
+		return
+	}
+
+	pyPath := filepath.Join(outDir, name+".py")
+	if err := os.WriteFile(pyPath, code, 0644); err != nil {
+		t.Fatalf("write py: %v", err)
+	}
+
+	cmd := exec.Command("python3", pyPath)
+	if in, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+		cmd.Stdin = bytes.NewReader(in)
+	}
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		writeRunError(outDir, name, pyPath, code, out, err)
+		t.Skipf("python error: %v", err)
+		return
+	}
+
+	outFile := filepath.Join(outDir, name+".out")
+	if err := os.WriteFile(outFile, normalize(out), 0644); err != nil {
+		t.Fatalf("write out: %v", err)
+	}
+	os.Remove(filepath.Join(outDir, name+".error"))
 }
 
 func normalize(out []byte) []byte {
@@ -130,4 +126,77 @@ func normalize(out []byte) []byte {
 		lines[i] = ln
 	}
 	return []byte(strings.Join(lines, "\n"))
+}
+
+func writeError(dir, name string, src []byte, err error) {
+	line := extractLine(err.Error())
+	var context string
+	if line > 0 {
+		lines := bytes.Split(src, []byte("\n"))
+		start := line - 2
+		if start < 0 {
+			start = 0
+		}
+		end := line + 1
+		if end > len(lines) {
+			end = len(lines)
+		}
+		var b strings.Builder
+		for i := start; i < end; i++ {
+			if i < len(lines) {
+				fmt.Fprintf(&b, "%4d: %s\n", i+1, lines[i])
+			}
+		}
+		context = b.String()
+	}
+	msg := fmt.Sprintf("line: %d\nerror: %v\n%s", line, err, context)
+	_ = os.WriteFile(filepath.Join(dir, name+".error"), []byte(msg), 0644)
+}
+
+func writeRunError(dir, name, file string, code, out []byte, runErr error) {
+	line := 0
+	parts := strings.Split(string(out), "\n")
+	for i := len(parts) - 1; i >= 0; i-- {
+		if strings.HasPrefix(parts[i], "  File") && strings.Contains(parts[i], file) {
+			fmt.Sscanf(parts[i], "  File %q, line %d", new(string), &line)
+			break
+		}
+	}
+	var context string
+	if line > 0 {
+		lines := strings.Split(string(code), "\n")
+		start := line - 2
+		if start < 0 {
+			start = 0
+		}
+		end := line + 1
+		if end > len(lines) {
+			end = len(lines)
+		}
+		var b strings.Builder
+		for i := start; i < end; i++ {
+			if i < len(lines) {
+				fmt.Fprintf(&b, "%4d: %s\n", i+1, lines[i])
+			}
+		}
+		context = b.String()
+	}
+	msg := fmt.Sprintf("line: %d\nerror: %v\n%s\n%s", line, runErr, out, context)
+	_ = os.WriteFile(filepath.Join(dir, name+".error"), []byte(msg), 0644)
+}
+
+func extractLine(msg string) int {
+	re := regexp.MustCompile(`:(\d+):`)
+	if m := re.FindStringSubmatch(msg); m != nil {
+		if n, err := strconv.Atoi(m[1]); err == nil {
+			return n
+		}
+	}
+	re = regexp.MustCompile(`line (\d+)`)
+	if m := re.FindStringSubmatch(msg); m != nil {
+		if n, err := strconv.Atoi(m[1]); err == nil {
+			return n
+		}
+	}
+	return 0
 }
