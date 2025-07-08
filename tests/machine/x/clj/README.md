@@ -1,6 +1,6 @@
 - # Clojure Compiler Results
 
-79/97 files compiled
+82/97 files compiled
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -26,13 +26,13 @@
 - [x] fun_three_args.mochi
 - [x] group_by.mochi
 - [ ] group_by_conditional_sum.mochi
-- [ ] group_by_having.mochi
-- [ ] group_by_join.mochi
-- [ ] group_by_left_join.mochi
-- [ ] group_by_multi_join.mochi
-- [ ] group_by_multi_join_sort.mochi
-- [ ] group_by_sort.mochi
-- [ ] group_items_iteration.mochi
+ - [x] group_by_having.mochi
+ - [ ] group_by_join.mochi
+ - [ ] group_by_left_join.mochi
+ - [x] group_by_multi_join.mochi
+ - [ ] group_by_multi_join_sort.mochi
+ - [ ] group_by_sort.mochi
+ - [x] group_items_iteration.mochi
 - [x] if_else.mochi
 - [x] if_then_else.mochi
 - [x] if_then_else_nested.mochi

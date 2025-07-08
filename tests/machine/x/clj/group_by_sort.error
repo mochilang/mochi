@@ -1,6 +1,6 @@
 exit status 1
-Syntax error reading source at (/workspace/mochi/tests/machine/x/clj/group_by_sort.clj:92:95).
-Unmatched delimiter: )
+Syntax error reading source at (/workspace/mochi/tests/machine/x/clj/group_by_sort.clj:98:1).
+EOF while reading, starting at line 50
 
 Full report at:
-/tmp/clojure-13510701394492623050.edn
+/tmp/clojure-12797391741250901340.edn

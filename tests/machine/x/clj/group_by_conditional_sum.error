@@ -1,6 +1,6 @@
 exit status 1
-Syntax error reading source at (/workspace/mochi/tests/machine/x/clj/group_by_conditional_sum.clj:92:156).
-Unmatched delimiter: )
+Syntax error reading source at (/workspace/mochi/tests/machine/x/clj/group_by_conditional_sum.clj:98:1).
+EOF while reading, starting at line 50
 
 Full report at:
-/tmp/clojure-3773979975929889267.edn
+/tmp/clojure-2264984216669963968.edn

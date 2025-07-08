@@ -88,6 +88,7 @@
         {:items customers :on (fn [o c] (= (:customerId o) (:id c)))}
       ] { :select (fn [o c] [o c]) })
       _groups (_group_by _rows (fn [o c] (:name c)))
+      ]
   (vec (map (fn [g] {:name (:key g) :count (count (:Items g))}) _groups)))) ;; list of map of string to any
   (println "--- Orders per customer ---")
   (loop [_tmp0 (seq stats)]
