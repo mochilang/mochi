@@ -10,7 +10,7 @@ public class Program
 {
     public static void Main()
     {
-        long[] a = new long[] { 1L, 2L };
-        Console.WriteLine(append(a, 3L));
+        long[] a = new long[] { 1, 2 };
+        Console.WriteLine((() => { var _tmp0 = new List<long>(a); _tmp0.Add(3); return _tmp0; })());
     }
 }
