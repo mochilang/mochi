@@ -1,2 +1,0 @@
-line 0: fun expr not supported
-let square = fun(x: int): int => x * x
