@@ -1,48 +1,74 @@
 
-/workspace/mochi/tests/machine/x/hs/json_builtin.hs:110:25: error:
-    • Ambiguous type variable ‘a0’ arising from the literal ‘1’
-      prevents the constraint ‘(Num a0)’ from being solved.
-      Relevant bindings include
-        m :: Map.Map String a0
-          (bound at /workspace/mochi/tests/machine/x/hs/json_builtin.hs:110:1)
-      Probable fix: use a type annotation to specify what ‘a0’ should be.
-      Potentially matching instances:
-        instance Num Integer -- Defined in ‘GHC.Num’
-        instance Num Double -- Defined in ‘GHC.Float’
-        ...plus three others
-        ...plus four instances involving out-of-scope types
-        (use -fprint-potential-instances to see them all)
-    • In the expression: 1
-      In the expression: ("a", 1)
-      In the first argument of ‘Map.fromList’, namely
-        ‘[("a", 1), ("b", 2)]’
+/workspace/mochi/tests/machine/x/hs/json_builtin.hs:137:48: error:
+    Not in scope: ‘V.toList’
+    NB: no module named ‘V’ is imported.
     |
-110 | m = Map.fromList [("a", 1), ("b", 2)]
-    |                         ^
+137 |     Just (Aeson.Array arr) -> map _valueToMap (V.toList arr)
+    |                                                ^^^^^^^^
 
-/workspace/mochi/tests/machine/x/hs/json_builtin.hs:114:3: error:
-    • Ambiguous type variable ‘a0’ arising from a use of ‘_json’
-      prevents the constraint ‘(Aeson.ToJSON a0)’ from being solved.
-      Probable fix: use a type annotation to specify what ‘a0’ should be.
-      Potentially matching instances:
-        instance Aeson.ToJSON Aeson.Key
-          -- Defined in ‘aeson-2.1.2.1:Data.Aeson.Types.ToJSON’
-        instance Aeson.ToJSON Aeson.DotNetTime
-          -- Defined in ‘aeson-2.1.2.1:Data.Aeson.Types.ToJSON’
-        ...plus 29 others
-        ...plus 77 instances involving out-of-scope types
-        (use -fprint-potential-instances to see them all)
-    • In a stmt of a 'do' block: _json m
-      In the expression: do _json m
-      In an equation for ‘main’: main = do _json m
+/workspace/mochi/tests/machine/x/hs/json_builtin.hs:143:18: error:
+    Not in scope: ‘T.unpack’
+    NB: no module named ‘T’ is imported.
     |
-114 |   _json m
-    |   ^^^^^
+143 |   Map.fromList [(T.unpack (Key.toText k), _valueToString v) | (k, v) <- KeyMap.toList o]
+    |                  ^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/json_builtin.hs:143:28: error:
+    Not in scope: ‘Key.toText’
+    NB: no module named ‘Key’ is imported.
+    |
+143 |   Map.fromList [(T.unpack (Key.toText k), _valueToString v) | (k, v) <- KeyMap.toList o]
+    |                            ^^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/json_builtin.hs:143:73: error:
+    Not in scope: ‘KeyMap.toList’
+    NB: no module named ‘KeyMap’ is imported.
+    Suggested fix: Perhaps use ‘Map.toList’ (imported from Data.Map)
+    |
+143 |   Map.fromList [(T.unpack (Key.toText k), _valueToString v) | (k, v) <- KeyMap.toList o]
+    |                                                                         ^^^^^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/json_builtin.hs:147:35: error:
+    Not in scope: ‘T.unpack’
+    NB: no module named ‘T’ is imported.
+    |
+147 | _valueToString (Aeson.String s) = T.unpack s
+    |                                   ^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/json_builtin.hs:154:18: error:
+    Not in scope: ‘KeyMap.fromList’
+    NB: no module named ‘KeyMap’ is imported.
+    Suggested fix: Perhaps use ‘Map.fromList’ (imported from Data.Map)
+    |
+154 |   Aeson.Object $ KeyMap.fromList [(Key.fromString k, Aeson.String (T.pack v)) | (k, v) <- Map.toList m]
+    |                  ^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/json_builtin.hs:154:36: error:
+    Not in scope: ‘Key.fromString’
+    NB: no module named ‘Key’ is imported.
+    |
+154 |   Aeson.Object $ KeyMap.fromList [(Key.fromString k, Aeson.String (T.pack v)) | (k, v) <- Map.toList m]
+    |                                    ^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/json_builtin.hs:154:68: error:
+    Not in scope: ‘T.pack’
+    NB: no module named ‘T’ is imported.
+    |
+154 |   Aeson.Object $ KeyMap.fromList [(Key.fromString k, Aeson.String (T.pack v)) | (k, v) <- Map.toList m]
+    |                                                                    ^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/json_builtin.hs:170:74: error:
+    Not in scope: ‘V.fromList’
+    NB: no module named ‘V’ is imported.
+    Suggested fix: Perhaps use ‘Map.fromList’ (imported from Data.Map)
+    |
+170 |               val = if length objs == 1 then head objs else Aeson.Array (V.fromList objs)
+    |                                                                          ^^^^^^^^^^
 
 
-Context around line 110:
-  108| _json v = BSL.putStrLn (Aeson.encode v)
-  109| 
-  110| m = Map.fromList [("a", 1), ("b", 2)]
-  111| 
-  112| main :: IO ()
+Context around line 137:
+  135| _parseJSON text =
+  136|   case Aeson.decode (BSL.pack text) of
+  137|     Just (Aeson.Array arr) -> map _valueToMap (V.toList arr)
+  138|     Just v -> [_valueToMap v]
+  139|     Nothing -> []

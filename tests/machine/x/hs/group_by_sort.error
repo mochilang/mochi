@@ -1,16 +1,16 @@
 
-/workspace/mochi/tests/machine/x/hs/group_by_sort.hs:105:1: error:
+/workspace/mochi/tests/machine/x/hs/group_by_sort.hs:173:1: error:
     Multiple declarations of ‘items’
     Declared at: /workspace/mochi/tests/machine/x/hs/group_by_sort.hs:36:37
-                 /workspace/mochi/tests/machine/x/hs/group_by_sort.hs:105:1
+                 /workspace/mochi/tests/machine/x/hs/group_by_sort.hs:173:1
     |
-105 | items = [Map.fromList [("cat", VString ("a")), ("val", VInt (3))], Map.fromList [("cat", VString ("a")), ("val", VInt (1))], Map.fromList [("cat", VString ("b")), ("val", VInt (5))], Map.fromList [("cat", VString ("b")), ("val", VInt (2))]]
+173 | items = [Map.fromList [("cat", VString ("a")), ("val", VInt (3))], Map.fromList [("cat", VString ("a")), ("val", VInt (1))], Map.fromList [("cat", VString ("b")), ("val", VInt (5))], Map.fromList [("cat", VString ("b")), ("val", VInt (2))]]
     | ^^^^^
 
 
-Context around line 105:
-  103|            in map row (drop start ls)
-  104| 
-  105| items = [Map.fromList [("cat", VString ("a")), ("val", VInt (3))], Map.fromList [("cat", VString ("a")), ("val", VInt (1))], Map.fromList [("cat", VString ("b")), ("val", VInt (5))], Map.fromList [("cat", VString ("b")), ("val", VInt (2))]]
-  106| 
-  107| grouped = map snd (List.sortOn fst [((-sum [fromMaybe (error "missing") (Map.lookup "val" (x)) | x <- g]), Map.fromList [("cat", VString (key (g))), ("total", VDouble (sum [fromMaybe (error "missing") (Map.lookup "val" (x)) | x <- g]))]) | g <- _group_by [(i) | i <- items] (\(i) -> fromMaybe (error "missing") (Map.lookup "cat" i))])
+Context around line 173:
+  171|            in _writeOutput path text
+  172| 
+  173| items = [Map.fromList [("cat", VString ("a")), ("val", VInt (3))], Map.fromList [("cat", VString ("a")), ("val", VInt (1))], Map.fromList [("cat", VString ("b")), ("val", VInt (5))], Map.fromList [("cat", VString ("b")), ("val", VInt (2))]]
+  174| 
+  175| grouped = map snd (List.sortOn fst [((-sum [fromMaybe (error "missing") (Map.lookup "val" (x)) | x <- g]), Map.fromList [("cat", VString (key (g))), ("total", VDouble (sum [fromMaybe (error "missing") (Map.lookup "val" (x)) | x <- g]))]) | g <- _group_by [(i) | i <- items] (\(i) -> fromMaybe (error "missing") (Map.lookup "cat" i))])

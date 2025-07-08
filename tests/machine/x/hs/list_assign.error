@@ -1,0 +1,45 @@
+
+/workspace/mochi/tests/machine/x/hs/list_assign.hs:109:14: error:
+    • No instance for (Num [a0]) arising from the literal ‘3’
+    • In the expression: 3
+      In an equation for ‘nums’: nums = 3
+      In the expression:
+        do let nums = 3
+           print ((nums !! 1))
+    |
+109 |   let nums = 3
+    |              ^
+
+/workspace/mochi/tests/machine/x/hs/list_assign.hs:110:3: error:
+    • Ambiguous type variable ‘a0’ arising from a use of ‘print’
+      prevents the constraint ‘(Show a0)’ from being solved.
+      Relevant bindings include
+        nums :: [a0]
+          (bound at /workspace/mochi/tests/machine/x/hs/list_assign.hs:109:7)
+      Probable fix: use a type annotation to specify what ‘a0’ should be.
+      Potentially matching instances:
+        instance (Show k, Show a) => Show (Map.Map k a)
+          -- Defined in ‘Data.Map.Internal’
+        instance Show Ordering -- Defined in ‘GHC.Show’
+        ...plus 27 others
+        ...plus 16 instances involving out-of-scope types
+        (use -fprint-potential-instances to see them all)
+    • In a stmt of a 'do' block: print ((nums !! 1))
+      In the expression:
+        do let nums = 3
+           print ((nums !! 1))
+      In an equation for ‘main’:
+          main
+            = do let nums = ...
+                 print ((nums !! 1))
+    |
+110 |   print ((nums !! 1))
+    |   ^^^^^
+
+
+Context around line 109:
+  107| main :: IO ()
+  108| main = do
+  109|   let nums = 3
+  110|   print ((nums !! 1))
+  111| 

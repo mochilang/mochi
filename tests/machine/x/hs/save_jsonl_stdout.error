@@ -1,0 +1,63 @@
+
+/workspace/mochi/tests/machine/x/hs/save_jsonl_stdout.hs:183:3: error:
+    • Couldn't match expected type: (a0 -> Maybe a0)
+                                    -> Map.Map String String -> IO ()
+                  with actual type: IO ()
+    • The function ‘_save’ is applied to five value arguments,
+        but its type ‘[Map.Map String String]
+                      -> Maybe String -> Maybe (Map.Map String String) -> IO ()’
+        has only three
+      In a stmt of a 'do' block:
+        _save people Just "-" Just (Map.fromList [("format", "jsonl")])
+      In the expression:
+        do _save people Just "-" Just (Map.fromList [("format", "jsonl")])
+    |
+183 |   _save people Just "-" Just (Map.fromList [("format", "jsonl")])
+    |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/save_jsonl_stdout.hs:183:9: error:
+    • Couldn't match type ‘AnyValue’ with ‘[Char]’
+      Expected: [Map.Map String String]
+        Actual: [Map.Map String AnyValue]
+    • In the first argument of ‘_save’, namely ‘people’
+      In a stmt of a 'do' block:
+        _save people Just "-" Just (Map.fromList [("format", "jsonl")])
+      In the expression:
+        do _save people Just "-" Just (Map.fromList [("format", "jsonl")])
+    |
+183 |   _save people Just "-" Just (Map.fromList [("format", "jsonl")])
+    |         ^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/save_jsonl_stdout.hs:183:16: error:
+    • Couldn't match expected type: Maybe String
+                  with actual type: a1 -> Maybe a1
+    • Probable cause: ‘Just’ is applied to too few arguments
+      In the second argument of ‘_save’, namely ‘Just’
+      In a stmt of a 'do' block:
+        _save people Just "-" Just (Map.fromList [("format", "jsonl")])
+      In the expression:
+        do _save people Just "-" Just (Map.fromList [("format", "jsonl")])
+    |
+183 |   _save people Just "-" Just (Map.fromList [("format", "jsonl")])
+    |                ^^^^
+
+/workspace/mochi/tests/machine/x/hs/save_jsonl_stdout.hs:183:21: error:
+    • Couldn't match type: [Char]
+                     with: Maybe (Map.Map String String)
+      Expected: Maybe (Map.Map String String)
+        Actual: String
+    • In the third argument of ‘_save’, namely ‘"-"’
+      In a stmt of a 'do' block:
+        _save people Just "-" Just (Map.fromList [("format", "jsonl")])
+      In the expression:
+        do _save people Just "-" Just (Map.fromList [("format", "jsonl")])
+    |
+183 |   _save people Just "-" Just (Map.fromList [("format", "jsonl")])
+    |                     ^^^
+
+
+Context around line 183:
+  181| main :: IO ()
+  182| main = do
+  183|   _save people Just "-" Just (Map.fromList [("format", "jsonl")])
+  184| 
