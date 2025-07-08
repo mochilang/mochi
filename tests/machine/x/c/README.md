@@ -29,5 +29,8 @@ Each program is compiled and executed during testing.
 - [x] break_continue.mochi
 - [x] list_assign.mochi
 - [x] list_index.mochi
+- [x] len_builtin.mochi
+- [x] len_string.mochi
+- [x] string_index.mochi
 
-Compiled 24/97 programs.
+Compiled 27/97 programs.
