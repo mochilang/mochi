@@ -1,8 +1,0 @@
-error running cross_join_triple:
-ERROR on line 35 of file /workspace/mochi/tests/machine/x/scheme/cross_join_triple.scm: missing trailing ')' started on line: 25
-  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
---- Cross Join of three lists ---
-
-context (line 35):
-)
-

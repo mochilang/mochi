@@ -39,6 +39,8 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 			c.writeln("'()")
 			c.indent--
 			c.writeln(")")
+			c.indent--
+			c.writeln(")")
 			return nil
 		}
 		brk := fmt.Sprintf("brk%d", len(c.loops))
@@ -113,6 +115,7 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 		c.writeln(")")
 		c.indent--
 		c.writeln("'()")
+		c.writeln(")")
 		c.indent--
 		c.writeln(")")
 		return nil
