@@ -1,0 +1,11 @@
+error running exists_builtin:
+ERROR on line 2 of file /workspace/mochi/tests/machine/x/scheme/exists_builtin.scm: undefined variable: exists
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+Searching for modules exporting exists ...
+... none found.
+
+context (line 2):
+(define data (list 1 2))
+(define flag (exists (let ((_res '()))
+  (for-each (lambda (x)

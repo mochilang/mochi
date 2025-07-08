@@ -1,0 +1,12 @@
+(define (makeAdder n)
+  (call/cc (lambda (return)
+    (return (lambda (x)
+  (call/cc (lambda (return)
+    (return (+ x n))
+  ))
+))
+  ))
+)
+
+(define add10 (makeAdder 10))
+(begin (display (add10 7)) (newline))

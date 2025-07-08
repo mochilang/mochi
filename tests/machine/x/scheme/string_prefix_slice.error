@@ -1,0 +1,7 @@
+error running string_prefix_slice:
+ERROR on line 25 of file /workspace/mochi/tests/machine/x/scheme/string_prefix_slice.scm: missing trailing ')' started on line: 1
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+
+context (line 25):
+(begin (display (equal? (_slice s2 0 (string-length prefix)) prefix)) (newline))
+

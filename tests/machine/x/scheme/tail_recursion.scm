@@ -1,0 +1,13 @@
+(define (sum_rec n acc)
+  (call/cc (lambda (return)
+    (if (equal? n 0)
+      (begin
+        (return acc)
+      )
+      '()
+    )
+    (return (sum_rec (- n 1) (+ acc n)))
+  ))
+)
+
+(begin (display (sum_rec 10 0)) (newline))
