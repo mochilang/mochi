@@ -5,6 +5,7 @@ package ftncode
 import (
 	"bytes"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"mochi/parser"
@@ -172,25 +173,42 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	}
 	if f.RangeEnd == nil {
 		lst := listLiteral(f.Source)
-		if lst == nil {
-			return fmt.Errorf("only numeric ranges or list literals supported")
+		if lst != nil {
+			arr := fmt.Sprintf("_arr_%d", c.tmpIndex)
+			idx := fmt.Sprintf("_i%d", c.tmpIndex)
+			c.tmpIndex++
+			elems := make([]string, len(lst.Elems))
+			for i, e := range lst.Elems {
+				v, err := c.compileExpr(e)
+				if err != nil {
+					return err
+				}
+				elems[i] = v
+			}
+			c.writeln(fmt.Sprintf("integer, dimension(%d) :: %s = (/%s/)", len(lst.Elems), arr, strings.Join(elems, ",")))
+			c.writeln(fmt.Sprintf("integer :: %s", idx))
+			c.writeln(fmt.Sprintf("do %s = 1, %d", idx, len(lst.Elems)))
+			c.indent++
+			c.writeln(fmt.Sprintf("%s = %s(%s)", f.Name, arr, idx))
+			for _, st := range f.Body {
+				if err := c.compileStmt(st); err != nil {
+					return err
+				}
+			}
+			c.indent--
+			c.writeln("end do")
+			return nil
 		}
-		arr := fmt.Sprintf("_arr_%d", c.tmpIndex)
+		src, err := c.compileExpr(f.Source)
+		if err != nil {
+			return err
+		}
 		idx := fmt.Sprintf("_i%d", c.tmpIndex)
 		c.tmpIndex++
-		elems := make([]string, len(lst.Elems))
-		for i, e := range lst.Elems {
-			v, err := c.compileExpr(e)
-			if err != nil {
-				return err
-			}
-			elems[i] = v
-		}
-		c.writeln(fmt.Sprintf("integer, dimension(%d) :: %s = (/%s/)", len(lst.Elems), arr, strings.Join(elems, ",")))
 		c.writeln(fmt.Sprintf("integer :: %s", idx))
-		c.writeln(fmt.Sprintf("do %s = 1, %d", idx, len(lst.Elems)))
+		c.writeln(fmt.Sprintf("do %s = 1, size(%s)", idx, src))
 		c.indent++
-		c.writeln(fmt.Sprintf("%s = %s(%s)", f.Name, arr, idx))
+		c.writeln(fmt.Sprintf("%s = %s(%s)", f.Name, src, idx))
 		for _, st := range f.Body {
 			if err := c.compileStmt(st); err != nil {
 				return err
@@ -293,6 +311,13 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		params[i] = p.Name
 	}
 	retType := typeName(fn.Return)
+	if fn.Return == nil {
+		if t, err := c.env.GetVar(fn.Name); err == nil {
+			if ft, ok := t.(types.FuncType); ok {
+				retType = typeNameFromTypes(ft.Return)
+			}
+		}
+	}
 	c.writeln(fmt.Sprintf("%s function %s(%s)", retType, fn.Name, strings.Join(params, ",")))
 	c.indent++
 	for _, p := range fn.Params {
@@ -341,6 +366,14 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		case "%":
 			res = fmt.Sprintf("mod(%s,%s)", res, r)
 			continue
+		case "as":
+			if lit := literalString(b.Left); lit != nil && r == "int" {
+				if iv, err := strconv.Atoi(*lit); err == nil {
+					res = fmt.Sprintf("%d", iv)
+					continue
+				}
+			}
+			return "", fmt.Errorf("unsupported cast")
 		}
 		res = fmt.Sprintf("(%s %s %s)", res, opStr, r)
 	}
@@ -430,7 +463,57 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 		args[i] = s
 	}
-	return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ",")), nil
+	switch call.Func {
+	case "len":
+		if len(call.Args) != 1 {
+			return "", fmt.Errorf("len expects 1 arg")
+		}
+		// heuristic: use len() for strings, size() otherwise
+		if lit := call.Args[0].Binary.Left.Value.Target; lit != nil && lit.Lit != nil && lit.Lit.Str != nil {
+			return fmt.Sprintf("len(%s)", args[0]), nil
+		}
+		return fmt.Sprintf("size(%s)", args[0]), nil
+	case "sum":
+		if len(call.Args) != 1 {
+			return "", fmt.Errorf("sum expects 1 arg")
+		}
+		return fmt.Sprintf("sum(%s)", args[0]), nil
+	case "min":
+		if len(call.Args) != 1 {
+			return "", fmt.Errorf("min expects 1 arg")
+		}
+		return fmt.Sprintf("minval(%s)", args[0]), nil
+	case "max":
+		if len(call.Args) != 1 {
+			return "", fmt.Errorf("max expects 1 arg")
+		}
+		return fmt.Sprintf("maxval(%s)", args[0]), nil
+	case "avg":
+		if len(call.Args) != 1 {
+			return "", fmt.Errorf("avg expects 1 arg")
+		}
+		arr := args[0]
+		return fmt.Sprintf("(sum(%s)/real(size(%s)))", arr, arr), nil
+	case "substring":
+		if len(call.Args) != 3 {
+			return "", fmt.Errorf("substring expects 3 args")
+		}
+		return fmt.Sprintf("%s(%s+1:%s)", args[0], args[1], args[2]), nil
+	case "append":
+		if len(call.Args) != 2 {
+			return "", fmt.Errorf("append expects 2 args")
+		}
+		arr := args[0]
+		elem := args[1]
+		tmp := fmt.Sprintf("_app_%d", c.tmpIndex)
+		c.tmpIndex++
+		c.writeln(fmt.Sprintf("integer, dimension(size(%s)+1) :: %s", arr, tmp))
+		c.writeln(fmt.Sprintf("%s(1:size(%s)) = %s", tmp, arr, arr))
+		c.writeln(fmt.Sprintf("%s(size(%s)+1) = %s", tmp, arr, elem))
+		return tmp, nil
+	default:
+		return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ",")), nil
+	}
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) string {
@@ -497,6 +580,16 @@ func listLiteral(e *parser.Expr) *parser.ListLiteral {
 	return v.Target.List
 }
 
+func literalString(e *parser.Unary) *string {
+	if e == nil || e.Value == nil || e.Value.Target == nil {
+		return nil
+	}
+	if lit := e.Value.Target.Lit; lit != nil && lit.Str != nil {
+		return lit.Str
+	}
+	return nil
+}
+
 func typeName(t *parser.TypeRef) string {
 	if t == nil {
 		return "integer"
@@ -514,4 +607,19 @@ func typeName(t *parser.TypeRef) string {
 		}
 	}
 	return "integer"
+}
+
+func typeNameFromTypes(t types.Type) string {
+	switch t.(type) {
+	case types.IntType, types.Int64Type:
+		return "integer"
+	case types.BoolType:
+		return "logical"
+	case types.StringType:
+		return "character(len=100)"
+	case types.FloatType:
+		return "real"
+	default:
+		return "integer"
+	}
 }
