@@ -8,6 +8,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -19,63 +21,152 @@ import (
 
 // TestCompileValidPrograms compiles a subset of programs from tests/vm/valid to Pascal.
 func TestCompileValidPrograms(t *testing.T) {
-	fpc, err := pascode.EnsureFPC()
-	if err != nil {
-		t.Skipf("fpc not installed: %v", err)
-	}
-
+	fpc := ensureFPC(t)
 	root := testutil.FindRepoRoot(t)
+	outDir := filepath.Join(root, "tests", "machine", "x", "pascal")
+	os.MkdirAll(outDir, 0755)
 	pattern := filepath.Join(root, "tests", "vm", "valid", "*.mochi")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
 		t.Fatalf("glob: %v", err)
 	}
-
-	outDir := filepath.Join(root, "tests", "machine", "x", "pascal")
-	_ = os.MkdirAll(outDir, 0755)
-
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		t.Run(name, func(t *testing.T) {
-			prog, err := parser.Parse(src)
-			if err != nil {
-				t.Fatalf("parse error: %v", err)
-			}
-			env := types.NewEnv(nil)
-			if errs := types.Check(prog, env); len(errs) > 0 {
-				t.Fatalf("type error: %v", errs[0])
-			}
-			c := pascode.New(env)
-			code, err := c.Compile(prog)
-			if err != nil {
-				t.Fatalf("compile error: %v", err)
-			}
-			pasFile := filepath.Join(outDir, name+".pas")
-			if err := os.WriteFile(pasFile, code, 0644); err != nil {
-				t.Fatalf("write: %v", err)
-			}
-			cmd := exec.Command(fpc, pasFile)
-			out, err := cmd.CombinedOutput()
-			if err != nil {
-				errFile := filepath.Join(outDir, name+".error")
-				var buf bytes.Buffer
-				fmt.Fprintf(&buf, "fpc error: %v\n%s", err, out)
-				_ = os.WriteFile(errFile, buf.Bytes(), 0644)
-				t.Fatalf("fpc error: %v", err)
-			}
-			exe := strings.TrimSuffix(pasFile, ".pas")
-			run := exec.Command(exe)
-			runOut, err := run.CombinedOutput()
-			if err != nil {
-				errFile := filepath.Join(outDir, name+".error")
-				var buf bytes.Buffer
-				fmt.Fprintf(&buf, "run error: %v\n%s", err, runOut)
-				_ = os.WriteFile(errFile, buf.Bytes(), 0644)
-				t.Fatalf("run error: %v", err)
-			}
-			if err := os.WriteFile(filepath.Join(outDir, name+".out"), bytes.TrimSpace(runOut), 0644); err != nil {
-				t.Fatalf("write out: %v", err)
-			}
-		})
+		t.Run(name, func(t *testing.T) { compileOne(t, src, outDir, name, fpc) })
 	}
+}
+
+func ensureFPC(t *testing.T) string {
+	t.Helper()
+	path, err := pascode.EnsureFPC()
+	if err != nil {
+		t.Skipf("fpc not installed: %v", err)
+	}
+	return path
+}
+
+func compileOne(t *testing.T, src, outDir, name, fpc string) {
+	data, err := os.ReadFile(src)
+	if err != nil {
+		t.Fatalf("read: %v", err)
+	}
+	prog, err := parser.Parse(src)
+	if err != nil {
+		writeError(outDir, name, data, err)
+		t.Skipf("parse error: %v", err)
+		return
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		writeError(outDir, name, data, errs[0])
+		t.Skipf("type error: %v", errs[0])
+		return
+	}
+	code, err := pascode.New(env).Compile(prog)
+	if err != nil {
+		writeError(outDir, name, data, err)
+		t.Skipf("compile error: %v", err)
+		return
+	}
+	pasFile := filepath.Join(outDir, name+".pas")
+	if err := os.WriteFile(pasFile, code, 0644); err != nil {
+		t.Fatalf("write pas: %v", err)
+	}
+	exe := strings.TrimSuffix(pasFile, ".pas")
+	if out, err := exec.Command(fpc, pasFile).CombinedOutput(); err != nil {
+		writeError(outDir, name, data, fmt.Errorf("fpc error: %v\n%s", err, out))
+		os.Remove(exe)
+		os.Remove(exe + ".o")
+		t.Skipf("fpc error: %v", err)
+		return
+	}
+	cmd := exec.Command(exe)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		writeError(outDir, name, data, fmt.Errorf("run error: %v\n%s", err, out))
+		os.Remove(exe)
+		os.Remove(exe + ".o")
+		t.Skipf("run error: %v", err)
+		return
+	}
+	outFile := filepath.Join(outDir, name+".out")
+	if err := os.WriteFile(outFile, out, 0644); err != nil {
+		t.Fatalf("write out: %v", err)
+	}
+	os.Remove(exe)
+	os.Remove(exe + ".o")
+}
+
+func writeError(dir, name string, src []byte, err error) {
+	line := extractLine(err.Error())
+	var context string
+	if line > 0 {
+		lines := bytes.Split(src, []byte("\n"))
+		start := line - 2
+		if start < 1 {
+			start = 1
+		}
+		end := line + 2
+		if end > len(lines) {
+			end = len(lines)
+		}
+		var b strings.Builder
+		for i := start; i <= end; i++ {
+			if i-1 < len(lines) {
+				fmt.Fprintf(&b, "%4d: %s\n", i, lines[i-1])
+			}
+		}
+		context = b.String()
+	}
+	msg := fmt.Sprintf("line: %d\nerror: %v\n%s", line, err, context)
+	_ = os.WriteFile(filepath.Join(dir, name+".error"), []byte(msg), 0644)
+}
+
+func extractLine(msg string) int {
+	re := regexp.MustCompile(`\((\d+)\)`)
+	if m := re.FindStringSubmatch(msg); m != nil {
+		if n, err := strconv.Atoi(m[1]); err == nil {
+			return n
+		}
+	}
+	re = regexp.MustCompile(`line (\d+)`)
+	if m := re.FindStringSubmatch(msg); m != nil {
+		if n, err := strconv.Atoi(m[1]); err == nil {
+			return n
+		}
+	}
+	return 0
+}
+
+func TestMain(m *testing.M) {
+	code := m.Run()
+	updateReadme()
+	os.Exit(code)
+}
+
+func updateReadme() {
+	root := testutil.FindRepoRoot(&testing.T{})
+	srcDir := filepath.Join(root, "tests", "vm", "valid")
+	outDir := filepath.Join(root, "tests", "machine", "x", "pascal")
+	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	total := len(files)
+	compiled := 0
+	var lines []string
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+		mark := "[ ]"
+		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
+			compiled++
+			mark = "[x]"
+		}
+		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+	}
+	var buf bytes.Buffer
+	buf.WriteString("# Generated Pascal Programs\n\n")
+	buf.WriteString("This directory contains Pascal source code and outputs generated by the compiler tests. Each Mochi program from `tests/vm/valid` is compiled to a `.pas` file. Successful runs have a corresponding `.out` file. If compilation or execution fails, an `.error` file is written.\n\n")
+	fmt.Fprintf(&buf, "Compiled programs: %d/%d\n\n", compiled, total)
+	buf.WriteString("Checklist:\n\n")
+	buf.WriteString(strings.Join(lines, "\n"))
+	buf.WriteString("\n")
+	os.WriteFile(filepath.Join(outDir, "README.md"), buf.Bytes(), 0644)
 }

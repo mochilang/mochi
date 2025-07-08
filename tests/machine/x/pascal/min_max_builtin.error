@@ -1,0 +1,12 @@
+line: 17
+error: fpc error: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/machine/x/pascal/min_max_builtin.pas
+min_max_builtin.pas(14,11) Error: Identifier not found "min"
+min_max_builtin.pas(15,11) Error: Identifier not found "max"
+min_max_builtin.pas(17) Fatal: There were 2 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode
+

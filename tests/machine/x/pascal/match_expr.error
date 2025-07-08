@@ -1,0 +1,10 @@
+line: 0
+error: fpc error: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/machine/x/pascal/match_expr.pas
+match_expr.pas(21,7) Fatal: Syntax error, ";" expected but "ELSE" found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode
+
