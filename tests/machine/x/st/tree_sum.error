@@ -1,0 +1,7 @@
+line: 5
+error: unsupported statement at line 5
+   3: // Algebraic data type for a binary tree of integers
+   4: 
+   5: type Tree =
+   6:   Leaf
+   7:   | Node(left: Tree, value: int, right: Tree)

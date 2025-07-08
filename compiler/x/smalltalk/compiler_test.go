@@ -19,11 +19,10 @@ import (
 	"mochi/types"
 )
 
-func ensureGST(t *testing.T) string {
+func ensureGST() string {
 	if p, err := exec.LookPath("gst"); err == nil {
 		return p
 	}
-	t.Skip("gst interpreter not available")
 	return ""
 }
 
@@ -69,7 +68,7 @@ func extractLine(msg string) int {
 }
 
 func TestCompilePrograms(t *testing.T) {
-	gst := ensureGST(t)
+	gst := ensureGST()
 	root := testutil.FindRepoRoot(t)
 	outDir := filepath.Join(root, "tests", "machine", "x", "st")
 	if err := os.MkdirAll(outDir, 0755); err != nil {
@@ -108,13 +107,16 @@ func TestCompilePrograms(t *testing.T) {
 			if err := os.WriteFile(stFile, code, 0644); err != nil {
 				t.Fatalf("write st: %v", err)
 			}
+			if gst == "" {
+				writeError(outDir, name, data, fmt.Errorf("gst interpreter not available"))
+				return
+			}
 			cmd := exec.Command(gst, stFile)
 			var buf bytes.Buffer
 			cmd.Stdout = &buf
 			cmd.Stderr = &buf
 			if err := cmd.Run(); err != nil {
 				writeError(outDir, name, data, fmt.Errorf("run error: %v\n%s", err, buf.Bytes()))
-				t.Skipf("run error: %v", err)
 				return
 			}
 			outPath := filepath.Join(outDir, name+".out")
