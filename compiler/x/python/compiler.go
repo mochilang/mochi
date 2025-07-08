@@ -20,11 +20,18 @@ type Compiler struct {
 	needsJSON   bool
 	needsData   bool
 	structTypes map[string]bool
+	env         *types.Env
+	tmp         int
 }
 
 // New creates a new Python compiler.
 func New(env *types.Env) *Compiler {
-	return &Compiler{structTypes: make(map[string]bool)}
+	return &Compiler{structTypes: make(map[string]bool), env: env}
+}
+
+func (c *Compiler) newTmp() string {
+	c.tmp++
+	return fmt.Sprintf("__tmp%d", c.tmp)
 }
 
 // Compile converts the parsed Mochi program into Python code.
@@ -325,6 +332,19 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			opStr = "and"
 		case "||":
 			opStr = "or"
+		case "union":
+			if op.All {
+				res = fmt.Sprintf("(%s + %s)", res, r)
+				continue
+			}
+			res = fmt.Sprintf("list(set(%s) | set(%s))", res, r)
+			continue
+		case "except":
+			res = fmt.Sprintf("[x for x in %s if x not in %s]", res, r)
+			continue
+		case "intersect":
+			res = fmt.Sprintf("[x for x in %s if x in set(%s)]", res, r)
+			continue
 		}
 		res = fmt.Sprintf("%s %s %s", res, opStr, r)
 	}
@@ -354,7 +374,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	for _, op := range p.Ops {
+	for idx, op := range p.Ops {
 		switch {
 		case op.Cast != nil:
 			typ, err := c.compileType(op.Cast.Type)
@@ -396,7 +416,18 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				val = fmt.Sprintf("%s[%s]", val, idx)
 			}
 		case op.Field != nil:
-			val = fmt.Sprintf("%s.%s", val, op.Field.Name)
+			if c.env != nil {
+				prefix := &parser.PostfixExpr{Target: p.Target, Ops: p.Ops[:idx]}
+				u := &parser.Unary{Value: prefix}
+				t := types.TypeOfPostfixBasic(u, c.env)
+				if types.IsMapType(t) {
+					val = fmt.Sprintf("%s[%q]", val, op.Field.Name)
+				} else {
+					val = fmt.Sprintf("%s.%s", val, op.Field.Name)
+				}
+			} else {
+				val = fmt.Sprintf("%s.%s", val, op.Field.Name)
+			}
 		case op.Call != nil:
 			parts := make([]string, len(op.Call.Args))
 			for i, a := range op.Call.Args {
@@ -452,8 +483,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileStructLiteral(p.Struct)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
 	case p.If != nil:
 		return c.compileIfExpr(p.If)
+	case p.Match != nil:
+		return c.compileMatchExpr(p.Match)
 	case p.Group != nil:
 		expr, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -512,6 +547,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("json expects 1 arg")
 		}
 		return fmt.Sprintf("json.dumps(%s)", args[0]), nil
+	case "exists":
+		if len(args) != 1 {
+			return "", fmt.Errorf("exists expects 1 arg")
+		}
+		return fmt.Sprintf("(len(%s) > 0)", args[0]), nil
 	default:
 		return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ", ")), nil
 	}
@@ -530,6 +570,85 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		return fmt.Sprintf("lambda %s: %s", strings.Join(params, ", "), body), nil
 	}
 	return "", fmt.Errorf("block function expressions not supported")
+}
+
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	if q.Group != nil || len(q.Joins) > 0 {
+		return "", fmt.Errorf("query features not supported")
+	}
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	child := types.NewEnv(c.env)
+	if lt, ok := types.TypeOfExprBasic(q.Source, c.env).(types.ListType); ok {
+		child.SetVar(q.Var, lt.Elem, true)
+	} else {
+		child.SetVar(q.Var, types.AnyType{}, true)
+	}
+	for _, f := range q.Froms {
+		if lt, ok := types.TypeOfExprBasic(f.Src, c.env).(types.ListType); ok {
+			child.SetVar(f.Var, lt.Elem, true)
+		} else {
+			child.SetVar(f.Var, types.AnyType{}, true)
+		}
+	}
+	oldEnv := c.env
+	c.env = child
+	defer func() { c.env = oldEnv }()
+	loops := []string{fmt.Sprintf("%s in %s", q.Var, src)}
+	for _, f := range q.Froms {
+		s, err := c.compileExpr(f.Src)
+		if err != nil {
+			return "", err
+		}
+		loops = append(loops, fmt.Sprintf("%s in %s", f.Var, s))
+	}
+	loopStr := strings.Join(loops, " for ")
+	cond := ""
+	if q.Where != nil {
+		cnd, err := c.compileExpr(q.Where)
+		if err != nil {
+			return "", err
+		}
+		cond = " if " + cnd
+	}
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		return "", err
+	}
+	expr := fmt.Sprintf("[%s for %s%s]", sel, loopStr, cond)
+	if q.Sort != nil {
+		key, err := c.compileExpr(q.Sort)
+		if err != nil {
+			return "", err
+		}
+		expr = fmt.Sprintf("[x[1] for x in sorted([( %s, %s ) for %s%s], key=lambda x: x[0])]", key, sel, loopStr, cond)
+	}
+	if q.Skip != nil || q.Take != nil {
+		start := "0"
+		if q.Skip != nil {
+			start, err = c.compileExpr(q.Skip)
+			if err != nil {
+				return "", err
+			}
+		}
+		end := ""
+		if q.Take != nil {
+			end, err = c.compileExpr(q.Take)
+			if err != nil {
+				return "", err
+			}
+			if q.Skip != nil {
+				end = fmt.Sprintf("(%s)+(%s)", start, end)
+			}
+		}
+		expr = fmt.Sprintf("%s[%s:%s]", expr, start, end)
+	}
+	if q.Distinct {
+		expr = fmt.Sprintf("list(dict.fromkeys(%s))", expr)
+	}
+	return expr, nil
 }
 
 func (c *Compiler) compileIfExpr(ix *parser.IfExpr) (string, error) {
@@ -556,6 +675,39 @@ func (c *Compiler) compileIfExpr(ix *parser.IfExpr) (string, error) {
 		}
 	}
 	return fmt.Sprintf("(%s if %s else %s)", thenExpr, cond, elseCode), nil
+}
+
+func (c *Compiler) compileMatchExpr(mx *parser.MatchExpr) (string, error) {
+	target, err := c.compileExpr(mx.Target)
+	if err != nil {
+		return "", err
+	}
+	elseExpr := "None"
+	expr := ""
+	for i := len(mx.Cases) - 1; i >= 0; i-- {
+		patStr, patIsIdent := c.simpleIdentifier(mx.Cases[i].Pattern)
+		res, err := c.compileExpr(mx.Cases[i].Result)
+		if err != nil {
+			return "", err
+		}
+		if patIsIdent && patStr == "_" {
+			elseExpr = res
+			continue
+		}
+		pat, err := c.compileExpr(mx.Cases[i].Pattern)
+		if err != nil {
+			return "", err
+		}
+		if expr == "" {
+			expr = fmt.Sprintf("(%s if %s == %s else %s)", res, target, pat, elseExpr)
+		} else {
+			expr = fmt.Sprintf("(%s if %s == %s else %s)", res, target, pat, expr)
+		}
+	}
+	if expr == "" {
+		expr = elseExpr
+	}
+	return expr, nil
 }
 
 func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error) {
