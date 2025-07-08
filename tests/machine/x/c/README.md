@@ -33,4 +33,14 @@ Each program is compiled and executed during testing.
 - [x] len_string.mochi
 - [x] string_index.mochi
 
-Compiled 27/97 programs.
+- [x] append_builtin.mochi
+- [x] avg_builtin.mochi
+- [x] count_builtin.mochi
+- [x] in_operator.mochi
+- [x] membership.mochi
+- [x] min_max_builtin.mochi
+- [x] string_in_operator.mochi
+- [x] substring_builtin.mochi
+- [x] sum_builtin.mochi
+
+Compiled 36/97 programs.

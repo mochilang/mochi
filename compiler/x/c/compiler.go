@@ -16,15 +16,26 @@ import (
 // supported at the moment. Unsupported constructs return an error so
 // the tests can record the failure.
 type Compiler struct {
-	buf    bytes.Buffer
-	indent int
-	env    *types.Env
-	vars   map[string]string
+	buf      bytes.Buffer
+	indent   int
+	env      *types.Env
+	vars     map[string]string
+	lens     map[string]int
+	listVals map[string][]string
+
+	needsContains  bool
+	needsPrintList bool
+	needsAvg       bool
+	needsSum       bool
+	needsMin       bool
+	needsMax       bool
+	needsSubstr    bool
+	needsConcat    bool
 }
 
 // New creates a new Compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, vars: make(map[string]string)}
+	return &Compiler{env: env, vars: make(map[string]string), lens: make(map[string]int), listVals: make(map[string][]string)}
 }
 
 // Compile translates the parsed program into C code.
@@ -38,6 +49,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.writeln("#include <string.h>")
 	c.writeln("")
 
+	var body bytes.Buffer
 	for _, st := range p.Statements {
 		if st.Fun != nil {
 			if err := c.compileFun(st.Fun); err != nil {
@@ -47,16 +59,24 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 		}
 	}
 
-	c.writeln("int main() {")
-	c.indent++
 	for _, st := range p.Statements {
 		if st.Fun != nil {
 			continue
 		}
+		oldBuf := c.buf
+		c.buf = body
 		if err := c.compileStmt(st); err != nil {
+			c.buf = oldBuf
 			return nil, err
 		}
+		c.buf = oldBuf
 	}
+
+	c.writeHelpers()
+
+	c.writeln("int main() {")
+	c.indent++
+	c.buf.Write(body.Bytes())
 	c.writeln("return 0;")
 	c.indent--
 	c.writeln("}")
@@ -126,6 +146,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			}
 			fmt.Fprintf(&c.buf, "int %s[] = {%s};\n", s.Let.Name, strings.Join(elems, ", "))
 			c.vars[s.Let.Name] = "int[]"
+			c.lens[s.Let.Name] = len(lst.Elems)
+			c.listVals[s.Let.Name] = elems
 		} else {
 			typ, _ := c.compileType(s.Let.Type)
 			if typ == "int" && isStringLiteral(s.Let.Value) {
@@ -158,6 +180,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			}
 			fmt.Fprintf(&c.buf, "int %s[] = {%s};\n", s.Var.Name, strings.Join(elems, ", "))
 			c.vars[s.Var.Name] = "int[]"
+			c.lens[s.Var.Name] = len(lst.Elems)
+			c.listVals[s.Var.Name] = elems
 		} else {
 			typ, _ := c.compileType(s.Var.Type)
 			if typ == "int" && isStringLiteral(s.Var.Value) {
@@ -266,12 +290,25 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 			return "", err
 		}
 		out := left
+		leftAST := e.Binary.Left
 		for _, op := range e.Binary.Right {
 			rhs, err := c.compilePostfix(op.Right)
 			if err != nil {
 				return "", err
 			}
-			out = fmt.Sprintf("(%s %s %s)", out, op.Op, rhs)
+			if op.Op == "in" {
+				expr, err := c.compileInOp(leftAST, op.Right, out, rhs)
+				if err != nil {
+					return "", err
+				}
+				out = expr
+			} else if op.Op == "+" && (c.unaryIsString(leftAST) || c.postfixIsString(op.Right)) {
+				c.needsConcat = true
+				out = fmt.Sprintf("str_concat(%s, %s)", out, rhs)
+			} else {
+				out = fmt.Sprintf("(%s %s %s)", out, op.Op, rhs)
+			}
+			leftAST = &parser.Unary{Value: op.Right}
 		}
 		return out, nil
 	}
@@ -458,6 +495,60 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		switch len(args) {
 		case 1:
 			arg := args[0]
+			if call.Args[0].Binary != nil {
+				u := call.Args[0].Binary.Left
+				if len(call.Args[0].Binary.Right) == 0 && len(u.Ops) == 0 && u.Value != nil && len(u.Value.Ops) == 0 {
+					if ap := u.Value.Target.Call; ap != nil && ap.Func == "append" {
+						if len(ap.Args) == 2 {
+							base := ap.Args[0]
+							extra, err := c.compileExpr(ap.Args[1])
+							if err != nil {
+								return "", err
+							}
+							if lst := listLiteral(base); lst != nil {
+								elems := make([]string, len(lst.Elems))
+								for i, e := range lst.Elems {
+									s, err := c.compileExpr(e)
+									if err != nil {
+										return "", err
+									}
+									elems[i] = s
+								}
+								arr := fmt.Sprintf("(int[]){%s, %s}", strings.Join(elems, ", "), extra)
+								c.needsPrintList = true
+								return fmt.Sprintf("print_list(%s, %d)", arr, len(lst.Elems)+1), nil
+							}
+							if name := simpleIdent(base); name != "" {
+								if vals, ok := c.listVals[name]; ok {
+									elems := append(append([]string{}, vals...), extra)
+									arr := fmt.Sprintf("(int[]){%s}", strings.Join(elems, ", "))
+									c.needsPrintList = true
+									return fmt.Sprintf("print_list(%s, %d)", arr, len(elems)), nil
+								}
+							}
+						}
+					}
+				}
+			}
+			if lst := listLiteral(call.Args[0]); lst != nil {
+				c.needsPrintList = true
+				elems := make([]string, len(lst.Elems))
+				for i, e := range lst.Elems {
+					s, err := c.compileExpr(e)
+					if err != nil {
+						return "", err
+					}
+					elems[i] = s
+				}
+				arr := fmt.Sprintf("(int[]){%s}", strings.Join(elems, ", "))
+				return fmt.Sprintf("print_list(%s, %d)", arr, len(lst.Elems)), nil
+			}
+			if name := simpleIdent(call.Args[0]); name != "" && c.vars[name] == "int[]" {
+				if l, ok := c.lens[name]; ok {
+					c.needsPrintList = true
+					return fmt.Sprintf("print_list(%s, %d)", name, l), nil
+				}
+			}
 			if isStringIndex(call.Args[0], c) {
 				return fmt.Sprintf("printf(\"%%c\\n\", %s)", arg), nil
 			}
@@ -492,6 +583,117 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return fmt.Sprintf("strlen(%s)", args[0]), nil
 		}
 		return "", fmt.Errorf("len unsupported")
+	} else if call.Func == "append" {
+		if len(args) != 2 {
+			return "", fmt.Errorf("append expects 2 args")
+		}
+		if lst := listLiteral(call.Args[0]); lst != nil {
+			elems := make([]string, len(lst.Elems))
+			for i, e := range lst.Elems {
+				s, err := c.compileExpr(e)
+				if err != nil {
+					return "", err
+				}
+				elems[i] = s
+			}
+			arr := fmt.Sprintf("(int[]){%s, %s}", strings.Join(elems, ", "), args[1])
+			// caller must know length
+			return arr, nil
+		} else if name := simpleIdent(call.Args[0]); name != "" {
+			if vals, ok := c.listVals[name]; ok {
+				elems := append(append([]string{}, vals...), args[1])
+				arr := fmt.Sprintf("(int[]){%s}", strings.Join(elems, ", "))
+				return arr, nil
+			}
+		}
+		return "", fmt.Errorf("append unsupported")
+	} else if call.Func == "avg" {
+		if len(args) != 1 {
+			return "", fmt.Errorf("avg expects 1 arg")
+		}
+		c.needsAvg = true
+		var length string
+		if lst := listLiteral(call.Args[0]); lst != nil {
+			length = fmt.Sprintf("%d", len(lst.Elems))
+		} else if name := simpleIdent(call.Args[0]); name != "" {
+			if l, ok := c.lens[name]; ok {
+				length = fmt.Sprintf("%d", l)
+			}
+		}
+		if length == "" {
+			return "", fmt.Errorf("avg unsupported")
+		}
+		return fmt.Sprintf("avg(%s, %s)", args[0], length), nil
+	} else if call.Func == "count" {
+		if len(args) != 1 {
+			return "", fmt.Errorf("count expects 1 arg")
+		}
+		if lst := listLiteral(call.Args[0]); lst != nil {
+			return fmt.Sprintf("%d", len(lst.Elems)), nil
+		}
+		if name := simpleIdent(call.Args[0]); name != "" {
+			if l, ok := c.lens[name]; ok {
+				return fmt.Sprintf("%d", l), nil
+			}
+		}
+		return "", fmt.Errorf("count unsupported")
+	} else if call.Func == "sum" {
+		if len(args) != 1 {
+			return "", fmt.Errorf("sum expects 1 arg")
+		}
+		c.needsSum = true
+		var length string
+		if lst := listLiteral(call.Args[0]); lst != nil {
+			length = fmt.Sprintf("%d", len(lst.Elems))
+		} else if name := simpleIdent(call.Args[0]); name != "" {
+			if l, ok := c.lens[name]; ok {
+				length = fmt.Sprintf("%d", l)
+			}
+		}
+		if length == "" {
+			return "", fmt.Errorf("sum unsupported")
+		}
+		return fmt.Sprintf("sum(%s, %s)", args[0], length), nil
+	} else if call.Func == "min" {
+		if len(args) != 1 {
+			return "", fmt.Errorf("min expects 1 arg")
+		}
+		c.needsMin = true
+		var length string
+		if lst := listLiteral(call.Args[0]); lst != nil {
+			length = fmt.Sprintf("%d", len(lst.Elems))
+		} else if name := simpleIdent(call.Args[0]); name != "" {
+			if l, ok := c.lens[name]; ok {
+				length = fmt.Sprintf("%d", l)
+			}
+		}
+		if length == "" {
+			return "", fmt.Errorf("min unsupported")
+		}
+		return fmt.Sprintf("min_val(%s, %s)", args[0], length), nil
+	} else if call.Func == "max" {
+		if len(args) != 1 {
+			return "", fmt.Errorf("max expects 1 arg")
+		}
+		c.needsMax = true
+		var length string
+		if lst := listLiteral(call.Args[0]); lst != nil {
+			length = fmt.Sprintf("%d", len(lst.Elems))
+		} else if name := simpleIdent(call.Args[0]); name != "" {
+			if l, ok := c.lens[name]; ok {
+				length = fmt.Sprintf("%d", l)
+			}
+		}
+		if length == "" {
+			return "", fmt.Errorf("max unsupported")
+		}
+		return fmt.Sprintf("max_val(%s, %s)", args[0], length), nil
+	} else if call.Func == "substring" {
+		if len(args) != 3 {
+			return "", fmt.Errorf("substring expects 3 args")
+		}
+		c.needsSubstr = true
+		return fmt.Sprintf("substr(%s, %s, %s)", args[0], args[1], args[2]), nil
 	}
 	return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ", ")), nil
 }
@@ -559,6 +761,21 @@ func (c *Compiler) exprIsString(e *parser.Expr) bool {
 	return types.IsStringType(t)
 }
 
+func (c *Compiler) exprIsList(e *parser.Expr) bool {
+	t := types.TypeOfExpr(e, c.env)
+	return types.IsListType(t)
+}
+
+func (c *Compiler) unaryIsString(u *parser.Unary) bool {
+	t := types.TypeOfUnary(u, c.env)
+	return types.IsStringType(t)
+}
+
+func (c *Compiler) postfixIsString(p *parser.PostfixExpr) bool {
+	t := types.TypeOfPostfix(p, c.env)
+	return types.IsStringType(t)
+}
+
 func isStringIndex(e *parser.Expr, c *Compiler) bool {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
 		return false
@@ -593,4 +810,127 @@ func listLiteral(e *parser.Expr) *parser.ListLiteral {
 		return nil
 	}
 	return u.Value.Target.List
+}
+
+func (c *Compiler) compileInOp(left *parser.Unary, right *parser.PostfixExpr, leftStr, rightStr string) (string, error) {
+	rType := types.TypeOfPostfix(right, c.env)
+	if types.IsListType(rType) {
+		var length string
+		if right.Target.List != nil {
+			length = fmt.Sprintf("%d", len(right.Target.List.Elems))
+		} else if right.Target.Selector != nil {
+			name := right.Target.Selector.Root
+			if l, ok := c.lens[name]; ok {
+				length = fmt.Sprintf("%d", l)
+			} else {
+				return "", fmt.Errorf("unknown length for %s", name)
+			}
+		} else {
+			return "", fmt.Errorf("in unsupported")
+		}
+		c.needsContains = true
+		return fmt.Sprintf("contains(%s, %s, %s)", rightStr, length, leftStr), nil
+	}
+	if types.IsStringType(rType) {
+		if !c.postfixIsString(right) || !c.unaryIsString(left) {
+			return "", fmt.Errorf("in type mismatch")
+		}
+		return fmt.Sprintf("(strstr(%s, %s) != NULL)", rightStr, leftStr), nil
+	}
+	return "", fmt.Errorf("in unsupported")
+}
+
+func (c *Compiler) writeHelpers() {
+	if c.needsConcat {
+		c.writeln("char* str_concat(const char* a, const char* b) {")
+		c.indent++
+		c.writeln("size_t len = strlen(a) + strlen(b);")
+		c.writeln("char* res = malloc(len + 1);")
+		c.writeln("strcpy(res, a);")
+		c.writeln("strcat(res, b);")
+		c.writeln("return res;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.needsSubstr {
+		c.writeln("char* substr(const char* s, int start, int end) {")
+		c.indent++
+		c.writeln("int n = end - start;")
+		c.writeln("char* out = malloc(n + 1);")
+		c.writeln("strncpy(out, s + start, n);")
+		c.writeln("out[n] = '\\0';")
+		c.writeln("return out;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.needsContains {
+		c.writeln("bool contains(const int* arr, int n, int val) {")
+		c.indent++
+		c.writeln("for (int i = 0; i < n; i++) {")
+		c.indent++
+		c.writeln("if (arr[i] == val) return true;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return false;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.needsPrintList {
+		c.writeln("void print_list(const int* arr, int n) {")
+		c.indent++
+		c.writeln("for (int i = 0; i < n; i++) {")
+		c.indent++
+		c.writeln("if (i > 0) printf(\" \");")
+		c.writeln("printf(\"%d\", arr[i]);")
+		c.indent--
+		c.writeln("}")
+		c.writeln("printf(\"\\n\");")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.needsSum {
+		c.writeln("int sum(const int* arr, int n) {")
+		c.indent++
+		c.writeln("int s = 0;")
+		c.writeln("for (int i = 0; i < n; i++) s += arr[i];")
+		c.writeln("return s;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.needsAvg {
+		c.writeln("int avg(const int* arr, int n) {")
+		c.indent++
+		c.writeln("if (n == 0) return 0;")
+		c.writeln("int s = 0;")
+		c.writeln("for (int i = 0; i < n; i++) s += arr[i];")
+		c.writeln("return s / n;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.needsMin {
+		c.writeln("int min_val(const int* arr, int n) {")
+		c.indent++
+		c.writeln("int m = arr[0];")
+		c.writeln("for (int i = 1; i < n; i++) if (arr[i] < m) m = arr[i];")
+		c.writeln("return m;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.needsMax {
+		c.writeln("int max_val(const int* arr, int n) {")
+		c.indent++
+		c.writeln("int m = arr[0];")
+		c.writeln("for (int i = 1; i < n; i++) if (arr[i] > m) m = arr[i];")
+		c.writeln("return m;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
 }
