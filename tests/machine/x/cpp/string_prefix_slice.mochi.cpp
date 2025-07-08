@@ -11,8 +11,10 @@ template<typename T> vector<T> mochi_slice(const vector<T>& v, int s, int e) { r
 inline string mochi_slice(const string& s, int st, int ed) { return s.substr(st, ed - st); }
 
 int main() {
-	auto a = 10;
-	auto b = 20;
-	mochi_print((a + b));
+	auto prefix = std::string("fore");
+	auto s1 = std::string("forest");
+	mochi_print((mochi_slice(s1, 0, ((int)prefix.size())) == prefix));
+	auto s2 = std::string("desert");
+	mochi_print((mochi_slice(s2, 0, ((int)prefix.size())) == prefix));
 	return 0;
 }

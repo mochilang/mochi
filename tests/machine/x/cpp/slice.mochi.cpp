@@ -11,8 +11,8 @@ template<typename T> vector<T> mochi_slice(const vector<T>& v, int s, int e) { r
 inline string mochi_slice(const string& s, int st, int ed) { return s.substr(st, ed - st); }
 
 int main() {
-	auto a = 10;
-	auto b = 20;
-	mochi_print((a + b));
+	mochi_print(mochi_slice(vector<int>{1, 2, 3}, 1, 3));
+	mochi_print(mochi_slice(vector<int>{1, 2, 3}, 0, 2));
+	mochi_print(mochi_slice(std::string("hello"), 1, 4));
 	return 0;
 }
