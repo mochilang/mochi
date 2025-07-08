@@ -1,6 +1,6 @@
 <?php
 $square = function($x) { return $x * $x; };
-_print(square(6));
+_print($square(6));
 function _print(...$args) {
     $parts = [];
     foreach ($args as $a) {

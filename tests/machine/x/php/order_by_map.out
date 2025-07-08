@@ -1,5 +1,0 @@
-PHP Warning:  Array to string conversion in /workspace/mochi/tests/machine/x/php/order_by_map.php on line 83
-PHP Warning:  Array to string conversion in /workspace/mochi/tests/machine/x/php/order_by_map.php on line 83
-PHP Warning:  Array to string conversion in /workspace/mochi/tests/machine/x/php/order_by_map.php on line 83
-PHP Warning:  Array to string conversion in /workspace/mochi/tests/machine/x/php/order_by_map.php on line 83
-[{"a":1,"b":2},{"a":1,"b":1},{"a":0,"b":5}]

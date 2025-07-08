@@ -1,5 +1,5 @@
 <?php
-_print(sum([1, 2, 3]));
+_print(array_sum([1, 2, 3]));
 function _print(...$args) {
     $parts = [];
     foreach ($args as $a) {

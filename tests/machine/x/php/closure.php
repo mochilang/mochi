@@ -3,7 +3,7 @@ function makeAdder($n) {
     return function($x) { return $x + $n; };
 }
 $add10 = makeAdder(10);
-_print(add10(7));
+_print($add10(7));
 function _print(...$args) {
     $parts = [];
     foreach ($args as $a) {

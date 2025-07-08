@@ -1,9 +1,0 @@
-PHP Warning:  Undefined array key "items" in /workspace/mochi/tests/machine/x/php/group_items_iteration.php on line 19
-PHP Warning:  Undefined array key "items" in /workspace/mochi/tests/machine/x/php/group_items_iteration.php on line 19
-PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/group_items_iteration.php on line 19
-PHP Warning:  Undefined array key "key" in /workspace/mochi/tests/machine/x/php/group_items_iteration.php on line 22
-PHP Warning:  Undefined array key "items" in /workspace/mochi/tests/machine/x/php/group_items_iteration.php on line 19
-PHP Warning:  Undefined array key "items" in /workspace/mochi/tests/machine/x/php/group_items_iteration.php on line 19
-PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/group_items_iteration.php on line 19
-PHP Warning:  Undefined array key "key" in /workspace/mochi/tests/machine/x/php/group_items_iteration.php on line 22
-[{"tag":null,"total":0},{"tag":null,"total":0}]
