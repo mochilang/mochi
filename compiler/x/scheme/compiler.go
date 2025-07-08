@@ -151,6 +151,7 @@ const groupHelpers = `(define (_count v)
         (n 0))
     (set! n (length lst))
     (if (= n 0) 0 (/ (_sum lst) n)))
+)
 
 (define (_max v)
   (let ((lst (cond
@@ -177,9 +178,6 @@ const groupHelpers = `(define (_count v)
                   (when (< n m) (set! m n)))
                 (cdr lst)))
     m))
-
-(define (_group_by src keyfn)
-
 (define (_group_by src keyfn)
   (let ((groups '()) (order '()))
     (for-each (lambda (it)
