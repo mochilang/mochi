@@ -217,7 +217,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if !strings.Contains(src, "HttpUtility") {
 		code = bytes.Replace(code, []byte("using System.Web;\n"), nil, 1)
 	}
-	return FormatCS(code), nil
+	formatted := FormatCS(code)
+	if len(formatted) > 0 && formatted[len(formatted)-1] != '\n' {
+		formatted = append(formatted, '\n')
+	}
+	return formatted, nil
 }
 
 func (c *Compiler) compileFunStmt(fn *parser.FunStmt) error {
