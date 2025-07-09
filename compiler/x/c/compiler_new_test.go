@@ -16,27 +16,32 @@ import (
 	"mochi/types"
 )
 
-func TestCCompiler_BasicPrograms(t *testing.T) {
+func TestCCompiler_ValidPrograms(t *testing.T) {
 	cc, err := exec.LookPath("gcc")
 	if err != nil {
 		t.Skip("gcc not installed")
 	}
-	srcDir := filepath.Join("..", "..", "..", "tests", "vm", "valid")
-	outDir := filepath.Join("..", "..", "..", "tests", "machine", "x", "c")
+	root := findRepoRoot(t)
+	srcDir := filepath.Join(root, "tests", "vm", "valid")
+	outDir := filepath.Join(root, "tests", "machine", "x", "c")
 	if err := os.MkdirAll(outDir, 0o755); err != nil {
 		t.Fatalf("mkout: %v", err)
 	}
-	programs := []string{"match_expr", "tree_sum", "two-sum", "cross_join", "cross_join_filter", "cross_join_triple"}
-	for _, name := range programs {
+	files, err := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	if err != nil {
+		t.Fatalf("glob: %v", err)
+	}
+	for _, srcPath := range files {
+		name := strings.TrimSuffix(filepath.Base(srcPath), ".mochi")
 		t.Run(name, func(t *testing.T) {
-			runCCompile(t, cc, srcDir, outDir, name)
+			runCCompile(t, cc, srcPath, outDir, name)
 		})
 	}
 }
 
-func runCCompile(t *testing.T, cc, srcDir, outDir, name string) {
+func runCCompile(t *testing.T, cc, srcPath, outDir, name string) {
 	_ = os.Remove(filepath.Join(outDir, name+".error"))
-	srcPath := filepath.Join(srcDir, name+".mochi")
+	srcDir := filepath.Dir(srcPath)
 	srcData, err := os.ReadFile(srcPath)
 	if err != nil {
 		t.Fatalf("read source: %v", err)
@@ -107,4 +112,23 @@ func writeError(dir, name string, src []byte, line int, err error) {
 		fmt.Fprintf(&buf, " %3d: %s\n", i+1, lines[i])
 	}
 	_ = os.WriteFile(path, buf.Bytes(), 0o644)
+}
+
+func findRepoRoot(t *testing.T) string {
+	dir, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	t.Fatal("go.mod not found")
+	return ""
 }
