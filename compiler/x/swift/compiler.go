@@ -544,6 +544,12 @@ func (c *compiler) primary(p *parser.Primary) (string, error) {
 }
 
 func (c *compiler) callExpr(call *parser.CallExpr) (string, error) {
+	// special case: exists(query ...)
+	if call.Func == "exists" && len(call.Args) == 1 {
+		if q := queryArg(call.Args[0]); q != nil {
+			return c.existsQuery(q)
+		}
+	}
 	args := make([]string, len(call.Args))
 	for i, a := range call.Args {
 		s, err := c.expr(a)
@@ -592,6 +598,14 @@ func (c *compiler) callExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("sum expects 1 argument at line %d", call.Pos.Line)
 		}
 		return fmt.Sprintf("%s.reduce(0, +)", args[0]), nil
+	case "exists":
+		if len(args) != 1 {
+			return "", fmt.Errorf("exists expects 1 argument at line %d", call.Pos.Line)
+		}
+		if q := queryArg(call.Args[0]); q != nil {
+			return c.existsQuery(q)
+		}
+		return fmt.Sprintf("!%s.isEmpty", args[0]), nil
 	case "values":
 		if len(args) != 1 {
 			return "", fmt.Errorf("values expects 1 argument at line %d", call.Pos.Line)
@@ -941,4 +955,52 @@ func (c *compiler) primaryType(p *parser.Primary) string {
 		return "map"
 	}
 	return ""
+}
+
+func queryArg(e *parser.Expr) *parser.QueryExpr {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil {
+		return nil
+	}
+	return e.Binary.Left.Value.Target.Query
+}
+
+func (c *compiler) existsQuery(q *parser.QueryExpr) (string, error) {
+	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+		return "", fmt.Errorf("unsupported query")
+	}
+	src, err := c.expr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	if q.Select != nil && !isVarRef(q.Select, q.Var) {
+		return "", fmt.Errorf("unsupported query")
+	}
+	if q.Where == nil {
+		return fmt.Sprintf("!%s.isEmpty", src), nil
+	}
+	saved := c.varTypes
+	c.varTypes = copyMap(c.varTypes)
+	c.varTypes[q.Var] = c.exprType(q.Source)
+	cond, err := c.expr(q.Where)
+	c.varTypes = saved
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("%s.contains { %s in %s }", src, q.Var, cond), nil
+}
+
+func isVarRef(e *parser.Expr, name string) bool {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil {
+		return false
+	}
+	sel := e.Binary.Left.Value.Target.Selector
+	return sel != nil && sel.Root == name && len(sel.Tail) == 0
+}
+
+func copyMap[K comparable, V any](m map[K]V) map[K]V {
+	out := make(map[K]V, len(m))
+	for k, v := range m {
+		out[k] = v
+	}
+	return out
 }
