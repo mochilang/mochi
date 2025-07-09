@@ -15,7 +15,6 @@ defmodule Main do
            })
 
          groups = _group_by(rows, fn [i] -> i.cat end)
-         groups = Enum.map(groups, fn g -> %{g | items: Enum.map(g.items, fn [i] -> i end)} end)
          items = groups
          items = Enum.sort_by(items, fn g -> -_sum(for x <- g, do: x.val) end)
          Enum.map(items, fn g -> %{cat: g.key, total: _sum(for x <- g.items, do: x.val)} end)
@@ -54,7 +53,14 @@ defmodule Main do
   defp _group_by(src, keyfn) do
     {groups, order} =
       Enum.reduce(src, {%{}, []}, fn it, {groups, order} ->
-        key = if is_list(it), do: apply(keyfn, it), else: keyfn.(it)
+        key =
+          if is_list(it) do
+            arity = :erlang.fun_info(keyfn, :arity) |> elem(1)
+            if arity == 1, do: keyfn.(it), else: apply(keyfn, it)
+          else
+            keyfn.(it)
+          end
+
         ks = :erlang.phash2(key)
 
         {groups, order} =

@@ -1,6 +1,6 @@
 line 14
 warning: default values for the optional arguments in _query/3 are never used
-  /workspace/mochi/tests/machine/x/ex/group_by_sort.mochi.exs:75
+  /workspace/mochi/tests/machine/x/ex/group_by_sort.mochi.exs:81
 
 ** (KeyError) key :val not found in: {:cat, "a"}. If you are using the dot syntax, such as map.field, make sure the left-hand side of the dot is a map
     /workspace/mochi/tests/machine/x/ex/group_by_sort.mochi.exs:14: anonymous fn/2 in Main.main/0
@@ -9,7 +9,7 @@ warning: default values for the optional arguments in _query/3 are never used
     (elixir 1.14.0) lib/enum.ex:3264: anonymous fn/2 in Enum.sort_by/3
     (elixir 1.14.0) lib/enum.ex:1658: Enum."-map/2-lists^map/1-0-"/2
     (elixir 1.14.0) lib/enum.ex:3264: Enum.sort_by/3
-    /workspace/mochi/tests/machine/x/ex/group_by_sort.mochi.exs:166: Main._query/3
+    /workspace/mochi/tests/machine/x/ex/group_by_sort.mochi.exs:172: Main._query/3
     /workspace/mochi/tests/machine/x/ex/group_by_sort.mochi.exs:12: Main.main/0
 
            _query(src, [], %{

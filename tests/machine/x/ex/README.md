@@ -4,8 +4,8 @@ This directory contains Elixir source code generated from Mochi programs and the
 
 ## Summary
 
-- 85/97 programs compiled and executed successfully.
-- 12 programs failed to compile or run.
+- 88/97 programs compiled and executed successfully.
+- 9 programs failed to compile or run.
 
 ### Successful
 append_builtin
@@ -96,14 +96,11 @@ while_loop
 
 ### Failed
 group_by_conditional_sum
-group_by_join
 group_by_left_join
 group_by_multi_join_sort
 group_by_sort
 group_items_iteration
-in_operator_extended
 load_yaml
 pure_global_fold
-record_assign
 save_jsonl_stdout
 tree_sum
