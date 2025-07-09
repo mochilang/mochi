@@ -1,14 +1,13 @@
 # OCaml Machine Output
 
-This directory contains OCaml source code generated from Mochi programs and the corresponding outputs/errors.
+Generated OCaml sources from the Mochi examples live in this directory. When an OCaml compiler is available each program is compiled and run, producing `.out` files (or `.error` if compilation or execution fails).
 
-## Summary
+## Program status
 
-- 60/97 programs compiled and executed successfully.
-- 37 programs failed to compile or run.
+The table below tracks which Mochi examples compile successfully using the current OCaml backend. A checked item means the generated OCaml program built and ran without errors.
 
-### Successful
-- append_builtin
+
+### Compiled successfully
 - avg_builtin
 - basic_compare
 - binary_precedence
@@ -108,8 +107,8 @@ This directory contains OCaml source code generated from Mochi programs and the 
 - two-sum
 - update_stmt
 
-## Remaining Tasks
 
+## Remaining Tasks
 - [ ] Implement support for advanced query joins and aggregation.
- - [x] Handle nested map updates and struct patterns.
 - [ ] Add runtime to run compiled programs during tests.
+

@@ -470,14 +470,18 @@ func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
 }
 
 func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
-	if len(q.Froms) == 0 && len(q.Joins) == 1 && q.Joins[0].Side != nil {
-		switch *q.Joins[0].Side {
-		case "left":
-			return c.compileLeftJoin(q)
-		case "right":
-			return c.compileRightJoin(q)
-		case "outer":
-			return c.compileOuterJoin(q)
+	if len(q.Froms) == 0 && len(q.Joins) == 1 {
+		if q.Joins[0].Side != nil {
+			switch *q.Joins[0].Side {
+			case "left":
+				return c.compileLeftJoin(q)
+			case "right":
+				return c.compileRightJoin(q)
+			case "outer":
+				return c.compileOuterJoin(q)
+			}
+		} else {
+			return c.compileJoin(q)
 		}
 	}
 	froms := append([]*parser.FromClause{{Var: q.Var, Src: q.Source}}, q.Froms...)
@@ -739,6 +743,53 @@ func (c *Compiler) compileOuterJoin(q *parser.QueryExpr) (string, error) {
 	}
 	buf.WriteString("    );\n")
 	buf.WriteString(fmt.Sprintf("  ) %s;\n", rightSrc))
+	buf.WriteString(fmt.Sprintf("  List.rev !%s)\n", resName))
+	return buf.String(), nil
+}
+
+func (c *Compiler) compileJoin(q *parser.QueryExpr) (string, error) {
+	join := q.Joins[0]
+	leftSrc, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	rightSrc, err := c.compileExpr(join.Src)
+	if err != nil {
+		return "", err
+	}
+	on := "true"
+	if join.On != nil {
+		on, err = c.compileExpr(join.On)
+		if err != nil {
+			return "", err
+		}
+	}
+	where := ""
+	if q.Where != nil {
+		where, err = c.compileExpr(q.Where)
+		if err != nil {
+			return "", err
+		}
+	}
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		return "", err
+	}
+	resName := fmt.Sprintf("__res%d", c.loop)
+	c.loop++
+	var buf bytes.Buffer
+	buf.WriteString(fmt.Sprintf("(let %s = ref [] in\n", resName))
+	buf.WriteString(fmt.Sprintf("  List.iter (fun %s ->\n", q.Var))
+	buf.WriteString(fmt.Sprintf("    List.iter (fun %s ->\n", join.Var))
+	buf.WriteString(fmt.Sprintf("      if %s then (\n", on))
+	if where != "" {
+		buf.WriteString(fmt.Sprintf("        if %s then %s := %s :: !%s;\n", where, resName, sel, resName))
+	} else {
+		buf.WriteString(fmt.Sprintf("        %s := %s :: !%s;\n", resName, sel, resName))
+	}
+	buf.WriteString("      )\n")
+	buf.WriteString(fmt.Sprintf("    ) %s;\n", rightSrc))
+	buf.WriteString(fmt.Sprintf("  ) %s;\n", leftSrc))
 	buf.WriteString(fmt.Sprintf("  List.rev !%s)\n", resName))
 	return buf.String(), nil
 }
