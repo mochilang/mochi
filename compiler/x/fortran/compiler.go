@@ -26,6 +26,8 @@ type Compiler struct {
 	tmpIndex    int
 }
 
+func structName(name string) string { return "t_" + strings.ToLower(name) }
+
 // New creates a new compiler instance.
 func New(env *types.Env) *Compiler {
 	return &Compiler{env: env, declared: make(map[string]bool)}
@@ -216,13 +218,14 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	if !ok {
 		return fmt.Errorf("unknown struct %s", t.Name)
 	}
-	c.writelnDecl(fmt.Sprintf("type :: %s", t.Name))
+	fname := structName(t.Name)
+	c.writelnDecl(fmt.Sprintf("type :: %s", fname))
 	c.indent++
 	for _, f := range st.Order {
 		c.writelnDecl(fmt.Sprintf("%s :: %s", typeNameFromTypes(st.Fields[f]), f))
 	}
 	c.indent--
-	c.writelnDecl(fmt.Sprintf("end type %s", t.Name))
+	c.writelnDecl(fmt.Sprintf("end type %s", fname))
 	return nil
 }
 
@@ -514,12 +517,44 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 }
 
 func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
-	base, err := c.compilePrimary(p.Target)
-	if err != nil {
-		return "", err
+	// Handle `{"field": val} as Struct` without trying to compile the map
+	// literal itself.
+	startOp := 0
+	var res string
+	if len(p.Ops) > 0 && p.Ops[0].Cast != nil && p.Ops[0].Cast.Type != nil && p.Ops[0].Cast.Type.Simple != nil {
+		if ml := mapLiteralPrimary(p.Target); ml != nil {
+			if st, ok := c.env.GetStruct(*p.Ops[0].Cast.Type.Simple); ok {
+				fields := make([]string, len(st.Order))
+				for i, f := range st.Order {
+					var val *parser.Expr
+					for _, it := range ml.Items {
+						if keyName(it.Key) == f {
+							val = it.Value
+							break
+						}
+					}
+					if val == nil {
+						return "", fmt.Errorf("missing field %s", f)
+					}
+					v, err := c.compileExpr(val)
+					if err != nil {
+						return "", err
+					}
+					fields[i] = v
+				}
+				res = fmt.Sprintf("%s(%s)", structName(st.Name), strings.Join(fields, ","))
+				startOp = 1
+			}
+		}
 	}
-	res := base
-	for _, op := range p.Ops {
+	if startOp == 0 {
+		base, err := c.compilePrimary(p.Target)
+		if err != nil {
+			return "", err
+		}
+		res = base
+	}
+	for _, op := range p.Ops[startOp:] {
 		switch {
 		case op.Index != nil:
 			if op.Index.Colon != nil {
@@ -602,7 +637,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 								}
 								fields[i] = v
 							}
-							res = fmt.Sprintf("%s(%s)", st.Name, strings.Join(fields, ","))
+							res = fmt.Sprintf("%s(%s)", structName(st.Name), strings.Join(fields, ","))
 							continue
 						}
 					}
@@ -877,7 +912,7 @@ func typeName(t *parser.TypeRef) string {
 		case "float":
 			return "real"
 		default:
-			return *t.Simple
+			return fmt.Sprintf("type(%s)", structName(*t.Simple))
 		}
 	}
 	return "integer"
@@ -895,7 +930,7 @@ func typeNameFromTypes(t types.Type) string {
 		return "real"
 	case types.StructType:
 		st := t.(types.StructType)
-		return st.Name
+		return fmt.Sprintf("type(%s)", structName(st.Name))
 	default:
 		return "integer"
 	}
