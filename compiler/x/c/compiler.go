@@ -3601,10 +3601,8 @@ func isMapIntStringLiteral(ml *parser.MapLiteral, env *types.Env) bool {
 		return false
 	}
 	for _, it := range ml.Items {
-		if _, ok := it.Key.Value.(*parser.NumberLiteral); !ok {
-			if _, ok2 := types.ExprType(it.Key, env).(types.IntType); !ok2 {
-				return false
-			}
+		if _, ok := types.ExprType(it.Key, env).(types.IntType); !ok {
+			return false
 		}
 		if env != nil {
 			if _, ok := types.ExprType(it.Value, env).(types.StringType); !ok {
