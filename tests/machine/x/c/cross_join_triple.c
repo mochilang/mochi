@@ -24,7 +24,7 @@ static list_string list_string_create(int len) {
 }
 typedef struct {
   int n;
-  int l;
+  char *l;
   int b;
 } combosItem;
 typedef struct {
@@ -71,8 +71,8 @@ int main() {
   for (int _t9 = 0; _t9 < combos.len; _t9++) {
     combosItem c = combos.data[_t9];
     printf("%d ", c.n);
-    printf("%d ", c.l);
-    printf("%d\n", c.b);
+    printf("%s ", c.l);
+    printf("%s\n", (c.b) ? "true" : "false");
   }
   return 0;
 }
