@@ -19,6 +19,7 @@ type Compiler struct {
 	env       *types.Env
 	helpers   map[string]bool
 	groupVars map[string]bool
+	tmpCount  int
 }
 
 // New creates a new Compiler instance.
@@ -69,6 +70,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileWhile(s.While)
 	case s.For != nil:
 		return c.compileFor(s.For)
+	case s.Update != nil:
+		return c.compileUpdate(s.Update)
 	case s.Break != nil:
 		c.writeln("break;")
 		return nil
@@ -314,6 +317,45 @@ func (c *Compiler) compileFor(fs *parser.ForStmt) error {
 			return err
 		}
 	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
+	list := "$" + sanitizeName(u.Target)
+	idx := c.newTmp()
+	item := c.newTmp()
+	c.writeln(fmt.Sprintf("foreach (%s as %s => %s) {", list, idx, item))
+	c.indent++
+	if u.Where != nil {
+		cond, err := c.compileExpr(u.Where)
+		if err != nil {
+			return err
+		}
+		c.writeln("if (" + cond + ") {")
+		c.indent++
+	}
+	for _, it := range u.Set.Items {
+		val, err := c.compileExpr(it.Value)
+		if err != nil {
+			return err
+		}
+		if name, ok := isSimpleIdentExpr(it.Key); ok {
+			c.writeln(fmt.Sprintf("%s->%s = %s;", item, sanitizeName(name), val))
+		} else {
+			key, err := c.compileExpr(it.Key)
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("%s[%s] = %s;", item, key, val))
+		}
+	}
+	if u.Where != nil {
+		c.indent--
+		c.writeln("}")
+	}
+	c.writeln(fmt.Sprintf("%s[%s] = %s;", list, idx, item))
 	c.indent--
 	c.writeln("}")
 	return nil
