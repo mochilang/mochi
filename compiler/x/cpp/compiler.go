@@ -5,6 +5,7 @@ package cpp
 import (
 	"bytes"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"mochi/parser"
@@ -623,6 +624,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				def.WriteString("struct " + name + " {")
 				for i, n := range names {
 					ftype := fmt.Sprintf("decltype(%s)", vals[i])
+					if t, ok := c.vars[vals[i]]; ok {
+						switch t {
+						case "string":
+							ftype = "std::string"
+						case "int":
+							ftype = "int"
+						case "bool":
+							ftype = "bool"
+						}
+					}
 					if dot := strings.Index(vals[i], "."); dot != -1 {
 						v := vals[i][:dot]
 						fld := vals[i][dot+1:]
@@ -887,9 +898,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.varStruct[q.Var] = t
 	}
 	if et := c.elemType[src]; et != "" {
-		c.vars[q.Var] = ""
-		if strings.Contains(et, "std::string") {
+		switch {
+		case strings.Contains(et, "std::string"):
 			c.vars[q.Var] = "string"
+		case et == "int":
+			c.vars[q.Var] = "int"
+		case et == "bool":
+			c.vars[q.Var] = "bool"
+		case strings.HasPrefix(et, "__struct"):
+			c.varStruct[q.Var] = et
 		}
 	}
 	fromSrcs := make([]string, len(q.Froms))
@@ -904,8 +921,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.varStruct[f.Var] = t
 		}
 		if et := c.elemType[s]; et != "" {
-			if strings.Contains(et, "std::string") {
+			switch {
+			case strings.Contains(et, "std::string"):
 				c.vars[f.Var] = "string"
+			case et == "int":
+				c.vars[f.Var] = "int"
+			case et == "bool":
+				c.vars[f.Var] = "bool"
+			case strings.HasPrefix(et, "__struct"):
+				c.varStruct[f.Var] = et
 			}
 		}
 	}
@@ -1111,6 +1135,9 @@ func extractVectorElemType(expr string) string {
 	if strings.Contains(typ, "std::string") {
 		return "std::string"
 	}
+	if strings.Contains(typ, "bool") {
+		return "bool"
+	}
 	if strings.HasPrefix(typ, "decltype(") {
 		texpr := strings.TrimSuffix(strings.TrimPrefix(typ, "decltype("), ")")
 		if strings.HasPrefix(texpr, "__struct") {
@@ -1118,6 +1145,12 @@ func extractVectorElemType(expr string) string {
 		}
 		if strings.Contains(texpr, "std::string") {
 			return "std::string"
+		}
+		if strings.Contains(texpr, "true") || strings.Contains(texpr, "false") {
+			return "bool"
+		}
+		if _, err := strconv.Atoi(texpr); err == nil {
+			return "int"
 		}
 	}
 	return ""
