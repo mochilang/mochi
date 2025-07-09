@@ -24,6 +24,35 @@ type Compiler struct {
 	inMain        bool
 	globals       map[string]bool
 	mutParams     map[string]map[int]bool
+	listVars      map[string]string
+}
+
+func (c *Compiler) fieldType(e *parser.Expr) types.Type {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return types.TypeOfExprBasic(e, c.env)
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return types.TypeOfExprBasic(e, c.env)
+	}
+	pf := u.Value
+	if len(pf.Ops) != 1 || pf.Ops[0].Field == nil || pf.Target == nil || pf.Target.Selector == nil {
+		return types.TypeOfExprBasic(e, c.env)
+	}
+	sel := pf.Target.Selector
+	if len(sel.Tail) != 0 {
+		return types.TypeOfExprBasic(e, c.env)
+	}
+	root := sel.Root
+	field := pf.Ops[0].Field.Name
+	if structName, ok := c.listVars[root]; ok {
+		if st, ok2 := c.structs[structName]; ok2 {
+			if t, ok3 := st.Fields[field]; ok3 {
+				return t
+			}
+		}
+	}
+	return types.TypeOfExprBasic(e, c.env)
 }
 
 func usesIdentExpr(e *parser.Expr, name string) bool {
@@ -237,6 +266,7 @@ func New(env *types.Env) *Compiler {
 		inMain:     true,
 		globals:    make(map[string]bool),
 		mutParams:  make(map[string]map[int]bool),
+		listVars:   make(map[string]string),
 	}
 }
 
@@ -1019,10 +1049,20 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 	child := types.NewEnv(c.env)
-	if lt, ok := types.TypeOfExprBasic(q.Source, c.env).(types.ListType); ok {
-		child.SetVar(q.Var, lt.Elem, true)
-	} else {
-		child.SetVar(q.Var, types.AnyType{}, true)
+	if id, ok := c.simpleIdent(q.Source); ok {
+		if name, ok2 := c.listVars[id]; ok2 {
+			if st, ok3 := c.structs[name]; ok3 {
+				child.SetVar(q.Var, st, true)
+				c.listVars[q.Var] = name
+			}
+		}
+	}
+	if _, err := child.GetVar(q.Var); err != nil {
+		if lt, ok := types.TypeOfExprBasic(q.Source, c.env).(types.ListType); ok {
+			child.SetVar(q.Var, lt.Elem, true)
+		} else {
+			child.SetVar(q.Var, types.AnyType{}, true)
+		}
 	}
 	fromSrcs := make([]string, len(q.Froms))
 	for i, f := range q.Froms {
@@ -1031,10 +1071,20 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		fromSrcs[i] = s
-		if lt, ok := types.TypeOfExprBasic(f.Src, c.env).(types.ListType); ok {
-			child.SetVar(f.Var, lt.Elem, true)
-		} else {
-			child.SetVar(f.Var, types.AnyType{}, true)
+		if id, ok := c.simpleIdent(f.Src); ok {
+			if name, ok2 := c.listVars[id]; ok2 {
+				if st, ok3 := c.structs[name]; ok3 {
+					child.SetVar(f.Var, st, true)
+					c.listVars[f.Var] = name
+				}
+			}
+		}
+		if _, err := child.GetVar(f.Var); err != nil {
+			if lt, ok := types.TypeOfExprBasic(f.Src, c.env).(types.ListType); ok {
+				child.SetVar(f.Var, lt.Elem, true)
+			} else {
+				child.SetVar(f.Var, types.AnyType{}, true)
+			}
 		}
 	}
 	orig := c.env
@@ -1193,7 +1243,7 @@ func (c *Compiler) compileStructLiteralFromMap(name string, m *parser.MapLiteral
 	}
 	fieldMap := map[string]*parser.Expr{}
 	for _, it := range m.Items {
-		if str, ok := c.simpleString(it.Key); ok {
+		if str, ok := c.simpleKey(it.Key); ok {
 			fieldMap[str] = it.Value
 		}
 	}
@@ -1216,7 +1266,7 @@ func (c *Compiler) compileMapLiteralAsStruct(name string, m *parser.MapLiteral) 
 	st := types.StructType{Name: name, Fields: map[string]types.Type{}, Order: []string{}}
 	fields := make([]string, len(m.Items))
 	for i, it := range m.Items {
-		str, ok := c.simpleString(it.Key)
+		str, ok := c.simpleKey(it.Key)
 		if !ok {
 			return "", fmt.Errorf("expected simple key")
 		}
@@ -1225,7 +1275,7 @@ func (c *Compiler) compileMapLiteralAsStruct(name string, m *parser.MapLiteral) 
 			return "", err
 		}
 		fields[i] = fmt.Sprintf("%s: %s", str, v)
-		st.Fields[str] = types.TypeOfExprBasic(it.Value, c.env)
+		st.Fields[str] = c.fieldType(it.Value)
 		st.Order = append(st.Order, str)
 	}
 	c.structs[name] = st
@@ -1235,7 +1285,7 @@ func (c *Compiler) compileMapLiteralAsStruct(name string, m *parser.MapLiteral) 
 
 func (c *Compiler) valueForKey(m *parser.MapLiteral, key string) *parser.Expr {
 	for _, it := range m.Items {
-		if str, ok := c.simpleString(it.Key); ok && str == key {
+		if str, ok := c.simpleKey(it.Key); ok && str == key {
 			return it.Value
 		}
 	}
@@ -1271,6 +1321,7 @@ func (c *Compiler) tryMapListStruct(varName string, list *parser.ListLiteral) (s
 	}
 	c.structs[structName] = st
 	c.genStructs = append(c.genStructs, st)
+	c.listVars[varName] = structName
 
 	elems := make([]string, len(list.Elems))
 	for i, e := range list.Elems {
@@ -1299,7 +1350,7 @@ func (c *Compiler) mapKeys(e *parser.Expr) ([]string, bool) {
 	}
 	keys := make([]string, len(u.Value.Target.Map.Items))
 	for i, it := range u.Value.Target.Map.Items {
-		str, ok := c.simpleString(it.Key)
+		str, ok := c.simpleKey(it.Key)
 		if !ok {
 			return nil, false
 		}
@@ -1535,6 +1586,16 @@ func (c *Compiler) simpleString(e *parser.Expr) (string, bool) {
 		return "", false
 	}
 	return *p.Target.Lit.Str, true
+}
+
+func (c *Compiler) simpleKey(e *parser.Expr) (string, bool) {
+	if s, ok := c.simpleString(e); ok {
+		return s, true
+	}
+	if id, ok := c.simpleIdent(e); ok {
+		return id, true
+	}
+	return "", false
 }
 
 func (c *Compiler) simpleIdent(e *parser.Expr) (string, bool) {
