@@ -935,9 +935,16 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 			c.writeln(formatFuncPtrDecl(typ, name, val))
 		}
 	} else {
-		decl := formatFuncPtrDecl(typ, name, "")
-		if strings.HasSuffix(decl, " = ;") { // remove "= ;" when no value
-			decl = strings.TrimSuffix(decl, " = ;") + ";"
+		// uninitialized variables default to the zero value of their type
+		val := ""
+		if stmt.Type != nil {
+			val = defaultCValue(t)
+		}
+		decl := formatFuncPtrDecl(typ, name, val)
+		if val == "" {
+			if strings.HasSuffix(decl, " = ;") {
+				decl = strings.TrimSuffix(decl, " = ;") + ";"
+			}
 		}
 		c.writeln(decl)
 	}
@@ -1045,7 +1052,15 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 			c.writeln(formatFuncPtrDecl(typ, name, val))
 		}
 	} else {
-		c.writeln(fmt.Sprintf("%s %s;", typ, name))
+		val := ""
+		if stmt.Type != nil {
+			val = defaultCValue(t)
+		}
+		if val != "" {
+			c.writeln(formatFuncPtrDecl(typ, name, val))
+		} else {
+			c.writeln(fmt.Sprintf("%s %s;", typ, name))
+		}
 	}
 	if c.env != nil {
 		c.env.SetVar(stmt.Name, t, true)

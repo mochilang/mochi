@@ -12,7 +12,7 @@ static list_int list_int_create(int len) {
   return l;
 }
 int main() {
-  int x;
+  int x = 0;
   printf("%d\n", x);
   return 0;
 }
