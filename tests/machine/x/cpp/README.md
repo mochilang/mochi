@@ -88,7 +88,7 @@ Compiled programs: 65/97
 - [ ] left_join_multi
 - [ ] list_set_ops
 - [ ] load_yaml
-- [ ] map_nested_assign
+- [x] map_nested_assign
 - [ ] order_by_map
 - [ ] outer_join
 - [ ] partial_application
@@ -96,7 +96,7 @@ Compiled programs: 65/97
 - [ ] query_sum_select
 - [ ] right_join
 - [ ] save_jsonl_stdout
-- [ ] sort_stable
+- [x] sort_stable
 - [ ] string_contains
 - [ ] string_prefix_slice
 - [ ] sum_builtin
@@ -123,7 +123,7 @@ Compiled programs: 65/97
 - [ ] left_join_multi
 - [ ] list_set_ops
 - [ ] load_yaml
-- [ ] map_nested_assign
+- [x] map_nested_assign
 - [ ] order_by_map
 - [ ] outer_join
 - [ ] partial_application
@@ -131,7 +131,7 @@ Compiled programs: 65/97
 - [ ] query_sum_select
 - [ ] right_join
 - [ ] save_jsonl_stdout
-- [ ] sort_stable
+- [x] sort_stable
 - [ ] string_contains
 - [ ] string_prefix_slice
 - [ ] sum_builtin

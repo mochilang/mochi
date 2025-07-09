@@ -29,7 +29,12 @@ int main() {
     return __res;
   })();
   {
-    std::cout << std::boolalpha << result;
+    auto __tmp1 = result;
+    for (size_t i = 0; i < __tmp1.size(); ++i) {
+      if (i)
+        std::cout << ' ';
+      std::cout << std::boolalpha << __tmp1[i];
+    }
     std::cout << std::endl;
   }
   return 0;

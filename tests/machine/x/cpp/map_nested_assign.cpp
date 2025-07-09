@@ -7,9 +7,10 @@
 #include <vector>
 
 int main() {
-  auto data = std::unordered_map<std::string, int>{
-      {std::string("outer"),
-       std::unordered_map<std::string, int>{{std::string("inner"), 1}}}};
+  auto data = std::unordered_map<std::string,
+                                 std::unordered_map<std::string, decltype(1)>>{
+      {std::string("outer"), std::unordered_map<std::string, decltype(1)>{
+                                 {std::string("inner"), 1}}}};
   data[std::string("outer")][std::string("inner")] = 2;
   {
     std::cout << std::boolalpha
