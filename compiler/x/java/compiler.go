@@ -509,6 +509,11 @@ func isMapLitCastToStructExpr(e *parser.Expr) bool {
 	return false
 }
 
+func isQueryExpr(e *parser.Expr) bool {
+	p := rootPrimary(e)
+	return p != nil && p.Query != nil && len(e.Binary.Right) == 0
+}
+
 func (c *Compiler) exprIsMap(e *parser.Expr) bool {
 	if isMapLiteral(e) != nil {
 		return true
@@ -531,6 +536,9 @@ func (c *Compiler) compileGlobalVar(v *parser.VarStmt) error {
 		typ = c.inferType(v.Value)
 		if isListLiteral(v.Value) != nil {
 			expr = fmt.Sprintf("new ArrayList<>(%s)", expr)
+		}
+		if typ == "var" && isQueryExpr(v.Value) {
+			typ = "List<Object>"
 		}
 	}
 	if typ == "var" {
@@ -556,9 +564,11 @@ func (c *Compiler) compileGlobalLet(v *parser.LetStmt) error {
 		if isListLiteral(v.Value) != nil {
 			expr = fmt.Sprintf("new ArrayList<>(%s)", expr)
 		}
-	}
-	if typ == "var" {
-		typ = "Object"
+		if isQueryExpr(v.Value) {
+			typ = "List<Object>"
+		} else if typ == "var" {
+			typ = "Object"
+		}
 	}
 	if v.Value == nil {
 		c.writeln(fmt.Sprintf("static %s %s = %s;", typ, v.Name, c.defaultValue(typ)))
@@ -733,6 +743,11 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 		} else if isMapLiteral(v.Value) != nil && !isMapLitCastToStructExpr(v.Value) {
 			expr = fmt.Sprintf("new HashMap<>(%s)", expr)
 		}
+		if isQueryExpr(v.Value) {
+			typ = "List<Object>"
+		} else if typ == "var" {
+			typ = "Object"
+		}
 	}
 	if v.Value == nil {
 		c.writeln(fmt.Sprintf("%s %s = %s;", typ, v.Name, c.defaultValue(typ)))
@@ -755,6 +770,11 @@ func (c *Compiler) compileLet(v *parser.LetStmt) error {
 			expr = fmt.Sprintf("new ArrayList<>(%s)", expr)
 		} else if isMapLiteral(v.Value) != nil && !isMapLitCastToStructExpr(v.Value) {
 			expr = fmt.Sprintf("new HashMap<>(%s)", expr)
+		}
+		if isQueryExpr(v.Value) {
+			typ = "List<Object>"
+		} else if typ == "var" {
+			typ = "Object"
 		}
 	}
 	if v.Value == nil {
@@ -1162,8 +1182,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 	case p.Selector != nil:
 		s := p.Selector.Root
-		if len(p.Selector.Tail) > 0 {
-			s += "." + strings.Join(p.Selector.Tail, ".")
+		typ := c.vars[p.Selector.Root]
+		for _, f := range p.Selector.Tail {
+			if strings.HasPrefix(typ, "Map<") || typ == "Map" {
+				s = fmt.Sprintf("((Map)%s).get(\"%s\")", s, f)
+				typ = mapValueType(typ)
+			} else {
+				s += "." + f
+			}
 		}
 		return s, nil
 	case p.Struct != nil:
@@ -1385,6 +1411,27 @@ func indentBlock(s string, depth int) string {
 	return strings.Join(lines, "\n") + "\n"
 }
 
+func identName(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil {
+		return "", false
+	}
+	if len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
 func simpleStringKey(e *parser.Expr) (string, bool) {
 	if e == nil || e.Binary == nil || e.Binary.Left == nil || len(e.Binary.Right) != 0 {
 		return "", false
@@ -1437,18 +1484,41 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	srcType := c.inferType(q.Source)
+	elemType := listElemType(srcType)
+	if name, ok := identName(q.Source); ok {
+		if t, ok2 := c.vars[name]; ok2 {
+			elemType = listElemType(t)
+		}
+	}
 
 	oldVars := c.vars
 	c.vars = copyMap(c.vars)
-	c.vars[q.Var] = "var"
+	if elemType != "" {
+		c.vars[q.Var] = elemType
+	} else {
+		c.vars[q.Var] = "var"
+	}
 	for _, fr := range q.Froms {
-		c.vars[fr.Var] = "var"
+		ft := c.inferType(fr.Src)
+		if name, ok := identName(fr.Src); ok {
+			if t, ok2 := c.vars[name]; ok2 {
+				ft = t
+			}
+		}
+		c.vars[fr.Var] = listElemType(ft)
 	}
 	for _, j := range q.Joins {
 		if j.Side != nil {
 			return "", fmt.Errorf("join type not supported")
 		}
-		c.vars[j.Var] = "var"
+		jt := c.inferType(j.Src)
+		if name, ok := identName(j.Src); ok {
+			if t, ok2 := c.vars[name]; ok2 {
+				jt = t
+			}
+		}
+		c.vars[j.Var] = listElemType(jt)
 	}
 
 	resVar := fmt.Sprintf("_res%d", c.tmpCount)
