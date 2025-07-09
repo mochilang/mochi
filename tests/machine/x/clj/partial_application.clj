@@ -14,7 +14,7 @@
 )
 
 (defn -main []
-  (def add5 (add 5)) ;; int
+  (def add5 (fn [_tmp0] (add 5 _tmp0))) ;; int
   (println (add5 3))
 )
 

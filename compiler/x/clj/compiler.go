@@ -1359,6 +1359,21 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			args = append(args, v)
 		}
 		name := sanitizeName(p.Call.Func)
+		if v, err := c.env.GetVar(p.Call.Func); err == nil {
+			if ft, ok := v.(types.FuncType); ok {
+				if len(args) < len(ft.Params) {
+					missing := len(ft.Params) - len(args)
+					params := make([]string, missing)
+					for i := range params {
+						params[i] = c.newTemp()
+					}
+					callArgs := append(append([]string{}, args...), params...)
+					return fmt.Sprintf("(fn [%s] (%s %s))",
+						strings.Join(params, " "), name,
+						strings.Join(callArgs, " ")), nil
+				}
+			}
+		}
 		switch name {
 		case "print":
 			return "(println " + strings.Join(args, " ") + ")", nil
