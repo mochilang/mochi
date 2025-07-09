@@ -4,8 +4,8 @@ This directory contains Elixir source code generated from Mochi programs and the
 
 ## Summary
 
-- 76/97 programs compiled and executed successfully.
-- 21 programs failed to compile or run.
+- 78/97 programs compiled and executed successfully.
+- 19 programs failed to compile or run.
 
 ### Successful
 - append_builtin
@@ -38,6 +38,8 @@ This directory contains Elixir source code generated from Mochi programs and the
 - inner_join
 - join_multi
 - json_builtin
+- left_join
+- left_join_multi
 - len_builtin
 - len_map
 - len_string
@@ -95,8 +97,6 @@ This directory contains Elixir source code generated from Mochi programs and the
 - group_by_sort
 - group_items_iteration
 - in_operator_extended
-- left_join
-- left_join_multi
 - list_assign
 - list_nested_assign
 - load_yaml

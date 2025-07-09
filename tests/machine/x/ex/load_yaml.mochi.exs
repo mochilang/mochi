@@ -7,7 +7,7 @@ defmodule Main do
     adults = for p <- people, p.age >= 18, do: %{name: p.name, email: p.email}
 
     for a <- adults do
-      IO.puts(Enum.join(Enum.map([a.name, a.email], &to_string(&1)), " "))
+      IO.puts(Enum.join(Enum.map([a.name, a.email], &inspect(&1)), " "))
     end
   end
 

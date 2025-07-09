@@ -10,7 +10,7 @@ defmodule Main do
     IO.inspect("--- Even pairs ---")
 
     for p <- pairs do
-      IO.puts(Enum.join(Enum.map([p.n, p.l], &to_string(&1)), " "))
+      IO.puts(Enum.join(Enum.map([p.n, p.l], &inspect(&1)), " "))
     end
   end
 end

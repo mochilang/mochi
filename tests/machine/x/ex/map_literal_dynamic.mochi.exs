@@ -10,7 +10,7 @@ defmodule Main do
     # m :: map()
     m = %{a: x, b: y}
     _ = m
-    IO.puts(Enum.join(Enum.map([Map.get(m, "a"), Map.get(m, "b")], &to_string(&1)), " "))
+    IO.puts(Enum.join(Enum.map([Map.get(m, "a"), Map.get(m, "b")], &inspect(&1)), " "))
   end
 end
 

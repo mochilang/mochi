@@ -876,6 +876,99 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 
 	if hasSide {
+		sideIdx := -1
+		outer := false
+		for i, j := range q.Joins {
+			if j.Side != nil {
+				if sideIdx != -1 {
+					outer = true
+					break
+				}
+				sideIdx = i
+				if *j.Side == "outer" {
+					outer = true
+				}
+			}
+		}
+
+		if sideIdx != -1 && !outer {
+			loops := []string{}
+			conds := []string{}
+			varNames := []string{sanitizeName(q.Var)}
+			for _, f := range q.Froms {
+				fs, err := c.compileExpr(f.Src)
+				if err != nil {
+					return "", err
+				}
+				loops = append(loops, fmt.Sprintf("%s <- %s", sanitizeName(f.Var), fs))
+				varNames = append(varNames, sanitizeName(f.Var))
+			}
+			sideSrc := ""
+			sideOn := ""
+			sideVar := ""
+			for i, j := range q.Joins {
+				js, err := c.compileExpr(j.Src)
+				if err != nil {
+					return "", err
+				}
+				on, err := c.compileExpr(j.On)
+				if err != nil {
+					return "", err
+				}
+				if i == sideIdx {
+					sideSrc = js
+					sideOn = on
+					sideVar = sanitizeName(j.Var)
+				} else {
+					loops = append(loops, fmt.Sprintf("%s <- %s", sanitizeName(j.Var), js))
+					varNames = append(varNames, sanitizeName(j.Var))
+					conds = append(conds, on)
+				}
+			}
+			if len(conds) > 0 {
+				jc := strings.Join(conds, " && ")
+				if cond != "" {
+					cond = fmt.Sprintf("(%s) && (%s)", jc, cond)
+				} else {
+					cond = jc
+				}
+			}
+
+			var b strings.Builder
+			b.WriteString("for ")
+			b.WriteString(sanitizeName(q.Var))
+			b.WriteString(" <- ")
+			b.WriteString(src)
+			for _, p := range loops {
+				b.WriteString(", ")
+				b.WriteString(p)
+			}
+			if cond != "" {
+				b.WriteString(", ")
+				b.WriteString(cond)
+			}
+			b.WriteString(" do\n")
+			b.WriteString("\t" + sideVar + " = Enum.find(" + sideSrc + ", fn " + sideVar + " -> " + sideOn + " end)\n")
+			b.WriteString("\t" + sel + "\n")
+			b.WriteString("end")
+
+			expr := b.String()
+			if sortExpr != "" {
+				expr = fmt.Sprintf("Enum.sort_by((%s), fn {_, k} -> k end)", expr)
+			}
+			if skipExpr != "" {
+				expr = fmt.Sprintf("Enum.drop(%s, %s)", expr, skipExpr)
+			}
+			if takeExpr != "" {
+				expr = fmt.Sprintf("Enum.take(%s, %s)", expr, takeExpr)
+			}
+			if sortExpr != "" {
+				expr = fmt.Sprintf("Enum.map(%s, fn {v, _} -> v end)", expr)
+			}
+
+			return expr, nil
+		}
+
 		fromSrcs := make([]string, len(q.Froms))
 		varNames := []string{sanitizeName(q.Var)}
 		for i, f := range q.Froms {

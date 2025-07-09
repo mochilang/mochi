@@ -25,7 +25,7 @@ defmodule Main do
         Enum.join(
           Enum.map(
             ["Order", entry.orderId, "by", entry.customerName, "- $", entry.total],
-            &to_string(&1)
+            &inspect(&1)
           ),
           " "
         )

@@ -33,7 +33,7 @@ defmodule Main do
                  end
                end).()
             ],
-            &to_string(&1)
+            &inspect(&1)
           ),
           " "
         )

@@ -19,7 +19,7 @@ defmodule Main do
     IO.inspect("--- Top products (excluding most expensive) ---")
 
     for item <- expensive do
-      IO.puts(Enum.join(Enum.map([item.name, "costs $", item.price], &to_string(&1)), " "))
+      IO.puts(Enum.join(Enum.map([item.name, "costs $", item.price], &inspect(&1)), " "))
     end
   end
 end

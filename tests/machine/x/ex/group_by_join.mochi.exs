@@ -31,7 +31,7 @@ defmodule Main do
     IO.inspect("--- Orders per customer ---")
 
     for s <- stats do
-      IO.puts(Enum.join(Enum.map([s.name, "orders:", s.count], &to_string(&1)), " "))
+      IO.puts(Enum.join(Enum.map([s.name, "orders:", s.count], &inspect(&1)), " "))
     end
   end
 

@@ -22,7 +22,7 @@ defmodule Main do
     for s <- stats do
       IO.puts(
         Enum.join(
-          Enum.map([s.city, ": count =", s.count, ", avg_age =", s.avg_age], &to_string(&1)),
+          Enum.map([s.city, ": count =", s.count, ", avg_age =", s.avg_age], &inspect(&1)),
           " "
         )
       )
