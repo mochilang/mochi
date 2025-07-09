@@ -39,9 +39,9 @@ begin
 end;
 
 var
-  _tmp0: specialize TFPGMap<Variant, Variant>;
-  _tmp1: specialize TFPGMap<Variant, Variant>;
-  _tmp2: specialize TFPGMap<Variant, Variant>;
+  _tmp0: specialize TFPGMap<string, Variant>;
+  _tmp1: specialize TFPGMap<string, Variant>;
+  _tmp2: specialize TFPGMap<string, Variant>;
   _tmp3: specialize TArray<Variant>;
   _tmp4: specialize TArray<Variant>;
   i: specialize TFPGMap<string, Variant>;
@@ -49,13 +49,13 @@ var
   _result: specialize TArray<Variant>;
 
 begin
-  _tmp0 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp0 := specialize TFPGMap<string, Variant>.Create;
   _tmp0.AddOrSetData('n', 1);
   _tmp0.AddOrSetData('v', 'a');
-  _tmp1 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp1 := specialize TFPGMap<string, Variant>.Create;
   _tmp1.AddOrSetData('n', 1);
   _tmp1.AddOrSetData('v', 'b');
-  _tmp2 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp2 := specialize TFPGMap<string, Variant>.Create;
   _tmp2.AddOrSetData('n', 2);
   _tmp2.AddOrSetData('v', 'c');
   items := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp0, _tmp1, _tmp2]);
@@ -63,8 +63,8 @@ begin
   SetLength(_tmp4, 0);
   for i in items do
     begin
-      _tmp3 := Concat(_tmp3, [i.v]);
-      _tmp4 := Concat(_tmp4, [i.n]);
+      _tmp3 := Concat(_tmp3, [i.KeyData['v']]);
+      _tmp4 := Concat(_tmp4, [i.KeyData['n']]);
     end;
   specialize _sortBy<Variant>(_tmp3, _tmp4);
   _result := _tmp3;
