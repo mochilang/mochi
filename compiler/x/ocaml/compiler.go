@@ -96,13 +96,13 @@ func (c *Compiler) Compile(prog *parser.Program, _ string) ([]byte, error) {
 	c.indent++
 	c.writeln("match m with")
 	c.indent++
-	c.writeln("| [] -> [(k,v)]")
-	c.writeln("| (k2,v2)::tl -> if k2 = k then (k,v)::tl else (k2,v2)::map_set tl k v")
+	c.writeln("| [] -> [(k,Obj.repr v)]")
+	c.writeln("| (k2,v2)::tl -> if k2 = k then (k,Obj.repr v)::tl else (k2,v2)::map_set tl k v")
 	c.indent--
 	c.indent--
 	c.buf.WriteByte('\n')
 
-	c.writeln("let map_get m k = List.assoc k m")
+	c.writeln("let map_get m k = Obj.obj (List.assoc k m)")
 	c.buf.WriteByte('\n')
 
 	c.writeln("let list_union a b = List.sort_uniq compare (a @ b)")
@@ -878,7 +878,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if isStringPrimary(p.Target) {
 					val = fmt.Sprintf("String.make 1 (String.get %s %s)", val, idx)
 				} else if c.isMapPrimary(p.Target) || isStringExpr(op.Index.Start) {
-					val = fmt.Sprintf("List.assoc %s %s", idx, val)
+					val = fmt.Sprintf("Obj.obj (List.assoc %s %s)", idx, val)
 				} else {
 					val = fmt.Sprintf("List.nth %s %s", val, idx)
 				}
@@ -938,7 +938,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		typ, _ := c.env.GetVar(base)
 		for _, field := range p.Selector.Tail {
 			if mt, ok := typ.(types.MapType); ok {
-				expr = fmt.Sprintf("List.assoc \"%s\" %s", field, expr)
+				expr = fmt.Sprintf("Obj.obj (List.assoc \"%s\" %s)", field, expr)
 				typ = mt.Value
 				continue
 			}
@@ -977,7 +977,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			items[i] = fmt.Sprintf("(%s,%s)", k, v)
+			items[i] = fmt.Sprintf("(%s,Obj.repr %s)", k, v)
 		}
 		return "[" + strings.Join(items, ";") + "]", nil
 	case p.Struct != nil:
