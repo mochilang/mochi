@@ -52,6 +52,50 @@ func sanitizeName(name string) string {
 	return res
 }
 
+func rootPrimary(e *parser.Expr) *parser.Primary {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil {
+		return nil
+	}
+	return e.Binary.Left.Value.Target
+}
+
+func isQueryExpr(e *parser.Expr) bool {
+	p := rootPrimary(e)
+	return p != nil && p.Query != nil && len(e.Binary.Right) == 0
+}
+
+func inferQueryType(q *parser.QueryExpr, env *types.Env) types.Type {
+	srcT := types.TypeOfExprBasic(q.Source, env)
+	var elem types.Type = types.AnyType{}
+	if lt, ok := srcT.(types.ListType); ok {
+		elem = lt.Elem
+	}
+	child := types.NewEnv(env)
+	child.SetVar(q.Var, elem, true)
+	for _, f := range q.Froms {
+		ft := types.TypeOfExprBasic(f.Src, env)
+		fe := types.AnyType{}
+		if lt, ok := ft.(types.ListType); ok {
+			fe = lt.Elem
+		}
+		child.SetVar(f.Var, fe, true)
+	}
+	for _, j := range q.Joins {
+		jt := types.TypeOfExprBasic(j.Src, env)
+		je := types.AnyType{}
+		if lt, ok := jt.(types.ListType); ok {
+			je = lt.Elem
+		}
+		child.SetVar(j.Var, je, true)
+	}
+	if q.Group != nil {
+		genv := types.NewEnv(child)
+		genv.SetVar(q.Group.Name, types.AnyType{}, true)
+		return types.ListType{Elem: types.TypeOfExprBasic(q.Select, genv)}
+	}
+	return types.ListType{Elem: types.TypeOfExprBasic(q.Select, child)}
+}
+
 func (c *Compiler) newTypedVar(typ string) string {
 	name := fmt.Sprintf("_tmp%d", c.tempVarCount)
 	c.tempVarCount++
