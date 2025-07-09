@@ -1528,6 +1528,7 @@ func (c *compiler) joinQuery(q *parser.QueryExpr) (string, error) {
 	}
 	joinSrcs := make([]string, len(q.Joins))
 	joinOns := make([]string, len(q.Joins))
+	joinSides := make([]string, len(q.Joins))
 	for i, j := range q.Joins {
 		js, err := c.expr(j.Src)
 		if err != nil {
@@ -1539,6 +1540,12 @@ func (c *compiler) joinQuery(q *parser.QueryExpr) (string, error) {
 		}
 		joinSrcs[i] = js
 		joinOns[i] = on
+		if j.Side != nil {
+			joinSides[i] = *j.Side
+		}
+	}
+	if len(q.Froms) == 0 && len(q.Joins) == 1 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && q.Where == nil && joinSides[0] != "" {
+		return c.joinSingleSide(q, src, joinSrcs[0], joinOns[0], joinSides[0])
 	}
 	savedVars := c.varTypes
 	savedFields := c.mapFields
@@ -1608,6 +1615,96 @@ func (c *compiler) joinQuery(q *parser.QueryExpr) (string, error) {
 		b.WriteString(indent + "}\n")
 	}
 	b.WriteString("\t}\n")
+	b.WriteString("\treturn _res\n")
+	b.WriteString("}())")
+	return b.String(), nil
+}
+
+func (c *compiler) joinSingleSide(q *parser.QueryExpr, src, joinSrc, onExpr, side string) (string, error) {
+	savedVars := c.varTypes
+	savedFields := c.mapFields
+	c.varTypes = copyMap(c.varTypes)
+	c.mapFields = copyMap(c.mapFields)
+	j := q.Joins[0]
+	c.varTypes[q.Var] = c.elementType(q.Source)
+	if fields := c.elementFieldTypes(q.Source); fields != nil {
+		c.mapFields[q.Var] = fields
+	}
+	c.varTypes[j.Var] = c.elementType(j.Src)
+	if fields := c.elementFieldTypes(j.Src); fields != nil {
+		c.mapFields[j.Var] = fields
+	}
+	sel, err := c.expr(q.Select)
+	c.varTypes = savedVars
+	c.mapFields = savedFields
+	if err != nil {
+		return "", err
+	}
+	qv := q.Var
+	jv := j.Var
+	var b strings.Builder
+	b.WriteString("({\n")
+	b.WriteString("\tvar _res: [Any] = []\n")
+	b.WriteString(fmt.Sprintf("\tlet _src = %s\n", src))
+	b.WriteString(fmt.Sprintf("\tlet _join = %s\n", joinSrc))
+	if side == "outer" {
+		b.WriteString("\tvar _matched = Array(repeating: false, count: _join.count)\n")
+	}
+	if side == "right" {
+		b.WriteString(fmt.Sprintf("\tfor %s in _join {\n", jv))
+		b.WriteString("\t\tvar _m = false\n")
+		b.WriteString(fmt.Sprintf("\t\tfor %s in _src {\n", qv))
+		b.WriteString(fmt.Sprintf("\t\t\tif !(%s) { continue }\n", onExpr))
+		b.WriteString("\t\t\t_m = true\n")
+		b.WriteString(fmt.Sprintf("\t\t\t_res.append(%s)\n", sel))
+		b.WriteString("\t\t}\n")
+		b.WriteString("\t\tif !_m {\n")
+		b.WriteString(fmt.Sprintf("\t\t\tlet %s: Any? = nil\n", qv))
+		b.WriteString(fmt.Sprintf("\t\t\t_res.append(%s)\n", sel))
+		b.WriteString("\t\t}\n")
+		b.WriteString("\t}\n")
+	} else {
+		b.WriteString(fmt.Sprintf("\tfor %s in _src {\n", qv))
+		if side != "" {
+			b.WriteString("\t\tvar _m = false\n")
+		}
+		if side == "outer" {
+			b.WriteString(fmt.Sprintf("\t\tfor (ri, %s) in _join.enumerated() {\n", jv))
+		} else {
+			b.WriteString(fmt.Sprintf("\t\tfor %s in _join {\n", jv))
+		}
+		b.WriteString(fmt.Sprintf("\t\t\tif !(%s) { continue }\n", onExpr))
+		if side == "outer" {
+			b.WriteString("\t\t\t_matched[ri] = true\n")
+		}
+		if side != "" {
+			b.WriteString("\t\t\t_m = true\n")
+		}
+		b.WriteString(fmt.Sprintf("\t\t\t_res.append(%s)\n", sel))
+		b.WriteString("\t\t}\n")
+		if side == "outer" {
+			b.WriteString("\t\tif !_m {\n")
+			b.WriteString(fmt.Sprintf("\t\t\tlet %s: Any? = nil\n", jv))
+			b.WriteString(fmt.Sprintf("\t\t\t_res.append(%s)\n", sel))
+			b.WriteString("\t\t}\n")
+			b.WriteString("\t}\n")
+			b.WriteString(fmt.Sprintf("\tfor (ri, %s) in _join.enumerated() {\n", jv))
+			b.WriteString("\t\tif !_matched[ri] {\n")
+			b.WriteString(fmt.Sprintf("\t\t\tlet %s: Any? = nil\n", qv))
+			b.WriteString(fmt.Sprintf("\t\t\tlet %s = %s\n", jv, jv))
+			b.WriteString(fmt.Sprintf("\t\t\t_res.append(%s)\n", sel))
+			b.WriteString("\t\t}\n")
+			b.WriteString("\t}\n")
+		} else if side == "left" {
+			b.WriteString("\t\tif !_m {\n")
+			b.WriteString(fmt.Sprintf("\t\t\tlet %s: Any? = nil\n", jv))
+			b.WriteString(fmt.Sprintf("\t\t\t_res.append(%s)\n", sel))
+			b.WriteString("\t\t}\n")
+			b.WriteString("\t}\n")
+		} else {
+			b.WriteString("\t}\n")
+		}
+	}
 	b.WriteString("\treturn _res\n")
 	b.WriteString("}())")
 	return b.String(), nil
