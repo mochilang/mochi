@@ -472,6 +472,38 @@ func TestCompilePrograms(t *testing.T) {
 	}
 }
 
+func TestMain(m *testing.M) {
+        code := m.Run()
+        updateReadme()
+        os.Exit(code)
+}
+
+func updateReadme() {
+        root := findRepoRoot(&testing.T{})
+        srcDir := filepath.Join(root, "tests", "vm", "valid")
+        outDir := filepath.Join(root, "tests", "machine", "x", "python")
+        files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+        total := len(files)
+        compiled := 0
+        var lines []string
+        for _, f := range files {
+                name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+                mark := "[ ]"
+                if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
+                        compiled++
+                        mark = "[x]"
+                }
+                lines = append(lines, fmt.Sprintf("- %s %s.mochi", mark, name))
+        }
+        var buf bytes.Buffer
+        buf.WriteString("# Python Machine Translations\n\n")
+        buf.WriteString("This directory contains Python code generated from the Mochi programs in `tests/vm/valid` using the Python compiler. Each program was compiled and executed. Successful runs produced an `.out` file while failures produced an `.error` file.\n\n")
+        fmt.Fprintf(&buf, "Compiled programs: %d/%d successful.\n", compiled, total)
+        buf.WriteString(strings.Join(lines, "\n"))
+        buf.WriteString("\n")
+        _ = os.WriteFile(filepath.Join(outDir, "README.md"), buf.Bytes(), 0o644)
+}
+
 func compileAndRun(t *testing.T, src, outDir, name string) {
 	data, err := os.ReadFile(src)
 	if err != nil {
