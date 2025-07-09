@@ -1,0 +1,5 @@
+Error on line 0: run error: exit status 1
+# command-line-arguments
+../../../tests/machine/x/go/right_join.go:74:6: non-boolean condition in if statement
+
+1: //go:build ignore

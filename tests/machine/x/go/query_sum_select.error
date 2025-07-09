@@ -1,0 +1,13 @@
+Error on line 0: run error: exit status 1
+panic: sum() expects list or group
+
+goroutine 1 [running]:
+main._sum({0x207faa0?, 0xc00022ff08?})
+	/workspace/mochi/tests/machine/x/go/query_sum_select.go:47 +0x2bf
+main.main.func1(...)
+	/workspace/mochi/tests/machine/x/go/query_sum_select.go:17
+main.main()
+	/workspace/mochi/tests/machine/x/go/query_sum_select.go:22 +0x8d
+exit status 2
+
+1: //go:build ignore

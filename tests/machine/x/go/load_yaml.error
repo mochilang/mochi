@@ -1,0 +1,13 @@
+Error on line 0: run error: exit status 1
+panic: open ../interpreter/valid/people.yaml: no such file or directory
+
+goroutine 1 [running]:
+main._load({0x211d10d?, 0x20?}, 0xc0001dbd38?)
+	/workspace/mochi/tests/machine/x/go/load_yaml.go:150 +0x265
+main.main.func1(...)
+	/workspace/mochi/tests/machine/x/go/load_yaml.go:20
+main.main()
+	/workspace/mochi/tests/machine/x/go/load_yaml.go:26 +0x27b
+exit status 2
+
+1: //go:build ignore

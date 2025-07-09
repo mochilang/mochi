@@ -1,0 +1,10 @@
+Error on line 0: output mismatch
+-- got --
+[2 3]
+[1 2]
+ell
+-- want --
+2 3
+1 2
+ell
+1: //go:build ignore
