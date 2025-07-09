@@ -936,7 +936,7 @@ func typeString(t types.Type) string {
 	case types.FuncType:
 		params := make([]string, len(tt.Params))
 		for i, p := range tt.Params {
-			params[i] = typeString(p)
+			params[i] = fmt.Sprintf("p%d: %s", i, typeString(p))
 		}
 		if tt.Return == nil || tt.Return == (types.VoidType{}) {
 			return fmt.Sprintf("procedure(%s)", strings.Join(params, "; "))

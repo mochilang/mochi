@@ -13,7 +13,7 @@ begin
 end;
 
 var
-  square: function (integer): integer;
+  square: function (p0: integer): integer;
 
 begin
   square := @_lambda0;
