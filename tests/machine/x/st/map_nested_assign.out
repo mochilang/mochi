@@ -1,0 +1,12 @@
+Object: Association new "<0x7f66808123d0>" error: did not understand #newFrom:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+Association(Object)>>doesNotUnderstand: #newFrom: (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/map_nested_assign.st:2)
+Object: nil error: did not understand #at:at:put:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+UndefinedObject(Object)>>doesNotUnderstand: #at:at:put: (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/map_nested_assign.st:3)
+Object: nil error: did not understand #at:at:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+UndefinedObject(Object)>>doesNotUnderstand: #at:at: (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/map_nested_assign.st:4)

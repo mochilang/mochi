@@ -1,0 +1,13 @@
+Object: Dictionary error: did not understand #newFrom:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+Dictionary class(Object)>>doesNotUnderstand: #newFrom: (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/group_by_multi_join.st:2)
+Object: Dictionary error: did not understand #newFrom:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+Dictionary class(Object)>>doesNotUnderstand: #newFrom: (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/group_by_multi_join.st:3)
+Object: Dictionary error: did not understand #newFrom:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+Dictionary class(Object)>>doesNotUnderstand: #newFrom: (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/group_by_multi_join.st:4)
+nil

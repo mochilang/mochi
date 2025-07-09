@@ -1,0 +1,6 @@
+42
+7/2
+Object: 7 error: did not understand #%
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+SmallInteger(Object)>>doesNotUnderstand: #% (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/math_ops.st:3)

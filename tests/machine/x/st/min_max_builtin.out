@@ -1,0 +1,8 @@
+Object: Array new: 3 "<0x7f66808123a0>" error: did not understand #min
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+Array(Object)>>doesNotUnderstand: #min (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/min_max_builtin.st:3)
+Object: Array new: 3 "<0x7f66808123a0>" error: did not understand #max
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+Array(Object)>>doesNotUnderstand: #max (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/min_max_builtin.st:4)

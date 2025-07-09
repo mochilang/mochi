@@ -1,4 +1,4 @@
-| nation customer orders lineitem start_date end_date result |
+| lineitem start_date end_date result nation customer orders |
 nation := {Dictionary newFrom: {n_nationkey -> 1. n_name -> 'BRAZIL'}}.
 customer := {Dictionary newFrom: {c_custkey -> 1. c_name -> 'Alice'. c_acctbal -> 100. c_nationkey -> 1. c_address -> '123 St'. c_phone -> '123-456'. c_comment -> 'Loyal'}}.
 orders := {Dictionary newFrom: {o_orderkey -> 1000. o_custkey -> 1. o_orderdate -> '1993-10-15'}. Dictionary newFrom: {o_orderkey -> 2000. o_custkey -> 1. o_orderdate -> '1994-01-02'}}.

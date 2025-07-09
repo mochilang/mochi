@@ -1,0 +1,14 @@
+Object: 'forest' error: Invalid argument false: must be a SmallInteger
+SystemExceptions.WrongClass(Exception)>>signal (ExcHandling.st:254)
+SystemExceptions.WrongClass class>>signalOn:mustBe: (SysExcept.st:778)
+SystemExceptions.WrongClass class>>signalOn:mustBe: (SysExcept.st:774)
+String(Object)>>checkIndexableBounds: (Object.st:794)
+String>>at: (String.st:312)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/string_prefix_slice.st:4)
+Object: 'desert' error: Invalid argument false: must be a SmallInteger
+SystemExceptions.WrongClass(Exception)>>signal (ExcHandling.st:254)
+SystemExceptions.WrongClass class>>signalOn:mustBe: (SysExcept.st:778)
+SystemExceptions.WrongClass class>>signalOn:mustBe: (SysExcept.st:774)
+String(Object)>>checkIndexableBounds: (Object.st:794)
+String>>at: (String.st:312)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/string_prefix_slice.st:6)
