@@ -112,6 +112,14 @@ func (c *Compiler) newTmp() string {
 	return name
 }
 
+// newMapTmp returns a temporary variable name specifically for map literals.
+// Using a distinct prefix makes the generated code easier to read.
+func (c *Compiler) newMapTmp() string {
+	name := fmt.Sprintf("_map%d", c.tmpCount)
+	c.tmpCount++
+	return name
+}
+
 func (c *Compiler) newLabel() string {
 	name := fmt.Sprintf("blk%d", c.labelCount)
 	c.labelCount++

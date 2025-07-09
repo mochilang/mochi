@@ -98,5 +98,5 @@
 - [ ] while_loop.mochi
 
 ## TODO
-- Regenerate outputs after fixing map literal temporary variable names
-- Support map literals in iterations by emitting `std.AutoHashMap` even when keys are simple
+- [x] Regenerate outputs after fixing map literal temporary variable names
+- [x] Support map literals in iterations by emitting `std.AutoHashMap` even when keys are simple
