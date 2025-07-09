@@ -203,25 +203,42 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln(fmt.Sprintf("defmodule %s do", mod))
 	c.indent++
 	// collect top-level constants as module attributes
-        helperRe := regexp.MustCompile(`_[a-zA-Z0-9]+\(`)
-        for _, s := range prog.Statements {
-                if s.Let != nil {
-                        val := "nil"
-                        if s.Let.Value != nil {
-                                v, err := c.compileExpr(s.Let.Value)
-                                if err != nil {
-                                        return nil, err
-                                }
-                                val = v
-                        }
-                        // avoid module attributes that invoke helper functions
-                        if !helperRe.MatchString(val) {
-                                name := sanitizeName(s.Let.Name)
-                                c.attrs[name] = val
-                                c.writeln(fmt.Sprintf("@%s %s", name, val))
-                        }
-                }
-        }
+	helperRe := regexp.MustCompile(`_[a-zA-Z0-9]+\(`)
+	letNames := []string{}
+	for _, s := range prog.Statements {
+		if s.Let != nil {
+			letNames = append(letNames, sanitizeName(s.Let.Name))
+		}
+	}
+	containsVar := func(expr, self string) bool {
+		for _, n := range letNames {
+			if n == self {
+				continue
+			}
+			if strings.Contains(expr, n) {
+				return true
+			}
+		}
+		return false
+	}
+	for _, s := range prog.Statements {
+		if s.Let != nil {
+			val := "nil"
+			if s.Let.Value != nil {
+				v, err := c.compileExpr(s.Let.Value)
+				if err != nil {
+					return nil, err
+				}
+				val = v
+			}
+			name := sanitizeName(s.Let.Name)
+			// avoid module attributes that invoke helper functions or reference other vars
+			if !helperRe.MatchString(val) && !containsVar(val, name) {
+				c.attrs[name] = val
+				c.writeln(fmt.Sprintf("@%s %s", name, val))
+			}
+		}
+	}
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
 			if err := c.compileFunStmt(s.Fun); err != nil {
@@ -918,7 +935,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if cond != "" {
 			whereFn = fmt.Sprintf("fn %s -> %s end", allParams, cond)
 		}
-               var b strings.Builder
+		var b strings.Builder
 		b.WriteString("(fn ->\n")
 		b.WriteString("\tsrc = " + src + "\n")
 		b.WriteString("\trows = _query(src, [\n")
