@@ -1177,14 +1177,34 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 }
 
 func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, error) {
-	args := make([]string, len(call.Args))
-	for i, a := range call.Args {
-		v, err := c.compileExpr(a)
-		if err != nil {
-			return "", err
-		}
-		args[i] = v
-	}
+       args := make([]string, len(call.Args))
+       for i, a := range call.Args {
+               v, err := c.compileExpr(a)
+               if err != nil {
+                       return "", err
+               }
+               args[i] = v
+       }
+       paramCount := 0
+       if c.env != nil {
+               if t, err := c.env.GetVar(call.Func); err == nil {
+                       if ft, ok := t.(types.FuncType); ok {
+                               paramCount = len(ft.Params)
+                       }
+               }
+       }
+       if paramCount > 0 && len(args) < paramCount && recv == "" {
+               rest := make([]string, paramCount-len(args))
+               for i := range rest {
+                       rest[i] = fmt.Sprintf("_p%d", i)
+               }
+               all := append([]string{strings.Join(args, " ")}, rest...)
+               callArgs := strings.TrimSpace(strings.Join(all, " "))
+               if callArgs != "" {
+                       callArgs = " " + callArgs
+               }
+               return fmt.Sprintf("(lambda (%s) (%s%s))", strings.Join(rest, " "), sanitizeName(call.Func), callArgs), nil
+       }
 	switch call.Func {
 	case "len":
 		if len(args) != 1 {
