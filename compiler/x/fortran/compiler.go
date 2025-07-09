@@ -161,6 +161,11 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 func (c *Compiler) compileLet(l *parser.LetStmt) error {
 	if !c.declared[l.Name] {
 		typ := typeName(l.Type)
+		if l.Type == nil {
+			if t, err := c.env.GetVar(l.Name); err == nil {
+				typ = typeNameFromTypes(t)
+			}
+		}
 		if lst := listLiteral(l.Value); lst != nil {
 			elems := make([]string, len(lst.Elems))
 			for i, e := range lst.Elems {
@@ -192,6 +197,11 @@ func (c *Compiler) compileLetDecl(l *parser.LetStmt) error {
 		return nil
 	}
 	typ := typeName(l.Type)
+	if l.Type == nil {
+		if t, err := c.env.GetVar(l.Name); err == nil {
+			typ = typeNameFromTypes(t)
+		}
+	}
 	if lst := listLiteral(l.Value); lst != nil {
 		c.writelnDecl(fmt.Sprintf("%s, dimension(%d) :: %s", typ, len(lst.Elems), l.Name))
 	} else {
@@ -515,7 +525,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			res = fmt.Sprintf("%s(%s)", res, v)
+			if types.IsStringPrimary(p.Target, c.env) {
+				res = fmt.Sprintf("%s(%s:%s)", res, v, v)
+			} else {
+				res = fmt.Sprintf("%s(%s)", res, v)
+			}
 		case op.Field != nil:
 			res = fmt.Sprintf("%s%%%s", res, op.Field.Name)
 		case op.Cast != nil:
@@ -560,6 +574,21 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 			} else {
 				return "", fmt.Errorf("unsupported cast")
+			}
+		case op.Call != nil:
+			args := make([]string, len(op.Call.Args))
+			for i, a := range op.Call.Args {
+				v, err := c.compileExpr(a)
+				if err != nil {
+					return "", err
+				}
+				args[i] = v
+			}
+			if strings.HasSuffix(res, "%contains") && len(args) == 1 {
+				base := strings.TrimSuffix(res, "%contains")
+				res = fmt.Sprintf("index(%s,%s) /= 0", base, args[0])
+			} else {
+				res = fmt.Sprintf("%s(%s)", res, strings.Join(args, ","))
 			}
 		default:
 			return "", fmt.Errorf("postfix operations not supported")
