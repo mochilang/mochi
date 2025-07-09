@@ -68,6 +68,12 @@ The table below tracks which Mochi examples compile successfully using the curre
 - dataset_where_filter
 - exists_builtin
 - values_builtin
+- inner_join
+- join_multi
+- left_join
+- left_join_multi
+- outer_join
+- right_join
 
 ### Failed
 - dataset_sort_take_limit
@@ -82,20 +88,14 @@ The table below tracks which Mochi examples compile successfully using the curre
 - group_by_sort
 - group_items_iteration
 - in_operator_extended
-- inner_join
-- join_multi
 - json_builtin
-- left_join
-- left_join_multi
 - load_yaml
 - map_int_key
 - match_expr
 - match_full
 - nested_function
 - order_by_map
-- outer_join
 - query_sum_select
-- right_join
 - save_jsonl_stdout
 - sort_stable
 - string_in_operator

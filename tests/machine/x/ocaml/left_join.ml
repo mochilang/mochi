@@ -33,13 +33,38 @@ let slice lst i j =
 
 let string_slice s i j = String.sub s i (j - i)
 
-let customers = [[("id",1);("name","Alice")];[("id",2);("name","Bob")]]
-let orders = [[("id",100);("customerId",1);("total",250)];[("id",101);("customerId",3);("total",80)]]
+let list_set lst idx value =
+  List.mapi (fun i v -> if i = idx then value else v) lst
+
+let rec map_set m k v =
+  match m with
+    | [] -> [(k,Obj.repr v)]
+    | (k2,v2)::tl -> if k2 = k then (k,Obj.repr v)::tl else (k2,v2)::map_set tl k v
+
+let map_get m k = Obj.obj (List.assoc k m)
+
+let list_union a b = List.sort_uniq compare (a @ b)
+let list_except a b = List.filter (fun x -> not (List.mem x b)) a
+let list_intersect a b = List.filter (fun x -> List.mem x b) a |> List.sort_uniq compare
+let list_union_all a b = a @ b
+let sum lst = List.fold_left (+) 0 lst
+
+let customers = [[("id",Obj.repr (1));("name",Obj.repr ("Alice"))];[("id",Obj.repr (2));("name",Obj.repr ("Bob"))]]
+let orders = [[("id",Obj.repr (100));("customerId",Obj.repr (1));("total",Obj.repr (250))];[("id",Obj.repr (101));("customerId",Obj.repr (3));("total",Obj.repr (80))]]
 let result = (let __res0 = ref [] in
   List.iter (fun o ->
-      __res0 := [("orderId",o.id);("customer",c);("total",o.total)] :: !__res0;
+    let matched = ref false in
+    List.iter (fun c ->
+      if (Obj.obj (List.assoc "customerId" o) = Obj.obj (List.assoc "id" c)) then (
+        __res0 := [("orderId",Obj.repr (Obj.obj (List.assoc "id" o)));("customer",Obj.repr (c));("total",Obj.repr (Obj.obj (List.assoc "total" o)))] :: !__res0;
+        matched := true)
+    ) customers;
+    if not !matched then (
+      let c = Obj.magic () in
+      __res0 := [("orderId",Obj.repr (Obj.obj (List.assoc "id" o)));("customer",Obj.repr (c));("total",Obj.repr (Obj.obj (List.assoc "total" o)))] :: !__res0;
+    );
   ) orders;
-List.rev !__res0)
+  List.rev !__res0)
 
 
 let () =

@@ -575,21 +575,28 @@ func (c *Compiler) compileLeftJoin(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	mapT := types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
+	child := types.NewEnv(c.env)
+	child.SetVar(q.Var, mapT, true)
+	child.SetVar(join.Var, mapT, true)
+	sub := *c
+	sub.env = child
+
 	on := "true"
 	if join.On != nil {
-		on, err = c.compileExpr(join.On)
+		on, err = sub.compileExpr(join.On)
 		if err != nil {
 			return "", err
 		}
 	}
 	where := ""
 	if q.Where != nil {
-		where, err = c.compileExpr(q.Where)
+		where, err = sub.compileExpr(q.Where)
 		if err != nil {
 			return "", err
 		}
 	}
-	sel, err := c.compileExpr(q.Select)
+	sel, err := sub.compileExpr(q.Select)
 	if err != nil {
 		return "", err
 	}
@@ -631,21 +638,28 @@ func (c *Compiler) compileRightJoin(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	mapT := types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
+	child := types.NewEnv(c.env)
+	child.SetVar(q.Var, mapT, true)
+	child.SetVar(join.Var, mapT, true)
+	sub := *c
+	sub.env = child
+
 	on := "true"
 	if join.On != nil {
-		on, err = c.compileExpr(join.On)
+		on, err = sub.compileExpr(join.On)
 		if err != nil {
 			return "", err
 		}
 	}
 	where := ""
 	if q.Where != nil {
-		where, err = c.compileExpr(q.Where)
+		where, err = sub.compileExpr(q.Where)
 		if err != nil {
 			return "", err
 		}
 	}
-	sel, err := c.compileExpr(q.Select)
+	sel, err := sub.compileExpr(q.Select)
 	if err != nil {
 		return "", err
 	}
@@ -687,21 +701,28 @@ func (c *Compiler) compileOuterJoin(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	mapT := types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
+	child := types.NewEnv(c.env)
+	child.SetVar(q.Var, mapT, true)
+	child.SetVar(join.Var, mapT, true)
+	sub := *c
+	sub.env = child
+
 	on := "true"
 	if join.On != nil {
-		on, err = c.compileExpr(join.On)
+		on, err = sub.compileExpr(join.On)
 		if err != nil {
 			return "", err
 		}
 	}
 	where := ""
 	if q.Where != nil {
-		where, err = c.compileExpr(q.Where)
+		where, err = sub.compileExpr(q.Where)
 		if err != nil {
 			return "", err
 		}
 	}
-	sel, err := c.compileExpr(q.Select)
+	sel, err := sub.compileExpr(q.Select)
 	if err != nil {
 		return "", err
 	}
@@ -757,21 +778,28 @@ func (c *Compiler) compileJoin(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	mapT := types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
+	child := types.NewEnv(c.env)
+	child.SetVar(q.Var, mapT, true)
+	child.SetVar(join.Var, mapT, true)
+	sub := *c
+	sub.env = child
+
 	on := "true"
 	if join.On != nil {
-		on, err = c.compileExpr(join.On)
+		on, err = sub.compileExpr(join.On)
 		if err != nil {
 			return "", err
 		}
 	}
 	where := ""
 	if q.Where != nil {
-		where, err = c.compileExpr(q.Where)
+		where, err = sub.compileExpr(q.Where)
 		if err != nil {
 			return "", err
 		}
 	}
-	sel, err := c.compileExpr(q.Select)
+	sel, err := sub.compileExpr(q.Select)
 	if err != nil {
 		return "", err
 	}
@@ -1028,7 +1056,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			items[i] = fmt.Sprintf("(%s,Obj.repr %s)", k, v)
+			items[i] = fmt.Sprintf("(%s,Obj.repr (%s))", k, v)
 		}
 		return "[" + strings.Join(items, ";") + "]", nil
 	case p.Struct != nil:
