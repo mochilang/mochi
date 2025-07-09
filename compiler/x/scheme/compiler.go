@@ -362,7 +362,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("(when (> failures 0) (display \"\\n[FAIL] \") (display failures) (display \" test(s) failed.\\n\"))")
 	}
 	code := c.buf.Bytes()
-	if c.needListSet || c.needStringSet || c.needMapHelpers || c.needDataset || c.needListOps || c.needSlice || c.needGroup || c.needJSON || len(c.tests) > 0 {
+	if c.needListSet || c.needStringSet || c.needMapHelpers || c.needDataset || c.needListOps || c.needSlice || c.needGroup || c.needJSON || c.needStringLib || len(c.tests) > 0 {
 		var pre bytes.Buffer
 		if c.needListSet {
 			pre.WriteString("(define (list-set lst idx val)\n")
@@ -636,6 +636,11 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			if s.Let.Type.Generic != nil && s.Let.Type.Generic.Name == "map" {
 				c.vars[s.Let.Name] = "map"
 			}
+			if s.Let.Type.Simple != nil && c.env != nil {
+				if _, ok := c.env.GetStruct(*s.Let.Type.Simple); ok {
+					c.vars[s.Let.Name] = "map"
+				}
+			}
 		} else {
 			if c.isStringExpr(s.Let.Value) {
 				c.vars[s.Let.Name] = "string"
@@ -662,6 +667,11 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			if s.Var.Type.Generic != nil && s.Var.Type.Generic.Name == "map" {
 				c.vars[s.Var.Name] = "map"
 			}
+			if s.Var.Type.Simple != nil && c.env != nil {
+				if _, ok := c.env.GetStruct(*s.Var.Type.Simple); ok {
+					c.vars[s.Var.Name] = "map"
+				}
+			}
 		} else {
 			if c.isStringExpr(s.Var.Value) {
 				c.vars[s.Var.Name] = "string"
@@ -676,11 +686,16 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return err
 		}
 		lhs := sanitizeName(s.Assign.Name)
-		if len(s.Assign.Index) == 0 {
+		if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
 			c.writeln(fmt.Sprintf("(set! %s %s)", lhs, rhs))
 			break
 		}
-		expr, err := c.compileIndexedSet(lhs, s.Assign.Index, rhs, c.varType(s.Assign.Name) == "string", c.varType(s.Assign.Name) == "map")
+		var expr string
+		if len(s.Assign.Field) > 0 {
+			expr, err = c.compileFieldSet(lhs, s.Assign.Field, rhs)
+		} else {
+			expr, err = c.compileIndexedSet(lhs, s.Assign.Index, rhs, c.varType(s.Assign.Name) == "string", c.varType(s.Assign.Name) == "map")
+		}
 		if err != nil {
 			return err
 		}
@@ -767,6 +782,24 @@ func (c *Compiler) compileIndexedSet(name string, idx []*parser.IndexOp, rhs str
 	return fmt.Sprintf("(list-set %s %s %s)", name, ie, inner), nil
 }
 
+func (c *Compiler) compileFieldSet(name string, fields []*parser.FieldOp, rhs string) (string, error) {
+	if len(fields) == 0 {
+		return rhs, nil
+	}
+	key := fmt.Sprintf("'%s", sanitizeName(fields[0].Name))
+	if len(fields) == 1 {
+		c.needMapHelpers = true
+		return fmt.Sprintf("(map-set %s %s %s)", name, key, rhs), nil
+	}
+	c.needMapHelpers = true
+	inner := fmt.Sprintf("(map-get %s %s)", name, key)
+	sub, err := c.compileFieldSet(inner, fields[1:], rhs)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("(map-set %s %s %s)", name, key, sub), nil
+}
+
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 	if e == nil {
 		return "'()", nil
@@ -811,6 +844,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		case "in":
 			root := rootNamePostfix(rightAst)
 			if c.varType(root) == "string" || c.isStringPostfix(rightAst) {
+				c.needStringLib = true
 				expr = fmt.Sprintf("(if (string-contains %s %s) #t #f)", right, expr)
 			} else if c.varType(root) == "map" || c.isMapPostfix(rightAst) {
 				expr = fmt.Sprintf("(if (assoc %s %s) #t #f)", expr, right)
@@ -831,7 +865,12 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			c.needListOps = true
 			expr = fmt.Sprintf("(_intersect %s %s)", expr, right)
 		case "<", "<=", ">", ">=":
-			expr = fmt.Sprintf("(%s %s %s)", op.Op, expr, right)
+			if c.isStringUnary(leftAst) || c.isStringPostfix(rightAst) {
+				fn := map[string]string{"<": "string<?", "<=": "string<=?", ">": "string>?", ">=": "string>=?"}[op.Op]
+				expr = fmt.Sprintf("(%s %s %s)", fn, expr, right)
+			} else {
+				expr = fmt.Sprintf("(%s %s %s)", op.Op, expr, right)
+			}
 		default:
 			expr = fmt.Sprintf("(%s %s %s)", op.Op, expr, right)
 		}
@@ -1108,7 +1147,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		expr := sanitizeName(p.Selector.Root)
 		for _, s := range p.Selector.Tail {
 			c.needMapHelpers = true
-			expr = fmt.Sprintf("(map-get %s \"%s\")", expr, sanitizeName(s))
+			expr = fmt.Sprintf("(map-get %s '%s)", expr, sanitizeName(s))
 		}
 		return expr, nil
 	case p.Group != nil:

@@ -1,4 +1,4 @@
-(begin (display (< "a" "b")) (newline))
-(begin (display (<= "a" "a")) (newline))
-(begin (display (> "b" "a")) (newline))
-(begin (display (>= "b" "b")) (newline))
+(begin (display (string<? "a" "b")) (newline))
+(begin (display (string<=? "a" "a")) (newline))
+(begin (display (string>? "b" "a")) (newline))
+(begin (display (string>=? "b" "b")) (newline))

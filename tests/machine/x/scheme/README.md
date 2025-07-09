@@ -1,4 +1,4 @@
-# Scheme Machine Results (83/97 compiled and ran)
+# Scheme Machine Results (86/97 compiled and ran)
 
 ## Success
 - [x] append_builtin.mochi
@@ -63,6 +63,8 @@
 - [x] sort_stable.mochi
 - [x] string_concat.mochi
 - [x] string_contains.mochi
+- [x] string_compare.mochi
+- [x] string_in_operator.mochi
 - [x] string_index.mochi
 - [x] substring_builtin.mochi
 - [x] sum_builtin.mochi
@@ -83,11 +85,11 @@
 - [ ] left_join.mochi
 - [ ] left_join_multi.mochi
 - [ ] load_yaml.mochi
- - [x] map_nested_assign.mochi
+- [x] map_nested_assign.mochi
 - [x] nested_function.mochi
-- [ ] outer_join.mochi
-- [ ] partial_application.mochi
-- [ ] record_assign.mochi
+ - [x] record_assign.mochi
+ - [ ] outer_join.mochi
+ - [ ] partial_application.mochi
 - [ ] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
 - [x] slice.mochi
