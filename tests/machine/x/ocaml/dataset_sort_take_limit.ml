@@ -33,7 +33,23 @@ let slice lst i j =
 
 let string_slice s i j = String.sub s i (j - i)
 
-let products = [[("name","Laptop");("price",1500)];[("name","Smartphone");("price",900)];[("name","Tablet");("price",600)];[("name","Monitor");("price",300)];[("name","Keyboard");("price",100)];[("name","Mouse");("price",50)];[("name","Headphones");("price",200)]]
+let list_set lst idx value =
+  List.mapi (fun i v -> if i = idx then value else v) lst
+
+let rec map_set m k v =
+  match m with
+    | [] -> [(k,Obj.repr v)]
+    | (k2,v2)::tl -> if k2 = k then (k,Obj.repr v)::tl else (k2,v2)::map_set tl k v
+
+let map_get m k = Obj.obj (List.assoc k m)
+
+let list_union a b = List.sort_uniq compare (a @ b)
+let list_except a b = List.filter (fun x -> not (List.mem x b)) a
+let list_intersect a b = List.filter (fun x -> List.mem x b) a |> List.sort_uniq compare
+let list_union_all a b = a @ b
+let sum lst = List.fold_left (+) 0 lst
+
+let products = [[("name",Obj.repr "Laptop");("price",Obj.repr 1500)];[("name",Obj.repr "Smartphone");("price",Obj.repr 900)];[("name",Obj.repr "Tablet");("price",Obj.repr 600)];[("name",Obj.repr "Monitor");("price",Obj.repr 300)];[("name",Obj.repr "Keyboard");("price",Obj.repr 100)];[("name",Obj.repr "Mouse");("price",Obj.repr 50)];[("name",Obj.repr "Headphones");("price",Obj.repr 200)]]
 let expensive = (let __res0 = ref [] in
   List.iter (fun p ->
       __res0 := p :: !__res0;
