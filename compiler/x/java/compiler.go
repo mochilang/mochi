@@ -18,10 +18,11 @@ type Compiler struct {
 	funRet          map[string]string
 	types           map[string]*parser.TypeDecl
 	needFuncImports bool
+	tmpCount        int
 }
 
 func New() *Compiler {
-	return &Compiler{buf: new(bytes.Buffer), helpers: make(map[string]bool), vars: make(map[string]string), funRet: make(map[string]string), types: make(map[string]*parser.TypeDecl)}
+	return &Compiler{buf: new(bytes.Buffer), helpers: make(map[string]bool), vars: make(map[string]string), funRet: make(map[string]string), types: make(map[string]*parser.TypeDecl), tmpCount: 0}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -310,18 +311,7 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 		return fmt.Sprintf("List<%s>", et)
 	}
 	if m := isMapLiteral(e); m != nil {
-		kt, vt := "Object", "Object"
-		if len(m.Items) > 0 {
-			kt = wrapperType(c.inferType(m.Items[0].Key))
-			if kt == "var" {
-				kt = c.litType(m.Items[0].Key)
-			}
-			vt = wrapperType(c.inferType(m.Items[0].Value))
-			if vt == "var" {
-				vt = c.litType(m.Items[0].Value)
-			}
-		}
-		return fmt.Sprintf("Map<%s,%s>", kt, vt)
+		return "Map<Object,Object>"
 	}
 	p := rootPrimary(e)
 	if p != nil && p.Lit != nil {
@@ -408,6 +398,32 @@ func isMapLiteral(e *parser.Expr) *parser.MapLiteral {
 		return p.Map
 	}
 	return nil
+}
+
+func (c *Compiler) simpleStringKey(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return "", false
+	}
+	if len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value.Target
+	if p == nil {
+		return "", false
+	}
+	if p.Selector != nil && len(p.Selector.Tail) == 0 {
+		if _, ok := c.vars[p.Selector.Root]; !ok {
+			return p.Selector.Root, true
+		}
+	}
+	if p.Lit != nil && p.Lit.Str != nil {
+		return *p.Lit.Str, true
+	}
+	return "", false
 }
 
 func isMapLitCastToStructExpr(e *parser.Expr) bool {
@@ -527,9 +543,15 @@ func (c *Compiler) compileList(l *parser.ListLiteral) (string, error) {
 func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
 	var items []string
 	for _, it := range m.Items {
-		k, err := c.compileExpr(it.Key)
-		if err != nil {
-			return "", err
+		var k string
+		if s, ok := c.simpleStringKey(it.Key); ok {
+			k = fmt.Sprintf("%q", s)
+		} else {
+			var err error
+			k, err = c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
 		}
 		v, err := c.compileExpr(it.Value)
 		if err != nil {
@@ -944,11 +966,18 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return "null", nil
 		}
 	case p.Selector != nil:
-		s := p.Selector.Root
-		if len(p.Selector.Tail) > 0 {
-			s += "." + strings.Join(p.Selector.Tail, ".")
+		root := p.Selector.Root
+		expr := root
+		typ := c.vars[root]
+		for _, f := range p.Selector.Tail {
+			if strings.HasPrefix(typ, "Map") {
+				expr = fmt.Sprintf("((Map)%s.get(\"%s\"))", expr, f)
+				typ = mapValueType(typ)
+			} else {
+				expr += "." + f
+			}
 		}
-		return s, nil
+		return expr, nil
 	case p.Struct != nil:
 		return c.compileStructLiteral(p.Struct)
 	case p.FunExpr != nil:
@@ -963,6 +992,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileList(p.List)
 	case p.Map != nil:
 		return c.compileMap(p.Map)
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
 	case p.Call != nil:
 		switch p.Call.Func {
 		case "print":
@@ -1162,4 +1193,121 @@ func (c *Compiler) compileExistsQuery(q *parser.QueryExpr) (string, error) {
 		}
 	}
 	return fmt.Sprintf("%s.stream().anyMatch(%s -> %s)", src, q.Var, cond), nil
+}
+
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	if len(q.Joins) > 0 || q.Group != nil || q.Distinct {
+		return "", fmt.Errorf("unsupported query")
+	}
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	fromSrcs := make([]string, len(q.Froms))
+	for i, f := range q.Froms {
+		fs, err := c.compileExpr(f.Src)
+		if err != nil {
+			return "", err
+		}
+		fromSrcs[i] = fs
+	}
+	old := c.vars
+	c.vars = copyMap(c.vars)
+	if c.exprIsMap(q.Source) {
+		c.vars[q.Var] = "Map<Object,Object>"
+	} else {
+		c.vars[q.Var] = "var"
+	}
+	for _, f := range q.Froms {
+		if c.exprIsMap(f.Src) {
+			c.vars[f.Var] = "Map<Object,Object>"
+		} else {
+			c.vars[f.Var] = "var"
+		}
+	}
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.vars = old
+		return "", err
+	}
+	var cond, sortExpr, skipExpr, takeExpr string
+	if q.Where != nil {
+		cond, err = c.compileExpr(q.Where)
+		if err != nil {
+			c.vars = old
+			return "", err
+		}
+	}
+	if q.Sort != nil {
+		sortExpr, err = c.compileExpr(q.Sort)
+		if err != nil {
+			c.vars = old
+			return "", err
+		}
+	}
+	if q.Skip != nil {
+		skipExpr, err = c.compileExpr(q.Skip)
+		if err != nil {
+			c.vars = old
+			return "", err
+		}
+	}
+	if q.Take != nil {
+		takeExpr, err = c.compileExpr(q.Take)
+		if err != nil {
+			c.vars = old
+			return "", err
+		}
+	}
+	c.vars = old
+
+	tmp := fmt.Sprintf("_res%d", c.tmpCount)
+	c.tmpCount++
+	var b strings.Builder
+	c.needFuncImports = true
+	b.WriteString("((java.util.function.Supplier<java.util.List<Object>>)(() -> {\n")
+	b.WriteString(fmt.Sprintf("\tjava.util.List<Object> %s = new java.util.ArrayList<>();\n", tmp))
+	indent := "\t"
+	b.WriteString(indent + fmt.Sprintf("for (var %s : %s) {\n", q.Var, src))
+	indent += "\t"
+	for i, f := range q.Froms {
+		b.WriteString(indent + fmt.Sprintf("for (var %s : %s) {\n", f.Var, fromSrcs[i]))
+		indent += "\t"
+	}
+	if cond != "" {
+		b.WriteString(indent + fmt.Sprintf("if (%s) {\n", cond))
+		indent += "\t"
+	}
+	if sortExpr != "" {
+		b.WriteString(indent + fmt.Sprintf("%s.add(new Object[]{%s, %s});\n", tmp, sortExpr, sel))
+	} else {
+		b.WriteString(indent + fmt.Sprintf("%s.add(%s);\n", tmp, sel))
+	}
+	if cond != "" {
+		indent = indent[:len(indent)-1]
+		b.WriteString(indent + "}\n")
+	}
+	for i := len(q.Froms) - 1; i >= 0; i-- {
+		indent = indent[:len(indent)-1]
+		b.WriteString(indent + "}\n")
+	}
+	indent = indent[:len(indent)-1]
+	b.WriteString(indent + "}\n")
+	if sortExpr != "" {
+		b.WriteString(fmt.Sprintf("\t%s.sort((a,b) -> ((Comparable)((Object[])a)[0]).compareTo((Comparable)((Object[])b)[0]));\n", tmp))
+		b.WriteString("\tjava.util.List<Object> _sorted = new java.util.ArrayList<>();\n")
+		b.WriteString(fmt.Sprintf("\tfor (Object _e : %s) _sorted.add(((Object[])_e)[1]);\n", tmp))
+		b.WriteString(fmt.Sprintf("\t%s = _sorted;\n", tmp))
+	}
+	if skipExpr != "" {
+		b.WriteString(fmt.Sprintf("\tint _skip = Math.max(%s, 0);\n", skipExpr))
+		b.WriteString(fmt.Sprintf("\tif (_skip > 0) %s = %s.subList(Math.min(_skip, %s.size()), %s.size());\n", tmp, tmp, tmp, tmp))
+	}
+	if takeExpr != "" {
+		b.WriteString(fmt.Sprintf("\tint _take = Math.max(%s, 0);\n", takeExpr))
+		b.WriteString(fmt.Sprintf("\tif (_take < %s.size()) %s = %s.subList(0, Math.min(_take, %s.size()));\n", tmp, tmp, tmp, tmp))
+	}
+	b.WriteString(fmt.Sprintf("\treturn %s;\n", tmp))
+	b.WriteString("})).get()")
+	return b.String(), nil
 }
