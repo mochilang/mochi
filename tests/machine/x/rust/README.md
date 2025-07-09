@@ -74,3 +74,32 @@ Checklist of programs that currently compile and run (70/97):
 - [x] substring_builtin
 - [x] user_type_literal
 
+Remaining programs to implement:
+- [ ] cross_join
+- [ ] cross_join_filter
+- [ ] cross_join_triple
+- [ ] dataset_sort_take_limit
+- [ ] dataset_where_filter
+- [ ] group_by
+- [ ] group_by_conditional_sum
+- [ ] group_by_having
+- [ ] group_by_join
+- [ ] group_by_left_join
+- [ ] group_by_multi_join
+- [ ] group_by_multi_join_sort
+- [ ] group_by_sort
+- [ ] group_items_iteration
+- [ ] inner_join
+- [ ] join_multi
+- [ ] left_join
+- [ ] left_join_multi
+- [ ] load_yaml
+- [ ] order_by_map
+- [ ] outer_join
+- [ ] query_sum_select
+- [ ] right_join
+- [ ] save_jsonl_stdout
+- [ ] sort_stable
+- [ ] tree_sum
+- [ ] update_stmt
+
