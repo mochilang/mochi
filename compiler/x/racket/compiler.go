@@ -847,6 +847,18 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			} else {
 				return "", fmt.Errorf("unsupported join type")
 			}
+		case "outer":
+			if len(q.Joins) == 1 && len(q.Froms) == 0 {
+				c.needListLib = true
+				body, err := c.compileExpr(q.Select)
+				if err != nil {
+					return "", err
+				}
+				left := fmt.Sprintf("(for/list ([%s %s]) (let ([%s (findf (lambda (%s) %s) %s)]) %s))", q.Var, src, j.Var, j.Var, onExpr, js, body)
+				right := fmt.Sprintf("(for/list ([%s %s] #:unless (for/or ([%s %s]) %s)) (let ([%s #f]) %s))", j.Var, js, q.Var, src, onExpr, q.Var, body)
+				return fmt.Sprintf("(append %s %s)", left, right), nil
+			}
+			return "", fmt.Errorf("unsupported join type")
 		default:
 			return "", fmt.Errorf("unsupported join type")
 		}
