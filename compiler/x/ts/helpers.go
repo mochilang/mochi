@@ -5,6 +5,7 @@ package tscode
 import (
 	"fmt"
 	"reflect"
+	"sort"
 	"strings"
 
 	"mochi/parser"
@@ -231,7 +232,24 @@ func tsType(t types.Type) string {
 	case types.MapType:
 		return "Record<" + tsType(tt.Key) + ", " + tsType(tt.Value) + ">"
 	case types.StructType:
-		return sanitizeName(tt.Name)
+		name := sanitizeName(tt.Name)
+		if name != "" {
+			return name
+		}
+		parts := make([]string, 0, len(tt.Fields))
+		order := tt.Order
+		if len(order) == 0 {
+			for fn := range tt.Fields {
+				order = append(order, fn)
+			}
+			sort.Strings(order)
+		}
+		for _, fn := range order {
+			if ft, ok := tt.Fields[fn]; ok {
+				parts = append(parts, fmt.Sprintf("%s: %s", sanitizeName(fn), tsType(ft)))
+			}
+		}
+		return "{ " + strings.Join(parts, "; ") + " }"
 	case types.UnionType:
 		return sanitizeName(tt.Name)
 	case types.FuncType:

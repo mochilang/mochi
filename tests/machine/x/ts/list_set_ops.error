@@ -1,2 +1,0 @@
-line 0: except not supported
-print([1,2] union [2,3])
