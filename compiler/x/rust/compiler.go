@@ -397,6 +397,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if c.helpers["_intersect"] {
 		out.WriteString("fn _intersect<T: Eq + std::hash::Hash + Clone>(a: Vec<T>, b: Vec<T>) -> Vec<T> {\n    use std::collections::HashSet;\n    let set: HashSet<T> = b.into_iter().collect();\n    a.into_iter().filter(|x| set.contains(x)).collect()\n}\n\n")
 	}
+	if c.helpers["_load"] {
+		out.WriteString("fn _load<T: serde::de::DeserializeOwned>(path: &str, _opts: std::collections::HashMap<String, String>) -> Vec<T> {\n    use std::io::Read;\n    let mut data = String::new();\n    if path.is_empty() || path == \"-\" {\n        std::io::stdin().read_to_string(&mut data).unwrap();\n    } else if let Ok(mut f) = std::fs::File::open(path) {\n        f.read_to_string(&mut data).unwrap();\n    }\n    if let Ok(v) = serde_json::from_str::<Vec<T>>(&data) { return v; }\n    if let Ok(v) = serde_json::from_str::<T>(&data) { return vec![v]; }\n    Vec::new()\n}\n\n")
+	}
+	if c.helpers["_save"] {
+		out.WriteString("fn _save<T: serde::Serialize>(src: &[T], path: &str, _opts: std::collections::HashMap<String, String>) {\n    if let Ok(text) = serde_json::to_string(src) {\n        if path.is_empty() || path == \"-\" {\n            println!(\"{}\", text);\n        } else {\n            std::fs::write(path, text).unwrap();\n        }\n    }\n}\n\n")
+	}
 	out.Write(c.buf.Bytes())
 	return out.Bytes(), nil
 }
@@ -431,6 +437,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileFor(s.For)
 	case s.While != nil:
 		return c.compileWhile(s.While)
+	case s.Update != nil:
+		return c.compileUpdateStmt(s.Update)
 	case s.Break != nil:
 		c.writeln("break;")
 		return nil
@@ -651,6 +659,60 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 			return err
 		}
 	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileUpdateStmt(u *parser.UpdateStmt) error {
+	list := u.Target
+	idx := c.newTmp()
+	item := c.newTmp()
+	c.writeln(fmt.Sprintf("for %s in 0..%s.len() {", idx, list))
+	c.indent++
+	c.writeln(fmt.Sprintf("let mut %s = %s[%s].clone();", item, list, idx))
+
+	orig := c.env
+	if c.env != nil {
+		if lt, ok := c.env.GetVar(list); ok {
+			if lt2, ok2 := lt.(types.ListType); ok2 {
+				if st, ok3 := lt2.Elem.(types.StructType); ok3 {
+					child := types.NewEnv(c.env)
+					for _, f := range st.Order {
+						child.SetVar(f, st.Fields[f], true)
+						c.writeln(fmt.Sprintf("let mut %s = %s.%s;", f, item, f))
+					}
+					c.env = child
+				}
+			}
+		}
+	}
+
+	if u.Where != nil {
+		cond, err := c.compileExpr(u.Where)
+		if err != nil {
+			c.env = orig
+			return err
+		}
+		c.writeln(fmt.Sprintf("if %s {", cond))
+		c.indent++
+	}
+	for _, it := range u.Set.Items {
+		if key, ok := c.simpleKey(it.Key); ok {
+			val, err := c.compileExpr(it.Value)
+			if err != nil {
+				c.env = orig
+				return err
+			}
+			c.writeln(fmt.Sprintf("%s.%s = %s;", item, key, val))
+		}
+	}
+	if u.Where != nil {
+		c.indent--
+		c.writeln("}")
+	}
+	c.env = orig
+	c.writeln(fmt.Sprintf("%s[%s] = %s;", list, idx, item))
 	c.indent--
 	c.writeln("}")
 	return nil
@@ -968,6 +1030,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileCall(p.Call)
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	case p.Selector != nil:
 		if len(p.Selector.Tail) == 0 {
 			if info, ok := c.variantInfo[p.Selector.Root]; ok {
@@ -1562,6 +1628,48 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	default:
 		return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ", ")), nil
 	}
+}
+
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
+	path := "\"\""
+	if l.Path != nil {
+		path = fmt.Sprintf("%q", *l.Path)
+	}
+	typ := "std::collections::HashMap<String, String>"
+	if l.Type != nil {
+		typ = rustType(l.Type)
+	}
+	opts := "std::collections::HashMap::new()"
+	if l.With != nil {
+		v, err := c.compileExpr(l.With)
+		if err != nil {
+			return "", err
+		}
+		opts = v
+	}
+	c.helpers["_load"] = true
+	return fmt.Sprintf("_load::<%s>(%s, %s)", typ, path, opts), nil
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
+	src, err := c.compileExpr(s.Src)
+	if err != nil {
+		return "", err
+	}
+	path := "\"\""
+	if s.Path != nil {
+		path = fmt.Sprintf("%q", *s.Path)
+	}
+	opts := "std::collections::HashMap::new()"
+	if s.With != nil {
+		v, err := c.compileExpr(s.With)
+		if err != nil {
+			return "", err
+		}
+		opts = v
+	}
+	c.helpers["_save"] = true
+	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts), nil
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) string {
