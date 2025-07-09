@@ -375,10 +375,22 @@ func (c *compiler) forStmt(f *parser.ForStmt) error {
 	}
 	c.writeln(header)
 	c.indent++
+	prev, havePrev := c.varTypes[f.Name]
+	c.varTypes[f.Name] = c.elementType(f.Source)
 	for _, st := range f.Body {
 		if err := c.stmt(st); err != nil {
+			if havePrev {
+				c.varTypes[f.Name] = prev
+			} else {
+				delete(c.varTypes, f.Name)
+			}
 			return err
 		}
+	}
+	if havePrev {
+		c.varTypes[f.Name] = prev
+	} else {
+		delete(c.varTypes, f.Name)
 	}
 	c.indent--
 	c.writeln("}")
@@ -1454,6 +1466,9 @@ func replaceIdent(s, name, repl string) string {
 
 func (c *compiler) elementType(e *parser.Expr) string {
 	typ := c.exprType(e)
+	if strings.HasPrefix(typ, "list_") {
+		return strings.TrimPrefix(typ, "list_")
+	}
 	if typ == "list" {
 		if sel := e.Binary.Left.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 {
 			if t, ok := c.varTypes[sel.Root]; ok && strings.HasPrefix(t, "list_") {
