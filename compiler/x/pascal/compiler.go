@@ -962,7 +962,7 @@ func collectVars(stmts []*parser.Statement, env *types.Env, vars map[string]stri
 				typ = typeString(resolveSimpleTypeRef(s.Let.Type))
 			}
 			if typ == "integer" && s.Let.Value != nil {
-				typT := types.TypeOfExpr(s.Let.Value, env)
+				typT := types.TypeOfExprBasic(s.Let.Value, env)
 				typ = typeString(typT)
 				if typ == "integer" && isStringSliceExpr(s.Let.Value, env, vars) {
 					typ = "string"
@@ -987,7 +987,7 @@ func collectVars(stmts []*parser.Statement, env *types.Env, vars map[string]stri
 				typ = typeString(resolveSimpleTypeRef(s.Var.Type))
 			}
 			if typ == "integer" && s.Var.Value != nil {
-				typT := types.TypeOfExpr(s.Var.Value, env)
+				typT := types.TypeOfExprBasic(s.Var.Value, env)
 				typ = typeString(typT)
 				if typ == "integer" && isStringSliceExpr(s.Var.Value, env, vars) {
 					typ = "string"
@@ -1011,7 +1011,7 @@ func collectVars(stmts []*parser.Statement, env *types.Env, vars map[string]stri
 					}
 				}
 				if typ == "integer" {
-					typT := types.TypeOfExpr(s.For.Source, env)
+					typT := types.TypeOfExprBasic(s.For.Source, env)
 					typ = typeString(typT)
 				}
 				if strings.HasPrefix(typ, "specialize TArray<") {
