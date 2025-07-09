@@ -4,7 +4,7 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 
 ## Summary
 
-- 55/97 programs compiled and executed successfully.
+- 57/97 programs compiled and executed successfully.
 
 ### Successful
 - append_builtin
@@ -48,6 +48,7 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 - string_index
 - string_prefix_slice
 - cast_string_to_int
+- cast_struct
 - membership
 - for_map_collection
 - len_map
@@ -62,9 +63,9 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 - map_nested_assign
 - string_in_operator
 - values_builtin
+- user_type_literal
 
 ### Failed
-- cast_struct
 - closure
 - cross_join
 - cross_join_filter
@@ -104,5 +105,4 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 - tree_sum
 - two-sum
 - update_stmt
-- user_type_literal
 - while_loop
