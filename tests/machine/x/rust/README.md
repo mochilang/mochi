@@ -100,6 +100,6 @@ Checklist of programs that currently compile and run (84/97):
 - [ ] right_join
 - [ ] save_jsonl_stdout
 - [ ] sort_stable
-- [x] tree_sum
+- [ ] tree_sum
 - [ ] update_stmt
 

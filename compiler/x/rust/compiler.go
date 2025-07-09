@@ -32,6 +32,7 @@ type Compiler struct {
 		Order  []string
 	}
 	groupVars []string
+	enumDecls []string
 }
 
 func (c *Compiler) fieldType(e *parser.Expr) types.Type {
@@ -290,6 +291,7 @@ func New(env *types.Env) *Compiler {
 			Order  []string
 		}),
 		groupVars: []string{},
+		enumDecls: []string{},
 	}
 }
 
@@ -414,6 +416,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.helpers = map[string]bool{}
 	c.inMain = true
 	c.globals = map[string]bool{}
+	c.enumDecls = []string{}
 	c.mutParams = analyzeMutations(prog)
 	c.writeln("fn main() {")
 	c.indent++
@@ -425,8 +428,15 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.indent--
 	c.writeln("}")
 
-	// prepend generated structs and helpers
+	// prepend generated enums, structs and helpers
 	var out bytes.Buffer
+	for _, decl := range c.enumDecls {
+		out.WriteString(decl)
+		if !strings.HasSuffix(decl, "\n") {
+			out.WriteByte('\n')
+		}
+		out.WriteByte('\n')
+	}
 	for _, st := range c.genStructs {
 		out.WriteString("#[derive(Default, Debug, Clone, PartialEq)]\n")
 		out.WriteString("struct " + st.Name + " {\n")
@@ -789,11 +799,14 @@ func (c *Compiler) compileUpdateStmt(u *parser.UpdateStmt) error {
 
 func (c *Compiler) compileTypeDecl(td *parser.TypeDecl) error {
 	if len(td.Variants) > 0 {
-		c.writeln(fmt.Sprintf("enum %s {", td.Name))
+		var b strings.Builder
+		b.WriteString("#[derive(Debug, Clone)]\n")
+		b.WriteString(fmt.Sprintf("enum %s {\n", td.Name))
 		c.indent++
 		for _, v := range td.Variants {
 			if len(v.Fields) == 0 {
-				c.writeln(fmt.Sprintf("%s,", v.Name))
+				b.WriteString(strings.Repeat("    ", c.indent))
+				b.WriteString(fmt.Sprintf("%s,\n", v.Name))
 				c.variantInfo[v.Name] = struct {
 					Union  string
 					Fields map[string]types.Type
@@ -813,7 +826,8 @@ func (c *Compiler) compileTypeDecl(td *parser.TypeDecl) error {
 				flds[f.Name] = types.ResolveTypeRef(f.Type, c.env)
 				order[i] = f.Name
 			}
-			c.writeln(fmt.Sprintf("%s { %s },", v.Name, strings.Join(fields, ", ")))
+			b.WriteString(strings.Repeat("    ", c.indent))
+			b.WriteString(fmt.Sprintf("%s { %s },\n", v.Name, strings.Join(fields, ", ")))
 			c.variantInfo[v.Name] = struct {
 				Union  string
 				Fields map[string]types.Type
@@ -822,11 +836,14 @@ func (c *Compiler) compileTypeDecl(td *parser.TypeDecl) error {
 			c.structs[v.Name] = types.StructType{Name: v.Name, Fields: flds, Order: order}
 		}
 		c.indent--
-		c.writeln("}")
+		b.WriteString("}\n")
+		c.enumDecls = append(c.enumDecls, b.String())
 		return nil
 	}
 	st := types.StructType{Name: td.Name, Fields: map[string]types.Type{}, Order: []string{}}
-	c.writeln(fmt.Sprintf("struct %s {", td.Name))
+	var b strings.Builder
+	b.WriteString("#[derive(Default, Debug, Clone, PartialEq)]\n")
+	b.WriteString(fmt.Sprintf("struct %s {\n", td.Name))
 	c.indent++
 	for _, m := range td.Members {
 		if m.Field == nil {
@@ -835,10 +852,12 @@ func (c *Compiler) compileTypeDecl(td *parser.TypeDecl) error {
 		typ := rustType(m.Field.Type)
 		st.Fields[m.Field.Name] = types.ResolveTypeRef(m.Field.Type, c.env)
 		st.Order = append(st.Order, m.Field.Name)
-		c.writeln(fmt.Sprintf("%s: %s,", m.Field.Name, typ))
+		b.WriteString(strings.Repeat("    ", c.indent))
+		b.WriteString(fmt.Sprintf("%s: %s,\n", m.Field.Name, typ))
 	}
 	c.indent--
-	c.writeln("}")
+	b.WriteString("}\n")
+	c.enumDecls = append(c.enumDecls, b.String())
 	c.structs[td.Name] = st
 	return nil
 }
