@@ -1,1 +1,21 @@
-line 0: compile error: unsupported primary at 2:14
+line 12: ../../../tests/machine/x/cpp/query_sum_select.cpp: In lambda function:
+../../../tests/machine/x/cpp/query_sum_select.cpp:12:42: error: ‘n’ was not declared in this scope
+   12 |     std::vector<decltype(std::accumulate(n.begin(), n.end(), 0))> __items;
+      |                                          ^
+../../../tests/machine/x/cpp/query_sum_select.cpp:12:65: error: template argument 1 is invalid
+   12 |     std::vector<decltype(std::accumulate(n.begin(), n.end(), 0))> __items;
+      |                                                                 ^
+../../../tests/machine/x/cpp/query_sum_select.cpp:12:65: error: template argument 2 is invalid
+../../../tests/machine/x/cpp/query_sum_select.cpp:16:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+   16 |       __items.push_back(std::accumulate(n.begin(), n.end(), 0));
+      |               ^~~~~~~~~
+../../../tests/machine/x/cpp/query_sum_select.cpp:16:43: error: request for member ‘begin’ in ‘n’, which is of non-class type ‘int’
+   16 |       __items.push_back(std::accumulate(n.begin(), n.end(), 0));
+      |                                           ^~~~~
+../../../tests/machine/x/cpp/query_sum_select.cpp:16:54: error: request for member ‘end’ in ‘n’, which is of non-class type ‘int’
+   16 |       __items.push_back(std::accumulate(n.begin(), n.end(), 0));
+      |                                                      ^~~
+
+ 11 |   auto result = ([&]() {
+ 12 |     std::vector<decltype(std::accumulate(n.begin(), n.end(), 0))> __items;
+ 13 |     for (auto n : nums) {

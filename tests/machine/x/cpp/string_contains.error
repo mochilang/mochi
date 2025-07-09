@@ -1,11 +1,11 @@
-line 16: ../../../tests/machine/x/cpp/string_contains.cpp: In function ‘int main()’:
-../../../tests/machine/x/cpp/string_contains.cpp:16:13: error: request for member ‘contains’ in ‘s’, which is of non-class type ‘const char*’
-   16 |     print(s.contains("cat"));
-      |             ^~~~~~~~
-../../../tests/machine/x/cpp/string_contains.cpp:17:13: error: request for member ‘contains’ in ‘s’, which is of non-class type ‘const char*’
-   17 |     print(s.contains("dog"));
-      |             ^~~~~~~~
+line 12: ../../../tests/machine/x/cpp/string_contains.cpp: In function ‘int main()’:
+../../../tests/machine/x/cpp/string_contains.cpp:12:38: error: ‘class std::__cxx11::basic_string<char>’ has no member named ‘contains’
+   12 |     std::cout << std::boolalpha << s.contains(std::string("cat"));
+      |                                      ^~~~~~~~
+../../../tests/machine/x/cpp/string_contains.cpp:16:38: error: ‘class std::__cxx11::basic_string<char>’ has no member named ‘contains’
+   16 |     std::cout << std::boolalpha << s.contains(std::string("dog"));
+      |                                      ^~~~~~~~
 
- 15 |     auto s = "catch";
- 16 |     print(s.contains("cat"));
- 17 |     print(s.contains("dog"));
+ 11 |   {
+ 12 |     std::cout << std::boolalpha << s.contains(std::string("cat"));
+ 13 |     std::cout << std::endl;

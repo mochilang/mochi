@@ -1,31 +1,73 @@
-#include <iostream>
-#include <vector>
-#include <unordered_map>
-#include <map>
 #include <algorithm>
+#include <iostream>
+#include <map>
 #include <numeric>
-
-template<typename T> void print_val(const T& v){ std::cout << v; }
-void print_val(const std::vector<int>& v){ for(size_t i=0;i<v.size();++i){ if(i) std::cout<<' '; std::cout<<v[i]; }}
-void print_val(bool b){ std::cout<<(b?"true":"false"); }
-void print(){ std::cout<<std::endl; }
-template<typename First, typename... Rest> void print(const First& first, const Rest&... rest){ print_val(first); if constexpr(sizeof...(rest)>0){ std::cout<<' '; print(rest...); } else { std::cout<<std::endl; }}
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
 auto classify(auto n) {
-    return ([&]() { auto __v = n; if (__v == 0) return "zero"; else if (__v == 1) return "one"; return "many"; })();
+  return ([&]() {
+    auto __v = n;
+    if (__v == 0)
+      return std::string("zero");
+    else if (__v == 1)
+      return std::string("one");
+    return std::string("many");
+  })();
 }
 
 int main() {
-    auto x = 2;
-    auto label = ([&]() { auto __v = x; if (__v == 1) return "one"; else if (__v == 2) return "two"; else if (__v == 3) return "three"; return "unknown"; })();
-    print(label);
-    auto day = "sun";
-    auto mood = ([&]() { auto __v = day; if (__v == "mon") return "tired"; else if (__v == "fri") return "excited"; else if (__v == "sun") return "relaxed"; return "normal"; })();
-    print(mood);
-    auto ok = true;
-    auto status = ([&]() { auto __v = ok; if (__v == true) return "confirmed"; else if (__v == false) return "denied"; return decltype("confirmed"){}; })();
-    print(status);
-    print(classify(0));
-    print(classify(5));
-    return 0;
+  auto x = 2;
+  auto label = ([&]() {
+    auto __v = x;
+    if (__v == 1)
+      return std::string("one");
+    else if (__v == 2)
+      return std::string("two");
+    else if (__v == 3)
+      return std::string("three");
+    return std::string("unknown");
+  })();
+  {
+    std::cout << std::boolalpha << label;
+    std::cout << std::endl;
+  }
+  auto day = std::string("sun");
+  auto mood = ([&]() {
+    auto __v = day;
+    if (__v == std::string("mon"))
+      return std::string("tired");
+    else if (__v == std::string("fri"))
+      return std::string("excited");
+    else if (__v == std::string("sun"))
+      return std::string("relaxed");
+    return std::string("normal");
+  })();
+  {
+    std::cout << std::boolalpha << mood;
+    std::cout << std::endl;
+  }
+  auto ok = true;
+  auto status = ([&]() {
+    auto __v = ok;
+    if (__v == true)
+      return std::string("confirmed");
+    else if (__v == false)
+      return std::string("denied");
+    return decltype(std::string("confirmed")){};
+  })();
+  {
+    std::cout << std::boolalpha << status;
+    std::cout << std::endl;
+  }
+  {
+    std::cout << std::boolalpha << classify(0);
+    std::cout << std::endl;
+  }
+  {
+    std::cout << std::boolalpha << classify(5);
+    std::cout << std::endl;
+  }
+  return 0;
 }
