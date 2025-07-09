@@ -27,6 +27,7 @@ type Compiler struct {
 	structCount int
 	varStruct   map[string]string
 	elemType    map[string]string
+	groups      map[string]struct{}
 }
 
 // New returns a new compiler instance.
@@ -38,6 +39,7 @@ func New() *Compiler {
 		varStruct: map[string]string{},
 		elemType:  map[string]string{},
 		funParams: map[string]int{},
+		groups:    map[string]struct{}{},
 	}
 }
 
@@ -1227,7 +1229,7 @@ func (c *Compiler) structFromMapLiteral(typ string, m *parser.MapLiteral) (strin
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if q.Group != nil {
-		return "", fmt.Errorf("query features not supported")
+		return c.compileGroupedQueryExpr(q)
 	}
 	for _, j := range q.Joins {
 		if j.Side != nil && *j.Side != "left" {
@@ -1515,6 +1517,339 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	return buf.String(), nil
 }
 
+func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) {
+	for _, j := range q.Joins {
+		if j.Side != nil && *j.Side != "left" {
+			return "", fmt.Errorf("join side not supported")
+		}
+	}
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	backup := map[string]string{}
+	if t := c.varStruct[src]; t != "" {
+		backup[q.Var] = c.varStruct[q.Var]
+		c.varStruct[q.Var] = t
+	}
+	if et := c.elemType[src]; et != "" {
+		switch {
+		case strings.Contains(et, "std::string"):
+			c.vars[q.Var] = "string"
+		case et == "int":
+			c.vars[q.Var] = "int"
+		case et == "bool":
+			c.vars[q.Var] = "bool"
+		case strings.HasPrefix(et, "__struct"):
+			c.varStruct[q.Var] = et
+		}
+	}
+	fromSrcs := make([]string, len(q.Froms))
+	for i, f := range q.Froms {
+		s, err := c.compileExpr(f.Src)
+		if err != nil {
+			return "", err
+		}
+		fromSrcs[i] = s
+		if t := c.varStruct[s]; t != "" {
+			backup[f.Var] = c.varStruct[f.Var]
+			c.varStruct[f.Var] = t
+		}
+		if et := c.elemType[s]; et != "" {
+			switch {
+			case strings.Contains(et, "std::string"):
+				c.vars[f.Var] = "string"
+			case et == "int":
+				c.vars[f.Var] = "int"
+			case et == "bool":
+				c.vars[f.Var] = "bool"
+			case strings.HasPrefix(et, "__struct"):
+				c.varStruct[f.Var] = et
+			}
+		}
+	}
+	joinSrcs := make([]string, len(q.Joins))
+	joinOns := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			return "", err
+		}
+		joinSrcs[i] = js
+		if t := c.varStruct[js]; t != "" {
+			backup[j.Var] = c.varStruct[j.Var]
+			c.varStruct[j.Var] = t
+		}
+		if et := c.elemType[js]; et != "" {
+			switch {
+			case strings.Contains(et, "std::string"):
+				c.vars[j.Var] = "string"
+			case et == "int":
+				c.vars[j.Var] = "int"
+			case et == "bool":
+				c.vars[j.Var] = "bool"
+			case strings.HasPrefix(et, "__struct"):
+				c.varStruct[j.Var] = et
+			}
+		}
+		on, err := c.compileExpr(j.On)
+		if err != nil {
+			return "", err
+		}
+		joinOns[i] = on
+	}
+	var where string
+	if q.Where != nil {
+		where, err = c.compileExpr(q.Where)
+		if err != nil {
+			return "", err
+		}
+	}
+	keyExpr, err := c.compileExpr(q.Group.Exprs[0])
+	if err != nil {
+		return "", err
+	}
+	keyType := fmt.Sprintf("decltype(%s)", keyExpr)
+	if t := structLiteralType(keyExpr); t != "" {
+		keyType = t
+	} else if t := c.varStruct[keyExpr]; t != "" {
+		if idx := strings.Index(t, "{"); idx != -1 {
+			t = t[:idx]
+		}
+		keyType = t
+	} else if dot := strings.Index(keyExpr, "."); dot != -1 {
+		v := keyExpr[:dot]
+		fld := keyExpr[dot+1:]
+		if t := c.varStruct[v]; t != "" {
+			if idx := strings.Index(t, "{"); idx != -1 {
+				t = t[:idx]
+			}
+			keyType = fmt.Sprintf("decltype(std::declval<%s>().%s)", t, fld)
+		}
+	}
+
+	itemVars := []string{q.Var}
+	for _, f := range q.Froms {
+		itemVars = append(itemVars, f.Var)
+	}
+	for _, j := range q.Joins {
+		itemVars = append(itemVars, j.Var)
+	}
+	itemStruct := c.structFromVars(itemVars)
+	groupStruct := fmt.Sprintf("__struct%d", c.structCount+1)
+	c.structCount++
+	c.headerWriteln(fmt.Sprintf("struct %s { %s key; std::vector<%s> items; };", groupStruct, keyType, itemStruct))
+
+	// prepare expressions for select, having, sort
+	oldAliases := c.aliases
+	c.aliases = make(map[string]string)
+	for k := range oldAliases {
+		c.aliases[k] = oldAliases[k]
+	}
+	c.aliases[q.Group.Name] = q.Group.Name + ".items"
+	valExpr, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.aliases = oldAliases
+		return "", err
+	}
+	itemType := fmt.Sprintf("decltype(%s)", valExpr)
+	if t := structLiteralType(valExpr); t != "" {
+		itemType = t
+	} else if t := c.varStruct[valExpr]; t != "" {
+		if idx := strings.Index(t, "{"); idx != -1 {
+			t = t[:idx]
+		}
+		itemType = t
+	} else if dot := strings.Index(valExpr, "."); dot != -1 {
+		v := valExpr[:dot]
+		fld := valExpr[dot+1:]
+		if t := c.varStruct[v]; t != "" {
+			if idx := strings.Index(t, "{"); idx != -1 {
+				t = t[:idx]
+			}
+			itemType = fmt.Sprintf("decltype(std::declval<%s>().%s)", t, fld)
+		}
+	}
+
+	var sortExpr, sortKeyType string
+	if q.Sort != nil {
+		sortExpr, err = c.compileExpr(q.Sort)
+		if err != nil {
+			c.aliases = oldAliases
+			return "", err
+		}
+		sortKeyType = fmt.Sprintf("decltype(%s)", sortExpr)
+	}
+	var havingExpr string
+	if q.Group.Having != nil {
+		havingExpr, err = c.compileExpr(q.Group.Having)
+		if err != nil {
+			c.aliases = oldAliases
+			return "", err
+		}
+	}
+	var skipExpr, takeExpr string
+	if q.Skip != nil {
+		skipExpr, err = c.compileExpr(q.Skip)
+		if err != nil {
+			c.aliases = oldAliases
+			return "", err
+		}
+	}
+	if q.Take != nil {
+		takeExpr, err = c.compileExpr(q.Take)
+		if err != nil {
+			c.aliases = oldAliases
+			return "", err
+		}
+	}
+	c.aliases = oldAliases
+	for k, v := range backup {
+		if v == "" {
+			delete(c.varStruct, k)
+		} else {
+			c.varStruct[k] = v
+		}
+	}
+
+	var buf strings.Builder
+	buf.WriteString("([&]() {\n")
+	indent := func(n int) {
+		for i := 0; i < n; i++ {
+			buf.WriteString("    ")
+		}
+	}
+	buf.WriteString("    std::vector<" + groupStruct + "> __groups;\n")
+	indentLevel := 1
+	indent(indentLevel)
+	buf.WriteString("for (auto " + q.Var + " : " + src + ") {\n")
+	indentLevel++
+	for i, fs := range fromSrcs {
+		indent(indentLevel)
+		buf.WriteString("for (auto " + q.Froms[i].Var + " : " + fs + ") {\n")
+		indentLevel++
+	}
+	var joinLoop func(int)
+	joinLoop = func(i int) {
+		if i == len(joinSrcs) {
+			if where != "" {
+				indent(indentLevel)
+				buf.WriteString("if (!(" + where + ")) continue;\n")
+			}
+			indent(indentLevel)
+			buf.WriteString("auto __key = " + keyExpr + ";\n")
+			indent(indentLevel)
+			itemInit := itemStruct + "{" + strings.Join(itemVars, ", ") + "}"
+			buf.WriteString("bool __found = false;\n")
+			indent(indentLevel)
+			buf.WriteString("for (auto &__g : __groups) { if (__g.key == __key) { __g.items.push_back(" + itemInit + "); __found = true; break; } }\n")
+			indent(indentLevel)
+			buf.WriteString("if (!__found) { __groups.push_back(" + groupStruct + "{__key, std::vector<" + itemStruct + ">{" + itemInit + "}}); }\n")
+			return
+		}
+		side := ""
+		if q.Joins[i].Side != nil {
+			side = *q.Joins[i].Side
+		}
+		switch side {
+		case "left":
+			indent(indentLevel)
+			buf.WriteString("{ bool __matched" + strconv.Itoa(i) + " = false;\n")
+			indentLevel++
+			indent(indentLevel)
+			buf.WriteString("for (auto " + q.Joins[i].Var + " : " + joinSrcs[i] + ") {\n")
+			indentLevel++
+			indent(indentLevel)
+			buf.WriteString("if (!(" + joinOns[i] + ")) continue;\n")
+			indent(indentLevel)
+			buf.WriteString("__matched" + strconv.Itoa(i) + " = true;\n")
+			joinLoop(i + 1)
+			indentLevel--
+			indent(indentLevel)
+			buf.WriteString("}\n")
+			indent(indentLevel)
+			buf.WriteString("if (!__matched" + strconv.Itoa(i) + ") {\n")
+			indentLevel++
+			indent(indentLevel)
+			buf.WriteString("auto " + q.Joins[i].Var + " = std::decay_t<decltype(*(" + joinSrcs[i] + ").begin())>{};\n")
+			joinLoop(i + 1)
+			indentLevel--
+			indent(indentLevel)
+			buf.WriteString("}\n")
+			indentLevel--
+			indent(indentLevel)
+			buf.WriteString("}\n")
+		default:
+			indent(indentLevel)
+			buf.WriteString("for (auto " + q.Joins[i].Var + " : " + joinSrcs[i] + ") {\n")
+			indentLevel++
+			indent(indentLevel)
+			buf.WriteString("if (!(" + joinOns[i] + ")) continue;\n")
+			joinLoop(i + 1)
+			indentLevel--
+			indent(indentLevel)
+			buf.WriteString("}\n")
+		}
+	}
+	joinLoop(0)
+	for i := len(fromSrcs) - 1; i >= 0; i-- {
+		indentLevel--
+		indent(indentLevel)
+		buf.WriteString("}\n")
+	}
+	indentLevel--
+	indent(indentLevel)
+	buf.WriteString("}\n")
+
+	// iterate groups to build result
+	indent(indentLevel)
+	buf.WriteString("std::vector<")
+	if sortExpr != "" || skipExpr != "" || takeExpr != "" {
+		if sortKeyType == "" {
+			sortKeyType = fmt.Sprintf("decltype(%s)", sortExpr)
+		}
+		buf.WriteString("std::pair<" + sortKeyType + ", " + itemType + ">")
+	} else {
+		buf.WriteString(itemType)
+	}
+	buf.WriteString("> __items;\n")
+	indent(indentLevel)
+	buf.WriteString("for (auto &" + q.Group.Name + " : __groups) {\n")
+	indentLevel++
+	if havingExpr != "" {
+		indent(indentLevel)
+		buf.WriteString("if (!(" + havingExpr + ")) continue;\n")
+	}
+	indent(indentLevel)
+	if sortExpr != "" || skipExpr != "" || takeExpr != "" {
+		buf.WriteString("__items.push_back({" + sortExpr + ", " + valExpr + "});\n")
+	} else {
+		buf.WriteString("__items.push_back(" + valExpr + ");\n")
+	}
+	indentLevel--
+	indent(indentLevel)
+	buf.WriteString("}\n")
+
+	if sortExpr != "" {
+		buf.WriteString("    std::sort(__items.begin(), __items.end(), [](auto &a, auto &b){ return a.first < b.first; });\n")
+	}
+	if skipExpr != "" {
+		buf.WriteString("    if ((size_t)" + skipExpr + " < __items.size()) __items.erase(__items.begin(), __items.begin()+" + skipExpr + ");\n")
+	}
+	if takeExpr != "" {
+		buf.WriteString("    if ((size_t)" + takeExpr + " < __items.size()) __items.resize(" + takeExpr + ");\n")
+	}
+	if sortExpr != "" || skipExpr != "" || takeExpr != "" {
+		buf.WriteString("    std::vector<" + itemType + "> __res;\n")
+		buf.WriteString("    for (auto &p : __items) __res.push_back(p.second);\n")
+		buf.WriteString("    return __res;\n")
+	} else {
+		buf.WriteString("    return __items;\n")
+	}
+	buf.WriteString("})()")
+	return buf.String(), nil
+}
+
 func (c *Compiler) simpleIdentifier(e *parser.Expr) (string, bool) {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
 		return "", false
@@ -1655,6 +1990,24 @@ func structLiteralType(expr string) string {
 		}
 	}
 	return ""
+}
+
+func (c *Compiler) structFromVars(names []string) string {
+	sig := "vars:" + strings.Join(names, ",")
+	if name, ok := c.structMap[sig]; ok {
+		return name
+	}
+	c.structCount++
+	name := fmt.Sprintf("__struct%d", c.structCount)
+	c.structMap[sig] = name
+	var def strings.Builder
+	def.WriteString("struct " + name + " {")
+	for _, n := range names {
+		def.WriteString("decltype(" + sanitizeName(n) + ") " + sanitizeName(n) + "; ")
+	}
+	def.WriteString("};")
+	c.headerWriteln(def.String())
+	return name
 }
 
 // compileFunExpr converts an anonymous function expression to a C++ lambda.
