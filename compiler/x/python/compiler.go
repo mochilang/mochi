@@ -703,12 +703,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		expr := sanitizeName(p.Selector.Root)
 		var typ types.Type = types.AnyType{}
 		if c.env != nil {
-			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
-				typ = t
-			} else if u, ok := c.env.FindUnionByVariant(p.Selector.Root); ok {
+			if u, ok := c.env.FindUnionByVariant(p.Selector.Root); ok {
 				if vt, ok := u.Variants[p.Selector.Root]; ok && len(vt.Fields) == 0 && len(p.Selector.Tail) == 0 {
 					return fmt.Sprintf("%s()", expr), nil
 				}
+			}
+			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+				typ = t
 			}
 		}
 		if c.methodFields != nil && c.methodFields[p.Selector.Root] {
