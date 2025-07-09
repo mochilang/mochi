@@ -158,6 +158,18 @@ func isMapStringType(t types.Type) bool {
 	return false
 }
 
+// defaultCValue returns a zero value literal for the given type.
+func defaultCValue(t types.Type) string {
+	switch t.(type) {
+	case types.StringType:
+		return "NULL"
+	case types.FloatType, types.IntType, types.BoolType:
+		return "0"
+	default:
+		return "0"
+	}
+}
+
 // listElemType returns the element type of e if it is a list expression with a
 // known element type in env.
 func listElemType(e *parser.Expr, env *types.Env) types.Type {
