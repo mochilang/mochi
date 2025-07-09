@@ -248,4 +248,4 @@ def _q0():
 
 
 result: list[dict[str, typing.Any]] = _q0()
-print(*result)
+print(result)

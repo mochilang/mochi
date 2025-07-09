@@ -188,4 +188,4 @@ def _q0():
 
 
 grouped: list[dict[str, typing.Any]] = _q0()
-print(*grouped)
+print(grouped)

@@ -168,4 +168,4 @@ for g in groups:
 result: list[typing.Any] = [
     r for r in sorted([r for r in tmp], key=lambda r: _sort_key(_get(r, "tag")))
 ]
-print(*result)
+print(result)

@@ -3,4 +3,4 @@ from __future__ import annotations
 import typing
 
 a: list[int] = [1, 2]
-print(*a + [3])
+print(a + [3])

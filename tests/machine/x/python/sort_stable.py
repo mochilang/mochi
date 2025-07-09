@@ -21,4 +21,4 @@ items: list[dict[str, typing.Any]] = [
 result: list[typing.Any] = [
     i["v"] for i in sorted([i for i in items], key=lambda i: _sort_key(i["n"]))
 ]
-print(*result)
+print(result)

@@ -20,4 +20,4 @@ _sorted: list[dict[str, int]] = [
         [x for x in data], key=lambda x: _sort_key({"a": x["a"], "b": x["b"]})
     )
 ]
-print(*_sorted)
+print(_sorted)

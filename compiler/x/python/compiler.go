@@ -696,11 +696,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			}
 		}
 		if len(call.Args) == 1 {
-			if _, ok := c.inferExprType(call.Args[0]).(types.ListType); ok {
-				argStr = "*" + args[0]
-			} else {
-				argStr = args[0]
-			}
+			argStr = args[0]
 		} else {
 			argStr = strings.Join(args, ", ")
 		}
