@@ -3,7 +3,7 @@
 This directory contains F# source code generated from Mochi programs in `tests/vm/valid`.
 Generated with `compiler/x/fs`. Programs that compile successfully have a `.fs` file, and if compilation fails an `.error` file captures the reason.
 
-Compiled programs: 90/97
+Compiled programs: 89/97
 
 Checklist:
 - [x] append_builtin
@@ -70,7 +70,7 @@ Checklist:
 - [x] min_max_builtin
 - [x] nested_function
 - [x] order_by_map
-- [x] outer_join
+- [ ] outer_join
 - [x] partial_application
 - [x] print_hello
 - [x] pure_fold
