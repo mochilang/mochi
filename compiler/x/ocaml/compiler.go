@@ -411,37 +411,69 @@ func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
 
 func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	froms := append([]*parser.FromClause{{Var: q.Var, Src: q.Source}}, q.Froms...)
-	sources := make([]string, len(froms))
-	vars := make([]string, len(froms))
-	for i, fr := range froms {
+	total := len(froms) + len(q.Joins)
+	sources := make([]string, total)
+	vars := make([]string, total)
+	idx := 0
+	for _, fr := range froms {
 		src, err := c.compileExpr(fr.Src)
 		if err != nil {
 			return "", err
 		}
-		sources[i] = src
-		vars[i] = fr.Var
+		sources[idx] = src
+		vars[idx] = fr.Var
+		idx++
 	}
+	joinConds := make([]string, len(q.Joins))
+	for j, jo := range q.Joins {
+		src, err := c.compileExpr(jo.Src)
+		if err != nil {
+			return "", err
+		}
+		sources[idx] = src
+		vars[idx] = jo.Var
+		idx++
+		if jo.On != nil {
+			cond, err := c.compileExpr(jo.On)
+			if err != nil {
+				return "", err
+			}
+			joinConds[j] = cond
+		}
+	}
+
+	condParts := []string{}
+	for _, jc := range joinConds {
+		if jc != "" {
+			condParts = append(condParts, jc)
+		}
+	}
+	if q.Where != nil {
+		w, err := c.compileExpr(q.Where)
+		if err != nil {
+			return "", err
+		}
+		condParts = append(condParts, w)
+	}
+	cond := strings.Join(condParts, " && ")
+
 	resName := fmt.Sprintf("__res%d", c.loop)
 	c.loop++
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("(let %s = ref [] in\n", resName))
-	for i := range froms {
+	for i := 0; i < total; i++ {
 		for j := 0; j <= i; j++ {
 			buf.WriteString(strings.Repeat("  ", j+1))
 		}
 		buf.WriteString(fmt.Sprintf("List.iter (fun %s ->\n", vars[i]))
 	}
-	for i := range froms {
-		buf.WriteString(strings.Repeat("  ", len(froms)+1-i))
+	for i := 0; i < total; i++ {
+		buf.WriteString(strings.Repeat("  ", total+1-i))
 		buf.WriteString("  ")
 	}
-	if q.Where != nil {
-		cond, err := c.compileExpr(q.Where)
-		if err != nil {
-			return "", err
-		}
+	if cond != "" {
 		buf.WriteString(fmt.Sprintf("if %s then\n", cond))
-		buf.WriteString(strings.Repeat("  ", len(froms)+1))
+		buf.WriteString(strings.Repeat("  ", total+1))
 	}
 	sel, err := c.compileExpr(q.Select)
 	if err != nil {
@@ -449,7 +481,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	}
 	buf.WriteString(fmt.Sprintf("%s := %s :: !%s", resName, sel, resName))
 	buf.WriteString(";\n")
-	for i := len(froms) - 1; i >= 0; i-- {
+	for i := total - 1; i >= 0; i-- {
 		for j := 0; j <= i; j++ {
 			buf.WriteString(strings.Repeat("  ", i-j+1))
 		}
