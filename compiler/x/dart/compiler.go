@@ -789,6 +789,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if q.Group != nil {
 		keyVar = fmt.Sprintf("_k%d", c.tmp)
 		c.tmp++
+		if name, ok := c.simpleIdentifier(q.Select); ok && name == q.Group.Name {
+			sel = fmt.Sprintf("{'key': %s, 'items': %s}", keyVar, q.Group.Name)
+		}
 		keyExpr := c.mustExpr(q.Group.Exprs[0])
 		grpVar = q.Group.Name
 		c.groupKeys[grpVar] = keyVar
@@ -1004,6 +1007,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("values expects 1 arg")
 		}
 		return fmt.Sprintf("%s.values.toList()", args[0]), nil
+	case "exists":
+		if len(args) != 1 {
+			return "", fmt.Errorf("exists expects 1 arg")
+		}
+		return fmt.Sprintf("%s.isNotEmpty", args[0]), nil
 	case "json":
 		if len(args) != 1 {
 			return "", fmt.Errorf("json expects 1 arg")
