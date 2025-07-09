@@ -373,14 +373,25 @@ func (c *compiler) binary(b *parser.BinaryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		if op.Op == "in" {
+		switch op.Op {
+		case "in":
 			typ := c.primaryType(op.Right.Target)
 			if typ == "map" {
 				res = fmt.Sprintf("%s.keys.contains(%s)", r, res)
 			} else {
 				res = fmt.Sprintf("%s.contains(%s)", r, res)
 			}
-		} else {
+		case "union":
+			if op.All {
+				res = fmt.Sprintf("(%s + %s)", res, r)
+			} else {
+				res = fmt.Sprintf("Array(Set(%s).union(%s)).sorted()", res, r)
+			}
+		case "except":
+			res = fmt.Sprintf("Array(Set(%s).subtracting(%s)).sorted()", res, r)
+		case "intersect":
+			res = fmt.Sprintf("Array(Set(%s).intersection(%s)).sorted()", res, r)
+		default:
 			res = fmt.Sprintf("%s %s %s", res, op.Op, r)
 		}
 	}
@@ -389,7 +400,7 @@ func (c *compiler) binary(b *parser.BinaryExpr) (string, error) {
 
 func supportedOp(op string) bool {
 	switch op {
-	case "+", "-", "*", "/", "%", "<", "<=", ">", ">=", "==", "!=", "&&", "||", "in":
+	case "+", "-", "*", "/", "%", "<", "<=", ">", ">=", "==", "!=", "&&", "||", "in", "union", "except", "intersect":
 		return true
 	}
 	return false
