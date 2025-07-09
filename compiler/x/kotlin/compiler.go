@@ -90,18 +90,94 @@ fun <T> intersect(a: MutableList<T>, b: MutableList<T>): MutableList<T> {
     return res
 }
 
+fun _load(path: String?, opts: Map<String, Any?>?): MutableList<MutableMap<String, Any?>> {
+    val fmt = opts?.get("format") as? String ?: "csv"
+    val lines = if (path == null || path == "-") {
+        listOf<String>()
+    } else {
+        java.io.File(path).readLines()
+    }
+    return when (fmt) {
+        "yaml" -> loadYamlSimple(lines)
+        else -> mutableListOf()
+    }
+}
+
+fun loadYamlSimple(lines: List<String>): MutableList<MutableMap<String, Any?>> {
+    val res = mutableListOf<MutableMap<String, Any?>>()
+    var cur: MutableMap<String, Any?>? = null
+    for (ln in lines) {
+        val t = ln.trim()
+        if (t.startsWith("- ")) {
+            cur?.let { res.add(it) }
+            cur = mutableMapOf()
+            val idx = t.indexOf(':', 2)
+            if (idx >= 0) {
+                val k = t.substring(2, idx).trim()
+                val v = parseSimpleValue(t.substring(idx + 1))
+                cur!![k] = v
+            }
+        } else if (t.contains(':')) {
+            val idx = t.indexOf(':')
+            val k = t.substring(0, idx).trim()
+            val v = parseSimpleValue(t.substring(idx + 1))
+            cur?.set(k, v)
+        }
+    }
+    cur?.let { res.add(it) }
+    return res
+}
+
+fun parseSimpleValue(s: String): Any? {
+    val t = s.trim()
+    return when {
+        t.matches(Regex("^-?\\d+$")) -> t.toInt()
+        t.matches(Regex("^-?\\d+\\.\\d+$")) -> t.toDouble()
+        t.equals("true", true) -> true
+        t.equals("false", true) -> false
+        t.startsWith("\"") && t.endsWith("\"") -> t.substring(1, t.length - 1)
+        else -> t
+    }
+}
+
+fun _save(rows: List<Any?>, path: String?, opts: Map<String, Any?>?) {
+    val fmt = opts?.get("format") as? String ?: "csv"
+    val writer = if (path == null || path == "-") {
+        java.io.BufferedWriter(java.io.OutputStreamWriter(System.out))
+    } else {
+        java.io.File(path).bufferedWriter()
+    }
+    if (fmt == "jsonl") {
+        for (r in rows) {
+            writer.write(toJson(r))
+            writer.newLine()
+        }
+    }
+    if (path != null && path != "-") writer.close()
+}
+
+fun toJson(v: Any?): String = when (v) {
+    null -> "null"
+    is String -> "\"" + v.replace("\"", "\\\"") + "\""
+    is Boolean, is Number -> v.toString()
+    is Map<*, *> -> v.entries.joinToString(prefix = "{", postfix = "}") { toJson(it.key.toString()) + ":" + toJson(it.value) }
+    is Iterable<*> -> v.joinToString(prefix = "[", postfix = "]") { toJson(it) }
+    else -> toJson(v.toString())
+}
+
 class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
 `
 
 // Compiler converts a subset of Mochi programs to Kotlin source code.
 type Compiler struct {
-	buf    bytes.Buffer
-	indent int
-	env    *types.Env
+	buf      bytes.Buffer
+	indent   int
+	env      *types.Env
+	tmpCount int
 }
 
 // New creates a new Kotlin compiler.
-func New(env *types.Env, _ string) *Compiler { return &Compiler{env: env} }
+func New(env *types.Env, _ string) *Compiler { return &Compiler{env: env, tmpCount: 0} }
 
 // Compile generates Kotlin code from prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
@@ -238,6 +314,23 @@ func (c *Compiler) stmt(s *parser.Statement) error {
 		c.writeln("break")
 	case s.Continue != nil:
 		c.writeln("continue")
+	case s.Fun != nil:
+		return c.funDecl(s.Fun)
+	case s.Expect != nil:
+		cond, err := c.expr(s.Expect.Value)
+		if err != nil {
+			return err
+		}
+		c.writeln("check(" + cond + ")")
+	case s.Test != nil:
+		for _, st := range s.Test.Body {
+			if err := c.stmt(st); err != nil {
+				return err
+			}
+		}
+		return nil
+	case s.Update != nil:
+		return c.compileUpdate(s.Update)
 	case s.Type != nil:
 		// type declarations are emitted before main
 		return nil
@@ -380,6 +473,71 @@ func (c *Compiler) forStmt(f *parser.ForStmt) error {
 	if elem != nil {
 		c.env = oldEnv
 	}
+	return nil
+}
+
+func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
+	list := u.Target
+	idx := fmt.Sprintf("_i%d", c.tmpCount)
+	item := fmt.Sprintf("_it%d", c.tmpCount)
+	c.tmpCount++
+
+	c.writeln(fmt.Sprintf("for (%s in 0 until %s.size) {", idx, list))
+	c.indent++
+	c.writeln(fmt.Sprintf("var %s = %s[%s]", item, list, idx))
+
+	origEnv := c.env
+	c.env = types.NewEnv(c.env)
+
+	if t, err := c.env.GetVar(u.Target); err == nil {
+		if lt, ok := t.(types.ListType); ok {
+			if st, ok := lt.Elem.(types.StructType); ok {
+				for _, f := range st.Order {
+					c.writeln(fmt.Sprintf("val %s = %s.%s", f, item, f))
+					c.env.SetVar(f, st.Fields[f], true)
+				}
+			}
+		}
+	}
+
+	if u.Where != nil {
+		cond, err := c.expr(u.Where)
+		if err != nil {
+			c.env = origEnv
+			return err
+		}
+		c.writeln(fmt.Sprintf("if (%s) {", cond))
+		c.indent++
+	}
+
+	for _, it := range u.Set.Items {
+		key, ok := identName(it.Key)
+		valExpr, err := c.expr(it.Value)
+		if err != nil {
+			c.env = origEnv
+			return err
+		}
+		if ok {
+			c.writeln(fmt.Sprintf("%s.%s = %s", item, key, valExpr))
+		} else {
+			keyExpr, err := c.expr(it.Key)
+			if err != nil {
+				c.env = origEnv
+				return err
+			}
+			c.writeln(fmt.Sprintf("(%s as MutableMap<Any?, Any?>)[%s] = %s", item, keyExpr, valExpr))
+		}
+	}
+
+	if u.Where != nil {
+		c.indent--
+		c.writeln("}")
+	}
+
+	c.writeln(fmt.Sprintf("%s[%s] = %s", list, idx, item))
+	c.env = origEnv
+	c.indent--
+	c.writeln("}")
 	return nil
 }
 
@@ -711,6 +869,10 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 		return c.ifExpr(p.If)
 	case p.Match != nil:
 		return c.matchExpr(p.Match)
+	case p.Load != nil:
+		return c.loadExpr(p.Load)
+	case p.Save != nil:
+		return c.saveExpr(p.Save)
 	default:
 		return "", fmt.Errorf("unsupported expression")
 	}
@@ -999,6 +1161,56 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	c.env = oldEnv
 	return res, nil
+}
+
+func (c *Compiler) loadExpr(l *parser.LoadExpr) (string, error) {
+	path := "null"
+	if l.Path != nil {
+		path = fmt.Sprintf("%q", *l.Path)
+	}
+	opts := "null"
+	if l.With != nil {
+		v, err := c.expr(l.With)
+		if err != nil {
+			return "", err
+		}
+		opts = v
+	}
+	expr := fmt.Sprintf("_load(%s, %s)", path, opts)
+	if l.Type != nil && l.Type.Simple != nil {
+		if st, ok := c.env.GetStruct(*l.Type.Simple); ok {
+			fields := make([]string, len(st.Order))
+			for i, f := range st.Order {
+				v := fmt.Sprintf("it[%q]", f)
+				if kt := kotlinCastType(st.Fields[f]); kt != "" {
+					v += fmt.Sprintf(" as %s", kt)
+				}
+				fields[i] = fmt.Sprintf("%s = %s", f, v)
+			}
+			expr += fmt.Sprintf(".map { %s(%s) }.toMutableList()", st.Name, strings.Join(fields, ", "))
+		}
+	}
+	return expr, nil
+}
+
+func (c *Compiler) saveExpr(s *parser.SaveExpr) (string, error) {
+	src, err := c.expr(s.Src)
+	if err != nil {
+		return "", err
+	}
+	path := "null"
+	if s.Path != nil {
+		path = fmt.Sprintf("%q", *s.Path)
+	}
+	opts := "null"
+	if s.With != nil {
+		v, err := c.expr(s.With)
+		if err != nil {
+			return "", err
+		}
+		opts = v
+	}
+	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts), nil
 }
 
 func identName(e *parser.Expr) (string, bool) {
