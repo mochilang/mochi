@@ -1045,6 +1045,13 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		idx := c.newTemp()
 		isStr := isStringExpr(f.Source, c.env)
 		isListStr := isListStringExpr(f.Source, c.env)
+		var elemC string
+		if lt, ok := c.exprType(f.Source).(types.ListType); ok {
+			elemC = cTypeFromType(lt.Elem)
+			if elemC == "" {
+				elemC = "int"
+			}
+		}
 		if isStr {
 			c.writeln(fmt.Sprintf("for (int %s = 0; %s[%s] != '\\0'; %s++) {", idx, src, idx, idx))
 			c.indent++
@@ -1063,17 +1070,20 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 			c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", idx, idx, src, idx))
 			c.indent++
 			if useVar {
-				c.writeln(fmt.Sprintf("int %s = %s.data[%s];", name, src, idx))
+				if elemC == "" {
+					elemC = "int"
+				}
+				c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", elemC, name, src, idx))
 			}
 		}
 		oldEnv := c.env
 		if c.env != nil {
 			c.env = types.NewEnv(c.env)
 			if useVar {
-				if isStr {
+				if isStr || isListStr {
 					c.env.SetVar(f.Name, types.StringType{}, true)
-				} else if isListStr {
-					c.env.SetVar(f.Name, types.StringType{}, true)
+				} else if lt, ok := c.exprType(f.Source).(types.ListType); ok {
+					c.env.SetVar(f.Name, lt.Elem, true)
 				} else {
 					c.env.SetVar(f.Name, types.IntType{}, true)
 				}
@@ -1860,6 +1870,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 		c.writeln(fmt.Sprintf("%s %s = %s.data[i];", elemOut, tmpV, res))
 		c.writeln(fmt.Sprintf("%s.data[i] = %s.data[j];", res, res))
 		c.writeln(fmt.Sprintf("%s.data[j] = %s;", res, tmpV))
+		c.indent--
+		c.writeln("}")
 		c.indent--
 		c.writeln("}")
 		c.indent--
