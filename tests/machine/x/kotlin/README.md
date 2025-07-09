@@ -2,7 +2,7 @@
 
 This directory contains Kotlin source files generated from Mochi programs. Running the programs requires the Kotlin toolchain.
 
-Compiled programs: 43/97
+Compiled programs: 44/97
 
 Checklist:
 [x] append_builtin
@@ -32,7 +32,7 @@ Checklist:
 [ ] group_by_having
 [ ] group_by_join
 [x] group_by_left_join
-[ ] group_by_multi_join
+[x] group_by_multi_join
 [x] group_by_multi_join_sort
 [x] group_by_sort
 [ ] group_items_iteration

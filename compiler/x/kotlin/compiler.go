@@ -677,19 +677,25 @@ func (c *Compiler) binary(b *parser.BinaryExpr) (string, error) {
 			continue
 		}
 		if isNumericOp(op.Op) {
-			if _, ok := lType.(types.AnyType); ok {
-				switch rType.(type) {
-				case types.IntType:
-					res = fmt.Sprintf("toInt(%s)", res)
-				case types.FloatType:
+			if _, lok := lType.(types.AnyType); lok {
+				if _, rok := rType.(types.AnyType); rok {
 					res = fmt.Sprintf("toDouble(%s)", res)
+					r = fmt.Sprintf("toDouble(%s)", r)
+				} else {
+					switch rType.(type) {
+					case types.IntType:
+						res = fmt.Sprintf("toInt(%s)", res)
+					case types.FloatType:
+						res = fmt.Sprintf("toDouble(%s)", res)
+					}
 				}
-			}
-			if _, ok := rType.(types.AnyType); ok {
+			} else if _, rok := rType.(types.AnyType); rok {
 				switch lType.(type) {
 				case types.IntType:
 					r = fmt.Sprintf("toInt(%s)", r)
 				case types.FloatType:
+					r = fmt.Sprintf("toDouble(%s)", r)
+				default:
 					r = fmt.Sprintf("toDouble(%s)", r)
 				}
 			}
