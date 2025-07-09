@@ -855,7 +855,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			b.WriteString(", take: " + takeExpr)
 		}
 		b.WriteString(" })\n")
-		b.WriteString(fmt.Sprintf("\tgroups = _group_by(rows, fn %s -> %s end)\n", allParams, keyExpr))
+		b.WriteString(fmt.Sprintf("\tgroups = _group_by(rows, fn [%s] -> %s end)\n", allParams, keyExpr))
 		b.WriteString(fmt.Sprintf("\tgroups = Enum.map(groups, fn g -> %%{g | items: Enum.map(g.items, fn [%s] -> %s end)} end)\n", allParams, sanitizeName(q.Var)))
 		b.WriteString("\titems = groups\n")
 		if sortExpr != "" {
