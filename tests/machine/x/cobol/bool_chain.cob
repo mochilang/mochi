@@ -5,18 +5,26 @@
        01 BOOM_RES PIC 9 VALUE 0.
        01 TMP PIC 9 VALUE 0.
        PROCEDURE DIVISION.
-       COMPUTE TMP = (1 < 2) AND (2 < 3) AND (3 < 4)
-       DISPLAY TMP
+       IF (1 < 2) AND (2 < 3) AND (3 < 4)
+           DISPLAY "true"
+       ELSE
+           DISPLAY "false"
+       END-IF
        PERFORM BOOM
-       COMPUTE TMP = (1 < 2) AND (2 > 3) AND BOOM_RES
-       DISPLAY TMP
+       IF (1 < 2) AND (2 > 3) AND BOOM_RES
+           DISPLAY "true"
+       ELSE
+           DISPLAY "false"
+       END-IF
        PERFORM BOOM
-       COMPUTE TMP = (1 < 2) AND (2 < 3) AND (3 > 4) AND BOOM_RES
-       DISPLAY TMP
+       IF (1 < 2) AND (2 < 3) AND (3 > 4) AND BOOM_RES
+           DISPLAY "true"
+       ELSE
+           DISPLAY "false"
+       END-IF
        STOP RUN.
        
        BOOM.
-           PROCEDURE DIVISION.
-               DISPLAY "boom"
-               COMPUTE BOOM_RES = 1
-               EXIT.
+           DISPLAY "boom"
+           COMPUTE BOOM_RES = 1
+           EXIT.

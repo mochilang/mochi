@@ -142,9 +142,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		using := ""
 		if len(fn.params) > 0 {
 			using = " USING " + strings.Join(fn.params, " ")
+			c.writeln("PROCEDURE DIVISION" + using + ".")
+			c.indent += 4
 		}
-		c.writeln("PROCEDURE DIVISION" + using + ".")
-		c.indent += 4
 		c.curFun = &fn
 		for _, st := range fn.body {
 			if err := c.compileStmt(st); err != nil {
