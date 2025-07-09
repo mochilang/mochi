@@ -596,14 +596,14 @@ const (
 		"    elseif fmt == 'jsonl' then\n" +
 		"        local function enc(v)\n" +
 		"            if type(v)=='table' then\n" +
-		"                local parts={}\n" +
-		"                parts[#parts+1]='{'\n" +
-		"                local first=true\n" +
-		"                for k,val in pairs(v) do\n" +
-		"                    if not first then parts[#parts+1]=',' end\n" +
-		"                    first=false\n" +
+		"                local keys={}\n" +
+		"                for k in pairs(v) do keys[#keys+1]=k end\n" +
+		"                table.sort(keys, function(a,b) return tostring(a)<tostring(b) end)\n" +
+		"                local parts={'{'}\n" +
+		"                for i,k in ipairs(keys) do\n" +
+		"                    if i>1 then parts[#parts+1]=',' end\n" +
 		"                    parts[#parts+1]=string.format('%q:',k)\n" +
-		"                    parts[#parts+1]=enc(val)\n" +
+		"                    parts[#parts+1]=enc(v[k])\n" +
 		"                end\n" +
 		"                parts[#parts+1]='}'\n" +
 		"                return table.concat(parts)\n" +

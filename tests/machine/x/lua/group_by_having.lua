@@ -99,7 +99,9 @@ big = (function()
     local _groups = __group_by(people, function(p) return p.city end)
     local _res = {}
     for _, g in ipairs(_groups) do
-        _res[#_res+1] = {["city"]=g.key, ["num"]=__count(g)}
+        if (__count(g) >= 4) then
+            _res[#_res+1] = {["city"]=g.key, ["num"]=__count(g)}
+        end
     end
     return _res
 end)()

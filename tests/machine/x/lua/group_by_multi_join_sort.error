@@ -1,0 +1,3 @@
+line 75: luac error: exit status 1
+luac: /tmp/mochi_2350159531.lua:75: unfinished string near '''
+
