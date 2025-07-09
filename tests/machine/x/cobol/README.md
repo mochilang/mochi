@@ -1,4 +1,4 @@
-# Mochi to COBOL Machine Translations (25/97 compiled)
+# Mochi to COBOL Machine Translations (26/97 compiled)
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -7,7 +7,7 @@
 - [x] bool_chain.mochi
 - [x] break_continue.mochi
 - [x] cast_string_to_int.mochi
-- [ ] cast_struct.mochi
+- [x] cast_struct.mochi
 - [ ] closure.mochi
 - [x] count_builtin.mochi
 - [ ] cross_join.mochi

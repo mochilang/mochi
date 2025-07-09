@@ -24,10 +24,17 @@ type Compiler struct {
 	seqList map[string]int
 }
 
-type varDecl struct {
+type varField struct {
 	name string
 	pic  string
 	val  string
+}
+
+type varDecl struct {
+	name   string
+	pic    string
+	val    string
+	fields []varField
 }
 
 type funDecl struct {
@@ -114,13 +121,28 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("DATA DIVISION.")
 	c.writeln("WORKING-STORAGE SECTION.")
 	for _, v := range c.vars {
-		line := fmt.Sprintf("01 %s %s", strings.ToUpper(v.name), v.pic)
-		if v.val != "" {
-			line += " VALUE " + v.val + "."
+		if len(v.fields) > 0 {
+			c.writeln(fmt.Sprintf("01 %s.", strings.ToUpper(v.name)))
+			c.indent += 4
+			for _, f := range v.fields {
+				line := fmt.Sprintf("05 %s %s", strings.ToUpper(f.name), f.pic)
+				if f.val != "" {
+					line += " VALUE " + f.val + "."
+				} else {
+					line += "."
+				}
+				c.writeln(line)
+			}
+			c.indent -= 4
 		} else {
-			line += "."
+			line := fmt.Sprintf("01 %s %s", strings.ToUpper(v.name), v.pic)
+			if v.val != "" {
+				line += " VALUE " + v.val + "."
+			} else {
+				line += "."
+			}
+			c.writeln(line)
 		}
-		c.writeln(line)
 	}
 	c.writeln("PROCEDURE DIVISION.")
 	for _, line := range c.init {
@@ -164,6 +186,38 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 func (c *Compiler) addVar(name string, typ *parser.TypeRef, value *parser.Expr, line int) error {
 	if value != nil {
+		// map literal cast to struct
+		if value.Binary != nil && len(value.Binary.Right) == 0 {
+			u := value.Binary.Left
+			if len(u.Ops) == 0 && u.Value != nil && len(u.Value.Ops) == 1 {
+				op := u.Value.Ops[0]
+				if op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Simple != nil {
+					if u.Value.Target != nil && u.Value.Target.Map != nil {
+						structName := *op.Cast.Type.Simple
+						st, ok := c.env.GetStruct(structName)
+						if !ok {
+							return fmt.Errorf("unknown struct %s", structName)
+						}
+						fields := make([]varField, 0, len(u.Value.Target.Map.Items))
+						for _, it := range u.Value.Target.Map.Items {
+							key, ok := simpleStringKey(it.Key)
+							if !ok {
+								return fmt.Errorf("unsupported struct key at line %d", line)
+							}
+							valStr, err := c.compileExpr(it.Value)
+							if err != nil {
+								return err
+							}
+							ft := st.Fields[key]
+							pic := cobolPic(ft, valStr)
+							fields = append(fields, varField{name: key, pic: pic, val: valStr})
+						}
+						c.vars = append(c.vars, varDecl{name: name, fields: fields})
+						return nil
+					}
+				}
+			}
+		}
 		if n, ok := seqIntList(value); ok {
 			if c.seqList == nil {
 				c.seqList = make(map[string]int)
@@ -734,7 +788,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return "(" + expr + ")", nil
 	case p.Selector != nil:
-		return strings.ToUpper(p.Selector.Root), nil
+		name := p.Selector.Root
+		if len(p.Selector.Tail) > 0 {
+			name = p.Selector.Tail[len(p.Selector.Tail)-1]
+		}
+		return strings.ToUpper(strings.ReplaceAll(name, "_", "-")), nil
 	default:
 		return "", fmt.Errorf("unsupported expression at line %d", p.Pos.Line)
 	}
@@ -955,4 +1013,39 @@ func intLiteral(e *parser.Expr) (int, bool) {
 		v = -v
 	}
 	return v, true
+}
+
+func simpleStringKey(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return *p.Target.Lit.Str, true
+	}
+	return "", false
+}
+
+func cobolPic(t types.Type, val string) string {
+	switch t.(type) {
+	case types.StringType:
+		if strings.HasPrefix(val, "\"") && strings.HasSuffix(val, "\"") {
+			return fmt.Sprintf("PIC X(%d)", len(strings.Trim(val, "\"")))
+		}
+		return "PIC X"
+	case types.BoolType:
+		return "PIC X(5)"
+	default:
+		return "PIC 9"
+	}
 }
