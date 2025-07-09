@@ -887,6 +887,72 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	c.env = child
 
+	// special cases for simple right or outer joins
+	if len(q.Froms) == 0 && len(q.Joins) == 1 && q.Group == nil && q.Sort == nil &&
+		q.Skip == nil && q.Take == nil && q.Where == nil {
+		j := q.Joins[0]
+		if j.Side != nil && (*j.Side == "right" || *j.Side == "outer") {
+			var out bytes.Buffer
+			out.WriteString("(() {\n")
+			out.WriteString(fmt.Sprintf("  var %s = <dynamic>[];\n", tmp))
+			left := c.mustExpr(q.Source)
+			right := c.mustExpr(j.Src)
+			cond := c.mustExpr(j.On)
+			sel := c.mustExpr(q.Select)
+
+			if *j.Side == "right" {
+				tmpVar := fmt.Sprintf("_jt%d", c.tmp)
+				c.tmp++
+				out.WriteString(fmt.Sprintf("  for (var %s in %s) {\n", j.Var, right))
+				out.WriteString(fmt.Sprintf("    var %s = <dynamic>[];\n", tmpVar))
+				out.WriteString(fmt.Sprintf("    for (var %s in %s) {\n", q.Var, left))
+				out.WriteString(fmt.Sprintf("      if (!(%s)) continue;\n", cond))
+				out.WriteString(fmt.Sprintf("      %s.add(%s);\n", tmpVar, q.Var))
+				out.WriteString("    }\n")
+				out.WriteString(fmt.Sprintf("    if (%s.isEmpty) %s.add(null);\n", tmpVar, tmpVar))
+				out.WriteString(fmt.Sprintf("    for (var %s in %s) {\n", q.Var, tmpVar))
+				out.WriteString(fmt.Sprintf("      %s.add(%s);\n", tmp, sel))
+				out.WriteString("    }\n")
+				out.WriteString("  }\n")
+				out.WriteString(fmt.Sprintf("  return %s;\n", tmp))
+				out.WriteString("})()")
+				c.env = origEnv
+				return out.String(), nil
+			}
+
+			if *j.Side == "outer" {
+				tmpVar := fmt.Sprintf("_jt%d", c.tmp)
+				c.tmp++
+				out.WriteString(fmt.Sprintf("  for (var %s in %s) {\n", q.Var, left))
+				out.WriteString(fmt.Sprintf("    var %s = <dynamic>[];\n", tmpVar))
+				out.WriteString(fmt.Sprintf("    for (var %s in %s) {\n", j.Var, right))
+				out.WriteString(fmt.Sprintf("      if (!(%s)) continue;\n", cond))
+				out.WriteString(fmt.Sprintf("      %s.add(%s);\n", tmpVar, j.Var))
+				out.WriteString("    }\n")
+				out.WriteString(fmt.Sprintf("    if (%s.isEmpty) %s.add(null);\n", tmpVar, tmpVar))
+				out.WriteString(fmt.Sprintf("    for (var %s in %s) {\n", j.Var, tmpVar))
+				out.WriteString(fmt.Sprintf("      %s.add(%s);\n", tmp, sel))
+				out.WriteString("    }\n")
+				out.WriteString("  }\n")
+				// unmatched right side
+				out.WriteString(fmt.Sprintf("  for (var %s in %s) {\n", j.Var, right))
+				out.WriteString("    var _f = false;\n")
+				out.WriteString(fmt.Sprintf("    for (var %s in %s) {\n", q.Var, left))
+				out.WriteString(fmt.Sprintf("      if (!(%s)) continue;\n", cond))
+				out.WriteString("      _f = true;\n      break;\n    }\n")
+				out.WriteString("    if (!_f) {\n")
+				out.WriteString(fmt.Sprintf("      var %s = null;\n", q.Var))
+				out.WriteString(fmt.Sprintf("      %s.add(%s);\n", tmp, sel))
+				out.WriteString("    }\n")
+				out.WriteString("  }\n")
+				out.WriteString(fmt.Sprintf("  return %s;\n", tmp))
+				out.WriteString("})()")
+				c.env = origEnv
+				return out.String(), nil
+			}
+		}
+	}
+
 	w("(() {\n")
 	w(fmt.Sprintf("  var %s = <dynamic>[];\n", tmp))
 	grpVar := ""
@@ -1373,19 +1439,20 @@ func (c *Compiler) constructorPattern(e *parser.Expr) (string, []string, bool) {
 		return "", nil, false
 	}
 	p := u.Value
-	if p.Call != nil {
-		vars := make([]string, len(p.Call.Args))
-		for i, a := range p.Call.Args {
+	if p.Target != nil && p.Target.Call != nil && len(p.Ops) == 0 {
+		call := p.Target.Call
+		vars := make([]string, len(call.Args))
+		for i, a := range call.Args {
 			v, ok := c.simpleIdentifier(a)
 			if !ok {
 				return "", nil, false
 			}
 			vars[i] = v
 		}
-		return p.Call.Func, vars, true
+		return call.Func, vars, true
 	}
-	if p.Selector != nil && len(p.Ops) == 0 && len(p.Selector.Tail) == 0 {
-		return p.Selector.Root, nil, true
+	if p.Target != nil && p.Target.Selector != nil && len(p.Ops) == 0 && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, nil, true
 	}
 	return "", nil, false
 }
