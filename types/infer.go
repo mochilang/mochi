@@ -435,12 +435,62 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 	case p.List != nil:
 		var elemType Type = AnyType{}
 		if len(p.List.Elems) > 0 {
-			elemType = ExprType(p.List.Elems[0], env)
-			for _, e := range p.List.Elems[1:] {
-				t := ExprType(e, env)
-				if !equalTypes(elemType, t) {
-					elemType = AnyType{}
-					break
+			first := p.List.Elems[0]
+			// Attempt to infer a struct type when all elements are map
+			// literals with matching keys and value types.
+			if ml := first.Binary.Left.Value.Target.Map; ml != nil && len(first.Binary.Right) == 0 {
+				fields := map[string]Type{}
+				order := make([]string, len(ml.Items))
+				valid := true
+				for i, it := range ml.Items {
+					key, ok := SimpleStringKey(it.Key)
+					if !ok {
+						valid = false
+						break
+					}
+					order[i] = key
+					fields[key] = ExprType(it.Value, env)
+				}
+				if valid {
+					for _, e := range p.List.Elems[1:] {
+						if e.Binary == nil || len(e.Binary.Right) != 0 {
+							valid = false
+							break
+						}
+						ml2 := e.Binary.Left.Value.Target.Map
+						if ml2 == nil || len(ml2.Items) != len(order) {
+							valid = false
+							break
+						}
+						for i, it := range ml2.Items {
+							key, ok := SimpleStringKey(it.Key)
+							if !ok || key != order[i] {
+								valid = false
+								break
+							}
+							vt := ExprType(it.Value, env)
+							ft := fields[key]
+							if !equalTypes(ft, vt) {
+								fields[key] = AnyType{}
+							}
+						}
+						if !valid {
+							break
+						}
+					}
+				}
+				if valid {
+					elemType = StructType{Fields: fields, Order: order}
+				}
+			}
+			if _, ok := elemType.(AnyType); ok {
+				elemType = ExprType(first, env)
+				for _, e := range p.List.Elems[1:] {
+					t := ExprType(e, env)
+					if !equalTypes(elemType, t) {
+						elemType = AnyType{}
+						break
+					}
 				}
 			}
 		}

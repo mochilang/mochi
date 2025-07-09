@@ -114,7 +114,7 @@ var helperGroupBy = "def _group_by(src: list[T], keyfn: Callable[[T], K]) -> lis
 	"        g.Items.append(it)\n" +
 	"    return [ groups[k] for k in order ]\n"
 
-var helperFetch = "def _fetch(url, opts):\n" +
+var helperFetch = "def _fetch(url: str, opts: dict[str, Any] | None) -> Any:\n" +
 	"    import urllib.request, urllib.parse, json\n" +
 	"    method = 'GET'\n" +
 	"    data = None\n" +
@@ -137,7 +137,7 @@ var helperFetch = "def _fetch(url, opts):\n" +
 	"        text = resp.read()\n" +
 	"    return json.loads(text)\n"
 
-var helperLoad = "def _load(path, opts):\n" +
+var helperLoad = "def _load(path: str | None, opts: dict[str, Any] | None) -> list[dict[str, Any]]:\n" +
 	"    import csv, json, sys, os\n" +
 	"    fmt = 'csv'\n" +
 	"    header = True\n" +
