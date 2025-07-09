@@ -41,6 +41,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
+	case s.Test != nil:
+		for _, stmt := range s.Test.Body {
+			if err := c.compileStmt(stmt); err != nil {
+				return err
+			}
+		}
+		return nil
+	case s.Expect != nil:
+		// Expectations inside tests are ignored in generated code
+		return nil
 	case s.Let != nil:
 		return c.compileLet(s.Let)
 	case s.Var != nil:
@@ -552,15 +562,21 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Map != nil:
 		parts := make([]string, len(p.Map.Items))
 		for i, it := range p.Map.Items {
-			k, err := c.compileExpr(it.Key)
-			if err != nil {
-				return "", err
+			var key string
+			if name, ok := isSimpleIdentExpr(it.Key); ok {
+				key = fmt.Sprintf("%q", name)
+			} else {
+				k, err := c.compileExpr(it.Key)
+				if err != nil {
+					return "", err
+				}
+				key = k
 			}
 			v, err := c.compileExpr(it.Value)
 			if err != nil {
 				return "", err
 			}
-			parts[i] = fmt.Sprintf("%s => %s", k, v)
+			parts[i] = fmt.Sprintf("%s => %s", key, v)
 		}
 		return "[" + strings.Join(parts, ", ") + "]", nil
 	case p.Selector != nil:

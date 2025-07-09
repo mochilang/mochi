@@ -29,6 +29,21 @@ func sanitizeName(name string) string {
 	return s
 }
 
+func isSimpleIdentExpr(e *parser.Expr) (string, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target.Selector == nil || len(p.Target.Selector.Tail) != 0 {
+		return "", false
+	}
+	return p.Target.Selector.Root, true
+}
+
 func (c *Compiler) isMapExpr(e *parser.Expr) bool {
 	if e == nil {
 		return false
