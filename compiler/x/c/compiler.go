@@ -1452,6 +1452,163 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 		return res
 	}
 
+	// handle joins without grouping
+	if len(q.Joins) > 0 && q.Group == nil {
+		type srcInfo struct {
+			varName string
+			expr    string
+			elem    types.Type
+			joinOn  string
+			left    bool
+		}
+
+		sources := []srcInfo{}
+		firstExpr := c.compileExpr(q.Source)
+		firstT := c.exprType(q.Source)
+		lt, ok := firstT.(types.ListType)
+		if !ok {
+			return "0"
+		}
+		sources = append(sources, srcInfo{varName: q.Var, expr: firstExpr, elem: lt.Elem})
+		for _, f := range q.Froms {
+			fe := c.compileExpr(f.Src)
+			ft := c.exprType(f.Src)
+			flt, ok := ft.(types.ListType)
+			if !ok {
+				return "0"
+			}
+			sources = append(sources, srcInfo{varName: f.Var, expr: fe, elem: flt.Elem})
+		}
+		for _, j := range q.Joins {
+			je := c.compileExpr(j.Src)
+			jt := c.exprType(j.Src)
+			jlt, ok := jt.(types.ListType)
+			if !ok {
+				return "0"
+			}
+			on := c.compileExpr(j.On)
+			left := false
+			if j.Side != nil && *j.Side == "left" {
+				left = true
+			}
+			sources = append(sources, srcInfo{varName: j.Var, expr: je, elem: jlt.Elem, joinOn: on, left: left})
+		}
+
+		oldEnv := c.env
+		if c.env != nil {
+			c.env = types.NewEnv(c.env)
+			for _, s := range sources {
+				c.env.SetVar(s.varName, s.elem, true)
+			}
+		}
+
+		var cond string
+		if q.Where != nil {
+			cond = c.compileExpr(q.Where)
+		}
+
+		val := c.compileExpr(q.Select)
+		retT := c.exprType(q.Select)
+		retList := types.ListType{Elem: retT}
+		listC := cTypeFromType(retList)
+		if listC == "list_string" {
+			c.need(needListString)
+		} else if listC == "list_float" {
+			c.need(needListFloat)
+		} else if listC == "list_list_int" {
+			c.need(needListListInt)
+		}
+
+		res := c.newTemp()
+		idx := c.newTemp()
+		lenExpr := sources[0].expr + ".len"
+		for i := 1; i < len(sources); i++ {
+			lenExpr = fmt.Sprintf("%s * %s.len", lenExpr, sources[i].expr)
+		}
+		c.writeln(fmt.Sprintf("%s %s = %s_create(%s);", listC, res, listC, lenExpr))
+		c.writeln(fmt.Sprintf("int %s = 0;", idx))
+
+		var loop func(int)
+		loop = func(i int) {
+			src := sources[i]
+			iter := c.newTemp()
+			if src.joinOn == "" {
+				c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", iter, iter, src.expr, iter))
+				c.indent++
+				c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", cTypeFromType(src.elem), sanitizeName(src.varName), src.expr, iter))
+				if i+1 < len(sources) {
+					loop(i + 1)
+				} else {
+					if cond != "" {
+						c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", cond))
+					}
+					c.writeln(fmt.Sprintf("%s.data[%s] = %s;", res, idx, val))
+					c.writeln(fmt.Sprintf("%s++;", idx))
+				}
+				c.indent--
+				c.writeln("}")
+			} else if src.left {
+				matched := c.newTemp()
+				c.writeln(fmt.Sprintf("int %s = 0;", matched))
+				c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", iter, iter, src.expr, iter))
+				c.indent++
+				c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", cTypeFromType(src.elem), sanitizeName(src.varName), src.expr, iter))
+				c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", src.joinOn))
+				c.writeln(fmt.Sprintf("%s = 1;", matched))
+				if i+1 < len(sources) {
+					loop(i + 1)
+				} else {
+					if cond != "" {
+						c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", cond))
+					}
+					c.writeln(fmt.Sprintf("%s.data[%s] = %s;", res, idx, val))
+					c.writeln(fmt.Sprintf("%s++;", idx))
+				}
+				c.indent--
+				c.writeln("}")
+				c.writeln(fmt.Sprintf("if (!%s) {", matched))
+				c.indent++
+				c.writeln(fmt.Sprintf("%s %s = %s;", cTypeFromType(src.elem), sanitizeName(src.varName), defaultCValue(src.elem)))
+				if i+1 < len(sources) {
+					loop(i + 1)
+				} else {
+					if cond != "" {
+						c.writeln(fmt.Sprintf("if (!(%s)) { } else {", cond))
+						c.indent++
+						c.writeln("}")
+						c.indent--
+					}
+					c.writeln(fmt.Sprintf("%s.data[%s] = %s;", res, idx, val))
+					c.writeln(fmt.Sprintf("%s++;", idx))
+				}
+				c.indent--
+				c.writeln("}")
+			} else {
+				c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", iter, iter, src.expr, iter))
+				c.indent++
+				c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", cTypeFromType(src.elem), sanitizeName(src.varName), src.expr, iter))
+				c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", src.joinOn))
+				if i+1 < len(sources) {
+					loop(i + 1)
+				} else {
+					if cond != "" {
+						c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", cond))
+					}
+					c.writeln(fmt.Sprintf("%s.data[%s] = %s;", res, idx, val))
+					c.writeln(fmt.Sprintf("%s++;", idx))
+				}
+				c.indent--
+				c.writeln("}")
+			}
+		}
+		loop(0)
+		c.writeln(fmt.Sprintf("%s.len = %s;", res, idx))
+		if c.env != nil {
+			c.env = oldEnv
+		}
+		return res
+	}
+
 	// only handle simple queries without joins or grouping
 	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil {
 		return "0"
