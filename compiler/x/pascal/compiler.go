@@ -1970,13 +1970,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		genv := types.NewEnv(child)
 		genv.SetVar(q.Group.Name, types.AnyType{}, true)
-		c.env = genv
-		valExpr, err := c.compileExpr(q.Select)
-		if err != nil {
-			c.env = orig
-			return "", err
-		}
-		c.env = orig
 		elemType := typeString(types.TypeOfExpr(q.Select, genv))
 		if elemType == "" {
 			elemType = "integer"
@@ -2003,6 +1996,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.writeln(fmt.Sprintf("for %s in %s do", sanitizeName(q.Group.Name), tmpGrp))
 		c.writeln("begin")
 		c.indent++
+		c.env = genv
+		valExpr, err := c.compileExpr(q.Select)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		c.env = orig
 		c.writeln(fmt.Sprintf("%s := Concat(%s, [%s]);", tmpRes, tmpRes, valExpr))
 		c.indent--
 		c.writeln("end;")
