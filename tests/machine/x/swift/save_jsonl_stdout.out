@@ -1,0 +1,9 @@
+{"name":"Alice","age":30}
+{"age":25,"name":"Bob"}
+/workspace/mochi/tests/machine/x/swift/save_jsonl_stdout.swift:10:33: warning: result of call to 'createFile(atPath:contents:attributes:)' is unused
+ 8 |             handle = FileHandle.standardOutput
+ 9 |         } else {
+10 |             FileManager.default.createFile(atPath: path, contents: nil)
+   |                                 `- warning: result of call to 'createFile(atPath:contents:attributes:)' is unused
+11 |             handle = FileHandle(forWritingAtPath: path)!
+12 |         }

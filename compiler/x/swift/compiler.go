@@ -30,14 +30,16 @@ type Compiler struct {
 // New creates a new Compiler instance.
 func New(env *types.Env) *Compiler {
 	return &Compiler{compiler: compiler{
-		structs:    make(map[string][]string),
-		variants:   make(map[string]string),
-		inout:      make(map[string][]bool),
-		funcArgs:   make(map[string][]string),
-		varTypes:   make(map[string]string),
-		swiftTypes: make(map[string]string),
-		mapFields:  make(map[string]map[string]string),
-		groups:     make(map[string]bool),
+		structs:     make(map[string][]string),
+		structTypes: make(map[string]map[string]string),
+		variants:    make(map[string]string),
+		inout:       make(map[string][]bool),
+		funcArgs:    make(map[string][]string),
+		varTypes:    make(map[string]string),
+		swiftTypes:  make(map[string]string),
+		mapFields:   make(map[string]map[string]string),
+		groups:      make(map[string]bool),
+		helpers:     make(map[string]bool),
 	}}
 }
 
@@ -48,21 +50,31 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	if err := c.program(p); err != nil {
 		return nil, err
 	}
+	body := c.buf.String()
+	c.buf.Reset()
+	if len(c.helpers) > 0 {
+		c.writeln("import Foundation")
+		c.writeln("")
+		c.emitRuntime()
+	}
+	c.buf.WriteString(body)
 	return []byte(c.buf.String()), nil
 }
 
 type compiler struct {
-	buf        strings.Builder
-	indent     int
-	structs    map[string][]string
-	variants   map[string]string
-	inout      map[string][]bool
-	funcArgs   map[string][]string
-	varTypes   map[string]string
-	swiftTypes map[string]string
-	mapFields  map[string]map[string]string
-	groups     map[string]bool
-	tupleMap   bool
+	buf         strings.Builder
+	indent      int
+	structs     map[string][]string
+	structTypes map[string]map[string]string
+	variants    map[string]string
+	inout       map[string][]bool
+	funcArgs    map[string][]string
+	varTypes    map[string]string
+	swiftTypes  map[string]string
+	mapFields   map[string]map[string]string
+	groups      map[string]bool
+	helpers     map[string]bool
+	tupleMap    bool
 }
 
 func (c *compiler) program(p *parser.Program) error {
@@ -247,6 +259,7 @@ func (c *compiler) typeDecl(t *parser.TypeDecl) error {
 		return nil
 	}
 	c.structs[t.Name] = []string{}
+	c.structTypes[t.Name] = make(map[string]string)
 	c.writeln(fmt.Sprintf("struct %s {", t.Name))
 	c.indent++
 	for _, m := range t.Members {
@@ -258,6 +271,7 @@ func (c *compiler) typeDecl(t *parser.TypeDecl) error {
 			return err
 		}
 		c.structs[t.Name] = append(c.structs[t.Name], m.Field.Name)
+		c.structTypes[t.Name][m.Field.Name] = typ
 		c.writeln(fmt.Sprintf("var %s: %s", m.Field.Name, typ))
 	}
 	c.indent--
@@ -720,6 +734,10 @@ func (c *compiler) primary(p *parser.Primary) (string, error) {
 		return c.matchExpr(p.Match)
 	case p.Query != nil:
 		return c.queryExpr(p.Query)
+	case p.Load != nil:
+		return c.loadExpr(p.Load)
+	case p.Save != nil:
+		return c.saveExpr(p.Save)
 	case p.Selector != nil:
 		return c.selector(p.Selector), nil
 	case p.Group != nil:
@@ -1821,10 +1839,7 @@ func (c *compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 			delete(c.mapFields, name)
 		}
 		if i == len(vars)-1 {
-			prev := c.tupleMap
-			c.tupleMap = true
 			sel, err := c.expr(q.Select)
-			c.tupleMap = prev
 			if err != nil {
 				return "", err
 			}
@@ -1920,6 +1935,64 @@ func (c *compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		res += fmt.Sprintf(".prefix(%s)", take)
 	}
 	return res, nil
+}
+
+func (c *compiler) loadExpr(l *parser.LoadExpr) (string, error) {
+	path := "\"\""
+	if l.Path != nil {
+		path = fmt.Sprintf("%q", *l.Path)
+	}
+	opts := "nil"
+	if l.With != nil {
+		v, err := c.expr(l.With)
+		if err != nil {
+			return "", err
+		}
+		opts = v
+	}
+	c.helpers["_load"] = true
+	expr := fmt.Sprintf("_load(path: %s, opts: %s)", path, opts)
+	if l.Type != nil && l.Type.Simple != nil {
+		name := *l.Type.Simple
+		if fields, ok := c.structs[name]; ok {
+			args := make([]string, len(fields))
+			for i, f := range fields {
+				typ := c.structTypes[name][f]
+				cast := ""
+				if typ != "" {
+					cast = " as! " + typ
+				}
+				args[i] = fmt.Sprintf("%s: rec[\"%s\"]%s", f, f, cast)
+			}
+			st, err := c.typeRef(l.Type)
+			if err != nil {
+				return "", err
+			}
+			expr = fmt.Sprintf("%s.map { rec in %s(%s) }", expr, st, strings.Join(args, ", "))
+		}
+	}
+	return expr, nil
+}
+
+func (c *compiler) saveExpr(s *parser.SaveExpr) (string, error) {
+	src, err := c.expr(s.Src)
+	if err != nil {
+		return "", err
+	}
+	path := "\"\""
+	if s.Path != nil {
+		path = fmt.Sprintf("%q", *s.Path)
+	}
+	opts := "nil"
+	if s.With != nil {
+		v, err := c.expr(s.With)
+		if err != nil {
+			return "", err
+		}
+		opts = v
+	}
+	c.helpers["_save"] = true
+	return fmt.Sprintf("_save(%s, path: %s, opts: %s)", src, path, opts), nil
 }
 
 func isVarRef(e *parser.Expr, name string) bool {
@@ -2075,3 +2148,82 @@ func literalType(e *parser.Expr) string {
 	}
 	return ""
 }
+
+func (c *compiler) emitRuntime() {
+	if c.helpers["_load"] {
+		for _, line := range strings.Split(helperLoad, "\n") {
+			if line == "" {
+				c.buf.WriteByte('\n')
+			} else {
+				c.writeln(line)
+			}
+		}
+	}
+	if c.helpers["_save"] {
+		for _, line := range strings.Split(helperSave, "\n") {
+			if line == "" {
+				c.buf.WriteByte('\n')
+			} else {
+				c.writeln(line)
+			}
+		}
+	}
+}
+
+const helperLoad = `func _parseVal(_ s: String) -> Any {
+    if let i = Int(s) { return i }
+    if let d = Double(s) { return d }
+    return s
+}
+
+func _load(path: String, opts: [String:Any]?) -> [[String:Any]] {
+    var text = ""
+    if path.isEmpty || path == "-" {
+        text = String(data: FileHandle.standardInput.readDataToEndOfFile(), encoding: .utf8) ?? ""
+    } else {
+        text = (try? String(contentsOfFile: path)) ?? ""
+    }
+    var rows: [[String:Any]] = []
+    var cur: [String:Any] = [:]
+    for line in text.split(separator: "\n") {
+        let l = line.trimmingCharacters(in: .whitespaces)
+        if l.hasPrefix("- ") {
+            if !cur.isEmpty { rows.append(cur); cur = [:] }
+            let rest = String(l.dropFirst(2))
+            if let idx = rest.firstIndex(of: ":") {
+                let key = String(rest[..<idx]).trimmingCharacters(in: .whitespaces)
+                let val = String(rest[rest.index(after: idx)...]).trimmingCharacters(in: .whitespaces)
+                cur[key] = _parseVal(val)
+            }
+        } else if let idx = l.firstIndex(of: ":") {
+            let key = String(l[..<idx]).trimmingCharacters(in: .whitespaces)
+            let val = String(l[l.index(after: idx)...]).trimmingCharacters(in: .whitespaces)
+            cur[key] = _parseVal(val)
+        }
+    }
+    if !cur.isEmpty { rows.append(cur) }
+    return rows
+}`
+
+const helperSave = `func _save(_ rows: [[String:Any]], path: String, opts: [String:Any]?) {
+    let format = (opts?["format"] as? String) ?? "csv"
+    if format == "jsonl" {
+        var handle: FileHandle
+        if path.isEmpty || path == "-" {
+            handle = FileHandle.standardOutput
+        } else {
+            FileManager.default.createFile(atPath: path, contents: nil)
+            handle = FileHandle(forWritingAtPath: path)!
+        }
+        for row in rows {
+            if let data = try? JSONSerialization.data(withJSONObject: row),
+               let strData = String(data: data, encoding: .utf8)?.data(using: .utf8) {
+                handle.write(strData)
+                handle.write(Data([0x0a]))
+            }
+        }
+        if handle !== FileHandle.standardOutput {
+            handle.closeFile()
+        }
+    }
+}`

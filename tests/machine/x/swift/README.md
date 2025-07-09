@@ -1,6 +1,6 @@
 # Machine-generated Swift Outputs
 
-Compiled programs: 80/97
+Compiled programs: 82/97
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -51,7 +51,7 @@ Compiled programs: 80/97
 - [x] list_index.mochi
 - [x] list_nested_assign.mochi
 - [x] list_set_ops.mochi
-- [ ] load_yaml.mochi
+- [x] load_yaml.mochi
 - [x] map_assign.mochi
 - [x] map_in_operator.mochi
 - [x] map_index.mochi
@@ -74,7 +74,7 @@ Compiled programs: 80/97
 - [x] query_sum_select.mochi
 - [x] record_assign.mochi
 - [ ] right_join.mochi
-- [ ] save_jsonl_stdout.mochi
+- [x] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
 - [x] slice.mochi
 - [x] sort_stable.mochi
@@ -102,5 +102,5 @@ Compiled programs: 80/97
 
 ## TODO
 - [ ] implement join queries
-- [ ] handle load/save dataset operations
+- [x] handle load/save dataset operations
 - [ ] preserve map field information in queries
