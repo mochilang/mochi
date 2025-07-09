@@ -315,3 +315,10 @@ tools/tcc/tools/
 !/tests/machine/x/ocaml/*.out
 !/tests/machine/x/ocaml/*.error
 !/tests/machine/x/ocaml/README.md
+
+# COBOL machine artifacts
+/tests/machine/x/cobol/*
+!/tests/machine/x/cobol/*.cob
+!/tests/machine/x/cobol/*.out
+!/tests/machine/x/cobol/*.error
+!/tests/machine/x/cobol/README.md
