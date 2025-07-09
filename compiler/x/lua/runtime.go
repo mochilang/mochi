@@ -512,8 +512,12 @@ const (
 		"            if root then\n" +
 		"                local clean = path\n" +
 		"                while string.sub(clean, 1, 3) == '../' do clean = string.sub(clean, 4) end\n" +
-		"                try = root .. '/' .. clean\n" +
+		"                try = root .. '/tests/' .. clean\n" +
 		"                f = io.open(try, 'r')\n" +
+		"                if not f then\n" +
+		"                    try = root .. '/' .. clean\n" +
+		"                    f = io.open(try, 'r')\n" +
+		"                end\n" +
 		"                if f then path = try end\n" +
 		"            end\n" +
 		"        end\n" +

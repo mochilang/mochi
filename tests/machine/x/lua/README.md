@@ -3,7 +3,7 @@
 This directory stores Lua code generated from the Mochi programs in `tests/vm/valid`.
 Each program was compiled and executed using the Lua compiler. Successful runs produce a `.out` file, while failures have a `.error` file.
 
-Compiled programs: 96/97
+Compiled programs: 97/97
 
 The custom `__print` helper has been removed. Generated code now uses Lua's
 native `print` function directly.
@@ -104,7 +104,7 @@ Checklist:
 - [x] group_by_sort
 - [x] group_items_iteration
 - [x] list_set_ops
-- [ ] load_yaml
+- [x] load_yaml
 - [x] order_by_map
 - [x] slice
 - [x] sort_stable
