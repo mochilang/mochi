@@ -225,14 +225,6 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 }
 
 func (c *Compiler) compileLet(st *parser.LetStmt) error {
-	c.writeIndent()
-	typ, err := c.compileType(st.Type)
-	if err != nil {
-		return err
-	}
-	c.buf.WriteString(typ)
-	c.buf.WriteByte(' ')
-	c.buf.WriteString(st.Name)
 	var exprStr string
 	if st.Value != nil {
 		var err error
@@ -240,6 +232,23 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 		if err != nil {
 			return err
 		}
+	}
+
+	typ, err := c.compileType(st.Type)
+	if err != nil {
+		return err
+	}
+	if st.Type == nil {
+		if et := extractVectorElemType(exprStr); et != "" {
+			typ = fmt.Sprintf("std::vector<%s>", et)
+		}
+	}
+
+	c.writeIndent()
+	c.buf.WriteString(typ)
+	c.buf.WriteByte(' ')
+	c.buf.WriteString(st.Name)
+	if st.Value != nil {
 		c.buf.WriteString(" = ")
 		c.buf.WriteString(exprStr)
 	} else if st.Type != nil {
@@ -272,14 +281,6 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 }
 
 func (c *Compiler) compileVar(st *parser.VarStmt) error {
-	c.writeIndent()
-	typ, err := c.compileType(st.Type)
-	if err != nil {
-		return err
-	}
-	c.buf.WriteString(typ)
-	c.buf.WriteByte(' ')
-	c.buf.WriteString(st.Name)
 	var exprStr string
 	if st.Value != nil {
 		var err error
@@ -287,6 +288,23 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 		if err != nil {
 			return err
 		}
+	}
+
+	typ, err := c.compileType(st.Type)
+	if err != nil {
+		return err
+	}
+	if st.Type == nil {
+		if et := extractVectorElemType(exprStr); et != "" {
+			typ = fmt.Sprintf("std::vector<%s>", et)
+		}
+	}
+
+	c.writeIndent()
+	c.buf.WriteString(typ)
+	c.buf.WriteByte(' ')
+	c.buf.WriteString(st.Name)
+	if st.Value != nil {
 		c.buf.WriteString(" = ")
 		c.buf.WriteString(exprStr)
 	} else if st.Type != nil {
