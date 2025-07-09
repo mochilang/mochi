@@ -5,6 +5,7 @@ package rustcode
 import (
 	"bytes"
 	"fmt"
+	"math"
 	"strings"
 
 	"mochi/parser"
@@ -419,7 +420,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	// prepend generated structs and helpers
 	var out bytes.Buffer
 	for _, st := range c.genStructs {
-		out.WriteString("#[derive(Default, Debug, Clone)]\n")
+		out.WriteString("#[derive(Default, Debug, Clone, PartialEq)]\n")
 		out.WriteString("struct " + st.Name + " {\n")
 		for _, f := range st.Order {
 			out.WriteString("    " + f + ": " + rustTypeFromType(st.Fields[f]) + ",\n")
@@ -651,7 +652,7 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 }
 
 func (c *Compiler) compileIf(i *parser.IfStmt) error {
-	cond, err := c.compileExpr(i.Cond)
+	cond, err := c.compileCond(i.Cond)
 	if err != nil {
 		return err
 	}
@@ -708,7 +709,7 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 }
 
 func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
-	cond, err := c.compileExpr(w.Cond)
+	cond, err := c.compileCond(w.Cond)
 	if err != nil {
 		return err
 	}
@@ -749,7 +750,7 @@ func (c *Compiler) compileUpdateStmt(u *parser.UpdateStmt) error {
 	}
 
 	if u.Where != nil {
-		cond, err := c.compileExpr(u.Where)
+		cond, err := c.compileCond(u.Where)
 		if err != nil {
 			c.env = orig
 			return err
@@ -911,6 +912,29 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 	return c.compileBinary(e.Binary)
 }
 
+func (c *Compiler) compileCond(e *parser.Expr) (string, error) {
+	expr, err := c.compileExpr(e)
+	if err != nil {
+		return "", err
+	}
+	if c.env != nil {
+		t := types.TypeOfExpr(e, c.env)
+		switch tt := t.(type) {
+		case types.BoolType:
+			return expr, nil
+		case types.IntType, types.Int64Type:
+			return fmt.Sprintf("%s != 0", expr), nil
+		case types.FloatType:
+			return fmt.Sprintf("%s != 0.0", expr), nil
+		case types.StringType:
+			return fmt.Sprintf("!%s.is_empty()", expr), nil
+		case types.StructType:
+			return fmt.Sprintf("%s != %s::default()", expr, tt.Name), nil
+		}
+	}
+	return fmt.Sprintf("%s != Default::default()", expr), nil
+}
+
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	left, err := c.compileUnary(b.Left)
 	if err != nil {
@@ -947,6 +971,19 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			if c.unaryIsString(leftAST) || c.postfixIsString(op.Right) {
 				res = fmt.Sprintf("format!(\"{}{}\", %s, %s)", res, r)
 			} else {
+				if c.env != nil {
+					lt := types.TypeOfUnary(leftAST, c.env)
+					rt := types.TypeOfPostfix(op.Right, c.env)
+					if _, ok := lt.(types.FloatType); ok {
+						if _, ok2 := rt.(types.IntType); ok2 {
+							r = fmt.Sprintf("%s as f64", r)
+						}
+					} else if _, ok := rt.(types.FloatType); ok {
+						if _, ok2 := lt.(types.IntType); ok2 {
+							res = fmt.Sprintf("(%s as f64)", res)
+						}
+					}
+				}
 				res = fmt.Sprintf("%s + %s", res, r)
 			}
 		case "union":
@@ -964,6 +1001,19 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			c.helpers["_intersect"] = true
 			res = fmt.Sprintf("_intersect(%s, %s)", res, r)
 		default:
+			if c.env != nil {
+				lt := types.TypeOfUnary(leftAST, c.env)
+				rt := types.TypeOfPostfix(op.Right, c.env)
+				if _, ok := lt.(types.FloatType); ok && op.Op == "*" {
+					if _, ok2 := rt.(types.IntType); ok2 {
+						r = fmt.Sprintf("%s as f64", r)
+					}
+				} else if _, ok := rt.(types.FloatType); ok && op.Op == "*" {
+					if _, ok2 := lt.(types.IntType); ok2 {
+						res = fmt.Sprintf("(%s as f64)", res)
+					}
+				}
+			}
 			res = fmt.Sprintf("%s %s %s", res, op.Op, r)
 		}
 		leftAST = &parser.Unary{Value: op.Right}
@@ -1118,7 +1168,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 }
 
 func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
-	cond, err := c.compileExpr(ie.Cond)
+	cond, err := c.compileCond(ie.Cond)
 	if err != nil {
 		return "", err
 	}
@@ -1243,7 +1293,7 @@ func (c *Compiler) compileGroupBySimple(q *parser.QueryExpr, src string, child *
 	var cond string
 	var err error
 	if q.Where != nil {
-		cond, err = c.compileExpr(q.Where)
+		cond, err = c.compileCond(q.Where)
 		if err != nil {
 			c.env = orig
 			return "", err
@@ -1300,7 +1350,7 @@ func (c *Compiler) compileGroupBySimple(q *parser.QueryExpr, src string, child *
 	c.env = groupEnv
 
 	if q.Group.Having != nil {
-		haveExpr, err := c.compileExpr(q.Group.Having)
+		haveExpr, err := c.compileCond(q.Group.Having)
 		if err != nil {
 			c.popGroupVar()
 			c.env = orig
@@ -1347,6 +1397,10 @@ func (c *Compiler) compileGroupBySimple(q *parser.QueryExpr, src string, child *
 	if ml := tryMapLiteral(q.Select); ml != nil {
 		name := c.newStructName("Result")
 		sel, err = c.compileMapLiteralAsStruct(name, ml)
+		if err == nil {
+			c.listVars[q.Var] = name
+			child.SetVar(q.Var, types.StructType{Name: name}, true)
+		}
 	} else {
 		sel, err = c.compileExpr(q.Select)
 	}
@@ -1391,7 +1445,7 @@ func (c *Compiler) compileGroupByJoin(q *parser.QueryExpr, src string, child *ty
 	var cond string
 	var err error
 	if q.Where != nil {
-		cond, err = c.compileExpr(q.Where)
+		cond, err = c.compileCond(q.Where)
 		if err != nil {
 			c.env = orig
 			return "", err
@@ -1520,7 +1574,7 @@ func (c *Compiler) compileGroupByJoin(q *parser.QueryExpr, src string, child *ty
 	c.env = groupEnv
 
 	if q.Group.Having != nil {
-		haveExpr, err := c.compileExpr(q.Group.Having)
+		haveExpr, err := c.compileCond(q.Group.Having)
 		if err != nil {
 			c.popGroupVar()
 			c.env = orig
@@ -1567,6 +1621,10 @@ func (c *Compiler) compileGroupByJoin(q *parser.QueryExpr, src string, child *ty
 	if ml := tryMapLiteral(q.Select); ml != nil {
 		name := c.newStructName("Result")
 		sel, err = c.compileMapLiteralAsStruct(name, ml)
+		if err == nil {
+			c.listVars[q.Var] = name
+			child.SetVar(q.Var, types.StructType{Name: name}, true)
+		}
 	} else {
 		sel, err = c.compileExpr(q.Select)
 	}
@@ -1611,7 +1669,7 @@ func (c *Compiler) compileLeftJoinSimple(q *parser.QueryExpr, src string, child 
 	var cond, sortExpr, skipExpr, takeExpr string
 	var err error
 	if q.Where != nil {
-		cond, err = c.compileExpr(q.Where)
+		cond, err = c.compileCond(q.Where)
 		if err != nil {
 			c.env = orig
 			return "", err
@@ -1642,6 +1700,10 @@ func (c *Compiler) compileLeftJoinSimple(q *parser.QueryExpr, src string, child 
 	if ml := tryMapLiteral(q.Select); ml != nil {
 		name := c.newStructName("Result")
 		sel, err = c.compileMapLiteralAsStruct(name, ml)
+		if err == nil {
+			c.listVars[q.Var] = name
+			child.SetVar(q.Var, types.StructType{Name: name}, true)
+		}
 	} else {
 		sel, err = c.compileExpr(q.Select)
 	}
@@ -1735,7 +1797,7 @@ func (c *Compiler) compileRightJoinSimple(q *parser.QueryExpr, src string, child
 	var cond, sortExpr, skipExpr, takeExpr string
 	var err error
 	if q.Where != nil {
-		cond, err = c.compileExpr(q.Where)
+		cond, err = c.compileCond(q.Where)
 		if err != nil {
 			c.env = orig
 			return "", err
@@ -1766,6 +1828,10 @@ func (c *Compiler) compileRightJoinSimple(q *parser.QueryExpr, src string, child
 	if ml := tryMapLiteral(q.Select); ml != nil {
 		name := c.newStructName("Result")
 		sel, err = c.compileMapLiteralAsStruct(name, ml)
+		if err == nil {
+			c.listVars[q.Var] = name
+			child.SetVar(q.Var, types.StructType{Name: name}, true)
+		}
 	} else {
 		sel, err = c.compileExpr(q.Select)
 	}
@@ -1859,7 +1925,7 @@ func (c *Compiler) compileLeftJoinLast(q *parser.QueryExpr, src string, child *t
 	var cond, sortExpr, skipExpr, takeExpr string
 	var err error
 	if q.Where != nil {
-		cond, err = c.compileExpr(q.Where)
+		cond, err = c.compileCond(q.Where)
 		if err != nil {
 			c.env = orig
 			return "", err
@@ -1890,6 +1956,10 @@ func (c *Compiler) compileLeftJoinLast(q *parser.QueryExpr, src string, child *t
 	if ml := tryMapLiteral(q.Select); ml != nil {
 		name := c.newStructName("Result")
 		sel, err = c.compileMapLiteralAsStruct(name, ml)
+		if err == nil {
+			c.listVars[q.Var] = name
+			child.SetVar(q.Var, types.StructType{Name: name}, true)
+		}
 	} else {
 		sel, err = c.compileExpr(q.Select)
 	}
@@ -2060,7 +2130,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		if j.On != nil {
 			c.env = child
-			cond, err := c.compileExpr(j.On)
+			cond, err := c.compileCond(j.On)
 			c.env = origEnv
 			if err != nil {
 				return "", err
@@ -2116,6 +2186,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if ml := tryMapLiteral(q.Select); ml != nil {
 		name := c.newStructName("Result")
 		sel, err = c.compileMapLiteralAsStruct(name, ml)
+		if err == nil {
+			c.listVars[q.Var] = name
+			child.SetVar(q.Var, types.StructType{Name: name}, true)
+		}
 	} else {
 		sel, err = c.compileExpr(q.Select)
 	}
@@ -2125,7 +2199,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	var cond, sortExpr, skipExpr, takeExpr string
 	if q.Where != nil {
-		cond, err = c.compileExpr(q.Where)
+		cond, err = c.compileCond(q.Where)
 		if err != nil {
 			c.env = orig
 			return "", err
@@ -2581,7 +2655,14 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 	case l.Str != nil:
 		return fmt.Sprintf("\"%s\"", *l.Str)
 	case l.Float != nil:
-		return fmt.Sprintf("%g", *l.Float)
+		f := *l.Float
+		s := fmt.Sprintf("%g", f)
+		if math.Floor(f) == f {
+			if !strings.Contains(s, ".") {
+				s += ".0"
+			}
+		}
+		return s
 	case l.Bool != nil:
 		if bool(*l.Bool) {
 			return "true"
