@@ -1,3 +1,5 @@
+//go:build ignore
+
 package main
 
 import (
@@ -5,6 +7,7 @@ import (
 	"fmt"
 	"mochi/runtime/data"
 	"reflect"
+	"strconv"
 	"time"
 )
 
@@ -107,7 +110,12 @@ func main() {
 					groups[ks] = g
 					order = append(order, ks)
 				}
-				g.Items = append(g.Items, row)
+				_item := map[string]any{}
+				for k, v := range _cast[map[string]any](row) {
+					_item[k] = v
+				}
+				_item["row"] = row
+				g.Items = append(g.Items, _item)
 			}
 		}
 		items := []*data.Group{}
@@ -168,7 +176,7 @@ func main() {
 					}
 					return _res
 				}()),
-				"count_order": _count(g),
+				"count_order": len(g.Items),
 			})
 		}
 		return _res
@@ -207,24 +215,24 @@ func _avg(v any) float64 {
 		case []any:
 			items = s
 		case []int:
-			items = make([]any, len(s))
-			for i, v := range s {
-				items[i] = v
+			items = []any{}
+			for _, v := range s {
+				items = append(items, v)
 			}
 		case []float64:
-			items = make([]any, len(s))
-			for i, v := range s {
-				items[i] = v
+			items = []any{}
+			for _, v := range s {
+				items = append(items, v)
 			}
 		case []string:
-			items = make([]any, len(s))
-			for i, v := range s {
-				items[i] = v
+			items = []any{}
+			for _, v := range s {
+				items = append(items, v)
 			}
 		case []bool:
-			items = make([]any, len(s))
-			for i, v := range s {
-				items[i] = v
+			items = []any{}
+			for _, v := range s {
+				items = append(items, v)
 			}
 		default:
 			panic("avg() expects list or group")
@@ -263,6 +271,9 @@ func _cast[T any](v any) T {
 			return any(int(vv)).(T)
 		case float32:
 			return any(int(vv)).(T)
+		case string:
+			n, _ := strconv.Atoi(vv)
+			return any(n).(T)
 		}
 	case float64:
 		switch vv := v.(type) {
@@ -307,35 +318,6 @@ func _convertMapAny(m map[any]any) map[string]any {
 		}
 	}
 	return out
-}
-
-func _count(v any) int {
-	if g, ok := v.(*data.Group); ok {
-		return len(g.Items)
-	}
-	switch s := v.(type) {
-	case []any:
-		return len(s)
-	case []int:
-		return len(s)
-	case []float64:
-		return len(s)
-	case []string:
-		return len(s)
-	case []bool:
-		return len(s)
-	case []map[string]any:
-		return len(s)
-	case map[string]any:
-		return len(s)
-	case string:
-		return len([]rune(s))
-	}
-	rv := reflect.ValueOf(v)
-	if rv.Kind() == reflect.Slice || rv.Kind() == reflect.Array {
-		return rv.Len()
-	}
-	panic("count() expects list or group")
 }
 
 func _equal(a, b any) bool {
@@ -383,14 +365,14 @@ func _sum(v any) float64 {
 		case []any:
 			items = s
 		case []int:
-			items = make([]any, len(s))
-			for i, v := range s {
-				items[i] = v
+			items = []any{}
+			for _, v := range s {
+				items = append(items, v)
 			}
 		case []float64:
-			items = make([]any, len(s))
-			for i, v := range s {
-				items[i] = v
+			items = []any{}
+			for _, v := range s {
+				items = append(items, v)
 			}
 		case []string, []bool:
 			panic("sum() expects numbers")
