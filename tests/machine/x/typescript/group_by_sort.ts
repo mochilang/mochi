@@ -1,5 +1,5 @@
-let items = [{cat: "a", val: 3}, {cat: "a", val: 1}, {cat: "b", val: 5}, {cat: "b", val: 2}];
-let grouped = (() => {
+const items = [{cat: "a", val: 3}, {cat: "a", val: 1}, {cat: "b", val: 5}, {cat: "b", val: 2}];
+const grouped = (() => {
   const groups = {};
   for (const i of items) {
     const _k = JSON.stringify(i.cat);

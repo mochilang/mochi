@@ -1,5 +1,5 @@
 function twoSum(nums, target) {
-  let n = nums.length;
+  const n = nums.length;
   for (let i = 0; i < n; i++) {
     for (let j = (i + 1); j < n; j++) {
       if (((nums[i] + nums[j]) == target)) {
@@ -9,6 +9,6 @@ function twoSum(nums, target) {
   }
   return [(-1), (-1)];
 }
-let result = twoSum([2, 7, 11, 15], 9);
+const result = twoSum([2, 7, 11, 15], 9);
 console.log(result[0]);
 console.log(result[1]);

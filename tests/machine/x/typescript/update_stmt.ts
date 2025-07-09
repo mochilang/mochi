@@ -1,5 +1,5 @@
 type Person = { name: any; age: any; status: any; };
-let people = [{name: "Alice", age: 17, status: "minor"}, {name: "Bob", age: 25, status: "unknown"}, {name: "Charlie", age: 18, status: "unknown"}, {name: "Diana", age: 16, status: "minor"}];
+const people = [{name: "Alice", age: 17, status: "minor"}, {name: "Bob", age: 25, status: "unknown"}, {name: "Charlie", age: 18, status: "unknown"}, {name: "Diana", age: 16, status: "minor"}];
 for (let i = 0; i < people.length; i++) {
   let _tmp1 = people[i];
   let status = _tmp1.status;

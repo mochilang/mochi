@@ -1,7 +1,7 @@
-let nums = [1, 2];
-let letters = ["A", "B"];
-let bools = [true, false];
-let combos = (() => {
+const nums = [1, 2];
+const letters = ["A", "B"];
+const bools = [true, false];
+const combos = (() => {
   const _tmp1 = [];
   for (const n of nums) {
     for (const l of letters) {

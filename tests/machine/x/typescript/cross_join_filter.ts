@@ -1,6 +1,6 @@
-let nums = [1, 2, 3];
-let letters = ["A", "B"];
-let pairs = (() => {
+const nums = [1, 2, 3];
+const letters = ["A", "B"];
+const pairs = (() => {
   const _tmp1 = [];
   for (const n of nums) {
     for (const l of letters) {

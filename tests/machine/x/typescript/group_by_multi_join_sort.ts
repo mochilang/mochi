@@ -1,10 +1,10 @@
-let nation = [{n_nationkey: 1, n_name: "BRAZIL"}];
-let customer = [{c_custkey: 1, c_name: "Alice", c_acctbal: 100, c_nationkey: 1, c_address: "123 St", c_phone: "123-456", c_comment: "Loyal"}];
-let orders = [{o_orderkey: 1000, o_custkey: 1, o_orderdate: "1993-10-15"}, {o_orderkey: 2000, o_custkey: 1, o_orderdate: "1994-01-02"}];
-let lineitem = [{l_orderkey: 1000, l_returnflag: "R", l_extendedprice: 1000, l_discount: 0.1}, {l_orderkey: 2000, l_returnflag: "N", l_extendedprice: 500, l_discount: 0}];
-let start_date = "1993-10-01";
-let end_date = "1994-01-01";
-let result = (() => {
+const nation = [{n_nationkey: 1, n_name: "BRAZIL"}];
+const customer = [{c_custkey: 1, c_name: "Alice", c_acctbal: 100, c_nationkey: 1, c_address: "123 St", c_phone: "123-456", c_comment: "Loyal"}];
+const orders = [{o_orderkey: 1000, o_custkey: 1, o_orderdate: "1993-10-15"}, {o_orderkey: 2000, o_custkey: 1, o_orderdate: "1994-01-02"}];
+const lineitem = [{l_orderkey: 1000, l_returnflag: "R", l_extendedprice: 1000, l_discount: 0.1}, {l_orderkey: 2000, l_returnflag: "N", l_extendedprice: 500, l_discount: 0}];
+const start_date = "1993-10-01";
+const end_date = "1994-01-01";
+const result = (() => {
   const groups = {};
   for (const c of customer) {
     for (const o of orders) {

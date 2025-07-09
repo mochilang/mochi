@@ -1,2 +1,2 @@
-let s = "mochi";
+const s = "mochi";
 console.log(s[1]);

@@ -1,5 +1,5 @@
-let x = 2;
-let label = (() => {
+const x = 2;
+const label = (() => {
   const _tmp1 = x;
   let _res;
   switch (_tmp1) {

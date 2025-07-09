@@ -123,13 +123,13 @@ func (c *Compiler) stmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
 		if s.Let.Value == nil {
-			c.writeln(fmt.Sprintf("let %s = null;", s.Let.Name))
+			c.writeln(fmt.Sprintf("const %s = null;", s.Let.Name))
 		} else {
 			val, err := c.expr(s.Let.Value)
 			if err != nil {
 				return err
 			}
-			c.writeln(fmt.Sprintf("let %s = %s;", s.Let.Name, val))
+			c.writeln(fmt.Sprintf("const %s = %s;", s.Let.Name, val))
 		}
 	case s.Var != nil:
 		if s.Var.Value == nil {

@@ -1,5 +1,5 @@
-let x = 2;
-let label = (() => {
+const x = 2;
+const label = (() => {
   const _tmp1 = x;
   let _res;
   switch (_tmp1) {
@@ -20,8 +20,8 @@ let label = (() => {
 })()
 ;
 console.log(label);
-let day = "sun";
-let mood = (() => {
+const day = "sun";
+const mood = (() => {
   const _tmp2 = day;
   let _res;
   switch (_tmp2) {
@@ -42,8 +42,8 @@ let mood = (() => {
 })()
 ;
 console.log(mood);
-let ok = true;
-let status = (() => {
+const ok = true;
+const status = (() => {
   const _tmp3 = ok;
   let _res;
   switch (_tmp3) {

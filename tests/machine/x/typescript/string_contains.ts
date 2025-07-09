@@ -1,3 +1,3 @@
-let s = "catch";
+const s = "catch";
 console.log(s.includes("cat"));
 console.log(s.includes("dog"));

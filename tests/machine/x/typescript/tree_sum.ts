@@ -16,5 +16,5 @@ function sum_tree(t) {
 })()
 ;
 }
-let t = {kind: "node", left: {kind: "leaf"}, value: 1, right: {kind: "node", left: {kind: "leaf"}, value: 2, right: {kind: "leaf"}}};
+const t = {kind: "node", left: {kind: "leaf"}, value: 1, right: {kind: "node", left: {kind: "leaf"}, value: 2, right: {kind: "leaf"}}};
 console.log(sum_tree(t));

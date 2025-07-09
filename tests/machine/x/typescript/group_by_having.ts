@@ -1,5 +1,5 @@
-let people = [{name: "Alice", city: "Paris"}, {name: "Bob", city: "Hanoi"}, {name: "Charlie", city: "Paris"}, {name: "Diana", city: "Hanoi"}, {name: "Eve", city: "Paris"}, {name: "Frank", city: "Hanoi"}, {name: "George", city: "Paris"}];
-let big = (() => {
+const people = [{name: "Alice", city: "Paris"}, {name: "Bob", city: "Hanoi"}, {name: "Charlie", city: "Paris"}, {name: "Diana", city: "Hanoi"}, {name: "Eve", city: "Paris"}, {name: "Frank", city: "Hanoi"}, {name: "George", city: "Paris"}];
+const big = (() => {
   const groups = {};
   for (const p of people) {
     const _k = JSON.stringify(p.city);
