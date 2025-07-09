@@ -35,6 +35,7 @@ var supported = map[string]bool{
 	"bool_chain":          true,
 	"fun_call":            true,
 	"fun_three_args":      true,
+	"string_concat":       true,
 	"typed_var":           true,
 	"typed_let":           true,
 	"if_then_else":        true,
