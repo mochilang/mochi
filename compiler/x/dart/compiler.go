@@ -898,8 +898,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		w(fmt.Sprintf("  var %s = <dynamic, List<dynamic>>{};\n", groups))
 	}
 
-	loops := []string{fmt.Sprintf("var %s in %s", q.Var, c.mustExpr(q.Source))}
-	conds := []string{""}
+	type loopInfo struct {
+		pre  []string
+		head string
+		cond string
+	}
+	loops := []loopInfo{{head: fmt.Sprintf("var %s in %s", q.Var, c.mustExpr(q.Source))}}
 	// mark main variable type
 	if t := types.TypeOfExpr(q.Source, c.env); t != nil {
 		if lt, ok := t.(types.ListType); ok {
@@ -909,8 +913,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 	}
 	for _, f := range q.Froms {
-		loops = append(loops, fmt.Sprintf("var %s in %s", f.Var, c.mustExpr(f.Src)))
-		conds = append(conds, "")
+		loops = append(loops, loopInfo{head: fmt.Sprintf("var %s in %s", f.Var, c.mustExpr(f.Src))})
 		if t := types.TypeOfExpr(f.Src, c.env); t != nil {
 			if lt, ok := t.(types.ListType); ok {
 				if _, ok := lt.Elem.(types.MapType); ok {
@@ -920,8 +923,23 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 	}
 	for _, j := range q.Joins {
-		loops = append(loops, fmt.Sprintf("var %s in %s", j.Var, c.mustExpr(j.Src)))
-		conds = append(conds, c.mustExpr(j.On))
+		js := c.mustExpr(j.Src)
+		on := c.mustExpr(j.On)
+		if j.Side != nil && *j.Side == "left" {
+			tmpVar := fmt.Sprintf("_jt%d", c.tmp)
+			c.tmp++
+			pre := []string{
+				fmt.Sprintf("var %s = <dynamic>[];", tmpVar),
+				fmt.Sprintf("for (var %s in %s) {", j.Var, js),
+				fmt.Sprintf("  if (!(%s)) continue;", on),
+				fmt.Sprintf("  %s.add(%s);", tmpVar, j.Var),
+				"}",
+				fmt.Sprintf("if (%s.isEmpty) %s.add(null);", tmpVar, tmpVar),
+			}
+			loops = append(loops, loopInfo{pre: pre, head: fmt.Sprintf("var %s in %s", j.Var, tmpVar)})
+		} else {
+			loops = append(loops, loopInfo{head: fmt.Sprintf("var %s in %s", j.Var, js), cond: on})
+		}
 		if t := types.TypeOfExpr(j.Src, c.env); t != nil {
 			if lt, ok := t.(types.ListType); ok {
 				if _, ok := lt.Elem.(types.MapType); ok {
@@ -932,8 +950,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 
 	for i, loop := range loops {
-		w(strings.Repeat("  ", i+1) + "for (" + loop + ") {\n")
-		if c := conds[i]; c != "" {
+		for _, pl := range loop.pre {
+			w(strings.Repeat("  ", i+1) + pl + "\n")
+		}
+		w(strings.Repeat("  ", i+1) + "for (" + loop.head + ") {\n")
+		if c := loop.cond; c != "" {
 			w(strings.Repeat("  ", i+2) + fmt.Sprintf("if (!(%s)) continue;\n", c))
 		}
 	}
