@@ -2,6 +2,7 @@ package dart
 
 import (
 	"bytes"
+	"os"
 	"os/exec"
 )
 
@@ -9,16 +10,23 @@ import (
 func formatDart(src []byte) []byte {
 	path, err := exec.LookPath("dart")
 	if err == nil {
-		cmd := exec.Command(path, "format", "--output", "show", "-")
-		cmd.Stdin = bytes.NewReader(src)
-		var out bytes.Buffer
-		cmd.Stdout = &out
-		if cmd.Run() == nil {
-			res := out.Bytes()
-			if len(res) == 0 || res[len(res)-1] != '\n' {
-				res = append(res, '\n')
+		tmp, err := os.CreateTemp("", "dart-src-*.dart")
+		if err == nil {
+			defer os.Remove(tmp.Name())
+			tmp.Write(src)
+			tmp.Close()
+			cmd := exec.Command(path, "format", "--output", "write", tmp.Name())
+			cmd.Stdout = nil
+			cmd.Stderr = nil
+			if cmd.Run() == nil {
+				data, err := os.ReadFile(tmp.Name())
+				if err == nil {
+					if len(data) == 0 || data[len(data)-1] != '\n' {
+						data = append(data, '\n')
+					}
+					return data
+				}
 			}
-			return res
 		}
 	}
 	src = bytes.ReplaceAll(src, []byte("\t"), []byte("  "))
