@@ -14,7 +14,7 @@ function is_prime(n: number): boolean {
 
 let duration: number;
 let end: number;
-let last: number;
+var last: number;
 let n: number;
 let repeat: number;
 let start: number;
@@ -25,7 +25,7 @@ function main(): void {
   last = 0;
   start = performance.now() * 1000000;
   for (let r: number = 0; r < repeat; r++) {
-    let count: number = 0;
+    var count = 0;
     for (let i: number = 2; i < n; i++) {
       if (is_prime(i)) {
         count = count + 1;

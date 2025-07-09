@@ -12,27 +12,10 @@ def fib(n: int) -> int:
     return fib((n - 1)) + fib((n - 2))
 
 
-n = 10
-start = time.time_ns()
-result = None
-duration = None
-
-
-def main():
-    global n
-    n = 10
-    global start
-    start = time.time_ns()
-    global result
-    result = fib(n)
-    global duration
-    duration = int(((time.time_ns() - start)) / 1000)
-    print(
-        json.dumps(
-            {"duration_us": duration, "output": result}, default=lambda o: vars(o)
-        )
-    )
-
-
-if __name__ == "__main__":
-    main()
+n: int = 10
+start: int = time.time_ns()
+result: int = fib(n)
+duration: int = int(((time.time_ns() - start)) / 1000)
+print(
+    json.dumps({"duration_us": duration, "output": result}, default=lambda o: vars(o))
+)
