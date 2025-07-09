@@ -44,6 +44,15 @@ type funDecl struct {
 	body   []*parser.Statement
 }
 
+func cobolName(name string) string {
+	s := strings.ToUpper(strings.ReplaceAll(name, "_", "-"))
+	switch s {
+	case "TITLE":
+		return "TITLE-V"
+	}
+	return s
+}
+
 func (c *Compiler) hasVar(name string) bool {
 	for _, v := range c.vars {
 		if v.name == name {
@@ -122,10 +131,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("WORKING-STORAGE SECTION.")
 	for _, v := range c.vars {
 		if len(v.fields) > 0 {
-			c.writeln(fmt.Sprintf("01 %s.", strings.ToUpper(v.name)))
+			c.writeln(fmt.Sprintf("01 %s.", cobolName(v.name)))
 			c.indent += 4
 			for _, f := range v.fields {
-				line := fmt.Sprintf("05 %s %s", strings.ToUpper(f.name), f.pic)
+				line := fmt.Sprintf("05 %s %s", cobolName(f.name), f.pic)
 				if f.val != "" {
 					line += " VALUE " + f.val + "."
 				} else {
@@ -135,7 +144,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			}
 			c.indent -= 4
 		} else {
-			line := fmt.Sprintf("01 %s %s", strings.ToUpper(v.name), v.pic)
+			line := fmt.Sprintf("01 %s %s", cobolName(v.name), v.pic)
 			if v.val != "" {
 				line += " VALUE " + v.val + "."
 			} else {
@@ -258,7 +267,7 @@ func (c *Compiler) addVar(name string, typ *parser.TypeRef, value *parser.Expr, 
 		if err != nil {
 			return err
 		}
-		c.init = append(c.init, fmt.Sprintf("COMPUTE %s = %s", strings.ToUpper(name), expr))
+		c.init = append(c.init, fmt.Sprintf("COMPUTE %s = %s", cobolName(name), expr))
 	}
 	if strings.HasPrefix(val, "\"") && strings.HasSuffix(val, "\"") {
 		pic = fmt.Sprintf("PIC X(%d)", len(strings.Trim(val, "\"")))
@@ -270,14 +279,14 @@ func (c *Compiler) addVar(name string, typ *parser.TypeRef, value *parser.Expr, 
 }
 
 func (c *Compiler) addFun(fn *parser.FunStmt) error {
-	name := "FN_" + strings.ToUpper(strings.ReplaceAll(fn.Name, "-", "_"))
+	name := "FN_" + cobolName(strings.ReplaceAll(fn.Name, "-", "_"))
 	res := name + "_RES"
 	if !c.hasVar(res) {
 		c.vars = append(c.vars, varDecl{name: res, pic: "PIC 9", val: "0"})
 	}
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
-		params[i] = strings.ToUpper(p.Name)
+		params[i] = cobolName(p.Name)
 	}
 	c.funs = append(c.funs, funDecl{name: name, result: res, params: params, body: fn.Body})
 	return nil
@@ -307,6 +316,9 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileFor(s.For)
 	case s.Return != nil:
 		return c.compileReturn(s.Return)
+	case s.Type != nil:
+		// type declarations do not emit code
+		return nil
 	case s.Break != nil:
 		c.writeln("EXIT PERFORM")
 		return nil
@@ -324,7 +336,7 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 	if err != nil {
 		return err
 	}
-	name := strings.ToUpper(a.Name)
+	name := cobolName(a.Name)
 	c.writeln(fmt.Sprintf("COMPUTE %s = %s", name, val))
 	return nil
 }
@@ -575,7 +587,7 @@ func (c *Compiler) compileUserCall(call *parser.CallExpr) (string, error) {
 			return fmt.Sprintf("%s(%d:%d)", sArg, start+1, end-start), nil
 		}
 	}
-	name := "FN_" + strings.ToUpper(strings.ReplaceAll(call.Func, "-", "_"))
+	name := "FN_" + cobolName(strings.ReplaceAll(call.Func, "-", "_"))
 	args := make([]string, len(call.Args))
 	for i, a := range call.Args {
 		s, err := c.compileExpr(a)
@@ -694,7 +706,7 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 }
 
 func (c *Compiler) compileFor(f *parser.ForStmt) error {
-	name := strings.ToUpper(f.Name)
+	name := cobolName(f.Name)
 	var start, end string
 	if f.RangeEnd == nil {
 		if n, ok := seqIntList(f.Source); ok {
@@ -840,7 +852,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		case op.Call != nil:
 			if p.Target != nil && p.Target.Selector != nil && len(p.Target.Selector.Tail) == 1 {
 				method := p.Target.Selector.Tail[0]
-				recv := strings.ToUpper(strings.ReplaceAll(p.Target.Selector.Root, "_", "-"))
+				recv := cobolName(p.Target.Selector.Root)
 				if method == "contains" && len(op.Call.Args) == 1 {
 					arg, err := c.compileExpr(op.Call.Args[0])
 					if err != nil {
@@ -882,7 +894,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if len(p.Selector.Tail) > 0 {
 			name = p.Selector.Tail[len(p.Selector.Tail)-1]
 		}
-		return strings.ToUpper(strings.ReplaceAll(name, "_", "-")), nil
+		return cobolName(name), nil
 	default:
 		return "", fmt.Errorf("unsupported expression at line %d", p.Pos.Line)
 	}
