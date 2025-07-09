@@ -1,4 +1,4 @@
-object two-sum {
+object two_sum {
   def twoSum(nums: list[Int], target: Int): list[Int] = {
     val n = nums.length
     for(i <- 0 to n) {

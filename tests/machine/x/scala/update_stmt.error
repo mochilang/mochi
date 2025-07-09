@@ -1,0 +1,5 @@
+exit status 1
+/workspace/mochi/tests/machine/x/scala/update_stmt.scala:4: error: not found: type list
+  val people: list[Person] = List(Person(name = "Alice", age = 17, status = "minor"), Person(name = "Bob", age = 25, status = "unknown"), Person(name = "Charlie", age = 18, status = "unknown"), Person(name = "Diana", age = 16, status = "minor"))
+              ^
+one error found

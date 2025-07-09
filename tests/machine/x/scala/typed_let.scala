@@ -1,6 +1,6 @@
 object typed_let {
+  val y: Int = 0
   def main(args: Array[String]): Unit = {
-    val y: Int = 0
     println((y))
   }
 }

@@ -1,6 +1,6 @@
 object if_else {
+  val x = 5
   def main(args: Array[String]): Unit = {
-    val x = 5
     if (x > 3) {
       println(("big"))
     } else {

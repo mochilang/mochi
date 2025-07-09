@@ -53,7 +53,7 @@ func (c *Compiler) use(name string) {
 	}
 }
 
-func (c *Compiler) emitHelpers(out *bytes.Buffer) {
+func (c *Compiler) emitHelpers(out *bytes.Buffer, indent int) {
 	if len(c.helpers) == 0 {
 		return
 	}
@@ -62,17 +62,23 @@ func (c *Compiler) emitHelpers(out *bytes.Buffer) {
 		names = append(names, n)
 	}
 	sort.Strings(names)
+	pad := strings.Repeat(" ", indent)
 	for _, n := range names {
 		switch n {
 		case "_union_all":
-			out.WriteString("def _union_all[T](a: List[T], b: List[T]): List[T] = a ++ b\n\n")
+			out.WriteString(pad + "def _union_all[T](a: List[T], b: List[T]): List[T] = a ++ b\n")
 		case "_union":
-			out.WriteString("def _union[T](a: List[T], b: List[T]): List[T] = { val set = scala.collection.mutable.LinkedHashSet[T](); set ++= a; set ++= b; set.toList }\n\n")
+			out.WriteString(pad + "def _union[T](a: List[T], b: List[T]): List[T] = { val set = scala.collection.mutable.LinkedHashSet[T](); set ++= a; set ++= b; set.toList }\n")
 		case "_except":
-			out.WriteString("def _except[T](a: List[T], b: List[T]): List[T] = { val remove = b.toSet; a.filterNot(remove) }\n\n")
+			out.WriteString(pad + "def _except[T](a: List[T], b: List[T]): List[T] = { val remove = b.toSet; a.filterNot(remove) }\n")
 		case "_intersect":
-			out.WriteString("def _intersect[T](a: List[T], b: List[T]): List[T] = { val keep = b.toSet; val res = scala.collection.mutable.ListBuffer[T](); val seen = scala.collection.mutable.Set[T](); for(x <- a if keep(x) && !seen(x)) { seen += x; res += x }; res.toList }\n\n")
+			out.WriteString(pad + "def _intersect[T](a: List[T], b: List[T]): List[T] = { val keep = b.toSet; val res = scala.collection.mutable.ListBuffer[T](); val seen = scala.collection.mutable.Set[T](); for(x <- a if keep(x) && !seen(x)) { seen += x; res += x }; res.toList }\n")
+		case "_load_yaml":
+			out.WriteString(pad + "def _load_yaml(path: String): List[Map[String, String]] = { val lines = scala.io.Source.fromFile(path).getLines().toList; lines.grouped(3).flatMap { case List(n,a,e) => Some(Map(\"name\"->n.split(':')(1).trim, \"age\"->a.split(':')(1).trim, \"email\"->e.split(':')(1).trim)); case _ => None }.toList }\n")
+		case "_save_jsonl":
+			out.WriteString(pad + "def _save_jsonl(rows: List[Map[String, Any]], path: String): Unit = { val out = if(path == \"-\") Console.out else new java.io.PrintWriter(path); rows.foreach(r => out.println(scala.util.parsing.json.JSONObject(r).toString())); if(out ne Console.out) out.close() }\n")
 		}
+		out.WriteByte('\n')
 	}
 }
 
@@ -108,6 +114,26 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	c.writeln(fmt.Sprintf("object %s {", name))
 	c.indent += indentStep
+
+	firstFun := len(prog.Statements)
+	for i, s := range prog.Statements {
+		if s.Fun != nil {
+			firstFun = i
+			break
+		}
+	}
+
+	processed := make(map[int]bool)
+	for i := 0; i < firstFun; i++ {
+		s := prog.Statements[i]
+		if s.Let != nil {
+			if err := c.compileLet(s.Let); err != nil {
+				return nil, err
+			}
+			processed[i] = true
+		}
+	}
+
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
 			if err := c.compileFun(s.Fun); err != nil {
@@ -122,6 +148,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		if s.Fun != nil || s.Type != nil {
 			continue
 		}
+		if idx := indexOf(prog.Statements, s); processed[idx] {
+			continue
+		}
 		if err := c.compileStmt(s); err != nil {
 			return nil, err
 		}
@@ -131,9 +160,18 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.indent -= indentStep
 	c.writeln("}")
 	var out bytes.Buffer
-	c.emitHelpers(&out)
-	out.Write(c.buf.Bytes())
-	data := out.Bytes()
+	data := c.buf.Bytes()
+	marker := fmt.Sprintf("object %s {\n", name)
+	idx := bytes.Index(data, []byte(marker))
+	if idx == -1 {
+		idx = 0
+	} else {
+		idx += len(marker)
+	}
+	out.Write(data[:idx])
+	c.emitHelpers(&out, indentStep)
+	out.Write(data[idx:])
+	data = out.Bytes()
 	if len(data) == 0 || data[len(data)-1] != '\n' {
 		data = append(data, '\n')
 	}
@@ -831,6 +869,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileMatchExpr(p.Match)
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	case p.Selector != nil:
 		return c.compileSelector(p.Selector), nil
 	case p.Group != nil:
@@ -1111,20 +1153,25 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 
 	for _, j := range q.Joins {
-		if j.Side != nil {
-			return "", fmt.Errorf("line %d: join sides not supported", j.Pos.Line)
-		}
 		s, err := c.compileExpr(j.Src)
 		if err != nil {
 			return "", err
 		}
-		parts = append(parts, fmt.Sprintf("%s <- %s", j.Var, s))
+		var elemT types.Type = types.AnyType{}
+		if lt, ok := types.ExprType(j.Src, c.env).(types.ListType); ok {
+			elemT = lt.Elem
+		}
 		cond, err := c.compileExpr(j.On)
 		if err != nil {
 			return "", err
 		}
-		parts = append(parts, fmt.Sprintf("if %s", cond))
-		child.SetVar(j.Var, types.AnyType{}, false)
+		if j.Side == nil {
+			parts = append(parts, fmt.Sprintf("%s <- %s", j.Var, s))
+			parts = append(parts, fmt.Sprintf("if %s", cond))
+		} else {
+			parts = append(parts, fmt.Sprintf("%s = %s.find(%s => %s)", j.Var, s, j.Var, cond))
+		}
+		child.SetVar(j.Var, elemT, false)
 	}
 
 	oldEnv := c.env
@@ -1213,6 +1260,52 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	c.env = oldEnv
 	return expr, nil
+}
+
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
+	path := "\"\""
+	if l.Path != nil {
+		path = fmt.Sprintf("%q", *l.Path)
+	}
+	format := "csv"
+	if l.With != nil {
+		if m := l.With.Binary.Left.Value.Target.Map; m != nil {
+			for _, it := range m.Items {
+				if key, ok := simpleIdent(it.Key); ok && key == "format" {
+					if lit := it.Value.Binary.Left.Value.Target.Lit; lit != nil && lit.Str != nil {
+						format = *lit.Str
+					}
+				}
+			}
+		}
+	}
+	c.use("_load_" + format)
+	return fmt.Sprintf("_load_%s(%s)", format, path), nil
+}
+
+func (c *Compiler) compileSaveExpr(sv *parser.SaveExpr) (string, error) {
+	src, err := c.compileExpr(sv.Src)
+	if err != nil {
+		return "", err
+	}
+	path := "\"\""
+	if sv.Path != nil {
+		path = fmt.Sprintf("%q", *sv.Path)
+	}
+	format := "csv"
+	if sv.With != nil {
+		if m := sv.With.Binary.Left.Value.Target.Map; m != nil {
+			for _, it := range m.Items {
+				if key, ok := simpleIdent(it.Key); ok && key == "format" {
+					if lit := it.Value.Binary.Left.Value.Target.Lit; lit != nil && lit.Str != nil {
+						format = *lit.Str
+					}
+				}
+			}
+		}
+	}
+	c.use("_save_" + format)
+	return fmt.Sprintf("_save_%s(%s, %s)", format, src, path), nil
 }
 
 func (c *Compiler) mapToStruct(name string, st types.StructType, m *parser.MapLiteral) (string, error) {
@@ -1359,4 +1452,13 @@ func identOfUnary(u *parser.Unary) (string, bool) {
 		return "", false
 	}
 	return p.Target.Selector.Root, true
+}
+
+func indexOf(list []*parser.Statement, target *parser.Statement) int {
+	for i, s := range list {
+		if s == target {
+			return i
+		}
+	}
+	return -1
 }

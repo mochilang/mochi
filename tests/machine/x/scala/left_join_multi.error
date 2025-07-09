@@ -1,1 +1,26 @@
-line 17: join sides not supported
+exit status 1
+/workspace/mochi/tests/machine/x/scala/left_join_multi.scala:5: error: value customerId is not a member of scala.collection.immutable.Map[String,Int]
+  val result = for { o <- orders; c <- customers; if (o.customerId).asInstanceOf[Int] == (c.id).asInstanceOf[Int]; i = items.find(i => (o.id).asInstanceOf[Int] == (i.orderId).asInstanceOf[Int]) } yield Map("orderId" -> (o("id")), "name" -> (c("name")), "item" -> (i))
+                                                        ^
+/workspace/mochi/tests/machine/x/scala/left_join_multi.scala:5: error: value id is not a member of scala.collection.immutable.Map[String,Any]
+  val result = for { o <- orders; c <- customers; if (o.customerId).asInstanceOf[Int] == (c.id).asInstanceOf[Int]; i = items.find(i => (o.id).asInstanceOf[Int] == (i.orderId).asInstanceOf[Int]) } yield Map("orderId" -> (o("id")), "name" -> (c("name")), "item" -> (i))
+                                                                                            ^
+/workspace/mochi/tests/machine/x/scala/left_join_multi.scala:5: error: value id is not a member of scala.collection.immutable.Map[String,Int]
+  val result = for { o <- orders; c <- customers; if (o.customerId).asInstanceOf[Int] == (c.id).asInstanceOf[Int]; i = items.find(i => (o.id).asInstanceOf[Int] == (i.orderId).asInstanceOf[Int]) } yield Map("orderId" -> (o("id")), "name" -> (c("name")), "item" -> (i))
+                                                                                                                                          ^
+/workspace/mochi/tests/machine/x/scala/left_join_multi.scala:5: error: value orderId is not a member of scala.collection.immutable.Map[String,Any]
+  val result = for { o <- orders; c <- customers; if (o.customerId).asInstanceOf[Int] == (c.id).asInstanceOf[Int]; i = items.find(i => (o.id).asInstanceOf[Int] == (i.orderId).asInstanceOf[Int]) } yield Map("orderId" -> (o("id")), "name" -> (c("name")), "item" -> (i))
+                                                                                                                                                                      ^
+/workspace/mochi/tests/machine/x/scala/left_join_multi.scala:5: error: Any does not take parameters
+  val result = for { o <- orders; c <- customers; if (o.customerId).asInstanceOf[Int] == (c.id).asInstanceOf[Int]; i = items.find(i => (o.id).asInstanceOf[Int] == (i.orderId).asInstanceOf[Int]) } yield Map("orderId" -> (o("id")), "name" -> (c("name")), "item" -> (i))
+                                                                                                                                                                                                                                                  ^
+/workspace/mochi/tests/machine/x/scala/left_join_multi.scala:9: error: Nothing does not take parameters
+      println((r("orderId")) + " " + (r("name")) + " " + (r("item")))
+                ^
+/workspace/mochi/tests/machine/x/scala/left_join_multi.scala:9: error: Nothing does not take parameters
+      println((r("orderId")) + " " + (r("name")) + " " + (r("item")))
+                                       ^
+/workspace/mochi/tests/machine/x/scala/left_join_multi.scala:9: error: Nothing does not take parameters
+      println((r("orderId")) + " " + (r("name")) + " " + (r("item")))
+                                                           ^
+8 errors found

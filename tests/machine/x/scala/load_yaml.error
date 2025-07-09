@@ -1,1 +1,5 @@
-line 7: unsupported expression
+exit status 1
+/workspace/mochi/tests/machine/x/scala/load_yaml.scala:7: error: value age is not a member of Map[String,String]
+  val adults = for { p <- people; if p.age >= 18 } yield Map("name" -> (p.name), "email" -> (p.email))
+                                       ^
+one error found
