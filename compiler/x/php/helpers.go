@@ -3,6 +3,7 @@
 package phpcode
 
 import (
+	"fmt"
 	"sort"
 	"strings"
 
@@ -123,4 +124,10 @@ func (c *Compiler) emitRuntime() {
 			c.buf.WriteString(code)
 		}
 	}
+}
+
+func (c *Compiler) newTmp() string {
+	name := fmt.Sprintf("$_tmp%d", c.tmpCount)
+	c.tmpCount++
+	return name
 }
