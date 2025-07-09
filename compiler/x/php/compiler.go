@@ -794,6 +794,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 	}
 
+	capture := queryFreeVars(q, c.env)
+	use := ""
+	if len(capture) > 0 {
+		use = " use (" + strings.Join(capture, ", ") + ")"
+	}
+
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
 		return "", err
@@ -823,7 +829,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	defer func() { c.env = oldEnv }()
 
 	var buf bytes.Buffer
-	buf.WriteString("(function() {")
+	buf.WriteString("(function()" + use + " {")
 	buf.WriteString("\n")
 	if q.Group != nil {
 		buf.WriteString("    $groups = [];")
@@ -1202,6 +1208,12 @@ func (c *Compiler) writeln(s string) {
 }
 
 func (c *Compiler) compileQueryExprAdvanced(q *parser.QueryExpr) (string, error) {
+	capture := queryFreeVars(q, c.env)
+	use := ""
+	if len(capture) > 0 {
+		use = " use (" + strings.Join(capture, ", ") + ")"
+	}
+
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
 		return "", err
@@ -1288,7 +1300,7 @@ func (c *Compiler) compileQueryExprAdvanced(q *parser.QueryExpr) (string, error)
 		for k, p := range onParams {
 			fnParams[k] = "$" + p
 		}
-		spec := fmt.Sprintf("['items'=>%s, 'on'=>function(%s){return %s;}", js, strings.Join(fnParams, ", "), joinOns[i])
+		spec := fmt.Sprintf("['items'=>%s, 'on'=>function(%s)%s{return %s;}", js, strings.Join(fnParams, ", "), use, joinOns[i])
 		if q.Joins[i].Side != nil {
 			side := *q.Joins[i].Side
 			if side == "left" || side == "outer" {
@@ -1307,7 +1319,7 @@ func (c *Compiler) compileQueryExprAdvanced(q *parser.QueryExpr) (string, error)
 		paramList[i] = "$" + p
 	}
 	allParams := strings.Join(paramList, ", ")
-	selectFn := fmt.Sprintf("function(%s){return %s;}", allParams, val)
+	selectFn := fmt.Sprintf("function(%s)%s{return %s;}", allParams, use, val)
 	opts := "[ 'select' => " + selectFn + " ]"
 	expr := fmt.Sprintf("_query(%s, [%s], %s)", src, strings.Join(joins, ", "), opts)
 	c.use("_query")
@@ -1338,9 +1350,9 @@ func (c *Compiler) compileQueryExprAdvanced(q *parser.QueryExpr) (string, error)
 	c.env = orig
 
 	var buf bytes.Buffer
-	buf.WriteString("(function() {\n")
+	buf.WriteString("(function()" + use + " {\n")
 	buf.WriteString(fmt.Sprintf("    $_rows = %s;\n", expr))
-	buf.WriteString(fmt.Sprintf("    $_groups = _group_by($_rows, function(%s){return %s;});\n", allParams, keyExpr))
+	buf.WriteString(fmt.Sprintf("    $_groups = _group_by($_rows, function(%s)%s{return %s;});\n", allParams, use, keyExpr))
 	buf.WriteString("    $result = [];\n")
 	buf.WriteString("    foreach ($_groups as $__g) {\n")
 	buf.WriteString(fmt.Sprintf("        $%s = $__g;\n", gname))
