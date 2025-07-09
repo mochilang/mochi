@@ -4,6 +4,7 @@ package swift
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"mochi/parser"
@@ -1270,8 +1271,58 @@ func (c *compiler) existsQuery(q *parser.QueryExpr) (string, error) {
 }
 
 func (c *compiler) queryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+	if len(q.Joins) > 0 || q.Group != nil || q.Distinct {
 		return "", fmt.Errorf("unsupported query")
+	}
+	if len(q.Froms) == 0 && q.Where == nil && q.Sort != nil {
+		src, err := c.expr(q.Source)
+		if err != nil {
+			return "", err
+		}
+		saved := c.varTypes
+		c.varTypes = copyMap(c.varTypes)
+		c.varTypes[q.Var] = c.elementType(q.Source)
+		prev := c.tupleMap
+		c.tupleMap = true
+		sel, err := c.expr(q.Select)
+		if err != nil {
+			c.varTypes = saved
+			return "", err
+		}
+		key, err := c.expr(q.Sort)
+		c.tupleMap = prev
+		if err != nil {
+			c.varTypes = saved
+			return "", err
+		}
+		c.varTypes = saved
+		desc := false
+		if strings.HasPrefix(key, "-") {
+			desc = true
+			key = strings.TrimPrefix(key, "-")
+		}
+		res := fmt.Sprintf("%s.map { %s in (value: %s, key: %s) }", src, q.Var, sel, key)
+		op := "<"
+		if desc {
+			op = ">"
+		}
+		res = fmt.Sprintf("%s.sorted { $0.key %s $1.key }", res, op)
+		if q.Skip != nil {
+			skip, err := c.expr(q.Skip)
+			if err != nil {
+				return "", err
+			}
+			res += fmt.Sprintf(".dropFirst(%s)", skip)
+		}
+		if q.Take != nil {
+			take, err := c.expr(q.Take)
+			if err != nil {
+				return "", err
+			}
+			res += fmt.Sprintf(".prefix(%s)", take)
+		}
+		res += ".map { $0.value }"
+		return res, nil
 	}
 	vars := []string{q.Var}
 	srcs := []*parser.Expr{q.Source}
@@ -1333,7 +1384,50 @@ func (c *compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		return fmt.Sprintf("%s.flatMap { %s in %s }", src, name, inner), nil
 	}
 
-	return build(0)
+	res, err := build(0)
+	if err != nil {
+		return "", err
+	}
+	if q.Sort != nil {
+		prevT := c.tupleMap
+		c.tupleMap = true
+		sortExpr, err := c.expr(q.Sort)
+		c.tupleMap = prevT
+		if err != nil {
+			return "", err
+		}
+		desc := false
+		if strings.HasPrefix(sortExpr, "-") {
+			desc = true
+			sortExpr = strings.TrimPrefix(sortExpr, "-")
+		}
+		a := sortExpr
+		b := sortExpr
+		for _, v := range vars {
+			a = replaceIdent(a, v, "$0")
+			b = replaceIdent(b, v, "$1")
+		}
+		op := "<"
+		if desc {
+			op = ">"
+		}
+		res = fmt.Sprintf("%s.sorted { %s %s %s }", res, a, op, b)
+	}
+	if q.Skip != nil {
+		skip, err := c.expr(q.Skip)
+		if err != nil {
+			return "", err
+		}
+		res += fmt.Sprintf(".dropFirst(%s)", skip)
+	}
+	if q.Take != nil {
+		take, err := c.expr(q.Take)
+		if err != nil {
+			return "", err
+		}
+		res += fmt.Sprintf(".prefix(%s)", take)
+	}
+	return res, nil
 }
 
 func isVarRef(e *parser.Expr, name string) bool {
@@ -1350,6 +1444,12 @@ func copyMap[K comparable, V any](m map[K]V) map[K]V {
 		out[k] = v
 	}
 	return out
+}
+
+func replaceIdent(s, name, repl string) string {
+	re := regexp.MustCompile(`\b` + regexp.QuoteMeta(name) + `\b`)
+	repl = strings.ReplaceAll(repl, "$", "$$")
+	return re.ReplaceAllString(s, repl)
 }
 
 func (c *compiler) elementType(e *parser.Expr) string {
