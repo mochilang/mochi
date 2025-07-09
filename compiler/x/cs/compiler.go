@@ -198,6 +198,23 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			}
 		}
 	}
+	// Remove unused using statements for cleaner output
+	src := string(code)
+	if !strings.Contains(src, "List<") && !strings.Contains(src, "Dictionary<") {
+		code = bytes.Replace(code, []byte("using System.Collections.Generic;\n"), nil, 1)
+	}
+	if !strings.Contains(src, "File.") && !strings.Contains(src, "Stream") {
+		code = bytes.Replace(code, []byte("using System.IO;\n"), nil, 1)
+	}
+	if !strings.Contains(src, "HttpClient") {
+		code = bytes.Replace(code, []byte("using System.Net.Http;\n"), nil, 1)
+	}
+	if !strings.Contains(src, "Encoding.") && !strings.Contains(src, "StringBuilder") {
+		code = bytes.Replace(code, []byte("using System.Text;\n"), nil, 1)
+	}
+	if !strings.Contains(src, "HttpUtility") {
+		code = bytes.Replace(code, []byte("using System.Web;\n"), nil, 1)
+	}
 	return FormatCS(code), nil
 }
 

@@ -39,7 +39,7 @@ func repoRoot() string {
 func csTypeOf(t types.Type) string {
 	switch tt := t.(type) {
 	case types.IntType, types.Int64Type:
-		return "long"
+		return "int"
 	case types.FloatType:
 		return "double"
 	case types.StringType:
