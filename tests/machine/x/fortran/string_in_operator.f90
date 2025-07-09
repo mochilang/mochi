@@ -1,7 +1,7 @@
 program main
   implicit none
-  integer :: s
+  character(len=100) :: s
   s = "catch"
-  print *, any(s == "cat")
-  print *, any(s == "dog")
+  print *, index(s,"cat") /= 0
+  print *, index(s,"dog") /= 0
 end program main

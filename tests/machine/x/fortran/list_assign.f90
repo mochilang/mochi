@@ -2,6 +2,6 @@ program main
   implicit none
   integer, dimension(2) :: nums
   nums = (/1,2/)
-  nums(1) = 3
-  print *, nums(1)
+  nums((1)+1) = 3
+  print *, nums((1)+1)
 end program main

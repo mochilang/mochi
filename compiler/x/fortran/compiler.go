@@ -247,7 +247,7 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 		if err != nil {
 			return err
 		}
-		target += fmt.Sprintf("(%s)", v)
+		target += fmt.Sprintf("((%s)+1)", v)
 	}
 	c.writeln(fmt.Sprintf("%s = %s", target, val))
 	return nil
@@ -466,7 +466,11 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			}
 			return "", fmt.Errorf("unsupported cast")
 		case "in":
-			res = fmt.Sprintf("any(%s == %s)", r, res)
+			if rightIsStr {
+				res = fmt.Sprintf("index(%s,%s) /= 0", r, res)
+			} else {
+				res = fmt.Sprintf("any(%s == %s)", r, res)
+			}
 			continue
 		case "+":
 			if leftIsStr || rightIsStr {
@@ -518,17 +522,49 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	for _, op := range p.Ops {
 		switch {
 		case op.Index != nil:
-			if op.Index.Colon != nil || op.Index.Colon2 != nil {
+			if op.Index.Colon != nil {
+				// slice expression
+				start := "0"
+				end := ""
+				if op.Index.Start != nil {
+					s, err := c.compileExpr(op.Index.Start)
+					if err != nil {
+						return "", err
+					}
+					start = s
+				}
+				if op.Index.End != nil {
+					e, err := c.compileExpr(op.Index.End)
+					if err != nil {
+						return "", err
+					}
+					end = e
+				} else {
+					if types.IsStringPrimary(p.Target, c.env) {
+						end = fmt.Sprintf("len(%s)", res)
+					} else {
+						end = fmt.Sprintf("size(%s)", res)
+					}
+				}
+				// convert to 1-based inclusive range
+				startF := "1"
+				if start != "0" {
+					startF = fmt.Sprintf("(%s)+1", start)
+				}
+				endF := end
+				res = fmt.Sprintf("%s(%s:%s)", res, startF, endF)
+			} else if op.Index.Colon2 != nil {
 				return "", fmt.Errorf("slices not supported")
-			}
-			v, err := c.compileExpr(op.Index.Start)
-			if err != nil {
-				return "", err
-			}
-			if types.IsStringPrimary(p.Target, c.env) {
-				res = fmt.Sprintf("%s(%s:%s)", res, v, v)
 			} else {
-				res = fmt.Sprintf("%s(%s)", res, v)
+				v, err := c.compileExpr(op.Index.Start)
+				if err != nil {
+					return "", err
+				}
+				if types.IsStringPrimary(p.Target, c.env) {
+					res = fmt.Sprintf("%s((%s)+1:(%s)+1)", res, v, v)
+				} else {
+					res = fmt.Sprintf("%s((%s)+1)", res, v)
+				}
 			}
 		case op.Field != nil:
 			res = fmt.Sprintf("%s%%%s", res, op.Field.Name)
@@ -644,8 +680,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(call.Args) != 1 {
 			return "", fmt.Errorf("len expects 1 arg")
 		}
-		// heuristic: use len() for strings, size() otherwise
-		if lit := call.Args[0].Binary.Left.Value.Target; lit != nil && lit.Lit != nil && lit.Lit.Str != nil {
+		if types.IsStringExpr(call.Args[0], c.env) {
 			return fmt.Sprintf("len(%s)", args[0]), nil
 		}
 		return fmt.Sprintf("size(%s)", args[0]), nil
