@@ -2028,7 +2028,8 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 	}
 	var b strings.Builder
 	lbl := c.newLabel()
-	b.WriteString("(" + lbl + ": { var m = std.AutoHashMap(" + keyType + ", " + valType + ").init(std.heap.page_allocator); ")
+	tmpMap := c.newTmp()
+	b.WriteString("(" + lbl + ": { var " + tmpMap + " = std.AutoHashMap(" + keyType + ", " + valType + ").init(std.heap.page_allocator); ")
 	for _, it := range m.Items {
 		var keyExpr string
 		if k, ok := simpleStringKey(it.Key); ok {
@@ -2044,9 +2045,9 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		b.WriteString("m.put(" + keyExpr + ", " + v + ") catch unreachable; ")
+		b.WriteString(tmpMap + ".put(" + keyExpr + ", " + v + ") catch unreachable; ")
 	}
-	b.WriteString("break :" + lbl + " m; })")
+	b.WriteString("break :" + lbl + " " + tmpMap + "; })")
 	return b.String(), nil
 }
 
