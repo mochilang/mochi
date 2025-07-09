@@ -1,0 +1,20 @@
+exit status 1
+/workspace/mochi/tests/machine/x/scala/group_by_multi_join.scala:5: error: value id is not a member of scala.collection.immutable.Map[String,Int]
+  val filtered = for { ps <- partsupp; s <- suppliers; if (s.id).asInstanceOf[Int] == (ps.supplier).asInstanceOf[Int]; n <- nations; if (n.id).asInstanceOf[Int] == (s.nation).asInstanceOf[Int]; if (n("name")).asInstanceOf[Int] == "A" } yield Map("part" -> (ps("part")), "value" -> ((ps("cost")).asInstanceOf[Int] * (ps("qty")).asInstanceOf[Int]))
+                                                             ^
+/workspace/mochi/tests/machine/x/scala/group_by_multi_join.scala:5: error: value supplier is not a member of scala.collection.immutable.Map[String,Int]
+  val filtered = for { ps <- partsupp; s <- suppliers; if (s.id).asInstanceOf[Int] == (ps.supplier).asInstanceOf[Int]; n <- nations; if (n.id).asInstanceOf[Int] == (s.nation).asInstanceOf[Int]; if (n("name")).asInstanceOf[Int] == "A" } yield Map("part" -> (ps("part")), "value" -> ((ps("cost")).asInstanceOf[Int] * (ps("qty")).asInstanceOf[Int]))
+                                                                                          ^
+/workspace/mochi/tests/machine/x/scala/group_by_multi_join.scala:5: error: value id is not a member of scala.collection.immutable.Map[String,Any]
+  val filtered = for { ps <- partsupp; s <- suppliers; if (s.id).asInstanceOf[Int] == (ps.supplier).asInstanceOf[Int]; n <- nations; if (n.id).asInstanceOf[Int] == (s.nation).asInstanceOf[Int]; if (n("name")).asInstanceOf[Int] == "A" } yield Map("part" -> (ps("part")), "value" -> ((ps("cost")).asInstanceOf[Int] * (ps("qty")).asInstanceOf[Int]))
+                                                                                                                                           ^
+/workspace/mochi/tests/machine/x/scala/group_by_multi_join.scala:6: error: Nothing does not take parameters
+  val grouped = ((for { x <- filtered } yield (x("part"), (x))).groupBy(_._1).map{ case(k,list) => (k, list.map(_._2)) }.toList).map{ case(gKey,gItems) => { val g = (gKey, gItems); Map("part" -> (g._1), "total" -> (for { r <- g } yield r.value.sum)) } }.toList
+                                                ^
+/workspace/mochi/tests/machine/x/scala/group_by_multi_join.scala:6: error: value map is not a member of Any
+  val grouped = ((for { x <- filtered } yield (x("part"), (x))).groupBy(_._1).map{ case(k,list) => (k, list.map(_._2)) }.toList).map{ case(gKey,gItems) => { val g = (gKey, gItems); Map("part" -> (g._1), "total" -> (for { r <- g } yield r.value.sum)) } }.toList
+                                                                                                            ^
+/workspace/mochi/tests/machine/x/scala/group_by_multi_join.scala:6: error: value map is not a member of (Any, Any)
+  val grouped = ((for { x <- filtered } yield (x("part"), (x))).groupBy(_._1).map{ case(k,list) => (k, list.map(_._2)) }.toList).map{ case(gKey,gItems) => { val g = (gKey, gItems); Map("part" -> (g._1), "total" -> (for { r <- g } yield r.value.sum)) } }.toList
+                                                                                                                                                                                                                                  ^
+6 errors found

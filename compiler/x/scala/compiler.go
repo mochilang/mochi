@@ -1175,7 +1175,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 	}
 
-	for _, j := range q.Joins {
+	for i, j := range q.Joins {
 		s, err := c.compileExpr(j.Src)
 		if err != nil {
 			return "", err
@@ -1192,7 +1192,21 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			parts = append(parts, fmt.Sprintf("%s <- %s", j.Var, s))
 			parts = append(parts, fmt.Sprintf("if %s", cond))
 		} else {
-			parts = append(parts, fmt.Sprintf("%s = %s.find(%s => %s)", j.Var, s, j.Var, cond))
+			side := strings.ToLower(*j.Side)
+			switch side {
+			case "left":
+				parts = append(parts, fmt.Sprintf("%s = %s.find(%s => %s)", j.Var, s, j.Var, cond))
+			case "right":
+				if i == 0 && len(q.Froms) == 0 && len(parts) == 1 && strings.HasPrefix(parts[0], q.Var+" <-") {
+					parts[0] = fmt.Sprintf("%s <- %s", j.Var, s)
+					parts = append(parts, fmt.Sprintf("%s = %s.find(%s => %s)", q.Var, src, q.Var, cond))
+				} else {
+					parts = append(parts, fmt.Sprintf("%s <- %s", j.Var, s))
+					parts = append(parts, fmt.Sprintf("%s = %s.find(%s => %s)", q.Var, src, q.Var, cond))
+				}
+			default: // treat other sides similar to left
+				parts = append(parts, fmt.Sprintf("%s = %s.find(%s => %s)", j.Var, s, j.Var, cond))
+			}
 		}
 		child.SetVar(j.Var, elemT, false)
 	}

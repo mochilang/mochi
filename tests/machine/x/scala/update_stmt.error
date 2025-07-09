@@ -1,0 +1,5 @@
+exit status 1
+/workspace/mochi/tests/machine/x/scala/update_stmt.scala:16: error: reassignment to val
+      people = people.updated(_i0, _it1)
+             ^
+one error found
