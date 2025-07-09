@@ -183,9 +183,9 @@ val filtered = run {
     val __res = mutableListOf<MutableMap<Any?, Any?>>()
     for (ps in partsupp) {
         for (s in suppliers) {
-            if (toBool((s as MutableMap<*, *>)["id"] as Int == (ps as MutableMap<*, *>)["supplier"])) {
+            if (toBool((s as MutableMap<*, *>)["id"] == (ps as MutableMap<*, *>)["supplier"])) {
                 for (n in nations) {
-                    if (toBool((n as MutableMap<*, *>)["id"] == (s as MutableMap<*, *>)["nation"] as Int)) {
+                    if (toBool((n as MutableMap<*, *>)["id"] == (s as MutableMap<*, *>)["nation"])) {
                         if (toBool((n as MutableMap<*, *>)["name"] == "A")) {
                             __res.add((mutableMapOf("part" to (ps as MutableMap<*, *>)["part"], "value" to toDouble((ps as MutableMap<*, *>)["cost"]) * toDouble((ps as MutableMap<*, *>)["qty"])) as MutableMap<Any?, Any?>))
                         }

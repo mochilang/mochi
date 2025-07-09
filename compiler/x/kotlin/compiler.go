@@ -1501,6 +1501,10 @@ func kotlinTypeOf(t types.Type) string {
 }
 
 func isStructType(t types.Type) bool {
-	_, ok := t.(types.StructType)
-	return ok
+	switch t.(type) {
+	case types.StructType, types.GroupType:
+		return true
+	default:
+		return false
+	}
 }
