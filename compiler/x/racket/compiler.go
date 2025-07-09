@@ -11,12 +11,20 @@ import (
 )
 
 type Compiler struct {
-	buf         bytes.Buffer
-	needListLib bool
-	structs     map[string][]string
+	buf              bytes.Buffer
+	needListLib      bool
+	structs          map[string][]string
+	structFieldTypes map[string]map[string]string
+	varTypes         map[string]string
 }
 
-func New() *Compiler { return &Compiler{structs: make(map[string][]string)} }
+func New() *Compiler {
+	return &Compiler{
+		structs:          make(map[string][]string),
+		structFieldTypes: make(map[string]map[string]string),
+		varTypes:         make(map[string]string),
+	}
+}
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
@@ -69,6 +77,13 @@ func (c *Compiler) compileStmtFull(s *parser.Statement, breakLbl, contLbl, retLb
 			expr = v
 		}
 		c.writeln(fmt.Sprintf("(define %s %s)", name, expr))
+		if t := c.getDeclType(s.Let.Type); t != "" {
+			c.varTypes[name] = t
+		} else if t := getCastType(s.Let.Value); t != "" {
+			c.varTypes[name] = t
+		} else if t := getStructLiteralType(s.Let.Value); t != "" {
+			c.varTypes[name] = t
+		}
 	case s.Assign != nil:
 		if len(s.Assign.Index) > 0 {
 			rhs, err := c.compileExpr(s.Assign.Value)
@@ -101,6 +116,13 @@ func (c *Compiler) compileStmtFull(s *parser.Statement, breakLbl, contLbl, retLb
 			expr = v
 		}
 		c.writeln(fmt.Sprintf("(define %s %s)", name, expr))
+		if t := c.getDeclType(s.Var.Type); t != "" {
+			c.varTypes[name] = t
+		} else if t := getCastType(s.Var.Value); t != "" {
+			c.varTypes[name] = t
+		} else if t := getStructLiteralType(s.Var.Value); t != "" {
+			c.varTypes[name] = t
+		}
 	case s.Fun != nil:
 		return c.compileFun(s.Fun)
 	case s.Return != nil:
@@ -212,11 +234,8 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 		case "||":
 			val = fmt.Sprintf("(or %s %s)", val, rhs)
 		case "in":
-			if rightStr || isStrLeft {
-				val = fmt.Sprintf("(regexp-match? (regexp %s) %s)", val, rhs)
-			} else {
-				val = fmt.Sprintf("(if (hash? %s) (hash-has-key? %s %s) (if (member %s %s) #t #f))", rhs, rhs, val, val, rhs)
-			}
+			c.needListLib = true
+			val = fmt.Sprintf("(cond [(string? %s) (regexp-match? (regexp %s) %s)] [(hash? %s) (hash-has-key? %s %s)] [else (member %s %s)])", rhs, val, rhs, rhs, rhs, val, val, rhs)
 		default:
 			return "", fmt.Errorf("unsupported operator %s", operator)
 		}
@@ -314,7 +333,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				} else {
 					end = fmt.Sprintf("(if (string? %s) (string-length %s) (length %s))", val, val, val)
 				}
-				val = fmt.Sprintf("(if (string? %s) (substring %s %s %s) (take (drop %s %s) (- %s %s)))", val, val, start, end, val, start, end, start)
+				c.needListLib = true
+				val = fmt.Sprintf("(cond [(string? %s) (substring %s %s %s)] [(hash? %s) (hash-ref %s %s)] [else (take (drop %s %s) (- %s %s))])", val, val, start, end, val, val, start, val, start, end, start)
 			} else {
 				if op.Index.Start == nil {
 					return "", fmt.Errorf("empty index")
@@ -323,11 +343,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				if isStringExpr(op.Index.Start) {
-					val = fmt.Sprintf("(hash-ref %s %s)", val, idx)
-				} else {
-					val = fmt.Sprintf("(if (string? %s) (string-ref %s %s) (list-ref %s %s))", val, val, idx, val, idx)
-				}
+				c.needListLib = true
+				val = fmt.Sprintf("(cond [(string? %s) (string-ref %s %s)] [(hash? %s) (hash-ref %s %s)] [else (list-ref %s %s)])", val, val, idx, val, val, idx, val, idx)
 			}
 		default:
 			return "", fmt.Errorf("unsupported postfix operation")
@@ -418,8 +435,18 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileIfExpr(p.If)
 	case p.Selector != nil:
 		val := p.Selector.Root
+		t, _ := c.varTypes[val]
 		for _, f := range p.Selector.Tail {
-			val = fmt.Sprintf("(hash-ref %s '%s)", val, f)
+			if t != "" {
+				val = fmt.Sprintf("(%s-%s %s)", t, f, val)
+				if ft, ok := c.structFieldTypes[t][f]; ok {
+					t = ft
+				} else {
+					t = ""
+				}
+			} else {
+				val = fmt.Sprintf("(hash-ref %s '%s)", val, f)
+			}
 		}
 		return val, nil
 	case p.Group != nil:
@@ -452,6 +479,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			parts[i*2+1] = v
 		}
 		return fmt.Sprintf("(hash %s)", strings.Join(parts, " ")), nil
+	case p.Struct != nil:
+		parts := make([]string, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			v, err := c.compileExpr(f.Value)
+			if err != nil {
+				return "", err
+			}
+			parts[i] = v
+		}
+		return fmt.Sprintf("(%s %s)", p.Struct.Name, strings.Join(parts, " ")), nil
 	case p.Query != nil:
 		return c.compileQuery(p.Query)
 	case p.FunExpr != nil:
@@ -569,8 +606,18 @@ func (c *Compiler) compileForWithLabelsFull(f *parser.ForStmt, breakLbl, contLbl
 
 func (c *Compiler) compileFun(f *parser.FunStmt) error {
 	params := make([]string, len(f.Params))
+	prev := c.varTypes
+	c.varTypes = make(map[string]string)
+	for k, v := range prev {
+		c.varTypes[k] = v
+	}
 	for i, p := range f.Params {
 		params[i] = p.Name
+		if p.Type != nil && p.Type.Simple != nil {
+			if _, ok := c.structs[*p.Type.Simple]; ok {
+				c.varTypes[p.Name] = *p.Type.Simple
+			}
+		}
 	}
 	c.writeln(fmt.Sprintf("(define (%s %s)", f.Name, strings.Join(params, " ")))
 	c.writeln("  (let/ec return")
@@ -580,6 +627,7 @@ func (c *Compiler) compileFun(f *parser.FunStmt) error {
 		}
 	}
 	c.writeln("  ))")
+	c.varTypes = prev
 	return nil
 }
 
@@ -712,25 +760,16 @@ func (c *Compiler) compileIndexedSet(name string, idx []*parser.IndexOp, rhs str
 		return "", err
 	}
 	if len(idx) == 1 {
-		if isStringExpr(idx[0].Start) {
-			return fmt.Sprintf("(hash-set %s %s %s)", name, ie, rhs), nil
-		}
 		c.needListLib = true
-		return fmt.Sprintf("(list-set %s %s %s)", name, ie, rhs), nil
+		return fmt.Sprintf("(cond [(hash? %s) (hash-set %s %s %s)] [else (list-set %s %s %s)])", name, name, ie, rhs, name, ie, rhs), nil
 	}
-	access := fmt.Sprintf("(list-ref %s %s)", name, ie)
-	if isStringExpr(idx[0].Start) {
-		access = fmt.Sprintf("(hash-ref %s %s)", name, ie)
-	}
+	c.needListLib = true
+	access := fmt.Sprintf("(cond [(hash? %s) (hash-ref %s %s)] [else (list-ref %s %s)])", name, name, ie, name, ie)
 	inner, err := c.compileIndexedSet(access, idx[1:], rhs)
 	if err != nil {
 		return "", err
 	}
-	if isStringExpr(idx[0].Start) {
-		return fmt.Sprintf("(hash-set %s %s %s)", name, ie, inner), nil
-	}
-	c.needListLib = true
-	return fmt.Sprintf("(list-set %s %s %s)", name, ie, inner), nil
+	return fmt.Sprintf("(cond [(hash? %s) (hash-set %s %s %s)] [else (list-set %s %s %s)])", name, name, ie, inner, name, ie, inner), nil
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
@@ -738,13 +777,20 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		return fmt.Errorf("unsupported statement")
 	}
 	fields := []string{}
+	fieldTypes := map[string]string{}
 	for _, m := range t.Members {
 		if m.Field == nil {
 			return fmt.Errorf("unsupported statement")
 		}
 		fields = append(fields, m.Field.Name)
+		if m.Field.Type != nil && m.Field.Type.Simple != nil {
+			fieldTypes[m.Field.Name] = *m.Field.Type.Simple
+		}
 	}
 	c.structs[t.Name] = fields
+	if len(fieldTypes) > 0 {
+		c.structFieldTypes[t.Name] = fieldTypes
+	}
 	c.writeln(fmt.Sprintf("(struct %s (%s) #:transparent)", t.Name, strings.Join(fields, " ")))
 	return nil
 }
@@ -777,4 +823,47 @@ func isIdentExpr(e *parser.Expr) bool {
 		return false
 	}
 	return len(u.Value.Target.Selector.Tail) == 0
+}
+
+func (c *Compiler) getDeclType(tr *parser.TypeRef) string {
+	if tr == nil || tr.Simple == nil {
+		return ""
+	}
+	if _, ok := c.structs[*tr.Simple]; ok {
+		return *tr.Simple
+	}
+	return ""
+}
+
+func getCastType(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if u == nil || u.Value == nil || len(u.Ops) != 0 {
+		return ""
+	}
+	p := u.Value
+	if p.Target == nil || len(p.Ops) == 0 {
+		return ""
+	}
+	op := p.Ops[len(p.Ops)-1]
+	if op.Cast == nil || op.Cast.Type == nil || op.Cast.Type.Simple == nil {
+		return ""
+	}
+	return *op.Cast.Type.Simple
+}
+
+func getStructLiteralType(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 || u.Value == nil || u.Value.Target == nil {
+		return ""
+	}
+	if u.Value.Target.Struct != nil {
+		return u.Value.Target.Struct.Name
+	}
+	return ""
 }
