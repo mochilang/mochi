@@ -4,8 +4,8 @@ This directory contains Ruby source code generated from Mochi programs and the c
 
 ## Summary
 
-- 87/97 programs compiled and executed successfully.
-- 10 programs failed to compile or run.
+- 89/97 programs compiled and executed successfully.
+- 8 programs failed to compile or run.
 
 ### Successful
 - append_builtin
@@ -31,9 +31,11 @@ This directory contains Ruby source code generated from Mochi programs and the c
 - fun_expr_in_let
 - fun_three_args
 - group_by
+- group_by_conditional_sum
 - group_by_having
 - group_by_join
 - group_by_multi_join
+- group_by_sort
 - if_else
 - if_then_else
 - if_then_else_nested
@@ -96,11 +98,9 @@ This directory contains Ruby source code generated from Mochi programs and the c
 - var_assignment
 - while_loop
 
-### Failed
-- group_by_conditional_sum
+-### Failed
 - group_by_left_join
 - group_by_multi_join_sort
-- group_by_sort
 - group_items_iteration
 - in_operator_extended
 - load_yaml
