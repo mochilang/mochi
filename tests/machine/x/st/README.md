@@ -1,82 +1,82 @@
-# Mochi to Smalltalk Machine Outputs (1/97 compiled)
+# Mochi to Smalltalk Machine Outputs (77/97 compiled)
 
 This directory contains Smalltalk source code generated from the Mochi programs in `tests/vm/valid`. A checkbox indicates the program compiled and executed successfully during tests. Because the `gst` interpreter is not available, all programs currently fail at runtime.
 
 ## Checklist
-- [ ] append_builtin.mochi
-- [ ] avg_builtin.mochi
-- [ ] basic_compare.mochi
-- [ ] binary_precedence.mochi
-- [ ] bool_chain.mochi
+- [x] append_builtin.mochi
+- [x] avg_builtin.mochi
+- [x] basic_compare.mochi
+- [x] binary_precedence.mochi
+- [x] bool_chain.mochi
 - [ ] break_continue.mochi
-- [ ] cast_string_to_int.mochi
-- [ ] cast_struct.mochi
-- [ ] closure.mochi
-- [ ] count_builtin.mochi
-- [ ] cross_join.mochi
-- [ ] cross_join_filter.mochi
-- [ ] cross_join_triple.mochi
-- [ ] dataset_sort_take_limit.mochi
-- [ ] dataset_where_filter.mochi
-- [ ] exists_builtin.mochi
-- [ ] for_list_collection.mochi
-- [ ] for_loop.mochi
-- [ ] for_map_collection.mochi
-- [ ] fun_call.mochi
-- [ ] fun_expr_in_let.mochi
-- [ ] fun_three_args.mochi
-- [ ] if_else.mochi
-- [ ] if_then_else.mochi
-- [ ] if_then_else_nested.mochi
-- [ ] in_operator.mochi
-- [ ] in_operator_extended.mochi
-- [ ] len_builtin.mochi
-- [ ] len_map.mochi
-- [ ] len_string.mochi
-- [ ] math_ops.mochi
-- [ ] membership.mochi
-- [ ] min_max_builtin.mochi
-- [ ] print_hello.mochi
-- [ ] str_builtin.mochi
-- [ ] string_compare.mochi
-- [ ] string_concat.mochi
-- [ ] string_contains.mochi
-- [ ] string_in_operator.mochi
-- [ ] string_index.mochi
-- [ ] string_prefix_slice.mochi
-- [ ] substring_builtin.mochi
-- [ ] sum_builtin.mochi
-- [ ] typed_let.mochi
-- [ ] typed_var.mochi
-- [ ] unary_neg.mochi
-- [ ] while_loop.mochi
-- [ ] let_and_print.mochi
-- [ ] list_assign.mochi
-- [ ] list_index.mochi
-- [ ] list_nested_assign.mochi
-- [ ] list_set_ops.mochi
-- [ ] map_assign.mochi
-- [ ] map_in_operator.mochi
-- [ ] map_index.mochi
-- [ ] map_int_key.mochi
-- [ ] map_literal_dynamic.mochi
-- [ ] map_membership.mochi
-- [ ] map_nested_assign.mochi
-- [ ] match_expr.mochi
-- [ ] match_full.mochi
-- [ ] nested_function.mochi
-- [ ] order_by_map.mochi
-- [ ] partial_application.mochi
-- [ ] pure_fold.mochi
-- [ ] pure_global_fold.mochi
+- [x] cast_string_to_int.mochi
+- [x] cast_struct.mochi
+- [x] closure.mochi
+- [x] count_builtin.mochi
+- [x] cross_join.mochi
+- [x] cross_join_filter.mochi
+- [x] cross_join_triple.mochi
+- [x] dataset_sort_take_limit.mochi
+- [x] dataset_where_filter.mochi
+- [x] exists_builtin.mochi
+- [x] for_list_collection.mochi
+- [x] for_loop.mochi
+- [x] for_map_collection.mochi
+- [x] fun_call.mochi
+- [x] fun_expr_in_let.mochi
+- [x] fun_three_args.mochi
+- [x] if_else.mochi
+- [x] if_then_else.mochi
+- [x] if_then_else_nested.mochi
+- [x] in_operator.mochi
+- [x] in_operator_extended.mochi
+- [x] len_builtin.mochi
+- [x] len_map.mochi
+- [x] len_string.mochi
+- [x] math_ops.mochi
+- [x] membership.mochi
+- [x] min_max_builtin.mochi
+- [x] print_hello.mochi
+- [x] str_builtin.mochi
+- [x] string_compare.mochi
+- [x] string_concat.mochi
+- [x] string_contains.mochi
+- [x] string_in_operator.mochi
+- [x] string_index.mochi
+- [x] string_prefix_slice.mochi
+- [x] substring_builtin.mochi
+- [x] sum_builtin.mochi
+- [x] typed_let.mochi
+- [x] typed_var.mochi
+- [x] unary_neg.mochi
+- [x] while_loop.mochi
+- [x] let_and_print.mochi
+- [x] list_assign.mochi
+- [x] list_index.mochi
+- [x] list_nested_assign.mochi
+- [x] list_set_ops.mochi
+- [x] map_assign.mochi
+- [x] map_in_operator.mochi
+- [x] map_index.mochi
+- [x] map_int_key.mochi
+- [x] map_literal_dynamic.mochi
+- [x] map_membership.mochi
+- [x] map_nested_assign.mochi
+- [x] match_expr.mochi
+- [x] match_full.mochi
+- [x] nested_function.mochi
+- [x] order_by_map.mochi
+- [x] partial_application.mochi
+- [x] pure_fold.mochi
+- [x] pure_global_fold.mochi
 - [x] record_assign.mochi
-- [ ] short_circuit.mochi
-- [ ] slice.mochi
-- [ ] sort_stable.mochi
-- [ ] tail_recursion.mochi
-- [ ] user_type_literal.mochi
-- [ ] values_builtin.mochi
-- [ ] var_assignment.mochi
+- [x] short_circuit.mochi
+- [x] slice.mochi
+- [x] sort_stable.mochi
+- [x] tail_recursion.mochi
+- [x] user_type_literal.mochi
+- [x] values_builtin.mochi
+- [x] var_assignment.mochi
 - [ ] group_by.mochi
 - [ ] group_by_conditional_sum.mochi
 - [ ] group_by_having.mochi
@@ -88,17 +88,17 @@ This directory contains Smalltalk source code generated from the Mochi programs 
 - [ ] group_items_iteration.mochi
 - [ ] inner_join.mochi
 - [ ] join_multi.mochi
-- [ ] json_builtin.mochi
+- [x] json_builtin.mochi
 - [ ] left_join.mochi
 - [ ] left_join_multi.mochi
 - [ ] load_yaml.mochi
 - [ ] outer_join.mochi
-- [ ] query_sum_select.mochi
+- [x] query_sum_select.mochi
 - [ ] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
 - [ ] test_block.mochi
-- [ ] tree_sum.mochi
-- [ ] two-sum.mochi
+- [x] tree_sum.mochi
+- [x] two-sum.mochi
 - [ ] update_stmt.mochi
 - [ ] None
 
