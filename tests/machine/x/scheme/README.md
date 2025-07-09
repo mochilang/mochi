@@ -91,12 +91,14 @@
 - [x] while_loop.mochi
 
 ## Failed
-- [ ] group_by_left_join.mochi
-- [ ] group_by_multi_join_sort.mochi
-- [ ] left_join.mochi
-- [ ] left_join_multi.mochi
-- [ ] load_yaml.mochi
-- [ ] outer_join.mochi
-- [ ] right_join.mochi
-- [ ] save_jsonl_stdout.mochi
-- [ ] tree_sum.mochi
+ - [ ] group_by_left_join.mochi
+ - [ ] group_by_multi_join_sort.mochi
+ - [ ] left_join.mochi
+ - [ ] left_join_multi.mochi
+ - [ ] load_yaml.mochi
+ - [ ] outer_join.mochi
+ - [ ] right_join.mochi
+ - [ ] tree_sum.mochi
+
+## Success after update
+ - [x] save_jsonl_stdout.mochi
