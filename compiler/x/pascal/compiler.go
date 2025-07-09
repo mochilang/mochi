@@ -1887,16 +1887,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				keyType = kt
 			}
 			valType = typeString(types.TypeOfExpr(p.Map.Items[0].Value, c.env))
-			if valType != "integer" {
-				valType = "Variant"
-			} else {
-				for _, it := range p.Map.Items[1:] {
-					vt := typeString(types.TypeOfExpr(it.Value, c.env))
-					if vt != "integer" {
-						valType = "Variant"
-						break
-					}
+			uniform := true
+			for _, it := range p.Map.Items[1:] {
+				vt := typeString(types.TypeOfExpr(it.Value, c.env))
+				if vt != valType {
+					uniform = false
+					break
 				}
+			}
+			if !uniform {
+				valType = "Variant"
 			}
 		}
 		tmp := c.newTypedVar(fmt.Sprintf("specialize TFPGMap<%s, %s>", keyType, valType))

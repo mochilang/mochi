@@ -21,6 +21,6 @@ begin
       if not ((x = 1)) then continue;
       _tmp0 := Concat(_tmp0, [x]);
     end;
-  flag := exists(_tmp0);
+  flag := (Length(_tmp0) > 0);
   writeln(flag);
 end.
