@@ -3926,12 +3926,29 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if !ok {
 			return "", fmt.Errorf("concat expects lists")
 		}
-		elemGo := goType(lt.Elem)
+		elemType := lt.Elem
+		same := !isAny(elemType)
+		for _, a := range call.Args[1:] {
+			t := c.inferExprType(a)
+			lt2, ok2 := t.(types.ListType)
+			if !ok2 || !equalTypes(elemType, lt2.Elem) || isAny(lt2.Elem) || goType(lt2.Elem) != goType(elemType) {
+				same = false
+				break
+			}
+		}
+		if same {
+			expr := args[0]
+			for i := 1; i < len(args); i++ {
+				expr = fmt.Sprintf("append(%s, %s...)", expr, args[i])
+			}
+			return expr, nil
+		}
+
+		elemGo := "any"
 		for i := range args {
 			c.use("_toAnySlice")
 			args[i] = fmt.Sprintf("_toAnySlice(%s)", args[i])
 		}
-		elemGo = "any"
 		c.use("_concat")
 		expr := args[0]
 		for i := 1; i < len(args); i++ {
