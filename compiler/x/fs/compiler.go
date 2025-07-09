@@ -995,6 +995,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 	loops := []string{fmt.Sprintf("for %s in %s do", q.Var, src)}
+	bindings := []string{}
 	for _, fr := range q.Froms {
 		s, err := c.compileExpr(fr.Src)
 		if err != nil {
@@ -1008,12 +1009,28 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		loops = append(loops, fmt.Sprintf("for %s in %s do", j.Var, js))
 		on, err := c.compileExpr(j.On)
 		if err != nil {
 			return "", err
 		}
-		joinConds = append(joinConds, on)
+		if j.Side == nil {
+			loops = append(loops, fmt.Sprintf("for %s in %s do", j.Var, js))
+			joinConds = append(joinConds, on)
+		} else {
+			switch *j.Side {
+			case "left":
+				bindings = append(bindings, fmt.Sprintf("let %s = List.tryFind (fun %s -> %s) %s", j.Var, j.Var, on, js))
+			case "right":
+				if len(q.Froms) == 0 && len(q.Joins) == 1 {
+					loops = []string{fmt.Sprintf("for %s in %s do", j.Var, js)}
+					bindings = append(bindings, fmt.Sprintf("let %s = List.tryFind (fun %s -> %s) %s", q.Var, q.Var, on, src))
+				} else {
+					return "", fmt.Errorf("unsupported join type")
+				}
+			default:
+				return "", fmt.Errorf("unsupported join type")
+			}
+		}
 	}
 	allVars := []string{q.Var}
 	for _, fr := range q.Froms {
@@ -1062,6 +1079,12 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 				inner.WriteString("  ")
 			}
 			inner.WriteString(l)
+			inner.WriteByte(' ')
+		}
+		for _, bnd := range bindings {
+			inner.WriteByte('\n')
+			inner.WriteString("  ")
+			inner.WriteString(bnd)
 			inner.WriteByte(' ')
 		}
 		if cond != "" {
@@ -1134,6 +1157,12 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			b.WriteString("  ")
 		}
 		b.WriteString(l)
+		b.WriteByte(' ')
+	}
+	for _, bnd := range bindings {
+		b.WriteByte('\n')
+		b.WriteString("  ")
+		b.WriteString(bnd)
 		b.WriteByte(' ')
 	}
 	if cond != "" {

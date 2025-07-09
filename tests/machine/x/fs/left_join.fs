@@ -20,7 +20,7 @@ type Anon3 = {
 let customers = [{ id = 1; name = "Alice" }; { id = 2; name = "Bob" }]
 let orders = [{ id = 100; customerId = 1; total = 250 }; { id = 101; customerId = 3; total = 80 }]
 let result = [ for o in orders do 
-  for c in customers do if o.customerId = c.id then yield { orderId = o.id; customer = c; total = o.total } ]
+  let c = List.tryFind (fun c -> o.customerId = c.id) customers yield { orderId = o.id; customer = c; total = o.total } ]
 printfn "%s" "--- Left Join ---"
 try
     for entry in result do
