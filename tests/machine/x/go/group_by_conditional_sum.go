@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"mochi/runtime/data"
 	"sort"
+	"strconv"
+	"strings"
 )
 
 func main() {
@@ -93,7 +95,7 @@ func main() {
 				_res := []any{}
 				for _, x := range g.Items {
 					_res = append(_res, func() any {
-						if _cast[map[string]any](x)["flag"] {
+						if _cast[bool](_cast[map[string]any](x)["flag"]) {
 							return _cast[map[string]any](x)["val"]
 						} else {
 							return 0
@@ -111,7 +113,7 @@ func main() {
 		}
 		return _res
 	}()
-	fmt.Println(result)
+	fmt.Println(strings.Trim(fmt.Sprint(result), "[]"))
 }
 
 func _cast[T any](v any) T {
@@ -128,6 +130,9 @@ func _cast[T any](v any) T {
 			return any(int(vv)).(T)
 		case float32:
 			return any(int(vv)).(T)
+		case string:
+			n, _ := strconv.Atoi(vv)
+			return any(n).(T)
 		}
 	case float64:
 		switch vv := v.(type) {
