@@ -20,6 +20,175 @@ type Compiler struct {
 	env     *types.Env
 	structs map[string]types.StructType
 	inMain  bool
+	globals map[string]bool
+}
+
+func usesIdentExpr(e *parser.Expr, name string) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	if usesIdentUnary(e.Binary.Left, name) {
+		return true
+	}
+	for _, op := range e.Binary.Right {
+		if usesIdentPostfix(op.Right, name) {
+			return true
+		}
+	}
+	return false
+}
+
+func usesIdentUnary(u *parser.Unary, name string) bool {
+	if u == nil {
+		return false
+	}
+	if usesIdentPostfix(u.Value, name) {
+		return true
+	}
+	if len(u.Ops) > 0 {
+		// unary ops don't contain identifiers
+	}
+	return false
+}
+
+func usesIdentPostfix(p *parser.PostfixExpr, name string) bool {
+	if p == nil {
+		return false
+	}
+	if usesIdentPrimary(p.Target, name) {
+		return true
+	}
+	for _, op := range p.Ops {
+		if op.Index != nil {
+			if usesIdentExpr(op.Index.Start, name) || usesIdentExpr(op.Index.End, name) {
+				return true
+			}
+		} else if op.Call != nil {
+			for _, a := range op.Call.Args {
+				if usesIdentExpr(a, name) {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+func usesIdentPrimary(p *parser.Primary, name string) bool {
+	if p == nil {
+		return false
+	}
+	switch {
+	case p.Selector != nil:
+		if p.Selector.Root == name {
+			return true
+		}
+	case p.Call != nil:
+		if p.Call.Func == name {
+			return true
+		}
+		for _, a := range p.Call.Args {
+			if usesIdentExpr(a, name) {
+				return true
+			}
+		}
+	case p.Group != nil:
+		return usesIdentExpr(p.Group, name)
+	case p.If != nil:
+		if usesIdentExpr(p.If.Cond, name) || usesIdentExpr(p.If.Then, name) || usesIdentExpr(p.If.Else, name) {
+			return true
+		}
+	case p.List != nil:
+		for _, e := range p.List.Elems {
+			if usesIdentExpr(e, name) {
+				return true
+			}
+		}
+	case p.Map != nil:
+		for _, it := range p.Map.Items {
+			if usesIdentExpr(it.Value, name) {
+				return true
+			}
+		}
+	case p.Struct != nil:
+		for _, it := range p.Struct.Fields {
+			if usesIdentExpr(it.Value, name) {
+				return true
+			}
+		}
+	case p.FunExpr != nil:
+		if p.FunExpr.ExprBody != nil {
+			return usesIdentExpr(p.FunExpr.ExprBody, name)
+		}
+		for _, s := range p.FunExpr.BlockBody {
+			if usesIdentStmt(s, name) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func usesIdentStmt(s *parser.Statement, name string) bool {
+	switch {
+	case s.Let != nil:
+		return usesIdentExpr(s.Let.Value, name)
+	case s.Var != nil:
+		return usesIdentExpr(s.Var.Value, name)
+	case s.Assign != nil:
+		if usesIdentExpr(s.Assign.Value, name) {
+			return true
+		}
+		for _, idx := range s.Assign.Index {
+			if usesIdentExpr(idx.Start, name) || usesIdentExpr(idx.End, name) {
+				return true
+			}
+		}
+		return false
+	case s.Return != nil:
+		return usesIdentExpr(s.Return.Value, name)
+	case s.Expr != nil:
+		return usesIdentExpr(s.Expr.Expr, name)
+	case s.If != nil:
+		if usesIdentExpr(s.If.Cond, name) {
+			return true
+		}
+		for _, stmt := range s.If.Then {
+			if usesIdentStmt(stmt, name) {
+				return true
+			}
+		}
+		for _, stmt := range s.If.Else {
+			if usesIdentStmt(stmt, name) {
+				return true
+			}
+		}
+	case s.For != nil:
+		if usesIdentExpr(s.For.Source, name) || usesIdentExpr(s.For.RangeEnd, name) {
+			return true
+		}
+		for _, stmt := range s.For.Body {
+			if usesIdentStmt(stmt, name) {
+				return true
+			}
+		}
+	case s.While != nil:
+		if usesIdentExpr(s.While.Cond, name) {
+			return true
+		}
+		for _, stmt := range s.While.Body {
+			if usesIdentStmt(stmt, name) {
+				return true
+			}
+		}
+	case s.Fun != nil:
+		for _, stmt := range s.Fun.Body {
+			if usesIdentStmt(stmt, name) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func (c *Compiler) newTmp() string {
@@ -29,7 +198,13 @@ func (c *Compiler) newTmp() string {
 
 // New returns a new Compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{helpers: make(map[string]bool), env: env, structs: make(map[string]types.StructType), inMain: true}
+	return &Compiler{
+		helpers: make(map[string]bool),
+		env:     env,
+		structs: make(map[string]types.StructType),
+		inMain:  true,
+		globals: make(map[string]bool),
+	}
 }
 
 // Compile converts a parsed Mochi program into Rust source code.
@@ -38,6 +213,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.indent = 0
 	c.helpers = map[string]bool{}
 	c.inMain = true
+	c.globals = map[string]bool{}
 	c.writeln("fn main() {")
 	c.indent++
 	for _, s := range prog.Statements {
@@ -132,6 +308,9 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 		}
 		typ := rustType(l.Type)
 		c.writeln(fmt.Sprintf("let %s: %s = %s;", l.Name, typ, rustDefault(typ)))
+		if c.inMain && c.indent == 1 {
+			c.globals[l.Name] = true
+		}
 		return nil
 	}
 	val, err := c.compileExpr(l.Value)
@@ -144,6 +323,9 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 	} else {
 		c.writeln(fmt.Sprintf("let %s = %s;", l.Name, val))
 	}
+	if c.inMain && c.indent == 1 {
+		c.globals[l.Name] = true
+	}
 	return nil
 }
 
@@ -154,6 +336,9 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 		}
 		typ := rustType(v.Type)
 		c.writeln(fmt.Sprintf("let mut %s: %s = %s;", v.Name, typ, rustDefault(typ)))
+		if c.inMain && c.indent == 1 {
+			c.globals[v.Name] = true
+		}
 		return nil
 	}
 	val, err := c.compileExpr(v.Value)
@@ -165,6 +350,9 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 		c.writeln(fmt.Sprintf("let mut %s: %s = %s;", v.Name, typ, val))
 	} else {
 		c.writeln(fmt.Sprintf("let mut %s = %s;", v.Name, val))
+	}
+	if c.inMain && c.indent == 1 {
+		c.globals[v.Name] = true
 	}
 	return nil
 }
@@ -329,6 +517,19 @@ func (c *Compiler) compileFun(f *parser.FunStmt) error {
 		retTy = rustType(f.Return)
 	}
 	topLevel := c.inMain && c.indent == 1
+	if topLevel {
+		for g := range c.globals {
+			for _, st := range f.Body {
+				if usesIdentStmt(st, g) {
+					topLevel = false
+					break
+				}
+			}
+			if !topLevel {
+				break
+			}
+		}
+	}
 	if !topLevel {
 		c.writeln(fmt.Sprintf("let %s = move |%s| -> %s {", f.Name, strings.Join(params, ", "), retTy))
 	} else {

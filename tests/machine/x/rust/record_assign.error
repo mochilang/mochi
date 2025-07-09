@@ -1,47 +1,55 @@
 line 0: compile: exit status 1
-error[E0308]: mismatched types
- --> /workspace/mochi/tests/machine/x/rust/record_assign.rs:9:9
+warning: variable does not need to be mutable
+ --> /workspace/mochi/tests/machine/x/rust/record_assign.rs:8:9
   |
-9 |     inc(c);
-  |     --- ^ expected `i32`, found `Counter`
-  |     |
-  |     arguments to this function are incorrect
+8 |     let mut c = Counter { n: 0 };
+  |         ----^
+  |         |
+  |         help: remove this `mut`
   |
-note: function defined here
- --> /workspace/mochi/tests/machine/x/rust/record_assign.rs:5:8
-  |
-5 |     fn inc(c: i32) -> i32 {
-  |        ^^^ ------
+  = note: `#[warn(unused_mut)]` on by default
 
-error[E0610]: `i32` is a primitive type and therefore doesn't have fields
- --> /workspace/mochi/tests/machine/x/rust/record_assign.rs:6:11
+error[E0382]: borrow of moved value: `c`
+  --> /workspace/mochi/tests/machine/x/rust/record_assign.rs:10:22
+   |
+8  |     let mut c = Counter { n: 0 };
+   |         ----- move occurs because `c` has type `Counter`, which does not implement the `Copy` trait
+9  |     inc(c);
+   |         - value moved here
+10 |     println!("{:?}", c.n);
+   |                      ^^^ value borrowed here after move
+   |
+note: consider changing this parameter type in function `inc` to borrow instead if owning the value isn't necessary
+  --> /workspace/mochi/tests/machine/x/rust/record_assign.rs:5:15
+   |
+5  |     fn inc(c: Counter) -> () {
+   |        ---    ^^^^^^^ this parameter takes ownership of the value
+   |        |
+   |        in this function
+note: if `Counter` implemented `Clone`, you could clone the value
+  --> /workspace/mochi/tests/machine/x/rust/record_assign.rs:2:5
+   |
+2  |     struct Counter {
+   |     ^^^^^^^^^^^^^^ consider implementing `Clone` for this type
+...
+9  |     inc(c);
+   |         - you could clone this value
+   = note: this error originates in the macro `$crate::format_args_nl` which comes from the expansion of the macro `println` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0594]: cannot assign to `c.n`, as `c` is not declared as mutable
+ --> /workspace/mochi/tests/machine/x/rust/record_assign.rs:6:9
   |
 6 |         c.n = c.n + 1;
-  |           ^
+  |         ^^^^^^^^^^^^^ cannot assign
+  |
+help: consider changing this to be mutable
+  |
+5 |     fn inc(mut c: Counter) -> () {
+  |            +++
 
-error[E0610]: `i32` is a primitive type and therefore doesn't have fields
- --> /workspace/mochi/tests/machine/x/rust/record_assign.rs:6:17
-  |
-6 |         c.n = c.n + 1;
-  |                 ^
+error: aborting due to 2 previous errors; 1 warning emitted
 
-error[E0308]: mismatched types
- --> /workspace/mochi/tests/machine/x/rust/record_assign.rs:5:23
-  |
-5 |     fn inc(c: i32) -> i32 {
-  |        ---            ^^^ expected `i32`, found `()`
-  |        |
-  |        implicitly returns `()` as its body has no tail or `return` expression
-  |
-help: consider returning the local binding `c`
-  |
-6 ~         c.n = c.n + 1;
-7 +         c
-  |
-
-error: aborting due to 4 previous errors
-
-Some errors have detailed explanations: E0308, E0610.
-For more information about an error, try `rustc --explain E0308`.
+Some errors have detailed explanations: E0382, E0594.
+For more information about an error, try `rustc --explain E0382`.
 
 fn main() {

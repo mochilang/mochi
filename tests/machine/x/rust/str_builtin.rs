@@ -1,3 +1,3 @@
 fn main() {
-    println!("{:?}", str(123));
+    println!("{:?}", 123.to_string());
 }

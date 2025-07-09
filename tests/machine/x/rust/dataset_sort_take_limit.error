@@ -139,11 +139,11 @@ help: the return type of this call is `{integer}` due to the type of the argumen
 note: method defined here
  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
 
-error[E0609]: no field `price` on type `&HashMap<&str, &str>`
- --> /workspace/mochi/tests/machine/x/rust/dataset_sort_take_limit.rs:3:98
+error[E0609]: no field `price` on type `HashMap<&str, &str>`
+ --> /workspace/mochi/tests/machine/x/rust/dataset_sort_take_limit.rs:3:99
   |
-3 |     let expensive = { let mut tmp1 = Vec::new();for p in &products { let tmp2 = p; let tmp3 = -p.price; tmp1.push((tmp3, tmp2)); } tmp1.s...
-  |                                                                                                  ^^^^^ unknown field
+3 |     let expensive = { let mut tmp1 = Vec::new();for &p in &products { let tmp2 = p; let tmp3 = -p.price; tmp1.push((tmp3, tmp2)); } tmp1....
+  |                                                                                                   ^^^^^ unknown field
 
 error: aborting due to 8 previous errors
 

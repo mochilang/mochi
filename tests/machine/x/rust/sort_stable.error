@@ -59,17 +59,17 @@ help: the return type of this call is `&'static str` due to the type of the argu
 note: method defined here
  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
 
-error[E0609]: no field `v` on type `&HashMap<&str, {integer}>`
- --> /workspace/mochi/tests/machine/x/rust/sort_stable.rs:3:77
+error[E0609]: no field `v` on type `HashMap<&str, {integer}>`
+ --> /workspace/mochi/tests/machine/x/rust/sort_stable.rs:3:78
   |
-3 |     let result = { let mut tmp1 = Vec::new();for i in &items { let tmp2 = i.v; let tmp3 = i.n; tmp1.push((tmp3, tmp2)); } tmp1.sort_by(|a...
-  |                                                                             ^ unknown field
+3 |     let result = { let mut tmp1 = Vec::new();for &i in &items { let tmp2 = i.v; let tmp3 = i.n; tmp1.push((tmp3, tmp2)); } tmp1.sort_by(|...
+  |                                                                              ^ unknown field
 
-error[E0609]: no field `n` on type `&HashMap<&str, {integer}>`
- --> /workspace/mochi/tests/machine/x/rust/sort_stable.rs:3:93
+error[E0609]: no field `n` on type `HashMap<&str, {integer}>`
+ --> /workspace/mochi/tests/machine/x/rust/sort_stable.rs:3:94
   |
-3 |     let result = { let mut tmp1 = Vec::new();for i in &items { let tmp2 = i.v; let tmp3 = i.n; tmp1.push((tmp3, tmp2)); } tmp1.sort_by(|a...
-  |                                                                                             ^ unknown field
+3 |     let result = { let mut tmp1 = Vec::new();for &i in &items { let tmp2 = i.v; let tmp3 = i.n; tmp1.push((tmp3, tmp2)); } tmp1.sort_by(|...
+  |                                                                                              ^ unknown field
 
 error: aborting due to 5 previous errors
 

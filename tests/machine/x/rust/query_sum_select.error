@@ -1,35 +1,22 @@
 line 0: compile: exit status 1
 error[E0308]: mismatched types
- --> /workspace/mochi/tests/machine/x/rust/query_sum_select.rs:7:72
+ --> /workspace/mochi/tests/machine/x/rust/query_sum_select.rs:7:104
   |
-7 |     let result = { let mut tmp1 = Vec::new();for n in &nums { if !(n > 1) { continue; } tmp1.push(sum(n)); } tmp1 };
-  |                                                                        ^ expected `&_`, found integer
+7 |     let result = { let mut tmp1 = Vec::new();for &n in &nums { if !(n > 1) { continue; } tmp1.push(sum(&n)); } tmp1 };
+  |                                                                                                    --- ^^ expected `&[i32]`, found `&{integer}`
+  |                                                                                                    |
+  |                                                                                                    arguments to this function are incorrect
   |
-  = note: expected reference `&_`
-                  found type `{integer}`
-help: consider dereferencing the borrow
-  |
-7 |     let result = { let mut tmp1 = Vec::new();for n in &nums { if !(*n > 1) { continue; } tmp1.push(sum(n)); } tmp1 };
-  |                                                                    +
-
-error[E0308]: mismatched types
- --> /workspace/mochi/tests/machine/x/rust/query_sum_select.rs:7:103
-  |
-7 |     let result = { let mut tmp1 = Vec::new();for n in &nums { if !(n > 1) { continue; } tmp1.push(sum(n)); } tmp1 };
-  |                                                                                                   --- ^ expected `Vec<i32>`, found `&{integer}`
-  |                                                                                                   |
-  |                                                                                                   arguments to this function are incorrect
-  |
-  = note: expected struct `Vec<i32>`
-          found reference `&{integer}`
+  = note: expected reference `&[i32]`
+             found reference `&{integer}`
 note: function defined here
  --> /workspace/mochi/tests/machine/x/rust/query_sum_select.rs:1:4
   |
-1 | fn sum(v: Vec<i32>) -> i32 {
-  |    ^^^ -----------
+1 | fn sum(v: &[i32]) -> i32 {
+  |    ^^^ ---------
 
-error: aborting due to 2 previous errors
+error: aborting due to 1 previous error
 
 For more information about this error, try `rustc --explain E0308`.
 
-fn sum(v: Vec<i32>) -> i32 {
+fn sum(v: &[i32]) -> i32 {

@@ -1,3 +1,3 @@
 fn main() {
-    println!("{:?}", substring("mochi", 1, 4));
+    println!("{:?}", &"mochi"[1 as usize..4 as usize]);
 }
