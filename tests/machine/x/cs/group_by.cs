@@ -6,10 +6,21 @@ using System.Linq;
 public class Program {
     public static void Main() {
         var people = new Dictionary<string, dynamic>[] { new Dictionary<string, dynamic> { { "name", "Alice" }, { "age", 30 }, { "city", "Paris" } }, new Dictionary<string, dynamic> { { "name", "Bob" }, { "age", 15 }, { "city", "Hanoi" } }, new Dictionary<string, dynamic> { { "name", "Charlie" }, { "age", 65 }, { "city", "Paris" } }, new Dictionary<string, dynamic> { { "name", "Diana" }, { "age", 45 }, { "city", "Hanoi" } }, new Dictionary<string, dynamic> { { "name", "Eve" }, { "age", 70 }, { "city", "Paris" } }, new Dictionary<string, dynamic> { { "name", "Frank" }, { "age", 22 }, { "city", "Hanoi" } } };
-        var stats = people.GroupBy(person => person["city"]).Select(g => new Dictionary<string, dynamic> { { "city", g.Key }, { "count", Enumerable.Count(g) }, { "avg_age", Enumerable.Average(g.Select(p => p["age"]).Select(_tmp1=>Convert.ToDouble(_tmp1))) } }).ToList();
+        var stats = people.GroupBy(person => person["city"]).Select(g => new Dictionary<string, dynamic> { { "city", g.Key }, { "count", Enumerable.Count(g) }, { "avg_age", _avg(g.Select(p => p["age"])) } }).ToList();
         Console.WriteLine("--- People grouped by city ---");
         foreach (var s in stats) {
             Console.WriteLine(string.Join(" ", new [] { Convert.ToString(s["city"]), Convert.ToString(": count ="), Convert.ToString(s["count"]), Convert.ToString(", avg_age ="), Convert.ToString(s["avg_age"]) }));
         }
     }
+    static double _avg(dynamic v) {
+        if (v == null) return 0.0;
+        int _n = 0;
+        double _sum = 0;
+        foreach (var it in v) {
+            _sum += Convert.ToDouble(it);
+            _n++;
+        }
+        return _n == 0 ? 0.0 : _sum / _n;
+    }
+    
 }

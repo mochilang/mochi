@@ -74,6 +74,11 @@ func csTypeOf(t types.Type) string {
 
 func isAny(t types.Type) bool { _, ok := t.(types.AnyType); return ok }
 
+func isInt(t types.Type) bool     { _, ok := t.(types.IntType); return ok }
+func isInt64(t types.Type) bool   { _, ok := t.(types.Int64Type); return ok }
+func isFloat(t types.Type) bool   { _, ok := t.(types.FloatType); return ok }
+func isNumeric(t types.Type) bool { return isInt(t) || isInt64(t) || isFloat(t) }
+
 func contains(sl []string, s string) bool {
 	for _, v := range sl {
 		if v == s {
