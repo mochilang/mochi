@@ -1,20 +1,14 @@
-program main
+program if_then_else_nested
   implicit none
   integer :: x
-  character(len=100) :: msg
-  character(len=100) :: tmp0
-  character(len=100) :: tmp1
+  character(len=6) :: msg
   x = 8
-  if ((x > 5)) then
-    tmp0 = "medium"
+  if (x > 10) then
+    msg = 'big   '
+  else if (x > 5) then
+    msg = 'medium'
   else
-    tmp0 = "small"
+    msg = 'small '
   end if
-  if ((x > 10)) then
-    tmp1 = "big"
-  else
-    tmp1 = tmp0
-  end if
-  msg = tmp1
-  print *, msg
-end program main
+  print *, trim(msg)
+end program if_then_else_nested

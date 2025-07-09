@@ -1,4 +1,5 @@
-program main
+program sum_builtin
   implicit none
-  print *, sum((/1,2,3/))
-end program main
+  integer :: arr(3) = (/1,2,3/)
+  print *, sum(arr)
+end program sum_builtin

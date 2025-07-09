@@ -963,7 +963,7 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 		}
 		return ".false."
 	case l.Str != nil:
-		return fmt.Sprintf("\"%s\"", *l.Str)
+		return fmt.Sprintf("'%s'", *l.Str)
 	default:
 		return "0"
 	}

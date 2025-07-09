@@ -1,10 +1,10 @@
-program main
-  implicit none
-  integer, dimension(2) :: a
-  integer, allocatable, dimension(:) :: app0
+program append_builtin
+  integer, dimension(:), allocatable :: a
+  integer, dimension(:), allocatable :: b
+  allocate(a(2))
   a = (/1,2/)
-  allocate(app0(size(a)+1))
-  app0(1:size(a)) = a
-  app0(size(a)+1) = 3
-  print *, app0
-end program main
+  allocate(b(3))
+  b(1:2) = a
+  b(3) = 3
+  print *, b
+end program append_builtin

@@ -1,12 +1,10 @@
-program main
+program pure_global_fold
   implicit none
-  integer :: k
-  k = 2
+  integer, parameter :: k = 2
   print *, inc(3)
-  contains
+contains
   integer function inc(x)
     integer, intent(in) :: x
-    inc = (x + k)
-    return
+    inc = x + k
   end function inc
-end program main
+end program pure_global_fold

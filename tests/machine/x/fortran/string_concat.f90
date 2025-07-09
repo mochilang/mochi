@@ -1,4 +1,4 @@
-program main
+program string_concat
   implicit none
-  print *, "hello " // "world"
-end program main
+  print *, 'hello ' // 'world'
+end program string_concat
