@@ -545,6 +545,8 @@ const (
 		"            return any(int(vv)).(T)\n" +
 		"        case float32:\n" +
 		"            return any(int(vv)).(T)\n" +
+		"        case string:\n" +
+		"            n, _ := strconv.Atoi(vv); return any(n).(T)\n" +
 		"        }\n" +
 		"    case float64:\n" +
 		"        switch vv := v.(type) {\n" +
@@ -833,6 +835,7 @@ func (c *Compiler) use(name string) {
 	if name == "_cast" {
 		c.imports["encoding/json"] = true
 		c.imports["fmt"] = true
+		c.imports["strconv"] = true
 		c.helpers["_convertMapAny"] = true
 	}
 	if name == "_toMapSlice" {
