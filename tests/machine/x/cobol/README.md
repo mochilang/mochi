@@ -1,4 +1,4 @@
-# Mochi to COBOL Machine Translations (14/97 compiled)
+# Mochi to COBOL Machine Translations (15/97 compiled)
 
 - [ ] append_builtin.mochi
 - [ ] avg_builtin.mochi
@@ -19,7 +19,7 @@
 - [ ] for_list_collection.mochi
 - [x] for_loop.mochi
 - [ ] for_map_collection.mochi
-- [ ] fun_call.mochi
+- [x] fun_call.mochi
 - [ ] fun_expr_in_let.mochi
 - [ ] fun_three_args.mochi
 - [ ] group_by.mochi

@@ -205,7 +205,7 @@ func (c *Compiler) addVar(name string, typ *parser.TypeRef, value *parser.Expr, 
 }
 
 func (c *Compiler) addFun(fn *parser.FunStmt) error {
-	name := strings.ToUpper(strings.ReplaceAll(fn.Name, "-", "_"))
+	name := "FN_" + strings.ToUpper(strings.ReplaceAll(fn.Name, "-", "_"))
 	res := name + "_RES"
 	if !c.hasVar(res) {
 		c.vars = append(c.vars, varDecl{name: res, pic: "PIC 9", val: "0"})
@@ -340,7 +340,7 @@ func (c *Compiler) compilePrint(call *parser.CallExpr) error {
 }
 
 func (c *Compiler) compileUserCall(call *parser.CallExpr) (string, error) {
-	name := strings.ToUpper(strings.ReplaceAll(call.Func, "-", "_"))
+	name := "FN_" + strings.ToUpper(strings.ReplaceAll(call.Func, "-", "_"))
 	args := make([]string, len(call.Args))
 	for i, a := range call.Args {
 		s, err := c.compileExpr(a)
