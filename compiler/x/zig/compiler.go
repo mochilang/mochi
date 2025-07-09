@@ -54,17 +54,19 @@ type Compiler struct {
 	locals            map[string]types.Type
 	funcRet           types.Type
 	captures          map[string]string
+	runtimeGlobals    map[string]bool
 }
 
 func New(env *types.Env) *Compiler {
 	return &Compiler{
-		env:          env,
-		imports:      map[string]string{},
-		structs:      map[string]bool{},
-		tests:        []string{},
-		constGlobals: map[string]bool{},
-		locals:       map[string]types.Type{},
-		captures:     map[string]string{},
+		env:            env,
+		imports:        map[string]string{},
+		structs:        map[string]bool{},
+		tests:          []string{},
+		constGlobals:   map[string]bool{},
+		locals:         map[string]types.Type{},
+		captures:       map[string]string{},
+		runtimeGlobals: map[string]bool{},
 	}
 }
 
@@ -120,7 +122,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		if s.Let != nil && c.constGlobals[sanitizeName(s.Let.Name)] {
 			continue
 		}
-		if s.Var != nil && c.constGlobals[sanitizeName(s.Var.Name)] {
+		if s.Var != nil && c.constGlobals[sanitizeName(s.Var.Name)] && !c.runtimeGlobals[sanitizeName(s.Var.Name)] {
 			continue
 		}
 		if err := c.compileStmt(s, false); err != nil {
@@ -339,7 +341,11 @@ func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 				}
 				c.env.SetVar(s.Var.Name, typ, true)
 			}
-			if s.Var.Value != nil {
+			if s.Var.Value != nil && isMapLiteralExpr(s.Var.Value) {
+				c.writeln(fmt.Sprintf("var %s: %s = undefined;", name, zigTypeOf(typ)))
+				c.constGlobals[name] = true
+				c.runtimeGlobals[name] = true
+			} else if s.Var.Value != nil {
 				v, err := c.compileExpr(s.Var.Value, false)
 				if err != nil {
 					return err
@@ -349,10 +355,11 @@ func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 				} else {
 					c.writeln(fmt.Sprintf("var %s: %s = %s;", name, zigTypeOf(typ), v))
 				}
+				c.constGlobals[name] = true
 			} else {
 				c.writeln(fmt.Sprintf("var %s: %s = undefined;", name, zigTypeOf(typ)))
+				c.constGlobals[name] = true
 			}
-			c.constGlobals[name] = true
 			continue
 		}
 	}
@@ -1239,6 +1246,17 @@ func (c *Compiler) compileVar(st *parser.VarStmt, inFun bool) error {
 	if inFun {
 		c.locals[st.Name] = typ
 	}
+	if !inFun && c.constGlobals[name] {
+		// runtime initialization of a global variable
+		if st.Value != nil {
+			v, err := c.compileExpr(st.Value, false)
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("%s = %s;", name, v))
+		}
+		return nil
+	}
 	if st.Value != nil && isEmptyListExpr(st.Value) {
 		elem := "i32"
 		if lt, ok := typ.(types.ListType); ok {
@@ -1987,26 +2005,6 @@ func (c *Compiler) compileListLiteral(list *parser.ListLiteral, asRef bool) (str
 }
 
 func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
-	simple := true
-	fields := make([]string, len(m.Items))
-	defs := make([]string, len(m.Items))
-	for i, it := range m.Items {
-		k, ok := simpleStringKey(it.Key)
-		if !ok {
-			simple = false
-			break
-		}
-		valExpr, err := c.compileExpr(it.Value, false)
-		if err != nil {
-			return "", err
-		}
-		name := sanitizeName(k)
-		fields[i] = fmt.Sprintf(".%s = %s", name, valExpr)
-		defs[i] = fmt.Sprintf("%s: %s,", name, zigTypeOf(c.inferExprType(it.Value)))
-	}
-	if simple {
-		return fmt.Sprintf("struct { %s }{ %s }", strings.Join(defs, " "), strings.Join(fields, ", ")), nil
-	}
 
 	keyType := "i32"
 	valType := "i32"
@@ -2029,7 +2027,11 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 	var b strings.Builder
 	lbl := c.newLabel()
 	tmpMap := c.newTmp()
-	b.WriteString("(" + lbl + ": { var " + tmpMap + " = std.AutoHashMap(" + keyType + ", " + valType + ").init(std.heap.page_allocator); ")
+	mapType := "std.AutoHashMap(" + keyType + ", " + valType + ")"
+	if keyType == "[]const u8" {
+		mapType = "std.StringHashMap(" + valType + ")"
+	}
+	b.WriteString("(" + lbl + ": { var " + tmpMap + " = " + mapType + ".init(std.heap.page_allocator); ")
 	for _, it := range m.Items {
 		var keyExpr string
 		if k, ok := simpleStringKey(it.Key); ok {
