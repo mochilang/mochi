@@ -74,6 +74,17 @@ func (c *Compiler) Compile(prog *parser.Program, _ string) ([]byte, error) {
 	c.indent--
 	c.buf.WriteByte('\n')
 
+	// helpers for slicing lists and strings
+	c.writeln("let slice lst i j =")
+	c.indent++
+	c.writeln("lst |> List.mapi (fun idx x -> idx, x)")
+	c.writeln("    |> List.filter (fun (idx, _) -> idx >= i && idx < j)")
+	c.writeln("    |> List.map snd")
+	c.indent--
+	c.writeln("")
+	c.writeln("let string_slice s i j = String.sub s i (j - i)")
+	c.buf.WriteByte('\n')
+
 	// first emit type, function and variable declarations
 	for _, s := range prog.Statements {
 		switch {
@@ -441,19 +452,48 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				val = fmt.Sprintf("%s %s", val, strings.Join(args, " "))
 			}
 		case op.Index != nil:
-			if op.Index.Start == nil {
-				return "", fmt.Errorf("unsupported index")
-			}
-			idx, err := c.compileExpr(op.Index.Start)
-			if err != nil {
-				return "", err
-			}
-			if isStringPrimary(p.Target) {
-				val = fmt.Sprintf("String.make 1 (String.get %s %s)", val, idx)
-			} else if isMapPrimary(p.Target) || isStringExpr(op.Index.Start) {
-				val = fmt.Sprintf("List.assoc %s %s", idx, val)
+			if op.Index.Colon != nil {
+				start := "0"
+				end := ""
+				var err error
+				if op.Index.Start != nil {
+					start, err = c.compileExpr(op.Index.Start)
+					if err != nil {
+						return "", err
+					}
+				}
+				if op.Index.End != nil {
+					end, err = c.compileExpr(op.Index.End)
+					if err != nil {
+						return "", err
+					}
+				} else {
+					if isStringPrimary(p.Target) {
+						end = fmt.Sprintf("String.length %s", val)
+					} else {
+						end = fmt.Sprintf("List.length %s", val)
+					}
+				}
+				if isStringPrimary(p.Target) {
+					val = fmt.Sprintf("string_slice %s %s %s", val, start, end)
+				} else {
+					val = fmt.Sprintf("slice %s %s %s", val, start, end)
+				}
 			} else {
-				val = fmt.Sprintf("List.nth %s %s", val, idx)
+				if op.Index.Start == nil {
+					return "", fmt.Errorf("unsupported index")
+				}
+				idx, err := c.compileExpr(op.Index.Start)
+				if err != nil {
+					return "", err
+				}
+				if isStringPrimary(p.Target) {
+					val = fmt.Sprintf("String.make 1 (String.get %s %s)", val, idx)
+				} else if isMapPrimary(p.Target) || isStringExpr(op.Index.Start) {
+					val = fmt.Sprintf("List.assoc %s %s", idx, val)
+				} else {
+					val = fmt.Sprintf("List.nth %s %s", val, idx)
+				}
 			}
 		case op.Cast != nil:
 			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
