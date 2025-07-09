@@ -2,7 +2,7 @@
 
 This directory contains C++ source code generated from Mochi programs and the corresponding outputs or errors.
 
-Compiled programs: 70/97
+Compiled programs: 72/97
 
 ## Checklist
 
@@ -86,12 +86,12 @@ Compiled programs: 70/97
 - [ ] json_builtin
 - [ ] left_join
 - [ ] left_join_multi
-- [ ] list_set_ops
+ - [x] list_set_ops
 - [ ] load_yaml
 - [x] map_nested_assign
 - [ ] order_by_map
 - [ ] outer_join
-- [ ] partial_application
+ - [x] partial_application
 - [ ] pure_global_fold
 - [ ] query_sum_select
 - [ ] right_join
@@ -121,12 +121,12 @@ Compiled programs: 70/97
 - [ ] json_builtin
 - [ ] left_join
 - [ ] left_join_multi
-- [ ] list_set_ops
+ - [x] list_set_ops
 - [ ] load_yaml
 - [x] map_nested_assign
 - [ ] order_by_map
 - [ ] outer_join
-- [ ] partial_application
+ - [x] partial_application
 - [ ] pure_global_fold
 - [ ] query_sum_select
 - [ ] right_join

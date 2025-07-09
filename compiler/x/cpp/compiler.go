@@ -19,6 +19,8 @@ type Compiler struct {
 	tmp    int
 	vars   map[string]string
 
+	funParams map[string]int
+
 	aliases map[string]string
 
 	structMap   map[string]string
@@ -35,6 +37,7 @@ func New() *Compiler {
 		structMap: map[string]string{},
 		varStruct: map[string]string{},
 		elemType:  map[string]string{},
+		funParams: map[string]int{},
 	}
 }
 
@@ -128,6 +131,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
+	c.funParams[fn.Name] = len(fn.Params)
 	c.writeIndent()
 	c.buf.WriteString("auto ")
 	c.buf.WriteString(fn.Name)
@@ -160,6 +164,7 @@ func (c *Compiler) compileStmt(st *parser.Statement) error {
 		if err != nil {
 			return err
 		}
+		c.funParams[st.Fun.Name] = len(st.Fun.Params)
 		c.writeIndent()
 		c.buf.WriteString("auto ")
 		c.buf.WriteString(st.Fun.Name)
@@ -558,6 +563,12 @@ func (c *Compiler) isVectorExpr(e *parser.Expr) bool {
 		return false
 	}
 	if len(e.Binary.Right) > 0 {
+		if len(e.Binary.Right) == 1 {
+			op := e.Binary.Right[0].Op
+			if op == "union" || op == "union_all" || op == "except" || op == "intersect" {
+				return true
+			}
+		}
 		return false
 	}
 	u := e.Binary.Left
@@ -682,6 +693,17 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 						combined = fmt.Sprintf("(%s.count(%s) > 0)", container, elem)
 					} else {
 						combined = fmt.Sprintf("(std::find(%s.begin(), %s.end(), %s) != %s.end())", container, container, elem, container)
+					}
+				} else if ops[i] == "union" || ops[i] == "union_all" || ops[i] == "except" || ops[i] == "intersect" {
+					switch ops[i] {
+					case "union":
+						combined = fmt.Sprintf("([&](auto a, auto b){ a.insert(a.end(), b.begin(), b.end()); std::sort(a.begin(), a.end()); a.erase(std::unique(a.begin(), a.end()), a.end()); return a; })(%s, %s)", l, r)
+					case "union_all":
+						combined = fmt.Sprintf("([&](auto a, auto b){ a.insert(a.end(), b.begin(), b.end()); return a; })(%s, %s)", l, r)
+					case "except":
+						combined = fmt.Sprintf("([&](auto a, auto b){ for(auto &x:b) a.erase(std::remove(a.begin(), a.end(), x), a.end()); return a; })(%s, %s)", l, r)
+					case "intersect":
+						combined = fmt.Sprintf("([&](auto a, auto b){ std::vector<std::decay_t<decltype(a[0])>> r_; for(auto &x:a) if(std::find(b.begin(), b.end(), x)!=b.end()) r_.push_back(x); return r_; })(%s, %s)", l, r)
 					}
 				} else {
 					combined = fmt.Sprintf("(%s %s %s)", l, ops[i], r)
@@ -1007,6 +1029,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if len(args) == 1 {
 				return fmt.Sprintf("([&](){ std::vector<int> v; for(auto &p : %s) v.push_back(p.second); return v; })()", args[0]), nil
 			}
+		}
+		if n, ok := c.funParams[name]; ok && len(args) < n {
+			return c.partialApply(name, args, n), nil
 		}
 		return name + "(" + strings.Join(args, ", ") + ")", nil
 	case p.Group != nil:
@@ -1643,4 +1668,33 @@ func (c *Compiler) compileLambda(params []*parser.Param, exprBody *parser.Expr, 
 	buf.WriteString("}")
 	c.tmp = sub.tmp
 	return buf.String(), nil
+}
+
+func (c *Compiler) partialApply(name string, args []string, total int) string {
+	var buf strings.Builder
+	buf.WriteString("[=](")
+	for i := len(args); i < total; i++ {
+		if i > len(args) {
+			buf.WriteString(", ")
+		}
+		buf.WriteString("auto p")
+		buf.WriteString(strconv.Itoa(i))
+	}
+	buf.WriteString(") {")
+	buf.WriteString("return ")
+	buf.WriteString(name)
+	buf.WriteString("(")
+	for i := 0; i < total; i++ {
+		if i > 0 {
+			buf.WriteString(", ")
+		}
+		if i < len(args) {
+			buf.WriteString(args[i])
+		} else {
+			buf.WriteString("p")
+			buf.WriteString(strconv.Itoa(i))
+		}
+	}
+	buf.WriteString("); }")
+	return buf.String()
 }
