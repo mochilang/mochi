@@ -16,7 +16,7 @@ main :-
     dict_create(_V4, map, [orderid-100, sku-"a"]),
     dict_create(_V5, map, [orderid-101, sku-"b"]),
     Items = [_V4, _V5],
-    findall(_V13, (member(O, Orders), member(C, Customers), get_item(O, 'customerId', _V6), get_item(C, 'id', _V7), (_V6 == _V7), member(I, Items), get_item(O, 'id', _V8), get_item(I, 'orderId', _V9), (_V8 == _V9), true, get_item(C, 'name', _V10), get_item(I, 'sku', _V11), dict_create(_V12, map, [name-_V10, sku-_V11]), _V13 = _V12), _V14),
+    findall(_V13, (member(O, Orders), member(C, Customers), get_item(O, 'customerid', _V6), get_item(C, 'id', _V7), (_V6 == _V7), member(I, Items), get_item(O, 'id', _V8), get_item(I, 'orderid', _V9), (_V8 == _V9), true, get_item(C, 'name', _V10), get_item(I, 'sku', _V11), dict_create(_V12, map, [name-_V10, sku-_V11]), _V13 = _V12), _V14),
     Result = _V14,
     write("--- Multi Join ---"),
     nl,

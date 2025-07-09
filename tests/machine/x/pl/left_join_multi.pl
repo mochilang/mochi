@@ -15,7 +15,7 @@ main :-
     Orders = [_V2, _V3],
     dict_create(_V4, map, [orderid-100, sku-"a"]),
     Items = [_V4],
-    findall(_V13, (member(O, Orders), member(C, Customers), get_item(O, 'customerId', _V5), get_item(C, 'id', _V6), (_V5 == _V6), findall(I, (member(I, Items), (_V7 == _V8)), _V9), (_V9 = [] -> I = nil; member(I, _V9)), get_item(O, 'id', _V7), get_item(I, 'orderId', _V8), (_V7 == _V8), true, get_item(O, 'id', _V10), get_item(C, 'name', _V11), dict_create(_V12, map, [orderid-_V10, name-_V11, item-I]), _V13 = _V12), _V14),
+    findall(_V13, (member(O, Orders), member(C, Customers), get_item(O, 'customerid', _V5), get_item(C, 'id', _V6), (_V5 == _V6), findall(I, (member(I, Items), get_item(O, 'id', _V7), get_item(I, 'orderid', _V8), (_V7 == _V8)), _V9), (_V9 = [] -> I = nil; member(I, _V9)), true, get_item(O, 'id', _V10), get_item(C, 'name', _V11), dict_create(_V12, map, [orderid-_V10, name-_V11, item-I]), _V13 = _V12), _V14),
     Result = _V14,
     write("--- Left Join Multi ---"),
     nl,
@@ -24,7 +24,7 @@ main :-
             member(R, Result),
                 catch(
                     (
-                        get_item(R, 'orderId', _V15),
+                        get_item(R, 'orderid', _V15),
                         write(_V15),
                         write(' '),
                         get_item(R, 'name', _V16),
