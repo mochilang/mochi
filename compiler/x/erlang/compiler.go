@@ -269,6 +269,10 @@ func (c *Compiler) compileStmtLine(st *parser.Statement) (string, error) {
 		return c.compileVar(st.Var)
 	case st.Assign != nil:
 		return c.compileAssign(st.Assign)
+	case st.Break != nil:
+		return c.compileBreak(st.Break)
+	case st.Continue != nil:
+		return c.compileContinue(st.Continue)
 	case st.Return != nil:
 		return c.compileReturn(st.Return)
 	case st.Expr != nil:
@@ -317,6 +321,14 @@ func (c *Compiler) compileReturn(ret *parser.ReturnStmt) (string, error) {
 		return "", err
 	}
 	return val, nil
+}
+
+func (c *Compiler) compileBreak(_ *parser.BreakStmt) (string, error) {
+	return "throw(break)", nil
+}
+
+func (c *Compiler) compileContinue(_ *parser.ContinueStmt) (string, error) {
+	return "throw(continue)", nil
 }
 
 func (c *Compiler) compileIfStmt(ifst *parser.IfStmt) (string, error) {
@@ -373,6 +385,11 @@ func (c *Compiler) compileFor(fr *parser.ForStmt) (string, error) {
 	if body == "" {
 		body = "ok"
 	}
+	hasBC := hasBreakOrContinue(fr.Body)
+	iterBody := body
+	if hasBC {
+		iterBody = fmt.Sprintf("try %s catch throw:continue -> ok end", body)
+	}
 	if fr.RangeEnd != nil {
 		start, err := c.compileExpr(fr.Source)
 		if err != nil {
@@ -382,7 +399,11 @@ func (c *Compiler) compileFor(fr *parser.ForStmt) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		return fmt.Sprintf("lists:foreach(fun(%s) -> %s end, lists:seq(%s, (%s)-1))", capitalize(fr.Name), body, start, end), nil
+		loop := fmt.Sprintf("lists:foreach(fun(%s) -> %s end, lists:seq(%s, (%s)-1))", capitalize(fr.Name), iterBody, start, end)
+		if hasBC {
+			loop = fmt.Sprintf("try %s catch throw:break -> ok end", loop)
+		}
+		return loop, nil
 	}
 	src, err := c.compileExpr(fr.Source)
 	if err != nil {
@@ -395,10 +416,16 @@ func (c *Compiler) compileFor(fr *parser.ForStmt) (string, error) {
 			typ = c.types[u.Value.Target.Selector.Root]
 		}
 	}
+	var loop string
 	if typ == "map" {
-		return fmt.Sprintf("lists:foreach(fun({%s,_}) -> %s end, maps:to_list(%s))", capitalize(fr.Name), body, src), nil
+		loop = fmt.Sprintf("lists:foreach(fun({%s,_}) -> %s end, maps:to_list(%s))", capitalize(fr.Name), iterBody, src)
+	} else {
+		loop = fmt.Sprintf("lists:foreach(fun(%s) -> %s end, %s)", capitalize(fr.Name), iterBody, src)
 	}
-	return fmt.Sprintf("lists:foreach(fun(%s) -> %s end, %s)", capitalize(fr.Name), body, src), nil
+	if hasBC {
+		loop = fmt.Sprintf("try %s catch throw:break -> ok end", loop)
+	}
+	return loop, nil
 }
 
 func (c *Compiler) compileIfExpr(ix *parser.IfExpr) (string, error) {
@@ -863,6 +890,33 @@ func capitalize(s string) string {
 		return s
 	}
 	return strings.ToUpper(s[:1]) + s[1:]
+}
+
+func hasBreakOrContinue(sts []*parser.Statement) bool {
+	for _, st := range sts {
+		switch {
+		case st.Break != nil, st.Continue != nil:
+			return true
+		case st.If != nil:
+			if hasBreakOrContinue(st.If.Then) || hasBreakOrContinue(st.If.Else) {
+				return true
+			}
+			if st.If.ElseIf != nil {
+				if hasBreakOrContinue(st.If.ElseIf.Then) || hasBreakOrContinue(st.If.ElseIf.Else) {
+					return true
+				}
+			}
+		case st.For != nil:
+			if hasBreakOrContinue(st.For.Body) {
+				return true
+			}
+		case st.While != nil:
+			if hasBreakOrContinue(st.While.Body) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func isIntLiteral(e *parser.Expr) bool {
