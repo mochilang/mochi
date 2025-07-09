@@ -2,8 +2,8 @@
 
 This directory contains Erlang source files compiled from Mochi programs in `tests/vm/valid`.
 
-- **42/97 programs compiled and ran successfully** (have `.out` files)
-- **55 programs failed** to compile or run (have `.error` files)
+- **43/97 programs compiled and ran successfully** (have `.out` files)
+- **54 programs failed** to compile or run (have `.error` files)
 
 ## Successful programs
 append_builtin
@@ -50,9 +50,9 @@ map_in_operator
 map_membership
 membership
 string_in_operator
+break_continue
 
 ## Failed programs
-break_continue
 cross_join
 cross_join_filter
 cross_join_triple
