@@ -17,11 +17,15 @@ type Compiler struct {
 	tmp                int
 	needContainsHelper bool
 	funParams          map[string]int
+	variants           map[string][]string
 }
 
 // New returns a new Compiler.
 func New() *Compiler {
-	return &Compiler{funParams: make(map[string]int)}
+	return &Compiler{
+		funParams: make(map[string]int),
+		variants:  make(map[string][]string),
+	}
 }
 
 func (c *Compiler) newTmp() string {
@@ -259,6 +263,21 @@ func (c *Compiler) typeDecl(td *parser.TypeDecl) error {
 			}
 		}
 		c.writeln(fmt.Sprintf("type %s = { %s };", td.Name, strings.Join(fields, " ")))
+		return nil
+	}
+	if len(td.Variants) > 0 {
+		parts := make([]string, len(td.Variants))
+		for i, v := range td.Variants {
+			fields := []string{fmt.Sprintf("kind: '%s'", v.Name)}
+			names := make([]string, len(v.Fields))
+			for j, f := range v.Fields {
+				fields = append(fields, fmt.Sprintf("%s: any", f.Name))
+				names[j] = f.Name
+			}
+			c.variants[v.Name] = names
+			parts[i] = fmt.Sprintf("{ %s }", strings.Join(fields, "; "))
+		}
+		c.writeln(fmt.Sprintf("type %s = %s;", td.Name, strings.Join(parts, " | ")))
 		return nil
 	}
 	return fmt.Errorf("unsupported type declaration")
@@ -576,21 +595,43 @@ func (c *Compiler) matchExpr(m *parser.MatchExpr) (string, error) {
 	indent++
 	writeln(fmt.Sprintf("const %s = %s;", tmp, target))
 	writeln("let _res;")
-	writeln(fmt.Sprintf("switch (%s) {", tmp))
-	indent++
-	hasDefault := false
+	first := true
 	for _, cs := range m.Cases {
 		if isUnderscoreExpr(cs.Pattern) {
+			if first {
+				writeln("_res = undefined;")
+				first = false
+			} else {
+				writeln("else {")
+				indent++
+				writeln("_res = undefined;")
+				indent--
+				writeln("}")
+			}
+			continue
+		}
+		if vname, vars, ok := c.variantPattern(cs.Pattern); ok {
+			cond := fmt.Sprintf("%s.kind === '%s'", tmp, vname)
+			if first {
+				writeln(fmt.Sprintf("if (%s) {", cond))
+				first = false
+			} else {
+				writeln(fmt.Sprintf("else if (%s) {", cond))
+			}
+			indent++
+			fields := c.variants[vname]
+			for i, name := range vars {
+				if name != "_" {
+					writeln(fmt.Sprintf("const %s = %s.%s;", name, tmp, fields[i]))
+				}
+			}
 			res, err := c.expr(cs.Result)
 			if err != nil {
 				return "", err
 			}
-			writeln("default:")
-			indent++
 			writeln(fmt.Sprintf("_res = %s;", res))
-			writeln("break;")
 			indent--
-			hasDefault = true
+			writeln("}")
 			continue
 		}
 		pat, err := c.expr(cs.Pattern)
@@ -601,21 +642,20 @@ func (c *Compiler) matchExpr(m *parser.MatchExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		writeln(fmt.Sprintf("case %s:", pat))
+		if first {
+			writeln(fmt.Sprintf("if (%s === %s) {", tmp, pat))
+			first = false
+		} else {
+			writeln(fmt.Sprintf("else if (%s === %s) {", tmp, pat))
+		}
 		indent++
 		writeln(fmt.Sprintf("_res = %s;", res))
-		writeln("break;")
 		indent--
+		writeln("}")
 	}
-	if !hasDefault {
-		writeln("default:")
-		indent++
+	if first {
 		writeln("_res = undefined;")
-		writeln("break;")
-		indent--
 	}
-	indent--
-	writeln("}")
 	writeln("return _res;")
 	indent--
 	writeln("})()")
@@ -771,6 +811,11 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 			}
 			fields[i] = fmt.Sprintf("%s: %s", f.Name, v)
 		}
+		if p.Struct.Name != "" {
+			if _, ok := c.variants[p.Struct.Name]; ok {
+				fields = append([]string{fmt.Sprintf("kind: '%s'", p.Struct.Name)}, fields...)
+			}
+		}
 		return "{" + strings.Join(fields, ", ") + "}", nil
 	case p.Group != nil:
 		v, err := c.expr(p.Group)
@@ -790,6 +835,17 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 				return "", err
 			}
 			args[i] = s
+		}
+		if fields, ok := c.variants[p.Call.Func]; ok {
+			if len(fields) != len(args) {
+				return "", fmt.Errorf("constructor %s expects %d args", p.Call.Func, len(fields))
+			}
+			parts := make([]string, len(args)+1)
+			parts[0] = fmt.Sprintf("kind: '%s'", p.Call.Func)
+			for i, a := range args {
+				parts[i+1] = fmt.Sprintf("%s: %s", fields[i], a)
+			}
+			return "{" + strings.Join(parts, ", ") + "}", nil
 		}
 		if arity, ok := c.funParams[p.Call.Func]; ok && len(args) < arity {
 			return fmt.Sprintf("(...args) => %s(%s, ...args)", p.Call.Func, strings.Join(args, ", ")), nil
@@ -874,6 +930,11 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 	case p.If != nil:
 		return c.ifExpr(p.If)
 	case p.Selector != nil:
+		if len(p.Selector.Tail) == 0 {
+			if _, ok := c.variants[p.Selector.Root]; ok {
+				return fmt.Sprintf("{ kind: '%s' }", p.Selector.Root), nil
+			}
+		}
 		return strings.Join(append([]string{p.Selector.Root}, p.Selector.Tail...), "."), nil
 	}
 	return "", fmt.Errorf("unsupported expression at line %d", p.Pos.Line)
@@ -892,4 +953,42 @@ func isUnderscoreExpr(e *parser.Expr) bool {
 		return false
 	}
 	return p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0
+}
+
+// variantPattern checks if e represents a variant matching pattern like
+// `Node(a,b)` and returns the variant name and bound variables.
+func (c *Compiler) variantPattern(e *parser.Expr) (string, []string, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return "", nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil || len(u.Value.Ops) != 0 {
+		return "", nil, false
+	}
+	p := u.Value
+	if p.Target != nil && p.Target.Call != nil && len(p.Ops) == 0 {
+		ce := p.Target.Call
+		if fields, ok := c.variants[ce.Func]; ok {
+			if len(fields) != len(ce.Args) {
+				return "", nil, false
+			}
+			vars := make([]string, len(ce.Args))
+			for i, a := range ce.Args {
+				if a == nil || len(a.Binary.Right) != 0 {
+					return "", nil, false
+				}
+				au := a.Binary.Left
+				if len(au.Ops) != 0 || au.Value == nil || len(au.Value.Ops) != 0 || au.Value.Target == nil || au.Value.Target.Selector == nil {
+					return "", nil, false
+				}
+				vars[i] = au.Value.Target.Selector.Root
+			}
+			return ce.Func, vars, true
+		}
+	} else if p.Target != nil && p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 && len(p.Ops) == 0 {
+		if _, ok := c.variants[p.Target.Selector.Root]; ok {
+			return p.Target.Selector.Root, nil, true
+		}
+	}
+	return "", nil, false
 }

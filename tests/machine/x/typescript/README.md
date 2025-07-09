@@ -4,7 +4,7 @@ This directory contains TypeScript code compiled from Mochi programs in `tests/v
 
 ## Progress
 
-Compiled: 83/97 programs
+Compiled: 84/97 programs
 
 ## Checklist
 - [x] append_builtin.mochi
@@ -94,7 +94,7 @@ Compiled: 83/97 programs
 - [x] sum_builtin.mochi
 - [x] tail_recursion.mochi
 - [x] test_block.mochi
-- [ ] tree_sum.mochi
+- [x] tree_sum.mochi
 - [x] two-sum.mochi
 - [x] typed_let.mochi
 - [x] typed_var.mochi
