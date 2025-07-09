@@ -4,8 +4,8 @@ This directory contains C++ source code generated from Mochi programs and the co
 
 ## Summary
 
-- 55/97 programs compiled and executed successfully.
-- 42 programs failed to compile or run.
+- 58/97 programs compiled and executed successfully.
+- 39 programs failed to compile or run.
 
 ### Successful
 - append_builtin
@@ -15,46 +15,60 @@ This directory contains C++ source code generated from Mochi programs and the co
 - bool_chain
 - break_continue
 - cast_string_to_int
+- cast_struct
 - closure
 - count_builtin
+- cross_join_filter
+- cross_join_triple
 - for_list_collection
 - for_loop
 - fun_call
 - fun_expr_in_let
 - fun_three_args
 - if_else
+- in_operator
 - len_builtin
 - len_map
+- len_string
 - let_and_print
 - list_assign
 - list_index
+- list_nested_assign
 - map_assign
+- map_in_operator
 - map_index
+- map_int_key
 - map_literal_dynamic
+- map_membership
 - match_expr
 - match_full
 - math_ops
+- membership
 - min_max_builtin
 - nested_function
 - print_hello
 - pure_fold
+- record_assign
 - short_circuit
 - slice
+- str_builtin
 - string_compare
+- string_concat
+- string_in_operator
 - string_index
+- substring_builtin
 - tail_recursion
 - two-sum
 - typed_let
 - typed_var
 - unary_neg
+- user_type_literal
+- values_builtin
 - var_assignment
 - while_loop
 
 ### Failed
-- cast_struct
 - cross_join
-- cross_join_filter
-- cross_join_triple
 - dataset_sort_take_limit
 - dataset_where_filter
 - exists_builtin
@@ -70,41 +84,27 @@ This directory contains C++ source code generated from Mochi programs and the co
 - group_items_iteration
 - if_then_else
 - if_then_else_nested
-- in_operator
 - in_operator_extended
 - inner_join
 - join_multi
 - json_builtin
 - left_join
 - left_join_multi
-- len_string
-- list_nested_assign
 - list_set_ops
 - load_yaml
-- map_in_operator
-- map_int_key
-- map_membership
 - map_nested_assign
-- membership
 - order_by_map
 - outer_join
 - partial_application
 - pure_global_fold
 - query_sum_select
-- record_assign
 - right_join
 - save_jsonl_stdout
 - sort_stable
-- str_builtin
-- string_concat
 - string_contains
-- string_in_operator
 - string_prefix_slice
-- substring_builtin
 - sum_builtin
 - test_block
 - tree_sum
 - update_stmt
-- user_type_literal
-- values_builtin
 
