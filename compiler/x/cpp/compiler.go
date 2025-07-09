@@ -643,6 +643,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 							}
 							ftype = fmt.Sprintf("decltype(std::declval<%s>().%s)", t, fld)
 						}
+					} else if strings.ContainsAny(vals[i], "<>=!") {
+						ftype = "bool"
 					}
 					def.WriteString(ftype + " " + n + "; ")
 				}
@@ -680,6 +682,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return fmt.Sprintf("std::unordered_map<%s,%s>{%s}", keyType, valType, strings.Join(pairs, ", ")), nil
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
+	case p.If != nil:
+		return c.compileIfExpr(p.If)
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
 	case p.Selector != nil:
@@ -812,6 +816,32 @@ func (c *Compiler) compileMatchExpr(mx *parser.MatchExpr) (string, error) {
 	return buf.String(), nil
 }
 
+func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
+	cond, err := c.compileExpr(ie.Cond)
+	if err != nil {
+		return "", err
+	}
+	thenExpr, err := c.compileExpr(ie.Then)
+	if err != nil {
+		return "", err
+	}
+	var elseExpr string
+	if ie.ElseIf != nil {
+		elseExpr, err = c.compileIfExpr(ie.ElseIf)
+		if err != nil {
+			return "", err
+		}
+	} else if ie.Else != nil {
+		elseExpr, err = c.compileExpr(ie.Else)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		elseExpr = "0"
+	}
+	return fmt.Sprintf("(%s ? %s : %s)", cond, thenExpr, elseExpr), nil
+}
+
 func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error) {
 	fieldNames := make([]string, len(sl.Fields))
 	fieldTypes := make([]string, len(sl.Fields))
@@ -823,7 +853,9 @@ func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error
 		}
 		fieldNames[i] = f.Name
 		ftype := fmt.Sprintf("decltype(%s)", val)
-		if dot := strings.Index(val, "."); dot != -1 {
+		if strings.ContainsAny(val, "<>=!") {
+			ftype = "bool"
+		} else if dot := strings.Index(val, "."); dot != -1 {
 			v := val[:dot]
 			fld := val[dot+1:]
 			if t := c.varStruct[v]; t != "" {
