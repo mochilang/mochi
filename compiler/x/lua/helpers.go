@@ -3,6 +3,7 @@
 package luacode
 
 import (
+	"fmt"
 	"reflect"
 	"strings"
 
@@ -203,4 +204,68 @@ func simpleStringKey(e *parser.Expr) (string, bool) {
 		return *p.Target.Lit.Str, true
 	}
 	return "", false
+}
+
+func extractFormat(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	p := e.Binary.Left
+	if p == nil || len(p.Ops) != 0 || p.Value == nil || p.Value.Target.Map == nil {
+		return "", false
+	}
+	for _, it := range p.Value.Target.Map.Items {
+		key, ok := simpleStringKey(it.Key)
+		if !ok || key != "format" {
+			continue
+		}
+		if it.Value.Binary == nil || len(it.Value.Binary.Right) != 0 {
+			continue
+		}
+		v := it.Value.Binary.Left.Value
+		if v != nil && v.Target.Lit != nil && v.Target.Lit.Str != nil {
+			return *v.Target.Lit.Str, true
+		}
+	}
+	return "", false
+}
+
+func toLuaLiteral(v any) string {
+	switch x := v.(type) {
+	case nil:
+		return "nil"
+	case string:
+		return fmt.Sprintf("%q", x)
+	case int, int32, int64, float64, float32:
+		return fmt.Sprint(x)
+	case bool:
+		if x {
+			return "true"
+		}
+		return "false"
+	case []any:
+		parts := make([]string, len(x))
+		for i, e := range x {
+			parts[i] = toLuaLiteral(e)
+		}
+		return "{" + strings.Join(parts, ", ") + "}"
+	case map[string]any:
+		parts := make([]string, 0, len(x))
+		for k, v := range x {
+			parts = append(parts, fmt.Sprintf("[%q]=%s", k, toLuaLiteral(v)))
+		}
+		return "{" + strings.Join(parts, ", ") + "}"
+	default:
+		// try via reflection for slices
+		rv := reflect.ValueOf(v)
+		if rv.Kind() == reflect.Slice {
+			n := rv.Len()
+			parts := make([]string, n)
+			for i := 0; i < n; i++ {
+				parts[i] = toLuaLiteral(rv.Index(i).Interface())
+			}
+			return "{" + strings.Join(parts, ", ") + "}"
+		}
+		return fmt.Sprint(x)
+	}
 }

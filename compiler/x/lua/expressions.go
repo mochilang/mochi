@@ -4,8 +4,12 @@ package luacode
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
+
+	"gopkg.in/yaml.v3"
 
 	"mochi/parser"
 	"mochi/types"
@@ -461,6 +465,48 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	if q.Group == nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		if q.Select != nil && q.Select.Binary != nil && len(q.Select.Binary.Right) == 0 {
+			call := q.Select.Binary.Left.Value.Target.Call
+			if call != nil && call.Func == "sum" && len(call.Args) == 1 {
+				src, err := c.compileExpr(q.Source)
+				if err != nil {
+					return "", err
+				}
+				orig := c.env
+				child := types.NewEnv(c.env)
+				child.SetVar(q.Var, types.AnyType{}, true)
+				c.env = child
+				var cond string
+				if q.Where != nil {
+					cond, err = c.compileExpr(q.Where)
+					if err != nil {
+						c.env = orig
+						return "", err
+					}
+				}
+				arg, err := c.compileExpr(call.Args[0])
+				if err != nil {
+					c.env = orig
+					return "", err
+				}
+				c.env = orig
+				var b strings.Builder
+				b.WriteString("(function()\n")
+				b.WriteString("\tlocal _sum = 0\n")
+				b.WriteString(fmt.Sprintf("\tfor _, %s in ipairs(%s) do\n", sanitizeName(q.Var), src))
+				if cond != "" {
+					b.WriteString(fmt.Sprintf("\t\tif %s then _sum = _sum + %s end\n", cond, arg))
+				} else {
+					b.WriteString(fmt.Sprintf("\t\t_sum = _sum + %s\n", arg))
+				}
+				b.WriteString("\tend\n")
+				b.WriteString("\treturn _sum\n")
+				b.WriteString("end)()")
+				return b.String(), nil
+			}
+		}
+	}
 	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Sort == nil && q.Skip == nil && q.Take == nil {
 		src, err := c.compileExpr(q.Source)
 		if err != nil {
@@ -1028,6 +1074,17 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 	path := "nil"
 	if l.Path != nil {
 		path = fmt.Sprintf("%q", *l.Path)
+	}
+	if l.Path != nil && l.With != nil {
+		if fmtStr, ok := extractFormat(l.With); ok && fmtStr == "yaml" {
+			p := filepath.Join(filepath.Dir(l.Pos.Filename), *l.Path)
+			if data, err := os.ReadFile(p); err == nil {
+				var out any
+				if yaml.Unmarshal(data, &out) == nil {
+					return toLuaLiteral(out), nil
+				}
+			}
+		}
 	}
 	opts := "nil"
 	if l.With != nil {
