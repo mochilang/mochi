@@ -19,6 +19,8 @@ type Compiler struct {
 	tmp    int
 	vars   map[string]string
 
+	aliases map[string]string
+
 	structMap   map[string]string
 	structCount int
 	varStruct   map[string]string
@@ -29,6 +31,7 @@ type Compiler struct {
 func New() *Compiler {
 	return &Compiler{
 		vars:      map[string]string{},
+		aliases:   map[string]string{},
 		structMap: map[string]string{},
 		varStruct: map[string]string{},
 		elemType:  map[string]string{},
@@ -183,6 +186,12 @@ func (c *Compiler) compileStmt(st *parser.Statement) error {
 		return c.compileWhile(st.While)
 	case st.For != nil:
 		return c.compileFor(st.For)
+	case st.Test != nil:
+		return c.compileTestBlock(st.Test)
+	case st.Expect != nil:
+		return c.compileExpect(st.Expect)
+	case st.Update != nil:
+		return c.compileUpdate(st.Update)
 	case st.Break != nil:
 		c.writeln("break;")
 		return nil
@@ -438,6 +447,90 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 	}
 	c.indent--
 	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
+	list := sanitizeName(u.Target)
+	item := c.newTmp()
+	c.writeln(fmt.Sprintf("for (auto &%s : %s) {", item, list))
+	c.indent++
+
+	used := map[string]struct{}{}
+	if u.Where != nil {
+		collectIdents(u.Where, used)
+	}
+	for _, it := range u.Set.Items {
+		if key, ok := identName(it.Key); ok {
+			used[key] = struct{}{}
+		}
+		collectIdents(it.Value, used)
+	}
+
+	oldAliases := c.aliases
+	c.aliases = make(map[string]string)
+	for k := range oldAliases {
+		c.aliases[k] = oldAliases[k]
+	}
+	for f := range used {
+		c.aliases[f] = fmt.Sprintf("%s.%s", item, sanitizeName(f))
+	}
+
+	if u.Where != nil {
+		cond, err := c.compileExpr(u.Where)
+		if err != nil {
+			c.aliases = oldAliases
+			return err
+		}
+		c.writeln("if (" + cond + ") {")
+		c.indent++
+	}
+
+	for _, it := range u.Set.Items {
+		if key, ok := identName(it.Key); ok {
+			val, err := c.compileExpr(it.Value)
+			if err != nil {
+				c.aliases = oldAliases
+				return err
+			}
+			c.writeln(fmt.Sprintf("%s.%s = %s;", item, sanitizeName(key), val))
+			continue
+		}
+		keyExpr, err := c.compileExpr(it.Key)
+		if err != nil {
+			c.aliases = oldAliases
+			return err
+		}
+		valExpr, err := c.compileExpr(it.Value)
+		if err != nil {
+			c.aliases = oldAliases
+			return err
+		}
+		c.writeln(fmt.Sprintf("%s[%s] = %s;", item, keyExpr, valExpr))
+	}
+
+	if u.Where != nil {
+		c.indent--
+		c.writeln("}")
+	}
+
+	c.aliases = oldAliases
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	for _, st := range t.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
+	// expectations are ignored in generated C++
 	return nil
 }
 
@@ -851,6 +944,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileMatchExpr(p.Match)
 	case p.Selector != nil:
 		name := p.Selector.Root
+		if alias, ok := c.aliases[name]; ok && len(p.Selector.Tail) == 0 {
+			name = alias
+		}
 		for _, t := range p.Selector.Tail {
 			name += "." + t
 		}
@@ -1516,7 +1612,7 @@ func (c *Compiler) compileLambda(params []*parser.Param, exprBody *parser.Expr, 
 	}
 	buf.WriteString(") {")
 
-	sub := &Compiler{indent: 1, tmp: c.tmp, vars: map[string]string{}}
+	sub := &Compiler{indent: 1, tmp: c.tmp, vars: map[string]string{}, aliases: map[string]string{}}
 	for _, p := range params {
 		if p.Type != nil {
 			typ, _ := c.compileType(p.Type)
