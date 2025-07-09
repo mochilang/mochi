@@ -404,6 +404,23 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		c.writeln("end;")
 		return nil
 	}
+	if c.isMapExpr(f.Source) {
+		idx := c.newVar()
+		c.writeln(fmt.Sprintf("for %s := 0 to %s.Count - 1 do", idx, src))
+		c.writeln("begin")
+		c.indent++
+		if f.Name != "_" {
+			c.writeln(fmt.Sprintf("%s := %s.Keys[%s];", name, src, idx))
+		}
+		for _, st := range f.Body {
+			if err := c.compileStmt(st); err != nil {
+				return err
+			}
+		}
+		c.indent--
+		c.writeln("end;")
+		return nil
+	}
 	loopVar := name
 	if f.Name == "_" {
 		loopVar = c.newVar()
@@ -881,9 +898,9 @@ func (c *Compiler) typeRef(t *parser.TypeRef) string {
 		ret := c.typeRef(t.Fun.Return)
 		var decl string
 		if ret == "" || ret == "void" {
-			decl = fmt.Sprintf("procedure(%s) is nested", strings.Join(declParts, "; "))
+			decl = fmt.Sprintf("procedure(%s)", strings.Join(declParts, "; "))
 		} else {
-			decl = fmt.Sprintf("function(%s): %s is nested", strings.Join(declParts, "; "), ret)
+			decl = fmt.Sprintf("function(%s): %s", strings.Join(declParts, "; "), ret)
 		}
 		for name, d := range c.funcTypes {
 			if d == decl {
@@ -940,9 +957,9 @@ func typeString(t types.Type) string {
 			params[i] = fmt.Sprintf("p%d: %s", i, typeString(p))
 		}
 		if tt.Return == nil || tt.Return == (types.VoidType{}) {
-			return fmt.Sprintf("procedure(%s) is nested", strings.Join(params, "; "))
+			return fmt.Sprintf("procedure(%s)", strings.Join(params, "; "))
 		}
-		return fmt.Sprintf("function(%s): %s is nested", strings.Join(params, "; "), typeString(tt.Return))
+		return fmt.Sprintf("function(%s): %s", strings.Join(params, "; "), typeString(tt.Return))
 	default:
 		return "integer"
 	}
@@ -1356,6 +1373,10 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				case "in":
 					if maps[i+1] {
 						res = fmt.Sprintf("(%s.IndexOf(%s) >= 0)", r, l)
+					} else if rlist {
+						elem := elemType
+						c.use("_containsList")
+						res = fmt.Sprintf("specialize _containsList<%s>(%s, %s)", elem, r, l)
 					} else {
 						res = fmt.Sprintf("(%s in %s)", l, r)
 					}
@@ -1660,8 +1681,26 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return fmt.Sprintf("specialize _appendList<%s>(%s, %s)", elem, args[0], args[1]), nil
 			}
 			return "", fmt.Errorf("append on non-list not supported")
+		case "exists":
+			if len(args) != 1 {
+				return "", fmt.Errorf("exists expects 1 argument")
+			}
+			t := types.TypeOfExpr(p.Call.Args[0], c.env)
+			if gt, ok := t.(types.GroupType); ok {
+				elem := typeString(gt.Elem)
+				c.use("_countGroup")
+				return fmt.Sprintf("(specialize _countGroup<%s>(%s) > 0)", elem, args[0]), nil
+			}
+			return fmt.Sprintf("(Length(%s) > 0)", args[0]), nil
 		case "len":
-			return fmt.Sprintf("Length(%s)", argStr), nil
+			if len(args) != 1 {
+				return "", fmt.Errorf("len expects 1 argument")
+			}
+			t := types.TypeOfExpr(p.Call.Args[0], c.env)
+			if _, ok := t.(types.MapType); ok {
+				return fmt.Sprintf("%s.Count", args[0]), nil
+			}
+			return fmt.Sprintf("Length(%s)", args[0]), nil
 		case "print":
 			if len(args) == 0 {
 				return "writeln()", nil
@@ -2795,6 +2834,17 @@ func (c *Compiler) emitHelpers() {
 			c.writeln("for i := 0 to n - 1 do")
 			c.writeln("  Result[i] := arr[i];")
 			c.writeln("Result[n] := val;")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_containsList":
+			c.writeln("generic function _containsList<T>(arr: specialize TArray<T>; v: T): boolean;")
+			c.writeln("var i: Integer;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("Result := False;")
+			c.writeln("for i := 0 to High(arr) do")
+			c.writeln("  if arr[i] = v then exit(True);")
 			c.indent--
 			c.writeln("end;")
 			c.writeln("")
