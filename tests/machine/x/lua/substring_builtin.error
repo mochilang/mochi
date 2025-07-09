@@ -1,6 +1,0 @@
-line 23: run error: exit status 1
-lua: /workspace/mochi/tests/machine/x/lua/substring_builtin.lua:23: attempt to call a nil value (global 'substring')
-stack traceback:
-	/workspace/mochi/tests/machine/x/lua/substring_builtin.lua:23: in main chunk
-	[C]: in ?
-
