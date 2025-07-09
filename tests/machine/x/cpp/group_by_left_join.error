@@ -1,1 +1,32 @@
-line 0: compile error: query features not supported
+line 82: ../../../tests/machine/x/cpp/group_by_left_join.cpp: In lambda function:
+../../../tests/machine/x/cpp/group_by_left_join.cpp:82:51: error: no match for ‘operator!’ (operand type is ‘__struct2’)
+   82 |                                               if (!(r.o))
+      |                                                   ^~~~~~
+../../../tests/machine/x/cpp/group_by_left_join.cpp:82:51: note: candidate: ‘operator!(bool)’ (built-in)
+../../../tests/machine/x/cpp/group_by_left_join.cpp:82:51: note:   no known conversion for argument 1 from ‘__struct2’ to ‘bool’
+../../../tests/machine/x/cpp/group_by_left_join.cpp: In lambda function:
+../../../tests/machine/x/cpp/group_by_left_join.cpp:79:43: warning: narrowing conversion of ‘(int)main()::<lambda()>::<lambda()>().std::vector<__struct3>::size()’ from ‘int’ to ‘bool’ [-Wnarrowing]
+   79 |       __items.push_back(__struct5{g.key, ((int)([&]() {
+      |                                          ~^~~~~~~~~~~~~
+   80 |                                             std::vector<__struct3> __items;
+      |                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   81 |                                             for (auto r : g.items) {
+      |                                             ~~~~~~~~~~~~~~~~~~~~~~~~
+   82 |                                               if (!(r.o))
+      |                                               ~~~~~~~~~~~
+   83 |                                                 continue;
+      |                                                 ~~~~~~~~~
+   84 |                                               __items.push_back(r);
+      |                                               ~~~~~~~~~~~~~~~~~~~~~
+   85 |                                             }
+      |                                             ~
+   86 |                                             return __items;
+      |                                             ~~~~~~~~~~~~~~~
+   87 |                                           })()
+      |                                           ~~~~
+   88 |                                               .size())});
+      |                                               ~~~~~~~~
+
+ 81 |                                             for (auto r : g.items) {
+ 82 |                                               if (!(r.o))
+ 83 |                                                 continue;

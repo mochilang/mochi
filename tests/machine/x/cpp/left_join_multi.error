@@ -1,1 +1,19 @@
-line 0: compile error: join side not supported
+line 24: ../../../tests/machine/x/cpp/left_join_multi.cpp:24:12: error: ‘i’ was not declared in this scope
+   24 |   decltype(i) item;
+      |            ^
+../../../tests/machine/x/cpp/left_join_multi.cpp:24:12: error: ‘i’ was not declared in this scope
+../../../tests/machine/x/cpp/left_join_multi.cpp: In lambda function:
+../../../tests/machine/x/cpp/left_join_multi.cpp:47:55: error: cannot convert ‘__struct3’ to ‘int’ in initialization
+   47 |             __items.push_back(__struct4{o.id, c.name, i});
+      |                                                       ^
+      |                                                       |
+      |                                                       __struct3
+../../../tests/machine/x/cpp/left_join_multi.cpp:51:55: error: cannot convert ‘__struct3’ to ‘int’ in initialization
+   51 |             __items.push_back(__struct4{o.id, c.name, i});
+      |                                                       ^
+      |                                                       |
+      |                                                       __struct3
+
+ 23 |   decltype(std::declval<__struct1>().name) name;
+ 24 |   decltype(i) item;
+ 25 | };

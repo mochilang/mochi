@@ -1,1 +1,8 @@
-line 0: compile error: query features not supported
+line 56: ../../../tests/machine/x/cpp/group_by_having.cpp: In function ‘int main()’:
+../../../tests/machine/x/cpp/group_by_having.cpp:56:3: error: ‘json’ was not declared in this scope
+   56 |   json(big);
+      |   ^~~~
+
+ 55 |   })();
+ 56 |   json(big);
+ 57 |   return 0;
