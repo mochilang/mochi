@@ -23,6 +23,10 @@ type Compiler struct {
 	indent    int
 	useIn     bool
 	useJSON   bool
+	useIO     bool
+	useYAML   bool
+	useLoad   bool
+	useSave   bool
 	tmp       int
 	mapVars   map[string]bool
 	groupKeys map[string]string
@@ -42,6 +46,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.indent = 0
 	c.useIn = false
 	c.useJSON = false
+	c.useIO = false
+	c.useYAML = false
+	c.useLoad = false
+	c.useSave = false
 	c.mapVars = make(map[string]bool)
 	c.groupKeys = make(map[string]string)
 
@@ -95,14 +103,52 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf = old
 
 	var out bytes.Buffer
+	if c.useIO {
+		out.WriteString("import 'dart:io';\n")
+	}
 	if c.useJSON {
-		out.WriteString("import 'dart:convert';\n\n")
+		out.WriteString("import 'dart:convert';\n")
+	}
+	if c.useYAML {
+		out.WriteString("import 'package:yaml/yaml.dart';\n")
+	}
+	if c.useIO || c.useJSON || c.useYAML {
+		out.WriteString("\n")
 	}
 	if c.useIn {
 		out.WriteString("bool _in(dynamic item, dynamic col) {\n")
 		out.WriteString("  if (col is Map) return col.containsKey(item);\n")
 		out.WriteString("  if (col is Iterable || col is String) return col.contains(item);\n")
 		out.WriteString("  return false;\n")
+		out.WriteString("}\n\n")
+	}
+	if c.useLoad {
+		out.WriteString("dynamic _load(String path, dynamic opts) {\n")
+		out.WriteString("  var fmt = 'csv';\n")
+		out.WriteString("  if (opts is Map && opts.containsKey('format')) fmt = opts['format'].toString();\n")
+		out.WriteString("  if (fmt == 'yaml') {\n")
+		out.WriteString("    var text = File(path).readAsStringSync();\n")
+		out.WriteString("    var data = loadYaml(text);\n")
+		out.WriteString("    if (data is List) return [for (var d in data) Map<String,dynamic>.from(d)];\n")
+		out.WriteString("    if (data is Map) return [Map<String,dynamic>.from(data)];\n")
+		out.WriteString("    return [];\n")
+		out.WriteString("  }\n")
+		out.WriteString("  var text = File(path).readAsStringSync();\n")
+		out.WriteString("  var data = jsonDecode(text);\n")
+		out.WriteString("  if (data is List) return data;\n")
+		out.WriteString("  if (data is Map) return [data];\n")
+		out.WriteString("  return [];\n")
+		out.WriteString("}\n\n")
+	}
+	if c.useSave {
+		out.WriteString("void _save(List<dynamic> rows, String path, String fmt) {\n")
+		out.WriteString("  if (fmt == 'jsonl' && path == '-') {\n")
+		out.WriteString("    for (var r in rows) { stdout.writeln(jsonEncode(r)); }\n")
+		out.WriteString("    return;\n")
+		out.WriteString("  }\n")
+		out.WriteString("  if (fmt == 'json') {\n")
+		out.WriteString("    File(path).writeAsStringSync(jsonEncode(rows));\n")
+		out.WriteString("  }\n")
 		out.WriteString("}\n\n")
 	}
 
@@ -727,6 +773,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileCall(p.Call)
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	case p.Group != nil:
 		e, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -979,6 +1029,21 @@ func (c *Compiler) simpleIdentifier(e *parser.Expr) (string, bool) {
 	return p.Target.Selector.Root, true
 }
 
+func (c *Compiler) simpleString(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 {
+		return "", false
+	}
+	p := u.Value
+	if p.Target == nil || p.Target.Lit == nil || p.Target.Lit.Str == nil || len(p.Ops) > 0 {
+		return "", false
+	}
+	return *p.Target.Lit.Str, true
+}
+
 func (c *Compiler) compileSelector(sel *parser.SelectorExpr) string {
 	root := sel.Root
 	if key, ok := c.groupKeys[root]; ok {
@@ -1086,6 +1151,71 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	}
 
 	return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ", ")), nil
+}
+
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
+	path := ""
+	if l.Path != nil {
+		p := *l.Path
+		if strings.HasPrefix(p, "../") {
+			p = filepath.Join("tests", strings.TrimPrefix(p, "../"))
+		}
+		path = p
+	}
+	opts := "null"
+	if l.With != nil {
+		v, err := c.compileExpr(l.With)
+		if err != nil {
+			return "", err
+		}
+		opts = v
+	}
+	c.useLoad = true
+	c.useIO = true
+	c.useJSON = true
+	c.useYAML = true
+	expr := fmt.Sprintf("_load('%s', %s)", path, opts)
+	if l.Type != nil && l.Type.Simple != nil {
+		tname := *l.Type.Simple
+		if st, ok := c.env.GetStruct(tname); ok {
+			args := make([]string, len(st.Order))
+			for i, name := range st.Order {
+				typ := dartTypeFromType(st.Fields[name])
+				if typ == "" {
+					typ = "dynamic"
+				}
+				args[i] = fmt.Sprintf("(_it['%s'] as %s)", name, typ)
+			}
+			return fmt.Sprintf("[for (var _it in (%s)) %s(%s)]", expr, tname, strings.Join(args, ", ")), nil
+		}
+	}
+	return expr, nil
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
+	src, err := c.compileExpr(s.Src)
+	if err != nil {
+		return "", err
+	}
+	path := "-"
+	if s.Path != nil {
+		path = *s.Path
+	}
+	format := "json"
+	if s.With != nil {
+		if str, ok := c.simpleString(s.With); ok {
+			format = str
+		}
+	}
+	c.useIO = true
+	c.useJSON = true
+	if format == "jsonl" && path == "-" {
+		return fmt.Sprintf("%s.forEach((r) => stdout.writeln(jsonEncode(r)))", src), nil
+	}
+	if format == "json" {
+		return fmt.Sprintf("File('%s').writeAsStringSync(jsonEncode(%s))", path, src), nil
+	}
+	return "null", fmt.Errorf("unsupported save format")
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) string {
