@@ -1,4 +1,4 @@
-line 11: exit status 254
-  for (var c in customer) {
-    if (!(o.o_orderdate >= start_date && o.o_orderdate < end_date && l.l_returnflag == 'R')) continue;
-    _q0.add([-(() {
+line 40: exit status 254
+    for (var c in customer) {
+      if (!(((o.o_orderdate as num) >= (start_date as num) &&
+                  o.o_orderdate as num) <

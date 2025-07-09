@@ -1,4 +1,4 @@
-line 5: exit status 254
+line 10: exit status 254
   print([1, 2, 3].where((x) => [2, 4].contains(x)).toList());
   print(List.from([1, 2])..addAll([2, 3]).length);
 }

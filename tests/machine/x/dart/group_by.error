@@ -1,4 +1,0 @@
-line 6: exit status 254
-  for (var person in people) {
-    _q0.add({'city': g.key, 'count': g.length, 'avg_age': ((() {
-  var _q1 = <dynamic>[];

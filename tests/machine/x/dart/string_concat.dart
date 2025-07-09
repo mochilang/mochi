@@ -1,3 +1,3 @@
 void main() {
-  print('hello ' + 'world');
+  print(('hello ' as num) + ('world' as num));
 }

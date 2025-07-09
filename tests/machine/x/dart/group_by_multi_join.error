@@ -1,4 +1,4 @@
-line 8: exit status 254
-  for (var ps in partsupp) {
-    if (!(n.name == 'A')) continue;
-    _q0.add({'part': ps.part, 'value': ps.cost * ps.qty});
+line 18: exit status 254
+    for (var ps in partsupp) {
+      if (!(n.name == 'A')) continue;
+      _q0.add({

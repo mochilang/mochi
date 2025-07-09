@@ -1,4 +1,4 @@
-line 14: exit status 254
-    if (entry.order) {
-      print(['Customer', entry.customerName, 'has order', entry.order.id, '- $', entry.order.total].join(' '));
+line 16: exit status 254
+    for (var c in customers) {
+      _q0.add({'customerName': c['name'], 'order': o});
     }

@@ -1,4 +1,4 @@
-line 6: exit status 254
-  for (var d in data) {
-    _q0.add(g);
+line 29: exit status 254
+    }
+    tmp = List.from(tmp)..add({'tag': _k2, 'total': total});
   }

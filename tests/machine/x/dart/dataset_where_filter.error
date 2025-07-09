@@ -1,4 +1,0 @@
-line 6: exit status 254
-  for (var person in people) {
-    if (!(person.age >= 18)) continue;
-    _q0.add({'name': person.name, 'age': person.age, 'is_senior': person.age >= 60});

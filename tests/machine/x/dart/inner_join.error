@@ -1,4 +1,4 @@
-line 13: exit status 254
-  for (var entry in result) {
-    print(['Order', entry.orderId, 'by', entry.customerName, '- $', entry.total].join(' '));
-  }
+line 18: exit status 254
+        'orderId': o['id'],
+        'customerName': c.name,
+        'total': o['total'],
