@@ -1,4 +1,0 @@
-error: unsupported statement at line 5
-   4| 
-   5| type Tree =
-   6|   Leaf

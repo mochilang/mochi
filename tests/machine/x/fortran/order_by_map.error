@@ -1,4 +1,0 @@
-error: unsupported expression at line 2
-   1| let data = [
-   2|   {a:1, b:2},
-   3|   {a:1, b:1},
