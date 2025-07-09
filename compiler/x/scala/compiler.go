@@ -781,7 +781,7 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+	if len(q.Joins) > 0 || q.Group != nil || q.Distinct {
 		return "", fmt.Errorf("line %d: query features not supported", q.Pos.Line)
 	}
 	parts := []string{}
@@ -823,7 +823,29 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 	c.env = oldEnv
-	return fmt.Sprintf("for { %s } yield %s", strings.Join(parts, "; "), sel), nil
+	expr := fmt.Sprintf("for { %s } yield %s", strings.Join(parts, "; "), sel)
+	if q.Sort != nil {
+		key, err := c.compileExpr(q.Sort)
+		if err != nil {
+			return "", err
+		}
+		expr = fmt.Sprintf("(%s).sortBy(%s => %s)", expr, q.Var, key)
+	}
+	if q.Skip != nil {
+		val, err := c.compileExpr(q.Skip)
+		if err != nil {
+			return "", err
+		}
+		expr = fmt.Sprintf("%s.drop(%s)", expr, val)
+	}
+	if q.Take != nil {
+		val, err := c.compileExpr(q.Take)
+		if err != nil {
+			return "", err
+		}
+		expr = fmt.Sprintf("%s.take(%s)", expr, val)
+	}
+	return expr, nil
 }
 
 func (c *Compiler) mapToStruct(name string, st types.StructType, m *parser.MapLiteral) (string, error) {
