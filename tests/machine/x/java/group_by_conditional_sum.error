@@ -1,4 +1,11 @@
-line 0: compile error: expression unsupported at line 7
+line 0: javac error: exit status 1
+/tmp/TestCompileValidProgramsgroup_by_conditional_sum1813671860/001/Main.java:20: error: incompatible types: Object cannot be converted to boolean
+		_res5.add((((Map)x).get("flag") ? ((Map)x).get("val") : 0));
+		                       ^
+Note: /tmp/TestCompileValidProgramsgroup_by_conditional_sum1813671860/001/Main.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+1 error
+
 
   1| let items = [
   2|   { cat: "a", val: 10, flag: true },
