@@ -477,7 +477,11 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 				keyT = zigTypeOf(mt.Key)
 				valT = zigTypeOf(mt.Value)
 			}
-			c.writeln(fmt.Sprintf("var %s = std.AutoHashMap(%s, %s).init(std.heap.page_allocator);", name, keyT, valT))
+			mapType := "std.AutoHashMap"
+			if keyT == "[]const u8" {
+				mapType = "std.StringHashMap"
+			}
+			c.writeln(fmt.Sprintf("var %s = %s(%s, %s).init(std.heap.page_allocator);", name, mapType, keyT, valT))
 			return nil
 		}
 		val := "0"
@@ -988,7 +992,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.needsEqual = true
 		lbl := c.newLabel()
 		b.WriteString(lbl + ": { var " + tmp + " = std.ArrayList(" + groupType + ").init(std.heap.page_allocator); ")
-		b.WriteString("var " + idxMap + " = std.AutoHashMap(" + keyType + ", usize).init(std.heap.page_allocator); ")
+		mapType := "std.AutoHashMap"
+		if keyType == "[]const u8" {
+			mapType = "std.StringHashMap"
+		}
+		b.WriteString("var " + idxMap + " = " + mapType + "(" + keyType + ", usize).init(std.heap.page_allocator); ")
 		b.WriteString("for (" + src + ") |" + sanitizeName(q.Var) + "| {")
 		for i, fs := range fromSrcs {
 			b.WriteString(" for (" + fs + ") |" + sanitizeName(q.Froms[i].Var) + "| {")
@@ -1254,7 +1262,11 @@ func (c *Compiler) compileVar(st *parser.VarStmt, inFun bool) error {
 			keyT = zigTypeOf(mt.Key)
 			valT = zigTypeOf(mt.Value)
 		}
-		c.writeln(fmt.Sprintf("var %s = std.AutoHashMap(%s, %s).init(std.heap.page_allocator);", name, keyT, valT))
+		mapType := "std.AutoHashMap"
+		if keyT == "[]const u8" {
+			mapType = "std.StringHashMap"
+		}
+		c.writeln(fmt.Sprintf("var %s = %s(%s, %s).init(std.heap.page_allocator);", name, mapType, keyT, valT))
 		return nil
 	}
 	val := "0"
@@ -1947,6 +1959,13 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		args[i] = v
 	}
+	if _, ok := c.env.GetFunc(call.Func); !ok {
+		if t, err := c.env.GetVar(call.Func); err == nil {
+			if _, ok := t.(types.FuncType); ok {
+				return fmt.Sprintf("%s.call(%s)", name, strings.Join(args, ", ")), nil
+			}
+		}
+	}
 	return fmt.Sprintf("%s(%s)", name, strings.Join(args, ", ")), nil
 }
 
@@ -1990,7 +2009,7 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 	keyType := "i32"
 	valType := "i32"
 	if len(m.Items) > 0 {
-		if c.isStringExpr(m.Items[0].Key) {
+		if _, ok := simpleStringKey(m.Items[0].Key); ok || c.isStringExpr(m.Items[0].Key) {
 			keyType = "[]const u8"
 		} else if c.isFloatExpr(m.Items[0].Key) {
 			keyType = "f64"
@@ -2007,7 +2026,11 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 	}
 	var b strings.Builder
 	lbl := c.newLabel()
-	b.WriteString("(" + lbl + ": { var m = std.AutoHashMap(" + keyType + ", " + valType + ").init(std.heap.page_allocator); ")
+	mapType := "std.AutoHashMap"
+	if keyType == "[]const u8" {
+		mapType = "std.StringHashMap"
+	}
+	b.WriteString("(" + lbl + ": { var m = " + mapType + "(" + keyType + ", " + valType + ").init(std.heap.page_allocator); ")
 	for _, it := range m.Items {
 		k, err := c.compileExpr(it.Key, false)
 		if err != nil {
@@ -2109,8 +2132,10 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		} else {
 			callParams = "self: @This()"
 		}
+		return fmt.Sprintf("(struct { %sfn call(%s) %s {\n%s} }{ %s })", decl, callParams, ret, body, init), nil
 	}
-	return fmt.Sprintf("(struct { %sfn call(%s) %s {\n%s} }{ %s }).call", decl, callParams, ret, body, init), nil
+
+	return fmt.Sprintf("fn(%s) %s {\n%s}", callParams, ret, body), nil
 }
 
 func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
