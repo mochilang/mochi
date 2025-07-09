@@ -205,6 +205,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileFor(s.For)
 	case s.If != nil:
 		return c.compileIf(s.If)
+	case s.Fun != nil:
+		return c.compileLocalFun(s.Fun)
 	case s.Break != nil:
 		c.writeln("break;")
 		return nil
@@ -591,14 +593,44 @@ func (c *Compiler) compileFunExpr(f *parser.FunExpr) (string, error) {
 	for _, p := range f.Params {
 		params = append(params, p.Name)
 	}
-	body, err := c.compileExpr(f.ExprBody)
-	if err != nil {
-		return "", err
+	if f.ExprBody != nil {
+		body, err := c.compileExpr(f.ExprBody)
+		if err != nil {
+			return "", err
+		}
+		if len(params) == 1 {
+			return fmt.Sprintf("%s -> %s", params[0], body), nil
+		}
+		return fmt.Sprintf("(%s) -> %s", strings.Join(params, ", "), body), nil
 	}
+
+	origBuf := c.buf
+	origIndent := c.indent
+	origVars := c.vars
+	buf := new(bytes.Buffer)
+	c.buf = buf
+	c.indent = 0
+	c.vars = copyMap(origVars)
+	for _, p := range f.Params {
+		c.vars[p.Name] = c.typeName(p.Type)
+	}
+	for _, s := range f.BlockBody {
+		if err := c.compileStmt(s); err != nil {
+			c.buf = origBuf
+			c.indent = origIndent
+			c.vars = origVars
+			return "", err
+		}
+	}
+	body := indentBlock(buf.String(), origIndent+1)
+	c.buf = origBuf
+	c.indent = origIndent
+	c.vars = origVars
+	paramList := strings.Join(params, ", ")
 	if len(params) == 1 {
-		return fmt.Sprintf("%s -> %s", params[0], body), nil
+		return fmt.Sprintf("%s -> {\n%s%s}", params[0], body, strings.Repeat("\t", origIndent)), nil
 	}
-	return fmt.Sprintf("(%s) -> %s", strings.Join(params, ", "), body), nil
+	return fmt.Sprintf("(%s) -> {\n%s%s}", paramList, body, strings.Repeat("\t", origIndent)), nil
 }
 
 func (c *Compiler) compileIfExpr(e *parser.IfExpr) (string, error) {
@@ -800,6 +832,24 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 	}
 	c.indent--
 	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileLocalFun(f *parser.FunStmt) error {
+	expr, err := c.compileFunExpr(&parser.FunExpr{Params: f.Params, Return: f.Return, BlockBody: f.Body})
+	if err != nil {
+		return err
+	}
+	typ := "Object"
+	declType := "Object"
+	if len(f.Params) == 1 && c.typeName(f.Return) == "int" {
+		if f.Params[0].Type != nil && c.typeName(f.Params[0].Type) == "int" {
+			typ = "IntUnaryOperator"
+			declType = "java.util.function.IntUnaryOperator"
+		}
+	}
+	c.writeln(fmt.Sprintf("%s %s = %s;", declType, f.Name, expr))
+	c.vars[f.Name] = typ
 	return nil
 }
 
@@ -1206,6 +1256,18 @@ func copyMap(src map[string]string) map[string]string {
 		dst[k] = v
 	}
 	return dst
+}
+
+func indentBlock(s string, depth int) string {
+	if s == "" {
+		return s
+	}
+	prefix := strings.Repeat("\t", depth)
+	lines := strings.Split(strings.TrimRight(s, "\n"), "\n")
+	for i, line := range lines {
+		lines[i] = prefix + line
+	}
+	return strings.Join(lines, "\n") + "\n"
 }
 
 func simpleStringKey(e *parser.Expr) (string, bool) {
