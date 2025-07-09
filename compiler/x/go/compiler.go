@@ -2450,15 +2450,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 
-       needsHelper := q.Sort != nil
-       for _, j := range q.Joins {
-               if j.Side != nil {
-                       if !(len(q.Joins) == 1 && *j.Side == "left") {
-                               needsHelper = true
-                               break
-                       }
-               }
-       }
+	needsHelper := q.Sort != nil
+	for _, j := range q.Joins {
+		if j.Side != nil {
+			if !(len(q.Joins) == 1 && (*j.Side == "left" || *j.Side == "right")) {
+				needsHelper = true
+				break
+			}
+		}
+	}
 
 	// Prepare environment for the query variable
 	srcType := c.inferExprType(q.Source)
@@ -2967,11 +2967,28 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		step++
 	}
 
-	specialJoin := len(q.Joins) == 1 && (joinSides[0] == "left")
-	if specialJoin {
+	specialLeft := len(q.Joins) == 1 && (joinSides[0] == "left")
+	specialRight := len(q.Joins) == 1 && (joinSides[0] == "right")
+	if specialLeft || specialRight {
 		condStep = len(varNames) - 1
 	}
-	if specialJoin {
+	if specialLeft {
+		jvar := sanitizeName(q.Joins[0].Var)
+		loopVar := jvar
+		if jvar == "_" {
+			loopVar = "v"
+		}
+		jsrc := joinSrcs[0]
+		buf.WriteString(indent + "matched := false\n")
+		if joinDirect[0] {
+			buf.WriteString(fmt.Sprintf(indent+"for _, %s := range %s {\n", loopVar, jsrc))
+		} else {
+			return "", fmt.Errorf("join source must be list")
+		}
+		indent += "\t"
+		buf.WriteString(fmt.Sprintf(indent+"if !(%s) { continue }\n", joinOns[0]))
+		buf.WriteString(indent + "matched = true\n")
+	} else if specialRight {
 		jvar := sanitizeName(q.Joins[0].Var)
 		loopVar := jvar
 		if jvar == "_" {
@@ -3007,7 +3024,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 	}
 
-	if specialJoin {
+	if specialLeft || specialRight {
 		if cond != "" {
 			if simple {
 				buf.WriteString(fmt.Sprintf(indent+"if %s {\n", cond))
