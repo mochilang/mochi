@@ -1,1 +1,2 @@
-#<OpenStruct cat="a", share=0.6666666666666666> #<OpenStruct cat="b", share=1.0>
+#<OpenStruct cat="a", share=0.6666666666666666>
+#<OpenStruct cat="b", share=1.0>

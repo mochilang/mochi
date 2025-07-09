@@ -11,6 +11,6 @@ def _sliceString(s, i, j)
   chars[start...finish].join
 end
 
-puts([[1, 2, 3][1...3]].join(" "))
-puts([[1, 2, 3][0...2]].join(" "))
-puts([_sliceString("hello", 1, 4)].join(" "))
+puts([1, 2, 3][1...3])
+puts([1, 2, 3][0...2])
+puts(_sliceString("hello", 1, 4))

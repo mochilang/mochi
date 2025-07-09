@@ -1,2 +1,2 @@
-y = nil
-puts([y].join(" "))
+$y = nil
+puts($y)

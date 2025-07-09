@@ -6,5 +6,5 @@ def _indexString(s, i)
   chars[idx]
 end
 
-s = "mochi"
-puts([_indexString(s, 1)].join(" "))
+$s = "mochi"
+puts(_indexString($s, 1))

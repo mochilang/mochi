@@ -11,5 +11,5 @@ def _json(v)
   puts(JSON.generate(obj))
 end
 
-m = OpenStruct.new(a: 1, b: 2)
-_json(m)
+$m = OpenStruct.new(a: 1, b: 2)
+_json($m)

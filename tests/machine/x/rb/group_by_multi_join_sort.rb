@@ -192,4 +192,4 @@ $result = (begin
 	end
 	_res
 end)
-puts([$result].join(" "))
+puts($result)

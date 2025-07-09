@@ -1,6 +1,6 @@
-x = 2
-label = (begin
-	_t0 = x
+$x = 2
+$label = (begin
+	_t0 = $x
 	case
 	when _t0 == 1
 		"one"
@@ -12,4 +12,4 @@ label = (begin
 		"unknown"
 	end
 end)
-puts([label].join(" "))
+puts($label)

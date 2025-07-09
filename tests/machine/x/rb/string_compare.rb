@@ -1,4 +1,4 @@
-puts([("a" < "b")].join(" "))
-puts([("a" <= "a")].join(" "))
-puts([("b" > "a")].join(" "))
-puts([("b" >= "b")].join(" "))
+puts(("a" < "b"))
+puts(("a" <= "a"))
+puts(("b" > "a"))
+puts(("b" >= "b"))

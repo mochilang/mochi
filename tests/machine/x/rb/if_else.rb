@@ -1,6 +1,6 @@
-x = 5
-if (x > 3)
-	puts(["big"].join(" "))
+$x = 5
+if ($x > 3)
+	puts("big")
 else
-	puts(["small"].join(" "))
+	puts("small")
 end

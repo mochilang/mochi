@@ -13,4 +13,4 @@ def _sum(v)
   s
 end
 
-puts([_sum([1, 2, 3])].join(" "))
+puts(_sum([1, 2, 3]))

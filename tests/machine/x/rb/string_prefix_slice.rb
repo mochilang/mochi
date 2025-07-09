@@ -11,8 +11,8 @@ def _sliceString(s, i, j)
   chars[start...finish].join
 end
 
-prefix = "fore"
-s1 = "forest"
-puts([(_sliceString(s1, 0, (prefix).length) == prefix)].join(" "))
-s2 = "desert"
-puts([(_sliceString(s2, 0, (prefix).length) == prefix)].join(" "))
+$prefix = "fore"
+$s1 = "forest"
+puts((_sliceString($s1, 0, ($prefix).length) == $prefix))
+$s2 = "desert"
+puts((_sliceString($s2, 0, ($prefix).length) == $prefix))

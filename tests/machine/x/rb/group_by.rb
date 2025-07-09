@@ -10,6 +10,9 @@ class MGroup
   def length
     @Items.length
   end
+  def items
+    @Items
+  end
   def each(&block)
     @Items.each(&block)
   end
@@ -35,9 +38,9 @@ g
 end
 end
 
-people = [OpenStruct.new(name: "Alice", age: 30, city: "Paris"), OpenStruct.new(name: "Bob", age: 15, city: "Hanoi"), OpenStruct.new(name: "Charlie", age: 65, city: "Paris"), OpenStruct.new(name: "Diana", age: 45, city: "Hanoi"), OpenStruct.new(name: "Eve", age: 70, city: "Paris"), OpenStruct.new(name: "Frank", age: 22, city: "Hanoi")]
-stats = _group_by(people, ->(person){ person.city }).map { |g| OpenStruct.new(city: g.key, count: (g).length, avg_age: ((((g)).map { |p| p.age }).length > 0 ? (((g)).map { |p| p.age }).sum(0.0) / (((g)).map { |p| p.age }).length : 0)) }
-puts(["--- People grouped by city ---"].join(" "))
-for s in stats
+$people = [OpenStruct.new(name: "Alice", age: 30, city: "Paris"), OpenStruct.new(name: "Bob", age: 15, city: "Hanoi"), OpenStruct.new(name: "Charlie", age: 65, city: "Paris"), OpenStruct.new(name: "Diana", age: 45, city: "Hanoi"), OpenStruct.new(name: "Eve", age: 70, city: "Paris"), OpenStruct.new(name: "Frank", age: 22, city: "Hanoi")]
+$stats = _group_by($people, ->(person){ person.city }).map { |g| OpenStruct.new(city: g.key, count: (g).length, avg_age: ((((g)).map { |p| p.age }).length > 0 ? (((g)).map { |p| p.age }).sum(0.0) / (((g)).map { |p| p.age }).length : 0)) }
+puts("--- People grouped by city ---")
+for s in $stats
 	puts([s.city, ": count =", s.count, ", avg_age =", s.avg_age].join(" "))
 end

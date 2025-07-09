@@ -1,1 +1,1 @@
-puts([("hello " + "world")].join(" "))
+puts(("hello " + "world"))

@@ -3,4 +3,4 @@ def inc(x)
 end
 
 $k = 2
-puts([inc(3)].join(" "))
+puts(inc(3))

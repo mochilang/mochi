@@ -5,4 +5,4 @@ def outer(x)
 	return inner.call(5)
 end
 
-puts([outer(3)].join(" "))
+puts(outer(3))

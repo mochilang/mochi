@@ -97,3 +97,7 @@ This directory contains Ruby source code generated from Mochi programs and the c
 - var_assignment
 - while_loop
 
+## Remaining Tasks
+
+All Mochi programs in `tests/vm/valid` compile and execute successfully with the Ruby compiler.
+

@@ -5,4 +5,4 @@ def sum_rec(n, acc)
 	return sum_rec((n - 1), (acc + n))
 end
 
-puts([sum_rec(10, 0)].join(" "))
+puts(sum_rec(10, 0))
