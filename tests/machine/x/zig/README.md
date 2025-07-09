@@ -1,4 +1,4 @@
-# Mochi to Zig Machine Outputs (32/97 compiled)
+# Mochi to Zig Machine Outputs (33/97 compiled)
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -19,7 +19,7 @@
 - [x] for_loop.mochi
  - [x] for_map_collection.mochi
 - [x] fun_call.mochi
-- [ ] fun_expr_in_let.mochi
+- [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
 - [ ] group_by.mochi
 - [ ] group_by_conditional_sum.mochi

@@ -2216,25 +2216,25 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		}
 	}
 
-	captured := freeVars(fn, paramNames)
-	fieldDecls := make([]string, len(captured))
-	fieldInits := make([]string, len(captured))
-	sub := &Compiler{env: child, locals: map[string]types.Type{}, captures: map[string]string{}}
-	for i, name := range captured {
-		typ := "i32"
-		if c.env != nil {
-			if t, err := c.env.GetVar(name); err == nil {
-				typ = zigTypeOf(t)
-				child.SetVar(name, t, true)
-				sub.locals[name] = t
-			}
-		}
-		sn := sanitizeName(name)
-		fieldDecls[i] = fmt.Sprintf("%s: %s,", sn, typ)
-		fieldInits[i] = fmt.Sprintf(".%s = %s", sn, sn)
-		sub.captures[sn] = "self." + sn
-	}
-	sub.indent = 1
+       captured := freeVars(fn, paramNames)
+       fieldDecls := make([]string, len(captured))
+       fieldInits := make([]string, len(captured))
+       sub := &Compiler{env: child, locals: map[string]types.Type{}, captures: map[string]string{}}
+       for i, name := range captured {
+               typ := "i32"
+               if c.env != nil {
+                       if t, err := c.env.GetVar(name); err == nil {
+                               typ = zigTypeOf(t)
+                               child.SetVar(name, t, true)
+                               sub.locals[name] = t
+                       }
+               }
+               sn := sanitizeName(name)
+               fieldDecls[i] = fmt.Sprintf("%s: %s,", sn, typ)
+               fieldInits[i] = fmt.Sprintf(".%s = %s", sn, sn)
+               sub.captures[sn] = "self." + sn
+       }
+       sub.indent = 1
 	if fn.ExprBody != nil {
 		expr, err := sub.compileExpr(fn.ExprBody, false)
 		if err != nil {
@@ -2265,19 +2265,22 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 			ret = zigTypeOf(t)
 		}
 	}
-	decl := ""
-	init := ""
-	callParams := strings.Join(params, ", ")
-	if len(captured) > 0 {
-		decl = strings.Join(fieldDecls, " ") + " "
-		init = strings.Join(fieldInits, ", ")
-		if callParams != "" {
-			callParams = "self: @This(), " + callParams
-		} else {
-			callParams = "self: @This()"
-		}
-	}
-	return fmt.Sprintf("(struct { %sfn call(%s) %s {\n%s} }{ %s }).call", decl, callParams, ret, body, init), nil
+       decl := ""
+       init := ""
+       callParams := strings.Join(params, ", ")
+       if len(captured) == 0 {
+               // simple function literal
+               return fmt.Sprintf("fn (%s) %s {\n%s}", callParams, ret, body), nil
+       }
+
+       decl = strings.Join(fieldDecls, " ") + " "
+       init = strings.Join(fieldInits, ", ")
+       if callParams != "" {
+               callParams = "self: @This(), " + callParams
+       } else {
+               callParams = "self: @This()"
+       }
+       return fmt.Sprintf("(struct { %sfn call(%s) %s {\n%s} }{ %s }).call", decl, callParams, ret, body, init), nil
 }
 
 func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
