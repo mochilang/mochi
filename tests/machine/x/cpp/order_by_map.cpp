@@ -11,7 +11,7 @@ struct __struct1 {
   decltype(2) b;
 };
 int main() {
-  auto data = std::vector<decltype(__struct1{1, 2})>{
+  std::vector<__struct1> data = std::vector<decltype(__struct1{1, 2})>{
       __struct1{1, 2}, __struct1{1, 1}, __struct1{0, 5}};
   auto sorted = ([&]() {
     std::vector<std::pair<decltype(std::declval<__struct1>().a), __struct1>>
@@ -27,7 +27,12 @@ int main() {
     return __res;
   })();
   {
-    std::cout << std::boolalpha << sorted;
+    auto __tmp1 = sorted;
+    for (size_t i = 0; i < __tmp1.size(); ++i) {
+      if (i)
+        std::cout << ' ';
+      std::cout << std::boolalpha << __tmp1[i];
+    }
     std::cout << std::endl;
   }
   return 0;

@@ -7,7 +7,8 @@
 #include <vector>
 
 int main() {
-  auto scores = std::unordered_map<std::string, int>{{std::string("alice"), 1}};
+  auto scores =
+      std::unordered_map<std::string, decltype(1)>{{std::string("alice"), 1}};
   scores[std::string("bob")] = 2;
   {
     std::cout << std::boolalpha << scores[std::string("bob")];

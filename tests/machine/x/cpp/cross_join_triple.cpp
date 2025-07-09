@@ -12,10 +12,10 @@ struct __struct1 {
   bool b;
 };
 int main() {
-  auto nums = std::vector<decltype(1)>{1, 2};
-  auto letters = std::vector<decltype(std::string("A"))>{std::string("A"),
-                                                         std::string("B")};
-  auto bools = std::vector<decltype(true)>{true, false};
+  std::vector<int> nums = std::vector<decltype(1)>{1, 2};
+  std::vector<std::string> letters = std::vector<decltype(std::string("A"))>{
+      std::string("A"), std::string("B")};
+  std::vector<bool> bools = std::vector<decltype(true)>{true, false};
   auto combos = ([&]() {
     std::vector<__struct1> __items;
     for (auto n : nums) {

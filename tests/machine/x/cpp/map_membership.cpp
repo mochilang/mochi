@@ -7,8 +7,8 @@
 #include <vector>
 
 int main() {
-  auto m = std::unordered_map<std::string, int>{{std::string("a"), 1},
-                                                {std::string("b"), 2}};
+  auto m = std::unordered_map<std::string, decltype(1)>{{std::string("a"), 1},
+                                                        {std::string("b"), 2}};
   {
     std::cout << std::boolalpha << (m.count(std::string("a")) > 0);
     std::cout << std::endl;

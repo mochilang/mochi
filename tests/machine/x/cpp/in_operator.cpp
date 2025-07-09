@@ -7,7 +7,7 @@
 #include <vector>
 
 int main() {
-  auto xs = std::vector<decltype(1)>{1, 2, 3};
+  std::vector<int> xs = std::vector<decltype(1)>{1, 2, 3};
   {
     std::cout << std::boolalpha
               << (std::find(xs.begin(), xs.end(), 2) != xs.end());
