@@ -3,23 +3,41 @@
 
 typedef struct {
   int len;
+  int cap;
   int *data;
 } list_int;
 static list_int list_int_create(int len) {
   list_int l;
   l.len = len;
-  l.data = (int *)malloc(sizeof(int) * len);
+  l.cap = len;
+  l.data = len ? (int *)malloc(sizeof(int) * len) : NULL;
   return l;
+}
+static void list_int_free(list_int *l) {
+  free(l->data);
+  l->data = NULL;
+  l->len = 0;
+  l->cap = 0;
 }
 typedef struct {
   int len;
+  int cap;
   list_int *data;
 } list_list_int;
 static list_list_int list_list_int_create(int len) {
   list_list_int l;
   l.len = len;
-  l.data = (list_int *)malloc(sizeof(list_int) * len);
+  l.cap = len;
+  l.data = len ? (list_int *)malloc(sizeof(list_int) * len) : NULL;
   return l;
+}
+static void list_list_int_free(list_list_int *l) {
+  for (int i = 0; i < l->len; i++)
+    list_int_free(&l->data[i]);
+  free(l->data);
+  l->data = NULL;
+  l->len = 0;
+  l->cap = 0;
 }
 static list_int concat_list_int(list_int a, list_int b) {
   list_int r = list_int_create(a.len + b.len);

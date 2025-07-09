@@ -5,12 +5,19 @@ package ccode
 // Runtime helper functions injected into generated C programs.
 
 const (
-	helperListInt = `typedef struct { int len; int *data; } list_int;
+	helperListInt = `typedef struct { int len; int cap; int *data; } list_int;
 static list_int list_int_create(int len) {
     list_int l;
     l.len = len;
-    l.data = (int*)malloc(sizeof(int)*len);
+    l.cap = len;
+    l.data = len ? (int*)malloc(sizeof(int)*len) : NULL;
     return l;
+}
+static void list_int_free(list_int* l) {
+    free(l->data);
+    l->data = NULL;
+    l->len = 0;
+    l->cap = 0;
 }
 `
 	helperListFloat = `typedef struct { int len; double *data; } list_float;
@@ -29,12 +36,20 @@ static list_string list_string_create(int len) {
     return l;
 }
 `
-	helperListListInt = `typedef struct { int len; list_int *data; } list_list_int;
+	helperListListInt = `typedef struct { int len; int cap; list_int *data; } list_list_int;
 static list_list_int list_list_int_create(int len) {
     list_list_int l;
     l.len = len;
-    l.data = (list_int*)malloc(sizeof(list_int)*len);
+    l.cap = len;
+    l.data = len ? (list_int*)malloc(sizeof(list_int)*len) : NULL;
     return l;
+}
+static void list_list_int_free(list_list_int* l) {
+    for (int i = 0; i < l->len; i++) list_int_free(&l->data[i]);
+    free(l->data);
+    l->data = NULL;
+    l->len = 0;
+    l->cap = 0;
 }`
 	helperMapIntBool = `typedef struct { int key; int value; } map_int_bool_item;
 static map_int_bool_item* map_int_bool_item_new(int key, int value) {

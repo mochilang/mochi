@@ -1,51 +1,50 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/group_items_iteration.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:78:21: error: invalid initializer
-   78 |   list_int groups = 0;
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:86:21: error: invalid initializer
+   86 |   list_int groups = 0;
       |                     ^
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:79:18: error: ‘_t2’ undeclared (first use in this function); did you mean ‘_t1’?
-   79 |   list_int tmp = _t2;
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:87:18: error: ‘_t2’ undeclared (first use in this function); did you mean ‘_t1’?
+   87 |   list_int tmp = _t2;
       |                  ^~~
       |                  _t1
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:79:18: note: each undeclared identifier is reported only once for each function it appears in
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:83:30: error: request for member ‘items’ in something not a structure or union
-   83 |     for (int _t4 = 0; _t4 < g.items.len; _t4++) {
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:87:18: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:91:30: error: request for member ‘items’ in something not a structure or union
+   91 |     for (int _t4 = 0; _t4 < g.items.len; _t4++) {
       |                              ^
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:84:16: error: request for member ‘items’ in something not a structure or union
-   84 |       int x = g.items.data[_t4];
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:92:16: error: request for member ‘items’ in something not a structure or union
+   92 |       int x = g.items.data[_t4];
       |                ^
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:85:25: error: request for member ‘val’ in something not a structure or union
-   85 |       total = (total + x.val);
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:93:25: error: request for member ‘val’ in something not a structure or union
+   93 |       total = (total + x.val);
       |                         ^
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:88:36: error: request for member ‘key’ in something not a structure or union
-   88 |     map_int_bool_put(&_t5, "tag", g.key);
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:96:36: error: request for member ‘key’ in something not a structure or union
+   96 |     map_int_bool_put(&_t5, "tag", g.key);
       |                                    ^
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:88:28: warning: passing argument 2 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
-   88 |     map_int_bool_put(&_t5, "tag", g.key);
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:96:28: warning: passing argument 2 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
+   96 |     map_int_bool_put(&_t5, "tag", g.key);
       |                            ^~~~~
       |                            |
       |                            char *
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:38:51: note: expected ‘int’ but argument is of type ‘char *’
-   38 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:46:51: note: expected ‘int’ but argument is of type ‘char *’
+   46 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
       |                                               ~~~~^~~
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:89:28: warning: passing argument 2 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
-   89 |     map_int_bool_put(&_t5, "total", total);
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:97:28: warning: passing argument 2 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
+   97 |     map_int_bool_put(&_t5, "total", total);
       |                            ^~~~~~~
       |                            |
       |                            char *
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:38:51: note: expected ‘int’ but argument is of type ‘char *’
-   38 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:46:51: note: expected ‘int’ but argument is of type ‘char *’
+   46 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
       |                                               ~~~~^~~
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:90:11: warning: implicit declaration of function ‘append’ [-Wimplicit-function-declaration]
-   90 |     tmp = append(tmp, _t5);
-      |           ^~~~~~
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:90:11: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:98:17: error: request for member ‘tag’ in something not a structure or union
-   98 |     _t9[_t7] = r.tag;
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:98:11: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+   98 |     tmp = 0;
+      |           ^
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:106:17: error: request for member ‘tag’ in something not a structure or union
+  106 |     _t9[_t7] = r.tag;
       |                 ^
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:115:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘list_int’ [-Wformat=]
-  115 |   printf("%d\n", result);
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:123:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘list_int’ [-Wformat=]
+  123 |   printf("%d\n", result);
       |           ~^     ~~~~~~
       |            |     |
       |            int   list_int

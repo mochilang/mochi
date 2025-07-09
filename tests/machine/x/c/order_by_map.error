@@ -1,31 +1,31 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/order_by_map.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/order_by_map.c:79:31: error: ‘x’ undeclared (first use in this function)
-   79 |   map_int_bool_put(&_t2, "a", x.a);
+/workspace/mochi/tests/machine/x/c/order_by_map.c:87:31: error: ‘x’ undeclared (first use in this function)
+   87 |   map_int_bool_put(&_t2, "a", x.a);
       |                               ^
-/workspace/mochi/tests/machine/x/c/order_by_map.c:79:31: note: each undeclared identifier is reported only once for each function it appears in
-/workspace/mochi/tests/machine/x/c/order_by_map.c:79:26: warning: passing argument 2 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
-   79 |   map_int_bool_put(&_t2, "a", x.a);
+/workspace/mochi/tests/machine/x/c/order_by_map.c:87:31: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/machine/x/c/order_by_map.c:87:26: warning: passing argument 2 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
+   87 |   map_int_bool_put(&_t2, "a", x.a);
       |                          ^~~
       |                          |
       |                          char *
-/workspace/mochi/tests/machine/x/c/order_by_map.c:38:51: note: expected ‘int’ but argument is of type ‘char *’
-   38 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
+/workspace/mochi/tests/machine/x/c/order_by_map.c:46:51: note: expected ‘int’ but argument is of type ‘char *’
+   46 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
       |                                               ~~~~^~~
-/workspace/mochi/tests/machine/x/c/order_by_map.c:80:26: warning: passing argument 2 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
-   80 |   map_int_bool_put(&_t2, "b", x.b);
+/workspace/mochi/tests/machine/x/c/order_by_map.c:88:26: warning: passing argument 2 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
+   88 |   map_int_bool_put(&_t2, "b", x.b);
       |                          ^~~
       |                          |
       |                          char *
-/workspace/mochi/tests/machine/x/c/order_by_map.c:38:51: note: expected ‘int’ but argument is of type ‘char *’
-   38 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
+/workspace/mochi/tests/machine/x/c/order_by_map.c:46:51: note: expected ‘int’ but argument is of type ‘char *’
+   46 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
       |                                               ~~~~^~~
-/workspace/mochi/tests/machine/x/c/order_by_map.c:87:16: error: incompatible types when assigning to type ‘int’ from type ‘map_int_bool’
-   87 |     _t6[_t4] = _t2;
+/workspace/mochi/tests/machine/x/c/order_by_map.c:95:16: error: incompatible types when assigning to type ‘int’ from type ‘map_int_bool’
+   95 |     _t6[_t4] = _t2;
       |                ^~~
-/workspace/mochi/tests/machine/x/c/order_by_map.c:104:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘list_dataItem’ [-Wformat=]
-  104 |   printf("%d\n", sorted);
+/workspace/mochi/tests/machine/x/c/order_by_map.c:112:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘list_dataItem’ [-Wformat=]
+  112 |   printf("%d\n", sorted);
       |           ~^     ~~~~~~
       |            |     |
       |            int   list_dataItem

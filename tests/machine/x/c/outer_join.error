@@ -1,32 +1,32 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/outer_join.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/outer_join.c:82:45: error: incompatible types when initializing type ‘int’ using type ‘ordersItem’
-   82 |       _t3.data[_t4] = (resultItem){.order = o, .customer = c};
+/workspace/mochi/tests/machine/x/c/outer_join.c:90:45: error: incompatible types when initializing type ‘int’ using type ‘ordersItem’
+   90 |       _t3.data[_t4] = (resultItem){.order = o, .customer = c};
       |                                             ^
-/workspace/mochi/tests/machine/x/c/outer_join.c:82:60: error: incompatible types when initializing type ‘int’ using type ‘customersItem’
-   82 |       _t3.data[_t4] = (resultItem){.order = o, .customer = c};
+/workspace/mochi/tests/machine/x/c/outer_join.c:90:60: error: incompatible types when initializing type ‘int’ using type ‘customersItem’
+   90 |       _t3.data[_t4] = (resultItem){.order = o, .customer = c};
       |                                                            ^
-/workspace/mochi/tests/machine/x/c/outer_join.c:87:28: error: invalid initializer
-   87 |   list_resultItem result = _t3;
+/workspace/mochi/tests/machine/x/c/outer_join.c:95:28: error: invalid initializer
+   95 |   list_resultItem result = _t3;
       |                            ^~~
-/workspace/mochi/tests/machine/x/c/outer_join.c:94:32: error: request for member ‘id’ in something not a structure or union
-   94 |         printf("%d ", row.order.id);
+/workspace/mochi/tests/machine/x/c/outer_join.c:102:32: error: request for member ‘id’ in something not a structure or union
+  102 |         printf("%d ", row.order.id);
       |                                ^
-/workspace/mochi/tests/machine/x/c/outer_join.c:96:35: error: request for member ‘name’ in something not a structure or union
-   96 |         printf("%d ", row.customer.name);
+/workspace/mochi/tests/machine/x/c/outer_join.c:104:35: error: request for member ‘name’ in something not a structure or union
+  104 |         printf("%d ", row.customer.name);
       |                                   ^
-/workspace/mochi/tests/machine/x/c/outer_join.c:98:33: error: request for member ‘total’ in something not a structure or union
-   98 |         printf("%d\n", row.order.total);
+/workspace/mochi/tests/machine/x/c/outer_join.c:106:33: error: request for member ‘total’ in something not a structure or union
+  106 |         printf("%d\n", row.order.total);
       |                                 ^
-/workspace/mochi/tests/machine/x/c/outer_join.c:101:32: error: request for member ‘id’ in something not a structure or union
-  101 |         printf("%d ", row.order.id);
+/workspace/mochi/tests/machine/x/c/outer_join.c:109:32: error: request for member ‘id’ in something not a structure or union
+  109 |         printf("%d ", row.order.id);
       |                                ^
-/workspace/mochi/tests/machine/x/c/outer_join.c:105:33: error: request for member ‘total’ in something not a structure or union
-  105 |         printf("%d\n", row.order.total);
+/workspace/mochi/tests/machine/x/c/outer_join.c:113:33: error: request for member ‘total’ in something not a structure or union
+  113 |         printf("%d\n", row.order.total);
       |                                 ^
-/workspace/mochi/tests/machine/x/c/outer_join.c:109:33: error: request for member ‘name’ in something not a structure or union
-  109 |       printf("%d ", row.customer.name);
+/workspace/mochi/tests/machine/x/c/outer_join.c:117:33: error: request for member ‘name’ in something not a structure or union
+  117 |       printf("%d ", row.customer.name);
       |                                 ^
 
    1: #include <stdio.h>

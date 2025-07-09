@@ -1,8 +1,8 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/group_by_left_join.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/group_by_left_join.c:70:26: error: invalid initializer
-   70 |   list_statsItem stats = 0;
+/workspace/mochi/tests/machine/x/c/group_by_left_join.c:78:26: error: invalid initializer
+   78 |   list_statsItem stats = 0;
       |                          ^
 
    1: #include <stdio.h>
