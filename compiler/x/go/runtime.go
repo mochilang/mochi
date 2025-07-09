@@ -726,14 +726,33 @@ const (
 		"    items := make([][]any, len(src))\n" +
 		"    for i, v := range src { items[i] = []any{v} }\n" +
 		"    for _, j := range joins {\n" +
-		"        if j.leftKey != nil && j.rightKey != nil && j.on == nil && !j.left && !j.right {\n" +
-		"            rmap := map[string][]any{}\n" +
-		"            for _, r := range j.items { key := fmt.Sprint(j.rightKey(r)); rmap[key] = append(rmap[key], r) }\n" +
+		"        if j.leftKey != nil && j.rightKey != nil {\n" +
+		"            rmap := map[string][]int{}\n" +
+		"            for ri, r := range j.items { key := fmt.Sprint(j.rightKey(r)); rmap[key] = append(rmap[key], ri) }\n" +
 		"            joined := [][]any{}\n" +
+		"            matched := make([]bool, len(j.items))\n" +
 		"            for _, left := range items {\n" +
 		"                key := fmt.Sprint(j.leftKey(left...))\n" +
-		"                if rs, ok := rmap[key]; ok {\n" +
-		"                    for _, right := range rs { joined = append(joined, append(append([]any(nil), left...), right)) }\n" +
+		"                if is, ok := rmap[key]; ok {\n" +
+		"                    m := false\n" +
+		"                    for _, ri := range is {\n" +
+		"                        right := j.items[ri]\n" +
+		"                        keep := true\n" +
+		"                        if j.on != nil { args := append(append([]any(nil), left...), right); keep = j.on(args...) }\n" +
+		"                        if !keep { continue }\n" +
+		"                        m = true; matched[ri] = true\n" +
+		"                        joined = append(joined, append(append([]any(nil), left...), right))\n" +
+		"                    }\n" +
+		"                    if j.left && !m { joined = append(joined, append(append([]any(nil), left...), nil)) }\n" +
+		"                } else if j.left {\n" +
+		"                    joined = append(joined, append(append([]any(nil), left...), nil))\n" +
+		"                }\n" +
+		"            }\n" +
+		"            if j.right {\n" +
+		"                lw := 0\n" +
+		"                if len(items) > 0 { lw = len(items[0]) }\n" +
+		"                for ri, right := range j.items {\n" +
+		"                    if !matched[ri] { undef := make([]any, lw); joined = append(joined, append(undef, right)) }\n" +
 		"                }\n" +
 		"            }\n" +
 		"            items = joined\n" +
