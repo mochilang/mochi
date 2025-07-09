@@ -180,7 +180,7 @@ func FormatLua(src []byte) []byte {
 		}
 	}
 	if path, err := exec.LookPath("luafmt"); err == nil {
-		cmd := exec.Command(path, "--stdin", "--indent-count", "4")
+		cmd := exec.Command(path, "--stdin", "--indent-count", "2")
 		cmd.Stdin = bytes.NewReader(src)
 		var out bytes.Buffer
 		cmd.Stdout = &out
@@ -192,7 +192,7 @@ func FormatLua(src []byte) []byte {
 			return res
 		}
 	}
-	src = bytes.ReplaceAll(src, []byte("\t"), []byte("    "))
+	src = bytes.ReplaceAll(src, []byte("\t"), []byte("  "))
 	if len(src) > 0 && src[len(src)-1] != '\n' {
 		src = append(src, '\n')
 	}

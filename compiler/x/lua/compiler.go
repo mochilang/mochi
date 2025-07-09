@@ -123,6 +123,9 @@ func contains(list []string, s string) bool {
 }
 
 func checkLuaSyntax(code []byte) error {
+	if os.Getenv("MOCHI_SKIP_LUA_SYNTAX") == "1" {
+		return nil
+	}
 	if _, err := exec.LookPath("luac"); err != nil {
 		return nil
 	}
