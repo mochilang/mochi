@@ -799,7 +799,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if sortExpr != "" || skipExpr != "" || takeExpr != "" {
 		b.WriteString("\tlocal items = _res\n")
 		if sortExpr != "" {
-			b.WriteString("\ttable.sort(items, function(a,b) return a.__key < b.__key end)\n")
+			b.WriteString("\ttable.sort(items, function(a,b) return tostring(a.__key) < tostring(b.__key) end)\n")
 			b.WriteString("\tlocal tmp = {}\n")
 			b.WriteString("\tfor _, it in ipairs(items) do tmp[#tmp+1] = it.__val end\n")
 			b.WriteString("\titems = tmp\n")

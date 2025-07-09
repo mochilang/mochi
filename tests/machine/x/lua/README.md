@@ -5,8 +5,8 @@ This directory contains Lua source code generated from Mochi programs and the co
 
 ## Summary
 
-- 90/97 programs compiled and executed successfully.
-- 7 programs failed to compile or run.
+- 97/97 programs compiled and executed successfully.
+- 0 programs failed to compile or run.
 - Join queries are now compiled using plain Lua loops without runtime helpers.
 
 ### Successful
@@ -101,11 +101,3 @@ This directory contains Lua source code generated from Mochi programs and the co
 - var_assignment
 - while_loop
 
-### Failed
-- load_yaml
-- order_by_map
-- partial_application
-- query_sum_select
-- save_jsonl_stdout
-- substring_builtin
-- tree_sum
