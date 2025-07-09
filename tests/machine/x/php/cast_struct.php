@@ -7,3 +7,4 @@ class Todo {
 }
 $todo = new Todo(["title" => "hi"]);
 var_dump($todo->title);
+?>

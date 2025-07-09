@@ -35,6 +35,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 	c.emitRuntime()
+	c.writeln("?>")
 	return c.buf.Bytes(), nil
 }
 
@@ -843,7 +844,7 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		if pat == "_" {
+		if pat == "_" || pat == "$_" {
 			pat = "default"
 		}
 		buf.WriteString("    " + pat + " => " + res + ",\n")

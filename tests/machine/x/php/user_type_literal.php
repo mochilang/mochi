@@ -17,3 +17,4 @@ class Book {
 }
 $book = new Book(['title' => "Go", 'author' => new Person(['name' => "Bob", 'age' => 42])]);
 var_dump($book->author->name);
+?>

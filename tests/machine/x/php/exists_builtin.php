@@ -8,5 +8,6 @@ $flag = count((function() {
         }
     }
     return $result;
-})();) > 0;
+})()) > 0;
 var_dump($flag);
+?>

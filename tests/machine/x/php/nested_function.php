@@ -6,3 +6,4 @@ function outer($x) {
     return inner(5);
 }
 var_dump(outer(3));
+?>

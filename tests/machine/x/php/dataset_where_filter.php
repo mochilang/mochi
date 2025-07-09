@@ -8,8 +8,9 @@ $adults = (function() {
         }
     }
     return $result;
-})();;
+})();
 var_dump("--- Adults ---");
 foreach ($adults as $person) {
     var_dump($person->name, "is", $person->age, ($person->is_senior ? " (senior)" : ""));
 }
+?>

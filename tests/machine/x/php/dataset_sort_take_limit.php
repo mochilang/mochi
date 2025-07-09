@@ -9,8 +9,9 @@ $expensive = (function() {
     $result = array_map(fn($r) => $r[1], $result);
     $result = array_slice($result, 1, 3);
     return $result;
-})();;
+})();
 var_dump("--- Top products (excluding most expensive) ---");
 foreach ($expensive as $item) {
     var_dump($item->name, "costs $", $item->price);
 }
+?>
