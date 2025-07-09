@@ -2,7 +2,7 @@
 
 This directory contains C# code generated from Mochi programs in `tests/vm/valid`. Each program that compiled and ran successfully has a `.cs` file with a matching `.out`. If compilation or execution failed, a `.error` file is present.
 
-Compiled programs: 35/97
+Compiled programs: 38/97
 
 ## Checklist
 - [x] append_builtin
@@ -29,13 +29,13 @@ Compiled programs: 35/97
 - [x] fun_three_args
 - [x] group_by
 - [x] group_by_conditional_sum
-- [ ] group_by_having
+- [x] group_by_having
 - [x] group_by_join
 - [x] group_by_left_join
 - [x] group_by_multi_join
 - [x] group_by_multi_join_sort
-- [ ] group_by_sort
-- [ ] group_items_iteration
+- [x] group_by_sort
+- [x] group_items_iteration
 - [ ] if_else
 - [ ] if_then_else
 - [ ] if_then_else_nested
@@ -104,5 +104,5 @@ Compiled programs: 35/97
 - [ ] while_loop
 
 ### Tasks remaining
-- [ ] Implement remaining Mochi features (group_by_having, group_by_sort, etc.)
+- [ ] Implement remaining Mochi features and compile remaining example programs
 

@@ -1075,11 +1075,16 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	stype := c.inferExprType(q.Source)
+	if gt, ok := stype.(types.GroupType); ok {
+		src = fmt.Sprintf("%s.Items", src)
+		stype = types.ListType{Elem: gt.Elem}
+	}
 	resultType := csTypeOf(c.inferExprType(q.Select))
 	orig := c.env
 	child := types.NewEnv(c.env)
 	var elemT types.Type = types.AnyType{}
-	if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
+	if lt, ok := stype.(types.ListType); ok {
 		elemT = lt.Elem
 	}
 	elemType := csTypeOf(elemT)
@@ -1156,8 +1161,16 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		var sortGroup string
+		var havingExpr string
 		if q.Sort != nil {
 			sortGroup, err = c.compileExpr(q.Sort)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
+		if q.Group.Having != nil {
+			havingExpr, err = c.compileExpr(q.Group.Having)
 			if err != nil {
 				c.env = orig
 				return "", err
@@ -1185,6 +1198,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		filtered := strings.Join(srcParts, ".")
 		expr := fmt.Sprintf("%s.GroupBy(%s => %s)", filtered, v, keyExpr)
+		if havingExpr != "" {
+			expr = fmt.Sprintf("%s.Where(%s => %s)", expr, sanitizeName(q.Group.Name), havingExpr)
+		}
 		if sortGroup != "" {
 			expr = fmt.Sprintf("%s.OrderBy(%s => %s)", expr, sanitizeName(q.Group.Name), sortGroup)
 		}
