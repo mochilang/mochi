@@ -537,6 +537,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.env = orig
 			return "", err
 		}
+		var havingExpr string
+		if q.Group.Having != nil {
+			havingExpr, err = c.compileExpr(q.Group.Having)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
 		c.env = orig
 		c.helpers["_Group"] = true
 		c.helpers["_group_by"] = true
@@ -553,7 +561,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		b.WriteString("\tlocal _res = {}\n")
 		b.WriteString(fmt.Sprintf("\tfor _, %s in ipairs(_groups) do\n", sanitizeName(q.Group.Name)))
-		b.WriteString(fmt.Sprintf("\t\t_res[#_res+1] = %s\n", valExpr))
+		if havingExpr != "" {
+			b.WriteString(fmt.Sprintf("\t\tif %s then\n", havingExpr))
+			b.WriteString(fmt.Sprintf("\t\t\t_res[#_res+1] = %s\n", valExpr))
+			b.WriteString("\t\tend\n")
+		} else {
+			b.WriteString(fmt.Sprintf("\t\t_res[#_res+1] = %s\n", valExpr))
+		}
 		b.WriteString("\tend\n")
 		b.WriteString("\treturn _res\n")
 		b.WriteString("end)()")
@@ -630,6 +644,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.env = orig
 			return "", err
 		}
+		var havingExpr string
+		if q.Group.Having != nil {
+			havingExpr, err = c.compileExpr(q.Group.Having)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
 		c.env = orig
 
 		params := []string{sanitizeName(q.Var)}
@@ -692,7 +714,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(fmt.Sprintf("\tlocal _groups = __group_by_rows(_rows, %s, %s)\n", keyFn, valFn))
 		b.WriteString("\tlocal _res = {}\n")
 		b.WriteString(fmt.Sprintf("\tfor _, %s in ipairs(_groups) do\n", sanitizeName(q.Group.Name)))
-		b.WriteString(fmt.Sprintf("\t\t_res[#_res+1] = %s\n", valExpr))
+		if havingExpr != "" {
+			b.WriteString(fmt.Sprintf("\t\tif %s then\n", havingExpr))
+			b.WriteString(fmt.Sprintf("\t\t\t_res[#_res+1] = %s\n", valExpr))
+			b.WriteString("\t\tend\n")
+		} else {
+			b.WriteString(fmt.Sprintf("\t\t_res[#_res+1] = %s\n", valExpr))
+		}
 		b.WriteString("\tend\n")
 		b.WriteString("\treturn _res\n")
 		b.WriteString("end)()")
