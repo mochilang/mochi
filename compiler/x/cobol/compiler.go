@@ -288,6 +288,9 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Fun != nil:
 		// handled in declaration pass
 		return nil
+	case s.Type != nil || s.ExternType != nil:
+		// type declarations are compile-time only
+		return nil
 	case s.Expr != nil:
 		if call, ok := isCallTo(s.Expr.Expr, "print"); ok {
 			return c.compilePrint(call)
