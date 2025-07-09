@@ -1039,6 +1039,15 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 			child.SetVar(f.Var, types.AnyType{}, true)
 		}
 	}
+	for _, j := range q.Joins {
+		if lt, ok := types.TypeOfExprBasic(j.Src, c.env).(types.ListType); ok {
+			child.SetVar(j.Var, lt.Elem, true)
+		} else if gt, ok := types.TypeOfExprBasic(j.Src, c.env).(types.GroupType); ok {
+			child.SetVar(j.Var, gt.Elem, true)
+		} else {
+			child.SetVar(j.Var, types.AnyType{}, true)
+		}
+	}
 	var elem types.Type
 	if lt, ok := types.TypeOfExprBasic(q.Source, c.env).(types.ListType); ok {
 		elem = lt.Elem
@@ -1075,6 +1084,25 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		b.WriteString(indent(lvl))
 		b.WriteString(fmt.Sprintf("for (%s in %s) {\n", f.Var, s))
+		lvl++
+	}
+	for _, j := range q.Joins {
+		js, err := c.expr(j.Src)
+		if err != nil {
+			return "", err
+		}
+		b.WriteString(indent(lvl))
+		b.WriteString(fmt.Sprintf("for (%s in %s) {\n", j.Var, js))
+		lvl++
+		cond, err := c.expr(j.On)
+		if err != nil {
+			return "", err
+		}
+		if _, ok := types.TypeOfExprBasic(j.On, c.env).(types.BoolType); !ok {
+			cond = "toBool(" + cond + ")"
+		}
+		b.WriteString(indent(lvl))
+		b.WriteString(fmt.Sprintf("if (%s) {\n", cond))
 		lvl++
 	}
 	if q.Where != nil {
@@ -1154,6 +1182,14 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(indent(lvl))
 		b.WriteString("}\n")
 	}
+	for range q.Joins {
+		lvl--
+		b.WriteString(indent(lvl))
+		b.WriteString("}\n")
+		lvl--
+		b.WriteString(indent(lvl))
+		b.WriteString("}\n")
+	}
 	for range q.Froms {
 		lvl--
 		b.WriteString(indent(lvl))
@@ -1219,6 +1255,9 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		vars := []string{q.Var}
 		for _, f := range q.Froms {
 			vars = append(vars, f.Var)
+		}
+		for _, j := range q.Joins {
+			vars = append(vars, j.Var)
 		}
 		if q.Group != nil {
 			vars = append(vars, q.Group.Name)
