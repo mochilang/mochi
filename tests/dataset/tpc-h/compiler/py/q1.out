@@ -1,1 +1,1 @@
-[{"returnflag": "N", "linestatus": "O", "sum_qty": 53, "sum_base_price": 3000, "sum_disc_price": 2750.0, "sum_charge": 2906.5, "avg_qty": 26.5, "avg_price": 1500.0, "avg_disc": 0.07500000000000001, "count_order": 2}]
+[{"returnflag": "N", "linestatus": "O", "sum_qty": 53.0, "sum_base_price": 3000.0, "sum_disc_price": 2750.0, "sum_charge": 2906.5, "avg_qty": 26.5, "avg_price": 1500.0, "avg_disc": 0.07500000000000001, "count_order": 2}]
