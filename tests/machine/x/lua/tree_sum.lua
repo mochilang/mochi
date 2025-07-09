@@ -19,5 +19,5 @@ function sum_tree(t)
 end)()
 end
 
-t = {__name="Node", left=Leaf, value=1, right={__name="Node", left=Leaf, value=2, right=Leaf}}
+t = {__name="Node", left={__name="Leaf"}, value=1, right={__name="Node", left={__name="Leaf"}, value=2, right={__name="Leaf"}}}
 print(sum_tree(t))
