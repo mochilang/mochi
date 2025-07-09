@@ -1,0 +1,2 @@
+Error on line 0: compile error: unsupported expression at line 3
+1: let data = [1,2]

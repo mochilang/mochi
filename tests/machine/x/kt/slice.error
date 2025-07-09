@@ -1,0 +1,2 @@
+Error on line 0: compile error: slices not supported
+1: print([1,2,3][1:3])

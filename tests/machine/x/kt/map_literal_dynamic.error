@@ -1,0 +1,2 @@
+Error on line 0: compile error: print expects 1 arg
+1: var x = 3

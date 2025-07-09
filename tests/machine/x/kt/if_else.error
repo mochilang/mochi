@@ -1,0 +1,2 @@
+Error on line 0: compile error: statement not supported at line 3
+1: let x = 5

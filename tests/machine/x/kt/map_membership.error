@@ -1,0 +1,2 @@
+Error on line 0: compile error: invalid expression
+1: let m = {"a": 1, "b": 2}

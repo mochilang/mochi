@@ -1,0 +1,13 @@
+Error on line 0: kotlinc error: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kt/json_builtin.kt:2:16: error: unresolved reference: a
+	val m = mapOf(a to 1, b to 2)
+               ^
+/workspace/mochi/tests/machine/x/kt/json_builtin.kt:2:24: error: unresolved reference: b
+	val m = mapOf(a to 1, b to 2)
+                       ^
+/workspace/mochi/tests/machine/x/kt/json_builtin.kt:3:2: error: unresolved reference: json
+	json(m)
+ ^
+
+1: fun main() {

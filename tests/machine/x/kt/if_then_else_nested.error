@@ -1,0 +1,2 @@
+Error on line 0: compile error: unsupported expression at line 2
+1: let x = 8
