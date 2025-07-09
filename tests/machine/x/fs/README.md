@@ -3,7 +3,7 @@
 This directory contains F# source code generated from Mochi programs in `tests/vm/valid`.
 Generated with `compiler/x/fs`. Programs that compile successfully have a `.fs` file, and if compilation fails an `.error` file captures the reason.
 
-Compiled programs: 91/97
+Compiled programs: 97/97
 
 Checklist:
 - [x] append_builtin
@@ -55,7 +55,7 @@ Checklist:
 - [x] list_index
 - [x] list_nested_assign
 - [x] list_set_ops
-- [ ] load_yaml
+ - [x] load_yaml
 - [x] map_assign
 - [x] map_in_operator
 - [x] map_index
@@ -70,7 +70,7 @@ Checklist:
 - [x] min_max_builtin
 - [x] nested_function
 - [x] order_by_map
-- [ ] outer_join
+ - [x] outer_join
 - [x] partial_application
 - [x] print_hello
 - [x] pure_fold
@@ -78,7 +78,7 @@ Checklist:
 - [x] query_sum_select
 - [x] record_assign
 - [x] right_join
-- [ ] save_jsonl_stdout
+ - [x] save_jsonl_stdout
 - [x] short_circuit
 - [x] slice
 - [x] sort_stable
@@ -92,13 +92,13 @@ Checklist:
 - [x] substring_builtin
 - [x] sum_builtin
 - [x] tail_recursion
-- [ ] test_block
-- [ ] tree_sum
+ - [x] test_block
+ - [x] tree_sum
 - [x] two-sum
 - [x] typed_let
 - [x] typed_var
 - [x] unary_neg
-- [ ] update_stmt
+ - [x] update_stmt
 - [x] user_type_literal
 - [x] values_builtin
 - [x] var_assignment
