@@ -448,6 +448,18 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if len(args) != 2 {
 			return "", fmt.Errorf("append expects 2 args")
 		}
+		if lit, ok := listLiteral(call.Args[0]); ok {
+			parts := make([]string, len(lit.Elems)+1)
+			for i, e := range lit.Elems {
+				v, err := c.compileExpr(e)
+				if err != nil {
+					return "", err
+				}
+				parts[i] = v
+			}
+			parts[len(lit.Elems)] = args[1]
+			return "{" + strings.Join(parts, ", ") + "}", nil
+		}
 		c.helpers["append"] = true
 		return fmt.Sprintf("__append(%s, %s)", args[0], args[1]), nil
 	case "substring":

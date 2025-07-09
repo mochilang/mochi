@@ -240,4 +240,4 @@ end)()), ["c_acctbal"]=g.key.c_acctbal, ["n_name"]=g.key.n_name, ["c_address"]=g
   end
   return _res
 end)()
-print(result)
+(function(lst) for i,v in ipairs(lst) do io.write(v) if i < #lst then io.write(" ") end end io.write("\n") end)(result)

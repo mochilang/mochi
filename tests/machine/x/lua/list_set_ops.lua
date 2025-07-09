@@ -64,7 +64,7 @@ function __union_all(a, b)
     if b then for _, v in ipairs(b) do res[#res+1] = v end end
     return res
 end
-print(__union({1, 2}, {2, 3}))
-print(__except({1, 2, 3}, {2}))
-print(__intersect({1, 2, 3}, {2, 4}))
+(function(lst) for i,v in ipairs(lst) do io.write(v) if i < #lst then io.write(" ") end end io.write("\n") end)(__union({1, 2}, {2, 3}))
+(function(lst) for i,v in ipairs(lst) do io.write(v) if i < #lst then io.write(" ") end end io.write("\n") end)(__except({1, 2, 3}, {2}))
+(function(lst) for i,v in ipairs(lst) do io.write(v) if i < #lst then io.write(" ") end end io.write("\n") end)(__intersect({1, 2, 3}, {2, 4}))
 print(#__union_all({1, 2}, {2, 3}))

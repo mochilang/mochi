@@ -8,4 +8,4 @@ function __values(m)
     return out
 end
 m = {["a"]=1, ["b"]=2, ["c"]=3}
-print(__values(m))
+(function(lst) for i,v in ipairs(lst) do io.write(v) if i < #lst then io.write(" ") end end io.write("\n") end)(__values(m))
