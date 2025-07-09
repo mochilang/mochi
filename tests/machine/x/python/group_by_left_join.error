@@ -1,0 +1,13 @@
+run: exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/machine/x/python/group_by_left_join.py", line 119, in <module>
+    stats: list[dict[str, typing.Any]] = _query(
+                                         ^^^^^^^
+  File "/workspace/mochi/tests/machine/x/python/group_by_left_join.py", line 105, in _query
+    res.append(opts["select"](*r))
+               ^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/machine/x/python/group_by_left_join.py", line 130, in <lambda>
+    "name": _get(g, "key"),
+                 ^
+NameError: name 'g' is not defined
+

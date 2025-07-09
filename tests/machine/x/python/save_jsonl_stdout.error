@@ -1,0 +1,9 @@
+run: exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/machine/x/python/save_jsonl_stdout.py", line 76, in <module>
+    _save(people, "-", dict({"format": "jsonl"}))
+  File "/workspace/mochi/tests/machine/x/python/save_jsonl_stdout.py", line 25, in _save
+    if path is not None and not os.path.isabs(path):
+                                ^^
+NameError: name 'os' is not defined
+
