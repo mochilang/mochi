@@ -2,7 +2,7 @@
 
 This directory stores machine generated Prolog translations of programs from `tests/vm/valid`. Each entry is compiled and executed during tests. If a program fails to compile or run, a `.error` file will contain the diagnostic details.
 
-Checklist of programs that currently compile and run (24/97):
+Checklist of programs that currently compile and run (25/97):
 
 - print_hello
 - let_and_print
@@ -23,6 +23,7 @@ Checklist of programs that currently compile and run (24/97):
 - bool_chain
 - fun_call
 - fun_three_args
+- string_concat
 - typed_var
 - typed_let
 - if_then_else

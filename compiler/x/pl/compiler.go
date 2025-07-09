@@ -240,6 +240,8 @@ func (c *Compiler) compileFor(fs *parser.ForStmt) error {
 	v := sanitizeVar(fs.Name)
 	c.writeln("catch(")
 	c.indent++
+	c.writeln("(")
+	c.indent++
 	if fs.RangeEnd != nil {
 		start, _, err := c.compileExpr(fs.Source)
 		if err != nil {
@@ -251,13 +253,13 @@ func (c *Compiler) compileFor(fs *parser.ForStmt) error {
 		}
 		tmp := c.newTmp()
 		c.writeln(fmt.Sprintf("%s is %s - 1,", tmp, end))
-		c.writeln(fmt.Sprintf("(between(%s, %s, %s),", start, tmp, v))
+		c.writeln(fmt.Sprintf("between(%s, %s, %s),", start, tmp, v))
 	} else {
 		src, _, err := c.compileExpr(fs.Source)
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("(member(%s, %s),", v, src))
+		c.writeln(fmt.Sprintf("member(%s, %s),", v, src))
 	}
 	c.indent++
 	c.writeln("catch(")
@@ -274,9 +276,9 @@ func (c *Compiler) compileFor(fs *parser.ForStmt) error {
 	c.writeln("), continue, true),")
 	c.writeln("fail")
 	c.indent--
-	c.writeln("; true)")
+	c.writeln("; true")
 	c.indent--
-	c.writeln(", break, true),")
+	c.writeln("), break, true),")
 	return nil
 }
 
@@ -294,7 +296,14 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, bool, error) {
 			return "", false, err
 		}
 		arith = true
-		if op.Op == "+" || op.Op == "-" || op.Op == "*" || op.Op == "/" {
+		concat := false
+		if op.Op == "+" && (strings.HasPrefix(res, "\"") || strings.HasPrefix(rhs, "\"")) {
+			tmp := c.newTmp()
+			c.writeln(fmt.Sprintf("string_concat(%s, %s, %s),", res, rhs, tmp))
+			res = tmp
+			arith = false
+			concat = true
+		} else if op.Op == "+" || op.Op == "-" || op.Op == "*" || op.Op == "/" {
 			res = fmt.Sprintf("(%s %s %s)", res, op.Op, rhs)
 		} else if op.Op == "%" {
 			res = fmt.Sprintf("(%s mod %s)", res, rhs)
@@ -316,7 +325,7 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, bool, error) {
 		} else {
 			return "", false, fmt.Errorf("unsupported op")
 		}
-		if ar == false && (op.Op == "+" || op.Op == "-" || op.Op == "*" || op.Op == "/" || op.Op == "%") {
+		if !concat && ar == false && (op.Op == "+" || op.Op == "-" || op.Op == "*" || op.Op == "/" || op.Op == "%") {
 			arith = true
 		}
 	}
