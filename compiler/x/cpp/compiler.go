@@ -876,6 +876,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				def.WriteString("struct " + name + " {")
 				for i, n := range names {
 					ftype := fmt.Sprintf("decltype(%s)", vals[i])
+					if strings.Contains(vals[i], "((int)") {
+						ftype = "int"
+					}
 					if t, ok := c.vars[vals[i]]; ok {
 						switch t {
 						case "string":
@@ -1528,6 +1531,7 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 		return "", err
 	}
 	backup := map[string]string{}
+	backupElem := map[string]string{}
 	if t := c.varStruct[src]; t != "" {
 		backup[q.Var] = c.varStruct[q.Var]
 		c.varStruct[q.Var] = t
@@ -1635,25 +1639,45 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 	for _, j := range q.Joins {
 		itemVars = append(itemVars, j.Var)
 	}
-	itemStruct := c.structFromVars(itemVars)
+	itemStruct := ""
+	if len(itemVars) == 1 {
+		if t := c.varStruct[itemVars[0]]; t != "" {
+			itemStruct = t
+		}
+	}
+	if itemStruct == "" {
+		itemStruct = c.structFromVars(itemVars)
+	}
 	groupStruct := fmt.Sprintf("__struct%d", c.structCount+1)
 	c.structCount++
 	c.headerWriteln(fmt.Sprintf("struct %s { %s key; std::vector<%s> items; };", groupStruct, keyType, itemStruct))
+	backup[q.Group.Name] = c.varStruct[q.Group.Name]
+	c.varStruct[q.Group.Name] = groupStruct
+	backupElem[q.Group.Name+".items"] = c.elemType[q.Group.Name+".items"]
+	c.elemType[q.Group.Name+".items"] = itemStruct
 
 	// prepare expressions for select, having, sort
 	oldAliases := c.aliases
+	selectIsGroup := false
+	if id, ok := c.simpleIdentifier(q.Select); ok && id == q.Group.Name {
+		selectIsGroup = true
+	}
 	c.aliases = make(map[string]string)
 	for k := range oldAliases {
 		c.aliases[k] = oldAliases[k]
 	}
-	c.aliases[q.Group.Name] = q.Group.Name + ".items"
+	if !selectIsGroup {
+		c.aliases[q.Group.Name] = q.Group.Name + ".items"
+	}
 	valExpr, err := c.compileExpr(q.Select)
 	if err != nil {
 		c.aliases = oldAliases
 		return "", err
 	}
 	itemType := fmt.Sprintf("decltype(%s)", valExpr)
-	if t := structLiteralType(valExpr); t != "" {
+	if selectIsGroup {
+		itemType = groupStruct
+	} else if t := structLiteralType(valExpr); t != "" {
 		itemType = t
 	} else if t := c.varStruct[valExpr]; t != "" {
 		if idx := strings.Index(t, "{"); idx != -1 {
@@ -1670,6 +1694,13 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 			itemType = fmt.Sprintf("decltype(std::declval<%s>().%s)", t, fld)
 		}
 	}
+
+	// prepare aliases for remaining expressions
+	c.aliases = make(map[string]string)
+	for k := range oldAliases {
+		c.aliases[k] = oldAliases[k]
+	}
+	c.aliases[q.Group.Name] = q.Group.Name + ".items"
 
 	var sortExpr, sortKeyType string
 	if q.Sort != nil {
@@ -1709,6 +1740,13 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 			delete(c.varStruct, k)
 		} else {
 			c.varStruct[k] = v
+		}
+	}
+	for k, v := range backupElem {
+		if v == "" {
+			delete(c.elemType, k)
+		} else {
+			c.elemType[k] = v
 		}
 	}
 
@@ -2003,7 +2041,14 @@ func (c *Compiler) structFromVars(names []string) string {
 	var def strings.Builder
 	def.WriteString("struct " + name + " {")
 	for _, n := range names {
-		def.WriteString("decltype(" + sanitizeName(n) + ") " + sanitizeName(n) + "; ")
+		fieldType := "decltype(" + sanitizeName(n) + ")"
+		if t := c.varStruct[n]; t != "" {
+			if idx := strings.Index(t, "{"); idx != -1 {
+				t = t[:idx]
+			}
+			fieldType = t
+		}
+		def.WriteString(fieldType + " " + sanitizeName(n) + "; ")
 	}
 	def.WriteString("};")
 	c.headerWriteln(def.String())

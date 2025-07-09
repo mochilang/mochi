@@ -2,7 +2,7 @@
 
 This directory contains C++ source code generated from Mochi programs and the corresponding outputs or errors.
 
-Compiled programs: 72/97
+Compiled programs: 74/97
 
 ## Checklist
 
@@ -71,10 +71,10 @@ Compiled programs: 72/97
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
-- [ ] group_by
+ - [x] group_by
 - [ ] group_by_conditional_sum
 - [ ] group_by_having
-- [ ] group_by_join
+ - [x] group_by_join
 - [ ] group_by_left_join
 - [ ] group_by_multi_join
 - [ ] group_by_multi_join_sort
@@ -106,10 +106,10 @@ Compiled programs: 72/97
 
 ## Remaining Tasks
 
-- [ ] group_by
-- [ ] group_by_conditional_sum
-- [ ] group_by_having
-- [ ] group_by_join
+ - [x] group_by
+ - [ ] group_by_conditional_sum
+ - [ ] group_by_having
+ - [x] group_by_join
 - [ ] group_by_left_join
 - [ ] group_by_multi_join
 - [ ] group_by_multi_join_sort
