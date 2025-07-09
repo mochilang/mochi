@@ -77,6 +77,19 @@ func (c *Compiler) emitHelpers(out *bytes.Buffer, indent int) {
 			out.WriteString(pad + "def _load_yaml(path: String): List[Map[String, String]] = { val lines = scala.io.Source.fromFile(path).getLines().toList; lines.grouped(3).flatMap { case List(n,a,e) => Some(Map(\"name\"->n.split(':')(1).trim, \"age\"->a.split(':')(1).trim, \"email\"->e.split(':')(1).trim)); case _ => None }.toList }\n")
 		case "_save_jsonl":
 			out.WriteString(pad + "def _save_jsonl(rows: List[Map[String, Any]], path: String): Unit = { val out = if(path == \"-\") Console.out else new java.io.PrintWriter(path); rows.foreach(r => out.println(scala.util.parsing.json.JSONObject(r).toString())); if(out ne Console.out) out.close() }\n")
+		case "_truthy":
+			out.WriteString(pad + "def _truthy(v: Any): Boolean = v match {\n" +
+				pad + "  case null => false\n" +
+				pad + "  case b: Boolean => b\n" +
+				pad + "  case i: Int => i != 0\n" +
+				pad + "  case l: Long => l != 0L\n" +
+				pad + "  case d: Double => d != 0.0\n" +
+				pad + "  case s: String => s.nonEmpty\n" +
+				pad + "  case m: scala.collection.Map[_, _] => m.nonEmpty\n" +
+				pad + "  case it: Iterable[_] => it.nonEmpty\n" +
+				pad + "  case opt: Option[_] => opt.nonEmpty\n" +
+				pad + "  case _ => true\n" +
+				pad + "}\n")
 		}
 		out.WriteByte('\n')
 	}
@@ -330,7 +343,8 @@ func (c *Compiler) compileIf(s *parser.IfStmt) error {
 		return err
 	}
 	if _, ok := types.ExprType(s.Cond, c.env).(types.BoolType); !ok {
-		cond = fmt.Sprintf("(%s).asInstanceOf[Boolean]", cond)
+		c.use("_truthy")
+		cond = fmt.Sprintf("_truthy(%s)", cond)
 	}
 	c.writeln(fmt.Sprintf("if (%s) {", cond))
 	c.indent += indentStep
@@ -370,7 +384,8 @@ func (c *Compiler) compileIfExpr(e *parser.IfExpr) (string, error) {
 		return "", err
 	}
 	if _, ok := types.ExprType(e.Cond, c.env).(types.BoolType); !ok {
-		cond = fmt.Sprintf("(%s).asInstanceOf[Boolean]", cond)
+		c.use("_truthy")
+		cond = fmt.Sprintf("_truthy(%s)", cond)
 	}
 	thenExpr, err := c.compileExpr(e.Then)
 	if err != nil {
@@ -416,7 +431,8 @@ func (c *Compiler) compileWhile(s *parser.WhileStmt) error {
 		return err
 	}
 	if _, ok := types.ExprType(s.Cond, c.env).(types.BoolType); !ok {
-		cond = fmt.Sprintf("(%s).asInstanceOf[Boolean]", cond)
+		c.use("_truthy")
+		cond = fmt.Sprintf("_truthy(%s)", cond)
 	}
 	c.writeln(fmt.Sprintf("while (%s) {", cond))
 	c.indent += indentStep
@@ -759,7 +775,12 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 				s = fmt.Sprintf("-(%s).asInstanceOf[Int]", s)
 			}
 		case "!":
-			s = fmt.Sprintf("!%s", s)
+			if _, ok := valType.(types.BoolType); ok {
+				s = fmt.Sprintf("!%s", s)
+			} else {
+				c.use("_truthy")
+				s = fmt.Sprintf("!_truthy(%s)", s)
+			}
 		default:
 			return "", fmt.Errorf("line %d: unsupported unary op %s", u.Pos.Line, op)
 		}

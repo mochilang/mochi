@@ -104,3 +104,4 @@ This directory contains Scala source files generated from Mochi programs using t
 ## TODO
 - [ ] finish query join support
 - [ ] improve load/save expression handling
+- [x] add generic truthiness helper for conditionals
