@@ -19,6 +19,7 @@ type Compiler struct {
 	tmp     int
 	env     *types.Env
 	structs map[string]types.StructType
+	inMain  bool
 }
 
 func (c *Compiler) newTmp() string {
@@ -28,7 +29,7 @@ func (c *Compiler) newTmp() string {
 
 // New returns a new Compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{helpers: make(map[string]bool), env: env, structs: make(map[string]types.StructType)}
+	return &Compiler{helpers: make(map[string]bool), env: env, structs: make(map[string]types.StructType), inMain: true}
 }
 
 // Compile converts a parsed Mochi program into Rust source code.
@@ -36,6 +37,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.indent = 0
 	c.helpers = map[string]bool{}
+	c.inMain = true
 	c.writeln("fn main() {")
 	c.indent++
 	for _, s := range prog.Statements {
@@ -174,6 +176,35 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 	}
 	target := a.Name
 	prefix := &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Selector: &parser.SelectorExpr{Root: a.Name}}}}
+	// handle map assignments specially
+	if len(a.Index) > 0 && len(a.Field) == 0 {
+		t, _ := c.env.GetVar(a.Name)
+		if len(a.Index) == 1 && types.IsMapType(t) {
+			idxStr, err := c.compileExpr(a.Index[0].Start)
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("%s.insert(%s, %s);", target, idxStr, val))
+			return nil
+		}
+		if len(a.Index) == 2 && types.IsMapType(t) {
+			first, err := c.compileExpr(a.Index[0].Start)
+			if err != nil {
+				return err
+			}
+			second, err := c.compileExpr(a.Index[1].Start)
+			if err != nil {
+				return err
+			}
+			tmp := c.newTmp()
+			c.writeln(fmt.Sprintf("if let Some(%s) = %s.get_mut(%s) {", tmp, target, first))
+			c.indent++
+			c.writeln(fmt.Sprintf("%s.insert(%s, %s);", tmp, second, val))
+			c.indent--
+			c.writeln("}")
+			return nil
+		}
+	}
 	for _, idx := range a.Index {
 		idxStr, err := c.compileExpr(idx.Start)
 		if err != nil {
@@ -293,8 +324,18 @@ func (c *Compiler) compileFun(f *parser.FunStmt) error {
 	for i, p := range f.Params {
 		params[i] = fmt.Sprintf("%s: %s", p.Name, rustType(p.Type))
 	}
-	retTy := rustType(f.Return)
-	c.writeln(fmt.Sprintf("fn %s(%s) -> %s {", f.Name, strings.Join(params, ", "), retTy))
+	retTy := "()"
+	if f.Return != nil {
+		retTy = rustType(f.Return)
+	}
+	topLevel := c.inMain && c.indent == 1
+	if !topLevel {
+		c.writeln(fmt.Sprintf("let %s = move |%s| -> %s {", f.Name, strings.Join(params, ", "), retTy))
+	} else {
+		c.writeln(fmt.Sprintf("fn %s(%s) -> %s {", f.Name, strings.Join(params, ", "), retTy))
+	}
+	prev := c.inMain
+	c.inMain = false
 	c.indent++
 	for _, s := range f.Body {
 		if err := c.compileStmt(s); err != nil {
@@ -302,7 +343,12 @@ func (c *Compiler) compileFun(f *parser.FunStmt) error {
 		}
 	}
 	c.indent--
-	c.writeln("}")
+	c.inMain = prev
+	if !topLevel {
+		c.writeln("};")
+	} else {
+		c.writeln("}")
+	}
 	return nil
 }
 
@@ -442,7 +488,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					return "", err
 				}
 				if types.IsMapType(t) {
-					val = fmt.Sprintf("%s[%s]", val, idxVal)
+					val = fmt.Sprintf("%s[&%s]", val, idxVal)
 				} else {
 					val = fmt.Sprintf("%s[%s as usize]", val, idxVal)
 				}
