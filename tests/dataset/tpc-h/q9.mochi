@@ -71,7 +71,7 @@ let result =
       )
   }
 
-print json(result)
+json(result)
 
 test "Q9 computes profit for green parts by nation and year" {
   let revenue = 1000.0 * 0.9   // 900

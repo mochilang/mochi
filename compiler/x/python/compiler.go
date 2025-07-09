@@ -30,6 +30,8 @@ type Compiler struct {
 	models       bool
 	methodFields map[string]bool
 	tupleFields  map[string]map[string]int
+	currentGroup string
+	groupFields  map[string]bool
 }
 
 func New(env *types.Env) *Compiler {
@@ -43,6 +45,8 @@ func New(env *types.Env) *Compiler {
 		tmpCount:     0,
 		methodFields: nil,
 		tupleFields:  make(map[string]map[string]int),
+		currentGroup: "",
+		groupFields:  nil,
 	}
 }
 
@@ -574,6 +578,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		if c.methodFields != nil && c.methodFields[p.Selector.Root] {
 			expr = "self." + expr
+		}
+		// If the identifier is not found in the current scope but matches
+		// a group-by key field, reference it via the current group
+		if _, ok := typ.(types.AnyType); ok && len(p.Selector.Tail) == 0 &&
+			c.currentGroup != "" && c.groupFields[sanitizeName(p.Selector.Root)] {
+			c.use("_get")
+			return fmt.Sprintf("_get(_get(%s, \"key\"), %q)", c.currentGroup, sanitizeName(p.Selector.Root)), nil
 		}
 		tail := p.Selector.Tail
 		if fm, ok := c.tupleFields[expr]; ok && len(tail) > 0 {
@@ -1234,10 +1245,34 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		genv := types.NewEnv(child)
 		genv.SetVar(q.Group.Name, types.GroupType{Elem: elemType}, true)
 
-		var sortExpr, skipExpr, takeExpr string
+		keyNames := groupKeyNames(q.Group.Exprs[0])
+		prevGroup := c.currentGroup
+		prevFields := c.groupFields
+		if len(keyNames) > 0 {
+			c.currentGroup = sanitizeName(q.Group.Name)
+			f := make(map[string]bool, len(keyNames))
+			for _, n := range keyNames {
+				f[n] = true
+			}
+			c.groupFields = f
+		}
+		defer func() {
+			c.currentGroup = prevGroup
+			c.groupFields = prevFields
+		}()
+
+		var sortExpr, skipExpr, takeExpr, havingExpr string
 		if q.Sort != nil {
 			c.env = genv
 			sortExpr, err = c.compileExpr(q.Sort)
+			c.env = orig
+			if err != nil {
+				return "", err
+			}
+		}
+		if q.Group.Having != nil {
+			c.env = genv
+			havingExpr, err = c.compileExpr(q.Group.Having)
 			c.env = orig
 			if err != nil {
 				return "", err
@@ -1278,6 +1313,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		tmpItems := fmt.Sprintf("_items%d", c.tmpCount)
 		c.tmpCount++
 		c.writeln(fmt.Sprintf("%s = _groups", tmpItems))
+		if havingExpr != "" {
+			c.writeln(fmt.Sprintf("%s = [g for g in %s if (%s)]", tmpItems, tmpItems, havingExpr))
+		}
 		if sortExpr != "" {
 			c.use("_sort_key")
 			c.writeln(fmt.Sprintf("%s = sorted(%s, key=lambda %s: _sort_key(%s))", tmpItems, tmpItems, sanitizeName(q.Group.Name), sortExpr))
