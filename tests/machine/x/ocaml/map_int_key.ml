@@ -33,7 +33,7 @@ let slice lst i j =
 
 let string_slice s i j = String.sub s i (j - i)
 
-let m = [(1,"a");(2,"b")]
+let m = [(1,Obj.repr "a");(2,Obj.repr "b")]
 
 let () =
-  print_endline (__show (List.nth m 1));
+  print_endline (__show (Obj.obj (List.assoc 1 m)));
