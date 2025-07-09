@@ -15,18 +15,23 @@ import (
 type Compiler struct {
 	buf    bytes.Buffer
 	indent int
+	vars   map[string]bool
 }
 
 // New returns a new Smalltalk compiler.
-func New() *Compiler { return &Compiler{} }
+func New() *Compiler { return &Compiler{vars: make(map[string]bool)} }
 
 // Compile converts the given Mochi program into Smalltalk source code.
 func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.indent = 0
+	c.vars = make(map[string]bool)
 	vars := collectVars(p.Statements)
 	if len(vars) > 0 {
 		c.writeln("| " + strings.Join(vars, " ") + " |")
+		for _, v := range vars {
+			c.vars[v] = true
+		}
 	}
 	for _, st := range p.Statements {
 		if err := c.compileStmt(st); err != nil {
@@ -106,6 +111,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		c.writeln(expr)
 		return nil
+	case s.Type != nil:
+		// Struct and enum definitions have no runtime effect in the
+		// generated Smalltalk code, so they are ignored.
+		return nil
 	default:
 		return fmt.Errorf("unsupported statement at line %d", s.Pos.Line)
 	}
@@ -136,14 +145,28 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 }
 
 func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
-	if len(a.Index) > 0 || len(a.Field) > 0 {
-		return fmt.Errorf("complex assignment not supported")
-	}
 	val, err := c.compileExpr(a.Value)
 	if err != nil {
 		return err
 	}
-	c.writeln(fmt.Sprintf("%s := %s.", a.Name, val))
+
+	target := a.Name
+	for _, idx := range a.Index {
+		ex, err := c.compileExpr(idx.Start)
+		if err != nil {
+			return err
+		}
+		target = fmt.Sprintf("%s at: %s", target, ex)
+	}
+	for _, f := range a.Field {
+		target = fmt.Sprintf("%s at: %q", target, f.Name)
+	}
+
+	if len(a.Index) > 0 || len(a.Field) > 0 {
+		c.writeln(fmt.Sprintf("%s put: %s.", target, val))
+	} else {
+		c.writeln(fmt.Sprintf("%s := %s.", target, val))
+	}
 	return nil
 }
 
