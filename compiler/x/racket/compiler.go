@@ -248,6 +248,36 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	}
 	for _, op := range p.Ops {
 		switch {
+		case op.Call != nil:
+			// handle method calls like x.contains(y)
+			args := make([]string, len(op.Call.Args))
+			for i, a := range op.Call.Args {
+				v, err := c.compileExpr(a)
+				if err != nil {
+					return "", err
+				}
+				args[i] = v
+			}
+			// special case for "contains" method on strings
+			if p.Target.Selector != nil && len(p.Target.Selector.Tail) > 0 &&
+				p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1] == "contains" && len(args) == 1 {
+				recvSel := &parser.Primary{Selector: &parser.SelectorExpr{
+					Root: p.Target.Selector.Root,
+					Tail: p.Target.Selector.Tail[:len(p.Target.Selector.Tail)-1],
+				}}
+				recv, err := c.compilePrimary(recvSel)
+				if err != nil {
+					return "", err
+				}
+				val = fmt.Sprintf("(regexp-match? (regexp %s) %s)", args[0], recv)
+				continue
+			}
+			if len(args) == 0 {
+				val = fmt.Sprintf("(%s)", val)
+			} else {
+				val = fmt.Sprintf("(%s %s)", val, strings.Join(args, " "))
+			}
+		case op.Cast != nil:
 		case op.Cast != nil:
 			if op.Cast.Type.Simple != nil {
 				tname := *op.Cast.Type.Simple
@@ -386,19 +416,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return fmt.Sprintf("(%s %s)", p.Call.Func, strings.Join(args, " ")), nil
 		}
 	case p.If != nil:
-		cond, err := c.compileExpr(p.If.Cond)
-		if err != nil {
-			return "", err
-		}
-		thn, err := c.compileExpr(p.If.Then)
-		if err != nil {
-			return "", err
-		}
-		els, err := c.compileExpr(p.If.Else)
-		if err != nil {
-			return "", err
-		}
-		return fmt.Sprintf("(if %s %s %s)", cond, thn, els), nil
+		return c.compileIfExpr(p.If)
 	case p.Selector != nil:
 		val := p.Selector.Root
 		for _, f := range p.Selector.Tail {
@@ -628,6 +646,32 @@ func (c *Compiler) compileWhileWithLabels(w *parser.WhileStmt, breakLbl, contLbl
 	c.writeln("      (loop)))")
 	c.writeln(")")
 	return nil
+}
+
+func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
+	cond, err := c.compileExpr(ie.Cond)
+	if err != nil {
+		return "", err
+	}
+	thn, err := c.compileExpr(ie.Then)
+	if err != nil {
+		return "", err
+	}
+	var els string
+	if ie.ElseIf != nil {
+		els, err = c.compileIfExpr(ie.ElseIf)
+		if err != nil {
+			return "", err
+		}
+	} else if ie.Else != nil {
+		els, err = c.compileExpr(ie.Else)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		els = "(void)"
+	}
+	return fmt.Sprintf("(if %s %s %s)", cond, thn, els), nil
 }
 
 func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
