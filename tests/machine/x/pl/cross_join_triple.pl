@@ -10,17 +10,24 @@ main :-
     Nums = [1, 2],
     Letters = ["A", "B"],
     Bools = [true, false],
-    dict_create(_V0, map, [N-N, L-L, B-B]),
-    findall(_V0, (member(N, Nums), member(L, Letters), member(B, Bools), true), _V1),
-    Combos = _V1,
-    writeln("--- Cross Join of three lists ---"),
+    findall(_V1, (member(N, Nums), member(L, Letters), member(B, Bools), true, dict_create(_V0, map, [n-N, l-L, b-B]), _V1 = _V0), _V2),
+    Combos = _V2,
+    write("--- Cross Join of three lists ---"),
+    nl,
     catch(
         (
             member(C, Combos),
                 catch(
                     (
-                        get_item(C, 'n', _V2),
-                        writeln(_V2),
+                        get_item(C, 'n', _V3),
+                        write(_V3),
+                        write(' '),
+                        get_item(C, 'l', _V4),
+                        write(_V4),
+                        write(' '),
+                        get_item(C, 'b', _V5),
+                        write(_V5),
+                        nl,
                         true
                     ), continue, true),
                     fail

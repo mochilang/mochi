@@ -7,26 +7,36 @@ get_item(List, Index, Val) :- nth0(Index, List, Val).
 
 :- initialization(main, main).
 main :-
-    dict_create(_V0, map, [Id-1, Name-"Alice"]),
-    dict_create(_V1, map, [Id-2, Name-"Bob"]),
+    dict_create(_V0, map, [id-1, name-"Alice"]),
+    dict_create(_V1, map, [id-2, name-"Bob"]),
     Customers = [_V0, _V1],
-    dict_create(_V2, map, [Id-100, CustomerId-1, Total-250]),
-    dict_create(_V3, map, [Id-101, CustomerId-3, Total-80]),
+    dict_create(_V2, map, [id-100, customerid-1, total-250]),
+    dict_create(_V3, map, [id-101, customerid-3, total-80]),
     Orders = [_V2, _V3],
-    get_item(O, 'customerId', _V4),
-    get_item(C, 'id', _V5),
-    get_item(O, 'id', _V6),
-    get_item(O, 'total', _V7),
-    dict_create(_V8, map, [OrderId-_V6, Customer-C, Total-_V7]),
-    findall(_V8, (member(O, Orders), member(C, Customers), (_V4 == _V5), true), _V9),
-    Result = _V9,
-    writeln("--- Left Join ---"),
+    findall(_V10, (member(O, Orders), findall(C, (member(C, Customers), (_V4 == _V5)), _V6), (_V6 = [] -> C = nil; member(C, _V6)), get_item(O, 'customerId', _V4), get_item(C, 'id', _V5), (_V4 == _V5), true, get_item(O, 'id', _V7), get_item(O, 'total', _V8), dict_create(_V9, map, [orderid-_V7, customer-C, total-_V8]), _V10 = _V9), _V11),
+    Result = _V11,
+    write("--- Left Join ---"),
+    nl,
     catch(
         (
             member(Entry, Result),
                 catch(
                     (
-                        writeln("Order"),
+                        write("Order"),
+                        write(' '),
+                        get_item(Entry, 'orderId', _V12),
+                        write(_V12),
+                        write(' '),
+                        write("customer"),
+                        write(' '),
+                        get_item(Entry, 'customer', _V13),
+                        write(_V13),
+                        write(' '),
+                        write("total"),
+                        write(' '),
+                        get_item(Entry, 'total', _V14),
+                        write(_V14),
+                        nl,
                         true
                     ), continue, true),
                     fail

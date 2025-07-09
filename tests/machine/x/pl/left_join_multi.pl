@@ -7,31 +7,32 @@ get_item(List, Index, Val) :- nth0(Index, List, Val).
 
 :- initialization(main, main).
 main :-
-    dict_create(_V0, map, [Id-1, Name-"Alice"]),
-    dict_create(_V1, map, [Id-2, Name-"Bob"]),
+    dict_create(_V0, map, [id-1, name-"Alice"]),
+    dict_create(_V1, map, [id-2, name-"Bob"]),
     Customers = [_V0, _V1],
-    dict_create(_V2, map, [Id-100, CustomerId-1]),
-    dict_create(_V3, map, [Id-101, CustomerId-2]),
+    dict_create(_V2, map, [id-100, customerid-1]),
+    dict_create(_V3, map, [id-101, customerid-2]),
     Orders = [_V2, _V3],
-    dict_create(_V4, map, [OrderId-100, Sku-"a"]),
+    dict_create(_V4, map, [orderid-100, sku-"a"]),
     Items = [_V4],
-    get_item(O, 'customerId', _V5),
-    get_item(C, 'id', _V6),
-    get_item(O, 'id', _V7),
-    get_item(I, 'orderId', _V8),
-    get_item(O, 'id', _V9),
-    get_item(C, 'name', _V10),
-    dict_create(_V11, map, [OrderId-_V9, Name-_V10, Item-I]),
-    findall(_V11, (member(O, Orders), member(C, Customers), (_V5 == _V6), member(I, Items), (_V7 == _V8), true), _V12),
-    Result = _V12,
-    writeln("--- Left Join Multi ---"),
+    findall(_V13, (member(O, Orders), member(C, Customers), get_item(O, 'customerId', _V5), get_item(C, 'id', _V6), (_V5 == _V6), findall(I, (member(I, Items), (_V7 == _V8)), _V9), (_V9 = [] -> I = nil; member(I, _V9)), get_item(O, 'id', _V7), get_item(I, 'orderId', _V8), (_V7 == _V8), true, get_item(O, 'id', _V10), get_item(C, 'name', _V11), dict_create(_V12, map, [orderid-_V10, name-_V11, item-I]), _V13 = _V12), _V14),
+    Result = _V14,
+    write("--- Left Join Multi ---"),
+    nl,
     catch(
         (
             member(R, Result),
                 catch(
                     (
-                        get_item(R, 'orderId', _V13),
-                        writeln(_V13),
+                        get_item(R, 'orderId', _V15),
+                        write(_V15),
+                        write(' '),
+                        get_item(R, 'name', _V16),
+                        write(_V16),
+                        write(' '),
+                        get_item(R, 'item', _V17),
+                        write(_V17),
+                        nl,
                         true
                     ), continue, true),
                     fail
