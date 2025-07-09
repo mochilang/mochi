@@ -501,10 +501,27 @@ const (
 		"    local fmt = 'json'\n" +
 		"    if opts and opts['format'] then fmt = opts['format'] end\n" +
 		"    local f\n" +
-		"    if not path or path == '' or path == '-' then\n" +
-		"        f = io.stdin\n" +
-		"    else\n" +
-		"        local err; f, err = io.open(path, 'r'); if not f then error(err) end\n" +
+		"    if path and path ~= '' and path ~= '-' and not string.match(path, '^/') then\n" +
+		"        local base = (arg and arg[0]) and string.match(arg[0], '(.*/)') or ''\n" +
+		"        local try = base .. path\n" +
+		"        f = io.open(try, 'r')\n" +
+		"        if f then path = try else\n" +
+		"            local root = os.getenv('MOCHI_ROOT')\n" +
+		"            if root then\n" +
+		"                local clean = path\n" +
+		"                while string.sub(clean, 1, 3) == '../' do clean = string.sub(clean, 4) end\n" +
+		"                try = root .. '/' .. clean\n" +
+		"                f = io.open(try, 'r')\n" +
+		"                if f then path = try end\n" +
+		"            end\n" +
+		"        end\n" +
+		"    end\n" +
+		"    if not f then\n" +
+		"        if not path or path == '' or path == '-' then\n" +
+		"            f = io.stdin\n" +
+		"        else\n" +
+		"            local err; f, err = io.open(path, 'r'); if not f then error(err) end\n" +
+		"        end\n" +
 		"    end\n" +
 		"    local data = f:read('*a')\n" +
 		"    if f ~= io.stdin then f:close() end\n" +
