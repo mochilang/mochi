@@ -1,4 +1,4 @@
 fn main() {
     let s = "mochi";
-    println!("{:?}", s[1 as usize]);
+    println!("{:?}", s.chars().nth(1 as usize).unwrap());
 }

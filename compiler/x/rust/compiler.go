@@ -761,6 +761,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 				if types.IsMapType(t) {
 					val = fmt.Sprintf("%s[&%s]", val, idxVal)
+				} else if types.IsStringType(t) {
+					val = fmt.Sprintf("%s.chars().nth(%s as usize).unwrap()", val, idxVal)
 				} else {
 					val = fmt.Sprintf("%s[%s as usize]", val, idxVal)
 				}
