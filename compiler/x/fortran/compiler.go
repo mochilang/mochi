@@ -810,7 +810,7 @@ func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	elseVal := "0"
+	var elseVal string
 	if ie.ElseIf != nil {
 		v, err := c.compileIfExpr(ie.ElseIf)
 		if err != nil {
@@ -823,7 +823,29 @@ func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
 			return "", err
 		}
 		elseVal = v
+	} else {
+		elseVal = "0"
 	}
+
+	// If the expression evaluates to a string, use a temporary variable and
+	// an IF statement. This avoids issues with the MERGE intrinsic when the
+	// branches have different lengths.
+	if types.IsStringExpr(ie.Then, c.env) {
+		tmp := fmt.Sprintf("tmp%d", c.tmpIndex)
+		c.tmpIndex++
+		c.writelnDecl(fmt.Sprintf("character(len=100) :: %s", tmp))
+		c.writeln(fmt.Sprintf("if (%s) then", cond))
+		c.indent++
+		c.writeln(fmt.Sprintf("%s = %s", tmp, thenVal))
+		c.indent--
+		c.writeln("else")
+		c.indent++
+		c.writeln(fmt.Sprintf("%s = %s", tmp, elseVal))
+		c.indent--
+		c.writeln("end if")
+		return tmp, nil
+	}
+
 	return fmt.Sprintf("merge(%s,%s,%s)", thenVal, elseVal, cond), nil
 }
 
