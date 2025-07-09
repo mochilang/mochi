@@ -1185,10 +1185,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		filtered := strings.Join(srcParts, ".")
 		expr := fmt.Sprintf("%s.GroupBy(%s => %s)", filtered, v, keyExpr)
-		expr = fmt.Sprintf("%s.Select(%s => %s)", expr, sanitizeName(q.Group.Name), valExpr)
 		if sortGroup != "" {
 			expr = fmt.Sprintf("%s.OrderBy(%s => %s)", expr, sanitizeName(q.Group.Name), sortGroup)
 		}
+		expr = fmt.Sprintf("%s.Select(%s => %s)", expr, sanitizeName(q.Group.Name), valExpr)
 		if skipExpr != "" {
 			expr = fmt.Sprintf("%s.Skip(%s)", expr, skipExpr)
 		}

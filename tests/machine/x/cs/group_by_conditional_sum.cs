@@ -6,8 +6,10 @@ using System.Linq;
 public class Program {
     public static void Main() {
         var items = new Dictionary<string, dynamic>[] { new Dictionary<string, dynamic> { { "cat", "a" }, { "val", 10 }, { "flag", true } }, new Dictionary<string, dynamic> { { "cat", "a" }, { "val", 5 }, { "flag", false } }, new Dictionary<string, dynamic> { { "cat", "b" }, { "val", 20 }, { "flag", true } } };
-        var result = items.GroupBy(i => i["cat"]).Select(g => new Dictionary<string, dynamic> { { "cat", g.Key }, { "share", (_sum(g.Select(x => (x["flag"] ? x["val"] : 0))) / _sum(g.Select(x => x["val"]))) } }).OrderBy(g => g.Key).ToList();
-        Console.WriteLine(result);
+        var result = items.GroupBy(i => i["cat"]).OrderBy(g => g.Key).Select(g => new Dictionary<string, dynamic> { { "cat", g.Key }, { "share", (_sum(g.Where(x => Convert.ToBoolean(x["flag"])).Select(x => x["val"])) / _sum(g.Select(x => x["val"]))) } }).ToList();
+        foreach (var r in result) {
+            Console.WriteLine(string.Join(" ", new [] { Convert.ToString(r["cat"]), Convert.ToString(": share"), Convert.ToString(r["share"]) }));
+        }
     }
     static double _sum(dynamic v) {
         if (v == null) return 0.0;
