@@ -253,6 +253,41 @@ func (c *Compiler) defaultValue(typ string) string {
 	}
 }
 
+func wrapperType(t string) string {
+	switch t {
+	case "int":
+		return "Integer"
+	case "double":
+		return "Double"
+	case "boolean":
+		return "Boolean"
+	default:
+		return t
+	}
+}
+
+func mapValueType(t string) string {
+	t = strings.TrimSpace(t)
+	if !strings.HasPrefix(t, "Map<") || !strings.HasSuffix(t, ">") {
+		return "Object"
+	}
+	inner := t[4 : len(t)-1]
+	depth := 0
+	for i := 0; i < len(inner); i++ {
+		switch inner[i] {
+		case '<':
+			depth++
+		case '>':
+			depth--
+		case ',':
+			if depth == 0 {
+				return strings.TrimSpace(inner[i+1:])
+			}
+		}
+	}
+	return "Object"
+}
+
 func (c *Compiler) inferType(e *parser.Expr) string {
 	// handle cast expressions first
 	if e != nil && e.Binary != nil && e.Binary.Left != nil && e.Binary.Left.Value != nil {
@@ -267,15 +302,24 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 	if l := isListLiteral(e); l != nil {
 		et := "Object"
 		if len(l.Elems) > 0 {
-			et = c.litType(l.Elems[0])
+			et = wrapperType(c.inferType(l.Elems[0]))
+			if et == "var" {
+				et = c.litType(l.Elems[0])
+			}
 		}
 		return fmt.Sprintf("List<%s>", et)
 	}
 	if m := isMapLiteral(e); m != nil {
 		kt, vt := "Object", "Object"
 		if len(m.Items) > 0 {
-			kt = c.litType(m.Items[0].Key)
-			vt = c.litType(m.Items[0].Value)
+			kt = wrapperType(c.inferType(m.Items[0].Key))
+			if kt == "var" {
+				kt = c.litType(m.Items[0].Key)
+			}
+			vt = wrapperType(c.inferType(m.Items[0].Value))
+			if vt == "var" {
+				vt = c.litType(m.Items[0].Value)
+			}
 		}
 		return fmt.Sprintf("Map<%s,%s>", kt, vt)
 	}
@@ -399,8 +443,6 @@ func (c *Compiler) compileGlobalVar(v *parser.VarStmt) error {
 		typ = c.inferType(v.Value)
 		if isListLiteral(v.Value) != nil {
 			expr = fmt.Sprintf("new ArrayList<>(%s)", expr)
-		} else if isMapLiteral(v.Value) != nil && !isMapLitCastToStructExpr(v.Value) {
-			expr = fmt.Sprintf("new HashMap<>(%s)", expr)
 		}
 	}
 	if typ == "var" {
@@ -425,8 +467,6 @@ func (c *Compiler) compileGlobalLet(v *parser.LetStmt) error {
 		typ = c.inferType(v.Value)
 		if isListLiteral(v.Value) != nil {
 			expr = fmt.Sprintf("new ArrayList<>(%s)", expr)
-		} else if isMapLiteral(v.Value) != nil && !isMapLitCastToStructExpr(v.Value) {
-			expr = fmt.Sprintf("new HashMap<>(%s)", expr)
 		}
 	}
 	if typ == "var" {
@@ -497,7 +537,7 @@ func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
 		}
 		items = append(items, fmt.Sprintf("%s, %s", k, v))
 	}
-	return fmt.Sprintf("java.util.Map.of(%s)", strings.Join(items, ", ")), nil
+	return fmt.Sprintf("new HashMap<>(java.util.Map.of(%s))", strings.Join(items, ", ")), nil
 }
 
 func (c *Compiler) compileStructLiteral(s *parser.StructLiteral) (string, error) {
@@ -615,6 +655,7 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 	for _, f := range a.Field {
 		target += "." + f.Name
 	}
+	typ := c.vars[a.Name]
 	for i, idx := range a.Index {
 		if idx.Start == nil || idx.Colon != nil {
 			return fmt.Errorf("complex indexing not supported")
@@ -630,7 +671,8 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 				c.writeln(fmt.Sprintf("%s.set(%s, %s);", target, ix, expr))
 			}
 		} else {
-			target = fmt.Sprintf("%s.get(%s)", target, ix)
+			target = fmt.Sprintf("((Map)%s.get(%s))", target, ix)
+			typ = mapValueType(typ)
 		}
 	}
 	if len(a.Index) == 0 {
@@ -820,7 +862,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	for _, op := range p.Ops {
+	for i, op := range p.Ops {
 		switch {
 		case op.Call != nil:
 			var args []string
@@ -866,10 +908,13 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
+			last := i == len(p.Ops)-1
 			if isString(val) || c.vars[val] == "String" {
 				val = fmt.Sprintf("%s.charAt(%s)", val, idx)
-			} else {
+			} else if last {
 				val = fmt.Sprintf("%s.get(%s)", val, idx)
+			} else {
+				val = fmt.Sprintf("((Map)%s.get(%s))", val, idx)
 			}
 		default:
 			return "", fmt.Errorf("postfix operations unsupported")
