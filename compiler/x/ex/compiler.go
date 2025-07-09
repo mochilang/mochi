@@ -650,6 +650,14 @@ func (c *Compiler) compileAssign(stmt *parser.AssignStmt) error {
 		}
 	}
 	if len(stmt.Index) > 0 {
+		if t, err2 := c.env.GetVar(stmt.Name); err2 == nil {
+			expr, err := c.compileIndexAssign(name, stmt.Index, value, t)
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("%s = %s", name, expr))
+			return nil
+		}
 		idx, err := c.compileExpr(stmt.Index[0].Start)
 		if err != nil {
 			return err
@@ -659,6 +667,48 @@ func (c *Compiler) compileAssign(stmt *parser.AssignStmt) error {
 	}
 	c.writeln(fmt.Sprintf("%s = %s", name, value))
 	return nil
+}
+
+func (c *Compiler) compileIndexAssign(base string, idxs []*parser.IndexOp, value string, t types.Type) (string, error) {
+	if len(idxs) == 0 {
+		return value, nil
+	}
+	idx, err := c.compileExpr(idxs[0].Start)
+	if err != nil {
+		return "", err
+	}
+	var inner types.Type
+	switch tt := t.(type) {
+	case types.ListType:
+		inner = tt.Elem
+		rest, err := c.compileIndexAssign("it", idxs[1:], value, inner)
+		if err != nil {
+			return "", err
+		}
+		if len(idxs) == 1 {
+			return fmt.Sprintf("List.replace_at(%s, %s, %s)", base, idx, rest), nil
+		}
+		return fmt.Sprintf("List.update_at(%s, %s, fn it -> %s end)", base, idx, rest), nil
+	case types.MapType:
+		inner = tt.Value
+		rest, err := c.compileIndexAssign("it", idxs[1:], value, inner)
+		if err != nil {
+			return "", err
+		}
+		if len(idxs) == 1 {
+			return fmt.Sprintf("Map.put(%s, %s, %s)", base, idx, rest), nil
+		}
+		return fmt.Sprintf("Map.update!(%s, %s, fn it -> %s end)", base, idx, rest), nil
+	default:
+		rest, err := c.compileIndexAssign("it", idxs[1:], value, types.AnyType{})
+		if err != nil {
+			return "", err
+		}
+		if len(idxs) == 1 {
+			return fmt.Sprintf("Map.put(%s, %s, %s)", base, idx, rest), nil
+		}
+		return fmt.Sprintf("Map.update!(%s, %s, fn it -> %s end)", base, idx, rest), nil
+	}
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
