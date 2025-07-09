@@ -1348,9 +1348,10 @@ func (c *Compiler) compileGroupBySimple(q *parser.QueryExpr, src string, child *
 	return b.String(), nil
 }
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Joins) > 0 {
-		return "", fmt.Errorf("query features not supported")
+	if q.Group != nil && len(q.Joins) > 0 {
+		return "", fmt.Errorf("join with grouping not supported")
 	}
+	origEnv := c.env
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
 		return "", err
@@ -1392,6 +1393,42 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			} else {
 				child.SetVar(f.Var, types.AnyType{}, true)
 			}
+		}
+	}
+	joinSrcs := make([]string, len(q.Joins))
+	joinConds := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			return "", err
+		}
+		joinSrcs[i] = js
+		if id, ok := c.simpleIdent(j.Src); ok {
+			if name, ok2 := c.listVars[id]; ok2 {
+				if st, ok3 := c.structs[name]; ok3 {
+					child.SetVar(j.Var, st, true)
+					c.listVars[j.Var] = name
+				}
+			}
+		}
+		if _, err := child.GetVar(j.Var); err != nil {
+			if lt, ok := types.TypeOfExprBasic(j.Src, c.env).(types.ListType); ok {
+				child.SetVar(j.Var, lt.Elem, true)
+			} else {
+				child.SetVar(j.Var, types.AnyType{}, true)
+			}
+		}
+		if j.On != nil {
+			c.env = child
+			cond, err := c.compileExpr(j.On)
+			c.env = origEnv
+			if err != nil {
+				return "", err
+			}
+			joinConds[i] = cond
+		}
+		if j.Side != nil {
+			return "", fmt.Errorf("join sides not supported")
 		}
 	}
 	if q.Group != nil {
@@ -1450,6 +1487,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	for i, fs := range fromSrcs {
 		b.WriteString(fmt.Sprintf(" for &%s in &%s {", q.Froms[i].Var, fs))
 	}
+	for i, js := range joinSrcs {
+		b.WriteString(fmt.Sprintf(" for &%s in &%s {", q.Joins[i].Var, js))
+		if joinConds[i] != "" {
+			b.WriteString(" if !(" + joinConds[i] + ") { continue; }")
+		}
+	}
 	if cond != "" {
 		b.WriteString(" if !(" + cond + ") { continue; }")
 	}
@@ -1461,6 +1504,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(" " + tmp + ".push((" + key + ", " + item + "));")
 	} else {
 		b.WriteString(" " + tmp + ".push(" + sel + ");")
+	}
+	for range joinSrcs {
+		b.WriteString(" }")
 	}
 	for range fromSrcs {
 		b.WriteString(" }")
