@@ -1,4 +1,0 @@
-line 18: exit status 254
-    for (var ps in partsupp) {
-      if (!(n.name == 'A')) continue;
-      _q0.add({

@@ -1,4 +1,0 @@
-line 18: exit status 254
-        'orderId': o['id'],
-        'customerName': c.name,
-        'total': o['total'],
