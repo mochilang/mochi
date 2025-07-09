@@ -262,11 +262,19 @@ func (c *Compiler) compileFun(f *parser.FunStmt) error {
 	}
 	c.writeln(fmt.Sprintf("%s %s(%s) {", ret, f.Name, strings.Join(params, ", ")))
 	c.indent++
+	origEnv := c.env
+	child := types.NewEnv(c.env)
+	for _, p := range f.Params {
+		child.SetVar(p.Name, types.ResolveTypeRef(p.Type, c.env), true)
+	}
+	c.env = child
 	for _, st := range f.Body {
 		if err := c.compileStmt(st); err != nil {
+			c.env = origEnv
 			return err
 		}
 	}
+	c.env = origEnv
 	c.indent--
 	c.writeln("}")
 	return nil
@@ -504,6 +512,8 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				case ">=":
 					res = fmt.Sprintf("%s >= 0", cmp)
 				}
+			} else if op.Op == "+" && (leftType == (types.StringType{}) || rightType == (types.StringType{})) {
+				res = fmt.Sprintf("%s + %s", cur, r)
 			} else {
 				l := res
 				rr := r

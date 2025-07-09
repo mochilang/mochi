@@ -1,5 +1,5 @@
 int inc(int x) {
-  return (x as num) + k;
+  return x + k;
 }
 
 void main() {

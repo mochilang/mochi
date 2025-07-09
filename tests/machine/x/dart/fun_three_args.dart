@@ -1,5 +1,5 @@
 int sum3(int a, int b, int c) {
-  return ((a as num) + (b as num) as num) + (c as num);
+  return a + b + c;
 }
 
 void main() {
