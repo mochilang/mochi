@@ -2,7 +2,7 @@
 
 This directory contains Scala source files generated from Mochi programs using the compiler in `compiler/x/scala`. Each file was compiled and executed using `scalac` and `scala`. The checklist below shows which programs have successfully compiled and run.
 
-## Progress: 72/97 files compiled
+## Progress: 77/97 files compiled
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -50,8 +50,8 @@ This directory contains Scala source files generated from Mochi programs using t
 - [x] let_and_print.mochi
 - [x] list_assign.mochi
 - [x] list_index.mochi
-- [ ] list_nested_assign.mochi
-- [ ] list_set_ops.mochi
+- [x] list_nested_assign.mochi
+- [x] list_set_ops.mochi
 - [ ] load_yaml.mochi
 - [x] map_assign.mochi
 - [x] map_in_operator.mochi
@@ -59,14 +59,14 @@ This directory contains Scala source files generated from Mochi programs using t
 - [x] map_int_key.mochi
 - [x] map_literal_dynamic.mochi
 - [x] map_membership.mochi
-- [ ] map_nested_assign.mochi
+- [x] map_nested_assign.mochi
 - [x] match_expr.mochi
 - [x] match_full.mochi
 - [x] math_ops.mochi
 - [x] membership.mochi
 - [x] min_max_builtin.mochi
 - [x] nested_function.mochi
-- [ ] order_by_map.mochi
+- [x] order_by_map.mochi
 - [ ] outer_join.mochi
 - [x] partial_application.mochi
 - [x] print_hello.mochi
@@ -91,7 +91,7 @@ This directory contains Scala source files generated from Mochi programs using t
 - [x] tail_recursion.mochi
 - [x] test_block.mochi
 - [x] tree_sum.mochi
-- [ ] two-sum.mochi
+- [x] two-sum.mochi
 - [x] typed_let.mochi
 - [x] typed_var.mochi
 - [x] unary_neg.mochi

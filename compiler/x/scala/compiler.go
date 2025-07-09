@@ -6,23 +6,27 @@ import (
 	"bytes"
 	"fmt"
 	"path/filepath"
+	"sort"
 	"strings"
+	"unicode"
 
 	"mochi/parser"
 	"mochi/types"
 )
 
 type Compiler struct {
-	buf    bytes.Buffer
-	indent int
-	env    *types.Env
-	tmp    int
+	buf     bytes.Buffer
+	indent  int
+	env     *types.Env
+	tmp     int
+	helpers map[string]bool
+	inSort  bool
 }
 
 const indentStep = 2
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env}
+	return &Compiler{env: env, helpers: make(map[string]bool)}
 }
 
 func (c *Compiler) newVar(prefix string) string {
@@ -43,11 +47,55 @@ func (c *Compiler) writeln(s string) {
 	c.buf.WriteByte('\n')
 }
 
-func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
-	name := strings.TrimSuffix(filepath.Base(prog.Pos.Filename), filepath.Ext(prog.Pos.Filename))
-	if name == "" {
-		name = "Main"
+func (c *Compiler) use(name string) {
+	if c.helpers != nil {
+		c.helpers[name] = true
 	}
+}
+
+func (c *Compiler) emitHelpers(out *bytes.Buffer) {
+	if len(c.helpers) == 0 {
+		return
+	}
+	names := make([]string, 0, len(c.helpers))
+	for n := range c.helpers {
+		names = append(names, n)
+	}
+	sort.Strings(names)
+	for _, n := range names {
+		switch n {
+		case "_union_all":
+			out.WriteString("def _union_all[T](a: List[T], b: List[T]): List[T] = a ++ b\n\n")
+		case "_union":
+			out.WriteString("def _union[T](a: List[T], b: List[T]): List[T] = { val set = scala.collection.mutable.LinkedHashSet[T](); set ++= a; set ++= b; set.toList }\n\n")
+		case "_except":
+			out.WriteString("def _except[T](a: List[T], b: List[T]): List[T] = { val remove = b.toSet; a.filterNot(remove) }\n\n")
+		case "_intersect":
+			out.WriteString("def _intersect[T](a: List[T], b: List[T]): List[T] = { val keep = b.toSet; val res = scala.collection.mutable.ListBuffer[T](); val seen = scala.collection.mutable.Set[T](); for(x <- a if keep(x) && !seen(x)) { seen += x; res += x }; res.toList }\n\n")
+		}
+	}
+}
+
+func sanitizeName(name string) string {
+	if name == "" {
+		return "Main"
+	}
+	var b strings.Builder
+	for i, r := range name {
+		if i == 0 && unicode.IsDigit(r) {
+			b.WriteByte('_')
+		}
+		if unicode.IsLetter(r) || unicode.IsDigit(r) || r == '_' {
+			b.WriteRune(r)
+		} else {
+			b.WriteByte('_')
+		}
+	}
+	return b.String()
+}
+
+func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
+	name := sanitizeName(strings.TrimSuffix(filepath.Base(prog.Pos.Filename), filepath.Ext(prog.Pos.Filename)))
 	// emit user-defined types before the main object
 	for _, s := range prog.Statements {
 		if s.Type != nil {
@@ -82,11 +130,14 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("}")
 	c.indent -= indentStep
 	c.writeln("}")
-	out := c.buf.Bytes()
-	if len(out) == 0 || out[len(out)-1] != '\n' {
-		out = append(out, '\n')
+	var out bytes.Buffer
+	c.emitHelpers(&out)
+	out.Write(c.buf.Bytes())
+	data := out.Bytes()
+	if len(data) == 0 || data[len(data)-1] != '\n' {
+		data = append(data, '\n')
 	}
-	return out, nil
+	return data, nil
 }
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
@@ -391,7 +442,7 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 		return err
 	}
 	target := s.Name
-	for _, idx := range s.Index {
+	for i, idx := range s.Index {
 		if idx.Colon != nil || idx.Colon2 != nil {
 			return fmt.Errorf("line %d: slice assignment unsupported", s.Pos.Line)
 		}
@@ -402,6 +453,10 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 			if err != nil {
 				return err
 			}
+		}
+		if i == len(s.Index)-1 && len(s.Index) > 1 {
+			c.writeln(fmt.Sprintf("%s.update(%s, %s)", target, idxExpr, expr))
+			return nil
 		}
 		target = fmt.Sprintf("%s(%s)", target, idxExpr)
 	}
@@ -610,6 +665,23 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 			default:
 				return "", fmt.Errorf("line %d: unsupported operator %s", op.Pos.Line, op.Op)
 			}
+		case "union":
+			if op.All {
+				c.use("_union_all")
+				s = fmt.Sprintf("_union_all(%s, %s)", s, r)
+			} else {
+				c.use("_union")
+				s = fmt.Sprintf("_union(%s, %s)", s, r)
+			}
+			leftType = types.ListType{Elem: types.AnyType{}}
+		case "except":
+			c.use("_except")
+			s = fmt.Sprintf("_except(%s, %s)", s, r)
+			leftType = types.ListType{Elem: types.AnyType{}}
+		case "intersect":
+			c.use("_intersect")
+			s = fmt.Sprintf("_intersect(%s, %s)", s, r)
+			leftType = types.ListType{Elem: types.AnyType{}}
 		default:
 			return "", fmt.Errorf("line %d: unsupported operator %s", op.Pos.Line, op.Op)
 		}
@@ -940,6 +1012,7 @@ func (c *Compiler) compileList(l *parser.ListLiteral, mutable bool) (string, err
 
 func (c *Compiler) compileMap(m *parser.MapLiteral, mutable bool) (string, error) {
 	items := make([]string, len(m.Items))
+	vals := make([]string, len(m.Items))
 	for i, it := range m.Items {
 		var k string
 		if name, ok := simpleIdent(it.Key); ok {
@@ -956,10 +1029,14 @@ func (c *Compiler) compileMap(m *parser.MapLiteral, mutable bool) (string, error
 			return "", err
 		}
 		items[i] = fmt.Sprintf("%s -> (%s)", k, v)
+		vals[i] = v
 	}
 	prefix := "Map"
 	if mutable {
 		prefix = "scala.collection.mutable.Map"
+	}
+	if c.inSort {
+		return fmt.Sprintf("(%s)", strings.Join(vals, ", ")), nil
 	}
 	return fmt.Sprintf("%s(%s)", prefix, strings.Join(items, ", ")), nil
 }
@@ -1109,7 +1186,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		expr = fmt.Sprintf("for { %s } yield %s", strings.Join(parts, "; "), sel)
 	}
 	if q.Sort != nil {
+		c.inSort = true
 		key, err := c.compileExpr(q.Sort)
+		c.inSort = false
 		if err != nil {
 			c.env = oldEnv
 			return "", err
