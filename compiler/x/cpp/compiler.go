@@ -256,7 +256,11 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 			c.vars[st.Name] = "string"
 		}
 	} else {
-		c.vars[st.Name] = c.inferType(exprStr)
+		inferred := c.inferType(exprStr)
+		if inferred == "" && c.isVectorExpr(st.Value) {
+			inferred = "vector"
+		}
+		c.vars[st.Name] = inferred
 	}
 	if s := extractVectorStruct(exprStr); s != "" {
 		c.varStruct[st.Name] = s
@@ -299,7 +303,11 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 			c.vars[st.Name] = "string"
 		}
 	} else {
-		c.vars[st.Name] = c.inferType(exprStr)
+		inferred := c.inferType(exprStr)
+		if inferred == "" && c.isVectorExpr(st.Value) {
+			inferred = "vector"
+		}
+		c.vars[st.Name] = inferred
 	}
 	if s := extractVectorStruct(exprStr); s != "" {
 		c.varStruct[st.Name] = s
@@ -770,9 +778,27 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if len(keys) > 0 {
 			if strings.HasPrefix(keys[0], "std::string") {
 				keyType = "std::string"
+			} else if strings.Contains(keys[0], "true") || strings.Contains(keys[0], "false") {
+				keyType = "bool"
+			} else if _, err := strconv.Atoi(keys[0]); err == nil {
+				keyType = "int"
+			} else {
+				keyType = fmt.Sprintf("decltype(%s)", keys[0])
 			}
 			if strings.HasPrefix(vals[0], "std::string") {
 				valType = "std::string"
+			} else if strings.HasPrefix(vals[0], "std::unordered_map") || strings.HasPrefix(vals[0], "std::map") {
+				if idx := strings.Index(vals[0], "{"); idx != -1 {
+					valType = vals[0][:idx]
+				} else {
+					valType = vals[0]
+				}
+			} else if t := structLiteralType(vals[0]); t != "" {
+				valType = t
+			} else if c.vars[vals[0]] == "string" {
+				valType = "std::string"
+			} else {
+				valType = fmt.Sprintf("decltype(%s)", vals[0])
 			}
 		}
 		pairs := []string{}
