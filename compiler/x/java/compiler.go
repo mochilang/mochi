@@ -970,6 +970,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileList(p.List)
 	case p.Map != nil:
 		return c.compileMap(p.Map)
+	case p.Query != nil:
+		return c.compileQuery(p.Query)
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
 	case p.Call != nil:
@@ -1192,6 +1194,62 @@ func (c *Compiler) compileExistsQuery(q *parser.QueryExpr) (string, error) {
 		}
 	}
 	return fmt.Sprintf("%s.stream().anyMatch(%s -> %s)", src, q.Var, cond), nil
+}
+
+func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
+	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil || q.Distinct {
+		return "", fmt.Errorf("unsupported query")
+	}
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	oldVars := c.vars
+	c.vars = copyMap(c.vars)
+	c.vars[q.Var] = "var"
+	var b strings.Builder
+	b.WriteString(fmt.Sprintf("%s.stream()", src))
+	if q.Where != nil {
+		cond, err := c.compileExpr(q.Where)
+		if err != nil {
+			c.vars = oldVars
+			return "", err
+		}
+		b.WriteString(fmt.Sprintf(".filter(%s -> %s)", q.Var, cond))
+	}
+	if q.Sort != nil {
+		se, err := c.compileExpr(q.Sort)
+		if err != nil {
+			c.vars = oldVars
+			return "", err
+		}
+		b.WriteString(fmt.Sprintf(".sorted(java.util.Comparator.comparing(%s -> %s))", q.Var, se))
+	}
+	if q.Skip != nil {
+		sk, err := c.compileExpr(q.Skip)
+		if err != nil {
+			c.vars = oldVars
+			return "", err
+		}
+		b.WriteString(fmt.Sprintf(".skip(%s)", sk))
+	}
+	if q.Take != nil {
+		tv, err := c.compileExpr(q.Take)
+		if err != nil {
+			c.vars = oldVars
+			return "", err
+		}
+		b.WriteString(fmt.Sprintf(".limit(%s)", tv))
+	}
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.vars = oldVars
+		return "", err
+	}
+	b.WriteString(fmt.Sprintf(".map(%s -> %s)", q.Var, sel))
+	b.WriteString(".collect(java.util.stream.Collectors.toList())")
+	c.vars = oldVars
+	return b.String(), nil
 }
 
 func isUnderscoreExpr(e *parser.Expr) bool {
