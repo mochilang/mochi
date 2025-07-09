@@ -14,12 +14,15 @@ type Compiler struct {
 	buf              bytes.Buffer
 	needListLib      bool
 	needJSONLib      bool
+	needYAMLLib      bool
 	needFuncLib      bool
 	structs          map[string][]string
 	structFieldTypes map[string]map[string]string
 	varTypes         map[string]string
 	funArity         map[string]int
 	groups           map[string]bool
+	listElemTypes    map[string]string
+	tmpCount         int
 }
 
 func New() *Compiler {
@@ -29,6 +32,7 @@ func New() *Compiler {
 		varTypes:         make(map[string]string),
 		funArity:         make(map[string]int),
 		groups:           make(map[string]bool),
+		listElemTypes:    make(map[string]string),
 	}
 }
 
@@ -47,6 +51,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	if c.needJSONLib {
 		out.WriteString("(require json)\n")
+	}
+	if c.needYAMLLib {
+		out.WriteString("(require yaml)\n")
 	}
 	if c.needFuncLib {
 		out.WriteString("(require racket/function)\n")
@@ -95,6 +102,9 @@ func (c *Compiler) compileStmtFull(s *parser.Statement, breakLbl, contLbl, retLb
 			c.varTypes[name] = t
 		} else if t := getStructLiteralType(s.Let.Value); t != "" {
 			c.varTypes[name] = t
+		}
+		if lt := getListElemType(s.Let.Type); lt != "" {
+			c.listElemTypes[name] = lt
 		}
 	case s.Assign != nil:
 		if len(s.Assign.Index) > 0 {
@@ -148,6 +158,9 @@ func (c *Compiler) compileStmtFull(s *parser.Statement, breakLbl, contLbl, retLb
 		} else if t := getStructLiteralType(s.Var.Value); t != "" {
 			c.varTypes[name] = t
 		}
+		if lt := getListElemType(s.Var.Type); lt != "" {
+			c.listElemTypes[name] = lt
+		}
 	case s.Fun != nil:
 		return c.compileFun(s.Fun)
 	case s.Return != nil:
@@ -184,6 +197,8 @@ func (c *Compiler) compileStmtFull(s *parser.Statement, breakLbl, contLbl, retLb
 		c.writeln(e)
 	case s.For != nil:
 		return c.compileForWithLabelsFull(s.For, breakLbl, contLbl, retLbl)
+	case s.Update != nil:
+		return c.compileUpdate(s.Update)
 	case s.Break != nil:
 		if breakLbl == "" {
 			return fmt.Errorf("unsupported statement")
@@ -542,6 +557,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			parts[i] = v
 		}
 		return fmt.Sprintf("(%s %s)", p.Struct.Name, strings.Join(parts, " ")), nil
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	case p.Query != nil:
 		return c.compileQuery(p.Query)
 	case p.Match != nil:
@@ -785,6 +804,11 @@ func (c *Compiler) compilePattern(e *parser.Expr) (string, error) {
 			if len(sel.Tail) == 0 && sel.Root == "_" {
 				return "_", nil
 			}
+			if len(sel.Tail) == 0 {
+				if fields, ok := c.structs[sel.Root]; ok && len(fields) == 0 {
+					return fmt.Sprintf("(%s)", sel.Root), nil
+				}
+			}
 		}
 	}
 	return c.compileExpr(e)
@@ -948,6 +972,17 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		return buf.String(), nil
 	}
 
+	if callArg, ok := isSimpleCall(q.Select, "sum"); ok {
+		arg, err := c.compileExpr(callArg)
+		if err != nil {
+			return "", err
+		}
+		if len(bindings) > 0 {
+			arg = fmt.Sprintf("(let (%s) %s)", strings.Join(bindings, " "), arg)
+		}
+		return fmt.Sprintf("(for/sum (%s%s) %s)", strings.Join(loops, " "), cond, arg), nil
+	}
+
 	body, err := c.compileExpr(q.Select)
 	if err != nil {
 		return "", err
@@ -980,9 +1015,105 @@ func (c *Compiler) compileIndexedSet(name string, idx []*parser.IndexOp, rhs str
 	return fmt.Sprintf("(cond [(hash? %s) (hash-set %s %s %s)] [else (list-set %s %s %s)])", name, name, ie, inner, name, ie, inner), nil
 }
 
+func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
+	list := u.Target
+	idxVar := fmt.Sprintf("_idx%d", c.tmpCount)
+	c.tmpCount++
+	itemVar := fmt.Sprintf("_item%d", c.tmpCount)
+	c.tmpCount++
+	c.needListLib = true
+	c.writeln(fmt.Sprintf("(for ([%s (in-range (length %s))])", idxVar, list))
+	c.writeln(fmt.Sprintf("  (let ([%s (list-ref %s %s)])", itemVar, list, idxVar))
+	elemType := c.listElemTypes[list]
+	prev := c.varTypes
+	if elemType != "" {
+		if fields, ok := c.structs[elemType]; ok {
+			c.varTypes = make(map[string]string)
+			for k, v := range prev {
+				c.varTypes[k] = v
+			}
+			for _, f := range fields {
+				c.varTypes[f] = c.structFieldTypes[elemType][f]
+				c.writeln(fmt.Sprintf("    (define %s (%s-%s %s))", f, elemType, f, itemVar))
+			}
+		}
+	}
+	if u.Where != nil {
+		cond, err := c.compileExpr(u.Where)
+		if err != nil {
+			c.varTypes = prev
+			return err
+		}
+		c.writeln(fmt.Sprintf("    (when %s", cond))
+	}
+	for _, it := range u.Set.Items {
+		key, ok := identName(it.Key)
+		val, err := c.compileExpr(it.Value)
+		if err != nil {
+			c.varTypes = prev
+			return err
+		}
+		if ok && elemType != "" {
+			c.writeln(fmt.Sprintf("    (set-%s-%s! %s %s)", elemType, key, itemVar, val))
+		} else if ok {
+			c.writeln(fmt.Sprintf("    (hash-set! %s '%s %s)", itemVar, key, val))
+		} else {
+			kexpr, err := c.compileExpr(it.Key)
+			if err != nil {
+				c.varTypes = prev
+				return err
+			}
+			c.writeln(fmt.Sprintf("    (hash-set! %s %s %s)", itemVar, kexpr, val))
+		}
+	}
+	if u.Where != nil {
+		c.writeln("    )")
+	}
+	c.varTypes = prev
+	c.writeln(fmt.Sprintf("    (set! %s (list-set %s %s %s))", list, list, idxVar, itemVar))
+	c.writeln("  )")
+	c.writeln(")")
+	return nil
+}
+
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
+	if l.Path == nil {
+		return "'()", nil
+	}
+	c.needYAMLLib = true
+	return fmt.Sprintf("(yaml-load (file->string %q))", *l.Path), nil
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
+	src, err := c.compileExpr(s.Src)
+	if err != nil {
+		return "", err
+	}
+	c.needJSONLib = true
+	if s.Path != nil && *s.Path != "-" {
+		return fmt.Sprintf("(call-with-output-file %q #:exists 'replace (lambda (out) (for ([r %s]) (fprintf out \"~a\\n\" (jsexpr->string r)))))", *s.Path, src), nil
+	}
+	return fmt.Sprintf("(for ([r %s]) (displayln (jsexpr->string r)))", src), nil
+}
+
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	if len(t.Variants) > 0 {
-		return fmt.Errorf("unsupported statement")
+		for _, v := range t.Variants {
+			fields := []string{}
+			fieldTypes := map[string]string{}
+			for _, f := range v.Fields {
+				fields = append(fields, f.Name)
+				if f.Type != nil && f.Type.Simple != nil {
+					fieldTypes[f.Name] = *f.Type.Simple
+				}
+			}
+			c.structs[v.Name] = fields
+			if len(fieldTypes) > 0 {
+				c.structFieldTypes[v.Name] = fieldTypes
+			}
+			c.writeln(fmt.Sprintf("(struct %s (%s) #:transparent #:mutable)", v.Name, strings.Join(fields, " ")))
+		}
+		return nil
 	}
 	fields := []string{}
 	fieldTypes := map[string]string{}
@@ -1047,6 +1178,20 @@ func identName(e *parser.Expr) (string, bool) {
 	return u.Value.Target.Selector.Root, true
 }
 
+func isSimpleCall(e *parser.Expr, name string) (*parser.Expr, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 || u.Value == nil || u.Value.Target == nil {
+		return nil, false
+	}
+	if u.Value.Target.Call == nil || u.Value.Target.Call.Func != name || len(u.Value.Target.Call.Args) != 1 {
+		return nil, false
+	}
+	return u.Value.Target.Call.Args[0], true
+}
+
 func (c *Compiler) getDeclType(tr *parser.TypeRef) string {
 	if tr == nil || tr.Simple == nil {
 		return ""
@@ -1086,6 +1231,16 @@ func getStructLiteralType(e *parser.Expr) string {
 	}
 	if u.Value.Target.Struct != nil {
 		return u.Value.Target.Struct.Name
+	}
+	return ""
+}
+
+func getListElemType(tr *parser.TypeRef) string {
+	if tr == nil || tr.Generic == nil || tr.Generic.Name != "list" {
+		return ""
+	}
+	if len(tr.Generic.Args) == 1 && tr.Generic.Args[0].Simple != nil {
+		return *tr.Generic.Args[0].Simple
 	}
 	return ""
 }

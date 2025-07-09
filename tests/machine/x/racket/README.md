@@ -2,7 +2,7 @@
 
 This directory contains Racket source code generated from the Mochi programs in `tests/vm/valid` using the Racket compiler. Each program was compiled and executed. Successful runs produced an `.out` file while failures produced an `.error` file.
 
-Compiled programs: 91/97
+Compiled programs: 97/97
 
 ## Checklist
 - [x] append_builtin
@@ -80,31 +80,31 @@ Compiled programs: 91/97
 - [x] group_by_sort
  - [x] group_items_iteration
 - [x] if_then_else_nested
- - [ ] in_operator_extended
+ - [x] in_operator_extended
  - [x] inner_join
  - [x] join_multi
  - [x] json_builtin
  - [x] left_join
  - [x] left_join_multi
-- [ ] load_yaml
+ - [x] load_yaml
 - [x] map_int_key
 - [x] map_membership
  - [x] match_expr
  - [x] match_full
  - [x] outer_join
  - [x] partial_application
-- [ ] query_sum_select
+ - [x] query_sum_select
  - [x] record_assign
  - [x] right_join
-- [ ] save_jsonl_stdout
+ - [x] save_jsonl_stdout
 - [x] string_contains
  - [x] test_block
-- [ ] tree_sum
-- [ ] update_stmt
+ - [x] tree_sum
+ - [x] update_stmt
 - [x] user_type_literal
 
 ## TODO
 - [ ] support struct casting and record field assignment
 - [ ] implement query operations (group by, joins, sort, etc.)
-- [ ] handle load/save expressions
-- [ ] implement match expressions and user defined types
+ - [x] handle load/save expressions
+ - [x] implement match expressions and user defined types
