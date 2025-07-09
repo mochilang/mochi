@@ -1,3 +1,5 @@
+(import (chibi string))
+
 (define xs (list 1 2 3))
 (define ys (let ((_res '()))
   (for-each (lambda (x)

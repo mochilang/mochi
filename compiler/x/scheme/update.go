@@ -85,15 +85,17 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 		c.writeln(")")
 	}
 
-	c.writeln(fmt.Sprintf("(set! %s (list-set %s %s item))", name, name, idx))
-	c.writeln(fmt.Sprintf("(loop (+ %s 1))", idx))
-	c.indent--
-	c.writeln(")")
-	c.indent--
-	c.writeln("'()")
-	c.indent--
-	c.writeln(")")
-	c.indent--
-	c.writeln(")")
-	return nil
+       c.needListSet = true
+       c.writeln(fmt.Sprintf("(set! %s (list-set %s %s item))", name, name, idx))
+       c.writeln(fmt.Sprintf("(loop (+ %s 1))", idx))
+       c.indent--
+       c.writeln(")")          // close item let
+       c.writeln(")")          // close begin
+       c.indent--
+       c.writeln("'()")
+       c.indent--
+       c.writeln(")")          // close if
+       c.indent--
+       c.writeln(")")          // close loop
+       return nil
 }

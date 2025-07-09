@@ -4,5 +4,5 @@
   ))
 )
 
-(define add5 (add 5))
+(define add5 (lambda (_p0) (add 5 _p0)))
 (begin (display (add5 3)) (newline))
