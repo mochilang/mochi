@@ -1,6 +1,6 @@
 # Machine-generated Swift Outputs
 
-Compiled programs: 76/97
+Compiled programs: 80/97
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -37,7 +37,7 @@ Compiled programs: 76/97
 - [x] if_then_else.mochi
 - [x] if_then_else_nested.mochi
 - [x] in_operator.mochi
-- [ ] in_operator_extended.mochi
+- [x] in_operator_extended.mochi
 - [ ] inner_join.mochi
 - [ ] join_multi.mochi
 - [x] json_builtin.mochi
@@ -71,7 +71,7 @@ Compiled programs: 76/97
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
-- [ ] query_sum_select.mochi
+- [x] query_sum_select.mochi
 - [x] record_assign.mochi
 - [ ] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
@@ -88,8 +88,8 @@ Compiled programs: 76/97
 - [x] substring_builtin.mochi
 - [x] sum_builtin.mochi
 - [x] tail_recursion.mochi
-- [ ] test_block.mochi
-- [ ] tree_sum.mochi
+- [x] test_block.mochi
+- [x] tree_sum.mochi
 - [x] two-sum.mochi
 - [x] typed_let.mochi
 - [x] typed_var.mochi
