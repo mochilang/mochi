@@ -3077,6 +3077,45 @@ func (c *Compiler) selectorType(sel *parser.SelectorExpr) types.Type {
 	if sel == nil {
 		return types.AnyType{}
 	}
+	if c.env != nil {
+		var typ types.Type
+		if t, err := c.env.GetVar(sel.Root); err == nil {
+			typ = t
+		} else if c.currentStruct != "" {
+			if st, ok := c.env.GetStruct(c.currentStruct); ok {
+				typ = st.Fields[sel.Root]
+			}
+		}
+		if typ != nil {
+			for _, f := range sel.Tail {
+				if st, ok := typ.(types.StructType); ok {
+					typ = st.Fields[f]
+				} else if ut, ok := typ.(types.UnionType); ok {
+					var found types.Type
+					for _, st := range ut.Variants {
+						if ft, ok2 := st.Fields[f]; ok2 {
+							if found != nil && !equalTypes(found, ft) {
+								found = nil
+								break
+							}
+							found = ft
+						}
+					}
+					if found == nil {
+						typ = nil
+						break
+					}
+					typ = found
+				} else {
+					typ = nil
+					break
+				}
+			}
+			if typ != nil {
+				return typ
+			}
+		}
+	}
 	p := &parser.Primary{Selector: sel}
 	postfix := &parser.PostfixExpr{Target: p}
 	unary := &parser.Unary{Value: postfix}
