@@ -1,6 +1,0 @@
-run: exit status 1
-/workspace/mochi/tests/machine/x/racket/left_join_multi.rkt:5:87: c: unbound identifier
-  in: c
-  location...:
-   /workspace/mochi/tests/machine/x/racket/left_join_multi.rkt:5:87
-

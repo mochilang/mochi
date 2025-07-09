@@ -807,6 +807,7 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 
 func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	loops := []string{}
+	condParts := []string{}
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
 		return "", err
@@ -830,7 +831,8 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		if j.Side == nil {
-			loops = append(loops, fmt.Sprintf("[%s %s #:when %s]", j.Var, js, onExpr))
+			loops = append(loops, fmt.Sprintf("[%s %s]", j.Var, js))
+			condParts = append(condParts, onExpr)
 			continue
 		}
 		switch *j.Side {
@@ -855,7 +857,10 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		cond = fmt.Sprintf(" #:when %s", ce)
+		condParts = append(condParts, ce)
+	}
+	if len(condParts) > 0 {
+		cond = fmt.Sprintf(" #:when (and %s)", strings.Join(condParts, " "))
 	}
 	body, err := c.compileExpr(q.Select)
 	if err != nil {
