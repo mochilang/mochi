@@ -32,6 +32,8 @@ type Compiler struct {
 	needsSetOps       bool
 	needsConcatList   bool
 	needsConcatString bool
+	needsSplitString  bool
+	needsJoinString   bool
 	needsJSON         bool
 	needsIndex        bool
 	needsIndexString  bool
@@ -1822,6 +1824,30 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", err
 		}
 		return fmt.Sprintf("std.ascii.lowerString(%s)", arg), nil
+	}
+	if name == "split" && len(call.Args) == 2 {
+		s, err := c.compileExpr(call.Args[0], false)
+		if err != nil {
+			return "", err
+		}
+		sep, err := c.compileExpr(call.Args[1], false)
+		if err != nil {
+			return "", err
+		}
+		c.needsSplitString = true
+		return fmt.Sprintf("_split_string(%s, %s)", s, sep), nil
+	}
+	if name == "join" && len(call.Args) == 2 {
+		parts, err := c.compileExpr(call.Args[0], false)
+		if err != nil {
+			return "", err
+		}
+		sep, err := c.compileExpr(call.Args[1], false)
+		if err != nil {
+			return "", err
+		}
+		c.needsJoinString = true
+		return fmt.Sprintf("_join_strings(%s, %s)", parts, sep), nil
 	}
 	if name == "substr" && len(call.Args) == 3 {
 		s, err := c.compileExpr(call.Args[0], false)

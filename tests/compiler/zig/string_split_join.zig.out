@@ -1,0 +1,47 @@
+const std = @import("std");
+
+fn _slice_string(s: []const u8, start: i32, end: i32, step: i32) []const u8 {
+    var sidx = start;
+    var eidx = end;
+    var stp = step;
+    const n: i32 = @as(i32, @intCast(s.len));
+    if (sidx < 0) sidx += n;
+    if (eidx < 0) eidx += n;
+    if (stp == 0) stp = 1;
+    if (sidx < 0) sidx = 0;
+    if (eidx > n) eidx = n;
+    if (stp > 0 and eidx < sidx) eidx = sidx;
+    if (stp < 0 and eidx > sidx) eidx = sidx;
+    var res = std.ArrayList(u8).init(std.heap.page_allocator);
+    defer res.deinit();
+    var i: i32 = sidx;
+    while ((stp > 0 and i < eidx) or (stp < 0 and i > eidx)) : (i += stp) {
+        res.append(s[@as(usize, @intCast(i))]) catch unreachable;
+    }
+    return res.toOwnedSlice() catch unreachable;
+}
+
+fn _split_string(s: []const u8, sep: []const u8) []const []const u8 {
+    var res = std.ArrayList([]const u8).init(std.heap.page_allocator);
+    defer res.deinit();
+    var it = std.mem.split(u8, s, sep);
+    while (it.next()) |p| { res.append(p) catch unreachable; }
+    return res.toOwnedSlice() catch unreachable;
+}
+
+fn _join_strings(parts: []const []const u8, sep: []const u8) []const u8 {
+    var res = std.ArrayList(u8).init(std.heap.page_allocator);
+    defer res.deinit();
+    for (parts, 0..) |it, i| {
+        if (i > 0) res.appendSlice(sep) catch unreachable;
+        res.appendSlice(it) catch unreachable;
+    }
+    return res.toOwnedSlice() catch unreachable;
+}
+
+const parts = _split_string("a,b,c", ",");
+const sep = _slice_string("--", 0, 1, 1);
+
+pub fn main() void {
+    std.debug.print("{s}\n", .{_join_strings(parts, sep)});
+}

@@ -360,6 +360,34 @@ func (c *Compiler) writeBuiltins() {
 		c.writeln("}")
 		c.writeln("")
 	}
+	if c.needsSplitString {
+		c.writeln("fn _split_string(s: []const u8, sep: []const u8) []const []const u8 {")
+		c.indent++
+		c.writeln("var res = std.ArrayList([]const u8).init(std.heap.page_allocator);")
+		c.writeln("defer res.deinit();")
+		c.writeln("var it = std.mem.split(u8, s, sep);")
+		c.writeln("while (it.next()) |p| { res.append(p) catch unreachable; }")
+		c.writeln("return res.toOwnedSlice() catch unreachable;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.needsJoinString {
+		c.writeln("fn _join_strings(parts: []const []const u8, sep: []const u8) []const u8 {")
+		c.indent++
+		c.writeln("var res = std.ArrayList(u8).init(std.heap.page_allocator);")
+		c.writeln("defer res.deinit();")
+		c.writeln("for (parts, 0..) |it, i| {")
+		c.indent++
+		c.writeln("if (i > 0) res.appendSlice(sep) catch unreachable;")
+		c.writeln("res.appendSlice(it) catch unreachable;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return res.toOwnedSlice() catch unreachable;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
 	if c.needsReduce {
 		c.writeln("fn _reduce(comptime T: type, v: []const T, init: T, f: fn (T, T) T) T {")
 		c.indent++
