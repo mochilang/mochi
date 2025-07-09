@@ -2,44 +2,42 @@
 
 This directory contains F# source code generated from Mochi programs and the corresponding outputs or error logs.
 
-## Summary
+## Checklist
 
-- 29/37 programs compiled and executed successfully.
-- 8 programs failed to compile or run.
+Checklist of programs that currently compile and run (29/37):
 
-### Successful
-- append_builtin
-- avg_builtin
-- basic_compare
-- binary_precedence
-- bool_chain
-- break_continue
-- cast_string_to_int
-- cast_struct
-- closure
-- count_builtin
-- exists_builtin
-- for_list_collection
-- for_loop
-- for_map_collection
-- fun_call
-- fun_expr_in_let
-- fun_three_args
-- if_else
-- if_then_else
-- if_then_else_nested
-- in_operator
-- cross_join
-- cross_join_filter
-- cross_join_triple
-- dataset_sort_take_limit
-- dataset_where_filter
+- [x] append_builtin
+- [x] avg_builtin
+- [x] basic_compare
+- [x] binary_precedence
+- [x] bool_chain
+- [x] break_continue
+- [x] cast_string_to_int
+- [x] cast_struct
+- [x] closure
+- [x] count_builtin
+- [x] exists_builtin
+- [x] for_list_collection
+- [x] for_loop
+- [x] for_map_collection
+- [x] fun_call
+- [x] fun_expr_in_let
+- [x] fun_three_args
+- [x] if_else
+- [x] if_then_else
+- [x] if_then_else_nested
+- [x] in_operator
+- [x] cross_join
+- [x] cross_join_filter
+- [x] cross_join_triple
+- [x] dataset_sort_take_limit
+- [x] dataset_where_filter
+- [x] group_by
+- [x] group_by_conditional_sum
+- [x] group_by_having
 
-- group_by
-- group_by_conditional_sum
-- group_by_having
+Remaining programs to implement:
 
-### Failed
 - group_by_join
 - group_by_left_join
 - group_by_multi_join

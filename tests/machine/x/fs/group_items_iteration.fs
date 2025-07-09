@@ -3,9 +3,19 @@ open System
 exception Break
 exception Continue
 
-let data = [dict [(tag, "a"); (val, 1)]; dict [(tag, "a"); (val, 2)]; dict [(tag, "b"); (val, 3)]]
-let groups = [ for d in data doyield g ]
-let mutable tmp = []
+type Anon1 = {
+    tag: string
+    val: int
+}
+type Anon2 = {
+    tag: obj
+    total: obj
+}
+let data = [{ tag = "a"; val = 1 }; { tag = "a"; val = 2 }; { tag = "b"; val = 3 }]
+let groups = [ for gKey, gItems in [ for d in data do yield d ] |> List.groupBy (fun d -> d.tag) do
+    let g = {| key = gKey; items = gItems |}
+    yield g ]
+let mutable tmp = [||]
 try
     for g in groups do
         try
@@ -16,8 +26,8 @@ try
                         total <- total + x.val
                     with Continue -> ()
             with Break -> ()
-            tmp <- tmp @ [dict [(tag, g.key); (total, total)]]
+            tmp <- tmp @ [{ tag = g.key; total = total }]
         with Continue -> ()
 with Break -> ()
-let result = [ for r in tmp doyield r ] |> List.sortBy (fun _ -> r.tag)
+let result = [ for r in tmp do yield r ] |> List.sortBy (fun r -> r.tag)
 printfn "%A" (result)

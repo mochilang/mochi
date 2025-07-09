@@ -964,6 +964,13 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		}
 		joinConds = append(joinConds, on)
 	}
+	allVars := []string{q.Var}
+	for _, fr := range q.Froms {
+		allVars = append(allVars, fr.Var)
+	}
+	for _, j := range q.Joins {
+		allVars = append(allVars, j.Var)
+	}
 	condParts := []string{}
 	if len(joinConds) > 0 {
 		condParts = append(condParts, strings.Join(joinConds, " && "))
@@ -1006,11 +1013,17 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		if cond != "" {
 			inner.WriteString(cond)
 		}
+		yieldExpr := q.Var
+		pat := q.Var
+		if len(allVars) > 1 {
+			yieldExpr = "(" + strings.Join(allVars, ", ") + ")"
+			pat = yieldExpr
+		}
 		inner.WriteString("yield ")
-		inner.WriteString(q.Var)
+		inner.WriteString(yieldExpr)
 		inner.WriteString(" ]")
 		listExpr := inner.String()
-		grpExpr := fmt.Sprintf("%s |> List.groupBy (fun %s -> %s)", listExpr, q.Var, keyExpr)
+		grpExpr := fmt.Sprintf("%s |> List.groupBy (fun %s -> %s)", listExpr, pat, keyExpr)
 
 		keyVar := q.Group.Name + "Key"
 		itemsVar := q.Group.Name + "Items"
