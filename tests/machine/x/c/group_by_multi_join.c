@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct {
   int id;
@@ -109,7 +110,7 @@ int main() {
         if (!(n.id == s.nation)) {
           continue;
         }
-        if (!(n.name == "A")) {
+        if (!((strcmp(n.name, "A") == 0))) {
           continue;
         }
         _t4.data[_t5] =

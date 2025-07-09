@@ -4,12 +4,12 @@
 typedef struct Person Person;
 typedef struct Book Book;
 
-typedef struct {
+typedef struct Person {
   char *name;
   int age;
 } Person;
 
-typedef struct {
+typedef struct Book {
   char *title;
   Person author;
 } Book;

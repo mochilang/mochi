@@ -1,11 +1,5 @@
 line: 0
 error: cc error: exit status 1
-/workspace/mochi/tests/machine/x/c/load_yaml.c:189:3: error: conflicting types for ‘Person’; have ‘struct <anonymous>’
-  189 | } Person;
-      |   ^~~~~~
-/workspace/mochi/tests/machine/x/c/load_yaml.c:168:23: note: previous declaration of ‘Person’ with type ‘Person’
-  168 | typedef struct Person Person;
-      |                       ^~~~~~
 /workspace/mochi/tests/machine/x/c/load_yaml.c: In function ‘main’:
 /workspace/mochi/tests/machine/x/c/load_yaml.c:192:3: error: unknown type name ‘list_Person’
   192 |   list_Person people = _load_json("../interpreter/valid/people.yaml");

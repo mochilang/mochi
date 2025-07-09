@@ -12,23 +12,17 @@ error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/update_stmt.c:8:17: note: previous definition of ‘list_int_create’ with type ‘list_int(int)’
     8 | static list_int list_int_create(int len) {
       |                 ^~~~~~~~~~~~~~~
-/workspace/mochi/tests/machine/x/c/update_stmt.c:30:3: error: conflicting types for ‘Person’; have ‘struct <anonymous>’
-   30 | } Person;
-      |   ^~~~~~
-/workspace/mochi/tests/machine/x/c/update_stmt.c:24:23: note: previous declaration of ‘Person’ with type ‘Person’
-   24 | typedef struct Person Person;
-      |                       ^~~~~~
 /workspace/mochi/tests/machine/x/c/update_stmt.c: In function ‘test_update_adult_status’:
-/workspace/mochi/tests/machine/x/c/update_stmt.c:34:17: error: incompatible types when assigning to type ‘int’ from type ‘Person’
+/workspace/mochi/tests/machine/x/c/update_stmt.c:34:17: error: incompatible types when assigning to type ‘int’ from type ‘Person’ {aka ‘struct Person’}
    34 |   _t1.data[0] = (Person){.name = "Alice", .age = 17, .status = "minor"};
       |                 ^
-/workspace/mochi/tests/machine/x/c/update_stmt.c:35:17: error: incompatible types when assigning to type ‘int’ from type ‘Person’
+/workspace/mochi/tests/machine/x/c/update_stmt.c:35:17: error: incompatible types when assigning to type ‘int’ from type ‘Person’ {aka ‘struct Person’}
    35 |   _t1.data[1] = (Person){.name = "Bob", .age = 26, .status = "adult"};
       |                 ^
-/workspace/mochi/tests/machine/x/c/update_stmt.c:36:17: error: incompatible types when assigning to type ‘int’ from type ‘Person’
+/workspace/mochi/tests/machine/x/c/update_stmt.c:36:17: error: incompatible types when assigning to type ‘int’ from type ‘Person’ {aka ‘struct Person’}
    36 |   _t1.data[2] = (Person){.name = "Charlie", .age = 19, .status = "adult"};
       |                 ^
-/workspace/mochi/tests/machine/x/c/update_stmt.c:37:17: error: incompatible types when assigning to type ‘int’ from type ‘Person’
+/workspace/mochi/tests/machine/x/c/update_stmt.c:37:17: error: incompatible types when assigning to type ‘int’ from type ‘Person’ {aka ‘struct Person’}
    37 |   _t1.data[3] = (Person){.name = "Diana", .age = 16, .status = "minor"};
       |                 ^
 /workspace/mochi/tests/machine/x/c/update_stmt.c:38:9: error: ‘people’ undeclared (first use in this function)
@@ -36,16 +30,16 @@ error: cc error: exit status 1
       |         ^~~~~~
 /workspace/mochi/tests/machine/x/c/update_stmt.c:38:9: note: each undeclared identifier is reported only once for each function it appears in
 /workspace/mochi/tests/machine/x/c/update_stmt.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/update_stmt.c:46:17: error: incompatible types when assigning to type ‘int’ from type ‘Person’
+/workspace/mochi/tests/machine/x/c/update_stmt.c:46:17: error: incompatible types when assigning to type ‘int’ from type ‘Person’ {aka ‘struct Person’}
    46 |   _t2.data[0] = (Person){.name = "Alice", .age = 17, .status = "minor"};
       |                 ^
-/workspace/mochi/tests/machine/x/c/update_stmt.c:47:17: error: incompatible types when assigning to type ‘int’ from type ‘Person’
+/workspace/mochi/tests/machine/x/c/update_stmt.c:47:17: error: incompatible types when assigning to type ‘int’ from type ‘Person’ {aka ‘struct Person’}
    47 |   _t2.data[1] = (Person){.name = "Bob", .age = 25, .status = "unknown"};
       |                 ^
-/workspace/mochi/tests/machine/x/c/update_stmt.c:48:17: error: incompatible types when assigning to type ‘int’ from type ‘Person’
+/workspace/mochi/tests/machine/x/c/update_stmt.c:48:17: error: incompatible types when assigning to type ‘int’ from type ‘Person’ {aka ‘struct Person’}
    48 |   _t2.data[2] = (Person){.name = "Charlie", .age = 18, .status = "unknown"};
       |                 ^
-/workspace/mochi/tests/machine/x/c/update_stmt.c:49:17: error: incompatible types when assigning to type ‘int’ from type ‘Person’
+/workspace/mochi/tests/machine/x/c/update_stmt.c:49:17: error: incompatible types when assigning to type ‘int’ from type ‘Person’ {aka ‘struct Person’}
    49 |   _t2.data[3] = (Person){.name = "Diana", .age = 16, .status = "minor"};
       |                 ^
 /workspace/mochi/tests/machine/x/c/update_stmt.c:50:3: error: unknown type name ‘list_Person’

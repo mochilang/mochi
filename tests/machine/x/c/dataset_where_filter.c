@@ -58,7 +58,7 @@ int main() {
     printf("%d ", person.name);
     printf("%s ", "is");
     printf("%d ", person.age);
-    printf("%s\n", (person.is_senior ? " (senior)" : ""));
+    printf("%d\n", (person.is_senior ? " (senior)" : ""));
   }
   return 0;
 }

@@ -5,14 +5,14 @@ typedef struct Tree Tree;
 typedef struct Leaf Leaf;
 typedef struct Node Node;
 
-typedef struct {
+typedef struct Leaf {
 } Leaf;
-typedef struct {
+typedef struct Node {
   Tree left;
   int value;
   Tree right;
 } Node;
-typedef struct {
+typedef struct Tree {
   int tag;
   union {
     Leaf Leaf;
