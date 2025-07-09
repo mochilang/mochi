@@ -5,6 +5,7 @@ package schemecode
 import (
 	"bytes"
 	"fmt"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -13,7 +14,7 @@ import (
 	"mochi/types"
 )
 
-const datasetHelpers = `(import (srfi 95) (chibi json))
+const datasetHelpers = `(import (srfi 95) (chibi json) (chibi io))
 
 (define (_fetch url opts)
   (let* ((method (if (and opts (assq 'method opts)) (cdr (assq 'method opts)) "GET"))
@@ -1538,7 +1539,11 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 	// pass an empty string when no path is provided so runtime treats it as stdin
 	path := "\"\""
 	if l.Path != nil {
-		path = strconv.Quote(*l.Path)
+		p := *l.Path
+		if strings.HasPrefix(p, "../") {
+			p = filepath.Join("tests", p[3:])
+		}
+		path = strconv.Quote(p)
 	}
 	opts := "'()"
 	if l.With != nil {
