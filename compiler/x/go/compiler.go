@@ -2673,6 +2673,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	joinDirect := make([]bool, len(q.Joins))
 	joinSides := make([]string, len(q.Joins))
 	joinTypes := make([]string, len(q.Joins))
+	joinLeftKeys := make([]string, len(q.Joins))
+	joinRightKeys := make([]string, len(q.Joins))
 	for i, j := range q.Joins {
 		js, err := c.compileExpr(j.Src)
 		if err != nil {
@@ -2692,6 +2694,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		joinOns[i] = on
+		if lk, rk, ok := c.eqJoinKeys(j.On, q.Var, j.Var); ok {
+			joinLeftKeys[i] = lk
+			joinRightKeys[i] = rk
+		}
 		if j.Side != nil {
 			joinSides[i] = *j.Side
 		}
@@ -2962,6 +2968,18 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			onTypes := append(paramTypes, joinTypes[i])
 			onFn := fmt.Sprintf("func(_a ...any) bool { %s; return %s }", assign(onParams, onTypes), joinOns[i])
 			spec := fmt.Sprintf("{items: %s, on: %s", js, onFn)
+			if joinLeftKeys[i] != "" && joinRightKeys[i] != "" {
+				lkAssign := assign(params, paramTypes)
+				lk := fmt.Sprintf("func(_a ...any) any { %s; return %s }", lkAssign, joinLeftKeys[i])
+				var rk string
+				if joinTypes[i] != "any" {
+					c.use("_cast")
+					rk = fmt.Sprintf("func(_v any) any { %s := _cast[%s](_v); _ = %s; return %s }", sanitizeName(q.Joins[i].Var), joinTypes[i], sanitizeName(q.Joins[i].Var), joinRightKeys[i])
+				} else {
+					rk = fmt.Sprintf("func(_v any) any { %s := _v; _ = %s; return %s }", sanitizeName(q.Joins[i].Var), sanitizeName(q.Joins[i].Var), joinRightKeys[i])
+				}
+				spec += ", leftKey: " + lk + ", rightKey: " + rk
+			}
 			if joinSides[i] == "left" || joinSides[i] == "outer" {
 				spec += ", left: true"
 			}

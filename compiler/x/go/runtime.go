@@ -720,12 +720,25 @@ const (
 		"    if err != nil { panic(err) }\n" +
 		"}\n"
 
-	helperQuery = "type _joinSpec struct { items []any; on func(...any) bool; left bool; right bool }\n" +
+	helperQuery = "type _joinSpec struct { items []any; on func(...any) bool; leftKey func(...any) any; rightKey func(any) any; left bool; right bool }\n" +
 		"type _queryOpts struct { selectFn func(...any) any; where func(...any) bool; sortKey func(...any) any; skip int; take int }\n" +
 		"func _query(src []any, joins []_joinSpec, opts _queryOpts) []any {\n" +
 		"    items := make([][]any, len(src))\n" +
 		"    for i, v := range src { items[i] = []any{v} }\n" +
 		"    for _, j := range joins {\n" +
+		"        if j.leftKey != nil && j.rightKey != nil && j.on == nil && !j.left && !j.right {\n" +
+		"            rmap := map[string][]any{}\n" +
+		"            for _, r := range j.items { key := fmt.Sprint(j.rightKey(r)); rmap[key] = append(rmap[key], r) }\n" +
+		"            joined := [][]any{}\n" +
+		"            for _, left := range items {\n" +
+		"                key := fmt.Sprint(j.leftKey(left...))\n" +
+		"                if rs, ok := rmap[key]; ok {\n" +
+		"                    for _, right := range rs { joined = append(joined, append(append([]any(nil), left...), right)) }\n" +
+		"                }\n" +
+		"            }\n" +
+		"            items = joined\n" +
+		"            continue\n" +
+		"        }\n" +
 		"        joined := [][]any{}\n" +
 		"        if j.right && j.left {\n" +
 		"            matched := make([]bool, len(j.items))\n" +
