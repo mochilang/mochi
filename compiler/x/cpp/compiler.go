@@ -901,6 +901,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 								}
 								ftype = fmt.Sprintf("decltype(std::declval<%s>().%s)", t, fld)
 							}
+						} else if t := c.varStruct[vals[i]]; t != "" {
+							if idx := strings.Index(t, "{"); idx != -1 {
+								t = t[:idx]
+							}
+							ftype = t
 						} else if t := inferExprType(vals[i]); t != "" {
 							ftype = t
 						}
@@ -1225,7 +1230,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return "", fmt.Errorf("query features not supported")
 	}
 	for _, j := range q.Joins {
-		if j.Side != nil {
+		if j.Side != nil && *j.Side != "left" {
 			return "", fmt.Errorf("join side not supported")
 		}
 	}
@@ -1437,15 +1442,49 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			}
 			return
 		}
-		indent(indentLevel)
-		buf.WriteString("for (auto " + q.Joins[i].Var + " : " + joinSrcs[i] + ") {\n")
-		indentLevel++
-		indent(indentLevel)
-		buf.WriteString("if (!(" + joinOns[i] + ")) continue;\n")
-		joinLoop(i + 1)
-		indentLevel--
-		indent(indentLevel)
-		buf.WriteString("}\n")
+		side := ""
+		if q.Joins[i].Side != nil {
+			side = *q.Joins[i].Side
+		}
+		switch side {
+		case "left":
+			indent(indentLevel)
+			buf.WriteString("{ bool __matched" + strconv.Itoa(i) + " = false;\n")
+			indentLevel++
+			indent(indentLevel)
+			buf.WriteString("for (auto " + q.Joins[i].Var + " : " + joinSrcs[i] + ") {\n")
+			indentLevel++
+			indent(indentLevel)
+			buf.WriteString("if (!(" + joinOns[i] + ")) continue;\n")
+			indent(indentLevel)
+			buf.WriteString("__matched" + strconv.Itoa(i) + " = true;\n")
+			joinLoop(i + 1)
+			indentLevel--
+			indent(indentLevel)
+			buf.WriteString("}\n")
+			indent(indentLevel)
+			buf.WriteString("if (!__matched" + strconv.Itoa(i) + ") {\n")
+			indentLevel++
+			indent(indentLevel)
+			buf.WriteString("auto " + q.Joins[i].Var + " = std::decay_t<decltype(*(" + joinSrcs[i] + ").begin())>{};\n")
+			joinLoop(i + 1)
+			indentLevel--
+			indent(indentLevel)
+			buf.WriteString("}\n")
+			indentLevel--
+			indent(indentLevel)
+			buf.WriteString("}\n")
+		default:
+			indent(indentLevel)
+			buf.WriteString("for (auto " + q.Joins[i].Var + " : " + joinSrcs[i] + ") {\n")
+			indentLevel++
+			indent(indentLevel)
+			buf.WriteString("if (!(" + joinOns[i] + ")) continue;\n")
+			joinLoop(i + 1)
+			indentLevel--
+			indent(indentLevel)
+			buf.WriteString("}\n")
+		}
 	}
 	joinLoop(0)
 	for i := len(fromSrcs) - 1; i >= 0; i-- {
@@ -1581,32 +1620,32 @@ func extractVectorElemType(expr string) string {
 	if idx == -1 {
 		return ""
 	}
-        typ := inner[:idx]
-        if strings.HasPrefix(typ, "decltype(") {
-                texpr := strings.TrimSuffix(strings.TrimPrefix(typ, "decltype("), ")")
-                if strings.HasPrefix(texpr, "__struct") {
-                        if idx := strings.Index(texpr, "{"); idx != -1 {
-                                texpr = texpr[:idx]
-                        }
-                        return texpr
-                }
-                if strings.Contains(texpr, "std::string") {
-                        return "std::string"
-                }
-                if strings.Contains(texpr, "true") || strings.Contains(texpr, "false") {
-                        return "bool"
-                }
-                if _, err := strconv.Atoi(texpr); err == nil {
-                        return "int"
-                }
-        }
-        if strings.Contains(typ, "std::string") {
-                return "std::string"
-        }
-        if strings.Contains(typ, "bool") {
-                return "bool"
-        }
-        return ""
+	typ := inner[:idx]
+	if strings.HasPrefix(typ, "decltype(") {
+		texpr := strings.TrimSuffix(strings.TrimPrefix(typ, "decltype("), ")")
+		if strings.HasPrefix(texpr, "__struct") {
+			if idx := strings.Index(texpr, "{"); idx != -1 {
+				texpr = texpr[:idx]
+			}
+			return texpr
+		}
+		if strings.Contains(texpr, "std::string") {
+			return "std::string"
+		}
+		if strings.Contains(texpr, "true") || strings.Contains(texpr, "false") {
+			return "bool"
+		}
+		if _, err := strconv.Atoi(texpr); err == nil {
+			return "int"
+		}
+	}
+	if strings.Contains(typ, "std::string") {
+		return "std::string"
+	}
+	if strings.Contains(typ, "bool") {
+		return "bool"
+	}
+	return ""
 }
 
 func structLiteralType(expr string) string {
