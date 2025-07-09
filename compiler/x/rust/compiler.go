@@ -314,6 +314,28 @@ func loopHead(varName, src string, env *types.Env) string {
 	return fmt.Sprintf("for &%s in &%s {", varName, src)
 }
 
+func loopVal(varName string, env *types.Env) string {
+	if env != nil {
+		if t, err := env.GetVar(varName); err == nil {
+			if _, ok := t.(types.StructType); ok {
+				return varName + ".clone()"
+			}
+		}
+	}
+	return varName
+}
+
+func defaultDecl(varName string, env *types.Env) string {
+	if env != nil {
+		if t, err := env.GetVar(varName); err == nil {
+			if st, ok := t.(types.StructType); ok {
+				return fmt.Sprintf("let %s: %s = Default::default();", varName, st.Name)
+			}
+		}
+	}
+	return fmt.Sprintf("let %s = Default::default();", varName)
+}
+
 func stmtMutatesVar(s *parser.Statement, name string) bool {
 	switch {
 	case s.Assign != nil:
@@ -397,6 +419,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	// prepend generated structs and helpers
 	var out bytes.Buffer
 	for _, st := range c.genStructs {
+		out.WriteString("#[derive(Default, Debug, Clone)]\n")
 		out.WriteString("struct " + st.Name + " {\n")
 		for _, f := range st.Order {
 			out.WriteString("    " + f + ": " + rustTypeFromType(st.Fields[f]) + ",\n")
@@ -1076,7 +1099,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if info, ok := c.variantInfo[p.Selector.Root]; ok {
 				return fmt.Sprintf("%s::%s", info.Union, p.Selector.Root), nil
 			}
-			return p.Selector.Root, nil
+			return loopVal(p.Selector.Root, c.env), nil
 		}
 		return p.Selector.Root + "." + strings.Join(p.Selector.Tail, "."), nil
 	case p.FunExpr != nil:
@@ -1437,13 +1460,272 @@ func (c *Compiler) compileLeftJoinSimple(q *parser.QueryExpr, src string, child 
 	}
 	b.WriteString(" }")
 	b.WriteString(" if !_matched {")
-	b.WriteString(fmt.Sprintf(" let %s = Default::default();", q.Joins[0].Var))
+	b.WriteString(" ")
+	b.WriteString(defaultDecl(q.Joins[0].Var, child))
 	if cond != "" {
 		b.WriteString(" if (" + cond + ") { " + tmp + ".push(" + sel + "); }")
 	} else {
 		b.WriteString(" " + tmp + ".push(" + sel + ");")
 	}
 	b.WriteString(" }")
+	for range fromSrcs {
+		b.WriteString(" }")
+	}
+	b.WriteString(" }")
+	if sortExpr != "" {
+		b.WriteString(" " + tmp + ".sort_by(|a,b| a.0.partial_cmp(&b.0).unwrap());")
+		res := c.newTmp()
+		b.WriteString(" let mut " + res + " = Vec::new();")
+		b.WriteString(" for p in " + tmp + " { " + res + ".push(p.1); }")
+		tmp = res
+	}
+	if skipExpr != "" || takeExpr != "" {
+		start := "0usize"
+		if skipExpr != "" {
+			start = skipExpr + " as usize"
+		}
+		end := ""
+		if takeExpr != "" {
+			if skipExpr != "" {
+				end = "(" + skipExpr + " + " + takeExpr + ") as usize"
+			} else {
+				end = takeExpr + " as usize"
+			}
+		} else {
+			end = tmp + ".len()"
+		}
+		b.WriteString(" let " + tmp + " = " + tmp + "[" + start + ".." + end + "].to_vec();")
+	}
+	if q.Distinct {
+		uniq := c.newTmp()
+		b.WriteString(" let mut set = std::collections::HashSet::new();")
+		b.WriteString(" let mut " + uniq + " = Vec::new();")
+		b.WriteString(" for v in " + tmp + ".into_iter() { if set.insert(v.clone()) { " + uniq + ".push(v); } }")
+		b.WriteString(" let " + tmp + " = " + uniq + ";")
+	}
+	b.WriteString(" " + tmp + " }")
+	c.env = orig
+	return b.String(), nil
+}
+
+func (c *Compiler) compileRightJoinSimple(q *parser.QueryExpr, src string, child *types.Env, fromSrcs []string, joinSrc, joinCond string) (string, error) {
+	orig := c.env
+	c.env = child
+	var cond, sortExpr, skipExpr, takeExpr string
+	var err error
+	if q.Where != nil {
+		cond, err = c.compileExpr(q.Where)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Sort != nil {
+		sortExpr, err = c.compileExpr(q.Sort)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Skip != nil {
+		skipExpr, err = c.compileExpr(q.Skip)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Take != nil {
+		takeExpr, err = c.compileExpr(q.Take)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	var sel string
+	if ml := tryMapLiteral(q.Select); ml != nil {
+		name := c.newStructName("Result")
+		sel, err = c.compileMapLiteralAsStruct(name, ml)
+	} else {
+		sel, err = c.compileExpr(q.Select)
+	}
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+
+	tmp := c.newTmp()
+	var b strings.Builder
+	b.WriteString("{ let mut ")
+	b.WriteString(tmp)
+	b.WriteString(" = Vec::new();")
+	b.WriteString(loopHead(q.Joins[0].Var, joinSrc, child))
+	b.WriteString(" let mut _matched = false;")
+	b.WriteString(" ")
+	b.WriteString(loopHead(q.Var, src, child))
+	for i, fs := range fromSrcs {
+		b.WriteString(" ")
+		b.WriteString(loopHead(q.Froms[i].Var, fs, child))
+	}
+	if joinCond != "" {
+		b.WriteString(" if !(" + joinCond + ") { continue; }")
+	}
+	if cond != "" {
+		b.WriteString(" if !(" + cond + ") { continue; }")
+	}
+	b.WriteString(" _matched = true;")
+	if sortExpr != "" {
+		item := c.newTmp()
+		key := c.newTmp()
+		b.WriteString(" let " + item + " = " + sel + ";")
+		b.WriteString(" let " + key + " = " + sortExpr + ";")
+		b.WriteString(" " + tmp + ".push((" + key + ", " + item + "));")
+	} else {
+		b.WriteString(" " + tmp + ".push(" + sel + ");")
+	}
+	for range fromSrcs {
+		b.WriteString(" }")
+	}
+	b.WriteString(" }")
+	b.WriteString(" if !_matched {")
+	b.WriteString(" ")
+	b.WriteString(defaultDecl(q.Var, child))
+	if cond != "" {
+		b.WriteString(" if (" + cond + ") { " + tmp + ".push(" + sel + "); }")
+	} else {
+		b.WriteString(" " + tmp + ".push(" + sel + ");")
+	}
+	b.WriteString(" }")
+	b.WriteString(" }")
+	if sortExpr != "" {
+		b.WriteString(" " + tmp + ".sort_by(|a,b| a.0.partial_cmp(&b.0).unwrap());")
+		res := c.newTmp()
+		b.WriteString(" let mut " + res + " = Vec::new();")
+		b.WriteString(" for p in " + tmp + " { " + res + ".push(p.1); }")
+		tmp = res
+	}
+	if skipExpr != "" || takeExpr != "" {
+		start := "0usize"
+		if skipExpr != "" {
+			start = skipExpr + " as usize"
+		}
+		end := ""
+		if takeExpr != "" {
+			if skipExpr != "" {
+				end = "(" + skipExpr + " + " + takeExpr + ") as usize"
+			} else {
+				end = takeExpr + " as usize"
+			}
+		} else {
+			end = tmp + ".len()"
+		}
+		b.WriteString(" let " + tmp + " = " + tmp + "[" + start + ".." + end + "].to_vec();")
+	}
+	if q.Distinct {
+		uniq := c.newTmp()
+		b.WriteString(" let mut set = std::collections::HashSet::new();")
+		b.WriteString(" let mut " + uniq + " = Vec::new();")
+		b.WriteString(" for v in " + tmp + ".into_iter() { if set.insert(v.clone()) { " + uniq + ".push(v); } }")
+		b.WriteString(" let " + tmp + " = " + uniq + ";")
+	}
+	b.WriteString(" " + tmp + " }")
+	c.env = orig
+	return b.String(), nil
+}
+
+func (c *Compiler) compileLeftJoinLast(q *parser.QueryExpr, src string, child *types.Env, fromSrcs, joinSrcs, joinConds []string) (string, error) {
+	orig := c.env
+	c.env = child
+	var cond, sortExpr, skipExpr, takeExpr string
+	var err error
+	if q.Where != nil {
+		cond, err = c.compileExpr(q.Where)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Sort != nil {
+		sortExpr, err = c.compileExpr(q.Sort)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Skip != nil {
+		skipExpr, err = c.compileExpr(q.Skip)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Take != nil {
+		takeExpr, err = c.compileExpr(q.Take)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	var sel string
+	if ml := tryMapLiteral(q.Select); ml != nil {
+		name := c.newStructName("Result")
+		sel, err = c.compileMapLiteralAsStruct(name, ml)
+	} else {
+		sel, err = c.compileExpr(q.Select)
+	}
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+	last := len(joinSrcs) - 1
+	tmp := c.newTmp()
+	var b strings.Builder
+	b.WriteString("{ let mut ")
+	b.WriteString(tmp)
+	b.WriteString(" = Vec::new();")
+	b.WriteString(loopHead(q.Var, src, child))
+	for i, fs := range fromSrcs {
+		b.WriteString(" ")
+		b.WriteString(loopHead(q.Froms[i].Var, fs, child))
+	}
+	for i := 0; i < last; i++ {
+		b.WriteString(" ")
+		b.WriteString(loopHead(q.Joins[i].Var, joinSrcs[i], child))
+		if joinConds[i] != "" {
+			b.WriteString(" if !(" + joinConds[i] + ") { continue; }")
+		}
+	}
+	b.WriteString(" let mut _matched = false;")
+	b.WriteString(" ")
+	b.WriteString(loopHead(q.Joins[last].Var, joinSrcs[last], child))
+	if joinConds[last] != "" {
+		b.WriteString(" if !(" + joinConds[last] + ") { continue; }")
+	}
+	if cond != "" {
+		b.WriteString(" if !(" + cond + ") { continue; }")
+	}
+	b.WriteString(" _matched = true;")
+	if sortExpr != "" {
+		item := c.newTmp()
+		key := c.newTmp()
+		b.WriteString(" let " + item + " = " + sel + ";")
+		b.WriteString(" let " + key + " = " + sortExpr + ";")
+		b.WriteString(" " + tmp + ".push((" + key + ", " + item + "));")
+	} else {
+		b.WriteString(" " + tmp + ".push(" + sel + ");")
+	}
+	b.WriteString(" }")
+	b.WriteString(" if !_matched {")
+	b.WriteString(" ")
+	b.WriteString(defaultDecl(q.Joins[last].Var, child))
+	if cond != "" {
+		b.WriteString(" if (" + cond + ") { " + tmp + ".push(" + sel + "); }")
+	} else {
+		b.WriteString(" " + tmp + ".push(" + sel + ");")
+	}
+	b.WriteString(" }")
+	for i := 0; i < last; i++ {
+		b.WriteString(" }")
+	}
 	for range fromSrcs {
 		b.WriteString(" }")
 	}
@@ -1572,6 +1854,25 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		res, err := c.compileLeftJoinSimple(q, src, child, fromSrcs, joinSrcs[0], joinConds[0])
 		c.env = origEnv
 		return res, err
+	}
+	if len(q.Joins) == 1 && joinSides[0] == "right" {
+		res, err := c.compileRightJoinSimple(q, src, child, fromSrcs, joinSrcs[0], joinConds[0])
+		c.env = origEnv
+		return res, err
+	}
+	if len(q.Joins) > 1 && joinSides[len(joinSides)-1] == "left" {
+		ok := true
+		for _, s := range joinSides[:len(joinSides)-1] {
+			if s != "" {
+				ok = false
+				break
+			}
+		}
+		if ok {
+			res, err := c.compileLeftJoinLast(q, src, child, fromSrcs, joinSrcs, joinConds)
+			c.env = origEnv
+			return res, err
+		}
 	}
 	for _, s := range joinSides {
 		if s != "" {
