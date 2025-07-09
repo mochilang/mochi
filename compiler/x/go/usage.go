@@ -107,7 +107,13 @@ func (c *Compiler) compileMainFunc(prog *parser.Program) error {
 		if s.Let == nil && s.Var == nil {
 			continue
 		}
-		if hasLaterTest(prog, i) {
+		name := ""
+		if s.Let != nil {
+			name = s.Let.Name
+		} else if s.Var != nil {
+			name = s.Var.Name
+		}
+		if hasLaterTest(prog, i) || varUsedInFuncs(prog, name) {
 			if err := c.compileGlobalVarDecl(s); err != nil {
 				return err
 			}
@@ -146,7 +152,13 @@ func (c *Compiler) compileMainFunc(prog *parser.Program) error {
 		if s.Fun != nil || s.Test != nil {
 			continue
 		}
-		if (s.Let != nil || s.Var != nil) && hasLaterTest(prog, i) {
+		name := ""
+		if s.Let != nil {
+			name = s.Let.Name
+		} else if s.Var != nil {
+			name = s.Var.Name
+		}
+		if (s.Let != nil || s.Var != nil) && (hasLaterTest(prog, i) || varUsedInFuncs(prog, name)) {
 			continue
 		}
 		body = append(body, s)
@@ -266,6 +278,19 @@ func hasLaterTest(prog *parser.Program, idx int) bool {
 	for _, s := range prog.Statements[idx+1:] {
 		if s.Test != nil {
 			return true
+		}
+	}
+	return false
+}
+
+func varUsedInFuncs(prog *parser.Program, name string) bool {
+	for _, s := range prog.Statements {
+		if s.Fun != nil {
+			for _, stmt := range s.Fun.Body {
+				if stmtUsesVar(stmt, name) {
+					return true
+				}
+			}
 		}
 	}
 	return false
