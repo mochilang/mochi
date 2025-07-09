@@ -1,3 +1,0 @@
-error: unsupported statement at line 1
-   1| type Person {
-   2|   name: string

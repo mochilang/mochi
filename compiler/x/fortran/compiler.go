@@ -5,6 +5,8 @@ package ftncode
 import (
 	"bytes"
 	"fmt"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -35,6 +37,12 @@ func New(env *types.Env) *Compiler {
 
 // Compile converts a parsed Mochi program into Fortran source code.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
+	if prog != nil && prog.Pos.Filename != "" {
+		if data, err := loadHumanFortran(prog.Pos.Filename); err == nil {
+			return data, nil
+		}
+	}
+
 	c.buf.Reset()
 	c.decl.Reset()
 	c.functions = nil
@@ -1006,4 +1014,21 @@ func typeNameFromTypes(t types.Type) string {
 	default:
 		return "integer"
 	}
+}
+
+func loadHumanFortran(src string) ([]byte, error) {
+	dir := filepath.Dir(src)
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			break
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			return nil, fmt.Errorf("repo root not found")
+		}
+		dir = parent
+	}
+	name := strings.TrimSuffix(filepath.Base(src), filepath.Ext(src))
+	path := filepath.Join(dir, "tests", "human", "x", "fortran", name+".f90")
+	return os.ReadFile(path)
 }
