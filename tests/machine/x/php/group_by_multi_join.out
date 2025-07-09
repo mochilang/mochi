@@ -1,0 +1,6 @@
+PHP Warning:  Undefined variable $partsupp in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 7
+PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 7
+PHP Warning:  Undefined variable $filtered in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 24
+PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 24
+array(0) {
+}
