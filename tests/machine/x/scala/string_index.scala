@@ -1,6 +1,6 @@
 object string_index {
+  val s = "mochi"
   def main(args: Array[String]): Unit = {
-    val s = "mochi"
     println((s.charAt(1)))
   }
 }

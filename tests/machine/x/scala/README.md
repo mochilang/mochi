@@ -102,5 +102,5 @@ This directory contains Scala source files generated from Mochi programs using t
 - [x] while_loop.mochi
 
 ## TODO
-- [ ] implement query joins
-- [ ] handle load/save expressions
+- [ ] finish query join support
+- [ ] improve load/save expression handling

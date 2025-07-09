@@ -1,14 +1,14 @@
 exit status 1
-/workspace/mochi/tests/machine/x/scala/group_by_sort.scala:4: error: identifier expected but 'val' found.
-    val grouped = (((for { i <- items } yield (i("cat"), (i))).groupBy(_._1).map{ case(k,list) => (k, list.map(_._2)) }.toList).map{ case(gKey,gItems) => { val g = (gKey, gItems); Map("cat" -> (g._1), "total" -> (for { x <- g } yield x.val.sum)) } }.toList).sortBy(i => -for { x <- g } yield x.val.sum)
-                                                                                                                                                                                                                                            ^
-/workspace/mochi/tests/machine/x/scala/group_by_sort.scala:4: error: ')' expected but '}' found.
-    val grouped = (((for { i <- items } yield (i("cat"), (i))).groupBy(_._1).map{ case(k,list) => (k, list.map(_._2)) }.toList).map{ case(gKey,gItems) => { val g = (gKey, gItems); Map("cat" -> (g._1), "total" -> (for { x <- g } yield x.val.sum)) } }.toList).sortBy(i => -for { x <- g } yield x.val.sum)
-                                                                                                                                                                                                                                                      ^
-/workspace/mochi/tests/machine/x/scala/group_by_sort.scala:4: error: illegal start of simple expression
-    val grouped = (((for { i <- items } yield (i("cat"), (i))).groupBy(_._1).map{ case(k,list) => (k, list.map(_._2)) }.toList).map{ case(gKey,gItems) => { val g = (gKey, gItems); Map("cat" -> (g._1), "total" -> (for { x <- g } yield x.val.sum)) } }.toList).sortBy(i => -for { x <- g } yield x.val.sum)
-                                                                                                                                                                                                                                                                               ^
-/workspace/mochi/tests/machine/x/scala/group_by_sort.scala:6: error: ')' expected but '}' found.
-  }
-  ^
+/workspace/mochi/tests/machine/x/scala/group_by_sort.scala:3: error: identifier expected but 'val' found.
+  val grouped = (((for { i <- items } yield (i("cat"), (i))).groupBy(_._1).map{ case(k,list) => (k, list.map(_._2)) }.toList).map{ case(gKey,gItems) => { val g = (gKey, gItems); Map("cat" -> (g._1), "total" -> (for { x <- g } yield x.val.sum)) } }.toList).sortBy(i => -for { x <- g } yield x.val.sum)
+                                                                                                                                                                                                                                          ^
+/workspace/mochi/tests/machine/x/scala/group_by_sort.scala:3: error: ')' expected but '}' found.
+  val grouped = (((for { i <- items } yield (i("cat"), (i))).groupBy(_._1).map{ case(k,list) => (k, list.map(_._2)) }.toList).map{ case(gKey,gItems) => { val g = (gKey, gItems); Map("cat" -> (g._1), "total" -> (for { x <- g } yield x.val.sum)) } }.toList).sortBy(i => -for { x <- g } yield x.val.sum)
+                                                                                                                                                                                                                                                    ^
+/workspace/mochi/tests/machine/x/scala/group_by_sort.scala:3: error: illegal start of simple expression
+  val grouped = (((for { i <- items } yield (i("cat"), (i))).groupBy(_._1).map{ case(k,list) => (k, list.map(_._2)) }.toList).map{ case(gKey,gItems) => { val g = (gKey, gItems); Map("cat" -> (g._1), "total" -> (for { x <- g } yield x.val.sum)) } }.toList).sortBy(i => -for { x <- g } yield x.val.sum)
+                                                                                                                                                                                                                                                                             ^
+/workspace/mochi/tests/machine/x/scala/group_by_sort.scala:7: error: ')' expected but '}' found.
+}
+^
 four errors found

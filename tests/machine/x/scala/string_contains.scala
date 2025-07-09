@@ -1,6 +1,6 @@
 object string_contains {
+  val s = "catch"
   def main(args: Array[String]): Unit = {
-    val s = "catch"
     println((s.contains("cat")))
     println((s.contains("dog")))
   }

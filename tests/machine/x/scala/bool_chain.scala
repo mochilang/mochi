@@ -10,4 +10,3 @@ object bool_chain {
     println(((1 < 2) && (2 < 3) && (3 > 4) && boom()))
   }
 }
-

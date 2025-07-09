@@ -1,1 +1,17 @@
-line 12: join sides not supported
+exit status 1
+/workspace/mochi/tests/machine/x/scala/group_by_left_join.scala:4: error: value customerId is not a member of scala.collection.immutable.Map[String,Int]
+  val stats = ((for { c <- customers; o = orders.find(o => (o.customerId).asInstanceOf[Int] == (c.id).asInstanceOf[Int]) } yield (c("name"), (c, o))).groupBy(_._1).map{ case(k,list) => (k, list.map(_._2)) }.toList).map{ case(gKey,gItems) => { val g = (gKey, gItems); Map("name" -> (g._1), "count" -> (for { r <- g; if r.o } yield r.size)) } }.toList
+                                                              ^
+/workspace/mochi/tests/machine/x/scala/group_by_left_join.scala:4: error: value id is not a member of scala.collection.immutable.Map[String,Any]
+  val stats = ((for { c <- customers; o = orders.find(o => (o.customerId).asInstanceOf[Int] == (c.id).asInstanceOf[Int]) } yield (c("name"), (c, o))).groupBy(_._1).map{ case(k,list) => (k, list.map(_._2)) }.toList).map{ case(gKey,gItems) => { val g = (gKey, gItems); Map("name" -> (g._1), "count" -> (for { r <- g; if r.o } yield r.size)) } }.toList
+                                                                                                  ^
+/workspace/mochi/tests/machine/x/scala/group_by_left_join.scala:4: error: Any does not take parameters
+  val stats = ((for { c <- customers; o = orders.find(o => (o.customerId).asInstanceOf[Int] == (c.id).asInstanceOf[Int]) } yield (c("name"), (c, o))).groupBy(_._1).map{ case(k,list) => (k, list.map(_._2)) }.toList).map{ case(gKey,gItems) => { val g = (gKey, gItems); Map("name" -> (g._1), "count" -> (for { r <- g; if r.o } yield r.size)) } }.toList
+                                                                                                                                   ^
+/workspace/mochi/tests/machine/x/scala/group_by_left_join.scala:4: error: value map is not a member of Any
+  val stats = ((for { c <- customers; o = orders.find(o => (o.customerId).asInstanceOf[Int] == (c.id).asInstanceOf[Int]) } yield (c("name"), (c, o))).groupBy(_._1).map{ case(k,list) => (k, list.map(_._2)) }.toList).map{ case(gKey,gItems) => { val g = (gKey, gItems); Map("name" -> (g._1), "count" -> (for { r <- g; if r.o } yield r.size)) } }.toList
+                                                                                                                                                                                                  ^
+/workspace/mochi/tests/machine/x/scala/group_by_left_join.scala:4: error: value filter is not a member of (Any, Any)
+  val stats = ((for { c <- customers; o = orders.find(o => (o.customerId).asInstanceOf[Int] == (c.id).asInstanceOf[Int]) } yield (c("name"), (c, o))).groupBy(_._1).map{ case(k,list) => (k, list.map(_._2)) }.toList).map{ case(gKey,gItems) => { val g = (gKey, gItems); Map("name" -> (g._1), "count" -> (for { r <- g; if r.o } yield r.size)) } }.toList
+                                                                                                                                                                                                                                                                                                                        ^
+5 errors found
