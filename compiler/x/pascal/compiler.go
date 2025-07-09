@@ -107,6 +107,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
+	// Collect variable types for the main body so selectors can be
+	// resolved correctly during the first pass.
+	globalVars := map[string]string{}
+	collectVars(prog.Statements, c.env, globalVars)
+	c.varTypes = globalVars
+
 	// Compile main body first to gather temporaries
 	var body bytes.Buffer
 	prevBuf := c.buf
@@ -2151,11 +2157,10 @@ buildSources:
 	}
 	condStr := strings.Join(condParts, " and ")
 	elemType := typeString(types.TypeOfExpr(q.Select, child))
-	if strings.HasPrefix(elemType, "specialize TFPGMap") {
+	if elemType == "_" || elemType == "" {
 		elemType = "specialize TFPGMap<string, Variant>"
-	}
-	if elemType == "" {
-		elemType = "integer"
+	} else if strings.HasPrefix(elemType, "specialize TFPGMap") {
+		elemType = "specialize TFPGMap<string, Variant>"
 	}
 
 	tmp := c.newTypedVar(fmt.Sprintf("specialize TArray<%s>", elemType))
@@ -2458,6 +2463,7 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	c.tempVars = make(map[string]string)
 	prevRepl := c.replacements
 	c.replacements = make(map[string]string)
+	prevVars := c.varTypes
 
 	name := "test_" + sanitizeName(t.Name)
 
@@ -2466,11 +2472,15 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	oldIndent := c.indent
 	c.buf = bytes.Buffer{}
 	c.indent = oldIndent + 1
+	localVars := map[string]string{}
+	collectVars(t.Body, c.env, localVars)
+	c.varTypes = localVars
 	for _, st := range t.Body {
 		if err := c.compileStmt(st); err != nil {
 			c.buf = oldBuf
 			c.indent = oldIndent
 			c.tempVars = prevTemps
+			c.varTypes = prevVars
 			return err
 		}
 	}
@@ -2478,8 +2488,7 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	c.buf = oldBuf
 	c.indent = oldIndent
 
-	vars := map[string]string{}
-	collectVars(t.Body, c.env, vars)
+	vars := localVars
 	for n, typ := range c.tempVars {
 		if typ == "" {
 			typ = "integer"
@@ -2509,6 +2518,7 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 
 	c.tempVars = prevTemps
 	c.replacements = prevRepl
+	c.varTypes = prevVars
 	return nil
 }
 
