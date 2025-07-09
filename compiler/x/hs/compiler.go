@@ -1290,6 +1290,41 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	child.SetVar(q.Var, elemType, true)
 
+	// handle simple right join as swapped left join
+	if len(q.Froms) == 0 && len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "right" {
+		j := q.Joins[0]
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			return "", err
+		}
+		jt := c.inferExprType(j.Src)
+		var je types.Type = types.AnyType{}
+		if lt, ok := jt.(types.ListType); ok {
+			je = lt.Elem
+		}
+		child.SetVar(j.Var, je, true)
+		c.env = child
+		on, err := c.compileExpr(j.On)
+		c.env = orig
+		if err != nil {
+			return "", err
+		}
+		tmp := fmt.Sprintf("_ms%d", c.tmpCount)
+		c.tmpCount++
+		loops := []string{
+			fmt.Sprintf("%s <- %s", sanitizeName(j.Var), js),
+			fmt.Sprintf("%s <- let %s = [ %s | %s <- %s, %s ] in if null %s then [Map.empty] else %s", sanitizeName(q.Var), tmp, sanitizeName(q.Var), sanitizeName(q.Var), src, on, tmp, tmp),
+		}
+		c.env = child
+		val, err := c.compileExpr(q.Select)
+		c.env = orig
+		if err != nil {
+			return "", err
+		}
+		res := fmt.Sprintf("[ %s | %s ]", val, strings.Join(loops, ", "))
+		return res, nil
+	}
+
 	loops := []string{}
 	conds := []string{}
 
