@@ -35,7 +35,15 @@ type Compiler struct {
 }
 
 func (c *Compiler) fieldType(e *parser.Expr) types.Type {
-	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+	if e == nil || e.Binary == nil {
+		return types.TypeOfExprBasic(e, c.env)
+	}
+	if len(e.Binary.Right) > 0 {
+		op := e.Binary.Right[0].Op
+		switch op {
+		case "==", "!=", "<", "<=", ">", ">=", "&&", "||", "in":
+			return types.BoolType{}
+		}
 		return types.TypeOfExprBasic(e, c.env)
 	}
 	u := e.Binary.Left
@@ -1326,7 +1334,7 @@ func (c *Compiler) compileGroupBySimple(q *parser.QueryExpr, src string, child *
 		b.WriteString(" if !(" + cond + ") { continue; }")
 	}
 	fmt.Fprintf(&b, " let key = %s;", keyExpr)
-	fmt.Fprintf(&b, " %s.entry(key).or_insert_with(Vec::new).push(%s);", mapTmp, q.Var)
+	fmt.Fprintf(&b, " %s.entry(key).or_insert_with(Vec::new).push(%s);", mapTmp, loopVal(q.Var, child))
 	for range fromSrcs {
 		b.WriteString(" }")
 	}
