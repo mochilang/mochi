@@ -4,7 +4,7 @@ This directory contains Kotlin source files generated from Mochi programs along 
 
 ## Summary
 
-- 35/97 programs compiled and executed successfully.
+ - 36/97 programs compiled and executed successfully.
 - 16 programs failed to compile or run.
 - 46 programs have not been processed yet.
 
@@ -44,6 +44,7 @@ map_assign
 map_index
 dataset_where_filter
 exists_builtin
+values_builtin
 
 ### Failed
 group_by
