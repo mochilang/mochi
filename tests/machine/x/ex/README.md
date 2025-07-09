@@ -4,8 +4,8 @@ This directory contains Elixir source code generated from Mochi programs and the
 
 ## Summary
 
-- 82/97 programs compiled and executed successfully.
-- 15 programs failed to compile or run.
+- 85/97 programs compiled and executed successfully.
+- 12 programs failed to compile or run.
 
 ### Successful
 append_builtin
@@ -55,6 +55,8 @@ map_in_operator
 map_index
 map_int_key
 map_literal_dynamic
+map_membership
+map_nested_assign
 match_expr
 match_full
 math_ops
@@ -66,6 +68,7 @@ outer_join
 partial_application
 print_hello
 pure_fold
+query_sum_select
 right_join
 short_circuit
 slice
@@ -100,10 +103,7 @@ group_by_sort
 group_items_iteration
 in_operator_extended
 load_yaml
-map_membership
-map_nested_assign
 pure_global_fold
-query_sum_select
 record_assign
 save_jsonl_stdout
 tree_sum

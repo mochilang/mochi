@@ -4,7 +4,7 @@ defmodule Main do
     # nums :: list(integer())
     nums = [1, 2, 3]
     # result :: float()
-    result = for n <- nums, n > 1, do: _sum(n)
+    result = _sum(for n <- nums, n > 1, do: n)
     IO.inspect(result)
   end
 

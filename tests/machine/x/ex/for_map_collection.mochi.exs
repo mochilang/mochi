@@ -2,7 +2,7 @@
 defmodule Main do
   def main do
     # m :: map()
-    m = %{a: 1, b: 2}
+    m = %{"a" => 1, "b" => 2}
     _ = m
 
     for k <- Map.keys(m) do

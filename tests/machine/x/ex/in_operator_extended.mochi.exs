@@ -9,8 +9,8 @@ defmodule Main do
     IO.inspect(if is_map(ys), do: Map.has_key?(ys, 2), else: Enum.member?(ys, 2))
     # m :: map()
     m = %{a: 1}
-    IO.inspect(String.contains?(m, "a"))
-    IO.inspect(String.contains?(m, "b"))
+    IO.inspect(if is_map(m), do: Map.has_key?(m, "a"), else: Enum.member?(m, "a"))
+    IO.inspect(if is_map(m), do: Map.has_key?(m, "b"), else: Enum.member?(m, "b"))
     # s :: String.t()
     s = "hello"
     IO.inspect(String.contains?(s, "ell"))
