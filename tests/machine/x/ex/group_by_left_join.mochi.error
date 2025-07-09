@@ -1,22 +1,19 @@
-line 22
+line 20
 warning: variable "o" is unused (if the variable is not meant to be used, prefix it with an underscore)
-  /workspace/mochi/tests/machine/x/ex/group_by_left_join.mochi.exs:22: Main.main/0
-
-warning: variable "o" is unused (if the variable is not meant to be used, prefix it with an underscore)
-  /workspace/mochi/tests/machine/x/ex/group_by_left_join.mochi.exs:25: Main.main/0
+  /workspace/mochi/tests/machine/x/ex/group_by_left_join.mochi.exs:20: Main.main/0
 
 warning: default values for the optional arguments in _query/3 are never used
-  /workspace/mochi/tests/machine/x/ex/group_by_left_join.mochi.exs:101
+  /workspace/mochi/tests/machine/x/ex/group_by_left_join.mochi.exs:95
 
-** (KeyError) key :o not found in: %{id: 1, name: "Alice"}
-    /workspace/mochi/tests/machine/x/ex/group_by_left_join.mochi.exs:28: anonymous fn/2 in Main.main/0
+** (KeyError) key :o not found in: [%{id: 1, name: "Alice"}, %{customerId: 1, id: 100}]. If you are using the dot syntax, such as map.field, make sure the left-hand side of the dot is a map
+    /workspace/mochi/tests/machine/x/ex/group_by_left_join.mochi.exs:22: anonymous fn/2 in Main.main/0
     (elixir 1.14.0) lib/enum.ex:2468: Enum."-reduce/3-lists^foldl/2-0-"/3
-    /workspace/mochi/tests/machine/x/ex/group_by_left_join.mochi.exs:28: anonymous fn/1 in Main.main/0
+    /workspace/mochi/tests/machine/x/ex/group_by_left_join.mochi.exs:22: anonymous fn/1 in Main.main/0
     (elixir 1.14.0) lib/enum.ex:1658: Enum."-map/2-lists^map/1-0-"/2
-    /workspace/mochi/tests/machine/x/ex/group_by_left_join.mochi.exs:28: Main.main/0
+    /workspace/mochi/tests/machine/x/ex/group_by_left_join.mochi.exs:22: Main.main/0
 
            )
 
          groups = _group_by(rows, fn [c, o] -> c.name end)
-
-         groups =
+         items = groups
+         Enum.map(items, fn g -> %{name: g.key, count: _count(for r <- g.items, r.o, do: r)} end)

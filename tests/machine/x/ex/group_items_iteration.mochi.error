@@ -1,4 +1,4 @@
-line 18
+line 17
 ** (FunctionClauseError) no function clause matching in anonymous fn/2 in Main.main/0    
     
     The following arguments were given to anonymous fn/2 in Main.main/0:
@@ -9,11 +9,11 @@ line 18
         # 2
         {:cont, {1}}
     
-    /workspace/mochi/tests/machine/x/ex/group_items_iteration.mochi.exs:18: anonymous fn/2 in Main.main/0
+    /workspace/mochi/tests/machine/x/ex/group_items_iteration.mochi.exs:17: anonymous fn/2 in Main.main/0
     (elixir 1.14.0) lib/enum.ex:2468: Enum."-reduce/3-lists^foldl/2-0-"/3
-    /workspace/mochi/tests/machine/x/ex/group_items_iteration.mochi.exs:18: anonymous fn/2 in Main.main/0
+    /workspace/mochi/tests/machine/x/ex/group_items_iteration.mochi.exs:17: anonymous fn/2 in Main.main/0
     (elixir 1.14.0) lib/enum.ex:2468: Enum."-reduce/3-lists^foldl/2-0-"/3
-    /workspace/mochi/tests/machine/x/ex/group_items_iteration.mochi.exs:13: Main.main/0
+    /workspace/mochi/tests/machine/x/ex/group_items_iteration.mochi.exs:12: Main.main/0
 
 
         {total} =
