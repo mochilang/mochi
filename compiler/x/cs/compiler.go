@@ -1082,6 +1082,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
 		elemT = lt.Elem
 	}
+	elemType := csTypeOf(elemT)
 	child.SetVar(q.Var, elemT, true)
 	c.env = child
 	sel, err := c.compileExpr(q.Select)
@@ -1216,6 +1217,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		joinSrcs := make([]string, len(q.Joins))
 		joinOns := make([]string, len(q.Joins))
 		joinSides := make([]string, len(q.Joins))
+		joinTypes := make([]string, len(q.Joins))
 		for i, j := range q.Joins {
 			js, err := c.compileExpr(j.Src)
 			if err != nil {
@@ -1230,6 +1232,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			if lt, ok := c.inferExprType(j.Src).(types.ListType); ok {
 				jt = lt.Elem
 			}
+			joinTypes[i] = csTypeOf(jt)
 			child.SetVar(j.Var, jt, true)
 			c.env = child
 			onExpr, err := c.compileExpr(j.On)
@@ -1410,7 +1413,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			buf.WriteString(indent + "}\n")
 			buf.WriteString(indent + "if (!_matched) {\n")
 			indent += "\t"
-			buf.WriteString(fmt.Sprintf(indent+"dynamic %s = null;\n", sanitizeName(q.Joins[0].Var)))
+			buf.WriteString(fmt.Sprintf(indent+"%s %s = default;\n", joinTypes[0], sanitizeName(q.Joins[0].Var)))
 			if cond != "" {
 				buf.WriteString(fmt.Sprintf(indent+"if (%s) {\n", cond))
 				indent += "\t"
@@ -1447,7 +1450,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			buf.WriteString(indent + "}\n")
 			buf.WriteString(indent + "if (!_matched) {\n")
 			indent += "\t"
-			buf.WriteString(fmt.Sprintf(indent+"dynamic %s = null;\n", sanitizeName(v)))
+			buf.WriteString(fmt.Sprintf(indent+"%s %s = default;\n", elemType, sanitizeName(v)))
 			if cond != "" {
 				buf.WriteString(fmt.Sprintf(indent+"if (%s) {\n", cond))
 				indent += "\t"
@@ -1462,7 +1465,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			indent = indent[:len(indent)-1]
 			buf.WriteString(indent + "}\n")
 		} else if specialOuter {
-			buf.WriteString(indent + "var _joinItems = new List<dynamic>(" + joinSrcs[0] + ");\n")
+			buf.WriteString(fmt.Sprintf(indent+"var _joinItems = new List<%s>(%s);\n", joinTypes[0], joinSrcs[0]))
 			buf.WriteString(indent + "var _matched = new bool[_joinItems.Count];\n")
 			buf.WriteString(fmt.Sprintf(indent+"foreach (var %s in %s) {\n", v, src))
 			indent += "\t"
@@ -1486,7 +1489,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			buf.WriteString(indent + "}\n")
 			buf.WriteString(indent + "if (!_m) {\n")
 			indent += "\t"
-			buf.WriteString(fmt.Sprintf(indent+"dynamic %s = null;\n", sanitizeName(q.Joins[0].Var)))
+			buf.WriteString(fmt.Sprintf(indent+"%s %s = default;\n", joinTypes[0], sanitizeName(q.Joins[0].Var)))
 			if cond != "" {
 				buf.WriteString(fmt.Sprintf(indent+"if (%s) {\n", cond))
 				indent += "\t"
@@ -1504,7 +1507,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			indent += "\t"
 			buf.WriteString(indent + "if (!_matched[i]) {\n")
 			indent += "\t"
-			buf.WriteString(fmt.Sprintf(indent+"dynamic %s = null;\n", sanitizeName(v)))
+			buf.WriteString(fmt.Sprintf(indent+"%s %s = default;\n", elemType, sanitizeName(v)))
 			buf.WriteString(fmt.Sprintf(indent+"var %s = _joinItems[i];\n", sanitizeName(q.Joins[0].Var)))
 			if cond != "" {
 				buf.WriteString(fmt.Sprintf(indent+"if (%s) {\n", cond))
@@ -2345,8 +2348,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("values expects 1 arg")
 		}
 		tmp := c.newVar()
+		val := "dynamic"
+		if mt, ok := c.inferExprType(call.Args[0]).(types.MapType); ok {
+			val = csTypeOf(mt.Value)
+		}
 		c.useLinq = true
-		return fmt.Sprintf("(new Func<List<dynamic>>(() => {var %s=new List<dynamic>();foreach(System.Collections.DictionaryEntry kv in %s){%s.Add(kv.Value);}return %s;}))()", tmp, args[0], tmp, tmp), nil
+		return fmt.Sprintf("(new Func<List<%s>>(() => {var %s=new List<%s>();foreach(System.Collections.DictionaryEntry kv in %s){%s.Add(kv.Value);}return %s;}))()", val, tmp, val, args[0], tmp, tmp), nil
 	case "exists":
 		if len(args) != 1 {
 			return "", fmt.Errorf("exists() expects 1 arg")
