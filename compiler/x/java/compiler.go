@@ -288,6 +288,9 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 			return t
 		}
 	}
+	if p != nil && p.Struct != nil {
+		return p.Struct.Name
+	}
 	if p != nil && p.FunExpr != nil {
 		if len(p.FunExpr.Params) == 1 && p.FunExpr.Return != nil && p.FunExpr.Return.Simple != nil && *p.FunExpr.Return.Simple == "int" && p.FunExpr.Params[0].Type != nil && p.FunExpr.Params[0].Type.Simple != nil && *p.FunExpr.Params[0].Type.Simple == "int" {
 			c.needFuncImports = true
@@ -604,11 +607,14 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 	if err != nil {
 		return err
 	}
-	if len(a.Index) == 0 {
+	if len(a.Index) == 0 && len(a.Field) == 0 {
 		c.writeln(fmt.Sprintf("%s = %s;", a.Name, expr))
 		return nil
 	}
 	target := a.Name
+	for _, f := range a.Field {
+		target += "." + f.Name
+	}
 	for i, idx := range a.Index {
 		if idx.Start == nil || idx.Colon != nil {
 			return fmt.Errorf("complex indexing not supported")
@@ -626,6 +632,9 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 		} else {
 			target = fmt.Sprintf("%s.get(%s)", target, ix)
 		}
+	}
+	if len(a.Index) == 0 {
+		c.writeln(fmt.Sprintf("%s = %s;", target, expr))
 	}
 	return nil
 }
