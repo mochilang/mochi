@@ -337,6 +337,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 	case p.If != nil:
 		return c.compileIfExpr(p.If)
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
 	case p.Selector != nil:
 		if len(p.Selector.Tail) == 0 {
 			return p.Selector.Root, nil
@@ -512,6 +514,87 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	c.indent--
 	c.writeln("end")
 	return nil
+}
+
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+
+	var b strings.Builder
+	b.WriteString("(function()\n")
+	b.WriteString("\tlocal _res = {}\n")
+	indent := "\t"
+	b.WriteString(fmt.Sprintf(indent+"for _, %s in ipairs(%s) do\n", sanitizeName(q.Var), src))
+	indent += "\t"
+
+	for _, f := range q.Froms {
+		fs, err := c.compileExpr(f.Src)
+		if err != nil {
+			return "", err
+		}
+		b.WriteString(fmt.Sprintf(indent+"for _, %s in ipairs(%s) do\n", sanitizeName(f.Var), fs))
+		indent += "\t"
+	}
+
+	var emitJoin func(int, string) error
+	emitJoin = func(idx int, ind string) error {
+		if idx >= len(q.Joins) {
+			if q.Where != nil {
+				cond, err := c.compileExpr(q.Where)
+				if err != nil {
+					return err
+				}
+				b.WriteString(ind + "if " + cond + " then\n")
+				ind += "\t"
+				sel, err := c.compileExpr(q.Select)
+				if err != nil {
+					return err
+				}
+				b.WriteString(fmt.Sprintf(ind+"_res[#_res+1] = %s\n", sel))
+				ind = ind[:len(ind)-1]
+				b.WriteString(ind + "end\n")
+			} else {
+				sel, err := c.compileExpr(q.Select)
+				if err != nil {
+					return err
+				}
+				b.WriteString(fmt.Sprintf(ind+"_res[#_res+1] = %s\n", sel))
+			}
+			return nil
+		}
+		j := q.Joins[idx]
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			return err
+		}
+		on, err := c.compileExpr(j.On)
+		if err != nil {
+			return err
+		}
+		b.WriteString(fmt.Sprintf(ind+"for _, %s in ipairs(%s) do\n", sanitizeName(j.Var), js))
+		b.WriteString(ind + "\tif " + on + " then\n")
+		if err := emitJoin(idx+1, ind+"\t\t"); err != nil {
+			return err
+		}
+		b.WriteString(ind + "\tend\n")
+		b.WriteString(ind + "end\n")
+		return nil
+	}
+	if err := emitJoin(0, indent); err != nil {
+		return "", err
+	}
+
+	for range q.Froms {
+		indent = indent[:len(indent)-1]
+		b.WriteString(indent + "end\n")
+	}
+	indent = indent[:len(indent)-1]
+	b.WriteString(indent + "end\n")
+	b.WriteString("\treturn _res\n")
+	b.WriteString("end)()")
+	return b.String(), nil
 }
 
 func contains(list []string, s string) bool {
