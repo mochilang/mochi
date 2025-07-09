@@ -361,6 +361,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return nil
 	case s.Fun != nil:
 		return c.compileFun(s.Fun)
+	case s.Test != nil:
+		return c.compileTestBlock(s.Test)
+	case s.Expect != nil:
+		return c.compileExpect(s.Expect)
 	default:
 		return fmt.Errorf("unsupported statement at line %d", s.Pos.Line)
 	}
@@ -621,6 +625,24 @@ func (c *Compiler) compileFun(f *parser.FunStmt) error {
 	} else {
 		c.writeln("}")
 	}
+	return nil
+}
+
+func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	for _, st := range t.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
+	v, err := c.compileExpr(e.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("assert!(%s);", v))
 	return nil
 }
 
