@@ -13,19 +13,39 @@ import (
 
 // Compiler translates a limited subset of Mochi into GNU Smalltalk code.
 type Compiler struct {
-	buf    bytes.Buffer
-	indent int
-	vars   map[string]bool
+	buf          bytes.Buffer
+	indent       int
+	vars         map[string]bool
+	needBreak    bool
+	needContinue bool
 }
 
 // New returns a new Smalltalk compiler.
-func New() *Compiler { return &Compiler{vars: make(map[string]bool)} }
+func New() *Compiler {
+	return &Compiler{vars: make(map[string]bool)}
+}
 
 // Compile converts the given Mochi program into Smalltalk source code.
 func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.indent = 0
 	c.vars = make(map[string]bool)
+	c.needBreak = false
+	c.needContinue = false
+
+	// compile program body into a temporary buffer first so helper
+	// definitions can be emitted before any statements
+	var body bytes.Buffer
+	c.buf = body
+	for _, st := range p.Statements {
+		if err := c.compileStmt(st); err != nil {
+			return nil, err
+		}
+	}
+	bodyBytes := c.buf.Bytes()
+	c.buf = bytes.Buffer{}
+	c.indent = 0
+
 	vars := collectVars(p.Statements)
 	if len(vars) > 0 {
 		c.writeln("| " + strings.Join(vars, " ") + " |")
@@ -33,11 +53,14 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 			c.vars[v] = true
 		}
 	}
-	for _, st := range p.Statements {
-		if err := c.compileStmt(st); err != nil {
-			return nil, err
-		}
+	if c.needBreak {
+		c.writeln("Object subclass: #BreakSignal instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!")
 	}
+	if c.needContinue {
+		c.writeln("Object subclass: #ContinueSignal instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!")
+	}
+
+	c.buf.Write(bodyBytes)
 	return c.buf.Bytes(), nil
 }
 
@@ -104,6 +127,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileWhile(s.While)
 	case s.For != nil:
 		return c.compileFor(s.For)
+	case s.Break != nil:
+		return c.compileBreak()
+	case s.Continue != nil:
+		return c.compileContinue()
 	case s.Return != nil:
 		expr, err := c.compileExpr(s.Return.Value)
 		if err != nil {
@@ -228,19 +255,59 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 	if err != nil {
 		return err
 	}
+	brk := hasBreak(w.Body)
+	cont := hasContinue(w.Body)
+	if brk {
+		c.needBreak = true
+	}
+	if cont {
+		c.needContinue = true
+	}
+	wrap := brk || cont
+	if wrap {
+		c.writeln("[")
+		c.indent++
+	}
 	c.writeln(fmt.Sprintf("[%s] whileTrue: [", cond))
 	c.indent++
+	if cont {
+		c.writeln("[")
+		c.indent++
+	}
 	for _, st := range w.Body {
 		if err := c.compileStmt(st); err != nil {
 			return err
 		}
 	}
+	if cont {
+		c.indent--
+		c.writeln("] on: ContinueSignal do: [:ex | ]")
+	}
 	c.indent--
-	c.writeln("].")
+	c.writeln("]")
+	if wrap {
+		c.indent--
+		c.writeln("] on: BreakSignal do: [:ex | ].")
+	} else {
+		c.writeln(".")
+	}
 	return nil
 }
 
 func (c *Compiler) compileFor(f *parser.ForStmt) error {
+	brk := hasBreak(f.Body)
+	cont := hasContinue(f.Body)
+	if brk {
+		c.needBreak = true
+	}
+	if cont {
+		c.needContinue = true
+	}
+	wrap := brk || cont
+	if wrap {
+		c.writeln("[")
+		c.indent++
+	}
 	if f.RangeEnd != nil {
 		start, err := c.compileExpr(f.Source)
 		if err != nil {
@@ -259,13 +326,39 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		c.writeln(fmt.Sprintf("%s do: [:%s |", src, f.Name))
 	}
 	c.indent++
+	if cont {
+		c.writeln("[")
+		c.indent++
+	}
 	for _, st := range f.Body {
 		if err := c.compileStmt(st); err != nil {
 			return err
 		}
 	}
+	if cont {
+		c.indent--
+		c.writeln("] on: ContinueSignal do: [:ex | ]")
+	}
 	c.indent--
-	c.writeln("].")
+	c.writeln("]")
+	if wrap {
+		c.indent--
+		c.writeln("] on: BreakSignal do: [:ex | ].")
+	} else {
+		c.writeln(".")
+	}
+	return nil
+}
+
+func (c *Compiler) compileBreak() error {
+	c.needBreak = true
+	c.writeln("BreakSignal signal")
+	return nil
+}
+
+func (c *Compiler) compileContinue() error {
+	c.needContinue = true
+	c.writeln("ContinueSignal signal")
 	return nil
 }
 
@@ -772,7 +865,77 @@ func (c *Compiler) blockString(stmts []*parser.Statement) (string, error) {
 			return "", err
 		}
 	}
+	if sub.needBreak {
+		c.needBreak = true
+	}
+	if sub.needContinue {
+		c.needContinue = true
+	}
 	return strings.TrimSpace(sub.buf.String()), nil
+}
+
+func hasBreak(st []*parser.Statement) bool {
+	for _, s := range st {
+		switch {
+		case s.Break != nil:
+			return true
+		case s.For != nil:
+			if hasBreak(s.For.Body) {
+				return true
+			}
+		case s.While != nil:
+			if hasBreak(s.While.Body) {
+				return true
+			}
+		case s.If != nil:
+			if hasBreak(s.If.Then) || hasBreakIf(s.If.ElseIf) || hasBreak(s.If.Else) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func hasBreakIf(i *parser.IfStmt) bool {
+	if i == nil {
+		return false
+	}
+	if hasBreak(i.Then) || hasBreak(i.Else) {
+		return true
+	}
+	return hasBreakIf(i.ElseIf)
+}
+
+func hasContinue(st []*parser.Statement) bool {
+	for _, s := range st {
+		switch {
+		case s.Continue != nil:
+			return true
+		case s.For != nil:
+			if hasContinue(s.For.Body) {
+				return true
+			}
+		case s.While != nil:
+			if hasContinue(s.While.Body) {
+				return true
+			}
+		case s.If != nil:
+			if hasContinue(s.If.Then) || hasContinueIf(s.If.ElseIf) || hasContinue(s.If.Else) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func hasContinueIf(i *parser.IfStmt) bool {
+	if i == nil {
+		return false
+	}
+	if hasContinue(i.Then) || hasContinue(i.Else) {
+		return true
+	}
+	return hasContinueIf(i.ElseIf)
 }
 
 func isUnderscoreExpr(e *parser.Expr) bool {
