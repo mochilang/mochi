@@ -36,6 +36,7 @@ func New(env *types.Env) *Compiler {
 		funcArgs:   make(map[string][]string),
 		varTypes:   make(map[string]string),
 		swiftTypes: make(map[string]string),
+		mapFields:  make(map[string]map[string]string),
 	}}
 }
 
@@ -58,6 +59,7 @@ type compiler struct {
 	funcArgs   map[string][]string
 	varTypes   map[string]string
 	swiftTypes map[string]string
+	mapFields  map[string]map[string]string
 	tupleMap   bool
 }
 
@@ -129,6 +131,7 @@ func (c *compiler) letStmt(l *parser.LetStmt) error {
 			c.writeln(fmt.Sprintf("let %s = %s", l.Name, val))
 		}
 		c.varTypes[l.Name] = c.inferType(l.Type, l.Value)
+		c.recordMapFields(l.Name, l.Value)
 		return nil
 	}
 	if typ == "" {
@@ -136,6 +139,7 @@ func (c *compiler) letStmt(l *parser.LetStmt) error {
 	}
 	c.writeln(fmt.Sprintf("let %s: %s = %s", l.Name, typ, defaultValue(typ)))
 	c.varTypes[l.Name] = c.inferType(l.Type, nil)
+	c.recordMapFields(l.Name, l.Value)
 	c.swiftTypes[l.Name] = typ
 	return nil
 }
@@ -157,6 +161,7 @@ func (c *compiler) varStmt(v *parser.VarStmt) error {
 			c.writeln(fmt.Sprintf("var %s = %s", v.Name, val))
 		}
 		c.varTypes[v.Name] = c.inferType(v.Type, v.Value)
+		c.recordMapFields(v.Name, v.Value)
 		return nil
 	}
 	if typ == "" {
@@ -164,6 +169,7 @@ func (c *compiler) varStmt(v *parser.VarStmt) error {
 	}
 	c.writeln(fmt.Sprintf("var %s: %s = %s", v.Name, typ, defaultValue(typ)))
 	c.varTypes[v.Name] = c.inferType(v.Type, nil)
+	c.recordMapFields(v.Name, v.Value)
 	c.swiftTypes[v.Name] = typ
 	return nil
 }
@@ -196,6 +202,7 @@ func (c *compiler) assignStmt(a *parser.AssignStmt) error {
 	c.writeln(fmt.Sprintf("%s = %s", lhs, val))
 	if len(a.Index) == 0 && len(a.Field) == 0 {
 		c.varTypes[a.Name] = c.inferType(nil, a.Value)
+		c.recordMapFields(a.Name, a.Value)
 	}
 	return nil
 }
@@ -391,13 +398,22 @@ func (c *compiler) forStmt(f *parser.ForStmt) error {
 	c.writeln(header)
 	c.indent++
 	prev, havePrev := c.varTypes[f.Name]
+	prevFields, haveFields := c.mapFields[f.Name]
 	c.varTypes[f.Name] = c.elementType(f.Source)
+	if fields := c.elementFieldTypes(f.Source); fields != nil {
+		c.mapFields[f.Name] = fields
+	}
 	for _, st := range f.Body {
 		if err := c.stmt(st); err != nil {
 			if havePrev {
 				c.varTypes[f.Name] = prev
 			} else {
 				delete(c.varTypes, f.Name)
+			}
+			if haveFields {
+				c.mapFields[f.Name] = prevFields
+			} else {
+				delete(c.mapFields, f.Name)
 			}
 			return err
 		}
@@ -406,6 +422,11 @@ func (c *compiler) forStmt(f *parser.ForStmt) error {
 		c.varTypes[f.Name] = prev
 	} else {
 		delete(c.varTypes, f.Name)
+	}
+	if haveFields {
+		c.mapFields[f.Name] = prevFields
+	} else {
+		delete(c.mapFields, f.Name)
 	}
 	c.indent--
 	c.writeln("}")
@@ -1063,7 +1084,13 @@ func (c *compiler) selector(s *parser.SelectorExpr) string {
 	if strings.HasPrefix(typ, "map") {
 		parts := []string{s.Root}
 		for _, f := range s.Tail {
-			parts = append(parts, fmt.Sprintf("[%q]", f))
+			cast := ""
+			if m, ok := c.mapFields[s.Root]; ok {
+				if t, ok2 := m[f]; ok2 {
+					cast = fmt.Sprintf(" as! %s", t)
+				}
+			}
+			parts = append(parts, fmt.Sprintf("[%q]%s", f, cast))
 		}
 		return strings.Join(parts, "")
 	}
@@ -1275,6 +1302,13 @@ func (c *compiler) exprType(e *parser.Expr) string {
 	if p.Target.Map != nil {
 		return "map"
 	}
+	if p.Target.Query != nil {
+		t := c.exprType(p.Target.Query.Select)
+		if t != "" {
+			return "list_" + t
+		}
+		return "list"
+	}
 	return ""
 }
 
@@ -1299,6 +1333,12 @@ func (c *compiler) primaryType(p *parser.Primary) string {
 		return "list"
 	case p.Map != nil:
 		return "map"
+	case p.Query != nil:
+		t := c.exprType(p.Query.Select)
+		if t != "" {
+			return "list_" + t
+		}
+		return "list"
 	}
 	return ""
 }
@@ -1396,8 +1436,10 @@ func (c *compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		srcs = append(srcs, f.Src)
 	}
 	saved := c.varTypes
+	savedFields := c.mapFields
 	c.varTypes = copyMap(c.varTypes)
-	defer func() { c.varTypes = saved }()
+	c.mapFields = copyMap(c.mapFields)
+	defer func() { c.varTypes = saved; c.mapFields = savedFields }()
 
 	var build func(int) (string, error)
 	build = func(i int) (string, error) {
@@ -1407,7 +1449,13 @@ func (c *compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		name := vars[i]
 		prevT, havePrev := c.varTypes[name]
+		prevF, haveF := c.mapFields[name]
 		c.varTypes[name] = c.elementType(srcs[i])
+		if fields := c.elementFieldTypes(srcs[i]); fields != nil {
+			c.mapFields[name] = fields
+		} else {
+			delete(c.mapFields, name)
+		}
 		if i == len(vars)-1 {
 			prev := c.tupleMap
 			c.tupleMap = true
@@ -1427,6 +1475,11 @@ func (c *compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 				} else {
 					delete(c.varTypes, name)
 				}
+				if haveF {
+					c.mapFields[name] = prevF
+				} else {
+					delete(c.mapFields, name)
+				}
 				return res, nil
 			}
 			res := fmt.Sprintf("%s.map { %s in %s }", src, name, sel)
@@ -1434,6 +1487,11 @@ func (c *compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 				c.varTypes[name] = prevT
 			} else {
 				delete(c.varTypes, name)
+			}
+			if haveF {
+				c.mapFields[name] = prevF
+			} else {
+				delete(c.mapFields, name)
 			}
 			return res, nil
 		}
@@ -1445,6 +1503,11 @@ func (c *compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 			c.varTypes[name] = prevT
 		} else {
 			delete(c.varTypes, name)
+		}
+		if haveF {
+			c.mapFields[name] = prevF
+		} else {
+			delete(c.mapFields, name)
 		}
 		return fmt.Sprintf("%s.flatMap { %s in %s }", src, name, inner), nil
 	}
@@ -1533,4 +1596,101 @@ func (c *compiler) elementType(e *parser.Expr) string {
 		}
 	}
 	return typ
+}
+
+func (c *compiler) elementFieldTypes(e *parser.Expr) map[string]string {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return nil
+	}
+	p := e.Binary.Left.Value
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		if t, ok := c.mapFields[p.Target.Selector.Root]; ok {
+			return t
+		}
+	}
+	if p.Target.List != nil && len(p.Target.List.Elems) > 0 {
+		if m := mapLit(p.Target.List.Elems[0]); m != nil {
+			return mapFieldsFromLiteral(m)
+		}
+	}
+	if p.Target.Query != nil {
+		if t := c.elementFieldTypes(p.Target.Query.Select); t != nil {
+			return t
+		}
+	}
+	return nil
+}
+
+func (c *compiler) recordMapFields(name string, e *parser.Expr) {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return
+	}
+	if m := mapLit(e); m != nil {
+		c.mapFields[name] = mapFieldsFromLiteral(m)
+		return
+	}
+	p := e.Binary.Left.Value
+	if p.Target.List != nil && len(p.Target.List.Elems) > 0 {
+		if m := mapLit(p.Target.List.Elems[0]); m != nil {
+			c.mapFields[name] = mapFieldsFromLiteral(m)
+			return
+		}
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		if t, ok := c.mapFields[p.Target.Selector.Root]; ok {
+			c.mapFields[name] = t
+		}
+	}
+	if p.Target.Query != nil {
+		if t := c.elementFieldTypes(p.Target.Query.Select); t != nil {
+			c.mapFields[name] = t
+		}
+	}
+}
+
+func mapLit(e *parser.Expr) *parser.MapLiteral {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return nil
+	}
+	return e.Binary.Left.Value.Target.Map
+}
+
+func mapFieldsFromLiteral(m *parser.MapLiteral) map[string]string {
+	if m == nil {
+		return nil
+	}
+	fields := make(map[string]string)
+	for _, it := range m.Items {
+		key, ok := keyName(it.Key)
+		if !ok {
+			continue
+		}
+		typ := literalType(it.Value)
+		if typ == "" {
+			typ = "Any"
+		}
+		fields[key] = typ
+	}
+	return fields
+}
+
+func literalType(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return ""
+	}
+	lit := e.Binary.Left.Value.Target.Lit
+	if lit == nil {
+		return ""
+	}
+	switch {
+	case lit.Int != nil:
+		return "Int"
+	case lit.Float != nil:
+		return "Double"
+	case lit.Bool != nil:
+		return "Bool"
+	case lit.Str != nil:
+		return "String"
+	}
+	return ""
 }
