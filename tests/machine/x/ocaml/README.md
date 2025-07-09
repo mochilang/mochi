@@ -4,8 +4,8 @@ This directory contains OCaml source code generated from Mochi programs and the 
 
 ## Summary
 
-- 59/97 programs compiled and executed successfully.
-- 38 programs failed to compile or run.
+- 60/97 programs compiled and executed successfully.
+- 37 programs failed to compile or run.
 
 ### Successful
 - append_builtin
@@ -67,11 +67,11 @@ This directory contains OCaml source code generated from Mochi programs and the 
 - cross_join_filter
 - cross_join_triple
 - dataset_where_filter
+- exists_builtin
 - values_builtin
 
 ### Failed
 - dataset_sort_take_limit
-- exists_builtin
 - for_map_collection
 - group_by
 - group_by_conditional_sum
