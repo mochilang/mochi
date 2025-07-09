@@ -902,6 +902,22 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			if opSym == "!=" {
 				opSym = "/="
 			}
+			if opSym == "+" || opSym == "-" || opSym == "*" || opSym == "/" {
+				if isAny(leftType) && isInt(rightType) {
+					expr = fmt.Sprintf("_asInt (%s)", expr)
+					leftType = types.IntType{}
+				} else if isAny(leftType) && isFloat(rightType) {
+					expr = fmt.Sprintf("_asDouble (%s)", expr)
+					leftType = types.FloatType{}
+				}
+				if isAny(rightType) && isInt(leftType) {
+					r = fmt.Sprintf("_asInt (%s)", r)
+					rightType = types.IntType{}
+				} else if isAny(rightType) && isFloat(leftType) {
+					r = fmt.Sprintf("_asDouble (%s)", r)
+					rightType = types.FloatType{}
+				}
+			}
 			expr = fmt.Sprintf("(%s %s %s)", expr, opSym, r)
 			switch opSym {
 			case "+", "-", "*", "/":
@@ -929,7 +945,12 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 		op := u.Ops[i]
 		switch op {
 		case "-":
-			expr = fmt.Sprintf("(-%s)", expr)
+			t := c.inferPostfixType(u.Value)
+			if isAny(t) {
+				expr = fmt.Sprintf("(- (_asInt (%s)))", expr)
+			} else {
+				expr = fmt.Sprintf("(-%s)", expr)
+			}
 		case "!":
 			expr = fmt.Sprintf("not %s", expr)
 		}
