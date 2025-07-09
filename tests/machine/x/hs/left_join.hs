@@ -174,7 +174,10 @@ customers = [Map.fromList [("id", VInt (1)), ("name", VString ("Alice"))], Map.f
 
 orders = [Map.fromList [("id", 100), ("customerId", 1), ("total", 250)], Map.fromList [("id", 101), ("customerId", 3), ("total", 80)]]
 
-result = [Map.fromList [("orderId", VInt (fromMaybe (error "missing") (Map.lookup "id" o))), ("customer", VString (c)), ("total", VInt (fromMaybe (error "missing") (Map.lookup "total" o)))] | o <- orders, c <- customers, (fromMaybe (error "missing") (Map.lookup "customerId" (o)) == fromMaybe (error "missing") (Map.lookup "id" (c)))]
+result = [Map.fromList [("orderId", VInt (fromMaybe (error "missing") (Map.lookup "id" o))), ("customer", VString (c)), ("total", VInt (fromMaybe (error "missing") (Map.lookup "total" o)))] |
+  o <- orders,
+  c <- let _ms0 = [c | c <- customers, (fromMaybe (error "missing") (Map.lookup "customerId" o) == fromMaybe (error "missing") (Map.lookup "id" c))]
+       in if null _ms0 then [Map.empty] else _ms0]
 
 main :: IO ()
 main = do
