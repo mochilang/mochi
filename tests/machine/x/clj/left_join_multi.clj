@@ -56,7 +56,7 @@
           it (if-let [sk (:sortKey opts)] (vec (sort-by #(apply sk %) it)) it)
           it (if (contains? opts :skip) (vec (drop (:skip opts) it)) it)
           it (if (contains? opts :take) (vec (take (:take opts) it)) it)]
-      (mapv #(apply (:select opts) %) it)))
+      (mapv #(apply (:select opts) %) it))))))))))))
 (declare customers orders items result)
 
 (defn -main []
