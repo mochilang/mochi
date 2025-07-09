@@ -19,7 +19,7 @@ type Person struct {
 
 func main() {
 	var people []Person = func() []Person {
-		rows := _load("../interpreter/valid/people.yaml", _toAnyMap(map[string]string{"format": "yaml"}))
+		rows := _load("../../../tests/interpreter/valid/people.yaml", _toAnyMap(map[string]string{"format": "yaml"}))
 		out := make([]Person, len(rows))
 		for i, r := range rows {
 			out[i] = _cast[Person](r)

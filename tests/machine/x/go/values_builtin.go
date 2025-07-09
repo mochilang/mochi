@@ -3,9 +3,8 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"strconv"
+	"reflect"
 	"strings"
 )
 
@@ -21,68 +20,32 @@ func main() {
 		B: 2,
 		C: 3,
 	}
-	fmt.Println(strings.Trim(fmt.Sprint(values(_cast[map[any]any](m))), "[]"))
+	fmt.Println(strings.Trim(fmt.Sprint(_values(m)), "[]"))
 }
 
-func _cast[T any](v any) T {
-	if tv, ok := v.(T); ok {
-		return tv
-	}
-	var out T
-	switch any(out).(type) {
-	case int:
-		switch vv := v.(type) {
-		case int:
-			return any(vv).(T)
-		case float64:
-			return any(int(vv)).(T)
-		case float32:
-			return any(int(vv)).(T)
-		case string:
-			n, _ := strconv.Atoi(vv)
-			return any(n).(T)
+func _values(v any) []any {
+	switch m := v.(type) {
+	case map[string]any:
+		res := make([]any, 0, len(m))
+		for _, vv := range m {
+			res = append(res, vv)
 		}
-	case float64:
-		switch vv := v.(type) {
-		case int:
-			return any(float64(vv)).(T)
-		case float64:
-			return any(vv).(T)
-		case float32:
-			return any(float64(vv)).(T)
+		return res
+	case map[any]any:
+		res := make([]any, 0, len(m))
+		for _, vv := range m {
+			res = append(res, vv)
 		}
-	case float32:
-		switch vv := v.(type) {
-		case int:
-			return any(float32(vv)).(T)
-		case float64:
-			return any(float32(vv)).(T)
-		case float32:
-			return any(vv).(T)
+		return res
+	}
+	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Struct {
+		n := rv.NumField()
+		res := make([]any, 0, n)
+		for i := 0; i < n; i++ {
+			res = append(res, rv.Field(i).Interface())
 		}
+		return res
 	}
-	if m, ok := v.(map[any]any); ok {
-		v = _convertMapAny(m)
-	}
-	data, err := json.Marshal(v)
-	if err != nil {
-		panic(err)
-	}
-	if err := json.Unmarshal(data, &out); err != nil {
-		panic(err)
-	}
-	return out
-}
-
-func _convertMapAny(m map[any]any) map[string]any {
-	out := make(map[string]any, len(m))
-	for k, v := range m {
-		key := fmt.Sprint(k)
-		if sub, ok := v.(map[any]any); ok {
-			out[key] = _convertMapAny(sub)
-		} else {
-			out[key] = v
-		}
-	}
-	return out
+	panic("values() expects map")
 }

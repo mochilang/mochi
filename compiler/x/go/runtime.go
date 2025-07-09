@@ -507,6 +507,27 @@ const (
 		"    return strings.ToUpper(fmt.Sprint(v))\n" +
 		"}\n"
 
+	helperValues = "func _values(v any) []any {\n" +
+		"    switch m := v.(type) {\n" +
+		"    case map[string]any:\n" +
+		"        res := make([]any, 0, len(m))\n" +
+		"        for _, vv := range m { res = append(res, vv) }\n" +
+		"        return res\n" +
+		"    case map[any]any:\n" +
+		"        res := make([]any, 0, len(m))\n" +
+		"        for _, vv := range m { res = append(res, vv) }\n" +
+		"        return res\n" +
+		"    }\n" +
+		"    rv := reflect.ValueOf(v)\n" +
+		"    if rv.Kind() == reflect.Struct {\n" +
+		"        n := rv.NumField()\n" +
+		"        res := make([]any, 0, n)\n" +
+		"        for i := 0; i < n; i++ { res = append(res, rv.Field(i).Interface()) }\n" +
+		"        return res\n" +
+		"    }\n" +
+		"    panic(\"values() expects map\")\n" +
+		"}\n"
+
 	helperExcept = "func _except[T any](a, b []T) []T {\n" +
 		"    res := []T{}\n" +
 		"    for _, x := range a {\n" +
@@ -818,6 +839,7 @@ var helperMap = map[string]string{
 	"_reverseString": helperReverseString,
 	"_lower":         helperLower,
 	"_upper":         helperUpper,
+	"_values":        helperValues,
 	"_except":        helperExcept,
 	"_intersect":     helperIntersect,
 	"_cast":          helperCast,

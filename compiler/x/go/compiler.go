@@ -5,6 +5,7 @@ package gocode
 import (
 	"bytes"
 	"fmt"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -2379,7 +2380,11 @@ func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
 func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 	path := "\"\""
 	if l.Path != nil {
-		path = fmt.Sprintf("%q", *l.Path)
+		p := *l.Path
+		if strings.HasPrefix(p, "../") {
+			p = filepath.Join("..", "..", "..", "tests", p[3:])
+		}
+		path = fmt.Sprintf("%q", p)
 	}
 	opts := "nil"
 	if l.With != nil {
@@ -3683,6 +3688,9 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 				paramTypes = ft.Params
 			}
 		}
+		if call.Func == "values" {
+			paramTypes = nil
+		}
 	}
 	for i, a := range call.Args {
 		if len(paramTypes) > i {
@@ -3747,6 +3755,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.use("_contains")
 		return fmt.Sprintf("_contains(%s, %s)", args[0], args[1]), nil
+	case "values":
+		if len(args) != 1 {
+			return "", fmt.Errorf("values expects 1 arg")
+		}
+		c.use("_values")
+		return fmt.Sprintf("_values(%s)", args[0]), nil
 	case "count":
 		if len(call.Args) == 1 {
 			at := c.inferExprType(call.Args[0])
