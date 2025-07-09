@@ -684,6 +684,7 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 		if err != nil {
 			return err
 		}
+		cond = stripParens(cond)
 		c.writeln(prefix + "if (" + cond + ") {")
 		c.indent++
 		for _, st := range s.Then {
@@ -718,6 +719,7 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 	if err != nil {
 		return err
 	}
+	cond = stripParens(cond)
 	c.writeln("while (" + cond + ") {")
 	c.indent++
 	for _, s := range w.Body {
@@ -2594,6 +2596,14 @@ func sanitizeName(name string) string {
 	s := b.String()
 	if s == "" || !((s[0] >= 'A' && s[0] <= 'Z') || (s[0] >= 'a' && s[0] <= 'z') || s[0] == '_') {
 		s = "_" + s
+	}
+	return s
+}
+
+func stripParens(s string) string {
+	for strings.HasPrefix(s, "(") && strings.HasSuffix(s, ")") {
+		s = strings.TrimPrefix(s, "(")
+		s = strings.TrimSuffix(s, ")")
 	}
 	return s
 }
