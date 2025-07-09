@@ -199,6 +199,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Continue != nil:
 		c.writeln("raise Continue")
 		return nil
+	case s.Fun != nil:
+		return c.compileLocalFun(s.Fun)
 	default:
 		return fmt.Errorf("unsupported statement at line %d", s.Pos.Line)
 	}
@@ -1525,6 +1527,39 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		}
 	}
 	c.indent--
+	return nil
+}
+
+func (c *Compiler) compileLocalFun(fn *parser.FunStmt) error {
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		if p.Type != nil {
+			params[i] = fmt.Sprintf("(%s : %s)", p.Name, c.typeRef(p.Type))
+		} else {
+			params[i] = p.Name
+		}
+	}
+	ret := "unit"
+	if fn.Return != nil {
+		ret = c.typeRef(fn.Return)
+	}
+	c.writeln(fmt.Sprintf("let rec %s %s : %s =", fn.Name, strings.Join(params, " "), ret))
+	c.indent++
+	for _, st := range fn.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	if len(fn.Body) == 0 {
+		c.writeln("()")
+	} else {
+		last := fn.Body[len(fn.Body)-1]
+		if last.Expr == nil && last.Return == nil {
+			c.writeln("()")
+		}
+	}
+	c.indent--
+	c.writeln("in")
 	return nil
 }
 

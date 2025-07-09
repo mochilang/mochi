@@ -83,7 +83,7 @@ runs produce a `.out` file while failures generate a `.error` report.
 
 - [ ] group_items_iteration
 - [ ] load_yaml
-- [ ] nested_function
+ - [x] nested_function
 - [ ] save_jsonl_stdout
 - [ ] test_block
 - [ ] two-sum
