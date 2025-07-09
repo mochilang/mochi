@@ -2,10 +2,12 @@
 
 This directory contains Elixir source code generated from Mochi programs and the corresponding outputs/errors.
 
+Recent updates improved query joins, allowing more complex group operations to compile correctly.
+
 ## Summary
 
-- 80/97 programs compiled and executed successfully.
-- 17 programs failed to compile or run.
+- 81/97 programs compiled and executed successfully.
+- 16 programs failed to compile or run.
 
 ### Successful
 - append_builtin
@@ -33,7 +35,8 @@ This directory contains Elixir source code generated from Mochi programs and the
 - group_by_multi_join
 - group_by_join
 - group_by_left_join
-- if_else
+- group_by_multi_join_sort
+ - if_else
 - if_then_else
 - if_then_else_nested
 - in_operator
@@ -93,7 +96,6 @@ This directory contains Elixir source code generated from Mochi programs and the
 - group_by
 - group_by_conditional_sum
 - group_by_having
-- group_by_multi_join_sort
 - group_by_sort
 - group_items_iteration
 - in_operator_extended
