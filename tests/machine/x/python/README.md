@@ -62,6 +62,7 @@ This directory contains Python source code generated from Mochi programs and the
 - group_by_conditional_sum
 - group_by_having
 - group_by_join
+- group_by_left_join
 - group_by_multi_join
 - group_by_multi_join_sort
 - group_by_sort
@@ -103,7 +104,6 @@ This directory contains Python source code generated from Mochi programs and the
 - tree_sum
 
 ### Failed
-- group_by_left_join
 - group_items_iteration
-- load_yaml
-- query_sum_select
+ - load_yaml
+ - query_sum_select
