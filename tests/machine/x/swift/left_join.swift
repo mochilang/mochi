@@ -1,0 +1,24 @@
+let customers = [["id": 1, "name": "Alice"], ["id": 2, "name": "Bob"]]
+let orders = [["id": 100, "customerId": 1, "total": 250], ["id": 101, "customerId": 3, "total": 80]]
+let result = ({
+	var _res: [[String:Any]] = []
+	let _src = orders
+	let _join = customers
+	for o in _src {
+		var _m = false
+		for c in _join {
+			if !(o["customerId"] as! Int == c["id"] as! Int) { continue }
+			_m = true
+			_res.append(["orderId": o["id"] as! Int, "customer": c, "total": o["total"] as! Int])
+		}
+		if !_m {
+			let c: Any? = nil
+			_res.append(["orderId": o["id"] as! Int, "customer": c, "total": o["total"] as! Int])
+		}
+	}
+	return _res
+}())
+print("--- Left Join ---")
+for entry in result {
+    print("Order", entry["orderId"], "customer", entry["customer"], "total", entry["total"])
+}

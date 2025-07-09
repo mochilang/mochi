@@ -1,6 +1,6 @@
 # Machine-generated Swift Outputs
 
-Compiled programs: 82/97
+Compiled programs: 86/97
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -38,11 +38,11 @@ Compiled programs: 82/97
 - [x] if_then_else_nested.mochi
 - [x] in_operator.mochi
 - [x] in_operator_extended.mochi
-- [ ] inner_join.mochi
-- [ ] join_multi.mochi
+- [x] inner_join.mochi
+- [x] join_multi.mochi
 - [x] json_builtin.mochi
-- [ ] left_join.mochi
-- [ ] left_join_multi.mochi
+- [x] left_join.mochi
+- [x] left_join_multi.mochi
 - [x] len_builtin.mochi
 - [x] len_map.mochi
 - [x] len_string.mochi
@@ -101,6 +101,6 @@ Compiled programs: 82/97
 - [x] while_loop.mochi
 
 ## TODO
-- [ ] implement join queries
+- [x] implement join queries
 - [x] handle load/save dataset operations
 - [ ] preserve map field information in queries

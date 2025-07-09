@@ -5,6 +5,7 @@ package swift
 import (
 	"fmt"
 	"regexp"
+	"sort"
 	"strings"
 
 	"mochi/parser"
@@ -1264,6 +1265,28 @@ func (c *compiler) isBuiltinType(typ string) bool {
 	return false
 }
 
+func swiftTypeOf(t string) string {
+	switch t {
+	case "string":
+		return "String"
+	case "bool":
+		return "Bool"
+	case "number", "int", "float":
+		return "Int"
+	case "map":
+		return "[String:Any]"
+	case "list":
+		return "[Any]"
+	}
+	if strings.HasPrefix(t, "list_") {
+		et := swiftTypeOf(strings.TrimPrefix(t, "list_"))
+		if et != "" {
+			return "[" + et + "]"
+		}
+	}
+	return ""
+}
+
 func (c *compiler) writeln(s string) {
 	for i := 0; i < c.indent; i++ {
 		c.buf.WriteString("    ")
@@ -1624,10 +1647,9 @@ func (c *compiler) joinQuery(q *parser.QueryExpr) (string, error) {
 		}
 		cond = ccond
 	}
-	prevTuple := c.tupleMap
-	c.tupleMap = true
+	selType := c.exprType(q.Select)
+	fields := c.elementFieldTypes(q.Select)
 	sel, err := c.expr(q.Select)
-	c.tupleMap = prevTuple
 	if err != nil {
 		c.varTypes = savedVars
 		c.mapFields = savedFields
@@ -1636,9 +1658,26 @@ func (c *compiler) joinQuery(q *parser.QueryExpr) (string, error) {
 	c.varTypes = savedVars
 	c.mapFields = savedFields
 
+	resTyp := swiftTypeOf(selType)
+	if selType == "map" && fields != nil {
+		keys := make([]string, 0, len(fields))
+		for k := range fields {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		parts := make([]string, len(keys))
+		for i, k := range keys {
+			parts[i] = fmt.Sprintf("%s: %s", k, fields[k])
+		}
+		resTyp = "(" + strings.Join(parts, ", ") + ")"
+	}
+	if resTyp == "" {
+		resTyp = "Any"
+	}
+
 	var b strings.Builder
 	b.WriteString("({\n")
-	b.WriteString("\tvar _res: [Any] = []\n")
+	b.WriteString(fmt.Sprintf("\tvar _res: [%s] = []\n", resTyp))
 	b.WriteString(fmt.Sprintf("\tfor %s in %s {\n", q.Var, src))
 	indent := "\t\t"
 	for i, fs := range fromSrcs {
@@ -1682,17 +1721,35 @@ func (c *compiler) joinSingleSide(q *parser.QueryExpr, src, joinSrc, onExpr, sid
 	if fields := c.elementFieldTypes(j.Src); fields != nil {
 		c.mapFields[j.Var] = fields
 	}
+	selType := c.exprType(q.Select)
+	fields := c.elementFieldTypes(q.Select)
 	sel, err := c.expr(q.Select)
 	c.varTypes = savedVars
 	c.mapFields = savedFields
 	if err != nil {
 		return "", err
 	}
+	resTyp := swiftTypeOf(selType)
+	if selType == "map" && fields != nil {
+		keys := make([]string, 0, len(fields))
+		for k := range fields {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		parts := make([]string, len(keys))
+		for i, k := range keys {
+			parts[i] = fmt.Sprintf("%s: %s", k, fields[k])
+		}
+		resTyp = "(" + strings.Join(parts, ", ") + ")"
+	}
+	if resTyp == "" {
+		resTyp = "Any"
+	}
 	qv := q.Var
 	jv := j.Var
 	var b strings.Builder
 	b.WriteString("({\n")
-	b.WriteString("\tvar _res: [Any] = []\n")
+	b.WriteString(fmt.Sprintf("\tvar _res: [%s] = []\n", resTyp))
 	b.WriteString(fmt.Sprintf("\tlet _src = %s\n", src))
 	b.WriteString(fmt.Sprintf("\tlet _join = %s\n", joinSrc))
 	if side == "outer" {
