@@ -1057,7 +1057,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(indent(lvl))
 		b.WriteString("val __order = mutableListOf<Any?>()\n")
 	} else {
-		b.WriteString("val __res = mutableListOf<Any?>()\n")
+		b.WriteString(fmt.Sprintf("val __res = mutableListOf<%s>()\n", kotlinTypeOf(selType)))
 	}
 	b.WriteString(indent(lvl))
 	b.WriteString(fmt.Sprintf("for (%s in %s) {\n", q.Var, src))
@@ -1148,7 +1148,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	b.WriteString("}\n")
 	if q.Group != nil {
 		b.WriteString(indent(lvl))
-		b.WriteString("val __res = mutableListOf<Any?>()\n")
+		b.WriteString(fmt.Sprintf("val __res = mutableListOf<%s>()\n", kotlinTypeOf(selType)))
 		b.WriteString(indent(lvl))
 		b.WriteString("for (k in __order) {\n")
 		lvl++
@@ -1369,6 +1369,29 @@ func kotlinElemType(t types.Type) string {
 		return "Boolean"
 	default:
 		return "Any"
+	}
+}
+
+func kotlinTypeOf(t types.Type) string {
+	switch tt := t.(type) {
+	case types.IntType:
+		return "Int"
+	case types.FloatType:
+		return "Double"
+	case types.StringType:
+		return "String"
+	case types.BoolType:
+		return "Boolean"
+	case types.ListType:
+		return fmt.Sprintf("MutableList<%s>", kotlinTypeOf(tt.Elem))
+	case types.MapType:
+		return fmt.Sprintf("MutableMap<%s, %s>", kotlinTypeOf(tt.Key), kotlinTypeOf(tt.Value))
+	case types.StructType:
+		return tt.Name
+	case types.GroupType:
+		return "Group"
+	default:
+		return "Any?"
 	}
 }
 
