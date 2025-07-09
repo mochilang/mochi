@@ -40,6 +40,8 @@ type Compiler struct {
 	varUsage map[any]bool
 
 	receiver string
+
+	anonStructCount int
 }
 
 // New creates a new Go compiler instance.
@@ -52,11 +54,12 @@ func New(env *types.Env) *Compiler {
 		handlerDones: []string{},
 		memo:         map[string]*parser.Literal{},
 
-		pyModules:     map[string]string{},
-		goModules:     map[string]string{},
-		tsModules:     map[string]string{},
-		externObjects: map[string]bool{},
-		tempVarCount:  0,
+		pyModules:       map[string]string{},
+		goModules:       map[string]string{},
+		tsModules:       map[string]string{},
+		externObjects:   map[string]bool{},
+		tempVarCount:    0,
+		anonStructCount: 0,
 	}
 }
 
@@ -324,6 +327,12 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 					c.env.SetStruct(st.Name, st)
 					c.compileStructType(st)
 				}
+			} else if ml := s.Value.Binary.Left.Value.Target.Map; ml != nil {
+				if st, ok := c.inferStructFromMap(ml, s.Name); ok {
+					t = st
+					c.env.SetStruct(st.Name, st)
+					c.compileStructType(st)
+				}
 			}
 		} else if old, err := c.env.GetVar(s.Name); err == nil {
 			t = old
@@ -388,6 +397,12 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 			if ll := s.Value.Binary.Left.Value.Target.List; ll != nil {
 				if st, ok := c.inferStructFromList(ll, s.Name); ok {
 					typ = types.ListType{Elem: st}
+					c.env.SetStruct(st.Name, st)
+					c.compileStructType(st)
+				}
+			} else if ml := s.Value.Binary.Left.Value.Target.Map; ml != nil {
+				if st, ok := c.inferStructFromMap(ml, s.Name); ok {
+					typ = st
 					c.env.SetStruct(st.Name, st)
 					c.compileStructType(st)
 				}
@@ -902,6 +917,38 @@ func (c *Compiler) inferStructFromList(ll *parser.ListLiteral, name string) (typ
 		}
 	}
 	stName := exportName(sanitizeName(name)) + "Item"
+	idx := 1
+	base := stName
+	for {
+		if _, ok := c.env.GetStruct(stName); ok || c.structs[stName] {
+			stName = fmt.Sprintf("%s%d", base, idx)
+			idx++
+		} else {
+			break
+		}
+	}
+	st := types.StructType{Name: stName, Fields: fields, Order: order}
+	return st, true
+}
+
+func (c *Compiler) inferStructFromMap(ml *parser.MapLiteral, name string) (types.StructType, bool) {
+	if ml == nil || len(ml.Items) == 0 {
+		return types.StructType{}, false
+	}
+	fields := map[string]types.Type{}
+	order := make([]string, len(ml.Items))
+	for i, it := range ml.Items {
+		key, ok := simpleStringKey(it.Key)
+		if !ok {
+			return types.StructType{}, false
+		}
+		order[i] = key
+		fields[key] = types.ExprType(it.Value, c.env)
+	}
+	stName := exportName(sanitizeName(name))
+	if stName == "" {
+		stName = "AnonStruct"
+	}
 	idx := 1
 	base := stName
 	for {
@@ -2541,10 +2588,30 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 	}
 
-	sel, err := c.compileExpr(q.Select)
-	if err != nil {
-		c.env = original
-		return "", err
+	var sel string
+	var retElem string
+	if ml := mapLiteral(q.Select); ml != nil {
+		if st, ok := c.inferStructFromMap(ml, "Result"); ok {
+			c.env.SetStruct(st.Name, st)
+			c.compileStructType(st)
+			sel, err = c.compileExprHint(q.Select, st)
+			if err != nil {
+				c.env = original
+				return "", err
+			}
+			retElem = goType(st)
+		}
+	}
+	if sel == "" {
+		sel, err = c.compileExpr(q.Select)
+		if err != nil {
+			c.env = original
+			return "", err
+		}
+		retElem = goType(c.inferExprType(q.Select))
+	}
+	if retElem == "" {
+		retElem = "any"
 	}
 	var cond string
 	if q.Where != nil {
@@ -2612,10 +2679,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			t = "any"
 		}
 		joinTypes[i] = t
-	}
-	retElem := goType(c.inferExprType(q.Select))
-	if retElem == "" {
-		retElem = "any"
 	}
 	varNames := []string{q.Var}
 	for _, f := range q.Froms {
@@ -3430,6 +3493,13 @@ func isEmptyMapLiteral(e *parser.Expr) bool {
 		return len(ml.Items) == 0
 	}
 	return false
+}
+
+func mapLiteral(e *parser.Expr) *parser.MapLiteral {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	return e.Binary.Left.Value.Target.Map
 }
 
 func (c *Compiler) callKey(call *parser.CallExpr) string {
