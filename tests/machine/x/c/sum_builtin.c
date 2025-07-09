@@ -17,7 +17,7 @@ int main() {
   _t1.data[1] = 2;
   _t1.data[2] = 3;
   printf("%g\n", ({
-           int sum = 0;
+           double sum = 0;
            for (int i = 0; i < _t1.len; i++)
              sum += _t1.data[i];
            sum;

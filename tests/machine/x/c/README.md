@@ -90,7 +90,7 @@ Checklist:
 - [x] string_index
 - [x] string_prefix_slice
 - [x] substring_builtin
-- [ ] sum_builtin
+- [x] sum_builtin
 - [x] tail_recursion
 - [x] test_block
 - [ ] tree_sum
