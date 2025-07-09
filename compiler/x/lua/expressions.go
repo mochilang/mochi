@@ -360,6 +360,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	argStr := strings.Join(args, ", ")
 	switch name {
 	case "print":
+		if len(call.Args) == 1 && isList(c.inferExprType(call.Args[0])) {
+			a := args[0]
+			expr := "(function(lst) for i,v in ipairs(lst) do io.write(v) if i < #lst then io.write(\" \") end end io.write(\"\\n\") end)(" + a + ")"
+			return expr, nil
+		}
 		return fmt.Sprintf("print(%s)", argStr), nil
 	case "str":
 		if len(args) == 1 {

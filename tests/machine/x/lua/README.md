@@ -6,7 +6,8 @@ Each program was compiled and executed using the Lua compiler. Successful runs p
 Compiled programs: 97/97
 
 The custom `__print` helper has been removed. Generated code now uses Lua's
-native `print` function directly.
+native `print` function directly. Lists passed to `print` are detected and
+printed element by element to match Mochi's output.
 
 Set `MOCHI_LUAC` to the path of the Lua bytecode compiler if `luac` is not on
 the PATH. The compiler uses this tool for a basic syntax check.
@@ -109,3 +110,6 @@ Checklist:
 - [x] slice
 - [x] sort_stable
 - [x] tree_sum
+
+Remaining tasks:
+- [ ] None
