@@ -2391,6 +2391,10 @@ func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	ct := c.inferExprType(ie.Cond)
+	if !isBool(ct) {
+		cond = c.castExpr(cond, ct, types.BoolType{})
+	}
 	thenExpr, err := c.compileExpr(ie.Then)
 	if err != nil {
 		return "", err
@@ -3608,8 +3612,14 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 				c.imports["strings"] = true
 				return fmt.Sprintf("fmt.Println(strings.Trim(fmt.Sprint(%s), \"[]\"))", args[0]), nil
 			}
+			return fmt.Sprintf("fmt.Println(%s)", argStr), nil
 		}
-		return fmt.Sprintf("fmt.Println(%s)", argStr), nil
+		c.imports["strings"] = true
+		parts := make([]string, len(args))
+		for i, a := range args {
+			parts[i] = fmt.Sprintf("fmt.Sprint(%s)", a)
+		}
+		return fmt.Sprintf("fmt.Println(strings.TrimRight(strings.Join([]string{%s}, \" \"), \" \"))", strings.Join(parts, ", ")), nil
 	case "str":
 		c.imports["fmt"] = true
 		return fmt.Sprintf("fmt.Sprint(%s)", argStr), nil
