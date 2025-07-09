@@ -314,7 +314,7 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
-		if _, ok := c.attrs[s.Let.Name]; !ok {
+		if _, ok := c.attrs[sanitizeName(s.Let.Name)]; !ok {
 			var val string
 			var err error
 			if s.Let.Value != nil {
@@ -1392,7 +1392,12 @@ func (c *Compiler) compilePattern(e *parser.Expr) (string, error) {
 			parts[i] = fmt.Sprintf("%s: %s", sanitizeName(f.Name), v)
 		}
 		if c.env != nil {
-			if st, ok := c.env.GetStruct(p.Struct.Name); ok {
+			name := p.Struct.Name
+			if st, ok := c.env.GetStruct(name); ok {
+				c.ensureStruct(st)
+				return fmt.Sprintf("%%%s{%s}", sanitizeName(st.Name), strings.Join(parts, ", ")), nil
+			}
+			if st, ok := c.env.GetStruct(sanitizeName(name)); ok {
 				c.ensureStruct(st)
 				return fmt.Sprintf("%%%s{%s}", sanitizeName(st.Name), strings.Join(parts, ", ")), nil
 			}
@@ -1400,7 +1405,8 @@ func (c *Compiler) compilePattern(e *parser.Expr) (string, error) {
 		return "%{" + strings.Join(parts, ", ") + "}", nil
 	case p.Call != nil:
 		if c.env != nil {
-			if ut, ok := c.env.FindUnionByVariant(p.Call.Func); ok {
+			name := p.Call.Func
+			if ut, ok := c.env.FindUnionByVariant(name); ok {
 				st := ut.Variants[p.Call.Func]
 				if len(p.Call.Args) != len(st.Order) {
 					return "", fmt.Errorf("variant %s expects %d args", p.Call.Func, len(st.Order))
@@ -1416,9 +1422,24 @@ func (c *Compiler) compilePattern(e *parser.Expr) (string, error) {
 				c.ensureStruct(st)
 				return fmt.Sprintf("%%%s{%s}", sanitizeName(st.Name), strings.Join(args, ", ")), nil
 			}
-			if st, ok := c.env.GetStruct(p.Call.Func); ok {
+			if st, ok := c.env.GetStruct(name); ok {
 				if len(p.Call.Args) != len(st.Order) {
 					return "", fmt.Errorf("struct %s expects %d args", p.Call.Func, len(st.Order))
+				}
+				args := make([]string, len(st.Order))
+				for i, a := range p.Call.Args {
+					v, err := c.compilePattern(a)
+					if err != nil {
+						return "", err
+					}
+					args[i] = fmt.Sprintf("%s: %s", sanitizeName(st.Order[i]), v)
+				}
+				c.ensureStruct(st)
+				return fmt.Sprintf("%%%s{%s}", sanitizeName(st.Name), strings.Join(args, ", ")), nil
+			}
+			if st, ok := c.env.GetStruct(sanitizeName(name)); ok {
+				if len(p.Call.Args) != len(st.Order) {
+					return "", fmt.Errorf("struct %s expects %d args", name, len(st.Order))
 				}
 				args := make([]string, len(st.Order))
 				for i, a := range p.Call.Args {
