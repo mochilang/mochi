@@ -183,6 +183,12 @@ func (c *Compiler) cType(t *parser.TypeRef) string {
 			if key == "int" && val == "int" {
 				return "map_int_bool"
 			}
+			if key == "char*" && val == "int" {
+				return "map_string_int"
+			}
+			if key == "int" && val == "char*" {
+				return "map_int_string"
+			}
 		}
 	}
 	return "int"
@@ -765,12 +771,24 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		if len(s.Assign.Index) == 1 {
 			if c.env != nil {
-				if tv, err := c.env.GetVar(s.Assign.Name); err == nil && isMapIntBoolType(tv) {
+				if tv, err := c.env.GetVar(s.Assign.Name); err == nil {
 					key := c.compileExpr(s.Assign.Index[0].Start)
 					val := c.compileExpr(s.Assign.Value)
-					c.need(needMapIntBool)
-					c.writeln(fmt.Sprintf("map_int_bool_put(&%s, %s, %s);", lhs, key, val))
-					return nil
+					if isMapIntBoolType(tv) {
+						c.need(needMapIntBool)
+						c.writeln(fmt.Sprintf("map_int_bool_put(&%s, %s, %s);", lhs, key, val))
+						return nil
+					}
+					if isMapStringIntType(tv) {
+						c.need(needMapStringInt)
+						c.writeln(fmt.Sprintf("map_string_int_put(&%s, %s, %s);", lhs, key, val))
+						return nil
+					}
+					if isMapIntStringType(tv) {
+						c.need(needMapIntString)
+						c.writeln(fmt.Sprintf("map_int_string_put(&%s, %s, %s);", lhs, key, val))
+						return nil
+					}
 				}
 			}
 		}
@@ -955,6 +973,26 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 				c.need(needMapIntBool)
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("map_int_bool %s = map_int_bool_create(0);", val))
+				c.writeln(formatFuncPtrDecl(typ, name, val))
+			} else if isMapStringIntType(t) && isEmptyMapLiteral(stmt.Value) {
+				c.need(needMapStringInt)
+				val := c.newTemp()
+				c.writeln(fmt.Sprintf("map_string_int %s = map_string_int_create(0);", val))
+				c.writeln(formatFuncPtrDecl(typ, name, val))
+			} else if isMapIntStringType(t) && isEmptyMapLiteral(stmt.Value) {
+				c.need(needMapIntString)
+				val := c.newTemp()
+				c.writeln(fmt.Sprintf("map_int_string %s = map_int_string_create(0);", val))
+				c.writeln(formatFuncPtrDecl(typ, name, val))
+			} else if isMapStringIntType(t) && isEmptyMapLiteral(stmt.Value) {
+				c.need(needMapStringInt)
+				val := c.newTemp()
+				c.writeln(fmt.Sprintf("map_string_int %s = map_string_int_create(0);", val))
+				c.writeln(formatFuncPtrDecl(typ, name, val))
+			} else if isMapIntStringType(t) && isEmptyMapLiteral(stmt.Value) {
+				c.need(needMapIntString)
+				val := c.newTemp()
+				c.writeln(fmt.Sprintf("map_int_string %s = map_int_string_create(0);", val))
 				c.writeln(formatFuncPtrDecl(typ, name, val))
 			} else {
 				val := c.compileExpr(stmt.Value)
@@ -1170,6 +1208,18 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 			if useVar {
 				c.writeln(fmt.Sprintf("char* %s = %s.data[%s];", name, src, idx))
 			}
+		} else if isMapStringIntExpr(f.Source, c.env) {
+			c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", idx, idx, src, idx))
+			c.indent++
+			if useVar {
+				c.writeln(fmt.Sprintf("char* %s = %s.data[%s].key;", name, src, idx))
+			}
+		} else if isMapIntStringExpr(f.Source, c.env) {
+			c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", idx, idx, src, idx))
+			c.indent++
+			if useVar {
+				c.writeln(fmt.Sprintf("int %s = %s.data[%s].key;", name, src, idx))
+			}
 		} else {
 			c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", idx, idx, src, idx))
 			c.indent++
@@ -1186,6 +1236,10 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 			if useVar {
 				if isStr || isListStr {
 					c.env.SetVar(f.Name, types.StringType{}, true)
+				} else if isMapStringIntExpr(f.Source, c.env) {
+					c.env.SetVar(f.Name, types.StringType{}, true)
+				} else if isMapIntStringExpr(f.Source, c.env) {
+					c.env.SetVar(f.Name, types.IntType{}, true)
 				} else if lt, ok := c.exprType(f.Source).(types.ListType); ok {
 					c.env.SetVar(f.Name, lt.Elem, true)
 				} else {
@@ -2466,6 +2520,26 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			leftString = false
 			continue
 		}
+		if op.Op == "in" && isMapStringIntPostfix(op.Right, c.env) {
+			c.need(needInMapStringInt)
+			left = fmt.Sprintf("map_string_int_contains(%s, %s)", right, left)
+			leftList = false
+			leftListInt = false
+			leftListString = false
+			leftListFloat = false
+			leftString = false
+			continue
+		}
+		if op.Op == "in" && isMapIntStringPostfix(op.Right, c.env) {
+			c.need(needInMapIntString)
+			left = fmt.Sprintf("map_int_string_contains(%s, %s)", right, left)
+			leftList = false
+			leftListInt = false
+			leftListString = false
+			leftListFloat = false
+			leftString = false
+			continue
+		}
 		if op.Op == "in" && leftString && isStringPostfixOrIndex(op.Right, c.env) {
 			c.need(needInString)
 			left = fmt.Sprintf("contains_string(%s, %s)", right, left)
@@ -2557,6 +2631,18 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 					}
 					expr = name
 					isStr = true
+				} else if isMapStringIntPrimary(p.Target, c.env) {
+					c.need(needMapStringInt)
+					expr = fmt.Sprintf("map_string_int_get(%s, %s)", expr, idx)
+					isStr = false
+					isFloatList = false
+					isStringList = false
+				} else if isMapIntStringPrimary(p.Target, c.env) {
+					c.need(needMapIntString)
+					expr = fmt.Sprintf("map_int_string_get(%s, %s)", expr, idx)
+					isStr = true
+					isFloatList = false
+					isStringList = false
 				} else {
 					expr = fmt.Sprintf("%s.data[%s]", expr, idx)
 					if isStringList {
@@ -2769,15 +2855,36 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			return fmt.Sprintf("(%s){%s}", sanitizeName(st.Name), strings.Join(parts, ", "))
 		}
 		name := c.newTemp()
-		c.need(needMapIntBool)
-		c.writeln(fmt.Sprintf("map_int_bool %s = map_int_bool_create(%d);", name, len(p.Map.Items)))
-		for _, it := range p.Map.Items {
-			k := c.compileExpr(it.Key)
-			if s, ok := types.SimpleStringKey(it.Key); ok {
-				k = fmt.Sprintf("\"%s\"", s)
+		if isMapStringIntLiteral(p.Map, c.env) {
+			c.need(needMapStringInt)
+			c.writeln(fmt.Sprintf("map_string_int %s = map_string_int_create(%d);", name, len(p.Map.Items)))
+			for _, it := range p.Map.Items {
+				k := c.compileExpr(it.Key)
+				if s, ok := types.SimpleStringKey(it.Key); ok {
+					k = fmt.Sprintf("\"%s\"", s)
+				}
+				v := c.compileExpr(it.Value)
+				c.writeln(fmt.Sprintf("map_string_int_put(&%s, %s, %s);", name, k, v))
 			}
-			v := c.compileExpr(it.Value)
-			c.writeln(fmt.Sprintf("map_int_bool_put(&%s, %s, %s);", name, k, v))
+		} else if isMapIntStringLiteral(p.Map, c.env) {
+			c.need(needMapIntString)
+			c.writeln(fmt.Sprintf("map_int_string %s = map_int_string_create(%d);", name, len(p.Map.Items)))
+			for _, it := range p.Map.Items {
+				k := c.compileExpr(it.Key)
+				v := c.compileExpr(it.Value)
+				c.writeln(fmt.Sprintf("map_int_string_put(&%s, %s, %s);", name, k, v))
+			}
+		} else {
+			c.need(needMapIntBool)
+			c.writeln(fmt.Sprintf("map_int_bool %s = map_int_bool_create(%d);", name, len(p.Map.Items)))
+			for _, it := range p.Map.Items {
+				k := c.compileExpr(it.Key)
+				if s, ok := types.SimpleStringKey(it.Key); ok {
+					k = fmt.Sprintf("\"%s\"", s)
+				}
+				v := c.compileExpr(it.Value)
+				c.writeln(fmt.Sprintf("map_int_bool_put(&%s, %s, %s);", name, k, v))
+			}
 		}
 		return name
 	case p.Call != nil:
@@ -3472,6 +3579,42 @@ func isEmptyMapLiteral(e *parser.Expr) bool {
 	return ml != nil && len(ml.Items) == 0
 }
 
+func isMapStringIntLiteral(ml *parser.MapLiteral, env *types.Env) bool {
+	if ml == nil {
+		return false
+	}
+	for _, it := range ml.Items {
+		if _, ok := types.SimpleStringKey(it.Key); !ok {
+			return false
+		}
+		if env != nil {
+			if _, ok := types.ExprType(it.Value, env).(types.IntType); !ok {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+func isMapIntStringLiteral(ml *parser.MapLiteral, env *types.Env) bool {
+	if ml == nil {
+		return false
+	}
+	for _, it := range ml.Items {
+		if _, ok := it.Key.Value.(*parser.NumberLiteral); !ok {
+			if _, ok2 := types.ExprType(it.Key, env).(types.IntType); !ok2 {
+				return false
+			}
+		}
+		if env != nil {
+			if _, ok := types.ExprType(it.Value, env).(types.StringType); !ok {
+				return false
+			}
+		}
+	}
+	return true
+}
+
 func isListListExpr(e *parser.Expr, env *types.Env) bool {
 	if e == nil || e.Binary == nil {
 		return false
@@ -3833,11 +3976,25 @@ func isMapStringExpr(e *parser.Expr, env *types.Env) bool {
 	return isMapStringUnary(e.Binary.Left, env)
 }
 
+func isMapStringIntExpr(e *parser.Expr, env *types.Env) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	return isMapStringIntUnary(e.Binary.Left, env)
+}
+
 func isMapStringUnary(u *parser.Unary, env *types.Env) bool {
 	if u == nil {
 		return false
 	}
 	return isMapStringPostfix(u.Value, env)
+}
+
+func isMapStringIntUnary(u *parser.Unary, env *types.Env) bool {
+	if u == nil {
+		return false
+	}
+	return isMapStringIntPostfix(u.Value, env)
 }
 
 func isMapStringPostfix(p *parser.PostfixExpr, env *types.Env) bool {
@@ -3850,6 +4007,16 @@ func isMapStringPostfix(p *parser.PostfixExpr, env *types.Env) bool {
 	return isMapStringPrimary(p.Target, env)
 }
 
+func isMapStringIntPostfix(p *parser.PostfixExpr, env *types.Env) bool {
+	if p == nil {
+		return false
+	}
+	if len(p.Ops) > 0 {
+		return false
+	}
+	return isMapStringIntPrimary(p.Target, env)
+}
+
 func isMapStringPrimary(p *parser.Primary, env *types.Env) bool {
 	if p == nil {
 		return false
@@ -3860,6 +4027,64 @@ func isMapStringPrimary(p *parser.Primary, env *types.Env) bool {
 	if p.Selector != nil && env != nil {
 		if t, err := env.GetVar(p.Selector.Root); err == nil {
 			if isMapStringType(t) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func isMapStringIntPrimary(p *parser.Primary, env *types.Env) bool {
+	if p == nil {
+		return false
+	}
+	if p.Map != nil {
+		return true
+	}
+	if p.Selector != nil && env != nil {
+		if t, err := env.GetVar(p.Selector.Root); err == nil {
+			if isMapStringIntType(t) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func isMapIntStringExpr(e *parser.Expr, env *types.Env) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	return isMapIntStringUnary(e.Binary.Left, env)
+}
+
+func isMapIntStringUnary(u *parser.Unary, env *types.Env) bool {
+	if u == nil {
+		return false
+	}
+	return isMapIntStringPostfix(u.Value, env)
+}
+
+func isMapIntStringPostfix(p *parser.PostfixExpr, env *types.Env) bool {
+	if p == nil {
+		return false
+	}
+	if len(p.Ops) > 0 {
+		return false
+	}
+	return isMapIntStringPrimary(p.Target, env)
+}
+
+func isMapIntStringPrimary(p *parser.Primary, env *types.Env) bool {
+	if p == nil {
+		return false
+	}
+	if p.Map != nil {
+		return true
+	}
+	if p.Selector != nil && env != nil {
+		if t, err := env.GetVar(p.Selector.Root); err == nil {
+			if isMapIntStringType(t) {
 				return true
 			}
 		}

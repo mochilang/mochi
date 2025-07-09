@@ -62,6 +62,38 @@ static int map_int_bool_contains(map_int_bool m, int key) {
     return 0;
 }`
 
+	helperMapStringInt = `typedef struct { char* key; int value; } pair_string_int;
+static pair_string_int pair_string_int_new(char* key, int value) {
+    pair_string_int p; p.key = key; p.value = value; return p;
+}
+typedef struct { int len; int cap; pair_string_int* data; } map_string_int;
+static map_string_int map_string_int_create(int cap) {
+    map_string_int m; m.len = 0; m.cap = cap;
+    m.data = cap?(pair_string_int*)malloc(sizeof(pair_string_int)*cap):NULL;
+    return m;
+}
+static void map_string_int_put(map_string_int* m, char* k, int v){
+    for(int i=0;i<m->len;i++) if(strcmp(m->data[i].key,k)==0){ m->data[i].value=v; return; }
+    if(m->len>=m->cap){ m->cap=m->cap?m->cap*2:4; m->data=(pair_string_int*)realloc(m->data,sizeof(pair_string_int)*m->cap); }
+    m->data[m->len++] = pair_string_int_new(k,v);
+}
+static int map_string_int_get(map_string_int m, const char* k){
+    for(int i=0;i<m.len;i++) if(strcmp(m.data[i].key,k)==0) return m.data[i].value;
+    return 0;
+}
+static int map_string_int_contains(map_string_int m,const char* k){
+    for(int i=0;i<m.len;i++) if(strcmp(m.data[i].key,k)==0) return 1;
+    return 0;
+}`
+
+	helperMapIntString = `typedef struct { int key; char* value; } pair_int_string;
+static pair_int_string pair_int_string_new(int key, char* val){ pair_int_string p; p.key=key; p.value=val; return p; }
+typedef struct { int len; int cap; pair_int_string* data; } map_int_string;
+static map_int_string map_int_string_create(int cap){ map_int_string m; m.len=0; m.cap=cap; m.data=cap?(pair_int_string*)malloc(sizeof(pair_int_string)*cap):NULL; return m; }
+static void map_int_string_put(map_int_string* m,int k,char* v){ for(int i=0;i<m->len;i++) if(m->data[i].key==k){ m->data[i].value=v; return; } if(m->len>=m->cap){ m->cap=m->cap?m->cap*2:4; m->data=(pair_int_string*)realloc(m->data,sizeof(pair_int_string)*m->cap); } m->data[m->len++]=pair_int_string_new(k,v); }
+static char* map_int_string_get(map_int_string m,int k){ for(int i=0;i<m.len;i++) if(m.data[i].key==k) return m.data[i].value; return ""; }
+static int map_int_string_contains(map_int_string m,int k){ for(int i=0;i<m.len;i++) if(m.data[i].key==k) return 1; return 0; }`
+
 	helperGroupByInt = `typedef struct { int key; list_int items; } _GroupInt;
 typedef struct { int len; int cap; _GroupInt* data; } list_group_int;
 static list_group_int _group_by_int(list_int src) {
@@ -665,6 +697,8 @@ var helperCode = map[string]string{
 	needInString:             helperContainsString,
 	needInListListInt:        helperContainsListListInt,
 	needInMapIntBool:         helperMapIntBool,
+	needInMapStringInt:       helperMapStringInt,
+	needInMapIntString:       helperMapIntString,
 	needInput:                helperInput,
 	needStr:                  helperStr,
 	needNow:                  helperNow,
@@ -676,6 +710,8 @@ var helperCode = map[string]string{
 	needFetch:                helperFetch,
 	needMapStringGet:         helperMapStringGet,
 	needMapIntBool:           helperMapIntBool,
+	needMapStringInt:         helperMapStringInt,
+	needMapIntString:         helperMapIntString,
 	needIndexString:          helperIndexString,
 	needSliceString:          helperSliceString,
 	needSliceListInt:         helperSliceListInt,
@@ -696,6 +732,8 @@ var helperOrder = []string{
 	needListString,
 	needListListInt,
 	needMapIntBool,
+	needMapStringInt,
+	needMapIntString,
 	needConcatListInt,
 	needConcatListFloat,
 	needConcatListString,
@@ -733,6 +771,8 @@ var helperOrder = []string{
 	needInString,
 	needInListListInt,
 	needInMapIntBool,
+	needInMapStringInt,
+	needInMapIntString,
 	needInput,
 	needStr,
 	needNow,
