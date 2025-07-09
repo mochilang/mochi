@@ -272,12 +272,23 @@ func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
 func (c *Compiler) castExpr(expr string, from, to types.Type) string {
 	fromGo := goType(from)
 	toGo := goType(to)
-	if toGo == "" || toGo == fromGo || equalTypes(from, to) {
+
+	if toGo == "" {
 		return expr
 	}
+
+	// If both types are the same and not `any`, no cast is needed.
+	if toGo == fromGo && !isAny(from) {
+		return expr
+	}
+	if equalTypes(from, to) && !isAny(from) && !isAny(to) {
+		return expr
+	}
+
 	if isNumeric(from) && isNumeric(to) {
 		return fmt.Sprintf("%s(%s)", toGo, expr)
 	}
+
 	c.use("_cast")
 	c.imports["encoding/json"] = true
 	return fmt.Sprintf("_cast[%s](%s)", toGo, expr)
