@@ -179,6 +179,8 @@ func (c *Compiler) compileWhile(st *parser.WhileStmt) error {
 		c.writeln("'()")
 		c.indent--
 		c.writeln(")")
+		c.indent--
+		c.writeln(")")
 		return nil
 	}
 	brk := fmt.Sprintf("brk%d", len(c.loops))
