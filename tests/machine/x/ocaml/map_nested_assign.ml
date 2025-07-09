@@ -33,8 +33,24 @@ let slice lst i j =
 
 let string_slice s i j = String.sub s i (j - i)
 
-let data = ref [("outer",[("inner",1)])]
+let list_set lst idx value =
+  List.mapi (fun i v -> if i = idx then value else v) lst
+
+let rec map_set m k v =
+  match m with
+    | [] -> [(k,v)]
+    | (k2,v2)::tl -> if k2 = k then (k,v)::tl else (k2,v2)::map_set tl k v
+
+let map_get m k = Obj.obj (List.assoc k m)
+
+let list_union a b = List.sort_uniq compare (a @ b)
+let list_except a b = List.filter (fun x -> not (List.mem x b)) a
+let list_intersect a b = List.filter (fun x -> List.mem x b) a |> List.sort_uniq compare
+let list_union_all a b = a @ b
+let sum lst = List.fold_left (+) 0 lst
+
+let data = ref [("outer",Obj.repr [("inner",Obj.repr 1)])]
 
 let () =
-  data := (let rec __upd l = match l with | [] -> [("outer",2)] | (k,v)::tl -> if k = "outer" then ("outer",2)::tl else (k,v)::__upd tl in __upd !data);
-  print_endline (__show (List.assoc "inner" List.assoc "outer" (!data)));
+  data := map_set !data "outer" (Obj.repr (map_set (map_get !data "outer") "inner" (Obj.repr 2)));
+  print_endline (__show (Obj.obj (List.assoc "inner" (Obj.obj (List.assoc "outer" ((!data)))))));

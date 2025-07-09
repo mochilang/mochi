@@ -4,8 +4,8 @@ This directory contains OCaml source code generated from Mochi programs and the 
 
 ## Summary
 
-- 51/97 programs compiled and executed successfully.
-- 46 programs failed to compile or run.
+- 55/97 programs compiled and executed successfully.
+- 42 programs failed to compile or run.
 
 ### Successful
 - append_builtin
@@ -33,6 +33,8 @@ This directory contains OCaml source code generated from Mochi programs and the 
 - let_and_print
 - list_assign
 - list_index
+- list_nested_assign
+- list_set_ops
 - map_assign
 - map_in_operator
 - map_index
@@ -53,10 +55,12 @@ This directory contains OCaml source code generated from Mochi programs and the 
 - string_concat
 - string_contains
 - substring_builtin
+- sum_builtin
 - typed_let
 - typed_var
 - unary_neg
 - user_type_literal
+- map_nested_assign
 - var_assignment
 - while_loop
 
@@ -83,11 +87,8 @@ This directory contains OCaml source code generated from Mochi programs and the 
 - json_builtin
 - left_join
 - left_join_multi
-- list_nested_assign
-- list_set_ops
 - load_yaml
 - map_int_key
-- map_nested_assign
 - match_expr
 - match_full
 - nested_function
@@ -100,7 +101,6 @@ This directory contains OCaml source code generated from Mochi programs and the 
 - string_in_operator
 - string_index
 - string_prefix_slice
-- sum_builtin
 - tail_recursion
 - test_block
 - tree_sum
@@ -111,5 +111,5 @@ This directory contains OCaml source code generated from Mochi programs and the 
 ## Remaining Tasks
 
 - [ ] Implement support for advanced query joins and aggregation.
-- [ ] Handle nested map updates and struct patterns.
+ - [x] Handle nested map updates and struct patterns.
 - [ ] Add runtime to run compiled programs during tests.
