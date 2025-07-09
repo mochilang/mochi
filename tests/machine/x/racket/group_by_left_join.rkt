@@ -1,7 +1,11 @@
 #lang racket
+(require racket/list)
 (define customers (list (hash 'id 1 'name "Alice") (hash 'id 2 'name "Bob") (hash 'id 3 'name "Charlie")))
 (define orders (list (hash 'id 100 'customerId 1) (hash 'id 101 'customerId 1) (hash 'id 102 'customerId 2)))
-(define stats (for*/list ([c customers]) (hash 'name (hash-ref g 'key) 'count (length (for*/list ([r g] #:when (hash-ref r 'o)) r)))))
+(define stats (let ([groups (make-hash)])
+  (for* ([c customers]) (let ((o (findf (lambda (o) (equal? (hash-ref o 'customerId) (hash-ref c 'id))) orders))) (let ([key (hash-ref c 'name)] [bucket (hash-ref groups key '())]) (hash-set! groups key (cons (hash 'c c 'o o) bucket)))))
+  (define _groups (for/list ([k (hash-keys groups)]) (hash 'key k 'items (hash-ref groups k))))
+  (for/list ([g _groups]) (hash 'name (hash-ref g 'key) 'count (length (for*/list ([r (hash-ref g 'items)] #:when (and (hash-ref r 'o))) r))))))
 (displayln "--- Group Left Join ---")
 (for ([s (if (hash? stats) (hash-keys stats) stats)])
 (displayln (string-join (map ~a (list (hash-ref s 'name) "orders:" (hash-ref s 'count))) " "))

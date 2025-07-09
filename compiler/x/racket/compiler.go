@@ -19,6 +19,7 @@ type Compiler struct {
 	structFieldTypes map[string]map[string]string
 	varTypes         map[string]string
 	funArity         map[string]int
+	groups           map[string]bool
 }
 
 func New() *Compiler {
@@ -27,6 +28,7 @@ func New() *Compiler {
 		structFieldTypes: make(map[string]map[string]string),
 		varTypes:         make(map[string]string),
 		funArity:         make(map[string]int),
+		groups:           make(map[string]bool),
 	}
 }
 
@@ -431,6 +433,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if len(args) != 1 {
 				return "", fmt.Errorf("count expects 1 arg")
 			}
+			if name, ok := identName(p.Call.Args[0]); ok && c.groups[name] {
+				return fmt.Sprintf("(length (hash-ref %s 'items))", args[0]), nil
+			}
 			return fmt.Sprintf("(length %s)", args[0]), nil
 		case "len":
 			if len(args) != 1 {
@@ -812,11 +817,17 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	if name, ok := identName(q.Source); ok && c.groups[name] {
+		src = fmt.Sprintf("(hash-ref %s 'items)", src)
+	}
 	loops = append(loops, fmt.Sprintf("[%s %s]", q.Var, src))
 	for _, f := range q.Froms {
 		s, err := c.compileExpr(f.Src)
 		if err != nil {
 			return "", err
+		}
+		if name, ok := identName(f.Src); ok && c.groups[name] {
+			s = fmt.Sprintf("(hash-ref %s 'items)", s)
 		}
 		loops = append(loops, fmt.Sprintf("[%s %s]", f.Var, s))
 	}
@@ -825,6 +836,9 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		js, err := c.compileExpr(j.Src)
 		if err != nil {
 			return "", err
+		}
+		if name, ok := identName(j.Src); ok && c.groups[name] {
+			js = fmt.Sprintf("(hash-ref %s 'items)", js)
 		}
 		onExpr, err := c.compileExpr(j.On)
 		if err != nil {
@@ -874,6 +888,66 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	if len(condParts) > 0 {
 		cond = fmt.Sprintf(" #:when (and %s)", strings.Join(condParts, " "))
 	}
+
+	if q.Group != nil {
+		if len(q.Group.Exprs) != 1 {
+			return "", fmt.Errorf("multi-key group not supported")
+		}
+		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
+		if err != nil {
+			return "", err
+		}
+		itemParts := []string{fmt.Sprintf("'%s %s", q.Var, q.Var)}
+		for _, f := range q.Froms {
+			itemParts = append(itemParts, fmt.Sprintf("'%s %s", f.Var, f.Var))
+		}
+		for _, j := range q.Joins {
+			itemParts = append(itemParts, fmt.Sprintf("'%s %s", j.Var, j.Var))
+		}
+		itemExpr := fmt.Sprintf("(hash %s)", strings.Join(itemParts, " "))
+		body := fmt.Sprintf("(let ([key %s] [bucket (hash-ref groups key '())]) (hash-set! groups key (cons %s bucket)))", keyExpr, itemExpr)
+		if len(bindings) > 0 {
+			body = fmt.Sprintf("(let (%s) %s)", strings.Join(bindings, " "), body)
+		}
+		collect := fmt.Sprintf("(for* (%s%s) %s)", strings.Join(loops, " "), cond, body)
+
+		var sel, have, sortExpr string
+		c.groups[q.Group.Name] = true
+		sel, err = c.compileExpr(q.Select)
+		if err != nil {
+			delete(c.groups, q.Group.Name)
+			return "", err
+		}
+		if q.Group.Having != nil {
+			have, err = c.compileExpr(q.Group.Having)
+			if err != nil {
+				delete(c.groups, q.Group.Name)
+				return "", err
+			}
+		}
+		if q.Sort != nil {
+			sortExpr, err = c.compileExpr(q.Sort)
+			if err != nil {
+				delete(c.groups, q.Group.Name)
+				return "", err
+			}
+		}
+		delete(c.groups, q.Group.Name)
+
+		var buf bytes.Buffer
+		buf.WriteString("(let ([groups (make-hash)])\n")
+		buf.WriteString("  " + collect + "\n")
+		buf.WriteString("  (define _groups (for/list ([k (hash-keys groups)]) (hash 'key k 'items (hash-ref groups k))))\n")
+		if sortExpr != "" {
+			buf.WriteString(fmt.Sprintf("  (set! _groups (sort _groups (lambda (a b) (> (let ([%s a]) %s) (let ([%s b]) %s)))))\n", q.Group.Name, sortExpr, q.Group.Name, sortExpr))
+		}
+		if have != "" {
+			buf.WriteString(fmt.Sprintf("  (set! _groups (filter (lambda (%s) %s) _groups))\n", q.Group.Name, have))
+		}
+		buf.WriteString(fmt.Sprintf("  (for/list ([%s _groups]) %s))", q.Group.Name, sel))
+		return buf.String(), nil
+	}
+
 	body, err := c.compileExpr(q.Select)
 	if err != nil {
 		return "", err
@@ -957,6 +1031,20 @@ func isIdentExpr(e *parser.Expr) bool {
 		return false
 	}
 	return len(u.Value.Target.Selector.Tail) == 0
+}
+
+func identName(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || u.Value.Target == nil || u.Value.Target.Selector == nil {
+		return "", false
+	}
+	if len(u.Value.Target.Selector.Tail) != 0 {
+		return "", false
+	}
+	return u.Value.Target.Selector.Root, true
 }
 
 func (c *Compiler) getDeclType(tr *parser.TypeRef) string {
