@@ -64,7 +64,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("def main(args: Array[String]): Unit = {")
 	c.indent += indentStep
 	for _, s := range prog.Statements {
-		if s.Fun != nil {
+		if s.Fun != nil || s.Type != nil {
 			continue
 		}
 		if err := c.compileStmt(s); err != nil {
@@ -178,7 +178,7 @@ func (c *Compiler) compileTypeDecl(td *parser.TypeDecl) error {
 	for _, m := range td.Members {
 		if m.Field != nil {
 			f := m.Field
-			fields = append(fields, fmt.Sprintf("%s: %s", f.Name, c.typeString(f.Type)))
+			fields = append(fields, fmt.Sprintf("var %s: %s", f.Name, c.typeString(f.Type)))
 		}
 	}
 	if len(fields) == 0 {
@@ -415,6 +415,14 @@ func (c *Compiler) compileExprStmt(s *parser.ExprStmt) error {
 		} else {
 			c.writeln(fmt.Sprintf("println(%s)", strings.Join(args, " + \" \" + ")))
 		}
+		return nil
+	}
+	if ok && call.Func == "json" {
+		expr, err := c.compileExpr(s.Expr)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("println(%s)", expr))
 		return nil
 	}
 	expr, err := c.compileExpr(s.Expr)
@@ -736,6 +744,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("values expects 1 arg")
 		}
 		return fmt.Sprintf("%s.values.toList", args[0]), nil
+	case "json":
+		if len(args) != 1 {
+			return "", fmt.Errorf("json expects 1 arg")
+		}
+		return fmt.Sprintf("scala.util.parsing.json.JSONObject(%s).toString()", args[0]), nil
 	case "exists":
 		if len(args) != 1 {
 			return "", fmt.Errorf("exists expects 1 arg")

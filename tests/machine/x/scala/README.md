@@ -2,7 +2,7 @@
 
 This directory contains Scala source files generated from Mochi programs using the compiler in `compiler/x/scala`. Each file was compiled and executed using `scalac` and `scala`. The checklist below shows which programs have successfully compiled and run.
 
-## Progress: 56/97 files compiled
+## Progress: 58/97 files compiled
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -41,7 +41,7 @@ This directory contains Scala source files generated from Mochi programs using t
 - [x] in_operator_extended.mochi
 - [ ] inner_join.mochi
 - [ ] join_multi.mochi
-- [ ] json_builtin.mochi
+- [x] json_builtin.mochi
 - [ ] left_join.mochi
 - [ ] left_join_multi.mochi
 - [x] len_builtin.mochi
@@ -73,7 +73,7 @@ This directory contains Scala source files generated from Mochi programs using t
 - [x] pure_fold.mochi
 - [ ] pure_global_fold.mochi
 - [ ] query_sum_select.mochi
-- [ ] record_assign.mochi
+- [x] record_assign.mochi
 - [ ] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
