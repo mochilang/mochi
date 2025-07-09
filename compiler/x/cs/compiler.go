@@ -2035,7 +2035,7 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	}
 	formatted := strings.Join(lines, "\n")
 
-	result := fmt.Sprintf("new %s(delegate(%s) {\n%s\n})", delegate, strings.Join(paramDecls, ", "), formatted)
+	result := fmt.Sprintf("new %s((%s) => {\n%s\n})", delegate, strings.Join(paramDecls, ", "), formatted)
 	c.varTypes = orig
 	return result, nil
 }
