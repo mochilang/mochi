@@ -1465,6 +1465,114 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 					return res
 				}
 			}
+		} else if len(q.Group.Exprs) == 2 {
+			src := c.compileExpr(q.Source)
+			srcT := c.exprType(q.Source)
+			if lt, ok := srcT.(types.ListType); ok {
+				if _, ok := c.exprType(q.Group.Exprs[0]).(types.StringType); ok {
+					if _, ok := c.exprType(q.Group.Exprs[1]).(types.StringType); ok {
+						c.need(needGroupByPairString)
+						c.need(needListPairString)
+						prevEnv := c.env
+						if c.env != nil {
+							genv := types.NewEnv(c.env)
+							genv.SetVar(q.Var, lt.Elem, true)
+							c.env = genv
+						}
+						var cond string
+						if q.Where != nil {
+							cond = c.compileExpr(q.Where)
+						}
+						rows := c.newTemp()
+						pairs := c.newTemp()
+						idxVar := c.newTemp()
+						listC := cTypeFromType(srcT)
+						if st, ok := lt.Elem.(types.StructType); ok {
+							c.compileStructType(st)
+							c.compileStructListType(st)
+						}
+						c.writeln(fmt.Sprintf("%s %s = %s_create(%s.len);", listC, rows, listC, src))
+						c.writeln(fmt.Sprintf("list_pair_string %s = list_pair_string_create(%s.len);", pairs, src))
+						c.writeln(fmt.Sprintf("int %s = 0;", idxVar))
+						c.writeln(fmt.Sprintf("for (int i=0; i<%s.len; i++) {", src))
+						c.indent++
+						c.writeln(fmt.Sprintf("%s %s = %s.data[i];", cTypeFromType(lt.Elem), sanitizeName(q.Var), src))
+						if cond != "" {
+							c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", cond))
+						}
+						keyA := c.compileExpr(q.Group.Exprs[0])
+						keyB := c.compileExpr(q.Group.Exprs[1])
+						c.writeln(fmt.Sprintf("%s.data[%s] = %s;", rows, idxVar, sanitizeName(q.Var)))
+						c.writeln(fmt.Sprintf("%s.data[%s] = (pair_string){%s, %s};", pairs, idxVar, keyA, keyB))
+						c.writeln(fmt.Sprintf("%s++;", idxVar))
+						c.indent--
+						c.writeln("}")
+						c.writeln(fmt.Sprintf("%s.len = %s;", rows, idxVar))
+						c.writeln(fmt.Sprintf("%s.len = %s;", pairs, idxVar))
+						groups := c.newTemp()
+						c.writeln(fmt.Sprintf("list_group_pair_string %s = _group_by_pair_string(%s);", groups, pairs))
+						oldEnv := c.env
+						if c.env != nil {
+							genv := types.NewEnv(c.env)
+							genv.SetVar(q.Group.Name, types.GroupType{Elem: lt.Elem}, true)
+							c.env = genv
+						}
+						if ml := asMapLiteral(q.Select); ml != nil {
+							if _, ok := c.structLits[ml]; !ok {
+								if st, ok2 := c.inferStructFromMap(ml, q.Var); ok2 {
+									c.structLits[ml] = st
+									c.compileStructType(st)
+									c.compileStructListType(st)
+								}
+							}
+						}
+						val := c.compileExpr(q.Select)
+						retT := c.exprType(q.Select)
+						if ml := asMapLiteral(q.Select); ml != nil {
+							if st, ok := retT.(types.StructType); ok {
+								c.structLits[ml] = st
+							}
+						}
+						retList := types.ListType{Elem: retT}
+						listRes := cTypeFromType(retList)
+						if listRes == "list_string" {
+							c.need(needListString)
+						} else if listRes == "list_float" {
+							c.need(needListFloat)
+						} else if listRes == "list_list_int" {
+							c.need(needListListInt)
+						}
+						res := c.newTemp()
+						idxRes := c.newTemp()
+						c.writeln(fmt.Sprintf("%s %s = %s_create(%s.len);", listRes, res, listRes, groups))
+						c.writeln(fmt.Sprintf("int %s = 0;", idxRes))
+						c.writeln(fmt.Sprintf("for (int gi=0; gi<%s.len; gi++) {", groups))
+						c.indent++
+						c.writeln(fmt.Sprintf("_GroupPairString _gp = %s.data[gi];", groups))
+						items := c.newTemp()
+						c.writeln(fmt.Sprintf("%s %s = %s_create(_gp.items.len);", listC, items, listC))
+						c.writeln(fmt.Sprintf("for (int j=0; j<_gp.items.len; j++) {"))
+						c.indent++
+						c.writeln(fmt.Sprintf("%s.data[j] = %s.data[_gp.items.data[j]];", items, rows))
+						c.indent--
+						c.writeln("}")
+						c.writeln(fmt.Sprintf("%s.len = _gp.items.len;", items))
+						c.writeln(fmt.Sprintf("struct { pair_string key; %s items; } %s = { _gp.key, %s };", listC, sanitizeName(q.Group.Name), items))
+						c.writeln(fmt.Sprintf("%s.data[%s] = %s;", res, idxRes, val))
+						c.writeln(fmt.Sprintf("%s++;", idxRes))
+						c.indent--
+						c.writeln("}")
+						c.writeln(fmt.Sprintf("%s.len = %s;", res, idxRes))
+						if c.env != nil {
+							c.env = oldEnv
+						}
+						if c.env != nil {
+							c.env = prevEnv
+						}
+						return res
+					}
+				}
+			}
 		}
 	}
 	// handle simple cross joins (multiple from clauses without joins)
