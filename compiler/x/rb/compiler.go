@@ -510,6 +510,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 
 	if needsHelper {
+		origEnv := c.env
 		src, err := c.compileExpr(q.Source)
 		if err != nil {
 			return "", err
@@ -613,8 +614,41 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if whereStr != "" {
 			whereFn = fmt.Sprintf("->(%s){ %s }", allParams, whereStr)
 		}
-		if sortStr != "" {
+		if sortStr != "" && q.Group == nil {
 			sortFn = fmt.Sprintf("->(%s){ %s }", allParams, sortStr)
+		}
+		var sortExpr, skipExpr, takeExpr string
+		if q.Group != nil {
+			if q.Sort != nil {
+				genv := types.NewEnv(c.env)
+				genv.SetVar(q.Group.Name, types.AnyType{}, true)
+				c.env = genv
+				sortExpr, err = c.compileExpr(q.Sort)
+				c.env = origEnv
+				if err != nil {
+					return "", err
+				}
+			}
+			if q.Skip != nil {
+				genv := types.NewEnv(c.env)
+				genv.SetVar(q.Group.Name, types.AnyType{}, true)
+				c.env = genv
+				skipExpr, err = c.compileExpr(q.Skip)
+				c.env = origEnv
+				if err != nil {
+					return "", err
+				}
+			}
+			if q.Take != nil {
+				genv := types.NewEnv(c.env)
+				genv.SetVar(q.Group.Name, types.AnyType{}, true)
+				c.env = genv
+				takeExpr, err = c.compileExpr(q.Take)
+				c.env = origEnv
+				if err != nil {
+					return "", err
+				}
+			}
 		}
 		var b strings.Builder
 		b.WriteString("(begin\n")
@@ -634,17 +668,29 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if sortFn != "" {
 			b.WriteString(", 'sortKey' => " + sortFn)
 		}
-		if skipStr != "" {
+		if skipStr != "" && q.Group == nil {
 			b.WriteString(", 'skip' => " + skipStr)
 		}
-		if takeStr != "" {
+		if takeStr != "" && q.Group == nil {
 			b.WriteString(", 'take' => " + takeStr)
 		}
 		b.WriteString(" })\n")
 		if q.Group != nil {
 			b.WriteString("\t_groups = _group_by(_rows, ->(" + allParams + "){ " + keyExpr + " })\n")
+			tmpName := fmt.Sprintf("_items%d", c.tmpCount)
+			c.tmpCount++
+			b.WriteString("\t" + tmpName + " = _groups\n")
+			if sortExpr != "" {
+				b.WriteString("\t" + tmpName + " = " + tmpName + ".sort_by { |" + sanitizeName(q.Group.Name) + "| " + sortExpr + " }\n")
+			}
+			if skipExpr != "" {
+				b.WriteString(fmt.Sprintf("\t%s = (%s).drop(%s)\n", tmpName, tmpName, skipExpr))
+			}
+			if takeExpr != "" {
+				b.WriteString(fmt.Sprintf("\t%s = (%s).take(%s)\n", tmpName, tmpName, takeExpr))
+			}
 			b.WriteString("\t_res = []\n")
-			b.WriteString("\tfor " + sanitizeName(q.Group.Name) + " in _groups\n")
+			b.WriteString("\tfor " + sanitizeName(q.Group.Name) + " in " + tmpName + "\n")
 			var valExpr string
 			if c.env != nil {
 				origEnv := c.env
