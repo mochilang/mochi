@@ -70,6 +70,8 @@ fun <T> intersect(a: MutableList<T>, b: MutableList<T>): MutableList<T> {
     for (x in a) if (b.contains(x)) res.add(x)
     return res
 }
+
+class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
 `
 
 // Compiler converts a subset of Mochi programs to Kotlin source code.
@@ -565,10 +567,20 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 	case p.Selector != nil:
 		name := p.Selector.Root
 		t, _ := c.env.GetVar(p.Selector.Root)
-		if types.IsMapType(t) {
+		if types.IsMapType(t) || isStructType(t) {
 			name = fmt.Sprintf("(%s as MutableMap<*, *>)", name)
-			for _, part := range p.Selector.Tail {
+			for i, part := range p.Selector.Tail {
 				name += fmt.Sprintf("[%q]", part)
+				if i == len(p.Selector.Tail)-1 {
+					if kt := kotlinCastType(fieldType(t, p.Selector.Tail)); kt != "" {
+						name += fmt.Sprintf(" as %s", kt)
+					}
+				} else {
+					ft := fieldType(t, p.Selector.Tail[:i+1])
+					if isStructType(ft) || types.IsMapType(ft) {
+						name = fmt.Sprintf("(%s as MutableMap<*, *>)", name)
+					}
+				}
 			}
 		} else {
 			if len(p.Selector.Tail) > 0 {
@@ -775,7 +787,13 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 
 	b.WriteString("run {\n")
 	b.WriteString(indent(lvl))
-	b.WriteString("val __res = mutableListOf<Any>()\n")
+	if q.Group != nil {
+		b.WriteString("val __groups = mutableMapOf<Any?, Group>()\n")
+		b.WriteString(indent(lvl))
+		b.WriteString("val __order = mutableListOf<Any?>()\n")
+	} else {
+		b.WriteString("val __res = mutableListOf<Any>()\n")
+	}
 	b.WriteString(indent(lvl))
 	b.WriteString(fmt.Sprintf("for (%s in %s) {\n", q.Var, src))
 	lvl++
@@ -801,8 +819,33 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	b.WriteString(indent(lvl))
-	b.WriteString(fmt.Sprintf("__res.add(%s)\n", sel))
+	if q.Group != nil {
+		keyExpr, err := c.expr(q.Group.Exprs[0])
+		if err != nil {
+			return "", err
+		}
+		b.WriteString(indent(lvl))
+		b.WriteString(fmt.Sprintf("val __k = %s\n", keyExpr))
+		b.WriteString(indent(lvl))
+		b.WriteString("var __g = __groups[__k]\n")
+		b.WriteString(indent(lvl))
+		b.WriteString("if (__g == null) {\n")
+		lvl++
+		b.WriteString(indent(lvl))
+		b.WriteString("__g = Group(__k, mutableListOf())\n")
+		b.WriteString(indent(lvl))
+		b.WriteString("__groups[__k] = __g\n")
+		b.WriteString(indent(lvl))
+		b.WriteString("__order.add(__k)\n")
+		lvl--
+		b.WriteString(indent(lvl))
+		b.WriteString("}\n")
+		b.WriteString(indent(lvl))
+		b.WriteString(fmt.Sprintf("__g.add(%s)\n", q.Var))
+	} else {
+		b.WriteString(indent(lvl))
+		b.WriteString(fmt.Sprintf("__res.add(%s)\n", sel))
+	}
 	if q.Where != nil {
 		lvl--
 		b.WriteString(indent(lvl))
@@ -816,9 +859,31 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	lvl--
 	b.WriteString(indent(lvl))
 	b.WriteString("}\n")
-	b.WriteString(indent(lvl))
-	b.WriteString("__res\n")
-	b.WriteString("}")
+	if q.Group != nil {
+		b.WriteString(indent(lvl))
+		b.WriteString("val __res = mutableListOf<Any>()\n")
+		b.WriteString(indent(lvl))
+		b.WriteString("for (k in __order) {\n")
+		lvl++
+		b.WriteString(indent(lvl))
+		b.WriteString("val g = __groups[k]!!\n")
+		if q.Group.Name != "g" {
+			b.WriteString(indent(lvl))
+			b.WriteString(fmt.Sprintf("val %s = g\n", q.Group.Name))
+		}
+		b.WriteString(indent(lvl))
+		b.WriteString(fmt.Sprintf("__res.add(%s)\n", sel))
+		lvl--
+		b.WriteString(indent(lvl))
+		b.WriteString("}\n")
+		b.WriteString(indent(lvl))
+		b.WriteString("__res\n")
+		b.WriteString("}")
+	} else {
+		b.WriteString(indent(lvl))
+		b.WriteString("__res\n")
+		b.WriteString("}")
+	}
 
 	res := b.String()
 	if q.Sort != nil {
@@ -900,4 +965,42 @@ func (c *Compiler) writeln(s string) {
 func replaceIdent(s, name, repl string) string {
 	re := regexp.MustCompile(`\b` + regexp.QuoteMeta(name) + `\b`)
 	return re.ReplaceAllString(s, repl)
+}
+
+func fieldType(t types.Type, path []string) types.Type {
+	for _, p := range path {
+		switch tt := t.(type) {
+		case types.StructType:
+			if f, ok := tt.Fields[p]; ok {
+				t = f
+			} else {
+				return types.AnyType{}
+			}
+		case types.MapType:
+			t = tt.Value
+		default:
+			return types.AnyType{}
+		}
+	}
+	return t
+}
+
+func kotlinCastType(t types.Type) string {
+	switch t.(type) {
+	case types.IntType:
+		return "Int"
+	case types.FloatType:
+		return "Double"
+	case types.StringType:
+		return "String"
+	case types.BoolType:
+		return "Boolean"
+	default:
+		return ""
+	}
+}
+
+func isStructType(t types.Type) bool {
+	_, ok := t.(types.StructType)
+	return ok
 }
