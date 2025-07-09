@@ -879,6 +879,25 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		c.writeln(fmt.Sprintf("%s(1:size(%s)) = %s", tmp, arr, arr))
 		c.writeln(fmt.Sprintf("%s(size(%s)+1) = %s", tmp, arr, elem))
 		return tmp, nil
+	case "values":
+		if len(call.Args) != 1 {
+			return "", fmt.Errorf("values expects 1 arg")
+		}
+		if ml := mapLiteral(call.Args[0]); ml != nil {
+			vals := make([]string, len(ml.Items))
+			for i, it := range ml.Items {
+				v, err := c.compileExpr(it.Value)
+				if err != nil {
+					return "", err
+				}
+				vals[i] = v
+			}
+			tmp := fmt.Sprintf("vals%d", c.tmpIndex)
+			c.tmpIndex++
+			c.writelnDecl(fmt.Sprintf("integer, dimension(%d) :: %s = (/%s/)", len(vals), tmp, strings.Join(vals, ",")))
+			return tmp, nil
+		}
+		return "", fmt.Errorf("values only supported for map literals")
 	default:
 		return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ",")), nil
 	}
@@ -1002,6 +1021,21 @@ func listLiteral(e *parser.Expr) *parser.ListLiteral {
 		return nil
 	}
 	return v.Target.List
+}
+
+func mapLiteral(e *parser.Expr) *parser.MapLiteral {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return nil
+	}
+	v := u.Value
+	if len(v.Ops) != 0 || v.Target == nil {
+		return nil
+	}
+	return v.Target.Map
 }
 
 func literalString(e *parser.Unary) *string {
