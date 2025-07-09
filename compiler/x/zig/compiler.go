@@ -1107,6 +1107,142 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			b.WriteString(" } } const res = " + tmp + ".toOwnedSlice() catch unreachable; break :" + lbl + " res; }")
 			return b.String(), nil
 		}
+		// handle simple right join without extra clauses
+		if len(q.Froms) == 0 && len(q.Joins) == 1 && q.Group == nil && q.Joins[0].Side != nil && *q.Joins[0].Side == "right" {
+			joinSrc, err := c.compileExpr(q.Joins[0].Src, false)
+			if err != nil {
+				return "", err
+			}
+			src, err := c.compileExpr(q.Source, false)
+			if err != nil {
+				return "", err
+			}
+			on, err := c.compileExpr(q.Joins[0].On, false)
+			if err != nil {
+				return "", err
+			}
+			var elemType types.Type = types.AnyType{}
+			if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
+				elemType = lt.Elem
+			}
+			var joinType types.Type = types.AnyType{}
+			if lt, ok := c.inferExprType(q.Joins[0].Src).(types.ListType); ok {
+				joinType = lt.Elem
+			}
+			child := types.NewEnv(c.env)
+			child.SetVar(q.Var, elemType, true)
+			child.SetVar(q.Joins[0].Var, joinType, true)
+			orig := c.env
+			c.env = child
+			sel, err := c.compileExpr(q.Select, false)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			var cond string
+			if q.Where != nil {
+				cond, err = c.compileExpr(q.Where, false)
+				if err != nil {
+					c.env = orig
+					return "", err
+				}
+			}
+			resType := zigTypeOf(c.inferExprType(q.Select))
+			elemElem := zigTypeOf(elemType)
+			c.env = orig
+
+			tmp := c.newTmp()
+			var b strings.Builder
+			elem := strings.TrimPrefix(resType, "[]const ")
+			lbl := c.newLabel()
+			lv := sanitizeName(q.Var)
+			jv := sanitizeName(q.Joins[0].Var)
+			b.WriteString(lbl + ": { var " + tmp + " = std.ArrayList(" + elem + ").init(std.heap.page_allocator); ")
+			b.WriteString("for (" + joinSrc + ") |" + jv + "| { var matched = false; for (" + src + ") |" + lv + "| {")
+			b.WriteString(" if (!(" + on + ")) continue; matched = true;")
+			if cond != "" {
+				b.WriteString(" if (!(" + cond + ")) { continue; }")
+			}
+			b.WriteString(" " + tmp + ".append(" + sel + ") catch unreachable; }")
+			b.WriteString(" if (!matched) { const " + lv + ": ?" + elemElem + " = null;")
+			if cond != "" {
+				b.WriteString(" if (" + cond + ") { " + tmp + ".append(" + sel + ") catch unreachable; }")
+			} else {
+				b.WriteString(" " + tmp + ".append(" + sel + ") catch unreachable;")
+			}
+			b.WriteString(" } } const res = " + tmp + ".toOwnedSlice() catch unreachable; break :" + lbl + " res; }")
+			return b.String(), nil
+		}
+		// handle simple outer join without extra clauses
+		if len(q.Froms) == 0 && len(q.Joins) == 1 && q.Group == nil && q.Joins[0].Side != nil && *q.Joins[0].Side == "outer" {
+			src, err := c.compileExpr(q.Source, false)
+			if err != nil {
+				return "", err
+			}
+			joinSrc, err := c.compileExpr(q.Joins[0].Src, false)
+			if err != nil {
+				return "", err
+			}
+			on, err := c.compileExpr(q.Joins[0].On, false)
+			if err != nil {
+				return "", err
+			}
+			var elemType types.Type = types.AnyType{}
+			if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
+				elemType = lt.Elem
+			}
+			var joinType types.Type = types.AnyType{}
+			if lt, ok := c.inferExprType(q.Joins[0].Src).(types.ListType); ok {
+				joinType = lt.Elem
+			}
+			child := types.NewEnv(c.env)
+			child.SetVar(q.Var, elemType, true)
+			child.SetVar(q.Joins[0].Var, joinType, true)
+			orig := c.env
+			c.env = child
+			sel, err := c.compileExpr(q.Select, false)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			var cond string
+			if q.Where != nil {
+				cond, err = c.compileExpr(q.Where, false)
+				if err != nil {
+					c.env = orig
+					return "", err
+				}
+			}
+			resType := zigTypeOf(c.inferExprType(q.Select))
+			elemElem := zigTypeOf(elemType)
+			joinElem := zigTypeOf(joinType)
+			c.env = orig
+
+			tmp := c.newTmp()
+			matched := c.newTmp()
+			var b strings.Builder
+			elem := strings.TrimPrefix(resType, "[]const ")
+			lbl := c.newLabel()
+			lv := sanitizeName(q.Var)
+			jv := sanitizeName(q.Joins[0].Var)
+			b.WriteString(lbl + ": { var " + tmp + " = std.ArrayList(" + elem + ").init(std.heap.page_allocator); ")
+			b.WriteString("var " + matched + " = std.AutoHashMap(usize, bool).init(std.heap.page_allocator); ")
+			b.WriteString("for (" + src + ", 0..) |" + lv + ", _i| { var " + jv + ": ?" + joinElem + " = null; var mi: usize = 0; for (" + joinSrc + ", 0..) |j, ji| {")
+			b.WriteString(" if (!(" + on + ")) continue; " + jv + " = j; mi = ji; " + matched + ".put(ji, true) catch {}; break; }")
+			if cond != "" {
+				b.WriteString(" if (" + cond + ") { " + tmp + ".append(" + sel + ") catch unreachable; }")
+			} else {
+				b.WriteString(" " + tmp + ".append(" + sel + ") catch unreachable;")
+			}
+			b.WriteString(" } for (" + joinSrc + ", 0..) |j, ji| { if (!" + matched + ".contains(ji)) { const " + lv + ": ?" + elemElem + " = null; " + jv + " = j;")
+			if cond != "" {
+				b.WriteString(" if (" + cond + ") { " + tmp + ".append(" + sel + ") catch unreachable; }")
+			} else {
+				b.WriteString(" " + tmp + ".append(" + sel + ") catch unreachable;")
+			}
+			b.WriteString(" } } const res = " + tmp + ".toOwnedSlice() catch unreachable; break :" + lbl + " res; }")
+			return b.String(), nil
+		}
 		if q.Group != nil {
 			return "", fmt.Errorf("unsupported query features")
 		}
