@@ -100,6 +100,11 @@ This directory contains Smalltalk source code generated from the Mochi programs 
 - [x] tree_sum.mochi
 - [x] two-sum.mochi
 - [ ] update_stmt.mochi
-- [ ] None
+
+## TODO
+- [ ] implement query joins and grouping
+- [ ] handle load/save expressions
+- [ ] support update statements
+- [ ] support test blocks
 
 All programs fail because gst is not installed.
