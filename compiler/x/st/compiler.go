@@ -761,6 +761,37 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		joinConds[i] = jc
 	}
 
+	if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "outer" &&
+		len(q.Froms) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil &&
+		q.Take == nil && !q.Distinct {
+		j := q.Joins[0]
+		lsrc := srcs[0]
+		rsrc := srcs[1]
+		cond := joinConds[0]
+		sel, err := c.compileExpr(q.Select)
+		if err != nil {
+			return "", err
+		}
+		var sb strings.Builder
+		sb.WriteString("[ | tmp |\n")
+		sb.WriteString("  tmp := OrderedCollection new.\n")
+		sb.WriteString(fmt.Sprintf("  %s do: [:%s |\n", lsrc, q.Var))
+		sb.WriteString(fmt.Sprintf("    | %s |\n", j.Var))
+		sb.WriteString(fmt.Sprintf("    %s := %s detect: [:%s | (%s) ] ifAbsent:[nil].\n", j.Var, rsrc, j.Var, cond))
+		sb.WriteString(fmt.Sprintf("    tmp add: %s.\n", sel))
+		sb.WriteString("  ].\n")
+		sb.WriteString(fmt.Sprintf("  %s do: [:%s |\n", rsrc, j.Var))
+		sb.WriteString(fmt.Sprintf("    (%s anySatisfy: [:%s | (%s) ]) ifFalse:[\n", lsrc, q.Var, cond))
+		sb.WriteString(fmt.Sprintf("      | %s |\n", q.Var))
+		sb.WriteString(fmt.Sprintf("      %s := nil.\n", q.Var))
+		sb.WriteString(fmt.Sprintf("      tmp add: %s.\n", sel))
+		sb.WriteString("    ].\n")
+		sb.WriteString("  ].\n")
+		sb.WriteString("  tmp\n")
+		sb.WriteString("] value")
+		return sb.String(), nil
+	}
+
 	cond := ""
 	if q.Where != nil {
 		cond, err = c.compileExpr(q.Where)

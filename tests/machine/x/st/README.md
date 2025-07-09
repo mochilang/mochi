@@ -102,6 +102,6 @@ This directory contains Smalltalk source code generated from the Mochi programs 
 - [x] update_stmt.mochi
 
 ## TODO
-- [ ] full outer join semantics
+- [x] full outer join semantics
 
 All programs fail because gst is not installed.
