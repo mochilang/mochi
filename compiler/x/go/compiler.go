@@ -3027,6 +3027,58 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		directRange = true
 	}
 
+	if len(q.Joins) == 0 && len(q.Froms) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		if call, ok := callPattern(q.Select); ok && len(call.Args) == 1 {
+			fn := call.Func
+			if fn == "sum" || fn == "count" || fn == "avg" || fn == "min" || fn == "max" {
+				if name, ok := identName(call.Args[0]); ok && name == q.Var {
+					tmpQ := *q
+					tmpQ.Select = &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Selector: &parser.SelectorExpr{Root: q.Var}}}}}}
+					items, err := c.compileQueryExpr(&tmpQ)
+					if err != nil {
+						return "", err
+					}
+					elemGo := goType(elemType)
+					if elemGo == "" {
+						elemGo = "any"
+					}
+					switch fn {
+					case "sum":
+						if isNumeric(elemType) {
+							c.use("_sumOrdered")
+							return fmt.Sprintf("_sumOrdered[%s](%s)", elemGo, items), nil
+						}
+						c.use("_sum")
+						return fmt.Sprintf("_sum(%s)", items), nil
+					case "count":
+						return fmt.Sprintf("len(%s)", items), nil
+					case "avg":
+						if isNumeric(elemType) {
+							c.use("_avgOrdered")
+							return fmt.Sprintf("_avgOrdered[%s](%s)", elemGo, items), nil
+						}
+						c.use("_avg")
+						return fmt.Sprintf("_avg(%s)", items), nil
+					case "min":
+						if isComparableSimple(elemType) {
+							c.use("_minOrdered")
+							return fmt.Sprintf("_minOrdered[%s](%s)", elemGo, items), nil
+						}
+						c.use("_min")
+						return fmt.Sprintf("_min(%s)", items), nil
+					case "max":
+						if isComparableSimple(elemType) {
+							c.use("_maxOrdered")
+							return fmt.Sprintf("_maxOrdered[%s](%s)", elemGo, items), nil
+						}
+						c.use("_max")
+						return fmt.Sprintf("_max(%s)", items), nil
+					}
+				}
+			}
+		}
+	}
+
 	simple := q.Sort == nil && q.Skip == nil && q.Take == nil
 
 	elemGo := goType(elemType)
@@ -3712,6 +3764,32 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		args[i] = v
 	}
 	argStr := strings.Join(args, ", ")
+
+	if len(paramTypes) > 0 && len(args) < len(paramTypes) {
+		// partial application
+		missing := paramTypes[len(args):]
+		names := make([]string, len(missing))
+		for i := range missing {
+			names[i] = fmt.Sprintf("p%d", i)
+			args = append(args, names[i])
+		}
+		ret := ""
+		if t, err := c.env.GetVar(call.Func); err == nil {
+			if ft, ok := t.(types.FuncType); ok {
+				ret = goType(ft.Return)
+			}
+		}
+		params := make([]string, len(missing))
+		for i, pt := range missing {
+			params[i] = fmt.Sprintf("%s %s", names[i], goType(pt))
+		}
+		body := fmt.Sprintf("%s(%s)", sanitizeName(call.Func), strings.Join(args, ", "))
+		if ret != "" {
+			return fmt.Sprintf("func(%s) %s { return %s }", strings.Join(params, ", "), ret, body), nil
+		}
+		return fmt.Sprintf("func(%s) { %s }", strings.Join(params, ", "), body), nil
+	}
+
 	switch call.Func {
 	case "print":
 		c.imports["fmt"] = true
