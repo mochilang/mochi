@@ -33,12 +33,35 @@ defmodule Main do
 
   defmodule Group do
     defstruct key: nil, items: []
+
+    def fetch(g, k) do
+      case k do
+        :key -> {:ok, g.key}
+        :items -> {:ok, g.items}
+        _ -> :error
+      end
+    end
+
+    def get_and_update(g, k, f) do
+      case k do
+        :key ->
+          {v, nv} = f.(g.key)
+          {v, %{g | key: nv}}
+
+        :items ->
+          {v, nv} = f.(g.items)
+          {v, %{g | items: nv}}
+
+        _ ->
+          {nil, g}
+      end
+    end
   end
 
   defp _group_by(src, keyfn) do
     {groups, order} =
       Enum.reduce(src, {%{}, []}, fn it, {groups, order} ->
-        key = keyfn.(it)
+        key = if is_list(it), do: apply(keyfn, it), else: keyfn.(it)
         ks = :erlang.phash2(key)
 
         {groups, order} =
@@ -48,7 +71,8 @@ defmodule Main do
             {Map.put(groups, ks, %Group{key: key}), order ++ [ks]}
           end
 
-        groups = Map.update!(groups, ks, fn g -> %{g | items: g.items ++ [it]} end)
+        val = if is_list(it) and length(it) == 1, do: hd(it), else: it
+        groups = Map.update!(groups, ks, fn g -> %{g | items: g.items ++ [val]} end)
         {groups, order}
       end)
 

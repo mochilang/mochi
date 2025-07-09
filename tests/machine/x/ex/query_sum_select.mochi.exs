@@ -11,7 +11,7 @@ defmodule Main do
   defp _sum(v) do
     list =
       cond do
-        is_map(v) and Map.has_key?(v, :items) -> v[:items]
+        is_map(v) and Map.has_key?(v, :items) -> Map.get(v, :items)
         is_list(v) -> v
         true -> raise "sum() expects list or group"
       end

@@ -1,6 +1,6 @@
-line 534
-** (BadMapError) expected a map, got: 2
-    (elixir 1.14.0) lib/map.ex:534: Map.get(2, "inner", nil)
-    /workspace/mochi/tests/machine/x/ex/map_nested_assign.mochi.exs:8: Main.main/0
-    (elixir 1.14.0) lib/code.ex:1245: Code.require_file/2
+line 319
+** (KeyError) key "outer" not found in: %{outer: %{inner: 1}}
+    :erlang.map_get("outer", %{outer: %{inner: 1}})
+    (elixir 1.14.0) lib/map.ex:319: Map.update!/3
+    /workspace/mochi/tests/machine/x/ex/map_nested_assign.mochi.exs:7: Main.main/0
 

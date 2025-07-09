@@ -7,7 +7,7 @@ defmodule Main do
   defp _count(v) do
     cond do
       is_list(v) -> length(v)
-      is_map(v) and Map.has_key?(v, :items) -> length(v[:items])
+      is_map(v) and Map.has_key?(v, :items) -> length(Map.get(v, :items))
       true -> raise "count() expects list or group"
     end
   end
