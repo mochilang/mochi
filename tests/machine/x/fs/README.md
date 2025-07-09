@@ -4,8 +4,8 @@ This directory contains F# source code generated from Mochi programs and the cor
 
 ## Summary
 
-- 24/37 programs compiled and executed successfully.
-- 13 programs failed to compile or run.
+- 26/37 programs compiled and executed successfully.
+- 11 programs failed to compile or run.
 
 ### Successful
 - append_builtin
@@ -32,10 +32,10 @@ This directory contains F# source code generated from Mochi programs and the cor
 - cross_join
 - cross_join_filter
 - cross_join_triple
-
-### Failed
 - dataset_sort_take_limit
 - dataset_where_filter
+
+### Failed
 - group_by
 - group_by_conditional_sum
 - group_by_having
