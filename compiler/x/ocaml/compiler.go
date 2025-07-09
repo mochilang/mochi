@@ -580,7 +580,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 				if isStringPrimary(p.Target) {
 					val = fmt.Sprintf("String.make 1 (String.get %s %s)", val, idx)
-				} else if isMapPrimary(p.Target) || isStringExpr(op.Index.Start) {
+				} else if c.isMapPrimary(p.Target) || isStringExpr(op.Index.Start) {
 					val = fmt.Sprintf("Obj.obj (List.assoc %s %s)", idx, val)
 				} else {
 					val = fmt.Sprintf("List.nth %s %s", val, idx)
@@ -928,11 +928,21 @@ func isStringPrimary(p *parser.Primary) bool {
 	return false
 }
 
-func isMapPrimary(p *parser.Primary) bool {
+func (c *Compiler) isMapPrimary(p *parser.Primary) bool {
 	if p == nil {
 		return false
 	}
-	return p.Map != nil
+	if p.Map != nil {
+		return true
+	}
+	if p.Selector != nil && len(p.Selector.Tail) == 0 {
+		if typ, err := c.env.GetVar(p.Selector.Root); err == nil {
+			if _, ok := typ.(types.MapType); ok {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func (c *Compiler) isMapPostfix(p *parser.PostfixExpr) bool {
