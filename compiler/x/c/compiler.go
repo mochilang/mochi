@@ -2619,10 +2619,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		} else if p.Call.Func == "sum" {
 			arg := c.compileExpr(p.Call.Args[0])
 			switch listElemType(p.Call.Args[0], c.env).(type) {
-			case types.FloatType:
+			case types.FloatType, types.IntType, types.BoolType:
+				// Always return double to match the runtime semantics
 				return fmt.Sprintf("({ double sum=0; for(int i=0;i<%s.len;i++) sum+=%s.data[i]; sum; })", arg, arg)
-			case types.IntType, types.BoolType:
-				return fmt.Sprintf("({ int sum=0; for(int i=0;i<%s.len;i++) sum+=%s.data[i]; sum; })", arg, arg)
 			}
 			c.need(needSumInt)
 			return fmt.Sprintf("_sum_int(%s)", arg)
