@@ -449,7 +449,7 @@ func (c *Compiler) compileIfExpr(ix *parser.IfExpr) (string, error) {
 			return "", err
 		}
 	}
-	return fmt.Sprintf("(if %s -> %s; true -> %s end)", cond, thenExpr, elseExpr), nil
+	return fmt.Sprintf("(case %s of true -> %s; _ -> %s end)", cond, thenExpr, elseExpr), nil
 }
 
 func (c *Compiler) compileMatchExpr(mx *parser.MatchExpr) (string, error) {
@@ -470,6 +470,75 @@ func (c *Compiler) compileMatchExpr(mx *parser.MatchExpr) (string, error) {
 		parts[i] = fmt.Sprintf("%s -> %s", pat, res)
 	}
 	return fmt.Sprintf("(case %s of %s end)", target, strings.Join(parts, "; ")), nil
+}
+
+func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
+	gens := []string{}
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	gens = append(gens, fmt.Sprintf("%s <- %s", capitalize(q.Var), src))
+	for _, fr := range q.Froms {
+		s, err := c.compileExpr(fr.Src)
+		if err != nil {
+			return "", err
+		}
+		gens = append(gens, fmt.Sprintf("%s <- %s", capitalize(fr.Var), s))
+	}
+
+	cond := ""
+	if q.Where != nil {
+		cnd, err := c.compileExpr(q.Where)
+		if err != nil {
+			return "", err
+		}
+		cond = cnd
+	}
+
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		return "", err
+	}
+
+	listExpr := "[" + sel + " || " + strings.Join(gens, ", ")
+	if cond != "" {
+		listExpr += ", " + cond
+	}
+	listExpr += "]"
+
+	res := listExpr
+
+	if q.Sort != nil {
+		key, err := c.compileExpr(q.Sort)
+		if err != nil {
+			return "", err
+		}
+		pairList := "[{" + key + ", " + sel + "} || " + strings.Join(gens, ", ")
+		if cond != "" {
+			pairList += ", " + cond
+		}
+		pairList += "]"
+		sorted := fmt.Sprintf("lists:keysort(1, %s)", pairList)
+		res = fmt.Sprintf("[V || {_, V} <- %s]", sorted)
+	}
+
+	if q.Skip != nil {
+		s, err := c.compileExpr(q.Skip)
+		if err != nil {
+			return "", err
+		}
+		res = fmt.Sprintf("lists:nthtail(%s, %s)", s, res)
+	}
+	if q.Take != nil {
+		t, err := c.compileExpr(q.Take)
+		if err != nil {
+			return "", err
+		}
+		res = fmt.Sprintf("lists:sublist(%s, %s)", res, t)
+	}
+
+	return res, nil
 }
 
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
@@ -651,10 +720,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Lit != nil:
 		return c.compileLiteral(p.Lit), nil
 	case p.Selector != nil:
-		if len(p.Selector.Tail) > 0 {
-			return "", fmt.Errorf("field access not supported")
+		expr := c.refVar(p.Selector.Root)
+		for _, f := range p.Selector.Tail {
+			expr = fmt.Sprintf("maps:get(%s, %s)", f, expr)
 		}
-		return c.refVar(p.Selector.Root), nil
+		return expr, nil
+	case p.Query != nil:
+		return c.compileQuery(p.Query)
 	case p.Call != nil:
 		return c.compileCall(p.Call)
 	case p.FunExpr != nil:
@@ -676,7 +748,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Map != nil:
 		parts := make([]string, len(p.Map.Items))
 		for i, it := range p.Map.Items {
-			k, err := c.compileExpr(it.Key)
+			k, err := c.compileMapKey(it.Key)
 			if err != nil {
 				return "", err
 			}
@@ -857,6 +929,18 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 	default:
 		return "undefined"
 	}
+}
+
+func (c *Compiler) compileMapKey(e *parser.Expr) (string, error) {
+	if e != nil && e.Binary != nil && len(e.Binary.Right) == 0 {
+		u := e.Binary.Left
+		if len(u.Ops) == 0 && u.Value != nil && len(u.Value.Ops) == 0 {
+			if u.Value.Target.Selector != nil && len(u.Value.Target.Selector.Tail) == 0 {
+				return u.Value.Target.Selector.Root, nil
+			}
+		}
+	}
+	return c.compileExpr(e)
 }
 
 func (c *Compiler) writeln(s string) {
