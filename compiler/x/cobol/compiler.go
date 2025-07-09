@@ -491,12 +491,19 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		return "", err
 	}
 	res := left
+	leftType := types.TypeOfUnary(b.Left, c.env)
 	for _, op := range b.Right {
 		r, err := c.compilePostfix(op.Right)
 		if err != nil {
 			return "", err
 		}
+		rightType := types.TypeOfPostfix(op.Right, c.env)
 		opStr := op.Op
+		if op.Op == "+" && (types.IsStringType(leftType) || types.IsStringType(rightType)) {
+			res = fmt.Sprintf("FUNCTION CONCATENATE(%s, %s)", res, r)
+			leftType = types.StringType{}
+			continue
+		}
 		switch op.Op {
 		case "&&":
 			opStr = "AND"
@@ -508,6 +515,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			opStr = "<>"
 		}
 		res = fmt.Sprintf("%s %s %s", res, opStr, r)
+		leftType = types.AnyType{}
 	}
 	return res, nil
 }
