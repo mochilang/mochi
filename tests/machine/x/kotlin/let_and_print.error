@@ -1,9 +1,0 @@
-line 66:
-OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
-/workspace/mochi/tests/machine/x/kotlin/let_and_print.kt:66:17: error: type mismatch: inferred type is Int? but Int was expected
-    println(a + b)
-                ^
-
- 65: fun main() {
- 66:     println(a + b)
- 67: }

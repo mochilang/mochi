@@ -14,6 +14,10 @@ fun avg(list: List<Number>): Double {
 
 fun count(list: Collection<Any?>): Int = list.size
 
+fun exists(list: Collection<Any?>): Boolean = list.isNotEmpty()
+
+fun <T> values(m: Map<*, T>): MutableList<T> = m.values.toMutableList()
+
 fun len(v: Any?): Int = when (v) {
     is String -> v.length
     is Collection<*> -> v.size
@@ -39,6 +43,21 @@ fun str(v: Any?): String = v.toString()
 
 fun substring(s: String, start: Int, end: Int): String = s.substring(start, end)
 
+fun toInt(v: Any?): Int = when (v) {
+    is Int -> v
+    is Double -> v.toInt()
+    is String -> v.toInt()
+    is Boolean -> if (v) 1 else 0
+    else -> 0
+}
+
+fun toDouble(v: Any?): Double = when (v) {
+    is Double -> v
+    is Int -> v.toDouble()
+    is String -> v.toDouble()
+    else -> 0.0
+}
+
 fun <T> union(a: MutableList<T>, b: MutableList<T>): MutableList<T> {
     val res = a.toMutableList()
     for (x in b) if (!res.contains(x)) res.add(x)
@@ -57,10 +76,12 @@ fun <T> intersect(a: MutableList<T>, b: MutableList<T>): MutableList<T> {
     return res
 }
 
+class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
+
 
 fun main() {
-    println(mutableListOf(1, 2) union mutableListOf(2, 3))
-    println(mutableListOf(1, 2, 3) except mutableListOf(2))
-    println(mutableListOf(1, 2, 3) intersect mutableListOf(2, 4))
-    println(len(mutableListOf(1, 2) union mutableListOf(2, 3)))
+    println(union(mutableListOf(1, 2).toMutableList(), mutableListOf(2, 3).toMutableList()))
+    println(except(mutableListOf(1, 2, 3).toMutableList(), mutableListOf(2).toMutableList()))
+    println(intersect(mutableListOf(1, 2, 3).toMutableList(), mutableListOf(2, 4).toMutableList()))
+    println(len(mutableListOf(1, 2).toMutableList().apply { addAll(mutableListOf(2, 3)) }))
 }

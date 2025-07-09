@@ -164,35 +164,41 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 func (c *Compiler) stmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
-		val := "null"
-		typ := ""
-		if s.Let.Type != nil {
-			typName := c.typeNameNullable(s.Let.Type)
-			typ = ": " + typName
-			val = c.zeroValue(s.Let.Type)
-		}
+		var val, typ string
 		if s.Let.Value != nil {
 			v, err := c.expr(s.Let.Value)
 			if err != nil {
 				return err
 			}
 			val = v
+			if s.Let.Type != nil {
+				typ = ": " + c.typeName(s.Let.Type)
+			}
+		} else {
+			val = "null"
+			if s.Let.Type != nil {
+				typ = ": " + c.typeNameNullable(s.Let.Type)
+				val = c.zeroValue(s.Let.Type)
+			}
 		}
 		c.writeln(fmt.Sprintf("val %s%s = %s", s.Let.Name, typ, val))
 	case s.Var != nil:
-		val := "null"
-		typ := ""
-		if s.Var.Type != nil {
-			typName := c.typeNameNullable(s.Var.Type)
-			typ = ": " + typName
-			val = c.zeroValue(s.Var.Type)
-		}
+		var val, typ string
 		if s.Var.Value != nil {
 			v, err := c.expr(s.Var.Value)
 			if err != nil {
 				return err
 			}
 			val = v
+			if s.Var.Type != nil {
+				typ = ": " + c.typeName(s.Var.Type)
+			}
+		} else {
+			val = "null"
+			if s.Var.Type != nil {
+				typ = ": " + c.typeNameNullable(s.Var.Type)
+				val = c.zeroValue(s.Var.Type)
+			}
 		}
 		c.writeln(fmt.Sprintf("var %s%s = %s", s.Var.Name, typ, val))
 	case s.Assign != nil:
@@ -468,6 +474,25 @@ func (c *Compiler) binary(b *parser.BinaryExpr) (string, error) {
 			return "", err
 		}
 		rType := types.TypeOfPostfix(op.Right, c.env)
+		if op.Op == "union" {
+			if op.All {
+				res = fmt.Sprintf("%s.toMutableList().apply { addAll(%s) }", res, r)
+			} else {
+				res = fmt.Sprintf("union(%s.toMutableList(), %s.toMutableList())", res, r)
+			}
+			lType = types.ListType{}
+			continue
+		}
+		if op.Op == "except" {
+			res = fmt.Sprintf("except(%s.toMutableList(), %s.toMutableList())", res, r)
+			lType = types.ListType{}
+			continue
+		}
+		if op.Op == "intersect" {
+			res = fmt.Sprintf("intersect(%s.toMutableList(), %s.toMutableList())", res, r)
+			lType = types.ListType{}
+			continue
+		}
 		if isNumericOp(op.Op) {
 			if _, ok := lType.(types.AnyType); ok {
 				switch rType.(type) {
