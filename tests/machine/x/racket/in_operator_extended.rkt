@@ -1,0 +1,11 @@
+#lang racket
+(define xs (list 1 2 3))
+(define ys (for*/list ([x xs] #:when (equal? (remainder x 2) 1)) x))
+(displayln (if (hash? ys) (hash-has-key? ys 1) (if (member 1 ys) #t #f)))
+(displayln (if (hash? ys) (hash-has-key? ys 2) (if (member 2 ys) #t #f)))
+(define m (hash 'a 1))
+(displayln (regexp-match? (regexp "a") m))
+(displayln (regexp-match? (regexp "b") m))
+(define s "hello")
+(displayln (regexp-match? (regexp "ell") s))
+(displayln (regexp-match? (regexp "foo") s))

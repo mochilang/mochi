@@ -13,9 +13,10 @@ import (
 type Compiler struct {
 	buf         bytes.Buffer
 	needListLib bool
+	structs     map[string][]string
 }
 
-func New() *Compiler { return &Compiler{} }
+func New() *Compiler { return &Compiler{structs: make(map[string][]string)} }
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
@@ -134,6 +135,8 @@ func (c *Compiler) compileStmtFull(s *parser.Statement, breakLbl, contLbl, retLb
 			return fmt.Errorf("unsupported statement")
 		}
 		c.writeln(fmt.Sprintf("(%s)", contLbl))
+	case s.Type != nil:
+		return c.compileTypeDecl(s.Type)
 	default:
 		return fmt.Errorf("unsupported statement")
 	}
@@ -167,6 +170,16 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 			val = fmt.Sprintf("(%s %s %s)", operator, val, rhs)
 		case "%":
 			val = fmt.Sprintf("(remainder %s %s)", val, rhs)
+		case "union":
+			if op.All {
+				val = fmt.Sprintf("(append %s %s)", val, rhs)
+			} else {
+				val = fmt.Sprintf("(remove-duplicates (append %s %s))", val, rhs)
+			}
+		case "except":
+			val = fmt.Sprintf("(filter (lambda (x) (not (member x %s))) %s)", rhs, val)
+		case "intersect":
+			val = fmt.Sprintf("(filter (lambda (x) (member x %s)) %s)", rhs, val)
 		case "==":
 			if isStrLeft || rightStr {
 				val = fmt.Sprintf("(string=? %s %s)", val, rhs)
@@ -202,7 +215,7 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 			if rightStr || isStrLeft {
 				val = fmt.Sprintf("(regexp-match? (regexp %s) %s)", val, rhs)
 			} else {
-				val = fmt.Sprintf("(if (member %s %s) #t #f)", val, rhs)
+				val = fmt.Sprintf("(if (hash? %s) (hash-has-key? %s %s) (if (member %s %s) #t #f))", rhs, rhs, val, val, rhs)
 			}
 		default:
 			return "", fmt.Errorf("unsupported operator %s", operator)
@@ -236,8 +249,19 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	for _, op := range p.Ops {
 		switch {
 		case op.Cast != nil:
-			if op.Cast.Type.Simple != nil && *op.Cast.Type.Simple == "int" {
-				val = fmt.Sprintf("(string->number %s)", val)
+			if op.Cast.Type.Simple != nil {
+				tname := *op.Cast.Type.Simple
+				if tname == "int" {
+					val = fmt.Sprintf("(string->number %s)", val)
+				} else if fields, ok := c.structs[tname]; ok {
+					parts := make([]string, len(fields))
+					for i, f := range fields {
+						parts[i] = fmt.Sprintf("(hash-ref %s '%s)", val, f)
+					}
+					val = fmt.Sprintf("(%s %s)", tname, strings.Join(parts, " "))
+				} else {
+					return "", fmt.Errorf("unsupported cast")
+				}
 			} else {
 				return "", fmt.Errorf("unsupported cast")
 			}
@@ -331,7 +355,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if len(args) != 1 {
 				return "", fmt.Errorf("len expects 1 arg")
 			}
-			return fmt.Sprintf("(if (string? %s) (string-length %s) (length %s))", args[0], args[0], args[0]), nil
+			x := args[0]
+			return fmt.Sprintf("(cond [(string? %s) (string-length %s)] [(hash? %s) (hash-count %s)] [else (length %s)])", x, x, x, x, x), nil
 		case "min":
 			if len(args) != 1 {
 				return "", fmt.Errorf("min expects 1 arg")
@@ -352,6 +377,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", fmt.Errorf("str expects 1 arg")
 			}
 			return fmt.Sprintf("(number->string %s)", args[0]), nil
+		case "exists":
+			if len(args) != 1 {
+				return "", fmt.Errorf("exists expects 1 arg")
+			}
+			return fmt.Sprintf("(not (null? %s))", args[0]), nil
 		default:
 			return fmt.Sprintf("(%s %s)", p.Call.Func, strings.Join(args, " ")), nil
 		}
@@ -370,8 +400,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return fmt.Sprintf("(if %s %s %s)", cond, thn, els), nil
 	case p.Selector != nil:
-		// simple variable access only
-		return p.Selector.Root, nil
+		val := p.Selector.Root
+		for _, f := range p.Selector.Tail {
+			val = fmt.Sprintf("(hash-ref %s '%s)", val, f)
+		}
+		return val, nil
 	case p.Group != nil:
 		return c.compileExpr(p.Group)
 	case p.List != nil:
@@ -383,13 +416,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			elems[i] = v
 		}
-		return fmt.Sprintf("'(%s)", strings.Join(elems, " ")), nil
+		return fmt.Sprintf("(list %s)", strings.Join(elems, " ")), nil
 	case p.Map != nil:
 		parts := make([]string, len(p.Map.Items)*2)
 		for i, it := range p.Map.Items {
 			k, err := c.compileExpr(it.Key)
 			if err != nil {
 				return "", err
+			}
+			if isIdentExpr(it.Key) {
+				k = fmt.Sprintf("'%s", k)
 			}
 			v, err := c.compileExpr(it.Value)
 			if err != nil {
@@ -399,6 +435,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			parts[i*2+1] = v
 		}
 		return fmt.Sprintf("(hash %s)", strings.Join(parts, " ")), nil
+	case p.Query != nil:
+		return c.compileQuery(p.Query)
 	case p.FunExpr != nil:
 		params := make([]string, len(p.FunExpr.Params))
 		for i, pa := range p.FunExpr.Params {
@@ -486,7 +524,7 @@ func (c *Compiler) compileForWithLabelsFull(f *parser.ForStmt, breakLbl, contLbl
 	if end != "" {
 		c.writeln(fmt.Sprintf("%s(for ([%s (in-range %s %s)])", indent(useBC, 1), name, start, end))
 	} else {
-		c.writeln(fmt.Sprintf("%s(for ([%s %s])", indent(useBC, 1), name, start))
+		c.writeln(fmt.Sprintf("%s(for ([%s (if (hash? %s) (hash-keys %s) %s)])", indent(useBC, 1), name, start, start, start))
 	}
 	if useBC {
 		c.writeln(fmt.Sprintf("%s(let/ec continue", indent(useBC, 2)))
@@ -592,6 +630,36 @@ func (c *Compiler) compileWhileWithLabels(w *parser.WhileStmt, breakLbl, contLbl
 	return nil
 }
 
+func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
+	loops := []string{}
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	loops = append(loops, fmt.Sprintf("[%s %s]", q.Var, src))
+	for _, f := range q.Froms {
+		s, err := c.compileExpr(f.Src)
+		if err != nil {
+			return "", err
+		}
+		loops = append(loops, fmt.Sprintf("[%s %s]", f.Var, s))
+	}
+	cond := ""
+	if q.Where != nil {
+		ce, err := c.compileExpr(q.Where)
+		if err != nil {
+			return "", err
+		}
+		cond = fmt.Sprintf(" #:when %s", ce)
+	}
+	body, err := c.compileExpr(q.Select)
+	if err != nil {
+		return "", err
+	}
+	expr := fmt.Sprintf("(for*/list (%s%s) %s)", strings.Join(loops, " "), cond, body)
+	return expr, nil
+}
+
 func (c *Compiler) compileIndexedSet(name string, idx []*parser.IndexOp, rhs string) (string, error) {
 	if len(idx) == 0 {
 		return rhs, nil
@@ -607,12 +675,35 @@ func (c *Compiler) compileIndexedSet(name string, idx []*parser.IndexOp, rhs str
 		c.needListLib = true
 		return fmt.Sprintf("(list-set %s %s %s)", name, ie, rhs), nil
 	}
-	inner, err := c.compileIndexedSet(fmt.Sprintf("(list-ref %s %s)", name, ie), idx[1:], rhs)
+	access := fmt.Sprintf("(list-ref %s %s)", name, ie)
+	if isStringExpr(idx[0].Start) {
+		access = fmt.Sprintf("(hash-ref %s %s)", name, ie)
+	}
+	inner, err := c.compileIndexedSet(access, idx[1:], rhs)
 	if err != nil {
 		return "", err
 	}
+	if isStringExpr(idx[0].Start) {
+		return fmt.Sprintf("(hash-set %s %s %s)", name, ie, inner), nil
+	}
 	c.needListLib = true
 	return fmt.Sprintf("(list-set %s %s %s)", name, ie, inner), nil
+}
+
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	if len(t.Variants) > 0 {
+		return fmt.Errorf("unsupported statement")
+	}
+	fields := []string{}
+	for _, m := range t.Members {
+		if m.Field == nil {
+			return fmt.Errorf("unsupported statement")
+		}
+		fields = append(fields, m.Field.Name)
+	}
+	c.structs[t.Name] = fields
+	c.writeln(fmt.Sprintf("(struct %s (%s) #:transparent)", t.Name, strings.Join(fields, " ")))
+	return nil
 }
 
 func isStringPrimary(p *parser.Primary) bool {
@@ -632,4 +723,15 @@ func isStringExpr(e *parser.Expr) bool {
 		return false
 	}
 	return isStringUnary(e.Binary.Left)
+}
+
+func isIdentExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || u.Value.Target == nil || u.Value.Target.Selector == nil {
+		return false
+	}
+	return len(u.Value.Target.Selector.Tail) == 0
 }

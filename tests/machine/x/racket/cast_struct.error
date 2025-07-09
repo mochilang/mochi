@@ -1,1 +1,6 @@
-unsupported statement
+run: exit status 1
+hash-ref: no value found for key
+  key: 'title
+  context...:
+   body of "/workspace/mochi/tests/machine/x/racket/cast_struct.rkt"
+

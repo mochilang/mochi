@@ -1,1 +1,6 @@
-unsupported primary
+run: exit status 1
+/workspace/mochi/tests/machine/x/racket/outer_join.rkt:4:64: c: unbound identifier
+  in: c
+  location...:
+   /workspace/mochi/tests/machine/x/racket/outer_join.rkt:4:64
+

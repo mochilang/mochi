@@ -1,8 +1,0 @@
-run: exit status 1
-length: contract violation
-  expected: list?
-  given: '#hash(("a" . 1) ("b" . 2))
-  context...:
-   /workspace/mochi/tests/machine/x/racket/len_map.rkt:2:0
-   body of "/workspace/mochi/tests/machine/x/racket/len_map.rkt"
-
