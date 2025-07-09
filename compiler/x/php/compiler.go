@@ -18,10 +18,11 @@ type Compiler struct {
 	needsJSON bool
 	env       *types.Env
 	helpers   map[string]bool
+	groupVars map[string]bool
 }
 
 // New creates a new Compiler instance.
-func New(env *types.Env) *Compiler { return &Compiler{env: env} }
+func New(env *types.Env) *Compiler { return &Compiler{env: env, groupVars: map[string]bool{}} }
 
 // Compile translates the program to PHP code.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
@@ -262,6 +263,9 @@ func (c *Compiler) compileFor(fs *parser.ForStmt) error {
 		if err != nil {
 			return err
 		}
+		if _, ok := c.isGroupVarExpr(fs.Source); ok {
+			src = fmt.Sprintf("%s['items']", src)
+		}
 		if c.isMapExpr(fs.Source) {
 			c.writeln(fmt.Sprintf("foreach (%s as %s => $_v) {", src, name))
 		} else {
@@ -375,6 +379,13 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	gvName := ""
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		name := sanitizeName(p.Target.Selector.Root)
+		if c.groupVars[name] {
+			gvName = name
+		}
+	}
 	t := types.TypeOfPrimary(p.Target, c.env)
 	for i := 0; i < len(p.Ops); i++ {
 		op := p.Ops[i]
@@ -438,6 +449,20 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 		case op.Field != nil:
 			name := op.Field.Name
+			if gvName != "" {
+				if name == "key" {
+					val = fmt.Sprintf("$%s_key", gvName)
+					gvName = ""
+					t = types.AnyType{}
+					continue
+				}
+				if name == "items" {
+					val = fmt.Sprintf("$%s['items']", gvName)
+					gvName = ""
+					t = types.AnyType{}
+					continue
+				}
+			}
 			val = fmt.Sprintf("%s->%s", val, sanitizeName(name))
 			t = types.AnyType{}
 		case op.Call != nil:
@@ -565,10 +590,16 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if types.IsStringType(types.TypeOfExprBasic(call.Args[0], c.env)) {
 			return fmt.Sprintf("strlen(%s)", args[0]), nil
 		}
+		if name, ok := c.isGroupVarExpr(call.Args[0]); ok {
+			return fmt.Sprintf("count($%s['items'])", name), nil
+		}
 		return fmt.Sprintf("count(%s)", args[0]), nil
 	case "count":
 		if len(args) != 1 {
 			return "", fmt.Errorf("count expects 1 arg")
+		}
+		if name, ok := c.isGroupVarExpr(call.Args[0]); ok {
+			return fmt.Sprintf("count($%s['items'])", name), nil
 		}
 		return fmt.Sprintf("count(%s)", args[0]), nil
 	case "avg":
@@ -615,6 +646,9 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("exists expects 1 arg")
 		}
+		if name, ok := c.isGroupVarExpr(call.Args[0]); ok {
+			return fmt.Sprintf("count($%s['items']) > 0", name), nil
+		}
 		return fmt.Sprintf("count(%s) > 0", args[0]), nil
 	default:
 		name := sanitizeName(call.Func)
@@ -656,7 +690,7 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if q.Group != nil || len(q.Joins) > 0 {
+	if len(q.Joins) > 0 {
 		return "", fmt.Errorf("query features not supported")
 	}
 	src, err := c.compileExpr(q.Source)
@@ -683,7 +717,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	var buf bytes.Buffer
 	buf.WriteString("(function() {")
 	buf.WriteString("\n")
-	buf.WriteString("    $result = [];")
+	if q.Group != nil {
+		buf.WriteString("    $groups = [];")
+	} else {
+		buf.WriteString("    $result = [];")
+	}
 	buf.WriteString("\n")
 
 	loops := []string{fmt.Sprintf("foreach (%s as $%s)", src, sanitizeName(q.Var))}
@@ -718,27 +756,44 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		indent++
 	}
 
-	sel, err := c.compileExpr(q.Select)
-	if err != nil {
-		return "", err
-	}
-
-	keyExpr := ""
-	if q.Sort != nil {
-		keyExpr, err = c.compileExpr(q.Sort)
+	if q.Group != nil {
+		if len(q.Group.Exprs) != 1 {
+			return "", fmt.Errorf("group by multiple expressions not supported")
+		}
+		keyStr, err := c.compileExpr(q.Group.Exprs[0])
 		if err != nil {
 			return "", err
 		}
-	}
-	for i := 0; i < indent; i++ {
-		buf.WriteString("    ")
-	}
-	if keyExpr != "" {
-		buf.WriteString(fmt.Sprintf("$result[] = [%s, %s];", keyExpr, sel))
+		for i := 0; i < indent; i++ {
+			buf.WriteString("    ")
+		}
+		buf.WriteString(fmt.Sprintf("$_k = json_encode(%s);\n", keyStr))
+		for i := 0; i < indent; i++ {
+			buf.WriteString("    ")
+		}
+		buf.WriteString(fmt.Sprintf("$groups[$_k][] = $%s;\n", sanitizeName(q.Var)))
 	} else {
-		buf.WriteString(fmt.Sprintf("$result[] = %s;", sel))
+		sel, err := c.compileExpr(q.Select)
+		if err != nil {
+			return "", err
+		}
+		keyExpr := ""
+		if q.Sort != nil {
+			keyExpr, err = c.compileExpr(q.Sort)
+			if err != nil {
+				return "", err
+			}
+		}
+		for i := 0; i < indent; i++ {
+			buf.WriteString("    ")
+		}
+		if keyExpr != "" {
+			buf.WriteString(fmt.Sprintf("$result[] = [%s, %s];", keyExpr, sel))
+		} else {
+			buf.WriteString(fmt.Sprintf("$result[] = %s;", sel))
+		}
+		buf.WriteString("\n")
 	}
-	buf.WriteString("\n")
 
 	if q.Where != nil {
 		indent--
@@ -756,6 +811,42 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		buf.WriteString("}")
 		buf.WriteString("\n")
+	}
+
+	if q.Group != nil {
+		buf.WriteString("    $result = [];\n")
+		buf.WriteString("    foreach ($groups as $_k => $__g) {\n")
+		gname := sanitizeName(q.Group.Name)
+		c.groupVars[gname] = true
+		buf.WriteString(fmt.Sprintf("        $%s = ['key'=>json_decode($_k, true),'items'=> $__g];\n", gname))
+		if q.Group.Having != nil {
+			cond, err := c.compileExpr(q.Group.Having)
+			if err != nil {
+				return "", err
+			}
+			buf.WriteString("        if (" + cond + ") {\n")
+		}
+		sel, err := c.compileExpr(q.Select)
+		if err != nil {
+			return "", err
+		}
+		keyExpr := ""
+		if q.Sort != nil {
+			keyExpr, err = c.compileExpr(q.Sort)
+			if err != nil {
+				return "", err
+			}
+		}
+		if keyExpr != "" {
+			buf.WriteString("        $result[] = [" + keyExpr + ", " + sel + "];\n")
+		} else {
+			buf.WriteString("        $result[] = " + sel + ";\n")
+		}
+		if q.Group.Having != nil {
+			buf.WriteString("        }\n")
+		}
+		delete(c.groupVars, gname)
+		buf.WriteString("    }\n")
 	}
 
 	if q.Sort != nil {

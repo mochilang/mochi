@@ -9,7 +9,7 @@ $result = (function() {
         }
     }
     return $result;
-})();;
+})();
 var_dump("--- Cross Join: All order-customer pairs ---");
 foreach ($result as $entry) {
     var_dump("Order", $entry->orderId, "(customerId:", $entry->orderCustomerId, ", total: $", $entry->orderTotal, ") paired with", $entry->pairedCustomerName);
