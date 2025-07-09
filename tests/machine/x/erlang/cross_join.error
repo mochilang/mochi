@@ -1,6 +1,0 @@
-line 12: unsupported expression at line 12
-  10:   { id: 102, customerId: 1, total: 300 }
-  11: ]
-  12: let result = from o in orders
-  13:              from c in customers
-  14:              select {

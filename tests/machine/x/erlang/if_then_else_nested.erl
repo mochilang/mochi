@@ -3,5 +3,5 @@
 
 main(_) ->
     X = 8,
-    Msg = (if (X > 10) -> "big"; true -> (if (X > 5) -> "medium"; true -> "small" end) end),
+    Msg = (case (X > 10) of true -> "big"; _ -> (case (X > 5) of true -> "medium"; _ -> "small" end) end),
     io:format("~p~n", [Msg]).

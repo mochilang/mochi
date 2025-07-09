@@ -6,4 +6,4 @@ makeAdder(N) ->
 
 main(_) ->
     Add10 = makeAdder(10),
-    io:format("~p~n", [add10(7)]).
+    io:format("~p~n", [Add10(7)]).

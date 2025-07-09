@@ -3,5 +3,5 @@
 
 main(_) ->
     X = 12,
-    Msg = (if (X > 10) -> "yes"; true -> "no" end),
+    Msg = (case (X > 10) of true -> "yes"; _ -> "no" end),
     io:format("~p~n", [Msg]).

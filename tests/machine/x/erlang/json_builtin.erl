@@ -2,5 +2,5 @@
 % json_builtin.erl - generated from json_builtin.mochi
 
 main(_) ->
-    M = #{A => 1, B => 2},
+    M = #{a => 1, b => 2},
     json(M).
