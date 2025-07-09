@@ -18,6 +18,7 @@ import (
 type Compiler struct {
 	buf    bytes.Buffer
 	indent int
+	vars   map[string]string
 }
 
 func defaultValue(typ string) string {
@@ -53,12 +54,13 @@ func (c *Compiler) compileType(t *parser.TypeRef) (string, error) {
 }
 
 // New creates a new F# compiler instance.
-func New() *Compiler { return &Compiler{} }
+func New() *Compiler { return &Compiler{vars: make(map[string]string)} }
 
 // Compile translates the given Mochi program into F# source code.
 func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.indent = 0
+	c.vars = make(map[string]string)
 	c.writeln("open System")
 	c.writeln("")
 	c.writeln("exception Break")
@@ -135,6 +137,9 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 		if err != nil {
 			return err
 		}
+		if typ == "" && c.isStringExpr(l.Value) {
+			typ = "string"
+		}
 	} else {
 		if typ == "" {
 			return fmt.Errorf("let without value at line %d", l.Pos.Line)
@@ -143,6 +148,7 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 	}
 	if typ != "" {
 		c.writeln(fmt.Sprintf("let %s: %s = %s", l.Name, typ, val))
+		c.vars[l.Name] = typ
 	} else {
 		c.writeln(fmt.Sprintf("let %s = %s", l.Name, val))
 	}
@@ -164,11 +170,15 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 		if err != nil {
 			return err
 		}
+		if typ == "" && c.isStringExpr(v.Value) {
+			typ = "string"
+		}
 	} else if typ != "" {
 		val = defaultValue(typ)
 	}
 	if typ != "" {
 		c.writeln(fmt.Sprintf("let mutable %s: %s = %s", v.Name, typ, val))
+		c.vars[v.Name] = typ
 	} else {
 		c.writeln(fmt.Sprintf("let mutable %s = %s", v.Name, val))
 	}
@@ -531,6 +541,9 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			if strings.HasPrefix(args[0], "\"") && strings.HasSuffix(args[0], "\"") {
 				return fmt.Sprintf("printfn \"%%s\" %s", args[0]), nil
 			}
+			if argAST != nil && c.isStringExpr(argAST) {
+				return fmt.Sprintf("printfn \"%%s\" %s", args[0]), nil
+			}
 			if argAST != nil && argAST.Binary != nil && argAST.Binary.Left != nil && argAST.Binary.Left.Value != nil && argAST.Binary.Left.Value.Target != nil {
 				t := argAST.Binary.Left.Value.Target
 				if t.Call != nil {
@@ -871,6 +884,23 @@ func isBoolExpr(e *parser.Expr) bool {
 		switch r.Op {
 		case "==", "!=", "<", "<=", ">", ">=", "&&", "||", "in":
 			return true
+		}
+	}
+	return false
+}
+
+func (c *Compiler) isStringExpr(e *parser.Expr) bool {
+	if p := rootPrimary(e); p != nil {
+		if p.Lit != nil && p.Lit.Str != nil {
+			return true
+		}
+		if p.Selector != nil {
+			if t, ok := c.vars[p.Selector.Root]; ok && t == "string" {
+				return true
+			}
+		}
+		if p.If != nil {
+			return c.isStringExpr(p.If.Then) && c.isStringExpr(p.If.Else)
 		}
 	}
 	return false
