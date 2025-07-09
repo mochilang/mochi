@@ -1184,7 +1184,15 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 
 	res := b.String()
 	if q.Sort != nil {
+		sortEnv := c.env
+		if q.Group != nil {
+			sortEnv = types.NewEnv(c.env)
+			sortEnv.SetVar(q.Group.Name, types.GroupType{Elem: elem}, true)
+		}
+		old := c.env
+		c.env = sortEnv
 		sortExpr, err := c.expr(q.Sort)
+		c.env = old
 		if err != nil {
 			return "", err
 		}
@@ -1198,7 +1206,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		for _, v := range vars {
 			sortExpr = replaceIdent(sortExpr, v, "it")
 		}
-		switch types.TypeOfExprBasic(q.Sort, c.env).(type) {
+		switch types.TypeOfExprBasic(q.Sort, sortEnv).(type) {
 		case types.IntType:
 			sortExpr += " as Int"
 		case types.FloatType:
@@ -1216,14 +1224,30 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		}
 	}
 	if q.Skip != nil {
+		skipEnv := c.env
+		if q.Group != nil {
+			skipEnv = types.NewEnv(c.env)
+			skipEnv.SetVar(q.Group.Name, types.GroupType{Elem: elem}, true)
+		}
+		oldSkip := c.env
+		c.env = skipEnv
 		skip, err := c.expr(q.Skip)
+		c.env = oldSkip
 		if err != nil {
 			return "", err
 		}
 		res += fmt.Sprintf(".drop(%s)", skip)
 	}
 	if q.Take != nil {
+		takeEnv := c.env
+		if q.Group != nil {
+			takeEnv = types.NewEnv(c.env)
+			takeEnv.SetVar(q.Group.Name, types.GroupType{Elem: elem}, true)
+		}
+		oldTake := c.env
+		c.env = takeEnv
 		take, err := c.expr(q.Take)
+		c.env = oldTake
 		if err != nil {
 			return "", err
 		}
