@@ -573,6 +573,32 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			return err
 		}
+		side := ""
+		if j.Side != nil {
+			side = *j.Side
+		}
+		if side == "left" {
+			flag := fmt.Sprintf("_m%d", idx)
+			iter := fmt.Sprintf("_j%d", idx)
+			b.WriteString(ind + fmt.Sprintf("local %s\n", sanitizeName(j.Var)))
+			b.WriteString(ind + fmt.Sprintf("local %s = false\n", flag))
+			b.WriteString(fmt.Sprintf(ind+"for _, %s in ipairs(%s) do\n", iter, js))
+			b.WriteString(ind + "\t" + sanitizeName(j.Var) + " = " + iter + "\n")
+			b.WriteString(ind + "\tif " + on + " then\n")
+			b.WriteString(ind + "\t\t" + flag + " = true\n")
+			if err := emitJoin(idx+1, ind+"\t\t"); err != nil {
+				return err
+			}
+			b.WriteString(ind + "\tend\n")
+			b.WriteString(ind + "end\n")
+			b.WriteString(fmt.Sprintf(ind+"if not %s then\n", flag))
+			b.WriteString(ind + "\t" + sanitizeName(j.Var) + " = nil\n")
+			if err := emitJoin(idx+1, ind+"\t"); err != nil {
+				return err
+			}
+			b.WriteString(ind + "end\n")
+			return nil
+		}
 		b.WriteString(fmt.Sprintf(ind+"for _, %s in ipairs(%s) do\n", sanitizeName(j.Var), js))
 		b.WriteString(ind + "\tif " + on + " then\n")
 		if err := emitJoin(idx+1, ind+"\t\t"); err != nil {
