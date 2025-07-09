@@ -182,6 +182,29 @@ func listElemType(e *parser.Expr, env *types.Env) types.Type {
 	if lt, ok := types.CheckExprType(e, env).(types.ListType); ok && !types.ContainsAny(lt.Elem) {
 		return lt.Elem
 	}
+	// If it's a literal list, infer element type from all elements.
+	if types.IsListLiteral(e) {
+		ll := e.Binary.Left.Value.Target.List
+		if len(ll.Elems) > 0 {
+			var elem types.Type
+			for i, el := range ll.Elems {
+				t := types.CheckExprType(el, env)
+				if types.ContainsAny(t) {
+					elem = nil
+					break
+				}
+				if i == 0 {
+					elem = t
+				} else if !equalTypes(elem, t) {
+					elem = nil
+					break
+				}
+			}
+			if elem != nil {
+				return elem
+			}
+		}
+	}
 	if lt, ok := types.ExprType(e, env).(types.ListType); ok {
 		if !types.ContainsAny(lt.Elem) {
 			return lt.Elem
