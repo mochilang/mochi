@@ -1,79 +1,67 @@
 line: 0
 error: cc error: exit status 1
-/workspace/mochi/tests/machine/x/c/update_stmt.c:17:3: error: conflicting types for ‘list_int’; have ‘struct <anonymous>’
-   17 | } list_int;
-      |   ^~~~~~~~
-/workspace/mochi/tests/machine/x/c/update_stmt.c:7:3: note: previous declaration of ‘list_int’ with type ‘list_int’
-    7 | } list_int;
-      |   ^~~~~~~~
-/workspace/mochi/tests/machine/x/c/update_stmt.c:18:17: error: conflicting types for ‘list_int_create’; have ‘list_int(int)’
-   18 | static list_int list_int_create(int len) {
-      |                 ^~~~~~~~~~~~~~~
-/workspace/mochi/tests/machine/x/c/update_stmt.c:8:17: note: previous definition of ‘list_int_create’ with type ‘list_int(int)’
-    8 | static list_int list_int_create(int len) {
-      |                 ^~~~~~~~~~~~~~~
 /workspace/mochi/tests/machine/x/c/update_stmt.c: In function ‘test_update_adult_status’:
-/workspace/mochi/tests/machine/x/c/update_stmt.c:34:17: error: incompatible types when assigning to type ‘int’ from type ‘Person’ {aka ‘struct Person’}
-   34 |   _t1.data[0] = (Person){.name = "Alice", .age = 17, .status = "minor"};
+/workspace/mochi/tests/machine/x/c/update_stmt.c:24:17: error: incompatible types when assigning to type ‘int’ from type ‘Person’ {aka ‘struct Person’}
+   24 |   _t1.data[0] = (Person){.name = "Alice", .age = 17, .status = "minor"};
       |                 ^
-/workspace/mochi/tests/machine/x/c/update_stmt.c:35:17: error: incompatible types when assigning to type ‘int’ from type ‘Person’ {aka ‘struct Person’}
-   35 |   _t1.data[1] = (Person){.name = "Bob", .age = 26, .status = "adult"};
+/workspace/mochi/tests/machine/x/c/update_stmt.c:25:17: error: incompatible types when assigning to type ‘int’ from type ‘Person’ {aka ‘struct Person’}
+   25 |   _t1.data[1] = (Person){.name = "Bob", .age = 26, .status = "adult"};
       |                 ^
+/workspace/mochi/tests/machine/x/c/update_stmt.c:26:17: error: incompatible types when assigning to type ‘int’ from type ‘Person’ {aka ‘struct Person’}
+   26 |   _t1.data[2] = (Person){.name = "Charlie", .age = 19, .status = "adult"};
+      |                 ^
+/workspace/mochi/tests/machine/x/c/update_stmt.c:27:17: error: incompatible types when assigning to type ‘int’ from type ‘Person’ {aka ‘struct Person’}
+   27 |   _t1.data[3] = (Person){.name = "Diana", .age = 16, .status = "minor"};
+      |                 ^
+/workspace/mochi/tests/machine/x/c/update_stmt.c:28:9: error: ‘people’ undeclared (first use in this function)
+   28 |   if (!(people == _t1)) {
+      |         ^~~~~~
+/workspace/mochi/tests/machine/x/c/update_stmt.c:28:9: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/machine/x/c/update_stmt.c: In function ‘main’:
 /workspace/mochi/tests/machine/x/c/update_stmt.c:36:17: error: incompatible types when assigning to type ‘int’ from type ‘Person’ {aka ‘struct Person’}
-   36 |   _t1.data[2] = (Person){.name = "Charlie", .age = 19, .status = "adult"};
+   36 |   _t2.data[0] = (Person){.name = "Alice", .age = 17, .status = "minor"};
       |                 ^
 /workspace/mochi/tests/machine/x/c/update_stmt.c:37:17: error: incompatible types when assigning to type ‘int’ from type ‘Person’ {aka ‘struct Person’}
-   37 |   _t1.data[3] = (Person){.name = "Diana", .age = 16, .status = "minor"};
+   37 |   _t2.data[1] = (Person){.name = "Bob", .age = 25, .status = "unknown"};
       |                 ^
-/workspace/mochi/tests/machine/x/c/update_stmt.c:38:9: error: ‘people’ undeclared (first use in this function)
-   38 |   if (!(people == _t1)) {
-      |         ^~~~~~
-/workspace/mochi/tests/machine/x/c/update_stmt.c:38:9: note: each undeclared identifier is reported only once for each function it appears in
-/workspace/mochi/tests/machine/x/c/update_stmt.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/update_stmt.c:46:17: error: incompatible types when assigning to type ‘int’ from type ‘Person’ {aka ‘struct Person’}
-   46 |   _t2.data[0] = (Person){.name = "Alice", .age = 17, .status = "minor"};
+/workspace/mochi/tests/machine/x/c/update_stmt.c:38:17: error: incompatible types when assigning to type ‘int’ from type ‘Person’ {aka ‘struct Person’}
+   38 |   _t2.data[2] = (Person){.name = "Charlie", .age = 18, .status = "unknown"};
       |                 ^
-/workspace/mochi/tests/machine/x/c/update_stmt.c:47:17: error: incompatible types when assigning to type ‘int’ from type ‘Person’ {aka ‘struct Person’}
-   47 |   _t2.data[1] = (Person){.name = "Bob", .age = 25, .status = "unknown"};
+/workspace/mochi/tests/machine/x/c/update_stmt.c:39:17: error: incompatible types when assigning to type ‘int’ from type ‘Person’ {aka ‘struct Person’}
+   39 |   _t2.data[3] = (Person){.name = "Diana", .age = 16, .status = "minor"};
       |                 ^
-/workspace/mochi/tests/machine/x/c/update_stmt.c:48:17: error: incompatible types when assigning to type ‘int’ from type ‘Person’ {aka ‘struct Person’}
-   48 |   _t2.data[2] = (Person){.name = "Charlie", .age = 18, .status = "unknown"};
-      |                 ^
-/workspace/mochi/tests/machine/x/c/update_stmt.c:49:17: error: incompatible types when assigning to type ‘int’ from type ‘Person’ {aka ‘struct Person’}
-   49 |   _t2.data[3] = (Person){.name = "Diana", .age = 16, .status = "minor"};
-      |                 ^
-/workspace/mochi/tests/machine/x/c/update_stmt.c:50:3: error: unknown type name ‘list_Person’
-   50 |   list_Person people = _t2;
+/workspace/mochi/tests/machine/x/c/update_stmt.c:40:3: error: unknown type name ‘list_Person’
+   40 |   list_Person people = _t2;
       |   ^~~~~~~~~~~
-/workspace/mochi/tests/machine/x/c/update_stmt.c:50:24: error: incompatible types when initializing type ‘int’ using type ‘list_int’
-   50 |   list_Person people = _t2;
+/workspace/mochi/tests/machine/x/c/update_stmt.c:40:24: error: incompatible types when initializing type ‘int’ using type ‘list_int’
+   40 |   list_Person people = _t2;
       |                        ^~~
-/workspace/mochi/tests/machine/x/c/update_stmt.c:51:33: error: request for member ‘len’ in something not a structure or union
-   51 |   for (int _t3 = 0; _t3 < people.len; _t3++) {
+/workspace/mochi/tests/machine/x/c/update_stmt.c:41:33: error: request for member ‘len’ in something not a structure or union
+   41 |   for (int _t3 = 0; _t3 < people.len; _t3++) {
       |                                 ^
-/workspace/mochi/tests/machine/x/c/update_stmt.c:52:24: error: request for member ‘data’ in something not a structure or union
-   52 |     Person _t4 = people.data[_t3];
+/workspace/mochi/tests/machine/x/c/update_stmt.c:42:24: error: request for member ‘data’ in something not a structure or union
+   42 |     Person _t4 = people.data[_t3];
       |                        ^
-/workspace/mochi/tests/machine/x/c/update_stmt.c:56:11: error: redefinition of ‘name’
-   56 |     char *name = _t4.name;
+/workspace/mochi/tests/machine/x/c/update_stmt.c:46:11: error: redefinition of ‘name’
+   46 |     char *name = _t4.name;
       |           ^~~~
-/workspace/mochi/tests/machine/x/c/update_stmt.c:53:11: note: previous definition of ‘name’ with type ‘char *’
-   53 |     char *name = _t4.name;
+/workspace/mochi/tests/machine/x/c/update_stmt.c:43:11: note: previous definition of ‘name’ with type ‘char *’
+   43 |     char *name = _t4.name;
       |           ^~~~
-/workspace/mochi/tests/machine/x/c/update_stmt.c:57:9: error: redefinition of ‘age’
-   57 |     int age = _t4.age;
+/workspace/mochi/tests/machine/x/c/update_stmt.c:47:9: error: redefinition of ‘age’
+   47 |     int age = _t4.age;
       |         ^~~
-/workspace/mochi/tests/machine/x/c/update_stmt.c:54:9: note: previous definition of ‘age’ with type ‘int’
-   54 |     int age = _t4.age;
+/workspace/mochi/tests/machine/x/c/update_stmt.c:44:9: note: previous definition of ‘age’ with type ‘int’
+   44 |     int age = _t4.age;
       |         ^~~
-/workspace/mochi/tests/machine/x/c/update_stmt.c:58:11: error: redefinition of ‘status’
-   58 |     char *status = _t4.status;
+/workspace/mochi/tests/machine/x/c/update_stmt.c:48:11: error: redefinition of ‘status’
+   48 |     char *status = _t4.status;
       |           ^~~~~~
-/workspace/mochi/tests/machine/x/c/update_stmt.c:55:11: note: previous definition of ‘status’ with type ‘char *’
-   55 |     char *status = _t4.status;
+/workspace/mochi/tests/machine/x/c/update_stmt.c:45:11: note: previous definition of ‘status’ with type ‘char *’
+   45 |     char *status = _t4.status;
       |           ^~~~~~
-/workspace/mochi/tests/machine/x/c/update_stmt.c:63:11: error: request for member ‘data’ in something not a structure or union
-   63 |     people.data[_t3] = _t4;
+/workspace/mochi/tests/machine/x/c/update_stmt.c:53:11: error: request for member ‘data’ in something not a structure or union
+   53 |     people.data[_t3] = _t4;
       |           ^
 
    1: #include <stdio.h>

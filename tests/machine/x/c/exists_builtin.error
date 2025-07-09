@@ -1,21 +1,12 @@
 line: 0
 error: cc error: exit status 1
-/workspace/mochi/tests/machine/x/c/exists_builtin.c:17:3: error: conflicting types for ‘list_int’; have ‘struct <anonymous>’
-   17 | } list_int;
-      |   ^~~~~~~~
-/workspace/mochi/tests/machine/x/c/exists_builtin.c:7:3: note: previous declaration of ‘list_int’ with type ‘list_int’
-    7 | } list_int;
-      |   ^~~~~~~~
-/workspace/mochi/tests/machine/x/c/exists_builtin.c:18:17: error: conflicting types for ‘list_int_create’; have ‘list_int(int)’
-   18 | static list_int list_int_create(int len) {
-      |                 ^~~~~~~~~~~~~~~
-/workspace/mochi/tests/machine/x/c/exists_builtin.c:8:17: note: previous definition of ‘list_int_create’ with type ‘list_int(int)’
-    8 | static list_int list_int_create(int len) {
-      |                 ^~~~~~~~~~~~~~~
 /workspace/mochi/tests/machine/x/c/exists_builtin.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/exists_builtin.c:40:14: warning: implicit declaration of function ‘exists’; did you mean ‘exit’? [-Wimplicit-function-declaration]
-   40 |   int flag = exists(_t2);
+/workspace/mochi/tests/machine/x/c/exists_builtin.c:30:14: warning: implicit declaration of function ‘exists’; did you mean ‘exit’? [-Wimplicit-function-declaration]
+   30 |   int flag = exists(_t2);
       |              ^~~~~~
       |              exit
+/usr/bin/ld: /tmp/ccgxoYFv.o: in function `main':
+exists_builtin.c:(.text+0x117): undefined reference to `exists'
+collect2: error: ld returned 1 exit status
 
    1: #include <stdio.h>
