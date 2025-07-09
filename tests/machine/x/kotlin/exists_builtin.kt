@@ -14,6 +14,8 @@ fun avg(list: List<Number>): Double {
 
 fun count(list: Collection<Any?>): Int = list.size
 
+fun exists(list: Collection<Any?>): Boolean = list.isNotEmpty()
+
 fun len(v: Any?): Int = when (v) {
     is String -> v.length
     is Collection<*> -> v.size

@@ -14,6 +14,8 @@ fun avg(list: List<Number>): Double {
 
 fun count(list: Collection<Any?>): Int = list.size
 
+fun exists(list: Collection<Any?>): Boolean = list.isNotEmpty()
+
 fun len(v: Any?): Int = when (v) {
     is String -> v.length
     is Collection<*> -> v.size
@@ -63,8 +65,8 @@ val people = mutableListOf(mutableMapOf("name" to "Alice", "age" to 30), mutable
 val adults = run {
     val __res = mutableListOf<Any>()
     for (person in people) {
-        if (person["age"] >= 18) {
-            __res.add(mutableMapOf("name" to person["name"], "age" to person["age"], "is_senior" to person["age"] >= 60))
+        if ((person as MutableMap<*, *>)["age"] >= 18) {
+            __res.add(mutableMapOf("name" to (person as MutableMap<*, *>)["name"], "age" to (person as MutableMap<*, *>)["age"], "is_senior" to (person as MutableMap<*, *>)["age"] >= 60))
         }
     }
     __res
@@ -73,6 +75,7 @@ val adults = run {
 fun main() {
     println("--- Adults ---")
     for (person in adults) {
-        println(listOf(person.name, "is", person.age, if (person.is_senior) " (senior)" else "").joinToString(" "))
+        println(listOf((person as MutableMap<*, *>)["name"], "is", (person as MutableMap<*, *>)["age"], if ((person as MutableMap<*, *>)["is_senior"]) " (senior)" else "").joinToString(" "))
     }
 }
+
