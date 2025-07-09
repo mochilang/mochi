@@ -1,6 +1,6 @@
 # Machine-generated Swift Outputs
 
-Compiled programs: 65/97
+Compiled programs: 69/97
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -59,8 +59,8 @@ Compiled programs: 65/97
 - [x] map_literal_dynamic.mochi
 - [x] map_membership.mochi
 - [x] map_nested_assign.mochi
-- [ ] match_expr.mochi
-- [ ] match_full.mochi
+- [x] match_expr.mochi
+- [x] match_full.mochi
 - [x] math_ops.mochi
 - [x] membership.mochi
 - [x] min_max_builtin.mochi

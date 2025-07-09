@@ -1,0 +1,10 @@
+let x = 2
+let label = { () in
+    switch x {
+    case 1: return "one"
+    case 2: return "two"
+    case 3: return "three"
+    default: return "unknown"
+    }
+}()
+print(label)
