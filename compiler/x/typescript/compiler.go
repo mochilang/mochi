@@ -301,9 +301,6 @@ func (c *Compiler) funExpr(fe *parser.FunExpr) (string, error) {
 }
 
 func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Joins) > 0 {
-		return "", fmt.Errorf("query joins not supported")
-	}
 	src, err := c.expr(q.Source)
 	if err != nil {
 		return "", err
@@ -315,6 +312,20 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		fromSrcs[i] = fs
+	}
+	joinSrcs := make([]string, len(q.Joins))
+	joinOns := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		js, err := c.expr(j.Src)
+		if err != nil {
+			return "", err
+		}
+		joinSrcs[i] = js
+		on, err := c.expr(j.On)
+		if err != nil {
+			return "", err
+		}
+		joinOns[i] = on
 	}
 	sel, err := c.expr(q.Select)
 	if err != nil {
@@ -381,6 +392,11 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 			writeln(fmt.Sprintf("for (const %s of %s) {", q.Froms[i].Var, fs))
 			indent++
 		}
+		for i, js := range joinSrcs {
+			writeln(fmt.Sprintf("for (const %s of %s) {", q.Joins[i].Var, js))
+			indent++
+			writeln("if (!(" + joinOns[i] + ")) continue;")
+		}
 		if whereStr != "" {
 			writeln("if (!(" + whereStr + ")) continue;")
 		}
@@ -388,6 +404,10 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		writeln("let g = groups[_k];")
 		writeln(fmt.Sprintf("if (!g) { g = []; g.key = %s; g.items = g; groups[_k] = g; }", keyStr))
 		writeln(fmt.Sprintf("g.push(%s);", q.Var))
+		for range q.Joins {
+			indent--
+			writeln("}")
+		}
 		for range q.Froms {
 			indent--
 			writeln("}")
@@ -465,6 +485,11 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 					writeln(fmt.Sprintf("for (const %s of %s) {", q.Froms[i].Var, fs))
 					indent++
 				}
+				for i, js := range joinSrcs {
+					writeln(fmt.Sprintf("for (const %s of %s) {", q.Joins[i].Var, js))
+					indent++
+					writeln("if (!(" + joinOns[i] + ")) continue;")
+				}
 				if whereStr != "" {
 					writeln("if (!(" + whereStr + ")) continue;")
 				}
@@ -472,6 +497,10 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 					writeln(res + ".push({item: " + sel + ", key: " + sortStr + "});")
 				} else {
 					writeln(res + ".push(" + sel + ");")
+				}
+				for range q.Joins {
+					indent--
+					writeln("}")
 				}
 				for range q.Froms {
 					indent--
@@ -489,6 +518,11 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 				writeln(fmt.Sprintf("for (const %s of %s) {", q.Froms[i].Var, fs))
 				indent++
 			}
+			for i, js := range joinSrcs {
+				writeln(fmt.Sprintf("for (const %s of %s) {", q.Joins[i].Var, js))
+				indent++
+				writeln("if (!(" + joinOns[i] + ")) continue;")
+			}
 			if whereStr != "" {
 				writeln("if (!(" + whereStr + ")) continue;")
 			}
@@ -496,6 +530,10 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 				writeln(res + ".push({item: " + sel + ", key: " + sortStr + "});")
 			} else {
 				writeln(res + ".push(" + sel + ");")
+			}
+			for range q.Joins {
+				indent--
+				writeln("}")
 			}
 			for range q.Froms {
 				indent--
