@@ -506,6 +506,7 @@ func (c *Compiler) postfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	t := types.TypeOfPrimaryBasic(p.Target, c.env)
 	for i, op := range p.Ops {
 		switch {
 		case op.Call != nil:
@@ -536,7 +537,6 @@ func (c *Compiler) postfix(p *parser.PostfixExpr) (string, error) {
 					}
 					end = e
 				}
-				t := types.TypeOfPrimaryBasic(p.Target, c.env)
 				if types.IsStringType(t) {
 					if end == "" {
 						end = fmt.Sprintf("%s.length", val)
@@ -556,13 +556,39 @@ func (c *Compiler) postfix(p *parser.PostfixExpr) (string, error) {
 					return "", err
 				}
 				if i < len(p.Ops)-1 {
-					val = fmt.Sprintf("%s[%s]!!", val, idx)
+					if types.IsMapType(t) {
+						val = fmt.Sprintf("(%s[%s] as MutableMap<*, *>?)!!", val, idx)
+						if mt, ok := t.(types.MapType); ok {
+							t = mt.Value
+						} else {
+							t = types.AnyType{}
+						}
+					} else {
+						val = fmt.Sprintf("%s[%s]!!", val, idx)
+						if lt, ok := t.(types.ListType); ok {
+							t = lt.Elem
+						} else {
+							t = types.AnyType{}
+						}
+					}
 				} else {
 					val = fmt.Sprintf("%s[%s]", val, idx)
 				}
 			}
 		case op.Field != nil:
 			val = fmt.Sprintf("%s.%s", val, op.Field.Name)
+			switch tt := t.(type) {
+			case types.StructType:
+				if ft, ok := tt.Fields[op.Field.Name]; ok {
+					t = ft
+				} else {
+					t = types.AnyType{}
+				}
+			case types.MapType:
+				t = tt.Value
+			default:
+				t = types.AnyType{}
+			}
 		case op.Cast != nil:
 			// special case: casting a map literal to a struct type
 			if op.Cast.Type.Simple != nil {
