@@ -4,11 +4,32 @@ package typescriptcode
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"os"
+	"path/filepath"
+	"strconv"
 	"strings"
+
+	"gopkg.in/yaml.v3"
 
 	"mochi/parser"
 )
+
+func findRepoRoot() string {
+	dir, _ := os.Getwd()
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	return ""
+}
 
 // Compiler translates a limited subset of Mochi into TypeScript.
 type Compiler struct {
@@ -17,11 +38,12 @@ type Compiler struct {
 	tmp                int
 	needContainsHelper bool
 	funParams          map[string]int
+	repoRoot           string
 }
 
 // New returns a new Compiler.
 func New() *Compiler {
-	return &Compiler{funParams: make(map[string]int)}
+	return &Compiler{funParams: make(map[string]int), repoRoot: findRepoRoot()}
 }
 
 func (c *Compiler) newTmp() string {
@@ -154,6 +176,8 @@ func (c *Compiler) stmt(s *parser.Statement) error {
 			return err
 		}
 		c.writeln(fmt.Sprintf("%s = %s;", target, val))
+	case s.Update != nil:
+		return c.updateStmt(s.Update)
 	case s.Test != nil:
 		for _, st := range s.Test.Body {
 			if st.Expect != nil {
@@ -261,6 +285,18 @@ func (c *Compiler) typeDecl(td *parser.TypeDecl) error {
 		c.writeln(fmt.Sprintf("type %s = { %s };", td.Name, strings.Join(fields, " ")))
 		return nil
 	}
+	if len(td.Variants) > 0 {
+		parts := make([]string, len(td.Variants))
+		for i, v := range td.Variants {
+			fields := []string{fmt.Sprintf("kind: %q", strings.ToLower(v.Name))}
+			for _, f := range v.Fields {
+				fields = append(fields, fmt.Sprintf("%s: any", f.Name))
+			}
+			parts[i] = fmt.Sprintf("{ %s }", strings.Join(fields, "; "))
+		}
+		c.writeln(fmt.Sprintf("type %s = %s;", td.Name, strings.Join(parts, " | ")))
+		return nil
+	}
 	return fmt.Errorf("unsupported type declaration")
 }
 
@@ -283,6 +319,133 @@ func (c *Compiler) assignTarget(a *parser.AssignStmt) (string, error) {
 		target = fmt.Sprintf("%s.%s", target, f.Name)
 	}
 	return target, nil
+}
+
+func (c *Compiler) updateStmt(u *parser.UpdateStmt) error {
+	tmp := c.newTmp()
+	c.writeln(fmt.Sprintf("for (let i = 0; i < %s.length; i++) {", u.Target))
+	c.indent++
+	c.writeln(fmt.Sprintf("let %s = %s[i];", tmp, u.Target))
+
+	fieldSet := map[string]bool{}
+	for _, it := range u.Set.Items {
+		if name := getIdent(it.Key); name != "" {
+			fieldSet[name] = true
+		}
+	}
+	collectFields(u.Where, fieldSet)
+	for f := range fieldSet {
+		c.writeln(fmt.Sprintf("let %s = %s.%s;", f, tmp, f))
+	}
+	if u.Where != nil {
+		cond, err := c.expr(u.Where)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("if (%s) {", cond))
+		c.indent++
+	}
+	for _, it := range u.Set.Items {
+		k := getIdent(it.Key)
+		v, err := c.expr(it.Value)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("%s.%s = %s;", tmp, k, v))
+	}
+	if u.Where != nil {
+		c.indent--
+		c.writeln("}")
+	}
+	c.writeln(fmt.Sprintf("%s[i] = %s;", u.Target, tmp))
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
+func collectFields(e *parser.Expr, set map[string]bool) {
+	if e == nil {
+		return
+	}
+	if b := e.Binary; b != nil {
+		collectFieldsUnary(b.Left, set)
+		for _, op := range b.Right {
+			collectFieldsPostfix(op.Right, set)
+		}
+	}
+}
+
+func collectFieldsUnary(u *parser.Unary, set map[string]bool) {
+	if u == nil {
+		return
+	}
+	collectFieldsPostfix(u.Value, set)
+}
+
+func collectFieldsPostfix(p *parser.PostfixExpr, set map[string]bool) {
+	if p == nil {
+		return
+	}
+	collectFieldsPrimary(p.Target, set)
+	for _, op := range p.Ops {
+		if op.Call != nil {
+			for _, a := range op.Call.Args {
+				collectFields(a, set)
+			}
+		}
+		if op.Index != nil {
+			collectFields(op.Index.Start, set)
+			collectFields(op.Index.End, set)
+			collectFields(op.Index.Step, set)
+		}
+	}
+}
+
+func collectFieldsPrimary(pr *parser.Primary, set map[string]bool) {
+	if pr == nil {
+		return
+	}
+	switch {
+	case pr.Selector != nil && len(pr.Selector.Tail) == 0:
+		set[pr.Selector.Root] = true
+	case pr.Group != nil:
+		collectFields(pr.Group, set)
+	case pr.List != nil:
+		for _, e := range pr.List.Elems {
+			collectFields(e, set)
+		}
+	case pr.Map != nil:
+		for _, it := range pr.Map.Items {
+			collectFields(it.Key, set)
+			collectFields(it.Value, set)
+		}
+	case pr.FunExpr != nil:
+		if pr.FunExpr.ExprBody != nil {
+			collectFields(pr.FunExpr.ExprBody, set)
+		}
+	case pr.Match != nil:
+		collectFields(pr.Match.Target, set)
+	case pr.Query != nil:
+		collectFields(pr.Query.Select, set)
+	}
+}
+
+func getIdent(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil || len(u.Value.Ops) != 0 {
+		return ""
+	}
+	if u.Value == nil || u.Value.Target == nil {
+		return ""
+	}
+	sel := u.Value.Target.Selector
+	if sel != nil && len(sel.Tail) == 0 {
+		return sel.Root
+	}
+	return ""
 }
 
 func (c *Compiler) funExpr(fe *parser.FunExpr) (string, error) {
@@ -767,6 +930,9 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 		if p.Lit.Int != nil {
 			return fmt.Sprint(*p.Lit.Int), nil
 		}
+		if p.Lit.Float != nil {
+			return strconv.FormatFloat(*p.Lit.Float, 'f', -1, 64), nil
+		}
 		if p.Lit.Str != nil {
 			return fmt.Sprintf("%q", *p.Lit.Str), nil
 		}
@@ -907,6 +1073,47 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 		default:
 			return fmt.Sprintf("%s(%s)", p.Call.Func, strings.Join(args, ", ")), nil
 		}
+	case p.Load != nil:
+		if p.Load.Path == nil {
+			return "", fmt.Errorf("load path must be string")
+		}
+		path := filepath.Join(c.repoRoot, "tests", "vm", "valid", *p.Load.Path)
+		data, err := os.ReadFile(path)
+		if err != nil {
+			return "", err
+		}
+		var v interface{}
+		if err := yaml.Unmarshal(data, &v); err != nil {
+			return "", err
+		}
+		js, _ := json.Marshal(v)
+		return fmt.Sprintf("JSON.parse(%q)", string(js)), nil
+	case p.Save != nil:
+		src, err := c.expr(p.Save.Src)
+		if err != nil {
+			return "", err
+		}
+		path := "-"
+		if p.Save.Path != nil {
+			path = *p.Save.Path
+		}
+		format := ""
+		if p.Save.With != nil {
+			if m := getFormat(p.Save.With); m != "" {
+				format = m
+			}
+		}
+		if path == "-" && format == "jsonl" {
+			tmp := c.newTmp()
+			var b bytes.Buffer
+			b.WriteString("(() => {\n")
+			b.WriteString(fmt.Sprintf("  for (const %s of %s) {\n", tmp, src))
+			b.WriteString(fmt.Sprintf("    console.log(JSON.stringify(%s));\n", tmp))
+			b.WriteString("  }\n")
+			b.WriteString("})()")
+			return b.String(), nil
+		}
+		return "undefined", nil
 	case p.Query != nil:
 		return c.queryExpr(p.Query)
 	case p.If != nil:
@@ -930,4 +1137,26 @@ func isUnderscoreExpr(e *parser.Expr) bool {
 		return false
 	}
 	return p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0
+}
+
+func getFormat(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil || u.Value.Target == nil || u.Value.Target.Map == nil {
+		return ""
+	}
+	for _, it := range u.Value.Target.Map.Items {
+		if getIdent(it.Key) == "format" {
+			if it.Value.Binary == nil || len(it.Value.Binary.Right) != 0 {
+				continue
+			}
+			vLit := it.Value.Binary.Left.Value
+			if vLit != nil && vLit.Target != nil && vLit.Target.Lit != nil && vLit.Target.Lit.Str != nil {
+				return *vLit.Target.Lit.Str
+			}
+		}
+	}
+	return ""
 }
