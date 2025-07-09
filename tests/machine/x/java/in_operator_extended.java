@@ -1,7 +1,14 @@
 import java.util.*;
 public class Main {
 	static List<Integer> xs = new ArrayList<>(java.util.Arrays.asList(1, 2, 3));
-	static Object ys = xs.stream().filter(x -> x % 2 == 1).map(x -> x).collect(java.util.stream.Collectors.toList());
+	static List<Object> ys = (new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
+	List<Object> _res0 = new ArrayList<>();
+	for (var x : xs) {
+		if (!(x % 2 == 1)) continue;
+		_res0.add(x);
+	}
+	return _res0;
+}}).get();
 	static Map<Object,Integer> m = new HashMap<>(java.util.Map.of("a", 1));
 	static String s = "hello";
 	static boolean inOp(Object item, Object collection) {

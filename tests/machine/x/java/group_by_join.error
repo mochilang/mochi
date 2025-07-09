@@ -1,4 +1,0 @@
-line 0: compile error: expression unsupported at line 11
-
-  1| // group_by_join.mochi
-  2| let customers = [
