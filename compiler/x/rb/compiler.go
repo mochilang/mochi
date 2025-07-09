@@ -25,11 +25,12 @@ type Compiler struct {
 	globals       map[string]bool
 	queryRows     map[string][]string
 	inKeyContext  bool
+	keyVar        string
 }
 
 // New creates a new Ruby compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, helpers: make(map[string]bool), structs: make(map[string]bool), globals: make(map[string]bool), queryRows: make(map[string][]string)}
+	return &Compiler{env: env, helpers: make(map[string]bool), structs: make(map[string]bool), globals: make(map[string]bool), queryRows: make(map[string][]string), keyVar: ""}
 }
 
 func (c *Compiler) newTmp() string {
@@ -652,6 +653,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				vars = append(vars, sanitizeName(j.Var))
 			}
 			c.queryRows[q.Group.Name] = vars
+			c.keyVar = sanitizeName(q.Group.Name)
 			if q.Sort != nil {
 				genv := types.NewEnv(c.env)
 				genv.SetVar(q.Group.Name, types.AnyType{}, true)
@@ -659,6 +661,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				sortExpr, err = c.compileExprKey(q.Sort)
 				c.env = origEnv
 				if err != nil {
+					c.keyVar = ""
 					delete(c.queryRows, q.Group.Name)
 					return "", err
 				}
@@ -670,6 +673,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				skipExpr, err = c.compileExpr(q.Skip)
 				c.env = origEnv
 				if err != nil {
+					c.keyVar = ""
 					delete(c.queryRows, q.Group.Name)
 					return "", err
 				}
@@ -681,10 +685,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				takeExpr, err = c.compileExpr(q.Take)
 				c.env = origEnv
 				if err != nil {
+					c.keyVar = ""
 					delete(c.queryRows, q.Group.Name)
 					return "", err
 				}
 			}
+			c.keyVar = ""
 			delete(c.queryRows, q.Group.Name)
 		}
 		var b strings.Builder
@@ -1052,7 +1058,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
+		c.keyVar = sanitizeName(q.Group.Name)
 		valExpr, err := c.compileExpr(q.Select)
+		c.keyVar = ""
 		if err != nil {
 			return "", err
 		}
@@ -1104,6 +1112,43 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			}
 			expr = fmt.Sprintf("(%s).take(%s)", expr, val)
 		}
+		// check for simple aggregate like sum(v) without group
+		if q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil &&
+			q.Select != nil && q.Select.Binary != nil && len(q.Select.Binary.Right) == 0 &&
+			q.Select.Binary.Left != nil && len(q.Select.Binary.Left.Ops) == 0 &&
+			q.Select.Binary.Left.Value != nil && q.Select.Binary.Left.Value.Target != nil &&
+			q.Select.Binary.Left.Value.Target.Call != nil {
+			call := q.Select.Binary.Left.Value.Target.Call
+			if len(call.Args) == 1 {
+				argExpr, err := c.compileExpr(call.Args[0])
+				if err != nil {
+					if rowMapping != nil {
+						delete(c.queryRows, q.Var)
+					}
+					return "", err
+				}
+				items := fmt.Sprintf("(%s).map { |%s| %s }", expr, iter, argExpr)
+				if rowMapping != nil {
+					delete(c.queryRows, q.Var)
+				}
+				switch call.Func {
+				case "sum":
+					c.use("_sum")
+					return fmt.Sprintf("_sum(%s)", items), nil
+				case "count", "len":
+					return fmt.Sprintf("(%s).length", items), nil
+				case "avg":
+					return fmt.Sprintf("((%[1]s).length > 0 ? (%[1]s).sum(0.0) / (%[1]s).length : 0)", items), nil
+				case "min":
+					c.use("_min")
+					return fmt.Sprintf("_min(%s)", items), nil
+				case "max":
+					c.use("_max")
+					return fmt.Sprintf("_max(%s)", items), nil
+				}
+			}
+		}
+
 		sel, err := c.compileExpr(q.Select)
 		if err != nil {
 			if rowMapping != nil {
@@ -1512,6 +1557,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		name := sanitizeName(p.Selector.Root)
 		if c.globals[name] {
 			name = "$" + name
+		}
+		if c.inKeyContext && c.keyVar != "" && len(p.Selector.Tail) == 0 {
+			return fmt.Sprintf("%s.key.%s", c.keyVar, name), nil
 		}
 		if vars, ok := c.queryRows[p.Selector.Root]; ok && len(p.Selector.Tail) > 0 {
 			idx := -1
