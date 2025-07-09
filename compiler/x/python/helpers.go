@@ -109,6 +109,34 @@ func simpleStringKey(e *parser.Expr) (string, bool) {
 	return "", false
 }
 
+// groupKeyNames returns field names used in a GROUP BY map expression.
+func groupKeyNames(e *parser.Expr) []string {
+	if e == nil {
+		return nil
+	}
+	if len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return nil
+	}
+	if p.Target.Map == nil {
+		return nil
+	}
+	names := make([]string, 0, len(p.Target.Map.Items))
+	for _, it := range p.Target.Map.Items {
+		if id, ok := identName(it.Key); ok {
+			names = append(names, sanitizeName(id))
+		}
+	}
+	return names
+}
+
 func equalTypes(a, b types.Type) bool {
 	if _, ok := a.(types.AnyType); ok {
 		return true

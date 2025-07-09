@@ -19,7 +19,7 @@ let lineitem = [
   }
 ]
 
-let result =
+let revenues =
   from l in lineitem
   join p in part on p.p_partkey == l.l_partkey
   where (
@@ -41,7 +41,9 @@ let result =
     )
   ) && l.l_shipmode in ["AIR", "AIR REG"]
   && l.l_shipinstruct == "DELIVER IN PERSON"
-  select sum(l.l_extendedprice * (1 - l.l_discount))
+  select l.l_extendedprice * (1 - l.l_discount)
+
+let result = sum(revenues)
 
 print(result)
 
