@@ -1400,6 +1400,22 @@ func (c *Compiler) compilePattern(e *parser.Expr) (string, error) {
 		return "%{" + strings.Join(parts, ", ") + "}", nil
 	case p.Call != nil:
 		if c.env != nil {
+			if ut, ok := c.env.FindUnionByVariant(p.Call.Func); ok {
+				st := ut.Variants[p.Call.Func]
+				if len(p.Call.Args) != len(st.Order) {
+					return "", fmt.Errorf("variant %s expects %d args", p.Call.Func, len(st.Order))
+				}
+				args := make([]string, len(st.Order))
+				for i, a := range p.Call.Args {
+					v, err := c.compilePattern(a)
+					if err != nil {
+						return "", err
+					}
+					args[i] = fmt.Sprintf("%s: %s", sanitizeName(st.Order[i]), v)
+				}
+				c.ensureStruct(st)
+				return fmt.Sprintf("%%%s{%s}", sanitizeName(st.Name), strings.Join(args, ", ")), nil
+			}
 			if st, ok := c.env.GetStruct(p.Call.Func); ok {
 				if len(p.Call.Args) != len(st.Order) {
 					return "", fmt.Errorf("struct %s expects %d args", p.Call.Func, len(st.Order))
@@ -1428,6 +1444,13 @@ func (c *Compiler) compilePattern(e *parser.Expr) (string, error) {
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		name := sanitizeName(p.Selector.Root)
 		if c.env != nil {
+			if ut, ok := c.env.FindUnionByVariant(p.Selector.Root); ok {
+				st := ut.Variants[p.Selector.Root]
+				c.ensureStruct(st)
+				if len(st.Order) == 0 {
+					return fmt.Sprintf("%%%s{}", sanitizeName(st.Name)), nil
+				}
+			}
 			if st, ok := c.env.GetStruct(p.Selector.Root); ok && len(st.Order) == 0 {
 				c.ensureStruct(st)
 				return fmt.Sprintf("%%%s{}", sanitizeName(st.Name)), nil
