@@ -1062,8 +1062,13 @@ func (c *Compiler) structFromMapLiteral(typ string, m *parser.MapLiteral) (strin
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if q.Group != nil || len(q.Joins) > 0 {
+	if q.Group != nil {
 		return "", fmt.Errorf("query features not supported")
+	}
+	for _, j := range q.Joins {
+		if j.Side != nil {
+			return "", fmt.Errorf("join side not supported")
+		}
 	}
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
@@ -1109,6 +1114,36 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				c.varStruct[f.Var] = et
 			}
 		}
+	}
+	joinSrcs := make([]string, len(q.Joins))
+	joinOns := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			return "", err
+		}
+		joinSrcs[i] = js
+		if t := c.varStruct[js]; t != "" {
+			backup[j.Var] = c.varStruct[j.Var]
+			c.varStruct[j.Var] = t
+		}
+		if et := c.elemType[js]; et != "" {
+			switch {
+			case strings.Contains(et, "std::string"):
+				c.vars[j.Var] = "string"
+			case et == "int":
+				c.vars[j.Var] = "int"
+			case et == "bool":
+				c.vars[j.Var] = "bool"
+			case strings.HasPrefix(et, "__struct"):
+				c.varStruct[j.Var] = et
+			}
+		}
+		on, err := c.compileExpr(j.On)
+		if err != nil {
+			return "", err
+		}
+		joinOns[i] = on
 	}
 	var where string
 	if q.Where != nil {
@@ -1228,16 +1263,32 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		buf.WriteString("for (auto " + q.Froms[i].Var + " : " + fs + ") {\n")
 		indentLevel++
 	}
-	if where != "" {
+	var joinLoop func(int)
+	joinLoop = func(i int) {
+		if i == len(joinSrcs) {
+			if where != "" {
+				indent(indentLevel)
+				buf.WriteString("if (!(" + where + ")) continue;\n")
+			}
+			indent(indentLevel)
+			if key != "" || skip != "" || take != "" {
+				buf.WriteString("__items.push_back({" + key + ", " + val + "});\n")
+			} else {
+				buf.WriteString("__items.push_back(" + val + ");\n")
+			}
+			return
+		}
 		indent(indentLevel)
-		buf.WriteString("if (!(" + where + ")) continue;\n")
+		buf.WriteString("for (auto " + q.Joins[i].Var + " : " + joinSrcs[i] + ") {\n")
+		indentLevel++
+		indent(indentLevel)
+		buf.WriteString("if (!(" + joinOns[i] + ")) continue;\n")
+		joinLoop(i + 1)
+		indentLevel--
+		indent(indentLevel)
+		buf.WriteString("}\n")
 	}
-	indent(indentLevel)
-	if key != "" || skip != "" || take != "" {
-		buf.WriteString("__items.push_back({" + key + ", " + val + "});\n")
-	} else {
-		buf.WriteString("__items.push_back(" + val + ");\n")
-	}
+	joinLoop(0)
 	for i := len(fromSrcs) - 1; i >= 0; i-- {
 		indentLevel--
 		indent(indentLevel)
