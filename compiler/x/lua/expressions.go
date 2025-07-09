@@ -263,6 +263,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		if len(p.Selector.Tail) > 0 {
 			name += "." + strings.Join(p.Selector.Tail, ".")
+		} else if c.env != nil {
+			if _, ok := c.env.GetFunc(p.Selector.Root); !ok {
+				if ut, ok := c.env.FindUnionByVariant(p.Selector.Root); ok {
+					if st, ok2 := ut.Variants[p.Selector.Root]; ok2 && len(st.Fields) == 0 {
+						return fmt.Sprintf("{__name=%q}", p.Selector.Root), nil
+					}
+				}
+			}
 		}
 		return name, nil
 	case p.Struct != nil:
