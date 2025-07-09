@@ -1,1 +1,8 @@
-postfix not supported
+run: exit status 2
+ERROR: /workspace/mochi/tests/machine/x/pl/two-sum.pl:14:6: Syntax error: Operator expected
+ERROR: /workspace/mochi/tests/machine/x/pl/two-sum.pl:33:46: Syntax error: Operator expected
+ERROR: /workspace/mochi/tests/machine/x/pl/two-sum.pl:49:25: Syntax error: Operator expected
+ERROR: /workspace/mochi/tests/machine/x/pl/two-sum.pl:47: user:main catch/3: Unknown procedure: main/1
+ERROR:   However, there are definitions for:
+ERROR:         main/0
+
