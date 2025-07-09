@@ -37,6 +37,7 @@ func New(env *types.Env) *Compiler {
 		varTypes:   make(map[string]string),
 		swiftTypes: make(map[string]string),
 		mapFields:  make(map[string]map[string]string),
+		groups:     make(map[string]bool),
 	}}
 }
 
@@ -60,6 +61,7 @@ type compiler struct {
 	varTypes   map[string]string
 	swiftTypes map[string]string
 	mapFields  map[string]map[string]string
+	groups     map[string]bool
 	tupleMap   bool
 }
 
@@ -764,26 +766,41 @@ func (c *compiler) callExpr(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("avg expects 1 argument at line %d", call.Pos.Line)
 		}
+		if name, ok := c.isGroupVar(call.Args[0]); ok {
+			return fmt.Sprintf("%s.items.reduce(0, +) / %s.items.count", name, name), nil
+		}
 		a := args[0]
 		return fmt.Sprintf("(%s.reduce(0, +) / %s.count)", a, a), nil
 	case "count", "len":
 		if len(args) != 1 {
 			return "", fmt.Errorf("%s expects 1 argument at line %d", call.Func, call.Pos.Line)
 		}
+		if name, ok := c.isGroupVar(call.Args[0]); ok {
+			return fmt.Sprintf("%s.items.count", name), nil
+		}
 		return fmt.Sprintf("%s.count", args[0]), nil
 	case "min":
 		if len(args) != 1 {
 			return "", fmt.Errorf("min expects 1 argument at line %d", call.Pos.Line)
+		}
+		if name, ok := c.isGroupVar(call.Args[0]); ok {
+			return fmt.Sprintf("%s.items.min()!", name), nil
 		}
 		return fmt.Sprintf("%s.min()!", args[0]), nil
 	case "max":
 		if len(args) != 1 {
 			return "", fmt.Errorf("max expects 1 argument at line %d", call.Pos.Line)
 		}
+		if name, ok := c.isGroupVar(call.Args[0]); ok {
+			return fmt.Sprintf("%s.items.max()!", name), nil
+		}
 		return fmt.Sprintf("%s.max()!", args[0]), nil
 	case "sum":
 		if len(args) != 1 {
 			return "", fmt.Errorf("sum expects 1 argument at line %d", call.Pos.Line)
+		}
+		if name, ok := c.isGroupVar(call.Args[0]); ok {
+			return fmt.Sprintf("%s.items.reduce(0, +)", name), nil
 		}
 		return fmt.Sprintf("%s.reduce(0, +)", args[0]), nil
 	case "exists":
@@ -1375,8 +1392,132 @@ func (c *compiler) existsQuery(q *parser.QueryExpr) (string, error) {
 	return fmt.Sprintf("%s.contains { %s in %s }", src, q.Var, cond), nil
 }
 
+func (c *compiler) groupQuery(q *parser.QueryExpr) (string, error) {
+	if len(q.Group.Exprs) != 1 || len(q.Froms) > 0 {
+		return "", fmt.Errorf("unsupported query")
+	}
+	src, err := c.expr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	savedVars := c.varTypes
+	savedFields := c.mapFields
+	c.varTypes = copyMap(c.varTypes)
+	c.mapFields = copyMap(c.mapFields)
+	c.varTypes[q.Var] = c.elementType(q.Source)
+	if fields := c.elementFieldTypes(q.Source); fields != nil {
+		c.mapFields[q.Var] = fields
+	}
+	var filtered string
+	if q.Where != nil {
+		cond, err := c.expr(q.Where)
+		if err != nil {
+			c.varTypes = savedVars
+			c.mapFields = savedFields
+			return "", err
+		}
+		filtered = fmt.Sprintf("%s.filter { %s in %s }", src, q.Var, cond)
+	} else {
+		filtered = src
+	}
+	keyExpr, err := c.expr(q.Group.Exprs[0])
+	if err != nil {
+		c.varTypes = savedVars
+		c.mapFields = savedFields
+		return "", err
+	}
+	gname := q.Group.Name
+	c.varTypes[gname] = ""
+	c.mapFields[gname] = nil
+	c.groups[gname] = true
+	var having string
+	if q.Group.Having != nil {
+		hv, err := c.expr(q.Group.Having)
+		if err != nil {
+			c.varTypes = savedVars
+			c.mapFields = savedFields
+			return "", err
+		}
+		having = hv
+	}
+	sel, err := c.expr(q.Select)
+	if err != nil {
+		c.varTypes = savedVars
+		c.mapFields = savedFields
+		return "", err
+	}
+	sortExpr := ""
+	if q.Sort != nil {
+		prev := c.tupleMap
+		c.tupleMap = true
+		s, err := c.expr(q.Sort)
+		c.tupleMap = prev
+		if err != nil {
+			c.varTypes = savedVars
+			c.mapFields = savedFields
+			return "", err
+		}
+		sortExpr = s
+	}
+	skipExpr := ""
+	if q.Skip != nil {
+		sk, err := c.expr(q.Skip)
+		if err != nil {
+			c.varTypes = savedVars
+			c.mapFields = savedFields
+			return "", err
+		}
+		skipExpr = sk
+	}
+	takeExpr := ""
+	if q.Take != nil {
+		tk, err := c.expr(q.Take)
+		if err != nil {
+			c.varTypes = savedVars
+			c.mapFields = savedFields
+			return "", err
+		}
+		takeExpr = tk
+	}
+	c.varTypes = savedVars
+	c.mapFields = savedFields
+	var b strings.Builder
+	b.WriteString("{ () -> [Any] in\n")
+	b.WriteString("    let _groups = Dictionary(grouping: " + filtered + ") { " + q.Var + " in " + keyExpr + " }\n")
+	b.WriteString("    var _tmp = _groups.map { (k, v) in (key: k, items: v) }\n")
+	if having != "" {
+		b.WriteString("    _tmp = _tmp.filter { " + gname + " in " + having + " }\n")
+	}
+	if sortExpr != "" {
+		desc := strings.HasPrefix(sortExpr, "-")
+		if desc {
+			sortExpr = strings.TrimPrefix(sortExpr, "-")
+		}
+		a := replaceIdent(sortExpr, gname, "$0")
+		bstr := replaceIdent(sortExpr, gname, "$1")
+		op := "<"
+		if desc {
+			op = ">"
+		}
+		b.WriteString("    _tmp.sort { " + a + " " + op + " " + bstr + " }\n")
+	}
+	if skipExpr != "" {
+		b.WriteString("    _tmp = Array(_tmp.dropFirst(" + skipExpr + "))\n")
+	}
+	if takeExpr != "" {
+		b.WriteString("    _tmp = Array(_tmp.prefix(" + takeExpr + "))\n")
+	}
+	b.WriteString("    return _tmp.map { " + gname + " in " + sel + " }\n")
+	b.WriteString("}()")
+	delete(c.groups, gname)
+	return b.String(), nil
+}
+
 func (c *compiler) queryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Joins) > 0 || q.Group != nil || q.Distinct {
+	if q.Group != nil && len(q.Joins) == 0 {
+		return c.groupQuery(q)
+	}
+	if len(q.Joins) > 0 || q.Distinct {
 		return "", fmt.Errorf("unsupported query")
 	}
 	if len(q.Froms) == 0 && q.Where == nil && q.Sort != nil {
@@ -1446,6 +1587,10 @@ func (c *compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		src, err := c.expr(srcs[i])
 		if err != nil {
 			return "", err
+		}
+		if name, ok := c.isGroupVar(srcs[i]); ok {
+			src += ".items"
+			_ = name
 		}
 		name := vars[i]
 		prevT, havePrev := c.varTypes[name]
@@ -1572,6 +1717,19 @@ func copyMap[K comparable, V any](m map[K]V) map[K]V {
 		out[k] = v
 	}
 	return out
+}
+
+func (c *compiler) isGroupVar(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil {
+		return "", false
+	}
+	sel := e.Binary.Left.Value.Target.Selector
+	if sel != nil && len(sel.Tail) == 0 {
+		if c.groups[sel.Root] {
+			return sel.Root, true
+		}
+	}
+	return "", false
 }
 
 func replaceIdent(s, name, repl string) string {
