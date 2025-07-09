@@ -1479,6 +1479,13 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					expr = fmt.Sprintf("%s[%s]", expr, idx)
 				}
 			}
+		} else if op.Field != nil {
+			part := sanitizeName(op.Field.Name)
+			if c.isMapPostfix(&parser.PostfixExpr{Target: p.Target}) {
+				expr = fmt.Sprintf("%s.KeyData['%s']", expr, part)
+			} else {
+				expr = fmt.Sprintf("%s.%s", expr, part)
+			}
 		} else if op.Call != nil {
 			args := make([]string, len(op.Call.Args))
 			for i, a := range op.Call.Args {
@@ -1547,17 +1554,34 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if rep, ok := c.replacements[name]; ok {
 			name = rep
 		}
-		if c.packages != nil {
-			if c.packages[name] {
-				parts := make([]string, len(p.Selector.Tail))
-				for i, part := range p.Selector.Tail {
-					parts[i] = sanitizeName(part)
+		isMap := false
+		if c.env != nil {
+			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+				if _, ok := t.(types.MapType); ok {
+					isMap = true
 				}
-				return name + "_" + strings.Join(parts, "_"), nil
 			}
 		}
-		for _, part := range p.Selector.Tail {
-			name += "." + sanitizeName(part)
+		if !isMap && c.varTypes != nil {
+			if vt, ok := c.varTypes[p.Selector.Root]; ok {
+				if strings.HasPrefix(vt, "specialize TFPGMap<") {
+					isMap = true
+				}
+			}
+		}
+		if c.packages != nil && c.packages[name] {
+			parts := make([]string, len(p.Selector.Tail))
+			for i, part := range p.Selector.Tail {
+				parts[i] = sanitizeName(part)
+			}
+			return name + "_" + strings.Join(parts, "_"), nil
+		}
+		for i, part := range p.Selector.Tail {
+			if isMap && i == 0 {
+				name = fmt.Sprintf("%s.KeyData['%s']", name, sanitizeName(part))
+			} else {
+				name += "." + sanitizeName(part)
+			}
 		}
 		return name, nil
 	case p.Call != nil:
@@ -1818,6 +1842,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		valType := "integer"
 		if len(p.Map.Items) > 0 {
 			keyType = typeString(types.TypeOfExpr(p.Map.Items[0].Key, c.env))
+			if _, ok := selectorName(p.Map.Items[0].Key); ok {
+				keyType = "string"
+			}
 			valType = typeString(types.TypeOfExpr(p.Map.Items[0].Value, c.env))
 			if valType != "integer" {
 				valType = "Variant"
@@ -1996,13 +2023,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		joinOns[i] = on
 	}
-	sel, err := c.compileExpr(q.Select)
-	if err != nil {
-		c.env = orig
-		return "", err
-	}
 	var condParts []string
-	var sortStr, skipStr, takeStr string
+	var skipStr, takeStr string
+	hasSort := q.Sort != nil
 	if q.Where != nil {
 		cs, err := c.compileExpr(q.Where)
 		if err != nil {
@@ -2011,13 +2034,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		if cs != "" {
 			condParts = append(condParts, cs)
-		}
-	}
-	if q.Sort != nil {
-		sortStr, err = c.compileExpr(q.Sort)
-		if err != nil {
-			c.env = orig
-			return "", err
 		}
 	}
 	if q.Skip != nil {
@@ -2039,12 +2055,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if elemType == "" {
 		elemType = "integer"
 	}
-	c.env = orig
 
 	tmp := c.newTypedVar(fmt.Sprintf("specialize TArray<%s>", elemType))
 	c.writeln(fmt.Sprintf("SetLength(%s, 0);", tmp))
 	var keyVar string
-	if sortStr != "" {
+	if hasSort {
 		keyVar = c.newTypedVar("specialize TArray<Variant>")
 		c.writeln(fmt.Sprintf("SetLength(%s, 0);", keyVar))
 	}
@@ -2067,9 +2082,19 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if condStr != "" {
 		c.writeln(fmt.Sprintf("if not (%s) then continue;", condStr))
 	}
-	c.writeln(fmt.Sprintf("%s := Concat(%s, [%s]);", tmp, tmp, sel))
-	if sortStr != "" {
-		c.writeln(fmt.Sprintf("%s := Concat(%s, [%s]);", keyVar, keyVar, sortStr))
+	valExpr, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+	c.writeln(fmt.Sprintf("%s := Concat(%s, [%s]);", tmp, tmp, valExpr))
+	if hasSort {
+		sortExpr, err := c.compileExpr(q.Sort)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		c.writeln(fmt.Sprintf("%s := Concat(%s, [%s]);", keyVar, keyVar, sortExpr))
 	}
 	// condStr does not open a begin/end block anymore
 	for range joinSrcs {
@@ -2084,7 +2109,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	c.writeln("end;")
 
 	result := tmp
-	if sortStr != "" {
+	if hasSort {
 		c.use("_sortBy")
 		c.writeln(fmt.Sprintf("specialize _sortBy<%s>(%s, %s);", elemType, result, keyVar))
 	}
@@ -2100,6 +2125,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.writeln(fmt.Sprintf("%s := specialize _sliceList<%s>(%s, 0, %s);", out, elemType, result, takeStr))
 		result = out
 	}
+	c.env = orig
 	return result, nil
 }
 
