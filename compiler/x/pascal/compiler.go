@@ -1876,26 +1876,36 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return fmt.Sprintf("specialize TArray<%s>([%s])", elemType, strings.Join(elems, ", ")), nil
 	case p.Map != nil:
-		// infer key/value types from first element if available
+		// infer key/value types from all entries
 		keyType := "string"
 		valType := "integer"
 		if len(p.Map.Items) > 0 {
-			kt := typeString(types.TypeOfExpr(p.Map.Items[0].Key, c.env))
-			if _, ok := stringKey(p.Map.Items[0].Key); ok {
+			first := p.Map.Items[0]
+			if _, ok := stringKey(first.Key); ok {
 				keyType = "string"
 			} else {
-				keyType = kt
+				keyType = typeString(types.TypeOfExpr(first.Key, c.env))
 			}
-			valType = typeString(types.TypeOfExpr(p.Map.Items[0].Value, c.env))
-			uniform := true
+			valType = typeString(types.TypeOfExpr(first.Value, c.env))
+
+			allKeysString := keyType == "string"
+			uniformVal := true
 			for _, it := range p.Map.Items[1:] {
+				if _, ok := stringKey(it.Key); !ok {
+					allKeysString = false
+				}
 				vt := typeString(types.TypeOfExpr(it.Value, c.env))
 				if vt != valType {
-					uniform = false
-					break
+					uniformVal = false
 				}
 			}
-			if !uniform {
+			if !allKeysString {
+				keyType = typeString(types.TypeOfExpr(first.Key, c.env))
+				if keyType == "" {
+					keyType = "Variant"
+				}
+			}
+			if !uniformVal {
 				valType = "Variant"
 			}
 		}
