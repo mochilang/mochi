@@ -1,4 +1,4 @@
-# Scheme Machine Results (88/97 compiled and ran)
+# Scheme Machine Results (89/97 compiled and ran)
 
 ## Success
 - [x] append_builtin.mochi
@@ -80,6 +80,7 @@
 - [x] sum_builtin.mochi
 - [x] tail_recursion.mochi
 - [x] test_block.mochi
+- [x] tree_sum.mochi
 - [x] two-sum.mochi
 - [x] typed_let.mochi
 - [x] typed_var.mochi
@@ -97,8 +98,7 @@
  - [ ] left_join_multi.mochi
  - [ ] load_yaml.mochi
  - [ ] outer_join.mochi
- - [ ] right_join.mochi
- - [ ] tree_sum.mochi
+- [ ] right_join.mochi
 
 ## Success after update
  - [x] save_jsonl_stdout.mochi
