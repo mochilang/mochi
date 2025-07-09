@@ -11,7 +11,7 @@ static list_int list_int_create(int len) {
   l.data = (int *)malloc(sizeof(int) * len);
   return l;
 }
-int inner(int y) { return (x + y); }
+int inner(int y) { return x + y; }
 
 int outer(int x) { return inner(5); }
 

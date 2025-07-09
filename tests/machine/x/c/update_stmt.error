@@ -19,10 +19,10 @@ error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/update_stmt.c:27:17: error: incompatible types when assigning to type ‘int’ from type ‘Person’
    27 |   _t1.data[3] = (Person){.name = "Diana", .age = 16, .status = "minor"};
       |                 ^
-/workspace/mochi/tests/machine/x/c/update_stmt.c:28:10: error: ‘people’ undeclared (first use in this function)
-   28 |   if (!((people == _t1))) {
-      |          ^~~~~~
-/workspace/mochi/tests/machine/x/c/update_stmt.c:28:10: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/machine/x/c/update_stmt.c:28:9: error: ‘people’ undeclared (first use in this function)
+   28 |   if (!(people == _t1)) {
+      |         ^~~~~~
+/workspace/mochi/tests/machine/x/c/update_stmt.c:28:9: note: each undeclared identifier is reported only once for each function it appears in
 /workspace/mochi/tests/machine/x/c/update_stmt.c: In function ‘main’:
 /workspace/mochi/tests/machine/x/c/update_stmt.c:36:17: error: incompatible types when assigning to type ‘int’ from type ‘Person’
    36 |   _t2.data[0] = (Person){.name = "Alice", .age = 17, .status = "minor"};

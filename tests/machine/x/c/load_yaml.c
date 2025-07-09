@@ -204,7 +204,7 @@ int main() {
   int _t2 = 0;
   for (int _t3 = 0; _t3 < people.len; _t3++) {
     Person p = people.data[_t3];
-    if (!((p.age >= 18))) {
+    if (!(p.age >= 18)) {
       continue;
     }
     _t1.data[_t2] = (adultsItem){.name = p.name, .email = p.email};

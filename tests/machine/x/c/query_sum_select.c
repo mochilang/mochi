@@ -27,7 +27,7 @@ int main() {
   int _t3 = 0;
   for (int _t4 = 0; _t4 < nums.len; _t4++) {
     int n = nums.data[_t4];
-    if (!((n > 1))) {
+    if (!(n > 1)) {
       continue;
     }
     _t2.data[_t3] = _sum_int(n);

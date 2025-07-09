@@ -90,13 +90,13 @@ int main() {
     ordersItem o = orders.data[_t6];
     for (int _t7 = 0; _t7 < customers.len; _t7++) {
       customersItem c = customers.data[_t7];
-      if (!((o.customerId == c.id))) {
+      if (!(o.customerId == c.id)) {
         continue;
       }
       int _t9 = 0;
       for (int _t8 = 0; _t8 < items.len; _t8++) {
         itemsItem i = items.data[_t8];
-        if (!((o.id == i.orderId))) {
+        if (!(o.id == i.orderId)) {
           continue;
         }
         _t9 = 1;

@@ -2263,7 +2263,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			leftString = false
 			continue
 		}
-		left = fmt.Sprintf("(%s %s %s)", left, op.Op, right)
+		left = fmt.Sprintf("%s %s %s", left, op.Op, right)
 		leftList = false
 		leftListInt = false
 		leftListString = false

@@ -15,9 +15,9 @@ error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/group_items_iteration.c:84:16: error: request for member ‘items’ in something not a structure or union
    84 |       int x = g.items.data[_t4];
       |                ^
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:85:25: error: request for member ‘val’ in something not a structure or union
-   85 |       total = (total + x.val);
-      |                         ^
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:85:24: error: request for member ‘val’ in something not a structure or union
+   85 |       total = total + x.val;
+      |                        ^
 /workspace/mochi/tests/machine/x/c/group_items_iteration.c:88:36: error: request for member ‘key’ in something not a structure or union
    88 |     map_int_bool_put(&_t5, "tag", g.key);
       |                                    ^
@@ -37,10 +37,9 @@ error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/group_items_iteration.c:38:51: note: expected ‘int’ but argument is of type ‘char *’
    38 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
       |                                               ~~~~^~~
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:90:11: warning: implicit declaration of function ‘append’ [-Wimplicit-function-declaration]
-   90 |     tmp = append(tmp, _t5);
-      |           ^~~~~~
 /workspace/mochi/tests/machine/x/c/group_items_iteration.c:90:11: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+   90 |     tmp = 0;
+      |           ^
 /workspace/mochi/tests/machine/x/c/group_items_iteration.c:98:17: error: request for member ‘tag’ in something not a structure or union
    98 |     _t9[_t7] = r.tag;
       |                 ^

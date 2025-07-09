@@ -53,7 +53,7 @@ int main() {
     int n = nums.data[_t5];
     for (int _t6 = 0; _t6 < letters.len; _t6++) {
       char *l = letters.data[_t6];
-      if (!(((n % 2) == 0))) {
+      if (!(n % 2 == 0)) {
         continue;
       }
       _t3.data[_t4] = (pairsItem){.n = n, .l = l};

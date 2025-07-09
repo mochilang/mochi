@@ -25,10 +25,10 @@ int main() {
   list_int numbers = _t1;
   for (int _t2 = 0; _t2 < numbers.len; _t2++) {
     int n = numbers.data[_t2];
-    if (((n % 2) == 0)) {
+    if (n % 2 == 0) {
       continue;
     }
-    if ((n > 7)) {
+    if (n > 7) {
       break;
     }
     printf("%s ", "odd number:");

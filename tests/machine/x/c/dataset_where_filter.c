@@ -53,12 +53,11 @@ int main() {
   int _t3 = 0;
   for (int _t4 = 0; _t4 < people.len; _t4++) {
     peopleItem person = people.data[_t4];
-    if (!((person.age >= 18))) {
+    if (!(person.age >= 18)) {
       continue;
     }
-    _t2.data[_t3] = (adultsItem){.name = person.name,
-                                 .age = person.age,
-                                 .is_senior = (person.age >= 60)};
+    _t2.data[_t3] = (adultsItem){
+        .name = person.name, .age = person.age, .is_senior = person.age >= 60};
     _t3++;
   }
   _t2.len = _t3;

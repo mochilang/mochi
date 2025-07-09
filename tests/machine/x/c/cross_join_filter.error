@@ -2,8 +2,8 @@ line: 0
 error: output mismatch
 -- got --
 --- Even pairs ---
-2 -487727100
-2 -487727098
+2 -2040573948
+2 -2040573946
 -- want --
 --- Even pairs ---
 2 A

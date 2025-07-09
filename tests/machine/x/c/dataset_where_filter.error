@@ -2,9 +2,9 @@ line: 0
 error: output mismatch
 -- got --
 --- Adults ---
-917864452 is 30 
-917864462 is 65  (senior)
-917864470 is 45
+664346628 is 30 
+664346638 is 65  (senior)
+664346646 is 45
 -- want --
 --- Adults ---
 Alice is 30

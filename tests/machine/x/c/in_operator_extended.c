@@ -74,7 +74,7 @@ int main() {
   int _t3 = 0;
   for (int _t4 = 0; _t4 < xs.len; _t4++) {
     int x = xs.data[_t4];
-    if (!(((x % 2) == 1))) {
+    if (!(x % 2 == 1)) {
       continue;
     }
     _t2.data[_t3] = x;
@@ -87,8 +87,8 @@ int main() {
   map_int_bool _t5 = map_int_bool_create(1);
   map_int_bool_put(&_t5, "a", 1);
   int m = _t5;
-  printf("%s\n", (("a" in m)) ? "true" : "false");
-  printf("%s\n", (("b" in m)) ? "true" : "false");
+  printf("%s\n", ("a" in m) ? "true" : "false");
+  printf("%s\n", ("b" in m) ? "true" : "false");
   char *s = "hello";
   printf("%s\n", (contains_string(s, "ell")) ? "true" : "false");
   printf("%s\n", (contains_string(s, "foo")) ? "true" : "false");

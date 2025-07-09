@@ -20,7 +20,7 @@ int main() {
   int _t3 = 0;
   for (int _t4 = 0; _t4 < data.len; _t4++) {
     int x = data.data[_t4];
-    if (!((x == 1))) {
+    if (!(x == 1)) {
       continue;
     }
     _t2.data[_t3] = x;
