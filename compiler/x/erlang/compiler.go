@@ -5,11 +5,13 @@ package erlang
 import (
 	"bytes"
 	"fmt"
+	yaml "gopkg.in/yaml.v3"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
+	"unicode"
 
 	"mochi/parser"
 )
@@ -31,6 +33,8 @@ type Compiler struct {
 	needRightJoin bool
 	needOuterJoin bool
 
+	needJSON bool
+
 	aliases   map[string]string
 	groupKeys map[string]string
 }
@@ -45,6 +49,7 @@ func New(srcPath string) *Compiler {
 		needLeftJoin:  false,
 		needRightJoin: false,
 		needOuterJoin: false,
+		needJSON:      false,
 		aliases:       make(map[string]string),
 		groupKeys:     make(map[string]string),
 	}
@@ -131,6 +136,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.needLeftJoin = false
 	c.needRightJoin = false
 	c.needOuterJoin = false
+	c.needJSON = false
 	c.aliases = make(map[string]string)
 	c.groupKeys = make(map[string]string)
 
@@ -212,6 +218,20 @@ func (c *Compiler) compileVar(v *parser.VarStmt) (string, error) {
 }
 
 func (c *Compiler) compileAssign(a *parser.AssignStmt) (string, error) {
+	if len(a.Field) > 0 && len(a.Index) == 0 {
+		if len(a.Field) > 1 {
+			return "", fmt.Errorf("complex assignment not supported")
+		}
+		fld := a.Field[0].Name
+		val, err := c.compileExpr(a.Value)
+		if err != nil {
+			return "", err
+		}
+		prev := c.refVar(a.Name)
+		name := c.newVarName(a.Name)
+		c.types[a.Name] = "map"
+		return fmt.Sprintf("%s = %s#{%s => %s}", name, prev, fld, val), nil
+	}
 	if len(a.Field) > 0 || len(a.Index) > 2 {
 		return "", fmt.Errorf("complex assignment not supported")
 	}
@@ -311,10 +331,16 @@ func (c *Compiler) compileStmtLine(st *parser.Statement) (string, error) {
 		return c.compileIfStmt(st.If)
 	case st.For != nil:
 		return c.compileFor(st.For)
+	case st.Update != nil:
+		return c.compileUpdate(st.Update)
+	case st.While != nil:
+		return c.compileWhile(st.While)
+	case st.Expect != nil:
+		return c.compileExpect(st.Expect)
+	case st.Test != nil:
+		return c.compileTestBlock(st.Test)
 	case st.Fun != nil:
 		return c.compileNestedFun(st.Fun)
-	case st.While != nil:
-		return "", fmt.Errorf("unsupported statement at line %d", st.Pos.Line)
 	case st.Type != nil:
 		return "", nil
 	default:
@@ -366,6 +392,114 @@ func (c *Compiler) compileBreak(_ *parser.BreakStmt) (string, error) {
 
 func (c *Compiler) compileContinue(_ *parser.ContinueStmt) (string, error) {
 	return "throw(continue)", nil
+}
+
+func (c *Compiler) compileExpect(ex *parser.ExpectStmt) (string, error) {
+	cond, err := c.compileExpr(ex.Value)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("(case %s of true -> ok; _ -> erlang:error(test_failed) end)", cond), nil
+}
+
+func (c *Compiler) compileTestBlock(tb *parser.TestBlock) (string, error) {
+	lines := make([]string, len(tb.Body))
+	for i, st := range tb.Body {
+		l, err := c.compileStmtLine(st)
+		if err != nil {
+			return "", err
+		}
+		lines[i] = l
+	}
+	return strings.Join(lines, ", "), nil
+}
+
+func (c *Compiler) compileWhile(w *parser.WhileStmt) (string, error) {
+	mutated := map[string]bool{}
+	for _, st := range w.Body {
+		if st.Assign != nil {
+			mutated[st.Assign.Name] = true
+		}
+	}
+	params := make([]string, 0, len(mutated))
+	initArgs := make([]string, 0, len(mutated))
+	for v := range mutated {
+		params = append(params, capitalize(v))
+		initArgs = append(initArgs, c.refVar(v))
+		c.aliases[v] = capitalize(v)
+		c.lets[v] = true
+	}
+	cond, err := c.compileExpr(w.Cond)
+	if err != nil {
+		return "", err
+	}
+	bodyLines := make([]string, len(w.Body))
+	for i, st := range w.Body {
+		l, err := c.compileStmtLine(st)
+		if err != nil {
+			return "", err
+		}
+		bodyLines[i] = l
+	}
+	nextArgs := make([]string, 0, len(mutated))
+	for v := range mutated {
+		nextArgs = append(nextArgs, c.refVar(v))
+	}
+	for v := range mutated {
+		delete(c.aliases, v)
+		delete(c.lets, v)
+	}
+	body := strings.Join(bodyLines, ", ")
+	if body == "" {
+		body = "ok"
+	}
+	loopName := c.newVarName("loop")
+	fun := fmt.Sprintf("fun %s(%s) -> case %s of true -> %s, %s(%s); _ -> ok end end", loopName, strings.Join(params, ", "), cond, body, loopName, strings.Join(nextArgs, ", "))
+	return fmt.Sprintf("(%s(%s))", fun, strings.Join(initArgs, ", ")), nil
+}
+
+func (c *Compiler) compileUpdate(st *parser.UpdateStmt) (string, error) {
+	item := c.newVarName(st.Target + "Item")
+	prev := c.refVar(st.Target)
+	aliases := map[string]string{}
+	for _, it := range st.Set.Items {
+		k, err := c.compileMapKey(it.Key)
+		if err != nil {
+			return "", err
+		}
+		aliases[k] = fmt.Sprintf("maps:get(%s, %s)", k, item)
+	}
+	for k, v := range aliases {
+		c.aliases[k] = v
+		c.lets[k] = true
+	}
+	cond := "true"
+	if st.Where != nil {
+		cnd, err := c.compileExpr(st.Where)
+		if err != nil {
+			return "", err
+		}
+		cond = cnd
+	}
+	setParts := make([]string, len(st.Set.Items))
+	for i, it := range st.Set.Items {
+		k, err := c.compileMapKey(it.Key)
+		if err != nil {
+			return "", err
+		}
+		v, err := c.compileExpr(it.Value)
+		if err != nil {
+			return "", err
+		}
+		setParts[i] = fmt.Sprintf("%s => %s", k, v)
+	}
+	for k := range aliases {
+		delete(c.aliases, k)
+		delete(c.lets, k)
+	}
+	updated := fmt.Sprintf("if %s -> %s#{%s}; true -> %s end", cond, item, strings.Join(setParts, ", "), item)
+	name := c.newVarName(st.Target)
+	return fmt.Sprintf("%s = [%s || %s <- %s]", name, updated, item, prev), nil
 }
 
 func (c *Compiler) compileIfStmt(ifst *parser.IfStmt) (string, error) {
@@ -881,7 +1015,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		return "", err
 	}
 	typ := c.typeOfPrimary(p.Target)
-	for _, op := range p.Ops {
+	for i := 0; i < len(p.Ops); i++ {
+		op := p.Ops[i]
 		switch {
 		case op.Index != nil:
 			idxOp := op.Index
@@ -933,6 +1068,19 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					typ = "map"
 				}
 			}
+		case op.Field != nil:
+			name := op.Field.Name
+			if i+1 < len(p.Ops) && p.Ops[i+1].Call != nil && name == "contains" {
+				i++
+				arg, err := c.compileExpr(p.Ops[i].Call.Args[0])
+				if err != nil {
+					return "", err
+				}
+				val = fmt.Sprintf("string:str(%s, %s) > 0", val, arg)
+				typ = "bool"
+			} else {
+				val = fmt.Sprintf("maps:get(%s, %s)", name, val)
+			}
 		default:
 			return "", fmt.Errorf("unsupported postfix at line %d", p.Target.Pos.Line)
 		}
@@ -944,6 +1092,17 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	switch {
 	case p.Lit != nil:
 		return c.compileLiteral(p.Lit), nil
+	case p.Struct != nil:
+		parts := make([]string, len(p.Struct.Fields)+1)
+		parts[0] = fmt.Sprintf("\"__name\" => %q", p.Struct.Name)
+		for i, f := range p.Struct.Fields {
+			v, err := c.compileExpr(f.Value)
+			if err != nil {
+				return "", err
+			}
+			parts[i+1] = fmt.Sprintf("%s => %s", f.Name, v)
+		}
+		return "#{" + strings.Join(parts, ", ") + "}", nil
 	case p.Selector != nil:
 		root := p.Selector.Root
 		if k, ok := c.groupKeys[root]; ok {
@@ -998,6 +1157,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			parts[i] = fmt.Sprintf("%s => %s", k, v)
 		}
 		return "#{" + strings.Join(parts, ", ") + "}", nil
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	case p.Group != nil:
 		expr, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -1161,6 +1324,22 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 		return fmt.Sprintf("string:substr(%s, (%s)+1, (%s)-(%s))", str, start, end, start), nil
 	default:
+		if unicode.IsUpper(rune(call.Func[0])) && c.funs[call.Func] == 0 {
+			parts := make([]string, len(call.Args)+1)
+			parts[0] = fmt.Sprintf("\"__name\" => %q", call.Func)
+			for i, a := range call.Args {
+				v, err := c.compileExpr(a)
+				if err != nil {
+					return "", err
+				}
+				if sel := a.Binary.Left.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 {
+					parts[i+1] = fmt.Sprintf("%s => %s", sel.Root, v)
+				} else {
+					parts[i+1] = fmt.Sprintf("arg%d => %s", i, v)
+				}
+			}
+			return "#{" + strings.Join(parts, ", ") + "}", nil
+		}
 		args := make([]string, len(call.Args))
 		for i, a := range call.Args {
 			s, err := c.compileExpr(a)
@@ -1183,6 +1362,58 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			name = c.refVar(name)
 		}
 		return fmt.Sprintf("%s(%s)", name, strings.Join(args, ", ")), nil
+	}
+}
+
+func (c *Compiler) compileLoadExpr(le *parser.LoadExpr) (string, error) {
+	if le.Path == nil {
+		return "", fmt.Errorf("load path required")
+	}
+	path := *le.Path
+	if !filepath.IsAbs(path) {
+		path = filepath.Join(filepath.Dir(c.srcPath), path)
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return "", err
+	}
+	var items []map[string]interface{}
+	if err := yaml.Unmarshal(data, &items); err != nil {
+		return "", err
+	}
+	rows := make([]string, len(items))
+	for i, m := range items {
+		parts := make([]string, 0, len(m)+1)
+		parts = append(parts, "\"__name\" => \"Person\"")
+		for k, v := range m {
+			parts = append(parts, fmt.Sprintf("%s => %v", k, c.compileLiteralValue(v)))
+		}
+		rows[i] = "#{" + strings.Join(parts, ", ") + "}"
+	}
+	return "[" + strings.Join(rows, ", ") + "]", nil
+}
+
+func (c *Compiler) compileSaveExpr(se *parser.SaveExpr) (string, error) {
+	src, err := c.compileExpr(se.Src)
+	if err != nil {
+		return "", err
+	}
+	if se.Path != nil && *se.Path == "-" {
+		c.needJSON = true
+		v := c.newVarName("row")
+		return fmt.Sprintf("lists:foreach(fun(%s) -> io:format(\"~s\\n\", [mochi_json_encode(%s)]) end, %s)", v, v, src), nil
+	}
+	return "ok", nil
+}
+
+func (c *Compiler) compileLiteralValue(v interface{}) string {
+	switch t := v.(type) {
+	case int, int64, float64:
+		return fmt.Sprintf("%v", t)
+	case string:
+		return fmt.Sprintf("%q", t)
+	default:
+		return "undefined"
 	}
 }
 
@@ -1481,6 +1712,20 @@ func (c *Compiler) writeRuntime() {
 		c.writeln("Left = mochi_left_join(L, R, Fun),")
 		c.writeln("Right = [ P || P = {undefined, _} <- mochi_right_join(L, R, Fun) ],")
 		c.writeln("Left ++ Right.")
+		c.indent--
+	}
+	if c.needJSON {
+		c.writeln("")
+		c.writeln("mochi_json_value(V) when is_integer(V); is_float(V) -> io_lib:format(\"~p\", [V]);")
+		c.writeln("mochi_json_value(V) when is_list(V) -> io_lib:format(\"~s\", [V]);")
+		c.writeln("mochi_json_value(true) -> \"true\";")
+		c.writeln("mochi_json_value(false) -> \"false\";")
+		c.writeln("mochi_json_value(undefined) -> \"null\".")
+		c.writeln("")
+		c.writeln("mochi_json_encode(M) ->")
+		c.indent++
+		c.writeln("Pairs = [ io_lib:format(\"\\\"~s\\\":~s\", [atom_to_list(K), mochi_json_value(V)]) || {K,V} <- maps:to_list(M) ],")
+		c.writeln("lists:flatten([\"{\", string:join(Pairs, \",\"), \"}\"]).")
 		c.indent--
 	}
 }
