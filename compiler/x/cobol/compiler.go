@@ -851,6 +851,66 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 			}
 			return "", fmt.Errorf("postfix operations not supported")
+		case op.Index != nil:
+			idx := op.Index
+			if idx.Colon == nil && idx.Colon2 == nil && idx.Step == nil {
+				if idx.Start == nil {
+					return "", fmt.Errorf("index needs start")
+				}
+				if i, ok := intLiteral(idx.Start); ok {
+					val = fmt.Sprintf("%s(%d:1)", val, i+1)
+				} else {
+					idxExpr, err := c.compileExpr(idx.Start)
+					if err != nil {
+						return "", err
+					}
+					val = fmt.Sprintf("%s(%s + 1:1)", val, idxExpr)
+				}
+				continue
+			}
+			if idx.Colon2 != nil || idx.Step != nil {
+				return "", fmt.Errorf("slice step not supported")
+			}
+			var startExpr string
+			if idx.Start != nil {
+				if i, ok := intLiteral(idx.Start); ok {
+					startExpr = fmt.Sprintf("%d", i)
+				} else {
+					s, err := c.compileExpr(idx.Start)
+					if err != nil {
+						return "", err
+					}
+					startExpr = s
+				}
+			} else {
+				startExpr = "0"
+			}
+			var endExpr string
+			if idx.End != nil {
+				if i, ok := intLiteral(idx.End); ok {
+					endExpr = fmt.Sprintf("%d", i)
+				} else {
+					s, err := c.compileExpr(idx.End)
+					if err != nil {
+						return "", err
+					}
+					endExpr = s
+				}
+			} else {
+				endExpr = fmt.Sprintf("FUNCTION LENGTH(%s)", val)
+			}
+			if idx.Start != nil {
+				if sConst, ok1 := intLiteral(idx.Start); ok1 {
+					if idx.End != nil {
+						if eConst, ok2 := intLiteral(idx.End); ok2 {
+							val = fmt.Sprintf("%s(%d:%d)", val, sConst+1, eConst-sConst)
+							continue
+						}
+					}
+				}
+			}
+			val = fmt.Sprintf("%s(%s + 1:%s - %s)", val, startExpr, endExpr, startExpr)
+			continue
 		default:
 			return "", fmt.Errorf("postfix operations not supported")
 		}
