@@ -958,6 +958,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, bool, error) {
 	}
 
 	loops := []string{}
+	varNames := []string{}
 	src, _, err := c.compileExpr(q.Source)
 	if err != nil {
 		c.vars = oldVars
@@ -966,6 +967,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, bool, error) {
 	vname := sanitizeVar(q.Var)
 	c.vars[q.Var] = vname
 	loops = append(loops, fmt.Sprintf("member(%s, %s)", vname, src))
+	varNames = append(varNames, vname)
 
 	for _, fr := range q.Froms {
 		fs, _, err := c.compileExpr(fr.Src)
@@ -976,6 +978,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, bool, error) {
 		fname := sanitizeVar(fr.Var)
 		c.vars[fr.Var] = fname
 		loops = append(loops, fmt.Sprintf("member(%s, %s)", fname, fs))
+		varNames = append(varNames, fname)
 	}
 
 	for _, j := range q.Joins {
@@ -1002,16 +1005,68 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, bool, error) {
 				onLines = append(onLines, line)
 			}
 		}
+		oldLoopStr := strings.Join(loops, ", ")
+		leftTuple := "[" + strings.Join(varNames, ", ") + "]"
+		nilAssignParts := make([]string, len(varNames))
+		for i, v := range varNames {
+			nilAssignParts[i] = fmt.Sprintf("%s = nil", v)
+		}
+		nilAssign := strings.Join(nilAssignParts, ", ")
 		if j.Side != nil && *j.Side == "left" {
 			tmp := c.newTmp()
 			joined := strings.Join(append([]string{fmt.Sprintf("member(%s, %s)", jname, js)}, onLines...), ", ")
 			loops = append(loops, fmt.Sprintf("findall(%s, (%s, %s), %s)", jname, joined, onCond, tmp))
 			loops = append(loops, fmt.Sprintf("(%s = [] -> %s = nil; member(%s, %s))", tmp, jname, jname, tmp))
-		} else {
-			loops = append(loops, fmt.Sprintf("member(%s, %s)", jname, js))
-			loops = append(loops, onLines...)
-			loops = append(loops, onCond)
+			varNames = append(varNames, jname)
+			continue
 		}
+		if j.Side != nil && *j.Side == "right" {
+			tmp := c.newTmp()
+			findBodyParts := []string{}
+			if oldLoopStr != "" {
+				findBodyParts = append(findBodyParts, oldLoopStr)
+			}
+			findBodyParts = append(findBodyParts, onLines...)
+			findBodyParts = append(findBodyParts, onCond)
+			findBody := strings.Join(findBodyParts, ", ")
+			loops = []string{
+				fmt.Sprintf("member(%s, %s)", jname, js),
+				fmt.Sprintf("findall(%s, (%s), %s)", leftTuple, findBody, tmp),
+				fmt.Sprintf("(%s = [] -> (%s) ; member(%s, %s))", tmp, nilAssign, leftTuple, tmp),
+			}
+			varNames = append(varNames, jname)
+			continue
+		}
+		if j.Side != nil && *j.Side == "outer" {
+			tmpL := c.newTmp()
+			joined := strings.Join(append([]string{fmt.Sprintf("member(%s, %s)", jname, js)}, onLines...), ", ")
+			leftLoops := append(append([]string{}, loops...), fmt.Sprintf("findall(%s, (%s, %s), %s)", jname, joined, onCond, tmpL), fmt.Sprintf("(%s = [] -> %s = nil; member(%s, %s))", tmpL, jname, jname, tmpL))
+			leftPart := strings.Join(leftLoops, ", ")
+
+			tmpR := c.newTmp()
+			findBodyParts := []string{}
+			if oldLoopStr != "" {
+				findBodyParts = append(findBodyParts, oldLoopStr)
+			}
+			findBodyParts = append(findBodyParts, onLines...)
+			findBodyParts = append(findBodyParts, onCond)
+			findBodyR := strings.Join(findBodyParts, ", ")
+			rightLoops := []string{
+				fmt.Sprintf("member(%s, %s)", jname, js),
+				fmt.Sprintf("findall(%s, (%s), %s)", leftTuple, findBodyR, tmpR),
+				fmt.Sprintf("%s = []", tmpR),
+				nilAssign,
+			}
+			rightPart := strings.Join(rightLoops, ", ")
+			loops = []string{fmt.Sprintf("((%s);(%s))", leftPart, rightPart)}
+			varNames = append(varNames, jname)
+			continue
+		}
+
+		loops = append(loops, fmt.Sprintf("member(%s, %s)", jname, js))
+		loops = append(loops, onLines...)
+		loops = append(loops, onCond)
+		varNames = append(varNames, jname)
 	}
 
 	cond := "true"
