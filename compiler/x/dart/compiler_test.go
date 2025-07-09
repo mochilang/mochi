@@ -63,6 +63,61 @@ func TestDartCompiler_ValidPrograms(t *testing.T) {
 	}
 }
 
+func TestDartCompiler_TPCHQueries(t *testing.T) {
+	if _, err := exec.LookPath("dart"); err != nil {
+		t.Skip("dart not installed")
+	}
+	root := findRepoRoot(t)
+	for i := 1; i <= 22; i++ {
+		q := fmt.Sprintf("q%d", i)
+		codeWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "dart", q+".dart.out")
+		outWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "dart", q+".out")
+		if _, err := os.Stat(codeWant); err != nil {
+			continue
+		}
+		t.Run(q, func(t *testing.T) {
+			src := filepath.Join(root, "tests", "dataset", "tpc-h", q+".mochi")
+			prog, err := parser.Parse(src)
+			if err != nil {
+				t.Fatalf("parse error: %v", err)
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				t.Fatalf("type error: %v", errs[0])
+			}
+			code, err := dart.New(env).Compile(prog)
+			if err != nil {
+				t.Fatalf("compile error: %v", err)
+			}
+			wantCode, err := os.ReadFile(codeWant)
+			if err != nil {
+				t.Fatalf("read golden: %v", err)
+			}
+			if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(wantCode)) {
+				t.Errorf("generated code mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q+".dart.out", got, bytes.TrimSpace(wantCode))
+			}
+			tmp := t.TempDir()
+			file := filepath.Join(tmp, "prog.dart")
+			if err := os.WriteFile(file, code, 0644); err != nil {
+				t.Fatalf("write error: %v", err)
+			}
+			cmd := exec.Command("dart", file)
+			out, err := cmd.CombinedOutput()
+			if err != nil {
+				t.Fatalf("dart run error: %v\n%s", err, out)
+			}
+			gotOut := bytes.TrimSpace(out)
+			wantOut, err := os.ReadFile(outWant)
+			if err != nil {
+				t.Fatalf("read golden: %v", err)
+			}
+			if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
+				t.Errorf("output mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q+".out", gotOut, bytes.TrimSpace(wantOut))
+			}
+		})
+	}
+}
+
 func writeError(dir, name, src string, err error) {
 	msg := err.Error()
 	os.WriteFile(filepath.Join(dir, name+".error"), []byte(msg), 0644)

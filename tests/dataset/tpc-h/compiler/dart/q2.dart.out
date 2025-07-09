@@ -1,0 +1,82 @@
+import 'dart:convert';
+
+var region = [{'r_regionkey': 1, 'r_name': 'EUROPE'}, {'r_regionkey': 2, 'r_name': 'ASIA'}];
+
+var nation = [{'n_nationkey': 10, 'n_regionkey': 1, 'n_name': 'FRANCE'}, {'n_nationkey': 20, 'n_regionkey': 2, 'n_name': 'CHINA'}];
+
+var supplier = [{'s_suppkey': 100, 's_name': 'BestSupplier', 's_address': '123 Rue', 's_nationkey': 10, 's_phone': '123', 's_acctbal': 1000, 's_comment': 'Fast and reliable'}, {'s_suppkey': 200, 's_name': 'AltSupplier', 's_address': '456 Way', 's_nationkey': 20, 's_phone': '456', 's_acctbal': 500, 's_comment': 'Slow'}];
+
+var part = [{'p_partkey': 1000, 'p_type': 'LARGE BRASS', 'p_size': 15, 'p_mfgr': 'M1'}, {'p_partkey': 2000, 'p_type': 'SMALL COPPER', 'p_size': 15, 'p_mfgr': 'M2'}];
+
+var partsupp = [{'ps_partkey': 1000, 'ps_suppkey': 100, 'ps_supplycost': 10}, {'ps_partkey': 1000, 'ps_suppkey': 200, 'ps_supplycost': 15}];
+
+var europe_nations = (() {
+  var _q0 = <dynamic>[];
+  for (var r in region) {
+    for (var n in nation) {
+      if (!(n['n_regionkey'] == r['r_regionkey'])) continue;
+      if (!(r['r_name'] == 'EUROPE')) continue;
+      _q0.add(n);
+    }
+  }
+  return _q0;
+})();
+
+var europe_suppliers = (() {
+  var _q1 = <dynamic>[];
+  for (var s in supplier) {
+    for (var n in europe_nations) {
+      if (!(s['s_nationkey'] == n['n_nationkey'])) continue;
+      _q1.add({'s': s, 'n': n});
+    }
+  }
+  return _q1;
+})();
+
+var target_parts = (() {
+  var _q2 = <dynamic>[];
+  for (var p in part) {
+    if (!(p['p_size'] == 15 && p['p_type'] == 'LARGE BRASS')) continue;
+    _q2.add(p);
+  }
+  return _q2;
+})();
+
+var target_partsupp = (() {
+  var _q3 = <dynamic>[];
+  for (var ps in partsupp) {
+    for (var p in target_parts) {
+      if (!(ps['ps_partkey'] == p['p_partkey'])) continue;
+      for (var s in europe_suppliers) {
+        if (!(ps['ps_suppkey'] == s['s']['s_suppkey'])) continue;
+        _q3.add({'s_acctbal': s['s']['s_acctbal'], 's_name': s['s']['s_name'], 'n_name': s['n']['n_name'], 'p_partkey': p['p_partkey'], 'p_mfgr': p['p_mfgr'], 's_address': s['s']['s_address'], 's_phone': s['s']['s_phone'], 's_comment': s['s']['s_comment'], 'ps_supplycost': ps['ps_supplycost']});
+      }
+    }
+  }
+  return _q3;
+})();
+
+var costs = (() {
+  var _q4 = <dynamic>[];
+  for (var x in target_partsupp) {
+    _q4.add(x['ps_supplycost']);
+  }
+  return _q4;
+})();
+
+var min_cost = costs.reduce((a, b) => a < b ? a : b);
+
+var result = (() {
+  var _q5 = <dynamic>[];
+  for (var x in target_partsupp) {
+    if (!(x['ps_supplycost'] == min_cost)) continue;
+    _q5.add([-(x['s_acctbal'] as num), x]);
+  }
+  _q5.sort((a,b) => (a[0] as Comparable).compareTo(b[0]));
+  _q5 = [for (var x in _q5) x[1]];
+  return _q5;
+})();
+
+void main() {
+  print(jsonEncode(result));
+}
