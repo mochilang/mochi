@@ -841,6 +841,7 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 	operands := []string{}
 	lists := []bool{}
 	strs := []bool{}
+	typs := []types.Type{}
 
 	first, err := c.compileUnary(b.Left)
 	if err != nil {
@@ -849,6 +850,7 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 	operands = append(operands, first)
 	lists = append(lists, c.isListUnary(b.Left))
 	strs = append(strs, c.isStringUnary(b.Left))
+	typs = append(typs, c.inferUnaryType(b.Left))
 
 	ops := []string{}
 	for _, part := range b.Right {
@@ -859,6 +861,7 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 		operands = append(operands, r)
 		lists = append(lists, c.isListPostfix(part.Right))
 		strs = append(strs, c.isStringPostfix(part.Right))
+		typs = append(typs, c.inferPostfixType(part.Right))
 		op := part.Op
 		if part.All {
 			op = op + "_all"
@@ -931,8 +934,21 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 				}
 			case "in":
 				leftStr = false
-				c.use("_in")
-				expr = fmt.Sprintf("_in(%s, %s)", left, right)
+				lt := typs[i]
+				rt := typs[i+1]
+				if isListType(rt) {
+					c.useLinq = true
+					expr = fmt.Sprintf("%s.Contains(%s)", right, left)
+				} else if isMapType(rt) {
+					expr = fmt.Sprintf("%s.ContainsKey(%s)", right, left)
+				} else if isStringType(rt) && isStringType(lt) {
+					expr = fmt.Sprintf("%s.Contains(%s)", right, left)
+				} else {
+					c.use("_in")
+					expr = fmt.Sprintf("_in(%s, %s)", left, right)
+				}
+				lists[i] = false
+				typs[i] = types.BoolType{}
 			case "union_all":
 				leftStr = false
 				c.use("_union_all")
@@ -964,9 +980,11 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 			operands[i] = expr
 			lists[i] = leftList
 			strs[i] = leftStr
+			typs[i] = resultType(op, typs[i], typs[i+1])
 			operands = append(operands[:i+1], operands[i+2:]...)
 			lists = append(lists[:i+1], lists[i+2:]...)
 			strs = append(strs[:i+1], strs[i+2:]...)
+			typs = append(typs[:i+1], typs[i+2:]...)
 			ops = append(ops[:i], ops[i+1:]...)
 		}
 	}
@@ -1119,6 +1137,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		if len(other) > 0 {
 			cond = strings.Join(other, " && ")
+		} else if flt, ok := aliasFilters[sanitizeName(q.Var)]; ok {
+			cond = strings.Join(flt, " && ")
 		}
 	}
 	if q.Sort != nil {
@@ -1637,7 +1657,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		parts = append(parts, fmt.Sprintf("Take(%s)", takeExpr))
 	}
 	parts = append(parts, fmt.Sprintf("Select(%s => %s)", v, sel))
-	return strings.Join(parts, "."), nil
+	expr := strings.Join(parts, ".")
+	if _, ok := c.inferExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Query: q}}}}}).(types.ListType); ok {
+		expr += ".ToArray()"
+	}
+	return expr, nil
 }
 
 func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
@@ -2819,6 +2843,16 @@ func isListType(t types.Type) bool {
 		return true
 	}
 	return false
+}
+
+func isMapType(t types.Type) bool {
+	_, ok := t.(types.MapType)
+	return ok
+}
+
+func isStringType(t types.Type) bool {
+	_, ok := t.(types.StringType)
+	return ok
 }
 
 func (c *Compiler) compilePackageImport(alias, path, filename string) error {
