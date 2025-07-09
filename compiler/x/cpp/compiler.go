@@ -953,12 +953,44 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	itemType := fmt.Sprintf("decltype(%s)", val)
 	if t := structLiteralType(val); t != "" {
 		itemType = t
+	} else if t := c.varStruct[val]; t != "" {
+		if idx := strings.Index(t, "{"); idx != -1 {
+			t = t[:idx]
+		}
+		itemType = t
+	} else if dot := strings.Index(val, "."); dot != -1 {
+		v := val[:dot]
+		fld := val[dot+1:]
+		if t := c.varStruct[v]; t != "" {
+			if idx := strings.Index(t, "{"); idx != -1 {
+				t = t[:idx]
+			}
+			itemType = fmt.Sprintf("decltype(std::declval<%s>().%s)", t, fld)
+		}
+	} else if t := c.elemType[val]; t != "" {
+		itemType = t
 	}
 	key := ""
+	keyType := ""
 	if q.Sort != nil {
 		key, err = c.compileExpr(q.Sort)
 		if err != nil {
 			return "", err
+		}
+		keyType = fmt.Sprintf("decltype(%s)", key)
+		if vt := c.varStruct[q.Var]; vt != "" {
+			if idx := strings.Index(vt, "{"); idx != -1 {
+				vt = vt[:idx]
+			}
+			if pos := strings.Index(key, q.Var+"."); pos != -1 {
+				start := pos + len(q.Var) + 1
+				end := start
+				for end < len(key) && ((key[end] >= 'a' && key[end] <= 'z') || (key[end] >= 'A' && key[end] <= 'Z') || (key[end] >= '0' && key[end] <= '9') || key[end] == '_') {
+					end++
+				}
+				fld := key[start:end]
+				keyType = fmt.Sprintf("decltype(std::declval<%s>().%s)", vt, fld)
+			}
 		}
 	}
 	skip := ""
@@ -992,7 +1024,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	buf.WriteString("    std::vector<")
 	if key != "" || skip != "" || take != "" {
-		buf.WriteString("std::pair<decltype(" + key + "), " + itemType + ")>")
+		if keyType == "" {
+			keyType = fmt.Sprintf("decltype(%s)", key)
+		}
+		buf.WriteString("std::pair<" + keyType + ", " + itemType + ">")
 	} else {
 		buf.WriteString(itemType)
 	}
