@@ -1,4 +1,4 @@
-# Mochi to Zig Machine Outputs (25/97 compiled)
+# Mochi to Zig Machine Outputs (31/97 compiled)
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -7,13 +7,13 @@
 - [x] break_continue.mochi
 - [x] cast_string_to_int.mochi
 - [x] cast_struct.mochi
-- [ ] closure.mochi
+- [x] closure.mochi
 - [x] count_builtin.mochi
-- [ ] cross_join.mochi
-- [ ] cross_join_filter.mochi
-- [ ] cross_join_triple.mochi
-- [ ] dataset_sort_take_limit.mochi
-- [ ] dataset_where_filter.mochi
+- [x] cross_join.mochi
+- [x] cross_join_filter.mochi
+- [x] cross_join_triple.mochi
+- [x] dataset_sort_take_limit.mochi
+- [x] dataset_where_filter.mochi
 - [x] exists_builtin.mochi
 - [x] for_list_collection.mochi
 - [x] for_loop.mochi

@@ -1987,6 +1987,27 @@ func (c *Compiler) compileListLiteral(list *parser.ListLiteral, asRef bool) (str
 }
 
 func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
+	simple := true
+	fields := make([]string, len(m.Items))
+	defs := make([]string, len(m.Items))
+	for i, it := range m.Items {
+		k, ok := simpleStringKey(it.Key)
+		if !ok {
+			simple = false
+			break
+		}
+		valExpr, err := c.compileExpr(it.Value, false)
+		if err != nil {
+			return "", err
+		}
+		name := sanitizeName(k)
+		fields[i] = fmt.Sprintf(".%s = %s", name, valExpr)
+		defs[i] = fmt.Sprintf("%s: %s,", name, zigTypeOf(c.inferExprType(it.Value)))
+	}
+	if simple {
+		return fmt.Sprintf("struct { %s }{ %s }", strings.Join(defs, " "), strings.Join(fields, ", ")), nil
+	}
+
 	keyType := "i32"
 	valType := "i32"
 	if len(m.Items) > 0 {
