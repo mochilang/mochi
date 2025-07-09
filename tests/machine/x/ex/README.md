@@ -4,8 +4,8 @@ This directory contains Elixir source code generated from Mochi programs and the
 
 ## Summary
 
-- 88/97 programs compiled and executed successfully.
-- 9 programs failed to compile or run.
+- 89/97 programs compiled and executed successfully.
+- 8 programs failed to compile or run.
 
 ### Successful
 append_builtin
@@ -93,6 +93,7 @@ user_type_literal
 values_builtin
 var_assignment
 while_loop
+tree_sum
 
 ### Failed
 group_by_conditional_sum
@@ -103,10 +104,9 @@ group_items_iteration
 load_yaml
 pure_global_fold
 save_jsonl_stdout
-tree_sum
 
 ## TODO
-- [ ] Fix pattern matching for union types
+- [x] Fix pattern matching for union types
 - [ ] Support YAML loading tests
 - [ ] Implement left/outer join handling in queries
 - [ ] Address JSONL save pipeline errors

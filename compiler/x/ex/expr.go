@@ -410,6 +410,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if len(p.Selector.Tail) > 0 {
 			name += "." + strings.Join(p.Selector.Tail, ".")
 		} else if c.env != nil {
+			if ut, ok := c.env.FindUnionByVariant(p.Selector.Root); ok {
+				st := ut.Variants[p.Selector.Root]
+				c.ensureStruct(st)
+				if len(st.Order) == 0 {
+					return fmt.Sprintf("%%%s{}", sanitizeName(st.Name)), nil
+				}
+			}
 			if st, ok := c.env.GetStruct(p.Selector.Root); ok && len(st.Order) == 0 {
 				c.ensureStruct(st)
 				return fmt.Sprintf("%%%s{}", sanitizeName(st.Name)), nil
@@ -452,6 +459,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if strings.HasSuffix(p.Call.Func, ".contains") && len(args) == 1 {
 			base := strings.TrimSuffix(p.Call.Func, ".contains")
 			return fmt.Sprintf("String.contains?(%s, %s)", base, argStr), nil
+		}
+		if c.env != nil {
+			if ut, ok := c.env.FindUnionByVariant(p.Call.Func); ok {
+				st := ut.Variants[p.Call.Func]
+				if len(args) != len(st.Order) {
+					return "", fmt.Errorf("variant %s expects %d args", p.Call.Func, len(st.Order))
+				}
+				c.ensureStruct(st)
+				parts := make([]string, len(st.Order))
+				for i, f := range st.Order {
+					parts[i] = fmt.Sprintf("%s: %s", sanitizeName(f), args[i])
+				}
+				return fmt.Sprintf("%%%s{%s}", sanitizeName(st.Name), strings.Join(parts, ", ")), nil
+			}
 		}
 		switch p.Call.Func {
 		case "print":
