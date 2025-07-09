@@ -1,4 +1,4 @@
 void main() {
-  var square = (x) => x * x;
+  var square = (x) => (x as num) * (x as num);
   print(square(6));
 }

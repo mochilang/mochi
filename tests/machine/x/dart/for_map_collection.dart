@@ -1,6 +1,7 @@
 void main() {
   var m = {'a': 1, 'b': 2};
-  for (var k in m) {
+  var _iter0 = m;
+  for (var k in (_iter0 is Map ? (_iter0 as Map).keys : _iter0) as Iterable) {
     print(k);
   }
 }

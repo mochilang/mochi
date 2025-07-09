@@ -1,4 +1,4 @@
-line 7: exit status 254
-  for (var c in customers) {
-    _q0.add({'name': g.key, 'count': (() {
-  var _q1 = <dynamic>[];
+line 27: exit status 255
+          for (var r in g) {
+            if (!(r['o'])) continue;
+            _q4.add(r);
