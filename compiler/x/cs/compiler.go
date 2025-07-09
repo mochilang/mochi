@@ -430,27 +430,39 @@ func (c *Compiler) scanProgram(prog *parser.Program) {
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
-		expr, err := c.compileExpr(s.Let.Value)
-		if err != nil {
-			return err
-		}
 		name := sanitizeName(s.Let.Name)
 		var typ string
-		if s.Let.Type != nil {
-			typ = csType(s.Let.Type)
-			if isEmptyListLiteral(s.Let.Value) {
-				expr = fmt.Sprintf("new %s { }", typ)
+		var expr string
+		if s.Let.Value != nil {
+			var err error
+			expr, err = c.compileExpr(s.Let.Value)
+			if err != nil {
+				return err
+			}
+			if s.Let.Type != nil {
+				typ = csType(s.Let.Type)
+				if isEmptyListLiteral(s.Let.Value) {
+					expr = fmt.Sprintf("new %s { }", typ)
+				}
+			} else {
+				inferred := csTypeOf(c.inferExprType(s.Let.Value))
+				typ = inferred
+				if isEmptyListLiteral(s.Let.Value) && strings.HasSuffix(typ, "[]") {
+					expr = fmt.Sprintf("new %s { }", typ)
+				}
+			}
+			if s.Let.Type != nil && isFetchExpr(s.Let.Value) && typ != "" {
+				c.use("_cast")
+				expr = fmt.Sprintf("_cast<%s>(%s)", typ, expr)
 			}
 		} else {
-			inferred := csTypeOf(c.inferExprType(s.Let.Value))
-			typ = inferred
-			if isEmptyListLiteral(s.Let.Value) && strings.HasSuffix(typ, "[]") {
-				expr = fmt.Sprintf("new %s { }", typ)
+			if s.Let.Type != nil {
+				typ = csType(s.Let.Type)
+				expr = "default"
+			} else {
+				typ = "dynamic"
+				expr = "null"
 			}
-		}
-		if s.Let.Type != nil && isFetchExpr(s.Let.Value) && typ != "" {
-			c.use("_cast")
-			expr = fmt.Sprintf("_cast<%s>(%s)", typ, expr)
 		}
 		c.varTypes[name] = typ
 		decl := "var"
@@ -459,27 +471,39 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		c.writeln(fmt.Sprintf("%s %s = %s;", decl, name, expr))
 	case s.Var != nil:
-		expr, err := c.compileExpr(s.Var.Value)
-		if err != nil {
-			return err
-		}
 		name := sanitizeName(s.Var.Name)
 		var typ string
-		if s.Var.Type != nil {
-			typ = csType(s.Var.Type)
-			if isEmptyListLiteral(s.Var.Value) {
-				expr = fmt.Sprintf("new %s { }", typ)
+		var expr string
+		if s.Var.Value != nil {
+			var err error
+			expr, err = c.compileExpr(s.Var.Value)
+			if err != nil {
+				return err
+			}
+			if s.Var.Type != nil {
+				typ = csType(s.Var.Type)
+				if isEmptyListLiteral(s.Var.Value) {
+					expr = fmt.Sprintf("new %s { }", typ)
+				}
+			} else {
+				inferred := csTypeOf(c.inferExprType(s.Var.Value))
+				typ = inferred
+				if isEmptyListLiteral(s.Var.Value) && strings.HasSuffix(typ, "[]") {
+					expr = fmt.Sprintf("new %s { }", typ)
+				}
+			}
+			if s.Var.Type != nil && isFetchExpr(s.Var.Value) && typ != "" {
+				c.use("_cast")
+				expr = fmt.Sprintf("_cast<%s>(%s)", typ, expr)
 			}
 		} else {
-			inferred := csTypeOf(c.inferExprType(s.Var.Value))
-			typ = inferred
-			if isEmptyListLiteral(s.Var.Value) && strings.HasSuffix(typ, "[]") {
-				expr = fmt.Sprintf("new %s { }", typ)
+			if s.Var.Type != nil {
+				typ = csType(s.Var.Type)
+				expr = "default"
+			} else {
+				typ = "dynamic"
+				expr = "null"
 			}
-		}
-		if s.Var.Type != nil && isFetchExpr(s.Var.Value) && typ != "" {
-			c.use("_cast")
-			expr = fmt.Sprintf("_cast<%s>(%s)", typ, expr)
 		}
 		c.varTypes[name] = typ
 		decl := "var"
