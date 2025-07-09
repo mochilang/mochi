@@ -399,7 +399,7 @@ func (c *Compiler) compileExprStmt(s *parser.ExprStmt) error {
 			if err != nil {
 				return err
 			}
-			args[i] = v
+			args[i] = fmt.Sprintf("(%s)", v)
 		}
 		if len(args) == 1 {
 			c.writeln(fmt.Sprintf("println(%s)", args[0]))
@@ -424,14 +424,24 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	leftType := types.TypeOfUnary(e.Binary.Left, c.env)
 	for _, op := range e.Binary.Right {
 		r, err := c.compilePostfix(op.Right)
 		if err != nil {
 			return "", err
 		}
+		rightType := types.TypeOfPostfix(op.Right, c.env)
 		switch op.Op {
 		case "+", "-", "*", "/", "%", "==", "!=", "<", "<=", ">", ">=", "&&", "||":
-			s = fmt.Sprintf("%s %s %s", s, op.Op, r)
+			ls, rs := s, r
+			if _, ok := leftType.(types.AnyType); ok {
+				ls = fmt.Sprintf("(%s).asInstanceOf[Int]", s)
+			}
+			if _, ok := rightType.(types.AnyType); ok {
+				rs = fmt.Sprintf("(%s).asInstanceOf[Int]", r)
+			}
+			s = fmt.Sprintf("%s %s %s", ls, op.Op, rs)
+			leftType = types.AnyType{}
 		case "in":
 			ct := types.TypeOfPostfix(op.Right, c.env)
 			switch ct.(type) {
@@ -452,11 +462,19 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	valType := types.TypeOfPostfix(u.Value, c.env)
 	for i := len(u.Ops) - 1; i >= 0; i-- {
 		op := u.Ops[i]
 		switch op {
-		case "-", "!":
-			s = fmt.Sprintf("%s%s", op, s)
+		case "-":
+			switch valType.(type) {
+			case types.IntType, types.Int64Type, types.FloatType:
+				s = fmt.Sprintf("-%s", s)
+			default:
+				s = fmt.Sprintf("-(%s).asInstanceOf[Int]", s)
+			}
+		case "!":
+			s = fmt.Sprintf("!%s", s)
 		default:
 			return "", fmt.Errorf("line %d: unsupported unary op %s", u.Pos.Line, op)
 		}
@@ -848,11 +866,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.env = oldEnv
 		return "", err
 	}
-	c.env = oldEnv
 	expr := fmt.Sprintf("for { %s } yield %s", strings.Join(parts, "; "), sel)
 	if q.Sort != nil {
 		key, err := c.compileExpr(q.Sort)
 		if err != nil {
+			c.env = oldEnv
 			return "", err
 		}
 		expr = fmt.Sprintf("(%s).sortBy(%s => %s)", expr, q.Var, key)
@@ -860,6 +878,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if q.Skip != nil {
 		val, err := c.compileExpr(q.Skip)
 		if err != nil {
+			c.env = oldEnv
 			return "", err
 		}
 		expr = fmt.Sprintf("%s.drop(%s)", expr, val)
@@ -867,10 +886,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if q.Take != nil {
 		val, err := c.compileExpr(q.Take)
 		if err != nil {
+			c.env = oldEnv
 			return "", err
 		}
 		expr = fmt.Sprintf("%s.take(%s)", expr, val)
 	}
+	c.env = oldEnv
 	return expr, nil
 }
 
