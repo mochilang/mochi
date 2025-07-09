@@ -53,16 +53,8 @@ const (
 		"}\n"
 
 	helperAvg = "function _avg(v: any): number {\n" +
-		"  let list: any[] | null = null;\n" +
-		"  if (Array.isArray(v)) list = v;\n" +
-		"  else if (v && typeof v === 'object') {\n" +
-		"    if (Array.isArray((v as any).items)) list = (v as any).items;\n" +
-		"    else if (Array.isArray((v as any).Items)) list = (v as any).Items;\n" +
-		"  }\n" +
-		"  if (!list || list.length === 0) return 0;\n" +
-		"  let sum = 0;\n" +
-		"  for (const n of list) sum += Number(n);\n" +
-		"  return sum / list.length;\n" +
+		"  const c = _count(v);\n" +
+		"  return c ? _sum(v) / c : 0;\n" +
 		"}\n"
 
 	helperReduce = "function _reduce(src: any[], fn: (a: any, b: any) => any, acc: any): any {\n" +

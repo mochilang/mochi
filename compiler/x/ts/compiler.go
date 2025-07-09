@@ -1726,6 +1726,8 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		return fmt.Sprintf("_exists(%s)", argStr), nil
 	case "avg":
 		c.use("_avg")
+		c.use("_count")
+		c.use("_sum")
 		return fmt.Sprintf("_avg(%s)", argStr), nil
 	case "reduce":
 		if len(args) != 3 {
