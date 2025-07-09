@@ -1,10 +1,10 @@
-# Mochi to COBOL Machine Translations (13/97 compiled)
+# Mochi to COBOL Machine Translations (14/97 compiled)
 
 - [ ] append_builtin.mochi
 - [ ] avg_builtin.mochi
 - [x] basic_compare.mochi
 - [x] binary_precedence.mochi
-- [ ] bool_chain.mochi
+- [x] bool_chain.mochi
 - [ ] break_continue.mochi
 - [x] cast_string_to_int.mochi
 - [ ] cast_struct.mochi
