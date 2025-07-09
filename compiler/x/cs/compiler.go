@@ -1143,11 +1143,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		genv := types.NewEnv(child)
-		var groupT types.Type = types.AnyType{}
+		var elemT types.Type = types.AnyType{}
 		if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
-			groupT = lt.Elem
+			elemT = lt.Elem
 		}
-		genv.SetVar(q.Group.Name, groupT, true)
+		genv.SetVar(q.Group.Name, types.GroupType{Elem: elemT}, true)
 		c.env = genv
 		valExpr, err := c.compileExpr(q.Select)
 		if err != nil {
@@ -1183,7 +1183,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			srcParts = append(srcParts, fmt.Sprintf("Where(%s => %s)", v, cond))
 		}
 		filtered := strings.Join(srcParts, ".")
-		expr := fmt.Sprintf("_group_by(%s, %s => %s)", filtered, v, keyExpr)
+		expr := fmt.Sprintf("%s.GroupBy(%s => %s)", filtered, v, keyExpr)
 		expr = fmt.Sprintf("%s.Select(%s => %s)", expr, sanitizeName(q.Group.Name), valExpr)
 		if sortGroup != "" {
 			expr = fmt.Sprintf("%s.OrderBy(%s => %s)", expr, sanitizeName(q.Group.Name), sortGroup)
@@ -1194,8 +1194,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if takeExpr != "" {
 			expr = fmt.Sprintf("%s.Take(%s)", expr, takeExpr)
 		}
-		c.use("_group_by")
-		c.use("_group")
 		return fmt.Sprintf("%s.ToList()", expr), nil
 	}
 
@@ -2182,6 +2180,33 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 		}
 		if len(p.Selector.Tail) > 0 {
+			if gt, ok := typ.(types.GroupType); ok {
+				field := p.Selector.Tail[0]
+				if field == "key" {
+					expr = fmt.Sprintf("%s.Key", expr)
+					typ = types.AnyType{}
+				} else if field == "items" {
+					expr = fmt.Sprintf("%s", expr)
+					typ = types.ListType{Elem: gt.Elem}
+					expr += ".Items"
+				} else {
+					expr = fmt.Sprintf("%s[%q]", expr, field)
+					typ = types.AnyType{}
+				}
+				for _, f := range p.Selector.Tail[1:] {
+					expr += "." + sanitizeName(f)
+					if st, ok := typ.(types.StructType); ok {
+						if ft, ok := st.Fields[f]; ok {
+							typ = ft
+						} else {
+							typ = types.AnyType{}
+						}
+					} else {
+						typ = types.AnyType{}
+					}
+				}
+				return expr, nil
+			}
 			if mt, ok := typ.(types.MapType); ok {
 				key := p.Selector.Tail[0]
 				expr = fmt.Sprintf("%s[%q]", expr, key)

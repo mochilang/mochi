@@ -3,40 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public class Program
-{
-    public static void Main()
-    {
+public class Program {
+    public static void Main() {
         var items = new Dictionary<string, dynamic>[] { new Dictionary<string, dynamic> { { "cat", "a" }, { "val", 10 }, { "flag", true } }, new Dictionary<string, dynamic> { { "cat", "a" }, { "val", 5 }, { "flag", false } }, new Dictionary<string, dynamic> { { "cat", "b" }, { "val", 20 }, { "flag", true } } };
-        var result = _group_by(items, i => i["cat"]).Select(g => new Dictionary<string, dynamic> { { "cat", g["key"] }, { "share", (Enumerable.Sum(g.Select(x => (x["flag"] ? x["val"] : 0)).Select(_tmp2 => Convert.ToDouble(_tmp2))) / Enumerable.Sum(g.Select(x => x["val"]).Select(_tmp3 => Convert.ToDouble(_tmp3)))) } }).OrderBy(g => g["key"]).ToList();
+        var result = items.GroupBy(i => i["cat"]).Select(g => new Dictionary<string, dynamic> { { "cat", g.Key }, { "share", (Enumerable.Sum(g.Select(x => (x["flag"] ? x["val"] : 0)).Select(_tmp2=>Convert.ToDouble(_tmp2))) / Enumerable.Sum(g.Select(x => x["val"]).Select(_tmp3=>Convert.ToDouble(_tmp3)))) } }).OrderBy(g => g.Key).ToList();
         Console.WriteLine(result);
     }
-    static List<_Group> _group_by(IEnumerable<dynamic> src, Func<dynamic, dynamic> keyfn)
-    {
-        var groups = new Dictionary<string, _Group>();
-        var order = new List<string>();
-        foreach (var it in src)
-        {
-            var key = keyfn(it);
-            var ks = Convert.ToString(key);
-            if (!groups.TryGetValue(ks, out var g))
-            {
-                g = new _Group(key);
-                groups[ks] = g;
-                order.Add(ks);
-            }
-            g.Items.Add(it);
-        }
-        var res = new List<_Group>();
-        foreach (var k in order) res.Add(groups[k]);
-        return res;
-    }
-
-    public class _Group
-    {
-        public dynamic key;
-        public List<dynamic> Items = new List<dynamic>();
-        public _Group(dynamic k) { key = k; }
-    }
-
 }
