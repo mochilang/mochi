@@ -1106,13 +1106,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			defer delete(c.tupleFields, sanitizeName(q.Var))
 		}
 	}
-	hasSide := false
-	for _, j := range q.Joins {
-		if j.Side != nil {
-			hasSide = true
-			break
-		}
-	}
 
 	child := types.NewEnv(c.env)
 	var elemType types.Type = types.AnyType{}
@@ -1153,197 +1146,27 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 
-	if !hasSide {
-		if q.Group != nil {
-			keyExpr, err := c.compileExpr(q.Group.Exprs[0])
-			if err != nil {
-				c.env = orig
-				return "", err
-			}
-
-			fromSrcs := make([]string, len(q.Froms))
-			varNames := []string{sanitizeName(q.Var)}
-			for i, f := range q.Froms {
-				fs, err := c.compileExpr(f.Src)
-				if err != nil {
-					c.env = orig
-					return "", err
-				}
-				fromSrcs[i] = fs
-				varNames = append(varNames, sanitizeName(f.Var))
-			}
-			joinSrcs := make([]string, len(q.Joins))
-			joinOns := make([]string, len(q.Joins))
-			paramCopy := append([]string(nil), varNames...)
-			for i, j := range q.Joins {
-				js, err := c.compileExpr(j.Src)
-				if err != nil {
-					c.env = orig
-					return "", err
-				}
-				joinSrcs[i] = js
-				on, err := c.compileExpr(j.On)
-				if err != nil {
-					c.env = orig
-					return "", err
-				}
-				joinOns[i] = on
-				varNames = append(varNames, sanitizeName(j.Var))
-			}
-			var whereExpr string
-			if q.Where != nil {
-				whereExpr, err = c.compileExpr(q.Where)
-				if err != nil {
-					c.env = orig
-					return "", err
-				}
-			}
+	if q.Group != nil {
+		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
+		if err != nil {
 			c.env = orig
-
-			joins := make([]string, 0, len(q.Froms)+len(q.Joins))
-			params := []string{sanitizeName(q.Var)}
-			for i, fs := range fromSrcs {
-				joins = append(joins, fmt.Sprintf("{ 'items': %s }", fs))
-				params = append(params, sanitizeName(q.Froms[i].Var))
-			}
-			paramCopy = append([]string(nil), params...)
-			for i, js := range joinSrcs {
-				onParams := append(paramCopy, sanitizeName(q.Joins[i].Var))
-				spec := fmt.Sprintf("{ 'items': %s, 'on': lambda %s: (%s)", js, strings.Join(onParams, ", "), joinOns[i])
-				if q.Joins[i].Side != nil {
-					side := *q.Joins[i].Side
-					if side == "left" || side == "outer" {
-						spec += ", 'left': True"
-					}
-					if side == "right" || side == "outer" {
-						spec += ", 'right': True"
-					}
-				}
-				spec += " }"
-				joins = append(joins, spec)
-				paramCopy = append(paramCopy, sanitizeName(q.Joins[i].Var))
-			}
-			allParams := strings.Join(paramCopy, ", ")
-			fieldMap := map[string]int{}
-			for i, n := range paramCopy {
-				fieldMap[sanitizeName(n)] = i
-			}
-			c.tupleFields[sanitizeName(q.Group.Name)] = fieldMap
-			rowExpr := "(" + allParams + ")"
-			selectFn := fmt.Sprintf("lambda %s: %s", allParams, rowExpr)
-			var whereFn string
-			if whereExpr != "" {
-				whereFn = fmt.Sprintf("lambda %s: (%s)", allParams, whereExpr)
-			}
-
-			joinStr := strings.Join(joins, ", ")
-			opts := "{ 'select': " + selectFn
-			if whereFn != "" {
-				opts += ", 'where': " + whereFn
-			}
-			opts += " }"
-
-			genv := types.NewEnv(child)
-			genv.SetVar(q.Group.Name, types.GroupType{Elem: elemType}, true)
-
-			var sortExpr, skipExpr, takeExpr string
-			if q.Sort != nil {
-				c.env = genv
-				sortExpr, err = c.compileExpr(q.Sort)
-				c.env = orig
-				if err != nil {
-					return "", err
-				}
-			}
-			if q.Skip != nil {
-				c.env = genv
-				skipExpr, err = c.compileExpr(q.Skip)
-				c.env = orig
-				if err != nil {
-					return "", err
-				}
-			}
-			if q.Take != nil {
-				c.env = genv
-				takeExpr, err = c.compileExpr(q.Take)
-				c.env = orig
-				if err != nil {
-					return "", err
-				}
-			}
-
-			c.env = genv
-			val, err := c.compileExpr(q.Select)
-			if err != nil {
-				c.env = orig
-				return "", err
-			}
-			c.env = orig
-
-			fn := fmt.Sprintf("_q%d", c.tmpCount)
-			c.tmpCount++
-			c.writeln(fmt.Sprintf("def %s():", fn))
-			c.indent++
-			c.writeln(fmt.Sprintf("_src = %s", src))
-			c.writeln(fmt.Sprintf("_rows = _query(_src, [%s], %s)", joinStr, opts))
-			c.writeln(fmt.Sprintf("_groups = _group_by(_rows, lambda %s: (%s))", allParams, keyExpr))
-			tmpItems := fmt.Sprintf("_items%d", c.tmpCount)
-			c.tmpCount++
-			c.writeln(fmt.Sprintf("%s = _groups", tmpItems))
-			if sortExpr != "" {
-				c.use("_sort_key")
-				c.writeln(fmt.Sprintf("%s = sorted(%s, key=lambda %s: _sort_key(%s))", tmpItems, tmpItems, sanitizeName(q.Group.Name), sortExpr))
-			}
-			if skipExpr != "" {
-				c.writeln(fmt.Sprintf("%s = (%s)[max(%s, 0):]", tmpItems, tmpItems, skipExpr))
-			}
-			if takeExpr != "" {
-				c.writeln(fmt.Sprintf("%s = (%s)[:max(%s, 0)]", tmpItems, tmpItems, takeExpr))
-			}
-			c.writeln(fmt.Sprintf("return [ %s for %s in %s ]", val, sanitizeName(q.Group.Name), tmpItems))
-			c.indent--
-			c.writeln("")
-
-			delete(c.tupleFields, sanitizeName(q.Group.Name))
-			c.use("_query")
-			c.use("_group_by")
-			c.use("_group")
-			return fn + "()", nil
+			return "", err
 		}
 
-		whereExpr := ""
-		whereLevel := 0
-		if q.Where != nil {
-			whereLevel = whereEvalLevel(q)
-			w, err := c.compileExpr(q.Where)
-			if err != nil {
-				c.env = orig
-				return "", err
-			}
-			whereExpr = w
-		}
-
-		loop0 := fmt.Sprintf("%s in %s", sanitizeName(q.Var), src)
-		if whereExpr != "" && whereLevel == 0 {
-			loop0 += " if " + whereExpr
-		}
-		loops := []string{loop0}
-		paramList := []string{sanitizeName(q.Var)}
+		fromSrcs := make([]string, len(q.Froms))
+		varNames := []string{sanitizeName(q.Var)}
 		for i, f := range q.Froms {
 			fs, err := c.compileExpr(f.Src)
 			if err != nil {
 				c.env = orig
 				return "", err
 			}
-			loop := fmt.Sprintf("%s in %s", sanitizeName(f.Var), fs)
-			if whereExpr != "" && whereLevel == i+1 {
-				loop += " if " + whereExpr
-			}
-			loops = append(loops, loop)
-			paramList = append(paramList, sanitizeName(f.Var))
+			fromSrcs[i] = fs
+			varNames = append(varNames, sanitizeName(f.Var))
 		}
-		condParts := []string{}
 		joinSrcs := make([]string, len(q.Joins))
+		joinOns := make([]string, len(q.Joins))
+		paramCopy := append([]string(nil), varNames...)
 		for i, j := range q.Joins {
 			js, err := c.compileExpr(j.Src)
 			if err != nil {
@@ -1351,88 +1174,256 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				return "", err
 			}
 			joinSrcs[i] = js
-			loops = append(loops, fmt.Sprintf("%s in %s", sanitizeName(j.Var), js))
 			on, err := c.compileExpr(j.On)
 			if err != nil {
 				c.env = orig
 				return "", err
 			}
-			condParts = append(condParts, on)
-			paramList = append(paramList, sanitizeName(j.Var))
+			joinOns[i] = on
+			varNames = append(varNames, sanitizeName(j.Var))
+		}
+		var gWhereExpr string
+		if q.Where != nil {
+			gWhereExpr, err = c.compileExpr(q.Where)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
 		}
 		c.env = orig
-		cond := ""
-		if len(condParts) > 0 {
-			cond = " if " + strings.Join(condParts, " and ")
+
+		joins := make([]string, 0, len(q.Froms)+len(q.Joins))
+		params := []string{sanitizeName(q.Var)}
+		for i, fs := range fromSrcs {
+			joins = append(joins, fmt.Sprintf("{ 'items': %s }", fs))
+			params = append(params, sanitizeName(q.Froms[i].Var))
 		}
-		if len(q.Joins) == 0 {
-			if q.Sort == nil && q.Skip == nil && q.Take == nil {
-				if q.Group == nil && q.Select != nil &&
-					q.Select.Binary != nil && len(q.Select.Binary.Right) == 0 &&
-					q.Select.Binary.Left != nil && len(q.Select.Binary.Left.Ops) == 0 &&
-					q.Select.Binary.Left.Value != nil && q.Select.Binary.Left.Value.Target != nil &&
-					q.Select.Binary.Left.Value.Target.Call != nil {
-					call := q.Select.Binary.Left.Value.Target.Call
-					if len(call.Args) == 1 {
-						fn := call.Func
-						if fn == "sum" || fn == "count" || fn == "avg" || fn == "min" || fn == "max" {
-							argExpr, err := c.compileExpr(call.Args[0])
-							if err != nil {
-								return "", err
-							}
-							items := fmt.Sprintf("[ %s for %s%s ]", argExpr, strings.Join(loops, " for "), cond)
-							switch fn {
-							case "sum":
-								return fmt.Sprintf("sum(%s)", items), nil
-							case "count":
-								return fmt.Sprintf("len(%s)", items), nil
-							case "avg":
-								c.use("_avg")
-								return fmt.Sprintf("_avg(%s)", items), nil
-							case "min":
-								c.use("_min")
-								return fmt.Sprintf("_min(%s)", items), nil
-							case "max":
-								c.use("_max")
-								return fmt.Sprintf("_max(%s)", items), nil
-							}
+		paramCopy = append([]string(nil), params...)
+		for i, js := range joinSrcs {
+			onParams := append(paramCopy, sanitizeName(q.Joins[i].Var))
+			spec := fmt.Sprintf("{ 'items': %s, 'on': lambda %s: (%s)", js, strings.Join(onParams, ", "), joinOns[i])
+			if q.Joins[i].Side != nil {
+				side := *q.Joins[i].Side
+				if side == "left" || side == "outer" {
+					spec += ", 'left': True"
+				}
+				if side == "right" || side == "outer" {
+					spec += ", 'right': True"
+				}
+			}
+			spec += " }"
+			joins = append(joins, spec)
+			paramCopy = append(paramCopy, sanitizeName(q.Joins[i].Var))
+		}
+		allParams := strings.Join(paramCopy, ", ")
+		fieldMap := map[string]int{}
+		for i, n := range paramCopy {
+			fieldMap[sanitizeName(n)] = i
+		}
+		c.tupleFields[sanitizeName(q.Group.Name)] = fieldMap
+		rowExpr := "(" + allParams + ")"
+		selectFn := fmt.Sprintf("lambda %s: %s", allParams, rowExpr)
+		var whereFn string
+		if gWhereExpr != "" {
+			whereFn = fmt.Sprintf("lambda %s: (%s)", allParams, gWhereExpr)
+		}
+
+		joinStr := strings.Join(joins, ", ")
+		opts := "{ 'select': " + selectFn
+		if whereFn != "" {
+			opts += ", 'where': " + whereFn
+		}
+		opts += " }"
+
+		genv := types.NewEnv(child)
+		genv.SetVar(q.Group.Name, types.GroupType{Elem: elemType}, true)
+
+		var sortExpr, skipExpr, takeExpr string
+		if q.Sort != nil {
+			c.env = genv
+			sortExpr, err = c.compileExpr(q.Sort)
+			c.env = orig
+			if err != nil {
+				return "", err
+			}
+		}
+		if q.Skip != nil {
+			c.env = genv
+			skipExpr, err = c.compileExpr(q.Skip)
+			c.env = orig
+			if err != nil {
+				return "", err
+			}
+		}
+		if q.Take != nil {
+			c.env = genv
+			takeExpr, err = c.compileExpr(q.Take)
+			c.env = orig
+			if err != nil {
+				return "", err
+			}
+		}
+
+		c.env = genv
+		val, err := c.compileExpr(q.Select)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		c.env = orig
+
+		fn := fmt.Sprintf("_q%d", c.tmpCount)
+		c.tmpCount++
+		c.writeln(fmt.Sprintf("def %s():", fn))
+		c.indent++
+		c.writeln(fmt.Sprintf("_src = %s", src))
+		c.writeln(fmt.Sprintf("_rows = _query(_src, [%s], %s)", joinStr, opts))
+		c.writeln(fmt.Sprintf("_groups = _group_by(_rows, lambda %s: (%s))", allParams, keyExpr))
+		tmpItems := fmt.Sprintf("_items%d", c.tmpCount)
+		c.tmpCount++
+		c.writeln(fmt.Sprintf("%s = _groups", tmpItems))
+		if sortExpr != "" {
+			c.use("_sort_key")
+			c.writeln(fmt.Sprintf("%s = sorted(%s, key=lambda %s: _sort_key(%s))", tmpItems, tmpItems, sanitizeName(q.Group.Name), sortExpr))
+		}
+		if skipExpr != "" {
+			c.writeln(fmt.Sprintf("%s = (%s)[max(%s, 0):]", tmpItems, tmpItems, skipExpr))
+		}
+		if takeExpr != "" {
+			c.writeln(fmt.Sprintf("%s = (%s)[:max(%s, 0)]", tmpItems, tmpItems, takeExpr))
+		}
+		c.writeln(fmt.Sprintf("return [ %s for %s in %s ]", val, sanitizeName(q.Group.Name), tmpItems))
+		c.indent--
+		c.writeln("")
+
+		delete(c.tupleFields, sanitizeName(q.Group.Name))
+		c.use("_query")
+		c.use("_group_by")
+		c.use("_group")
+		return fn + "()", nil
+	}
+
+	whereExpr := ""
+	whereLevel := 0
+	if q.Where != nil {
+		whereLevel = whereEvalLevel(q)
+		w, err := c.compileExpr(q.Where)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		whereExpr = w
+	}
+
+	loop0 := fmt.Sprintf("%s in %s", sanitizeName(q.Var), src)
+	if whereExpr != "" && whereLevel == 0 {
+		loop0 += " if " + whereExpr
+	}
+	loops := []string{loop0}
+	paramList := []string{sanitizeName(q.Var)}
+	for i, f := range q.Froms {
+		fs, err := c.compileExpr(f.Src)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		loop := fmt.Sprintf("%s in %s", sanitizeName(f.Var), fs)
+		if whereExpr != "" && whereLevel == i+1 {
+			loop += " if " + whereExpr
+		}
+		loops = append(loops, loop)
+		paramList = append(paramList, sanitizeName(f.Var))
+	}
+	condParts := []string{}
+	joinList := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		joinList[i] = js
+		loops = append(loops, fmt.Sprintf("%s in %s", sanitizeName(j.Var), js))
+		on, err := c.compileExpr(j.On)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		condParts = append(condParts, on)
+		paramList = append(paramList, sanitizeName(j.Var))
+	}
+	c.env = orig
+	cond := ""
+	if len(condParts) > 0 {
+		cond = " if " + strings.Join(condParts, " and ")
+	}
+	if len(q.Joins) == 0 {
+		if q.Sort == nil && q.Skip == nil && q.Take == nil {
+			if q.Group == nil && q.Select != nil &&
+				q.Select.Binary != nil && len(q.Select.Binary.Right) == 0 &&
+				q.Select.Binary.Left != nil && len(q.Select.Binary.Left.Ops) == 0 &&
+				q.Select.Binary.Left.Value != nil && q.Select.Binary.Left.Value.Target != nil &&
+				q.Select.Binary.Left.Value.Target.Call != nil {
+				call := q.Select.Binary.Left.Value.Target.Call
+				if len(call.Args) == 1 {
+					fn := call.Func
+					if fn == "sum" || fn == "count" || fn == "avg" || fn == "min" || fn == "max" {
+						argExpr, err := c.compileExpr(call.Args[0])
+						if err != nil {
+							return "", err
+						}
+						items := fmt.Sprintf("[ %s for %s%s ]", argExpr, strings.Join(loops, " for "), cond)
+						switch fn {
+						case "sum":
+							return fmt.Sprintf("sum(%s)", items), nil
+						case "count":
+							return fmt.Sprintf("len(%s)", items), nil
+						case "avg":
+							c.use("_avg")
+							return fmt.Sprintf("_avg(%s)", items), nil
+						case "min":
+							c.use("_min")
+							return fmt.Sprintf("_min(%s)", items), nil
+						case "max":
+							c.use("_max")
+							return fmt.Sprintf("_max(%s)", items), nil
 						}
 					}
 				}
-				return fmt.Sprintf("[ %s for %s%s ]", sel, strings.Join(loops, " for "), cond), nil
 			}
-
-			items := fmt.Sprintf("[ %s for %s%s ]", sanitizeName(q.Var), strings.Join(loops, " for "), cond)
-			if q.Sort != nil {
-				c.env = child
-				s, err := c.compileExpr(q.Sort)
-				c.env = orig
-				if err != nil {
-					return "", err
-				}
-				c.use("_sort_key")
-				items = fmt.Sprintf("sorted(%s, key=lambda %s: _sort_key(%s))", items, strings.Join(paramList, ", "), s)
-			}
-			if q.Skip != nil {
-				c.env = child
-				sk, err := c.compileExpr(q.Skip)
-				c.env = orig
-				if err != nil {
-					return "", err
-				}
-				items = fmt.Sprintf("(%s)[max(%s, 0):]", items, sk)
-			}
-			if q.Take != nil {
-				c.env = child
-				tk, err := c.compileExpr(q.Take)
-				c.env = orig
-				if err != nil {
-					return "", err
-				}
-				items = fmt.Sprintf("(%s)[:max(%s, 0)]", items, tk)
-			}
-			return fmt.Sprintf("[ %s for %s in %s ]", sel, sanitizeName(q.Var), items), nil
+			return fmt.Sprintf("[ %s for %s%s ]", sel, strings.Join(loops, " for "), cond), nil
 		}
+
+		items := fmt.Sprintf("[ %s for %s%s ]", sanitizeName(q.Var), strings.Join(loops, " for "), cond)
+		if q.Sort != nil {
+			c.env = child
+			s, err := c.compileExpr(q.Sort)
+			c.env = orig
+			if err != nil {
+				return "", err
+			}
+			c.use("_sort_key")
+			items = fmt.Sprintf("sorted(%s, key=lambda %s: _sort_key(%s))", items, strings.Join(paramList, ", "), s)
+		}
+		if q.Skip != nil {
+			c.env = child
+			sk, err := c.compileExpr(q.Skip)
+			c.env = orig
+			if err != nil {
+				return "", err
+			}
+			items = fmt.Sprintf("(%s)[max(%s, 0):]", items, sk)
+		}
+		if q.Take != nil {
+			c.env = child
+			tk, err := c.compileExpr(q.Take)
+			c.env = orig
+			if err != nil {
+				return "", err
+			}
+			items = fmt.Sprintf("(%s)[:max(%s, 0)]", items, tk)
+		}
+		return fmt.Sprintf("[ %s for %s in %s ]", sel, sanitizeName(q.Var), items), nil
 	}
 
 	fromSrcs := make([]string, len(q.Froms))
@@ -1471,7 +1462,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.env = orig
 		return "", err
 	}
-	var whereExpr, sortExpr, skipExpr, takeExpr string
+	var sortExpr, skipExpr, takeExpr string
 	if q.Where != nil {
 		c.env = child
 		whereExpr, err = c.compileExpr(q.Where)

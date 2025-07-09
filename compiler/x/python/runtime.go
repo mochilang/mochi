@@ -154,12 +154,13 @@ var helperLoad = "def _load(path, opts):\n" +
 	"            path = base\n" +
 	"        elif os.environ.get('MOCHI_ROOT'):\n" +
 	"            root = os.environ.get('MOCHI_ROOT')\n" +
-	"            p = os.path.normpath(os.path.join(root, path))\n" +
+	"            clean = path\n" +
+	"            while clean.startswith('../'):\n" +
+	"                clean = clean[3:]\n" +
+	"            p = os.path.join(root, 'tests', clean)\n" +
 	"            if not os.path.exists(p):\n" +
-	"                p2 = os.path.normpath(os.path.join(root, 'tests', path))\n" +
-	"                if os.path.exists(p2):\n" +
-	"                    p = p2\n" +
-	"            path = p\n" +
+	"                p = os.path.join(root, clean)\n" +
+	"            path = os.path.normpath(p)\n" +
 	"    f = sys.stdin if path is None or path == '-' else open(path, 'r')\n" +
 	"    try:\n" +
 	"        if fmt == 'tsv':\n" +
@@ -197,8 +198,34 @@ var helperLoad = "def _load(path, opts):\n" +
 	"        elif fmt == 'jsonl':\n" +
 	"            return [json.loads(line) for line in f if line.strip()]\n" +
 	"        elif fmt == 'yaml':\n" +
-	"            import yaml\n" +
-	"            data = yaml.safe_load(f)\n" +
+	"            try:\n" +
+	"                import yaml\n" +
+	"                data = yaml.safe_load(f)\n" +
+	"            except Exception:\n" +
+	"                data = []\n" +
+	"                cur = None\n" +
+	"                for line in f:\n" +
+	"                    line = line.rstrip()\n" +
+	"                    if not line:\n" +
+	"                        continue\n" +
+	"                    if line.startswith('- '):\n" +
+	"                        if cur is not None:\n" +
+	"                            data.append(cur)\n" +
+	"                        cur = {}\n" +
+	"                        line = line[2:]\n" +
+	"                    if ':' in line:\n" +
+	"                        k, v = line.split(':', 1)\n" +
+	"                        k = k.strip()\n" +
+	"                        v = v.strip()\n" +
+	"                        if v.isdigit():\n" +
+	"                            cur[k] = int(v)\n" +
+	"                        else:\n" +
+	"                            try:\n" +
+	"                                cur[k] = float(v)\n" +
+	"                            except:\n" +
+	"                                cur[k] = v\n" +
+	"                if cur is not None:\n" +
+	"                    data.append(cur)\n" +
 	"            if isinstance(data, list):\n" +
 	"                return [dict(d) for d in data]\n" +
 	"            if isinstance(data, dict):\n" +
@@ -211,7 +238,7 @@ var helperLoad = "def _load(path, opts):\n" +
 	"            f.close()\n"
 
 var helperSave = "def _save(rows, path, opts):\n" +
-	"    import csv, json, sys, dataclasses\n" +
+	"    import csv, json, sys, dataclasses, os\n" +
 	"    fmt = 'csv'\n" +
 	"    header = False\n" +
 	"    delim = ','\n" +

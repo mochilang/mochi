@@ -28,6 +28,38 @@ def _get(obj, name):
     raise Exception("field not found: " + name)
 
 
+class _Group(Generic[K, T]):
+    def __init__(self, key: K):
+        self.key = key
+        self.Items: list[T] = []
+        self.items = self.Items
+
+    def __iter__(self):
+        return iter(self.Items)
+
+
+def _group_by(src: list[T], keyfn: Callable[[T], K]) -> list[_Group[K, T]]:
+    groups: dict[str, _Group[K, T]] = {}
+    order: list[str] = []
+    for it in src:
+        if isinstance(it, (list, tuple)):
+            key = keyfn(*it)
+        else:
+            key = keyfn(it)
+        if isinstance(key, dict):
+            import types
+
+            key = types.SimpleNamespace(**key)
+        ks = str(key)
+        g = groups.get(ks)
+        if not g:
+            g = _Group(key)
+            groups[ks] = g
+            order.append(ks)
+        g.Items.append(it)
+    return [groups[k] for k in order]
+
+
 def _query(src, joins, opts):
     items = [[v] for v in src]
     for j in joins:
@@ -116,22 +148,29 @@ orders: list[dict[str, int]] = [
     {"id": 101, "customerId": 1},
     {"id": 102, "customerId": 2},
 ]
-stats: list[dict[str, typing.Any]] = _query(
-    customers,
-    [
-        {
-            "items": orders,
-            "on": lambda c, o: ((o["customerId"] == c["id"])),
-            "left": True,
-        }
-    ],
-    {
-        "select": lambda c, o: {
-            "name": _get(g, "key"),
-            "count": len([r for r in g if _get(r, "o")]),
-        }
-    },
-)
+
+
+def _q0():
+    _src = customers
+    _rows = _query(
+        _src,
+        [
+            {
+                "items": orders,
+                "on": lambda c, o: ((o["customerId"] == c["id"])),
+                "left": True,
+            }
+        ],
+        {"select": lambda c, o: (c, o)},
+    )
+    _groups = _group_by(_rows, lambda c, o: (c["name"]))
+    _items1 = _groups
+    return [
+        {"name": _get(g, "key"), "count": len([r for r in g if r[1]])} for g in _items1
+    ]
+
+
+stats: list[dict[str, typing.Any]] = _q0()
 print("--- Group Left Join ---")
 for s in stats:
     print(s["name"], "orders:", s["count"])

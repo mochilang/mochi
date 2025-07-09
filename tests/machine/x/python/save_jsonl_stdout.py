@@ -10,7 +10,7 @@ K = TypeVar("K")
 
 
 def _save(rows, path, opts):
-    import csv, json, sys, dataclasses
+    import csv, json, sys, dataclasses, os
 
     fmt = "csv"
     header = False
