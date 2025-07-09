@@ -1,0 +1,3 @@
+ERROR: /workspace/mochi/tests/machine/x/pl/fun_three_args.pl:2:4: Syntax error: Operator expected
+ERROR: /workspace/mochi/tests/machine/x/pl/fun_three_args.pl:7:7: Syntax error: Operator expected
+

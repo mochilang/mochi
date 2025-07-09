@@ -1,0 +1,3 @@
+ERROR: /workspace/mochi/tests/machine/x/pl/pure_fold.pl:2:6: Syntax error: Operator expected
+ERROR: /workspace/mochi/tests/machine/x/pl/pure_fold.pl:7:9: Syntax error: Operator expected
+

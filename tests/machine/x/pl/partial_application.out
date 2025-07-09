@@ -1,0 +1,3 @@
+ERROR: /workspace/mochi/tests/machine/x/pl/partial_application.pl:2:3: Syntax error: Operator expected
+ERROR: /workspace/mochi/tests/machine/x/pl/partial_application.pl:7:6: Syntax error: Operator expected
+

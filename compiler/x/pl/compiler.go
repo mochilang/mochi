@@ -117,6 +117,14 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
+		if call := getSimpleCall(s.Let.Value); call != nil && call.Func == "exists" && len(call.Args) == 1 {
+			if q := getQuery(call.Args[0]); q != nil {
+				if err := c.compileExists(s.Let.Name, q); err != nil {
+					return err
+				}
+				return nil
+			}
+		}
 		val, arith, err := c.compileExpr(s.Let.Value)
 		if err != nil {
 			return err
@@ -133,6 +141,14 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if s.Var.Value == nil {
 			c.writeln(fmt.Sprintf("%s = _,", name))
 			return nil
+		}
+		if call := getSimpleCall(s.Var.Value); call != nil && call.Func == "exists" && len(call.Args) == 1 {
+			if q := getQuery(call.Args[0]); q != nil {
+				if err := c.compileExists(s.Var.Name, q); err != nil {
+					return err
+				}
+				return nil
+			}
 		}
 		val, arith, err := c.compileExpr(s.Var.Value)
 		if err != nil {
@@ -587,4 +603,64 @@ func isBoolExpr(s string) bool {
 		}
 	}
 	return false
+}
+
+func getSimpleCall(e *parser.Expr) *parser.CallExpr {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return nil
+	}
+	if p.Target != nil && p.Target.Call != nil {
+		return p.Target.Call
+	}
+	return nil
+}
+
+func getQuery(e *parser.Expr) *parser.QueryExpr {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return nil
+	}
+	return p.Target.Query
+}
+
+func (c *Compiler) compileExists(name string, q *parser.QueryExpr) error {
+	src, _, err := c.compileExpr(q.Source)
+	if err != nil {
+		return err
+	}
+	varName := sanitizeVar(q.Var)
+	old := c.vars
+	c.vars = make(map[string]string)
+	for k, v := range old {
+		c.vars[k] = v
+	}
+	c.vars[q.Var] = varName
+	cond := "true"
+	if q.Where != nil {
+		cond, _, err = c.compileExpr(q.Where)
+		if err != nil {
+			c.vars = old
+			return err
+		}
+	}
+	c.vars = old
+	target := sanitizeVar(name)
+	c.writeln(fmt.Sprintf("(once((member(%s, %s), %s)) -> %s = true ; %s = false),", varName, src, cond, target, target))
+	c.vars[name] = target
+	return nil
 }
