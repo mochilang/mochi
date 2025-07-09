@@ -78,15 +78,15 @@ runs produce a `.out` file while failures generate a `.error` report.
 - [x] match_expr
 - [x] match_full
 - [x] tree_sum
+- [x] group_items_iteration
+- [x] two-sum
 
 ## Failed to build or run
 
-- [ ] group_items_iteration
 - [ ] load_yaml
  - [x] nested_function
 - [ ] save_jsonl_stdout
 - [ ] test_block
-- [ ] two-sum
 - [ ] update_stmt
 
 ## Remaining Tasks

@@ -123,6 +123,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return nil
 	case s.Fun != nil:
 		return c.compileLocalFun(s.Fun)
+	case s.Let != nil:
+		return c.compileLocalLet(s.Let)
+	case s.Var != nil:
+		return c.compileLocalVar(s.Var)
 	default:
 		return fmt.Errorf("unsupported statement at line %d", s.Pos.Line)
 	}
@@ -176,6 +180,47 @@ func (c *Compiler) compileGlobalVar(v *parser.VarStmt) error {
 		c.writeln(fmt.Sprintf("let %s : %s ref = ref %s", v.Name, typStr, val))
 	} else {
 		c.writeln(fmt.Sprintf("let %s = ref %s", v.Name, val))
+	}
+	return nil
+}
+
+func (c *Compiler) compileLocalLet(l *parser.LetStmt) error {
+	val := "()"
+	var err error
+	if l.Value != nil {
+		val, err = c.compileExpr(l.Value)
+		if err != nil {
+			return err
+		}
+	}
+	typ := ""
+	if l.Type != nil {
+		typ = c.typeRef(l.Type)
+	}
+	if typ != "" {
+		c.writeln(fmt.Sprintf("let %s : %s = %s in", l.Name, typ, val))
+	} else {
+		c.writeln(fmt.Sprintf("let %s = %s in", l.Name, val))
+	}
+	return nil
+}
+
+func (c *Compiler) compileLocalVar(v *parser.VarStmt) error {
+	val := "0"
+	var err error
+	if v.Value != nil {
+		val, err = c.compileExpr(v.Value)
+		if err != nil {
+			return err
+		}
+	}
+	c.vars[v.Name] = true
+	typ, _ := c.env.GetVar(v.Name)
+	typStr := ocamlType(typ)
+	if typStr != "" {
+		c.writeln(fmt.Sprintf("let %s : %s ref = ref %s in", v.Name, typStr, val))
+	} else {
+		c.writeln(fmt.Sprintf("let %s = ref %s in", v.Name, val))
 	}
 	return nil
 }
@@ -2038,9 +2083,8 @@ func (c *Compiler) scanPrimary(p *parser.Primary) {
 		c.scanQuery(p.Query)
 	case p.Match != nil:
 		for _, cs := range p.Match.Cases {
-			for _, st := range cs.Body {
-				c.scanStmt(st)
-			}
+			c.scanExpr(cs.Pattern)
+			c.scanExpr(cs.Result)
 		}
 	case p.FunExpr != nil:
 		if p.FunExpr.ExprBody != nil {
