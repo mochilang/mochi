@@ -1,0 +1,13 @@
+#lang racket
+(define data (list (hash 'tag "a" 'val 1) (hash 'tag "a" 'val 2) (hash 'tag "b" 'val 3)))
+(define groups (for*/list ([d data]) g))
+(define tmp (list ))
+(for ([g (if (hash? groups) (hash-keys groups) groups)])
+(define total 0)
+(for ([x (if (hash? (hash-ref g 'items)) (hash-keys (hash-ref g 'items)) (hash-ref g 'items))])
+(set! total (+ total (hash-ref x 'val)))
+)
+(set! tmp (append tmp (list (hash 'tag (hash-ref g 'key) 'total total))))
+)
+(define result (for*/list ([r tmp]) r))
+(displayln result)
