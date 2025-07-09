@@ -1,5 +1,5 @@
 | items grouped |
-items := {Dictionary newFrom: {cat -> 'a'. val -> 3}. Dictionary newFrom: {cat -> 'a'. val -> 1}. Dictionary newFrom: {cat -> 'b'. val -> 5}. Dictionary newFrom: {cat -> 'b'. val -> 2}}.
+items := {Dictionary newFrom:{#cat->'a'. #val->3}. Dictionary newFrom:{#cat->'a'. #val->1}. Dictionary newFrom:{#cat->'b'. #val->5}. Dictionary newFrom:{#cat->'b'. #val->2}}.
 grouped := [ | groups tmp |
   groups := Dictionary new.
   tmp := OrderedCollection new.
@@ -11,7 +11,7 @@ grouped := [ | groups tmp |
   groups keysAndValuesDo: [:k :grp |
     | g |
     g := Dictionary newFrom:{#key->k. #items->grp}.
-    tmp add: Dictionary newFrom: {cat -> g.key. total -> ([ | tmp |
+    tmp add: Dictionary newFrom:{#cat->g.key. #total->([ | tmp |
   tmp := OrderedCollection new.
   g do: [:x |
     tmp add: x.val.

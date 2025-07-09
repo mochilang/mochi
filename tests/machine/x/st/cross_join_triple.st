@@ -1,4 +1,4 @@
-| nums letters bools combos c |
+| combos c nums letters bools |
 nums := {1. 2}.
 letters := {'A'. 'B'}.
 bools := {true. false}.
@@ -7,7 +7,7 @@ combos := [ | tmp |
   nums do: [:n |
     letters do: [:l |
       bools do: [:b |
-        tmp add: Dictionary newFrom: {n -> n. l -> l. b -> b}.
+        tmp add: Dictionary newFrom:{#n->n. #l->l. #b->b}.
       ].
     ].
   ].

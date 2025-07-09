@@ -565,7 +565,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Map != nil:
 		pairs := make([]string, len(p.Map.Items))
 		for i, it := range p.Map.Items {
-			k, err := c.compileExpr(it.Key)
+			k, err := c.compileMapKey(it.Key)
 			if err != nil {
 				return "", err
 			}
@@ -573,9 +573,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			pairs[i] = fmt.Sprintf("%s -> %s", k, v)
+			pairs[i] = fmt.Sprintf("%s->%s", k, v)
 		}
-		return "Dictionary newFrom: {" + strings.Join(pairs, ". ") + "}", nil
+		return "Dictionary newFrom:{" + strings.Join(pairs, ". ") + "}", nil
 	case p.Struct != nil:
 		return c.compileStructLiteral(p.Struct)
 	case p.Load != nil:
@@ -1128,6 +1128,25 @@ func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error
 		fields[i] = fmt.Sprintf("#%s->%s", f.Name, v)
 	}
 	return "Dictionary newFrom: {" + strings.Join(fields, ". ") + "}", nil
+}
+
+func (c *Compiler) compileMapKey(e *parser.Expr) (string, error) {
+	if e != nil && e.Binary != nil && len(e.Binary.Right) == 0 {
+		u := e.Binary.Left
+		if len(u.Ops) == 0 && u.Value != nil && len(u.Value.Ops) == 0 {
+			if u.Value.Target != nil {
+				if sel := u.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 {
+					if !c.vars[sel.Root] {
+						return "#" + sel.Root, nil
+					}
+				}
+			}
+			if lit := u.Value.Target; lit != nil && lit.Lit != nil {
+				return c.compileLiteral(lit.Lit), nil
+			}
+		}
+	}
+	return c.compileExpr(e)
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) string {
