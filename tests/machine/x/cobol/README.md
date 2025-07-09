@@ -1,4 +1,4 @@
-# Mochi to COBOL Machine Translations (17/97 compiled)
+# Mochi to COBOL Machine Translations (19/97 compiled)
 
 - [ ] append_builtin.mochi
 - [ ] avg_builtin.mochi
@@ -59,7 +59,7 @@
 - [ ] map_nested_assign.mochi
 - [ ] match_expr.mochi
 - [ ] match_full.mochi
-- [ ] math_ops.mochi
+ - [x] math_ops.mochi
 - [ ] membership.mochi
 - [ ] min_max_builtin.mochi
 - [ ] nested_function.mochi
@@ -76,7 +76,7 @@
 - [ ] short_circuit.mochi
 - [ ] slice.mochi
 - [ ] sort_stable.mochi
-- [ ] str_builtin.mochi
+ - [x] str_builtin.mochi
 - [x] string_compare.mochi
 - [ ] string_concat.mochi
 - [ ] string_contains.mochi

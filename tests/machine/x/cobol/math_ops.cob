@@ -8,6 +8,7 @@
        DISPLAY TMP
        COMPUTE TMP = 7 / 2
        DISPLAY TMP
-       COMPUTE TMP = 7 % 2
+       COMPUTE TMP = FUNCTION MOD(7, 2)
        DISPLAY TMP
        STOP RUN.
+

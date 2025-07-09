@@ -1,4 +1,0 @@
-cobc: exit status 1
-/workspace/mochi/tests/machine/x/cobol/math_ops.cob:11: error: invalid symbol '%' - skipping word
-/workspace/mochi/tests/machine/x/cobol/math_ops.cob:11: error: syntax error, unexpected Literal
-
