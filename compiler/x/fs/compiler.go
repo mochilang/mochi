@@ -16,9 +16,10 @@ import (
 // subset of Mochi. It is intentionally minimal and only handles the
 // constructs required by a few simple programs.
 type Compiler struct {
-	buf    bytes.Buffer
-	indent int
-	vars   map[string]string
+	buf     bytes.Buffer
+	indent  int
+	vars    map[string]string
+	structs map[string]map[string]string
 }
 
 func defaultValue(typ string) string {
@@ -54,7 +55,12 @@ func (c *Compiler) compileType(t *parser.TypeRef) (string, error) {
 }
 
 // New creates a new F# compiler instance.
-func New() *Compiler { return &Compiler{vars: make(map[string]string)} }
+func New() *Compiler {
+	return &Compiler{
+		vars:    make(map[string]string),
+		structs: make(map[string]map[string]string),
+	}
+}
 
 // Compile translates the given Mochi program into F# source code.
 func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
@@ -140,6 +146,17 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 		if typ == "" && c.isStringExpr(l.Value) {
 			typ = "string"
 		}
+		// infer type from cast expression
+		if typ == "" {
+			if p := rootPostfix(l.Value); p != nil {
+				for _, op := range p.Ops {
+					if op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Simple != nil {
+						typ = *op.Cast.Type.Simple
+						break
+					}
+				}
+			}
+		}
 	} else {
 		if typ == "" {
 			return fmt.Errorf("let without value at line %d", l.Pos.Line)
@@ -172,6 +189,16 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 		}
 		if typ == "" && c.isStringExpr(v.Value) {
 			typ = "string"
+		}
+		if typ == "" {
+			if p := rootPostfix(v.Value); p != nil {
+				for _, op := range p.Ops {
+					if op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Simple != nil {
+						typ = *op.Cast.Type.Simple
+						break
+					}
+				}
+			}
 		}
 	} else if typ != "" {
 		val = defaultValue(typ)
@@ -346,6 +373,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	if len(t.Variants) > 0 {
 		return fmt.Errorf("variant types not supported")
 	}
+	fields := make(map[string]string)
 	c.writeln(fmt.Sprintf("type %s = {", t.Name))
 	c.indent++
 	for idx, m := range t.Members {
@@ -356,6 +384,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		if err != nil {
 			return err
 		}
+		fields[m.Field.Name] = ft
 		line := fmt.Sprintf("%s: %s", m.Field.Name, ft)
 		if idx < len(t.Members)-1 {
 			c.writeln(line)
@@ -365,6 +394,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	}
 	c.indent--
 	c.writeln("}")
+	c.structs[t.Name] = fields
 	return nil
 }
 
@@ -854,6 +884,13 @@ func rootPrimary(e *parser.Expr) *parser.Primary {
 	return e.Binary.Left.Value.Target
 }
 
+func rootPostfix(e *parser.Expr) *parser.PostfixExpr {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return nil
+	}
+	return e.Binary.Left.Value
+}
+
 func isMapLiteral(e *parser.Expr) *parser.MapLiteral {
 	p := rootPrimary(e)
 	if p != nil && p.Map != nil && len(e.Binary.Right) == 0 {
@@ -895,8 +932,17 @@ func (c *Compiler) isStringExpr(e *parser.Expr) bool {
 			return true
 		}
 		if p.Selector != nil {
-			if t, ok := c.vars[p.Selector.Root]; ok && t == "string" {
-				return true
+			if t, ok := c.vars[p.Selector.Root]; ok {
+				if t == "string" {
+					return true
+				}
+				if fields, ok := c.structs[t]; ok {
+					if len(p.Selector.Tail) == 1 {
+						if ft, ok := fields[p.Selector.Tail[0]]; ok && ft == "string" {
+							return true
+						}
+					}
+				}
 			}
 		}
 		if p.If != nil {
