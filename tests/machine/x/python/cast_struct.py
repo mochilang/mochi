@@ -11,13 +11,4 @@ class Todo:
 
 
 todo: Todo = Todo(**{"title": "hi"})
-
-
-def main():
-    global todo
-    todo = Todo(**{"title": "hi"})
-    print(todo.title)
-
-
-if __name__ == "__main__":
-    main()
+print(todo.title)

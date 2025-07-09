@@ -5,15 +5,4 @@ import typing
 
 a: int = 10
 b: int = 20
-
-
-def main():
-    global a
-    a = 10
-    global b
-    b = 20
-    print((a + b))
-
-
-if __name__ == "__main__":
-    main()
+print((a + b))

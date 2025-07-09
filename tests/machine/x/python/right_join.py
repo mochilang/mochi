@@ -104,51 +104,38 @@ def _query(src, joins, opts):
     return res
 
 
-customers: list[dict[str, typing.Any]] = None
-orders: list[dict[str, int]] = None
-result: list[dict[str, typing.Any]] = None
-
-
-def main():
-    global customers
-    customers = [
-        {"id": 1, "name": "Alice"},
-        {"id": 2, "name": "Bob"},
-        {"id": 3, "name": "Charlie"},
-        {"id": 4, "name": "Diana"},
-    ]
-    global orders
-    orders = [
-        {"id": 100, "customerId": 1, "total": 250},
-        {"id": 101, "customerId": 2, "total": 125},
-        {"id": 102, "customerId": 1, "total": 300},
-    ]
-    global result
-    result = _query(
-        customers,
-        [
-            {
-                "items": orders,
-                "on": lambda c, o: ((o["customerId"] == c["id"])),
-                "right": True,
-            }
-        ],
-        {"select": lambda c, o: {"customerName": c["name"], "order": o}},
-    )
-    print("--- Right Join using syntax ---")
-    for entry in result:
-        if entry["order"]:
-            print(
-                "Customer",
-                entry["customerName"],
-                "has order",
-                _get(entry["order"], "id"),
-                "- $",
-                _get(entry["order"], "total"),
-            )
-        else:
-            print("Customer", entry["customerName"], "has no orders")
-
-
-if __name__ == "__main__":
-    main()
+customers: list[dict[str, typing.Any]] = [
+    {"id": 1, "name": "Alice"},
+    {"id": 2, "name": "Bob"},
+    {"id": 3, "name": "Charlie"},
+    {"id": 4, "name": "Diana"},
+]
+orders: list[dict[str, int]] = [
+    {"id": 100, "customerId": 1, "total": 250},
+    {"id": 101, "customerId": 2, "total": 125},
+    {"id": 102, "customerId": 1, "total": 300},
+]
+result: list[dict[str, typing.Any]] = _query(
+    customers,
+    [
+        {
+            "items": orders,
+            "on": lambda c, o: ((o["customerId"] == c["id"])),
+            "right": True,
+        }
+    ],
+    {"select": lambda c, o: {"customerName": c["name"], "order": o}},
+)
+print("--- Right Join using syntax ---")
+for entry in result:
+    if entry["order"]:
+        print(
+            "Customer",
+            entry["customerName"],
+            "has order",
+            _get(entry["order"], "id"),
+            "- $",
+            _get(entry["order"], "total"),
+        )
+    else:
+        print("Customer", entry["customerName"], "has no orders")

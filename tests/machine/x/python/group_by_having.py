@@ -144,33 +144,24 @@ def _query(src, joins, opts):
     return res
 
 
-people: list[dict[str, str]] = None
-big: list[dict[str, typing.Any]] = None
+people: list[dict[str, str]] = [
+    {"name": "Alice", "city": "Paris"},
+    {"name": "Bob", "city": "Hanoi"},
+    {"name": "Charlie", "city": "Paris"},
+    {"name": "Diana", "city": "Hanoi"},
+    {"name": "Eve", "city": "Paris"},
+    {"name": "Frank", "city": "Hanoi"},
+    {"name": "George", "city": "Paris"},
+]
 
 
-def main():
-    global people
-    people = [
-        {"name": "Alice", "city": "Paris"},
-        {"name": "Bob", "city": "Hanoi"},
-        {"name": "Charlie", "city": "Paris"},
-        {"name": "Diana", "city": "Hanoi"},
-        {"name": "Eve", "city": "Paris"},
-        {"name": "Frank", "city": "Hanoi"},
-        {"name": "George", "city": "Paris"},
-    ]
-
-    def _q0():
-        _src = people
-        _rows = _query(_src, [], {"select": lambda p: (p)})
-        _groups = _group_by(_rows, lambda p: (p["city"]))
-        _items1 = _groups
-        return [{"city": _get(g, "key"), "num": len(g.Items)} for g in _items1]
-
-    global big
-    big = _q0()
-    print(json.dumps(big, default=lambda o: vars(o)))
+def _q0():
+    _src = people
+    _rows = _query(_src, [], {"select": lambda p: (p)})
+    _groups = _group_by(_rows, lambda p: (p["city"]))
+    _items1 = _groups
+    return [{"city": _get(g, "key"), "num": len(g.Items)} for g in _items1]
 
 
-if __name__ == "__main__":
-    main()
+big: list[dict[str, typing.Any]] = _q0()
+print(json.dumps(big, default=lambda o: vars(o)))

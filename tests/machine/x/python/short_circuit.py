@@ -9,10 +9,5 @@ def boom(a: int, b: int) -> bool:
     return True
 
 
-def main():
-    print(str((False and boom(1, 2))).lower())
-    print(str((True or boom(1, 2))).lower())
-
-
-if __name__ == "__main__":
-    main()
+print(str((False and boom(1, 2))).lower())
+print(str((True or boom(1, 2))).lower())

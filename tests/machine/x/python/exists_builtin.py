@@ -4,16 +4,5 @@ from __future__ import annotations
 import typing
 
 data: list[int] = [1, 2]
-flag: bool = None
-
-
-def main():
-    global data
-    data = [1, 2]
-    global flag
-    flag = len([x for x in data if (x == 1)]) > 0
-    print(str(flag).lower())
-
-
-if __name__ == "__main__":
-    main()
+flag: bool = len([x for x in data if (x == 1)]) > 0
+print(str(flag).lower())

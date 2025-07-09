@@ -40,13 +40,4 @@ class Node(Tree):
 
 
 t: Node = Node(left=Leaf(), value=1, right=Node(left=Leaf(), value=2, right=Leaf()))
-
-
-def main():
-    global t
-    t = Node(left=Leaf(), value=1, right=Node(left=Leaf(), value=2, right=Leaf()))
-    print(sum_tree(t))
-
-
-if __name__ == "__main__":
-    main()
+print(sum_tree(t))

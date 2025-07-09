@@ -4,14 +4,5 @@ from __future__ import annotations
 import typing
 
 xs: list[int] = [1, 2, 3]
-
-
-def main():
-    global xs
-    xs = [1, 2, 3]
-    print(str((2 in xs)).lower())
-    print(str((not ((5 in xs)))).lower())
-
-
-if __name__ == "__main__":
-    main()
+print(str((2 in xs)).lower())
+print(str((not ((5 in xs)))).lower())

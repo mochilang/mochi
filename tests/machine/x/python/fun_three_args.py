@@ -8,9 +8,4 @@ def sum3(a: int, b: int, c: int) -> int:
     return (a + b) + c
 
 
-def main():
-    print(6)
-
-
-if __name__ == "__main__":
-    main()
+print(6)

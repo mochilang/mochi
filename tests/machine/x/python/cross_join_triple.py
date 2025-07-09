@@ -6,22 +6,9 @@ import typing
 nums: list[int] = [1, 2]
 letters: list[str] = ["A", "B"]
 bools: list[bool] = [True, False]
-combos: list[dict[str, typing.Any]] = None
-
-
-def main():
-    global nums
-    nums = [1, 2]
-    global letters
-    letters = ["A", "B"]
-    global bools
-    bools = [True, False]
-    global combos
-    combos = [{"n": n, "l": l, "b": b} for n in nums for l in letters for b in bools]
-    print("--- Cross Join of three lists ---")
-    for c in combos:
-        print(c["n"], c["l"], c["b"])
-
-
-if __name__ == "__main__":
-    main()
+combos: list[dict[str, typing.Any]] = [
+    {"n": n, "l": l, "b": b} for n in nums for l in letters for b in bools
+]
+print("--- Cross Join of three lists ---")
+for c in combos:
+    print(c["n"], c["l"], c["b"])

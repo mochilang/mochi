@@ -9,13 +9,4 @@ def makeAdder(n: int) -> typing.Callable[[int], int]:
 
 
 add10: typing.Callable[[int], int] = makeAdder(10)
-
-
-def main():
-    global add10
-    add10 = makeAdder(10)
-    print(add10(7))
-
-
-if __name__ == "__main__":
-    main()
+print(add10(7))

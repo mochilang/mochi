@@ -4,14 +4,5 @@ from __future__ import annotations
 import typing
 
 data: dict[str, dict[str, int]] = {"outer": {"inner": 1}}
-
-
-def main():
-    global data
-    data = {"outer": {"inner": 1}}
-    data["outer"]["inner"] = 2
-    print(data["outer"]["inner"])
-
-
-if __name__ == "__main__":
-    main()
+data["outer"]["inner"] = 2
+print(data["outer"]["inner"])

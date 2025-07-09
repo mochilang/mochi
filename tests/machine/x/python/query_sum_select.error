@@ -1,13 +1,11 @@
 run: exit status 1
 Traceback (most recent call last):
-  File "/workspace/mochi/tests/machine/x/python/query_sum_select.py", line 41, in <module>
-    main()
-  File "/workspace/mochi/tests/machine/x/python/query_sum_select.py", line 36, in main
-    result = [_sum(n) for n in nums if (n > 1)]
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/workspace/mochi/tests/machine/x/python/query_sum_select.py", line 36, in <listcomp>
-    result = [_sum(n) for n in nums if (n > 1)]
-              ^^^^^^^
+  File "/workspace/mochi/tests/machine/x/python/query_sum_select.py", line 29, in <module>
+    result: float = [_sum(n) for n in nums if (n > 1)]
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/machine/x/python/query_sum_select.py", line 29, in <listcomp>
+    result: float = [_sum(n) for n in nums if (n > 1)]
+                     ^^^^^^^
   File "/workspace/mochi/tests/machine/x/python/query_sum_select.py", line 16, in _sum
     raise Exception("sum() expects list or group")
 Exception: sum() expects list or group

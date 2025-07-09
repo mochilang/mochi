@@ -9,13 +9,4 @@ def inc(x: int) -> int:
 
 
 k: int = 2
-
-
-def main():
-    global k
-    k = 2
-    print(inc(3))
-
-
-if __name__ == "__main__":
-    main()
+print(inc(3))

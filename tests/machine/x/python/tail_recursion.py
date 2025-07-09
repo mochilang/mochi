@@ -10,9 +10,4 @@ def sum_rec(n: int, acc: int) -> int:
     return sum_rec((n - 1), (acc + n))
 
 
-def main():
-    print(sum_rec(10, 0))
-
-
-if __name__ == "__main__":
-    main()
+print(sum_rec(10, 0))

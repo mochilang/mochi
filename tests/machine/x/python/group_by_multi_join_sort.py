@@ -157,134 +157,97 @@ def _sum(v):
     return s
 
 
-nation: list[dict[str, typing.Any]] = None
-customer: list[dict[str, typing.Any]] = None
-orders: list[dict[str, typing.Any]] = None
-lineitem: list[dict[str, typing.Any]] = None
+nation: list[dict[str, typing.Any]] = [{"n_nationkey": 1, "n_name": "BRAZIL"}]
+customer: list[dict[str, typing.Any]] = [
+    {
+        "c_custkey": 1,
+        "c_name": "Alice",
+        "c_acctbal": 100,
+        "c_nationkey": 1,
+        "c_address": "123 St",
+        "c_phone": "123-456",
+        "c_comment": "Loyal",
+    }
+]
+orders: list[dict[str, typing.Any]] = [
+    {"o_orderkey": 1000, "o_custkey": 1, "o_orderdate": "1993-10-15"},
+    {"o_orderkey": 2000, "o_custkey": 1, "o_orderdate": "1994-01-02"},
+]
+lineitem: list[dict[str, typing.Any]] = [
+    {
+        "l_orderkey": 1000,
+        "l_returnflag": "R",
+        "l_extendedprice": 1000,
+        "l_discount": 0.1,
+    },
+    {"l_orderkey": 2000, "l_returnflag": "N", "l_extendedprice": 500, "l_discount": 0},
+]
 start_date: str = "1993-10-01"
 end_date: str = "1994-01-01"
-result: list[dict[str, typing.Any]] = None
 
 
-def main():
-    global nation
-    nation = [{"n_nationkey": 1, "n_name": "BRAZIL"}]
-    global customer
-    customer = [
-        {
-            "c_custkey": 1,
-            "c_name": "Alice",
-            "c_acctbal": 100,
-            "c_nationkey": 1,
-            "c_address": "123 St",
-            "c_phone": "123-456",
-            "c_comment": "Loyal",
-        }
-    ]
-    global orders
-    orders = [
-        {"o_orderkey": 1000, "o_custkey": 1, "o_orderdate": "1993-10-15"},
-        {"o_orderkey": 2000, "o_custkey": 1, "o_orderdate": "1994-01-02"},
-    ]
-    global lineitem
-    lineitem = [
-        {
-            "l_orderkey": 1000,
-            "l_returnflag": "R",
-            "l_extendedprice": 1000,
-            "l_discount": 0.1,
-        },
-        {
-            "l_orderkey": 2000,
-            "l_returnflag": "N",
-            "l_extendedprice": 500,
-            "l_discount": 0,
-        },
-    ]
-    global start_date
-    start_date = "1993-10-01"
-    global end_date
-    end_date = "1994-01-01"
-
-    def _q0():
-        _src = customer
-        _rows = _query(
-            _src,
-            [
-                {
-                    "items": orders,
-                    "on": lambda c, o: ((o["o_custkey"] == c["c_custkey"])),
-                },
-                {
-                    "items": lineitem,
-                    "on": lambda c, o, l: ((l["l_orderkey"] == o["o_orderkey"])),
-                },
-                {
-                    "items": nation,
-                    "on": lambda c, o, l, n: ((n["n_nationkey"] == c["c_nationkey"])),
-                },
-            ],
+def _q0():
+    _src = customer
+    _rows = _query(
+        _src,
+        [
+            {"items": orders, "on": lambda c, o: ((o["o_custkey"] == c["c_custkey"]))},
             {
-                "select": lambda c, o, l, n: (c, o, l, n),
-                "where": lambda c, o, l, n: (
-                    (
-                        (
-                            (o["o_orderdate"] >= start_date)
-                            and (o["o_orderdate"] < end_date)
-                        )
-                        and (l["l_returnflag"] == "R")
-                    )
-                ),
+                "items": lineitem,
+                "on": lambda c, o, l: ((l["l_orderkey"] == o["o_orderkey"])),
             },
-        )
-        _groups = _group_by(
-            _rows,
-            lambda c, o, l, n: (
-                {
-                    "c_custkey": c["c_custkey"],
-                    "c_name": c["c_name"],
-                    "c_acctbal": c["c_acctbal"],
-                    "c_address": c["c_address"],
-                    "c_phone": c["c_phone"],
-                    "c_comment": c["c_comment"],
-                    "n_name": n["n_name"],
-                }
-            ),
-        )
-        _items1 = _groups
-        _items1 = sorted(
-            _items1,
-            key=lambda g: _sort_key(
+            {
+                "items": nation,
+                "on": lambda c, o, l, n: ((n["n_nationkey"] == c["c_nationkey"])),
+            },
+        ],
+        {
+            "select": lambda c, o, l, n: (c, o, l, n),
+            "where": lambda c, o, l, n: (
                 (
-                    -_sum(
-                        [
-                            (x[2]["l_extendedprice"] * ((1 - x[2]["l_discount"])))
-                            for x in g
-                        ]
-                    )
+                    ((o["o_orderdate"] >= start_date) and (o["o_orderdate"] < end_date))
+                    and (l["l_returnflag"] == "R")
                 )
             ),
-        )
-        return [
+        },
+    )
+    _groups = _group_by(
+        _rows,
+        lambda c, o, l, n: (
             {
-                "c_custkey": _get(_get(g, "key"), "c_custkey"),
-                "c_name": _get(_get(g, "key"), "c_name"),
-                "revenue": _sum(
-                    [(x[2]["l_extendedprice"] * ((1 - x[2]["l_discount"]))) for x in g]
-                ),
-                "c_acctbal": _get(_get(g, "key"), "c_acctbal"),
-                "n_name": _get(_get(g, "key"), "n_name"),
-                "c_address": _get(_get(g, "key"), "c_address"),
-                "c_phone": _get(_get(g, "key"), "c_phone"),
-                "c_comment": _get(_get(g, "key"), "c_comment"),
+                "c_custkey": c["c_custkey"],
+                "c_name": c["c_name"],
+                "c_acctbal": c["c_acctbal"],
+                "c_address": c["c_address"],
+                "c_phone": c["c_phone"],
+                "c_comment": c["c_comment"],
+                "n_name": n["n_name"],
             }
-            for g in _items1
-        ]
+        ),
+    )
+    _items1 = _groups
+    _items1 = sorted(
+        _items1,
+        key=lambda g: _sort_key(
+            (-_sum([(x[2]["l_extendedprice"] * ((1 - x[2]["l_discount"]))) for x in g]))
+        ),
+    )
+    return [
+        {
+            "c_custkey": _get(_get(g, "key"), "c_custkey"),
+            "c_name": _get(_get(g, "key"), "c_name"),
+            "revenue": _sum(
+                [(x[2]["l_extendedprice"] * ((1 - x[2]["l_discount"]))) for x in g]
+            ),
+            "c_acctbal": _get(_get(g, "key"), "c_acctbal"),
+            "n_name": _get(_get(g, "key"), "n_name"),
+            "c_address": _get(_get(g, "key"), "c_address"),
+            "c_phone": _get(_get(g, "key"), "c_phone"),
+            "c_comment": _get(_get(g, "key"), "c_comment"),
+        }
+        for g in _items1
+    ]
 
-    global result
-    result = _q0()
-    print(*result)
 
-
-if __name__ == "__main__":
-    main()
+result: list[dict[str, typing.Any]] = _q0()
+print(*result)

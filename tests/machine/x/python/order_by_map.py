@@ -15,22 +15,11 @@ def _sort_key(k):
     return k
 
 
-data: list[dict[str, int]] = None
-_sorted: list[dict[str, int]] = None
-
-
-def main():
-    global data
-    data = [{"a": 1, "b": 2}, {"a": 1, "b": 1}, {"a": 0, "b": 5}]
-    global _sorted
-    _sorted = [
-        x
-        for x in sorted(
-            [x for x in data], key=lambda x: _sort_key({"a": x["a"], "b": x["b"]})
-        )
-    ]
-    print(*_sorted)
-
-
-if __name__ == "__main__":
-    main()
+data: list[dict[str, int]] = [{"a": 1, "b": 2}, {"a": 1, "b": 1}, {"a": 0, "b": 5}]
+_sorted: list[dict[str, int]] = [
+    x
+    for x in sorted(
+        [x for x in data], key=lambda x: _sort_key({"a": x["a"], "b": x["b"]})
+    )
+]
+print(*_sorted)

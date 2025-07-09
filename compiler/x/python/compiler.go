@@ -27,7 +27,6 @@ type Compiler struct {
 	tmpCount     int
 	models       bool
 	methodFields map[string]bool
-	globals      map[string]bool
 	tupleFields  map[string]map[string]int
 }
 
@@ -41,7 +40,6 @@ func New(env *types.Env) *Compiler {
 		models:       false,
 		tmpCount:     0,
 		methodFields: nil,
-		globals:      make(map[string]bool),
 		tupleFields:  make(map[string]map[string]int),
 	}
 }
@@ -103,8 +101,6 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	// Collect Python imports first so they can be emitted at the top.
 	c.collectImports(prog.Statements)
 
-	needsAsync := containsStreamCode(prog.Statements)
-
 	// Function declarations
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
@@ -125,108 +121,6 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
-	// Placeholder globals for variables used in tests
-	wrotePlaceholder := false
-	seen := map[string]bool{}
-	for _, s := range prog.Statements {
-		if s.Test != nil {
-			continue
-		}
-		switch {
-		case s.Let != nil:
-			name := sanitizeName(s.Let.Name)
-			if seen[name] {
-				continue
-			}
-			seen[name] = true
-			c.globals[name] = true
-			useExpr := false
-			if isLiteralExpr(s.Let.Value) || isPureExpr(s.Let.Value) {
-				vars := map[string]struct{}{}
-				exprVars(s.Let.Value, vars)
-				if len(vars) == 0 {
-					useExpr = true
-				}
-			}
-			var typ types.Type
-			if c.env != nil {
-				if t, err := c.env.GetVar(s.Let.Name); err == nil {
-					typ = t
-				}
-			}
-			if typ == nil && s.Let.Type != nil {
-				typ = c.resolveTypeRef(s.Let.Type)
-			}
-			if typ == nil && s.Let.Value != nil {
-				typ = c.inferExprType(s.Let.Value)
-			}
-			var exprStr string
-			if useExpr {
-				e, err := c.compileExpr(s.Let.Value)
-				if err != nil {
-					return nil, err
-				}
-				exprStr = e
-			} else {
-				exprStr = "None"
-			}
-			if typ != nil && !isAny(typ) {
-				c.imports["typing"] = "typing"
-				c.writeln(fmt.Sprintf("%s: %s = %s", name, pyType(typ), exprStr))
-			} else {
-				c.writeln(fmt.Sprintf("%s = %s", name, exprStr))
-			}
-			wrotePlaceholder = true
-		case s.Var != nil:
-			name := sanitizeName(s.Var.Name)
-			if seen[name] {
-				continue
-			}
-			seen[name] = true
-			c.globals[name] = true
-			useExpr := false
-			if isLiteralExpr(s.Var.Value) || isPureExpr(s.Var.Value) {
-				vars := map[string]struct{}{}
-				exprVars(s.Var.Value, vars)
-				if len(vars) == 0 {
-					useExpr = true
-				}
-			}
-			var typ types.Type
-			if c.env != nil {
-				if t, err := c.env.GetVar(s.Var.Name); err == nil {
-					typ = t
-				}
-			}
-			if typ == nil && s.Var.Type != nil {
-				typ = c.resolveTypeRef(s.Var.Type)
-			}
-			if typ == nil && s.Var.Value != nil {
-				typ = c.inferExprType(s.Var.Value)
-			}
-			var exprStr string
-			if useExpr {
-				e, err := c.compileExpr(s.Var.Value)
-				if err != nil {
-					return nil, err
-				}
-				exprStr = e
-			} else {
-				exprStr = "None"
-			}
-			if typ != nil && !isAny(typ) {
-				c.imports["typing"] = "typing"
-				c.writeln(fmt.Sprintf("%s: %s = %s", name, pyType(typ), exprStr))
-			} else {
-				c.writeln(fmt.Sprintf("%s = %s", name, exprStr))
-			}
-			wrotePlaceholder = true
-		}
-	}
-	if wrotePlaceholder {
-		c.writeln("")
-	}
-
 	// Test blocks
 	for _, s := range prog.Statements {
 		if s.Test != nil {
@@ -237,35 +131,24 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
-	// Main function
-	if needsAsync {
-		c.writeln("async def main():")
-	} else {
-		c.writeln("def main():")
-	}
-	c.indent++
-	mainEmpty := true
+	tests := []string{}
 	for _, s := range prog.Statements {
-		if s.Fun != nil || s.Test != nil || s.Type != nil {
+		if s.Test != nil {
+			tests = append(tests, "test_"+sanitizeName(s.Test.Name))
+		}
+	}
+
+	for _, s := range prog.Statements {
+		if s.Fun != nil || s.Type != nil || s.Test != nil {
 			continue
 		}
 		if err := c.compileStmt(s); err != nil {
 			return nil, err
 		}
-		mainEmpty = false
 	}
-	for _, s := range prog.Statements {
-		if s.Test != nil {
-			name := "test_" + sanitizeName(s.Test.Name)
-			c.writeln(fmt.Sprintf("%s()", name))
-			mainEmpty = false
-		}
+	for _, name := range tests {
+		c.writeln(fmt.Sprintf("%s()", name))
 	}
-	if mainEmpty {
-		c.writeln("pass")
-	}
-	c.indent--
-	c.writeln("")
 
 	body := append([]byte(nil), c.buf.Bytes()...)
 	c.buf.Reset()
@@ -294,35 +177,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("_models = {}")
 		c.writeln("")
 	}
-
-	if needsAsync {
-		c.use("_wait_all")
-	}
-
 	if len(c.helpers) > 0 {
 		c.emitRuntime()
 	}
 	c.buf.Write(body)
-
-	if needsAsync {
-		c.writeln("async def _run():")
-		c.indent++
-		c.writeln("await main()")
-		c.writeln("await _wait_all()")
-		c.indent--
-		c.writeln("")
-
-		c.writeln("if __name__ == \"__main__\":")
-		c.indent++
-		c.writeln("import asyncio")
-		c.writeln("asyncio.run(_run())")
-		c.indent--
-	} else {
-		c.writeln("if __name__ == \"__main__\":")
-		c.indent++
-		c.writeln("main()")
-		c.indent--
-	}
 
 	code := c.buf.Bytes()
 	return FormatPy(code), nil

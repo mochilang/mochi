@@ -4,15 +4,6 @@ from __future__ import annotations
 import typing
 
 i: int = 0
-
-
-def main():
-    global i
-    i = 0
-    while i < 3:
-        print(i)
-        i = i + 1
-
-
-if __name__ == "__main__":
-    main()
+while i < 3:
+    print(i)
+    i = i + 1

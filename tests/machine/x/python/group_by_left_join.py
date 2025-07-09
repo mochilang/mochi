@@ -104,45 +104,32 @@ def _query(src, joins, opts):
     return res
 
 
-customers: list[dict[str, typing.Any]] = None
-orders: list[dict[str, int]] = None
-stats: list[dict[str, typing.Any]] = None
-
-
-def main():
-    global customers
-    customers = [
-        {"id": 1, "name": "Alice"},
-        {"id": 2, "name": "Bob"},
-        {"id": 3, "name": "Charlie"},
-    ]
-    global orders
-    orders = [
-        {"id": 100, "customerId": 1},
-        {"id": 101, "customerId": 1},
-        {"id": 102, "customerId": 2},
-    ]
-    global stats
-    stats = _query(
-        customers,
-        [
-            {
-                "items": orders,
-                "on": lambda c, o: ((o["customerId"] == c["id"])),
-                "left": True,
-            }
-        ],
+customers: list[dict[str, typing.Any]] = [
+    {"id": 1, "name": "Alice"},
+    {"id": 2, "name": "Bob"},
+    {"id": 3, "name": "Charlie"},
+]
+orders: list[dict[str, int]] = [
+    {"id": 100, "customerId": 1},
+    {"id": 101, "customerId": 1},
+    {"id": 102, "customerId": 2},
+]
+stats: list[dict[str, typing.Any]] = _query(
+    customers,
+    [
         {
-            "select": lambda c, o: {
-                "name": _get(g, "key"),
-                "count": len([r for r in g if _get(r, "o")]),
-            }
-        },
-    )
-    print("--- Group Left Join ---")
-    for s in stats:
-        print(s["name"], "orders:", s["count"])
-
-
-if __name__ == "__main__":
-    main()
+            "items": orders,
+            "on": lambda c, o: ((o["customerId"] == c["id"])),
+            "left": True,
+        }
+    ],
+    {
+        "select": lambda c, o: {
+            "name": _get(g, "key"),
+            "count": len([r for r in g if _get(r, "o")]),
+        }
+    },
+)
+print("--- Group Left Join ---")
+for s in stats:
+    print(s["name"], "orders:", s["count"])

@@ -4,16 +4,7 @@ from __future__ import annotations
 import typing
 
 x: int = 5
-
-
-def main():
-    global x
-    x = 5
-    if x > 3:
-        print("big")
-    else:
-        print("small")
-
-
-if __name__ == "__main__":
-    main()
+if x > 3:
+    print("big")
+else:
+    print("small")

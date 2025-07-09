@@ -15,34 +15,23 @@ def _sort_key(k):
     return k
 
 
-products: list[dict[str, typing.Any]] = None
-expensive: list[dict[str, typing.Any]] = None
-
-
-def main():
-    global products
-    products = [
-        {"name": "Laptop", "price": 1500},
-        {"name": "Smartphone", "price": 900},
-        {"name": "Tablet", "price": 600},
-        {"name": "Monitor", "price": 300},
-        {"name": "Keyboard", "price": 100},
-        {"name": "Mouse", "price": 50},
-        {"name": "Headphones", "price": 200},
-    ]
-    global expensive
-    expensive = [
-        p
-        for p in (
-            (sorted([p for p in products], key=lambda p: _sort_key((-p["price"]))))[
-                max(1, 0) :
-            ]
-        )[: max(3, 0)]
-    ]
-    print("--- Top products (excluding most expensive) ---")
-    for item in expensive:
-        print(item["name"], "costs $", item["price"])
-
-
-if __name__ == "__main__":
-    main()
+products: list[dict[str, typing.Any]] = [
+    {"name": "Laptop", "price": 1500},
+    {"name": "Smartphone", "price": 900},
+    {"name": "Tablet", "price": 600},
+    {"name": "Monitor", "price": 300},
+    {"name": "Keyboard", "price": 100},
+    {"name": "Mouse", "price": 50},
+    {"name": "Headphones", "price": 200},
+]
+expensive: list[dict[str, typing.Any]] = [
+    p
+    for p in (
+        (sorted([p for p in products], key=lambda p: _sort_key((-p["price"]))))[
+            max(1, 0) :
+        ]
+    )[: max(3, 0)]
+]
+print("--- Top products (excluding most expensive) ---")
+for item in expensive:
+    print(item["name"], "costs $", item["price"])

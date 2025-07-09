@@ -87,48 +87,28 @@ def _query(src, joins, opts):
     return res
 
 
-customers: list[dict[str, typing.Any]] = None
-orders: list[dict[str, int]] = None
-result: list[dict[str, int]] = None
-
-
-def main():
-    global customers
-    customers = [
-        {"id": 1, "name": "Alice"},
-        {"id": 2, "name": "Bob"},
-        {"id": 3, "name": "Charlie"},
-    ]
-    global orders
-    orders = [
-        {"id": 100, "customerId": 1, "total": 250},
-        {"id": 101, "customerId": 2, "total": 125},
-        {"id": 102, "customerId": 1, "total": 300},
-        {"id": 103, "customerId": 4, "total": 80},
-    ]
-    global result
-    result = _query(
-        orders,
-        [{"items": customers, "on": lambda o, c: ((o["customerId"] == c["id"]))}],
-        {
-            "select": lambda o, c: {
-                "orderId": o["id"],
-                "customerName": c["name"],
-                "total": o["total"],
-            }
-        },
-    )
-    print("--- Orders with customer info ---")
-    for entry in result:
-        print(
-            "Order",
-            entry["orderId"],
-            "by",
-            entry["customerName"],
-            "- $",
-            entry["total"],
-        )
-
-
-if __name__ == "__main__":
-    main()
+customers: list[dict[str, typing.Any]] = [
+    {"id": 1, "name": "Alice"},
+    {"id": 2, "name": "Bob"},
+    {"id": 3, "name": "Charlie"},
+]
+orders: list[dict[str, int]] = [
+    {"id": 100, "customerId": 1, "total": 250},
+    {"id": 101, "customerId": 2, "total": 125},
+    {"id": 102, "customerId": 1, "total": 300},
+    {"id": 103, "customerId": 4, "total": 80},
+]
+result: list[dict[str, int]] = _query(
+    orders,
+    [{"items": customers, "on": lambda o, c: ((o["customerId"] == c["id"]))}],
+    {
+        "select": lambda o, c: {
+            "orderId": o["id"],
+            "customerName": c["name"],
+            "total": o["total"],
+        }
+    },
+)
+print("--- Orders with customer info ---")
+for entry in result:
+    print("Order", entry["orderId"], "by", entry["customerName"], "- $", entry["total"])

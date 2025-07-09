@@ -61,14 +61,8 @@ def _save(rows, path, opts):
             f.close()
 
 
-people: list[dict[str, typing.Any]] = None
-
-
-def main():
-    global people
-    people = [{"name": "Alice", "age": 30}, {"name": "Bob", "age": 25}]
-    _save(people, "-", dict({"format": "jsonl"}))
-
-
-if __name__ == "__main__":
-    main()
+people: list[dict[str, typing.Any]] = [
+    {"name": "Alice", "age": 30},
+    {"name": "Bob", "age": 25},
+]
+_save(people, "-", dict({"format": "jsonl"}))

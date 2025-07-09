@@ -3,14 +3,5 @@ from __future__ import annotations
 
 import typing
 
-square: typing.Callable[[int], int] = None
-
-
-def main():
-    global square
-    square = lambda x: (x * x)
-    print(square(6))
-
-
-if __name__ == "__main__":
-    main()
+square: typing.Callable[[int], int] = lambda x: (x * x)
+print(square(6))

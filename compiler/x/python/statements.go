@@ -123,11 +123,8 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 			}
 			c.env.SetVar(s.Name, t, false)
 		}
-		if c.globals[name] && c.indent > 0 {
-			c.writeln("global " + name)
-		}
 	}
-	useAnn := typ != nil && !isAny(typ) && !(c.globals[name] && c.indent > 0)
+	useAnn := typ != nil && !isAny(typ)
 	if useAnn {
 		c.imports["typing"] = "typing"
 		c.writeln(fmt.Sprintf("%s: %s = %s", name, pyType(typ), value))
@@ -174,12 +171,9 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 			}
 			c.env.SetVar(s.Name, t, true)
 		}
-		if c.globals[name] && c.indent > 0 {
-			c.writeln("global " + name)
-		}
 	}
 	if c.env != nil {
-		if t, err := c.env.GetVar(s.Name); err == nil && !isAny(t) && !(c.globals[name] && c.indent > 0) {
+		if t, err := c.env.GetVar(s.Name); err == nil && !isAny(t) {
 			c.imports["typing"] = "typing"
 			c.writeln(fmt.Sprintf("%s: %s = %s", name, pyType(t), value))
 			return nil
@@ -316,9 +310,6 @@ func (c *Compiler) compileFetchStmt(f *parser.FetchStmt) error {
 	name := sanitizeName(f.Target)
 	if c.env != nil {
 		c.env.SetVar(f.Target, types.AnyType{}, false)
-		if c.globals[name] && c.indent > 0 {
-			c.writeln("global " + name)
-		}
 	}
 	c.writeln(fmt.Sprintf("%s = %s", name, expr))
 	return nil

@@ -18,13 +18,4 @@ class Book:
 
 
 book: Book = Book(title="Go", author=Person(name="Bob", age=42))
-
-
-def main():
-    global book
-    book = Book(title="Go", author=Person(name="Bob", age=42))
-    print(book.author.name)
-
-
-if __name__ == "__main__":
-    main()
+print(book.author.name)

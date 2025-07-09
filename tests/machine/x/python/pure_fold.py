@@ -8,9 +8,4 @@ def triple(x: int) -> int:
     return x * 3
 
 
-def main():
-    print(triple((1 + 2)))
-
-
-if __name__ == "__main__":
-    main()
+print(triple((1 + 2)))
