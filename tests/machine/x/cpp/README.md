@@ -2,7 +2,7 @@
 
 This directory contains C++ source code generated from Mochi programs and the corresponding outputs or errors.
 
-Compiled programs: 72/97
+Compiled programs: 74/97
 
 ## Checklist
 
@@ -81,8 +81,8 @@ Compiled programs: 72/97
 - [ ] group_by_sort
 - [ ] group_items_iteration
 - [ ] in_operator_extended
-- [ ] inner_join
-- [ ] join_multi
+- [x] inner_join
+- [x] join_multi
 - [ ] json_builtin
 - [ ] left_join
 - [ ] left_join_multi
@@ -116,8 +116,8 @@ Compiled programs: 72/97
 - [ ] group_by_sort
 - [ ] group_items_iteration
 - [ ] in_operator_extended
-- [ ] inner_join
-- [ ] join_multi
+- [x] inner_join
+- [x] join_multi
 - [ ] json_builtin
 - [ ] left_join
 - [ ] left_join_multi

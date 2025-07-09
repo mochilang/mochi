@@ -1582,15 +1582,12 @@ func extractVectorElemType(expr string) string {
 		return ""
 	}
 	typ := inner[:idx]
-	if strings.Contains(typ, "std::string") {
-		return "std::string"
-	}
-	if strings.Contains(typ, "bool") {
-		return "bool"
-	}
 	if strings.HasPrefix(typ, "decltype(") {
 		texpr := strings.TrimSuffix(strings.TrimPrefix(typ, "decltype("), ")")
 		if strings.HasPrefix(texpr, "__struct") {
+			if idx := strings.Index(texpr, "{"); idx != -1 {
+				return texpr[:idx]
+			}
 			return texpr
 		}
 		if strings.Contains(texpr, "std::string") {
@@ -1602,6 +1599,12 @@ func extractVectorElemType(expr string) string {
 		if _, err := strconv.Atoi(texpr); err == nil {
 			return "int"
 		}
+	}
+	if strings.Contains(typ, "std::string") {
+		return "std::string"
+	}
+	if strings.Contains(typ, "bool") {
+		return "bool"
 	}
 	return ""
 }
