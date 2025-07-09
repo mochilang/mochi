@@ -1,5 +1,2 @@
-line: 1
-error: unsupported statement at line 1
-   1: type Person {
-   2:   name: string
-   3:   age: int
+line: 0
+error: gst interpreter not available
