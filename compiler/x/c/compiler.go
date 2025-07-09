@@ -2604,6 +2604,52 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 				}
 			}
 			return ""
+		} else if p.Call.Func == "append" {
+			if len(p.Call.Args) != 2 {
+				return "0"
+			}
+			lst := c.compileExpr(p.Call.Args[0])
+			val := c.compileExpr(p.Call.Args[1])
+			switch listElemType(p.Call.Args[0], c.env).(type) {
+			case types.IntType, types.BoolType:
+				c.need(needConcatListInt)
+				tmp := c.newTemp()
+				c.writeln(fmt.Sprintf("list_int %s = list_int_create(1);", tmp))
+				c.writeln(fmt.Sprintf("%s.data[0] = %s;", tmp, val))
+				name := c.newTemp()
+				c.writeln(fmt.Sprintf("list_int %s = concat_list_int(%s, %s);", name, lst, tmp))
+				return name
+			case types.FloatType:
+				c.need(needConcatListFloat)
+				tmp := c.newTemp()
+				c.writeln(fmt.Sprintf("list_float %s = list_float_create(1);", tmp))
+				c.writeln(fmt.Sprintf("%s.data[0] = %s;", tmp, val))
+				name := c.newTemp()
+				c.writeln(fmt.Sprintf("list_float %s = concat_list_float(%s, %s);", name, lst, tmp))
+				return name
+			case types.StringType:
+				c.need(needConcatListString)
+				c.need(needListString)
+				tmp := c.newTemp()
+				c.writeln(fmt.Sprintf("list_string %s = list_string_create(1);", tmp))
+				c.writeln(fmt.Sprintf("%s.data[0] = %s;", tmp, val))
+				name := c.newTemp()
+				c.writeln(fmt.Sprintf("list_string %s = concat_list_string(%s, %s);", name, lst, tmp))
+				return name
+			case types.ListType:
+				// only support list<list<int>>
+				if isListListExpr(p.Call.Args[0], c.env) {
+					c.need(needConcatListListInt)
+					c.need(needListListInt)
+					tmp := c.newTemp()
+					c.writeln(fmt.Sprintf("list_list_int %s = list_list_int_create(1);", tmp))
+					c.writeln(fmt.Sprintf("%s.data[0] = %s;", tmp, val))
+					name := c.newTemp()
+					c.writeln(fmt.Sprintf("list_list_int %s = concat_list_list_int(%s, %s);", name, lst, tmp))
+					return name
+				}
+			}
+			return "0"
 		} else if p.Call.Func == "count" {
 			t := c.exprType(p.Call.Args[0])
 			arg := c.compileExpr(p.Call.Args[0])
@@ -3197,6 +3243,11 @@ func isListIntPrimary(p *parser.Primary, env *types.Env) bool {
 		}
 	}
 	if p.Call != nil && env != nil {
+		if p.Call.Func == "append" {
+			if len(p.Call.Args) > 0 && isListIntExpr(p.Call.Args[0], env) {
+				return true
+			}
+		}
 		if t, err := env.GetVar(p.Call.Func); err == nil {
 			if ft, ok := t.(types.FuncType); ok {
 				if lt, ok2 := ft.Return.(types.ListType); ok2 {
@@ -3278,6 +3329,11 @@ func isListStringPrimary(p *parser.Primary, env *types.Env) bool {
 		}
 	}
 	if p.Call != nil && env != nil {
+		if p.Call.Func == "append" {
+			if len(p.Call.Args) > 0 && isListStringExpr(p.Call.Args[0], env) {
+				return true
+			}
+		}
 		if t, err := env.GetVar(p.Call.Func); err == nil {
 			if ft, ok := t.(types.FuncType); ok {
 				if lt, ok2 := ft.Return.(types.ListType); ok2 {
@@ -3358,6 +3414,11 @@ func isListFloatPrimary(p *parser.Primary, env *types.Env) bool {
 		}
 	}
 	if p.Call != nil && env != nil {
+		if p.Call.Func == "append" {
+			if len(p.Call.Args) > 0 && isListFloatExpr(p.Call.Args[0], env) {
+				return true
+			}
+		}
 		if t, err := env.GetVar(p.Call.Func); err == nil {
 			if ft, ok := t.(types.FuncType); ok {
 				if lt, ok2 := ft.Return.(types.ListType); ok2 {
