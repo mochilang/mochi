@@ -2,7 +2,7 @@
 
 This directory contains Scala source files generated from Mochi programs using the compiler in `compiler/x/scala`. Each file was compiled and executed using `scalac` and `scala`. The checklist below shows which programs have successfully compiled and run.
 
-## Progress: 60/97 files compiled
+## Progress: 61/97 files compiled
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -99,4 +99,10 @@ This directory contains Scala source files generated from Mochi programs using t
 - [ ] user_type_literal.mochi
 - [ ] values_builtin.mochi
 - [ ] var_assignment.mochi
-- [ ] while_loop.mochi
+- [x] while_loop.mochi
+
+## TODO
+- [ ] implement query joins
+- [ ] handle load/save expressions
+- [ ] support update statements
+- [ ] support test blocks

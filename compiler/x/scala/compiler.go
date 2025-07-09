@@ -395,6 +395,22 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 	for _, f := range s.Field {
 		target += "." + f.Name
 	}
+	// check for compound assignment like x = x + y
+	if len(s.Index) == 0 && len(s.Field) == 0 {
+		if b := s.Value.Binary; b != nil && len(b.Right) == 1 {
+			if id, ok := identOfUnary(b.Left); ok && id == s.Name {
+				op := b.Right[0]
+				if op.Op == "+" || op.Op == "-" || op.Op == "*" || op.Op == "/" || op.Op == "%" {
+					rhs, err := c.compilePostfix(op.Right)
+					if err != nil {
+						return err
+					}
+					c.writeln(fmt.Sprintf("%s %s= %s", target, op.Op, rhs))
+					return nil
+				}
+			}
+		}
+	}
 	c.writeln(fmt.Sprintf("%s = %s", target, expr))
 	return nil
 }
@@ -1103,6 +1119,17 @@ func simpleIdent(e *parser.Expr) (string, bool) {
 		return "", false
 	}
 	u := e.Binary.Left
+	if u == nil || len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Selector == nil || len(p.Target.Selector.Tail) > 0 {
+		return "", false
+	}
+	return p.Target.Selector.Root, true
+}
+
+func identOfUnary(u *parser.Unary) (string, bool) {
 	if u == nil || len(u.Ops) > 0 || u.Value == nil {
 		return "", false
 	}
