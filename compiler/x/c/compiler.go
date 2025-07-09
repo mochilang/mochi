@@ -567,15 +567,34 @@ func (c *Compiler) compileStructType(st types.StructType) {
 		return
 	}
 	c.structs[name] = true
-	c.writeln("typedef struct {")
-	c.indent++
-	for _, fn := range st.Order {
-		ft := st.Fields[fn]
-		c.writeln(fmt.Sprintf("%s %s;", cTypeFromType(ft), sanitizeName(fn)))
+	if c.indent > 0 {
+		oldBuf := c.buf
+		oldIndent := c.indent
+		c.buf = bytes.Buffer{}
+		c.indent = 0
+		c.writeln("typedef struct {")
+		c.indent++
+		for _, fn := range st.Order {
+			ft := st.Fields[fn]
+			c.writeln(fmt.Sprintf("%s %s;", cTypeFromType(ft), sanitizeName(fn)))
+		}
+		c.indent--
+		c.writeln(fmt.Sprintf("}%s;", name))
+		c.compileStructListType(st)
+		c.lambdas = append(c.lambdas, c.buf.String())
+		c.buf = oldBuf
+		c.indent = oldIndent
+	} else {
+		c.writeln("typedef struct {")
+		c.indent++
+		for _, fn := range st.Order {
+			ft := st.Fields[fn]
+			c.writeln(fmt.Sprintf("%s %s;", cTypeFromType(ft), sanitizeName(fn)))
+		}
+		c.indent--
+		c.writeln(fmt.Sprintf("}%s;", name))
+		c.compileStructListType(st)
 	}
-	c.indent--
-	c.writeln(fmt.Sprintf("}%s;", name))
-	c.compileStructListType(st)
 	for _, ft := range st.Fields {
 		if sub, ok := ft.(types.StructType); ok {
 			c.compileStructType(sub)
@@ -589,6 +608,25 @@ func (c *Compiler) compileStructListType(st types.StructType) {
 		return
 	}
 	c.listStructs[listName] = true
+	if c.indent > 0 {
+		oldBuf := c.buf
+		oldIndent := c.indent
+		c.buf = bytes.Buffer{}
+		c.indent = 0
+		c.writeln(fmt.Sprintf("typedef struct { int len; %s *data; } %s;", sanitizeName(st.Name), listName))
+		c.writeln(fmt.Sprintf("static %s %s_create(int len) {", listName, listName))
+		c.indent++
+		c.writeln(fmt.Sprintf("%s l;", listName))
+		c.writeln("l.len = len;")
+		c.writeln(fmt.Sprintf("l.data = (%s*)malloc(sizeof(%s)*len);", sanitizeName(st.Name), sanitizeName(st.Name)))
+		c.writeln("return l;")
+		c.indent--
+		c.writeln("}")
+		c.lambdas = append(c.lambdas, c.buf.String())
+		c.buf = oldBuf
+		c.indent = oldIndent
+		return
+	}
 	c.writeln(fmt.Sprintf("typedef struct { int len; %s *data; } %s;", sanitizeName(st.Name), listName))
 	c.writeln(fmt.Sprintf("static %s %s_create(int len) {", listName, listName))
 	c.indent++
@@ -1293,6 +1331,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 					}
 					val := c.compileExpr(q.Select)
 					retT := c.exprType(q.Select)
+					if ml := asMapLiteral(q.Select); ml != nil {
+						if st, ok := retT.(types.StructType); ok {
+							c.structLits[ml] = st
+						}
+					}
 					retList := types.ListType{Elem: retT}
 					listC := cTypeFromType(retList)
 					if listC == "list_string" {
@@ -1322,6 +1365,93 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 			}
 		}
 	}
+	// handle simple cross joins (multiple from clauses without joins)
+	if len(q.Froms) > 0 && len(q.Joins) == 0 && q.Group == nil {
+		// collect all sources
+		type srcInfo struct {
+			varName string
+			expr    string
+			elem    types.Type
+		}
+		sources := []srcInfo{}
+		firstExpr := c.compileExpr(q.Source)
+		firstT := c.exprType(q.Source)
+		lt, ok := firstT.(types.ListType)
+		if !ok {
+			return "0"
+		}
+		sources = append(sources, srcInfo{varName: q.Var, expr: firstExpr, elem: lt.Elem})
+		for _, f := range q.Froms {
+			fe := c.compileExpr(f.Src)
+			ft := c.exprType(f.Src)
+			flt, ok := ft.(types.ListType)
+			if !ok {
+				return "0"
+			}
+			sources = append(sources, srcInfo{varName: f.Var, expr: fe, elem: flt.Elem})
+		}
+
+		oldEnv := c.env
+		if c.env != nil {
+			c.env = types.NewEnv(c.env)
+			for _, s := range sources {
+				c.env.SetVar(s.varName, s.elem, true)
+			}
+		}
+
+		var cond string
+		if q.Where != nil {
+			cond = c.compileExpr(q.Where)
+		}
+
+		val := c.compileExpr(q.Select)
+		retT := c.exprType(q.Select)
+		retList := types.ListType{Elem: retT}
+		listC := cTypeFromType(retList)
+		if listC == "list_string" {
+			c.need(needListString)
+		} else if listC == "list_float" {
+			c.need(needListFloat)
+		} else if listC == "list_list_int" {
+			c.need(needListListInt)
+		}
+
+		res := c.newTemp()
+		idx := c.newTemp()
+		lenExpr := sources[0].expr + ".len"
+		for i := 1; i < len(sources); i++ {
+			lenExpr = fmt.Sprintf("%s * %s.len", lenExpr, sources[i].expr)
+		}
+		c.writeln(fmt.Sprintf("%s %s = %s_create(%s);", listC, res, listC, lenExpr))
+		c.writeln(fmt.Sprintf("int %s = 0;", idx))
+
+		var loop func(int)
+		loop = func(i int) {
+			src := sources[i]
+			iter := c.newTemp()
+			c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", iter, iter, src.expr, iter))
+			c.indent++
+			c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", cTypeFromType(src.elem), sanitizeName(src.varName), src.expr, iter))
+			if i+1 < len(sources) {
+				loop(i + 1)
+			} else {
+				if cond != "" {
+					c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", cond))
+				}
+				c.writeln(fmt.Sprintf("%s.data[%s] = %s;", res, idx, val))
+				c.writeln(fmt.Sprintf("%s++;", idx))
+			}
+			c.indent--
+			c.writeln("}")
+		}
+		loop(0)
+		c.writeln(fmt.Sprintf("%s.len = %s;", res, idx))
+		if c.env != nil {
+			c.env = oldEnv
+		}
+		return res
+	}
+
 	// only handle simple queries without joins or grouping
 	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil {
 		return "0"
@@ -1995,6 +2125,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		c.writeln(fmt.Sprintf("map_int_bool %s = map_int_bool_create(%d);", name, len(p.Map.Items)))
 		for _, it := range p.Map.Items {
 			k := c.compileExpr(it.Key)
+			if s, ok := types.SimpleStringKey(it.Key); ok {
+				k = fmt.Sprintf("\"%s\"", s)
+			}
 			v := c.compileExpr(it.Value)
 			c.writeln(fmt.Sprintf("map_int_bool_put(&%s, %s, %s);", name, k, v))
 		}
