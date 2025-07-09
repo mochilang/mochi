@@ -17,6 +17,9 @@ import (
 )
 
 func findRepoRoot() string {
+	if root := os.Getenv("MOCHI_ROOT"); root != "" {
+		return root
+	}
 	dir, _ := os.Getwd()
 	for i := 0; i < 10; i++ {
 		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
