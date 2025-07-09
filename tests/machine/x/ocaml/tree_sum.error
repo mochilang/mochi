@@ -1,10 +1,1 @@
-stage: compile
-error:
 unsupported expression at line 10
-
-Context (around line 10):
-   8 | 
-   9 | fun sum_tree(t: Tree): int {
-  10 |   return match t {
-  11 |     Leaf => 0
-  12 |     Node(left, value, right) => sum_tree(left) + value + sum_tree(right)

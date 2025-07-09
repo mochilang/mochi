@@ -1,114 +1,77 @@
 # OCaml Machine Output
 
-Generated OCaml sources from the Mochi examples live in this directory. When an OCaml compiler is available each program is compiled and run, producing `.out` files (or `.error` if compilation or execution fails).
+Generated `.ml` files in this directory are produced by the Mochi to OCaml compiler.
+If an OCaml toolchain is available each program is built and executed.  Successful
+runs produce a `.out` file while failures generate a `.error` report.
 
-## Program status
+## Compiled and ran successfully
 
-The table below tracks which Mochi examples compile successfully using the current OCaml backend. A checked item means the generated OCaml program built and ran without errors.
+- [x] append_builtin
+- [x] avg_builtin
+- [x] basic_compare
+- [x] binary_precedence
+- [x] bool_chain
+- [x] break_continue
+- [x] cast_string_to_int
+- [x] cast_struct
+- [x] closure
+- [x] count_builtin
+- [x] exists_builtin
+- [x] for_list_collection
+- [x] for_loop
+- [x] fun_call
+- [x] fun_expr_in_let
+- [x] fun_three_args
+- [x] if_else
+- [x] if_then_else
+- [x] if_then_else_nested
+- [x] in_operator
+- [x] len_builtin
+- [x] len_map
+- [x] len_string
+- [x] let_and_print
+- [x] list_assign
+- [x] list_index
+- [x] map_assign
+- [x] map_in_operator
+- [x] map_index
+- [x] map_literal_dynamic
+- [x] map_membership
+- [x] math_ops
+- [x] membership
+- [x] min_max_builtin
+- [x] partial_application
+- [x] print_hello
+- [x] pure_fold
+- [x] pure_global_fold
+- [x] record_assign
+- [x] short_circuit
+- [x] slice
+- [x] str_builtin
+- [x] string_compare
+- [x] string_concat
+- [x] string_contains
+- [x] substring_builtin
+- [x] typed_let
+- [x] typed_var
+- [x] unary_neg
+- [x] user_type_literal
+- [x] var_assignment
+- [x] while_loop
 
+## Failed to build or run
 
-### Compiled successfully
-- avg_builtin
-- basic_compare
-- binary_precedence
-- bool_chain
-- break_continue
-- cast_string_to_int
-- cast_struct
-- closure
-- count_builtin
-- for_list_collection
-- for_loop
-- fun_call
-- fun_expr_in_let
-- fun_three_args
-- if_else
-- if_then_else
-- if_then_else_nested
-- in_operator
-- len_builtin
-- len_map
-- len_string
-- let_and_print
-- list_assign
-- list_index
-- list_nested_assign
-- list_set_ops
-- map_assign
-- map_in_operator
-- map_index
-- map_literal_dynamic
-- map_membership
-- math_ops
-- membership
-- min_max_builtin
-- partial_application
-- print_hello
-- pure_fold
-- pure_global_fold
-- record_assign
-- short_circuit
-- slice
-- str_builtin
-- string_compare
-- string_concat
-- string_contains
-- substring_builtin
-- sum_builtin
-- typed_let
-- typed_var
-- unary_neg
-- user_type_literal
-- map_nested_assign
-- var_assignment
-- while_loop
-- cross_join
-- cross_join_filter
-- cross_join_triple
-- dataset_where_filter
-- exists_builtin
-- values_builtin
-
-### Failed
-- dataset_sort_take_limit
-- for_map_collection
-- group_by
-- group_by_conditional_sum
-- group_by_having
-- group_by_join
-- group_by_left_join
-- group_by_multi_join
-- group_by_multi_join_sort
-- group_by_sort
-- group_items_iteration
-- in_operator_extended
-- inner_join
-- join_multi
-- json_builtin
-- left_join
-- left_join_multi
-- load_yaml
-- map_int_key
-- match_expr
-- match_full
-- nested_function
-- order_by_map
-- outer_join
-- query_sum_select
-- right_join
-- save_jsonl_stdout
-- sort_stable
-- string_in_operator
-- string_index
-- string_prefix_slice
-- tail_recursion
-- test_block
-- tree_sum
-- two-sum
-- update_stmt
-
+- [ ] group_items_iteration
+- [ ] load_yaml
+- [ ] match_expr
+- [ ] match_full
+- [ ] nested_function
+- [ ] save_jsonl_stdout
+- [ ] test_block
+- [ ] tree_sum
+- [ ] two-sum
+- [ ] update_stmt
 
 ## Remaining Tasks
 - [ ] Implement support for advanced query joins and aggregation.
 - [ ] Add runtime to run compiled programs during tests.
-

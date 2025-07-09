@@ -1,10 +1,1 @@
-stage: compile
-error:
 unsupported expression at line 3
-
-Context (around line 3):
-   1 | let x = 2
-   2 | 
-   3 | let label = match x {
-   4 |   1 => "one"
-   5 |   2 => "two"

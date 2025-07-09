@@ -1,10 +1,1 @@
-stage: compile
-error:
 unsupported statement at line 9
-
-Context (around line 9):
-   7 | var tmp = []
-   8 | for g in groups {
-   9 |   var total = 0
-  10 |   for x in g.items {
-  11 |     total = total + x.val

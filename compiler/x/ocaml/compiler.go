@@ -484,6 +484,11 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			return c.compileJoin(q)
 		}
 	}
+	if len(q.Joins) > 1 {
+		if side := q.Joins[len(q.Joins)-1].Side; side != nil && *side == "left" {
+			return c.compileLeftJoinLast(q)
+		}
+	}
 	froms := append([]*parser.FromClause{{Var: q.Var, Src: q.Source}}, q.Froms...)
 	total := len(froms) + len(q.Joins)
 	sources := make([]string, total)
@@ -744,6 +749,132 @@ func (c *Compiler) compileOuterJoin(q *parser.QueryExpr) (string, error) {
 	buf.WriteString("    );\n")
 	buf.WriteString(fmt.Sprintf("  ) %s;\n", rightSrc))
 	buf.WriteString(fmt.Sprintf("  List.rev !%s)\n", resName))
+	return buf.String(), nil
+}
+
+func (c *Compiler) compileLeftJoinLast(q *parser.QueryExpr) (string, error) {
+	last := q.Joins[len(q.Joins)-1]
+	prev := q.Joins[:len(q.Joins)-1]
+
+	froms := append([]*parser.FromClause{{Var: q.Var, Src: q.Source}}, q.Froms...)
+	total := len(froms) + len(prev)
+	sources := make([]string, total)
+	vars := make([]string, total)
+	idx := 0
+	for _, fr := range froms {
+		src, err := c.compileExpr(fr.Src)
+		if err != nil {
+			return "", err
+		}
+		sources[idx] = src
+		vars[idx] = fr.Var
+		idx++
+	}
+	joinConds := make([]string, len(prev))
+	for j, jo := range prev {
+		src, err := c.compileExpr(jo.Src)
+		if err != nil {
+			return "", err
+		}
+		sources[idx] = src
+		vars[idx] = jo.Var
+		idx++
+		if jo.On != nil {
+			cond, err := c.compileExpr(jo.On)
+			if err != nil {
+				return "", err
+			}
+			joinConds[j] = cond
+		}
+	}
+
+	condPrev := []string{}
+	for _, jc := range joinConds {
+		if jc != "" {
+			condPrev = append(condPrev, jc)
+		}
+	}
+	prevCond := strings.Join(condPrev, " && ")
+
+	lastSrc, err := c.compileExpr(last.Src)
+	if err != nil {
+		return "", err
+	}
+	on := "true"
+	if last.On != nil {
+		on, err = c.compileExpr(last.On)
+		if err != nil {
+			return "", err
+		}
+	}
+	where := ""
+	if q.Where != nil {
+		where, err = c.compileExpr(q.Where)
+		if err != nil {
+			return "", err
+		}
+	}
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		return "", err
+	}
+	resName := fmt.Sprintf("__res%d", c.loop)
+	c.loop++
+	var buf bytes.Buffer
+	buf.WriteString(fmt.Sprintf("(let %s = ref [] in\n", resName))
+	for i := 0; i < total; i++ {
+		for j := 0; j <= i; j++ {
+			buf.WriteString(strings.Repeat("  ", j+1))
+		}
+		buf.WriteString(fmt.Sprintf("List.iter (fun %s ->\n", vars[i]))
+	}
+	indent := strings.Repeat("  ", total+1)
+	condAll := prevCond
+	if on != "true" {
+		if condAll != "" {
+			condAll += " && " + on
+		} else {
+			condAll = on
+		}
+	}
+	if where != "" {
+		if condAll != "" {
+			condAll += " && " + where
+		} else {
+			condAll = where
+		}
+	}
+	buf.WriteString(indent + "let matched = ref false in\n")
+	buf.WriteString(indent + fmt.Sprintf("List.iter (fun %s ->\n", last.Var))
+	buf.WriteString(indent + "  if " + condAll + " then (\n")
+	buf.WriteString(indent + "    " + fmt.Sprintf("%s := %s :: !%s;\n", resName, sel, resName))
+	buf.WriteString(indent + "    matched := true)\n")
+	buf.WriteString(indent + fmt.Sprintf(") %s;\n", lastSrc))
+
+	condNoLast := prevCond
+	if where != "" {
+		if condNoLast != "" {
+			condNoLast += " && " + where
+		} else {
+			condNoLast = where
+		}
+	}
+	buf.WriteString(indent + "if not !matched then (\n")
+	buf.WriteString(indent + fmt.Sprintf("  let %s = Obj.magic () in\n", last.Var))
+	if condNoLast != "" {
+		buf.WriteString(indent + fmt.Sprintf("  if %s then %s := %s :: !%s;\n", condNoLast, resName, sel, resName))
+	} else {
+		buf.WriteString(indent + fmt.Sprintf("  %s := %s :: !%s;\n", resName, sel, resName))
+	}
+	buf.WriteString(indent + ");\n")
+
+	for i := total - 1; i >= 0; i-- {
+		for j := 0; j <= i; j++ {
+			buf.WriteString(strings.Repeat("  ", i-j+1))
+		}
+		buf.WriteString(fmt.Sprintf(") %s;\n", sources[i]))
+	}
+	buf.WriteString(fmt.Sprintf("List.rev !%s)\n", resName))
 	return buf.String(), nil
 }
 

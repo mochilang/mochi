@@ -33,21 +33,43 @@ let slice lst i j =
 
 let string_slice s i j = String.sub s i (j - i)
 
-let nation = [[("n_nationkey",1);("n_name","BRAZIL")]]
-let customer = [[("c_custkey",1);("c_name","Alice");("c_acctbal",100);("c_nationkey",1);("c_address","123 St");("c_phone","123-456");("c_comment","Loyal")]]
-let orders = [[("o_orderkey",1000);("o_custkey",1);("o_orderdate","1993-10-15")];[("o_orderkey",2000);("o_custkey",1);("o_orderdate","1994-01-02")]]
-let lineitem = [[("l_orderkey",1000);("l_returnflag","R");("l_extendedprice",1000);("l_discount",0.1)];[("l_orderkey",2000);("l_returnflag","N");("l_extendedprice",500);("l_discount",0)]]
+let list_set lst idx value =
+  List.mapi (fun i v -> if i = idx then value else v) lst
+
+let rec map_set m k v =
+  match m with
+    | [] -> [(k,Obj.repr v)]
+    | (k2,v2)::tl -> if k2 = k then (k,Obj.repr v)::tl else (k2,v2)::map_set tl k v
+
+let map_get m k = Obj.obj (List.assoc k m)
+
+let list_union a b = List.sort_uniq compare (a @ b)
+let list_except a b = List.filter (fun x -> not (List.mem x b)) a
+let list_intersect a b = List.filter (fun x -> List.mem x b) a |> List.sort_uniq compare
+let list_union_all a b = a @ b
+let sum lst = List.fold_left (+) 0 lst
+
+let nation = [[("n_nationkey",Obj.repr 1);("n_name",Obj.repr "BRAZIL")]]
+let customer = [[("c_custkey",Obj.repr 1);("c_name",Obj.repr "Alice");("c_acctbal",Obj.repr 100);("c_nationkey",Obj.repr 1);("c_address",Obj.repr "123 St");("c_phone",Obj.repr "123-456");("c_comment",Obj.repr "Loyal")]]
+let orders = [[("o_orderkey",Obj.repr 1000);("o_custkey",Obj.repr 1);("o_orderdate",Obj.repr "1993-10-15")];[("o_orderkey",Obj.repr 2000);("o_custkey",Obj.repr 1);("o_orderdate",Obj.repr "1994-01-02")]]
+let lineitem = [[("l_orderkey",Obj.repr 1000);("l_returnflag",Obj.repr "R");("l_extendedprice",Obj.repr 1000);("l_discount",Obj.repr 0.1)];[("l_orderkey",Obj.repr 2000);("l_returnflag",Obj.repr "N");("l_extendedprice",Obj.repr 500);("l_discount",Obj.repr 0)]]
 let start_date = "1993-10-01"
 let end_date = "1994-01-01"
 let result = (let __res0 = ref [] in
   List.iter (fun c ->
-      if (((((o.o_orderdate >= start_date) && o.o_orderdate) < end_date) && l.l_returnflag) = "R") then
-    __res0 := [("c_custkey",g.key.c_custkey);("c_name",g.key.c_name);("revenue",sum (let __res1 = ref [] in
+      List.iter (fun o ->
+            List.iter (fun l ->
+                    List.iter (fun n ->
+                                    if (o.o_custkey = c.c_custkey) && (l.l_orderkey = o.o_orderkey) && (n.n_nationkey = c.c_nationkey) && (((((o.o_orderdate >= start_date) && o.o_orderdate) < end_date) && l.l_returnflag) = "R") then
+          __res0 := [("c_custkey",Obj.repr g.key.c_custkey);("c_name",Obj.repr g.key.c_name);("revenue",Obj.repr (sum (let __res1 = ref [] in
   List.iter (fun x ->
       __res1 := (x.l.l_extendedprice * ((1 - x.l.l_discount))) :: !__res1;
   ) g;
 List.rev !__res1)
-);("c_acctbal",g.key.c_acctbal);("n_name",g.key.n_name);("c_address",g.key.c_address);("c_phone",g.key.c_phone);("c_comment",g.key.c_comment)] :: !__res0;
+));("c_acctbal",Obj.repr g.key.c_acctbal);("n_name",Obj.repr g.key.n_name);("c_address",Obj.repr g.key.c_address);("c_phone",Obj.repr g.key.c_phone);("c_comment",Obj.repr g.key.c_comment)] :: !__res0;
+                    ) nation;
+            ) lineitem;
+      ) orders;
   ) customer;
 List.rev !__res0)
 

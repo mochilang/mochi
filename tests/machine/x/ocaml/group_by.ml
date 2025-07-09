@@ -33,10 +33,26 @@ let slice lst i j =
 
 let string_slice s i j = String.sub s i (j - i)
 
-let people = [[("name","Alice");("age",30);("city","Paris")];[("name","Bob");("age",15);("city","Hanoi")];[("name","Charlie");("age",65);("city","Paris")];[("name","Diana");("age",45);("city","Hanoi")];[("name","Eve");("age",70);("city","Paris")];[("name","Frank");("age",22);("city","Hanoi")]]
+let list_set lst idx value =
+  List.mapi (fun i v -> if i = idx then value else v) lst
+
+let rec map_set m k v =
+  match m with
+    | [] -> [(k,Obj.repr v)]
+    | (k2,v2)::tl -> if k2 = k then (k,Obj.repr v)::tl else (k2,v2)::map_set tl k v
+
+let map_get m k = Obj.obj (List.assoc k m)
+
+let list_union a b = List.sort_uniq compare (a @ b)
+let list_except a b = List.filter (fun x -> not (List.mem x b)) a
+let list_intersect a b = List.filter (fun x -> List.mem x b) a |> List.sort_uniq compare
+let list_union_all a b = a @ b
+let sum lst = List.fold_left (+) 0 lst
+
+let people = [[("name",Obj.repr "Alice");("age",Obj.repr 30);("city",Obj.repr "Paris")];[("name",Obj.repr "Bob");("age",Obj.repr 15);("city",Obj.repr "Hanoi")];[("name",Obj.repr "Charlie");("age",Obj.repr 65);("city",Obj.repr "Paris")];[("name",Obj.repr "Diana");("age",Obj.repr 45);("city",Obj.repr "Hanoi")];[("name",Obj.repr "Eve");("age",Obj.repr 70);("city",Obj.repr "Paris")];[("name",Obj.repr "Frank");("age",Obj.repr 22);("city",Obj.repr "Hanoi")]]
 let stats = (let __res0 = ref [] in
   List.iter (fun person ->
-      __res0 := [("city",g.key);("count",List.length g);("avg_age",(List.fold_left (+) 0 (let __res1 = ref [] in
+      __res0 := [("city",Obj.repr g.key);("count",Obj.repr List.length g);("avg_age",Obj.repr (List.fold_left (+) 0 (let __res1 = ref [] in
   List.iter (fun p ->
       __res1 := p.age :: !__res1;
   ) g;
