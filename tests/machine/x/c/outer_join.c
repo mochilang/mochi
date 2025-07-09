@@ -76,7 +76,7 @@ int main() {
     ordersItem o = orders.data[_t5];
     for (int _t6 = 0; _t6 < customers.len; _t6++) {
       customersItem c = customers.data[_t6];
-      if (!((o.customerId == c.id))) {
+      if (!(o.customerId == c.id)) {
         continue;
       }
       _t3.data[_t4] = (resultItem){.order = o, .customer = c};

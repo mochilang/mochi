@@ -17,7 +17,7 @@ typedef struct {
   int n;
 } Counter;
 
-int inc(Counter *c) { c.n = (c.n + 1); }
+int inc(Counter *c) { c.n = c.n + 1; }
 
 int main() {
   Counter c = (Counter){.n = 0};

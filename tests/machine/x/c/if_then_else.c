@@ -13,7 +13,7 @@ static list_int list_int_create(int len) {
 }
 int main() {
   int x = 12;
-  char *msg = ((x > 10) ? "yes" : "no");
+  char *msg = (x > 10 ? "yes" : "no");
   printf("%s\n", msg);
   return 0;
 }

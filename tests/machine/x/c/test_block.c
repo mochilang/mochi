@@ -12,8 +12,8 @@ static list_int list_int_create(int len) {
   return l;
 }
 static void test_addition_works() {
-  int x = (1 + 2);
-  if (!((x == 3))) {
+  int x = 1 + 2;
+  if (!(x == 3)) {
     fprintf(stderr, "expect failed\n");
     exit(1);
   }

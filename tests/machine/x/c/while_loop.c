@@ -13,9 +13,9 @@ static list_int list_int_create(int len) {
 }
 int main() {
   int i = 0;
-  while ((i < 3)) {
+  while (i < 3) {
     printf("%d\n", i);
-    i = (i + 1);
+    i = i + 1;
   }
   return 0;
 }

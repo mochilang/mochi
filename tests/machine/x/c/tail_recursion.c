@@ -12,10 +12,10 @@ static list_int list_int_create(int len) {
   return l;
 }
 int sum_rec(int n, int acc) {
-  if ((n == 0)) {
+  if (n == 0) {
     return acc;
   }
-  return sum_rec((n - 1), (acc + n));
+  return sum_rec(n - 1, acc + n);
 }
 
 int main() {

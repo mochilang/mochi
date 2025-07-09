@@ -11,7 +11,7 @@ static list_int list_int_create(int len) {
   l.data = (int *)malloc(sizeof(int) * len);
   return l;
 }
-int _lambda0(int x) { return (x + n); }
+int _lambda0(int x) { return x + n; }
 
 int (*)(int) makeAdder(int n) { return _lambda0; }
 

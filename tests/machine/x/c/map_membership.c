@@ -59,7 +59,7 @@ int main() {
   map_int_bool_put(&_t1, "a", 1);
   map_int_bool_put(&_t1, "b", 2);
   int m = _t1;
-  printf("%s\n", (("a" in m)) ? "true" : "false");
-  printf("%s\n", (("c" in m)) ? "true" : "false");
+  printf("%s\n", ("a" in m) ? "true" : "false");
+  printf("%s\n", ("c" in m) ? "true" : "false");
   return 0;
 }
