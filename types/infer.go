@@ -926,6 +926,9 @@ func TypeOfPrimaryBasic(p *parser.Primary, env *Env) Type {
 // IsListType reports whether t is a list type.
 func IsListType(t Type) bool { return isList(t) }
 
+// IsStructType reports whether t is a struct type.
+func IsStructType(t Type) bool { _, ok := t.(StructType); return ok }
+
 // IsMapType reports whether t is a map type.
 func IsMapType(t Type) bool { _, ok := t.(MapType); return ok }
 

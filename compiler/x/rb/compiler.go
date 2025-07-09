@@ -1265,7 +1265,7 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 			var expr string
 			switch op {
 			case "in":
-				if types.IsMapType(rt) {
+				if types.IsMapType(rt) || types.IsStructType(rt) {
 					expr = fmt.Sprintf("(%s.to_h.key?(%s))", r, l)
 				} else {
 					expr = fmt.Sprintf("(%s.include?(%s))", r, l)
