@@ -160,7 +160,19 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 
 func (c *Compiler) compileTypeDecl(td *parser.TypeDecl) error {
 	if len(td.Variants) > 0 {
-		return fmt.Errorf("line %d: union types not supported", td.Pos.Line)
+		c.writeln("sealed trait " + td.Name)
+		for _, v := range td.Variants {
+			if len(v.Fields) == 0 {
+				c.writeln(fmt.Sprintf("case object %s extends %s", v.Name, td.Name))
+				continue
+			}
+			fields := make([]string, len(v.Fields))
+			for i, f := range v.Fields {
+				fields[i] = fmt.Sprintf("%s: %s", f.Name, c.typeString(f.Type))
+			}
+			c.writeln(fmt.Sprintf("case class %s(%s) extends %s", v.Name, strings.Join(fields, ", "), td.Name))
+		}
+		return nil
 	}
 	fields := []string{}
 	for _, m := range td.Members {
@@ -692,6 +704,20 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 		return fmt.Sprintf("(%s).nonEmpty", args[0]), nil
 	default:
+		if t, err := c.env.GetVar(call.Func); err == nil {
+			if ft, ok := t.(types.FuncType); ok && len(args) < len(ft.Params) {
+				missing := len(ft.Params) - len(args)
+				names := make([]string, missing)
+				params := make([]string, missing)
+				for i := 0; i < missing; i++ {
+					pname := fmt.Sprintf("p%d", i)
+					names[i] = pname
+					params[i] = fmt.Sprintf("%s: %s", pname, c.typeOf(ft.Params[len(args)+i]))
+				}
+				callArgs := append(append([]string{}, args...), names...)
+				return fmt.Sprintf("(%s) => %s(%s)", strings.Join(params, ", "), call.Func, strings.Join(callArgs, ", ")), nil
+			}
+		}
 		return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ", ")), nil
 	}
 }
@@ -906,6 +932,36 @@ func (c *Compiler) typeString(t *parser.TypeRef) string {
 		return fmt.Sprintf("(%s) => %s", strings.Join(parts, ", "), ret)
 	}
 	return "Any"
+}
+
+func (c *Compiler) typeOf(t types.Type) string {
+	switch tt := t.(type) {
+	case types.IntType, types.Int64Type:
+		return "Int"
+	case types.FloatType:
+		return "Double"
+	case types.BoolType:
+		return "Boolean"
+	case types.StringType:
+		return "String"
+	case types.ListType:
+		return fmt.Sprintf("List[%s]", c.typeOf(tt.Elem))
+	case types.MapType:
+		return fmt.Sprintf("Map[%s, %s]", c.typeOf(tt.Key), c.typeOf(tt.Value))
+	case types.StructType:
+		return tt.Name
+	case types.UnionType:
+		return tt.Name
+	case types.FuncType:
+		params := make([]string, len(tt.Params))
+		for i, p := range tt.Params {
+			params[i] = c.typeOf(p)
+		}
+		ret := c.typeOf(tt.Return)
+		return fmt.Sprintf("(%s) => %s", strings.Join(params, ", "), ret)
+	default:
+		return "Any"
+	}
 }
 
 func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
