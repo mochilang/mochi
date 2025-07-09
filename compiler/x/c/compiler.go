@@ -2413,6 +2413,18 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 							isStringList = false
 							continue
 						}
+					} else if meth == "contains" {
+						if _, ok := c.selectorType(baseSel).(types.StringType); ok && len(op.Call.Args) == 1 {
+							recv := c.compileSelector(baseSel)
+							arg := c.compileExpr(op.Call.Args[0])
+							c.need(needInString)
+							c.need(needStringHeader)
+							expr = fmt.Sprintf("contains_string(%s, %s)", recv, arg)
+							isStr = false
+							isFloatList = false
+							isStringList = false
+							continue
+						}
 					}
 				}
 			}
@@ -2842,6 +2854,17 @@ func (c *Compiler) selectorStructType(sel *parser.SelectorExpr) (types.StructTyp
 	return st, ok
 }
 
+func (c *Compiler) selectorType(sel *parser.SelectorExpr) types.Type {
+	if sel == nil {
+		return types.AnyType{}
+	}
+	p := &parser.Primary{Selector: sel}
+	postfix := &parser.PostfixExpr{Target: p}
+	unary := &parser.Unary{Value: postfix}
+	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: unary}}
+	return c.exprType(expr)
+}
+
 func isStringArg(e *parser.Expr, env *types.Env) bool {
 	if e == nil {
 		return false
@@ -2893,8 +2916,11 @@ func isStringPostfix(p *parser.PostfixExpr, env *types.Env) bool {
 		return false
 	}
 	if len(p.Ops) > 0 {
-		if p.Ops[0].Index != nil && isListStringPrimary(p.Target, env) {
-			return true
+		if p.Ops[0].Index != nil {
+			if isListStringPrimary(p.Target, env) || isStringPrimary(p.Target, env) {
+				return true
+			}
+			return false
 		}
 		return false
 	}
