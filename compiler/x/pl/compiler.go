@@ -11,11 +11,15 @@ import (
 )
 
 type Compiler struct {
-	buf    bytes.Buffer
-	indent int
-	tmp    int
-	vars   map[string]string
-	retVar string
+	buf           bytes.Buffer
+	indent        int
+	tmp           int
+	vars          map[string]string
+	retVar        string
+	needsGetItem  bool
+	needsSlice    bool
+	needsContains bool
+	needsLenAny   bool
 }
 
 func New() *Compiler {
@@ -47,8 +51,11 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.indent = 0
 	c.tmp = 0
 	c.vars = make(map[string]string)
+	c.needsGetItem = false
+	c.needsSlice = false
+	c.needsContains = false
+	c.needsLenAny = false
 
-	c.writeln(":- style_check(-singleton).")
 	for _, st := range p.Statements {
 		if st.Fun != nil {
 			if err := c.compileFun(st.Fun); err != nil {
@@ -69,7 +76,43 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	}
 	c.writeln("true.")
 	c.indent--
-	return c.buf.Bytes(), nil
+	var out bytes.Buffer
+	out.WriteString(":- style_check(-singleton).\n")
+	if c.needsGetItem {
+		out.WriteString("get_item(Container, Key, Val) :-\n")
+		out.WriteString("    is_dict(Container), !, (string(Key) -> atom_string(A, Key) ; A = Key), get_dict(A, Container, Val).\n")
+		out.WriteString("get_item(Container, Index, Val) :-\n")
+		out.WriteString("    string(Container), !, string_chars(Container, Chars), nth0(Index, Chars, Val).\n")
+		out.WriteString("get_item(List, Index, Val) :- nth0(Index, List, Val).\n\n")
+	}
+	if c.needsSlice {
+		out.WriteString("slice(Str, I, J, Out) :-\n")
+		out.WriteString("    string(Str), !,\n")
+		out.WriteString("    Len is J - I,\n")
+		out.WriteString("    sub_string(Str, I, Len, _, Out).\n")
+		out.WriteString("slice(List, I, J, Out) :-\n")
+		out.WriteString("    length(Prefix, I),\n")
+		out.WriteString("    append(Prefix, Rest, List),\n")
+		out.WriteString("    Len is J - I,\n")
+		out.WriteString("    length(Out, Len),\n")
+		out.WriteString("    append(Out, _, Rest).\n\n")
+	}
+	if c.needsContains {
+		out.WriteString("contains(Container, Item, Res) :-\n")
+		out.WriteString("    is_dict(Container), !, (get_dict(Item, Container, _) -> Res = true ; Res = false).\n")
+		out.WriteString("contains(List, Item, Res) :-\n")
+		out.WriteString("    string(List), !, (sub_string(List, _, _, _, Item) -> Res = true ; Res = false).\n")
+		out.WriteString("contains(List, Item, Res) :- (member(Item, List) -> Res = true ; Res = false).\n\n")
+	}
+	if c.needsLenAny {
+		out.WriteString("len_any(Value, Len) :-\n")
+		out.WriteString("    string(Value), !, string_length(Value, Len).\n")
+		out.WriteString("len_any(Value, Len) :-\n")
+		out.WriteString("    is_dict(Value), !, dict_pairs(Value, _, Pairs), length(Pairs, Len).\n")
+		out.WriteString("len_any(Value, Len) :- length(Value, Len).\n\n")
+	}
+	out.Write(c.buf.Bytes())
+	return out.Bytes(), nil
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
@@ -326,10 +369,10 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, bool, error) {
 		} else if op.Op == "%" {
 			res = fmt.Sprintf("(%s mod %s)", res, rhs)
 		} else if op.Op == "==" {
-			res = fmt.Sprintf("(%s =:= %s)", res, rhs)
+			res = fmt.Sprintf("(%s == %s)", res, rhs)
 			arith = false
 		} else if op.Op == "!=" {
-			res = fmt.Sprintf("(%s =\\= %s)", res, rhs)
+			res = fmt.Sprintf("(%s \\== %s)", res, rhs)
 			arith = false
 		} else if op.Op == "<" || op.Op == "<=" || op.Op == ">" || op.Op == ">=" {
 			res = fmt.Sprintf("(%s %s %s)", res, op.Op, rhs)
@@ -367,10 +410,41 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, bool, error) {
 }
 
 func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, bool, error) {
-	if len(pf.Ops) != 0 {
+	if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && len(pf.Ops) > 0 && pf.Ops[0].Call != nil {
+		container := c.lookupVar(pf.Target.Selector.Root)
+		val, arith, err := c.compileMethodCall(container, pf.Target.Selector.Tail[0], pf.Ops[0].Call)
+		if err != nil {
+			return "", false, err
+		}
+		if len(pf.Ops) > 1 {
+			return "", false, fmt.Errorf("postfix not supported")
+		}
+		return val, arith, nil
+	}
+	val, arith, err := c.compilePrimary(pf.Target)
+	if err != nil {
+		return "", false, err
+	}
+	for i := 0; i < len(pf.Ops); i++ {
+		op := pf.Ops[i]
+		if op.Index != nil {
+			val, arith, err = c.compileIndex(val, op.Index)
+			if err != nil {
+				return "", false, err
+			}
+			continue
+		}
+		if op.Field != nil && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil {
+			val, arith, err = c.compileMethodCall(val, op.Field.Name, pf.Ops[i+1].Call)
+			if err != nil {
+				return "", false, err
+			}
+			i++
+			continue
+		}
 		return "", false, fmt.Errorf("postfix not supported")
 	}
-	return c.compilePrimary(pf.Target)
+	return val, arith, nil
 }
 
 func (c *Compiler) compilePrimary(p *parser.Primary) (string, bool, error) {
@@ -505,11 +579,8 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, bool, error) {
 			return "", false, err
 		}
 		tmp := c.newTmp()
-		if strings.HasPrefix(arg, "\"") {
-			c.writeln(fmt.Sprintf("string_length(%s, %s),", arg, tmp))
-		} else {
-			c.writeln(fmt.Sprintf("length(%s, %s),", arg, tmp))
-		}
+		c.needsLenAny = true
+		c.writeln(fmt.Sprintf("len_any(%s, %s),", arg, tmp))
 		return tmp, true, nil
 	case "count":
 		if len(call.Args) != 1 {
@@ -598,7 +669,7 @@ func getPrintCall(e *parser.Expr) *parser.CallExpr {
 }
 
 func isBoolExpr(s string) bool {
-	ops := []string{"=:=", "=\\=", "<", "<=", ">", ">="}
+	ops := []string{"=:=", "=\\=", "<", "<=", ">", ">=", "==", "\\=="}
 	for _, op := range ops {
 		if strings.Contains(s, op) {
 			return true
@@ -665,4 +736,51 @@ func (c *Compiler) compileExists(name string, q *parser.QueryExpr) error {
 	c.writeln(fmt.Sprintf("(once((member(%s, %s), %s)) -> %s = true ; %s = false),", varName, src, cond, target, target))
 	c.vars[name] = target
 	return nil
+}
+
+func (c *Compiler) compileIndex(container string, idx *parser.IndexOp) (string, bool, error) {
+	if idx.Colon == nil {
+		index, _, err := c.compileExpr(idx.Start)
+		if err != nil {
+			return "", false, err
+		}
+		tmp := c.newTmp()
+		c.needsGetItem = true
+		c.writeln(fmt.Sprintf("get_item(%s, %s, %s),", container, index, tmp))
+		return tmp, false, nil
+	}
+	start := "0"
+	if idx.Start != nil {
+		s, _, err := c.compileExpr(idx.Start)
+		if err != nil {
+			return "", false, err
+		}
+		start = s
+	}
+	end := "0"
+	if idx.End != nil {
+		e, _, err := c.compileExpr(idx.End)
+		if err != nil {
+			return "", false, err
+		}
+		end = e
+	}
+	tmp := c.newTmp()
+	c.needsSlice = true
+	c.writeln(fmt.Sprintf("slice(%s, %s, %s, %s),", container, start, end, tmp))
+	return tmp, false, nil
+}
+
+func (c *Compiler) compileMethodCall(container, method string, call *parser.CallOp) (string, bool, error) {
+	if method == "contains" && len(call.Args) == 1 {
+		arg, _, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", false, err
+		}
+		tmp := c.newTmp()
+		c.needsContains = true
+		c.writeln(fmt.Sprintf("contains(%s, %s, %s),", container, arg, tmp))
+		return tmp, false, nil
+	}
+	return "", false, fmt.Errorf("unsupported method")
 }

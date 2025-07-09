@@ -4,7 +4,7 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 
 ## Summary
 
-- 35/97 programs compiled and executed successfully.
+- 40/97 programs compiled and executed successfully.
 
 ### Successful
 - append_builtin
@@ -42,6 +42,11 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 - typed_var
 - unary_neg
 - var_assignment
+- list_index
+- slice
+- string_contains
+- string_index
+- string_prefix_slice
 
 ### Failed
 - cast_string_to_int
@@ -72,7 +77,6 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 - left_join_multi
 - len_map
 - list_assign
-- list_index
 - list_nested_assign
 - list_set_ops
 - load_yaml
@@ -93,13 +97,9 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 - record_assign
 - right_join
 - save_jsonl_stdout
-- slice
-- sort_stable
-- string_contains
-- string_in_operator
-- string_index
-- string_prefix_slice
-- test_block
+ - sort_stable
+ - string_in_operator
+ - test_block
 - tree_sum
 - two-sum
 - update_stmt
