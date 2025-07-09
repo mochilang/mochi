@@ -63,14 +63,14 @@ val products = mutableListOf(mutableMapOf("name" to "Laptop", "price" to 1500), 
 val expensive = run {
     val __res = mutableListOf<Any>()
     for (p in products) {
-        __res.add(p)
+        __res.add((p as MutableMap<*, *>))
     }
     __res
-}.sortedByDescending { p["price"] }.drop(1).take(3)
+}.sortedByDescending { (it as MutableMap<*, *>)["price"] as Comparable<Any> }.drop(1).take(3)
 
 fun main() {
     println("--- Top products (excluding most expensive) ---")
     for (item in expensive) {
-        println(listOf(item.name, "costs $", item.price).joinToString(" "))
+        println(listOf((item as MutableMap<*, *>)["name"], "costs $", (item as MutableMap<*, *>)["price"]).joinToString(" "))
     }
 }

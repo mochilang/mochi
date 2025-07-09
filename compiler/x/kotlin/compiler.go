@@ -5,6 +5,7 @@ package kotlin
 import (
 	"bytes"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"mochi/parser"
@@ -825,6 +826,23 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
+		vars := []string{q.Var}
+		for _, f := range q.Froms {
+			vars = append(vars, f.Var)
+		}
+		for _, v := range vars {
+			sortExpr = replaceIdent(sortExpr, v, "it")
+		}
+		switch types.TypeOfExprBasic(q.Sort, c.env).(type) {
+		case types.IntType:
+			sortExpr += " as Int"
+		case types.FloatType:
+			sortExpr += " as Double"
+		case types.StringType:
+			sortExpr += " as String"
+		default:
+			sortExpr += " as Comparable<Any>"
+		}
 		if strings.HasPrefix(sortExpr, "-") {
 			sortExpr = strings.TrimPrefix(sortExpr, "-")
 			res += fmt.Sprintf(".sortedByDescending { %s }", sortExpr)
@@ -877,4 +895,9 @@ func (c *Compiler) writeln(s string) {
 	}
 	c.buf.WriteString(s)
 	c.buf.WriteByte('\n')
+}
+
+func replaceIdent(s, name, repl string) string {
+	re := regexp.MustCompile(`\b` + regexp.QuoteMeta(name) + `\b`)
+	return re.ReplaceAllString(s, repl)
 }
