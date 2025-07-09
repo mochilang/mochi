@@ -4,8 +4,8 @@ This directory contains C++ source code generated from Mochi programs and the co
 
 ## Summary
 
-- 55/97 programs compiled and executed successfully.
-- 42 programs failed to compile or run.
+- 57/97 programs compiled and executed successfully.
+- 40 programs failed to compile or run.
 
 ### Successful
 - append_builtin
@@ -49,6 +49,8 @@ This directory contains C++ source code generated from Mochi programs and the co
 - unary_neg
 - var_assignment
 - while_loop
+- exists_builtin
+- list_nested_assign
 
 ### Failed
 - cast_struct
@@ -57,7 +59,6 @@ This directory contains C++ source code generated from Mochi programs and the co
 - cross_join_triple
 - dataset_sort_take_limit
 - dataset_where_filter
-- exists_builtin
 - for_map_collection
 - group_by
 - group_by_conditional_sum
@@ -78,7 +79,6 @@ This directory contains C++ source code generated from Mochi programs and the co
 - left_join
 - left_join_multi
 - len_string
-- list_nested_assign
 - list_set_ops
 - load_yaml
 - map_in_operator

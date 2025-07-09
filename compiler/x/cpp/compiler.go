@@ -666,6 +666,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if len(args) == 1 {
 				return fmt.Sprintf("([&](){ std::vector<int> v; for(auto &p : %s) v.push_back(p.second); return v; })()", args[0]), nil
 			}
+		case "exists":
+			if len(args) == 1 {
+				return fmt.Sprintf("(!(%s).empty())", args[0]), nil
+			}
 		}
 		return name + "(" + strings.Join(args, ", ") + ")", nil
 	case p.Group != nil:
@@ -793,7 +797,7 @@ func (c *Compiler) structFromMapLiteral(typ string, m *parser.MapLiteral) (strin
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if q.Group != nil || len(q.Joins) > 0 {
+	if q.Group != nil || len(q.Joins) > 0 || q.Sort != nil || q.Skip != nil || q.Take != nil {
 		return "", fmt.Errorf("query features not supported")
 	}
 	src, err := c.compileExpr(q.Source)
@@ -819,42 +823,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	key := ""
-	if q.Sort != nil {
-		key, err = c.compileExpr(q.Sort)
-		if err != nil {
-			return "", err
-		}
-	}
-	skip := ""
-	if q.Skip != nil {
-		skip, err = c.compileExpr(q.Skip)
-		if err != nil {
-			return "", err
-		}
-	}
-	take := ""
-	if q.Take != nil {
-		take, err = c.compileExpr(q.Take)
-		if err != nil {
-			return "", err
-		}
-	}
 
 	var buf strings.Builder
 	buf.WriteString("([&]() {\n")
+	buf.WriteString("    std::vector<int> __items;\n")
 	indent := func(n int) {
 		for i := 0; i < n; i++ {
 			buf.WriteString("    ")
 		}
 	}
-	buf.WriteString("    std::vector<")
-	if key != "" || skip != "" || take != "" {
-		buf.WriteString("std::pair<decltype(" + key + "), decltype(" + val + ")>>")
-	} else {
-		buf.WriteString("decltype(" + val + ")")
-	}
-	buf.WriteString("> __items;\n")
 	indentLevel := 1
 	indent(indentLevel)
 	buf.WriteString("for (auto " + q.Var + " : " + src + ") {\n")
@@ -869,11 +846,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		buf.WriteString("if (!(" + where + ")) continue;\n")
 	}
 	indent(indentLevel)
-	if key != "" || skip != "" || take != "" {
-		buf.WriteString("__items.push_back({" + key + ", " + val + "});\n")
-	} else {
-		buf.WriteString("__items.push_back(" + val + ");\n")
-	}
+	buf.WriteString("__items.push_back(" + val + ");\n")
 	for i := len(fromSrcs) - 1; i >= 0; i-- {
 		indentLevel--
 		indent(indentLevel)
@@ -882,22 +855,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	indentLevel--
 	indent(indentLevel)
 	buf.WriteString("}\n")
-	if key != "" {
-		buf.WriteString("    std::sort(__items.begin(), __items.end(), [](auto &a, auto &b){ return a.first < b.first; });\n")
-	}
-	if skip != "" {
-		buf.WriteString("    if ((size_t)" + skip + " < __items.size()) __items.erase(__items.begin(), __items.begin()+" + skip + ");\n")
-	}
-	if take != "" {
-		buf.WriteString("    if ((size_t)" + take + " < __items.size()) __items.resize(" + take + ");\n")
-	}
-	if key != "" || skip != "" || take != "" {
-		buf.WriteString("    std::vector<decltype(" + val + ")> __res;\n")
-		buf.WriteString("    for (auto &p : __items) __res.push_back(p.second);\n")
-		buf.WriteString("    return __res;\n")
-	} else {
-		buf.WriteString("    return __items;\n")
-	}
+	buf.WriteString("    return __items;\n")
 	buf.WriteString("})()")
 	return buf.String(), nil
 }
