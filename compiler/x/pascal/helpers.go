@@ -59,6 +59,9 @@ func (c *Compiler) newTypedVar(typ string) string {
 		c.tempVars = make(map[string]string)
 	}
 	c.tempVars[name] = typ
+	if c.varTypes != nil {
+		c.varTypes[name] = typ
+	}
 	return name
 }
 
