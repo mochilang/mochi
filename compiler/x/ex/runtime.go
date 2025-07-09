@@ -5,13 +5,13 @@ package excode
 const (
 	helperInput = "defp _input() do\n  String.trim(IO.gets(\"\"))\nend\n"
 
-	helperCount = "defp _count(v) do\n  cond do\n    is_list(v) -> length(v)\n    is_map(v) and Map.has_key?(v, :items) -> length(v[:items])\n    true -> raise \"count() expects list or group\"\n  end\nend\n"
+	helperCount = "defp _count(v) do\n  cond do\n    is_list(v) -> length(v)\n    is_map(v) and Map.has_key?(v, :items) -> length(v.items)\n    true -> raise \"count() expects list or group\"\n  end\nend\n"
 
-	helperSum = "defp _sum(v) do\n  list = cond do\n    is_map(v) and Map.has_key?(v, :items) -> v[:items]\n    is_list(v) -> v\n    true -> raise \"sum() expects list or group\"\n  end\n  Enum.sum(list)\nend\n"
+	helperSum = "defp _sum(v) do\n  list = cond do\n    is_map(v) and Map.has_key?(v, :items) -> v.items\n    is_list(v) -> v\n    true -> raise \"sum() expects list or group\"\n  end\n  Enum.sum(list)\nend\n"
 
-	helperAvg = "defp _avg(v) do\n  list = cond do\n    is_map(v) and Map.has_key?(v, :items) -> v[:items]\n    is_list(v) -> v\n    true -> raise \"avg() expects list or group\"\n  end\n  if Enum.count(list) == 0 do\n    0\n  else\n    Enum.sum(list) / Enum.count(list)\n  end\nend\n"
+	helperAvg = "defp _avg(v) do\n  list = cond do\n    is_map(v) and Map.has_key?(v, :items) -> v.items\n    is_list(v) -> v\n    true -> raise \"avg() expects list or group\"\n  end\n  if Enum.count(list) == 0 do\n    0\n  else\n    Enum.sum(list) / Enum.count(list)\n  end\nend\n"
 
-	helperExists = "defp _exists(v) do\n  cond do\n    is_list(v) -> length(v) > 0\n    is_map(v) and Map.has_key?(v, :items) -> length(v[:items]) > 0\n    is_map(v) -> map_size(v) > 0\n    is_binary(v) -> String.length(v) > 0\n    true -> raise \"exists expects list, map or string\"\n  end\nend\n"
+	helperExists = "defp _exists(v) do\n  cond do\n    is_list(v) -> length(v) > 0\n    is_map(v) and Map.has_key?(v, :items) -> length(v.items) > 0\n    is_map(v) -> map_size(v) > 0\n    is_binary(v) -> String.length(v) > 0\n    true -> raise \"exists expects list, map or string\"\n  end\nend\n"
 
 	helperJson = `defp _escape_json(<<>>), do: ""
 defp _escape_json(<<"\\", rest::binary>>), do: "\\\\" <> _escape_json(rest)
@@ -30,11 +30,11 @@ defp _to_json(_), do: "null"
 defp _json(v), do: IO.puts(_to_json(v))
 `
 
-	helperMin = "defp _min(v) do\n  list = cond do\n    is_map(v) and Map.has_key?(v, :items) -> v[:items]\n    is_list(v) -> v\n    true -> raise \"min() expects list or group\"\n  end\n  if Enum.count(list) == 0 do\n    0\n  else\n    hd = hd(list)\n    Enum.reduce(tl(list), hd, fn it, acc ->\n      cond do\n        is_binary(acc) and is_binary(it) -> if it < acc, do: it, else: acc\n        true -> if Kernel.<(it, acc), do: it, else: acc\n      end\n    end)\n  end\nend\n"
+	helperMin = "defp _min(v) do\n  list = cond do\n    is_map(v) and Map.has_key?(v, :items) -> v.items\n    is_list(v) -> v\n    true -> raise \"min() expects list or group\"\n  end\n  if Enum.count(list) == 0 do\n    0\n  else\n    hd = hd(list)\n    Enum.reduce(tl(list), hd, fn it, acc ->\n      cond do\n        is_binary(acc) and is_binary(it) -> if it < acc, do: it, else: acc\n        true -> if Kernel.<(it, acc), do: it, else: acc\n      end\n    end)\n  end\nend\n"
 
-	helperMax = "defp _max(v) do\n  list = cond do\n    is_map(v) and Map.has_key?(v, :items) -> v[:items]\n    is_list(v) -> v\n    true -> raise \"max() expects list or group\"\n  end\n  if Enum.count(list) == 0 do\n    0\n  else\n    hd = hd(list)\n    Enum.reduce(tl(list), hd, fn it, acc ->\n      cond do\n        is_binary(acc) and is_binary(it) -> if it > acc, do: it, else: acc\n        true -> if Kernel.>(it, acc), do: it, else: acc\n      end\n    end)\n  end\nend\n"
+	helperMax = "defp _max(v) do\n  list = cond do\n    is_map(v) and Map.has_key?(v, :items) -> v.items\n    is_list(v) -> v\n    true -> raise \"max() expects list or group\"\n  end\n  if Enum.count(list) == 0 do\n    0\n  else\n    hd = hd(list)\n    Enum.reduce(tl(list), hd, fn it, acc ->\n      cond do\n        is_binary(acc) and is_binary(it) -> if it > acc, do: it, else: acc\n        true -> if Kernel.>(it, acc), do: it, else: acc\n      end\n    end)\n  end\nend\n"
 
-	helperFirst = "defp _first(v) do\n  cond do\n    is_map(v) and Map.has_key?(v, :items) ->\n      if length(v[:items]) == 0, do: nil, else: hd(v[:items])\n    is_list(v) ->\n      if v == [], do: nil, else: hd(v)\n    true -> nil\n  end\nend\n"
+	helperFirst = "defp _first(v) do\n  cond do\n    is_map(v) and Map.has_key?(v, :items) ->\n      if length(v.items) == 0, do: nil, else: hd(v.items)\n    is_list(v) ->\n      if v == [], do: nil, else: hd(v)\n    true -> nil\n  end\nend\n"
 
 	helperReverse = "defp _reverse(v) do\n  cond do\n    is_list(v) -> Enum.reverse(v)\n    is_binary(v) -> String.graphemes(v) |> Enum.reverse() |> Enum.join()\n    true -> raise \"reverse expects list or string\"\n  end\nend\n"
 
