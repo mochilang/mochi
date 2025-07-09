@@ -5,14 +5,18 @@ fun <T> append(list: MutableList<T>, item: T): MutableList<T> {
     return res
 }
 
-fun avg(list: List<Number>): Double {
+fun avg(list: List<Any?>): Double {
     if (list.isEmpty()) return 0.0
     var s = 0.0
-    for (n in list) s += n.toDouble()
+    for (n in list) s += toDouble(n)
     return s / list.size
 }
 
 fun count(list: Collection<Any?>): Int = list.size
+
+fun exists(list: Collection<Any?>): Boolean = list.isNotEmpty()
+
+fun <T> values(m: Map<*, T>): MutableList<T> = m.values.toMutableList()
 
 fun len(v: Any?): Int = when (v) {
     is String -> v.length
@@ -21,23 +25,48 @@ fun len(v: Any?): Int = when (v) {
     else -> 0
 }
 
-fun max(list: List<Int>): Int {
+fun max(list: List<Any?>): Int {
     var m = Int.MIN_VALUE
-    for (n in list) if (n > m) m = n
+    for (n in list) {
+        val v = toInt(n)
+        if (v > m) m = v
+    }
     return if (m == Int.MIN_VALUE) 0 else m
 }
 
-fun min(list: List<Int>): Int {
+fun min(list: List<Any?>): Int {
     var m = Int.MAX_VALUE
-    for (n in list) if (n < m) m = n
+    for (n in list) {
+        val v = toInt(n)
+        if (v < m) m = v
+    }
     return if (m == Int.MAX_VALUE) 0 else m
 }
 
-fun sum(list: List<Int>): Int = list.sum()
+fun sum(list: List<Any?>): Int {
+    var s = 0
+    for (n in list) s += toInt(n)
+    return s
+}
 
 fun str(v: Any?): String = v.toString()
 
 fun substring(s: String, start: Int, end: Int): String = s.substring(start, end)
+
+fun toInt(v: Any?): Int = when (v) {
+    is Int -> v
+    is Double -> v.toInt()
+    is String -> v.toInt()
+    is Boolean -> if (v) 1 else 0
+    else -> 0
+}
+
+fun toDouble(v: Any?): Double = when (v) {
+    is Double -> v
+    is Int -> v.toDouble()
+    is String -> v.toDouble()
+    else -> 0.0
+}
 
 fun <T> union(a: MutableList<T>, b: MutableList<T>): MutableList<T> {
     val res = a.toMutableList()
@@ -57,16 +86,106 @@ fun <T> intersect(a: MutableList<T>, b: MutableList<T>): MutableList<T> {
     return res
 }
 
+fun _load(path: String?, opts: Map<String, Any?>?): MutableList<MutableMap<String, Any?>> {
+    val fmt = opts?.get("format") as? String ?: "csv"
+    val lines = if (path == null || path == "-") {
+        listOf<String>()
+    } else {
+        java.io.File(path).readLines()
+    }
+    return when (fmt) {
+        "yaml" -> loadYamlSimple(lines)
+        else -> mutableListOf()
+    }
+}
+
+fun loadYamlSimple(lines: List<String>): MutableList<MutableMap<String, Any?>> {
+    val res = mutableListOf<MutableMap<String, Any?>>()
+    var cur: MutableMap<String, Any?>? = null
+    for (ln in lines) {
+        val t = ln.trim()
+        if (t.startsWith("- ")) {
+            cur?.let { res.add(it) }
+            cur = mutableMapOf()
+            val idx = t.indexOf(':', 2)
+            if (idx >= 0) {
+                val k = t.substring(2, idx).trim()
+                val v = parseSimpleValue(t.substring(idx + 1))
+                cur!![k] = v
+            }
+        } else if (t.contains(':')) {
+            val idx = t.indexOf(':')
+            val k = t.substring(0, idx).trim()
+            val v = parseSimpleValue(t.substring(idx + 1))
+            cur?.set(k, v)
+        }
+    }
+    cur?.let { res.add(it) }
+    return res
+}
+
+fun parseSimpleValue(s: String): Any? {
+    val t = s.trim()
+    return when {
+        t.matches(Regex("^-?\\d+$")) -> t.toInt()
+        t.matches(Regex("^-?\\d+\\.\\d+$")) -> t.toDouble()
+        t.equals("true", true) -> true
+        t.equals("false", true) -> false
+        t.startsWith("\"") && t.endsWith("\"") -> t.substring(1, t.length - 1)
+        else -> t
+    }
+}
+
+fun _save(rows: List<Any?>, path: String?, opts: Map<String, Any?>?) {
+    val fmt = opts?.get("format") as? String ?: "csv"
+    val writer = if (path == null || path == "-") {
+        java.io.BufferedWriter(java.io.OutputStreamWriter(System.out))
+    } else {
+        java.io.File(path).bufferedWriter()
+    }
+    if (fmt == "jsonl") {
+        for (r in rows) {
+            writer.write(toJson(r))
+            writer.newLine()
+        }
+    }
+    if (path != null && path != "-") writer.close()
+}
+
+fun toJson(v: Any?): String = when (v) {
+    null -> "null"
+    is String -> "\"" + v.replace("\"", "\\\"") + "\""
+    is Boolean, is Number -> v.toString()
+    is Map<*, *> -> v.entries.joinToString(prefix = "{", postfix = "}") { toJson(it.key.toString()) + ":" + toJson(it.value) }
+    is Iterable<*> -> v.joinToString(prefix = "[", postfix = "]") { toJson(it) }
+    else -> toJson(v.toString())
+}
+
+class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
+
 
 val people = mutableListOf(mutableMapOf("name" to "Alice", "age" to 30, "city" to "Paris"), mutableMapOf("name" to "Bob", "age" to 15, "city" to "Hanoi"), mutableMapOf("name" to "Charlie", "age" to 65, "city" to "Paris"), mutableMapOf("name" to "Diana", "age" to 45, "city" to "Hanoi"), mutableMapOf("name" to "Eve", "age" to 70, "city" to "Paris"), mutableMapOf("name" to "Frank", "age" to 22, "city" to "Hanoi"))
 
 val stats = run {
-    val __res = mutableListOf<Any>()
+    val __groups = mutableMapOf<Any?, Group>()
+    val __order = mutableListOf<Any?>()
     for (person in people) {
+        val __k = (person as MutableMap<*, *>)["city"]
+        var __g = __groups[__k]
+        if (__g == null) {
+            __g = Group(__k, mutableListOf())
+            __groups[__k] = __g
+            __order.add(__k)
+        }
+        __g.add(person)
+    }
+    val __res = mutableListOf<Any?>()
+    for (k in __order) {
+        val g = __groups[k]!!
         __res.add(mutableMapOf("city" to g.key, "count" to count(g), "avg_age" to avg(run {
-    val __res = mutableListOf<Any>()
+    val __res = mutableListOf<Any?>()
     for (p in g) {
-        __res.add(p.age)
+        __res.add((p as MutableMap<*, *>)["age"])
     }
     __res
 })))
@@ -77,6 +196,6 @@ val stats = run {
 fun main() {
     println("--- People grouped by city ---")
     for (s in stats) {
-        println(listOf(s.city, ": count =", s.count, ", avg_age =", s.avg_age).joinToString(" "))
+        println(listOf((s as MutableMap<*, *>)["city"], ": count =", (s as MutableMap<*, *>)["count"], ", avg_age =", (s as MutableMap<*, *>)["avg_age"]).joinToString(" "))
     }
 }
