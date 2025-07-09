@@ -16,13 +16,14 @@ import (
 // subset of Mochi. It is intentionally minimal and only handles the
 // constructs required by a few simple programs.
 type Compiler struct {
-	buf     bytes.Buffer
-	prelude bytes.Buffer
-	indent  int
-	vars    map[string]string
-	structs map[string]map[string]string
-	anon    map[string]string
-	anonCnt int
+	buf      bytes.Buffer
+	prelude  bytes.Buffer
+	indent   int
+	vars     map[string]string
+	structs  map[string]map[string]string
+	anon     map[string]string
+	anonCnt  int
+	usesJson bool
 }
 
 func defaultValue(typ string) string {
@@ -60,9 +61,10 @@ func (c *Compiler) compileType(t *parser.TypeRef) (string, error) {
 // New creates a new F# compiler instance.
 func New() *Compiler {
 	return &Compiler{
-		vars:    make(map[string]string),
-		structs: make(map[string]map[string]string),
-		anon:    make(map[string]string),
+		vars:     make(map[string]string),
+		structs:  make(map[string]map[string]string),
+		anon:     make(map[string]string),
+		usesJson: false,
 	}
 }
 
@@ -75,24 +77,26 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.structs = make(map[string]map[string]string)
 	c.anon = make(map[string]string)
 	c.anonCnt = 0
+	c.usesJson = false
 
-	var header bytes.Buffer
-	header.WriteString("open System\n")
-	header.WriteString("open System.Text.Json\n")
-	header.WriteString("\n")
-	header.WriteString("exception Break\n")
-	header.WriteString("exception Continue\n")
-	header.WriteString("\n")
-	c.buf.Write(header.Bytes())
 	for _, s := range p.Statements {
 		if err := c.compileStmt(s); err != nil {
 			return nil, err
 		}
 	}
+	var header bytes.Buffer
+	header.WriteString("open System\n")
+	if c.usesJson {
+		header.WriteString("open System.Text.Json\n")
+	}
+	header.WriteString("\n")
+	header.WriteString("exception Break\n")
+	header.WriteString("exception Continue\n")
+	header.WriteString("\n")
 	var final bytes.Buffer
 	final.Write(header.Bytes())
 	final.Write(c.prelude.Bytes())
-	final.Write(c.buf.Bytes()[header.Len():])
+	final.Write(c.buf.Bytes())
 	return final.Bytes(), nil
 }
 
@@ -712,6 +716,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 	case "json":
 		if len(args) == 1 {
+			c.usesJson = true
 			return fmt.Sprintf("JsonSerializer.Serialize(%s)", args[0]), nil
 		}
 	case "len":
@@ -802,8 +807,13 @@ func (c *Compiler) compileFunExpr(f *parser.FunExpr) (string, error) {
 func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
 	items := make([]string, len(m.Items))
 	allSimple := true
+	names := make([]string, len(m.Items))
+	values := make([]string, len(m.Items))
+	types := make([]string, len(m.Items))
+	typeMap := make(map[string]string)
 	for i, it := range m.Items {
-		if _, ok := c.simpleIdentifier(it.Key); !ok {
+		name, ok := c.simpleIdentifier(it.Key)
+		if !ok {
 			allSimple = false
 		}
 		k, err := c.compileMapKey(it.Key)
@@ -815,18 +825,33 @@ func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
 			return "", err
 		}
 		items[i] = fmt.Sprintf("(%s, %s)", k, v)
+		if ok {
+			names[i] = name
+			values[i] = v
+			t := c.inferType(it.Value)
+			types[i] = t
+			typeMap[name] = t
+		}
 	}
 	if allSimple {
-		fields := make([]string, len(m.Items))
-		for i, it := range m.Items {
-			v, err := c.compileExpr(it.Value)
-			if err != nil {
-				return "", err
+		key := strings.Join(names, ",") + "|" + strings.Join(types, ",")
+		typ, ok := c.anon[key]
+		if !ok {
+			c.anonCnt++
+			typ = fmt.Sprintf("Anon%d", c.anonCnt)
+			c.anon[key] = typ
+			c.structs[typ] = typeMap
+			c.prelude.WriteString(fmt.Sprintf("type %s = {\n", typ))
+			for i, n := range names {
+				c.prelude.WriteString(fmt.Sprintf("    %s: %s\n", n, types[i]))
 			}
-			name, _ := c.simpleIdentifier(it.Key)
-			fields[i] = fmt.Sprintf("%s = %s", name, v)
+			c.prelude.WriteString("}\n")
 		}
-		return "{| " + strings.Join(fields, "; ") + " |}", nil
+		fields := make([]string, len(names))
+		for i, n := range names {
+			fields[i] = fmt.Sprintf("%s = %s", n, values[i])
+		}
+		return fmt.Sprintf("{ %s }", strings.Join(fields, "; ")), nil
 	}
 	return "dict [" + strings.Join(items, "; ") + "]", nil
 }
