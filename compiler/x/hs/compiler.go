@@ -1265,7 +1265,7 @@ func (c *Compiler) compilePrint(ca callArgs) (string, error) {
 		if strings.HasPrefix(a, "\"") || strings.HasPrefix(a, "_indexString") || c.isStringExpr(ca.exprs[i]) {
 			parts[i] = a
 		} else {
-			parts[i] = fmt.Sprintf("show %s", a)
+			parts[i] = fmt.Sprintf("show (%s)", a)
 		}
 	}
 	return fmt.Sprintf("putStrLn (unwords [%s])", strings.Join(parts, ", ")), nil
