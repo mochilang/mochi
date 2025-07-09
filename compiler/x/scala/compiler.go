@@ -16,12 +16,19 @@ type Compiler struct {
 	buf    bytes.Buffer
 	indent int
 	env    *types.Env
+	tmp    int
 }
 
 const indentStep = 2
 
 func New(env *types.Env) *Compiler {
 	return &Compiler{env: env}
+}
+
+func (c *Compiler) newVar(prefix string) string {
+	name := fmt.Sprintf("_%s%d", prefix, c.tmp)
+	c.tmp++
+	return name
 }
 
 func (c *Compiler) writeIndent() {
@@ -102,12 +109,18 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileVar(s.Var)
 	case s.Assign != nil:
 		return c.compileAssign(s.Assign)
+	case s.Update != nil:
+		return c.compileUpdate(s.Update)
 	case s.Break != nil:
 		c.writeln("return")
 		return nil
 	case s.Continue != nil:
 		c.writeln("// continue")
 		return nil
+	case s.Test != nil:
+		return c.compileTestBlock(s.Test)
+	case s.Expect != nil:
+		return c.compileExpect(s.Expect)
 	case s.Expr != nil:
 		return c.compileExprStmt(s.Expr)
 	default:
@@ -412,6 +425,115 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 		}
 	}
 	c.writeln(fmt.Sprintf("%s = %s", target, expr))
+	return nil
+}
+
+func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
+	expr, err := c.compileExpr(e.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("assert(%s)", expr))
+	return nil
+}
+
+func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	for _, st := range t.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
+	list := u.Target
+	idx := c.newVar("i")
+	item := c.newVar("it")
+	c.writeln(fmt.Sprintf("for(%s <- 0 until %s.length) {", idx, list))
+	c.indent += indentStep
+	c.writeln(fmt.Sprintf("var %s = %s(%s)", item, list, idx))
+
+	var elemType types.Type = types.AnyType{}
+	if c.env != nil {
+		if t, err := c.env.GetVar(u.Target); err == nil {
+			if lt, ok := t.(types.ListType); ok {
+				elemType = lt.Elem
+			}
+		}
+	}
+	child := types.NewEnv(c.env)
+	if st, ok := elemType.(types.StructType); ok {
+		for _, f := range st.Order {
+			c.writeln(fmt.Sprintf("var %s = %s.%s", f, item, f))
+			child.SetVar(f, st.Fields[f], true)
+		}
+	} else if mt, ok := elemType.(types.MapType); ok {
+		if _, ok2 := mt.Key.(types.StringType); ok2 {
+			for _, it := range u.Set.Items {
+				if key, ok3 := identName(it.Key); ok3 {
+					c.writeln(fmt.Sprintf("var %s = %s(%q)", key, item, key))
+					child.SetVar(key, mt.Value, true)
+				}
+			}
+		}
+	}
+
+	oldEnv := c.env
+	c.env = child
+
+	if u.Where != nil {
+		cond, err := c.compileExpr(u.Where)
+		if err != nil {
+			c.env = oldEnv
+			return err
+		}
+		c.writeln(fmt.Sprintf("if (%s) {", cond))
+		c.indent += indentStep
+	}
+
+	for _, it := range u.Set.Items {
+		if _, ok := elemType.(types.StructType); ok {
+			if key, ok2 := identName(it.Key); ok2 {
+				val, err := c.compileExpr(it.Value)
+				if err != nil {
+					c.env = oldEnv
+					return err
+				}
+				c.writeln(fmt.Sprintf("%s = %s", key, val))
+				continue
+			}
+			// fallthrough to map style if key not simple
+		}
+		keyExpr, err := c.compileExpr(it.Key)
+		if err != nil {
+			c.env = oldEnv
+			return err
+		}
+		valExpr, err := c.compileExpr(it.Value)
+		if err != nil {
+			c.env = oldEnv
+			return err
+		}
+		c.writeln(fmt.Sprintf("%s(%s) = %s", item, keyExpr, valExpr))
+	}
+
+	if u.Where != nil {
+		c.indent -= indentStep
+		c.writeln("}")
+	}
+
+	if st, ok := elemType.(types.StructType); ok {
+		parts := make([]string, len(st.Order))
+		for i, f := range st.Order {
+			parts[i] = fmt.Sprintf("%s = %s", f, f)
+		}
+		c.writeln(fmt.Sprintf("%s = %s(%s)", item, st.Name, strings.Join(parts, ", ")))
+	}
+	c.writeln(fmt.Sprintf("%s = %s.updated(%s, %s)", list, list, idx, item))
+	c.env = oldEnv
+	c.indent -= indentStep
+	c.writeln("}")
 	return nil
 }
 
@@ -1129,6 +1251,21 @@ func simpleIdent(e *parser.Expr) (string, bool) {
 	}
 	p := u.Value
 	if len(p.Ops) > 0 || p.Target == nil || p.Target.Selector == nil || len(p.Target.Selector.Tail) > 0 {
+		return "", false
+	}
+	return p.Target.Selector.Root, true
+}
+
+func identName(e *parser.Expr) (string, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Selector == nil || len(p.Target.Selector.Tail) != 0 {
 		return "", false
 	}
 	return p.Target.Selector.Root, true
