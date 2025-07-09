@@ -24,7 +24,7 @@ func TestCCompiler_BasicPrograms(t *testing.T) {
 	if err := os.MkdirAll(outDir, 0o755); err != nil {
 		t.Fatalf("mkout: %v", err)
 	}
-	programs := []string{"match_expr", "tree_sum", "two-sum"}
+	programs := []string{"match_expr", "tree_sum", "two-sum", "cross_join", "cross_join_filter", "cross_join_triple"}
 	for _, name := range programs {
 		t.Run(name, func(t *testing.T) {
 			runCCompile(t, cc, srcDir, outDir, name)
