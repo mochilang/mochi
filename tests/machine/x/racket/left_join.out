@@ -1,0 +1,3 @@
+--- Left Join ---
+Order 100 customer #hash((id . 1) (name . Alice)) total 250
+Order 101 customer #f total 80
