@@ -1,4 +1,4 @@
-# Scheme Machine Results (77/97 compiled and ran)
+# Scheme Machine Results (78/97 compiled and ran)
 
 ## Success
 - [x] append_builtin.mochi
@@ -83,7 +83,7 @@
 - [ ] left_join.mochi
 - [ ] left_join_multi.mochi
 - [ ] load_yaml.mochi
-- [ ] map_nested_assign.mochi
+ - [x] map_nested_assign.mochi
 - [ ] nested_function.mochi
 - [ ] outer_join.mochi
 - [ ] partial_application.mochi
