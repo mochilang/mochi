@@ -709,6 +709,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileContinue()
 	case s.Update != nil:
 		return c.compileUpdate(s.Update)
+	case s.Fun != nil:
+		return c.compileFun(s.Fun)
 	case s.Expect != nil:
 		return c.compileExpect(s.Expect)
 	default:
@@ -1172,30 +1174,30 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 			return "", fmt.Errorf("str expects 1 arg")
 		}
 		return fmt.Sprintf("(let ((s (open-output-string))) (write %s s) (get-output-string s))", args[0]), nil
-       case "count":
-               if len(args) != 1 {
-                       return "", fmt.Errorf("count expects 1 arg")
-               }
-               c.needGroup = true
-               return fmt.Sprintf("(_count %s)", args[0]), nil
-       case "exists":
-               if len(args) != 1 {
-                       return "", fmt.Errorf("exists expects 1 arg")
-               }
-               root := rootNameExpr(call.Args[0])
-               if c.varType(root) == "string" || c.isStringExpr(call.Args[0]) {
-                       return fmt.Sprintf("(> (string-length %s) 0)", args[0]), nil
-               }
-               if c.isMapExpr(call.Args[0]) || c.isListExpr(call.Args[0]) {
-                       return fmt.Sprintf("(> (length %s) 0)", args[0]), nil
-               }
-               c.needGroup = true
-               return fmt.Sprintf("(_exists %s)", args[0]), nil
-       case "avg":
-               if len(args) != 1 {
-                       return "", fmt.Errorf("avg expects 1 arg")
-               }
-               c.needGroup = true
+	case "count":
+		if len(args) != 1 {
+			return "", fmt.Errorf("count expects 1 arg")
+		}
+		c.needGroup = true
+		return fmt.Sprintf("(_count %s)", args[0]), nil
+	case "exists":
+		if len(args) != 1 {
+			return "", fmt.Errorf("exists expects 1 arg")
+		}
+		root := rootNameExpr(call.Args[0])
+		if c.varType(root) == "string" || c.isStringExpr(call.Args[0]) {
+			return fmt.Sprintf("(> (string-length %s) 0)", args[0]), nil
+		}
+		if c.isMapExpr(call.Args[0]) || c.isListExpr(call.Args[0]) {
+			return fmt.Sprintf("(> (length %s) 0)", args[0]), nil
+		}
+		c.needGroup = true
+		return fmt.Sprintf("(_exists %s)", args[0]), nil
+	case "avg":
+		if len(args) != 1 {
+			return "", fmt.Errorf("avg expects 1 arg")
+		}
+		c.needGroup = true
 		return fmt.Sprintf("(_avg %s)", args[0]), nil
 	case "max":
 		if len(args) != 1 {
