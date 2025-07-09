@@ -575,6 +575,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			pairs[i] = fmt.Sprintf("%s -> %s", k, v)
 		}
 		return "Dictionary newFrom: {" + strings.Join(pairs, ". ") + "}", nil
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
+	case p.Fetch != nil:
+		return c.compileFetchExpr(p.Fetch)
 	case p.FunExpr != nil:
 		params := make([]string, len(p.FunExpr.Params))
 		for i, pa := range p.FunExpr.Params {
@@ -977,6 +983,64 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	b.WriteString("  tmp\n")
 	b.WriteString("] value")
 	return b.String(), nil
+}
+
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
+	path := "nil"
+	if l.Path != nil {
+		s := strings.ReplaceAll(*l.Path, "'", "''")
+		path = "'" + s + "'"
+	}
+	opts := "nil"
+	if l.With != nil {
+		v, err := c.compileExpr(l.With)
+		if err != nil {
+			return "", err
+		}
+		opts = v
+	}
+	expr := fmt.Sprintf("(Main _load: %s opts: %s)", path, opts)
+	if l.Type != nil && l.Type.Simple != nil {
+		expr = fmt.Sprintf("(%s collect: [:it | %s newFrom: it])", expr, *l.Type.Simple)
+	}
+	return expr, nil
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
+	src, err := c.compileExpr(s.Src)
+	if err != nil {
+		return "", err
+	}
+	path := "nil"
+	if s.Path != nil {
+		p := strings.ReplaceAll(*s.Path, "'", "''")
+		path = "'" + p + "'"
+	}
+	opts := "nil"
+	if s.With != nil {
+		v, err := c.compileExpr(s.With)
+		if err != nil {
+			return "", err
+		}
+		opts = v
+	}
+	return fmt.Sprintf("(Main _save: %s path: %s opts: %s)", src, path, opts), nil
+}
+
+func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
+	url, err := c.compileExpr(f.URL)
+	if err != nil {
+		return "", err
+	}
+	opts := "nil"
+	if f.With != nil {
+		v, err := c.compileExpr(f.With)
+		if err != nil {
+			return "", err
+		}
+		opts = v
+	}
+	return fmt.Sprintf("(Main _fetch: %s opts: %s)", url, opts), nil
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) string {

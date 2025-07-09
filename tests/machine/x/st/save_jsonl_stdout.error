@@ -1,6 +1,2 @@
-line: 6
-error: unsupported expression at line 6
-   4: ]
-   5: 
-   6: save people to "-" with { format: "jsonl" }
-   7: 
+line: 0
+error: gst interpreter not available
