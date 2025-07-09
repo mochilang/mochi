@@ -20,6 +20,19 @@ type Compiler struct {
 	needFuncImports bool
 }
 
+func toObjectType(t string) string {
+	switch t {
+	case "int":
+		return "Integer"
+	case "double":
+		return "Double"
+	case "boolean":
+		return "Boolean"
+	default:
+		return t
+	}
+}
+
 func New() *Compiler {
 	return &Compiler{buf: new(bytes.Buffer), helpers: make(map[string]bool), vars: make(map[string]string), funRet: make(map[string]string), types: make(map[string]*parser.TypeDecl)}
 }
@@ -161,6 +174,36 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.indent--
 		c.writeln("}")
 	}
+	if c.helpers["slice"] {
+		c.writeln("static <T> List<T> slice(List<T> obj, int i, int j) {")
+		c.indent++
+		c.writeln("int start = i;")
+		c.writeln("int end = j;")
+		c.writeln("int n = obj.size();")
+		c.writeln("if (start < 0) start += n;")
+		c.writeln("if (end < 0) end += n;")
+		c.writeln("if (start < 0) start = 0;")
+		c.writeln("if (end > n) end = n;")
+		c.writeln("if (end < start) end = start;")
+		c.writeln("return new ArrayList<>(obj.subList(start, end));")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.helpers["sliceString"] {
+		c.writeln("static String sliceString(String s, int i, int j) {")
+		c.indent++
+		c.writeln("int start = i;")
+		c.writeln("int end = j;")
+		c.writeln("int n = s.length();")
+		c.writeln("if (start < 0) start += n;")
+		c.writeln("if (end < 0) end += n;")
+		c.writeln("if (start < 0) start = 0;")
+		c.writeln("if (end > n) end = n;")
+		c.writeln("if (end < start) end = start;")
+		c.writeln("return s.substring(start, end);")
+		c.indent--
+		c.writeln("}")
+	}
 	if c.helpers["in"] {
 		c.writeln("static boolean inOp(Object item, Object collection) {")
 		c.indent++
@@ -218,6 +261,19 @@ func (c *Compiler) typeName(t *parser.TypeRef) string {
 		if len(t.Fun.Params) == 1 && t.Fun.Return != nil && t.Fun.Return.Simple != nil && *t.Fun.Return.Simple == "int" && t.Fun.Params[0].Simple != nil && *t.Fun.Params[0].Simple == "int" {
 			c.needFuncImports = true
 			return "IntUnaryOperator"
+		}
+		return "Object"
+	}
+	if t.Generic != nil {
+		g := t.Generic
+		if g.Name == "list" && len(g.Args) == 1 {
+			elem := toObjectType(c.typeName(g.Args[0]))
+			return fmt.Sprintf("List<%s>", elem)
+		}
+		if g.Name == "map" && len(g.Args) == 2 {
+			kt := toObjectType(c.typeName(g.Args[0]))
+			vt := toObjectType(c.typeName(g.Args[1]))
+			return fmt.Sprintf("Map<%s,%s>", kt, vt)
 		}
 		return "Object"
 	}
@@ -497,7 +553,7 @@ func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
 		}
 		items = append(items, fmt.Sprintf("%s, %s", k, v))
 	}
-	return fmt.Sprintf("java.util.Map.of(%s)", strings.Join(items, ", ")), nil
+	return fmt.Sprintf("new HashMap<>(java.util.Map.of(%s))", strings.Join(items, ", ")), nil
 }
 
 func (c *Compiler) compileStructLiteral(s *parser.StructLiteral) (string, error) {
@@ -625,12 +681,16 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 		}
 		if i == len(a.Index)-1 {
 			if strings.HasPrefix(ix, "\"") {
-				c.writeln(fmt.Sprintf("%s.put(%s, %s);", target, ix, expr))
+				c.writeln(fmt.Sprintf("((Map)%s).put(%s, %s);", target, ix, expr))
 			} else {
-				c.writeln(fmt.Sprintf("%s.set(%s, %s);", target, ix, expr))
+				c.writeln(fmt.Sprintf("((List)%s).set(%s, %s);", target, ix, expr))
 			}
 		} else {
-			target = fmt.Sprintf("%s.get(%s)", target, ix)
+			if strings.HasPrefix(ix, "\"") {
+				target = fmt.Sprintf("((Map)%s).get(%s)", target, ix)
+			} else {
+				target = fmt.Sprintf("((List)%s).get(%s)", target, ix)
+			}
 		}
 	}
 	if len(a.Index) == 0 {
@@ -859,17 +919,46 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 			}
 		case op.Index != nil:
-			if op.Index.Start == nil || op.Index.Colon != nil {
-				return "", fmt.Errorf("complex indexing not supported")
-			}
-			idx, err := c.compileExpr(op.Index.Start)
-			if err != nil {
-				return "", err
-			}
-			if isString(val) || c.vars[val] == "String" {
-				val = fmt.Sprintf("%s.charAt(%s)", val, idx)
+			if op.Index.Colon != nil {
+				start := "0"
+				end := "0"
+				var err error
+				if op.Index.Start != nil {
+					start, err = c.compileExpr(op.Index.Start)
+					if err != nil {
+						return "", err
+					}
+				}
+				if op.Index.End != nil {
+					end, err = c.compileExpr(op.Index.End)
+					if err != nil {
+						return "", err
+					}
+				}
+				if isString(val) || c.vars[val] == "String" {
+					c.helpers["sliceString"] = true
+					val = fmt.Sprintf("sliceString(%s, %s, %s)", val, start, end)
+				} else {
+					c.helpers["slice"] = true
+					val = fmt.Sprintf("slice(%s, %s, %s)", val, start, end)
+				}
 			} else {
-				val = fmt.Sprintf("%s.get(%s)", val, idx)
+				if op.Index.Start == nil {
+					return "", fmt.Errorf("complex indexing not supported")
+				}
+				idx, err := c.compileExpr(op.Index.Start)
+				if err != nil {
+					return "", err
+				}
+				if isString(val) || c.vars[val] == "String" {
+					val = fmt.Sprintf("%s.charAt(%s)", val, idx)
+				} else {
+					if strings.HasPrefix(idx, "\"") {
+						val = fmt.Sprintf("((Map)%s).get(%s)", val, idx)
+					} else {
+						val = fmt.Sprintf("((List)%s).get(%s)", val, idx)
+					}
+				}
 			}
 		default:
 			return "", fmt.Errorf("postfix operations unsupported")
@@ -946,7 +1035,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			if isString(expr) {
+			if isString(expr) || c.vars[expr] == "String" {
 				return fmt.Sprintf("%s.length()", expr), nil
 			}
 			return fmt.Sprintf("%s.size()", expr), nil

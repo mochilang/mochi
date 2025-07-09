@@ -1,11 +1,11 @@
 import java.util.*;
 public class Main {
-	static Object result = twoSum(java.util.Arrays.asList(2, 7, 11, 15), 9);
-	static Object twoSum(Object nums, int target) {
+	static List<Integer> result = twoSum(java.util.Arrays.asList(2, 7, 11, 15), 9);
+	static List<Integer> twoSum(List<Integer> nums, int target) {
 		var n = nums.size();
 		for (int i = 0; i < n; i++) {
 			for (int j = i + 1; j < n; j++) {
-				if (nums.get(i) + nums.get(j) == target) {
+				if (((List)nums).get(i) + ((List)nums).get(j) == target) {
 					return java.util.Arrays.asList(i, j);
 				}
 			}
@@ -13,7 +13,7 @@ public class Main {
 		return java.util.Arrays.asList(-1, -1);
 	}
 	public static void main(String[] args) {
-	System.out.println(result.get(0));
-	System.out.println(result.get(1));
+	System.out.println(((List)result).get(0));
+	System.out.println(((List)result).get(1));
 	}
 }
