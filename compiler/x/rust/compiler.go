@@ -25,6 +25,11 @@ type Compiler struct {
 	globals       map[string]bool
 	mutParams     map[string]map[int]bool
 	listVars      map[string]string
+	variantInfo   map[string]struct {
+		Union  string
+		Fields map[string]types.Type
+		Order  []string
+	}
 }
 
 func (c *Compiler) fieldType(e *parser.Expr) types.Type {
@@ -267,6 +272,11 @@ func New(env *types.Env) *Compiler {
 		globals:    make(map[string]bool),
 		mutParams:  make(map[string]map[int]bool),
 		listVars:   make(map[string]string),
+		variantInfo: make(map[string]struct {
+			Union  string
+			Fields map[string]types.Type
+			Order  []string
+		}),
 	}
 }
 
@@ -648,7 +658,41 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 
 func (c *Compiler) compileTypeDecl(td *parser.TypeDecl) error {
 	if len(td.Variants) > 0 {
-		return fmt.Errorf("variant types not supported")
+		c.writeln(fmt.Sprintf("enum %s {", td.Name))
+		c.indent++
+		for _, v := range td.Variants {
+			if len(v.Fields) == 0 {
+				c.writeln(fmt.Sprintf("%s,", v.Name))
+				c.variantInfo[v.Name] = struct {
+					Union  string
+					Fields map[string]types.Type
+					Order  []string
+				}{Union: td.Name, Fields: map[string]types.Type{}, Order: []string{}}
+				continue
+			}
+			fields := make([]string, len(v.Fields))
+			flds := make(map[string]types.Type)
+			order := make([]string, len(v.Fields))
+			for i, f := range v.Fields {
+				typ := rustType(f.Type)
+				if f.Type != nil && f.Type.Simple != nil && *f.Type.Simple == td.Name {
+					typ = fmt.Sprintf("Box<%s>", td.Name)
+				}
+				fields[i] = fmt.Sprintf("%s: %s", f.Name, typ)
+				flds[f.Name] = types.ResolveTypeRef(f.Type, c.env)
+				order[i] = f.Name
+			}
+			c.writeln(fmt.Sprintf("%s { %s },", v.Name, strings.Join(fields, ", ")))
+			c.variantInfo[v.Name] = struct {
+				Union  string
+				Fields map[string]types.Type
+				Order  []string
+			}{Union: td.Name, Fields: flds, Order: order}
+			c.structs[v.Name] = types.StructType{Name: v.Name, Fields: flds, Order: order}
+		}
+		c.indent--
+		c.writeln("}")
+		return nil
 	}
 	st := types.StructType{Name: td.Name, Fields: map[string]types.Type{}, Order: []string{}}
 	c.writeln(fmt.Sprintf("struct %s {", td.Name))
@@ -926,6 +970,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileQueryExpr(p.Query)
 	case p.Selector != nil:
 		if len(p.Selector.Tail) == 0 {
+			if info, ok := c.variantInfo[p.Selector.Root]; ok {
+				return fmt.Sprintf("%s::%s", info.Union, p.Selector.Root), nil
+			}
 			return p.Selector.Root, nil
 		}
 		return p.Selector.Root + "." + strings.Join(p.Selector.Tail, "."), nil
@@ -1004,7 +1051,31 @@ func (c *Compiler) compileMatchPattern(e *parser.Expr) (string, error) {
 		if name == "_" {
 			return "_", nil
 		}
+		if info, ok := c.variantInfo[name]; ok {
+			return fmt.Sprintf("%s::%s", info.Union, name), nil
+		}
 		return name, nil
+	}
+	// handle variant pattern Node(a,b)
+	if e != nil && e.Binary != nil && len(e.Binary.Right) == 0 {
+		u := e.Binary.Left
+		if u != nil && len(u.Ops) == 0 && u.Value != nil && u.Value.Target != nil && u.Value.Target.Call != nil {
+			call := u.Value.Target.Call
+			if info, ok := c.variantInfo[call.Func]; ok {
+				if len(call.Args) != len(info.Order) {
+					return "", fmt.Errorf("pattern arg mismatch")
+				}
+				parts := make([]string, len(call.Args))
+				for i, a := range call.Args {
+					id, ok := c.simpleIdent(a)
+					if !ok {
+						return "", fmt.Errorf("complex pattern not supported")
+					}
+					parts[i] = fmt.Sprintf("%s: %s", info.Order[i], id)
+				}
+				return fmt.Sprintf("%s::%s { %s }", info.Union, call.Func, strings.Join(parts, ", ")), nil
+			}
+		}
 	}
 	return c.compileExpr(e)
 }
@@ -1216,6 +1287,22 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 }
 
 func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error) {
+	if info, ok := c.variantInfo[sl.Name]; ok {
+		fields := make([]string, len(sl.Fields))
+		for i, f := range sl.Fields {
+			v, err := c.compileExpr(f.Value)
+			if err != nil {
+				return "", err
+			}
+			if ft, ok := info.Fields[f.Name]; ok {
+				if ut, ok2 := ft.(types.UnionType); ok2 && ut.Name == info.Union {
+					v = fmt.Sprintf("Box::new(%s)", v)
+				}
+			}
+			fields[i] = fmt.Sprintf("%s: %s", f.Name, v)
+		}
+		return fmt.Sprintf("%s::%s { %s }", info.Union, sl.Name, strings.Join(fields, ", ")), nil
+	}
 	fields := make([]string, len(sl.Fields))
 	for i, f := range sl.Fields {
 		v, err := c.compileExpr(f.Value)
