@@ -1393,6 +1393,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if strings.HasSuffix(expr, ".contains") && len(args) == 1 {
 				expr = strings.TrimSuffix(expr, ".contains")
 				expr = fmt.Sprintf("(%s.include?(%s))", expr, args[0])
+			} else if strings.HasSuffix(expr, ".key?") && len(args) == 1 {
+				expr = strings.TrimSuffix(expr, ".key?")
+				expr = fmt.Sprintf("(%s.to_h.key?(%s))", expr, args[0])
 			} else if builtin, ok, err := c.compileBuiltinCall(expr, args, op.Call.Args); ok {
 				if err != nil {
 					return "", err
@@ -1544,6 +1547,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			if first == "length" {
 				expr := fmt.Sprintf("%s.length", name)
+				for _, t := range p.Selector.Tail[1:] {
+					expr += "." + sanitizeName(t)
+				}
+				return expr, nil
+			}
+		}
+		if len(p.Selector.Tail) > 0 {
+			first := sanitizeName(p.Selector.Tail[0])
+			if first == "items" {
+				expr := fmt.Sprintf("%s.Items", name)
 				for _, t := range p.Selector.Tail[1:] {
 					expr += "." + sanitizeName(t)
 				}
