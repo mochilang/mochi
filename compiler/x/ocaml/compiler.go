@@ -598,6 +598,26 @@ func (c *Compiler) compileLeftJoin(q *parser.QueryExpr) (string, error) {
 	return buf.String(), nil
 }
 
+func (c *Compiler) compileMatch(m *parser.MatchExpr) (string, error) {
+	target, err := c.compileExpr(m.Target)
+	if err != nil {
+		return "", err
+	}
+	parts := make([]string, len(m.Cases))
+	for i, cs := range m.Cases {
+		pat, err := c.compileExpr(cs.Pattern)
+		if err != nil {
+			return "", err
+		}
+		res, err := c.compileExpr(cs.Result)
+		if err != nil {
+			return "", err
+		}
+		parts[i] = fmt.Sprintf("| %s -> %s", pat, res)
+	}
+	return fmt.Sprintf("(match %s with %s)", target, strings.Join(parts, " ")), nil
+}
+
 // --- expressions ---
 
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
@@ -792,9 +812,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		typ, _ := c.env.GetVar(base)
 		for _, field := range p.Selector.Tail {
-			if mt, ok := typ.(types.MapType); ok {
+			if mt, ok := typ.(types.MapType); ok || typ == nil {
 				expr = fmt.Sprintf("Obj.obj (List.assoc \"%s\" %s)", field, expr)
-				typ = mt.Value
+				if ok {
+					typ = mt.Value
+				}
 				continue
 			}
 			expr = expr + "." + field
@@ -849,6 +871,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileIfExpr(p.If)
 	case p.Query != nil:
 		return c.compileQuery(p.Query)
+	case p.Match != nil:
+		return c.compileMatch(p.Match)
 	case p.FunExpr != nil:
 		params := make([]string, len(p.FunExpr.Params))
 		for i, p2 := range p.FunExpr.Params {

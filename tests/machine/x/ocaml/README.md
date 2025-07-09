@@ -4,8 +4,8 @@ This directory contains OCaml source code generated from Mochi programs and the 
 
 ## Summary
 
-- 55/97 programs compiled and executed successfully.
-- 42 programs failed to compile or run.
+- 61/97 programs compiled and executed successfully.
+- 36 programs failed to compile or run.
 
 ### Successful
 - append_builtin
@@ -60,6 +60,8 @@ This directory contains OCaml source code generated from Mochi programs and the 
 - typed_var
 - unary_neg
 - user_type_literal
+- match_expr
+- match_full
 - map_nested_assign
 - var_assignment
 - while_loop
@@ -89,8 +91,6 @@ This directory contains OCaml source code generated from Mochi programs and the 
 - left_join_multi
 - load_yaml
 - map_int_key
-- match_expr
-- match_full
 - nested_function
 - order_by_map
 - outer_join
