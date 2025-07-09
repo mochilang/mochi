@@ -1,0 +1,14 @@
+type Person = { name: any; age: any; status: any; };
+let people = [{name: "Alice", age: 17, status: "minor"}, {name: "Bob", age: 25, status: "unknown"}, {name: "Charlie", age: 18, status: "unknown"}, {name: "Diana", age: 16, status: "minor"}];
+for (let i = 0; i < people.length; i++) {
+  let _tmp1 = people[i];
+  let status = _tmp1.status;
+  let age = _tmp1.age;
+  if ((age >= 18)) {
+    _tmp1.status = "adult";
+    _tmp1.age = (age + 1);
+  }
+  people[i] = _tmp1;
+}
+if (!((people == [{name: "Alice", age: 17, status: "minor"}, {name: "Bob", age: 26, status: "adult"}, {name: "Charlie", age: 19, status: "adult"}, {name: "Diana", age: 16, status: "minor"}]))) { throw new Error("update adult status failed"); }
+console.log("ok");
