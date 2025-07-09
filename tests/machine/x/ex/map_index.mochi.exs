@@ -2,7 +2,7 @@
 defmodule Main do
   def main do
     # m :: map()
-    m = %{a: 1, b: 2}
+    m = %{"a" => 1, "b" => 2}
     IO.inspect(Map.get(m, "b"))
   end
 end

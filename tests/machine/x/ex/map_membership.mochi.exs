@@ -2,9 +2,9 @@
 defmodule Main do
   def main do
     # m :: map()
-    m = %{a: 1, b: 2}
-    IO.inspect(String.contains?(m, "a"))
-    IO.inspect(String.contains?(m, "c"))
+    m = %{"a" => 1, "b" => 2}
+    IO.inspect(if is_map(m), do: Map.has_key?(m, "a"), else: Enum.member?(m, "a"))
+    IO.inspect(if is_map(m), do: Map.has_key?(m, "c"), else: Enum.member?(m, "c"))
   end
 end
 

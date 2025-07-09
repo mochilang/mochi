@@ -6,7 +6,7 @@ defmodule Main do
     end
 
     # todo :: Todo
-    todo = _structify(Todo, %{title: "hi"})
+    todo = _structify(Todo, %{"title" => "hi"})
     IO.inspect(todo.title)
   end
 

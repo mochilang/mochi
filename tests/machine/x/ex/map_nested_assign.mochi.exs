@@ -2,7 +2,7 @@
 defmodule Main do
   def main do
     # data :: map()
-    data = %{outer: %{inner: 1}}
+    data = %{"outer" => %{"inner" => 1}}
     _ = data
     data = Map.update!(data, "outer", fn it -> Map.put(it, "inner", 2) end)
     IO.inspect(Map.get(Map.get(data, "outer"), "inner"))

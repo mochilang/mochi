@@ -2,7 +2,7 @@
 defmodule Main do
   def main do
     # scores :: map()
-    scores = %{alice: 1}
+    scores = %{"alice" => 1}
     _ = scores
     scores = Map.put(scores, "bob", 2)
     IO.inspect(Map.get(scores, "bob"))

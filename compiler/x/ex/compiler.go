@@ -711,6 +711,31 @@ func (c *Compiler) compileIndexAssign(base string, idxs []*parser.IndexOp, value
 	}
 }
 
+// aggregatorInfo checks if the expression is a simple aggregator call like
+// `sum(x)` and returns the helper name and the argument expression if so.
+func aggregatorInfo(e *parser.Expr) (string, *parser.Expr) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return "", nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", nil
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target.Call == nil {
+		return "", nil
+	}
+	call := p.Target.Call
+	if len(call.Args) != 1 {
+		return "", nil
+	}
+	switch call.Func {
+	case "sum", "avg", "count", "min", "max", "first":
+		return "_" + call.Func, call.Args[0]
+	}
+	return "", nil
+}
+
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
@@ -761,7 +786,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return expr, nil
 	}
 
-	sel, err := c.compileExpr(q.Select)
+	agg, arg := aggregatorInfo(q.Select)
+	if agg != "" {
+		c.use(agg)
+	}
+	targetExpr := q.Select
+	if arg != nil {
+		targetExpr = arg
+	}
+	sel, err := c.compileExpr(targetExpr)
 	if err != nil {
 		c.env = orig
 		return "", err
@@ -1213,7 +1246,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	b.WriteString(", do: ")
 	b.WriteString(sel)
-	return b.String(), nil
+	expr := b.String()
+	if agg != "" {
+		expr = fmt.Sprintf("%s(%s)", agg, expr)
+	}
+	return expr, nil
 }
 
 func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {

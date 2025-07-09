@@ -100,7 +100,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			case "==", "!=":
 				expr = fmt.Sprintf("(%s %s %s)", l.expr, op, r.expr)
 			case "in":
-				if r.isString || l.isString {
+				if r.isString {
 					expr = fmt.Sprintf("String.contains?(%s, %s)", r.expr, l.expr)
 				} else {
 					expr = fmt.Sprintf("(if is_map(%s), do: Map.has_key?(%s, %s), else: Enum.member?(%s, %s))", r.expr, r.expr, l.expr, r.expr, l.expr)
@@ -623,10 +623,8 @@ func simpleAtomKey(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
-		s := *p.Target.Lit.Str
-		if isValidAtom(s) {
-			return s, true
-		}
+		// string literals should remain strings, not atoms
+		return "", false
 	}
 	return "", false
 }
