@@ -232,7 +232,7 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 		typ, _ := c.env.GetVar(a.Name)
 		switch typ.(type) {
 		case types.MapType:
-			c.writeln(fmt.Sprintf("%s := (let rec __upd l = match l with | [] -> [(%s,%s)] | (k,v)::tl -> if k = %s then (%s,%s)::tl else (k,v)::__upd tl in __upd !%s);", a.Name, idx, val, idx, idx, val, a.Name))
+			c.writeln(fmt.Sprintf("%s := (let rec __upd l = match l with | [] -> [(%s,Obj.repr %s)] | (k,v)::tl -> if k = %s then (%s,Obj.repr %s)::tl else (k,v)::__upd tl in __upd !%s);", a.Name, idx, val, idx, idx, val, a.Name))
 		default:
 			c.writeln(fmt.Sprintf("%s := List.mapi (fun i v -> if i = %s then %s else v) !%s;", a.Name, idx, val, a.Name))
 		}
@@ -581,7 +581,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if isStringPrimary(p.Target) {
 					val = fmt.Sprintf("String.make 1 (String.get %s %s)", val, idx)
 				} else if isMapPrimary(p.Target) || isStringExpr(op.Index.Start) {
-					val = fmt.Sprintf("List.assoc %s %s", idx, val)
+					val = fmt.Sprintf("Obj.obj (List.assoc %s %s)", idx, val)
 				} else {
 					val = fmt.Sprintf("List.nth %s %s", val, idx)
 				}
@@ -633,19 +633,26 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Lit != nil:
 		return c.compileLiteral(p.Lit), nil
 	case p.Selector != nil:
-		name := p.Selector.Root
-		for _, t := range p.Selector.Tail {
-			name += "." + t
+		base := p.Selector.Root
+		expr := base
+		if c.vars[base] {
+			expr = "(!" + base + ")"
 		}
-		if c.vars[p.Selector.Root] {
-			parts := []string{"(!" + p.Selector.Root + ")"}
-			parts = append(parts, p.Selector.Tail...)
-			return strings.Join(parts, "."), nil
+		typ, _ := c.env.GetVar(base)
+		for _, field := range p.Selector.Tail {
+			if mt, ok := typ.(types.MapType); ok {
+				expr = fmt.Sprintf("Obj.obj (List.assoc \"%s\" %s)", field, expr)
+				typ = mt.Value
+				continue
+			}
+			expr = expr + "." + field
+			if st, ok := typ.(types.StructType); ok {
+				if ft, ok2 := st.Fields[field]; ok2 {
+					typ = ft
+				}
+			}
 		}
-		if c.vars[name] {
-			return "!" + name, nil
-		}
-		return name, nil
+		return expr, nil
 	case p.List != nil:
 		elems := make([]string, len(p.List.Elems))
 		for i, e := range p.List.Elems {
@@ -659,24 +666,21 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Map != nil:
 		items := make([]string, len(p.Map.Items))
 		for i, it := range p.Map.Items {
+			var k, v string
+			var err error
 			if key, ok := identConst(it.Key); ok {
-				k := fmt.Sprintf("\"%s\"", key)
-				v, err := c.compileExpr(it.Value)
+				k = fmt.Sprintf("\"%s\"", key)
+			} else {
+				k, err = c.compileExpr(it.Key)
 				if err != nil {
 					return "", err
 				}
-				items[i] = fmt.Sprintf("(%s,%s)", k, v)
-				continue
 			}
-			k, err := c.compileExpr(it.Key)
+			v, err = c.compileExpr(it.Value)
 			if err != nil {
 				return "", err
 			}
-			v, err := c.compileExpr(it.Value)
-			if err != nil {
-				return "", err
-			}
-			items[i] = fmt.Sprintf("(%s,%s)", k, v)
+			items[i] = fmt.Sprintf("(%s,Obj.repr %s)", k, v)
 		}
 		return "[" + strings.Join(items, ";") + "]", nil
 	case p.Struct != nil:
