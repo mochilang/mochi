@@ -1,0 +1,22 @@
+data = {{["a"]=1, ["b"]=2}, {["a"]=1, ["b"]=1}, {["a"]=0, ["b"]=5}}
+sorted = (function()
+    local _res = {}
+    for _, x in ipairs(data) do
+        _res[#_res+1] = {__key = {["a"]=x.a, ["b"]=x.b}, __val = x}
+    end
+    local items = _res
+    table.sort(items, function(a,b) return tostring(a.__key) < tostring(b.__key) end)
+    local tmp = {}
+    for _, it in ipairs(items) do tmp[#tmp+1] = it.__val end
+    items = tmp
+    _res = items
+    return _res
+end)()
+(function()
+    local _tmp0 = sorted
+    for i, v in ipairs(_tmp0) do
+        io.write(tostring(v))
+        if i < #_tmp0 then io.write(" ") end
+    end
+    io.write("\n")
+end)()
