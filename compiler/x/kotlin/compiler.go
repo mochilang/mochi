@@ -395,6 +395,9 @@ func (c *Compiler) ifStmt(i *parser.IfStmt) error {
 	if err != nil {
 		return err
 	}
+	if _, ok := types.TypeOfExprBasic(i.Cond, c.env).(types.BoolType); !ok {
+		cond = "toBool(" + cond + ")"
+	}
 	c.writeln("if (" + cond + ") {")
 	c.indent++
 	for _, st := range i.Then {
@@ -426,6 +429,9 @@ func (c *Compiler) whileStmt(w *parser.WhileStmt) error {
 	cond, err := c.expr(w.Cond)
 	if err != nil {
 		return err
+	}
+	if _, ok := types.TypeOfExprBasic(w.Cond, c.env).(types.BoolType); !ok {
+		cond = "toBool(" + cond + ")"
 	}
 	c.writeln("while (" + cond + ") {")
 	c.indent++
@@ -809,23 +815,23 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 	case p.Selector != nil:
 		name := p.Selector.Root
 		t, _ := c.env.GetVar(p.Selector.Root)
-		if types.IsMapType(t) || isStructType(t) {
-			name = fmt.Sprintf("(%s as MutableMap<*, *>)", name)
-			for i, part := range p.Selector.Tail {
-				name += fmt.Sprintf("[%q]", part)
-				if i == len(p.Selector.Tail)-1 {
-					if kt := kotlinCastType(fieldType(t, p.Selector.Tail)); kt != "" {
-						name += fmt.Sprintf(" as %s", kt)
-					}
-				} else {
-					ft := fieldType(t, p.Selector.Tail[:i+1])
-					if isStructType(ft) || types.IsMapType(ft) {
-						name = fmt.Sprintf("(%s as MutableMap<*, *>)", name)
+		if len(p.Selector.Tail) > 0 {
+			if types.IsMapType(t) || isStructType(t) {
+				name = fmt.Sprintf("(%s as MutableMap<*, *>)", name)
+				for i, part := range p.Selector.Tail {
+					name += fmt.Sprintf("[%q]", part)
+					if i == len(p.Selector.Tail)-1 {
+						if kt := kotlinCastType(fieldType(t, p.Selector.Tail)); kt != "" {
+							name += fmt.Sprintf(" as %s", kt)
+						}
+					} else {
+						ft := fieldType(t, p.Selector.Tail[:i+1])
+						if isStructType(ft) || types.IsMapType(ft) {
+							name = fmt.Sprintf("(%s as MutableMap<*, *>)", name)
+						}
 					}
 				}
-			}
-		} else {
-			if len(p.Selector.Tail) > 0 {
+			} else {
 				name += "." + strings.Join(p.Selector.Tail, ".")
 			}
 		}
@@ -1076,6 +1082,9 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
+		if _, ok := types.TypeOfExprBasic(q.Where, c.env).(types.BoolType); !ok {
+			cond = "toBool(" + cond + ")"
+		}
 		b.WriteString(indent(lvl))
 		b.WriteString(fmt.Sprintf("if (%s) {\n", cond))
 		lvl++
@@ -1100,6 +1109,9 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			c.env = child
 			return "", err
+		}
+		if _, ok := types.TypeOfExprBasic(q.Group.Having, c.env).(types.BoolType); !ok {
+			h = "toBool(" + h + ")"
 		}
 		having = h
 	}
@@ -1130,8 +1142,12 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(indent(lvl))
 		b.WriteString(fmt.Sprintf("__g.add(%s)\n", q.Var))
 	} else {
+		selAdd := sel
+		if _, ok := selType.(types.MapType); ok {
+			selAdd = fmt.Sprintf("(%s as %s)", sel, kotlinTypeOf(selType))
+		}
 		b.WriteString(indent(lvl))
-		b.WriteString(fmt.Sprintf("__res.add(%s)\n", sel))
+		b.WriteString(fmt.Sprintf("__res.add(%s)\n", selAdd))
 	}
 	if q.Where != nil {
 		lvl--
@@ -1163,8 +1179,12 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 			b.WriteString(fmt.Sprintf("if (%s) {\n", having))
 			lvl++
 		}
+		selAdd := sel
+		if _, ok := selType.(types.MapType); ok {
+			selAdd = fmt.Sprintf("(%s as %s)", sel, kotlinTypeOf(selType))
+		}
 		b.WriteString(indent(lvl))
-		b.WriteString(fmt.Sprintf("__res.add(%s)\n", sel))
+		b.WriteString(fmt.Sprintf("__res.add(%s)\n", selAdd))
 		if having != "" {
 			lvl--
 			b.WriteString(indent(lvl))
