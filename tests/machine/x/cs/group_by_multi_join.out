@@ -1,0 +1,36 @@
+let _Group = []
+fun _Group["new"](k) {
+  return { "key": k, "items": [] }
+}
+let nations = [{ "id": 1, "name": "A" }, { "id": 2, "name": "B" }]
+let suppliers = [{ "id": 1, "nation": 1 }, { "id": 2, "nation": 2 }]
+let partsupp = [{ "part": 100, "supplier": 1, "cost": 10.0, "qty": 2 }, { "part": 100, "supplier": 2, "cost": 20.0, "qty": 1 }, { "part": 200, "supplier": 1, "cost": 5.0, "qty": 3 }]
+let filtered = fun() {
+    let _src = partsupp
+    return __query(_src, [{ "items": suppliers, "on": fun(ps, s) {
+    return (s["id"] == ps["supplier"])
+} }, { "items": nations, "on": fun(ps, s, n) {
+    return (n["id"] == s["nation"])
+} }], { "selectFn": fun(ps, s, n) {
+    return { "part": ps["part"], "value": ps["cost"] * ps["qty"] }
+}, "where": fun(ps, s, n) {
+    return (n["name"] == "A")
+} })
+}()
+let grouped = fun() {
+    let _groups = __group_by(filtered, fun(x) {
+    return x["part"]
+})
+    let _res = []
+    for _, g in ipairs(_groups) {
+      _res[len(_res) + 1] = { "part": g["key"], "total": __sum(fun() {
+    let _res = []
+    for _, r in ipairs(g["items"]) {
+      _res[len(_res) + 1] = r["value"]
+    }
+    return _res
+}()) }
+    }
+    return _res
+}()
+print(grouped)
