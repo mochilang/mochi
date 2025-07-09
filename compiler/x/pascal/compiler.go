@@ -26,8 +26,10 @@ type Compiler struct {
 	packages     map[string]bool
 	helpers      map[string]bool
 	lambdas      []string
+	lambdaBuffer *bytes.Buffer
 	replacements map[string]string
 	funcTypes    map[string]string
+	returnType   types.Type
 }
 
 // New creates a new Pascal compiler instance.
@@ -38,8 +40,10 @@ func New(env *types.Env) *Compiler {
 		packages:     make(map[string]bool),
 		helpers:      make(map[string]bool),
 		lambdas:      []string{},
+		lambdaBuffer: nil,
 		replacements: make(map[string]string),
 		funcTypes:    make(map[string]string),
+		returnType:   nil,
 	}
 }
 
@@ -256,7 +260,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			c.writeln(fmt.Sprintf("%s := %s;", name, val))
 		}
 	case s.Return != nil:
-		val, err := c.compileExpr(s.Return.Value)
+		val, err := c.compileExprWith(c.returnType, s.Return.Value)
 		if err != nil {
 			return err
 		}
@@ -673,6 +677,8 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	c.tempVars = make(map[string]string)
 	prevRepl := c.replacements
 	c.replacements = make(map[string]string)
+	prevReturn := c.returnType
+	c.returnType = resolveSimpleTypeRef(fun.Return)
 
 	name := sanitizeName(fun.Name)
 	params := make([]string, len(fun.Params))
@@ -686,6 +692,8 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 
 	// Compile body first so that temporaries are collected
 	var body, nested bytes.Buffer
+	prevLambda := c.lambdaBuffer
+	c.lambdaBuffer = &nested
 	prevBuf := c.buf
 	prevIndent := c.indent
 	c.buf = bytes.Buffer{}
@@ -714,6 +722,7 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	body = c.buf
 	c.buf = prevBuf
 	c.indent = prevIndent
+	c.lambdaBuffer = prevLambda
 
 	vars := map[string]string{}
 	paramMap := map[string]string{}
@@ -765,6 +774,7 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	c.tempVars = prevTemps
 	c.varTypes = nil
 	c.replacements = prevRepl
+	c.returnType = prevReturn
 	return nil
 }
 
@@ -1255,6 +1265,14 @@ func resolveSimpleTypeRef(t *parser.TypeRef) types.Type {
 				Value: resolveSimpleTypeRef(t.Generic.Args[1]),
 			}
 		}
+	}
+	if t.Fun != nil {
+		params := make([]types.Type, len(t.Fun.Params))
+		for i, p := range t.Fun.Params {
+			params[i] = resolveSimpleTypeRef(p)
+		}
+		ret := resolveSimpleTypeRef(t.Fun.Return)
+		return types.FuncType{Params: params, Return: ret}
 	}
 	return types.IntType{}
 }
@@ -2315,6 +2333,7 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	name := fmt.Sprintf("_lambda%d", len(c.lambdas))
 	oldBuf := c.buf
 	oldIndent := c.indent
+	outBuf := c.lambdaBuffer
 	c.buf = bytes.Buffer{}
 	c.indent = 0
 	var body []*parser.Statement
@@ -2330,9 +2349,17 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		return "", err
 	}
 	code := c.buf.String()
-	c.lambdas = append(c.lambdas, code)
 	c.buf = oldBuf
 	c.indent = oldIndent
+	if outBuf != nil {
+		outBuf.WriteString(code)
+		if !strings.HasSuffix(code, "\n") {
+			outBuf.WriteByte('\n')
+		}
+		outBuf.WriteByte('\n')
+	} else {
+		c.lambdas = append(c.lambdas, code)
+	}
 	if _, ok := c.expected.(types.FuncType); ok {
 		return "@" + name, nil
 	}
