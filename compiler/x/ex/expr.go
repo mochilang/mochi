@@ -409,6 +409,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		name := sanitizeName(p.Selector.Root)
 		if len(p.Selector.Tail) > 0 {
 			name += "." + strings.Join(p.Selector.Tail, ".")
+		} else if c.env != nil {
+			if st, ok := c.env.GetStruct(p.Selector.Root); ok && len(st.Order) == 0 {
+				c.ensureStruct(st)
+				return fmt.Sprintf("%%%s{}", sanitizeName(st.Name)), nil
+			}
+			if _, ok := c.attrs[p.Selector.Root]; ok {
+				return "@" + name, nil
+			}
 		}
 		return name, nil
 	case p.Group != nil:
@@ -421,6 +429,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", err
 			}
 			parts[i] = fmt.Sprintf("%s: %s", f.Name, v)
+		}
+		if c.env != nil {
+			if st, ok := c.env.GetStruct(p.Struct.Name); ok {
+				c.ensureStruct(st)
+				return fmt.Sprintf("%%%s{%s}", sanitizeName(st.Name), strings.Join(parts, ", ")), nil
+			}
 		}
 		return "%{" + strings.Join(parts, ", ") + "}", nil
 	case p.FunExpr != nil:
@@ -521,6 +535,19 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		case "values":
 			return fmt.Sprintf("Map.values(%s)", argStr), nil
 		default:
+			if c.env != nil {
+				if st, ok := c.env.GetStruct(p.Call.Func); ok {
+					if len(args) != len(st.Order) {
+						return "", fmt.Errorf("struct %s expects %d args", p.Call.Func, len(st.Order))
+					}
+					c.ensureStruct(st)
+					parts := make([]string, len(st.Order))
+					for i, f := range st.Order {
+						parts[i] = fmt.Sprintf("%s: %s", sanitizeName(f), args[i])
+					}
+					return fmt.Sprintf("%%%s{%s}", sanitizeName(st.Name), strings.Join(parts, ", ")), nil
+				}
+			}
 			if c.funcs[p.Call.Func] {
 				if c.env != nil {
 					if t, err := c.env.GetVar(p.Call.Func); err == nil {
