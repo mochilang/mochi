@@ -1,16 +1,15 @@
 stage: compile
 error:
-File "/workspace/mochi/tests/machine/x/ocaml/tail_recursion.ml", line 22, characters 2-9:
-22 |   sum_rec (n - 1) (acc + n)
-       ^^^^^^^
-Error: This expression has type int -> ('a -> 'b -> 'c -> 'd) -> 'e
-       but an expression was expected of type 'a
-       The type variable 'a occurs inside int -> ('a -> 'b -> 'c -> 'd) -> 'e
+File "/workspace/mochi/tests/machine/x/ocaml/tail_recursion.ml", line 40, characters 19-22:
+40 |   sum_rec (n - 1) (acc + n)
+                        ^^^
+Error: This expression has type unit but an expression was expected of type
+         int
 
 
-Context (around line 22):
-  20 |     acc
-  21 |   )
-  22 |   sum_rec (n - 1) (acc + n)
-  23 | 
-  24 | 
+Context (around line 40):
+  38 |     acc
+  39 |   ) ;
+  40 |   sum_rec (n - 1) (acc + n)
+  41 | 
+  42 | 

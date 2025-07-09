@@ -1,9 +1,0 @@
-stage: compile
-error:
-unsupported expression at line 2
-
-Context (around line 2):
-   1 | let x = 8
-   2 | let msg = if x > 10 then "big" else if x > 5 then "medium" else "small"
-   3 | print(msg)
-   4 | 

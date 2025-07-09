@@ -1,10 +1,15 @@
 stage: compile
 error:
-unsupported expression at line 3
+File "/workspace/mochi/tests/machine/x/ocaml/exists_builtin.ml", line 37, characters 11-17:
+37 | let flag = exists (let __res0 = ref [] in
+                ^^^^^^
+Error: Unbound value exists
+Hint: Did you mean exit?
 
-Context (around line 3):
-   1 | let data = [1,2]
-   2 | let flag = exists(
-   3 |   from x in data
-   4 |   where x == 1
-   5 |   select x
+
+Context (around line 37):
+  35 | 
+  36 | let data = [1;2]
+  37 | let flag = exists (let __res0 = ref [] in
+  38 |   List.iter (fun x ->
+  39 |       if (x = 1) then

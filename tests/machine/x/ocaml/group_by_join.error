@@ -1,10 +1,15 @@
 stage: compile
 error:
-unsupported expression at line 3
+File "/workspace/mochi/tests/machine/x/ocaml/group_by_join.ml", line 36, characters 35-42:
+36 | let customers = [[("id",1);("name","Alice")];[("id",2);("name","Bob")]]
+                                        ^^^^^^^
+Error: This expression has type string but an expression was expected of type
+         int
 
-Context (around line 3):
-   1 | // group_by_join.mochi
-   2 | let customers = [
-   3 |   { id: 1, name: "Alice" },
-   4 |   { id: 2, name: "Bob" }
-   5 | ]
+
+Context (around line 36):
+  34 | let string_slice s i j = String.sub s i (j - i)
+  35 | 
+  36 | let customers = [[("id",1);("name","Alice")];[("id",2);("name","Bob")]]
+  37 | let orders = [[("id",100);("customerId",1)];[("id",101);("customerId",1)];[("id",102);("customerId",2)]]
+  38 | let stats = (let __res0 = ref [] in

@@ -1,9 +1,15 @@
 stage: compile
 error:
-unsupported expression at line 2
+File "/workspace/mochi/tests/machine/x/ocaml/group_by_multi_join_sort.ml", line 36, characters 43-51:
+36 | let nation = [[("n_nationkey",1);("n_name","BRAZIL")]]
+                                                ^^^^^^^^
+Error: This expression has type string but an expression was expected of type
+         int
 
-Context (around line 2):
-   1 | let nation = [
-   2 |   { n_nationkey: 1, n_name: "BRAZIL" }
-   3 | ]
-   4 | 
+
+Context (around line 36):
+  34 | let string_slice s i j = String.sub s i (j - i)
+  35 | 
+  36 | let nation = [[("n_nationkey",1);("n_name","BRAZIL")]]
+  37 | let customer = [[("c_custkey",1);("c_name","Alice");("c_acctbal",100);("c_nationkey",1);("c_address","123 St");("c_phone","123-456");("c_comment","Loyal")]]
+  38 | let orders = [[("o_orderkey",1000);("o_custkey",1);("o_orderdate","1993-10-15")];[("o_orderkey",2000);("o_custkey",1);("o_orderdate","1994-01-02")]]

@@ -1,9 +1,14 @@
 stage: compile
 error:
-unsupported expression at line 2
+File "/workspace/mochi/tests/machine/x/ocaml/group_by_sort.ml", line 41, characters 18-21:
+41 |       __res1 := x.val :: !__res1;
+                       ^^^
+Error: Syntax error
 
-Context (around line 2):
-   1 | let items = [
-   2 |   { cat: "a", val: 3 },
-   3 |   { cat: "a", val: 1 },
-   4 |   { cat: "b", val: 5 },
+
+Context (around line 41):
+  39 |       __res0 := [("cat",g.key);("total",sum (let __res1 = ref [] in
+  40 |   List.iter (fun x ->
+  41 |       __res1 := x.val :: !__res1;
+  42 |   ) g;
+  43 | List.rev !__res1)

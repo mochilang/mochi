@@ -1,8 +1,5 @@
-stage: compile
+stage: run
 error:
-unsupported expression at line 1
 
-Context (around line 1):
-   1 | var m = {"a": 1, "b": 2}
-   2 | for k in m {
-   3 |   print(k)
+
+Context (around line 0):

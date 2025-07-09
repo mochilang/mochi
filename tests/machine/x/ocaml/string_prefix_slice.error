@@ -1,15 +1,15 @@
 stage: compile
 error:
-File "/workspace/mochi/tests/machine/x/ocaml/string_prefix_slice.ml", line 23, characters 35-37:
-23 |   print_endline (__show ((List.nth s1 0 = prefix)));
-                                        ^^
-Error: This expression has type string but an expression was expected of type
-         'a list
+File "/workspace/mochi/tests/machine/x/ocaml/string_prefix_slice.ml", line 41, characters 26-31:
+41 |   print_endline (__show ((slice s1 0 List.length prefix = prefix)));
+                               ^^^^^
+Error: This function has type 'a list -> int -> int -> 'a list
+       It is applied to too many arguments; maybe you forgot a `;'.
 
 
-Context (around line 23):
-  21 | 
-  22 | let () =
-  23 |   print_endline (__show ((List.nth s1 0 = prefix)));
-  24 |   print_endline (__show ((List.nth s2 0 = prefix)));
-  25 | 
+Context (around line 41):
+  39 | 
+  40 | let () =
+  41 |   print_endline (__show ((slice s1 0 List.length prefix = prefix)));
+  42 |   print_endline (__show ((slice s2 0 List.length prefix = prefix)));
+  43 | 

@@ -1,8 +1,13 @@
 stage: compile
 error:
-unsupported expression at line 1
+File "/workspace/mochi/tests/machine/x/ocaml/json_builtin.ml", line 39, characters 2-6:
+39 |   json m;
+       ^^^^
+Error: Unbound value json
 
-Context (around line 1):
-   1 | let m = {a: 1, b: 2}
-   2 | json(m)
-   3 | 
+
+Context (around line 39):
+  37 | 
+  38 | let () =
+  39 |   json m;
+  40 | 
