@@ -133,6 +133,11 @@ func isStringLiteral(e *parser.Expr) bool {
 	return p.Target != nil && p.Target.Lit != nil && p.Target.Lit.Str != nil
 }
 
+func isStructType(t types.Type) bool {
+	_, ok := t.(types.StructType)
+	return ok
+}
+
 func collectIdents(e *parser.Expr, out map[string]struct{}) {
 	if e == nil || e.Binary == nil {
 		return
