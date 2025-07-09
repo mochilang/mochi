@@ -16,6 +16,8 @@ type Compiler struct {
 	buf    bytes.Buffer
 	indent int
 	vars   map[string]bool // variables declared with 'var'
+
+	loop int
 }
 
 // New creates a compiler instance.
@@ -51,6 +53,10 @@ func (c *Compiler) Compile(prog *parser.Program, _ string) ([]byte, error) {
 	c.writeln("| _ -> \"<value>\"")
 	c.indent--
 	c.indent--
+	c.buf.WriteByte('\n')
+
+	c.writeln("exception Break")
+	c.writeln("exception Continue")
 	c.buf.WriteByte('\n')
 
 	// first emit function and variable declarations
@@ -115,6 +121,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return err
 		}
 		c.writeln(val)
+		return nil
+	case s.Break != nil:
+		c.writeln("raise Break")
+		return nil
+	case s.Continue != nil:
+		c.writeln("raise Continue")
 		return nil
 	default:
 		return fmt.Errorf("unsupported statement at line %d", s.Pos.Line)
@@ -219,22 +231,43 @@ func (c *Compiler) compileFor(fr *parser.ForStmt) error {
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("for %s = %s to %s do", fr.Name, start, end))
+		loopName := fmt.Sprintf("__loop%d", c.loop)
+		c.loop++
+		c.writeln(fmt.Sprintf("let rec %s i =", loopName))
 		c.indent++
+		c.writeln(fmt.Sprintf("if i > %s then () else (", end))
+		c.indent++
+		c.writeln("try")
+		c.indent++
+		c.writeln(fmt.Sprintf("let %s = i in", fr.Name))
 		for _, st := range fr.Body {
 			if err := c.compileStmt(st); err != nil {
 				return err
 			}
 		}
 		c.indent--
-		c.writeln("done")
+		c.writeln("with Continue -> ()")
+		c.writeln(fmt.Sprintf("; %s (i + 1))", loopName))
+		c.indent--
+		c.indent--
+		c.writeln("in")
+		c.writeln(fmt.Sprintf("try %s %s with Break -> ()", loopName, start))
 		return nil
 	}
 	src, err := c.compileExpr(fr.Source)
 	if err != nil {
 		return err
 	}
-	c.writeln(fmt.Sprintf("List.iter (fun %s ->", fr.Name))
+	loopName := fmt.Sprintf("__loop%d", c.loop)
+	c.loop++
+	c.writeln(fmt.Sprintf("let rec %s lst =", loopName))
+	c.indent++
+	c.writeln("match lst with")
+	c.indent++
+	c.writeln("| [] -> ()")
+	c.writeln(fmt.Sprintf("| %s::rest ->", fr.Name))
+	c.indent++
+	c.writeln("try")
 	c.indent++
 	for _, st := range fr.Body {
 		if err := c.compileStmt(st); err != nil {
@@ -242,7 +275,12 @@ func (c *Compiler) compileFor(fr *parser.ForStmt) error {
 		}
 	}
 	c.indent--
-	c.writeln(fmt.Sprintf(") %s", src))
+	c.writeln("with Continue -> ()")
+	c.writeln(fmt.Sprintf("; %s rest", loopName))
+	c.indent--
+	c.indent--
+	c.writeln("in")
+	c.writeln(fmt.Sprintf("try %s %s with Break -> ()", loopName, src))
 	return nil
 }
 
@@ -251,20 +289,26 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 	if err != nil {
 		return err
 	}
-	c.writeln("let rec loop () =")
+	loopName := fmt.Sprintf("__loop%d", c.loop)
+	c.loop++
+	c.writeln(fmt.Sprintf("let rec %s () =", loopName))
 	c.indent++
 	c.writeln(fmt.Sprintf("if %s then (", cond))
+	c.indent++
+	c.writeln("try")
 	c.indent++
 	for _, st := range w.Body {
 		if err := c.compileStmt(st); err != nil {
 			return err
 		}
 	}
-	c.writeln("loop ()")
+	c.writeln(fmt.Sprintf("%s ()", loopName))
+	c.indent--
+	c.writeln("with Continue -> ()")
 	c.indent--
 	c.writeln(") else ()")
 	c.indent--
-	c.writeln("in loop ()")
+	c.writeln(fmt.Sprintf("in try %s () with Break -> ()", loopName))
 	return nil
 }
 
@@ -350,7 +394,22 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			val = fmt.Sprintf("List.nth %s %s", val, idx)
+			if isStringPrimary(p.Target) {
+				val = fmt.Sprintf("String.make 1 (String.get %s %s)", val, idx)
+			} else {
+				val = fmt.Sprintf("List.nth %s %s", val, idx)
+			}
+		case op.Cast != nil:
+			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
+				switch *op.Cast.Type.Simple {
+				case "int":
+					val = fmt.Sprintf("int_of_string %s", val)
+				default:
+					return "", fmt.Errorf("unsupported cast")
+				}
+			} else {
+				return "", fmt.Errorf("unsupported cast")
+			}
 		default:
 			return "", fmt.Errorf("unsupported postfix")
 		}
@@ -381,6 +440,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems[i] = s
 		}
 		return "[" + strings.Join(elems, ";") + "]", nil
+	case p.Map != nil:
+		items := make([]string, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			k, err := c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", err
+			}
+			items[i] = fmt.Sprintf("(%s,%s)", k, v)
+		}
+		return "[" + strings.Join(items, ";") + "]", nil
 	case p.FunExpr != nil:
 		params := make([]string, len(p.FunExpr.Params))
 		for i, p2 := range p.FunExpr.Params {
@@ -555,6 +628,19 @@ func isStringExprExpr(p *parser.PostfixExpr) bool {
 		return true
 	}
 	if p.Target.Call != nil && p.Target.Call.Func == "str" {
+		return true
+	}
+	return false
+}
+
+func isStringPrimary(p *parser.Primary) bool {
+	if p == nil {
+		return false
+	}
+	if p.Lit != nil && p.Lit.Str != nil {
+		return true
+	}
+	if p.Call != nil && p.Call.Func == "str" {
 		return true
 	}
 	return false
