@@ -1,7 +1,7 @@
 Error on line 0: output mismatch
 -- got --
 ok
-   test update adult status            ... ok (163.0µs)
+   test update adult status            ... ok (14.0µs)
 -- want --
 ok
 1: //go:build ignore

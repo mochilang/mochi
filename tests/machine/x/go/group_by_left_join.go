@@ -6,6 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"mochi/runtime/data"
+	"reflect"
+	"strconv"
+	"strings"
 )
 
 func main() {
@@ -40,7 +43,17 @@ func main() {
 		CustomerId: 2,
 	}}
 	_ = orders
-	var stats []map[string]any = func() []map[string]any {
+	type Stats struct {
+		Name  any `json:"name"`
+		Count int `json:"count"`
+	}
+
+	type Result struct {
+		Name  any `json:"name"`
+		Count int `json:"count"`
+	}
+
+	var stats []Stats = _cast[[]Stats](func() []Result {
 		groups := map[string]*data.Group{}
 		order := []string{}
 		for _, c := range customers {
@@ -72,25 +85,28 @@ func main() {
 		for _, ks := range order {
 			items = append(items, groups[ks])
 		}
-		_res := []map[string]any{}
+		_res := []Result{}
 		for _, g := range items {
-			_res = append(_res, map[string]any{"name": g.Key, "count": len(func() []any {
-				_res := []any{}
-				for _, r := range g.Items {
-					if _cast[map[string]any](r)["o"] {
-						if _cast[map[string]any](r)["o"] {
-							_res = append(_res, r)
+			_res = append(_res, Result{
+				Name: g.Key,
+				Count: len(func() []any {
+					_res := []any{}
+					for _, r := range g.Items {
+						if _exists(_cast[map[string]any](r)["o"]) {
+							if _exists(_cast[map[string]any](r)["o"]) {
+								_res = append(_res, r)
+							}
 						}
 					}
-				}
-				return _res
-			}())})
+					return _res
+				}()),
+			})
 		}
 		return _res
-	}()
+	}())
 	fmt.Println("--- Group Left Join ---")
 	for _, s := range stats {
-		fmt.Println(s["name"], "orders:", s["count"])
+		fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint(s.Name), fmt.Sprint("orders:"), fmt.Sprint(s.Count)}, " "), " "))
 	}
 }
 
@@ -108,6 +124,9 @@ func _cast[T any](v any) T {
 			return any(int(vv)).(T)
 		case float32:
 			return any(int(vv)).(T)
+		case string:
+			n, _ := strconv.Atoi(vv)
+			return any(n).(T)
 		}
 	case float64:
 		switch vv := v.(type) {
@@ -152,4 +171,33 @@ func _convertMapAny(m map[any]any) map[string]any {
 		}
 	}
 	return out
+}
+
+func _exists(v any) bool {
+	if g, ok := v.(*data.Group); ok {
+		return len(g.Items) > 0
+	}
+	switch s := v.(type) {
+	case []any:
+		return len(s) > 0
+	case []int:
+		return len(s) > 0
+	case []float64:
+		return len(s) > 0
+	case []string:
+		return len(s) > 0
+	case []bool:
+		return len(s) > 0
+	case []map[string]any:
+		return len(s) > 0
+	case map[string]any:
+		return len(s) > 0
+	case string:
+		return len([]rune(s)) > 0
+	}
+	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Slice || rv.Kind() == reflect.Array {
+		return rv.Len() > 0
+	}
+	return false
 }

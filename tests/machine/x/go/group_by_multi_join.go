@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"mochi/runtime/data"
+	"strconv"
+	"strings"
 )
 
 func main() {
@@ -58,8 +60,18 @@ func main() {
 		Cost:     5.0,
 		Qty:      3,
 	}}
-	var filtered []map[string]any = func() []map[string]any {
-		_res := []map[string]any{}
+	type Filtered struct {
+		Part  any `json:"part"`
+		Value any `json:"value"`
+	}
+
+	type Result struct {
+		Part  int     `json:"part"`
+		Value float64 `json:"value"`
+	}
+
+	var filtered []Filtered = _cast[[]Filtered](func() []Result {
+		_res := []Result{}
 		for _, ps := range partsupp {
 			for _, s := range suppliers {
 				if !(s.Id == ps.Supplier) {
@@ -71,19 +83,32 @@ func main() {
 					}
 					if n.Name == "A" {
 						if n.Name == "A" {
-							_res = append(_res, map[string]any{"part": ps.Part, "value": (ps.Cost * float64(ps.Qty))})
+							_res = append(_res, Result{
+								Part:  ps.Part,
+								Value: (ps.Cost * float64(ps.Qty)),
+							})
 						}
 					}
 				}
 			}
 		}
 		return _res
-	}()
-	var grouped []map[string]any = func() []map[string]any {
+	}())
+	type Grouped struct {
+		Part  any     `json:"part"`
+		Total float64 `json:"total"`
+	}
+
+	type Result1 struct {
+		Part  any     `json:"part"`
+		Total float64 `json:"total"`
+	}
+
+	var grouped []Grouped = _cast[[]Grouped](func() []Result1 {
 		groups := map[string]*data.Group{}
 		order := []string{}
 		for _, x := range filtered {
-			key := x["part"]
+			key := x.Part
 			ks := fmt.Sprint(key)
 			g, ok := groups[ks]
 			if !ok {
@@ -93,20 +118,23 @@ func main() {
 			}
 			g.Items = append(g.Items, x)
 		}
-		_res := []map[string]any{}
+		_res := []Result1{}
 		for _, ks := range order {
 			g := groups[ks]
-			_res = append(_res, map[string]any{"part": g.Key, "total": _sum(func() []any {
-				_res := []any{}
-				for _, r := range g.Items {
-					_res = append(_res, _cast[map[string]any](r)["value"])
-				}
-				return _res
-			}())})
+			_res = append(_res, Result1{
+				Part: g.Key,
+				Total: _sum(func() []any {
+					_res := []any{}
+					for _, r := range g.Items {
+						_res = append(_res, _cast[map[string]any](r)["value"])
+					}
+					return _res
+				}()),
+			})
 		}
 		return _res
-	}()
-	fmt.Println(grouped)
+	}())
+	fmt.Println(strings.Trim(fmt.Sprint(grouped), "[]"))
 }
 
 func _cast[T any](v any) T {
@@ -123,6 +151,9 @@ func _cast[T any](v any) T {
 			return any(int(vv)).(T)
 		case float32:
 			return any(int(vv)).(T)
+		case string:
+			n, _ := strconv.Atoi(vv)
+			return any(n).(T)
 		}
 	case float64:
 		switch vv := v.(type) {

@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"mochi/runtime/data"
 	"sort"
+	"strconv"
+	"strings"
 )
 
 func main() {
@@ -33,7 +35,17 @@ func main() {
 			Val: 2,
 		},
 	}
-	var grouped []map[string]any = func() []map[string]any {
+	type Grouped struct {
+		Cat   any     `json:"cat"`
+		Total float64 `json:"total"`
+	}
+
+	type Result struct {
+		Cat   any     `json:"cat"`
+		Total float64 `json:"total"`
+	}
+
+	var grouped []Grouped = _cast[[]Grouped](func() []Result {
 		groups := map[string]*data.Group{}
 		order := []string{}
 		for _, i := range items {
@@ -97,19 +109,22 @@ func main() {
 		for idx, p := range pairs {
 			items[idx] = p.item
 		}
-		_res := []map[string]any{}
+		_res := []Result{}
 		for _, g := range items {
-			_res = append(_res, map[string]any{"cat": g.Key, "total": _sum(func() []any {
-				_res := []any{}
-				for _, x := range g.Items {
-					_res = append(_res, _cast[map[string]any](x)["val"])
-				}
-				return _res
-			}())})
+			_res = append(_res, Result{
+				Cat: g.Key,
+				Total: _sum(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						_res = append(_res, _cast[map[string]any](x)["val"])
+					}
+					return _res
+				}()),
+			})
 		}
 		return _res
-	}()
-	fmt.Println(grouped)
+	}())
+	fmt.Println(strings.Trim(fmt.Sprint(grouped), "[]"))
 }
 
 func _cast[T any](v any) T {
@@ -126,6 +141,9 @@ func _cast[T any](v any) T {
 			return any(int(vv)).(T)
 		case float32:
 			return any(int(vv)).(T)
+		case string:
+			n, _ := strconv.Atoi(vv)
+			return any(n).(T)
 		}
 	case float64:
 		switch vv := v.(type) {

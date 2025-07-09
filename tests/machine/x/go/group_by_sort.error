@@ -1,6 +1,6 @@
 Error on line 0: output mismatch
 -- got --
-[map[cat:b total:7] map[cat:a total:4]]
+{b 7} {a 4}
 -- want --
 map[cat:b total:7] map[cat:a total:4]
 1: //go:build ignore

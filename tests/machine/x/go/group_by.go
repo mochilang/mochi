@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"mochi/runtime/data"
+	"strconv"
+	"strings"
 )
 
 func main() {
@@ -47,7 +49,19 @@ func main() {
 			City: "Hanoi",
 		},
 	}
-	var stats []map[string]any = func() []map[string]any {
+	type Stats struct {
+		City    any     `json:"city"`
+		Count   int     `json:"count"`
+		Avg_age float64 `json:"avg_age"`
+	}
+
+	type Result struct {
+		City    any     `json:"city"`
+		Count   int     `json:"count"`
+		Avg_age float64 `json:"avg_age"`
+	}
+
+	var stats []Stats = _cast[[]Stats](func() []Result {
 		groups := map[string]*data.Group{}
 		order := []string{}
 		for _, person := range people {
@@ -61,13 +75,13 @@ func main() {
 			}
 			g.Items = append(g.Items, person)
 		}
-		_res := []map[string]any{}
+		_res := []Result{}
 		for _, ks := range order {
 			g := groups[ks]
-			_res = append(_res, map[string]any{
-				"city":  g.Key,
-				"count": len(g.Items),
-				"avg_age": _avg(func() []any {
+			_res = append(_res, Result{
+				City:  g.Key,
+				Count: len(g.Items),
+				Avg_age: _avg(func() []any {
 					_res := []any{}
 					for _, p := range g.Items {
 						_res = append(_res, _cast[map[string]any](p)["age"])
@@ -77,10 +91,10 @@ func main() {
 			})
 		}
 		return _res
-	}()
+	}())
 	fmt.Println("--- People grouped by city ---")
 	for _, s := range stats {
-		fmt.Println(s["city"], ": count =", s["count"], ", avg_age =", s["avg_age"])
+		fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint(s.City), fmt.Sprint(": count ="), fmt.Sprint(s.Count), fmt.Sprint(", avg_age ="), fmt.Sprint(s.Avg_age)}, " "), " "))
 	}
 }
 
@@ -149,6 +163,9 @@ func _cast[T any](v any) T {
 			return any(int(vv)).(T)
 		case float32:
 			return any(int(vv)).(T)
+		case string:
+			n, _ := strconv.Atoi(vv)
+			return any(n).(T)
 		}
 	case float64:
 		switch vv := v.(type) {

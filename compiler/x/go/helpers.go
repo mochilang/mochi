@@ -289,6 +289,11 @@ func (c *Compiler) castExpr(expr string, from, to types.Type) string {
 		return fmt.Sprintf("%s(%s)", toGo, expr)
 	}
 
+	if _, ok := from.(types.AnyType); ok && isBool(to) {
+		c.use("_exists")
+		return fmt.Sprintf("_exists(%s)", expr)
+	}
+
 	c.use("_cast")
 	c.imports["encoding/json"] = true
 	return fmt.Sprintf("_cast[%s](%s)", toGo, expr)

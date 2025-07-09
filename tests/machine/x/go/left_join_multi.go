@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
+	"strconv"
+	"strings"
 )
 
 func main() {
@@ -44,7 +46,19 @@ func main() {
 		Sku:     "a",
 	}}
 	_ = items
-	var result []map[string]any = func() []map[string]any {
+	type Result struct {
+		OrderId any `json:"orderId"`
+		Name    any `json:"name"`
+		Item    any `json:"item"`
+	}
+
+	type Result1 struct {
+		OrderId int       `json:"orderId"`
+		Name    string    `json:"name"`
+		Item    ItemsItem `json:"item"`
+	}
+
+	var result []Result = _cast[[]Result](func() []Result1 {
 		src := _toAnySlice(orders)
 		resAny := _query(src, []_joinSpec{
 			{items: _toAnySlice(customers), on: func(_a ...any) bool {
@@ -70,21 +84,21 @@ func main() {
 			_ = c
 			i := _cast[ItemsItem](_a[2])
 			_ = i
-			return map[string]any{
-				"orderId": o.Id,
-				"name":    c.Name,
-				"item":    i,
+			return Result1{
+				OrderId: o.Id,
+				Name:    c.Name,
+				Item:    i,
 			}
 		}, skip: -1, take: -1})
-		out := make([]map[string]any, len(resAny))
+		out := make([]Result1, len(resAny))
 		for i, v := range resAny {
-			out[i] = _cast[map[string]any](v)
+			out[i] = _cast[Result1](v)
 		}
 		return out
-	}()
+	}())
 	fmt.Println("--- Left Join Multi ---")
 	for _, r := range result {
-		fmt.Println(r["orderId"], r["name"], r["item"])
+		fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint(r.OrderId), fmt.Sprint(r.Name), fmt.Sprint(r.Item)}, " "), " "))
 	}
 }
 
@@ -102,6 +116,9 @@ func _cast[T any](v any) T {
 			return any(int(vv)).(T)
 		case float32:
 			return any(int(vv)).(T)
+		case string:
+			n, _ := strconv.Atoi(vv)
+			return any(n).(T)
 		}
 	case float64:
 		switch vv := v.(type) {

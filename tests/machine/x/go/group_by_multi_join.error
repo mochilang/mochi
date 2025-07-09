@@ -1,6 +1,6 @@
 Error on line 0: output mismatch
 -- got --
-[map[part:100 total:20] map[part:200 total:15]]
+{100 20} {200 15}
 -- want --
 map[part:100 total:20] map[part:200 total:15]
 1: //go:build ignore

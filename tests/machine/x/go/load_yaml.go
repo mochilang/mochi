@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"mochi/runtime/data"
 	"os"
+	"strconv"
+	"strings"
 )
 
 type Person struct {
@@ -24,19 +26,32 @@ func main() {
 		}
 		return out
 	}()
-	var adults []map[string]string = func() []map[string]string {
-		_res := []map[string]string{}
+	type Adults struct {
+		Name  any `json:"name"`
+		Email any `json:"email"`
+	}
+
+	type Result struct {
+		Name  string `json:"name"`
+		Email string `json:"email"`
+	}
+
+	var adults []Adults = _cast[[]Adults](func() []Result {
+		_res := []Result{}
 		for _, p := range people {
 			if p.Age >= 18 {
 				if p.Age >= 18 {
-					_res = append(_res, map[string]string{"name": p.Name, "email": p.Email})
+					_res = append(_res, Result{
+						Name:  p.Name,
+						Email: p.Email,
+					})
 				}
 			}
 		}
 		return _res
-	}()
+	}())
 	for _, a := range adults {
-		fmt.Println(a["name"], a["email"])
+		fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint(a.Name), fmt.Sprint(a.Email)}, " "), " "))
 	}
 }
 
@@ -54,6 +69,9 @@ func _cast[T any](v any) T {
 			return any(int(vv)).(T)
 		case float32:
 			return any(int(vv)).(T)
+		case string:
+			n, _ := strconv.Atoi(vv)
+			return any(n).(T)
 		}
 	case float64:
 		switch vv := v.(type) {

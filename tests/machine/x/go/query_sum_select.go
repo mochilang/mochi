@@ -5,6 +5,7 @@ package main
 import (
 	"fmt"
 	"mochi/runtime/data"
+	"strings"
 )
 
 func main() {
@@ -20,7 +21,7 @@ func main() {
 		}
 		return _res
 	}()
-	fmt.Println(result)
+	fmt.Println(strings.Trim(fmt.Sprint(result), "[]"))
 }
 
 func _sum(v any) float64 {
