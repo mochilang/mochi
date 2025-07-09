@@ -1,0 +1,8 @@
+run: exit status 1
+list-ref: index reaches a non-pair
+  index: 1
+  in: '#hash((1 . "a") (2 . "b"))
+  context...:
+   /workspace/mochi/tests/machine/x/racket/map_int_key.rkt:3:0
+   body of "/workspace/mochi/tests/machine/x/racket/map_int_key.rkt"
+
