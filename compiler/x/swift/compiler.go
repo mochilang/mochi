@@ -1446,12 +1446,15 @@ func (c *compiler) groupQuery(q *parser.QueryExpr) (string, error) {
 		}
 		having = hv
 	}
-	sel, err := c.expr(q.Select)
-	if err != nil {
-		c.varTypes = savedVars
-		c.mapFields = savedFields
-		return "", err
-	}
+       prevTuple := c.tupleMap
+       c.tupleMap = true
+       sel, err := c.expr(q.Select)
+       c.tupleMap = prevTuple
+       if err != nil {
+               c.varTypes = savedVars
+               c.mapFields = savedFields
+               return "", err
+       }
 	sortExpr := ""
 	if q.Sort != nil {
 		prev := c.tupleMap
@@ -1532,27 +1535,18 @@ func (c *compiler) joinQuery(q *parser.QueryExpr) (string, error) {
 		}
 		fromSrcs[i] = fs
 	}
-	joinSrcs := make([]string, len(q.Joins))
-	joinOns := make([]string, len(q.Joins))
-	joinSides := make([]string, len(q.Joins))
-	for i, j := range q.Joins {
-		js, err := c.expr(j.Src)
-		if err != nil {
-			return "", err
-		}
-		on, err := c.expr(j.On)
-		if err != nil {
-			return "", err
-		}
-		joinSrcs[i] = js
-		joinOns[i] = on
-		if j.Side != nil {
-			joinSides[i] = *j.Side
-		}
-	}
-	if len(q.Froms) == 0 && len(q.Joins) == 1 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && q.Where == nil && joinSides[0] != "" {
-		return c.joinSingleSide(q, src, joinSrcs[0], joinOns[0], joinSides[0])
-	}
+       joinSrcs := make([]string, len(q.Joins))
+       joinSides := make([]string, len(q.Joins))
+       for i, j := range q.Joins {
+               js, err := c.expr(j.Src)
+               if err != nil {
+                       return "", err
+               }
+               joinSrcs[i] = js
+               if j.Side != nil {
+                       joinSides[i] = *j.Side
+               }
+       }
 	savedVars := c.varTypes
 	savedFields := c.mapFields
 	c.varTypes = copyMap(c.varTypes)
@@ -1568,13 +1562,29 @@ func (c *compiler) joinQuery(q *parser.QueryExpr) (string, error) {
 		}
 		_ = fromSrcs[i]
 	}
-	for i, j := range q.Joins {
-		c.varTypes[j.Var] = c.elementType(j.Src)
-		if fields := c.elementFieldTypes(j.Src); fields != nil {
-			c.mapFields[j.Var] = fields
-		}
-		_ = joinSrcs[i]
-	}
+       for i, j := range q.Joins {
+               c.varTypes[j.Var] = c.elementType(j.Src)
+               if fields := c.elementFieldTypes(j.Src); fields != nil {
+                       c.mapFields[j.Var] = fields
+               }
+               _ = joinSrcs[i]
+       }
+
+       joinOns := make([]string, len(q.Joins))
+       for i, j := range q.Joins {
+               on, err := c.expr(j.On)
+               if err != nil {
+                       c.varTypes = savedVars
+                       c.mapFields = savedFields
+                       return "", err
+               }
+               joinOns[i] = on
+       }
+       if len(q.Froms) == 0 && len(q.Joins) == 1 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && q.Where == nil && joinSides[0] != "" {
+               c.varTypes = savedVars
+               c.mapFields = savedFields
+               return c.joinSingleSide(q, src, joinSrcs[0], joinOns[0], joinSides[0])
+       }
 	cond := ""
 	if q.Where != nil {
 		ccond, err := c.expr(q.Where)
@@ -1585,12 +1595,15 @@ func (c *compiler) joinQuery(q *parser.QueryExpr) (string, error) {
 		}
 		cond = ccond
 	}
-	sel, err := c.expr(q.Select)
-	if err != nil {
-		c.varTypes = savedVars
-		c.mapFields = savedFields
-		return "", err
-	}
+       prevTuple := c.tupleMap
+       c.tupleMap = true
+       sel, err := c.expr(q.Select)
+       c.tupleMap = prevTuple
+       if err != nil {
+               c.varTypes = savedVars
+               c.mapFields = savedFields
+               return "", err
+       }
 	c.varTypes = savedVars
 	c.mapFields = savedFields
 
