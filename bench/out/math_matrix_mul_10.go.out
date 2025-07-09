@@ -1,3 +1,5 @@
+//go:build ignore
+
 package main
 
 import (
@@ -6,6 +8,7 @@ import (
 	"time"
 )
 
+// line 1
 func matmul(a [][]int, b [][]int) [][]int {
 	var n int = len(a)
 	var m int = len(b[0])

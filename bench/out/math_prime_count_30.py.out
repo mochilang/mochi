@@ -15,37 +15,16 @@ def is_prime(n: int) -> bool:
     return True
 
 
-n = 30
-repeat = 100
-last = 0
-start = time.time_ns()
-end = time.time_ns()
-duration = None
-
-
-def main():
-    global n
-    n = 30
-    global repeat
-    repeat = 100
-    global last
-    last = 0
-    global start
-    start = time.time_ns()
-    for r in range(0, repeat):
-        count = 0
-        for i in range(2, n):
-            if is_prime(i):
-                count = count + 1
-        last = count
-    global end
-    end = time.time_ns()
-    global duration
-    duration = int(((end - start)) / 1000)
-    print(
-        json.dumps({"duration_us": duration, "output": last}, default=lambda o: vars(o))
-    )
-
-
-if __name__ == "__main__":
-    main()
+n: int = 30
+repeat: int = 100
+last: int = 0
+start: int = time.time_ns()
+for r in range(0, repeat):
+    count: typing.Callable[[typing.Any], int] = 0
+    for i in range(2, n):
+        if is_prime(i):
+            count = count + 1
+    last = count
+end: int = time.time_ns()
+duration: int = int(((end - start)) / 1000)
+print(json.dumps({"duration_us": duration, "output": last}, default=lambda o: vars(o)))

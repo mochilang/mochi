@@ -1,3 +1,5 @@
+//go:build ignore
+
 package main
 
 import (
@@ -6,6 +8,7 @@ import (
 	"time"
 )
 
+// line 1
 func fact_rec(n int) int {
 	if n == 0 {
 		return 1

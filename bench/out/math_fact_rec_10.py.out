@@ -12,30 +12,11 @@ def fact_rec(n: int) -> int:
     return n * fact_rec((n - 1))
 
 
-n = 10
-repeat = 1000
-last = 0
-start = time.time_ns()
-duration = None
-
-
-def main():
-    global n
-    n = 10
-    global repeat
-    repeat = 1000
-    global last
-    last = 0
-    global start
-    start = time.time_ns()
-    for i in range(0, repeat):
-        last = fact_rec(n)
-    global duration
-    duration = int(((time.time_ns() - start)) / 1000)
-    print(
-        json.dumps({"duration_us": duration, "output": last}, default=lambda o: vars(o))
-    )
-
-
-if __name__ == "__main__":
-    main()
+n: int = 10
+repeat: int = 1000
+last: int = 0
+start: int = time.time_ns()
+for i in range(0, repeat):
+    last = fact_rec(n)
+duration: int = int(((time.time_ns() - start)) / 1000)
+print(json.dumps({"duration_us": duration, "output": last}, default=lambda o: vars(o)))
