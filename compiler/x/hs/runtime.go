@@ -166,6 +166,12 @@ _asBool :: AnyValue -> Bool
 _asBool (VBool b) = b
 _asBool v = error ("expected bool, got " ++ show v)
 
+_showAny :: AnyValue -> String
+_showAny (VInt n) = show n
+_showAny (VDouble d) = show d
+_showAny (VString s) = s
+_showAny (VBool b) = if b then "true" else "false"
+
 _parseJSON :: String -> [Map.Map String String]
 _parseJSON text =
   case Aeson.decode (BSL.pack text) of

@@ -1329,12 +1329,17 @@ func (c *Compiler) compilePrint(ca callArgs) (string, error) {
 		if strings.HasPrefix(arg, "\"") || strings.HasPrefix(arg, "show(") || strings.HasPrefix(arg, "show ") || strings.HasPrefix(arg, "show") || strings.HasPrefix(arg, "_indexString") || c.isStringExpr(ca.exprs[0]) {
 			return fmt.Sprintf("putStrLn (%s)", arg), nil
 		}
+		if _, ok := c.inferExprType(ca.exprs[0]).(types.AnyType); ok {
+			return fmt.Sprintf("putStrLn (_showAny (%s))", arg), nil
+		}
 		return fmt.Sprintf("print (%s)", arg), nil
 	}
 	parts := make([]string, len(ca.args))
 	for i, a := range ca.args {
 		if strings.HasPrefix(a, "\"") || strings.HasPrefix(a, "_indexString") || c.isStringExpr(ca.exprs[i]) {
 			parts[i] = a
+		} else if _, ok := c.inferExprType(ca.exprs[i]).(types.AnyType); ok {
+			parts[i] = fmt.Sprintf("_showAny (%s)", a)
 		} else {
 			parts[i] = fmt.Sprintf("show (%s)", a)
 		}
