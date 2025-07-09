@@ -999,16 +999,33 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	child := types.NewEnv(c.env)
 	if lt, ok := types.TypeOfExprBasic(q.Source, c.env).(types.ListType); ok {
 		child.SetVar(q.Var, lt.Elem, true)
+	} else if gt, ok := types.TypeOfExprBasic(q.Source, c.env).(types.GroupType); ok {
+		child.SetVar(q.Var, gt.Elem, true)
 	} else {
 		child.SetVar(q.Var, types.AnyType{}, true)
 	}
 	for _, f := range q.Froms {
 		if lt, ok := types.TypeOfExprBasic(f.Src, c.env).(types.ListType); ok {
 			child.SetVar(f.Var, lt.Elem, true)
+		} else if gt, ok := types.TypeOfExprBasic(f.Src, c.env).(types.GroupType); ok {
+			child.SetVar(f.Var, gt.Elem, true)
 		} else {
 			child.SetVar(f.Var, types.AnyType{}, true)
 		}
 	}
+	var elem types.Type
+	if lt, ok := types.TypeOfExprBasic(q.Source, c.env).(types.ListType); ok {
+		elem = lt.Elem
+	} else if gt, ok := types.TypeOfExprBasic(q.Source, c.env).(types.GroupType); ok {
+		elem = gt.Elem
+	}
+	selEnv := child
+	if q.Group != nil {
+		genv := types.NewEnv(child)
+		genv.SetVar(q.Group.Name, types.GroupType{Elem: elem}, true)
+		selEnv = genv
+	}
+	selType := types.TypeOfExprBasic(q.Select, selEnv)
 	oldEnv := c.env
 	c.env = child
 
@@ -1019,7 +1036,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(indent(lvl))
 		b.WriteString("val __order = mutableListOf<Any?>()\n")
 	} else {
-		b.WriteString("val __res = mutableListOf<Any>()\n")
+		b.WriteString(fmt.Sprintf("val __res = mutableListOf<%s>()\n", kotlinElemType(selType)))
 	}
 	b.WriteString(indent(lvl))
 	b.WriteString(fmt.Sprintf("for (%s in %s) {\n", q.Var, src))
@@ -1042,13 +1059,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(fmt.Sprintf("if (%s) {\n", cond))
 		lvl++
 	}
-	var elem types.Type
-	if lt, ok := types.TypeOfExprBasic(q.Source, c.env).(types.ListType); ok {
-		elem = lt.Elem
-	} else if gt, ok := types.TypeOfExprBasic(q.Source, c.env).(types.GroupType); ok {
-		elem = gt.Elem
-	}
-	selEnv := c.env
+	selEnv = c.env
 	if q.Group != nil {
 		genv := types.NewEnv(c.env)
 		genv.SetVar(q.Group.Name, types.GroupType{Elem: elem}, true)
@@ -1116,7 +1127,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	b.WriteString("}\n")
 	if q.Group != nil {
 		b.WriteString(indent(lvl))
-		b.WriteString("val __res = mutableListOf<Any>()\n")
+		b.WriteString(fmt.Sprintf("val __res = mutableListOf<%s>()\n", kotlinElemType(selType)))
 		b.WriteString(indent(lvl))
 		b.WriteString("for (k in __order) {\n")
 		lvl++
@@ -1321,6 +1332,19 @@ func kotlinCastType(t types.Type) string {
 		return "Boolean"
 	default:
 		return ""
+	}
+}
+
+func kotlinElemType(t types.Type) string {
+	switch t.(type) {
+	case types.IntType, types.FloatType:
+		return "Number"
+	case types.StringType:
+		return "String"
+	case types.BoolType:
+		return "Boolean"
+	default:
+		return "Any"
 	}
 }
 
