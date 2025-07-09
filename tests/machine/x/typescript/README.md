@@ -4,7 +4,7 @@ This directory contains TypeScript code compiled from Mochi programs in `tests/v
 
 ## Progress
 
-Compiled: 83/97 programs
+Compiled: 91/97 programs
 
 ## Checklist
 - [x] append_builtin.mochi
@@ -32,8 +32,8 @@ Compiled: 83/97 programs
 - [x] group_by.mochi
 - [x] group_by_conditional_sum.mochi
 - [x] group_by_having.mochi
-- [ ] group_by_join.mochi
-- [ ] group_by_left_join.mochi
+- [x] group_by_join.mochi
+- [x] group_by_left_join.mochi
 - [ ] group_by_multi_join.mochi
 - [ ] group_by_multi_join_sort.mochi
 - [x] group_by_sort.mochi
@@ -43,11 +43,11 @@ Compiled: 83/97 programs
 - [x] if_then_else_nested.mochi
 - [x] in_operator.mochi
 - [x] in_operator_extended.mochi
-- [ ] inner_join.mochi
-- [ ] join_multi.mochi
+- [x] inner_join.mochi
+- [x] join_multi.mochi
 - [x] json_builtin.mochi
-- [ ] left_join.mochi
-- [ ] left_join_multi.mochi
+- [x] left_join.mochi
+- [x] left_join_multi.mochi
 - [x] len_builtin.mochi
 - [x] len_map.mochi
 - [x] len_string.mochi
@@ -71,14 +71,14 @@ Compiled: 83/97 programs
 - [x] min_max_builtin.mochi
 - [x] nested_function.mochi
 - [x] order_by_map.mochi
-- [ ] outer_join.mochi
+ - [x] outer_join.mochi
 - [x] partial_application.mochi
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
  - [x] query_sum_select.mochi
 - [x] record_assign.mochi
-- [ ] right_join.mochi
+ - [x] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
 - [x] slice.mochi
