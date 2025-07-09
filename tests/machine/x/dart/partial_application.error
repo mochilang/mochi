@@ -1,4 +1,4 @@
-line 2: exit status 254
-int add(int a, int b) {
-  return (a as num) + (b as num);
-}
+line 6: exit status 254
+void main() {
+  var add5 = add(5);
+  print(add5(3));

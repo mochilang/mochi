@@ -1,5 +1,5 @@
 int triple(int x) {
-  return (x as num) * 3;
+  return x * 3;
 }
 
 void main() {

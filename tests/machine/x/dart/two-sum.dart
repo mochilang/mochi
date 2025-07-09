@@ -2,7 +2,7 @@ List<int> twoSum(List<int> nums, int target) {
   var n = nums.length;
   for (var i = 0; i < n; i++) {
     for (var j = (i as num) + 1; j < n; j++) {
-      if ((nums[i] as num) + (nums[j] as num) == target) {
+      if (nums[i] + nums[j] == target) {
         return [i, j];
       }
     }
