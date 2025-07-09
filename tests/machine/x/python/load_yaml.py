@@ -23,7 +23,14 @@ def _load(path, opts):
         if isinstance(delim, str) and delim:
             delim = delim[0]
     if path is not None and not os.path.isabs(path):
-        path = os.path.join(os.path.dirname(__file__), path)
+        base = os.path.join(os.path.dirname(__file__), path)
+        if os.path.exists(base):
+            path = base
+        elif os.environ.get("MOCHI_ROOT"):
+            clean = path
+            while clean.startswith("../"):
+                clean = clean[3:]
+            path = os.path.join(os.environ.get("MOCHI_ROOT"), clean)
     f = sys.stdin if path is None or path == "-" else open(path, "r")
     try:
         if fmt == "tsv":

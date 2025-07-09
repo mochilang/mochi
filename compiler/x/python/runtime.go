@@ -88,6 +88,7 @@ var helperGroupClass = "class _Group(Generic[K, T]):\n" +
 	"    def __init__(self, key: K):\n" +
 	"        self.key = key\n" +
 	"        self.Items: list[T] = []\n" +
+	"        self.items = self.Items\n" +
 	"    def __iter__(self):\n" +
 	"        return iter(self.Items)\n"
 
@@ -146,7 +147,14 @@ var helperLoad = "def _load(path, opts):\n" +
 	"        if isinstance(delim, str) and delim:\n" +
 	"            delim = delim[0]\n" +
 	"    if path is not None and not os.path.isabs(path):\n" +
-	"        path = os.path.join(os.path.dirname(__file__), path)\n" +
+	"        base = os.path.join(os.path.dirname(__file__), path)\n" +
+	"        if os.path.exists(base):\n" +
+	"            path = base\n" +
+	"        elif os.environ.get('MOCHI_ROOT'):\n" +
+	"            clean = path\n" +
+	"            while clean.startswith('../'):\n" +
+	"                clean = clean[3:]\n" +
+	"            path = os.path.join(os.environ.get('MOCHI_ROOT'), clean)\n" +
 	"    f = sys.stdin if path is None or path == '-' else open(path, 'r')\n" +
 	"    try:\n" +
 	"        if fmt == 'tsv':\n" +
@@ -209,6 +217,14 @@ var helperSave = "def _save(rows, path, opts):\n" +
 	"        if isinstance(delim, str) and delim:\n" +
 	"            delim = delim[0]\n" +
 	"    rows = [ dataclasses.asdict(r) if dataclasses.is_dataclass(r) else r for r in rows ]\n" +
+	"    if path is not None and not os.path.isabs(path):\n" +
+	"        base = os.path.join(os.path.dirname(__file__), path)\n" +
+	"        if not os.path.exists(base) and os.environ.get('MOCHI_ROOT'):\n" +
+	"            clean = path\n" +
+	"            while clean.startswith('../'):\n" +
+	"                clean = clean[3:]\n" +
+	"            base = os.path.join(os.environ.get('MOCHI_ROOT'), clean)\n" +
+	"        path = base\n" +
 	"    f = sys.stdout if path is None or path == '-' else open(path, 'w')\n" +
 	"    try:\n" +
 	"        if fmt == 'tsv':\n" +
@@ -305,6 +321,8 @@ var helperGet = "def _get(obj, name):\n" +
 	"            return obj[name]\n" +
 	"    if hasattr(obj, name):\n" +
 	"        return getattr(obj, name)\n" +
+	"    if name == 'items' and hasattr(obj, 'Items'):\n" +
+	"        return getattr(obj, 'Items')\n" +
 	"    if isinstance(obj, (list, tuple)):\n" +
 	"        for it in obj:\n" +
 	"            try:\n" +
