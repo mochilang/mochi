@@ -7,8 +7,8 @@ output resembles hand written Dart code.
 ## Summary
 
 - Total Mochi programs: 97
-- Successful compilations: 66
-- Failed compilations or runtime errors: 31
+- Successful compilations: 67
+- Failed compilations or runtime errors: 30
 
 ## Successful programs
 - append_builtin
@@ -77,9 +77,9 @@ output resembles hand written Dart code.
 - values_builtin
 - var_assignment
 - while_loop
+- dataset_sort_take_limit
 
 ## Failed programs
-- dataset_sort_take_limit
 - dataset_where_filter
 - exists_builtin
 - group_by
