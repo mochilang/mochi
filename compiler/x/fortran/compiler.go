@@ -553,6 +553,28 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			return "", err
 		}
 		res = base
+		if len(p.Ops) > 0 && p.Ops[0].Index != nil {
+			if p.Target.List != nil {
+				arr := fmt.Sprintf("arr%d", c.tmpIndex)
+				elems := make([]string, len(p.Target.List.Elems))
+				for i, e := range p.Target.List.Elems {
+					v, err := c.compileExpr(e)
+					if err != nil {
+						return "", err
+					}
+					elems[i] = v
+				}
+				c.writelnDecl(fmt.Sprintf("integer, dimension(%d) :: %s = (/%s/)", len(elems), arr, strings.Join(elems, ",")))
+				res = arr
+				c.tmpIndex++
+			} else if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+				tmp := fmt.Sprintf("s%d", c.tmpIndex)
+				c.tmpIndex++
+				c.writelnDecl(fmt.Sprintf("character(len=%d) :: %s", len(*p.Target.Lit.Str), tmp))
+				c.writeln(fmt.Sprintf("%s = \"%s\"", tmp, *p.Target.Lit.Str))
+				res = tmp
+			}
+		}
 	}
 	for _, op := range p.Ops[startOp:] {
 		switch {
@@ -674,6 +696,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileLiteral(p.Lit), nil
 	case p.Call != nil:
 		return c.compileCall(p.Call)
+	case p.If != nil:
+		return c.compileIfExpr(p.If)
 	case p.List != nil:
 		elems := make([]string, len(p.List.Elems))
 		for i, e := range p.List.Elems {
@@ -775,6 +799,32 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	default:
 		return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ",")), nil
 	}
+}
+
+func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
+	cond, err := c.compileExpr(ie.Cond)
+	if err != nil {
+		return "", err
+	}
+	thenVal, err := c.compileExpr(ie.Then)
+	if err != nil {
+		return "", err
+	}
+	elseVal := "0"
+	if ie.ElseIf != nil {
+		v, err := c.compileIfExpr(ie.ElseIf)
+		if err != nil {
+			return "", err
+		}
+		elseVal = v
+	} else if ie.Else != nil {
+		v, err := c.compileExpr(ie.Else)
+		if err != nil {
+			return "", err
+		}
+		elseVal = v
+	}
+	return fmt.Sprintf("merge(%s,%s,%s)", thenVal, elseVal, cond), nil
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) string {
