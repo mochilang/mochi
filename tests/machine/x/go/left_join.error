@@ -1,8 +1,8 @@
 Error on line 0: output mismatch
 -- got --
 --- Left Join ---
-Order 100 customer {1 Alice} total 250
-Order 101 customer {0 } total 80
+Order 100 customer map[id:1 name:Alice] total 250
+Order 101 customer map[id:0 name:] total 80
 -- want --
 --- Left Join ---
 Order 100 customer map[id:1 name:Alice] total 250

@@ -5,6 +5,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"mochi/runtime/data"
+	"reflect"
+	"strconv"
+	"strings"
 )
 
 func main() {
@@ -51,8 +55,18 @@ func main() {
 		Total:      300,
 	}}
 	_ = orders
-	var result []map[string]any = func() []map[string]any {
-		_res := []map[string]any{}
+	type Result struct {
+		CustomerName any `json:"customerName"`
+		Order        any `json:"order"`
+	}
+
+	type Result1 struct {
+		CustomerName string     `json:"customerName"`
+		Order        OrdersItem `json:"order"`
+	}
+
+	var result []Result = _cast[[]Result](func() []Result1 {
+		_res := []Result1{}
 		for _, c := range customers {
 			matched := false
 			for _, o := range orders {
@@ -60,21 +74,27 @@ func main() {
 					continue
 				}
 				matched = true
-				_res = append(_res, map[string]any{"customerName": c.Name, "order": o})
+				_res = append(_res, Result1{
+					CustomerName: c.Name,
+					Order:        o,
+				})
 			}
 			if !matched {
 				var o OrdersItem
-				_res = append(_res, map[string]any{"customerName": c.Name, "order": o})
+				_res = append(_res, Result1{
+					CustomerName: c.Name,
+					Order:        o,
+				})
 			}
 		}
 		return _res
-	}()
+	}())
 	fmt.Println("--- Right Join using syntax ---")
 	for _, entry := range result {
-		if entry["order"] {
-			fmt.Println("Customer", entry["customerName"], "has order", _cast[map[string]any](entry["order"])["id"], "- $", _cast[map[string]any](entry["order"])["total"])
+		if _exists(entry.Order) {
+			fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint("Customer"), fmt.Sprint(entry.CustomerName), fmt.Sprint("has order"), fmt.Sprint(_cast[map[string]any](entry.Order)["id"]), fmt.Sprint("- $"), fmt.Sprint(_cast[map[string]any](entry.Order)["total"])}, " "), " "))
 		} else {
-			fmt.Println("Customer", entry["customerName"], "has no orders")
+			fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint("Customer"), fmt.Sprint(entry.CustomerName), fmt.Sprint("has no orders")}, " "), " "))
 		}
 	}
 }
@@ -93,6 +113,9 @@ func _cast[T any](v any) T {
 			return any(int(vv)).(T)
 		case float32:
 			return any(int(vv)).(T)
+		case string:
+			n, _ := strconv.Atoi(vv)
+			return any(n).(T)
 		}
 	case float64:
 		switch vv := v.(type) {
@@ -137,4 +160,33 @@ func _convertMapAny(m map[any]any) map[string]any {
 		}
 	}
 	return out
+}
+
+func _exists(v any) bool {
+	if g, ok := v.(*data.Group); ok {
+		return len(g.Items) > 0
+	}
+	switch s := v.(type) {
+	case []any:
+		return len(s) > 0
+	case []int:
+		return len(s) > 0
+	case []float64:
+		return len(s) > 0
+	case []string:
+		return len(s) > 0
+	case []bool:
+		return len(s) > 0
+	case []map[string]any:
+		return len(s) > 0
+	case map[string]any:
+		return len(s) > 0
+	case string:
+		return len([]rune(s)) > 0
+	}
+	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Slice || rv.Kind() == reflect.Array {
+		return rv.Len() > 0
+	}
+	return false
 }

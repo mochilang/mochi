@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
+	"strconv"
+	"strings"
 )
 
 func main() {
@@ -33,7 +35,7 @@ func main() {
 		}
 		return out
 	}()
-	fmt.Println(sorted)
+	fmt.Println(strings.Trim(fmt.Sprint(sorted), "[]"))
 }
 
 func _cast[T any](v any) T {
@@ -50,6 +52,9 @@ func _cast[T any](v any) T {
 			return any(int(vv)).(T)
 		case float32:
 			return any(int(vv)).(T)
+		case string:
+			n, _ := strconv.Atoi(vv)
+			return any(n).(T)
 		}
 	case float64:
 		switch vv := v.(type) {

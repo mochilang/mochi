@@ -1,6 +1,18 @@
-Error on line 0: run error: exit status 1
-# command-line-arguments
-../../../tests/machine/x/go/outer_join.go:89:6: non-boolean condition in if statement
-../../../tests/machine/x/go/outer_join.go:90:7: non-boolean condition in if statement
-
+Error on line 0: output mismatch
+-- got --
+--- Outer Join using syntax ---
+Order 100 by Alice - $ 250
+Order 101 by Bob - $ 125
+Order 102 by Alice - $ 300
+Order 103 by  - $ 80
+Order 0 by Charlie - $ 0
+Order 0 by Diana - $ 0
+-- want --
+--- Outer Join using syntax ---
+Order 100 by Alice - $ 250
+Order 101 by Bob - $ 125
+Order 102 by Alice - $ 300
+Order 103 by Unknown - $ 80
+Customer Charlie has no orders
+Customer Diana has no orders
 1: //go:build ignore

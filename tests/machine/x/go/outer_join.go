@@ -5,7 +5,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"mochi/runtime/data"
+	"reflect"
 	"sort"
+	"strconv"
+	"strings"
 )
 
 func main() {
@@ -61,7 +65,17 @@ func main() {
 			Total:      80,
 		},
 	}
-	var result []map[string]any = func() []map[string]any {
+	type Result struct {
+		Order    any `json:"order"`
+		Customer any `json:"customer"`
+	}
+
+	type Result1 struct {
+		Order    OrdersItem    `json:"order"`
+		Customer CustomersItem `json:"customer"`
+	}
+
+	var result []Result = _cast[[]Result](func() []Result1 {
 		src := _toAnySlice(orders)
 		resAny := _query(src, []_joinSpec{
 			{items: _toAnySlice(customers), on: func(_a ...any) bool {
@@ -76,24 +90,27 @@ func main() {
 			_ = o
 			c := _cast[CustomersItem](_a[1])
 			_ = c
-			return map[string]any{"order": o, "customer": c}
+			return Result1{
+				Order:    o,
+				Customer: c,
+			}
 		}, skip: -1, take: -1})
-		out := make([]map[string]any, len(resAny))
+		out := make([]Result1, len(resAny))
 		for i, v := range resAny {
-			out[i] = _cast[map[string]any](v)
+			out[i] = _cast[Result1](v)
 		}
 		return out
-	}()
+	}())
 	fmt.Println("--- Outer Join using syntax ---")
 	for _, row := range result {
-		if row["order"] {
-			if row["customer"] {
-				fmt.Println("Order", _cast[map[string]any](row["order"])["id"], "by", _cast[map[string]any](row["customer"])["name"], "- $", _cast[map[string]any](row["order"])["total"])
+		if _exists(row.Order) {
+			if _exists(row.Customer) {
+				fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint("Order"), fmt.Sprint(_cast[map[string]any](row.Order)["id"]), fmt.Sprint("by"), fmt.Sprint(_cast[map[string]any](row.Customer)["name"]), fmt.Sprint("- $"), fmt.Sprint(_cast[map[string]any](row.Order)["total"])}, " "), " "))
 			} else {
-				fmt.Println("Order", _cast[map[string]any](row["order"])["id"], "by", "Unknown", "- $", _cast[map[string]any](row["order"])["total"])
+				fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint("Order"), fmt.Sprint(_cast[map[string]any](row.Order)["id"]), fmt.Sprint("by"), fmt.Sprint("Unknown"), fmt.Sprint("- $"), fmt.Sprint(_cast[map[string]any](row.Order)["total"])}, " "), " "))
 			}
 		} else {
-			fmt.Println("Customer", _cast[map[string]any](row["customer"])["name"], "has no orders")
+			fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint("Customer"), fmt.Sprint(_cast[map[string]any](row.Customer)["name"]), fmt.Sprint("has no orders")}, " "), " "))
 		}
 	}
 }
@@ -112,6 +129,9 @@ func _cast[T any](v any) T {
 			return any(int(vv)).(T)
 		case float32:
 			return any(int(vv)).(T)
+		case string:
+			n, _ := strconv.Atoi(vv)
+			return any(n).(T)
 		}
 	case float64:
 		switch vv := v.(type) {
@@ -156,6 +176,35 @@ func _convertMapAny(m map[any]any) map[string]any {
 		}
 	}
 	return out
+}
+
+func _exists(v any) bool {
+	if g, ok := v.(*data.Group); ok {
+		return len(g.Items) > 0
+	}
+	switch s := v.(type) {
+	case []any:
+		return len(s) > 0
+	case []int:
+		return len(s) > 0
+	case []float64:
+		return len(s) > 0
+	case []string:
+		return len(s) > 0
+	case []bool:
+		return len(s) > 0
+	case []map[string]any:
+		return len(s) > 0
+	case map[string]any:
+		return len(s) > 0
+	case string:
+		return len([]rune(s)) > 0
+	}
+	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Slice || rv.Kind() == reflect.Array {
+		return rv.Len() > 0
+	}
+	return false
 }
 
 type _joinSpec struct {

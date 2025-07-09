@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
+	"strconv"
+	"strings"
 )
 
 func main() {
@@ -49,7 +51,7 @@ func main() {
 	for _, g := range groups {
 		var total int = 0
 		for _, x := range _toAnySlice(_cast[map[string]any](g)["items"]) {
-			total = _cast[int]((float64(total) + _cast[float64](_cast[map[string]any](x)["val"])))
+			total = _cast[int](_cast[int]((float64(total) + _cast[float64](_cast[map[string]any](x)["val"]))))
 		}
 		tmp = append(tmp, map[string]any{"tag": _cast[map[string]any](g)["key"], "total": total})
 	}
@@ -62,7 +64,7 @@ func main() {
 		}
 		return out
 	}()
-	fmt.Println(result)
+	fmt.Println(strings.Trim(fmt.Sprint(result), "[]"))
 }
 
 func _cast[T any](v any) T {
@@ -79,6 +81,9 @@ func _cast[T any](v any) T {
 			return any(int(vv)).(T)
 		case float32:
 			return any(int(vv)).(T)
+		case string:
+			n, _ := strconv.Atoi(vv)
+			return any(n).(T)
 		}
 	case float64:
 		switch vv := v.(type) {

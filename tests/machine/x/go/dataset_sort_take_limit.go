@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
+	"strconv"
+	"strings"
 )
 
 func main() {
@@ -55,7 +57,7 @@ func main() {
 	}()
 	fmt.Println("--- Top products (excluding most expensive) ---")
 	for _, item := range expensive {
-		fmt.Println(item.Name, "costs $", item.Price)
+		fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint(item.Name), fmt.Sprint("costs $"), fmt.Sprint(item.Price)}, " "), " "))
 	}
 }
 
@@ -73,6 +75,9 @@ func _cast[T any](v any) T {
 			return any(int(vv)).(T)
 		case float32:
 			return any(int(vv)).(T)
+		case string:
+			n, _ := strconv.Atoi(vv)
+			return any(n).(T)
 		}
 	case float64:
 		switch vv := v.(type) {

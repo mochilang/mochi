@@ -333,6 +333,14 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 					c.env.SetStruct(st.Name, st)
 					c.compileStructType(st)
 				}
+			} else if qe := s.Value.Binary.Left.Value.Target.Query; qe != nil {
+				if ml := mapLiteral(qe.Select); ml != nil {
+					if st, ok := c.inferStructFromMap(ml, s.Name); ok {
+						t = types.ListType{Elem: st}
+						c.env.SetStruct(st.Name, st)
+						c.compileStructType(st)
+					}
+				}
 			}
 		} else if old, err := c.env.GetVar(s.Name); err == nil {
 			t = old
@@ -2631,6 +2639,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			c.env = original
 			return "", err
+		}
+		ct := c.inferExprType(q.Where)
+		if !isBool(ct) {
+			cond = c.castExpr(cond, ct, types.BoolType{})
 		}
 	}
 	var sortExpr string

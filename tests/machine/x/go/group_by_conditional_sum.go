@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"mochi/runtime/data"
+	"reflect"
 	"sort"
 	"strconv"
 	"strings"
@@ -31,7 +32,17 @@ func main() {
 		Val:  20,
 		Flag: true,
 	}}
-	var result []map[string]any = func() []map[string]any {
+	type Result struct {
+		Cat   any     `json:"cat"`
+		Share float64 `json:"share"`
+	}
+
+	type Result1 struct {
+		Cat   any     `json:"cat"`
+		Share float64 `json:"share"`
+	}
+
+	var result []Result = _cast[[]Result](func() []Result1 {
 		groups := map[string]*data.Group{}
 		order := []string{}
 		for _, i := range items {
@@ -89,30 +100,33 @@ func main() {
 		for idx, p := range pairs {
 			items[idx] = p.item
 		}
-		_res := []map[string]any{}
+		_res := []Result1{}
 		for _, g := range items {
-			_res = append(_res, map[string]any{"cat": g.Key, "share": (_sum(func() []any {
-				_res := []any{}
-				for _, x := range g.Items {
-					_res = append(_res, func() any {
-						if _cast[bool](_cast[map[string]any](x)["flag"]) {
-							return _cast[map[string]any](x)["val"]
-						} else {
-							return 0
-						}
-					}())
-				}
-				return _res
-			}()) / _sum(func() []any {
-				_res := []any{}
-				for _, x := range g.Items {
-					_res = append(_res, _cast[map[string]any](x)["val"])
-				}
-				return _res
-			}()))})
+			_res = append(_res, Result1{
+				Cat: g.Key,
+				Share: (_sum(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						_res = append(_res, func() any {
+							if _exists(_cast[map[string]any](x)["flag"]) {
+								return _cast[map[string]any](x)["val"]
+							} else {
+								return 0
+							}
+						}())
+					}
+					return _res
+				}()) / _sum(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						_res = append(_res, _cast[map[string]any](x)["val"])
+					}
+					return _res
+				}())),
+			})
 		}
 		return _res
-	}()
+	}())
 	fmt.Println(strings.Trim(fmt.Sprint(result), "[]"))
 }
 
@@ -177,6 +191,35 @@ func _convertMapAny(m map[any]any) map[string]any {
 		}
 	}
 	return out
+}
+
+func _exists(v any) bool {
+	if g, ok := v.(*data.Group); ok {
+		return len(g.Items) > 0
+	}
+	switch s := v.(type) {
+	case []any:
+		return len(s) > 0
+	case []int:
+		return len(s) > 0
+	case []float64:
+		return len(s) > 0
+	case []string:
+		return len(s) > 0
+	case []bool:
+		return len(s) > 0
+	case []map[string]any:
+		return len(s) > 0
+	case map[string]any:
+		return len(s) > 0
+	case string:
+		return len([]rune(s)) > 0
+	}
+	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Slice || rv.Kind() == reflect.Array {
+		return rv.Len() > 0
+	}
+	return false
 }
 
 func _sum(v any) float64 {

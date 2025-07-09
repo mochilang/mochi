@@ -1,0 +1,5 @@
+Error on line 0: run error: exit status 1
+# command-line-arguments
+../../../tests/machine/x/go/group_by_join.go:47:31: cannot use func() []Result {…}() (value of type []Result) as []map[string]any value in variable declaration
+
+1: //go:build ignore

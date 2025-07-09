@@ -4,6 +4,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 )
 
 func main() {
@@ -25,6 +26,6 @@ func main() {
 		if n > 7 {
 			break
 		}
-		fmt.Println("odd number:", n)
+		fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint("odd number:"), fmt.Sprint(n)}, " "), " "))
 	}
 }

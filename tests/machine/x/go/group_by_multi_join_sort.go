@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"mochi/runtime/data"
 	"sort"
+	"strconv"
+	"strings"
 )
 
 func main() {
@@ -76,7 +78,29 @@ func main() {
 	_ = lineitem
 	var start_date string = "1993-10-01"
 	var end_date string = "1994-01-01"
-	var result []map[string]any = func() []map[string]any {
+	type Result struct {
+		C_custkey any     `json:"c_custkey"`
+		C_name    any     `json:"c_name"`
+		Revenue   float64 `json:"revenue"`
+		C_acctbal any     `json:"c_acctbal"`
+		N_name    any     `json:"n_name"`
+		C_address any     `json:"c_address"`
+		C_phone   any     `json:"c_phone"`
+		C_comment any     `json:"c_comment"`
+	}
+
+	type Result1 struct {
+		C_custkey any     `json:"c_custkey"`
+		C_name    any     `json:"c_name"`
+		Revenue   float64 `json:"revenue"`
+		C_acctbal any     `json:"c_acctbal"`
+		N_name    any     `json:"n_name"`
+		C_address any     `json:"c_address"`
+		C_phone   any     `json:"c_phone"`
+		C_comment any     `json:"c_comment"`
+	}
+
+	var result []Result = _cast[[]Result](func() []Result1 {
 		groups := map[string]*data.Group{}
 		order := []string{}
 		for _, c := range customer {
@@ -177,28 +201,28 @@ func main() {
 		for idx, p := range pairs {
 			items[idx] = p.item
 		}
-		_res := []map[string]any{}
+		_res := []Result1{}
 		for _, g := range items {
-			_res = append(_res, map[string]any{
-				"c_custkey": _cast[map[string]any](g.Key)["c_custkey"],
-				"c_name":    _cast[map[string]any](g.Key)["c_name"],
-				"revenue": _sum(func() []any {
+			_res = append(_res, Result1{
+				C_custkey: _cast[map[string]any](g.Key)["c_custkey"],
+				C_name:    _cast[map[string]any](g.Key)["c_name"],
+				Revenue: _sum(func() []any {
 					_res := []any{}
 					for _, x := range g.Items {
 						_res = append(_res, (_cast[float64](_cast[map[string]any](_cast[map[string]any](x)["l"])["l_extendedprice"]) * _cast[float64]((_cast[float64](1) - _cast[float64](_cast[map[string]any](_cast[map[string]any](x)["l"])["l_discount"])))))
 					}
 					return _res
 				}()),
-				"c_acctbal": _cast[map[string]any](g.Key)["c_acctbal"],
-				"n_name":    _cast[map[string]any](g.Key)["n_name"],
-				"c_address": _cast[map[string]any](g.Key)["c_address"],
-				"c_phone":   _cast[map[string]any](g.Key)["c_phone"],
-				"c_comment": _cast[map[string]any](g.Key)["c_comment"],
+				C_acctbal: _cast[map[string]any](g.Key)["c_acctbal"],
+				N_name:    _cast[map[string]any](g.Key)["n_name"],
+				C_address: _cast[map[string]any](g.Key)["c_address"],
+				C_phone:   _cast[map[string]any](g.Key)["c_phone"],
+				C_comment: _cast[map[string]any](g.Key)["c_comment"],
 			})
 		}
 		return _res
-	}()
-	fmt.Println(result)
+	}())
+	fmt.Println(strings.Trim(fmt.Sprint(result), "[]"))
 }
 
 func _cast[T any](v any) T {
@@ -215,6 +239,9 @@ func _cast[T any](v any) T {
 			return any(int(vv)).(T)
 		case float32:
 			return any(int(vv)).(T)
+		case string:
+			n, _ := strconv.Atoi(vv)
+			return any(n).(T)
 		}
 	case float64:
 		switch vv := v.(type) {

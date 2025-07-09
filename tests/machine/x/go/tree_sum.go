@@ -5,6 +5,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 )
 
 type Tree interface{ isTree() }
@@ -23,7 +24,7 @@ func (Node) isTree() {}
 
 // line 9
 func sum_tree(t Tree) int {
-	return func() any {
+	return _cast[int](func() any {
 		_t := t
 		if _, ok := _t.(Leaf); ok {
 			return 0
@@ -35,7 +36,7 @@ func sum_tree(t Tree) int {
 			return ((sum_tree(left) + value) + sum_tree(right))
 		}
 		return nil
-	}()
+	}())
 }
 
 func main() {
@@ -57,6 +58,9 @@ func _cast[T any](v any) T {
 			return any(int(vv)).(T)
 		case float32:
 			return any(int(vv)).(T)
+		case string:
+			n, _ := strconv.Atoi(vv)
+			return any(n).(T)
 		}
 	case float64:
 		switch vv := v.(type) {

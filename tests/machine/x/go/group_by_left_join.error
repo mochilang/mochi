@@ -1,6 +1,11 @@
-Error on line 0: run error: exit status 1
-# command-line-arguments
-../../../tests/machine/x/go/group_by_left_join.go:80:9: non-boolean condition in if statement
-../../../tests/machine/x/go/group_by_left_join.go:81:10: non-boolean condition in if statement
-
+Error on line 0: output mismatch
+-- got --
+--- Group Left Join ---
+Alice orders: 0
+Bob orders: 0
+-- want --
+--- Group Left Join ---
+Alice orders: 2
+Bob orders: 1
+Charlie orders: 0
 1: //go:build ignore

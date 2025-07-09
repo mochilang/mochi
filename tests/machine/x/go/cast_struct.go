@@ -5,6 +5,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 )
 
 type Todo struct {
@@ -12,7 +13,11 @@ type Todo struct {
 }
 
 func main() {
-	var todo Todo = Todo{Title: "hi"}
+	type Todo1 struct {
+		Title string `json:"title"`
+	}
+
+	var todo Todo1 = Todo1{Title: "hi"}
 	_ = todo
 	fmt.Println(todo.Title)
 }
@@ -31,6 +36,9 @@ func _cast[T any](v any) T {
 			return any(int(vv)).(T)
 		case float32:
 			return any(int(vv)).(T)
+		case string:
+			n, _ := strconv.Atoi(vv)
+			return any(n).(T)
 		}
 	case float64:
 		switch vv := v.(type) {

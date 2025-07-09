@@ -39,7 +39,17 @@ func main() {
 		Id:         102,
 		CustomerId: 2,
 	}}
-	var stats []map[string]any = func() []map[string]any {
+	type Stats struct {
+		Name  any `json:"name"`
+		Count int `json:"count"`
+	}
+
+	type Result struct {
+		Name  any `json:"name"`
+		Count int `json:"count"`
+	}
+
+	var stats []Stats = _cast[[]Stats](func() []Result {
 		groups := map[string]*data.Group{}
 		order := []string{}
 		for _, o := range orders {
@@ -71,15 +81,18 @@ func main() {
 		for _, ks := range order {
 			items = append(items, groups[ks])
 		}
-		_res := []map[string]any{}
+		_res := []Result{}
 		for _, g := range items {
-			_res = append(_res, map[string]any{"name": g.Key, "count": len(g.Items)})
+			_res = append(_res, Result{
+				Name:  g.Key,
+				Count: len(g.Items),
+			})
 		}
 		return _res
-	}()
+	}())
 	fmt.Println("--- Orders per customer ---")
 	for _, s := range stats {
-		fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint(s["name"]), fmt.Sprint("orders:"), fmt.Sprint(s["count"])}, " "), " "))
+		fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint(s.Name), fmt.Sprint("orders:"), fmt.Sprint(s.Count)}, " "), " "))
 	}
 }
 
