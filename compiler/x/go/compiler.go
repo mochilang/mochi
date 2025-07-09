@@ -1062,6 +1062,10 @@ func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
 	if err != nil {
 		return err
 	}
+	ct := c.inferExprType(stmt.Cond)
+	if !isBool(ct) {
+		cond = c.castExpr(cond, ct, types.BoolType{})
+	}
 	c.writeIndent()
 	c.buf.WriteString("if !(" + cond + ") {\n")
 	c.indent++
@@ -2390,6 +2394,10 @@ func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
 	cond, err := c.compileExpr(ie.Cond)
 	if err != nil {
 		return "", err
+	}
+	ct := c.inferExprType(ie.Cond)
+	if !isBool(ct) {
+		cond = c.castExpr(cond, ct, types.BoolType{})
 	}
 	thenExpr, err := c.compileExpr(ie.Then)
 	if err != nil {
