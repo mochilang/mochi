@@ -110,6 +110,20 @@ func (c *Compiler) Compile(prog *parser.Program, _ string) ([]byte, error) {
 	c.writeln("let list_intersect a b = List.filter (fun x -> List.mem x b) a |> List.sort_uniq compare")
 	c.writeln("let list_union_all a b = a @ b")
 	c.writeln("let sum lst = List.fold_left (+) 0 lst")
+
+	// basic group record and helper
+	c.writeln("type ('k,'v) group = { key : 'k; items : 'v list }")
+	c.writeln("let group_by lst keyfn =")
+	c.indent++
+	c.writeln("let add acc it =")
+	c.indent++
+	c.writeln("let k = keyfn it in")
+	c.writeln("let cur = try List.assoc k acc with Not_found -> [] in")
+	c.writeln("(k, cur @ [it]) :: List.remove_assoc k acc")
+	c.indent--
+	c.writeln("in")
+	c.writeln("lst |> List.fold_left add [] |> List.rev |> List.map (fun (k,items) -> { key = k; items = items })")
+	c.indent--
 	c.buf.WriteByte('\n')
 
 	// first emit type, function and variable declarations
@@ -470,6 +484,9 @@ func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
 }
 
 func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
+	if q.Group != nil {
+		return c.compileGroup(q)
+	}
 	if len(q.Froms) == 0 && len(q.Joins) == 1 {
 		if q.Joins[0].Side != nil {
 			switch *q.Joins[0].Side {
@@ -921,6 +938,116 @@ func (c *Compiler) compileJoin(q *parser.QueryExpr) (string, error) {
 	buf.WriteString("      )\n")
 	buf.WriteString(fmt.Sprintf("    ) %s;\n", rightSrc))
 	buf.WriteString(fmt.Sprintf("  ) %s;\n", leftSrc))
+	buf.WriteString(fmt.Sprintf("  List.rev !%s)\n", resName))
+	return buf.String(), nil
+}
+
+func (c *Compiler) compileGroup(q *parser.QueryExpr) (string, error) {
+	if len(q.Group.Exprs) != 1 {
+		return "", fmt.Errorf("unsupported multi-key group")
+	}
+
+	froms := append([]*parser.FromClause{{Var: q.Var, Src: q.Source}}, q.Froms...)
+	total := len(froms) + len(q.Joins)
+	sources := make([]string, total)
+	vars := make([]string, total)
+	idx := 0
+	for _, fr := range froms {
+		src, err := c.compileExpr(fr.Src)
+		if err != nil {
+			return "", err
+		}
+		sources[idx] = src
+		vars[idx] = fr.Var
+		idx++
+	}
+	joinConds := make([]string, len(q.Joins))
+	for j, jo := range q.Joins {
+		src, err := c.compileExpr(jo.Src)
+		if err != nil {
+			return "", err
+		}
+		sources[idx] = src
+		vars[idx] = jo.Var
+		idx++
+		if jo.On != nil {
+			cond, err := c.compileExpr(jo.On)
+			if err != nil {
+				return "", err
+			}
+			joinConds[j] = cond
+		}
+	}
+	condParts := []string{}
+	for _, jc := range joinConds {
+		if jc != "" {
+			condParts = append(condParts, jc)
+		}
+	}
+	if q.Where != nil {
+		w, err := c.compileExpr(q.Where)
+		if err != nil {
+			return "", err
+		}
+		condParts = append(condParts, w)
+	}
+	cond := strings.Join(condParts, " && ")
+
+	keyExpr, err := c.compileExpr(q.Group.Exprs[0])
+	if err != nil {
+		return "", err
+	}
+
+	resName := fmt.Sprintf("__res%d", c.loop)
+	groups := fmt.Sprintf("__groups%d", c.loop)
+	c.loop++
+
+	var buf bytes.Buffer
+	buf.WriteString(fmt.Sprintf("(let %s = ref [] in\n", groups))
+	for i := 0; i < total; i++ {
+		for j := 0; j <= i; j++ {
+			buf.WriteString(strings.Repeat("  ", j+1))
+		}
+		buf.WriteString(fmt.Sprintf("List.iter (fun %s ->\n", vars[i]))
+	}
+	for i := 0; i < total; i++ {
+		buf.WriteString(strings.Repeat("  ", total+1-i))
+		buf.WriteString("  ")
+	}
+	if cond != "" {
+		buf.WriteString(fmt.Sprintf("if %s then (\n", cond))
+		buf.WriteString(strings.Repeat("  ", total+2))
+	}
+	buf.WriteString(fmt.Sprintf("let key = %s in\n", keyExpr))
+	buf.WriteString(strings.Repeat("  ", total+2))
+	buf.WriteString(fmt.Sprintf("let cur = try List.assoc key !%s with Not_found -> [] in\n", groups))
+	buf.WriteString(strings.Repeat("  ", total+2))
+	buf.WriteString(fmt.Sprintf("%s := (key, %s :: cur) :: List.remove_assoc key !%s", groups, q.Var, groups))
+	if cond != "" {
+		buf.WriteString(")")
+	}
+	buf.WriteString(";\n")
+	for i := total - 1; i >= 0; i-- {
+		for j := 0; j <= i; j++ {
+			buf.WriteString(strings.Repeat("  ", i-j+1))
+		}
+		buf.WriteString(fmt.Sprintf(") %s;\n", sources[i]))
+	}
+
+	buf.WriteString(fmt.Sprintf("  let %s = ref [] in\n", resName))
+	buf.WriteString(fmt.Sprintf("  List.iter (fun (%sKey,%sItems) ->\n", q.Group.Name, q.Group.Name))
+	buf.WriteString(fmt.Sprintf("    let %s = { key = %sKey; items = List.rev %sItems } in\n", q.Group.Name, q.Group.Name, q.Group.Name))
+	selEnv := c.env
+	genv := types.NewEnv(selEnv)
+	genv.SetVar(q.Group.Name, types.AnyType{}, true)
+	c.env = genv
+	sel, err := c.compileExpr(q.Select)
+	c.env = selEnv
+	if err != nil {
+		return "", err
+	}
+	buf.WriteString(fmt.Sprintf("    %s := %s :: !%s\n", resName, sel, resName))
+	buf.WriteString(fmt.Sprintf("  ) !%s;\n", groups))
 	buf.WriteString(fmt.Sprintf("  List.rev !%s)\n", resName))
 	return buf.String(), nil
 }
