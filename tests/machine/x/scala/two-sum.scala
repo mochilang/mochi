@@ -1,5 +1,5 @@
 object two_sum {
-  def twoSum(nums: list[Int], target: Int): list[Int] = {
+  def twoSum(nums: List[Int], target: Int): List[Int] = {
     val n = nums.length
     for(i <- 0 to n) {
       for(j <- (i).asInstanceOf[Int] + 1 to n) {

@@ -1,5 +1,0 @@
-exit status 1
-/workspace/mochi/tests/machine/x/scala/order_by_map.scala:4: error: No implicit Ordering defined for scala.collection.immutable.Map[String,Int].
-    val sorted = (for { x <- data } yield x).sortBy(x => Map("a" -> (x("a")), "b" -> (x("b"))))
-                                                   ^
-one error found
