@@ -1329,13 +1329,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						genv.SetVar(q.Group.Name, types.GroupType{Elem: lt.Elem}, true)
 						c.env = genv
 					}
-					val := c.compileExpr(q.Select)
 					retT := c.exprType(q.Select)
 					if ml := asMapLiteral(q.Select); ml != nil {
 						if st, ok := retT.(types.StructType); ok {
 							c.structLits[ml] = st
 						}
 					}
+					val := c.compileExpr(q.Select)
 					retList := types.ListType{Elem: retT}
 					listC := cTypeFromType(retList)
 					if listC == "list_string" {
@@ -1365,6 +1365,111 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 			}
 		}
 	}
+	// handle joins without grouping
+	if len(q.Joins) > 0 && q.Group == nil {
+		// collect all sources including joins
+		type srcInfo struct {
+			varName string
+			expr    string
+			elem    types.Type
+		}
+		sources := []srcInfo{}
+		firstExpr := c.compileExpr(q.Source)
+		firstT := c.exprType(q.Source)
+		lt, ok := firstT.(types.ListType)
+		if !ok {
+			return "0"
+		}
+		sources = append(sources, srcInfo{varName: q.Var, expr: firstExpr, elem: lt.Elem})
+		for _, f := range q.Froms {
+			fe := c.compileExpr(f.Src)
+			ft := c.exprType(f.Src)
+			flt, ok := ft.(types.ListType)
+			if !ok {
+				return "0"
+			}
+			sources = append(sources, srcInfo{varName: f.Var, expr: fe, elem: flt.Elem})
+		}
+		joinConds := []string{}
+		for _, j := range q.Joins {
+			js := c.compileExpr(j.Src)
+			jt := c.exprType(j.Src)
+			jlt, ok := jt.(types.ListType)
+			if !ok {
+				return "0"
+			}
+			sources = append(sources, srcInfo{varName: j.Var, expr: js, elem: jlt.Elem})
+			joinConds = append(joinConds, c.compileExpr(j.On))
+		}
+
+		oldEnv := c.env
+		if c.env != nil {
+			c.env = types.NewEnv(c.env)
+			for _, s := range sources {
+				c.env.SetVar(s.varName, s.elem, true)
+			}
+		}
+
+		conds := []string{}
+		if q.Where != nil {
+			conds = append(conds, c.compileExpr(q.Where))
+		}
+		conds = append(conds, joinConds...)
+		cond := strings.Join(conds, " && ")
+
+		val := c.compileExpr(q.Select)
+		retT := c.exprType(q.Select)
+		if ml := asMapLiteral(q.Select); ml != nil {
+			if st, ok := retT.(types.StructType); ok {
+				c.structLits[ml] = st
+			}
+		}
+		retList := types.ListType{Elem: retT}
+		listC := cTypeFromType(retList)
+		if listC == "list_string" {
+			c.need(needListString)
+		} else if listC == "list_float" {
+			c.need(needListFloat)
+		} else if listC == "list_list_int" {
+			c.need(needListListInt)
+		}
+
+		res := c.newTemp()
+		idx := c.newTemp()
+		lenExpr := sources[0].expr + ".len"
+		for i := 1; i < len(sources); i++ {
+			lenExpr = fmt.Sprintf("%s * %s.len", lenExpr, sources[i].expr)
+		}
+		c.writeln(fmt.Sprintf("%s %s = %s_create(%s);", listC, res, listC, lenExpr))
+		c.writeln(fmt.Sprintf("int %s = 0;", idx))
+
+		var loop func(int)
+		loop = func(i int) {
+			src := sources[i]
+			iter := c.newTemp()
+			c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", iter, iter, src.expr, iter))
+			c.indent++
+			c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", cTypeFromType(src.elem), sanitizeName(src.varName), src.expr, iter))
+			if i+1 < len(sources) {
+				loop(i + 1)
+			} else {
+				if cond != "" {
+					c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", cond))
+				}
+				c.writeln(fmt.Sprintf("%s.data[%s] = %s;", res, idx, val))
+				c.writeln(fmt.Sprintf("%s++;", idx))
+			}
+			c.indent--
+			c.writeln("}")
+		}
+		loop(0)
+		c.writeln(fmt.Sprintf("%s.len = %s;", res, idx))
+		if c.env != nil {
+			c.env = oldEnv
+		}
+		return res
+	}
+
 	// handle simple cross joins (multiple from clauses without joins)
 	if len(q.Froms) > 0 && len(q.Joins) == 0 && q.Group == nil {
 		// collect all sources
