@@ -104,3 +104,9 @@ load_yaml
 pure_global_fold
 save_jsonl_stdout
 tree_sum
+
+## TODO
+- [ ] Fix pattern matching for union types
+- [ ] Support YAML loading tests
+- [ ] Implement left/outer join handling in queries
+- [ ] Address JSONL save pipeline errors

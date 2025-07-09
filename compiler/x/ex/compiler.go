@@ -25,6 +25,7 @@ type Compiler struct {
 	structs    map[string]types.StructType
 	structDefs []string
 	Module     string
+	attrs      map[string]string
 }
 
 var atomIdent = regexp.MustCompile(`^[a-z_][a-zA-Z0-9_]*$`)
@@ -140,7 +141,7 @@ func usesLoopControl(stmts []*parser.Statement) bool {
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, helpers: make(map[string]bool), funcs: make(map[string]bool), structs: make(map[string]types.StructType), Module: "Main", structDefs: []string{}}
+	return &Compiler{env: env, helpers: make(map[string]bool), funcs: make(map[string]bool), structs: make(map[string]types.StructType), Module: "Main", structDefs: []string{}, attrs: make(map[string]string)}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -201,6 +202,22 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.writeln(fmt.Sprintf("defmodule %s do", mod))
 	c.indent++
+	// collect top-level constants as module attributes
+	for _, s := range prog.Statements {
+		if s.Let != nil {
+			val := "nil"
+			if s.Let.Value != nil {
+				v, err := c.compileExpr(s.Let.Value)
+				if err != nil {
+					return nil, err
+				}
+				val = v
+			}
+			name := sanitizeName(s.Let.Name)
+			c.attrs[name] = val
+			c.writeln(fmt.Sprintf("@%s %s", name, val))
+		}
+	}
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
 			if err := c.compileFunStmt(s.Fun); err != nil {
@@ -297,23 +314,25 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
-		var val string
-		var err error
-		if s.Let.Value != nil {
-			val, err = c.compileExpr(s.Let.Value)
-			if err != nil {
-				return err
+		if _, ok := c.attrs[s.Let.Name]; !ok {
+			var val string
+			var err error
+			if s.Let.Value != nil {
+				val, err = c.compileExpr(s.Let.Value)
+				if err != nil {
+					return err
+				}
+			} else {
+				val = "nil"
 			}
-		} else {
-			val = "nil"
-		}
-		name := sanitizeName(s.Let.Name)
-		if c.env != nil {
-			if t, err := c.env.GetVar(s.Let.Name); err == nil {
-				c.writeln(fmt.Sprintf("# %s :: %s", name, c.typeSpec(t)))
+			name := sanitizeName(s.Let.Name)
+			if c.env != nil {
+				if t, err := c.env.GetVar(s.Let.Name); err == nil {
+					c.writeln(fmt.Sprintf("# %s :: %s", name, c.typeSpec(t)))
+				}
 			}
+			c.writeln(fmt.Sprintf("%s = %s", name, val))
 		}
-		c.writeln(fmt.Sprintf("%s = %s", name, val))
 	case s.Var != nil:
 		return c.compileVar(s.Var)
 	case s.Assign != nil:
@@ -1328,7 +1347,7 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	var b strings.Builder
 	b.WriteString("(fn ->\n")
 	b.WriteString("\t" + tmp + " = " + target + "\n")
-	b.WriteString("\tcond do\n")
+	b.WriteString("\tcase " + tmp + " do\n")
 	hasDefault := false
 	for _, cs := range m.Cases {
 		res, err := c.compileExpr(cs.Result)
@@ -1336,21 +1355,95 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 			return "", err
 		}
 		if isUnderscoreExpr(cs.Pattern) {
-			b.WriteString("\t\ttrue -> " + res + "\n")
+			b.WriteString("\t\t_ -> " + res + "\n")
 			hasDefault = true
 			break
 		}
-		pat, err := c.compileExpr(cs.Pattern)
+		pat, err := c.compilePattern(cs.Pattern)
 		if err != nil {
 			return "", err
 		}
-		b.WriteString(fmt.Sprintf("\t\t%s == %s -> %s\n", tmp, pat, res))
+		b.WriteString(fmt.Sprintf("\t\t%s -> %s\n", pat, res))
 	}
 	if !hasDefault {
-		b.WriteString("\t\ttrue -> nil\n")
+		b.WriteString("\t\t_ -> nil\n")
 	}
 	b.WriteString("\tend\nend).()")
 	return b.String(), nil
+}
+
+func (c *Compiler) compilePattern(e *parser.Expr) (string, error) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return c.compileExpr(e)
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return c.compileExpr(e)
+	}
+	p := u.Value
+	switch {
+	case p.Struct != nil:
+		parts := make([]string, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			v, err := c.compilePattern(f.Value)
+			if err != nil {
+				return "", err
+			}
+			parts[i] = fmt.Sprintf("%s: %s", sanitizeName(f.Name), v)
+		}
+		if c.env != nil {
+			if st, ok := c.env.GetStruct(p.Struct.Name); ok {
+				c.ensureStruct(st)
+				return fmt.Sprintf("%%%s{%s}", sanitizeName(st.Name), strings.Join(parts, ", ")), nil
+			}
+		}
+		return "%{" + strings.Join(parts, ", ") + "}", nil
+	case p.Call != nil:
+		if c.env != nil {
+			if st, ok := c.env.GetStruct(p.Call.Func); ok {
+				if len(p.Call.Args) != len(st.Order) {
+					return "", fmt.Errorf("struct %s expects %d args", p.Call.Func, len(st.Order))
+				}
+				args := make([]string, len(st.Order))
+				for i, a := range p.Call.Args {
+					v, err := c.compilePattern(a)
+					if err != nil {
+						return "", err
+					}
+					args[i] = fmt.Sprintf("%s: %s", sanitizeName(st.Order[i]), v)
+				}
+				c.ensureStruct(st)
+				return fmt.Sprintf("%%%s{%s}", sanitizeName(st.Name), strings.Join(args, ", ")), nil
+			}
+		}
+		parts := make([]string, len(p.Call.Args))
+		for i, a := range p.Call.Args {
+			v, err := c.compilePattern(a)
+			if err != nil {
+				return "", err
+			}
+			parts[i] = v
+		}
+		return fmt.Sprintf("%s(%s)", p.Call.Func, strings.Join(parts, ", ")), nil
+	case p.Selector != nil && len(p.Selector.Tail) == 0:
+		name := sanitizeName(p.Selector.Root)
+		if c.env != nil {
+			if st, ok := c.env.GetStruct(p.Selector.Root); ok && len(st.Order) == 0 {
+				c.ensureStruct(st)
+				return fmt.Sprintf("%%%s{}", sanitizeName(st.Name)), nil
+			}
+			if _, ok := c.attrs[p.Selector.Root]; ok {
+				return "@" + name, nil
+			}
+		}
+		return name, nil
+	case p.Lit != nil:
+		return c.compileExpr(e)
+	case p.Group != nil:
+		return c.compilePattern(p.Group)
+	default:
+		return c.compileExpr(e)
+	}
 }
 
 func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
