@@ -1,4 +1,4 @@
-# Mochi to Zig Machine Outputs (23/97 compiled)
+# Mochi to Zig Machine Outputs (25/97 compiled)
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -67,7 +67,7 @@
 - [ ] partial_application.mochi
 - [x] print_hello.mochi
 - [ ] pure_fold.mochi
-- [ ] pure_global_fold.mochi
+- [x] pure_global_fold.mochi
 - [ ] query_sum_select.mochi
 - [ ] record_assign.mochi
 - [ ] right_join.mochi
@@ -77,7 +77,7 @@
 - [ ] sort_stable.mochi
 - [ ] str_builtin.mochi
 - [ ] string_compare.mochi
-- [ ] string_concat.mochi
+- [x] string_concat.mochi
 - [ ] string_contains.mochi
 - [ ] string_in_operator.mochi
 - [ ] string_index.mochi
