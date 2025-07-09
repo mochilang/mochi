@@ -1,0 +1,30 @@
+
+/workspace/mochi/tests/machine/x/hs/string_in_operator.hs:109:21: error:
+    • Couldn't match type ‘Char’ with ‘[Char]’
+      Expected: [String]
+        Actual: String
+    • In the second argument of ‘elem’, namely ‘s’
+      In the first argument of ‘print’, namely ‘(elem "cat" s)’
+      In a stmt of a 'do' block: print (elem "cat" s)
+    |
+109 |   print (elem "cat" s)
+    |                     ^
+
+/workspace/mochi/tests/machine/x/hs/string_in_operator.hs:110:21: error:
+    • Couldn't match type ‘Char’ with ‘[Char]’
+      Expected: [String]
+        Actual: String
+    • In the second argument of ‘elem’, namely ‘s’
+      In the first argument of ‘print’, namely ‘(elem "dog" s)’
+      In a stmt of a 'do' block: print (elem "dog" s)
+    |
+110 |   print (elem "dog" s)
+    |                     ^
+
+
+Context around line 109:
+  107| main :: IO ()
+  108| main = do
+  109|   print (elem "cat" s)
+  110|   print (elem "dog" s)
+  111| 

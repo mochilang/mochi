@@ -1,0 +1,12 @@
+ok
+update_stmt.hs: expect failed
+CallStack (from HasCallStack):
+  error, called at /workspace/mochi/tests/machine/x/hs/update_stmt.hs:108:16 in main:Main
+
+
+Context around line 108:
+  106| expect :: Bool -> IO ()
+  107| expect True = pure ()
+  108| expect False = error "expect failed"
+  109| 
+  110| data Person = Person
