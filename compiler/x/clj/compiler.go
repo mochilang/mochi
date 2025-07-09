@@ -1658,6 +1658,8 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	}
 	joinSrcs := make([]string, len(q.Joins))
 	joinOns := make([]string, len(q.Joins))
+	joinLeftKeys := make([]string, len(q.Joins))
+	joinRightKeys := make([]string, len(q.Joins))
 	for i, j := range q.Joins {
 		js, err := c.compileExpr(j.Src)
 		if err != nil {
@@ -1669,6 +1671,17 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		}
 		joinSrcs[i] = js
 		joinOns[i] = on
+
+		if leftExpr, rightExpr, ok := joinEqParts(j.On); ok {
+			lkey, err := c.compileExpr(leftExpr)
+			if err == nil {
+				rkey, err2 := c.compileExpr(rightExpr)
+				if err2 == nil {
+					joinLeftKeys[i] = lkey
+					joinRightKeys[i] = rkey
+				}
+			}
+		}
 	}
 	var whereExpr string
 	if q.Where != nil {
@@ -2275,7 +2288,14 @@ func (c *Compiler) compileQueryHelper(q *parser.QueryExpr) (string, error) {
 	paramCopy := append([]string(nil), params...)
 	for i, js := range joinSrcs {
 		onParams := append(paramCopy, sanitizeName(q.Joins[i].Var))
-		spec := fmt.Sprintf("{:items %s :on (fn [%s] %s)", js, strings.Join(onParams, " "), joinOns[i])
+		spec := fmt.Sprintf("{:items %s", js)
+		if joinLeftKeys[i] != "" && joinRightKeys[i] != "" {
+			lfn := fmt.Sprintf("(fn [%s] %s)", strings.Join(paramCopy, " "), joinLeftKeys[i])
+			rfn := fmt.Sprintf("(fn [%s] %s)", sanitizeName(q.Joins[i].Var), joinRightKeys[i])
+			spec += " :leftKey " + lfn + " :rightKey " + rfn
+		} else {
+			spec += fmt.Sprintf(" :on (fn [%s] %s)", strings.Join(onParams, " "), joinOns[i])
+		}
 		if q.Joins[i].Side != nil {
 			side := *q.Joins[i].Side
 			if side == "left" || side == "outer" {
