@@ -16,4 +16,3 @@ try
             printfn "%s" (String.concat " " [string item.name; string "costs $"; string item.price])
         with Continue -> ()
 with Break -> ()
-

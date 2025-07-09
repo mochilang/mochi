@@ -24,6 +24,8 @@ type Compiler struct {
 	indent   int
 	vars     map[string]string
 	structs  map[string]map[string]string
+	groups   map[string]bool
+	maps     map[string]bool
 	anon     map[string]string
 	anonCnt  int
 	usesJson bool
@@ -66,6 +68,8 @@ func New() *Compiler {
 	return &Compiler{
 		vars:     make(map[string]string),
 		structs:  make(map[string]map[string]string),
+		groups:   make(map[string]bool),
+		maps:     make(map[string]bool),
 		anon:     make(map[string]string),
 		usesJson: false,
 	}
@@ -78,6 +82,8 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.indent = 0
 	c.vars = make(map[string]string)
 	c.structs = make(map[string]map[string]string)
+	c.groups = make(map[string]bool)
+	c.maps = make(map[string]bool)
 	c.anon = make(map[string]string)
 	c.anonCnt = 0
 	c.usesJson = false
@@ -162,6 +168,9 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 	}
 	var val string
 	if l.Value != nil {
+		if p := rootPrimary(l.Value); p != nil && p.Map != nil {
+			c.maps[l.Name] = true
+		}
 		val, err = c.compileExpr(l.Value)
 		if err != nil {
 			return err
@@ -206,20 +215,28 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	}
 	var val string = "0"
 	if v.Value != nil {
-		if p := rootPrimary(v.Value); p != nil && p.List != nil {
-			elems := make([]string, len(p.List.Elems))
-			for i, e := range p.List.Elems {
-				s, err := c.compileExpr(e)
+		if p := rootPrimary(v.Value); p != nil {
+			if p.List != nil {
+				elems := make([]string, len(p.List.Elems))
+				for i, e := range p.List.Elems {
+					s, err := c.compileExpr(e)
+					if err != nil {
+						return err
+					}
+					elems[i] = s
+				}
+				val = "[|" + strings.Join(elems, "; ") + "|]"
+			} else if p.Map != nil {
+				c.maps[v.Name] = true
+				val, err = c.compileMap(p.Map)
 				if err != nil {
 					return err
 				}
-				elems[i] = s
-			}
-			val = "[|" + strings.Join(elems, "; ") + "|]"
-		} else {
-			val, err = c.compileExpr(v.Value)
-			if err != nil {
-				return err
+			} else {
+				val, err = c.compileExpr(v.Value)
+				if err != nil {
+					return err
+				}
 			}
 		}
 		if typ == "" && c.isStringExpr(v.Value) {
@@ -264,7 +281,7 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 		target = fmt.Sprintf("%s.[%s]", target, s)
 	}
 	for _, f := range a.Field {
-		target = fmt.Sprintf("%s.%s", target, f.Name)
+		target = fmt.Sprintf("%s.%s", target, sanitizeIdent(f.Name))
 	}
 	c.writeln(fmt.Sprintf("%s <- %s", target, val))
 	return nil
@@ -470,6 +487,12 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				res = fmt.Sprintf("%s.ContainsKey %s", r, res)
 				continue
 			}
+			if identifierRegexp.MatchString(r) {
+				if c.maps[r] {
+					res = fmt.Sprintf("%s.ContainsKey %s", r, res)
+					continue
+				}
+			}
 			res = fmt.Sprintf("List.contains %s %s", res, r)
 			continue
 		}
@@ -558,11 +581,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					}
 					args[j] = s
 				}
-				val = fmt.Sprintf("%s.%s(%s)", val, op.Field.Name, strings.Join(args, ", "))
+				val = fmt.Sprintf("%s.%s(%s)", val, sanitizeIdent(op.Field.Name), strings.Join(args, ", "))
 				i++
 				continue
 			}
-			val = fmt.Sprintf("%s.%s", val, op.Field.Name)
+			val = fmt.Sprintf("%s.%s", val, sanitizeIdent(op.Field.Name))
 			continue
 		}
 		if op.Call != nil {
@@ -708,6 +731,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 	case "count":
 		if len(args) == 1 {
+			if name, ok := c.simpleIdentifier(argAST); ok {
+				if c.groups[name] {
+					return fmt.Sprintf("List.length %s.items", args[0]), nil
+				}
+			}
 			return fmt.Sprintf("List.length %s", args[0]), nil
 		}
 	case "exists":
@@ -829,11 +857,11 @@ func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
 		}
 		items[i] = fmt.Sprintf("(%s, %s)", k, v)
 		if ok {
-			names[i] = name
+			names[i] = sanitizeIdent(name)
 			values[i] = v
 			t := c.inferType(it.Value)
 			types[i] = t
-			typeMap[name] = t
+			typeMap[sanitizeIdent(name)] = t
 		}
 	}
 	if allSimple {
@@ -870,10 +898,11 @@ func (c *Compiler) compileStruct(s *parser.StructLiteral) (string, error) {
 			return "", err
 		}
 		t := c.inferType(f.Value)
-		fields[i] = fmt.Sprintf("%s = %s", f.Name, v)
-		names[i] = f.Name
+		fname := sanitizeIdent(f.Name)
+		fields[i] = fmt.Sprintf("%s = %s", fname, v)
+		names[i] = fname
 		types[i] = t
-		typeMap[f.Name] = t
+		typeMap[fname] = t
 	}
 	if s.Name != "" {
 		return fmt.Sprintf("{ %s }", strings.Join(fields, "; ")), nil
@@ -986,6 +1015,9 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	if len(condParts) > 0 {
 		cond = fmt.Sprintf("if %s then ", strings.Join(condParts, " && "))
 	}
+	if q.Group != nil {
+		c.groups[q.Group.Name] = true
+	}
 	sel, err := c.compileExpr(q.Select)
 	if err != nil {
 		return "", err
@@ -1027,6 +1059,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 
 		keyVar := q.Group.Name + "Key"
 		itemsVar := q.Group.Name + "Items"
+		c.groups[q.Group.Name] = true
 
 		if q.Group.Having != nil {
 			condExpr, err := c.compileExpr(q.Group.Having)
@@ -1155,6 +1188,26 @@ func join(parts []string, sep string) string {
 		out += sep + p
 	}
 	return out
+}
+
+var fsKeywords = map[string]struct{}{
+	"abstract": {}, "and": {}, "as": {}, "assert": {}, "base": {}, "begin": {}, "class": {},
+	"default": {}, "delegate": {}, "do": {}, "done": {}, "downcast": {}, "downto": {},
+	"elif": {}, "else": {}, "end": {}, "exception": {}, "external": {}, "false": {},
+	"finally": {}, "for": {}, "fun": {}, "function": {}, "if": {}, "in": {}, "inherit": {},
+	"inline": {}, "interface": {}, "internal": {}, "lazy": {}, "let": {}, "match": {},
+	"member": {}, "module": {}, "mutable": {}, "namespace": {}, "new": {}, "null": {},
+	"of": {}, "open": {}, "or": {}, "override": {}, "private": {}, "public": {}, "rec": {},
+	"return": {}, "sig": {}, "static": {}, "struct": {}, "then": {}, "to": {}, "true": {},
+	"try": {}, "type": {}, "upcast": {}, "use": {}, "val": {}, "void": {}, "when": {},
+	"while": {}, "with": {}, "yield": {},
+}
+
+func sanitizeIdent(name string) string {
+	if _, ok := fsKeywords[name]; ok {
+		return "``" + name + "``"
+	}
+	return name
 }
 
 func rootPrimary(e *parser.Expr) *parser.Primary {
