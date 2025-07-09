@@ -397,6 +397,22 @@ const (
 		"  return res;\n" +
 		"}\n"
 
+	helperHashJoin = "function _hashJoin(left: any[], right: any[], lk: (v: any) => any, rk: (v: any) => any): any[] {\n" +
+		"  const idx = new Map<any, any[]>();\n" +
+		"  for (const r of right) {\n" +
+		"    const k = rk(r);\n" +
+		"    const arr = idx.get(k);\n" +
+		"    if (arr) arr.push(r); else idx.set(k, [r]);\n" +
+		"  }\n" +
+		"  const out: any[] = [];\n" +
+		"  for (const l of left) {\n" +
+		"    const arr = idx.get(lk(l));\n" +
+		"    if (!arr) continue;\n" +
+		"    for (const r of arr) out.push([l, r]);\n" +
+		"  }\n" +
+		"  return out;\n" +
+		"}\n"
+
 	helperDataset = "import { readAllSync } from \"https://deno.land/std@0.221.0/io/read_all.ts\";\n" +
 		"import { parse as _yamlParse, stringify as _yamlStringify } from \"https://deno.land/std@0.221.0/yaml/mod.ts\";\n" +
 		"function _readInput(path: string | null): string {\n" +
@@ -534,6 +550,7 @@ var helperMap = map[string]string{
 	"_waitAll":     helperWaitAll,
 	"_agent":       helperAgent,
 	"_query":       helperQuery,
+	"_hashJoin":    helperHashJoin,
 	"_dataset":     helperDataset,
 	"_json":        helperJSON,
 	"_fmt":         helperFmt,

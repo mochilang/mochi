@@ -2216,6 +2216,55 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return b.String(), nil
 		}
 
+		if simple && !group && len(q.Froms) == 0 && len(q.Joins) == 1 && q.Where == nil {
+			j := q.Joins[0]
+			if j.Side == nil {
+				if lf, rf, ok := joinEqFields(j.On, q.Var, j.Var); ok {
+					child := types.NewEnv(c.env)
+					var elemType types.Type = types.AnyType{}
+					if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
+						elemType = lt.Elem
+					}
+					child.SetVar(q.Var, elemType, true)
+					var je types.Type = types.AnyType{}
+					if lt, ok := c.inferExprType(j.Src).(types.ListType); ok {
+						je = lt.Elem
+					}
+					child.SetVar(j.Var, je, true)
+					orig := c.env
+					c.env = child
+					joinSrc, err := c.compileIterExpr(j.Src)
+					if err != nil {
+						c.env = orig
+						return "", err
+					}
+					val, err := c.compileExpr(q.Select)
+					if err != nil {
+						c.env = orig
+						return "", err
+					}
+					c.env = orig
+					qv := sanitizeName(q.Var)
+					jv := sanitizeName(j.Var)
+					var b strings.Builder
+					b.WriteString("(() => {\n")
+					b.WriteString("\tconst _src = " + src + ";\n")
+					b.WriteString("\tconst _join = " + joinSrc + ";\n")
+					b.WriteString("\tconst _pairs = _hashJoin(_src, _join, (" + qv + ") => " + qv + "." + sanitizeName(lf) + ", (" + jv + ") => " + jv + "." + sanitizeName(rf) + ");\n")
+					b.WriteString("\tconst _res = [];\n")
+					b.WriteString("\tfor (const _p of _pairs) {\n")
+					b.WriteString("\t\tconst " + qv + " = _p[0];\n")
+					b.WriteString("\t\tconst " + jv + " = _p[1];\n")
+					b.WriteString("\t\t_res.push(" + val + ");\n")
+					b.WriteString("\t}\n")
+					b.WriteString("\treturn _res;\n")
+					b.WriteString("})()")
+					c.use("_hashJoin")
+					return b.String(), nil
+				}
+			}
+		}
+
 		var b strings.Builder
 		b.WriteString("(() => {\n")
 		b.WriteString("\tconst _src = " + src + ";\n")
@@ -3075,6 +3124,27 @@ func fieldFromPostfix(p *parser.PostfixExpr, varName string) (string, bool) {
 		return p.Target.Selector.Tail[0], true
 	}
 	return "", false
+}
+
+func joinEqFields(e *parser.Expr, leftVar, rightVar string) (string, string, bool) {
+	if e == nil || len(e.Binary.Right) != 1 {
+		return "", "", false
+	}
+	b := e.Binary.Right[0]
+	if b.Op != "==" {
+		return "", "", false
+	}
+	if lf, ok := fieldFromUnary(e.Binary.Left, leftVar); ok {
+		if rf, ok2 := fieldFromPostfix(b.Right, rightVar); ok2 {
+			return lf, rf, true
+		}
+	}
+	if lf, ok := fieldFromUnary(e.Binary.Left, rightVar); ok {
+		if rf, ok2 := fieldFromPostfix(b.Right, leftVar); ok2 {
+			return rf, lf, true
+		}
+	}
+	return "", "", false
 }
 
 func formatTS(src []byte) []byte {
