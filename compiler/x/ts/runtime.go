@@ -91,6 +91,16 @@ const (
 		"  return JSON.stringify(_sort(v));\n" +
 		"}\n"
 
+	helperFmt = "function _fmt(v: any): string {\n" +
+		"  if (Array.isArray(v)) return '[' + v.map(_fmt).join(' ') + ']';\n" +
+		"  if (v && typeof v === 'object') {\n" +
+		"    const keys = Object.keys(v).sort();\n" +
+		"    const parts = keys.map(k => k + ':' + _fmt(v[k]));\n" +
+		"    return 'map[' + parts.join(' ') + ']';\n" +
+		"  }\n" +
+		"  return String(v);\n" +
+		"}\n"
+
 	helperMin = "function _min(v: any): any {\n" +
 		"  let list: any[] | null = null;\n" +
 		"  if (Array.isArray(v)) list = v;\n" +
@@ -526,6 +536,7 @@ var helperMap = map[string]string{
 	"_query":       helperQuery,
 	"_dataset":     helperDataset,
 	"_json":        helperJSON,
+	"_fmt":         helperFmt,
 }
 
 func (c *Compiler) use(name string) {
