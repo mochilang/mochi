@@ -8,7 +8,7 @@
             (begin (set-cdr! p v) m)
             (cons (cons k v) m)))
 )
-(import (srfi 95))
+(import (srfi 95) (chibi json) (chibi io))
 
 (define (_fetch url opts)
   (let* ((method (if (and opts (assq 'method opts)) (cdr (assq 'method opts)) "GET"))
@@ -81,11 +81,11 @@
   (list (cons 'name name) (cons 'age age) (cons 'email email))
 )
 
-(define people (_load "../interpreter/valid/people.yaml" (list (cons "format" "yaml"))))
+(define people (_load "tests/interpreter/valid/people.yaml" (list (cons "format" "yaml"))))
 (define adults (let ((_res '()))
   (for-each (lambda (p)
-    (when (>= (map-get p "age") 18)
-      (set! _res (append _res (list (list (cons "name" (map-get p "name")) (cons "email" (map-get p "email"))))))
+    (when (>= (map-get p 'age) 18)
+      (set! _res (append _res (list (list (cons "name" (map-get p 'name)) (cons "email" (map-get p 'email))))))
     )
   ) (if (string? people) (string->list people) people))
   _res))
@@ -93,7 +93,7 @@
   (if (< a_idx (length adults))
     (begin
       (let ((a (list-ref adults a_idx)))
-        (begin (display (map-get a "name")) (display " ") (display (map-get a "email")) (newline))
+        (begin (display (map-get a 'name)) (display " ") (display (map-get a 'email)) (newline))
       )
       (loop (+ a_idx 1))
     )
