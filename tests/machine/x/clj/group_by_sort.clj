@@ -30,7 +30,7 @@
   (def grouped (let [_src items
       _groups (_group_by _src (fn [i] (:cat i)))
       ]
-  (->> _groups (sort-by (fn [g] (- (_sum (vec (->> (for [x g] (:val x)))))))) (map (fn [g] {:cat (:key g) :total (_sum (vec (->> (for [x (:Items g)] (:val x)))))})) vec))) ;; list of map of string to any
+  (->> _groups (sort-by (fn [g] (- (_sum (vec (->> (for [x (:Items g)] (:val x)))))))) (map (fn [g] {:cat (:key g) :total (_sum (vec (->> (for [x (:Items g)] (:val x)))))})) vec))) ;; list of map of string to any
   (println grouped)
 )
 

@@ -2,7 +2,7 @@
 
 This directory contains Clojure code generated from the Mochi programs in `tests/vm/valid` using the Clojure compiler. Each program was compiled and executed. Successful runs produced an `.out` file while failures produced an `.error` file.
 
-Compiled programs: 85/97 successful.
+Compiled programs: 92/97 successful.
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -86,17 +86,17 @@ Compiled programs: 85/97 successful.
 - [x] user_type_literal.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
-- [ ] group_by_join.mochi
-- [ ] group_by_left_join.mochi
-- [ ] group_by_multi_join_sort.mochi
-- [ ] group_by_sort.mochi
-- [ ] left_join.mochi
-- [ ] left_join_multi.mochi
+- [x] group_by_join.mochi
+- [x] group_by_left_join.mochi
+- [x] group_by_multi_join_sort.mochi
+- [x] group_by_sort.mochi
+- [x] left_join.mochi
+- [x] left_join_multi.mochi
 - [ ] load_yaml.mochi
 - [ ] order_by_map.mochi
 - [ ] outer_join.mochi
 - [x] partial_application.mochi
 - [ ] query_sum_select.mochi
-- [ ] right_join.mochi
+- [x] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
 - [x] values_builtin.mochi
