@@ -744,6 +744,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return p.Selector.Root + "." + strings.Join(p.Selector.Tail, "."), nil
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
+	case p.Match != nil:
+		return c.compileMatchExpr(p.Match)
 	case p.Group != nil:
 		expr, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -781,6 +783,43 @@ func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
 		fmt.Fprintf(&b, " else { %s }", elseExpr)
 	}
 	return b.String(), nil
+}
+
+func (c *Compiler) compileMatchExpr(me *parser.MatchExpr) (string, error) {
+	target, err := c.compileExpr(me.Target)
+	if err != nil {
+		return "", err
+	}
+	var b strings.Builder
+	b.WriteString("match ")
+	b.WriteString(target)
+	b.WriteString(" {")
+	for i, cs := range me.Cases {
+		pat, err := c.compileMatchPattern(cs.Pattern)
+		if err != nil {
+			return "", err
+		}
+		res, err := c.compileExpr(cs.Result)
+		if err != nil {
+			return "", err
+		}
+		if i > 0 {
+			b.WriteString(" ")
+		}
+		fmt.Fprintf(&b, "%s => %s,", pat, res)
+	}
+	b.WriteString(" }")
+	return b.String(), nil
+}
+
+func (c *Compiler) compileMatchPattern(e *parser.Expr) (string, error) {
+	if name, ok := c.simpleIdent(e); ok {
+		if name == "_" {
+			return "_", nil
+		}
+		return name, nil
+	}
+	return c.compileExpr(e)
 }
 
 func (c *Compiler) unaryIsString(u *parser.Unary) bool {
