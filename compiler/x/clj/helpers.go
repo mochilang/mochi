@@ -417,3 +417,44 @@ func isListPushCall(e *parser.Expr) (string, *parser.Expr, bool) {
 	}
 	return p.Target.Selector.Root, p.Ops[0].Call.Args[0], true
 }
+
+// fieldAccess returns the variable and field name if e is a simple
+// selector expression like `x.y`.
+func fieldAccess(e *parser.Expr) (string, string, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return "", "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return "", "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 1 {
+		return p.Target.Selector.Root, p.Target.Selector.Tail[0], true
+	}
+	return "", "", false
+}
+
+// joinEqParts returns the left and right expressions if e is an equality
+// comparison between two simple selector expressions.
+func joinEqParts(e *parser.Expr) (*parser.Expr, *parser.Expr, bool) {
+	if e == nil || len(e.Binary.Right) != 1 {
+		return nil, nil, false
+	}
+	op := e.Binary.Right[0]
+	if op.Op != "==" {
+		return nil, nil, false
+	}
+	left := &parser.Expr{Binary: &parser.BinaryExpr{Left: e.Binary.Left}}
+	right := &parser.Expr{Binary: &parser.BinaryExpr{Left: op.Right}}
+	if _, _, ok := fieldAccess(left); !ok {
+		return nil, nil, false
+	}
+	if _, _, ok := fieldAccess(right); !ok {
+		return nil, nil, false
+	}
+	return left, right, true
+}
