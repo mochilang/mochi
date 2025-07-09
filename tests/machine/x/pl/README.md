@@ -4,7 +4,7 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 
 ## Summary
 
-- 42/97 programs compiled and executed successfully.
+- 55/97 programs compiled and executed successfully.
 
 ### Successful
 - append_builtin
@@ -49,6 +49,19 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 - string_prefix_slice
 - cast_string_to_int
 - membership
+- for_map_collection
+- len_map
+- list_assign
+- list_nested_assign
+- map_assign
+- map_in_operator
+- map_index
+- map_int_key
+- map_literal_dynamic
+- map_membership
+- map_nested_assign
+- string_in_operator
+- values_builtin
 
 ### Failed
 - cast_struct
@@ -58,7 +71,6 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 - cross_join_triple
 - dataset_sort_take_limit
 - dataset_where_filter
-- for_map_collection
 - fun_expr_in_let
 - group_by
 - group_by_conditional_sum
@@ -76,18 +88,8 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 - json_builtin
 - left_join
 - left_join_multi
-- len_map
-- list_assign
-- list_nested_assign
 - list_set_ops
 - load_yaml
-- map_assign
-- map_in_operator
-- map_index
-- map_int_key
-- map_literal_dynamic
-- map_membership
-- map_nested_assign
 - match_expr
 - match_full
 - nested_function
@@ -97,12 +99,10 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 - record_assign
 - right_join
 - save_jsonl_stdout
- - sort_stable
- - string_in_operator
- - test_block
+- sort_stable
+- test_block
 - tree_sum
 - two-sum
 - update_stmt
 - user_type_literal
-- values_builtin
 - while_loop

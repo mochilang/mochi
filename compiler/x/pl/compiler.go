@@ -20,6 +20,7 @@ type Compiler struct {
 	needsSlice    bool
 	needsContains bool
 	needsLenAny   bool
+	needsSetItem  bool
 }
 
 func New() *Compiler {
@@ -55,6 +56,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.needsSlice = false
 	c.needsContains = false
 	c.needsLenAny = false
+	c.needsSetItem = false
 
 	for _, st := range p.Statements {
 		if st.Fun != nil {
@@ -99,7 +101,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	}
 	if c.needsContains {
 		out.WriteString("contains(Container, Item, Res) :-\n")
-		out.WriteString("    is_dict(Container), !, (get_dict(Item, Container, _) -> Res = true ; Res = false).\n")
+		out.WriteString("    is_dict(Container), !, (string(Item) -> atom_string(A, Item) ; A = Item), (get_dict(A, Container, _) -> Res = true ; Res = false).\n")
 		out.WriteString("contains(List, Item, Res) :-\n")
 		out.WriteString("    string(List), !, (sub_string(List, _, _, _, Item) -> Res = true ; Res = false).\n")
 		out.WriteString("contains(List, Item, Res) :- (member(Item, List) -> Res = true ; Res = false).\n\n")
@@ -110,6 +112,13 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 		out.WriteString("len_any(Value, Len) :-\n")
 		out.WriteString("    is_dict(Value), !, dict_pairs(Value, _, Pairs), length(Pairs, Len).\n")
 		out.WriteString("len_any(Value, Len) :- length(Value, Len).\n\n")
+	}
+	if c.needsSetItem {
+		out.WriteString("set_item(Container, Key, Val, Out) :-\n")
+		out.WriteString("    is_dict(Container), !, (string(Key) -> atom_string(A, Key) ; A = Key), put_dict(A, Container, Val, Out).\n")
+		out.WriteString("set_item(List, Index, Val, Out) :-\n")
+		out.WriteString("    nth0(Index, List, _, Rest),\n")
+		out.WriteString("    nth0(Index, Out, Val, Rest).\n\n")
 	}
 	out.Write(c.buf.Bytes())
 	return out.Bytes(), nil
@@ -205,15 +214,55 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			c.writeln(fmt.Sprintf("%s = %s,", name, val))
 		}
 	case s.Assign != nil:
-		name := c.newVar(s.Assign.Name)
-		val, arith, err := c.compileExpr(s.Assign.Value)
-		if err != nil {
-			return err
-		}
-		if arith {
-			c.writeln(fmt.Sprintf("%s is %s,", name, val))
+		if len(s.Assign.Index) == 0 {
+			name := c.newVar(s.Assign.Name)
+			val, arith, err := c.compileExpr(s.Assign.Value)
+			if err != nil {
+				return err
+			}
+			if arith {
+				c.writeln(fmt.Sprintf("%s is %s,", name, val))
+			} else {
+				c.writeln(fmt.Sprintf("%s = %s,", name, val))
+			}
 		} else {
-			c.writeln(fmt.Sprintf("%s = %s,", name, val))
+			container := c.lookupVar(s.Assign.Name)
+			idxVals := make([]string, len(s.Assign.Index))
+			for i, idx := range s.Assign.Index {
+				if idx.Colon != nil {
+					return fmt.Errorf("slice assignment not supported")
+				}
+				iv, _, err := c.compileExpr(idx.Start)
+				if err != nil {
+					return err
+				}
+				idxVals[i] = iv
+			}
+			val, _, err := c.compileExpr(s.Assign.Value)
+			if err != nil {
+				return err
+			}
+			containers := []string{container}
+			cur := container
+			for i := 0; i < len(idxVals)-1; i++ {
+				tmp := c.newTmp()
+				c.needsGetItem = true
+				c.writeln(fmt.Sprintf("get_item(%s, %s, %s),", cur, idxVals[i], tmp))
+				containers = append(containers, tmp)
+				cur = tmp
+			}
+			tmp := c.newTmp()
+			c.needsSetItem = true
+			c.writeln(fmt.Sprintf("set_item(%s, %s, %s, %s),", cur, idxVals[len(idxVals)-1], val, tmp))
+			newVal := tmp
+			for i := len(idxVals) - 2; i >= 0; i-- {
+				tmp2 := c.newTmp()
+				c.needsSetItem = true
+				c.writeln(fmt.Sprintf("set_item(%s, %s, %s, %s),", containers[i], idxVals[i], newVal, tmp2))
+				newVal = tmp2
+			}
+			name := c.newVar(s.Assign.Name)
+			c.writeln(fmt.Sprintf("%s = %s,", name, newVal))
 		}
 	case s.Return != nil:
 		if c.retVar == "" {
@@ -481,6 +530,25 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, bool, error) {
 			elems = append(elems, s)
 		}
 		return "[" + strings.Join(elems, ", ") + "]", false, nil
+	case p.Map != nil:
+		pairs := []string{}
+		for _, it := range p.Map.Items {
+			key, _, err := c.compileExpr(it.Key)
+			if err != nil {
+				return "", false, err
+			}
+			if strings.HasPrefix(key, "\"") && strings.HasSuffix(key, "\"") {
+				key = "'" + strings.Trim(key, "\"") + "'"
+			}
+			val, _, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", false, err
+			}
+			pairs = append(pairs, fmt.Sprintf("%s-%s", key, val))
+		}
+		tmp := c.newTmp()
+		c.writeln(fmt.Sprintf("dict_create(%s, map, [%s]),", tmp, strings.Join(pairs, ", ")))
+		return tmp, false, nil
 	case p.If != nil:
 		return c.compileIfExpr(p.If)
 	case p.Call != nil:
