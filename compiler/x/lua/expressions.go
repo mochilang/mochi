@@ -15,6 +15,21 @@ import (
 	"mochi/types"
 )
 
+func repoRoot() string {
+	dir, _ := os.Getwd()
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	return ""
+}
+
 // --- Expressions ---
 
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
@@ -1107,16 +1122,33 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 
 func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 	path := "nil"
+	var p string
 	if l.Path != nil {
-		path = fmt.Sprintf("%q", *l.Path)
+		p = *l.Path
+		var outPath string
+		if strings.HasPrefix(p, "../") {
+			outPath = filepath.Join("..", "..", "..", p[3:])
+		} else {
+			outPath = p
+		}
+		path = fmt.Sprintf("%q", outPath)
 	}
 	if l.Path != nil && l.With != nil {
 		if fmtStr, ok := extractFormat(l.With); ok && fmtStr == "yaml" {
-			p := filepath.Join(filepath.Dir(l.Pos.Filename), *l.Path)
-			if data, err := os.ReadFile(p); err == nil {
+			compPath := filepath.Join(filepath.Dir(l.Pos.Filename), p)
+			if data, err := os.ReadFile(compPath); err == nil {
 				var out any
 				if yaml.Unmarshal(data, &out) == nil {
 					return toLuaLiteral(out), nil
+				}
+			} else if strings.HasPrefix(p, "../") {
+				root := repoRoot()
+				alt := filepath.Join(root, "tests", p[3:])
+				if d, e := os.ReadFile(alt); e == nil {
+					var out any
+					if yaml.Unmarshal(d, &out) == nil {
+						return toLuaLiteral(out), nil
+					}
 				}
 			}
 		}
