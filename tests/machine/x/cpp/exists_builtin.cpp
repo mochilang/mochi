@@ -7,7 +7,7 @@
 #include <vector>
 
 int main() {
-  auto data = std::vector<decltype(1)>{1, 2};
+  std::vector<int> data = std::vector<decltype(1)>{1, 2};
   auto flag = (!([&]() {
                   std::vector<int> __items;
                   for (auto x : data) {

@@ -7,7 +7,8 @@
 #include <vector>
 
 int main() {
-  auto numbers = std::vector<decltype(1)>{1, 2, 3, 4, 5, 6, 7, 8, 9};
+  std::vector<int> numbers =
+      std::vector<decltype(1)>{1, 2, 3, 4, 5, 6, 7, 8, 9};
   for (auto n : numbers) {
     if (((n % 2) == 0)) {
       continue;

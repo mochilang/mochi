@@ -29,6 +29,7 @@ int main() {
       __tmp1.age = (__tmp1.age + 1);
     }
   }
+  // test update adult status
   {
     std::cout << std::boolalpha << std::string("ok");
     std::cout << std::endl;

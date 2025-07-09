@@ -11,9 +11,10 @@ struct __struct1 {
   decltype(std::string("a")) v;
 };
 int main() {
-  auto items = std::vector<decltype(__struct1{1, std::string("a")})>{
-      __struct1{1, std::string("a")}, __struct1{1, std::string("b")},
-      __struct1{2, std::string("c")}};
+  std::vector<__struct1> items =
+      std::vector<decltype(__struct1{1, std::string("a")})>{
+          __struct1{1, std::string("a")}, __struct1{1, std::string("b")},
+          __struct1{2, std::string("c")}};
   auto result = ([&]() {
     std::vector<std::pair<decltype(std::declval<__struct1>().n),
                           decltype(std::declval<__struct1>().v)>>

@@ -16,10 +16,12 @@ struct __struct2 {
   bool is_senior;
 };
 int main() {
-  auto people = std::vector<decltype(__struct1{std::string("Alice"), 30})>{
-      __struct1{std::string("Alice"), 30}, __struct1{std::string("Bob"), 15},
-      __struct1{std::string("Charlie"), 65},
-      __struct1{std::string("Diana"), 45}};
+  std::vector<__struct1> people =
+      std::vector<decltype(__struct1{std::string("Alice"), 30})>{
+          __struct1{std::string("Alice"), 30},
+          __struct1{std::string("Bob"), 15},
+          __struct1{std::string("Charlie"), 65},
+          __struct1{std::string("Diana"), 45}};
   auto adults = ([&]() {
     std::vector<__struct2> __items;
     for (auto person : people) {

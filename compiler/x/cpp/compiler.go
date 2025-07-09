@@ -1556,29 +1556,32 @@ func extractVectorElemType(expr string) string {
 	if idx == -1 {
 		return ""
 	}
-	typ := inner[:idx]
-	if strings.Contains(typ, "std::string") {
-		return "std::string"
-	}
-	if strings.Contains(typ, "bool") {
-		return "bool"
-	}
-	if strings.HasPrefix(typ, "decltype(") {
-		texpr := strings.TrimSuffix(strings.TrimPrefix(typ, "decltype("), ")")
-		if strings.HasPrefix(texpr, "__struct") {
-			return texpr
-		}
-		if strings.Contains(texpr, "std::string") {
-			return "std::string"
-		}
-		if strings.Contains(texpr, "true") || strings.Contains(texpr, "false") {
-			return "bool"
-		}
-		if _, err := strconv.Atoi(texpr); err == nil {
-			return "int"
-		}
-	}
-	return ""
+        typ := inner[:idx]
+        if strings.HasPrefix(typ, "decltype(") {
+                texpr := strings.TrimSuffix(strings.TrimPrefix(typ, "decltype("), ")")
+                if strings.HasPrefix(texpr, "__struct") {
+                        if idx := strings.Index(texpr, "{"); idx != -1 {
+                                texpr = texpr[:idx]
+                        }
+                        return texpr
+                }
+                if strings.Contains(texpr, "std::string") {
+                        return "std::string"
+                }
+                if strings.Contains(texpr, "true") || strings.Contains(texpr, "false") {
+                        return "bool"
+                }
+                if _, err := strconv.Atoi(texpr); err == nil {
+                        return "int"
+                }
+        }
+        if strings.Contains(typ, "std::string") {
+                return "std::string"
+        }
+        if strings.Contains(typ, "bool") {
+                return "bool"
+        }
+        return ""
 }
 
 func structLiteralType(expr string) string {

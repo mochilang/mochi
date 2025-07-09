@@ -7,7 +7,7 @@
 #include <vector>
 
 int main() {
-  auto a = std::vector<decltype(1)>{1, 2};
+  std::vector<int> a = std::vector<decltype(1)>{1, 2};
   {
     auto __tmp1 = ([&](auto v) {
       v.push_back(3);

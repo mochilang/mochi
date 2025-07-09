@@ -11,14 +11,15 @@ struct __struct1 {
   decltype(1500) price;
 };
 int main() {
-  auto products = std::vector<decltype(__struct1{std::string("Laptop"), 1500})>{
-      __struct1{std::string("Laptop"), 1500},
-      __struct1{std::string("Smartphone"), 900},
-      __struct1{std::string("Tablet"), 600},
-      __struct1{std::string("Monitor"), 300},
-      __struct1{std::string("Keyboard"), 100},
-      __struct1{std::string("Mouse"), 50},
-      __struct1{std::string("Headphones"), 200}};
+  std::vector<__struct1> products =
+      std::vector<decltype(__struct1{std::string("Laptop"), 1500})>{
+          __struct1{std::string("Laptop"), 1500},
+          __struct1{std::string("Smartphone"), 900},
+          __struct1{std::string("Tablet"), 600},
+          __struct1{std::string("Monitor"), 300},
+          __struct1{std::string("Keyboard"), 100},
+          __struct1{std::string("Mouse"), 50},
+          __struct1{std::string("Headphones"), 200}};
   auto expensive = ([&]() {
     std::vector<std::pair<decltype(std::declval<__struct1>().price), __struct1>>
         __items;
