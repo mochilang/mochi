@@ -238,6 +238,7 @@ type Compiler struct {
 	needJSON       bool
 	needStringLib  bool
 	loops          []loopCtx
+	tmpCount       int
 	mainStmts      []*parser.Statement
 	tests          []testInfo
 }
@@ -297,7 +298,7 @@ func hasLoopCtrlIf(ifst *parser.IfStmt) bool {
 
 // New creates a new Scheme compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, vars: map[string]string{}, loops: []loopCtx{}, needDataset: false, needListOps: false, needSlice: false, needGroup: false, needJSON: false, needStringLib: false, mainStmts: nil, tests: []testInfo{}}
+	return &Compiler{env: env, vars: map[string]string{}, loops: []loopCtx{}, needDataset: false, needListOps: false, needSlice: false, needGroup: false, needJSON: false, needStringLib: false, tmpCount: 0, mainStmts: nil, tests: []testInfo{}}
 }
 
 func (c *Compiler) writeIndent() {
@@ -1757,15 +1758,41 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			jv := sanitizeName(q.Joins[j].Var)
 			js := joinSrcs[j]
 			on := joinOns[j]
-			b.WriteString(indent + fmt.Sprintf("(for-each (lambda (%s)\n", jv))
-			if on != "" {
-				b.WriteString(indent + "  (when " + on + "\n")
-				writeJoins(j+1, indent+"    ")
-				b.WriteString(indent + "  )")
+			if q.Joins[j].Side != nil && *q.Joins[j].Side == "left" {
+				tmp := fmt.Sprintf("_ms%d", c.tmpCount)
+				flag := fmt.Sprintf("_m%d", c.tmpCount)
+				c.tmpCount++
+				b.WriteString(indent + fmt.Sprintf("(let ((%s '()) (%s #f))\n", tmp, flag))
+				b.WriteString(indent + fmt.Sprintf("  (for-each (lambda (%s)\n", jv))
+				if on != "" {
+					b.WriteString(indent + "    (when " + on + "\n")
+					b.WriteString(indent + fmt.Sprintf("      (set! %s (append %s (list %s)))\n", tmp, tmp, jv))
+					b.WriteString(indent + fmt.Sprintf("      (set! %s #t))\n", flag))
+					b.WriteString(indent + "    )")
+				} else {
+					b.WriteString(indent + fmt.Sprintf("    (set! %s (append %s (list %s)))\n", tmp, tmp, jv))
+					b.WriteString(indent + fmt.Sprintf("    (set! %s #t)\n", flag))
+				}
+				b.WriteString(fmt.Sprintf(") (if (string? %s) (string->list %s) %s))\n", js, js, js))
+				b.WriteString(indent + fmt.Sprintf("  (if %s\n", flag))
+				b.WriteString(indent + fmt.Sprintf("      (for-each (lambda (%s)\n", jv))
+				writeJoins(j+1, indent+"        ")
+				b.WriteString(indent + fmt.Sprintf("      ) %s)\n", tmp))
+				b.WriteString(indent + "      (let ((" + jv + " '()))\n")
+				writeJoins(j+1, indent+"        ")
+				b.WriteString(indent + "      ))\n")
+				b.WriteString(indent + ")\n")
 			} else {
-				writeJoins(j+1, indent+"  ")
+				b.WriteString(indent + fmt.Sprintf("(for-each (lambda (%s)\n", jv))
+				if on != "" {
+					b.WriteString(indent + "  (when " + on + "\n")
+					writeJoins(j+1, indent+"    ")
+					b.WriteString(indent + "  )")
+				} else {
+					writeJoins(j+1, indent+"  ")
+				}
+				b.WriteString(fmt.Sprintf(") (if (string? %s) (string->list %s) %s))\n", js, js, js))
 			}
-			b.WriteString(fmt.Sprintf(") (if (string? %s) (string->list %s) %s))\n", js, js, js))
 		}
 		var writeLoops func(int, string)
 		writeLoops = func(i int, indent string) {
@@ -1915,15 +1942,41 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		jv := sanitizeName(q.Joins[j].Var)
 		js := joinSrcs[j]
 		on := joinOns[j]
-		b.WriteString(indent + fmt.Sprintf("(for-each (lambda (%s)\n", jv))
-		if on != "" {
-			b.WriteString(indent + "  (when " + on + "\n")
-			writeJoins(j+1, indent+"    ")
-			b.WriteString(indent + "  )")
+		if q.Joins[j].Side != nil && *q.Joins[j].Side == "left" {
+			tmp := fmt.Sprintf("_ms%d", c.tmpCount)
+			flag := fmt.Sprintf("_m%d", c.tmpCount)
+			c.tmpCount++
+			b.WriteString(indent + fmt.Sprintf("(let ((%s '()) (%s #f))\n", tmp, flag))
+			b.WriteString(indent + fmt.Sprintf("  (for-each (lambda (%s)\n", jv))
+			if on != "" {
+				b.WriteString(indent + "    (when " + on + "\n")
+				b.WriteString(indent + fmt.Sprintf("      (set! %s (append %s (list %s)))\n", tmp, tmp, jv))
+				b.WriteString(indent + fmt.Sprintf("      (set! %s #t))\n", flag))
+				b.WriteString(indent + "    )")
+			} else {
+				b.WriteString(indent + fmt.Sprintf("    (set! %s (append %s (list %s)))\n", tmp, tmp, jv))
+				b.WriteString(indent + fmt.Sprintf("    (set! %s #t)\n", flag))
+			}
+			b.WriteString(fmt.Sprintf(") (if (string? %s) (string->list %s) %s))\n", js, js, js))
+			b.WriteString(indent + fmt.Sprintf("  (if %s\n", flag))
+			b.WriteString(indent + fmt.Sprintf("      (for-each (lambda (%s)\n", jv))
+			writeJoins(j+1, indent+"        ")
+			b.WriteString(indent + fmt.Sprintf("      ) %s)\n", tmp))
+			b.WriteString(indent + "      (let ((" + jv + " '()))\n")
+			writeJoins(j+1, indent+"        ")
+			b.WriteString(indent + "      ))\n")
+			b.WriteString(indent + ")\n")
 		} else {
-			writeJoins(j+1, indent+"  ")
+			b.WriteString(indent + fmt.Sprintf("(for-each (lambda (%s)\n", jv))
+			if on != "" {
+				b.WriteString(indent + "  (when " + on + "\n")
+				writeJoins(j+1, indent+"    ")
+				b.WriteString(indent + "  )")
+			} else {
+				writeJoins(j+1, indent+"  ")
+			}
+			b.WriteString(fmt.Sprintf(") (if (string? %s) (string->list %s) %s))\n", js, js, js))
 		}
-		b.WriteString(fmt.Sprintf(") (if (string? %s) (string->list %s) %s))\n", js, js, js))
 	}
 
 	var writeLoops func(int, string)
