@@ -60,6 +60,20 @@ func (c *Compiler) Compile(prog *parser.Program, _ string) ([]byte, error) {
 	c.writeln("exception Continue")
 	c.buf.WriteByte('\n')
 
+	// helper for substring search used by the `contains` method
+	c.writeln("let string_contains s sub =")
+	c.indent++
+	c.writeln("let len_s = String.length s and len_sub = String.length sub in")
+	c.writeln("let rec aux i =")
+	c.indent++
+	c.writeln("if i + len_sub > len_s then false")
+	c.writeln("else if String.sub s i len_sub = sub then true")
+	c.writeln("else aux (i + 1)")
+	c.indent--
+	c.writeln("in aux 0")
+	c.indent--
+	c.buf.WriteByte('\n')
+
 	// first emit type, function and variable declarations
 	for _, s := range prog.Statements {
 		switch {
@@ -416,7 +430,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 				args = append(args, s)
 			}
-			val = fmt.Sprintf("%s %s", val, strings.Join(args, " "))
+			if strings.HasSuffix(val, ".contains") && len(args) == 1 {
+				base := strings.TrimSuffix(val, ".contains")
+				val = fmt.Sprintf("string_contains %s %s", base, args[0])
+			} else {
+				val = fmt.Sprintf("%s %s", val, strings.Join(args, " "))
+			}
 		case op.Index != nil:
 			if op.Index.Start == nil {
 				return "", fmt.Errorf("unsupported index")
@@ -596,6 +615,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("avg expects 1 arg")
 		}
 		return fmt.Sprintf("(List.fold_left (+) 0 %s / List.length %s)", args[0], args[0]), nil
+	case "substring":
+		if len(args) != 3 {
+			return "", fmt.Errorf("substring expects 3 args")
+		}
+		return fmt.Sprintf("String.sub %s %s (%s - %s)", args[0], args[1], args[2], args[1]), nil
 	case "str":
 		if len(args) != 1 {
 			return "", fmt.Errorf("str expects 1 arg")
