@@ -29,6 +29,7 @@ type Compiler struct {
 	usesSliceStr bool
 	usesExpect   bool
 	usesFetch    bool
+	tmpCount     int
 }
 
 func (c *Compiler) hsType(t types.Type) string {
@@ -69,7 +70,7 @@ func (c *Compiler) hsType(t types.Type) string {
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, structs: make(map[string]bool)}
+	return &Compiler{env: env, structs: make(map[string]bool), tmpCount: 0}
 }
 
 // Compile generates Haskell code for prog.
@@ -85,6 +86,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.usesSliceStr = false
 	c.usesExpect = false
 	c.usesFetch = false
+	c.tmpCount = 0
 
 	for _, s := range prog.Statements {
 		if s.Type != nil {
@@ -1329,12 +1331,18 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		loops = append(loops, fmt.Sprintf("%s <- %s", sanitizeName(j.Var), js))
 		on, err := c.compileExpr(j.On)
 		if err != nil {
 			return "", err
 		}
-		conds = append(conds, on)
+		if j.Side != nil && *j.Side == "left" {
+			tmp := fmt.Sprintf("_ms%d", c.tmpCount)
+			c.tmpCount++
+			loops = append(loops, fmt.Sprintf("%s <- let %s = [ %s | %s <- %s, %s ] in if null %s then [Map.empty] else %s", sanitizeName(j.Var), tmp, sanitizeName(j.Var), sanitizeName(j.Var), js, on, tmp, tmp))
+		} else {
+			loops = append(loops, fmt.Sprintf("%s <- %s", sanitizeName(j.Var), js))
+			conds = append(conds, on)
+		}
 		jt := c.inferExprType(j.Src)
 		var je types.Type = types.AnyType{}
 		if lt, ok := jt.(types.ListType); ok {

@@ -2,6 +2,8 @@
 
 96/97 programs compiled
 
+The compiler now handles basic `left join` queries.
+
 ## Compiled
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
