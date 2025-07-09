@@ -3,6 +3,7 @@
 package luacode
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -337,8 +338,23 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	argStr := strings.Join(args, ", ")
 	switch name {
 	case "print":
-		c.helpers["print"] = true
-		return fmt.Sprintf("__print(%s)", argStr), nil
+		if len(args) == 1 {
+			if _, ok := c.inferExprType(call.Args[0]).(types.ListType); ok {
+				tmp := fmt.Sprintf("_tmp%d", c.tmpCount)
+				c.tmpCount++
+				var buf bytes.Buffer
+				buf.WriteString("(function()\n")
+				buf.WriteString(fmt.Sprintf("\tlocal %s = %s\n", tmp, args[0]))
+				buf.WriteString(fmt.Sprintf("\tfor i, v in ipairs(%s) do\n", tmp))
+				buf.WriteString("\t\tio.write(tostring(v))\n")
+				buf.WriteString(fmt.Sprintf("\t\tif i < #%s then io.write(\" \") end\n", tmp))
+				buf.WriteString("\tend\n")
+				buf.WriteString("\tio.write(\"\\n\")\n")
+				buf.WriteString("end)()")
+				return buf.String(), nil
+			}
+		}
+		return fmt.Sprintf("print(%s)", argStr), nil
 	case "str":
 		if len(args) == 1 {
 			return fmt.Sprintf("tostring(%s)", args[0]), nil
