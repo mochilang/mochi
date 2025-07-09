@@ -1,38 +1,38 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/map_nested_assign.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/map_nested_assign.c:60:26: warning: passing argument 2 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
-   60 |   map_int_bool_put(&_t2, "inner", 1);
+/workspace/mochi/tests/machine/x/c/map_nested_assign.c:50:26: warning: passing argument 2 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
+   50 |   map_int_bool_put(&_t2, "inner", 1);
       |                          ^~~~~~~
       |                          |
       |                          char *
-/workspace/mochi/tests/machine/x/c/map_nested_assign.c:38:51: note: expected ‘int’ but argument is of type ‘char *’
-   38 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
+/workspace/mochi/tests/machine/x/c/map_nested_assign.c:28:51: note: expected ‘int’ but argument is of type ‘char *’
+   28 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
       |                                               ~~~~^~~
-/workspace/mochi/tests/machine/x/c/map_nested_assign.c:61:26: warning: passing argument 2 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
-   61 |   map_int_bool_put(&_t1, "outer", _t2);
+/workspace/mochi/tests/machine/x/c/map_nested_assign.c:51:26: warning: passing argument 2 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
+   51 |   map_int_bool_put(&_t1, "outer", _t2);
       |                          ^~~~~~~
       |                          |
       |                          char *
-/workspace/mochi/tests/machine/x/c/map_nested_assign.c:38:51: note: expected ‘int’ but argument is of type ‘char *’
-   38 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
+/workspace/mochi/tests/machine/x/c/map_nested_assign.c:28:51: note: expected ‘int’ but argument is of type ‘char *’
+   28 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
       |                                               ~~~~^~~
-/workspace/mochi/tests/machine/x/c/map_nested_assign.c:61:35: error: incompatible type for argument 3 of ‘map_int_bool_put’
-   61 |   map_int_bool_put(&_t1, "outer", _t2);
+/workspace/mochi/tests/machine/x/c/map_nested_assign.c:51:35: error: incompatible type for argument 3 of ‘map_int_bool_put’
+   51 |   map_int_bool_put(&_t1, "outer", _t2);
       |                                   ^~~
       |                                   |
       |                                   map_int_bool
-/workspace/mochi/tests/machine/x/c/map_nested_assign.c:38:60: note: expected ‘int’ but argument is of type ‘map_int_bool’
-   38 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
+/workspace/mochi/tests/machine/x/c/map_nested_assign.c:28:60: note: expected ‘int’ but argument is of type ‘map_int_bool’
+   28 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
       |                                                        ~~~~^~~~~
-/workspace/mochi/tests/machine/x/c/map_nested_assign.c:62:14: error: incompatible types when initializing type ‘int’ using type ‘map_int_bool’
-   62 |   int data = _t1;
+/workspace/mochi/tests/machine/x/c/map_nested_assign.c:52:14: error: incompatible types when initializing type ‘int’ using type ‘map_int_bool’
+   52 |   int data = _t1;
       |              ^~~
-/workspace/mochi/tests/machine/x/c/map_nested_assign.c:63:7: error: request for member ‘data’ in something not a structure or union
-   63 |   data.data["outer"].data["inner"] = 2;
+/workspace/mochi/tests/machine/x/c/map_nested_assign.c:53:7: error: request for member ‘data’ in something not a structure or union
+   53 |   data.data["outer"].data["inner"] = 2;
       |       ^
-/workspace/mochi/tests/machine/x/c/map_nested_assign.c:64:22: error: request for member ‘data’ in something not a structure or union
-   64 |   printf("%d\n", data.data["outer"].data["inner"]);
+/workspace/mochi/tests/machine/x/c/map_nested_assign.c:54:22: error: request for member ‘data’ in something not a structure or union
+   54 |   printf("%d\n", data.data["outer"].data["inner"]);
       |                      ^
 
    1: #include <stdio.h>

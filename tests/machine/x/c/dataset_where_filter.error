@@ -2,9 +2,9 @@ line: 0
 error: output mismatch
 -- got --
 --- Adults ---
-664346628 is 30 
-664346638 is 65  (senior)
-664346646 is 45
+-1966473212 is 30 
+-1966473202 is 65  (senior)
+-1966473194 is 45
 -- want --
 --- Adults ---
 Alice is 30

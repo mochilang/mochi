@@ -12,6 +12,7 @@ const (
 	needListListInt          = "list_list_int"
 	needConcatListListInt    = "concat_list_list_int"
 	needConcatListInt        = "concat_list_int"
+	needListInt              = "list_int"
 	needListString           = "list_string"
 	needConcatListString     = "concat_list_string"
 	needConcatString         = "concat_string"

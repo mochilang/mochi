@@ -1,23 +1,21 @@
 line: 0
-error: output mismatch
--- got --
---- Cross Join of three lists ---
-1 1777037320 1
-1 1777037320 0
-1 1777037322 1
-1 1777037322 0
-2 1777037320 1
-2 1777037320 0
-2 1777037322 1
-2 1777037322 0
--- want --
---- Cross Join of three lists ---
-1 A true
-1 A false
-1 B true
-1 B false
-2 A true
-2 A false
-2 B true
-2 B false
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/cross_join_triple.c:18:3: error: conflicting types for ‘list_int’; have ‘struct <anonymous>’
+   18 | } list_int;
+      |   ^~~~~~~~
+/workspace/mochi/tests/machine/x/c/cross_join_triple.c:8:3: note: previous declaration of ‘list_int’ with type ‘list_int’
+    8 | } list_int;
+      |   ^~~~~~~~
+/workspace/mochi/tests/machine/x/c/cross_join_triple.c:19:17: error: conflicting types for ‘list_int_create’; have ‘list_int(int)’
+   19 | static list_int list_int_create(int len) {
+      |                 ^~~~~~~~~~~~~~~
+/workspace/mochi/tests/machine/x/c/cross_join_triple.c:9:17: note: previous definition of ‘list_int_create’ with type ‘list_int(int)’
+    9 | static list_int list_int_create(int len) {
+      |                 ^~~~~~~~~~~~~~~
+/workspace/mochi/tests/machine/x/c/cross_join_triple.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/cross_join_triple.c:73:51: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+   73 |         _t4.data[_t5] = (combosItem){.n = n, .l = l, .b = b};
+      |                                                   ^
+/workspace/mochi/tests/machine/x/c/cross_join_triple.c:73:51: note: (near initialization for ‘(anonymous).l’)
+
    1: #include <stdio.h>

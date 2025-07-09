@@ -1,52 +1,93 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/group_items_iteration.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:78:21: error: invalid initializer
-   78 |   list_int groups = 0;
-      |                     ^
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:79:18: error: ‘_t2’ undeclared (first use in this function); did you mean ‘_t1’?
-   79 |   list_int tmp = _t2;
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:68:3: error: unknown type name ‘list_int’
+   68 |   list_int groups = 0;
+      |   ^~~~~~~~
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:69:3: error: unknown type name ‘list_int’
+   69 |   list_int tmp = _t2;
+      |   ^~~~~~~~
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:69:18: error: ‘_t2’ undeclared (first use in this function); did you mean ‘_t1’?
+   69 |   list_int tmp = _t2;
       |                  ^~~
       |                  _t1
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:79:18: note: each undeclared identifier is reported only once for each function it appears in
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:83:30: error: request for member ‘items’ in something not a structure or union
-   83 |     for (int _t4 = 0; _t4 < g.items.len; _t4++) {
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:69:18: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:70:33: error: request for member ‘len’ in something not a structure or union
+   70 |   for (int _t3 = 0; _t3 < groups.len; _t3++) {
+      |                                 ^
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:71:19: error: request for member ‘data’ in something not a structure or union
+   71 |     int g = groups.data[_t3];
+      |                   ^
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:73:30: error: request for member ‘items’ in something not a structure or union
+   73 |     for (int _t4 = 0; _t4 < g.items.len; _t4++) {
       |                              ^
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:84:16: error: request for member ‘items’ in something not a structure or union
-   84 |       int x = g.items.data[_t4];
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:74:16: error: request for member ‘items’ in something not a structure or union
+   74 |       int x = g.items.data[_t4];
       |                ^
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:85:24: error: request for member ‘val’ in something not a structure or union
-   85 |       total = total + x.val;
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:75:24: error: request for member ‘val’ in something not a structure or union
+   75 |       total = total + x.val;
       |                        ^
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:88:36: error: request for member ‘key’ in something not a structure or union
-   88 |     map_int_bool_put(&_t5, "tag", g.key);
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:78:36: error: request for member ‘key’ in something not a structure or union
+   78 |     map_int_bool_put(&_t5, "tag", g.key);
       |                                    ^
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:88:28: warning: passing argument 2 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
-   88 |     map_int_bool_put(&_t5, "tag", g.key);
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:78:28: warning: passing argument 2 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
+   78 |     map_int_bool_put(&_t5, "tag", g.key);
       |                            ^~~~~
       |                            |
       |                            char *
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:38:51: note: expected ‘int’ but argument is of type ‘char *’
-   38 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:28:51: note: expected ‘int’ but argument is of type ‘char *’
+   28 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
       |                                               ~~~~^~~
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:89:28: warning: passing argument 2 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
-   89 |     map_int_bool_put(&_t5, "total", total);
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:79:28: warning: passing argument 2 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
+   79 |     map_int_bool_put(&_t5, "total", total);
       |                            ^~~~~~~
       |                            |
       |                            char *
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:38:51: note: expected ‘int’ but argument is of type ‘char *’
-   38 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:28:51: note: expected ‘int’ but argument is of type ‘char *’
+   28 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
       |                                               ~~~~^~~
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:90:11: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
-   90 |     tmp = 0;
-      |           ^
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:98:17: error: request for member ‘tag’ in something not a structure or union
-   98 |     _t9[_t7] = r.tag;
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:82:3: error: unknown type name ‘list_int’
+   82 |   list_int _t6 = list_int_create(tmp.len);
+      |   ^~~~~~~~
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:82:18: warning: implicit declaration of function ‘list_int_create’; did you mean ‘list_dataItem_create’? [-Wimplicit-function-declaration]
+   82 |   list_int _t6 = list_int_create(tmp.len);
+      |                  ^~~~~~~~~~~~~~~
+      |                  list_dataItem_create
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:82:37: error: request for member ‘len’ in something not a structure or union
+   82 |   list_int _t6 = list_int_create(tmp.len);
+      |                                     ^
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:83:45: error: request for member ‘len’ in something not a structure or union
+   83 |   int *_t9 = (int *)malloc(sizeof(int) * tmp.len);
+      |                                             ^
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:85:30: error: request for member ‘len’ in something not a structure or union
+   85 |   for (int _t8 = 0; _t8 < tmp.len; _t8++) {
+      |                              ^
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:86:16: error: request for member ‘data’ in something not a structure or union
+   86 |     int r = tmp.data[_t8];
+      |                ^
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:87:8: error: request for member ‘data’ in something not a structure or union
+   87 |     _t6.data[_t7] = r;
+      |        ^
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:88:17: error: request for member ‘tag’ in something not a structure or union
+   88 |     _t9[_t7] = r.tag;
       |                 ^
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:115:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘list_int’ [-Wformat=]
-  115 |   printf("%d\n", result);
-      |           ~^     ~~~~~~
-      |            |     |
-      |            int   list_int
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:91:6: error: request for member ‘len’ in something not a structure or union
+   91 |   _t6.len = _t7;
+      |      ^
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:98:23: error: request for member ‘data’ in something not a structure or union
+   98 |         int _t11 = _t6.data[i];
+      |                       ^
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:99:12: error: request for member ‘data’ in something not a structure or union
+   99 |         _t6.data[i] = _t6.data[j];
+      |            ^
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:99:26: error: request for member ‘data’ in something not a structure or union
+   99 |         _t6.data[i] = _t6.data[j];
+      |                          ^
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:100:12: error: request for member ‘data’ in something not a structure or union
+  100 |         _t6.data[j] = _t11;
+      |            ^
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:104:3: error: unknown type name ‘list_int’
+  104 |   list_int result = _t6;
+      |   ^~~~~~~~
 
    1: #include <stdio.h>

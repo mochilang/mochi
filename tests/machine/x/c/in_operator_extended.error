@@ -1,23 +1,35 @@
 line: 0
 error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/in_operator_extended.c:18:3: error: conflicting types for ‘list_int’; have ‘struct <anonymous>’
+   18 | } list_int;
+      |   ^~~~~~~~
+/workspace/mochi/tests/machine/x/c/in_operator_extended.c:8:3: note: previous declaration of ‘list_int’ with type ‘list_int’
+    8 | } list_int;
+      |   ^~~~~~~~
+/workspace/mochi/tests/machine/x/c/in_operator_extended.c:19:17: error: conflicting types for ‘list_int_create’; have ‘list_int(int)’
+   19 | static list_int list_int_create(int len) {
+      |                 ^~~~~~~~~~~~~~~
+/workspace/mochi/tests/machine/x/c/in_operator_extended.c:9:17: note: previous definition of ‘list_int_create’ with type ‘list_int(int)’
+    9 | static list_int list_int_create(int len) {
+      |                 ^~~~~~~~~~~~~~~
 /workspace/mochi/tests/machine/x/c/in_operator_extended.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/in_operator_extended.c:88:26: warning: passing argument 2 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
-   88 |   map_int_bool_put(&_t5, "a", 1);
+/workspace/mochi/tests/machine/x/c/in_operator_extended.c:98:26: warning: passing argument 2 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
+   98 |   map_int_bool_put(&_t5, "a", 1);
       |                          ^~~
       |                          |
       |                          char *
-/workspace/mochi/tests/machine/x/c/in_operator_extended.c:39:51: note: expected ‘int’ but argument is of type ‘char *’
-   39 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
+/workspace/mochi/tests/machine/x/c/in_operator_extended.c:49:51: note: expected ‘int’ but argument is of type ‘char *’
+   49 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
       |                                               ~~~~^~~
-/workspace/mochi/tests/machine/x/c/in_operator_extended.c:89:11: error: incompatible types when initializing type ‘int’ using type ‘map_int_bool’
-   89 |   int m = _t5;
+/workspace/mochi/tests/machine/x/c/in_operator_extended.c:99:11: error: incompatible types when initializing type ‘int’ using type ‘map_int_bool’
+   99 |   int m = _t5;
       |           ^~~
-/workspace/mochi/tests/machine/x/c/in_operator_extended.c:90:22: error: expected ‘)’ before ‘in’
-   90 |   printf("%s\n", ("a" in m) ? "true" : "false");
+/workspace/mochi/tests/machine/x/c/in_operator_extended.c:100:22: error: expected ‘)’ before ‘in’
+  100 |   printf("%s\n", ("a" in m) ? "true" : "false");
       |                  ~   ^~~
       |                      )
-/workspace/mochi/tests/machine/x/c/in_operator_extended.c:91:22: error: expected ‘)’ before ‘in’
-   91 |   printf("%s\n", ("b" in m) ? "true" : "false");
+/workspace/mochi/tests/machine/x/c/in_operator_extended.c:101:22: error: expected ‘)’ before ‘in’
+  101 |   printf("%s\n", ("b" in m) ? "true" : "false");
       |                  ~   ^~~
       |                      )
 

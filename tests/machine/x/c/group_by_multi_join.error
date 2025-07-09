@@ -1,17 +1,27 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/group_by_multi_join.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:126:13: error: incompatible types when assigning to type ‘int’ from type ‘filteredItem’
-  126 |             (filteredItem){.part = ps.part, .value = ps.cost * ps.qty};
-      |             ^
-/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:132:32: error: invalid initializer
-  132 |   list_filteredItem filtered = _t4;
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:98:3: error: unknown type name ‘list_int’
+   98 |   list_int _t4 = list_int_create(partsupp.len * suppliers.len * nations.len);
+      |   ^~~~~~~~
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:98:18: warning: implicit declaration of function ‘list_int_create’; did you mean ‘list_nationsItem_create’? [-Wimplicit-function-declaration]
+   98 |   list_int _t4 = list_int_create(partsupp.len * suppliers.len * nations.len);
+      |                  ^~~~~~~~~~~~~~~
+      |                  list_nationsItem_create
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:115:12: error: request for member ‘data’ in something not a structure or union
+  115 |         _t4.data[_t5] =
+      |            ^
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:121:6: error: request for member ‘len’ in something not a structure or union
+  121 |   _t4.len = _t5;
+      |      ^
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:122:32: error: invalid initializer
+  122 |   list_filteredItem filtered = _t4;
       |                                ^~~
-/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:133:30: error: invalid initializer
-  133 |   list_groupedItem grouped = 0;
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:123:30: error: invalid initializer
+  123 |   list_groupedItem grouped = 0;
       |                              ^
-/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:134:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘list_groupedItem’ [-Wformat=]
-  134 |   printf("%d\n", grouped);
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:124:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘list_groupedItem’ [-Wformat=]
+  124 |   printf("%d\n", grouped);
       |           ~^     ~~~~~~~
       |            |     |
       |            int   list_groupedItem

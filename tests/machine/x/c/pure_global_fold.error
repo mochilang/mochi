@@ -1,9 +1,9 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/pure_global_fold.c: In function ‘inc’:
-/workspace/mochi/tests/machine/x/c/pure_global_fold.c:14:29: error: ‘k’ undeclared (first use in this function)
-   14 | int inc(int x) { return x + k; }
+/workspace/mochi/tests/machine/x/c/pure_global_fold.c:4:29: error: ‘k’ undeclared (first use in this function)
+    4 | int inc(int x) { return x + k; }
       |                             ^
-/workspace/mochi/tests/machine/x/c/pure_global_fold.c:14:29: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/machine/x/c/pure_global_fold.c:4:29: note: each undeclared identifier is reported only once for each function it appears in
 
    1: #include <stdio.h>

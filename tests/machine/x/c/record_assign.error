@@ -1,18 +1,18 @@
 line: 0
 error: cc error: exit status 1
-/workspace/mochi/tests/machine/x/c/record_assign.c:18:3: error: conflicting types for ‘Counter’; have ‘struct <anonymous>’
-   18 | } Counter;
+/workspace/mochi/tests/machine/x/c/record_assign.c:8:3: error: conflicting types for ‘Counter’; have ‘struct <anonymous>’
+    8 | } Counter;
       |   ^~~~~~~
-/workspace/mochi/tests/machine/x/c/record_assign.c:14:24: note: previous declaration of ‘Counter’ with type ‘Counter’
-   14 | typedef struct Counter Counter;
+/workspace/mochi/tests/machine/x/c/record_assign.c:4:24: note: previous declaration of ‘Counter’ with type ‘Counter’
+    4 | typedef struct Counter Counter;
       |                        ^~~~~~~
 /workspace/mochi/tests/machine/x/c/record_assign.c: In function ‘inc’:
-/workspace/mochi/tests/machine/x/c/record_assign.c:20:24: error: ‘c’ is a pointer; did you mean to use ‘->’?
-   20 | int inc(Counter *c) { c.n = c.n + 1; }
+/workspace/mochi/tests/machine/x/c/record_assign.c:10:24: error: ‘c’ is a pointer; did you mean to use ‘->’?
+   10 | int inc(Counter *c) { c.n = c.n + 1; }
       |                        ^
       |                        ->
-/workspace/mochi/tests/machine/x/c/record_assign.c:20:30: error: ‘c’ is a pointer; did you mean to use ‘->’?
-   20 | int inc(Counter *c) { c.n = c.n + 1; }
+/workspace/mochi/tests/machine/x/c/record_assign.c:10:30: error: ‘c’ is a pointer; did you mean to use ‘->’?
+   10 | int inc(Counter *c) { c.n = c.n + 1; }
       |                              ^
       |                              ->
 

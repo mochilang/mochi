@@ -1,31 +1,31 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/map_in_operator.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/map_in_operator.c:59:29: warning: passing argument 3 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
-   59 |   map_int_bool_put(&_t1, 1, "a");
+/workspace/mochi/tests/machine/x/c/map_in_operator.c:49:29: warning: passing argument 3 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
+   49 |   map_int_bool_put(&_t1, 1, "a");
       |                             ^~~
       |                             |
       |                             char *
-/workspace/mochi/tests/machine/x/c/map_in_operator.c:38:60: note: expected ‘int’ but argument is of type ‘char *’
-   38 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
+/workspace/mochi/tests/machine/x/c/map_in_operator.c:28:60: note: expected ‘int’ but argument is of type ‘char *’
+   28 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
       |                                                        ~~~~^~~~~
-/workspace/mochi/tests/machine/x/c/map_in_operator.c:60:29: warning: passing argument 3 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
-   60 |   map_int_bool_put(&_t1, 2, "b");
+/workspace/mochi/tests/machine/x/c/map_in_operator.c:50:29: warning: passing argument 3 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
+   50 |   map_int_bool_put(&_t1, 2, "b");
       |                             ^~~
       |                             |
       |                             char *
-/workspace/mochi/tests/machine/x/c/map_in_operator.c:38:60: note: expected ‘int’ but argument is of type ‘char *’
-   38 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
+/workspace/mochi/tests/machine/x/c/map_in_operator.c:28:60: note: expected ‘int’ but argument is of type ‘char *’
+   28 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
       |                                                        ~~~~^~~~~
-/workspace/mochi/tests/machine/x/c/map_in_operator.c:61:11: error: incompatible types when initializing type ‘int’ using type ‘map_int_bool’
-   61 |   int m = _t1;
+/workspace/mochi/tests/machine/x/c/map_in_operator.c:51:11: error: incompatible types when initializing type ‘int’ using type ‘map_int_bool’
+   51 |   int m = _t1;
       |           ^~~
-/workspace/mochi/tests/machine/x/c/map_in_operator.c:62:20: error: expected ‘)’ before ‘in’
-   62 |   printf("%s\n", (1 in m) ? "true" : "false");
+/workspace/mochi/tests/machine/x/c/map_in_operator.c:52:20: error: expected ‘)’ before ‘in’
+   52 |   printf("%s\n", (1 in m) ? "true" : "false");
       |                  ~ ^~~
       |                    )
-/workspace/mochi/tests/machine/x/c/map_in_operator.c:63:20: error: expected ‘)’ before ‘in’
-   63 |   printf("%s\n", (3 in m) ? "true" : "false");
+/workspace/mochi/tests/machine/x/c/map_in_operator.c:53:20: error: expected ‘)’ before ‘in’
+   53 |   printf("%s\n", (3 in m) ? "true" : "false");
       |                  ~ ^~~
       |                    )
 
