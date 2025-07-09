@@ -107,3 +107,4 @@ This directory contains Haskell code generated from the Mochi programs in `tests
 - [ ] Implement support for dataset and join queries.
 - [ ] Add map and struct operations needed for JSON helpers.
 - [ ] Finish runtime features for update statements and YAML loading.
+- [ ] Improve query output formatting beyond `_showAny` helpers.

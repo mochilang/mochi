@@ -1,4 +1,3 @@
---- Top products (excluding most expensive) ---
-VString "Smartphone" costs $ VInt 900
-VString "Tablet" costs $ VInt 600
-VString "Monitor" costs $ VInt 300
+--- Top products (excluding most expensive) ---Smartphone costs $ 900
+Tablet costs $ 600
+Monitor costs $ 300
