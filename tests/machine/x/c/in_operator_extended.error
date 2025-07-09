@@ -12,25 +12,13 @@ error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/in_operator_extended.c:89:11: error: incompatible types when initializing type ‘int’ using type ‘map_int_bool’
    89 |   int m = _t5;
       |           ^~~
-/workspace/mochi/tests/machine/x/c/in_operator_extended.c:90:22: error: expected ‘)’ before ‘in’
-   90 |   printf("%d\n", ("a" in m));
-      |                  ~   ^~~
-      |                      )
-/workspace/mochi/tests/machine/x/c/in_operator_extended.c:90:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]
-   90 |   printf("%d\n", ("a" in m));
-      |           ~^     ~~~~~~~
-      |            |     |
-      |            int   char *
-      |           %s
-/workspace/mochi/tests/machine/x/c/in_operator_extended.c:91:22: error: expected ‘)’ before ‘in’
-   91 |   printf("%d\n", ("b" in m));
-      |                  ~   ^~~
-      |                      )
-/workspace/mochi/tests/machine/x/c/in_operator_extended.c:91:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]
-   91 |   printf("%d\n", ("b" in m));
-      |           ~^     ~~~~~~~
-      |            |     |
-      |            int   char *
-      |           %s
+/workspace/mochi/tests/machine/x/c/in_operator_extended.c:90:23: error: expected ‘)’ before ‘in’
+   90 |   printf("%s\n", (("a" in m)) ? "true" : "false");
+      |                   ~   ^~~
+      |                       )
+/workspace/mochi/tests/machine/x/c/in_operator_extended.c:91:23: error: expected ‘)’ before ‘in’
+   91 |   printf("%s\n", (("b" in m)) ? "true" : "false");
+      |                   ~   ^~~
+      |                       )
 
    1: #include <stdio.h>

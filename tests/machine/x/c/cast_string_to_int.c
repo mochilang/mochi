@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct {
   int len;
@@ -12,6 +13,6 @@ static list_int list_int_create(int len) {
   return l;
 }
 int main() {
-  printf("%d\n", "1995");
+  printf("%d\n", atoi("1995"));
   return 0;
 }

@@ -13,7 +13,7 @@ static list_int list_int_create(int len) {
 }
 int main() {
   char *s = "catch";
-  printf("%d\n", s.contains("cat"));
-  printf("%d\n", s.contains("dog"));
+  printf("%s\n", (s.contains("cat")) ? "true" : "false");
+  printf("%s\n", (s.contains("dog")) ? "true" : "false");
   return 0;
 }

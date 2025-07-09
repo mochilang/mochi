@@ -23,8 +23,5 @@ error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/cast_struct.c:38:60: note: expected ‘int’ but argument is of type ‘char *’
    38 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
       |                                                        ~~~~^~~~~
-/workspace/mochi/tests/machine/x/c/cast_struct.c:66:15: error: invalid initializer
-   66 |   Todo todo = _t1;
-      |               ^~~
 
    1: #include <stdio.h>

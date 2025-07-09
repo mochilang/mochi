@@ -596,41 +596,29 @@ static void _save_json(list_map_string rows,const char* path){ FILE* f=(!path||p
 }
 `
 	helperPrintListInt = `static void _print_list_int(list_int v) {
-    printf("[");
     for (int i = 0; i < v.len; i++) {
         if (i > 0) printf(" ");
         printf("%d", v.data[i]);
     }
-    printf("]");
-}
-`
+}`
 	helperPrintListListInt = `static void _print_list_list_int(list_list_int v) {
-    printf("[");
     for (int i = 0; i < v.len; i++) {
         if (i > 0) printf(" ");
         _print_list_int(v.data[i]);
     }
-    printf("]");
-}
-`
+}`
 	helperPrintListFloat = `static void _print_list_float(list_float v) {
-    printf("[");
     for (int i = 0; i < v.len; i++) {
         if (i > 0) printf(" ");
         printf("%g", v.data[i]);
     }
-    printf("]");
-}
-`
+}`
 	helperPrintListString = `static void _print_list_string(list_string v) {
-    printf("[");
     for (int i = 0; i < v.len; i++) {
         if (i > 0) printf(" ");
         printf("%s", v.data[i]);
     }
-    printf("]");
-}
-`
+}`
 )
 
 // Mapping of helper requirement keys to their C implementations and the order

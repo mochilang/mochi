@@ -96,13 +96,11 @@ static list_int intersect_list_int(list_int a, list_int b) {
   return r;
 }
 static void _print_list_int(list_int v) {
-  printf("[");
   for (int i = 0; i < v.len; i++) {
     if (i > 0)
       printf(" ");
     printf("%d", v.data[i]);
   }
-  printf("]");
 }
 int main() {
   list_int _t1 = list_int_create(2);

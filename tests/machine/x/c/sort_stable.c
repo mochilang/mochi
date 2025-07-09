@@ -23,13 +23,11 @@ static list_string list_string_create(int len) {
   return l;
 }
 static void _print_list_string(list_string v) {
-  printf("[");
   for (int i = 0; i < v.len; i++) {
     if (i > 0)
       printf(" ");
     printf("%s", v.data[i]);
   }
-  printf("]");
 }
 typedef struct {
   int n;

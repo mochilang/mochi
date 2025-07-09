@@ -82,15 +82,15 @@ int main() {
   }
   _t2.len = _t3;
   list_int ys = _t2;
-  printf("%d\n", contains_list_int(ys, 1));
-  printf("%d\n", contains_list_int(ys, 2));
+  printf("%s\n", (contains_list_int(ys, 1)) ? "true" : "false");
+  printf("%s\n", (contains_list_int(ys, 2)) ? "true" : "false");
   map_int_bool _t5 = map_int_bool_create(1);
   map_int_bool_put(&_t5, "a", 1);
   int m = _t5;
-  printf("%d\n", ("a" in m));
-  printf("%d\n", ("b" in m));
+  printf("%s\n", (("a" in m)) ? "true" : "false");
+  printf("%s\n", (("b" in m)) ? "true" : "false");
   char *s = "hello";
-  printf("%d\n", contains_string(s, "ell"));
-  printf("%d\n", contains_string(s, "foo"));
+  printf("%s\n", (contains_string(s, "ell")) ? "true" : "false");
+  printf("%s\n", (contains_string(s, "foo")) ? "true" : "false");
   return 0;
 }
