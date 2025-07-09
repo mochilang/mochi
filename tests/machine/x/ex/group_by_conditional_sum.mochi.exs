@@ -13,7 +13,7 @@ defmodule Main do
       (fn ->
          src = items
          rows = _query(src, [], %{select: fn i -> [i] end, sortKey: fn g -> g.key end})
-         groups = _group_by(rows, fn i -> i.cat end)
+         groups = _group_by(rows, fn [i] -> i.cat end)
          groups = Enum.map(groups, fn g -> %{g | items: Enum.map(g.items, fn [i] -> i end)} end)
          items = groups
          items = Enum.sort_by(items, fn g -> g.key end)
@@ -42,12 +42,35 @@ defmodule Main do
 
   defmodule Group do
     defstruct key: nil, items: []
+
+    def fetch(g, k) do
+      case k do
+        :key -> {:ok, g.key}
+        :items -> {:ok, g.items}
+        _ -> :error
+      end
+    end
+
+    def get_and_update(g, k, f) do
+      case k do
+        :key ->
+          {v, nv} = f.(g.key)
+          {v, %{g | key: nv}}
+
+        :items ->
+          {v, nv} = f.(g.items)
+          {v, %{g | items: nv}}
+
+        _ ->
+          {nil, g}
+      end
+    end
   end
 
   defp _group_by(src, keyfn) do
     {groups, order} =
       Enum.reduce(src, {%{}, []}, fn it, {groups, order} ->
-        key = keyfn.(it)
+        key = if is_list(it), do: apply(keyfn, it), else: keyfn.(it)
         ks = :erlang.phash2(key)
 
         {groups, order} =
@@ -57,7 +80,8 @@ defmodule Main do
             {Map.put(groups, ks, %Group{key: key}), order ++ [ks]}
           end
 
-        groups = Map.update!(groups, ks, fn g -> %{g | items: g.items ++ [it]} end)
+        val = if is_list(it) and length(it) == 1, do: hd(it), else: it
+        groups = Map.update!(groups, ks, fn g -> %{g | items: g.items ++ [val]} end)
         {groups, order}
       end)
 
@@ -182,7 +206,7 @@ defmodule Main do
   defp _sum(v) do
     list =
       cond do
-        is_map(v) and Map.has_key?(v, :items) -> v[:items]
+        is_map(v) and Map.has_key?(v, :items) -> Map.get(v, :items)
         is_list(v) -> v
         true -> raise "sum() expects list or group"
       end

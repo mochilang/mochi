@@ -4,7 +4,7 @@ defmodule Main do
     # matrix :: list(list(integer()))
     matrix = [[1, 2], [3, 4]]
     _ = matrix
-    matrix = Map.put(matrix, 1, 5)
+    matrix = List.update_at(matrix, 1, fn it -> List.replace_at(it, 0, 5) end)
     IO.inspect(Enum.at(Enum.at(matrix, 1), 0))
   end
 end

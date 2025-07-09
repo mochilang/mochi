@@ -11,7 +11,7 @@ defmodule Main do
   defp _exists(v) do
     cond do
       is_list(v) -> length(v) > 0
-      is_map(v) and Map.has_key?(v, :items) -> length(v[:items]) > 0
+      is_map(v) and Map.has_key?(v, :items) -> length(Map.get(v, :items)) > 0
       is_map(v) -> map_size(v) > 0
       is_binary(v) -> String.length(v) > 0
       true -> raise "exists expects list, map or string"
