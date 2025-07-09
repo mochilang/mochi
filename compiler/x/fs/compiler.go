@@ -29,6 +29,7 @@ type Compiler struct {
 	anon     map[string]string
 	anonCnt  int
 	usesJson bool
+	usesYaml bool
 }
 
 func defaultValue(typ string) string {
@@ -72,6 +73,7 @@ func New() *Compiler {
 		maps:     make(map[string]bool),
 		anon:     make(map[string]string),
 		usesJson: false,
+		usesYaml: false,
 	}
 }
 
@@ -87,6 +89,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.anon = make(map[string]string)
 	c.anonCnt = 0
 	c.usesJson = false
+	c.usesYaml = false
 
 	for _, s := range p.Statements {
 		if err := c.compileStmt(s); err != nil {
@@ -97,6 +100,10 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	header.WriteString("open System\n")
 	if c.usesJson {
 		header.WriteString("open System.Text.Json\n")
+	}
+	if c.usesYaml {
+		header.WriteString("open System.IO\n")
+		header.WriteString("open YamlDotNet.Serialization\n")
 	}
 	header.WriteString("\n")
 	header.WriteString("exception Break\n")
@@ -111,6 +118,10 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
+	case s.Test != nil:
+		return c.compileTestBlock(s.Test)
+	case s.Expect != nil:
+		return c.compileExpect(s.Expect)
 	case s.Let != nil:
 		return c.compileLet(s.Let)
 	case s.Var != nil:
@@ -127,6 +138,14 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			s.Expr.Expr.Binary.Left != nil && s.Expr.Expr.Binary.Left.Value != nil &&
 			s.Expr.Expr.Binary.Left.Value.Target != nil && s.Expr.Expr.Binary.Left.Value.Target.Call != nil &&
 			s.Expr.Expr.Binary.Left.Value.Target.Call.Func == "print" {
+			expr, err := c.compileExpr(s.Expr.Expr)
+			if err != nil {
+				return err
+			}
+			c.writeln(expr)
+			return nil
+		}
+		if p := rootPrimary(s.Expr.Expr); p != nil && p.Save != nil {
 			expr, err := c.compileExpr(s.Expr.Expr)
 			if err != nil {
 				return err
@@ -152,6 +171,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileIfStmt(s.If)
 	case s.Type != nil:
 		return c.compileTypeDecl(s.Type)
+	case s.Update != nil:
+		return c.compileUpdate(s.Update)
 	default:
 		return fmt.Errorf("unsupported statement at line %d", s.Pos.Line)
 	}
@@ -163,7 +184,7 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 	if l.Type != nil {
 		typ, err = c.compileType(l.Type)
 		if err != nil {
-			return err
+			typ = ""
 		}
 	}
 	var val string
@@ -210,7 +231,7 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	if v.Type != nil {
 		typ, err = c.compileType(v.Type)
 		if err != nil {
-			return err
+			typ = ""
 		}
 	}
 	var val string = "0"
@@ -423,7 +444,25 @@ func (c *Compiler) compileIfStmt(i *parser.IfStmt) error {
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	if len(t.Variants) > 0 {
-		return fmt.Errorf("variant types not supported")
+		c.writeln(fmt.Sprintf("type %s =", t.Name))
+		c.indent++
+		for _, v := range t.Variants {
+			parts := make([]string, len(v.Fields))
+			for i, f := range v.Fields {
+				ft, err := c.compileType(f.Type)
+				if err != nil {
+					return err
+				}
+				parts[i] = ft
+			}
+			if len(parts) == 0 {
+				c.writeln("| " + v.Name)
+			} else {
+				c.writeln("| " + v.Name + " of " + strings.Join(parts, " * "))
+			}
+		}
+		c.indent--
+		return nil
 	}
 	fields := make(map[string]string)
 	c.writeln(fmt.Sprintf("type %s = {", t.Name))
@@ -437,7 +476,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 			return err
 		}
 		fields[m.Field.Name] = ft
-		line := fmt.Sprintf("%s: %s", m.Field.Name, ft)
+		line := fmt.Sprintf("mutable %s: %s", m.Field.Name, ft)
 		if idx < len(t.Members)-1 {
 			c.writeln(line)
 		} else {
@@ -649,6 +688,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileMap(p.Map)
 	case p.Struct != nil:
 		return c.compileStruct(p.Struct)
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	case p.Call != nil:
 		return c.compileCall(p.Call)
 	case p.Query != nil:
@@ -927,7 +970,14 @@ func (c *Compiler) compileStruct(s *parser.StructLiteral) (string, error) {
 		typeMap[fname] = t
 	}
 	if s.Name != "" {
-		return fmt.Sprintf("{ %s }", strings.Join(fields, "; ")), nil
+		if _, ok := c.structs[s.Name]; ok {
+			return fmt.Sprintf("{ %s }", strings.Join(fields, "; ")), nil
+		}
+		vals := make([]string, len(s.Fields))
+		for i := range s.Fields {
+			vals[i] = strings.SplitN(fields[i], " = ", 2)[1]
+		}
+		return fmt.Sprintf("%s(%s)", s.Name, strings.Join(vals, ", ")), nil
 	}
 	key := strings.Join(names, ",") + "|" + strings.Join(types, ",")
 	typ, ok := c.anon[key]
@@ -950,6 +1000,106 @@ func (c *Compiler) compileMapKey(e *parser.Expr) (string, error) {
 		return fmt.Sprintf("\"%s\"", name), nil
 	}
 	return c.compileExpr(e)
+}
+
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
+	if l.Path == nil || l.Type == nil {
+		return "", fmt.Errorf("unsupported expression at line %d", l.Pos.Line)
+	}
+	typ, err := c.compileType(l.Type)
+	if err != nil {
+		return "", err
+	}
+	c.usesYaml = true
+	return fmt.Sprintf("(let deserializer = DeserializerBuilder().Build()\n    let yamlText = File.ReadAllText(%q)\n    deserializer.Deserialize<%s list>(yamlText))", *l.Path, typ), nil
+}
+
+func (c *Compiler) compileSaveExpr(sv *parser.SaveExpr) (string, error) {
+	src, err := c.compileExpr(sv.Src)
+	if err != nil {
+		return "", err
+	}
+	c.usesJson = true
+	return fmt.Sprintf("(List.iter (fun row -> printfn \"%%s\" (JsonSerializer.Serialize(row))) %s)", src), nil
+}
+
+func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	for _, st := range t.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
+	expr, err := c.compileExpr(e.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("assert (%s)", expr))
+	return nil
+}
+
+func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
+	iter := "item"
+	c.writeln(fmt.Sprintf("for %s in %s do", iter, u.Target))
+	c.indent++
+	rep := func(s string) string {
+		for _, it := range u.Set.Items {
+			if key, ok := c.simpleIdentifier(it.Key); ok {
+				s = strings.ReplaceAll(s, key, fmt.Sprintf("%s.%s", iter, sanitizeIdent(key)))
+			}
+		}
+		return s
+	}
+	if u.Where != nil {
+		cond, err := c.compileExpr(u.Where)
+		if err != nil {
+			return err
+		}
+		cond = rep(cond)
+		c.writeln(fmt.Sprintf("if %s then", cond))
+		c.indent++
+	}
+	for _, it := range u.Set.Items {
+		key, ok := c.simpleIdentifier(it.Key)
+		if !ok {
+			return fmt.Errorf("unsupported update key")
+		}
+		val, err := c.compileExpr(it.Value)
+		if err != nil {
+			return err
+		}
+		val = rep(val)
+		c.writeln(fmt.Sprintf("%s.%s <- %s", iter, sanitizeIdent(key), val))
+	}
+	if u.Where != nil {
+		c.indent--
+	}
+	c.indent--
+	return nil
+}
+
+func (c *Compiler) compileOuterJoin(q *parser.QueryExpr) (string, error) {
+	j := q.Joins[0]
+	left, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	right, err := c.compileExpr(j.Src)
+	if err != nil {
+		return "", err
+	}
+	on, err := c.compileExpr(j.On)
+	if err != nil {
+		return "", err
+	}
+	part1 := fmt.Sprintf("[ for %s in %s do\n    let %s = %s |> List.tryFind (fun %s -> %s)\n    yield { order = Some %s; customer = %s } ]",
+		q.Var, left, j.Var, right, j.Var, on, q.Var, j.Var)
+	part2 := fmt.Sprintf("[ for %s in %s do\n    if %s |> List.exists (fun %s -> %s) |> not then\n        yield { order = None; customer = Some %s } ]",
+		j.Var, right, left, q.Var, on, j.Var)
+	return fmt.Sprintf("(let orderPart = %s\n let customerPart = %s\n orderPart @ customerPart)", part1, part2), nil
 }
 
 func (c *Compiler) simpleIdentifier(e *parser.Expr) (string, bool) {
@@ -990,6 +1140,9 @@ func stringLiteral(e *parser.Expr) (string, bool) {
 }
 
 func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
+	if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "outer" && len(q.Froms) == 0 {
+		return c.compileOuterJoin(q)
+	}
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
 		return "", err

@@ -12,14 +12,15 @@ type Anon2 = {
     customerId: int
     total: int
 }
-type Anon3 = {
-    order: obj
-    customer: obj
-}
 let customers = [{ id = 1; name = "Alice" }; { id = 2; name = "Bob" }; { id = 3; name = "Charlie" }; { id = 4; name = "Diana" }]
 let orders = [{ id = 100; customerId = 1; total = 250 }; { id = 101; customerId = 2; total = 125 }; { id = 102; customerId = 1; total = 300 }; { id = 103; customerId = 5; total = 80 }]
-let result = [ for o in orders do 
-  for c in customers do if o.customerId = c.id then yield { order = o; customer = c } ]
+let result = (let orderPart = [ for o in orders do
+    let c = customers |> List.tryFind (fun c -> o.customerId = c.id)
+    yield { order = Some o; customer = c } ]
+ let customerPart = [ for c in customers do
+    if orders |> List.exists (fun o -> o.customerId = c.id) |> not then
+        yield { order = None; customer = Some c } ]
+ orderPart @ customerPart)
 printfn "%s" "--- Outer Join using syntax ---"
 try
     for row in result do
