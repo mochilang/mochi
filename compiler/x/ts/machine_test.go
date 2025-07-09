@@ -67,6 +67,7 @@ func TestGenerateMachineOutput(t *testing.T) {
 			if err := os.WriteFile(filepath.Join(outDir, name+".out"), out, 0644); err != nil {
 				t.Fatalf("write out: %v", err)
 			}
+			os.Remove(filepath.Join(outDir, name+".error"))
 		})
 	}
 }
@@ -93,4 +94,37 @@ func findRepoRoot3(t *testing.T) string {
 	}
 	t.Fatal("go.mod not found")
 	return ""
+}
+
+func TestMain(m *testing.M) {
+	code := m.Run()
+	updateReadme()
+	os.Exit(code)
+}
+
+func updateReadme() {
+	root := findRepoRoot3(&testing.T{})
+	srcDir := filepath.Join(root, "tests", "vm", "valid")
+	outDir := filepath.Join(root, "tests", "machine", "x", "ts")
+	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	total := len(files)
+	compiled := 0
+	var lines []string
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+		mark := "[ ]"
+		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
+			compiled++
+			mark = "[x]"
+		}
+		lines = append(lines, fmt.Sprintf("- %s %s.mochi", mark, name))
+	}
+	var buf bytes.Buffer
+	buf.WriteString("# Machine-generated TypeScript Programs\n\n")
+	buf.WriteString("This directory contains TypeScript code compiled from Mochi programs in `tests/vm/valid` using the experimental compiler.\n\n")
+	fmt.Fprintf(&buf, "## Progress\n\nCompiled: %d/%d programs\n\n", compiled, total)
+	buf.WriteString("## Checklist\n\n")
+	buf.WriteString(strings.Join(lines, "\n"))
+	buf.WriteString("\n")
+	os.WriteFile(filepath.Join(outDir, "README.md"), buf.Bytes(), 0644)
 }
