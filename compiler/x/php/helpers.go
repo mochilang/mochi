@@ -95,6 +95,124 @@ func (c *Compiler) isGroupVarExpr(e *parser.Expr) (string, bool) {
 	return "", false
 }
 
+func isUnderscoreExpr(e *parser.Expr) bool {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target.Selector == nil {
+		return false
+	}
+	return p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0
+}
+
+func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target.Call == nil {
+		return nil, false
+	}
+	return p.Target.Call, true
+}
+
+func identName(e *parser.Expr) (string, bool) {
+	if e == nil {
+		return "", false
+	}
+	if len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func collectFields(e *parser.Expr, set map[string]bool) {
+	if e == nil {
+		return
+	}
+	if b := e.Binary; b != nil {
+		collectFieldsUnary(b.Left, set)
+		for _, op := range b.Right {
+			collectFieldsPostfix(op.Right, set)
+		}
+	}
+}
+
+func collectFieldsUnary(u *parser.Unary, set map[string]bool) {
+	if u == nil {
+		return
+	}
+	collectFieldsPostfix(u.Value, set)
+}
+
+func collectFieldsPostfix(p *parser.PostfixExpr, set map[string]bool) {
+	if p == nil {
+		return
+	}
+	collectFieldsPrimary(p.Target, set)
+	for _, op := range p.Ops {
+		if op.Call != nil {
+			for _, a := range op.Call.Args {
+				collectFields(a, set)
+			}
+		}
+		if op.Index != nil {
+			collectFields(op.Index.Start, set)
+			collectFields(op.Index.End, set)
+			collectFields(op.Index.Step, set)
+		}
+	}
+}
+
+func collectFieldsPrimary(pr *parser.Primary, set map[string]bool) {
+	if pr == nil {
+		return
+	}
+	switch {
+	case pr.Selector != nil && len(pr.Selector.Tail) == 0:
+		set[pr.Selector.Root] = true
+	case pr.Group != nil:
+		collectFields(pr.Group, set)
+	case pr.List != nil:
+		for _, e := range pr.List.Elems {
+			collectFields(e, set)
+		}
+	case pr.Map != nil:
+		for _, it := range pr.Map.Items {
+			collectFields(it.Key, set)
+			collectFields(it.Value, set)
+		}
+	case pr.FunExpr != nil:
+		if pr.FunExpr.ExprBody != nil {
+			collectFields(pr.FunExpr.ExprBody, set)
+		}
+	case pr.Match != nil:
+		collectFields(pr.Match.Target, set)
+	case pr.Query != nil:
+		collectFields(pr.Query.Select, set)
+	}
+}
+
 func isStringType(t types.Type) bool {
 	_, ok := t.(types.StringType)
 	return ok

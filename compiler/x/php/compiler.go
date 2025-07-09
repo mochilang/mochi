@@ -69,6 +69,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileWhile(s.While)
 	case s.For != nil:
 		return c.compileFor(s.For)
+	case s.Update != nil:
+		return c.compileUpdate(s.Update)
 	case s.Break != nil:
 		c.writeln("break;")
 		return nil
@@ -314,6 +316,49 @@ func (c *Compiler) compileFor(fs *parser.ForStmt) error {
 			return err
 		}
 	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
+	target := "$" + sanitizeName(u.Target)
+	c.writeln(fmt.Sprintf("foreach (%s as $i => $e) {", target))
+	c.indent++
+	fieldSet := map[string]bool{}
+	for _, it := range u.Set.Items {
+		if name, ok := isSimpleIdentExpr(it.Key); ok {
+			fieldSet[name] = true
+		}
+	}
+	collectFields(u.Where, fieldSet)
+	for f := range fieldSet {
+		c.writeln(fmt.Sprintf("$%s = $e['%s'];", sanitizeName(f), f))
+	}
+	if u.Where != nil {
+		cond, err := c.compileExpr(u.Where)
+		if err != nil {
+			return err
+		}
+		c.writeln("if (" + cond + ") {")
+		c.indent++
+	}
+	for _, it := range u.Set.Items {
+		key, ok := isSimpleIdentExpr(it.Key)
+		if !ok {
+			return fmt.Errorf("update key must be identifier")
+		}
+		val, err := c.compileExpr(it.Value)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("$e['%s'] = %s;", key, val))
+	}
+	if u.Where != nil {
+		c.indent--
+		c.writeln("}")
+	}
+	c.writeln(fmt.Sprintf("%s[$i] = $e;", target))
 	c.indent--
 	c.writeln("}")
 	return nil
@@ -1005,28 +1050,57 @@ func (c *Compiler) compileIfExpr(ix *parser.IfExpr) (string, error) {
 }
 
 func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
-	target, err := c.compileExpr(m.Target)
+	targ, err := c.compileExpr(m.Target)
 	if err != nil {
 		return "", err
 	}
+	tmp := "$_t"
 	var buf bytes.Buffer
-	buf.WriteString("match(" + target + ") {")
-	buf.WriteByte('\n')
+	buf.WriteString("(function(" + tmp + ") {\n")
 	for _, cs := range m.Cases {
-		pat, err := c.compileExpr(cs.Pattern)
-		if err != nil {
-			return "", err
-		}
 		res, err := c.compileExpr(cs.Result)
 		if err != nil {
 			return "", err
 		}
-		if pat == "_" || pat == "$_" {
-			pat = "default"
+		if isUnderscoreExpr(cs.Pattern) {
+			buf.WriteString("    return " + res + ";\n")
+			buf.WriteString("})(" + targ + ")")
+			return buf.String(), nil
 		}
-		buf.WriteString("    " + pat + " => " + res + ",\n")
+		cond := ""
+		if call, ok := callPattern(cs.Pattern); ok {
+			if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
+				st := ut.Variants[call.Func]
+				cond = fmt.Sprintf("%s instanceof %s", tmp, sanitizeName(call.Func))
+				names := []string{}
+				values := []string{}
+				for idx, arg := range call.Args {
+					if id, ok := identName(arg); ok && id != "_" {
+						names = append(names, "$"+sanitizeName(id))
+						field := sanitizeName(st.Order[idx])
+						values = append(values, fmt.Sprintf("%s->%s", tmp, field))
+					}
+				}
+				if len(names) > 0 {
+					res = fmt.Sprintf("(function(%s) { return %s; })(%s)", strings.Join(names, ", "), res, strings.Join(values, ", "))
+				}
+			}
+		} else if ident, ok := identName(cs.Pattern); ok {
+			if _, ok := c.env.FindUnionByVariant(ident); ok {
+				cond = fmt.Sprintf("%s instanceof %s", tmp, sanitizeName(ident))
+			}
+		}
+		if cond == "" {
+			pat, err := c.compileExpr(cs.Pattern)
+			if err != nil {
+				return "", err
+			}
+			cond = fmt.Sprintf("%s === %s", tmp, pat)
+		}
+		buf.WriteString(fmt.Sprintf("    if (%s) return %s;\n", cond, res))
 	}
-	buf.WriteString("}")
+	buf.WriteString("    return null;\n")
+	buf.WriteString("})(" + targ + ")")
 	return buf.String(), nil
 }
 
