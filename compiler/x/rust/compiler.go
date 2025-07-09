@@ -518,7 +518,7 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("for %s in %s..%s {", f.Name, src, end))
+		c.writeln(fmt.Sprintf("for %s in (%s as i32)..(%s as i32) {", f.Name, src, end))
 	} else {
 		c.writeln(fmt.Sprintf("for %s in %s {", f.Name, src))
 	}
@@ -1251,6 +1251,18 @@ func rustType(t *parser.TypeRef) string {
 			return "&'static str"
 		default:
 			return *t.Simple
+		}
+	}
+	if t.Generic != nil {
+		switch t.Generic.Name {
+		case "list":
+			if len(t.Generic.Args) == 1 {
+				return fmt.Sprintf("Vec<%s>", rustType(t.Generic.Args[0]))
+			}
+		case "map":
+			if len(t.Generic.Args) == 2 {
+				return fmt.Sprintf("std::collections::HashMap<%s, %s>", rustType(t.Generic.Args[0]), rustType(t.Generic.Args[1]))
+			}
 		}
 	}
 	if t.Fun != nil {
