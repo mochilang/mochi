@@ -5,8 +5,8 @@ exception Continue
 
 let mutable m = dict [("a", 1); ("b", 2)]
 try
-    for k in m do
+    for KeyValue(k, _) in m do
         try
-            printfn "%A" (k)
+            printfn "%s" k
         with Continue -> ()
 with Break -> ()

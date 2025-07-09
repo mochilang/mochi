@@ -173,6 +173,9 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 		if typ == "" && c.isStringExpr(v.Value) {
 			typ = "string"
 		}
+		if typ == "" && isMapLiteral(v.Value) != nil {
+			c.vars[v.Name] = "map"
+		}
 	} else if typ != "" {
 		val = defaultValue(typ)
 	}
@@ -248,7 +251,19 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	} else {
 		c.writeln("try")
 		c.indent++
-		c.writeln(fmt.Sprintf("for %s in %s do", f.Name, start))
+		if isMapLiteral(f.Source) != nil || strings.HasPrefix(start, "dict [") {
+			c.writeln(fmt.Sprintf("for KeyValue(%s, _) in %s do", f.Name, start))
+			c.vars[f.Name] = "string"
+		} else if rp := rootPrimary(f.Source); rp != nil && rp.Selector != nil {
+			if t, ok := c.vars[rp.Selector.Root]; ok && t == "map" {
+				c.writeln(fmt.Sprintf("for KeyValue(%s, _) in %s do", f.Name, start))
+				c.vars[f.Name] = "string"
+			} else {
+				c.writeln(fmt.Sprintf("for %s in %s do", f.Name, start))
+			}
+		} else {
+			c.writeln(fmt.Sprintf("for %s in %s do", f.Name, start))
+		}
 	}
 	c.indent++
 	c.writeln("try")
