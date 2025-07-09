@@ -582,6 +582,11 @@ func (c *Compiler) compileUserCall(call *parser.CallExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
+		if !isSimpleExpr(a) {
+			tmp := c.ensureTmpVar()
+			c.writeln(fmt.Sprintf("COMPUTE %s = %s", tmp, s))
+			s = tmp
+		}
 		args[i] = s
 	}
 	line := fmt.Sprintf("PERFORM %s", name)
@@ -767,6 +772,28 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			res = fmt.Sprintf("FUNCTION MOD(%s, %s)", res, r)
 			leftType = types.AnyType{}
 			continue
+		case "in":
+			if lst := listLiteralPostfix(op.Right); lst != nil {
+				conds := make([]string, len(lst.Elems))
+				for i, e := range lst.Elems {
+					v, err := c.compileExpr(e)
+					if err != nil {
+						return "", err
+					}
+					conds[i] = fmt.Sprintf("%s = %s", res, v)
+				}
+				res = "(" + strings.Join(conds, " OR ") + ")"
+				leftType = types.BoolType{}
+				continue
+			}
+			if id, ok := identPostfix(op.Right); ok {
+				if n, ok := c.seqList[id]; ok {
+					res = fmt.Sprintf("(%s >= 1 AND %s <= %d)", res, res, n)
+					leftType = types.BoolType{}
+					continue
+				}
+			}
+			return "", fmt.Errorf("unsupported in operator")
 		}
 		res = fmt.Sprintf("%s %s %s", res, opStr, r)
 		leftType = types.AnyType{}
@@ -1032,6 +1059,23 @@ func listLiteral(e *parser.Expr) *parser.ListLiteral {
 		return nil
 	}
 	return v.Target.List
+}
+
+func listLiteralPostfix(p *parser.PostfixExpr) *parser.ListLiteral {
+	if p == nil || len(p.Ops) != 0 || p.Target == nil {
+		return nil
+	}
+	return p.Target.List
+}
+
+func identPostfix(p *parser.PostfixExpr) (string, bool) {
+	if p == nil || len(p.Ops) != 0 || p.Target == nil || p.Target.Selector == nil {
+		return "", false
+	}
+	if len(p.Target.Selector.Tail) != 0 {
+		return "", false
+	}
+	return p.Target.Selector.Root, true
 }
 
 func intLiteral(e *parser.Expr) (int, bool) {
