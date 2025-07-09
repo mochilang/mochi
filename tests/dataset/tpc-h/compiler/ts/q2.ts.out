@@ -102,51 +102,56 @@ function main(): void {
   ];
   europe_nations = (() => {
     const _src = region;
-    return _query(_src, [
-      { items: nation, on: (r, n) => (_equal(n.n_regionkey, r.r_regionkey)) },
-    ], { select: (r, n) => n, where: (r, n) => (_equal(r.r_name, "EUROPE")) });
+    const _res = [];
+    for (const r of _src) {
+      for (const n of nation) {
+        if (!(_equal(n.n_regionkey, r.r_regionkey))) continue;
+        if (!(_equal(r.r_name, "EUROPE"))) continue;
+        _res.push(n);
+      }
+    }
+    return _res;
   })();
   europe_suppliers = (() => {
     const _src = supplier;
-    return _query(_src, [
-      {
-        items: europe_nations,
-        on: (s, n) => (_equal(s.s_nationkey, n.n_nationkey)),
-      },
-    ], {
-      select: (s, n) => ({
-        "s": s,
-        "n": n,
-      }),
-    });
+    const _res = [];
+    for (const s of _src) {
+      for (const n of europe_nations) {
+        if (!(_equal(s.s_nationkey, n.n_nationkey))) continue;
+        _res.push({
+          "s": s,
+          "n": n,
+        });
+      }
+    }
+    return _res;
   })();
   target_parts = part.filter(
     (p) => (_equal(p.p_size, 15) && _equal(p.p_type, "LARGE BRASS"))
   ).map((p) => p);
   target_partsupp = (() => {
     const _src = partsupp;
-    return _query(_src, [
-      {
-        items: target_parts,
-        on: (ps, p) => (_equal(ps.ps_partkey, p.p_partkey)),
-      },
-      {
-        items: europe_suppliers,
-        on: (ps, p, s) => (_equal(ps.ps_suppkey, s.s.s_suppkey)),
-      },
-    ], {
-      select: (ps, p, s) => ({
-        "s_acctbal": s.s.s_acctbal,
-        "s_name": s.s.s_name,
-        "n_name": s.n.n_name,
-        "p_partkey": p.p_partkey,
-        "p_mfgr": p.p_mfgr,
-        "s_address": s.s.s_address,
-        "s_phone": s.s.s_phone,
-        "s_comment": s.s.s_comment,
-        "ps_supplycost": ps.ps_supplycost,
-      }),
-    });
+    const _res = [];
+    for (const ps of _src) {
+      for (const p of target_parts) {
+        if (!(_equal(ps.ps_partkey, p.p_partkey))) continue;
+        for (const s of europe_suppliers) {
+          if (!(_equal(ps.ps_suppkey, s.s.s_suppkey))) continue;
+          _res.push({
+            "s_acctbal": s.s.s_acctbal,
+            "s_name": s.s.s_name,
+            "n_name": s.n.n_name,
+            "p_partkey": p.p_partkey,
+            "p_mfgr": p.p_mfgr,
+            "s_address": s.s.s_address,
+            "s_phone": s.s.s_phone,
+            "s_comment": s.s.s_comment,
+            "ps_supplycost": ps.ps_supplycost,
+          });
+        }
+      }
+    }
+    return _res;
   })();
   costs = target_partsupp.map((x) => x.ps_supplycost);
   min_cost = _min(costs);
@@ -235,96 +240,6 @@ function _min(v: any): any {
     if (num < mv) mv = num;
   }
   return mv;
-}
-
-function _query(src: any[], joins: any[], opts: any): any {
-  let items = src.map((v) => [v]);
-  for (const j of joins) {
-    const joined: any[] = [];
-    if (j.right && j.left) {
-      const matched: boolean[] = new Array(j.items.length).fill(false);
-      for (const left of items) {
-        let m = false;
-        for (let ri = 0; ri < j.items.length; ri++) {
-          const right = j.items[ri];
-          let keep = true;
-          if (left.some((v: any) => v === null) || right === null) {
-            keep = false;
-          } else if (j.on) keep = j.on(...left, right);
-          if (!keep) continue;
-          m = true;
-          matched[ri] = true;
-          joined.push([...left, right]);
-        }
-        if (!m) joined.push([...left, null]);
-      }
-      for (let ri = 0; ri < j.items.length; ri++) {
-        if (!matched[ri]) {
-          const undef = Array(items[0]?.length || 0).fill(null);
-          joined.push([...undef, j.items[ri]]);
-        }
-      }
-    } else if (j.right) {
-      for (const right of j.items) {
-        let m = false;
-        for (const left of items) {
-          let keep = true;
-          if (left.some((v: any) => v === null) || right === null) {
-            keep = false;
-          } else if (j.on) keep = j.on(...left, right);
-          if (!keep) continue;
-          m = true;
-          joined.push([...left, right]);
-        }
-        if (!m) {
-          const undef = Array(items[0]?.length || 0).fill(null);
-          joined.push([...undef, right]);
-        }
-      }
-    } else {
-      for (const left of items) {
-        let m = false;
-        for (const right of j.items) {
-          let keep = true;
-          if (left.some((v: any) => v === null) || right === null) {
-            keep = false;
-          } else if (j.on) keep = j.on(...left, right);
-          if (!keep) continue;
-          m = true;
-          joined.push([...left, right]);
-        }
-        if (j.left && !m) joined.push([...left, null]);
-      }
-    }
-    items = joined;
-  }
-  if (opts.where) items = items.filter((r) => opts.where(...r));
-  if (opts.sortKey) {
-    let pairs = items.map((it) => ({ item: it, key: opts.sortKey(...it) }));
-    pairs.sort((a, b) => {
-      const ak = a.key;
-      const bk = b.key;
-      if (typeof ak === "number" && typeof bk === "number") return ak - bk;
-      if (typeof ak === "string" && typeof bk === "string") {
-        return ak < bk
-          ? -1
-          : (ak > bk ? 1 : 0);
-      }
-      return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);
-    });
-    items = pairs.map((p) => p.item);
-  }
-  if (opts.skip !== undefined) {
-    const n = opts.skip;
-    items = n < items.length ? items.slice(n) : [];
-  }
-  if (opts.take !== undefined) {
-    const n = opts.take;
-    if (n < items.length) items = items.slice(0, n);
-  }
-  const res = [];
-  for (const r of items) res.push(opts.select(...r));
-  return res;
 }
 
 main();
