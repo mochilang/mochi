@@ -11,6 +11,9 @@ class Person {
 }
 $people = [new Person(['name' => "Alice", 'age' => 17, 'status' => "minor"]), new Person(['name' => "Bob", 'age' => 25, 'status' => "unknown"]), new Person(['name' => "Charlie", 'age' => 18, 'status' => "unknown"]), new Person(['name' => "Diana", 'age' => 16, 'status' => "minor"])];
 foreach ($people as $_tmp0 => $_tmp1) {
+    $name = $_tmp1->name;
+    $age = $_tmp1->age;
+    $status = $_tmp1->status;
     if ($age >= 18) {
         $_tmp1->status = "adult";
         $_tmp1->age = $age + 1;

@@ -326,19 +326,50 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 	list := "$" + sanitizeName(u.Target)
 	idx := c.newTmp()
 	item := c.newTmp()
+
 	c.writeln(fmt.Sprintf("foreach (%s as %s => %s) {", list, idx, item))
 	c.indent++
+
+	var st types.StructType
+	if c.env != nil {
+		if typ, err := c.env.GetVar(u.Target); err == nil {
+			if lt, ok := typ.(types.ListType); ok {
+				if s, ok := lt.Elem.(types.StructType); ok {
+					st = s
+				}
+			}
+		}
+	}
+
+	var origEnv *types.Env
+	if st.Name != "" {
+		child := types.NewEnv(c.env)
+		for _, f := range st.Order {
+			c.writeln(fmt.Sprintf("$%s = %s->%s;", sanitizeName(f), item, sanitizeName(f)))
+			child.SetVar(f, st.Fields[f], true)
+		}
+		origEnv = c.env
+		c.env = child
+	}
+
 	if u.Where != nil {
 		cond, err := c.compileExpr(u.Where)
 		if err != nil {
+			if origEnv != nil {
+				c.env = origEnv
+			}
 			return err
 		}
 		c.writeln("if (" + cond + ") {")
 		c.indent++
 	}
+
 	for _, it := range u.Set.Items {
 		val, err := c.compileExpr(it.Value)
 		if err != nil {
+			if origEnv != nil {
+				c.env = origEnv
+			}
 			return err
 		}
 		if name, ok := isSimpleIdentExpr(it.Key); ok {
@@ -346,15 +377,24 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 		} else {
 			key, err := c.compileExpr(it.Key)
 			if err != nil {
+				if origEnv != nil {
+					c.env = origEnv
+				}
 				return err
 			}
 			c.writeln(fmt.Sprintf("%s[%s] = %s;", item, key, val))
 		}
 	}
+
 	if u.Where != nil {
 		c.indent--
 		c.writeln("}")
 	}
+
+	if origEnv != nil {
+		c.env = origEnv
+	}
+
 	c.writeln(fmt.Sprintf("%s[%s] = %s;", list, idx, item))
 	c.indent--
 	c.writeln("}")
