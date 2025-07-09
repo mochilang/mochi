@@ -2546,6 +2546,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.env = original
 		return "", err
 	}
+	var havingExpr string
+	if q.Group != nil && q.Group.Having != nil {
+		havingExpr, err = c.compileExpr(q.Group.Having)
+		if err != nil {
+			c.env = original
+			return "", err
+		}
+	}
 	var cond string
 	if q.Where != nil {
 		cond, err = c.compileExpr(q.Where)
@@ -2666,6 +2674,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		buf.WriteString("\t\tg := groups[ks]\n")
 		if alias != "g" {
 			buf.WriteString(fmt.Sprintf("\t\t%s := g\n", alias))
+		}
+		if havingExpr != "" {
+			buf.WriteString(fmt.Sprintf("\t\tif !(%s) { continue }\n", havingExpr))
 		}
 		buf.WriteString(fmt.Sprintf("\t\t_res = append(_res, %s)\n", sel))
 		buf.WriteString("\t}\n")
@@ -2816,6 +2827,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 		buf.WriteString(fmt.Sprintf("\t_res := []%s{}\n", retElem))
 		buf.WriteString(fmt.Sprintf("\tfor _, %s := range items {\n", sanitizeName(q.Group.Name)))
+		if havingExpr != "" {
+			buf.WriteString(fmt.Sprintf("\t\tif !(%s) { continue }\n", havingExpr))
+		}
 		buf.WriteString(fmt.Sprintf("\t\t_res = append(_res, %s)\n", sel))
 		buf.WriteString("\t}\n")
 		buf.WriteString("\treturn _res\n")

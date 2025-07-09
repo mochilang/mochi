@@ -61,6 +61,9 @@ func main() {
 		_res := []map[string]any{}
 		for _, ks := range order {
 			g := groups[ks]
+			if !(len(g.Items) >= 4) {
+				continue
+			}
 			_res = append(_res, map[string]any{"city": g.Key, "num": len(g.Items)})
 		}
 		return _res

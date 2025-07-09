@@ -7,6 +7,6 @@ import (
 )
 
 func main() {
-	var x int = nil
+	var x int
 	fmt.Println(x)
 }
