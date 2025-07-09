@@ -193,6 +193,8 @@ func (c *Compiler) stmt(s *parser.Statement) error {
 			val = v
 		}
 		c.writeln(fmt.Sprintf("var %s%s = %s", s.Var.Name, typ, val))
+	case s.Fun != nil:
+		return c.funDecl(s.Fun)
 	case s.Assign != nil:
 		v, err := c.expr(s.Assign.Value)
 		if err != nil {
