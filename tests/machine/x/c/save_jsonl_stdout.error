@@ -1,20 +1,20 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/save_jsonl_stdout.c: In function ‘_is_number’:
-/workspace/mochi/tests/machine/x/c/save_jsonl_stdout.c:28:10: warning: implicit declaration of function ‘_isnum’; did you mean ‘_is_number’? [-Wimplicit-function-declaration]
-   28 |     if (!_isnum(*p))
+/workspace/mochi/tests/machine/x/c/save_jsonl_stdout.c:18:10: warning: implicit declaration of function ‘_isnum’; did you mean ‘_is_number’? [-Wimplicit-function-declaration]
+   18 |     if (!_isnum(*p))
       |          ^~~~~~
       |          _is_number
 /workspace/mochi/tests/machine/x/c/save_jsonl_stdout.c: At top level:
-/workspace/mochi/tests/machine/x/c/save_jsonl_stdout.c:32:33: error: unknown type name ‘map_string’
-   32 | static void _write_obj(FILE *f, map_string m) {
+/workspace/mochi/tests/machine/x/c/save_jsonl_stdout.c:22:33: error: unknown type name ‘map_string’
+   22 | static void _write_obj(FILE *f, map_string m) {
       |                                 ^~~~~~~~~~
-/workspace/mochi/tests/machine/x/c/save_jsonl_stdout.c:46:24: error: unknown type name ‘list_map_string’
-   46 | static void _save_json(list_map_string rows, const char *path) {
+/workspace/mochi/tests/machine/x/c/save_jsonl_stdout.c:36:24: error: unknown type name ‘list_map_string’
+   36 | static void _save_json(list_map_string rows, const char *path) {
       |                        ^~~~~~~~~~~~~~~
 /workspace/mochi/tests/machine/x/c/save_jsonl_stdout.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/save_jsonl_stdout.c:88:3: warning: implicit declaration of function ‘_save_json’ [-Wimplicit-function-declaration]
-   88 |   _save_json(people, "-");
+/workspace/mochi/tests/machine/x/c/save_jsonl_stdout.c:78:3: warning: implicit declaration of function ‘_save_json’ [-Wimplicit-function-declaration]
+   78 |   _save_json(people, "-");
       |   ^~~~~~~~~~
 
    1: #include <stdio.h>

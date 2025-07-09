@@ -11,6 +11,16 @@ static list_int list_int_create(int len) {
   l.data = (int *)malloc(sizeof(int) * len);
   return l;
 }
+typedef struct {
+  int len;
+  int *data;
+} list_int;
+static list_int list_int_create(int len) {
+  list_int l;
+  l.len = len;
+  l.data = (int *)malloc(sizeof(int) * len);
+  return l;
+}
 int main() {
   list_int _t1 = list_int_create(2);
   _t1.data[0] = 1;

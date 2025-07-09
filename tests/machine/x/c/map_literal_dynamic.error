@@ -1,30 +1,30 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/map_literal_dynamic.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/map_literal_dynamic.c:61:26: warning: passing argument 2 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
-   61 |   map_int_bool_put(&_t1, "a", x);
+/workspace/mochi/tests/machine/x/c/map_literal_dynamic.c:51:26: warning: passing argument 2 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
+   51 |   map_int_bool_put(&_t1, "a", x);
       |                          ^~~
       |                          |
       |                          char *
-/workspace/mochi/tests/machine/x/c/map_literal_dynamic.c:38:51: note: expected ‘int’ but argument is of type ‘char *’
-   38 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
+/workspace/mochi/tests/machine/x/c/map_literal_dynamic.c:28:51: note: expected ‘int’ but argument is of type ‘char *’
+   28 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
       |                                               ~~~~^~~
-/workspace/mochi/tests/machine/x/c/map_literal_dynamic.c:62:26: warning: passing argument 2 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
-   62 |   map_int_bool_put(&_t1, "b", y);
+/workspace/mochi/tests/machine/x/c/map_literal_dynamic.c:52:26: warning: passing argument 2 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
+   52 |   map_int_bool_put(&_t1, "b", y);
       |                          ^~~
       |                          |
       |                          char *
-/workspace/mochi/tests/machine/x/c/map_literal_dynamic.c:38:51: note: expected ‘int’ but argument is of type ‘char *’
-   38 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
+/workspace/mochi/tests/machine/x/c/map_literal_dynamic.c:28:51: note: expected ‘int’ but argument is of type ‘char *’
+   28 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
       |                                               ~~~~^~~
-/workspace/mochi/tests/machine/x/c/map_literal_dynamic.c:63:11: error: incompatible types when initializing type ‘int’ using type ‘map_int_bool’
-   63 |   int m = _t1;
+/workspace/mochi/tests/machine/x/c/map_literal_dynamic.c:53:11: error: incompatible types when initializing type ‘int’ using type ‘map_int_bool’
+   53 |   int m = _t1;
       |           ^~~
-/workspace/mochi/tests/machine/x/c/map_literal_dynamic.c:64:18: error: request for member ‘data’ in something not a structure or union
-   64 |   printf("%d ", m.data["a"]);
+/workspace/mochi/tests/machine/x/c/map_literal_dynamic.c:54:18: error: request for member ‘data’ in something not a structure or union
+   54 |   printf("%d ", m.data["a"]);
       |                  ^
-/workspace/mochi/tests/machine/x/c/map_literal_dynamic.c:65:19: error: request for member ‘data’ in something not a structure or union
-   65 |   printf("%d\n", m.data["b"]);
+/workspace/mochi/tests/machine/x/c/map_literal_dynamic.c:55:19: error: request for member ‘data’ in something not a structure or union
+   55 |   printf("%d\n", m.data["b"]);
       |                   ^
 
    1: #include <stdio.h>

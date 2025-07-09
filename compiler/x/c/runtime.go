@@ -624,6 +624,7 @@ static void _save_json(list_map_string rows,const char* path){ FILE* f=(!path||p
 // Mapping of helper requirement keys to their C implementations and the order
 // they should be emitted in.
 var helperCode = map[string]string{
+	needListInt:              helperListInt,
 	needListFloat:            helperListFloat,
 	needListString:           helperListString,
 	needListListInt:          helperListListInt,
@@ -690,6 +691,7 @@ var helperCode = map[string]string{
 }
 
 var helperOrder = []string{
+	needListInt,
 	needListFloat,
 	needListString,
 	needListListInt,
@@ -756,7 +758,9 @@ var helperOrder = []string{
 }
 
 func (c *Compiler) emitRuntime() {
-	c.buf.WriteString(helperListInt)
+	if c.has(needListInt) {
+		c.buf.WriteString(helperListInt)
+	}
 	for _, h := range helperOrder {
 		if c.has(h) {
 			c.buf.WriteString(helperCode[h])

@@ -475,6 +475,10 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 			}
 			if isListListIntType(t) {
 				c.need(needListListInt)
+				c.need(needListInt)
+				c.need(needListInt)
+				c.need(needListInt)
+				c.need(needListInt)
 			}
 		}
 	}
@@ -898,10 +902,12 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 				c.writeln(formatFuncPtrDecl(typ, name, val))
 			} else if isListListIntType(t) {
 				c.need(needListListInt)
+				c.need(needListInt)
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("list_list_int %s = list_list_int_create(0);", val))
 				c.writeln(formatFuncPtrDecl(typ, name, val))
 			} else if isListIntType(t) {
+				c.need(needListInt)
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("list_int %s = list_int_create(0);", val))
 				c.writeln(formatFuncPtrDecl(typ, name, val))
@@ -1035,6 +1041,7 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 				c.writeln(fmt.Sprintf("list_list_int %s = list_list_int_create(0);", val))
 				c.writeln(formatFuncPtrDecl(typ, name, val))
 			} else if isListIntType(t) {
+				c.need(needListInt)
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("list_int %s = list_int_create(0);", val))
 				c.writeln(formatFuncPtrDecl(typ, name, val))
@@ -1376,6 +1383,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 			if lt, ok := srcT.(types.ListType); ok {
 				if _, ok := lt.Elem.(types.IntType); ok {
 					c.need(needGroupByInt)
+					c.need(needListInt)
 					groups := c.newTemp()
 					c.writeln(fmt.Sprintf("list_group_int %s = _group_by_int(%s);", groups, src))
 					oldEnv := c.env
@@ -1993,6 +2001,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 		}
 		if (op.Op == "+" || (op.Op == "union" && op.All)) && leftListInt && isListIntPostfix(op.Right, c.env) {
 			c.need(needConcatListInt)
+			c.need(needListInt)
 			name := c.newTemp()
 			c.writeln(fmt.Sprintf("list_int %s = concat_list_int(%s, %s);", name, left, right))
 			left = name
@@ -2040,6 +2049,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 		}
 		if op.Op == "union" && leftListInt && isListIntPostfix(op.Right, c.env) {
 			c.need(needUnionListInt)
+			c.need(needListInt)
 			name := c.newTemp()
 			c.writeln(fmt.Sprintf("list_int %s = union_list_int(%s, %s);", name, left, right))
 			left = name
@@ -2076,6 +2086,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 		}
 		if op.Op == "union" && leftList && isListListPostfix(op.Right, c.env) {
 			c.need(needUnionListListInt)
+			c.need(needListInt)
 			name := c.newTemp()
 			c.writeln(fmt.Sprintf("list_list_int %s = union_list_list_int(%s, %s);", name, left, right))
 			left = name
@@ -2087,6 +2098,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 		}
 		if op.Op == "except" && leftListInt && isListIntPostfix(op.Right, c.env) {
 			c.need(needExceptListInt)
+			c.need(needListInt)
 			name := c.newTemp()
 			c.writeln(fmt.Sprintf("list_int %s = except_list_int(%s, %s);", name, left, right))
 			left = name
@@ -2123,6 +2135,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 		}
 		if op.Op == "except" && leftList && isListListPostfix(op.Right, c.env) {
 			c.need(needExceptListListInt)
+			c.need(needListInt)
 			name := c.newTemp()
 			c.writeln(fmt.Sprintf("list_list_int %s = except_list_list_int(%s, %s);", name, left, right))
 			left = name
@@ -2134,6 +2147,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 		}
 		if op.Op == "intersect" && leftListInt && isListIntPostfix(op.Right, c.env) {
 			c.need(needIntersectListInt)
+			c.need(needListInt)
 			name := c.newTemp()
 			c.writeln(fmt.Sprintf("list_int %s = intersect_list_int(%s, %s);", name, left, right))
 			left = name
@@ -2170,6 +2184,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 		}
 		if op.Op == "intersect" && leftList && isListListPostfix(op.Right, c.env) {
 			c.need(needIntersectListListInt)
+			c.need(needListInt)
 			name := c.newTemp()
 			c.writeln(fmt.Sprintf("list_list_int %s = intersect_list_list_int(%s, %s);", name, left, right))
 			left = name
@@ -2181,6 +2196,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 		}
 		if op.Op == "in" && isListIntPostfix(op.Right, c.env) {
 			c.need(needInListInt)
+			c.need(needListInt)
 			left = fmt.Sprintf("contains_list_int(%s, %s)", right, left)
 			leftList = false
 			leftListInt = false
@@ -2211,6 +2227,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 		}
 		if op.Op == "in" && isListListPostfix(op.Right, c.env) {
 			c.need(needInListListInt)
+			c.need(needListInt)
 			left = fmt.Sprintf("contains_list_list_int(%s, %s)", right, left)
 			leftList = false
 			leftListInt = false
@@ -2355,6 +2372,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 					isStringList = false
 				} else {
 					c.need(needSliceListInt)
+					c.need(needListInt)
 					c.writeln(fmt.Sprintf("list_int %s = slice_list_int(%s, %s, %s);", name, expr, start, end))
 					if c.env != nil {
 						c.env.SetVar(name, types.ListType{Elem: types.IntType{}}, true)
@@ -2496,6 +2514,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					return name
 				}
 			}
+			c.need(needListInt)
 			c.writeln(fmt.Sprintf("list_int %s = list_int_create(%d);", name, len(p.List.Elems)))
 			for i, el := range p.List.Elems {
 				v := c.compileExpr(el)
@@ -2547,6 +2566,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 				if isListListExpr(a, c.env) {
 					c.need(needListListInt)
 					c.need(needPrintListInt)
+					c.need(needListInt)
 					c.need(needPrintListListInt)
 					c.writeln(fmt.Sprintf("_print_list_list_int(%s);", argExpr))
 					if i == len(p.Call.Args)-1 {

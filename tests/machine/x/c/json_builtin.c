@@ -4,16 +4,6 @@
 
 typedef struct {
   int len;
-  int *data;
-} list_int;
-static list_int list_int_create(int len) {
-  list_int l;
-  l.len = len;
-  l.data = (int *)malloc(sizeof(int) * len);
-  return l;
-}
-typedef struct {
-  int len;
   double *data;
 } list_float;
 static list_float list_float_create(int len) {

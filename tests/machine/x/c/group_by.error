@@ -1,8 +1,8 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/group_by.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/group_by.c:55:26: error: invalid initializer
-   55 |   list_statsItem stats = 0;
+/workspace/mochi/tests/machine/x/c/group_by.c:45:26: error: invalid initializer
+   45 |   list_statsItem stats = 0;
       |                          ^
 
    1: #include <stdio.h>

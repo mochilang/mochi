@@ -1,11 +1,21 @@
 line: 0
-error: output mismatch
--- got --
---- Even pairs ---
-2 -2040573948
-2 -2040573946
--- want --
---- Even pairs ---
-2 A
-2 B
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/cross_join_filter.c:18:3: error: conflicting types for ‘list_int’; have ‘struct <anonymous>’
+   18 | } list_int;
+      |   ^~~~~~~~
+/workspace/mochi/tests/machine/x/c/cross_join_filter.c:8:3: note: previous declaration of ‘list_int’ with type ‘list_int’
+    8 | } list_int;
+      |   ^~~~~~~~
+/workspace/mochi/tests/machine/x/c/cross_join_filter.c:19:17: error: conflicting types for ‘list_int_create’; have ‘list_int(int)’
+   19 | static list_int list_int_create(int len) {
+      |                 ^~~~~~~~~~~~~~~
+/workspace/mochi/tests/machine/x/c/cross_join_filter.c:9:17: note: previous definition of ‘list_int_create’ with type ‘list_int(int)’
+    9 | static list_int list_int_create(int len) {
+      |                 ^~~~~~~~~~~~~~~
+/workspace/mochi/tests/machine/x/c/cross_join_filter.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/cross_join_filter.c:69:48: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+   69 |       _t3.data[_t4] = (pairsItem){.n = n, .l = l};
+      |                                                ^
+/workspace/mochi/tests/machine/x/c/cross_join_filter.c:69:48: note: (near initialization for ‘(anonymous).l’)
+
    1: #include <stdio.h>
