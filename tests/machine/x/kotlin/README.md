@@ -4,9 +4,9 @@ This directory contains Kotlin code compiled from Mochi programs in `tests/vm/va
 
 ## Progress
 
-Compiled: 53/97 programs
+Compiled: 54/97 programs
 
-Successfully ran: 47/97 programs
+Successfully ran: 48/97 programs
 
 ## Checklist
 
@@ -48,7 +48,7 @@ Successfully ran: 47/97 programs
 - [x] in_operator_extended.mochi
 - [x] inner_join.mochi
 - [x] join_multi.mochi
-- [ ] json_builtin.mochi
+- [x] json_builtin.mochi
 - [x] left_join.mochi
 - [x] left_join_multi.mochi
 - [x] len_builtin.mochi
@@ -61,7 +61,7 @@ Successfully ran: 47/97 programs
 - [x] list_set_ops.mochi
 - [ ] load_yaml.mochi
 - [x] map_assign.mochi
-- [ ] map_in_operator.mochi
+- [x] map_in_operator.mochi
 - [x] map_index.mochi
 - [ ] map_int_key.mochi
 - [ ] map_literal_dynamic.mochi
