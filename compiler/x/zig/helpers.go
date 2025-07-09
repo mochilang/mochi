@@ -130,6 +130,31 @@ func indentBlock(s string, depth int) string {
 	return strings.Join(lines, "\n") + "\n"
 }
 
+func zeroValue(t types.Type) string {
+	switch tt := t.(type) {
+	case types.IntType, types.Int64Type:
+		return "0"
+	case types.FloatType:
+		return "0.0"
+	case types.StringType:
+		return "\"\""
+	case types.BoolType:
+		return "false"
+	case types.ListType:
+		elem := strings.TrimPrefix(zigTypeOf(tt.Elem), "[]const ")
+		return fmt.Sprintf("std.ArrayList(%s).init(std.heap.page_allocator)", elem)
+	case types.MapType:
+		if _, ok := tt.Key.(types.StringType); ok {
+			return fmt.Sprintf("std.StringHashMap(%s).init(std.heap.page_allocator)", zigTypeOf(tt.Value))
+		}
+		return fmt.Sprintf("std.AutoHashMap(%s, %s).init(std.heap.page_allocator)", zigTypeOf(tt.Key), zigTypeOf(tt.Value))
+	case types.StructType:
+		return fmt.Sprintf("%s{}", sanitizeName(tt.Name))
+	default:
+		return "undefined"
+	}
+}
+
 func simpleStringKey(e *parser.Expr) (string, bool) {
 	if e == nil || len(e.Binary.Right) != 0 {
 		return "", false

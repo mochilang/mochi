@@ -122,6 +122,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		if s.Let != nil && c.constGlobals[sanitizeName(s.Let.Name)] {
 			continue
 		}
+		if s.Var != nil && c.constGlobals[sanitizeName(s.Var.Name)] {
+			continue
+		}
 		if err := c.compileStmt(s, false); err != nil {
 			return nil, err
 		}
@@ -321,7 +324,7 @@ func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 				}
 				c.constGlobals[name] = true
 			} else {
-				c.writeln(fmt.Sprintf("var %s: %s = undefined;", name, zigTypeOf(typ)))
+				c.writeln(fmt.Sprintf("var %s: %s = %s;", name, zigTypeOf(typ), zeroValue(typ)))
 				c.constGlobals[name] = true
 			}
 			continue
@@ -361,7 +364,7 @@ func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 					}
 				}
 			} else {
-				c.writeln(fmt.Sprintf("var %s: %s = undefined;", name, zigTypeOf(typ)))
+				c.writeln(fmt.Sprintf("var %s: %s = %s;", name, zigTypeOf(typ), zeroValue(typ)))
 			}
 			c.constGlobals[name] = true
 			continue
