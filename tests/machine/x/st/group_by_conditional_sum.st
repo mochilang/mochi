@@ -1,18 +1,17 @@
 | items result |
 items := {Dictionary newFrom: {cat -> 'a'. val -> 10. flag -> true}. Dictionary newFrom: {cat -> 'a'. val -> 5. flag -> false}. Dictionary newFrom: {cat -> 'b'. val -> 20. flag -> true}}.
-result := [ | groups res |
+result := [ | groups tmp |
   groups := Dictionary new.
+  tmp := OrderedCollection new.
   items do: [:i |
-    | g k |
-    k := i.cat.
-    g := groups at: k ifAbsentPut: [OrderedCollection new].
-    g add: i.
-  ]
-  res := OrderedCollection new.
-  groups keysAndValuesDo: [:k :items |
     | g |
-    g := Dictionary newFrom: {#key->k. #items->items}.
-    res add: Dictionary newFrom: {cat -> g.key. share -> (([ | tmp |
+    g := groups at: i.cat ifAbsentPut:[OrderedCollection new].
+    g add: Dictionary newFrom: {#i->i}.
+  ].
+  groups keysAndValuesDo: [:k :grp |
+    | g |
+    g := Dictionary newFrom:{#key->k. #items->grp}.
+    tmp add: Dictionary newFrom: {cat -> g.key. share -> (([ | tmp |
   tmp := OrderedCollection new.
   g do: [:x |
     tmp add: (x.flag) ifTrue: [x.val] ifFalse: [0].
@@ -26,7 +25,7 @@ result := [ | groups res |
   tmp
 ] value inject: 0 into: [:s :x | s + x]))}.
   ].
-  res := res asSortedCollection: [:a :b | a.key < b.key].
-  res
+  tmp := tmp asSortedCollection: [:a :b | g.key < g.key].
+  tmp
 ] value.
 Transcript show: (result) printString; cr.

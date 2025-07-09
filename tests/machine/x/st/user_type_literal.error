@@ -1,7 +1,2 @@
-line: 11
-error: unsupported expression at line 11
-   9: }
-  10: 
-  11: let book = Book {
-  12:   title: "Go",
-  13:   author: Person { name: "Bob", age: 42 },
+line: 0
+error: gst interpreter not available
