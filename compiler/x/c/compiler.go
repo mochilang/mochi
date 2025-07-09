@@ -2982,6 +2982,17 @@ func isStringPrimary(p *parser.Primary, env *types.Env) bool {
 		return true
 	case p.Selector != nil && env != nil:
 		if t, err := env.GetVar(p.Selector.Root); err == nil {
+			for _, f := range p.Selector.Tail {
+				st, ok := t.(types.StructType)
+				if !ok {
+					return false
+				}
+				ft, ok := st.Fields[f]
+				if !ok {
+					return false
+				}
+				t = ft
+			}
 			if _, ok := t.(types.StringType); ok {
 				return true
 			}
@@ -3717,7 +3728,20 @@ func (c *Compiler) inferStructFromMap(ml *parser.MapLiteral, name string) (types
 			return types.StructType{}, false
 		}
 		order[i] = key
-		fields[key] = types.ExprType(it.Value, c.env)
+		t := types.ExprType(it.Value, c.env)
+		if types.ContainsAny(t) {
+			switch {
+			case isStringExpr(it.Value, c.env):
+				t = types.StringType{}
+			case isFloatExpr(it.Value, c.env):
+				t = types.FloatType{}
+			case isBoolArg(it.Value, c.env):
+				t = types.BoolType{}
+			default:
+				t = types.IntType{}
+			}
+		}
+		fields[key] = t
 	}
 	stName := sanitizeName(name) + "Item"
 	idx := 1
