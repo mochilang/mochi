@@ -1742,6 +1742,16 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "max":
 		c.use("_max")
 		return fmt.Sprintf("_max(%s)", argStr), nil
+	case "floor":
+		if len(args) == 1 {
+			return fmt.Sprintf("Math.floor(%s)", args[0]), nil
+		}
+		return "", fmt.Errorf("floor expects 1 arg")
+	case "ceil":
+		if len(args) == 1 {
+			return fmt.Sprintf("Math.ceil(%s)", args[0]), nil
+		}
+		return "", fmt.Errorf("ceil expects 1 arg")
 	case "concat":
 		if len(args) == 0 {
 			return "[]", nil
