@@ -1,4 +1,4 @@
-# Mochi to Smalltalk Machine Outputs (77/97 compiled)
+# Mochi to Smalltalk Machine Outputs (78/97 compiled)
 
 This directory contains Smalltalk source code generated from the Mochi programs in `tests/vm/valid`. A checkbox indicates the program compiled and executed successfully during tests. Because the `gst` interpreter is not available, all programs currently fail at runtime.
 
@@ -8,7 +8,7 @@ This directory contains Smalltalk source code generated from the Mochi programs 
 - [x] basic_compare.mochi
 - [x] binary_precedence.mochi
 - [x] bool_chain.mochi
-- [ ] break_continue.mochi
+- [x] break_continue.mochi
 - [x] cast_string_to_int.mochi
 - [x] cast_struct.mochi
 - [x] closure.mochi

@@ -104,6 +104,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileWhile(s.While)
 	case s.For != nil:
 		return c.compileFor(s.For)
+	case s.Break != nil:
+		c.writeln("\" break\"")
+		return nil
+	case s.Continue != nil:
+		c.writeln("\" continue\"")
+		return nil
 	case s.Return != nil:
 		expr, err := c.compileExpr(s.Return.Value)
 		if err != nil {
