@@ -532,6 +532,26 @@ func (c *Compiler) funExpr(fe *parser.FunExpr) (string, error) {
 		}
 		return fmt.Sprintf("(%s) => %s", strings.Join(params, ", "), body), nil
 	}
+	if len(fe.BlockBody) > 0 {
+		sub := New()
+		sub.repoRoot = c.repoRoot
+		sub.funParams = c.funParams
+		sub.variants = c.variants
+		for _, st := range fe.BlockBody {
+			if err := sub.stmt(st); err != nil {
+				return "", err
+			}
+		}
+		if sub.needContainsHelper {
+			c.needContainsHelper = true
+		}
+		lines := strings.Split(strings.TrimRight(sub.buf.String(), "\n"), "\n")
+		for i, l := range lines {
+			lines[i] = "  " + l
+		}
+		body := strings.Join(lines, "\n")
+		return fmt.Sprintf("(%s) => {\n%s\n}", strings.Join(params, ", "), body), nil
+	}
 	return "", fmt.Errorf("unsupported function literal")
 }
 
