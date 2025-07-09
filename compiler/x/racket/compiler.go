@@ -735,6 +735,20 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		}
 		loops = append(loops, fmt.Sprintf("[%s %s]", f.Var, s))
 	}
+	for _, j := range q.Joins {
+		if j.Side != nil {
+			return "", fmt.Errorf("unsupported join type")
+		}
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			return "", err
+		}
+		onExpr, err := c.compileExpr(j.On)
+		if err != nil {
+			return "", err
+		}
+		loops = append(loops, fmt.Sprintf("[%s %s #:when %s]", j.Var, js, onExpr))
+	}
 	cond := ""
 	if q.Where != nil {
 		ce, err := c.compileExpr(q.Where)
