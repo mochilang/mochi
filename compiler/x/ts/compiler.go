@@ -33,6 +33,7 @@ type Compiler struct {
 	root         string
 	globals      map[string]string
 	moduleScope  bool
+	groupKeys    map[string]string
 }
 
 // New creates a new TypeScript compiler instance.
@@ -47,6 +48,7 @@ func New(env *types.Env, root string) *Compiler {
 		root:        root,
 		globals:     make(map[string]string),
 		moduleScope: false,
+		groupKeys:   nil,
 	}
 }
 
@@ -1582,6 +1584,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 		}
 		expr := sanitizeName(p.Selector.Root)
+		if c.groupKeys != nil && len(p.Selector.Tail) == 0 {
+			if v, ok := c.groupKeys[expr]; ok {
+				return v, nil
+			}
+		}
 		for _, s := range p.Selector.Tail {
 			expr += "." + sanitizeName(s)
 		}
@@ -2139,6 +2146,16 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if !needsHelper {
 		simple := q.Sort == nil && q.Skip == nil && q.Take == nil
 		group := q.Group != nil
+		if group {
+			fields := groupKeyFields(q.Group.Exprs[0])
+			prev := c.groupKeys
+			c.groupKeys = make(map[string]string)
+			gname := sanitizeName(q.Group.Name)
+			for _, f := range fields {
+				c.groupKeys[sanitizeName(f)] = gname + ".key." + sanitizeName(f)
+			}
+			defer func() { c.groupKeys = prev }()
+		}
 
 		if simple && !group && len(q.Froms) == 0 && len(q.Joins) == 0 {
 			child := types.NewEnv(c.env)
@@ -2173,7 +2190,29 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			if strings.HasPrefix(trimmed, "{") || strings.HasPrefix(trimmed, "[") || strings.Contains(trimmed, "\n") {
 				mapped = "(" + val + ")"
 			}
+			if name, arg, ok := detectAggCall(q.Select); ok {
+				argStr, err := c.compileExpr(arg)
+				if err != nil {
+					c.env = orig
+					return "", err
+				}
+				var agg strings.Builder
+				agg.WriteString("(() => {\n")
+				agg.WriteString("\tconst _items = ")
+				agg.WriteString(src)
+				if cond != "" {
+					agg.WriteString(fmt.Sprintf(".filter(%s => (%s))", sanitizeName(q.Var), cond))
+				}
+				agg.WriteString(fmt.Sprintf(".map(%s => %s);\n", sanitizeName(q.Var), argStr))
+				agg.WriteString(fmt.Sprintf("\treturn _%s(_items);\n", name))
+				agg.WriteString("})()")
+				c.use("_" + name)
+				c.env = orig
+				return agg.String(), nil
+			}
+
 			b.WriteString(fmt.Sprintf(".map(%s => %s)", sanitizeName(q.Var), mapped))
+			c.env = orig
 			return b.String(), nil
 		}
 
@@ -2242,6 +2281,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		var keyExpr string
 		var val string
+		var havingStr string
 		if group {
 			keyExpr, err = c.compileExpr(q.Group.Exprs[0])
 			if err != nil {
@@ -2255,6 +2295,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			if err != nil {
 				c.env = orig
 				return "", err
+			}
+			if q.Group.Having != nil {
+				havingStr, err = c.compileExpr(q.Group.Having)
+				if err != nil {
+					c.env = orig
+					return "", err
+				}
 			}
 			c.env = child
 		} else {
@@ -2309,7 +2356,16 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		} else if simple {
 			b.WriteString(indent + "_res.push(" + val + ")\n")
 		} else {
-			b.WriteString(indent + "_items.push(" + sanitizeName(q.Var) + ");\n")
+			parts := []string{fmt.Sprintf("%s: %s", sanitizeName(q.Var), sanitizeName(q.Var))}
+			for _, f := range q.Froms {
+				v := sanitizeName(f.Var)
+				parts = append(parts, fmt.Sprintf("%s: %s", v, v))
+			}
+			for _, j := range q.Joins {
+				v := sanitizeName(j.Var)
+				parts = append(parts, fmt.Sprintf("%s: %s", v, v))
+			}
+			b.WriteString(indent + "_items.push({" + strings.Join(parts, ", ") + "});\n")
 		}
 		for i := len(q.Joins) - 1; i >= 0; i-- {
 			indent = indent[:len(indent)-len(indentStr)]
@@ -2323,6 +2379,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 		if group {
 			b.WriteString("\tlet _groups = _order.map(k => _map.get(k)!);\n")
+			if havingStr != "" {
+				b.WriteString("\t_groups = _groups.filter(" + sanitizeName(q.Group.Name) + " => (" + havingStr + "));\n")
+			}
 			if simple {
 				b.WriteString("\tconst _res = [];\n")
 				b.WriteString("\tfor (const " + sanitizeName(q.Group.Name) + " of _groups) {\n")
@@ -2390,12 +2449,26 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.env = orig
 		b.WriteString("\tconst _res = [];\n")
 		var rv string
+		vars := []string{sanitizeName(q.Var)}
+		for _, f := range q.Froms {
+			vars = append(vars, sanitizeName(f.Var))
+		}
+		for _, j := range q.Joins {
+			vars = append(vars, sanitizeName(j.Var))
+		}
 		if group {
 			rv = sanitizeName(q.Group.Name)
-		} else {
+		} else if simple {
 			rv = sanitizeName(q.Var)
+		} else {
+			rv = "_it"
 		}
 		b.WriteString("\tfor (const " + rv + " of _items) {\n")
+		if !group && !simple {
+			for _, v := range vars {
+				b.WriteString("\t\tconst " + v + " = " + rv + "." + v + ";\n")
+			}
+		}
 		b.WriteString("\t\t_res.push(" + val + ")\n")
 		b.WriteString("\t}\n")
 		b.WriteString("\treturn _res;\n")
@@ -2905,6 +2978,50 @@ func loadExpr(e *parser.Expr) (*parser.LoadExpr, bool) {
 		return nil, false
 	}
 	return p.Target.Load, true
+}
+
+// detectAggCall returns the name and argument of a simple aggregator call like
+// sum(x) or count(x). If the expression is not such a call, ok is false.
+func detectAggCall(e *parser.Expr) (name string, arg *parser.Expr, ok bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return "", nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil || len(u.Value.Ops) != 0 {
+		return "", nil, false
+	}
+	pr := u.Value.Target
+	if pr == nil || pr.Call == nil || len(pr.Call.Args) != 1 {
+		return "", nil, false
+	}
+	switch pr.Call.Func {
+	case "sum", "count", "avg", "min", "max":
+		return pr.Call.Func, pr.Call.Args[0], true
+	default:
+		return "", nil, false
+	}
+}
+
+// groupKeyFields returns the field names of a simple map literal used as a
+// group key. It returns nil if the expression is not a suitable map literal.
+func groupKeyFields(e *parser.Expr) []string {
+	if e == nil || e.Binary == nil {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil || len(u.Value.Ops) != 0 {
+		return nil
+	}
+	if u.Value.Target == nil || u.Value.Target.Map == nil {
+		return nil
+	}
+	fields := make([]string, 0, len(u.Value.Target.Map.Items))
+	for _, it := range u.Value.Target.Map.Items {
+		if name, ok := identName(it.Key); ok {
+			fields = append(fields, name)
+		}
+	}
+	return fields
 }
 
 func (c *Compiler) eqFilter(e *parser.Expr, varName string) (string, string, bool) {

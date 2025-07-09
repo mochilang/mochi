@@ -160,7 +160,7 @@ function main(): void {
     var _items = [];
     for (const x of _src) {
       if (!(_equal(x.ps_supplycost, min_cost))) continue;
-      _items.push(x);
+      _items.push({ x: x });
     }
     let _pairs = _items.map((it) => {
       const x = it;
@@ -179,7 +179,8 @@ function main(): void {
     });
     _items = _pairs.map((p) => p.item);
     const _res = [];
-    for (const x of _items) {
+    for (const _it of _items) {
+      const x = _it.x;
       _res.push(x);
     }
     return _res;
@@ -243,3 +244,4 @@ function _min(v: any): any {
 }
 
 main();
+
