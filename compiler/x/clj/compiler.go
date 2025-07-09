@@ -2088,6 +2088,16 @@ func (c *Compiler) compileSimpleGroup(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 	}
+
+	genv := types.NewEnv(child)
+	var gElem types.Type
+	gElem, _ = child.GetVar(q.Var)
+	if gElem == nil {
+		gElem = types.AnyType{}
+	}
+	genv.SetVar(q.Group.Name, types.GroupType{Elem: gElem}, true)
+	c.env = genv
+
 	sortExpr := ""
 	if q.Sort != nil {
 		sortExpr, err = c.compileExpr(q.Sort)
@@ -2112,14 +2122,7 @@ func (c *Compiler) compileSimpleGroup(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 	}
-	genv := types.NewEnv(child)
-	var gElem types.Type
-	gElem, _ = child.GetVar(q.Var)
-	if gElem == nil {
-		gElem = types.AnyType{}
-	}
-	genv.SetVar(q.Group.Name, types.GroupType{Elem: gElem}, true)
-	c.env = genv
+
 	valExpr, err := c.compileExpr(q.Select)
 	if err != nil {
 		c.env = origEnv
