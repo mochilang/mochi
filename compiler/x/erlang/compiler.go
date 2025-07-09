@@ -894,6 +894,15 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", err
 		}
 		return fmt.Sprintf("maps:values(%s)", a0), nil
+	case "exists":
+		if len(call.Args) != 1 {
+			return "", fmt.Errorf("exists expects 1 arg")
+		}
+		a0, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("(length(%s) > 0)", a0), nil
 	case "substring":
 		if len(call.Args) != 3 {
 			return "", fmt.Errorf("substring expects 3 args")
