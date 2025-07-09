@@ -80,10 +80,17 @@ func cTypeFromType(t types.Type) string {
 			return "list_" + sanitizeName(st.Name)
 		}
 	case types.MapType:
-		if _, ok := tt.Key.(types.IntType); ok {
-			if _, ok2 := tt.Value.(types.BoolType); ok2 {
-				return "map_int_bool"
-			}
+		if isMapIntBoolType(tt) {
+			return "map_int_bool"
+		}
+		if isMapStringIntType(tt) {
+			return "map_string_int"
+		}
+		if isMapIntStringType(tt) {
+			return "map_int_string"
+		}
+		if isMapStringType(tt) {
+			return "map_string"
 		}
 	case types.GroupType:
 		if _, ok := tt.Elem.(types.IntType); ok {
