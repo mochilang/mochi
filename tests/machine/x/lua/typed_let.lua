@@ -1,0 +1,2 @@
+y = nil
+print(y)

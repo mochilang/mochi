@@ -1,0 +1,15 @@
+function __avg(v)
+    local items
+    if type(v) == 'table' and v.items ~= nil then
+        items = v.items
+    elseif type(v) == 'table' then
+        items = v
+    else
+        error('avg() expects list or group')
+    end
+    if #items == 0 then return 0 end
+    local sum = 0
+    for _, it in ipairs(items) do sum = sum + it end
+    return sum / #items
+end
+print(__avg({1, 2, 3}))
