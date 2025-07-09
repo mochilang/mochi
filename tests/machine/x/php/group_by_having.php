@@ -1,5 +1,5 @@
 <?php
-$people = [[$name => "Alice", $city => "Paris"], [$name => "Bob", $city => "Hanoi"], [$name => "Charlie", $city => "Paris"], [$name => "Diana", $city => "Hanoi"], [$name => "Eve", $city => "Paris"], [$name => "Frank", $city => "Hanoi"], [$name => "George", $city => "Paris"]];
+$people = [["name" => "Alice", "city" => "Paris"], ["name" => "Bob", "city" => "Hanoi"], ["name" => "Charlie", "city" => "Paris"], ["name" => "Diana", "city" => "Hanoi"], ["name" => "Eve", "city" => "Paris"], ["name" => "Frank", "city" => "Hanoi"], ["name" => "George", "city" => "Paris"]];
 $big = (function() {
     $groups = [];
     foreach ($people as $p) {
@@ -10,7 +10,7 @@ $big = (function() {
     foreach ($groups as $_k => $__g) {
         $g = ['key'=>json_decode($_k, true),'items'=> $__g];
         if (count($g['items']) >= 4) {
-        $result[] = [$city => $g->key, $num => count($g['items'])];
+        $result[] = ["city" => $g->key, "num" => count($g['items'])];
         }
     }
     return $result;

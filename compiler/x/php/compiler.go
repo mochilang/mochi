@@ -626,6 +626,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return "[" + strings.Join(parts, ", ") + "]", nil
 	case p.Selector != nil:
+		if ut, ok := c.env.FindUnionByVariant(p.Selector.Root); ok && len(p.Selector.Tail) == 0 {
+			st := ut.Variants[p.Selector.Root]
+			if len(st.Order) == 0 {
+				return fmt.Sprintf("new %s()", sanitizeName(p.Selector.Root)), nil
+			}
+		}
 		name := "$" + sanitizeName(p.Selector.Root)
 		for _, t := range p.Selector.Tail {
 			name += "->" + sanitizeName(t)
@@ -1009,6 +1015,25 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 }
 
 func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error) {
+	if ut, ok := c.env.FindUnionByVariant(sl.Name); ok {
+		st := ut.Variants[sl.Name]
+		args := make([]string, len(st.Order))
+		for i, name := range st.Order {
+			valStr := "null"
+			for _, f := range sl.Fields {
+				if f.Name == name {
+					v, err := c.compileExpr(f.Value)
+					if err != nil {
+						return "", err
+					}
+					valStr = v
+					break
+				}
+			}
+			args[i] = valStr
+		}
+		return fmt.Sprintf("new %s(%s)", sanitizeName(sl.Name), strings.Join(args, ", ")), nil
+	}
 	fields := make([]string, len(sl.Fields))
 	for i, f := range sl.Fields {
 		v, err := c.compileExpr(f.Value)
@@ -1052,23 +1077,54 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 		return "", err
 	}
 	var buf bytes.Buffer
-	buf.WriteString("match(" + target + ") {")
-	buf.WriteByte('\n')
+	buf.WriteString("(function($_t) {\n")
 	for _, cs := range m.Cases {
-		pat, err := c.compileExpr(cs.Pattern)
-		if err != nil {
-			return "", err
-		}
 		res, err := c.compileExpr(cs.Result)
 		if err != nil {
 			return "", err
 		}
-		if pat == "_" || pat == "$_" {
-			pat = "default"
+		if isUnderscoreExpr(cs.Pattern) {
+			buf.WriteString("    return " + res + ";\n")
+			buf.WriteString(")(" + target + ")")
+			return buf.String(), nil
 		}
-		buf.WriteString("    " + pat + " => " + res + ",\n")
+		cond := ""
+		if call, ok := callPattern(cs.Pattern); ok {
+			if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
+				st := ut.Variants[call.Func]
+				cond = fmt.Sprintf("$_t instanceof %s", sanitizeName(call.Func))
+				names := []string{}
+				values := []string{}
+				for idx, arg := range call.Args {
+					if id, ok := identName(arg); ok {
+						if id == "_" {
+							continue
+						}
+						names = append(names, "$"+sanitizeName(id))
+						field := sanitizeName(st.Order[idx])
+						values = append(values, fmt.Sprintf("$_t->%s", field))
+					}
+				}
+				if len(names) > 0 {
+					res = fmt.Sprintf("(function(%s) { return %s; })(%s)", strings.Join(names, ", "), res, strings.Join(values, ", "))
+				}
+			}
+		} else if ident, ok := identName(cs.Pattern); ok {
+			if _, ok := c.env.FindUnionByVariant(ident); ok {
+				cond = fmt.Sprintf("$_t instanceof %s", sanitizeName(ident))
+			}
+		}
+		if cond == "" {
+			p, err := c.compileExpr(cs.Pattern)
+			if err != nil {
+				return "", err
+			}
+			cond = fmt.Sprintf("$_t === %s", p)
+		}
+		buf.WriteString(fmt.Sprintf("    if (%s) return %s;\n", cond, res))
 	}
-	buf.WriteString("}")
+	buf.WriteString("    return null;\n")
+	buf.WriteString("})(" + target + ")")
 	return buf.String(), nil
 }
 

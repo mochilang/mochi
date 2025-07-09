@@ -1,5 +1,5 @@
 <?php
-$items = [[$cat => "a", $val => 3], [$cat => "a", $val => 1], [$cat => "b", $val => 5], [$cat => "b", $val => 2]];
+$items = [["cat" => "a", "val" => 3], ["cat" => "a", "val" => 1], ["cat" => "b", "val" => 5], ["cat" => "b", "val" => 2]];
 $grouped = (function() {
     $groups = [];
     foreach ($items as $i) {
@@ -15,7 +15,7 @@ $grouped = (function() {
         $result[] = $x->val;
     }
     return $result;
-})()), [$cat => $g->key, $total => array_sum((function() {
+})()), ["cat" => $g->key, "total" => array_sum((function() {
     $result = [];
     foreach ($g as $x) {
         $result[] = $x->val;

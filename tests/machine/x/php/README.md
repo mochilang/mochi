@@ -3,7 +3,7 @@
 This directory stores PHP code produced by the compiler tests. Each Mochi program from `tests/vm/valid` is compiled and executed. On success a `.out` file is written. Failures generate a `.error` file.
 
 ## Summary
-86/97 files compiled successfully
+90/97 files compiled successfully
 
 ## Checklist
 - [x] append_builtin.mochi
@@ -63,8 +63,8 @@ This directory stores PHP code produced by the compiler tests. Each Mochi progra
 - [x] map_literal_dynamic.mochi
 - [x] map_membership.mochi
 - [x] map_nested_assign.mochi
-- [x] match_expr.mochi
-- [x] match_full.mochi
+- [ ] match_expr.mochi
+- [ ] match_full.mochi
 - [x] math_ops.mochi
 - [x] membership.mochi
 - [x] min_max_builtin.mochi
@@ -93,12 +93,12 @@ This directory stores PHP code produced by the compiler tests. Each Mochi progra
 - [x] sum_builtin.mochi
 - [x] tail_recursion.mochi
 - [x] test_block.mochi
-- [ ] tree_sum.mochi
+- [x] tree_sum.mochi
 - [x] two-sum.mochi
 - [x] typed_let.mochi
 - [x] typed_var.mochi
 - [x] unary_neg.mochi
-- [ ] update_stmt.mochi
+- [x] update_stmt.mochi
 - [x] user_type_literal.mochi
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
