@@ -1,4 +1,4 @@
-| nations suppliers partsupp filtered grouped |
+| filtered grouped nations partsupp suppliers |
 nations := {Dictionary newFrom: {id -> 1. name -> 'A'}. Dictionary newFrom: {id -> 2. name -> 'B'}}.
 suppliers := {Dictionary newFrom: {id -> 1. nation -> 1}. Dictionary newFrom: {id -> 2. nation -> 2}}.
 partsupp := {Dictionary newFrom: {part -> 100. supplier -> 1. cost -> 10. qty -> 2}. Dictionary newFrom: {part -> 100. supplier -> 2. cost -> 20. qty -> 1}. Dictionary newFrom: {part -> 200. supplier -> 1. cost -> 5. qty -> 3}}.
@@ -15,18 +15,19 @@ filtered := [ | tmp |
   ].
   tmp
 ] value.
-grouped := [ | groups tmp |
+grouped := [ | groups res |
   groups := Dictionary new.
-  tmp := OrderedCollection new.
   filtered do: [:x |
+    | g k |
+    k := x.part.
+    g := groups at: k ifAbsentPut: [OrderedCollection new].
+    g add: x.
+  ]
+  res := OrderedCollection new.
+  groups keysAndValuesDo: [:k :items |
     | g |
-    g := groups at: x.part ifAbsentPut:[OrderedCollection new].
-    g add: Dictionary newFrom: {#x->x}.
-  ].
-  groups keysAndValuesDo: [:k :grp |
-    | g |
-    g := Dictionary newFrom:{#key->k. #items->grp}.
-    tmp add: Dictionary newFrom: {part -> g.key. total -> ([ | tmp |
+    g := Dictionary newFrom: {#key->k. #items->items}.
+    res add: Dictionary newFrom: {part -> g.key. total -> ([ | tmp |
   tmp := OrderedCollection new.
   g do: [:r |
     tmp add: r.value.
@@ -34,6 +35,6 @@ grouped := [ | groups tmp |
   tmp
 ] value inject: 0 into: [:s :x | s + x])}.
   ].
-  tmp
+  res
 ] value.
 Transcript show: (grouped) printString; cr.

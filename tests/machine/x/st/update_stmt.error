@@ -1,2 +1,7 @@
-line: 0
-error: gst interpreter not available
+line: 8
+error: unsupported expression at line 8
+   6: 
+   7: let people: list<Person> = [
+   8:   Person { name: "Alice", age: 17, status: "minor" },
+   9:   Person { name: "Bob", age: 25, status: "unknown" },
+  10:   Person { name: "Charlie", age: 18, status: "unknown" },

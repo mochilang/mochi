@@ -1,5 +1,4 @@
-| n |
-{1. 2. 3} do: [:n |.
-Transcript show: (n) printString; cr.
-].
+{1. 2. 3} do: [:n |
+  Transcript show: (n) printString; cr.
+]
 .

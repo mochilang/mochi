@@ -1,2 +1,5 @@
-line: 0
-error: gst interpreter not available
+line: 1
+error: unsupported statement at line 1
+   1: test "addition works" {
+   2:   let x = 1 + 2
+   3:   expect x == 3
