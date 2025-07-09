@@ -822,23 +822,13 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 		name := p.Selector.Root
 		t, _ := c.env.GetVar(p.Selector.Root)
 		if len(p.Selector.Tail) > 0 {
-			if types.IsMapType(t) || isStructType(t) {
-				name = fmt.Sprintf("(%s as MutableMap<*, *>)", name)
-				for i, part := range p.Selector.Tail {
-					name += fmt.Sprintf("[%q]", part)
-					if i == len(p.Selector.Tail)-1 {
-						if kt := kotlinCastType(fieldType(t, p.Selector.Tail)); kt != "" {
-							name += fmt.Sprintf(" as %s", kt)
-						}
-					} else {
-						ft := fieldType(t, p.Selector.Tail[:i+1])
-						if isStructType(ft) || types.IsMapType(ft) {
-							name = fmt.Sprintf("(%s as MutableMap<*, *>)", name)
-						}
-					}
-				}
-			} else {
+			if isStructType(t) {
 				name += "." + strings.Join(p.Selector.Tail, ".")
+			} else {
+				name = fmt.Sprintf("(%s as MutableMap<*, *>)", name)
+				for _, part := range p.Selector.Tail {
+					name += fmt.Sprintf("[%q]", part)
+				}
 			}
 		}
 		return name, nil

@@ -1,18 +1,6 @@
-line 68:
-OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
-/workspace/mochi/tests/machine/x/kotlin/inner_join.kt:68:72: error: unresolved reference: c
-        __res.add(mutableMapOf("orderId" to o["id"], "customerName" to c.name, "total" to o["total"]))
-                                                                       ^
-/workspace/mochi/tests/machine/x/kotlin/inner_join.kt:76:39: error: unresolved reference: orderId
-        println(listOf("Order", entry.orderId, "by", entry.customerName, "- $", entry.total).joinToString(" "))
-                                      ^
-/workspace/mochi/tests/machine/x/kotlin/inner_join.kt:76:60: error: unresolved reference: customerName
-        println(listOf("Order", entry.orderId, "by", entry.customerName, "- $", entry.total).joinToString(" "))
-                                                           ^
-/workspace/mochi/tests/machine/x/kotlin/inner_join.kt:76:87: error: unresolved reference: total
-        println(listOf("Order", entry.orderId, "by", entry.customerName, "- $", entry.total).joinToString(" "))
-                                                                                      ^
+line 0:
+--- Orders with customer info ---
+Exception in thread "main" java.lang.ClassCastException: class java.lang.String cannot be cast to class java.lang.Integer (java.lang.String and java.lang.Integer are in module java.base of loader 'bootstrap')
+	at Inner_joinKt.main(inner_join.kt:195)
+	at Inner_joinKt.main(inner_join.kt)
 
- 67:     for (o in orders) {
- 68:         __res.add(mutableMapOf("orderId" to o["id"], "customerName" to c.name, "total" to o["total"]))
- 69:     }

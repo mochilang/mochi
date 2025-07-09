@@ -2,7 +2,7 @@
 
 This directory contains Kotlin source files generated from Mochi programs. Running the programs requires the Kotlin toolchain.
 
-Compiled programs: 44/97
+Compiled programs: 45/97
 
 Checklist:
 [x] append_builtin
@@ -41,7 +41,7 @@ Checklist:
 [x] if_then_else_nested
 [x] in_operator
 [x] in_operator_extended
-[ ] inner_join
+[x] inner_join
 [ ] join_multi
 [ ] json_builtin
 [ ] left_join
