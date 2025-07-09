@@ -1,0 +1,55 @@
+:- style_check(-singleton).
+get_item(Container, Key, Val) :-
+    is_dict(Container), !, (string(Key) -> atom_string(A, Key) ; A = Key), get_dict(A, Container, Val).
+get_item(Container, Index, Val) :-
+    string(Container), !, string_chars(Container, Chars), nth0(Index, Chars, Val).
+get_item(List, Index, Val) :- nth0(Index, List, Val).
+
+:- initialization(main, main).
+main :-
+    dict_create(_V0, map, [N_nationkey-1, N_name-"BRAZIL"]),
+    Nation = [_V0],
+    dict_create(_V1, map, [C_custkey-1, C_name-"Alice", C_acctbal-100, C_nationkey-1, C_address-"123 St", C_phone-"123-456", C_comment-"Loyal"]),
+    Customer = [_V1],
+    dict_create(_V2, map, [O_orderkey-1000, O_custkey-1, O_orderdate-"1993-10-15"]),
+    dict_create(_V3, map, [O_orderkey-2000, O_custkey-1, O_orderdate-"1994-01-02"]),
+    Orders = [_V2, _V3],
+    dict_create(_V4, map, [L_orderkey-1000, L_returnflag-"R", L_extendedprice-1000, L_discount-0.1]),
+    dict_create(_V5, map, [L_orderkey-2000, L_returnflag-"N", L_extendedprice-500, L_discount-0]),
+    Lineitem = [_V4, _V5],
+    Start_date = "1993-10-01",
+    End_date = "1994-01-01",
+    get_item(O, 'o_custkey', _V6),
+    get_item(C, 'c_custkey', _V7),
+    get_item(L, 'l_orderkey', _V8),
+    get_item(O, 'o_orderkey', _V9),
+    get_item(N, 'n_nationkey', _V10),
+    get_item(C, 'c_nationkey', _V11),
+    get_item(O, 'o_orderdate', _V12),
+    get_item(O, 'o_orderdate', _V13),
+    get_item(L, 'l_returnflag', _V14),
+    get_item(G, 'key', _V15),
+    get_item(_V15, 'c_custkey', _V16),
+    get_item(G, 'key', _V17),
+    get_item(_V17, 'c_name', _V18),
+    get_item(X, 'l', _V19),
+    get_item(_V19, 'l_extendedprice', _V20),
+    get_item(X, 'l', _V21),
+    get_item(_V21, 'l_discount', _V22),
+    findall((_V20 * (1 - _V22)), (member(X, G), true), _V23),
+    sum_list(_V23, _V24),
+    get_item(G, 'key', _V25),
+    get_item(_V25, 'c_acctbal', _V26),
+    get_item(G, 'key', _V27),
+    get_item(_V27, 'n_name', _V28),
+    get_item(G, 'key', _V29),
+    get_item(_V29, 'c_address', _V30),
+    get_item(G, 'key', _V31),
+    get_item(_V31, 'c_phone', _V32),
+    get_item(G, 'key', _V33),
+    get_item(_V33, 'c_comment', _V34),
+    dict_create(_V35, map, [C_custkey-_V16, C_name-_V18, Revenue-_V24, C_acctbal-_V26, N_name-_V28, C_address-_V30, C_phone-_V32, C_comment-_V34]),
+    findall(_V35, (member(C, Customer), member(O, Orders), (_V6 == _V7), member(L, Lineitem), (_V8 == _V9), member(N, Nation), (_V10 == _V11), (((((_V12 >= Start_date), _V13) < End_date), _V14) == "R")), _V36),
+    Result = _V36,
+    writeln(Result),
+    true.

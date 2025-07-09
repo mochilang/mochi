@@ -12,6 +12,9 @@ import (
 
 type Compiler struct {
 	buf           bytes.Buffer
+	funcBuf       bytes.Buffer
+	lambdaBuf     bytes.Buffer
+	out           *bytes.Buffer
 	indent        int
 	tmp           int
 	vars          map[string]string
@@ -24,7 +27,9 @@ type Compiler struct {
 }
 
 func New() *Compiler {
-	return &Compiler{vars: make(map[string]string)}
+	c := &Compiler{vars: make(map[string]string)}
+	c.out = &c.funcBuf
+	return c
 }
 
 func (c *Compiler) newVar(base string) string {
@@ -41,14 +46,16 @@ func (c *Compiler) newVar(base string) string {
 
 func (c *Compiler) writeln(s string) {
 	for i := 0; i < c.indent; i++ {
-		c.buf.WriteString("    ")
+		c.out.WriteString("    ")
 	}
-	c.buf.WriteString(s)
-	c.buf.WriteByte('\n')
+	c.out.WriteString(s)
+	c.out.WriteByte('\n')
 }
 
 func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.buf.Reset()
+	c.funcBuf.Reset()
+	c.lambdaBuf.Reset()
 	c.indent = 0
 	c.tmp = 0
 	c.vars = make(map[string]string)
@@ -58,6 +65,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.needsLenAny = false
 	c.needsSetItem = false
 
+	c.out = &c.funcBuf
 	for _, st := range p.Statements {
 		if st.Fun != nil {
 			if err := c.compileFun(st.Fun); err != nil {
@@ -65,6 +73,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 			}
 		}
 	}
+	c.out = &c.buf
 	c.writeln(":- initialization(main, main).")
 	c.writeln("main :-")
 	c.indent++
@@ -120,6 +129,8 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 		out.WriteString("    nth0(Index, List, _, Rest),\n")
 		out.WriteString("    nth0(Index, Out, Val, Rest).\n\n")
 	}
+	out.Write(c.lambdaBuf.Bytes())
+	out.Write(c.funcBuf.Bytes())
 	out.Write(c.buf.Bytes())
 	return out.Bytes(), nil
 }
@@ -634,6 +645,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, bool, error) {
 		return c.compileCall(p.Call)
 	case p.Query != nil:
 		return c.compileQuery(p.Query)
+	case p.FunExpr != nil:
+		return c.compileFunExpr(p.FunExpr)
 	}
 	return "", false, fmt.Errorf("unsupported primary")
 }
@@ -965,6 +978,30 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, bool, error) {
 	c.writeln(fmt.Sprintf("findall(%s, (%s), %s),", sel, strings.Join(loops, ", "), tmp))
 	c.vars = oldVars
 	return tmp, false, nil
+}
+
+func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, bool, error) {
+	name := fmt.Sprintf("p__lambda%d", c.tmp)
+	c.tmp++
+	var body []*parser.Statement
+	if fn.ExprBody != nil {
+		body = []*parser.Statement{{Return: &parser.ReturnStmt{Value: fn.ExprBody}}}
+	} else {
+		body = fn.BlockBody
+	}
+	fs := &parser.FunStmt{Name: name, Params: fn.Params, Body: body}
+	oldIndent := c.indent
+	oldOut := c.out
+	c.indent = 0
+	c.out = &c.lambdaBuf
+	if err := c.compileFun(fs); err != nil {
+		c.indent = oldIndent
+		c.out = oldOut
+		return "", false, err
+	}
+	c.indent = oldIndent
+	c.out = oldOut
+	return name, false, nil
 }
 
 func (c *Compiler) compileIndex(container string, idx *parser.IndexOp) (string, bool, error) {
