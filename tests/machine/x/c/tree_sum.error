@@ -1,29 +1,11 @@
 line: 0
 error: cc error: exit status 1
-/workspace/mochi/tests/machine/x/c/tree_sum.c:9:3: error: conflicting types for ‘Leaf’; have ‘struct <anonymous>’
-    9 | } Leaf;
-      |   ^~~~
-/workspace/mochi/tests/machine/x/c/tree_sum.c:5:21: note: previous declaration of ‘Leaf’ with type ‘Leaf’
-    5 | typedef struct Leaf Leaf;
-      |                     ^~~~
 /workspace/mochi/tests/machine/x/c/tree_sum.c:11:8: error: field ‘left’ has incomplete type
    11 |   Tree left;
       |        ^~~~
 /workspace/mochi/tests/machine/x/c/tree_sum.c:13:8: error: field ‘right’ has incomplete type
    13 |   Tree right;
       |        ^~~~~
-/workspace/mochi/tests/machine/x/c/tree_sum.c:14:3: error: conflicting types for ‘Node’; have ‘struct <anonymous>’
-   14 | } Node;
-      |   ^~~~
-/workspace/mochi/tests/machine/x/c/tree_sum.c:6:21: note: previous declaration of ‘Node’ with type ‘Node’
-    6 | typedef struct Node Node;
-      |                     ^~~~
-/workspace/mochi/tests/machine/x/c/tree_sum.c:21:3: error: conflicting types for ‘Tree’; have ‘struct <anonymous>’
-   21 | } Tree;
-      |   ^~~~
-/workspace/mochi/tests/machine/x/c/tree_sum.c:4:21: note: previous declaration of ‘Tree’ with type ‘Tree’
-    4 | typedef struct Tree Tree;
-      |                     ^~~~
 /workspace/mochi/tests/machine/x/c/tree_sum.c: In function ‘sum_tree’:
 /workspace/mochi/tests/machine/x/c/tree_sum.c:24:16: error: expected expression before ‘Leaf’
    24 |   return (t == Leaf ? 0
@@ -37,7 +19,7 @@ error: cc error: exit status 1
       |                           ^
       |                           |
       |                           int
-/workspace/mochi/tests/machine/x/c/tree_sum.c:23:19: note: expected ‘Tree’ but argument is of type ‘int’
+/workspace/mochi/tests/machine/x/c/tree_sum.c:23:19: note: expected ‘Tree’ {aka ‘struct Tree’} but argument is of type ‘int’
    23 | int sum_tree(Tree t) {
       |              ~~~~~^
 

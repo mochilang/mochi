@@ -182,7 +182,7 @@ static list_adultsItem list_adultsItem_create(int len) {
   return l;
 }
 
-typedef struct {
+typedef struct Person {
   char *name;
   int age;
   char *email;

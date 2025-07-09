@@ -3232,6 +3232,26 @@ func isBoolArg(e *parser.Expr, env *types.Env) bool {
 	return ok
 }
 
+// guessType infers a more specific type for expression e, falling back to int
+// when the regular inference reports Any. It checks string, float and bool
+// heuristics similar to inferStructFromMap.
+func (c *Compiler) guessType(e *parser.Expr) types.Type {
+	t := c.exprType(e)
+	if types.ContainsAny(t) {
+		switch {
+		case isStringExpr(e, c.env):
+			return types.StringType{}
+		case isFloatExpr(e, c.env):
+			return types.FloatType{}
+		case isBoolArg(e, c.env):
+			return types.BoolType{}
+		default:
+			return types.IntType{}
+		}
+	}
+	return t
+}
+
 func isFloatExpr(e *parser.Expr, env *types.Env) bool {
 	if e == nil || e.Binary == nil {
 		return false
@@ -3941,19 +3961,7 @@ func (c *Compiler) inferStructFromMap(ml *parser.MapLiteral, name string) (types
 			return types.StructType{}, false
 		}
 		order[i] = key
-		t := types.ExprType(it.Value, c.env)
-		if types.ContainsAny(t) {
-			switch {
-			case isStringExpr(it.Value, c.env):
-				t = types.StringType{}
-			case isFloatExpr(it.Value, c.env):
-				t = types.FloatType{}
-			case isBoolArg(it.Value, c.env):
-				t = types.BoolType{}
-			default:
-				t = types.IntType{}
-			}
-		}
+		t := c.guessType(it.Value)
 		fields[key] = t
 	}
 	stName := sanitizeName(name) + "Item"

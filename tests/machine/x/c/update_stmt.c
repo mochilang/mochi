@@ -23,7 +23,7 @@ static list_int list_int_create(int len) {
 }
 typedef struct Person Person;
 
-typedef struct {
+typedef struct Person {
   char *name;
   int age;
   char *status;

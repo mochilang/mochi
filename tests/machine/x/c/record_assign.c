@@ -3,7 +3,7 @@
 
 typedef struct Counter Counter;
 
-typedef struct {
+typedef struct Counter {
   int n;
 } Counter;
 
