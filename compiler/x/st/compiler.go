@@ -81,6 +81,25 @@ func (c *Compiler) writeln(s string) {
 
 func (c *Compiler) compileStmt(st *parser.Statement) error {
 	switch {
+	case st.Type != nil:
+		// Smalltalk code does not require explicit type declarations.
+		// Ignore struct and enum definitions.
+		return nil
+	case st.Fun != nil:
+		params := make([]string, len(st.Fun.Params))
+		for i, p := range st.Fun.Params {
+			params[i] = ":" + p.Name
+		}
+		pnames := make([]string, len(st.Fun.Params))
+		for i, p := range st.Fun.Params {
+			pnames[i] = p.Name
+		}
+		body, err := c.blockString(pnames, st.Fun.Body)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("%s := [%s | %s ]", st.Fun.Name, strings.Join(params, " "), body))
+		return nil
 	case st.Let != nil:
 		expr, err := c.compileExpr(st.Let.Value)
 		if err != nil {
@@ -94,14 +113,25 @@ func (c *Compiler) compileStmt(st *parser.Statement) error {
 		}
 		c.writeln(fmt.Sprintf("%s := %s", st.Var.Name, expr))
 	case st.Assign != nil:
-		if len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0 {
-			return fmt.Errorf("complex assignment not supported")
-		}
 		val, err := c.compileExpr(st.Assign.Value)
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("%s := %s", st.Assign.Name, val))
+		switch {
+		case len(st.Assign.Field) == 1 && len(st.Assign.Index) == 0:
+			fld := st.Assign.Field[0].Name
+			c.writeln(fmt.Sprintf("%s at: '%s' put: %s", st.Assign.Name, fld, val))
+		case len(st.Assign.Index) == 1 && len(st.Assign.Field) == 0:
+			idx, err := c.compileExpr(st.Assign.Index[0].Start)
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("%s at: %s put: %s", st.Assign.Name, idx, val))
+		case len(st.Assign.Field) == 0 && len(st.Assign.Index) == 0:
+			c.writeln(fmt.Sprintf("%s := %s", st.Assign.Name, val))
+		default:
+			return fmt.Errorf("complex assignment not supported")
+		}
 	case st.Expr != nil:
 		// handle print built-in
 		if call := getCall(st.Expr.Expr); call != nil && call.Func == "print" && len(call.Args) == 1 {
@@ -117,6 +147,13 @@ func (c *Compiler) compileStmt(st *parser.Statement) error {
 			return err
 		}
 		c.writeln(expr)
+	case st.Return != nil:
+		val, err := c.compileExpr(st.Return.Value)
+		if err != nil {
+			return err
+		}
+		c.writeln("^" + val)
+		return nil
 	case st.If != nil:
 		return c.compileIf(st.If)
 	case st.While != nil:
@@ -353,6 +390,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				val = fmt.Sprintf("%s asFloat", val)
 			case "string":
 				val = fmt.Sprintf("%s asString", val)
+			default:
+				// casting to struct types has no runtime effect
 			}
 		default:
 			return "", fmt.Errorf("unsupported postfix expression")
@@ -365,6 +404,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	switch {
 	case p.Selector != nil:
 		name := p.Selector.Root
+		if c.vars[name] {
+			expr := name
+			for _, s := range p.Selector.Tail {
+				expr = fmt.Sprintf("%s at: '%s'", expr, s)
+			}
+			return expr, nil
+		}
 		for _, s := range p.Selector.Tail {
 			name += "." + s
 		}
@@ -397,6 +443,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			pairs[i] = fmt.Sprintf("%s -> %s", k, v)
 		}
 		return "Dictionary newFrom: {" + strings.Join(pairs, ". ") + "}", nil
+	case p.Struct != nil:
+		return c.compileStructLiteral(p.Struct)
 	case p.FunExpr != nil:
 		params := make([]string, len(p.FunExpr.Params))
 		for i, pa := range p.FunExpr.Params {
@@ -410,7 +458,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			body = b
 		} else {
-			b, err := c.blockString(p.FunExpr.BlockBody)
+			pnames := make([]string, len(p.FunExpr.Params))
+			for i, pa := range p.FunExpr.Params {
+				pnames[i] = pa.Name
+			}
+			b, err := c.blockString(pnames, p.FunExpr.BlockBody)
 			if err != nil {
 				return "", err
 			}
@@ -650,6 +702,18 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	return b.String(), nil
 }
 
+func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error) {
+	fields := make([]string, len(sl.Fields))
+	for i, f := range sl.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return "", err
+		}
+		fields[i] = fmt.Sprintf("#%s->%s", f.Name, v)
+	}
+	return "Dictionary newFrom: {" + strings.Join(fields, ". ") + "}", nil
+}
+
 func (c *Compiler) compileLiteral(l *parser.Literal) string {
 	switch {
 	case l.Int != nil:
@@ -680,8 +744,11 @@ func isStringLiteral(e *parser.Expr) bool {
 	return u.Value.Target != nil && u.Value.Target.Lit != nil && u.Value.Target.Lit.Str != nil
 }
 
-func (c *Compiler) blockString(stmts []*parser.Statement) (string, error) {
-	sub := &Compiler{}
+func (c *Compiler) blockString(params []string, stmts []*parser.Statement) (string, error) {
+	sub := &Compiler{vars: make(map[string]bool)}
+	for _, p := range params {
+		sub.vars[p] = true
+	}
 	for _, st := range stmts {
 		if err := sub.compileStmt(st); err != nil {
 			return "", err
