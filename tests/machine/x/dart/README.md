@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs. Successful runs have a .out file, failures a .error file.
 
-Compiled programs: 95/97
+Compiled programs: 97/97
 
 Checklist:
 
@@ -70,14 +70,14 @@ Checklist:
 - [x] min_max_builtin
 - [x] nested_function
 - [x] order_by_map
-- [ ] outer_join
+- [x] outer_join
 - [x] partial_application
 - [x] print_hello
 - [x] pure_fold
 - [x] pure_global_fold
 - [x] query_sum_select
 - [x] record_assign
-- [ ] right_join
+- [x] right_join
 - [x] save_jsonl_stdout
 - [x] short_circuit
 - [x] slice
@@ -106,5 +106,4 @@ Checklist:
 
 ## Remaining Tasks
 
-- [ ] outer_join
-- [ ] right_join
+None.
