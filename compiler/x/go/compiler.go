@@ -3771,10 +3771,18 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		return fmt.Sprintf("_count(%s)", argStr), nil
 	case "exists":
-		// Always fall back to the runtime helper. The helper handles
-		// slices, maps, strings and groups. This avoids cases where the
-		// inferred type is imprecise and would lead to invalid code like
-		// `!len(x)` rather than `!(len(x) > 0)`.
+		if len(call.Args) == 1 {
+			at := c.inferExprType(call.Args[0])
+			switch at.(type) {
+			case types.ListType, types.MapType:
+				return fmt.Sprintf("len(%s) > 0", args[0]), nil
+			case types.StringType:
+				return fmt.Sprintf("len([]rune(%s)) > 0", args[0]), nil
+			case types.GroupType:
+				return fmt.Sprintf("len(%s.Items) > 0", args[0]), nil
+			}
+		}
+		// Fallback to the runtime helper for imprecise types.
 		c.use("_exists")
 		return fmt.Sprintf("_exists(%s)", argStr), nil
 	case "substring":
