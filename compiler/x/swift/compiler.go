@@ -51,6 +51,7 @@ type compiler struct {
 	structs  map[string][]string
 	inout    map[string][]bool
 	varTypes map[string]string
+	tupleMap bool
 }
 
 func (c *compiler) program(p *parser.Program) error {
@@ -529,25 +530,15 @@ func (c *compiler) primary(p *parser.Primary) (string, error) {
 		}
 		return "[" + strings.Join(elems, ", ") + "]", nil
 	case p.Map != nil:
-		items := make([]string, len(p.Map.Items))
-		for i, m := range p.Map.Items {
-			k, err := c.expr(m.Key)
-			if err != nil {
-				return "", err
-			}
-			v, err := c.expr(m.Value)
-			if err != nil {
-				return "", err
-			}
-			items[i] = fmt.Sprintf("%s: %s", k, v)
-		}
-		return "[" + strings.Join(items, ", ") + "]", nil
+		return c.mapLiteral(p.Map)
 	case p.Struct != nil:
 		return c.structLiteral(p.Struct)
 	case p.If != nil:
 		return c.ifExpr(p.If)
 	case p.Match != nil:
 		return c.matchExpr(p.Match)
+	case p.Query != nil:
+		return c.queryExpr(p.Query)
 	case p.Selector != nil:
 		return selector(p.Selector), nil
 	case p.Group != nil:
@@ -779,6 +770,58 @@ func (c *compiler) mapToStruct(m *parser.MapLiteral, name string) (string, error
 		fields[i] = fmt.Sprintf("%s: %s", key, v)
 	}
 	return fmt.Sprintf("%s(%s)", name, strings.Join(fields, ", ")), nil
+}
+
+func (c *compiler) mapLiteral(m *parser.MapLiteral) (string, error) {
+	if c.tupleMap {
+		fields := make([]string, len(m.Items))
+		for i, it := range m.Items {
+			key, ok := keyName(it.Key)
+			if !ok {
+				c.tupleMap = false
+				return c.mapLiteral(m)
+			}
+			v, err := c.expr(it.Value)
+			if err != nil {
+				return "", err
+			}
+			fields[i] = fmt.Sprintf("%s: %s", key, v)
+		}
+		return "(" + strings.Join(fields, ", ") + ")", nil
+	}
+	items := make([]string, len(m.Items))
+	for i, it := range m.Items {
+		var kstr string
+		if name, ok := keyName(it.Key); ok {
+			kstr = fmt.Sprintf("%q", name)
+		} else {
+			var err error
+			kstr, err = c.expr(it.Key)
+			if err != nil {
+				return "", err
+			}
+		}
+		v, err := c.expr(it.Value)
+		if err != nil {
+			return "", err
+		}
+		items[i] = fmt.Sprintf("%s: %s", kstr, v)
+	}
+	return "[" + strings.Join(items, ", ") + "]", nil
+}
+
+func keyName(e *parser.Expr) (string, bool) {
+	if s, ok := stringLiteral(e); ok {
+		return s, true
+	}
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil {
+		return "", false
+	}
+	sel := e.Binary.Left.Value.Target.Selector
+	if sel != nil && len(sel.Tail) == 0 {
+		return sel.Root, true
+	}
+	return "", false
 }
 
 func stringLiteral(e *parser.Expr) (string, bool) {
@@ -1047,6 +1090,54 @@ func (c *compiler) existsQuery(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 	return fmt.Sprintf("%s.contains { %s in %s }", src, q.Var, cond), nil
+}
+
+func (c *compiler) queryExpr(q *parser.QueryExpr) (string, error) {
+	if len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+		return "", fmt.Errorf("unsupported query")
+	}
+	vars := []string{q.Var}
+	srcs := []*parser.Expr{q.Source}
+	for _, f := range q.Froms {
+		vars = append(vars, f.Var)
+		srcs = append(srcs, f.Src)
+	}
+	saved := c.varTypes
+	c.varTypes = copyMap(c.varTypes)
+	defer func() { c.varTypes = saved }()
+
+	var build func(int) (string, error)
+	build = func(i int) (string, error) {
+		src, err := c.expr(srcs[i])
+		if err != nil {
+			return "", err
+		}
+		name := vars[i]
+		if i == len(vars)-1 {
+			prev := c.tupleMap
+			c.tupleMap = true
+			sel, err := c.expr(q.Select)
+			c.tupleMap = prev
+			if err != nil {
+				return "", err
+			}
+			if q.Where != nil {
+				cond, err := c.expr(q.Where)
+				if err != nil {
+					return "", err
+				}
+				return fmt.Sprintf("%s.compactMap { %s in %s ? (%s) : nil }", src, name, cond, sel), nil
+			}
+			return fmt.Sprintf("%s.map { %s in %s }", src, name, sel), nil
+		}
+		inner, err := build(i + 1)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s.flatMap { %s in %s }", src, name, inner), nil
+	}
+
+	return build(0)
 }
 
 func isVarRef(e *parser.Expr, name string) bool {
