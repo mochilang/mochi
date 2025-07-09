@@ -2450,13 +2450,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 
-	needsHelper := q.Sort != nil
-	for _, j := range q.Joins {
-		if j.Side != nil {
-			needsHelper = true
-			break
-		}
-	}
+       needsHelper := q.Sort != nil
+       for _, j := range q.Joins {
+               if j.Side != nil {
+                       if !(len(q.Joins) == 1 && *j.Side == "left") {
+                               needsHelper = true
+                               break
+                       }
+               }
+       }
 
 	// Prepare environment for the query variable
 	srcType := c.inferExprType(q.Source)
