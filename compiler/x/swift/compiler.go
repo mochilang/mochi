@@ -834,6 +834,12 @@ func (c *compiler) callExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("values expects 1 argument at line %d", call.Pos.Line)
 		}
 		return fmt.Sprintf("Array(%s.values)", args[0]), nil
+	case "json":
+		if len(args) != 1 {
+			return "", fmt.Errorf("json expects 1 argument at line %d", call.Pos.Line)
+		}
+		c.helpers["_json"] = true
+		return fmt.Sprintf("_json(%s)", args[0]), nil
 	case "substring":
 		if len(args) != 3 {
 			return "", fmt.Errorf("substring expects 3 arguments at line %d", call.Pos.Line)
@@ -1464,15 +1470,12 @@ func (c *compiler) groupQuery(q *parser.QueryExpr) (string, error) {
 		}
 		having = hv
 	}
-       prevTuple := c.tupleMap
-       c.tupleMap = true
-       sel, err := c.expr(q.Select)
-       c.tupleMap = prevTuple
-       if err != nil {
-               c.varTypes = savedVars
-               c.mapFields = savedFields
-               return "", err
-       }
+	sel, err := c.expr(q.Select)
+	if err != nil {
+		c.varTypes = savedVars
+		c.mapFields = savedFields
+		return "", err
+	}
 	sortExpr := ""
 	if q.Sort != nil {
 		prev := c.tupleMap
@@ -1553,18 +1556,18 @@ func (c *compiler) joinQuery(q *parser.QueryExpr) (string, error) {
 		}
 		fromSrcs[i] = fs
 	}
-       joinSrcs := make([]string, len(q.Joins))
-       joinSides := make([]string, len(q.Joins))
-       for i, j := range q.Joins {
-               js, err := c.expr(j.Src)
-               if err != nil {
-                       return "", err
-               }
-               joinSrcs[i] = js
-               if j.Side != nil {
-                       joinSides[i] = *j.Side
-               }
-       }
+	joinSrcs := make([]string, len(q.Joins))
+	joinSides := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		js, err := c.expr(j.Src)
+		if err != nil {
+			return "", err
+		}
+		joinSrcs[i] = js
+		if j.Side != nil {
+			joinSides[i] = *j.Side
+		}
+	}
 	savedVars := c.varTypes
 	savedFields := c.mapFields
 	c.varTypes = copyMap(c.varTypes)
@@ -1580,29 +1583,29 @@ func (c *compiler) joinQuery(q *parser.QueryExpr) (string, error) {
 		}
 		_ = fromSrcs[i]
 	}
-       for i, j := range q.Joins {
-               c.varTypes[j.Var] = c.elementType(j.Src)
-               if fields := c.elementFieldTypes(j.Src); fields != nil {
-                       c.mapFields[j.Var] = fields
-               }
-               _ = joinSrcs[i]
-       }
+	for i, j := range q.Joins {
+		c.varTypes[j.Var] = c.elementType(j.Src)
+		if fields := c.elementFieldTypes(j.Src); fields != nil {
+			c.mapFields[j.Var] = fields
+		}
+		_ = joinSrcs[i]
+	}
 
-       joinOns := make([]string, len(q.Joins))
-       for i, j := range q.Joins {
-               on, err := c.expr(j.On)
-               if err != nil {
-                       c.varTypes = savedVars
-                       c.mapFields = savedFields
-                       return "", err
-               }
-               joinOns[i] = on
-       }
-       if len(q.Froms) == 0 && len(q.Joins) == 1 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && q.Where == nil && joinSides[0] != "" {
-               c.varTypes = savedVars
-               c.mapFields = savedFields
-               return c.joinSingleSide(q, src, joinSrcs[0], joinOns[0], joinSides[0])
-       }
+	joinOns := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		on, err := c.expr(j.On)
+		if err != nil {
+			c.varTypes = savedVars
+			c.mapFields = savedFields
+			return "", err
+		}
+		joinOns[i] = on
+	}
+	if len(q.Froms) == 0 && len(q.Joins) == 1 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && q.Where == nil && joinSides[0] != "" {
+		c.varTypes = savedVars
+		c.mapFields = savedFields
+		return c.joinSingleSide(q, src, joinSrcs[0], joinOns[0], joinSides[0])
+	}
 	cond := ""
 	if q.Where != nil {
 		ccond, err := c.expr(q.Where)
@@ -1613,21 +1616,18 @@ func (c *compiler) joinQuery(q *parser.QueryExpr) (string, error) {
 		}
 		cond = ccond
 	}
-       prevTuple := c.tupleMap
-       c.tupleMap = true
-       sel, err := c.expr(q.Select)
-       c.tupleMap = prevTuple
-       if err != nil {
-               c.varTypes = savedVars
-               c.mapFields = savedFields
-               return "", err
-       }
+	sel, err := c.expr(q.Select)
+	if err != nil {
+		c.varTypes = savedVars
+		c.mapFields = savedFields
+		return "", err
+	}
 	c.varTypes = savedVars
 	c.mapFields = savedFields
 
 	var b strings.Builder
 	b.WriteString("({\n")
-	b.WriteString("\tvar _res: [Any] = []\n")
+	b.WriteString("\tvar _res: [[String:Any]] = []\n")
 	b.WriteString(fmt.Sprintf("\tfor %s in %s {\n", q.Var, src))
 	indent := "\t\t"
 	for i, fs := range fromSrcs {
@@ -1681,7 +1681,7 @@ func (c *compiler) joinSingleSide(q *parser.QueryExpr, src, joinSrc, onExpr, sid
 	jv := j.Var
 	var b strings.Builder
 	b.WriteString("({\n")
-	b.WriteString("\tvar _res: [Any] = []\n")
+	b.WriteString("\tvar _res: [[String:Any]] = []\n")
 	b.WriteString(fmt.Sprintf("\tlet _src = %s\n", src))
 	b.WriteString(fmt.Sprintf("\tlet _join = %s\n", joinSrc))
 	if side == "outer" {
@@ -2168,6 +2168,15 @@ func (c *compiler) emitRuntime() {
 			}
 		}
 	}
+	if c.helpers["_json"] {
+		for _, line := range strings.Split(helperJSON, "\n") {
+			if line == "" {
+				c.buf.WriteByte('\n')
+			} else {
+				c.writeln(line)
+			}
+		}
+	}
 }
 
 const helperLoad = `func _parseVal(_ s: String) -> Any {
@@ -2225,5 +2234,12 @@ const helperSave = `func _save(_ rows: [[String:Any]], path: String, opts: [Stri
         if handle !== FileHandle.standardOutput {
             handle.closeFile()
         }
+    }
+}`
+
+const helperJSON = `func _json(_ v: Any) {
+    if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+       let s = String(data: d, encoding: .utf8) {
+        print(s)
     }
 }`
