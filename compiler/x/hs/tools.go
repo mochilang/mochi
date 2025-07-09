@@ -80,7 +80,7 @@ func EnsureHaskell() error {
 			if err := cmd.Run(); err != nil {
 				return err
 			}
-			cmd = exec.Command("apt-get", "install", "-y", "ghc")
+			cmd = exec.Command("apt-get", "install", "-y", "ghc", "libghc-aeson-dev")
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 			if err := cmd.Run(); err == nil {

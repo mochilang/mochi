@@ -1543,7 +1543,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			res = fmt.Sprintf("drop %s %s", sk, res)
+			res = fmt.Sprintf("drop %s (%s)", sk, res)
 			c.usesList = true
 		}
 		if q.Take != nil {
@@ -1551,7 +1551,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			res = fmt.Sprintf("take %s %s", tk, res)
+			res = fmt.Sprintf("take %s (%s)", tk, res)
 			c.usesList = true
 		}
 		c.usesMap = true
@@ -1581,7 +1581,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		res = fmt.Sprintf("drop %s %s", sk, res)
+		res = fmt.Sprintf("drop %s (%s)", sk, res)
 		c.usesList = true
 	}
 	if q.Take != nil {
@@ -1589,7 +1589,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		res = fmt.Sprintf("take %s %s", tk, res)
+		res = fmt.Sprintf("take %s (%s)", tk, res)
 		c.usesList = true
 	}
 	return res, nil
