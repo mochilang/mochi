@@ -1,1 +1,12 @@
-error: slices not supported
+error: gfortran: exit status 1
+/workspace/mochi/tests/machine/x/fortran/slice.f90:3:21:
+
+    3 |   print *, (/1,2,3/)((1)+1:3)
+      |                     1
+Error: Syntax error in PRINT statement at (1)
+/workspace/mochi/tests/machine/x/fortran/slice.f90:4:21:
+
+    4 |   print *, (/1,2,3/)(1:2)
+      |                     1
+Error: Syntax error in PRINT statement at (1)
+
