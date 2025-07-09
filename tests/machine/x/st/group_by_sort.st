@@ -1,4 +1,4 @@
-| grouped items |
+| items grouped |
 items := {Dictionary newFrom: {cat -> 'a'. val -> 3}. Dictionary newFrom: {cat -> 'a'. val -> 1}. Dictionary newFrom: {cat -> 'b'. val -> 5}. Dictionary newFrom: {cat -> 'b'. val -> 2}}.
 grouped := [ | groups tmp |
   groups := Dictionary new.

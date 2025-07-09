@@ -1,4 +1,4 @@
-| m s xs ys |
+| xs ys m s |
 xs := {1. 2. 3}.
 ys := [ | tmp |
   tmp := OrderedCollection new.
