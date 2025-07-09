@@ -1,0 +1,5 @@
+Error on line 0: run error: exit status 1
+# command-line-arguments
+../../../tests/machine/x/go/values_builtin.go:15:14: undefined: values
+
+1: //go:build ignore

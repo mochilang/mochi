@@ -1,0 +1,8 @@
+Error on line 0: run error: exit status 1
+# command-line-arguments
+../../../tests/machine/x/go/partial_application.go:15:21: not enough arguments in call to add
+	have (number)
+	want (int, int)
+../../../tests/machine/x/go/partial_application.go:16:14: invalid operation: cannot call non-function add5 (variable of type int)
+
+1: //go:build ignore

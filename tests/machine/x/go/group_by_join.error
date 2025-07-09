@@ -1,0 +1,6 @@
+Error on line 0: run error: exit status 1
+# command-line-arguments
+../../../tests/machine/x/go/group_by_join.go:56:23: undefined: _cast
+../../../tests/machine/x/go/group_by_join.go:60:23: undefined: _cast
+
+1: //go:build ignore
