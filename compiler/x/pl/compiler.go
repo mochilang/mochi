@@ -597,6 +597,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, bool, error) {
 		return c.compileIfExpr(p.If)
 	case p.Call != nil:
 		return c.compileCall(p.Call)
+	case p.Query != nil:
+		return c.compileQuery(p.Query)
 	}
 	return "", false, fmt.Errorf("unsupported primary")
 }
@@ -861,6 +863,73 @@ func (c *Compiler) compileExists(name string, q *parser.QueryExpr) error {
 	c.writeln(fmt.Sprintf("(once((member(%s, %s), %s)) -> %s = true ; %s = false),", varName, src, cond, target, target))
 	c.vars[name] = target
 	return nil
+}
+
+func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, bool, error) {
+	oldVars := c.vars
+	c.vars = make(map[string]string)
+	for k, v := range oldVars {
+		c.vars[k] = v
+	}
+
+	loops := []string{}
+	src, _, err := c.compileExpr(q.Source)
+	if err != nil {
+		c.vars = oldVars
+		return "", false, err
+	}
+	vname := sanitizeVar(q.Var)
+	c.vars[q.Var] = vname
+	loops = append(loops, fmt.Sprintf("member(%s, %s)", vname, src))
+
+	for _, fr := range q.Froms {
+		fs, _, err := c.compileExpr(fr.Src)
+		if err != nil {
+			c.vars = oldVars
+			return "", false, err
+		}
+		fname := sanitizeVar(fr.Var)
+		c.vars[fr.Var] = fname
+		loops = append(loops, fmt.Sprintf("member(%s, %s)", fname, fs))
+	}
+
+	for _, j := range q.Joins {
+		js, _, err := c.compileExpr(j.Src)
+		if err != nil {
+			c.vars = oldVars
+			return "", false, err
+		}
+		jname := sanitizeVar(j.Var)
+		c.vars[j.Var] = jname
+		loops = append(loops, fmt.Sprintf("member(%s, %s)", jname, js))
+		onCond, _, err := c.compileExpr(j.On)
+		if err != nil {
+			c.vars = oldVars
+			return "", false, err
+		}
+		loops = append(loops, onCond)
+	}
+
+	cond := "true"
+	if q.Where != nil {
+		ccond, _, err := c.compileExpr(q.Where)
+		if err != nil {
+			c.vars = oldVars
+			return "", false, err
+		}
+		cond = ccond
+	}
+	loops = append(loops, cond)
+
+	sel, _, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.vars = oldVars
+		return "", false, err
+	}
+	tmp := c.newTmp()
+	c.writeln(fmt.Sprintf("findall(%s, (%s), %s),", sel, strings.Join(loops, ", "), tmp))
+	c.vars = oldVars
+	return tmp, false, nil
 }
 
 func (c *Compiler) compileIndex(container string, idx *parser.IndexOp) (string, bool, error) {
