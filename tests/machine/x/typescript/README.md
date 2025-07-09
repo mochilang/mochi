@@ -4,7 +4,7 @@ This directory contains TypeScript code compiled from Mochi programs in `tests/v
 
 ## Progress
 
-Compiled: 94/97 programs
+Compiled: 97/97 programs
 
 ## Checklist
 
@@ -36,7 +36,7 @@ Compiled: 94/97 programs
 - [x] group_by_join.mochi
 - [x] group_by_left_join.mochi
 - [x] group_by_multi_join.mochi
-- [ ] group_by_multi_join_sort.mochi
+- [x] group_by_multi_join_sort.mochi
 - [x] group_by_sort.mochi
 - [x] group_items_iteration.mochi
 - [x] if_else.mochi
@@ -95,12 +95,12 @@ Compiled: 94/97 programs
 - [x] sum_builtin.mochi
 - [x] tail_recursion.mochi
 - [x] test_block.mochi
-- [ ] tree_sum.mochi
+- [x] tree_sum.mochi
 - [x] two-sum.mochi
 - [x] typed_let.mochi
 - [x] typed_var.mochi
 - [x] unary_neg.mochi
-- [ ] update_stmt.mochi
+- [x] update_stmt.mochi
 - [x] user_type_literal.mochi
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi

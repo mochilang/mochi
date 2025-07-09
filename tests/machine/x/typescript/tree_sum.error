@@ -1,7 +1,0 @@
-line 0: run: exit status 1
-[0m[1m[31merror[0m: Uncaught (in promise) ReferenceError: Leaf is not defined
-let t = {left: Leaf, value: 1, right: {left: Leaf, value: 2, right: Leaf}};
-[0m[31m               ^[0m
-    at [0m[36mfile:///workspace/mochi/tests/machine/x/typescript/tree_sum.ts[0m:[0m[33m21[0m:[0m[33m16[0m
-
-type Tree = { kind: "leaf" } | { kind: "node"; left: any; value: any; right: any };

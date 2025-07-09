@@ -1,3 +1,20 @@
+function deepEqual(a: any, b: any): boolean {
+  if (Array.isArray(a) && Array.isArray(b)) {
+    if (a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) if (!deepEqual(a[i], b[i])) return false;
+    return true;
+  }
+  if (a && b && typeof a === 'object' && typeof b === 'object') {
+    const ak = Object.keys(a);
+    const bk = Object.keys(b);
+    if (ak.length !== bk.length) return false;
+    for (const k of ak) {
+      if (!bk.includes(k) || !deepEqual(a[k], b[k])) return false;
+    }
+    return true;
+  }
+  return a === b;
+}
 let nation = [{n_nationkey: 1, n_name: "BRAZIL"}];
 let customer = [{c_custkey: 1, c_name: "Alice", c_acctbal: 100, c_nationkey: 1, c_address: "123 St", c_phone: "123-456", c_comment: "Loyal"}];
 let orders = [{o_orderkey: 1000, o_custkey: 1, o_orderdate: "1993-10-15"}, {o_orderkey: 2000, o_custkey: 1, o_orderdate: "1994-01-02"}];
@@ -8,16 +25,16 @@ let result = (() => {
   const groups = {};
   for (const c of customer) {
     for (const o of orders) {
-      if (!((o.o_custkey == c.c_custkey))) continue;
+      if (!(deepEqual(o.o_custkey, c.c_custkey))) continue;
       for (const l of lineitem) {
-        if (!((l.l_orderkey == o.o_orderkey))) continue;
+        if (!(deepEqual(l.l_orderkey, o.o_orderkey))) continue;
         for (const n of nation) {
-          if (!((n.n_nationkey == c.c_nationkey))) continue;
-          if (!((((((o.o_orderdate >= start_date) && o.o_orderdate) < end_date) && l.l_returnflag) == "R"))) continue;
+          if (!(deepEqual(n.n_nationkey, c.c_nationkey))) continue;
+          if (!(deepEqual(((((o.o_orderdate >= start_date) && o.o_orderdate) < end_date) && l.l_returnflag), "R"))) continue;
           const _k = JSON.stringify({c_custkey: c.c_custkey, c_name: c.c_name, c_acctbal: c.c_acctbal, c_address: c.c_address, c_phone: c.c_phone, c_comment: c.c_comment, n_name: n.n_name});
           let g = groups[_k];
           if (!g) { g = []; g.key = {c_custkey: c.c_custkey, c_name: c.c_name, c_acctbal: c.c_acctbal, c_address: c.c_address, c_phone: c.c_phone, c_comment: c.c_comment, n_name: n.n_name}; g.items = g; groups[_k] = g; }
-          g.push(c);
+          g.push({c: c, o: o, l: l, n: n});
         }
       }
     }

@@ -33,17 +33,23 @@ func findRepoRoot() string {
 
 // Compiler translates a limited subset of Mochi into TypeScript.
 type Compiler struct {
-	buf                bytes.Buffer
-	indent             int
-	tmp                int
-	needContainsHelper bool
-	funParams          map[string]int
-	repoRoot           string
+	buf                 bytes.Buffer
+	indent              int
+	tmp                 int
+	needContainsHelper  bool
+	needDeepEqualHelper bool
+	funParams           map[string]int
+	variants            map[string][]string
+	repoRoot            string
 }
 
 // New returns a new Compiler.
 func New() *Compiler {
-	return &Compiler{funParams: make(map[string]int), repoRoot: findRepoRoot()}
+	return &Compiler{
+		funParams: make(map[string]int),
+		variants:  make(map[string][]string),
+		repoRoot:  findRepoRoot(),
+	}
 }
 
 func (c *Compiler) newTmp() string {
@@ -78,10 +84,21 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.indent = 0
 	c.needContainsHelper = false
+	c.needDeepEqualHelper = false
 	c.funParams = make(map[string]int)
+	c.variants = make(map[string][]string)
 	for _, st := range prog.Statements {
 		if st.Fun != nil {
 			c.funParams[st.Fun.Name] = len(st.Fun.Params)
+		}
+		if st.Type != nil {
+			for _, v := range st.Type.Variants {
+				fields := make([]string, len(v.Fields))
+				for i, f := range v.Fields {
+					fields[i] = f.Name
+				}
+				c.variants[v.Name] = fields
+			}
 		}
 	}
 	for _, st := range prog.Statements {
@@ -94,6 +111,26 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		helper := "function contains(a: any, b: any) {\n" +
 			"  if (Array.isArray(a) || typeof a === \"string\") return a.includes(b);\n" +
 			"  return Object.prototype.hasOwnProperty.call(a, b);\n" +
+			"}\n"
+		code = append([]byte(helper), code...)
+	}
+	if c.needDeepEqualHelper {
+		helper := "function deepEqual(a: any, b: any): boolean {\n" +
+			"  if (Array.isArray(a) && Array.isArray(b)) {\n" +
+			"    if (a.length !== b.length) return false;\n" +
+			"    for (let i = 0; i < a.length; i++) if (!deepEqual(a[i], b[i])) return false;\n" +
+			"    return true;\n" +
+			"  }\n" +
+			"  if (a && b && typeof a === 'object' && typeof b === 'object') {\n" +
+			"    const ak = Object.keys(a);\n" +
+			"    const bk = Object.keys(b);\n" +
+			"    if (ak.length !== bk.length) return false;\n" +
+			"    for (const k of ak) {\n" +
+			"      if (!bk.includes(k) || !deepEqual(a[k], b[k])) return false;\n" +
+			"    }\n" +
+			"    return true;\n" +
+			"  }\n" +
+			"  return a === b;\n" +
 			"}\n"
 		code = append([]byte(helper), code...)
 	}
@@ -566,7 +603,14 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		writeln(fmt.Sprintf("const _k = JSON.stringify(%s);", keyStr))
 		writeln("let g = groups[_k];")
 		writeln(fmt.Sprintf("if (!g) { g = []; g.key = %s; g.items = g; groups[_k] = g; }", keyStr))
-		writeln(fmt.Sprintf("g.push(%s);", q.Var))
+		parts := []string{fmt.Sprintf("%s: %s", q.Var, q.Var)}
+		for _, f := range q.Froms {
+			parts = append(parts, fmt.Sprintf("%s: %s", f.Var, f.Var))
+		}
+		for _, j := range q.Joins {
+			parts = append(parts, fmt.Sprintf("%s: %s", j.Var, j.Var))
+		}
+		writeln(fmt.Sprintf("g.push({%s});", strings.Join(parts, ", ")))
 		for range q.Joins {
 			indent--
 			writeln("}")
@@ -777,46 +821,106 @@ func (c *Compiler) matchExpr(m *parser.MatchExpr) (string, error) {
 	indent++
 	writeln(fmt.Sprintf("const %s = %s;", tmp, target))
 	writeln("let _res;")
-	writeln(fmt.Sprintf("switch (%s) {", tmp))
-	indent++
-	hasDefault := false
+	variant := true
 	for _, cs := range m.Cases {
 		if isUnderscoreExpr(cs.Pattern) {
+			continue
+		}
+		if _, _, ok := c.variantPattern(cs.Pattern); !ok {
+			variant = false
+			break
+		}
+	}
+	if variant {
+		first := true
+		for _, cs := range m.Cases {
+			if isUnderscoreExpr(cs.Pattern) {
+				if first {
+					writeln("{")
+				} else {
+					writeln("else {")
+				}
+				indent++
+				res, err := c.expr(cs.Result)
+				if err != nil {
+					return "", err
+				}
+				writeln(fmt.Sprintf("_res = %s;", res))
+				indent--
+				writeln("}")
+				first = false
+				continue
+			}
+			name, vars, _ := c.variantPattern(cs.Pattern)
+			cond := fmt.Sprintf("%s.kind === %q", tmp, strings.ToLower(name))
+			if first {
+				writeln(fmt.Sprintf("if (%s) {", cond))
+				first = false
+			} else {
+				writeln(fmt.Sprintf("else if (%s) {", cond))
+			}
+			indent++
+			fields := c.variants[name]
+			for i, v := range vars {
+				if i < len(fields) {
+					writeln(fmt.Sprintf("const %s = %s.%s;", v, tmp, fields[i]))
+				}
+			}
 			res, err := c.expr(cs.Result)
 			if err != nil {
 				return "", err
 			}
-			writeln("default:")
+			writeln(fmt.Sprintf("_res = %s;", res))
+			indent--
+			writeln("}")
+		}
+		if first {
+			writeln("{ _res = undefined }")
+		} else {
+			writeln("else { _res = undefined }")
+		}
+	} else {
+		writeln(fmt.Sprintf("switch (%s) {", tmp))
+		indent++
+		hasDefault := false
+		for _, cs := range m.Cases {
+			if isUnderscoreExpr(cs.Pattern) {
+				res, err := c.expr(cs.Result)
+				if err != nil {
+					return "", err
+				}
+				writeln("default:")
+				indent++
+				writeln(fmt.Sprintf("_res = %s;", res))
+				writeln("break;")
+				indent--
+				hasDefault = true
+				continue
+			}
+			pat, err := c.expr(cs.Pattern)
+			if err != nil {
+				return "", err
+			}
+			res, err := c.expr(cs.Result)
+			if err != nil {
+				return "", err
+			}
+			writeln(fmt.Sprintf("case %s:", pat))
 			indent++
 			writeln(fmt.Sprintf("_res = %s;", res))
 			writeln("break;")
 			indent--
-			hasDefault = true
-			continue
 		}
-		pat, err := c.expr(cs.Pattern)
-		if err != nil {
-			return "", err
+		if !hasDefault {
+			writeln("default:")
+			indent++
+			writeln("_res = undefined;")
+			writeln("break;")
+			indent--
 		}
-		res, err := c.expr(cs.Result)
-		if err != nil {
-			return "", err
-		}
-		writeln(fmt.Sprintf("case %s:", pat))
-		indent++
-		writeln(fmt.Sprintf("_res = %s;", res))
-		writeln("break;")
 		indent--
+		writeln("}")
 	}
-	if !hasDefault {
-		writeln("default:")
-		indent++
-		writeln("_res = undefined;")
-		writeln("break;")
-		indent--
-	}
-	indent--
-	writeln("}")
 	writeln("return _res;")
 	indent--
 	writeln("})()")
@@ -855,6 +959,12 @@ func (c *Compiler) binary(b *parser.BinaryExpr) (string, error) {
 		case "in":
 			c.needContainsHelper = true
 			result = fmt.Sprintf("contains(%s, %s)", r, result)
+		case "==":
+			c.needDeepEqualHelper = true
+			result = fmt.Sprintf("deepEqual(%s, %s)", result, r)
+		case "!=":
+			c.needDeepEqualHelper = true
+			result = fmt.Sprintf("!deepEqual(%s, %s)", result, r)
 		default:
 			result = fmt.Sprintf("(%s %s %s)", result, op.Op, r)
 		}
@@ -967,6 +1077,17 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 		}
 		return "{" + strings.Join(items, ", ") + "}", nil
 	case p.Struct != nil:
+		if _, ok := c.variants[p.Struct.Name]; ok {
+			parts := []string{fmt.Sprintf("kind: %q", strings.ToLower(p.Struct.Name))}
+			for _, f := range p.Struct.Fields {
+				v, err := c.expr(f.Value)
+				if err != nil {
+					return "", err
+				}
+				parts = append(parts, fmt.Sprintf("%s: %s", f.Name, v))
+			}
+			return "{" + strings.Join(parts, ", ") + "}", nil
+		}
 		fields := make([]string, len(p.Struct.Fields))
 		for i, f := range p.Struct.Fields {
 			v, err := c.expr(f.Value)
@@ -1119,6 +1240,11 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 	case p.If != nil:
 		return c.ifExpr(p.If)
 	case p.Selector != nil:
+		if len(p.Selector.Tail) == 0 {
+			if fields, ok := c.variants[p.Selector.Root]; ok && len(fields) == 0 {
+				return fmt.Sprintf("{kind: %q}", strings.ToLower(p.Selector.Root)), nil
+			}
+		}
 		return strings.Join(append([]string{p.Selector.Root}, p.Selector.Tail...), "."), nil
 	}
 	return "", fmt.Errorf("unsupported expression at line %d", p.Pos.Line)
@@ -1159,4 +1285,37 @@ func getFormat(e *parser.Expr) string {
 		}
 	}
 	return ""
+}
+
+func (c *Compiler) variantPattern(e *parser.Expr) (string, []string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return "", nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil || len(u.Value.Ops) != 0 {
+		return "", nil, false
+	}
+	p := u.Value.Target
+	if p == nil {
+		return "", nil, false
+	}
+	if p.Selector != nil && len(p.Selector.Tail) == 0 {
+		if _, ok := c.variants[p.Selector.Root]; ok {
+			return p.Selector.Root, nil, true
+		}
+	}
+	if p.Call != nil {
+		if _, ok := c.variants[p.Call.Func]; ok {
+			vars := make([]string, len(p.Call.Args))
+			for i, a := range p.Call.Args {
+				v := getIdent(a)
+				if v == "" {
+					return "", nil, false
+				}
+				vars[i] = v
+			}
+			return p.Call.Func, vars, true
+		}
+	}
+	return "", nil, false
 }
