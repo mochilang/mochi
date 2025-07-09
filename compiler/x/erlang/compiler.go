@@ -281,6 +281,10 @@ func (c *Compiler) compileStmtLine(st *parser.Statement) (string, error) {
 		return c.compileIfStmt(st.If)
 	case st.For != nil:
 		return c.compileFor(st.For)
+	case st.Fun != nil:
+		return c.compileNestedFun(st.Fun)
+	case st.While != nil:
+		return "", fmt.Errorf("unsupported statement at line %d", st.Pos.Line)
 	case st.Type != nil:
 		return "", nil
 	default:
@@ -426,6 +430,28 @@ func (c *Compiler) compileFor(fr *parser.ForStmt) (string, error) {
 		loop = fmt.Sprintf("try %s catch throw:break -> ok end", loop)
 	}
 	return loop, nil
+}
+
+func (c *Compiler) compileNestedFun(fn *parser.FunStmt) (string, error) {
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		params[i] = capitalize(p.Name)
+	}
+	c.lets[fn.Name] = true
+	bodyLines := make([]string, len(fn.Body))
+	for i, st := range fn.Body {
+		l, err := c.compileStmtLine(st)
+		if err != nil {
+			return "", err
+		}
+		bodyLines[i] = l
+	}
+	body := strings.Join(bodyLines, ", ")
+	if body == "" {
+		body = "ok"
+	}
+	name := capitalize(fn.Name)
+	return fmt.Sprintf("%s = fun(%s) -> %s end", name, strings.Join(params, ", "), body), nil
 }
 
 func (c *Compiler) compileIfExpr(ix *parser.IfExpr) (string, error) {
