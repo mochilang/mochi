@@ -7,8 +7,8 @@ import typing
 
 
 def fib(n: int) -> int:
-    a = 0
-    b = 1
+    a: int = 0
+    b: int = 1
     for i in range(0, n):
         tmp = a + b
         a = b
@@ -16,30 +16,11 @@ def fib(n: int) -> int:
     return a
 
 
-n = 30
-repeat = 1000
-last = 0
-start = time.time_ns()
-duration = None
-
-
-def main():
-    global n
-    n = 30
-    global repeat
-    repeat = 1000
-    global last
-    last = 0
-    global start
-    start = time.time_ns()
-    for i in range(0, repeat):
-        last = fib(n)
-    global duration
-    duration = int(((time.time_ns() - start)) / 1000)
-    print(
-        json.dumps({"duration_us": duration, "output": last}, default=lambda o: vars(o))
-    )
-
-
-if __name__ == "__main__":
-    main()
+n: int = 30
+repeat: int = 1000
+last: int = 0
+start: int = time.time_ns()
+for i in range(0, repeat):
+    last = fib(n)
+duration: int = int(((time.time_ns() - start)) / 1000)
+print(json.dumps({"duration_us": duration, "output": last}, default=lambda o: vars(o)))

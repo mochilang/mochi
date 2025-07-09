@@ -8,7 +8,7 @@ function fact_rec(n: number): number {
 }
 
 let duration: number;
-let last: number;
+var last: number;
 let n: number;
 let repeat: number;
 let start: number;
