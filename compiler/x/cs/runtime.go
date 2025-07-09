@@ -268,6 +268,11 @@ func (c *Compiler) emitRuntime() {
 				c.writeln("return true;")
 				c.indent--
 				c.writeln("}")
+				c.writeln("if ((a is int || a is long || a is float || a is double) && (b is int || b is long || b is float || b is double)) {")
+				c.indent++
+				c.writeln("return Convert.ToDouble(a) == Convert.ToDouble(b);")
+				c.indent--
+				c.writeln("}")
 				c.writeln("return Equals(a, b);")
 				c.indent--
 				c.writeln("}")
