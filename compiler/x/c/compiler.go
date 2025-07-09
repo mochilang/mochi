@@ -1329,6 +1329,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						genv.SetVar(q.Group.Name, types.GroupType{Elem: lt.Elem}, true)
 						c.env = genv
 					}
+					if ml := asMapLiteral(q.Select); ml != nil {
+						if _, ok := c.structLits[ml]; !ok {
+							if st, ok2 := c.inferStructFromMap(ml, q.Var); ok2 {
+								c.structLits[ml] = st
+								c.compileStructType(st)
+								c.compileStructListType(st)
+							}
+						}
+					}
 					val := c.compileExpr(q.Select)
 					retT := c.exprType(q.Select)
 					if ml := asMapLiteral(q.Select); ml != nil {
@@ -1404,6 +1413,16 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 			cond = c.compileExpr(q.Where)
 		}
 
+		if ml := asMapLiteral(q.Select); ml != nil {
+			if _, ok := c.structLits[ml]; !ok {
+				if st, ok2 := c.inferStructFromMap(ml, q.Var); ok2 {
+					c.structLits[ml] = st
+					c.compileStructType(st)
+					c.compileStructListType(st)
+				}
+			}
+		}
+
 		val := c.compileExpr(q.Select)
 		retT := c.exprType(q.Select)
 		retList := types.ListType{Elem: retT}
@@ -1450,6 +1469,104 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 			c.env = oldEnv
 		}
 		return res
+	}
+
+	// handle a single right join without additional clauses
+	if len(q.Joins) == 1 && len(q.Froms) == 0 && q.Group == nil {
+		j := q.Joins[0]
+		if j.Side != nil && *j.Side == "right" {
+			leftExpr := c.compileExpr(q.Source)
+			leftT := c.exprType(q.Source)
+			leftLt, ok := leftT.(types.ListType)
+			if !ok {
+				return "0"
+			}
+			rightExpr := c.compileExpr(j.Src)
+			rightT := c.exprType(j.Src)
+			rightLt, ok := rightT.(types.ListType)
+			if !ok {
+				return "0"
+			}
+			joinOn := c.compileExpr(j.On)
+
+			oldEnv := c.env
+			if c.env != nil {
+				c.env = types.NewEnv(c.env)
+				c.env.SetVar(j.Var, rightLt.Elem, true)
+				c.env.SetVar(q.Var, leftLt.Elem, true)
+			}
+
+			var cond string
+			if q.Where != nil {
+				cond = c.compileExpr(q.Where)
+			}
+
+			if ml := asMapLiteral(q.Select); ml != nil {
+				if _, ok := c.structLits[ml]; !ok {
+					if st, ok2 := c.inferStructFromMap(ml, q.Var); ok2 {
+						c.structLits[ml] = st
+						c.compileStructType(st)
+						c.compileStructListType(st)
+					}
+				}
+			}
+
+			val := c.compileExpr(q.Select)
+			retT := c.exprType(q.Select)
+			retList := types.ListType{Elem: retT}
+			listC := cTypeFromType(retList)
+			if listC == "list_string" {
+				c.need(needListString)
+			} else if listC == "list_float" {
+				c.need(needListFloat)
+			} else if listC == "list_list_int" {
+				c.need(needListListInt)
+			}
+
+			res := c.newTemp()
+			idx := c.newTemp()
+			c.writeln(fmt.Sprintf("%s %s = %s_create(%s.len * %s.len);", listC, res, listC, rightExpr, leftExpr))
+			c.writeln(fmt.Sprintf("int %s = 0;", idx))
+			iterR := c.newTemp()
+			c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", iterR, iterR, rightExpr, iterR))
+			c.indent++
+			c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", cTypeFromType(rightLt.Elem), sanitizeName(j.Var), rightExpr, iterR))
+			matched := c.newTemp()
+			c.writeln(fmt.Sprintf("int %s = 0;", matched))
+			iterL := c.newTemp()
+			c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", iterL, iterL, leftExpr, iterL))
+			c.indent++
+			c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", cTypeFromType(leftLt.Elem), sanitizeName(q.Var), leftExpr, iterL))
+			c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", joinOn))
+			c.writeln(fmt.Sprintf("%s = 1;", matched))
+			if cond != "" {
+				c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", cond))
+			}
+			c.writeln(fmt.Sprintf("%s.data[%s] = %s;", res, idx, val))
+			c.writeln(fmt.Sprintf("%s++;", idx))
+			c.indent--
+			c.writeln("}")
+			c.writeln(fmt.Sprintf("if (!%s) {", matched))
+			c.indent++
+			c.writeln(fmt.Sprintf("%s %s = %s;", cTypeFromType(leftLt.Elem), sanitizeName(q.Var), defaultCValue(leftLt.Elem)))
+			if cond != "" {
+				c.writeln(fmt.Sprintf("if (!(%s)) { } else {", cond))
+				c.indent++
+				c.writeln("}")
+				c.indent--
+			}
+			c.writeln(fmt.Sprintf("%s.data[%s] = %s;", res, idx, val))
+			c.writeln(fmt.Sprintf("%s++;", idx))
+			c.indent--
+			c.writeln("}")
+			c.indent--
+			c.writeln("}")
+			c.writeln(fmt.Sprintf("%s.len = %s;", res, idx))
+			if c.env != nil {
+				c.env = oldEnv
+			}
+			return res
+		}
 	}
 
 	// handle joins without grouping
@@ -3345,6 +3462,45 @@ func (c *Compiler) inferStructFromList(ll *parser.ListLiteral, name string) (typ
 				return types.StructType{}, false
 			}
 		}
+	}
+	stName := sanitizeName(name) + "Item"
+	idx := 1
+	base := stName
+	for {
+		if c.structs[stName] {
+			stName = fmt.Sprintf("%s%d", base, idx)
+			idx++
+		} else if c.env != nil {
+			if _, ok := c.env.GetStruct(stName); ok {
+				stName = fmt.Sprintf("%s%d", base, idx)
+				idx++
+			} else {
+				break
+			}
+		} else {
+			break
+		}
+	}
+	st := types.StructType{Name: stName, Fields: fields, Order: order}
+	return st, true
+}
+
+// inferStructFromMap creates a struct type from a map literal if all keys are
+// simple strings. It is used when query select clauses return map literals so
+// that the generated C code can use a plain struct instead of a generic map.
+func (c *Compiler) inferStructFromMap(ml *parser.MapLiteral, name string) (types.StructType, bool) {
+	if ml == nil || len(ml.Items) == 0 {
+		return types.StructType{}, false
+	}
+	fields := map[string]types.Type{}
+	order := make([]string, len(ml.Items))
+	for i, it := range ml.Items {
+		key, ok := types.SimpleStringKey(it.Key)
+		if !ok {
+			return types.StructType{}, false
+		}
+		order[i] = key
+		fields[key] = types.ExprType(it.Value, c.env)
 	}
 	stName := sanitizeName(name) + "Item"
 	idx := 1
