@@ -99,3 +99,8 @@ Compiled programs: 80/97
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
+
+## TODO
+- [ ] implement join queries
+- [ ] handle load/save dataset operations
+- [ ] preserve map field information in queries

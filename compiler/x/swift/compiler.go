@@ -1098,7 +1098,7 @@ func (c *compiler) selector(s *parser.SelectorExpr) string {
 		return s.Root
 	}
 	typ := c.varTypes[s.Root]
-	if strings.HasPrefix(typ, "map") {
+	if strings.HasPrefix(typ, "map") || (typ == "" && c.mapFields[s.Root] != nil) {
 		parts := []string{s.Root}
 		for _, f := range s.Tail {
 			cast := ""
@@ -1281,6 +1281,12 @@ func (c *compiler) inferType(t *parser.TypeRef, val *parser.Expr) string {
 				return "list"
 			case p.Target.Map != nil:
 				return "map"
+			case p.Target.Query != nil:
+				t := c.exprType(p.Target.Query.Select)
+				if t != "" {
+					return "list_" + t
+				}
+				return "list"
 			}
 		}
 	}
@@ -1802,6 +1808,10 @@ func (c *compiler) recordMapFields(name string, e *parser.Expr) {
 	if p.Target.Query != nil {
 		if t := c.elementFieldTypes(p.Target.Query.Select); t != nil {
 			c.mapFields[name] = t
+		} else if isVarRef(p.Target.Query.Select, p.Target.Query.Var) {
+			if t := c.elementFieldTypes(p.Target.Query.Source); t != nil {
+				c.mapFields[name] = t
+			}
 		}
 	}
 }
