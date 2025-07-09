@@ -1,7 +1,0 @@
-line: 12
-error: unsupported primary at line 12
-  10: 
-  11: let big =
-  12:   from p in people
-  13:   group by p.city into g
-  14:   having count(g) >= 4

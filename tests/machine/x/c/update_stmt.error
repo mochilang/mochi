@@ -1,7 +1,0 @@
-line: 14
-error: unsupported statement at line 14
-  12: ]
-  13: 
-  14: update people
-  15: set {
-  16:   status: "adult",

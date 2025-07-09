@@ -1,7 +1,0 @@
-line: 15
-error: unsupported primary at line 15
-  13: ]
-  14: let filtered =
-  15:   from ps in partsupp
-  16:   join s in suppliers on s.id == ps.supplier
-  17:   join n in nations on n.id == s.nation
