@@ -2390,6 +2390,116 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return b.String(), nil
 	}
 
+	// specialized loop implementation for single joins with a side
+	if len(q.Froms) == 0 && len(q.Joins) == 1 && q.Group == nil &&
+		q.Sort == nil && q.Skip == nil && q.Take == nil && q.Where == nil {
+		j := q.Joins[0]
+		side := ""
+		if j.Side != nil {
+			side = *j.Side
+		}
+		child := types.NewEnv(c.env)
+		var elemType types.Type = types.AnyType{}
+		if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
+			elemType = lt.Elem
+		}
+		child.SetVar(q.Var, elemType, true)
+		var je types.Type = types.AnyType{}
+		if lt, ok := c.inferExprType(j.Src).(types.ListType); ok {
+			je = lt.Elem
+		}
+		child.SetVar(j.Var, je, true)
+		orig := c.env
+		c.env = child
+		joinSrc, err := c.compileIterExpr(j.Src)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		onExpr, err := c.compileExpr(j.On)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		val, err := c.compileExpr(q.Select)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		c.env = orig
+
+		qv := sanitizeName(q.Var)
+		jv := sanitizeName(j.Var)
+		var b strings.Builder
+		b.WriteString("(() => {\n")
+		b.WriteString("\tconst _src = " + src + ";\n")
+		b.WriteString("\tconst _join = " + joinSrc + ";\n")
+		if side == "outer" {
+			b.WriteString("\tconst _matched = new Array(_join.length).fill(false);\n")
+		}
+		b.WriteString("\tconst _res = [];\n")
+		if side == "right" {
+			b.WriteString("\tfor (const " + jv + " of _join) {\n")
+			b.WriteString("\t\tlet _m = false;\n")
+			b.WriteString("\t\tfor (const " + qv + " of _src) {\n")
+			b.WriteString("\t\t\tif (!(" + onExpr + ")) continue;\n")
+			b.WriteString("\t\t\t_m = true;\n")
+			b.WriteString("\t\t\t_res.push(" + val + ");\n")
+			b.WriteString("\t\t}\n")
+			b.WriteString("\t\tif (!_m) {\n")
+			b.WriteString("\t\t\tconst " + qv + " = null;\n")
+			b.WriteString("\t\t\t_res.push(" + val + ");\n")
+			b.WriteString("\t\t}\n")
+			b.WriteString("\t}\n")
+		} else {
+			b.WriteString("\tfor (const " + qv + " of _src) {\n")
+			if side != "" {
+				b.WriteString("\t\tlet _m = false;\n")
+			}
+			if side == "outer" {
+				b.WriteString("\t\tfor (let _ri = 0; _ri < _join.length; _ri++) {\n")
+				b.WriteString("\t\t\tconst " + jv + " = _join[_ri];\n")
+			} else {
+				b.WriteString("\t\tfor (const " + jv + " of _join) {\n")
+			}
+			b.WriteString("\t\t\tif (!(" + onExpr + ")) continue;\n")
+			if side == "outer" {
+				b.WriteString("\t\t\t_matched[_ri] = true;\n")
+			}
+			if side != "" {
+				b.WriteString("\t\t\t_m = true;\n")
+			}
+			b.WriteString("\t\t\t_res.push(" + val + ");\n")
+			b.WriteString("\t\t}\n")
+			if side == "outer" {
+				b.WriteString("\t\tif (!_m) {\n")
+				b.WriteString("\t\t\tconst " + jv + " = null;\n")
+				b.WriteString("\t\t\t_res.push(" + val + ");\n")
+				b.WriteString("\t\t}\n")
+				b.WriteString("\t}\n")
+				b.WriteString("\tfor (let _ri = 0; _ri < _join.length; _ri++) {\n")
+				b.WriteString("\t\tif (!_matched[_ri]) {\n")
+				b.WriteString("\t\t\tconst " + qv + " = null;\n")
+				b.WriteString("\t\t\tconst " + jv + " = _join[_ri];\n")
+				b.WriteString("\t\t\t_res.push(" + val + ");\n")
+				b.WriteString("\t\t}\n")
+				b.WriteString("\t}\n")
+			} else if side == "left" {
+				b.WriteString("\t\tif (!_m) {\n")
+				b.WriteString("\t\t\tconst " + jv + " = null;\n")
+				b.WriteString("\t\t\t_res.push(" + val + ");\n")
+				b.WriteString("\t\t}\n")
+				b.WriteString("\t}\n")
+			} else {
+				// inner join fallback if side is empty
+				b.WriteString("\t}\n")
+			}
+		}
+		b.WriteString("\treturn _res;\n")
+		b.WriteString("})()")
+		return b.String(), nil
+	}
+
 	// helper-based implementation for joins with sides
 	child := types.NewEnv(c.env)
 	varNames := []string{sanitizeName(q.Var)}
