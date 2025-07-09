@@ -1034,6 +1034,71 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 
 	if len(q.Froms) > 0 || len(q.Joins) > 0 {
+		// handle simple left join without extra clauses
+		if len(q.Froms) == 0 && len(q.Joins) == 1 && q.Group == nil && q.Joins[0].Side != nil && *q.Joins[0].Side == "left" {
+			src, err := c.compileExpr(q.Source, false)
+			if err != nil {
+				return "", err
+			}
+			joinSrc, err := c.compileExpr(q.Joins[0].Src, false)
+			if err != nil {
+				return "", err
+			}
+			on, err := c.compileExpr(q.Joins[0].On, false)
+			if err != nil {
+				return "", err
+			}
+			var elemType types.Type = types.AnyType{}
+			if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
+				elemType = lt.Elem
+			}
+			var joinType types.Type = types.AnyType{}
+			if lt, ok := c.inferExprType(q.Joins[0].Src).(types.ListType); ok {
+				joinType = lt.Elem
+			}
+			child := types.NewEnv(c.env)
+			child.SetVar(q.Var, elemType, true)
+			child.SetVar(q.Joins[0].Var, joinType, true)
+			orig := c.env
+			c.env = child
+			sel, err := c.compileExpr(q.Select, false)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			var cond string
+			if q.Where != nil {
+				cond, err = c.compileExpr(q.Where, false)
+				if err != nil {
+					c.env = orig
+					return "", err
+				}
+			}
+			resType := zigTypeOf(c.inferExprType(q.Select))
+			joinElem := zigTypeOf(joinType)
+			c.env = orig
+
+			tmp := c.newTmp()
+			var b strings.Builder
+			elem := strings.TrimPrefix(resType, "[]const ")
+			lbl := c.newLabel()
+			jv := sanitizeName(q.Joins[0].Var)
+			b.WriteString(lbl + ": { var " + tmp + " = std.ArrayList(" + elem + ").init(std.heap.page_allocator); ")
+			b.WriteString("for (" + src + ") |" + sanitizeName(q.Var) + "| { var matched = false; for (" + joinSrc + ") |" + jv + "| {")
+			b.WriteString(" if (!(" + on + ")) continue; matched = true;")
+			if cond != "" {
+				b.WriteString(" if (!(" + cond + ")) { continue; }")
+			}
+			b.WriteString(" " + tmp + ".append(" + sel + ") catch unreachable; }")
+			b.WriteString(" if (!matched) { const " + jv + ": ?" + joinElem + " = null;")
+			if cond != "" {
+				b.WriteString(" if (" + cond + ") { " + tmp + ".append(" + sel + ") catch unreachable; }")
+			} else {
+				b.WriteString(" " + tmp + ".append(" + sel + ") catch unreachable;")
+			}
+			b.WriteString(" } } const res = " + tmp + ".toOwnedSlice() catch unreachable; break :" + lbl + " res; }")
+			return b.String(), nil
+		}
 		if q.Group != nil {
 			return "", fmt.Errorf("unsupported query features")
 		}
