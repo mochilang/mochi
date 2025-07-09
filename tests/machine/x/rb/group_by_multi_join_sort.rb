@@ -10,6 +10,9 @@ class MGroup
   def length
     @Items.length
   end
+  def items
+    @Items
+  end
   def each(&block)
     @Items.each(&block)
   end
@@ -167,24 +170,26 @@ def _sum(v)
   s
 end
 
-nation = [OpenStruct.new(n_nationkey: 1, n_name: "BRAZIL")]
-customer = [OpenStruct.new(c_custkey: 1, c_name: "Alice", c_acctbal: 100.0, c_nationkey: 1, c_address: "123 St", c_phone: "123-456", c_comment: "Loyal")]
-orders = [OpenStruct.new(o_orderkey: 1000, o_custkey: 1, o_orderdate: "1993-10-15"), OpenStruct.new(o_orderkey: 2000, o_custkey: 1, o_orderdate: "1994-01-02")]
-lineitem = [OpenStruct.new(l_orderkey: 1000, l_returnflag: "R", l_extendedprice: 1000.0, l_discount: 0.1), OpenStruct.new(l_orderkey: 2000, l_returnflag: "N", l_extendedprice: 500.0, l_discount: 0.0)]
-start_date = "1993-10-01"
-end_date = "1994-01-01"
-result = (begin
-	src = customer
+$nation = [OpenStruct.new(n_nationkey: 1, n_name: "BRAZIL")]
+$customer = [OpenStruct.new(c_custkey: 1, c_name: "Alice", c_acctbal: 100.0, c_nationkey: 1, c_address: "123 St", c_phone: "123-456", c_comment: "Loyal")]
+$orders = [OpenStruct.new(o_orderkey: 1000, o_custkey: 1, o_orderdate: "1993-10-15"), OpenStruct.new(o_orderkey: 2000, o_custkey: 1, o_orderdate: "1994-01-02")]
+$lineitem = [OpenStruct.new(l_orderkey: 1000, l_returnflag: "R", l_extendedprice: 1000.0, l_discount: 0.1), OpenStruct.new(l_orderkey: 2000, l_returnflag: "N", l_extendedprice: 500.0, l_discount: 0.0)]
+$start_date = "1993-10-01"
+$end_date = "1994-01-01"
+$result = (begin
+	src = $customer
 	_rows = _query(src, [
-		{ 'items' => orders, 'on' => ->(c, o){ (o.o_custkey == c.c_custkey) } },
-		{ 'items' => lineitem, 'on' => ->(c, o, l){ (l.l_orderkey == o.o_orderkey) } },
-		{ 'items' => nation, 'on' => ->(c, o, l, n){ (n.n_nationkey == c.c_nationkey) } }
-	], { 'select' => ->(c, o, l, n){ [c, o, l, n] }, 'where' => ->(c, o, l, n){ (((o.o_orderdate >= start_date) && (o.o_orderdate < end_date)) && (l.l_returnflag == "R")) }, 'sortKey' => ->(c, o, l, n){ (-_sum(((g)).map { |x| (x.l.l_extendedprice * ((1 - x.l.l_discount))) })) } })
+		{ 'items' => $orders, 'on' => ->(c, o){ (o.o_custkey == c.c_custkey) } },
+		{ 'items' => $lineitem, 'on' => ->(c, o, l){ (l.l_orderkey == o.o_orderkey) } },
+		{ 'items' => $nation, 'on' => ->(c, o, l, n){ (n.n_nationkey == c.c_nationkey) } }
+	], { 'select' => ->(c, o, l, n){ [c, o, l, n] }, 'where' => ->(c, o, l, n){ (((o.o_orderdate >= $start_date) && (o.o_orderdate < $end_date)) && (l.l_returnflag == "R")) } })
 	_groups = _group_by(_rows, ->(c, o, l, n){ OpenStruct.new(c_custkey: c.c_custkey, c_name: c.c_name, c_acctbal: c.c_acctbal, c_address: c.c_address, c_phone: c.c_phone, c_comment: c.c_comment, n_name: n.n_name) })
+	_items0 = _groups
+	_items0 = _items0.sort_by { |g| (-_sum(((g)).map { |x| (x[2].l_extendedprice * ((1 - x[2].l_discount))) })) }
 	_res = []
-	for g in _groups
-		_res << OpenStruct.new(c_custkey: g.key.c_custkey, c_name: g.key.c_name, revenue: _sum(((g)).map { |x| (x.l.l_extendedprice * ((1 - x.l.l_discount))) }), c_acctbal: g.key.c_acctbal, n_name: g.key.n_name, c_address: g.key.c_address, c_phone: g.key.c_phone, c_comment: g.key.c_comment)
+	for g in _items0
+		_res << OpenStruct.new(c_custkey: g.key.c_custkey, c_name: g.key.c_name, revenue: _sum(((g)).map { |x| (x[2].l_extendedprice * ((1 - x[2].l_discount))) }), c_acctbal: g.key.c_acctbal, n_name: g.key.n_name, c_address: g.key.c_address, c_phone: g.key.c_phone, c_comment: g.key.c_comment)
 	end
 	_res
 end)
-puts([result].join(" "))
+puts([$result].join(" "))

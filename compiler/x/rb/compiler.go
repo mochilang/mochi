@@ -464,6 +464,9 @@ func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
 
 func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 	lhs := sanitizeName(s.Name)
+	if c.globals[lhs] {
+		lhs = "$" + lhs
+	}
 	for _, idx := range s.Index {
 		iexpr, err := c.compileExpr(idx.Start)
 		if err != nil {
@@ -631,12 +634,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		allParams := strings.Join(tmp, ", ")
 		var selectFn string
 		if q.Group != nil {
-			fields := make([]string, len(tmp))
-			for i, n := range tmp {
-				fields[i] = fmt.Sprintf("%s: %s", sanitizeName(n), sanitizeName(n))
-			}
-			selectFn = fmt.Sprintf("->(%s){ OpenStruct.new(%s) }", allParams, strings.Join(fields, ", "))
-			c.useOpenStruct = true
+			selectFn = fmt.Sprintf("->(%s){ [%s] }", allParams, strings.Join(tmp, ", "))
 		} else {
 			selectFn = fmt.Sprintf("->(%s){ %s }", allParams, sel)
 		}
@@ -2074,6 +2072,9 @@ func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
 
 func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 	list := sanitizeName(u.Target)
+	if c.globals[list] {
+		list = "$" + list
+	}
 	idxVar := c.newTmp()
 	itemVar := c.newTmp()
 	c.writeln(fmt.Sprintf("%s.each_with_index do |%s, %s|", list, itemVar, idxVar))

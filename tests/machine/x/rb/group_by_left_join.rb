@@ -10,6 +10,9 @@ class MGroup
   def length
     @Items.length
   end
+  def items
+    @Items
+  end
   def each(&block)
     @Items.each(&block)
   end
@@ -153,21 +156,22 @@ def _query(src, joins, opts)
   res
 end
 
-customers = [OpenStruct.new(id: 1, name: "Alice"), OpenStruct.new(id: 2, name: "Bob"), OpenStruct.new(id: 3, name: "Charlie")]
-orders = [OpenStruct.new(id: 100, customerId: 1), OpenStruct.new(id: 101, customerId: 1), OpenStruct.new(id: 102, customerId: 2)]
-stats = (begin
-	src = customers
+$customers = [OpenStruct.new(id: 1, name: "Alice"), OpenStruct.new(id: 2, name: "Bob"), OpenStruct.new(id: 3, name: "Charlie")]
+$orders = [OpenStruct.new(id: 100, customerId: 1), OpenStruct.new(id: 101, customerId: 1), OpenStruct.new(id: 102, customerId: 2)]
+$stats = (begin
+	src = $customers
 	_rows = _query(src, [
-		{ 'items' => orders, 'on' => ->(c, o){ (o.customerId == c.id) }, 'left' => true }
+		{ 'items' => $orders, 'on' => ->(c, o){ (o.customerId == c.id) }, 'left' => true }
 	], { 'select' => ->(c, o){ [c, o] } })
 	_groups = _group_by(_rows, ->(c, o){ c.name })
+	_items0 = _groups
 	_res = []
-	for g in _groups
-		_res << OpenStruct.new(name: g.key, count: ((((g)).select { |r| r.o }).map { |r| r }).length)
+	for g in _items0
+		_res << OpenStruct.new(name: g.key, count: ((((g)).select { |r| r[1] }).map { |r| r }).length)
 	end
 	_res
 end)
 puts(["--- Group Left Join ---"].join(" "))
-for s in stats
+for s in $stats
 	puts([s.name, "orders:", s.count].join(" "))
 end

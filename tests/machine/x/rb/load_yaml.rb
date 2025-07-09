@@ -58,8 +58,8 @@ end
 
 Person = Struct.new(:name, :age, :email, keyword_init: true)
 
-people = (_load("../interpreter/valid/people.yaml", (OpenStruct.new(format: "yaml")).to_h.transform_keys(&:to_s))).map { |_it| Person.new(**_it) }
-adults = (((people)).select { |p| (p.age >= 18) }).map { |p| OpenStruct.new(name: p.name, email: p.email) }
-for a in adults
+$people = (_load(File.expand_path("../../../interpreter/valid/people.yaml", __dir__), (OpenStruct.new(format: "yaml")).to_h.transform_keys(&:to_s))).map { |_it| Person.new(**_it) }
+$adults = ((($people)).select { |p| (p.age >= 18) }).map { |p| OpenStruct.new(name: p.name, email: p.email) }
+for a in $adults
 	puts([a.name, a.email].join(" "))
 end
