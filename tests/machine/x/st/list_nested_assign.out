@@ -1,0 +1,8 @@
+Object: Array new: 2 "<0x7f66808123a0>" error: did not understand #at:at:put:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+Array(Object)>>doesNotUnderstand: #at:at:put: (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/list_nested_assign.st:3)
+Object: Array new: 2 "<0x7f66808123a0>" error: did not understand #at:at:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+Array(Object)>>doesNotUnderstand: #at:at: (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/list_nested_assign.st:4)

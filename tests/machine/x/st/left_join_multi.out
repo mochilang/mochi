@@ -1,0 +1,13 @@
+Object: Dictionary error: did not understand #newFrom:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+Dictionary class(Object)>>doesNotUnderstand: #newFrom: (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/left_join_multi.st:2)
+Object: Dictionary error: did not understand #newFrom:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+Dictionary class(Object)>>doesNotUnderstand: #newFrom: (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/left_join_multi.st:3)
+Object: Dictionary error: did not understand #newFrom:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+Dictionary class(Object)>>doesNotUnderstand: #newFrom: (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/left_join_multi.st:4)
+--- Left Join Multi ---

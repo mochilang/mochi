@@ -1,0 +1,12 @@
+Object: Dictionary error: did not understand #newFrom:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+Dictionary class(Object)>>doesNotUnderstand: #newFrom: (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/map_membership.st:2)
+Object: 'a' error: did not understand #in
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #in (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/map_membership.st:3)
+Object: 'c' error: did not understand #in
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #in (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/map_membership.st:4)

@@ -1,0 +1,8 @@
+Object: 2 error: did not understand #inject:into:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+SmallInteger(Object)>>doesNotUnderstand: #inject:into: (SysExcept.st:1448)
+optimized [] in UndefinedObject>>executeStatements (../../../tests/machine/x/st/query_sum_select.st:7)
+Array(SequenceableCollection)>>do: (SeqCollect.st:827)
+optimized [] in UndefinedObject>>executeStatements (../../../tests/machine/x/st/query_sum_select.st:5)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/query_sum_select.st:3)
+nil

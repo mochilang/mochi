@@ -1,0 +1,5 @@
+Object: nil error: did not understand #value:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+UndefinedObject(Object)>>doesNotUnderstand: #value: (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/exists_builtin.st:3)
+nil

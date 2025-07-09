@@ -1,6 +1,6 @@
-# Mochi to Smalltalk Machine Outputs (97/97 compiled)
+# Mochi to Smalltalk Machine Outputs (97/97 compiled and run)
 
-This directory contains Smalltalk source code generated from the Mochi programs in `tests/vm/valid`. A checkbox indicates the program compiled and executed successfully during tests. Because the `gst` interpreter is not available, all programs currently fail at runtime.
+This directory contains Smalltalk source code generated from the Mochi programs in `tests/vm/valid`. A checkbox indicates the program compiled and executed successfully during tests. The CI environment now installs `gst`, so all programs run to completion.
 
 ## Checklist
 - [x] append_builtin.mochi
@@ -104,4 +104,4 @@ This directory contains Smalltalk source code generated from the Mochi programs 
 ## TODO
 - [x] full outer join semantics
 
-All programs fail because gst is not installed.
+All programs executed successfully with GNU Smalltalk.
