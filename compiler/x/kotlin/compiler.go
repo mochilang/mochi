@@ -19,10 +19,10 @@ fun <T> append(list: MutableList<T>, item: T): MutableList<T> {
     return res
 }
 
-fun avg(list: List<Number>): Double {
+fun avg(list: List<Any?>): Double {
     if (list.isEmpty()) return 0.0
     var s = 0.0
-    for (n in list) s += n.toDouble()
+    for (n in list) s += toDouble(n)
     return s / list.size
 }
 
@@ -39,19 +39,29 @@ fun len(v: Any?): Int = when (v) {
     else -> 0
 }
 
-fun max(list: List<Int>): Int {
+fun max(list: List<Any?>): Int {
     var m = Int.MIN_VALUE
-    for (n in list) if (n > m) m = n
+    for (n in list) {
+        val v = toInt(n)
+        if (v > m) m = v
+    }
     return if (m == Int.MIN_VALUE) 0 else m
 }
 
-fun min(list: List<Int>): Int {
+fun min(list: List<Any?>): Int {
     var m = Int.MAX_VALUE
-    for (n in list) if (n < m) m = n
+    for (n in list) {
+        val v = toInt(n)
+        if (v < m) m = v
+    }
     return if (m == Int.MAX_VALUE) 0 else m
 }
 
-fun sum(list: List<Int>): Int = list.sum()
+fun sum(list: List<Any?>): Int {
+    var s = 0
+    for (n in list) s += toInt(n)
+    return s
+}
 
 fun str(v: Any?): String = v.toString()
 
@@ -70,6 +80,15 @@ fun toDouble(v: Any?): Double = when (v) {
     is Int -> v.toDouble()
     is String -> v.toDouble()
     else -> 0.0
+}
+
+fun toBool(v: Any?): Boolean = when (v) {
+    is Boolean -> v
+    is Int -> v != 0
+    is Double -> v != 0.0
+    is String -> v.isNotEmpty()
+    null -> false
+    else -> true
 }
 
 fun <T> union(a: MutableList<T>, b: MutableList<T>): MutableList<T> {
@@ -936,6 +955,7 @@ func (c *Compiler) ifExpr(ix *parser.IfExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	cond = "toBool(" + cond + ")"
 	thenExpr, err := c.expr(ix.Then)
 	if err != nil {
 		return "", err
@@ -1026,6 +1046,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		selEnv = genv
 	}
 	selType := types.TypeOfExprBasic(q.Select, selEnv)
+	_ = selType
 	oldEnv := c.env
 	c.env = child
 
@@ -1036,7 +1057,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(indent(lvl))
 		b.WriteString("val __order = mutableListOf<Any?>()\n")
 	} else {
-		b.WriteString(fmt.Sprintf("val __res = mutableListOf<%s>()\n", kotlinElemType(selType)))
+		b.WriteString("val __res = mutableListOf<Any?>()\n")
 	}
 	b.WriteString(indent(lvl))
 	b.WriteString(fmt.Sprintf("for (%s in %s) {\n", q.Var, src))
@@ -1127,7 +1148,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	b.WriteString("}\n")
 	if q.Group != nil {
 		b.WriteString(indent(lvl))
-		b.WriteString(fmt.Sprintf("val __res = mutableListOf<%s>()\n", kotlinElemType(selType)))
+		b.WriteString("val __res = mutableListOf<Any?>()\n")
 		b.WriteString(indent(lvl))
 		b.WriteString("for (k in __order) {\n")
 		lvl++
@@ -1170,6 +1191,9 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		vars := []string{q.Var}
 		for _, f := range q.Froms {
 			vars = append(vars, f.Var)
+		}
+		if q.Group != nil {
+			vars = append(vars, q.Group.Name)
 		}
 		for _, v := range vars {
 			sortExpr = replaceIdent(sortExpr, v, "it")
