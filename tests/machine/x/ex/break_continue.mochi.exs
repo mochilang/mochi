@@ -15,7 +15,7 @@ defmodule Main do
             throw(:break)
           end
 
-          IO.puts(Enum.join(Enum.map(["odd number:", n], &to_string(&1)), " "))
+          IO.puts(Enum.join(Enum.map(["odd number:", n], &inspect(&1)), " "))
           {:cont, :ok}
         catch
           :break -> {:halt, :ok}

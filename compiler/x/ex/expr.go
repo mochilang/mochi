@@ -292,7 +292,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					if len(args) == 1 {
 						res = fmt.Sprintf("IO.inspect(%s)", argStr)
 					} else {
-						res = fmt.Sprintf("IO.puts(Enum.join(Enum.map([%s], &to_string(&1)), \" \"))", argStr)
+						res = fmt.Sprintf("IO.puts(Enum.join(Enum.map([%s], &inspect(&1)), \" \"))", argStr)
 					}
 				case "len":
 					if len(args) != 1 {
@@ -444,7 +444,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if len(args) == 1 {
 				return fmt.Sprintf("IO.inspect(%s)", argStr), nil
 			}
-			return fmt.Sprintf("IO.puts(Enum.join(Enum.map([%s], &to_string(&1)), \" \"))", argStr), nil
+			return fmt.Sprintf("IO.puts(Enum.join(Enum.map([%s], &inspect(&1)), \" \"))", argStr), nil
 		case "len":
 			if len(args) != 1 {
 				return "", fmt.Errorf("len expects 1 arg")

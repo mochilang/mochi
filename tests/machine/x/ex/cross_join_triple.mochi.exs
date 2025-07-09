@@ -12,7 +12,7 @@ defmodule Main do
     IO.inspect("--- Cross Join of three lists ---")
 
     for c <- combos do
-      IO.puts(Enum.join(Enum.map([c.n, c.l, c.b], &to_string(&1)), " "))
+      IO.puts(Enum.join(Enum.map([c.n, c.l, c.b], &inspect(&1)), " "))
     end
   end
 end

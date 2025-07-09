@@ -37,7 +37,7 @@ defmodule Main do
               ") paired with",
               entry.pairedCustomerName
             ],
-            &to_string(&1)
+            &inspect(&1)
           ),
           " "
         )

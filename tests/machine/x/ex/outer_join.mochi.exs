@@ -40,7 +40,7 @@ defmodule Main do
             Enum.join(
               Enum.map(
                 ["Order", row.order.id, "by", row.customer.name, "- $", row.order.total],
-                &to_string(&1)
+                &inspect(&1)
               ),
               " "
             )
@@ -50,7 +50,7 @@ defmodule Main do
             Enum.join(
               Enum.map(
                 ["Order", row.order.id, "by", "Unknown", "- $", row.order.total],
-                &to_string(&1)
+                &inspect(&1)
               ),
               " "
             )
@@ -58,10 +58,7 @@ defmodule Main do
         end
       else
         IO.puts(
-          Enum.join(
-            Enum.map(["Customer", row.customer.name, "has no orders"], &to_string(&1)),
-            " "
-          )
+          Enum.join(Enum.map(["Customer", row.customer.name, "has no orders"], &inspect(&1)), " ")
         )
       end
     end

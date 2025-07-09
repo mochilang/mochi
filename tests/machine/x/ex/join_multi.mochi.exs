@@ -18,7 +18,7 @@ defmodule Main do
     IO.inspect("--- Multi Join ---")
 
     for r <- result do
-      IO.puts(Enum.join(Enum.map([r.name, "bought item", r.sku], &to_string(&1)), " "))
+      IO.puts(Enum.join(Enum.map([r.name, "bought item", r.sku], &inspect(&1)), " "))
     end
   end
 end
