@@ -1,10 +1,16 @@
 stage: compile
 error:
-unsupported expression at line 3
+File "/workspace/mochi/tests/machine/x/ocaml/cross_join_filter.ml", line 43, characters 8-15:
+43 |       ) letters;
+             ^^^^^^^
+Error: This expression has type string list
+       but an expression was expected of type int list
+       Type string is not compatible with type int 
 
-Context (around line 3):
-   1 | let nums = [1, 2, 3]
-   2 | let letters = ["A", "B"]
-   3 | let pairs = from n in nums
-   4 |             from l in letters
-   5 |             where n % 2 == 0
+
+Context (around line 43):
+  41 |               if ((n mod 2) = 0) then
+  42 |       __res0 := [("n",n);("l",l)] :: !__res0;
+  43 |       ) letters;
+  44 |   ) nums;
+  45 | List.rev !__res0)

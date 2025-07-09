@@ -1,9 +1,14 @@
 stage: compile
 error:
-unsupported expression at line 2
+File "/workspace/mochi/tests/machine/x/ocaml/group_by_having.ml", line 39, characters 25-26:
+39 |       __res0 := [("city",g.key);("num",List.length g)] :: !__res0;
+                              ^
+Error: Unbound value g
 
-Context (around line 2):
-   1 | let people = [
-   2 |   { name: "Alice", city: "Paris" },
-   3 |   { name: "Bob", city: "Hanoi" },
-   4 |   { name: "Charlie", city: "Paris" },
+
+Context (around line 39):
+  37 | let big = (let __res0 = ref [] in
+  38 |   List.iter (fun p ->
+  39 |       __res0 := [("city",g.key);("num",List.length g)] :: !__res0;
+  40 |   ) people;
+  41 | List.rev !__res0)

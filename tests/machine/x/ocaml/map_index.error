@@ -1,8 +1,0 @@
-stage: compile
-error:
-unsupported expression at line 1
-
-Context (around line 1):
-   1 | let m = {"a": 1, "b": 2}
-   2 | print(m["b"])
-   3 | 

@@ -1,10 +1,16 @@
 stage: compile
 error:
-unsupported expression at line 4
+File "/workspace/mochi/tests/machine/x/ocaml/cross_join_triple.ml", line 45, characters 8-15:
+45 |       ) letters;
+             ^^^^^^^
+Error: This expression has type string list
+       but an expression was expected of type bool list
+       Type string is not compatible with type bool 
 
-Context (around line 4):
-   2 | let letters = ["A", "B"]
-   3 | let bools = [true, false]
-   4 | let combos = from n in nums
-   5 |              from l in letters
-   6 |              from b in bools
+
+Context (around line 45):
+  43 |                         __res0 := [("n",n);("l",l);("b",b)] :: !__res0;
+  44 |             ) bools;
+  45 |       ) letters;
+  46 |   ) nums;
+  47 | List.rev !__res0)

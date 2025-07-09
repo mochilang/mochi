@@ -4,8 +4,8 @@ This directory contains OCaml source code generated from Mochi programs and the 
 
 ## Summary
 
-- 44/97 programs compiled and executed successfully.
-- 53 programs failed to compile or run.
+- 51/97 programs compiled and executed successfully.
+- 46 programs failed to compile or run.
 
 ### Successful
 - append_builtin
@@ -52,6 +52,10 @@ This directory contains OCaml source code generated from Mochi programs and the 
 - map_int_key
 - map_membership
 - len_map
+- if_then_else
+- if_then_else_nested
+- list_assign
+- record_assign
 
 ### Failed
 - cross_join
@@ -70,15 +74,12 @@ This directory contains OCaml source code generated from Mochi programs and the 
 - group_by_multi_join_sort
 - group_by_sort
 - group_items_iteration
-- if_then_else
-- if_then_else_nested
 - in_operator_extended
 - inner_join
 - join_multi
 - json_builtin
 - left_join
 - left_join_multi
-- list_assign
 - list_nested_assign
 - list_set_ops
 - load_yaml
@@ -89,7 +90,6 @@ This directory contains OCaml source code generated from Mochi programs and the 
 - order_by_map
 - outer_join
 - query_sum_select
-- record_assign
 - right_join
 - save_jsonl_stdout
 - slice

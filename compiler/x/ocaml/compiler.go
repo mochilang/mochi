@@ -212,7 +212,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 			continue
 		}
 		typ := c.typeRef(m.Field.Type)
-		fields = append(fields, fmt.Sprintf("%s : %s", m.Field.Name, typ))
+		fields = append(fields, fmt.Sprintf("mutable %s : %s", m.Field.Name, typ))
 	}
 	name := strings.ToLower(t.Name)
 	c.writeln(fmt.Sprintf("type %s = { %s }", name, strings.Join(fields, "; ")))
@@ -229,7 +229,22 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("%s := (let rec __upd l = match l with | [] -> [(%s,%s)] | (k,v)::tl -> if k = %s then (%s,%s)::tl else (k,v)::__upd tl in __upd !%s);", a.Name, idx, val, idx, idx, val, a.Name))
+		typ, _ := c.env.GetVar(a.Name)
+		switch typ.(type) {
+		case types.MapType:
+			c.writeln(fmt.Sprintf("%s := (let rec __upd l = match l with | [] -> [(%s,%s)] | (k,v)::tl -> if k = %s then (%s,%s)::tl else (k,v)::__upd tl in __upd !%s);", a.Name, idx, val, idx, idx, val, a.Name))
+		default:
+			c.writeln(fmt.Sprintf("%s := List.mapi (fun i v -> if i = %s then %s else v) !%s;", a.Name, idx, val, a.Name))
+		}
+		return nil
+	}
+	if len(a.Field) > 0 {
+		field := a.Field[0].Name
+		if c.vars[a.Name] {
+			c.writeln(fmt.Sprintf("%s := { !%s with %s = %s };", a.Name, a.Name, field, val))
+		} else {
+			c.writeln(fmt.Sprintf("%s.%s <- %s;", a.Name, field, val))
+		}
 		return nil
 	}
 	if c.vars[a.Name] {
@@ -260,7 +275,7 @@ func (c *Compiler) compileIf(i *parser.IfStmt) error {
 			return err
 		}
 		c.indent--
-		c.writeln(")")
+		c.writeln(") ;")
 	} else if len(i.Else) > 0 {
 		c.writeln(") else (")
 		c.indent++
@@ -270,9 +285,9 @@ func (c *Compiler) compileIf(i *parser.IfStmt) error {
 			}
 		}
 		c.indent--
-		c.writeln(")")
+		c.writeln(") ;")
 	} else {
-		c.writeln(")")
+		c.writeln(") ;")
 	}
 	return nil
 }
@@ -366,6 +381,82 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 	c.indent--
 	c.writeln(fmt.Sprintf("in try %s () with Break -> ()", loopName))
 	return nil
+}
+
+func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
+	cond, err := c.compileExpr(ie.Cond)
+	if err != nil {
+		return "", err
+	}
+	thenVal, err := c.compileExpr(ie.Then)
+	if err != nil {
+		return "", err
+	}
+	var elseVal string
+	if ie.ElseIf != nil {
+		elseVal, err = c.compileIfExpr(ie.ElseIf)
+		if err != nil {
+			return "", err
+		}
+	} else if ie.Else != nil {
+		elseVal, err = c.compileExpr(ie.Else)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		elseVal = "()"
+	}
+	return fmt.Sprintf("(if %s then %s else %s)", cond, thenVal, elseVal), nil
+}
+
+func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
+	froms := append([]*parser.FromClause{{Var: q.Var, Src: q.Source}}, q.Froms...)
+	sources := make([]string, len(froms))
+	vars := make([]string, len(froms))
+	for i, fr := range froms {
+		src, err := c.compileExpr(fr.Src)
+		if err != nil {
+			return "", err
+		}
+		sources[i] = src
+		vars[i] = fr.Var
+	}
+	resName := fmt.Sprintf("__res%d", c.loop)
+	c.loop++
+	var buf bytes.Buffer
+	buf.WriteString(fmt.Sprintf("(let %s = ref [] in\n", resName))
+	for i := range froms {
+		for j := 0; j <= i; j++ {
+			buf.WriteString(strings.Repeat("  ", j+1))
+		}
+		buf.WriteString(fmt.Sprintf("List.iter (fun %s ->\n", vars[i]))
+	}
+	for i := range froms {
+		buf.WriteString(strings.Repeat("  ", len(froms)+1-i))
+		buf.WriteString("  ")
+	}
+	if q.Where != nil {
+		cond, err := c.compileExpr(q.Where)
+		if err != nil {
+			return "", err
+		}
+		buf.WriteString(fmt.Sprintf("if %s then\n", cond))
+		buf.WriteString(strings.Repeat("  ", len(froms)+1))
+	}
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		return "", err
+	}
+	buf.WriteString(fmt.Sprintf("%s := %s :: !%s", resName, sel, resName))
+	buf.WriteString(";\n")
+	for i := len(froms) - 1; i >= 0; i-- {
+		for j := 0; j <= i; j++ {
+			buf.WriteString(strings.Repeat("  ", i-j+1))
+		}
+		buf.WriteString(fmt.Sprintf(") %s;\n", sources[i]))
+	}
+	buf.WriteString(fmt.Sprintf("List.rev !%s)\n", resName))
+	return buf.String(), nil
 }
 
 // --- expressions ---
@@ -546,6 +637,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		for _, t := range p.Selector.Tail {
 			name += "." + t
 		}
+		if c.vars[p.Selector.Root] {
+			parts := []string{"(!" + p.Selector.Root + ")"}
+			parts = append(parts, p.Selector.Tail...)
+			return strings.Join(parts, "."), nil
+		}
 		if c.vars[name] {
 			return "!" + name, nil
 		}
@@ -563,6 +659,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Map != nil:
 		items := make([]string, len(p.Map.Items))
 		for i, it := range p.Map.Items {
+			if key, ok := identConst(it.Key); ok {
+				k := fmt.Sprintf("\"%s\"", key)
+				v, err := c.compileExpr(it.Value)
+				if err != nil {
+					return "", err
+				}
+				items[i] = fmt.Sprintf("(%s,%s)", k, v)
+				continue
+			}
 			k, err := c.compileExpr(it.Key)
 			if err != nil {
 				return "", err
@@ -574,6 +679,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			items[i] = fmt.Sprintf("(%s,%s)", k, v)
 		}
 		return "[" + strings.Join(items, ";") + "]", nil
+	case p.Struct != nil:
+		fields := make([]string, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			v, err := c.compileExpr(f.Value)
+			if err != nil {
+				return "", err
+			}
+			fields[i] = fmt.Sprintf("%s = %s", f.Name, v)
+		}
+		return "{ " + strings.Join(fields, "; ") + " }", nil
+	case p.If != nil:
+		return c.compileIfExpr(p.If)
+	case p.Query != nil:
+		return c.compileQuery(p.Query)
 	case p.FunExpr != nil:
 		params := make([]string, len(p.FunExpr.Params))
 		for i, p2 := range p.FunExpr.Params {
@@ -708,6 +827,11 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	}
 	if len(fn.Body) == 0 {
 		c.writeln("()")
+	} else {
+		last := fn.Body[len(fn.Body)-1]
+		if last.Expr == nil && last.Return == nil {
+			c.writeln("()")
+		}
 	}
 	c.indent--
 	return nil
@@ -851,6 +975,20 @@ func stringConst(e *parser.Expr) (string, bool) {
 	}
 	if u.Value.Target.Lit != nil && u.Value.Target.Lit.Str != nil {
 		return *u.Value.Target.Lit.Str, true
+	}
+	return "", false
+}
+
+func identConst(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || u.Value.Target == nil {
+		return "", false
+	}
+	if u.Value.Target.Selector != nil && len(u.Value.Target.Selector.Tail) == 0 {
+		return u.Value.Target.Selector.Root, true
 	}
 	return "", false
 }

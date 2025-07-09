@@ -1,5 +1,0 @@
-stage: compile
-error:
-unsupported postfix
-
-Context (around line 0):

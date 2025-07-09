@@ -15,8 +15,32 @@ let rec __show v =
     | 253 -> string_of_float (magic v)
     | _ -> "<value>"
 
+exception Break
+exception Continue
+
+let string_contains s sub =
+  let len_s = String.length s and len_sub = String.length sub in
+  let rec aux i =
+    if i + len_sub > len_s then false
+    else if String.sub s i len_sub = sub then true
+    else aux (i + 1)
+  in aux 0
+
+let slice lst i j =
+  lst |> List.mapi (fun idx x -> idx, x)
+      |> List.filter (fun (idx, _) -> idx >= i && idx < j)
+      |> List.map snd
+
+let string_slice s i j = String.sub s i (j - i)
+
 
 let () =
-  for i = 1 to 4 do
-    print_endline (__show (i));
-  done
+  let rec __loop0 i =
+    if i > 4 then () else (
+      try
+        let i = i in
+        print_endline (__show (i));
+      with Continue -> ()
+      ; __loop0 (i + 1))
+  in
+  try __loop0 1 with Break -> ()
