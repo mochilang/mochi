@@ -38,8 +38,8 @@ let list_set lst idx value =
 
 let rec map_set m k v =
   match m with
-    | [] -> [(k,v)]
-    | (k2,v2)::tl -> if k2 = k then (k,v)::tl else (k2,v2)::map_set tl k v
+    | [] -> [(k,Obj.repr v)]
+    | (k2,v2)::tl -> if k2 = k then (k,Obj.repr v)::tl else (k2,v2)::map_set tl k v
 
 let map_get m k = Obj.obj (List.assoc k m)
 
@@ -49,7 +49,7 @@ let list_intersect a b = List.filter (fun x -> List.mem x b) a |> List.sort_uniq
 let list_union_all a b = a @ b
 let sum lst = List.fold_left (+) 0 lst
 
-let matrix = ref [[1;2];[3;4]]
+let matrix : int list list ref = ref [[1;2];[3;4]]
 
 let () =
   matrix := list_set !matrix 1 (list_set (List.nth !matrix 1) 0 5);

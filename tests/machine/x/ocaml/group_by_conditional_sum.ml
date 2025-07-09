@@ -33,20 +33,36 @@ let slice lst i j =
 
 let string_slice s i j = String.sub s i (j - i)
 
-let items = [[("cat","a");("val",10);("flag",true)];[("cat","a");("val",5);("flag",false)];[("cat","b");("val",20);("flag",true)]]
+let list_set lst idx value =
+  List.mapi (fun i v -> if i = idx then value else v) lst
+
+let rec map_set m k v =
+  match m with
+    | [] -> [(k,Obj.repr v)]
+    | (k2,v2)::tl -> if k2 = k then (k,Obj.repr v)::tl else (k2,v2)::map_set tl k v
+
+let map_get m k = Obj.obj (List.assoc k m)
+
+let list_union a b = List.sort_uniq compare (a @ b)
+let list_except a b = List.filter (fun x -> not (List.mem x b)) a
+let list_intersect a b = List.filter (fun x -> List.mem x b) a |> List.sort_uniq compare
+let list_union_all a b = a @ b
+let sum lst = List.fold_left (+) 0 lst
+
+let items = [[("cat",Obj.repr "a");("val",Obj.repr 10);("flag",Obj.repr true)];[("cat",Obj.repr "a");("val",Obj.repr 5);("flag",Obj.repr false)];[("cat",Obj.repr "b");("val",Obj.repr 20);("flag",Obj.repr true)]]
 let result = (let __res0 = ref [] in
   List.iter (fun i ->
-      __res0 := [("cat",g.key);("share",(sum (let __res1 = ref [] in
+      __res0 := [("cat",Obj.repr g.key);("share",Obj.repr ((sum (let __res1 = ref [] in
   List.iter (fun x ->
       __res1 := (if x.flag then x.val else 0) :: !__res1;
   ) g;
 List.rev !__res1)
- / sum (let __res2 = ref [] in
+) / (sum (let __res2 = ref [] in
   List.iter (fun x ->
       __res2 := x.val :: !__res2;
   ) g;
 List.rev !__res2)
-))] :: !__res0;
+)))] :: !__res0;
   ) items;
 List.rev !__res0)
 

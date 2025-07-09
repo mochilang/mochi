@@ -38,8 +38,8 @@ let list_set lst idx value =
 
 let rec map_set m k v =
   match m with
-    | [] -> [(k,v)]
-    | (k2,v2)::tl -> if k2 = k then (k,v)::tl else (k2,v2)::map_set tl k v
+    | [] -> [(k,Obj.repr v)]
+    | (k2,v2)::tl -> if k2 = k then (k,Obj.repr v)::tl else (k2,v2)::map_set tl k v
 
 let map_get m k = Obj.obj (List.assoc k m)
 

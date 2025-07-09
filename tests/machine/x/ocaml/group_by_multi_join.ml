@@ -33,24 +33,44 @@ let slice lst i j =
 
 let string_slice s i j = String.sub s i (j - i)
 
-let nations = [[("id",1);("name","A")];[("id",2);("name","B")]]
-let suppliers = [[("id",1);("nation",1)];[("id",2);("nation",2)]]
-let partsupp = [[("part",100);("supplier",1);("cost",10);("qty",2)];[("part",100);("supplier",2);("cost",20);("qty",1)];[("part",200);("supplier",1);("cost",5);("qty",3)]]
+let list_set lst idx value =
+  List.mapi (fun i v -> if i = idx then value else v) lst
+
+let rec map_set m k v =
+  match m with
+    | [] -> [(k,Obj.repr v)]
+    | (k2,v2)::tl -> if k2 = k then (k,Obj.repr v)::tl else (k2,v2)::map_set tl k v
+
+let map_get m k = Obj.obj (List.assoc k m)
+
+let list_union a b = List.sort_uniq compare (a @ b)
+let list_except a b = List.filter (fun x -> not (List.mem x b)) a
+let list_intersect a b = List.filter (fun x -> List.mem x b) a |> List.sort_uniq compare
+let list_union_all a b = a @ b
+let sum lst = List.fold_left (+) 0 lst
+
+let nations = [[("id",Obj.repr 1);("name",Obj.repr "A")];[("id",Obj.repr 2);("name",Obj.repr "B")]]
+let suppliers = [[("id",Obj.repr 1);("nation",Obj.repr 1)];[("id",Obj.repr 2);("nation",Obj.repr 2)]]
+let partsupp = [[("part",Obj.repr 100);("supplier",Obj.repr 1);("cost",Obj.repr 10);("qty",Obj.repr 2)];[("part",Obj.repr 100);("supplier",Obj.repr 2);("cost",Obj.repr 20);("qty",Obj.repr 1)];[("part",Obj.repr 200);("supplier",Obj.repr 1);("cost",Obj.repr 5);("qty",Obj.repr 3)]]
 let filtered = (let __res0 = ref [] in
   List.iter (fun ps ->
-      if (n.name = "A") then
-    __res0 := [("part",ps.part);("value",(ps.cost * ps.qty))] :: !__res0;
+      List.iter (fun s ->
+            List.iter (fun n ->
+                        if (s.id = ps.supplier) && (n.id = s.nation) && (n.name = "A") then
+        __res0 := [("part",Obj.repr ps.part);("value",Obj.repr (ps.cost * ps.qty))] :: !__res0;
+            ) nations;
+      ) suppliers;
   ) partsupp;
 List.rev !__res0)
 
 let grouped = (let __res1 = ref [] in
   List.iter (fun x ->
-      __res1 := [("part",g.key);("total",sum (let __res2 = ref [] in
+      __res1 := [("part",Obj.repr g.key);("total",Obj.repr (sum (let __res2 = ref [] in
   List.iter (fun r ->
       __res2 := r.value :: !__res2;
   ) g;
 List.rev !__res2)
-)] :: !__res1;
+))] :: !__res1;
   ) filtered;
 List.rev !__res1)
 

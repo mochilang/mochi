@@ -33,8 +33,24 @@ let slice lst i j =
 
 let string_slice s i j = String.sub s i (j - i)
 
-let nums = ref [1;2]
+let list_set lst idx value =
+  List.mapi (fun i v -> if i = idx then value else v) lst
+
+let rec map_set m k v =
+  match m with
+    | [] -> [(k,Obj.repr v)]
+    | (k2,v2)::tl -> if k2 = k then (k,Obj.repr v)::tl else (k2,v2)::map_set tl k v
+
+let map_get m k = Obj.obj (List.assoc k m)
+
+let list_union a b = List.sort_uniq compare (a @ b)
+let list_except a b = List.filter (fun x -> not (List.mem x b)) a
+let list_intersect a b = List.filter (fun x -> List.mem x b) a |> List.sort_uniq compare
+let list_union_all a b = a @ b
+let sum lst = List.fold_left (+) 0 lst
+
+let nums : int list ref = ref [1;2]
 
 let () =
-  nums := List.mapi (fun i v -> if i = 1 then 3 else v) !nums;
+  nums := list_set !nums 1 3;
   print_endline (__show (List.nth (!nums) 1));
