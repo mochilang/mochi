@@ -4,9 +4,9 @@ This directory contains Kotlin code compiled from Mochi programs in `tests/vm/va
 
 ## Progress
 
-Compiled: 54/97 programs
+Compiled: 84/97 programs
 
-Successfully ran: 48/97 programs
+Successfully ran: 78/97 programs
 
 ## Checklist
 
@@ -59,51 +59,51 @@ Successfully ran: 48/97 programs
 - [x] list_index.mochi
 - [x] list_nested_assign.mochi
 - [x] list_set_ops.mochi
-- [ ] load_yaml.mochi
+- [x] load_yaml.mochi
 - [x] map_assign.mochi
 - [x] map_in_operator.mochi
 - [x] map_index.mochi
-- [ ] map_int_key.mochi
-- [ ] map_literal_dynamic.mochi
-- [ ] map_membership.mochi
-- [ ] map_nested_assign.mochi
-- [ ] match_expr.mochi
-- [ ] match_full.mochi
-- [ ] math_ops.mochi
-- [ ] membership.mochi
-- [ ] min_max_builtin.mochi
+- [x] map_int_key.mochi
+- [x] map_literal_dynamic.mochi
+- [x] map_membership.mochi
+- [x] map_nested_assign.mochi
+- [x] match_expr.mochi
+- [x] match_full.mochi
+- [x] math_ops.mochi
+- [x] membership.mochi
+- [x] min_max_builtin.mochi
 - [ ] nested_function.mochi
 - [ ] order_by_map.mochi
 - [ ] outer_join.mochi
 - [ ] partial_application.mochi
-- [ ] print_hello.mochi
-- [ ] pure_fold.mochi
-- [ ] pure_global_fold.mochi
+- [x] print_hello.mochi
+- [x] pure_fold.mochi
+- [x] pure_global_fold.mochi
 - [ ] query_sum_select.mochi
-- [ ] record_assign.mochi
+- [x] record_assign.mochi
 - [ ] right_join.mochi
-- [ ] save_jsonl_stdout.mochi
-- [ ] short_circuit.mochi
-- [ ] slice.mochi
+- [x] save_jsonl_stdout.mochi
+- [x] short_circuit.mochi
+- [x] slice.mochi
 - [ ] sort_stable.mochi
-- [ ] str_builtin.mochi
+- [x] str_builtin.mochi
 - [ ] string_compare.mochi
-- [ ] string_concat.mochi
+- [x] string_concat.mochi
 - [ ] string_contains.mochi
-- [ ] string_in_operator.mochi
-- [ ] string_index.mochi
-- [ ] string_prefix_slice.mochi
-- [ ] substring_builtin.mochi
-- [ ] sum_builtin.mochi
+- [x] string_in_operator.mochi
+- [x] string_index.mochi
+- [x] string_prefix_slice.mochi
+- [x] substring_builtin.mochi
+- [x] sum_builtin.mochi
 - [ ] tail_recursion.mochi
 - [ ] test_block.mochi
 - [ ] tree_sum.mochi
 - [ ] two-sum.mochi
-- [ ] typed_let.mochi
-- [ ] typed_var.mochi
-- [ ] unary_neg.mochi
+- [x] typed_let.mochi
+- [x] typed_var.mochi
+- [x] unary_neg.mochi
 - [ ] update_stmt.mochi
-- [ ] user_type_literal.mochi
+- [x] user_type_literal.mochi
 - [x] values_builtin.mochi
-- [ ] var_assignment.mochi
-- [ ] while_loop.mochi
+- [x] var_assignment.mochi
+- [x] while_loop.mochi

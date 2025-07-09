@@ -55,6 +55,7 @@ func compileAndRun(t *testing.T, src string) (string, error) {
 	}
 
 	runCmd := exec.Command("java", "-jar", jarFile)
+	runCmd.Dir = filepath.Dir(filepath.Dir(src))
 	runOut, err := runCmd.CombinedOutput()
 	if err != nil {
 		writeError(outDir, base, srcFile, runOut)
