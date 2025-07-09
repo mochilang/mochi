@@ -30,16 +30,18 @@ type Compiler struct {
 // New creates a new Compiler instance.
 func New(env *types.Env) *Compiler {
 	return &Compiler{compiler: compiler{
-		structs:     make(map[string][]string),
-		structTypes: make(map[string]map[string]string),
-		variants:    make(map[string]string),
-		inout:       make(map[string][]bool),
-		funcArgs:    make(map[string][]string),
-		varTypes:    make(map[string]string),
-		swiftTypes:  make(map[string]string),
-		mapFields:   make(map[string]map[string]string),
-		groups:      make(map[string]bool),
-		helpers:     make(map[string]bool),
+		structs:         make(map[string][]string),
+		structTypes:     make(map[string]map[string]string),
+		variants:        make(map[string]string),
+		inout:           make(map[string][]bool),
+		funcArgs:        make(map[string][]string),
+		varTypes:        make(map[string]string),
+		swiftTypes:      make(map[string]string),
+		mapFields:       make(map[string]map[string]string),
+		groups:          make(map[string]bool),
+		groupElemType:   make(map[string]string),
+		groupElemFields: make(map[string]map[string]string),
+		helpers:         make(map[string]bool),
 	}}
 }
 
@@ -62,19 +64,21 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 }
 
 type compiler struct {
-	buf         strings.Builder
-	indent      int
-	structs     map[string][]string
-	structTypes map[string]map[string]string
-	variants    map[string]string
-	inout       map[string][]bool
-	funcArgs    map[string][]string
-	varTypes    map[string]string
-	swiftTypes  map[string]string
-	mapFields   map[string]map[string]string
-	groups      map[string]bool
-	helpers     map[string]bool
-	tupleMap    bool
+	buf             strings.Builder
+	indent          int
+	structs         map[string][]string
+	structTypes     map[string]map[string]string
+	variants        map[string]string
+	inout           map[string][]bool
+	funcArgs        map[string][]string
+	varTypes        map[string]string
+	swiftTypes      map[string]string
+	mapFields       map[string]map[string]string
+	groups          map[string]bool
+	groupElemType   map[string]string
+	groupElemFields map[string]map[string]string
+	helpers         map[string]bool
+	tupleMap        bool
 }
 
 func (c *compiler) program(p *parser.Program) error {
@@ -1428,7 +1432,8 @@ func (c *compiler) groupQuery(q *parser.QueryExpr) (string, error) {
 	savedFields := c.mapFields
 	c.varTypes = copyMap(c.varTypes)
 	c.mapFields = copyMap(c.mapFields)
-	c.varTypes[q.Var] = c.elementType(q.Source)
+	elemType := c.elementType(q.Source)
+	c.varTypes[q.Var] = elemType
 	if fields := c.elementFieldTypes(q.Source); fields != nil {
 		c.mapFields[q.Var] = fields
 	}
@@ -1454,6 +1459,10 @@ func (c *compiler) groupQuery(q *parser.QueryExpr) (string, error) {
 	c.varTypes[gname] = ""
 	c.mapFields[gname] = nil
 	c.groups[gname] = true
+	c.groupElemType[gname] = elemType
+	if fields := c.elementFieldTypes(q.Source); fields != nil {
+		c.groupElemFields[gname] = fields
+	}
 	var having string
 	if q.Group.Having != nil {
 		hv, err := c.expr(q.Group.Having)
@@ -1464,15 +1473,15 @@ func (c *compiler) groupQuery(q *parser.QueryExpr) (string, error) {
 		}
 		having = hv
 	}
-       prevTuple := c.tupleMap
-       c.tupleMap = true
-       sel, err := c.expr(q.Select)
-       c.tupleMap = prevTuple
-       if err != nil {
-               c.varTypes = savedVars
-               c.mapFields = savedFields
-               return "", err
-       }
+	prevTuple := c.tupleMap
+	c.tupleMap = true
+	sel, err := c.expr(q.Select)
+	c.tupleMap = prevTuple
+	if err != nil {
+		c.varTypes = savedVars
+		c.mapFields = savedFields
+		return "", err
+	}
 	sortExpr := ""
 	if q.Sort != nil {
 		prev := c.tupleMap
@@ -1537,6 +1546,8 @@ func (c *compiler) groupQuery(q *parser.QueryExpr) (string, error) {
 	b.WriteString("    return _tmp.map { " + gname + " in " + sel + " }\n")
 	b.WriteString("}()")
 	delete(c.groups, gname)
+	delete(c.groupElemType, gname)
+	delete(c.groupElemFields, gname)
 	return b.String(), nil
 }
 
@@ -1553,18 +1564,18 @@ func (c *compiler) joinQuery(q *parser.QueryExpr) (string, error) {
 		}
 		fromSrcs[i] = fs
 	}
-       joinSrcs := make([]string, len(q.Joins))
-       joinSides := make([]string, len(q.Joins))
-       for i, j := range q.Joins {
-               js, err := c.expr(j.Src)
-               if err != nil {
-                       return "", err
-               }
-               joinSrcs[i] = js
-               if j.Side != nil {
-                       joinSides[i] = *j.Side
-               }
-       }
+	joinSrcs := make([]string, len(q.Joins))
+	joinSides := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		js, err := c.expr(j.Src)
+		if err != nil {
+			return "", err
+		}
+		joinSrcs[i] = js
+		if j.Side != nil {
+			joinSides[i] = *j.Side
+		}
+	}
 	savedVars := c.varTypes
 	savedFields := c.mapFields
 	c.varTypes = copyMap(c.varTypes)
@@ -1580,29 +1591,29 @@ func (c *compiler) joinQuery(q *parser.QueryExpr) (string, error) {
 		}
 		_ = fromSrcs[i]
 	}
-       for i, j := range q.Joins {
-               c.varTypes[j.Var] = c.elementType(j.Src)
-               if fields := c.elementFieldTypes(j.Src); fields != nil {
-                       c.mapFields[j.Var] = fields
-               }
-               _ = joinSrcs[i]
-       }
+	for i, j := range q.Joins {
+		c.varTypes[j.Var] = c.elementType(j.Src)
+		if fields := c.elementFieldTypes(j.Src); fields != nil {
+			c.mapFields[j.Var] = fields
+		}
+		_ = joinSrcs[i]
+	}
 
-       joinOns := make([]string, len(q.Joins))
-       for i, j := range q.Joins {
-               on, err := c.expr(j.On)
-               if err != nil {
-                       c.varTypes = savedVars
-                       c.mapFields = savedFields
-                       return "", err
-               }
-               joinOns[i] = on
-       }
-       if len(q.Froms) == 0 && len(q.Joins) == 1 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && q.Where == nil && joinSides[0] != "" {
-               c.varTypes = savedVars
-               c.mapFields = savedFields
-               return c.joinSingleSide(q, src, joinSrcs[0], joinOns[0], joinSides[0])
-       }
+	joinOns := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		on, err := c.expr(j.On)
+		if err != nil {
+			c.varTypes = savedVars
+			c.mapFields = savedFields
+			return "", err
+		}
+		joinOns[i] = on
+	}
+	if len(q.Froms) == 0 && len(q.Joins) == 1 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && q.Where == nil && joinSides[0] != "" {
+		c.varTypes = savedVars
+		c.mapFields = savedFields
+		return c.joinSingleSide(q, src, joinSrcs[0], joinOns[0], joinSides[0])
+	}
 	cond := ""
 	if q.Where != nil {
 		ccond, err := c.expr(q.Where)
@@ -1613,15 +1624,15 @@ func (c *compiler) joinQuery(q *parser.QueryExpr) (string, error) {
 		}
 		cond = ccond
 	}
-       prevTuple := c.tupleMap
-       c.tupleMap = true
-       sel, err := c.expr(q.Select)
-       c.tupleMap = prevTuple
-       if err != nil {
-               c.varTypes = savedVars
-               c.mapFields = savedFields
-               return "", err
-       }
+	prevTuple := c.tupleMap
+	c.tupleMap = true
+	sel, err := c.expr(q.Select)
+	c.tupleMap = prevTuple
+	if err != nil {
+		c.varTypes = savedVars
+		c.mapFields = savedFields
+		return "", err
+	}
 	c.varTypes = savedVars
 	c.mapFields = savedFields
 
@@ -2040,9 +2051,21 @@ func (c *compiler) elementType(e *parser.Expr) string {
 			if t, ok := c.varTypes[sel.Root]; ok && strings.HasPrefix(t, "list_") {
 				return strings.TrimPrefix(t, "list_")
 			}
+			if c.groups[sel.Root] {
+				if t, ok2 := c.groupElemType[sel.Root]; ok2 {
+					return t
+				}
+			}
 		}
 		if e.Binary.Left.Value.Target.List != nil && len(e.Binary.Left.Value.Target.List.Elems) > 0 {
 			return c.exprType(e.Binary.Left.Value.Target.List.Elems[0])
+		}
+	}
+	if sel := e.Binary.Left.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 {
+		if c.groups[sel.Root] {
+			if t, ok := c.groupElemType[sel.Root]; ok {
+				return t
+			}
 		}
 	}
 	return typ
@@ -2056,6 +2079,11 @@ func (c *compiler) elementFieldTypes(e *parser.Expr) map[string]string {
 	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
 		if t, ok := c.mapFields[p.Target.Selector.Root]; ok {
 			return t
+		}
+		if c.groups[p.Target.Selector.Root] {
+			if t, ok2 := c.groupElemFields[p.Target.Selector.Root]; ok2 {
+				return t
+			}
 		}
 	}
 	if p.Target.List != nil && len(p.Target.List.Elems) > 0 {
