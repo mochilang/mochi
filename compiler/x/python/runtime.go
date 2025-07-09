@@ -153,10 +153,13 @@ var helperLoad = "def _load(path, opts):\n" +
 	"        if os.path.exists(base):\n" +
 	"            path = base\n" +
 	"        elif os.environ.get('MOCHI_ROOT'):\n" +
-	"            clean = path\n" +
-	"            while clean.startswith('../'):\n" +
-	"                clean = clean[3:]\n" +
-	"            path = os.path.join(os.environ.get('MOCHI_ROOT'), clean)\n" +
+	"            root = os.environ.get('MOCHI_ROOT')\n" +
+	"            p = os.path.normpath(os.path.join(root, path))\n" +
+	"            if not os.path.exists(p):\n" +
+	"                p2 = os.path.normpath(os.path.join(root, 'tests', path))\n" +
+	"                if os.path.exists(p2):\n" +
+	"                    p = p2\n" +
+	"            path = p\n" +
 	"    f = sys.stdin if path is None or path == '-' else open(path, 'r')\n" +
 	"    try:\n" +
 	"        if fmt == 'tsv':\n" +
