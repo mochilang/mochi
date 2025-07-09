@@ -6,37 +6,6 @@ import "sort"
 
 // Runtime helper functions injected into generated Lua programs.
 const (
-	helperPrint = "function __print(...)\n" +
-		"    local n = select('#', ...)\n" +
-		"    local args = {...}\n" +
-		"    local function to_str(v)\n" +
-		"        if v == nil then return '<nil>' end\n" +
-		"        if type(v) == 'table' then\n" +
-		"            if v[1] ~= nil or #v > 0 then\n" +
-		"                local parts = {}\n" +
-		"                for i,x in ipairs(v) do parts[#parts+1] = tostring(x) end\n" +
-		"                return table.concat(parts, ' ')\n" +
-		"            end\n" +
-		"        end\n" +
-		"        if type(v) == 'number' and v == math.floor(v) then\n" +
-		"            return tostring(math.floor(v))\n" +
-		"        end\n" +
-		"        return tostring(v)\n" +
-		"    end\n" +
-		"    for i=1,n do\n" +
-		"        local a = args[i]\n" +
-		"        if i > 1 then\n" +
-		"            if i == n and (a == '' or a == nil) then\n" +
-		"                -- no extra space before empty last arg\n" +
-		"            else\n" +
-		"                io.write(' ')\n" +
-		"            end\n" +
-		"        end\n" +
-		"        io.write(to_str(a))\n" +
-		"    end\n" +
-		"    io.write('\\n')\n" +
-		"end\n"
-
 	helperRunTests = "function __run_tests(tests)\n" +
 		"    local function format_duration(d)\n" +
 		"        if d < 1e-6 then return string.format('%dns', math.floor(d*1e9)) end\n" +
@@ -853,7 +822,6 @@ const (
 )
 
 var helperMap = map[string]string{
-	"print":          helperPrint,
 	"run_tests":      helperRunTests,
 	"iter":           helperIter,
 	"div":            helperDiv,
