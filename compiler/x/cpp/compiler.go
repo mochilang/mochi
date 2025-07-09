@@ -400,6 +400,9 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 				c.vars[st.Name] = "string"
 			}
 		}
+		if c.vars[src] == "map" {
+			c.vars[st.Name] = "pair"
+		}
 	}
 	c.indent++
 	for _, s := range st.Body {
@@ -491,6 +494,8 @@ func (c *Compiler) compilePrint(args []*parser.Expr) error {
 			c.buf.WriteString("for(size_t i=0;i<" + tmp + ".size();++i){ if(i) std::cout<<' '; std::cout << std::boolalpha << " + tmp + "[i]; } ")
 		case "bool":
 			c.buf.WriteString("std::cout << std::boolalpha << (" + s + "); ")
+		case "pair":
+			c.buf.WriteString("std::cout << std::boolalpha << " + s + ".first << ' ' << " + s + ".second; ")
 		default:
 			c.buf.WriteString("std::cout << std::boolalpha << " + s + "; ")
 		}

@@ -11,7 +11,7 @@ int main() {
                                                 {std::string("b"), 2}};
   for (auto k : m) {
     {
-      std::cout << std::boolalpha << k;
+      std::cout << std::boolalpha << k.first << ' ' << k.second;
       std::cout << std::endl;
     }
   }
