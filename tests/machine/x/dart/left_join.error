@@ -1,4 +1,0 @@
-line 13: exit status 254
-    for (var o in orders) {
-      _q0.add({'orderId': o['id'], 'customer': c, 'total': o['total']});
-    }

@@ -590,12 +590,12 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			res = fmt.Sprintf("_in(%s, %s)", res, r)
 		case "union":
 			if op.All {
-				res = fmt.Sprintf("List.from(%s)..addAll(%s)", res, r)
+				res = fmt.Sprintf("(List.from(%s)..addAll(%s))", res, r)
 			} else {
 				res = fmt.Sprintf("{...%s, ...%s}.toList()", res, r)
 			}
 		case "except":
-			res = fmt.Sprintf("List.from(%s)..removeWhere((x) => %s.contains(x))", res, r)
+			res = fmt.Sprintf("(List.from(%s)..removeWhere((x) => %s.contains(x)))", res, r)
 		case "intersect":
 			res = fmt.Sprintf("%s.where((x) => %s.contains(x)).toList()", res, r)
 		default:

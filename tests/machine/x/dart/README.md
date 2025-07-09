@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs. Successful runs have a .out file, failures a .error file.
 
-Compiled programs: 76/97
+Compiled programs: 86/97
 
 Checklist:
 
@@ -31,9 +31,9 @@ Checklist:
 - [x] group_by
 - [x] group_by_conditional_sum
 - [x] group_by_having
-- [ ] group_by_join
+- [x] group_by_join
 - [ ] group_by_left_join
-- [ ] group_by_multi_join
+- [x] group_by_multi_join
 - [ ] group_by_multi_join_sort
 - [x] group_by_sort
 - [ ] group_items_iteration
@@ -42,11 +42,11 @@ Checklist:
 - [x] if_then_else_nested
 - [x] in_operator
 - [x] in_operator_extended
-- [ ] inner_join
-- [ ] join_multi
+- [x] inner_join
+- [x] join_multi
 - [x] json_builtin
-- [ ] left_join
-- [ ] left_join_multi
+- [x] left_join
+- [x] left_join_multi
 - [x] len_builtin
 - [x] len_map
 - [x] len_string
@@ -54,7 +54,7 @@ Checklist:
 - [x] list_assign
 - [x] list_index
 - [x] list_nested_assign
-- [ ] list_set_ops
+- [x] list_set_ops
 - [ ] load_yaml
 - [x] map_assign
 - [x] map_in_operator
@@ -68,17 +68,17 @@ Checklist:
 - [x] math_ops
 - [x] membership
 - [x] min_max_builtin
-- [ ] nested_function
+- [x] nested_function
 - [ ] order_by_map
 - [ ] outer_join
 - [ ] partial_application
 - [x] print_hello
 - [x] pure_fold
-- [ ] pure_global_fold
+- [x] pure_global_fold
 - [ ] query_sum_select
 - [x] record_assign
 - [ ] right_join
-- [ ] save_jsonl_stdout
+- [x] save_jsonl_stdout
 - [x] short_circuit
 - [ ] slice
 - [x] sort_stable
@@ -106,25 +106,15 @@ Checklist:
 
 ## Remaining Tasks
 
-- [ ] group_by_join
 - [ ] group_by_left_join
-- [ ] group_by_multi_join
 - [ ] group_by_multi_join_sort
 - [ ] group_items_iteration
-- [ ] inner_join
-- [ ] join_multi
-- [ ] left_join
-- [ ] left_join_multi
-- [ ] list_set_ops
 - [ ] load_yaml
 - [x] map_nested_assign
-- [ ] nested_function
 - [ ] order_by_map
 - [ ] outer_join
 - [ ] partial_application
-- [ ] pure_global_fold
 - [ ] query_sum_select
 - [ ] right_join
-- [ ] save_jsonl_stdout
 - [ ] slice
 - [ ] tree_sum
