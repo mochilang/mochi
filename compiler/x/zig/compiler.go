@@ -1990,7 +1990,7 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 	keyType := "i32"
 	valType := "i32"
 	if len(m.Items) > 0 {
-		if c.isStringExpr(m.Items[0].Key) {
+		if _, ok := simpleStringKey(m.Items[0].Key); ok || c.isStringExpr(m.Items[0].Key) {
 			keyType = "[]const u8"
 		} else if c.isFloatExpr(m.Items[0].Key) {
 			keyType = "f64"
@@ -2009,15 +2009,21 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 	lbl := c.newLabel()
 	b.WriteString("(" + lbl + ": { var m = std.AutoHashMap(" + keyType + ", " + valType + ").init(std.heap.page_allocator); ")
 	for _, it := range m.Items {
-		k, err := c.compileExpr(it.Key, false)
-		if err != nil {
-			return "", err
+		var keyExpr string
+		if k, ok := simpleStringKey(it.Key); ok {
+			keyExpr = fmt.Sprintf("\"%s\"", sanitizeName(k))
+		} else {
+			ke, err := c.compileExpr(it.Key, false)
+			if err != nil {
+				return "", err
+			}
+			keyExpr = ke
 		}
 		v, err := c.compileExpr(it.Value, false)
 		if err != nil {
 			return "", err
 		}
-		b.WriteString("m.put(" + k + ", " + v + ") catch unreachable; ")
+		b.WriteString("m.put(" + keyExpr + ", " + v + ") catch unreachable; ")
 	}
 	b.WriteString("break :" + lbl + " m; })")
 	return b.String(), nil
