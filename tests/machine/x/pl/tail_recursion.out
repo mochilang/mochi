@@ -1,0 +1,4 @@
+ERROR: /workspace/mochi/tests/machine/x/pl/tail_recursion.pl:2:7: Syntax error: Operator expected
+ERROR: /workspace/mochi/tests/machine/x/pl/tail_recursion.pl:5:6: Syntax error: Operator expected
+ERROR: /workspace/mochi/tests/machine/x/pl/tail_recursion.pl:12:10: Syntax error: Operator expected
+

@@ -15,34 +15,6 @@ import (
 	"mochi/parser"
 )
 
-var supported = map[string]bool{
-	"print_hello":         true,
-	"let_and_print":       true,
-	"var_assignment":      true,
-	"for_loop":            true,
-	"for_list_collection": true,
-	"append_builtin":      true,
-	"avg_builtin":         true,
-	"basic_compare":       true,
-	"binary_precedence":   true,
-	"math_ops":            true,
-	"unary_neg":           true,
-	"len_builtin":         true,
-	"len_string":          true,
-	"sum_builtin":         true,
-	"min_max_builtin":     true,
-	"count_builtin":       true,
-	"bool_chain":          true,
-	"fun_call":            true,
-	"fun_three_args":      true,
-	"string_concat":       true,
-	"typed_var":           true,
-	"typed_let":           true,
-	"if_then_else":        true,
-	"if_then_else_nested": true,
-	"if_else":             true,
-}
-
 func TestPrologCompiler(t *testing.T) {
 	root := findRepoRoot(t)
 	pattern := filepath.Join(root, "tests", "vm", "valid", "*.mochi")
@@ -54,10 +26,6 @@ func TestPrologCompiler(t *testing.T) {
 	os.MkdirAll(outDir, 0o755)
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		if !supported[name] {
-			t.Logf("skip %s", name)
-			continue
-		}
 		t.Run(name, func(t *testing.T) { compileAndRun(t, src, outDir, name) })
 	}
 }

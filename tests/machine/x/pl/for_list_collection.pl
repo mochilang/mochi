@@ -1,8 +1,15 @@
 :- style_check(-singleton).
 :- initialization(main, main).
 main :-
-    (member(N, [1, 2, 3]),
-        writeln(N),
-        fail
-    ; true),
-    true.
+    catch(
+        (
+            member(N, [1, 2, 3]),
+                catch(
+                    (
+                        writeln(N),
+                        true
+                    ), continue, true),
+                    fail
+                ; true
+            ), break, true),
+            true.
