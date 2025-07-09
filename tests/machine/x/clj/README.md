@@ -100,3 +100,10 @@ Compiled programs: 97/97 successful.
 - [x] right_join.mochi
 - [x] save_jsonl_stdout.mochi
 - [x] values_builtin.mochi
+
+## Status
+All example programs compile and run successfully.
+
+## Remaining tasks
+None
+
