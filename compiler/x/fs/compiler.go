@@ -17,9 +17,12 @@ import (
 // constructs required by a few simple programs.
 type Compiler struct {
 	buf     bytes.Buffer
+	prelude bytes.Buffer
 	indent  int
 	vars    map[string]string
 	structs map[string]map[string]string
+	anon    map[string]string
+	anonCnt int
 }
 
 func defaultValue(typ string) string {
@@ -59,26 +62,38 @@ func New() *Compiler {
 	return &Compiler{
 		vars:    make(map[string]string),
 		structs: make(map[string]map[string]string),
+		anon:    make(map[string]string),
 	}
 }
 
 // Compile translates the given Mochi program into F# source code.
 func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.buf.Reset()
+	c.prelude.Reset()
 	c.indent = 0
 	c.vars = make(map[string]string)
-	c.writeln("open System")
-	c.writeln("open System.Text.Json")
-	c.writeln("")
-	c.writeln("exception Break")
-	c.writeln("exception Continue")
-	c.writeln("")
+	c.structs = make(map[string]map[string]string)
+	c.anon = make(map[string]string)
+	c.anonCnt = 0
+
+	var header bytes.Buffer
+	header.WriteString("open System\n")
+	header.WriteString("open System.Text.Json\n")
+	header.WriteString("\n")
+	header.WriteString("exception Break\n")
+	header.WriteString("exception Continue\n")
+	header.WriteString("\n")
+	c.buf.Write(header.Bytes())
 	for _, s := range p.Statements {
 		if err := c.compileStmt(s); err != nil {
 			return nil, err
 		}
 	}
-	return c.buf.Bytes(), nil
+	var final bytes.Buffer
+	final.Write(header.Bytes())
+	final.Write(c.prelude.Bytes())
+	final.Write(c.buf.Bytes()[header.Len():])
+	return final.Bytes(), nil
 }
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
@@ -818,17 +833,37 @@ func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
 
 func (c *Compiler) compileStruct(s *parser.StructLiteral) (string, error) {
 	fields := make([]string, len(s.Fields))
+	names := make([]string, len(s.Fields))
+	types := make([]string, len(s.Fields))
+	typeMap := make(map[string]string)
 	for i, f := range s.Fields {
 		v, err := c.compileExpr(f.Value)
 		if err != nil {
 			return "", err
 		}
+		t := c.inferType(f.Value)
 		fields[i] = fmt.Sprintf("%s = %s", f.Name, v)
+		names[i] = f.Name
+		types[i] = t
+		typeMap[f.Name] = t
 	}
 	if s.Name != "" {
 		return fmt.Sprintf("{ %s }", strings.Join(fields, "; ")), nil
 	}
-	return fmt.Sprintf("{| %s |}", strings.Join(fields, "; ")), nil
+	key := strings.Join(names, ",") + "|" + strings.Join(types, ",")
+	typ, ok := c.anon[key]
+	if !ok {
+		c.anonCnt++
+		typ = fmt.Sprintf("Anon%d", c.anonCnt)
+		c.anon[key] = typ
+		c.structs[typ] = typeMap
+		c.prelude.WriteString(fmt.Sprintf("type %s = {\n", typ))
+		for i, n := range names {
+			c.prelude.WriteString(fmt.Sprintf("    %s: %s\n", n, types[i]))
+		}
+		c.prelude.WriteString("}\n")
+	}
+	return fmt.Sprintf("{ %s }", strings.Join(fields, "; ")), nil
 }
 
 func (c *Compiler) compileMapKey(e *parser.Expr) (string, error) {
@@ -901,8 +936,8 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			b.WriteString("  ")
 		}
 		b.WriteString(l)
+		b.WriteByte(' ')
 	}
-	b.WriteByte(' ')
 	if cond != "" {
 		b.WriteString(cond)
 	}
@@ -917,9 +952,9 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		}
 		if strings.HasPrefix(s, "-") {
 			s = strings.TrimPrefix(s, "-")
-			expr = fmt.Sprintf("%s |> List.sortByDescending (fun _ -> %s)", expr, s)
+			expr = fmt.Sprintf("%s |> List.sortByDescending (fun %s -> %s)", expr, q.Var, s)
 		} else {
-			expr = fmt.Sprintf("%s |> List.sortBy (fun _ -> %s)", expr, s)
+			expr = fmt.Sprintf("%s |> List.sortBy (fun %s -> %s)", expr, q.Var, s)
 		}
 	}
 	if q.Skip != nil {
@@ -1079,6 +1114,39 @@ func (c *Compiler) isStringPrimary(p *parser.Primary) bool {
 		return c.isStringExpr(p.If.Then) && c.isStringExpr(p.If.Else)
 	}
 	return false
+}
+
+func (c *Compiler) inferType(e *parser.Expr) string {
+	if e == nil || e.Binary == nil {
+		return "obj"
+	}
+	if isBoolExpr(e) {
+		return "bool"
+	}
+	if c.isStringExpr(e) {
+		return "string"
+	}
+	if p := rootPrimary(e); p != nil {
+		if p.Lit != nil {
+			if p.Lit.Int != nil {
+				return "int"
+			}
+			if p.Lit.Float != nil {
+				return "float"
+			}
+		}
+		if p.Selector != nil {
+			if t, ok := c.vars[p.Selector.Root]; ok {
+				if fields, ok := c.structs[t]; ok && len(p.Selector.Tail) == 1 {
+					if ft, ok := fields[p.Selector.Tail[0]]; ok {
+						return ft
+					}
+				}
+				return t
+			}
+		}
+	}
+	return "obj"
 }
 
 func repoRoot() (string, error) {
