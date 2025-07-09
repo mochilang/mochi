@@ -1,5 +1,5 @@
-| people adults a |
-people := load value: "../interpreter/valid/people.yaml" value: Dictionary newFrom: {format -> 'yaml'}.
+| adults people |
+people := ((Main _load: '../interpreter/valid/people.yaml' opts: Dictionary newFrom: {format -> 'yaml'}) collect: [:it | Person newFrom: it]).
 adults := [ | tmp |
   tmp := OrderedCollection new.
   people do: [:p |
@@ -9,7 +9,7 @@ adults := [ | tmp |
   ].
   tmp
 ] value.
-adults do: [:a |.
-Transcript show: (a at: 'name') printString; show: ' '; show: (a at: 'email') printString; cr.
-].
+adults do: [:a |
+  Transcript show: (a.name) printString; show: ' '; show: (a.email) printString; cr.
+]
 .
