@@ -4,8 +4,8 @@ This directory contains OCaml source code generated from Mochi programs and the 
 
 ## Summary
 
-- 39/97 programs compiled and executed successfully.
-- 58 programs failed to compile or run.
+- 40/97 programs compiled and executed successfully.
+- 57 programs failed to compile or run.
 
 ### Successful
 - append_builtin
@@ -44,12 +44,12 @@ This directory contains OCaml source code generated from Mochi programs and the 
 - while_loop
 - break_continue
 - cast_string_to_int
+- cast_struct
 - map_assign
 - map_index
 - map_literal_dynamic
 
 ### Failed
-- cast_struct
 - cross_join
 - cross_join_filter
 - cross_join_triple

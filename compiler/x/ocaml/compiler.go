@@ -18,11 +18,12 @@ type Compiler struct {
 	vars   map[string]bool // variables declared with 'var'
 
 	loop int
+	env  *types.Env
 }
 
 // New creates a compiler instance.
-func New(_ *types.Env) *Compiler {
-	return &Compiler{vars: make(map[string]bool)}
+func New(env *types.Env) *Compiler {
+	return &Compiler{vars: make(map[string]bool), env: env}
 }
 
 // Compile emits OCaml code for prog. Only a few constructs are supported.
@@ -59,9 +60,13 @@ func (c *Compiler) Compile(prog *parser.Program, _ string) ([]byte, error) {
 	c.writeln("exception Continue")
 	c.buf.WriteByte('\n')
 
-	// first emit function and variable declarations
+	// first emit type, function and variable declarations
 	for _, s := range prog.Statements {
 		switch {
+		case s.Type != nil:
+			if err := c.compileTypeDecl(s.Type); err != nil {
+				return nil, err
+			}
 		case s.Fun != nil:
 			if err := c.compileFun(s.Fun); err != nil {
 				return nil, err
@@ -82,7 +87,7 @@ func (c *Compiler) Compile(prog *parser.Program, _ string) ([]byte, error) {
 	c.writeln("let () =")
 	c.indent++
 	for _, s := range prog.Statements {
-		if s.Fun != nil || s.Let != nil || s.Var != nil {
+		if s.Fun != nil || s.Let != nil || s.Var != nil || s.Type != nil {
 			continue
 		}
 		if err := c.compileStmt(s); err != nil {
@@ -168,6 +173,24 @@ func (c *Compiler) compileGlobalVar(v *parser.VarStmt) error {
 	}
 	c.vars[v.Name] = true
 	c.writeln(fmt.Sprintf("let %s = ref %s", v.Name, val))
+	return nil
+}
+
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	if len(t.Variants) > 0 || len(t.Members) == 0 {
+		// unions or empty types unsupported
+		return nil
+	}
+	fields := make([]string, 0, len(t.Members))
+	for _, m := range t.Members {
+		if m.Field == nil {
+			continue
+		}
+		typ := c.typeRef(m.Field.Type)
+		fields = append(fields, fmt.Sprintf("%s : %s", m.Field.Name, typ))
+	}
+	name := strings.ToLower(t.Name)
+	c.writeln(fmt.Sprintf("type %s = { %s }", name, strings.Join(fields, "; ")))
 	return nil
 }
 
@@ -415,7 +438,15 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				case "int":
 					val = fmt.Sprintf("int_of_string %s", val)
 				default:
-					return "", fmt.Errorf("unsupported cast")
+					if p.Target.Map != nil {
+						rec, err := c.recordLiteral(p.Target.Map)
+						if err != nil {
+							return "", err
+						}
+						val = rec
+					} else {
+						return "", fmt.Errorf("unsupported cast")
+					}
 				}
 			} else {
 				return "", fmt.Errorf("unsupported cast")
@@ -425,6 +456,22 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		}
 	}
 	return val, nil
+}
+
+func (c *Compiler) recordLiteral(m *parser.MapLiteral) (string, error) {
+	fields := make([]string, len(m.Items))
+	for i, it := range m.Items {
+		key, ok := stringConst(it.Key)
+		if !ok {
+			return "", fmt.Errorf("unsupported struct key")
+		}
+		v, err := c.compileExpr(it.Value)
+		if err != nil {
+			return "", err
+		}
+		fields[i] = fmt.Sprintf("%s = %s", key, v)
+	}
+	return "{ " + strings.Join(fields, "; ") + " }", nil
 }
 
 func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
@@ -598,6 +645,27 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	return nil
 }
 
+func (c *Compiler) typeRef(t *parser.TypeRef) string {
+	if t == nil {
+		return "unit"
+	}
+	if t.Simple != nil {
+		switch *t.Simple {
+		case "int":
+			return "int"
+		case "float":
+			return "float"
+		case "bool":
+			return "bool"
+		case "string":
+			return "string"
+		default:
+			return strings.ToLower(*t.Simple)
+		}
+	}
+	return "unit"
+}
+
 func (c *Compiler) writeln(s string) {
 	for i := 0; i < c.indent; i++ {
 		c.buf.WriteString("  ")
@@ -686,4 +754,18 @@ func isStringUnary(u *parser.Unary) bool {
 		return true
 	}
 	return false
+}
+
+func stringConst(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || u.Value.Target == nil {
+		return "", false
+	}
+	if u.Value.Target.Lit != nil && u.Value.Target.Lit.Str != nil {
+		return *u.Value.Target.Lit.Str, true
+	}
+	return "", false
 }
