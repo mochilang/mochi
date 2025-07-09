@@ -777,6 +777,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileLoadExpr(p.Load)
 	case p.Save != nil:
 		return c.compileSaveExpr(p.Save)
+	case p.Match != nil:
+		return c.compileMatchExpr(p.Match)
 	case p.Group != nil:
 		e, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -1216,6 +1218,53 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 		return fmt.Sprintf("File('%s').writeAsStringSync(jsonEncode(%s))", path, src), nil
 	}
 	return "null", fmt.Errorf("unsupported save format")
+}
+
+func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
+	target, err := c.compileExpr(m.Target)
+	if err != nil {
+		return "", err
+	}
+	var b strings.Builder
+	b.WriteString("(() {\n")
+	b.WriteString("  var _t = " + target + ";\n")
+	for i, cs := range m.Cases {
+		pat, err := c.compileExpr(cs.Pattern)
+		if err != nil {
+			return "", err
+		}
+		res, err := c.compileExpr(cs.Result)
+		if err != nil {
+			return "", err
+		}
+		if isUnderscoreExpr(cs.Pattern) {
+			b.WriteString("  else {\n    return " + res + ";\n  }\n")
+			continue
+		}
+		if i == 0 {
+			b.WriteString("  if (_t == " + pat + ") {\n    return " + res + ";\n  }")
+		} else {
+			b.WriteString(" else if (_t == " + pat + ") {\n    return " + res + ";\n  }")
+		}
+	}
+	b.WriteString("  return null;\n")
+	b.WriteString("})()")
+	return b.String(), nil
+}
+
+func isUnderscoreExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Selector == nil || len(p.Target.Selector.Tail) != 0 {
+		return false
+	}
+	return p.Target.Selector.Root == "_"
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) string {
