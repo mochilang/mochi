@@ -16,13 +16,19 @@ type Compiler struct {
 	helpers         map[string]bool
 	vars            map[string]string
 	funRet          map[string]string
+	funSigs         map[string]*funSig
 	types           map[string]*parser.TypeDecl
 	needFuncImports bool
 	tmpCount        int
 }
 
+type funSig struct {
+	params []*parser.Param
+	ret    *parser.TypeRef
+}
+
 func New() *Compiler {
-	return &Compiler{buf: new(bytes.Buffer), helpers: make(map[string]bool), vars: make(map[string]string), funRet: make(map[string]string), types: make(map[string]*parser.TypeDecl), tmpCount: 0}
+	return &Compiler{buf: new(bytes.Buffer), helpers: make(map[string]bool), vars: make(map[string]string), funRet: make(map[string]string), funSigs: make(map[string]*funSig), types: make(map[string]*parser.TypeDecl), tmpCount: 0}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -62,6 +68,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 		if s.Fun != nil {
 			c.funRet[s.Fun.Name] = c.typeName(s.Fun.Return)
+			c.funSigs[s.Fun.Name] = &funSig{params: s.Fun.Params, ret: s.Fun.Return}
 			continue
 		}
 		if err := c.compileStmt(s); err != nil {
@@ -337,6 +344,15 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 		return c.typeName(&parser.TypeRef{Simple: litTypeName(p)})
 	}
 	if p != nil && p.Call != nil {
+		if sig, ok := c.funSigs[p.Call.Func]; ok {
+			if len(p.Call.Args) < len(sig.params) {
+				if len(sig.params)-len(p.Call.Args) == 1 && sig.ret != nil && sig.ret.Simple != nil && *sig.ret.Simple == "int" && sig.params[len(p.Call.Args)].Type != nil && sig.params[len(p.Call.Args)].Type.Simple != nil && *sig.params[len(p.Call.Args)].Type.Simple == "int" {
+					c.needFuncImports = true
+					return "IntUnaryOperator"
+				}
+				return "Object"
+			}
+		}
 		if t, ok := c.funRet[p.Call.Func]; ok {
 			return t
 		}
@@ -897,7 +913,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 				args = append(args, arg)
 			}
-			val = fmt.Sprintf("%s(%s)", val, strings.Join(args, ", "))
+			if typ == "IntUnaryOperator" {
+				val = fmt.Sprintf("%s.applyAsInt(%s)", val, strings.Join(args, ", "))
+			} else {
+				val = fmt.Sprintf("%s(%s)", val, strings.Join(args, ", "))
+			}
 		case op.Cast != nil:
 			t := c.typeName(op.Cast.Type)
 			if _, ok := c.types[t]; ok && p.Target.Map != nil {
@@ -1155,6 +1175,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", err
 			}
 			args = append(args, arg)
+		}
+		if sig, ok := c.funSigs[p.Call.Func]; ok && len(args) < len(sig.params) {
+			remain := sig.params[len(args):]
+			if len(remain) == 1 {
+				param := remain[0].Name
+				callArgs := append(append([]string{}, args...), param)
+				c.needFuncImports = true
+				return fmt.Sprintf("%s -> %s(%s)", param, p.Call.Func, strings.Join(callArgs, ", ")), nil
+			}
+			return "", fmt.Errorf("partial application unsupported")
 		}
 		if t, ok := c.vars[p.Call.Func]; ok && t == "IntUnaryOperator" {
 			return fmt.Sprintf("%s.applyAsInt(%s)", p.Call.Func, strings.Join(args, ", ")), nil
