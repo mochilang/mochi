@@ -1700,6 +1700,17 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	aggFn := ""
+	if call, ok := callPattern(q.Select); ok && len(call.Args) == 1 {
+		fn := call.Func
+		if fn == "sum" || fn == "count" || fn == "avg" || fn == "min" || fn == "max" {
+			aggFn = fn
+			selExpr, err = c.compileExpr(call.Args[0])
+			if err != nil {
+				return "", err
+			}
+		}
+	}
 	v := sanitizeName(q.Var)
 	varParts := []string{fmt.Sprintf("%s %s", v, src)}
 	varNames := []string{q.Var}
@@ -1765,14 +1776,9 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	expr := b.String()
 
 	// Handle simple aggregations like sum(), count(), avg(), min(), max()
-	if len(q.Joins) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
-		if call, ok := callPattern(q.Select); ok && len(call.Args) == 1 {
-			fn := call.Func
-			if fn == "sum" || fn == "count" || fn == "avg" || fn == "min" || fn == "max" {
-				c.use("_" + fn)
-				return fmt.Sprintf("(_%s %s)", fn, expr), nil
-			}
-		}
+	if aggFn != "" && len(q.Joins) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		c.use("_" + aggFn)
+		return fmt.Sprintf("(_%s %s)", aggFn, expr), nil
 	}
 	return expr, nil
 }

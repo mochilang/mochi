@@ -22,7 +22,7 @@
       (= fmt "csv") (_parse_csv text header delim)
       (= fmt "tsv") (_parse_csv text header "\t")
       (= fmt "json")
-        (let [data (clojure.data.json/read-str text :key-fn keyword)]
+        (let [data (clojure.edn/read-string text)]
           (cond
             (map? data) [data]
             (sequential? data) (vec data)
@@ -30,13 +30,19 @@
       (= fmt "jsonl")
         (->> (clojure.string/split-lines text)
              (remove clojure.string/blank?)
-             (mapv #(clojure.data.json/read-str % :key-fn keyword)))
+             (mapv clojure.edn/read-string))
       (= fmt "yaml")
-        (let [y (-> text java.io.StringReader. (org.yaml.snakeyaml.Yaml.) .load)]
-          (cond
-            (instance? java.util.Map y) [(into {} y)]
-            (instance? java.util.List y) (mapv #(into {} %) y)
-            :else []))
+        (->> (clojure.string/split text #"(?m)^- ")
+             (map clojure.string/trim)
+             (remove clojure.string/blank?)
+             (mapv (fn [blk]
+                     (->> (clojure.string/split-lines blk)
+                          (map clojure.string/trim)
+                          (remove clojure.string/blank?)
+                          (map (fn [line]
+                                 (let [[k v] (clojure.string/split line #":\s*" 2)]
+                                   [(keyword k) v])))
+                          (into {})))))
       :else [])) )
 
 (declare people adults)

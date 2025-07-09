@@ -115,7 +115,7 @@ const (
       (= fmt "csv") (_parse_csv text header delim)
       (= fmt "tsv") (_parse_csv text header "\t")
       (= fmt "json")
-        (let [data (clojure.data.json/read-str text :key-fn keyword)]
+        (let [data (clojure.edn/read-string text)]
           (cond
             (map? data) [data]
             (sequential? data) (vec data)
@@ -123,13 +123,19 @@ const (
       (= fmt "jsonl")
         (->> (clojure.string/split-lines text)
              (remove clojure.string/blank?)
-             (mapv #(clojure.data.json/read-str % :key-fn keyword)))
+             (mapv clojure.edn/read-string))
       (= fmt "yaml")
-        (let [y (-> text java.io.StringReader. (org.yaml.snakeyaml.Yaml.) .load)]
-          (cond
-            (instance? java.util.Map y) [(into {} y)]
-            (instance? java.util.List y) (mapv #(into {} %) y)
-            :else []))
+        (->> (clojure.string/split text #"(?m)^- ")
+             (map clojure.string/trim)
+             (remove clojure.string/blank?)
+             (mapv (fn [blk]
+                     (->> (clojure.string/split-lines blk)
+                          (map clojure.string/trim)
+                          (remove clojure.string/blank?)
+                          (map (fn [line]
+                                 (let [[k v] (clojure.string/split line #":\s*" 2)]
+                                   [(keyword k) v])))
+                          (into {})))))
       :else [])) )
 `
 
@@ -152,22 +158,15 @@ const (
       (= fmt "tsv")
         (_save rows path (assoc opts :format "csv" :delimiter "\t"))
       (= fmt "json")
-        (let [out (clojure.data.json/write-str rows)]
+        (let [out (_to_json rows)]
           (if (or (nil? path) (= path "") (= path "-"))
             (print out)
             (spit path out)))
       (= fmt "jsonl")
-        (let [out (clojure.string/join "\n" (map #(clojure.data.json/write-str %) rows))]
+        (let [out (clojure.string/join "\n" (map _to_json rows))]
           (if (or (nil? path) (= path "") (= path "-"))
             (print (str out "\n"))
             (spit path (str out "\n"))))
-      (= fmt "yaml")
-        (let [yaml (org.yaml.snakeyaml.Yaml.)
-              out (.dump yaml (clojure.walk/keywordize-keys
-                             (if (= 1 (count rows)) (first rows) rows)))]
-          (if (or (nil? path) (= path "") (= path "-"))
-            (print out)
-            (spit path out)))
       :else
         nil)) )
 `
