@@ -1508,7 +1508,11 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 				return "", err
 			}
 		}
-		ops = append(ops, part.Op)
+		op := part.Op
+		if part.Op == "union" && part.All {
+			op = "union_all"
+		}
+		ops = append(ops, op)
 		operands = append(operands, right)
 		typesList = append(typesList, rightType)
 	}
