@@ -7,10 +7,13 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"mochi/parser"
 )
+
+var identifierRegexp = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_]*$`)
 
 // Compiler is a very small F# code generator that supports only a
 // subset of Mochi. It is intentionally minimal and only handles the
@@ -899,18 +902,25 @@ func (c *Compiler) compileMapKey(e *parser.Expr) (string, error) {
 }
 
 func (c *Compiler) simpleIdentifier(e *parser.Expr) (string, bool) {
-	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+	if e == nil {
 		return "", false
 	}
-	u := e.Binary.Left
-	if u == nil || len(u.Ops) > 0 {
-		return "", false
+	if e.Binary != nil && len(e.Binary.Right) == 0 {
+		if u := e.Binary.Left; u != nil {
+			if len(u.Ops) == 0 && u.Value != nil && u.Value.Target != nil {
+				if sel := u.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 {
+					return sel.Root, true
+				}
+			}
+		}
 	}
-	p := u.Value
-	if len(p.Ops) > 0 || p.Target == nil || p.Target.Selector == nil || len(p.Target.Selector.Tail) > 0 {
-		return "", false
+	s, err := c.compileExpr(e)
+	if err == nil {
+		if identifierRegexp.MatchString(s) {
+			return s, true
+		}
 	}
-	return p.Target.Selector.Root, true
+	return "", false
 }
 
 func stringLiteral(e *parser.Expr) (string, bool) {
