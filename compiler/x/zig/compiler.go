@@ -997,6 +997,35 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				return "", err
 			}
 		}
+		var sortExpr, skipExpr, takeExpr, havingExpr string
+		if q.Sort != nil {
+			sortExpr, err = c.compileExpr(q.Sort, false)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
+		if q.Group.Having != nil {
+			havingExpr, err = c.compileExpr(q.Group.Having, false)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
+		if q.Skip != nil {
+			skipExpr, err = c.compileExpr(q.Skip, false)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
+		if q.Take != nil {
+			takeExpr, err = c.compileExpr(q.Take, false)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
 		resType := zigTypeOf(c.inferExprType(q.Select))
 		keyType := zigTypeOf(c.inferExprType(q.Group.Exprs[0]))
 		c.env = orig
@@ -1034,10 +1063,54 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			b.WriteString(" }")
 		}
 		b.WriteString(" }")
+		itemsVar := c.newTmp()
+		b.WriteString(" var " + itemsVar + " = std.ArrayList(" + groupType + ").init(std.heap.page_allocator);")
+		b.WriteString("for (" + tmp + ".items) |" + sanitizeName(q.Group.Name) + "| {")
+		if havingExpr != "" {
+			b.WriteString(" if (!(" + havingExpr + ")) continue;")
+		}
+		b.WriteString(" " + itemsVar + ".append(" + sanitizeName(q.Group.Name) + ") catch unreachable; }")
+		if sortExpr != "" {
+			keyType := zigTypeOf(c.inferExprType(q.Sort))
+			pairType := "struct { item: " + groupType + ", key: " + keyType + " }"
+			sortTmp := c.newTmp()
+			b.WriteString(" var " + sortTmp + " = std.ArrayList(" + pairType + ").init(std.heap.page_allocator);")
+			b.WriteString("for (" + itemsVar + ".items) |" + sanitizeName(q.Group.Name) + "| { " + sortTmp + ".append(.{ .item = " + sanitizeName(q.Group.Name) + ", .key = " + sortExpr + " }) catch unreachable; }")
+			b.WriteString(" for (0.." + sortTmp + ".items.len) |i| { for (i+1.." + sortTmp + ".items.len) |j| {")
+			cmp := sortTmp + ".items[j].key < " + sortTmp + ".items[i].key"
+			if zigTypeOf(c.inferExprType(q.Sort)) == "[]const u8" {
+				cmp = "std.mem.lessThan(u8, " + sortTmp + ".items[j].key, " + sortTmp + ".items[i].key)"
+			}
+			b.WriteString(" if (" + cmp + ") { const t = " + sortTmp + ".items[i]; " + sortTmp + ".items[i] = " + sortTmp + ".items[j]; " + sortTmp + ".items[j] = t; }")
+			b.WriteString(" } }")
+			itemsVar2 := c.newTmp()
+			b.WriteString(" var " + itemsVar2 + " = std.ArrayList(" + groupType + ").init(std.heap.page_allocator);")
+			b.WriteString("for (" + sortTmp + ".items) |p| { " + itemsVar2 + ".append(p.item) catch unreachable; }")
+			itemsVar = itemsVar2
+		}
 		resVar := c.newTmp()
 		b.WriteString(" var " + resVar + " = std.ArrayList(" + resElem + ").init(std.heap.page_allocator);")
-		b.WriteString("for (" + tmp + ".items) |" + sanitizeName(q.Group.Name) + "| { " + resVar + ".append(" + sel + ") catch unreachable; }")
-		b.WriteString(" break :" + lbl + " " + resVar + ".toOwnedSlice() catch unreachable; }")
+		b.WriteString("for (" + itemsVar + ".items) |" + sanitizeName(q.Group.Name) + "| { " + resVar + ".append(" + sel + ") catch unreachable; }")
+		b.WriteString(" const " + resVar + "Slice = " + resVar + ".toOwnedSlice() catch unreachable;")
+		if skipExpr != "" || takeExpr != "" {
+			c.needsSlice = true
+			start := "0"
+			if skipExpr != "" {
+				start = skipExpr
+			}
+			end := fmt.Sprintf("@as(i32, @intCast(%sSlice.len))", resVar)
+			if takeExpr != "" {
+				if skipExpr != "" {
+					end = fmt.Sprintf("(%s + %s)", skipExpr, takeExpr)
+				} else {
+					end = takeExpr
+				}
+			}
+			b.WriteString(" var " + resVar + "Sliced = _slice_list(" + resElem + ", " + resVar + "Slice, " + start + ", " + end + ", 1);")
+			b.WriteString(" break :" + lbl + " " + resVar + "Sliced; }")
+		} else {
+			b.WriteString(" break :" + lbl + " " + resVar + "Slice; }")
+		}
 		return b.String(), nil
 	}
 
