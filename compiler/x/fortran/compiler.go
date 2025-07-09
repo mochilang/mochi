@@ -426,12 +426,16 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	leftIsStr := types.IsStringUnary(b.Left, c.env)
+	leftIsLit := literalString(b.Left) != nil
 	res := left
 	for _, op := range b.Right {
 		r, err := c.compilePostfix(op.Right)
 		if err != nil {
 			return "", err
 		}
+		rightIsStr := types.IsStringPostfix(op.Right, c.env)
+		rightIsLit := literalStringPrimary(op.Right.Target) != nil
 		opStr := op.Op
 		switch opStr {
 		case "&&":
@@ -454,8 +458,25 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		case "in":
 			res = fmt.Sprintf("any(%s == %s)", r, res)
 			continue
+		case "+":
+			if leftIsStr || rightIsStr {
+				l := res
+				if leftIsStr && !leftIsLit {
+					l = fmt.Sprintf("trim(%s)", l)
+				}
+				rr := r
+				if rightIsStr && !rightIsLit {
+					rr = fmt.Sprintf("trim(%s)", rr)
+				}
+				res = fmt.Sprintf("%s // %s", l, rr)
+				leftIsStr = true
+				leftIsLit = false
+				continue
+			}
 		}
 		res = fmt.Sprintf("(%s %s %s)", res, opStr, r)
+		leftIsStr = false
+		leftIsLit = false
 	}
 	return res, nil
 }
