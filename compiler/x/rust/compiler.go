@@ -13,14 +13,15 @@ import (
 
 // Compiler translates a subset of Mochi to Rust source code.
 type Compiler struct {
-	buf     bytes.Buffer
-	indent  int
-	helpers map[string]bool
-	tmp     int
-	env     *types.Env
-	structs map[string]types.StructType
-	inMain  bool
-	globals map[string]bool
+	buf       bytes.Buffer
+	indent    int
+	helpers   map[string]bool
+	tmp       int
+	env       *types.Env
+	structs   map[string]types.StructType
+	inMain    bool
+	globals   map[string]bool
+	mutParams map[string]map[int]bool
 }
 
 func usesIdentExpr(e *parser.Expr, name string) bool {
@@ -199,12 +200,75 @@ func (c *Compiler) newTmp() string {
 // New returns a new Compiler instance.
 func New(env *types.Env) *Compiler {
 	return &Compiler{
-		helpers: make(map[string]bool),
-		env:     env,
-		structs: make(map[string]types.StructType),
-		inMain:  true,
-		globals: make(map[string]bool),
+		helpers:   make(map[string]bool),
+		env:       env,
+		structs:   make(map[string]types.StructType),
+		inMain:    true,
+		globals:   make(map[string]bool),
+		mutParams: make(map[string]map[int]bool),
 	}
+}
+
+func stmtMutatesVar(s *parser.Statement, name string) bool {
+	switch {
+	case s.Assign != nil:
+		if s.Assign.Name == name {
+			return true
+		}
+	case s.For != nil:
+		for _, b := range s.For.Body {
+			if stmtMutatesVar(b, name) {
+				return true
+			}
+		}
+	case s.While != nil:
+		for _, b := range s.While.Body {
+			if stmtMutatesVar(b, name) {
+				return true
+			}
+		}
+	case s.If != nil:
+		for _, b := range s.If.Then {
+			if stmtMutatesVar(b, name) {
+				return true
+			}
+		}
+		for _, b := range s.If.Else {
+			if stmtMutatesVar(b, name) {
+				return true
+			}
+		}
+	case s.Fun != nil:
+		for _, b := range s.Fun.Body {
+			if stmtMutatesVar(b, name) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func analyzeMutations(prog *parser.Program) map[string]map[int]bool {
+	res := make(map[string]map[int]bool)
+	for _, st := range prog.Statements {
+		if st.Fun == nil {
+			continue
+		}
+		f := st.Fun
+		mp := make(map[int]bool)
+		for i, p := range f.Params {
+			for _, b := range f.Body {
+				if stmtMutatesVar(b, p.Name) {
+					mp[i] = true
+					break
+				}
+			}
+		}
+		if len(mp) > 0 {
+			res[f.Name] = mp
+		}
+	}
+	return res
 }
 
 // Compile converts a parsed Mochi program into Rust source code.
@@ -214,6 +278,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.helpers = map[string]bool{}
 	c.inMain = true
 	c.globals = map[string]bool{}
+	c.mutParams = analyzeMutations(prog)
 	c.writeln("fn main() {")
 	c.indent++
 	for _, s := range prog.Statements {
@@ -509,8 +574,14 @@ func (c *Compiler) compileTypeDecl(td *parser.TypeDecl) error {
 
 func (c *Compiler) compileFun(f *parser.FunStmt) error {
 	params := make([]string, len(f.Params))
+	mut := c.mutParams[f.Name]
 	for i, p := range f.Params {
-		params[i] = fmt.Sprintf("%s: %s", p.Name, rustType(p.Type))
+		typ := rustType(p.Type)
+		if mut != nil && mut[i] {
+			params[i] = fmt.Sprintf("%s: &mut %s", p.Name, typ)
+		} else {
+			params[i] = fmt.Sprintf("%s: %s", p.Name, typ)
+		}
 	}
 	retTy := "()"
 	if f.Return != nil {
@@ -1057,6 +1128,13 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", err
 		}
 		args[i] = s
+	}
+	if mp, ok := c.mutParams[call.Func]; ok {
+		for i := range args {
+			if mp[i] {
+				args[i] = fmt.Sprintf("&mut %s", args[i])
+			}
+		}
 	}
 	if typ, err := c.env.GetVar(call.Func); err == nil {
 		if ft, ok := typ.(types.FuncType); ok && !ft.Variadic && len(args) < len(ft.Params) {
