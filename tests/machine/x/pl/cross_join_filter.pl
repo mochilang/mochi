@@ -9,17 +9,21 @@ get_item(List, Index, Val) :- nth0(Index, List, Val).
 main :-
     Nums = [1, 2, 3],
     Letters = ["A", "B"],
-    dict_create(_V0, map, [N-N, L-L]),
-    findall(_V0, (member(N, Nums), member(L, Letters), ((N mod 2) == 0)), _V1),
-    Pairs = _V1,
-    writeln("--- Even pairs ---"),
+    findall(_V1, (member(N, Nums), member(L, Letters), ((N mod 2) == 0), dict_create(_V0, map, [n-N, l-L]), _V1 = _V0), _V2),
+    Pairs = _V2,
+    write("--- Even pairs ---"),
+    nl,
     catch(
         (
             member(P, Pairs),
                 catch(
                     (
-                        get_item(P, 'n', _V2),
-                        writeln(_V2),
+                        get_item(P, 'n', _V3),
+                        write(_V3),
+                        write(' '),
+                        get_item(P, 'l', _V4),
+                        write(_V4),
+                        nl,
                         true
                     ), continue, true),
                     fail

@@ -306,21 +306,26 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return nil
 	case s.Expr != nil:
 		if call := getPrintCall(s.Expr.Expr); call != nil {
-			arg, arith, err := c.compileExpr(call.Args[0])
-			if err != nil {
-				return err
+			for i, a := range call.Args {
+				if i > 0 {
+					c.writeln("write(' '),")
+				}
+				val, arith, err := c.compileExpr(a)
+				if err != nil {
+					return err
+				}
+				if arith {
+					tmp := c.newTmp()
+					c.writeln(fmt.Sprintf("%s is %s,", tmp, val))
+					val = tmp
+				} else if isBoolExpr(val) {
+					tmp := c.newTmp()
+					c.writeln(fmt.Sprintf("(%s -> %s = true ; %s = false),", val, tmp, tmp))
+					val = tmp
+				}
+				c.writeln(fmt.Sprintf("write(%s),", val))
 			}
-			if arith {
-				tmp := c.newTmp()
-				c.writeln(fmt.Sprintf("%s is %s,", tmp, arg))
-				c.writeln(fmt.Sprintf("writeln(%s),", tmp))
-			} else if isBoolExpr(arg) {
-				tmp := c.newTmp()
-				c.writeln(fmt.Sprintf("(%s -> %s = true ; %s = false),", arg, tmp, tmp))
-				c.writeln(fmt.Sprintf("writeln(%s),", tmp))
-			} else {
-				c.writeln(fmt.Sprintf("writeln(%s),", arg))
-			}
+			c.writeln("nl,")
 			return nil
 		}
 		return fmt.Errorf("unsupported expression statement")
@@ -337,6 +342,9 @@ func (c *Compiler) compileIf(is *parser.IfStmt) error {
 	cond, _, err := c.compileExpr(is.Cond)
 	if err != nil {
 		return err
+	}
+	if !isBoolExpr(cond) {
+		cond = fmt.Sprintf("%s \\= nil", cond)
 	}
 	c.writeln(fmt.Sprintf("(%s ->", cond))
 	c.indent++
@@ -623,6 +631,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, bool, error) {
 	case p.Map != nil:
 		pairs := []string{}
 		for _, it := range p.Map.Items {
+			if k, ok := simpleStringKey(it.Key); ok {
+				val, _, err := c.compileExpr(it.Value)
+				if err != nil {
+					return "", false, err
+				}
+				pairs = append(pairs, fmt.Sprintf("%s-%s", strings.ToLower(k), val))
+				continue
+			}
 			key, _, err := c.compileExpr(it.Key)
 			if err != nil {
 				return "", false, err
@@ -825,6 +841,27 @@ func sanitizeVar(s string) string {
 	return s
 }
 
+func simpleStringKey(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return *p.Target.Lit.Str, true
+	}
+	return "", false
+}
+
 func getPrintCall(e *parser.Expr) *parser.CallExpr {
 	if e == nil || len(e.Binary.Right) != 0 {
 		return nil
@@ -949,39 +986,75 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, bool, error) {
 		}
 		jname := sanitizeVar(j.Var)
 		c.vars[j.Var] = jname
+		var onBuf bytes.Buffer
+		oldOut := c.out
+		c.out = &onBuf
 		onCond, _, err := c.compileExpr(j.On)
+		c.out = oldOut
 		if err != nil {
 			c.vars = oldVars
 			return "", false, err
+		}
+		onLines := []string{}
+		for _, line := range strings.Split(strings.TrimSpace(onBuf.String()), "\n") {
+			line = strings.TrimSuffix(strings.TrimSpace(line), ",")
+			if line != "" {
+				onLines = append(onLines, line)
+			}
 		}
 		if j.Side != nil && *j.Side == "left" {
 			tmp := c.newTmp()
 			loops = append(loops, fmt.Sprintf("findall(%s, (member(%s, %s), %s), %s)", jname, jname, js, onCond, tmp))
-			loops = append(loops, fmt.Sprintf("(%s = [] -> %s = nil ; member(%s, %s))", tmp, jname, jname, tmp))
+			loops = append(loops, fmt.Sprintf("(%s = [] -> %s = nil; member(%s, %s))", tmp, jname, jname, tmp))
 		} else {
 			loops = append(loops, fmt.Sprintf("member(%s, %s)", jname, js))
-			loops = append(loops, onCond)
 		}
+		loops = append(loops, onLines...)
+		loops = append(loops, onCond)
 	}
 
 	cond := "true"
 	if q.Where != nil {
+		var whereBuf bytes.Buffer
+		oldOut2 := c.out
+		c.out = &whereBuf
 		ccond, _, err := c.compileExpr(q.Where)
+		c.out = oldOut2
 		if err != nil {
 			c.vars = oldVars
 			return "", false, err
+		}
+		for _, line := range strings.Split(strings.TrimSpace(whereBuf.String()), "\n") {
+			line = strings.TrimSuffix(strings.TrimSpace(line), ",")
+			if line != "" {
+				loops = append(loops, line)
+			}
 		}
 		cond = ccond
 	}
 	loops = append(loops, cond)
 
-	sel, _, err := c.compileExpr(q.Select)
+	var selBuf bytes.Buffer
+	oldOut := c.out
+	c.out = &selBuf
+	selVal, _, err := c.compileExpr(q.Select)
+	c.out = oldOut
 	if err != nil {
 		c.vars = oldVars
 		return "", false, err
 	}
+	selLines := []string{}
+	for _, line := range strings.Split(strings.TrimSpace(selBuf.String()), "\n") {
+		line = strings.TrimSuffix(strings.TrimSpace(line), ",")
+		if line != "" {
+			selLines = append(selLines, line)
+		}
+	}
+	resVar := c.newTmp()
+	loops = append(loops, selLines...)
+	loops = append(loops, fmt.Sprintf("%s = %s", resVar, selVal))
 	tmp := c.newTmp()
-	c.writeln(fmt.Sprintf("findall(%s, (%s), %s),", sel, strings.Join(loops, ", "), tmp))
+	c.writeln(fmt.Sprintf("findall(%s, (%s), %s),", resVar, strings.Join(loops, ", "), tmp))
 	c.vars = oldVars
 	return tmp, false, nil
 }
