@@ -1,18 +1,17 @@
-| grouped items |
+| items grouped |
 items := {Dictionary newFrom: {cat -> 'a'. val -> 3}. Dictionary newFrom: {cat -> 'a'. val -> 1}. Dictionary newFrom: {cat -> 'b'. val -> 5}. Dictionary newFrom: {cat -> 'b'. val -> 2}}.
-grouped := [ | groups res |
+grouped := [ | groups tmp |
   groups := Dictionary new.
+  tmp := OrderedCollection new.
   items do: [:i |
-    | g k |
-    k := i.cat.
-    g := groups at: k ifAbsentPut: [OrderedCollection new].
-    g add: i.
-  ]
-  res := OrderedCollection new.
-  groups keysAndValuesDo: [:k :items |
     | g |
-    g := Dictionary newFrom: {#key->k. #items->items}.
-    res add: Dictionary newFrom: {cat -> g.key. total -> ([ | tmp |
+    g := groups at: i.cat ifAbsentPut:[OrderedCollection new].
+    g add: Dictionary newFrom: {#i->i}.
+  ].
+  groups keysAndValuesDo: [:k :grp |
+    | g |
+    g := Dictionary newFrom:{#key->k. #items->grp}.
+    tmp add: Dictionary newFrom: {cat -> g.key. total -> ([ | tmp |
   tmp := OrderedCollection new.
   g do: [:x |
     tmp add: x.val.
@@ -20,19 +19,19 @@ grouped := [ | groups res |
   tmp
 ] value inject: 0 into: [:s :x | s + x])}.
   ].
-  res := res asSortedCollection: [:a :b | -([ | tmp |
-  tmp := OrderedCollection new.
-  a do: [:x |
+  tmp := tmp asSortedCollection: [:a :b | -([ | tmp |
+  tmp := OrderedCollectaon new.
+  g do: [:x |
     tmp add: x.val.
   ].
   tmp
-] value inject: 0 into: [:s :x | s + x]) < -([ | tmp |
-  tmp := OrderedCollection new.
-  b do: [:x |
+] value anject: 0 anto: [:s :x | s + x]) < -([ | tmp |
+  tmp := OrderedCollectbon new.
+  g do: [:x |
     tmp add: x.val.
   ].
   tmp
-] value inject: 0 into: [:s :x | s + x])].
-  res
+] value bnject: 0 bnto: [:s :x | s + x])].
+  tmp
 ] value.
 Transcript show: (grouped) printString; cr.

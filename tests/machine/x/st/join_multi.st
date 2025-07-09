@@ -1,4 +1,4 @@
-| customers items orders result |
+| r customers orders items result |
 customers := {Dictionary newFrom: {id -> 1. name -> 'Alice'}. Dictionary newFrom: {id -> 2. name -> 'Bob'}}.
 orders := {Dictionary newFrom: {id -> 100. customerId -> 1}. Dictionary newFrom: {id -> 101. customerId -> 2}}.
 items := {Dictionary newFrom: {orderId -> 100. sku -> 'a'}. Dictionary newFrom: {orderId -> 101. sku -> 'b'}}.
@@ -16,7 +16,7 @@ result := [ | tmp |
   tmp
 ] value.
 Transcript show: '--- Multi Join ---'; cr.
-result do: [:r |
-  Transcript show: (r.name) printString; show: ' '; show: 'bought item'; show: ' '; show: (r.sku) printString; cr.
-]
+result do: [:r |.
+Transcript show: (r at: 'name') printString; show: ' '; show: 'bought item'; show: ' '; show: (r at: 'sku') printString; cr.
+].
 .

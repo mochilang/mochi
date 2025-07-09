@@ -70,6 +70,11 @@ func (c *Compiler) collectVars(st *parser.Statement) {
 		c.vars[st.Let.Name] = true
 	case st.Var != nil:
 		c.vars[st.Var.Name] = true
+	case st.Fun != nil:
+		c.vars[st.Fun.Name] = true
+		for _, s := range st.Fun.Body {
+			c.collectVars(s)
+		}
 	case st.If != nil:
 		for _, s := range st.If.Then {
 			c.collectVars(s)
@@ -160,7 +165,11 @@ func (c *Compiler) compileStmt(st *parser.Statement) error {
 			if err != nil {
 				return err
 			}
-			c.writeln(fmt.Sprintf("Transcript show: (%s) printString; cr", arg))
+			if isStringLiteral(call.Args[0]) {
+				c.writeln(fmt.Sprintf("Transcript show: %s; cr", arg))
+			} else {
+				c.writeln(fmt.Sprintf("Transcript show: (%s) printString; cr", arg))
+			}
 			return nil
 		}
 		expr, err := c.compileExpr(st.Expr.Expr)

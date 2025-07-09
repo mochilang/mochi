@@ -1,1 +1,2 @@
-line: 0error: gst interpreter not available
+line: 0
+error: complex assignment not supported

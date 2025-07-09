@@ -1,7 +1,2 @@
-line: 7
-error: unsupported expression at line 7
-   5: }
-   6: 
-   7: var c = Counter { n: 0 }
-   8: inc(c)
-   9: print(c.n)
+line: 0
+error: gst interpreter not available
