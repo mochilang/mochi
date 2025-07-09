@@ -1,0 +1,18 @@
+let customers = [{ "id": 1, "name": "Alice" }, { "id": 2, "name": "Bob" }, { "id": 3, "name": "Charlie" }, { "id": 4, "name": "Diana" }]
+let orders = [{ "id": 100, "customerId": 1, "total": 250 }, { "id": 101, "customerId": 2, "total": 125 }, { "id": 102, "customerId": 1, "total": 300 }]
+let result = fun() {
+    let _src = customers
+    return __query(_src, [{ "items": orders, "on": fun(c, o) {
+    return (o["customerId"] == c["id"])
+}, "right": true }], { "selectFn": fun(c, o) {
+    return { "customerName": c["name"], "order": o }
+} })
+}()
+print("--- Right Join using syntax ---")
+for _, entry in ipairs(result) {
+  if entry["order"] {
+    print("Customer", entry["customerName"], "has order", entry["order"]["id"], "- $", entry["order"]["total"])
+  } else {
+    print("Customer", entry["customerName"], "has no orders")
+  }
+}
