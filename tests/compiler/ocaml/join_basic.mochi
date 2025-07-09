@@ -1,0 +1,14 @@
+let customers = [
+  { id: 1, name: "Alice" },
+  { id: 2, name: "Bob" }
+]
+let orders = [
+  { id: 100, customerId: 1, total: 250 },
+  { id: 101, customerId: 3, total: 125 }
+]
+let res = from o in orders
+          join from c in customers on o.customerId == c.id
+          select str(o.id) + "-" + c.name
+for r in res {
+  print(r)
+}
