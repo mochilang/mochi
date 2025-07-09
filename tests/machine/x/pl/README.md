@@ -4,7 +4,7 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 
 ## Summary
 
-- 57/97 programs compiled and executed successfully.
+ - 58/97 programs compiled and executed successfully.
 
 ### Successful
 - append_builtin
@@ -61,6 +61,7 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 - map_literal_dynamic
 - map_membership
 - map_nested_assign
+- in_operator
 - string_in_operator
 - values_builtin
 - user_type_literal
@@ -82,7 +83,6 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 - group_by_multi_join_sort
 - group_by_sort
 - group_items_iteration
-- in_operator
 - in_operator_extended
 - inner_join
 - join_multi
