@@ -107,6 +107,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
+	// Pre-collect variables so that later statements can be
+	// compiled with type information available.
+	preVars := map[string]string{}
+	collectVars(prog.Statements, c.env, preVars)
+
 	// Compile main body first to gather temporaries
 	var body bytes.Buffer
 	prevBuf := c.buf
