@@ -1,1 +1,53 @@
-line 0: compile error: unsupported primary at 2:10
+line 15: ../../../tests/machine/x/cpp/in_operator_extended.cpp: In lambda function:
+../../../tests/machine/x/cpp/in_operator_extended.cpp:15:26: error: ‘x’ was not declared in this scope; did you mean ‘xs’?
+   15 |     std::vector<decltype(x)> __items;
+      |                          ^
+      |                          xs
+../../../tests/machine/x/cpp/in_operator_extended.cpp:15:28: error: template argument 1 is invalid
+   15 |     std::vector<decltype(x)> __items;
+      |                            ^
+../../../tests/machine/x/cpp/in_operator_extended.cpp:15:28: error: template argument 2 is invalid
+../../../tests/machine/x/cpp/in_operator_extended.cpp:19:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+   19 |       __items.push_back(x);
+      |               ^~~~~~~~~
+../../../tests/machine/x/cpp/in_operator_extended.cpp: In function ‘int main()’:
+../../../tests/machine/x/cpp/in_operator_extended.cpp:25:32: error: request for member ‘begin’ in ‘ys’, which is of non-class type ‘int’
+   25 |               << (std::find(ys.begin(), ys.end(), 1) != ys.end());
+      |                                ^~~~~
+../../../tests/machine/x/cpp/in_operator_extended.cpp:25:44: error: request for member ‘end’ in ‘ys’, which is of non-class type ‘int’
+   25 |               << (std::find(ys.begin(), ys.end(), 1) != ys.end());
+      |                                            ^~~
+../../../tests/machine/x/cpp/in_operator_extended.cpp:25:60: error: request for member ‘end’ in ‘ys’, which is of non-class type ‘int’
+   25 |               << (std::find(ys.begin(), ys.end(), 1) != ys.end());
+      |                                                            ^~~
+../../../tests/machine/x/cpp/in_operator_extended.cpp:30:32: error: request for member ‘begin’ in ‘ys’, which is of non-class type ‘int’
+   30 |               << (std::find(ys.begin(), ys.end(), 2) != ys.end());
+      |                                ^~~~~
+../../../tests/machine/x/cpp/in_operator_extended.cpp:30:44: error: request for member ‘end’ in ‘ys’, which is of non-class type ‘int’
+   30 |               << (std::find(ys.begin(), ys.end(), 2) != ys.end());
+      |                                            ^~~
+../../../tests/machine/x/cpp/in_operator_extended.cpp:30:60: error: request for member ‘end’ in ‘ys’, which is of non-class type ‘int’
+   30 |               << (std::find(ys.begin(), ys.end(), 2) != ys.end());
+      |                                                            ^~~
+../../../tests/machine/x/cpp/in_operator_extended.cpp:36:31: error: ‘struct __struct1’ has no member named ‘begin’
+   36 |               << (std::find(m.begin(), m.end(), std::string("a")) != m.end());
+      |                               ^~~~~
+../../../tests/machine/x/cpp/in_operator_extended.cpp:36:42: error: ‘struct __struct1’ has no member named ‘end’
+   36 |               << (std::find(m.begin(), m.end(), std::string("a")) != m.end());
+      |                                          ^~~
+../../../tests/machine/x/cpp/in_operator_extended.cpp:36:72: error: ‘struct __struct1’ has no member named ‘end’
+   36 |               << (std::find(m.begin(), m.end(), std::string("a")) != m.end());
+      |                                                                        ^~~
+../../../tests/machine/x/cpp/in_operator_extended.cpp:41:31: error: ‘struct __struct1’ has no member named ‘begin’
+   41 |               << (std::find(m.begin(), m.end(), std::string("b")) != m.end());
+      |                               ^~~~~
+../../../tests/machine/x/cpp/in_operator_extended.cpp:41:42: error: ‘struct __struct1’ has no member named ‘end’
+   41 |               << (std::find(m.begin(), m.end(), std::string("b")) != m.end());
+      |                                          ^~~
+../../../tests/machine/x/cpp/in_operator_extended.cpp:41:72: error: ‘struct __struct1’ has no member named ‘end’
+   41 |               << (std::find(m.begin(), m.end(), std::string("b")) != m.end());
+      |                                                                        ^~~
+
+ 14 |   auto ys = ([&]() {
+ 15 |     std::vector<decltype(x)> __items;
+ 16 |     for (auto x : xs) {

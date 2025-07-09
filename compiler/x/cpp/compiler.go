@@ -93,11 +93,6 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.headerWriteln("#include <utility>")
 	c.headerWriteln("")
 
-	c.headerWriteln("template<typename T> void print_val(const T& v){ std::cout << v; }")
-	c.headerWriteln("void print_val(const std::vector<int>& v){ for(size_t i=0;i<v.size();++i){ if(i) std::cout<<' '; std::cout<<v[i]; }}")
-	c.headerWriteln("void print_val(bool b){ std::cout<<(b?\"true\":\"false\"); }")
-	c.headerWriteln("void print(){ std::cout<<std::endl; }")
-	c.headerWriteln("template<typename First, typename... Rest> void print(const First& first, const Rest&... rest){ print_val(first); if constexpr(sizeof...(rest)>0){ std::cout<<' '; print(rest...); } else { std::cout<<std::endl; }}")
 	c.headerWriteln("")
 
 	// first generate function declarations
@@ -195,6 +190,9 @@ func (c *Compiler) compileStmt(st *parser.Statement) error {
 		c.writeln("continue;")
 		return nil
 	case st.Expr != nil:
+		if call, ok := printCall(st.Expr.Expr); ok {
+			return c.compilePrint(call.Args)
+		}
 		expr, err := c.compileExpr(st.Expr.Expr)
 		if err != nil {
 			return err
@@ -414,6 +412,94 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 	return nil
 }
 
+func printCall(e *parser.Expr) (*parser.CallExpr, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) > 0 || u.Value == nil {
+		return nil, false
+	}
+	pf := u.Value
+	if len(pf.Ops) > 0 || pf.Target == nil || pf.Target.Call == nil {
+		return nil, false
+	}
+	if pf.Target.Call.Func != "print" {
+		return nil, false
+	}
+	return pf.Target.Call, true
+}
+
+func (c *Compiler) isVectorExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	if len(e.Binary.Right) > 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) > 0 || u.Value == nil {
+		return false
+	}
+	pf := u.Value
+	if len(pf.Ops) > 0 {
+		return false
+	}
+	if pf.Target != nil {
+		if pf.Target.List != nil || pf.Target.Query != nil {
+			return true
+		}
+		if pf.Target.Call != nil {
+			switch pf.Target.Call.Func {
+			case "append", "values":
+				return true
+			}
+		}
+		if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 0 {
+			if t, ok := c.vars[pf.Target.Selector.Root]; ok && t == "vector" {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (c *Compiler) compilePrint(args []*parser.Expr) error {
+	c.writeIndent()
+	c.buf.WriteString("{ ")
+	for i, a := range args {
+		s, err := c.compileExpr(a)
+		if err != nil {
+			return err
+		}
+		typ := c.inferType(s)
+		if typ == "" {
+			if t, ok := c.vars[s]; ok {
+				typ = t
+			}
+		}
+		if typ == "" && c.isVectorExpr(a) {
+			typ = "vector"
+		}
+		if i > 0 {
+			c.buf.WriteString("std::cout << ' '; ")
+		}
+		switch typ {
+		case "vector":
+			tmp := c.newTmp()
+			c.buf.WriteString("auto " + tmp + " = " + s + "; ")
+			c.buf.WriteString("for(size_t i=0;i<" + tmp + ".size();++i){ if(i) std::cout<<' '; std::cout << std::boolalpha << " + tmp + "[i]; } ")
+		case "bool":
+			c.buf.WriteString("std::cout << std::boolalpha << (" + s + "); ")
+		default:
+			c.buf.WriteString("std::cout << std::boolalpha << " + s + "; ")
+		}
+	}
+	c.buf.WriteString("std::cout << std::endl; }")
+	c.buf.WriteByte('\n')
+	return nil
+}
+
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 	if e == nil {
 		return "", nil
@@ -527,9 +613,7 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, error) {
 				}
 				args = append(args, s)
 			}
-			if base == "print" {
-				expr = fmt.Sprintf("print(%s)", strings.Join(args, ", "))
-			} else if base == "len" && len(args) == 1 {
+			if base == "len" && len(args) == 1 {
 				expr = fmt.Sprintf("(%s.size())", args[0])
 			} else if base == "append" && len(args) == 2 {
 				expr = fmt.Sprintf("([&](auto v){ v.push_back(%s); return v; })(%s)", args[1], args[0])
@@ -703,8 +787,6 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			args = append(args, s)
 		}
 		switch name {
-		case "print":
-			return fmt.Sprintf("print(%s)", strings.Join(args, ", ")), nil
 		case "len":
 			if len(args) == 1 {
 				return fmt.Sprintf("%s.size()", args[0]), nil

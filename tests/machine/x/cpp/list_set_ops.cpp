@@ -1,20 +1,36 @@
-#include <iostream>
-#include <vector>
-#include <unordered_map>
-#include <map>
 #include <algorithm>
+#include <iostream>
+#include <map>
 #include <numeric>
-
-template<typename T> void print_val(const T& v){ std::cout << v; }
-void print_val(const std::vector<int>& v){ for(size_t i=0;i<v.size();++i){ if(i) std::cout<<' '; std::cout<<v[i]; }}
-void print_val(bool b){ std::cout<<(b?"true":"false"); }
-void print(){ std::cout<<std::endl; }
-template<typename First, typename... Rest> void print(const First& first, const Rest&... rest){ print_val(first); if constexpr(sizeof...(rest)>0){ std::cout<<' '; print(rest...); } else { std::cout<<std::endl; }}
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
 int main() {
-    print((std::vector<int>{1, 2} union std::vector<int>{2, 3}));
-    print((std::vector<int>{1, 2, 3} except std::vector<int>{2}));
-    print((std::vector<int>{1, 2, 3} intersect std::vector<int>{2, 4}));
-    print((std::vector<int>{1, 2} union std::vector<int>{2, 3}).size());
-    return 0;
+  {
+    std::cout << std::boolalpha
+              << (std::vector<decltype(1)>{1, 2} union std::vector<decltype(2)>{
+                     2, 3});
+    std::cout << std::endl;
+  }
+  {
+    std::cout << std::boolalpha
+              << (std::vector<decltype(1)>{
+                     1, 2, 3} except std::vector<decltype(2)>{2});
+    std::cout << std::endl;
+  }
+  {
+    std::cout << std::boolalpha
+              << (std::vector<decltype(1)>{
+                     1, 2, 3} intersect std::vector<decltype(2)>{2, 4});
+    std::cout << std::endl;
+  }
+  {
+    std::cout << std::boolalpha
+              << (std::vector<decltype(1)>{1, 2} union std::vector<decltype(2)>{
+                      2, 3})
+                     .size();
+    std::cout << std::endl;
+  }
+  return 0;
 }

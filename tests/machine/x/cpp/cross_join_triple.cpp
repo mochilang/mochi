@@ -6,27 +6,6 @@
 #include <utility>
 #include <vector>
 
-template <typename T> void print_val(const T &v) { std::cout << v; }
-void print_val(const std::vector<int> &v) {
-  for (size_t i = 0; i < v.size(); ++i) {
-    if (i)
-      std::cout << ' ';
-    std::cout << v[i];
-  }
-}
-void print_val(bool b) { std::cout << (b ? "true" : "false"); }
-void print() { std::cout << std::endl; }
-template <typename First, typename... Rest>
-void print(const First &first, const Rest &...rest) {
-  print_val(first);
-  if constexpr (sizeof...(rest) > 0) {
-    std::cout << ' ';
-    print(rest...);
-  } else {
-    std::cout << std::endl;
-  }
-}
-
 struct __struct1 {
   int n;
   std::string l;
@@ -48,9 +27,20 @@ int main() {
     }
     return __items;
   })();
-  print(std::string("--- Cross Join of three lists ---"));
+  {
+    std::cout << std::boolalpha
+              << std::string("--- Cross Join of three lists ---");
+    std::cout << std::endl;
+  }
   for (auto c : combos) {
-    print(c.n, c.l, c.b);
+    {
+      std::cout << std::boolalpha << c.n;
+      std::cout << ' ';
+      std::cout << std::boolalpha << c.l;
+      std::cout << ' ';
+      std::cout << std::boolalpha << c.b;
+      std::cout << std::endl;
+    }
   }
   return 0;
 }

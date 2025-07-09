@@ -1,1 +1,12 @@
-line 0: compile error: unsupported primary at 7:14
+line 16: ../../../tests/machine/x/cpp/dataset_where_filter.cpp:16:13: error: ‘person’ was not declared in this scope; did you mean ‘perror’?
+   16 |   decltype((person.age >= 60)) is_senior;
+      |             ^~~~~~
+      |             perror
+../../../tests/machine/x/cpp/dataset_where_filter.cpp:16:13: error: ‘person’ was not declared in this scope; did you mean ‘perror’?
+   16 |   decltype((person.age >= 60)) is_senior;
+      |             ^~~~~~
+      |             perror
+
+ 15 |   decltype(std::declval<__struct1>().age) age;
+ 16 |   decltype((person.age >= 60)) is_senior;
+ 17 | };

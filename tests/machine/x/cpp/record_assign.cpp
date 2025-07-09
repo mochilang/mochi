@@ -1,26 +1,25 @@
-#include <iostream>
-#include <vector>
-#include <unordered_map>
-#include <map>
 #include <algorithm>
+#include <iostream>
+#include <map>
 #include <numeric>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
-template<typename T> void print_val(const T& v){ std::cout << v; }
-void print_val(const std::vector<int>& v){ for(size_t i=0;i<v.size();++i){ if(i) std::cout<<' '; std::cout<<v[i]; }}
-void print_val(bool b){ std::cout<<(b?"true":"false"); }
-void print(){ std::cout<<std::endl; }
-template<typename First, typename... Rest> void print(const First& first, const Rest&... rest){ print_val(first); if constexpr(sizeof...(rest)>0){ std::cout<<' '; print(rest...); } else { std::cout<<std::endl; }}
-
-auto inc(auto c) {
-    c.n = (c.n + 1);
-}
+struct __struct1 {
+  decltype(0) n;
+};
+auto inc(auto c) { c.n = (c.n + 1); }
 
 int main() {
-    struct Counter {
-        int n;
-    };
-    auto c = ([&]() { Counter __v; __v.n = 0; return __v; })();
-    inc(c);
-    print(c.n);
-    return 0;
+  struct Counter {
+    int n;
+  };
+  auto c = __struct1{0};
+  inc(c);
+  {
+    std::cout << std::boolalpha << c.n;
+    std::cout << std::endl;
+  }
+  return 0;
 }
