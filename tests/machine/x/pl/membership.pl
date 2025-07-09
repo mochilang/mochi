@@ -29,11 +29,9 @@ contains(List, Item, Res) :-
 contains(List, Item, Res) :- (member(Item, List) -> Res = true ; Res = false).
 :- initialization(main, main).
 main :-
-    Nums = [3, 1, 4],
-    min_list(Nums, _V0),
-    _V1 is _V0,
+    Nums = [1, 2, 3],
+    contains(Nums, 2, _V0),
+    writeln(_V0),
+    contains(Nums, 4, _V1),
     writeln(_V1),
-    max_list(Nums, _V2),
-    _V3 is _V2,
-    writeln(_V3),
     true.

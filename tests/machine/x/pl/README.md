@@ -1,10 +1,10 @@
 # Mochi to Prolog Machine Outputs
 
-This directory contains Prolog code generated from the Mochi programs in `tests/vm/valid` and the corresponding execution results.
+This directory contains Prolog code generated from the Mochi programs in tests/vm/valid and the corresponding execution results.
 
 ## Summary
 
-- 35/97 programs compiled and executed successfully.
+- 42/97 programs compiled and executed successfully.
 
 ### Successful
 - append_builtin
@@ -13,6 +13,7 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 - binary_precedence
 - bool_chain
 - break_continue
+- cast_string_to_int
 - count_builtin
 - exists_builtin
 - for_list_collection
@@ -25,16 +26,22 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 - len_builtin
 - len_string
 - let_and_print
+- list_index
 - math_ops
+- membership
 - min_max_builtin
 - partial_application
 - print_hello
 - pure_fold
 - pure_global_fold
 - short_circuit
+- slice
 - str_builtin
 - string_compare
 - string_concat
+- string_in_operator
+- string_index
+- string_prefix_slice
 - substring_builtin
 - sum_builtin
 - tail_recursion
@@ -44,7 +51,6 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 - var_assignment
 
 ### Failed
-- cast_string_to_int
 - cast_struct
 - closure
 - cross_join
@@ -72,7 +78,6 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 - left_join_multi
 - len_map
 - list_assign
-- list_index
 - list_nested_assign
 - list_set_ops
 - load_yaml
@@ -85,7 +90,6 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 - map_nested_assign
 - match_expr
 - match_full
-- membership
 - nested_function
 - order_by_map
 - outer_join
@@ -93,12 +97,8 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 - record_assign
 - right_join
 - save_jsonl_stdout
-- slice
 - sort_stable
 - string_contains
-- string_in_operator
-- string_index
-- string_prefix_slice
 - test_block
 - tree_sum
 - two-sum

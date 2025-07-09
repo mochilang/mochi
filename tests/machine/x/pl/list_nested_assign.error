@@ -1,1 +1,2 @@
-postfix not supported
+run: exit status 1
+

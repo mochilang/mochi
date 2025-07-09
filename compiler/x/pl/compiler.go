@@ -47,6 +47,34 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.vars = make(map[string]string)
 
 	c.writeln(":- style_check(-singleton).")
+	c.writeln("get_item(Container, Key, Val) :-")
+	c.writeln("    is_dict(Container), !, (string(Key) -> atom_string(A, Key) ; A = Key), get_dict(A, Container, Val).")
+	c.writeln("get_item(Container, Index, Val) :-")
+	c.writeln("    string(Container), !, string_chars(Container, Chars), nth0(Index, Chars, Val).")
+	c.writeln("get_item(List, Index, Val) :- nth0(Index, List, Val).")
+	c.writeln("")
+	c.writeln("set_item(Container, Key, Val, Out) :-")
+	c.writeln("    is_dict(Container), !, (string(Key) -> atom_string(A, Key) ; A = Key), put_dict(A, Container, Val, Out).")
+	c.writeln("set_item(List, Index, Val, Out) :-")
+	c.writeln("    nth0(Index, List, _, Rest),")
+	c.writeln("    nth0(Index, Out, Val, Rest).")
+	c.writeln("")
+	c.writeln("slice(Str, I, J, Out) :-")
+	c.writeln("    string(Str), !,")
+	c.writeln("    Len is J - I,")
+	c.writeln("    sub_string(Str, I, Len, _, Out).")
+	c.writeln("slice(List, I, J, Out) :-")
+	c.writeln("    length(Prefix, I),")
+	c.writeln("    append(Prefix, Rest, List),")
+	c.writeln("    Len is J - I,")
+	c.writeln("    length(Out, Len),")
+	c.writeln("    append(Out, _, Rest).")
+	c.writeln("")
+	c.writeln("contains(Container, Item, Res) :-")
+	c.writeln("    is_dict(Container), !, (get_dict(Item, Container, _) -> Res = true ; Res = false).")
+	c.writeln("contains(List, Item, Res) :-")
+	c.writeln("    string(List), !, string_chars(List, Chars), (member(Item, Chars) -> Res = true ; Res = false).")
+	c.writeln("contains(List, Item, Res) :- (member(Item, List) -> Res = true ; Res = false).")
 	for _, st := range p.Statements {
 		if st.Fun != nil {
 			if err := c.compileFun(st.Fun); err != nil {
@@ -324,10 +352,18 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, bool, error) {
 		} else if op.Op == "%" {
 			res = fmt.Sprintf("(%s mod %s)", res, rhs)
 		} else if op.Op == "==" {
-			res = fmt.Sprintf("(%s =:= %s)", res, rhs)
+			if arith && ar {
+				res = fmt.Sprintf("(%s =:= %s)", res, rhs)
+			} else {
+				res = fmt.Sprintf("(%s == %s)", res, rhs)
+			}
 			arith = false
 		} else if op.Op == "!=" {
-			res = fmt.Sprintf("(%s =\\= %s)", res, rhs)
+			if arith && ar {
+				res = fmt.Sprintf("(%s =\\= %s)", res, rhs)
+			} else {
+				res = fmt.Sprintf("(%s \\== %s)", res, rhs)
+			}
 			arith = false
 		} else if op.Op == "<" || op.Op == "<=" || op.Op == ">" || op.Op == ">=" {
 			res = fmt.Sprintf("(%s %s %s)", res, op.Op, rhs)
@@ -337,6 +373,11 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, bool, error) {
 			arith = false
 		} else if op.Op == "||" {
 			res = fmt.Sprintf("(%s ; %s)", res, rhs)
+			arith = false
+		} else if op.Op == "in" {
+			tmp := c.newTmp()
+			c.writeln(fmt.Sprintf("contains(%s, %s, %s),", rhs, res, tmp))
+			res = tmp
 			arith = false
 		} else {
 			return "", false, fmt.Errorf("unsupported op")
@@ -365,10 +406,77 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, bool, error) {
 }
 
 func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, bool, error) {
-	if len(pf.Ops) != 0 {
-		return "", false, fmt.Errorf("postfix not supported")
+	res, arith, err := c.compilePrimary(pf.Target)
+	if err != nil {
+		return "", false, err
 	}
-	return c.compilePrimary(pf.Target)
+	for i := 0; i < len(pf.Ops); i++ {
+		op := pf.Ops[i]
+		switch {
+		case op.Index != nil:
+			idx := op.Index.Start
+			if op.Index.Colon != nil || op.Index.Colon2 != nil || op.Index.Step != nil {
+				// slice
+				if op.Index.End == nil || idx == nil {
+					return "", false, fmt.Errorf("slice not supported")
+				}
+				start, _, err := c.compileExpr(idx)
+				if err != nil {
+					return "", false, err
+				}
+				end, _, err := c.compileExpr(op.Index.End)
+				if err != nil {
+					return "", false, err
+				}
+				tmp := c.newTmp()
+				c.writeln(fmt.Sprintf("slice(%s, %s, %s, %s),", res, start, end, tmp))
+				res = tmp
+				arith = false
+			} else {
+				if idx == nil {
+					return "", false, fmt.Errorf("index missing")
+				}
+				pos, _, err := c.compileExpr(idx)
+				if err != nil {
+					return "", false, err
+				}
+				tmp := c.newTmp()
+				c.writeln(fmt.Sprintf("get_item(%s, %s, %s),", res, pos, tmp))
+				res = tmp
+				arith = false
+			}
+		case op.Field != nil && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil && op.Field.Name == "contains":
+			call := pf.Ops[i+1].Call
+			if len(call.Args) != 1 {
+				return "", false, fmt.Errorf("contains expects 1 arg")
+			}
+			arg, _, err := c.compileExpr(call.Args[0])
+			if err != nil {
+				return "", false, err
+			}
+			tmp := c.newTmp()
+			c.writeln(fmt.Sprintf("contains(%s, %s, %s),", res, arg, tmp))
+			res = tmp
+			arith = false
+			i++ // skip call op
+		case op.Cast != nil:
+			if op.Cast.Type.Simple == nil {
+				return "", false, fmt.Errorf("unsupported cast")
+			}
+			switch *op.Cast.Type.Simple {
+			case "int":
+				tmp := c.newTmp()
+				c.writeln(fmt.Sprintf("atom_number(%s, %s),", res, tmp))
+				res = tmp
+				arith = true
+			default:
+				return "", false, fmt.Errorf("unsupported cast")
+			}
+		default:
+			return "", false, fmt.Errorf("postfix not supported")
+		}
+	}
+	return res, arith, nil
 }
 
 func (c *Compiler) compilePrimary(p *parser.Primary) (string, bool, error) {
@@ -503,11 +611,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, bool, error) {
 			return "", false, err
 		}
 		tmp := c.newTmp()
-		if strings.HasPrefix(arg, "\"") {
-			c.writeln(fmt.Sprintf("string_length(%s, %s),", arg, tmp))
-		} else {
-			c.writeln(fmt.Sprintf("length(%s, %s),", arg, tmp))
-		}
+		c.writeln(fmt.Sprintf("(string(%s) -> string_length(%s, %s) ; length(%s, %s)),", arg, arg, tmp, arg, tmp))
 		return tmp, true, nil
 	case "count":
 		if len(call.Args) != 1 {

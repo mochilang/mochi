@@ -29,11 +29,13 @@ contains(List, Item, Res) :-
 contains(List, Item, Res) :- (member(Item, List) -> Res = true ; Res = false).
 :- initialization(main, main).
 main :-
-    Nums = [3, 1, 4],
-    min_list(Nums, _V0),
-    _V1 is _V0,
-    writeln(_V1),
-    max_list(Nums, _V2),
-    _V3 is _V2,
-    writeln(_V3),
+    Prefix = "fore",
+    S1 = "forest",
+    (string(Prefix) -> string_length(Prefix, _V0) ; length(Prefix, _V0)),
+    slice(S1, 0, _V0, _V1),
+    writeln((_V1 == Prefix)),
+    S2 = "desert",
+    (string(Prefix) -> string_length(Prefix, _V2) ; length(Prefix, _V2)),
+    slice(S2, 0, _V2, _V3),
+    writeln((_V3 == Prefix)),
     true.
