@@ -1,4 +1,4 @@
-# Mochi to COBOL Machine Translations (26/97 compiled)
+# Mochi to COBOL Machine Translations (28/97 compiled)
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -43,7 +43,7 @@
 - [ ] left_join_multi.mochi
 - [x] len_builtin.mochi
 - [ ] len_map.mochi
-- [ ] len_string.mochi
+- [x] len_string.mochi
 - [x] let_and_print.mochi
 - [ ] list_assign.mochi
 - [ ] list_index.mochi
@@ -83,7 +83,7 @@
 - [ ] string_in_operator.mochi
 - [ ] string_index.mochi
 - [ ] string_prefix_slice.mochi
-- [ ] substring_builtin.mochi
+- [x] substring_builtin.mochi
 - [x] sum_builtin.mochi
 - [ ] tail_recursion.mochi
 - [ ] test_block.mochi
