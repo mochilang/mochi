@@ -713,8 +713,8 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if q.Group != nil || len(q.Joins) > 0 {
-		return "", fmt.Errorf("query features not supported")
+	if len(q.Joins) > 0 {
+		return "", fmt.Errorf("join clauses not supported")
 	}
 
 	srcs := make([]string, 1+len(q.Froms))
@@ -750,8 +750,29 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 
 	var b strings.Builder
-	b.WriteString("[ | tmp |\n")
-	b.WriteString("  tmp := OrderedCollection new.\n")
+	if q.Group != nil {
+		b.WriteString("[ | groups tmp |\n")
+		b.WriteString("  groups := Dictionary new.\n")
+		b.WriteString("  tmp := OrderedCollection new.\n")
+	} else {
+		b.WriteString("[ | tmp |\n")
+		b.WriteString("  tmp := OrderedCollection new.\n")
+	}
+
+	row := ""
+	key := ""
+	if q.Group != nil {
+		fields := make([]string, len(vars))
+		for i, v := range vars {
+			fields[i] = fmt.Sprintf("#%s->%s", v, v)
+		}
+		row = "Dictionary newFrom: {" + strings.Join(fields, ". ") + "}"
+		k, err := c.compileExpr(q.Group.Exprs[0])
+		if err != nil {
+			return "", err
+		}
+		key = k
+	}
 
 	var loop func(int, string)
 	loop = func(i int, indent string) {
@@ -762,15 +783,30 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		} else {
 			if cond != "" {
 				b.WriteString(next + "(" + cond + ") ifTrue: [\n")
-				b.WriteString(next + "  tmp add: " + sel + ".\n")
-				b.WriteString(next + "].\n")
+				next += "  "
+			}
+			if q.Group != nil {
+				b.WriteString(next + "| g |\n")
+				b.WriteString(next + "g := groups at: " + key + " ifAbsentPut:[OrderedCollection new].\n")
+				b.WriteString(next + "g add: " + row + ".\n")
 			} else {
 				b.WriteString(next + "tmp add: " + sel + ".\n")
+			}
+			if cond != "" {
+				b.WriteString(indent + "  ].\n")
 			}
 		}
 		b.WriteString(indent + "].\n")
 	}
 	loop(0, "  ")
+
+	if q.Group != nil {
+		b.WriteString("  groups keysAndValuesDo: [:k :grp |\n")
+		b.WriteString("    | " + q.Group.Name + " |\n")
+		b.WriteString("    " + q.Group.Name + " := Dictionary newFrom:{#key->k. #items->grp}.\n")
+		b.WriteString("    tmp add: " + sel + ".\n")
+		b.WriteString("  ].\n")
+	}
 
 	if q.Sort != nil {
 		key, err := c.compileExpr(q.Sort)
