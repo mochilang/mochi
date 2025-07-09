@@ -2,10 +2,10 @@ fn main() {
     struct Counter {
         n: i32,
     }
-    fn inc(c: Counter) -> () {
+    fn inc(c: &mut Counter) -> () {
         c.n = c.n + 1;
     }
     let mut c = Counter { n: 0 };
-    inc(c);
+    inc(&mut c);
     println!("{:?}", c.n);
 }
