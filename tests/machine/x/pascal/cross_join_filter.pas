@@ -8,8 +8,8 @@ type
   generic TArray<T> = array of T;
 
 var
-  _tmp0: specialize TFPGMap<integer, Variant>;
-  _tmp1: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp0: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp1: specialize TFPGMap<string, Variant>;
   l: string;
   letters: specialize TArray<string>;
   n: integer;
@@ -20,19 +20,19 @@ var
 begin
   nums := specialize TArray<integer>([1, 2, 3]);
   letters := specialize TArray<string>(['A', 'B']);
-  _tmp0 := specialize TFPGMap<integer, Variant>.Create;
-  _tmp0.AddOrSetData('n', n);
-  _tmp0.AddOrSetData('l', l);
-  SetLength(_tmp1, 0);
+  SetLength(_tmp0, 0);
   for n in nums do
     begin
       for l in letters do
         begin
           if not ((n mod 2 = 0)) then continue;
-          _tmp1 := Concat(_tmp1, [_tmp0]);
+          _tmp1 := specialize TFPGMap<string, Variant>.Create;
+          _tmp1.AddOrSetData('n', n);
+          _tmp1.AddOrSetData('l', l);
+          _tmp0 := Concat(_tmp0, [_tmp1]);
         end;
     end;
-  pairs := _tmp1;
+  pairs := _tmp0;
   writeln('--- Even pairs ---');
   for p in pairs do
     begin

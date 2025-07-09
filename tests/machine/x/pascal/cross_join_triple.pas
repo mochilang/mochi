@@ -8,8 +8,8 @@ type
   generic TArray<T> = array of T;
 
 var
-  _tmp0: specialize TFPGMap<integer, Variant>;
-  _tmp1: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp0: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp1: specialize TFPGMap<string, Variant>;
   b: boolean;
   bools: specialize TArray<boolean>;
   c: specialize TFPGMap<string, Variant>;
@@ -23,22 +23,22 @@ begin
   nums := specialize TArray<integer>([1, 2]);
   letters := specialize TArray<string>(['A', 'B']);
   bools := specialize TArray<boolean>([True, False]);
-  _tmp0 := specialize TFPGMap<integer, Variant>.Create;
-  _tmp0.AddOrSetData('n', n);
-  _tmp0.AddOrSetData('l', l);
-  _tmp0.AddOrSetData('b', b);
-  SetLength(_tmp1, 0);
+  SetLength(_tmp0, 0);
   for n in nums do
     begin
       for l in letters do
         begin
           for b in bools do
             begin
-              _tmp1 := Concat(_tmp1, [_tmp0]);
+              _tmp1 := specialize TFPGMap<string, Variant>.Create;
+              _tmp1.AddOrSetData('n', n);
+              _tmp1.AddOrSetData('l', l);
+              _tmp1.AddOrSetData('b', b);
+              _tmp0 := Concat(_tmp0, [_tmp1]);
             end;
         end;
     end;
-  combos := _tmp1;
+  combos := _tmp0;
   writeln('--- Cross Join of three lists ---');
   for c in combos do
     begin
