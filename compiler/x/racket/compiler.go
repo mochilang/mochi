@@ -13,9 +13,12 @@ import (
 type Compiler struct {
 	buf              bytes.Buffer
 	needListLib      bool
+	needJSONLib      bool
+	needFuncLib      bool
 	structs          map[string][]string
 	structFieldTypes map[string]map[string]string
 	varTypes         map[string]string
+	funArity         map[string]int
 }
 
 func New() *Compiler {
@@ -23,6 +26,7 @@ func New() *Compiler {
 		structs:          make(map[string][]string),
 		structFieldTypes: make(map[string]map[string]string),
 		varTypes:         make(map[string]string),
+		funArity:         make(map[string]int),
 	}
 }
 
@@ -38,6 +42,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	out.WriteString("#lang racket\n")
 	if c.needListLib {
 		out.WriteString("(require racket/list)\n")
+	}
+	if c.needJSONLib {
+		out.WriteString("(require json)\n")
+	}
+	if c.needFuncLib {
+		out.WriteString("(require racket/function)\n")
 	}
 	out.Write(c.buf.Bytes())
 	if out.Len() == 0 || out.Bytes()[out.Len()-1] != '\n' {
@@ -98,7 +108,20 @@ func (c *Compiler) compileStmtFull(s *parser.Statement, breakLbl, contLbl, retLb
 			return nil
 		}
 		if len(s.Assign.Field) > 0 {
-			return fmt.Errorf("complex assignment not supported")
+			if len(s.Assign.Field) != 1 {
+				return fmt.Errorf("complex assignment not supported")
+			}
+			val, err := c.compileExpr(s.Assign.Value)
+			if err != nil {
+				return err
+			}
+			if t, ok := c.varTypes[s.Assign.Name]; ok && t != "" {
+				field := s.Assign.Field[0].Name
+				c.writeln(fmt.Sprintf("(set-%s-%s! %s %s)", t, field, s.Assign.Name, val))
+			} else {
+				return fmt.Errorf("unsupported statement")
+			}
+			return nil
 		}
 		val, err := c.compileExpr(s.Assign.Value)
 		if err != nil {
@@ -428,7 +451,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", fmt.Errorf("exists expects 1 arg")
 			}
 			return fmt.Sprintf("(not (null? %s))", args[0]), nil
+		case "json":
+			if len(args) != 1 {
+				return "", fmt.Errorf("json expects 1 arg")
+			}
+			c.needJSONLib = true
+			return fmt.Sprintf("(displayln (jsexpr->string %s))", args[0]), nil
 		default:
+			if ar, ok := c.funArity[p.Call.Func]; ok && len(args) < ar {
+				c.needFuncLib = true
+				if len(args) == 0 {
+					return p.Call.Func, nil
+				}
+				return fmt.Sprintf("(curry %s %s)", p.Call.Func, strings.Join(args, " ")), nil
+			}
 			return fmt.Sprintf("(%s %s)", p.Call.Func, strings.Join(args, " ")), nil
 		}
 	case p.If != nil:
@@ -619,6 +655,7 @@ func (c *Compiler) compileFun(f *parser.FunStmt) error {
 			}
 		}
 	}
+	c.funArity[f.Name] = len(f.Params)
 	c.writeln(fmt.Sprintf("(define (%s %s)", f.Name, strings.Join(params, " ")))
 	c.writeln("  (let/ec return")
 	for _, st := range f.Body {
@@ -805,7 +842,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	if len(fieldTypes) > 0 {
 		c.structFieldTypes[t.Name] = fieldTypes
 	}
-	c.writeln(fmt.Sprintf("(struct %s (%s) #:transparent)", t.Name, strings.Join(fields, " ")))
+	c.writeln(fmt.Sprintf("(struct %s (%s) #:transparent #:mutable)", t.Name, strings.Join(fields, " ")))
 	return nil
 }
 

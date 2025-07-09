@@ -1,6 +1,0 @@
-run: exit status 1
-/workspace/mochi/tests/machine/x/racket/json_builtin.rkt:3:1: json: unbound identifier
-  in: json
-  location...:
-   /workspace/mochi/tests/machine/x/racket/json_builtin.rkt:3:1
-
