@@ -340,7 +340,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		// compile variant structs
 		for _, v := range t.Variants {
 			vname := sanitizeName(v.Name)
-			c.writeln("typedef struct {")
+			c.writeln(fmt.Sprintf("typedef struct %s {", vname))
 			c.indent++
 			for _, f := range v.Fields {
 				typ := c.cType(f.Type)
@@ -350,7 +350,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 			c.writeln(fmt.Sprintf("}%s;", vname))
 		}
 		// union wrapper
-		c.writeln("typedef struct {")
+		c.writeln(fmt.Sprintf("typedef struct %s {", name))
 		c.indent++
 		c.writeln("int tag;")
 		c.writeln("union {")
@@ -380,7 +380,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		}
 		return nil
 	}
-	c.writeln("typedef struct {")
+	c.writeln(fmt.Sprintf("typedef struct %s {", name))
 	c.indent++
 	var fields map[string]types.Type
 	var order []string
@@ -2304,6 +2304,22 @@ func (c *Compiler) compileUnary(u *parser.Unary) string {
 }
 
 func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
+	// Special case: casting a map literal to a struct should
+	// produce a direct struct initializer without generating
+	// an intermediate map value.
+	if p.Target != nil && p.Target.Map != nil && len(p.Ops) == 1 && p.Ops[0].Cast != nil {
+		ct := resolveTypeRef(p.Ops[0].Cast.Type, c.env)
+		if st, ok := ct.(types.StructType); ok {
+			parts := make([]string, len(p.Target.Map.Items))
+			for i, it := range p.Target.Map.Items {
+				key, _ := types.SimpleStringKey(it.Key)
+				val := c.compileExpr(it.Value)
+				parts[i] = fmt.Sprintf(".%s = %s", sanitizeName(key), val)
+			}
+			return fmt.Sprintf("(%s){%s}", sanitizeName(st.Name), strings.Join(parts, ", "))
+		}
+	}
+
 	expr := c.compilePrimary(p.Target)
 	isStr := isStringPrimary(p.Target, c.env)
 	isFloatList := isListFloatPrimary(p.Target, c.env)
