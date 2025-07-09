@@ -224,7 +224,7 @@ func TestTSCompiler_TPCHQueries(t *testing.T) {
 		t.Skipf("deno not installed: %v", err)
 	}
 	root := findRepoRoot(t)
-	for i := 1; i <= 2; i++ {
+	for i := 1; i <= 22; i++ {
 		base := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "tpc-h", base+".mochi")
 		codeWantPath := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "ts", base+".ts.out")
