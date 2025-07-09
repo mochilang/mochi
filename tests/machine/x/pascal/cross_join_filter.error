@@ -4,13 +4,9 @@ Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling /workspace/mochi/tests/machine/x/pascal/cross_join_filter.pas
-cross_join_filter.pas(24,25) Error: Incompatible type for arg no. 1: Got "Char", expected "LongInt"
-cross_join_filter.pas(25,25) Error: Incompatible type for arg no. 1: Got "Char", expected "LongInt"
-cross_join_filter.pas(32,41) Error: Incompatible types: got "{Array Of Const/Constant Open} Array of TFPGMap$2$crcB529B9ED" expected "TArray$1$crcE0B4E8C7"
-cross_join_filter.pas(32,35) Error: Incompatible types: got "TFPGMap<System.LongInt,System.Variant>" expected "TFPGMap<System.ShortString,System.Variant>"
 cross_join_filter.pas(39,17) Error: identifier idents no member "n"
 cross_join_filter.pas(39,27) Error: identifier idents no member "l"
-cross_join_filter.pas(42) Fatal: There were 6 errors compiling module, stopping
+cross_join_filter.pas(42) Fatal: There were 2 errors compiling module, stopping
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode
 

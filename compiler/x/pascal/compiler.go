@@ -2023,57 +2023,89 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	fromSrcs := make([]string, len(q.Froms))
-	for i, f := range q.Froms {
+	type srcInfo struct {
+		varName string
+		expr    string
+		elem    types.Type
+		joinOn  string
+		left    bool
+	}
+	sources := []srcInfo{}
+	firstT := types.TypeOfExpr(q.Source, c.env)
+	var firstElem types.Type = types.AnyType{}
+	if lt, ok := firstT.(types.ListType); ok {
+		firstElem = lt.Elem
+	}
+	srcInfoFirst := srcInfo{varName: q.Var, expr: src, elem: firstElem}
+
+	// handle single right join by swapping order
+	if len(q.Joins) == 1 && len(q.Froms) == 0 {
+		j := q.Joins[0]
+		if j.Side != nil && *j.Side == "right" {
+			je, err := c.compileExpr(j.Src)
+			if err != nil {
+				return "", err
+			}
+			jt := types.TypeOfExpr(j.Src, c.env)
+			var jElem types.Type = types.AnyType{}
+			if lt, ok := jt.(types.ListType); ok {
+				jElem = lt.Elem
+			}
+			sources = append(sources, srcInfo{varName: j.Var, expr: je, elem: jElem})
+			// second source is the original
+			sources = append(sources, srcInfo{varName: q.Var, expr: src, elem: firstElem, joinOn: "", left: true})
+			qVar := q.Var
+			q.Var = j.Var
+			q.Joins = nil
+			q.Froms = nil
+			// rebuild join info for the swapped case
+			q.Joins = []*parser.JoinClause{{Var: qVar, Src: q.Source, On: j.On}}
+			srcInfoFirst = sources[0]
+			goto buildSources
+		}
+	}
+
+buildSources:
+	sources = append(sources, srcInfoFirst)
+	for _, f := range q.Froms {
 		fs, err := c.compileExpr(f.Src)
 		if err != nil {
 			return "", err
 		}
-		fromSrcs[i] = fs
-	}
-	joinSrcs := make([]string, len(q.Joins))
-	for i, j := range q.Joins {
-		js, err := c.compileExpr(j.Src)
-		if err != nil {
-			return "", err
-		}
-		joinSrcs[i] = js
-	}
-
-	orig := c.env
-	child := types.NewEnv(c.env)
-	srcType := types.TypeOfExpr(q.Source, c.env)
-	var elem types.Type = types.AnyType{}
-	if lt, ok := srcType.(types.ListType); ok {
-		elem = lt.Elem
-	}
-	child.SetVar(q.Var, elem, true)
-	for _, f := range q.Froms {
-		ft := types.TypeOfExpr(f.Src, child)
+		ft := types.TypeOfExpr(f.Src, c.env)
 		var fe types.Type = types.AnyType{}
 		if lt, ok := ft.(types.ListType); ok {
 			fe = lt.Elem
 		}
-		child.SetVar(f.Var, fe, true)
+		sources = append(sources, srcInfo{varName: f.Var, expr: fs, elem: fe})
 	}
 	for _, j := range q.Joins {
-		jt := types.TypeOfExpr(j.Src, child)
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			return "", err
+		}
+		jt := types.TypeOfExpr(j.Src, c.env)
 		var je types.Type = types.AnyType{}
 		if lt, ok := jt.(types.ListType); ok {
 			je = lt.Elem
 		}
-		child.SetVar(j.Var, je, true)
-	}
-	c.env = child
-	joinOns := make([]string, len(q.Joins))
-	for i, j := range q.Joins {
+		left := false
+		if j.Side != nil && *j.Side == "left" {
+			left = true
+		}
 		on, err := c.compileExpr(j.On)
 		if err != nil {
-			c.env = orig
 			return "", err
 		}
-		joinOns[i] = on
+		sources = append(sources, srcInfo{varName: j.Var, expr: js, elem: je, joinOn: on, left: left})
 	}
+
+	orig := c.env
+	child := types.NewEnv(c.env)
+	for _, s := range sources {
+		child.SetVar(s.varName, s.elem, true)
+	}
+	c.env = child
 	var condParts []string
 	var skipStr, takeStr string
 	hasSort := q.Sort != nil
@@ -2103,6 +2135,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	condStr := strings.Join(condParts, " and ")
 	elemType := typeString(types.TypeOfExpr(q.Select, child))
+	if strings.HasPrefix(elemType, "specialize TFPGMap") {
+		elemType = "specialize TFPGMap<string, Variant>"
+	}
 	if elemType == "" {
 		elemType = "integer"
 	}
@@ -2114,50 +2149,104 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		keyVar = c.newTypedVar("specialize TArray<Variant>")
 		c.writeln(fmt.Sprintf("SetLength(%s, 0);", keyVar))
 	}
-	c.writeln(fmt.Sprintf("for %s in %s do", sanitizeName(q.Var), src))
-	c.writeln("begin")
-	c.indent++
-	for i, fs := range fromSrcs {
-		c.writeln(fmt.Sprintf("for %s in %s do", sanitizeName(q.Froms[i].Var), fs))
-		c.writeln("begin")
-		c.indent++
-	}
-	for i, js := range joinSrcs {
-		c.writeln(fmt.Sprintf("for %s in %s do", sanitizeName(q.Joins[i].Var), js))
-		c.writeln("begin")
-		c.indent++
-		if joinOns[i] != "" {
-			c.writeln(fmt.Sprintf("if not (%s) then continue;", joinOns[i]))
+	emitBody := func() error {
+		if condStr != "" {
+			c.writeln(fmt.Sprintf("if not (%s) then continue;", condStr))
 		}
+		valExpr, err := c.compileExpr(q.Select)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("%s := Concat(%s, [%s]);", tmp, tmp, valExpr))
+		if hasSort {
+			sortExpr, err := c.compileExpr(q.Sort)
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("%s := Concat(%s, [%s]);", keyVar, keyVar, sortExpr))
+		}
+		return nil
 	}
-	if condStr != "" {
-		c.writeln(fmt.Sprintf("if not (%s) then continue;", condStr))
+
+	var loop func(int) error
+	loop = func(i int) error {
+		src := sources[i]
+		name := sanitizeName(src.varName)
+		if src.joinOn == "" && !src.left {
+			c.writeln(fmt.Sprintf("for %s in %s do", name, src.expr))
+			c.writeln("begin")
+			c.indent++
+			if i+1 < len(sources) {
+				if err := loop(i + 1); err != nil {
+					return err
+				}
+			} else {
+				if err := emitBody(); err != nil {
+					return err
+				}
+			}
+			c.indent--
+			c.writeln("end;")
+		} else if src.left {
+			matched := c.newTypedVar("boolean")
+			c.writeln(fmt.Sprintf("%s := False;", matched))
+			c.writeln(fmt.Sprintf("for %s in %s do", name, src.expr))
+			c.writeln("begin")
+			c.indent++
+			if src.joinOn != "" {
+				c.writeln(fmt.Sprintf("if not (%s) then continue;", src.joinOn))
+			}
+			c.writeln(fmt.Sprintf("%s := True;", matched))
+			if i+1 < len(sources) {
+				if err := loop(i + 1); err != nil {
+					return err
+				}
+			} else {
+				if err := emitBody(); err != nil {
+					return err
+				}
+			}
+			c.indent--
+			c.writeln("end;")
+			c.writeln(fmt.Sprintf("if not %s then", matched))
+			c.writeln("begin")
+			c.indent++
+			c.writeln(fmt.Sprintf("%s := %s;", name, defaultValue(src.elem)))
+			if i+1 < len(sources) {
+				if err := loop(i + 1); err != nil {
+					return err
+				}
+			} else {
+				if err := emitBody(); err != nil {
+					return err
+				}
+			}
+			c.indent--
+			c.writeln("end;")
+		} else {
+			c.writeln(fmt.Sprintf("for %s in %s do", name, src.expr))
+			c.writeln("begin")
+			c.indent++
+			c.writeln(fmt.Sprintf("if not (%s) then continue;", src.joinOn))
+			if i+1 < len(sources) {
+				if err := loop(i + 1); err != nil {
+					return err
+				}
+			} else {
+				if err := emitBody(); err != nil {
+					return err
+				}
+			}
+			c.indent--
+			c.writeln("end;")
+		}
+		return nil
 	}
-	valExpr, err := c.compileExpr(q.Select)
-	if err != nil {
+
+	if err := loop(0); err != nil {
 		c.env = orig
 		return "", err
 	}
-	c.writeln(fmt.Sprintf("%s := Concat(%s, [%s]);", tmp, tmp, valExpr))
-	if hasSort {
-		sortExpr, err := c.compileExpr(q.Sort)
-		if err != nil {
-			c.env = orig
-			return "", err
-		}
-		c.writeln(fmt.Sprintf("%s := Concat(%s, [%s]);", keyVar, keyVar, sortExpr))
-	}
-	// condStr does not open a begin/end block anymore
-	for range joinSrcs {
-		c.indent--
-		c.writeln("end;")
-	}
-	for range fromSrcs {
-		c.indent--
-		c.writeln("end;")
-	}
-	c.indent--
-	c.writeln("end;")
 
 	result := tmp
 	if hasSort {

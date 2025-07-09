@@ -489,3 +489,10 @@ func stringKey(e *parser.Expr) (string, bool) {
 	}
 	return "", false
 }
+
+func asMapLiteral(e *parser.Expr) *parser.MapLiteral {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil || e.Binary.Left.Value.Target == nil {
+		return nil
+	}
+	return e.Binary.Left.Value.Target.Map
+}
