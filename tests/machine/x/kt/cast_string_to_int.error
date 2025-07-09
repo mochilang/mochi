@@ -1,6 +1,0 @@
-Error on line 0: run error: exit status 1
-Exception in thread "main" java.lang.ClassCastException: class java.lang.String cannot be cast to class java.lang.Integer (java.lang.String and java.lang.Integer are in module java.base of loader 'bootstrap')
-	at Cast_string_to_intKt.main(cast_string_to_int.kt:2)
-	at Cast_string_to_intKt.main(cast_string_to_int.kt)
-
-1: fun main() {

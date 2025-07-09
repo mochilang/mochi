@@ -1,2 +1,0 @@
-Error on line 0: compile error: statement not supported at line 2
-1: fun outer(x: int): int {
