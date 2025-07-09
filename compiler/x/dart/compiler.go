@@ -98,7 +98,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	out.Write(fnBuf.Bytes())
 	out.Write(mainBytes)
-	return out.Bytes(), nil
+	return formatDart(out.Bytes()), nil
 }
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
