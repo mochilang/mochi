@@ -1,0 +1,3 @@
+--- Left Join ---
+Order 100 customer map[id:1 name:Alice] total 250
+Order 101 customer null total 80

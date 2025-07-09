@@ -1,0 +1,44 @@
+#[derive(Clone, Debug, Default)]
+struct Customer {
+    id: i64,
+    name: String,
+}
+
+#[derive(Clone, Debug, Default)]
+struct Order {
+    id: i64,
+    customerId: i64,
+    total: i64,
+}
+
+#[derive(Clone, Debug, Default)]
+struct PairInfo {
+    orderId: i64,
+    customer: Option<Customer>,
+    total: i64,
+}
+
+fn main() {
+    let mut customers = vec![Customer { id: 1, name: "Alice".to_string() }, Customer { id: 2, name: "Bob".to_string() }];
+    let mut orders = vec![Order { id: 100, customerId: 1, total: 250 }, Order { id: 101, customerId: 3, total: 80 }];
+    let mut result = {
+    let mut _res = Vec::new();
+    for o in orders.clone() {
+        let mut _matched = false;
+        for c in customers.clone() {
+            if !(o.customerId == c.id) { continue; }
+            _matched = true;
+            _res.push(PairInfo { orderId: o.id, customer: Some(c), total: o.total });
+        }
+        if !_matched {
+            let c = Option::<Customer>::None;
+            _res.push(PairInfo { orderId: o.id, customer: c, total: o.total });
+        }
+    }
+    _res
+};
+    println!("{}", "--- Left Join ---");
+    for entry in result {
+        println!("{} {} {} {:?} {} {}", "Order", entry.orderId, "customer", entry.customer, "total", entry.total);
+    }
+}

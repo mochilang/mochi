@@ -1347,6 +1347,127 @@ func (c *Compiler) compileGroupBySimple(q *parser.QueryExpr, src string, child *
 	b.WriteString(" result }")
 	return b.String(), nil
 }
+
+func (c *Compiler) compileLeftJoinSimple(q *parser.QueryExpr, src string, child *types.Env, fromSrcs []string, joinSrc, joinCond string) (string, error) {
+	orig := c.env
+	c.env = child
+	var cond, sortExpr, skipExpr, takeExpr string
+	var err error
+	if q.Where != nil {
+		cond, err = c.compileExpr(q.Where)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Sort != nil {
+		sortExpr, err = c.compileExpr(q.Sort)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Skip != nil {
+		skipExpr, err = c.compileExpr(q.Skip)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Take != nil {
+		takeExpr, err = c.compileExpr(q.Take)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	var sel string
+	if ml := tryMapLiteral(q.Select); ml != nil {
+		name := c.newStructName("Result")
+		sel, err = c.compileMapLiteralAsStruct(name, ml)
+	} else {
+		sel, err = c.compileExpr(q.Select)
+	}
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+
+	tmp := c.newTmp()
+	var b strings.Builder
+	b.WriteString("{ let mut ")
+	b.WriteString(tmp)
+	b.WriteString(" = Vec::new();")
+	b.WriteString(fmt.Sprintf("for &%s in &%s {", q.Var, src))
+	for i, fs := range fromSrcs {
+		b.WriteString(fmt.Sprintf(" for &%s in &%s {", q.Froms[i].Var, fs))
+	}
+	b.WriteString(" let mut _matched = false;")
+	b.WriteString(fmt.Sprintf(" for &%s in &%s {", q.Joins[0].Var, joinSrc))
+	if joinCond != "" {
+		b.WriteString(" if !(" + joinCond + ") { continue; }")
+	}
+	if cond != "" {
+		b.WriteString(" if !(" + cond + ") { continue; }")
+	}
+	b.WriteString(" _matched = true;")
+	if sortExpr != "" {
+		item := c.newTmp()
+		key := c.newTmp()
+		b.WriteString(" let " + item + " = " + sel + ";")
+		b.WriteString(" let " + key + " = " + sortExpr + ";")
+		b.WriteString(" " + tmp + ".push((" + key + ", " + item + "));")
+	} else {
+		b.WriteString(" " + tmp + ".push(" + sel + ");")
+	}
+	b.WriteString(" }")
+	b.WriteString(" if !_matched {")
+	b.WriteString(fmt.Sprintf(" let %s = Default::default();", q.Joins[0].Var))
+	if cond != "" {
+		b.WriteString(" if (" + cond + ") { " + tmp + ".push(" + sel + "); }")
+	} else {
+		b.WriteString(" " + tmp + ".push(" + sel + ");")
+	}
+	b.WriteString(" }")
+	for range fromSrcs {
+		b.WriteString(" }")
+	}
+	b.WriteString(" }")
+	if sortExpr != "" {
+		b.WriteString(" " + tmp + ".sort_by(|a,b| a.0.partial_cmp(&b.0).unwrap());")
+		res := c.newTmp()
+		b.WriteString(" let mut " + res + " = Vec::new();")
+		b.WriteString(" for p in " + tmp + " { " + res + ".push(p.1); }")
+		tmp = res
+	}
+	if skipExpr != "" || takeExpr != "" {
+		start := "0usize"
+		if skipExpr != "" {
+			start = skipExpr + " as usize"
+		}
+		end := ""
+		if takeExpr != "" {
+			if skipExpr != "" {
+				end = "(" + skipExpr + " + " + takeExpr + ") as usize"
+			} else {
+				end = takeExpr + " as usize"
+			}
+		} else {
+			end = tmp + ".len()"
+		}
+		b.WriteString(" let " + tmp + " = " + tmp + "[" + start + ".." + end + "].to_vec();")
+	}
+	if q.Distinct {
+		uniq := c.newTmp()
+		b.WriteString(" let mut set = std::collections::HashSet::new();")
+		b.WriteString(" let mut " + uniq + " = Vec::new();")
+		b.WriteString(" for v in " + tmp + ".into_iter() { if set.insert(v.clone()) { " + uniq + ".push(v); } }")
+		b.WriteString(" let " + tmp + " = " + uniq + ";")
+	}
+	b.WriteString(" " + tmp + " }")
+	c.env = orig
+	return b.String(), nil
+}
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if q.Group != nil && len(q.Joins) > 0 {
 		return "", fmt.Errorf("join with grouping not supported")
@@ -1397,6 +1518,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	joinSrcs := make([]string, len(q.Joins))
 	joinConds := make([]string, len(q.Joins))
+	joinSides := make([]string, len(q.Joins))
 	for i, j := range q.Joins {
 		js, err := c.compileExpr(j.Src)
 		if err != nil {
@@ -1428,6 +1550,16 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			joinConds[i] = cond
 		}
 		if j.Side != nil {
+			joinSides[i] = *j.Side
+		}
+	}
+	if len(q.Joins) == 1 && joinSides[0] == "left" {
+		res, err := c.compileLeftJoinSimple(q, src, child, fromSrcs, joinSrcs[0], joinConds[0])
+		c.env = origEnv
+		return res, err
+	}
+	for _, s := range joinSides {
+		if s != "" {
 			return "", fmt.Errorf("join sides not supported")
 		}
 	}
