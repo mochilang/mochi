@@ -386,7 +386,11 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		case "%":
 			opStr = "mod"
 		case "in":
-			res = fmt.Sprintf("(List.mem %s %s)", res, r)
+			if c.isMapPostfix(op.Right) {
+				res = fmt.Sprintf("(List.mem_assoc %s %s)", res, r)
+			} else {
+				res = fmt.Sprintf("(List.mem %s %s)", res, r)
+			}
 			continue
 		}
 		if opStr == "+" && isStringUnary(b.Left) && isStringExprExpr(op.Right) {
@@ -761,6 +765,23 @@ func isMapPrimary(p *parser.Primary) bool {
 		return false
 	}
 	return p.Map != nil
+}
+
+func (c *Compiler) isMapPostfix(p *parser.PostfixExpr) bool {
+	if p == nil || p.Target == nil {
+		return false
+	}
+	if p.Target.Map != nil {
+		return true
+	}
+	if p.Target.Selector != nil && len(p.Ops) == 0 {
+		if typ, err := c.env.GetVar(p.Target.Selector.Root); err == nil {
+			if _, ok := typ.(types.MapType); ok {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func isStringUnary(u *parser.Unary) bool {
