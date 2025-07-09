@@ -874,6 +874,17 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		child.SetVar(f.Var, fe, true)
 	}
+	for _, j := range q.Joins {
+		jt := types.TypeOfExpr(j.Src, c.env)
+		var je types.Type = types.AnyType{}
+		if lt, ok := jt.(types.ListType); ok {
+			je = lt.Elem
+			if _, ok := lt.Elem.(types.MapType); ok {
+				c.mapVars[j.Var] = true
+			}
+		}
+		child.SetVar(j.Var, je, true)
+	}
 	c.env = child
 
 	w("(() {\n")
@@ -888,6 +899,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 
 	loops := []string{fmt.Sprintf("var %s in %s", q.Var, c.mustExpr(q.Source))}
+	conds := []string{""}
 	// mark main variable type
 	if t := types.TypeOfExpr(q.Source, c.env); t != nil {
 		if lt, ok := t.(types.ListType); ok {
@@ -898,6 +910,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	for _, f := range q.Froms {
 		loops = append(loops, fmt.Sprintf("var %s in %s", f.Var, c.mustExpr(f.Src)))
+		conds = append(conds, "")
 		if t := types.TypeOfExpr(f.Src, c.env); t != nil {
 			if lt, ok := t.(types.ListType); ok {
 				if _, ok := lt.Elem.(types.MapType); ok {
@@ -906,9 +919,23 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			}
 		}
 	}
+	for _, j := range q.Joins {
+		loops = append(loops, fmt.Sprintf("var %s in %s", j.Var, c.mustExpr(j.Src)))
+		conds = append(conds, c.mustExpr(j.On))
+		if t := types.TypeOfExpr(j.Src, c.env); t != nil {
+			if lt, ok := t.(types.ListType); ok {
+				if _, ok := lt.Elem.(types.MapType); ok {
+					c.mapVars[j.Var] = true
+				}
+			}
+		}
+	}
 
 	for i, loop := range loops {
 		w(strings.Repeat("  ", i+1) + "for (" + loop + ") {\n")
+		if c := conds[i]; c != "" {
+			w(strings.Repeat("  ", i+2) + fmt.Sprintf("if (!(%s)) continue;\n", c))
+		}
 	}
 
 	if q.Where != nil {
