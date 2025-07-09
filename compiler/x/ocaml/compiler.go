@@ -85,6 +85,33 @@ func (c *Compiler) Compile(prog *parser.Program, _ string) ([]byte, error) {
 	c.writeln("let string_slice s i j = String.sub s i (j - i)")
 	c.buf.WriteByte('\n')
 
+	// basic helpers for list and map updates and set operations
+	c.writeln("let list_set lst idx value =")
+	c.indent++
+	c.writeln("List.mapi (fun i v -> if i = idx then value else v) lst")
+	c.indent--
+	c.buf.WriteByte('\n')
+
+	c.writeln("let rec map_set m k v =")
+	c.indent++
+	c.writeln("match m with")
+	c.indent++
+	c.writeln("| [] -> [(k,v)]")
+	c.writeln("| (k2,v2)::tl -> if k2 = k then (k,v)::tl else (k2,v2)::map_set tl k v")
+	c.indent--
+	c.indent--
+	c.buf.WriteByte('\n')
+
+	c.writeln("let map_get m k = Obj.obj (List.assoc k m)")
+	c.buf.WriteByte('\n')
+
+	c.writeln("let list_union a b = List.sort_uniq compare (a @ b)")
+	c.writeln("let list_except a b = List.filter (fun x -> not (List.mem x b)) a")
+	c.writeln("let list_intersect a b = List.filter (fun x -> List.mem x b) a |> List.sort_uniq compare")
+	c.writeln("let list_union_all a b = a @ b")
+	c.writeln("let sum lst = List.fold_left (+) 0 lst")
+	c.buf.WriteByte('\n')
+
 	// first emit type, function and variable declarations
 	for _, s := range prog.Statements {
 		switch {
@@ -225,18 +252,37 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 		return err
 	}
 	if len(a.Index) > 0 && c.vars[a.Name] {
-		idx, err := c.compileExpr(a.Index[0].Start)
-		if err != nil {
-			return err
-		}
 		typ, _ := c.env.GetVar(a.Name)
-		switch typ.(type) {
-		case types.MapType:
-			c.writeln(fmt.Sprintf("%s := (let rec __upd l = match l with | [] -> [(%s,Obj.repr %s)] | (k,v)::tl -> if k = %s then (%s,Obj.repr %s)::tl else (k,v)::__upd tl in __upd !%s);", a.Name, idx, val, idx, idx, val, a.Name))
-		default:
-			c.writeln(fmt.Sprintf("%s := List.mapi (fun i v -> if i = %s then %s else v) !%s;", a.Name, idx, val, a.Name))
+		if len(a.Index) == 1 {
+			idx, err := c.compileExpr(a.Index[0].Start)
+			if err != nil {
+				return err
+			}
+			switch typ.(type) {
+			case types.MapType:
+				c.writeln(fmt.Sprintf("%s := map_set !%s %s (Obj.repr %s);", a.Name, a.Name, idx, val))
+			default:
+				c.writeln(fmt.Sprintf("%s := list_set !%s %s %s;", a.Name, a.Name, idx, val))
+			}
+			return nil
 		}
-		return nil
+		if len(a.Index) == 2 {
+			idx1, err := c.compileExpr(a.Index[0].Start)
+			if err != nil {
+				return err
+			}
+			idx2, err := c.compileExpr(a.Index[1].Start)
+			if err != nil {
+				return err
+			}
+			switch typ.(type) {
+			case types.MapType:
+				c.writeln(fmt.Sprintf("%s := map_set !%s %s (Obj.repr (map_set (map_get !%s %s) %s (Obj.repr %s)));", a.Name, a.Name, idx1, a.Name, idx1, idx2, val))
+			default:
+				c.writeln(fmt.Sprintf("%s := list_set !%s %s (list_set (List.nth !%s %s) %s %s);", a.Name, a.Name, idx1, a.Name, idx1, idx2, val))
+			}
+			return nil
+		}
 	}
 	if len(a.Field) > 0 {
 		field := a.Field[0].Name
@@ -494,6 +540,19 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				res = fmt.Sprintf("(List.mem %s %s)", res, r)
 			}
 			continue
+		case "union":
+			if op.All {
+				res = fmt.Sprintf("(list_union_all %s %s)", res, r)
+			} else {
+				res = fmt.Sprintf("(list_union %s %s)", res, r)
+			}
+			continue
+		case "except":
+			res = fmt.Sprintf("(list_except %s %s)", res, r)
+			continue
+		case "intersect":
+			res = fmt.Sprintf("(list_intersect %s %s)", res, r)
+			continue
 		}
 		if opStr == "+" && isStringUnary(b.Left) && isStringExprExpr(op.Right) {
 			res = fmt.Sprintf("(%s ^ %s)", res, r)
@@ -581,7 +640,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if isStringPrimary(p.Target) {
 					val = fmt.Sprintf("String.make 1 (String.get %s %s)", val, idx)
 				} else if c.isMapPrimary(p.Target) || isStringExpr(op.Index.Start) {
-					val = fmt.Sprintf("Obj.obj (List.assoc %s %s)", idx, val)
+					val = fmt.Sprintf("Obj.obj (List.assoc %s (%s))", idx, val)
 				} else {
 					val = fmt.Sprintf("List.nth %s %s", val, idx)
 				}
@@ -782,6 +841,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("avg expects 1 arg")
 		}
 		return fmt.Sprintf("(List.fold_left (+) 0 %s / List.length %s)", args[0], args[0]), nil
+	case "sum":
+		if len(args) != 1 {
+			return "", fmt.Errorf("sum expects 1 arg")
+		}
+		return fmt.Sprintf("(sum %s)", args[0]), nil
 	case "substring":
 		if len(args) != 3 {
 			return "", fmt.Errorf("substring expects 3 args")
