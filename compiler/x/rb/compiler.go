@@ -22,11 +22,14 @@ type Compiler struct {
 	useOpenStruct bool
 	helpers       map[string]bool
 	structs       map[string]bool
+	globals       map[string]bool
+	queryRows     map[string][]string
+	inKeyContext  bool
 }
 
 // New creates a new Ruby compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, helpers: make(map[string]bool), structs: make(map[string]bool)}
+	return &Compiler{env: env, helpers: make(map[string]bool), structs: make(map[string]bool), globals: make(map[string]bool), queryRows: make(map[string][]string)}
 }
 
 func (c *Compiler) newTmp() string {
@@ -129,6 +132,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return nil
 	case s.Expect != nil:
 		return c.compileExpect(s.Expect)
+	case s.Update != nil:
+		return c.compileUpdate(s.Update)
 	default:
 		return nil
 	}
@@ -152,7 +157,12 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 		}
 		c.env.SetVar(l.Name, typ, false)
 	}
-	c.writeln(fmt.Sprintf("%s = %s", sanitizeName(l.Name), val))
+	name := sanitizeName(l.Name)
+	if c.indent == 0 {
+		c.globals[name] = true
+		name = "$" + name
+	}
+	c.writeln(fmt.Sprintf("%s = %s", name, val))
 	return nil
 }
 
@@ -176,7 +186,12 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 		}
 		c.env.SetVar(v.Name, typ, true)
 	}
-	c.writeln(fmt.Sprintf("%s = %s", sanitizeName(v.Name), val))
+	name := sanitizeName(v.Name)
+	if c.indent == 0 {
+		c.globals[name] = true
+		name = "$" + name
+	}
+	c.writeln(fmt.Sprintf("%s = %s", name, val))
 	return nil
 }
 
@@ -499,6 +514,7 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	needsHelper := false
+	var rowMapping []string
 	for _, j := range q.Joins {
 		if j.Side != nil {
 			needsHelper = true
@@ -562,7 +578,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			}
 		}
 		if q.Sort != nil {
-			sortStr, err = c.compileExpr(q.Sort)
+			sortStr, err = c.compileExprKey(q.Sort)
 			if err != nil {
 				return "", err
 			}
@@ -619,13 +635,16 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		var sortExpr, skipExpr, takeExpr string
 		if q.Group != nil {
+			vars := append([]string{sanitizeName(q.Var)}, names[1:]...)
+			c.queryRows[q.Group.Name] = vars
 			if q.Sort != nil {
 				genv := types.NewEnv(c.env)
 				genv.SetVar(q.Group.Name, types.AnyType{}, true)
 				c.env = genv
-				sortExpr, err = c.compileExpr(q.Sort)
+				sortExpr, err = c.compileExprKey(q.Sort)
 				c.env = origEnv
 				if err != nil {
+					delete(c.queryRows, q.Group.Name)
 					return "", err
 				}
 			}
@@ -636,6 +655,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				skipExpr, err = c.compileExpr(q.Skip)
 				c.env = origEnv
 				if err != nil {
+					delete(c.queryRows, q.Group.Name)
 					return "", err
 				}
 			}
@@ -646,9 +666,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				takeExpr, err = c.compileExpr(q.Take)
 				c.env = origEnv
 				if err != nil {
+					delete(c.queryRows, q.Group.Name)
 					return "", err
 				}
 			}
+			delete(c.queryRows, q.Group.Name)
 		}
 		var b strings.Builder
 		b.WriteString("(begin\n")
@@ -692,6 +714,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			b.WriteString("\t_res = []\n")
 			b.WriteString("\tfor " + sanitizeName(q.Group.Name) + " in " + tmpName + "\n")
 			var valExpr string
+			vars := append([]string{sanitizeName(q.Var)}, names[1:]...)
+			c.queryRows[q.Group.Name] = vars
 			if c.env != nil {
 				origEnv := c.env
 				genv := types.NewEnv(c.env)
@@ -700,14 +724,17 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				valExpr, err = c.compileExpr(q.Select)
 				c.env = origEnv
 				if err != nil {
+					delete(c.queryRows, q.Group.Name)
 					return "", err
 				}
 			} else {
 				valExpr, err = c.compileExpr(q.Select)
 				if err != nil {
+					delete(c.queryRows, q.Group.Name)
 					return "", err
 				}
 			}
+			delete(c.queryRows, q.Group.Name)
 			b.WriteString("\t\t_res << " + valExpr + "\n")
 			b.WriteString("\tend\n")
 			b.WriteString("\t_res\n")
@@ -729,6 +756,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		iter := sanitizeName(q.Var)
+		if name, ok := identName(q.Source); ok {
+			if vars, ok2 := c.queryRows[name]; ok2 {
+				rowMapping = vars
+				c.queryRows[q.Var] = vars
+			}
+		}
 
 		fromSrcs := make([]string, len(q.Froms))
 		for i, f := range q.Froms {
@@ -765,8 +798,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		var sortVal, skipVal, takeVal string
 		if q.Sort != nil {
-			v, err := c.compileExpr(q.Sort)
+			v, err := c.compileExprKey(q.Sort)
 			if err != nil {
+				if rowMapping != nil {
+					delete(c.queryRows, q.Var)
+				}
 				return "", err
 			}
 			sortVal = v
@@ -985,6 +1021,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 	iter := sanitizeName(q.Var)
+	if name, ok := identName(q.Source); ok {
+		if vars, ok2 := c.queryRows[name]; ok2 {
+			rowMapping = vars
+			c.queryRows[q.Var] = vars
+		}
+	}
 
 	// simple grouping without additional clauses
 	if q.Group != nil && len(q.Froms) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
@@ -1007,13 +1049,19 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if q.Where != nil {
 			cond, err := c.compileExpr(q.Where)
 			if err != nil {
+				if rowMapping != nil {
+					delete(c.queryRows, q.Var)
+				}
 				return "", err
 			}
 			expr = fmt.Sprintf("(%s).select { |%s| %s }", expr, iter, cond)
 		}
 		if q.Sort != nil {
-			val, err := c.compileExpr(q.Sort)
+			val, err := c.compileExprKey(q.Sort)
 			if err != nil {
+				if rowMapping != nil {
+					delete(c.queryRows, q.Var)
+				}
 				return "", err
 			}
 			expr = fmt.Sprintf("(%s).sort_by { |%s| %s }", expr, iter, val)
@@ -1021,6 +1069,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if q.Skip != nil {
 			val, err := c.compileExpr(q.Skip)
 			if err != nil {
+				if rowMapping != nil {
+					delete(c.queryRows, q.Var)
+				}
 				return "", err
 			}
 			expr = fmt.Sprintf("(%s).drop(%s)", expr, val)
@@ -1028,13 +1079,22 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if q.Take != nil {
 			val, err := c.compileExpr(q.Take)
 			if err != nil {
+				if rowMapping != nil {
+					delete(c.queryRows, q.Var)
+				}
 				return "", err
 			}
 			expr = fmt.Sprintf("(%s).take(%s)", expr, val)
 		}
 		sel, err := c.compileExpr(q.Select)
 		if err != nil {
+			if rowMapping != nil {
+				delete(c.queryRows, q.Var)
+			}
 			return "", err
+		}
+		if rowMapping != nil {
+			delete(c.queryRows, q.Var)
 		}
 		expr = fmt.Sprintf("(%s).map { |%s| %s }", expr, iter, sel)
 		return expr, nil
@@ -1065,6 +1125,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if q.Skip != nil {
 		v, err := c.compileExpr(q.Skip)
 		if err != nil {
+			if rowMapping != nil {
+				delete(c.queryRows, q.Var)
+			}
 			return "", err
 		}
 		skipVal = v
@@ -1072,6 +1135,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if q.Take != nil {
 		v, err := c.compileExpr(q.Take)
 		if err != nil {
+			if rowMapping != nil {
+				delete(c.queryRows, q.Var)
+			}
 			return "", err
 		}
 		takeVal = v
@@ -1128,6 +1194,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 // --- Expressions ---
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) { return c.compileBinaryExpr(e.Binary) }
+
+func (c *Compiler) compileExprKey(e *parser.Expr) (string, error) {
+	saved := c.inKeyContext
+	c.inKeyContext = true
+	v, err := c.compileExpr(e)
+	c.inKeyContext = saved
+	return v, err
+}
 
 func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 	if b == nil {
@@ -1192,7 +1266,7 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 			switch op {
 			case "in":
 				if types.IsMapType(rt) {
-					expr = fmt.Sprintf("(%s.key?(%s))", r, l)
+					expr = fmt.Sprintf("(%s.to_h.key?(%s))", r, l)
 				} else {
 					expr = fmt.Sprintf("(%s.include?(%s))", r, l)
 				}
@@ -1377,6 +1451,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return "{}", nil
 		}
 		items := make([]string, len(p.Map.Items))
+		vals := make([]string, len(p.Map.Items))
 		identOnly := true
 		for i, it := range p.Map.Items {
 			var k string
@@ -1394,6 +1469,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
+			vals[i] = v
 			if identOnly {
 				items[i] = fmt.Sprintf("%s: %s", k, v)
 			} else {
@@ -1404,12 +1480,34 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 		}
 		if identOnly {
+			if c.inKeyContext {
+				return "[" + strings.Join(vals, ", ") + "]", nil
+			}
 			c.useOpenStruct = true
 			return "OpenStruct.new(" + strings.Join(items, ", ") + ")", nil
 		}
 		return "{" + strings.Join(items, ", ") + "}", nil
 	case p.Selector != nil:
 		name := sanitizeName(p.Selector.Root)
+		if c.globals[name] {
+			name = "$" + name
+		}
+		if vars, ok := c.queryRows[p.Selector.Root]; ok && len(p.Selector.Tail) > 0 {
+			idx := -1
+			for i, v := range vars {
+				if sanitizeName(p.Selector.Tail[0]) == sanitizeName(v) {
+					idx = i
+					break
+				}
+			}
+			if idx >= 0 {
+				expr := fmt.Sprintf("%s[%d]", name, idx)
+				for _, t := range p.Selector.Tail[1:] {
+					expr += "." + sanitizeName(t)
+				}
+				return expr, nil
+			}
+		}
 		var typ types.Type
 		if c.env != nil {
 			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
@@ -1910,5 +2008,104 @@ func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
 		return err
 	}
 	c.writeln(fmt.Sprintf("raise \"expect failed\" unless %s", expr))
+	return nil
+}
+
+func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
+	list := sanitizeName(u.Target)
+	idxVar := c.newTmp()
+	itemVar := c.newTmp()
+	c.writeln(fmt.Sprintf("%s.each_with_index do |%s, %s|", list, itemVar, idxVar))
+	c.indent++
+
+	var elem types.Type = types.AnyType{}
+	if c.env != nil {
+		if t, err := c.env.GetVar(u.Target); err == nil {
+			if lt, ok := t.(types.ListType); ok {
+				elem = lt.Elem
+			}
+		}
+	}
+
+	used := map[string]struct{}{}
+	if u.Where != nil {
+		collectIdents(u.Where, used)
+	}
+	for _, it := range u.Set.Items {
+		if key, ok := identName(it.Key); ok {
+			used[key] = struct{}{}
+		}
+		collectIdents(it.Value, used)
+	}
+
+	var orig *types.Env
+	if st, ok := elem.(types.StructType); ok {
+		child := types.NewEnv(c.env)
+		for _, f := range st.Order {
+			if _, ok := used[f]; !ok {
+				continue
+			}
+			c.writeln(fmt.Sprintf("%s = %s.%s", sanitizeName(f), itemVar, sanitizeName(f)))
+			child.SetVar(f, st.Fields[f], true)
+		}
+		orig = c.env
+		c.env = child
+	} else if mt, ok := elem.(types.MapType); ok && equalTypes(mt.Key, types.StringType{}) {
+		child := types.NewEnv(c.env)
+		for f := range used {
+			c.writeln(fmt.Sprintf("%s = %s[%q]", sanitizeName(f), itemVar, f))
+			child.SetVar(f, mt.Value, true)
+		}
+		orig = c.env
+		c.env = child
+	}
+
+	if u.Where != nil {
+		cond, err := c.compileExpr(u.Where)
+		if err != nil {
+			if orig != nil {
+				c.env = orig
+			}
+			return err
+		}
+		c.writeln(fmt.Sprintf("next unless %s", cond))
+	}
+
+	for _, it := range u.Set.Items {
+		if _, ok := elem.(types.StructType); ok {
+			if key, ok2 := identName(it.Key); ok2 {
+				val, err := c.compileExpr(it.Value)
+				if err != nil {
+					if orig != nil {
+						c.env = orig
+					}
+					return err
+				}
+				c.writeln(fmt.Sprintf("%s.%s = %s", itemVar, sanitizeName(key), val))
+				continue
+			}
+		}
+		keyExpr, err := c.compileExpr(it.Key)
+		if err != nil {
+			if orig != nil {
+				c.env = orig
+			}
+			return err
+		}
+		valExpr, err := c.compileExpr(it.Value)
+		if err != nil {
+			if orig != nil {
+				c.env = orig
+			}
+			return err
+		}
+		c.writeln(fmt.Sprintf("%s[%s] = %s", itemVar, keyExpr, valExpr))
+	}
+
+	if orig != nil {
+		c.env = orig
+	}
+	c.indent--
+	c.writeln("end")
 	return nil
 }
