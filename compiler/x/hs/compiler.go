@@ -417,6 +417,10 @@ func (c *Compiler) compileMainStmt(s *parser.Statement) error {
 			}
 			c.writeln(fmt.Sprintf("let _ = whileLoop (\\() -> %s) (\\() -> Nothing <$ (%s)) in return ()", cond, body))
 		}
+	case s.Update != nil:
+		if err := c.compileUpdate(s.Update); err != nil {
+			return err
+		}
 	case s.Expect != nil:
 		expr, err := c.compileExpr(s.Expect.Value)
 		if err != nil {
@@ -615,6 +619,78 @@ func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
 	}
 	c.usesExpect = true
 	c.writeln(fmt.Sprintf("expect (%s)", v))
+	return nil
+}
+
+func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
+	list := sanitizeName(u.Target)
+	item := fmt.Sprintf("_it%d", c.tmpCount)
+	c.tmpCount++
+
+	var st types.StructType
+	if c.env != nil {
+		if t, err := c.env.GetVar(u.Target); err == nil {
+			if lt, ok := t.(types.ListType); ok {
+				if s, ok := lt.Elem.(types.StructType); ok {
+					st = s
+				}
+			}
+		}
+	}
+
+	origEnv := c.env
+	if st.Name != "" {
+		child := types.NewEnv(c.env)
+		for _, f := range st.Order {
+			child.SetVar(f, st.Fields[f], true)
+		}
+		c.env = child
+	}
+
+	var bindings []string
+	if st.Name != "" {
+		for _, f := range st.Order {
+			bindings = append(bindings, fmt.Sprintf("%s = Main.%s %s", sanitizeName(f), sanitizeName(f), item))
+		}
+	}
+
+	cond := ""
+	if u.Where != nil {
+		v, err := c.compileExpr(u.Where)
+		if err != nil {
+			c.env = origEnv
+			return err
+		}
+		cond = v
+	}
+
+	parts := make([]string, len(u.Set.Items))
+	for i, it := range u.Set.Items {
+		field, _ := identName(it.Key)
+		val, err := c.compileExpr(it.Value)
+		if err != nil {
+			c.env = origEnv
+			return err
+		}
+		parts[i] = fmt.Sprintf("%s = %s", sanitizeName(field), val)
+	}
+	updated := fmt.Sprintf("%s { %s }", item, strings.Join(parts, ", "))
+
+	expr := updated
+	if cond != "" {
+		expr = fmt.Sprintf("if %s then %s else %s", cond, updated, item)
+	}
+	if len(bindings) > 0 {
+		expr = fmt.Sprintf("let %s in %s", strings.Join(bindings, "; "), expr)
+	}
+
+	c.writeln(fmt.Sprintf("let %s = map (\\%s -> %s) %s", list, item, expr, list))
+	c.env = origEnv
+	if c.env != nil {
+		if t, err := c.env.GetVar(u.Target); err == nil {
+			c.env.SetVar(u.Target, t, true)
+		}
+	}
 	return nil
 }
 
