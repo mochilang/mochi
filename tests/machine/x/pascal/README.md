@@ -103,3 +103,8 @@ Checklist:
 - [ ] values_builtin
 - [x] var_assignment
 - [x] while_loop
+
+## Remaining Tasks
+
+The Pascal backend currently skips many programs that rely on dataset query features, complex join operations and advanced pattern matching. Extending `compileQueryExpr` and related helpers to fully cover these constructs will allow the remaining examples to compile.
+
