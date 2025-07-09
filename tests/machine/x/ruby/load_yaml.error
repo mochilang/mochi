@@ -1,0 +1,9 @@
+error: /workspace/mochi/tests/machine/x/ruby/load_yaml.rb:16:in `initialize': No such file or directory @ rb_sysopen - ../interpreter/valid/people.yaml (Errno::ENOENT)
+	from /workspace/mochi/tests/machine/x/ruby/load_yaml.rb:16:in `open'
+	from /workspace/mochi/tests/machine/x/ruby/load_yaml.rb:16:in `_load'
+	from /workspace/mochi/tests/machine/x/ruby/load_yaml.rb:61:in `<main>'
+14:     delim = delim[0] if delim.is_a?(String) && !delim.empty?
+15:   end
+16:   io = (path.nil? || path == '') ? STDIN : File.open(path, 'r')
+17:   begin
+18:     case fmt
