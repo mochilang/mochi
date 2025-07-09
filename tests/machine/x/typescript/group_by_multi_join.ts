@@ -1,7 +1,7 @@
-let nations = [{id: 1, name: "A"}, {id: 2, name: "B"}];
-let suppliers = [{id: 1, nation: 1}, {id: 2, nation: 2}];
-let partsupp = [{part: 100, supplier: 1, cost: 10, qty: 2}, {part: 100, supplier: 2, cost: 20, qty: 1}, {part: 200, supplier: 1, cost: 5, qty: 3}];
-let filtered = (() => {
+const nations = [{id: 1, name: "A"}, {id: 2, name: "B"}];
+const suppliers = [{id: 1, nation: 1}, {id: 2, nation: 2}];
+const partsupp = [{part: 100, supplier: 1, cost: 10, qty: 2}, {part: 100, supplier: 2, cost: 20, qty: 1}, {part: 200, supplier: 1, cost: 5, qty: 3}];
+const filtered = (() => {
   const _tmp1 = [];
   for (const ps of partsupp) {
     for (const s of suppliers) {
@@ -17,7 +17,7 @@ let filtered = (() => {
   return res;
 })()
 ;
-let grouped = (() => {
+const grouped = (() => {
   const groups = {};
   for (const x of filtered) {
     const _k = JSON.stringify(x.part);

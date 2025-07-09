@@ -1,5 +1,5 @@
-let items = [{cat: "a", val: 10, flag: true}, {cat: "a", val: 5, flag: false}, {cat: "b", val: 20, flag: true}];
-let result = (() => {
+const items = [{cat: "a", val: 10, flag: true}, {cat: "a", val: 5, flag: false}, {cat: "b", val: 20, flag: true}];
+const result = (() => {
   const groups = {};
   for (const i of items) {
     const _k = JSON.stringify(i.cat);

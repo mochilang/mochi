@@ -1,6 +1,6 @@
 type Person = { name: any; age: any; email: any; };
-let people = JSON.parse("[{\"age\":30,\"email\":\"alice@example.com\",\"name\":\"Alice\"},{\"age\":15,\"email\":\"bob@example.com\",\"name\":\"Bob\"},{\"age\":20,\"email\":\"charlie@example.com\",\"name\":\"Charlie\"}]");
-let adults = (() => {
+const people = JSON.parse("[{\"age\":30,\"email\":\"alice@example.com\",\"name\":\"Alice\"},{\"age\":15,\"email\":\"bob@example.com\",\"name\":\"Bob\"},{\"age\":20,\"email\":\"charlie@example.com\",\"name\":\"Charlie\"}]");
+const adults = (() => {
   const _tmp1 = [];
   for (const p of people) {
     if (!((p.age >= 18))) continue;

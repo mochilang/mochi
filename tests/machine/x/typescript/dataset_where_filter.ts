@@ -1,5 +1,5 @@
-let people = [{name: "Alice", age: 30}, {name: "Bob", age: 15}, {name: "Charlie", age: 65}, {name: "Diana", age: 45}];
-let adults = (() => {
+const people = [{name: "Alice", age: 30}, {name: "Bob", age: 15}, {name: "Charlie", age: 65}, {name: "Diana", age: 45}];
+const adults = (() => {
   const _tmp1 = [];
   for (const person of people) {
     if (!((person.age >= 18))) continue;

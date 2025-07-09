@@ -1,6 +1,6 @@
-let customers = [{id: 1, name: "Alice"}, {id: 2, name: "Bob"}];
-let orders = [{id: 100, customerId: 1, total: 250}, {id: 101, customerId: 3, total: 80}];
-let result = (() => {
+const customers = [{id: 1, name: "Alice"}, {id: 2, name: "Bob"}];
+const orders = [{id: 100, customerId: 1, total: 250}, {id: 101, customerId: 3, total: 80}];
+const result = (() => {
   const _tmp1 = [];
   for (const o of orders) {
     for (const c of customers) {

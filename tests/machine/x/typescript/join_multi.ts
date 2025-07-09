@@ -1,7 +1,7 @@
-let customers = [{id: 1, name: "Alice"}, {id: 2, name: "Bob"}];
-let orders = [{id: 100, customerId: 1}, {id: 101, customerId: 2}];
-let items = [{orderId: 100, sku: "a"}, {orderId: 101, sku: "b"}];
-let result = (() => {
+const customers = [{id: 1, name: "Alice"}, {id: 2, name: "Bob"}];
+const orders = [{id: 100, customerId: 1}, {id: 101, customerId: 2}];
+const items = [{orderId: 100, sku: "a"}, {orderId: 101, sku: "b"}];
+const result = (() => {
   const _tmp1 = [];
   for (const o of orders) {
     for (const c of customers) {

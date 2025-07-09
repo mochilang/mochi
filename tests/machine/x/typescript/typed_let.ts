@@ -1,2 +1,2 @@
-let y = null;
+const y = null;
 console.log(y);

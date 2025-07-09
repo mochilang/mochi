@@ -1,5 +1,5 @@
-let data = [{tag: "a", val: 1}, {tag: "a", val: 2}, {tag: "b", val: 3}];
-let groups = (() => {
+const data = [{tag: "a", val: 1}, {tag: "a", val: 2}, {tag: "b", val: 3}];
+const groups = (() => {
   const groups = {};
   for (const d of data) {
     const _k = JSON.stringify(d.tag);
@@ -25,7 +25,7 @@ for (const g of (Array.isArray(_tmp2) ? _tmp2 : Object.keys(_tmp2))) {
   }
   tmp = [...tmp, {tag: g.key, total: total}];
 }
-let result = (() => {
+const result = (() => {
   const _tmp4 = [];
   for (const r of tmp) {
     _tmp4.push({item: r, key: r.tag});

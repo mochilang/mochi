@@ -1,4 +1,4 @@
-let k = 2;
+const k = 2;
 function inc(x) {
   return (x + k);
 }
