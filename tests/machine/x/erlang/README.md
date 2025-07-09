@@ -1,95 +1,109 @@
-# Generated Erlang Code
+# Erlang Machine Output
 
-This directory contains Erlang source files compiled from Mochi programs in `tests/vm/valid`.
+This directory contains Erlang source code generated from the Mochi programs in `tests/vm/valid`.
 
-- **48/97 programs compiled and ran successfully** (have `.out` files)
-- **49 programs failed** to compile or run (have `.error` files)
+Compiled programs: 39/97
 
-## Successful programs
-append_builtin
-avg_builtin
-basic_compare
-binary_precedence
-bool_chain
-cast_string_to_int
-cast_struct
-closure
-count_builtin
-for_list_collection
-for_loop
-for_map_collection
-fun_call
-fun_three_args
-fun_expr_in_let
-if_else
-if_then_else
-if_then_else_nested
-len_builtin
-len_map
-len_string
-let_and_print
-list_assign
-list_index
-map_assign
-map_index
-map_int_key
-map_literal_dynamic
-math_ops
-min_max_builtin
-partial_application
-print_hello
-pure_fold
-short_circuit
-slice
-string_concat
-string_index
-substring_builtin
-sum_builtin
-in_operator
-map_in_operator
-map_membership
-membership
-string_in_operator
-break_continue
-cross_join
-cross_join_filter
-cross_join_triple
-dataset_sort_take_limit
-dataset_where_filter
+- [x] append_builtin
+- [x] avg_builtin
+- [x] basic_compare
+- [x] binary_precedence
+- [x] bool_chain
+- [x] break_continue
+- [ ] cast_string_to_int
+- [ ] cast_struct
+- [ ] closure
+- [x] count_builtin
+- [ ] cross_join
+- [ ] cross_join_filter
+- [ ] cross_join_triple
+- [ ] dataset_sort_take_limit
+- [ ] dataset_where_filter
+- [x] exists_builtin
+- [x] for_list_collection
+- [x] for_loop
+- [x] for_map_collection
+- [x] fun_call
+- [ ] fun_expr_in_let
+- [x] fun_three_args
+- [ ] group_by
+- [ ] group_by_conditional_sum
+- [ ] group_by_having
+- [ ] group_by_join
+- [ ] group_by_left_join
+- [ ] group_by_multi_join
+- [ ] group_by_multi_join_sort
+- [ ] group_by_sort
+- [ ] group_items_iteration
+- [x] if_else
+- [x] if_then_else
+- [x] if_then_else_nested
+- [x] in_operator
+- [ ] in_operator_extended
+- [ ] inner_join
+- [ ] join_multi
+- [ ] json_builtin
+- [ ] left_join
+- [ ] left_join_multi
+- [x] len_builtin
+- [x] len_map
+- [x] len_string
+- [x] let_and_print
+- [x] list_assign
+- [x] list_index
+- [ ] list_nested_assign
+- [ ] list_set_ops
+- [ ] load_yaml
+- [x] map_assign
+- [x] map_in_operator
+- [x] map_index
+- [x] map_int_key
+- [ ] map_literal_dynamic
+- [x] map_membership
+- [ ] map_nested_assign
+- [ ] match_expr
+- [ ] match_full
+- [x] math_ops
+- [x] membership
+- [x] min_max_builtin
+- [ ] nested_function
+- [ ] order_by_map
+- [ ] outer_join
+- [ ] partial_application
+- [x] print_hello
+- [x] pure_fold
+- [ ] pure_global_fold
+- [ ] query_sum_select
+- [ ] record_assign
+- [ ] right_join
+- [ ] save_jsonl_stdout
+- [x] short_circuit
+- [ ] slice
+- [ ] sort_stable
+- [ ] str_builtin
+- [ ] string_compare
+- [x] string_concat
+- [ ] string_contains
+- [x] string_in_operator
+- [x] string_index
+- [ ] string_prefix_slice
+- [x] substring_builtin
+- [x] sum_builtin
+- [ ] tail_recursion
+- [ ] test_block
+- [ ] tree_sum
+- [ ] two-sum
+- [ ] typed_let
+- [ ] typed_var
+- [ ] unary_neg
+- [ ] update_stmt
+- [ ] user_type_literal
+- [ ] values_builtin
+- [ ] var_assignment
+- [ ] while_loop
 
-## Failed programs
-exists_builtin
-group_by
-group_by_conditional_sum
-group_by_having
-group_by_join
-group_by_left_join
-group_by_multi_join
-group_by_multi_join_sort
-group_by_sort
-group_items_iteration
-in_operator_extended
-inner_join
-join_multi
-json_builtin
-left_join
-left_join_multi
-list_nested_assign
-list_set_ops
-load_yaml
-map_nested_assign
-match_expr
-match_full
-nested_function
-order_by_map
-outer_join
-pure_global_fold
-query_sum_select
-record_assign
-right_join
-save_jsonl_stdout
-sort_stable
-str_builtin
-string_compare
-string_contains
-string_prefix_slice
+## Remaining tasks
+
+- [ ] Implement `exists` query compilation
+- [ ] Support joins and group-by queries
+- [ ] Add code generation for remaining Mochi examples
