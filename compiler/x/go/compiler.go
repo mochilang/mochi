@@ -2602,26 +2602,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 	var sel string
 	var retElem string
-	if ml := mapLiteral(q.Select); ml != nil {
-		if st, ok := c.inferStructFromMap(ml, "Result"); ok {
-			c.env.SetStruct(st.Name, st)
-			c.compileStructType(st)
-			sel, err = c.compileExprHint(q.Select, st)
-			if err != nil {
-				c.env = original
-				return "", err
-			}
-			retElem = goType(st)
-		}
+	sel, err = c.compileExpr(q.Select)
+	if err != nil {
+		c.env = original
+		return "", err
 	}
-	if sel == "" {
-		sel, err = c.compileExpr(q.Select)
-		if err != nil {
-			c.env = original
-			return "", err
-		}
-		retElem = goType(c.inferExprType(q.Select))
-	}
+	retElem = goType(c.inferExprType(q.Select))
 	if retElem == "" {
 		retElem = "any"
 	}
