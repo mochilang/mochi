@@ -170,6 +170,9 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
+	case s.Type != nil:
+		// Type declarations are ignored in Prolog output
+		return nil
 	case s.Let != nil:
 		if call := getSimpleCall(s.Let.Value); call != nil && call.Func == "exists" && len(call.Args) == 1 {
 			if q := getQuery(call.Args[0]); q != nil {
@@ -489,12 +492,20 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, bool, error) 
 			}
 			continue
 		}
-		if op.Field != nil && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil {
-			val, arith, err = c.compileMethodCall(val, op.Field.Name, pf.Ops[i+1].Call)
-			if err != nil {
-				return "", false, err
+		if op.Field != nil {
+			if i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil {
+				val, arith, err = c.compileMethodCall(val, op.Field.Name, pf.Ops[i+1].Call)
+				if err != nil {
+					return "", false, err
+				}
+				i++
+				continue
 			}
-			i++
+			tmp := c.newTmp()
+			c.needsGetItem = true
+			c.writeln(fmt.Sprintf("get_item(%s, '%s', %s),", val, op.Field.Name, tmp))
+			val = tmp
+			arith = false
 			continue
 		}
 		if op.Cast != nil {
@@ -518,6 +529,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, bool, error) {
 			return v, false, nil
 		}
 		return sanitizeVar(p.Selector.Root), false, nil
+	case p.Selector != nil:
+		var val string
+		if v, ok := c.vars[p.Selector.Root]; ok {
+			val = v
+		} else {
+			val = sanitizeVar(p.Selector.Root)
+		}
+		for _, f := range p.Selector.Tail {
+			tmp := c.newTmp()
+			c.needsGetItem = true
+			c.writeln(fmt.Sprintf("get_item(%s, '%s', %s),", val, f, tmp))
+			val = tmp
+		}
+		return val, false, nil
 	case p.Group != nil:
 		return c.compileExpr(p.Group)
 	case p.List != nil:
@@ -530,6 +555,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, bool, error) {
 			elems = append(elems, s)
 		}
 		return "[" + strings.Join(elems, ", ") + "]", false, nil
+	case p.Struct != nil:
+		pairs := []string{}
+		for _, f := range p.Struct.Fields {
+			val, _, err := c.compileExpr(f.Value)
+			if err != nil {
+				return "", false, err
+			}
+			key := "'" + f.Name + "'"
+			pairs = append(pairs, fmt.Sprintf("%s-%s", key, val))
+		}
+		tmp := c.newTmp()
+		tag := "p_" + strings.ToLower(p.Struct.Name)
+		c.writeln(fmt.Sprintf("dict_create(%s, %s, [%s]),", tmp, tag, strings.Join(pairs, ", ")))
+		return tmp, false, nil
 	case p.Map != nil:
 		pairs := []string{}
 		for _, it := range p.Map.Items {
