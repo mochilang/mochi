@@ -474,7 +474,12 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 				rs = fmt.Sprintf("(%s).asInstanceOf[Int]", r)
 			}
 			s = fmt.Sprintf("%s %s %s", ls, op.Op, rs)
-			leftType = types.AnyType{}
+			switch op.Op {
+			case "&&", "||", "==", "!=", "<", "<=", ">", ">=":
+				leftType = types.BoolType{}
+			default:
+				leftType = types.AnyType{}
+			}
 		case "in":
 			ct := types.TypeOfPostfix(op.Right, c.env)
 			switch ct.(type) {
