@@ -51,6 +51,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	name := "main"
 	if prog.Package != "" {
 		name = sanitize(prog.Package)
+	} else if prog != nil && prog.Pos.Filename != "" {
+		base := filepath.Base(prog.Pos.Filename)
+		base = strings.TrimSuffix(base, filepath.Ext(base))
+		name = sanitize(base)
 	}
 	c.writeln(fmt.Sprintf("program %s", name))
 	c.indent++
