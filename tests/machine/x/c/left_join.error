@@ -1,0 +1,17 @@
+line: 0
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/left_join.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/left_join.c:82:53: error: incompatible types when initializing type ‘int’ using type ‘customersItem’
+   82 |           (resultItem){.orderId = o.id, .customer = c, .total = o.total};
+      |                                                     ^
+/workspace/mochi/tests/machine/x/c/left_join.c:86:25: error: invalid initializer
+   86 |       customersItem c = 0;
+      |                         ^
+/workspace/mochi/tests/machine/x/c/left_join.c:88:53: error: incompatible types when initializing type ‘int’ using type ‘customersItem’
+   88 |           (resultItem){.orderId = o.id, .customer = c, .total = o.total};
+      |                                                     ^
+/workspace/mochi/tests/machine/x/c/left_join.c:93:28: error: invalid initializer
+   93 |   list_resultItem result = _t3;
+      |                            ^~~
+
+   1: #include <stdio.h>

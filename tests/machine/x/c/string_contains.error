@@ -1,0 +1,11 @@
+line: 0
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/string_contains.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/string_contains.c:16:19: error: request for member ‘contains’ in something not a structure or union
+   16 |   printf("%d\n", s.contains("cat"));
+      |                   ^
+/workspace/mochi/tests/machine/x/c/string_contains.c:17:19: error: request for member ‘contains’ in something not a structure or union
+   17 |   printf("%d\n", s.contains("dog"));
+      |                   ^
+
+   1: #include <stdio.h>

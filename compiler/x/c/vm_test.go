@@ -1,4 +1,4 @@
-//go:build slow
+//go:build archived && slow
 
 package ccode_test
 

@@ -1,0 +1,23 @@
+line: 0
+error: output mismatch
+-- got --
+--- Cross Join of three lists ---
+1 -2120802296 1
+1 -2120802296 0
+1 -2120802294 1
+1 -2120802294 0
+2 -2120802296 1
+2 -2120802296 0
+2 -2120802294 1
+2 -2120802294 0
+-- want --
+--- Cross Join of three lists ---
+1 A true
+1 A false
+1 B true
+1 B false
+2 A true
+2 A false
+2 B true
+2 B false
+   1: #include <stdio.h>

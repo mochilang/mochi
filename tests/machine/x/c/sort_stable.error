@@ -1,0 +1,7 @@
+line: 0
+error: output mismatch
+-- got --
+[a b c]
+-- want --
+a b c
+   1: #include <stdio.h>

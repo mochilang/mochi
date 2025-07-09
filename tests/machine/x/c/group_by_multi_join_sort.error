@@ -1,0 +1,13 @@
+line: 0
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/group_by_multi_join_sort.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/group_by_multi_join_sort.c:134:28: error: invalid initializer
+  134 |   list_resultItem result = 0;
+      |                            ^
+/workspace/mochi/tests/machine/x/c/group_by_multi_join_sort.c:135:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘list_resultItem’ [-Wformat=]
+  135 |   printf("%d\n", result);
+      |           ~^     ~~~~~~
+      |            |     |
+      |            int   list_resultItem
+
+   1: #include <stdio.h>

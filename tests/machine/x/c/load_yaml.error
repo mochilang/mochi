@@ -1,0 +1,34 @@
+line: 0
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/load_yaml.c:199:3: error: conflicting types for ‘Person’; have ‘struct <anonymous>’
+  199 | } Person;
+      |   ^~~~~~
+/workspace/mochi/tests/machine/x/c/load_yaml.c:178:23: note: previous declaration of ‘Person’ with type ‘Person’
+  178 | typedef struct Person Person;
+      |                       ^~~~~~
+/workspace/mochi/tests/machine/x/c/load_yaml.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/load_yaml.c:202:3: error: unknown type name ‘list_Person’
+  202 |   list_Person people = _load_json("../interpreter/valid/people.yaml");
+      |   ^~~~~~~~~~~
+/workspace/mochi/tests/machine/x/c/load_yaml.c:202:24: error: incompatible types when initializing type ‘int’ using type ‘list_map_string’
+  202 |   list_Person people = _load_json("../interpreter/valid/people.yaml");
+      |                        ^~~~~~~~~~
+/workspace/mochi/tests/machine/x/c/load_yaml.c:203:54: error: request for member ‘len’ in something not a structure or union
+  203 |   list_adultsItem _t1 = list_adultsItem_create(people.len);
+      |                                                      ^
+/workspace/mochi/tests/machine/x/c/load_yaml.c:205:33: error: request for member ‘len’ in something not a structure or union
+  205 |   for (int _t3 = 0; _t3 < people.len; _t3++) {
+      |                                 ^
+/workspace/mochi/tests/machine/x/c/load_yaml.c:206:22: error: request for member ‘data’ in something not a structure or union
+  206 |     Person p = people.data[_t3];
+      |                      ^
+/workspace/mochi/tests/machine/x/c/load_yaml.c:210:42: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+  210 |     _t1.data[_t2] = (adultsItem){.name = p.name, .email = p.email};
+      |                                          ^
+/workspace/mochi/tests/machine/x/c/load_yaml.c:210:42: note: (near initialization for ‘(anonymous).name’)
+/workspace/mochi/tests/machine/x/c/load_yaml.c:210:59: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+  210 |     _t1.data[_t2] = (adultsItem){.name = p.name, .email = p.email};
+      |                                                           ^
+/workspace/mochi/tests/machine/x/c/load_yaml.c:210:59: note: (near initialization for ‘(anonymous).email’)
+
+   1: #include <stdio.h>

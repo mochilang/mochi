@@ -1,0 +1,16 @@
+line: 0
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/user_type_literal.c:20:3: error: conflicting types for ‘Person’; have ‘struct <anonymous>’
+   20 | } Person;
+      |   ^~~~~~
+/workspace/mochi/tests/machine/x/c/user_type_literal.c:14:23: note: previous declaration of ‘Person’ with type ‘Person’
+   14 | typedef struct Person Person;
+      |                       ^~~~~~
+/workspace/mochi/tests/machine/x/c/user_type_literal.c:25:3: error: conflicting types for ‘Book’; have ‘struct <anonymous>’
+   25 | } Book;
+      |   ^~~~
+/workspace/mochi/tests/machine/x/c/user_type_literal.c:15:21: note: previous declaration of ‘Book’ with type ‘Book’
+   15 | typedef struct Book Book;
+      |                     ^~~~
+
+   1: #include <stdio.h>
