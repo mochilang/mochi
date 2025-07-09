@@ -531,6 +531,50 @@ func (c *Compiler) compileUserCall(call *parser.CallExpr) (string, error) {
 	if call.Func == "str" && len(call.Args) == 1 {
 		return c.compileExpr(call.Args[0])
 	}
+	if call.Func == "len" && len(call.Args) == 1 {
+		arg := call.Args[0]
+		if lst := listLiteral(arg); lst != nil {
+			return fmt.Sprintf("%d", len(lst.Elems)), nil
+		}
+		if id, ok := identExpr(arg); ok {
+			if n, ok := c.seqList[id]; ok {
+				return fmt.Sprintf("%d", n), nil
+			}
+		}
+		if types.IsStringType(types.TypeOfExpr(arg, c.env)) {
+			val, err := c.compileExpr(arg)
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("FUNCTION LENGTH(%s)", val), nil
+		}
+	}
+	if call.Func == "substring" && len(call.Args) == 3 {
+		sArg, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", err
+		}
+		if str, ok := stringLiteral(call.Args[0]); ok {
+			if start, ok1 := intLiteral(call.Args[1]); ok1 {
+				if end, ok2 := intLiteral(call.Args[2]); ok2 {
+					if start < 0 || end < start {
+						return "", fmt.Errorf("invalid substring range")
+					}
+					runes := []rune(str)
+					if end > len(runes) {
+						end = len(runes)
+					}
+					res := string(runes[start:end])
+					return fmt.Sprintf("\"%s\"", res), nil
+				}
+			}
+		}
+		start, ok1 := intLiteral(call.Args[1])
+		end, ok2 := intLiteral(call.Args[2])
+		if ok1 && ok2 {
+			return fmt.Sprintf("%s(%d:%d)", sArg, start+1, end-start), nil
+		}
+	}
 	name := "FN_" + strings.ToUpper(strings.ReplaceAll(call.Func, "-", "_"))
 	args := make([]string, len(call.Args))
 	for i, a := range call.Args {
@@ -1013,6 +1057,17 @@ func intLiteral(e *parser.Expr) (int, bool) {
 		v = -v
 	}
 	return v, true
+}
+
+func stringLiteral(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil || len(u.Value.Ops) != 0 || u.Value.Target == nil || u.Value.Target.Lit == nil || u.Value.Target.Lit.Str == nil {
+		return "", false
+	}
+	return *u.Value.Target.Lit.Str, true
 }
 
 func simpleStringKey(e *parser.Expr) (string, bool) {
