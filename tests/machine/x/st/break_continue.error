@@ -1,7 +1,2 @@
-line: 5
-error: unsupported statement at line 5
-   3: for n in numbers {
-   4:   if n % 2 == 0 {
-   5:     continue
-   6:   }
-   7:   if n > 7 {
+line: 0
+error: gst interpreter not available
