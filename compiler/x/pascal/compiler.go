@@ -979,8 +979,13 @@ func collectVars(stmts []*parser.Statement, env *types.Env, vars map[string]stri
 				typ = typeString(resolveSimpleTypeRef(s.Let.Type))
 			}
 			if typ == "integer" && s.Let.Value != nil {
-				typT := types.TypeOfExprBasic(s.Let.Value, env)
-				typ = typeString(typT)
+				if isQueryExpr(s.Let.Value) {
+					qt := inferQueryType(rootPrimary(s.Let.Value).Query, env)
+					typ = typeString(qt)
+				} else {
+					typT := types.TypeOfExprBasic(s.Let.Value, env)
+					typ = typeString(typT)
+				}
 				if typ == "integer" && isStringSliceExpr(s.Let.Value, env, vars) {
 					typ = "string"
 				} else if typ == "integer" && isStringLiteral(s.Let.Value) {
@@ -992,6 +997,9 @@ func collectVars(stmts []*parser.Statement, env *types.Env, vars map[string]stri
 				}
 			}
 			vars[s.Let.Name] = typ
+			if env != nil {
+				env.SetVar(s.Let.Name, parsePasType(typ), true)
+			}
 			collectQueryVars(s.Let.Value, env, vars)
 		case s.Var != nil:
 			typ := "integer"
@@ -1004,8 +1012,13 @@ func collectVars(stmts []*parser.Statement, env *types.Env, vars map[string]stri
 				typ = typeString(resolveSimpleTypeRef(s.Var.Type))
 			}
 			if typ == "integer" && s.Var.Value != nil {
-				typT := types.TypeOfExprBasic(s.Var.Value, env)
-				typ = typeString(typT)
+				if isQueryExpr(s.Var.Value) {
+					qt := inferQueryType(rootPrimary(s.Var.Value).Query, env)
+					typ = typeString(qt)
+				} else {
+					typT := types.TypeOfExprBasic(s.Var.Value, env)
+					typ = typeString(typT)
+				}
 				if typ == "integer" && isStringSliceExpr(s.Var.Value, env, vars) {
 					typ = "string"
 				}
@@ -1018,6 +1031,9 @@ func collectVars(stmts []*parser.Statement, env *types.Env, vars map[string]stri
 				typ = "boolean"
 			}
 			vars[s.Var.Name] = typ
+			if env != nil {
+				env.SetVar(s.Var.Name, parsePasType(typ), true)
+			}
 			collectQueryVars(s.Var.Value, env, vars)
 		case s.For != nil:
 			if s.For.Name != "_" {
