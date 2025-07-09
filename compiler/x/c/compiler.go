@@ -70,6 +70,7 @@ type Compiler struct {
 	currentStruct string
 	autoType      bool
 	captures      map[string]captureInfo
+	uninitVars    map[string]bool
 }
 
 func New(env *types.Env) *Compiler {
@@ -83,6 +84,7 @@ func New(env *types.Env) *Compiler {
 		fetchStructs:  map[string]bool{},
 		externObjects: []string{},
 		captures:      map[string]captureInfo{},
+		uninitVars:    map[string]bool{},
 	}
 }
 
@@ -972,6 +974,12 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 			}
 		}
 		c.writeln(decl)
+		if stmt.Type != nil && stmt.Value == nil {
+			if c.uninitVars == nil {
+				c.uninitVars = map[string]bool{}
+			}
+			c.uninitVars[stmt.Name] = true
+		}
 	}
 	if c.env != nil {
 		c.env.SetVar(stmt.Name, t, false)
@@ -1086,6 +1094,12 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 			c.writeln(formatFuncPtrDecl(typ, name, val))
 		} else {
 			c.writeln(fmt.Sprintf("%s %s;", typ, name))
+		}
+		if stmt.Type != nil && stmt.Value == nil {
+			if c.uninitVars == nil {
+				c.uninitVars = map[string]bool{}
+			}
+			c.uninitVars[stmt.Name] = true
 		}
 	}
 	if c.env != nil {
@@ -2765,6 +2779,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			return fmt.Sprintf("slice_string(%s, %s, %s)", s, start, end)
 		} else if p.Call.Func == "print" {
 			for i, a := range p.Call.Args {
+				if name, ok := identName(a); ok && c.uninitVars[name] {
+					end := " "
+					if i == len(p.Call.Args)-1 {
+						end = "\\n"
+					}
+					c.writeln(fmt.Sprintf("printf(\"<nil>%s\");", end))
+					continue
+				}
 				argExpr := c.compileExpr(a)
 				if isListListExpr(a, c.env) {
 					c.need(needListListInt)
