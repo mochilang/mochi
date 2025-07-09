@@ -1455,6 +1455,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		whereLevel := 0
 		if q.Where != nil {
 			whereLevel = whereEvalLevel(q)
+			if len(q.Joins) > 0 {
+				whereLevel = len(q.Froms) + len(q.Joins) + 1
+			}
 			w, err := c.compileExpr(q.Where)
 			if err != nil {
 				c.env = orig
@@ -1500,10 +1503,16 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			condParts = append(condParts, on)
 			paramList = append(paramList, sanitizeName(j.Var))
 		}
+		if whereExpr != "" {
+			condParts = append(condParts, whereExpr)
+		}
 		c.env = orig
 		cond := ""
 		if len(condParts) > 0 {
 			cond = " if " + strings.Join(condParts, " and ")
+		}
+		if !hasSide && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+			return fmt.Sprintf("[ %s for %s%s ]", sel, strings.Join(loops, " for "), cond), nil
 		}
 		if len(q.Joins) == 0 {
 			if q.Sort == nil && q.Skip == nil && q.Take == nil {

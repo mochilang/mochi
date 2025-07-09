@@ -170,20 +170,15 @@ def main():
         {"part": 200, "supplier": 1, "cost": 5, "qty": 3},
     ]
     global filtered
-    filtered = _query(
-        partsupp,
-        [
-            {"items": suppliers, "on": lambda ps, s: ((s["id"] == ps["supplier"]))},
-            {"items": nations, "on": lambda ps, s, n: ((n["id"] == s["nation"]))},
-        ],
-        {
-            "select": lambda ps, s, n: {
-                "part": ps["part"],
-                "value": (ps["cost"] * ps["qty"]),
-            },
-            "where": lambda ps, s, n: ((n["name"] == "A")),
-        },
-    )
+    filtered = [
+        {"part": ps["part"], "value": (ps["cost"] * ps["qty"])}
+        for ps in partsupp
+        for s in suppliers
+        for n in nations
+        if (s["id"] == ps["supplier"])
+        and (n["id"] == s["nation"])
+        and (n["name"] == "A")
+    ]
 
     def _q0():
         _src = filtered

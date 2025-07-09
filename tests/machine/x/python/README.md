@@ -7,6 +7,10 @@ This directory contains Python source code generated from Mochi programs and the
 - 93/97 programs compiled and executed successfully.
 - 4 programs failed to compile or run.
 
+Generated join queries such as `inner_join` and `join_multi` now use
+native Python loops instead of the generic `_query` helper for more
+readable output.
+
 ### Successful
 - append_builtin
 - avg_builtin
