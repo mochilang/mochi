@@ -181,14 +181,18 @@ val stats = run {
     val __groups = mutableMapOf<Any?, Group>()
     val __order = mutableListOf<Any?>()
     for (c in customers) {
-        val __k = (c as MutableMap<*, *>)["name"]
-        var __g = __groups[__k]
-        if (__g == null) {
-            __g = Group(__k, mutableListOf())
-            __groups[__k] = __g
-            __order.add(__k)
+        for (o in orders) {
+            if (toBool((o as MutableMap<*, *>)["customerId"] == (c as MutableMap<*, *>)["id"])) {
+                val __k = (c as MutableMap<*, *>)["name"]
+                var __g = __groups[__k]
+                if (__g == null) {
+                    __g = Group(__k, mutableListOf())
+                    __groups[__k] = __g
+                    __order.add(__k)
+                }
+                __g.add(c)
+            }
         }
-        __g.add(c)
     }
     val __res = mutableListOf<MutableMap<Any?, Any?>>()
     for (k in __order) {
