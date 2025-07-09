@@ -125,7 +125,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	var out bytes.Buffer
 	out.Write(c.header.Bytes())
 	out.Write(c.buf.Bytes())
-	return out.Bytes(), nil
+	return FormatCPP(out.Bytes()), nil
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
