@@ -45,8 +45,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.mapVars = make(map[string]bool)
 	c.groupKeys = make(map[string]string)
 
-	// compile function declarations into a separate buffer so they appear
-	// before the main entry point
+	// collect top-level declarations so that functions and global variables
+	// appear before the main entry point
 	var fnBuf bytes.Buffer
 	old := c.buf
 	c.buf.Reset()
@@ -63,6 +63,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 				return nil, err
 			}
 			c.writeln("")
+		case st.Let != nil:
+			if err := c.compileLet(st.Let); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		case st.Var != nil:
+			if err := c.compileVar(st.Var); err != nil {
+				return nil, err
+			}
+			c.writeln("")
 		}
 	}
 	fnBuf.Write(c.buf.Bytes())
@@ -71,7 +81,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("void main() {")
 	c.indent++
 	for _, st := range prog.Statements {
-		if st.Fun != nil {
+		if st.Fun != nil || st.Let != nil || st.Var != nil {
 			continue
 		}
 		if err := c.compileStmt(st); err != nil {
@@ -132,7 +142,11 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		c.writeln("continue;")
 		return nil
 	case s.Fun != nil:
-		// handled earlier
+		// nested function declaration
+		if err := c.compileFun(s.Fun); err != nil {
+			return err
+		}
+		c.writeln("")
 		return nil
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
