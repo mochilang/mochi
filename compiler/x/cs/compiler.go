@@ -1199,7 +1199,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			srcParts = append(srcParts, fmt.Sprintf("Where(%s => %s)", v, cond))
 		}
 		filtered := strings.Join(srcParts, ".")
-		expr := fmt.Sprintf("%s.GroupBy(%s => %s)", filtered, v, keyExpr)
+		c.use("_group_by")
+		expr := fmt.Sprintf("_group_by(%s, %s => %s)", filtered, v, keyExpr)
 		if havingExpr != "" {
 			expr = fmt.Sprintf("%s.Where(%s => %s)", expr, sanitizeName(q.Group.Name), havingExpr)
 		}
