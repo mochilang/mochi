@@ -158,19 +158,19 @@ func (c *Compiler) compileStmtFull(s *parser.Statement, breakLbl, contLbl, retLb
 		} else {
 			c.writeln(val)
 		}
-       case s.Expect != nil:
-               cond, err := c.compileExpr(s.Expect.Value)
-               if err != nil {
-                       return err
-               }
-               c.writeln(fmt.Sprintf("(when %s (displayln \"ok\"))", cond))
-       case s.Test != nil:
-               for _, st := range s.Test.Body {
-                       if err := c.compileStmtFull(st, breakLbl, contLbl, retLbl); err != nil {
-                               return err
-                       }
-               }
-       case s.If != nil:
+	case s.Expect != nil:
+		cond, err := c.compileExpr(s.Expect.Value)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("(when %s (displayln \"ok\"))", cond))
+	case s.Test != nil:
+		for _, st := range s.Test.Body {
+			if err := c.compileStmtFull(st, breakLbl, contLbl, retLbl); err != nil {
+				return err
+			}
+		}
+	case s.If != nil:
 		return c.compileIfWithLabelsFull(s.If, breakLbl, contLbl, retLbl)
 	case s.While != nil:
 		return c.compileWhileWithLabels(s.While, breakLbl, contLbl, retLbl)
@@ -338,10 +338,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					val = fmt.Sprintf("(string->number %s)", val)
 				} else if fields, ok := c.structs[tname]; ok {
 					parts := make([]string, len(fields))
-                                for i, f := range fields {
-                                        parts[i] = fmt.Sprintf("(hash-ref %s \"%s\")", val, f)
-                                }
-                                val = fmt.Sprintf("(%s %s)", tname, strings.Join(parts, " "))
+					for i, f := range fields {
+						parts[i] = fmt.Sprintf("(hash-ref %s \"%s\")", val, f)
+					}
+					val = fmt.Sprintf("(%s %s)", tname, strings.Join(parts, " "))
 				} else {
 					return "", fmt.Errorf("unsupported cast")
 				}
@@ -537,11 +537,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			parts[i] = v
 		}
 		return fmt.Sprintf("(%s %s)", p.Struct.Name, strings.Join(parts, " ")), nil
-        case p.Query != nil:
-                return c.compileQuery(p.Query)
-       case p.Match != nil:
-               return c.compileMatchExpr(p.Match)
-        case p.FunExpr != nil:
+	case p.Query != nil:
+		return c.compileQuery(p.Query)
+	case p.Match != nil:
+		return c.compileMatchExpr(p.Match)
+	case p.FunExpr != nil:
 		params := make([]string, len(p.FunExpr.Params))
 		for i, pa := range p.FunExpr.Params {
 			params[i] = pa.Name
@@ -769,40 +769,40 @@ func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
 	} else {
 		els = "(void)"
 	}
-        return fmt.Sprintf("(if %s %s %s)", cond, thn, els), nil
+	return fmt.Sprintf("(if %s %s %s)", cond, thn, els), nil
 }
 
 func (c *Compiler) compilePattern(e *parser.Expr) (string, error) {
-       if e != nil && e.Binary != nil && len(e.Binary.Right) == 0 {
-               u := e.Binary.Left
-               if u != nil && len(u.Ops) == 0 && u.Value != nil && u.Value.Target != nil && u.Value.Target.Selector != nil {
-                       sel := u.Value.Target.Selector
-                       if len(sel.Tail) == 0 && sel.Root == "_" {
-                               return "_", nil
-                       }
-               }
-       }
-       return c.compileExpr(e)
+	if e != nil && e.Binary != nil && len(e.Binary.Right) == 0 {
+		u := e.Binary.Left
+		if u != nil && len(u.Ops) == 0 && u.Value != nil && u.Value.Target != nil && u.Value.Target.Selector != nil {
+			sel := u.Value.Target.Selector
+			if len(sel.Tail) == 0 && sel.Root == "_" {
+				return "_", nil
+			}
+		}
+	}
+	return c.compileExpr(e)
 }
 
 func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
-       target, err := c.compileExpr(m.Target)
-       if err != nil {
-               return "", err
-       }
-       parts := make([]string, len(m.Cases))
-       for i, cs := range m.Cases {
-               pat, err := c.compilePattern(cs.Pattern)
-               if err != nil {
-                       return "", err
-               }
-               res, err := c.compileExpr(cs.Result)
-               if err != nil {
-                       return "", err
-               }
-               parts[i] = fmt.Sprintf("[%s %s]", pat, res)
-       }
-       return fmt.Sprintf("(match %s %s)", target, strings.Join(parts, " ")), nil
+	target, err := c.compileExpr(m.Target)
+	if err != nil {
+		return "", err
+	}
+	parts := make([]string, len(m.Cases))
+	for i, cs := range m.Cases {
+		pat, err := c.compilePattern(cs.Pattern)
+		if err != nil {
+			return "", err
+		}
+		res, err := c.compileExpr(cs.Result)
+		if err != nil {
+			return "", err
+		}
+		parts[i] = fmt.Sprintf("[%s %s]", pat, res)
+	}
+	return fmt.Sprintf("(match %s %s)", target, strings.Join(parts, " ")), nil
 }
 
 func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
@@ -819,10 +819,8 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		}
 		loops = append(loops, fmt.Sprintf("[%s %s]", f.Var, s))
 	}
+	bindings := []string{}
 	for _, j := range q.Joins {
-		if j.Side != nil {
-			return "", fmt.Errorf("unsupported join type")
-		}
 		js, err := c.compileExpr(j.Src)
 		if err != nil {
 			return "", err
@@ -831,7 +829,25 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		loops = append(loops, fmt.Sprintf("[%s %s #:when %s]", j.Var, js, onExpr))
+		if j.Side == nil {
+			loops = append(loops, fmt.Sprintf("[%s %s #:when %s]", j.Var, js, onExpr))
+			continue
+		}
+		switch *j.Side {
+		case "left":
+			c.needListLib = true
+			bindings = append(bindings, fmt.Sprintf("(%s (findf (lambda (%s) %s) %s))", j.Var, j.Var, onExpr, js))
+		case "right":
+			if len(q.Joins) == 1 && len(q.Froms) == 0 {
+				c.needListLib = true
+				loops = []string{fmt.Sprintf("[%s %s]", j.Var, js)}
+				bindings = append(bindings, fmt.Sprintf("(%s (findf (lambda (%s) %s) %s))", q.Var, q.Var, onExpr, src))
+			} else {
+				return "", fmt.Errorf("unsupported join type")
+			}
+		default:
+			return "", fmt.Errorf("unsupported join type")
+		}
 	}
 	cond := ""
 	if q.Where != nil {
@@ -844,6 +860,9 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	body, err := c.compileExpr(q.Select)
 	if err != nil {
 		return "", err
+	}
+	if len(bindings) > 0 {
+		body = fmt.Sprintf("(let (%s) %s)", strings.Join(bindings, " "), body)
 	}
 	expr := fmt.Sprintf("(for*/list (%s%s) %s)", strings.Join(loops, " "), cond, body)
 	return expr, nil
