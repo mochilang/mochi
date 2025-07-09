@@ -949,13 +949,19 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, bool, error) {
 		}
 		jname := sanitizeVar(j.Var)
 		c.vars[j.Var] = jname
-		loops = append(loops, fmt.Sprintf("member(%s, %s)", jname, js))
 		onCond, _, err := c.compileExpr(j.On)
 		if err != nil {
 			c.vars = oldVars
 			return "", false, err
 		}
-		loops = append(loops, onCond)
+		if j.Side != nil && *j.Side == "left" {
+			tmp := c.newTmp()
+			loops = append(loops, fmt.Sprintf("findall(%s, (member(%s, %s), %s), %s)", jname, jname, js, onCond, tmp))
+			loops = append(loops, fmt.Sprintf("(%s = [] -> %s = nil ; member(%s, %s))", tmp, jname, jname, tmp))
+		} else {
+			loops = append(loops, fmt.Sprintf("member(%s, %s)", jname, js))
+			loops = append(loops, onCond)
+		}
 	}
 
 	cond := "true"
