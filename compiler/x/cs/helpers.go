@@ -53,9 +53,17 @@ func csTypeOf(t types.Type) string {
 	case types.MapType:
 		return fmt.Sprintf("Dictionary<%s, %s>", csTypeOf(tt.Key), csTypeOf(tt.Value))
 	case types.StructType:
-		return sanitizeName(tt.Name)
+		name := sanitizeName(tt.Name)
+		if name == "" {
+			return "dynamic"
+		}
+		return name
 	case types.UnionType:
-		return sanitizeName(tt.Name)
+		name := sanitizeName(tt.Name)
+		if name == "" {
+			return "dynamic"
+		}
+		return name
 	case types.FuncType:
 		params := make([]string, len(tt.Params))
 		for i, p := range tt.Params {
