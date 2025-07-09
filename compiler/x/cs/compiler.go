@@ -430,21 +430,29 @@ func (c *Compiler) scanProgram(prog *parser.Program) {
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
-		expr, err := c.compileExpr(s.Let.Value)
-		if err != nil {
-			return err
+		var expr string
+		var err error
+		if s.Let.Value != nil {
+			expr, err = c.compileExpr(s.Let.Value)
+			if err != nil {
+				return err
+			}
 		}
 		name := sanitizeName(s.Let.Name)
 		var typ string
 		if s.Let.Type != nil {
 			typ = csType(s.Let.Type)
-			if isEmptyListLiteral(s.Let.Value) {
+			if s.Let.Value == nil {
+				expr = "default"
+			} else if isEmptyListLiteral(s.Let.Value) {
 				expr = fmt.Sprintf("new %s { }", typ)
 			}
 		} else {
 			inferred := csTypeOf(c.inferExprType(s.Let.Value))
 			typ = inferred
-			if isEmptyListLiteral(s.Let.Value) && strings.HasSuffix(typ, "[]") {
+			if s.Let.Value == nil {
+				expr = "default"
+			} else if isEmptyListLiteral(s.Let.Value) && strings.HasSuffix(typ, "[]") {
 				expr = fmt.Sprintf("new %s { }", typ)
 			}
 		}
@@ -459,21 +467,29 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		c.writeln(fmt.Sprintf("%s %s = %s;", decl, name, expr))
 	case s.Var != nil:
-		expr, err := c.compileExpr(s.Var.Value)
-		if err != nil {
-			return err
+		var expr string
+		var err error
+		if s.Var.Value != nil {
+			expr, err = c.compileExpr(s.Var.Value)
+			if err != nil {
+				return err
+			}
 		}
 		name := sanitizeName(s.Var.Name)
 		var typ string
 		if s.Var.Type != nil {
 			typ = csType(s.Var.Type)
-			if isEmptyListLiteral(s.Var.Value) {
+			if s.Var.Value == nil {
+				expr = "default"
+			} else if isEmptyListLiteral(s.Var.Value) {
 				expr = fmt.Sprintf("new %s { }", typ)
 			}
 		} else {
 			inferred := csTypeOf(c.inferExprType(s.Var.Value))
 			typ = inferred
-			if isEmptyListLiteral(s.Var.Value) && strings.HasSuffix(typ, "[]") {
+			if s.Var.Value == nil {
+				expr = "default"
+			} else if isEmptyListLiteral(s.Var.Value) && strings.HasSuffix(typ, "[]") {
 				expr = fmt.Sprintf("new %s { }", typ)
 			}
 		}
