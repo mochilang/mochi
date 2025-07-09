@@ -8,12 +8,12 @@ error: cc error: exit status 1
       |                        ^~~~~~~
 /workspace/mochi/tests/machine/x/c/record_assign.c: In function ‘inc’:
 /workspace/mochi/tests/machine/x/c/record_assign.c:20:24: error: ‘c’ is a pointer; did you mean to use ‘->’?
-   20 | int inc(Counter *c) { c.n = (c.n + 1); }
+   20 | int inc(Counter *c) { c.n = c.n + 1; }
       |                        ^
       |                        ->
-/workspace/mochi/tests/machine/x/c/record_assign.c:20:31: error: ‘c’ is a pointer; did you mean to use ‘->’?
-   20 | int inc(Counter *c) { c.n = (c.n + 1); }
-      |                               ^
-      |                               ->
+/workspace/mochi/tests/machine/x/c/record_assign.c:20:30: error: ‘c’ is a pointer; did you mean to use ‘->’?
+   20 | int inc(Counter *c) { c.n = c.n + 1; }
+      |                              ^
+      |                              ->
 
    1: #include <stdio.h>

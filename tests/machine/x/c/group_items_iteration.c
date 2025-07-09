@@ -82,12 +82,12 @@ int main() {
     int total = 0;
     for (int _t4 = 0; _t4 < g.items.len; _t4++) {
       int x = g.items.data[_t4];
-      total = (total + x.val);
+      total = total + x.val;
     }
     map_int_bool _t5 = map_int_bool_create(2);
     map_int_bool_put(&_t5, "tag", g.key);
     map_int_bool_put(&_t5, "total", total);
-    tmp = append(tmp, _t5);
+    tmp = 0;
   }
   list_int _t6 = list_int_create(tmp.len);
   int *_t9 = (int *)malloc(sizeof(int) * tmp.len);

@@ -13,7 +13,7 @@ static list_int list_int_create(int len) {
 }
 int main() {
   int x = 5;
-  if ((x > 3)) {
+  if (x > 3) {
     printf("%s\n", "big");
   } else {
     printf("%s\n", "small");

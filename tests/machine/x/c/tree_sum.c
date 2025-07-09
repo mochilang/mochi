@@ -33,7 +33,7 @@ typedef struct {
 int sum_tree(Tree t) {
   return (t == Leaf ? 0
                     : (t == Node(left, value, right)
-                           ? ((sum_tree(left) + value) + sum_tree(right))
+                           ? sum_tree(left) + value + sum_tree(right)
                            : 0));
 }
 

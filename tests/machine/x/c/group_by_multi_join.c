@@ -111,19 +111,19 @@ int main() {
     partsuppItem ps = partsupp.data[_t6];
     for (int _t7 = 0; _t7 < suppliers.len; _t7++) {
       suppliersItem s = suppliers.data[_t7];
-      if (!((s.id == ps.supplier))) {
+      if (!(s.id == ps.supplier)) {
         continue;
       }
       for (int _t8 = 0; _t8 < nations.len; _t8++) {
         nationsItem n = nations.data[_t8];
-        if (!((n.id == s.nation))) {
+        if (!(n.id == s.nation)) {
           continue;
         }
-        if (!((n.name == "A"))) {
+        if (!(n.name == "A")) {
           continue;
         }
         _t4.data[_t5] =
-            (filteredItem){.part = ps.part, .value = (ps.cost * ps.qty)};
+            (filteredItem){.part = ps.part, .value = ps.cost * ps.qty};
         _t5++;
       }
     }

@@ -13,6 +13,6 @@ static list_int list_int_create(int len) {
 }
 int main() {
   printf("%d\n", (-3));
-  printf("%d\n", (5 + ((-2))));
+  printf("%d\n", 5 + ((-2)));
   return 0;
 }

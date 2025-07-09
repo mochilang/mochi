@@ -17,7 +17,7 @@ int boom(int a, int b) {
 }
 
 int main() {
-  printf("%s\n", ((0 && boom(1, 2))) ? "true" : "false");
-  printf("%s\n", ((1 || boom(1, 2))) ? "true" : "false");
+  printf("%s\n", (0 && boom(1, 2)) ? "true" : "false");
+  printf("%s\n", (1 || boom(1, 2)) ? "true" : "false");
   return 0;
 }

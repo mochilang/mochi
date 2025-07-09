@@ -76,7 +76,7 @@ int main() {
     int _t6 = 0;
     for (int _t7 = 0; _t7 < customers.len; _t7++) {
       customersItem c = customers.data[_t7];
-      if (!((o.customerId == c.id))) {
+      if (!(o.customerId == c.id)) {
         continue;
       }
       _t6 = 1;

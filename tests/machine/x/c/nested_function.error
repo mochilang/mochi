@@ -1,9 +1,9 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/nested_function.c: In function ‘inner’:
-/workspace/mochi/tests/machine/x/c/nested_function.c:14:28: error: ‘x’ undeclared (first use in this function)
-   14 | int inner(int y) { return (x + y); }
-      |                            ^
-/workspace/mochi/tests/machine/x/c/nested_function.c:14:28: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/machine/x/c/nested_function.c:14:27: error: ‘x’ undeclared (first use in this function)
+   14 | int inner(int y) { return x + y; }
+      |                           ^
+/workspace/mochi/tests/machine/x/c/nested_function.c:14:27: note: each undeclared identifier is reported only once for each function it appears in
 
    1: #include <stdio.h>

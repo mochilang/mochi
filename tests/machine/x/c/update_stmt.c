@@ -25,7 +25,7 @@ static void test_update_adult_status() {
   _t1.data[1] = (Person){.name = "Bob", .age = 26, .status = "adult"};
   _t1.data[2] = (Person){.name = "Charlie", .age = 19, .status = "adult"};
   _t1.data[3] = (Person){.name = "Diana", .age = 16, .status = "minor"};
-  if (!((people == _t1))) {
+  if (!(people == _t1)) {
     fprintf(stderr, "expect failed\n");
     exit(1);
   }
@@ -46,9 +46,9 @@ int main() {
     char *name = _t4.name;
     int age = _t4.age;
     char *status = _t4.status;
-    if ((_t4.age >= 18)) {
+    if (_t4.age >= 18) {
       _t4.status = "adult";
-      _t4.age = (_t4.age + 1);
+      _t4.age = _t4.age + 1;
     }
     people.data[_t3] = _t4;
   }

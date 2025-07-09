@@ -2,7 +2,7 @@ line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/group_by_multi_join.c: In function ‘main’:
 /workspace/mochi/tests/machine/x/c/group_by_multi_join.c:126:13: error: incompatible types when assigning to type ‘int’ from type ‘filteredItem’
-  126 |             (filteredItem){.part = ps.part, .value = (ps.cost * ps.qty)};
+  126 |             (filteredItem){.part = ps.part, .value = ps.cost * ps.qty};
       |             ^
 /workspace/mochi/tests/machine/x/c/group_by_multi_join.c:132:32: error: invalid initializer
   132 |   list_filteredItem filtered = _t4;

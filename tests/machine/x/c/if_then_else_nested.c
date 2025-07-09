@@ -13,7 +13,7 @@ static list_int list_int_create(int len) {
 }
 int main() {
   int x = 8;
-  char *msg = ((x > 10) ? "big" : ((x > 5) ? "medium" : "small"));
+  char *msg = (x > 10 ? "big" : (x > 5 ? "medium" : "small"));
   printf("%s\n", msg);
   return 0;
 }

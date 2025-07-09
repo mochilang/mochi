@@ -2,15 +2,15 @@ line: 0
 error: output mismatch
 -- got --
 --- Cross Join: All order-customer pairs ---
-Order 100 (customerId: 1 , total: $ 250 ) paired with -2126598136
-Order 100 (customerId: 1 , total: $ 250 ) paired with -2126598130
-Order 100 (customerId: 1 , total: $ 250 ) paired with -2126598126
-Order 101 (customerId: 2 , total: $ 125 ) paired with -2126598136
-Order 101 (customerId: 2 , total: $ 125 ) paired with -2126598130
-Order 101 (customerId: 2 , total: $ 125 ) paired with -2126598126
-Order 102 (customerId: 1 , total: $ 300 ) paired with -2126598136
-Order 102 (customerId: 1 , total: $ 300 ) paired with -2126598130
-Order 102 (customerId: 1 , total: $ 300 ) paired with -2126598126
+Order 100 (customerId: 1 , total: $ 250 ) paired with -961101816
+Order 100 (customerId: 1 , total: $ 250 ) paired with -961101810
+Order 100 (customerId: 1 , total: $ 250 ) paired with -961101806
+Order 101 (customerId: 2 , total: $ 125 ) paired with -961101816
+Order 101 (customerId: 2 , total: $ 125 ) paired with -961101810
+Order 101 (customerId: 2 , total: $ 125 ) paired with -961101806
+Order 102 (customerId: 1 , total: $ 300 ) paired with -961101816
+Order 102 (customerId: 1 , total: $ 300 ) paired with -961101810
+Order 102 (customerId: 1 , total: $ 300 ) paired with -961101806
 -- want --
 --- Cross Join: All order-customer pairs ---
 Order 100 (customerId: 1 , total: $ 250 ) paired with Alice
