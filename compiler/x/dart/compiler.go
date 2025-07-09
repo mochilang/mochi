@@ -658,6 +658,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	t := types.TypeOfPrimary(p.Target, c.env)
 	for _, op := range p.Ops {
 		switch {
 		case op.Index != nil:
@@ -688,7 +689,20 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				val = fmt.Sprintf("%s[%s]", val, idx)
+				if mt, ok := t.(types.MapType); ok {
+					val = fmt.Sprintf("(%s as Map)[%s]", val, idx)
+					t = mt.Value
+				} else {
+					val = fmt.Sprintf("%s[%s]", val, idx)
+					switch tt := t.(type) {
+					case types.ListType:
+						t = tt.Elem
+					case types.StringType:
+						t = types.StringType{}
+					default:
+						t = types.AnyType{}
+					}
+				}
 			}
 		case op.Field != nil:
 			val += fmt.Sprintf("['%s']", op.Field.Name)

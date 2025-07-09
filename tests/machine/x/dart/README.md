@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs. Successful runs have a .out file, failures a .error file.
 
-Compiled programs: 75/97
+Compiled programs: 76/97
 
 Checklist:
 
@@ -62,7 +62,7 @@ Checklist:
 - [x] map_int_key
 - [x] map_literal_dynamic
 - [x] map_membership
-- [ ] map_nested_assign
+- [x] map_nested_assign
 - [x] match_expr
 - [x] match_full
 - [x] math_ops
@@ -117,7 +117,7 @@ Checklist:
 - [ ] left_join_multi
 - [ ] list_set_ops
 - [ ] load_yaml
-- [ ] map_nested_assign
+- [x] map_nested_assign
 - [ ] nested_function
 - [ ] order_by_map
 - [ ] outer_join

@@ -1,4 +1,0 @@
-line 6: exit status 254
-  (data['outer'] as Map)['inner'] = 2;
-  print(data['outer']['inner']);
-}
