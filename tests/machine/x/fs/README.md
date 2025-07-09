@@ -1,10 +1,12 @@
 # F# Machine Output
 
-This directory contains F# source code generated from Mochi programs and the corresponding outputs or error logs.
+This directory contains F# source code generated from Mochi programs in `tests/vm/valid`.
+All files were produced using the minimal F# compiler in `compiler/x/fs`.
 
-## Checklist
+## Generated Programs (37)
 
-Checklist of programs that currently compile and run (29/37):
+The following programs were successfully compiled to F#. Runtime execution is not
+performed in this environment, so only the source files are provided.
 
 - [x] append_builtin
 - [x] avg_builtin
@@ -16,6 +18,11 @@ Checklist of programs that currently compile and run (29/37):
 - [x] cast_struct
 - [x] closure
 - [x] count_builtin
+- [x] cross_join
+- [x] cross_join_filter
+- [x] cross_join_triple
+- [x] dataset_sort_take_limit
+- [x] dataset_where_filter
 - [x] exists_builtin
 - [x] for_list_collection
 - [x] for_loop
@@ -23,26 +30,22 @@ Checklist of programs that currently compile and run (29/37):
 - [x] fun_call
 - [x] fun_expr_in_let
 - [x] fun_three_args
+- [x] group_by
+- [x] group_by_conditional_sum
+- [x] group_by_having
+- [x] group_by_join
+- [x] group_by_left_join
+- [x] group_by_multi_join
+- [x] group_by_multi_join_sort
+- [x] group_by_sort
+- [x] group_items_iteration
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
 - [x] in_operator
-- [x] cross_join
-- [x] cross_join_filter
-- [x] cross_join_triple
-- [x] dataset_sort_take_limit
-- [x] dataset_where_filter
-- [x] group_by
-- [x] group_by_conditional_sum
-- [x] group_by_having
+- [x] in_operator_extended
+- [x] inner_join
 
-Remaining programs to implement:
+## Remaining Work
 
-- group_by_join
-- group_by_left_join
-- group_by_multi_join
-- group_by_multi_join_sort
-- group_by_sort
-- group_items_iteration
-- in_operator_extended
-- inner_join
+- Integrate an F# toolchain to compile and execute the generated programs.

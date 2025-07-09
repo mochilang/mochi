@@ -6,5 +6,5 @@ exception Continue
 type Todo = {
     title: string
 }
-let todo = { title = "hi" }
-printfn "%s" (string todo.title)
+let todo: Todo = { title = "hi" }
+printfn "%s" todo.title

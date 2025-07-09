@@ -21,4 +21,3 @@ try
             printfn "%s" (String.concat " " [string person.name; string "is"; string person.age; string (if person.is_senior then " (senior)" else "")])
         with Continue -> ()
 with Break -> ()
-
