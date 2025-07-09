@@ -721,14 +721,25 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 					if dot := strings.Index(vals[i], "."); dot != -1 {
 						v := vals[i][:dot]
 						fld := vals[i][dot+1:]
-						if t := c.varStruct[v]; t != "" {
-							if idx := strings.Index(t, "{"); idx != -1 {
-								t = t[:idx]
+						simple := true
+						for _, ch := range fld {
+							if !(ch == '_' || ('a' <= ch && ch <= 'z') || ('A' <= ch && ch <= 'Z') || ('0' <= ch && ch <= '9')) {
+								simple = false
+								break
 							}
-							ftype = fmt.Sprintf("decltype(std::declval<%s>().%s)", t, fld)
 						}
-					} else if strings.ContainsAny(vals[i], "<>=!") {
-						ftype = "bool"
+						if simple {
+							if t := c.varStruct[v]; t != "" {
+								if idx := strings.Index(t, "{"); idx != -1 {
+									t = t[:idx]
+								}
+								ftype = fmt.Sprintf("decltype(std::declval<%s>().%s)", t, fld)
+							}
+						} else if t := inferExprType(vals[i]); t != "" {
+							ftype = t
+						}
+					} else if t := inferExprType(vals[i]); t != "" {
+						ftype = t
 					}
 					def.WriteString(ftype + " " + n + "; ")
 				}
@@ -806,6 +817,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		case "count":
 			if len(args) == 1 {
 				return fmt.Sprintf("((int)%s.size())", args[0]), nil
+			}
+		case "exists":
+			if len(args) == 1 {
+				return fmt.Sprintf("(!%s.empty())", args[0]), nil
 			}
 		case "min":
 			if len(args) == 1 {
@@ -935,16 +950,27 @@ func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error
 		}
 		fieldNames[i] = f.Name
 		ftype := fmt.Sprintf("decltype(%s)", val)
-		if strings.ContainsAny(val, "<>=!") {
-			ftype = "bool"
+		if t := inferExprType(val); t != "" {
+			ftype = t
 		} else if dot := strings.Index(val, "."); dot != -1 {
 			v := val[:dot]
 			fld := val[dot+1:]
-			if t := c.varStruct[v]; t != "" {
-				if idx := strings.Index(t, "{"); idx != -1 {
-					t = t[:idx]
+			simple := true
+			for _, ch := range fld {
+				if !(ch == '_' || ('a' <= ch && ch <= 'z') || ('A' <= ch && ch <= 'Z') || ('0' <= ch && ch <= '9')) {
+					simple = false
+					break
 				}
-				ftype = fmt.Sprintf("decltype(std::declval<%s>().%s)", t, fld)
+			}
+			if simple {
+				if t := c.varStruct[v]; t != "" {
+					if idx := strings.Index(t, "{"); idx != -1 {
+						t = t[:idx]
+					}
+					ftype = fmt.Sprintf("decltype(std::declval<%s>().%s)", t, fld)
+				}
+			} else if t := inferExprType(val); t != "" {
+				ftype = t
 			}
 		} else if c.vars[val] == "string" {
 			ftype = "std::string"
@@ -1065,7 +1091,23 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 	itemType := fmt.Sprintf("decltype(%s)", val)
-	if t := structLiteralType(val); t != "" {
+	if val == q.Var {
+		if t := c.varStruct[q.Var]; t != "" {
+			if idx := strings.Index(t, "{"); idx != -1 {
+				t = t[:idx]
+			}
+			itemType = t
+		} else if typ, ok := c.vars[q.Var]; ok {
+			switch typ {
+			case "string":
+				itemType = "std::string"
+			case "int":
+				itemType = "int"
+			case "bool":
+				itemType = "bool"
+			}
+		}
+	} else if t := structLiteralType(val); t != "" {
 		itemType = t
 	} else if t := c.varStruct[val]; t != "" {
 		if idx := strings.Index(t, "{"); idx != -1 {
@@ -1256,6 +1298,18 @@ func (c *Compiler) inferType(expr string) string {
 	}
 	if strings.HasPrefix(expr, "std::vector") {
 		return "vector"
+	}
+	return ""
+}
+
+// inferExprType returns a simple C++ type for the given expression string.
+// It is used when generating struct field declarations.
+func inferExprType(expr string) string {
+	if strings.ContainsAny(expr, "<>=!&|") {
+		return "bool"
+	}
+	if strings.Contains(expr, "true") || strings.Contains(expr, "false") {
+		return "bool"
 	}
 	return ""
 }

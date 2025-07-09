@@ -4,8 +4,8 @@ This directory contains C++ source code generated from Mochi programs and the co
 
 ## Summary
 
-- 62/97 programs compiled and executed successfully.
-- 35 programs failed to compile or run.
+- 64/97 programs compiled and executed successfully.
+- 33 programs failed to compile or run.
 
 ### Successful
 - append_builtin
@@ -68,12 +68,12 @@ This directory contains C++ source code generated from Mochi programs and the co
 - var_assignment
 - while_loop
 - dataset_sort_take_limit
+- dataset_where_filter
+- exists_builtin
 - if_then_else
 - if_then_else_nested
 
 ### Failed
-- dataset_where_filter
-- exists_builtin
 - for_map_collection
 - group_by
 - group_by_conditional_sum

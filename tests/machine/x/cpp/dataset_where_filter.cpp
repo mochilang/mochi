@@ -13,7 +13,7 @@ struct __struct1 {
 struct __struct2 {
   decltype(std::declval<__struct1>().name) name;
   decltype(std::declval<__struct1>().age) age;
-  decltype((person.age >= 60)) is_senior;
+  bool is_senior;
 };
 int main() {
   auto people = std::vector<decltype(__struct1{std::string("Alice"), 30})>{
