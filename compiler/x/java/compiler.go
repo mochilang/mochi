@@ -231,6 +231,21 @@ func (c *Compiler) typeName(t *parser.TypeRef) string {
 		}
 		return "Object"
 	}
+	if t.Generic != nil {
+		switch t.Generic.Name {
+		case "list":
+			return fmt.Sprintf("List<%s>", wrapperType(c.typeName(t.Generic.Args[0])))
+		case "map":
+			if len(t.Generic.Args) >= 2 {
+				kt := wrapperType(c.typeName(t.Generic.Args[0]))
+				vt := wrapperType(c.typeName(t.Generic.Args[1]))
+				return fmt.Sprintf("Map<%s,%s>", kt, vt)
+			}
+			return "Map<Object,Object>"
+		default:
+			return "Object"
+		}
+	}
 	if t.Simple == nil {
 		return "Object"
 	}
@@ -329,14 +344,24 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 	}
 	if m := isMapLiteral(e); m != nil {
 		kt, vt := "Object", "Object"
-		if len(m.Items) > 0 {
-			kt = wrapperType(c.inferType(m.Items[0].Key))
-			if kt == "var" {
-				kt = c.litType(m.Items[0].Key)
+		for i, it := range m.Items {
+			k := wrapperType(c.inferType(it.Key))
+			if k == "var" {
+				k = c.litType(it.Key)
 			}
-			vt = wrapperType(c.inferType(m.Items[0].Value))
-			if vt == "var" {
-				vt = c.litType(m.Items[0].Value)
+			v := wrapperType(c.inferType(it.Value))
+			if v == "var" {
+				v = c.litType(it.Value)
+			}
+			if i == 0 {
+				kt, vt = k, v
+			} else {
+				if kt != k {
+					kt = "Object"
+				}
+				if vt != v {
+					vt = "Object"
+				}
 			}
 		}
 		return fmt.Sprintf("Map<%s,%s>", kt, vt)
@@ -855,6 +880,9 @@ func (c *Compiler) compileLocalFun(f *parser.FunStmt) error {
 
 func (c *Compiler) compileFun(f *parser.FunStmt) error {
 	ret := c.typeName(f.Return)
+	if f.Return == nil {
+		ret = "void"
+	}
 	var params []string
 	for _, p := range f.Params {
 		params = append(params, fmt.Sprintf("%s %s", c.typeName(p.Type), p.Name))

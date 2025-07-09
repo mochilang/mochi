@@ -6,9 +6,9 @@ class Counter {
 	}
 }
 public class Main {
-	static Object c = new Counter(0);
-	static int inc(Counter c) {
-		c = c.n + 1;
+	static Counter c = new Counter(0);
+	static void inc(Counter c) {
+		c.n = c.n + 1;
 	}
 	public static void main(String[] args) {
 	inc(c);
