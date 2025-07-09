@@ -15,10 +15,10 @@
 
 (define (inc c)
   (call/cc (lambda (return)
-    (set! c (+ (map-get c "n") 1))
+    (set! c (map-set c 'n (+ (map-get c 'n) 1)))
   ))
 )
 
 (define c (list (cons 'n 0)))
 (inc c)
-(begin (display (map-get c "n")) (newline))
+(begin (display (map-get c 'n)) (newline))

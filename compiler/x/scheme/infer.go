@@ -18,6 +18,8 @@ func (c *Compiler) varType(name string) string {
 				return "string"
 			case types.MapType:
 				return "map"
+			case types.StructType:
+				return "map"
 			}
 		}
 	}
@@ -83,34 +85,34 @@ func (c *Compiler) isMapPostfix(p *parser.PostfixExpr) bool {
 }
 
 func (c *Compiler) isMapPrimary(p *parser.Primary) bool {
-        if types.IsMapPrimary(p, c.env) {
-                return true
-        }
-        if p != nil && p.Selector != nil {
-                return c.varType(p.Selector.Root) == "map"
-        }
-        return false
+	if types.IsMapPrimary(p, c.env) {
+		return true
+	}
+	if p != nil && p.Selector != nil {
+		return c.varType(p.Selector.Root) == "map"
+	}
+	return false
 }
 
 func (c *Compiler) isListExpr(e *parser.Expr) bool {
-        if e == nil {
-                return false
-        }
-        if name, ok := identName(e); ok && c.env != nil {
-                if t, err := c.env.GetVar(name); err == nil {
-                        if _, ok := t.(types.ListType); ok {
-                                return true
-                        }
-                }
-        }
-        if len(e.Binary.Right) == 0 {
-                u := e.Binary.Left
-                if len(u.Ops) == 0 {
-                        p := u.Value
-                        if len(p.Ops) == 0 && p.Target.List != nil {
-                                return true
-                        }
-                }
-        }
-        return false
+	if e == nil {
+		return false
+	}
+	if name, ok := identName(e); ok && c.env != nil {
+		if t, err := c.env.GetVar(name); err == nil {
+			if _, ok := t.(types.ListType); ok {
+				return true
+			}
+		}
+	}
+	if len(e.Binary.Right) == 0 {
+		u := e.Binary.Left
+		if len(u.Ops) == 0 {
+			p := u.Value
+			if len(p.Ops) == 0 && p.Target.List != nil {
+				return true
+			}
+		}
+	}
+	return false
 }

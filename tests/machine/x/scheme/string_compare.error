@@ -1,8 +1,0 @@
-error running string_compare:
-ERROR on line 1 of file /workspace/mochi/tests/machine/x/scheme/string_compare.scm: invalid type, expected Number: "a"
-  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
-  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
-
-context (line 1):
-(begin (display (< "a" "b")) (newline))
-(begin (display (<= "a" "a")) (newline))
