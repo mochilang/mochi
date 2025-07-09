@@ -4,8 +4,8 @@ This directory contains Python source code generated from Mochi programs and the
 
 ## Summary
 
-- 92/97 programs compiled and executed successfully.
-- 5 programs failed to compile or run.
+- 93/97 programs compiled and executed successfully.
+- 4 programs failed to compile or run.
 
 ### Successful
 - append_builtin
@@ -100,10 +100,10 @@ This directory contains Python source code generated from Mochi programs and the
 - values_builtin
 - var_assignment
 - while_loop
+- tree_sum
 
 ### Failed
 - group_by_left_join
 - group_items_iteration
 - load_yaml
 - query_sum_select
-- tree_sum
