@@ -182,6 +182,26 @@ func (c *Compiler) isMapPostfix(p *parser.PostfixExpr) bool {
 	return ok
 }
 
+// listLiteral returns the ListLiteral contained in e if e is a simple list
+// literal without any operators applied.
+func listLiteral(e *parser.Expr) (*parser.ListLiteral, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 {
+		return nil, false
+	}
+	p := u.Value
+	if p == nil || len(p.Ops) != 0 {
+		return nil, false
+	}
+	if p.Target.List != nil {
+		return p.Target.List, true
+	}
+	return nil, false
+}
+
 func simpleStringKey(e *parser.Expr) (string, bool) {
 	if e == nil || e.Binary == nil {
 		return "", false

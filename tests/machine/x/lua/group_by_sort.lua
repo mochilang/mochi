@@ -219,4 +219,4 @@ end)())}
   end
   return _res
 end)()
-print(grouped)
+(function(lst) for i,v in ipairs(lst) do io.write(v) if i < #lst then io.write(" ") end end io.write("\n") end)(grouped)

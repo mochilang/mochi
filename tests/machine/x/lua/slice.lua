@@ -24,6 +24,6 @@ function __slice(obj, i, j)
         return {}
     end
 end
-print(__slice({1, 2, 3}, 1, 3))
-print(__slice({1, 2, 3}, 0, 2))
+(function(lst) for i,v in ipairs(lst) do io.write(v) if i < #lst then io.write(" ") end end io.write("\n") end)(__slice({1, 2, 3}, 1, 3))
+(function(lst) for i,v in ipairs(lst) do io.write(v) if i < #lst then io.write(" ") end end io.write("\n") end)(__slice({1, 2, 3}, 0, 2))
 print(__slice("hello", 1, 4))

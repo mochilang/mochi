@@ -6,7 +6,7 @@ function Person.new(o)
   return o
 end
 
-people = {{["name"]="Alice", ["age"]=30, ["email"]="alice@example.com"}, {["name"]="Bob", ["age"]=15, ["email"]="bob@example.com"}, {["name"]="Charlie", ["age"]=20, ["email"]="charlie@example.com"}}
+people = {{["name"]="Alice", ["age"]=30, ["email"]="alice@example.com"}, {["name"]="Bob", ["age"]=15, ["email"]="bob@example.com"}, {["age"]=20, ["email"]="charlie@example.com", ["name"]="Charlie"}}
 adults = (function()
   local _res = {}
   for _, p in ipairs(people) do
