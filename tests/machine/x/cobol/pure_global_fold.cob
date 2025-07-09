@@ -3,14 +3,14 @@
        DATA DIVISION.
        WORKING-STORAGE SECTION.
        01 K PIC 9 VALUE 2.
-       01 INC_RES PIC 9 VALUE 0.
+       01 FN_INC_RES PIC 9 VALUE 0.
        01 TMP PIC 9 VALUE 0.
        PROCEDURE DIVISION.
-       PERFORM INC USING 3
-       DISPLAY INC_RES
+       PERFORM FN_INC USING 3
+       DISPLAY FN_INC_RES
        STOP RUN.
        
-       INC.
+       FN_INC.
            PROCEDURE DIVISION USING X.
-               COMPUTE INC_RES = X + K
+               COMPUTE FN_INC_RES = X + K
                EXIT.

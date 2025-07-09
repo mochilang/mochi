@@ -1,4 +1,1 @@
-unsupported expression at line 5
-
-let todo = {"title": "hi"} as Todo
-print(todo.title)
+unsupported statement at line 1

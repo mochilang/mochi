@@ -11,4 +11,3 @@
        COMPUTE TMP = FUNCTION MOD(7, 2)
        DISPLAY TMP
        STOP RUN.
-

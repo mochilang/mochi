@@ -1,4 +1,1 @@
 unsupported expression at line 2
-fun makeAdder(n: int): fun(int): int {
-  return fun(x: int): int => x + n
-}

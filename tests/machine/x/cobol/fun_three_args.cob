@@ -2,14 +2,14 @@
        PROGRAM-ID. FUN_THREE_ARGS.
        DATA DIVISION.
        WORKING-STORAGE SECTION.
-       01 SUM3_RES PIC 9 VALUE 0.
+       01 FN_SUM3_RES PIC 9 VALUE 0.
        01 TMP PIC 9 VALUE 0.
        PROCEDURE DIVISION.
-       PERFORM SUM3 USING 1 2 3
-       DISPLAY SUM3_RES
+       PERFORM FN_SUM3 USING 1 2 3
+       DISPLAY FN_SUM3_RES
        STOP RUN.
        
-       SUM3.
+       FN_SUM3.
            PROCEDURE DIVISION USING A B C.
-               COMPUTE SUM3_RES = A + B + C
+               COMPUTE FN_SUM3_RES = A + B + C
                EXIT.
