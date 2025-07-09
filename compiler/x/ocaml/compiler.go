@@ -19,6 +19,18 @@ type Compiler struct {
 
 	loop int
 	env  *types.Env
+	// flags to include runtime helpers
+	needShow        bool
+	needContains    bool
+	needSlice       bool
+	needStringSlice bool
+	needListSet     bool
+	needMapSet      bool
+	needMapGet      bool
+	needListOps     bool
+	needSum         bool
+	needGroup       bool
+	needLoop        bool
 }
 
 // New creates a compiler instance.
@@ -31,100 +43,10 @@ func (c *Compiler) Compile(prog *parser.Program, _ string) ([]byte, error) {
 	c.buf.Reset()
 	c.indent = 0
 
-	// helper pretty printer for `print` builtin
-	c.writeln("let rec __show v =")
-	c.indent++
-	c.writeln("let open Obj in")
-	c.writeln("let rec list_aux o =")
-	c.indent++
-	c.writeln("if is_int o && (magic (obj o) : int) = 0 then \"\" else")
-	c.writeln(" let hd = field o 0 in")
-	c.writeln(" let tl = field o 1 in")
-	c.writeln(" let rest = list_aux tl in")
-	c.writeln(" if rest = \"\" then __show (obj hd) else __show (obj hd) ^ \"; \" ^ rest")
-	c.indent--
-	c.writeln("in")
-	c.writeln("let r = repr v in")
-	c.writeln("if is_int r then string_of_int (magic v) else")
-	c.writeln("match tag r with")
-	c.indent++
-	c.writeln("| 0 -> if size r = 0 then \"[]\" else \"[\" ^ list_aux r ^ \"]\"")
-	c.writeln("| 252 -> (magic v : string)")
-	c.writeln("| 253 -> string_of_float (magic v)")
-	c.writeln("| _ -> \"<value>\"")
-	c.indent--
-	c.indent--
-	c.buf.WriteByte('\n')
+	c.vars = make(map[string]bool)
 
-	c.writeln("exception Break")
-	c.writeln("exception Continue")
-	c.buf.WriteByte('\n')
-
-	// helper for substring search used by the `contains` method
-	c.writeln("let string_contains s sub =")
-	c.indent++
-	c.writeln("let len_s = String.length s and len_sub = String.length sub in")
-	c.writeln("let rec aux i =")
-	c.indent++
-	c.writeln("if i + len_sub > len_s then false")
-	c.writeln("else if String.sub s i len_sub = sub then true")
-	c.writeln("else aux (i + 1)")
-	c.indent--
-	c.writeln("in aux 0")
-	c.indent--
-	c.buf.WriteByte('\n')
-
-	// helpers for slicing lists and strings
-	c.writeln("let slice lst i j =")
-	c.indent++
-	c.writeln("lst |> List.mapi (fun idx x -> idx, x)")
-	c.writeln("    |> List.filter (fun (idx, _) -> idx >= i && idx < j)")
-	c.writeln("    |> List.map snd")
-	c.indent--
-	c.writeln("")
-	c.writeln("let string_slice s i j = String.sub s i (j - i)")
-	c.buf.WriteByte('\n')
-
-	// basic helpers for list and map updates and set operations
-	c.writeln("let list_set lst idx value =")
-	c.indent++
-	c.writeln("List.mapi (fun i v -> if i = idx then value else v) lst")
-	c.indent--
-	c.buf.WriteByte('\n')
-
-	c.writeln("let rec map_set m k v =")
-	c.indent++
-	c.writeln("match m with")
-	c.indent++
-	c.writeln("| [] -> [(k,Obj.repr v)]")
-	c.writeln("| (k2,v2)::tl -> if k2 = k then (k,Obj.repr v)::tl else (k2,v2)::map_set tl k v")
-	c.indent--
-	c.indent--
-	c.buf.WriteByte('\n')
-
-	c.writeln("let map_get m k = Obj.obj (List.assoc k m)")
-	c.buf.WriteByte('\n')
-
-	c.writeln("let list_union a b = List.sort_uniq compare (a @ b)")
-	c.writeln("let list_except a b = List.filter (fun x -> not (List.mem x b)) a")
-	c.writeln("let list_intersect a b = List.filter (fun x -> List.mem x b) a |> List.sort_uniq compare")
-	c.writeln("let list_union_all a b = a @ b")
-	c.writeln("let sum lst = List.fold_left (+) 0 lst")
-
-	// basic group record and helper
-	c.writeln("type ('k,'v) group = { key : 'k; items : 'v list }")
-	c.writeln("let group_by lst keyfn =")
-	c.indent++
-	c.writeln("let add acc it =")
-	c.indent++
-	c.writeln("let k = keyfn it in")
-	c.writeln("let cur = try List.assoc k acc with Not_found -> [] in")
-	c.writeln("(k, cur @ [it]) :: List.remove_assoc k acc")
-	c.indent--
-	c.writeln("in")
-	c.writeln("lst |> List.fold_left add [] |> List.rev |> List.map (fun (k,items) -> { key = k; items = items })")
-	c.indent--
-	c.buf.WriteByte('\n')
+	c.scanProgram(prog)
+	c.emitRuntime()
 
 	// first emit type, function and variable declarations
 	for _, s := range prog.Statements {
@@ -1835,4 +1757,339 @@ func (c *Compiler) compilePattern(e *parser.Expr) (string, error) {
 		return id, nil
 	}
 	return c.compileExpr(e)
+}
+
+// --- runtime helpers ---
+
+func (c *Compiler) emitRuntime() {
+	if c.needShow {
+		c.writeln("let rec __show v =")
+		c.indent++
+		c.writeln("let open Obj in")
+		c.writeln("let rec list_aux o =")
+		c.indent++
+		c.writeln("if is_int o && (magic (obj o) : int) = 0 then \"\" else")
+		c.writeln(" let hd = field o 0 in")
+		c.writeln(" let tl = field o 1 in")
+		c.writeln(" let rest = list_aux tl in")
+		c.writeln(" if rest = \"\" then __show (obj hd) else __show (obj hd) ^ \"; \" ^ rest")
+		c.indent--
+		c.writeln("in")
+		c.writeln("let r = repr v in")
+		c.writeln("if is_int r then string_of_int (magic v) else")
+		c.writeln("match tag r with")
+		c.indent++
+		c.writeln(`| 0 -> if size r = 0 then "[]" else "[" ^ list_aux r ^ "]"`)
+		c.writeln("| 252 -> (magic v : string)")
+		c.writeln("| 253 -> string_of_float (magic v)")
+		c.writeln("| _ -> \"<value>\"")
+		c.indent--
+		c.indent--
+		c.buf.WriteByte('\n')
+	}
+
+	if c.needLoop {
+		c.writeln("exception Break")
+		c.writeln("exception Continue")
+		c.buf.WriteByte('\n')
+	}
+
+	if c.needContains {
+		c.writeln("let string_contains s sub =")
+		c.indent++
+		c.writeln("let len_s = String.length s and len_sub = String.length sub in")
+		c.writeln("let rec aux i =")
+		c.indent++
+		c.writeln("if i + len_sub > len_s then false")
+		c.writeln("else if String.sub s i len_sub = sub then true")
+		c.writeln("else aux (i + 1)")
+		c.indent--
+		c.writeln("in aux 0")
+		c.indent--
+		c.buf.WriteByte('\n')
+	}
+
+	if c.needSlice {
+		c.writeln("let slice lst i j =")
+		c.indent++
+		c.writeln("lst |> List.mapi (fun idx x -> idx, x)")
+		c.writeln("    |> List.filter (fun (idx, _) -> idx >= i && idx < j)")
+		c.writeln("    |> List.map snd")
+		c.indent--
+		c.writeln("")
+	}
+
+	if c.needStringSlice {
+		c.writeln("let string_slice s i j = String.sub s i (j - i)")
+		c.buf.WriteByte('\n')
+	}
+
+	if c.needListSet {
+		c.writeln("let list_set lst idx value =")
+		c.indent++
+		c.writeln("List.mapi (fun i v -> if i = idx then value else v) lst")
+		c.indent--
+		c.buf.WriteByte('\n')
+	}
+
+	if c.needMapSet {
+		c.writeln("let rec map_set m k v =")
+		c.indent++
+		c.writeln("match m with")
+		c.indent++
+		c.writeln("| [] -> [(k,Obj.repr v)]")
+		c.writeln("| (k2,v2)::tl -> if k2 = k then (k,Obj.repr v)::tl else (k2,v2)::map_set tl k v")
+		c.indent--
+		c.indent--
+		c.buf.WriteByte('\n')
+	}
+
+	if c.needMapGet {
+		c.writeln("let map_get m k = Obj.obj (List.assoc k m)")
+		c.buf.WriteByte('\n')
+	}
+
+	if c.needListOps {
+		c.writeln("let list_union a b = List.sort_uniq compare (a @ b)")
+		c.writeln("let list_except a b = List.filter (fun x -> not (List.mem x b)) a")
+		c.writeln("let list_intersect a b = List.filter (fun x -> List.mem x b) a |> List.sort_uniq compare")
+		c.writeln("let list_union_all a b = a @ b")
+	}
+
+	if c.needSum {
+		c.writeln("let sum lst = List.fold_left (+) 0 lst")
+	}
+
+	if c.needGroup {
+		c.writeln("type ('k,'v) group = { key : 'k; items : 'v list }")
+	}
+
+	if c.needShow || c.needContains || c.needSlice || c.needStringSlice || c.needListSet || c.needMapSet || c.needMapGet || c.needListOps || c.needSum || c.needGroup || c.needLoop {
+		c.buf.WriteByte('\n')
+	}
+}
+
+// --- program scanning ---
+
+func (c *Compiler) scanProgram(p *parser.Program) {
+	for _, s := range p.Statements {
+		c.scanStmt(s)
+	}
+}
+
+func (c *Compiler) scanStmt(s *parser.Statement) {
+	switch {
+	case s.Assign != nil:
+		if len(s.Assign.Index) > 0 {
+			typ, _ := c.env.GetVar(s.Assign.Name)
+			if _, ok := typ.(types.MapType); ok {
+				c.needMapSet = true
+				if len(s.Assign.Index) > 1 {
+					c.needMapGet = true
+				}
+			} else {
+				c.needListSet = true
+			}
+			for _, idx := range s.Assign.Index {
+				if idx.Start != nil {
+					c.scanExpr(idx.Start)
+				}
+				if idx.End != nil {
+					c.scanExpr(idx.End)
+				}
+			}
+		}
+		if s.Assign.Value != nil {
+			c.scanExpr(s.Assign.Value)
+		}
+	case s.Expr != nil:
+		c.scanExpr(s.Expr.Expr)
+	case s.If != nil:
+		c.scanExpr(s.If.Cond)
+		for _, st := range s.If.Then {
+			c.scanStmt(st)
+		}
+		if s.If.ElseIf != nil {
+			c.scanStmt(&parser.Statement{If: s.If.ElseIf})
+		}
+		for _, st := range s.If.Else {
+			c.scanStmt(st)
+		}
+	case s.For != nil:
+		c.needLoop = true
+		c.scanExpr(s.For.Source)
+		if s.For.RangeEnd != nil {
+			c.scanExpr(s.For.RangeEnd)
+		}
+		for _, st := range s.For.Body {
+			c.scanStmt(st)
+		}
+	case s.While != nil:
+		c.needLoop = true
+		c.scanExpr(s.While.Cond)
+		for _, st := range s.While.Body {
+			c.scanStmt(st)
+		}
+	case s.Return != nil:
+		if s.Return.Value != nil {
+			c.scanExpr(s.Return.Value)
+		}
+	case s.Fun != nil:
+		for _, st := range s.Fun.Body {
+			c.scanStmt(st)
+		}
+	case s.Let != nil:
+		if s.Let.Value != nil {
+			c.scanExpr(s.Let.Value)
+		}
+	case s.Var != nil:
+		if s.Var.Value != nil {
+			c.scanExpr(s.Var.Value)
+		}
+	}
+}
+
+func (c *Compiler) scanExpr(e *parser.Expr) {
+	if e == nil || e.Binary == nil {
+		return
+	}
+	c.scanUnary(e.Binary.Left)
+	for _, op := range e.Binary.Right {
+		if op.Op == "union" || op.Op == "except" || op.Op == "intersect" || op.Op == "union" && op.All {
+			c.needListOps = true
+		}
+		c.scanPostfix(op.Right)
+	}
+}
+
+func (c *Compiler) scanUnary(u *parser.Unary) {
+	if u == nil {
+		return
+	}
+	c.scanPostfix(u.Value)
+}
+
+func (c *Compiler) scanPostfix(p *parser.PostfixExpr) {
+	if p == nil {
+		return
+	}
+	c.scanPrimary(p.Target)
+	for i, op := range p.Ops {
+		if op.Call != nil {
+			for _, a := range op.Call.Args {
+				c.scanExpr(a)
+			}
+			if i > 0 && p.Ops[i-1].Field != nil && p.Ops[i-1].Field.Name == "contains" {
+				c.needContains = true
+			}
+		}
+		if op.Index != nil {
+			if op.Index.Start != nil {
+				c.scanExpr(op.Index.Start)
+			}
+			if op.Index.End != nil {
+				c.scanExpr(op.Index.End)
+			}
+			if op.Index.Colon != nil {
+				if isStringPrimary(p.Target) {
+					c.needStringSlice = true
+				} else {
+					c.needSlice = true
+				}
+			}
+		}
+	}
+}
+
+func (c *Compiler) scanPrimary(p *parser.Primary) {
+	switch {
+	case p == nil:
+	case p.Call != nil:
+		for _, a := range p.Call.Args {
+			c.scanExpr(a)
+		}
+		switch p.Call.Func {
+		case "print", "str":
+			c.needShow = true
+		case "sum":
+			c.needSum = true
+		}
+	case p.List != nil:
+		for _, e := range p.List.Elems {
+			c.scanExpr(e)
+		}
+	case p.Map != nil:
+		for _, it := range p.Map.Items {
+			c.scanExpr(it.Key)
+			c.scanExpr(it.Value)
+		}
+	case p.Struct != nil:
+		for _, f := range p.Struct.Fields {
+			c.scanExpr(f.Value)
+		}
+	case p.If != nil:
+		if p.If != nil {
+			c.scanExpr(p.If.Cond)
+			if p.If.Then != nil {
+				c.scanExpr(p.If.Then)
+			}
+		}
+	case p.Query != nil:
+		c.scanQuery(p.Query)
+	case p.Match != nil:
+		for _, cs := range p.Match.Cases {
+			for _, st := range cs.Body {
+				c.scanStmt(st)
+			}
+		}
+	case p.FunExpr != nil:
+		if p.FunExpr.ExprBody != nil {
+			c.scanExpr(p.FunExpr.ExprBody)
+		}
+		for _, st := range p.FunExpr.BlockBody {
+			c.scanStmt(st)
+		}
+	case p.Group != nil:
+		c.scanExpr(p.Group)
+	}
+}
+
+func (c *Compiler) scanQuery(q *parser.QueryExpr) {
+	if q == nil {
+		return
+	}
+	c.scanExpr(q.Source)
+	for _, fr := range q.Froms {
+		c.scanExpr(fr.Src)
+	}
+	for _, jo := range q.Joins {
+		c.scanExpr(jo.Src)
+		if jo.On != nil {
+			c.scanExpr(jo.On)
+		}
+	}
+	if q.Where != nil {
+		c.scanExpr(q.Where)
+	}
+	if q.Group != nil {
+		c.needGroup = true
+		for _, e := range q.Group.Exprs {
+			c.scanExpr(e)
+		}
+		if q.Group.Having != nil {
+			c.scanExpr(q.Group.Having)
+		}
+	}
+	if q.Sort != nil {
+		c.scanExpr(q.Sort)
+	}
+	if q.Skip != nil {
+		c.scanExpr(q.Skip)
+	}
+	if q.Take != nil {
+		c.scanExpr(q.Take)
+	}
+	if q.Select != nil {
+		c.scanExpr(q.Select)
+	}
 }
