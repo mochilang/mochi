@@ -1,0 +1,5 @@
+exit status 1
+/workspace/mochi/tests/machine/x/scala/query_sum_select.scala:4: error: value sum is not a member of Int
+    val result = for { n <- nums; if n > 1 } yield n.sum
+                                                     ^
+one error found
