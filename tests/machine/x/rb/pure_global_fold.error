@@ -1,9 +1,0 @@
-error: /workspace/mochi/tests/machine/x/rb/pure_global_fold.rb:2:in `inc': undefined local variable or method `k' for main:Object (NameError)
-
-	return (x + k)
-	            ^
-	from /workspace/mochi/tests/machine/x/rb/pure_global_fold.rb:6:in `<main>'
-1: def inc(x)
-2: 	return (x + k)
-3: end
-4: 

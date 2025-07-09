@@ -1,6 +1,0 @@
-error: /workspace/mochi/tests/machine/x/rb/update_stmt.rb:5:in `<main>': expect failed (RuntimeError)
-ok
-3: people = [Person.new(name: "Alice", age: 17, status: "minor"), Person.new(name: "Bob", age: 25, status: "unknown"), Person.new(name: "Charlie", age: 18, status: "unknown"), Person.new(name: "Diana", age: 16, status: "minor")]
-4: puts(["ok"].join(" "))
-5: raise "expect failed" unless (people == [Person.new(name: "Alice", age: 17, status: "minor"), Person.new(name: "Bob", age: 26, status: "adult"), Person.new(name: "Charlie", age: 19, status: "adult"), Person.new(name: "Diana", age: 16, status: "minor")])
-6: 

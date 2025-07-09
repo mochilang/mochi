@@ -10,6 +10,9 @@ class MGroup
   def length
     @Items.length
   end
+  def items
+    @Items
+  end
   def each(&block)
     @Items.each(&block)
   end
@@ -35,15 +38,15 @@ g
 end
 end
 
-data = [OpenStruct.new(tag: "a", val: 1), OpenStruct.new(tag: "a", val: 2), OpenStruct.new(tag: "b", val: 3)]
-groups = _group_by(data, ->(d){ d.tag }).map { |g| g }
-tmp = []
-for g in groups
+$data = [OpenStruct.new(tag: "a", val: 1), OpenStruct.new(tag: "a", val: 2), OpenStruct.new(tag: "b", val: 3)]
+$groups = _group_by($data, ->(d){ d.tag }).map { |g| g }
+$tmp = []
+for g in $groups
 	total = 0
 	for x in g.items
 		total = (total + x.val)
 	end
-	tmp = (tmp + [OpenStruct.new(tag: g.key, total: total)])
+	$tmp = ($tmp + [OpenStruct.new(tag: g.key, total: total)])
 end
-result = (((tmp)).sort_by { |r| r.tag }).map { |r| r }
-puts([result].join(" "))
+$result = ((($tmp)).sort_by { |r| r.tag }).map { |r| r }
+puts([$result].join(" "))

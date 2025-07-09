@@ -4,8 +4,7 @@ This directory contains Ruby source code generated from Mochi programs and the c
 
 ## Summary
 
-- 89/97 programs compiled and executed successfully.
-- 8 programs failed to compile or run.
+- 97/97 programs compiled and executed successfully.
 
 ### Successful
 - append_builtin
@@ -98,12 +97,3 @@ This directory contains Ruby source code generated from Mochi programs and the c
 - var_assignment
 - while_loop
 
--### Failed
-- group_by_left_join
-- group_by_multi_join_sort
-- group_items_iteration
-- in_operator_extended
-- load_yaml
-- order_by_map
-- pure_global_fold
-- update_stmt
