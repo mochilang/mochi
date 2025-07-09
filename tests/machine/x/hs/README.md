@@ -1,13 +1,8 @@
 # Haskell Machine Output
 
-This directory contains Haskell source code generated from Mochi programs and the corresponding outputs or errors.
+This directory contains Haskell code generated from the Mochi programs in `tests/vm/valid`. Each program was compiled and executed with `runhaskell`. Successful runs have a corresponding `.out` file while failures produce a `.error` log.
 
-## Summary
-
-- 49/97 programs compiled and executed successfully.
-- 48 programs failed to compile or run.
-
-### Successful
+## Compiled and ran successfully
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -58,7 +53,7 @@ This directory contains Haskell source code generated from Mochi programs and th
 - [x] var_assignment
 - [x] while_loop
 
-### Failed
+## Failed to build or run
 - [ ] dataset_sort_take_limit
 - [ ] dataset_where_filter
 - [ ] exists_builtin
@@ -108,3 +103,7 @@ This directory contains Haskell source code generated from Mochi programs and th
 - [ ] update_stmt
 - [ ] values_builtin
 
+## Remaining Tasks
+- [ ] Implement support for dataset and join queries.
+- [ ] Add map and struct operations needed for JSON helpers.
+- [ ] Finish runtime features for update statements and YAML loading.
