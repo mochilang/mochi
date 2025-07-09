@@ -644,7 +644,8 @@ func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
 		return s.Root
 	}
 	if t, err := c.env.GetVar(s.Root); err == nil {
-		if _, ok := t.(types.MapType); ok {
+		switch tt := t.(type) {
+		case types.MapType:
 			base := s.Root
 			for i, f := range s.Tail {
 				base = fmt.Sprintf("%s(%q)", base, f)
@@ -653,6 +654,16 @@ func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
 				}
 			}
 			return base
+		case types.GroupType:
+			if len(s.Tail) == 1 {
+				switch s.Tail[0] {
+				case "key":
+					return fmt.Sprintf("%s._1", s.Root)
+				case "items":
+					return fmt.Sprintf("%s._2", s.Root)
+				}
+			}
+			_ = tt // silence unused warning in case build tags differ
 		}
 	}
 	parts := append([]string{s.Root}, s.Tail...)
@@ -834,8 +845,8 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Joins) > 0 || q.Group != nil || q.Distinct {
-		return "", fmt.Errorf("line %d: query features not supported", q.Pos.Line)
+	if q.Distinct {
+		return "", fmt.Errorf("line %d: distinct queries not supported", q.Pos.Line)
 	}
 	parts := []string{}
 	src, err := c.compileExpr(q.Source)
@@ -860,6 +871,23 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 	}
 
+	for _, j := range q.Joins {
+		if j.Side != nil {
+			return "", fmt.Errorf("line %d: join sides not supported", j.Pos.Line)
+		}
+		s, err := c.compileExpr(j.Src)
+		if err != nil {
+			return "", err
+		}
+		parts = append(parts, fmt.Sprintf("%s <- %s", j.Var, s))
+		cond, err := c.compileExpr(j.On)
+		if err != nil {
+			return "", err
+		}
+		parts = append(parts, fmt.Sprintf("if %s", cond))
+		child.SetVar(j.Var, types.AnyType{}, false)
+	}
+
 	oldEnv := c.env
 	c.env = child
 	if q.Where != nil {
@@ -870,12 +898,54 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		parts = append(parts, fmt.Sprintf("if %s", cond))
 	}
-	sel, err := c.compileExpr(q.Select)
-	if err != nil {
-		c.env = oldEnv
-		return "", err
+	var expr string
+	if q.Group != nil {
+		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
+		if err != nil {
+			c.env = oldEnv
+			return "", err
+		}
+		tuple := strings.Join(append([]string{q.Var}, func() []string {
+			names := make([]string, len(q.Froms)+len(q.Joins))
+			for i, f := range q.Froms {
+				names[i] = f.Var
+			}
+			for i, j := range q.Joins {
+				names[len(q.Froms)+i] = j.Var
+			}
+			return names
+		}()...), ", ")
+		tmp := fmt.Sprintf("for { %s } yield (%s, (%s))", strings.Join(parts, "; "), keyExpr, tuple)
+		groups := fmt.Sprintf("(%s).groupBy(_._1).map{ case(k,list) => (k, list.map(_._2)) }", tmp)
+
+		groupEnv := types.NewEnv(c.env)
+		groupEnv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, false)
+
+		if q.Group.Having != nil {
+			c.env = groupEnv
+			cond, err := c.compileExpr(q.Group.Having)
+			if err != nil {
+				c.env = oldEnv
+				return "", err
+			}
+			groups = fmt.Sprintf("(%s).filter{ case(%sKey,%sItems) => { val %s = (%sKey, %sItems); %s } }", groups, q.Group.Name, q.Group.Name, q.Group.Name, q.Group.Name+"Key", q.Group.Name+"Items", cond)
+		}
+
+		c.env = groupEnv
+		sel, err := c.compileExpr(q.Select)
+		if err != nil {
+			c.env = oldEnv
+			return "", err
+		}
+		expr = fmt.Sprintf("(%s).map{ case(%sKey,%sItems) => { val %s = (%sKey, %sItems); %s } }", groups, q.Group.Name, q.Group.Name, q.Group.Name, q.Group.Name+"Key", q.Group.Name+"Items", sel)
+	} else {
+		sel, err := c.compileExpr(q.Select)
+		if err != nil {
+			c.env = oldEnv
+			return "", err
+		}
+		expr = fmt.Sprintf("for { %s } yield %s", strings.Join(parts, "; "), sel)
 	}
-	expr := fmt.Sprintf("for { %s } yield %s", strings.Join(parts, "; "), sel)
 	if q.Sort != nil {
 		key, err := c.compileExpr(q.Sort)
 		if err != nil {
