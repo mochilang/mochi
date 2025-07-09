@@ -4,8 +4,8 @@ This directory contains C# source code generated from Mochi programs and the cor
 
 ## Summary
 
-- 23/97 programs compiled and executed successfully.
-- 74 programs failed to compile or run or were not yet tested.
+- 25/97 programs compiled and executed successfully.
+- 72 programs failed to compile or run or were not yet tested.
 
 ### Successful
 - append_builtin
@@ -27,6 +27,8 @@ This directory contains C# source code generated from Mochi programs and the cor
 - for_list_collection
 - for_loop
 - fun_three_args
+- fun_call
+- fun_expr_in_let
 - var_assignment
 - print_hello
 - typed_let
