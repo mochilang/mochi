@@ -3,7 +3,7 @@
 This directory stores PHP code produced by the compiler tests. Each Mochi program from `tests/vm/valid` is compiled and executed. On success a `.out` file is written. Failures generate a `.error` file.
 
 ## Summary
-90/97 files compiled successfully
+97/97 files compiled successfully
 
 ## Checklist
 - [x] append_builtin.mochi
@@ -32,7 +32,7 @@ This directory stores PHP code produced by the compiler tests. Each Mochi progra
 - [x] group_by_conditional_sum.mochi
 - [x] group_by_having.mochi
 - [x] group_by_join.mochi
-- [ ] group_by_left_join.mochi
+- [x] group_by_left_join.mochi
 - [x] group_by_multi_join.mochi
 - [x] group_by_multi_join_sort.mochi
 - [x] group_by_sort.mochi
@@ -45,8 +45,8 @@ This directory stores PHP code produced by the compiler tests. Each Mochi progra
 - [x] inner_join.mochi
 - [x] join_multi.mochi
 - [x] json_builtin.mochi
-- [ ] left_join.mochi
-- [ ] left_join_multi.mochi
+- [x] left_join.mochi
+- [x] left_join_multi.mochi
 - [x] len_builtin.mochi
 - [x] len_map.mochi
 - [x] len_string.mochi
@@ -63,21 +63,21 @@ This directory stores PHP code produced by the compiler tests. Each Mochi progra
 - [x] map_literal_dynamic.mochi
 - [x] map_membership.mochi
 - [x] map_nested_assign.mochi
-- [ ] match_expr.mochi
-- [ ] match_full.mochi
+- [x] match_expr.mochi
+- [x] match_full.mochi
 - [x] math_ops.mochi
 - [x] membership.mochi
 - [x] min_max_builtin.mochi
 - [x] nested_function.mochi
 - [x] order_by_map.mochi
-- [ ] outer_join.mochi
+- [x] outer_join.mochi
 - [x] partial_application.mochi
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
 - [x] query_sum_select.mochi
 - [x] record_assign.mochi
-- [ ] right_join.mochi
+- [x] right_join.mochi
 - [x] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
 - [x] slice.mochi

@@ -1,0 +1,97 @@
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 4
+string(31) "--- Right Join using syntax ---"
+PHP Warning:  Attempt to read property "order" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 7
+PHP Warning:  Attempt to read property "customerName" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 10
+string(8) "Customer"
+NULL
+string(13) "has no orders"
+PHP Warning:  Attempt to read property "order" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 7
+PHP Warning:  Attempt to read property "customerName" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 10
+string(8) "Customer"
+NULL
+string(13) "has no orders"
+PHP Warning:  Attempt to read property "order" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 7
+PHP Warning:  Attempt to read property "customerName" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 10
+string(8) "Customer"
+NULL
+string(13) "has no orders"
+PHP Warning:  Attempt to read property "order" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 7
+PHP Warning:  Attempt to read property "customerName" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 10
+string(8) "Customer"
+NULL
+string(13) "has no orders"
+PHP Warning:  Attempt to read property "order" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 7
+PHP Warning:  Attempt to read property "customerName" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 10
+string(8) "Customer"
+NULL
+string(13) "has no orders"
+PHP Warning:  Attempt to read property "order" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 7
+PHP Warning:  Attempt to read property "customerName" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 10
+string(8) "Customer"
+NULL
+string(13) "has no orders"
+PHP Warning:  Attempt to read property "order" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 7
+PHP Warning:  Attempt to read property "customerName" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 10
+string(8) "Customer"
+NULL
+string(13) "has no orders"
+PHP Warning:  Attempt to read property "order" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 7
+PHP Warning:  Attempt to read property "customerName" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 10
+string(8) "Customer"
+NULL
+string(13) "has no orders"
+PHP Warning:  Attempt to read property "order" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 7
+PHP Warning:  Attempt to read property "customerName" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 10
+string(8) "Customer"
+NULL
+string(13) "has no orders"
+PHP Warning:  Attempt to read property "order" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 7
+PHP Warning:  Attempt to read property "customerName" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 10
+string(8) "Customer"
+NULL
+string(13) "has no orders"
+PHP Warning:  Attempt to read property "order" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 7
+PHP Warning:  Attempt to read property "customerName" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 10
+string(8) "Customer"
+NULL
+string(13) "has no orders"
+PHP Warning:  Attempt to read property "order" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 7
+PHP Warning:  Attempt to read property "customerName" on array in /workspace/mochi/tests/machine/x/php/right_join.php on line 10
+string(8) "Customer"
+NULL
+string(13) "has no orders"

@@ -1,54 +1,20 @@
-//go:build slow
-
-package phpcode
-
-// helperMap stores snippets of runtime helper functions that the compiler
-// can emit if needed. The PHP backend currently has no helpers.
-var helperLoad = `function _load($path = null, $opts = []) {
-    $fmt = $opts['format'] ?? 'csv';
-    if ($path !== null && $path !== '' && $path != '-' && $path[0] !== '/') {
-        $path = __DIR__ . '/' . $path;
-    }
-    if ($fmt === 'yaml') {
-        $lines = ($path === null || $path === '' || $path === '-') ?
-            file('php://stdin', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) :
-            file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        $rows = [];
-        $curr = [];
-        foreach ($lines as $line) {
-            $line = trim($line);
-            if (str_starts_with($line, '-')) {
-                if ($curr) $rows[] = $curr;
-                $curr = [];
-                $line = trim(substr($line, 1));
-                if ($line !== '') {
-                    [$k, $v] = array_map('trim', explode(':', $line, 2));
-                    $curr[$k] = is_numeric($v) ? (int)$v : $v;
-                }
-            } else {
-                [$k, $v] = array_map('trim', explode(':', $line, 2));
-                $curr[$k] = is_numeric($v) ? (int)$v : $v;
-            }
+<?php
+$customers = [["id" => 1, "name" => "Alice"], ["id" => 2, "name" => "Bob"], ["id" => 3, "name" => "Charlie"], ["id" => 4, "name" => "Diana"]];
+$orders = [["id" => 100, "customerId" => 1, "total" => 250], ["id" => 101, "customerId" => 2, "total" => 125], ["id" => 102, "customerId" => 1, "total" => 300], ["id" => 103, "customerId" => 5, "total" => 80]];
+$result = _query($orders, [['items'=>$customers, 'on'=>function($o, $c){return $o->customerId == $c->id;}, 'left'=>true, 'right'=>true]], [ 'select' => function($o, $c){return ["order" => $o, "customer" => $c];} ]);
+var_dump("--- Outer Join using syntax ---");
+foreach ($result as $row) {
+    if ($row->order) {
+        if ($row->customer) {
+            var_dump("Order", $row->order->id, "by", $row->customer->name, "- $", $row->order->total);
+        } else {
+            var_dump("Order", $row->order->id, "by", "Unknown", "- $", $row->order->total);
         }
-        if ($curr) $rows[] = $curr;
-        return $rows;
+    } else {
+        var_dump("Customer", $row->customer->name, "has no orders");
     }
-    return [];
-}`
-
-var helperSave = `function _save($rows, $path = null, $opts = []) {
-    $fmt = $opts['format'] ?? 'csv';
-    if ($fmt === 'jsonl') {
-        $out = ($path === null || $path === '' || $path === '-') ? STDOUT : fopen($path, 'w');
-        foreach ($rows as $row) {
-            if (is_object($row)) $row = (array)$row;
-            fwrite($out, json_encode($row) . PHP_EOL);
-        }
-        if ($out !== STDOUT) fclose($out);
-    }
-}`
-
-var helperQuery = `function _query($src, $joins, $opts) {
+}
+function _query($src, $joins, $opts) {
     $items = [];
     foreach ($src as $v) { $items[] = [$v]; }
     foreach ($joins as $j) {
@@ -131,26 +97,4 @@ var helperQuery = `function _query($src, $joins, $opts) {
     $sel = $opts['select'];
     foreach ($items as $r) { $res[] = $sel(...$r); }
     return $res;
-}`
-
-var helperGroupBy = `function _group_by($src, $keyfn) {
-    $groups = [];
-    $order = [];
-    foreach ($src as $it) {
-        $key = is_array($it) ? $keyfn(...$it) : $keyfn($it);
-        if (is_array($key)) $key = (object)$key;
-        $ks = json_encode($key);
-        if (!isset($groups[$ks])) { $groups[$ks] = ['key'=>$key,'items'=>[]]; $order[] = $ks; }
-        $groups[$ks]['items'][] = $it;
-    }
-    $res = [];
-    foreach ($order as $k) { $res[] = $groups[$k]; }
-    return $res;
-}`
-
-var helperMap = map[string]string{
-	"_load":     helperLoad,
-	"_save":     helperSave,
-	"_query":    helperQuery,
-	"_group_by": helperGroupBy,
 }

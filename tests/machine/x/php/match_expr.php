@@ -5,5 +5,5 @@ $label = (function($_t) {
     if ($_t === 2) return "two";
     if ($_t === 3) return "three";
     return "unknown";
-)($x);
+})($x);
 var_dump($label);

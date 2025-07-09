@@ -1,0 +1,53 @@
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/left_join.php on line 4
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/left_join.php on line 4
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/left_join.php on line 4
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/left_join.php on line 4
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/left_join.php on line 4
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/left_join.php on line 4
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/left_join.php on line 4
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/left_join.php on line 4
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/left_join.php on line 4
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/left_join.php on line 4
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/left_join.php on line 4
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/left_join.php on line 4
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/left_join.php on line 4
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/left_join.php on line 4
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/left_join.php on line 4
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/left_join.php on line 4
+string(17) "--- Left Join ---"
+PHP Warning:  Attempt to read property "orderId" on array in /workspace/mochi/tests/machine/x/php/left_join.php on line 7
+PHP Warning:  Attempt to read property "customer" on array in /workspace/mochi/tests/machine/x/php/left_join.php on line 7
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/left_join.php on line 7
+string(5) "Order"
+NULL
+string(8) "customer"
+NULL
+string(5) "total"
+NULL
+PHP Warning:  Attempt to read property "orderId" on array in /workspace/mochi/tests/machine/x/php/left_join.php on line 7
+PHP Warning:  Attempt to read property "customer" on array in /workspace/mochi/tests/machine/x/php/left_join.php on line 7
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/left_join.php on line 7
+string(5) "Order"
+NULL
+string(8) "customer"
+NULL
+string(5) "total"
+NULL
+PHP Warning:  Attempt to read property "orderId" on array in /workspace/mochi/tests/machine/x/php/left_join.php on line 7
+PHP Warning:  Attempt to read property "customer" on array in /workspace/mochi/tests/machine/x/php/left_join.php on line 7
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/left_join.php on line 7
+string(5) "Order"
+NULL
+string(8) "customer"
+NULL
+string(5) "total"
+NULL
+PHP Warning:  Attempt to read property "orderId" on array in /workspace/mochi/tests/machine/x/php/left_join.php on line 7
+PHP Warning:  Attempt to read property "customer" on array in /workspace/mochi/tests/machine/x/php/left_join.php on line 7
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/left_join.php on line 7
+string(5) "Order"
+NULL
+string(8) "customer"
+NULL
+string(5) "total"
+NULL
