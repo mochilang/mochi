@@ -30,6 +30,7 @@ type Compiler struct {
 		Fields map[string]types.Type
 		Order  []string
 	}
+	groupVars []string
 }
 
 func (c *Compiler) fieldType(e *parser.Expr) types.Type {
@@ -277,7 +278,27 @@ func New(env *types.Env) *Compiler {
 			Fields map[string]types.Type
 			Order  []string
 		}),
+		groupVars: []string{},
 	}
+}
+
+func (c *Compiler) pushGroupVar(name string) {
+	c.groupVars = append(c.groupVars, name)
+}
+
+func (c *Compiler) popGroupVar() {
+	if len(c.groupVars) > 0 {
+		c.groupVars = c.groupVars[:len(c.groupVars)-1]
+	}
+}
+
+func (c *Compiler) isGroupVar(name string) bool {
+	for i := len(c.groupVars) - 1; i >= 0; i-- {
+		if c.groupVars[i] == name {
+			return true
+		}
+	}
+	return false
 }
 
 func stmtMutatesVar(s *parser.Statement, name string) bool {
@@ -626,6 +647,9 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	src, err := c.compileExpr(f.Source)
 	if err != nil {
 		return err
+	}
+	if id, ok := c.simpleIdent(f.Source); ok && c.isGroupVar(id) {
+		src += ".items"
 	}
 	if f.RangeEnd != nil {
 		end, err := c.compileExpr(f.RangeEnd)
@@ -1177,8 +1201,154 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	return "", fmt.Errorf("block function expressions not supported")
 }
 
+func (c *Compiler) compileGroupBySimple(q *parser.QueryExpr, src string, child *types.Env, fromSrcs []string) (string, error) {
+	orig := c.env
+	c.env = child
+	var cond string
+	var err error
+	if q.Where != nil {
+		cond, err = c.compileExpr(q.Where)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if len(q.Group.Exprs) != 1 {
+		c.env = orig
+		return "", fmt.Errorf("multi-key group not supported")
+	}
+	keyExpr, err := c.compileExpr(q.Group.Exprs[0])
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+	keyType := types.TypeOfExprBasic(q.Group.Exprs[0], c.env)
+	elemType, _ := child.GetVar(q.Var)
+
+	mapTmp := c.newTmp()
+	groupVec := c.newTmp()
+
+	var b strings.Builder
+	b.WriteString("{ let mut ")
+	b.WriteString(mapTmp)
+	b.WriteString(" = std::collections::HashMap::new();")
+	b.WriteString(fmt.Sprintf("for &%s in &%s {", q.Var, src))
+	for i, fs := range fromSrcs {
+		fmt.Fprintf(&b, " for &%s in &%s {", q.Froms[i].Var, fs)
+	}
+	if cond != "" {
+		b.WriteString(" if !(" + cond + ") { continue; }")
+	}
+	fmt.Fprintf(&b, " let key = %s;", keyExpr)
+	fmt.Fprintf(&b, " %s.entry(key).or_insert_with(Vec::new).push(%s);", mapTmp, q.Var)
+	for range fromSrcs {
+		b.WriteString(" }")
+	}
+	b.WriteString(" }")
+
+	groupStruct := c.newStructName("Group")
+	st := types.StructType{Name: groupStruct, Fields: map[string]types.Type{"key": keyType, "items": types.ListType{Elem: elemType}}, Order: []string{"key", "items"}}
+	c.structs[groupStruct] = st
+	c.genStructs = append(c.genStructs, st)
+
+	b.WriteString(" let mut ")
+	b.WriteString(groupVec)
+	b.WriteString(fmt.Sprintf(" = Vec::<%s>::new();", groupStruct))
+	b.WriteString(fmt.Sprintf(" for (k,v) in %s { %s.push(%s { key: k, items: v }); }", mapTmp, groupVec, groupStruct))
+
+	groupVar := q.Group.Name
+	groupEnv := types.NewEnv(orig)
+	groupEnv.SetVar(groupVar, st, true)
+	c.pushGroupVar(groupVar)
+	c.env = groupEnv
+
+	if q.Group.Having != nil {
+		haveExpr, err := c.compileExpr(q.Group.Having)
+		if err != nil {
+			c.popGroupVar()
+			c.env = orig
+			return "", err
+		}
+		tmp2 := c.newTmp()
+		fmt.Fprintf(&b, " let mut %s = Vec::new();", tmp2)
+		fmt.Fprintf(&b, " for g in %s.into_iter() { if %s { %s.push(g); } }", groupVec, haveExpr, tmp2)
+		groupVec = tmp2
+	}
+
+	var sortExpr string
+	if q.Sort != nil {
+		sortExpr, err = c.compileExpr(q.Sort)
+		if err != nil {
+			c.popGroupVar()
+			c.env = orig
+			return "", err
+		}
+		sa := strings.ReplaceAll(sortExpr, groupVar, "a")
+		sb := strings.ReplaceAll(sortExpr, groupVar, "b")
+		fmt.Fprintf(&b, " %s.sort_by(|a,b| %s.partial_cmp(&%s).unwrap());", groupVec, sa, sb)
+	}
+
+	var skipExpr, takeExpr string
+	if q.Skip != nil {
+		skipExpr, err = c.compileExpr(q.Skip)
+		if err != nil {
+			c.popGroupVar()
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Take != nil {
+		takeExpr, err = c.compileExpr(q.Take)
+		if err != nil {
+			c.popGroupVar()
+			c.env = orig
+			return "", err
+		}
+	}
+
+	var sel string
+	if ml := tryMapLiteral(q.Select); ml != nil {
+		name := c.newStructName("Result")
+		sel, err = c.compileMapLiteralAsStruct(name, ml)
+	} else {
+		sel, err = c.compileExpr(q.Select)
+	}
+	if err != nil {
+		c.popGroupVar()
+		c.env = orig
+		return "", err
+	}
+
+	b.WriteString(" let mut result = Vec::new();")
+	b.WriteString(fmt.Sprintf(" for %s in %s {", groupVar, groupVec))
+	b.WriteString(" result.push(" + sel + ");")
+	b.WriteString(" }")
+
+	if skipExpr != "" || takeExpr != "" {
+		start := "0usize"
+		if skipExpr != "" {
+			start = skipExpr + " as usize"
+		}
+		end := ""
+		if takeExpr != "" {
+			if skipExpr != "" {
+				end = "(" + skipExpr + " + " + takeExpr + ") as usize"
+			} else {
+				end = takeExpr + " as usize"
+			}
+		} else {
+			end = "result.len()"
+		}
+		b.WriteString(" result = result[" + start + ".." + end + "].to_vec();")
+	}
+
+	c.popGroupVar()
+	c.env = orig
+	b.WriteString(" result }")
+	return b.String(), nil
+}
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if q.Group != nil || len(q.Joins) > 0 {
+	if len(q.Joins) > 0 {
 		return "", fmt.Errorf("query features not supported")
 	}
 	src, err := c.compileExpr(q.Source)
@@ -1223,6 +1393,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				child.SetVar(f.Var, types.AnyType{}, true)
 			}
 		}
+	}
+	if q.Group != nil {
+		return c.compileGroupBySimple(q, src, child, fromSrcs)
 	}
 	orig := c.env
 	c.env = child
@@ -1542,6 +1715,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", err
 		}
 		args[i] = s
+	}
+	for i, a := range call.Args {
+		if name, ok := c.simpleIdent(a); ok && c.isGroupVar(name) {
+			args[i] += ".items"
+		}
 	}
 	if mp, ok := c.mutParams[call.Func]; ok {
 		for i := range args {

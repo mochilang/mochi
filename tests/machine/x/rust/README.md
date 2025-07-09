@@ -2,7 +2,7 @@
 
 This directory stores machine generated Rust translations of programs from `tests/vm/valid`. Each entry is compiled and executed during tests. If a program fails to compile or run, a `.error` file contains the diagnostic details.
 
-Checklist of programs that currently compile and run (75/97):
+Checklist of programs that currently compile and run (80/97):
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -80,15 +80,15 @@ Checklist of programs that currently compile and run (75/97):
 - [x] user_type_literal
 
 -Remaining programs to implement:
-- [ ] group_by
-- [ ] group_by_conditional_sum
-- [ ] group_by_having
+- [x] group_by
+- [x] group_by_conditional_sum
+- [x] group_by_having
 - [ ] group_by_join
 - [ ] group_by_left_join
 - [ ] group_by_multi_join
 - [ ] group_by_multi_join_sort
-- [ ] group_by_sort
-- [ ] group_items_iteration
+- [x] group_by_sort
+- [x] group_items_iteration
 - [ ] inner_join
 - [ ] join_multi
 - [ ] left_join
@@ -100,6 +100,6 @@ Checklist of programs that currently compile and run (75/97):
 - [ ] right_join
 - [ ] save_jsonl_stdout
 - [ ] sort_stable
-- [ ] tree_sum
+- [x] tree_sum
 - [ ] update_stmt
 
