@@ -44,6 +44,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	// reset state so helpers from previous compilations aren't leaked
 	c.helpers = map[string]bool{}
 	c.useOpenStruct = false
+	// collect top level globals so functions defined before variables can
+	// still reference them as globals
+	for _, s := range prog.Statements {
+		switch {
+		case s.Let != nil:
+			c.globals[sanitizeName(s.Let.Name)] = true
+		case s.Var != nil:
+			c.globals[sanitizeName(s.Var.Name)] = true
+		}
+	}
 	tests := []*parser.TestBlock{}
 	for _, s := range prog.Statements {
 		if s.Type != nil {
@@ -636,6 +646,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		var sortExpr, skipExpr, takeExpr string
 		if q.Group != nil {
 			vars := append([]string{sanitizeName(q.Var)}, names[1:]...)
+			for _, j := range q.Joins {
+				vars = append(vars, sanitizeName(j.Var))
+			}
 			c.queryRows[q.Group.Name] = vars
 			if q.Sort != nil {
 				genv := types.NewEnv(c.env)
@@ -715,6 +728,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			b.WriteString("\tfor " + sanitizeName(q.Group.Name) + " in " + tmpName + "\n")
 			var valExpr string
 			vars := append([]string{sanitizeName(q.Var)}, names[1:]...)
+			for _, j := range q.Joins {
+				vars = append(vars, sanitizeName(j.Var))
+			}
 			c.queryRows[q.Group.Name] = vars
 			if c.env != nil {
 				origEnv := c.env
@@ -1507,6 +1523,28 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				}
 				return expr, nil
 			}
+			first := sanitizeName(p.Selector.Tail[0])
+			if first == "items" {
+				expr := fmt.Sprintf("%s.Items", name)
+				for _, t := range p.Selector.Tail[1:] {
+					expr += "." + sanitizeName(t)
+				}
+				return expr, nil
+			}
+			if first == "key" {
+				expr := fmt.Sprintf("%s.key", name)
+				for _, t := range p.Selector.Tail[1:] {
+					expr += "." + sanitizeName(t)
+				}
+				return expr, nil
+			}
+			if first == "length" {
+				expr := fmt.Sprintf("%s.length", name)
+				for _, t := range p.Selector.Tail[1:] {
+					expr += "." + sanitizeName(t)
+				}
+				return expr, nil
+			}
 		}
 		var typ types.Type
 		if c.env != nil {
@@ -1732,7 +1770,8 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 	path := "nil"
 	if l.Path != nil {
-		path = strconv.Quote(*l.Path)
+		rel := strings.TrimPrefix(*l.Path, "../")
+		path = fmt.Sprintf("File.expand_path(%q, __dir__)", "../../../"+rel)
 	}
 	opts := "nil"
 	if l.With != nil {
