@@ -2350,6 +2350,33 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 					isStringList = false
 				}
 			}
+		} else if op.Cast != nil {
+			ct := resolveTypeRef(op.Cast.Type, c.env)
+			if st, ok := ct.(types.StructType); ok && p.Target != nil && p.Target.Map != nil {
+				parts := make([]string, len(p.Target.Map.Items))
+				for i, it := range p.Target.Map.Items {
+					key, _ := types.SimpleStringKey(it.Key)
+					val := c.compileExpr(it.Value)
+					parts[i] = fmt.Sprintf(".%s = %s", sanitizeName(key), val)
+				}
+				expr = fmt.Sprintf("(%s){%s}", sanitizeName(st.Name), strings.Join(parts, ", "))
+				isStr = false
+				isFloatList = false
+				isStringList = false
+			} else if _, ok := ct.(types.IntType); ok && isStr {
+				c.need(needStringHeader)
+				expr = fmt.Sprintf("atoi(%s)", expr)
+				isStr = false
+			} else if _, ok := ct.(types.FloatType); ok && isStr {
+				c.need(needStringHeader)
+				expr = fmt.Sprintf("atof(%s)", expr)
+				isStr = false
+			} else {
+				expr = fmt.Sprintf("(%s)(%s)", c.cType(op.Cast.Type), expr)
+				isStr = false
+			}
+			isFloatList = false
+			isStringList = false
 		} else if op.Call != nil {
 			if p.Target != nil && p.Target.Selector != nil && c.env != nil {
 				sel := p.Target.Selector
@@ -2480,6 +2507,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 				return fmt.Sprintf("strlen(%s)", arg)
 			}
 			return fmt.Sprintf("%s.len", arg)
+		} else if p.Call.Func == "substring" {
+			c.need(needSliceString)
+			c.need(needStringHeader)
+			s := c.compileExpr(p.Call.Args[0])
+			start := c.compileExpr(p.Call.Args[1])
+			end := c.compileExpr(p.Call.Args[2])
+			return fmt.Sprintf("slice_string(%s, %s, %s)", s, start, end)
 		} else if p.Call.Func == "print" {
 			for i, a := range p.Call.Args {
 				argExpr := c.compileExpr(a)
@@ -2521,17 +2555,25 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 						c.writeln("printf(\" \");")
 					}
 				} else {
-					fmtStr := "%d"
-					if isStringArg(a, c.env) {
-						fmtStr = "%s"
-					} else if isFloatArg(a, c.env) {
-						fmtStr = "%g"
+					if isBoolArg(a, c.env) {
+						end := " "
+						if i == len(p.Call.Args)-1 {
+							end = "\\n"
+						}
+						c.writeln(fmt.Sprintf("printf(\"%%s%s\", (%s)?\"true\":\"false\");", end, argExpr))
+					} else {
+						fmtStr := "%d"
+						if isStringArg(a, c.env) {
+							fmtStr = "%s"
+						} else if isFloatArg(a, c.env) {
+							fmtStr = "%g"
+						}
+						end := " "
+						if i == len(p.Call.Args)-1 {
+							end = "\\n"
+						}
+						c.writeln(fmt.Sprintf("printf(\"%s%s\", %s);", fmtStr, end, argExpr))
 					}
-					end := " "
-					if i == len(p.Call.Args)-1 {
-						end = "\\n"
-					}
-					c.writeln(fmt.Sprintf("printf(\"%s%s\", %s);", fmtStr, end, argExpr))
 				}
 			}
 			return ""
@@ -2868,6 +2910,15 @@ func isFloatArg(e *parser.Expr, env *types.Env) bool {
 	}
 	c := New(env)
 	_, ok := c.exprType(e).(types.FloatType)
+	return ok
+}
+
+func isBoolArg(e *parser.Expr, env *types.Env) bool {
+	if e == nil {
+		return false
+	}
+	c := New(env)
+	_, ok := c.exprType(e).(types.BoolType)
 	return ok
 }
 

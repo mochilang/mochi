@@ -20,13 +20,13 @@ error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/map_in_operator.c:61:11: error: incompatible types when initializing type ‘int’ using type ‘map_int_bool’
    61 |   int m = _t1;
       |           ^~~
-/workspace/mochi/tests/machine/x/c/map_in_operator.c:62:20: error: expected ‘)’ before ‘in’
-   62 |   printf("%d\n", (1 in m));
-      |                  ~ ^~~
-      |                    )
-/workspace/mochi/tests/machine/x/c/map_in_operator.c:63:20: error: expected ‘)’ before ‘in’
-   63 |   printf("%d\n", (3 in m));
-      |                  ~ ^~~
-      |                    )
+/workspace/mochi/tests/machine/x/c/map_in_operator.c:62:21: error: expected ‘)’ before ‘in’
+   62 |   printf("%s\n", ((1 in m)) ? "true" : "false");
+      |                   ~ ^~~
+      |                     )
+/workspace/mochi/tests/machine/x/c/map_in_operator.c:63:21: error: expected ‘)’ before ‘in’
+   63 |   printf("%s\n", ((3 in m)) ? "true" : "false");
+      |                   ~ ^~~
+      |                     )
 
    1: #include <stdio.h>

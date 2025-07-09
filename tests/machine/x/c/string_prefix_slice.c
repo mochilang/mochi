@@ -34,7 +34,7 @@ int main() {
     _b[_e - _s] = '\0';
     _b;
   });
-  printf("%d\n", (_t1 == prefix));
+  printf("%s\n", ((_t1 == prefix)) ? "true" : "false");
   char *s2 = "desert";
   char *_t2 = ({
     int _len = strlen(s2);
@@ -55,6 +55,6 @@ int main() {
     _b[_e - _s] = '\0';
     _b;
   });
-  printf("%d\n", (_t2 == prefix));
+  printf("%s\n", ((_t2 == prefix)) ? "true" : "false");
   return 0;
 }

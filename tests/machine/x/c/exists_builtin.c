@@ -28,6 +28,6 @@ int main() {
   }
   _t2.len = _t3;
   int flag = exists(_t2);
-  printf("%d\n", flag);
+  printf("%s\n", (flag) ? "true" : "false");
   return 0;
 }

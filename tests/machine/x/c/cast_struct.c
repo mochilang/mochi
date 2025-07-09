@@ -63,7 +63,7 @@ typedef struct {
 int main() {
   map_int_bool _t1 = map_int_bool_create(1);
   map_int_bool_put(&_t1, "title", "hi");
-  Todo todo = _t1;
+  Todo todo = (Todo){.title = "hi"};
   printf("%s\n", todo.title);
   return 0;
 }

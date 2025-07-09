@@ -17,7 +17,7 @@ static int contains_string(char *s, char *sub) {
 }
 int main() {
   char *s = "catch";
-  printf("%d\n", contains_string(s, "cat"));
-  printf("%d\n", contains_string(s, "dog"));
+  printf("%s\n", (contains_string(s, "cat")) ? "true" : "false");
+  printf("%s\n", (contains_string(s, "dog")) ? "true" : "false");
   return 0;
 }

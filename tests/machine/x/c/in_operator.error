@@ -1,9 +1,0 @@
-line: 0
-error: output mismatch
--- got --
-1
-1
--- want --
-true
-true
-   1: #include <stdio.h>

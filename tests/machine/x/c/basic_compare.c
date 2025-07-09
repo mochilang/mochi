@@ -15,7 +15,7 @@ int main() {
   int a = (10 - 3);
   int b = (2 + 2);
   printf("%d\n", a);
-  printf("%d\n", (a == 7));
-  printf("%d\n", (b < 5));
+  printf("%s\n", ((a == 7)) ? "true" : "false");
+  printf("%s\n", ((b < 5)) ? "true" : "false");
   return 0;
 }
