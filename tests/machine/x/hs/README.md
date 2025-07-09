@@ -4,8 +4,8 @@ This directory contains Haskell source code generated from Mochi programs and th
 
 ## Summary
 
-- 48/97 programs compiled and executed successfully.
-- 49 programs failed to compile or run.
+- 49/97 programs compiled and executed successfully.
+- 48 programs failed to compile or run.
 
 ### Successful
 - [x] append_builtin
@@ -20,6 +20,7 @@ This directory contains Haskell source code generated from Mochi programs and th
 - [x] count_builtin
 - [x] cross_join_filter
 - [x] cross_join_triple
+- [x] cross_join
 - [x] for_list_collection
 - [x] for_loop
 - [x] for_map_collection
@@ -58,7 +59,6 @@ This directory contains Haskell source code generated from Mochi programs and th
 - [x] while_loop
 
 ### Failed
-- [ ] cross_join
 - [ ] dataset_sort_take_limit
 - [ ] dataset_where_filter
 - [ ] exists_builtin

@@ -1059,7 +1059,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 					return "", err
 				}
 				if anyVal {
-					v = wrapAnyValue(c.inferExprType(it.Value), v)
+					vt := c.inferExprType(it.Value)
+					if !isAny(vt) {
+						v = wrapAnyValue(vt, v)
+					}
 				}
 				items[i] = fmt.Sprintf("(%s, %s)", k, v)
 				continue
@@ -1073,7 +1076,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", err
 			}
 			if anyVal {
-				v = wrapAnyValue(c.inferExprType(it.Value), v)
+				vt := c.inferExprType(it.Value)
+				if !isAny(vt) {
+					v = wrapAnyValue(vt, v)
+				}
 			}
 			items[i] = fmt.Sprintf("(%s, %s)", k, v)
 		}

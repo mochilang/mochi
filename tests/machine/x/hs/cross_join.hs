@@ -180,7 +180,7 @@ customers = [Map.fromList [("id", VInt (1)), ("name", VString ("Alice"))], Map.f
 
 orders = [Map.fromList [("id", 100), ("customerId", 1), ("total", 250)], Map.fromList [("id", 101), ("customerId", 2), ("total", 125)], Map.fromList [("id", 102), ("customerId", 1), ("total", 300)]]
 
-result = [Map.fromList [("orderId", VInt (fromMaybe (error "missing") (Map.lookup "id" o))), ("orderCustomerId", VInt (fromMaybe (error "missing") (Map.lookup "customerId" o))), ("pairedCustomerName", VString (fromMaybe (error "missing") (Map.lookup "name" c))), ("orderTotal", VInt (fromMaybe (error "missing") (Map.lookup "total" o)))] | o <- orders, c <- customers]
+result = [Map.fromList [("orderId", VInt (fromMaybe (error "missing") (Map.lookup "id" o))), ("orderCustomerId", VInt (fromMaybe (error "missing") (Map.lookup "customerId" o))), ("pairedCustomerName", fromMaybe (error "missing") (Map.lookup "name" c)), ("orderTotal", VInt (fromMaybe (error "missing") (Map.lookup "total" o)))] | o <- orders, c <- customers]
 
 main :: IO ()
 main = do
