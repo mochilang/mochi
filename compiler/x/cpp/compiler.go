@@ -638,6 +638,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 						v := vals[i][:dot]
 						fld := vals[i][dot+1:]
 						if t := c.varStruct[v]; t != "" {
+							if idx := strings.Index(t, "{"); idx != -1 {
+								t = t[:idx]
+							}
 							ftype = fmt.Sprintf("decltype(std::declval<%s>().%s)", t, fld)
 						}
 					}
@@ -824,6 +827,9 @@ func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error
 			v := val[:dot]
 			fld := val[dot+1:]
 			if t := c.varStruct[v]; t != "" {
+				if idx := strings.Index(t, "{"); idx != -1 {
+					t = t[:idx]
+				}
 				ftype = fmt.Sprintf("decltype(std::declval<%s>().%s)", t, fld)
 			}
 		} else if c.vars[val] == "string" {

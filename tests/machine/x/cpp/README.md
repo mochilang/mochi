@@ -4,8 +4,8 @@ This directory contains C++ source code generated from Mochi programs and the co
 
 ## Summary
 
-- 58/97 programs compiled and executed successfully.
-- 39 programs failed to compile or run.
+- 59/97 programs compiled and executed successfully.
+- 38 programs failed to compile or run.
 
 ### Successful
 - append_builtin
@@ -20,6 +20,7 @@ This directory contains C++ source code generated from Mochi programs and the co
 - count_builtin
 - cross_join_filter
 - cross_join_triple
+- cross_join
 - for_list_collection
 - for_loop
 - fun_call
@@ -68,7 +69,6 @@ This directory contains C++ source code generated from Mochi programs and the co
 - while_loop
 
 ### Failed
-- cross_join
 - dataset_sort_take_limit
 - dataset_where_filter
 - exists_builtin
