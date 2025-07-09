@@ -354,7 +354,9 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 			lit = l
 		}
 	}
-	if fn := pureFunExpr(s.Value); fn != nil && exprUsesVarFun(fn, s.Name) {
+	if s.Value == nil {
+		c.writeln(fmt.Sprintf("var %s %s", name, typStr))
+	} else if fn := pureFunExpr(s.Value); fn != nil && exprUsesVarFun(fn, s.Name) {
 		c.writeln(fmt.Sprintf("var %s %s", name, typStr))
 		c.writeln(fmt.Sprintf("%s = %s", name, value))
 	} else {
@@ -424,7 +426,9 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 		}
 	}
 
-	if fn := pureFunExpr(s.Value); fn != nil && exprUsesVarFun(fn, s.Name) {
+	if s.Value == nil {
+		c.writeln(fmt.Sprintf("var %s %s", name, typStr))
+	} else if fn := pureFunExpr(s.Value); fn != nil && exprUsesVarFun(fn, s.Name) {
 		c.writeln(fmt.Sprintf("var %s %s", name, typStr))
 		c.writeln(fmt.Sprintf("%s = %s", name, value))
 	} else {
@@ -1747,12 +1751,15 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 		switch op {
 		case "union":
 			c.use("_union")
+			c.use("_equal")
 			expr = fmt.Sprintf("_union[%s](%s, %s)", elemGo, left, right)
 		case "except":
 			c.use("_except")
+			c.use("_equal")
 			expr = fmt.Sprintf("_except[%s](%s, %s)", elemGo, left, right)
 		case "intersect":
 			c.use("_intersect")
+			c.use("_equal")
 			expr = fmt.Sprintf("_intersect[%s](%s, %s)", elemGo, left, right)
 		}
 		next = lt
