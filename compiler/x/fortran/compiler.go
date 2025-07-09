@@ -116,6 +116,15 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
+	case s.Test != nil:
+		for _, st := range s.Test.Body {
+			if err := c.compileStmt(st); err != nil {
+				return err
+			}
+		}
+		return nil
+	case s.Expect != nil:
+		return c.compileExpect(s.Expect)
 	case s.Let != nil:
 		return c.compileLet(s.Let)
 	case s.Var != nil:
@@ -169,6 +178,26 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 			}
 		}
 		if lst := listLiteral(l.Value); lst != nil {
+			if inner := listLiteral(lst.Elems[0]); inner != nil {
+				cols := len(inner.Elems)
+				flat := make([]string, 0, len(lst.Elems)*cols)
+				for _, it := range lst.Elems {
+					in := listLiteral(it)
+					if in == nil || len(in.Elems) != cols {
+						return fmt.Errorf("irregular nested list")
+					}
+					for _, e := range in.Elems {
+						v, err := c.compileExpr(e)
+						if err != nil {
+							return err
+						}
+						flat = append(flat, v)
+					}
+				}
+				c.writeln(fmt.Sprintf("%s, dimension(%d,%d) :: %s = reshape((/%s/),(/%d,%d/))", typ, len(lst.Elems), cols, l.Name, strings.Join(flat, ","), len(lst.Elems), cols))
+				c.declared[l.Name] = true
+				return nil
+			}
 			elems := make([]string, len(lst.Elems))
 			for i, e := range lst.Elems {
 				v, err := c.compileExpr(e)
@@ -205,7 +234,12 @@ func (c *Compiler) compileLetDecl(l *parser.LetStmt) error {
 		}
 	}
 	if lst := listLiteral(l.Value); lst != nil {
-		c.writelnDecl(fmt.Sprintf("%s, dimension(%d) :: %s", typ, len(lst.Elems), l.Name))
+		if inner := listLiteral(lst.Elems[0]); inner != nil {
+			cols := len(inner.Elems)
+			c.writelnDecl(fmt.Sprintf("%s, dimension(%d,%d) :: %s", typ, len(lst.Elems), cols, l.Name))
+		} else {
+			c.writelnDecl(fmt.Sprintf("%s, dimension(%d) :: %s", typ, len(lst.Elems), l.Name))
+		}
 	} else {
 		c.writelnDecl(fmt.Sprintf("%s :: %s", typ, l.Name))
 	}
@@ -242,6 +276,7 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 		return err
 	}
 	target := a.Name
+	var indices []string
 	for _, idx := range a.Index {
 		if idx.Colon != nil || idx.Colon2 != nil {
 			return fmt.Errorf("slices not supported")
@@ -250,7 +285,10 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 		if err != nil {
 			return err
 		}
-		target += fmt.Sprintf("((%s)+1)", v)
+		indices = append(indices, fmt.Sprintf("((%s)+1)", v))
+	}
+	if len(indices) > 0 {
+		target += "(" + strings.Join(indices, ",") + ")"
 	}
 	c.writeln(fmt.Sprintf("%s = %s", target, val))
 	return nil
@@ -395,6 +433,23 @@ func (c *Compiler) compileReturn(r *parser.ReturnStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
+	cond, err := c.compileExpr(e.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("if (%s) then", cond))
+	c.indent++
+	c.writeln("print *, 'test passed'")
+	c.indent--
+	c.writeln("else")
+	c.indent++
+	c.writeln("print *, 'test failed'")
+	c.indent--
+	c.writeln("end if")
+	return nil
+}
+
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
@@ -408,14 +463,14 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 			}
 		}
 	}
-	c.writeln(fmt.Sprintf("%s function %s(%s)", retType, fn.Name, strings.Join(params, ",")))
+	c.writeln(fmt.Sprintf("recursive %s function %s(%s) result(res)", retType, fn.Name, strings.Join(params, ",")))
 	c.indent++
 	for _, p := range fn.Params {
 		c.writeln(fmt.Sprintf("%s, intent(in) :: %s", typeName(p.Type), p.Name))
 		c.declared[p.Name] = true
 	}
 	prev := c.currentFunc
-	c.currentFunc = fn.Name
+	c.currentFunc = "res"
 	for _, st := range fn.Body {
 		if err := c.compileStmt(st); err != nil {
 			return err
@@ -576,6 +631,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 		}
 	}
+	var idxList []string
 	for _, op := range p.Ops[startOp:] {
 		switch {
 		case op.Index != nil:
@@ -609,7 +665,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					startF = fmt.Sprintf("(%s)+1", start)
 				}
 				endF := end
-				res = fmt.Sprintf("%s(%s:%s)", res, startF, endF)
+				idxList = append(idxList, fmt.Sprintf("%s:%s", startF, endF))
 			} else if op.Index.Colon2 != nil {
 				return "", fmt.Errorf("slices not supported")
 			} else {
@@ -618,14 +674,22 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					return "", err
 				}
 				if types.IsStringPrimary(p.Target, c.env) {
-					res = fmt.Sprintf("%s((%s)+1:(%s)+1)", res, v, v)
+					idxList = append(idxList, fmt.Sprintf("(%s)+1:(%s)+1", v, v))
 				} else {
-					res = fmt.Sprintf("%s((%s)+1)", res, v)
+					idxList = append(idxList, fmt.Sprintf("((%s)+1)", v))
 				}
 			}
 		case op.Field != nil:
+			if len(idxList) > 0 {
+				res = fmt.Sprintf("%s(%s)", res, strings.Join(idxList, ","))
+				idxList = nil
+			}
 			res = fmt.Sprintf("%s%%%s", res, op.Field.Name)
 		case op.Cast != nil:
+			if len(idxList) > 0 {
+				res = fmt.Sprintf("%s(%s)", res, strings.Join(idxList, ","))
+				idxList = nil
+			}
 			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
 				switch *op.Cast.Type.Simple {
 				case "int":
@@ -677,6 +741,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 				args[i] = v
 			}
+			if len(idxList) > 0 {
+				res = fmt.Sprintf("%s(%s)", res, strings.Join(idxList, ","))
+				idxList = nil
+			}
 			if strings.HasSuffix(res, "%contains") && len(args) == 1 {
 				base := strings.TrimSuffix(res, "%contains")
 				res = fmt.Sprintf("index(%s,%s) /= 0", base, args[0])
@@ -686,6 +754,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		default:
 			return "", fmt.Errorf("postfix operations not supported")
 		}
+	}
+	if len(idxList) > 0 {
+		res = fmt.Sprintf("%s(%s)", res, strings.Join(idxList, ","))
 	}
 	return res, nil
 }
