@@ -1399,7 +1399,11 @@ func (c *Compiler) compileGroupBySimple(q *parser.QueryExpr, src string, child *
 		sel, err = c.compileMapLiteralAsStruct(name, ml)
 		if err == nil {
 			c.listVars[q.Var] = name
-			child.SetVar(q.Var, types.StructType{Name: name}, true)
+			// Do not override the loop variable type before the
+			// iteration is generated. Otherwise the loop would
+			// treat the variable as a struct reference and borrow
+			// values incorrectly.
+			// child.SetVar(q.Var, types.StructType{Name: name}, true)
 		}
 	} else {
 		sel, err = c.compileExpr(q.Select)
