@@ -188,6 +188,10 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 
 func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 	target := a.Name
+	typ, _ := c.env.GetVar(a.Name)
+	if c.mapVars[a.Name] {
+		typ = types.MapType{}
+	}
 	for i, idx := range a.Index {
 		if idx.Colon != nil || idx.Colon2 != nil || idx.End != nil || idx.Step != nil {
 			return fmt.Errorf("slice assignment not supported")
@@ -199,14 +203,51 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 		if err != nil {
 			return err
 		}
-		if i < len(a.Index)-1 || len(a.Field) > 0 {
-			target = fmt.Sprintf("(%s[%s] as Map)", target, expr)
-		} else {
-			target += fmt.Sprintf("[%s]", expr)
+		more := i < len(a.Index)-1 || len(a.Field) > 0
+		switch t := typ.(type) {
+		case types.ListType:
+			typ = t.Elem
+			if more && isMapType(typ) {
+				target = fmt.Sprintf("(%s[%s] as Map)", target, expr)
+			} else if more {
+				target = fmt.Sprintf("%s[%s]", target, expr)
+			} else {
+				target += fmt.Sprintf("[%s]", expr)
+			}
+		case types.MapType:
+			typ = t.Value
+			if more && isMapType(typ) {
+				target = fmt.Sprintf("(%s[%s] as Map)", target, expr)
+			} else if more {
+				target = fmt.Sprintf("%s[%s]", target, expr)
+			} else {
+				target += fmt.Sprintf("[%s]", expr)
+			}
+		default:
+			if more {
+				target = fmt.Sprintf("%s[%s]", target, expr)
+			} else {
+				target += fmt.Sprintf("[%s]", expr)
+			}
+			typ = types.AnyType{}
 		}
 	}
 	for _, f := range a.Field {
-		target += "." + f.Name
+		switch t := typ.(type) {
+		case types.MapType:
+			target += fmt.Sprintf("['%s']", f.Name)
+			typ = t.Value
+		case types.StructType:
+			target += "." + f.Name
+			if ft, ok := t.Fields[f.Name]; ok {
+				typ = ft
+			} else {
+				typ = types.AnyType{}
+			}
+		default:
+			target += "." + f.Name
+			typ = types.AnyType{}
+		}
 	}
 	val, err := c.compileExpr(a.Value)
 	if err != nil {
@@ -1178,6 +1219,11 @@ func isNumericOp(op string) bool {
 	default:
 		return false
 	}
+}
+
+func isMapType(t types.Type) bool {
+	_, ok := t.(types.MapType)
+	return ok
 }
 
 func findRepoRoot() string {
