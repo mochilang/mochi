@@ -521,6 +521,7 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 }
 
 func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	c.writeln("// test " + strings.Trim(t.Name, "\""))
 	for _, st := range t.Body {
 		if err := c.compileStmt(st); err != nil {
 			return err
