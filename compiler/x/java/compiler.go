@@ -179,6 +179,42 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.indent--
 		c.writeln("}")
 	}
+	if c.helpers["union_all"] {
+		c.writeln("static <T> List<T> union_all(List<T> a, List<T> b) {")
+		c.indent++
+		c.writeln("List<T> res = new ArrayList<>(a);")
+		c.writeln("res.addAll(b);")
+		c.writeln("return res;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.helpers["union"] {
+		c.writeln("static <T> List<T> union(List<T> a, List<T> b) {")
+		c.indent++
+		c.writeln("LinkedHashSet<T> s = new LinkedHashSet<>(a);")
+		c.writeln("s.addAll(b);")
+		c.writeln("return new ArrayList<>(s);")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.helpers["except"] {
+		c.writeln("static <T> List<T> except(List<T> a, List<T> b) {")
+		c.indent++
+		c.writeln("List<T> res = new ArrayList<>();")
+		c.writeln("for (T x : a) if (!b.contains(x)) res.add(x);")
+		c.writeln("return res;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.helpers["intersect"] {
+		c.writeln("static <T> List<T> intersect(List<T> a, List<T> b) {")
+		c.indent++
+		c.writeln("List<T> res = new ArrayList<>();")
+		c.writeln("for (T x : a) if (b.contains(x) && !res.contains(x)) res.add(x);")
+		c.writeln("return res;")
+		c.indent--
+		c.writeln("}")
+	}
 	c.writeln("public static void main(String[] args) {")
 	c.indent++
 	c.buf.Write(body.Bytes())
@@ -944,6 +980,26 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 		if op.Op == "in" {
 			c.helpers["in"] = true
 			expr = fmt.Sprintf("inOp(%s, %s)", expr, right)
+			continue
+		}
+		if op.Op == "union" {
+			if op.All {
+				c.helpers["union_all"] = true
+				expr = fmt.Sprintf("union_all(%s, %s)", expr, right)
+			} else {
+				c.helpers["union"] = true
+				expr = fmt.Sprintf("union(%s, %s)", expr, right)
+			}
+			continue
+		}
+		if op.Op == "except" {
+			c.helpers["except"] = true
+			expr = fmt.Sprintf("except(%s, %s)", expr, right)
+			continue
+		}
+		if op.Op == "intersect" {
+			c.helpers["intersect"] = true
+			expr = fmt.Sprintf("intersect(%s, %s)", expr, right)
 			continue
 		}
 		if (op.Op == "<" || op.Op == "<=" || op.Op == ">" || op.Op == ">=") &&
