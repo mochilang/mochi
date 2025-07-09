@@ -1244,6 +1244,42 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		c.env = child
 
+		if len(q.Froms) == 0 && len(q.Joins) == 1 && q.Group == nil && joinSides[0] == "" {
+			on := q.Joins[0].On
+			if on != nil && on.Binary != nil && len(on.Binary.Right) == 1 && on.Binary.Right[0].Op == "==" {
+				leftKey, err := c.compileUnary(on.Binary.Left)
+				if err != nil {
+					c.env = orig
+					return "", err
+				}
+				rightKey, err := c.compilePostfix(on.Binary.Right[0].Right)
+				if err != nil {
+					c.env = orig
+					return "", err
+				}
+				sel, err := c.compileExpr(q.Select)
+				if err != nil {
+					c.env = orig
+					return "", err
+				}
+				c.env = orig
+				expr := fmt.Sprintf("%s.Join(%s, %s => %s, %s => %s, (%s, %s) => %s)", src, joinSrcs[0], v, leftKey, sanitizeName(q.Joins[0].Var), rightKey, v, sanitizeName(q.Joins[0].Var), sel)
+				if cond != "" {
+					expr = fmt.Sprintf("%s.Where(%s => %s)", expr, v, cond)
+				}
+				if sortExpr != "" {
+					expr = fmt.Sprintf("%s.OrderBy(%s => %s)", expr, v, sortExpr)
+				}
+				if skipExpr != "" {
+					expr = fmt.Sprintf("%s.Skip(%s)", expr, skipExpr)
+				}
+				if takeExpr != "" {
+					expr = fmt.Sprintf("%s.Take(%s)", expr, takeExpr)
+				}
+				return fmt.Sprintf("%s.ToList()", expr), nil
+			}
+		}
+
 		if q.Group != nil {
 			keyExpr, err := c.compileExpr(q.Group.Exprs[0])
 			if err != nil {
