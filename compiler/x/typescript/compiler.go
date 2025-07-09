@@ -1077,7 +1077,7 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 		if p.Load.Path == nil {
 			return "", fmt.Errorf("load path must be string")
 		}
-		path := filepath.Join(c.repoRoot, "tests", "vm", "valid", *p.Load.Path)
+		path := filepath.Join(c.repoRoot, "tests", "vm", *p.Load.Path)
 		data, err := os.ReadFile(path)
 		if err != nil {
 			return "", err
