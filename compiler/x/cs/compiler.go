@@ -2382,6 +2382,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 
 func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	args := make([]string, len(call.Args))
+	var paramTypes []types.Type
+	var retType types.Type = types.VoidType{}
+	if fn, ok := c.env.GetFunc(call.Func); ok {
+		paramTypes = make([]types.Type, len(fn.Params))
+		for i, p := range fn.Params {
+			paramTypes[i] = c.resolveTypeRef(p.Type)
+		}
+		retType = c.resolveTypeRef(fn.Return)
+	} else if t, err := c.env.GetVar(call.Func); err == nil {
+		if ft, ok := t.(types.FuncType); ok {
+			paramTypes = ft.Params
+			retType = ft.Return
+		}
+	}
 	for i, a := range call.Args {
 		v, err := c.compileExpr(a)
 		if err != nil {
@@ -2390,6 +2404,35 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		args[i] = v
 	}
 	argStr := strings.Join(args, ", ")
+
+	if len(paramTypes) > 0 && len(args) < len(paramTypes) {
+		missing := paramTypes[len(args):]
+		names := make([]string, len(missing))
+		for i := range missing {
+			names[i] = fmt.Sprintf("p%d", i)
+		}
+		callArgs := append(append([]string{}, args...), names...)
+		ret := csTypeOf(retType)
+		if ret == "" {
+			ret = "void"
+		}
+		ptypes := make([]string, len(missing))
+		pdecls := make([]string, len(missing))
+		for i, pt := range missing {
+			ptStr := csTypeOf(pt)
+			ptypes[i] = ptStr
+			pdecls[i] = fmt.Sprintf("%s %s", ptStr, names[i])
+		}
+		del := delegateType(ptypes, ret)
+		body := fmt.Sprintf("%s(%s)", sanitizeName(call.Func), strings.Join(callArgs, ", "))
+		if ret == "void" {
+			body += ";"
+		} else {
+			body = "return " + body + ";"
+		}
+		expr := fmt.Sprintf("new %s((%s) => { %s })", del, strings.Join(pdecls, ", "), body)
+		return expr, nil
+	}
 	switch call.Func {
 	case "print":
 		if len(args) == 1 {
