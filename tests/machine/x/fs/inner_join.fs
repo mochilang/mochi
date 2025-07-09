@@ -3,9 +3,24 @@ open System
 exception Break
 exception Continue
 
-let customers = [dict [(id, 1); (name, "Alice")]; dict [(id, 2); (name, "Bob")]; dict [(id, 3); (name, "Charlie")]]
-let orders = [dict [(id, 100); (customerId, 1); (total, 250)]; dict [(id, 101); (customerId, 2); (total, 125)]; dict [(id, 102); (customerId, 1); (total, 300)]; dict [(id, 103); (customerId, 4); (total, 80)]]
-let result = [ for o in orders doyield dict [(orderId, o.id); (customerName, c.name); (total, o.total)] ]
+type Anon1 = {
+    id: int
+    name: string
+}
+type Anon2 = {
+    id: int
+    customerId: int
+    total: int
+}
+type Anon3 = {
+    orderId: obj
+    customerName: obj
+    total: obj
+}
+let customers = [{ id = 1; name = "Alice" }; { id = 2; name = "Bob" }; { id = 3; name = "Charlie" }]
+let orders = [{ id = 100; customerId = 1; total = 250 }; { id = 101; customerId = 2; total = 125 }; { id = 102; customerId = 1; total = 300 }; { id = 103; customerId = 4; total = 80 }]
+let result = [ for o in orders do 
+  for c in customers do if o.customerId = c.id then yield { orderId = o.id; customerName = c.name; total = o.total } ]
 printfn "%s" "--- Orders with customer info ---"
 try
     for entry in result do
