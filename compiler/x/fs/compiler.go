@@ -68,6 +68,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.indent = 0
 	c.vars = make(map[string]string)
 	c.writeln("open System")
+	c.writeln("open System.Text.Json")
 	c.writeln("")
 	c.writeln("exception Break")
 	c.writeln("exception Continue")
@@ -183,9 +184,21 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	}
 	var val string = "0"
 	if v.Value != nil {
-		val, err = c.compileExpr(v.Value)
-		if err != nil {
-			return err
+		if p := rootPrimary(v.Value); p != nil && p.List != nil {
+			elems := make([]string, len(p.List.Elems))
+			for i, e := range p.List.Elems {
+				s, err := c.compileExpr(e)
+				if err != nil {
+					return err
+				}
+				elems[i] = s
+			}
+			val = "[|" + strings.Join(elems, "; ") + "|]"
+		} else {
+			val, err = c.compileExpr(v.Value)
+			if err != nil {
+				return err
+			}
 		}
 		if typ == "" && c.isStringExpr(v.Value) {
 			typ = "string"
@@ -467,14 +480,79 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if len(p.Ops) == 0 {
 		return val, nil
 	}
-	// handle sequence of ops but only support index and cast
-	for _, op := range p.Ops {
-		if op.Index != nil && op.Index.Start != nil {
-			idx, err := c.compileExpr(op.Index.Start)
-			if err != nil {
-				return "", err
+	// handle sequence of ops including index, slice, field and call
+	for i := 0; i < len(p.Ops); i++ {
+		op := p.Ops[i]
+		if op.Index != nil {
+			if op.Index.Colon != nil {
+				start := "0"
+				if op.Index.Start != nil {
+					s, err := c.compileExpr(op.Index.Start)
+					if err != nil {
+						return "", err
+					}
+					start = s
+				}
+				end := ""
+				if op.Index.End != nil {
+					e, err := c.compileExpr(op.Index.End)
+					if err != nil {
+						return "", err
+					}
+					end = e
+				}
+				if c.isStringPrimary(p.Target) {
+					if end != "" {
+						val = fmt.Sprintf("%s.Substring(%s, %s - %s)", val, start, end, start)
+					} else {
+						val = fmt.Sprintf("%s.Substring(%s)", val, start)
+					}
+				} else {
+					if end != "" {
+						val = fmt.Sprintf("%s.[%s..(%s-1)]", val, start, end)
+					} else {
+						val = fmt.Sprintf("%s.[%s..]", val, start)
+					}
+				}
+				continue
 			}
-			val = fmt.Sprintf("%s.[%s]", val, idx)
+			if op.Index.Start != nil {
+				idx, err := c.compileExpr(op.Index.Start)
+				if err != nil {
+					return "", err
+				}
+				val = fmt.Sprintf("%s.[%s]", val, idx)
+				continue
+			}
+		}
+		if op.Field != nil {
+			if i+1 < len(p.Ops) && p.Ops[i+1].Call != nil {
+				call := p.Ops[i+1].Call
+				args := make([]string, len(call.Args))
+				for j, a := range call.Args {
+					s, err := c.compileExpr(a)
+					if err != nil {
+						return "", err
+					}
+					args[j] = s
+				}
+				val = fmt.Sprintf("%s.%s(%s)", val, op.Field.Name, strings.Join(args, ", "))
+				i++
+				continue
+			}
+			val = fmt.Sprintf("%s.%s", val, op.Field.Name)
+			continue
+		}
+		if op.Call != nil {
+			args := make([]string, len(op.Call.Args))
+			for j, a := range op.Call.Args {
+				s, err := c.compileExpr(a)
+				if err != nil {
+					return "", err
+				}
+				args[j] = s
+			}
+			val = fmt.Sprintf("%s(%s)", val, strings.Join(args, ", "))
 			continue
 		}
 		if op.Cast != nil {
@@ -617,12 +695,36 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) == 1 {
 			return fmt.Sprintf("not (List.isEmpty %s)", args[0]), nil
 		}
+	case "json":
+		if len(args) == 1 {
+			return fmt.Sprintf("JsonSerializer.Serialize(%s)", args[0]), nil
+		}
 	case "len":
 		if len(args) == 1 {
 			if strings.HasPrefix(args[0], "\"") {
 				return fmt.Sprintf("%s.Length", args[0]), nil
 			}
 			return fmt.Sprintf("List.length %s", args[0]), nil
+		}
+	case "max":
+		if len(args) == 1 {
+			return fmt.Sprintf("List.max %s", args[0]), nil
+		}
+	case "min":
+		if len(args) == 1 {
+			return fmt.Sprintf("List.min %s", args[0]), nil
+		}
+	case "str":
+		if len(args) == 1 {
+			return fmt.Sprintf("string %s", args[0]), nil
+		}
+	case "substring":
+		if len(args) == 3 {
+			return fmt.Sprintf("%s.Substring(%s, %s - %s)", args[0], args[1], args[2], args[1]), nil
+		}
+	case "sum":
+		if len(args) == 1 {
+			return fmt.Sprintf("List.sum %s", args[0]), nil
 		}
 	case "values":
 		if len(args) == 1 {
@@ -948,6 +1050,33 @@ func (c *Compiler) isStringExpr(e *parser.Expr) bool {
 		if p.If != nil {
 			return c.isStringExpr(p.If.Then) && c.isStringExpr(p.If.Else)
 		}
+	}
+	return false
+}
+
+func (c *Compiler) isStringPrimary(p *parser.Primary) bool {
+	if p == nil {
+		return false
+	}
+	if p.Lit != nil && p.Lit.Str != nil {
+		return true
+	}
+	if p.Selector != nil {
+		if t, ok := c.vars[p.Selector.Root]; ok {
+			if t == "string" {
+				return true
+			}
+			if fields, ok := c.structs[t]; ok {
+				if len(p.Selector.Tail) == 1 {
+					if ft, ok := fields[p.Selector.Tail[0]]; ok && ft == "string" {
+						return true
+					}
+				}
+			}
+		}
+	}
+	if p.If != nil {
+		return c.isStringExpr(p.If.Then) && c.isStringExpr(p.If.Else)
 	}
 	return false
 }
