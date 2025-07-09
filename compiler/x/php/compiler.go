@@ -788,6 +788,12 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	for _, j := range q.Joins {
+		if j.Side != nil && *j.Side != "" {
+			return c.compileQueryExprAdvanced(q)
+		}
+	}
+
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
 		return "", err
@@ -806,10 +812,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 	}
 	for _, j := range q.Joins {
-		if j.Side != nil && *j.Side != "" {
-			// only inner joins supported for now
-			return "", fmt.Errorf("query join type not supported")
-		}
 		if lt, ok := types.TypeOfExprBasic(j.Src, c.env).(types.ListType); ok {
 			child.SetVar(j.Var, lt.Elem, true)
 		} else {
@@ -1085,7 +1087,7 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 		}
 		if isUnderscoreExpr(cs.Pattern) {
 			buf.WriteString("    return " + res + ";\n")
-			buf.WriteString(")(" + target + ")")
+			buf.WriteString("})(" + target + ")")
 			return buf.String(), nil
 		}
 		cond := ""
@@ -1197,4 +1199,163 @@ func (c *Compiler) writeln(s string) {
 	}
 	c.buf.WriteString(s)
 	c.buf.WriteByte('\n')
+}
+
+func (c *Compiler) compileQueryExprAdvanced(q *parser.QueryExpr) (string, error) {
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	child := types.NewEnv(c.env)
+	if lt, ok := types.TypeOfExprBasic(q.Source, c.env).(types.ListType); ok {
+		child.SetVar(q.Var, lt.Elem, true)
+	} else {
+		child.SetVar(q.Var, types.AnyType{}, true)
+	}
+	for _, f := range q.Froms {
+		if lt, ok := types.TypeOfExprBasic(f.Src, c.env).(types.ListType); ok {
+			child.SetVar(f.Var, lt.Elem, true)
+		} else {
+			child.SetVar(f.Var, types.AnyType{}, true)
+		}
+	}
+	for _, j := range q.Joins {
+		if lt, ok := types.TypeOfExprBasic(j.Src, c.env).(types.ListType); ok {
+			child.SetVar(j.Var, lt.Elem, true)
+		} else {
+			child.SetVar(j.Var, types.AnyType{}, true)
+		}
+	}
+	orig := c.env
+	c.env = child
+
+	fromSrcs := make([]string, len(q.Froms))
+	varNames := []string{sanitizeName(q.Var)}
+	for i, f := range q.Froms {
+		s, err := c.compileExpr(f.Src)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		fromSrcs[i] = s
+		varNames = append(varNames, sanitizeName(f.Var))
+	}
+	joinSrcs := make([]string, len(q.Joins))
+	joinOns := make([]string, len(q.Joins))
+	paramCopy := append([]string(nil), varNames...)
+	for i, j := range q.Joins {
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		joinSrcs[i] = js
+		on, err := c.compileExpr(j.On)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		joinOns[i] = on
+		varNames = append(varNames, sanitizeName(j.Var))
+	}
+
+	val, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+	var keyExpr string
+	if q.Group != nil {
+		keyExpr, err = c.compileExpr(q.Group.Exprs[0])
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+
+	c.env = orig
+
+	joins := make([]string, 0, len(q.Froms)+len(q.Joins))
+	params := []string{sanitizeName(q.Var)}
+	for i, fs := range fromSrcs {
+		joins = append(joins, fmt.Sprintf("['items'=>%s]", fs))
+		params = append(params, sanitizeName(q.Froms[i].Var))
+	}
+	paramCopy = append([]string(nil), params...)
+	for i, js := range joinSrcs {
+		onParams := append(paramCopy, sanitizeName(q.Joins[i].Var))
+		fnParams := make([]string, len(onParams))
+		for k, p := range onParams {
+			fnParams[k] = "$" + p
+		}
+		spec := fmt.Sprintf("['items'=>%s, 'on'=>function(%s){return %s;}", js, strings.Join(fnParams, ", "), joinOns[i])
+		if q.Joins[i].Side != nil {
+			side := *q.Joins[i].Side
+			if side == "left" || side == "outer" {
+				spec += ", 'left'=>true"
+			}
+			if side == "right" || side == "outer" {
+				spec += ", 'right'=>true"
+			}
+		}
+		spec += "]"
+		joins = append(joins, spec)
+		paramCopy = append(paramCopy, sanitizeName(q.Joins[i].Var))
+	}
+	paramList := make([]string, len(paramCopy))
+	for i, p := range paramCopy {
+		paramList[i] = "$" + p
+	}
+	allParams := strings.Join(paramList, ", ")
+	selectFn := fmt.Sprintf("function(%s){return %s;}", allParams, val)
+	opts := "[ 'select' => " + selectFn + " ]"
+	expr := fmt.Sprintf("_query(%s, [%s], %s)", src, strings.Join(joins, ", "), opts)
+	c.use("_query")
+	if q.Group == nil {
+		return expr, nil
+	}
+
+	genv := types.NewEnv(child)
+	genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
+	gname := sanitizeName(q.Group.Name)
+	c.groupVars[gname] = true
+	c.env = genv
+	groupVal, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.env = orig
+		delete(c.groupVars, gname)
+		return "", err
+	}
+	havingCond := ""
+	if q.Group.Having != nil {
+		havingCond, err = c.compileExpr(q.Group.Having)
+		if err != nil {
+			c.env = orig
+			delete(c.groupVars, gname)
+			return "", err
+		}
+	}
+	c.env = orig
+
+	var buf bytes.Buffer
+	buf.WriteString("(function() {\n")
+	buf.WriteString(fmt.Sprintf("    $_rows = %s;\n", expr))
+	buf.WriteString(fmt.Sprintf("    $_groups = _group_by($_rows, function(%s){return %s;});\n", allParams, keyExpr))
+	buf.WriteString("    $result = [];\n")
+	buf.WriteString("    foreach ($_groups as $__g) {\n")
+	buf.WriteString(fmt.Sprintf("        $%s = $__g;\n", gname))
+	if havingCond != "" {
+		buf.WriteString(fmt.Sprintf("        if (%s) {\n", havingCond))
+		buf.WriteString(fmt.Sprintf("            $result[] = %s;\n", groupVal))
+		buf.WriteString("        }\n")
+	} else {
+		buf.WriteString(fmt.Sprintf("        $result[] = %s;\n", groupVal))
+	}
+	buf.WriteString("    }\n")
+	buf.WriteString("    return $result;\n")
+	buf.WriteString("})()")
+
+	delete(c.groupVars, gname)
+	c.use("_group_by")
+	return buf.String(), nil
 }

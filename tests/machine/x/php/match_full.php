@@ -5,7 +5,7 @@ $label = (function($_t) {
     if ($_t === 2) return "two";
     if ($_t === 3) return "three";
     return "unknown";
-)($x);
+})($x);
 var_dump($label);
 $day = "sun";
 $mood = (function($_t) {
@@ -13,7 +13,7 @@ $mood = (function($_t) {
     if ($_t === "fri") return "excited";
     if ($_t === "sun") return "relaxed";
     return "normal";
-)($day);
+})($day);
 var_dump($mood);
 $ok = true;
 $status = (function($_t) {
@@ -27,7 +27,7 @@ function classify($n) {
     if ($_t === 0) return "zero";
     if ($_t === 1) return "one";
     return "many";
-)($n);
+})($n);
 }
 var_dump(classify(0));
 var_dump(classify(5));
