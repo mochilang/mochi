@@ -153,6 +153,13 @@ const groupHelpers = `(define (_count v)
     (if (= n 0) 0 (/ (_sum lst) n)))
 )
 
+(define (_exists v)
+  (cond
+    ((and (pair? v) (assq 'Items v)) (not (null? (cdr (assq 'Items v)))))
+    ((string? v) (> (string-length v) 0))
+    ((list? v) (not (null? v)))
+    (else #f)))
+
 (define (_max v)
   (let ((lst (cond
                ((and (pair? v) (assq 'Items v)) (cdr (assq 'Items v)))
@@ -1165,17 +1172,30 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 			return "", fmt.Errorf("str expects 1 arg")
 		}
 		return fmt.Sprintf("(let ((s (open-output-string))) (write %s s) (get-output-string s))", args[0]), nil
-	case "count":
-		if len(args) != 1 {
-			return "", fmt.Errorf("count expects 1 arg")
-		}
-		c.needGroup = true
-		return fmt.Sprintf("(_count %s)", args[0]), nil
-	case "avg":
-		if len(args) != 1 {
-			return "", fmt.Errorf("avg expects 1 arg")
-		}
-		c.needGroup = true
+       case "count":
+               if len(args) != 1 {
+                       return "", fmt.Errorf("count expects 1 arg")
+               }
+               c.needGroup = true
+               return fmt.Sprintf("(_count %s)", args[0]), nil
+       case "exists":
+               if len(args) != 1 {
+                       return "", fmt.Errorf("exists expects 1 arg")
+               }
+               root := rootNameExpr(call.Args[0])
+               if c.varType(root) == "string" || c.isStringExpr(call.Args[0]) {
+                       return fmt.Sprintf("(> (string-length %s) 0)", args[0]), nil
+               }
+               if c.isMapExpr(call.Args[0]) || c.isListExpr(call.Args[0]) {
+                       return fmt.Sprintf("(> (length %s) 0)", args[0]), nil
+               }
+               c.needGroup = true
+               return fmt.Sprintf("(_exists %s)", args[0]), nil
+       case "avg":
+               if len(args) != 1 {
+                       return "", fmt.Errorf("avg expects 1 arg")
+               }
+               c.needGroup = true
 		return fmt.Sprintf("(_avg %s)", args[0]), nil
 	case "max":
 		if len(args) != 1 {

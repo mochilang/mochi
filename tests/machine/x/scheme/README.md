@@ -1,4 +1,4 @@
-# Scheme Machine Results (81/97 compiled and ran)
+# Scheme Machine Results (82/97 compiled and ran)
 
 ## Success
 - [x] append_builtin.mochi
@@ -74,9 +74,9 @@
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] dataset_sort_take_limit.mochi
+- [x] exists_builtin.mochi
 
 ## Failed
-- [ ] exists_builtin.mochi
 - [ ] group_by_left_join.mochi
 - [ ] group_by_multi_join_sort.mochi
 - [ ] in_operator_extended.mochi
