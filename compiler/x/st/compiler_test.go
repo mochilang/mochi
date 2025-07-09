@@ -21,6 +21,11 @@ func ensureGST() string {
 	if p, err := exec.LookPath("gst"); err == nil {
 		return p
 	}
+	if err := st.EnsureSmalltalk(); err == nil {
+		if p, err := exec.LookPath("gst"); err == nil {
+			return p
+		}
+	}
 	return ""
 }
 
