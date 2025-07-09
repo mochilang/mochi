@@ -3,6 +3,8 @@
 This directory contains Python code generated from the Mochi programs in `tests/vm/valid` using the Python compiler. Each program was compiled and executed. Successful runs produced an `.out` file while failures produced an `.error` file.
 
 Compiled programs: 97/97 successful.
+
+## Checklist
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -100,3 +102,8 @@ Compiled programs: 97/97 successful.
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
+
+## Remaining Tasks
+- [ ] Replace placeholder LLM helpers in runtime.go with real integrations
+- [ ] Support async stream handlers by using `asyncio` properly
+- [ ] Use dataclass definitions for struct types when possible
