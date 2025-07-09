@@ -5,6 +5,9 @@ Each program was compiled and executed using the Lua compiler. Successful runs p
 
 Compiled programs: 86/97
 
+Set `MOCHI_LUAC` to the path of the Lua bytecode compiler if `luac` is not on
+the PATH. The compiler uses this tool for a basic syntax check.
+
 Checklist:
 - [x] append_builtin
 - [x] avg_builtin
