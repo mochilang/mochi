@@ -30,10 +30,12 @@ type Compiler struct {
 // New creates a new Compiler instance.
 func New(env *types.Env) *Compiler {
 	return &Compiler{compiler: compiler{
-		structs:  make(map[string][]string),
-		variants: make(map[string]string),
-		inout:    make(map[string][]bool),
-		varTypes: make(map[string]string),
+		structs:    make(map[string][]string),
+		variants:   make(map[string]string),
+		inout:      make(map[string][]bool),
+		funcArgs:   make(map[string][]string),
+		varTypes:   make(map[string]string),
+		swiftTypes: make(map[string]string),
 	}}
 }
 
@@ -48,13 +50,15 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 }
 
 type compiler struct {
-	buf      strings.Builder
-	indent   int
-	structs  map[string][]string
-	variants map[string]string
-	inout    map[string][]bool
-	varTypes map[string]string
-	tupleMap bool
+	buf        strings.Builder
+	indent     int
+	structs    map[string][]string
+	variants   map[string]string
+	inout      map[string][]bool
+	funcArgs   map[string][]string
+	varTypes   map[string]string
+	swiftTypes map[string]string
+	tupleMap   bool
 }
 
 func (c *compiler) program(p *parser.Program) error {
@@ -120,6 +124,7 @@ func (c *compiler) letStmt(l *parser.LetStmt) error {
 		}
 		if typ != "" {
 			c.writeln(fmt.Sprintf("let %s: %s = %s", l.Name, typ, val))
+			c.swiftTypes[l.Name] = typ
 		} else {
 			c.writeln(fmt.Sprintf("let %s = %s", l.Name, val))
 		}
@@ -131,6 +136,7 @@ func (c *compiler) letStmt(l *parser.LetStmt) error {
 	}
 	c.writeln(fmt.Sprintf("let %s: %s = %s", l.Name, typ, defaultValue(typ)))
 	c.varTypes[l.Name] = c.inferType(l.Type, nil)
+	c.swiftTypes[l.Name] = typ
 	return nil
 }
 
@@ -146,6 +152,7 @@ func (c *compiler) varStmt(v *parser.VarStmt) error {
 		}
 		if typ != "" {
 			c.writeln(fmt.Sprintf("var %s: %s = %s", v.Name, typ, val))
+			c.swiftTypes[v.Name] = typ
 		} else {
 			c.writeln(fmt.Sprintf("var %s = %s", v.Name, val))
 		}
@@ -157,12 +164,14 @@ func (c *compiler) varStmt(v *parser.VarStmt) error {
 	}
 	c.writeln(fmt.Sprintf("var %s: %s = %s", v.Name, typ, defaultValue(typ)))
 	c.varTypes[v.Name] = c.inferType(v.Type, nil)
+	c.swiftTypes[v.Name] = typ
 	return nil
 }
 
 func (c *compiler) assignStmt(a *parser.AssignStmt) error {
 	lhs := a.Name
-	for _, idx := range a.Index {
+	baseType := c.varTypes[a.Name]
+	for i, idx := range a.Index {
 		if idx.Colon != nil || idx.Colon2 != nil || idx.End != nil || idx.Step != nil || idx.Start == nil {
 			return fmt.Errorf("complex assignment not supported")
 		}
@@ -171,6 +180,10 @@ func (c *compiler) assignStmt(a *parser.AssignStmt) error {
 			return err
 		}
 		lhs += fmt.Sprintf("[%s]", expr)
+		if strings.HasPrefix(baseType, "map") && (i < len(a.Index)-1 || len(a.Field) > 0) {
+			lhs += "!"
+		}
+		baseType = ""
 	}
 	for _, f := range a.Field {
 		lhs += "." + f.Name
@@ -249,6 +262,7 @@ func (c *compiler) funStmt(f *parser.FunStmt) error {
 	c.buf.WriteString(f.Name)
 	c.buf.WriteString("(")
 	c.inout[f.Name] = make([]bool, len(f.Params))
+	c.funcArgs[f.Name] = make([]string, len(f.Params))
 	for i, p := range f.Params {
 		if i > 0 {
 			c.buf.WriteString(", ")
@@ -268,6 +282,7 @@ func (c *compiler) funStmt(f *parser.FunStmt) error {
 			c.inout[f.Name][i] = true
 		}
 		c.buf.WriteString(typ)
+		c.funcArgs[f.Name][i] = typ
 	}
 	c.buf.WriteString(")")
 	if f.Return != nil {
@@ -438,11 +453,29 @@ func (c *compiler) updateStmt(u *parser.UpdateStmt) error {
 	saved := c.varTypes[elem]
 	c.varTypes[elem] = strings.TrimPrefix(typ, "list_")
 	cond := "true"
+	elemType := ""
+	if st, ok := c.swiftTypes[u.Target]; ok {
+		if strings.HasPrefix(st, "[") && strings.HasSuffix(st, "]") {
+			elemType = strings.TrimSuffix(strings.TrimPrefix(st, "["), "]")
+		}
+	}
+	if elemType == "" {
+		elemType = strings.TrimPrefix(typ, "list_")
+	}
+	fields := c.structs[elemType]
 	if u.Where != nil {
+		savedVars := c.varTypes
 		c.varTypes = copyMap(c.varTypes)
+		for _, f := range fields {
+			c.varTypes[f] = ""
+		}
 		condExpr, err := c.expr(u.Where)
+		c.varTypes = savedVars
 		if err != nil {
 			return err
+		}
+		for _, f := range fields {
+			condExpr = replaceIdent(condExpr, f, elem+"."+f)
 		}
 		cond = condExpr
 	}
@@ -456,6 +489,9 @@ func (c *compiler) updateStmt(u *parser.UpdateStmt) error {
 		val, err := c.expr(it.Value)
 		if err != nil {
 			return err
+		}
+		for _, f := range fields {
+			val = replaceIdent(val, f, elem+"."+f)
 		}
 		c.writeln(fmt.Sprintf("%s.%s = %s", elem, key, val))
 	}
@@ -598,6 +634,9 @@ func (c *compiler) postfix(p *parser.PostfixExpr) (string, error) {
 					val = fmt.Sprintf("%s[%s]", val, pos)
 				} else {
 					val = fmt.Sprintf("%s[%s]", val, s)
+					if typ == "map" {
+						val += "!"
+					}
 				}
 			}
 		case op.Field != nil:
@@ -748,6 +787,20 @@ func (c *compiler) callExpr(call *parser.CallExpr) (string, error) {
 		end := fmt.Sprintf("%s.index(%s.startIndex, offsetBy: %s)", s, s, args[2])
 		return fmt.Sprintf("String(%s[%s..<%s])", s, start, end), nil
 	default:
+		if params, ok := c.funcArgs[call.Func]; ok && len(call.Args) < len(params) {
+			missing := len(params) - len(call.Args)
+			names := make([]string, missing)
+			callParts := make([]string, len(params))
+			for i, a := range args {
+				callParts[i] = a
+			}
+			for i := 0; i < missing; i++ {
+				name := fmt.Sprintf("p%d", i)
+				names[i] = fmt.Sprintf("_ %s: %s", name, params[len(call.Args)+i])
+				callParts[len(call.Args)+i] = name
+			}
+			return fmt.Sprintf("{ (%s) in %s(%s) }", strings.Join(names, ", "), call.Func, strings.Join(callParts, ", ")), nil
+		}
 		if flags, ok := c.inout[call.Func]; ok {
 			for i := range flags {
 				if flags[i] && i < len(args) {

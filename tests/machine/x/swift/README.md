@@ -1,6 +1,6 @@
 # Machine-generated Swift Outputs
 
-Compiled programs: 77/97
+Compiled programs: 76/97
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
