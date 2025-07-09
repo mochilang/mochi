@@ -20,6 +20,7 @@ type Compiler struct {
 	types           map[string]*parser.TypeDecl
 	needFuncImports bool
 	tmpCount        int
+	groupKeys       map[string]string
 }
 
 type funSig struct {
@@ -28,7 +29,7 @@ type funSig struct {
 }
 
 func New() *Compiler {
-	return &Compiler{buf: new(bytes.Buffer), helpers: make(map[string]bool), vars: make(map[string]string), funRet: make(map[string]string), funSigs: make(map[string]*funSig), types: make(map[string]*parser.TypeDecl), tmpCount: 0}
+	return &Compiler{buf: new(bytes.Buffer), helpers: make(map[string]bool), vars: make(map[string]string), funRet: make(map[string]string), funSigs: make(map[string]*funSig), types: make(map[string]*parser.TypeDecl), tmpCount: 0, groupKeys: make(map[string]string)}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -130,35 +131,39 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("}")
 	}
 	if c.helpers["sum"] {
-		c.writeln("static int sum(List<Integer> v) {")
+		c.writeln("static int sum(List<? extends Number> v) {")
 		c.indent++
 		c.writeln("int s = 0;")
-		c.writeln("for (int n : v) s += n;")
+		c.writeln("for (Number n : v) s += n.intValue();")
 		c.writeln("return s;")
 		c.indent--
 		c.writeln("}")
 	}
 	if c.helpers["avg"] {
-		c.writeln("static double avg(List<Integer> v) {")
+		c.writeln("static double avg(List<? extends Number> v) {")
 		c.indent++
 		c.writeln("if (v.isEmpty()) return 0;")
 		c.writeln("int s = 0;")
-		c.writeln("for (int n : v) s += n;")
+		c.writeln("for (Number n : v) s += n.intValue();")
 		c.writeln("return (double)s / v.size();")
 		c.indent--
 		c.writeln("}")
 	}
 	if c.helpers["min"] {
-		c.writeln("static int min(List<Integer> v) {")
+		c.writeln("static int min(List<? extends Number> v) {")
 		c.indent++
-		c.writeln("return Collections.min(v);")
+		c.writeln("int m = Integer.MAX_VALUE;")
+		c.writeln("for (Number n : v) if (n.intValue() < m) m = n.intValue();")
+		c.writeln("return m;")
 		c.indent--
 		c.writeln("}")
 	}
 	if c.helpers["max"] {
-		c.writeln("static int max(List<Integer> v) {")
+		c.writeln("static int max(List<? extends Number> v) {")
 		c.indent++
-		c.writeln("return Collections.max(v);")
+		c.writeln("int m = Integer.MIN_VALUE;")
+		c.writeln("for (Number n : v) if (n.intValue() > m) m = n.intValue();")
+		c.writeln("return m;")
 		c.indent--
 		c.writeln("}")
 	}
@@ -429,6 +434,20 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 			return "IntUnaryOperator"
 		}
 		return "Object"
+	}
+	if p != nil && p.Selector != nil {
+		if t, ok := c.vars[p.Selector.Root]; ok {
+			if strings.HasPrefix(t, "Map<") {
+				return mapValueType(t)
+			}
+		}
+	}
+	if p != nil && p.Query != nil {
+		et := c.inferType(p.Query.Select)
+		if et == "var" {
+			et = "Object"
+		}
+		return fmt.Sprintf("List<%s>", wrapperType(et))
 	}
 	return "var"
 }
@@ -1183,8 +1202,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Selector != nil:
 		s := p.Selector.Root
 		typ := c.vars[p.Selector.Root]
+		if keyVar, ok := c.groupKeys[p.Selector.Root]; ok && len(p.Selector.Tail) == 1 && p.Selector.Tail[0] == "key" {
+			return keyVar, nil
+		}
 		for _, f := range p.Selector.Tail {
-			if strings.HasPrefix(typ, "Map<") || typ == "Map" {
+			if strings.HasPrefix(typ, "Map<") || typ == "Map" || typ == "Object" || typ == "" {
 				s = fmt.Sprintf("((Map)%s).get(\"%s\")", s, f)
 				typ = mapValueType(typ)
 			} else {
@@ -1304,7 +1326,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			return fmt.Sprintf("sum(%s)", a1), nil
+			return fmt.Sprintf("sum((List<Number>)(List<?>)%s)", a1), nil
 		case "avg":
 			if len(p.Call.Args) != 1 {
 				return "", fmt.Errorf("avg expects 1 argument at line %d", p.Pos.Line)
@@ -1314,7 +1336,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			return fmt.Sprintf("avg(%s)", a1), nil
+			return fmt.Sprintf("avg((List<Number>)(List<?>)%s)", a1), nil
 		case "min":
 			if len(p.Call.Args) != 1 {
 				return "", fmt.Errorf("min expects 1 argument at line %d", p.Pos.Line)
@@ -1324,7 +1346,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			return fmt.Sprintf("min(%s)", a1), nil
+			return fmt.Sprintf("min((List<Number>)(List<?>)%s)", a1), nil
 		case "max":
 			if len(p.Call.Args) != 1 {
 				return "", fmt.Errorf("max expects 1 argument at line %d", p.Pos.Line)
@@ -1334,7 +1356,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			return fmt.Sprintf("max(%s)", a1), nil
+			return fmt.Sprintf("max((List<Number>)(List<?>)%s)", a1), nil
 		case "values":
 			if len(p.Call.Args) != 1 {
 				return "", fmt.Errorf("values expects 1 argument at line %d", p.Pos.Line)
@@ -1476,7 +1498,7 @@ func (c *Compiler) compileExistsQuery(q *parser.QueryExpr) (string, error) {
 }
 
 func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
-	if q.Group != nil || q.Distinct {
+	if q.Distinct {
 		return "", fmt.Errorf("unsupported query")
 	}
 
@@ -1524,9 +1546,22 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	resVar := fmt.Sprintf("_res%d", c.tmpCount)
 	c.tmpCount++
 
+	groupsVar := ""
+	if q.Group != nil {
+		if len(q.Group.Exprs) != 1 {
+			c.vars = oldVars
+			return "", fmt.Errorf("unsupported multi-key group")
+		}
+		groupsVar = fmt.Sprintf("_groups%d", c.tmpCount)
+		c.tmpCount++
+	}
+
 	var b strings.Builder
 	b.WriteString("(new java.util.function.Supplier<List<Object>>() {public List<Object> get() {\n")
 	b.WriteString(fmt.Sprintf("\tList<Object> %s = new ArrayList<>();\n", resVar))
+	if groupsVar != "" {
+		b.WriteString(fmt.Sprintf("\tMap<Object,List<Object>> %s = new LinkedHashMap<>();\n", groupsVar))
+	}
 	indent := "\t"
 	b.WriteString(fmt.Sprintf("%sfor (var %s : %s) {\n", indent, q.Var, src))
 	indent += "\t"
@@ -1562,12 +1597,49 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		}
 		b.WriteString(fmt.Sprintf("%sif (!(%s)) continue;\n", indent, cond))
 	}
-	sel, err := c.compileExpr(q.Select)
-	if err != nil {
-		c.vars = oldVars
-		return "", err
+	if groupsVar != "" {
+		rowVar := fmt.Sprintf("_row%d", c.tmpCount)
+		c.tmpCount++
+		vars := []string{q.Var}
+		for _, fr := range q.Froms {
+			vars = append(vars, fr.Var)
+		}
+		for _, j := range q.Joins {
+			vars = append(vars, j.Var)
+		}
+		if len(vars) == 1 {
+			b.WriteString(fmt.Sprintf("%svar %s = %s;\n", indent, rowVar, vars[0]))
+		} else {
+			b.WriteString(fmt.Sprintf("%sMap<String,Object> %s = new HashMap<>();\n", indent, rowVar))
+			b.WriteString(fmt.Sprintf("%s%s.put(\"%s\", %s);\n", indent, rowVar, q.Var, q.Var))
+			for _, fr := range q.Froms {
+				b.WriteString(fmt.Sprintf("%s%s.put(\"%s\", %s);\n", indent, rowVar, fr.Var, fr.Var))
+			}
+			for _, j := range q.Joins {
+				b.WriteString(fmt.Sprintf("%s%s.put(\"%s\", %s);\n", indent, rowVar, j.Var, j.Var))
+			}
+		}
+		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
+		if err != nil {
+			c.vars = oldVars
+			return "", err
+		}
+		keyVar := fmt.Sprintf("_key%d", c.tmpCount)
+		c.tmpCount++
+		b.WriteString(fmt.Sprintf("%sObject %s = %s;\n", indent, keyVar, keyExpr))
+		bucketVar := fmt.Sprintf("_b%d", c.tmpCount)
+		c.tmpCount++
+		b.WriteString(fmt.Sprintf("%sList<Object> %s = %s.get(%s);\n", indent, bucketVar, groupsVar, keyVar))
+		b.WriteString(fmt.Sprintf("%sif (%s == null) { %s = new ArrayList<>(); %s.put(%s, %s); }\n", indent, bucketVar, bucketVar, groupsVar, keyVar, bucketVar))
+		b.WriteString(fmt.Sprintf("%s%s.add(%s);\n", indent, bucketVar, rowVar))
+	} else {
+		sel, err := c.compileExpr(q.Select)
+		if err != nil {
+			c.vars = oldVars
+			return "", err
+		}
+		b.WriteString(fmt.Sprintf("%s%s.add(%s);\n", indent, resVar, sel))
 	}
-	b.WriteString(fmt.Sprintf("%s%s.add(%s);\n", indent, resVar, sel))
 	for range q.Joins {
 		indent = indent[:len(indent)-1]
 		b.WriteString(fmt.Sprintf("%s}\n", indent))
@@ -1578,6 +1650,32 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	}
 	indent = indent[:len(indent)-1]
 	b.WriteString(fmt.Sprintf("%s}\n", indent))
+
+	if groupsVar != "" {
+		gName := q.Group.Name
+		keyVar := fmt.Sprintf("%s_key", gName)
+		c.groupKeys[gName] = keyVar
+		c.vars[gName] = "List<Object>"
+		b.WriteString(fmt.Sprintf("\tfor (var __e : %s.entrySet()) {\n", groupsVar))
+		b.WriteString(fmt.Sprintf("\t\tObject %s = __e.getKey();\n", keyVar))
+		b.WriteString(fmt.Sprintf("\t\tList<Object> %s = __e.getValue();\n", gName))
+		if q.Group.Having != nil {
+			cond, err := c.compileExpr(q.Group.Having)
+			if err != nil {
+				c.vars = oldVars
+				return "", err
+			}
+			b.WriteString(fmt.Sprintf("\t\tif (!(%s)) continue;\n", cond))
+		}
+		sel, err := c.compileExpr(q.Select)
+		if err != nil {
+			c.vars = oldVars
+			return "", err
+		}
+		b.WriteString(fmt.Sprintf("\t\t%[1]s.add(%[2]s);\n", resVar, sel))
+		b.WriteString("\t}\n")
+		delete(c.groupKeys, gName)
+	}
 	b.WriteString(fmt.Sprintf("\treturn %s;\n", resVar))
 	b.WriteString("}}).get()")
 
