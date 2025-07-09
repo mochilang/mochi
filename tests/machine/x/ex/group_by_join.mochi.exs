@@ -19,7 +19,7 @@ defmodule Main do
              %{select: fn o, c -> [o, c] end}
            )
 
-         groups = _group_by(rows, fn o, c -> c.name end)
+         groups = _group_by(rows, fn [o, c] -> c.name end)
 
          groups =
            Enum.map(groups, fn g -> %{g | items: Enum.map(g.items, fn [o, c] -> o end)} end)
@@ -38,7 +38,7 @@ defmodule Main do
   defp _count(v) do
     cond do
       is_list(v) -> length(v)
-      is_map(v) and Map.has_key?(v, :items) -> length(v[:items])
+      is_map(v) and Map.has_key?(v, :items) -> length(Map.get(v, :items))
       true -> raise "count() expects list or group"
     end
   end

@@ -4,8 +4,8 @@ This directory contains Elixir source code generated from Mochi programs and the
 
 ## Summary
 
-- 78/97 programs compiled and executed successfully.
-- 19 programs failed to compile or run.
+- 79/97 programs compiled and executed successfully.
+- 18 programs failed to compile or run.
 
 ### Successful
 - append_builtin
@@ -31,6 +31,7 @@ This directory contains Elixir source code generated from Mochi programs and the
 - fun_expr_in_let
 - fun_three_args
 - group_by_multi_join
+- group_by_join
 - if_else
 - if_then_else
 - if_then_else_nested
@@ -91,7 +92,6 @@ This directory contains Elixir source code generated from Mochi programs and the
 - group_by
 - group_by_conditional_sum
 - group_by_having
-- group_by_join
 - group_by_left_join
 - group_by_multi_join_sort
 - group_by_sort
