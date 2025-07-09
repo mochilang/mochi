@@ -285,6 +285,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileIf(s.If)
 	case s.For != nil:
 		return c.compileFor(s.For)
+	case s.While != nil:
+		return c.compileWhile(s.While)
 	case s.Break != nil:
 		c.writeln("throw(break),")
 		return nil
@@ -392,6 +394,39 @@ func (c *Compiler) compileFor(fs *parser.ForStmt) error {
 	c.writeln("; true")
 	c.indent--
 	c.writeln("), break, true),")
+	return nil
+}
+
+func (c *Compiler) compileWhile(ws *parser.WhileStmt) error {
+	c.writeln("catch(")
+	c.indent++
+	c.writeln("(")
+	c.indent++
+	c.writeln("repeat,")
+	cond, _, err := c.compileExpr(ws.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("(%s ->", cond))
+	c.indent++
+	c.writeln("catch(")
+	c.indent++
+	c.writeln("(")
+	c.indent++
+	for _, st := range ws.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.writeln("true")
+	c.indent--
+	c.writeln("), continue, true),")
+	c.writeln("fail")
+	c.indent--
+	c.writeln("; true)")
+	c.indent--
+	c.writeln("), break, true),")
+	c.indent--
 	return nil
 }
 
