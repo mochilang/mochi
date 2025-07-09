@@ -1,0 +1,9 @@
+exit status 1
+/workspace/mochi/tests/machine/x/scala/sort_stable.scala:4: error: Any does not take parameters
+    val result = (for { i <- items } yield i("v")).sortBy(i => i("n"))
+                                                                ^
+/workspace/mochi/tests/machine/x/scala/sort_stable.scala:4: error: diverging implicit expansion for type scala.math.Ordering[B]
+starting with method Tuple9 in object Ordering
+    val result = (for { i <- items } yield i("v")).sortBy(i => i("n"))
+                                                         ^
+two errors found

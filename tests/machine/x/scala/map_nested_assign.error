@@ -1,0 +1,5 @@
+exit status 1
+/workspace/mochi/tests/machine/x/scala/map_nested_assign.scala:4: error: value update is not a member of scala.collection.immutable.Map[String,Int]
+    data("outer")("inner") = 2
+        ^
+one error found

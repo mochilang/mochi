@@ -2,12 +2,12 @@
 
 This directory contains Scala source files generated from Mochi programs using the compiler in `compiler/x/scala`. Each file was compiled and executed using `scalac` and `scala`. The checklist below shows which programs have successfully compiled and run.
 
-## Progress: 61/97 files compiled
+## Progress: 69/97 files compiled
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
 - [x] binary_precedence.mochi
-- [x] bool_chain.mochi
+- [ ] bool_chain.mochi
 - [x] break_continue.mochi
 - [x] cast_string_to_int.mochi
 - [x] cast_struct.mochi
@@ -85,20 +85,20 @@ This directory contains Scala source files generated from Mochi programs using t
 - [x] string_contains.mochi
 - [x] string_in_operator.mochi
 - [x] string_index.mochi
-- [ ] string_prefix_slice.mochi
-- [ ] substring_builtin.mochi
-- [ ] sum_builtin.mochi
-- [ ] tail_recursion.mochi
+- [x] string_prefix_slice.mochi
+- [x] substring_builtin.mochi
+- [x] sum_builtin.mochi
+- [x] tail_recursion.mochi
 - [ ] test_block.mochi
-- [ ] tree_sum.mochi
+- [x] tree_sum.mochi
 - [ ] two-sum.mochi
 - [x] typed_let.mochi
 - [x] typed_var.mochi
-- [ ] unary_neg.mochi
+- [x] unary_neg.mochi
 - [ ] update_stmt.mochi
-- [ ] user_type_literal.mochi
-- [ ] values_builtin.mochi
-- [ ] var_assignment.mochi
+- [x] user_type_literal.mochi
+- [x] values_builtin.mochi
+- [x] var_assignment.mochi
 - [x] while_loop.mochi
 
 ## TODO

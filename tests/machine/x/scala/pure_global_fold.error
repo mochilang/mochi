@@ -1,0 +1,5 @@
+exit status 1
+/workspace/mochi/tests/machine/x/scala/pure_global_fold.scala:3: error: not found: value k
+    return (x).asInstanceOf[Int] + k
+                                   ^
+one error found

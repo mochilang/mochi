@@ -1,0 +1,20 @@
+exit status 1
+/workspace/mochi/tests/machine/x/scala/join_multi.scala:6: error: value customerId is not a member of scala.collection.immutable.Map[String,Int]
+    val result = for { o <- orders; c <- customers; if (o.customerId).asInstanceOf[Int] == (c.id).asInstanceOf[Int]; i <- items; if (o.id).asInstanceOf[Int] == (i.orderId).asInstanceOf[Int] } yield Map("name" -> (c.name), "sku" -> (i.sku))
+                                                          ^
+/workspace/mochi/tests/machine/x/scala/join_multi.scala:6: error: value id is not a member of scala.collection.immutable.Map[String,Any]
+    val result = for { o <- orders; c <- customers; if (o.customerId).asInstanceOf[Int] == (c.id).asInstanceOf[Int]; i <- items; if (o.id).asInstanceOf[Int] == (i.orderId).asInstanceOf[Int] } yield Map("name" -> (c.name), "sku" -> (i.sku))
+                                                                                              ^
+/workspace/mochi/tests/machine/x/scala/join_multi.scala:6: error: value id is not a member of scala.collection.immutable.Map[String,Int]
+    val result = for { o <- orders; c <- customers; if (o.customerId).asInstanceOf[Int] == (c.id).asInstanceOf[Int]; i <- items; if (o.id).asInstanceOf[Int] == (i.orderId).asInstanceOf[Int] } yield Map("name" -> (c.name), "sku" -> (i.sku))
+                                                                                                                                       ^
+/workspace/mochi/tests/machine/x/scala/join_multi.scala:6: error: value orderId is not a member of scala.collection.immutable.Map[String,Any]
+    val result = for { o <- orders; c <- customers; if (o.customerId).asInstanceOf[Int] == (c.id).asInstanceOf[Int]; i <- items; if (o.id).asInstanceOf[Int] == (i.orderId).asInstanceOf[Int] } yield Map("name" -> (c.name), "sku" -> (i.sku))
+                                                                                                                                                                   ^
+/workspace/mochi/tests/machine/x/scala/join_multi.scala:9: error: Nothing does not take parameters
+      println((r("name")) + " " + ("bought item") + " " + (r("sku")))
+                ^
+/workspace/mochi/tests/machine/x/scala/join_multi.scala:9: error: Nothing does not take parameters
+      println((r("name")) + " " + ("bought item") + " " + (r("sku")))
+                                                            ^
+6 errors found
