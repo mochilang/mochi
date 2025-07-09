@@ -1,4 +1,4 @@
-# Scheme Machine Results (89/97 compiled and ran)
+# Scheme Machine Results (91/97 compiled and ran)
 
 ## Success
 - [x] append_builtin.mochi
@@ -60,12 +60,14 @@
 - [x] min_max_builtin.mochi
 - [x] nested_function.mochi
 - [x] order_by_map.mochi
+- [x] outer_join.mochi
 - [x] partial_application.mochi
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
 - [x] query_sum_select.mochi
 - [x] record_assign.mochi
+- [x] right_join.mochi
 - [x] short_circuit.mochi
 - [x] slice.mochi
 - [x] sort_stable.mochi
@@ -95,10 +97,8 @@
  - [ ] group_by_left_join.mochi
  - [ ] group_by_multi_join_sort.mochi
  - [ ] left_join.mochi
- - [ ] left_join_multi.mochi
- - [ ] load_yaml.mochi
- - [ ] outer_join.mochi
-- [ ] right_join.mochi
+- [ ] left_join_multi.mochi
+- [ ] load_yaml.mochi
 
 ## Success after update
  - [x] save_jsonl_stdout.mochi
