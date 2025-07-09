@@ -562,7 +562,7 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, bool, error) 
 			}
 			tmp := c.newTmp()
 			c.needsGetItem = true
-			c.writeln(fmt.Sprintf("get_item(%s, '%s', %s),", val, op.Field.Name, tmp))
+			c.writeln(fmt.Sprintf("get_item(%s, '%s', %s),", val, strings.ToLower(op.Field.Name), tmp))
 			val = tmp
 			arith = false
 			continue
@@ -598,7 +598,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, bool, error) {
 		for _, f := range p.Selector.Tail {
 			tmp := c.newTmp()
 			c.needsGetItem = true
-			c.writeln(fmt.Sprintf("get_item(%s, '%s', %s),", val, f, tmp))
+			c.writeln(fmt.Sprintf("get_item(%s, '%s', %s),", val, strings.ToLower(f), tmp))
 			val = tmp
 		}
 		return val, false, nil
@@ -1004,13 +1004,14 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, bool, error) {
 		}
 		if j.Side != nil && *j.Side == "left" {
 			tmp := c.newTmp()
-			loops = append(loops, fmt.Sprintf("findall(%s, (member(%s, %s), %s), %s)", jname, jname, js, onCond, tmp))
+			joined := strings.Join(append([]string{fmt.Sprintf("member(%s, %s)", jname, js)}, onLines...), ", ")
+			loops = append(loops, fmt.Sprintf("findall(%s, (%s, %s), %s)", jname, joined, onCond, tmp))
 			loops = append(loops, fmt.Sprintf("(%s = [] -> %s = nil; member(%s, %s))", tmp, jname, jname, tmp))
 		} else {
 			loops = append(loops, fmt.Sprintf("member(%s, %s)", jname, js))
+			loops = append(loops, onLines...)
+			loops = append(loops, onCond)
 		}
-		loops = append(loops, onLines...)
-		loops = append(loops, onCond)
 	}
 
 	cond := "true"

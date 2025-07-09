@@ -13,7 +13,7 @@ main :-
     dict_create(_V2, map, [id-100, customerid-1, total-250]),
     dict_create(_V3, map, [id-101, customerid-3, total-80]),
     Orders = [_V2, _V3],
-    findall(_V10, (member(O, Orders), findall(C, (member(C, Customers), (_V4 == _V5)), _V6), (_V6 = [] -> C = nil; member(C, _V6)), get_item(O, 'customerId', _V4), get_item(C, 'id', _V5), (_V4 == _V5), true, get_item(O, 'id', _V7), get_item(O, 'total', _V8), dict_create(_V9, map, [orderid-_V7, customer-C, total-_V8]), _V10 = _V9), _V11),
+    findall(_V10, (member(O, Orders), findall(C, (member(C, Customers), get_item(O, 'customerid', _V4), get_item(C, 'id', _V5), (_V4 == _V5)), _V6), (_V6 = [] -> C = nil; member(C, _V6)), true, get_item(O, 'id', _V7), get_item(O, 'total', _V8), dict_create(_V9, map, [orderid-_V7, customer-C, total-_V8]), _V10 = _V9), _V11),
     Result = _V11,
     write("--- Left Join ---"),
     nl,
@@ -24,7 +24,7 @@ main :-
                     (
                         write("Order"),
                         write(' '),
-                        get_item(Entry, 'orderId', _V12),
+                        get_item(Entry, 'orderid', _V12),
                         write(_V12),
                         write(' '),
                         write("customer"),
