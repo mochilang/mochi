@@ -1,0 +1,7 @@
+line: 0
+error: output mismatch
+-- got --
+-1548902396
+-- want --
+1995
+   1: #include <stdio.h>

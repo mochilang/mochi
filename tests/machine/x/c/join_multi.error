@@ -1,0 +1,19 @@
+line: 0
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/join_multi.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/join_multi.c:101:46: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+  101 |         _t4.data[_t5] = (resultItem){.name = c.name, .sku = i.sku};
+      |                                              ^
+/workspace/mochi/tests/machine/x/c/join_multi.c:101:46: note: (near initialization for ‘(anonymous).name’)
+/workspace/mochi/tests/machine/x/c/join_multi.c:101:61: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+  101 |         _t4.data[_t5] = (resultItem){.name = c.name, .sku = i.sku};
+      |                                                             ^
+/workspace/mochi/tests/machine/x/c/join_multi.c:101:61: note: (near initialization for ‘(anonymous).sku’)
+/workspace/mochi/tests/machine/x/c/join_multi.c:101:25: error: incompatible types when assigning to type ‘int’ from type ‘resultItem’
+  101 |         _t4.data[_t5] = (resultItem){.name = c.name, .sku = i.sku};
+      |                         ^
+/workspace/mochi/tests/machine/x/c/join_multi.c:107:28: error: invalid initializer
+  107 |   list_resultItem result = _t4;
+      |                            ^~~
+
+   1: #include <stdio.h>

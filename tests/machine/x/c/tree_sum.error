@@ -1,0 +1,44 @@
+line: 0
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/tree_sum.c:19:3: error: conflicting types for ‘Leaf’; have ‘struct <anonymous>’
+   19 | } Leaf;
+      |   ^~~~
+/workspace/mochi/tests/machine/x/c/tree_sum.c:15:21: note: previous declaration of ‘Leaf’ with type ‘Leaf’
+   15 | typedef struct Leaf Leaf;
+      |                     ^~~~
+/workspace/mochi/tests/machine/x/c/tree_sum.c:21:8: error: field ‘left’ has incomplete type
+   21 |   Tree left;
+      |        ^~~~
+/workspace/mochi/tests/machine/x/c/tree_sum.c:23:8: error: field ‘right’ has incomplete type
+   23 |   Tree right;
+      |        ^~~~~
+/workspace/mochi/tests/machine/x/c/tree_sum.c:24:3: error: conflicting types for ‘Node’; have ‘struct <anonymous>’
+   24 | } Node;
+      |   ^~~~
+/workspace/mochi/tests/machine/x/c/tree_sum.c:16:21: note: previous declaration of ‘Node’ with type ‘Node’
+   16 | typedef struct Node Node;
+      |                     ^~~~
+/workspace/mochi/tests/machine/x/c/tree_sum.c:31:3: error: conflicting types for ‘Tree’; have ‘struct <anonymous>’
+   31 | } Tree;
+      |   ^~~~
+/workspace/mochi/tests/machine/x/c/tree_sum.c:14:21: note: previous declaration of ‘Tree’ with type ‘Tree’
+   14 | typedef struct Tree Tree;
+      |                     ^~~~
+/workspace/mochi/tests/machine/x/c/tree_sum.c: In function ‘sum_tree’:
+/workspace/mochi/tests/machine/x/c/tree_sum.c:34:16: error: expected expression before ‘Leaf’
+   34 |   return (t == Leaf ? 0
+      |                ^~~~
+/workspace/mochi/tests/machine/x/c/tree_sum.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/tree_sum.c:41:26: error: expected expression before ‘Leaf’
+   41 |   int t = (Node){.left = Leaf,
+      |                          ^~~~
+/workspace/mochi/tests/machine/x/c/tree_sum.c:44:27: error: incompatible type for argument 1 of ‘sum_tree’
+   44 |   printf("%d\n", sum_tree(t));
+      |                           ^
+      |                           |
+      |                           int
+/workspace/mochi/tests/machine/x/c/tree_sum.c:33:19: note: expected ‘Tree’ but argument is of type ‘int’
+   33 | int sum_tree(Tree t) {
+      |              ~~~~~^
+
+   1: #include <stdio.h>

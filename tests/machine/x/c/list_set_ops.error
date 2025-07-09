@@ -1,0 +1,13 @@
+line: 0
+error: output mismatch
+-- got --
+[1 2 3]
+[1 3]
+[2]
+4
+-- want --
+1 2 3
+1 3
+2
+4
+   1: #include <stdio.h>
