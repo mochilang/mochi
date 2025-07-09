@@ -1,4 +1,4 @@
-# Mochi to COBOL Machine Translations (24/97 compiled)
+# Mochi to COBOL Machine Translations (25/97 compiled)
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -78,7 +78,7 @@
 - [ ] sort_stable.mochi
  - [x] str_builtin.mochi
 - [x] string_compare.mochi
-- [ ] string_concat.mochi
+- [x] string_concat.mochi
 - [ ] string_contains.mochi
 - [ ] string_in_operator.mochi
 - [ ] string_index.mochi
