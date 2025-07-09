@@ -16,6 +16,7 @@ This directory contains Haskell code generated from the Mochi programs in `tests
 - [x] cross_join_filter
 - [x] cross_join_triple
 - [x] cross_join
+- [x] dataset_sort_take_limit
 - [x] for_list_collection
 - [x] for_loop
 - [x] for_map_collection
@@ -54,7 +55,6 @@ This directory contains Haskell code generated from the Mochi programs in `tests
 - [x] while_loop
 
 ## Failed to build or run
-- [ ] dataset_sort_take_limit
 - [ ] dataset_where_filter
 - [ ] exists_builtin
 - [ ] group_by

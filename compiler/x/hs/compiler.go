@@ -845,6 +845,32 @@ func (c *Compiler) compileIfExpr(stmt *parser.IfStmt) (string, error) {
 	return fmt.Sprintf("if %s then %s else %s", cond, thenExpr, elseExpr), nil
 }
 
+func (c *Compiler) compileIfExprExpr(e *parser.IfExpr) (string, error) {
+	thenExpr, err := c.compileExpr(e.Then)
+	if err != nil {
+		return "", err
+	}
+	var elseExpr string
+	if e.ElseIf != nil {
+		elseExpr, err = c.compileIfExprExpr(e.ElseIf)
+		if err != nil {
+			return "", err
+		}
+	} else if e.Else != nil {
+		elseExpr, err = c.compileExpr(e.Else)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		elseExpr = "()"
+	}
+	cond, err := c.compileExpr(e.Cond)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("if %s then %s else %s", cond, thenExpr, elseExpr), nil
+}
+
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 	if e == nil {
 		return "", nil
@@ -903,6 +929,22 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				opSym = "/="
 			}
 			if opSym == "+" || opSym == "-" || opSym == "*" || opSym == "/" {
+				if isAny(leftType) && isInt(rightType) {
+					expr = fmt.Sprintf("_asInt (%s)", expr)
+					leftType = types.IntType{}
+				} else if isAny(leftType) && isFloat(rightType) {
+					expr = fmt.Sprintf("_asDouble (%s)", expr)
+					leftType = types.FloatType{}
+				}
+				if isAny(rightType) && isInt(leftType) {
+					r = fmt.Sprintf("_asInt (%s)", r)
+					rightType = types.IntType{}
+				} else if isAny(rightType) && isFloat(leftType) {
+					r = fmt.Sprintf("_asDouble (%s)", r)
+					rightType = types.FloatType{}
+				}
+			}
+			if opSym == "==" || opSym == "/=" || opSym == "<" || opSym == "<=" || opSym == ">" || opSym == ">=" {
 				if isAny(leftType) && isInt(rightType) {
 					expr = fmt.Sprintf("_asInt (%s)", expr)
 					leftType = types.IntType{}
@@ -1232,6 +1274,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 		}
 		return expr, nil
+	case p.If != nil:
+		return c.compileIfExprExpr(p.If)
 	case p.Struct != nil:
 		parts := make([]string, len(p.Struct.Fields))
 		for i, f := range p.Struct.Fields {
