@@ -13,14 +13,15 @@ import (
 )
 
 type Compiler struct {
-	buf    bytes.Buffer
-	indent int
-	vars   []varDecl
-	init   []string
-	env    *types.Env
-	funs   []funDecl
-	curFun *funDecl
-	tmpVar string
+	buf     bytes.Buffer
+	indent  int
+	vars    []varDecl
+	init    []string
+	env     *types.Env
+	funs    []funDecl
+	curFun  *funDecl
+	tmpVar  string
+	seqList map[string]int
 }
 
 type varDecl struct {
@@ -66,7 +67,7 @@ func (c *Compiler) collectForVars(st []*parser.Statement) {
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env}
+	return &Compiler{env: env, seqList: make(map[string]int)}
 }
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
@@ -77,6 +78,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.funs = nil
 	c.curFun = nil
 	c.tmpVar = ""
+	c.seqList = make(map[string]int)
 
 	name := strings.TrimSuffix(filepath.Base(prog.Pos.Filename), filepath.Ext(prog.Pos.Filename))
 	name = strings.ReplaceAll(name, "-", "_")
@@ -161,6 +163,15 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 }
 
 func (c *Compiler) addVar(name string, typ *parser.TypeRef, value *parser.Expr, line int) error {
+	if value != nil {
+		if n, ok := seqIntList(value); ok {
+			if c.seqList == nil {
+				c.seqList = make(map[string]int)
+			}
+			c.seqList[name] = n
+			return nil
+		}
+	}
 	pic := "PIC 9"
 	val := ""
 	if typ != nil && typ.Simple != nil {
@@ -296,46 +307,89 @@ func isCallTo(e *parser.Expr, name string) (*parser.CallExpr, bool) {
 }
 
 func (c *Compiler) compilePrint(call *parser.CallExpr) error {
-	if len(call.Args) != 1 {
+	if len(call.Args) == 0 {
 		return fmt.Errorf("print expects 1 arg")
 	}
-	arg := call.Args[0]
-	if fc, ok := isCallTo(arg, ""); ok { // user defined function
-		val, err := c.compileUserCall(fc)
+	if len(call.Args) == 1 {
+		arg := call.Args[0]
+		if fc, ok := isCallTo(arg, ""); ok {
+			val, err := c.compileUserCall(fc)
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("DISPLAY %s", val))
+			return nil
+		}
+		if isComparisonExpr(arg) || isBoolExpr(arg) {
+			cond, err := c.compileExpr(arg)
+			if err != nil {
+				return err
+			}
+			c.writeln("IF " + cond)
+			c.indent += 4
+			c.writeln("DISPLAY \"true\"")
+			c.indent -= 4
+			c.writeln("ELSE")
+			c.indent += 4
+			c.writeln("DISPLAY \"false\"")
+			c.indent -= 4
+			c.writeln("END-IF")
+			return nil
+		}
+		expr, err := c.compileExpr(arg)
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("DISPLAY %s", val))
-		return nil
-	}
-	if isComparisonExpr(arg) || isBoolExpr(arg) {
-		cond, err := c.compileExpr(arg)
-		if err != nil {
-			return err
+		if isSimpleExpr(arg) {
+			c.writeln(fmt.Sprintf("DISPLAY %s", expr))
+			return nil
 		}
-		c.writeln("IF " + cond)
-		c.indent += 4
-		c.writeln("DISPLAY \"true\"")
-		c.indent -= 4
-		c.writeln("ELSE")
-		c.indent += 4
-		c.writeln("DISPLAY \"false\"")
-		c.indent -= 4
-		c.writeln("END-IF")
+		tmp := c.ensureTmpVar()
+		c.writeln(fmt.Sprintf("COMPUTE %s = %s", tmp, expr))
+		c.writeln(fmt.Sprintf("DISPLAY %s", tmp))
 		return nil
 	}
 
-	expr, err := c.compileExpr(arg)
-	if err != nil {
-		return err
+	parts := make([]string, len(call.Args))
+	for i, arg := range call.Args {
+		if fc, ok := isCallTo(arg, ""); ok {
+			val, err := c.compileUserCall(fc)
+			if err != nil {
+				return err
+			}
+			parts[i] = val
+			continue
+		}
+		if isComparisonExpr(arg) || isBoolExpr(arg) {
+			cond, err := c.compileExpr(arg)
+			if err != nil {
+				return err
+			}
+			tmp := c.ensureTmpVar()
+			c.writeln("IF " + cond)
+			c.indent += 4
+			c.writeln(fmt.Sprintf("MOVE \"true\" TO %s", tmp))
+			c.indent -= 4
+			c.writeln("ELSE")
+			c.indent += 4
+			c.writeln(fmt.Sprintf("MOVE \"false\" TO %s", tmp))
+			c.indent -= 4
+			c.writeln("END-IF")
+			parts[i] = tmp
+			continue
+		}
+		expr, err := c.compileExpr(arg)
+		if err != nil {
+			return err
+		}
+		if !isSimpleExpr(arg) {
+			tmp := c.ensureTmpVar()
+			c.writeln(fmt.Sprintf("COMPUTE %s = %s", tmp, expr))
+			expr = tmp
+		}
+		parts[i] = expr
 	}
-	if isSimpleExpr(arg) {
-		c.writeln(fmt.Sprintf("DISPLAY %s", expr))
-		return nil
-	}
-	tmp := c.ensureTmpVar()
-	c.writeln(fmt.Sprintf("COMPUTE %s = %s", tmp, expr))
-	c.writeln(fmt.Sprintf("DISPLAY %s", tmp))
+	c.writeln("DISPLAY " + strings.Join(parts, " "))
 	return nil
 }
 
@@ -454,18 +508,33 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 }
 
 func (c *Compiler) compileFor(f *parser.ForStmt) error {
-	if f.RangeEnd == nil {
-		return fmt.Errorf("only range for loops supported")
-	}
-	start, err := c.compileExpr(f.Source)
-	if err != nil {
-		return err
-	}
-	end, err := c.compileExpr(f.RangeEnd)
-	if err != nil {
-		return err
-	}
 	name := strings.ToUpper(f.Name)
+	var start, end string
+	if f.RangeEnd == nil {
+		if n, ok := seqIntList(f.Source); ok {
+			start = "1"
+			end = fmt.Sprintf("%d", n)
+		} else if id, ok := identExpr(f.Source); ok {
+			if n, ok := c.seqList[id]; ok {
+				start = "1"
+				end = fmt.Sprintf("%d", n)
+			} else {
+				return fmt.Errorf("only range for loops supported")
+			}
+		} else {
+			return fmt.Errorf("only range for loops supported")
+		}
+	} else {
+		var err error
+		start, err = c.compileExpr(f.Source)
+		if err != nil {
+			return err
+		}
+		end, err = c.compileExpr(f.RangeEnd)
+		if err != nil {
+			return err
+		}
+	}
 	c.writeln(fmt.Sprintf("PERFORM VARYING %s FROM %s BY 1 UNTIL %s > %s", name, start, name, end))
 	c.indent += 4
 	for _, st := range f.Body {
@@ -702,4 +771,61 @@ func needsTmpVar(st []*parser.Statement) bool {
 		}
 	}
 	return false
+}
+
+func seqIntList(e *parser.Expr) (int, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return 0, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return 0, false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.List == nil {
+		return 0, false
+	}
+	elems := p.Target.List.Elems
+	if len(elems) == 0 {
+		return 0, false
+	}
+	for i, elem := range elems {
+		if elem == nil || elem.Binary == nil || len(elem.Binary.Right) != 0 {
+			return 0, false
+		}
+		u2 := elem.Binary.Left
+		if len(u2.Ops) > 1 {
+			return 0, false
+		}
+		if len(u2.Ops) == 1 && u2.Ops[0] != "-" {
+			return 0, false
+		}
+		p2 := u2.Value
+		if len(p2.Ops) != 0 || p2.Target == nil || p2.Target.Lit == nil || p2.Target.Lit.Int == nil {
+			return 0, false
+		}
+		v := *p2.Target.Lit.Int
+		if v != i+1 {
+			return 0, false
+		}
+	}
+	return len(elems), true
+}
+
+func identExpr(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Selector == nil {
+		return "", false
+	}
+	if len(p.Target.Selector.Tail) != 0 {
+		return "", false
+	}
+	return p.Target.Selector.Root, true
 }

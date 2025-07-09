@@ -1,11 +1,11 @@
-# Mochi to COBOL Machine Translations (15/97 compiled)
+# Mochi to COBOL Machine Translations (17/97 compiled)
 
 - [ ] append_builtin.mochi
 - [ ] avg_builtin.mochi
 - [x] basic_compare.mochi
 - [x] binary_precedence.mochi
 - [x] bool_chain.mochi
-- [ ] break_continue.mochi
+- [x] break_continue.mochi
 - [x] cast_string_to_int.mochi
 - [ ] cast_struct.mochi
 - [ ] closure.mochi
@@ -16,7 +16,7 @@
 - [ ] dataset_sort_take_limit.mochi
 - [ ] dataset_where_filter.mochi
 - [ ] exists_builtin.mochi
-- [ ] for_list_collection.mochi
+- [x] for_list_collection.mochi
 - [x] for_loop.mochi
 - [ ] for_map_collection.mochi
 - [x] fun_call.mochi
