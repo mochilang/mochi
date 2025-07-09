@@ -798,9 +798,14 @@ var helperOrder = []string{
 }
 
 func (c *Compiler) emitRuntime() {
+	emitted := map[string]bool{}
 	for _, h := range helperOrder {
 		if c.has(h) {
-			c.buf.WriteString(helperCode[h])
+			code := helperCode[h]
+			if !emitted[code] {
+				c.buf.WriteString(code)
+				emitted[code] = true
+			}
 		}
 	}
 }
