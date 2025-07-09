@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs. Successful runs have a .out file, failures a .error file.
 
-Compiled programs: 86/97
+Compiled programs: 95/97
 
 Checklist:
 
@@ -32,11 +32,11 @@ Checklist:
 - [x] group_by_conditional_sum
 - [x] group_by_having
 - [x] group_by_join
-- [ ] group_by_left_join
+- [x] group_by_left_join
 - [x] group_by_multi_join
-- [ ] group_by_multi_join_sort
+- [x] group_by_multi_join_sort
 - [x] group_by_sort
-- [ ] group_items_iteration
+- [x] group_items_iteration
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
@@ -55,7 +55,7 @@ Checklist:
 - [x] list_index
 - [x] list_nested_assign
 - [x] list_set_ops
-- [ ] load_yaml
+- [x] load_yaml
 - [x] map_assign
 - [x] map_in_operator
 - [x] map_index
@@ -69,18 +69,18 @@ Checklist:
 - [x] membership
 - [x] min_max_builtin
 - [x] nested_function
-- [ ] order_by_map
+- [x] order_by_map
 - [ ] outer_join
-- [ ] partial_application
+- [x] partial_application
 - [x] print_hello
 - [x] pure_fold
 - [x] pure_global_fold
-- [ ] query_sum_select
+- [x] query_sum_select
 - [x] record_assign
 - [ ] right_join
 - [x] save_jsonl_stdout
 - [x] short_circuit
-- [ ] slice
+- [x] slice
 - [x] sort_stable
 - [x] str_builtin
 - [x] string_compare
@@ -93,7 +93,7 @@ Checklist:
 - [x] sum_builtin
 - [x] tail_recursion
 - [x] test_block
-- [ ] tree_sum
+- [x] tree_sum
 - [x] two-sum
 - [x] typed_let
 - [x] typed_var
@@ -106,15 +106,5 @@ Checklist:
 
 ## Remaining Tasks
 
-- [ ] group_by_left_join
-- [ ] group_by_multi_join_sort
-- [ ] group_items_iteration
-- [ ] load_yaml
-- [x] map_nested_assign
-- [ ] order_by_map
 - [ ] outer_join
-- [ ] partial_application
-- [ ] query_sum_select
 - [ ] right_join
-- [ ] slice
-- [ ] tree_sum

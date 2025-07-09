@@ -975,9 +975,17 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		grpVar = q.Group.Name
 		c.groupKeys[grpVar] = keyVar
 		c.mapVars[grpVar] = true
-		child.SetVar(grpVar, types.ListType{Elem: elemType}, true)
+		child.SetVar(grpVar, types.ListType{Elem: types.MapType{Key: types.StringType{}, Value: types.AnyType{}}}, true)
 		w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("var %s = %s;\n", keyVar, keyExpr))
-		w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("%s.putIfAbsent(%s, () => <dynamic>[]).add(%s);\n", groups, keyVar, q.Var))
+		parts := []string{"'" + q.Var + "': " + q.Var}
+		for _, f := range q.Froms {
+			parts = append(parts, "'"+f.Var+"': "+f.Var)
+		}
+		for _, j := range q.Joins {
+			parts = append(parts, "'"+j.Var+"': "+j.Var)
+		}
+		item := "{" + strings.Join(parts, ", ") + "}"
+		w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("%s.putIfAbsent(%s, () => <dynamic>[]).add(%s);\n", groups, keyVar, item))
 	} else {
 		if q.Sort != nil {
 			key := c.mustExpr(q.Sort)
@@ -1010,7 +1018,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 
 	if q.Sort != nil {
-		w(fmt.Sprintf("  %s.sort((a,b) => (a[0] as Comparable).compareTo(b[0]));\n", tmp))
+		cmpA := "a[0]"
+		cmpB := "b[0]"
+		if !isComparableType(types.TypeOfExpr(q.Sort, c.env)) {
+			c.useJSON = true
+			cmpA = fmt.Sprintf("jsonEncode(%s)", cmpA)
+			cmpB = fmt.Sprintf("jsonEncode(%s)", cmpB)
+		}
+		w(fmt.Sprintf("  %s.sort((a,b) => (%s as Comparable).compareTo(%s));\n", tmp, cmpA, cmpB))
 		w(fmt.Sprintf("  %s = [for (var x in %s) x[1]];\n", tmp, tmp))
 	}
 	if q.Skip != nil || q.Take != nil {
@@ -1114,6 +1129,9 @@ func (c *Compiler) compileSelector(sel *parser.SelectorExpr) string {
 		if len(sel.Tail) == 1 && sel.Tail[0] == "key" {
 			return key
 		}
+		if len(sel.Tail) == 1 && sel.Tail[0] == "items" {
+			return root
+		}
 	}
 	typ, _ := c.env.GetVar(root)
 	if ok := c.mapVars[root]; ok {
@@ -1141,6 +1159,15 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", err
 		}
 		args[i] = s
+	}
+	if fn, ok := c.env.GetFunc(call.Func); ok && len(call.Args) < len(fn.Params) {
+		missing := fn.Params[len(call.Args):]
+		vars := make([]string, len(missing))
+		for i, p := range missing {
+			vars[i] = p.Name
+		}
+		all := append(append([]string{}, args...), vars...)
+		return fmt.Sprintf("(%s) => %s(%s)", strings.Join(vars, ", "), call.Func, strings.Join(all, ", ")), nil
 	}
 	// handle simple builtins so the generated Dart code is runnable without
 	// additional support libraries
@@ -1291,6 +1318,33 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	b.WriteString("(() {\n")
 	b.WriteString("  var _t = " + target + ";\n")
 	for i, cs := range m.Cases {
+		if isUnderscoreExpr(cs.Pattern) {
+			res, err := c.compileExpr(cs.Result)
+			if err != nil {
+				return "", err
+			}
+			b.WriteString("  else {\n    return " + res + ";\n  }\n")
+			continue
+		}
+		if name, vars, ok := c.constructorPattern(cs.Pattern); ok {
+			st, _ := c.env.GetStruct(name)
+			res, err := c.compileExpr(cs.Result)
+			if err != nil {
+				return "", err
+			}
+			if i == 0 {
+				b.WriteString("  if (_t is " + name + ") {\n")
+			} else {
+				b.WriteString(" else if (_t is " + name + ") {\n")
+			}
+			for idx, v := range vars {
+				if idx < len(st.Order) {
+					b.WriteString("    var " + v + " = (_t as " + name + ")." + st.Order[idx] + ";\n")
+				}
+			}
+			b.WriteString("    return " + res + ";\n  }")
+			continue
+		}
 		pat, err := c.compileExpr(cs.Pattern)
 		if err != nil {
 			return "", err
@@ -1298,10 +1352,6 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 		res, err := c.compileExpr(cs.Result)
 		if err != nil {
 			return "", err
-		}
-		if isUnderscoreExpr(cs.Pattern) {
-			b.WriteString("  else {\n    return " + res + ";\n  }\n")
-			continue
 		}
 		if i == 0 {
 			b.WriteString("  if (_t == " + pat + ") {\n    return " + res + ";\n  }")
@@ -1312,6 +1362,32 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	b.WriteString("  return null;\n")
 	b.WriteString("})()")
 	return b.String(), nil
+}
+
+func (c *Compiler) constructorPattern(e *parser.Expr) (string, []string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", nil, false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) > 0 {
+		return "", nil, false
+	}
+	p := u.Value
+	if p.Call != nil {
+		vars := make([]string, len(p.Call.Args))
+		for i, a := range p.Call.Args {
+			v, ok := c.simpleIdentifier(a)
+			if !ok {
+				return "", nil, false
+			}
+			vars[i] = v
+		}
+		return p.Call.Func, vars, true
+	}
+	if p.Selector != nil && len(p.Ops) == 0 && len(p.Selector.Tail) == 0 {
+		return p.Selector.Root, nil, true
+	}
+	return "", nil, false
 }
 
 func isUnderscoreExpr(e *parser.Expr) bool {
@@ -1461,6 +1537,15 @@ func defaultValue(typ string) string {
 func isNumericType(t types.Type) bool {
 	switch t.(type) {
 	case types.IntType, types.Int64Type, types.FloatType:
+		return true
+	default:
+		return false
+	}
+}
+
+func isComparableType(t types.Type) bool {
+	switch t.(type) {
+	case types.IntType, types.Int64Type, types.FloatType, types.StringType, types.BoolType:
 		return true
 	default:
 		return false
