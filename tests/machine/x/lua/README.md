@@ -7,6 +7,7 @@ This directory contains Lua source code generated from Mochi programs and the co
 
 - 90/97 programs compiled and executed successfully.
 - 7 programs failed to compile or run.
+- Join queries are now compiled using plain Lua loops without runtime helpers.
 
 ### Successful
 - append_builtin
