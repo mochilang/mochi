@@ -30,6 +30,7 @@ type Compiler struct {
 func New(env *types.Env) *Compiler {
 	return &Compiler{compiler: compiler{
 		structs:  make(map[string][]string),
+		variants: make(map[string]string),
 		inout:    make(map[string][]bool),
 		varTypes: make(map[string]string),
 	}}
@@ -49,6 +50,7 @@ type compiler struct {
 	buf      strings.Builder
 	indent   int
 	structs  map[string][]string
+	variants map[string]string
 	inout    map[string][]bool
 	varTypes map[string]string
 	tupleMap bool
@@ -87,6 +89,12 @@ func (c *compiler) stmt(s *parser.Statement) error {
 		return c.breakStmt(s.Break)
 	case s.Continue != nil:
 		return c.continueStmt(s.Continue)
+	case s.Test != nil:
+		return c.testBlock(s.Test)
+	case s.Expect != nil:
+		return c.expectStmt(s.Expect)
+	case s.Update != nil:
+		return c.updateStmt(s.Update)
 	case s.Expr != nil:
 		expr, err := c.expr(s.Expr.Expr)
 		if err != nil {
@@ -180,7 +188,40 @@ func (c *compiler) assignStmt(a *parser.AssignStmt) error {
 
 func (c *compiler) typeDecl(t *parser.TypeDecl) error {
 	if len(t.Variants) > 0 {
-		return fmt.Errorf("variant types not supported")
+		indirect := false
+		for _, v := range t.Variants {
+			for _, f := range v.Fields {
+				typ, _ := c.typeRef(f.Type)
+				if typ == t.Name {
+					indirect = true
+				}
+			}
+			c.variants[v.Name] = t.Name
+		}
+		if indirect {
+			c.writeln(fmt.Sprintf("indirect enum %s {", t.Name))
+		} else {
+			c.writeln(fmt.Sprintf("enum %s {", t.Name))
+		}
+		c.indent++
+		for _, v := range t.Variants {
+			if len(v.Fields) == 0 {
+				c.writeln("case " + strings.ToLower(v.Name))
+				continue
+			}
+			fields := make([]string, len(v.Fields))
+			for i, f := range v.Fields {
+				typ, err := c.typeRef(f.Type)
+				if err != nil {
+					return err
+				}
+				fields[i] = fmt.Sprintf("%s: %s", f.Name, typ)
+			}
+			c.writeln(fmt.Sprintf("case %s(%s)", strings.ToLower(v.Name), strings.Join(fields, ", ")))
+		}
+		c.indent--
+		c.writeln("}")
+		return nil
 	}
 	c.structs[t.Name] = []string{}
 	c.writeln(fmt.Sprintf("struct %s {", t.Name))
@@ -221,7 +262,7 @@ func (c *compiler) funStmt(f *parser.FunStmt) error {
 		c.buf.WriteString("_ ")
 		c.buf.WriteString(p.Name)
 		c.buf.WriteString(": ")
-		if !isBuiltinType(typ) {
+		if !c.isBuiltinType(typ) {
 			c.buf.WriteString("inout ")
 			c.inout[f.Name][i] = true
 		}
@@ -350,6 +391,71 @@ func (c *compiler) breakStmt(_ *parser.BreakStmt) error {
 
 func (c *compiler) continueStmt(_ *parser.ContinueStmt) error {
 	c.writeln("continue")
+	return nil
+}
+
+func (c *compiler) testBlock(t *parser.TestBlock) error {
+	for _, st := range t.Body {
+		if err := c.stmt(st); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *compiler) expectStmt(e *parser.ExpectStmt) error {
+	val, err := c.expr(e.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln("assert(" + val + ")")
+	return nil
+}
+
+func (c *compiler) updateStmt(u *parser.UpdateStmt) error {
+	typ, ok := c.varTypes[u.Target]
+	if !ok || !strings.HasPrefix(typ, "list") {
+		return fmt.Errorf("update only supported on list variables")
+	}
+	idx := "i"
+	c.writeln(fmt.Sprintf("for %s in 0..<%s.count {", idx, u.Target))
+	c.indent++
+	elem := "elem"
+	c.writeln(fmt.Sprintf("var %s = %s[%s]", elem, u.Target, idx))
+	saved := c.varTypes[elem]
+	c.varTypes[elem] = strings.TrimPrefix(typ, "list_")
+	cond := "true"
+	if u.Where != nil {
+		c.varTypes = copyMap(c.varTypes)
+		condExpr, err := c.expr(u.Where)
+		if err != nil {
+			return err
+		}
+		cond = condExpr
+	}
+	c.writeln("if " + cond + " {")
+	c.indent++
+	for _, it := range u.Set.Items {
+		key, ok := keyName(it.Key)
+		if !ok {
+			return fmt.Errorf("update key must be literal")
+		}
+		val, err := c.expr(it.Value)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("%s.%s = %s", elem, key, val))
+	}
+	c.indent--
+	c.writeln("}")
+	c.writeln(fmt.Sprintf("%s[%s] = %s", u.Target, idx, elem))
+	if saved != "" {
+		c.varTypes[elem] = saved
+	} else {
+		delete(c.varTypes, elem)
+	}
+	c.indent--
+	c.writeln("}")
 	return nil
 }
 
@@ -540,7 +646,7 @@ func (c *compiler) primary(p *parser.Primary) (string, error) {
 	case p.Query != nil:
 		return c.queryExpr(p.Query)
 	case p.Selector != nil:
-		return selector(p.Selector), nil
+		return c.selector(p.Selector), nil
 	case p.Group != nil:
 		e, err := c.expr(p.Group)
 		if err != nil {
@@ -719,6 +825,12 @@ func (c *compiler) structLiteral(s *parser.StructLiteral) (string, error) {
 		}
 		fields[i] = fmt.Sprintf("%s: %s", f.Name, v)
 	}
+	if enum, ok := c.variants[s.Name]; ok {
+		if len(fields) == 0 {
+			return fmt.Sprintf("%s.%s", enum, strings.ToLower(s.Name)), nil
+		}
+		return fmt.Sprintf("%s.%s(%s)", enum, strings.ToLower(s.Name), strings.Join(fields, ", ")), nil
+	}
 	return fmt.Sprintf("%s(%s)", s.Name, strings.Join(fields, ", ")), nil
 }
 
@@ -733,15 +845,46 @@ func (c *compiler) matchExpr(m *parser.MatchExpr) (string, error) {
 	b.WriteString(target)
 	b.WriteString(" {\n")
 	for _, cse := range m.Cases {
-		pat, err := c.expr(cse.Pattern)
-		if err != nil {
-			return "", err
+		var patStr string
+		if cse.Pattern.Binary.Left.Value.Target.Struct != nil {
+			call := cse.Pattern.Binary.Left.Value.Target.Struct
+			if _, ok := c.variants[call.Name]; ok {
+				if len(call.Fields) == 0 {
+					patStr = fmt.Sprintf(".%s", strings.ToLower(call.Name))
+				} else {
+					pats := make([]string, len(call.Fields))
+					for i, f := range call.Fields {
+						pats[i] = f.Name
+					}
+					patStr = fmt.Sprintf("let .%s(%s)", strings.ToLower(call.Name), strings.Join(pats, ", "))
+				}
+			}
+		} else if call := cse.Pattern.Binary.Left.Value.Target.Call; call != nil {
+			if _, ok := c.variants[call.Func]; ok {
+				if len(call.Args) == 0 {
+					patStr = fmt.Sprintf(".%s", strings.ToLower(call.Func))
+				} else {
+					pats := make([]string, len(call.Args))
+					for i, a := range call.Args {
+						s, _ := c.expr(a)
+						pats[i] = s
+					}
+					patStr = fmt.Sprintf("let .%s(%s)", strings.ToLower(call.Func), strings.Join(pats, ", "))
+				}
+			}
+		}
+		if patStr == "" {
+			p, err := c.expr(cse.Pattern)
+			if err != nil {
+				return "", err
+			}
+			patStr = p
 		}
 		if isWildcard(cse.Pattern) {
 			b.WriteString("    default: return ")
 		} else {
 			b.WriteString("    case ")
-			b.WriteString(pat)
+			b.WriteString(patStr)
 			b.WriteString(": return ")
 		}
 		res, err := c.expr(cse.Result)
@@ -843,9 +986,20 @@ func isWildcard(e *parser.Expr) bool {
 	return sel != nil && sel.Root == "_" && len(sel.Tail) == 0
 }
 
-func selector(s *parser.SelectorExpr) string {
+func (c *compiler) selector(s *parser.SelectorExpr) string {
 	if len(s.Tail) == 0 {
+		if enum, ok := c.variants[s.Root]; ok {
+			return enum + "." + strings.ToLower(s.Root)
+		}
 		return s.Root
+	}
+	typ := c.varTypes[s.Root]
+	if strings.HasPrefix(typ, "map") {
+		parts := []string{s.Root}
+		for _, f := range s.Tail {
+			parts = append(parts, fmt.Sprintf("[%q]", f))
+		}
+		return strings.Join(parts, "")
 	}
 	return s.Root + "." + strings.Join(s.Tail, ".")
 }
@@ -962,10 +1116,15 @@ func defaultValue(typ string) string {
 	}
 }
 
-func isBuiltinType(typ string) bool {
+func (c *compiler) isBuiltinType(typ string) bool {
 	switch typ {
 	case "Int", "Double", "Bool", "String":
 		return true
+	}
+	for _, en := range c.variants {
+		if en == typ {
+			return true
+		}
 	}
 	if strings.HasPrefix(typ, "[") && strings.HasSuffix(typ, "]") {
 		return true
@@ -1003,6 +1162,12 @@ func (c *compiler) inferType(t *parser.TypeRef, val *parser.Expr) string {
 			case p.Target.Lit != nil && p.Target.Lit.Str != nil:
 				return "string"
 			case p.Target.List != nil:
+				if len(p.Target.List.Elems) > 0 && p.Target.List.Elems[0].Binary != nil {
+					et := c.exprType(p.Target.List.Elems[0])
+					if et != "" {
+						return "list_" + et
+					}
+				}
 				return "list"
 			case p.Target.Map != nil:
 				return "map"
@@ -1033,6 +1198,12 @@ func (c *compiler) exprType(e *parser.Expr) string {
 		return "string"
 	}
 	if p.Target.List != nil {
+		if len(p.Target.List.Elems) > 0 {
+			et := c.exprType(p.Target.List.Elems[0])
+			if et != "" {
+				return "list_" + et
+			}
+		}
 		return "list"
 	}
 	if p.Target.Map != nil {
@@ -1053,6 +1224,12 @@ func (c *compiler) primaryType(p *parser.Primary) string {
 	case p.Lit != nil && p.Lit.Str != nil:
 		return "string"
 	case p.List != nil:
+		if len(p.List.Elems) > 0 {
+			et := c.exprType(p.List.Elems[0])
+			if et != "" {
+				return "list_" + et
+			}
+		}
 		return "list"
 	case p.Map != nil:
 		return "map"
@@ -1113,6 +1290,8 @@ func (c *compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		name := vars[i]
+		prevT, havePrev := c.varTypes[name]
+		c.varTypes[name] = c.elementType(srcs[i])
 		if i == len(vars)-1 {
 			prev := c.tupleMap
 			c.tupleMap = true
@@ -1126,13 +1305,30 @@ func (c *compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				return fmt.Sprintf("%s.compactMap { %s in %s ? (%s) : nil }", src, name, cond, sel), nil
+				res := fmt.Sprintf("%s.compactMap { %s in %s ? (%s) : nil }", src, name, cond, sel)
+				if havePrev {
+					c.varTypes[name] = prevT
+				} else {
+					delete(c.varTypes, name)
+				}
+				return res, nil
 			}
-			return fmt.Sprintf("%s.map { %s in %s }", src, name, sel), nil
+			res := fmt.Sprintf("%s.map { %s in %s }", src, name, sel)
+			if havePrev {
+				c.varTypes[name] = prevT
+			} else {
+				delete(c.varTypes, name)
+			}
+			return res, nil
 		}
 		inner, err := build(i + 1)
 		if err != nil {
 			return "", err
+		}
+		if havePrev {
+			c.varTypes[name] = prevT
+		} else {
+			delete(c.varTypes, name)
 		}
 		return fmt.Sprintf("%s.flatMap { %s in %s }", src, name, inner), nil
 	}
@@ -1154,4 +1350,19 @@ func copyMap[K comparable, V any](m map[K]V) map[K]V {
 		out[k] = v
 	}
 	return out
+}
+
+func (c *compiler) elementType(e *parser.Expr) string {
+	typ := c.exprType(e)
+	if typ == "list" {
+		if sel := e.Binary.Left.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 {
+			if t, ok := c.varTypes[sel.Root]; ok && strings.HasPrefix(t, "list_") {
+				return strings.TrimPrefix(t, "list_")
+			}
+		}
+		if e.Binary.Left.Value.Target.List != nil && len(e.Binary.Left.Value.Target.List.Elems) > 0 {
+			return c.exprType(e.Binary.Left.Value.Target.List.Elems[0])
+		}
+	}
+	return typ
 }
