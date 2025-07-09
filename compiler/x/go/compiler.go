@@ -2726,14 +2726,17 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		buf.WriteString(indent + "\torder = append(order, ks)\n")
 		buf.WriteString(indent + "}\n")
 		itemVar := "_item"
+		c.use("_cast")
 		buf.WriteString(fmt.Sprintf(indent+"%s := map[string]any{}\n", itemVar))
 		buf.WriteString(fmt.Sprintf(indent+"for k, v := range _cast[map[string]any](%s) { %s[k] = v }\n", sanitizeName(q.Var), itemVar))
 		buf.WriteString(fmt.Sprintf(indent+"%s[\"%s\"] = %s\n", itemVar, sanitizeName(q.Var), sanitizeName(q.Var)))
 		for _, f := range q.Froms {
+			c.use("_cast")
 			buf.WriteString(fmt.Sprintf(indent+"for k, v := range _cast[map[string]any](%s) { %s[k] = v }\n", sanitizeName(f.Var), itemVar))
 			buf.WriteString(fmt.Sprintf(indent+"%s[\"%s\"] = %s\n", itemVar, sanitizeName(f.Var), sanitizeName(f.Var)))
 		}
 		for _, j := range q.Joins {
+			c.use("_cast")
 			buf.WriteString(fmt.Sprintf(indent+"for k, v := range _cast[map[string]any](%s) { %s[k] = v }\n", sanitizeName(j.Var), itemVar))
 			buf.WriteString(fmt.Sprintf(indent+"%s[\"%s\"] = %s\n", itemVar, sanitizeName(j.Var), sanitizeName(j.Var)))
 		}
