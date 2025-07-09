@@ -1,7 +1,6 @@
-program main
+program membership
   implicit none
-  integer, dimension(3) :: nums
-  nums = (/1,2,3/)
+  integer :: nums(3) = (/1,2,3/)
   print *, any(nums == 2)
   print *, any(nums == 4)
-end program main
+end program membership

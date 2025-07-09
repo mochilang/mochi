@@ -1,10 +1,9 @@
-program main
+program pure_fold
   implicit none
-  print *, triple((1 + 2))
-  contains
+  print *, triple(1 + 2)
+contains
   integer function triple(x)
     integer, intent(in) :: x
-    triple = (x * 3)
-    return
+    triple = x * 3
   end function triple
-end program main
+end program pure_fold

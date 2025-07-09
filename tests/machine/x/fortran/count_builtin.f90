@@ -1,4 +1,5 @@
-program main
+program count_builtin
   implicit none
-  print *, size((/1,2,3/))
-end program main
+  integer :: arr(3) = (/1,2,3/)
+  print *, size(arr)
+end program count_builtin

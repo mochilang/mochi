@@ -1,5 +1,5 @@
-program main
+program typed_let
   implicit none
   integer :: y
   print *, y
-end program main
+end program typed_let

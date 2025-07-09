@@ -1,4 +1,4 @@
-program main
+program print_hello
   implicit none
-  print *, "hello"
-end program main
+  print *, 'hello'
+end program print_hello
