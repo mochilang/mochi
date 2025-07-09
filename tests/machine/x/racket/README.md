@@ -2,7 +2,7 @@
 
 This directory contains Racket source code generated from the Mochi programs in `tests/vm/valid` using the Racket compiler. Each program was compiled and executed. Successful runs produced an `.out` file while failures produced an `.error` file.
 
-Compiled programs: 73/97
+Compiled programs: 76/97
 
 ## Checklist
 - [x] append_builtin
@@ -89,8 +89,8 @@ Compiled programs: 73/97
 - [ ] load_yaml
 - [x] map_int_key
 - [x] map_membership
-- [ ] match_expr
-- [ ] match_full
+ - [x] match_expr
+ - [x] match_full
 - [ ] outer_join
  - [x] partial_application
 - [ ] query_sum_select
@@ -98,7 +98,7 @@ Compiled programs: 73/97
 - [ ] right_join
 - [ ] save_jsonl_stdout
 - [x] string_contains
-- [ ] test_block
+ - [x] test_block
 - [ ] tree_sum
 - [ ] update_stmt
 - [x] user_type_literal
