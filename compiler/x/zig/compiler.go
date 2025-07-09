@@ -50,6 +50,7 @@ type Compiler struct {
 	needsPrintList    bool
 	tests             []string
 	constGlobals      map[string]bool
+	globalInits       map[string]string
 	labelCount        int
 	locals            map[string]types.Type
 	funcRet           types.Type
@@ -63,6 +64,7 @@ func New(env *types.Env) *Compiler {
 		structs:      map[string]bool{},
 		tests:        []string{},
 		constGlobals: map[string]bool{},
+		globalInits:  map[string]string{},
 		locals:       map[string]types.Type{},
 		captures:     map[string]string{},
 	}
@@ -118,9 +120,6 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			continue
 		}
 		if s.Let != nil && c.constGlobals[sanitizeName(s.Let.Name)] {
-			continue
-		}
-		if s.Var != nil && c.constGlobals[sanitizeName(s.Var.Name)] {
 			continue
 		}
 		if err := c.compileStmt(s, false); err != nil {
@@ -340,14 +339,26 @@ func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 				c.env.SetVar(s.Var.Name, typ, true)
 			}
 			if s.Var.Value != nil {
-				v, err := c.compileExpr(s.Var.Value, false)
-				if err != nil {
-					return err
-				}
-				if s.Var.Type == nil || canInferType(s.Var.Value, typ) {
-					c.writeln(fmt.Sprintf("var %s = %s;", name, v))
+				if isMapLiteralExpr(s.Var.Value) || isEmptyMapExpr(s.Var.Value) {
+					c.writeln(fmt.Sprintf("var %s: %s = undefined;", name, zigTypeOf(typ)))
+					v, err := c.compileExpr(s.Var.Value, false)
+					if err != nil {
+						return err
+					}
+					if c.globalInits == nil {
+						c.globalInits = map[string]string{}
+					}
+					c.globalInits[name] = fmt.Sprintf("%s = %s;", name, v)
 				} else {
-					c.writeln(fmt.Sprintf("var %s: %s = %s;", name, zigTypeOf(typ), v))
+					v, err := c.compileExpr(s.Var.Value, false)
+					if err != nil {
+						return err
+					}
+					if s.Var.Type == nil || canInferType(s.Var.Value, typ) {
+						c.writeln(fmt.Sprintf("var %s = %s;", name, v))
+					} else {
+						c.writeln(fmt.Sprintf("var %s: %s = %s;", name, zigTypeOf(typ), v))
+					}
 				}
 			} else {
 				c.writeln(fmt.Sprintf("var %s: %s = undefined;", name, zigTypeOf(typ)))
@@ -1225,6 +1236,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 func (c *Compiler) compileVar(st *parser.VarStmt, inFun bool) error {
 	name := sanitizeName(st.Name)
+	if !inFun && c.constGlobals[name] {
+		if init, ok := c.globalInits[name]; ok {
+			c.writeln(init)
+			return nil
+		}
+	}
 	var typ types.Type = types.AnyType{}
 	if c.env != nil {
 		if st.Type != nil {
@@ -1987,27 +2004,6 @@ func (c *Compiler) compileListLiteral(list *parser.ListLiteral, asRef bool) (str
 }
 
 func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
-	simple := true
-	fields := make([]string, len(m.Items))
-	defs := make([]string, len(m.Items))
-	for i, it := range m.Items {
-		k, ok := simpleStringKey(it.Key)
-		if !ok {
-			simple = false
-			break
-		}
-		valExpr, err := c.compileExpr(it.Value, false)
-		if err != nil {
-			return "", err
-		}
-		name := sanitizeName(k)
-		fields[i] = fmt.Sprintf(".%s = %s", name, valExpr)
-		defs[i] = fmt.Sprintf("%s: %s,", name, zigTypeOf(c.inferExprType(it.Value)))
-	}
-	if simple {
-		return fmt.Sprintf("struct { %s }{ %s }", strings.Join(defs, " "), strings.Join(fields, ", ")), nil
-	}
-
 	keyType := "i32"
 	valType := "i32"
 	if len(m.Items) > 0 {
@@ -2029,7 +2025,12 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 	var b strings.Builder
 	lbl := c.newLabel()
 	tmpMap := c.newTmp()
-	b.WriteString("(" + lbl + ": { var " + tmpMap + " = std.AutoHashMap(" + keyType + ", " + valType + ").init(std.heap.page_allocator); ")
+	b.WriteString("(" + lbl + ": { var " + tmpMap + " = ")
+	if keyType == "[]const u8" {
+		b.WriteString("std.StringHashMap(" + valType + ").init(std.heap.page_allocator); ")
+	} else {
+		b.WriteString("std.AutoHashMap(" + keyType + ", " + valType + ").init(std.heap.page_allocator); ")
+	}
 	for _, it := range m.Items {
 		var keyExpr string
 		if k, ok := simpleStringKey(it.Key); ok {

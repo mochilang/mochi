@@ -27,6 +27,9 @@ func zigTypeOf(t types.Type) string {
 	case types.ListType:
 		return "[]const " + zigTypeOf(tt.Elem)
 	case types.MapType:
+		if _, ok := tt.Key.(types.StringType); ok {
+			return fmt.Sprintf("std.StringHashMap(%s)", zigTypeOf(tt.Value))
+		}
 		return fmt.Sprintf("std.AutoHashMap(%s, %s)", zigTypeOf(tt.Key), zigTypeOf(tt.Value))
 	case types.StructType:
 		return sanitizeName(tt.Name)
