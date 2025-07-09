@@ -1,12 +1,12 @@
-line: 24
+line: 25
 error: fpc error: exit status 1
 Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling /workspace/mochi/tests/machine/x/pascal/for_map_collection.pas
-for_map_collection.pas(21,16) Error: Can't read or write variables of this type
-for_map_collection.pas(19,12) Error: Cannot find an enumerator for the type "TFPGMap$2$crcD929FFD2"
-for_map_collection.pas(24) Fatal: There were 2 errors compiling module, stopping
+for_map_collection.pas(22,16) Error: Can't read or write variables of this type
+for_map_collection.pas(20,12) Error: Cannot find an enumerator for the type "TFPGMap$2$crcD929FFD2"
+for_map_collection.pas(25) Fatal: There were 2 errors compiling module, stopping
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode
 
