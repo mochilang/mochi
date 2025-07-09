@@ -85,6 +85,10 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 		out.WriteString("\t\treturn nil\n")
 		out.WriteString("\tend\nend\n\n")
 	}
+	if c.used["query"] {
+		out.WriteString(helperQuery)
+		out.WriteString("\n")
+	}
 	out.Write(c.buf.Bytes())
 	return out.Bytes(), nil
 }
@@ -517,6 +521,12 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	for _, j := range q.Joins {
+		if j.Side != nil && (*j.Side == "right" || *j.Side == "outer") {
+			return c.compileQueryWithHelper(q)
+		}
+	}
+
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
 		return "", err
@@ -623,6 +633,135 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	return b.String(), nil
 }
 
+func (c *Compiler) compileQueryWithHelper(q *parser.QueryExpr) (string, error) {
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+
+	fromSrcs := make([]string, len(q.Froms))
+	for i, f := range q.Froms {
+		fs, err := c.compileExpr(f.Src)
+		if err != nil {
+			return "", err
+		}
+		fromSrcs[i] = fs
+	}
+
+	joinSrcs := make([]string, len(q.Joins))
+	joinOns := make([]string, len(q.Joins))
+	joinSides := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			return "", err
+		}
+		on, err := c.compileExpr(j.On)
+		if err != nil {
+			return "", err
+		}
+		joinSrcs[i] = js
+		joinOns[i] = on
+		if j.Side != nil {
+			joinSides[i] = *j.Side
+		}
+	}
+
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		return "", err
+	}
+	var whereExpr, sortExpr, skipExpr, takeExpr string
+	if q.Where != nil {
+		whereExpr, err = c.compileExpr(q.Where)
+		if err != nil {
+			return "", err
+		}
+	}
+	if q.Sort != nil {
+		sortExpr, err = c.compileExpr(q.Sort)
+		if err != nil {
+			return "", err
+		}
+	}
+	if q.Skip != nil {
+		skipExpr, err = c.compileExpr(q.Skip)
+		if err != nil {
+			return "", err
+		}
+	}
+	if q.Take != nil {
+		takeExpr, err = c.compileExpr(q.Take)
+		if err != nil {
+			return "", err
+		}
+	}
+
+	params := []string{sanitizeName(q.Var)}
+	for _, f := range q.Froms {
+		params = append(params, sanitizeName(f.Var))
+	}
+	paramCopy := append([]string(nil), params...)
+
+	joins := make([]string, 0, len(q.Froms)+len(q.Joins))
+	for _, fs := range fromSrcs {
+		joins = append(joins, fmt.Sprintf("{ items = %s }", fs))
+	}
+	for i, js := range joinSrcs {
+		onParams := append(paramCopy, sanitizeName(q.Joins[i].Var))
+		spec := fmt.Sprintf("{ items = %s, on = function(%s) return %s end", js, strings.Join(onParams, ", "), joinOns[i])
+		side := joinSides[i]
+		if side == "left" || side == "outer" {
+			spec += ", left = true"
+		}
+		if side == "right" || side == "outer" {
+			spec += ", right = true"
+		}
+		spec += " }"
+		joins = append(joins, spec)
+		paramCopy = append(paramCopy, sanitizeName(q.Joins[i].Var))
+	}
+
+	allParams := strings.Join(paramCopy, ", ")
+	selectFn := fmt.Sprintf("function(%s) return %s end", allParams, sel)
+	var whereFn, sortFn string
+	if whereExpr != "" {
+		whereFn = fmt.Sprintf("function(%s) return (%s) end", allParams, whereExpr)
+	}
+	if sortExpr != "" {
+		sortFn = fmt.Sprintf("function(%s) return (%s) end", allParams, sortExpr)
+	}
+
+	var b strings.Builder
+	b.WriteString("(function()\n")
+	b.WriteString("\tlocal _src = " + src + "\n")
+	b.WriteString("\treturn __query(_src, {\n")
+	for i, j := range joins {
+		b.WriteString("\t\t" + j)
+		if i != len(joins)-1 {
+			b.WriteString(",")
+		}
+		b.WriteString("\n")
+	}
+	b.WriteString("\t}, { selectFn = " + selectFn)
+	if whereFn != "" {
+		b.WriteString(", where = " + whereFn)
+	}
+	if sortFn != "" {
+		b.WriteString(", sortKey = " + sortFn)
+	}
+	if skipExpr != "" {
+		b.WriteString(", skip = " + skipExpr)
+	}
+	if takeExpr != "" {
+		b.WriteString(", take = " + takeExpr)
+	}
+	b.WriteString(" })\n")
+	b.WriteString("end)()")
+	c.used["query"] = true
+	return b.String(), nil
+}
+
 func contains(list []string, s string) bool {
 	for _, v := range list {
 		if v == s {
@@ -677,3 +816,150 @@ func isListLiteralExpr(e *parser.Expr) bool {
 }
 
 func init() {}
+
+const helperQuery = "function __query(src, joins, opts)\n" +
+	"    local whereFn = opts.where\n" +
+	"    local items = {}\n" +
+	"    if #joins == 0 and whereFn then\n" +
+	"        for _, v in ipairs(src) do if whereFn(v) then items[#items+1] = {v} end end\n" +
+	"    else\n" +
+	"        for _, v in ipairs(src) do items[#items+1] = {v} end\n" +
+	"    end\n" +
+	"    for ji, j in ipairs(joins) do\n" +
+	"        local joined = {}\n" +
+	"        local jitems = j.items or {}\n" +
+	"        if j.right and j.left then\n" +
+	"            local matched = {}\n" +
+	"            for _, left in ipairs(items) do\n" +
+	"                local m = false\n" +
+	"                for ri, right in ipairs(jitems) do\n" +
+	"                    local keep = true\n" +
+	"                    if j.on then\n" +
+	"                        local args = {table.unpack(left)}\n" +
+	"                        args[#args+1] = right\n" +
+	"                        keep = j.on(table.unpack(args))\n" +
+	"                    end\n" +
+	"                    if keep then\n" +
+	"                        m = true; matched[ri] = true\n" +
+	"                        local row = {table.unpack(left)}\n" +
+	"                        row[#row+1] = right\n" +
+	"                        if ji == #joins and whereFn and not whereFn(table.unpack(row)) then\n" +
+	"                        else\n" +
+	"                            joined[#joined+1] = row\n" +
+	"                        end\n" +
+	"                    end\n" +
+	"                end\n" +
+	"                if not m then\n" +
+	"                    local row = {table.unpack(left)}\n" +
+	"                    row[#row+1] = nil\n" +
+	"                    if ji == #joins and whereFn and not whereFn(table.unpack(row)) then\n" +
+	"                    else\n" +
+	"                        joined[#joined+1] = row\n" +
+	"                    end\n" +
+	"                end\n" +
+	"            end\n" +
+	"            for ri, right in ipairs(jitems) do\n" +
+	"                if not matched[ri] then\n" +
+	"                    local undef = {}\n" +
+	"                    if #items > 0 then for _=1,#items[1] do undef[#undef+1]=nil end end\n" +
+	"                    local row = {table.unpack(undef)}\n" +
+	"                    row[#row+1] = right\n" +
+	"                    if ji == #joins and whereFn and not whereFn(table.unpack(row)) then\n" +
+	"                    else\n" +
+	"                        joined[#joined+1] = row\n" +
+	"                    end\n" +
+	"                end\n" +
+	"            end\n" +
+	"        elseif j.right then\n" +
+	"            for _, right in ipairs(jitems) do\n" +
+	"                local m = false\n" +
+	"                for _, left in ipairs(items) do\n" +
+	"                    local keep = true\n" +
+	"                    if j.on then\n" +
+	"                        local args = {table.unpack(left)}\n" +
+	"                        args[#args+1] = right\n" +
+	"                        keep = j.on(table.unpack(args))\n" +
+	"                    end\n" +
+	"                    if keep then\n" +
+	"                        m = true\n" +
+	"                        local row = {table.unpack(left)}\n" +
+	"                        row[#row+1] = right\n" +
+	"                        if ji == #joins and whereFn and not whereFn(table.unpack(row)) then\n" +
+	"                        else\n" +
+	"                            joined[#joined+1] = row\n" +
+	"                        end\n" +
+	"                    end\n" +
+	"                end\n" +
+	"                if not m then\n" +
+	"                    local undef = {}\n" +
+	"                    if #items > 0 then for _=1,#items[1] do undef[#undef+1]=nil end end\n" +
+	"                    local row = {table.unpack(undef)}\n" +
+	"                    row[#row+1] = right\n" +
+	"                    if ji == #joins and whereFn and not whereFn(table.unpack(row)) then\n" +
+	"                    else\n" +
+	"                        joined[#joined+1] = row\n" +
+	"                    end\n" +
+	"                end\n" +
+	"            end\n" +
+	"        else\n" +
+	"            for _, left in ipairs(items) do\n" +
+	"                local m = false\n" +
+	"                for _, right in ipairs(jitems) do\n" +
+	"                    local keep = true\n" +
+	"                    if j.on then\n" +
+	"                        local args = {table.unpack(left)}\n" +
+	"                        args[#args+1] = right\n" +
+	"                        keep = j.on(table.unpack(args))\n" +
+	"                    end\n" +
+	"                    if keep then\n" +
+	"                        m = true\n" +
+	"                        local row = {table.unpack(left)}\n" +
+	"                        row[#row+1] = right\n" +
+	"                        if ji == #joins and whereFn and not whereFn(table.unpack(row)) then\n" +
+	"                        else\n" +
+	"                            joined[#joined+1] = row\n" +
+	"                        end\n" +
+	"                    end\n" +
+	"                end\n" +
+	"                if j.left and not m then\n" +
+	"                    local row = {table.unpack(left)}\n" +
+	"                    row[#row+1] = nil\n" +
+	"                    if ji == #joins and whereFn and not whereFn(table.unpack(row)) then\n" +
+	"                    else\n" +
+	"                        joined[#joined+1] = row\n" +
+	"                    end\n" +
+	"                end\n" +
+	"            end\n" +
+	"        end\n" +
+	"        items = joined\n" +
+	"    end\n" +
+	"    if opts.sortKey then\n" +
+	"        local pairs = {}\n" +
+	"        for _, it in ipairs(items) do pairs[#pairs+1] = {item=it, key=opts.sortKey(table.unpack(it))} end\n" +
+	"        table.sort(pairs, function(a,b)\n" +
+	"            local ak, bk = a.key, b.key\n" +
+	"            if type(ak)=='number' and type(bk)=='number' then return ak < bk end\n" +
+	"            if type(ak)=='string' and type(bk)=='string' then return ak < bk end\n" +
+	"            return tostring(ak) < tostring(bk)\n" +
+	"        end)\n" +
+	"        items = {}\n" +
+	"        for i,p in ipairs(pairs) do items[i] = p.item end\n" +
+	"    end\n" +
+	"    if opts.skip ~= nil then\n" +
+	"        local n = opts.skip\n" +
+	"        if n < #items then\n" +
+	"            for i=1,n do table.remove(items,1) end\n" +
+	"        else\n" +
+	"            items = {}\n" +
+	"        end\n" +
+	"    end\n" +
+	"    if opts.take ~= nil then\n" +
+	"        local n = opts.take\n" +
+	"        if n < #items then\n" +
+	"            for i=#items, n+1, -1 do table.remove(items) end\n" +
+	"        end\n" +
+	"    end\n" +
+	"    local res = {}\n" +
+	"    for _, r in ipairs(items) do res[#res+1] = opts.selectFn(table.unpack(r)) end\n" +
+	"    return res\n" +
+	"end\n"
