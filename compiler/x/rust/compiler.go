@@ -13,15 +13,17 @@ import (
 
 // Compiler translates a subset of Mochi to Rust source code.
 type Compiler struct {
-	buf       bytes.Buffer
-	indent    int
-	helpers   map[string]bool
-	tmp       int
-	env       *types.Env
-	structs   map[string]types.StructType
-	inMain    bool
-	globals   map[string]bool
-	mutParams map[string]map[int]bool
+	buf           bytes.Buffer
+	indent        int
+	helpers       map[string]bool
+	tmp           int
+	env           *types.Env
+	structs       map[string]types.StructType
+	genStructs    []types.StructType
+	structCounter int
+	inMain        bool
+	globals       map[string]bool
+	mutParams     map[string]map[int]bool
 }
 
 func usesIdentExpr(e *parser.Expr, name string) bool {
@@ -197,15 +199,44 @@ func (c *Compiler) newTmp() string {
 	return fmt.Sprintf("tmp%d", c.tmp)
 }
 
+func titleCase(s string) string {
+	if s == "" {
+		return s
+	}
+	return strings.ToUpper(s[:1]) + s[1:]
+}
+
+func singular(s string) string {
+	if strings.HasSuffix(s, "s") && len(s) > 1 {
+		return s[:len(s)-1]
+	}
+	return s
+}
+
+func (c *Compiler) newStructName(base string) string {
+	name := titleCase(base)
+	if _, ok := c.structs[name]; !ok {
+		return name
+	}
+	for {
+		c.structCounter++
+		candidate := fmt.Sprintf("%s%d", name, c.structCounter)
+		if _, ok := c.structs[candidate]; !ok {
+			return candidate
+		}
+	}
+}
+
 // New returns a new Compiler instance.
 func New(env *types.Env) *Compiler {
 	return &Compiler{
-		helpers:   make(map[string]bool),
-		env:       env,
-		structs:   make(map[string]types.StructType),
-		inMain:    true,
-		globals:   make(map[string]bool),
-		mutParams: make(map[string]map[int]bool),
+		helpers:    make(map[string]bool),
+		env:        env,
+		structs:    make(map[string]types.StructType),
+		genStructs: []types.StructType{},
+		inMain:     true,
+		globals:    make(map[string]bool),
+		mutParams:  make(map[string]map[int]bool),
 	}
 }
 
@@ -289,8 +320,15 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.indent--
 	c.writeln("}")
 
-	// prepend helpers
+	// prepend generated structs and helpers
 	var out bytes.Buffer
+	for _, st := range c.genStructs {
+		out.WriteString("struct " + st.Name + " {\n")
+		for _, f := range st.Order {
+			out.WriteString("    " + f + ": " + rustTypeFromType(st.Fields[f]) + ",\n")
+		}
+		out.WriteString("}\n\n")
+	}
 	if c.helpers["append"] {
 		out.WriteString("fn append<T: Clone>(mut v: Vec<T>, item: T) -> Vec<T> {\n")
 		out.WriteString("    v.push(item);\n    v\n}\n\n")
@@ -382,6 +420,18 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 		}
 		return nil
 	}
+	if list := tryListLiteral(l.Value); list != nil {
+		if code, ok, err := c.tryMapListStruct(l.Name, list); ok {
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("let %s = %s;", l.Name, code))
+			if c.inMain && c.indent == 1 {
+				c.globals[l.Name] = true
+			}
+			return nil
+		}
+	}
 	val, err := c.compileExpr(l.Value)
 	if err != nil {
 		return err
@@ -409,6 +459,18 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 			c.globals[v.Name] = true
 		}
 		return nil
+	}
+	if list := tryListLiteral(v.Value); list != nil {
+		if code, ok, err := c.tryMapListStruct(v.Name, list); ok {
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("let mut %s = %s;", v.Name, code))
+			if c.inMain && c.indent == 1 {
+				c.globals[v.Name] = true
+			}
+			return nil
+		}
 	}
 	val, err := c.compileExpr(v.Value)
 	if err != nil {
@@ -977,7 +1039,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	orig := c.env
 	c.env = child
-	sel, err := c.compileExpr(q.Select)
+	var sel string
+	if ml := tryMapLiteral(q.Select); ml != nil {
+		name := c.newStructName("Result")
+		sel, err = c.compileMapLiteralAsStruct(name, ml)
+	} else {
+		sel, err = c.compileExpr(q.Select)
+	}
 	if err != nil {
 		c.env = orig
 		return "", err
@@ -1144,6 +1212,124 @@ func (c *Compiler) compileStructLiteralFromMap(name string, m *parser.MapLiteral
 	return fmt.Sprintf("%s { %s }", name, strings.Join(fields, ", ")), nil
 }
 
+func (c *Compiler) compileMapLiteralAsStruct(name string, m *parser.MapLiteral) (string, error) {
+	st := types.StructType{Name: name, Fields: map[string]types.Type{}, Order: []string{}}
+	fields := make([]string, len(m.Items))
+	for i, it := range m.Items {
+		str, ok := c.simpleString(it.Key)
+		if !ok {
+			return "", fmt.Errorf("expected simple key")
+		}
+		v, err := c.compileExpr(it.Value)
+		if err != nil {
+			return "", err
+		}
+		fields[i] = fmt.Sprintf("%s: %s", str, v)
+		st.Fields[str] = types.TypeOfExprBasic(it.Value, c.env)
+		st.Order = append(st.Order, str)
+	}
+	c.structs[name] = st
+	c.genStructs = append(c.genStructs, st)
+	return fmt.Sprintf("%s { %s }", name, strings.Join(fields, ", ")), nil
+}
+
+func (c *Compiler) valueForKey(m *parser.MapLiteral, key string) *parser.Expr {
+	for _, it := range m.Items {
+		if str, ok := c.simpleString(it.Key); ok && str == key {
+			return it.Value
+		}
+	}
+	return nil
+}
+
+func (c *Compiler) tryMapListStruct(varName string, list *parser.ListLiteral) (string, bool, error) {
+	if len(list.Elems) == 0 {
+		return "", false, nil
+	}
+	firstKeys, ok := c.mapKeys(list.Elems[0])
+	if !ok {
+		return "", false, nil
+	}
+	for _, e := range list.Elems[1:] {
+		keys, ok := c.mapKeys(e)
+		if !ok || len(keys) != len(firstKeys) {
+			return "", false, nil
+		}
+		for i, k := range keys {
+			if k != firstKeys[i] {
+				return "", false, nil
+			}
+		}
+	}
+	structName := c.newStructName(singular(varName))
+	st := types.StructType{Name: structName, Fields: map[string]types.Type{}, Order: firstKeys}
+	firstMap := list.Elems[0].Binary.Left.Value.Target.Map
+	for _, k := range firstKeys {
+		expr := c.valueForKey(firstMap, k)
+		t := types.TypeOfExprBasic(expr, c.env)
+		st.Fields[k] = t
+	}
+	c.structs[structName] = st
+	c.genStructs = append(c.genStructs, st)
+
+	elems := make([]string, len(list.Elems))
+	for i, e := range list.Elems {
+		m := e.Binary.Left.Value.Target.Map
+		fields := make([]string, len(firstKeys))
+		for j, k := range firstKeys {
+			vexpr := c.valueForKey(m, k)
+			val, err := c.compileExpr(vexpr)
+			if err != nil {
+				return "", false, err
+			}
+			fields[j] = fmt.Sprintf("%s: %s", k, val)
+		}
+		elems[i] = fmt.Sprintf("%s { %s }", structName, strings.Join(fields, ", "))
+	}
+	return "vec![" + strings.Join(elems, ", ") + "]", true, nil
+}
+
+func (c *Compiler) mapKeys(e *parser.Expr) ([]string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || u.Value.Target == nil || u.Value.Target.Map == nil {
+		return nil, false
+	}
+	keys := make([]string, len(u.Value.Target.Map.Items))
+	for i, it := range u.Value.Target.Map.Items {
+		str, ok := c.simpleString(it.Key)
+		if !ok {
+			return nil, false
+		}
+		keys[i] = str
+	}
+	return keys, true
+}
+
+func tryListLiteral(e *parser.Expr) *parser.ListLiteral {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || u.Value.Target == nil || u.Value.Target.List == nil {
+		return nil
+	}
+	return u.Value.Target.List
+}
+
+func tryMapLiteral(e *parser.Expr) *parser.MapLiteral {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || u.Value.Target == nil || u.Value.Target.Map == nil {
+		return nil
+	}
+	return u.Value.Target.Map
+}
+
 func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	args := make([]string, len(call.Args))
 	for i, a := range call.Args {
@@ -1298,6 +1484,27 @@ func rustType(t *parser.TypeRef) string {
 		return fmt.Sprintf("Box<dyn Fn(%s) -> %s>", strings.Join(params, ", "), ret)
 	}
 	return "i32"
+}
+
+func rustTypeFromType(t types.Type) string {
+	switch tt := t.(type) {
+	case types.IntType, types.Int64Type:
+		return "i32"
+	case types.BoolType:
+		return "bool"
+	case types.FloatType:
+		return "f64"
+	case types.StringType:
+		return "&'static str"
+	case types.ListType:
+		return fmt.Sprintf("Vec<%s>", rustTypeFromType(tt.Elem))
+	case types.MapType:
+		return fmt.Sprintf("std::collections::HashMap<%s, %s>", rustTypeFromType(tt.Key), rustTypeFromType(tt.Value))
+	case types.StructType:
+		return tt.Name
+	default:
+		return "i32"
+	}
 }
 
 func rustDefault(typ string) string {
