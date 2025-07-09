@@ -1,6 +1,6 @@
 # Haskell Machine-Compiled Programs
 
-96/97 programs compiled
+97/97 programs compiled
 
 The compiler now handles basic `left` and `right` join queries.
 
@@ -97,10 +97,9 @@ The compiler now handles basic `left` and `right` join queries.
 - [x] typed_let.mochi
 - [x] typed_var.mochi
 - [x] unary_neg.mochi
+- [x] update_stmt.mochi
 - [x] user_type_literal.mochi
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
 
-## Missing
-- [ ] update_stmt.mochi

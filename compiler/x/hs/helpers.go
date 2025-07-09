@@ -61,6 +61,27 @@ func simpleStringKey(e *parser.Expr) (string, bool) {
 	return "", false
 }
 
+func identName(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil {
+		return "", false
+	}
+	if len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
 func wrapAnyValue(t types.Type, v string) string {
 	switch t.(type) {
 	case types.IntType, types.Int64Type:
