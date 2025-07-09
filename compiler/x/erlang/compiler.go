@@ -509,6 +509,7 @@ func (c *Compiler) compileMatchExpr(mx *parser.MatchExpr) (string, error) {
 
 func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	gens := []string{}
+	conds := []string{}
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
 		return "", err
@@ -521,14 +522,30 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		}
 		gens = append(gens, fmt.Sprintf("%s <- %s", capitalize(fr.Var), s))
 	}
+	for _, j := range q.Joins {
+		if j.Side != nil {
+			return "", fmt.Errorf("join side %s not supported", *j.Side)
+		}
+		s, err := c.compileExpr(j.Src)
+		if err != nil {
+			return "", err
+		}
+		gens = append(gens, fmt.Sprintf("%s <- %s", capitalize(j.Var), s))
+		if j.On != nil {
+			onCond, err := c.compileExpr(j.On)
+			if err != nil {
+				return "", err
+			}
+			conds = append(conds, onCond)
+		}
+	}
 
-	cond := ""
 	if q.Where != nil {
 		cnd, err := c.compileExpr(q.Where)
 		if err != nil {
 			return "", err
 		}
-		cond = cnd
+		conds = append(conds, cnd)
 	}
 
 	sel, err := c.compileExpr(q.Select)
@@ -537,6 +554,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	}
 
 	listExpr := "[" + sel + " || " + strings.Join(gens, ", ")
+	cond := strings.Join(conds, ", ")
 	if cond != "" {
 		listExpr += ", " + cond
 	}
