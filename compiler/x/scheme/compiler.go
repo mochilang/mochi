@@ -1643,11 +1643,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return b.String(), nil
 	}
 	if q.Group != nil {
-		for _, j := range q.Joins {
-			if j.Side != nil {
-				return "", fmt.Errorf("unsupported join type")
-			}
-		}
 		src, err := c.compileExpr(q.Source)
 		if err != nil {
 			return "", err
@@ -1830,11 +1825,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		b.WriteString("    _res))")
 		return b.String(), nil
-	}
-	for _, j := range q.Joins {
-		if j.Side != nil {
-			return "", fmt.Errorf("unsupported join type")
-		}
 	}
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
