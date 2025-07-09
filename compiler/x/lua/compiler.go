@@ -126,8 +126,13 @@ func checkLuaSyntax(code []byte) error {
 	if os.Getenv("MOCHI_SKIP_LUA_SYNTAX") == "1" {
 		return nil
 	}
-	if _, err := exec.LookPath("luac"); err != nil {
-		return nil
+	luac := os.Getenv("MOCHI_LUAC")
+	if luac == "" {
+		if path, err := exec.LookPath("luac"); err == nil {
+			luac = path
+		} else {
+			return nil
+		}
 	}
 	tmp, err := os.CreateTemp("", "mochi_*.lua")
 	if err != nil {
@@ -139,7 +144,7 @@ func checkLuaSyntax(code []byte) error {
 		return err
 	}
 	tmp.Close()
-	cmd := exec.Command("luac", "-p", tmp.Name())
+	cmd := exec.Command(luac, "-p", tmp.Name())
 	if out, err := cmd.CombinedOutput(); err != nil {
 		return fmt.Errorf("luac error: %v\n%s", err, out)
 	}
