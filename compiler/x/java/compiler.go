@@ -1023,27 +1023,58 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 			}
 		case op.Index != nil:
-			if op.Index.Start == nil || op.Index.Colon != nil {
-				return "", fmt.Errorf("complex indexing not supported")
-			}
-			idx, err := c.compileExpr(op.Index.Start)
-			if err != nil {
-				return "", err
-			}
-			last := i == len(p.Ops)-1
-			if isString(val) || c.vars[val] == "String" {
-				val = fmt.Sprintf("%s.charAt(%s)", val, idx)
-			} else if last {
-				val = fmt.Sprintf("%s.get(%s)", val, idx)
-			} else {
-				if strings.HasPrefix(typ, "Map<") {
-					val = fmt.Sprintf("((Map)%s.get(%s))", val, idx)
-					typ = mapValueType(typ)
-				} else if strings.HasPrefix(typ, "List<") {
-					val = fmt.Sprintf("((List)%s.get(%s))", val, idx)
-					typ = listElemType(typ)
+			if op.Index.Colon != nil || op.Index.Colon2 != nil || op.Index.Step != nil {
+				// slice operation
+				start := "0"
+				end := ""
+				if op.Index.Start != nil {
+					s, err := c.compileExpr(op.Index.Start)
+					if err != nil {
+						return "", err
+					}
+					start = s
+				}
+				if op.Index.End != nil {
+					e, err := c.compileExpr(op.Index.End)
+					if err != nil {
+						return "", err
+					}
+					end = e
 				} else {
-					val = fmt.Sprintf("((Map)%s.get(%s))", val, idx)
+					if isString(val) || c.vars[val] == "String" {
+						end = fmt.Sprintf("%s.length()", val)
+					} else {
+						end = fmt.Sprintf("%s.size()", val)
+					}
+				}
+				if isString(val) || c.vars[val] == "String" {
+					val = fmt.Sprintf("%s.substring(%s, %s)", val, start, end)
+				} else {
+					val = fmt.Sprintf("((List)%s).subList(%s, %s)", val, start, end)
+				}
+			} else {
+				if op.Index.Start == nil {
+					return "", fmt.Errorf("complex indexing not supported")
+				}
+				idx, err := c.compileExpr(op.Index.Start)
+				if err != nil {
+					return "", err
+				}
+				last := i == len(p.Ops)-1
+				if isString(val) || c.vars[val] == "String" {
+					val = fmt.Sprintf("%s.charAt(%s)", val, idx)
+				} else if last {
+					val = fmt.Sprintf("%s.get(%s)", val, idx)
+				} else {
+					if strings.HasPrefix(typ, "Map<") {
+						val = fmt.Sprintf("((Map)%s.get(%s))", val, idx)
+						typ = mapValueType(typ)
+					} else if strings.HasPrefix(typ, "List<") {
+						val = fmt.Sprintf("((List)%s.get(%s))", val, idx)
+						typ = listElemType(typ)
+					} else {
+						val = fmt.Sprintf("((Map)%s.get(%s))", val, idx)
+					}
 				}
 			}
 		default:
@@ -1125,7 +1156,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			if isString(expr) {
+			if isString(expr) || c.vars[expr] == "String" {
 				return fmt.Sprintf("%s.length()", expr), nil
 			}
 			return fmt.Sprintf("%s.size()", expr), nil
