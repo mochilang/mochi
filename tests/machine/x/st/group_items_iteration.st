@@ -1,5 +1,5 @@
-| total x result data groups tmp g |
-data := {Dictionary newFrom: {tag -> 'a'. val -> 1}. Dictionary newFrom: {tag -> 'a'. val -> 2}. Dictionary newFrom: {tag -> 'b'. val -> 3}}.
+| data groups tmp g total x result |
+data := {Dictionary newFrom:{#tag->'a'. #val->1}. Dictionary newFrom:{#tag->'a'. #val->2}. Dictionary newFrom:{#tag->'b'. #val->3}}.
 groups := [ | groups tmp |
   groups := Dictionary new.
   tmp := OrderedCollection new.
@@ -22,7 +22,7 @@ g at: 'items' do: [:x |.
 total := (total + x at: 'val').
 ].
 .
-tmp := tmp copyWith: Dictionary newFrom: {tag -> g at: 'key'. total -> total}.
+tmp := tmp copyWith: Dictionary newFrom:{#tag->g at: 'key'. total->total}.
 ].
 .
 result := [ | tmp |

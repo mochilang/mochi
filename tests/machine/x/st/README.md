@@ -5,7 +5,8 @@ in `tests/vm/valid`. A checkbox indicates the program compiled and executed
 successfully during tests. The CI environment now installs `gst`, so all
 programs run to completion.  The Smalltalk compiler supports `join` and
 `group by` queries, allowing the examples below to execute as in the reference
-implementations.
+implementations. Dictionary keys now emit Smalltalk symbols to more closely
+match the hand written examples in `tests/human/x/st`.
 
 ## Checklist
 - [x] append_builtin.mochi

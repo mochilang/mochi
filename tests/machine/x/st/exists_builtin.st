@@ -1,4 +1,4 @@
-| flag data |
+| data flag |
 data := {1. 2}.
 flag := exists value: [ | tmp |
   tmp := OrderedCollection new.

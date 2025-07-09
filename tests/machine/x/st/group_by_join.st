@@ -1,6 +1,6 @@
 | customers orders stats s |
-customers := {Dictionary newFrom: {id -> 1. name -> 'Alice'}. Dictionary newFrom: {id -> 2. name -> 'Bob'}}.
-orders := {Dictionary newFrom: {id -> 100. customerId -> 1}. Dictionary newFrom: {id -> 101. customerId -> 1}. Dictionary newFrom: {id -> 102. customerId -> 2}}.
+customers := {Dictionary newFrom:{#id->1. #name->'Alice'}. Dictionary newFrom:{#id->2. #name->'Bob'}}.
+orders := {Dictionary newFrom:{#id->100. #customerId->1}. Dictionary newFrom:{#id->101. #customerId->1}. Dictionary newFrom:{#id->102. #customerId->2}}.
 stats := [ | groups tmp |
   groups := Dictionary new.
   tmp := OrderedCollection new.
@@ -16,7 +16,7 @@ stats := [ | groups tmp |
   groups keysAndValuesDo: [:k :grp |
     | g |
     g := Dictionary newFrom:{#key->k. #items->grp}.
-    tmp add: Dictionary newFrom: {name -> g.key. count -> (g size)}.
+    tmp add: Dictionary newFrom:{#name->g.key. #count->(g size)}.
   ].
   tmp
 ] value.

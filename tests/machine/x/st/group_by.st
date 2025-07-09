@@ -1,5 +1,5 @@
-| people stats s |
-people := {Dictionary newFrom: {name -> 'Alice'. age -> 30. city -> 'Paris'}. Dictionary newFrom: {name -> 'Bob'. age -> 15. city -> 'Hanoi'}. Dictionary newFrom: {name -> 'Charlie'. age -> 65. city -> 'Paris'}. Dictionary newFrom: {name -> 'Diana'. age -> 45. city -> 'Hanoi'}. Dictionary newFrom: {name -> 'Eve'. age -> 70. city -> 'Paris'}. Dictionary newFrom: {name -> 'Frank'. age -> 22. city -> 'Hanoi'}}.
+| stats s people |
+people := {Dictionary newFrom:{#name->'Alice'. #age->30. #city->'Paris'}. Dictionary newFrom:{#name->'Bob'. #age->15. #city->'Hanoi'}. Dictionary newFrom:{#name->'Charlie'. #age->65. #city->'Paris'}. Dictionary newFrom:{#name->'Diana'. #age->45. #city->'Hanoi'}. Dictionary newFrom:{#name->'Eve'. #age->70. #city->'Paris'}. Dictionary newFrom:{#name->'Frank'. #age->22. #city->'Hanoi'}}.
 stats := [ | groups tmp |
   groups := Dictionary new.
   tmp := OrderedCollection new.
@@ -11,7 +11,7 @@ stats := [ | groups tmp |
   groups keysAndValuesDo: [:k :grp |
     | g |
     g := Dictionary newFrom:{#key->k. #items->grp}.
-    tmp add: Dictionary newFrom: {city -> g.key. count -> (g size). avg_age -> avg value: [ | tmp |
+    tmp add: Dictionary newFrom:{#city->g.key. #count->(g size). #avg_age->avg value: [ | tmp |
   tmp := OrderedCollection new.
   g do: [:p |
     tmp add: p.age.

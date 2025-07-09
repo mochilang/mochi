@@ -1,4 +1,4 @@
-| a b |
+| b a |
 a := (10 - 3).
 b := (2 + 2).
 Transcript show: (a) printString; cr.
