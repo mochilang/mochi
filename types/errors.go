@@ -58,6 +58,7 @@ var Errors = map[string]diagnostic.Template{
 	"T037": {Code: "T037", Message: "count() expects list or group, got %s", Help: "Pass a list or group to count()."},
 	"T038": {Code: "T038", Message: "avg() expects numeric list or group, got %s", Help: "Ensure the list or group contains numbers."},
 	"T041": {Code: "T041", Message: "sum() expects numeric list or group, got %s", Help: "Ensure the list or group contains numbers."},
+	"T042": {Code: "T042", Message: "`having` condition must be boolean", Help: "Ensure the condition evaluates to true or false."},
 	"T039": {Code: "T039", Message: "function %s expects %d arguments, got %d", Help: "Pass exactly %d arguments to `%s`."},
 	"T040": {Code: "T040", Message: "`if` condition must be boolean", Help: "Ensure the condition evaluates to true or false."},
 }
@@ -208,6 +209,10 @@ func errJoinSourceList(pos lexer.Position) error {
 
 func errJoinOnBoolean(pos lexer.Position) error {
 	return Errors["T035"].New(pos)
+}
+
+func errHavingBoolean(pos lexer.Position) error {
+	return Errors["T042"].New(pos)
 }
 
 func errLenOperand(pos lexer.Position, typ Type) error {
