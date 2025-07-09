@@ -48,6 +48,7 @@ let list_except a b = List.filter (fun x -> not (List.mem x b)) a
 let list_intersect a b = List.filter (fun x -> List.mem x b) a |> List.sort_uniq compare
 let list_union_all a b = a @ b
 let sum lst = List.fold_left (+) 0 lst
+let join_strings parts sep = String.concat sep parts
 
 let nums = [3;1;4]
 

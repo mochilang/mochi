@@ -48,6 +48,7 @@ let list_except a b = List.filter (fun x -> not (List.mem x b)) a
 let list_intersect a b = List.filter (fun x -> List.mem x b) a |> List.sort_uniq compare
 let list_union_all a b = a @ b
 let sum lst = List.fold_left (+) 0 lst
+let join_strings parts sep = String.concat sep parts
 
 let nation = [[("n_nationkey",Obj.repr 1);("n_name",Obj.repr "BRAZIL")]]
 let customer = [[("c_custkey",Obj.repr 1);("c_name",Obj.repr "Alice");("c_acctbal",Obj.repr 100);("c_nationkey",Obj.repr 1);("c_address",Obj.repr "123 St");("c_phone",Obj.repr "123-456");("c_comment",Obj.repr "Loyal")]]

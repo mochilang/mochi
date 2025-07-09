@@ -48,6 +48,7 @@ let list_except a b = List.filter (fun x -> not (List.mem x b)) a
 let list_intersect a b = List.filter (fun x -> List.mem x b) a |> List.sort_uniq compare
 let list_union_all a b = a @ b
 let sum lst = List.fold_left (+) 0 lst
+let join_strings parts sep = String.concat sep parts
 
 let items = [[("cat",Obj.repr "a");("val",Obj.repr 10);("flag",Obj.repr true)];[("cat",Obj.repr "a");("val",Obj.repr 5);("flag",Obj.repr false)];[("cat",Obj.repr "b");("val",Obj.repr 20);("flag",Obj.repr true)]]
 let result = (let __res0 = ref [] in

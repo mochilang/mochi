@@ -106,11 +106,12 @@ func (c *Compiler) Compile(prog *parser.Program, _ string) ([]byte, error) {
 	c.buf.WriteByte('\n')
 
 	c.writeln("let list_union a b = List.sort_uniq compare (a @ b)")
-	c.writeln("let list_except a b = List.filter (fun x -> not (List.mem x b)) a")
-	c.writeln("let list_intersect a b = List.filter (fun x -> List.mem x b) a |> List.sort_uniq compare")
-	c.writeln("let list_union_all a b = a @ b")
-	c.writeln("let sum lst = List.fold_left (+) 0 lst")
-	c.buf.WriteByte('\n')
+        c.writeln("let list_except a b = List.filter (fun x -> not (List.mem x b)) a")
+        c.writeln("let list_intersect a b = List.filter (fun x -> List.mem x b) a |> List.sort_uniq compare")
+        c.writeln("let list_union_all a b = a @ b")
+        c.writeln("let sum lst = List.fold_left (+) 0 lst")
+       c.writeln("let join_strings parts sep = String.concat sep parts")
+        c.buf.WriteByte('\n')
 
 	// first emit type, function and variable declarations
 	for _, s := range prog.Statements {
@@ -1271,16 +1272,21 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("exists expects 1 arg")
 		}
 		return fmt.Sprintf("(%s <> [])", args[0]), nil
-	case "substring":
-		if len(args) != 3 {
-			return "", fmt.Errorf("substring expects 3 args")
-		}
-		return fmt.Sprintf("String.sub %s %s (%s - %s)", args[0], args[1], args[2], args[1]), nil
-	case "str":
-		if len(args) != 1 {
-			return "", fmt.Errorf("str expects 1 arg")
-		}
-		return fmt.Sprintf("__show (%s)", args[0]), nil
+        case "substring":
+                if len(args) != 3 {
+                        return "", fmt.Errorf("substring expects 3 args")
+                }
+                return fmt.Sprintf("String.sub %s %s (%s - %s)", args[0], args[1], args[2], args[1]), nil
+       case "join":
+               if len(args) != 2 {
+                       return "", fmt.Errorf("join expects 2 args")
+               }
+               return fmt.Sprintf("join_strings %s %s", args[0], args[1]), nil
+        case "str":
+                if len(args) != 1 {
+                        return "", fmt.Errorf("str expects 1 arg")
+                }
+                return fmt.Sprintf("__show (%s)", args[0]), nil
 	default:
 		return fmt.Sprintf("%s %s", call.Func, strings.Join(args, " ")), nil
 	}

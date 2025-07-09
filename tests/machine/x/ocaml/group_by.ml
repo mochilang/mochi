@@ -48,6 +48,7 @@ let list_except a b = List.filter (fun x -> not (List.mem x b)) a
 let list_intersect a b = List.filter (fun x -> List.mem x b) a |> List.sort_uniq compare
 let list_union_all a b = a @ b
 let sum lst = List.fold_left (+) 0 lst
+let join_strings parts sep = String.concat sep parts
 
 let people = [[("name",Obj.repr "Alice");("age",Obj.repr 30);("city",Obj.repr "Paris")];[("name",Obj.repr "Bob");("age",Obj.repr 15);("city",Obj.repr "Hanoi")];[("name",Obj.repr "Charlie");("age",Obj.repr 65);("city",Obj.repr "Paris")];[("name",Obj.repr "Diana");("age",Obj.repr 45);("city",Obj.repr "Hanoi")];[("name",Obj.repr "Eve");("age",Obj.repr 70);("city",Obj.repr "Paris")];[("name",Obj.repr "Frank");("age",Obj.repr 22);("city",Obj.repr "Hanoi")]]
 let stats = (let __res0 = ref [] in

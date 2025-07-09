@@ -75,3 +75,4 @@ runs produce a `.out` file while failures generate a `.error` report.
 ## Remaining Tasks
 - [ ] Implement support for advanced query joins and aggregation.
 - [ ] Add runtime to run compiled programs during tests.
+- [x] Support `join` builtin for concatenating string lists.
