@@ -1,0 +1,10 @@
+--- Cross Join: All order-customer pairs ---
+Order VInt 100 (customerId: VInt 1 , total: $ VInt 250 ) paired with VString "Alice"
+Order VInt 100 (customerId: VInt 1 , total: $ VInt 250 ) paired with VString "Bob"
+Order VInt 100 (customerId: VInt 1 , total: $ VInt 250 ) paired with VString "Charlie"
+Order VInt 101 (customerId: VInt 2 , total: $ VInt 125 ) paired with VString "Alice"
+Order VInt 101 (customerId: VInt 2 , total: $ VInt 125 ) paired with VString "Bob"
+Order VInt 101 (customerId: VInt 2 , total: $ VInt 125 ) paired with VString "Charlie"
+Order VInt 102 (customerId: VInt 1 , total: $ VInt 300 ) paired with VString "Alice"
+Order VInt 102 (customerId: VInt 1 , total: $ VInt 300 ) paired with VString "Bob"
+Order VInt 102 (customerId: VInt 1 , total: $ VInt 300 ) paired with VString "Charlie"
