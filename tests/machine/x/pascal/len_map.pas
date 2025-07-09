@@ -14,5 +14,5 @@ begin
   _tmp0 := specialize TFPGMap<string, integer>.Create;
   _tmp0.AddOrSetData('a', 1);
   _tmp0.AddOrSetData('b', 2);
-  writeln(Length(_tmp0));
+  writeln(_tmp0.Count);
 end.
