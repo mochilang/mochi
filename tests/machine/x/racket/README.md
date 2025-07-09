@@ -1,107 +1,110 @@
-# Generated Racket Code
+# Racket Machine Translations
 
-This directory contains Racket source files compiled from Mochi programs in `tests/vm/valid`.
+This directory contains Racket source code generated from the Mochi programs in `tests/vm/valid` using the Racket compiler. Each program was compiled and executed. Successful runs produced an `.out` file while failures produced an `.error` file.
 
-- **64/97 programs compiled and ran successfully** (have `.out` files)
-- **33 programs failed** to compile or run (have `.error` files)
+Compiled programs: 64/97
 
-## Successful programs
-- append_builtin
-- avg_builtin
-- basic_compare
-- binary_precedence
-- bool_chain
-- break_continue
-- cast_string_to_int
-- closure
-- count_builtin
-- cross_join
-- cross_join_filter
-- cross_join_triple
-- dataset_sort_take_limit
-- dataset_where_filter
-- exists_builtin
-- for_list_collection
-- for_loop
-- for_map_collection
-- fun_call
-- fun_expr_in_let
-- fun_three_args
-- if_else
-- if_then_else
-- in_operator
-- len_builtin
-- len_map
-- len_string
-- let_and_print
-- list_assign
-- list_index
-- list_nested_assign
-- list_set_ops
-- map_assign
-- map_in_operator
-- map_index
-- map_literal_dynamic
-- map_nested_assign
-- math_ops
-- membership
-- min_max_builtin
-- nested_function
-- order_by_map
-- print_hello
-- pure_fold
-- pure_global_fold
-- short_circuit
-- slice
-- sort_stable
-- str_builtin
-- string_compare
-- string_concat
-- string_in_operator
-- string_index
-- string_prefix_slice
-- substring_builtin
-- sum_builtin
-- tail_recursion
-- two-sum
-- typed_let
-- typed_var
-- unary_neg
-- values_builtin
-- var_assignment
-- while_loop
+## Checklist
+- [x] append_builtin
+- [x] avg_builtin
+- [x] basic_compare
+- [x] binary_precedence
+- [x] bool_chain
+- [x] break_continue
+- [x] cast_string_to_int
+- [x] closure
+- [x] count_builtin
+- [x] cross_join
+- [x] cross_join_filter
+- [x] cross_join_triple
+- [x] dataset_sort_take_limit
+- [x] dataset_where_filter
+- [x] exists_builtin
+- [x] for_list_collection
+- [x] for_loop
+- [x] for_map_collection
+- [x] fun_call
+- [x] fun_expr_in_let
+- [x] fun_three_args
+- [x] if_else
+- [x] if_then_else
+- [x] in_operator
+- [x] len_builtin
+- [x] len_map
+- [x] len_string
+- [x] let_and_print
+- [x] list_assign
+- [x] list_index
+- [x] list_nested_assign
+- [x] list_set_ops
+- [x] map_assign
+- [x] map_in_operator
+- [x] map_index
+- [x] map_literal_dynamic
+- [x] map_nested_assign
+- [x] math_ops
+- [x] membership
+- [x] min_max_builtin
+- [x] nested_function
+- [x] order_by_map
+- [x] print_hello
+- [x] pure_fold
+- [x] pure_global_fold
+- [x] short_circuit
+- [x] slice
+- [x] sort_stable
+- [x] str_builtin
+- [x] string_compare
+- [x] string_concat
+- [x] string_in_operator
+- [x] string_index
+- [x] string_prefix_slice
+- [x] substring_builtin
+- [x] sum_builtin
+- [x] tail_recursion
+- [x] two-sum
+- [x] typed_let
+- [x] typed_var
+- [x] unary_neg
+- [x] values_builtin
+- [x] var_assignment
+- [x] while_loop
+- [ ] cast_struct
+- [ ] group_by
+- [ ] group_by_conditional_sum
+- [ ] group_by_having
+- [ ] group_by_join
+- [ ] group_by_left_join
+- [ ] group_by_multi_join
+- [ ] group_by_multi_join_sort
+- [ ] group_by_sort
+- [ ] group_items_iteration
+- [ ] if_then_else_nested
+- [ ] in_operator_extended
+- [ ] inner_join
+- [ ] join_multi
+- [ ] json_builtin
+- [ ] left_join
+- [ ] left_join_multi
+- [ ] load_yaml
+- [ ] map_int_key
+- [ ] map_membership
+- [ ] match_expr
+- [ ] match_full
+- [ ] outer_join
+- [ ] partial_application
+- [ ] query_sum_select
+- [ ] record_assign
+- [ ] right_join
+- [ ] save_jsonl_stdout
+- [ ] string_contains
+- [ ] test_block
+- [ ] tree_sum
+- [ ] update_stmt
+- [ ] user_type_literal
 
-## Failed programs
-- cast_struct
-- group_by
-- group_by_conditional_sum
-- group_by_having
-- group_by_join
-- group_by_left_join
-- group_by_multi_join
-- group_by_multi_join_sort
-- group_by_sort
-- group_items_iteration
-- if_then_else_nested
-- in_operator_extended
-- inner_join
-- join_multi
-- json_builtin
-- left_join
-- left_join_multi
-- load_yaml
-- map_int_key
-- map_membership
-- match_expr
-- match_full
-- outer_join
-- partial_application
-- query_sum_select
-- record_assign
-- right_join
-- save_jsonl_stdout
-- string_contains
-- test_block
-- tree_sum
-- update_stmt
-- user_type_literal
+## TODO
+- [ ] support struct casting and record field assignment
+- [ ] implement query operations (group by, joins, sort, etc.)
+- [ ] handle load/save expressions
+- [ ] implement match expressions and user defined types
