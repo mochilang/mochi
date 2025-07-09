@@ -460,6 +460,11 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, bool, error) {
 		if op == "-" {
 			val = fmt.Sprintf("(-%s)", val)
 			arith = true
+		} else if op == "!" {
+			tmp := c.newTmp()
+			c.writeln(fmt.Sprintf("(%s -> %s = false ; %s = true),", val, tmp, tmp))
+			val = tmp
+			arith = false
 		} else {
 			return "", false, fmt.Errorf("unsupported unary op")
 		}
