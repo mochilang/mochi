@@ -18,10 +18,11 @@ type Compiler struct {
 	funRet          map[string]string
 	types           map[string]*parser.TypeDecl
 	needFuncImports bool
+	tmpCount        int
 }
 
 func New() *Compiler {
-	return &Compiler{buf: new(bytes.Buffer), helpers: make(map[string]bool), vars: make(map[string]string), funRet: make(map[string]string), types: make(map[string]*parser.TypeDecl)}
+	return &Compiler{buf: new(bytes.Buffer), helpers: make(map[string]bool), vars: make(map[string]string), funRet: make(map[string]string), types: make(map[string]*parser.TypeDecl), tmpCount: 0}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -963,6 +964,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileList(p.List)
 	case p.Map != nil:
 		return c.compileMap(p.Map)
+	case p.Match != nil:
+		return c.compileMatchExpr(p.Match)
 	case p.Call != nil:
 		switch p.Call.Func {
 		case "print":
@@ -1162,4 +1165,77 @@ func (c *Compiler) compileExistsQuery(q *parser.QueryExpr) (string, error) {
 		}
 	}
 	return fmt.Sprintf("%s.stream().anyMatch(%s -> %s)", src, q.Var, cond), nil
+}
+
+func isUnderscoreExpr(e *parser.Expr) bool {
+	if e == nil {
+		return false
+	}
+	if len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return false
+	}
+	if p.Target.Selector != nil && p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0 {
+		return true
+	}
+	return false
+}
+
+func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
+	target, err := c.compileExpr(m.Target)
+	if err != nil {
+		return "", err
+	}
+	tmp := fmt.Sprintf("_t%d", c.tmpCount)
+	c.tmpCount++
+	// infer return type of cases
+	retType := "Object"
+	for _, cs := range m.Cases {
+		t := c.inferType(cs.Result)
+		if t == "var" {
+			retType = "Object"
+			break
+		}
+		if retType == "Object" {
+			retType = t
+		} else if retType != t {
+			retType = "Object"
+			break
+		}
+	}
+	c.needFuncImports = true
+	var b strings.Builder
+	b.WriteString(fmt.Sprintf("(new java.util.function.Supplier<%s>(){public %s get(){\n", retType, retType))
+	b.WriteString("\tvar " + tmp + " = " + target + ";\n")
+	for i, cs := range m.Cases {
+		res, err := c.compileExpr(cs.Result)
+		if err != nil {
+			return "", err
+		}
+		if isUnderscoreExpr(cs.Pattern) {
+			b.WriteString("\treturn " + res + ";\n")
+			b.WriteString("}}).get()")
+			return b.String(), nil
+		}
+		pat, err := c.compileExpr(cs.Pattern)
+		if err != nil {
+			return "", err
+		}
+		cond := fmt.Sprintf("Objects.equals(%s, %s)", tmp, pat)
+		if i == 0 {
+			b.WriteString("\tif (" + cond + ") return " + res + ";\n")
+		} else {
+			b.WriteString("\telse if (" + cond + ") return " + res + ";\n")
+		}
+	}
+	b.WriteString("\treturn null;\n")
+	b.WriteString("}}).get()")
+	return b.String(), nil
 }
