@@ -420,7 +420,7 @@ func (c *Compiler) compilePrint(call *parser.CallExpr) error {
 		if err != nil {
 			return err
 		}
-		if isSimpleExpr(arg) {
+		if isSimpleExpr(arg) || types.IsStringType(types.TypeOfExpr(arg, c.env)) {
 			c.writeln(fmt.Sprintf("DISPLAY %s", expr))
 			return nil
 		}
