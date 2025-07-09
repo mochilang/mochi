@@ -497,6 +497,8 @@ func compileAndRun(t *testing.T, src, outDir, name string) {
 	codePath := filepath.Join(outDir, name+".py")
 	os.WriteFile(codePath, code, 0o644)
 	cmd := exec.Command("python3", codePath)
+	root := findRepoRoot(t)
+	cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root)
 	var buf bytes.Buffer
 	cmd.Stdout = &buf
 	cmd.Stderr = &buf

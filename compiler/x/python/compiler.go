@@ -1365,6 +1365,38 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		if len(q.Joins) == 0 {
 			if q.Sort == nil && q.Skip == nil && q.Take == nil {
+				if q.Group == nil && q.Select != nil &&
+					q.Select.Binary != nil && len(q.Select.Binary.Right) == 0 &&
+					q.Select.Binary.Left != nil && len(q.Select.Binary.Left.Ops) == 0 &&
+					q.Select.Binary.Left.Value != nil && q.Select.Binary.Left.Value.Target != nil &&
+					q.Select.Binary.Left.Value.Target.Call != nil {
+					call := q.Select.Binary.Left.Value.Target.Call
+					if len(call.Args) == 1 {
+						fn := call.Func
+						if fn == "sum" || fn == "count" || fn == "avg" || fn == "min" || fn == "max" {
+							argExpr, err := c.compileExpr(call.Args[0])
+							if err != nil {
+								return "", err
+							}
+							items := fmt.Sprintf("[ %s for %s%s ]", argExpr, strings.Join(loops, " for "), cond)
+							switch fn {
+							case "sum":
+								return fmt.Sprintf("sum(%s)", items), nil
+							case "count":
+								return fmt.Sprintf("len(%s)", items), nil
+							case "avg":
+								c.use("_avg")
+								return fmt.Sprintf("_avg(%s)", items), nil
+							case "min":
+								c.use("_min")
+								return fmt.Sprintf("_min(%s)", items), nil
+							case "max":
+								c.use("_max")
+								return fmt.Sprintf("_max(%s)", items), nil
+							}
+						}
+					}
+				}
 				return fmt.Sprintf("[ %s for %s%s ]", sel, strings.Join(loops, " for "), cond), nil
 			}
 

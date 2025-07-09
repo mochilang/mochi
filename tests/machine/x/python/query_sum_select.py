@@ -26,5 +26,5 @@ def _sum(v):
 
 
 nums: list[int] = [1, 2, 3]
-result: float = [_sum(n) for n in nums if (n > 1)]
+result: float = sum([n for n in nums if (n > 1)])
 print(result)
