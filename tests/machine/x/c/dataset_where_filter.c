@@ -17,7 +17,7 @@ static list_peopleItem list_peopleItem_create(int len) {
 }
 
 typedef struct {
-  int name;
+  char *name;
   int age;
   int is_senior;
 } adultsItem;
@@ -55,10 +55,10 @@ int main() {
   printf("%s\n", "--- Adults ---");
   for (int _t5 = 0; _t5 < adults.len; _t5++) {
     adultsItem person = adults.data[_t5];
-    printf("%d ", person.name);
+    printf("%s ", person.name);
     printf("%s ", "is");
     printf("%d ", person.age);
-    printf("%d\n", (person.is_senior ? " (senior)" : ""));
+    printf("%s\n", (person.is_senior ? " (senior)" : ""));
   }
   return 0;
 }
