@@ -742,8 +742,13 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if len(q.Joins) == 1 && len(q.Froms) == 0 && q.Group == nil {
-		if q.Joins[0].Side != nil && *q.Joins[0].Side == "left" {
-			return c.compileLeftJoinSimple(q)
+		if q.Joins[0].Side != nil {
+			switch *q.Joins[0].Side {
+			case "left":
+				return c.compileLeftJoinSimple(q)
+			case "right":
+				return c.compileRightJoinSimple(q)
+			}
 		}
 	}
 	srcs := make([]string, 1+len(q.Froms)+len(q.Joins))
@@ -995,6 +1000,88 @@ func (c *Compiler) compileLeftJoinSimple(q *parser.QueryExpr) (string, error) {
 		}
 		keyA := strings.ReplaceAll(key, q.Var, "a")
 		keyB := strings.ReplaceAll(key, q.Var, "b")
+		b.WriteString("  tmp := tmp asSortedCollection: [:a :b | " + keyA + " < " + keyB + "].\n")
+	}
+
+	if q.Skip != nil || q.Take != nil {
+		start := "1"
+		if q.Skip != nil {
+			sk, err := c.compileExpr(q.Skip)
+			if err != nil {
+				return "", err
+			}
+			start = "(" + sk + ") + 1"
+		}
+		end := "tmp size"
+		if q.Take != nil {
+			tk, err := c.compileExpr(q.Take)
+			if err != nil {
+				return "", err
+			}
+			if q.Skip != nil {
+				end = "(" + start + " - 1 + " + tk + ")"
+			} else {
+				end = tk
+			}
+		}
+		b.WriteString("  tmp := tmp copyFrom: " + start + " to: " + end + ".\n")
+	}
+
+	if q.Distinct {
+		b.WriteString("  tmp := tmp asSet asOrderedCollection.\n")
+	}
+
+	b.WriteString("  tmp\n")
+	b.WriteString("] value")
+	return b.String(), nil
+}
+
+func (c *Compiler) compileRightJoinSimple(q *parser.QueryExpr) (string, error) {
+	j := q.Joins[0]
+	left, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	right, err := c.compileExpr(j.Src)
+	if err != nil {
+		return "", err
+	}
+	onCond, err := c.compileExpr(j.On)
+	if err != nil {
+		return "", err
+	}
+	cond := ""
+	if q.Where != nil {
+		cond, err = c.compileExpr(q.Where)
+		if err != nil {
+			return "", err
+		}
+	}
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		return "", err
+	}
+
+	var b strings.Builder
+	b.WriteString("[ | tmp |\n")
+	b.WriteString("  tmp := OrderedCollection new.\n")
+	b.WriteString(fmt.Sprintf("  %s do: [:%s |\n", right, j.Var))
+	b.WriteString(fmt.Sprintf("    | %s |\n", q.Var))
+	b.WriteString(fmt.Sprintf("    %s := %s detect: [:%s | (%s) ] ifAbsent:[nil].\n", q.Var, left, q.Var, onCond))
+	if cond != "" {
+		b.WriteString(fmt.Sprintf("    (%s) ifTrue: [ tmp add: %s ].\n", cond, sel))
+	} else {
+		b.WriteString(fmt.Sprintf("    tmp add: %s.\n", sel))
+	}
+	b.WriteString("  ].\n")
+
+	if q.Sort != nil {
+		key, err := c.compileExpr(q.Sort)
+		if err != nil {
+			return "", err
+		}
+		keyA := strings.ReplaceAll(key, j.Var, "a")
+		keyB := strings.ReplaceAll(key, j.Var, "b")
 		b.WriteString("  tmp := tmp asSortedCollection: [:a :b | " + keyA + " < " + keyB + "].\n")
 	}
 
