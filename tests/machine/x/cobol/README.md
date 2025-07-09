@@ -1,7 +1,7 @@
-# Mochi to COBOL Machine Translations (19/97 compiled)
+# Mochi to COBOL Machine Translations (24/97 compiled)
 
-- [ ] append_builtin.mochi
-- [ ] avg_builtin.mochi
+- [x] append_builtin.mochi
+- [x] avg_builtin.mochi
 - [x] basic_compare.mochi
 - [x] binary_precedence.mochi
 - [x] bool_chain.mochi
@@ -9,7 +9,7 @@
 - [x] cast_string_to_int.mochi
 - [ ] cast_struct.mochi
 - [ ] closure.mochi
-- [ ] count_builtin.mochi
+- [x] count_builtin.mochi
 - [ ] cross_join.mochi
 - [ ] cross_join_filter.mochi
 - [ ] cross_join_triple.mochi
@@ -41,7 +41,7 @@
 - [ ] json_builtin.mochi
 - [ ] left_join.mochi
 - [ ] left_join_multi.mochi
-- [ ] len_builtin.mochi
+- [x] len_builtin.mochi
 - [ ] len_map.mochi
 - [ ] len_string.mochi
 - [x] let_and_print.mochi
@@ -84,7 +84,7 @@
 - [ ] string_index.mochi
 - [ ] string_prefix_slice.mochi
 - [ ] substring_builtin.mochi
-- [ ] sum_builtin.mochi
+- [x] sum_builtin.mochi
 - [ ] tail_recursion.mochi
 - [ ] test_block.mochi
 - [ ] tree_sum.mochi
