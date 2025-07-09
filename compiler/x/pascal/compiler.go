@@ -367,13 +367,50 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 
 func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	name := sanitizeName(f.Name)
+	var elem types.Type = types.IntType{}
+	if f.RangeEnd != nil {
+		elem = types.IntType{}
+	} else if c.isStringExpr(f.Source) {
+		elem = types.StringType{}
+	} else if c.isMapExpr(f.Source) {
+		if t := types.TypeOfExpr(f.Source, c.env); t != nil {
+			if mt, ok := t.(types.MapType); ok {
+				elem = mt.Key
+			}
+		}
+	} else {
+		if t := types.TypeOfExpr(f.Source, c.env); t != nil {
+			if lt, ok := t.(types.ListType); ok {
+				elem = lt.Elem
+			}
+		}
+	}
+
+	prevEnv := c.env
+	prevVars := c.varTypes
+	if f.Name != "_" {
+		if c.env != nil {
+			child := types.NewEnv(c.env)
+			child.SetVar(f.Name, elem, true)
+			c.env = child
+		}
+		if c.varTypes != nil {
+			c.varTypes[f.Name] = typeString(elem)
+		}
+	}
+	restore := func() {
+		c.env = prevEnv
+		c.varTypes = prevVars
+	}
 	if f.RangeEnd != nil {
 		start, err := c.compileExpr(f.Source)
 		if err != nil {
+			restore()
 			return err
 		}
 		end, err := c.compileExpr(f.RangeEnd)
 		if err != nil {
+			restore()
 			return err
 		}
 		c.writeln(fmt.Sprintf("for %s := %s to %s - 1 do", name, start, end))
@@ -386,6 +423,7 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		}
 		c.indent--
 		c.writeln("end;")
+		restore()
 		return nil
 	}
 
@@ -408,6 +446,7 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		}
 		c.indent--
 		c.writeln("end;")
+		restore()
 		return nil
 	}
 	if c.isMapExpr(f.Source) {
@@ -420,11 +459,13 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		}
 		for _, st := range f.Body {
 			if err := c.compileStmt(st); err != nil {
+				restore()
 				return err
 			}
 		}
 		c.indent--
 		c.writeln("end;")
+		restore()
 		return nil
 	}
 	loopVar := name
@@ -442,6 +483,7 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	}
 	c.indent--
 	c.writeln("end;")
+	restore()
 	return nil
 }
 
