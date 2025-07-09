@@ -383,6 +383,12 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, bool, error) {
 		} else if op.Op == "||" {
 			res = fmt.Sprintf("(%s ; %s)", res, rhs)
 			arith = false
+		} else if op.Op == "in" {
+			tmp := c.newTmp()
+			c.needsContains = true
+			c.writeln(fmt.Sprintf("contains(%s, %s, %s),", rhs, res, tmp))
+			res = tmp
+			arith = false
 		} else {
 			return "", false, fmt.Errorf("unsupported op")
 		}
@@ -440,6 +446,13 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, bool, error) 
 				return "", false, err
 			}
 			i++
+			continue
+		}
+		if op.Cast != nil {
+			val, arith, err = c.compileCast(val, op.Cast)
+			if err != nil {
+				return "", false, err
+			}
 			continue
 		}
 		return "", false, fmt.Errorf("postfix not supported")
@@ -783,4 +796,18 @@ func (c *Compiler) compileMethodCall(container, method string, call *parser.Call
 		return tmp, false, nil
 	}
 	return "", false, fmt.Errorf("unsupported method")
+}
+
+func (c *Compiler) compileCast(val string, cast *parser.CastOp) (string, bool, error) {
+	if cast.Type != nil && cast.Type.Simple != nil {
+		switch *cast.Type.Simple {
+		case "int":
+			tmp := c.newTmp()
+			c.writeln(fmt.Sprintf("number_string(%s, %s),", tmp, val))
+			return tmp, true, nil
+		default:
+			return val, false, nil
+		}
+	}
+	return val, false, nil
 }
