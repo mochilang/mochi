@@ -1,9 +1,0 @@
-Error on line 7: zig build error: exit status 1
-/workspace/mochi/tests/machine/x/zig/dataset_where_filter.zig:7:137: error: expected type 'i32', found '*const [4:0]u8'
-/tmp/zig-0.12.0/lib/std/hash_map.zig:551:38: note: parameter type declared here
-/tmp/zig-0.12.0/lib/std/hash_map.zig:14:13: error: std.auto_hash.autoHash does not allow slices here ([]const u8) because the intent is unclear. Consider using std.StringHashMap for hashing the contents of []const u8. Alternatively, consider using std.auto_hash.hash or providing your own hash function instead.
-/tmp/zig-0.12.0/lib/std/hash_map.zig:55:39: note: called from here
-
-6: pub fn main() void {
-7:     people = &[_]std.AutoHashMap([]const u8, i32){blk0: { var m = std.AutoHashMap(i32, []const u8).init(std.heap.page_allocator); m.put("name", "Alice") catch unreachable; m.put("age", 30) catch unreachable; break :blk0 m; }, blk1: { var m = std.AutoHashMap(i32, []const u8).init(std.heap.page_allocator); m.put("name", "Bob") catch unreachable; m.put("age", 15) catch unreachable; break :blk1 m; }, blk2: { var m = std.AutoHashMap(i32, []const u8).init(std.heap.page_allocator); m.put("name", "Charlie") catch unreachable; m.put("age", 65) catch unreachable; break :blk2 m; }, blk3: { var m = std.AutoHashMap(i32, []const u8).init(std.heap.page_allocator); m.put("name", "Diana") catch unreachable; m.put("age", 45) catch unreachable; break :blk3 m; }};
-8:     adults = blk5: { var _tmp0 = std.ArrayList(std.AutoHashMap([]const u8, i32)).init(std.heap.page_allocator); for (people) |person| { if (!((person.age >= 18))) continue; _tmp0.append(blk4: { var m = std.AutoHashMap(i32, i32).init(std.heap.page_allocator); m.put("name", person.name) catch unreachable; m.put("age", person.age) catch unreachable; m.put("is_senior", (person.age >= 60)) catch unreachable; break :blk4 m; }) catch unreachable; } const _tmp1 = _tmp0.toOwnedSlice() catch unreachable; break :blk5 _tmp1; };

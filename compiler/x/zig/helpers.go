@@ -32,6 +32,13 @@ func zigTypeOf(t types.Type) string {
 		}
 		return fmt.Sprintf("std.AutoHashMap(%s, %s)", zigTypeOf(tt.Key), zigTypeOf(tt.Value))
 	case types.StructType:
+		if tt.Name == "" {
+			fields := make([]string, len(tt.Order))
+			for i, f := range tt.Order {
+				fields[i] = fmt.Sprintf("%s: %s", sanitizeName(f), zigTypeOf(tt.Fields[f]))
+			}
+			return fmt.Sprintf("struct { %s }", strings.Join(fields, " "))
+		}
 		return sanitizeName(tt.Name)
 	case types.FuncType:
 		params := make([]string, len(tt.Params))

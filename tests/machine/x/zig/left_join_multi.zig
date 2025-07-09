@@ -1,15 +1,11 @@
 const std = @import("std");
 
-var customers: []const std.AutoHashMap([]const u8, i32) = undefined;
-var orders: []const std.AutoHashMap([]const u8, i32) = undefined;
-var items: []const std.AutoHashMap([]const u8, i32) = undefined;
-var result: []const std.AutoHashMap([]const u8, i32) = undefined;
+const customers = (blk0: { const _tmp0 = struct { id: i32, name: []const u8, }; const _arr = &[_]_tmp0{_tmp0{ .id = 1, .name = "Alice" }, _tmp0{ .id = 2, .name = "Bob" }}; break :blk0 _arr; });
+const orders = (blk1: { const _tmp1 = struct { id: i32, customerId: i32, }; const _arr = &[_]_tmp1{_tmp1{ .id = 100, .customerId = 1 }, _tmp1{ .id = 101, .customerId = 2 }}; break :blk1 _arr; });
+const items = (blk2: { const _tmp2 = struct { orderId: i32, sku: []const u8, }; const _arr = &[_]_tmp2{_tmp2{ .orderId = 100, .sku = "a" }}; break :blk2 _arr; });
+const result = blk3: { var _tmp3 = std.ArrayList(struct { orderId: i32 name: []const u8 item: struct { orderId: i32 sku: []const u8 } }).init(std.heap.page_allocator); for (orders) |o| { for (customers) |c| { if (!((o.customerId == c.id))) continue; for (items) |i| { if (!((o.id == i.orderId))) continue; _tmp3.append(struct { orderId: i32, name: []const u8, item: struct { orderId: i32 sku: []const u8 }, }{ .orderId = o.id, .name = c.name, .item = i }) catch unreachable; } } } const _tmp4 = _tmp3.toOwnedSlice() catch unreachable; break :blk3 _tmp4; };
 
 pub fn main() void {
-    customers = &[_]std.AutoHashMap([]const u8, i32){blk0: { var m = std.AutoHashMap(i32, i32).init(std.heap.page_allocator); m.put("id", 1) catch unreachable; m.put("name", "Alice") catch unreachable; break :blk0 m; }, blk1: { var m = std.AutoHashMap(i32, i32).init(std.heap.page_allocator); m.put("id", 2) catch unreachable; m.put("name", "Bob") catch unreachable; break :blk1 m; }};
-    orders = &[_]std.AutoHashMap([]const u8, i32){blk2: { var m = std.AutoHashMap(i32, i32).init(std.heap.page_allocator); m.put("id", 100) catch unreachable; m.put("customerId", 1) catch unreachable; break :blk2 m; }, blk3: { var m = std.AutoHashMap(i32, i32).init(std.heap.page_allocator); m.put("id", 101) catch unreachable; m.put("customerId", 2) catch unreachable; break :blk3 m; }};
-    items = &[_]std.AutoHashMap([]const u8, i32){blk4: { var m = std.AutoHashMap(i32, i32).init(std.heap.page_allocator); m.put("orderId", 100) catch unreachable; m.put("sku", "a") catch unreachable; break :blk4 m; }};
-    result = blk6: { var _tmp0 = std.ArrayList(std.AutoHashMap([]const u8, i32)).init(std.heap.page_allocator); for (orders) |o| { for (customers) |c| { if (!((o.customerId == c.id))) continue; for (items) |i| { if (!((o.id == i.orderId))) continue; _tmp0.append(blk5: { var m = std.AutoHashMap(i32, i32).init(std.heap.page_allocator); m.put("orderId", o.id) catch unreachable; m.put("name", c.name) catch unreachable; m.put("item", i) catch unreachable; break :blk5 m; }) catch unreachable; } } } const _tmp1 = _tmp0.toOwnedSlice() catch unreachable; break :blk6 _tmp1; };
     std.debug.print("{s}\n", .{"--- Left Join Multi ---"});
     for (result) |r| {
         std.debug.print("{any} {any} {any}\n", .{r.orderId, r.name, r.item});

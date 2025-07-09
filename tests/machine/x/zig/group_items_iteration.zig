@@ -24,22 +24,18 @@ fn _equal(a: anytype, b: anytype) bool {
     };
 }
 
-var data: []const std.AutoHashMap([]const u8, i32) = undefined;
-var groups: []const i32 = undefined;
-var tmp: []const i32 = undefined;
-var result: []const i32 = undefined;
+const data = (blk0: { const _tmp0 = struct { tag: []const u8, val: i32, }; const _arr = &[_]_tmp0{_tmp0{ .tag = "a", .val = 1 }, _tmp0{ .tag = "a", .val = 2 }, _tmp0{ .tag = "b", .val = 3 }}; break :blk0 _arr; });
+const groups = blk1: { var _tmp1 = std.ArrayList(struct { key: []const u8, Items: std.ArrayList(struct { tag: []const u8 val: i32 }) }).init(std.heap.page_allocator); var _tmp2 = std.AutoHashMap([]const u8, usize).init(std.heap.page_allocator); for (data) |d| { const _tmp3 = d.tag; if (_tmp2.get(_tmp3)) |idx| { _tmp1.items[idx].Items.append(d) catch unreachable; } else { var g = struct { key: []const u8, Items: std.ArrayList(struct { tag: []const u8 val: i32 }) }{ .key = _tmp3, .Items = std.ArrayList(struct { tag: []const u8 val: i32 }).init(std.heap.page_allocator) }; g.Items.append(d) catch unreachable; _tmp1.append(g) catch unreachable; _tmp2.put(_tmp3, _tmp1.items.len - 1) catch unreachable; } } var _tmp4 = std.ArrayList(i32).init(std.heap.page_allocator);for (_tmp1.items) |g| { _tmp4.append(g) catch unreachable; } break :blk1 _tmp4.toOwnedSlice() catch unreachable; };
+var tmp = &[]i32{};
+const result = blk2: { var _tmp5 = std.ArrayList(struct { item: i32, key: i32 }).init(std.heap.page_allocator); for (tmp) |r| { _tmp5.append(.{ .item = r, .key = r.tag }) catch unreachable; } for (0.._tmp5.items.len) |i| { for (i+1.._tmp5.items.len) |j| { if (_tmp5.items[j].key < _tmp5.items[i].key) { const t = _tmp5.items[i]; _tmp5.items[i] = _tmp5.items[j]; _tmp5.items[j] = t; } } } var _tmp6 = std.ArrayList(i32).init(std.heap.page_allocator);for (_tmp5.items) |p| { _tmp6.append(p.item) catch unreachable; } const _tmp7 = _tmp6.toOwnedSlice() catch unreachable; break :blk2 _tmp7; };
 
 pub fn main() void {
-    data = &[_]std.AutoHashMap([]const u8, i32){blk0: { var m = std.AutoHashMap(i32, []const u8).init(std.heap.page_allocator); m.put("tag", "a") catch unreachable; m.put("val", 1) catch unreachable; break :blk0 m; }, blk1: { var m = std.AutoHashMap(i32, []const u8).init(std.heap.page_allocator); m.put("tag", "a") catch unreachable; m.put("val", 2) catch unreachable; break :blk1 m; }, blk2: { var m = std.AutoHashMap(i32, []const u8).init(std.heap.page_allocator); m.put("tag", "b") catch unreachable; m.put("val", 3) catch unreachable; break :blk2 m; }};
-    groups = blk3: { var _tmp0 = std.ArrayList(struct { key: i32, Items: std.ArrayList(std.AutoHashMap([]const u8, i32)) }).init(std.heap.page_allocator); var _tmp1 = std.AutoHashMap(i32, usize).init(std.heap.page_allocator); for (data) |d| { const _tmp2 = d.tag; if (_tmp1.get(_tmp2)) |idx| { _tmp0.items[idx].Items.append(d) catch unreachable; } else { var g = struct { key: i32, Items: std.ArrayList(std.AutoHashMap([]const u8, i32)) }{ .key = _tmp2, .Items = std.ArrayList(std.AutoHashMap([]const u8, i32)).init(std.heap.page_allocator) }; g.Items.append(d) catch unreachable; _tmp0.append(g) catch unreachable; _tmp1.put(_tmp2, _tmp0.items.len - 1) catch unreachable; } } var _tmp3 = std.ArrayList(i32).init(std.heap.page_allocator);for (_tmp0.items) |g| { _tmp3.append(g) catch unreachable; } break :blk3 _tmp3.toOwnedSlice() catch unreachable; };
-    tmp = &[_]i32{};
     for (groups) |g| {
         var total = 0;
         for (g.items) |x| {
             total = (total + x.val);
         }
-        tmp = _append(i32, tmp, blk4: { var m = std.AutoHashMap(i32, i32).init(std.heap.page_allocator); m.put("tag", g.key) catch unreachable; m.put(total, total) catch unreachable; break :blk4 m; });
+        tmp = _append(i32, tmp, struct { tag: i32, total: i32, }{ .tag = g.key, .total = total });
     }
-    result = blk5: { var _tmp4 = std.ArrayList(struct { item: i32, key: i32 }).init(std.heap.page_allocator); for (tmp) |r| { _tmp4.append(.{ .item = r, .key = r.tag }) catch unreachable; } for (0.._tmp4.items.len) |i| { for (i+1.._tmp4.items.len) |j| { if (_tmp4.items[j].key < _tmp4.items[i].key) { const t = _tmp4.items[i]; _tmp4.items[i] = _tmp4.items[j]; _tmp4.items[j] = t; } } } var _tmp5 = std.ArrayList(i32).init(std.heap.page_allocator);for (_tmp4.items) |p| { _tmp5.append(p.item) catch unreachable; } const _tmp6 = _tmp5.toOwnedSlice() catch unreachable; break :blk5 _tmp6; };
     _print_list(i32, result);
 }

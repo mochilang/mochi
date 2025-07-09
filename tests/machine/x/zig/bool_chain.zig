@@ -6,7 +6,7 @@ fn boom() bool {
 }
 
 pub fn main() void {
-    std.debug.print("{any}\n", .{((((1 < 2)) and ((2 < 3))) and ((3 < 4)))});
-    std.debug.print("{any}\n", .{((((1 < 2)) and ((2 > 3))) and boom())});
-    std.debug.print("{any}\n", .{(((((1 < 2)) and ((2 < 3))) and ((3 > 4))) and boom())});
+    std.debug.print("{}\n", .{((((1 < 2)) and ((2 < 3))) and ((3 < 4)))});
+    std.debug.print("{}\n", .{((((1 < 2)) and ((2 > 3))) and boom())});
+    std.debug.print("{}\n", .{(((((1 < 2)) and ((2 < 3))) and ((3 > 4))) and boom())});
 }

@@ -1,7 +1,0 @@
-Error on line 5: zig build error: exit status 1
-/workspace/mochi/tests/machine/x/zig/fun_expr_in_let.zig:5:10: error: no field named 'call' in struct 'fun_expr_in_let.square__struct_3385'
-/workspace/mochi/tests/machine/x/zig/fun_expr_in_let.zig:3:17: note: struct declared here
-
-4:         return (x * x);
-5: } }{  }).call;
-6: pub fn main() void {

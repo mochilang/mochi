@@ -1,8 +1,0 @@
-Error on line 7: zig build error: exit status 1
-/workspace/mochi/tests/machine/x/zig/closure.zig:7:16: error: no field named 'call' in struct 'closure.makeAdder__struct_3386'
-/workspace/mochi/tests/machine/x/zig/closure.zig:5:13: note: struct declared here
-/workspace/mochi/tests/machine/x/zig/closure.zig:3:24: note: called from here
-
-6:         return (x + self.n);
-7: } }{ .n = n }).call;
-8: }

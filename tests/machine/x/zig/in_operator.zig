@@ -5,10 +5,9 @@ fn _contains_list_int(v: []const i32, item: i32) bool {
     return false;
 }
 
-var xs: []const i32 = undefined;
+const xs = &[_]i32{1, 2, 3};
 
 pub fn main() void {
-    xs = &[_]i32{1, 2, 3};
-    std.debug.print("{any}\n", .{_contains_list_int(xs, 2)});
-    std.debug.print("{any}\n", .{!(_contains_list_int(xs, 5))});
+    std.debug.print("{}\n", .{_contains_list_int(xs, 2)});
+    std.debug.print("{}\n", .{!(_contains_list_int(xs, 5))});
 }

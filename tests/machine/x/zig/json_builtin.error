@@ -1,7 +1,0 @@
-Error on line 13: zig build error: exit status 1
-/workspace/mochi/tests/machine/x/zig/json_builtin.zig:13:21: error: local variable shadows declaration of 'm'
-/workspace/mochi/tests/machine/x/zig/json_builtin.zig:10:1: note: declared here
-
-12: pub fn main() void {
-13:     m = blk0: { var m = std.AutoHashMap(i32, i32).init(std.heap.page_allocator); m.put("a", 1) catch unreachable; m.put("b", 2) catch unreachable; break :blk0 m; };
-14:     _json(m);

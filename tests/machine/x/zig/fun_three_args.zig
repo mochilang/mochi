@@ -5,5 +5,5 @@ fn sum3(a: i32, b: i32, c: i32) i32 {
 }
 
 pub fn main() void {
-    std.debug.print("{any}\n", .{sum3(1, 2, 3)});
+    std.debug.print("{d}\n", .{sum3(1, 2, 3)});
 }
