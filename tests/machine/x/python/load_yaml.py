@@ -28,12 +28,13 @@ def _load(path, opts):
             path = base
         elif os.environ.get("MOCHI_ROOT"):
             root = os.environ.get("MOCHI_ROOT")
-            p = os.path.normpath(os.path.join(root, path))
+            clean = path
+            while clean.startswith("../"):
+                clean = clean[3:]
+            p = os.path.join(root, "tests", clean)
             if not os.path.exists(p):
-                p2 = os.path.normpath(os.path.join(root, "tests", path))
-                if os.path.exists(p2):
-                    p = p2
-            path = p
+                p = os.path.join(root, clean)
+            path = os.path.normpath(p)
     f = sys.stdin if path is None or path == "-" else open(path, "r")
     try:
         if fmt == "tsv":
@@ -73,9 +74,35 @@ def _load(path, opts):
         elif fmt == "jsonl":
             return [json.loads(line) for line in f if line.strip()]
         elif fmt == "yaml":
-            import yaml
+            try:
+                import yaml
 
-            data = yaml.safe_load(f)
+                data = yaml.safe_load(f)
+            except Exception:
+                data = []
+                cur = None
+                for line in f:
+                    line = line.rstrip()
+                    if not line:
+                        continue
+                    if line.startswith("- "):
+                        if cur is not None:
+                            data.append(cur)
+                        cur = {}
+                        line = line[2:]
+                    if ":" in line:
+                        k, v = line.split(":", 1)
+                        k = k.strip()
+                        v = v.strip()
+                        if v.isdigit():
+                            cur[k] = int(v)
+                        else:
+                            try:
+                                cur[k] = float(v)
+                            except:
+                                cur[k] = v
+                if cur is not None:
+                    data.append(cur)
             if isinstance(data, list):
                 return [dict(d) for d in data]
             if isinstance(data, dict):
