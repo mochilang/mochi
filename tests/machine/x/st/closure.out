@@ -1,0 +1,9 @@
+Object: BlockClosure new "<0x7f6680817d00>" error: return from a dead method context
+SystemExceptions.BadReturn(Exception)>>signal (ExcHandling.st:254)
+SystemExceptions.BadReturn class(Exception class)>>signal (ExcHandling.st:151)
+BlockClosure(Object)>>badReturnError (Object.st:1389)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/closure.st:3)
+Object: nil error: did not understand #value:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+UndefinedObject(Object)>>doesNotUnderstand: #value: (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/closure.st:4)

@@ -1,0 +1,8 @@
+Object: Association new "<0x7f66808125f0>" error: did not understand #newFrom:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+Association(Object)>>doesNotUnderstand: #newFrom: (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/user_type_literal.st:2)
+Object: nil error: did not understand #at:at:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+UndefinedObject(Object)>>doesNotUnderstand: #at:at: (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/user_type_literal.st:3)

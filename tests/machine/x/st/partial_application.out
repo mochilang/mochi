@@ -1,0 +1,9 @@
+Object: BlockClosure new "<0x7f6680812390>" error: wrong number of arguments
+SystemExceptions.WrongArgumentCount(Exception)>>signal (ExcHandling.st:254)
+SystemExceptions.WrongArgumentCount class(Exception class)>>signal (ExcHandling.st:151)
+BlockClosure>>value: (BlkClosure.st:569)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/partial_application.st:3)
+Object: nil error: did not understand #value:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+UndefinedObject(Object)>>doesNotUnderstand: #value: (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/partial_application.st:4)

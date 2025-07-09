@@ -1,0 +1,10 @@
+Object: Dictionary error: did not understand #newFrom:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+Dictionary class(Object)>>doesNotUnderstand: #newFrom: (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/map_index.st:2)
+Object: nil error: Invalid value nil: object not indexable
+SystemExceptions.NotIndexable(Exception)>>signal (ExcHandling.st:254)
+SystemExceptions.NotIndexable class(SystemExceptions.InvalidValue class)>>signalOn: (SysExcept.st:411)
+UndefinedObject(Object)>>checkIndexableBounds: (Object.st:792)
+UndefinedObject(Object)>>at: (Object.st:858)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/map_index.st:3)

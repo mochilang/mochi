@@ -1,4 +1,4 @@
-| customers orders stats s |
+| s customers orders stats |
 customers := {Dictionary newFrom: {id -> 1. name -> 'Alice'}. Dictionary newFrom: {id -> 2. name -> 'Bob'}. Dictionary newFrom: {id -> 3. name -> 'Charlie'}}.
 orders := {Dictionary newFrom: {id -> 100. customerId -> 1}. Dictionary newFrom: {id -> 101. customerId -> 1}. Dictionary newFrom: {id -> 102. customerId -> 2}}.
 stats := [ | groups tmp |

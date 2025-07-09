@@ -4,10 +4,15 @@ orders := {Dictionary newFrom: {id -> 100. customerId -> 1. total -> 250}. Dicti
 result := [ | tmp |
   tmp := OrderedCollection new.
   orders do: [:o |
-    customers do: [:c |
-      ((o.customerId = c.id)) ifTrue: [
-        tmp add: Dictionary newFrom: {order -> o. customer -> c}.
-      ].
+    | c |
+    c := customers detect: [:c | ((o.customerId = c.id)) ] ifAbsent:[nil].
+    tmp add: Dictionary newFrom: {order -> o. customer -> c}.
+  ].
+  customers do: [:c |
+    (orders anySatisfy: [:o | ((o.customerId = c.id)) ]) ifFalse:[
+      | o |
+      o := nil.
+      tmp add: Dictionary newFrom: {order -> o. customer -> c}.
     ].
   ].
   tmp

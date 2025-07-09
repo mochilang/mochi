@@ -1,4 +1,4 @@
-| big people |
+| people big |
 people := {Dictionary newFrom: {name -> 'Alice'. city -> 'Paris'}. Dictionary newFrom: {name -> 'Bob'. city -> 'Hanoi'}. Dictionary newFrom: {name -> 'Charlie'. city -> 'Paris'}. Dictionary newFrom: {name -> 'Diana'. city -> 'Hanoi'}. Dictionary newFrom: {name -> 'Eve'. city -> 'Paris'}. Dictionary newFrom: {name -> 'Frank'. city -> 'Hanoi'}. Dictionary newFrom: {name -> 'George'. city -> 'Paris'}}.
 big := [ | groups tmp |
   groups := Dictionary new.

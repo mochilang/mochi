@@ -1,0 +1,10 @@
+Object: 1 error: did not understand #%
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+SmallInteger(Object)>>doesNotUnderstand: #% (SysExcept.st:1448)
+optimized [] in UndefinedObject>>executeStatements (../../../tests/machine/x/st/cross_join_filter.st:8)
+Array(SequenceableCollection)>>do: (SeqCollect.st:827)
+optimized [] in UndefinedObject>>executeStatements (../../../tests/machine/x/st/cross_join_filter.st:7)
+Array(SequenceableCollection)>>do: (SeqCollect.st:827)
+optimized [] in UndefinedObject>>executeStatements (../../../tests/machine/x/st/cross_join_filter.st:6)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/cross_join_filter.st:4)
+--- Even pairs ---

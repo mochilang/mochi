@@ -1,0 +1,12 @@
+Object: OrderedCollection new: 16 "<0x7f668082dd70>" error: did not understand #add:newFrom:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+OrderedCollection(Object)>>doesNotUnderstand: #add:newFrom: (SysExcept.st:1448)
+optimized [] in UndefinedObject>>executeStatements (../../../tests/machine/x/st/cross_join_triple.st:10)
+Array(SequenceableCollection)>>do: (SeqCollect.st:827)
+optimized [] in UndefinedObject>>executeStatements (../../../tests/machine/x/st/cross_join_triple.st:9)
+Array(SequenceableCollection)>>do: (SeqCollect.st:827)
+optimized [] in UndefinedObject>>executeStatements (../../../tests/machine/x/st/cross_join_triple.st:8)
+Array(SequenceableCollection)>>do: (SeqCollect.st:827)
+optimized [] in UndefinedObject>>executeStatements (../../../tests/machine/x/st/cross_join_triple.st:7)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/cross_join_triple.st:5)
+--- Cross Join of three lists ---

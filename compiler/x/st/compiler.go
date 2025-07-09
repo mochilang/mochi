@@ -127,37 +127,56 @@ func (c *Compiler) compileStmt(st *parser.Statement) error {
 		c.writeln(fmt.Sprintf("%s := [%s | %s ]", st.Fun.Name, strings.Join(params, " "), body))
 		return nil
 	case st.Let != nil:
-		expr, err := c.compileExpr(st.Let.Value)
-		if err != nil {
-			return err
+		if st.Let.Value != nil {
+			expr, err := c.compileExpr(st.Let.Value)
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("%s := %s", st.Let.Name, expr))
 		}
-		c.writeln(fmt.Sprintf("%s := %s", st.Let.Name, expr))
+		return nil
 	case st.Var != nil:
-		expr, err := c.compileExpr(st.Var.Value)
-		if err != nil {
-			return err
+		if st.Var.Value != nil {
+			expr, err := c.compileExpr(st.Var.Value)
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("%s := %s", st.Var.Name, expr))
 		}
-		c.writeln(fmt.Sprintf("%s := %s", st.Var.Name, expr))
+		return nil
 	case st.Assign != nil:
 		val, err := c.compileExpr(st.Assign.Value)
 		if err != nil {
 			return err
 		}
-		switch {
-		case len(st.Assign.Field) == 1 && len(st.Assign.Index) == 0:
-			fld := st.Assign.Field[0].Name
-			c.writeln(fmt.Sprintf("%s at: '%s' put: %s", st.Assign.Name, fld, val))
-		case len(st.Assign.Index) == 1 && len(st.Assign.Field) == 0:
-			idx, err := c.compileExpr(st.Assign.Index[0].Start)
+		target := st.Assign.Name
+		// build nested access for all but last index/field
+		for i, idx := range st.Assign.Index {
+			if i == len(st.Assign.Index)-1 && len(st.Assign.Field) == 0 {
+				idxStr, err := c.compileExpr(idx.Start)
+				if err != nil {
+					return err
+				}
+				c.writeln(fmt.Sprintf("%s at: %s put: %s", target, idxStr, val))
+				return nil
+			}
+			idxStr, err := c.compileExpr(idx.Start)
 			if err != nil {
 				return err
 			}
-			c.writeln(fmt.Sprintf("%s at: %s put: %s", st.Assign.Name, idx, val))
-		case len(st.Assign.Field) == 0 && len(st.Assign.Index) == 0:
-			c.writeln(fmt.Sprintf("%s := %s", st.Assign.Name, val))
-		default:
-			return fmt.Errorf("complex assignment not supported")
+			target = fmt.Sprintf("%s at: %s", target, idxStr)
 		}
+		for i, f := range st.Assign.Field {
+			if i == len(st.Assign.Field)-1 {
+				c.writeln(fmt.Sprintf("%s at: '%s' put: %s", target, f.Name, val))
+				return nil
+			}
+			target = fmt.Sprintf("%s at: '%s'", target, f.Name)
+		}
+		if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
+			c.writeln(fmt.Sprintf("%s := %s", st.Assign.Name, val))
+		}
+		return nil
 	case st.Expr != nil:
 		// handle print built-in
 		if call := getCall(st.Expr.Expr); call != nil && call.Func == "print" && len(call.Args) == 1 {

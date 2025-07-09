@@ -1,4 +1,4 @@
-| products expensive item |
+| expensive item products |
 products := {Dictionary newFrom: {name -> 'Laptop'. price -> 1500}. Dictionary newFrom: {name -> 'Smartphone'. price -> 900}. Dictionary newFrom: {name -> 'Tablet'. price -> 600}. Dictionary newFrom: {name -> 'Monitor'. price -> 300}. Dictionary newFrom: {name -> 'Keyboard'. price -> 100}. Dictionary newFrom: {name -> 'Mouse'. price -> 50}. Dictionary newFrom: {name -> 'Headphones'. price -> 200}}.
 expensive := [ | tmp |
   tmp := OrderedCollection new.

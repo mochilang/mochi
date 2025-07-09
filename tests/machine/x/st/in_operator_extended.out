@@ -1,0 +1,35 @@
+Object: 1 error: did not understand #%
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+SmallInteger(Object)>>doesNotUnderstand: #% (SysExcept.st:1448)
+optimized [] in UndefinedObject>>executeStatements (../../../tests/machine/x/st/in_operator_extended.st:6)
+Array(SequenceableCollection)>>do: (SeqCollect.st:827)
+optimized [] in UndefinedObject>>executeStatements (../../../tests/machine/x/st/in_operator_extended.st:5)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/in_operator_extended.st:3)
+Object: 1 error: did not understand #in
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+SmallInteger(Object)>>doesNotUnderstand: #in (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/in_operator_extended.st:12)
+Object: 2 error: did not understand #in
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+SmallInteger(Object)>>doesNotUnderstand: #in (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/in_operator_extended.st:13)
+Object: Dictionary error: did not understand #newFrom:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+Dictionary class(Object)>>doesNotUnderstand: #newFrom: (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/in_operator_extended.st:14)
+Object: 'a' error: did not understand #in
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #in (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/in_operator_extended.st:15)
+Object: 'b' error: did not understand #in
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #in (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/in_operator_extended.st:16)
+Object: 'ell' error: did not understand #in
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #in (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/in_operator_extended.st:18)
+Object: 'foo' error: did not understand #in
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #in (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/in_operator_extended.st:19)

@@ -1,0 +1,8 @@
+Object: Dictionary error: did not understand #newFrom:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+Dictionary class(Object)>>doesNotUnderstand: #newFrom: (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/values_builtin.st:2)
+Object: nil error: did not understand #values
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+UndefinedObject(Object)>>doesNotUnderstand: #values (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/values_builtin.st:3)

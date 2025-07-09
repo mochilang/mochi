@@ -1,4 +1,4 @@
-| data groups tmp g total x result |
+| total x result data groups tmp g |
 data := {Dictionary newFrom: {tag -> 'a'. val -> 1}. Dictionary newFrom: {tag -> 'a'. val -> 2}. Dictionary newFrom: {tag -> 'b'. val -> 3}}.
 groups := [ | groups tmp |
   groups := Dictionary new.

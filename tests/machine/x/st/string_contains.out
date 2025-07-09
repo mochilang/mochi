@@ -1,0 +1,8 @@
+Object: 'catch' error: did not understand #at:value:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #at:value: (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/string_contains.st:3)
+Object: 'catch' error: did not understand #at:value:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #at:value: (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/string_contains.st:4)
