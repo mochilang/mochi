@@ -1005,6 +1005,10 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 	if err != nil {
 		return err
 	}
+	ct := c.inferExprType(stmt.Cond)
+	if !isBool(ct) {
+		cond = c.castExpr(cond, ct, types.BoolType{})
+	}
 	c.writeIndent()
 	c.buf.WriteString("if " + cond + " {")
 	c.buf.WriteByte('\n')
@@ -3599,6 +3603,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	switch call.Func {
 	case "print":
 		c.imports["fmt"] = true
+		if len(call.Args) == 1 {
+			if _, ok := c.inferExprType(call.Args[0]).(types.ListType); ok {
+				c.imports["strings"] = true
+				return fmt.Sprintf("fmt.Println(strings.Trim(fmt.Sprint(%s), \"[]\"))", args[0]), nil
+			}
+		}
 		return fmt.Sprintf("fmt.Println(%s)", argStr), nil
 	case "str":
 		c.imports["fmt"] = true

@@ -4,11 +4,12 @@ package main
 
 import (
 	"fmt"
+	"strings"
 )
 
 func main() {
 	var a []int = []int{1, 2}
-	fmt.Println(append(_convSlice[int, any](a), 3))
+	fmt.Println(strings.Trim(fmt.Sprint(append(_convSlice[int, any](a), 3)), "[]"))
 }
 
 func _convSlice[T any, U any](s []T) []U {

@@ -435,3 +435,24 @@ func collectIdents(e *parser.Expr, out map[string]struct{}) {
 		scanPostfix(part.Right)
 	}
 }
+
+func zeroValue(t types.Type) string {
+	switch tt := t.(type) {
+	case types.IntType, types.Int64Type:
+		return "0"
+	case types.FloatType:
+		return "0.0"
+	case types.StringType:
+		return "\"\""
+	case types.BoolType:
+		return "false"
+	case types.ListType:
+		return fmt.Sprintf("[]%s{}", goType(tt.Elem))
+	case types.MapType:
+		return fmt.Sprintf("map[%s]%s{}", goType(tt.Key), goType(tt.Value))
+	case types.StructType:
+		return fmt.Sprintf("%s{}", sanitizeName(tt.Name))
+	default:
+		return "nil"
+	}
+}
