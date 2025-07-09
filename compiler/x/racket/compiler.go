@@ -48,10 +48,14 @@ func indent(ok bool, depth int) string {
 }
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
-	return c.compileStmtWithLabels(s, "", "")
+	return c.compileStmtFull(s, "", "", "")
 }
 
 func (c *Compiler) compileStmtWithLabels(s *parser.Statement, breakLbl, contLbl string) error {
+	return c.compileStmtFull(s, breakLbl, contLbl, "")
+}
+
+func (c *Compiler) compileStmtFull(s *parser.Statement, breakLbl, contLbl, retLbl string) error {
 	switch {
 	case s.Let != nil:
 		name := s.Let.Name
@@ -103,11 +107,15 @@ func (c *Compiler) compileStmtWithLabels(s *parser.Statement, breakLbl, contLbl 
 		if err != nil {
 			return err
 		}
-		c.writeln(val)
+		if retLbl != "" {
+			c.writeln(fmt.Sprintf("(%s %s)", retLbl, val))
+		} else {
+			c.writeln(val)
+		}
 	case s.If != nil:
-		return c.compileIfWithLabels(s.If, breakLbl, contLbl)
+		return c.compileIfWithLabelsFull(s.If, breakLbl, contLbl, retLbl)
 	case s.While != nil:
-		return c.compileWhile(s.While)
+		return c.compileWhileWithLabels(s.While, breakLbl, contLbl, retLbl)
 	case s.Expr != nil:
 		e, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -115,7 +123,7 @@ func (c *Compiler) compileStmtWithLabels(s *parser.Statement, breakLbl, contLbl 
 		}
 		c.writeln(e)
 	case s.For != nil:
-		return c.compileForWithLabels(s.For, breakLbl, contLbl)
+		return c.compileForWithLabelsFull(s.For, breakLbl, contLbl, retLbl)
 	case s.Break != nil:
 		if breakLbl == "" {
 			return fmt.Errorf("unsupported statement")
@@ -438,7 +446,7 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 }
 
 func (c *Compiler) compileFor(f *parser.ForStmt) error {
-	return c.compileForWithLabels(f, "", "")
+	return c.compileForWithLabelsFull(f, "", "", "")
 }
 
 func hasBC(sts []*parser.Statement) bool {
@@ -458,7 +466,7 @@ func hasBC(sts []*parser.Statement) bool {
 	return false
 }
 
-func (c *Compiler) compileForWithLabels(f *parser.ForStmt, breakLbl, contLbl string) error {
+func (c *Compiler) compileForWithLabelsFull(f *parser.ForStmt, breakLbl, contLbl, retLbl string) error {
 	name := f.Name
 	start, err := c.compileExpr(f.Source)
 	if err != nil {
@@ -485,11 +493,11 @@ func (c *Compiler) compileForWithLabels(f *parser.ForStmt, breakLbl, contLbl str
 	}
 	for _, st := range f.Body {
 		if useBC {
-			if err := c.compileStmtWithLabels(st, "break", "continue"); err != nil {
+			if err := c.compileStmtFull(st, "break", "continue", retLbl); err != nil {
 				return err
 			}
 		} else {
-			if err := c.compileStmt(st); err != nil {
+			if err := c.compileStmtFull(st, breakLbl, contLbl, retLbl); err != nil {
 				return err
 			}
 		}
@@ -510,20 +518,25 @@ func (c *Compiler) compileFun(f *parser.FunStmt) error {
 		params[i] = p.Name
 	}
 	c.writeln(fmt.Sprintf("(define (%s %s)", f.Name, strings.Join(params, " ")))
+	c.writeln("  (let/ec return")
 	for _, st := range f.Body {
-		if err := c.compileStmt(st); err != nil {
+		if err := c.compileStmtFull(st, "", "", "return"); err != nil {
 			return err
 		}
 	}
-	c.writeln(")")
+	c.writeln("  ))")
 	return nil
 }
 
 func (c *Compiler) compileIf(st *parser.IfStmt) error {
-	return c.compileIfWithLabels(st, "", "")
+	return c.compileIfWithLabelsFull(st, "", "", "")
 }
 
 func (c *Compiler) compileIfWithLabels(st *parser.IfStmt, breakLbl, contLbl string) error {
+	return c.compileIfWithLabelsFull(st, breakLbl, contLbl, "")
+}
+
+func (c *Compiler) compileIfWithLabelsFull(st *parser.IfStmt, breakLbl, contLbl, retLbl string) error {
 	cond, err := c.compileExpr(st.Cond)
 	if err != nil {
 		return err
@@ -531,19 +544,19 @@ func (c *Compiler) compileIfWithLabels(st *parser.IfStmt, breakLbl, contLbl stri
 	c.writeln(fmt.Sprintf("(if %s", cond))
 	c.writeln("  (begin")
 	for _, s := range st.Then {
-		if err := c.compileStmtWithLabels(s, breakLbl, contLbl); err != nil {
+		if err := c.compileStmtFull(s, breakLbl, contLbl, retLbl); err != nil {
 			return err
 		}
 	}
 	c.writeln("  )")
 	if st.ElseIf != nil {
-		if err := c.compileIfWithLabels(st.ElseIf, breakLbl, contLbl); err != nil {
+		if err := c.compileIfWithLabelsFull(st.ElseIf, breakLbl, contLbl, retLbl); err != nil {
 			return err
 		}
 	} else if len(st.Else) > 0 {
 		c.writeln("  (begin")
 		for _, s := range st.Else {
-			if err := c.compileStmtWithLabels(s, breakLbl, contLbl); err != nil {
+			if err := c.compileStmtFull(s, breakLbl, contLbl, retLbl); err != nil {
 				return err
 			}
 		}
@@ -556,10 +569,10 @@ func (c *Compiler) compileIfWithLabels(st *parser.IfStmt, breakLbl, contLbl stri
 }
 
 func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
-	return c.compileWhileWithLabels(w, "", "")
+	return c.compileWhileWithLabels(w, "", "", "")
 }
 
-func (c *Compiler) compileWhileWithLabels(w *parser.WhileStmt, breakLbl, contLbl string) error {
+func (c *Compiler) compileWhileWithLabels(w *parser.WhileStmt, breakLbl, contLbl, retLbl string) error {
 	cond, err := c.compileExpr(w.Cond)
 	if err != nil {
 		return err
@@ -569,7 +582,7 @@ func (c *Compiler) compileWhileWithLabels(w *parser.WhileStmt, breakLbl, contLbl
 	c.writeln(fmt.Sprintf("    (when %s", cond))
 	c.writeln("      (let/ec continue")
 	for _, st := range w.Body {
-		if err := c.compileStmtWithLabels(st, "break", "continue"); err != nil {
+		if err := c.compileStmtFull(st, "break", "continue", retLbl); err != nil {
 			return err
 		}
 	}

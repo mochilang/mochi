@@ -3,7 +3,7 @@
 (let/ec break
   (for ([n numbers])
     (let/ec continue
-(if (= (remainder n 2) 0)
+(if (equal? (remainder n 2) 0)
   (begin
 (continue)
   )

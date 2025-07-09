@@ -1,0 +1,8 @@
+run: exit status 1
+regexp-match?: contract violation
+  expected: (or/c bytes? string? input-port? path?)
+  given: '#hash(("a" . 1) ("b" . 2))
+  context...:
+   /workspace/mochi/tests/machine/x/racket/map_membership.rkt:3:0
+   body of "/workspace/mochi/tests/machine/x/racket/map_membership.rkt"
+

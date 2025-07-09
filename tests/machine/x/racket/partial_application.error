@@ -1,0 +1,8 @@
+run: exit status 1
+add: arity mismatch;
+ the expected number of arguments does not match the given number
+  expected: 2
+  given: 1
+  context...:
+   body of "/workspace/mochi/tests/machine/x/racket/partial_application.rkt"
+

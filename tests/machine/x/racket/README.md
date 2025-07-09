@@ -1,0 +1,108 @@
+# Generated Racket Code
+
+This directory contains Racket source files compiled from Mochi programs in `tests/vm/valid`.
+
+- **51/97 programs compiled and ran successfully** (have `.out` files)
+- **46 programs failed** to compile or run (have `.error` files)
+
+## Successful programs
+- append_builtin
+- avg_builtin
+- basic_compare
+- binary_precedence
+- bool_chain
+- break_continue
+- cast_string_to_int
+- closure
+- count_builtin
+- for_list_collection
+- for_loop
+- fun_call
+- fun_expr_in_let
+- fun_three_args
+- if_else
+- if_then_else
+- in_operator
+- len_builtin
+- len_string
+- let_and_print
+- list_assign
+- list_index
+- list_nested_assign
+- map_assign
+- map_index
+- map_literal_dynamic
+- math_ops
+- membership
+- min_max_builtin
+- nested_function
+- print_hello
+- pure_fold
+- pure_global_fold
+- short_circuit
+- slice
+- str_builtin
+- string_compare
+- string_concat
+- string_in_operator
+- string_index
+- string_prefix_slice
+- substring_builtin
+- sum_builtin
+- tail_recursion
+- two-sum
+- typed_let
+- typed_var
+- unary_neg
+- values_builtin
+- var_assignment
+- while_loop
+
+## Failed programs
+- cast_struct
+- cross_join
+- cross_join_filter
+- cross_join_triple
+- dataset_sort_take_limit
+- dataset_where_filter
+- exists_builtin
+- for_map_collection
+- group_by
+- group_by_conditional_sum
+- group_by_having
+- group_by_join
+- group_by_left_join
+- group_by_multi_join
+- group_by_multi_join_sort
+- group_by_sort
+- group_items_iteration
+- if_then_else_nested
+- in_operator_extended
+- inner_join
+- join_multi
+- json_builtin
+- left_join
+- left_join_multi
+- len_map
+- list_set_ops
+- load_yaml
+- map_in_operator
+- map_int_key
+- map_membership
+- map_nested_assign
+- match_expr
+- match_full
+- order_by_map
+- outer_join
+- partial_application
+- query_sum_select
+- record_assign
+- right_join
+- save_jsonl_stdout
+- sort_stable
+- string_contains
+- test_block
+- tree_sum
+- update_stmt
+- user_type_literal
+

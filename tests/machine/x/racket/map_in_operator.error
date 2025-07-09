@@ -1,0 +1,7 @@
+run: exit status 1
+member: not a proper list
+  in: '#hash((1 . "a") (2 . "b"))
+  context...:
+   /workspace/mochi/tests/machine/x/racket/map_in_operator.rkt:3:0
+   body of "/workspace/mochi/tests/machine/x/racket/map_in_operator.rkt"
+
