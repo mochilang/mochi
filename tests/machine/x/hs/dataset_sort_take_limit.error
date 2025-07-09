@@ -1,38 +1,42 @@
 
-/workspace/mochi/tests/machine/x/hs/dataset_sort_take_limit.hs:5:1: error:
-    Could not find module ‘Data.Aeson’
-    Perhaps you meant Data.Version (from base-4.17.2.0)
-    Use -v (or `:set -v` in ghci) to see a list of the files searched for.
-  |
-5 | import qualified Data.Aeson as Aeson
-  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/machine/x/hs/dataset_sort_take_limit.hs:181:38: error:
+    • No instance for (Ord AnyValue)
+        arising from a use of ‘List.sortOn’
+    • In the second argument of ‘map’, namely
+        ‘(List.sortOn
+            fst
+            [((- fromMaybe (error "missing") (Map.lookup "price" (p))), p) |
+               p <- products])’
+      In the second argument of ‘drop’, namely
+        ‘(map
+            snd
+            (List.sortOn
+               fst
+               [((- fromMaybe (error "missing") (Map.lookup "price" (p))), p) |
+                  p <- products]))’
+      In the second argument of ‘take’, namely
+        ‘(drop
+            1
+            (map
+               snd
+               (List.sortOn
+                  fst
+                  [((- fromMaybe (error "missing") (Map.lookup "price" (p))), p) |
+                     p <- products])))’
+    |
+181 | expensive = take 3 (drop 1 (map snd (List.sortOn fst [((-fromMaybe (error "missing") (Map.lookup "price" (p))), p) | p <- products])))
+    |                                      ^^^^^^^^^^^
 
-/workspace/mochi/tests/machine/x/hs/dataset_sort_take_limit.hs:6:1: error:
-    Could not find module ‘Data.Aeson.Key’
-    Use -v (or `:set -v` in ghci) to see a list of the files searched for.
-  |
-6 | import qualified Data.Aeson.Key as Key
-  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-/workspace/mochi/tests/machine/x/hs/dataset_sort_take_limit.hs:7:1: error:
-    Could not find module ‘Data.Aeson.KeyMap’
-    Use -v (or `:set -v` in ghci) to see a list of the files searched for.
-  |
-7 | import qualified Data.Aeson.KeyMap as KeyMap
-  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-/workspace/mochi/tests/machine/x/hs/dataset_sort_take_limit.hs:15:1: error:
-    Could not find module ‘Data.Vector’
-    Perhaps you meant Data.Functor (from base-4.17.2.0)
-    Use -v (or `:set -v` in ghci) to see a list of the files searched for.
-   |
-15 | import qualified Data.Vector as V
-   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-
-Context around line 5:
-    3| module Main where
-    4| 
-    5| import qualified Data.Aeson as Aeson
-    6| import qualified Data.Aeson.Key as Key
-    7| import qualified Data.Aeson.KeyMap as KeyMap
+tests/machine/x/hs/dataset_sort_take_limit.hs:181:57: error:
+    • No instance for (Num AnyValue)
+        arising from a use of syntactic negation
+    • In the expression:
+        - fromMaybe (error "missing") (Map.lookup "price" (p))
+      In the expression:
+        ((- fromMaybe (error "missing") (Map.lookup "price" (p))), p)
+      In the second argument of ‘List.sortOn’, namely
+        ‘[((- fromMaybe (error "missing") (Map.lookup "price" (p))), p) |
+            p <- products]’
+    |
+181 | expensive = take 3 (drop 1 (map snd (List.sortOn fst [((-fromMaybe (error "missing") (Map.lookup "price" (p))), p) | p <- products])))
+    |                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

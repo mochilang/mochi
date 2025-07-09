@@ -1,0 +1,9 @@
+--- Cross Join of three lists ---
+VInt 1 VString "A" VBool True
+VInt 1 VString "A" VBool False
+VInt 1 VString "B" VBool True
+VInt 1 VString "B" VBool False
+VInt 2 VString "A" VBool True
+VInt 2 VString "A" VBool False
+VInt 2 VString "B" VBool True
+VInt 2 VString "B" VBool False

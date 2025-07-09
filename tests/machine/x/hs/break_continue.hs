@@ -111,6 +111,6 @@ main = do
         | ((n `mod` 2) == 0) = loop nRest
         | (n > 7) = return ()
         | otherwise = do
-            putStrLn (unwords ["odd number:", show n])
+            putStrLn (unwords ["odd number:", show (n)])
             loop nRest
   loop numbers

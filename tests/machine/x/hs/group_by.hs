@@ -183,4 +183,4 @@ stats = [Map.fromList [("city", VString (key (g))), ("count", VInt (length (item
 main :: IO ()
 main = do
   putStrLn ("--- People grouped by city ---")
-  mapM_ (\s -> putStrLn (unwords [show fromMaybe (error "missing") (Map.lookup "city" s), ": count =", show fromMaybe (error "missing") (Map.lookup "count" s), ", avg_age =", show fromMaybe (error "missing") (Map.lookup "avg_age" s)])) stats
+  mapM_ (\s -> putStrLn (unwords [show (fromMaybe (error "missing") (Map.lookup "city" s)), ": count =", show (fromMaybe (error "missing") (Map.lookup "count" s)), ", avg_age =", show (fromMaybe (error "missing") (Map.lookup "avg_age" s))])) stats

@@ -178,9 +178,9 @@ _save rows path opts =
 
 products = [Map.fromList [("name", VString ("Laptop")), ("price", VInt (1500))], Map.fromList [("name", VString ("Smartphone")), ("price", VInt (900))], Map.fromList [("name", VString ("Tablet")), ("price", VInt (600))], Map.fromList [("name", VString ("Monitor")), ("price", VInt (300))], Map.fromList [("name", VString ("Keyboard")), ("price", VInt (100))], Map.fromList [("name", VString ("Mouse")), ("price", VInt (50))], Map.fromList [("name", VString ("Headphones")), ("price", VInt (200))]]
 
-expensive = take 3 drop 1 map snd (List.sortOn fst [((-fromMaybe (error "missing") (Map.lookup "price" (p))), p) | p <- products])
+expensive = take 3 (drop 1 (map snd (List.sortOn fst [((-fromMaybe (error "missing") (Map.lookup "price" (p))), p) | p <- products])))
 
 main :: IO ()
 main = do
   putStrLn ("--- Top products (excluding most expensive) ---")
-  mapM_ (\item -> putStrLn (unwords [show fromMaybe (error "missing") (Map.lookup "name" item), "costs $", show fromMaybe (error "missing") (Map.lookup "price" item)])) expensive
+  mapM_ (\item -> putStrLn (unwords [show (fromMaybe (error "missing") (Map.lookup "name" item)), "costs $", show (fromMaybe (error "missing") (Map.lookup "price" item))])) expensive

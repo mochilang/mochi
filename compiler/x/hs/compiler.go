@@ -1255,7 +1255,7 @@ type callArgs struct {
 func (c *Compiler) compilePrint(ca callArgs) (string, error) {
 	if len(ca.args) == 1 {
 		arg := ca.args[0]
-		if strings.HasPrefix(arg, "\"") || strings.HasPrefix(arg, "show ") || strings.HasPrefix(arg, "show(") || strings.HasPrefix(arg, "_indexString") || c.isStringExpr(ca.exprs[0]) {
+		if strings.HasPrefix(arg, "\"") || strings.HasPrefix(arg, "show(") || strings.HasPrefix(arg, "show ") || strings.HasPrefix(arg, "show") || strings.HasPrefix(arg, "_indexString") || c.isStringExpr(ca.exprs[0]) {
 			return fmt.Sprintf("putStrLn (%s)", arg), nil
 		}
 		return fmt.Sprintf("print (%s)", arg), nil
