@@ -964,9 +964,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		b.WriteString(" })\n")
 		b.WriteString(fmt.Sprintf("\tgroups = _group_by(rows, fn [%s] -> %s end)\n", allParams, keyExpr))
-		if len(paramCopy) > 1 {
-			b.WriteString(fmt.Sprintf("\tgroups = Enum.map(groups, fn g -> %%{g | items: Enum.map(g.items, fn [%s] -> %s end)} end)\n", allParams, sanitizeName(q.Var)))
-		}
+		// Keep full rows in group items to support nested queries
 		b.WriteString("\titems = groups\n")
 		if sortExpr != "" {
 			b.WriteString(fmt.Sprintf("\titems = Enum.sort_by(items, fn %s -> %s end)\n", sanitizeName(q.Group.Name), sortExpr))
