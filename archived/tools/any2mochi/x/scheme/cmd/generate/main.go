@@ -1,3 +1,5 @@
+//go:build slow
+
 package main
 
 import (
@@ -7,9 +9,9 @@ import (
 	"path/filepath"
 	"strings"
 
+	scheme "mochi/archived/tools/any2mochi/x/scheme"
 	"mochi/parser"
 	vm "mochi/runtime/vm"
-	scheme "mochi/archived/tools/any2mochi/x/scheme"
 	"mochi/types"
 )
 
