@@ -1,6 +1,6 @@
 # Machine-generated Swift Outputs
 
-Compiled programs: 74/97
+Compiled programs: 77/97
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -15,7 +15,7 @@ Compiled programs: 74/97
 - [x] cross_join.mochi
 - [x] cross_join_filter.mochi
 - [x] cross_join_triple.mochi
-- [ ] dataset_sort_take_limit.mochi
+- [x] dataset_sort_take_limit.mochi
 - [x] dataset_where_filter.mochi
 - [x] exists_builtin.mochi
 - [x] for_list_collection.mochi
@@ -65,7 +65,7 @@ Compiled programs: 74/97
 - [x] membership.mochi
 - [x] min_max_builtin.mochi
 - [x] nested_function.mochi
-- [ ] order_by_map.mochi
+- [x] order_by_map.mochi
 - [ ] outer_join.mochi
 - [x] partial_application.mochi
 - [x] print_hello.mochi
@@ -77,7 +77,7 @@ Compiled programs: 74/97
 - [ ] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
 - [x] slice.mochi
-- [ ] sort_stable.mochi
+- [x] sort_stable.mochi
 - [x] str_builtin.mochi
 - [x] string_compare.mochi
 - [x] string_concat.mochi
