@@ -1,0 +1,7 @@
+Error on line 0: kotlinc error: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kt/pure_global_fold.kt:2:14: error: unresolved reference: k
+	return (x + k)
+             ^
+
+1: fun inc(x: Int): Int {

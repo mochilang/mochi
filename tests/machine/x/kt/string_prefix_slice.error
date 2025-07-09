@@ -1,0 +1,2 @@
+Error on line 0: compile error: slices not supported
+1: let prefix = "fore"

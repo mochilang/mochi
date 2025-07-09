@@ -1,0 +1,12 @@
+Error on line 0: kotlinc error: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kt/list_nested_assign.kt:3:2: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <K, V> MutableMap<Int, Int>.set(key: Int, value: Int): Unit defined in kotlin.collections
+@InlineOnly public inline operator fun kotlin.text.StringBuilder /* = java.lang.StringBuilder */.set(index: Int, value: Char): Unit defined in kotlin.text
+	matrix[1][0] = 5
+ ^
+/workspace/mochi/tests/machine/x/kt/list_nested_assign.kt:3:11: error: no set method providing array access
+	matrix[1][0] = 5
+          ^
+
+1: fun main() {
