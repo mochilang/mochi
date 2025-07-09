@@ -499,7 +499,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					continue
 				}
 			}
-			val = fmt.Sprintf("%s->%s", val, sanitizeName(name))
+			if _, ok := t.(types.MapType); ok {
+				val = fmt.Sprintf("%s['%s']", val, name)
+			} else {
+				val = fmt.Sprintf("%s->%s", val, sanitizeName(name))
+			}
 			t = types.AnyType{}
 		case op.Call != nil:
 			if strings.HasSuffix(val, "->contains") && len(op.Call.Args) == 1 {
@@ -736,9 +740,6 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Joins) > 0 {
-		return "", fmt.Errorf("query features not supported")
-	}
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
 		return "", err
@@ -756,6 +757,17 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			child.SetVar(f.Var, types.AnyType{}, true)
 		}
 	}
+	for _, j := range q.Joins {
+		if j.Side != nil && *j.Side != "" {
+			// only inner joins supported for now
+			return "", fmt.Errorf("query join type not supported")
+		}
+		if lt, ok := types.TypeOfExprBasic(j.Src, c.env).(types.ListType); ok {
+			child.SetVar(j.Var, lt.Elem, true)
+		} else {
+			child.SetVar(j.Var, types.AnyType{}, true)
+		}
+	}
 	oldEnv := c.env
 	c.env = child
 	defer func() { c.env = oldEnv }()
@@ -770,23 +782,43 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	buf.WriteString("\n")
 
-	loops := []string{fmt.Sprintf("foreach (%s as $%s)", src, sanitizeName(q.Var))}
+	type loopCond struct{ loop, cond string }
+	loops := []loopCond{{loop: fmt.Sprintf("foreach (%s as $%s)", src, sanitizeName(q.Var))}}
 	for _, f := range q.Froms {
 		s, err := c.compileExpr(f.Src)
 		if err != nil {
 			return "", err
 		}
-		loops = append(loops, fmt.Sprintf("foreach (%s as $%s)", s, sanitizeName(f.Var)))
+		loops = append(loops, loopCond{loop: fmt.Sprintf("foreach (%s as $%s)", s, sanitizeName(f.Var))})
+	}
+	for _, j := range q.Joins {
+		s, err := c.compileExpr(j.Src)
+		if err != nil {
+			return "", err
+		}
+		cond, err := c.compileExpr(j.On)
+		if err != nil {
+			return "", err
+		}
+		loops = append(loops, loopCond{loop: fmt.Sprintf("foreach (%s as $%s)", s, sanitizeName(j.Var)), cond: cond})
 	}
 
 	indent := 1
-	for _, l := range loops {
+	for _, lc := range loops {
 		for i := 0; i < indent; i++ {
 			buf.WriteString("    ")
 		}
-		buf.WriteString(l + " {")
+		buf.WriteString(lc.loop + " {")
 		buf.WriteString("\n")
 		indent++
+		if lc.cond != "" {
+			for i := 0; i < indent; i++ {
+				buf.WriteString("    ")
+			}
+			buf.WriteString("if (" + lc.cond + ") {")
+			buf.WriteString("\n")
+			indent++
+		}
 	}
 
 	if q.Where != nil {
@@ -851,6 +883,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 
 	for i := len(loops) - 1; i >= 0; i-- {
+		lc := loops[i]
+		if lc.cond != "" {
+			indent--
+			for j := 0; j < indent; j++ {
+				buf.WriteString("    ")
+			}
+			buf.WriteString("}")
+			buf.WriteString("\n")
+		}
 		indent--
 		for j := 0; j < indent; j++ {
 			buf.WriteString("    ")

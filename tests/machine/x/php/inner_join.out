@@ -1,0 +1,3 @@
+PHP Warning:  Undefined variable $orders in /workspace/mochi/tests/machine/x/php/inner_join.php on line 6
+PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/inner_join.php on line 6
+string(33) "--- Orders with customer info ---"

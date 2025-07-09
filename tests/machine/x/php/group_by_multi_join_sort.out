@@ -1,0 +1,4 @@
+PHP Warning:  Undefined variable $customer in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 10
+PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 10
+array(0) {
+}
