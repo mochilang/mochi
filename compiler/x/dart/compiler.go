@@ -323,6 +323,7 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 }
 
 func (c *Compiler) compileFor(f *parser.ForStmt) error {
+	origEnv := c.env
 	if f.RangeEnd != nil {
 		start, err := c.compileExpr(f.Source)
 		if err != nil {
@@ -349,6 +350,13 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 			if _, ok := lt.Elem.(types.MapType); ok {
 				c.mapVars[f.Name] = true
 			}
+			child := types.NewEnv(c.env)
+			child.SetVar(f.Name, lt.Elem, true)
+			c.env = child
+		} else {
+			child := types.NewEnv(c.env)
+			child.SetVar(f.Name, types.AnyType{}, true)
+			c.env = child
 		}
 
 		c.writeln(fmt.Sprintf("for (var %s in (%s is Map ? (%s as Map).keys : %s) as Iterable) {", f.Name, iterVar, iterVar, iterVar))
@@ -361,6 +369,7 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	}
 	c.indent--
 	c.writeln("}")
+	c.env = origEnv
 	return nil
 }
 
@@ -710,9 +719,31 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	tmp := fmt.Sprintf("_q%d", c.tmp)
 	c.tmp++
 
-	w := func(s string) {
-		b.WriteString(s)
+	w := func(s string) { b.WriteString(s) }
+
+	origEnv := c.env
+	child := types.NewEnv(c.env)
+	srcType := types.TypeOfExpr(q.Source, c.env)
+	var elemType types.Type = types.AnyType{}
+	if lt, ok := srcType.(types.ListType); ok {
+		elemType = lt.Elem
+		if _, ok := lt.Elem.(types.MapType); ok {
+			c.mapVars[q.Var] = true
+		}
 	}
+	child.SetVar(q.Var, elemType, true)
+	for _, f := range q.Froms {
+		ft := types.TypeOfExpr(f.Src, c.env)
+		var fe types.Type = types.AnyType{}
+		if lt, ok := ft.(types.ListType); ok {
+			fe = lt.Elem
+			if _, ok := lt.Elem.(types.MapType); ok {
+				c.mapVars[f.Var] = true
+			}
+		}
+		child.SetVar(f.Var, fe, true)
+	}
+	c.env = child
 
 	w("(() {\n")
 	w(fmt.Sprintf("  var %s = <dynamic>[];\n", tmp))
@@ -762,6 +793,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		grpVar = q.Group.Name
 		c.groupKeys[grpVar] = keyVar
 		c.mapVars[grpVar] = true
+		child.SetVar(grpVar, types.ListType{Elem: elemType}, true)
 		w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("var %s = %s;\n", keyVar, keyExpr))
 		w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("%s.putIfAbsent(%s, () => <dynamic>[]).add(%s);\n", groups, keyVar, q.Var))
 	} else {
@@ -818,6 +850,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	w(fmt.Sprintf("  return %s;\n", tmp))
 	w("})()")
+	c.env = origEnv
 	return b.String(), nil
 }
 
