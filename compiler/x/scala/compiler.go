@@ -663,6 +663,9 @@ func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
 			}
 			return base
 		case types.GroupType:
+			if len(s.Tail) == 0 {
+				return fmt.Sprintf("%s._2", s.Root)
+			}
 			if len(s.Tail) == 1 {
 				switch s.Tail[0] {
 				case "key":
@@ -697,10 +700,13 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("avg expects 1 arg")
 		}
-		return fmt.Sprintf("%s.sum.toDouble / %s.size", args[0], args[0]), nil
+		return fmt.Sprintf("(%s).sum.toDouble / (%s).size", args[0], args[0]), nil
 	case "count":
 		if len(args) != 1 {
 			return "", fmt.Errorf("count expects 1 arg")
+		}
+		if _, ok := types.ExprType(call.Args[0], c.env).(types.GroupType); ok {
+			return fmt.Sprintf("(%s)._2.size", args[0]), nil
 		}
 		return fmt.Sprintf("%s.size", args[0]), nil
 	case "len":
@@ -929,7 +935,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return names
 		}()...), ", ")
 		tmp := fmt.Sprintf("for { %s } yield (%s, (%s))", strings.Join(parts, "; "), keyExpr, tuple)
-		groups := fmt.Sprintf("(%s).groupBy(_._1).map{ case(k,list) => (k, list.map(_._2)) }", tmp)
+		groups := fmt.Sprintf("(%s).groupBy(_._1).map{ case(k,list) => (k, list.map(_._2)) }.toList", tmp)
 
 		groupEnv := types.NewEnv(c.env)
 		groupEnv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, false)
@@ -941,7 +947,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				c.env = oldEnv
 				return "", err
 			}
-			groups = fmt.Sprintf("(%s).filter{ case(%sKey,%sItems) => { val %s = (%sKey, %sItems); %s } }", groups, q.Group.Name, q.Group.Name, q.Group.Name, q.Group.Name+"Key", q.Group.Name+"Items", cond)
+			groups = fmt.Sprintf("(%s).filter{ case(%s,%s) => { val %s = (%s, %s); %s } }", groups, q.Group.Name+"Key", q.Group.Name+"Items", q.Group.Name, q.Group.Name+"Key", q.Group.Name+"Items", cond)
 		}
 
 		c.env = groupEnv
@@ -950,7 +956,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.env = oldEnv
 			return "", err
 		}
-		expr = fmt.Sprintf("(%s).map{ case(%sKey,%sItems) => { val %s = (%sKey, %sItems); %s } }", groups, q.Group.Name, q.Group.Name, q.Group.Name, q.Group.Name+"Key", q.Group.Name+"Items", sel)
+		expr = fmt.Sprintf("(%s).map{ case(%s,%s) => { val %s = (%s, %s); %s } }.toList", groups, q.Group.Name+"Key", q.Group.Name+"Items", q.Group.Name, q.Group.Name+"Key", q.Group.Name+"Items", sel)
 	} else {
 		sel, err := c.compileExpr(q.Select)
 		if err != nil {
