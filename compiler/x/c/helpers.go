@@ -161,6 +161,28 @@ func isMapStringType(t types.Type) bool {
 	return false
 }
 
+func isMapStringIntType(t types.Type) bool {
+	if mt, ok := t.(types.MapType); ok {
+		if _, ok := mt.Key.(types.StringType); ok {
+			if _, ok2 := mt.Value.(types.IntType); ok2 {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func isMapIntStringType(t types.Type) bool {
+	if mt, ok := t.(types.MapType); ok {
+		if _, ok := mt.Key.(types.IntType); ok {
+			if _, ok2 := mt.Value.(types.StringType); ok2 {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 // defaultCValue returns a zero value literal for the given type.
 func defaultCValue(t types.Type) string {
 	switch t.(type) {
