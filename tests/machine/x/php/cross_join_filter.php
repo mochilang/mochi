@@ -11,7 +11,7 @@ $pairs = (function() {
         }
     }
     return $result;
-})();;
+})();
 var_dump("--- Even pairs ---");
 foreach ($pairs as $p) {
     var_dump($p->n, $p->l);

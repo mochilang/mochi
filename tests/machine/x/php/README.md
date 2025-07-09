@@ -3,7 +3,7 @@
 This directory stores PHP code produced by the compiler tests. Each Mochi program from `tests/vm/valid` is compiled and executed. On success a `.out` file is written. Failures generate a `.error` file.
 
 ## Summary
-74/97 files compiled successfully
+81/97 files compiled successfully
 
 ## Checklist
 - [x] append_builtin.mochi
@@ -21,22 +21,22 @@ This directory stores PHP code produced by the compiler tests. Each Mochi progra
 - [x] cross_join_triple.mochi
 - [x] dataset_sort_take_limit.mochi
 - [x] dataset_where_filter.mochi
-- [ ] exists_builtin.mochi
+- [x] exists_builtin.mochi
 - [x] for_list_collection.mochi
 - [x] for_loop.mochi
 - [x] for_map_collection.mochi
 - [x] fun_call.mochi
 - [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
-- [ ] group_by.mochi
-- [ ] group_by_conditional_sum.mochi
-- [ ] group_by_having.mochi
+- [x] group_by.mochi
+- [x] group_by_conditional_sum.mochi
+- [x] group_by_having.mochi
 - [ ] group_by_join.mochi
 - [ ] group_by_left_join.mochi
 - [ ] group_by_multi_join.mochi
 - [ ] group_by_multi_join_sort.mochi
-- [ ] group_by_sort.mochi
-- [ ] group_items_iteration.mochi
+- [x] group_by_sort.mochi
+- [x] group_items_iteration.mochi
 - [x] if_else.mochi
 - [x] if_then_else.mochi
 - [x] if_then_else_nested.mochi
@@ -63,7 +63,7 @@ This directory stores PHP code produced by the compiler tests. Each Mochi progra
 - [x] map_literal_dynamic.mochi
 - [x] map_membership.mochi
 - [x] map_nested_assign.mochi
-- [ ] match_expr.mochi
+- [x] match_expr.mochi
 - [ ] match_full.mochi
 - [x] math_ops.mochi
 - [x] membership.mochi

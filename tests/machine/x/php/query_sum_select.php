@@ -8,5 +8,5 @@ $result = (function() {
         }
     }
     return $result;
-})();;
+})();
 var_dump($result);

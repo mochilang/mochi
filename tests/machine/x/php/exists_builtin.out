@@ -1,0 +1,3 @@
+PHP Warning:  Undefined variable $data in /workspace/mochi/tests/machine/x/php/exists_builtin.php on line 5
+PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/exists_builtin.php on line 5
+bool(false)

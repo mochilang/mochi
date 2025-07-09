@@ -61,6 +61,25 @@ func (c *Compiler) isMapExpr(e *parser.Expr) bool {
 	return false
 }
 
+func (c *Compiler) isGroupVarExpr(e *parser.Expr) (string, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target.Selector == nil || len(p.Target.Selector.Tail) != 0 {
+		return "", false
+	}
+	name := sanitizeName(p.Target.Selector.Root)
+	if c.groupVars != nil && c.groupVars[name] {
+		return name, true
+	}
+	return "", false
+}
+
 func isStringType(t types.Type) bool {
 	_, ok := t.(types.StringType)
 	return ok

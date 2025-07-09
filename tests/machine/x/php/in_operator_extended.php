@@ -8,7 +8,7 @@ $ys = (function() {
         }
     }
     return $result;
-})();;
+})();
 var_dump(in_array(1, $ys));
 var_dump(in_array(2, $ys));
 $m = [$a => 1];
