@@ -1,13 +1,11 @@
 # F# Machine Output
 
 This directory contains F# source code generated from Mochi programs in `tests/vm/valid`.
-All files were produced using the minimal F# compiler in `compiler/x/fs`.
+Generated with `compiler/x/fs`. Programs that compile successfully have a `.fs` file, and if compilation fails an `.error` file captures the reason.
 
-## Generated Programs (37)
+Compiled programs: 90/97
 
-The following programs were successfully compiled to F#. Runtime execution is not
-performed in this environment, so only the source files are provided.
-
+Checklist:
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -45,7 +43,66 @@ performed in this environment, so only the source files are provided.
 - [x] in_operator
 - [x] in_operator_extended
 - [x] inner_join
+- [x] join_multi
+- [x] json_builtin
+- [x] left_join
+- [x] left_join_multi
+- [x] len_builtin
+- [x] len_map
+- [x] len_string
+- [x] let_and_print
+- [x] list_assign
+- [x] list_index
+- [x] list_nested_assign
+- [x] list_set_ops
+- [ ] load_yaml
+- [x] map_assign
+- [x] map_in_operator
+- [x] map_index
+- [x] map_int_key
+- [x] map_literal_dynamic
+- [x] map_membership
+- [x] map_nested_assign
+- [ ] match_expr
+- [ ] match_full
+- [x] math_ops
+- [x] membership
+- [x] min_max_builtin
+- [x] nested_function
+- [x] order_by_map
+- [x] outer_join
+- [x] partial_application
+- [x] print_hello
+- [x] pure_fold
+- [x] pure_global_fold
+- [x] query_sum_select
+- [x] record_assign
+- [x] right_join
+- [ ] save_jsonl_stdout
+- [x] short_circuit
+- [x] slice
+- [x] sort_stable
+- [x] str_builtin
+- [x] string_compare
+- [x] string_concat
+- [x] string_contains
+- [x] string_in_operator
+- [x] string_index
+- [x] string_prefix_slice
+- [x] substring_builtin
+- [x] sum_builtin
+- [x] tail_recursion
+- [ ] test_block
+- [ ] tree_sum
+- [x] two-sum
+- [x] typed_let
+- [x] typed_var
+- [x] unary_neg
+- [ ] update_stmt
+- [x] user_type_literal
+- [x] values_builtin
+- [x] var_assignment
+- [x] while_loop
 
-## Remaining Work
-
-- Integrate an F# toolchain to compile and execute the generated programs.
+Remaining tasks:
+- [ ] Add F# toolchain to run compiled programs and compare output
