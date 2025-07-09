@@ -394,6 +394,9 @@ func (c *Compiler) compilePrint(call *parser.CallExpr) error {
 }
 
 func (c *Compiler) compileUserCall(call *parser.CallExpr) (string, error) {
+	if call.Func == "str" && len(call.Args) == 1 {
+		return c.compileExpr(call.Args[0])
+	}
 	name := "FN_" + strings.ToUpper(strings.ReplaceAll(call.Func, "-", "_"))
 	args := make([]string, len(call.Args))
 	for i, a := range call.Args {
@@ -582,6 +585,10 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			opStr = "="
 		case "!=":
 			opStr = "<>"
+		case "%":
+			res = fmt.Sprintf("FUNCTION MOD(%s, %s)", res, r)
+			leftType = types.AnyType{}
+			continue
 		}
 		res = fmt.Sprintf("%s %s %s", res, opStr, r)
 		leftType = types.AnyType{}
