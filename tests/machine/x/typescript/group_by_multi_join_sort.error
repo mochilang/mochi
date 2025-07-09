@@ -1,9 +1,0 @@
-line 0: run: exit status 1
-[0m[1m[31merror[0m: Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'l_extendedprice')
-    _tmp1.push((x.l.l_extendedprice * ((1 - x.l.l_discount))));
-[0m[31m                    ^[0m
-    at [0m[36mfile:///workspace/mochi/tests/machine/x/typescript/group_by_multi_join_sort.ts[0m:[0m[33m31[0m:[0m[33m21[0m
-    at [0m[36mfile:///workspace/mochi/tests/machine/x/typescript/group_by_multi_join_sort.ts[0m:[0m[33m35[0m:[0m[33m2[0m
-    at [0m[36mfile:///workspace/mochi/tests/machine/x/typescript/group_by_multi_join_sort.ts[0m:[0m[33m48[0m:[0m[33m2[0m
-
-let nation = [{n_nationkey: 1, n_name: "BRAZIL"}];

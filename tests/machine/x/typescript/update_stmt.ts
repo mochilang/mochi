@@ -10,5 +10,5 @@ for (let i = 0; i < people.length; i++) {
   }
   people[i] = _tmp1;
 }
-if (!((people == [{name: "Alice", age: 17, status: "minor"}, {name: "Bob", age: 26, status: "adult"}, {name: "Charlie", age: 19, status: "adult"}, {name: "Diana", age: 16, status: "minor"}]))) { throw new Error("update adult status failed"); }
+if (!(JSON.stringify(people) === JSON.stringify([{name: "Alice", age: 17, status: "minor"}, {name: "Bob", age: 26, status: "adult"}, {name: "Charlie", age: 19, status: "adult"}, {name: "Diana", age: 16, status: "minor"}]))) { throw new Error("update adult status failed"); }
 console.log("ok");
