@@ -250,6 +250,26 @@ const (
 		"    return out\n" +
 		"end\n"
 
+	helperPrint = "function __print(...)\n" +
+		"    local args = {...}\n" +
+		"    local n = select('#', ...)\n" +
+		"    for i = 1, n do\n" +
+		"        local v = args[i]\n" +
+		"        if v == nil then\n" +
+		"            io.write('<nil>')\n" +
+		"        elseif type(v) == 'table' and (v[1] ~= nil or #v > 0) then\n" +
+		"            for j=1,#v do\n" +
+		"                io.write(tostring(v[j]))\n" +
+		"                if j < #v then io.write(' ') end\n" +
+		"            end\n" +
+		"        else\n" +
+		"            io.write(tostring(v))\n" +
+		"        end\n" +
+		"        if i < n then io.write(' ') end\n" +
+		"    end\n" +
+		"    io.write('\n')\n" +
+		"end\n"
+
 	helperAppend = "function __append(lst, v)\n" +
 		"    local out = {}\n" +
 		"    if lst then for i = 1, #lst do out[#out+1] = lst[i] end end\n" +
@@ -259,8 +279,11 @@ const (
 
 	helperValues = "function __values(m)\n" +
 		"    if type(m) ~= 'table' then error('values() expects map') end\n" +
+		"    local keys = {}\n" +
+		"    for k in pairs(m) do keys[#keys+1] = k end\n" +
+		"    table.sort(keys, function(a,b) return tostring(a)<tostring(b) end)\n" +
 		"    local out = {}\n" +
-		"    for _, v in pairs(m) do out[#out+1] = v end\n" +
+		"    for _, k in ipairs(keys) do out[#out+1] = m[k] end\n" +
 		"    return out\n" +
 		"end\n"
 
@@ -855,6 +878,7 @@ var helperMap = map[string]string{
 	"first":          helperFirst,
 	"concat":         helperConcat,
 	"append":         helperAppend,
+	"print":          helperPrint,
 	"values":         helperValues,
 	"reduce":         helperReduce,
 	"json":           helperJson,

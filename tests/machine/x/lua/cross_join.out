@@ -1,0 +1,10 @@
+--- Cross Join: All order-customer pairs ---
+Order	100	(customerId:	1	, total: $	250	) paired with	Alice
+Order	100	(customerId:	1	, total: $	250	) paired with	Bob
+Order	100	(customerId:	1	, total: $	250	) paired with	Charlie
+Order	101	(customerId:	2	, total: $	125	) paired with	Alice
+Order	101	(customerId:	2	, total: $	125	) paired with	Bob
+Order	101	(customerId:	2	, total: $	125	) paired with	Charlie
+Order	102	(customerId:	1	, total: $	300	) paired with	Alice
+Order	102	(customerId:	1	, total: $	300	) paired with	Bob
+Order	102	(customerId:	1	, total: $	300	) paired with	Charlie
