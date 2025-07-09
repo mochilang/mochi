@@ -14,14 +14,14 @@ function __save(rows, path, opts)
     elseif fmt == 'jsonl' then
         local function enc(v)
             if type(v)=='table' then
-                local parts={}
-                parts[#parts+1]='{'
-                local first=true
-                for k,val in pairs(v) do
-                    if not first then parts[#parts+1]=',' end
-                    first=false
+                local keys={}
+                for k in pairs(v) do keys[#keys+1]=k end
+                table.sort(keys, function(a,b) return tostring(a)<tostring(b) end)
+                local parts={'{'}
+                for i,k in ipairs(keys) do
+                    if i>1 then parts[#parts+1]=',' end
                     parts[#parts+1]=string.format('%q:',k)
-                    parts[#parts+1]=enc(val)
+                    parts[#parts+1]=enc(v[k])
                 end
                 parts[#parts+1]='}'
                 return table.concat(parts)
