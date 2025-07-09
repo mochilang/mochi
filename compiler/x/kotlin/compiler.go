@@ -175,6 +175,10 @@ fun _save(rows: List<Any?>, path: String?, opts: Map<String, Any?>?) {
     if (path != null && path != "-") writer.close()
 }
 
+fun json(v: Any?) {
+    println(toJson(v))
+}
+
 fun toJson(v: Any?): String = when (v) {
     null -> "null"
     is String -> "\"" + v.replace("\"", "\\\"") + "\""
@@ -913,6 +917,12 @@ func (c *Compiler) callExpr(call *parser.CallExpr) (string, error) {
 			return fmt.Sprintf("println(%s)", args[0]), nil
 		}
 		return fmt.Sprintf("println(listOf(%s).joinToString(\" \"))", strings.Join(args, ", ")), nil
+	}
+	if call.Func == "json" {
+		if len(args) == 1 {
+			return fmt.Sprintf("json(%s)", args[0]), nil
+		}
+		return fmt.Sprintf("json(listOf(%s))", strings.Join(args, ", ")), nil
 	}
 	return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ", ")), nil
 }
