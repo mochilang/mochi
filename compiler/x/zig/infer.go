@@ -32,6 +32,25 @@ func (c *Compiler) inferExprType(e *parser.Expr) types.Type {
 					return types.ListType{Elem: elem}
 				}
 				if p.Target.Map != nil {
+					allSimple := true
+					fields := map[string]types.Type{}
+					order := make([]string, len(p.Target.Map.Items))
+					for i, it := range p.Target.Map.Items {
+						if k, ok := identName(it.Key); ok {
+							order[i] = k
+							fields[k] = c.inferExprType(it.Value)
+						} else if str, ok := simpleStringKey(it.Key); ok {
+							order[i] = str
+							fields[str] = c.inferExprType(it.Value)
+						} else {
+							allSimple = false
+							break
+						}
+					}
+					if allSimple {
+						return types.StructType{Fields: fields, Order: order}
+					}
+
 					var key types.Type = types.AnyType{}
 					var val types.Type = types.AnyType{}
 					for i, it := range p.Target.Map.Items {

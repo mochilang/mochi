@@ -16,9 +16,8 @@ fn _print_list(comptime T: type, v: []const T) void {
     std.debug.print("\n", .{});
 }
 
-var a: []const i32 = undefined;
+const a = &[_]i32{1, 2};
 
 pub fn main() void {
-    a = &[_]i32{1, 2};
     _print_list(i32, _append(i32, a, 3));
 }

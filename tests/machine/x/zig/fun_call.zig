@@ -5,5 +5,5 @@ fn add(a: i32, b: i32) i32 {
 }
 
 pub fn main() void {
-    std.debug.print("{any}\n", .{add(2, 3)});
+    std.debug.print("{d}\n", .{add(2, 3)});
 }
