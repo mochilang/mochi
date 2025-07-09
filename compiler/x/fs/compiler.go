@@ -951,13 +951,33 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		}
 		loops = append(loops, fmt.Sprintf("for %s in %s do", fr.Var, s))
 	}
-	var cond string
+	joinConds := []string{}
+	for _, j := range q.Joins {
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			return "", err
+		}
+		loops = append(loops, fmt.Sprintf("for %s in %s do", j.Var, js))
+		on, err := c.compileExpr(j.On)
+		if err != nil {
+			return "", err
+		}
+		joinConds = append(joinConds, on)
+	}
+	condParts := []string{}
+	if len(joinConds) > 0 {
+		condParts = append(condParts, strings.Join(joinConds, " && "))
+	}
 	if q.Where != nil {
 		cnd, err := c.compileExpr(q.Where)
 		if err != nil {
 			return "", err
 		}
-		cond = fmt.Sprintf("if %s then ", cnd)
+		condParts = append(condParts, cnd)
+	}
+	var cond string
+	if len(condParts) > 0 {
+		cond = fmt.Sprintf("if %s then ", strings.Join(condParts, " && "))
 	}
 	sel, err := c.compileExpr(q.Select)
 	if err != nil {
