@@ -1574,7 +1574,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	}
 
 	useHelper := false
-	if q.Group != nil {
+	if q.Group != nil || len(q.Froms) > 0 || len(q.Joins) > 0 {
 		useHelper = true
 	}
 	for _, j := range q.Joins {
