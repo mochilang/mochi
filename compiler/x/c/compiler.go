@@ -860,14 +860,21 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 			}
 		} else if q := stmt.Value.Binary.Left.Value.Target.Query; q != nil {
 			if ml := asMapLiteral(q.Select); ml != nil {
+				prevEnv := c.env
+				if c.env != nil {
+					c.env = c.buildQueryEnv(q)
+				}
 				if st, ok := c.inferStructFromMap(ml, stmt.Name); ok {
 					t = types.ListType{Elem: st}
-					if c.env != nil {
-						c.env.SetStruct(st.Name, st)
+					if prevEnv != nil {
+						prevEnv.SetStruct(st.Name, st)
 					}
 					c.compileStructType(st)
 					c.compileStructListType(st)
 					c.structLits[ml] = st
+				}
+				if c.env != nil {
+					c.env = prevEnv
 				}
 			}
 		}
@@ -1092,6 +1099,30 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 		c.env.SetVar(stmt.Name, t, true)
 	}
 	return nil
+}
+
+// buildQueryEnv constructs a temporary environment with variables bound to the
+// element types of the query sources. It inherits from the current compiler
+// environment so previously defined structs remain available.
+func (c *Compiler) buildQueryEnv(q *parser.QueryExpr) *types.Env {
+	if c.env == nil {
+		return nil
+	}
+	env := types.NewEnv(c.env)
+	if lt, ok := c.exprType(q.Source).(types.ListType); ok {
+		env.SetVar(q.Var, lt.Elem, true)
+	}
+	for _, f := range q.Froms {
+		if lt, ok := c.exprType(f.Src).(types.ListType); ok {
+			env.SetVar(f.Var, lt.Elem, true)
+		}
+	}
+	for _, j := range q.Joins {
+		if lt, ok := c.exprType(j.Src).(types.ListType); ok {
+			env.SetVar(j.Var, lt.Elem, true)
+		}
+	}
+	return env
 }
 
 func (c *Compiler) compileFor(f *parser.ForStmt) error {
