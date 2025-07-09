@@ -22,22 +22,15 @@
       (= fmt "tsv")
         (_save rows path (assoc opts :format "csv" :delimiter "\t"))
       (= fmt "json")
-        (let [out (clojure.data.json/write-str rows)]
+        (let [out (_to_json rows)]
           (if (or (nil? path) (= path "") (= path "-"))
             (print out)
             (spit path out)))
       (= fmt "jsonl")
-        (let [out (clojure.string/join "\n" (map #(clojure.data.json/write-str %) rows))]
+        (let [out (clojure.string/join "\n" (map _to_json rows))]
           (if (or (nil? path) (= path "") (= path "-"))
             (print (str out "\n"))
             (spit path (str out "\n"))))
-      (= fmt "yaml")
-        (let [yaml (org.yaml.snakeyaml.Yaml.)
-              out (.dump yaml (clojure.walk/keywordize-keys
-                             (if (= 1 (count rows)) (first rows) rows)))]
-          (if (or (nil? path) (= path "") (= path "-"))
-            (print out)
-            (spit path out)))
       :else
         nil)) )
 
