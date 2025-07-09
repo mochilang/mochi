@@ -833,6 +833,18 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 					}
 				}
 			}
+		} else if q := stmt.Value.Binary.Left.Value.Target.Query; q != nil {
+			if ml := asMapLiteral(q.Select); ml != nil {
+				if st, ok := c.inferStructFromMap(ml, stmt.Name); ok {
+					t = types.ListType{Elem: st}
+					if c.env != nil {
+						c.env.SetStruct(st.Name, st)
+					}
+					c.compileStructType(st)
+					c.compileStructListType(st)
+					c.structLits[ml] = st
+				}
+			}
 		}
 	}
 	if t == nil {
@@ -898,10 +910,26 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 				c.writeln(formatFuncPtrDecl(typ, name, val))
 			} else {
 				val := c.compileExpr(stmt.Value)
+				if q := stmt.Value.Binary.Left.Value.Target.Query; q != nil {
+					if ml := asMapLiteral(q.Select); ml != nil {
+						if st, ok := c.structLits[ml]; ok {
+							typ = "list_" + sanitizeName(st.Name)
+							t = types.ListType{Elem: st}
+						}
+					}
+				}
 				c.writeln(formatFuncPtrDecl(typ, name, val))
 			}
 		} else {
 			val := c.compileExpr(stmt.Value)
+			if q := stmt.Value.Binary.Left.Value.Target.Query; q != nil {
+				if ml := asMapLiteral(q.Select); ml != nil {
+					if st, ok := c.structLits[ml]; ok {
+						typ = "list_" + sanitizeName(st.Name)
+						t = types.ListType{Elem: st}
+					}
+				}
+			}
 			c.writeln(formatFuncPtrDecl(typ, name, val))
 		}
 	} else {
@@ -1435,6 +1463,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 
 		val := c.compileExpr(q.Select)
 		retT := c.exprType(q.Select)
+		if ml := asMapLiteral(q.Select); ml != nil {
+			if st, ok := c.structLits[ml]; ok {
+				retT = st
+			}
+		}
 		retList := types.ListType{Elem: retT}
 		listC := cTypeFromType(retList)
 		if listC == "list_string" {
@@ -1781,10 +1814,28 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 		takeExpr = "-1"
 	}
 
+	var selStruct types.StructType
+	var hasStruct bool
+	if ml := asMapLiteral(q.Select); ml != nil {
+		if st, ok := c.structLits[ml]; ok {
+			selStruct = st
+			hasStruct = true
+		} else if st, ok2 := c.inferStructFromMap(ml, q.Var); ok2 {
+			c.structLits[ml] = st
+			c.compileStructType(st)
+			c.compileStructListType(st)
+			selStruct = st
+			hasStruct = true
+		}
+	}
+
 	val := c.compileExpr(q.Select)
 	retT := c.exprType(q.Select)
 	retList := types.ListType{Elem: retT}
 	listC := cTypeFromType(retList)
+	if hasStruct {
+		listC = "list_" + sanitizeName(selStruct.Name)
+	}
 	if listC == "" {
 		listC = "list_int"
 	}
