@@ -23,7 +23,8 @@ const (
 		"        end\n" +
 		"        return tostring(v)\n" +
 		"    end\n" +
-		"    for i, a in ipairs(args) do\n" +
+		"    for i=1,n do\n" +
+		"        local a = args[i]\n" +
 		"        if i > 1 then\n" +
 		"            if i == n and (a == '' or a == nil) then\n" +
 		"                -- no extra space before empty last arg\n" +
@@ -584,13 +585,28 @@ const (
 		"        if not ok then error('yaml library not found') end\n" +
 		"        if yaml.dump then data = yaml.dump(rows) else data = yaml.encode(rows) end\n" +
 		"    elseif fmt == 'jsonl' then\n" +
-		"        local ok, json = pcall(require, 'json')\n" +
-		"        if not ok then error('json library not found') end\n" +
-		"        local lines = {}\n" +
-		"        for _, row in ipairs(rows) do\n" +
-		"            table.insert(lines, json.encode(row))\n" +
+		"        local function enc(v)\n" +
+		"            if type(v)=='table' then\n" +
+		"                local parts={}\n" +
+		"                parts[#parts+1]='{'\n" +
+		"                local first=true\n" +
+		"                for k,val in pairs(v) do\n" +
+		"                    if not first then parts[#parts+1]=',' end\n" +
+		"                    first=false\n" +
+		"                    parts[#parts+1]=string.format('%q:',k)\n" +
+		"                    parts[#parts+1]=enc(val)\n" +
+		"                end\n" +
+		"                parts[#parts+1]='}'\n" +
+		"                return table.concat(parts)\n" +
+		"            elseif type(v)=='string' then\n" +
+		"                return string.format('%q',v)\n" +
+		"            else\n" +
+		"                return tostring(v)\n" +
+		"            end\n" +
 		"        end\n" +
-		"        data = table.concat(lines, '\\n')\n" +
+		"        local lines={}\n" +
+		"        for _,row in ipairs(rows) do lines[#lines+1]=enc(row) end\n" +
+		"        data=table.concat(lines,'\\n')\n" +
 		"    elseif fmt == 'csv' then\n" +
 		"        local lines = {}\n" +
 		"        for _, row in ipairs(rows) do\n" +
