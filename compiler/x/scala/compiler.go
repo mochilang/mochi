@@ -227,6 +227,9 @@ func (c *Compiler) compileIf(s *parser.IfStmt) error {
 	if err != nil {
 		return err
 	}
+	if _, ok := types.ExprType(s.Cond, c.env).(types.BoolType); !ok {
+		cond = fmt.Sprintf("(%s).asInstanceOf[Boolean]", cond)
+	}
 	c.writeln(fmt.Sprintf("if (%s) {", cond))
 	c.indent += indentStep
 	for _, st := range s.Then {
@@ -263,6 +266,9 @@ func (c *Compiler) compileIfExpr(e *parser.IfExpr) (string, error) {
 	cond, err := c.compileExpr(e.Cond)
 	if err != nil {
 		return "", err
+	}
+	if _, ok := types.ExprType(e.Cond, c.env).(types.BoolType); !ok {
+		cond = fmt.Sprintf("(%s).asInstanceOf[Boolean]", cond)
 	}
 	thenExpr, err := c.compileExpr(e.Then)
 	if err != nil {
@@ -306,6 +312,9 @@ func (c *Compiler) compileWhile(s *parser.WhileStmt) error {
 	cond, err := c.compileExpr(s.Cond)
 	if err != nil {
 		return err
+	}
+	if _, ok := types.ExprType(s.Cond, c.env).(types.BoolType); !ok {
+		cond = fmt.Sprintf("(%s).asInstanceOf[Boolean]", cond)
 	}
 	c.writeln(fmt.Sprintf("while (%s) {", cond))
 	c.indent += indentStep
@@ -773,7 +782,7 @@ func (c *Compiler) compileMap(m *parser.MapLiteral, mutable bool) (string, error
 		if err != nil {
 			return "", err
 		}
-		items[i] = fmt.Sprintf("%s -> %s", k, v)
+		items[i] = fmt.Sprintf("%s -> (%s)", k, v)
 	}
 	prefix := "Map"
 	if mutable {
