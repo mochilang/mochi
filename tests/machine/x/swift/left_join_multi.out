@@ -1,0 +1,58 @@
+/workspace/mochi/tests/machine/x/swift/left_join_multi.swift:8:25: warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
+ 6 | 	for o in orders {
+ 7 | 		for c in customers {
+ 8 | 			if !(o["customerId"] as! Int == c["id"] as! Int) { continue }
+   |                         `- warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
+ 9 | 			for i in items {
+10 | 				if !(o["id"] as! Int == i["orderId"] as! Int) { continue }
+
+/workspace/mochi/tests/machine/x/swift/left_join_multi.swift:10:18: warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
+ 8 | 			if !(o["customerId"] as! Int == c["id"] as! Int) { continue }
+ 9 | 			for i in items {
+10 | 				if !(o["id"] as! Int == i["orderId"] as! Int) { continue }
+   |                  `- warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
+11 | 				_res.append(["orderId": o["id"] as! Int, "name": c["name"] as! String, "item": i])
+12 | 			}
+
+/workspace/mochi/tests/machine/x/swift/left_join_multi.swift:11:37: warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
+ 9 | 			for i in items {
+10 | 				if !(o["id"] as! Int == i["orderId"] as! Int) { continue }
+11 | 				_res.append(["orderId": o["id"] as! Int, "name": c["name"] as! String, "item": i])
+   |                                     `- warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
+12 | 			}
+13 | 		}
+
+/workspace/mochi/tests/machine/x/swift/left_join_multi.swift:19:11: warning: expression implicitly coerced from 'Any?' to 'Any'
+17 | print("--- Left Join Multi ---")
+18 | for r in result {
+19 |     print(r["orderId"], r["name"], r["item"])
+   |           ||- note: provide a default value to avoid this warning
+   |           ||- note: force-unwrap the value to avoid this warning
+   |           |`- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+   |           `- warning: expression implicitly coerced from 'Any?' to 'Any'
+20 | }
+21 | 
+
+/workspace/mochi/tests/machine/x/swift/left_join_multi.swift:19:25: warning: expression implicitly coerced from 'Any?' to 'Any'
+17 | print("--- Left Join Multi ---")
+18 | for r in result {
+19 |     print(r["orderId"], r["name"], r["item"])
+   |                         ||- note: provide a default value to avoid this warning
+   |                         ||- note: force-unwrap the value to avoid this warning
+   |                         |`- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+   |                         `- warning: expression implicitly coerced from 'Any?' to 'Any'
+20 | }
+21 | 
+
+/workspace/mochi/tests/machine/x/swift/left_join_multi.swift:19:36: warning: expression implicitly coerced from 'Any?' to 'Any'
+17 | print("--- Left Join Multi ---")
+18 | for r in result {
+19 |     print(r["orderId"], r["name"], r["item"])
+   |                                    ||- note: provide a default value to avoid this warning
+   |                                    ||- note: force-unwrap the value to avoid this warning
+   |                                    |`- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+   |                                    `- warning: expression implicitly coerced from 'Any?' to 'Any'
+20 | }
+21 | 
+--- Left Join Multi ---
+Optional(100) Optional("Alice") Optional(["orderId": 100, "sku": "a"])

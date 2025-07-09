@@ -1,0 +1,60 @@
+/workspace/mochi/tests/machine/x/swift/inner_join.swift:7:25: warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
+ 5 | 	for o in orders {
+ 6 | 		for c in customers {
+ 7 | 			if !(o["customerId"] as! Int == c["id"] as! Int) { continue }
+   |                         `- warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
+ 8 | 			_res.append(["orderId": o["id"] as! Int, "customerName": c["name"] as! String, "total": o["total"] as! Int])
+ 9 | 		}
+
+/workspace/mochi/tests/machine/x/swift/inner_join.swift:8:36: warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
+ 6 | 		for c in customers {
+ 7 | 			if !(o["customerId"] as! Int == c["id"] as! Int) { continue }
+ 8 | 			_res.append(["orderId": o["id"] as! Int, "customerName": c["name"] as! String, "total": o["total"] as! Int])
+   |                                    `- warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
+ 9 | 		}
+10 | 	}
+
+/workspace/mochi/tests/machine/x/swift/inner_join.swift:8:103: warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
+ 6 | 		for c in customers {
+ 7 | 			if !(o["customerId"] as! Int == c["id"] as! Int) { continue }
+ 8 | 			_res.append(["orderId": o["id"] as! Int, "customerName": c["name"] as! String, "total": o["total"] as! Int])
+   |                                                                                                       `- warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
+ 9 | 		}
+10 | 	}
+
+/workspace/mochi/tests/machine/x/swift/inner_join.swift:15:20: warning: expression implicitly coerced from 'Any?' to 'Any'
+13 | print("--- Orders with customer info ---")
+14 | for entry in result {
+15 |     print("Order", entry["orderId"], "by", entry["customerName"], "- $", entry["total"])
+   |                    |    |- note: provide a default value to avoid this warning
+   |                    |    |- note: force-unwrap the value to avoid this warning
+   |                    |    `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+   |                    `- warning: expression implicitly coerced from 'Any?' to 'Any'
+16 | }
+17 | 
+
+/workspace/mochi/tests/machine/x/swift/inner_join.swift:15:44: warning: expression implicitly coerced from 'Any?' to 'Any'
+13 | print("--- Orders with customer info ---")
+14 | for entry in result {
+15 |     print("Order", entry["orderId"], "by", entry["customerName"], "- $", entry["total"])
+   |                                            |    |- note: provide a default value to avoid this warning
+   |                                            |    |- note: force-unwrap the value to avoid this warning
+   |                                            |    `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+   |                                            `- warning: expression implicitly coerced from 'Any?' to 'Any'
+16 | }
+17 | 
+
+/workspace/mochi/tests/machine/x/swift/inner_join.swift:15:74: warning: expression implicitly coerced from 'Any?' to 'Any'
+13 | print("--- Orders with customer info ---")
+14 | for entry in result {
+15 |     print("Order", entry["orderId"], "by", entry["customerName"], "- $", entry["total"])
+   |                                                                          |    |- note: provide a default value to avoid this warning
+   |                                                                          |    |- note: force-unwrap the value to avoid this warning
+   |                                                                          |    `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+   |                                                                          `- warning: expression implicitly coerced from 'Any?' to 'Any'
+16 | }
+17 | 
+--- Orders with customer info ---
+Order Optional(100) by Optional("Alice") - $ Optional(250)
+Order Optional(101) by Optional("Bob") - $ Optional(125)
+Order Optional(102) by Optional("Alice") - $ Optional(300)
