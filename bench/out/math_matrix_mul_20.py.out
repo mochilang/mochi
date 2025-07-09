@@ -10,11 +10,11 @@ def matmul(a: list[list[int]], b: list[list[int]]) -> list[list[int]]:
     n = len(a)
     m = len(b[0])
     p = len(b)
-    result = []
+    result: list[list[int]] = []
     for i in range(0, n):
-        row = []
+        row: list[int] = []
         for j in range(0, m):
-            sum = 0
+            sum: typing.Callable[[typing.Any], float] = 0
             for k in range(0, p):
                 sum = sum + (a[i][k] * b[k][j])
             row = row + [sum]
@@ -22,51 +22,28 @@ def matmul(a: list[list[int]], b: list[list[int]]) -> list[list[int]]:
     return result
 
 
-size = 20
-repeat = 10
-a = []
-b = []
-last = []
-start = time.time_ns()
-end = time.time_ns()
-duration = None
-
-
-def main():
-    global size
-    size = 20
-    global repeat
-    repeat = 10
-    global a
-    a = []
-    for i in range(0, size):
-        row = []
-        for j in range(0, size):
-            row = row + [i + j]
-        a = a + [row]
-    global b
-    b = []
-    for i in range(0, size):
-        row = []
-        for j in range(0, size):
-            row = row + [i * j]
-        b = b + [row]
-    global last
-    last = []
-    global start
-    start = time.time_ns()
-    for i in range(0, repeat):
-        last = matmul(a, b)
-    global end
-    end = time.time_ns()
-    global duration
-    duration = int(((end - start)) / 1000)
-    print(
-        json.dumps(
-            {"duration_us": duration, "output": last[0][0]}, default=lambda o: vars(o)
-        )
+size: int = 20
+repeat: int = 10
+a: list[list[int]] = []
+for i in range(0, size):
+    row: list[int] = []
+    for j in range(0, size):
+        row = row + [i + j]
+    a = a + [row]
+b: list[list[int]] = []
+for i in range(0, size):
+    row: list[int] = []
+    for j in range(0, size):
+        row = row + [i * j]
+    b = b + [row]
+last: list[list[int]] = []
+start: int = time.time_ns()
+for i in range(0, repeat):
+    last = matmul(a, b)
+end: int = time.time_ns()
+duration: int = int(((end - start)) / 1000)
+print(
+    json.dumps(
+        {"duration_us": duration, "output": last[0][0]}, default=lambda o: vars(o)
     )
-
-
-if __name__ == "__main__":
-    main()
+)

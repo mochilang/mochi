@@ -1,3 +1,5 @@
+//go:build ignore
+
 package main
 
 import (
@@ -6,6 +8,7 @@ import (
 	"time"
 )
 
+// line 1
 func sum_loop(n int) int {
 	var total int = 0
 	for i := 1; i < n; i++ {

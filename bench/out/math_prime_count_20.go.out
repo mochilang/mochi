@@ -1,3 +1,5 @@
+//go:build ignore
+
 package main
 
 import (
@@ -6,6 +8,7 @@ import (
 	"time"
 )
 
+// line 1
 func is_prime(n int) bool {
 	if n < 2 {
 		return false
