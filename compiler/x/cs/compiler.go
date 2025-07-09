@@ -1,5 +1,3 @@
-//go:build slow
-
 package cscode
 
 import (
