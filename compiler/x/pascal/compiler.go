@@ -61,6 +61,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.writeln(fmt.Sprintf("program %s;", name))
 	c.writeln("{$mode objfpc}")
+	c.writeln("{$modeswitch nestedprocvars}")
 	c.writeln("uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;")
 	c.writeln("")
 	c.writeln("type")
@@ -880,9 +881,9 @@ func (c *Compiler) typeRef(t *parser.TypeRef) string {
 		ret := c.typeRef(t.Fun.Return)
 		var decl string
 		if ret == "" || ret == "void" {
-			decl = fmt.Sprintf("procedure(%s)", strings.Join(declParts, "; "))
+			decl = fmt.Sprintf("procedure(%s) is nested", strings.Join(declParts, "; "))
 		} else {
-			decl = fmt.Sprintf("function(%s): %s", strings.Join(declParts, "; "), ret)
+			decl = fmt.Sprintf("function(%s): %s is nested", strings.Join(declParts, "; "), ret)
 		}
 		for name, d := range c.funcTypes {
 			if d == decl {
@@ -939,9 +940,9 @@ func typeString(t types.Type) string {
 			params[i] = fmt.Sprintf("p%d: %s", i, typeString(p))
 		}
 		if tt.Return == nil || tt.Return == (types.VoidType{}) {
-			return fmt.Sprintf("procedure(%s)", strings.Join(params, "; "))
+			return fmt.Sprintf("procedure(%s) is nested", strings.Join(params, "; "))
 		}
-		return fmt.Sprintf("function(%s): %s", strings.Join(params, "; "), typeString(tt.Return))
+		return fmt.Sprintf("function(%s): %s is nested", strings.Join(params, "; "), typeString(tt.Return))
 	default:
 		return "integer"
 	}
