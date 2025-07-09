@@ -1,0 +1,13 @@
+line: 0
+error: output mismatch
+-- got --
+--- Adults ---
+-263073788 is 30 
+-263073778 is 65  (senior)
+-263073770 is 45
+-- want --
+--- Adults ---
+Alice is 30
+Charlie is 65  (senior)
+Diana is 45
+   1: #include <stdio.h>

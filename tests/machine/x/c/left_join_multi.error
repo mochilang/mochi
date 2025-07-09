@@ -1,0 +1,25 @@
+line: 0
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/left_join_multi.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/left_join_multi.c:104:51: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+  104 |             (resultItem){.orderId = o.id, .name = c.name, .item = i};
+      |                                                   ^
+/workspace/mochi/tests/machine/x/c/left_join_multi.c:104:51: note: (near initialization for ‘(anonymous).name’)
+/workspace/mochi/tests/machine/x/c/left_join_multi.c:104:67: error: incompatible types when initializing type ‘int’ using type ‘itemsItem’
+  104 |             (resultItem){.orderId = o.id, .name = c.name, .item = i};
+      |                                                                   ^
+/workspace/mochi/tests/machine/x/c/left_join_multi.c:108:23: error: invalid initializer
+  108 |         itemsItem i = 0;
+      |                       ^
+/workspace/mochi/tests/machine/x/c/left_join_multi.c:110:51: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+  110 |             (resultItem){.orderId = o.id, .name = c.name, .item = i};
+      |                                                   ^
+/workspace/mochi/tests/machine/x/c/left_join_multi.c:110:51: note: (near initialization for ‘(anonymous).name’)
+/workspace/mochi/tests/machine/x/c/left_join_multi.c:110:67: error: incompatible types when initializing type ‘int’ using type ‘itemsItem’
+  110 |             (resultItem){.orderId = o.id, .name = c.name, .item = i};
+      |                                                                   ^
+/workspace/mochi/tests/machine/x/c/left_join_multi.c:116:28: error: invalid initializer
+  116 |   list_resultItem result = _t4;
+      |                            ^~~
+
+   1: #include <stdio.h>

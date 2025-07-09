@@ -1,0 +1,18 @@
+line: 0
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/substring_builtin.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/substring_builtin.c:15:18: warning: implicit declaration of function ‘substring’ [-Wimplicit-function-declaration]
+   15 |   printf("%s\n", substring("mochi", 1, 4));
+      |                  ^~~~~~~~~
+/workspace/mochi/tests/machine/x/c/substring_builtin.c:15:12: warning: format ‘%s’ expects argument of type ‘char *’, but argument 2 has type ‘int’ [-Wformat=]
+   15 |   printf("%s\n", substring("mochi", 1, 4));
+      |           ~^     ~~~~~~~~~~~~~~~~~~~~~~~~
+      |            |     |
+      |            |     int
+      |            char *
+      |           %d
+/usr/bin/ld: /tmp/ccEyPSE8.o: in function `main':
+substring_builtin.c:(.text+0x6c): undefined reference to `substring'
+collect2: error: ld returned 1 exit status
+
+   1: #include <stdio.h>
