@@ -1,5 +1,23 @@
 # 📦 CHANGELOG.md
 
+## [0.10.20] – 2025-07-09T10:05:52+07:00
+
+### Added
+
+* Cross join support for the C backend with join features in TypeScript, Go and Elixir compilers
+* Refactored Python compiler for idiomatic output
+* Updated machine outputs across languages
+
+### Changed
+
+* Numeric handling improvements and formatting cleanups across backends
+
+### Fixed
+
+* Python group_by_left_join output and Ex join regression
+* Removed outdated error artifacts
+
+
 ## [0.10.19] – 2025-07-08T08:40:55+07:00
 
 ### Added
