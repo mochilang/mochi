@@ -1,4 +1,0 @@
-error: selector not supported at line 2
-   1| let s = "catch"
-   2| print(s.contains("cat"))
-   3| print(s.contains("dog"))
