@@ -349,6 +349,28 @@ func mapValueType(t string) string {
 	return "Object"
 }
 
+func mapKeyType(t string) string {
+	t = strings.TrimSpace(t)
+	if !strings.HasPrefix(t, "Map<") || !strings.HasSuffix(t, ">") {
+		return "Object"
+	}
+	inner := t[4 : len(t)-1]
+	depth := 0
+	for i := 0; i < len(inner); i++ {
+		switch inner[i] {
+		case '<':
+			depth++
+		case '>':
+			depth--
+		case ',':
+			if depth == 0 {
+				return strings.TrimSpace(inner[:i])
+			}
+		}
+	}
+	return "Object"
+}
+
 func listElemType(t string) string {
 	t = strings.TrimSpace(t)
 	if !strings.HasPrefix(t, "List<") || !strings.HasSuffix(t, ">") {
@@ -864,19 +886,39 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		if err != nil {
 			return err
 		}
+		srcType := c.inferType(f.Source)
+		if name, ok := identName(f.Source); ok {
+			if t, ok2 := c.vars[name]; ok2 {
+				srcType = t
+			}
+		}
+		elemType := listElemType(srcType)
+		if elemType == "Object" && srcType == "List<Object>" {
+			elemType = "Map"
+		}
 		if c.exprIsMap(f.Source) {
+			elemType = mapKeyType(srcType)
 			c.writeln(fmt.Sprintf("for (var %s : %s.keySet()) {", f.Name, src))
 		} else {
 			c.writeln(fmt.Sprintf("for (var %s : %s) {", f.Name, src))
 		}
+		oldVars := c.vars
+		c.vars = copyMap(c.vars)
+		if elemType != "" {
+			c.vars[f.Name] = elemType
+		} else {
+			c.vars[f.Name] = "var"
+		}
 		c.indent++
 		for _, s := range f.Body {
 			if err := c.compileStmt(s); err != nil {
+				c.vars = oldVars
 				return err
 			}
 		}
 		c.indent--
 		c.writeln("}")
+		c.vars = oldVars
 		return nil
 	}
 	start, err := c.compileExpr(f.Source)
@@ -1184,6 +1226,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		s := p.Selector.Root
 		typ := c.vars[p.Selector.Root]
 		for _, f := range p.Selector.Tail {
+			if typ == "" || typ == "Object" || typ == "var" {
+				typ = "Map"
+			}
 			if strings.HasPrefix(typ, "Map<") || typ == "Map" {
 				s = fmt.Sprintf("((Map)%s).get(\"%s\")", s, f)
 				typ = mapValueType(typ)
