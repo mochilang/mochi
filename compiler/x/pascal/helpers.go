@@ -74,7 +74,7 @@ func inferQueryType(q *parser.QueryExpr, env *types.Env) types.Type {
 	child.SetVar(q.Var, elem, true)
 	for _, f := range q.Froms {
 		ft := types.TypeOfExprBasic(f.Src, env)
-		fe := types.AnyType{}
+		var fe types.Type = types.AnyType{}
 		if lt, ok := ft.(types.ListType); ok {
 			fe = lt.Elem
 		}
@@ -82,7 +82,7 @@ func inferQueryType(q *parser.QueryExpr, env *types.Env) types.Type {
 	}
 	for _, j := range q.Joins {
 		jt := types.TypeOfExprBasic(j.Src, env)
-		je := types.AnyType{}
+		var je types.Type = types.AnyType{}
 		if lt, ok := jt.(types.ListType); ok {
 			je = lt.Elem
 		}
