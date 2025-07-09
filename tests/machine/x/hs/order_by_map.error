@@ -1,0 +1,14 @@
+
+/workspace/mochi/tests/machine/x/hs/order_by_map.hs:173:6: error:
+    parse error on input ‘=’
+    |
+173 | data = [Map.fromList [("a", 1), ("b", 2)], Map.fromList [("a", 1), ("b", 1)], Map.fromList [("a", 0), ("b", 5)]]
+    |      ^
+
+
+Context around line 173:
+  171| 
+  172| 
+  173| data = [Map.fromList [("a", 1), ("b", 2)], Map.fromList [("a", 1), ("b", 1)], Map.fromList [("a", 0), ("b", 5)]]
+  174| 
+  175| sorted = map snd (List.sortOn fst [ ( Map.fromList [("a", VString (fromMaybe (error "missing") (Map.lookup "a" (x)))), ("b", VString (fromMaybe (error "missing") (Map.lookup "b" (x))))], x ) | x <- data ])

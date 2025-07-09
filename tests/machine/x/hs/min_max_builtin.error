@@ -1,0 +1,64 @@
+
+/workspace/mochi/tests/machine/x/hs/min_max_builtin.hs:105:9: error:
+    • Ambiguous type variable ‘a0’ arising from the literal ‘3’
+      prevents the constraint ‘(Num a0)’ from being solved.
+      Relevant bindings include
+        nums :: [a0]
+          (bound at /workspace/mochi/tests/machine/x/hs/min_max_builtin.hs:105:1)
+      Probable fix: use a type annotation to specify what ‘a0’ should be.
+      Potentially matching instances:
+        instance Num Integer -- Defined in ‘GHC.Num’
+        instance Num Double -- Defined in ‘GHC.Float’
+        ...plus three others
+        ...plus three instances involving out-of-scope types
+        (use -fprint-potential-instances to see them all)
+    • In the expression: 3
+      In the expression: [3, 1, 4]
+      In an equation for ‘nums’: nums = [3, 1, 4]
+    |
+105 | nums = [3, 1, 4]
+    |         ^
+
+/workspace/mochi/tests/machine/x/hs/min_max_builtin.hs:109:3: error:
+    • No instance for (Show ([a0] -> [a0]))
+        arising from a use of ‘print’
+        (maybe you haven't applied a function to enough arguments?)
+    • In a stmt of a 'do' block: print (min nums)
+      In the expression:
+        do print (min nums)
+           print (max nums)
+      In an equation for ‘main’:
+          main
+            = do print (min nums)
+                 print (max nums)
+    |
+109 |   print (min nums)
+    |   ^^^^^
+
+/workspace/mochi/tests/machine/x/hs/min_max_builtin.hs:109:10: error:
+    • Ambiguous type variable ‘a0’ arising from a use of ‘min’
+      prevents the constraint ‘(Ord a0)’ from being solved.
+      Probable fix: use a type annotation to specify what ‘a0’ should be.
+      Potentially matching instances:
+        instance (Ord k, Ord v) => Ord (Map.Map k v)
+          -- Defined in ‘Data.Map.Internal’
+        instance Ord Ordering -- Defined in ‘GHC.Classes’
+        ...plus 25 others
+        ...plus five instances involving out-of-scope types
+        (use -fprint-potential-instances to see them all)
+    • In the first argument of ‘print’, namely ‘(min nums)’
+      In a stmt of a 'do' block: print (min nums)
+      In the expression:
+        do print (min nums)
+           print (max nums)
+    |
+109 |   print (min nums)
+    |          ^^^
+
+
+Context around line 105:
+  103|            in map row (drop start ls)
+  104| 
+  105| nums = [3, 1, 4]
+  106| 
+  107| main :: IO ()
