@@ -23,6 +23,7 @@ type Compiler struct {
 	structs map[string]map[string]string
 	anon    map[string]string
 	anonCnt int
+	useJson bool
 }
 
 func defaultValue(typ string) string {
@@ -63,6 +64,7 @@ func New() *Compiler {
 		vars:    make(map[string]string),
 		structs: make(map[string]map[string]string),
 		anon:    make(map[string]string),
+		useJson: false,
 	}
 }
 
@@ -75,10 +77,13 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.structs = make(map[string]map[string]string)
 	c.anon = make(map[string]string)
 	c.anonCnt = 0
+	c.useJson = false
 
 	var header bytes.Buffer
 	header.WriteString("open System\n")
-	header.WriteString("open System.Text.Json\n")
+	if c.useJson {
+		header.WriteString("open System.Text.Json\n")
+	}
 	header.WriteString("\n")
 	header.WriteString("exception Break\n")
 	header.WriteString("exception Continue\n")
@@ -712,6 +717,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 	case "json":
 		if len(args) == 1 {
+			c.useJson = true
 			return fmt.Sprintf("JsonSerializer.Serialize(%s)", args[0]), nil
 		}
 	case "len":
@@ -802,6 +808,12 @@ func (c *Compiler) compileFunExpr(f *parser.FunExpr) (string, error) {
 func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
 	items := make([]string, len(m.Items))
 	allSimple := true
+
+	fields := make([]string, len(m.Items))
+	names := make([]string, len(m.Items))
+	types := make([]string, len(m.Items))
+	typeMap := make(map[string]string)
+
 	for i, it := range m.Items {
 		if _, ok := c.simpleIdentifier(it.Key); !ok {
 			allSimple = false
@@ -815,19 +827,33 @@ func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
 			return "", err
 		}
 		items[i] = fmt.Sprintf("(%s, %s)", k, v)
-	}
-	if allSimple {
-		fields := make([]string, len(m.Items))
-		for i, it := range m.Items {
-			v, err := c.compileExpr(it.Value)
-			if err != nil {
-				return "", err
-			}
-			name, _ := c.simpleIdentifier(it.Key)
+
+		if name, ok := c.simpleIdentifier(it.Key); ok {
 			fields[i] = fmt.Sprintf("%s = %s", name, v)
+			names[i] = name
+			t := c.inferType(it.Value)
+			types[i] = t
+			typeMap[name] = t
 		}
-		return "{| " + strings.Join(fields, "; ") + " |}", nil
 	}
+
+	if allSimple {
+		key := strings.Join(names, ",") + "|" + strings.Join(types, ",")
+		typ, ok := c.anon[key]
+		if !ok {
+			c.anonCnt++
+			typ = fmt.Sprintf("Anon%d", c.anonCnt)
+			c.anon[key] = typ
+			c.structs[typ] = typeMap
+			c.prelude.WriteString(fmt.Sprintf("type %s = {\n", typ))
+			for i, n := range names {
+				c.prelude.WriteString(fmt.Sprintf("    %s: %s\n", n, types[i]))
+			}
+			c.prelude.WriteString("}\n")
+		}
+		return "{ " + strings.Join(fields, "; ") + " }", nil
+	}
+
 	return "dict [" + strings.Join(items, "; ") + "]", nil
 }
 
