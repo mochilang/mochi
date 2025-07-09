@@ -1061,6 +1061,9 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		selEnv = genv
 	}
 	selType := types.TypeOfExprBasic(q.Select, selEnv)
+	if t := selectorType(q.Select, selEnv); t != nil {
+		selType = t
+	}
 	_ = selType
 	oldEnv := c.env
 	c.env = child
@@ -1385,6 +1388,29 @@ func identName(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+// selectorType returns the type of a simple selector expression if it can be
+// derived from the environment. It returns nil if the expression is not a
+// selector or the type cannot be determined.
+func selectorType(e *parser.Expr, env *types.Env) types.Type {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target.Selector == nil {
+		return nil
+	}
+	sel := p.Target.Selector
+	t, err := env.GetVar(sel.Root)
+	if err != nil {
+		return nil
+	}
+	return fieldType(t, sel.Tail)
 }
 
 func (c *Compiler) writeln(s string) {

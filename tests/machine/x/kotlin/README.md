@@ -104,4 +104,4 @@ Checklist:
 [ ] while_loop
 
 Remaining tasks:
-- Fix group by query list typing
+- Fix group by query list typing (done)
