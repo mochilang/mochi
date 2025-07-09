@@ -6,6 +6,8 @@ This directory contains Go source code generated from Mochi programs and the cor
 
 - 97/97 programs compiled and executed successfully.
 
+Left joins are now generated using explicit loops instead of the generic `_query` helper for clearer output.
+
 
 ### Successful
 - append_builtin
