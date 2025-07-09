@@ -1373,57 +1373,88 @@ func (c *Compiler) compileExistsQuery(q *parser.QueryExpr) (string, error) {
 }
 
 func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
-	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil || q.Distinct {
+	if q.Group != nil || q.Distinct {
 		return "", fmt.Errorf("unsupported query")
 	}
+
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
 		return "", err
 	}
+
 	oldVars := c.vars
 	c.vars = copyMap(c.vars)
 	c.vars[q.Var] = "var"
+	for _, fr := range q.Froms {
+		c.vars[fr.Var] = "var"
+	}
+	for _, j := range q.Joins {
+		if j.Side != nil {
+			return "", fmt.Errorf("join type not supported")
+		}
+		c.vars[j.Var] = "var"
+	}
+
+	resVar := fmt.Sprintf("_res%d", c.tmpCount)
+	c.tmpCount++
+
 	var b strings.Builder
-	b.WriteString(fmt.Sprintf("%s.stream()", src))
+	b.WriteString("(new java.util.function.Supplier<List<Object>>() {public List<Object> get() {\n")
+	b.WriteString(fmt.Sprintf("\tList<Object> %s = new ArrayList<>();\n", resVar))
+	indent := "\t"
+	b.WriteString(fmt.Sprintf("%sfor (var %s : %s) {\n", indent, q.Var, src))
+	indent += "\t"
+	for _, fr := range q.Froms {
+		fs, err := c.compileExpr(fr.Src)
+		if err != nil {
+			c.vars = oldVars
+			return "", err
+		}
+		b.WriteString(fmt.Sprintf("%sfor (var %s : %s) {\n", indent, fr.Var, fs))
+		indent += "\t"
+	}
+	for _, j := range q.Joins {
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			c.vars = oldVars
+			return "", err
+		}
+		b.WriteString(fmt.Sprintf("%sfor (var %s : %s) {\n", indent, j.Var, js))
+		indent += "\t"
+		on, err := c.compileExpr(j.On)
+		if err != nil {
+			c.vars = oldVars
+			return "", err
+		}
+		b.WriteString(fmt.Sprintf("%sif (!(%s)) continue;\n", indent, on))
+	}
 	if q.Where != nil {
 		cond, err := c.compileExpr(q.Where)
 		if err != nil {
 			c.vars = oldVars
 			return "", err
 		}
-		b.WriteString(fmt.Sprintf(".filter(%s -> %s)", q.Var, cond))
-	}
-	if q.Sort != nil {
-		se, err := c.compileExpr(q.Sort)
-		if err != nil {
-			c.vars = oldVars
-			return "", err
-		}
-		b.WriteString(fmt.Sprintf(".sorted(java.util.Comparator.comparing(%s -> %s))", q.Var, se))
-	}
-	if q.Skip != nil {
-		sk, err := c.compileExpr(q.Skip)
-		if err != nil {
-			c.vars = oldVars
-			return "", err
-		}
-		b.WriteString(fmt.Sprintf(".skip(%s)", sk))
-	}
-	if q.Take != nil {
-		tv, err := c.compileExpr(q.Take)
-		if err != nil {
-			c.vars = oldVars
-			return "", err
-		}
-		b.WriteString(fmt.Sprintf(".limit(%s)", tv))
+		b.WriteString(fmt.Sprintf("%sif (!(%s)) continue;\n", indent, cond))
 	}
 	sel, err := c.compileExpr(q.Select)
 	if err != nil {
 		c.vars = oldVars
 		return "", err
 	}
-	b.WriteString(fmt.Sprintf(".map(%s -> %s)", q.Var, sel))
-	b.WriteString(".collect(java.util.stream.Collectors.toList())")
+	b.WriteString(fmt.Sprintf("%s%s.add(%s);\n", indent, resVar, sel))
+	for range q.Joins {
+		indent = indent[:len(indent)-1]
+		b.WriteString(fmt.Sprintf("%s}\n", indent))
+	}
+	for range q.Froms {
+		indent = indent[:len(indent)-1]
+		b.WriteString(fmt.Sprintf("%s}\n", indent))
+	}
+	indent = indent[:len(indent)-1]
+	b.WriteString(fmt.Sprintf("%s}\n", indent))
+	b.WriteString(fmt.Sprintf("\treturn %s;\n", resVar))
+	b.WriteString("}}).get()")
+
 	c.vars = oldVars
 	return b.String(), nil
 }
