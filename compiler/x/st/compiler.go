@@ -185,6 +185,12 @@ func (c *Compiler) compileStmt(st *parser.Statement) error {
 		return c.compileBreak()
 	case st.Continue != nil:
 		return c.compileContinue()
+	case st.Test != nil:
+		return c.compileTestBlock(st.Test)
+	case st.Expect != nil:
+		return c.compileExpect(st.Expect)
+	case st.Update != nil:
+		return c.compileUpdate(st.Update)
 	default:
 		return fmt.Errorf("unsupported statement at line %d", st.Pos.Line)
 	}
@@ -544,6 +550,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "Dictionary newFrom: {" + strings.Join(pairs, ". ") + "}", nil
 	case p.Struct != nil:
 		return c.compileStructLiteral(p.Struct)
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	case p.FunExpr != nil:
 		params := make([]string, len(p.FunExpr.Params))
 		for i, pa := range p.FunExpr.Params {
@@ -668,6 +678,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileMatchExpr(p.Match)
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	default:
 		return "", fmt.Errorf("unsupported expression at line %d", p.Pos.Line)
 	}
@@ -949,4 +963,115 @@ func hasContinueIf(i *parser.IfStmt) bool {
 		return true
 	}
 	return hasContinueIf(i.ElseIf)
+}
+
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
+	path := "nil"
+	if l.Path != nil {
+		path = fmt.Sprintf("%q", *l.Path)
+	}
+	opts := "nil"
+	if l.With != nil {
+		v, err := c.compileExpr(l.With)
+		if err != nil {
+			return "", err
+		}
+		opts = v
+	}
+	return fmt.Sprintf("load value: %s value: %s", path, opts), nil
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
+	src, err := c.compileExpr(s.Src)
+	if err != nil {
+		return "", err
+	}
+	path := "nil"
+	if s.Path != nil {
+		path = fmt.Sprintf("%q", *s.Path)
+	}
+	opts := "nil"
+	if s.With != nil {
+		v, err := c.compileExpr(s.With)
+		if err != nil {
+			return "", err
+		}
+		opts = v
+	}
+	return fmt.Sprintf("save value: %s value: %s value: %s", src, path, opts), nil
+}
+
+func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
+	expr, err := c.compileExpr(e.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("(%s) ifTrue: [Transcript show:'ok'; cr] ifFalse: [Transcript show:'fail'; cr]", expr))
+	return nil
+}
+
+func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	for _, s := range t.Body {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
+	list := u.Target
+	c.writeln(fmt.Sprintf("%s do: [:it |", list))
+	c.indent++
+	if u.Where != nil {
+		cond, err := c.compileExpr(u.Where)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("(%s) ifTrue: [", cond))
+		c.indent++
+	}
+	for _, it := range u.Set.Items {
+		val, err := c.compileExpr(it.Value)
+		if err != nil {
+			return err
+		}
+		if key, ok := identName(it.Key); ok {
+			c.writeln(fmt.Sprintf("it at: '%s' put: %s", key, val))
+		} else {
+			k, err := c.compileExpr(it.Key)
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("it at: %s put: %s", k, val))
+		}
+	}
+	if u.Where != nil {
+		c.indent--
+		c.writeln("]")
+	}
+	c.indent--
+	c.writeln("]")
+	return nil
+}
+
+func identName(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil {
+		return "", false
+	}
+	if len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Selector == nil {
+		return "", false
+	}
+	if len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
 }
