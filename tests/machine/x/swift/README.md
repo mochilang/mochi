@@ -1,6 +1,6 @@
 # Machine-generated Swift Outputs
 
-Compiled programs: 69/97
+Compiled programs: 70/97
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -50,7 +50,7 @@ Compiled programs: 69/97
 - [x] list_assign.mochi
 - [x] list_index.mochi
 - [x] list_nested_assign.mochi
-- [ ] list_set_ops.mochi
+- [x] list_set_ops.mochi
 - [ ] load_yaml.mochi
 - [x] map_assign.mochi
 - [x] map_in_operator.mochi
