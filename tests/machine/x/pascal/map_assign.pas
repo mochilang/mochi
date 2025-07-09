@@ -1,5 +1,6 @@
 program main;
 {$mode objfpc}
+{$modeswitch nestedprocvars}
 
 uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
 

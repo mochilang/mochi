@@ -1,15 +1,15 @@
-line: 101
+line: 102
 error: fpc error: exit status 1
 Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling /workspace/mochi/tests/machine/x/pascal/dataset_sort_take_limit.pas
-dataset_sort_take_limit.pas(82,15) Error: Illegal type conversion: "{Array Of Const/Constant Open} Array of TFPGMap$2$crcA49C6E68" to "TArray$1$crc09D74DF2"
-dataset_sort_take_limit.pas(89,34) Error: identifier idents no member "price"
-dataset_sort_take_limit.pas(89,16) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of TArray$1$crcE41905E8", expected "{Open} Array Of Pointer"
-dataset_sort_take_limit.pas(98,20) Error: identifier idents no member "name"
-dataset_sort_take_limit.pas(98,52) Error: identifier idents no member "price"
-dataset_sort_take_limit.pas(101) Fatal: There were 5 errors compiling module, stopping
+dataset_sort_take_limit.pas(83,15) Error: Illegal type conversion: "{Array Of Const/Constant Open} Array of TFPGMap$2$crcA49C6E68" to "TArray$1$crc09D74DF2"
+dataset_sort_take_limit.pas(90,34) Error: identifier idents no member "price"
+dataset_sort_take_limit.pas(90,16) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of TArray$1$crcE41905E8", expected "{Open} Array Of Pointer"
+dataset_sort_take_limit.pas(99,20) Error: identifier idents no member "name"
+dataset_sort_take_limit.pas(99,52) Error: identifier idents no member "price"
+dataset_sort_take_limit.pas(102) Fatal: There were 5 errors compiling module, stopping
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode
 

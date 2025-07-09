@@ -1,11 +1,11 @@
-line: 22
+line: 23
 error: fpc error: exit status 1
 Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling /workspace/mochi/tests/machine/x/pascal/pure_global_fold.pas
-pure_global_fold.pas(11,17) Error: Identifier not found "k"
-pure_global_fold.pas(22) Fatal: There were 1 errors compiling module, stopping
+pure_global_fold.pas(12,17) Error: Identifier not found "k"
+pure_global_fold.pas(23) Fatal: There were 1 errors compiling module, stopping
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode
 

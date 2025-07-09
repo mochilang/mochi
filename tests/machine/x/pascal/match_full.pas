@@ -1,5 +1,6 @@
 program main;
 {$mode objfpc}
+{$modeswitch nestedprocvars}
 
 uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
 
@@ -9,7 +10,7 @@ type
 function classify(n: integer): string;
 
 var
-  _tmp0: integer;
+  _tmp0: string;
   _tmp1: integer;
 begin
   _tmp1 := n;

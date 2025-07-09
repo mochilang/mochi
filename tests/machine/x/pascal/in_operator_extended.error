@@ -1,15 +1,15 @@
-line: 38
+line: 39
 error: fpc error: exit status 1
 Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling /workspace/mochi/tests/machine/x/pascal/in_operator_extended.pas
-in_operator_extended.pas(27,14) Error: Operator is not overloaded
 in_operator_extended.pas(28,14) Error: Operator is not overloaded
-in_operator_extended.pas(31,8) Error: Incompatible types: got "TFPGMap<System.Variant,System.LongInt>" expected "TFPGMap<System.ShortString,System.LongInt>"
-in_operator_extended.pas(35,18) Error: Operator is not overloaded
+in_operator_extended.pas(29,14) Error: Operator is not overloaded
+in_operator_extended.pas(32,8) Error: Incompatible types: got "TFPGMap<System.Variant,System.LongInt>" expected "TFPGMap<System.ShortString,System.LongInt>"
 in_operator_extended.pas(36,18) Error: Operator is not overloaded
-in_operator_extended.pas(38) Fatal: There were 5 errors compiling module, stopping
+in_operator_extended.pas(37,18) Error: Operator is not overloaded
+in_operator_extended.pas(39) Fatal: There were 5 errors compiling module, stopping
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode
 

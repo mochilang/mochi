@@ -1,11 +1,11 @@
-line: 20
+line: 21
 error: fpc error: exit status 1
 Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling /workspace/mochi/tests/machine/x/pascal/map_int_key.pas
-map_int_key.pas(17,8) Error: Incompatible types: got "TFPGMap<System.LongInt,System.Variant>" expected "TFPGMap<System.LongInt,System.ShortString>"
-map_int_key.pas(20) Fatal: There were 1 errors compiling module, stopping
+map_int_key.pas(18,8) Error: Incompatible types: got "TFPGMap<System.LongInt,System.Variant>" expected "TFPGMap<System.LongInt,System.ShortString>"
+map_int_key.pas(21) Fatal: There were 1 errors compiling module, stopping
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode
 

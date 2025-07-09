@@ -1,5 +1,6 @@
 program main;
 {$mode objfpc}
+{$modeswitch nestedprocvars}
 
 uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
 
@@ -13,7 +14,7 @@ begin
 end;
 
 var
-  square: function (p0: integer): integer;
+  square: function (p0: integer): integer is nested;
 
 begin
   square := @_lambda0;

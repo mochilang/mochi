@@ -1,24 +1,24 @@
-line: 79
+line: 80
 error: fpc error: exit status 1
 Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling /workspace/mochi/tests/machine/x/pascal/right_join.pas
-right_join.pas(38,16) Error: Illegal type conversion: "{Array Of Const/Constant Open} Array of TFPGMap$2$crcA49C6E68" to "TArray$1$crcE0B4E8C7"
-right_join.pas(51,13) Error: Illegal type conversion: "{Array Of Const/Constant Open} Array of TFPGMap$2$crcDFB44C97" to "TArray$1$crc7ED07D64"
-right_join.pas(53,40) Error: identifier idents no member "name"
-right_join.pas(54,31) Error: Identifier not found "o"
-right_join.pas(58,11) Error: Identifier not found "o"
-right_join.pas(60,20) Error: Identifier not found "o"
-right_join.pas(60,37) Error: identifier idents no member "id"
-right_join.pas(61,41) Error: Incompatible types: got "{Array Of Const/Constant Open} Array of TFPGMap$2$crcA49C6E68" expected "TArray$1$crcE0B4E8C7"
-right_join.pas(61,35) Error: Incompatible types: got "TFPGMap<System.Variant,System.Variant>" expected "TFPGMap<System.ShortString,System.Variant>"
-right_join.pas(68,16) Error: identifier idents no member "order"
-right_join.pas(70,42) Error: identifier idents no member "customerName"
-right_join.pas(70,85) Error: identifier idents no member "order"
-right_join.pas(71,37) Error: identifier idents no member "order"
-right_join.pas(75,42) Error: identifier idents no member "customerName"
-right_join.pas(79) Fatal: There were 14 errors compiling module, stopping
+right_join.pas(39,16) Error: Illegal type conversion: "{Array Of Const/Constant Open} Array of TFPGMap$2$crcA49C6E68" to "TArray$1$crcE0B4E8C7"
+right_join.pas(52,13) Error: Illegal type conversion: "{Array Of Const/Constant Open} Array of TFPGMap$2$crcDFB44C97" to "TArray$1$crc7ED07D64"
+right_join.pas(54,40) Error: identifier idents no member "name"
+right_join.pas(55,31) Error: Identifier not found "o"
+right_join.pas(59,11) Error: Identifier not found "o"
+right_join.pas(61,20) Error: Identifier not found "o"
+right_join.pas(61,37) Error: identifier idents no member "id"
+right_join.pas(62,41) Error: Incompatible types: got "{Array Of Const/Constant Open} Array of TFPGMap$2$crcA49C6E68" expected "TArray$1$crcE0B4E8C7"
+right_join.pas(62,35) Error: Incompatible types: got "TFPGMap<System.Variant,System.Variant>" expected "TFPGMap<System.ShortString,System.Variant>"
+right_join.pas(69,16) Error: identifier idents no member "order"
+right_join.pas(71,42) Error: identifier idents no member "customerName"
+right_join.pas(71,85) Error: identifier idents no member "order"
+right_join.pas(72,37) Error: identifier idents no member "order"
+right_join.pas(76,42) Error: identifier idents no member "customerName"
+right_join.pas(80) Fatal: There were 14 errors compiling module, stopping
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode
 
