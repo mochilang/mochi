@@ -1,1 +1,1 @@
-Transcript show: ('hello') printString; cr.
+Transcript show: 'hello'; cr.

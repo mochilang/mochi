@@ -1,7 +1,7 @@
 | x |
 x := 5.
 ((x > 3)) ifTrue: [
-Transcript show: ('big') printString; cr.
+  Transcript show: 'big'; cr.
 ] ifFalse: [
-Transcript show: ('small') printString; cr.
+  Transcript show: 'small'; cr.
 ].

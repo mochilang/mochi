@@ -1,4 +1,4 @@
-| nums letters pairs p |
+| letters nums pairs |
 nums := {1. 2. 3}.
 letters := {'A'. 'B'}.
 pairs := [ | tmp |
@@ -12,8 +12,8 @@ pairs := [ | tmp |
   ].
   tmp
 ] value.
-Transcript show: ('--- Even pairs ---') printString; cr.
-pairs do: [:p |.
-Transcript show: (p at: 'n') printString; show: ' '; show: (p at: 'l') printString; cr.
-].
+Transcript show: '--- Even pairs ---'; cr.
+pairs do: [:p |
+  Transcript show: (p.n) printString; show: ' '; show: (p.l) printString; cr.
+]
 .

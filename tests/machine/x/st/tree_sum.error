@@ -1,2 +1,7 @@
-line: 0
-error: gst interpreter not available
+line: 16
+error: unsupported expression at line 16
+  14: }
+  15: 
+  16: let t = Node {
+  17:   left: Leaf,
+  18:   value: 1,
