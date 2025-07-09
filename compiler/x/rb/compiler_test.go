@@ -92,6 +92,7 @@ func TestCompileValidPrograms(t *testing.T) {
 				t.Fatalf("write code: %v", err)
 			}
 			cmd := exec.Command("ruby", codePath)
+			cmd.Dir = root
 			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 				cmd.Stdin = bytes.NewReader(data)
 			}
