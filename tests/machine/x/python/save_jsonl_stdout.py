@@ -10,7 +10,7 @@ K = TypeVar("K")
 
 
 def _save(rows, path, opts):
-    import csv, json, sys, dataclasses
+    import csv, json, sys, dataclasses, os
 
     fmt = "csv"
     header = False
@@ -22,6 +22,14 @@ def _save(rows, path, opts):
         if isinstance(delim, str) and delim:
             delim = delim[0]
     rows = [dataclasses.asdict(r) if dataclasses.is_dataclass(r) else r for r in rows]
+    if path is not None and not os.path.isabs(path):
+        base = os.path.join(os.path.dirname(__file__), path)
+        if not os.path.exists(base) and os.environ.get("MOCHI_ROOT"):
+            clean = path
+            while clean.startswith("../"):
+                clean = clean[3:]
+            base = os.path.join(os.environ.get("MOCHI_ROOT"), clean)
+        path = base
     f = sys.stdout if path is None or path == "-" else open(path, "w")
     try:
         if fmt == "tsv":

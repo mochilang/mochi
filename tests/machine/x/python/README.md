@@ -4,8 +4,8 @@ This directory contains Python source code generated from Mochi programs and the
 
 ## Summary
 
-- 97/97 programs compiled and executed successfully.
-- 0 programs failed to compile or run.
+- 96/97 programs compiled and executed successfully.
+- 1 program failed to compile or run.
 
 ### Successful
 - append_builtin
@@ -62,7 +62,6 @@ This directory contains Python source code generated from Mochi programs and the
 - group_by_conditional_sum
 - group_by_having
 - group_by_join
-- group_by_left_join
 - group_by_multi_join
 - group_by_multi_join_sort
 - group_by_sort
@@ -102,4 +101,7 @@ This directory contains Python source code generated from Mochi programs and the
 - var_assignment
 - while_loop
 - tree_sum
+
+### Failed
+- group_by_left_join
 

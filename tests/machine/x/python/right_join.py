@@ -17,6 +17,8 @@ def _get(obj, name):
             return obj[name]
     if hasattr(obj, name):
         return getattr(obj, name)
+    if name == "items" and hasattr(obj, "Items"):
+        return getattr(obj, "Items")
     if isinstance(obj, (list, tuple)):
         for it in obj:
             try:

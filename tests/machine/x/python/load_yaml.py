@@ -27,10 +27,17 @@ def _load(path, opts):
         if os.path.exists(base):
             path = base
         elif os.environ.get("MOCHI_ROOT"):
-            clean = path
-            while clean.startswith("../"):
-                clean = clean[3:]
-            path = os.path.join(os.environ.get("MOCHI_ROOT"), clean)
+            root = os.environ.get("MOCHI_ROOT")
+            p = os.path.normpath(os.path.join(root, path))
+            if not os.path.exists(p):
+                p2 = os.path.normpath(os.path.join(root, "tests", path))
+                if not os.path.exists(p2):
+                    p3 = os.path.normpath(os.path.join(root, "tests", "vm", path))
+                    if os.path.exists(p3):
+                        p2 = p3
+                if os.path.exists(p2):
+                    p = p2
+            path = p
     f = sys.stdin if path is None or path == "-" else open(path, "r")
     try:
         if fmt == "tsv":

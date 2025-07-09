@@ -157,6 +157,10 @@ var helperLoad = "def _load(path, opts):\n" +
 	"            p = os.path.normpath(os.path.join(root, path))\n" +
 	"            if not os.path.exists(p):\n" +
 	"                p2 = os.path.normpath(os.path.join(root, 'tests', path))\n" +
+	"                if not os.path.exists(p2):\n" +
+	"                    p3 = os.path.normpath(os.path.join(root, 'tests', 'vm', path))\n" +
+	"                    if os.path.exists(p3):\n" +
+	"                        p2 = p3\n" +
 	"                if os.path.exists(p2):\n" +
 	"                    p = p2\n" +
 	"            path = p\n" +
@@ -211,7 +215,7 @@ var helperLoad = "def _load(path, opts):\n" +
 	"            f.close()\n"
 
 var helperSave = "def _save(rows, path, opts):\n" +
-	"    import csv, json, sys, dataclasses\n" +
+	"    import csv, json, sys, dataclasses, os\n" +
 	"    fmt = 'csv'\n" +
 	"    header = False\n" +
 	"    delim = ','\n" +

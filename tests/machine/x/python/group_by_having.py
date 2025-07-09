@@ -26,6 +26,8 @@ def _get(obj, name):
             return obj[name]
     if hasattr(obj, name):
         return getattr(obj, name)
+    if name == "items" and hasattr(obj, "Items"):
+        return getattr(obj, "Items")
     if isinstance(obj, (list, tuple)):
         for it in obj:
             try:
@@ -39,6 +41,7 @@ class _Group(Generic[K, T]):
     def __init__(self, key: K):
         self.key = key
         self.Items: list[T] = []
+        self.items = self.Items
 
     def __iter__(self):
         return iter(self.Items)
