@@ -8,10 +8,13 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"mochi/parser"
 )
+
+var identifierRegex = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_]*$`)
 
 // Compiler translates a subset of Mochi programs into Erlang source code.
 type Compiler struct {
@@ -133,6 +136,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		l, err := c.compileStmtLine(st)
 		if err != nil {
 			return nil, err
+		}
+		if l == "" {
+			continue
 		}
 		lines = append(lines, l)
 	}
@@ -305,6 +311,9 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		l, err := c.compileStmtLine(st)
 		if err != nil {
 			return err
+		}
+		if l == "" {
+			continue
 		}
 		lines = append(lines, l)
 	}
@@ -732,6 +741,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if t == "int" && typ == "string" {
 					val = fmt.Sprintf("list_to_integer(%s)", val)
 					typ = "int"
+				} else {
+					// casting to a struct or other type is a no-op
+					typ = "map"
 				}
 			}
 		default:
@@ -849,6 +861,15 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", err
 		}
 		return fmt.Sprintf("(lists:sum(%s) / length(%s))", a0, a0), nil
+	case "str":
+		if len(call.Args) != 1 {
+			return "", fmt.Errorf("str expects 1 arg")
+		}
+		a0, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("lists:flatten(io_lib:format(\"~p\", [%s]))", a0), nil
 	case "count":
 		if len(call.Args) != 1 {
 			return "", fmt.Errorf("count expects 1 arg")
@@ -990,6 +1011,12 @@ func (c *Compiler) compileMapKey(e *parser.Expr) (string, error) {
 		if len(u.Ops) == 0 && u.Value != nil && len(u.Value.Ops) == 0 {
 			if u.Value.Target.Selector != nil && len(u.Value.Target.Selector.Tail) == 0 {
 				return u.Value.Target.Selector.Root, nil
+			}
+			if u.Value.Target.Lit != nil && u.Value.Target.Lit.Str != nil {
+				s := *u.Value.Target.Lit.Str
+				if identifierRegex.MatchString(s) {
+					return s, nil
+				}
 			}
 		}
 	}
