@@ -726,8 +726,159 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if q.Group != nil || len(q.Joins) > 0 {
+	if len(q.Joins) > 0 {
 		return "", fmt.Errorf("query features not supported")
+	}
+
+	if q.Group != nil {
+		srcs := make([]string, 1+len(q.Froms))
+		vars := make([]string, 1+len(q.Froms))
+
+		s, err := c.compileExpr(q.Source)
+		if err != nil {
+			return "", err
+		}
+		srcs[0] = s
+		vars[0] = q.Var
+
+		for i, f := range q.Froms {
+			fs, err := c.compileExpr(f.Src)
+			if err != nil {
+				return "", err
+			}
+			srcs[i+1] = fs
+			vars[i+1] = f.Var
+		}
+
+		cond := ""
+		if q.Where != nil {
+			cond, err = c.compileExpr(q.Where)
+			if err != nil {
+				return "", err
+			}
+		}
+
+		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
+		if err != nil {
+			return "", err
+		}
+
+		sub := &Compiler{vars: make(map[string]bool)}
+		for k := range c.vars {
+			sub.vars[k] = true
+		}
+		sub.vars[q.Group.Name] = true
+		valExpr, err := sub.compileExpr(q.Select)
+		if err != nil {
+			return "", err
+		}
+
+		having := ""
+		if q.Group.Having != nil {
+			havExpr, err := sub.compileExpr(q.Group.Having)
+			if err != nil {
+				return "", err
+			}
+			having = havExpr
+		}
+
+		sortExpr := ""
+		if q.Sort != nil {
+			srt, err := sub.compileExpr(q.Sort)
+			if err != nil {
+				return "", err
+			}
+			sortExpr = srt
+		}
+
+		skipExpr := ""
+		if q.Skip != nil {
+			sk, err := sub.compileExpr(q.Skip)
+			if err != nil {
+				return "", err
+			}
+			skipExpr = sk
+		}
+
+		takeExpr := ""
+		if q.Take != nil {
+			tk, err := sub.compileExpr(q.Take)
+			if err != nil {
+				return "", err
+			}
+			takeExpr = tk
+		}
+
+		var b strings.Builder
+		b.WriteString("[ | groups res |\n")
+		b.WriteString("  groups := Dictionary new.\n")
+
+		var loop func(int, string)
+		loop = func(i int, indent string) {
+			b.WriteString(indent + srcs[i] + " do: [:" + vars[i] + " |\n")
+			next := indent + "  "
+			if i+1 < len(srcs) {
+				loop(i+1, next)
+			} else {
+				if cond != "" {
+					b.WriteString(next + "(" + cond + ") ifTrue: [\n")
+					next += "  "
+				}
+				b.WriteString(next + "| g k |\n")
+				b.WriteString(next + "k := " + keyExpr + ".\n")
+				b.WriteString(next + "g := groups at: k ifAbsentPut: [OrderedCollection new].\n")
+				b.WriteString(next + "g add: " + vars[0] + ".\n")
+				if cond != "" {
+					next = next[:len(next)-2]
+					b.WriteString(next + "]\n")
+				}
+			}
+			b.WriteString(indent + "]\n")
+		}
+		loop(0, "  ")
+
+		b.WriteString("  res := OrderedCollection new.\n")
+		b.WriteString("  groups keysAndValuesDo: [:k :items |\n")
+		b.WriteString("    | " + q.Group.Name + " |\n")
+		b.WriteString("    " + q.Group.Name + " := Dictionary newFrom: {#key->k. #items->items}.\n")
+		if having != "" {
+			b.WriteString("    (" + having + ") ifTrue: [\n")
+			b.WriteString("      res add: " + valExpr + ".\n")
+			b.WriteString("    ].\n")
+		} else {
+			b.WriteString("    res add: " + valExpr + ".\n")
+		}
+		b.WriteString("  ].\n")
+
+		if sortExpr != "" {
+			keyA := strings.ReplaceAll(sortExpr, q.Group.Name, "a")
+			keyB := strings.ReplaceAll(sortExpr, q.Group.Name, "b")
+			b.WriteString("  res := res asSortedCollection: [:a :b | " + keyA + " < " + keyB + "].\n")
+		}
+
+		if skipExpr != "" || takeExpr != "" {
+			start := "1"
+			if skipExpr != "" {
+				start = "(" + skipExpr + ") + 1"
+			}
+			end := "res size"
+			if takeExpr != "" {
+				if skipExpr != "" {
+					end = "(" + start + " - 1 + " + takeExpr + ")"
+				} else {
+					end = takeExpr
+				}
+			}
+			b.WriteString("  res := res copyFrom: " + start + " to: " + end + ".\n")
+		}
+
+		if q.Distinct {
+			b.WriteString("  res := res asSet asOrderedCollection.\n")
+		}
+
+		b.WriteString("  res\n")
+		b.WriteString("] value")
+		return b.String(), nil
 	}
 
 	srcs := make([]string, 1+len(q.Froms))
