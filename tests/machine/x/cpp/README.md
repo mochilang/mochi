@@ -2,7 +2,7 @@
 
 This directory contains C++ source code generated from Mochi programs and the corresponding outputs or errors.
 
-Compiled programs: 65/97
+Compiled programs: 68/97
 
 ## Checklist
 
@@ -97,9 +97,9 @@ Compiled programs: 65/97
 - [ ] right_join
 - [ ] save_jsonl_stdout
 - [x] sort_stable
-- [ ] string_contains
-- [ ] string_prefix_slice
-- [ ] sum_builtin
+- [x] string_contains
+- [x] string_prefix_slice
+- [x] sum_builtin
 - [ ] test_block
 - [ ] tree_sum
 - [ ] update_stmt
@@ -132,9 +132,9 @@ Compiled programs: 65/97
 - [ ] right_join
 - [ ] save_jsonl_stdout
 - [x] sort_stable
-- [ ] string_contains
-- [ ] string_prefix_slice
-- [ ] sum_builtin
+- [x] string_contains
+- [x] string_prefix_slice
+- [x] sum_builtin
 - [ ] test_block
 - [ ] tree_sum
 - [ ] update_stmt

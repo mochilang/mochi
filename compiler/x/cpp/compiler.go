@@ -649,7 +649,7 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, error) {
 			} else if base == "append" && len(args) == 2 {
 				expr = fmt.Sprintf("([&](auto v){ v.push_back(%s); return v; })(%s)", args[1], args[0])
 			} else if base == "sum" && len(args) == 1 {
-				expr = fmt.Sprintf("std::accumulate(%s.begin(), %s.end(), 0)", args[0], args[0])
+				expr = fmt.Sprintf("([&](auto v){ return std::accumulate(v.begin(), v.end(), 0); })(%s)", args[0])
 			} else if base == "avg" && len(args) == 1 {
 				expr = fmt.Sprintf("([&](auto v){ int s=0; for(auto x:v) s+=x; return v.empty()?0:(double)s/v.size(); })(%s)", args[0])
 			} else if base == "count" && len(args) == 1 {
@@ -658,19 +658,38 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, error) {
 				expr = fmt.Sprintf("(*std::min_element(%s.begin(), %s.end()))", args[0], args[0])
 			} else if base == "max" && len(args) == 1 {
 				expr = fmt.Sprintf("(*std::max_element(%s.begin(), %s.end()))", args[0], args[0])
+			} else if strings.HasSuffix(base, ".contains") && len(args) == 1 {
+				target := strings.TrimSuffix(base, ".contains")
+				expr = fmt.Sprintf("(%s.find(%s) != std::string::npos)", target, args[0])
 			} else {
 				expr = base + "(" + strings.Join(args, ", ") + ")"
 			}
 			base = expr
 		} else if op.Index != nil {
-			if op.Index.Start == nil {
-				return "", fmt.Errorf("unsupported empty index")
+			if op.Index.End != nil || op.Index.Colon != nil {
+				start := "0"
+				var err error
+				if op.Index.Start != nil {
+					start, err = c.compileExpr(op.Index.Start)
+					if err != nil {
+						return "", err
+					}
+				}
+				end, err := c.compileExpr(op.Index.End)
+				if err != nil {
+					return "", err
+				}
+				expr = fmt.Sprintf("std::string(%s).substr(%s, (%s)-(%s))", expr, start, end, start)
+			} else {
+				if op.Index.Start == nil {
+					return "", fmt.Errorf("unsupported empty index")
+				}
+				idx, err := c.compileExpr(op.Index.Start)
+				if err != nil {
+					return "", err
+				}
+				expr = fmt.Sprintf("%s[%s]", expr, idx)
 			}
-			idx, err := c.compileExpr(op.Index.Start)
-			if err != nil {
-				return "", err
-			}
-			expr = fmt.Sprintf("%s[%s]", expr, idx)
 		} else if op.Field != nil {
 			expr = fmt.Sprintf("%s.%s", expr, op.Field.Name)
 		} else if op.Cast != nil {
@@ -857,7 +876,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 		case "sum":
 			if len(args) == 1 {
-				return fmt.Sprintf("std::accumulate(%s.begin(), %s.end(), 0)", args[0], args[0]), nil
+				return fmt.Sprintf("([&](auto v){ return std::accumulate(v.begin(), v.end(), 0); })(%s)", args[0]), nil
 			}
 		case "avg":
 			if len(args) == 1 {
