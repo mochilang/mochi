@@ -534,8 +534,8 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 		if ml := s.Value.Binary.Left.Value.Target.Map; ml != nil && len(ml.Items) == 0 {
 			if c.env != nil {
 				if t, err := c.env.GetVar(s.Name); err == nil {
-					if mt, ok := t.(types.MapType); ok {
-						value = fmt.Sprintf("{} as Record<%s, %s>", tsType(mt.Key), tsType(mt.Value))
+					if _, ok := t.(types.MapType); ok {
+						value = "{}"
 					}
 				}
 			}

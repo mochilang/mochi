@@ -152,7 +152,7 @@ const (
 		"  return false;\n" +
 		"}\n"
 
-	helperValues = "function _values<T>(m: Record<string, T>): T[] {\n" +
+	helperValues = "function _values<T>(m: { [key: string]: T }): T[] {\n" +
 		"  if (m && typeof m === 'object' && !Array.isArray(m)) {\n" +
 		"    return Object.values(m);\n" +
 		"  }\n" +
@@ -164,7 +164,7 @@ const (
 		"  return v === null ? '' : v;\n" +
 		"}\n"
 
-	helperIter = "function _iter<T>(v: Iterable<T> | Record<string, T> | any): Iterable<T | string> {\n" +
+	helperIter = "function _iter<T>(v: Iterable<T> | { [key: string]: T } | any): Iterable<T | string> {\n" +
 		"  if (v && typeof v === 'object' && !Array.isArray(v) && !(Symbol.iterator in v)) {\n" +
 		"    return Object.keys(v);\n" +
 		"  }\n" +
@@ -239,8 +239,8 @@ const (
 		"  try { return JSON.parse(text); } catch { return text; }\n" +
 		"}\n"
 
-	helperToAnyMap = "function _toAnyMap(m: any): Record<string, any> {\n" +
-		"  return m as Record<string, any>;\n" +
+	helperToAnyMap = "function _toAnyMap(m: any): { [key: string]: any } {\n" +
+		"  return m as { [key: string]: any };\n" +
 		"}\n"
 
 	helperUnionAll = "function _union_all<T>(a: T[], b: T[]): T[] {\n" +
@@ -297,9 +297,9 @@ const (
 
 	helperAgent = "class Agent {\n" +
 		"  name: string;\n" +
-		"  handlers: Record<string, (ev: any) => any | Promise<any>> = {};\n" +
-		"  intents: Record<string, (...args: any[]) => any> = {};\n" +
-		"  state: Record<string, any> = {};\n" +
+		"  handlers: { [key: string]: (ev: any) => any | Promise<any> } = {};\n" +
+		"  intents: { [key: string]: (...args: any[]) => any } = {};\n" +
+		"  state: { [key: string]: any } = {};\n" +
 		"  constructor(name: string) {\n" +
 		"    this.name = name;\n" +
 		"  }\n" +
@@ -424,7 +424,7 @@ const (
 		"  for (let i=start; i<lines.length; i++) {\n" +
 		"    if (!lines[i]) continue;\n" +
 		"    const parts = lines[i].split(delim);\n" +
-		"    const m: Record<string, any> = {};\n" +
+		"    const m: { [key: string]: any } = {};\n" +
 		"    for (let j=0; j<headers.length; j++) {\n" +
 		"      const val = parts[j] ?? '';\n" +
 		"      if (/^-?\\d+$/.test(val)) m[headers[j]] = parseInt(val,10);\n" +

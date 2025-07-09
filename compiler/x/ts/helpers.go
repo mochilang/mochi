@@ -230,7 +230,7 @@ func tsType(t types.Type) string {
 		}
 		return elem + "[]"
 	case types.MapType:
-		return "Record<" + tsType(tt.Key) + ", " + tsType(tt.Value) + ">"
+		return "{ [key: " + tsType(tt.Key) + "]: " + tsType(tt.Value) + " }"
 	case types.StructType:
 		name := sanitizeName(tt.Name)
 		if name != "" {
