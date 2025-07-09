@@ -1,4 +1,0 @@
-F# Compiler for F# 4.0 (Open Source Edition)
-Freely distributed under the Apache 2.0 Open Source License
-
-/workspace/mochi/tests/machine/x/fs/dataset_sort_take_limit.fs(7,47): error FS0010: Unexpected symbol ']' in expression. Expected '->' or other token.

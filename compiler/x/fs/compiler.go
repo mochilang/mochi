@@ -963,6 +963,81 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
+	// handle group by
+	if q.Group != nil {
+		if len(q.Group.Exprs) != 1 {
+			return "", fmt.Errorf("multiple group keys not supported")
+		}
+		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
+		if err != nil {
+			return "", err
+		}
+		var inner strings.Builder
+		inner.WriteString("[ ")
+		for i, l := range loops {
+			if i > 0 {
+				inner.WriteByte('\n')
+				inner.WriteString("  ")
+			}
+			inner.WriteString(l)
+			inner.WriteByte(' ')
+		}
+		if cond != "" {
+			inner.WriteString(cond)
+		}
+		inner.WriteString("yield ")
+		inner.WriteString(q.Var)
+		inner.WriteString(" ]")
+		listExpr := inner.String()
+		grpExpr := fmt.Sprintf("%s |> List.groupBy (fun %s -> %s)", listExpr, q.Var, keyExpr)
+
+		keyVar := q.Group.Name + "Key"
+		itemsVar := q.Group.Name + "Items"
+
+		if q.Group.Having != nil {
+			condExpr, err := c.compileExpr(q.Group.Having)
+			if err != nil {
+				return "", err
+			}
+			grpExpr = fmt.Sprintf("%s |> List.filter (fun (%s, %s) -> let %s = {| key = %s; items = %s |} in %s)",
+				grpExpr, keyVar, itemsVar, q.Group.Name, keyVar, itemsVar, condExpr)
+		}
+		if q.Sort != nil {
+			s, err := c.compileExpr(q.Sort)
+			if err != nil {
+				return "", err
+			}
+			if strings.HasPrefix(s, "-") {
+				s = strings.TrimPrefix(s, "-")
+				grpExpr = fmt.Sprintf("%s |> List.sortByDescending (fun (%s, %s) -> let %s = {| key = %s; items = %s |} in %s)",
+					grpExpr, keyVar, itemsVar, q.Group.Name, keyVar, itemsVar, s)
+			} else {
+				grpExpr = fmt.Sprintf("%s |> List.sortBy (fun (%s, %s) -> let %s = {| key = %s; items = %s |} in %s)",
+					grpExpr, keyVar, itemsVar, q.Group.Name, keyVar, itemsVar, s)
+			}
+		}
+		if q.Skip != nil {
+			sk, err := c.compileExpr(q.Skip)
+			if err != nil {
+				return "", err
+			}
+			grpExpr = fmt.Sprintf("%s |> List.skip %s", grpExpr, sk)
+		}
+		if q.Take != nil {
+			tk, err := c.compileExpr(q.Take)
+			if err != nil {
+				return "", err
+			}
+			grpExpr = fmt.Sprintf("%s |> List.take %s", grpExpr, tk)
+		}
+		if q.Distinct {
+			grpExpr = fmt.Sprintf("%s |> List.distinct", grpExpr)
+		}
+		return fmt.Sprintf("[ for %s, %s in %s do\n    let %s = {| key = %s; items = %s |}\n    yield %s ]",
+			keyVar, itemsVar, grpExpr, q.Group.Name, keyVar, itemsVar, sel), nil
+	}
+
 	var b strings.Builder
 	b.WriteString("[ ")
 	for i, l := range loops {
