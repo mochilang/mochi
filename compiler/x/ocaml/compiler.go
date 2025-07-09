@@ -257,8 +257,25 @@ func (c *Compiler) compileGlobalVar(v *parser.VarStmt) error {
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
-	if len(t.Variants) > 0 || len(t.Members) == 0 {
-		// unions or empty types unsupported
+	if len(t.Variants) > 0 {
+		parts := make([]string, len(t.Variants))
+		for i, v := range t.Variants {
+			if len(v.Fields) == 0 {
+				parts[i] = v.Name
+			} else {
+				args := make([]string, len(v.Fields))
+				for j, f := range v.Fields {
+					args[j] = c.typeRef(f.Type)
+				}
+				parts[i] = fmt.Sprintf("%s of %s", v.Name, strings.Join(args, " * "))
+			}
+		}
+		name := strings.ToLower(t.Name)
+		c.writeln(fmt.Sprintf("type %s = %s", name, strings.Join(parts, " | ")))
+		return nil
+	}
+	if len(t.Members) == 0 {
+		// empty types unsupported
 		return nil
 	}
 	fields := make([]string, 0, len(t.Members))
@@ -481,6 +498,28 @@ func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
 		elseVal = "()"
 	}
 	return fmt.Sprintf("(if %s then %s else %s)", cond, thenVal, elseVal), nil
+}
+
+func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
+	target, err := c.compileExpr(m.Target)
+	if err != nil {
+		return "", err
+	}
+	var buf bytes.Buffer
+	buf.WriteString("(match " + target + " with")
+	for _, cs := range m.Cases {
+		pat, err := c.compilePattern(cs.Pattern)
+		if err != nil {
+			return "", err
+		}
+		res, err := c.compileExpr(cs.Result)
+		if err != nil {
+			return "", err
+		}
+		buf.WriteString(" | " + pat + " -> " + res)
+	}
+	buf.WriteString(")")
+	return buf.String(), nil
 }
 
 func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
@@ -1290,6 +1329,22 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return "[" + strings.Join(items, ";") + "]", nil
 	case p.Struct != nil:
+		if ut, ok := c.env.FindUnionByVariant(p.Struct.Name); ok {
+			st := ut.Variants[p.Struct.Name]
+			args := make([]string, len(st.Order))
+			for i, name := range st.Order {
+				for _, f := range p.Struct.Fields {
+					if f.Name == name {
+						v, err := c.compileExpr(f.Value)
+						if err != nil {
+							return "", err
+						}
+						args[i] = v
+					}
+				}
+			}
+			return fmt.Sprintf("%s (%s)", p.Struct.Name, strings.Join(args, ", ")), nil
+		}
 		fields := make([]string, len(p.Struct.Fields))
 		for i, f := range p.Struct.Fields {
 			v, err := c.compileExpr(f.Value)
@@ -1303,6 +1358,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileIfExpr(p.If)
 	case p.Query != nil:
 		return c.compileQuery(p.Query)
+	case p.Match != nil:
+		return c.compileMatchExpr(p.Match)
 	case p.FunExpr != nil:
 		params := make([]string, len(p.FunExpr.Params))
 		for i, p2 := range p.FunExpr.Params {
@@ -1409,6 +1466,12 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 		return fmt.Sprintf("__show (%s)", args[0]), nil
 	default:
+		if len(args) > 1 && len(call.Func) > 0 && strings.ToUpper(call.Func[:1]) == call.Func[:1] {
+			return fmt.Sprintf("%s (%s)", call.Func, strings.Join(args, ", ")), nil
+		}
+		if len(args) == 0 {
+			return call.Func, nil
+		}
 		return fmt.Sprintf("%s %s", call.Func, strings.Join(args, " ")), nil
 	}
 }
@@ -1659,4 +1722,82 @@ func identConst(e *parser.Expr) (string, bool) {
 		return u.Value.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+func identName(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || u.Value.Target == nil {
+		return "", false
+	}
+	if u.Value.Target.Selector != nil && len(u.Value.Target.Selector.Tail) == 0 {
+		return u.Value.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func isUnderscoreExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return false
+	}
+	if len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil || u.Value.Target == nil {
+		return false
+	}
+	if len(u.Value.Ops) != 0 {
+		return false
+	}
+	if u.Value.Target.Selector != nil && u.Value.Target.Selector.Root == "_" && len(u.Value.Target.Selector.Tail) == 0 {
+		return true
+	}
+	return false
+}
+
+func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return nil, false
+	}
+	if len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil || u.Value.Target == nil {
+		return nil, false
+	}
+	if len(u.Value.Ops) != 0 || u.Value.Target.Call == nil {
+		return nil, false
+	}
+	return u.Value.Target.Call, true
+}
+
+func (c *Compiler) compilePattern(e *parser.Expr) (string, error) {
+	if isUnderscoreExpr(e) {
+		return "_", nil
+	}
+	if call, ok := callPattern(e); ok {
+		args := make([]string, len(call.Args))
+		for i, a := range call.Args {
+			s, err := c.compilePattern(a)
+			if err != nil {
+				return "", err
+			}
+			args[i] = s
+		}
+		if len(args) == 0 {
+			return call.Func, nil
+		}
+		if len(args) == 1 {
+			return fmt.Sprintf("%s %s", call.Func, args[0]), nil
+		}
+		return fmt.Sprintf("%s (%s)", call.Func, strings.Join(args, ", ")), nil
+	}
+	if id, ok := identName(e); ok {
+		return id, nil
+	}
+	return c.compileExpr(e)
 }

@@ -75,17 +75,17 @@ runs produce a `.out` file while failures generate a `.error` report.
 - [x] user_type_literal
 - [x] var_assignment
 - [x] while_loop
+- [x] match_expr
+- [x] match_full
+- [x] tree_sum
 
 ## Failed to build or run
 
 - [ ] group_items_iteration
 - [ ] load_yaml
-- [ ] match_expr
-- [ ] match_full
 - [ ] nested_function
 - [ ] save_jsonl_stdout
 - [ ] test_block
-- [ ] tree_sum
 - [ ] two-sum
 - [ ] update_stmt
 
