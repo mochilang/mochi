@@ -1,4 +1,4 @@
-| m x y |
+| x y m |
 x := 3.
 y := 4.
 m := Dictionary newFrom: {'a' -> x. 'b' -> y}.

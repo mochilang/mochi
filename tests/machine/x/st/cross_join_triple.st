@@ -1,4 +1,4 @@
-| bools combos letters nums |
+| nums letters bools combos c |
 nums := {1. 2}.
 letters := {'A'. 'B'}.
 bools := {true. false}.
@@ -13,7 +13,8 @@ combos := [ | tmp |
   ].
   tmp
 ] value.
-Transcript show: '--- Cross Join of three lists ---'; cr.
-combos do: [:c |
-  Transcript show: (c.n) printString; show: ' '; show: (c.l) printString; show: ' '; show: (c.b) printString; cr.
+Transcript show: ('--- Cross Join of three lists ---') printString; cr.
+combos do: [:c |.
+Transcript show: (c at: 'n') printString; show: ' '; show: (c at: 'l') printString; show: ' '; show: (c at: 'b') printString; cr.
 ].
+.

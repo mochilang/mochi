@@ -713,12 +713,8 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Joins) > 0 {
-		return "", fmt.Errorf("join clauses not supported")
-	}
-
-	srcs := make([]string, 1+len(q.Froms))
-	vars := make([]string, 1+len(q.Froms))
+	srcs := make([]string, 1+len(q.Froms)+len(q.Joins))
+	vars := make([]string, 1+len(q.Froms)+len(q.Joins))
 
 	s, err := c.compileExpr(q.Source)
 	if err != nil {
@@ -736,11 +732,36 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		vars[i+1] = f.Var
 	}
 
+	joinConds := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			return "", err
+		}
+		srcs[len(q.Froms)+1+i] = js
+		vars[len(q.Froms)+1+i] = j.Var
+		jc, err := c.compileExpr(j.On)
+		if err != nil {
+			return "", err
+		}
+		joinConds[i] = jc
+	}
+
 	cond := ""
 	if q.Where != nil {
 		cond, err = c.compileExpr(q.Where)
 		if err != nil {
 			return "", err
+		}
+	}
+	for _, jc := range joinConds {
+		if jc == "" {
+			continue
+		}
+		if cond == "" {
+			cond = jc
+		} else {
+			cond = fmt.Sprintf("(%s and: [%s])", cond, jc)
 		}
 	}
 
