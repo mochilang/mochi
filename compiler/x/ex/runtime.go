@@ -40,7 +40,26 @@ defp _json(v), do: IO.puts(_to_json(v))
 
 	helperConcat = "defp _concat(a, b) do\n  if is_list(a) and is_list(b) do\n    a ++ b\n  else\n    raise \"concat expects lists\"\n  end\nend\n"
 
-	helperGroup = "defmodule Group do\n  defstruct key: nil, items: []\nend\n"
+	helperGroup = "defmodule Group do\n  defstruct key: nil, items: []\n" +
+		"  def fetch(g, k) do\n" +
+		"    case k do\n" +
+		"      :key -> {:ok, g.key}\n" +
+		"      :items -> {:ok, g.items}\n" +
+		"      _ -> :error\n" +
+		"    end\n" +
+		"  end\n" +
+		"  def get_and_update(g, k, f) do\n" +
+		"    case k do\n" +
+		"      :key ->\n" +
+		"        {v, nv} = f.(g.key)\n" +
+		"        {v, %{g | key: nv}}\n" +
+		"      :items ->\n" +
+		"        {v, nv} = f.(g.items)\n" +
+		"        {v, %{g | items: nv}}\n" +
+		"      _ -> {nil, g}\n" +
+		"    end\n" +
+		"  end\n" +
+		"end\n"
 
 	helperGroupBy = "defp _group_by(src, keyfn) do\n  {groups, order} = Enum.reduce(src, {%{}, []}, fn it, {groups, order} ->\n    key = if is_list(it), do: apply(keyfn, it), else: keyfn.(it)\n    ks = :erlang.phash2(key)\n    {groups, order} = if Map.has_key?(groups, ks) do\n      {groups, order}\n    else\n      {Map.put(groups, ks, %Group{key: key}), order ++ [ks]}\n    end\n    val = if is_list(it) and length(it) == 1, do: hd(it), else: it\n    groups = Map.update!(groups, ks, fn g -> %{g | items: g.items ++ [val]} end)\n    {groups, order}\n  end)\n  Enum.map(order, fn k -> groups[k] end)\nend\n"
 
