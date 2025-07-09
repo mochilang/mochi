@@ -1057,9 +1057,7 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 		return err
 	}
 	ct := c.inferExprType(stmt.Cond)
-	if !isBool(ct) {
-		cond = c.castExpr(cond, ct, types.BoolType{})
-	}
+	cond = c.castExpr(cond, ct, types.BoolType{})
 	c.writeIndent()
 	c.buf.WriteString("if " + cond + " {")
 	c.buf.WriteByte('\n')
@@ -1114,9 +1112,7 @@ func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
 		return err
 	}
 	ct := c.inferExprType(stmt.Cond)
-	if !isBool(ct) {
-		cond = c.castExpr(cond, ct, types.BoolType{})
-	}
+	cond = c.castExpr(cond, ct, types.BoolType{})
 	c.writeIndent()
 	c.buf.WriteString("if !(" + cond + ") {\n")
 	c.indent++
@@ -1508,7 +1504,11 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 				return "", err
 			}
 		}
-		ops = append(ops, part.Op)
+		op := part.Op
+		if op == "union" && part.All {
+			op = "union_all"
+		}
+		ops = append(ops, op)
 		operands = append(operands, right)
 		typesList = append(typesList, rightType)
 	}
@@ -2450,9 +2450,7 @@ func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
 		return "", err
 	}
 	ct := c.inferExprType(ie.Cond)
-	if !isBool(ct) {
-		cond = c.castExpr(cond, ct, types.BoolType{})
-	}
+	cond = c.castExpr(cond, ct, types.BoolType{})
 	thenExpr, err := c.compileExpr(ie.Then)
 	if err != nil {
 		return "", err
