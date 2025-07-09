@@ -102,7 +102,7 @@ func (c *Compiler) Compile(prog *parser.Program, _ string) ([]byte, error) {
 	c.indent--
 	c.buf.WriteByte('\n')
 
-	c.writeln("let map_get m k = Obj.obj (List.assoc k m)")
+	c.writeln("let map_get m k = List.assoc k m")
 	c.buf.WriteByte('\n')
 
 	c.writeln("let list_union a b = List.sort_uniq compare (a @ b)")
@@ -198,8 +198,8 @@ func (c *Compiler) compileGlobalLet(l *parser.LetStmt) error {
 		if err != nil {
 			return err
 		}
-	} else if l.Type != nil && l.Type.Simple != nil {
-		switch *l.Type.Simple {
+	} else if l.Type != nil {
+		switch c.typeRef(l.Type) {
 		case "int":
 			val = "0"
 		case "float":
@@ -210,7 +210,15 @@ func (c *Compiler) compileGlobalLet(l *parser.LetStmt) error {
 			val = "\"\""
 		}
 	}
-	c.writeln(fmt.Sprintf("let %s = %s", l.Name, val))
+	typ := ""
+	if l.Type != nil {
+		typ = c.typeRef(l.Type)
+	}
+	if typ != "" {
+		c.writeln(fmt.Sprintf("let %s : %s = %s", l.Name, typ, val))
+	} else {
+		c.writeln(fmt.Sprintf("let %s = %s", l.Name, val))
+	}
 	return nil
 }
 
@@ -224,7 +232,13 @@ func (c *Compiler) compileGlobalVar(v *parser.VarStmt) error {
 		}
 	}
 	c.vars[v.Name] = true
-	c.writeln(fmt.Sprintf("let %s = ref %s", v.Name, val))
+	typ, _ := c.env.GetVar(v.Name)
+	typStr := ocamlType(typ)
+	if typStr != "" {
+		c.writeln(fmt.Sprintf("let %s : %s ref = ref %s", v.Name, typStr, val))
+	} else {
+		c.writeln(fmt.Sprintf("let %s = ref %s", v.Name, val))
+	}
 	return nil
 }
 
@@ -260,7 +274,7 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 			}
 			switch typ.(type) {
 			case types.MapType:
-				c.writeln(fmt.Sprintf("%s := map_set !%s %s (Obj.repr %s);", a.Name, a.Name, idx, val))
+				c.writeln(fmt.Sprintf("%s := map_set !%s %s %s;", a.Name, a.Name, idx, val))
 			default:
 				c.writeln(fmt.Sprintf("%s := list_set !%s %s %s;", a.Name, a.Name, idx, val))
 			}
@@ -277,7 +291,7 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 			}
 			switch typ.(type) {
 			case types.MapType:
-				c.writeln(fmt.Sprintf("%s := map_set !%s %s (Obj.repr (map_set (map_get !%s %s) %s (Obj.repr %s)));", a.Name, a.Name, idx1, a.Name, idx1, idx2, val))
+				c.writeln(fmt.Sprintf("%s := map_set !%s %s (map_set (map_get !%s %s) %s %s);", a.Name, a.Name, idx1, a.Name, idx1, idx2, val))
 			default:
 				c.writeln(fmt.Sprintf("%s := list_set !%s %s (list_set (List.nth !%s %s) %s %s);", a.Name, a.Name, idx1, a.Name, idx1, idx2, val))
 			}
@@ -864,7 +878,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if isStringPrimary(p.Target) {
 					val = fmt.Sprintf("String.make 1 (String.get %s %s)", val, idx)
 				} else if c.isMapPrimary(p.Target) || isStringExpr(op.Index.Start) {
-					val = fmt.Sprintf("Obj.obj (List.assoc %s (%s))", idx, val)
+					val = fmt.Sprintf("List.assoc %s %s", idx, val)
 				} else {
 					val = fmt.Sprintf("List.nth %s %s", val, idx)
 				}
@@ -924,7 +938,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		typ, _ := c.env.GetVar(base)
 		for _, field := range p.Selector.Tail {
 			if mt, ok := typ.(types.MapType); ok {
-				expr = fmt.Sprintf("Obj.obj (List.assoc \"%s\" %s)", field, expr)
+				expr = fmt.Sprintf("List.assoc \"%s\" %s", field, expr)
 				typ = mt.Value
 				continue
 			}
@@ -963,7 +977,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			items[i] = fmt.Sprintf("(%s,Obj.repr %s)", k, v)
+			items[i] = fmt.Sprintf("(%s,%s)", k, v)
 		}
 		return "[" + strings.Join(items, ";") + "]", nil
 	case p.Struct != nil:
@@ -1108,9 +1122,17 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
-		params[i] = p.Name
+		if p.Type != nil {
+			params[i] = fmt.Sprintf("(%s : %s)", p.Name, c.typeRef(p.Type))
+		} else {
+			params[i] = p.Name
+		}
 	}
-	c.writeln(fmt.Sprintf("let rec %s %s =", fn.Name, strings.Join(params, " ")))
+	ret := "unit"
+	if fn.Return != nil {
+		ret = c.typeRef(fn.Return)
+	}
+	c.writeln(fmt.Sprintf("let rec %s %s : %s =", fn.Name, strings.Join(params, " "), ret))
 	c.indent++
 	for _, st := range fn.Body {
 		if err := c.compileStmt(st); err != nil {
@@ -1147,7 +1169,37 @@ func (c *Compiler) typeRef(t *parser.TypeRef) string {
 			return strings.ToLower(*t.Simple)
 		}
 	}
+	if t.Generic != nil {
+		if t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
+			return c.typeRef(t.Generic.Args[0]) + " list"
+		}
+		if t.Generic.Name == "map" && len(t.Generic.Args) == 2 {
+			return fmt.Sprintf("(%s * %s) list", c.typeRef(t.Generic.Args[0]), c.typeRef(t.Generic.Args[1]))
+		}
+	}
 	return "unit"
+}
+
+func ocamlType(t types.Type) string {
+	switch tt := t.(type) {
+	case types.IntType, types.Int64Type:
+		return "int"
+	case types.FloatType:
+		return "float"
+	case types.BoolType:
+		return "bool"
+	case types.StringType:
+		return "string"
+	case types.ListType:
+		return ocamlType(tt.Elem) + " list"
+	case types.MapType:
+		return fmt.Sprintf("(%s * %s) list", ocamlType(tt.Key), ocamlType(tt.Value))
+	case types.StructType:
+		return strings.ToLower(tt.Name)
+	case types.VoidType:
+		return "unit"
+	}
+	return "Obj.t"
 }
 
 func (c *Compiler) writeln(s string) {
