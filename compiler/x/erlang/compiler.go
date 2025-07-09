@@ -26,10 +26,23 @@ type Compiler struct {
 	lets    map[string]bool
 	types   map[string]string
 	funs    map[string]int
+
+	needLeftJoin  bool
+	needRightJoin bool
+	needOuterJoin bool
 }
 
 func New(srcPath string) *Compiler {
-	return &Compiler{srcPath: srcPath, varVers: make(map[string]int), lets: make(map[string]bool), types: make(map[string]string), funs: make(map[string]int)}
+	return &Compiler{
+		srcPath:       srcPath,
+		varVers:       make(map[string]int),
+		lets:          make(map[string]bool),
+		types:         make(map[string]string),
+		funs:          make(map[string]int),
+		needLeftJoin:  false,
+		needRightJoin: false,
+		needOuterJoin: false,
+	}
 }
 
 // CompileFile compiles the Mochi source file at path.
@@ -110,6 +123,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.lets = make(map[string]bool)
 	c.types = make(map[string]string)
 	c.funs = make(map[string]int)
+	c.needLeftJoin = false
+	c.needRightJoin = false
+	c.needOuterJoin = false
 
 	base := strings.TrimSuffix(filepath.Base(c.srcPath), filepath.Ext(c.srcPath))
 	c.writeln("#!/usr/bin/env escript")
@@ -152,6 +168,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 
 	c.indent--
+	c.writeRuntime()
 	return c.buf.Bytes(), nil
 }
 
@@ -514,7 +531,9 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	gens = append(gens, fmt.Sprintf("%s <- %s", capitalize(q.Var), src))
+
 	for _, fr := range q.Froms {
 		s, err := c.compileExpr(fr.Src)
 		if err != nil {
@@ -522,21 +541,82 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		}
 		gens = append(gens, fmt.Sprintf("%s <- %s", capitalize(fr.Var), s))
 	}
-	for _, j := range q.Joins {
-		if j.Side != nil {
-			return "", fmt.Errorf("join side %s not supported", *j.Side)
-		}
-		s, err := c.compileExpr(j.Src)
+
+	specialJoin := false
+	var joinSrc []string
+	var joinOns []string
+	if len(q.Joins) > 0 {
+		joinSrc = make([]string, len(q.Joins))
+		joinOns = make([]string, len(q.Joins))
+	}
+
+	for i, j := range q.Joins {
+		js, err := c.compileExpr(j.Src)
 		if err != nil {
 			return "", err
 		}
-		gens = append(gens, fmt.Sprintf("%s <- %s", capitalize(j.Var), s))
+		joinSrc[i] = js
+		on := ""
 		if j.On != nil {
-			onCond, err := c.compileExpr(j.On)
+			oc, err := c.compileExpr(j.On)
 			if err != nil {
 				return "", err
 			}
-			conds = append(conds, onCond)
+			on = oc
+		}
+		joinOns[i] = on
+	}
+
+	if len(q.Joins) == 1 && q.Joins[0].Side != nil {
+		side := *q.Joins[0].Side
+		if side == "right" || side == "outer" {
+			specialJoin = true
+			on := joinOns[0]
+			js := joinSrc[0]
+			if side == "right" {
+				gens[0] = fmt.Sprintf("{%s, %s} <- mochi_right_join(%s, %s, fun(%s, %s) -> %s end)",
+					capitalize(q.Var), capitalize(q.Joins[0].Var), src, js, capitalize(q.Var), capitalize(q.Joins[0].Var), on)
+				c.needRightJoin = true
+			} else {
+				gens[0] = fmt.Sprintf("{%s, %s} <- mochi_outer_join(%s, %s, fun(%s, %s) -> %s end)",
+					capitalize(q.Var), capitalize(q.Joins[0].Var), src, js, capitalize(q.Var), capitalize(q.Joins[0].Var), on)
+				c.needLeftJoin = true
+				c.needRightJoin = true
+				c.needOuterJoin = true
+			}
+		}
+	}
+
+	for i, j := range q.Joins {
+		if specialJoin && i == 0 {
+			continue
+		}
+		js := joinSrc[i]
+		on := joinOns[i]
+		if j.Side != nil {
+			switch *j.Side {
+			case "left":
+				gens = append(gens, fmt.Sprintf("{%s, %s} <- mochi_left_join_item(%s, %s, fun(%s, %s) -> %s end)",
+					capitalize(q.Var), capitalize(j.Var), capitalize(q.Var), js, capitalize(q.Var), capitalize(j.Var), on))
+				c.needLeftJoin = true
+			case "right":
+				gens = append(gens, fmt.Sprintf("{%s, %s} <- mochi_right_join_item(%s, %s, fun(%s, %s) -> %s end)",
+					capitalize(q.Var), capitalize(j.Var), js, capitalize(q.Var), capitalize(q.Var), capitalize(j.Var), on))
+				c.needRightJoin = true
+			case "outer":
+				gens = append(gens, fmt.Sprintf("{%s, %s} <- mochi_outer_join(%s, %s, fun(%s, %s) -> %s end)",
+					capitalize(q.Var), capitalize(j.Var), capitalize(q.Var), js, capitalize(q.Var), capitalize(j.Var), on))
+				c.needLeftJoin = true
+				c.needRightJoin = true
+				c.needOuterJoin = true
+			default:
+				return "", fmt.Errorf("join side %s not supported", *j.Side)
+			}
+		} else {
+			gens = append(gens, fmt.Sprintf("%s <- %s", capitalize(j.Var), js))
+			if on != "" {
+				conds = append(conds, on)
+			}
 		}
 	}
 
@@ -1247,4 +1327,54 @@ func selectIsVar(e *parser.Expr, name string) bool {
 		return s.Root == name && len(s.Tail) == 0
 	}
 	return false
+}
+
+func (c *Compiler) writeRuntime() {
+	if c.needLeftJoin {
+		c.writeln("")
+		c.writeln("mochi_left_join_item(A, B, Fun) ->")
+		c.indent++
+		c.writeln("Matches = [ {A, J} || J <- B, Fun(A, J) ],")
+		c.writeln("case Matches of")
+		c.indent++
+		c.writeln("[] -> [{A, undefined}];")
+		c.writeln("_ -> Matches")
+		c.indent--
+		c.writeln("end.")
+		c.indent--
+
+		c.writeln("")
+		c.writeln("mochi_left_join(L, R, Fun) ->")
+		c.indent++
+		c.writeln("lists:flatmap(fun(X) -> mochi_left_join_item(X, R, Fun) end, L).")
+		c.indent--
+	}
+	if c.needRightJoin {
+		c.writeln("")
+		c.writeln("mochi_right_join_item(B, A, Fun) ->")
+		c.indent++
+		c.writeln("Matches = [ {I, B} || I <- A, Fun(I, B) ],")
+		c.writeln("case Matches of")
+		c.indent++
+		c.writeln("[] -> [{undefined, B}];")
+		c.writeln("_ -> Matches")
+		c.indent--
+		c.writeln("end.")
+		c.indent--
+
+		c.writeln("")
+		c.writeln("mochi_right_join(L, R, Fun) ->")
+		c.indent++
+		c.writeln("lists:flatmap(fun(Y) -> mochi_right_join_item(Y, L, Fun) end, R).")
+		c.indent--
+	}
+	if c.needOuterJoin {
+		c.writeln("")
+		c.writeln("mochi_outer_join(L, R, Fun) ->")
+		c.indent++
+		c.writeln("Left = mochi_left_join(L, R, Fun),")
+		c.writeln("Right = [ P || P = {undefined, _} <- mochi_right_join(L, R, Fun) ],")
+		c.writeln("Left ++ Right.")
+		c.indent--
+	}
 }
