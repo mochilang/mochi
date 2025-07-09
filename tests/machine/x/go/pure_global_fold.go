@@ -11,8 +11,9 @@ func inc(x int) int {
 	return (x + k)
 }
 
+var k int
+
 func main() {
-	var k int = 2
-	_ = k
-	fmt.Println(5)
+	k = 2
+	fmt.Println(inc(3))
 }

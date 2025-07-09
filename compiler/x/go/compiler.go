@@ -318,8 +318,11 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	name := sanitizeName(s.Name)
 	var t types.Type = types.AnyType{}
 	if c.env != nil {
+		envTyp, _ := c.env.GetVar(s.Name)
 		if s.Type != nil {
 			t = c.resolveTypeRef(s.Type)
+		} else if envTyp != nil {
+			t = envTyp
 		} else if s.Value != nil {
 			t = c.inferExprType(s.Value)
 			if ll := s.Value.Binary.Left.Value.Target.List; ll != nil {
@@ -343,8 +346,8 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 					}
 				}
 			}
-		} else if old, err := c.env.GetVar(s.Name); err == nil {
-			t = old
+		} else if envTyp != nil {
+			t = envTyp
 		}
 		c.env.SetVar(s.Name, t, false)
 	}
@@ -399,8 +402,11 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 
 	var typ types.Type = types.AnyType{}
 	if c.env != nil {
+		envTyp, _ := c.env.GetVar(s.Name)
 		if s.Type != nil {
 			typ = c.resolveTypeRef(s.Type)
+		} else if envTyp != nil {
+			typ = envTyp
 		} else if s.Value != nil {
 			typ = c.inferExprTypeHint(s.Value, typ)
 			if ll := s.Value.Binary.Left.Value.Target.List; ll != nil {
@@ -416,8 +422,8 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 					c.compileStructType(st)
 				}
 			}
-		} else if t, err := c.env.GetVar(s.Name); err == nil {
-			typ = t
+		} else if envTyp != nil {
+			typ = envTyp
 		}
 		c.env.SetVar(s.Name, typ, true)
 	}
