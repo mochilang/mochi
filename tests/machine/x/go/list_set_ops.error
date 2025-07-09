@@ -1,0 +1,8 @@
+Error on line 0: run error: exit status 1
+# command-line-arguments
+../../../tests/machine/x/go/list_set_ops.go:21:7: undefined: _equal
+../../../tests/machine/x/go/list_set_ops.go:38:7: undefined: _equal
+../../../tests/machine/x/go/list_set_ops.go:46:8: undefined: _equal
+../../../tests/machine/x/go/list_set_ops.go:64:7: undefined: _equal
+
+1: //go:build ignore

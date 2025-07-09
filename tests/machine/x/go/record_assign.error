@@ -1,0 +1,13 @@
+Error on line 0: run error: exit status 1
+panic: json: cannot unmarshal number into Go value of type main.Counter
+
+goroutine 1 [running]:
+main._cast[...]({0x4ccf00, 0x5186a8})
+	/workspace/mochi/tests/machine/x/go/record_assign.go:67 +0x38d
+main.inc({0x0?})
+	/workspace/mochi/tests/machine/x/go/record_assign.go:16 +0x2c
+main.main()
+	/workspace/mochi/tests/machine/x/go/record_assign.go:21 +0x15
+exit status 2
+
+1: //go:build ignore
