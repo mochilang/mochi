@@ -24,12 +24,12 @@ function __exists(v)
 end
 data = {1, 2}
 flag = __exists((function()
-    local _res = {}
-    for _, x in ipairs(data) do
-        if __eq(x, 1) then
-            _res[#_res+1] = x
-        end
+  local _res = {}
+  for _, x in ipairs(data) do
+    if __eq(x, 1) then
+      _res[#_res+1] = x
     end
-    return _res
+  end
+  return _res
 end)())
 print(flag)

@@ -64,28 +64,7 @@ function __union_all(a, b)
     if b then for _, v in ipairs(b) do res[#res+1] = v end end
     return res
 end
-(function()
-    local _tmp0 = __union({1, 2}, {2, 3})
-    for i, v in ipairs(_tmp0) do
-        io.write(tostring(v))
-        if i < #_tmp0 then io.write(" ") end
-    end
-    io.write("\n")
-end)()
-(function()
-    local _tmp1 = __except({1, 2, 3}, {2})
-    for i, v in ipairs(_tmp1) do
-        io.write(tostring(v))
-        if i < #_tmp1 then io.write(" ") end
-    end
-    io.write("\n")
-end)()
-(function()
-    local _tmp2 = __intersect({1, 2, 3}, {2, 4})
-    for i, v in ipairs(_tmp2) do
-        io.write(tostring(v))
-        if i < #_tmp2 then io.write(" ") end
-    end
-    io.write("\n")
-end)()
+print(__union({1, 2}, {2, 3}))
+print(__except({1, 2, 3}, {2}))
+print(__intersect({1, 2, 3}, {2, 4}))
 print(#__union_all({1, 2}, {2, 3}))

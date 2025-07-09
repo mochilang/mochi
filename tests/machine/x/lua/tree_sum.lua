@@ -11,11 +11,11 @@ function __add(a, b)
     end
 end
 function sum_tree(t)
-    return (function()
-    local _t0 = t
-    if _t0.__name == "Leaf" then return 0 end
-    if _t0.__name == "Node" then return (function(left, value, right) return __add(__add(sum_tree(left), value), sum_tree(right)) end)(_t0.left, _t0.value, _t0.right) end
-    return nil
+  return (function()
+  local _t0 = t
+  if _t0.__name == "Leaf" then return 0 end
+  if _t0.__name == "Node" then return (function(left, value, right) return __add(__add(sum_tree(left), value), sum_tree(right)) end)(_t0.left, _t0.value, _t0.right) end
+  return nil
 end)()
 end
 

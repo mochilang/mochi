@@ -11,7 +11,7 @@ function __add(a, b)
     end
 end
 function sum3(a, b, c)
-    return __add(__add(a, b), c)
+  return __add(__add(a, b), c)
 end
 
 print(sum3(1, 2, 3))

@@ -11,7 +11,7 @@ function __add(a, b)
     end
 end
 function triple(x)
-    return (x * 3)
+  return (x * 3)
 end
 
 print(triple(__add(1, 2)))

@@ -11,10 +11,10 @@ function __add(a, b)
     end
 end
 function outer(x)
-    local function inner(y)
-        return __add(x, y)
-    end
-    return inner(5)
+  local function inner(y)
+    return __add(x, y)
+  end
+  return inner(5)
 end
 
 print(outer(3))

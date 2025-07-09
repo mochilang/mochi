@@ -217,27 +217,27 @@ end
 customers = {{["id"]=1, ["name"]="Alice"}, {["id"]=2, ["name"]="Bob"}, {["id"]=3, ["name"]="Charlie"}}
 orders = {{["id"]=100, ["customerId"]=1}, {["id"]=101, ["customerId"]=1}, {["id"]=102, ["customerId"]=2}}
 stats = (function()
-    local _src = customers
-    local _rows = __query(_src, {
-        { items = orders, on = function(c, o) return __eq(o.customerId, c.id) end, left = true }
-    }, { selectFn = function(c, o) return {c, o} end })
-    local _groups = __group_by_rows(_rows, function(c, o) return c.name end, function(c, o) local _row = __merge(c, o); _row.c = c; _row.o = o; return _row end)
-    local _res = {}
-    for _, g in ipairs(_groups) do
-        _res[#_res+1] = {["name"]=g.key, ["count"]=__count((function()
-    local _res = {}
-    for _, r in ipairs(g.items) do
-        if r.o then
-            _res[#_res+1] = r
-        end
+  local _src = customers
+  local _rows = __query(_src, {
+    { items = orders, on = function(c, o) return __eq(o.customerId, c.id) end, left = true }
+  }, { selectFn = function(c, o) return {c, o} end })
+  local _groups = __group_by_rows(_rows, function(c, o) return c.name end, function(c, o) local _row = __merge(c, o); _row.c = c; _row.o = o; return _row end)
+  local _res = {}
+  for _, g in ipairs(_groups) do
+    _res[#_res+1] = {["name"]=g.key, ["count"]=__count((function()
+  local _res = {}
+  for _, r in ipairs(g.items) do
+    if r.o then
+      _res[#_res+1] = r
     end
-    return _res
+  end
+  return _res
 end)())}
-    end
-    return _res
+  end
+  return _res
 end)()
 print("--- Group Left Join ---")
 for _, s in ipairs(stats) do
-    print(s.name, "orders:", s.count)
-    ::__continue0::
+  print(s.name, "orders:", s.count)
+  ::__continue0::
 end

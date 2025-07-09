@@ -61,21 +61,21 @@ function __count(v)
 end
 people = {{["name"]="Alice", ["age"]=30, ["city"]="Paris"}, {["name"]="Bob", ["age"]=15, ["city"]="Hanoi"}, {["name"]="Charlie", ["age"]=65, ["city"]="Paris"}, {["name"]="Diana", ["age"]=45, ["city"]="Hanoi"}, {["name"]="Eve", ["age"]=70, ["city"]="Paris"}, {["name"]="Frank", ["age"]=22, ["city"]="Hanoi"}}
 stats = (function()
-    local _groups = __group_by(people, function(person) return person.city end)
-    local _res = {}
-    for _, g in ipairs(_groups) do
-        _res[#_res+1] = {["city"]=g.key, ["count"]=__count(g), ["avg_age"]=__avg((function()
-    local _res = {}
-    for _, p in ipairs(g.items) do
-        _res[#_res+1] = p.age
-    end
-    return _res
+  local _groups = __group_by(people, function(person) return person.city end)
+  local _res = {}
+  for _, g in ipairs(_groups) do
+    _res[#_res+1] = {["city"]=g.key, ["count"]=__count(g), ["avg_age"]=__avg((function()
+  local _res = {}
+  for _, p in ipairs(g.items) do
+    _res[#_res+1] = p.age
+  end
+  return _res
 end)())}
-    end
-    return _res
+  end
+  return _res
 end)()
 print("--- People grouped by city ---")
 for _, s in ipairs(stats) do
-    print(s.city, ": count =", s.count, ", avg_age =", s.avg_age)
-    ::__continue0::
+  print(s.city, ": count =", s.count, ", avg_age =", s.avg_age)
+  ::__continue0::
 end

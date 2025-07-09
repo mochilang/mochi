@@ -1,3 +1,2 @@
 --- Left Join ---
-Order	100	customer	table: 0x55626ec73e30	total	250
-Order	101	customer	nil	total	80
+Order	100	customer	table: 0x5618c0af0e30	total	250Order	101	customer	nil	total	80

@@ -29,13 +29,13 @@ function __eq(a, b)
 end
 xs = {1, 2, 3}
 ys = (function()
-    local _res = {}
-    for _, x in ipairs(xs) do
-        if __eq((x % 2), 1) then
-            _res[#_res+1] = x
-        end
+  local _res = {}
+  for _, x in ipairs(xs) do
+    if __eq((x % 2), 1) then
+      _res[#_res+1] = x
     end
-    return _res
+  end
+  return _res
 end)()
 print(__contains(ys, 1))
 print(__contains(ys, 2))
