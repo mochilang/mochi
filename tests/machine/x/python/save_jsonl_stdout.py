@@ -20,7 +20,7 @@ def _save(rows, path, opts):
         if isinstance(delim, str) and delim:
             delim = delim[0]
     rows = [dataclasses.asdict(r) if dataclasses.is_dataclass(r) else r for r in rows]
-    if path is not None and (not os.path.isabs(path)):
+    if path is not None and path != "-" and (not os.path.isabs(path)):
         base = os.path.join(os.path.dirname(__file__), path)
         if not os.path.exists(base) and os.environ.get("MOCHI_ROOT"):
             clean = path
