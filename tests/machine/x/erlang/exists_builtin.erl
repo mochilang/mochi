@@ -3,5 +3,5 @@
 
 main(_) ->
     Data = [1, 2],
-    Flag = (length([X || X <- Data, (X == 1)]) > 0),
+    Flag = lists:any(fun(X) -> (X == 1) end, Data),
     io:format("~p~n", [Flag]).

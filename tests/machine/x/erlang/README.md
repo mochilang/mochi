@@ -104,6 +104,6 @@ Compiled programs: 39/97
 
 ## Remaining tasks
 
-- [ ] Implement `exists` query compilation
+- [x] Implement `exists` query compilation
 - [ ] Support joins and group-by queries
 - [ ] Add code generation for remaining Mochi examples
