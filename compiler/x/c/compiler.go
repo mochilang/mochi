@@ -2914,6 +2914,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 				}
 			}
 			return "0"
+		} else if p.Call.Func == "exists" {
+			arg := c.compileExpr(p.Call.Args[0])
+			if _, ok := c.exprType(p.Call.Args[0]).(types.GroupType); ok {
+				return fmt.Sprintf("%s.items.len > 0", arg)
+			}
+			return fmt.Sprintf("%s.len > 0", arg)
 		} else if p.Call.Func == "count" {
 			t := c.exprType(p.Call.Args[0])
 			arg := c.compileExpr(p.Call.Args[0])

@@ -27,7 +27,7 @@ int main() {
     _t3++;
   }
   _t2.len = _t3;
-  int flag = exists(_t2);
+  int flag = _t2.len > 0;
   printf("%s\n", (flag) ? "true" : "false");
   return 0;
 }
