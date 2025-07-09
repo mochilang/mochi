@@ -1209,6 +1209,36 @@ func defaultValue(typ string) string {
 	}
 }
 
+func swiftType(name string) string {
+	switch name {
+	case "int":
+		return "Int"
+	case "float":
+		return "Double"
+	case "bool":
+		return "Bool"
+	case "string":
+		return "String"
+	}
+	if strings.HasPrefix(name, "list_") {
+		inner := swiftType(strings.TrimPrefix(name, "list_"))
+		if inner == "" {
+			inner = "Any"
+		}
+		return "[" + inner + "]"
+	}
+	if name == "list" {
+		return "[Any]"
+	}
+	if name == "map" {
+		return "[AnyHashable: Any]"
+	}
+	if name == "" {
+		return "Any"
+	}
+	return name
+}
+
 func (c *compiler) isBuiltinType(typ string) bool {
 	switch typ {
 	case "Int", "Double", "Bool", "String":
@@ -1376,8 +1406,11 @@ func (c *compiler) existsQuery(q *parser.QueryExpr) (string, error) {
 }
 
 func (c *compiler) queryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Joins) > 0 || q.Group != nil || q.Distinct {
+	if q.Group != nil || q.Distinct {
 		return "", fmt.Errorf("unsupported query")
+	}
+	if len(q.Joins) > 0 {
+		return c.joinQueryExpr(q)
 	}
 	if len(q.Froms) == 0 && q.Where == nil && q.Sort != nil {
 		src, err := c.expr(q.Source)
@@ -1578,6 +1611,117 @@ func replaceIdent(s, name, repl string) string {
 	re := regexp.MustCompile(`\b` + regexp.QuoteMeta(name) + `\b`)
 	repl = strings.ReplaceAll(repl, "$", "$$")
 	return re.ReplaceAllString(s, repl)
+}
+
+func (c *compiler) joinQueryExpr(q *parser.QueryExpr) (string, error) {
+	if q.Sort != nil || q.Skip != nil || q.Take != nil {
+		return "", fmt.Errorf("unsupported query")
+	}
+
+	vars := []string{q.Var}
+	srcs := make([]string, 0, len(q.Froms)+len(q.Joins)+1)
+	src, err := c.expr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	srcs = append(srcs, src)
+
+	saved := c.varTypes
+	savedFields := c.mapFields
+	c.varTypes = copyMap(c.varTypes)
+	c.mapFields = copyMap(c.mapFields)
+	defer func() { c.varTypes = saved; c.mapFields = savedFields }()
+
+	c.varTypes[q.Var] = c.elementType(q.Source)
+	if f := c.elementFieldTypes(q.Source); f != nil {
+		c.mapFields[q.Var] = f
+	}
+
+	for _, f := range q.Froms {
+		v, err := c.expr(f.Src)
+		if err != nil {
+			return "", err
+		}
+		srcs = append(srcs, v)
+		vars = append(vars, f.Var)
+		c.varTypes[f.Var] = c.elementType(f.Src)
+		if fl := c.elementFieldTypes(f.Src); fl != nil {
+			c.mapFields[f.Var] = fl
+		}
+	}
+
+	joinConds := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		v, err := c.expr(j.Src)
+		if err != nil {
+			return "", err
+		}
+		srcs = append(srcs, v)
+		vars = append(vars, j.Var)
+		c.varTypes[j.Var] = c.elementType(j.Src)
+		if fl := c.elementFieldTypes(j.Src); fl != nil {
+			c.mapFields[j.Var] = fl
+		}
+		cond, err := c.expr(j.On)
+		if err != nil {
+			return "", err
+		}
+		joinConds[i] = cond
+	}
+
+	var whereCond string
+	if q.Where != nil {
+		w, err := c.expr(q.Where)
+		if err != nil {
+			return "", err
+		}
+		whereCond = w
+	}
+	for _, jc := range joinConds {
+		if whereCond == "" {
+			whereCond = jc
+		} else {
+			whereCond = fmt.Sprintf("(%s) && (%s)", whereCond, jc)
+		}
+	}
+
+	prev := c.tupleMap
+	c.tupleMap = true
+	sel, err := c.expr(q.Select)
+	c.tupleMap = prev
+	if err != nil {
+		return "", err
+	}
+
+	resType := swiftType(c.exprType(q.Select))
+	indent := 1
+	var b strings.Builder
+	b.WriteString("{ () -> [" + resType + "] in\n")
+	b.WriteString("    var _res: [" + resType + "] = []\n")
+	for i, v := range vars {
+		b.WriteString(strings.Repeat("    ", indent))
+		b.WriteString(fmt.Sprintf("for %s in %s {\n", v, srcs[i]))
+		indent++
+		if i >= 1+len(q.Froms) { // join var
+			jc := joinConds[i-(1+len(q.Froms))]
+			b.WriteString(strings.Repeat("    ", indent))
+			b.WriteString(fmt.Sprintf("if !(%s) { continue }\n", jc))
+		}
+	}
+	if whereCond != "" {
+		b.WriteString(strings.Repeat("    ", indent))
+		b.WriteString(fmt.Sprintf("if !(%s) { continue }\n", whereCond))
+	}
+	b.WriteString(strings.Repeat("    ", indent))
+	b.WriteString("_res.append(" + sel + ")\n")
+	for i := len(vars) - 1; i >= 0; i-- {
+		indent--
+		b.WriteString(strings.Repeat("    ", indent))
+		b.WriteString("}\n")
+	}
+	b.WriteString("    return _res\n")
+	b.WriteString("}()")
+	return b.String(), nil
 }
 
 func (c *compiler) elementType(e *parser.Expr) string {
