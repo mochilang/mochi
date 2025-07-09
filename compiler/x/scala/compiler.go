@@ -1258,12 +1258,55 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		expr = fmt.Sprintf("(%s).map{ case(%s,%s) => { val %s = (%s, %s); %s } }.toList", groups, q.Group.Name+"Key", q.Group.Name+"Items", q.Group.Name, q.Group.Name+"Key", q.Group.Name+"Items", sel)
 	} else {
-		sel, err := c.compileExpr(q.Select)
-		if err != nil {
-			c.env = oldEnv
-			return "", err
+		// handle simple aggregations without GROUP BY
+		if call, ok := callPattern(q.Select); ok {
+			agg := ""
+			switch call.Func {
+			case "sum", "min", "max":
+				if len(call.Args) == 1 {
+					arg, err := c.compileExpr(call.Args[0])
+					if err != nil {
+						c.env = oldEnv
+						return "", err
+					}
+					list := fmt.Sprintf("for { %s } yield %s", strings.Join(parts, "; "), arg)
+					agg = fmt.Sprintf("(%s).%s", list, call.Func)
+				}
+			case "avg":
+				if len(call.Args) == 1 {
+					arg, err := c.compileExpr(call.Args[0])
+					if err != nil {
+						c.env = oldEnv
+						return "", err
+					}
+					list := fmt.Sprintf("for { %s } yield %s", strings.Join(parts, "; "), arg)
+					agg = fmt.Sprintf("(%s).sum.toDouble / (%s).size", list, list)
+				}
+			case "count":
+				target := "1"
+				if len(call.Args) == 1 {
+					var err error
+					target, err = c.compileExpr(call.Args[0])
+					if err != nil {
+						c.env = oldEnv
+						return "", err
+					}
+				}
+				list := fmt.Sprintf("for { %s } yield %s", strings.Join(parts, "; "), target)
+				agg = fmt.Sprintf("(%s).size", list)
+			}
+			if agg != "" {
+				expr = agg
+			}
 		}
-		expr = fmt.Sprintf("for { %s } yield %s", strings.Join(parts, "; "), sel)
+		if expr == "" {
+			sel, err := c.compileExpr(q.Select)
+			if err != nil {
+				c.env = oldEnv
+				return "", err
+			}
+			expr = fmt.Sprintf("for { %s } yield %s", strings.Join(parts, "; "), sel)
+		}
 	}
 	if q.Sort != nil && q.Group == nil {
 		c.inSort = true
