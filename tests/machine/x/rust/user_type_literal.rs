@@ -5,7 +5,7 @@ fn main() {
     }
     struct Book {
         title: &'static str,
-        author: i32,
+        author: Person,
     }
     let book = Book { title: "Go", author: Person { name: "Bob", age: 42 } };
     println!("{:?}", book.author.name);

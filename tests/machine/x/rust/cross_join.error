@@ -59,26 +59,26 @@ help: the return type of this call is `&'static str` due to the type of the argu
 note: method defined here
  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
 
-error[E0609]: no field `id` on type `&HashMap<&str, {integer}>`
- --> /workspace/mochi/tests/machine/x/rust/cross_join.rs:4:167
+error[E0609]: no field `id` on type `HashMap<&str, {integer}>`
+ --> /workspace/mochi/tests/machine/x/rust/cross_join.rs:4:169
   |
 4 | ... = std::collections::HashMap::new(); m.insert("orderId", o.id); m.insert("orderCustomerId", o.customerId); m.insert("pairedCustomerNam...
   |                                                               ^^ unknown field
 
-error[E0609]: no field `customerId` on type `&HashMap<&str, {integer}>`
- --> /workspace/mochi/tests/machine/x/rust/cross_join.rs:4:202
+error[E0609]: no field `customerId` on type `HashMap<&str, {integer}>`
+ --> /workspace/mochi/tests/machine/x/rust/cross_join.rs:4:204
   |
 4 | ...insert("orderId", o.id); m.insert("orderCustomerId", o.customerId); m.insert("pairedCustomerName", c.name); m.insert("orderTotal", o.t...
   |                                                           ^^^^^^^^^^ unknown field
 
-error[E0609]: no field `name` on type `&HashMap<&str, {integer}>`
- --> /workspace/mochi/tests/machine/x/rust/cross_join.rs:4:248
+error[E0609]: no field `name` on type `HashMap<&str, {integer}>`
+ --> /workspace/mochi/tests/machine/x/rust/cross_join.rs:4:250
   |
 4 | ...tomerId", o.customerId); m.insert("pairedCustomerName", c.name); m.insert("orderTotal", o.total); m }); } } tmp1 };
   |                                                              ^^^^ unknown field
 
-error[E0609]: no field `total` on type `&HashMap<&str, {integer}>`
- --> /workspace/mochi/tests/machine/x/rust/cross_join.rs:4:280
+error[E0609]: no field `total` on type `HashMap<&str, {integer}>`
+ --> /workspace/mochi/tests/machine/x/rust/cross_join.rs:4:282
   |
 4 | ...("pairedCustomerName", c.name); m.insert("orderTotal", o.total); m }); } } tmp1 };
   |                                                             ^^^^^ unknown field

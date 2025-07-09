@@ -1,18 +1,16 @@
 line 0: compile: exit status 1
 error[E0308]: mismatched types
- --> /workspace/mochi/tests/machine/x/rust/cross_join_filter.rs:4:203
+ --> /workspace/mochi/tests/machine/x/rust/cross_join_filter.rs:4:205
   |
-4 | ...d::collections::HashMap::new(); m.insert("n", n); m.insert("l", l); m }); } } tmp1 };
-  |                                    -             -     ------      ^ expected `&{integer}`, found `&&str`
-  |                                    |             |     |
-  |                                    |             |     arguments to this method are incorrect
-  |                                    |             this argument has type `&{integer}`...
-  |                                    ... which causes `m` to have type `HashMap<&str, &{integer}>`
+4 | ...std::collections::HashMap::new(); m.insert("n", n); m.insert("l", l); m }); } } tmp1 };
+  |                                      -             -     ------      ^ expected integer, found `&str`
+  |                                      |             |     |
+  |                                      |             |     arguments to this method are incorrect
+  |                                      |             this argument has type `{integer}`...
+  |                                      ... which causes `m` to have type `HashMap<&str, {integer}>`
   |
-  = note: expected reference `&{integer}`
-             found reference `&&str`
-help: the return type of this call is `&&str` due to the type of the argument passed
- --> /workspace/mochi/tests/machine/x/rust/cross_join_filter.rs:4:189
+help: the return type of this call is `&str` due to the type of the argument passed
+ --> /workspace/mochi/tests/machine/x/rust/cross_join_filter.rs:4:191
   |
 4 | ...ashMap::new(); m.insert("n", n); m.insert("l", l); m }); } } tmp1 };
   |                                     ^^^^^^^^^^^^^^-^
@@ -21,13 +19,13 @@ help: the return type of this call is `&&str` due to the type of the argument pa
 note: method defined here
  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
 
-error[E0609]: no field `n` on type `HashMap<&str, &{integer}>`
+error[E0609]: no field `n` on type `HashMap<&str, {integer}>`
  --> /workspace/mochi/tests/machine/x/rust/cross_join_filter.rs:7:33
   |
 7 |         println!("{:?} {:?}", p.n, p.l);
   |                                 ^ unknown field
 
-error[E0609]: no field `l` on type `HashMap<&str, &{integer}>`
+error[E0609]: no field `l` on type `HashMap<&str, {integer}>`
  --> /workspace/mochi/tests/machine/x/rust/cross_join_filter.rs:7:38
   |
 7 |         println!("{:?} {:?}", p.n, p.l);
