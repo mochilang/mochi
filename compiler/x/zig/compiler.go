@@ -2080,10 +2080,47 @@ func (c *Compiler) compileLiteral(l *parser.Literal, hint types.Type) (string, e
 
 func (c *Compiler) compileListLiteral(list *parser.ListLiteral, asRef bool) (string, error) {
 	elems := make([]string, len(list.Elems))
-	elemType := "i32"
-	if len(list.Elems) > 0 {
-		elemType = zigTypeOf(c.inferExprType(list.Elems[0]))
+	if len(list.Elems) == 0 {
+		if asRef {
+			return "&[]i32{}", nil
+		}
+		return "[]i32{}", nil
 	}
+
+	if ml := extractMapLiteral(list.Elems[0]); ml != nil {
+		structName := c.newTmp()
+		decl, init, ok, err := c.mapLiteralStruct(ml, structName)
+		if ok && err == nil {
+			elems[0] = init
+			for i := 1; i < len(list.Elems); i++ {
+				ml2 := extractMapLiteral(list.Elems[i])
+				if ml2 == nil {
+					return "", fmt.Errorf("mixed list elements not supported")
+				}
+				_, init2, ok2, err2 := c.mapLiteralStruct(ml2, structName)
+				if err2 != nil {
+					return "", err2
+				}
+				if !ok2 {
+					return "", fmt.Errorf("inconsistent map literal")
+				}
+				elems[i] = init2
+			}
+			lbl := c.newLabel()
+			var b strings.Builder
+			b.WriteString("(" + lbl + ": { " + decl + " const _arr = ")
+			if asRef {
+				b.WriteString("&[_]" + structName + "{")
+			} else {
+				b.WriteString("[_]" + structName + "{")
+			}
+			b.WriteString(strings.Join(elems, ", "))
+			b.WriteString("}; break :" + lbl + " _arr; })")
+			return b.String(), nil
+		}
+	}
+
+	elemType := zigTypeOf(c.inferExprType(list.Elems[0]))
 	for i, e := range list.Elems {
 		v, err := c.compileExpr(e, false)
 		if err != nil {
@@ -2098,6 +2135,13 @@ func (c *Compiler) compileListLiteral(list *parser.ListLiteral, asRef bool) (str
 }
 
 func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
+	if _, init, ok, err := c.mapLiteralStruct(m, ""); ok {
+		if err != nil {
+			return "", err
+		}
+		return init, nil
+	}
+
 	keyType := "i32"
 	valType := "i32"
 	if len(m.Items) > 0 {

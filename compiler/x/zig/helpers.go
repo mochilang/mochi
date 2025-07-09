@@ -194,6 +194,60 @@ func identName(e *parser.Expr) (string, bool) {
 	return "", false
 }
 
+// extractMapLiteral returns the map literal contained in the expression if
+// it is a simple literal expression. Returns nil otherwise.
+func extractMapLiteral(e *parser.Expr) *parser.MapLiteral {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil
+	}
+	if u.Value == nil || u.Value.Target == nil || len(u.Value.Ops) != 0 {
+		return nil
+	}
+	return u.Value.Target.Map
+}
+
+// mapLiteralStruct returns the Zig struct type and initialization for the map
+// literal if all keys are simple strings. The ok result will be false if the
+// map cannot be represented as a struct.
+// mapLiteralStruct builds a struct representation of the map literal. If name
+// is non-empty, the returned initialization will use that name as the struct
+// type and typ will contain a declaration of the struct type. When name is
+// empty, typ will contain the struct type and init will include the inline
+// struct definition.
+func (c *Compiler) mapLiteralStruct(m *parser.MapLiteral, name string) (typ, init string, ok bool, err error) {
+	keys := make([]string, len(m.Items))
+	fields := make([]string, len(m.Items))
+	inits := make([]string, len(m.Items))
+	for i, it := range m.Items {
+		k, ok := simpleStringKey(it.Key)
+		if !ok {
+			return "", "", false, nil
+		}
+		key := sanitizeName(k)
+		valExpr, err := c.compileExpr(it.Value, false)
+		if err != nil {
+			return "", "", false, err
+		}
+		valType := zigTypeOf(c.inferExprType(it.Value))
+		keys[i] = key
+		fields[i] = fmt.Sprintf("%s: %s,", key, valType)
+		inits[i] = fmt.Sprintf(".%s = %s", key, valExpr)
+	}
+	structDef := fmt.Sprintf("struct { %s }", strings.Join(fields, " "))
+	if name != "" {
+		typ = fmt.Sprintf("const %s = %s;", name, structDef)
+		init = fmt.Sprintf("%s{ %s }", name, strings.Join(inits, ", "))
+	} else {
+		typ = structDef
+		init = fmt.Sprintf("%s{ %s }", structDef, strings.Join(inits, ", "))
+	}
+	return typ, init, true, nil
+}
+
 func equalTypes(a, b types.Type) bool {
 	if _, ok := a.(types.AnyType); ok {
 		return true
