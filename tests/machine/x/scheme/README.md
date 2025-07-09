@@ -1,4 +1,4 @@
-# Scheme Machine Results (78/97 compiled and ran)
+# Scheme Machine Results (81/97 compiled and ran)
 
 ## Success
 - [x] append_builtin.mochi
@@ -91,7 +91,7 @@
 - [ ] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
 - [x] slice.mochi
-- [ ] str_builtin.mochi
+ - [x] str_builtin.mochi
 - [ ] string_compare.mochi
 - [ ] string_in_operator.mochi
 - [x] string_prefix_slice.mochi
@@ -99,4 +99,4 @@
 - [x] typed_let.mochi
 - [x] typed_var.mochi
 - [ ] update_stmt.mochi
-- [ ] while_loop.mochi
+ - [x] while_loop.mochi

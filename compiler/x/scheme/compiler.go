@@ -1164,7 +1164,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 		if len(args) != 1 {
 			return "", fmt.Errorf("str expects 1 arg")
 		}
-		return fmt.Sprintf("(format \"~a\" %s)", args[0]), nil
+		return fmt.Sprintf("(let ((s (open-output-string))) (write %s s) (get-output-string s))", args[0]), nil
 	case "count":
 		if len(args) != 1 {
 			return "", fmt.Errorf("count expects 1 arg")
