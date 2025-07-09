@@ -208,31 +208,24 @@ nations = {{["id"]=1, ["name"]="A"}, {["id"]=2, ["name"]="B"}}
 suppliers = {{["id"]=1, ["nation"]=1}, {["id"]=2, ["nation"]=2}}
 partsupp = {{["part"]=100, ["supplier"]=1, ["cost"]=10.0, ["qty"]=2}, {["part"]=100, ["supplier"]=2, ["cost"]=20.0, ["qty"]=1}, {["part"]=200, ["supplier"]=1, ["cost"]=5.0, ["qty"]=3}}
 filtered = (function()
-    local _src = partsupp
-    return __query(_src, {
-        { items = suppliers, on = function(ps, s) return __eq(s.id, ps.supplier) end },
-        { items = nations, on = function(ps, s, n) return __eq(n.id, s.nation) end }
-    }, { selectFn = function(ps, s, n) return {["part"]=ps.part, ["value"]=(ps.cost * ps.qty)} end, where = function(ps, s, n) return (__eq(n.name, "A")) end })
+  local _src = partsupp
+  return __query(_src, {
+    { items = suppliers, on = function(ps, s) return __eq(s.id, ps.supplier) end },
+    { items = nations, on = function(ps, s, n) return __eq(n.id, s.nation) end }
+  }, { selectFn = function(ps, s, n) return {["part"]=ps.part, ["value"]=(ps.cost * ps.qty)} end, where = function(ps, s, n) return (__eq(n.name, "A")) end })
 end)()
 grouped = (function()
-    local _groups = __group_by(filtered, function(x) return x.part end)
-    local _res = {}
-    for _, g in ipairs(_groups) do
-        _res[#_res+1] = {["part"]=g.key, ["total"]=__sum((function()
-    local _res = {}
-    for _, r in ipairs(g.items) do
-        _res[#_res+1] = r.value
-    end
-    return _res
+  local _groups = __group_by(filtered, function(x) return x.part end)
+  local _res = {}
+  for _, g in ipairs(_groups) do
+    _res[#_res+1] = {["part"]=g.key, ["total"]=__sum((function()
+  local _res = {}
+  for _, r in ipairs(g.items) do
+    _res[#_res+1] = r.value
+  end
+  return _res
 end)())}
-    end
-    return _res
+  end
+  return _res
 end)()
-(function()
-    local _tmp0 = grouped
-    for i, v in ipairs(_tmp0) do
-        io.write(tostring(v))
-        if i < #_tmp0 then io.write(" ") end
-    end
-    io.write("\n")
-end)()
+print(grouped)

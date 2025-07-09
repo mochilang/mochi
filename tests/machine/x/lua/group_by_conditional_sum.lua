@@ -209,39 +209,32 @@ function __sum(v)
 end
 items = {{["cat"]="a", ["val"]=10, ["flag"]=true}, {["cat"]="a", ["val"]=5, ["flag"]=false}, {["cat"]="b", ["val"]=20, ["flag"]=true}}
 result = (function()
-    local _src = items
-    local _rows = __query(_src, {
-    }, { selectFn = function(i) return {i} end })
-    local _groups = __group_by_rows(_rows, function(i) return i.cat end, function(i) local _row = __merge(i); _row.i = i; return _row end)
-    local _res = {}
-    for _, g in ipairs(_groups) do
-        _res[#_res+1] = {["cat"]=g.key, ["share"]=__div(__sum((function()
-    local _res = {}
-    for _, x in ipairs(g.items) do
-        _res[#_res+1] = (function()
-    if x.flag then
-        return x.val
-    else
-        return 0
-    end
+  local _src = items
+  local _rows = __query(_src, {
+  }, { selectFn = function(i) return {i} end })
+  local _groups = __group_by_rows(_rows, function(i) return i.cat end, function(i) local _row = __merge(i); _row.i = i; return _row end)
+  local _res = {}
+  for _, g in ipairs(_groups) do
+    _res[#_res+1] = {["cat"]=g.key, ["share"]=__div(__sum((function()
+  local _res = {}
+  for _, x in ipairs(g.items) do
+    _res[#_res+1] = (function()
+  if x.flag then
+    return x.val
+  else
+    return 0
+  end
 end)()
-    end
-    return _res
+  end
+  return _res
 end)()), __sum((function()
-    local _res = {}
-    for _, x in ipairs(g.items) do
-        _res[#_res+1] = x.val
-    end
-    return _res
+  local _res = {}
+  for _, x in ipairs(g.items) do
+    _res[#_res+1] = x.val
+  end
+  return _res
 end)()))}
-    end
-    return _res
+  end
+  return _res
 end)()
-(function()
-    local _tmp0 = result
-    for i, v in ipairs(_tmp0) do
-        io.write(tostring(v))
-        if i < #_tmp0 then io.write(" ") end
-    end
-    io.write("\n")
-end)()
+print(result)

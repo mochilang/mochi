@@ -47,17 +47,17 @@ function __indexString(s, i)
     return string.sub(s, i, i)
 end
 function twoSum(nums, target)
-    local n = #nums
-    for i = 0, (n)-1 do
-        for j = __add(i, 1), (n)-1 do
-            if __eq(__add(__index(nums, i), __index(nums, j)), target) then
-                return {i, j}
-            end
-            ::__continue1::
-        end
-        ::__continue0::
+  local n = #nums
+  for i = 0, (n)-1 do
+    for j = __add(i, 1), (n)-1 do
+      if __eq(__add(__index(nums, i), __index(nums, j)), target) then
+        return {i, j}
+      end
+      ::__continue1::
     end
-    return {-1, -1}
+    ::__continue0::
+  end
+  return {-1, -1}
 end
 
 result = twoSum({2, 7, 11, 15}, 9)

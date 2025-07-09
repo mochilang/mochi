@@ -161,14 +161,14 @@ customers = {{["id"]=1, ["name"]="Alice"}, {["id"]=2, ["name"]="Bob"}}
 orders = {{["id"]=100, ["customerId"]=1}, {["id"]=101, ["customerId"]=2}}
 items = {{["orderId"]=100, ["sku"]="a"}}
 result = (function()
-    local _src = orders
-    return __query(_src, {
-        { items = customers, on = function(o, c) return __eq(o.customerId, c.id) end },
-        { items = items, on = function(o, c, i) return __eq(o.id, i.orderId) end, left = true }
-    }, { selectFn = function(o, c, i) return {["orderId"]=o.id, ["name"]=c.name, ["item"]=i} end })
+  local _src = orders
+  return __query(_src, {
+    { items = customers, on = function(o, c) return __eq(o.customerId, c.id) end },
+    { items = items, on = function(o, c, i) return __eq(o.id, i.orderId) end, left = true }
+  }, { selectFn = function(o, c, i) return {["orderId"]=o.id, ["name"]=c.name, ["item"]=i} end })
 end)()
 print("--- Left Join Multi ---")
 for _, r in ipairs(result) do
-    print(r.orderId, r.name, r.item)
-    ::__continue0::
+  print(r.orderId, r.name, r.item)
+  ::__continue0::
 end

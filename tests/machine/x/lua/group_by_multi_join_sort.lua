@@ -221,30 +221,23 @@ lineitem = {{["l_orderkey"]=1000, ["l_returnflag"]="R", ["l_extendedprice"]=1000
 start_date = "1993-10-01"
 end_date = "1994-01-01"
 result = (function()
-    local _src = customer
-    local _rows = __query(_src, {
-        { items = orders, on = function(c, o) return __eq(o.o_custkey, c.c_custkey) end },
-        { items = lineitem, on = function(c, o, l) return __eq(l.l_orderkey, o.o_orderkey) end },
-        { items = nation, on = function(c, o, l, n) return __eq(n.n_nationkey, c.c_nationkey) end }
-    }, { selectFn = function(c, o, l, n) return {c, o, l, n} end, where = function(c, o, l, n) return ((((o.o_orderdate >= start_date) and (o.o_orderdate < end_date)) and __eq(l.l_returnflag, "R"))) end })
-    local _groups = __group_by_rows(_rows, function(c, o, l, n) return {["c_custkey"]=c.c_custkey, ["c_name"]=c.c_name, ["c_acctbal"]=c.c_acctbal, ["c_address"]=c.c_address, ["c_phone"]=c.c_phone, ["c_comment"]=c.c_comment, ["n_name"]=n.n_name} end, function(c, o, l, n) local _row = __merge(c, o, l, n); _row.c = c; _row.o = o; _row.l = l; _row.n = n; return _row end)
-    local _res = {}
-    for _, g in ipairs(_groups) do
-        _res[#_res+1] = {["c_custkey"]=g.key.c_custkey, ["c_name"]=g.key.c_name, ["revenue"]=__sum((function()
-    local _res = {}
-    for _, x in ipairs(g.items) do
-        _res[#_res+1] = (x.l.l_extendedprice * ((1 - x.l.l_discount)))
-    end
-    return _res
+  local _src = customer
+  local _rows = __query(_src, {
+    { items = orders, on = function(c, o) return __eq(o.o_custkey, c.c_custkey) end },
+    { items = lineitem, on = function(c, o, l) return __eq(l.l_orderkey, o.o_orderkey) end },
+    { items = nation, on = function(c, o, l, n) return __eq(n.n_nationkey, c.c_nationkey) end }
+  }, { selectFn = function(c, o, l, n) return {c, o, l, n} end, where = function(c, o, l, n) return ((((o.o_orderdate >= start_date) and (o.o_orderdate < end_date)) and __eq(l.l_returnflag, "R"))) end })
+  local _groups = __group_by_rows(_rows, function(c, o, l, n) return {["c_custkey"]=c.c_custkey, ["c_name"]=c.c_name, ["c_acctbal"]=c.c_acctbal, ["c_address"]=c.c_address, ["c_phone"]=c.c_phone, ["c_comment"]=c.c_comment, ["n_name"]=n.n_name} end, function(c, o, l, n) local _row = __merge(c, o, l, n); _row.c = c; _row.o = o; _row.l = l; _row.n = n; return _row end)
+  local _res = {}
+  for _, g in ipairs(_groups) do
+    _res[#_res+1] = {["c_custkey"]=g.key.c_custkey, ["c_name"]=g.key.c_name, ["revenue"]=__sum((function()
+  local _res = {}
+  for _, x in ipairs(g.items) do
+    _res[#_res+1] = (x.l.l_extendedprice * ((1 - x.l.l_discount)))
+  end
+  return _res
 end)()), ["c_acctbal"]=g.key.c_acctbal, ["n_name"]=g.key.n_name, ["c_address"]=g.key.c_address, ["c_phone"]=g.key.c_phone, ["c_comment"]=g.key.c_comment}
-    end
-    return _res
+  end
+  return _res
 end)()
-(function()
-    local _tmp0 = result
-    for i, v in ipairs(_tmp0) do
-        io.write(tostring(v))
-        if i < #_tmp0 then io.write(" ") end
-    end
-    io.write("\n")
-end)()
+print(result)

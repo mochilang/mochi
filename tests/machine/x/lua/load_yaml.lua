@@ -60,22 +60,22 @@ end
 Person = {}
 Person.__index = Person
 function Person.new(o)
-    o = o or {}
-    setmetatable(o, Person)
-    return o
+  o = o or {}
+  setmetatable(o, Person)
+  return o
 end
 
 people = __load("../interpreter/valid/people.yaml", {["format"]="yaml"})
 adults = (function()
-    local _res = {}
-    for _, p in ipairs(people) do
-        if (p.age >= 18) then
-            _res[#_res+1] = {["name"]=p.name, ["email"]=p.email}
-        end
+  local _res = {}
+  for _, p in ipairs(people) do
+    if (p.age >= 18) then
+      _res[#_res+1] = {["name"]=p.name, ["email"]=p.email}
     end
-    return _res
+  end
+  return _res
 end)()
 for _, a in ipairs(adults) do
-    print(a.name, a.email)
-    ::__continue0::
+  print(a.name, a.email)
+  ::__continue0::
 end

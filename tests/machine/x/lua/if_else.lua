@@ -1,6 +1,6 @@
 x = 5
 if (x > 3) then
-    print("big")
+  print("big")
 else
-    print("small")
+  print("small")
 end

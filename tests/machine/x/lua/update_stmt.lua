@@ -50,28 +50,28 @@ end
 Person = {}
 Person.__index = Person
 function Person.new(o)
-    o = o or {}
-    setmetatable(o, Person)
-    return o
+  o = o or {}
+  setmetatable(o, Person)
+  return o
 end
 
 function test_update_adult_status()
-    if not (__eq(people, {{name="Alice", age=17, status="minor"}, {name="Bob", age=26, status="adult"}, {name="Charlie", age=19, status="adult"}, {name="Diana", age=16, status="minor"}})) then error('expect failed') end
+  if not (__eq(people, {{name="Alice", age=17, status="minor"}, {name="Bob", age=26, status="adult"}, {name="Charlie", age=19, status="adult"}, {name="Diana", age=16, status="minor"}})) then error('expect failed') end
 end
 
 people = {{name="Alice", age=17, status="minor"}, {name="Bob", age=25, status="unknown"}, {name="Charlie", age=18, status="unknown"}, {name="Diana", age=16, status="minor"}}
 for _i0 = 1, #people do
-    local _it0 = people[_i0]
-    local name = _it0["name"]
-    local age = _it0["age"]
-    local status = _it0["status"]
-    if (age >= 18) then
-        _it0["status"] = "adult"
-        _it0["age"] = __add(age, 1)
-    end
-    people[_i0] = _it0
+  local _it0 = people[_i0]
+  local name = _it0["name"]
+  local age = _it0["age"]
+  local status = _it0["status"]
+  if (age >= 18) then
+    _it0["status"] = "adult"
+    _it0["age"] = __add(age, 1)
+  end
+  people[_i0] = _it0
 end
 print("ok")
 local __tests = {
-    {name="update adult status", fn=test_update_adult_status},
+  {name="update adult status", fn=test_update_adult_status},
 }

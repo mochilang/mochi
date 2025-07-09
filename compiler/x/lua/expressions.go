@@ -337,8 +337,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	argStr := strings.Join(args, ", ")
 	switch name {
 	case "print":
-		c.helpers["print"] = true
-		return fmt.Sprintf("__print(%s)", argStr), nil
+		return fmt.Sprintf("print(%s)", argStr), nil
 	case "str":
 		if len(args) == 1 {
 			return fmt.Sprintf("tostring(%s)", args[0]), nil

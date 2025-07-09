@@ -160,17 +160,17 @@ end
 customers = {{["id"]=1, ["name"]="Alice"}, {["id"]=2, ["name"]="Bob"}, {["id"]=3, ["name"]="Charlie"}, {["id"]=4, ["name"]="Diana"}}
 orders = {{["id"]=100, ["customerId"]=1, ["total"]=250}, {["id"]=101, ["customerId"]=2, ["total"]=125}, {["id"]=102, ["customerId"]=1, ["total"]=300}}
 result = (function()
-    local _src = customers
-    return __query(_src, {
-        { items = orders, on = function(c, o) return __eq(o.customerId, c.id) end, right = true }
-    }, { selectFn = function(c, o) return {["customerName"]=c.name, ["order"]=o} end })
+  local _src = customers
+  return __query(_src, {
+    { items = orders, on = function(c, o) return __eq(o.customerId, c.id) end, right = true }
+  }, { selectFn = function(c, o) return {["customerName"]=c.name, ["order"]=o} end })
 end)()
 print("--- Right Join using syntax ---")
 for _, entry in ipairs(result) do
-    if entry.order then
-        print("Customer", entry.customerName, "has order", entry.order.id, "- $", entry.order.total)
-    else
-        print("Customer", entry.customerName, "has no orders")
-    end
-    ::__continue0::
+  if entry.order then
+    print("Customer", entry.customerName, "has order", entry.order.id, "- $", entry.order.total)
+  else
+    print("Customer", entry.customerName, "has no orders")
+  end
+  ::__continue0::
 end

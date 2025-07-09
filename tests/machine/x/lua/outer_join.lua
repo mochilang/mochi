@@ -160,21 +160,21 @@ end
 customers = {{["id"]=1, ["name"]="Alice"}, {["id"]=2, ["name"]="Bob"}, {["id"]=3, ["name"]="Charlie"}, {["id"]=4, ["name"]="Diana"}}
 orders = {{["id"]=100, ["customerId"]=1, ["total"]=250}, {["id"]=101, ["customerId"]=2, ["total"]=125}, {["id"]=102, ["customerId"]=1, ["total"]=300}, {["id"]=103, ["customerId"]=5, ["total"]=80}}
 result = (function()
-    local _src = orders
-    return __query(_src, {
-        { items = customers, on = function(o, c) return __eq(o.customerId, c.id) end, left = true, right = true }
-    }, { selectFn = function(o, c) return {["order"]=o, ["customer"]=c} end })
+  local _src = orders
+  return __query(_src, {
+    { items = customers, on = function(o, c) return __eq(o.customerId, c.id) end, left = true, right = true }
+  }, { selectFn = function(o, c) return {["order"]=o, ["customer"]=c} end })
 end)()
 print("--- Outer Join using syntax ---")
 for _, row in ipairs(result) do
-    if row.order then
-        if row.customer then
-            print("Order", row.order.id, "by", row.customer.name, "- $", row.order.total)
-        else
-            print("Order", row.order.id, "by", "Unknown", "- $", row.order.total)
-        end
+  if row.order then
+    if row.customer then
+      print("Order", row.order.id, "by", row.customer.name, "- $", row.order.total)
     else
-        print("Customer", row.customer.name, "has no orders")
+      print("Order", row.order.id, "by", "Unknown", "- $", row.order.total)
     end
-    ::__continue0::
+  else
+    print("Customer", row.customer.name, "has no orders")
+  end
+  ::__continue0::
 end

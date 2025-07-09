@@ -24,20 +24,6 @@ function __slice(obj, i, j)
         return {}
     end
 end
-(function()
-    local _tmp0 = __slice({1, 2, 3}, 1, 3)
-    for i, v in ipairs(_tmp0) do
-        io.write(tostring(v))
-        if i < #_tmp0 then io.write(" ") end
-    end
-    io.write("\n")
-end)()
-(function()
-    local _tmp1 = __slice({1, 2, 3}, 0, 2)
-    for i, v in ipairs(_tmp1) do
-        io.write(tostring(v))
-        if i < #_tmp1 then io.write(" ") end
-    end
-    io.write("\n")
-end)()
+print(__slice({1, 2, 3}, 1, 3))
+print(__slice({1, 2, 3}, 0, 2))
 print(__slice("hello", 1, 4))
