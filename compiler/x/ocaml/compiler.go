@@ -375,6 +375,11 @@ func (c *Compiler) compileFor(fr *parser.ForStmt) error {
 	if err != nil {
 		return err
 	}
+	srcType := types.ExprType(fr.Source, c.env)
+	var elemType types.Type = types.AnyType{}
+	if lt, ok := srcType.(types.ListType); ok {
+		elemType = lt.Elem
+	}
 	loopName := fmt.Sprintf("__loop%d", c.loop)
 	c.loop++
 	c.writeln(fmt.Sprintf("let rec %s lst =", loopName))
@@ -386,11 +391,16 @@ func (c *Compiler) compileFor(fr *parser.ForStmt) error {
 	c.indent++
 	c.writeln("try")
 	c.indent++
+	origEnv := c.env
+	c.env = types.NewEnv(c.env)
+	c.env.SetVar(fr.Name, elemType, true)
 	for _, st := range fr.Body {
 		if err := c.compileStmt(st); err != nil {
+			c.env = origEnv
 			return err
 		}
 	}
+	c.env = origEnv
 	c.indent--
 	c.writeln("with Continue -> ()")
 	c.writeln(fmt.Sprintf("; %s rest", loopName))
@@ -459,13 +469,26 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	froms := append([]*parser.FromClause{{Var: q.Var, Src: q.Source}}, q.Froms...)
 	sources := make([]string, len(froms))
 	vars := make([]string, len(froms))
+
+	// use a child environment so selector expressions inside the query
+	// can resolve field access for each range variable
+	origEnv := c.env
+	c.env = types.NewEnv(c.env)
 	for i, fr := range froms {
 		src, err := c.compileExpr(fr.Src)
 		if err != nil {
+			c.env = origEnv
 			return "", err
 		}
 		sources[i] = src
 		vars[i] = fr.Var
+		// infer element type of the source and bind the variable
+		srcType := types.ExprType(fr.Src, origEnv)
+		if lt, ok := srcType.(types.ListType); ok {
+			c.env.SetVar(fr.Var, lt.Elem, true)
+		} else {
+			c.env.SetVar(fr.Var, srcType, true)
+		}
 	}
 	resName := fmt.Sprintf("__res%d", c.loop)
 	c.loop++
@@ -502,6 +525,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		buf.WriteString(fmt.Sprintf(") %s;\n", sources[i]))
 	}
 	buf.WriteString(fmt.Sprintf("List.rev !%s)\n", resName))
+	c.env = origEnv
 	return buf.String(), nil
 }
 
@@ -739,7 +763,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			items[i] = fmt.Sprintf("(%s,Obj.repr %s)", k, v)
+			items[i] = fmt.Sprintf("(%s,Obj.repr (%s))", k, v)
 		}
 		return "[" + strings.Join(items, ";") + "]", nil
 	case p.Struct != nil:

@@ -4,8 +4,8 @@ This directory contains OCaml source code generated from Mochi programs and the 
 
 ## Summary
 
-- 55/97 programs compiled and executed successfully.
-- 42 programs failed to compile or run.
+- 61/97 programs compiled and executed successfully.
+- 36 programs failed to compile or run.
 
 ### Successful
 - append_builtin
@@ -18,6 +18,11 @@ This directory contains OCaml source code generated from Mochi programs and the 
 - cast_struct
 - closure
 - count_builtin
+- cross_join
+- cross_join_filter
+- cross_join_triple
+- dataset_sort_take_limit
+- dataset_where_filter
 - for_list_collection
 - for_loop
 - fun_call
@@ -33,13 +38,14 @@ This directory contains OCaml source code generated from Mochi programs and the 
 - let_and_print
 - list_assign
 - list_index
-- list_nested_assign
 - list_set_ops
 - map_assign
 - map_in_operator
 - map_index
+- map_int_key
 - map_literal_dynamic
 - map_membership
+- map_nested_assign
 - math_ops
 - membership
 - min_max_builtin
@@ -50,6 +56,7 @@ This directory contains OCaml source code generated from Mochi programs and the 
 - record_assign
 - short_circuit
 - slice
+- sort_stable
 - str_builtin
 - string_compare
 - string_concat
@@ -60,16 +67,10 @@ This directory contains OCaml source code generated from Mochi programs and the 
 - typed_var
 - unary_neg
 - user_type_literal
-- map_nested_assign
 - var_assignment
 - while_loop
 
 ### Failed
-- cross_join
-- cross_join_filter
-- cross_join_triple
-- dataset_sort_take_limit
-- dataset_where_filter
 - exists_builtin
 - for_map_collection
 - group_by
@@ -88,7 +89,6 @@ This directory contains OCaml source code generated from Mochi programs and the 
 - left_join
 - left_join_multi
 - load_yaml
-- map_int_key
 - match_expr
 - match_full
 - nested_function
@@ -97,7 +97,6 @@ This directory contains OCaml source code generated from Mochi programs and the 
 - query_sum_select
 - right_join
 - save_jsonl_stdout
-- sort_stable
 - string_in_operator
 - string_index
 - string_prefix_slice
