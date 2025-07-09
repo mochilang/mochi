@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int _lambda0(int x) { return x + n; }
+static int _lambda0_n;
+int _lambda0(int x) { return x + _lambda0_n; }
 
-int (*)(int) makeAdder(int n) { return _lambda0; }
+int (*makeAdder(int n))(int) { return (_lambda0_n = n, _lambda0); }
 
 int main() {
   int (*add10)(int) = makeAdder(10);

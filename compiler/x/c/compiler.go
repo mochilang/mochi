@@ -49,6 +49,11 @@ func sanitizeName(name string) string {
 	return s
 }
 
+type captureInfo struct {
+	global string
+	typ    types.Type
+}
+
 type Compiler struct {
 	structLits    map[*parser.MapLiteral]types.StructType
 	buf           bytes.Buffer
@@ -64,6 +69,7 @@ type Compiler struct {
 	fetchStructs  map[string]bool
 	currentStruct string
 	autoType      bool
+	captures      map[string]captureInfo
 }
 
 func New(env *types.Env) *Compiler {
@@ -76,6 +82,7 @@ func New(env *types.Env) *Compiler {
 		listStructs:   map[string]bool{},
 		fetchStructs:  map[string]bool{},
 		externObjects: []string{},
+		captures:      map[string]captureInfo{},
 	}
 }
 
@@ -449,8 +456,16 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 		}
 	}
 	ret := cTypeFromType(retType)
-	c.buf.WriteString(ret + " ")
-	c.buf.WriteString(sanitizeName(fun.Name))
+	var retSuffix string
+	if strings.Contains(ret, "(*") {
+		idx := strings.Index(ret, "(*")
+		prefix := ret[:idx+2]
+		retSuffix = ret[idx+2:]
+		c.buf.WriteString(prefix + sanitizeName(fun.Name))
+	} else {
+		c.buf.WriteString(ret + " ")
+		c.buf.WriteString(sanitizeName(fun.Name))
+	}
 	c.buf.WriteByte('(')
 	for i, p := range fun.Params {
 		if i > 0 {
@@ -482,7 +497,11 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 			}
 		}
 	}
-	c.buf.WriteString("){\n")
+	c.buf.WriteByte(')')
+	if retSuffix != "" {
+		c.buf.WriteString(retSuffix)
+	}
+	c.buf.WriteString(" {\n")
 	c.indent++
 	prevEnv := c.env
 	if c.env != nil {
@@ -1349,8 +1368,27 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) string {
 
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) string {
 	name := fmt.Sprintf("_lambda%d", len(c.lambdas))
+	paramNames := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		paramNames[i] = sanitizeName(p.Name)
+	}
+	captured := freeVars(fn, paramNames)
+
 	oldBuf := c.buf
 	oldIndent := c.indent
+	oldCaps := c.captures
+	capMap := map[string]captureInfo{}
+	for _, v := range captured {
+		if c.env != nil {
+			if t, err := c.env.GetVar(v); err == nil {
+				gname := fmt.Sprintf("%s_%s", name, sanitizeName(v))
+				capMap[v] = captureInfo{global: gname, typ: t}
+				c.lambdas = append(c.lambdas, fmt.Sprintf("static %s %s;", cTypeFromType(t), gname))
+			}
+		}
+	}
+	c.captures = capMap
+
 	c.buf = bytes.Buffer{}
 	c.indent = 0
 	var body []*parser.Statement
@@ -1361,15 +1399,26 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) string {
 	}
 	fs := &parser.FunStmt{Name: name, Params: fn.Params, Return: fn.Return, Body: body}
 	if err := c.compileFun(fs); err != nil {
+		c.captures = oldCaps
 		c.buf = oldBuf
 		c.indent = oldIndent
 		return "0"
 	}
 	code := c.buf.String()
 	c.lambdas = append(c.lambdas, code)
+	c.captures = oldCaps
 	c.buf = oldBuf
 	c.indent = oldIndent
-	return name
+
+	if len(captured) == 0 {
+		return name
+	}
+	assigns := make([]string, len(captured))
+	for i, v := range captured {
+		assigns[i] = fmt.Sprintf("%s_%s = %s", name, sanitizeName(v), sanitizeName(v))
+	}
+	assigns = append(assigns, name)
+	return fmt.Sprintf("(%s)", strings.Join(assigns, ", "))
 }
 
 // compileQueryExpr generates C code for simple dataset queries. It now
@@ -2984,6 +3033,20 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 }
 
 func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
+	if capInfo, ok := c.captures[s.Root]; ok {
+		expr := capInfo.global
+		typ := capInfo.typ
+		for _, f := range s.Tail {
+			if st, ok := typ.(types.StructType); ok {
+				expr += "." + sanitizeName(f)
+				typ = st.Fields[f]
+			} else {
+				expr += "." + sanitizeName(f)
+				typ = nil
+			}
+		}
+		return expr
+	}
 	expr := sanitizeName(s.Root)
 	var typ types.Type
 	if c.currentStruct != "" && c.env != nil {
