@@ -18,7 +18,10 @@ defmodule Main do
     out =
       case format do
         "json" -> Jason.encode!(rows)
-        "jsonl" -> Enum.map(rows, &Jason.encode!/1) |> (Enum.join("\n") <> "\n")
+        "jsonl" ->
+          Enum.map(rows, &Jason.encode!/1)
+          |> Enum.join("\n")
+          |> Kernel.<>("\n")
         "tsv" -> _to_csv(rows, header, "	")
         _ -> _to_csv(rows, header, delim)
       end
