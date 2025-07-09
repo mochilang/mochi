@@ -631,8 +631,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		allParams := strings.Join(tmp, ", ")
 		var selectFn string
 		if q.Group != nil {
-			tupleExpr := "[" + allParams + "]"
-			selectFn = fmt.Sprintf("->(%s){ %s }", allParams, tupleExpr)
+			fields := make([]string, len(tmp))
+			for i, n := range tmp {
+				fields[i] = fmt.Sprintf("%s: %s", sanitizeName(n), sanitizeName(n))
+			}
+			selectFn = fmt.Sprintf("->(%s){ OpenStruct.new(%s) }", allParams, strings.Join(fields, ", "))
+			c.useOpenStruct = true
 		} else {
 			selectFn = fmt.Sprintf("->(%s){ %s }", allParams, sel)
 		}
@@ -1281,7 +1285,7 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 			var expr string
 			switch op {
 			case "in":
-				if types.IsMapType(rt) {
+				if types.IsMapType(rt) || isStructType(rt) {
 					expr = fmt.Sprintf("(%s.to_h.key?(%s))", r, l)
 				} else {
 					expr = fmt.Sprintf("(%s.include?(%s))", r, l)
@@ -1770,8 +1774,13 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 	path := "nil"
 	if l.Path != nil {
-		rel := strings.TrimPrefix(*l.Path, "../")
-		path = fmt.Sprintf("File.expand_path(%q, __dir__)", "../../../"+rel)
+		p := *l.Path
+		if strings.HasPrefix(p, "../") {
+			rel := strings.TrimPrefix(p, "../")
+			path = fmt.Sprintf("File.expand_path(%q, __dir__)", "../../../"+rel)
+		} else {
+			path = strconv.Quote(p)
+		}
 	}
 	opts := "nil"
 	if l.With != nil {

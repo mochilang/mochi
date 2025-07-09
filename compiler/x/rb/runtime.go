@@ -288,6 +288,9 @@ end`
   def length
     @Items.length
   end
+  def items
+    @Items
+  end
   def each(&block)
     @Items.each(&block)
   end
