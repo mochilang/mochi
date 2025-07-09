@@ -1971,7 +1971,21 @@ func (c *Compiler) compileListLiteral(list *parser.ListLiteral, asRef bool) (str
 	elems := make([]string, len(list.Elems))
 	elemType := "i32"
 	if len(list.Elems) > 0 {
-		elemType = zigTypeOf(c.inferExprType(list.Elems[0]))
+		if ml := list.Elems[0].Binary.Left.Value.Target.Map; ml != nil {
+			if allSimpleMap(ml) {
+				elemType = c.structTypeForMap(ml)
+				for i, e := range list.Elems {
+					elems[i], _ = c.mapInitForStruct(e.Binary.Left.Value.Target.Map)
+				}
+				if asRef {
+					return fmt.Sprintf("&[_]%s{%s}", elemType, strings.Join(elems, ", ")), nil
+				}
+				return fmt.Sprintf("[_]%s{%s}", elemType, strings.Join(elems, ", ")), nil
+			}
+			elemType = zigTypeOf(c.inferExprType(list.Elems[0]))
+		} else {
+			elemType = zigTypeOf(c.inferExprType(list.Elems[0]))
+		}
 	}
 	for i, e := range list.Elems {
 		v, err := c.compileExpr(e, false)
@@ -1986,22 +2000,125 @@ func (c *Compiler) compileListLiteral(list *parser.ListLiteral, asRef bool) (str
 	return fmt.Sprintf("[_]%s{%s}", elemType, strings.Join(elems, ", ")), nil
 }
 
+func allSimpleMap(m *parser.MapLiteral) bool {
+	for _, it := range m.Items {
+		if _, ok := simpleStringKey(it.Key); !ok {
+			return false
+		}
+	}
+	return true
+}
+
+func (c *Compiler) structTypeForMap(m *parser.MapLiteral) string {
+	fields := make([]string, len(m.Items))
+	for i, it := range m.Items {
+		key, _ := simpleStringKey(it.Key)
+		name := sanitizeName(key)
+		t := c.inferExprType(it.Value)
+		fields[i] = fmt.Sprintf("%s: %s", name, zigTypeOf(t))
+	}
+	return fmt.Sprintf("struct { %s }", strings.Join(fields, ", "))
+}
+
+func (c *Compiler) mapInitForStruct(m *parser.MapLiteral) (string, error) {
+	fields := make([]string, len(m.Items))
+	for i, it := range m.Items {
+		key, _ := simpleStringKey(it.Key)
+		name := sanitizeName(key)
+		v, err := c.compileExpr(it.Value, false)
+		if err != nil {
+			return "", err
+		}
+		fields[i] = fmt.Sprintf(".%s = %s", name, v)
+	}
+	return ".{" + strings.Join(fields, ", ") + "}", nil
+}
+
 func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
+	// If all keys are simple identifiers or strings, emit an inline struct
+	// literal so that the result can be a compile-time constant. This mirrors
+	// the style of the hand written examples.
+	allSimple := true
+	for _, it := range m.Items {
+		if _, ok := simpleStringKey(it.Key); !ok {
+			allSimple = false
+			break
+		}
+	}
+	if allSimple {
+		fields := make([]string, len(m.Items))
+		decls := make([]string, len(m.Items))
+		for i, it := range m.Items {
+			key, _ := simpleStringKey(it.Key)
+			name := sanitizeName(key)
+			val, err := c.compileExpr(it.Value, false)
+			if err != nil {
+				return "", err
+			}
+			t := c.inferExprType(it.Value)
+			fields[i] = fmt.Sprintf("%s: %s", name, zigTypeOf(t))
+			decls[i] = fmt.Sprintf(".%s = %s", name, val)
+		}
+		return fmt.Sprintf("struct { %s }{ %s }", strings.Join(fields, ", "), strings.Join(decls, ", ")), nil
+	}
+
 	keyType := "i32"
 	valType := "i32"
 	if len(m.Items) > 0 {
-		if _, ok := simpleStringKey(m.Items[0].Key); ok || c.isStringExpr(m.Items[0].Key) {
+		// Determine key type based on all items.
+		kt := "int"
+		for _, it := range m.Items {
+			switch {
+			case c.isStringExpr(it.Key) || func() bool { _, ok := simpleStringKey(it.Key); return ok }():
+				kt = "string"
+				break
+			case c.isFloatExpr(it.Key):
+				if kt != "string" {
+					kt = "float"
+				}
+			case c.isBoolExpr(it.Key):
+				if kt != "string" && kt != "float" {
+					kt = "bool"
+				}
+			}
+			if kt == "string" {
+				break
+			}
+		}
+		switch kt {
+		case "string":
 			keyType = "[]const u8"
-		} else if c.isFloatExpr(m.Items[0].Key) {
+		case "float":
 			keyType = "f64"
-		} else if c.isBoolExpr(m.Items[0].Key) {
+		case "bool":
 			keyType = "bool"
 		}
-		if c.isStringExpr(m.Items[0].Value) {
+
+		vt := "int"
+		for _, it := range m.Items {
+			switch {
+			case c.isStringExpr(it.Value):
+				vt = "string"
+				break
+			case c.isFloatExpr(it.Value):
+				if vt != "string" {
+					vt = "float"
+				}
+			case c.isBoolExpr(it.Value):
+				if vt != "string" && vt != "float" {
+					vt = "bool"
+				}
+			}
+			if vt == "string" {
+				break
+			}
+		}
+		switch vt {
+		case "string":
 			valType = "[]const u8"
-		} else if c.isFloatExpr(m.Items[0].Value) {
+		case "float":
 			valType = "f64"
-		} else if c.isBoolExpr(m.Items[0].Value) {
+		case "bool":
 			valType = "bool"
 		}
 	}
