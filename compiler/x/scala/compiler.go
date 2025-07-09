@@ -686,6 +686,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("values expects 1 arg")
 		}
 		return fmt.Sprintf("%s.values.toList", args[0]), nil
+	case "exists":
+		if len(args) != 1 {
+			return "", fmt.Errorf("exists expects 1 arg")
+		}
+		return fmt.Sprintf("(%s).nonEmpty", args[0]), nil
 	default:
 		return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ", ")), nil
 	}

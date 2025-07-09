@@ -3,7 +3,7 @@
 This directory contains Scala source files generated from Mochi programs using the compiler in `compiler/x/scala`. Each file was compiled and executed using `scalac` and `scala`. The checklist below shows which programs have successfully compiled and run.
 
 
-## Progress: 13/97 files compiled
+## Progress: 14/97 files compiled
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -19,7 +19,7 @@ This directory contains Scala source files generated from Mochi programs using t
 - [x] cross_join_triple.mochi
 - [ ] dataset_sort_take_limit.mochi
 - [ ] dataset_where_filter.mochi
-- [ ] exists_builtin.mochi
+- [x] exists_builtin.mochi
 - [ ] for_list_collection.mochi
 - [ ] for_loop.mochi
 - [ ] for_map_collection.mochi
