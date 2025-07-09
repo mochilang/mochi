@@ -1,9 +1,0 @@
-exit status 127
-/workspace/mochi/tests/machine/x/erlang/closure.erl:9:24: function add10/1 undefined
-/workspace/mochi/tests/machine/x/erlang/closure.erl:8:5: Warning: variable 'Add10' is unused
-escript: There were compilation errors.
-
-   7: main(_) ->
-   8:     Add10 = makeAdder(10),
-   9:     io:format("~p~n", [add10(7)]).
-  10: 

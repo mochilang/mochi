@@ -1,5 +1,1 @@
-line 6: unsupported expression at line 6
-   4: ]
-   5: 
-   6: save people to "-" with { format: "jsonl" }
-   7: 
+unsupported expression at line 6

@@ -1,9 +1,0 @@
-exit status 127
-/workspace/mochi/tests/machine/x/erlang/fun_expr_in_let.erl:6:24: function square/1 undefined
-/workspace/mochi/tests/machine/x/erlang/fun_expr_in_let.erl:5:5: Warning: variable 'Square' is unused
-escript: There were compilation errors.
-
-   4: main(_) ->
-   5:     Square = fun(X) -> (X * X) end,
-   6:     io:format("~p~n", [square(6)]).
-   7: 

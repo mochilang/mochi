@@ -30,6 +30,9 @@ type Compiler struct {
 	needLeftJoin  bool
 	needRightJoin bool
 	needOuterJoin bool
+
+	aliases   map[string]string
+	groupKeys map[string]string
 }
 
 func New(srcPath string) *Compiler {
@@ -42,6 +45,8 @@ func New(srcPath string) *Compiler {
 		needLeftJoin:  false,
 		needRightJoin: false,
 		needOuterJoin: false,
+		aliases:       make(map[string]string),
+		groupKeys:     make(map[string]string),
 	}
 }
 
@@ -126,6 +131,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.needLeftJoin = false
 	c.needRightJoin = false
 	c.needOuterJoin = false
+	c.aliases = make(map[string]string)
+	c.groupKeys = make(map[string]string)
 
 	base := strings.TrimSuffix(filepath.Base(c.srcPath), filepath.Ext(c.srcPath))
 	c.writeln("#!/usr/bin/env escript")
@@ -628,32 +635,114 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		conds = append(conds, cnd)
 	}
 
-	sel, err := c.compileExpr(q.Select)
-	if err != nil {
-		return "", err
-	}
-
-	listExpr := "[" + sel + " || " + strings.Join(gens, ", ")
 	cond := strings.Join(conds, ", ")
-	if cond != "" {
-		listExpr += ", " + cond
-	}
-	listExpr += "]"
 
-	res := listExpr
+	res := ""
 
-	if q.Sort != nil {
-		key, err := c.compileExpr(q.Sort)
-		if err != nil {
-			return "", err
+	if q.Group != nil {
+		keyParts := make([]string, len(q.Group.Exprs))
+		for i, ge := range q.Group.Exprs {
+			k, err := c.compileExpr(ge)
+			if err != nil {
+				return "", err
+			}
+			keyParts[i] = k
 		}
-		pairList := "[{" + key + ", " + sel + "} || " + strings.Join(gens, ", ")
+		keyExpr := ""
+		if len(keyParts) == 1 {
+			keyExpr = keyParts[0]
+		} else {
+			keyExpr = "{" + strings.Join(keyParts, ", ") + "}"
+		}
+
+		vars := []string{fmt.Sprintf("%s=%s", capitalize(q.Var), capitalize(q.Var))}
+		for _, fr := range q.Froms {
+			vars = append(vars, fmt.Sprintf("%s=%s", capitalize(fr.Var), capitalize(fr.Var)))
+		}
+		for _, j := range q.Joins {
+			vars = append(vars, fmt.Sprintf("%s=%s", capitalize(j.Var), capitalize(j.Var)))
+		}
+		elemMap := "#{" + strings.Join(vars, ", ") + "}"
+
+		pairList := "[{" + keyExpr + ", " + elemMap + "} || " + strings.Join(gens, ", ")
 		if cond != "" {
 			pairList += ", " + cond
 		}
 		pairList += "]"
-		sorted := fmt.Sprintf("lists:keysort(1, %s)", pairList)
-		res = fmt.Sprintf("[V || {_, V} <- %s]", sorted)
+
+		acc := c.newVarName("acc")
+		kvar := c.newVarName("key")
+		vvar := c.newVarName("val")
+		fold := fmt.Sprintf("lists:foldl(fun({%s, %s}, %s) -> L = maps:get(%s, %s, []), maps:put(%s, [%s | L], %s) end, #{}, %s)", kvar, vvar, acc, kvar, acc, kvar, vvar, acc, pairList)
+		groupsList := fmt.Sprintf("maps:to_list(%s)", fold)
+
+		c.aliases[q.Group.Name] = vvar
+		c.groupKeys[q.Group.Name] = kvar
+		c.lets[q.Group.Name] = true
+		defer func(n string) {
+			delete(c.aliases, n)
+			delete(c.groupKeys, n)
+			delete(c.lets, n)
+		}(q.Group.Name)
+
+		having := ""
+		if q.Group.Having != nil {
+			h, err := c.compileExpr(q.Group.Having)
+			if err != nil {
+				return "", err
+			}
+			having = h
+		}
+
+		sel, err := c.compileExpr(q.Select)
+		if err != nil {
+			return "", err
+		}
+
+		listExpr := "[" + sel + " || {" + kvar + ", " + vvar + "} <- " + groupsList
+		if having != "" {
+			listExpr += ", " + having
+		}
+		listExpr += "]"
+
+		res = listExpr
+		if q.Sort != nil {
+			key, err := c.compileExpr(q.Sort)
+			if err != nil {
+				return "", err
+			}
+			pairList2 := "[{" + key + ", " + sel + "} || {" + kvar + ", " + vvar + "} <- " + groupsList
+			if having != "" {
+				pairList2 += ", " + having
+			}
+			pairList2 += "]"
+			sorted := fmt.Sprintf("lists:keysort(1, %s)", pairList2)
+			res = fmt.Sprintf("[V || {_, V} <- %s]", sorted)
+		}
+	} else {
+		sel, err := c.compileExpr(q.Select)
+		if err != nil {
+			return "", err
+		}
+		listExpr := "[" + sel + " || " + strings.Join(gens, ", ")
+		if cond != "" {
+			listExpr += ", " + cond
+		}
+		listExpr += "]"
+		res = listExpr
+		if q.Sort != nil {
+			key, err := c.compileExpr(q.Sort)
+			if err != nil {
+				return "", err
+			}
+			pairList := "[{" + key + ", " + sel + "} || " + strings.Join(gens, ", ")
+			if cond != "" {
+				pairList += ", " + cond
+			}
+			pairList += "]"
+			sorted := fmt.Sprintf("lists:keysort(1, %s)", pairList)
+			res = fmt.Sprintf("[V || {_, V} <- %s]", sorted)
+		}
 	}
 
 	if q.Skip != nil {
@@ -856,7 +945,21 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Lit != nil:
 		return c.compileLiteral(p.Lit), nil
 	case p.Selector != nil:
-		expr := c.refVar(p.Selector.Root)
+		root := p.Selector.Root
+		if k, ok := c.groupKeys[root]; ok {
+			expr := k
+			tail := p.Selector.Tail
+			if len(tail) > 0 && tail[0] == "key" {
+				tail = tail[1:]
+			} else {
+				expr = c.refVar(root)
+			}
+			for _, f := range tail {
+				expr = fmt.Sprintf("maps:get(%s, %s)", f, expr)
+			}
+			return expr, nil
+		}
+		expr := c.refVar(root)
 		for _, f := range p.Selector.Tail {
 			expr = fmt.Sprintf("maps:get(%s, %s)", f, expr)
 		}
@@ -1137,6 +1240,9 @@ func (c *Compiler) newVarName(base string) string {
 }
 
 func (c *Compiler) refVar(base string) string {
+	if a, ok := c.aliases[base]; ok {
+		return a
+	}
 	if c.lets[base] {
 		return capitalize(base)
 	}

@@ -1,6 +1,0 @@
-line 10: unsupported expression at line 10
-   8:   { name: "Frank", age: 22, city: "Hanoi" }
-   9: ]
-  10: let stats = from person in people
-  11:             group by person.city into g
-  12:             select {

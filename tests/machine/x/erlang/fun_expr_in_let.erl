@@ -3,4 +3,4 @@
 
 main(_) ->
     Square = fun(X) -> (X * X) end,
-    io:format("~p~n", [square(6)]).
+    io:format("~p~n", [Square(6)]).
