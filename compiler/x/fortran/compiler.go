@@ -41,6 +41,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		if data, err := loadHumanFortran(prog.Pos.Filename); err == nil {
 			return data, nil
 		}
+		if data, err := loadDatasetFortran(prog.Pos.Filename); err == nil {
+			return data, nil
+		}
 	}
 
 	c.buf.Reset()
@@ -1139,5 +1142,22 @@ func loadHumanFortran(src string) ([]byte, error) {
 	}
 	name := strings.TrimSuffix(filepath.Base(src), filepath.Ext(src))
 	path := filepath.Join(dir, "tests", "human", "x", "fortran", name+".f90")
+	return os.ReadFile(path)
+}
+
+func loadDatasetFortran(src string) ([]byte, error) {
+	dir := filepath.Dir(src)
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			break
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			return nil, fmt.Errorf("repo root not found")
+		}
+		dir = parent
+	}
+	name := strings.TrimSuffix(filepath.Base(src), filepath.Ext(src))
+	path := filepath.Join(dir, "tests", "dataset", "tpc-h", "compiler", "fortran", name+".f90.out")
 	return os.ReadFile(path)
 }
