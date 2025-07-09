@@ -1,1 +1,7 @@
-unsupported primary
+run: exit status 1
+apply: contract violation
+  expected: list?
+  given: 2
+  context...:
+   body of "/workspace/mochi/tests/machine/x/racket/query_sum_select.rkt"
+

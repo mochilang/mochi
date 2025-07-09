@@ -1,2 +1,2 @@
 #lang racket
-(displayln (let ([xs '(1 2 3)]) (/ (apply + xs) (length xs))))
+(displayln (let ([xs (list 1 2 3)]) (/ (apply + xs) (length xs))))
