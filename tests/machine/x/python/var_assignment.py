@@ -4,14 +4,5 @@ from __future__ import annotations
 import typing
 
 x: int = 1
-
-
-def main():
-    global x
-    x = 1
-    x = 2
-    print(x)
-
-
-if __name__ == "__main__":
-    main()
+x = 2
+print(x)

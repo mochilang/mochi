@@ -10,13 +10,4 @@ def add(a: int, b: int) -> int:
 
 
 add5: typing.Callable[[int], int] = functools.partial(add, 5)
-
-
-def main():
-    global add5
-    add5 = functools.partial(add, 5)
-    print(add5(3))
-
-
-if __name__ == "__main__":
-    main()
+print(add5(3))

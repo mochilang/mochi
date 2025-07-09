@@ -4,14 +4,5 @@ from __future__ import annotations
 import typing
 
 m: dict[int, str] = {1: "a", 2: "b"}
-
-
-def main():
-    global m
-    m = {1: "a", 2: "b"}
-    print(str((1 in m)).lower())
-    print(str((3 in m)).lower())
-
-
-if __name__ == "__main__":
-    main()
+print(str((1 in m)).lower())
+print(str((3 in m)).lower())

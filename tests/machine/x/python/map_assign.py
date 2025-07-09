@@ -4,14 +4,5 @@ from __future__ import annotations
 import typing
 
 scores: dict[str, int] = {"alice": 1}
-
-
-def main():
-    global scores
-    scores = {"alice": 1}
-    scores["bob"] = 2
-    print(scores["bob"])
-
-
-if __name__ == "__main__":
-    main()
+scores["bob"] = 2
+print(scores["bob"])

@@ -5,19 +5,6 @@ import typing
 
 prefix: str = "fore"
 s1: str = "forest"
+print(str((s1[0 : len(prefix)] == prefix)).lower())
 s2: str = "desert"
-
-
-def main():
-    global prefix
-    prefix = "fore"
-    global s1
-    s1 = "forest"
-    print(str((s1[0 : len(prefix)] == prefix)).lower())
-    global s2
-    s2 = "desert"
-    print(str((s2[0 : len(prefix)] == prefix)).lower())
-
-
-if __name__ == "__main__":
-    main()
+print(str((s2[0 : len(prefix)] == prefix)).lower())

@@ -7,10 +7,5 @@ def test_addition_works():
     assert x == 3
 
 
-def main():
-    print("ok")
-    test_addition_works()
-
-
-if __name__ == "__main__":
-    main()
+print("ok")
+test_addition_works()

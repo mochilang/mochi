@@ -5,18 +5,5 @@ import typing
 
 x: int = 3
 y: int = 4
-m: dict[str, int] = None
-
-
-def main():
-    global x
-    x = 3
-    global y
-    y = 4
-    global m
-    m = {"a": x, "b": y}
-    print(m["a"], m["b"])
-
-
-if __name__ == "__main__":
-    main()
+m: dict[str, int] = {"a": x, "b": y}
+print(m["a"], m["b"])

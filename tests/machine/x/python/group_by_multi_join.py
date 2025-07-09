@@ -151,54 +151,39 @@ def _sum(v):
     return s
 
 
-nations: list[dict[str, typing.Any]] = None
-suppliers: list[dict[str, int]] = None
-partsupp: list[dict[str, typing.Any]] = None
-filtered: list[dict[str, typing.Any]] = None
-grouped: list[dict[str, typing.Any]] = None
-
-
-def main():
-    global nations
-    nations = [{"id": 1, "name": "A"}, {"id": 2, "name": "B"}]
-    global suppliers
-    suppliers = [{"id": 1, "nation": 1}, {"id": 2, "nation": 2}]
-    global partsupp
-    partsupp = [
-        {"part": 100, "supplier": 1, "cost": 10, "qty": 2},
-        {"part": 100, "supplier": 2, "cost": 20, "qty": 1},
-        {"part": 200, "supplier": 1, "cost": 5, "qty": 3},
-    ]
-    global filtered
-    filtered = _query(
-        partsupp,
-        [
-            {"items": suppliers, "on": lambda ps, s: ((s["id"] == ps["supplier"]))},
-            {"items": nations, "on": lambda ps, s, n: ((n["id"] == s["nation"]))},
-        ],
-        {
-            "select": lambda ps, s, n: {
-                "part": ps["part"],
-                "value": (ps["cost"] * ps["qty"]),
-            },
-            "where": lambda ps, s, n: ((n["name"] == "A")),
+nations: list[dict[str, typing.Any]] = [{"id": 1, "name": "A"}, {"id": 2, "name": "B"}]
+suppliers: list[dict[str, int]] = [{"id": 1, "nation": 1}, {"id": 2, "nation": 2}]
+partsupp: list[dict[str, typing.Any]] = [
+    {"part": 100, "supplier": 1, "cost": 10, "qty": 2},
+    {"part": 100, "supplier": 2, "cost": 20, "qty": 1},
+    {"part": 200, "supplier": 1, "cost": 5, "qty": 3},
+]
+filtered: list[dict[str, typing.Any]] = _query(
+    partsupp,
+    [
+        {"items": suppliers, "on": lambda ps, s: ((s["id"] == ps["supplier"]))},
+        {"items": nations, "on": lambda ps, s, n: ((n["id"] == s["nation"]))},
+    ],
+    {
+        "select": lambda ps, s, n: {
+            "part": ps["part"],
+            "value": (ps["cost"] * ps["qty"]),
         },
-    )
-
-    def _q0():
-        _src = filtered
-        _rows = _query(_src, [], {"select": lambda x: (x)})
-        _groups = _group_by(_rows, lambda x: (x["part"]))
-        _items1 = _groups
-        return [
-            {"part": _get(g, "key"), "total": _sum([r["value"] for r in g])}
-            for g in _items1
-        ]
-
-    global grouped
-    grouped = _q0()
-    print(*grouped)
+        "where": lambda ps, s, n: ((n["name"] == "A")),
+    },
+)
 
 
-if __name__ == "__main__":
-    main()
+def _q0():
+    _src = filtered
+    _rows = _query(_src, [], {"select": lambda x: (x)})
+    _groups = _group_by(_rows, lambda x: (x["part"]))
+    _items1 = _groups
+    return [
+        {"part": _get(g, "key"), "total": _sum([r["value"] for r in g])}
+        for g in _items1
+    ]
+
+
+grouped: list[dict[str, typing.Any]] = _q0()
+print(*grouped)

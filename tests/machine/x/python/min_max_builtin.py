@@ -4,14 +4,5 @@ from __future__ import annotations
 import typing
 
 nums: list[int] = [3, 1, 4]
-
-
-def main():
-    global nums
-    nums = [3, 1, 4]
-    print((min([it for it in nums if it is not None]) if nums else 0))
-    print((max([it for it in nums if it is not None]) if nums else 0))
-
-
-if __name__ == "__main__":
-    main()
+print((min([it for it in nums if it is not None]) if nums else 0))
+print((max([it for it in nums if it is not None]) if nums else 0))

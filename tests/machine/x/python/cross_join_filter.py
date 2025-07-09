@@ -5,20 +5,9 @@ import typing
 
 nums: list[int] = [1, 2, 3]
 letters: list[str] = ["A", "B"]
-pairs: list[dict[str, typing.Any]] = None
-
-
-def main():
-    global nums
-    nums = [1, 2, 3]
-    global letters
-    letters = ["A", "B"]
-    global pairs
-    pairs = [{"n": n, "l": l} for n in nums if ((n % 2) == 0) for l in letters]
-    print("--- Even pairs ---")
-    for p in pairs:
-        print(p["n"], p["l"])
-
-
-if __name__ == "__main__":
-    main()
+pairs: list[dict[str, typing.Any]] = [
+    {"n": n, "l": l} for n in nums if ((n % 2) == 0) for l in letters
+]
+print("--- Even pairs ---")
+for p in pairs:
+    print(p["n"], p["l"])

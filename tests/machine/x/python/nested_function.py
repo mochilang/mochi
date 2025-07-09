@@ -11,9 +11,4 @@ def outer(x: int) -> int:
     return inner(5)
 
 
-def main():
-    print(outer(3))
-
-
-if __name__ == "__main__":
-    main()
+print(outer(3))

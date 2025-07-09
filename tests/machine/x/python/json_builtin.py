@@ -4,14 +4,5 @@ from __future__ import annotations
 import json
 import typing
 
-m: dict[str, int] = None
-
-
-def main():
-    global m
-    m = {"a": 1, "b": 2}
-    print(json.dumps(m, default=lambda o: vars(o)))
-
-
-if __name__ == "__main__":
-    main()
+m: dict[str, int] = {"a": 1, "b": 2}
+print(json.dumps(m, default=lambda o: vars(o)))

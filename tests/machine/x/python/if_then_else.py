@@ -4,16 +4,5 @@ from __future__ import annotations
 import typing
 
 x: int = 12
-msg: str = None
-
-
-def main():
-    global x
-    x = 12
-    global msg
-    msg = "yes" if (x > 10) else "no"
-    print(msg)
-
-
-if __name__ == "__main__":
-    main()
+msg: str = "yes" if (x > 10) else "no"
+print(msg)

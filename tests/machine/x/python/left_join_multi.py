@@ -87,36 +87,27 @@ def _query(src, joins, opts):
     return res
 
 
-customers: list[dict[str, typing.Any]] = None
-orders: list[dict[str, int]] = None
-items: list[dict[str, typing.Any]] = None
-result: list[dict[str, typing.Any]] = None
-
-
-def main():
-    global customers
-    customers = [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]
-    global orders
-    orders = [{"id": 100, "customerId": 1}, {"id": 101, "customerId": 2}]
-    global items
-    items = [{"orderId": 100, "sku": "a"}]
-    global result
-    result = _query(
-        orders,
-        [
-            {"items": customers, "on": lambda o, c: ((o["customerId"] == c["id"]))},
-            {
-                "items": items,
-                "on": lambda o, c, i: ((o["id"] == i["orderId"])),
-                "left": True,
-            },
-        ],
-        {"select": lambda o, c, i: {"orderId": o["id"], "name": c["name"], "item": i}},
-    )
-    print("--- Left Join Multi ---")
-    for r in result:
-        print(r["orderId"], r["name"], r["item"])
-
-
-if __name__ == "__main__":
-    main()
+customers: list[dict[str, typing.Any]] = [
+    {"id": 1, "name": "Alice"},
+    {"id": 2, "name": "Bob"},
+]
+orders: list[dict[str, int]] = [
+    {"id": 100, "customerId": 1},
+    {"id": 101, "customerId": 2},
+]
+items: list[dict[str, typing.Any]] = [{"orderId": 100, "sku": "a"}]
+result: list[dict[str, typing.Any]] = _query(
+    orders,
+    [
+        {"items": customers, "on": lambda o, c: ((o["customerId"] == c["id"]))},
+        {
+            "items": items,
+            "on": lambda o, c, i: ((o["id"] == i["orderId"])),
+            "left": True,
+        },
+    ],
+    {"select": lambda o, c, i: {"orderId": o["id"], "name": c["name"], "item": i}},
+)
+print("--- Left Join Multi ---")
+for r in result:
+    print(r["orderId"], r["name"], r["item"])

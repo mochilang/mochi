@@ -9,48 +9,25 @@ def classify(n: int) -> str:
 
 
 x: int = 2
-label: str = None
+label: str = (
+    lambda _t1=x: (
+        "one" if _t1 == 1 else "two" if _t1 == 2 else "three" if _t1 == 3 else "unknown"
+    )
+)()
+print(label)
 day: str = "sun"
-mood: str = None
+mood: str = (
+    lambda _t2=day: (
+        "tired"
+        if _t2 == "mon"
+        else "excited" if _t2 == "fri" else "relaxed" if _t2 == "sun" else "normal"
+    )
+)()
+print(mood)
 ok: bool = True
-status: str = None
-
-
-def main():
-    global x
-    x = 2
-    global label
-    label = (
-        lambda _t1=x: (
-            "one"
-            if _t1 == 1
-            else "two" if _t1 == 2 else "three" if _t1 == 3 else "unknown"
-        )
-    )()
-    print(label)
-    global day
-    day = "sun"
-    global mood
-    mood = (
-        lambda _t2=day: (
-            "tired"
-            if _t2 == "mon"
-            else "excited" if _t2 == "fri" else "relaxed" if _t2 == "sun" else "normal"
-        )
-    )()
-    print(mood)
-    global ok
-    ok = True
-    global status
-    status = (
-        lambda _t3=ok: (
-            "confirmed" if _t3 == True else "denied" if _t3 == False else None
-        )
-    )()
-    print(status)
-    print(classify(0))
-    print(classify(5))
-
-
-if __name__ == "__main__":
-    main()
+status: str = (
+    lambda _t3=ok: "confirmed" if _t3 == True else "denied" if _t3 == False else None
+)()
+print(status)
+print(classify(0))
+print(classify(5))

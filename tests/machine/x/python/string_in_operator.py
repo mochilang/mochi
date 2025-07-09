@@ -4,14 +4,5 @@ from __future__ import annotations
 import typing
 
 s: str = "catch"
-
-
-def main():
-    global s
-    s = "catch"
-    print(str(("cat" in s)).lower())
-    print(str(("dog" in s)).lower())
-
-
-if __name__ == "__main__":
-    main()
+print(str(("cat" in s)).lower())
+print(str(("dog" in s)).lower())

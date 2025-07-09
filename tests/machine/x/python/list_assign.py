@@ -4,14 +4,5 @@ from __future__ import annotations
 import typing
 
 nums: list[int] = [1, 2]
-
-
-def main():
-    global nums
-    nums = [1, 2]
-    nums[1] = 3
-    print(nums[1])
-
-
-if __name__ == "__main__":
-    main()
+nums[1] = 3
+print(nums[1])

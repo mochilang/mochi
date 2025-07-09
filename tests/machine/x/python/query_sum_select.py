@@ -26,16 +26,5 @@ def _sum(v):
 
 
 nums: list[int] = [1, 2, 3]
-result: float = None
-
-
-def main():
-    global nums
-    nums = [1, 2, 3]
-    global result
-    result = [_sum(n) for n in nums if (n > 1)]
-    print(result)
-
-
-if __name__ == "__main__":
-    main()
+result: float = [_sum(n) for n in nums if (n > 1)]
+print(result)

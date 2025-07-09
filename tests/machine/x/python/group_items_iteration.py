@@ -141,38 +141,29 @@ def _sort_key(k):
     return k
 
 
-data: list[dict[str, typing.Any]] = None
-groups: list[_Group[Any, dict[str, typing.Any]]] = None
+data: list[dict[str, typing.Any]] = [
+    {"tag": "a", "val": 1},
+    {"tag": "a", "val": 2},
+    {"tag": "b", "val": 3},
+]
+
+
+def _q0():
+    _src = data
+    _rows = _query(_src, [], {"select": lambda d: (d)})
+    _groups = _group_by(_rows, lambda d: (d["tag"]))
+    _items1 = _groups
+    return [g for g in _items1]
+
+
+groups: list[_Group[Any, dict[str, typing.Any]]] = _q0()
 tmp: list[typing.Any] = []
-result: list[typing.Any] = None
-
-
-def main():
-    global data
-    data = [{"tag": "a", "val": 1}, {"tag": "a", "val": 2}, {"tag": "b", "val": 3}]
-
-    def _q0():
-        _src = data
-        _rows = _query(_src, [], {"select": lambda d: (d)})
-        _groups = _group_by(_rows, lambda d: (d["tag"]))
-        _items1 = _groups
-        return [g for g in _items1]
-
-    global groups
-    groups = _q0()
-    global tmp
-    tmp = []
-    for g in groups:
-        total: int = 0
-        for x in _get(g, "items"):
-            total = total + _get(x, "val")
-        tmp = tmp + [{"tag": _get(g, "key"), "total": total}]
-    global result
-    result = [
-        r for r in sorted([r for r in tmp], key=lambda r: _sort_key(_get(r, "tag")))
-    ]
-    print(*result)
-
-
-if __name__ == "__main__":
-    main()
+for g in groups:
+    total: int = 0
+    for x in _get(g, "items"):
+        total = total + _get(x, "val")
+    tmp = tmp + [{"tag": _get(g, "key"), "total": total}]
+result: list[typing.Any] = [
+    r for r in sorted([r for r in tmp], key=lambda r: _sort_key(_get(r, "tag")))
+]
+print(*result)

@@ -1,8 +1,6 @@
 run: exit status 1
 Traceback (most recent call last):
-  File "/workspace/mochi/tests/machine/x/python/load_yaml.py", line 105, in <module>
-    main()
-  File "/workspace/mochi/tests/machine/x/python/load_yaml.py", line 96, in main
+  File "/workspace/mochi/tests/machine/x/python/load_yaml.py", line 90, in <module>
     for _it in _load("../interpreter/valid/people.yaml", dict({"format": "yaml"}))
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/workspace/mochi/tests/machine/x/python/load_yaml.py", line 27, in _load

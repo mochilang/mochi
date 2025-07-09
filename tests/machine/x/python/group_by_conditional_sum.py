@@ -157,39 +157,30 @@ def _sum(v):
     return s
 
 
-items: list[dict[str, typing.Any]] = None
-result: list[dict[str, typing.Any]] = None
+items: list[dict[str, typing.Any]] = [
+    {"cat": "a", "val": 10, "flag": True},
+    {"cat": "a", "val": 5, "flag": False},
+    {"cat": "b", "val": 20, "flag": True},
+]
 
 
-def main():
-    global items
-    items = [
-        {"cat": "a", "val": 10, "flag": True},
-        {"cat": "a", "val": 5, "flag": False},
-        {"cat": "b", "val": 20, "flag": True},
+def _q0():
+    _src = items
+    _rows = _query(_src, [], {"select": lambda i: (i)})
+    _groups = _group_by(_rows, lambda i: (i["cat"]))
+    _items1 = _groups
+    _items1 = sorted(_items1, key=lambda g: _sort_key(_get(g, "key")))
+    return [
+        {
+            "cat": _get(g, "key"),
+            "share": (
+                _sum([(x["val"] if x["flag"] else 0) for x in g])
+                / _sum([x["val"] for x in g])
+            ),
+        }
+        for g in _items1
     ]
 
-    def _q0():
-        _src = items
-        _rows = _query(_src, [], {"select": lambda i: (i)})
-        _groups = _group_by(_rows, lambda i: (i["cat"]))
-        _items1 = _groups
-        _items1 = sorted(_items1, key=lambda g: _sort_key(_get(g, "key")))
-        return [
-            {
-                "cat": _get(g, "key"),
-                "share": (
-                    _sum([(x["val"] if x["flag"] else 0) for x in g])
-                    / _sum([x["val"] for x in g])
-                ),
-            }
-            for g in _items1
-        ]
 
-    global result
-    result = _q0()
-    print(*result)
-
-
-if __name__ == "__main__":
-    main()
+result: list[dict[str, typing.Any]] = _q0()
+print(*result)

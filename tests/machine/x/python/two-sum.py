@@ -14,14 +14,5 @@ def twoSum(nums: list[int], target: int) -> list[int]:
 
 
 result: list[int] = twoSum([2, 7, 11, 15], 9)
-
-
-def main():
-    global result
-    result = twoSum([2, 7, 11, 15], 9)
-    print(result[0])
-    print(result[1])
-
-
-if __name__ == "__main__":
-    main()
+print(result[0])
+print(result[1])

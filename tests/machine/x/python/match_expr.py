@@ -4,22 +4,9 @@ from __future__ import annotations
 import typing
 
 x: int = 2
-label: str = None
-
-
-def main():
-    global x
-    x = 2
-    global label
-    label = (
-        lambda _t0=x: (
-            "one"
-            if _t0 == 1
-            else "two" if _t0 == 2 else "three" if _t0 == 3 else "unknown"
-        )
-    )()
-    print(label)
-
-
-if __name__ == "__main__":
-    main()
+label: str = (
+    lambda _t0=x: (
+        "one" if _t0 == 1 else "two" if _t0 == 2 else "three" if _t0 == 3 else "unknown"
+    )
+)()
+print(label)

@@ -1,8 +1,6 @@
 run: exit status 1
 Traceback (most recent call last):
-  File "/workspace/mochi/tests/machine/x/python/group_items_iteration.py", line 178, in <module>
-    main()
-  File "/workspace/mochi/tests/machine/x/python/group_items_iteration.py", line 167, in main
+  File "/workspace/mochi/tests/machine/x/python/group_items_iteration.py", line 163, in <module>
     for x in _get(g, "items"):
              ^^^^^^^^^^^^^^^^
   File "/workspace/mochi/tests/machine/x/python/group_items_iteration.py", line 26, in _get

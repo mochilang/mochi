@@ -15,14 +15,5 @@ class Counter:
 
 
 c: Counter = Counter(n=0)
-
-
-def main():
-    global c
-    c = Counter(n=0)
-    inc(c)
-    print(c.n)
-
-
-if __name__ == "__main__":
-    main()
+inc(c)
+print(c.n)

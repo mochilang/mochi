@@ -87,63 +87,50 @@ def _query(src, joins, opts):
     return res
 
 
-customers: list[dict[str, typing.Any]] = None
-orders: list[dict[str, int]] = None
-result: list[dict[str, dict[str, int]]] = None
-
-
-def main():
-    global customers
-    customers = [
-        {"id": 1, "name": "Alice"},
-        {"id": 2, "name": "Bob"},
-        {"id": 3, "name": "Charlie"},
-        {"id": 4, "name": "Diana"},
-    ]
-    global orders
-    orders = [
-        {"id": 100, "customerId": 1, "total": 250},
-        {"id": 101, "customerId": 2, "total": 125},
-        {"id": 102, "customerId": 1, "total": 300},
-        {"id": 103, "customerId": 5, "total": 80},
-    ]
-    global result
-    result = _query(
-        orders,
-        [
-            {
-                "items": customers,
-                "on": lambda o, c: ((o["customerId"] == c["id"])),
-                "left": True,
-                "right": True,
-            }
-        ],
-        {"select": lambda o, c: {"order": o, "customer": c}},
-    )
-    print("--- Outer Join using syntax ---")
-    for row in result:
-        if row["order"]:
-            if row["customer"]:
-                print(
-                    "Order",
-                    row["order"]["id"],
-                    "by",
-                    row["customer"]["name"],
-                    "- $",
-                    row["order"]["total"],
-                )
-            else:
-                print(
-                    "Order",
-                    row["order"]["id"],
-                    "by",
-                    "Unknown",
-                    "- $",
-                    row["order"]["total"],
-                )
+customers: list[dict[str, typing.Any]] = [
+    {"id": 1, "name": "Alice"},
+    {"id": 2, "name": "Bob"},
+    {"id": 3, "name": "Charlie"},
+    {"id": 4, "name": "Diana"},
+]
+orders: list[dict[str, int]] = [
+    {"id": 100, "customerId": 1, "total": 250},
+    {"id": 101, "customerId": 2, "total": 125},
+    {"id": 102, "customerId": 1, "total": 300},
+    {"id": 103, "customerId": 5, "total": 80},
+]
+result: list[dict[str, dict[str, int]]] = _query(
+    orders,
+    [
+        {
+            "items": customers,
+            "on": lambda o, c: ((o["customerId"] == c["id"])),
+            "left": True,
+            "right": True,
+        }
+    ],
+    {"select": lambda o, c: {"order": o, "customer": c}},
+)
+print("--- Outer Join using syntax ---")
+for row in result:
+    if row["order"]:
+        if row["customer"]:
+            print(
+                "Order",
+                row["order"]["id"],
+                "by",
+                row["customer"]["name"],
+                "- $",
+                row["order"]["total"],
+            )
         else:
-            print("Customer", row["customer"]["name"], "has no orders")
-
-
-if __name__ == "__main__":
-    main()
+            print(
+                "Order",
+                row["order"]["id"],
+                "by",
+                "Unknown",
+                "- $",
+                row["order"]["total"],
+            )
+    else:
+        print("Customer", row["customer"]["name"], "has no orders")

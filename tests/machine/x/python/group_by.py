@@ -159,41 +159,32 @@ def _query(src, joins, opts):
     return res
 
 
-people: list[dict[str, typing.Any]] = None
-stats: list[dict[str, typing.Any]] = None
+people: list[dict[str, typing.Any]] = [
+    {"name": "Alice", "age": 30, "city": "Paris"},
+    {"name": "Bob", "age": 15, "city": "Hanoi"},
+    {"name": "Charlie", "age": 65, "city": "Paris"},
+    {"name": "Diana", "age": 45, "city": "Hanoi"},
+    {"name": "Eve", "age": 70, "city": "Paris"},
+    {"name": "Frank", "age": 22, "city": "Hanoi"},
+]
 
 
-def main():
-    global people
-    people = [
-        {"name": "Alice", "age": 30, "city": "Paris"},
-        {"name": "Bob", "age": 15, "city": "Hanoi"},
-        {"name": "Charlie", "age": 65, "city": "Paris"},
-        {"name": "Diana", "age": 45, "city": "Hanoi"},
-        {"name": "Eve", "age": 70, "city": "Paris"},
-        {"name": "Frank", "age": 22, "city": "Hanoi"},
+def _q0():
+    _src = people
+    _rows = _query(_src, [], {"select": lambda person: (person)})
+    _groups = _group_by(_rows, lambda person: (person["city"]))
+    _items1 = _groups
+    return [
+        {
+            "city": _get(g, "key"),
+            "count": len(g.Items),
+            "avg_age": _avg([p["age"] for p in g]),
+        }
+        for g in _items1
     ]
 
-    def _q0():
-        _src = people
-        _rows = _query(_src, [], {"select": lambda person: (person)})
-        _groups = _group_by(_rows, lambda person: (person["city"]))
-        _items1 = _groups
-        return [
-            {
-                "city": _get(g, "key"),
-                "count": len(g.Items),
-                "avg_age": _avg([p["age"] for p in g]),
-            }
-            for g in _items1
-        ]
 
-    global stats
-    stats = _q0()
-    print("--- People grouped by city ---")
-    for s in stats:
-        print(s["city"], ": count =", s["count"], ", avg_age =", s["avg_age"])
-
-
-if __name__ == "__main__":
-    main()
+stats: list[dict[str, typing.Any]] = _q0()
+print("--- People grouped by city ---")
+for s in stats:
+    print(s["city"], ": count =", s["count"], ", avg_age =", s["avg_age"])

@@ -4,14 +4,5 @@ from __future__ import annotations
 import typing
 
 matrix: list[list[int]] = [[1, 2], [3, 4]]
-
-
-def main():
-    global matrix
-    matrix = [[1, 2], [3, 4]]
-    matrix[1][0] = 5
-    print(matrix[1][0])
-
-
-if __name__ == "__main__":
-    main()
+matrix[1][0] = 5
+print(matrix[1][0])

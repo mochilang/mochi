@@ -157,36 +157,24 @@ def _sum(v):
     return s
 
 
-items: list[dict[str, typing.Any]] = None
-grouped: list[dict[str, typing.Any]] = None
+items: list[dict[str, typing.Any]] = [
+    {"cat": "a", "val": 3},
+    {"cat": "a", "val": 1},
+    {"cat": "b", "val": 5},
+    {"cat": "b", "val": 2},
+]
 
 
-def main():
-    global items
-    items = [
-        {"cat": "a", "val": 3},
-        {"cat": "a", "val": 1},
-        {"cat": "b", "val": 5},
-        {"cat": "b", "val": 2},
+def _q0():
+    _src = items
+    _rows = _query(_src, [], {"select": lambda i: (i)})
+    _groups = _group_by(_rows, lambda i: (i["cat"]))
+    _items1 = _groups
+    _items1 = sorted(_items1, key=lambda g: _sort_key((-_sum([x["val"] for x in g]))))
+    return [
+        {"cat": _get(g, "key"), "total": _sum([x["val"] for x in g])} for g in _items1
     ]
 
-    def _q0():
-        _src = items
-        _rows = _query(_src, [], {"select": lambda i: (i)})
-        _groups = _group_by(_rows, lambda i: (i["cat"]))
-        _items1 = _groups
-        _items1 = sorted(
-            _items1, key=lambda g: _sort_key((-_sum([x["val"] for x in g])))
-        )
-        return [
-            {"cat": _get(g, "key"), "total": _sum([x["val"] for x in g])}
-            for g in _items1
-        ]
 
-    global grouped
-    grouped = _q0()
-    print(*grouped)
-
-
-if __name__ == "__main__":
-    main()
+grouped: list[dict[str, typing.Any]] = _q0()
+print(*grouped)

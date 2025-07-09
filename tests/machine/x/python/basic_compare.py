@@ -5,17 +5,6 @@ import typing
 
 a: int = 10 - 3
 b: int = 2 + 2
-
-
-def main():
-    global a
-    a = 10 - 3
-    global b
-    b = 2 + 2
-    print(a)
-    print(str((a == 7)).lower())
-    print(str((b < 5)).lower())
-
-
-if __name__ == "__main__":
-    main()
+print(a)
+print(str((a == 7)).lower())
+print(str((b < 5)).lower())

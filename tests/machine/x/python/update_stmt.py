@@ -12,14 +12,6 @@ class Person:
     status: str
 
 
-people: list[Person] = [
-    Person(name="Alice", age=17, status="minor"),
-    Person(name="Bob", age=25, status="unknown"),
-    Person(name="Charlie", age=18, status="unknown"),
-    Person(name="Diana", age=16, status="minor"),
-]
-
-
 def test_update_adult_status():
     assert people == [
         Person(name="Alice", age=17, status="minor"),
@@ -29,25 +21,19 @@ def test_update_adult_status():
     ]
 
 
-def main():
-    global people
-    people = [
-        Person(name="Alice", age=17, status="minor"),
-        Person(name="Bob", age=25, status="unknown"),
-        Person(name="Charlie", age=18, status="unknown"),
-        Person(name="Diana", age=16, status="minor"),
-    ]
-    for _i0, _it1 in enumerate(people):
-        name = _it1.name
-        age = _it1.age
-        status = _it1.status
-        if age >= 18:
-            setattr(_it1, "status", "adult")
-            setattr(_it1, "age", (age + 1))
-        people[_i0] = _it1
-    print("ok")
-    test_update_adult_status()
-
-
-if __name__ == "__main__":
-    main()
+people: list[Person] = [
+    Person(name="Alice", age=17, status="minor"),
+    Person(name="Bob", age=25, status="unknown"),
+    Person(name="Charlie", age=18, status="unknown"),
+    Person(name="Diana", age=16, status="minor"),
+]
+for _i0, _it1 in enumerate(people):
+    name = _it1.name
+    age = _it1.age
+    status = _it1.status
+    if age >= 18:
+        setattr(_it1, "status", "adult")
+        setattr(_it1, "age", (age + 1))
+    people[_i0] = _it1
+print("ok")
+test_update_adult_status()

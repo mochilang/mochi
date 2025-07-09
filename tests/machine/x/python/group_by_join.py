@@ -143,38 +143,30 @@ def _query(src, joins, opts):
     return res
 
 
-customers: list[dict[str, typing.Any]] = None
-orders: list[dict[str, int]] = None
-stats: list[dict[str, typing.Any]] = None
+customers: list[dict[str, typing.Any]] = [
+    {"id": 1, "name": "Alice"},
+    {"id": 2, "name": "Bob"},
+]
+orders: list[dict[str, int]] = [
+    {"id": 100, "customerId": 1},
+    {"id": 101, "customerId": 1},
+    {"id": 102, "customerId": 2},
+]
 
 
-def main():
-    global customers
-    customers = [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]
-    global orders
-    orders = [
-        {"id": 100, "customerId": 1},
-        {"id": 101, "customerId": 1},
-        {"id": 102, "customerId": 2},
-    ]
-
-    def _q0():
-        _src = orders
-        _rows = _query(
-            _src,
-            [{"items": customers, "on": lambda o, c: ((o["customerId"] == c["id"]))}],
-            {"select": lambda o, c: (o, c)},
-        )
-        _groups = _group_by(_rows, lambda o, c: (c["name"]))
-        _items1 = _groups
-        return [{"name": _get(g, "key"), "count": len(g.Items)} for g in _items1]
-
-    global stats
-    stats = _q0()
-    print("--- Orders per customer ---")
-    for s in stats:
-        print(s["name"], "orders:", s["count"])
+def _q0():
+    _src = orders
+    _rows = _query(
+        _src,
+        [{"items": customers, "on": lambda o, c: ((o["customerId"] == c["id"]))}],
+        {"select": lambda o, c: (o, c)},
+    )
+    _groups = _group_by(_rows, lambda o, c: (c["name"]))
+    _items1 = _groups
+    return [{"name": _get(g, "key"), "count": len(g.Items)} for g in _items1]
 
 
-if __name__ == "__main__":
-    main()
+stats: list[dict[str, typing.Any]] = _q0()
+print("--- Orders per customer ---")
+for s in stats:
+    print(s["name"], "orders:", s["count"])

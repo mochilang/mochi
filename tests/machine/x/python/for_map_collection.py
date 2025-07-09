@@ -4,14 +4,5 @@ from __future__ import annotations
 import typing
 
 m: dict[str, int] = {"a": 1, "b": 2}
-
-
-def main():
-    global m
-    m = {"a": 1, "b": 2}
-    for k in m:
-        print(k)
-
-
-if __name__ == "__main__":
-    main()
+for k in m:
+    print(k)

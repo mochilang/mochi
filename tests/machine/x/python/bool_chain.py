@@ -9,11 +9,6 @@ def boom() -> bool:
     return True
 
 
-def main():
-    print(str(((((1 < 2)) and ((2 < 3))) and ((3 < 4)))).lower())
-    print(str(((((1 < 2)) and ((2 > 3))) and boom())).lower())
-    print(str((((((1 < 2)) and ((2 < 3))) and ((3 > 4))) and boom())).lower())
-
-
-if __name__ == "__main__":
-    main()
+print(str(((((1 < 2)) and ((2 < 3))) and ((3 < 4)))).lower())
+print(str(((((1 < 2)) and ((2 > 3))) and boom())).lower())
+print(str((((((1 < 2)) and ((2 < 3))) and ((3 > 4))) and boom())).lower())
