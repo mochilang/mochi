@@ -183,4 +183,4 @@ adults = [Map.fromList [("name", VString (fromMaybe (error "missing") (Map.looku
 main :: IO ()
 main = do
   putStrLn ("--- Adults ---")
-  mapM_ (\person -> putStrLn (unwords [show fromMaybe (error "missing") (Map.lookup "name" person), "is", show fromMaybe (error "missing") (Map.lookup "age" person), 0])) adults
+  mapM_ (\person -> putStrLn (unwords [show (fromMaybe (error "missing") (Map.lookup "name" person)), "is", show (fromMaybe (error "missing") (Map.lookup "age" person)), 0])) adults

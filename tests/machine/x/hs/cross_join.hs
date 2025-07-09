@@ -185,4 +185,4 @@ result = [Map.fromList [("orderId", VInt (fromMaybe (error "missing") (Map.looku
 main :: IO ()
 main = do
   putStrLn ("--- Cross Join: All order-customer pairs ---")
-  mapM_ (\entry -> putStrLn (unwords ["Order", show fromMaybe (error "missing") (Map.lookup "orderId" entry), "(customerId:", show fromMaybe (error "missing") (Map.lookup "orderCustomerId" entry), ", total: $", show fromMaybe (error "missing") (Map.lookup "orderTotal" entry), ") paired with", show fromMaybe (error "missing") (Map.lookup "pairedCustomerName" entry)])) result
+  mapM_ (\entry -> putStrLn (unwords ["Order", show (fromMaybe (error "missing") (Map.lookup "orderId" entry)), "(customerId:", show (fromMaybe (error "missing") (Map.lookup "orderCustomerId" entry)), ", total: $", show (fromMaybe (error "missing") (Map.lookup "orderTotal" entry)), ") paired with", show (fromMaybe (error "missing") (Map.lookup "pairedCustomerName" entry))])) result

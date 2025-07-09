@@ -4,106 +4,107 @@ This directory contains Haskell source code generated from Mochi programs and th
 
 ## Summary
 
-- 43/97 programs compiled and executed successfully.
-- 54 programs failed to compile or run.
+- 48/97 programs compiled and executed successfully.
+- 49 programs failed to compile or run.
 
 ### Successful
-- append_builtin
-- avg_builtin
-- basic_compare
-- binary_precedence
-- bool_chain
-- break_continue
-- cast_string_to_int
-- closure
-- count_builtin
-- for_list_collection
-- for_loop
-- fun_call
-- fun_expr_in_let
-- fun_three_args
-- if_else
-- in_operator
-- len_builtin
-- len_string
-- let_and_print
-- list_index
-- math_ops
-- membership
-- nested_function
-- partial_application
-- print_hello
-- pure_fold
-- pure_global_fold
-- short_circuit
-- slice
-- str_builtin
-- string_compare
-- string_concat
-- string_index
-- sum_builtin
-- tail_recursion
-- test_block
-- two-sum
-- typed_let
-- typed_var
-- unary_neg
-- user_type_literal
-- var_assignment
-- while_loop
+- [x] append_builtin
+- [x] avg_builtin
+- [x] basic_compare
+- [x] binary_precedence
+- [x] bool_chain
+- [x] break_continue
+- [x] cast_string_to_int
+- [x] cast_struct
+- [x] closure
+- [x] count_builtin
+- [x] cross_join_filter
+- [x] cross_join_triple
+- [x] for_list_collection
+- [x] for_loop
+- [x] for_map_collection
+- [x] fun_call
+- [x] fun_expr_in_let
+- [x] fun_three_args
+- [x] group_by_having
+- [x] if_else
+- [x] in_operator
+- [x] len_builtin
+- [x] len_string
+- [x] let_and_print
+- [x] list_index
+- [x] math_ops
+- [x] membership
+- [x] nested_function
+- [x] partial_application
+- [x] print_hello
+- [x] pure_fold
+- [x] pure_global_fold
+- [x] short_circuit
+- [x] slice
+- [x] str_builtin
+- [x] string_compare
+- [x] string_concat
+- [x] string_index
+- [x] sum_builtin
+- [x] tail_recursion
+- [x] test_block
+- [x] two-sum
+- [x] typed_let
+- [x] typed_var
+- [x] unary_neg
+- [x] user_type_literal
+- [x] var_assignment
+- [x] while_loop
 
 ### Failed
-- cast_struct
-- cross_join
-- cross_join_filter
-- cross_join_triple
-- dataset_sort_take_limit
-- dataset_where_filter
-- exists_builtin
-- for_map_collection
-- group_by
-- group_by_conditional_sum
-- group_by_having
-- group_by_join
-- group_by_left_join
-- group_by_multi_join
-- group_by_multi_join_sort
-- group_by_sort
-- group_items_iteration
-- if_then_else
-- if_then_else_nested
-- in_operator_extended
-- inner_join
-- join_multi
-- json_builtin
-- left_join
-- left_join_multi
-- len_map
-- list_assign
-- list_nested_assign
-- list_set_ops
-- load_yaml
-- map_assign
-- map_in_operator
-- map_index
-- map_int_key
-- map_literal_dynamic
-- map_membership
-- map_nested_assign
-- match_expr
-- match_full
-- min_max_builtin
-- order_by_map
-- outer_join
-- query_sum_select
-- record_assign
-- right_join
-- save_jsonl_stdout
-- sort_stable
-- string_contains
-- string_in_operator
-- string_prefix_slice
-- substring_builtin
-- tree_sum
-- update_stmt
-- values_builtin
+- [ ] cross_join
+- [ ] dataset_sort_take_limit
+- [ ] dataset_where_filter
+- [ ] exists_builtin
+- [ ] group_by
+- [ ] group_by_conditional_sum
+- [ ] group_by_join
+- [ ] group_by_left_join
+- [ ] group_by_multi_join
+- [ ] group_by_multi_join_sort
+- [ ] group_by_sort
+- [ ] group_items_iteration
+- [ ] if_then_else
+- [ ] if_then_else_nested
+- [ ] in_operator_extended
+- [ ] inner_join
+- [ ] join_multi
+- [ ] json_builtin
+- [ ] left_join
+- [ ] left_join_multi
+- [ ] len_map
+- [ ] list_assign
+- [ ] list_nested_assign
+- [ ] list_set_ops
+- [ ] load_yaml
+- [ ] map_assign
+- [ ] map_in_operator
+- [ ] map_index
+- [ ] map_int_key
+- [ ] map_literal_dynamic
+- [ ] map_membership
+- [ ] map_nested_assign
+- [ ] match_expr
+- [ ] match_full
+- [ ] min_max_builtin
+- [ ] order_by_map
+- [ ] outer_join
+- [ ] query_sum_select
+- [ ] record_assign
+- [ ] right_join
+- [ ] save_jsonl_stdout
+- [ ] sort_stable
+- [ ] string_contains
+- [ ] string_in_operator
+- [ ] string_prefix_slice
+- [ ] substring_builtin
+- [ ] tree_sum
+- [ ] update_stmt
+- [ ] values_builtin
+

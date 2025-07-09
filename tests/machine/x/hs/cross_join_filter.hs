@@ -185,4 +185,4 @@ pairs = [Map.fromList [("n", VInt (n)), ("l", VString (l))] | n <- nums, l <- le
 main :: IO ()
 main = do
   putStrLn ("--- Even pairs ---")
-  mapM_ (\p -> putStrLn (unwords [show fromMaybe (error "missing") (Map.lookup "n" p), show fromMaybe (error "missing") (Map.lookup "l" p)])) pairs
+  mapM_ (\p -> putStrLn (unwords [show (fromMaybe (error "missing") (Map.lookup "n" p)), show (fromMaybe (error "missing") (Map.lookup "l" p))])) pairs

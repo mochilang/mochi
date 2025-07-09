@@ -1,0 +1,3 @@
+--- Even pairs ---
+VInt 2 VString "A"
+VInt 2 VString "B"

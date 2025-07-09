@@ -187,4 +187,4 @@ combos = [Map.fromList [("n", VInt (n)), ("l", VString (l)), ("b", VBool (b))] |
 main :: IO ()
 main = do
   putStrLn ("--- Cross Join of three lists ---")
-  mapM_ (\c -> putStrLn (unwords [show fromMaybe (error "missing") (Map.lookup "n" c), show fromMaybe (error "missing") (Map.lookup "l" c), show fromMaybe (error "missing") (Map.lookup "b" c)])) combos
+  mapM_ (\c -> putStrLn (unwords [show (fromMaybe (error "missing") (Map.lookup "n" c)), show (fromMaybe (error "missing") (Map.lookup "l" c)), show (fromMaybe (error "missing") (Map.lookup "b" c))])) combos
