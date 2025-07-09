@@ -83,7 +83,7 @@ Checklist of programs that currently compile and run (84/97):
 - [x] group_by
 - [x] group_by_conditional_sum
 - [x] group_by_having
-- [ ] group_by_join
+- [x] group_by_join
 - [ ] group_by_left_join
 - [ ] group_by_multi_join
 - [ ] group_by_multi_join_sort
