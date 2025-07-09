@@ -1106,7 +1106,13 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 			}
 		case op.Field != nil:
-			val = fmt.Sprintf("%s.%s", val, op.Field.Name)
+			prefix := &parser.Unary{Value: &parser.PostfixExpr{Target: p.Target, Ops: p.Ops[:opIndex]}}
+			t := types.TypeOfPostfixBasic(prefix, c.env)
+			if types.IsMapType(t) {
+				val = fmt.Sprintf("%s[\"%s\"]", val, op.Field.Name)
+			} else {
+				val = fmt.Sprintf("%s.%s", val, op.Field.Name)
+			}
 		case op.Call != nil:
 			args := make([]string, len(op.Call.Args))
 			for i, a := range op.Call.Args {
@@ -1372,7 +1378,7 @@ func (c *Compiler) compileGroupBySimple(q *parser.QueryExpr, src string, child *
 
 	var sortExpr string
 	if q.Sort != nil {
-		sortExpr, err = c.compileExpr(q.Sort)
+		sortExpr, err = c.compileSortKey(q.Sort)
 		if err != nil {
 			c.popGroupVar()
 			c.env = orig
@@ -1596,7 +1602,7 @@ func (c *Compiler) compileGroupByJoin(q *parser.QueryExpr, src string, child *ty
 
 	var sortExpr string
 	if q.Sort != nil {
-		sortExpr, err = c.compileExpr(q.Sort)
+		sortExpr, err = c.compileSortKey(q.Sort)
 		if err != nil {
 			c.popGroupVar()
 			c.env = orig
@@ -1684,7 +1690,7 @@ func (c *Compiler) compileLeftJoinSimple(q *parser.QueryExpr, src string, child 
 		}
 	}
 	if q.Sort != nil {
-		sortExpr, err = c.compileExpr(q.Sort)
+		sortExpr, err = c.compileSortKey(q.Sort)
 		if err != nil {
 			c.env = orig
 			return "", err
@@ -1812,7 +1818,7 @@ func (c *Compiler) compileRightJoinSimple(q *parser.QueryExpr, src string, child
 		}
 	}
 	if q.Sort != nil {
-		sortExpr, err = c.compileExpr(q.Sort)
+		sortExpr, err = c.compileSortKey(q.Sort)
 		if err != nil {
 			c.env = orig
 			return "", err
@@ -1940,7 +1946,7 @@ func (c *Compiler) compileLeftJoinLast(q *parser.QueryExpr, src string, child *t
 		}
 	}
 	if q.Sort != nil {
-		sortExpr, err = c.compileExpr(q.Sort)
+		sortExpr, err = c.compileSortKey(q.Sort)
 		if err != nil {
 			c.env = orig
 			return "", err
@@ -2214,7 +2220,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 	}
 	if q.Sort != nil {
-		sortExpr, err = c.compileExpr(q.Sort)
+		sortExpr, err = c.compileSortKey(q.Sort)
 		if err != nil {
 			c.env = orig
 			return "", err
@@ -2511,6 +2517,21 @@ func tryMapLiteral(e *parser.Expr) *parser.MapLiteral {
 		return nil
 	}
 	return u.Value.Target.Map
+}
+
+func (c *Compiler) compileSortKey(e *parser.Expr) (string, error) {
+	if ml := tryMapLiteral(e); ml != nil {
+		parts := make([]string, len(ml.Items))
+		for i, it := range ml.Items {
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", err
+			}
+			parts[i] = v
+		}
+		return "(" + strings.Join(parts, ", ") + ")", nil
+	}
+	return c.compileExpr(e)
 }
 
 func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
