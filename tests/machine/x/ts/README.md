@@ -4,7 +4,7 @@ This directory contains TypeScript code compiled from Mochi programs in `tests/v
 
 ## Progress
 
-Compiled: 76/97 programs
+Compiled: 77/97 programs
 
 ## Checklist
 
@@ -44,7 +44,7 @@ Compiled: 76/97 programs
 - [x] if_then_else_nested.mochi
 - [x] in_operator.mochi
 - [x] in_operator_extended.mochi
-- [ ] inner_join.mochi
+- [x] inner_join.mochi
 - [ ] join_multi.mochi
 - [ ] json_builtin.mochi
 - [ ] left_join.mochi

@@ -2116,13 +2116,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 	}
 
-	needsHelper := len(q.Joins) > 0
-	if !needsHelper {
-		for _, j := range q.Joins {
-			if j.Side != nil {
-				needsHelper = true
-				break
-			}
+	needsHelper := false
+	for _, j := range q.Joins {
+		if j.Side != nil {
+			needsHelper = true
+			break
 		}
 	}
 	if !needsHelper {
