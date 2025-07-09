@@ -156,7 +156,33 @@ func (c *Compiler) compileReturn(r *parser.ReturnStmt) error {
 
 func (c *Compiler) compileTypeDecl(td *parser.TypeDecl) error {
 	if len(td.Variants) > 0 {
-		return fmt.Errorf("variant types not supported")
+		base := sanitizeName(td.Name)
+		c.writeln(fmt.Sprintf("abstract class %s {}", base))
+		for _, v := range td.Variants {
+			name := sanitizeName(v.Name)
+			c.writeln(fmt.Sprintf("class %s extends %s {", name, base))
+			c.indent++
+			for _, f := range v.Fields {
+				c.writeln(fmt.Sprintf("public $%s;", sanitizeName(f.Name)))
+			}
+			if len(v.Fields) > 0 {
+				params := make([]string, len(v.Fields))
+				for i, f := range v.Fields {
+					params[i] = "$" + sanitizeName(f.Name)
+				}
+				c.writeln(fmt.Sprintf("function __construct(%s) {", strings.Join(params, ", ")))
+				c.indent++
+				for _, f := range v.Fields {
+					fn := sanitizeName(f.Name)
+					c.writeln(fmt.Sprintf("$this->%s = $%s;", fn, fn))
+				}
+				c.indent--
+				c.writeln("}")
+			}
+			c.indent--
+			c.writeln("}")
+		}
+		return nil
 	}
 	c.writeln(fmt.Sprintf("class %s {", sanitizeName(td.Name)))
 	c.indent++
@@ -555,6 +581,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileIfExpr(p.If)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	case p.Group != nil:
 		inner, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -934,13 +964,56 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		if pat == "_" {
+		if pat == "_" || pat == "$_" {
 			pat = "default"
 		}
 		buf.WriteString("    " + pat + " => " + res + ",\n")
 	}
 	buf.WriteString("}")
 	return buf.String(), nil
+}
+
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
+	path := "null"
+	if l.Path != nil {
+		path = fmt.Sprintf("%q", *l.Path)
+	}
+	opts := "[]"
+	if l.With != nil {
+		o, err := c.compileExpr(l.With)
+		if err != nil {
+			return "", err
+		}
+		opts = o
+	}
+	c.use("_load")
+	expr := fmt.Sprintf("_load(%s, %s)", path, opts)
+	if l.Type != nil && l.Type.Simple != nil {
+		tname := sanitizeName(*l.Type.Simple)
+		expr = fmt.Sprintf("array_map(fn($it) => new %s($it), %s)", tname, expr)
+	}
+	return expr, nil
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
+	src, err := c.compileExpr(s.Src)
+	if err != nil {
+		return "", err
+	}
+	path := "null"
+	if s.Path != nil {
+		path = fmt.Sprintf("%q", *s.Path)
+	}
+	opts := "[]"
+	if s.With != nil {
+		o, err := c.compileExpr(s.With)
+		if err != nil {
+			return "", err
+		}
+		opts = o
+	}
+	c.use("_save")
+	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts), nil
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) string {
