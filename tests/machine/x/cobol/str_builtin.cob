@@ -6,4 +6,3 @@
        PROCEDURE DIVISION.
        DISPLAY 123
        STOP RUN.
-

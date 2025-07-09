@@ -793,6 +793,11 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 					continue
 				}
 			}
+			if types.IsStringType(leftType) && types.IsStringType(rightType) {
+				res = fmt.Sprintf("FUNCTION INDEX(%s, %s) > 0", r, res)
+				leftType = types.BoolType{}
+				continue
+			}
 			return "", fmt.Errorf("unsupported in operator")
 		}
 		res = fmt.Sprintf("%s %s %s", res, opStr, r)
@@ -832,6 +837,20 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			} else {
 				return "", fmt.Errorf("unsupported cast")
 			}
+		case op.Call != nil:
+			if p.Target != nil && p.Target.Selector != nil && len(p.Target.Selector.Tail) == 1 {
+				method := p.Target.Selector.Tail[0]
+				recv := strings.ToUpper(strings.ReplaceAll(p.Target.Selector.Root, "_", "-"))
+				if method == "contains" && len(op.Call.Args) == 1 {
+					arg, err := c.compileExpr(op.Call.Args[0])
+					if err != nil {
+						return "", err
+					}
+					val = fmt.Sprintf("FUNCTION INDEX(%s, %s) > 0", recv, arg)
+					continue
+				}
+			}
+			return "", fmt.Errorf("postfix operations not supported")
 		default:
 			return "", fmt.Errorf("postfix operations not supported")
 		}

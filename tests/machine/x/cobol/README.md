@@ -1,4 +1,4 @@
-# Mochi to COBOL Machine Translations (28/97 compiled)
+# Mochi to COBOL Machine Translations (38/97 compiled)
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -21,7 +21,7 @@
 - [ ] for_map_collection.mochi
 - [x] fun_call.mochi
 - [ ] fun_expr_in_let.mochi
-- [ ] fun_three_args.mochi
+- [x] fun_three_args.mochi
 - [ ] group_by.mochi
 - [ ] group_by_conditional_sum.mochi
 - [ ] group_by_having.mochi
@@ -34,7 +34,7 @@
 - [x] if_else.mochi
 - [ ] if_then_else.mochi
 - [ ] if_then_else_nested.mochi
-- [ ] in_operator.mochi
+- [x] in_operator.mochi
 - [ ] in_operator_extended.mochi
 - [ ] inner_join.mochi
 - [ ] join_multi.mochi
@@ -55,37 +55,37 @@
 - [ ] map_index.mochi
 - [ ] map_int_key.mochi
 - [ ] map_literal_dynamic.mochi
-- [ ] map_membership.mochi
-- [ ] map_nested_assign.mochi
-- [ ] match_expr.mochi
-- [ ] match_full.mochi
+ - [ ] map_membership.mochi
+ - [ ] map_nested_assign.mochi
+ - [ ] match_expr.mochi
+ - [ ] match_full.mochi
  - [x] math_ops.mochi
-- [ ] membership.mochi
-- [ ] min_max_builtin.mochi
-- [ ] nested_function.mochi
-- [ ] order_by_map.mochi
-- [ ] outer_join.mochi
-- [ ] partial_application.mochi
+ - [x] membership.mochi
+ - [ ] min_max_builtin.mochi
+ - [x] nested_function.mochi
+ - [ ] order_by_map.mochi
+ - [ ] outer_join.mochi
+ - [x] partial_application.mochi
 - [x] print_hello.mochi
-- [ ] pure_fold.mochi
-- [ ] pure_global_fold.mochi
+- [x] pure_fold.mochi
+- [x] pure_global_fold.mochi
 - [ ] query_sum_select.mochi
 - [ ] record_assign.mochi
 - [ ] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
-- [ ] short_circuit.mochi
+- [x] short_circuit.mochi
 - [ ] slice.mochi
 - [ ] sort_stable.mochi
  - [x] str_builtin.mochi
 - [x] string_compare.mochi
 - [x] string_concat.mochi
-- [ ] string_contains.mochi
-- [ ] string_in_operator.mochi
+- [x] string_contains.mochi
+- [x] string_in_operator.mochi
 - [ ] string_index.mochi
 - [ ] string_prefix_slice.mochi
 - [x] substring_builtin.mochi
 - [x] sum_builtin.mochi
-- [ ] tail_recursion.mochi
+- [x] tail_recursion.mochi
 - [ ] test_block.mochi
 - [ ] tree_sum.mochi
 - [ ] two-sum.mochi
@@ -97,3 +97,8 @@
 - [ ] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
+
+## Remaining tasks
+- [ ] Add support for dataset queries and join operations
+- [ ] Implement map and record assignment features
+- [ ] Handle pattern matching and advanced list operations

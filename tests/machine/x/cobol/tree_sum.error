@@ -1,4 +1,1 @@
 unsupported expression at line 16
-
-let t = Node {
-  left: Leaf,
