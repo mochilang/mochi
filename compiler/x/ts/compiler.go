@@ -2123,6 +2123,75 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			break
 		}
 	}
+
+	if len(q.Joins) == 1 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && len(q.Froms) == 0 {
+		j := q.Joins[0]
+		if j.Side != nil && *j.Side == "left" {
+			child := types.NewEnv(c.env)
+			var elemType types.Type = types.AnyType{}
+			if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
+				elemType = lt.Elem
+			}
+			child.SetVar(q.Var, elemType, true)
+			jt := c.inferExprType(j.Src)
+			var je types.Type = types.AnyType{}
+			if lt, ok := jt.(types.ListType); ok {
+				je = lt.Elem
+			}
+			child.SetVar(j.Var, je, true)
+			orig := c.env
+			c.env = child
+			val, err := c.compileExpr(q.Select)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			cond, err := c.compileExpr(j.On)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			var whereExpr string
+			if q.Where != nil {
+				whereExpr, err = c.compileExpr(q.Where)
+				if err != nil {
+					c.env = orig
+					return "", err
+				}
+			}
+			js, err := c.compileIterExpr(j.Src)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			c.env = orig
+			var b strings.Builder
+			b.WriteString("(() => {\n")
+			b.WriteString("\tconst _res = [];\n")
+			if *j.Side == "left" {
+				b.WriteString("\tfor (const " + sanitizeName(q.Var) + " of " + src + ") {\n")
+				b.WriteString("\t\tlet _m = false;\n")
+				b.WriteString("\t\tfor (const " + sanitizeName(j.Var) + " of " + js + ") {\n")
+				b.WriteString("\t\t\tif (!(" + cond + ")) continue;\n")
+				if whereExpr != "" {
+					b.WriteString("\t\t\tif (!(" + whereExpr + ")) continue;\n")
+				}
+				b.WriteString("\t\t\t_m = true; _res.push(" + val + ");\n")
+				b.WriteString("\t\t}\n")
+				b.WriteString("\t\tif (!_m) { const " + sanitizeName(j.Var) + " = null;")
+				if whereExpr != "" {
+					b.WriteString(" if (" + whereExpr + ") { _res.push(" + val + "); }")
+				} else {
+					b.WriteString(" _res.push(" + val + ");")
+				}
+				b.WriteString(" }\n")
+				b.WriteString("\t}\n")
+			}
+			b.WriteString("\treturn _res;\n")
+			b.WriteString("})()")
+			return b.String(), nil
+		}
+	}
 	if !needsHelper {
 		simple := q.Sort == nil && q.Skip == nil && q.Take == nil
 		group := q.Group != nil

@@ -4,7 +4,7 @@ This directory contains TypeScript code compiled from Mochi programs in `tests/v
 
 ## Progress
 
-Compiled: 77/97 programs
+Compiled: 81/97 programs
 
 ## Checklist
 
@@ -45,10 +45,10 @@ Compiled: 77/97 programs
 - [x] in_operator.mochi
 - [x] in_operator_extended.mochi
 - [x] inner_join.mochi
-- [ ] join_multi.mochi
+- [x] join_multi.mochi
 - [ ] json_builtin.mochi
-- [ ] left_join.mochi
-- [ ] left_join_multi.mochi
+- [x] left_join.mochi
+- [x] left_join_multi.mochi
 - [x] len_builtin.mochi
 - [x] len_map.mochi
 - [x] len_string.mochi
@@ -79,7 +79,7 @@ Compiled: 77/97 programs
 - [x] pure_global_fold.mochi
 - [ ] query_sum_select.mochi
 - [ ] record_assign.mochi
-- [ ] right_join.mochi
+- [x] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
 - [x] slice.mochi
