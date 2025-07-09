@@ -374,7 +374,12 @@ func (c *compiler) binary(b *parser.BinaryExpr) (string, error) {
 			return "", err
 		}
 		if op.Op == "in" {
-			res = fmt.Sprintf("%s.contains(%s)", r, res)
+			typ := c.primaryType(op.Right.Target)
+			if typ == "map" {
+				res = fmt.Sprintf("%s.keys.contains(%s)", r, res)
+			} else {
+				res = fmt.Sprintf("%s.contains(%s)", r, res)
+			}
 		} else {
 			res = fmt.Sprintf("%s %s %s", res, op.Op, r)
 		}
@@ -530,6 +535,8 @@ func (c *compiler) primary(p *parser.Primary) (string, error) {
 		return c.structLiteral(p.Struct)
 	case p.If != nil:
 		return c.ifExpr(p.If)
+	case p.Match != nil:
+		return c.matchExpr(p.Match)
 	case p.Selector != nil:
 		return selector(p.Selector), nil
 	case p.Group != nil:
@@ -713,6 +720,40 @@ func (c *compiler) structLiteral(s *parser.StructLiteral) (string, error) {
 	return fmt.Sprintf("%s(%s)", s.Name, strings.Join(fields, ", ")), nil
 }
 
+func (c *compiler) matchExpr(m *parser.MatchExpr) (string, error) {
+	target, err := c.expr(m.Target)
+	if err != nil {
+		return "", err
+	}
+	var b strings.Builder
+	b.WriteString("{ () in\n")
+	b.WriteString("    switch ")
+	b.WriteString(target)
+	b.WriteString(" {\n")
+	for _, cse := range m.Cases {
+		pat, err := c.expr(cse.Pattern)
+		if err != nil {
+			return "", err
+		}
+		if isWildcard(cse.Pattern) {
+			b.WriteString("    default: return ")
+		} else {
+			b.WriteString("    case ")
+			b.WriteString(pat)
+			b.WriteString(": return ")
+		}
+		res, err := c.expr(cse.Result)
+		if err != nil {
+			return "", err
+		}
+		b.WriteString(res)
+		b.WriteString("\n")
+	}
+	b.WriteString("    }\n")
+	b.WriteString("}()")
+	return b.String(), nil
+}
+
 func (c *compiler) mapToStruct(m *parser.MapLiteral, name string) (string, error) {
 	fields := make([]string, len(m.Items))
 	for i, it := range m.Items {
@@ -738,6 +779,14 @@ func stringLiteral(e *parser.Expr) (string, bool) {
 		return *p.Lit.Str, true
 	}
 	return "", false
+}
+
+func isWildcard(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil {
+		return false
+	}
+	sel := e.Binary.Left.Value.Target.Selector
+	return sel != nil && sel.Root == "_" && len(sel.Tail) == 0
 }
 
 func selector(s *parser.SelectorExpr) string {
