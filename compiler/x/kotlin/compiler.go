@@ -880,9 +880,37 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(fmt.Sprintf("if (%s) {\n", cond))
 		lvl++
 	}
+	var elem types.Type
+	if lt, ok := types.TypeOfExprBasic(q.Source, c.env).(types.ListType); ok {
+		elem = lt.Elem
+	} else if gt, ok := types.TypeOfExprBasic(q.Source, c.env).(types.GroupType); ok {
+		elem = gt.Elem
+	}
+	selEnv := c.env
+	if q.Group != nil {
+		genv := types.NewEnv(c.env)
+		genv.SetVar(q.Group.Name, types.GroupType{Elem: elem}, true)
+		selEnv = genv
+		c.env = selEnv
+	}
 	sel, err := c.expr(q.Select)
 	if err != nil {
+		if q.Group != nil {
+			c.env = child
+		}
 		return "", err
+	}
+	var having string
+	if q.Group != nil && q.Group.Having != nil {
+		h, err := c.expr(q.Group.Having)
+		if err != nil {
+			c.env = child
+			return "", err
+		}
+		having = h
+	}
+	if q.Group != nil {
+		c.env = child
 	}
 	if q.Group != nil {
 		keyExpr, err := c.expr(q.Group.Exprs[0])
@@ -936,8 +964,18 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 			b.WriteString(indent(lvl))
 			b.WriteString(fmt.Sprintf("val %s = g\n", q.Group.Name))
 		}
+		if having != "" {
+			b.WriteString(indent(lvl))
+			b.WriteString(fmt.Sprintf("if (%s) {\n", having))
+			lvl++
+		}
 		b.WriteString(indent(lvl))
 		b.WriteString(fmt.Sprintf("__res.add(%s)\n", sel))
+		if having != "" {
+			lvl--
+			b.WriteString(indent(lvl))
+			b.WriteString("}\n")
+		}
 		lvl--
 		b.WriteString(indent(lvl))
 		b.WriteString("}\n")

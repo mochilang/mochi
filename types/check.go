@@ -2092,6 +2092,15 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 		genv := NewEnv(child)
 		gStruct := GroupType{Elem: elemT}
 		genv.SetVar(q.Group.Name, gStruct, true)
+		if q.Group.Having != nil {
+			ht, err := checkExprWithExpected(q.Group.Having, genv, BoolType{})
+			if err != nil {
+				return nil, err
+			}
+			if !unify(ht, BoolType{}, nil) {
+				return nil, errHavingBoolean(q.Group.Having.Pos)
+			}
+		}
 		selT, err = checkExpr(q.Select, genv)
 	} else {
 		if name, arg, ok := aggregateCallName(q.Select); ok {

@@ -1,6 +1,6 @@
 # Kotlin Machine Output
 
-This directory contains Kotlin source files generated from Mochi programs along with their runtime output or error logs.
+This directory contains Kotlin source files generated from Mochi programs along with their runtime output or error logs. The compiler now supports `group by` queries, but running the programs requires the Kotlin toolchain.
 
 ## Summary
 
