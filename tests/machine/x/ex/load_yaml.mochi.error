@@ -1,15 +1,9 @@
-line 42
+line 358
 warning: default values for the optional arguments in _load/2 are never used
   /workspace/mochi/tests/machine/x/ex/load_yaml.mochi.exs:14
 
-warning: undefined function _parse_csv/3 (expected Main to define such a function or for it to be imported, but none are available)
-  /workspace/mochi/tests/machine/x/ex/load_yaml.mochi.exs:45
+** (File.Error) could not read file "../interpreter/valid/people.yaml": no such file or directory
+    (elixir 1.14.0) lib/file.ex:358: File.read!/1
+    /workspace/mochi/tests/machine/x/ex/load_yaml.mochi.exs:28: Main._load/2
+    /workspace/mochi/tests/machine/x/ex/load_yaml.mochi.exs:5: Main.main/0
 
-** (CompileError) /workspace/mochi/tests/machine/x/ex/load_yaml.mochi.exs:42: undefined function _parse_csv/3 (expected Main to define such a function or for it to be imported, but none are available)
-
-
-
-      "tsv" ->
-        _parse_csv(text, header, "	")
-
-      _ ->

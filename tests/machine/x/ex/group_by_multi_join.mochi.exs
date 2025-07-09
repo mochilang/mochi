@@ -59,7 +59,14 @@ defmodule Main do
   defp _group_by(src, keyfn) do
     {groups, order} =
       Enum.reduce(src, {%{}, []}, fn it, {groups, order} ->
-        key = if is_list(it), do: apply(keyfn, it), else: keyfn.(it)
+        key =
+          if is_list(it) do
+            arity = :erlang.fun_info(keyfn, :arity) |> elem(1)
+            if arity == 1, do: keyfn.(it), else: apply(keyfn, it)
+          else
+            keyfn.(it)
+          end
+
         ks = :erlang.phash2(key)
 
         {groups, order} =

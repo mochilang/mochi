@@ -45,6 +45,46 @@ defmodule Main do
         _parse_csv(text, header, delim)
     end
   end
+
+  defp _parse_csv(text, header, delim) do
+    lines = text |> String.trim() |> String.split(~r/\r?\n/, trim: true)
+
+    if lines == [] do
+      []
+    else
+      {headers, start} =
+        if header do
+          {String.split(hd(lines), delim), 1}
+        else
+          cols = String.split(hd(lines), delim)
+          {Enum.map(0..(length(cols) - 1), fn i -> "c" <> Integer.to_string(i) end), 0}
+        end
+
+      Enum.drop(lines, start)
+      |> Enum.map(fn line ->
+        parts = String.split(line, delim)
+
+        Enum.with_index(headers)
+        |> Enum.reduce(%{}, fn {h, i}, acc ->
+          val = if i < length(parts), do: Enum.at(parts, i), else: ""
+
+          value =
+            case Integer.parse(val) do
+              {int, ""} ->
+                int
+
+              _ ->
+                case Float.parse(val) do
+                  {f, ""} -> f
+                  _ -> val
+                end
+            end
+
+          Map.put(acc, h, value)
+        end)
+      end)
+    end
+  end
 end
 
 Main.main()

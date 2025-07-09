@@ -31,6 +31,35 @@ defmodule Main do
       _ -> File.write!(path, out)
     end
   end
+
+  defp _to_csv(rows, header, delim) do
+    headers = if rows == [], do: [], else: rows |> hd() |> Map.keys() |> Enum.sort()
+    lines = if header, do: [Enum.join(headers, delim)], else: []
+
+    lines =
+      lines ++
+        Enum.map(rows, fn row ->
+          Enum.map(headers, fn h ->
+            val = Map.get(row, h)
+
+            cond do
+              is_map(val) or is_list(val) -> Jason.encode!(val)
+              val == nil -> ""
+              true -> to_string(val)
+            end
+          end)
+          |> Enum.join(delim)
+        end)
+
+    Enum.join(lines, "\n")
+  end
+
+  defp _to_map_list(v) do
+    cond do
+      is_list(v) and Enum.all?(v, &is_map/1) -> v
+      true -> raise "save source must be list of maps"
+    end
+  end
 end
 
 Main.main()
