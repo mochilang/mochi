@@ -1,4 +1,0 @@
-line 6: exit status 255
-  ];
-  (matrix[1] as Map)[0] = 5;
-  print(matrix[1][0]);
