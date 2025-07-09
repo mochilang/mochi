@@ -194,6 +194,12 @@ const (
   (println (_to_json v)))
 `
 
+	helperSortKey = `(defn _sort_key [k]
+  (cond
+    (map? k) (pr-str (into (sorted-map) k))
+    (sequential? k) (vec k)
+    :else k))`
+
 	helperIn = `(defn _in [item col]
   (cond
     (and (string? col) (string? item)) (clojure.string/includes? col item)
@@ -278,7 +284,7 @@ const (
             (clojure.data.json/read-str (.body resp) :key-fn keyword)))))
   )`
 
-        helperQuery = `(defn _query [src joins opts]
+	helperQuery = `(defn _query [src joins opts]
   (let [items (atom (mapv vector src))]
     (doseq [j joins]
       (let [joined (atom [])]
@@ -331,7 +337,9 @@ const (
               (reset! items @joined))))
     (let [it @items
           it (if-let [w (:where opts)] (vec (filter #(apply w %) it)) it)
-          it (if-let [sk (:sortKey opts)] (vec (sort-by #(apply sk %) it)) it)
+          it (if-let [sk (:sortKey opts)]
+               (vec (sort-by #(let [k (apply sk %)] (_sort_key k)) it))
+               it)
           it (if (contains? opts :skip) (vec (drop (:skip opts) it)) it)
           it (if (contains? opts :take) (vec (take (:take opts) it)) it)]
       (mapv #(apply (:select opts) %) it))))))))))))`
@@ -354,6 +362,7 @@ var helperMap = map[string]string{
 	"_escape_json":      helperEscapeJSON,
 	"_to_json":          helperToJSON,
 	"_json":             helperJSON,
+	"_sort_key":         helperSortKey,
 	"_in":               helperIn,
 	"_union_all":        helperUnionAll,
 	"_union":            helperUnion,
@@ -385,6 +394,7 @@ var helperOrder = []string{
 	"_escape_json",
 	"_to_json",
 	"_json",
+	"_sort_key",
 	"_in",
 	"_union_all",
 	"_union",

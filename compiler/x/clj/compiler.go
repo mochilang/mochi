@@ -1751,7 +1751,8 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	}
 	b.WriteString("] " + selExpr + ")")
 	if sortExpr != "" {
-		b.WriteString(" (sort-by (fn [" + v + "] " + sortExpr + "))")
+		b.WriteString(" (sort-by (fn [" + v + "] (_sort_key " + sortExpr + ")))")
+		c.use("_sort_key")
 	}
 	if skipExpr != "" {
 		b.WriteString(" (drop " + skipExpr + ")")
@@ -1761,7 +1762,19 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	}
 	b.WriteString("))")
 	c.env = origEnv
-	return b.String(), nil
+	expr := b.String()
+
+	// Handle simple aggregations like sum(), count(), avg(), min(), max()
+	if len(q.Joins) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		if call, ok := callPattern(q.Select); ok && len(call.Args) == 1 {
+			fn := call.Func
+			if fn == "sum" || fn == "count" || fn == "avg" || fn == "min" || fn == "max" {
+				c.use("_" + fn)
+				return fmt.Sprintf("(_%s %s)", fn, expr), nil
+			}
+		}
+	}
+	return expr, nil
 }
 
 // compileQueryExpr exposes dataset query compilation used by primary expressions.
@@ -2142,7 +2155,8 @@ func (c *Compiler) compileSimpleGroup(q *parser.QueryExpr) (string, error) {
 	b.WriteString("      ]\n")
 	b.WriteString("  (->> _groups")
 	if sortExpr != "" {
-		b.WriteString(" (sort-by (fn [" + sanitizeName(q.Group.Name) + "] " + sortExpr + "))")
+		b.WriteString(" (sort-by (fn [" + sanitizeName(q.Group.Name) + "] (_sort_key " + sortExpr + ")))")
+		c.use("_sort_key")
 	}
 	if skipExpr != "" {
 		b.WriteString(" (drop " + skipExpr + ")")
@@ -2283,6 +2297,7 @@ func (c *Compiler) compileQueryHelper(q *parser.QueryExpr) (string, error) {
 	}
 	if sortExpr != "" {
 		sortFn = fmt.Sprintf("(fn [%s] %s)", allParams, sortExpr)
+		c.use("_sort_key")
 	}
 	optsParts := []string{":select " + selectFn}
 	if whereFn != "" {
