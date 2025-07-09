@@ -1,4 +1,4 @@
-# Mochi to Smalltalk Machine Outputs (83/97 compiled)
+# Mochi to Smalltalk Machine Outputs (86/97 compiled)
 
 This directory contains Smalltalk source code generated from the Mochi programs in `tests/vm/valid`. A checkbox indicates the program compiled and executed successfully during tests. Because the `gst` interpreter is not available, all programs currently fail at runtime.
 
@@ -102,7 +102,7 @@ This directory contains Smalltalk source code generated from the Mochi programs 
 - [ ] update_stmt.mochi
 
 ## TODO
-- [ ] implement query joins and grouping
+- [ ] implement query joins
 - [ ] handle load/save expressions
 - [ ] support update statements
 - [ ] support test blocks
