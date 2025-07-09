@@ -54,6 +54,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.lambdas = nil
 	c.replacements = make(map[string]string)
 	c.funcTypes = make(map[string]string)
+	// Collect variable types ahead of time so map selectors inside the main
+	// body can be expanded correctly.
+	c.varTypes = map[string]string{}
+	collectVars(prog.Statements, c.env, c.varTypes)
 	collectFuncTypes(prog.Statements, c)
 	name := "main"
 	if prog.Package != "" {
@@ -106,6 +110,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			c.writeln("")
 		}
 	}
+
+	// Restore variable type information after compiling functions since
+	// compileFun resets the map.
+	c.varTypes = map[string]string{}
+	collectVars(prog.Statements, c.env, c.varTypes)
 
 	// Compile main body first to gather temporaries
 	var body bytes.Buffer

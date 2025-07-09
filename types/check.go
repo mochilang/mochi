@@ -1690,6 +1690,8 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 				valT = vt
 			} else if !unify(valT, vt, nil) {
 				valT = AnyType{}
+			} else if _, ok := vt.(AnyType); ok {
+				valT = AnyType{}
 			}
 		}
 		if keyT == nil {

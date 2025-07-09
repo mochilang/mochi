@@ -103,3 +103,9 @@ Checklist:
 - [ ] values_builtin
 - [x] var_assignment
 - [x] while_loop
+
+## Remaining tasks
+
+- Re-run the compiler with a working FreePascal installation to
+  generate `.out` files for programs marked as incomplete.
+- Verify join and group by queries compile and execute correctly.
