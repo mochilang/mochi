@@ -42,15 +42,17 @@ func (c *Compiler) fieldType(e *parser.Expr) types.Type {
 		return types.TypeOfExprBasic(e, c.env)
 	}
 	pf := u.Value
-	if len(pf.Ops) != 1 || pf.Ops[0].Field == nil || pf.Target == nil || pf.Target.Selector == nil {
+	var root, field string
+	switch {
+	case len(pf.Ops) == 1 && pf.Ops[0].Field != nil && pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 0:
+		root = pf.Target.Selector.Root
+		field = pf.Ops[0].Field.Name
+	case len(pf.Ops) == 0 && pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1:
+		root = pf.Target.Selector.Root
+		field = pf.Target.Selector.Tail[0]
+	default:
 		return types.TypeOfExprBasic(e, c.env)
 	}
-	sel := pf.Target.Selector
-	if len(sel.Tail) != 0 {
-		return types.TypeOfExprBasic(e, c.env)
-	}
-	root := sel.Root
-	field := pf.Ops[0].Field.Name
 	if structName, ok := c.listVars[root]; ok {
 		if st, ok2 := c.structs[structName]; ok2 {
 			if t, ok3 := st.Fields[field]; ok3 {
@@ -299,6 +301,17 @@ func (c *Compiler) isGroupVar(name string) bool {
 		}
 	}
 	return false
+}
+
+func loopHead(varName, src string, env *types.Env) string {
+	if env != nil {
+		if t, err := env.GetVar(varName); err == nil {
+			if _, ok := t.(types.StructType); ok {
+				return fmt.Sprintf("for %s in &%s {", varName, src)
+			}
+		}
+	}
+	return fmt.Sprintf("for &%s in &%s {", varName, src)
 }
 
 func stmtMutatesVar(s *parser.Statement, name string) bool {
@@ -698,7 +711,7 @@ func (c *Compiler) compileUpdateStmt(u *parser.UpdateStmt) error {
 
 	orig := c.env
 	if c.env != nil {
-		if lt, ok := c.env.GetVar(list); ok {
+		if lt, err := c.env.GetVar(list); err == nil {
 			if lt2, ok2 := lt.(types.ListType); ok2 {
 				if st, ok3 := lt2.Elem.(types.StructType); ok3 {
 					child := types.NewEnv(c.env)
@@ -1232,9 +1245,9 @@ func (c *Compiler) compileGroupBySimple(q *parser.QueryExpr, src string, child *
 	b.WriteString("{ let mut ")
 	b.WriteString(mapTmp)
 	b.WriteString(" = std::collections::HashMap::new();")
-	b.WriteString(fmt.Sprintf("for &%s in &%s {", q.Var, src))
+	b.WriteString(loopHead(q.Var, src, child))
 	for i, fs := range fromSrcs {
-		fmt.Fprintf(&b, " for &%s in &%s {", q.Froms[i].Var, fs)
+		fmt.Fprintf(&b, " %s", loopHead(q.Froms[i].Var, fs, child))
 	}
 	if cond != "" {
 		b.WriteString(" if !(" + cond + ") { continue; }")
@@ -1398,12 +1411,14 @@ func (c *Compiler) compileLeftJoinSimple(q *parser.QueryExpr, src string, child 
 	b.WriteString("{ let mut ")
 	b.WriteString(tmp)
 	b.WriteString(" = Vec::new();")
-	b.WriteString(fmt.Sprintf("for &%s in &%s {", q.Var, src))
+	b.WriteString(loopHead(q.Var, src, child))
 	for i, fs := range fromSrcs {
-		b.WriteString(fmt.Sprintf(" for &%s in &%s {", q.Froms[i].Var, fs))
+		b.WriteString(" ")
+		b.WriteString(loopHead(q.Froms[i].Var, fs, child))
 	}
 	b.WriteString(" let mut _matched = false;")
-	b.WriteString(fmt.Sprintf(" for &%s in &%s {", q.Joins[0].Var, joinSrc))
+	b.WriteString(" ")
+	b.WriteString(loopHead(q.Joins[0].Var, joinSrc, child))
 	if joinCond != "" {
 		b.WriteString(" if !(" + joinCond + ") { continue; }")
 	}
@@ -1615,12 +1630,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	b.WriteString("{ let mut ")
 	b.WriteString(tmp)
 	b.WriteString(" = Vec::new();")
-	b.WriteString(fmt.Sprintf("for &%s in &%s {", q.Var, src))
+	b.WriteString(loopHead(q.Var, src, child))
 	for i, fs := range fromSrcs {
-		b.WriteString(fmt.Sprintf(" for &%s in &%s {", q.Froms[i].Var, fs))
+		b.WriteString(" ")
+		b.WriteString(loopHead(q.Froms[i].Var, fs, child))
 	}
 	for i, js := range joinSrcs {
-		b.WriteString(fmt.Sprintf(" for &%s in &%s {", q.Joins[i].Var, js))
+		b.WriteString(" ")
+		b.WriteString(loopHead(q.Joins[i].Var, js, child))
 		if joinConds[i] != "" {
 			b.WriteString(" if !(" + joinConds[i] + ") { continue; }")
 		}
