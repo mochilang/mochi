@@ -344,6 +344,42 @@ func simpleStringKey(e *parser.Expr) (string, bool) {
 	return "", false
 }
 
+// eqJoinKeys checks if expression e represents an equality comparison between
+// fields of the left and right query variables. If so it returns the compiled
+// expressions for the left and right keys.
+func (c *Compiler) eqJoinKeys(e *parser.Expr, leftVar, rightVar string) (string, string, bool) {
+	if e == nil || len(e.Binary.Right) != 1 {
+		return "", "", false
+	}
+	op := e.Binary.Right[0]
+	if op.Op != "==" {
+		return "", "", false
+	}
+	lhs := e.Binary.Left
+	rhs := op.Right
+	if len(lhs.Ops) != 0 || len(rhs.Ops) != 0 || lhs.Value == nil || rhs.Target == nil {
+		return "", "", false
+	}
+	ls := lhs.Value.Target.Selector
+	rs := rhs.Target.Selector
+	if ls == nil || rs == nil {
+		return "", "", false
+	}
+	// compile expressions
+	lExpr, err1 := c.compileExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: lhs}})
+	rExpr, err2 := c.compileExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: rhs}}})
+	if err1 != nil || err2 != nil {
+		return "", "", false
+	}
+	if ls.Root == leftVar && rs.Root == rightVar {
+		return lExpr, rExpr, true
+	}
+	if ls.Root == rightVar && rs.Root == leftVar {
+		return rExpr, lExpr, true
+	}
+	return "", "", false
+}
+
 func (c *Compiler) newVar() string {
 	name := fmt.Sprintf("_tmp%d", c.tempVarCount)
 	c.tempVarCount++
