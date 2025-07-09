@@ -1,5 +1,5 @@
 <?php
-$data = [[$tag => "a", $val => 1], [$tag => "a", $val => 2], [$tag => "b", $val => 3]];
+$data = [["tag" => "a", "val" => 1], ["tag" => "a", "val" => 2], ["tag" => "b", "val" => 3]];
 $groups = (function() {
     $groups = [];
     foreach ($data as $d) {
@@ -19,7 +19,7 @@ foreach ($groups as $g) {
     foreach ($g->items as $x) {
         $total = $total + $x->val;
     }
-    $tmp = array_merge($tmp, [[$tag => $g->key, $total => $total]]);
+    $tmp = array_merge($tmp, [["tag" => $g->key, "total" => $total]]);
 }
 $result = (function() {
     $result = [];

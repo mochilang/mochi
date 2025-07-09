@@ -6,7 +6,7 @@ $pairs = (function() {
     foreach ($nums as $n) {
         foreach ($letters as $l) {
             if ($n % 2 == 0) {
-                $result[] = [$n => $n, $l => $l];
+                $result[] = ["n" => $n, "l" => $l];
             }
         }
     }

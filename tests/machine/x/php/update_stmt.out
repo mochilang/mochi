@@ -1,0 +1,5 @@
+PHP Warning:  Undefined variable $age in /workspace/mochi/tests/machine/x/php/update_stmt.php on line 14
+PHP Warning:  Undefined variable $age in /workspace/mochi/tests/machine/x/php/update_stmt.php on line 14
+PHP Warning:  Undefined variable $age in /workspace/mochi/tests/machine/x/php/update_stmt.php on line 14
+PHP Warning:  Undefined variable $age in /workspace/mochi/tests/machine/x/php/update_stmt.php on line 14
+string(2) "ok"

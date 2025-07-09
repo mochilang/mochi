@@ -7,7 +7,7 @@ $combos = (function() {
     foreach ($nums as $n) {
         foreach ($letters as $l) {
             foreach ($bools as $b) {
-                $result[] = [$n => $n, $l => $l, $b => $b];
+                $result[] = ["n" => $n, "l" => $l, "b" => $b];
             }
         }
     }

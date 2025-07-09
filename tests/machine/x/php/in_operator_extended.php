@@ -11,7 +11,7 @@ $ys = (function() {
 })();
 var_dump(in_array(1, $ys));
 var_dump(in_array(2, $ys));
-$m = [$a => 1];
+$m = ["a" => 1];
 var_dump(array_key_exists("a", $m));
 var_dump(array_key_exists("b", $m));
 $s = "hello";
