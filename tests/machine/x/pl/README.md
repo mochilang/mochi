@@ -4,7 +4,7 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 
 ## Summary
 
- - 58/97 programs compiled and executed successfully.
+ - 85/97 programs compiled successfully.
 
 ### Checklist
 - [x] append_builtin
@@ -65,42 +65,42 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 - [x] string_in_operator
 - [x] values_builtin
 - [x] user_type_literal
-- [ ] closure
-- [ ] cross_join
-- [ ] cross_join_filter
-- [ ] cross_join_triple
-- [ ] dataset_sort_take_limit
-- [ ] dataset_where_filter
-- [ ] fun_expr_in_let
-- [ ] group_by
-- [ ] group_by_conditional_sum
+- [x] closure
+- [x] cross_join
+- [x] cross_join_filter
+- [x] cross_join_triple
+- [x] dataset_sort_take_limit
+- [x] dataset_where_filter
+- [x] fun_expr_in_let
+- [x] group_by
+- [x] group_by_conditional_sum
 - [ ] group_by_having
-- [ ] group_by_join
-- [ ] group_by_left_join
-- [ ] group_by_multi_join
-- [ ] group_by_multi_join_sort
-- [ ] group_by_sort
-- [ ] group_items_iteration
-- [ ] in_operator_extended
-- [ ] inner_join
-- [ ] join_multi
+- [x] group_by_join
+- [x] group_by_left_join
+- [x] group_by_multi_join
+- [x] group_by_multi_join_sort
+- [x] group_by_sort
+- [x] group_items_iteration
+- [x] in_operator_extended
+- [x] inner_join
+- [x] join_multi
 - [ ] json_builtin
-- [ ] left_join
-- [ ] left_join_multi
+- [x] left_join
+- [x] left_join_multi
 - [ ] list_set_ops
 - [ ] load_yaml
 - [ ] match_expr
 - [ ] match_full
 - [ ] nested_function
-- [ ] order_by_map
-- [ ] outer_join
-- [ ] query_sum_select
+- [x] order_by_map
+- [x] outer_join
+- [x] query_sum_select
 - [ ] record_assign
-- [ ] right_join
+- [x] right_join
 - [ ] save_jsonl_stdout
-- [ ] sort_stable
+- [x] sort_stable
 - [ ] test_block
 - [ ] tree_sum
-- [ ] two-sum
+- [x] two-sum
 - [ ] update_stmt
-- [ ] while_loop
+- [x] while_loop
