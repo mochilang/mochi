@@ -1,4 +1,4 @@
-# Mochi to COBOL Machine Translations (38/97 compiled)
+# Mochi to COBOL Machine Translations (39/97 compiled)
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
