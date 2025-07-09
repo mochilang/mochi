@@ -1513,9 +1513,112 @@ func (c *compiler) groupQuery(q *parser.QueryExpr) (string, error) {
 	return b.String(), nil
 }
 
+func (c *compiler) joinQuery(q *parser.QueryExpr) (string, error) {
+	src, err := c.expr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	fromSrcs := make([]string, len(q.Froms))
+	for i, f := range q.Froms {
+		fs, err := c.expr(f.Src)
+		if err != nil {
+			return "", err
+		}
+		fromSrcs[i] = fs
+	}
+	joinSrcs := make([]string, len(q.Joins))
+	joinOns := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		js, err := c.expr(j.Src)
+		if err != nil {
+			return "", err
+		}
+		on, err := c.expr(j.On)
+		if err != nil {
+			return "", err
+		}
+		joinSrcs[i] = js
+		joinOns[i] = on
+	}
+	savedVars := c.varTypes
+	savedFields := c.mapFields
+	c.varTypes = copyMap(c.varTypes)
+	c.mapFields = copyMap(c.mapFields)
+	c.varTypes[q.Var] = c.elementType(q.Source)
+	if fields := c.elementFieldTypes(q.Source); fields != nil {
+		c.mapFields[q.Var] = fields
+	}
+	for i, f := range q.Froms {
+		c.varTypes[f.Var] = c.elementType(f.Src)
+		if fields := c.elementFieldTypes(f.Src); fields != nil {
+			c.mapFields[f.Var] = fields
+		}
+		_ = fromSrcs[i]
+	}
+	for i, j := range q.Joins {
+		c.varTypes[j.Var] = c.elementType(j.Src)
+		if fields := c.elementFieldTypes(j.Src); fields != nil {
+			c.mapFields[j.Var] = fields
+		}
+		_ = joinSrcs[i]
+	}
+	cond := ""
+	if q.Where != nil {
+		ccond, err := c.expr(q.Where)
+		if err != nil {
+			c.varTypes = savedVars
+			c.mapFields = savedFields
+			return "", err
+		}
+		cond = ccond
+	}
+	sel, err := c.expr(q.Select)
+	if err != nil {
+		c.varTypes = savedVars
+		c.mapFields = savedFields
+		return "", err
+	}
+	c.varTypes = savedVars
+	c.mapFields = savedFields
+
+	var b strings.Builder
+	b.WriteString("({\n")
+	b.WriteString("\tvar _res: [Any] = []\n")
+	b.WriteString(fmt.Sprintf("\tfor %s in %s {\n", q.Var, src))
+	indent := "\t\t"
+	for i, fs := range fromSrcs {
+		b.WriteString(fmt.Sprintf("%sfor %s in %s {\n", indent, q.Froms[i].Var, fs))
+		indent += "\t"
+	}
+	for i, js := range joinSrcs {
+		b.WriteString(fmt.Sprintf("%sfor %s in %s {\n", indent, q.Joins[i].Var, js))
+		indent += "\t"
+		b.WriteString(fmt.Sprintf("%sif !(%s) { continue }\n", indent, joinOns[i]))
+	}
+	if cond != "" {
+		b.WriteString(fmt.Sprintf("%sif !(%s) { continue }\n", indent, cond))
+	}
+	b.WriteString(fmt.Sprintf("%s_res.append(%s)\n", indent, sel))
+	for range joinSrcs {
+		indent = indent[:len(indent)-1]
+		b.WriteString(indent + "}\n")
+	}
+	for range fromSrcs {
+		indent = indent[:len(indent)-1]
+		b.WriteString(indent + "}\n")
+	}
+	b.WriteString("\t}\n")
+	b.WriteString("\treturn _res\n")
+	b.WriteString("}())")
+	return b.String(), nil
+}
+
 func (c *compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	if q.Group != nil && len(q.Joins) == 0 {
 		return c.groupQuery(q)
+	}
+	if len(q.Joins) > 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
+		return c.joinQuery(q)
 	}
 	if len(q.Joins) > 0 || q.Distinct {
 		return "", fmt.Errorf("unsupported query")
