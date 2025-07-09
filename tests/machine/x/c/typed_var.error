@@ -1,7 +1,7 @@
 line: 0
 error: output mismatch
 -- got --
-32767
+0
 -- want --
 <nil>
    1: #include <stdio.h>
