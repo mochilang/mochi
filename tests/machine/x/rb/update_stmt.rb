@@ -8,5 +8,5 @@ $people.each_with_index do |_t1, _t0|
 	_t1.status = "adult"
 	_t1.age = (age + 1)
 end
-puts(["ok"].join(" "))
+puts("ok")
 raise "expect failed" unless ($people == [Person.new(name: "Alice", age: 17, status: "minor"), Person.new(name: "Bob", age: 26, status: "adult"), Person.new(name: "Charlie", age: 19, status: "adult"), Person.new(name: "Diana", age: 16, status: "minor")])

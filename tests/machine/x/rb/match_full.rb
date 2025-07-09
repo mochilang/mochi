@@ -12,9 +12,9 @@ def classify(n)
 end)
 end
 
-x = 2
-label = (begin
-	_t1 = x
+$x = 2
+$label = (begin
+	_t1 = $x
 	case
 	when _t1 == 1
 		"one"
@@ -26,10 +26,10 @@ label = (begin
 		"unknown"
 	end
 end)
-puts([label].join(" "))
-day = "sun"
-mood = (begin
-	_t2 = day
+puts($label)
+$day = "sun"
+$mood = (begin
+	_t2 = $day
 	case
 	when _t2 == "mon"
 		"tired"
@@ -41,10 +41,10 @@ mood = (begin
 		"normal"
 	end
 end)
-puts([mood].join(" "))
-ok = true
-status = (begin
-	_t3 = ok
+puts($mood)
+$ok = true
+$status = (begin
+	_t3 = $ok
 	case
 	when _t3 == true
 		"confirmed"
@@ -54,6 +54,6 @@ status = (begin
 		nil
 	end
 end)
-puts([status].join(" "))
-puts([classify(0)].join(" "))
-puts([classify(5)].join(" "))
+puts($status)
+puts(classify(0))
+puts(classify(5))

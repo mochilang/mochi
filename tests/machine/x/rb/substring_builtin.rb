@@ -11,4 +11,4 @@ def _sliceString(s, i, j)
   chars[start...finish].join
 end
 
-puts([_sliceString("mochi", 1, 4)].join(" "))
+puts(_sliceString("mochi", 1, 4))

@@ -8,7 +8,7 @@ end
 
 def sum_tree(t)
 	return (begin
-	_t0 = t
+	_t0 = $t
 	case
 	when _t0.is_a?(Leaf)
 		0
@@ -20,5 +20,5 @@ def sum_tree(t)
 end)
 end
 
-t = Node.new(left: Leaf.new, value: 1, right: Node.new(left: Leaf.new, value: 2, right: Leaf.new))
-puts([sum_tree(t)].join(" "))
+$t = Node.new(left: Leaf.new, value: 1, right: Node.new(left: Leaf.new, value: 2, right: Leaf.new))
+puts(sum_tree($t))

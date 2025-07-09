@@ -1609,6 +1609,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			args[i] = v
 		}
 		name := sanitizeName(p.Call.Func)
+		if c.globals[name] {
+			name = "$" + name
+		}
 		if builtin, ok, err := c.compileBuiltinCall(name, args, p.Call.Args); ok {
 			if err != nil {
 				return "", err
@@ -1838,6 +1841,7 @@ func (c *Compiler) compileBuiltinCall(name string, args []string, origArgs []*pa
 			if c.isListExpr(origArgs[0]) || c.isMapExpr(origArgs[0]) {
 				return fmt.Sprintf("puts(%s.inspect)", args[0]), true, nil
 			}
+			return fmt.Sprintf("puts(%s)", args[0]), true, nil
 		}
 		return fmt.Sprintf("puts([%s].join(\" \"))", strings.Join(args, ", ")), true, nil
 	case "len", "count":

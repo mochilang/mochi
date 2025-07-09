@@ -10,6 +10,9 @@ class MGroup
   def length
     @Items.length
   end
+  def items
+    @Items
+  end
   def each(&block)
     @Items.each(&block)
   end
@@ -45,6 +48,6 @@ def _json(v)
   puts(JSON.generate(obj))
 end
 
-people = [OpenStruct.new(name: "Alice", city: "Paris"), OpenStruct.new(name: "Bob", city: "Hanoi"), OpenStruct.new(name: "Charlie", city: "Paris"), OpenStruct.new(name: "Diana", city: "Hanoi"), OpenStruct.new(name: "Eve", city: "Paris"), OpenStruct.new(name: "Frank", city: "Hanoi"), OpenStruct.new(name: "George", city: "Paris")]
-big = _group_by(people, ->(p){ p.city }).map { |g| OpenStruct.new(city: g.key, num: (g).length) }
-_json(big)
+$people = [OpenStruct.new(name: "Alice", city: "Paris"), OpenStruct.new(name: "Bob", city: "Hanoi"), OpenStruct.new(name: "Charlie", city: "Paris"), OpenStruct.new(name: "Diana", city: "Hanoi"), OpenStruct.new(name: "Eve", city: "Paris"), OpenStruct.new(name: "Frank", city: "Hanoi"), OpenStruct.new(name: "George", city: "Paris")]
+$big = _group_by($people, ->(p){ p.city }).map { |g| OpenStruct.new(city: g.key, num: (g).length) }
+_json($big)

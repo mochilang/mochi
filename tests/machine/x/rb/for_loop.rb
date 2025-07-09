@@ -1,3 +1,3 @@
 for i in 1...4
-	puts([i].join(" "))
+	puts(i)
 end

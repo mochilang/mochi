@@ -10,6 +10,9 @@ class MGroup
   def length
     @Items.length
   end
+  def items
+    @Items
+  end
   def each(&block)
     @Items.each(&block)
   end
@@ -153,21 +156,22 @@ def _query(src, joins, opts)
   res
 end
 
-customers = [OpenStruct.new(id: 1, name: "Alice"), OpenStruct.new(id: 2, name: "Bob")]
-orders = [OpenStruct.new(id: 100, customerId: 1), OpenStruct.new(id: 101, customerId: 1), OpenStruct.new(id: 102, customerId: 2)]
-stats = (begin
-	src = orders
+$customers = [OpenStruct.new(id: 1, name: "Alice"), OpenStruct.new(id: 2, name: "Bob")]
+$orders = [OpenStruct.new(id: 100, customerId: 1), OpenStruct.new(id: 101, customerId: 1), OpenStruct.new(id: 102, customerId: 2)]
+$stats = (begin
+	src = $orders
 	_rows = _query(src, [
-		{ 'items' => customers, 'on' => ->(o, c){ (o.customerId == c.id) } }
+		{ 'items' => $customers, 'on' => ->(o, c){ (o.customerId == c.id) } }
 	], { 'select' => ->(o, c){ [o, c] } })
 	_groups = _group_by(_rows, ->(o, c){ c.name })
+	_items0 = _groups
 	_res = []
-	for g in _groups
+	for g in _items0
 		_res << OpenStruct.new(name: g.key, count: (g).length)
 	end
 	_res
 end)
-puts(["--- Orders per customer ---"].join(" "))
-for s in stats
+puts("--- Orders per customer ---")
+for s in $stats
 	puts([s.name, "orders:", s.count].join(" "))
 end

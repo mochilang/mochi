@@ -23,6 +23,6 @@ def _min(v)
   list.min
 end
 
-nums = [3, 1, 4]
-puts([_min(nums)].join(" "))
-puts([_max(nums)].join(" "))
+$nums = [3, 1, 4]
+puts(_min($nums))
+puts(_max($nums))

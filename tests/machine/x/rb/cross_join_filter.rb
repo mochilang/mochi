@@ -1,11 +1,11 @@
 require 'ostruct'
 
-nums = [1, 2, 3]
-letters = ["A", "B"]
-pairs = (begin
+$nums = [1, 2, 3]
+$letters = ["A", "B"]
+$pairs = (begin
 	_res = []
-	for n in nums
-		for l in letters
+	for n in $nums
+		for l in $letters
 			if ((n % 2) == 0)
 				_res << OpenStruct.new(n: n, l: l)
 			end
@@ -13,7 +13,7 @@ pairs = (begin
 	end
 	_res
 end)
-puts(["--- Even pairs ---"].join(" "))
-for p in pairs
+puts("--- Even pairs ---")
+for p in $pairs
 	puts([p.n, p.l].join(" "))
 end

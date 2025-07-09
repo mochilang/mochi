@@ -10,6 +10,9 @@ class MGroup
   def length
     @Items.length
   end
+  def items
+    @Items
+  end
   def each(&block)
     @Items.each(&block)
   end
@@ -167,16 +170,18 @@ def _sum(v)
   s
 end
 
-items = [OpenStruct.new(cat: "a", val: 10, flag: true), OpenStruct.new(cat: "a", val: 5, flag: false), OpenStruct.new(cat: "b", val: 20, flag: true)]
-result = (begin
-	src = items
+$items = [OpenStruct.new(cat: "a", val: 10, flag: true), OpenStruct.new(cat: "a", val: 5, flag: false), OpenStruct.new(cat: "b", val: 20, flag: true)]
+$result = (begin
+	src = $items
 	_rows = _query(src, [
-	], { 'select' => ->(i){ [i] }, 'sortKey' => ->(i){ g.key } })
+	], { 'select' => ->(i){ [i] } })
 	_groups = _group_by(_rows, ->(i){ i.cat })
+	_items0 = _groups
+	_items0 = _items0.sort_by { |g| g.key }
 	_res = []
-	for g in _groups
+	for g in _items0
 		_res << OpenStruct.new(cat: g.key, share: (_sum(((g)).map { |x| (x.flag ? x.val : 0) }) / _sum(((g)).map { |x| x.val })))
 	end
 	_res
 end)
-puts([result].join(" "))
+puts($result)

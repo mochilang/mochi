@@ -43,10 +43,10 @@ $groups = _group_by($data, ->(d){ d.tag }).map { |g| g }
 $tmp = []
 for g in $groups
 	total = 0
-	for x in g.items
+	for x in g.Items
 		total = (total + x.val)
 	end
 	$tmp = ($tmp + [OpenStruct.new(tag: g.key, total: total)])
 end
 $result = ((($tmp)).sort_by { |r| r.tag }).map { |r| r }
-puts([$result].join(" "))
+puts($result)

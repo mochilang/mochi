@@ -119,18 +119,18 @@ def _query(src, joins, opts)
   res
 end
 
-customers = [OpenStruct.new(id: 1, name: "Alice"), OpenStruct.new(id: 2, name: "Bob")]
-orders = [OpenStruct.new(id: 100, customerId: 1), OpenStruct.new(id: 101, customerId: 2)]
-items = [OpenStruct.new(orderId: 100, sku: "a")]
-result = (begin
-	src = orders
+$customers = [OpenStruct.new(id: 1, name: "Alice"), OpenStruct.new(id: 2, name: "Bob")]
+$orders = [OpenStruct.new(id: 100, customerId: 1), OpenStruct.new(id: 101, customerId: 2)]
+$items = [OpenStruct.new(orderId: 100, sku: "a")]
+$result = (begin
+	src = $orders
 	_rows = _query(src, [
-		{ 'items' => customers, 'on' => ->(o, c){ (o.customerId == c.id) } },
-		{ 'items' => items, 'on' => ->(o, c, i){ (o.id == i.orderId) }, 'left' => true }
+		{ 'items' => $customers, 'on' => ->(o, c){ (o.customerId == c.id) } },
+		{ 'items' => $items, 'on' => ->(o, c, i){ (o.id == i.orderId) }, 'left' => true }
 	], { 'select' => ->(o, c, i){ OpenStruct.new(orderId: o.id, name: c.name, item: i) } })
 	_rows
 end)
-puts(["--- Left Join Multi ---"].join(" "))
-for r in result
+puts("--- Left Join Multi ---")
+for r in $result
 	puts([r.orderId, r.name, r.item].join(" "))
 end

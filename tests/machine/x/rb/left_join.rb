@@ -119,16 +119,16 @@ def _query(src, joins, opts)
   res
 end
 
-customers = [OpenStruct.new(id: 1, name: "Alice"), OpenStruct.new(id: 2, name: "Bob")]
-orders = [OpenStruct.new(id: 100, customerId: 1, total: 250), OpenStruct.new(id: 101, customerId: 3, total: 80)]
-result = (begin
-	src = orders
+$customers = [OpenStruct.new(id: 1, name: "Alice"), OpenStruct.new(id: 2, name: "Bob")]
+$orders = [OpenStruct.new(id: 100, customerId: 1, total: 250), OpenStruct.new(id: 101, customerId: 3, total: 80)]
+$result = (begin
+	src = $orders
 	_rows = _query(src, [
-		{ 'items' => customers, 'on' => ->(o, c){ (o.customerId == c.id) }, 'left' => true }
+		{ 'items' => $customers, 'on' => ->(o, c){ (o.customerId == c.id) }, 'left' => true }
 	], { 'select' => ->(o, c){ OpenStruct.new(orderId: o.id, customer: c, total: o.total) } })
 	_rows
 end)
-puts(["--- Left Join ---"].join(" "))
-for entry in result
+puts("--- Left Join ---")
+for entry in $result
 	puts(["Order", entry.orderId, "customer", entry.customer, "total", entry.total].join(" "))
 end

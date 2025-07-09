@@ -1,1 +1,1 @@
-puts([([1, 2, 3]).length].join(" "))
+puts(([1, 2, 3]).length)

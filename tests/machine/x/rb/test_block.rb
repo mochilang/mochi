@@ -1,3 +1,3 @@
-puts(["ok"].join(" "))
-x = (1 + 2)
-raise "expect failed" unless (x == 3)
+puts("ok")
+$x = (1 + 2)
+raise "expect failed" unless ($x == 3)

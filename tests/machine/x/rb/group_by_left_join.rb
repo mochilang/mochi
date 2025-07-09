@@ -171,7 +171,7 @@ $stats = (begin
 	end
 	_res
 end)
-puts(["--- Group Left Join ---"].join(" "))
+puts("--- Group Left Join ---")
 for s in $stats
 	puts([s.name, "orders:", s.count].join(" "))
 end

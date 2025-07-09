@@ -1,3 +1,3 @@
-puts([(6 * 7)].join(" "))
-puts([(7 / 2)].join(" "))
-puts([(7 % 2)].join(" "))
+puts((6 * 7))
+puts((7 / 2))
+puts((7 % 2))
