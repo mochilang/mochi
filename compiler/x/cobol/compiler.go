@@ -313,6 +313,86 @@ func (c *Compiler) compilePrint(call *parser.CallExpr) error {
 	if len(call.Args) == 1 {
 		arg := call.Args[0]
 		if fc, ok := isCallTo(arg, ""); ok {
+			switch fc.Func {
+			case "append":
+				if len(fc.Args) == 2 {
+					if lst := listLiteral(fc.Args[0]); lst != nil {
+						parts := make([]string, len(lst.Elems)+1)
+						for i, e := range lst.Elems {
+							v, err := c.compileExpr(e)
+							if err != nil {
+								return err
+							}
+							parts[i] = v
+						}
+						v, err := c.compileExpr(fc.Args[1])
+						if err != nil {
+							return err
+						}
+						parts[len(parts)-1] = v
+						c.writeln("DISPLAY " + strings.Join(parts, " "))
+						return nil
+					}
+					if id, ok := identExpr(fc.Args[0]); ok {
+						if n, ok := c.seqList[id]; ok {
+							parts := make([]string, n+1)
+							for i := 1; i <= n; i++ {
+								parts[i-1] = fmt.Sprintf("%d", i)
+							}
+							v, err := c.compileExpr(fc.Args[1])
+							if err != nil {
+								return err
+							}
+							parts[n] = v
+							c.writeln("DISPLAY " + strings.Join(parts, " "))
+							return nil
+						}
+					}
+				}
+			case "len", "count":
+				if len(fc.Args) == 1 {
+					if lst := listLiteral(fc.Args[0]); lst != nil {
+						c.writeln(fmt.Sprintf("DISPLAY %d", len(lst.Elems)))
+						return nil
+					}
+					if id, ok := identExpr(fc.Args[0]); ok {
+						if n, ok := c.seqList[id]; ok {
+							c.writeln(fmt.Sprintf("DISPLAY %d", n))
+							return nil
+						}
+					}
+				}
+			case "sum", "avg":
+				if len(fc.Args) == 1 {
+					if lst := listLiteral(fc.Args[0]); lst != nil {
+						total := 0
+						for _, e := range lst.Elems {
+							if v, ok := intLiteral(e); ok {
+								total += v
+							} else {
+								return fmt.Errorf("only int literals supported in %s", fc.Func)
+							}
+						}
+						if fc.Func == "sum" {
+							c.writeln(fmt.Sprintf("DISPLAY %d", total))
+						} else {
+							c.writeln(fmt.Sprintf("DISPLAY %d", total/len(lst.Elems)))
+						}
+						return nil
+					}
+					if id, ok := identExpr(fc.Args[0]); ok {
+						if n, ok := c.seqList[id]; ok {
+							total := n * (n + 1) / 2
+							if fc.Func == "sum" {
+								c.writeln(fmt.Sprintf("DISPLAY %d", total))
+							} else {
+								c.writeln(fmt.Sprintf("DISPLAY %d", total/n))
+							}
+							return nil
+						}
+					}
+				}
+			}
 			val, err := c.compileUserCall(fc)
 			if err != nil {
 				return err
@@ -835,4 +915,44 @@ func identExpr(e *parser.Expr) (string, bool) {
 		return "", false
 	}
 	return p.Target.Selector.Root, true
+}
+
+func listLiteral(e *parser.Expr) *parser.ListLiteral {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return nil
+	}
+	v := u.Value
+	if len(v.Ops) != 0 || v.Target == nil {
+		return nil
+	}
+	return v.Target.List
+}
+
+func intLiteral(e *parser.Expr) (int, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return 0, false
+	}
+	u := e.Binary.Left
+	neg := false
+	if len(u.Ops) > 1 {
+		return 0, false
+	}
+	if len(u.Ops) == 1 {
+		if u.Ops[0] != "-" {
+			return 0, false
+		}
+		neg = true
+	}
+	if u.Value == nil || len(u.Value.Ops) != 0 || u.Value.Target == nil || u.Value.Target.Lit == nil || u.Value.Target.Lit.Int == nil {
+		return 0, false
+	}
+	v := *u.Value.Target.Lit.Int
+	if neg {
+		v = -v
+	}
+	return v, true
 }
