@@ -1,0 +1,5 @@
+let xs = [1,2,1,3]
+let res = from x in xs where x > 1 group by x into g select {k: g.key, c: count(g)}
+for g in res {
+  print(g.k, g.c)
+}

@@ -1376,7 +1376,7 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) string {
 // supports optional `sort by`, `skip` and `take` clauses in addition to basic
 // `from`/`where`/`select`. Joins and grouping remain unimplemented.
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
-	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Sort == nil && q.Skip == nil && q.Take == nil {
 		if name, ok := identName(q.Group.Exprs[0]); ok && name == q.Var {
 			src := c.compileExpr(q.Source)
 			srcT := c.exprType(q.Source)
@@ -1384,8 +1384,35 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 				if _, ok := lt.Elem.(types.IntType); ok {
 					c.need(needGroupByInt)
 					c.need(needListInt)
+					prevEnv := c.env
+					if c.env != nil {
+						genv := types.NewEnv(c.env)
+						genv.SetVar(q.Var, lt.Elem, true)
+						c.env = genv
+					}
+					var cond string
+					if q.Where != nil {
+						cond = c.compileExpr(q.Where)
+					}
+					tmpSrc := src
+					if cond != "" {
+						filtered := c.newTemp()
+						idxVar := c.newTemp()
+						c.writeln(fmt.Sprintf("list_int %s = list_int_create(%s.len);", filtered, src))
+						c.writeln(fmt.Sprintf("int %s = 0;", idxVar))
+						c.writeln(fmt.Sprintf("for (int i=0; i<%s.len; i++) {", src))
+						c.indent++
+						c.writeln(fmt.Sprintf("int %s = %s.data[i];", sanitizeName(q.Var), src))
+						c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", cond))
+						c.writeln(fmt.Sprintf("%s.data[%s] = %s;", filtered, idxVar, sanitizeName(q.Var)))
+						c.writeln(fmt.Sprintf("%s++;", idxVar))
+						c.indent--
+						c.writeln("}")
+						c.writeln(fmt.Sprintf("%s.len = %s;", filtered, idxVar))
+						tmpSrc = filtered
+					}
 					groups := c.newTemp()
-					c.writeln(fmt.Sprintf("list_group_int %s = _group_by_int(%s);", groups, src))
+					c.writeln(fmt.Sprintf("list_group_int %s = _group_by_int(%s);", groups, tmpSrc))
 					oldEnv := c.env
 					if c.env != nil {
 						genv := types.NewEnv(c.env)
@@ -1431,6 +1458,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 					c.writeln(fmt.Sprintf("%s.len = %s;", res, idx))
 					if c.env != nil {
 						c.env = oldEnv
+					}
+					if c.env != nil {
+						c.env = prevEnv
 					}
 					return res
 				}
