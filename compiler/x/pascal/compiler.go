@@ -1880,9 +1880,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		keyType := "string"
 		valType := "integer"
 		if len(p.Map.Items) > 0 {
-			keyType = typeString(types.TypeOfExpr(p.Map.Items[0].Key, c.env))
-			if _, ok := selectorName(p.Map.Items[0].Key); ok {
+			kt := typeString(types.TypeOfExpr(p.Map.Items[0].Key, c.env))
+			if _, ok := stringKey(p.Map.Items[0].Key); ok {
 				keyType = "string"
+			} else {
+				keyType = kt
 			}
 			valType = typeString(types.TypeOfExpr(p.Map.Items[0].Value, c.env))
 			if valType != "integer" {
