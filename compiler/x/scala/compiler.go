@@ -480,6 +480,21 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 		return err
 	}
 	target := s.Name
+	// handle nested index assignment for immutable collections
+	if len(s.Index) == 2 && len(s.Field) == 0 {
+		idx0, err := c.compileExpr(s.Index[0].Start)
+		if err != nil {
+			return err
+		}
+		idx1, err := c.compileExpr(s.Index[1].Start)
+		if err != nil {
+			return err
+		}
+		tmp := c.newVar("tmp")
+		c.writeln(fmt.Sprintf("val %s = %s(%s).updated(%s, %s)", tmp, target, idx0, idx1, expr))
+		c.writeln(fmt.Sprintf("%s = %s.updated(%s, %s)", target, target, idx0, tmp))
+		return nil
+	}
 	for i, idx := range s.Index {
 		if idx.Colon != nil || idx.Colon2 != nil {
 			return fmt.Errorf("line %d: slice assignment unsupported", s.Pos.Line)
@@ -919,6 +934,14 @@ func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
 				}
 			}
 			return base
+		case types.StructType:
+			if tt.Name == "" {
+				base := s.Root
+				for _, f := range s.Tail {
+					base = fmt.Sprintf("%s(%q)", base, f)
+				}
+				return base
+			}
 		case types.GroupType:
 			if len(s.Tail) == 0 {
 				return fmt.Sprintf("%s._2", s.Root)
@@ -1203,6 +1226,16 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}()...), ", ")
 		tmp := fmt.Sprintf("for { %s } yield (%s, (%s))", strings.Join(parts, "; "), keyExpr, tuple)
 		groups := fmt.Sprintf("(%s).groupBy(_._1).map{ case(k,list) => (k, list.map(_._2)) }.toList", tmp)
+		if q.Sort != nil {
+			c.inSort = true
+			key, err := c.compileExpr(q.Sort)
+			c.inSort = false
+			if err != nil {
+				c.env = oldEnv
+				return "", err
+			}
+			groups = fmt.Sprintf("(%s).sortBy(%s => %s)", groups, q.Group.Name, key)
+		}
 
 		groupEnv := types.NewEnv(c.env)
 		groupEnv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, false)
@@ -1232,7 +1265,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		expr = fmt.Sprintf("for { %s } yield %s", strings.Join(parts, "; "), sel)
 	}
-	if q.Sort != nil {
+	if q.Sort != nil && q.Group == nil {
 		c.inSort = true
 		key, err := c.compileExpr(q.Sort)
 		c.inSort = false
@@ -1355,7 +1388,14 @@ func (c *Compiler) typeString(t *parser.TypeRef) string {
 		for i, a := range g.Args {
 			args[i] = c.typeString(a)
 		}
-		return fmt.Sprintf("%s[%s]", g.Name, strings.Join(args, ", "))
+		name := g.Name
+		switch name {
+		case "list":
+			name = "List"
+		case "map":
+			name = "Map"
+		}
+		return fmt.Sprintf("%s[%s]", name, strings.Join(args, ", "))
 	}
 	if t.Fun != nil {
 		parts := make([]string, len(t.Fun.Params))

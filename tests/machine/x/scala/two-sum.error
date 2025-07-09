@@ -1,8 +1,0 @@
-exit status 1
-/workspace/mochi/tests/machine/x/scala/two-sum.scala:2: error: not found: type list
-  def twoSum(nums: list[Int], target: Int): list[Int] = {
-                                            ^
-/workspace/mochi/tests/machine/x/scala/two-sum.scala:2: error: not found: type list
-  def twoSum(nums: list[Int], target: Int): list[Int] = {
-                   ^
-two errors found

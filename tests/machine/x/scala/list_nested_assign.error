@@ -1,5 +1,0 @@
-exit status 1
-/workspace/mochi/tests/machine/x/scala/list_nested_assign.scala:4: error: value update is not a member of List[Int]
-    matrix(1).update(0, 5)
-              ^
-one error found
