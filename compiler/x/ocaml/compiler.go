@@ -176,6 +176,14 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 	if err != nil {
 		return err
 	}
+	if len(a.Index) > 0 && c.vars[a.Name] {
+		idx, err := c.compileExpr(a.Index[0].Start)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("%s := (let rec __upd l = match l with | [] -> [(%s,%s)] | (k,v)::tl -> if k = %s then (%s,%s)::tl else (k,v)::__upd tl in __upd !%s);", a.Name, idx, val, idx, idx, val, a.Name))
+		return nil
+	}
 	if c.vars[a.Name] {
 		c.writeln(fmt.Sprintf("%s := %s;", a.Name, val))
 	} else {
@@ -396,6 +404,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 			if isStringPrimary(p.Target) {
 				val = fmt.Sprintf("String.make 1 (String.get %s %s)", val, idx)
+			} else if isMapPrimary(p.Target) || isStringExpr(op.Index.Start) {
+				val = fmt.Sprintf("List.assoc %s %s", idx, val)
 			} else {
 				val = fmt.Sprintf("List.nth %s %s", val, idx)
 			}
@@ -504,10 +514,18 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	}
 	switch call.Func {
 	case "print":
-		if len(args) != 1 {
-			return "", fmt.Errorf("print expects 1 arg")
+		if len(args) == 0 {
+			return "", fmt.Errorf("print expects at least 1 arg")
 		}
-		return fmt.Sprintf("print_endline (__show (%s))", args[0]), nil
+		if len(args) == 1 {
+			return fmt.Sprintf("print_endline (__show (%s))", args[0]), nil
+		}
+		parts := make([]string, len(args))
+		for i, a := range args {
+			parts[i] = fmt.Sprintf("__show (%s)", a)
+		}
+		expr := strings.Join(parts, " ^ \" \" ^ ")
+		return fmt.Sprintf("print_endline (%s)", expr), nil
 	case "append":
 		if len(args) != 2 {
 			return "", fmt.Errorf("append expects 2 args")
@@ -644,6 +662,13 @@ func isStringPrimary(p *parser.Primary) bool {
 		return true
 	}
 	return false
+}
+
+func isMapPrimary(p *parser.Primary) bool {
+	if p == nil {
+		return false
+	}
+	return p.Map != nil
 }
 
 func isStringUnary(u *parser.Unary) bool {

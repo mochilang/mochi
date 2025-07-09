@@ -4,8 +4,8 @@ This directory contains OCaml source code generated from Mochi programs and the 
 
 ## Summary
 
-- 34/97 programs compiled and executed successfully.
-- 63 programs failed to compile or run.
+- 39/97 programs compiled and executed successfully.
+- 58 programs failed to compile or run.
 
 ### Successful
 - append_builtin
@@ -42,10 +42,13 @@ This directory contains OCaml source code generated from Mochi programs and the 
 - unary_neg
 - var_assignment
 - while_loop
-
-### Failed
 - break_continue
 - cast_string_to_int
+- map_assign
+- map_index
+- map_literal_dynamic
+
+### Failed
 - cast_struct
 - cross_join
 - cross_join_filter
@@ -76,11 +79,8 @@ This directory contains OCaml source code generated from Mochi programs and the 
 - list_nested_assign
 - list_set_ops
 - load_yaml
-- map_assign
 - map_in_operator
-- map_index
 - map_int_key
-- map_literal_dynamic
 - map_membership
 - map_nested_assign
 - match_expr
