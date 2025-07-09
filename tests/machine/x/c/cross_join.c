@@ -35,7 +35,7 @@ static list_ordersItem list_ordersItem_create(int len) {
 typedef struct {
   int orderId;
   int orderCustomerId;
-  int pairedCustomerName;
+  char *pairedCustomerName;
   int orderTotal;
 } resultItem;
 typedef struct {
@@ -85,7 +85,7 @@ int main() {
     printf("%s ", ", total: $");
     printf("%d ", entry.orderTotal);
     printf("%s ", ") paired with");
-    printf("%d\n", entry.pairedCustomerName);
+    printf("%s\n", entry.pairedCustomerName);
   }
   return 0;
 }

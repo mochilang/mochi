@@ -861,15 +861,34 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 				}
 			}
 		} else if q := stmt.Value.Binary.Left.Value.Target.Query; q != nil {
-			if ml := asMapLiteral(q.Select); ml != nil {
+			if ml := asMapLiteral(q.Select); ml != nil && c.env != nil {
+				// Build a temporary environment with query variables to
+				// improve type inference of the map literal.
+				qenv := types.NewEnv(c.env)
+				if st, ok := c.exprType(q.Source).(types.ListType); ok {
+					qenv.SetVar(q.Var, st.Elem, true)
+				}
+				for _, f := range q.Froms {
+					if ft, ok := c.exprType(f.Src).(types.ListType); ok {
+						qenv.SetVar(f.Var, ft.Elem, true)
+					}
+				}
+				for _, j := range q.Joins {
+					if jt, ok := c.exprType(j.Src).(types.ListType); ok {
+						qenv.SetVar(j.Var, jt.Elem, true)
+					}
+				}
+				prevEnv := c.env
+				c.env = qenv
 				if st, ok := c.inferStructFromMap(ml, stmt.Name); ok {
 					t = types.ListType{Elem: st}
-					if c.env != nil {
-						c.env.SetStruct(st.Name, st)
-					}
+					c.env = prevEnv
+					c.env.SetStruct(st.Name, st)
 					c.compileStructType(st)
 					c.compileStructListType(st)
 					c.structLits[ml] = st
+				} else {
+					c.env = prevEnv
 				}
 			}
 		}

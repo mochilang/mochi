@@ -24,7 +24,7 @@ static list_string list_string_create(int len) {
 }
 typedef struct {
   int n;
-  int l;
+  char *l;
 } pairsItem;
 typedef struct {
   int len;
@@ -66,7 +66,7 @@ int main() {
   for (int _t7 = 0; _t7 < pairs.len; _t7++) {
     pairsItem p = pairs.data[_t7];
     printf("%d ", p.n);
-    printf("%d\n", p.l);
+    printf("%s\n", p.l);
   }
   return 0;
 }
