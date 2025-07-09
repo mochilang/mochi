@@ -278,7 +278,6 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				val = fmt.Sprintf("(%s %s)", val, strings.Join(args, " "))
 			}
 		case op.Cast != nil:
-		case op.Cast != nil:
 			if op.Cast.Type.Simple != nil {
 				tname := *op.Cast.Type.Simple
 				if tname == "int" {
