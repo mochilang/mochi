@@ -55,6 +55,21 @@ fun str(v: Any?): String = v.toString()
 
 fun substring(s: String, start: Int, end: Int): String = s.substring(start, end)
 
+fun toInt(v: Any?): Int = when (v) {
+    is Int -> v
+    is Double -> v.toInt()
+    is String -> v.toInt()
+    is Boolean -> if (v) 1 else 0
+    else -> 0
+}
+
+fun toDouble(v: Any?): Double = when (v) {
+    is Double -> v
+    is Int -> v.toDouble()
+    is String -> v.toDouble()
+    else -> 0.0
+}
+
 fun <T> union(a: MutableList<T>, b: MutableList<T>): MutableList<T> {
     val res = a.toMutableList()
     for (x in b) if (!res.contains(x)) res.add(x)
@@ -443,13 +458,34 @@ func (c *Compiler) binary(b *parser.BinaryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	lType := types.TypeOfUnary(b.Left, c.env)
 	res := left
 	for _, op := range b.Right {
 		r, err := c.postfix(op.Right)
 		if err != nil {
 			return "", err
 		}
+		rType := types.TypeOfPostfix(op.Right, c.env)
+		if isNumericOp(op.Op) {
+			if _, ok := lType.(types.AnyType); ok {
+				switch rType.(type) {
+				case types.IntType:
+					res = fmt.Sprintf("toInt(%s)", res)
+				case types.FloatType:
+					res = fmt.Sprintf("toDouble(%s)", res)
+				}
+			}
+			if _, ok := rType.(types.AnyType); ok {
+				switch lType.(type) {
+				case types.IntType:
+					r = fmt.Sprintf("toInt(%s)", r)
+				case types.FloatType:
+					r = fmt.Sprintf("toDouble(%s)", r)
+				}
+			}
+		}
 		res = fmt.Sprintf("%s %s %s", res, op.Op, r)
+		lType = rType
 	}
 	return res, nil
 }
@@ -967,6 +1003,15 @@ func (c *Compiler) writeln(s string) {
 func replaceIdent(s, name, repl string) string {
 	re := regexp.MustCompile(`\b` + regexp.QuoteMeta(name) + `\b`)
 	return re.ReplaceAllString(s, repl)
+}
+
+func isNumericOp(op string) bool {
+	switch op {
+	case "+", "-", "*", "/", "%", "<", "<=", ">", ">=":
+		return true
+	default:
+		return false
+	}
 }
 
 func fieldType(t types.Type, path []string) types.Type {
