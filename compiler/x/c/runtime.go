@@ -758,9 +758,6 @@ var helperOrder = []string{
 }
 
 func (c *Compiler) emitRuntime() {
-	if c.has(needListInt) {
-		c.buf.WriteString(helperListInt)
-	}
 	for _, h := range helperOrder {
 		if c.has(h) {
 			c.buf.WriteString(helperCode[h])
