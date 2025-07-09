@@ -1,0 +1,36 @@
+warning: variable "c" is unused (if the variable is not meant to be used, prefix it with an underscore)
+  /workspace/mochi/tests/machine/x/ex/group_by_multi_join_sort.mochi.exs:45: Main.main/0
+
+warning: variable "l" is unused (if the variable is not meant to be used, prefix it with an underscore)
+  /workspace/mochi/tests/machine/x/ex/group_by_multi_join_sort.mochi.exs:46: Main.main/0
+
+warning: variable "o" is unused (if the variable is not meant to be used, prefix it with an underscore)
+  /workspace/mochi/tests/machine/x/ex/group_by_multi_join_sort.mochi.exs:46: Main.main/0
+
+warning: variable "c" is unused (if the variable is not meant to be used, prefix it with an underscore)
+  /workspace/mochi/tests/machine/x/ex/group_by_multi_join_sort.mochi.exs:50: Main.main/0
+
+warning: variable "n" is unused (if the variable is not meant to be used, prefix it with an underscore)
+  /workspace/mochi/tests/machine/x/ex/group_by_multi_join_sort.mochi.exs:50: Main.main/0
+
+warning: variable "l" is unused (if the variable is not meant to be used, prefix it with an underscore)
+  /workspace/mochi/tests/machine/x/ex/group_by_multi_join_sort.mochi.exs:57: Main.main/0
+
+warning: variable "o" is unused (if the variable is not meant to be used, prefix it with an underscore)
+  /workspace/mochi/tests/machine/x/ex/group_by_multi_join_sort.mochi.exs:57: Main.main/0
+
+warning: default values for the optional arguments in _query/3 are never used
+  /workspace/mochi/tests/machine/x/ex/group_by_multi_join_sort.mochi.exs:148
+
+[
+  %{
+    c_acctbal: 100,
+    c_address: "123 St",
+    c_comment: "Loyal",
+    c_custkey: 1,
+    c_name: "Alice",
+    c_phone: "123-456",
+    n_name: "BRAZIL",
+    revenue: 900.0
+  }
+]
