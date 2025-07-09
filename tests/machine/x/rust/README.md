@@ -2,7 +2,7 @@
 
 This directory stores machine generated Rust translations of programs from `tests/vm/valid`. Each entry is compiled and executed during tests. If a program fails to compile or run, a `.error` file contains the diagnostic details.
 
-Checklist of programs that currently compile and run (70/97):
+Checklist of programs that currently compile and run (75/97):
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -38,6 +38,11 @@ Checklist of programs that currently compile and run (70/97):
 - [x] map_index
 - [x] map_int_key
 - [x] map_literal_dynamic
+- [x] cross_join
+- [x] cross_join_filter
+- [x] cross_join_triple
+- [x] dataset_sort_take_limit
+- [x] dataset_where_filter
 - [x] map_membership
 - [x] map_nested_assign
 - [x] match_expr
@@ -74,12 +79,7 @@ Checklist of programs that currently compile and run (70/97):
 - [x] substring_builtin
 - [x] user_type_literal
 
-Remaining programs to implement:
-- [ ] cross_join
-- [ ] cross_join_filter
-- [ ] cross_join_triple
-- [ ] dataset_sort_take_limit
-- [ ] dataset_where_filter
+-Remaining programs to implement:
 - [ ] group_by
 - [ ] group_by_conditional_sum
 - [ ] group_by_having
