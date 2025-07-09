@@ -17,7 +17,7 @@ let result = (() => {
           const _k = JSON.stringify({c_custkey: c.c_custkey, c_name: c.c_name, c_acctbal: c.c_acctbal, c_address: c.c_address, c_phone: c.c_phone, c_comment: c.c_comment, n_name: n.n_name});
           let g = groups[_k];
           if (!g) { g = []; g.key = {c_custkey: c.c_custkey, c_name: c.c_name, c_acctbal: c.c_acctbal, c_address: c.c_address, c_phone: c.c_phone, c_comment: c.c_comment, n_name: n.n_name}; g.items = g; groups[_k] = g; }
-          g.push(c);
+          g.push({c: c, o: o, l: l, n: n});
         }
       }
     }

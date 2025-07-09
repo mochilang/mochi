@@ -38,12 +38,13 @@ type Compiler struct {
 	tmp                int
 	needContainsHelper bool
 	funParams          map[string]int
+	variants           map[string][]string
 	repoRoot           string
 }
 
 // New returns a new Compiler.
 func New() *Compiler {
-	return &Compiler{funParams: make(map[string]int), repoRoot: findRepoRoot()}
+	return &Compiler{funParams: make(map[string]int), variants: make(map[string][]string), repoRoot: findRepoRoot()}
 }
 
 func (c *Compiler) newTmp() string {
@@ -79,9 +80,19 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.indent = 0
 	c.needContainsHelper = false
 	c.funParams = make(map[string]int)
+	c.variants = make(map[string][]string)
 	for _, st := range prog.Statements {
 		if st.Fun != nil {
 			c.funParams[st.Fun.Name] = len(st.Fun.Params)
+		}
+		if st.Type != nil {
+			for _, v := range st.Type.Variants {
+				names := make([]string, len(v.Fields))
+				for i, f := range v.Fields {
+					names[i] = f.Name
+				}
+				c.variants[v.Name] = names
+			}
 		}
 	}
 	for _, st := range prog.Statements {
@@ -448,6 +459,64 @@ func getIdent(e *parser.Expr) string {
 	return ""
 }
 
+func (c *Compiler) variantPattern(e *parser.Expr) (string, []string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return "", nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil || len(u.Value.Ops) != 0 {
+		return "", nil, false
+	}
+	if u.Value.Target == nil {
+		return "", nil, false
+	}
+	if u.Value.Target.Call != nil {
+		name := u.Value.Target.Call.Func
+		fields, ok := c.variants[name]
+		if !ok {
+			return "", nil, false
+		}
+		vars := make([]string, len(u.Value.Target.Call.Args))
+		for i, a := range u.Value.Target.Call.Args {
+			v := getIdent(a)
+			if v == "" {
+				return "", nil, false
+			}
+			vars[i] = v
+			if i < len(fields) {
+				_ = fields[i]
+			}
+		}
+		return name, vars, true
+	}
+	if u.Value.Target.Selector != nil && len(u.Value.Target.Selector.Tail) == 0 {
+		name := u.Value.Target.Selector.Root
+		if _, ok := c.variants[name]; ok {
+			return name, nil, true
+		}
+	}
+	return "", nil, false
+}
+
+func isLiteralComplexUnary(u *parser.Unary) bool {
+	if u == nil || len(u.Ops) != 0 || u.Value == nil {
+		return false
+	}
+	return isLiteralComplexPostfix(u.Value)
+}
+
+func isLiteralComplexPostfix(p *parser.PostfixExpr) bool {
+	if p == nil || len(p.Ops) != 0 || p.Target == nil {
+		return false
+	}
+	pr := p.Target
+	switch {
+	case pr.List != nil, pr.Map != nil, pr.Struct != nil:
+		return true
+	}
+	return false
+}
+
 func (c *Compiler) funExpr(fe *parser.FunExpr) (string, error) {
 	params := make([]string, len(fe.Params))
 	for i, p := range fe.Params {
@@ -566,7 +635,18 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		writeln(fmt.Sprintf("const _k = JSON.stringify(%s);", keyStr))
 		writeln("let g = groups[_k];")
 		writeln(fmt.Sprintf("if (!g) { g = []; g.key = %s; g.items = g; groups[_k] = g; }", keyStr))
-		writeln(fmt.Sprintf("g.push(%s);", q.Var))
+		if len(q.Froms)+len(q.Joins) <= 1 {
+			writeln(fmt.Sprintf("g.push(%s);", q.Var))
+		} else {
+			parts := []string{fmt.Sprintf("%s: %s", q.Var, q.Var)}
+			for _, f := range q.Froms {
+				parts = append(parts, fmt.Sprintf("%s: %s", f.Var, f.Var))
+			}
+			for _, j := range q.Joins {
+				parts = append(parts, fmt.Sprintf("%s: %s", j.Var, j.Var))
+			}
+			writeln(fmt.Sprintf("g.push({%s});", strings.Join(parts, ", ")))
+		}
 		for range q.Joins {
 			indent--
 			writeln("}")
@@ -777,46 +857,106 @@ func (c *Compiler) matchExpr(m *parser.MatchExpr) (string, error) {
 	indent++
 	writeln(fmt.Sprintf("const %s = %s;", tmp, target))
 	writeln("let _res;")
-	writeln(fmt.Sprintf("switch (%s) {", tmp))
-	indent++
-	hasDefault := false
+
+	simple := true
 	for _, cs := range m.Cases {
 		if isUnderscoreExpr(cs.Pattern) {
+			continue
+		}
+		if _, _, ok := c.variantPattern(cs.Pattern); ok {
+			simple = false
+			break
+		}
+		if !isSimplePattern(cs.Pattern) {
+			simple = false
+			break
+		}
+	}
+
+	if simple {
+		writeln(fmt.Sprintf("switch (%s) {", tmp))
+		indent++
+		hasDefault := false
+		for _, cs := range m.Cases {
+			if isUnderscoreExpr(cs.Pattern) {
+				res, err := c.expr(cs.Result)
+				if err != nil {
+					return "", err
+				}
+				writeln("default:")
+				indent++
+				writeln(fmt.Sprintf("_res = %s;", res))
+				writeln("break;")
+				indent--
+				hasDefault = true
+				continue
+			}
+			pat, err := c.expr(cs.Pattern)
+			if err != nil {
+				return "", err
+			}
 			res, err := c.expr(cs.Result)
 			if err != nil {
 				return "", err
 			}
-			writeln("default:")
+			writeln(fmt.Sprintf("case %s:", pat))
 			indent++
 			writeln(fmt.Sprintf("_res = %s;", res))
 			writeln("break;")
 			indent--
-			hasDefault = true
-			continue
 		}
-		pat, err := c.expr(cs.Pattern)
-		if err != nil {
-			return "", err
+		if !hasDefault {
+			writeln("default:")
+			indent++
+			writeln("_res = undefined;")
+			writeln("break;")
+			indent--
 		}
-		res, err := c.expr(cs.Result)
-		if err != nil {
-			return "", err
-		}
-		writeln(fmt.Sprintf("case %s:", pat))
-		indent++
-		writeln(fmt.Sprintf("_res = %s;", res))
-		writeln("break;")
 		indent--
+		writeln("}")
+	} else {
+		prefix := "if"
+		for i, cs := range m.Cases {
+			cond := "true"
+			var pre []string
+			if !isUnderscoreExpr(cs.Pattern) {
+				if name, vars, ok := c.variantPattern(cs.Pattern); ok {
+					cond = fmt.Sprintf("%s.kind === %q", tmp, strings.ToLower(name))
+					fields := c.variants[name]
+					for j, v := range vars {
+						fld := fmt.Sprintf("field%d", j+1)
+						if j < len(fields) {
+							fld = fields[j]
+						}
+						pre = append(pre, fmt.Sprintf("const %s = %s.%s;", v, tmp, fld))
+					}
+				} else {
+					pat, err := c.expr(cs.Pattern)
+					if err != nil {
+						return "", err
+					}
+					cond = fmt.Sprintf("JSON.stringify(%s) === JSON.stringify(%s)", tmp, pat)
+				}
+			}
+			if i == len(m.Cases)-1 && isUnderscoreExpr(cs.Pattern) {
+				writeln("else {")
+			} else {
+				writeln(fmt.Sprintf("%s (%s) {", prefix, cond))
+			}
+			indent++
+			for _, l := range pre {
+				writeln(l)
+			}
+			res, err := c.expr(cs.Result)
+			if err != nil {
+				return "", err
+			}
+			writeln(fmt.Sprintf("_res = %s;", res))
+			indent--
+			writeln("}")
+			prefix = "else if"
+		}
 	}
-	if !hasDefault {
-		writeln("default:")
-		indent++
-		writeln("_res = undefined;")
-		writeln("break;")
-		indent--
-	}
-	indent--
-	writeln("}")
 	writeln("return _res;")
 	indent--
 	writeln("})()")
@@ -836,6 +976,7 @@ func (c *Compiler) binary(b *parser.BinaryExpr) (string, error) {
 		return "", err
 	}
 	result := left
+	leftAst := b.Left
 	for _, op := range b.Right {
 		r, err := c.postfix(op.Right)
 		if err != nil {
@@ -855,9 +996,20 @@ func (c *Compiler) binary(b *parser.BinaryExpr) (string, error) {
 		case "in":
 			c.needContainsHelper = true
 			result = fmt.Sprintf("contains(%s, %s)", r, result)
+		case "==", "!=":
+			if isLiteralComplexUnary(leftAst) || isLiteralComplexPostfix(op.Right) {
+				cmp := fmt.Sprintf("JSON.stringify(%s) === JSON.stringify(%s)", result, r)
+				if op.Op == "!=" {
+					cmp = "!(" + cmp + ")"
+				}
+				result = cmp
+			} else {
+				result = fmt.Sprintf("(%s %s %s)", result, op.Op, r)
+			}
 		default:
 			result = fmt.Sprintf("(%s %s %s)", result, op.Op, r)
 		}
+		leftAst = nil
 	}
 	return result, nil
 }
@@ -967,13 +1119,28 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 		}
 		return "{" + strings.Join(items, ", ") + "}", nil
 	case p.Struct != nil:
-		fields := make([]string, len(p.Struct.Fields))
-		for i, f := range p.Struct.Fields {
-			v, err := c.expr(f.Value)
-			if err != nil {
-				return "", err
+		fields := []string{}
+		if names, ok := c.variants[p.Struct.Name]; ok {
+			fields = append(fields, fmt.Sprintf("kind: %q", strings.ToLower(p.Struct.Name)))
+			for i, f := range p.Struct.Fields {
+				v, err := c.expr(f.Value)
+				if err != nil {
+					return "", err
+				}
+				name := f.Name
+				if i < len(names) {
+					name = names[i]
+				}
+				fields = append(fields, fmt.Sprintf("%s: %s", name, v))
 			}
-			fields[i] = fmt.Sprintf("%s: %s", f.Name, v)
+		} else {
+			for _, f := range p.Struct.Fields {
+				v, err := c.expr(f.Value)
+				if err != nil {
+					return "", err
+				}
+				fields = append(fields, fmt.Sprintf("%s: %s", f.Name, v))
+			}
 		}
 		return "{" + strings.Join(fields, ", ") + "}", nil
 	case p.Group != nil:
@@ -987,6 +1154,21 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 	case p.Match != nil:
 		return c.matchExpr(p.Match)
 	case p.Call != nil:
+		if fields, ok := c.variants[p.Call.Func]; ok {
+			parts := []string{fmt.Sprintf("kind: %q", strings.ToLower(p.Call.Func))}
+			for i, a := range p.Call.Args {
+				s, err := c.expr(a)
+				if err != nil {
+					return "", err
+				}
+				name := fmt.Sprintf("field%d", i+1)
+				if i < len(fields) {
+					name = fields[i]
+				}
+				parts = append(parts, fmt.Sprintf("%s: %s", name, s))
+			}
+			return "{" + strings.Join(parts, ", ") + "}", nil
+		}
 		args := make([]string, len(p.Call.Args))
 		for i, a := range p.Call.Args {
 			s, err := c.expr(a)
@@ -1119,6 +1301,9 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 	case p.If != nil:
 		return c.ifExpr(p.If)
 	case p.Selector != nil:
+		if _, ok := c.variants[p.Selector.Root]; ok && len(p.Selector.Tail) == 0 {
+			return fmt.Sprintf("{kind: %q}", strings.ToLower(p.Selector.Root)), nil
+		}
 		return strings.Join(append([]string{p.Selector.Root}, p.Selector.Tail...), "."), nil
 	}
 	return "", fmt.Errorf("unsupported expression at line %d", p.Pos.Line)
@@ -1137,6 +1322,28 @@ func isUnderscoreExpr(e *parser.Expr) bool {
 		return false
 	}
 	return p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0
+}
+
+func isSimplePattern(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil || len(u.Value.Ops) != 0 {
+		return false
+	}
+	pr := u.Value.Target
+	if pr == nil {
+		return false
+	}
+	switch {
+	case pr.Lit != nil:
+		return true
+	case pr.Selector != nil && len(pr.Selector.Tail) == 0:
+		return true
+	default:
+		return false
+	}
 }
 
 func getFormat(e *parser.Expr) string {
