@@ -289,6 +289,14 @@ func mapValueType(t string) string {
 	return "Object"
 }
 
+func listElemType(t string) string {
+	t = strings.TrimSpace(t)
+	if !strings.HasPrefix(t, "List<") || !strings.HasSuffix(t, ">") {
+		return "Object"
+	}
+	return strings.TrimSpace(t[5 : len(t)-1])
+}
+
 func (c *Compiler) inferType(e *parser.Expr) string {
 	// handle cast expressions first
 	if e != nil && e.Binary != nil && e.Binary.Left != nil && e.Binary.Left.Value != nil {
@@ -672,14 +680,19 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 			return err
 		}
 		if i == len(a.Index)-1 {
-			if strings.HasPrefix(ix, "\"") {
+			if strings.HasPrefix(typ, "Map<") || strings.HasPrefix(ix, "\"") {
 				c.writeln(fmt.Sprintf("%s.put(%s, %s);", target, ix, expr))
 			} else {
 				c.writeln(fmt.Sprintf("%s.set(%s, %s);", target, ix, expr))
 			}
 		} else {
-			target = fmt.Sprintf("((Map)%s.get(%s))", target, ix)
-			typ = mapValueType(typ)
+			if strings.HasPrefix(typ, "Map<") {
+				target = fmt.Sprintf("((Map)%s.get(%s))", target, ix)
+				typ = mapValueType(typ)
+			} else {
+				target = fmt.Sprintf("((List)%s.get(%s))", target, ix)
+				typ = listElemType(typ)
+			}
 		}
 	}
 	if len(a.Index) == 0 {
@@ -869,6 +882,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	typ := ""
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		typ = c.vars[p.Target.Selector.Root]
+	}
 	for i, op := range p.Ops {
 		switch {
 		case op.Call != nil:
@@ -921,7 +938,15 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			} else if last {
 				val = fmt.Sprintf("%s.get(%s)", val, idx)
 			} else {
-				val = fmt.Sprintf("((Map)%s.get(%s))", val, idx)
+				if strings.HasPrefix(typ, "Map<") {
+					val = fmt.Sprintf("((Map)%s.get(%s))", val, idx)
+					typ = mapValueType(typ)
+				} else if strings.HasPrefix(typ, "List<") {
+					val = fmt.Sprintf("((List)%s.get(%s))", val, idx)
+					typ = listElemType(typ)
+				} else {
+					val = fmt.Sprintf("((Map)%s.get(%s))", val, idx)
+				}
 			}
 		default:
 			return "", fmt.Errorf("postfix operations unsupported")
