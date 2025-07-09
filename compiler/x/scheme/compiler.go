@@ -711,6 +711,11 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 }
 
 // compileIndexedSet builds a nested list/string update expression for an indexed assignment.
+// compileIndexedSet builds nested update expressions for assignments using
+// indexing. When assigning into maps we use `map-get`/`map-set` to handle
+// association lists instead of list-ref/list-set which only work on plain
+// lists. Only the outermost container type is tracked which is sufficient for
+// simple nested map updates used in the tests.
 func (c *Compiler) compileIndexedSet(name string, idx []*parser.IndexOp, rhs string, isString, isMap bool) (string, error) {
 	if len(idx) == 0 {
 		return rhs, nil
@@ -731,9 +736,23 @@ func (c *Compiler) compileIndexedSet(name string, idx []*parser.IndexOp, rhs str
 		c.needListSet = true
 		return fmt.Sprintf("(list-set %s %s %s)", name, ie, rhs), nil
 	}
-	inner, err := c.compileIndexedSet(fmt.Sprintf("(list-ref %s %s)", name, ie), idx[1:], rhs, false, false)
+
+	// Access the current element using the appropriate lookup operator so
+	// nested map assignments work correctly.
+	innerSrc := fmt.Sprintf("(list-ref %s %s)", name, ie)
+	nextIsMap := false
+	if isMap {
+		c.needMapHelpers = true
+		innerSrc = fmt.Sprintf("(map-get %s %s)", name, ie)
+		nextIsMap = true
+	}
+	inner, err := c.compileIndexedSet(innerSrc, idx[1:], rhs, false, nextIsMap)
 	if err != nil {
 		return "", err
+	}
+	if isMap {
+		c.needMapHelpers = true
+		return fmt.Sprintf("(map-set %s %s %s)", name, ie, inner), nil
 	}
 	c.needListSet = true
 	return fmt.Sprintf("(list-set %s %s %s)", name, ie, inner), nil

@@ -1,8 +1,0 @@
-error running map_nested_assign:
-ERROR in list-tail on line 34 of file /usr/share/chibi/init-7.scm: invalid type, expected Number: "outer"
-  called from list-ref on line 36 of file /usr/share/chibi/init-7.scm
-  called from <anonymous> on line 21 of file /workspace/mochi/tests/machine/x/scheme/map_nested_assign.scm
-  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
-  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
-
-context (line 34):

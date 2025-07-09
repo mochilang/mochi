@@ -1,11 +1,3 @@
-(define (list-set lst idx val)
-    (let loop ((i idx) (l lst))
-        (if (null? l)
-            '()
-            (if (= i 0)
-                (cons val (cdr l))
-                (cons (car l) (loop (- i 1) (cdr l))))))
-)
 (define (map-get m k)
     (let ((p (assoc k m)))
         (if p (cdr p) '()))
@@ -18,5 +10,5 @@
 )
 
 (define data (list (cons "outer" (list (cons "inner" 1)))))
-(set! data (list-set data "outer" (list-set (list-ref data "outer") "inner" 2)))
+(set! data (map-set data "outer" (map-set (map-get data "outer") "inner" 2)))
 (begin (display (map-get (map-get data "outer") "inner")) (newline))
