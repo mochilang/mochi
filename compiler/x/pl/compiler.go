@@ -47,6 +47,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.vars = make(map[string]string)
 
 	c.writeln(":- style_check(-singleton).")
+	c.emitHelpers()
 	for _, st := range p.Statements {
 		if st.Fun != nil {
 			if err := c.compileFun(st.Fun); err != nil {
@@ -84,7 +85,12 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	}
 	resVar := "_Res"
 	c.retVar = resVar
-	c.writeln(fmt.Sprintf("%s(%s, %s) :-", sanitizeVar(fn.Name), strings.Join(params, ", "), resVar))
+	args := strings.Join(params, ", ")
+	if args == "" {
+		c.writeln(fmt.Sprintf("%s(%s) :-", sanitizePred(fn.Name), resVar))
+	} else {
+		c.writeln(fmt.Sprintf("%s(%s, %s) :-", sanitizePred(fn.Name), args, resVar))
+	}
 	c.indent++
 	for i, st := range fn.Body {
 		if i == len(fn.Body)-1 && st.Return != nil {
@@ -115,6 +121,10 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 }
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
+	return c.compileStmtSuffix(s, ",")
+}
+
+func (c *Compiler) compileStmtSuffix(s *parser.Statement, suffix string) error {
 	switch {
 	case s.Let != nil:
 		val, arith, err := c.compileExpr(s.Let.Value)
@@ -123,15 +133,15 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		name := sanitizeVar(s.Let.Name)
 		if arith {
-			c.writeln(fmt.Sprintf("%s is %s,", name, val))
+			c.writeln(fmt.Sprintf("%s is %s%s", name, val, suffix))
 		} else {
-			c.writeln(fmt.Sprintf("%s = %s,", name, val))
+			c.writeln(fmt.Sprintf("%s = %s%s", name, val, suffix))
 		}
 		c.vars[s.Let.Name] = name
 	case s.Var != nil:
 		name := c.newVar(s.Var.Name)
 		if s.Var.Value == nil {
-			c.writeln(fmt.Sprintf("%s = _,", name))
+			c.writeln(fmt.Sprintf("%s = _%s", name, suffix))
 			return nil
 		}
 		val, arith, err := c.compileExpr(s.Var.Value)
@@ -139,9 +149,9 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return err
 		}
 		if arith {
-			c.writeln(fmt.Sprintf("%s is %s,", name, val))
+			c.writeln(fmt.Sprintf("%s is %s%s", name, val, suffix))
 		} else {
-			c.writeln(fmt.Sprintf("%s = %s,", name, val))
+			c.writeln(fmt.Sprintf("%s = %s%s", name, val, suffix))
 		}
 	case s.Assign != nil:
 		name := c.newVar(s.Assign.Name)
@@ -150,9 +160,9 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return err
 		}
 		if arith {
-			c.writeln(fmt.Sprintf("%s is %s,", name, val))
+			c.writeln(fmt.Sprintf("%s is %s%s", name, val, suffix))
 		} else {
-			c.writeln(fmt.Sprintf("%s = %s,", name, val))
+			c.writeln(fmt.Sprintf("%s = %s%s", name, val, suffix))
 		}
 	case s.Return != nil:
 		if c.retVar == "" {
@@ -173,10 +183,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.For != nil:
 		return c.compileFor(s.For)
 	case s.Break != nil:
-		c.writeln("throw(break),")
+		c.writeln("throw(break)" + suffix)
 		return nil
 	case s.Continue != nil:
-		c.writeln("throw(continue),")
+		c.writeln("throw(continue)" + suffix)
 		return nil
 	case s.Expr != nil:
 		if call := getPrintCall(s.Expr.Expr); call != nil {
@@ -187,13 +197,13 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			if arith {
 				tmp := c.newTmp()
 				c.writeln(fmt.Sprintf("%s is %s,", tmp, arg))
-				c.writeln(fmt.Sprintf("writeln(%s),", tmp))
+				c.writeln(fmt.Sprintf("writeln(%s)%s", tmp, suffix))
 			} else if isBoolExpr(arg) {
 				tmp := c.newTmp()
 				c.writeln(fmt.Sprintf("(%s -> %s = true ; %s = false),", arg, tmp, tmp))
-				c.writeln(fmt.Sprintf("writeln(%s),", tmp))
+				c.writeln(fmt.Sprintf("writeln(%s)%s", tmp, suffix))
 			} else {
-				c.writeln(fmt.Sprintf("writeln(%s),", arg))
+				c.writeln(fmt.Sprintf("writeln(%s)%s", arg, suffix))
 			}
 			return nil
 		}
@@ -214,8 +224,13 @@ func (c *Compiler) compileIf(is *parser.IfStmt) error {
 	}
 	c.writeln(fmt.Sprintf("(%s ->", cond))
 	c.indent++
-	for _, st := range is.Then {
-		if err := c.compileStmt(st); err != nil {
+	for i, st := range is.Then {
+		last := i == len(is.Then)-1
+		suf := ","
+		if last {
+			suf = ""
+		}
+		if err := c.compileStmtSuffix(st, suf); err != nil {
 			return err
 		}
 	}
@@ -223,8 +238,13 @@ func (c *Compiler) compileIf(is *parser.IfStmt) error {
 	if len(is.Else) > 0 {
 		c.writeln(";")
 		c.indent++
-		for _, st := range is.Else {
-			if err := c.compileStmt(st); err != nil {
+		for i, st := range is.Else {
+			last := i == len(is.Else)-1
+			suf := ","
+			if last {
+				suf = ""
+			}
+			if err := c.compileStmtSuffix(st, suf); err != nil {
 				return err
 			}
 		}
@@ -316,6 +336,11 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, bool, error) {
 		} else if op.Op == "<" || op.Op == "<=" || op.Op == ">" || op.Op == ">=" {
 			res = fmt.Sprintf("(%s %s %s)", res, op.Op, rhs)
 			arith = false
+		} else if op.Op == "in" {
+			tmp := c.newTmp()
+			c.writeln(fmt.Sprintf("contains(%s, %s, %s),", rhs, res, tmp))
+			res = tmp
+			arith = false
 		} else if op.Op == "&&" {
 			res = fmt.Sprintf("(%s, %s)", res, rhs)
 			arith = false
@@ -349,10 +374,37 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, bool, error) {
 }
 
 func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, bool, error) {
-	if len(pf.Ops) != 0 {
-		return "", false, fmt.Errorf("postfix not supported")
+	res, arith, err := c.compilePrimary(pf.Target)
+	if err != nil {
+		return "", false, err
 	}
-	return c.compilePrimary(pf.Target)
+	for _, op := range pf.Ops {
+		if op.Index != nil {
+			if op.Index.Colon != nil || op.Index.Colon2 != nil || op.Index.End != nil || op.Index.Step != nil {
+				return "", false, fmt.Errorf("slice not supported")
+			}
+			idx, _, err := c.compileExpr(op.Index.Start)
+			if err != nil {
+				return "", false, err
+			}
+			tmp := c.newTmp()
+			c.writeln(fmt.Sprintf("get_item(%s, %s, %s),", res, idx, tmp))
+			res = tmp
+			arith = false
+		} else if op.Call != nil {
+			// Should not reach here; calls are handled in compilePrimary
+			return "", false, fmt.Errorf("nested call not supported")
+		} else if op.Field != nil {
+			tmp := c.newTmp()
+			k := "'" + op.Field.Name + "'"
+			c.writeln(fmt.Sprintf("get_item(%s, %s, %s),", res, k, tmp))
+			res = tmp
+			arith = false
+		} else {
+			return "", false, fmt.Errorf("postfix not supported")
+		}
+	}
+	return res, arith, nil
 }
 
 func (c *Compiler) compilePrimary(p *parser.Primary) (string, bool, error) {
@@ -376,6 +428,25 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, bool, error) {
 			elems = append(elems, s)
 		}
 		return "[" + strings.Join(elems, ", ") + "]", false, nil
+	case p.Map != nil:
+		items := make([]string, 0, len(p.Map.Items))
+		for _, it := range p.Map.Items {
+			k, _, err := c.compileExpr(it.Key)
+			if err != nil {
+				return "", false, err
+			}
+			if strings.HasPrefix(k, "\"") && strings.HasSuffix(k, "\"") {
+				k = "'" + k[1:len(k)-1] + "'"
+			}
+			v, _, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", false, err
+			}
+			items = append(items, fmt.Sprintf("%s-%s", k, v))
+		}
+		tmp := c.newTmp()
+		c.writeln(fmt.Sprintf("dict_create(%s, map, [%s]),", tmp, strings.Join(items, ", ")))
+		return tmp, false, nil
 	case p.If != nil:
 		return c.compileIfExpr(p.If)
 	case p.Call != nil:
@@ -514,7 +585,12 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, bool, error) {
 			args[i] = s
 		}
 		tmp := c.newTmp()
-		c.writeln(fmt.Sprintf("%s(%s, %s),", sanitizeVar(call.Func), strings.Join(args, ", "), tmp))
+		argStr := strings.Join(args, ", ")
+		if argStr == "" {
+			c.writeln(fmt.Sprintf("%s(%s),", sanitizePred(call.Func), tmp))
+		} else {
+			c.writeln(fmt.Sprintf("%s(%s, %s),", sanitizePred(call.Func), argStr, tmp))
+		}
 		return tmp, false, nil
 	}
 }
@@ -561,6 +637,11 @@ func sanitizeVar(s string) string {
 	return s
 }
 
+func sanitizePred(s string) string {
+	s = strings.ReplaceAll(s, "-", "_")
+	return strings.ToLower(s)
+}
+
 func getPrintCall(e *parser.Expr) *parser.CallExpr {
 	if e == nil || len(e.Binary.Right) != 0 {
 		return nil
@@ -587,4 +668,27 @@ func isBoolExpr(s string) bool {
 		}
 	}
 	return false
+}
+
+func (c *Compiler) emitHelpers() {
+	c.writeln("get_item(Container, Key, Val) :-")
+	c.indent++
+	c.writeln("    is_dict(Container), !, (string(Key) -> atom_string(A, Key) ; A = Key), get_dict(A, Container, Val).")
+	c.writeln("get_item(Container, Index, Val) :-")
+	c.writeln("    string(Container), !, string_chars(Container, Chars), nth0(Index, Chars, Val).")
+	c.writeln("get_item(List, Index, Val) :- nth0(Index, List, Val).")
+	c.writeln("")
+	c.writeln("set_item(Container, Key, Val, Out) :-")
+	c.writeln("    is_dict(Container), !, (string(Key) -> atom_string(A, Key) ; A = Key), put_dict(A, Container, Val, Out).")
+	c.writeln("set_item(List, Index, Val, Out) :-")
+	c.writeln("    nth0(Index, List, _, Rest),")
+	c.writeln("    nth0(Index, Out, Val, Rest).")
+	c.writeln("")
+	c.writeln("contains(Container, Item, Res) :-")
+	c.writeln("    is_dict(Container), !, (string(Item) -> atom_string(A, Item) ; A = Item), (get_dict(A, Container, _) -> Res = true ; Res = false).")
+	c.writeln("contains(List, Item, Res) :-")
+	c.writeln("    string(List), !, string_chars(List, Chars), (member(Item, Chars) -> Res = true ; Res = false).")
+	c.writeln("contains(List, Item, Res) :- (member(Item, List) -> Res = true ; Res = false).")
+	c.writeln("")
+	c.indent--
 }

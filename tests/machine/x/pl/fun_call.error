@@ -1,2 +1,7 @@
-run: exec: "swipl": executable file not found in $PATH
+run: exit status 2
+ERROR: /workspace/mochi/tests/machine/x/pl/fun_call.pl:20:3: Syntax error: Operator expected
+ERROR: /workspace/mochi/tests/machine/x/pl/fun_call.pl:25:6: Syntax error: Operator expected
+ERROR: /workspace/mochi/tests/machine/x/pl/fun_call.pl:23: user:main catch/3: Unknown procedure: main/1
+ERROR:   However, there are definitions for:
+ERROR:         main/0
 

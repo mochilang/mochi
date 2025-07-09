@@ -41,6 +41,12 @@ var supported = map[string]bool{
 	"if_then_else":        true,
 	"if_then_else_nested": true,
 	"if_else":             true,
+	"map_index":           true,
+	"map_int_key":         true,
+	"map_literal_dynamic": true,
+	"map_in_operator":     true,
+	"map_membership":      true,
+	"membership":          true,
 }
 
 func TestPrologCompiler(t *testing.T) {

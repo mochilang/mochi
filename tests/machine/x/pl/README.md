@@ -2,7 +2,7 @@
 
 This directory stores machine generated Prolog translations of programs from `tests/vm/valid`. Each entry is compiled and executed during tests. If a program fails to compile or run, a `.error` file will contain the diagnostic details.
 
-Checklist of programs that currently compile and run (25/97):
+Checklist of programs that currently compile and run (31/97):
 
 - print_hello
 - let_and_print
@@ -29,3 +29,9 @@ Checklist of programs that currently compile and run (25/97):
 - if_then_else
 - if_then_else_nested
 - if_else
+- map_index
+- map_int_key
+- map_literal_dynamic
+- map_in_operator
+- map_membership
+- membership
