@@ -866,7 +866,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			if isString(val) {
+			if isString(val) || c.vars[val] == "String" {
 				val = fmt.Sprintf("%s.charAt(%s)", val, idx)
 			} else {
 				val = fmt.Sprintf("%s.get(%s)", val, idx)
