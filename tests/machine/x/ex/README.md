@@ -4,8 +4,8 @@ This directory contains Elixir source code generated from Mochi programs and the
 
 ## Summary
 
- - 95/97 programs compiled and executed successfully.
- - 2 programs failed to compile or run.
+ - 96/97 programs compiled and executed successfully.
+ - 1 program failed to compile or run.
 
 ### Successful
 append_builtin
@@ -51,6 +51,7 @@ list_assign
 list_index
 list_nested_assign
 list_set_ops
+load_yaml
 map_assign
 map_in_operator
 map_index
@@ -97,7 +98,6 @@ var_assignment
 while_loop
 
 ### Failed
-- load_yaml
 - save_jsonl_stdout
 
 ## TODO
