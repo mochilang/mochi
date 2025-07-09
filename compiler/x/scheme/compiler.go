@@ -532,6 +532,22 @@ func (c *Compiler) compileMethod(structName string, fn *parser.FunStmt) error {
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	if len(t.Variants) > 0 {
+		for _, v := range t.Variants {
+			name := sanitizeName(v.Name)
+			if len(v.Fields) == 0 {
+				c.writeln(fmt.Sprintf("(define %s '%s)", name, name))
+				continue
+			}
+			params := make([]string, len(v.Fields))
+			for i, f := range v.Fields {
+				params[i] = sanitizeName(f.Name)
+			}
+			c.writeln(fmt.Sprintf("(define (%s %s)", name, strings.Join(params, " ")))
+			c.indent++
+			c.writeln(fmt.Sprintf("(list '%s %s)", name, strings.Join(params, " ")))
+			c.indent--
+			c.writeln(")")
+		}
 		return nil
 	}
 	fields := []string{}
@@ -1131,6 +1147,33 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return "(list " + strings.Join(pairs, " ") + ")", nil
 	case p.Struct != nil:
+		if c.env != nil {
+			if ut, ok := c.env.FindUnionByVariant(p.Struct.Name); ok {
+				if st, ok2 := ut.Variants[p.Struct.Name]; ok2 {
+					names := st.Order
+					if len(names) == 0 {
+						for fn := range st.Fields {
+							names = append(names, fn)
+						}
+						sort.Strings(names)
+					}
+					vals := make([]string, len(names))
+					for i, n := range names {
+						for _, f := range p.Struct.Fields {
+							if f.Name == n {
+								v, err := c.compileExpr(f.Value)
+								if err != nil {
+									return "", err
+								}
+								vals[i] = v
+								break
+							}
+						}
+					}
+					return fmt.Sprintf("(%s %s)", sanitizeName(p.Struct.Name), strings.Join(vals, " ")), nil
+				}
+			}
+		}
 		parts := make([]string, len(p.Struct.Fields))
 		for i, f := range p.Struct.Fields {
 			v, err := c.compileExpr(f.Value)
@@ -1441,6 +1484,22 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 		if isUnderscoreExpr(cse.Pattern) {
 			buf.WriteString(" (else " + res + ")")
 			hasDefault = true
+			continue
+		}
+		if v, names, ok := isUnionVariantPattern(cse.Pattern); ok {
+			buf.WriteString(" ((and (pair? _t) (eq? (car _t) '" + sanitizeName(v) + "))")
+			if len(names) > 0 {
+				buf.WriteString(" (let (")
+				for i, n := range names {
+					if i > 0 {
+						buf.WriteString(" ")
+					}
+					buf.WriteString(fmt.Sprintf("(%s (list-ref _t %d))", n, i+1))
+				}
+				buf.WriteString(") " + res + "))")
+			} else {
+				buf.WriteString(" " + res + ")")
+			}
 			continue
 		}
 		pat, err := c.compileExpr(cse.Pattern)
@@ -1914,6 +1973,33 @@ func isUnderscoreExpr(e *parser.Expr) bool {
 		return false
 	}
 	return p.Target != nil && p.Target.Selector != nil && p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0
+}
+
+func isUnionVariantPattern(e *parser.Expr) (string, []string, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return "", nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return "", nil, false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Call == nil {
+		return "", nil, false
+	}
+	call := p.Target.Call
+	names := make([]string, len(call.Args))
+	for i, a := range call.Args {
+		if len(a.Binary.Right) != 0 || len(a.Binary.Left.Ops) != 0 || a.Binary.Left.Value == nil {
+			return "", nil, false
+		}
+		sel := a.Binary.Left.Value.Target
+		if sel == nil || sel.Selector == nil || len(a.Binary.Left.Value.Ops) != 0 {
+			return "", nil, false
+		}
+		names[i] = sanitizeName(sel.Selector.Root)
+	}
+	return call.Func, names, true
 }
 
 func sanitizeName(name string) string {
