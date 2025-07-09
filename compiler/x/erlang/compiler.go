@@ -898,6 +898,24 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(call.Args) != 1 {
 			return "", fmt.Errorf("exists expects 1 arg")
 		}
+		// Special case for simple query expressions so we can
+		// translate to lists:any/2 like the human implementations.
+		if q := extractQuery(call.Args[0]); q != nil {
+			if canExistsAny(q) {
+				src, err := c.compileExpr(q.Source)
+				if err != nil {
+					return "", err
+				}
+				if q.Where == nil {
+					return fmt.Sprintf("(%s /= [])", src), nil
+				}
+				cond, err := c.compileExpr(q.Where)
+				if err != nil {
+					return "", err
+				}
+				return fmt.Sprintf("lists:any(fun(%s) -> %s end, %s)", capitalize(q.Var), cond, src), nil
+			}
+		}
 		a0, err := c.compileExpr(call.Args[0])
 		if err != nil {
 			return "", err
@@ -1144,4 +1162,44 @@ func isStringPostfix(p *parser.PostfixExpr) bool {
 	}
 	t := p.Target
 	return t.Lit != nil && t.Lit.Str != nil
+}
+
+// extractQuery attempts to retrieve a QueryExpr from e if present.
+func extractQuery(e *parser.Expr) *parser.QueryExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || len(u.Value.Ops) > 0 {
+		return nil
+	}
+	return u.Value.Target.Query
+}
+
+// canExistsAny reports whether q can be translated to lists:any/2.
+// We only support simple queries: single source, optional where, selecting the
+// loop variable without modifiers.
+func canExistsAny(q *parser.QueryExpr) bool {
+	if q == nil {
+		return false
+	}
+	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+		return false
+	}
+	return selectIsVar(q.Select, q.Var)
+}
+
+// selectIsVar checks whether e represents the variable name.
+func selectIsVar(e *parser.Expr, name string) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || len(u.Value.Ops) > 0 {
+		return false
+	}
+	if s := u.Value.Target.Selector; s != nil {
+		return s.Root == name && len(s.Tail) == 0
+	}
+	return false
 }
