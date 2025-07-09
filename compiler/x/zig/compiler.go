@@ -2007,7 +2007,7 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 	}
 	var b strings.Builder
 	lbl := c.newLabel()
-	b.WriteString(lbl + ": { var m = std.AutoHashMap(" + keyType + ", " + valType + ").init(std.heap.page_allocator); ")
+	b.WriteString("(" + lbl + ": { var m = std.AutoHashMap(" + keyType + ", " + valType + ").init(std.heap.page_allocator); ")
 	for _, it := range m.Items {
 		k, err := c.compileExpr(it.Key, false)
 		if err != nil {
@@ -2019,7 +2019,7 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 		}
 		b.WriteString("m.put(" + k + ", " + v + ") catch unreachable; ")
 	}
-	b.WriteString("break :" + lbl + " m; }")
+	b.WriteString("break :" + lbl + " m; })")
 	return b.String(), nil
 }
 

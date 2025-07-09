@@ -1,4 +1,4 @@
-# Mochi to Zig Machine Outputs (22/97 compiled)
+# Mochi to Zig Machine Outputs (23/97 compiled)
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -41,7 +41,7 @@
 - [ ] left_join.mochi
 - [ ] left_join_multi.mochi
 - [x] len_builtin.mochi
-- [ ] len_map.mochi
+- [x] len_map.mochi
 - [x] len_string.mochi
 - [x] let_and_print.mochi
 - [ ] list_assign.mochi
