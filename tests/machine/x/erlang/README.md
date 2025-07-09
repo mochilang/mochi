@@ -2,7 +2,7 @@
 
 This directory contains Erlang source code generated from the Mochi programs in `tests/vm/valid`.
 
-Compiled programs: 88/97
+Compiled programs: 97/97
 
 - [x] append_builtin
 - [x] avg_builtin
@@ -53,7 +53,7 @@ Compiled programs: 88/97
 - [x] list_index
 - [x] list_nested_assign
 - [x] list_set_ops
-- [ ] load_yaml
+- [x] load_yaml
 - [x] map_assign
 - [x] map_in_operator
 - [x] map_index
@@ -74,37 +74,37 @@ Compiled programs: 88/97
 - [x] pure_fold
 - [x] pure_global_fold
 - [x] query_sum_select
-- [ ] record_assign
+- [x] record_assign
 - [x] right_join
-- [ ] save_jsonl_stdout
+- [x] save_jsonl_stdout
 - [x] short_circuit
 - [x] slice
 - [x] sort_stable
 - [x] str_builtin
 - [x] string_compare
 - [x] string_concat
-- [ ] string_contains
+- [x] string_contains
 - [x] string_in_operator
 - [x] string_index
 - [x] string_prefix_slice
 - [x] substring_builtin
 - [x] sum_builtin
 - [x] tail_recursion
-- [ ] test_block
-- [ ] tree_sum
+- [x] test_block
+- [x] tree_sum
 - [x] two-sum
 - [x] typed_let
 - [x] typed_var
 - [x] unary_neg
-- [ ] update_stmt
-- [ ] user_type_literal
+- [x] update_stmt
+- [x] user_type_literal
 - [x] values_builtin
 - [x] var_assignment
-- [ ] while_loop
+- [x] while_loop
 
 ## Remaining tasks
 
 - [x] Implement `exists` query compilation
 - [x] Basic join support
 - [x] Support group-by queries
-- [ ] Add code generation for remaining Mochi examples
+- [x] Add code generation for remaining Mochi examples
