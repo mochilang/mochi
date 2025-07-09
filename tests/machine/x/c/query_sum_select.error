@@ -1,0 +1,16 @@
+line: 0
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/query_sum_select.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/query_sum_select.c:33:30: error: incompatible type for argument 1 of ‘_sum_int’
+   33 |     _t2.data[_t3] = _sum_int(n);
+      |                              ^
+      |                              |
+      |                              int
+/workspace/mochi/tests/machine/x/c/query_sum_select.c:14:30: note: expected ‘list_int’ but argument is of type ‘int’
+   14 | static int _sum_int(list_int v) {
+      |                     ~~~~~~~~~^
+/workspace/mochi/tests/machine/x/c/query_sum_select.c:37:19: error: incompatible types when initializing type ‘double’ using type ‘list_int’
+   37 |   double result = _t2;
+      |                   ^~~
+
+   1: #include <stdio.h>

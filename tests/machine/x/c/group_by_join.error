@@ -1,0 +1,8 @@
+line: 0
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/group_by_join.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/group_by_join.c:69:26: error: invalid initializer
+   69 |   list_statsItem stats = 0;
+      |                          ^
+
+   1: #include <stdio.h>
