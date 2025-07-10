@@ -18,7 +18,7 @@
         (when (equal? (map-get o 'customerId) (map-get c 'id))
           (set! _ms0 (append _ms0 (list c)))
           (set! _m0 #t))
-        )) (if (string? customers) (string->list customers) customers))
+) (if (string? customers) (string->list customers) customers))
       (if _m0
           (for-each (lambda (c)
             (set! _res (append _res (list (list (cons "orderId" (map-get o 'id)) (cons "customer" c) (cons "total" (map-get o 'total))))))
