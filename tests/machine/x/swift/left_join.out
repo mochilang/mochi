@@ -57,5 +57,5 @@
 23 |     print("Order", entry["orderId"]!, "customer", entry["customer"]!, "total", entry["total"]!)
 24 | }
 --- Left Join ---
-Order 100 customer ["id": 1, "name": "Alice"] total 250
+Order 100 customer ["name": "Alice", "id": 1] total 250
 Order 101 customer nil total 80

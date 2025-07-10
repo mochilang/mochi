@@ -4,7 +4,7 @@ This directory contains Swift code compiled from Mochi programs in `tests/vm/val
 
 ## Progress
 
-Compiled: 90/97 programs
+Compiled: 92/100 programs
 
 ## Checklist
 
@@ -30,11 +30,12 @@ Compiled: 90/97 programs
 - [x] fun_call.mochi
 - [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
+- [ ] go_auto.mochi
 - [x] group_by.mochi
 - [x] group_by_conditional_sum.mochi
 - [x] group_by_having.mochi
-- [ ] group_by_join.mochi
-- [ ] group_by_left_join.mochi
+- [x] group_by_join.mochi
+- [x] group_by_left_join.mochi
 - [ ] group_by_multi_join.mochi
 - [ ] group_by_multi_join_sort.mochi
 - [x] group_by_sort.mochi
@@ -77,6 +78,8 @@ Compiled: 90/97 programs
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
+- [ ] python_auto.mochi
+- [ ] python_math.mochi
 - [x] query_sum_select.mochi
 - [x] record_assign.mochi
 - [ ] right_join.mochi

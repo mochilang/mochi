@@ -1,0 +1,27 @@
+/workspace/mochi/tests/machine/x/swift/group_by_left_join.swift:8:25: warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
+ 6 | 		var _m = false
+ 7 | 		for o in orders {
+ 8 | 			if !(o["customerId"] as! Int == c["id"] as! Int) { continue }
+   |                         `- warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
+ 9 | 			_m = true
+10 | 			let _k = c["name"] as! String
+
+/workspace/mochi/tests/machine/x/swift/group_by_left_join.swift:19:6: warning: variable '_tmp' was never mutated; consider changing to 'let' constant
+17 | 		}
+18 | 	}
+19 | 	var _tmp = _groups.map { (k, v) in (key: k, items: v) }
+   |      `- warning: variable '_tmp' was never mutated; consider changing to 'let' constant
+20 | 	return _tmp.map { g in ["name": g.key, "count": g.items.filter { r in (r as! [String:Any])["o"] != nil }.count] }
+21 | }())
+
+/workspace/mochi/tests/machine/x/swift/group_by_left_join.swift:23:16: warning: forced cast from '[[String : AnyHashable]]' to '[[String : Any]]' always succeeds; did you mean to use 'as'?
+21 | }())
+22 | print("--- Group Left Join ---")
+23 | for s in stats as! [[String:Any]] {
+   |                `- warning: forced cast from '[[String : AnyHashable]]' to '[[String : Any]]' always succeeds; did you mean to use 'as'?
+24 |     print(s["name"]!, "orders:", s["count"]!)
+25 | }
+--- Group Left Join ---
+Alice orders: 2
+Charlie orders: 1
+Bob orders: 1
