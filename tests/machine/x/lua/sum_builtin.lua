@@ -1,3 +1,11 @@
+function __print(...)
+    local args = {...}
+    local parts = {}
+    for i,a in ipairs(args) do
+        if a ~= nil and a ~= '' then parts[#parts+1] = tostring(a) end
+    end
+    print(table.concat(parts, ' '))
+end
 function __sum(v)
     local items
     if type(v) == 'table' and v.items ~= nil then
@@ -11,4 +19,4 @@ function __sum(v)
     for _, it in ipairs(items) do sum = sum + it end
     return sum
 end
-print(__sum({1, 2, 3}))
+__print(__sum({1, 2, 3}))

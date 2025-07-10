@@ -1,3 +1,11 @@
+function __print(...)
+    local args = {...}
+    local parts = {}
+    for i,a in ipairs(args) do
+        if a ~= nil and a ~= '' then parts[#parts+1] = tostring(a) end
+    end
+    print(table.concat(parts, ' '))
+end
 products = {{["name"]="Laptop", ["price"]=1500}, {["name"]="Smartphone", ["price"]=900}, {["name"]="Tablet", ["price"]=600}, {["name"]="Monitor", ["price"]=300}, {["name"]="Keyboard", ["price"]=100}, {["name"]="Mouse", ["price"]=50}, {["name"]="Headphones", ["price"]=200}}
 expensive = (function()
   local _res = {}
@@ -5,7 +13,7 @@ expensive = (function()
     _res[#_res+1] = {__key = -p.price, __val = p}
   end
   local items = _res
-  table.sort(items, function(a,b) return tostring(a.__key) < tostring(b.__key) end)
+  table.sort(items, function(a,b) return a.__key < b.__key end)
   local tmp = {}
   for _, it in ipairs(items) do tmp[#tmp+1] = it.__val end
   items = tmp
@@ -22,8 +30,8 @@ expensive = (function()
   _res = items
   return _res
 end)()
-print("--- Top products (excluding most expensive) ---")
+__print("--- Top products (excluding most expensive) ---")
 for _, item in ipairs(expensive) do
-  print(item.name, "costs $", item.price)
+  __print(item.name, "costs $", item.price)
   ::__continue0::
 end

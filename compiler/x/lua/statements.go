@@ -79,6 +79,11 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 			return err
 		}
 		val = expr
+	} else if s.Type != nil {
+		if c.uninitVars == nil {
+			c.uninitVars = map[string]bool{}
+		}
+		c.uninitVars[s.Name] = true
 	}
 	prefix := "local "
 	if c.indent == 0 {
@@ -89,8 +94,7 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 }
 
 func (c *Compiler) compileVar(s *parser.VarStmt) error {
-	// treat same as let
-	return c.compileLet(&parser.LetStmt{Name: s.Name, Value: s.Value})
+	return c.compileLet(&parser.LetStmt{Name: s.Name, Type: s.Type, Value: s.Value})
 }
 
 func (c *Compiler) compileImport(im *parser.ImportStmt) error {
@@ -263,6 +267,19 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 			}
 		} else {
 			lhs = fmt.Sprintf("%s[%s]", lhs, idxExpr)
+			t = types.AnyType{}
+		}
+	}
+
+	for _, fld := range s.Field {
+		lhs = fmt.Sprintf("%s.%s", lhs, sanitizeName(fld.Name))
+		if st, ok := t.(types.StructType); ok {
+			if ft, ok2 := st.Fields[fld.Name]; ok2 {
+				t = ft
+			} else {
+				t = types.AnyType{}
+			}
+		} else {
 			t = types.AnyType{}
 		}
 	}

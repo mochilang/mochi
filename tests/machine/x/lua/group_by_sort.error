@@ -1,0 +1,6 @@
+line 205: run error: exit status 1
+lua: /workspace/mochi/tests/machine/x/lua/group_by_sort.lua:205: attempt to call a table value
+stack traceback:
+	/workspace/mochi/tests/machine/x/lua/group_by_sort.lua:205: in main chunk
+	[C]: in ?
+

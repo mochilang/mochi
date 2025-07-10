@@ -10,6 +10,16 @@ function __avg(v)
     if #items == 0 then return 0 end
     local sum = 0
     for _, it in ipairs(items) do sum = sum + it end
-    return sum / #items
+    local res = sum / #items
+    if res == math.floor(res) then return math.floor(res) end
+    return res
 end
-print(__avg({1, 2, 3}))
+function __print(...)
+    local args = {...}
+    local parts = {}
+    for i,a in ipairs(args) do
+        if a ~= nil and a ~= '' then parts[#parts+1] = tostring(a) end
+    end
+    print(table.concat(parts, ' '))
+end
+__print(__avg({1, 2, 3}))

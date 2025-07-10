@@ -1,0 +1,6 @@
+line 211: run error: exit status 1
+lua: ...e/mochi/tests/machine/x/lua/group_by_conditional_sum.lua:211: attempt to call a table value
+stack traceback:
+	...e/mochi/tests/machine/x/lua/group_by_conditional_sum.lua:211: in main chunk
+	[C]: in ?
+

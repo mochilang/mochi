@@ -21,5 +21,13 @@ function __indexString(s, i)
     if i < 1 or i > len then error('index out of range') end
     return string.sub(s, i, i)
 end
+function __print(...)
+    local args = {...}
+    local parts = {}
+    for i,a in ipairs(args) do
+        if a ~= nil and a ~= '' then parts[#parts+1] = tostring(a) end
+    end
+    print(table.concat(parts, ' '))
+end
 m = {[1]="a", [2]="b"}
-print(__index(m, 1))
+__print(__index(m, 1))

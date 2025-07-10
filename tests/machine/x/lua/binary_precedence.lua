@@ -10,7 +10,15 @@ function __add(a, b)
         return a + b
     end
 end
-print(__add(1, (2 * 3)))
-print(((__add(1, 2)) * 3))
-print(__add((2 * 3), 1))
-print((2 * (__add(3, 1))))
+function __print(...)
+    local args = {...}
+    local parts = {}
+    for i,a in ipairs(args) do
+        if a ~= nil and a ~= '' then parts[#parts+1] = tostring(a) end
+    end
+    print(table.concat(parts, ' '))
+end
+__print(__add(1, (2 * 3)))
+__print(((__add(1, 2)) * 3))
+__print(__add((2 * 3), 1))
+__print((2 * (__add(3, 1))))

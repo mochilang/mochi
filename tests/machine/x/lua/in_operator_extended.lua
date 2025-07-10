@@ -27,6 +27,14 @@ function __eq(a, b)
     for k, _ in pairs(b) do if a[k] == nil then return false end end
     return true
 end
+function __print(...)
+    local args = {...}
+    local parts = {}
+    for i,a in ipairs(args) do
+        if a ~= nil and a ~= '' then parts[#parts+1] = tostring(a) end
+    end
+    print(table.concat(parts, ' '))
+end
 xs = {1, 2, 3}
 ys = (function()
   local _res = {}
@@ -37,11 +45,11 @@ ys = (function()
   end
   return _res
 end)()
-print(__contains(ys, 1))
-print(__contains(ys, 2))
+__print(__contains(ys, 1))
+__print(__contains(ys, 2))
 m = {["a"]=1}
-print((m["a"] ~= nil))
-print((m["b"] ~= nil))
+__print((m["a"] ~= nil))
+__print((m["b"] ~= nil))
 s = "hello"
-print(__contains(s, "ell"))
-print(__contains(s, "foo"))
+__print(__contains(s, "ell"))
+__print(__contains(s, "foo"))

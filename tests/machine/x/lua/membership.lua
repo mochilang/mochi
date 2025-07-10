@@ -14,6 +14,14 @@ function __contains(container, item)
         return false
     end
 end
+function __print(...)
+    local args = {...}
+    local parts = {}
+    for i,a in ipairs(args) do
+        if a ~= nil and a ~= '' then parts[#parts+1] = tostring(a) end
+    end
+    print(table.concat(parts, ' '))
+end
 nums = {1, 2, 3}
-print(__contains(nums, 2))
-print(__contains(nums, 4))
+__print(__contains(nums, 2))
+__print(__contains(nums, 4))

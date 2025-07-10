@@ -11,6 +11,14 @@ function __eq(a, b)
     for k, _ in pairs(b) do if a[k] == nil then return false end end
     return true
 end
+function __print(...)
+    local args = {...}
+    local parts = {}
+    for i,a in ipairs(args) do
+        if a ~= nil and a ~= '' then parts[#parts+1] = tostring(a) end
+    end
+    print(table.concat(parts, ' '))
+end
 function __query(src, joins, opts)
     local whereFn = opts.where
     local items = {}
@@ -165,8 +173,8 @@ result = (function()
     { items = customers, on = function(o, c) return __eq(o.customerId, c.id) end }
   }, { selectFn = function(o, c) return {["orderId"]=o.id, ["customerName"]=c.name, ["total"]=o.total} end })
 end)()
-print("--- Orders with customer info ---")
+__print("--- Orders with customer info ---")
 for _, entry in ipairs(result) do
-  print("Order", entry.orderId, "by", entry.customerName, "- $", entry.total)
+  __print("Order", entry.orderId, "by", entry.customerName, "- $", entry.total)
   ::__continue0::
 end

@@ -1,4 +1,12 @@
-print(("a" < "b"))
-print(("a" <= "a"))
-print(("b" > "a"))
-print(("b" >= "b"))
+function __print(...)
+    local args = {...}
+    local parts = {}
+    for i,a in ipairs(args) do
+        if a ~= nil and a ~= '' then parts[#parts+1] = tostring(a) end
+    end
+    print(table.concat(parts, ' '))
+end
+__print(("a" < "b"))
+__print(("a" <= "a"))
+__print(("b" > "a"))
+__print(("b" >= "b"))

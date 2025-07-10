@@ -44,7 +44,9 @@ function __avg(v)
     if #items == 0 then return 0 end
     local sum = 0
     for _, it in ipairs(items) do sum = sum + it end
-    return sum / #items
+    local res = sum / #items
+    if res == math.floor(res) then return math.floor(res) end
+    return res
 end
 function __count(v)
     if type(v) == 'table' then
@@ -58,6 +60,14 @@ function __count(v)
     else
         error('count() expects list or group')
     end
+end
+function __print(...)
+    local args = {...}
+    local parts = {}
+    for i,a in ipairs(args) do
+        if a ~= nil and a ~= '' then parts[#parts+1] = tostring(a) end
+    end
+    print(table.concat(parts, ' '))
 end
 people = {{["name"]="Alice", ["age"]=30, ["city"]="Paris"}, {["name"]="Bob", ["age"]=15, ["city"]="Hanoi"}, {["name"]="Charlie", ["age"]=65, ["city"]="Paris"}, {["name"]="Diana", ["age"]=45, ["city"]="Hanoi"}, {["name"]="Eve", ["age"]=70, ["city"]="Paris"}, {["name"]="Frank", ["age"]=22, ["city"]="Hanoi"}}
 stats = (function()
@@ -74,8 +84,8 @@ end)())}
   end
   return _res
 end)()
-print("--- People grouped by city ---")
+__print("--- People grouped by city ---")
 for _, s in ipairs(stats) do
-  print(s.city, ": count =", s.count, ", avg_age =", s.avg_age)
+  __print(s.city, ": count =", s.count, ", avg_age =", s.avg_age)
   ::__continue0::
 end

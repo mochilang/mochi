@@ -23,8 +23,16 @@ function __eq(a, b)
     for k, _ in pairs(b) do if a[k] == nil then return false end end
     return true
 end
+function __print(...)
+    local args = {...}
+    local parts = {}
+    for i,a in ipairs(args) do
+        if a ~= nil and a ~= '' then parts[#parts+1] = tostring(a) end
+    end
+    print(table.concat(parts, ' '))
+end
 a = (10 - 3)
 b = __add(2, 2)
-print(a)
-print(__eq(a, 7))
-print((b < 5))
+__print(a)
+__print(__eq(a, 7))
+__print((b < 5))

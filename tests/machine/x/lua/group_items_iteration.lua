@@ -98,7 +98,7 @@ result = (function()
     _res[#_res+1] = {__key = r.tag, __val = r}
   end
   local items = _res
-  table.sort(items, function(a,b) return tostring(a.__key) < tostring(b.__key) end)
+  table.sort(items, function(a,b) return a.__key < b.__key end)
   local tmp = {}
   for _, it in ipairs(items) do tmp[#tmp+1] = it.__val end
   items = tmp

@@ -50,6 +50,14 @@ function __min(v)
         return m
     end
 end
+function __print(...)
+    local args = {...}
+    local parts = {}
+    for i,a in ipairs(args) do
+        if a ~= nil and a ~= '' then parts[#parts+1] = tostring(a) end
+    end
+    print(table.concat(parts, ' '))
+end
 nums = {3, 1, 4}
-print(__min(nums))
-print(__max(nums))
+__print(__min(nums))
+__print(__max(nums))
