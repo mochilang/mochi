@@ -683,11 +683,11 @@ func (c *Compiler) assignPath(base string, typ types.Type, idx []*parser.IndexOp
 		switch tt := typ.(type) {
 		case types.MapType:
 			c.usesMap = true
-			inner, err := c.assignPath(fmt.Sprintf("fromMaybe (error \"missing\") (Map.lookup %s %s)", ix, base), tt.Value, idx[1:], fields, val)
+			inner, err := c.assignPath("m", tt.Value, idx[1:], fields, val)
 			if err != nil {
 				return "", err
 			}
-			return fmt.Sprintf("Map.adjust (\\_ -> %s) %s %s", inner, ix, base), nil
+			return fmt.Sprintf("Map.adjust (\\m -> %s) %s %s", inner, ix, base), nil
 		case types.ListType:
 			c.usesList = true
 			c.usesUpdate = true
@@ -707,11 +707,11 @@ func (c *Compiler) assignPath(base string, typ types.Type, idx []*parser.IndexOp
 				return fmt.Sprintf("_updateAt %s (\\_ -> %s) %s", ix, inner, base), nil
 			}
 			c.usesMap = true
-			inner, err := c.assignPath(fmt.Sprintf("fromMaybe (error \"missing\") (Map.lookup %s %s)", ix, base), types.AnyType{}, idx[1:], fields, val)
+			inner, err := c.assignPath("m", types.AnyType{}, idx[1:], fields, val)
 			if err != nil {
 				return "", err
 			}
-			return fmt.Sprintf("Map.adjust (\\_ -> %s) %s %s", inner, ix, base), nil
+			return fmt.Sprintf("Map.adjust (\\m -> %s) %s %s", inner, ix, base), nil
 		}
 	} else if len(fields) > 0 {
 		field := sanitizeName(fields[0].Name)
@@ -1042,7 +1042,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			leftType = types.ListType{Elem: types.AnyType{}}
 		} else if op.Op == "except" {
 			c.usesList = true
-			expr = fmt.Sprintf("(%s List.\\ %s)", expr, r)
+			expr = fmt.Sprintf("(%s List.\\\\ %s)", expr, r)
 			leftType = types.ListType{Elem: types.AnyType{}}
 		} else if op.Op == "intersect" {
 			c.usesList = true
