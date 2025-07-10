@@ -270,7 +270,7 @@ func (c *compiler) typeDecl(t *parser.TypeDecl) error {
 	}
 	c.structs[t.Name] = []string{}
 	c.structTypes[t.Name] = make(map[string]string)
-	c.writeln(fmt.Sprintf("struct %s {", t.Name))
+	c.writeln(fmt.Sprintf("struct %s: Equatable {", t.Name))
 	c.indent++
 	for _, m := range t.Members {
 		if m.Field == nil || m.Method != nil {
@@ -2256,6 +2256,16 @@ func (c *compiler) recordMapFields(name string, e *parser.Expr) {
 		return
 	}
 	if m := mapLit(e); m != nil {
+		// ignore map fields when casting to a known struct type
+		if len(e.Binary.Left.Value.Ops) == 1 && e.Binary.Left.Value.Ops[0].Cast != nil {
+			typ, err := c.typeRef(e.Binary.Left.Value.Ops[0].Cast.Type)
+			if err == nil {
+				if _, ok := c.structs[typ]; ok {
+					// result is a struct, not a map
+					return
+				}
+			}
+		}
 		c.mapFields[name] = mapFieldsFromLiteral(m)
 		return
 	}

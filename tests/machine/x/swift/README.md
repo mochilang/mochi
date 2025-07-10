@@ -1,6 +1,6 @@
 # Machine-generated Swift Outputs
 
-Compiled programs: 82/97
+Compiled programs: 79/97
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -15,7 +15,7 @@ Compiled programs: 82/97
 - [x] cross_join.mochi
 - [x] cross_join_filter.mochi
 - [x] cross_join_triple.mochi
-- [x] dataset_sort_take_limit.mochi
+- [ ] dataset_sort_take_limit.mochi
 - [x] dataset_where_filter.mochi
 - [x] exists_builtin.mochi
 - [x] for_list_collection.mochi
@@ -37,7 +37,7 @@ Compiled programs: 82/97
 - [x] if_then_else.mochi
 - [x] if_then_else_nested.mochi
 - [x] in_operator.mochi
-- [ ] in_operator_extended.mochi
+- [x] in_operator_extended.mochi
 - [x] inner_join.mochi
 - [x] join_multi.mochi
 - [ ] json_builtin.mochi
@@ -58,26 +58,26 @@ Compiled programs: 82/97
 - [x] map_int_key.mochi
 - [x] map_literal_dynamic.mochi
 - [x] map_membership.mochi
-- [x] map_nested_assign.mochi
+- [ ] map_nested_assign.mochi
 - [x] match_expr.mochi
 - [x] match_full.mochi
 - [x] math_ops.mochi
 - [x] membership.mochi
 - [x] min_max_builtin.mochi
 - [x] nested_function.mochi
-- [x] order_by_map.mochi
+- [ ] order_by_map.mochi
 - [ ] outer_join.mochi
-- [x] partial_application.mochi
+- [ ] partial_application.mochi
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
-- [x] query_sum_select.mochi
+- [ ] query_sum_select.mochi
 - [x] record_assign.mochi
 - [ ] right_join.mochi
 - [x] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
 - [x] slice.mochi
-- [x] sort_stable.mochi
+- [ ] sort_stable.mochi
 - [x] str_builtin.mochi
 - [x] string_compare.mochi
 - [x] string_concat.mochi
@@ -89,12 +89,12 @@ Compiled programs: 82/97
 - [x] sum_builtin.mochi
 - [x] tail_recursion.mochi
 - [x] test_block.mochi
-- [ ] tree_sum.mochi
+- [x] tree_sum.mochi
 - [x] two-sum.mochi
 - [x] typed_let.mochi
 - [x] typed_var.mochi
 - [x] unary_neg.mochi
-- [ ] update_stmt.mochi
+- [x] update_stmt.mochi
 - [x] user_type_literal.mochi
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
