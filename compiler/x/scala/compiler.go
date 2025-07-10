@@ -28,7 +28,10 @@ type Compiler struct {
 	autoCount   int
 }
 
-func (c *Compiler) detectStructMap(e *parser.Expr) (types.StructType, bool) {
+func (c *Compiler) detectStructMap(e *parser.Expr, env *types.Env) (types.StructType, bool) {
+	if env == nil {
+		env = c.env
+	}
 	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
 		return types.StructType{}, false
 	}
@@ -42,7 +45,7 @@ func (c *Compiler) detectStructMap(e *parser.Expr) (types.StructType, bool) {
 		if !ok {
 			return types.StructType{}, false
 		}
-		st.Fields[key] = c.namedType(types.ExprType(it.Value, c.env))
+		st.Fields[key] = c.namedType(types.ExprType(it.Value, env))
 		st.Order[i] = key
 	}
 	return st, true
@@ -349,16 +352,17 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	} else if s.Value != nil {
 		typ = c.namedType(types.ExprType(s.Value, c.env))
 		if q := s.Value.Binary.Left.Value.Target.Query; q != nil {
-			if st, ok := c.detectStructMap(q.Select); ok {
+			qenv := c.querySelectEnv(q)
+			if st, ok := c.detectStructMap(q.Select, qenv); ok {
 				st = c.ensureStructName(st)
 				typ = types.ListType{Elem: st}
 			}
 		} else if lst := s.Value.Binary.Left.Value.Target.List; lst != nil {
 			if len(lst.Elems) > 0 {
-				if st, ok := c.detectStructMap(lst.Elems[0]); ok {
+				if st, ok := c.detectStructMap(lst.Elems[0], c.env); ok {
 					same := true
 					for _, e := range lst.Elems[1:] {
-						st2, ok2 := c.detectStructMap(e)
+						st2, ok2 := c.detectStructMap(e, c.env)
 						if !ok2 || len(st2.Order) != len(st.Order) {
 							same = false
 							break
@@ -2092,4 +2096,34 @@ func (c *Compiler) emitAutoStructs(out *bytes.Buffer, indent int) {
 		out.WriteString(pad + fmt.Sprintf("case class %s(%s)\n", n, strings.Join(fields, ", ")))
 	}
 	out.WriteByte('\n')
+}
+
+func (c *Compiler) querySelectEnv(q *parser.QueryExpr) *types.Env {
+	env := types.NewEnv(c.env)
+	if lt, ok := types.ExprType(q.Source, c.env).(types.ListType); ok {
+		env.SetVar(q.Var, lt.Elem, false)
+	} else {
+		env.SetVar(q.Var, types.AnyType{}, false)
+	}
+	for _, f := range q.Froms {
+		if lt, ok := types.ExprType(f.Src, c.env).(types.ListType); ok {
+			env.SetVar(f.Var, lt.Elem, false)
+		} else {
+			env.SetVar(f.Var, types.AnyType{}, false)
+		}
+	}
+	for _, j := range q.Joins {
+		if lt, ok := types.ExprType(j.Src, c.env).(types.ListType); ok {
+			env.SetVar(j.Var, lt.Elem, false)
+		} else {
+			env.SetVar(j.Var, types.AnyType{}, false)
+		}
+	}
+	if q.Group != nil {
+		keyT := types.ExprType(q.Group.Exprs[0], env)
+		g := types.NewEnv(env)
+		g.SetVar(q.Group.Name, types.GroupType{Key: keyT, Elem: types.AnyType{}}, false)
+		env = g
+	}
+	return env
 }
