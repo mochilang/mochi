@@ -14,7 +14,7 @@ begin
 end;
 
 var
-  square: function (p0: p0__integer): integer;
+  square: function (p0: integer): integer is nested;
 
 begin
   square := @_lambda0;

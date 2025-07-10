@@ -14,7 +14,7 @@ begin
 end;
 
 var
-  add5: function (p0: p0__integer): integer;
+  add5: function (p0: integer): integer is nested;
 
 begin
   add5 := add(5);

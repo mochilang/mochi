@@ -423,6 +423,9 @@ func parsePasType(s string) types.Type {
 		if endIdx > 0 {
 			paramsPart := s[strings.Index(s, "(")+1 : endIdx]
 			rest := strings.TrimSpace(s[endIdx+1:])
+			if strings.HasSuffix(rest, "is nested") {
+				rest = strings.TrimSpace(strings.TrimSuffix(rest, "is nested"))
+			}
 			var ret types.Type = types.VoidType{}
 			if !proc {
 				if strings.HasPrefix(rest, ":") {
@@ -432,7 +435,13 @@ func parsePasType(s string) types.Type {
 			parts := []types.Type{}
 			if strings.TrimSpace(paramsPart) != "" {
 				for _, p := range strings.Split(paramsPart, ";") {
-					parts = append(parts, parsePasType(strings.TrimSpace(p)))
+					p = strings.TrimSpace(p)
+					if idx := strings.Index(p, ":"); idx >= 0 {
+						p = strings.TrimSpace(p[idx+1:])
+					}
+					if p != "" {
+						parts = append(parts, parsePasType(p))
+					}
 				}
 			}
 			return types.FuncType{Params: parts, Return: ret}
