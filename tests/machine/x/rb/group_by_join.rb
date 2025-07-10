@@ -172,6 +172,6 @@ $stats = (begin
 	_res
 end)
 puts("--- Orders per customer ---")
-for s in $stats
+$stats.each do |s|
 	puts([s.name, "orders:", s.count].join(" "))
 end

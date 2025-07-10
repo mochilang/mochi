@@ -41,9 +41,9 @@ end
 $data = [OpenStruct.new(tag: "a", val: 1), OpenStruct.new(tag: "a", val: 2), OpenStruct.new(tag: "b", val: 3)]
 $groups = _group_by($data, ->(d){ d.tag }).map { |g| g }
 $tmp = []
-for g in $groups
+$groups.each do |g|
 	total = 0
-	for x in g.Items
+	g.Items.each do |x|
 		total = (total + x.val)
 	end
 	$tmp = ($tmp + [OpenStruct.new(tag: g.key, total: total)])

@@ -1,3 +1,3 @@
-for i in 1...4
+(1...4).each do |i|
 	puts(i)
 end

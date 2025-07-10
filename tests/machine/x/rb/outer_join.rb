@@ -129,7 +129,7 @@ $result = (begin
 	_rows
 end)
 puts("--- Outer Join using syntax ---")
-for row in $result
+$result.each do |row|
 	if row.order
 		if row.customer
 			puts(["Order", row.order.id, "by", row.customer.name, "- $", row.order.total].join(" "))

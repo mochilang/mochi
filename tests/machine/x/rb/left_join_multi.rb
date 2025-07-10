@@ -131,6 +131,6 @@ $result = (begin
 	_rows
 end)
 puts("--- Left Join Multi ---")
-for r in $result
+$result.each do |r|
 	puts([r.orderId, r.name, r.item].join(" "))
 end
