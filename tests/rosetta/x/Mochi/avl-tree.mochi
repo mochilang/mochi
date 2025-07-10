@@ -1,0 +1,2 @@
+import go "mochi/runtime/ffi/go/avltree" as avltree auto
+print(avltree.ExampleOutput())
