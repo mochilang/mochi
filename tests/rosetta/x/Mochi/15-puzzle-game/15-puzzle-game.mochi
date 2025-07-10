@@ -1,4 +1,4 @@
-# Mochi implementation of Rosetta 15 puzzle game
+// Mochi implementation of Rosetta 15 puzzle game
 
 var solved = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,0]
 
@@ -34,25 +34,27 @@ fun boardStr(): string {
 
 fun randMove(): int { return now() % 4 }
 
-fun isValidMove(m: int): (int, bool) {
+fun isValidMove(m: int): list<any> {
   if m == 0 {
-    return (empty - 4, empty / 4 > 0)
+    return [empty - 4, empty / 4 > 0]
   }
   if m == 1 {
-    return (empty + 4, empty / 4 < 3)
+    return [empty + 4, empty / 4 < 3]
   }
   if m == 2 {
-    return (empty + 1, empty % 4 < 3)
+    return [empty + 1, empty % 4 < 3]
   }
   if m == 3 {
-    return (empty - 1, empty % 4 > 0)
+    return [empty - 1, empty % 4 > 0]
   }
-  return (0, false)
+  return [0, false]
 }
 
 fun doMove(m: int): bool {
   let i = empty
-  let (j, ok) = isValidMove(m)
+  let res = isValidMove(m)
+  let j = res[0]
+  let ok = res[1]
   if ok {
     let tmp = board[i]
     board[i] = board[j]
@@ -101,15 +103,13 @@ fun playOneMove() {
       m = 2
     } else if ch == "L" || ch == "l" {
       m = 3
-    } else if ch == "Q" || ch == "q" {
-      print("Quiting after " + str(moves) + " moves.")
-      quit = true
-      return
     } else {
-      print("Please enter \"U\", \"D\", \"L\", or \"R\" to move the empty cell\n" +
-            "up, down, left, or right. You can also enter \"Q\" to quit.\n" +
-            "Upper or lowercase is accepted and only the first non-blank\n" +
-            "character is important (i.e. you may enter \"up\" if you like).")
+      if ch == "Q" || ch == "q" {
+        print("Quiting after " + str(moves) + " moves.")
+        quit = true
+        return
+      }
+      print("Please enter a valid move or Q to quit.")
       continue
     }
     if !doMove(m) {
