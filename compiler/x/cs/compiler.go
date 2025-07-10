@@ -660,6 +660,9 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 		}
 		lhs = fmt.Sprintf("%s[%s]", lhs, iexpr)
 	}
+	for _, fld := range a.Field {
+		lhs = fmt.Sprintf("%s.%s", lhs, sanitizeName(fld.Name))
+	}
 	val, err := c.compileExpr(a.Value)
 	if err != nil {
 		return err
@@ -2412,7 +2415,9 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		for i, p := range fn.Params {
 			paramTypes[i] = c.resolveTypeRef(p.Type)
 		}
-		retType = c.resolveTypeRef(fn.Return)
+		if fn.Return != nil {
+			retType = c.resolveTypeRef(fn.Return)
+		}
 	} else if t, err := c.env.GetVar(call.Func); err == nil {
 		if ft, ok := t.(types.FuncType); ok {
 			paramTypes = ft.Params
