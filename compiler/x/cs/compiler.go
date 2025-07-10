@@ -2488,7 +2488,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			if isListType(t) {
 				if lt, ok := t.(types.ListType); ok && isPrimitiveType(lt.Elem) {
 					c.useLinq = true
-					return fmt.Sprintf("Console.WriteLine(string.Join(\" \", %s))", args[0]), nil
+					return fmt.Sprintf("Console.WriteLine(\"[\" + string.Join(\", \", %s) + \"]\")", args[0]), nil
 				}
 				return fmt.Sprintf("Console.WriteLine(JsonSerializer.Serialize(%s))", args[0]), nil
 			}
