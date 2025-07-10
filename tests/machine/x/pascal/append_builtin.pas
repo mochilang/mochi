@@ -1,4 +1,4 @@
-program main;
+program AppendBuiltin;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

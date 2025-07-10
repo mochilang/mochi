@@ -1,4 +1,4 @@
-program main;
+program TailRecursion;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

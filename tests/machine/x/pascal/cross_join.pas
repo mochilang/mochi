@@ -1,4 +1,4 @@
-program main;
+program CrossJoin;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 
@@ -64,8 +64,8 @@ begin
   writeln('--- Cross Join: All order-customer pairs ---');
   for entry in _result do
     begin
-      writeln('Order', ' ', entry.orderId, ' ', '(customerId:', ' ', entry.orderCustomerId, ' ',
-              ', total: $', ' ', entry.orderTotal, ' ', ') paired with', ' ', entry.
-              pairedCustomerName);
+      writeln('Order', ' ', entry.KeyData['orderId'], ' ', '(customerId:', ' ', entry.KeyData[
+              'orderCustomerId'], ' ', ', total: $', ' ', entry.KeyData['orderTotal'], ' ',
+              ') paired with', ' ', entry.KeyData['pairedCustomerName']);
     end;
 end.

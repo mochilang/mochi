@@ -1,4 +1,4 @@
-program main;
+program BreakContinue;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

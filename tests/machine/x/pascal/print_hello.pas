@@ -1,4 +1,4 @@
-program main;
+program PrintHello;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

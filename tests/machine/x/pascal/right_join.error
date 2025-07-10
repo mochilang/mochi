@@ -1,24 +1,26 @@
-line: 80
+line: 105
 error: fpc error: exit status 1
 Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling /workspace/mochi/tests/machine/x/pascal/right_join.pas
-right_join.pas(39,16) Error: Illegal type conversion: "{Array Of Const/Constant Open} Array of TFPGMap$2$crcA49C6E68" to "TArray$1$crcE0B4E8C7"
-right_join.pas(52,13) Error: Illegal type conversion: "{Array Of Const/Constant Open} Array of TFPGMap$2$crcDFB44C97" to "TArray$1$crc7ED07D64"
-right_join.pas(54,40) Error: identifier idents no member "name"
-right_join.pas(55,31) Error: Identifier not found "o"
-right_join.pas(59,11) Error: Identifier not found "o"
-right_join.pas(61,20) Error: Identifier not found "o"
-right_join.pas(61,37) Error: identifier idents no member "id"
-right_join.pas(62,41) Error: Incompatible types: got "{Array Of Const/Constant Open} Array of TFPGMap$2$crcA49C6E68" expected "TArray$1$crcE0B4E8C7"
-right_join.pas(62,35) Error: Incompatible types: got "TFPGMap<System.Variant,System.Variant>" expected "TFPGMap<System.ShortString,System.Variant>"
-right_join.pas(69,16) Error: identifier idents no member "order"
-right_join.pas(71,42) Error: identifier idents no member "customerName"
-right_join.pas(71,85) Error: identifier idents no member "order"
-right_join.pas(72,37) Error: identifier idents no member "order"
-right_join.pas(76,42) Error: identifier idents no member "customerName"
-right_join.pas(80) Fatal: There were 14 errors compiling module, stopping
+right_join.pas(59,11) Error: Identifier not found "c"
+right_join.pas(62,17) Error: Illegal assignment to for-loop variable "o"
+right_join.pas(64,19) Error: Identifier not found "c"
+right_join.pas(66,30) Error: identifier idents no member "customerId"
+right_join.pas(66,43) Error: Identifier not found "c"
+right_join.pas(68,54) Error: Identifier not found "c"
+right_join.pas(69,48) Error: Incompatible type for arg no. 2: Got "TFPGMap<System.ShortString,System.Variant>", expected "Variant"
+right_join.pas(62,15) Error: Incompatible types: got "TFPGMap<System.ShortString,System.LongInt>" expected "TFPGMap<System.ShortString,System.Variant>"
+right_join.pas(76,11) Error: Identifier not found "c"
+right_join.pas(79,19) Error: Identifier not found "c"
+right_join.pas(81,30) Error: identifier idents no member "customerId"
+right_join.pas(81,43) Error: Identifier not found "c"
+right_join.pas(83,55) Error: Identifier not found "c"
+right_join.pas(84,49) Error: Incompatible type for arg no. 2: Got "TFPGMap<System.ShortString,System.Variant>", expected "Variant"
+right_join.pas(77,15) Error: Incompatible types: got "TFPGMap<System.ShortString,System.LongInt>" expected "TFPGMap<System.ShortString,System.Variant>"
+right_join.pas(56,7) Error: Incompatible types: got "TFPGMap<System.ShortString,System.LongInt>" expected "TFPGMap<System.ShortString,System.Variant>"
+right_join.pas(105) Fatal: There were 16 errors compiling module, stopping
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode
 

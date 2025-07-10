@@ -1,4 +1,4 @@
-program main;
+program UserTypeLiteral;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

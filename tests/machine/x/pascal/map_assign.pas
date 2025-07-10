@@ -1,4 +1,4 @@
-program main;
+program MapAssign;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

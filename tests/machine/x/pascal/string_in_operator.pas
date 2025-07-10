@@ -1,4 +1,4 @@
-program main;
+program StringInOperator;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

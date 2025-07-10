@@ -1,4 +1,4 @@
-program main;
+program DatasetSortTakeLimit;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 
@@ -42,14 +42,14 @@ begin
 end;
 
 var
-  _tmp0: specialize TFPGMap<Variant, Variant>;
-  _tmp1: specialize TFPGMap<Variant, Variant>;
+  _tmp0: specialize TFPGMap<string, Variant>;
+  _tmp1: specialize TFPGMap<string, Variant>;
   _tmp10: specialize TArray<specialize TFPGMap<string, Variant>>;
-  _tmp2: specialize TFPGMap<Variant, Variant>;
-  _tmp3: specialize TFPGMap<Variant, Variant>;
-  _tmp4: specialize TFPGMap<Variant, Variant>;
-  _tmp5: specialize TFPGMap<Variant, Variant>;
-  _tmp6: specialize TFPGMap<Variant, Variant>;
+  _tmp2: specialize TFPGMap<string, Variant>;
+  _tmp3: specialize TFPGMap<string, Variant>;
+  _tmp4: specialize TFPGMap<string, Variant>;
+  _tmp5: specialize TFPGMap<string, Variant>;
+  _tmp6: specialize TFPGMap<string, Variant>;
   _tmp7: specialize TArray<specialize TFPGMap<string, Variant>>;
   _tmp8: specialize TArray<Variant>;
   _tmp9: specialize TArray<specialize TFPGMap<string, Variant>>;
@@ -59,25 +59,25 @@ var
   products: specialize TArray<specialize TFPGMap<string, Variant>>;
 
 begin
-  _tmp0 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp0 := specialize TFPGMap<string, Variant>.Create;
   _tmp0.AddOrSetData('name', 'Laptop');
   _tmp0.AddOrSetData('price', 1500);
-  _tmp1 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp1 := specialize TFPGMap<string, Variant>.Create;
   _tmp1.AddOrSetData('name', 'Smartphone');
   _tmp1.AddOrSetData('price', 900);
-  _tmp2 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp2 := specialize TFPGMap<string, Variant>.Create;
   _tmp2.AddOrSetData('name', 'Tablet');
   _tmp2.AddOrSetData('price', 600);
-  _tmp3 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp3 := specialize TFPGMap<string, Variant>.Create;
   _tmp3.AddOrSetData('name', 'Monitor');
   _tmp3.AddOrSetData('price', 300);
-  _tmp4 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp4 := specialize TFPGMap<string, Variant>.Create;
   _tmp4.AddOrSetData('name', 'Keyboard');
   _tmp4.AddOrSetData('price', 100);
-  _tmp5 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp5 := specialize TFPGMap<string, Variant>.Create;
   _tmp5.AddOrSetData('name', 'Mouse');
   _tmp5.AddOrSetData('price', 50);
-  _tmp6 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp6 := specialize TFPGMap<string, Variant>.Create;
   _tmp6.AddOrSetData('name', 'Headphones');
   _tmp6.AddOrSetData('price', 200);
   products := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp0, _tmp1, _tmp2, _tmp3,
@@ -87,7 +87,7 @@ begin
   for p in products do
     begin
       _tmp7 := Concat(_tmp7, [p]);
-      _tmp8 := Concat(_tmp8, [-p.price]);
+      _tmp8 := Concat(_tmp8, [-p.KeyData['price']]);
     end;
   specialize _sortBy<specialize TFPGMap<string, Variant>>(_tmp7, _tmp8);
   _tmp9 := specialize _sliceList<specialize TFPGMap<string, Variant>>(_tmp7, 1, Length(_tmp7));
@@ -96,6 +96,6 @@ begin
   writeln('--- Top products (excluding most expensive) ---');
   for item in expensive do
     begin
-      writeln(item.name, ' ', 'costs $', ' ', item.price);
+      writeln(item.KeyData['name'], ' ', 'costs $', ' ', item.KeyData['price']);
     end;
 end.

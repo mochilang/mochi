@@ -1,4 +1,4 @@
-program main;
+program QuerySumSelect;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

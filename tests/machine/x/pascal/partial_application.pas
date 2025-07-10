@@ -1,4 +1,4 @@
-program main;
+program PartialApplication;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 
@@ -14,7 +14,7 @@ begin
 end;
 
 var
-  add5: function (p0: integer): integer is nested;
+  add5: function (p0: p0__integer): integer;
 
 begin
   add5 := add(5);

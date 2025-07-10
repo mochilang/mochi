@@ -1,4 +1,4 @@
-program main;
+program ForLoop;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

@@ -1,4 +1,4 @@
-program main;
+program GroupByMultiJoinSort;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 
@@ -50,17 +50,17 @@ begin
 end;
 
 var
-  _tmp0: specialize TFPGMap<Variant, Variant>;
-  _tmp1: specialize TFPGMap<Variant, Variant>;
+  _tmp0: specialize TFPGMap<string, Variant>;
+  _tmp1: specialize TFPGMap<string, Variant>;
   _tmp10: specialize TArray<Variant>;
-  _tmp2: specialize TFPGMap<Variant, Variant>;
-  _tmp3: specialize TFPGMap<Variant, Variant>;
-  _tmp4: specialize TFPGMap<Variant, Variant>;
-  _tmp5: specialize TFPGMap<Variant, Variant>;
-  _tmp6: specialize TFPGMap<Variant, Variant>;
+  _tmp2: specialize TFPGMap<string, Variant>;
+  _tmp3: specialize TFPGMap<string, Variant>;
+  _tmp4: specialize TFPGMap<string, Variant>;
+  _tmp5: specialize TFPGMap<string, Variant>;
+  _tmp6: specialize TArray<specialize TFPGMap<string, Variant>>;
   _tmp7: specialize TArray<Variant>;
-  _tmp8: specialize TArray<Variant>;
-  _tmp9: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp8: specialize TFPGMap<string, Variant>;
+  _tmp9: specialize TArray<Variant>;
   c: specialize TFPGMap<string, Variant>;
   customer: specialize TArray<specialize TFPGMap<string, Variant>>;
   end_date: string;
@@ -72,11 +72,11 @@ var
   x: integer;
 
 begin
-  _tmp0 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp0 := specialize TFPGMap<string, Variant>.Create;
   _tmp0.AddOrSetData('n_nationkey', 1);
   _tmp0.AddOrSetData('n_name', 'BRAZIL');
   nation := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp0]);
-  _tmp1 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp1 := specialize TFPGMap<string, Variant>.Create;
   _tmp1.AddOrSetData('c_custkey', 1);
   _tmp1.AddOrSetData('c_name', 'Alice');
   _tmp1.AddOrSetData('c_acctbal', 100);
@@ -85,21 +85,21 @@ begin
   _tmp1.AddOrSetData('c_phone', '123-456');
   _tmp1.AddOrSetData('c_comment', 'Loyal');
   customer := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp1]);
-  _tmp2 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp2 := specialize TFPGMap<string, Variant>.Create;
   _tmp2.AddOrSetData('o_orderkey', 1000);
   _tmp2.AddOrSetData('o_custkey', 1);
   _tmp2.AddOrSetData('o_orderdate', '1993-10-15');
-  _tmp3 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp3 := specialize TFPGMap<string, Variant>.Create;
   _tmp3.AddOrSetData('o_orderkey', 2000);
   _tmp3.AddOrSetData('o_custkey', 1);
   _tmp3.AddOrSetData('o_orderdate', '1994-01-02');
   orders := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp2, _tmp3]);
-  _tmp4 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp4 := specialize TFPGMap<string, Variant>.Create;
   _tmp4.AddOrSetData('l_orderkey', 1000);
   _tmp4.AddOrSetData('l_returnflag', 'R');
   _tmp4.AddOrSetData('l_extendedprice', 1000);
   _tmp4.AddOrSetData('l_discount', 0.1);
-  _tmp5 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp5 := specialize TFPGMap<string, Variant>.Create;
   _tmp5.AddOrSetData('l_orderkey', 2000);
   _tmp5.AddOrSetData('l_returnflag', 'N');
   _tmp5.AddOrSetData('l_extendedprice', 500);
@@ -107,47 +107,47 @@ begin
   lineitem := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp4, _tmp5]);
   start_date := '1993-10-01';
   end_date := '1994-01-01';
-  _tmp6 := specialize TFPGMap<Variant, Variant>.Create;
-  _tmp6.AddOrSetData('c_custkey', g.key.c_custkey);
-  _tmp6.AddOrSetData('c_name', g.key.c_name);
+  SetLength(_tmp6, 0);
   SetLength(_tmp7, 0);
-  for x in g do
-    begin
-      _tmp7 := Concat(_tmp7, [x.l.l_extendedprice * 1 - x.l.l_discount]);
-    end;
-  _tmp6.AddOrSetData('revenue', specialize _sumList<Variant>(_tmp7));
-  _tmp6.AddOrSetData('c_acctbal', g.key.c_acctbal);
-  _tmp6.AddOrSetData('n_name', g.key.n_name);
-  _tmp6.AddOrSetData('c_address', g.key.c_address);
-  _tmp6.AddOrSetData('c_phone', g.key.c_phone);
-  _tmp6.AddOrSetData('c_comment', g.key.c_comment);
-  SetLength(_tmp8, 0);
-  for x in g do
-    begin
-      _tmp8 := Concat(_tmp8, [x.l.l_extendedprice * 1 - x.l.l_discount]);
-    end;
-  SetLength(_tmp9, 0);
-  SetLength(_tmp10, 0);
   for c in customer do
     begin
       for o in orders do
         begin
-          if not ((o.o_custkey = c.c_custkey)) then continue;
+          if not ((o.o_custkey = c.KeyData['c_custkey'])) then continue;
           for l in lineitem do
             begin
               if not ((l.l_orderkey = o.o_orderkey)) then continue;
               for n in nation do
                 begin
-                  if not ((n.n_nationkey = c.c_nationkey)) then continue;
-                  if not ((((o.o_orderdate >= start_date) and (o.o_orderdate < end_date)) and (l.
-                     l_returnflag = 'R'))) then continue;
-                  _tmp9 := Concat(_tmp9, [_tmp6]);
-                  _tmp10 := Concat(_tmp10, [-specialize _sumList<Variant>(_tmp8)]);
+                  if not ((n.n_nationkey = c.KeyData['c_nationkey'])) then continue;
+                  if not ((((o.KeyData['o_orderdate'] >= start_date) and (o.KeyData['o_orderdate'] <
+                     end_date)) and (l.KeyData['l_returnflag'] = 'R'))) then continue;
+                  _tmp8 := specialize TFPGMap<string, Variant>.Create;
+                  _tmp8.AddOrSetData('c_custkey', g.key.c_custkey);
+                  _tmp8.AddOrSetData('c_name', g.key.c_name);
+                  SetLength(_tmp9, 0);
+                  for x in g do
+                    begin
+                      _tmp9 := Concat(_tmp9, [x.l.l_extendedprice * 1 - x.l.l_discount]);
+                    end;
+                  _tmp8.AddOrSetData('revenue', specialize _sumList<Variant>(_tmp9));
+                  _tmp8.AddOrSetData('c_acctbal', g.key.c_acctbal);
+                  _tmp8.AddOrSetData('n_name', g.key.n_name);
+                  _tmp8.AddOrSetData('c_address', g.key.c_address);
+                  _tmp8.AddOrSetData('c_phone', g.key.c_phone);
+                  _tmp8.AddOrSetData('c_comment', g.key.c_comment);
+                  _tmp6 := Concat(_tmp6, [_tmp8]);
+                  SetLength(_tmp10, 0);
+                  for x in g do
+                    begin
+                      _tmp10 := Concat(_tmp10, [x.l.l_extendedprice * 1 - x.l.l_discount]);
+                    end;
+                  _tmp7 := Concat(_tmp7, [-specialize _sumList<Variant>(_tmp10)]);
                 end;
             end;
         end;
     end;
-  specialize _sortBy<specialize TFPGMap<string, Variant>>(_tmp9, _tmp10);
-  _result := _tmp9;
+  specialize _sortBy<specialize TFPGMap<string, Variant>>(_tmp6, _tmp7);
+  _result := _tmp6;
   specialize _printList<specialize TFPGMap<string, Variant>>(_result);
 end.

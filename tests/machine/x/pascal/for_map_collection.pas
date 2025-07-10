@@ -1,4 +1,4 @@
-program main;
+program ForMapCollection;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 
@@ -9,6 +9,7 @@ type
 
 var
   _tmp0: specialize TFPGMap<string, integer>;
+  _tmp1: integer;
   k: specialize TFPGMap<string, integer>;
   m: specialize TFPGMap<string, integer>;
 
@@ -17,8 +18,9 @@ begin
   _tmp0.AddOrSetData('a', 1);
   _tmp0.AddOrSetData('b', 2);
   m := _tmp0;
-  for k in m do
+  for _tmp1 := 0 to m.Count - 1 do
     begin
+      k := m.Keys[_tmp1];
       writeln(k);
     end;
 end.

@@ -4,9 +4,15 @@ Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling /workspace/mochi/tests/machine/x/pascal/two-sum.pas
-two-sum.pas(20,11) Error: Ordinal expression expected
-two-sum.pas(22,26) Error: Identifier not found "_indexList"
-two-sum.pas(22,50) Fatal: Syntax error, ")" expected but "," found
+two-sum.pas(16,7) Error: Identifier not found "i"
+two-sum.pas(16,7) Error: Ordinal expression expected
+two-sum.pas(16,7) Error: Illegal counter variable
+two-sum.pas(18,11) Error: Identifier not found "j"
+two-sum.pas(18,11) Error: Ordinal expression expected
+two-sum.pas(18,11) Error: Illegal counter variable
+two-sum.pas(18,16) Error: Identifier not found "i"
+two-sum.pas(20,26) Error: Identifier not found "_indexList"
+two-sum.pas(20,50) Fatal: Syntax error, ")" expected but "," found
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode
 

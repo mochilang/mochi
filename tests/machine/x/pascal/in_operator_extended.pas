@@ -1,4 +1,4 @@
-program main;
+program InOperatorExtended;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 
@@ -7,9 +7,18 @@ uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
 type
   generic TArray<T> = array of T;
 
+  generic function _containsList<T>(arr: specialize TArray<T>; v: T): boolean;
+
+var i: Integer;
+begin
+  Result := False;
+  for i := 0 to High(arr) do
+    if arr[i] = v then exit(True);
+end;
+
 var
   _tmp0: specialize TArray<integer>;
-  _tmp1: specialize TFPGMap<Variant, integer>;
+  _tmp1: specialize TFPGMap<string, integer>;
   m: specialize TFPGMap<string, integer>;
   s: string;
   x: integer;
@@ -25,9 +34,9 @@ begin
       _tmp0 := Concat(_tmp0, [x]);
     end;
   ys := _tmp0;
-  writeln((1 in ys));
-  writeln((2 in ys));
-  _tmp1 := specialize TFPGMap<Variant, integer>.Create;
+  writeln(specialize _containsList<Variant>(ys, 1));
+  writeln(specialize _containsList<Variant>(ys, 2));
+  _tmp1 := specialize TFPGMap<string, integer>.Create;
   _tmp1.AddOrSetData('a', 1);
   m := _tmp1;
   writeln((m.IndexOf('a') >= 0));

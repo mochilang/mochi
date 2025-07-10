@@ -1,4 +1,4 @@
-program main;
+program FunThreeArgs;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

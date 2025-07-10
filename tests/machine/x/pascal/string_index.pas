@@ -1,4 +1,4 @@
-program main;
+program StringIndex;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

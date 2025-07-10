@@ -1,4 +1,4 @@
-program main;
+program WhileLoop;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

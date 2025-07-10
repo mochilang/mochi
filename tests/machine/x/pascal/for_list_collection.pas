@@ -1,4 +1,4 @@
-program main;
+program ForListCollection;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 
@@ -8,7 +8,7 @@ type
   generic TArray<T> = array of T;
 
 var
-  n: integer;
+  n: Variant;
 
 begin
   for n in specialize TArray<integer>([1, 2, 3]) do

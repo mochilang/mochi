@@ -1,9 +1,12 @@
-line: 0
-error: run error: exit status 217
-ok
-An unhandled exception occurred at $00000000004012D4:
-Exception: expect failed
-  $00000000004012D4
-  $00000000004016BF
-
+line: 76
+error: fpc error: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/machine/x/pascal/update_stmt.pas
+update_stmt.pas(66,11) Error: Identifier not found "age"
+update_stmt.pas(69,24) Error: Identifier not found "age"
+update_stmt.pas(76) Fatal: There were 2 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode
 

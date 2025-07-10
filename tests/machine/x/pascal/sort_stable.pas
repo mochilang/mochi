@@ -1,4 +1,4 @@
-program main;
+program SortStable;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

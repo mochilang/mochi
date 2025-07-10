@@ -1,0 +1,13 @@
+line: 33
+error: fpc error: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/machine/x/pascal/closure.pas
+closure.pas(22,13) Error: Incompatible types: got "<procedure variable type of function(LongInt):LongInt is nested;Register>" expected "<procedure variable type of function(LongInt):LongInt;Register>"
+closure.pas(27,35) Error: Identifier not found "p0__integer"
+closure.pas(30,12) Error: Incompatible types: got "<procedure variable type of function(LongInt):LongInt;Register>" expected "<procedure variable type of function(<erroneous type>):LongInt;Register>"
+closure.pas(33) Fatal: There were 3 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode
+

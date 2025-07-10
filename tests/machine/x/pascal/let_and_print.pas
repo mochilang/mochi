@@ -1,4 +1,4 @@
-program main;
+program LetAndPrint;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

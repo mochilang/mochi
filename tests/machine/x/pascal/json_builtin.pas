@@ -1,4 +1,4 @@
-program main;
+program JsonBuiltin;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

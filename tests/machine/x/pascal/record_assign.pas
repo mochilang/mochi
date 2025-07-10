@@ -1,4 +1,4 @@
-program main;
+program RecordAssign;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

@@ -1,4 +1,4 @@
-program main;
+program FunCall;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

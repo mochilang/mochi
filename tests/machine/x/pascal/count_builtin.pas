@@ -1,4 +1,4 @@
-program main;
+program CountBuiltin;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

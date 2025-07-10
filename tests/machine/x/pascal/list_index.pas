@@ -1,4 +1,4 @@
-program main;
+program ListIndex;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

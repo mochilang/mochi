@@ -4,11 +4,11 @@ Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling /workspace/mochi/tests/machine/x/pascal/order_by_map.pas
-order_by_map.pas(62,11) Error: Illegal type conversion: "{Array Of Const/Constant Open} Array of TFPGMap$2$crcDFB44C97" to "TArray$1$crc09D74DF2"
-order_by_map.pas(64,29) Error: identifier idents no member "a"
-order_by_map.pas(65,29) Error: identifier idents no member "b"
-order_by_map.pas(71,37) Error: Incompatible types: got "{Array Of Const/Constant Open} Array of TFPGMap$2$crcDFB44C97" expected "TArray$1$crcE41905E8"
-order_by_map.pas(71,31) Error: Incompatible types: got "TFPGMap<System.Variant,System.LongInt>" expected "Variant"
+order_by_map.pas(67,33) Error: Incompatible types: got "{Array Of Const/Constant Open} Array of TFPGMap$2$crcD929FFD2" expected "TArray$1$crc09D74DF2"
+order_by_map.pas(67,31) Error: Incompatible types: got "TFPGMap<System.ShortString,System.LongInt>" expected "TFPGMap<System.ShortString,System.Variant>"
+order_by_map.pas(71,37) Error: Incompatible types: got "{Array Of Const/Constant Open} Array of TFPGMap$2$crcD929FFD2" expected "TArray$1$crcE41905E8"
+order_by_map.pas(71,31) Error: Incompatible types: got "TFPGMap<System.ShortString,System.LongInt>" expected "Variant"
+order_by_map.pas(74,13) Error: Incompatible types: got "TArray$1$crc09D74DF2" expected "TArray$1$crc90DE1C48"
 order_by_map.pas(17,19) Error: Can't read or write variables of this type
 order_by_map.pas(77) Fatal: There were 6 errors compiling module, stopping
 Fatal: Compilation aborted

@@ -1,4 +1,4 @@
-program main;
+program MapLiteralDynamic;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

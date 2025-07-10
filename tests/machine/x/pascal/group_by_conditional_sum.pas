@@ -1,4 +1,4 @@
-program main;
+program GroupByConditionalSum;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 
@@ -50,12 +50,12 @@ begin
 end;
 
 var
-  _tmp0: specialize TFPGMap<Variant, Variant>;
-  _tmp1: specialize TFPGMap<Variant, Variant>;
-  _tmp2: specialize TFPGMap<Variant, Variant>;
-  _tmp3: specialize TFPGMap<Variant, Variant>;
-  _tmp4: specialize TArray<specialize TFPGMap<string, Variant>>;
-  _tmp5: specialize TArray<Variant>;
+  _tmp0: specialize TFPGMap<string, Variant>;
+  _tmp1: specialize TFPGMap<string, Variant>;
+  _tmp2: specialize TFPGMap<string, Variant>;
+  _tmp3: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp4: specialize TArray<Variant>;
+  _tmp5: specialize TFPGMap<string, Variant>;
   _tmp6: specialize TArray<Variant>;
   _tmp7: specialize TArray<specialize TFPGMap<string, Variant>>;
   _tmp8: specialize TArray<Variant>;
@@ -65,50 +65,49 @@ var
   x: integer;
 
 begin
-  _tmp0 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp0 := specialize TFPGMap<string, Variant>.Create;
   _tmp0.AddOrSetData('cat', 'a');
   _tmp0.AddOrSetData('val', 10);
   _tmp0.AddOrSetData('flag', True);
-  _tmp1 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp1 := specialize TFPGMap<string, Variant>.Create;
   _tmp1.AddOrSetData('cat', 'a');
   _tmp1.AddOrSetData('val', 5);
   _tmp1.AddOrSetData('flag', False);
-  _tmp2 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp2 := specialize TFPGMap<string, Variant>.Create;
   _tmp2.AddOrSetData('cat', 'b');
   _tmp2.AddOrSetData('val', 20);
   _tmp2.AddOrSetData('flag', True);
   items := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp0, _tmp1, _tmp2]);
-  _tmp3 := specialize TFPGMap<Variant, Variant>.Create;
-  _tmp3.AddOrSetData('cat', g.key);
-  if x.flag then
-    begin
-      _tmp4 := x.val;
-    end
-  else
-    begin
-      _tmp4 := 0;
-    end;
-  SetLength(_tmp5, 0);
-  for x in g do
-    begin
-      _tmp5 := Concat(_tmp5, [_tmp4]);
-    end;
-  SetLength(_tmp6, 0);
-  for x in g do
-    begin
-      _tmp6 := Concat(_tmp6, [x.val]);
-    end;
-  _tmp3.AddOrSetData('share', specialize _sumList<Variant>(_tmp5) div specialize _sumList<Variant>(
-                                                                                               _tmp6
-  ));
-  SetLength(_tmp7, 0);
-  SetLength(_tmp8, 0);
+  SetLength(_tmp3, 0);
+  SetLength(_tmp4, 0);
   for i in items do
     begin
-      _tmp7 := Concat(_tmp7, [_tmp3]);
-      _tmp8 := Concat(_tmp8, [g.key]);
+      _tmp5 := specialize TFPGMap<string, Variant>.Create;
+      _tmp5.AddOrSetData('cat', g.key);
+      SetLength(_tmp6, 0);
+      for x in g do
+        begin
+          if x.flag then
+            begin
+              _tmp7 := x.val;
+            end
+          else
+            begin
+              _tmp7 := 0;
+            end;
+          _tmp6 := Concat(_tmp6, [_tmp7]);
+        end;
+      SetLength(_tmp8, 0);
+      for x in g do
+        begin
+          _tmp8 := Concat(_tmp8, [x.val]);
+        end;
+      _tmp5.AddOrSetData('share', specialize _sumList<Variant>(_tmp6) div specialize _sumList<
+      Variant>(_tmp8));
+      _tmp3 := Concat(_tmp3, [_tmp5]);
+      _tmp4 := Concat(_tmp4, [g.key]);
     end;
-  specialize _sortBy<specialize TFPGMap<string, Variant>>(_tmp7, _tmp8);
-  _result := _tmp7;
+  specialize _sortBy<specialize TFPGMap<string, Variant>>(_tmp3, _tmp4);
+  _result := _tmp3;
   specialize _printList<specialize TFPGMap<string, Variant>>(_result);
 end.

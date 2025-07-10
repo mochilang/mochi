@@ -1,4 +1,4 @@
-program main;
+program MatchFull;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

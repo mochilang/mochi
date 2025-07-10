@@ -1,4 +1,4 @@
-program main;
+program FunExprInLet;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 
@@ -14,7 +14,7 @@ begin
 end;
 
 var
-  square: function (p0: integer): integer is nested;
+  square: function (p0: p0__integer): integer;
 
 begin
   square := @_lambda0;

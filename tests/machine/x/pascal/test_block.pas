@@ -1,4 +1,4 @@
-program main;
+program TestBlock;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

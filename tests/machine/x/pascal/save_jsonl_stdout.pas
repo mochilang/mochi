@@ -1,4 +1,4 @@
-program main;
+program SaveJsonlStdout;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 
@@ -28,15 +28,15 @@ end;
 end;
 
 var
-  _tmp0: specialize TFPGMap<Variant, Variant>;
-  _tmp1: specialize TFPGMap<Variant, Variant>;
+  _tmp0: specialize TFPGMap<string, Variant>;
+  _tmp1: specialize TFPGMap<string, Variant>;
   people: specialize TArray<specialize TFPGMap<string, Variant>>;
 
 begin
-  _tmp0 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp0 := specialize TFPGMap<string, Variant>.Create;
   _tmp0.AddOrSetData('name', 'Alice');
   _tmp0.AddOrSetData('age', 30);
-  _tmp1 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp1 := specialize TFPGMap<string, Variant>.Create;
   _tmp1.AddOrSetData('name', 'Bob');
   _tmp1.AddOrSetData('age', 25);
   people := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp0, _tmp1]);

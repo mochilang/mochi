@@ -1,4 +1,4 @@
-program main;
+program VarAssignment;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

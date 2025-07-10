@@ -1,4 +1,4 @@
-program main;
+program StringContains;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 
