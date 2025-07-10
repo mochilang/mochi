@@ -1269,23 +1269,31 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				case types.IsMapType(rt):
 					res = fmt.Sprintf("%s.contains_key(&%s)", r, res)
 				default:
-					// attempt heuristics when type inference failed
 					switch {
+					case c.postfixIsMap(op.Right):
+						res = fmt.Sprintf("%s.contains_key(&%s)", r, res)
+					case c.postfixIsList(op.Right):
+						res = fmt.Sprintf("%s.contains(&%s)", r, res)
 					case c.postfixIsString(op.Right):
 						if !c.unaryIsString(leftAST) {
 							return "", fmt.Errorf("in type mismatch")
 						}
 						res = fmt.Sprintf("%s.contains(%s)", r, res)
-					case c.postfixIsList(op.Right):
-						res = fmt.Sprintf("%s.contains(&%s)", r, res)
-					case c.postfixIsMap(op.Right):
-						res = fmt.Sprintf("%s.contains_key(&%s)", r, res)
 					default:
 						return "", fmt.Errorf("in unsupported")
 					}
 				}
 			} else {
-				return "", fmt.Errorf("in unsupported")
+				switch {
+				case c.postfixIsMap(op.Right):
+					res = fmt.Sprintf("%s.contains_key(&%s)", r, res)
+				case c.postfixIsList(op.Right):
+					res = fmt.Sprintf("%s.contains(&%s)", r, res)
+				case c.postfixIsString(op.Right) && c.unaryIsString(leftAST):
+					res = fmt.Sprintf("%s.contains(%s)", r, res)
+				default:
+					return "", fmt.Errorf("in unsupported")
+				}
 			}
 		case "+":
 			if c.unaryIsString(leftAST) || c.postfixIsString(op.Right) {
