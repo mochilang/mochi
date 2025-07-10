@@ -354,6 +354,9 @@ func (c *compiler) ifStmt(i *parser.IfStmt) error {
 	if err != nil {
 		return err
 	}
+	if c.needsNilCheck(i.Cond) {
+		cond += " != nil"
+	}
 	c.writeln("if " + cond + " {")
 	c.indent++
 	for _, st := range i.Then {
@@ -389,6 +392,9 @@ func (c *compiler) whileStmt(w *parser.WhileStmt) error {
 	cond, err := c.expr(w.Cond)
 	if err != nil {
 		return err
+	}
+	if c.needsNilCheck(w.Cond) {
+		cond += " != nil"
 	}
 	c.writeln("while " + cond + " {")
 	c.indent++
@@ -1132,6 +1138,25 @@ func isWildcard(e *parser.Expr) bool {
 	}
 	sel := e.Binary.Left.Value.Target.Selector
 	return sel != nil && sel.Root == "_" && len(sel.Tail) == 0
+}
+
+func (c *compiler) needsNilCheck(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 {
+		return false
+	}
+	sel := u.Value.Target.Selector
+	if sel == nil || len(sel.Tail) == 0 {
+		return false
+	}
+	typ := c.varTypes[sel.Root]
+	if typ == "map" || c.mapFields[sel.Root] != nil {
+		return true
+	}
+	return false
 }
 
 func (c *compiler) selector(s *parser.SelectorExpr) string {

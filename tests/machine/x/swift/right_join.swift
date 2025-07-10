@@ -20,7 +20,7 @@ var result = ({
 }())
 print("--- Right Join using syntax ---")
 for entry in result {
-    if entry["order"] {
+    if entry["order"] != nil {
         print("Customer", entry["customerName"], "has order", entry["order"]["id"], "- $", entry["order"]["total"])
     }
     else {
