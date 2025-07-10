@@ -1,6 +1,6 @@
 #include <iostream>
 
-auto square = [=](int x) { return (x * x); };
+auto square = [](int x) { return (x * x); };
 
 int main() {
   {

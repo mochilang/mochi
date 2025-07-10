@@ -2331,7 +2331,12 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 // compileLambda builds a C++ lambda from the given parameters and body.
 func (c *Compiler) compileLambda(params []*parser.Param, exprBody *parser.Expr, stmts []*parser.Statement) (string, error) {
 	var buf strings.Builder
-	buf.WriteString("[=](")
+	cap := "[=]"
+	if c.scope == 0 {
+		cap = "[]"
+	}
+	buf.WriteString(cap)
+	buf.WriteString("(")
 	for i, p := range params {
 		if i > 0 {
 			buf.WriteString(", ")
