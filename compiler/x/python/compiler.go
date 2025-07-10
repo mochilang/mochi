@@ -1013,15 +1013,14 @@ func (c *Compiler) compileListLiteral(l *parser.ListLiteral) (string, error) {
 func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 	items := make([]string, len(m.Items))
 	for i, it := range m.Items {
-		var k string
+		k, err := c.compileExpr(it.Key)
+		if err != nil {
+			return "", err
+		}
 		if s, ok := simpleStringKey(it.Key); ok {
 			k = fmt.Sprintf("%q", sanitizeName(s))
-		} else {
-			var err error
-			k, err = c.compileExpr(it.Key)
-			if err != nil {
-				return "", err
-			}
+		} else if name, ok := identName(it.Key); ok {
+			k = fmt.Sprintf("%q", sanitizeName(name))
 		}
 		v, err := c.compileExpr(it.Value)
 		if err != nil {
