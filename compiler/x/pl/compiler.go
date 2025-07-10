@@ -218,9 +218,20 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	}
 	resVar := "_Res"
 	c.retVar = resVar
+	// compile nested functions before the outer body
+	for _, st := range fn.Body {
+		if st.Fun != nil {
+			if err := c.compileNestedFun(st.Fun); err != nil {
+				return err
+			}
+		}
+	}
 	c.writeln(fmt.Sprintf("%s(%s, %s) :-", sanitizeAtom(fn.Name), strings.Join(params, ", "), resVar))
 	c.indent++
 	for i, st := range fn.Body {
+		if st.Fun != nil {
+			continue
+		}
 		if i == len(fn.Body)-1 && st.Return != nil {
 			val, arith, err := c.compileExpr(st.Return.Value)
 			if err != nil {
@@ -258,10 +269,10 @@ func (c *Compiler) compileNestedFun(fn *parser.FunStmt) error {
 	sort.Strings(keys)
 
 	captures := make([]string, len(keys))
-	params := make([]parser.Param, 0, len(keys)+len(fn.Params))
+	params := make([]*parser.Param, 0, len(keys)+len(fn.Params))
 	for i, k := range keys {
 		captures[i] = k
-		params = append(params, parser.Param{Name: sanitizeVar(k)})
+		params = append(params, &parser.Param{Name: sanitizeVar(k)})
 	}
 	params = append(params, fn.Params...)
 	name := fmt.Sprintf("%s__%s", c.currentFun, fn.Name)
@@ -450,7 +461,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		return fmt.Errorf("unsupported expression statement")
 	case s.Fun != nil:
-		return c.compileNestedFun(s.Fun)
+		// Nested functions are compiled separately
+		return nil
 	default:
 		return fmt.Errorf("unsupported statement")
 	}

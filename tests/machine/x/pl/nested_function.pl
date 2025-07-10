@@ -1,0 +1,14 @@
+:- style_check(-singleton).
+outer__inner(X, Y, _Res) :-
+    _Res is (X + Y).
+
+outer(X, _Res) :-
+    inner(5, _V0),
+    _Res = _V0.
+
+:- initialization(main, main).
+main :-
+    outer(3, _V0),
+    write(_V0),
+    nl,
+    true.
