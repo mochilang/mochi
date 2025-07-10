@@ -1,0 +1,35 @@
+// Mochi implementation of Rosetta "Active Directory Search for a user" task
+
+fun search_user(directory: map<string, list<string>>, username: string): list<string> {
+  return directory[username]
+}
+
+fun main() {
+  let client = {
+    "Base": "dc=example,dc=com",
+    "Host": "ldap.example.com",
+    "Port": 389,
+    "GroupFilter": "(memberUid=%s)",
+  }
+  // Mock directory data for demonstration
+  let directory = {
+    "username": ["admins", "users"],
+    "john": ["users"],
+  }
+  let groups = search_user(directory, "username")
+  if len(groups) > 0 {
+    var out = "Groups: ["
+    var i = 0
+    while i < len(groups) {
+      out = out + "\"" + groups[i] + "\""
+      if i < len(groups) - 1 { out = out + ", " }
+      i = i + 1
+    }
+    out = out + "]"
+    print(out)
+  } else {
+    print("User not found")
+  }
+}
+
+main()
