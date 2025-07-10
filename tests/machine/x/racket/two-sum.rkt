@@ -1,10 +1,11 @@
 #lang racket
+(require racket/list)
 (define (twoSum nums target)
   (let/ec return
 (define n (cond [(string? nums) (string-length nums)] [(hash? nums) (hash-count nums)] [else (length nums)]))
 (for ([i (in-range 0 n)])
 (for ([j (in-range (+ i 1) n)])
-(if (equal? (+ (if (string? nums) (string-ref nums i) (list-ref nums i)) (if (string? nums) (string-ref nums j) (list-ref nums j))) target)
+(if (equal? (+ (cond [(string? nums) (string-ref nums i)] [(hash? nums) (hash-ref nums i)] [else (list-ref nums i)]) (cond [(string? nums) (string-ref nums j)] [(hash? nums) (hash-ref nums j)] [else (list-ref nums j)])) target)
   (begin
 (return (list i j))
   )
@@ -15,5 +16,5 @@
 (return (list (- 1) (- 1)))
   ))
 (define result (twoSum (list 2 7 11 15) 9))
-(displayln (if (string? result) (string-ref result 0) (list-ref result 0)))
-(displayln (if (string? result) (string-ref result 1) (list-ref result 1)))
+(displayln (cond [(string? result) (string-ref result 0)] [(hash? result) (hash-ref result 0)] [else (list-ref result 0)]))
+(displayln (cond [(string? result) (string-ref result 1)] [(hash? result) (hash-ref result 1)] [else (list-ref result 1)]))

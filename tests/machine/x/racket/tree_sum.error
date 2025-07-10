@@ -1,0 +1,10 @@
+run: exit status 1
+match: no matching clause for #<procedure:Leaf>
+  location...:
+   /workspace/mochi/tests/machine/x/racket/tree_sum.rkt:6:8
+  context...:
+   /workspace/mochi/tests/machine/x/racket/tree_sum.rkt:5:2
+   [repeats 1 more time]
+   /workspace/mochi/tests/machine/x/racket/tree_sum.rkt:9:0
+   body of "/workspace/mochi/tests/machine/x/racket/tree_sum.rkt"
+

@@ -1,0 +1,1 @@
+(#hash((cat . a) (total . 4)) #hash((cat . b) (total . 7)))

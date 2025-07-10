@@ -1,0 +1,6 @@
+run: exit status 1
+/workspace/mochi/tests/machine/x/racket/load_yaml.rkt:4:16: yaml-load: unbound identifier
+  in: yaml-load
+  location...:
+   /workspace/mochi/tests/machine/x/racket/load_yaml.rkt:4:16
+
