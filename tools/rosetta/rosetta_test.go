@@ -1,6 +1,9 @@
 package rosetta
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func TestListTasks(t *testing.T) {
 	tasks, err := ListTasks(false)
@@ -70,7 +73,7 @@ func TestDownloadCached(t *testing.T) {
 	if len(data) == 0 {
 		t.Fatal("empty download")
 	}
-	if string(data[:2]) != "pa" && string(data[:6]) != "package" {
-		t.Fatalf("unexpected data prefix: %q", data[:10])
+	if !strings.HasPrefix(string(data), "//go:build ignore") {
+		t.Fatalf("missing build tag prefix")
 	}
 }
