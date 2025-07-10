@@ -5,19 +5,19 @@ var stats = ({
 	for c in customers {
 		var _m = false
 		for o in orders {
-			if !(o.customerId == c.id) { continue }
+			if !(o["customerId"] as! Int == c["id"] as! Int) { continue }
 			_m = true
 			let _k = c["name"] as! String
-			_groups[_k, default: []].append((c: c, o: o))
+			_groups[_k, default: []].append(["c": c, "o": o])
 		}
 		if !_m {
 			let o: Any? = nil
 			let _k = c["name"] as! String
-			_groups[_k, default: []].append((c: c, o: o))
+			_groups[_k, default: []].append(["c": c, "o": o])
 		}
 	}
 	var _tmp = _groups.map { (k, v) in (key: k, items: v) }
-	return _tmp.map { g in ["name": g.key, "count": g.items.filter { r in r["o"] as! [String:Any] }.count] }
+	return _tmp.map { g in ["name": g.key, "count": g.items.filter { r in (r as! [String:Any])["o"] != nil }.count] }
 }())
 print("--- Group Left Join ---")
 for s in stats as! [[String:Any]] {

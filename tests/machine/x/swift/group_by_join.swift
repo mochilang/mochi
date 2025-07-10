@@ -4,9 +4,9 @@ var stats = ({
 	var _groups: [AnyHashable:[Any]] = [:]
 	for o in orders {
 		for c in customers {
-			if !(o.customerId == c.id) { continue }
+			if !(o["customerId"] as! Int == c["id"] as! Int) { continue }
 			let _k = c["name"] as! String
-			_groups[_k, default: []].append((o: o, c: c))
+			_groups[_k, default: []].append(["o": o, "c": c])
 		}
 	}
 	var _tmp = _groups.map { (k, v) in (key: k, items: v) }

@@ -1795,13 +1795,28 @@ func (c *compiler) groupJoinQuery(q *parser.QueryExpr) (string, error) {
 	c.mapFields[gname] = nil
 	c.groups[gname] = true
 	c.groupElemType[gname] = ""
-	c.groupElemFields[gname] = nil
 	names := []string{q.Var}
 	for _, f := range q.Froms {
 		names = append(names, f.Var)
 	}
 	for _, j := range q.Joins {
 		names = append(names, j.Var)
+	}
+
+	fields := make(map[string]string)
+	for _, n := range names {
+		if t, ok := c.swiftTypes[n]; ok {
+			fields[n] = t
+		} else if vt, ok := c.varTypes[n]; ok {
+			if st := swiftTypeOf(vt); st != "" {
+				fields[n] = st
+			}
+		}
+	}
+	if len(fields) > 0 {
+		c.groupElemFields[gname] = fields
+	} else {
+		c.groupElemFields[gname] = nil
 	}
 
 	var having string
@@ -1853,9 +1868,9 @@ func (c *compiler) groupJoinQuery(q *parser.QueryExpr) (string, error) {
 
 	parts := make([]string, len(names))
 	for i, n := range names {
-		parts[i] = fmt.Sprintf("%s: %s", n, n)
+		parts[i] = fmt.Sprintf("\"%s\": %s", n, n)
 	}
-	itemExpr := "(" + strings.Join(parts, ", ") + ")"
+	itemExpr := "[" + strings.Join(parts, ", ") + "]"
 
 	var b strings.Builder
 	b.WriteString("({\n")

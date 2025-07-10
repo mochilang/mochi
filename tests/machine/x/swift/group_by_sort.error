@@ -1,4 +1,0 @@
-line 2: exit status 1
-var items = [["cat": "a", "val": 3], ["cat": "a", "val": 1], ["cat": "b", "val": 5], ["cat": "b", "val": 2]]
-var grouped = { () -> [Any] in
-    var _groups: [AnyHashable:[[String:Any]]] = [:]

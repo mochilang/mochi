@@ -1,4 +1,0 @@
-line 5: exit status 1
-for person in adults {
-    print(person["name"], "is", person["age"], person["is_senior"] ? " (senior)" : "")
-}

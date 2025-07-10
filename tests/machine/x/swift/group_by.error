@@ -1,4 +1,0 @@
-line 16: exit status 1
-for s in stats {
-    print(s["city"] as! Any, ": count =", s["count"] as! Any, ", avg_age =", s["avg_age"] as! Any)
-}
