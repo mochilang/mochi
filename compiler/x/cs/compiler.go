@@ -1009,7 +1009,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		return "", err
 	}
 	isStr := c.isStringPostfix(p)
-	for _, op := range p.Ops {
+	for i, op := range p.Ops {
 		if op.Call != nil {
 			args := make([]string, len(op.Call.Args))
 			for i, a := range op.Call.Args {
@@ -1069,8 +1069,17 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					c.use("_indexString")
 					expr = fmt.Sprintf("_indexString(%s, %s)", expr, idx)
 				} else {
-					c.use("_indexList")
-					expr = fmt.Sprintf("_indexList(%s, %s)", expr, idx)
+					var preType types.Type
+					if c.env != nil {
+						prefix := &parser.PostfixExpr{Target: p.Target, Ops: p.Ops[:i]}
+						preType = c.inferPostfixType(prefix)
+					}
+					if _, ok := preType.(types.MapType); ok {
+						expr = fmt.Sprintf("%s[%s]", expr, idx)
+					} else {
+						c.use("_indexList")
+						expr = fmt.Sprintf("_indexList(%s, %s)", expr, idx)
+					}
 				}
 			}
 			isStr = false
