@@ -158,7 +158,7 @@ tmp = []
 for g in groups:
     total = 0
     for x in _get(g, "items"):
-        total = total + _get(x, "val")
+        total = total + x["val"]
     tmp = tmp + [{"tag": _get(g, "key"), "total": total}]
 result = [r for r in sorted([r for r in tmp], key=lambda r: _sort_key(_get(r, "tag")))]
 print(result)

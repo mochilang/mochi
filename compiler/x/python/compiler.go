@@ -978,6 +978,37 @@ func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, err
 			return "{" + strings.Join(items, ", ") + "}", nil
 		}
 	}
+	if st, ok := hint.(types.StructType); ok {
+		if ml := e.Binary.Left.Value.Target.Map; ml != nil {
+			if len(ml.Items) == len(st.Fields) {
+				fields := make([]string, len(ml.Items))
+				for i, it := range ml.Items {
+					name, ok := identName(it.Key)
+					if !ok {
+						if s, ok2 := simpleStringKey(it.Key); ok2 {
+							name = s
+						} else {
+							// fallback to map literal
+							return c.compileMapLiteral(ml)
+						}
+					}
+					ft, ok := st.Fields[name]
+					var val string
+					var err error
+					if ok {
+						val, err = c.compileExprHint(it.Value, ft)
+					} else {
+						val, err = c.compileExpr(it.Value)
+					}
+					if err != nil {
+						return "", err
+					}
+					fields[i] = fmt.Sprintf("%s=%s", sanitizeName(name), val)
+				}
+				return fmt.Sprintf("%s(%s)", sanitizeName(st.Name), strings.Join(fields, ", ")), nil
+			}
+		}
+	}
 	return c.compileExpr(e)
 }
 
