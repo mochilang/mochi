@@ -1,119 +1,119 @@
-line 53: ../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:53:12: error: ‘g’ was not declared in this scope
-   53 |   decltype(g.key.c_custkey) c_custkey;
+line 263: ../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:263:12: error: ‘g’ was not declared in this scope
+  263 |   decltype(g.key.c_custkey) c_custkey;
       |            ^
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:53:12: error: ‘g’ was not declared in this scope
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:54:12: error: ‘g’ was not declared in this scope
-   54 |   decltype(g.key.c_name) c_name;
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:263:12: error: ‘g’ was not declared in this scope
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:264:12: error: ‘g’ was not declared in this scope
+  264 |   decltype(g.key.c_name) c_name;
       |            ^
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:54:12: error: ‘g’ was not declared in this scope
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:56:12: error: ‘g’ was not declared in this scope
-   56 |   decltype(g.key.c_acctbal) c_acctbal;
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:264:12: error: ‘g’ was not declared in this scope
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:266:12: error: ‘g’ was not declared in this scope
+  266 |   decltype(g.key.c_acctbal) c_acctbal;
       |            ^
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:56:12: error: ‘g’ was not declared in this scope
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:57:12: error: ‘g’ was not declared in this scope
-   57 |   decltype(g.key.n_name) n_name;
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:266:12: error: ‘g’ was not declared in this scope
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:267:12: error: ‘g’ was not declared in this scope
+  267 |   decltype(g.key.n_name) n_name;
       |            ^
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:57:12: error: ‘g’ was not declared in this scope
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:58:12: error: ‘g’ was not declared in this scope
-   58 |   decltype(g.key.c_address) c_address;
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:267:12: error: ‘g’ was not declared in this scope
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:268:12: error: ‘g’ was not declared in this scope
+  268 |   decltype(g.key.c_address) c_address;
       |            ^
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:58:12: error: ‘g’ was not declared in this scope
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:59:12: error: ‘g’ was not declared in this scope
-   59 |   decltype(g.key.c_phone) c_phone;
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:268:12: error: ‘g’ was not declared in this scope
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:269:12: error: ‘g’ was not declared in this scope
+  269 |   decltype(g.key.c_phone) c_phone;
       |            ^
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:59:12: error: ‘g’ was not declared in this scope
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:60:12: error: ‘g’ was not declared in this scope
-   60 |   decltype(g.key.c_comment) c_comment;
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:269:12: error: ‘g’ was not declared in this scope
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:270:12: error: ‘g’ was not declared in this scope
+  270 |   decltype(g.key.c_comment) c_comment;
       |            ^
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:60:12: error: ‘g’ was not declared in this scope
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:270:12: error: ‘g’ was not declared in this scope
 ../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp: In lambda function:
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:102:27: error: no match for ‘operator==’ (operand types are ‘__struct5’ and ‘__struct5’)
-  102 |               if (__g.key == __key) {
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:357:27: error: no match for ‘operator==’ (operand types are ‘__struct5’ and ‘__struct5’)
+  357 |               if (__g.key == __key) {
       |                   ~~~~~~~ ^~ ~~~~~
       |                       |      |
       |                       |      __struct5
       |                       __struct5
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:116:39: error: lambda-expression in unevaluated context only available with ‘-std=c++20’ or ‘-std=gnu++20’
-  116 |     std::vector<std::pair<decltype((-([&](auto v) {
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:371:39: error: lambda-expression in unevaluated context only available with ‘-std=c++20’ or ‘-std=gnu++20’
+  371 |     std::vector<std::pair<decltype((-([&](auto v) {
       |                                       ^
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:119:31: error: lambda-expression in unevaluated context only available with ‘-std=c++20’ or ‘-std=gnu++20’
-  119 |                           })(([&]() {
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:374:31: error: lambda-expression in unevaluated context only available with ‘-std=c++20’ or ‘-std=gnu++20’
+  374 |                           })(([&]() {
       |                               ^
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:134:27: error: template argument 1 is invalid
-  134 |                           __struct8>>
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:389:27: error: template argument 1 is invalid
+  389 |                           __struct8>>
       |                           ^~~~~~~~~
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:134:36: error: template argument 1 is invalid
-  134 |                           __struct8>>
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:389:36: error: template argument 1 is invalid
+  389 |                           __struct8>>
       |                                    ^~
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:134:36: error: template argument 2 is invalid
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:137:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
-  137 |       __items.push_back(
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:389:36: error: template argument 2 is invalid
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:392:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  392 |       __items.push_back(
       |               ^~~~~~~~~
 ../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp: In lambda function:
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:141:45: error: ‘std::declval<__struct4>’ is not a class member
-  141 |                                            .std::declval<__struct4>()
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:396:45: error: ‘std::declval<__struct4>’ is not a class member
+  396 |                                            .std::declval<__struct4>()
       |                                             ^~~
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:144:51: error: ‘std::declval<__struct4>’ is not a class member
-  144 |                                                  .std::declval<__struct4>()
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:399:51: error: ‘std::declval<__struct4>’ is not a class member
+  399 |                                                  .std::declval<__struct4>()
       |                                                   ^~~
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:141:45: error: ‘std::declval<__struct4>’ is not a class member
-  141 |                                            .std::declval<__struct4>()
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:396:45: error: ‘std::declval<__struct4>’ is not a class member
+  396 |                                            .std::declval<__struct4>()
       |                                             ^~~
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:144:51: error: ‘std::declval<__struct4>’ is not a class member
-  144 |                                                  .std::declval<__struct4>()
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:399:51: error: ‘std::declval<__struct4>’ is not a class member
+  399 |                                                  .std::declval<__struct4>()
       |                                                   ^~~
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:145:65: error: template argument 1 is invalid
-  145 |                                                  .l_discount))))>
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:400:65: error: template argument 1 is invalid
+  400 |                                                  .l_discount))))>
       |                                                                 ^
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:145:65: error: template argument 2 is invalid
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:148:28: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
-  148 |                    __items.push_back(
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:400:65: error: template argument 2 is invalid
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:403:28: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  403 |                    __items.push_back(
       |                            ^~~~~~~~~
 ../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:2)> [with auto:2 = int]’:
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:138:78:   required from here
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:138:54: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
-  138 |           {(-([&](auto v) { return std::accumulate(v.begin(), v.end(), 0); })(
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:393:78:   required from here
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:393:54: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  393 |           {(-([&](auto v) { return std::accumulate(v.begin(), v.end(), 0); })(
       |                                                    ~~^~~~~
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:138:65: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
-  138 |           {(-([&](auto v) { return std::accumulate(v.begin(), v.end(), 0); })(
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:393:65: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  393 |           {(-([&](auto v) { return std::accumulate(v.begin(), v.end(), 0); })(
       |                                                               ~~^~~
 ../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp: In lambda function:
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:158:45: error: ‘std::declval<__struct4>’ is not a class member
-  158 |                                            .std::declval<__struct4>()
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:413:45: error: ‘std::declval<__struct4>’ is not a class member
+  413 |                                            .std::declval<__struct4>()
       |                                             ^~~
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:161:51: error: ‘std::declval<__struct4>’ is not a class member
-  161 |                                                  .std::declval<__struct4>()
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:416:51: error: ‘std::declval<__struct4>’ is not a class member
+  416 |                                                  .std::declval<__struct4>()
       |                                                   ^~~
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:158:45: error: ‘std::declval<__struct4>’ is not a class member
-  158 |                                            .std::declval<__struct4>()
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:413:45: error: ‘std::declval<__struct4>’ is not a class member
+  413 |                                            .std::declval<__struct4>()
       |                                             ^~~
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:161:51: error: ‘std::declval<__struct4>’ is not a class member
-  161 |                                                  .std::declval<__struct4>()
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:416:51: error: ‘std::declval<__struct4>’ is not a class member
+  416 |                                                  .std::declval<__struct4>()
       |                                                   ^~~
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:162:65: error: template argument 1 is invalid
-  162 |                                                  .l_discount))))>
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:417:65: error: template argument 1 is invalid
+  417 |                                                  .l_discount))))>
       |                                                                 ^
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:162:65: error: template argument 2 is invalid
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:165:28: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
-  165 |                    __items.push_back(
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:417:65: error: template argument 2 is invalid
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:420:28: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  420 |                    __items.push_back(
       |                            ^~~~~~~~~
 ../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:3)> [with auto:3 = int]’:
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:156:18:   required from here
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:155:43: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
-  155 |                  return std::accumulate(v.begin(), v.end(), 0);
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:411:18:   required from here
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:410:43: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  410 |                  return std::accumulate(v.begin(), v.end(), 0);
       |                                         ~~^~~~~
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:155:54: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
-  155 |                  return std::accumulate(v.begin(), v.end(), 0);
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:410:54: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  410 |                  return std::accumulate(v.begin(), v.end(), 0);
       |                                                    ~~^~~
 ../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp: In lambda function:
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:173:23: error: request for member ‘begin’ in ‘__items’, which is of non-class type ‘int’
-  173 |     std::sort(__items.begin(), __items.end(),
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:428:23: error: request for member ‘begin’ in ‘__items’, which is of non-class type ‘int’
+  428 |     std::sort(__items.begin(), __items.end(),
       |                       ^~~~~
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:173:40: error: request for member ‘end’ in ‘__items’, which is of non-class type ‘int’
-  173 |     std::sort(__items.begin(), __items.end(),
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:428:40: error: request for member ‘end’ in ‘__items’, which is of non-class type ‘int’
+  428 |     std::sort(__items.begin(), __items.end(),
       |                                        ^~~
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:176:20: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
-  176 |     for (auto &p : __items)
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:431:20: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+  431 |     for (auto &p : __items)
       |                    ^~~~~~~
       |                    std::begin
 In file included from /usr/include/c++/13/string:53,
@@ -126,14 +126,14 @@ In file included from /usr/include/c++/13/string:53,
 /usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
   114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
       |                                     ^~~~~
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:176:20: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
-  176 |     for (auto &p : __items)
+../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:431:20: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
+  431 |     for (auto &p : __items)
       |                    ^~~~~~~
       |                    std::end
 /usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
   116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
       |                                     ^~~
 
- 52 | struct __struct8 {
- 53 |   decltype(g.key.c_custkey) c_custkey;
- 54 |   decltype(g.key.c_name) c_name;
+262 | struct __struct8 {
+263 |   decltype(g.key.c_custkey) c_custkey;
+264 |   decltype(g.key.c_name) c_name;

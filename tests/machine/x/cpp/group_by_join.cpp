@@ -6,18 +6,108 @@
 #include <utility>
 #include <vector>
 
+template <typename T> void __json(const T &);
+inline void __json(int v) { std::cout << v; }
+inline void __json(double v) { std::cout << v; }
+inline void __json(bool v) { std::cout << (v ? "true" : "false"); }
+inline void __json(const std::string &v) { std::cout << "\"" << v << "\""; }
+inline void __json(const char *v) { std::cout << "\"" << v << "\""; }
+template <typename T> void __json(const std::vector<T> &v) {
+  std::cout << "[";
+  bool first = true;
+  for (const auto &x : v) {
+    if (!first)
+      std::cout << ",";
+    first = false;
+    __json(x);
+  }
+  std::cout << "]";
+}
+template <typename K, typename V> void __json(const std::map<K, V> &m) {
+  std::cout << "{";
+  bool first = true;
+  for (const auto &kv : m) {
+    if (!first)
+      std::cout << ",";
+    first = false;
+    __json(kv.first);
+    std::cout << ":";
+    __json(kv.second);
+  }
+  std::cout << "}";
+}
+template <typename K, typename V>
+void __json(const std::unordered_map<K, V> &m) {
+  std::cout << "{";
+  bool first = true;
+  for (const auto &kv : m) {
+    if (!first)
+      std::cout << ",";
+    first = false;
+    __json(kv.first);
+    std::cout << ":";
+    __json(kv.second);
+  }
+  std::cout << "}";
+}
+
 struct __struct1 {
   decltype(1) id;
   decltype(std::string("Alice")) name;
 };
+inline void __json(const __struct1 &v) {
+  bool first = true;
+  std::cout << "{";
+  if (!first)
+    std::cout << ",";
+  first = false;
+  std::cout << "\"id\":";
+  __json(v.id);
+  if (!first)
+    std::cout << ",";
+  first = false;
+  std::cout << "\"name\":";
+  __json(v.name);
+  std::cout << "}";
+}
 struct __struct2 {
   decltype(100) id;
   decltype(1) customerId;
 };
+inline void __json(const __struct2 &v) {
+  bool first = true;
+  std::cout << "{";
+  if (!first)
+    std::cout << ",";
+  first = false;
+  std::cout << "\"id\":";
+  __json(v.id);
+  if (!first)
+    std::cout << ",";
+  first = false;
+  std::cout << "\"customerId\":";
+  __json(v.customerId);
+  std::cout << "}";
+}
 struct __struct3 {
   __struct2 o;
   __struct1 c;
 };
+inline void __json(const __struct3 &v) {
+  bool first = true;
+  std::cout << "{";
+  if (!first)
+    std::cout << ",";
+  first = false;
+  std::cout << "\"o\":";
+  __json(v.o);
+  if (!first)
+    std::cout << ",";
+  first = false;
+  std::cout << "\"c\":";
+  __json(v.c);
+  std::cout << "}";
+}
 struct __struct4 {
   decltype(std::declval<__struct1>().name) key;
   std::vector<__struct3> items;
@@ -26,6 +116,21 @@ struct __struct5 {
   decltype(std::declval<__struct4>().key) name;
   int count;
 };
+inline void __json(const __struct5 &v) {
+  bool first = true;
+  std::cout << "{";
+  if (!first)
+    std::cout << ",";
+  first = false;
+  std::cout << "\"name\":";
+  __json(v.name);
+  if (!first)
+    std::cout << ",";
+  first = false;
+  std::cout << "\"count\":";
+  __json(v.count);
+  std::cout << "}";
+}
 int main() {
   std::vector<__struct1> customers =
       std::vector<decltype(__struct1{1, std::string("Alice")})>{
