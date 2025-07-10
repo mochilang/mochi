@@ -13,15 +13,16 @@ import (
 )
 
 type Compiler struct {
-	buf     bytes.Buffer
-	indent  int
-	vars    []varDecl
-	init    []string
-	env     *types.Env
-	funs    []funDecl
-	curFun  *funDecl
-	tmpVar  string
-	seqList map[string]int
+	buf        bytes.Buffer
+	indent     int
+	vars       []varDecl
+	init       []string
+	env        *types.Env
+	funs       []funDecl
+	curFun     *funDecl
+	tmpVar     string
+	seqList    map[string]int
+	constLists map[string][]string
 }
 
 type varField struct {
@@ -83,7 +84,7 @@ func (c *Compiler) collectForVars(st []*parser.Statement) {
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, seqList: make(map[string]int)}
+	return &Compiler{env: env, seqList: make(map[string]int), constLists: make(map[string][]string)}
 }
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
@@ -95,6 +96,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.curFun = nil
 	c.tmpVar = ""
 	c.seqList = make(map[string]int)
+	c.constLists = make(map[string][]string)
 
 	name := strings.TrimSuffix(filepath.Base(prog.Pos.Filename), filepath.Ext(prog.Pos.Filename))
 	name = strings.ReplaceAll(name, "-", "_")
@@ -233,6 +235,27 @@ func (c *Compiler) addVar(name string, typ *parser.TypeRef, value *parser.Expr, 
 			}
 			c.seqList[name] = n
 			return nil
+		}
+		if lst := listLiteral(value); lst != nil {
+			elems := make([]string, len(lst.Elems))
+			for i, e := range lst.Elems {
+				if !isLiteralExpr(e) {
+					lst = nil
+					break
+				}
+				v, err := c.compileExpr(e)
+				if err != nil {
+					return err
+				}
+				elems[i] = v
+			}
+			if lst != nil {
+				if c.constLists == nil {
+					c.constLists = make(map[string][]string)
+				}
+				c.constLists[name] = elems
+				return nil
+			}
 		}
 	}
 	pic := "PIC 9"
@@ -834,6 +857,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	typ := types.TypeOfPrimary(p.Target, c.env)
 	for _, op := range p.Ops {
 		switch {
 		case op.Cast != nil:
@@ -849,6 +873,61 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			} else {
 				return "", fmt.Errorf("unsupported cast")
 			}
+		case op.Index != nil:
+			idx := op.Index
+			if idx.Colon != nil || idx.End != nil || idx.Step != nil || idx.Colon2 != nil {
+				if idx.Step != nil || idx.Colon2 != nil {
+					return "", fmt.Errorf("slices not supported")
+				}
+				if !types.IsStringType(typ) {
+					return "", fmt.Errorf("slices only supported on strings")
+				}
+				start := "0"
+				if idx.Start != nil {
+					start, err = c.compileExpr(idx.Start)
+					if err != nil {
+						return "", err
+					}
+				}
+				end := fmt.Sprintf("FUNCTION LENGTH(%s)", val)
+				if idx.End != nil {
+					end, err = c.compileExpr(idx.End)
+					if err != nil {
+						return "", err
+					}
+				}
+				startOne := "1"
+				if start != "0" {
+					startOne = fmt.Sprintf("(%s + 1)", start)
+				}
+				length := end
+				if start != "0" {
+					length = fmt.Sprintf("(%s - %s)", end, start)
+				}
+				val = fmt.Sprintf("%s(%s:%s)", val, startOne, length)
+				typ = types.StringType{}
+				continue
+			}
+			if name, ok := identPostfix(p); ok {
+				if lst, ok := c.constLists[name]; ok {
+					if i, ok := intLiteral(idx.Start); ok && i >= 0 && i < len(lst) {
+						val = lst[i]
+						typ = types.AnyType{}
+						continue
+					}
+				}
+			}
+			idxExpr, err := c.compileExpr(idx.Start)
+			if err != nil {
+				return "", err
+			}
+			if types.IsStringType(typ) {
+				startOne := fmt.Sprintf("(%s + 1)", idxExpr)
+				val = fmt.Sprintf("%s(%s:1)", val, startOne)
+				typ = types.StringType{}
+				continue
+			}
+			return "", fmt.Errorf("indexing not supported")
 		case op.Call != nil:
 			if p.Target != nil && p.Target.Selector != nil && len(p.Target.Selector.Tail) == 1 {
 				method := p.Target.Selector.Tail[0]

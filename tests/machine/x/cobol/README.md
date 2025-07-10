@@ -1,4 +1,4 @@
-# Mochi to COBOL Machine Translations (39/97 compiled)
+# Mochi to COBOL Machine Translations (42/97 compiled)
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -61,7 +61,7 @@
  - [ ] match_full.mochi
  - [x] math_ops.mochi
  - [x] membership.mochi
- - [ ] min_max_builtin.mochi
+ - [x] min_max_builtin.mochi
  - [x] nested_function.mochi
  - [ ] order_by_map.mochi
  - [ ] outer_join.mochi
@@ -81,8 +81,8 @@
 - [x] string_concat.mochi
 - [x] string_contains.mochi
 - [x] string_in_operator.mochi
-- [ ] string_index.mochi
-- [ ] string_prefix_slice.mochi
+ - [x] string_index.mochi
+ - [x] string_prefix_slice.mochi
 - [x] substring_builtin.mochi
 - [x] sum_builtin.mochi
 - [x] tail_recursion.mochi
