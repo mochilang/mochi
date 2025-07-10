@@ -1,0 +1,166 @@
+// Mochi implementation of Rosetta "Achilles numbers" task
+// Translated from Go version in tests/rosetta/x/Go/achilles-numbers.go
+
+fun pow10(exp: int): int {
+  var n = 1
+  var i = 0
+  while i < exp {
+    n = n * 10
+    i = i + 1
+  }
+  return n
+}
+
+fun totient(n: int): int {
+  var tot = n
+  var nn = n
+  var i = 2
+  while i * i <= nn {
+    if nn % i == 0 {
+      while nn % i == 0 {
+        nn = nn / i
+      }
+      tot = tot - tot / i
+    }
+    if i == 2 {
+      i = 1
+    }
+    i = i + 2
+  }
+  if nn > 1 {
+    tot = tot - tot / nn
+  }
+  return tot
+}
+
+var pps: map<int, bool> = {}
+
+fun getPerfectPowers(maxExp: int) {
+  let upper = pow10(maxExp)
+  var i = 2
+  while i * i < upper {
+    var p = i * i
+    while true {
+      p = p * i
+      if p >= upper { break }
+      pps[p] = true
+    }
+    i = i + 1
+  }
+}
+
+fun getAchilles(minExp: int, maxExp: int): map<int, bool> {
+  let lower = pow10(minExp)
+  let upper = pow10(maxExp)
+  var achilles: map<int, bool> = {}
+  var b = 1
+  while b * b * b < upper {
+    let b3 = b * b * b
+    var a = 1
+    while true {
+      let p = b3 * a * a
+      if p >= upper { break }
+      if p >= lower {
+        if !(p in pps) {
+          achilles[p] = true
+        }
+      }
+      a = a + 1
+    }
+    b = b + 1
+  }
+  return achilles
+}
+
+fun sortInts(xs: list<int>): list<int> {
+  var res: list<int> = []
+  var tmp = xs
+  while len(tmp) > 0 {
+    var min = tmp[0]
+    var idx = 0
+    var i = 1
+    while i < len(tmp) {
+      if tmp[i] < min {
+        min = tmp[i]
+        idx = i
+      }
+      i = i + 1
+    }
+    res = res + [min]
+    var out: list<int> = []
+    var j = 0
+    while j < len(tmp) {
+      if j != idx { out = out + [tmp[j]] }
+      j = j + 1
+    }
+    tmp = out
+  }
+  return res
+}
+
+fun pad(n: int, width: int): string {
+  var s = str(n)
+  while len(s) < width {
+    s = " " + s
+  }
+  return s
+}
+
+fun main() {
+  let maxDigits = 15
+  getPerfectPowers(maxDigits)
+  let achSet = getAchilles(1, 5)
+  var ach: list<int> = []
+  for k in achSet.keys() { ach = ach + [k] }
+  ach = sortInts(ach)
+
+  print("First 50 Achilles numbers:")
+  var i = 0
+  while i < 50 {
+    var line = ""
+    var j = 0
+    while j < 10 {
+      line = line + pad(ach[i], 4)
+      if j < 9 { line = line + " " }
+      i = i + 1
+      j = j + 1
+    }
+    print(line)
+  }
+
+  print("\nFirst 30 strong Achilles numbers:")
+  var strong: list<int> = []
+  var count = 0
+  var idx = 0
+  while count < 30 {
+    let tot = totient(ach[idx])
+    if tot in achSet {
+      strong = strong + [ach[idx]]
+      count = count + 1
+    }
+    idx = idx + 1
+  }
+  i = 0
+  while i < 30 {
+    var line = ""
+    var j = 0
+    while j < 10 {
+      line = line + pad(strong[i], 5)
+      if j < 9 { line = line + " " }
+      i = i + 1
+      j = j + 1
+    }
+    print(line)
+  }
+
+  print("\nNumber of Achilles numbers with:")
+  let counts = [1, 12, 47, 192, 664, 2242, 7395, 24008, 77330, 247449, 788855, 2508051, 7960336, 25235383]
+  var d = 2
+  while d <= maxDigits {
+    let c = counts[d-2]
+    print(pad(d, 2) + " digits: " + str(c))
+    d = d + 1
+  }
+}
+
+main()
