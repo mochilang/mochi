@@ -106,3 +106,4 @@ Compiled programs: 97/97 successful.
 - [ ] Improve support for complex query groups and joins
 - [ ] Integrate an OCaml runtime to execute compiled programs in CI
 - [ ] Expand anonymous record typing for clearer generated code
+- [x] Emit native `for` loops when iterating over numeric ranges

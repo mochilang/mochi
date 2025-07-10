@@ -420,15 +420,12 @@ func (c *Compiler) compileFor(fr *parser.ForStmt) error {
 		if err != nil {
 			return err
 		}
-		loopName := fmt.Sprintf("__loop%d", c.loop)
-		c.loop++
-		c.writeln(fmt.Sprintf("let rec %s i =", loopName))
+		c.writeln("try")
 		c.indent++
-		c.writeln(fmt.Sprintf("if i > %s then () else (", end))
+		c.writeln(fmt.Sprintf("for %s = %s to %s do", fr.Name, start, end))
 		c.indent++
 		c.writeln("try")
 		c.indent++
-		c.writeln(fmt.Sprintf("let %s = i in", fr.Name))
 		for _, st := range fr.Body {
 			if err := c.compileStmt(st); err != nil {
 				return err
@@ -436,11 +433,10 @@ func (c *Compiler) compileFor(fr *parser.ForStmt) error {
 		}
 		c.indent--
 		c.writeln("with Continue -> ()")
-		c.writeln(fmt.Sprintf("; %s (i + 1))", loopName))
 		c.indent--
+		c.writeln("done")
 		c.indent--
-		c.writeln("in")
-		c.writeln(fmt.Sprintf("try %s %s with Break -> ()", loopName, start))
+		c.writeln("with Break -> ()")
 		return nil
 	}
 	src, err := c.compileExpr(fr.Source)
