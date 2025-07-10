@@ -103,3 +103,19 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+
+## Setup
+
+Running the C# tests requires the .NET SDK. The helper functions in
+`compiler/x/cs/tools.go` install missing tools automatically:
+
+```go
+// EnsureDotnet verifies that the dotnet CLI is installed and attempts to
+// install it if missing. It is safe to call from tests.
+func EnsureDotnet() error {
+        return ensureDotnet()
+}
+```
+
+`EnsureFormatter` ensures either `dotnet format` or `csharpier` is available for
+formatting generated code.

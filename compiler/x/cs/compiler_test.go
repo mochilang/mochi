@@ -19,9 +19,9 @@ import (
 )
 
 func TestCompileValidPrograms(t *testing.T) {
-	if _, err := exec.LookPath("dotnet"); err != nil {
-		t.Skip("dotnet not installed")
-	}
+        if err := cscode.EnsureDotnet(); err != nil {
+                t.Skipf("dotnet not installed: %v", err)
+        }
 
 	root := findRepoRoot(t)
 	pattern := filepath.Join(root, "tests", "vm", "valid", "*.mochi")
