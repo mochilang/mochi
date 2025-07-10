@@ -24,6 +24,7 @@ type Compiler struct {
 	needsContains bool
 	needsLenAny   bool
 	needsSetItem  bool
+	needsGroup    bool
 }
 
 func New() *Compiler {
@@ -64,6 +65,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.needsContains = false
 	c.needsLenAny = false
 	c.needsSetItem = false
+	c.needsGroup = false
 
 	c.out = &c.funcBuf
 	for _, st := range p.Statements {
@@ -128,6 +130,41 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 		out.WriteString("set_item(List, Index, Val, Out) :-\n")
 		out.WriteString("    nth0(Index, List, _, Rest),\n")
 		out.WriteString("    nth0(Index, Out, Val, Rest).\n\n")
+	}
+	if c.needsGroup {
+		out.WriteString("to_list(Str, L) :-\n")
+		out.WriteString("    string(Str), !,\n")
+		out.WriteString("    string_chars(Str, L).\n")
+		out.WriteString("to_list(L, L).\n\n")
+
+		out.WriteString("count(V, R) :-\n")
+		out.WriteString("    is_dict(V), !, get_dict('Items', V, Items), length(Items, R).\n")
+		out.WriteString("count(V, R) :-\n")
+		out.WriteString("    string(V), !, string_chars(V, C), length(C, R).\n")
+		out.WriteString("count(V, R) :-\n")
+		out.WriteString("    is_list(V), !, length(V, R).\n")
+		out.WriteString("count(_, _) :- throw(error('count expects list or group')).\n\n")
+
+		out.WriteString("avg(V, R) :-\n")
+		out.WriteString("    is_dict(V), !, get_dict('Items', V, Items), avg_list(Items, R).\n")
+		out.WriteString("avg(V, R) :-\n")
+		out.WriteString("    is_list(V), !, avg_list(V, R).\n")
+		out.WriteString("avg(_, _) :- throw(error('avg expects list or group')).\n")
+		out.WriteString("avg_list([], 0).\n")
+		out.WriteString("avg_list(L, R) :- sum_list(L, S), length(L, N), N > 0, R is S / N.\n\n")
+
+		out.WriteString("sum(V, R) :-\n")
+		out.WriteString("    is_dict(V), !, get_dict('Items', V, Items), sum_list(Items, R).\n")
+		out.WriteString("sum(V, R) :-\n")
+		out.WriteString("    is_list(V), !, sum_list(V, R).\n")
+		out.WriteString("sum(_, _) :- throw(error('sum expects list or group')).\n\n")
+
+		out.WriteString("group_insert(Key, Item, [], [_{key:Key, 'Items':[Item]}]).\n")
+		out.WriteString("group_insert(Key, Item, [G|Gs], [NG|Gs]) :- get_dict(key, G, Key), !, get_dict('Items', G, Items), append(Items, [Item], NItems), put_dict('Items', G, NItems, NG).\n")
+		out.WriteString("group_insert(Key, Item, [G|Gs], [G|Rs]) :- group_insert(Key, Item, Gs, Rs).\n")
+		out.WriteString("group_pairs([], Acc, Res) :- reverse(Acc, Res).\n")
+		out.WriteString("group_pairs([K-V|T], Acc, Res) :- group_insert(K, V, Acc, Acc1), group_pairs(T, Acc1, Res).\n")
+		out.WriteString("group_by(List, Fn, Groups) :- findall(K-V, (member(V, List), call(Fn, V, K)), Pairs), group_pairs(Pairs, [], Groups).\n\n")
 	}
 	out.Write(c.lambdaBuf.Bytes())
 	out.Write(c.funcBuf.Bytes())
@@ -733,13 +770,9 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, bool, error) {
 		if err != nil {
 			return "", false, err
 		}
-		s := c.newTmp()
-		n := c.newTmp()
 		tmp := c.newTmp()
-		c.writeln(fmt.Sprintf("sum_list(%s, %s),", arg, s))
-		c.writeln(fmt.Sprintf("length(%s, %s),", arg, n))
-		c.writeln(fmt.Sprintf("%s > 0,", n))
-		c.writeln(fmt.Sprintf("%s is %s / %s,", tmp, s, n))
+		c.needsGroup = true
+		c.writeln(fmt.Sprintf("avg(%s, %s),", arg, tmp))
 		return tmp, true, nil
 	case "sum":
 		if len(call.Args) != 1 {
@@ -750,7 +783,8 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, bool, error) {
 			return "", false, err
 		}
 		tmp := c.newTmp()
-		c.writeln(fmt.Sprintf("sum_list(%s, %s),", arg, tmp))
+		c.needsGroup = true
+		c.writeln(fmt.Sprintf("sum(%s, %s),", arg, tmp))
 		return tmp, true, nil
 	case "min":
 		if len(call.Args) != 1 {
@@ -795,7 +829,8 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, bool, error) {
 			return "", false, err
 		}
 		tmp := c.newTmp()
-		c.writeln(fmt.Sprintf("length(%s, %s),", arg, tmp))
+		c.needsGroup = true
+		c.writeln(fmt.Sprintf("count(%s, %s),", arg, tmp))
 		return tmp, true, nil
 	default:
 		args := make([]string, len(call.Args))
@@ -1102,6 +1137,69 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, bool, error) {
 		cond = ccond
 	}
 	loops = append(loops, cond)
+
+	if q.Group != nil {
+		// compile key expression (only first expr supported)
+		var keyBuf bytes.Buffer
+		oldOut := c.out
+		c.out = &keyBuf
+		keyVal, _, err := c.compileExpr(q.Group.Exprs[0])
+		c.out = oldOut
+		if err != nil {
+			c.vars = oldVars
+			return "", false, err
+		}
+		for _, line := range strings.Split(strings.TrimSpace(keyBuf.String()), "\n") {
+			line = strings.TrimSuffix(strings.TrimSpace(line), ",")
+			if line != "" {
+				loops = append(loops, line)
+			}
+		}
+		keyVar := c.newTmp()
+		loops = append(loops, fmt.Sprintf("%s = %s", keyVar, keyVal))
+
+		itemVar := c.newTmp()
+		fields := make([]string, len(varNames))
+		for i, v := range varNames {
+			fields[i] = fmt.Sprintf("%s-%s", v, v)
+		}
+		c.writeln(fmt.Sprintf("dict_create(%s, map, [%s]),", itemVar, strings.Join(fields, ", ")))
+		pairVar := c.newTmp()
+		loops = append(loops, fmt.Sprintf("%s = %s-%s", pairVar, keyVar, itemVar))
+
+		pairList := c.newTmp()
+		c.writeln(fmt.Sprintf("findall(%s, (%s), %s),", pairVar, strings.Join(loops, ", "), pairList))
+		groupsVar := c.newTmp()
+		c.needsGroup = true
+		c.writeln(fmt.Sprintf("group_pairs(%s, [], %s),", pairList, groupsVar))
+
+		gname := sanitizeVar(q.Group.Name)
+		c.vars = oldVars
+		c.vars[q.Group.Name] = gname
+
+		var selBuf bytes.Buffer
+		oldOut2 := c.out
+		c.out = &selBuf
+		selVal, _, err := c.compileExpr(q.Select)
+		c.out = oldOut2
+		if err != nil {
+			return "", false, err
+		}
+		selLines := []string{}
+		for _, line := range strings.Split(strings.TrimSpace(selBuf.String()), "\n") {
+			line = strings.TrimSuffix(strings.TrimSpace(line), ",")
+			if line != "" {
+				selLines = append(selLines, line)
+			}
+		}
+		loops2 := []string{fmt.Sprintf("member(%s, %s)", gname, groupsVar)}
+		loops2 = append(loops2, selLines...)
+		resVar := c.newTmp()
+		loops2 = append(loops2, fmt.Sprintf("%s = %s", resVar, selVal))
+		tmp := c.newTmp()
+		c.writeln(fmt.Sprintf("findall(%s, (%s), %s),", resVar, strings.Join(loops2, ", "), tmp))
+		return tmp, false, nil
+	}
 
 	var selBuf bytes.Buffer
 	oldOut := c.out
