@@ -1222,20 +1222,13 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 }
 
 func (c *Compiler) compileList(l *parser.ListLiteral, mutable bool) (string, error) {
-	elems := make([]string, len(l.Elems))
-	for i, e := range l.Elems {
-		s, err := c.compileExpr(e)
-		if err != nil {
-			return "", err
-		}
-		elems[i] = s
-	}
 	prefix := "List"
 	if mutable {
 		prefix = "scala.collection.mutable.ArrayBuffer"
 	}
 
-	// infer element type
+	// determine element type before compiling elements so that map literals
+	// can be rendered as case class instances
 	var elemType types.Type = types.AnyType{}
 	if len(l.Elems) > 0 {
 		elemType = c.namedType(types.ExprType(l.Elems[0], c.env))
@@ -1299,6 +1292,17 @@ func (c *Compiler) compileList(l *parser.ListLiteral, mutable bool) (string, err
 			}
 		}
 	}
+
+	// now compile elements with the inferred type information available
+	elems := make([]string, len(l.Elems))
+	for i, e := range l.Elems {
+		s, err := c.compileExpr(e)
+		if err != nil {
+			return "", err
+		}
+		elems[i] = s
+	}
+
 	typeStr := c.typeOf(elemType)
 	return fmt.Sprintf("%s[%s](%s)", prefix, typeStr, strings.Join(elems, ", ")), nil
 }
