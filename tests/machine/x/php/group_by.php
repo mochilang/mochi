@@ -3,28 +3,28 @@ $people = [["name" => "Alice", "age" => 30, "city" => "Paris"], ["name" => "Bob"
 $stats = (function() use ($people) {
     $groups = [];
     foreach ($people as $person) {
-        $_k = json_encode($person->city);
+        $_k = json_encode($person['city']);
         $groups[$_k][] = $person;
     }
     $result = [];
     foreach ($groups as $_k => $__g) {
         $g = ['key'=>json_decode($_k, true),'items'=> $__g];
-        $result[] = ["city" => $g->key, "count" => count($g['items']), "avg_age" => (count((function() {
+        $result[] = ["city" => $g['key'], "count" => count($g['items']), "avg_age" => (count((function() use ($g) {
     $result = [];
-    foreach ($g as $p) {
-        $result[] = $p->age;
+    foreach ($g['items'] as $p) {
+        $result[] = $p['age'];
     }
     return $result;
-})()) ? array_sum((function() {
+})()) ? array_sum((function() use ($g) {
     $result = [];
-    foreach ($g as $p) {
-        $result[] = $p->age;
+    foreach ($g['items'] as $p) {
+        $result[] = $p['age'];
     }
     return $result;
-})())/count((function() {
+})())/count((function() use ($g) {
     $result = [];
-    foreach ($g as $p) {
-        $result[] = $p->age;
+    foreach ($g['items'] as $p) {
+        $result[] = $p['age'];
     }
     return $result;
 })()) : 0)];
@@ -33,5 +33,5 @@ $stats = (function() use ($people) {
 })();
 var_dump("--- People grouped by city ---");
 foreach ($stats as $s) {
-    var_dump($s->city, ": count =", $s->count, ", avg_age =", $s->avg_age);
+    var_dump($s['city'], ": count =", $s['count'], ", avg_age =", $s['avg_age']);
 }

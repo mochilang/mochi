@@ -1,49 +1,12 @@
-PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 5
-PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 5
-PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 5
-PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 5
-PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 5
-PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 5
-PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 5
-PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 5
-PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 5
-PHP Warning:  Attempt to read property "orderId" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 5
-PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 5
-PHP Warning:  Attempt to read property "orderId" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 5
-PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 5
-PHP Warning:  Attempt to read property "orderId" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 5
-PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 5
-PHP Warning:  Attempt to read property "orderId" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 5
-PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 5
-PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 5
-PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 5
-PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 5
-PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 5
-PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 5
-PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 5
-PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 5
 string(23) "--- Left Join Multi ---"
-PHP Warning:  Attempt to read property "orderId" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 8
-PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 8
-PHP Warning:  Attempt to read property "item" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 8
-NULL
-NULL
-NULL
-PHP Warning:  Attempt to read property "orderId" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 8
-PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 8
-PHP Warning:  Attempt to read property "item" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 8
-NULL
-NULL
-NULL
-PHP Warning:  Attempt to read property "orderId" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 8
-PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 8
-PHP Warning:  Attempt to read property "item" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 8
-NULL
-NULL
-NULL
-PHP Warning:  Attempt to read property "orderId" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 8
-PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 8
-PHP Warning:  Attempt to read property "item" on array in /workspace/mochi/tests/machine/x/php/left_join_multi.php on line 8
-NULL
-NULL
+int(100)
+string(5) "Alice"
+array(2) {
+  ["orderId"]=>
+  int(100)
+  ["sku"]=>
+  string(1) "a"
+}
+int(101)
+string(3) "Bob"
 NULL

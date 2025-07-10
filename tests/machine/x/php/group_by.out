@@ -1,18 +1,11 @@
-PHP Warning:  Attempt to read property "city" on array in /workspace/mochi/tests/machine/x/php/group_by.php on line 6
-PHP Warning:  Attempt to read property "city" on array in /workspace/mochi/tests/machine/x/php/group_by.php on line 6
-PHP Warning:  Attempt to read property "city" on array in /workspace/mochi/tests/machine/x/php/group_by.php on line 6
-PHP Warning:  Attempt to read property "city" on array in /workspace/mochi/tests/machine/x/php/group_by.php on line 6
-PHP Warning:  Attempt to read property "city" on array in /workspace/mochi/tests/machine/x/php/group_by.php on line 6
-PHP Warning:  Attempt to read property "city" on array in /workspace/mochi/tests/machine/x/php/group_by.php on line 6
-PHP Warning:  Attempt to read property "key" on array in /workspace/mochi/tests/machine/x/php/group_by.php on line 12
-PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by.php on line 14
-PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/group_by.php on line 14
 string(30) "--- People grouped by city ---"
-PHP Warning:  Attempt to read property "city" on array in /workspace/mochi/tests/machine/x/php/group_by.php on line 36
-PHP Warning:  Attempt to read property "count" on array in /workspace/mochi/tests/machine/x/php/group_by.php on line 36
-PHP Warning:  Attempt to read property "avg_age" on array in /workspace/mochi/tests/machine/x/php/group_by.php on line 36
-NULL
+string(5) "Paris"
 string(9) ": count ="
-NULL
+int(3)
 string(11) ", avg_age ="
-NULL
+int(55)
+string(5) "Hanoi"
+string(9) ": count ="
+int(3)
+string(11) ", avg_age ="
+float(27.333333333333332)

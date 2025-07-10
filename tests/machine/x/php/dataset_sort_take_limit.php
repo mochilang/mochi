@@ -3,7 +3,7 @@ $products = [["name" => "Laptop", "price" => 1500], ["name" => "Smartphone", "pr
 $expensive = (function() use ($products) {
     $result = [];
     foreach ($products as $p) {
-        $result[] = [-$p->price, $p];
+        $result[] = [-$p['price'], $p];
     }
     usort($result, function($a, $b) { return $a[0] <=> $b[0]; });
     $result = array_map(fn($r) => $r[1], $result);
@@ -12,5 +12,5 @@ $expensive = (function() use ($products) {
 })();
 var_dump("--- Top products (excluding most expensive) ---");
 foreach ($expensive as $item) {
-    var_dump($item->name, "costs $", $item->price);
+    var_dump($item['name'], "costs $", $item['price']);
 }

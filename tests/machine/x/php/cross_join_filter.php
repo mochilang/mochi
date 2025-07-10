@@ -14,5 +14,5 @@ $pairs = (function() use ($letters, $nums) {
 })();
 var_dump("--- Even pairs ---");
 foreach ($pairs as $p) {
-    var_dump($p->n, $p->l);
+    var_dump($p['n'], $p['l']);
 }

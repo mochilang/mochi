@@ -60,6 +60,14 @@ func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
 	return p.Target.Call, true
 }
 
+func simpleCall(e *parser.Expr, name string) (*parser.Expr, bool) {
+	call, ok := callPattern(e)
+	if !ok || call.Func != name || len(call.Args) != 1 {
+		return nil, false
+	}
+	return call.Args[0], true
+}
+
 func identName(e *parser.Expr) (string, bool) {
 	if e == nil {
 		return "", false

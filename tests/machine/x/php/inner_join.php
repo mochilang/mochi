@@ -5,8 +5,8 @@ $result = (function() use ($customers, $orders) {
     $result = [];
     foreach ($orders as $o) {
         foreach ($customers as $c) {
-            if ($o->customerId == $c->id) {
-                $result[] = ["orderId" => $o->id, "customerName" => $c->name, "total" => $o->total];
+            if ($o['customerId'] == $c['id']) {
+                $result[] = ["orderId" => $o['id'], "customerName" => $c['name'], "total" => $o['total']];
             }
         }
     }
@@ -14,5 +14,5 @@ $result = (function() use ($customers, $orders) {
 })();
 var_dump("--- Orders with customer info ---");
 foreach ($result as $entry) {
-    var_dump("Order", $entry->orderId, "by", $entry->customerName, "- $", $entry->total);
+    var_dump("Order", $entry['orderId'], "by", $entry['customerName'], "- $", $entry['total']);
 }

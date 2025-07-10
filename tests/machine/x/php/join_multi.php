@@ -6,10 +6,10 @@ $result = (function() use ($customers, $items, $orders) {
     $result = [];
     foreach ($orders as $o) {
         foreach ($customers as $c) {
-            if ($o->customerId == $c->id) {
+            if ($o['customerId'] == $c['id']) {
                 foreach ($items as $i) {
-                    if ($o->id == $i->orderId) {
-                        $result[] = ["name" => $c->name, "sku" => $i->sku];
+                    if ($o['id'] == $i['orderId']) {
+                        $result[] = ["name" => $c['name'], "sku" => $i['sku']];
                     }
                 }
             }
@@ -19,5 +19,5 @@ $result = (function() use ($customers, $items, $orders) {
 })();
 var_dump("--- Multi Join ---");
 foreach ($result as $r) {
-    var_dump($r->name, "bought item", $r->sku);
+    var_dump($r['name'], "bought item", $r['sku']);
 }

@@ -2,23 +2,15 @@
 $customers = [["id" => 1, "name" => "Alice"], ["id" => 2, "name" => "Bob"], ["id" => 3, "name" => "Charlie"]];
 $orders = [["id" => 100, "customerId" => 1], ["id" => 101, "customerId" => 1], ["id" => 102, "customerId" => 2]];
 $stats = (function() use ($customers, $orders) {
-    $_rows = _query($customers, [['items'=>$orders, 'on'=>function($c, $o) use ($customers, $orders){return $o->customerId == $c->id;}, 'left'=>true]], [ 'select' => function($c, $o) use ($customers, $orders){return ["name" => $g->key, "count" => count((function() {
-    $result = [];
-    foreach ($g as $r) {
-        if ($r->o) {
-            $result[] = $r;
-        }
-    }
-    return $result;
-})())];} ]);
-    $_groups = _group_by($_rows, function($c, $o) use ($customers, $orders){return $c->name;});
+    $_rows = _query($customers, [['items'=>$orders, 'on'=>function($c, $o) use ($customers, $orders){return $o['customerId'] == $c['id'];}, 'left'=>true]], [ 'select' => function($c, $o) use ($customers, $orders){return [$c, $o];} ]);
+    $_groups = _group_by($_rows, function($c, $o) use ($customers, $orders){return $c['name'];});
     $result = [];
     foreach ($_groups as $__g) {
         $g = $__g;
-        $result[] = ["name" => $g->key, "count" => count((function() use ($g) {
+        $result[] = ["name" => $g['key'], "count" => count((function() use ($g) {
     $result = [];
-    foreach ($g as $r) {
-        if ($r->o) {
+    foreach ($g['items'] as $r) {
+        if ($r['o']) {
             $result[] = $r;
         }
     }
@@ -29,7 +21,7 @@ $stats = (function() use ($customers, $orders) {
 })();
 var_dump("--- Group Left Join ---");
 foreach ($stats as $s) {
-    var_dump($s->name, "orders:", $s->count);
+    var_dump($s['name'], "orders:", $s['count']);
 }
 function _group_by($src, $keyfn) {
     $groups = [];

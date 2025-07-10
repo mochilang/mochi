@@ -1,14 +1,8 @@
-PHP Warning:  Attempt to read property "n" on array in /workspace/mochi/tests/machine/x/php/sort_stable.php on line 6
-PHP Warning:  Attempt to read property "v" on array in /workspace/mochi/tests/machine/x/php/sort_stable.php on line 6
-PHP Warning:  Attempt to read property "n" on array in /workspace/mochi/tests/machine/x/php/sort_stable.php on line 6
-PHP Warning:  Attempt to read property "v" on array in /workspace/mochi/tests/machine/x/php/sort_stable.php on line 6
-PHP Warning:  Attempt to read property "n" on array in /workspace/mochi/tests/machine/x/php/sort_stable.php on line 6
-PHP Warning:  Attempt to read property "v" on array in /workspace/mochi/tests/machine/x/php/sort_stable.php on line 6
 array(3) {
   [0]=>
-  NULL
+  string(1) "a"
   [1]=>
-  NULL
+  string(1) "b"
   [2]=>
-  NULL
+  string(1) "c"
 }
