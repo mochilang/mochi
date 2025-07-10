@@ -1,0 +1,98 @@
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  let digits = {
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5,
+    "6": 6,
+    "7": 7,
+    "8": 8,
+    "9": 9,
+  }
+  while i < len(str) {
+    n = n * 10 + digits[str[i:i+1]]
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun main() {
+  var total = 0
+  var computer = now() % 2 == 0
+  print("Enter q to quit at any time\n")
+  if computer {
+    print("The computer will choose first")
+  } else {
+    print("You will choose first")
+  }
+  print("\n\nRunning total is now 0\n\n")
+  var round = 1
+  var done = false
+  while !done {
+    print("ROUND " + str(round) + ":\n\n")
+    var i = 0
+    while i < 2 && (!done) {
+      if computer {
+        var choice = 0
+        if total < 18 {
+          choice = now() % 3 + 1
+        } else {
+          choice = 21 - total
+        }
+        total = total + choice
+        print("The computer chooses " + str(choice))
+        print("Running total is now " + str(total))
+        if total == 21 {
+          print("\nSo, commiserations, the computer has won!")
+          done = true
+        }
+      } else {
+        while true {
+          print("Your choice 1 to 3 : ")
+          let line = input()
+          if line == "q" || line == "Q" {
+            print("OK, quitting the game")
+            done = true
+            break
+          }
+          var num = parseIntStr(line)
+          if num < 1 || num > 3 {
+            if total + num > 21 {
+              print("Too big, try again")
+            } else {
+              print("Out of range, try again")
+            }
+            continue
+          }
+          if total + num > 21 {
+            print("Too big, try again")
+            continue
+          }
+          total = total + num
+          print("Running total is now " + str(total))
+          break
+        }
+        if total == 21 {
+          print("\nSo, congratulations, you've won!")
+          done = true
+        }
+      }
+      print("\n")
+      computer = !computer
+      i = i + 1
+    }
+    round = round + 1
+  }
+}
+
+main()
