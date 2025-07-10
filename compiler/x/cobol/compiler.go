@@ -106,7 +106,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.constMaps = make(map[string][]mapEntry)
 
 	name := strings.TrimSuffix(filepath.Base(prog.Pos.Filename), filepath.Ext(prog.Pos.Filename))
-	name = strings.ReplaceAll(name, "-", "_")
+	// Use dashes in program names to better match common COBOL style
+	// and the hand written reference implementations.
+	name = strings.ReplaceAll(name, "_", "-")
 	name = strings.ToUpper(name)
 
 	// collect variable and constant declarations
