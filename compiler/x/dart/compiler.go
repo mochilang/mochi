@@ -110,7 +110,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		out.WriteString("import 'dart:convert';\n")
 	}
 	if c.useYAML {
-		out.WriteString("import 'package:yaml/yaml.dart';\n")
+		// no external dependencies; a tiny YAML parser is embedded below
 	}
 	if c.useIO || c.useJSON || c.useYAML {
 		out.WriteString("\n")
@@ -128,16 +128,41 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		out.WriteString("  if (opts is Map && opts.containsKey('format')) fmt = opts['format'].toString();\n")
 		out.WriteString("  if (fmt == 'yaml') {\n")
 		out.WriteString("    var text = File(path).readAsStringSync();\n")
-		out.WriteString("    var data = loadYaml(text);\n")
-		out.WriteString("    if (data is List) return [for (var d in data) Map<String,dynamic>.from(d)];\n")
-		out.WriteString("    if (data is Map) return [Map<String,dynamic>.from(data)];\n")
-		out.WriteString("    return [];\n")
+		out.WriteString("    var data = _parseYaml(text);\n")
+		out.WriteString("    return data;\n")
 		out.WriteString("  }\n")
 		out.WriteString("  var text = File(path).readAsStringSync();\n")
 		out.WriteString("  var data = jsonDecode(text);\n")
 		out.WriteString("  if (data is List) return data;\n")
 		out.WriteString("  if (data is Map) return [data];\n")
 		out.WriteString("  return [];\n")
+		out.WriteString("}\n\n")
+	}
+	if c.useYAML {
+		out.WriteString("List<Map<String,dynamic>> _parseYaml(String text) {\n")
+		out.WriteString("  var rows = <Map<String,dynamic>>[];\n")
+		out.WriteString("  Map<String,dynamic>? cur;\n")
+		out.WriteString("  for (var line in LineSplitter.split(text)) {\n")
+		out.WriteString("    var t = line.trim();\n")
+		out.WriteString("    if (t.isEmpty) continue;\n")
+		out.WriteString("    if (t.startsWith('-')) {\n")
+		out.WriteString("      if (cur != null) rows.add(cur);\n")
+		out.WriteString("      cur = <String,dynamic>{};\n")
+		out.WriteString("      t = t.substring(1).trim();\n")
+		out.WriteString("      if (t.isEmpty) continue;\n")
+		out.WriteString("    }\n")
+		out.WriteString("    var idx = t.indexOf(':');\n")
+		out.WriteString("    if (idx <= 0) continue;\n")
+		out.WriteString("    var key = t.substring(0, idx).trim();\n")
+		out.WriteString("    var val = t.substring(idx+1).trim();\n")
+		out.WriteString("    if ((val.startsWith(\"\\\"\") && val.endsWith(\"\\\"\")) || (val.startsWith(\"'\") && val.endsWith(\"'\"))) {\n")
+		out.WriteString("      val = val.substring(1, val.length-1);\n")
+		out.WriteString("    }\n")
+		out.WriteString("    var numVal = num.tryParse(val);\n")
+		out.WriteString("    cur?[key] = numVal ?? val;\n")
+		out.WriteString("  }\n")
+		out.WriteString("  if (cur != null) rows.add(cur);\n")
+		out.WriteString("  return rows;\n")
 		out.WriteString("}\n\n")
 	}
 	if c.useSave {

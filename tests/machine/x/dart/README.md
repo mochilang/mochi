@@ -103,3 +103,9 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+
+## TODO
+- [ ] Support YAML without external packages (done)
+- [ ] Implement group_by, right_join, outer_join, etc.
+- [ ] Ensure tree_sum and two-sum compile and run.
+
