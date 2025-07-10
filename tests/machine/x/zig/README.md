@@ -100,6 +100,6 @@ These files were generated using the Zig compiler backend. Each `.mochi` program
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
 
-## TODO
-- [ ] Keep generated outputs in sync with compiler improvements.
+-## TODO
+- [x] Keep generated outputs in sync with compiler improvements.
 - [x] Optimize print statements for constant strings.

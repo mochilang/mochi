@@ -116,6 +116,7 @@ func (c *Compiler) writeBuiltins() {
 		c.indent++
 		c.writeln("var res = std.ArrayList(T).init(std.heap.page_allocator);")
 		c.writeln("defer res.deinit();")
+		c.writeln("res.ensureTotalCapacity(v.len + 1) catch unreachable;")
 		c.writeln("for (v) |it| { res.append(it) catch unreachable; }")
 		c.writeln("res.append(x) catch unreachable;")
 		c.writeln("return res.toOwnedSlice() catch unreachable;")

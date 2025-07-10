@@ -3,6 +3,7 @@ const std = @import("std");
 fn _append(comptime T: type, v: []const T, x: T) []T {
     var res = std.ArrayList(T).init(std.heap.page_allocator);
     defer res.deinit();
+    res.ensureTotalCapacity(v.len + 1) catch unreachable;
     for (v) |it| { res.append(it) catch unreachable; }
     res.append(x) catch unreachable;
     return res.toOwnedSlice() catch unreachable;
