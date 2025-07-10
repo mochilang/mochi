@@ -1,7 +1,7 @@
 case class Person(var name: String, var age: Int, var status: String)
 
 object update_stmt {
-  val people: List[Person] = List(Person(name = "Alice", age = 17, status = "minor"), Person(name = "Bob", age = 25, status = "unknown"), Person(name = "Charlie", age = 18, status = "unknown"), Person(name = "Diana", age = 16, status = "minor"))
+  var people: scala.collection.mutable.ArrayBuffer[Person] = scala.collection.mutable.ArrayBuffer(Person(name = "Alice", age = 17, status = "minor"), Person(name = "Bob", age = 25, status = "unknown"), Person(name = "Charlie", age = 18, status = "unknown"), Person(name = "Diana", age = 16, status = "minor"))
   def main(args: Array[String]): Unit = {
     for(_i0 <- 0 until people.length) {
       var _it1 = people(_i0)

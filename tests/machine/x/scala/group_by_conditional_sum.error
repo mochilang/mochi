@@ -1,0 +1,8 @@
+exit status 1
+/workspace/mochi/tests/machine/x/scala/group_by_conditional_sum.scala:16: error: identifier expected but 'val' found.
+  val result = (((for { i <- items } yield (i("cat"), (i))).groupBy(_._1).map{ case(k,list) => (k, list.map(_._2)) }.toList).sortBy(g => g.key)).map{ case(gKey,gItems) => { val g = (gKey, gItems); Map("cat" -> (g._1), "share" -> (for { x <- g._2 } yield if (_truthy(x.flag)) x.val else 0.sum / for { x <- g._2 } yield x.val.sum)) } }.toList
+                                                                                                                                                                                                                                                                                     ^
+/workspace/mochi/tests/machine/x/scala/group_by_conditional_sum.scala:16: error: ')' expected but '}' found.
+  val result = (((for { i <- items } yield (i("cat"), (i))).groupBy(_._1).map{ case(k,list) => (k, list.map(_._2)) }.toList).sortBy(g => g.key)).map{ case(gKey,gItems) => { val g = (gKey, gItems); Map("cat" -> (g._1), "share" -> (for { x <- g._2 } yield if (_truthy(x.flag)) x.val else 0.sum / for { x <- g._2 } yield x.val.sum)) } }.toList
+                                                                                                                                                                                                                                                                                                                                          ^
+two errors found

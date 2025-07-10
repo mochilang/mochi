@@ -1,0 +1,17 @@
+exit status 1
+/workspace/mochi/tests/machine/x/scala/inner_join.scala:4: error: value customerId is not a member of scala.collection.immutable.Map[String,Int]
+  val result = for { o <- orders; c <- customers; if (o.customerId).asInstanceOf[Int] == (c.id).asInstanceOf[Int] } yield Map("orderId" -> (o("id")), "customerName" -> (c("name")), "total" -> (o("total")))
+                                                        ^
+/workspace/mochi/tests/machine/x/scala/inner_join.scala:4: error: value id is not a member of scala.collection.immutable.Map[String,Any]
+  val result = for { o <- orders; c <- customers; if (o.customerId).asInstanceOf[Int] == (c.id).asInstanceOf[Int] } yield Map("orderId" -> (o("id")), "customerName" -> (c("name")), "total" -> (o("total")))
+                                                                                            ^
+/workspace/mochi/tests/machine/x/scala/inner_join.scala:8: error: Nothing does not take parameters
+      println(("Order") + " " + (entry("orderId")) + " " + ("by") + " " + (entry("customerName")) + " " + ("- $") + " " + (entry("total")))
+                                      ^
+/workspace/mochi/tests/machine/x/scala/inner_join.scala:8: error: Nothing does not take parameters
+      println(("Order") + " " + (entry("orderId")) + " " + ("by") + " " + (entry("customerName")) + " " + ("- $") + " " + (entry("total")))
+                                                                                ^
+/workspace/mochi/tests/machine/x/scala/inner_join.scala:8: error: Nothing does not take parameters
+      println(("Order") + " " + (entry("orderId")) + " " + ("by") + " " + (entry("customerName")) + " " + ("- $") + " " + (entry("total")))
+                                                                                                                                ^
+5 errors found
