@@ -1463,8 +1463,8 @@ func (c *Compiler) compileGroupBySimple(q *parser.QueryExpr, src string, child *
 			c.env = orig
 			return "", err
 		}
-		sa := strings.ReplaceAll(sortExpr, groupVar, "a")
-		sb := strings.ReplaceAll(sortExpr, groupVar, "b")
+		sa := fmt.Sprintf("(%s)", strings.ReplaceAll(sortExpr, groupVar, "a"))
+		sb := fmt.Sprintf("(%s)", strings.ReplaceAll(sortExpr, groupVar, "b"))
 		fmt.Fprintf(&b, " %s.sort_by(|a,b| %s.partial_cmp(&%s).unwrap());", groupVec, sa, sb)
 	}
 
@@ -1491,7 +1491,6 @@ func (c *Compiler) compileGroupBySimple(q *parser.QueryExpr, src string, child *
 		name := c.newStructName("Result")
 		sel, err = c.compileMapLiteralAsStruct(name, ml)
 		if err == nil {
-			c.listVars[q.Var] = name
 			child.SetVar(q.Var, types.StructType{Name: name}, true)
 		}
 	} else {
@@ -1687,8 +1686,8 @@ func (c *Compiler) compileGroupByJoin(q *parser.QueryExpr, src string, child *ty
 			c.env = orig
 			return "", err
 		}
-		sa := strings.ReplaceAll(sortExpr, groupVar, "a")
-		sb := strings.ReplaceAll(sortExpr, groupVar, "b")
+		sa := fmt.Sprintf("(%s)", strings.ReplaceAll(sortExpr, groupVar, "a"))
+		sb := fmt.Sprintf("(%s)", strings.ReplaceAll(sortExpr, groupVar, "b"))
 		fmt.Fprintf(&b, " %s.sort_by(|a,b| %s.partial_cmp(&%s).unwrap());", groupVec, sa, sb)
 	}
 
@@ -1715,7 +1714,6 @@ func (c *Compiler) compileGroupByJoin(q *parser.QueryExpr, src string, child *ty
 		name := c.newStructName("Result")
 		sel, err = c.compileMapLiteralAsStruct(name, ml)
 		if err == nil {
-			c.listVars[q.Var] = name
 			child.SetVar(q.Var, types.StructType{Name: name}, true)
 		}
 	} else {
@@ -1794,7 +1792,6 @@ func (c *Compiler) compileLeftJoinSimple(q *parser.QueryExpr, src string, child 
 		name := c.newStructName("Result")
 		sel, err = c.compileMapLiteralAsStruct(name, ml)
 		if err == nil {
-			c.listVars[q.Var] = name
 			child.SetVar(q.Var, types.StructType{Name: name}, true)
 		}
 	} else {
@@ -1923,7 +1920,6 @@ func (c *Compiler) compileRightJoinSimple(q *parser.QueryExpr, src string, child
 		name := c.newStructName("Result")
 		sel, err = c.compileMapLiteralAsStruct(name, ml)
 		if err == nil {
-			c.listVars[q.Var] = name
 			child.SetVar(q.Var, types.StructType{Name: name}, true)
 		}
 	} else {
@@ -2023,7 +2019,6 @@ func (c *Compiler) compileOuterJoinSimple(q *parser.QueryExpr, src string, child
 		name := c.newStructName("Result")
 		sel, err = c.compileMapLiteralAsStruct(name, ml)
 		if err == nil {
-			c.listVars[q.Var] = name
 			child.SetVar(q.Var, types.StructType{Name: name}, true)
 		}
 	} else {
@@ -2121,7 +2116,6 @@ func (c *Compiler) compileLeftJoinLast(q *parser.QueryExpr, src string, child *t
 		name := c.newStructName("Result")
 		sel, err = c.compileMapLiteralAsStruct(name, ml)
 		if err == nil {
-			c.listVars[q.Var] = name
 			child.SetVar(q.Var, types.StructType{Name: name}, true)
 		}
 	} else {
@@ -2407,7 +2401,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		name := c.newStructName("Result")
 		sel, err = c.compileMapLiteralAsStruct(name, ml)
 		if err == nil {
-			c.listVars[q.Var] = name
 			child.SetVar(q.Var, types.StructType{Name: name}, true)
 		}
 	} else {
@@ -2792,6 +2785,19 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		c.helpers["append"] = true
 		if len(args) != 2 {
 			return "", fmt.Errorf("append expects 2 args")
+		}
+		if ml := tryMapLiteral(call.Args[1]); ml != nil {
+			if name, ok := c.simpleIdent(call.Args[0]); ok {
+				structName := c.newStructName("Item")
+				code, err := c.compileMapLiteralAsStruct(structName, ml)
+				if err == nil {
+					args[1] = code
+					c.listVars[name] = structName
+					if c.env != nil {
+						c.env.SetVar(name, types.ListType{Elem: types.StructType{Name: structName}}, true)
+					}
+				}
+			}
 		}
 		return fmt.Sprintf("append(%s, %s)", args[0], args[1]), nil
 	case "avg":
