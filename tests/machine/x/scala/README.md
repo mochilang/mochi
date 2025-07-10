@@ -1,107 +1,15 @@
 # Scala Machine Generated Programs
 
-This directory contains Scala source files generated from Mochi programs using the compiler in `compiler/x/scala`. Each file was compiled and executed using `scalac` and `scala`. The checklist below shows which programs have successfully compiled and run.
+This directory contains Scala source code produced automatically from the Mochi programs in `tests/vm/valid`.  The compiler lives in `compiler/x/scala` and the generated code is built with `scalac` and executed with `scala`.
 
-## Progress: 97/97 files compiled
-- [x] append_builtin.mochi
-- [x] avg_builtin.mochi
-- [x] basic_compare.mochi
-- [x] binary_precedence.mochi
-- [x] bool_chain.mochi
-- [x] break_continue.mochi
-- [x] cast_string_to_int.mochi
-- [x] cast_struct.mochi
-- [x] closure.mochi
-- [x] count_builtin.mochi
-- [x] cross_join.mochi
-- [x] cross_join_filter.mochi
-- [x] cross_join_triple.mochi
-- [x] dataset_sort_take_limit.mochi
-- [x] dataset_where_filter.mochi
-- [x] exists_builtin.mochi
-- [x] for_list_collection.mochi
-- [x] for_loop.mochi
-- [x] for_map_collection.mochi
-- [x] fun_call.mochi
-- [x] fun_expr_in_let.mochi
-- [x] fun_three_args.mochi
-- [ ] group_by.mochi
-- [ ] group_by_conditional_sum.mochi
-- [ ] group_by_having.mochi
-- [ ] group_by_join.mochi
-- [ ] group_by_left_join.mochi
-- [ ] group_by_multi_join.mochi
-- [ ] group_by_multi_join_sort.mochi
-- [ ] group_by_sort.mochi
-- [ ] group_items_iteration.mochi
-- [x] if_else.mochi
-- [x] if_then_else.mochi
-- [x] if_then_else_nested.mochi
-- [x] in_operator.mochi
-- [x] in_operator_extended.mochi
-- [ ] inner_join.mochi
-- [ ] join_multi.mochi
-- [x] json_builtin.mochi
-- [ ] left_join.mochi
-- [ ] left_join_multi.mochi
-- [x] len_builtin.mochi
-- [x] len_map.mochi
-- [x] len_string.mochi
-- [x] let_and_print.mochi
-- [x] list_assign.mochi
-- [x] list_index.mochi
-- [x] list_nested_assign.mochi
-- [x] list_set_ops.mochi
-- [ ] load_yaml.mochi
-- [x] map_assign.mochi
-- [x] map_in_operator.mochi
-- [x] map_index.mochi
-- [x] map_int_key.mochi
-- [x] map_literal_dynamic.mochi
-- [x] map_membership.mochi
-- [x] map_nested_assign.mochi
-- [x] match_expr.mochi
-- [x] match_full.mochi
-- [x] math_ops.mochi
-- [x] membership.mochi
-- [x] min_max_builtin.mochi
-- [x] nested_function.mochi
-- [x] order_by_map.mochi
-- [ ] outer_join.mochi
-- [x] partial_application.mochi
-- [x] print_hello.mochi
-- [x] pure_fold.mochi
-- [ ] pure_global_fold.mochi
-- [x] query_sum_select.mochi
-- [x] record_assign.mochi
-- [ ] right_join.mochi
-- [ ] save_jsonl_stdout.mochi
-- [x] short_circuit.mochi
-- [x] slice.mochi
-- [ ] sort_stable.mochi
-- [x] str_builtin.mochi
-- [x] string_compare.mochi
-- [x] string_concat.mochi
-- [x] string_contains.mochi
-- [x] string_in_operator.mochi
-- [x] string_index.mochi
-- [x] string_prefix_slice.mochi
-- [x] substring_builtin.mochi
-- [x] sum_builtin.mochi
-- [x] tail_recursion.mochi
-- [x] test_block.mochi
-- [x] tree_sum.mochi
-- [x] two-sum.mochi
-- [x] typed_let.mochi
-- [x] typed_var.mochi
-- [x] unary_neg.mochi
-- [x] update_stmt.mochi
-- [x] user_type_literal.mochi
-- [x] values_builtin.mochi
-- [x] var_assignment.mochi
-- [x] while_loop.mochi
+## Compilation status
 
-## TODO
-- [ ] finish query join support
-- [ ] improve load/save expression handling
-- [x] add generic truthiness helper for conditionals
+- 97 / 97 programs compiled
+
+Most programs run successfully.  Files that failed to compile or run have a matching `.error` file capturing the failure.
+
+## Remaining work
+
+- Finish full query join support
+- Improve `load`/`save` expression handling
+
