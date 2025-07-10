@@ -12,6 +12,6 @@ var
 
 begin
   s := 'catch';
-  writeln(('cat' in s));
-  writeln(('dog' in s));
+  writeln((Pos('cat', s) > 0));
+  writeln((Pos('dog', s) > 0));
 end.
