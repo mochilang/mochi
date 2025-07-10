@@ -15,5 +15,5 @@ $result = (begin
 end)
 puts("--- Orders with customer info ---")
 $result.each do |entry|
-	puts(["Order", entry.orderId, "by", entry.customerName, "- $", entry.total].join(" "))
+  puts(["Order", entry.orderId, "by", entry.customerName, "- $", entry.total].join(" "))
 end

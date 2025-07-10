@@ -1,5 +1,5 @@
 def inc(x)
-	return (x + $k)
+  return (x + $k)
 end
 
 $k = 2

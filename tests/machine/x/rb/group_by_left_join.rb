@@ -173,5 +173,5 @@ $stats = (begin
 end)
 puts("--- Group Left Join ---")
 $stats.each do |s|
-	puts([s.name, "orders:", s.count].join(" "))
+  puts([s.name, "orders:", s.count].join(" "))
 end

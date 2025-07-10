@@ -1,13 +1,13 @@
 module Tree; end
 class Leaf
-	include Tree
+  include Tree
 end
 Node = Struct.new(:left, :value, :right, keyword_init: true) do
-	include Tree
+  include Tree
 end
 
 def sum_tree(t)
-	return (begin
+  return (begin
 	_t0 = t
 	case
 	when _t0.is_a?(Leaf)

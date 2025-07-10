@@ -130,9 +130,9 @@ $result = (begin
 end)
 puts("--- Right Join using syntax ---")
 $result.each do |entry|
-	if entry.order
-		puts(["Customer", entry.customerName, "has order", entry.order.id, "- $", entry.order.total].join(" "))
-	else
-		puts(["Customer", entry.customerName, "has no orders"].join(" "))
-	end
+  if entry.order
+    puts(["Customer", entry.customerName, "has order", entry.order.id, "- $", entry.order.total].join(" "))
+  else
+    puts(["Customer", entry.customerName, "has no orders"].join(" "))
+  end
 end

@@ -4,5 +4,5 @@ $products = [OpenStruct.new(name: "Laptop", price: 1500), OpenStruct.new(name: "
 $expensive = ((((($products)).sort_by { |p| (-p.price) }).drop(1)).take(3)).map { |p| p }
 puts("--- Top products (excluding most expensive) ---")
 $expensive.each do |item|
-	puts([item.name, "costs $", item.price].join(" "))
+  puts([item.name, "costs $", item.price].join(" "))
 end

@@ -15,5 +15,5 @@ $pairs = (begin
 end)
 puts("--- Even pairs ---")
 $pairs.each do |p|
-	puts([p.n, p.l].join(" "))
+  puts([p.n, p.l].join(" "))
 end

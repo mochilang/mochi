@@ -130,13 +130,13 @@ $result = (begin
 end)
 puts("--- Outer Join using syntax ---")
 $result.each do |row|
-	if row.order
-		if row.customer
-			puts(["Order", row.order.id, "by", row.customer.name, "- $", row.order.total].join(" "))
-		else
-			puts(["Order", row.order.id, "by", "Unknown", "- $", row.order.total].join(" "))
-		end
-	else
-		puts(["Customer", row.customer.name, "has no orders"].join(" "))
-	end
+  if row.order
+    if row.customer
+      puts(["Order", row.order.id, "by", row.customer.name, "- $", row.order.total].join(" "))
+    else
+      puts(["Order", row.order.id, "by", "Unknown", "- $", row.order.total].join(" "))
+    end
+  else
+    puts(["Customer", row.customer.name, "has no orders"].join(" "))
+  end
 end

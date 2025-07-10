@@ -29,7 +29,7 @@ func (c *Compiler) writeln(s string) {
 
 func (c *Compiler) writeIndent() {
 	for i := 0; i < c.indent; i++ {
-		c.buf.WriteByte('\t')
+		c.buf.WriteString("  ")
 	}
 }
 

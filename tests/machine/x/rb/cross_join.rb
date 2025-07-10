@@ -13,5 +13,5 @@ $result = (begin
 end)
 puts("--- Cross Join: All order-customer pairs ---")
 $result.each do |entry|
-	puts(["Order", entry.orderId, "(customerId:", entry.orderCustomerId, ", total: $", entry.orderTotal, ") paired with", entry.pairedCustomerName].join(" "))
+  puts(["Order", entry.orderId, "(customerId:", entry.orderCustomerId, ", total: $", entry.orderTotal, ") paired with", entry.pairedCustomerName].join(" "))
 end

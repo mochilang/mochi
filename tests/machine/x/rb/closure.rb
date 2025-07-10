@@ -1,5 +1,5 @@
 def makeAdder(n)
-	return ->(x){ (x + n) }
+  return ->(x){ (x + n) }
 end
 
 $add10 = makeAdder(10)

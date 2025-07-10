@@ -20,5 +20,5 @@ $result = (begin
 end)
 puts("--- Multi Join ---")
 $result.each do |r|
-	puts([r.name, "bought item", r.sku].join(" "))
+  puts([r.name, "bought item", r.sku].join(" "))
 end

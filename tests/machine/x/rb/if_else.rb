@@ -1,6 +1,6 @@
 $x = 5
 if ($x > 3)
-	puts("big")
+  puts("big")
 else
-	puts("small")
+  puts("small")
 end

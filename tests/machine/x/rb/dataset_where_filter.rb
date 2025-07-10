@@ -4,5 +4,5 @@ $people = [OpenStruct.new(name: "Alice", age: 30), OpenStruct.new(name: "Bob", a
 $adults = ((($people)).select { |person| (person.age >= 18) }).map { |person| OpenStruct.new(name: person.name, age: person.age, is_senior: (person.age >= 60)) }
 puts("--- Adults ---")
 $adults.each do |person|
-	puts([person.name, "is", person.age, (person.is_senior ? " (senior)" : "")].join(" "))
+  puts([person.name, "is", person.age, (person.is_senior ? " (senior)" : "")].join(" "))
 end

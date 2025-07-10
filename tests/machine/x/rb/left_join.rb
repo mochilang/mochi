@@ -130,5 +130,5 @@ $result = (begin
 end)
 puts("--- Left Join ---")
 $result.each do |entry|
-	puts(["Order", entry.orderId, "customer", entry.customer, "total", entry.total].join(" "))
+  puts(["Order", entry.orderId, "customer", entry.customer, "total", entry.total].join(" "))
 end

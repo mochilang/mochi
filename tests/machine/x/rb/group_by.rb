@@ -42,5 +42,5 @@ $people = [OpenStruct.new(name: "Alice", age: 30, city: "Paris"), OpenStruct.new
 $stats = _group_by($people, ->(person){ person.city }).map { |g| OpenStruct.new(city: g.key, count: (g).length, avg_age: ((((g)).map { |p| p.age }).length > 0 ? (((g)).map { |p| p.age }).sum(0.0) / (((g)).map { |p| p.age }).length : 0)) }
 puts("--- People grouped by city ---")
 $stats.each do |s|
-	puts([s.city, ": count =", s.count, ", avg_age =", s.avg_age].join(" "))
+  puts([s.city, ": count =", s.count, ", avg_age =", s.avg_age].join(" "))
 end

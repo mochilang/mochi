@@ -1,5 +1,5 @@
 def classify(n)
-	return (begin
+  return (begin
 	_t0 = n
 	case
 	when _t0 == 0
