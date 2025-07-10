@@ -347,10 +347,15 @@ func loopVal(varName string, env *types.Env) string {
 func defaultDecl(varName string, env *types.Env) string {
 	if env != nil {
 		if t, err := env.GetVar(varName); err == nil {
-			if st, ok := t.(types.StructType); ok {
-				return fmt.Sprintf("let %s: %s = Default::default();", varName, st.Name)
-			}
+			return defaultDeclType(varName, t)
 		}
+	}
+	return fmt.Sprintf("let %s = Default::default();", varName)
+}
+
+func defaultDeclType(varName string, t types.Type) string {
+	if st, ok := t.(types.StructType); ok {
+		return fmt.Sprintf("let %s: %s = Default::default();", varName, st.Name)
 	}
 	return fmt.Sprintf("let %s = Default::default();", varName)
 }
@@ -1903,6 +1908,7 @@ func (c *Compiler) compileRightJoinSimple(q *parser.QueryExpr, src string, child
 			return "", err
 		}
 	}
+	origVarType, _ := child.GetVar(q.Var)
 	var sel string
 	if ml := tryMapLiteral(q.Select); ml != nil {
 		name := c.newStructName("Result")
@@ -1954,7 +1960,7 @@ func (c *Compiler) compileRightJoinSimple(q *parser.QueryExpr, src string, child
 	b.WriteString(" }")
 	b.WriteString(" if !_matched {")
 	b.WriteString(" ")
-	b.WriteString(defaultDecl(q.Var, child))
+	b.WriteString(defaultDeclType(q.Var, origVarType))
 	if cond != "" {
 		b.WriteString(" if (" + cond + ") { " + tmp + ".push(" + sel + "); }")
 	} else {
