@@ -1446,6 +1446,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if q.Group != nil {
 		return c.compileGroupedQueryExpr(q)
 	}
+	// Queries are compiled into immediately invoked lambdas. Increase the
+	// scope counter so nested queries can capture variables correctly.
+	c.scope++
+	defer func() { c.scope-- }()
 	for _, j := range q.Joins {
 		if j.Side != nil && *j.Side != "left" {
 			return "", fmt.Errorf("join side not supported")
@@ -1742,7 +1746,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		buf.WriteString("    return __items;\n")
 	}
 	buf.WriteString("})()")
-	c.scope--
 	res := buf.String()
 	if strings.HasPrefix(itemType, "__struct") {
 		c.varStruct[res] = itemType
