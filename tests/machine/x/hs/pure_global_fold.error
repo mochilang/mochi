@@ -1,0 +1,47 @@
+
+/workspace/mochi/tests/machine/x/hs/pure_global_fold.hs:13:10: error:
+    • Found hole: _asInt :: Int -> Int
+      Or perhaps ‘_asInt’ is mis-spelled, or not in scope
+    • In the first argument of ‘(+)’, namely ‘_asInt (x)’
+      In the expression: _asInt (x) + k
+      In an equation for ‘inc’: inc x = (_asInt (x) + k)
+    • Relevant bindings include
+        x :: Int
+          (bound at /workspace/mochi/tests/machine/x/hs/pure_global_fold.hs:13:5)
+        inc :: Int -> Int
+          (bound at /workspace/mochi/tests/machine/x/hs/pure_global_fold.hs:13:1)
+      Valid hole fits include
+        inc :: Int -> Int
+          (bound at /workspace/mochi/tests/machine/x/hs/pure_global_fold.hs:13:1)
+        negate :: forall a. Num a => a -> a
+          with negate @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/machine/x/hs/pure_global_fold.hs:4:8-11
+           (and originally defined in ‘GHC.Num’))
+        fromIntegral :: forall a b. (Integral a, Num b) => a -> b
+          with fromIntegral @Int @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/machine/x/hs/pure_global_fold.hs:4:8-11
+           (and originally defined in ‘GHC.Real’))
+        id :: forall a. a -> a
+          with id @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/machine/x/hs/pure_global_fold.hs:4:8-11
+           (and originally defined in ‘GHC.Base’))
+        fromEnum :: forall a. Enum a => a -> Int
+          with fromEnum @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/machine/x/hs/pure_global_fold.hs:4:8-11
+           (and originally defined in ‘GHC.Enum’))
+        pred :: forall a. Enum a => a -> a
+          with pred @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/machine/x/hs/pure_global_fold.hs:4:8-11
+           (and originally defined in ‘GHC.Enum’))
+        (Some hole fits suppressed; use -fmax-valid-hole-fits=N or -fno-max-valid-hole-fits)
+   |
+13 | inc x = (_asInt (x) + k)
+   |          ^^^^^^
+
+
+Context around line 13:
+   11| 
+   12| inc :: Int -> Int
+   13| inc x = (_asInt (x) + k)
+   14| 
+   15| k = 2

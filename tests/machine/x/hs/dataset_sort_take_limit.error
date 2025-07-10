@@ -1,0 +1,38 @@
+
+/workspace/mochi/tests/machine/x/hs/dataset_sort_take_limit.hs:6:1: error:
+    Could not find module ‘Data.Aeson’
+    Perhaps you meant Data.Version (from base-4.17.2.0)
+    Use -v (or `:set -v` in ghci) to see a list of the files searched for.
+  |
+6 | import qualified Data.Aeson as Aeson
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/dataset_sort_take_limit.hs:7:1: error:
+    Could not find module ‘Data.Aeson.Key’
+    Use -v (or `:set -v` in ghci) to see a list of the files searched for.
+  |
+7 | import qualified Data.Aeson.Key as Key
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/dataset_sort_take_limit.hs:8:1: error:
+    Could not find module ‘Data.Aeson.KeyMap’
+    Use -v (or `:set -v` in ghci) to see a list of the files searched for.
+  |
+8 | import qualified Data.Aeson.KeyMap as KeyMap
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/dataset_sort_take_limit.hs:16:1: error:
+    Could not find module ‘Data.Vector’
+    Perhaps you meant Data.Functor (from base-4.17.2.0)
+    Use -v (or `:set -v` in ghci) to see a list of the files searched for.
+   |
+16 | import qualified Data.Vector as V
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+Context around line 6:
+    4| module Main where
+    5| 
+    6| import qualified Data.Aeson as Aeson
+    7| import qualified Data.Aeson.Key as Key
+    8| import qualified Data.Aeson.KeyMap as KeyMap

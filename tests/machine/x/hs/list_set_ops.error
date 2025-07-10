@@ -1,5 +1,5 @@
 
-/workspace/mochi/tests/machine/x/hs/list_set_ops.hs:108:21: error:
+/workspace/mochi/tests/machine/x/hs/list_set_ops.hs:109:21: error:
     Not in scope: ‘List.\’
     NB: the module ‘Data.List’ does not export ‘\’.
     Suggested fix:
@@ -8,13 +8,13 @@
         ‘List.!!’ (imported from Data.List),
         ‘List.++’ (imported from Data.List)
     |
-108 |   print (([1, 2, 3] List.\ [2]))
+109 |   print (([1, 2, 3] List.\ [2]))
     |                     ^^^^^^
 
 
-Context around line 108:
-  106| main = do
-  107|   print (List.union [1, 2] [2, 3])
-  108|   print (([1, 2, 3] List.\ [2]))
-  109|   print (List.intersect [1, 2, 3] [2, 4])
-  110|   print (length ([1, 2] ++ [2, 3]))
+Context around line 109:
+  107| main = do
+  108|   print (List.union [1, 2] [2, 3])
+  109|   print (([1, 2, 3] List.\ [2]))
+  110|   print (List.intersect [1, 2, 3] [2, 4])
+  111|   print (length ([1, 2] ++ [2, 3]))

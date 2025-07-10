@@ -1,8 +1,10 @@
 # Haskell Machine Output
 
-This directory contains Haskell code generated from the Mochi programs in `tests/vm/valid`. Each `.hs` file is the compiler output. Programs that executed successfully using `runhaskell` have a corresponding `.out` file while failures have a `.error` log.
+This directory contains Haskell code generated from Mochi programs in `tests/vm/valid`. 
+Each `.hs` file is the compiler output. Programs that executed successfully have a corresponding `.out` file, 
+while failures have a `.error` log.
 
-## Compiled and ran successfully (51/97)
+## Compiled and ran successfully (60/97)
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -25,12 +27,19 @@ This directory contains Haskell code generated from the Mochi programs in `tests
 - [x] fun_three_args
 - [x] group_by_having
 - [x] if_else
+- [x] if_then_else
+- [x] if_then_else_nested
 - [x] in_operator
 - [x] len_builtin
-- [x] len_string
 - [x] len_map
+- [x] len_string
 - [x] let_and_print
 - [x] list_index
+- [x] map_in_operator
+- [x] map_index
+- [x] map_int_key
+- [x] map_literal_dynamic
+- [x] map_membership
 - [x] math_ops
 - [x] membership
 - [x] nested_function
@@ -44,6 +53,7 @@ This directory contains Haskell code generated from the Mochi programs in `tests
 - [x] string_compare
 - [x] string_concat
 - [x] string_index
+- [x] string_prefix_slice
 - [x] sum_builtin
 - [x] tail_recursion
 - [x] test_block
@@ -52,10 +62,11 @@ This directory contains Haskell code generated from the Mochi programs in `tests
 - [x] typed_var
 - [x] unary_neg
 - [x] user_type_literal
+- [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
 
-## Failed to build or run (46/97)
+## Failed to build or run (37/97)
 - [ ] dataset_where_filter
 - [ ] exists_builtin
 - [ ] group_by
@@ -66,8 +77,6 @@ This directory contains Haskell code generated from the Mochi programs in `tests
 - [ ] group_by_multi_join_sort
 - [ ] group_by_sort
 - [ ] group_items_iteration
-- [ ] if_then_else
-- [ ] if_then_else_nested
 - [ ] in_operator_extended
 - [ ] inner_join
 - [ ] join_multi
@@ -79,11 +88,6 @@ This directory contains Haskell code generated from the Mochi programs in `tests
 - [ ] list_set_ops
 - [ ] load_yaml
 - [ ] map_assign
-- [ ] map_in_operator
-- [ ] map_index
-- [ ] map_int_key
-- [ ] map_literal_dynamic
-- [ ] map_membership
 - [ ] map_nested_assign
 - [ ] match_expr
 - [ ] match_full
@@ -97,11 +101,9 @@ This directory contains Haskell code generated from the Mochi programs in `tests
 - [ ] sort_stable
 - [ ] string_contains
 - [ ] string_in_operator
-- [ ] string_prefix_slice
 - [ ] substring_builtin
 - [ ] tree_sum
 - [ ] update_stmt
-- [ ] values_builtin
 
 ## Remaining Tasks
 - [ ] Implement support for dataset and join queries.

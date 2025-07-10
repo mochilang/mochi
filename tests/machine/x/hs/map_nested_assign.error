@@ -1,14 +1,14 @@
 
-/workspace/mochi/tests/machine/x/hs/map_nested_assign.hs:173:6: error:
+/workspace/mochi/tests/machine/x/hs/map_nested_assign.hs:13:6: error:
     parse error on input ‘=’
-    |
-173 | data = Map.fromList [("outer", Map.fromList [("inner", 1)])]
-    |      ^
+   |
+13 | data = Map.fromList [("outer", Map.fromList [("inner", 1)])]
+   |      ^
 
 
-Context around line 173:
-  171| 
-  172| 
-  173| data = Map.fromList [("outer", Map.fromList [("inner", 1)])]
-  174| 
-  175| main :: IO ()
+Context around line 13:
+   11| 
+   12| 
+   13| data = Map.fromList [("outer", Map.fromList [("inner", 1)])]
+   14| 
+   15| main :: IO ()

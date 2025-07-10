@@ -1,16 +1,16 @@
 
-/workspace/mochi/tests/machine/x/hs/match_expr.hs:107:9: error:
+/workspace/mochi/tests/machine/x/hs/match_expr.hs:14:9: error:
     • No instance for (Num String) arising from the literal ‘0’
     • In the expression: 0
       In an equation for ‘label’: label = 0
-    |
-107 | label = 0
-    |         ^
+   |
+14 | label = 0
+   |         ^
 
 
-Context around line 107:
-  105| x = 2
-  106| 
-  107| label = 0
-  108| 
-  109| main :: IO ()
+Context around line 14:
+   12| x = 2
+   13| 
+   14| label = 0
+   15| 
+   16| main :: IO ()

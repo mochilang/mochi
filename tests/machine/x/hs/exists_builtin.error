@@ -1,6 +1,14 @@
 
-tests/machine/x/hs/exists_builtin.hs:99:6: error:
+/workspace/mochi/tests/machine/x/hs/exists_builtin.hs:13:6: error:
     parse error on input ‘=’
    |
-99 | data = [1, 2]
+13 | data = [1, 2]
    |      ^
+
+
+Context around line 13:
+   11| 
+   12| 
+   13| data = [1, 2]
+   14| 
+   15| flag = exists [x | x <- filter (\x -> (x == 1)) data]

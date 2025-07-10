@@ -1,0 +1,62 @@
+
+/workspace/mochi/tests/machine/x/hs/two-sum.hs:109:62: error:
+    • Found hole: _asInt :: Int -> Int
+      Or perhaps ‘_asInt’ is mis-spelled, or not in scope
+    • In the first argument of ‘(+)’, namely ‘_asInt (i)’
+      In the first argument of ‘forLoop’, namely ‘(_asInt (i) + 1)’
+      In the expression:
+        forLoop
+          (_asInt (i) + 1) n
+          (\ j
+             -> if (((nums !! i) + (nums !! j)) == target) then
+                    Just ([i, j])
+                else
+                    Nothing)
+    • Relevant bindings include
+        i :: Int
+          (bound at /workspace/mochi/tests/machine/x/hs/two-sum.hs:109:48)
+        n :: Int
+          (bound at /workspace/mochi/tests/machine/x/hs/two-sum.hs:109:10)
+        target :: Int
+          (bound at /workspace/mochi/tests/machine/x/hs/two-sum.hs:107:13)
+        nums :: [Int]
+          (bound at /workspace/mochi/tests/machine/x/hs/two-sum.hs:107:8)
+        twoSum :: [Int] -> Int -> [Int]
+          (bound at /workspace/mochi/tests/machine/x/hs/two-sum.hs:107:1)
+      Valid hole fits include
+        negate :: forall a. Num a => a -> a
+          with negate @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/machine/x/hs/two-sum.hs:4:8-11
+           (and originally defined in ‘GHC.Num’))
+        fromIntegral :: forall a b. (Integral a, Num b) => a -> b
+          with fromIntegral @Int @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/machine/x/hs/two-sum.hs:4:8-11
+           (and originally defined in ‘GHC.Real’))
+        id :: forall a. a -> a
+          with id @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/machine/x/hs/two-sum.hs:4:8-11
+           (and originally defined in ‘GHC.Base’))
+        fromEnum :: forall a. Enum a => a -> Int
+          with fromEnum @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/machine/x/hs/two-sum.hs:4:8-11
+           (and originally defined in ‘GHC.Enum’))
+        pred :: forall a. Enum a => a -> a
+          with pred @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/machine/x/hs/two-sum.hs:4:8-11
+           (and originally defined in ‘GHC.Enum’))
+        succ :: forall a. Enum a => a -> a
+          with succ @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/machine/x/hs/two-sum.hs:4:8-11
+           (and originally defined in ‘GHC.Enum’))
+        (Some hole fits suppressed; use -fmax-valid-hole-fits=N or -fno-max-valid-hole-fits)
+    |
+109 |     (let n = length nums in case forLoop 0 n (\i -> forLoop (_asInt (i) + 1) n (\j -> if (((nums !! i) + (nums !! j)) == target) then Just ([i, j]) else Nothing)) of Just v -> Just v; Nothing -> Just ([(-1), (-1)]))
+    |                                                              ^^^^^^
+
+
+Context around line 109:
+  107| twoSum nums target =
+  108|   fromMaybe ([]) $
+  109|     (let n = length nums in case forLoop 0 n (\i -> forLoop (_asInt (i) + 1) n (\j -> if (((nums !! i) + (nums !! j)) == target) then Just ([i, j]) else Nothing)) of Just v -> Just v; Nothing -> Just ([(-1), (-1)]))
+  110|   where
+  111|     n = length nums

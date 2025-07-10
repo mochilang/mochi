@@ -1,14 +1,14 @@
 
-/workspace/mochi/tests/machine/x/hs/group_items_iteration.hs:173:6: error:
+/workspace/mochi/tests/machine/x/hs/group_items_iteration.hs:180:6: error:
     parse error on input ‘=’
     |
-173 | data = [Map.fromList [("tag", VString ("a")), ("val", VInt (1))], Map.fromList [("tag", VString ("a")), ("val", VInt (2))], Map.fromList [("tag", VString ("b")), ("val", VInt (3))]]
+180 | data = [Map.fromList [("tag", VString ("a")), ("val", VInt (1))], Map.fromList [("tag", VString ("a")), ("val", VInt (2))], Map.fromList [("tag", VString ("b")), ("val", VInt (3))]]
     |      ^
 
 
-Context around line 173:
-  171| 
-  172| 
-  173| data = [Map.fromList [("tag", VString ("a")), ("val", VInt (1))], Map.fromList [("tag", VString ("a")), ("val", VInt (2))], Map.fromList [("tag", VString ("b")), ("val", VInt (3))]]
-  174| 
-  175| groups = [ g | g <- _group_by data (\d -> fromMaybe (error "missing") (Map.lookup "tag" d)), let g = g ]
+Context around line 180:
+  178| 
+  179| 
+  180| data = [Map.fromList [("tag", VString ("a")), ("val", VInt (1))], Map.fromList [("tag", VString ("a")), ("val", VInt (2))], Map.fromList [("tag", VString ("b")), ("val", VInt (3))]]
+  181| 
+  182| groups = [ g | g <- _group_by data (\d -> fromMaybe (error "missing") (Map.lookup "tag" d)), let g = g ]

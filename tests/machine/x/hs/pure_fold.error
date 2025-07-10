@@ -1,0 +1,47 @@
+
+/workspace/mochi/tests/machine/x/hs/pure_fold.hs:13:13: error:
+    • Found hole: _asInt :: Int -> Int
+      Or perhaps ‘_asInt’ is mis-spelled, or not in scope
+    • In the first argument of ‘(*)’, namely ‘_asInt (x)’
+      In the expression: _asInt (x) * 3
+      In an equation for ‘triple’: triple x = (_asInt (x) * 3)
+    • Relevant bindings include
+        x :: Int
+          (bound at /workspace/mochi/tests/machine/x/hs/pure_fold.hs:13:8)
+        triple :: Int -> Int
+          (bound at /workspace/mochi/tests/machine/x/hs/pure_fold.hs:13:1)
+      Valid hole fits include
+        triple :: Int -> Int
+          (bound at /workspace/mochi/tests/machine/x/hs/pure_fold.hs:13:1)
+        negate :: forall a. Num a => a -> a
+          with negate @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/machine/x/hs/pure_fold.hs:4:8-11
+           (and originally defined in ‘GHC.Num’))
+        fromIntegral :: forall a b. (Integral a, Num b) => a -> b
+          with fromIntegral @Int @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/machine/x/hs/pure_fold.hs:4:8-11
+           (and originally defined in ‘GHC.Real’))
+        id :: forall a. a -> a
+          with id @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/machine/x/hs/pure_fold.hs:4:8-11
+           (and originally defined in ‘GHC.Base’))
+        fromEnum :: forall a. Enum a => a -> Int
+          with fromEnum @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/machine/x/hs/pure_fold.hs:4:8-11
+           (and originally defined in ‘GHC.Enum’))
+        pred :: forall a. Enum a => a -> a
+          with pred @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/machine/x/hs/pure_fold.hs:4:8-11
+           (and originally defined in ‘GHC.Enum’))
+        (Some hole fits suppressed; use -fmax-valid-hole-fits=N or -fno-max-valid-hole-fits)
+   |
+13 | triple x = (_asInt (x) * 3)
+   |             ^^^^^^
+
+
+Context around line 13:
+   11| 
+   12| triple :: Int -> Int
+   13| triple x = (_asInt (x) * 3)
+   14| 
+   15| main :: IO ()

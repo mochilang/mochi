@@ -1,14 +1,14 @@
 
-/workspace/mochi/tests/machine/x/hs/record_assign.hs:114:18: error:
+/workspace/mochi/tests/machine/x/hs/record_assign.hs:21:18: error:
     • Couldn't match expected type ‘Counter’ with actual type ‘Int’
     • In the first argument of ‘n’, namely ‘(c)’
       In the first argument of ‘(+)’, namely ‘n (c)’
       In the expression: n (c) + 1
-    |
-114 |     (let c = (n (c) + 1) in Nothing)
-    |                  ^
+   |
+21 |     (let c = (n (c) + 1) in Nothing)
+   |                  ^
 
-/workspace/mochi/tests/machine/x/hs/record_assign.hs:120:3: error:
+/workspace/mochi/tests/machine/x/hs/record_assign.hs:27:3: error:
     • Couldn't match expected type ‘IO a0’ with actual type ‘()’
     • In a stmt of a 'do' block: inc c
       In the expression:
@@ -18,14 +18,14 @@
           main
             = do inc c
                  print (n (c))
-    |
-120 |   inc c
-    |   ^^^^^
+   |
+27 |   inc c
+   |   ^^^^^
 
 
-Context around line 114:
-  112| inc c =
-  113|   fromMaybe (()) $
-  114|     (let c = (n (c) + 1) in Nothing)
-  115| 
-  116| c = Counter {n = 0}
+Context around line 21:
+   19| inc c =
+   20|   fromMaybe (()) $
+   21|     (let c = (n (c) + 1) in Nothing)
+   22| 
+   23| c = Counter {n = 0}
