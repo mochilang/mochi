@@ -7,24 +7,31 @@ get_item(List, Index, Val) :- nth0(Index, List, Val).
 
 :- initialization(main, main).
 main :-
-    dict_create(_V0, map, [Name-"Laptop", Price-1500]),
-    dict_create(_V1, map, [Name-"Smartphone", Price-900]),
-    dict_create(_V2, map, [Name-"Tablet", Price-600]),
-    dict_create(_V3, map, [Name-"Monitor", Price-300]),
-    dict_create(_V4, map, [Name-"Keyboard", Price-100]),
-    dict_create(_V5, map, [Name-"Mouse", Price-50]),
-    dict_create(_V6, map, [Name-"Headphones", Price-200]),
+    dict_create(_V0, map, [name-"Laptop", price-1500]),
+    dict_create(_V1, map, [name-"Smartphone", price-900]),
+    dict_create(_V2, map, [name-"Tablet", price-600]),
+    dict_create(_V3, map, [name-"Monitor", price-300]),
+    dict_create(_V4, map, [name-"Keyboard", price-100]),
+    dict_create(_V5, map, [name-"Mouse", price-50]),
+    dict_create(_V6, map, [name-"Headphones", price-200]),
     Products = [_V0, _V1, _V2, _V3, _V4, _V5, _V6],
-    findall(P, (member(P, Products), true), _V7),
-    Expensive = _V7,
-    writeln("--- Top products (excluding most expensive) ---"),
+    findall(_V7, (member(P, Products), true, _V7 = P), _V8),
+    Expensive = _V8,
+    write("--- Top products (excluding most expensive) ---"),
+    nl,
     catch(
         (
             member(Item, Expensive),
                 catch(
                     (
-                        get_item(Item, 'name', _V8),
-                        writeln(_V8),
+                        get_item(Item, 'name', _V9),
+                        write(_V9),
+                        write(' '),
+                        write("costs $"),
+                        write(' '),
+                        get_item(Item, 'price', _V10),
+                        write(_V10),
+                        nl,
                         true
                     ), continue, true),
                     fail

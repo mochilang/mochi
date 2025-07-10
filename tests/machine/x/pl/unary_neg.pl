@@ -2,7 +2,9 @@
 :- initialization(main, main).
 main :-
     _V0 is (-3),
-    writeln(_V0),
+    write(_V0),
+    nl,
     _V1 is (5 + (-2)),
-    writeln(_V1),
+    write(_V1),
+    nl,
     true.

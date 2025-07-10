@@ -1,0 +1,4 @@
+ERROR: /workspace/mochi/tests/machine/x/pl/closure.pl:2:10: Syntax error: Operator expected
+ERROR: /workspace/mochi/tests/machine/x/pl/closure.pl:5:9: Syntax error: Operator expected
+ERROR: /workspace/mochi/tests/machine/x/pl/closure.pl:10:12: Syntax error: Operator expected
+

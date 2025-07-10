@@ -13,9 +13,12 @@ slice(List, I, J, Out) :-
 :- initialization(main, main).
 main :-
     slice([1, 2, 3], 1, 3, _V0),
-    writeln(_V0),
+    write(_V0),
+    nl,
     slice([1, 2, 3], 0, 2, _V1),
-    writeln(_V1),
+    write(_V1),
+    nl,
     slice("hello", 1, 4, _V2),
-    writeln(_V2),
+    write(_V2),
+    nl,
     true.

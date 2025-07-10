@@ -7,26 +7,32 @@ get_item(List, Index, Val) :- nth0(Index, List, Val).
 
 :- initialization(main, main).
 main :-
-    dict_create(_V0, map, [Name-"Alice", Age-30]),
-    dict_create(_V1, map, [Name-"Bob", Age-15]),
-    dict_create(_V2, map, [Name-"Charlie", Age-65]),
-    dict_create(_V3, map, [Name-"Diana", Age-45]),
+    dict_create(_V0, map, [name-"Alice", age-30]),
+    dict_create(_V1, map, [name-"Bob", age-15]),
+    dict_create(_V2, map, [name-"Charlie", age-65]),
+    dict_create(_V3, map, [name-"Diana", age-45]),
     People = [_V0, _V1, _V2, _V3],
-    get_item(Person, 'age', _V4),
-    get_item(Person, 'name', _V5),
-    get_item(Person, 'age', _V6),
-    get_item(Person, 'age', _V7),
-    dict_create(_V8, map, [Name-_V5, Age-_V6, Is_senior-(_V7 >= 60)]),
-    findall(_V8, (member(Person, People), (_V4 >= 18)), _V9),
-    Adults = _V9,
-    writeln("--- Adults ---"),
+    findall(_V9, (member(Person, People), get_item(Person, 'age', _V4), (_V4 >= 18), get_item(Person, 'name', _V5), get_item(Person, 'age', _V6), get_item(Person, 'age', _V7), dict_create(_V8, map, [name-_V5, age-_V6, is_senior-(_V7 >= 60)]), _V9 = _V8), _V10),
+    Adults = _V10,
+    write("--- Adults ---"),
+    nl,
     catch(
         (
             member(Person, Adults),
                 catch(
                     (
-                        get_item(Person, 'name', _V10),
-                        writeln(_V10),
+                        get_item(Person, 'name', _V11),
+                        write(_V11),
+                        write(' '),
+                        write("is"),
+                        write(' '),
+                        get_item(Person, 'age', _V12),
+                        write(_V12),
+                        write(' '),
+                        get_item(Person, 'is_senior', _V13),
+                        ((_V13 -> " (senior)" ; "") -> _V14 = true ; _V14 = false),
+                        write(_V14),
+                        nl,
                         true
                     ), continue, true),
                     fail

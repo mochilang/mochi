@@ -1,0 +1,3 @@
+ERROR: /workspace/mochi/tests/machine/x/pl/record_assign.pl:14:3: Syntax error: Operator expected
+ERROR: /workspace/mochi/tests/machine/x/pl/record_assign.pl:23:6: Syntax error: Operator expected
+

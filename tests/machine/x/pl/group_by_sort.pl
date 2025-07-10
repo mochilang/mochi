@@ -7,17 +7,13 @@ get_item(List, Index, Val) :- nth0(Index, List, Val).
 
 :- initialization(main, main).
 main :-
-    dict_create(_V0, map, [Cat-"a", Val-3]),
-    dict_create(_V1, map, [Cat-"a", Val-1]),
-    dict_create(_V2, map, [Cat-"b", Val-5]),
-    dict_create(_V3, map, [Cat-"b", Val-2]),
+    dict_create(_V0, map, [cat-"a", val-3]),
+    dict_create(_V1, map, [cat-"a", val-1]),
+    dict_create(_V2, map, [cat-"b", val-5]),
+    dict_create(_V3, map, [cat-"b", val-2]),
     Items = [_V0, _V1, _V2, _V3],
-    get_item(G, 'key', _V4),
-    get_item(X, 'val', _V5),
-    findall(_V5, (member(X, G), true), _V6),
-    sum_list(_V6, _V7),
-    dict_create(_V8, map, [Cat-_V4, Total-_V7]),
-    findall(_V8, (member(I, Items), true), _V9),
-    Grouped = _V9,
-    writeln(Grouped),
+    findall(_V10, (member(I, Items), true, get_item(G, 'key', _V4), findall(_V6, (member(X, G), true, get_item(X, 'val', _V5), _V6 = _V5), _V7), sum_list(_V7, _V8), dict_create(_V9, map, [cat-_V4, total-_V8]), _V10 = _V9), _V11),
+    Grouped = _V11,
+    write(Grouped),
+    nl,
     true.

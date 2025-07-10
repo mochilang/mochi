@@ -2,5 +2,6 @@
 :- initialization(main, main).
 main :-
     Y is 0,
-    writeln(Y),
+    write(Y),
+    nl,
     true.

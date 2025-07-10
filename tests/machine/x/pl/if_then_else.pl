@@ -3,5 +3,6 @@
 main :-
     X is 12,
     Msg = ((X > 10) -> "yes" ; "no"),
-    writeln(Msg),
+    write(Msg),
+    nl,
     true.

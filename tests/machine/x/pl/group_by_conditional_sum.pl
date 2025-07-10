@@ -7,20 +7,12 @@ get_item(List, Index, Val) :- nth0(Index, List, Val).
 
 :- initialization(main, main).
 main :-
-    dict_create(_V0, map, [Cat-"a", Val-10, Flag-true]),
-    dict_create(_V1, map, [Cat-"a", Val-5, Flag-false]),
-    dict_create(_V2, map, [Cat-"b", Val-20, Flag-true]),
+    dict_create(_V0, map, [cat-"a", val-10, flag-true]),
+    dict_create(_V1, map, [cat-"a", val-5, flag-false]),
+    dict_create(_V2, map, [cat-"b", val-20, flag-true]),
     Items = [_V0, _V1, _V2],
-    get_item(G, 'key', _V3),
-    get_item(X, 'flag', _V4),
-    get_item(X, 'val', _V5),
-    findall((_V4 -> _V5 ; 0), (member(X, G), true), _V6),
-    sum_list(_V6, _V7),
-    get_item(X, 'val', _V8),
-    findall(_V8, (member(X, G), true), _V9),
-    sum_list(_V9, _V10),
-    dict_create(_V11, map, [Cat-_V3, Share-(_V7 / _V10)]),
-    findall(_V11, (member(I, Items), true), _V12),
-    Result = _V12,
-    writeln(Result),
+    findall(_V14, (member(I, Items), true, get_item(G, 'key', _V3), findall(_V6, (member(X, G), true, get_item(X, 'flag', _V4), get_item(X, 'val', _V5), _V6 = (_V4 -> _V5 ; 0)), _V7), sum_list(_V7, _V8), findall(_V10, (member(X, G), true, get_item(X, 'val', _V9), _V10 = _V9), _V11), sum_list(_V11, _V12), dict_create(_V13, map, [cat-_V3, share-(_V8 / _V12)]), _V14 = _V13), _V15),
+    Result = _V15,
+    write(Result),
+    nl,
     true.

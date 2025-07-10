@@ -9,7 +9,9 @@ contains(List, Item, Res) :- (member(Item, List) -> Res = true ; Res = false).
 main :-
     S = "catch",
     contains(S, "cat", _V0),
-    writeln(_V0),
+    write(_V0),
+    nl,
     contains(S, "dog", _V1),
-    writeln(_V1),
+    write(_V1),
+    nl,
     true.

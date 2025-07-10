@@ -5,5 +5,6 @@ Triple(X, _Res) :-
 :- initialization(main, main).
 main :-
     Triple((1 + 2), _V0),
-    writeln(_V0),
+    write(_V0),
+    nl,
     true.

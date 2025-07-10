@@ -2,8 +2,8 @@
 :- initialization(main, main).
 main :-
     Nums = [1, 2, 3],
-    sum_list(N, _V0),
-    findall(_V0, (member(N, Nums), (N > 1)), _V1),
-    Result = _V1,
-    writeln(Result),
+    findall(_V1, (member(N, Nums), (N > 1), sum_list(N, _V0), _V1 = _V0), _V2),
+    Result = _V2,
+    write(Result),
+    nl,
     true.

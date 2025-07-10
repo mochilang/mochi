@@ -20,5 +20,6 @@ main :-
     Matrix_3 = _V2,
     get_item(Matrix_3, 1, _V4),
     get_item(_V4, 0, _V5),
-    writeln(_V5),
+    write(_V5),
+    nl,
     true.

@@ -9,8 +9,12 @@ get_item(List, Index, Val) :- nth0(Index, List, Val).
 main :-
     X is 3,
     Y is 4,
-    dict_create(_V0, map, ['a'-X, 'b'-Y]),
+    dict_create(_V0, map, [a-X, b-Y]),
     M = _V0,
     get_item(M, "a", _V1),
-    writeln(_V1),
+    write(_V1),
+    write(' '),
+    get_item(M, "b", _V2),
+    write(_V2),
+    nl,
     true.

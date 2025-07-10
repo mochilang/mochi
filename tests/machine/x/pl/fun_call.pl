@@ -5,5 +5,6 @@ Add(A, B, _Res) :-
 :- initialization(main, main).
 main :-
     Add(2, 3, _V0),
-    writeln(_V0),
+    write(_V0),
+    nl,
     true.

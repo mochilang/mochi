@@ -7,12 +7,12 @@ get_item(List, Index, Val) :- nth0(Index, List, Val).
 
 :- initialization(main, main).
 main :-
-    dict_create(_V0, map, [N-1, V-"a"]),
-    dict_create(_V1, map, [N-1, V-"b"]),
-    dict_create(_V2, map, [N-2, V-"c"]),
+    dict_create(_V0, map, [n-1, v-"a"]),
+    dict_create(_V1, map, [n-1, v-"b"]),
+    dict_create(_V2, map, [n-2, v-"c"]),
     Items = [_V0, _V1, _V2],
-    get_item(I, 'v', _V3),
-    findall(_V3, (member(I, Items), true), _V4),
-    Result = _V4,
-    writeln(Result),
+    findall(_V4, (member(I, Items), true, get_item(I, 'v', _V3), _V4 = _V3), _V5),
+    Result = _V5,
+    write(Result),
+    nl,
     true.

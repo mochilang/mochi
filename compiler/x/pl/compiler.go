@@ -228,7 +228,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			c.writeln(fmt.Sprintf("%s = %s,", name, val))
 		}
 	case s.Assign != nil:
-		if len(s.Assign.Index) == 0 {
+		if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
 			name := c.newVar(s.Assign.Name)
 			val, arith, err := c.compileExpr(s.Assign.Value)
 			if err != nil {
@@ -241,8 +241,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			}
 		} else {
 			container := c.lookupVar(s.Assign.Name)
-			idxVals := make([]string, len(s.Assign.Index))
-			for i, idx := range s.Assign.Index {
+			idxVals := make([]string, 0, len(s.Assign.Index)+len(s.Assign.Field))
+			for _, idx := range s.Assign.Index {
 				if idx.Colon != nil {
 					return fmt.Errorf("slice assignment not supported")
 				}
@@ -250,7 +250,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				if err != nil {
 					return err
 				}
-				idxVals[i] = iv
+				idxVals = append(idxVals, iv)
+			}
+			for _, f := range s.Assign.Field {
+				idxVals = append(idxVals, fmt.Sprintf("'%s'", strings.ToLower(f.Name)))
 			}
 			val, _, err := c.compileExpr(s.Assign.Value)
 			if err != nil {
@@ -326,6 +329,14 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				c.writeln(fmt.Sprintf("write(%s),", val))
 			}
 			c.writeln("nl,")
+			return nil
+		}
+		if call := getSimpleCall(s.Expr.Expr); call != nil {
+			val, _, err := c.compileExpr(s.Expr.Expr)
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("%s,", val))
 			return nil
 		}
 		return fmt.Errorf("unsupported expression statement")

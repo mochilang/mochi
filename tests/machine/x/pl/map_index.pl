@@ -7,8 +7,9 @@ get_item(List, Index, Val) :- nth0(Index, List, Val).
 
 :- initialization(main, main).
 main :-
-    dict_create(_V0, map, ['a'-1, 'b'-2]),
+    dict_create(_V0, map, [a-1, b-2]),
     M = _V0,
     get_item(M, "b", _V1),
-    writeln(_V1),
+    write(_V1),
+    nl,
     true.

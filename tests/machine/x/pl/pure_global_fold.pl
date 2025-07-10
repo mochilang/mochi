@@ -6,5 +6,6 @@ Inc(X, _Res) :-
 main :-
     K is 2,
     Inc(3, _V0),
-    writeln(_V0),
+    write(_V0),
+    nl,
     true.
