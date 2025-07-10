@@ -17,7 +17,7 @@ public class Main {
 		_it0.status = "adult";
 		_it0.age = _it0.age + 1;
 	}
-	if (!(people == java.util.Arrays.asList(new Person("Alice", 17, "minor"), new Person("Bob", 26, "adult"), new Person("Charlie", 19, "adult"), new Person("Diana", 16, "minor")))) throw new AssertionError("expect failed");
+	if (!(Objects.equals(people, java.util.Arrays.asList(new Person("Alice", 17, "minor"), new Person("Bob", 26, "adult"), new Person("Charlie", 19, "adult"), new Person("Diana", 16, "minor"))))) throw new AssertionError("expect failed");
 	System.out.println("ok");
 	}
 }

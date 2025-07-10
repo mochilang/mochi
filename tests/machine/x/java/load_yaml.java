@@ -1,4 +1,5 @@
 import java.util.*;
+import java.io.*;
 class Person {
 	String name;
 	int age;
@@ -12,12 +13,12 @@ class Person {
 public class Main {
 	static List<Object> people = loadYaml("../interpreter/valid/people.yaml");
 	static List<Object> adults = (new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
-	List<Object> _res0 = new ArrayList<>();
+	List<Object> _res1 = new ArrayList<>();
 	for (var p : people) {
-		if (!(((Number)((Map)p).get("age")).doubleValue() >= 18)) continue;
-		_res0.add(new LinkedHashMap<>(){{put("name", ((Map)p).get("name"));put("email", ((Map)p).get("email"));}});
+		if (!(Boolean.TRUE.equals(((Number)((Map)p).get("age")).doubleValue() >= 18))) continue;
+		_res1.add(new LinkedHashMap<>(){{put("name", ((Map)p).get("name"));put("email", ((Map)p).get("email"));}});
 	}
-	return _res0;
+	return _res1;
 }}).get();
 	static List<Map<String,Object>> loadYaml(String path) throws Exception {
 		List<Map<String,Object>> list = new ArrayList<>();

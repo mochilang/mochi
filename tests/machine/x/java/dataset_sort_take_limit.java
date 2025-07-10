@@ -2,11 +2,11 @@ import java.util.*;
 public class Main {
 	static List<Map<Object,Object>> products = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<>(){{put("name", "Laptop");put("price", 1500);}}, new LinkedHashMap<>(){{put("name", "Smartphone");put("price", 900);}}, new LinkedHashMap<>(){{put("name", "Tablet");put("price", 600);}}, new LinkedHashMap<>(){{put("name", "Monitor");put("price", 300);}}, new LinkedHashMap<>(){{put("name", "Keyboard");put("price", 100);}}, new LinkedHashMap<>(){{put("name", "Mouse");put("price", 50);}}, new LinkedHashMap<>(){{put("name", "Headphones");put("price", 200);}}));
 	static List<Object> expensive = (new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
-	List<Object> _res0 = new ArrayList<>();
+	List<Object> _res1 = new ArrayList<>();
 	for (var p : products) {
-		_res0.add(p);
+		_res1.add(p);
 	}
-	return _res0;
+	return _res1;
 }}).get();
 	public static void main(String[] args) {
 	System.out.println("--- Top products (excluding most expensive) ---");

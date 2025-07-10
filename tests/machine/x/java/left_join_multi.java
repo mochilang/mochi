@@ -4,23 +4,23 @@ public class Main {
 	static List<Map<Object,Integer>> orders = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<>(){{put("id", 100);put("customerId", 1);}}, new LinkedHashMap<>(){{put("id", 101);put("customerId", 2);}}));
 	static List<Map<Object,Object>> items = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<>(){{put("orderId", 100);put("sku", "a");}}));
 	static List<Object> result = (new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
-	List<Object> _res0 = new ArrayList<>();
+	List<Object> _res3 = new ArrayList<>();
 	for (var o : orders) {
 		for (var c : customers) {
-			if (!(((Map)o).get("customerId") == ((Map)c).get("id"))) continue;
-			List<Object> _tmp1 = new ArrayList<>();
-			for (var _it2 : items) {
-				var i = _it2;
-				if (!(((Map)o).get("id") == ((Map)i).get("orderId"))) continue;
-				_tmp1.add(_it2);
+			if (!(Objects.equals(((Map)o).get("customerId"), ((Map)c).get("id")))) continue;
+			List<Object> _tmp4 = new ArrayList<>();
+			for (var _it5 : items) {
+				var i = _it5;
+				if (!(Objects.equals(((Map)o).get("id"), ((Map)i).get("orderId")))) continue;
+				_tmp4.add(_it5);
 			}
-			if (_tmp1.isEmpty()) _tmp1.add(null);
-			for (var i : _tmp1) {
-				_res0.add(new LinkedHashMap<>(){{put("orderId", ((Map)o).get("id"));put("name", ((Map)c).get("name"));put("item", i);}});
+			if (_tmp4.isEmpty()) _tmp4.add(null);
+			for (var i : _tmp4) {
+				_res3.add(new LinkedHashMap<>(){{put("orderId", ((Map)o).get("id"));put("name", ((Map)c).get("name"));put("item", i);}});
 			}
 		}
 	}
-	return _res0;
+	return _res3;
 }}).get();
 	public static void main(String[] args) {
 	System.out.println("--- Left Join Multi ---");
