@@ -16,6 +16,8 @@ import (
 	"github.com/alecthomas/participle/v2/lexer"
 	"mochi/parser"
 	"mochi/runtime/data"
+	goffi "mochi/runtime/ffi/go"
+	pythonffi "mochi/runtime/ffi/python"
 	mhttp "mochi/runtime/http"
 	"mochi/types"
 )
@@ -139,6 +141,11 @@ const (
 	OpDistinct
 	OpExpect
 	OpSelect
+
+	// Foreign function interface operations
+	OpGoCall
+	OpGoAutoCall
+	OpPyCall
 )
 
 func (op Op) String() string {
@@ -301,6 +308,12 @@ func (op Op) String() string {
 		return "Expect"
 	case OpSelect:
 		return "Select"
+	case OpGoCall:
+		return "GoCall"
+	case OpGoAutoCall:
+		return "GoAutoCall"
+	case OpPyCall:
+		return "PyCall"
 	default:
 		return "?"
 	}
@@ -487,6 +500,10 @@ func (p *Program) Disassemble(src string) string {
 				fmt.Fprintf(&b, "%s, %s, %s", formatReg(ins.A), p.funcName(ins.B), formatRegs(ins.D, ins.C))
 			case OpCallV:
 				fmt.Fprintf(&b, "%s, %s, %d, %s", formatReg(ins.A), formatReg(ins.B), ins.C, formatReg(ins.D))
+			case OpGoCall, OpGoAutoCall:
+				fmt.Fprintf(&b, "%s, %s, %d, %s", formatReg(ins.A), formatReg(ins.B), ins.C, formatReg(ins.D))
+			case OpPyCall:
+				fmt.Fprintf(&b, "%s, %s, %s, %d, %s", formatReg(ins.A), formatReg(ins.B), formatReg(ins.C), ins.Val.Int, formatReg(ins.D))
 			case OpReturn:
 				fmt.Fprintf(&b, "%s", formatReg(ins.A))
 			case OpNot, OpNeg, OpNegInt, OpNegFloat:
@@ -1927,6 +1944,41 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				return Value{}, err
 			}
 			fr.regs[ins.A] = res
+		case OpGoCall:
+			name := fr.regs[ins.B].Str
+			args := make([]any, ins.C)
+			for i := 0; i < ins.C; i++ {
+				args[i] = fr.regs[ins.D+i].ToAny()
+			}
+			res, err := goffi.Call(name, args...)
+			if err != nil {
+				return Value{}, m.newError(err, trace, ins.Line)
+			}
+			fr.regs[ins.A] = FromAny(res)
+		case OpGoAutoCall:
+			name := fr.regs[ins.B].Str
+			args := make([]any, ins.C)
+			for i := 0; i < ins.C; i++ {
+				args[i] = fr.regs[ins.D+i].ToAny()
+			}
+			res, err := goffi.CallAuto(name, args...)
+			if err != nil {
+				return Value{}, m.newError(err, trace, ins.Line)
+			}
+			fr.regs[ins.A] = FromAny(res)
+		case OpPyCall:
+			mod := fr.regs[ins.B].Str
+			attr := fr.regs[ins.C].Str
+			count := ins.Val.Int
+			args := make([]any, count)
+			for i := 0; i < count; i++ {
+				args[i] = fr.regs[ins.D+i].ToAny()
+			}
+			res, err := pythonffi.Attr(mod, attr, args...)
+			if err != nil {
+				return Value{}, m.newError(err, trace, ins.Line)
+			}
+			fr.regs[ins.A] = FromAny(res)
 		case OpNot:
 			fr.regs[ins.A] = Value{Tag: ValueBool, Bool: !fr.regs[ins.B].Truthy()}
 		case OpReturn:
@@ -1951,6 +2003,13 @@ type compiler struct {
 	funcs   []Function
 	fnIndex map[string]int
 	types   []types.Type
+	imports map[string]importMod
+}
+
+type importMod struct {
+	lang string
+	path string
+	auto bool
 }
 
 type funcCompiler struct {
@@ -2025,7 +2084,7 @@ func CompileWithSource(p *parser.Program, env *types.Env, src string) (*Program,
 }
 
 func compileProgram(p *parser.Program, env *types.Env) (*Program, error) {
-	c := &compiler{prog: p, env: env, fnIndex: map[string]int{}}
+	c := &compiler{prog: p, env: env, fnIndex: map[string]int{}, imports: map[string]importMod{}}
 	c.funcs = append(c.funcs, Function{})
 	for _, st := range p.Statements {
 		switch {
@@ -2436,6 +2495,15 @@ func (fc *funcCompiler) compileStmt(s *parser.Statement) error {
 	case s.Expr != nil:
 		fc.compileExpr(s.Expr.Expr)
 		return nil
+	case s.Import != nil:
+		alias := s.Import.As
+		if alias == "" {
+			alias = parser.AliasFromPath(s.Import.Path)
+		}
+		if s.Import.Lang != nil {
+			fc.comp.imports[alias] = importMod{lang: *s.Import.Lang, path: strings.Trim(s.Import.Path, "\""), auto: s.Import.Auto}
+		}
+		return nil
 	case s.Fun != nil:
 		captureNames := make([]string, 0, len(fc.vars))
 		for name := range fc.vars {
@@ -2772,6 +2840,18 @@ func (fc *funcCompiler) compilePostfix(p *parser.PostfixExpr) int {
 	if v, ok := fc.evalConstPostfix(p); ok {
 		return fc.constReg(p.Target.Pos, v)
 	}
+
+	if sel := p.Target.Selector; sel != nil {
+		if imp, ok := fc.comp.imports[sel.Root]; ok {
+			attr := strings.Join(sel.Tail, ".")
+			if len(p.Ops) == 0 {
+				return fc.compileFFI(imp, attr, nil, p.Target.Pos)
+			}
+			if len(p.Ops) == 1 && p.Ops[0].Call != nil {
+				return fc.compileFFI(imp, attr, p.Ops[0].Call, p.Ops[0].Call.Pos)
+			}
+		}
+	}
 	// Special case for struct method calls like obj.method()
 	if len(p.Ops) == 1 && p.Ops[0].Call != nil && p.Target.Selector != nil && len(p.Target.Selector.Tail) == 1 {
 		rootName := p.Target.Selector.Root
@@ -2919,6 +2999,43 @@ func (fc *funcCompiler) compilePostfix(p *parser.PostfixExpr) int {
 		}
 	}
 	return r
+}
+
+func (fc *funcCompiler) compileFFI(im importMod, attr string, call *parser.CallOp, pos lexer.Position) int {
+	var argRegs []int
+	if call != nil {
+		argRegs = make([]int, len(call.Args))
+		for i := range call.Args {
+			argRegs[i] = fc.newReg()
+		}
+		for i, a := range call.Args {
+			ar := fc.compileExpr(a)
+			fc.emit(a.Pos, Instr{Op: OpMove, A: argRegs[i], B: ar})
+		}
+	}
+	dst := fc.newReg()
+	start := 0
+	if len(argRegs) > 0 {
+		start = argRegs[0]
+	}
+	switch im.lang {
+	case "python":
+		mod := fc.constReg(pos, Value{Tag: ValueStr, Str: im.path})
+		attrReg := fc.constReg(pos, Value{Tag: ValueStr, Str: attr})
+		fc.emit(pos, Instr{Op: OpPyCall, A: dst, B: mod, C: attrReg, D: start, Val: Value{Tag: ValueInt, Int: len(argRegs)}})
+	case "go":
+		name := im.path
+		if attr != "" {
+			name += "." + attr
+		}
+		nameReg := fc.constReg(pos, Value{Tag: ValueStr, Str: name})
+		op := OpGoCall
+		if im.auto {
+			op = OpGoAutoCall
+		}
+		fc.emit(pos, Instr{Op: op, A: dst, B: nameReg, C: len(argRegs), D: start})
+	}
+	return dst
 }
 
 func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
