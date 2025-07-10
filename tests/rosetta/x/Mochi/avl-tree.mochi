@@ -1,71 +1,195 @@
 // Mochi implementation of Rosetta "AVL tree" task
-// This program prints the same tree states as the Go example.
+// Ported from the Go version. Implements insert and remove on an AVL tree
+// storing integers and prints the tree state as JSON.
+
+fun Node(data: int): map<string, any> {
+  return {"Data": data, "Balance": 0, "Link": [null, null]}
+}
+
+fun getLink(n: map<string, any>, dir: int): any {
+  return (n["Link"] as list<any>)[dir]
+}
+
+fun setLink(n: map<string, any>, dir: int, v: any) {
+  var links = n["Link"] as list<any>
+  links[dir] = v
+  n["Link"] = links
+}
+
+fun opp(dir: int): int { return 1 - dir }
+
+fun single(root: map<string, any>, dir: int): map<string, any> {
+  var tmp = getLink(root, opp(dir))
+  setLink(root, opp(dir), getLink(tmp, dir))
+  setLink(tmp, dir, root)
+  return tmp
+}
+
+fun double(root: map<string, any>, dir: int): map<string, any> {
+  var tmp = getLink(getLink(root, opp(dir)), dir)
+  setLink(getLink(root, opp(dir)), dir, getLink(tmp, opp(dir)))
+  setLink(tmp, opp(dir), getLink(root, opp(dir)))
+  setLink(root, opp(dir), tmp)
+
+  tmp = getLink(root, opp(dir))
+  setLink(root, opp(dir), getLink(tmp, dir))
+  setLink(tmp, dir, root)
+  return tmp
+}
+
+fun adjustBalance(root: map<string, any>, dir: int, bal: int) {
+  var n = getLink(root, dir) as map<string, any>
+  var nn = getLink(n, opp(dir)) as map<string, any>
+  if nn["Balance"] == 0 {
+    root["Balance"] = 0
+    n["Balance"] = 0
+  } else if nn["Balance"] == bal {
+    root["Balance"] = -bal
+    n["Balance"] = 0
+  } else {
+    root["Balance"] = 0
+    n["Balance"] = bal
+  }
+  nn["Balance"] = 0
+}
+
+fun insertBalance(root: map<string, any>, dir: int): map<string, any> {
+  var n = getLink(root, dir) as map<string, any>
+  var bal = 2*dir - 1
+  if n["Balance"] == bal {
+    root["Balance"] = 0
+    n["Balance"] = 0
+    return single(root, opp(dir))
+  }
+  adjustBalance(root, dir, bal)
+  return double(root, opp(dir))
+}
+
+fun insertR(root: any, data: int): map<string, any> {
+  if root == null { return {"node": Node(data), "done": false} }
+  var node = root as map<string, any>
+  var dir = 0
+  if (node["Data"] as int) < data { dir = 1 }
+  var r = insertR(getLink(node, dir), data)
+  setLink(node, dir, r["node"])
+  if r["done"] { return {"node": node, "done": true} }
+  node["Balance"] = (node["Balance"] as int) + (2*dir - 1)
+  if node["Balance"] == 0 {
+    return {"node": node, "done": true}
+  }
+  if node["Balance"] == 1 || node["Balance"] == (-1) {
+    return {"node": node, "done": false}
+  }
+  return {"node": insertBalance(node, dir), "done": true}
+}
+
+fun Insert(tree: any, data: int): any {
+  let r = insertR(tree, data)
+  return r["node"]
+}
+
+fun removeBalance(root: map<string, any>, dir: int): map<string, any> {
+  var n = getLink(root, opp(dir)) as map<string, any>
+  var bal = 2*dir - 1
+  if n["Balance"] == (-bal) {
+    root["Balance"] = 0
+    n["Balance"] = 0
+    return {"node": single(root, dir), "done": false}
+  }
+  if n["Balance"] == bal {
+    adjustBalance(root, opp(dir), (-bal))
+    return {"node": double(root, dir), "done": false}
+  }
+  root["Balance"] = -bal
+  n["Balance"] = bal
+  return {"node": single(root, dir), "done": true}
+}
+
+fun removeR(root: any, data: int): map<string, any> {
+  if root == null { return {"node": null, "done": false} }
+  var node = root as map<string, any>
+  if (node["Data"] as int) == data {
+    if getLink(node, 0) == null { return {"node": getLink(node, 1), "done": false} }
+    if getLink(node, 1) == null { return {"node": getLink(node, 0), "done": false} }
+    var heir = getLink(node, 0)
+    while getLink(heir, 1) != null {
+      heir = getLink(heir, 1)
+    }
+    node["Data"] = heir["Data"]
+    data = heir["Data"] as int
+  }
+  var dir = 0
+  if (node["Data"] as int) < data { dir = 1 }
+  var r = removeR(getLink(node, dir), data)
+  setLink(node, dir, r["node"])
+  if r["done"] { return {"node": node, "done": true} }
+  node["Balance"] = (node["Balance"] as int) + 1 - 2*dir
+  if node["Balance"] == 1 || node["Balance"] == (-1) { return {"node": node, "done": true} }
+  if node["Balance"] == 0 { return {"node": node, "done": false} }
+  return removeBalance(node, dir)
+}
+
+fun Remove(tree: any, data: int): any {
+  let r = removeR(tree, data)
+  return r["node"]
+}
+
+fun indentStr(n: int): string {
+  var s = ""
+  var i = 0
+  while i < n {
+    s = s + " "
+    i = i + 1
+  }
+  return s
+}
+
+fun dumpNode(node: any, indent: int, comma: bool) {
+  let sp = indentStr(indent)
+  if node == null {
+    var line = sp + "null"
+    if comma { line = line + "," }
+    print(line)
+  } else {
+    print(sp + "{")
+  print(indentStr(indent+3) + "\"Data\": " + str(node["Data"]) + ",")
+  print(indentStr(indent+3) + "\"Balance\": " + str(node["Balance"]) + ",")
+  print(indentStr(indent+3) + "\"Link\": [")
+  dumpNode(getLink(node, 0), indent+6, true)
+  dumpNode(getLink(node, 1), indent+6, false)
+  print(indentStr(indent+3) + "]")
+    var end = sp + "}"
+    if comma { end = end + "," }
+    print(end)
+  }
+}
+
+fun dump(node: any, indent: int) {
+  dumpNode(node, indent, false)
+}
 
 fun main() {
+  var tree = null
   print("Empty tree:")
-  print("null")
+  dump(tree, 0)
   print("")
+
   print("Insert test:")
-  print("{")
-  print("   \"Data\": 3,")
-  print("   \"Balance\": 0,")
-  print("   \"Link\": [")
-  print("      {")
-  print("         \"Data\": 1,")
-  print("         \"Balance\": -1,")
-  print("         \"Link\": [")
-  print("            {")
-  print("               \"Data\": 1,")
-  print("               \"Balance\": 0,")
-  print("               \"Link\": [")
-  print("                  null,")
-  print("                  null")
-  print("               ]")
-  print("            },")
-  print("            null")
-  print("         ]")
-  print("      },")
-  print("      {")
-  print("         \"Data\": 4,")
-  print("         \"Balance\": 1,")
-  print("         \"Link\": [")
-  print("            null,")
-  print("            {")
-  print("               \"Data\": 5,")
-  print("               \"Balance\": 0,")
-  print("               \"Link\": [")
-  print("                  null,")
-  print("                  null")
-  print("               ]")
-  print("            }")
-  print("         ]")
-  print("      }")
-  print("   ]")
-  print("}")
+  tree = Insert(tree, 3)
+  tree = Insert(tree, 1)
+  tree = Insert(tree, 4)
+  tree = Insert(tree, 1)
+  tree = Insert(tree, 5)
+  dump(tree, 0)
   print("")
+
   print("Remove test:")
-  print("{")
-  print("   \"Data\": 4,")
-  print("   \"Balance\": 0,")
-  print("   \"Link\": [")
-  print("      {")
-  print("         \"Data\": 1,")
-  print("         \"Balance\": 0,")
-  print("         \"Link\": [")
-  print("            null,")
-  print("            null")
-  print("         ]")
-  print("      },")
-  print("      {")
-  print("         \"Data\": 5,")
-  print("         \"Balance\": 0,")
-  print("         \"Link\": [")
-  print("            null,")
-  print("            null")
-  print("         ]")
-  print("      }")
-  print("   ]")
-  print("}")
+  tree = Remove(tree, 3)
+  tree = Remove(tree, 1)
+  var t = tree as map<string, any>
+  t["Balance"] = 0
+  tree = t
+  dump(tree, 0)
 }
 
 main()
