@@ -1,4 +1,4 @@
-line 14: exit status 1
-}()
-var tmp = []
-for g in groups {
+line 17: exit status 1
+    var total = 0
+    for x in g["items"] as! [[String:Any]] as! [[String:Any]] {
+        total = total + x["val"] as! Int
