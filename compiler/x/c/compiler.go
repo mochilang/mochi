@@ -2422,6 +2422,7 @@ func (c *Compiler) compileExpr(e *parser.Expr) string {
 
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 	left := c.compileUnary(b.Left)
+	leftType := c.unaryType(b.Left)
 	leftList := isListListUnary(b.Left, c.env)
 	leftListInt := isListIntUnary(b.Left, c.env)
 	leftListFloat := isListFloatUnary(b.Left, c.env)
@@ -2429,6 +2430,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 	leftString := isStringUnary(b.Left, c.env)
 	for _, op := range b.Right {
 		right := c.compilePostfix(op.Right)
+		rightType := c.postfixType(op.Right)
 		if (op.Op == "+" || (op.Op == "union" && op.All)) && leftList && isListListPostfix(op.Right, c.env) {
 			c.need(needConcatListListInt)
 			c.need(needListListInt)
@@ -2742,7 +2744,13 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			leftString = false
 			continue
 		}
-		left = fmt.Sprintf("%s %s %s", left, op.Op, right)
+		if op.Op == "/" && isInt(leftType) && isInt(rightType) {
+			left = fmt.Sprintf("((double)%s) / ((double)%s)", left, right)
+			leftType = types.FloatType{}
+		} else {
+			left = fmt.Sprintf("%s %s %s", left, op.Op, right)
+			leftType = resultType(op.Op, leftType, rightType)
+		}
 		leftList = false
 		leftListInt = false
 		leftListString = false
