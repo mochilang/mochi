@@ -29,12 +29,12 @@ Compiled programs: 97/97
 - [x] fun_expr_in_let
 - [x] fun_three_args
 - [x] group_by
- - [x] group_by_conditional_sum
+- [x] group_by_conditional_sum
 - [x] group_by_having
 - [x] group_by_join
 - [x] group_by_left_join
 - [x] group_by_multi_join
- - [x] group_by_multi_join_sort
+- [x] group_by_multi_join_sort
 - [x] group_by_sort
 - [x] group_items_iteration
 - [x] if_else
@@ -55,7 +55,7 @@ Compiled programs: 97/97
 - [x] list_index
 - [x] list_nested_assign
 - [x] list_set_ops
- - [x] load_yaml
+- [x] load_yaml
 - [x] map_assign
 - [x] map_in_operator
 - [x] map_index
@@ -93,7 +93,7 @@ Compiled programs: 97/97
 - [x] sum_builtin
 - [x] tail_recursion
 - [x] test_block
- - [x] tree_sum
+- [x] tree_sum
 - [x] two-sum
 - [x] typed_let
 - [x] typed_var
@@ -103,6 +103,3 @@ Compiled programs: 97/97
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
-
-## TODO
-- [ ] None
