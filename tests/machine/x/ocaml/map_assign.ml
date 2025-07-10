@@ -21,8 +21,8 @@ let rec map_set m k v =
     | (k2,v2)::tl -> if k2 = k then (k,Obj.repr v)::tl else (k2,v2)::map_set tl k v
 
 
-let scores : (string * int) list ref = ref [("alice",Obj.repr (1))]
+let scores : (string * Obj.t) list ref = ref [("alice",Obj.repr (1))]
 
 let () =
   scores := map_set !scores "bob" 2;
-  print_endline (__show (Obj.obj (List.assoc "bob" (!scores))));
+  print_endline (__show (Obj.obj (List.assoc "bob" ((!scores)))));

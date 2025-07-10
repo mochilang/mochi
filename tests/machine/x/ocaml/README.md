@@ -85,9 +85,9 @@ that run successfully have a `.out` file while failures generate a `.error` repo
 - [ ] json_builtin
 - [ ] left_join
 - [ ] left_join_multi
-- [ ] list_nested_assign
+ - [x] list_nested_assign
  - [x] load_yaml
-- [ ] map_assign
+ - [x] map_assign
 - [ ] map_literal_dynamic
 - [ ] map_nested_assign
 - [ ] order_by_map
