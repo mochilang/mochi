@@ -1,4 +1,4 @@
-# Scheme Machine Output (96/100 compiled and run)
+# Scheme Machine Output (100/100 compiled and run)
 
 This directory contains Scheme code generated from the Mochi programs in `tests/vm/valid`. Each program was executed with chibi-scheme. Successful runs have a `.out` file and failures provide a `.error`.
 
@@ -25,7 +25,7 @@ This directory contains Scheme code generated from the Mochi programs in `tests/
 - [x] fun_call
 - [x] fun_expr_in_let
 - [x] fun_three_args
-- [ ] go_auto
+- [x] go_auto
 - [x] group_by
 - [x] group_by_conditional_sum
 - [x] group_by_having
@@ -53,7 +53,7 @@ This directory contains Scheme code generated from the Mochi programs in `tests/
 - [x] list_index
 - [x] list_nested_assign
 - [x] list_set_ops
-- [ ] load_yaml
+- [x] load_yaml
 - [x] map_assign
 - [x] map_in_operator
 - [x] map_index
@@ -73,8 +73,8 @@ This directory contains Scheme code generated from the Mochi programs in `tests/
 - [x] print_hello
 - [x] pure_fold
 - [x] pure_global_fold
-- [ ] python_auto
-- [ ] python_math
+- [x] python_auto
+- [x] python_math
 - [x] query_sum_select
 - [x] record_assign
 - [x] right_join
@@ -108,3 +108,5 @@ This directory contains Scheme code generated from the Mochi programs in `tests/
 - [ ] Better handling of date comparisons and sorting when running JOB benchmarks
 - [ ] More efficient dataset grouping and aggregation
 - [ ] Support for concurrent agents and streaming primitives
+
+All programs executed successfully.

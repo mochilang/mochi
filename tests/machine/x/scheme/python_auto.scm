@@ -1,3 +1,4 @@
+(define math (list (cons 'pi 3.141592653589793) (cons 'sqrt (lambda (x) (sqrt x)))))
 (define (map-get m k)
     (let ((p (assoc k m)))
         (if p (cdr p) '()))
