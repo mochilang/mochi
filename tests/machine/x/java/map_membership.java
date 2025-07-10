@@ -8,7 +8,13 @@ class DataClass1 {
 	}
 }
 public class Main {
-	static DataClass1 m = new DataClass1(1, 2);
+	static Map<String,Integer> m = mapOfEntries(entry("a", 1), entry("b", 2));
+	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
+	static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {
+		LinkedHashMap<K,V> m = new LinkedHashMap<>();
+		for (var e : entries) m.put(e.getKey(), e.getValue());
+		return m;
+	}
 	static boolean inOp(Object item, Object collection) {
 		if (collection instanceof Map<?,?> m) return m.containsKey(item);
 		if (collection instanceof Collection<?> c) return c.contains(item);
