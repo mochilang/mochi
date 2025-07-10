@@ -2,7 +2,7 @@
 
 This directory contains Racket source code generated from the Mochi programs in `tests/vm/valid` using the Racket backend. Each program was compiled and executed. Successful runs produced an `.out` file while failures produced an `.error` file.
 
-Compiled programs: 93/97
+Compiled programs: 97/97
 
 ## Checklist
 
@@ -29,12 +29,12 @@ Compiled programs: 93/97
 - [x] fun_expr_in_let
 - [x] fun_three_args
 - [x] group_by
-- [ ] group_by_conditional_sum
+ - [x] group_by_conditional_sum
 - [x] group_by_having
 - [x] group_by_join
 - [x] group_by_left_join
 - [x] group_by_multi_join
-- [ ] group_by_multi_join_sort
+ - [x] group_by_multi_join_sort
 - [x] group_by_sort
 - [x] group_items_iteration
 - [x] if_else
@@ -55,7 +55,7 @@ Compiled programs: 93/97
 - [x] list_index
 - [x] list_nested_assign
 - [x] list_set_ops
-- [ ] load_yaml
+ - [x] load_yaml
 - [x] map_assign
 - [x] map_in_operator
 - [x] map_index
@@ -93,7 +93,7 @@ Compiled programs: 93/97
 - [x] sum_builtin
 - [x] tail_recursion
 - [x] test_block
-- [ ] tree_sum
+ - [x] tree_sum
 - [x] two-sum
 - [x] typed_let
 - [x] typed_var
@@ -105,6 +105,4 @@ Compiled programs: 93/97
 - [x] while_loop
 
 ## TODO
-- [ ] Support YAML loading (needed for `load_yaml.mochi`)
-- [ ] Improve grouped query handling for numeric comparisons
-- [ ] Fix pattern matching for recursive types (`tree_sum.mochi`)
+- [ ] None
