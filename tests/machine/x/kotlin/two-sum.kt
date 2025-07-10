@@ -15,7 +15,7 @@ fun toBool(v: Any?): Boolean = when (v) {
 }
 val result = twoSum(mutableListOf(2, 7, 11, 15), 9)
 
-fun twoSum(nums: Any, target: Int): Any {
+fun twoSum(nums: MutableList<Int>, target: Int): MutableList<Int> {
     val n = len(nums)
     for (i in 0 until n) {
         for (j in i + 1 until n) {
