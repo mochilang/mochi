@@ -1,0 +1,37 @@
+// Mochi implementation of Rosetta "Add a variable to a class instance at runtime" task
+// Translated from Go version in tests/rosetta/x/Go/add-a-variable-to-a-class-instance-at-runtime.go
+
+// Define a simple type holding a map for runtime fields
+
+type SomeStruct {
+  runtimeFields: map<string, string>
+}
+
+fun main() {
+  var ss = SomeStruct { runtimeFields: {} }
+  print("Create two fields at runtime: \n")
+  var i = 1
+  while i <= 2 {
+    print("  Field #" + str(i) + ":\n")
+    print("       Enter name  : ")
+    let name = input()
+    print("       Enter value : ")
+    let value = input()
+    ss.runtimeFields[name] = value
+    print("\n")
+    i = i + 1
+  }
+  while true {
+    print("Which field do you want to inspect ? ")
+    let name = input()
+    if name in ss.runtimeFields {
+      let value = ss.runtimeFields[name]
+      print("Its value is '" + value + "'")
+      return
+    } else {
+      print("There is no field of that name, try again\n")
+    }
+  }
+}
+
+main()
