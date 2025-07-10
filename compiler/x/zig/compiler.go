@@ -322,12 +322,12 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		}
 		return nil
 	}
-	c.writeln(fmt.Sprintf("const %s = struct {", name))
-	c.indent++
+	fields := []string{}
+	methods := []*parser.FunStmt{}
 	for _, m := range t.Members {
 		if m.Field != nil {
 			typ := c.zigType(m.Field.Type)
-			c.writeln(fmt.Sprintf("%s: %s,", sanitizeName(m.Field.Name), typ))
+			fields = append(fields, fmt.Sprintf("%s: %s,", sanitizeName(m.Field.Name), typ))
 			if c.env != nil {
 				st, ok := c.env.GetStruct(t.Name)
 				if !ok {
@@ -338,6 +338,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 				c.env.SetStruct(t.Name, st)
 			}
 		} else if m.Method != nil {
+			methods = append(methods, m.Method)
 			if c.env != nil {
 				st, ok := c.env.GetStruct(t.Name)
 				if !ok {
@@ -361,6 +362,19 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 				return err
 			}
 		}
+	}
+	if len(fields) == 1 && len(methods) == 0 {
+		c.writeln(fmt.Sprintf("const %s = struct { %s };", name, strings.TrimSuffix(fields[0], ",")))
+		return nil
+	}
+	c.writeln(fmt.Sprintf("const %s = struct {", name))
+	c.indent++
+	for _, f := range fields {
+		c.writeln(f)
+	}
+	for _, m := range methods {
+		// methods already emitted by compileMethod
+		_ = m
 	}
 	c.indent--
 	c.writeln("};")
