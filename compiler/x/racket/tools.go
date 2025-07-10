@@ -22,6 +22,8 @@ func Format(src []byte) []byte {
 		cmd := exec.Command("raco", "fmt", "--stdin")
 		cmd.Stdin = bytes.NewReader(src)
 		var out bytes.Buffer
+		cmd.Stdout = &out
+		cmd.Stderr = &out
 		if err := cmd.Run(); err == nil {
 			outBytes := out.Bytes()
 			if len(outBytes) > 0 && outBytes[len(outBytes)-1] != '\n' {
