@@ -1,27 +1,15 @@
 line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramsmap_nested_assign4089131902/001/Main.java:8: error: duplicate class: DataClass1
+/tmp/TestCompileValidProgramsmap_nested_assign3148972679/001/Main.java:8: error: duplicate class: DataClass1
 class DataClass1 {
 ^
-/tmp/TestCompileValidProgramsmap_nested_assign4089131902/001/Main.java:15: error: incompatible types: DataClass1 cannot be converted to int
-	static DataClass1 data = new DataClass1(new DataClass1(1));
-	                                        ^
-/tmp/TestCompileValidProgramsmap_nested_assign4089131902/001/Main.java:17: error: cannot find symbol
-	((List)data.get("outer")).put("inner", 2);
-	           ^
-  symbol:   method get(String)
-  location: variable data of type DataClass1
-/tmp/TestCompileValidProgramsmap_nested_assign4089131902/001/Main.java:17: error: cannot find symbol
+/tmp/TestCompileValidProgramsmap_nested_assign3148972679/001/Main.java:23: error: cannot find symbol
 	((List)data.get("outer")).put("inner", 2);
 	                         ^
   symbol:   method put(String,int)
   location: interface List
-/tmp/TestCompileValidProgramsmap_nested_assign4089131902/001/Main.java:18: error: cannot find symbol
-	System.out.println(((Map)data.get("outer")).get("inner"));
-	                             ^
-  symbol:   method get(String)
-  location: variable data of type DataClass1
-Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
-5 errors
+Note: /tmp/TestCompileValidProgramsmap_nested_assign3148972679/001/Main.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+2 errors
 
 
   1| var data = {"outer": {"inner": 1}}
