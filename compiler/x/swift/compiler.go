@@ -684,7 +684,7 @@ func (c *compiler) postfix(p *parser.PostfixExpr) (string, error) {
 						if sel := p.Target.Selector; sel != nil && len(sel.Tail) == 0 {
 							if m, ok2 := c.mapFields[sel.Root]; ok2 {
 								if t, ok3 := m[key]; ok3 {
-									val = fmt.Sprintf("%s[%q] as! %s", val, key, t)
+									val = fmt.Sprintf("(%s[%q] as! %s)", val, key, t)
 									continue
 								}
 							}
@@ -1889,6 +1889,37 @@ func (c *compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	if len(q.Joins) > 0 || q.Distinct {
 		return "", fmt.Errorf("unsupported query")
 	}
+
+	if q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && len(q.Froms) == 0 {
+		if call := callExprSimple(q.Select); call != nil && len(call.Args) == 1 {
+			arg := call.Args[0]
+			if isVarRef(arg, q.Var) {
+				src, err := c.expr(q.Source)
+				if err != nil {
+					return "", err
+				}
+				if q.Where != nil {
+					cond, err := c.expr(q.Where)
+					if err != nil {
+						return "", err
+					}
+					src = fmt.Sprintf("%s.filter { %s in %s }", src, q.Var, cond)
+				}
+				switch call.Func {
+				case "sum":
+					return fmt.Sprintf("%s.reduce(0, +)", src), nil
+				case "count", "len":
+					return fmt.Sprintf("%s.count", src), nil
+				case "min":
+					return fmt.Sprintf("%s.min()!", src), nil
+				case "max":
+					return fmt.Sprintf("%s.max()!", src), nil
+				case "avg":
+					return fmt.Sprintf("({ let _t = %s; return _t.reduce(0, +) / _t.count })()", src), nil
+				}
+			}
+		}
+	}
 	if len(q.Froms) == 0 && q.Where == nil && q.Sort != nil {
 		src, err := c.expr(q.Source)
 		if err != nil {
@@ -2144,6 +2175,16 @@ func isVarRef(e *parser.Expr, name string) bool {
 	}
 	sel := e.Binary.Left.Value.Target.Selector
 	return sel != nil && sel.Root == name && len(sel.Tail) == 0
+}
+
+func callExprSimple(e *parser.Expr) *parser.CallExpr {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil {
+		return nil
+	}
+	if len(e.Binary.Right) == 0 && len(e.Binary.Left.Value.Ops) == 0 {
+		return e.Binary.Left.Value.Target.Call
+	}
+	return nil
 }
 
 func copyMap[K comparable, V any](m map[K]V) map[K]V {

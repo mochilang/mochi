@@ -1,6 +1,6 @@
 # Machine-generated Swift Outputs
 
-Compiled programs: 81/97
+Compiled programs: 84/97
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -58,7 +58,7 @@ Compiled programs: 81/97
 - [x] map_int_key.mochi
 - [x] map_literal_dynamic.mochi
 - [x] map_membership.mochi
-- [ ] map_nested_assign.mochi
+- [x] map_nested_assign.mochi
 - [x] match_expr.mochi
 - [x] match_full.mochi
 - [x] math_ops.mochi
@@ -67,11 +67,11 @@ Compiled programs: 81/97
 - [x] nested_function.mochi
 - [ ] order_by_map.mochi
 - [ ] outer_join.mochi
-- [ ] partial_application.mochi
+- [x] partial_application.mochi
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
-- [ ] query_sum_select.mochi
+- [x] query_sum_select.mochi
 - [x] record_assign.mochi
 - [ ] right_join.mochi
 - [x] save_jsonl_stdout.mochi
