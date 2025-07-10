@@ -1585,8 +1585,13 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 			expr = fmt.Sprintf("(int64(%s) %s int64(%s))", left, op, right)
 			next = types.Int64Type{}
 		case isInt(leftType) && isInt(rightType):
-			expr = fmt.Sprintf("(%s %s %s)", left, op, right)
-			next = types.IntType{}
+			if op == "/" {
+				expr = fmt.Sprintf("(float64(%s) / float64(%s))", left, right)
+				next = types.FloatType{}
+			} else {
+				expr = fmt.Sprintf("(%s %s %s)", left, op, right)
+				next = types.IntType{}
+			}
 		case isFloat(leftType) && isFloat(rightType):
 			expr = fmt.Sprintf("(%s %s %s)", left, op, right)
 			next = types.FloatType{}

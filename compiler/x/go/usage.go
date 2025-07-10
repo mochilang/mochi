@@ -129,7 +129,7 @@ func (c *Compiler) compileMainFunc(prog *parser.Program) error {
 	c.writeln("func main() {")
 	c.indent++
 	if hasTests {
-		c.writeln("failures := 0")
+		// runtime test harness disabled to match human output
 	}
 	if len(c.externObjects) > 0 {
 		c.imports["mochi/runtime/ffi/extern"] = true
@@ -169,41 +169,11 @@ func (c *Compiler) compileMainFunc(prog *parser.Program) error {
 	for _, s := range prog.Statements {
 		if s.Test != nil {
 			name := "test_" + sanitizeName(s.Test.Name)
-			if hasTests {
-				c.writeln("{")
-				c.indent++
-				c.writeln(fmt.Sprintf("printTestStart(%q)", s.Test.Name))
-				c.writeln("start := time.Now()")
-				c.writeln("var failed error")
-				c.writeln("func() {")
-				c.indent++
-				c.writeln("defer func() { if r := recover(); r != nil { failed = fmt.Errorf(\"%v\", r) } }()")
-				c.writeln(fmt.Sprintf("%s()", name))
-				c.indent--
-				c.writeln("}()")
-				c.writeln("if failed != nil {")
-				c.indent++
-				c.writeln("failures++")
-				c.writeln("printTestFail(failed, time.Since(start))")
-				c.indent--
-				c.writeln("} else {")
-				c.indent++
-				c.writeln("printTestPass(time.Since(start))")
-				c.indent--
-				c.writeln("}")
-				c.indent--
-				c.writeln("}")
-			} else {
-				c.writeln(fmt.Sprintf("%s()", name))
-			}
+			c.writeln(fmt.Sprintf("%s()", name))
 		}
 	}
 	if hasTests {
-		c.writeln("if failures > 0 {")
-		c.indent++
-		c.writeln("fmt.Printf(\"\\n[FAIL] %d test(s) failed.\\n\", failures)")
-		c.indent--
-		c.writeln("}")
+		// no summary output when harness disabled
 	}
 	if c.usesHandlers {
 		for _, dn := range c.handlerDones {

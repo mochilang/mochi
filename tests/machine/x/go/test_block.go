@@ -45,28 +45,6 @@ func test_addition_works() {
 }
 
 func main() {
-	failures := 0
 	fmt.Println("ok")
-	{
-		printTestStart("addition works")
-		start := time.Now()
-		var failed error
-		func() {
-			defer func() {
-				if r := recover(); r != nil {
-					failed = fmt.Errorf("%v", r)
-				}
-			}()
-			test_addition_works()
-		}()
-		if failed != nil {
-			failures++
-			printTestFail(failed, time.Since(start))
-		} else {
-			printTestPass(time.Since(start))
-		}
-	}
-	if failures > 0 {
-		fmt.Printf("\n[FAIL] %d test(s) failed.\n", failures)
-	}
+	test_addition_works()
 }
