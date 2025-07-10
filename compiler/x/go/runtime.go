@@ -555,7 +555,44 @@ const (
 		"}\n"
 
 	helperCast = "func _cast[T any](v any) T {\n" +
-		"    return v.(T)\n" +
+		"    if tv, ok := v.(T); ok { return tv }\n" +
+		"    var out T\n" +
+		"    switch any(out).(type) {\n" +
+		"    case int:\n" +
+		"        switch vv := v.(type) {\n" +
+		"        case int:\n" +
+		"            return any(vv).(T)\n" +
+		"        case float64:\n" +
+		"            return any(int(vv)).(T)\n" +
+		"        case float32:\n" +
+		"            return any(int(vv)).(T)\n" +
+		"        }\n" +
+		"    case float64:\n" +
+		"        switch vv := v.(type) {\n" +
+		"        case int:\n" +
+		"            return any(float64(vv)).(T)\n" +
+		"        case float64:\n" +
+		"            return any(vv).(T)\n" +
+		"        case float32:\n" +
+		"            return any(float64(vv)).(T)\n" +
+		"        }\n" +
+		"    case float32:\n" +
+		"        switch vv := v.(type) {\n" +
+		"        case int:\n" +
+		"            return any(float32(vv)).(T)\n" +
+		"        case float64:\n" +
+		"            return any(float32(vv)).(T)\n" +
+		"        case float32:\n" +
+		"            return any(vv).(T)\n" +
+		"        }\n" +
+		"    }\n" +
+		"    if m, ok := v.(map[any]any); ok {\n" +
+		"        v = _convertMapAny(m)\n" +
+		"    }\n" +
+		"    data, err := json.Marshal(v)\n" +
+		"    if err != nil { panic(err) }\n" +
+		"    if err := json.Unmarshal(data, &out); err != nil { panic(err) }\n" +
+		"    return out\n" +
 		"}\n"
 
 	helperConvertMapAny = "func _convertMapAny(m map[any]any) map[string]any {\n" +
