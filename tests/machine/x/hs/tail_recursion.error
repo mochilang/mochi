@@ -1,0 +1,83 @@
+
+/workspace/mochi/tests/machine/x/hs/tail_recursion.hs:14:12: error:
+    • Found hole: _asInt :: Int -> Integer
+      Or perhaps ‘_asInt’ is mis-spelled, or not in scope
+    • In the first argument of ‘(==)’, namely ‘_asInt (n)’
+      In the expression: _asInt (n) == 0
+      In the expression:
+        if (_asInt (n) == 0) then Just (acc) else Nothing
+    • Relevant bindings include
+        acc :: Int
+          (bound at /workspace/mochi/tests/machine/x/hs/tail_recursion.hs:13:11)
+        n :: Int
+          (bound at /workspace/mochi/tests/machine/x/hs/tail_recursion.hs:13:9)
+        sum_rec :: Int -> Int -> Int
+          (bound at /workspace/mochi/tests/machine/x/hs/tail_recursion.hs:13:1)
+      Valid hole fits include
+        toInteger :: forall a. Integral a => a -> Integer
+          with toInteger @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/machine/x/hs/tail_recursion.hs:4:8-11
+           (and originally defined in ‘GHC.Real’))
+        toEnum :: forall a. Enum a => Int -> a
+          with toEnum @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/machine/x/hs/tail_recursion.hs:4:8-11
+           (and originally defined in ‘GHC.Enum’))
+        fromIntegral :: forall a b. (Integral a, Num b) => a -> b
+          with fromIntegral @Int @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/machine/x/hs/tail_recursion.hs:4:8-11
+           (and originally defined in ‘GHC.Real’))
+   |
+14 |   case if (_asInt (n) == 0) then Just (acc) else Nothing of Just v -> Just v; Nothing -> Just (sum_rec (_asInt (n) - 1) (acc + n))
+   |            ^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/tail_recursion.hs:14:105: error:
+    • Found hole: _asInt :: Int -> Int
+      Or perhaps ‘_asInt’ is mis-spelled, or not in scope
+    • In the first argument of ‘(-)’, namely ‘_asInt (n)’
+      In the first argument of ‘sum_rec’, namely ‘(_asInt (n) - 1)’
+      In the first argument of ‘Just’, namely
+        ‘(sum_rec (_asInt (n) - 1) (acc + n))’
+    • Relevant bindings include
+        acc :: Int
+          (bound at /workspace/mochi/tests/machine/x/hs/tail_recursion.hs:13:11)
+        n :: Int
+          (bound at /workspace/mochi/tests/machine/x/hs/tail_recursion.hs:13:9)
+        sum_rec :: Int -> Int -> Int
+          (bound at /workspace/mochi/tests/machine/x/hs/tail_recursion.hs:13:1)
+      Valid hole fits include
+        negate :: forall a. Num a => a -> a
+          with negate @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/machine/x/hs/tail_recursion.hs:4:8-11
+           (and originally defined in ‘GHC.Num’))
+        fromIntegral :: forall a b. (Integral a, Num b) => a -> b
+          with fromIntegral @Int @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/machine/x/hs/tail_recursion.hs:4:8-11
+           (and originally defined in ‘GHC.Real’))
+        id :: forall a. a -> a
+          with id @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/machine/x/hs/tail_recursion.hs:4:8-11
+           (and originally defined in ‘GHC.Base’))
+        fromEnum :: forall a. Enum a => a -> Int
+          with fromEnum @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/machine/x/hs/tail_recursion.hs:4:8-11
+           (and originally defined in ‘GHC.Enum’))
+        pred :: forall a. Enum a => a -> a
+          with pred @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/machine/x/hs/tail_recursion.hs:4:8-11
+           (and originally defined in ‘GHC.Enum’))
+        succ :: forall a. Enum a => a -> a
+          with succ @Int
+          (imported from ‘Prelude’ at /workspace/mochi/tests/machine/x/hs/tail_recursion.hs:4:8-11
+           (and originally defined in ‘GHC.Enum’))
+        (Some hole fits suppressed; use -fmax-valid-hole-fits=N or -fno-max-valid-hole-fits)
+   |
+14 |   case if (_asInt (n) == 0) then Just (acc) else Nothing of Just v -> Just v; Nothing -> Just (sum_rec (_asInt (n) - 1) (acc + n))
+   |                                                                                                         ^^^^^^
+
+
+Context around line 14:
+   12| sum_rec :: Int -> Int -> Int
+   13| sum_rec n acc = fromMaybe (0) $
+   14|   case if (_asInt (n) == 0) then Just (acc) else Nothing of Just v -> Just v; Nothing -> Just (sum_rec (_asInt (n) - 1) (acc + n))
+   15| 
+   16| main :: IO ()

@@ -1,28 +1,27 @@
 
-/workspace/mochi/tests/machine/x/hs/list_nested_assign.hs:109:16: error:
+/workspace/mochi/tests/machine/x/hs/list_nested_assign.hs:16:16: error:
     • No instance for (Num [[a0]]) arising from the literal ‘5’
     • In the expression: 5
       In an equation for ‘matrix’: matrix = 5
       In the expression:
         do let matrix = 5
            print (((matrix !! 1) !! 0))
-    |
-109 |   let matrix = 5
-    |                ^
+   |
+16 |   let matrix = 5
+   |                ^
 
-/workspace/mochi/tests/machine/x/hs/list_nested_assign.hs:110:3: error:
+/workspace/mochi/tests/machine/x/hs/list_nested_assign.hs:17:3: error:
     • Ambiguous type variable ‘a0’ arising from a use of ‘print’
       prevents the constraint ‘(Show a0)’ from being solved.
       Relevant bindings include
         matrix :: [[a0]]
-          (bound at /workspace/mochi/tests/machine/x/hs/list_nested_assign.hs:109:7)
+          (bound at /workspace/mochi/tests/machine/x/hs/list_nested_assign.hs:16:7)
       Probable fix: use a type annotation to specify what ‘a0’ should be.
       Potentially matching instances:
-        instance (Show k, Show a) => Show (Map.Map k a)
-          -- Defined in ‘Data.Map.Internal’
         instance Show Ordering -- Defined in ‘GHC.Show’
-        ...plus 27 others
-        ...plus 16 instances involving out-of-scope types
+        instance Show a => Show (Maybe a) -- Defined in ‘GHC.Show’
+        ...plus 25 others
+        ...plus 12 instances involving out-of-scope types
         (use -fprint-potential-instances to see them all)
     • In a stmt of a 'do' block: print (((matrix !! 1) !! 0))
       In the expression:
@@ -32,14 +31,14 @@
           main
             = do let matrix = ...
                  print (((matrix !! 1) !! 0))
-    |
-110 |   print (((matrix !! 1) !! 0))
-    |   ^^^^^
+   |
+17 |   print (((matrix !! 1) !! 0))
+   |   ^^^^^
 
 
-Context around line 109:
-  107| main :: IO ()
-  108| main = do
-  109|   let matrix = 5
-  110|   print (((matrix !! 1) !! 0))
-  111| 
+Context around line 16:
+   14| main :: IO ()
+   15| main = do
+   16|   let matrix = 5
+   17|   print (((matrix !! 1) !! 0))
+   18| 

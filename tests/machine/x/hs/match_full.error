@@ -1,40 +1,40 @@
 
-/workspace/mochi/tests/machine/x/hs/match_full.hs:106:14: error:
+/workspace/mochi/tests/machine/x/hs/match_full.hs:13:14: error:
     • No instance for (Num String) arising from the literal ‘0’
     • In the expression: 0
       In an equation for ‘classify’: classify n = 0
-    |
-106 | classify n = 0
-    |              ^
+   |
+13 | classify n = 0
+   |              ^
 
-/workspace/mochi/tests/machine/x/hs/match_full.hs:110:9: error:
+/workspace/mochi/tests/machine/x/hs/match_full.hs:17:9: error:
     • No instance for (Num String) arising from the literal ‘0’
     • In the expression: 0
       In an equation for ‘label’: label = 0
-    |
-110 | label = 0
-    |         ^
+   |
+17 | label = 0
+   |         ^
 
-/workspace/mochi/tests/machine/x/hs/match_full.hs:114:8: error:
+/workspace/mochi/tests/machine/x/hs/match_full.hs:21:8: error:
     • No instance for (Num String) arising from the literal ‘0’
     • In the expression: 0
       In an equation for ‘mood’: mood = 0
-    |
-114 | mood = 0
-    |        ^
+   |
+21 | mood = 0
+   |        ^
 
-/workspace/mochi/tests/machine/x/hs/match_full.hs:118:10: error:
+/workspace/mochi/tests/machine/x/hs/match_full.hs:25:10: error:
     • No instance for (Num String) arising from the literal ‘0’
     • In the expression: 0
       In an equation for ‘status’: status = 0
-    |
-118 | status = 0
-    |          ^
+   |
+25 | status = 0
+   |          ^
 
 
-Context around line 106:
-  104| 
-  105| classify :: Int -> String
-  106| classify n = 0
-  107| 
-  108| x = 2
+Context around line 13:
+   11| 
+   12| classify :: Int -> String
+   13| classify n = 0
+   14| 
+   15| x = 2

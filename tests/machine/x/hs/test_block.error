@@ -1,0 +1,49 @@
+
+/workspace/mochi/tests/machine/x/hs/test_block.hs:113:12: error:
+    • Found hole: _asInt :: Integer -> Integer
+      Or perhaps ‘_asInt’ is mis-spelled, or not in scope
+    • In the first argument of ‘(==)’, namely ‘_asInt (x)’
+      In the first argument of ‘expect’, namely ‘((_asInt (x) == 3))’
+      In a stmt of a 'do' block: expect ((_asInt (x) == 3))
+    • Relevant bindings include
+        x :: Integer
+          (bound at /workspace/mochi/tests/machine/x/hs/test_block.hs:112:7)
+        test_addition_works :: IO ()
+          (bound at /workspace/mochi/tests/machine/x/hs/test_block.hs:111:1)
+      Valid hole fits include
+        fromInteger :: forall a. Num a => Integer -> a
+          with fromInteger @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/machine/x/hs/test_block.hs:4:8-11
+           (and originally defined in ‘GHC.Num’))
+        negate :: forall a. Num a => a -> a
+          with negate @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/machine/x/hs/test_block.hs:4:8-11
+           (and originally defined in ‘GHC.Num’))
+        fromIntegral :: forall a b. (Integral a, Num b) => a -> b
+          with fromIntegral @Integer @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/machine/x/hs/test_block.hs:4:8-11
+           (and originally defined in ‘GHC.Real’))
+        toInteger :: forall a. Integral a => a -> Integer
+          with toInteger @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/machine/x/hs/test_block.hs:4:8-11
+           (and originally defined in ‘GHC.Real’))
+        id :: forall a. a -> a
+          with id @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/machine/x/hs/test_block.hs:4:8-11
+           (and originally defined in ‘GHC.Base’))
+        pred :: forall a. Enum a => a -> a
+          with pred @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/machine/x/hs/test_block.hs:4:8-11
+           (and originally defined in ‘GHC.Enum’))
+        (Some hole fits suppressed; use -fmax-valid-hole-fits=N or -fno-max-valid-hole-fits)
+    |
+113 |   expect ((_asInt (x) == 3))
+    |            ^^^^^^
+
+
+Context around line 113:
+  111| test_addition_works = do
+  112|   let x = (1 + 2)
+  113|   expect ((_asInt (x) == 3))
+  114| 
+  115| main :: IO ()
