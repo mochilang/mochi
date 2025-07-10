@@ -36,21 +36,24 @@ var grouped = (() {
   var _q1 = <dynamic>[];
   var _g2 = <dynamic, List<dynamic>>{};
   for (var x in filtered) {
-    var _k4 = x['part'];
-    _g2.putIfAbsent(_k4, () => <dynamic>[]).add({'x': x});
+    var _k5 = x['part'];
+    _g2.putIfAbsent(_k5, () => <dynamic>[]).add(x);
   }
   for (var entry in _g2.entries) {
     var g = entry.value;
-    var _k4 = entry.key;
+    var _k5 = entry.key;
     _q1.add({
-      'part': _k4,
+      'part': _k5,
       'total': (() {
-        var _q5 = <dynamic>[];
-        for (var r in g) {
-          _q5.add(r['value']);
-        }
-        return _q5;
-      })().reduce((a, b) => a + b),
+        var _t7 = (() {
+          var _q6 = <dynamic>[];
+          for (var r in g) {
+            _q6.add(r['value']);
+          }
+          return _q6;
+        })();
+        return _t7.reduce((a, b) => a + b);
+      })(),
     });
   }
   return _q1;

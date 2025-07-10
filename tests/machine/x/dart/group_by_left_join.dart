@@ -33,7 +33,7 @@ var stats = (() {
       'count': (() {
         var _q5 = <dynamic>[];
         for (var r in g) {
-          if (!(r['o'])) continue;
+          if (r['o'] == null) continue;
           _q5.add(r);
         }
         return _q5;
