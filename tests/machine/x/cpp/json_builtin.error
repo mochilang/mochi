@@ -1,8 +1,0 @@
-line 15: ../../../tests/machine/x/cpp/json_builtin.cpp: In function ‘int main()’:
-../../../tests/machine/x/cpp/json_builtin.cpp:15:3: error: ‘json’ was not declared in this scope
-   15 |   json(m);
-      |   ^~~~
-
- 14 |   auto m = __struct1{1, 2};
- 15 |   json(m);
- 16 |   return 0;

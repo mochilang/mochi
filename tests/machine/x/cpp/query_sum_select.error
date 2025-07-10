@@ -1,33 +1,33 @@
-line 13: ../../../tests/machine/x/cpp/query_sum_select.cpp: In lambda function:
-../../../tests/machine/x/cpp/query_sum_select.cpp:13:9: error: lambda-expression in unevaluated context only available with ‘-std=c++20’ or ‘-std=gnu++20’
-   13 |         [&](auto v) { return std::accumulate(v.begin(), v.end(), 0); })(n))>
+line 58: ../../../tests/machine/x/cpp/query_sum_select.cpp: In lambda function:
+../../../tests/machine/x/cpp/query_sum_select.cpp:58:9: error: lambda-expression in unevaluated context only available with ‘-std=c++20’ or ‘-std=gnu++20’
+   58 |         [&](auto v) { return std::accumulate(v.begin(), v.end(), 0); })(n))>
       |         ^
-../../../tests/machine/x/cpp/query_sum_select.cpp:13:73: error: ‘n’ was not declared in this scope
-   13 |         [&](auto v) { return std::accumulate(v.begin(), v.end(), 0); })(n))>
+../../../tests/machine/x/cpp/query_sum_select.cpp:58:73: error: ‘n’ was not declared in this scope
+   58 |         [&](auto v) { return std::accumulate(v.begin(), v.end(), 0); })(n))>
       |                                                                         ^
-../../../tests/machine/x/cpp/query_sum_select.cpp:13:76: error: template argument 1 is invalid
-   13 |         [&](auto v) { return std::accumulate(v.begin(), v.end(), 0); })(n))>
+../../../tests/machine/x/cpp/query_sum_select.cpp:58:76: error: template argument 1 is invalid
+   58 |         [&](auto v) { return std::accumulate(v.begin(), v.end(), 0); })(n))>
       |                                                                            ^
-../../../tests/machine/x/cpp/query_sum_select.cpp:13:76: error: template argument 2 is invalid
-../../../tests/machine/x/cpp/query_sum_select.cpp:18:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
-   18 |       __items.push_back(
+../../../tests/machine/x/cpp/query_sum_select.cpp:58:76: error: template argument 2 is invalid
+../../../tests/machine/x/cpp/query_sum_select.cpp:63:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+   63 |       __items.push_back(
       |               ^~~~~~~~~
 ../../../tests/machine/x/cpp/query_sum_select.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:2)> [with auto:2 = int]’:
-../../../tests/machine/x/cpp/query_sum_select.cpp:19:75:   required from here
-../../../tests/machine/x/cpp/query_sum_select.cpp:19:51: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
-   19 |           ([&](auto v) { return std::accumulate(v.begin(), v.end(), 0); })(n));
+../../../tests/machine/x/cpp/query_sum_select.cpp:64:75:   required from here
+../../../tests/machine/x/cpp/query_sum_select.cpp:64:51: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+   64 |           ([&](auto v) { return std::accumulate(v.begin(), v.end(), 0); })(n));
       |                                                 ~~^~~~~
-../../../tests/machine/x/cpp/query_sum_select.cpp:19:62: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
-   19 |           ([&](auto v) { return std::accumulate(v.begin(), v.end(), 0); })(n));
+../../../tests/machine/x/cpp/query_sum_select.cpp:64:62: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+   64 |           ([&](auto v) { return std::accumulate(v.begin(), v.end(), 0); })(n));
       |                                                            ~~^~~
 ../../../tests/machine/x/cpp/query_sum_select.cpp: In function ‘int main()’:
-../../../tests/machine/x/cpp/query_sum_select.cpp:25:35: error: request for member ‘size’ in ‘__tmp1’, which is of non-class type ‘int’
-   25 |     for (size_t i = 0; i < __tmp1.size(); ++i) {
+../../../tests/machine/x/cpp/query_sum_select.cpp:70:35: error: request for member ‘size’ in ‘__tmp1’, which is of non-class type ‘int’
+   70 |     for (size_t i = 0; i < __tmp1.size(); ++i) {
       |                                   ^~~~
-../../../tests/machine/x/cpp/query_sum_select.cpp:28:44: error: invalid types ‘int[size_t {aka long unsigned int}]’ for array subscript
-   28 |       std::cout << std::boolalpha << __tmp1[i];
+../../../tests/machine/x/cpp/query_sum_select.cpp:73:44: error: invalid types ‘int[size_t {aka long unsigned int}]’ for array subscript
+   73 |       std::cout << std::boolalpha << __tmp1[i];
       |                                            ^
 
- 12 |     std::vector<decltype((
- 13 |         [&](auto v) { return std::accumulate(v.begin(), v.end(), 0); })(n))>
- 14 |         __items;
+ 57 |     std::vector<decltype((
+ 58 |         [&](auto v) { return std::accumulate(v.begin(), v.end(), 0); })(n))>
+ 59 |         __items;

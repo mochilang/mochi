@@ -1,36 +1,36 @@
-line 25: ../../../tests/machine/x/cpp/group_by_multi_join.cpp:25:13: error: ‘ps’ was not declared in this scope
-   25 |   decltype((ps.cost * ps.qty)) value;
+line 125: ../../../tests/machine/x/cpp/group_by_multi_join.cpp:125:13: error: ‘ps’ was not declared in this scope
+  125 |   decltype((ps.cost * ps.qty)) value;
       |             ^~
-../../../tests/machine/x/cpp/group_by_multi_join.cpp:25:23: error: ‘ps’ was not declared in this scope
-   25 |   decltype((ps.cost * ps.qty)) value;
+../../../tests/machine/x/cpp/group_by_multi_join.cpp:125:23: error: ‘ps’ was not declared in this scope
+  125 |   decltype((ps.cost * ps.qty)) value;
       |                       ^~
-../../../tests/machine/x/cpp/group_by_multi_join.cpp:25:13: error: ‘ps’ was not declared in this scope
-   25 |   decltype((ps.cost * ps.qty)) value;
+../../../tests/machine/x/cpp/group_by_multi_join.cpp:125:13: error: ‘ps’ was not declared in this scope
+  125 |   decltype((ps.cost * ps.qty)) value;
       |             ^~
-../../../tests/machine/x/cpp/group_by_multi_join.cpp:25:23: error: ‘ps’ was not declared in this scope
-   25 |   decltype((ps.cost * ps.qty)) value;
+../../../tests/machine/x/cpp/group_by_multi_join.cpp:125:23: error: ‘ps’ was not declared in this scope
+  125 |   decltype((ps.cost * ps.qty)) value;
       |                       ^~
 ../../../tests/machine/x/cpp/group_by_multi_join.cpp: In lambda function:
-../../../tests/machine/x/cpp/group_by_multi_join.cpp:84:13: warning: narrowing conversion of ‘<lambda closure object>main()::<lambda()>::<lambda(auto:1)>().main()::<lambda()>::<lambda(auto:1)>(main()::<lambda()>::<lambda()>())’ from ‘int’ to ‘bool’ [-Wnarrowing]
-   82 |           g.key, ([&](auto v) {
+../../../tests/machine/x/cpp/group_by_multi_join.cpp:214:13: warning: narrowing conversion of ‘<lambda closure object>main()::<lambda()>::<lambda(auto:1)>().main()::<lambda()>::<lambda(auto:1)>(main()::<lambda()>::<lambda()>())’ from ‘int’ to ‘bool’ [-Wnarrowing]
+  212 |           g.key, ([&](auto v) {
       |                  ~~~~~~~~~~~~~~
-   83 |             return std::accumulate(v.begin(), v.end(), 0);
+  213 |             return std::accumulate(v.begin(), v.end(), 0);
       |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   84 |           })(([&]() {
+  214 |           })(([&]() {
       |           ~~^~~~~~~~~
-   85 |             std::vector<decltype(std::declval<__struct4>().value)> __items;
+  215 |             std::vector<decltype(std::declval<__struct4>().value)> __items;
       |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   86 |             for (auto r : g.items) {
+  216 |             for (auto r : g.items) {
       |             ~~~~~~~~~~~~~~~~~~~~~~~~
-   87 |               __items.push_back(r.value);
+  217 |               __items.push_back(r.value);
       |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   88 |             }
+  218 |             }
       |             ~
-   89 |             return __items;
+  219 |             return __items;
       |             ~~~~~~~~~~~~~~~
-   90 |           })())});
+  220 |           })())});
       |           ~~~~~
 
- 24 |   decltype(std::declval<__struct3>().part) part;
- 25 |   decltype((ps.cost * ps.qty)) value;
- 26 | };
+124 |   decltype(std::declval<__struct3>().part) part;
+125 |   decltype((ps.cost * ps.qty)) value;
+126 | };

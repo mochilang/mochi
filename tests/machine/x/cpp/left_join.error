@@ -1,19 +1,19 @@
-line 20: ../../../tests/machine/x/cpp/left_join.cpp:20:12: error: ‘c’ was not declared in this scope
-   20 |   decltype(c) customer;
+line 100: ../../../tests/machine/x/cpp/left_join.cpp:100:12: error: ‘c’ was not declared in this scope
+  100 |   decltype(c) customer;
       |            ^
-../../../tests/machine/x/cpp/left_join.cpp:20:12: error: ‘c’ was not declared in this scope
+../../../tests/machine/x/cpp/left_join.cpp:100:12: error: ‘c’ was not declared in this scope
 ../../../tests/machine/x/cpp/left_join.cpp: In lambda function:
-../../../tests/machine/x/cpp/left_join.cpp:38:45: error: cannot convert ‘__struct1’ to ‘int’ in initialization
-   38 |           __items.push_back(__struct3{o.id, c, o.total});
+../../../tests/machine/x/cpp/left_join.cpp:138:45: error: cannot convert ‘__struct1’ to ‘int’ in initialization
+  138 |           __items.push_back(__struct3{o.id, c, o.total});
       |                                             ^
       |                                             |
       |                                             __struct1
-../../../tests/machine/x/cpp/left_join.cpp:42:45: error: cannot convert ‘__struct1’ to ‘int’ in initialization
-   42 |           __items.push_back(__struct3{o.id, c, o.total});
+../../../tests/machine/x/cpp/left_join.cpp:142:45: error: cannot convert ‘__struct1’ to ‘int’ in initialization
+  142 |           __items.push_back(__struct3{o.id, c, o.total});
       |                                             ^
       |                                             |
       |                                             __struct1
 
- 19 |   decltype(std::declval<__struct2>().id) orderId;
- 20 |   decltype(c) customer;
- 21 |   decltype(std::declval<__struct2>().total) total;
+ 99 |   decltype(std::declval<__struct2>().id) orderId;
+100 |   decltype(c) customer;
+101 |   decltype(std::declval<__struct2>().total) total;

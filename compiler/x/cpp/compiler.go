@@ -12,6 +12,11 @@ import (
 	"mochi/parser"
 )
 
+type structInfo struct {
+	Name   string
+	Fields []string
+}
+
 // Compiler translates a subset of Mochi to simple C++17 code.
 type Compiler struct {
 	header bytes.Buffer
@@ -24,7 +29,7 @@ type Compiler struct {
 
 	aliases map[string]string
 
-	structMap   map[string]string
+	structMap   map[string]*structInfo
 	structCount int
 	varStruct   map[string]string
 	elemType    map[string]string
@@ -36,7 +41,7 @@ func New() *Compiler {
 	return &Compiler{
 		vars:      map[string]string{},
 		aliases:   map[string]string{},
-		structMap: map[string]string{},
+		structMap: map[string]*structInfo{},
 		varStruct: map[string]string{},
 		elemType:  map[string]string{},
 		funParams: map[string]int{},
@@ -91,7 +96,7 @@ func (c *Compiler) writeIndent() {
 func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.header.Reset()
-	c.structMap = map[string]string{}
+	c.structMap = map[string]*structInfo{}
 	c.structCount = 0
 	c.headerWriteln("#include <iostream>")
 	c.headerWriteln("#include <vector>")
@@ -102,6 +107,15 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.headerWriteln("#include <utility>")
 	c.headerWriteln("")
 
+	c.headerWriteln("template<typename T> void __json(const T&);")
+	c.headerWriteln("inline void __json(int v){ std::cout<<v; }")
+	c.headerWriteln("inline void __json(double v){ std::cout<<v; }")
+	c.headerWriteln("inline void __json(bool v){ std::cout<<(v?\"true\":\"false\"); }")
+	c.headerWriteln("inline void __json(const std::string &v){ std::cout<<\"\\\"\"<<v<<\"\\\"\"; }")
+	c.headerWriteln("inline void __json(const char* v){ std::cout<<\"\\\"\"<<v<<\"\\\"\"; }")
+	c.headerWriteln("template<typename T> void __json(const std::vector<T>& v){ std::cout<<\"[\"; bool first=true; for(const auto&x:v){ if(!first) std::cout<<\",\"; first=false; __json(x);} std::cout<<\"]\"; }")
+	c.headerWriteln("template<typename K,typename V> void __json(const std::map<K,V>& m){ std::cout<<\"{\"; bool first=true; for(const auto&kv:m){ if(!first) std::cout<<\",\"; first=false; __json(kv.first); std::cout<<\":\"; __json(kv.second);} std::cout<<\"}\"; }")
+	c.headerWriteln("template<typename K,typename V> void __json(const std::unordered_map<K,V>& m){ std::cout<<\"{\"; bool first=true; for(const auto&kv:m){ if(!first) std::cout<<\",\"; first=false; __json(kv.first); std::cout<<\":\"; __json(kv.second);} std::cout<<\"}\"; }")
 	c.headerWriteln("")
 
 	// first generate function declarations
@@ -880,13 +894,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		if simple {
 			sig := strings.Join(names, ",")
-			name, ok := c.structMap[sig]
+			info, ok := c.structMap[sig]
 			if !ok {
 				c.structCount++
-				name = fmt.Sprintf("__struct%d", c.structCount)
-				c.structMap[sig] = name
+				info = &structInfo{Name: fmt.Sprintf("__struct%d", c.structCount), Fields: append([]string(nil), names...)}
+				c.structMap[sig] = info
 				var def strings.Builder
-				def.WriteString("struct " + name + " {")
+				def.WriteString("struct " + info.Name + " {")
 				for i, n := range names {
 					ftype := fmt.Sprintf("decltype(%s)", vals[i])
 					if strings.Contains(vals[i], "((int)") {
@@ -934,8 +948,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				}
 				def.WriteString("};")
 				c.headerWriteln(def.String())
+				c.generateJSONPrinter(info)
 			}
-			return fmt.Sprintf("%s{%s}", name, strings.Join(vals, ", ")), nil
+			return fmt.Sprintf("%s{%s}", info.Name, strings.Join(vals, ", ")), nil
 		}
 		keys := []string{}
 		for _, it := range p.Map.Items {
@@ -1051,6 +1066,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		case "values":
 			if len(args) == 1 {
 				return fmt.Sprintf("([&](){ std::vector<int> v; for(auto &p : %s) v.push_back(p.second); return v; })()", args[0]), nil
+			}
+		case "json":
+			if len(args) == 1 {
+				return fmt.Sprintf("(__json(%s))", args[0]), nil
 			}
 		}
 		if n, ok := c.funParams[name]; ok && len(args) < n {
@@ -1197,20 +1216,21 @@ func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error
 		inits[i] = val
 	}
 	sig := sl.Name + ":" + strings.Join(fieldNames, ",")
-	name, ok := c.structMap[sig]
+	info, ok := c.structMap[sig]
 	if !ok {
 		c.structCount++
-		name = fmt.Sprintf("__struct%d", c.structCount)
-		c.structMap[sig] = name
+		info = &structInfo{Name: fmt.Sprintf("__struct%d", c.structCount), Fields: append([]string(nil), fieldNames...)}
+		c.structMap[sig] = info
 		var def strings.Builder
-		def.WriteString("struct " + name + " {")
+		def.WriteString("struct " + info.Name + " {")
 		for i := range fieldNames {
 			def.WriteString(fieldTypes[i] + " " + fieldNames[i] + "; ")
 		}
 		def.WriteString("};")
 		c.headerWriteln(def.String())
+		c.generateJSONPrinter(info)
 	}
-	return fmt.Sprintf("%s{%s}", name, strings.Join(inits, ", ")), nil
+	return fmt.Sprintf("%s{%s}", info.Name, strings.Join(inits, ", ")), nil
 }
 
 func stringLiteral(e *parser.Expr) (string, bool) {
@@ -2081,14 +2101,14 @@ func structLiteralType(expr string) string {
 
 func (c *Compiler) structFromVars(names []string) string {
 	sig := "vars:" + strings.Join(names, ",")
-	if name, ok := c.structMap[sig]; ok {
-		return name
+	if info, ok := c.structMap[sig]; ok {
+		return info.Name
 	}
 	c.structCount++
-	name := fmt.Sprintf("__struct%d", c.structCount)
-	c.structMap[sig] = name
+	info := &structInfo{Name: fmt.Sprintf("__struct%d", c.structCount), Fields: append([]string(nil), names...)}
+	c.structMap[sig] = info
 	var def strings.Builder
-	def.WriteString("struct " + name + " {")
+	def.WriteString("struct " + info.Name + " {")
 	for _, n := range names {
 		fieldType := "decltype(" + sanitizeName(n) + ")"
 		if t := c.varStruct[n]; t != "" {
@@ -2101,7 +2121,8 @@ func (c *Compiler) structFromVars(names []string) string {
 	}
 	def.WriteString("};")
 	c.headerWriteln(def.String())
-	return name
+	c.generateJSONPrinter(info)
+	return info.Name
 }
 
 // compileFunExpr converts an anonymous function expression to a C++ lambda.
@@ -2186,4 +2207,16 @@ func (c *Compiler) partialApply(name string, args []string, total int) string {
 	}
 	buf.WriteString("); }")
 	return buf.String()
+}
+
+func (c *Compiler) generateJSONPrinter(info *structInfo) {
+	c.headerWriteln("inline void __json(const " + info.Name + " &v){")
+	c.headerWriteln("    bool first=true;")
+	c.headerWriteln("    std::cout<<\"{\";")
+	for _, f := range info.Fields {
+		c.headerWriteln("    if(!first) std::cout<<\",\"; first=false;")
+		c.headerWriteln("    std::cout<<\"\\\"" + f + "\\\":\"; __json(v." + f + ");")
+	}
+	c.headerWriteln("    std::cout<<\"}\";")
+	c.headerWriteln("}")
 }
