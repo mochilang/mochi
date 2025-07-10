@@ -10,17 +10,21 @@ fun toBool(v: Any?): Boolean = when (v) {
 }
 
 class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
-val customers = mutableListOf(mutableMapOf("id" to 1, "name" to "Alice"), mutableMapOf("id" to 2, "name" to "Bob"), mutableMapOf("id" to 3, "name" to "Charlie"))
+data class Customer(var id: Int, var name: String)
 
-val orders = mutableListOf(mutableMapOf("id" to 100, "customerId" to 1), mutableMapOf("id" to 101, "customerId" to 1), mutableMapOf("id" to 102, "customerId" to 2))
+data class Order(var id: Int, var customerId: Int)
+
+val customers = mutableListOf(Customer(id = 1, name = "Alice"), Customer(id = 2, name = "Bob"), Customer(id = 3, name = "Charlie"))
+
+val orders = mutableListOf(Order(id = 100, customerId = 1), Order(id = 101, customerId = 1), Order(id = 102, customerId = 2))
 
 val stats = run {
     val __groups = mutableMapOf<Any?, Group>()
     val __order = mutableListOf<Any?>()
     for (c in customers) {
         for (o in orders) {
-            if (toBool((o as MutableMap<*, *>)["customerId"] == (c as MutableMap<*, *>)["id"])) {
-                val __k = (c as MutableMap<*, *>)["name"]
+            if (toBool(o.customerId == c.id)) {
+                val __k = c.name
                 var __g = __groups[__k]
                 if (__g == null) {
                     __g = Group(__k, mutableListOf())

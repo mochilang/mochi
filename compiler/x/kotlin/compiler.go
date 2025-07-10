@@ -187,11 +187,21 @@ type Compiler struct {
 	env      *types.Env
 	tmpCount int
 	used     map[string]bool
+
+	// inferred struct types from list of maps
+	inferred map[string]types.StructType
+	mapNodes map[*parser.MapLiteral]string
 }
 
 // New creates a new Kotlin compiler.
 func New(env *types.Env, _ string) *Compiler {
-	return &Compiler{env: env, tmpCount: 0, used: make(map[string]bool)}
+	return &Compiler{
+		env:      env,
+		tmpCount: 0,
+		used:     make(map[string]bool),
+		inferred: make(map[string]types.StructType),
+		mapNodes: make(map[*parser.MapLiteral]string),
+	}
 }
 
 // Compile generates Kotlin code from prog.
@@ -199,6 +209,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.indent = 0
 	c.used = make(map[string]bool)
+	c.inferred = make(map[string]types.StructType)
+	c.mapNodes = make(map[*parser.MapLiteral]string)
+
+	c.discoverStructs(prog)
 
 	// emit type declarations first
 	for _, s := range prog.Statements {
@@ -208,6 +222,14 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			}
 			c.writeln("")
 		}
+	}
+	for _, st := range c.inferred {
+		fields := make([]string, len(st.Order))
+		for i, f := range st.Order {
+			fields[i] = fmt.Sprintf("var %s: %s", f, kotlinTypeOf(st.Fields[f]))
+		}
+		c.writeln(fmt.Sprintf("data class %s(%s)", st.Name, strings.Join(fields, ", ")))
+		c.writeln("")
 	}
 	// emit global variable declarations before functions so they are
 	// visible to all functions
@@ -918,6 +940,18 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 		}
 		return "mutableListOf(" + strings.Join(parts, ", ") + ")", nil
 	case p.Map != nil:
+		if name, ok := c.mapNodes[p.Map]; ok {
+			fields := make([]string, len(p.Map.Items))
+			for i, it := range p.Map.Items {
+				v, err := c.expr(it.Value)
+				if err != nil {
+					return "", err
+				}
+				k, _ := identName(it.Key)
+				fields[i] = fmt.Sprintf("%s = %s", k, v)
+			}
+			return fmt.Sprintf("%s(%s)", name, strings.Join(fields, ", ")), nil
+		}
 		items := make([]string, len(p.Map.Items))
 		for i, it := range p.Map.Items {
 			var k string
@@ -1627,6 +1661,126 @@ func selectorType(e *parser.Expr, env *types.Env) types.Type {
 		return nil
 	}
 	return fieldType(t, sel.Tail)
+}
+
+func structNameFromVar(name string) string {
+	if strings.HasSuffix(name, "s") && len(name) > 1 {
+		name = name[:len(name)-1]
+	}
+	if len(name) == 0 {
+		return "Record"
+	}
+	return strings.ToUpper(name[:1]) + name[1:]
+}
+
+func mapLiteral(e *parser.Expr) (*parser.MapLiteral, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil, false
+	}
+	pf := u.Value
+	if len(pf.Ops) != 0 || pf.Target == nil {
+		return nil, false
+	}
+	if pf.Target.Map != nil {
+		return pf.Target.Map, true
+	}
+	return nil, false
+}
+
+func listLiteral(e *parser.Expr) (*parser.ListLiteral, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil, false
+	}
+	pf := u.Value
+	if len(pf.Ops) != 0 || pf.Target == nil {
+		return nil, false
+	}
+	if pf.Target.List != nil {
+		return pf.Target.List, true
+	}
+	return nil, false
+}
+
+// discoverStructs scans the program for list literals consisting of map
+// literals with identical simple keys and promotes them to data classes.
+func (c *Compiler) discoverStructs(prog *parser.Program) {
+	for _, st := range prog.Statements {
+		var list *parser.ListLiteral
+		var name string
+		var mutable bool
+		switch {
+		case st.Let != nil && st.Let.Value != nil:
+			list, _ = listLiteral(st.Let.Value)
+			name = st.Let.Name
+			mutable = false
+		case st.Var != nil && st.Var.Value != nil:
+			list, _ = listLiteral(st.Var.Value)
+			name = st.Var.Name
+			mutable = true
+		}
+		if list == nil || len(list.Elems) == 0 {
+			continue
+		}
+		firstMap, ok := mapLiteral(list.Elems[0])
+		if !ok {
+			continue
+		}
+		keys := []string{}
+		for _, it := range firstMap.Items {
+			if k, ok := identName(it.Key); ok {
+				keys = append(keys, k)
+			} else {
+				keys = nil
+				break
+			}
+		}
+		if keys == nil || len(keys) == 0 {
+			continue
+		}
+		okAll := true
+		for _, e := range list.Elems[1:] {
+			m, ok := mapLiteral(e)
+			if !ok || len(m.Items) != len(keys) {
+				okAll = false
+				break
+			}
+			for i, it := range m.Items {
+				k, ok := identName(it.Key)
+				if !ok || k != keys[i] {
+					okAll = false
+					break
+				}
+			}
+			if !okAll {
+				break
+			}
+		}
+		if !okAll {
+			continue
+		}
+		fields := map[string]types.Type{}
+		for i, it := range firstMap.Items {
+			fields[keys[i]] = c.inferExprType(it.Value)
+		}
+		structName := structNameFromVar(name)
+		stype := types.StructType{Name: structName, Fields: fields, Order: keys}
+		c.inferred[structName] = stype
+		c.env.SetStruct(structName, stype)
+		c.env.SetVar(name, types.ListType{Elem: stype}, mutable)
+		for _, e := range list.Elems {
+			if m, ok := mapLiteral(e); ok {
+				c.mapNodes[m] = structName
+			}
+		}
+	}
 }
 
 func (c *Compiler) writeln(s string) {

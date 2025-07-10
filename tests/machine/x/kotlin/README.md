@@ -113,3 +113,4 @@ Successfully ran: 83/97 programs
 ## Remaining Work
 
 - [ ] Compare output with reference implementations
+- [x] Emit data classes for uniform map lists

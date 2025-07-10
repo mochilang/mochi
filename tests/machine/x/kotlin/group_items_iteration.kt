@@ -12,13 +12,15 @@ fun toDouble(v: Any?): Double = when (v) {
 }
 
 class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
-val data = mutableListOf(mutableMapOf("tag" to "a", "val" to 1), mutableMapOf("tag" to "a", "val" to 2), mutableMapOf("tag" to "b", "val" to 3))
+data class Data(var tag: String, var val: Int)
+
+val data = mutableListOf(Data(tag = "a", val = 1), Data(tag = "a", val = 2), Data(tag = "b", val = 3))
 
 val groups = run {
     val __groups = mutableMapOf<Any?, Group>()
     val __order = mutableListOf<Any?>()
     for (d in data) {
-        val __k = (d as MutableMap<*, *>)["tag"]
+        val __k = d.tag
         var __g = __groups[__k]
         if (__g == null) {
             __g = Group(__k, mutableListOf())

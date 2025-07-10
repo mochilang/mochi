@@ -6,20 +6,26 @@ fun toBool(v: Any?): Boolean = when (v) {
     null -> false
     else -> true
 }
-val customers = mutableListOf(mutableMapOf("id" to 1, "name" to "Alice"), mutableMapOf("id" to 2, "name" to "Bob"))
+data class Customer(var id: Int, var name: String)
 
-val orders = mutableListOf(mutableMapOf("id" to 100, "customerId" to 1), mutableMapOf("id" to 101, "customerId" to 2))
+data class Order(var id: Int, var customerId: Int)
 
-val items = mutableListOf(mutableMapOf("orderId" to 100, "sku" to "a"), mutableMapOf("orderId" to 101, "sku" to "b"))
+data class Item(var orderId: Int, var sku: String)
+
+val customers = mutableListOf(Customer(id = 1, name = "Alice"), Customer(id = 2, name = "Bob"))
+
+val orders = mutableListOf(Order(id = 100, customerId = 1), Order(id = 101, customerId = 2))
+
+val items = mutableListOf(Item(orderId = 100, sku = "a"), Item(orderId = 101, sku = "b"))
 
 val result = run {
     val __res = mutableListOf<MutableMap<Any?, Any?>>()
     for (o in orders) {
         for (c in customers) {
-            if (toBool((o as MutableMap<*, *>)["customerId"] == (c as MutableMap<*, *>)["id"])) {
+            if (toBool(o.customerId == c.id)) {
                 for (i in items) {
-                    if (toBool((o as MutableMap<*, *>)["id"] == (i as MutableMap<*, *>)["orderId"])) {
-                        __res.add((mutableMapOf("name" to (c as MutableMap<*, *>)["name"], "sku" to (i as MutableMap<*, *>)["sku"]) as MutableMap<Any?, Any?>))
+                    if (toBool(o.id == i.orderId)) {
+                        __res.add((mutableMapOf("name" to c.name, "sku" to i.sku) as MutableMap<Any?, Any?>))
                     }
                 }
             }

@@ -1,12 +1,14 @@
-val items = mutableListOf(mutableMapOf("n" to 1, "v" to "a"), mutableMapOf("n" to 1, "v" to "b"), mutableMapOf("n" to 2, "v" to "c"))
+data class Item(var n: Int, var v: String)
+
+val items = mutableListOf(Item(n = 1, v = "a"), Item(n = 1, v = "b"), Item(n = 2, v = "c"))
 
 val result = run {
-    val __res = mutableListOf<Any?>()
+    val __res = mutableListOf<String>()
     for (i in items) {
-        __res.add((i as MutableMap<*, *>)["v"])
+        __res.add(i.v)
     }
     __res
-}.sortedBy { (it as MutableMap<*, *>)["n"] as Comparable<Any> }
+}.sortedBy { it.n as Comparable<Any> }
 
 fun main() {
     println(result)

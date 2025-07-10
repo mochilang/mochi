@@ -23,13 +23,15 @@ fun toJson(v: Any?): String = when (v) {
 }
 
 class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
-val people = mutableListOf(mutableMapOf("name" to "Alice", "city" to "Paris"), mutableMapOf("name" to "Bob", "city" to "Hanoi"), mutableMapOf("name" to "Charlie", "city" to "Paris"), mutableMapOf("name" to "Diana", "city" to "Hanoi"), mutableMapOf("name" to "Eve", "city" to "Paris"), mutableMapOf("name" to "Frank", "city" to "Hanoi"), mutableMapOf("name" to "George", "city" to "Paris"))
+data class People(var name: String, var city: String)
+
+val people = mutableListOf(People(name = "Alice", city = "Paris"), People(name = "Bob", city = "Hanoi"), People(name = "Charlie", city = "Paris"), People(name = "Diana", city = "Hanoi"), People(name = "Eve", city = "Paris"), People(name = "Frank", city = "Hanoi"), People(name = "George", city = "Paris"))
 
 val big = run {
     val __groups = mutableMapOf<Any?, Group>()
     val __order = mutableListOf<Any?>()
     for (p in people) {
-        val __k = (p as MutableMap<*, *>)["city"]
+        val __k = p.city
         var __g = __groups[__k]
         if (__g == null) {
             __g = Group(__k, mutableListOf())

@@ -8,13 +8,15 @@ fun avg(list: List<Any?>): Double {
 fun count(list: Collection<Any?>): Int = list.size
 
 class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
-val people = mutableListOf(mutableMapOf("name" to "Alice", "age" to 30, "city" to "Paris"), mutableMapOf("name" to "Bob", "age" to 15, "city" to "Hanoi"), mutableMapOf("name" to "Charlie", "age" to 65, "city" to "Paris"), mutableMapOf("name" to "Diana", "age" to 45, "city" to "Hanoi"), mutableMapOf("name" to "Eve", "age" to 70, "city" to "Paris"), mutableMapOf("name" to "Frank", "age" to 22, "city" to "Hanoi"))
+data class People(var name: String, var age: Int, var city: String)
+
+val people = mutableListOf(People(name = "Alice", age = 30, city = "Paris"), People(name = "Bob", age = 15, city = "Hanoi"), People(name = "Charlie", age = 65, city = "Paris"), People(name = "Diana", age = 45, city = "Hanoi"), People(name = "Eve", age = 70, city = "Paris"), People(name = "Frank", age = 22, city = "Hanoi"))
 
 val stats = run {
     val __groups = mutableMapOf<Any?, Group>()
     val __order = mutableListOf<Any?>()
     for (person in people) {
-        val __k = (person as MutableMap<*, *>)["city"]
+        val __k = person.city
         var __g = __groups[__k]
         if (__g == null) {
             __g = Group(__k, mutableListOf())
@@ -27,9 +29,9 @@ val stats = run {
     for (k in __order) {
         val g = __groups[k]!!
         __res.add((mutableMapOf("city" to g.key, "count" to count(g), "avg_age" to avg(run {
-    val __res = mutableListOf<Any?>()
+    val __res = mutableListOf<Int>()
     for (p in g) {
-        __res.add((p as MutableMap<*, *>)["age"])
+        __res.add(p.age)
     }
     __res
 })) as MutableMap<Any?, Any?>))

@@ -1,12 +1,14 @@
-val products = mutableListOf(mutableMapOf("name" to "Laptop", "price" to 1500), mutableMapOf("name" to "Smartphone", "price" to 900), mutableMapOf("name" to "Tablet", "price" to 600), mutableMapOf("name" to "Monitor", "price" to 300), mutableMapOf("name" to "Keyboard", "price" to 100), mutableMapOf("name" to "Mouse", "price" to 50), mutableMapOf("name" to "Headphones", "price" to 200))
+data class Product(var name: String, var price: Int)
+
+val products = mutableListOf(Product(name = "Laptop", price = 1500), Product(name = "Smartphone", price = 900), Product(name = "Tablet", price = 600), Product(name = "Monitor", price = 300), Product(name = "Keyboard", price = 100), Product(name = "Mouse", price = 50), Product(name = "Headphones", price = 200))
 
 val expensive = run {
-    val __res = mutableListOf<MutableMap<String, Any?>>()
+    val __res = mutableListOf<Product>()
     for (p in products) {
-        __res.add((p as MutableMap<String, Any?>))
+        __res.add(p)
     }
     __res
-}.sortedByDescending { (it as MutableMap<*, *>)["price"] as Comparable<Any> }.drop(1).take(3)
+}.sortedByDescending { it.price as Comparable<Any> }.drop(1).take(3)
 
 fun main() {
     println("--- Top products (excluding most expensive) ---")
