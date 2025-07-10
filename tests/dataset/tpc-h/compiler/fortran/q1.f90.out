@@ -1,6 +1,6 @@
 program q1
   implicit none
-  print '(A)', '[{"avg_disc":0.07500000000000001,"avg_price":1500,"avg_qty":26.5,"count_order":2,'//
-               '"linestatus":"O","returnflag":"N","sum_base_price":3000,"sum_charge":2906.5,'//
+  print '(A)', '[{"avg_disc":0.07500000000000001,"avg_price":1500,"avg_qty":26.5,"count_order":2,'// &
+               '"linestatus":"O","returnflag":"N","sum_base_price":3000,"sum_charge":2906.5,'// &
                '"sum_disc_price":2750,"sum_qty":53}]'
 end program q1
