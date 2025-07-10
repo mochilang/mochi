@@ -3,11 +3,11 @@ panic: json: cannot unmarshal number into Go value of type main.Counter
 
 goroutine 1 [running]:
 main._cast[...]({0x4ccf00, 0x518708})
-	/workspace/mochi/tests/machine/x/go/record_assign.go:71 +0x3eb
+	/workspace/mochi/tests/machine/x/go/record_assign.go:73 +0x3eb
 main.inc({0x0?})
 	/workspace/mochi/tests/machine/x/go/record_assign.go:17 +0x2c
 main.main()
-	/workspace/mochi/tests/machine/x/go/record_assign.go:22 +0x15
+	/workspace/mochi/tests/machine/x/go/record_assign.go:24 +0x25
 exit status 2
 
 1: //go:build ignore

@@ -1,9 +1,8 @@
 Error on line 0: run error: exit status 1
 # command-line-arguments
-../../../tests/machine/x/go/group_items_iteration.go:29:36: data.Group is not a type
-../../../tests/machine/x/go/group_items_iteration.go:30:30: data.Group is not a type
-../../../tests/machine/x/go/group_items_iteration.go:37:15: data.Group is not a type
-../../../tests/machine/x/go/group_items_iteration.go:43:19: data.Group is not a type
-../../../tests/machine/x/go/group_items_iteration.go:53:32: in call to _toAnySlice, cannot infer T (declared at ../../../tests/machine/x/go/group_items_iteration.go:287:18)
+../../../tests/machine/x/go/group_items_iteration.go:15:21: data.Group is not a type
+../../../tests/machine/x/go/group_items_iteration.go:16:30: data.Group is not a type
+../../../tests/machine/x/go/group_items_iteration.go:23:15: data.Group is not a type
+../../../tests/machine/x/go/group_items_iteration.go:29:19: data.Group is not a type
 
 1: //go:build ignore

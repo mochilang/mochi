@@ -11,53 +11,27 @@ import (
 )
 
 func main() {
-	type ProductsItem struct {
-		Name  string `json:"name"`
-		Price int    `json:"price"`
+	var products []map[string]any = []map[string]any{
+		map[string]any{"name": "Laptop", "price": 1500},
+		map[string]any{"name": "Smartphone", "price": 900},
+		map[string]any{"name": "Tablet", "price": 600},
+		map[string]any{"name": "Monitor", "price": 300},
+		map[string]any{"name": "Keyboard", "price": 100},
+		map[string]any{"name": "Mouse", "price": 50},
+		map[string]any{"name": "Headphones", "price": 200},
 	}
-
-	var products []ProductsItem = []ProductsItem{
-		ProductsItem{
-			Name:  "Laptop",
-			Price: 1500,
-		},
-		ProductsItem{
-			Name:  "Smartphone",
-			Price: 900,
-		},
-		ProductsItem{
-			Name:  "Tablet",
-			Price: 600,
-		},
-		ProductsItem{
-			Name:  "Monitor",
-			Price: 300,
-		},
-		ProductsItem{
-			Name:  "Keyboard",
-			Price: 100,
-		},
-		ProductsItem{
-			Name:  "Mouse",
-			Price: 50,
-		},
-		ProductsItem{
-			Name:  "Headphones",
-			Price: 200,
-		},
-	}
-	var expensive []ProductsItem = func() []ProductsItem {
+	var expensive []map[string]any = func() []map[string]any {
 		src := _toAnySlice(products)
-		resAny := _query(src, []_joinSpec{}, _queryOpts{selectFn: func(_a ...any) any { p := _cast[ProductsItem](_a[0]); _ = p; return p }, sortKey: func(_a ...any) any { p := _cast[ProductsItem](_a[0]); _ = p; return -p.Price }, skip: 1, take: 3})
-		out := make([]ProductsItem, len(resAny))
+		resAny := _query(src, []_joinSpec{}, _queryOpts{selectFn: func(_a ...any) any { p := _cast[map[string]any](_a[0]); _ = p; return p }, sortKey: func(_a ...any) any { p := _cast[map[string]any](_a[0]); _ = p; return -_cast[float64](p["price"]) }, skip: 1, take: 3})
+		out := make([]map[string]any, len(resAny))
 		for i, v := range resAny {
-			out[i] = _cast[ProductsItem](v)
+			out[i] = _cast[map[string]any](v)
 		}
 		return out
 	}()
 	fmt.Println("--- Top products (excluding most expensive) ---")
 	for _, item := range expensive {
-		fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint(item.Name), fmt.Sprint("costs $"), fmt.Sprint(item.Price)}, " "), " "))
+		fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint(item["name"]), fmt.Sprint("costs $"), fmt.Sprint(item["price"])}, " "), " "))
 	}
 }
 
@@ -125,10 +99,12 @@ func _convertMapAny(m map[any]any) map[string]any {
 }
 
 type _joinSpec struct {
-	items []any
-	on    func(...any) bool
-	left  bool
-	right bool
+	items    []any
+	on       func(...any) bool
+	leftKey  func(...any) any
+	rightKey func(any) any
+	left     bool
+	right    bool
 }
 type _queryOpts struct {
 	selectFn func(...any) any
@@ -144,6 +120,54 @@ func _query(src []any, joins []_joinSpec, opts _queryOpts) []any {
 		items[i] = []any{v}
 	}
 	for _, j := range joins {
+		if j.leftKey != nil && j.rightKey != nil {
+			rmap := map[string][]int{}
+			for ri, r := range j.items {
+				key := fmt.Sprint(j.rightKey(r))
+				rmap[key] = append(rmap[key], ri)
+			}
+			joined := [][]any{}
+			matched := make([]bool, len(j.items))
+			for _, left := range items {
+				key := fmt.Sprint(j.leftKey(left...))
+				if is, ok := rmap[key]; ok {
+					m := false
+					for _, ri := range is {
+						right := j.items[ri]
+						keep := true
+						if j.on != nil {
+							args := append(append([]any(nil), left...), right)
+							keep = j.on(args...)
+						}
+						if !keep {
+							continue
+						}
+						m = true
+						matched[ri] = true
+						joined = append(joined, append(append([]any(nil), left...), right))
+					}
+					if j.left && !m {
+						joined = append(joined, append(append([]any(nil), left...), nil))
+					}
+				} else if j.left {
+					joined = append(joined, append(append([]any(nil), left...), nil))
+				}
+			}
+			if j.right {
+				lw := 0
+				if len(items) > 0 {
+					lw = len(items[0])
+				}
+				for ri, right := range j.items {
+					if !matched[ri] {
+						undef := make([]any, lw)
+						joined = append(joined, append(undef, right))
+					}
+				}
+			}
+			items = joined
+			continue
+		}
 		joined := [][]any{}
 		if j.right && j.left {
 			matched := make([]bool, len(j.items))

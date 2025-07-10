@@ -13,40 +13,24 @@ import (
 )
 
 func main() {
-	type ItemsItem struct {
-		Cat  string `json:"cat"`
-		Val  int    `json:"val"`
-		Flag bool   `json:"flag"`
-	}
-
-	var items []ItemsItem = []ItemsItem{ItemsItem{
-		Cat:  "a",
-		Val:  10,
-		Flag: true,
-	}, ItemsItem{
-		Cat:  "a",
-		Val:  5,
-		Flag: false,
-	}, ItemsItem{
-		Cat:  "b",
-		Val:  20,
-		Flag: true,
+	var items []map[string]any = []map[string]any{map[string]any{
+		"cat":  "a",
+		"val":  10,
+		"flag": true,
+	}, map[string]any{
+		"cat":  "a",
+		"val":  5,
+		"flag": false,
+	}, map[string]any{
+		"cat":  "b",
+		"val":  20,
+		"flag": true,
 	}}
-	type Result struct {
-		Cat   any     `json:"cat"`
-		Share float64 `json:"share"`
-	}
-
-	type Result1 struct {
-		Cat   any     `json:"cat"`
-		Share float64 `json:"share"`
-	}
-
-	var result []Result = _cast[[]Result](func() []Result1 {
+	var result []map[string]any = func() []map[string]any {
 		groups := map[string]*data.Group{}
 		order := []string{}
 		for _, i := range items {
-			key := i.Cat
+			key := i["cat"]
 			ks := fmt.Sprint(key)
 			g, ok := groups[ks]
 			if !ok {
@@ -100,34 +84,31 @@ func main() {
 		for idx, p := range pairs {
 			items[idx] = p.item
 		}
-		_res := []Result1{}
+		_res := []map[string]any{}
 		for _, g := range items {
-			_res = append(_res, Result1{
-				Cat: g.Key,
-				Share: (_sum(func() []any {
-					_res := []any{}
-					for _, x := range g.Items {
-						_res = append(_res, func() any {
-							if _exists(_cast[map[string]any](x)["flag"]) {
-								return _cast[map[string]any](x)["val"]
-							} else {
-								return 0
-							}
-						}())
-					}
-					return _res
-				}()) / _sum(func() []any {
-					_res := []any{}
-					for _, x := range g.Items {
-						_res = append(_res, _cast[map[string]any](x)["val"])
-					}
-					return _res
-				}())),
-			})
+			_res = append(_res, map[string]any{"cat": g.Key, "share": (_sum(func() []any {
+				_res := []any{}
+				for _, x := range g.Items {
+					_res = append(_res, func() any {
+						if _exists(_cast[map[string]any](x)["flag"]) {
+							return _cast[map[string]any](x)["val"]
+						} else {
+							return 0
+						}
+					}())
+				}
+				return _res
+			}()) / _sum(func() []any {
+				_res := []any{}
+				for _, x := range g.Items {
+					_res = append(_res, _cast[map[string]any](x)["val"])
+				}
+				return _res
+			}()))})
 		}
 		return _res
-	}())
-	fmt.Println(strings.Trim(fmt.Sprint(result), "[]"))
+	}()
+	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(result), "["), "]"))
 }
 
 func _cast[T any](v any) T {

@@ -2,7 +2,7 @@ Error on line 0: output mismatch
 -- got --
 --- Left Join Multi ---
 100 Alice map[orderId:100 sku:a]
-101 Bob map[orderId:0 sku:]
+101 Bob map[]
 -- want --
 --- Left Join Multi ---
 100 Alice map[orderId:100 sku:a]

@@ -12,44 +12,17 @@ import (
 )
 
 func main() {
-	type ItemsItem struct {
-		Cat string `json:"cat"`
-		Val int    `json:"val"`
+	var items []map[string]any = []map[string]any{
+		map[string]any{"cat": "a", "val": 3},
+		map[string]any{"cat": "a", "val": 1},
+		map[string]any{"cat": "b", "val": 5},
+		map[string]any{"cat": "b", "val": 2},
 	}
-
-	var items []ItemsItem = []ItemsItem{
-		ItemsItem{
-			Cat: "a",
-			Val: 3,
-		},
-		ItemsItem{
-			Cat: "a",
-			Val: 1,
-		},
-		ItemsItem{
-			Cat: "b",
-			Val: 5,
-		},
-		ItemsItem{
-			Cat: "b",
-			Val: 2,
-		},
-	}
-	type Grouped struct {
-		Cat   any     `json:"cat"`
-		Total float64 `json:"total"`
-	}
-
-	type Result struct {
-		Cat   any     `json:"cat"`
-		Total float64 `json:"total"`
-	}
-
-	var grouped []Grouped = _cast[[]Grouped](func() []Result {
+	var grouped []map[string]any = func() []map[string]any {
 		groups := map[string]*data.Group{}
 		order := []string{}
 		for _, i := range items {
-			key := i.Cat
+			key := i["cat"]
 			ks := fmt.Sprint(key)
 			g, ok := groups[ks]
 			if !ok {
@@ -109,22 +82,19 @@ func main() {
 		for idx, p := range pairs {
 			items[idx] = p.item
 		}
-		_res := []Result{}
+		_res := []map[string]any{}
 		for _, g := range items {
-			_res = append(_res, Result{
-				Cat: g.Key,
-				Total: _sum(func() []any {
-					_res := []any{}
-					for _, x := range g.Items {
-						_res = append(_res, _cast[map[string]any](x)["val"])
-					}
-					return _res
-				}()),
-			})
+			_res = append(_res, map[string]any{"cat": g.Key, "total": _sum(func() []any {
+				_res := []any{}
+				for _, x := range g.Items {
+					_res = append(_res, _cast[map[string]any](x)["val"])
+				}
+				return _res
+			}())})
 		}
 		return _res
-	}())
-	fmt.Println(strings.Trim(fmt.Sprint(grouped), "[]"))
+	}()
+	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(grouped), "["), "]"))
 }
 
 func _cast[T any](v any) T {

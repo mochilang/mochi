@@ -39,8 +39,10 @@ func sum_tree(t Tree) int {
 	}())
 }
 
+var t Node
+
 func main() {
-	var t Node = Node{Left: _cast[Tree](Leaf), Value: 1, Right: Node{Left: _cast[Tree](Leaf), Value: 2, Right: _cast[Tree](Leaf)}}
+	t = Node{Left: _cast[Tree](Leaf), Value: 1, Right: Node{Left: _cast[Tree](Leaf), Value: 2, Right: _cast[Tree](Leaf)}}
 	fmt.Println(sum_tree(t))
 }
 

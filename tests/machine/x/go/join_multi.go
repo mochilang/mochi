@@ -3,146 +3,72 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"strconv"
+	"reflect"
 	"strings"
 )
 
 func main() {
-	type CustomersItem struct {
-		Id   int    `json:"id"`
-		Name string `json:"name"`
-	}
-
-	var customers []CustomersItem = []CustomersItem{CustomersItem{
-		Id:   1,
-		Name: "Alice",
-	}, CustomersItem{
-		Id:   2,
-		Name: "Bob",
-	}}
+	var customers []map[string]any = []map[string]any{map[string]any{"id": 1, "name": "Alice"}, map[string]any{"id": 2, "name": "Bob"}}
 	_ = customers
-	type OrdersItem struct {
-		Id         int `json:"id"`
-		CustomerId int `json:"customerId"`
-	}
-
-	var orders []OrdersItem = []OrdersItem{OrdersItem{
-		Id:         100,
-		CustomerId: 1,
-	}, OrdersItem{
-		Id:         101,
-		CustomerId: 2,
-	}}
-	type ItemsItem struct {
-		OrderId int    `json:"orderId"`
-		Sku     string `json:"sku"`
-	}
-
-	var items []ItemsItem = []ItemsItem{ItemsItem{
-		OrderId: 100,
-		Sku:     "a",
-	}, ItemsItem{
-		OrderId: 101,
-		Sku:     "b",
-	}}
+	var orders []map[string]int = []map[string]int{map[string]int{"id": 100, "customerId": 1}, map[string]int{"id": 101, "customerId": 2}}
+	var items []map[string]any = []map[string]any{map[string]any{"orderId": 100, "sku": "a"}, map[string]any{"orderId": 101, "sku": "b"}}
 	_ = items
-	type Result struct {
-		Name any `json:"name"`
-		Sku  any `json:"sku"`
-	}
-
-	type Result1 struct {
-		Name string `json:"name"`
-		Sku  string `json:"sku"`
-	}
-
-	var result []Result = _cast[[]Result](func() []Result1 {
-		_res := []Result1{}
+	var result []map[string]any = func() []map[string]any {
+		_res := []map[string]any{}
 		for _, o := range orders {
 			for _, c := range customers {
-				if !(o.CustomerId == c.Id) {
+				if !(_equal(o["customerId"], c["id"])) {
 					continue
 				}
 				for _, i := range items {
-					if !(o.Id == i.OrderId) {
+					if !(_equal(o["id"], i["orderId"])) {
 						continue
 					}
-					_res = append(_res, Result1{
-						Name: c.Name,
-						Sku:  i.Sku,
-					})
+					_res = append(_res, map[string]any{"name": c["name"], "sku": i["sku"]})
 				}
 			}
 		}
 		return _res
-	}())
+	}()
 	fmt.Println("--- Multi Join ---")
 	for _, r := range result {
-		fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint(r.Name), fmt.Sprint("bought item"), fmt.Sprint(r.Sku)}, " "), " "))
+		fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint(r["name"]), fmt.Sprint("bought item"), fmt.Sprint(r["sku"])}, " "), " "))
 	}
 }
 
-func _cast[T any](v any) T {
-	if tv, ok := v.(T); ok {
-		return tv
-	}
-	var out T
-	switch any(out).(type) {
-	case int:
-		switch vv := v.(type) {
-		case int:
-			return any(vv).(T)
-		case float64:
-			return any(int(vv)).(T)
-		case float32:
-			return any(int(vv)).(T)
-		case string:
-			n, _ := strconv.Atoi(vv)
-			return any(n).(T)
+func _equal(a, b any) bool {
+	av := reflect.ValueOf(a)
+	bv := reflect.ValueOf(b)
+	if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+		if av.Len() != bv.Len() {
+			return false
 		}
-	case float64:
-		switch vv := v.(type) {
-		case int:
-			return any(float64(vv)).(T)
-		case float64:
-			return any(vv).(T)
-		case float32:
-			return any(float64(vv)).(T)
+		for i := 0; i < av.Len(); i++ {
+			if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) {
+				return false
+			}
 		}
-	case float32:
-		switch vv := v.(type) {
-		case int:
-			return any(float32(vv)).(T)
-		case float64:
-			return any(float32(vv)).(T)
-		case float32:
-			return any(vv).(T)
+		return true
+	}
+	if av.Kind() == reflect.Map && bv.Kind() == reflect.Map {
+		if av.Len() != bv.Len() {
+			return false
 		}
-	}
-	if m, ok := v.(map[any]any); ok {
-		v = _convertMapAny(m)
-	}
-	data, err := json.Marshal(v)
-	if err != nil {
-		panic(err)
-	}
-	if err := json.Unmarshal(data, &out); err != nil {
-		panic(err)
-	}
-	return out
-}
-
-func _convertMapAny(m map[any]any) map[string]any {
-	out := make(map[string]any, len(m))
-	for k, v := range m {
-		key := fmt.Sprint(k)
-		if sub, ok := v.(map[any]any); ok {
-			out[key] = _convertMapAny(sub)
-		} else {
-			out[key] = v
+		for _, k := range av.MapKeys() {
+			bvVal := bv.MapIndex(k)
+			if !bvVal.IsValid() {
+				return false
+			}
+			if !_equal(av.MapIndex(k).Interface(), bvVal.Interface()) {
+				return false
+			}
 		}
+		return true
 	}
-	return out
+	if (av.Kind() == reflect.Int || av.Kind() == reflect.Int64 || av.Kind() == reflect.Float64) &&
+		(bv.Kind() == reflect.Int || bv.Kind() == reflect.Int64 || bv.Kind() == reflect.Float64) {
+		return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()
+	}
+	return reflect.DeepEqual(a, b)
 }

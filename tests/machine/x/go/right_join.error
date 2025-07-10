@@ -1,11 +1,11 @@
 Error on line 0: output mismatch
 -- got --
 --- Right Join using syntax ---
-Customer Alice has order 100 - $ 250
-Customer Alice has order 102 - $ 300
-Customer Bob has order 101 - $ 125
-Customer Charlie has order 0 - $ 0
-Customer Diana has order 0 - $ 0
+Customer Alice has no orders
+Customer Alice has no orders
+Customer Bob has no orders
+Customer Charlie has no orders
+Customer Diana has no orders
 -- want --
 --- Right Join using syntax ---
 Customer Alice has order 100 - $ 250
