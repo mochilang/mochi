@@ -1,0 +1,139 @@
+// Rosetta Code task: Abbreviations, simple
+
+fun splitFields(s: string): list<string> {
+  var fields: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i]
+    if ch == " " || ch == "\t" || ch == "\n" || ch == "\r" {
+      if len(cur) > 0 {
+        fields = append(fields, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { fields = append(fields, cur) }
+  return fields
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  let digits = {
+    "0": 0, "1": 1, "2": 2, "3": 3, "4": 4,
+    "5": 5, "6": 6, "7": 7, "8": 8, "9": 9,
+  }
+  while i < len(str) {
+    n = n * 10 + digits[str[i]]
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun isDigits(str: string): bool {
+  if len(str) == 0 { return false }
+  var i = 0
+  while i < len(str) {
+    let ch = str[i]
+    if ch < "0" || ch > "9" { return false }
+    i = i + 1
+  }
+  return true
+}
+
+type Table {
+  commands: list<string>
+  minLens: list<int>
+}
+
+fun readTable(table: string): Table {
+  let fields = splitFields(table)
+  var commands: list<string> = []
+  var mins: list<int> = []
+  var i = 0
+  while i < len(fields) {
+    var cmd = fields[i]
+    var cmdLen = len(cmd)
+    i = i + 1
+    if i < len(fields) && isDigits(fields[i]) {
+      let num = parseIntStr(fields[i])
+      if 1 <= num && num < len(cmd) {
+        cmdLen = num
+        i = i + 1
+      }
+    }
+    commands = append(commands, cmd)
+    mins = append(mins, cmdLen)
+  }
+  return Table { commands: commands, minLens: mins }
+}
+
+fun validateCommands(t: Table, words: list<string>): list<string> {
+  var results: list<string> = []
+  for word in words {
+    var matchFound = false
+    let wlen = len(word)
+    var idx = 0
+    while idx < len(t.commands) {
+      let cmd = t.commands[idx]
+      let minLen = t.minLens[idx]
+      if minLen != 0 && wlen >= minLen && wlen <= len(cmd) {
+        if substring(upper(cmd), 0, wlen) == upper(word) {
+          results = append(results, upper(cmd))
+          matchFound = true
+          break
+        }
+      }
+      idx = idx + 1
+    }
+    if !matchFound { results = append(results, "*error*") }
+  }
+  return results
+}
+
+fun joinWords(words: list<string>): string {
+  var out = ""
+  var i = 0
+  while i < len(words) {
+    if i > 0 { out = out + " " }
+    out = out + words[i]
+    i = i + 1
+  }
+  return out
+}
+
+fun printResults(words: list<string>, results: list<string>) {
+  print("user words: " + joinWords(words))
+  print("full words: " + joinWords(results))
+}
+
+fun main() {
+  let table = "" +
+    "add 1  alter 3  backup 2  bottom 1  Cappend 2  change 1  Schange  Cinsert 2  Clast 3 " +
+    "compress 4 copy 2 count 3 Coverlay 3 cursor 3  delete 3 Cdelete 2  down 1  duplicate " +
+    "3 xEdit 1 expand 3 extract 3  find 1 Nfind 2 Nfindup 6 NfUP 3 Cfind 2 findUP 3 fUP 2 " +
+    "forward 2  get  help 1 hexType 4  input 1 powerInput 3  join 1 split 2 spltJOIN load " +
+    "locate 1 Clocate 2 lowerCase 3 upperCase 3 Lprefix 2  macro  merge 2 modify 3 move 2 " +
+    "msg  next 1 overlay 1 parse preserve 4 purge 3 put putD query 1  quit  read recover 3 " +
+    "refresh renum 3 repeat 3 replace 1 Creplace 2 reset 3 restore 4 rgtLEFT right 2 left " +
+    "2  save  set  shift 2  si  sort  sos  stack 3 status 4 top  transfer 3  type 1  up 1 "
+
+  let sentence = "riG   rePEAT copies  put mo   rest    types   fup.    6       poweRin"
+
+  let tbl = readTable(table)
+  let words = splitFields(sentence)
+  let results = validateCommands(tbl, words)
+  printResults(words, results)
+}
+
+main()
