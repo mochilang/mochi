@@ -583,12 +583,19 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileExpr(p.Group)
 	case p.List != nil:
 		elems := make([]string, len(p.List.Elems))
+		allLit := true
 		for i, e := range p.List.Elems {
 			v, err := c.compileExpr(e)
 			if err != nil {
 				return "", err
 			}
+			if !isLiteralExpr(e) {
+				allLit = false
+			}
 			elems[i] = v
+		}
+		if allLit {
+			return fmt.Sprintf("'(%s)", strings.Join(elems, " ")), nil
 		}
 		return fmt.Sprintf("(list %s)", strings.Join(elems, " ")), nil
 	case p.Map != nil:
@@ -1251,6 +1258,17 @@ func identName(e *parser.Expr) (string, bool) {
 		return "", false
 	}
 	return u.Value.Target.Selector.Root, true
+}
+
+func isLiteralExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 || u.Value == nil || u.Value.Target == nil {
+		return false
+	}
+	return u.Value.Target.Lit != nil
 }
 
 func isSimpleCall(e *parser.Expr, name string) (*parser.Expr, bool) {
