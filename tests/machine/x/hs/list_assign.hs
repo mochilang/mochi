@@ -9,10 +9,10 @@ import Data.List (intercalate, isPrefixOf, isInfixOf)
 import qualified Data.List as List
 
 
-
 nums = [1, 2]
 
 main :: IO ()
 main = do
-    let nums = 3
+    let nums = _updateAt 1 (const 3) nums
     print ((nums !! 1))
+
