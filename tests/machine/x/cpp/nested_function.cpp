@@ -6,9 +6,6 @@ int outer(int x) {
 }
 
 int main() {
-  {
-    std::cout << std::boolalpha << outer(3);
-    std::cout << std::endl;
-  }
+  std::cout << std::boolalpha << outer(3) << std::endl;
   return 0;
 }

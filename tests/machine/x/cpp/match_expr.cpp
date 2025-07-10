@@ -13,9 +13,6 @@ auto label = ([]() {
 })();
 
 int main() {
-  {
-    std::cout << std::boolalpha << label;
-    std::cout << std::endl;
-  }
+  std::cout << std::boolalpha << label << std::endl;
   return 0;
 }

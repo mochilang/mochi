@@ -61,11 +61,8 @@ auto result = ([]() {
 })();
 
 int main() {
-  {
-    std::cout << std::boolalpha
-              << std::string("--- Outer Join using syntax ---");
-    std::cout << std::endl;
-  }
+  std::cout << std::boolalpha << std::string("--- Outer Join using syntax ---")
+            << std::endl;
   for (auto row : result) {
     if ((row.order != __struct2{})) {
       if ((row.customer != __struct1{})) {

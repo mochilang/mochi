@@ -14,9 +14,6 @@ auto flag = (!([]() {
                   .empty());
 
 int main() {
-  {
-    std::cout << std::boolalpha << flag;
-    std::cout << std::endl;
-  }
+  std::cout << std::boolalpha << flag << std::endl;
   return 0;
 }

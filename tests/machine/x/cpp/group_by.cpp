@@ -78,11 +78,8 @@ auto stats = ([]() {
 })();
 
 int main() {
-  {
-    std::cout << std::boolalpha
-              << std::string("--- People grouped by city ---");
-    std::cout << std::endl;
-  }
+  std::cout << std::boolalpha << std::string("--- People grouped by city ---")
+            << std::endl;
   for (auto s : stats) {
     {
       std::cout << std::boolalpha << s.city;

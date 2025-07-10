@@ -6,9 +6,6 @@ auto msg =
               : ((x > 5) ? std::string("medium") : std::string("small")));
 
 int main() {
-  {
-    std::cout << std::boolalpha << msg;
-    std::cout << std::endl;
-  }
+  std::cout << std::boolalpha << msg << std::endl;
   return 0;
 }

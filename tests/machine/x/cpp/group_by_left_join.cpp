@@ -115,10 +115,8 @@ auto stats = ([]() {
 })();
 
 int main() {
-  {
-    std::cout << std::boolalpha << std::string("--- Group Left Join ---");
-    std::cout << std::endl;
-  }
+  std::cout << std::boolalpha << std::string("--- Group Left Join ---")
+            << std::endl;
   for (auto s : stats) {
     {
       std::cout << std::boolalpha << s.name;

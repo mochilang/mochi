@@ -8,9 +8,6 @@ int sum_rec(int n, int acc) {
 }
 
 int main() {
-  {
-    std::cout << std::boolalpha << sum_rec(10, 0);
-    std::cout << std::endl;
-  }
+  std::cout << std::boolalpha << sum_rec(10, 0) << std::endl;
   return 0;
 }

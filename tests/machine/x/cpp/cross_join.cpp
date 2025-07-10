@@ -53,11 +53,9 @@ auto result = ([]() {
 })();
 
 int main() {
-  {
-    std::cout << std::boolalpha
-              << std::string("--- Cross Join: All order-customer pairs ---");
-    std::cout << std::endl;
-  }
+  std::cout << std::boolalpha
+            << std::string("--- Cross Join: All order-customer pairs ---")
+            << std::endl;
   for (auto entry : result) {
     {
       std::cout << std::boolalpha << std::string("Order");

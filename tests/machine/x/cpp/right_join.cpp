@@ -60,11 +60,8 @@ auto result = ([]() {
 })();
 
 int main() {
-  {
-    std::cout << std::boolalpha
-              << std::string("--- Right Join using syntax ---");
-    std::cout << std::endl;
-  }
+  std::cout << std::boolalpha << std::string("--- Right Join using syntax ---")
+            << std::endl;
   for (auto entry : result) {
     if ((entry.order != __struct2{})) {
       {

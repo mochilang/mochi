@@ -162,10 +162,7 @@ auto result = ([]() {
 })();
 
 int main() {
-  {
-    std::cout << std::boolalpha << std::string("--- Left Join ---");
-    std::cout << std::endl;
-  }
+  std::cout << std::boolalpha << std::string("--- Left Join ---") << std::endl;
   for (auto entry : result) {
     {
       std::cout << std::boolalpha << std::string("Order");

@@ -25,9 +25,6 @@ int main() {
     }
   }
   // test update adult status
-  {
-    std::cout << std::boolalpha << std::string("ok");
-    std::cout << std::endl;
-  }
+  std::cout << std::boolalpha << std::string("ok") << std::endl;
   return 0;
 }

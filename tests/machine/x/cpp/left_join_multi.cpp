@@ -187,10 +187,8 @@ auto result = ([]() {
 })();
 
 int main() {
-  {
-    std::cout << std::boolalpha << std::string("--- Left Join Multi ---");
-    std::cout << std::endl;
-  }
+  std::cout << std::boolalpha << std::string("--- Left Join Multi ---")
+            << std::endl;
   for (auto r : result) {
     {
       std::cout << std::boolalpha << r.orderId;

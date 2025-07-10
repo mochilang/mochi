@@ -66,10 +66,7 @@ auto result = ([]() {
 })();
 
 int main() {
-  {
-    std::cout << std::boolalpha << std::string("--- Multi Join ---");
-    std::cout << std::endl;
-  }
+  std::cout << std::boolalpha << std::string("--- Multi Join ---") << std::endl;
   for (auto r : result) {
     {
       std::cout << std::boolalpha << r.name;
