@@ -1,0 +1,14 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/tree_sum.ml", line 23, characters 8-12:
+23 | let t : node = Node (Leaf, 1, Node (Leaf, 2, Leaf))
+             ^^^^
+Error: Unbound type constructor node
+
+
+Context (around line 23):
+  21 |   (match t with | Leaf -> 0 | Node (left, value, right) -> ((sum_tree left + value) + sum_tree right))
+  22 | 
+  23 | let t : node = Node (Leaf, 1, Node (Leaf, 2, Leaf))
+  24 | 
+  25 | let () =

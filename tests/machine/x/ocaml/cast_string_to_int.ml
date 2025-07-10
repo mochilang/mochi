@@ -18,4 +18,4 @@ let rec __show v =
 
 
 let () =
-  print_endline (__show (int_of_string "1995"));
+  print_endline int_of_string "1995";

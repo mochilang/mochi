@@ -1682,6 +1682,9 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("print expects at least 1 arg")
 		}
 		if len(args) == 1 {
+			if isStringExpr(call.Args[0]) {
+				return fmt.Sprintf("print_endline %s", args[0]), nil
+			}
 			return fmt.Sprintf("print_endline (__show (%s))", args[0]), nil
 		}
 		parts := make([]string, len(args))

@@ -19,5 +19,5 @@ let rec __show v =
 let s : string = "catch"
 
 let () =
-  print_endline (__show ((List.mem "cat" s)));
-  print_endline (__show ((List.mem "dog" s)));
+  print_endline (List.mem "cat" s);
+  print_endline (List.mem "dog" s);

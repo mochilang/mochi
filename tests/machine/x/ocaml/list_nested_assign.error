@@ -1,0 +1,14 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/list_nested_assign.ml", line 26, characters 34-42:
+26 |   print_endline (__show (List.nth List.nth (!matrix) 1 0));
+                                       ^^^^^^^^
+Error: This expression has type 'a list -> int -> 'a
+       but an expression was expected of type ('b -> 'c -> 'd) list
+
+
+Context (around line 26):
+  24 | let () =
+  25 |   matrix := list_set !matrix 1 (list_set (List.nth !matrix 1) 0 5);
+  26 |   print_endline (__show (List.nth List.nth (!matrix) 1 0));
+  27 | 

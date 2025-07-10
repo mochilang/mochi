@@ -30,7 +30,7 @@ List.rev !__res0)
 
 
 let () =
-  print_endline (__show ("--- Top products (excluding most expensive) ---"));
+  print_endline "--- Top products (excluding most expensive) ---";
   let rec __loop1 lst =
     match lst with
       | [] -> ()

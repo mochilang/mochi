@@ -50,7 +50,7 @@ List.rev !__res1)
 
 
 let () =
-  print_endline (__show ("--- Group Left Join ---"));
+  print_endline "--- Group Left Join ---";
   let rec __loop2 lst =
     match lst with
       | [] -> ()

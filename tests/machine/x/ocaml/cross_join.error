@@ -1,0 +1,16 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/cross_join.ml", line 32, characters 8-17:
+32 |       ) customers;
+             ^^^^^^^^^
+Error: This expression has type record1 list
+       but an expression was expected of type (string * Obj.t) list list
+       Type record1 is not compatible with type (string * Obj.t) list 
+
+
+Context (around line 32):
+  30 |       List.iter (fun c ->
+  31 |               __res0 := { orderId = Obj.obj (List.assoc "id" o); orderCustomerId = Obj.obj (List.assoc "customerId" o); pairedCustomerName = Obj.obj (List.assoc "name" c); orderTotal = Obj.obj (List.assoc "total" o) } :: !__res0;
+  32 |       ) customers;
+  33 |   ) orders;
+  34 | List.rev !__res0)

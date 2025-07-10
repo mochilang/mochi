@@ -37,7 +37,7 @@ let result : (string * Obj.t) list list = (let __res0 = ref [] in
 
 
 let () =
-  print_endline (__show ("--- Orders with customer info ---"));
+  print_endline "--- Orders with customer info ---";
   let rec __loop1 lst =
     match lst with
       | [] -> ()

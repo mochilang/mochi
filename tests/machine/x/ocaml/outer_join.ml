@@ -52,7 +52,7 @@ let result : (string * Obj.t) list list = (let __res0 = ref [] in
 
 
 let () =
-  print_endline (__show ("--- Outer Join using syntax ---"));
+  print_endline "--- Outer Join using syntax ---";
   let rec __loop1 lst =
     match lst with
       | [] -> ()

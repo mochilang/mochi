@@ -1,0 +1,15 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/string_compare.ml", line 21, characters 16-27:
+21 |   print_endline ("a" < "b");
+                     ^^^^^^^^^^^
+Error: This expression has type bool but an expression was expected of type
+         string
+
+
+Context (around line 21):
+  19 | 
+  20 | let () =
+  21 |   print_endline ("a" < "b");
+  22 |   print_endline ("a" <= "a");
+  23 |   print_endline ("b" > "a");
