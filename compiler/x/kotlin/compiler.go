@@ -1754,71 +1754,103 @@ func listLiteral(e *parser.Expr) (*parser.ListLiteral, bool) {
 func (c *Compiler) discoverStructs(prog *parser.Program) {
 	for _, st := range prog.Statements {
 		var list *parser.ListLiteral
+		var mp *parser.MapLiteral
 		var name string
 		var mutable bool
 		switch {
 		case st.Let != nil && st.Let.Value != nil:
 			list, _ = listLiteral(st.Let.Value)
+			if list == nil {
+				mp, _ = mapLiteral(st.Let.Value)
+			}
 			name = st.Let.Name
 			mutable = false
 		case st.Var != nil && st.Var.Value != nil:
 			list, _ = listLiteral(st.Var.Value)
+			if list == nil {
+				mp, _ = mapLiteral(st.Var.Value)
+			}
 			name = st.Var.Name
 			mutable = true
 		}
-		if list == nil || len(list.Elems) == 0 {
-			continue
-		}
-		firstMap, ok := mapLiteral(list.Elems[0])
-		if !ok {
-			continue
-		}
-		keys := []string{}
-		for _, it := range firstMap.Items {
-			if k, ok := identName(it.Key); ok {
-				keys = append(keys, k)
-			} else {
-				keys = nil
-				break
+		if list != nil {
+			if len(list.Elems) == 0 {
+				continue
 			}
-		}
-		if keys == nil || len(keys) == 0 {
-			continue
-		}
-		okAll := true
-		for _, e := range list.Elems[1:] {
-			m, ok := mapLiteral(e)
-			if !ok || len(m.Items) != len(keys) {
-				okAll = false
-				break
+			firstMap, ok := mapLiteral(list.Elems[0])
+			if !ok {
+				continue
 			}
-			for i, it := range m.Items {
-				k, ok := identName(it.Key)
-				if !ok || k != keys[i] {
+			keys := []string{}
+			for _, it := range firstMap.Items {
+				if k, ok := identName(it.Key); ok {
+					keys = append(keys, k)
+				} else {
+					keys = nil
+					break
+				}
+			}
+			if keys == nil || len(keys) == 0 {
+				continue
+			}
+			okAll := true
+			for _, e := range list.Elems[1:] {
+				m, ok := mapLiteral(e)
+				if !ok || len(m.Items) != len(keys) {
 					okAll = false
+					break
+				}
+				for i, it := range m.Items {
+					k, ok := identName(it.Key)
+					if !ok || k != keys[i] {
+						okAll = false
+						break
+					}
+				}
+				if !okAll {
 					break
 				}
 			}
 			if !okAll {
-				break
+				continue
 			}
-		}
-		if !okAll {
-			continue
-		}
-		fields := map[string]types.Type{}
-		for i, it := range firstMap.Items {
-			fields[keys[i]] = c.inferExprType(it.Value)
-		}
-		structName := structNameFromVar(name)
-		stype := types.StructType{Name: structName, Fields: fields, Order: keys}
-		c.inferred[structName] = stype
-		c.env.SetStruct(structName, stype)
-		c.env.SetVar(name, types.ListType{Elem: stype}, mutable)
-		for _, e := range list.Elems {
-			if m, ok := mapLiteral(e); ok {
-				c.mapNodes[m] = structName
+			fields := map[string]types.Type{}
+			for i, it := range firstMap.Items {
+				fields[keys[i]] = c.inferExprType(it.Value)
 			}
+			structName := structNameFromVar(name)
+			stype := types.StructType{Name: structName, Fields: fields, Order: keys}
+			c.inferred[structName] = stype
+			c.env.SetStruct(structName, stype)
+			c.env.SetVar(name, types.ListType{Elem: stype}, mutable)
+			for _, e := range list.Elems {
+				if m, ok := mapLiteral(e); ok {
+					c.mapNodes[m] = structName
+				}
+			}
+		} else if mp != nil {
+			keys := []string{}
+			for _, it := range mp.Items {
+				if k, ok := identName(it.Key); ok {
+					keys = append(keys, k)
+				} else {
+					keys = nil
+					break
+				}
+			}
+			if keys == nil || len(keys) == 0 {
+				continue
+			}
+			fields := map[string]types.Type{}
+			for i, it := range mp.Items {
+				fields[keys[i]] = c.inferExprType(it.Value)
+			}
+			structName := structNameFromVar(name)
+			stype := types.StructType{Name: structName, Fields: fields, Order: keys}
+			c.inferred[structName] = stype
+			c.env.SetStruct(structName, stype)
+			c.env.SetVar(name, stype, mutable)
+			c.mapNodes[mp] = structName
 		}
 	}
 }

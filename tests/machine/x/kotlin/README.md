@@ -117,3 +117,4 @@ Successfully ran: 83/100 programs
 
 - [ ] Compare output with reference implementations
 - [x] Emit data classes for uniform map lists
+- [ ] Infer data classes from single map literals
