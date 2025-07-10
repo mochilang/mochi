@@ -1655,11 +1655,16 @@ func (c *compiler) groupQuery(q *parser.QueryExpr) (string, error) {
 	c.varTypes = savedVars
 	c.mapFields = savedFields
 	var b strings.Builder
-	b.WriteString("{ () -> [Any] in\n")
+	selIsGroup := sel == gname
 	et := swiftTypeOf(elemType)
 	if et == "" {
 		et = "Any"
 	}
+	retType := "[Any]"
+	if selIsGroup {
+		retType = fmt.Sprintf("[(key: AnyHashable, items: [%s])]", et)
+	}
+	b.WriteString(fmt.Sprintf("{ () -> %s in\n", retType))
 	b.WriteString(fmt.Sprintf("    var _groups: [AnyHashable:[%s]] = [:]\n", et))
 	b.WriteString(fmt.Sprintf("    for %s in %s {\n", q.Var, filtered))
 	b.WriteString(fmt.Sprintf("        let _k = %s\n", keyExpr))
@@ -1695,7 +1700,11 @@ func (c *compiler) groupQuery(q *parser.QueryExpr) (string, error) {
 	if takeExpr != "" {
 		b.WriteString("    _tmp = Array(_tmp.prefix(" + takeExpr + "))\n")
 	}
-	b.WriteString("    return _tmp.map { " + gname + " in " + sel + " }\n")
+	if selIsGroup {
+		b.WriteString("    return _tmp\n")
+	} else {
+		b.WriteString("    return _tmp.map { " + gname + " in " + sel + " }\n")
+	}
 	b.WriteString("}()")
 	delete(c.groups, gname)
 	delete(c.groupElemType, gname)
@@ -1946,7 +1955,11 @@ func (c *compiler) groupJoinQuery(q *parser.QueryExpr) (string, error) {
 	if takeExpr != "" {
 		b.WriteString(fmt.Sprintf("\t_tmp = Array(_tmp.prefix(%s))\n", takeExpr))
 	}
-	b.WriteString(fmt.Sprintf("\treturn _tmp.map { %s in %s }\n", gname, sel))
+	if sel == gname {
+		b.WriteString("\treturn _tmp\n")
+	} else {
+		b.WriteString(fmt.Sprintf("\treturn _tmp.map { %s in %s }\n", gname, sel))
+	}
 	b.WriteString("}())")
 
 	delete(c.groups, gname)
