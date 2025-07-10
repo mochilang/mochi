@@ -29,7 +29,7 @@ Checklist:
 - [x] fun_expr_in_let
 - [x] fun_three_args
 - [ ] go_auto
- - [x] group_by
+- [x] group_by
 - [ ] group_by_conditional_sum
 - [ ] group_by_having
 - [ ] group_by_join
@@ -45,7 +45,7 @@ Checklist:
 - [x] in_operator_extended
 - [x] inner_join
 - [x] join_multi
-- [ ] json_builtin
+- [x] json_builtin
 - [ ] left_join
 - [ ] left_join_multi
 - [x] len_builtin
