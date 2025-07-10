@@ -16,7 +16,7 @@ let rec __show v =
     | _ -> "<value>"
 
 
-let rec makeAdder (n : int) : unit =
+let rec makeAdder (n : int) : int -> int =
   fun x -> (x + n)
 
 let add10 = makeAdder 10

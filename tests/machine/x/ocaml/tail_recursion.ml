@@ -17,10 +17,7 @@ let rec __show v =
 
 
 let rec sum_rec (n : int) (acc : int) : int =
-  if (n = 0) then (
-    acc
-  ) ;
-  sum_rec (n - 1) (acc + n)
+  if (n = 0) then acc else sum_rec (n - 1) (acc + n)
 
 
 let () =

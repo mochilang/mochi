@@ -1689,6 +1689,29 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		c.writeln(fmt.Sprintf("let rec %s %s =", fn.Name, strings.Join(params, " ")))
 	}
 	c.indent++
+
+	if len(fn.Body) == 2 {
+		if ifs := fn.Body[0].If; ifs != nil && ifs.ElseIf == nil && len(ifs.Else) == 0 && len(ifs.Then) == 1 && ifs.Then[0].Return != nil {
+			if retStmt := fn.Body[1].Return; retStmt != nil {
+				cond, err := c.compileExpr(ifs.Cond)
+				if err != nil {
+					return err
+				}
+				thenVal, err := c.compileExpr(ifs.Then[0].Return.Value)
+				if err != nil {
+					return err
+				}
+				elseVal, err := c.compileExpr(retStmt.Value)
+				if err != nil {
+					return err
+				}
+				c.writeln(fmt.Sprintf("if %s then %s else %s", cond, thenVal, elseVal))
+				c.indent--
+				return nil
+			}
+		}
+	}
+
 	for _, st := range fn.Body {
 		if err := c.compileStmt(st); err != nil {
 			return err
@@ -1725,6 +1748,30 @@ func (c *Compiler) compileLocalFun(fn *parser.FunStmt) error {
 		c.writeln(fmt.Sprintf("let rec %s %s =", fn.Name, strings.Join(params, " ")))
 	}
 	c.indent++
+
+	if len(fn.Body) == 2 {
+		if ifs := fn.Body[0].If; ifs != nil && ifs.ElseIf == nil && len(ifs.Else) == 0 && len(ifs.Then) == 1 && ifs.Then[0].Return != nil {
+			if retStmt := fn.Body[1].Return; retStmt != nil {
+				cond, err := c.compileExpr(ifs.Cond)
+				if err != nil {
+					return err
+				}
+				thenVal, err := c.compileExpr(ifs.Then[0].Return.Value)
+				if err != nil {
+					return err
+				}
+				elseVal, err := c.compileExpr(retStmt.Value)
+				if err != nil {
+					return err
+				}
+				c.writeln(fmt.Sprintf("if %s then %s else %s", cond, thenVal, elseVal))
+				c.indent--
+				c.writeln("in")
+				return nil
+			}
+		}
+	}
+
 	for _, st := range fn.Body {
 		if err := c.compileStmt(st); err != nil {
 			return err
@@ -1746,6 +1793,18 @@ func (c *Compiler) compileLocalFun(fn *parser.FunStmt) error {
 func (c *Compiler) typeRef(t *parser.TypeRef) string {
 	if t == nil {
 		return "unit"
+	}
+	if t.Fun != nil {
+		parts := make([]string, len(t.Fun.Params))
+		for i, p := range t.Fun.Params {
+			parts[i] = c.typeRef(p)
+		}
+		ret := "unit"
+		if t.Fun.Return != nil {
+			ret = c.typeRef(t.Fun.Return)
+		}
+		parts = append(parts, ret)
+		return strings.Join(parts, " -> ")
 	}
 	if t.Simple != nil {
 		switch *t.Simple {
@@ -1790,6 +1849,17 @@ func ocamlType(t types.Type) string {
 		return ocamlType(tt.Elem) + " list"
 	case types.StructType:
 		return strings.ToLower(tt.Name)
+	case types.FuncType:
+		parts := make([]string, len(tt.Params))
+		for i, p := range tt.Params {
+			parts[i] = ocamlType(p)
+		}
+		ret := "unit"
+		if tt.Return != nil {
+			ret = ocamlType(tt.Return)
+		}
+		parts = append(parts, ret)
+		return strings.Join(parts, " -> ")
 	case types.VoidType:
 		return "unit"
 	}
