@@ -8,10 +8,7 @@ auto data = std::unordered_map<std::string,
 
 int main() {
   data[std::string("outer")][std::string("inner")] = 2;
-  {
-    std::cout << std::boolalpha
-              << data[std::string("outer")][std::string("inner")];
-    std::cout << std::endl;
-  }
+  std::cout << std::boolalpha
+            << data[std::string("outer")][std::string("inner")] << std::endl;
   return 0;
 }

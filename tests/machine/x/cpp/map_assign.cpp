@@ -6,9 +6,6 @@ auto scores =
 
 int main() {
   scores[std::string("bob")] = 2;
-  {
-    std::cout << std::boolalpha << scores[std::string("bob")];
-    std::cout << std::endl;
-  }
+  std::cout << std::boolalpha << scores[std::string("bob")] << std::endl;
   return 0;
 }

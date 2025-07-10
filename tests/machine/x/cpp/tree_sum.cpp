@@ -39,9 +39,6 @@ int main() {
     })());
     return __p;
   })();
-  {
-    std::cout << std::boolalpha << sum_tree(t);
-    std::cout << std::endl;
-  }
+  std::cout << std::boolalpha << sum_tree(t) << std::endl;
   return 0;
 }

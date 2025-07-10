@@ -54,11 +54,8 @@ auto result = ([]() {
 })();
 
 int main() {
-  {
-    std::cout << std::boolalpha
-              << std::string("--- Orders with customer info ---");
-    std::cout << std::endl;
-  }
+  std::cout << std::boolalpha
+            << std::string("--- Orders with customer info ---") << std::endl;
   for (auto entry : result) {
     {
       std::cout << std::boolalpha << std::string("Order");

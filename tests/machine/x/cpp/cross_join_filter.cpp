@@ -27,10 +27,7 @@ auto pairs = ([]() {
 })();
 
 int main() {
-  {
-    std::cout << std::boolalpha << std::string("--- Even pairs ---");
-    std::cout << std::endl;
-  }
+  std::cout << std::boolalpha << std::string("--- Even pairs ---") << std::endl;
   for (auto p : pairs) {
     {
       std::cout << std::boolalpha << p.n;

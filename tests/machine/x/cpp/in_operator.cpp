@@ -5,15 +5,10 @@
 std::vector<int> xs = std::vector<decltype(1)>{1, 2, 3};
 
 int main() {
-  {
-    std::cout << std::boolalpha
-              << (std::find(xs.begin(), xs.end(), 2) != xs.end());
-    std::cout << std::endl;
-  }
-  {
-    std::cout << std::boolalpha
-              << (!((std::find(xs.begin(), xs.end(), 5) != xs.end())));
-    std::cout << std::endl;
-  }
+  std::cout << std::boolalpha
+            << (std::find(xs.begin(), xs.end(), 2) != xs.end()) << std::endl;
+  std::cout << std::boolalpha
+            << (!((std::find(xs.begin(), xs.end(), 5) != xs.end())))
+            << std::endl;
   return 0;
 }

@@ -24,10 +24,7 @@ std::string classify(int n) {
 }
 
 int main() {
-  {
-    std::cout << std::boolalpha << label;
-    std::cout << std::endl;
-  }
+  std::cout << std::boolalpha << label << std::endl;
   auto day = std::string("sun");
   auto mood = ([&]() {
     auto __v = day;
@@ -39,10 +36,7 @@ int main() {
       return std::string("relaxed");
     return std::string("normal");
   })();
-  {
-    std::cout << std::boolalpha << mood;
-    std::cout << std::endl;
-  }
+  std::cout << std::boolalpha << mood << std::endl;
   auto ok = true;
   auto status = ([&]() {
     auto __v = ok;
@@ -52,17 +46,8 @@ int main() {
       return std::string("denied");
     return decltype(std::string("confirmed")){};
   })();
-  {
-    std::cout << std::boolalpha << status;
-    std::cout << std::endl;
-  }
-  {
-    std::cout << std::boolalpha << classify(0);
-    std::cout << std::endl;
-  }
-  {
-    std::cout << std::boolalpha << classify(5);
-    std::cout << std::endl;
-  }
+  std::cout << std::boolalpha << status << std::endl;
+  std::cout << std::boolalpha << classify(0) << std::endl;
+  std::cout << std::boolalpha << classify(5) << std::endl;
   return 0;
 }

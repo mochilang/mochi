@@ -45,17 +45,15 @@ int main() {
     }
     std::cout << std::endl;
   }
-  {
-    std::cout << std::boolalpha
-              << ([&](auto a, auto b) {
-                   a.insert(a.end(), b.begin(), b.end());
-                   std::sort(a.begin(), a.end());
-                   a.erase(std::unique(a.begin(), a.end()), a.end());
-                   return a;
-                 })(std::vector<decltype(1)>{1, 2},
-                    std::vector<decltype(2)>{2, 3})
-                     .size();
-    std::cout << std::endl;
-  }
+  std::cout << std::boolalpha
+            << ([&](auto a, auto b) {
+                 a.insert(a.end(), b.begin(), b.end());
+                 std::sort(a.begin(), a.end());
+                 a.erase(std::unique(a.begin(), a.end()), a.end());
+                 return a;
+               })(std::vector<decltype(1)>{1, 2},
+                  std::vector<decltype(2)>{2, 3})
+                   .size()
+            << std::endl;
   return 0;
 }

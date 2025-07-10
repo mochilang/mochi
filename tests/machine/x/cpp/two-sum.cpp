@@ -15,13 +15,7 @@ auto twoSum(auto nums, int target) {
 
 int main() {
   auto result = twoSum(std::vector<decltype(2)>{2, 7, 11, 15}, 9);
-  {
-    std::cout << std::boolalpha << result[0];
-    std::cout << std::endl;
-  }
-  {
-    std::cout << std::boolalpha << result[1];
-    std::cout << std::endl;
-  }
+  std::cout << std::boolalpha << result[0] << std::endl;
+  std::cout << std::boolalpha << result[1] << std::endl;
   return 0;
 }

@@ -13,9 +13,6 @@ auto inc(Counter c) { c.n = (c.n + 1); }
 int main() {
   auto c = Counter{0};
   inc(c);
-  {
-    std::cout << std::boolalpha << c.n;
-    std::cout << std::endl;
-  }
+  std::cout << std::boolalpha << c.n << std::endl;
   return 0;
 }

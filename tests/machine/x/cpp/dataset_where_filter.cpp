@@ -38,10 +38,7 @@ auto adults = ([]() {
 })();
 
 int main() {
-  {
-    std::cout << std::boolalpha << std::string("--- Adults ---");
-    std::cout << std::endl;
-  }
+  std::cout << std::boolalpha << std::string("--- Adults ---") << std::endl;
   for (auto person : adults) {
     {
       std::cout << std::boolalpha << person.name;

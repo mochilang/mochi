@@ -6,10 +6,7 @@ auto m = std::unordered_map<std::string, decltype(1)>{{std::string("a"), 1},
 
 int main() {
   for (auto k : m) {
-    {
-      std::cout << std::boolalpha << k.first << ' ' << k.second;
-      std::cout << std::endl;
-    }
+    std::cout << std::boolalpha << k.first << ' ' << k.second << std::endl;
   }
   return 0;
 }

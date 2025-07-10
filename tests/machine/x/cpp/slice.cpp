@@ -24,10 +24,8 @@ int main() {
     }
     std::cout << std::endl;
   }
-  {
-    std::cout << std::boolalpha
-              << std::string(std::string("hello")).substr(1, (4) - (1));
-    std::cout << std::endl;
-  }
+  std::cout << std::boolalpha
+            << std::string(std::string("hello")).substr(1, (4) - (1))
+            << std::endl;
   return 0;
 }
