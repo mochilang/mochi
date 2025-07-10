@@ -234,6 +234,15 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 
 func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	mutable := c.updates[s.Name]
+	var typ types.Type = types.AnyType{}
+	if s.Type != nil {
+		typ = types.ResolveTypeRef(s.Type, c.env)
+	} else if s.Value != nil {
+		typ = types.ExprType(s.Value, c.env)
+	}
+	if c.env != nil {
+		c.env.SetVar(s.Name, typ, mutable)
+	}
 	rhs := "0"
 	if s.Value != nil {
 		var err error
@@ -288,9 +297,18 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 			return err
 		}
 	}
+	var typ types.Type = types.AnyType{}
 	if s.Type != nil {
-		typ := c.typeString(s.Type)
-		c.writeln(fmt.Sprintf("var %s: %s = %s", s.Name, typ, rhs))
+		typ = types.ResolveTypeRef(s.Type, c.env)
+	} else if s.Value != nil {
+		typ = types.ExprType(s.Value, c.env)
+	}
+	if c.env != nil {
+		c.env.SetVar(s.Name, typ, true)
+	}
+	if s.Type != nil {
+		ts := c.typeString(s.Type)
+		c.writeln(fmt.Sprintf("var %s: %s = %s", s.Name, ts, rhs))
 	} else {
 		c.writeln(fmt.Sprintf("var %s = %s", s.Name, rhs))
 	}
