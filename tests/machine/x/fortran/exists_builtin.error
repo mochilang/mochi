@@ -1,0 +1,4 @@
+error: unsupported expression at line 3
+   2| let flag = exists(
+   3|   from x in data
+   4|   where x == 1

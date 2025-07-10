@@ -1,6 +1,8 @@
 program let_and_print
   implicit none
-  integer :: x
-  x = 5
-  print *, x
+  integer :: a
+  integer :: b
+  a = 10
+  b = 20
+  print *, (a + b)
 end program let_and_print

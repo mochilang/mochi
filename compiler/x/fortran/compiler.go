@@ -37,14 +37,10 @@ func New(env *types.Env) *Compiler {
 
 // Compile converts a parsed Mochi program into Fortran source code.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
-	if prog != nil && prog.Pos.Filename != "" {
-		if data, err := loadHumanFortran(prog.Pos.Filename); err == nil {
-			return data, nil
-		}
-		if data, err := loadDatasetFortran(prog.Pos.Filename); err == nil {
-			return data, nil
-		}
-	}
+	// If human written Fortran exists for the source program the tests may
+	// use it instead of exercising the compiler.  For the purposes of the
+	// machine generated outputs we want to always run the compiler, so the
+	// fallback to the reference implementations is disabled.
 
 	c.buf.Reset()
 	c.decl.Reset()
@@ -193,11 +189,15 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 			}
 		}
 		if lst := listLiteral(l.Value); lst != nil {
-			if inner := listLiteral(lst.Elems[0]); inner != nil {
-				cols := len(inner.Elems)
-				c.writelnDecl(fmt.Sprintf("%s, dimension(%d,%d) :: %s", typ, len(lst.Elems), cols, l.Name))
+			if len(lst.Elems) > 0 {
+				if inner := listLiteral(lst.Elems[0]); inner != nil {
+					cols := len(inner.Elems)
+					c.writelnDecl(fmt.Sprintf("%s, dimension(%d,%d) :: %s", typ, len(lst.Elems), cols, l.Name))
+				} else {
+					c.writelnDecl(fmt.Sprintf("%s, dimension(%d) :: %s", typ, len(lst.Elems), l.Name))
+				}
 			} else {
-				c.writelnDecl(fmt.Sprintf("%s, dimension(%d) :: %s", typ, len(lst.Elems), l.Name))
+				c.writelnDecl(fmt.Sprintf("%s, dimension(0) :: %s", typ, l.Name))
 			}
 		} else {
 			c.writelnDecl(fmt.Sprintf("%s :: %s", typ, l.Name))
@@ -256,11 +256,15 @@ func (c *Compiler) compileLetDecl(l *parser.LetStmt) error {
 		}
 	}
 	if lst := listLiteral(l.Value); lst != nil {
-		if inner := listLiteral(lst.Elems[0]); inner != nil {
-			cols := len(inner.Elems)
-			c.writelnDecl(fmt.Sprintf("%s, dimension(%d,%d) :: %s", typ, len(lst.Elems), cols, l.Name))
+		if len(lst.Elems) > 0 {
+			if inner := listLiteral(lst.Elems[0]); inner != nil {
+				cols := len(inner.Elems)
+				c.writelnDecl(fmt.Sprintf("%s, dimension(%d,%d) :: %s", typ, len(lst.Elems), cols, l.Name))
+			} else {
+				c.writelnDecl(fmt.Sprintf("%s, dimension(%d) :: %s", typ, len(lst.Elems), l.Name))
+			}
 		} else {
-			c.writelnDecl(fmt.Sprintf("%s, dimension(%d) :: %s", typ, len(lst.Elems), l.Name))
+			c.writelnDecl(fmt.Sprintf("%s, dimension(0) :: %s", typ, l.Name))
 		}
 	} else {
 		c.writelnDecl(fmt.Sprintf("%s :: %s", typ, l.Name))
