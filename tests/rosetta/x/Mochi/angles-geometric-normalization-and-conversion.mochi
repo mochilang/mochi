@@ -1,0 +1,45 @@
+// Mochi implementation of Rosetta "Angles geometric normalization and conversion" task
+// Translated from Go version in tests/rosetta/x/Go/angles-geometric-normalization-and-conversion.go
+
+fun d2d(d: float): float { return d % 360.0 }
+fun g2g(g: float): float { return g % 400.0 }
+fun m2m(m: float): float { return m % 6400.0 }
+fun r2r(r: float): float { return r % (2.0 * 3.141592653589793) }
+
+fun d2g(d: float): float { return d2d(d) * 400.0 / 360.0 }
+fun d2m(d: float): float { return d2d(d) * 6400.0 / 360.0 }
+fun d2r(d: float): float { return d2d(d) * 3.141592653589793 / 180.0 }
+
+fun g2d(g: float): float { return g2g(g) * 360.0 / 400.0 }
+fun g2m(g: float): float { return g2g(g) * 6400.0 / 400.0 }
+fun g2r(g: float): float { return g2g(g) * 3.141592653589793 / 200.0 }
+
+fun m2d(m: float): float { return m2m(m) * 360.0 / 6400.0 }
+fun m2g(m: float): float { return m2m(m) * 400.0 / 6400.0 }
+fun m2r(m: float): float { return m2m(m) * 3.141592653589793 / 3200.0 }
+
+fun r2d(r: float): float { return r2r(r) * 180.0 / 3.141592653589793 }
+fun r2g(r: float): float { return r2r(r) * 200.0 / 3.141592653589793 }
+fun r2m(r: float): float { return r2r(r) * 3200.0 / 3.141592653589793 }
+
+fun main() {
+  let angles = [-2.0, -1.0, 0.0, 1.0, 2.0, 6.2831853, 16.0, 57.2957795, 359.0, 399.0, 6399.0, 1000000.0]
+  print("degrees normalized_degs gradians mils radians")
+  for a in angles {
+    print(str(a) + " " + str(d2d(a)) + " " + str(d2g(a)) + " " + str(d2m(a)) + " " + str(d2r(a)))
+  }
+  print("\ngradians normalized_grds degrees mils radians")
+  for a in angles {
+    print(str(a) + " " + str(g2g(a)) + " " + str(g2d(a)) + " " + str(g2m(a)) + " " + str(g2r(a)))
+  }
+  print("\nmils normalized_mils degrees gradians radians")
+  for a in angles {
+    print(str(a) + " " + str(m2m(a)) + " " + str(m2d(a)) + " " + str(m2g(a)) + " " + str(m2r(a)))
+  }
+  print("\nradians normalized_rads degrees gradians mils")
+  for a in angles {
+    print(str(a) + " " + str(r2r(a)) + " " + str(r2d(a)) + " " + str(r2g(a)) + " " + str(r2m(a)))
+  }
+}
+
+main()
