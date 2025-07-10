@@ -32,10 +32,10 @@ func formatParams(ps []ffiinfo.ParamInfo) string {
 			b.WriteString(p.Name)
 			if p.Type != "" {
 				b.WriteString(": ")
-				b.WriteString(p.Type)
+				b.WriteString(normalizeType(p.Type))
 			}
 		} else if p.Type != "" {
-			b.WriteString(p.Type)
+			b.WriteString(normalizeType(p.Type))
 		}
 	}
 	return b.String()
@@ -49,7 +49,7 @@ func formatResults(rs []ffiinfo.ParamInfo) string {
 		if rs[0].Type == "" {
 			return ""
 		}
-		return ": " + rs[0].Type
+		return ": " + normalizeType(rs[0].Type)
 	}
 	var b strings.Builder
 	b.WriteString(": (")
@@ -57,7 +57,7 @@ func formatResults(rs []ffiinfo.ParamInfo) string {
 		if i > 0 {
 			b.WriteString(", ")
 		}
-		b.WriteString(r.Type)
+		b.WriteString(normalizeType(r.Type))
 	}
 	b.WriteString(")")
 	return b.String()
@@ -80,7 +80,27 @@ func externs(info *ffiinfo.ModuleInfo) string {
 
 func normalizeType(t string) string {
 	if strings.HasPrefix(t, "untyped ") {
-		return strings.TrimPrefix(t, "untyped ")
+		t = strings.TrimPrefix(t, "untyped ")
+	}
+	if strings.HasPrefix(t, "[]") {
+		return "list<" + normalizeType(t[2:]) + ">"
+	}
+	if strings.HasPrefix(t, "[") {
+		end := strings.Index(t, "]")
+		if end > 0 {
+			return "list<" + normalizeType(t[end+1:]) + ">"
+		}
+	}
+	if strings.HasPrefix(t, "map[") {
+		end := strings.Index(t, "]")
+		if end > 0 {
+			key := normalizeType(t[4:end])
+			val := normalizeType(strings.TrimSpace(t[end+1:]))
+			return "map<" + key + ", " + val + ">"
+		}
+	}
+	if strings.HasPrefix(t, "*") {
+		return normalizeType(t[1:])
 	}
 	return t
 }
