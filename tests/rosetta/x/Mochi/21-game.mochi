@@ -1,3 +1,5 @@
+// Mochi implementation of Rosetta "21 game" task
+
 fun parseIntStr(str: string): int {
   var i = 0
   var neg = false
