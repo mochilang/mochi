@@ -4,7 +4,7 @@ This directory contains Kotlin code compiled from Mochi programs in `tests/vm/va
 
 ## Progress
 
-Compiled: 86/97 programs
+Compiled: 97/97 programs
 
 Successfully ran: 80/97 programs
 
@@ -34,13 +34,13 @@ Successfully ran: 80/97 programs
 - [x] fun_three_args.mochi
 - [x] group_by.mochi
 - [x] group_by_conditional_sum.mochi
-- [ ] group_by_having.mochi
+ - [x] group_by_having.mochi
 - [x] group_by_join.mochi
 - [x] group_by_left_join.mochi
 - [x] group_by_multi_join.mochi
-- [ ] group_by_multi_join_sort.mochi
-- [ ] group_by_sort.mochi
-- [ ] group_items_iteration.mochi
+ - [x] group_by_multi_join_sort.mochi
+ - [x] group_by_sort.mochi
+ - [x] group_items_iteration.mochi
 - [x] if_else.mochi
 - [x] if_then_else.mochi
 - [x] if_then_else_nested.mochi
@@ -73,36 +73,36 @@ Successfully ran: 80/97 programs
 - [x] membership.mochi
 - [x] min_max_builtin.mochi
  - [x] nested_function.mochi
-- [ ] order_by_map.mochi
-- [ ] outer_join.mochi
+ - [x] order_by_map.mochi
+ - [x] outer_join.mochi
 - [x] partial_application.mochi
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
-- [ ] query_sum_select.mochi
+ - [x] query_sum_select.mochi
 - [x] record_assign.mochi
-- [ ] right_join.mochi
+ - [x] right_join.mochi
 - [x] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
 - [x] slice.mochi
-- [ ] sort_stable.mochi
+ - [x] sort_stable.mochi
 - [x] str_builtin.mochi
-- [ ] string_compare.mochi
+ - [x] string_compare.mochi
 - [x] string_concat.mochi
-- [ ] string_contains.mochi
+ - [x] string_contains.mochi
 - [x] string_in_operator.mochi
 - [x] string_index.mochi
 - [x] string_prefix_slice.mochi
 - [x] substring_builtin.mochi
 - [x] sum_builtin.mochi
-- [ ] tail_recursion.mochi
-- [ ] test_block.mochi
-- [ ] tree_sum.mochi
-- [ ] two-sum.mochi
+ - [x] tail_recursion.mochi
+ - [x] test_block.mochi
+ - [x] tree_sum.mochi
+ - [x] two-sum.mochi
 - [x] typed_let.mochi
 - [x] typed_var.mochi
 - [x] unary_neg.mochi
-- [ ] update_stmt.mochi
+ - [x] update_stmt.mochi
 - [x] user_type_literal.mochi
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
@@ -110,5 +110,5 @@ Successfully ran: 80/97 programs
 
 ## Remaining Work
 
-- [ ] Re-run compilation after join and group by enhancements
-- [ ] Verify output against reference implementations
+- [ ] Run the generated programs once a Kotlin toolchain is available
+- [ ] Compare output with reference implementations

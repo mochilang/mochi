@@ -161,6 +161,10 @@ fun _save(rows: List<Any?>, path: String?, opts: Map<String, Any?>?) {
     if (path != null && path != "-") writer.close()
 }
 
+fun json(v: Any?) {
+    println(toJson(v))
+}
+
 fun toJson(v: Any?): String = when (v) {
     null -> "null"
     is String -> "\"" + v.replace("\"", "\\\"") + "\""
@@ -186,7 +190,7 @@ val grouped = run {
             __groups[__k] = __g
             __order.add(__k)
         }
-        __g.add(i)
+        __g.add(mutableMapOf("i" to i) as MutableMap<Any?, Any?>)
     }
     val __res = mutableListOf<MutableMap<Any?, Any?>>()
     for (k in __order) {

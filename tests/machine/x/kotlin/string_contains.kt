@@ -177,8 +177,9 @@ fun toJson(v: Any?): String = when (v) {
 class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
 
 
+val s = "catch"
+
 fun main() {
-    for (i in 1 until 4) {
-        println(i)
-    }
+    println((s as MutableMap<*, *>)["contains"]("cat"))
+    println((s as MutableMap<*, *>)["contains"]("dog"))
 }

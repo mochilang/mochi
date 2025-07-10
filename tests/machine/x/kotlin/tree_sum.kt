@@ -177,8 +177,19 @@ fun toJson(v: Any?): String = when (v) {
 class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
 
 
-fun main() {
-    for (i in 1 until 4) {
-        println(i)
+
+val t = Node(left = Leaf, value = 1, right = Node(left = Leaf, value = 2, right = Leaf))
+
+fun sum_tree(t: Tree): Int {
+    return run {
+    val __t = t
+    when (__t) {
+        Leaf -> 0
+        Node(left, value, right) -> toInt(sum_tree(left) + toInt(value)) + sum_tree(right)
     }
+}
+}
+
+fun main() {
+    println(sum_tree(t))
 }

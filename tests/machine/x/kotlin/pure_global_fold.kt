@@ -180,7 +180,7 @@ class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by 
 val k = 2
 
 fun inc(x: Int): Int {
-    return toInt(x) + k
+    return x + k
 }
 
 fun main() {

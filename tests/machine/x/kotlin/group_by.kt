@@ -68,6 +68,15 @@ fun toDouble(v: Any?): Double = when (v) {
     else -> 0.0
 }
 
+fun toBool(v: Any?): Boolean = when (v) {
+    is Boolean -> v
+    is Int -> v != 0
+    is Double -> v != 0.0
+    is String -> v.isNotEmpty()
+    null -> false
+    else -> true
+}
+
 fun <T> union(a: MutableList<T>, b: MutableList<T>): MutableList<T> {
     val res = a.toMutableList()
     for (x in b) if (!res.contains(x)) res.add(x)
@@ -152,6 +161,10 @@ fun _save(rows: List<Any?>, path: String?, opts: Map<String, Any?>?) {
     if (path != null && path != "-") writer.close()
 }
 
+fun json(v: Any?) {
+    println(toJson(v))
+}
+
 fun toJson(v: Any?): String = when (v) {
     null -> "null"
     is String -> "\"" + v.replace("\"", "\\\"") + "\""
@@ -177,18 +190,18 @@ val stats = run {
             __groups[__k] = __g
             __order.add(__k)
         }
-        __g.add(person)
+        __g.add(mutableMapOf("person" to person) as MutableMap<Any?, Any?>)
     }
-    val __res = mutableListOf<Any?>()
+    val __res = mutableListOf<MutableMap<Any?, Any?>>()
     for (k in __order) {
         val g = __groups[k]!!
-        __res.add(mutableMapOf("city" to g.key, "count" to count(g), "avg_age" to avg(run {
+        __res.add((mutableMapOf("city" to g.key, "count" to count(g), "avg_age" to avg(run {
     val __res = mutableListOf<Any?>()
     for (p in g) {
         __res.add((p as MutableMap<*, *>)["age"])
     }
     __res
-})))
+})) as MutableMap<Any?, Any?>))
     }
     __res
 }
