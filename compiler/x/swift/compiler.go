@@ -1632,8 +1632,19 @@ func (c *compiler) groupQuery(q *parser.QueryExpr) (string, error) {
 	c.mapFields = savedFields
 	var b strings.Builder
 	b.WriteString("{ () -> [Any] in\n")
-	b.WriteString("    let _groups = Dictionary(grouping: " + filtered + ") { " + q.Var + " in " + keyExpr + " }\n")
-	b.WriteString("    var _tmp = _groups.map { (k, v) in (key: k, items: v) }\n")
+	et := swiftTypeOf(elemType)
+	if et == "" {
+		et = "Any"
+	}
+	b.WriteString(fmt.Sprintf("    var _groups: [AnyHashable:[%s]] = [:]\n", et))
+	b.WriteString(fmt.Sprintf("    for %s in %s {\n", q.Var, filtered))
+	b.WriteString(fmt.Sprintf("        let _k = %s\n", keyExpr))
+	b.WriteString(fmt.Sprintf("        _groups[_k, default: []].append(%s)\n", q.Var))
+	b.WriteString("    }\n")
+	b.WriteString(fmt.Sprintf("    var _tmp: [(key: AnyHashable, items: [%s])] = []\n", et))
+	b.WriteString("    for (k, v) in _groups {\n")
+	b.WriteString("        _tmp.append((key: k, items: v))\n")
+	b.WriteString("    }\n")
 	if having != "" {
 		b.WriteString("    _tmp = _tmp.filter { " + gname + " in " + having + " }\n")
 	}

@@ -1,10 +1,10 @@
-/workspace/mochi/tests/machine/x/swift/group_by_having.swift:21:65: warning: forced cast from 'String?' to 'String' only unwraps optionals; did you mean to use '!'?
-19 | var people = [["name": "Alice", "city": "Paris"], ["name": "Bob", "city": "Hanoi"], ["name": "Charlie", "city": "Paris"], ["name": "Diana", "city": "Hanoi"], ["name": "Eve", "city": "Paris"], ["name": "Frank", "city": "Hanoi"], ["name": "George", "city": "Paris"]]
-20 | var big = { () -> [Any] in
-21 |     let _groups = Dictionary(grouping: people) { p in p["city"] as! String }
-   |                                                                 `- warning: forced cast from 'String?' to 'String' only unwraps optionals; did you mean to use '!'?
-22 |     var _tmp = _groups.map { (k, v) in (key: k, items: v) }
-23 |     _tmp = _tmp.filter { g in g.items.count >= 4 }
+/workspace/mochi/tests/machine/x/swift/group_by_having.swift:23:28: warning: forced cast from 'String?' to 'String' only unwraps optionals; did you mean to use '!'?
+21 |     var _groups: [AnyHashable:[[String:Any]]] = [:]
+22 |     for p in people {
+23 |         let _k = p["city"] as! String
+   |                            `- warning: forced cast from 'String?' to 'String' only unwraps optionals; did you mean to use '!'?
+24 |         _groups[_k, default: []].append(p)
+25 |     }
 
 /workspace/mochi/tests/machine/x/swift/group_by_having.swift:13:27: warning: conditional cast from 'Any' to 'Any' always succeeds
 11 |         return x

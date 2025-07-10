@@ -1,4 +1,4 @@
-line 4: exit status 1
-    let _groups = Dictionary(grouping: data) { d in d["tag"] as! String }
-    var _tmp = _groups.map { (k, v) in (key: k, items: v) }
-    return _tmp.map { g in g }
+line 14: exit status 1
+}()
+var tmp = []
+for g in groups {
