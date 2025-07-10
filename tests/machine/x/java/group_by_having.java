@@ -1,6 +1,6 @@
 import java.util.*;
 public class Main {
-	static List<Map<String,String>> people = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<String,String>(){{put("name", "Alice");put("city", "Paris");}}, new LinkedHashMap<String,String>(){{put("name", "Bob");put("city", "Hanoi");}}, new LinkedHashMap<String,String>(){{put("name", "Charlie");put("city", "Paris");}}, new LinkedHashMap<String,String>(){{put("name", "Diana");put("city", "Hanoi");}}, new LinkedHashMap<String,String>(){{put("name", "Eve");put("city", "Paris");}}, new LinkedHashMap<String,String>(){{put("name", "Frank");put("city", "Hanoi");}}, new LinkedHashMap<String,String>(){{put("name", "George");put("city", "Paris");}}));
+	static List<Map<String,String>> people = new ArrayList<>(java.util.Arrays.asList(mapOfEntries(entry("name", "Alice"), entry("city", "Paris")), mapOfEntries(entry("name", "Bob"), entry("city", "Hanoi")), mapOfEntries(entry("name", "Charlie"), entry("city", "Paris")), mapOfEntries(entry("name", "Diana"), entry("city", "Hanoi")), mapOfEntries(entry("name", "Eve"), entry("city", "Paris")), mapOfEntries(entry("name", "Frank"), entry("city", "Hanoi")), mapOfEntries(entry("name", "George"), entry("city", "Paris"))));
 	static List<Object> big = (new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
 	List<Object> _res5 = new ArrayList<>();
 	Map<Object,List<Object>> _groups6 = new LinkedHashMap<>();
@@ -15,12 +15,18 @@ public class Main {
 		Object g_key = __e.getKey();
 		List<Object> g = __e.getValue();
 		if (!(count(g) >= 4)) continue;
-		_res5.add(new LinkedHashMap<String,Object>(){{put("city", g_key);put("num", count(g));}});
+		_res5.add(mapOfEntries(entry("city", g_key), entry("num", count(g))));
 	}
 	return _res5;
 }}).get();
 	static int count(Collection<?> c) {
 		return c.size();
+	}
+	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
+	static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {
+		LinkedHashMap<K,V> m = new LinkedHashMap<>();
+		for (var e : entries) m.put(e.getKey(), e.getValue());
+		return m;
 	}
 	static String toJson(Object o) {
 		if (o instanceof Map<?,?> m) {

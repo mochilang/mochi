@@ -206,6 +206,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.indent--
 		c.writeln("}")
 	}
+	if c.helpers["map_of_entries"] {
+		c.writeln("static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }")
+		c.writeln("static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {")
+		c.indent++
+		c.writeln("LinkedHashMap<K,V> m = new LinkedHashMap<>();")
+		c.writeln("for (var e : entries) m.put(e.getKey(), e.getValue());")
+		c.writeln("return m;")
+		c.indent--
+		c.writeln("}")
+	}
 	if c.helpers["in"] {
 		c.writeln("static boolean inOp(Object item, Object collection) {")
 		c.indent++
@@ -907,6 +917,7 @@ func (c *Compiler) compileList(l *parser.ListLiteral) (string, error) {
 }
 
 func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
+	c.helpers["map_of_entries"] = true
 	var entries []string
 	for _, it := range m.Items {
 		var k string
@@ -923,10 +934,9 @@ func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		entries = append(entries, fmt.Sprintf("put(%s, %s);", k, v))
+		entries = append(entries, fmt.Sprintf("entry(%s, %s)", k, v))
 	}
-	kt, vt := c.mapLiteralTypes(m)
-	return fmt.Sprintf("new LinkedHashMap<%s,%s>(){{%s}}", kt, vt, strings.Join(entries, "")), nil
+	return fmt.Sprintf("mapOfEntries(%s)", strings.Join(entries, ", ")), nil
 }
 
 func (c *Compiler) mapLiteralTypes(m *parser.MapLiteral) (string, string) {

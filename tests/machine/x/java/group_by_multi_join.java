@@ -1,8 +1,8 @@
 import java.util.*;
 public class Main {
-	static List<Map<String,Object>> nations = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<String,Object>(){{put("id", 1);put("name", "A");}}, new LinkedHashMap<String,Object>(){{put("id", 2);put("name", "B");}}));
-	static List<Map<String,Integer>> suppliers = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<String,Integer>(){{put("id", 1);put("nation", 1);}}, new LinkedHashMap<String,Integer>(){{put("id", 2);put("nation", 2);}}));
-	static List<Map<String,Object>> partsupp = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<String,Object>(){{put("part", 100);put("supplier", 1);put("cost", 10.000000);put("qty", 2);}}, new LinkedHashMap<String,Object>(){{put("part", 100);put("supplier", 2);put("cost", 20.000000);put("qty", 1);}}, new LinkedHashMap<String,Object>(){{put("part", 200);put("supplier", 1);put("cost", 5.000000);put("qty", 3);}}));
+	static List<Map<String,Object>> nations = new ArrayList<>(java.util.Arrays.asList(mapOfEntries(entry("id", 1), entry("name", "A")), mapOfEntries(entry("id", 2), entry("name", "B"))));
+	static List<Map<String,Integer>> suppliers = new ArrayList<>(java.util.Arrays.asList(mapOfEntries(entry("id", 1), entry("nation", 1)), mapOfEntries(entry("id", 2), entry("nation", 2))));
+	static List<Map<String,Object>> partsupp = new ArrayList<>(java.util.Arrays.asList(mapOfEntries(entry("part", 100), entry("supplier", 1), entry("cost", 10.000000), entry("qty", 2)), mapOfEntries(entry("part", 100), entry("supplier", 2), entry("cost", 20.000000), entry("qty", 1)), mapOfEntries(entry("part", 200), entry("supplier", 1), entry("cost", 5.000000), entry("qty", 3))));
 	static List<Object> filtered = (new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
 	List<Object> _res7 = new ArrayList<>();
 	for (var ps : partsupp) {
@@ -11,7 +11,7 @@ public class Main {
 			for (var n : nations) {
 				if (!(Objects.equals(((Map)n).get("id"), ((Map)s).get("nation")))) continue;
 				if (!(Objects.equals(((Map)n).get("name"), "A"))) continue;
-				_res7.add(new LinkedHashMap<String,Object>(){{put("part", ((Map)ps).get("part"));put("value", ((Number)((Map)ps).get("cost")).doubleValue() * ((Number)((Map)ps).get("qty")).doubleValue());}});
+				_res7.add(mapOfEntries(entry("part", ((Map)ps).get("part")), entry("value", ((Number)((Map)ps).get("cost")).doubleValue() * ((Number)((Map)ps).get("qty")).doubleValue())));
 			}
 		}
 	}
@@ -30,13 +30,13 @@ public class Main {
 	for (var __e : _groups9.entrySet()) {
 		Object g_key = __e.getKey();
 		List<Object> g = __e.getValue();
-		_res8.add(new LinkedHashMap<String,Object>(){{put("part", g_key);put("total", sum((List<Number>)(List<?>)(new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
+		_res8.add(mapOfEntries(entry("part", g_key), entry("total", sum((List<Number>)(List<?>)(new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
 	List<Object> _res13 = new ArrayList<>();
 	for (var r : g) {
 		_res13.add(((Map)r).get("value"));
 	}
 	return _res13;
-}}).get()));}});
+}}).get()))));
 	}
 	return _res8;
 }}).get();
@@ -44,6 +44,12 @@ public class Main {
 		int s = 0;
 		for (Number n : v) s += n.intValue();
 		return s;
+	}
+	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
+	static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {
+		LinkedHashMap<K,V> m = new LinkedHashMap<>();
+		for (var e : entries) m.put(e.getKey(), e.getValue());
+		return m;
 	}
 	public static void main(String[] args) {
 	System.out.println(grouped);

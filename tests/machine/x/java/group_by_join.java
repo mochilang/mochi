@@ -1,7 +1,7 @@
 import java.util.*;
 public class Main {
-	static List<Map<String,Object>> customers = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<String,Object>(){{put("id", 1);put("name", "Alice");}}, new LinkedHashMap<String,Object>(){{put("id", 2);put("name", "Bob");}}));
-	static List<Map<String,Integer>> orders = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<String,Integer>(){{put("id", 100);put("customerId", 1);}}, new LinkedHashMap<String,Integer>(){{put("id", 101);put("customerId", 1);}}, new LinkedHashMap<String,Integer>(){{put("id", 102);put("customerId", 2);}}));
+	static List<Map<String,Object>> customers = new ArrayList<>(java.util.Arrays.asList(mapOfEntries(entry("id", 1), entry("name", "Alice")), mapOfEntries(entry("id", 2), entry("name", "Bob"))));
+	static List<Map<String,Integer>> orders = new ArrayList<>(java.util.Arrays.asList(mapOfEntries(entry("id", 100), entry("customerId", 1)), mapOfEntries(entry("id", 101), entry("customerId", 1)), mapOfEntries(entry("id", 102), entry("customerId", 2))));
 	static List<Object> stats = (new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
 	List<Object> _res5 = new ArrayList<>();
 	Map<Object,List<Object>> _groups6 = new LinkedHashMap<>();
@@ -20,12 +20,18 @@ public class Main {
 	for (var __e : _groups6.entrySet()) {
 		Object g_key = __e.getKey();
 		List<Object> g = __e.getValue();
-		_res5.add(new LinkedHashMap<String,Object>(){{put("name", g_key);put("count", count(g));}});
+		_res5.add(mapOfEntries(entry("name", g_key), entry("count", count(g))));
 	}
 	return _res5;
 }}).get();
 	static int count(Collection<?> c) {
 		return c.size();
+	}
+	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
+	static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {
+		LinkedHashMap<K,V> m = new LinkedHashMap<>();
+		for (var e : entries) m.put(e.getKey(), e.getValue());
+		return m;
 	}
 	public static void main(String[] args) {
 	System.out.println("--- Orders per customer ---");

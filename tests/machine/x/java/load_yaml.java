@@ -24,10 +24,16 @@ public class Main {
 	List<Object> _res1 = new ArrayList<>();
 	for (var p : people) {
 		if (!(((Number)((Map)p).get("age")).doubleValue() >= 18)) continue;
-		_res1.add(new LinkedHashMap<String,Object>(){{put("name", ((Map)p).get("name"));put("email", ((Map)p).get("email"));}});
+		_res1.add(mapOfEntries(entry("name", ((Map)p).get("name")), entry("email", ((Map)p).get("email"))));
 	}
 	return _res1;
 }}).get();
+	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
+	static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {
+		LinkedHashMap<K,V> m = new LinkedHashMap<>();
+		for (var e : entries) m.put(e.getKey(), e.getValue());
+		return m;
+	}
 	static List<Map<String,Object>> loadYaml(String path) {
 		if (!(new java.io.File(path)).isAbsolute()) {
 			java.io.File f = new java.io.File(path);
