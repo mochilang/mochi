@@ -13,6 +13,21 @@ func (c *Compiler) compileIf(st *parser.IfStmt) error {
 	if err != nil {
 		return err
 	}
+
+	// use (when ...) form when there is no else branch for readability
+	if st.ElseIf == nil && len(st.Else) == 0 {
+		c.writeln(fmt.Sprintf("(when %s", cond))
+		c.indent++
+		for _, s := range st.Then {
+			if err := c.compileStmt(s); err != nil {
+				return err
+			}
+		}
+		c.indent--
+		c.writeln(")")
+		return nil
+	}
+
 	c.writeln(fmt.Sprintf("(if %s", cond))
 	c.indent++
 	c.writeln("(begin")

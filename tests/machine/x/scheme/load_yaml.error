@@ -1,9 +1,10 @@
-ERROR in caar on line 5 of file /usr/share/chibi/init-7.scm: car: not a pair: 0
-  called from assoc on line 693 of file /usr/share/chibi/init-7.scm
-  called from map-get on line 280 of file /usr/share/chibi/init-7.scm
-  called from <anonymous> on line 15 of file /usr/share/chibi/scheme/misc-macros.scm
-  called from for1 on line 75 of file /usr/share/chibi/init-7.scm
-  called from <anonymous> on line 85 of file tests/machine/x/scheme/load_yaml.scm
-  called from <anonymous> on line 85 of file tests/machine/x/scheme/load_yaml.scm
+error running load_yaml:
+ERROR in "open-input-file": couldn't open input file: "tests/interpreter/valid/people.yaml"
+  called from <anonymous> on line 108 of file /workspace/mochi/tests/machine/x/scheme/load_yaml.scm
   called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
   called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+
+context (line 108):
+
+(define people (_load "tests/interpreter/valid/people.yaml" (list (cons "format" "yaml"))))
+(define adults (let ((_res '()))

@@ -1,4 +1,26 @@
-(import (srfi 95))
+(import (srfi 95) (chibi json) (chibi io))
+
+(define (_yaml_value v)
+  (let ((n (string->number v)))
+    (if n n v)))
+
+(define (_parse_yaml text)
+  (let ((rows '()) (cur '()))
+    (for-each (lambda (ln)
+                (when (string-prefix? ln "- ")
+                  (when (not (null? cur))
+                    (set! rows (append rows (list cur))))
+                  (set! cur '())
+                  (set! ln (substring ln 2 (string-length ln))))
+                (when (string-contains ln ":")
+                  (let* ((p (string-split ln ":"))
+                         (k (string-trim (car p)))
+                         (val (string-trim (string-join (cdr p) ":"))))
+                    (set! cur (append cur (list (cons k (_yaml_value val))))))))
+              (string-split text #\newline))
+    (when (not (null? cur))
+      (set! rows (append rows (list cur))))
+    rows))
 
 (define (_fetch url opts)
   (let* ((method (if (and opts (assq 'method opts)) (cdr (assq 'method opts)) "GET"))
@@ -33,6 +55,8 @@
            (map string->json
                 (filter (lambda (l) (not (string=? l "")))
                         (string-split text #\newline))))
+          ((string=? fmt "yaml")
+           (_parse_yaml text))
           (else
            (let ((d (string->json text)))
              (if (list? d) d (list d)))))))

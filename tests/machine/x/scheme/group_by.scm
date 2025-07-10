@@ -33,6 +33,13 @@
     (if (= n 0) 0 (/ (_sum lst) n)))
 )
 
+(define (_exists v)
+  (cond
+    ((and (pair? v) (assq 'Items v)) (not (null? (cdr (assq 'Items v)))))
+    ((string? v) (> (string-length v) 0))
+    ((list? v) (not (null? v)))
+    (else #f)))
+
 (define (_max v)
   (let ((lst (cond
                ((and (pair? v) (assq 'Items v)) (cdr (assq 'Items v)))
@@ -81,19 +88,19 @@
   ) (if (string? people) (string->list people) people))
   (let ((_res '()))
     (for-each (lambda (g)
-      (set! _res (append _res (list (list (cons "city" (map-get g "key")) (cons "count" (_count g)) (cons "avg_age" (_avg (let ((_res '()))
+      (set! _res (append _res (list (list (cons "city" (map-get g 'key)) (cons "count" (_count g)) (cons "avg_age" (_avg (let ((_res '()))
   (for-each (lambda (p)
-    (set! _res (append _res (list (map-get p "age"))))
+    (set! _res (append _res (list (map-get p 'age))))
   ) (if (string? g) (string->list g) g))
   _res)))))))
-    ) (_group_by _tmp (lambda (person) (map-get person "city"))))
+    ) (_group_by _tmp (lambda (person) (map-get person 'city))))
     _res)))
 (begin (display "--- People grouped by city ---") (newline))
 (let loop ((s_idx 0))
   (if (< s_idx (length stats))
     (begin
       (let ((s (list-ref stats s_idx)))
-        (begin (display (map-get s "city")) (display " ") (display ": count =") (display " ") (display (map-get s "count")) (display " ") (display ", avg_age =") (display " ") (display (map-get s "avg_age")) (newline))
+        (begin (display (map-get s 'city)) (display " ") (display ": count =") (display " ") (display (map-get s 'count)) (display " ") (display ", avg_age =") (display " ") (display (map-get s 'avg_age)) (newline))
       )
       (loop (+ s_idx 1))
     )

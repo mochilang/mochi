@@ -25,7 +25,7 @@
   (if (< p_idx (length pairs))
     (begin
       (let ((p (list-ref pairs p_idx)))
-        (begin (display (map-get p "n")) (display " ") (display (map-get p "l")) (newline))
+        (begin (display (map-get p 'n)) (display " ") (display (map-get p 'l)) (newline))
       )
       (loop (+ p_idx 1))
     )

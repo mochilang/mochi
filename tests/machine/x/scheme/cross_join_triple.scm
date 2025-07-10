@@ -26,7 +26,7 @@
   (if (< c_idx (length combos))
     (begin
       (let ((c (list-ref combos c_idx)))
-        (begin (display (map-get c "n")) (display " ") (display (map-get c "l")) (display " ") (display (map-get c "b")) (newline))
+        (begin (display (map-get c 'n)) (display " ") (display (map-get c 'l)) (display " ") (display (map-get c 'b)) (newline))
       )
       (loop (+ c_idx 1))
     )

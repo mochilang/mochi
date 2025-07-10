@@ -14,7 +14,7 @@
 (define result (let ((_res '()))
   (for-each (lambda (o)
     (for-each (lambda (c)
-      (set! _res (append _res (list (list (cons "orderId" (map-get o "id")) (cons "orderCustomerId" (map-get o "customerId")) (cons "pairedCustomerName" (map-get c "name")) (cons "orderTotal" (map-get o "total"))))))
+      (set! _res (append _res (list (list (cons "orderId" (map-get o 'id)) (cons "orderCustomerId" (map-get o 'customerId)) (cons "pairedCustomerName" (map-get c 'name)) (cons "orderTotal" (map-get o 'total))))))
     ) (if (string? customers) (string->list customers) customers))
   ) (if (string? orders) (string->list orders) orders))
   _res))
@@ -23,7 +23,7 @@
   (if (< entry_idx (length result))
     (begin
       (let ((entry (list-ref result entry_idx)))
-        (begin (display "Order") (display " ") (display (map-get entry "orderId")) (display " ") (display "(customerId:") (display " ") (display (map-get entry "orderCustomerId")) (display " ") (display ", total: $") (display " ") (display (map-get entry "orderTotal")) (display " ") (display ") paired with") (display " ") (display (map-get entry "pairedCustomerName")) (newline))
+        (begin (display "Order") (display " ") (display (map-get entry 'orderId)) (display " ") (display "(customerId:") (display " ") (display (map-get entry 'orderCustomerId)) (display " ") (display ", total: $") (display " ") (display (map-get entry 'orderTotal)) (display " ") (display ") paired with") (display " ") (display (map-get entry 'pairedCustomerName)) (newline))
       )
       (loop (+ entry_idx 1))
     )

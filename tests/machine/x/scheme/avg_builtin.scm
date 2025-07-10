@@ -23,6 +23,13 @@
     (if (= n 0) 0 (/ (_sum lst) n)))
 )
 
+(define (_exists v)
+  (cond
+    ((and (pair? v) (assq 'Items v)) (not (null? (cdr (assq 'Items v)))))
+    ((string? v) (> (string-length v) 0))
+    ((list? v) (not (null? v)))
+    (else #f)))
+
 (define (_max v)
   (let ((lst (cond
                ((and (pair? v) (assq 'Items v)) (cdr (assq 'Items v)))

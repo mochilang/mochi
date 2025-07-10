@@ -14,4 +14,4 @@
 )
 
 (define todo (let ((_tmp (list (cons "title" "hi")))) (new-Todo (map-get _tmp "title"))))
-(begin (display (map-get todo "title")) (newline))
+(begin (display (map-get todo 'title)) (newline))

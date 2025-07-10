@@ -1,0 +1,12 @@
+error running dataset_sort_take_limit:
+ERROR on line 125 of file /workspace/mochi/tests/machine/x/scheme/dataset_sort_take_limit.scm: invalid type, expected Number: ()
+  called from for1 on line 75 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 123 of file /workspace/mochi/tests/machine/x/scheme/dataset_sort_take_limit.scm
+  called from <anonymous> on line 123 of file /workspace/mochi/tests/machine/x/scheme/dataset_sort_take_limit.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+
+context (line 125):
+  (for-each (lambda (p)
+    (set! _tmp (append _tmp (list (cons p (- (map-get p 'price))))))
+  ) (if (string? products) (string->list products) products))
