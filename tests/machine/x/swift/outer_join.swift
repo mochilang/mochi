@@ -29,8 +29,8 @@ var result = ({
 }())
 print("--- Outer Join using syntax ---")
 for row in result {
-    if row["order"] {
-        if row["customer"] {
+    if row["order"] != nil {
+        if row["customer"] != nil {
             print("Order", row["order"]["id"], "by", row["customer"]["name"], "- $", row["order"]["total"])
         }
         else {

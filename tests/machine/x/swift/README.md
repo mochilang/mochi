@@ -106,3 +106,4 @@ Checklist:
 ## TODO
 - [ ] implement group+join queries
 - [ ] support variant types
+- [ ] handle map fields in join results without unsafe casts
