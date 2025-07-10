@@ -20,6 +20,7 @@ type Compiler struct {
 	env          *types.Env
 	structs      map[string]bool
 	usesMap      bool
+	usesAnyValue bool
 	usesList     bool
 	usesTime     bool
 	usesJSON     bool
@@ -194,13 +195,13 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	header.WriteString("import qualified Data.Map as Map\n")
 	header.WriteString("import Data.List (intercalate, isPrefixOf)\n")
 	header.WriteString("import qualified Data.List as List\n")
-	if c.usesJSON || c.usesLoad || c.usesSave || c.usesFetch || c.usesMap {
+	if c.usesJSON || c.usesLoad || c.usesSave || c.usesFetch || c.usesAnyValue {
 		header.WriteString("import qualified Data.Aeson as Aeson\n")
 	}
 	if len(c.structs) > 0 {
 		header.WriteString("import GHC.Generics (Generic)\n")
 	}
-	if c.usesLoad || c.usesSave || c.usesFetch || c.usesMap {
+	if c.usesLoad || c.usesSave || c.usesFetch || c.usesAnyValue {
 		header.WriteString("import qualified Data.Aeson.KeyMap as KeyMap\n")
 		header.WriteString("import qualified Data.Aeson.Key as Key\n")
 		header.WriteString("import qualified Data.Vector as V\n")
@@ -209,17 +210,17 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if c.usesFetch {
 		header.WriteString("import System.Process (readProcess)\n")
 	}
-	if c.usesJSON || c.usesLoad || c.usesSave || c.usesFetch || c.usesMap {
+	if c.usesJSON || c.usesLoad || c.usesSave || c.usesFetch || c.usesAnyValue {
 		header.WriteString("import qualified Data.ByteString.Lazy.Char8 as BSL\n")
 	}
 	header.WriteString("\n")
-	if c.usesLoop || c.usesMap || c.usesList || c.usesTime || c.usesJSON || c.usesLoad || c.usesSave || c.usesSlice || c.usesSliceStr || c.usesExpect || c.usesFetch {
+	if c.usesLoop || c.usesList || c.usesTime || c.usesJSON || c.usesLoad || c.usesSave || c.usesSlice || c.usesSliceStr || c.usesExpect || c.usesFetch {
 		header.WriteString(runtime)
 	}
 	if c.usesJSON {
 		header.WriteString(jsonHelper)
 	}
-	if c.usesLoad || c.usesSave || c.usesFetch || c.usesMap {
+	if c.usesLoad || c.usesSave || c.usesFetch || c.usesAnyValue {
 		header.WriteString(loadRuntime)
 	}
 	if c.usesExpect {
@@ -1130,6 +1131,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				if anyVal {
 					vt := c.inferExprType(it.Value)
 					if !isAny(vt) {
+						c.usesAnyValue = true
 						v = wrapAnyValue(vt, v)
 					}
 				}
@@ -1147,6 +1149,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if anyVal {
 				vt := c.inferExprType(it.Value)
 				if !isAny(vt) {
+					c.usesAnyValue = true
 					v = wrapAnyValue(vt, v)
 				}
 			}
@@ -1171,6 +1174,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			args[i] = v
 		}
 		if p.Call.Func == "len" {
+			if len(args) == 1 {
+				if _, ok := c.inferExprType(p.Call.Args[0]).(types.MapType); ok {
+					c.usesMap = true
+					return fmt.Sprintf("Map.size (%s)", args[0]), nil
+				}
+			}
 			return fmt.Sprintf("length %s", strings.Join(args, " ")), nil
 		}
 		if p.Call.Func == "count" {
