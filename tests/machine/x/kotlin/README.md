@@ -4,9 +4,9 @@ This directory contains Kotlin code compiled from Mochi programs in `tests/vm/va
 
 ## Progress
 
-Compiled: 84/97 programs
+Compiled: 85/97 programs
 
-Successfully ran: 78/97 programs
+Successfully ran: 79/97 programs
 
 ## Checklist
 
@@ -72,7 +72,7 @@ Successfully ran: 78/97 programs
 - [x] math_ops.mochi
 - [x] membership.mochi
 - [x] min_max_builtin.mochi
-- [ ] nested_function.mochi
+ - [x] nested_function.mochi
 - [ ] order_by_map.mochi
 - [ ] outer_join.mochi
 - [ ] partial_application.mochi
