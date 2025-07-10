@@ -1,4 +1,4 @@
-| combos c nums letters bools |
+| nums letters bools combos c |
 nums := {1. 2}.
 letters := {'A'. 'B'}.
 bools := {true. false}.

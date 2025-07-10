@@ -1,4 +1,4 @@
-| stats s people |
+| people stats s |
 people := {Dictionary newFrom:{#name->'Alice'. #age->30. #city->'Paris'}. Dictionary newFrom:{#name->'Bob'. #age->15. #city->'Hanoi'}. Dictionary newFrom:{#name->'Charlie'. #age->65. #city->'Paris'}. Dictionary newFrom:{#name->'Diana'. #age->45. #city->'Hanoi'}. Dictionary newFrom:{#name->'Eve'. #age->70. #city->'Paris'}. Dictionary newFrom:{#name->'Frank'. #age->22. #city->'Hanoi'}}.
 stats := [ | groups tmp |
   groups := Dictionary new.
