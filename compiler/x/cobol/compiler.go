@@ -236,6 +236,24 @@ func (c *Compiler) addVar(name string, typ *parser.TypeRef, value *parser.Expr, 
 						return nil
 					}
 				}
+			} else if len(u.Ops) == 0 && u.Value != nil && len(u.Value.Ops) == 0 && u.Value.Target != nil && u.Value.Target.Struct != nil {
+				structLit := u.Value.Target.Struct
+				st, ok := c.env.GetStruct(structLit.Name)
+				if !ok {
+					return fmt.Errorf("unknown struct %s", structLit.Name)
+				}
+				fields := make([]varField, 0, len(structLit.Fields))
+				for _, f := range structLit.Fields {
+					valStr, err := c.compileExpr(f.Value)
+					if err != nil {
+						return err
+					}
+					ft := st.Fields[f.Name]
+					pic := cobolPic(ft, valStr)
+					fields = append(fields, varField{name: f.Name, pic: pic, val: valStr})
+				}
+				c.vars = append(c.vars, varDecl{name: name, fields: fields})
+				return nil
 			}
 		}
 		if n, ok := seqIntList(value); ok {
@@ -387,6 +405,13 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 		return err
 	}
 	name := cobolName(a.Name)
+	// handle field assignments like `rec.field = expr`
+	if len(a.Field) > 0 {
+		name = cobolName(a.Field[len(a.Field)-1].Name)
+	}
+	if len(a.Index) > 0 {
+		return fmt.Errorf("indexing not supported")
+	}
 	c.writeln(fmt.Sprintf("COMPUTE %s = %s", name, val))
 	return nil
 }
