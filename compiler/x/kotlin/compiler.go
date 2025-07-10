@@ -612,6 +612,24 @@ func (c *Compiler) typeName(t *parser.TypeRef) string {
 		}
 		return fmt.Sprintf("(%s) -> %s", strings.Join(params, ", "), ret)
 	}
+	if t.Generic != nil {
+		name := t.Generic.Name
+		switch name {
+		case "list":
+			if len(t.Generic.Args) == 1 {
+				return fmt.Sprintf("MutableList<%s>", c.typeName(t.Generic.Args[0]))
+			}
+		case "map":
+			if len(t.Generic.Args) == 2 {
+				return fmt.Sprintf("MutableMap<%s, %s>", c.typeName(t.Generic.Args[0]), c.typeName(t.Generic.Args[1]))
+			}
+		}
+		args := make([]string, len(t.Generic.Args))
+		for i, a := range t.Generic.Args {
+			args[i] = c.typeName(a)
+		}
+		return fmt.Sprintf("%s<%s>", strings.Title(name), strings.Join(args, ", "))
+	}
 	if t.Simple != nil {
 		switch *t.Simple {
 		case "int":

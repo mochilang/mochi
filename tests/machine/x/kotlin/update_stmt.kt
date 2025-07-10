@@ -1,6 +1,6 @@
 data class Person(var name: String, var age: Int, var status: String)
 
-val people: Any = mutableListOf(Person(name = "Alice", age = 17, status = "minor"), Person(name = "Bob", age = 25, status = "unknown"), Person(name = "Charlie", age = 18, status = "unknown"), Person(name = "Diana", age = 16, status = "minor"))
+val people: MutableList<Person> = mutableListOf(Person(name = "Alice", age = 17, status = "minor"), Person(name = "Bob", age = 25, status = "unknown"), Person(name = "Charlie", age = 18, status = "unknown"), Person(name = "Diana", age = 16, status = "minor"))
 
 fun main() {
     for (_i0 in 0 until people.size) {
