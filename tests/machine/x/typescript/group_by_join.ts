@@ -20,7 +20,7 @@ const stats = (() => {
 })()
 ;
 console.log("--- Orders per customer ---");
-const _tmp2 = stats;
-for (const s of (Array.isArray(_tmp2) ? _tmp2 : Object.keys(_tmp2))) {
+const _tmp22 = stats;
+for (const s of (Array.isArray(_tmp22) ? _tmp22 : Object.keys(_tmp22))) {
   console.log(s.name, "orders:", s.count);
 }

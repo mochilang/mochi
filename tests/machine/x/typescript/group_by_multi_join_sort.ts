@@ -26,19 +26,19 @@ const result = (() => {
   for (const _k in groups) {
     const g = groups[_k];
     res.push({item: {c_custkey: g.key.c_custkey, c_name: g.key.c_name, revenue: ((() => {
-  const _tmp1 = [];
+  const _tmp29 = [];
   for (const x of g) {
-    _tmp1.push((x.l.l_extendedprice * ((1 - x.l.l_discount))));
+    _tmp29.push((x.l.l_extendedprice * ((1 - x.l.l_discount))));
   }
-  let res = _tmp1;
+  let res = _tmp29;
   return res;
 })()
 .reduce((a,b)=>a+b,0)), c_acctbal: g.key.c_acctbal, n_name: g.key.n_name, c_address: g.key.c_address, c_phone: g.key.c_phone, c_comment: g.key.c_comment}, key: (-((() => {
-  const _tmp2 = [];
+  const _tmp30 = [];
   for (const x of g) {
-    _tmp2.push((x.l.l_extendedprice * ((1 - x.l.l_discount))));
+    _tmp30.push((x.l.l_extendedprice * ((1 - x.l.l_discount))));
   }
-  let res = _tmp2;
+  let res = _tmp30;
   return res;
 })()
 .reduce((a,b)=>a+b,0)))});

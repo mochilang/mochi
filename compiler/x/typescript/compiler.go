@@ -286,9 +286,13 @@ func (c *Compiler) forStmt(f *parser.ForStmt) error {
 		}
 		c.writeln(fmt.Sprintf("for (let %s = %s; %s < %s; %s++) {", f.Name, src, f.Name, end, f.Name))
 	} else {
-		tmp := c.newTmp()
-		c.writeln(fmt.Sprintf("const %s = %s;", tmp, src))
-		c.writeln(fmt.Sprintf("for (const %s of (Array.isArray(%s) ? %s : Object.keys(%s))) {", f.Name, tmp, tmp, tmp))
+		if isSimpleIterable(f.Source) {
+			c.writeln(fmt.Sprintf("for (const %s of %s) {", f.Name, src))
+		} else {
+			tmp := c.newTmp()
+			c.writeln(fmt.Sprintf("const %s = %s;", tmp, src))
+			c.writeln(fmt.Sprintf("for (const %s of (Array.isArray(%s) ? %s : Object.keys(%s))) {", f.Name, tmp, tmp, tmp))
+		}
 	}
 	c.indent++
 	for _, st := range f.Body {
@@ -1433,4 +1437,25 @@ func getFormat(e *parser.Expr) string {
 		}
 	}
 	return ""
+}
+
+func isSimpleIterable(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil || len(u.Value.Ops) != 0 {
+		return false
+	}
+	p := u.Value.Target
+	if p == nil {
+		return false
+	}
+	switch {
+	case p.List != nil:
+		return true
+	case p.Lit != nil && p.Lit.Str != nil:
+		return true
+	}
+	return false
 }
