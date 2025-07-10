@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 
-auto twoSum(auto nums, auto target) {
+auto twoSum(auto nums, int target) {
   auto n = nums.size();
   for (int i = 0; i < n; ++i) {
     for (int j = (i + 1); j < n; ++j) {

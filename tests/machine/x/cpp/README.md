@@ -2,7 +2,7 @@
 
 This directory contains C++ source code generated from Mochi programs and the corresponding outputs or error logs.
 
-Compiled programs: 95/100
+Compiled programs: 97/100
 
 ## Checklist
 
@@ -28,7 +28,7 @@ Compiled programs: 95/100
 - [x] fun_call
 - [x] fun_expr_in_let
 - [x] fun_three_args
-- [ ] go_auto
+- [x] go_auto
 - [x] group_by
 - [x] group_by_conditional_sum
 - [x] group_by_having
@@ -76,7 +76,7 @@ Compiled programs: 95/100
 - [x] print_hello
 - [x] pure_fold
 - [x] pure_global_fold
-- [ ] python_auto
+- [x] python_auto
 - [ ] python_math
 - [x] query_sum_select
 - [x] record_assign

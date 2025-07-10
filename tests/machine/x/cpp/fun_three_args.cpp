@@ -1,6 +1,6 @@
 #include <iostream>
 
-auto sum3(auto a, auto b, auto c) { return ((a + b) + c); }
+int sum3(int a, int b, int c) { return ((a + b) + c); }
 
 int main() {
   {

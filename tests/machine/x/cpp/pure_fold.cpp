@@ -1,6 +1,6 @@
 #include <iostream>
 
-auto triple(auto x) { return (x * 3); }
+int triple(int x) { return (x * 3); }
 
 int main() {
   {

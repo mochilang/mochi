@@ -1,6 +1,6 @@
 #include <iostream>
 
-auto add(auto a, auto b) { return (a + b); }
+int add(int a, int b) { return (a + b); }
 
 int main() {
   {

@@ -11,11 +11,11 @@ const double e = 2.718281828459045;
 } // namespace math
 int main() {
   {
-    std::cout << std::boolalpha << math.sqrt(16);
+    std::cout << std::boolalpha << math::sqrt(16);
     std::cout << std::endl;
   }
   {
-    std::cout << std::boolalpha << math.pi;
+    std::cout << std::boolalpha << math::pi;
     std::cout << std::endl;
   }
   return 0;

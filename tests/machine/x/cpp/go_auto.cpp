@@ -7,15 +7,15 @@ const int Answer = 42;
 } // namespace testpkg
 int main() {
   {
-    std::cout << std::boolalpha << testpkg.Add(2, 3);
+    std::cout << std::boolalpha << testpkg::Add(2, 3);
     std::cout << std::endl;
   }
   {
-    std::cout << std::boolalpha << testpkg.Pi;
+    std::cout << std::boolalpha << testpkg::Pi;
     std::cout << std::endl;
   }
   {
-    std::cout << std::boolalpha << testpkg.Answer;
+    std::cout << std::boolalpha << testpkg::Answer;
     std::cout << std::endl;
   }
   return 0;

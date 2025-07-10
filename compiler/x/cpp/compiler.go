@@ -55,6 +55,8 @@ type Compiler struct {
 
 	unions   map[string]*unionInfo
 	variants map[string]*variantInfo
+
+	packages map[string]struct{}
 }
 
 // New returns a new compiler instance.
@@ -74,6 +76,7 @@ func New() *Compiler {
 		scope:        0,
 		unions:       map[string]*unionInfo{},
 		variants:     map[string]*variantInfo{},
+		packages:     map[string]struct{}{},
 	}
 }
 
@@ -769,6 +772,7 @@ func (c *Compiler) compileImport(im *parser.ImportStmt) error {
 	if im.Lang == nil {
 		return nil
 	}
+	c.packages[im.As] = struct{}{}
 	switch *im.Lang {
 	case "python":
 		if im.Path == "math" && im.Auto {
@@ -1330,15 +1334,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
 	case p.Selector != nil:
-		name := p.Selector.Root
-		if alias, ok := c.aliases[name]; ok && len(p.Selector.Tail) == 0 {
-			name = alias
+		root := p.Selector.Root
+		if alias, ok := c.aliases[root]; ok && len(p.Selector.Tail) == 0 {
+			return alias, nil
 		}
+		sep := "."
+		if _, ok := c.packages[root]; ok {
+			sep = "::"
+		}
+		name := root
 		if _, ok := c.variants[name]; ok && len(p.Selector.Tail) == 0 {
 			return fmt.Sprintf("new %s{}", name), nil
 		}
 		for _, t := range p.Selector.Tail {
-			name += "." + t
+			name += sep + t
 		}
 		return name, nil
 	case p.Call != nil:
@@ -2629,6 +2638,19 @@ func inferExprType(expr string) string {
 }
 
 func extractVectorStruct(expr string) string {
+	if idx := strings.Index(expr, "v.push_back("); idx != -1 {
+		inner := expr[idx+len("v.push_back("):]
+		end := strings.Index(inner, ")")
+		if end != -1 {
+			val := inner[:end]
+			if strings.HasPrefix(val, "__struct") {
+				if brace := strings.Index(val, "{"); brace != -1 {
+					return val[:brace]
+				}
+				return val
+			}
+		}
+	}
 	start := strings.Index(expr, "std::vector<decltype(")
 	if start == -1 {
 		return ""
@@ -2646,6 +2668,28 @@ func extractVectorStruct(expr string) string {
 }
 
 func extractVectorElemType(expr string) string {
+	if strings.Contains(expr, "v.push_back(") {
+		inner := expr[strings.Index(expr, "v.push_back(")+len("v.push_back("):]
+		end := strings.Index(inner, ")")
+		if end != -1 {
+			val := inner[:end]
+			if strings.HasPrefix(val, "__struct") {
+				if idx := strings.Index(val, "{"); idx != -1 {
+					val = val[:idx]
+				}
+				return val
+			}
+			if strings.HasPrefix(val, "std::string") {
+				return "std::string"
+			}
+			if val == "true" || val == "false" {
+				return "bool"
+			}
+			if _, err := strconv.Atoi(val); err == nil {
+				return "int"
+			}
+		}
+	}
 	if !strings.HasPrefix(expr, "std::vector<") {
 		return ""
 	}
