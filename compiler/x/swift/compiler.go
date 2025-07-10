@@ -988,9 +988,10 @@ func (c *compiler) matchExpr(m *parser.MatchExpr) (string, error) {
 	}
 	var b strings.Builder
 	b.WriteString("{ () in\n")
-	b.WriteString("    switch ")
+	b.WriteString("    let __t = ")
 	b.WriteString(target)
-	b.WriteString(" {\n")
+	b.WriteString("\n")
+	b.WriteString("    switch __t {\n")
 	for _, cse := range m.Cases {
 		var patStr string
 		if cse.Pattern.Binary.Left.Value.Target.Struct != nil {
