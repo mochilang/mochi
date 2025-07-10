@@ -1077,7 +1077,7 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 			return "", err
 		}
 		c.needsEqual = true
-		expr = fmt.Sprintf("if (_equal(%s, %s)) %s else (%s)", target, pat, res, expr)
+		expr = fmt.Sprintf("if (_equal(%s, %s)) %s else %s", target, pat, res, expr)
 	}
 	return expr, nil
 }
@@ -1105,7 +1105,7 @@ func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
 		}
 		elseVal = v
 	}
-	return fmt.Sprintf("if (%s) (%s) else (%s)", cond, thenVal, elseVal), nil
+	return fmt.Sprintf("if (%s) %s else %s", cond, thenVal, elseVal), nil
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
