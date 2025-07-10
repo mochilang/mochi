@@ -1,3 +1,8 @@
 void main() {
-  print([1, 2, 3].reduce((a, b) => a + b));
+  print(
+    (() {
+      var _t0 = [1, 2, 3];
+      return _t0.reduce((a, b) => a + b);
+    })(),
+  );
 }

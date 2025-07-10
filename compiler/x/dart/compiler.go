@@ -1064,9 +1064,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 
 	type loopInfo struct {
-		pre  []string
-		head string
-		cond string
+		pre      []string
+		head     string
+		cond     string
+		boolCond bool
 	}
 	loops := []loopInfo{{head: fmt.Sprintf("var %s in %s", q.Var, c.mustExpr(q.Source))}}
 	// mark main variable type

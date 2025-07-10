@@ -15,7 +15,7 @@ var big = (() {
   var _g1 = <dynamic, List<dynamic>>{};
   for (var p in people) {
     var _k2 = p['city'];
-    _g1.putIfAbsent(_k2, () => <dynamic>[]).add({'p': p});
+    _g1.putIfAbsent(_k2, () => <dynamic>[]).add(p);
   }
   for (var entry in _g1.entries) {
     var g = entry.value;
