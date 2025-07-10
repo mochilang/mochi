@@ -40,7 +40,7 @@ int main() {
   list_int _t1 = list_int_create(2);
   _t1.data[0] = 1;
   _t1.data[1] = 2;
-  list_int a = _t1;
+  __auto_type a = _t1;
   list_int _t2 = list_int_create(1);
   _t2.data[0] = 3;
   list_int _t3 = concat_list_int(a, _t2);

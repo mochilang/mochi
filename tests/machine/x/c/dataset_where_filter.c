@@ -38,7 +38,7 @@ int main() {
   _t1.data[1] = (peopleItem){.name = "Bob", .age = 15};
   _t1.data[2] = (peopleItem){.name = "Charlie", .age = 65};
   _t1.data[3] = (peopleItem){.name = "Diana", .age = 45};
-  list_peopleItem people = _t1;
+  __auto_type people = _t1;
   list_adultsItem _t2 = list_adultsItem_create(people.len);
   int _t3 = 0;
   for (int _t4 = 0; _t4 < people.len; _t4++) {

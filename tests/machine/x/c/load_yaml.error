@@ -1,20 +1,25 @@
 line: 0
 error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/load_yaml.c:72:3: error: unknown type name ‘map_string_int’
+   72 |   map_string_int *data;
+      |   ^~~~~~~~~~~~~~
+/workspace/mochi/tests/machine/x/c/load_yaml.c: In function ‘list_map_string_int_create’:
+/workspace/mochi/tests/machine/x/c/load_yaml.c:78:19: error: ‘map_string_int’ undeclared (first use in this function); did you mean ‘map_string_put’?
+   78 |   l.data = cap ? (map_string_int *)malloc(sizeof(map_string_int) * cap) : NULL;
+      |                   ^~~~~~~~~~~~~~
+      |                   map_string_put
+/workspace/mochi/tests/machine/x/c/load_yaml.c:78:19: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/machine/x/c/load_yaml.c:78:35: error: expected expression before ‘)’ token
+   78 |   l.data = cap ? (map_string_int *)malloc(sizeof(map_string_int) * cap) : NULL;
+      |                                   ^
+/workspace/mochi/tests/machine/x/c/load_yaml.c: At top level:
+/workspace/mochi/tests/machine/x/c/load_yaml.c:81:62: error: unknown type name ‘map_string_int’; did you mean ‘map_string’?
+   81 | static void list_map_string_int_push(list_map_string_int *l, map_string_int m) {
+      |                                                              ^~~~~~~~~~~~~~
+      |                                                              map_string
 /workspace/mochi/tests/machine/x/c/load_yaml.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/load_yaml.c:192:3: error: unknown type name ‘list_Person’
-  192 |   list_Person people = _load_json("../interpreter/valid/people.yaml");
-      |   ^~~~~~~~~~~
-/workspace/mochi/tests/machine/x/c/load_yaml.c:192:24: error: incompatible types when initializing type ‘int’ using type ‘list_map_string’
-  192 |   list_Person people = _load_json("../interpreter/valid/people.yaml");
-      |                        ^~~~~~~~~~
-/workspace/mochi/tests/machine/x/c/load_yaml.c:193:54: error: request for member ‘len’ in something not a structure or union
-  193 |   list_adultsItem _t1 = list_adultsItem_create(people.len);
-      |                                                      ^
-/workspace/mochi/tests/machine/x/c/load_yaml.c:195:33: error: request for member ‘len’ in something not a structure or union
-  195 |   for (int _t3 = 0; _t3 < people.len; _t3++) {
-      |                                 ^
-/workspace/mochi/tests/machine/x/c/load_yaml.c:196:22: error: request for member ‘data’ in something not a structure or union
-  196 |     Person p = people.data[_t3];
-      |                      ^
+/workspace/mochi/tests/machine/x/c/load_yaml.c:216:16: error: invalid initializer
+  216 |     Person p = people.data[_t3];
+      |                ^~~~~~
 
    1: #include <stdio.h>

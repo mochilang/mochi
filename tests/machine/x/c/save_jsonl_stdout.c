@@ -74,7 +74,7 @@ int main() {
   list_peopleItem _t1 = list_peopleItem_create(2);
   _t1.data[0] = (peopleItem){.name = "Alice", .age = 30};
   _t1.data[1] = (peopleItem){.name = "Bob", .age = 25};
-  list_peopleItem people = _t1;
+  __auto_type people = _t1;
   _save_json(people, "-");
   return 0;
 }

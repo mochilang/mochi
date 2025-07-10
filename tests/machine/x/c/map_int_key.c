@@ -53,7 +53,7 @@ int main() {
   map_int_string _t1 = map_int_string_create(2);
   map_int_string_put(&_t1, 1, "a");
   map_int_string_put(&_t1, 2, "b");
-  map_int_string m = _t1;
+  __auto_type m = _t1;
   printf("%s\n", map_int_string_get(m, 1));
   return 0;
 }

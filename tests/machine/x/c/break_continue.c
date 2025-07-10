@@ -22,7 +22,7 @@ int main() {
   _t1.data[6] = 7;
   _t1.data[7] = 8;
   _t1.data[8] = 9;
-  list_int numbers = _t1;
+  __auto_type numbers = _t1;
   for (int _t2 = 0; _t2 < numbers.len; _t2++) {
     int n = numbers.data[_t2];
     if (n % 2 == 0) {

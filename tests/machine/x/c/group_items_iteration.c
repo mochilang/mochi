@@ -124,7 +124,7 @@ int main() {
   _t1.data[0] = (dataItem){.tag = "a", .val = 1};
   _t1.data[1] = (dataItem){.tag = "a", .val = 2};
   _t1.data[2] = (dataItem){.tag = "b", .val = 3};
-  list_dataItem data = _t1;
+  __auto_type data = _t1;
   list_dataItem _t2 = list_dataItem_create(data.len);
   list_string _t3 = list_string_create(data.len);
   int _t4 = 0;
@@ -154,13 +154,13 @@ int main() {
     _t7++;
   }
   _t6.len = _t7;
-  list_int groups = _t6;
-  list_int tmp = _t9;
+  __auto_type groups = _t6;
+  __auto_type tmp = _t9;
   for (int _t10 = 0; _t10 < groups.len; _t10++) {
     int g = groups.data[_t10];
-    int total = 0;
+    __auto_type total = 0;
     for (int _t11 = 0; _t11 < g.items.len; _t11++) {
-      int x = g.items.data[_t11];
+      dataItem x = g.items.data[_t11];
       total = total + x.val;
     }
     map_int_bool _t12 = map_int_bool_create(2);
@@ -190,7 +190,7 @@ int main() {
       }
     }
   }
-  list_int result = _t13;
+  __auto_type result = _t13;
   printf("%d\n", result);
   return 0;
 }

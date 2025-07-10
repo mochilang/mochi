@@ -16,7 +16,7 @@ int main() {
   _t1.data[0] = 10;
   _t1.data[1] = 20;
   _t1.data[2] = 30;
-  list_int xs = _t1;
+  __auto_type xs = _t1;
   printf("%d\n", xs.data[1]);
   return 0;
 }

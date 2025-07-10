@@ -1,50 +1,59 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+
+typedef struct {
+  int len;
+  int *data;
+} list_int;
+static list_int list_int_create(int len) {
+  list_int l;
+  l.len = len;
+  l.data = (int *)malloc(sizeof(int) * len);
+  return l;
+}
+typedef struct {
+  int len;
+  list_int *data;
+} list_list_int;
+static list_list_int list_list_int_create(int len) {
+  list_list_int l;
+  l.len = len;
+  l.data = (list_int *)malloc(sizeof(list_int) * len);
+  return l;
+}
+static list_int slice_list_int(list_int v, int start, int end) {
+  if (start < 0)
+    start += v.len;
+  if (end < 0)
+    end += v.len;
+  if (start < 0)
+    start = 0;
+  if (end > v.len)
+    end = v.len;
+  if (start > end)
+    start = end;
+  list_int r = list_int_create(end - start);
+  for (int i = 0; i < r.len; i++)
+    r.data[i] = v.data[start + i];
+  return r;
+}
+static void _print_list_int(list_int v) {
+  for (int i = 0; i < v.len; i++) {
+    if (i > 0)
+      printf(" ");
+    printf("%d", v.data[i]);
+  }
+}
+static char *prefix = "fore";
+static char *s1 = "forest";
+static char *s2 = "desert";
 
 int main() {
-  char *prefix = "fore";
-  char *s1 = "forest";
-  char *_t1 = ({
-    int _len = strlen(s1);
-    int _s = 0;
-    int _e = strlen(prefix);
-    if (_s < 0)
-      _s += _len;
-    if (_e < 0)
-      _e += _len;
-    if (_s < 0)
-      _s = 0;
-    if (_e > _len)
-      _e = _len;
-    if (_s > _e)
-      _s = _e;
-    char *_b = (char *)malloc(_e - _s + 1);
-    memcpy(_b, s1 + _s, _e - _s);
-    _b[_e - _s] = '\0';
-    _b;
-  });
-  printf("%s\n", ((strcmp(_t1, prefix) == 0)) ? "true" : "false");
-  char *s2 = "desert";
-  char *_t2 = ({
-    int _len = strlen(s2);
-    int _s = 0;
-    int _e = strlen(prefix);
-    if (_s < 0)
-      _s += _len;
-    if (_e < 0)
-      _e += _len;
-    if (_s < 0)
-      _s = 0;
-    if (_e > _len)
-      _e = _len;
-    if (_s > _e)
-      _s = _e;
-    char *_b = (char *)malloc(_e - _s + 1);
-    memcpy(_b, s2 + _s, _e - _s);
-    _b[_e - _s] = '\0';
-    _b;
-  });
-  printf("%s\n", ((strcmp(_t2, prefix) == 0)) ? "true" : "false");
+  list_int _t1 = slice_list_int(s1, 0, prefix.len);
+  _print_list_int(_t1 == prefix);
+  printf("\n");
+  list_int _t2 = slice_list_int(s2, 0, prefix.len);
+  _print_list_int(_t2 == prefix);
+  printf("\n");
   return 0;
 }

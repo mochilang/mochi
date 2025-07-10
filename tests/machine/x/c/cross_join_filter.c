@@ -42,11 +42,11 @@ int main() {
   _t1.data[0] = 1;
   _t1.data[1] = 2;
   _t1.data[2] = 3;
-  list_int nums = _t1;
+  __auto_type nums = _t1;
   list_string _t2 = list_string_create(2);
   _t2.data[0] = "A";
   _t2.data[1] = "B";
-  list_string letters = _t2;
+  __auto_type letters = _t2;
   list_pairsItem _t3 = list_pairsItem_create(nums.len * letters.len);
   int _t4 = 0;
   for (int _t5 = 0; _t5 < nums.len; _t5++) {

@@ -1,0 +1,27 @@
+line: 0
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/python_math.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/python_math.c:14:22: error: ‘math’ undeclared (first use in this function)
+   14 |   __auto_type area = math.pi * math.pow(r, 2.0);
+      |                      ^~~~
+/workspace/mochi/tests/machine/x/c/python_math.c:14:22: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/machine/x/c/python_math.c:19:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘double’ [-Wformat=]
+   19 |   printf("%d ", r);
+      |           ~^    ~
+      |            |    |
+      |            int  double
+      |           %f
+/workspace/mochi/tests/machine/x/c/python_math.c:21:18: error: ‘area’ undeclared (first use in this function)
+   21 |   printf("%d\n", area);
+      |                  ^~~~
+/workspace/mochi/tests/machine/x/c/python_math.c:23:21: error: ‘root’ undeclared (first use in this function)
+   23 |   printf("%.17g\n", root);
+      |                     ^~~~
+/workspace/mochi/tests/machine/x/c/python_math.c:25:21: error: ‘sin45’ undeclared (first use in this function)
+   25 |   printf("%.17g\n", sin45);
+      |                     ^~~~~
+/workspace/mochi/tests/machine/x/c/python_math.c:27:21: error: ‘log_e’ undeclared (first use in this function)
+   27 |   printf("%.17g\n", log_e);
+      |                     ^~~~~
+
+   1: #include <stdio.h>

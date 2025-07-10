@@ -53,14 +53,14 @@ int main() {
   _t1.data[1] = (customersItem){.id = 2, .name = "Bob"};
   _t1.data[2] = (customersItem){.id = 3, .name = "Charlie"};
   _t1.data[3] = (customersItem){.id = 4, .name = "Diana"};
-  list_customersItem customers = _t1;
+  __auto_type customers = _t1;
   list_ordersItem _t2 = list_ordersItem_create(4);
   _t2.data[0] = (ordersItem){.id = 100, .customerId = 1, .total = 250};
   _t2.data[1] = (ordersItem){.id = 101, .customerId = 2, .total = 125};
   _t2.data[2] = (ordersItem){.id = 102, .customerId = 1, .total = 300};
   _t2.data[3] = (ordersItem){.id = 103, .customerId = 5, .total = 80};
-  list_ordersItem orders = _t2;
-  list_int _t3 = list_int_create(orders.len * customers.len);
+  __auto_type orders = _t2;
+  list_resultItem _t3 = list_resultItem_create(orders.len * customers.len);
   int _t4 = 0;
   for (int _t5 = 0; _t5 < orders.len; _t5++) {
     ordersItem o = orders.data[_t5];

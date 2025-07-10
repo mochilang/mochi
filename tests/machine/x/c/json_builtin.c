@@ -97,7 +97,7 @@ static list_mItem list_mItem_create(int len) {
 }
 
 int main() {
-  mItem m = (mItem){.a = 1, .b = 2};
+  __auto_type m = (mItem){.a = 1, .b = 2};
   printf("{");
   _json_string("a");
   printf(":");

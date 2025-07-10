@@ -102,6 +102,7 @@ func New(env *types.Env) *Compiler {
 		uninitVars:    map[string]bool{},
 		pointerVars:   map[string]bool{},
 		groupKeys:     map[string]types.Type{},
+		autoType:      true,
 	}
 }
 

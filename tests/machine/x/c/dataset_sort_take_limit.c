@@ -25,7 +25,7 @@ int main() {
   _t1.data[4] = (productsItem){.name = "Keyboard", .price = 100};
   _t1.data[5] = (productsItem){.name = "Mouse", .price = 50};
   _t1.data[6] = (productsItem){.name = "Headphones", .price = 200};
-  list_productsItem products = _t1;
+  __auto_type products = _t1;
   list_productsItem _t2 = list_productsItem_create(products.len);
   int *_t5 = (int *)malloc(sizeof(int) * products.len);
   int _t3 = 0;
@@ -59,7 +59,7 @@ int main() {
       }
     }
   }
-  list_productsItem expensive = _t2;
+  __auto_type expensive = _t2;
   printf("%s\n", "--- Top products (excluding most expensive) ---");
   for (int _t11 = 0; _t11 < expensive.len; _t11++) {
     productsItem item = expensive.data[_t11];

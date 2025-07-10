@@ -4,7 +4,7 @@
 int _lambda0(int x) { return x * x; }
 
 int main() {
-  int (*square)(int) = _lambda0;
+  __auto_type square = _lambda0;
   printf("%d\n", square(6));
   return 0;
 }

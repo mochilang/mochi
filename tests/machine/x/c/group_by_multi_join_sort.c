@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+static char *start_date = "1993-10-01";
+static char *end_date = "1994-01-01";
+
 typedef struct {
   int n_nationkey;
   char *n_name;
@@ -93,7 +96,7 @@ static list_resultItem list_resultItem_create(int len) {
 int main() {
   list_nationItem _t1 = list_nationItem_create(1);
   _t1.data[0] = (nationItem){.n_nationkey = 1, .n_name = "BRAZIL"};
-  list_nationItem nation = _t1;
+  __auto_type nation = _t1;
   list_customerItem _t2 = list_customerItem_create(1);
   _t2.data[0] = (customerItem){.c_custkey = 1,
                                .c_name = "Alice",
@@ -102,13 +105,13 @@ int main() {
                                .c_address = "123 St",
                                .c_phone = "123-456",
                                .c_comment = "Loyal"};
-  list_customerItem customer = _t2;
+  __auto_type customer = _t2;
   list_ordersItem _t3 = list_ordersItem_create(2);
   _t3.data[0] = (ordersItem){
       .o_orderkey = 1000, .o_custkey = 1, .o_orderdate = "1993-10-15"};
   _t3.data[1] = (ordersItem){
       .o_orderkey = 2000, .o_custkey = 1, .o_orderdate = "1994-01-02"};
-  list_ordersItem orders = _t3;
+  __auto_type orders = _t3;
   list_lineitemItem _t4 = list_lineitemItem_create(2);
   _t4.data[0] = (lineitemItem){.l_orderkey = 1000,
                                .l_returnflag = "R",
@@ -118,9 +121,7 @@ int main() {
                                .l_returnflag = "N",
                                .l_extendedprice = 500.0,
                                .l_discount = 0.0};
-  list_lineitemItem lineitem = _t4;
-  char *start_date = "1993-10-01";
-  char *end_date = "1994-01-01";
+  __auto_type lineitem = _t4;
   list_resultItem result = 0;
   printf("%d\n", result);
   return 0;

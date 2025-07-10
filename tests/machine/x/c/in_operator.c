@@ -22,7 +22,7 @@ int main() {
   _t1.data[0] = 1;
   _t1.data[1] = 2;
   _t1.data[2] = 3;
-  list_int xs = _t1;
+  __auto_type xs = _t1;
   printf("%s\n", (contains_list_int(xs, 2)) ? "true" : "false");
   printf("%s\n", ((!(contains_list_int(xs, 5)))) ? "true" : "false");
   return 0;
