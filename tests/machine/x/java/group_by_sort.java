@@ -1,6 +1,6 @@
 import java.util.*;
 public class Main {
-	static List<Map<Object,Object>> items = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<>(){{put("cat", "a");put("val", 3);}}, new LinkedHashMap<>(){{put("cat", "a");put("val", 1);}}, new LinkedHashMap<>(){{put("cat", "b");put("val", 5);}}, new LinkedHashMap<>(){{put("cat", "b");put("val", 2);}}));
+	static List<Map<String,Object>> items = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<String,Object>(){{put("cat", "a");put("val", 3);}}, new LinkedHashMap<String,Object>(){{put("cat", "a");put("val", 1);}}, new LinkedHashMap<String,Object>(){{put("cat", "b");put("val", 5);}}, new LinkedHashMap<String,Object>(){{put("cat", "b");put("val", 2);}}));
 	static List<Object> grouped = (new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
 	List<Object> _res6 = new ArrayList<>();
 	Map<Object,List<Object>> _groups7 = new LinkedHashMap<>();
@@ -14,7 +14,7 @@ public class Main {
 	for (var __e : _groups7.entrySet()) {
 		Object g_key = __e.getKey();
 		List<Object> g = __e.getValue();
-		_res6.add(new LinkedHashMap<>(){{put("cat", g_key);put("total", sum((List<Number>)(List<?>)(new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
+		_res6.add(new LinkedHashMap<String,Object>(){{put("cat", g_key);put("total", sum((List<Number>)(List<?>)(new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
 	List<Object> _res11 = new ArrayList<>();
 	for (var x : g) {
 		_res11.add(((Map)x).get("val"));

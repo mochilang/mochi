@@ -1,6 +1,6 @@
 import java.util.*;
 public class Main {
-	static List<Map<Object,Object>> items = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<>(){{put("cat", "a");put("val", 10);put("flag", true);}}, new LinkedHashMap<>(){{put("cat", "a");put("val", 5);put("flag", false);}}, new LinkedHashMap<>(){{put("cat", "b");put("val", 20);put("flag", true);}}));
+	static List<Map<String,Object>> items = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<String,Object>(){{put("cat", "a");put("val", 10);put("flag", true);}}, new LinkedHashMap<String,Object>(){{put("cat", "a");put("val", 5);put("flag", false);}}, new LinkedHashMap<String,Object>(){{put("cat", "b");put("val", 20);put("flag", true);}}));
 	static List<Object> result = (new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
 	List<Object> _res7 = new ArrayList<>();
 	Map<Object,List<Object>> _groups8 = new LinkedHashMap<>();
@@ -14,10 +14,10 @@ public class Main {
 	for (var __e : _groups8.entrySet()) {
 		Object g_key = __e.getKey();
 		List<Object> g = __e.getValue();
-		_res7.add(new LinkedHashMap<>(){{put("cat", g_key);put("share", ((Number)sum((List<Number>)(List<?>)(new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
+		_res7.add(new LinkedHashMap<String,Object>(){{put("cat", g_key);put("share", ((Number)sum((List<Number>)(List<?>)(new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
 	List<Object> _res12 = new ArrayList<>();
 	for (var x : g) {
-		_res12.add((Boolean.TRUE.equals(((Map)x).get("flag")) ? ((Map)x).get("val") : 0));
+		_res12.add((((Map)x).get("flag") != null ? ((Map)x).get("val") : 0));
 	}
 	return _res12;
 }}).get())).doubleValue() / ((Number)sum((List<Number>)(List<?>)(new java.util.function.Supplier<List<Object>>() {public List<Object> get() {

@@ -5,7 +5,7 @@ public class Main {
 		int n = nums.size();
 		for (int i = 0; i < n; i++) {
 			for (int j = i + 1; j < n; j++) {
-				if (Objects.equals(nums.get(i) + nums.get(j), target)) {
+				if (Objects.equals(((Number)nums.get(i)).doubleValue() + ((Number)nums.get(j)).doubleValue(), target)) {
 					return java.util.Arrays.asList(i, j);
 				}
 			}

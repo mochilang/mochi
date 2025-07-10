@@ -1,6 +1,6 @@
 import java.util.*;
 public class Main {
-	static List<Map<Object,Object>> products = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<>(){{put("name", "Laptop");put("price", 1500);}}, new LinkedHashMap<>(){{put("name", "Smartphone");put("price", 900);}}, new LinkedHashMap<>(){{put("name", "Tablet");put("price", 600);}}, new LinkedHashMap<>(){{put("name", "Monitor");put("price", 300);}}, new LinkedHashMap<>(){{put("name", "Keyboard");put("price", 100);}}, new LinkedHashMap<>(){{put("name", "Mouse");put("price", 50);}}, new LinkedHashMap<>(){{put("name", "Headphones");put("price", 200);}}));
+	static List<Map<String,Object>> products = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<String,Object>(){{put("name", "Laptop");put("price", 1500);}}, new LinkedHashMap<String,Object>(){{put("name", "Smartphone");put("price", 900);}}, new LinkedHashMap<String,Object>(){{put("name", "Tablet");put("price", 600);}}, new LinkedHashMap<String,Object>(){{put("name", "Monitor");put("price", 300);}}, new LinkedHashMap<String,Object>(){{put("name", "Keyboard");put("price", 100);}}, new LinkedHashMap<String,Object>(){{put("name", "Mouse");put("price", 50);}}, new LinkedHashMap<String,Object>(){{put("name", "Headphones");put("price", 200);}}));
 	static List<Object> expensive = (new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
 	List<Object> _res1 = new ArrayList<>();
 	for (var p : products) {

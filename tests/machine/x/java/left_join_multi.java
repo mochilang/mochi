@@ -1,8 +1,8 @@
 import java.util.*;
 public class Main {
-	static List<Map<Object,Object>> customers = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<>(){{put("id", 1);put("name", "Alice");}}, new LinkedHashMap<>(){{put("id", 2);put("name", "Bob");}}));
-	static List<Map<Object,Integer>> orders = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<>(){{put("id", 100);put("customerId", 1);}}, new LinkedHashMap<>(){{put("id", 101);put("customerId", 2);}}));
-	static List<Map<Object,Object>> items = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<>(){{put("orderId", 100);put("sku", "a");}}));
+	static List<Map<String,Object>> customers = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<String,Object>(){{put("id", 1);put("name", "Alice");}}, new LinkedHashMap<String,Object>(){{put("id", 2);put("name", "Bob");}}));
+	static List<Map<String,Integer>> orders = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<String,Integer>(){{put("id", 100);put("customerId", 1);}}, new LinkedHashMap<String,Integer>(){{put("id", 101);put("customerId", 2);}}));
+	static List<Map<String,Object>> items = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<String,Object>(){{put("orderId", 100);put("sku", "a");}}));
 	static List<Object> result = (new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
 	List<Object> _res3 = new ArrayList<>();
 	for (var o : orders) {
@@ -16,7 +16,7 @@ public class Main {
 			}
 			if (_tmp4.isEmpty()) _tmp4.add(null);
 			for (var i : _tmp4) {
-				_res3.add(new LinkedHashMap<>(){{put("orderId", ((Map)o).get("id"));put("name", ((Map)c).get("name"));put("item", i);}});
+				_res3.add(new LinkedHashMap<String,Object>(){{put("orderId", ((Map)o).get("id"));put("name", ((Map)c).get("name"));put("item", i);}});
 			}
 		}
 	}

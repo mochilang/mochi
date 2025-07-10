@@ -515,7 +515,10 @@ func (c *Compiler) maybeNumber(expr string) string {
 }
 
 func maybeBool(expr string) string {
-	if strings.Contains(expr, ").get(") {
+	if strings.Contains(expr, ".get(") {
+		if strings.ContainsAny(expr, "<>=!+-*/%") || strings.Contains(expr, "==") || strings.Contains(expr, "!=") || strings.Contains(expr, "Objects.equals") {
+			return expr
+		}
 		return fmt.Sprintf("%s != null", expr)
 	}
 	return expr
@@ -559,14 +562,20 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 	if m := isMapLiteral(e); m != nil {
 		kt, vt := "Object", "Object"
 		for i, it := range m.Items {
-			k := wrapperType(c.inferType(it.Key))
+			k := c.inferType(it.Key)
 			if k == "var" {
-				k = c.litType(it.Key)
+				if _, ok := simpleStringKey(it.Key); ok {
+					k = "String"
+				} else {
+					k = c.litType(it.Key)
+				}
 			}
-			v := wrapperType(c.inferType(it.Value))
+			v := c.inferType(it.Value)
 			if v == "var" {
 				v = c.litType(it.Value)
 			}
+			k = wrapperType(k)
+			v = wrapperType(v)
 			if i == 0 {
 				kt, vt = k, v
 			} else {
@@ -916,7 +925,39 @@ func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
 		}
 		entries = append(entries, fmt.Sprintf("put(%s, %s);", k, v))
 	}
-	return fmt.Sprintf("new LinkedHashMap<>(){{%s}}", strings.Join(entries, "")), nil
+	kt, vt := c.mapLiteralTypes(m)
+	return fmt.Sprintf("new LinkedHashMap<%s,%s>(){{%s}}", kt, vt, strings.Join(entries, "")), nil
+}
+
+func (c *Compiler) mapLiteralTypes(m *parser.MapLiteral) (string, string) {
+	kt, vt := "Object", "Object"
+	for i, it := range m.Items {
+		ktyp := c.inferType(it.Key)
+		if ktyp == "var" {
+			if _, ok := simpleStringKey(it.Key); ok {
+				ktyp = "String"
+			} else {
+				ktyp = c.litType(it.Key)
+			}
+		}
+		vtyp := c.inferType(it.Value)
+		if vtyp == "var" {
+			vtyp = c.litType(it.Value)
+		}
+		ktyp = wrapperType(ktyp)
+		vtyp = wrapperType(vtyp)
+		if i == 0 {
+			kt, vt = ktyp, vtyp
+		} else {
+			if kt != ktyp {
+				kt = "Object"
+			}
+			if vt != vtyp {
+				vt = "Object"
+			}
+		}
+	}
+	return kt, vt
 }
 
 func (c *Compiler) compileStructLiteral(s *parser.StructLiteral) (string, error) {
