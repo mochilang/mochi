@@ -1,0 +1,41 @@
+let PI = 3.141592653589793
+
+fun sinApprox(x: float): float {
+  var term = x
+  var sum = x
+  var n = 1
+  while n <= 12 {
+    let denom = ((2 * n) * (2 * n + 1)) as float
+    term = -term * x * x / denom
+    sum = sum + term
+    n = n + 1
+  }
+  return sum
+}
+
+let dt = 0.01
+var s = 0.0
+var t1 = 0.0
+var k1 = sinApprox(0.0)
+
+var i = 1
+while i <= 200 {
+  let t2 = (i as float) * dt
+  let k2 = sinApprox(t2 * PI)
+  s = s + (k1 + k2) * 0.5 * (t2 - t1)
+  t1 = t2
+  k1 = k2
+  i = i + 1
+}
+
+var i2 = 1
+while i2 <= 50 {
+  let t2 = 2.0 + (i2 as float) * dt
+  let k2 = 0.0
+  s = s + (k1 + k2) * 0.5 * (t2 - t1)
+  t1 = t2
+  k1 = k2
+  i2 = i2 + 1
+}
+
+print(s)
