@@ -1,0 +1,36 @@
+// Mochi implementation of Rosetta "Almost-prime" task
+// Translated from Go version in tests/rosetta/x/Go/almost-prime.go
+
+fun kPrime(n: int, k: int): bool {
+  var nf = 0
+  var i = 2
+  while i <= n {
+    while n % i == 0 {
+      if nf == k { return false }
+      nf = nf + 1
+      n = n / i
+    }
+    i = i + 1
+  }
+  return nf == k
+}
+
+fun gen(k: int, count: int): list<int> {
+  var r: list<int> = []
+  var n = 2
+  while len(r) < count {
+    if kPrime(n, k) { r = append(r, n) }
+    n = n + 1
+  }
+  return r
+}
+
+fun main() {
+  var k = 1
+  while k <= 5 {
+    print(str(k) + " " + str(gen(k, 10)))
+    k = k + 1
+  }
+}
+
+main()
