@@ -98,7 +98,7 @@ Executed successfully: 74/97
 - [x] typed_let.mochi
 - [x] typed_var.mochi
 - [x] unary_neg.mochi
-- [ ] update_stmt.mochi
+- [x] update_stmt.mochi
 - [x] user_type_literal.mochi
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi

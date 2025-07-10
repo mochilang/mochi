@@ -21,12 +21,13 @@ type Compiler struct {
 	tmp     int
 	helpers map[string]bool
 	inSort  bool
+	updates map[string]bool
 }
 
 const indentStep = 2
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, helpers: make(map[string]bool)}
+	return &Compiler{env: env, helpers: make(map[string]bool), updates: make(map[string]bool)}
 }
 
 func (c *Compiler) newVar(prefix string) string {
@@ -115,6 +116,7 @@ func sanitizeName(name string) string {
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	name := sanitizeName(strings.TrimSuffix(filepath.Base(prog.Pos.Filename), filepath.Ext(prog.Pos.Filename)))
+	collectUpdates(prog.Statements, c.updates)
 	// emit user-defined types before the main object
 	for _, s := range prog.Statements {
 		if s.Type != nil {
@@ -231,19 +233,41 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 }
 
 func (c *Compiler) compileLet(s *parser.LetStmt) error {
+	mutable := c.updates[s.Name]
 	rhs := "0"
 	if s.Value != nil {
 		var err error
-		rhs, err = c.compileExpr(s.Value)
+		if mutable {
+			if lst := s.Value.Binary.Left.Value.Target.List; lst != nil {
+				rhs, err = c.compileList(lst, true)
+			} else if mp := s.Value.Binary.Left.Value.Target.Map; mp != nil {
+				rhs, err = c.compileMap(mp, true)
+			} else {
+				rhs, err = c.compileExpr(s.Value)
+			}
+		} else {
+			rhs, err = c.compileExpr(s.Value)
+		}
 		if err != nil {
 			return err
 		}
 	}
 	if s.Type != nil {
 		typ := c.typeString(s.Type)
-		c.writeln(fmt.Sprintf("val %s: %s = %s", s.Name, typ, rhs))
+		if mutable {
+			typ = c.mutableTypeString(s.Type)
+		}
+		if mutable {
+			c.writeln(fmt.Sprintf("var %s: %s = %s", s.Name, typ, rhs))
+		} else {
+			c.writeln(fmt.Sprintf("val %s: %s = %s", s.Name, typ, rhs))
+		}
 	} else {
-		c.writeln(fmt.Sprintf("val %s = %s", s.Name, rhs))
+		if mutable {
+			c.writeln(fmt.Sprintf("var %s = %s", s.Name, rhs))
+		} else {
+			c.writeln(fmt.Sprintf("val %s = %s", s.Name, rhs))
+		}
 	}
 	return nil
 }
@@ -1476,6 +1500,26 @@ func (c *Compiler) typeString(t *parser.TypeRef) string {
 	return "Any"
 }
 
+func (c *Compiler) mutableTypeString(t *parser.TypeRef) string {
+	if t == nil {
+		return "Any"
+	}
+	if t.Generic != nil {
+		g := t.Generic
+		args := make([]string, len(g.Args))
+		for i, a := range g.Args {
+			args[i] = c.typeString(a)
+		}
+		switch g.Name {
+		case "list":
+			return fmt.Sprintf("scala.collection.mutable.ArrayBuffer[%s]", strings.Join(args, ", "))
+		case "map":
+			return fmt.Sprintf("scala.collection.mutable.Map[%s]", strings.Join(args, ", "))
+		}
+	}
+	return c.typeString(t)
+}
+
 func (c *Compiler) typeOf(t types.Type) string {
 	switch tt := t.(type) {
 	case types.IntType, types.Int64Type:
@@ -1569,4 +1613,29 @@ func indexOf(list []*parser.Statement, target *parser.Statement) int {
 		}
 	}
 	return -1
+}
+
+func collectUpdates(stmts []*parser.Statement, out map[string]bool) {
+	for _, s := range stmts {
+		switch {
+		case s.Update != nil:
+			out[s.Update.Target] = true
+		case s.If != nil:
+			collectUpdates(s.If.Then, out)
+			if s.If.ElseIf != nil {
+				collectUpdates([]*parser.Statement{{If: s.If.ElseIf}}, out)
+			}
+			if s.If.Else != nil {
+				collectUpdates(s.If.Else, out)
+			}
+		case s.While != nil:
+			collectUpdates(s.While.Body, out)
+		case s.For != nil:
+			collectUpdates(s.For.Body, out)
+		case s.Fun != nil:
+			collectUpdates(s.Fun.Body, out)
+		case s.Test != nil:
+			collectUpdates(s.Test.Body, out)
+		}
+	}
 }
