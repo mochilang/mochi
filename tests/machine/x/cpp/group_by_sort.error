@@ -3,7 +3,7 @@ line 40: ../../../tests/machine/x/cpp/group_by_sort.cpp: In lambda function:
    40 |   std::vector<std::pair<decltype((-([&](auto v) {
       |                                     ^
 ../../../tests/machine/x/cpp/group_by_sort.cpp:43:29: error: lambda-expression in unevaluated context only available with ‘-std=c++20’ or ‘-std=gnu++20’
-   43 |                         })(([]() {
+   43 |                         })(([&]() {
       |                             ^
 ../../../tests/machine/x/cpp/group_by_sort.cpp:51:25: error: template argument 1 is invalid
    51 |                         __struct3>>
@@ -15,17 +15,6 @@ line 40: ../../../tests/machine/x/cpp/group_by_sort.cpp: In lambda function:
 ../../../tests/machine/x/cpp/group_by_sort.cpp:54:13: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
    54 |     __items.push_back(
       |             ^~~~~~~~~
-../../../tests/machine/x/cpp/group_by_sort.cpp: In lambda function:
-../../../tests/machine/x/cpp/group_by_sort.cpp:58:30: error: ‘g’ is not captured
-   58 |                for (auto x : g.items) {
-      |                              ^
-../../../tests/machine/x/cpp/group_by_sort.cpp:56:16: note: the lambda has no capture-default
-   56 |              ([]() {
-      |                ^
-../../../tests/machine/x/cpp/group_by_sort.cpp:53:14: note: ‘__struct2& g’ declared here
-   53 |   for (auto &g : __groups) {
-      |              ^
-../../../tests/machine/x/cpp/group_by_sort.cpp: In lambda function:
 ../../../tests/machine/x/cpp/group_by_sort.cpp:66:16: warning: narrowing conversion of ‘<lambda closure object><lambda()>::<lambda(auto:3)>().<lambda()>::<lambda(auto:3)>(<lambda()>::<lambda()>())’ from ‘int’ to ‘bool’ [-Wnarrowing]
    64 |              g.key, ([&](auto v) {
       |                     ~~~~~~~~~~~~~~

@@ -73,7 +73,7 @@ auto stats = ([]() {
     __items.push_back(__struct5{g.key, ((int)([&]() {
                                           std::vector<__struct3> __items;
                                           for (auto r : g.items) {
-                                            if (!(r.o))
+                                            if (!((r.o != __struct2{})))
                                               continue;
                                             __items.push_back(r);
                                           }

@@ -2,7 +2,7 @@
 
 This directory contains C++ source code generated from Mochi programs and the corresponding outputs or errors.
 
-Compiled programs: 82/97
+Compiled programs: 84/97
 
 ## Checklist
 
@@ -28,10 +28,25 @@ Compiled programs: 82/97
 - [x] fun_call
 - [x] fun_expr_in_let
 - [x] fun_three_args
+- [x] group_by
+- [x] group_by_conditional_sum
+- [x] group_by_having
+- [x] group_by_join
+- [ ] group_by_left_join
+- [ ] group_by_multi_join
+- [ ] group_by_multi_join_sort
+- [ ] group_by_sort
+- [ ] group_items_iteration
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
 - [x] in_operator
+- [ ] in_operator_extended
+- [x] inner_join
+- [x] join_multi
+- [x] json_builtin
+- [x] left_join
+- [x] left_join_multi
 - [x] len_builtin
 - [x] len_map
 - [x] len_string
@@ -39,102 +54,52 @@ Compiled programs: 82/97
 - [x] list_assign
 - [x] list_index
 - [x] list_nested_assign
+- [x] list_set_ops
+- [ ] load_yaml
 - [x] map_assign
 - [x] map_in_operator
 - [x] map_index
 - [x] map_int_key
 - [x] map_literal_dynamic
 - [x] map_membership
+- [x] map_nested_assign
 - [x] match_expr
 - [x] match_full
 - [x] math_ops
 - [x] membership
 - [x] min_max_builtin
 - [x] nested_function
+- [ ] order_by_map
+- [ ] outer_join
+- [x] partial_application
 - [x] print_hello
 - [x] pure_fold
+- [x] pure_global_fold
+- [ ] query_sum_select
 - [x] record_assign
+- [ ] right_join
+- [ ] save_jsonl_stdout
 - [x] short_circuit
 - [x] slice
+- [x] sort_stable
 - [x] str_builtin
 - [x] string_compare
 - [x] string_concat
+- [x] string_contains
 - [x] string_in_operator
 - [x] string_index
+- [x] string_prefix_slice
 - [x] substring_builtin
+- [x] sum_builtin
 - [x] tail_recursion
+- [x] test_block
+- [ ] tree_sum
 - [x] two-sum
 - [x] typed_let
 - [x] typed_var
 - [x] unary_neg
+- [x] update_stmt
 - [x] user_type_literal
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
- - [x] group_by
- - [x] group_by_conditional_sum
- - [x] group_by_having
- - [x] group_by_join
-- [ ] group_by_left_join
-- [ ] group_by_multi_join
-- [ ] group_by_multi_join_sort
-- [ ] group_by_sort
-- [ ] group_items_iteration
-- [ ] in_operator_extended
-- [x] inner_join
-- [x] join_multi
- - [x] json_builtin
-- [ ] left_join
-- [ ] left_join_multi
- - [x] list_set_ops
-- [ ] load_yaml
-- [x] map_nested_assign
-- [ ] order_by_map
-- [ ] outer_join
- - [x] partial_application
-- [x] pure_global_fold
-- [ ] query_sum_select
-- [ ] right_join
-- [ ] save_jsonl_stdout
-- [x] sort_stable
-- [x] string_contains
-- [x] string_prefix_slice
-- [x] sum_builtin
-- [x] test_block
-- [ ] tree_sum
-- [x] update_stmt
-
-## Remaining Tasks
-
- - [x] group_by
- - [x] group_by_conditional_sum
- - [x] group_by_having
- - [x] group_by_join
-- [ ] group_by_left_join
-- [ ] group_by_multi_join
-- [ ] group_by_multi_join_sort
-- [ ] group_by_sort
-- [ ] group_items_iteration
-- [ ] in_operator_extended
-- [x] inner_join
-- [x] join_multi
- - [x] json_builtin
-- [ ] left_join
-- [ ] left_join_multi
- - [x] list_set_ops
-- [ ] load_yaml
-- [x] map_nested_assign
-- [ ] order_by_map
-- [ ] outer_join
- - [x] partial_application
-- [x] pure_global_fold
-- [ ] query_sum_select
-- [ ] right_join
-- [ ] save_jsonl_stdout
-- [x] sort_stable
-- [x] string_contains
-- [x] string_prefix_slice
-- [x] sum_builtin
-- [ ] tree_sum
-- [x] update_stmt
-

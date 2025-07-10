@@ -1,9 +1,10 @@
 line 76: ../../../tests/machine/x/cpp/group_by_left_join.cpp: In lambda function:
-../../../tests/machine/x/cpp/group_by_left_join.cpp:76:49: error: no match for ‘operator!’ (operand type is ‘__struct2’)
-   76 |                                             if (!(r.o))
-      |                                                 ^~~~~~
-../../../tests/machine/x/cpp/group_by_left_join.cpp:76:49: note: candidate: ‘operator!(bool)’ (built-in)
-../../../tests/machine/x/cpp/group_by_left_join.cpp:76:49: note:   no known conversion for argument 1 from ‘__struct2’ to ‘bool’
+../../../tests/machine/x/cpp/group_by_left_join.cpp:76:56: error: no match for ‘operator!=’ (operand types are ‘__struct2’ and ‘__struct2’)
+   76 |                                             if (!((r.o != __struct2{})))
+      |                                                    ~~~ ^~ ~~~~~~~~~~~
+      |                                                      |    |
+      |                                                      |    __struct2
+      |                                                      __struct2
 ../../../tests/machine/x/cpp/group_by_left_join.cpp: In lambda function:
 ../../../tests/machine/x/cpp/group_by_left_join.cpp:73:41: warning: narrowing conversion of ‘(int)<lambda()>::<lambda()>().std::vector<__struct3>::size()’ from ‘int’ to ‘bool’ [-Wnarrowing]
    73 |     __items.push_back(__struct5{g.key, ((int)([&]() {
@@ -12,8 +13,8 @@ line 76: ../../../tests/machine/x/cpp/group_by_left_join.cpp: In lambda function
       |                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    75 |                                           for (auto r : g.items) {
       |                                           ~~~~~~~~~~~~~~~~~~~~~~~~
-   76 |                                             if (!(r.o))
-      |                                             ~~~~~~~~~~~
+   76 |                                             if (!((r.o != __struct2{})))
+      |                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    77 |                                               continue;
       |                                               ~~~~~~~~~
    78 |                                             __items.push_back(r);
@@ -28,5 +29,5 @@ line 76: ../../../tests/machine/x/cpp/group_by_left_join.cpp: In lambda function
       |                                             ~~~~~~~~
 
  75 |                                           for (auto r : g.items) {
- 76 |                                             if (!(r.o))
+ 76 |                                             if (!((r.o != __struct2{})))
  77 |                                               continue;

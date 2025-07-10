@@ -1291,7 +1291,11 @@ func (c *Compiler) compileMatchExpr(mx *parser.MatchExpr) (string, error) {
 		}
 	}
 	var buf strings.Builder
-	buf.WriteString("([&]() { auto __v = ")
+	cap := "[&]"
+	if c.scope == 0 {
+		cap = "[]"
+	}
+	buf.WriteString("(" + cap + "() { auto __v = ")
 	buf.WriteString(target)
 	buf.WriteString("; ")
 	for i, cs := range cases {
@@ -1446,8 +1450,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if q.Group != nil {
 		return c.compileGroupedQueryExpr(q)
 	}
-	// Queries are compiled into immediately invoked lambdas. Increase the
-	// scope counter so nested queries can capture variables correctly.
+	// Queries are compiled into immediately invoked lambdas. Determine the
+	// capture list based on the current scope before increasing it so that
+	// top-level queries use an empty capture.
+	cap := "[&]"
+	if c.scope == 0 {
+		cap = "[]"
+	}
 	c.scope++
 	defer func() { c.scope-- }()
 	for _, j := range q.Joins {
@@ -1629,10 +1638,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 
 	var buf strings.Builder
-	cap := "[&]"
-	if c.scope == 0 {
-		cap = "[]"
-	}
 	buf.WriteString("(" + cap + "() {\n")
 	indent := func(n int) {
 		for i := 0; i < n; i++ {
@@ -1916,8 +1921,8 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 	if c.scope == 0 {
 		cap = "[]"
 	}
-	buf.WriteString("(" + cap + "() {\n")
 	c.scope++
+	buf.WriteString("(" + cap + "() {\n")
 
 	valExpr, err := c.compileExpr(q.Select)
 	if err != nil {
