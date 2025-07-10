@@ -45,21 +45,11 @@ function main(): void {
       }),
     });
   })();
-  console.log(_fmt("--- Left Join Multi ---"));
+  console.log("--- Left Join Multi ---");
   for (const r of result) {
-    console.log(_fmt(r.orderId), _fmt(r.name), _fmt(r.item));
+    console.log(r.orderId, r.name, r.item);
   }
 }
-function _fmt(v: any): string {
-  if (Array.isArray(v)) return v.map(_fmt).join(" ");
-  if (v && typeof v === "object") {
-    const keys = Object.keys(v).sort();
-    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
-    return "map[" + parts.join(" ") + "]";
-  }
-  return String(v);
-}
-
 function _query(src: any[], joins: any[], opts: any): any {
   let items = src.map((v) => [v]);
   for (const j of joins) {

@@ -12,23 +12,13 @@ function main(): void {
     3,
   ];
   ys = xs.filter((x) => ((x % 2) == 1)).map((x) => x);
-  console.log(_fmt(ys.includes(1)));
-  console.log(_fmt(ys.includes(2)));
+  console.log(ys.includes(1));
+  console.log(ys.includes(2));
   m = { "a": 1 };
-  console.log(_fmt(Object.prototype.hasOwnProperty.call(m, String("a"))));
-  console.log(_fmt(Object.prototype.hasOwnProperty.call(m, String("b"))));
+  console.log(Object.prototype.hasOwnProperty.call(m, String("a")));
+  console.log(Object.prototype.hasOwnProperty.call(m, String("b")));
   s = "hello";
-  console.log(_fmt(s.includes("ell")));
-  console.log(_fmt(s.includes("foo")));
+  console.log(s.includes("ell"));
+  console.log(s.includes("foo"));
 }
-function _fmt(v: any): string {
-  if (Array.isArray(v)) return v.map(_fmt).join(" ");
-  if (v && typeof v === "object") {
-    const keys = Object.keys(v).sort();
-    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
-    return "map[" + parts.join(" ") + "]";
-  }
-  return String(v);
-}
-
 main();

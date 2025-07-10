@@ -9,7 +9,7 @@ function main(): void {
     2,
   ];
   flag = _exists(data.filter((x) => (x == 1)).map((x) => x));
-  console.log(_fmt(flag));
+  console.log(flag);
 }
 function _exists(v: any): boolean {
   if (Array.isArray(v)) return v.length > 0;
@@ -20,16 +20,6 @@ function _exists(v: any): boolean {
   }
   if (typeof v === "string") return v.length > 0;
   return false;
-}
-
-function _fmt(v: any): string {
-  if (Array.isArray(v)) return v.map(_fmt).join(" ");
-  if (v && typeof v === "object") {
-    const keys = Object.keys(v).sort();
-    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
-    return "map[" + parts.join(" ") + "]";
-  }
-  return String(v);
 }
 
 main();

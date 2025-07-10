@@ -5,16 +5,6 @@ var scores: { [key: string]: number };
 function main(): void {
   scores = { "alice": 1 };
   scores["bob"] = 2;
-  console.log(_fmt(scores["bob"]));
+  console.log(scores["bob"]);
 }
-function _fmt(v: any): string {
-  if (Array.isArray(v)) return v.map(_fmt).join(" ");
-  if (v && typeof v === "object") {
-    const keys = Object.keys(v).sort();
-    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
-    return "map[" + parts.join(" ") + "]";
-  }
-  return String(v);
-}
-
 main();

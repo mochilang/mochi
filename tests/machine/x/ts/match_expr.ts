@@ -12,7 +12,7 @@ function main(): void {
     if (_equal(_t, 3)) return "three";
     return "unknown";
   })();
-  console.log(_fmt(label));
+  console.log(label);
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
@@ -32,16 +32,6 @@ function _equal(a: any, b: any): boolean {
     return true;
   }
   return a === b;
-}
-
-function _fmt(v: any): string {
-  if (Array.isArray(v)) return v.map(_fmt).join(" ");
-  if (v && typeof v === "object") {
-    const keys = Object.keys(v).sort();
-    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
-    return "map[" + parts.join(" ") + "]";
-  }
-  return String(v);
 }
 
 main();

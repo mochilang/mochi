@@ -1676,10 +1676,17 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	}
 	switch call.Func {
 	case "print":
-		c.use("_fmt")
 		parts := make([]string, len(args))
 		for i, a := range args {
-			parts[i] = fmt.Sprintf("_fmt(%s)", a)
+			t := c.inferExprType(call.Args[i])
+			switch t.(type) {
+			case types.ListType:
+				parts[i] = fmt.Sprintf("Array.isArray(%[1]s) ? %[1]s.join(' ') : %[1]s", a)
+			case types.MapType, types.StructType, types.UnionType:
+				parts[i] = fmt.Sprintf("JSON.stringify(%s)", a)
+			default:
+				parts[i] = a
+			}
 		}
 		return fmt.Sprintf("console.log(%s)", strings.Join(parts, ", ")), nil
 	case "keys":

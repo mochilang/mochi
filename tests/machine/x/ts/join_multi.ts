@@ -53,19 +53,9 @@ function main(): void {
     }
     return _res;
   })();
-  console.log(_fmt("--- Multi Join ---"));
+  console.log("--- Multi Join ---");
   for (const r of result) {
-    console.log(_fmt(r.name), _fmt("bought item"), _fmt(r.sku));
+    console.log(r.name, "bought item", r.sku);
   }
 }
-function _fmt(v: any): string {
-  if (Array.isArray(v)) return v.map(_fmt).join(" ");
-  if (v && typeof v === "object") {
-    const keys = Object.keys(v).sort();
-    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
-    return "map[" + parts.join(" ") + "]";
-  }
-  return String(v);
-}
-
 main();

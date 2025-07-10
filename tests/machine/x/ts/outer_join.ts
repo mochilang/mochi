@@ -82,45 +82,31 @@ function main(): void {
     }
     return _res;
   })();
-  console.log(_fmt("--- Outer Join using syntax ---"));
+  console.log("--- Outer Join using syntax ---");
   for (const row of result) {
     if (row.order) {
       if (row.customer) {
         console.log(
-          _fmt("Order"),
-          _fmt(row.order.id),
-          _fmt("by"),
-          _fmt(row.customer.name),
-          _fmt("- $"),
-          _fmt(row.order.total),
+          "Order",
+          row.order.id,
+          "by",
+          row.customer.name,
+          "- $",
+          row.order.total,
         );
       } else {
         console.log(
-          _fmt("Order"),
-          _fmt(row.order.id),
-          _fmt("by"),
-          _fmt("Unknown"),
-          _fmt("- $"),
-          _fmt(row.order.total),
+          "Order",
+          row.order.id,
+          "by",
+          "Unknown",
+          "- $",
+          row.order.total,
         );
       }
     } else {
-      console.log(
-        _fmt("Customer"),
-        _fmt(row.customer.name),
-        _fmt("has no orders"),
-      );
+      console.log("Customer", row.customer.name, "has no orders");
     }
   }
 }
-function _fmt(v: any): string {
-  if (Array.isArray(v)) return v.map(_fmt).join(" ");
-  if (v && typeof v === "object") {
-    const keys = Object.keys(v).sort();
-    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
-    return "map[" + parts.join(" ") + "]";
-  }
-  return String(v);
-}
-
 main();

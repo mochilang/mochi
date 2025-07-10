@@ -5,16 +5,6 @@ var data: { [key: string]: { [key: string]: number } };
 function main(): void {
   data = { "outer": { "inner": 1 } };
   data["outer"]["inner"] = 2;
-  console.log(_fmt(data["outer"]["inner"]));
+  console.log(data["outer"]["inner"]);
 }
-function _fmt(v: any): string {
-  if (Array.isArray(v)) return v.map(_fmt).join(" ");
-  if (v && typeof v === "object") {
-    const keys = Object.keys(v).sort();
-    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
-    return "map[" + parts.join(" ") + "]";
-  }
-  return String(v);
-}
-
 main();

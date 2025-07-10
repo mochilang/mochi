@@ -57,28 +57,18 @@ function main(): void {
     }
     return _res;
   })();
-  console.log(_fmt("--- Orders with customer info ---"));
+  console.log("--- Orders with customer info ---");
   for (const entry of result) {
     console.log(
-      _fmt("Order"),
-      _fmt(entry.orderId),
-      _fmt("by"),
-      _fmt(entry.customerName),
-      _fmt("- $"),
-      _fmt(entry.total),
+      "Order",
+      entry.orderId,
+      "by",
+      entry.customerName,
+      "- $",
+      entry.total,
     );
   }
 }
-function _fmt(v: any): string {
-  if (Array.isArray(v)) return v.map(_fmt).join(" ");
-  if (v && typeof v === "object") {
-    const keys = Object.keys(v).sort();
-    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
-    return "map[" + parts.join(" ") + "]";
-  }
-  return String(v);
-}
-
 function _hashJoin(
   left: any[],
   right: any[],

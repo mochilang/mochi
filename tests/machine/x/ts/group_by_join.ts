@@ -58,9 +58,9 @@ function main(): void {
     }
     return _res;
   })();
-  console.log(_fmt("--- Orders per customer ---"));
+  console.log("--- Orders per customer ---");
   for (const s of stats) {
-    console.log(_fmt(s.name), _fmt("orders:"), _fmt(s.count));
+    console.log(s.name, "orders:", s.count);
   }
 }
 function _count(v: any): number {
@@ -70,16 +70,6 @@ function _count(v: any): number {
     if (Array.isArray((v as any).Items)) return (v as any).Items.length;
   }
   return 0;
-}
-
-function _fmt(v: any): string {
-  if (Array.isArray(v)) return v.map(_fmt).join(" ");
-  if (v && typeof v === "object") {
-    const keys = Object.keys(v).sort();
-    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
-    return "map[" + parts.join(" ") + "]";
-  }
-  return String(v);
 }
 
 main();
