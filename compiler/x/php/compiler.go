@@ -856,7 +856,33 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		}
 		return fmt.Sprintf("function(%s) { return %s; }", strings.Join(params, ", "), body), nil
 	}
-	return "", fmt.Errorf("block function expressions not supported")
+
+	// Support block-bodied anonymous functions
+	var buf bytes.Buffer
+	buf.WriteString(fmt.Sprintf("function(%s) {\n", strings.Join(params, ", ")))
+
+	// Temporarily switch buffer and indentation to compile the body
+	origBuf := c.buf
+	origIndent := c.indent
+	c.buf = bytes.Buffer{}
+	c.indent = 1
+	for _, st := range fn.BlockBody {
+		if err := c.compileStmt(st); err != nil {
+			c.buf = origBuf
+			c.indent = origIndent
+			return "", err
+		}
+	}
+	if len(fn.BlockBody) == 0 {
+		c.writeln("return;")
+	}
+	body := c.buf.String()
+	c.buf = origBuf
+	c.indent = origIndent
+
+	buf.WriteString(body)
+	buf.WriteString("}")
+	return buf.String(), nil
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
