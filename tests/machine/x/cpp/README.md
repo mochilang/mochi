@@ -55,7 +55,7 @@ Compiled programs: 81/97
 - [x] pure_fold
 - [x] record_assign
 - [x] short_circuit
- - [ ] slice
+- [x] slice
 - [x] str_builtin
 - [x] string_compare
 - [x] string_concat
