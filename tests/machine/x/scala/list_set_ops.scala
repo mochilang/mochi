@@ -8,9 +8,9 @@ object list_set_ops {
   def _union_all[T](a: List[T], b: List[T]): List[T] = a ++ b
 
   def main(args: Array[String]): Unit = {
-    println((_union(List(1, 2), List(2, 3))))
-    println((_except(List(1, 2, 3), List(2))))
-    println((_intersect(List(1, 2, 3), List(2, 4))))
-    println((_union_all(List(1, 2), List(2, 3)).length))
+    println((_union(List[Int](1, 2), List[Int](2, 3))))
+    println((_except(List[Int](1, 2, 3), List[Int](2))))
+    println((_intersect(List[Int](1, 2, 3), List[Int](2, 4))))
+    println((_union_all(List[Int](1, 2), List[Int](2, 3)).length))
   }
 }
