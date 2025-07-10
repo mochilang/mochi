@@ -1,7 +1,8 @@
 #include <iostream>
 
+auto square = [=](int x) { return (x * x); };
+
 int main() {
-  auto square = [=](int x) { return (x * x); };
   {
     std::cout << std::boolalpha << square(6);
     std::cout << std::endl;

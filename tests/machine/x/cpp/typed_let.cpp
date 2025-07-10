@@ -1,7 +1,8 @@
 #include <iostream>
 
+int y = 0;
+
 int main() {
-  int y = 0;
   {
     std::cout << std::boolalpha << y;
     std::cout << std::endl;

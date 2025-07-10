@@ -10,22 +10,22 @@ struct __struct2 {
   decltype(std::declval<__struct1>().age) age;
   bool is_senior;
 };
+std::vector<__struct1> people =
+    std::vector<decltype(__struct1{std::string("Alice"), 30})>{
+        __struct1{std::string("Alice"), 30}, __struct1{std::string("Bob"), 15},
+        __struct1{std::string("Charlie"), 65},
+        __struct1{std::string("Diana"), 45}};
+auto adults = ([]() {
+  std::vector<__struct2> __items;
+  for (auto person : people) {
+    if (!((person.age >= 18)))
+      continue;
+    __items.push_back(__struct2{person.name, person.age, (person.age >= 60)});
+  }
+  return __items;
+})();
+
 int main() {
-  std::vector<__struct1> people =
-      std::vector<decltype(__struct1{std::string("Alice"), 30})>{
-          __struct1{std::string("Alice"), 30},
-          __struct1{std::string("Bob"), 15},
-          __struct1{std::string("Charlie"), 65},
-          __struct1{std::string("Diana"), 45}};
-  auto adults = ([&]() {
-    std::vector<__struct2> __items;
-    for (auto person : people) {
-      if (!((person.age >= 18)))
-        continue;
-      __items.push_back(__struct2{person.name, person.age, (person.age >= 60)});
-    }
-    return __items;
-  })();
   {
     std::cout << std::boolalpha << std::string("--- Adults ---");
     std::cout << std::endl;

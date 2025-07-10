@@ -2,7 +2,7 @@
 
 This directory contains C++ source code generated from Mochi programs and the corresponding outputs or errors.
 
-Compiled programs: 81/97
+Compiled programs: 82/97
 
 ## Checklist
 

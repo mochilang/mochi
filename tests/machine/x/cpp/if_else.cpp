@@ -1,7 +1,8 @@
 #include <iostream>
 
+auto x = 5;
+
 int main() {
-  auto x = 5;
   if ((x > 3)) {
     {
       std::cout << std::boolalpha << std::string("big");

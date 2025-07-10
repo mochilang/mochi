@@ -1,0 +1,7 @@
+line 4: ../../../tests/machine/x/cpp/match_expr.cpp:4:16: error: non-local lambda expression cannot have a capture-default
+    4 | auto label = ([&]() {
+      |                ^
+
+  3 | auto x = 2;
+  4 | auto label = ([&]() {
+  5 |   auto __v = x;

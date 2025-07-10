@@ -21,69 +21,70 @@ struct __struct5 {
   decltype(std::declval<__struct4>().key) name;
   bool count;
 };
-int main() {
-  std::vector<__struct1> customers =
-      std::vector<decltype(__struct1{1, std::string("Alice")})>{
-          __struct1{1, std::string("Alice")}, __struct1{2, std::string("Bob")},
-          __struct1{3, std::string("Charlie")}};
-  std::vector<__struct2> orders = std::vector<decltype(__struct2{100, 1})>{
-      __struct2{100, 1}, __struct2{101, 1}, __struct2{102, 2}};
-  auto stats = ([&]() {
-    std::vector<__struct4> __groups;
-    for (auto c : customers) {
-      {
-        bool __matched0 = false;
-        for (auto o : orders) {
-          if (!((o.customerId == c.id)))
-            continue;
-          __matched0 = true;
-          auto __key = c.name;
-          bool __found = false;
-          for (auto &__g : __groups) {
-            if (__g.key == __key) {
-              __g.items.push_back(__struct3{c, o});
-              __found = true;
-              break;
-            }
-          }
-          if (!__found) {
-            __groups.push_back(
-                __struct4{__key, std::vector<__struct3>{__struct3{c, o}}});
+std::vector<__struct1> customers =
+    std::vector<decltype(__struct1{1, std::string("Alice")})>{
+        __struct1{1, std::string("Alice")}, __struct1{2, std::string("Bob")},
+        __struct1{3, std::string("Charlie")}};
+std::vector<__struct2> orders = std::vector<decltype(__struct2{100, 1})>{
+    __struct2{100, 1}, __struct2{101, 1}, __struct2{102, 2}};
+auto stats = ([]() {
+  std::vector<__struct4> __groups;
+  for (auto c : customers) {
+    {
+      bool __matched0 = false;
+      for (auto o : orders) {
+        if (!((o.customerId == c.id)))
+          continue;
+        __matched0 = true;
+        auto __key = c.name;
+        bool __found = false;
+        for (auto &__g : __groups) {
+          if (__g.key == __key) {
+            __g.items.push_back(__struct3{c, o});
+            __found = true;
+            break;
           }
         }
-        if (!__matched0) {
-          auto o = std::decay_t<decltype(*(orders).begin())>{};
-          auto __key = c.name;
-          bool __found = false;
-          for (auto &__g : __groups) {
-            if (__g.key == __key) {
-              __g.items.push_back(__struct3{c, o});
-              __found = true;
-              break;
-            }
+        if (!__found) {
+          __groups.push_back(
+              __struct4{__key, std::vector<__struct3>{__struct3{c, o}}});
+        }
+      }
+      if (!__matched0) {
+        auto o = std::decay_t<decltype(*(orders).begin())>{};
+        auto __key = c.name;
+        bool __found = false;
+        for (auto &__g : __groups) {
+          if (__g.key == __key) {
+            __g.items.push_back(__struct3{c, o});
+            __found = true;
+            break;
           }
-          if (!__found) {
-            __groups.push_back(
-                __struct4{__key, std::vector<__struct3>{__struct3{c, o}}});
-          }
+        }
+        if (!__found) {
+          __groups.push_back(
+              __struct4{__key, std::vector<__struct3>{__struct3{c, o}}});
         }
       }
     }
-    std::vector<__struct5> __items;
-    for (auto &g : __groups) {
-      __items.push_back(__struct5{g.key, ((int)([&]() {
-                                            std::vector<__struct3> __items;
-                                            for (auto r : g.items) {
-                                              if (!(r.o))
-                                                continue;
-                                              __items.push_back(r);
-                                            }
-                                            return __items;
-                                          })()
-                                              .size())});
-    }
-    return __items;
-  })();
+  }
+  std::vector<__struct5> __items;
+  for (auto &g : __groups) {
+    __items.push_back(__struct5{g.key, ((int)([&]() {
+                                          std::vector<__struct3> __items;
+                                          for (auto r : g.items) {
+                                            if (!(r.o))
+                                              continue;
+                                            __items.push_back(r);
+                                          }
+                                          return __items;
+                                        })()
+                                            .size())});
+  }
+  return __items;
+})();
+
+int main() {
   {
     std::cout << std::boolalpha << std::string("--- Group Left Join ---");
     std::cout << std::endl;

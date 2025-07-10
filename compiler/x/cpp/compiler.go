@@ -23,6 +23,7 @@ type Compiler struct {
 	header bytes.Buffer
 	buf    bytes.Buffer
 	indent int
+	scope  int
 	tmp    int
 	vars   map[string]string
 
@@ -51,6 +52,7 @@ func New() *Compiler {
 		funParams:    map[string]int{},
 		groups:       map[string]struct{}{},
 		usesJSON:     false,
+		scope:        0,
 	}
 }
 
@@ -113,7 +115,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 			encounteredFun = true
 			continue
 		}
-		if !encounteredFun && (st.Let != nil || st.Var != nil) {
+		if !encounteredFun && (st.Let != nil || st.Var != nil || st.Type != nil) {
 			globals = append(globals, st)
 		}
 	}
@@ -141,6 +143,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 
 	c.writeln("int main() {")
 	c.indent++
+	c.scope++
 	for _, st := range p.Statements {
 		if st.Fun != nil {
 			continue
@@ -154,6 +157,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	}
 	c.writeln("return 0;")
 	c.indent--
+	c.scope--
 	c.writeln("}")
 
 	if c.usesJSON {
@@ -233,12 +237,14 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	}
 	c.buf.WriteString(") {\n")
 	c.indent++
+	c.scope++
 	for _, st := range fn.Body {
 		if err := c.compileStmt(st); err != nil {
 			return err
 		}
 	}
 	c.indent--
+	c.scope--
 	c.writeln("}")
 	return nil
 }
@@ -1578,16 +1584,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 	}
-	for k, v := range backup {
-		if v == "" {
-			delete(c.varStruct, k)
-		} else {
-			c.varStruct[k] = v
-		}
-	}
 
 	var buf strings.Builder
-	buf.WriteString("([&]() {\n")
+	cap := "[&]"
+	if c.scope == 0 {
+		cap = "[]"
+	}
+	buf.WriteString("(" + cap + "() {\n")
 	indent := func(n int) {
 		for i := 0; i < n; i++ {
 			buf.WriteString("    ")
@@ -1700,10 +1703,18 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		buf.WriteString("    return __items;\n")
 	}
 	buf.WriteString("})()")
+	c.scope--
 	res := buf.String()
 	if strings.HasPrefix(itemType, "__struct") {
 		c.varStruct[res] = itemType
 		c.elemType[res] = itemType
+	}
+	for k, v := range backup {
+		if v == "" {
+			delete(c.varStruct, k)
+		} else {
+			c.varStruct[k] = v
+		}
 	}
 	return res, nil
 }
@@ -1857,9 +1868,19 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 	if !selectIsGroup {
 		c.aliases[q.Group.Name] = q.Group.Name + ".items"
 	}
+
+	var buf strings.Builder
+	cap := "[&]"
+	if c.scope == 0 {
+		cap = "[]"
+	}
+	buf.WriteString("(" + cap + "() {\n")
+	c.scope++
+
 	valExpr, err := c.compileExpr(q.Select)
 	if err != nil {
 		c.aliases = oldAliases
+		c.scope--
 		return "", err
 	}
 	itemTypeExpr := valExpr
@@ -1927,27 +1948,12 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 		takeExpr, err = c.compileExpr(q.Take)
 		if err != nil {
 			c.aliases = oldAliases
+			c.scope--
 			return "", err
 		}
 	}
 	c.aliases = oldAliases
-	for k, v := range backup {
-		if v == "" {
-			delete(c.varStruct, k)
-		} else {
-			c.varStruct[k] = v
-		}
-	}
-	for k, v := range backupElem {
-		if v == "" {
-			delete(c.elemType, k)
-		} else {
-			c.elemType[k] = v
-		}
-	}
 
-	var buf strings.Builder
-	buf.WriteString("([&]() {\n")
 	indent := func(n int) {
 		for i := 0; i < n; i++ {
 			buf.WriteString("    ")
@@ -2084,10 +2090,25 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 		buf.WriteString("    return __items;\n")
 	}
 	buf.WriteString("})()")
+	c.scope--
 	res := buf.String()
 	if strings.HasPrefix(itemType, "__struct") {
 		c.varStruct[res] = itemType
 		c.elemType[res] = itemType
+	}
+	for k, v := range backup {
+		if v == "" {
+			delete(c.varStruct, k)
+		} else {
+			c.varStruct[k] = v
+		}
+	}
+	for k, v := range backupElem {
+		if v == "" {
+			delete(c.elemType, k)
+		} else {
+			c.elemType[k] = v
+		}
 	}
 	return res, nil
 }
@@ -2286,7 +2307,7 @@ func (c *Compiler) compileLambda(params []*parser.Param, exprBody *parser.Expr, 
 	}
 	buf.WriteString(") {")
 
-	sub := &Compiler{indent: 1, tmp: c.tmp, vars: map[string]string{}, aliases: map[string]string{}}
+	sub := &Compiler{indent: 1, tmp: c.tmp, vars: map[string]string{}, aliases: map[string]string{}, scope: c.scope + 1}
 	for _, p := range params {
 		if p.Type != nil {
 			typ, _ := c.compileType(p.Type)

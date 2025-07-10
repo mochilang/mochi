@@ -1,5 +1,37 @@
 #include <iostream>
 
+auto x = 2;
+auto label = ([&]() {
+  auto __v = x;
+  if (__v == 1)
+    return std::string("one");
+  else if (__v == 2)
+    return std::string("two");
+  else if (__v == 3)
+    return std::string("three");
+  return std::string("unknown");
+})();
+auto day = std::string("sun");
+auto mood = ([&]() {
+  auto __v = day;
+  if (__v == std::string("mon"))
+    return std::string("tired");
+  else if (__v == std::string("fri"))
+    return std::string("excited");
+  else if (__v == std::string("sun"))
+    return std::string("relaxed");
+  return std::string("normal");
+})();
+auto ok = true;
+auto status = ([&]() {
+  auto __v = ok;
+  if (__v == true)
+    return std::string("confirmed");
+  else if (__v == false)
+    return std::string("denied");
+  return decltype(std::string("confirmed")){};
+})();
+
 auto classify(auto n) {
   return ([&]() {
     auto __v = n;
@@ -12,45 +44,14 @@ auto classify(auto n) {
 }
 
 int main() {
-  auto x = 2;
-  auto label = ([&]() {
-    auto __v = x;
-    if (__v == 1)
-      return std::string("one");
-    else if (__v == 2)
-      return std::string("two");
-    else if (__v == 3)
-      return std::string("three");
-    return std::string("unknown");
-  })();
   {
     std::cout << std::boolalpha << label;
     std::cout << std::endl;
   }
-  auto day = std::string("sun");
-  auto mood = ([&]() {
-    auto __v = day;
-    if (__v == std::string("mon"))
-      return std::string("tired");
-    else if (__v == std::string("fri"))
-      return std::string("excited");
-    else if (__v == std::string("sun"))
-      return std::string("relaxed");
-    return std::string("normal");
-  })();
   {
     std::cout << std::boolalpha << mood;
     std::cout << std::endl;
   }
-  auto ok = true;
-  auto status = ([&]() {
-    auto __v = ok;
-    if (__v == true)
-      return std::string("confirmed");
-    else if (__v == false)
-      return std::string("denied");
-    return decltype(std::string("confirmed")){};
-  })();
   {
     std::cout << std::boolalpha << status;
     std::cout << std::endl;

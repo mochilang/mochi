@@ -1,7 +1,8 @@
 #include <iostream>
 
+auto s = std::string("catch");
+
 int main() {
-  auto s = std::string("catch");
   {
     std::cout << std::boolalpha
               << (s.find(std::string("cat")) != std::string::npos);

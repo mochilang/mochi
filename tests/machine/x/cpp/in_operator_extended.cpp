@@ -5,17 +5,20 @@
 struct __struct1 {
   decltype(1) a;
 };
+std::vector<int> xs = std::vector<decltype(1)>{1, 2, 3};
+auto ys = ([]() {
+  std::vector<int> __items;
+  for (auto x : xs) {
+    if (!(((x % 2) == 1)))
+      continue;
+    __items.push_back(x);
+  }
+  return __items;
+})();
+auto m = __struct1{1};
+auto s = std::string("hello");
+
 int main() {
-  std::vector<int> xs = std::vector<decltype(1)>{1, 2, 3};
-  auto ys = ([&]() {
-    std::vector<int> __items;
-    for (auto x : xs) {
-      if (!(((x % 2) == 1)))
-        continue;
-      __items.push_back(x);
-    }
-    return __items;
-  })();
   {
     std::cout << std::boolalpha
               << (std::find(ys.begin(), ys.end(), 1) != ys.end());
@@ -26,7 +29,6 @@ int main() {
               << (std::find(ys.begin(), ys.end(), 2) != ys.end());
     std::cout << std::endl;
   }
-  auto m = __struct1{1};
   {
     std::cout << std::boolalpha
               << (std::find(m.begin(), m.end(), std::string("a")) != m.end());
@@ -37,7 +39,6 @@ int main() {
               << (std::find(m.begin(), m.end(), std::string("b")) != m.end());
     std::cout << std::endl;
   }
-  auto s = std::string("hello");
   {
     std::cout << std::boolalpha
               << (s.find(std::string("ell")) != std::string::npos);
