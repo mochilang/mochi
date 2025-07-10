@@ -23,4 +23,4 @@ let matrix : int list list ref = ref [[1;2];[3;4]]
 
 let () =
   matrix := list_set !matrix 1 (list_set (List.nth !matrix 1) 0 5);
-  print_endline (__show (List.nth List.nth (!matrix) 1 0));
+  print_endline (__show (List.nth (List.nth ((!matrix)) 1) 0));

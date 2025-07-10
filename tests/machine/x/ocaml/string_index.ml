@@ -19,4 +19,4 @@ let rec __show v =
 let s = "mochi"
 
 let () =
-  print_endline (__show (List.nth s 1));
+  print_endline (__show (String.make 1 (String.get s 1)));

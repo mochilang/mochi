@@ -529,7 +529,7 @@ func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
 	if err != nil {
 		return err
 	}
-	c.writeln(fmt.Sprintf("assert (%s)", expr))
+	c.writeln(fmt.Sprintf("assert (%s);", expr))
 	return nil
 }
 
@@ -1248,6 +1248,9 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		case "in":
 			if c.isMapPostfix(op.Right) {
 				res = fmt.Sprintf("(List.mem_assoc %s %s)", res, r)
+			} else if isStringExprExpr(op.Right) || c.isStringType(op.Right) {
+				c.needContains = true
+				res = fmt.Sprintf("(string_contains %s %s)", r, res)
 			} else {
 				res = fmt.Sprintf("(List.mem %s %s)", res, r)
 			}
@@ -1266,7 +1269,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			res = fmt.Sprintf("(list_intersect %s %s)", res, r)
 			continue
 		}
-		if opStr == "+" && isStringUnary(b.Left) && isStringExprExpr(op.Right) {
+		if opStr == "+" && c.isStringUnary(b.Left) && isStringExprExpr(op.Right) {
 			res = fmt.Sprintf("(%s ^ %s)", res, r)
 		} else {
 			res = fmt.Sprintf("(%s %s %s)", res, opStr, r)
@@ -1330,16 +1333,16 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 						return "", err
 					}
 				} else {
-					if isStringPrimary(p.Target) {
-						end = fmt.Sprintf("String.length %s", val)
+					if c.isStringPrimary(p.Target) {
+						end = fmt.Sprintf("(String.length %s)", val)
 					} else {
-						end = fmt.Sprintf("List.length %s", val)
+						end = fmt.Sprintf("(List.length %s)", val)
 					}
 				}
-				if isStringPrimary(p.Target) {
-					val = fmt.Sprintf("string_slice %s %s %s", val, start, end)
+				if c.isStringPrimary(p.Target) {
+					val = fmt.Sprintf("string_slice %s %s (%s)", val, start, end)
 				} else {
-					val = fmt.Sprintf("slice %s %s %s", val, start, end)
+					val = fmt.Sprintf("slice %s %s (%s)", val, start, end)
 				}
 			} else {
 				if op.Index.Start == nil {
@@ -1349,12 +1352,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				if isStringPrimary(p.Target) {
+				if c.isStringPrimary(p.Target) {
 					val = fmt.Sprintf("String.make 1 (String.get %s %s)", val, idx)
 				} else if c.isMapPrimary(p.Target) || isStringExpr(op.Index.Start) {
 					val = fmt.Sprintf("Obj.obj (List.assoc %s %s)", idx, val)
 				} else {
-					val = fmt.Sprintf("List.nth %s %s", val, idx)
+					val = fmt.Sprintf("List.nth (%s) %s", val, idx)
 				}
 			}
 		case op.Cast != nil:
@@ -1561,7 +1564,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("len expects 1 arg")
 		}
-		if isStringLiteralExpr(call.Args[0]) {
+		if isStringLiteralExpr(call.Args[0]) || isStringExpr(call.Args[0]) || c.isStringType(call.Args[0].Binary.Left.Value) {
 			return fmt.Sprintf("String.length %s", args[0]), nil
 		}
 		return fmt.Sprintf("List.length %s", args[0]), nil
@@ -1919,7 +1922,7 @@ func isStringExprExpr(p *parser.PostfixExpr) bool {
 	return false
 }
 
-func isStringPrimary(p *parser.Primary) bool {
+func (c *Compiler) isStringPrimary(p *parser.Primary) bool {
 	if p == nil {
 		return false
 	}
@@ -1928,6 +1931,13 @@ func isStringPrimary(p *parser.Primary) bool {
 	}
 	if p.Call != nil && p.Call.Func == "str" {
 		return true
+	}
+	if p.Selector != nil && len(p.Selector.Tail) == 0 {
+		if typ, err := c.env.GetVar(p.Selector.Root); err == nil {
+			if _, ok := typ.(types.StringType); ok {
+				return true
+			}
+		}
 	}
 	return false
 }
@@ -1966,7 +1976,7 @@ func (c *Compiler) isMapPostfix(p *parser.PostfixExpr) bool {
 	return false
 }
 
-func isStringUnary(u *parser.Unary) bool {
+func (c *Compiler) isStringUnary(u *parser.Unary) bool {
 	if u == nil || len(u.Ops) > 0 || u.Value == nil {
 		return false
 	}
@@ -1974,13 +1984,16 @@ func isStringUnary(u *parser.Unary) bool {
 	if p == nil {
 		return false
 	}
-	if p.Lit != nil && p.Lit.Str != nil {
-		return true
+	return c.isStringPrimary(p)
+}
+
+func (c *Compiler) isStringType(p *parser.PostfixExpr) bool {
+	if p == nil {
+		return false
 	}
-	if p.Call != nil && p.Call.Func == "str" {
-		return true
-	}
-	return false
+	t := types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: p}}}, c.env)
+	_, ok := t.(types.StringType)
+	return ok
 }
 
 func stringConst(e *parser.Expr) (string, bool) {
@@ -2382,7 +2395,7 @@ func (c *Compiler) scanPostfix(p *parser.PostfixExpr) {
 				c.scanExpr(op.Index.End)
 			}
 			if op.Index.Colon != nil {
-				if isStringPrimary(p.Target) {
+				if c.isStringPrimary(p.Target) {
 					c.needStringSlice = true
 				} else {
 					c.needSlice = true
