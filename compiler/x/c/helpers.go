@@ -208,6 +208,19 @@ func listElemType(e *parser.Expr, env *types.Env) types.Type {
 	if env == nil || e == nil {
 		return nil
 	}
+	// Handle group.items selectors which the type checker reports as `any`.
+	if e.Binary != nil && len(e.Binary.Right) == 0 {
+		u := e.Binary.Left
+		if u != nil && u.Value != nil && u.Value.Target != nil {
+			if sel := u.Value.Target.Selector; sel != nil && len(sel.Tail) == 1 && sel.Tail[0] == "items" {
+				if t, err := env.GetVar(sel.Root); err == nil {
+					if gt, ok := t.(types.GroupType); ok {
+						return gt.Elem
+					}
+				}
+			}
+		}
+	}
 	// First try the stricter checker to avoid falling back to `any`.
 	if lt, ok := types.CheckExprType(e, env).(types.ListType); ok && !types.ContainsAny(lt.Elem) {
 		return lt.Elem
