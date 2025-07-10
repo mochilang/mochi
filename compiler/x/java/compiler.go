@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 
 	"mochi/parser"
@@ -26,7 +27,15 @@ type Compiler struct {
 	variantOf         map[string]string
 	variantFields     map[string][]string
 	variantFieldTypes map[string][]string
+	dataClasses       map[string]*dataClass
+	dataClassOrder    []string
 	srcDir            string
+}
+
+type dataClass struct {
+	name   string
+	fields []string
+	types  []string
 }
 
 type funSig struct {
@@ -47,6 +56,8 @@ func New() *Compiler {
 		variantOf:         make(map[string]string),
 		variantFields:     make(map[string][]string),
 		variantFieldTypes: make(map[string][]string),
+		dataClasses:       make(map[string]*dataClass),
+		dataClassOrder:    []string{},
 	}
 }
 
@@ -121,6 +132,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		if err := c.compileTypeDecl(tdecl); err != nil {
 			return nil, err
 		}
+	}
+	// inferred data classes
+	for _, key := range c.dataClassOrder {
+		c.compileDataClass(c.dataClasses[key])
 	}
 	c.writeln("public class Main {")
 	c.indent++
@@ -570,6 +585,9 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 		return fmt.Sprintf("List<%s>", et)
 	}
 	if m := isMapLiteral(e); m != nil {
+		if name := c.dataClassFor(m); name != "" {
+			return name
+		}
 		kt, vt := "Object", "Object"
 		for i, it := range m.Items {
 			k := c.inferType(it.Key)
@@ -904,6 +922,57 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	return nil
 }
 
+func (c *Compiler) dataClassFor(m *parser.MapLiteral) string {
+	var keys []string
+	for _, it := range m.Items {
+		s, ok := simpleStringKey(it.Key)
+		if !ok {
+			return ""
+		}
+		keys = append(keys, s)
+	}
+	sort.Strings(keys)
+	shape := strings.Join(keys, ";")
+	if dc, ok := c.dataClasses[shape]; ok {
+		return dc.name
+	}
+	name := fmt.Sprintf("DataClass%d", len(c.dataClasses)+1)
+	var fields []string
+	var types []string
+	for _, it := range m.Items {
+		s, _ := simpleStringKey(it.Key)
+		fields = append(fields, s)
+		typ := c.inferType(it.Value)
+		if typ == "var" {
+			typ = c.litType(it.Value)
+		}
+		types = append(types, typ)
+	}
+	c.dataClasses[shape] = &dataClass{name: name, fields: fields, types: types}
+	c.dataClassOrder = append(c.dataClassOrder, shape)
+	return name
+}
+
+func (c *Compiler) compileDataClass(dc *dataClass) {
+	c.writeln(fmt.Sprintf("static class %s {", dc.name))
+	c.indent++
+	var params []string
+	for i, f := range dc.fields {
+		typ := dc.types[i]
+		c.writeln(fmt.Sprintf("%s %s;", typ, f))
+		params = append(params, fmt.Sprintf("%s %s", typ, f))
+	}
+	c.writeln(fmt.Sprintf("%s(%s) {", dc.name, strings.Join(params, ", ")))
+	c.indent++
+	for _, f := range dc.fields {
+		c.writeln(fmt.Sprintf("this.%s = %s;", f, f))
+	}
+	c.indent--
+	c.writeln("}")
+	c.indent--
+	c.writeln("}")
+}
+
 func (c *Compiler) compileList(l *parser.ListLiteral) (string, error) {
 	var elems []string
 	for _, e := range l.Elems {
@@ -917,6 +986,17 @@ func (c *Compiler) compileList(l *parser.ListLiteral) (string, error) {
 }
 
 func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
+	if name := c.dataClassFor(m); name != "" {
+		var args []string
+		for _, it := range m.Items {
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", err
+			}
+			args = append(args, v)
+		}
+		return fmt.Sprintf("new %s(%s)", name, strings.Join(args, ", ")), nil
+	}
 	c.helpers["map_of_entries"] = true
 	var entries []string
 	for _, it := range m.Items {
@@ -1071,7 +1151,7 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 		typ = c.inferType(v.Value)
 		if isListLiteral(v.Value) != nil {
 			expr = fmt.Sprintf("new ArrayList<>(%s)", expr)
-		} else if isMapLiteral(v.Value) != nil && !isMapLitCastToStructExpr(v.Value) {
+		} else if ml := isMapLiteral(v.Value); ml != nil && c.dataClassFor(ml) == "" && !isMapLitCastToStructExpr(v.Value) {
 			expr = fmt.Sprintf("new HashMap<>(%s)", expr)
 		}
 		if isQueryExpr(v.Value) && typ != "int" {
@@ -1099,7 +1179,7 @@ func (c *Compiler) compileLet(v *parser.LetStmt) error {
 		typ = c.inferType(v.Value)
 		if isListLiteral(v.Value) != nil {
 			expr = fmt.Sprintf("new ArrayList<>(%s)", expr)
-		} else if isMapLiteral(v.Value) != nil && !isMapLitCastToStructExpr(v.Value) {
+		} else if ml := isMapLiteral(v.Value); ml != nil && c.dataClassFor(ml) == "" && !isMapLitCastToStructExpr(v.Value) {
 			expr = fmt.Sprintf("new HashMap<>(%s)", expr)
 		}
 		if isQueryExpr(v.Value) {
