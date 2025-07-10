@@ -1,0 +1,48 @@
+line 30:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/outer_join.kt:30:41: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out String, String>.get(key: String): String? defined in kotlin.collections
+                println(listOf("Order", (row as MutableMap<*, *>)["order"]["id"], "by", (row as MutableMap<*, *>)["customer"]["name"], "- $", (row as MutableMap<*, *>)["order"]["total"]).joinToString(" "))
+                                        ^
+/workspace/mochi/tests/machine/x/kotlin/outer_join.kt:30:75: error: no get method providing array access
+                println(listOf("Order", (row as MutableMap<*, *>)["order"]["id"], "by", (row as MutableMap<*, *>)["customer"]["name"], "- $", (row as MutableMap<*, *>)["order"]["total"]).joinToString(" "))
+                                                                          ^
+/workspace/mochi/tests/machine/x/kotlin/outer_join.kt:30:89: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out String, String>.get(key: String): String? defined in kotlin.collections
+                println(listOf("Order", (row as MutableMap<*, *>)["order"]["id"], "by", (row as MutableMap<*, *>)["customer"]["name"], "- $", (row as MutableMap<*, *>)["order"]["total"]).joinToString(" "))
+                                                                                        ^
+/workspace/mochi/tests/machine/x/kotlin/outer_join.kt:30:126: error: no get method providing array access
+                println(listOf("Order", (row as MutableMap<*, *>)["order"]["id"], "by", (row as MutableMap<*, *>)["customer"]["name"], "- $", (row as MutableMap<*, *>)["order"]["total"]).joinToString(" "))
+                                                                                                                             ^
+/workspace/mochi/tests/machine/x/kotlin/outer_join.kt:30:143: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out String, String>.get(key: String): String? defined in kotlin.collections
+                println(listOf("Order", (row as MutableMap<*, *>)["order"]["id"], "by", (row as MutableMap<*, *>)["customer"]["name"], "- $", (row as MutableMap<*, *>)["order"]["total"]).joinToString(" "))
+                                                                                                                                              ^
+/workspace/mochi/tests/machine/x/kotlin/outer_join.kt:30:177: error: no get method providing array access
+                println(listOf("Order", (row as MutableMap<*, *>)["order"]["id"], "by", (row as MutableMap<*, *>)["customer"]["name"], "- $", (row as MutableMap<*, *>)["order"]["total"]).joinToString(" "))
+                                                                                                                                                                                ^
+/workspace/mochi/tests/machine/x/kotlin/outer_join.kt:33:41: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out String, String>.get(key: String): String? defined in kotlin.collections
+                println(listOf("Order", (row as MutableMap<*, *>)["order"]["id"], "by", "Unknown", "- $", (row as MutableMap<*, *>)["order"]["total"]).joinToString(" "))
+                                        ^
+/workspace/mochi/tests/machine/x/kotlin/outer_join.kt:33:75: error: no get method providing array access
+                println(listOf("Order", (row as MutableMap<*, *>)["order"]["id"], "by", "Unknown", "- $", (row as MutableMap<*, *>)["order"]["total"]).joinToString(" "))
+                                                                          ^
+/workspace/mochi/tests/machine/x/kotlin/outer_join.kt:33:107: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out String, String>.get(key: String): String? defined in kotlin.collections
+                println(listOf("Order", (row as MutableMap<*, *>)["order"]["id"], "by", "Unknown", "- $", (row as MutableMap<*, *>)["order"]["total"]).joinToString(" "))
+                                                                                                          ^
+/workspace/mochi/tests/machine/x/kotlin/outer_join.kt:33:141: error: no get method providing array access
+                println(listOf("Order", (row as MutableMap<*, *>)["order"]["id"], "by", "Unknown", "- $", (row as MutableMap<*, *>)["order"]["total"]).joinToString(" "))
+                                                                                                                                            ^
+/workspace/mochi/tests/machine/x/kotlin/outer_join.kt:37:40: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out String, String>.get(key: String): String? defined in kotlin.collections
+            println(listOf("Customer", (row as MutableMap<*, *>)["customer"]["name"], "has no orders").joinToString(" "))
+                                       ^
+/workspace/mochi/tests/machine/x/kotlin/outer_join.kt:37:77: error: no get method providing array access
+            println(listOf("Customer", (row as MutableMap<*, *>)["customer"]["name"], "has no orders").joinToString(" "))
+                                                                            ^
+
+ 29:             if (toBool((row as MutableMap<*, *>)["customer"])) {
+ 30:                 println(listOf("Order", (row as MutableMap<*, *>)["order"]["id"], "by", (row as MutableMap<*, *>)["customer"]["name"], "- $", (row as MutableMap<*, *>)["order"]["total"]).joinToString(" "))
+ 31:             }

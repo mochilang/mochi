@@ -1,4 +1,4 @@
-data class Counter(var n: Int)
+data class Counter(val n: Int)
 
 var c = Counter(n = 0)
 

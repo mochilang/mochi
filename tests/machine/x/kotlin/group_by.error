@@ -1,0 +1,9 @@
+line 4:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/group_by.kt:4:26: error: unresolved reference: toDouble
+    for (n in list) s += toDouble(n)
+                         ^
+
+  3:     var s = 0.0
+  4:     for (n in list) s += toDouble(n)
+  5:     return s / list.size

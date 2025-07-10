@@ -1,0 +1,12 @@
+line 3:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/if_then_else_nested.kt:3:15: error: unresolved reference: toBool
+val msg = if (toBool(x > 10)) "big" else if (toBool(x > 5)) "medium" else "small"
+              ^
+/workspace/mochi/tests/machine/x/kotlin/if_then_else_nested.kt:3:46: error: unresolved reference: toBool
+val msg = if (toBool(x > 10)) "big" else if (toBool(x > 5)) "medium" else "small"
+                                             ^
+
+  2: 
+  3: val msg = if (toBool(x > 10)) "big" else if (toBool(x > 5)) "medium" else "small"
+  4: 

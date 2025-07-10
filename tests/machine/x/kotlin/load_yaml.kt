@@ -56,7 +56,7 @@ fun parseSimpleValue(s: String): Any? {
         else -> t
     }
 }
-data class Person(var name: String, var age: Int, var email: String)
+data class Person(val name: String, val age: Int, val email: String)
 
 val people = _load("../interpreter/valid/people.yaml", mutableMapOf("format" to "yaml")).map { Person(name = it["name"] as String, age = it["age"] as Int, email = it["email"] as String) }.toMutableList()
 

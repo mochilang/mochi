@@ -591,7 +591,7 @@ func (c *Compiler) typeDecl(t *parser.TypeDecl) error {
 	fields := make([]string, 0, len(t.Members))
 	for _, m := range t.Members {
 		if m.Field != nil {
-			fields = append(fields, fmt.Sprintf("var %s: %s", m.Field.Name, c.typeName(m.Field.Type)))
+			fields = append(fields, fmt.Sprintf("val %s: %s", m.Field.Name, c.typeName(m.Field.Type)))
 		}
 	}
 	c.writeln(fmt.Sprintf("data class %s(%s)", t.Name, strings.Join(fields, ", ")))

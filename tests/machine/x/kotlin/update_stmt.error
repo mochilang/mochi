@@ -1,0 +1,24 @@
+line 6:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/update_stmt.kt:6:32: error: unresolved reference: size
+    for (_i0 in 0 until people.size) {
+                               ^
+/workspace/mochi/tests/machine/x/kotlin/update_stmt.kt:7:20: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out Int, ???>.get(key: Int): ??? defined in kotlin.collections
+        var _it0 = people[_i0]
+                   ^
+/workspace/mochi/tests/machine/x/kotlin/update_stmt.kt:7:26: error: no get method providing array access
+        var _it0 = people[_i0]
+                         ^
+/workspace/mochi/tests/machine/x/kotlin/update_stmt.kt:15:9: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <K, V> MutableMap<Int, ???>.set(key: Int, value: ???): Unit defined in kotlin.collections
+@InlineOnly public inline operator fun kotlin.text.StringBuilder /* = java.lang.StringBuilder */.set(index: Int, value: Char): Unit defined in kotlin.text
+        people[_i0] = _it0
+        ^
+/workspace/mochi/tests/machine/x/kotlin/update_stmt.kt:15:15: error: no set method providing array access
+        people[_i0] = _it0
+              ^
+
+  5: fun main() {
+  6:     for (_i0 in 0 until people.size) {
+  7:         var _it0 = people[_i0]

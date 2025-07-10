@@ -1,4 +1,4 @@
-data class Person(var name: String, var age: Int, var status: String)
+data class Person(val name: String, val age: Int, val status: String)
 
 val people: Any = mutableListOf(Person(name = "Alice", age = 17, status = "minor"), Person(name = "Bob", age = 25, status = "unknown"), Person(name = "Charlie", age = 18, status = "unknown"), Person(name = "Diana", age = 16, status = "minor"))
 

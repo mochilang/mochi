@@ -1,6 +1,6 @@
 line 3:
 OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
-/workspace/mochi/tests/machine/x/kotlin/group_by_sort.kt:3:26: error: unresolved reference: toInt
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join.kt:3:26: error: unresolved reference: toInt
     for (n in list) s += toInt(n)
                          ^
 

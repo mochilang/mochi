@@ -1,0 +1,10 @@
+line 23:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/dataset_where_filter.kt:23:189: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+public fun String.compareTo(other: String, ignoreCase: Boolean = ...): Int defined in kotlin.text
+            __res.add((mutableMapOf("name" to (person as MutableMap<*, *>)["name"], "age" to (person as MutableMap<*, *>)["age"], "is_senior" to toInt((person as MutableMap<*, *>)["age"]) >= 60) as MutableMap<Any?, Any?>))
+                                                                                                                                                                                            ^
+
+ 22:         if (toBool(toInt((person as MutableMap<*, *>)["age"]) >= 18)) {
+ 23:             __res.add((mutableMapOf("name" to (person as MutableMap<*, *>)["name"], "age" to (person as MutableMap<*, *>)["age"], "is_senior" to toInt((person as MutableMap<*, *>)["age"]) >= 60) as MutableMap<Any?, Any?>))
+ 24:         }

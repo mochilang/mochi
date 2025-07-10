@@ -1,0 +1,12 @@
+line 3:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/query_sum_select.kt:3:26: error: unresolved reference: toInt
+    for (n in list) s += toInt(n)
+                         ^
+/workspace/mochi/tests/machine/x/kotlin/query_sum_select.kt:21:27: error: type mismatch: inferred type is Int but List<Any?> was expected
+            __res.add(sum(n))
+                          ^
+
+  2:     var s = 0
+  3:     for (n in list) s += toInt(n)
+  4:     return s

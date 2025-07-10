@@ -22,6 +22,13 @@ import (
 // generated source and runtime output under tests/machine/x/kotlin and returns
 // the runtime output or an error.
 func compileAndRun(t *testing.T, src string) (string, error) {
+	if _, err := exec.LookPath("kotlinc"); err != nil {
+		return "", fmt.Errorf("kotlinc not found: %w", err)
+	}
+	if _, err := exec.LookPath("java"); err != nil {
+		return "", fmt.Errorf("java not found: %w", err)
+	}
+
 	prog, err := parser.Parse(src)
 	if err != nil {
 		return "", fmt.Errorf("parse error: %w", err)
@@ -46,7 +53,8 @@ func compileAndRun(t *testing.T, src string) (string, error) {
 		return "", err
 	}
 
-	jarFile := filepath.Join(outDir, base+".jar")
+	tmpDir := t.TempDir()
+	jarFile := filepath.Join(tmpDir, base+".jar")
 	cmd := exec.Command("kotlinc", srcFile, "-include-runtime", "-d", jarFile)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
@@ -66,6 +74,7 @@ func compileAndRun(t *testing.T, src string) (string, error) {
 	if err := os.WriteFile(outPath, runOut, 0o644); err != nil {
 		return "", err
 	}
+	os.Remove(filepath.Join(outDir, base+".error"))
 	return string(bytes.TrimSpace(runOut)), nil
 }
 

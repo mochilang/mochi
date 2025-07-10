@@ -1,0 +1,12 @@
+line 4:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/min_max_builtin.kt:4:17: error: unresolved reference: toInt
+        val v = toInt(n)
+                ^
+/workspace/mochi/tests/machine/x/kotlin/min_max_builtin.kt:13:17: error: unresolved reference: toInt
+        val v = toInt(n)
+                ^
+
+  3:     for (n in list) {
+  4:         val v = toInt(n)
+  5:         if (v > m) m = v

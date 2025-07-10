@@ -1,0 +1,20 @@
+line 29:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/right_join.kt:29:98: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out String, Any?>.get(key: String): Any? defined in kotlin.collections
+            println(listOf("Customer", (entry as MutableMap<*, *>)["customerName"], "has order", (entry as MutableMap<*, *>)["order"]["id"], "- $", (entry as MutableMap<*, *>)["order"]["total"]).joinToString(" "))
+                                                                                                 ^
+/workspace/mochi/tests/machine/x/kotlin/right_join.kt:29:134: error: no get method providing array access
+            println(listOf("Customer", (entry as MutableMap<*, *>)["customerName"], "has order", (entry as MutableMap<*, *>)["order"]["id"], "- $", (entry as MutableMap<*, *>)["order"]["total"]).joinToString(" "))
+                                                                                                                                     ^
+/workspace/mochi/tests/machine/x/kotlin/right_join.kt:29:149: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out String, Any?>.get(key: String): Any? defined in kotlin.collections
+            println(listOf("Customer", (entry as MutableMap<*, *>)["customerName"], "has order", (entry as MutableMap<*, *>)["order"]["id"], "- $", (entry as MutableMap<*, *>)["order"]["total"]).joinToString(" "))
+                                                                                                                                                    ^
+/workspace/mochi/tests/machine/x/kotlin/right_join.kt:29:185: error: no get method providing array access
+            println(listOf("Customer", (entry as MutableMap<*, *>)["customerName"], "has order", (entry as MutableMap<*, *>)["order"]["id"], "- $", (entry as MutableMap<*, *>)["order"]["total"]).joinToString(" "))
+                                                                                                                                                                                        ^
+
+ 28:         if (toBool((entry as MutableMap<*, *>)["order"])) {
+ 29:             println(listOf("Customer", (entry as MutableMap<*, *>)["customerName"], "has order", (entry as MutableMap<*, *>)["order"]["id"], "- $", (entry as MutableMap<*, *>)["order"]["total"]).joinToString(" "))
+ 30:         }

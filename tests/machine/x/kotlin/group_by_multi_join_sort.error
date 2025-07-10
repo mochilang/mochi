@@ -1,48 +1,81 @@
-line 76:
+line 54:
 OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
-/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:76:13: error: unresolved reference: o
-        if (o.o_orderdate >= start_date && o.o_orderdate < end_date && l.l_returnflag == "R") {
-            ^
-/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:76:44: error: unresolved reference: o
-        if (o.o_orderdate >= start_date && o.o_orderdate < end_date && l.l_returnflag == "R") {
-                                           ^
-/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:76:72: error: unresolved reference: l
-        if (o.o_orderdate >= start_date && o.o_orderdate < end_date && l.l_returnflag == "R") {
-                                                                       ^
-/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:77:51: error: unresolved reference: g
-            __res.add(mutableMapOf("c_custkey" to g.key.c_custkey, "c_name" to g.key.c_name, "revenue" to sum(run {
-                                                  ^
-/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:77:80: error: unresolved reference: g
-            __res.add(mutableMapOf("c_custkey" to g.key.c_custkey, "c_name" to g.key.c_name, "revenue" to sum(run {
-                                                                               ^
-/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:77:111: error: type inference failed. Expected type mismatch: inferred type is MutableList<Any> but List<Int> was expected
-            __res.add(mutableMapOf("c_custkey" to g.key.c_custkey, "c_name" to g.key.c_name, "revenue" to sum(run {
-                                                                                                              ^
-/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:79:15: error: unresolved reference: g
-    for (x in g) {
-              ^
-/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:83:20: error: unresolved reference: g
-}), "c_acctbal" to g.key.c_acctbal, "n_name" to g.key.n_name, "c_address" to g.key.c_address, "c_phone" to g.key.c_phone, "c_comment" to g.key.c_comment))
-                   ^
-/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:83:49: error: unresolved reference: g
-}), "c_acctbal" to g.key.c_acctbal, "n_name" to g.key.n_name, "c_address" to g.key.c_address, "c_phone" to g.key.c_phone, "c_comment" to g.key.c_comment))
-                                                ^
-/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:83:78: error: unresolved reference: g
-}), "c_acctbal" to g.key.c_acctbal, "n_name" to g.key.n_name, "c_address" to g.key.c_address, "c_phone" to g.key.c_phone, "c_comment" to g.key.c_comment))
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:54:83: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+public fun String.compareTo(other: String, ignoreCase: Boolean = ...): Int defined in kotlin.text
+                                if (toBool((o as MutableMap<*, *>)["o_orderdate"] >= start_date && (o as MutableMap<*, *>)["o_orderdate"] < end_date && (l as MutableMap<*, *>)["l_returnflag"] == "R")) {
+                                                                                  ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:54:139: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+public fun String.compareTo(other: String, ignoreCase: Boolean = ...): Int defined in kotlin.text
+                                if (toBool((o as MutableMap<*, *>)["o_orderdate"] >= start_date && (o as MutableMap<*, *>)["o_orderdate"] < end_date && (l as MutableMap<*, *>)["l_returnflag"] == "R")) {
+                                                                                                                                          ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:74:54: error: unresolved reference: c_custkey
+        __res.add((mutableMapOf("c_custkey" to g.key.c_custkey, "c_name" to g.key.c_name, "revenue" to sum(run {
+                                                     ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:74:83: error: unresolved reference: c_name
+        __res.add((mutableMapOf("c_custkey" to g.key.c_custkey, "c_name" to g.key.c_name, "revenue" to sum(run {
+                                                                                  ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:77:29: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out String, Any?>.get(key: String): Any? defined in kotlin.collections
+        __res.add((toDouble((x as MutableMap<*, *>)["l"]["l_extendedprice"]) * toDouble((1 - toInt((x as MutableMap<*, *>)["l"]["l_discount"]))) as MutableMap<String, Any?>))
+                            ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:77:57: error: no get method providing array access
+        __res.add((toDouble((x as MutableMap<*, *>)["l"]["l_extendedprice"]) * toDouble((1 - toInt((x as MutableMap<*, *>)["l"]["l_discount"]))) as MutableMap<String, Any?>))
+                                                        ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:77:78: error: none of the following functions can be called with the arguments supplied: 
+public final operator fun times(other: Byte): Double defined in kotlin.Double
+public final operator fun times(other: Double): Double defined in kotlin.Double
+public final operator fun times(other: Float): Double defined in kotlin.Double
+public final operator fun times(other: Int): Double defined in kotlin.Double
+public final operator fun times(other: Long): Double defined in kotlin.Double
+public final operator fun times(other: Short): Double defined in kotlin.Double
+        __res.add((toDouble((x as MutableMap<*, *>)["l"]["l_extendedprice"]) * toDouble((1 - toInt((x as MutableMap<*, *>)["l"]["l_discount"]))) as MutableMap<String, Any?>))
                                                                              ^
-/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:83:108: error: unresolved reference: g
-}), "c_acctbal" to g.key.c_acctbal, "n_name" to g.key.n_name, "c_address" to g.key.c_address, "c_phone" to g.key.c_phone, "c_comment" to g.key.c_comment))
-                                                                                                           ^
-/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:83:138: error: unresolved reference: g
-}), "c_acctbal" to g.key.c_acctbal, "n_name" to g.key.n_name, "c_address" to g.key.c_address, "c_phone" to g.key.c_phone, "c_comment" to g.key.c_comment))
-                                                                                                                                         ^
-/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:87:28: error: type inference failed. Expected type mismatch: inferred type is MutableList<Any> but List<Int> was expected
-}.sortedByDescending { sum(run {
-                           ^
-/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:89:15: error: unresolved reference: g
-    for (x in g) {
-              ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:77:100: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out String, Any?>.get(key: String): Any? defined in kotlin.collections
+        __res.add((toDouble((x as MutableMap<*, *>)["l"]["l_extendedprice"]) * toDouble((1 - toInt((x as MutableMap<*, *>)["l"]["l_discount"]))) as MutableMap<String, Any?>))
+                                                                                                   ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:77:128: error: no get method providing array access
+        __res.add((toDouble((x as MutableMap<*, *>)["l"]["l_extendedprice"]) * toDouble((1 - toInt((x as MutableMap<*, *>)["l"]["l_discount"]))) as MutableMap<String, Any?>))
+                                                                                                                               ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:80:26: error: unresolved reference: c_acctbal
+}), "c_acctbal" to g.key.c_acctbal, "n_name" to g.key.n_name, "c_address" to g.key.c_address, "c_phone" to g.key.c_phone, "c_comment" to g.key.c_comment) as MutableMap<Any?, Any?>))
+                         ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:80:55: error: unresolved reference: n_name
+}), "c_acctbal" to g.key.c_acctbal, "n_name" to g.key.n_name, "c_address" to g.key.c_address, "c_phone" to g.key.c_phone, "c_comment" to g.key.c_comment) as MutableMap<Any?, Any?>))
+                                                      ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:80:84: error: unresolved reference: c_address
+}), "c_acctbal" to g.key.c_acctbal, "n_name" to g.key.n_name, "c_address" to g.key.c_address, "c_phone" to g.key.c_phone, "c_comment" to g.key.c_comment) as MutableMap<Any?, Any?>))
+                                                                                   ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:80:114: error: unresolved reference: c_phone
+}), "c_acctbal" to g.key.c_acctbal, "n_name" to g.key.n_name, "c_address" to g.key.c_address, "c_phone" to g.key.c_phone, "c_comment" to g.key.c_comment) as MutableMap<Any?, Any?>))
+                                                                                                                 ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:80:144: error: unresolved reference: c_comment
+}), "c_acctbal" to g.key.c_acctbal, "n_name" to g.key.n_name, "c_address" to g.key.c_address, "c_phone" to g.key.c_phone, "c_comment" to g.key.c_comment) as MutableMap<Any?, Any?>))
+                                                                                                                                               ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:86:29: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out String, Any?>.get(key: String): Any? defined in kotlin.collections
+        __res.add((toDouble((x as MutableMap<*, *>)["it"]["l_extendedprice"]) * toDouble((1 - toInt((x as MutableMap<*, *>)["it"]["l_discount"]))) as MutableMap<String, Any?>))
+                            ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:86:58: error: no get method providing array access
+        __res.add((toDouble((x as MutableMap<*, *>)["it"]["l_extendedprice"]) * toDouble((1 - toInt((x as MutableMap<*, *>)["it"]["l_discount"]))) as MutableMap<String, Any?>))
+                                                         ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:86:79: error: none of the following functions can be called with the arguments supplied: 
+public final operator fun times(other: Byte): Double defined in kotlin.Double
+public final operator fun times(other: Double): Double defined in kotlin.Double
+public final operator fun times(other: Float): Double defined in kotlin.Double
+public final operator fun times(other: Int): Double defined in kotlin.Double
+public final operator fun times(other: Long): Double defined in kotlin.Double
+public final operator fun times(other: Short): Double defined in kotlin.Double
+        __res.add((toDouble((x as MutableMap<*, *>)["it"]["l_extendedprice"]) * toDouble((1 - toInt((x as MutableMap<*, *>)["it"]["l_discount"]))) as MutableMap<String, Any?>))
+                                                                              ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:86:101: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out String, Any?>.get(key: String): Any? defined in kotlin.collections
+        __res.add((toDouble((x as MutableMap<*, *>)["it"]["l_extendedprice"]) * toDouble((1 - toInt((x as MutableMap<*, *>)["it"]["l_discount"]))) as MutableMap<String, Any?>))
+                                                                                                    ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:86:130: error: no get method providing array access
+        __res.add((toDouble((x as MutableMap<*, *>)["it"]["l_extendedprice"]) * toDouble((1 - toInt((x as MutableMap<*, *>)["it"]["l_discount"]))) as MutableMap<String, Any?>))
+                                                                                                                                 ^
 
- 75:     for (c in customer) {
- 76:         if (o.o_orderdate >= start_date && o.o_orderdate < end_date && l.l_returnflag == "R") {
- 77:             __res.add(mutableMapOf("c_custkey" to g.key.c_custkey, "c_name" to g.key.c_name, "revenue" to sum(run {
+ 53:                             if (toBool((n as MutableMap<*, *>)["n_nationkey"] == (c as MutableMap<*, *>)["c_nationkey"])) {
+ 54:                                 if (toBool((o as MutableMap<*, *>)["o_orderdate"] >= start_date && (o as MutableMap<*, *>)["o_orderdate"] < end_date && (l as MutableMap<*, *>)["l_returnflag"] == "R")) {
+ 55:                                     val __k = mutableMapOf("c_custkey" to (c as MutableMap<*, *>)["c_custkey"], "c_name" to (c as MutableMap<*, *>)["c_name"], "c_acctbal" to (c as MutableMap<*, *>)["c_acctbal"], "c_address" to (c as MutableMap<*, *>)["c_address"], "c_phone" to (c as MutableMap<*, *>)["c_phone"], "c_comment" to (c as MutableMap<*, *>)["c_comment"], "n_name" to (n as MutableMap<*, *>)["n_name"])

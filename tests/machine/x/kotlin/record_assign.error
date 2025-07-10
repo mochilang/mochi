@@ -1,0 +1,9 @@
+line 6:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/record_assign.kt:6:5: error: val cannot be reassigned
+    c.n = c.n + 1
+    ^
+
+  5: fun inc(c: Counter): Unit {
+  6:     c.n = c.n + 1
+  7: }
