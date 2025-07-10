@@ -57,6 +57,11 @@ type Compiler struct {
 	locals            map[string]types.Type
 	funcRet           types.Type
 	captures          map[string]string
+	variantInfo       map[string]struct {
+		Union  string
+		Fields map[string]types.Type
+		Order  []string
+	}
 }
 
 func New(env *types.Env) *Compiler {
@@ -69,6 +74,11 @@ func New(env *types.Env) *Compiler {
 		globalInits:  map[string]string{},
 		locals:       map[string]types.Type{},
 		captures:     map[string]string{},
+		variantInfo: map[string]struct {
+			Union  string
+			Fields map[string]types.Type
+			Order  []string
+		}{},
 	}
 }
 
@@ -181,6 +191,11 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
 		typ := c.zigType(p.Type)
+		if p.Type != nil && p.Type.Simple != nil {
+			if _, ok := c.env.GetUnion(*p.Type.Simple); ok {
+				typ = "*" + typ
+			}
+		}
 		params[i] = fmt.Sprintf("%s: %s", sanitizeName(p.Name), typ)
 	}
 	ret := "void"
@@ -245,14 +260,65 @@ func (c *Compiler) compileTest(tb *parser.TestBlock) error {
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
-	if len(t.Variants) > 0 {
-		return fmt.Errorf("union types not supported")
-	}
 	name := sanitizeName(t.Name)
 	if c.structs[name] {
 		return nil
 	}
 	c.structs[name] = true
+	if len(t.Variants) > 0 {
+		c.writeln(fmt.Sprintf("const %s = union(enum) {", name))
+		c.indent++
+		for _, v := range t.Variants {
+			vname := sanitizeName(v.Name)
+			if len(v.Fields) == 0 {
+				c.writeln(fmt.Sprintf("%s,", vname))
+				if c.env != nil {
+					c.variantInfo[v.Name] = struct {
+						Union  string
+						Fields map[string]types.Type
+						Order  []string
+					}{Union: t.Name, Fields: map[string]types.Type{}, Order: []string{}}
+					c.env.SetStruct(v.Name, types.StructType{Name: v.Name, Fields: map[string]types.Type{}, Order: []string{}})
+				}
+				continue
+			}
+			fields := make([]string, len(v.Fields))
+			flds := make(map[string]types.Type)
+			order := make([]string, len(v.Fields))
+			for i, f := range v.Fields {
+				typ := c.zigType(f.Type)
+				if f.Type != nil && f.Type.Simple != nil && *f.Type.Simple == t.Name {
+					typ = "*" + name
+				}
+				fields[i] = fmt.Sprintf("%s: %s", sanitizeName(f.Name), typ)
+				if c.env != nil {
+					flds[f.Name] = c.resolveTypeRef(f.Type)
+				}
+				order[i] = f.Name
+			}
+			c.writeln(fmt.Sprintf("%s: struct { %s },", vname, strings.Join(fields, ", ")))
+			if c.env != nil {
+				c.variantInfo[v.Name] = struct {
+					Union  string
+					Fields map[string]types.Type
+					Order  []string
+				}{Union: t.Name, Fields: flds, Order: order}
+				c.env.SetStruct(v.Name, types.StructType{Name: v.Name, Fields: flds, Order: order})
+			}
+		}
+		c.indent--
+		c.writeln("};")
+		if c.env != nil {
+			variants := map[string]types.StructType{}
+			for _, v := range t.Variants {
+				if st, ok := c.env.GetStruct(v.Name); ok {
+					variants[v.Name] = st
+				}
+			}
+			c.env.SetUnion(t.Name, types.UnionType{Name: t.Name, Variants: variants})
+		}
+		return nil
+	}
 	c.writeln(fmt.Sprintf("const %s = struct {", name))
 	c.indent++
 	for _, m := range t.Members {
@@ -467,6 +533,14 @@ func (c *Compiler) zigType(t *parser.TypeRef) string {
 		return "bool"
 	case "string":
 		return "[]const u8"
+	}
+	if c.env != nil {
+		if _, ok := c.env.GetStruct(*t.Simple); ok {
+			return sanitizeName(*t.Simple)
+		}
+		if _, ok := c.env.GetUnion(*t.Simple); ok {
+			return sanitizeName(*t.Simple)
+		}
 	}
 	return "i32"
 }
@@ -877,6 +951,74 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	target, err := c.compileExpr(m.Target, false)
 	if err != nil {
 		return "", err
+	}
+	if _, ok := c.inferExprType(m.Target).(types.UnionType); ok {
+		var b strings.Builder
+		b.WriteString("switch (" + target + ".*) {")
+		for _, cs := range m.Cases {
+			if isUnderscoreExpr(cs.Pattern) {
+				res, err := c.compileExpr(cs.Result, false)
+				if err != nil {
+					return "", err
+				}
+				b.WriteString("else => " + res + ", ")
+				continue
+			}
+			if name, args, ok := c.variantPattern(cs.Pattern); ok {
+				info := c.variantInfo[name]
+				var payload string
+				origEnv := c.env
+				origCap := c.captures
+				if len(args) > 0 {
+					payload = c.newTmp()
+					if c.env != nil {
+						child := types.NewEnv(c.env)
+						for i, a := range args {
+							t := info.Fields[info.Order[i]]
+							child.SetVar(a, t, true)
+						}
+						c.env = child
+					}
+					caps := make(map[string]string, len(c.captures)+len(args))
+					for k, v := range c.captures {
+						caps[k] = v
+					}
+					for i, a := range args {
+						caps[sanitizeName(a)] = payload + "." + sanitizeName(info.Order[i])
+					}
+					c.captures = caps
+				}
+				res, err := c.compileExpr(cs.Result, false)
+				if len(args) > 0 {
+					if origEnv != nil {
+						c.env = origEnv
+					}
+					c.captures = origCap
+				}
+				if err != nil {
+					return "", err
+				}
+				if len(args) > 0 {
+					b.WriteString(fmt.Sprintf(".%s => |%s| %s, ", sanitizeName(name), payload, res))
+				} else {
+					b.WriteString(fmt.Sprintf(".%s => %s, ", sanitizeName(name), res))
+				}
+				continue
+			}
+			// fallback to equality
+			pat, err := c.compileExpr(cs.Pattern, false)
+			if err != nil {
+				return "", err
+			}
+			res, err := c.compileExpr(cs.Result, false)
+			if err != nil {
+				return "", err
+			}
+			c.needsEqual = true
+			b.WriteString(fmt.Sprintf("else => if (_equal(%s, %s)) %s else ", target, pat, res))
+		}
+		b.WriteString("}")
+		return b.String(), nil
 	}
 	expr := "0"
 	for i := len(m.Cases) - 1; i >= 0; i-- {
@@ -1960,6 +2102,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary, asReturn bool) (string, err
 		if alias, ok := c.captures[name]; ok {
 			name = alias
 		}
+		if len(p.Selector.Tail) == 0 {
+			if info, ok := c.variantInfo[p.Selector.Root]; ok {
+				if len(info.Fields) == 0 {
+					return fmt.Sprintf("%s{ .%s = {} }", sanitizeName(info.Union), sanitizeName(p.Selector.Root)), nil
+				}
+			}
+		}
 		if len(p.Selector.Tail) > 0 {
 			name += "." + strings.Join(p.Selector.Tail, ".")
 		} else if c.env != nil {
@@ -2273,6 +2422,15 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		args[i] = v
 	}
+	if fn, ok := c.env.GetFunc(call.Func); ok {
+		for i, p := range fn.Params {
+			if p.Type != nil && p.Type.Simple != nil {
+				if _, ok := c.env.GetUnion(*p.Type.Simple); ok {
+					args[i] = "&" + args[i]
+				}
+			}
+		}
+	}
 	return fmt.Sprintf("%s(%s)", name, strings.Join(args, ", ")), nil
 }
 
@@ -2408,6 +2566,22 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral, forceMap bool) (strin
 }
 
 func (c *Compiler) compileStructLiteral(s *parser.StructLiteral) (string, error) {
+	if info, ok := c.variantInfo[s.Name]; ok {
+		fields := make([]string, len(s.Fields))
+		for i, f := range s.Fields {
+			v, err := c.compileExpr(f.Value, false)
+			if err != nil {
+				return "", err
+			}
+			if ft, ok2 := info.Fields[f.Name]; ok2 {
+				if ut, ok3 := ft.(types.UnionType); ok3 && ut.Name == info.Union {
+					v = "&" + v
+				}
+			}
+			fields[i] = fmt.Sprintf(".%s = %s", sanitizeName(f.Name), v)
+		}
+		return fmt.Sprintf("%s{ .%s = .{ %s } }", sanitizeName(info.Union), sanitizeName(s.Name), strings.Join(fields, ", ")), nil
+	}
 	fields := make([]string, len(s.Fields))
 	for i, f := range s.Fields {
 		v, err := c.compileExpr(f.Value, false)
