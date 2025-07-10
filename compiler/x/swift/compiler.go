@@ -1639,6 +1639,253 @@ func (c *compiler) groupQuery(q *parser.QueryExpr) (string, error) {
 	return b.String(), nil
 }
 
+// groupJoinQuery handles queries that contain both join and group by clauses.
+// It supports inner joins and a single left join without additional FROM
+// clauses. The generated Swift code mirrors the reference translations used in
+// the tests by building the join result and grouping it in one pass.
+func (c *compiler) groupJoinQuery(q *parser.QueryExpr) (string, error) {
+	if len(q.Group.Exprs) != 1 {
+		return "", fmt.Errorf("unsupported query")
+	}
+	src, err := c.expr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	fromSrcs := make([]string, len(q.Froms))
+	for i, f := range q.Froms {
+		fs, err := c.expr(f.Src)
+		if err != nil {
+			return "", err
+		}
+		fromSrcs[i] = fs
+	}
+	joinSrcs := make([]string, len(q.Joins))
+	joinSides := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		js, err := c.expr(j.Src)
+		if err != nil {
+			return "", err
+		}
+		joinSrcs[i] = js
+		if j.Side != nil {
+			joinSides[i] = *j.Side
+		}
+	}
+	joinOns := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		on, err := c.expr(j.On)
+		if err != nil {
+			return "", err
+		}
+		joinOns[i] = on
+	}
+
+	savedVars := c.varTypes
+	savedFields := c.mapFields
+	c.varTypes = copyMap(c.varTypes)
+	c.mapFields = copyMap(c.mapFields)
+	c.varTypes[q.Var] = c.elementType(q.Source)
+	if fields := c.elementFieldTypes(q.Source); fields != nil {
+		c.mapFields[q.Var] = fields
+	}
+	for i, f := range q.Froms {
+		c.varTypes[f.Var] = c.elementType(f.Src)
+		if fields := c.elementFieldTypes(f.Src); fields != nil {
+			c.mapFields[f.Var] = fields
+		}
+		_ = fromSrcs[i]
+	}
+	for i, j := range q.Joins {
+		c.varTypes[j.Var] = c.elementType(j.Src)
+		if fields := c.elementFieldTypes(j.Src); fields != nil {
+			c.mapFields[j.Var] = fields
+		}
+		_ = joinSrcs[i]
+	}
+
+	cond := ""
+	if q.Where != nil {
+		ccond, err := c.expr(q.Where)
+		if err != nil {
+			c.varTypes = savedVars
+			c.mapFields = savedFields
+			return "", err
+		}
+		cond = ccond
+	}
+
+	keyExpr, err := c.expr(q.Group.Exprs[0])
+	if err != nil {
+		c.varTypes = savedVars
+		c.mapFields = savedFields
+		return "", err
+	}
+	gname := q.Group.Name
+	c.varTypes[gname] = ""
+	c.mapFields[gname] = nil
+	c.groups[gname] = true
+	elemFields := make(map[string]string)
+	names := []string{q.Var}
+	for _, f := range q.Froms {
+		names = append(names, f.Var)
+	}
+	for _, j := range q.Joins {
+		names = append(names, j.Var)
+	}
+	for _, n := range names {
+		typ := swiftTypeOf(c.varTypes[n])
+		if typ == "" {
+			typ = "Any"
+		}
+		elemFields[n] = typ
+	}
+	c.groupElemType[gname] = "map"
+	c.groupElemFields[gname] = elemFields
+
+	var having string
+	if q.Group.Having != nil {
+		hv, err := c.expr(q.Group.Having)
+		if err != nil {
+			c.varTypes = savedVars
+			c.mapFields = savedFields
+			return "", err
+		}
+		having = hv
+	}
+	prevTuple := c.tupleMap
+	c.tupleMap = true
+	sel, err := c.expr(q.Select)
+	c.tupleMap = prevTuple
+	if err != nil {
+		c.varTypes = savedVars
+		c.mapFields = savedFields
+		return "", err
+	}
+	sortExpr := ""
+	if q.Sort != nil {
+		prev := c.tupleMap
+		c.tupleMap = true
+		s, err := c.expr(q.Sort)
+		c.tupleMap = prev
+		if err != nil {
+			c.varTypes = savedVars
+			c.mapFields = savedFields
+			return "", err
+		}
+		sortExpr = s
+	}
+	skipExpr := ""
+	if q.Skip != nil {
+		sk, err := c.expr(q.Skip)
+		if err != nil {
+			c.varTypes = savedVars
+			c.mapFields = savedFields
+			return "", err
+		}
+		skipExpr = sk
+	}
+	takeExpr := ""
+	if q.Take != nil {
+		tk, err := c.expr(q.Take)
+		if err != nil {
+			c.varTypes = savedVars
+			c.mapFields = savedFields
+			return "", err
+		}
+		takeExpr = tk
+	}
+
+	parts := make([]string, len(names))
+	for i, n := range names {
+		parts[i] = fmt.Sprintf("%s: %s", n, n)
+	}
+	itemExpr := "(" + strings.Join(parts, ", ") + ")"
+
+	var b strings.Builder
+	b.WriteString("({\n")
+	b.WriteString("\tvar _groups: [AnyHashable:[Any]] = [:]\n")
+	b.WriteString(fmt.Sprintf("\tfor %s in %s {\n", q.Var, src))
+	indent := "\t\t"
+	for i, fs := range fromSrcs {
+		b.WriteString(fmt.Sprintf("%sfor %s in %s {\n", indent, q.Froms[i].Var, fs))
+		indent += "\t"
+	}
+	// handle single left join specially
+	if len(q.Joins) == 1 && joinSides[0] == "left" && len(fromSrcs) == 0 && cond == "" {
+		jv := q.Joins[0].Var
+		js := joinSrcs[0]
+		on := joinOns[0]
+		b.WriteString(fmt.Sprintf("%svar _m = false\n", indent))
+		b.WriteString(fmt.Sprintf("%sfor %s in %s {\n", indent, jv, js))
+		indent += "\t"
+		b.WriteString(fmt.Sprintf("%sif !(%s) { continue }\n", indent, on))
+		b.WriteString(fmt.Sprintf("%s_m = true\n", indent))
+		b.WriteString(fmt.Sprintf("%slet _k = %s\n", indent, keyExpr))
+		b.WriteString(fmt.Sprintf("%s_groups[_k, default: []].append(%s)\n", indent, itemExpr))
+		indent = indent[:len(indent)-1]
+		b.WriteString(indent + "}\n")
+		b.WriteString(fmt.Sprintf("%sif !_m {\n", indent))
+		indent += "\t"
+		b.WriteString(fmt.Sprintf("%slet %s: Any? = nil\n", indent, jv))
+		b.WriteString(fmt.Sprintf("%slet _k = %s\n", indent, keyExpr))
+		b.WriteString(fmt.Sprintf("%s_groups[_k, default: []].append(%s)\n", indent, itemExpr))
+		indent = indent[:len(indent)-1]
+		b.WriteString(indent + "}\n")
+	} else {
+		for i, js := range joinSrcs {
+			b.WriteString(fmt.Sprintf("%sfor %s in %s {\n", indent, q.Joins[i].Var, js))
+			indent += "\t"
+			b.WriteString(fmt.Sprintf("%sif !(%s) { continue }\n", indent, joinOns[i]))
+		}
+		if cond != "" {
+			b.WriteString(fmt.Sprintf("%sif !(%s) { continue }\n", indent, cond))
+		}
+		b.WriteString(fmt.Sprintf("%slet _k = %s\n", indent, keyExpr))
+		b.WriteString(fmt.Sprintf("%s_groups[_k, default: []].append(%s)\n", indent, itemExpr))
+		for range joinSrcs {
+			indent = indent[:len(indent)-1]
+			b.WriteString(indent + "}\n")
+		}
+	}
+	for range fromSrcs {
+		indent = indent[:len(indent)-1]
+		b.WriteString(indent + "}\n")
+	}
+	b.WriteString("\t}\n")
+	b.WriteString("\tvar _tmp = _groups.map { (k, v) in (key: k, items: v) }\n")
+	if having != "" {
+		b.WriteString(fmt.Sprintf("\t_tmp = _tmp.filter { %s in %s }\n", gname, having))
+	}
+	if sortExpr != "" {
+		desc := strings.HasPrefix(sortExpr, "-")
+		if desc {
+			sortExpr = strings.TrimPrefix(sortExpr, "-")
+		}
+		a := replaceIdent(sortExpr, gname, "$0")
+		bstr := replaceIdent(sortExpr, gname, "$1")
+		op := "<"
+		if desc {
+			op = ">"
+		}
+		b.WriteString(fmt.Sprintf("\t_tmp.sort { %s %s %s }\n", a, op, bstr))
+	}
+	if skipExpr != "" {
+		b.WriteString(fmt.Sprintf("\t_tmp = Array(_tmp.dropFirst(%s))\n", skipExpr))
+	}
+	if takeExpr != "" {
+		b.WriteString(fmt.Sprintf("\t_tmp = Array(_tmp.prefix(%s))\n", takeExpr))
+	}
+	b.WriteString(fmt.Sprintf("\treturn _tmp.map { %s in %s }\n", gname, sel))
+	b.WriteString("}())")
+
+	delete(c.groups, gname)
+	delete(c.groupElemType, gname)
+	delete(c.groupElemFields, gname)
+	c.varTypes = savedVars
+	c.mapFields = savedFields
+	return b.String(), nil
+}
+
 func (c *compiler) joinQuery(q *parser.QueryExpr) (string, error) {
 	src, err := c.expr(q.Source)
 	if err != nil {
@@ -1883,6 +2130,9 @@ func (c *compiler) joinSingleSide(q *parser.QueryExpr, src, joinSrc, onExpr, sid
 func (c *compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	if q.Group != nil && len(q.Joins) == 0 {
 		return c.groupQuery(q)
+	}
+	if q.Group != nil && len(q.Joins) > 0 && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
+		return c.groupJoinQuery(q)
 	}
 	if len(q.Joins) > 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
 		return c.joinQuery(q)

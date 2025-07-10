@@ -1,2 +1,4 @@
-line: 0
-error: unsupported query
+line 7: exit status 1
+		for c in customers {
+			if !(o.customerId == c.id) { continue }
+			let _k = c["name"] as! String

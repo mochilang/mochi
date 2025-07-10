@@ -1,2 +1,4 @@
-line: 0
-error: unsupported query
+line 8: exit status 1
+		for o in orders {
+			if !(o.customerId == c.id) { continue }
+			_m = true

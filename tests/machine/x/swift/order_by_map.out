@@ -11,4 +11,4 @@
   |                                                                            `- warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
 3 | print(sorted)
 4 | 
-[["b": 5, "a": 0], ["b": 1, "a": 1], ["b": 2, "a": 1]]
+[["b": 5, "a": 0], ["b": 1, "a": 1], ["a": 1, "b": 2]]

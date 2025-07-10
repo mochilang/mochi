@@ -2,7 +2,7 @@
 
 This directory contains Swift source code generated from the Mochi programs in `tests/vm/valid`. Each program is compiled to Swift and executed. Successful runs have a `.out` file; failures have a `.error`.
 
-Compiled programs: 85/97
+Compiled programs: 87/97
 
 Checklist:
 - [x] append_builtin
