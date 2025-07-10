@@ -679,11 +679,20 @@ func (c *compiler) postfix(p *parser.PostfixExpr) (string, error) {
 				if typ == "string" {
 					pos := fmt.Sprintf("%s.index(%s.startIndex, offsetBy: %s)", val, val, s)
 					val = fmt.Sprintf("%s[%s]", val, pos)
+				} else if typ == "map" {
+					if key, ok := keyName(idx.Start); ok {
+						if sel := p.Target.Selector; sel != nil && len(sel.Tail) == 0 {
+							if m, ok2 := c.mapFields[sel.Root]; ok2 {
+								if t, ok3 := m[key]; ok3 {
+									val = fmt.Sprintf("%s[%q] as! %s", val, key, t)
+									continue
+								}
+							}
+						}
+					}
+					val = fmt.Sprintf("%s[%s]!", val, s)
 				} else {
 					val = fmt.Sprintf("%s[%s]", val, s)
-					if typ == "map" {
-						val += "!"
-					}
 				}
 			}
 		case op.Field != nil:
@@ -2287,6 +2296,16 @@ func (c *compiler) recordMapFields(name string, e *parser.Expr) {
 		} else if isVarRef(p.Target.Query.Select, p.Target.Query.Var) {
 			if t := c.elementFieldTypes(p.Target.Query.Source); t != nil {
 				c.mapFields[name] = t
+			}
+		}
+	}
+	if p.Target.Call != nil && (p.Target.Call.Func == "map" || p.Target.Call.Func == "compactMap") {
+		if len(p.Target.Call.Args) == 1 && p.Target.Call.Args[0].Binary != nil {
+			fe := p.Target.Call.Args[0].Binary.Left.Value.Target.FunExpr
+			if fe != nil && fe.ExprBody != nil {
+				if m := mapLit(fe.ExprBody); m != nil {
+					c.mapFields[name] = mapFieldsFromLiteral(m)
+				}
 			}
 		}
 	}
