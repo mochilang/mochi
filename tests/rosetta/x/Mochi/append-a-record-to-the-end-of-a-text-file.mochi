@@ -1,0 +1,25 @@
+// Mochi implementation of Rosetta "Append a record to the end of a text file" task
+// This version just simulates the file contents in memory.
+
+fun writeTwo(): list<string> {
+  return [
+    "jsmith:x:1001:1000:Joe Smith,Room 1007,(234)555-8917,(234)555-0077,jsmith@rosettacode.org:/home/jsmith:/bin/bash",
+    "jdoe:x:1002:1000:Jane Doe,Room 1004,(234)555-8914,(234)555-0044,jdoe@rosettacode.org:/home/jsmith:/bin/bash",
+  ]
+}
+
+fun appendOneMore(lines: list<string>): list<string> {
+  return append(lines, "xyz:x:1003:1000:X Yz,Room 1003,(234)555-8913,(234)555-0033,xyz@rosettacode.org:/home/xyz:/bin/bash")
+}
+
+fun main() {
+  var lines = writeTwo()
+  lines = appendOneMore(lines)
+  if len(lines) >= 3 && lines[2] == "xyz:x:1003:1000:X Yz,Room 1003,(234)555-8913,(234)555-0033,xyz@rosettacode.org:/home/xyz:/bin/bash" {
+    print("append okay")
+  } else {
+    print("it didn't work")
+  }
+}
+
+main()
