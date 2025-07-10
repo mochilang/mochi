@@ -4,7 +4,7 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 
 ## Summary
 
- - 77/97 programs compiled and ran successfully.
+ - 79/97 programs compiled and ran successfully.
 
 ### Checklist
 - [x] append_builtin

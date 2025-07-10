@@ -3,7 +3,8 @@
 main :-
     dict_create(_V0, map, [a-1, b-2, c-3]),
     M = _V0,
-    Values(M, _V1),
-    write(_V1),
+    dict_pairs(M, _, _V1),
+    findall(V, member(_-V, _V1), _V2),
+    write(_V2),
     nl,
     true.

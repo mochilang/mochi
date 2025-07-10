@@ -834,6 +834,30 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, bool, error) {
 		c.needsGroup = true
 		c.writeln(fmt.Sprintf("count(%s, %s),", arg, tmp))
 		return tmp, true, nil
+	case "str":
+		if len(call.Args) != 1 {
+			return "", false, fmt.Errorf("str expects 1 arg")
+		}
+		arg, _, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", false, err
+		}
+		tmp := c.newTmp()
+		c.writeln(fmt.Sprintf("term_string(%s, %s),", arg, tmp))
+		return tmp, false, nil
+	case "values":
+		if len(call.Args) != 1 {
+			return "", false, fmt.Errorf("values expects 1 arg")
+		}
+		arg, _, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", false, err
+		}
+		pairs := c.newTmp()
+		tmp := c.newTmp()
+		c.writeln(fmt.Sprintf("dict_pairs(%s, _, %s),", arg, pairs))
+		c.writeln(fmt.Sprintf("findall(V, member(_-V, %s), %s),", pairs, tmp))
+		return tmp, false, nil
 	default:
 		args := make([]string, len(call.Args))
 		for i, a := range call.Args {
