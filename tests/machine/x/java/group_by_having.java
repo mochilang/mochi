@@ -1,42 +1,32 @@
 import java.util.*;
-class DataClass1 {
-	String name;
-	String city;
-	DataClass1(String name, String city) {
-		this.name = name;
-		this.city = city;
-	}
-}
-class DataClass2 {
-	Object city;
-	Object num;
-	DataClass2(Object city, Object num) {
-		this.city = city;
-		this.num = num;
-	}
-}
 public class Main {
-	static List<DataClass1> people = new ArrayList<>(java.util.Arrays.asList(new DataClass1("Alice", "Paris"), new DataClass1("Bob", "Hanoi"), new DataClass1("Charlie", "Paris"), new DataClass1("Diana", "Hanoi"), new DataClass1("Eve", "Paris"), new DataClass1("Frank", "Hanoi"), new DataClass1("George", "Paris")));
-	static List<DataClass2> big = (new java.util.function.Supplier<List<DataClass2>>(){public List<DataClass2> get(){
-	List<DataClass2> _res5 = new ArrayList<>();
-	Map<String,List<DataClass1>> _groups6 = new LinkedHashMap<>();
+	static List<Map<String,String>> people = new ArrayList<>(java.util.Arrays.asList(mapOfEntries(entry("name", "Alice"), entry("city", "Paris")), mapOfEntries(entry("name", "Bob"), entry("city", "Hanoi")), mapOfEntries(entry("name", "Charlie"), entry("city", "Paris")), mapOfEntries(entry("name", "Diana"), entry("city", "Hanoi")), mapOfEntries(entry("name", "Eve"), entry("city", "Paris")), mapOfEntries(entry("name", "Frank"), entry("city", "Hanoi")), mapOfEntries(entry("name", "George"), entry("city", "Paris"))));
+	static List<Map<String,Object>> big = (new java.util.function.Supplier<List<Map<String,Object>>>(){public List<Map<String,Object>> get(){
+	List<Map<String,Object>> _res5 = new ArrayList<>();
+	Map<String,List<Map<String,String>>> _groups6 = new LinkedHashMap<>();
 	for (var p : people) {
 		var _row7 = p;
-		String _key8 = p.city;
-		List<DataClass1> _b9 = _groups6.get(_key8);
+		String _key8 = ((Map)p).get("city");
+		List<Map<String,String>> _b9 = _groups6.get(_key8);
 		if (_b9 == null) { _b9 = new ArrayList<>(); _groups6.put(_key8, _b9); }
 		_b9.add(_row7);
 	}
 	for (var __e : _groups6.entrySet()) {
 		String g_key = __e.getKey();
-		List<DataClass1> g = __e.getValue();
+		List<Map<String,String>> g = __e.getValue();
 		if (!(count(g) >= 4)) continue;
-		_res5.add(new DataClass2(g_key, count(g)));
+		_res5.add(mapOfEntries(entry("city", g_key), entry("num", count(g))));
 	}
 	return _res5;
 }}).get();
 	static int count(Collection<?> c) {
 		return c.size();
+	}
+	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
+	static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {
+		LinkedHashMap<K,V> m = new LinkedHashMap<>();
+		for (var e : entries) m.put(e.getKey(), e.getValue());
+		return m;
 	}
 	static String toJson(Object o) {
 		if (o instanceof Map<?,?> m) {

@@ -31,6 +31,7 @@ type Compiler struct {
 	dataClassOrder    []string
 	srcDir            string
 	curVar            string
+	noStruct          bool
 }
 
 type dataClass struct {
@@ -60,6 +61,7 @@ func New() *Compiler {
 		dataClasses:       make(map[string]*dataClass),
 		dataClassOrder:    []string{},
 		curVar:            "",
+		noStruct:          false,
 	}
 }
 
@@ -503,6 +505,7 @@ func classNameFromVar(s string) string {
 	if s == "" {
 		return ""
 	}
+	s = singularize(s)
 	parts := strings.FieldsFunc(s, func(r rune) bool {
 		return r == '_' || r == '-' || r == ' '
 	})
@@ -513,6 +516,16 @@ func classNameFromVar(s string) string {
 		parts[i] = strings.ToUpper(p[:1]) + p[1:]
 	}
 	return strings.Join(parts, "")
+}
+
+func singularize(s string) string {
+	if len(s) > 3 && strings.HasSuffix(s, "ies") {
+		return s[:len(s)-3] + "y"
+	}
+	if len(s) > 1 && strings.HasSuffix(s, "s") {
+		return s[:len(s)-1]
+	}
+	return s
 }
 
 func mapValueType(t string) string {
@@ -603,10 +616,15 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 	}
 	if l := isListLiteral(e); l != nil {
 		et := "Object"
-		if len(l.Elems) > 0 {
-			et = wrapperType(c.inferType(l.Elems[0]))
-			if et == "var" {
-				et = c.litType(l.Elems[0])
+		for i, elem := range l.Elems {
+			t := wrapperType(c.inferType(elem))
+			if t == "var" {
+				t = c.litType(elem)
+			}
+			if i == 0 {
+				et = t
+			} else if et != t {
+				et = "Object"
 			}
 		}
 		return fmt.Sprintf("List<%s>", et)
@@ -848,14 +866,24 @@ func (c *Compiler) exprIsMap(e *parser.Expr) bool {
 
 func (c *Compiler) compileGlobalVar(v *parser.VarStmt) error {
 	typ := c.typeName(v.Type)
+	origNS := c.noStruct
+	c.noStruct = true
 	expr, err := c.compileExpr(v.Value)
+	c.noStruct = origNS
 	if err != nil {
 		return err
 	}
 	if v.Type == nil && v.Value != nil {
+		nsOrig := c.noStruct
+		c.noStruct = true
 		typ = c.inferType(v.Value)
+		c.noStruct = nsOrig
 		if isListLiteral(v.Value) != nil {
 			expr = fmt.Sprintf("new ArrayList<>(%s)", expr)
+		} else if ml := isMapLiteral(v.Value); ml != nil {
+			kt, vt := c.mapLiteralTypes(ml)
+			typ = fmt.Sprintf("Map<%s,%s>", kt, vt)
+			expr = fmt.Sprintf("new HashMap<>(%s)", expr)
 		}
 	}
 	if typ == "var" {
@@ -985,6 +1013,9 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 }
 
 func (c *Compiler) dataClassFor(m *parser.MapLiteral) string {
+	if c.noStruct || c.curVar == "" {
+		return ""
+	}
 	var keys []string
 	for _, it := range m.Items {
 		s, ok := simpleStringKey(it.Key)
@@ -1106,16 +1137,18 @@ func (c *Compiler) compileList(l *parser.ListLiteral) (string, error) {
 }
 
 func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
-	if name := c.dataClassFor(m); name != "" {
-		var args []string
-		for _, it := range m.Items {
-			v, err := c.compileExpr(it.Value)
-			if err != nil {
-				return "", err
+	if !c.noStruct {
+		if name := c.dataClassFor(m); name != "" {
+			var args []string
+			for _, it := range m.Items {
+				v, err := c.compileExpr(it.Value)
+				if err != nil {
+					return "", err
+				}
+				args = append(args, v)
 			}
-			args = append(args, v)
+			return fmt.Sprintf("new %s(%s)", name, strings.Join(args, ", ")), nil
 		}
-		return fmt.Sprintf("new %s(%s)", name, strings.Join(args, ", ")), nil
 	}
 	c.helpers["map_of_entries"] = true
 	var entries []string
@@ -1265,16 +1298,24 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	typ := c.typeName(v.Type)
 	orig := c.curVar
 	c.curVar = v.Name
+	origNS := c.noStruct
+	c.noStruct = true
 	expr, err := c.compileExpr(v.Value)
+	c.noStruct = origNS
 	c.curVar = orig
 	if err != nil {
 		return err
 	}
 	if v.Type == nil && v.Value != nil {
+		nsOrig := c.noStruct
+		c.noStruct = true
 		typ = c.inferType(v.Value)
+		c.noStruct = nsOrig
 		if isListLiteral(v.Value) != nil {
 			expr = fmt.Sprintf("new ArrayList<>(%s)", expr)
-		} else if ml := isMapLiteral(v.Value); ml != nil && c.dataClassFor(ml) == "" && !isMapLitCastToStructExpr(v.Value) {
+		} else if ml := isMapLiteral(v.Value); ml != nil {
+			kt, vt := c.mapLiteralTypes(ml)
+			typ = fmt.Sprintf("Map<%s,%s>", kt, vt)
 			expr = fmt.Sprintf("new HashMap<>(%s)", expr)
 		}
 		if typ == "var" {

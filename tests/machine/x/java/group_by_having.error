@@ -1,0 +1,11 @@
+line 0: javac error: exit status 1
+/tmp/TestCompileValidProgramsgroup_by_having1078349435/001/Main.java:9: error: incompatible types: Object cannot be converted to String
+		String _key8 = ((Map)p).get("city");
+		                           ^
+Note: /tmp/TestCompileValidProgramsgroup_by_having1078349435/001/Main.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+1 error
+
+
+  1| let people = [
+  2|   { name: "Alice", city: "Paris" },

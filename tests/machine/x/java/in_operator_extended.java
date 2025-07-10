@@ -1,10 +1,4 @@
 import java.util.*;
-class DataClass1 {
-	int a;
-	DataClass1(int a) {
-		this.a = a;
-	}
-}
 public class Main {
 	static List<Integer> xs = new ArrayList<>(java.util.Arrays.asList(1, 2, 3));
 	static List<Integer> ys = (new java.util.function.Supplier<List<Integer>>(){public List<Integer> get(){

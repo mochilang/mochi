@@ -1,14 +1,4 @@
 import java.util.*;
-class DataClass1 {
-	int a;
-	int b;
-	int c;
-	DataClass1(int a, int b, int c) {
-		this.a = a;
-		this.b = b;
-		this.c = c;
-	}
-}
 public class Main {
 	static Map<String,Integer> m = mapOfEntries(entry("a", 1), entry("b", 2), entry("c", 3));
 	static <K,V> List<V> values(Map<K,V> m) {

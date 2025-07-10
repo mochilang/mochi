@@ -1,46 +1,26 @@
 import java.util.*;
-class DataClass1 {
-	String name;
-	int age;
-	String city;
-	DataClass1(String name, int age, String city) {
-		this.name = name;
-		this.age = age;
-		this.city = city;
-	}
-}
-class DataClass2 {
-	Object city;
-	Object count;
-	double avg_age;
-	DataClass2(Object city, Object count, double avg_age) {
-		this.city = city;
-		this.count = count;
-		this.avg_age = avg_age;
-	}
-}
 public class Main {
-	static List<DataClass1> people = new ArrayList<>(java.util.Arrays.asList(new DataClass1("Alice", 30, "Paris"), new DataClass1("Bob", 15, "Hanoi"), new DataClass1("Charlie", 65, "Paris"), new DataClass1("Diana", 45, "Hanoi"), new DataClass1("Eve", 70, "Paris"), new DataClass1("Frank", 22, "Hanoi")));
-	static List<DataClass2> stats = (new java.util.function.Supplier<List<DataClass2>>(){public List<DataClass2> get(){
-	List<DataClass2> _res6 = new ArrayList<>();
-	Map<String,List<DataClass1>> _groups7 = new LinkedHashMap<>();
+	static List<Map<String,Object>> people = new ArrayList<>(java.util.Arrays.asList(mapOfEntries(entry("name", "Alice"), entry("age", 30), entry("city", "Paris")), mapOfEntries(entry("name", "Bob"), entry("age", 15), entry("city", "Hanoi")), mapOfEntries(entry("name", "Charlie"), entry("age", 65), entry("city", "Paris")), mapOfEntries(entry("name", "Diana"), entry("age", 45), entry("city", "Hanoi")), mapOfEntries(entry("name", "Eve"), entry("age", 70), entry("city", "Paris")), mapOfEntries(entry("name", "Frank"), entry("age", 22), entry("city", "Hanoi"))));
+	static List<Map<String,Object>> stats = (new java.util.function.Supplier<List<Map<String,Object>>>(){public List<Map<String,Object>> get(){
+	List<Map<String,Object>> _res6 = new ArrayList<>();
+	Map<Object,List<Map<String,Object>>> _groups7 = new LinkedHashMap<>();
 	for (var person : people) {
 		var _row8 = person;
-		String _key9 = person.city;
-		List<DataClass1> _b10 = _groups7.get(_key9);
+		Object _key9 = ((Map)person).get("city");
+		List<Map<String,Object>> _b10 = _groups7.get(_key9);
 		if (_b10 == null) { _b10 = new ArrayList<>(); _groups7.put(_key9, _b10); }
 		_b10.add(_row8);
 	}
 	for (var __e : _groups7.entrySet()) {
-		String g_key = __e.getKey();
-		List<DataClass1> g = __e.getValue();
-		_res6.add(new DataClass2(g_key, count(g), avg((List<Number>)(List<?>)(new java.util.function.Supplier<List<Integer>>(){public List<Integer> get(){
-	List<Integer> _res11 = new ArrayList<>();
+		Object g_key = __e.getKey();
+		List<Map<String,Object>> g = __e.getValue();
+		_res6.add(mapOfEntries(entry("city", g_key), entry("count", count(g)), entry("avg_age", avg((List<Number>)(List<?>)(new java.util.function.Supplier<List<Object>>(){public List<Object> get(){
+	List<Object> _res11 = new ArrayList<>();
 	for (var p : g) {
-		_res11.add(p.age);
+		_res11.add(((Map)p).get("age"));
 	}
 	return _res11;
-}}).get())));
+}}).get()))));
 	}
 	return _res6;
 }}).get();
@@ -53,10 +33,16 @@ public class Main {
 		for (Number n : v) s += n.intValue();
 		return (double)s / v.size();
 	}
+	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
+	static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {
+		LinkedHashMap<K,V> m = new LinkedHashMap<>();
+		for (var e : entries) m.put(e.getKey(), e.getValue());
+		return m;
+	}
 	public static void main(String[] args) {
 	System.out.println("--- People grouped by city ---");
-	for (DataClass2 s : stats) {
-		System.out.println(s.city + " " + ": count =" + " " + s.count + " " + ", avg_age =" + " " + s.avg_age);
+	for (Map<String,Object> s : stats) {
+		System.out.println(((Map)s).get("city") + " " + ": count =" + " " + ((Map)s).get("count") + " " + ", avg_age =" + " " + ((Map)s).get("avg_age"));
 	}
 	}
 }
