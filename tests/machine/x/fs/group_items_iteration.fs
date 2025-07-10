@@ -1,8 +1,5 @@
 open System
 
-exception Break
-exception Continue
-
 type Anon1 = {
     tag: string
     ``val``: int
@@ -16,18 +13,10 @@ let groups = [ for gKey, gItems in [ for d in data do yield d ] |> List.groupBy 
     let g = {| key = gKey; items = gItems |}
     yield g ]
 let mutable tmp = [||]
-try
-    for g in groups do
-        try
-            let mutable total = 0
-            try
-                for x in g.items do
-                    try
-                        total <- total + x.val
-                    with Continue -> ()
-            with Break -> ()
-            tmp <- tmp @ [{ tag = g.key; total = total }]
-        with Continue -> ()
-with Break -> ()
+for g in groups do
+    let mutable total = 0
+    for x in g.items do
+        total <- total + x.val
+    tmp <- tmp @ [{ tag = g.key; total = total }]
 let result = [ for r in tmp do yield r ] |> List.sortBy (fun r -> r.tag)
 printfn "%A" (result)

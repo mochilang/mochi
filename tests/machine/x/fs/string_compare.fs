@@ -1,8 +1,5 @@
 open System
 
-exception Break
-exception Continue
-
 printfn "%s" "a" < "b"
 printfn "%s" "a" <= "a"
 printfn "%s" "b" > "a"

@@ -1,8 +1,5 @@
 open System
 
-exception Break
-exception Continue
-
 type Anon1 = {
     id: int
     name: string
@@ -22,15 +19,11 @@ let result = (let orderPart = [ for o in orders do
         yield { order = None; customer = Some c } ]
  orderPart @ customerPart)
 printfn "%s" "--- Outer Join using syntax ---"
-try
-    for row in result do
-        try
-            if row.order then
-                if row.customer then
-                    printfn "%s" (String.concat " " [string "Order"; string row.order.id; string "by"; string row.customer.name; string "- $"; string row.order.total])
-                else
-                    printfn "%s" (String.concat " " [string "Order"; string row.order.id; string "by"; string "Unknown"; string "- $"; string row.order.total])
-            else
-                printfn "%s" (String.concat " " [string "Customer"; string row.customer.name; string "has no orders"])
-        with Continue -> ()
-with Break -> ()
+for row in result do
+    if row.order then
+        if row.customer then
+            printfn "%s" (String.concat " " [string "Order"; string row.order.id; string "by"; string row.customer.name; string "- $"; string row.order.total])
+        else
+            printfn "%s" (String.concat " " [string "Order"; string row.order.id; string "by"; string "Unknown"; string "- $"; string row.order.total])
+    else
+        printfn "%s" (String.concat " " [string "Customer"; string row.customer.name; string "has no orders"])

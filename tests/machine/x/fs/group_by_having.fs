@@ -1,9 +1,6 @@
 open System
 open System.Text.Json
 
-exception Break
-exception Continue
-
 type Anon1 = {
     name: string
     city: string

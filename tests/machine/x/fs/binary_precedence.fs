@@ -1,8 +1,5 @@
 open System
 
-exception Break
-exception Continue
-
 printfn "%A" (1 + 2 * 3)
 printfn "%A" ((1 + 2) * 3)
 printfn "%A" (2 * 3 + 1)

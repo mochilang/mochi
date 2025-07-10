@@ -1,8 +1,5 @@
 open System
 
-exception Break
-exception Continue
-
 let boom (a) (b) =
     printfn "%s" "boom"
     true

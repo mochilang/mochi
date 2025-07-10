@@ -1,8 +1,5 @@
 open System
 
-exception Break
-exception Continue
-
 type Tree =
     | Leaf
     | Node of Tree * int * Tree

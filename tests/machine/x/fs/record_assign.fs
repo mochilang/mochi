@@ -1,10 +1,7 @@
 open System
 
-exception Break
-exception Continue
-
 type Counter = {
-    n: int
+    mutable n: int
 }
 let inc (c) =
     c.n <- c.n + 1

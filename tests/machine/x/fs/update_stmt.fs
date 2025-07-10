@@ -1,8 +1,5 @@
 open System
 
-exception Break
-exception Continue
-
 type Person = {
     mutable name: string
     mutable age: int

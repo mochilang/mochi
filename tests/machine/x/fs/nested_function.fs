@@ -1,8 +1,5 @@
 open System
 
-exception Break
-exception Continue
-
 let outer (x) =
     let inner (y) =
         x + y
