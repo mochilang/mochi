@@ -8,5 +8,5 @@ class Todo:
     title: str
 
 
-todo: Todo = Todo(**{"title": "hi"})
+todo = Todo(**{"title": "hi"})
 print(todo.title)

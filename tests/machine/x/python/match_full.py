@@ -16,7 +16,7 @@ def classify(n: int) -> str:
     return _match0(n)
 
 
-x: int = 2
+x = 2
 
 
 def _match1(_t1):
@@ -31,9 +31,9 @@ def _match1(_t1):
             return "unknown"
 
 
-label: str = _match1(x)
+label = _match1(x)
 print(label)
-day: str = "sun"
+day = "sun"
 
 
 def _match2(_t2):
@@ -48,9 +48,9 @@ def _match2(_t2):
             return "normal"
 
 
-mood: str = _match2(day)
+mood = _match2(day)
 print(mood)
-ok: bool = True
+ok = True
 
 
 def _match3(_t3):
@@ -63,7 +63,7 @@ def _match3(_t3):
             return None
 
 
-status: str = _match3(ok)
+status = _match3(ok)
 print(status)
 print(classify(0))
 print(classify(5))

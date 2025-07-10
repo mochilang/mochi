@@ -11,6 +11,6 @@ def twoSum(nums: list[int], target: int) -> list[int]:
     return [-1, -1]
 
 
-result: list[int] = twoSum([2, 7, 11, 15], 9)
+result = twoSum([2, 7, 11, 15], 9)
 print(result[0])
 print(result[1])

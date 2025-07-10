@@ -15,5 +15,5 @@ class Book:
     author: Person
 
 
-book: Book = Book(title="Go", author=Person(name="Bob", age=42))
+book = Book(title="Go", author=Person(name="Bob", age=42))
 print(book.author.name)
