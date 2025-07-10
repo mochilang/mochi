@@ -2,8 +2,8 @@
 defmodule Main do
   @s "catch"
   def main do
-    IO.inspect(String.contains?(s, "cat"))
-    IO.inspect(String.contains?(s, "dog"))
+    IO.inspect(String.contains?(@s, "cat"))
+    IO.inspect(String.contains?(@s, "dog"))
   end
 end
 

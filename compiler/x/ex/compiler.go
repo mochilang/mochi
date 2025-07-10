@@ -238,8 +238,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 				val = v
 			}
 			name := sanitizeName(s.Let.Name)
-			// avoid module attributes that invoke helper functions or reference other vars
-			if !helperRe.MatchString(val) && !containsVar(val, name) {
+			// only emit module attribute for simple constant expressions
+			if isConstExpr(s.Let.Value) && !helperRe.MatchString(val) && !containsVar(val, name) {
 				c.attrs[name] = val
 				c.writeln(fmt.Sprintf("@%s %s", name, val))
 			}

@@ -2,7 +2,7 @@
 
 This directory contains Elixir source code generated from Mochi programs and the corresponding outputs.
 
-Compiled programs: 83/97
+Compiled programs: 86/97
 
 Checklist:
 
@@ -14,7 +14,7 @@ Checklist:
 - [x] break_continue
 - [x] cast_string_to_int
 - [x] cast_struct
-- [ ] closure
+- [x] closure
 - [x] count_builtin
 - [x] cross_join
 - [x] cross_join_filter
@@ -26,7 +26,7 @@ Checklist:
 - [x] for_loop
 - [x] for_map_collection
 - [x] fun_call
-- [ ] fun_expr_in_let
+- [x] fun_expr_in_let
 - [x] fun_three_args
 - [x] group_by
 - [x] group_by_conditional_sum
@@ -85,7 +85,7 @@ Checklist:
 - [x] str_builtin
 - [x] string_compare
 - [x] string_concat
-- [ ] string_contains
+- [x] string_contains
 - [x] string_in_operator
 - [x] string_index
 - [x] string_prefix_slice
@@ -105,8 +105,6 @@ Checklist:
 - [x] while_loop
 
 ### Remaining tasks
-- [ ] closure
-- [ ] fun_expr_in_let
 - [ ] group_by_left_join
 - [ ] group_by_multi_join_sort
 - [ ] group_by_sort
@@ -114,7 +112,6 @@ Checklist:
 - [ ] load_yaml
 - [ ] partial_application
 - [ ] record_assign
-- [ ] string_contains
 - [ ] tree_sum
 - [ ] two-sum
 - [ ] update_stmt
