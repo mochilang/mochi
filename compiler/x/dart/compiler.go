@@ -1130,18 +1130,38 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		keyExpr := c.mustExpr(q.Group.Exprs[0])
 		grpVar = q.Group.Name
 		c.groupKeys[grpVar] = keyVar
-		c.mapVars[grpVar] = true
-		child.SetVar(grpVar, types.ListType{Elem: types.MapType{Key: types.StringType{}, Value: types.AnyType{}}}, true)
-		w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("var %s = %s;\n", keyVar, keyExpr))
-		parts := []string{"'" + q.Var + "': " + q.Var}
+
+		vars := []string{q.Var}
 		for _, f := range q.Froms {
-			parts = append(parts, "'"+f.Var+"': "+f.Var)
+			vars = append(vars, f.Var)
 		}
 		for _, j := range q.Joins {
-			parts = append(parts, "'"+j.Var+"': "+j.Var)
+			vars = append(vars, j.Var)
 		}
-		item := "{" + strings.Join(parts, ", ") + "}"
-		w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("%s.putIfAbsent(%s, () => <dynamic>[]).add(%s);\n", groups, keyVar, item))
+
+		w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("var %s = %s;\n", keyVar, keyExpr))
+
+		if len(vars) == 1 {
+			if t, err := c.env.GetVar(vars[0]); err == nil {
+				child.SetVar(grpVar, types.ListType{Elem: t}, true)
+			} else {
+				child.SetVar(grpVar, types.ListType{Elem: types.AnyType{}}, true)
+			}
+			item := vars[0]
+			w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("%s.putIfAbsent(%s, () => <dynamic>[]).add(%s);\n", groups, keyVar, item))
+		} else {
+			c.mapVars[grpVar] = true
+			child.SetVar(grpVar, types.ListType{Elem: types.MapType{Key: types.StringType{}, Value: types.AnyType{}}}, true)
+			parts := []string{"'" + q.Var + "': " + q.Var}
+			for _, f := range q.Froms {
+				parts = append(parts, "'"+f.Var+"': "+f.Var)
+			}
+			for _, j := range q.Joins {
+				parts = append(parts, "'"+j.Var+"': "+j.Var)
+			}
+			item := "{" + strings.Join(parts, ", ") + "}"
+			w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("%s.putIfAbsent(%s, () => <dynamic>[]).add(%s);\n", groups, keyVar, item))
+		}
 	} else {
 		if q.Sort != nil {
 			key := c.mustExpr(q.Sort)

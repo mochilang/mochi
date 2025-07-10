@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs. Successful runs have a .out file, failures a .error file.
 
-Compiled programs: 83/97
+Compiled programs: 87/97
 
 Checklist:
 
@@ -28,14 +28,14 @@ Checklist:
 - [x] fun_call
 - [x] fun_expr_in_let
 - [x] fun_three_args
-- [ ] group_by
-- [ ] group_by_conditional_sum
+- [x] group_by
+- [x] group_by_conditional_sum
 - [x] group_by_having
 - [x] group_by_join
 - [ ] group_by_left_join
 - [x] group_by_multi_join
 - [ ] group_by_multi_join_sort
-- [ ] group_by_sort
+- [x] group_by_sort
 - [ ] group_items_iteration
 - [x] if_else
 - [x] if_then_else
@@ -75,7 +75,7 @@ Checklist:
 - [x] print_hello
 - [x] pure_fold
 - [x] pure_global_fold
-- [ ] query_sum_select
+- [x] query_sum_select
 - [x] record_assign
 - [ ] right_join
 - [x] save_jsonl_stdout
@@ -103,9 +103,3 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
-
-## TODO
-- [ ] Support YAML without external packages (done)
-- [ ] Implement group_by, right_join, outer_join, etc.
-- [ ] Ensure tree_sum and two-sum compile and run.
-
