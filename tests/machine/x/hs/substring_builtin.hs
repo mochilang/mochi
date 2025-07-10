@@ -3,7 +3,7 @@
 
 module Main where
 
-import Data.List (intercalate, isPrefixOf)
+import Data.List (intercalate, isInfixOf, isPrefixOf)
 import qualified Data.List as List
 import qualified Data.Map as Map
 import Data.Maybe (fromMaybe)
@@ -11,4 +11,4 @@ import Data.Time.Clock.POSIX (getPOSIXTime)
 
 main :: IO ()
 main = do
-  putStrLn (substring "mochi" 1 4)
+  putStrLn (take (4 - 1) (drop 1 "mochi"))

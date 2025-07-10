@@ -5,7 +5,7 @@ module Main where
 
 import qualified Data.Aeson as Aeson
 import qualified Data.ByteString.Lazy.Char8 as BSL
-import Data.List (intercalate, isPrefixOf)
+import Data.List (intercalate, isInfixOf, isPrefixOf)
 import qualified Data.List as List
 import qualified Data.Map as Map
 import Data.Maybe (fromMaybe)

@@ -3,7 +3,7 @@
 
 module Main where
 
-import Data.List (intercalate, isPrefixOf)
+import Data.List (intercalate, isInfixOf, isPrefixOf)
 import qualified Data.List as List
 import qualified Data.Map as Map
 import Data.Maybe (fromMaybe)
@@ -13,5 +13,5 @@ s = "catch"
 
 main :: IO ()
 main = do
-  print (fromMaybe (error "missing") (Map.lookup "contains" (s)) "cat")
-  print (fromMaybe (error "missing") (Map.lookup "contains" (s)) "dog")
+  print (isInfixOf "cat" s)
+  print (isInfixOf "dog" s)

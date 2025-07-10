@@ -194,7 +194,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	header.WriteString("import Data.Maybe (fromMaybe)\n")
 	header.WriteString("import Data.Time.Clock.POSIX (getPOSIXTime)\n")
 	header.WriteString("import qualified Data.Map as Map\n")
-	header.WriteString("import Data.List (intercalate, isPrefixOf)\n")
+	header.WriteString("import Data.List (intercalate, isPrefixOf, isInfixOf)\n")
 	header.WriteString("import qualified Data.List as List\n")
 	if c.usesJSON || c.usesLoad || c.usesSave || c.usesFetch || c.usesAnyValue {
 		header.WriteString("import qualified Data.Aeson as Aeson\n")
@@ -910,6 +910,12 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			if c.isMapPostfix(op.Right) {
 				c.usesMap = true
 				expr = fmt.Sprintf("Map.member %s %s", expr, r)
+			} else if _, ok1 := leftType.(types.StringType); ok1 {
+				if _, ok2 := rightType.(types.StringType); ok2 {
+					expr = fmt.Sprintf("isInfixOf %s %s", expr, r)
+				} else {
+					expr = fmt.Sprintf("elem %s %s", expr, r)
+				}
 			} else {
 				expr = fmt.Sprintf("elem %s %s", expr, r)
 			}
@@ -1011,6 +1017,25 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 }
 
 func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
+	// Special-case string contains method
+	if sel := p.Target.Selector; sel != nil && len(sel.Tail) > 0 && sel.Tail[len(sel.Tail)-1] == "contains" {
+		if len(p.Ops) > 0 && p.Ops[0].Call != nil && len(p.Ops[0].Call.Args) == 1 {
+			baseSel := &parser.SelectorExpr{Root: sel.Root, Tail: sel.Tail[:len(sel.Tail)-1]}
+			basePrim := &parser.Primary{Selector: baseSel}
+			if c.isStringPrimary(basePrim) {
+				baseExpr, err := c.compilePrimary(basePrim)
+				if err != nil {
+					return "", err
+				}
+				argExpr, err := c.compileExpr(p.Ops[0].Call.Args[0])
+				if err != nil {
+					return "", err
+				}
+				return fmt.Sprintf("isInfixOf %s %s", argExpr, baseExpr), nil
+			}
+		}
+	}
+
 	expr, err := c.compilePrimary(p.Target)
 	if err != nil {
 		return "", err
@@ -1193,6 +1218,18 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		if p.Call.Func == "avg" && len(args) == 1 {
 			return fmt.Sprintf("(sum %s `div` length %s)", args[0], args[0]), nil
+		}
+		if p.Call.Func == "substring" && len(args) == 3 {
+			start := args[1]
+			end := args[2]
+			src := args[0]
+			return fmt.Sprintf("take (%s - %s) (drop %s %s)", end, start, start, src), nil
+		}
+		if p.Call.Func == "min" && len(args) == 1 {
+			return fmt.Sprintf("minimum %s", args[0]), nil
+		}
+		if p.Call.Func == "max" && len(args) == 1 {
+			return fmt.Sprintf("maximum %s", args[0]), nil
 		}
 		if p.Call.Func == "str" {
 			return fmt.Sprintf("show %s", strings.Join(args, " ")), nil
