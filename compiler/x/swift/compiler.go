@@ -1959,7 +1959,12 @@ func (c *compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				res := fmt.Sprintf("%s.compactMap { %s in %s ? (%s) : nil }", src, name, cond, sel)
+				var res string
+				if isVarRef(q.Select, name) {
+					res = fmt.Sprintf("%s.filter { %s in %s }", src, name, cond)
+				} else {
+					res = fmt.Sprintf("%s.compactMap { %s in %s ? (%s) : nil }", src, name, cond, sel)
+				}
 				if havePrev {
 					c.varTypes[name] = prevT
 				} else {
