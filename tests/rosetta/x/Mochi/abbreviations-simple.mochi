@@ -1,0 +1,166 @@
+// Mochi implementation of Rosetta "Abbreviations simple" task
+
+fun fields(s: string): list<string> {
+  var words: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i + 1)
+    if ch == " " || ch == "\n" || ch == "\t" {
+      if len(cur) > 0 {
+        words = append(words, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { words = append(words, cur) }
+  return words
+}
+
+fun padRight(s: string, width: int): string {
+  var out = s
+  var i = len(s)
+  while i < width {
+    out = out + " "
+    i = i + 1
+  }
+  return out
+}
+
+fun join(xs: list<string>, sep: string): string {
+  var res = ""
+  var i = 0
+  while i < len(xs) {
+    if i > 0 { res = res + sep }
+    res = res + xs[i]
+    i = i + 1
+  }
+  return res
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  let digits = {
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5,
+    "6": 6,
+    "7": 7,
+    "8": 8,
+    "9": 9,
+  }
+  while i < len(str) {
+    n = n * 10 + digits[str[i:i+1]]
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun isDigits(s: string): bool {
+  if len(s) == 0 { return false }
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i + 1)
+    if ch < "0" || ch > "9" { return false }
+    i = i + 1
+  }
+  return true
+}
+
+fun readTable(table: string): map<string, any> {
+  let toks = fields(table)
+  var cmds: list<string> = []
+  var mins: list<int> = []
+  var i = 0
+  while i < len(toks) {
+    let cmd = toks[i]
+    var minlen = len(cmd)
+    i = i + 1
+    if i < len(toks) && isDigits(toks[i]) {
+      let num = parseIntStr(toks[i])
+      if num >= 1 && num < len(cmd) {
+        minlen = num
+        i = i + 1
+      }
+    }
+    cmds = append(cmds, cmd)
+    mins = append(mins, minlen)
+  }
+  return {"commands": cmds, "mins": mins}
+}
+
+fun validate(commands: list<string>, mins: list<int>, words: list<string>): list<string> {
+  var results: list<string> = []
+  var wi = 0
+  while wi < len(words) {
+    let w = words[wi]
+    var found = false
+    let wlen = len(w)
+    var ci = 0
+    while ci < len(commands) {
+      let cmd = commands[ci]
+      if mins[ci] != 0 && wlen >= mins[ci] && wlen <= len(cmd) {
+        let c = upper(cmd)
+        let ww = upper(w)
+        if substring(c, 0, wlen) == ww {
+          results = append(results, c)
+          found = true
+          break
+        }
+      }
+      ci = ci + 1
+    }
+    if !found { results = append(results, "*error*") }
+    wi = wi + 1
+  }
+  return results
+}
+
+fun main() {
+  let table = "" +
+    "add 1  alter 3  backup 2  bottom 1  Cappend 2  change 1  Schange  Cinsert 2  Clast 3 " +
+    "compress 4 copy 2 count 3 Coverlay 3 cursor 3  delete 3 Cdelete 2  down 1  duplicate " +
+    "3 xEdit 1 expand 3 extract 3  find 1 Nfind 2 Nfindup 6 NfUP 3 Cfind 2 findUP 3 fUP 2 " +
+    "forward 2  get  help 1 hexType 4  input 1 powerInput 3  join 1 split 2 spltJOIN load " +
+    "locate 1 Clocate 2 lowerCase 3 upperCase 3 Lprefix 2  macro  merge 2 modify 3 move 2 " +
+    "msg  next 1 overlay 1 parse preserve 4 purge 3 put putD query 1 quit  read recover 3 " +
+    "refresh renum 3 repeat 3 replace 1 Creplace 2 reset 3 restore 4 rgtLEFT right 2 left " +
+    "2  save  set  shift 2  si  sort  sos  stack 3 status 4 top  transfer 3  type 1  up 1 "
+
+  let sentence = "riG   rePEAT copies  put mo   rest    types   fup.    6\npoweRin"
+
+  let tbl = readTable(table)
+  let commands = tbl["commands"] as list<string>
+  let mins = tbl["mins"] as list<int>
+  let words = fields(sentence)
+  let results = validate(commands, mins, words)
+
+  var out1 = "user words:"
+  var k = 0
+  while k < len(words) {
+    out1 = out1 + " "
+    if k < len(words) - 1 {
+      out1 = out1 + padRight(words[k], len(results[k]))
+    } else {
+      out1 = out1 + words[k]
+    }
+    k = k + 1
+  }
+  print(out1)
+  print("full words: " + join(results, " "))
+}
+
+main()
