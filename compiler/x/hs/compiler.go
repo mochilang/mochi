@@ -392,7 +392,7 @@ func (c *Compiler) compileMainStmt(s *parser.Statement) error {
 				child.SetVar(asn.Name, t, true)
 				c.env = child
 			}
-			cond, err := c.compileExpr(s.While.Cond)
+			cond, err := c.compileBoolExpr(s.While.Cond)
 			if err != nil {
 				c.env = orig
 				return err
@@ -427,7 +427,7 @@ func (c *Compiler) compileMainStmt(s *parser.Statement) error {
 			if err != nil {
 				return err
 			}
-			cond, err := c.compileExpr(s.While.Cond)
+			cond, err := c.compileBoolExpr(s.While.Cond)
 			if err != nil {
 				return err
 			}
@@ -451,7 +451,7 @@ func (c *Compiler) compileMainStmt(s *parser.Statement) error {
 }
 
 func (c *Compiler) compileIfMain(stmt *parser.IfStmt) error {
-	cond, err := c.compileExpr(stmt.Cond)
+	cond, err := c.compileBoolExpr(stmt.Cond)
 	if err != nil {
 		return err
 	}
@@ -903,7 +903,7 @@ func (c *Compiler) compileStmtExpr(stmts []*parser.Statement, top bool) (string,
 			if err != nil {
 				return "", err
 			}
-			cond, err := c.compileExpr(s.While.Cond)
+			cond, err := c.compileBoolExpr(s.While.Cond)
 			if err != nil {
 				return "", err
 			}
@@ -945,7 +945,7 @@ func (c *Compiler) compileIfExpr(stmt *parser.IfStmt) (string, error) {
 			return "", err
 		}
 	}
-	cond, err := c.compileExpr(stmt.Cond)
+	cond, err := c.compileBoolExpr(stmt.Cond)
 	if err != nil {
 		return "", err
 	}
@@ -971,7 +971,7 @@ func (c *Compiler) compileIfExprExpr(e *parser.IfExpr) (string, error) {
 	} else {
 		elseExpr = "()"
 	}
-	cond, err := c.compileExpr(e.Cond)
+	cond, err := c.compileBoolExpr(e.Cond)
 	if err != nil {
 		return "", err
 	}
@@ -983,6 +983,22 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 		return "", nil
 	}
 	return c.compileBinary(e.Binary)
+}
+
+// compileBoolExpr compiles e expecting a boolean result. If the static type of
+// e is `any`, the result is wrapped with `_asBool` to convert from `AnyValue`.
+func (c *Compiler) compileBoolExpr(e *parser.Expr) (string, error) {
+	expr, err := c.compileExpr(e)
+	if err != nil {
+		return "", err
+	}
+	if _, ok := c.inferExprType(e).(types.BoolType); ok {
+		return expr, nil
+	}
+	if _, ok := c.inferExprType(e).(types.AnyType); ok {
+		return fmt.Sprintf("_asBool (%s)", expr), nil
+	}
+	return expr, nil
 }
 
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {

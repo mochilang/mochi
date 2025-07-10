@@ -4,7 +4,7 @@ This directory contains Haskell code generated from Mochi programs in `tests/vm/
 Each `.hs` file is the compiler output. Programs that executed successfully have a corresponding `.out` file, 
 while failures have a `.error` log.
 
-## Compiled and ran successfully (69/97)
+## Compiled and ran successfully (70/97)
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -19,6 +19,7 @@ while failures have a `.error` log.
 - [x] cross_join_filter
 - [x] cross_join_triple
 - [x] dataset_sort_take_limit
+- [x] dataset_where_filter
 - [x] exists_builtin
 - [x] for_list_collection
 - [x] for_loop
@@ -75,8 +76,7 @@ while failures have a `.error` log.
 - [x] list_nested_assign
 - [x] map_assign
 
-## Failed to build or run (28/97)
-- [ ] dataset_where_filter
+## Failed to build or run (27/97)
 - [ ] group_by
 - [ ] group_by_conditional_sum
 - [ ] group_by_join
@@ -110,5 +110,5 @@ while failures have a `.error` log.
 - [ ] Add map and struct operations needed for JSON helpers.
 - [ ] Finish runtime features for update statements and YAML loading.
 - [ ] Improve query output formatting beyond `_showAny` helpers.
-- [ ] Generate `.out` files once Haskell dependencies are available.
+- [ ] Generate `.out` files for remaining programs once additional runtime features are implemented.
 - [ ] Implement map, list, and record assignment transformations.
