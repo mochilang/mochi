@@ -100,3 +100,12 @@ Compiled programs: 97/97 successful.
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
+
+## Remaining Tasks
+
+The Python backend still lacks support for a few Mochi features:
+
+* `import` statements targeting languages other than Python
+* Error handling using `try`/`catch`
+* Concurrency primitives such as `spawn` and channels
+* Conversion of complex Python constructs like list comprehensions back to Mochi

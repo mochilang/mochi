@@ -925,6 +925,18 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.use("_values")
 		return fmt.Sprintf("_values(%s)", args[0]), nil
+	case "ceil":
+		if len(args) != 1 {
+			return "", fmt.Errorf("ceil expects 1 arg")
+		}
+		c.imports["math"] = "math"
+		return fmt.Sprintf("math.ceil(%s)", args[0]), nil
+	case "floor":
+		if len(args) != 1 {
+			return "", fmt.Errorf("floor expects 1 arg")
+		}
+		c.imports["math"] = "math"
+		return fmt.Sprintf("math.floor(%s)", args[0]), nil
 	case "eval":
 		return fmt.Sprintf("eval(%s)", argStr), nil
 	default:
