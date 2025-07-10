@@ -853,6 +853,12 @@ func (c *compiler) callExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("values expects 1 argument at line %d", call.Pos.Line)
 		}
 		return fmt.Sprintf("Array(%s.values)", args[0]), nil
+	case "json":
+		if len(args) != 1 {
+			return "", fmt.Errorf("json expects 1 argument at line %d", call.Pos.Line)
+		}
+		c.helpers["_json"] = true
+		return fmt.Sprintf("_json(%s)", args[0]), nil
 	case "substring":
 		if len(args) != 3 {
 			return "", fmt.Errorf("substring expects 3 arguments at line %d", call.Pos.Line)
@@ -2420,6 +2426,15 @@ func (c *compiler) emitRuntime() {
 			}
 		}
 	}
+	if c.helpers["_json"] {
+		for _, line := range strings.Split(helperJSON, "\n") {
+			if line == "" {
+				c.buf.WriteByte('\n')
+			} else {
+				c.writeln(line)
+			}
+		}
+	}
 }
 
 const helperLoad = `func _parseVal(_ s: String) -> Any {
@@ -2477,5 +2492,22 @@ const helperSave = `func _save(_ rows: [[String:Any]], path: String, opts: [Stri
         if handle !== FileHandle.standardOutput {
             handle.closeFile()
         }
+    }
+}`
+
+const helperJSON = `func _json(_ v: Any) {
+    func _sort(_ x: Any) -> Any {
+        if let a = x as? [Any] { return a.map { _sort($0) } }
+        if let m = x as? [String:Any] {
+            var out: [String:Any] = [:]
+            for k in m.keys.sorted() { out[k] = _sort(m[k]!) }
+            return out
+        }
+        return x
+    }
+    if let obj = _sort(v) as? Any,
+       let data = try? JSONSerialization.data(withJSONObject: obj),
+       let s = String(data: data, encoding: .utf8) {
+        print(s)
     }
 }`

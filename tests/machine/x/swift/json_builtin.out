@@ -1,0 +1,8 @@
+/workspace/mochi/tests/machine/x/swift/json_builtin.swift:13:27: warning: conditional cast from 'Any' to 'Any' always succeeds
+11 |         return x
+12 |     }
+13 |     if let obj = _sort(v) as? Any,
+   |                           `- warning: conditional cast from 'Any' to 'Any' always succeeds
+14 |        let data = try? JSONSerialization.data(withJSONObject: obj),
+15 |        let s = String(data: data, encoding: .utf8) {
+{"b":2,"a":1}
