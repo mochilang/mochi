@@ -1,7 +1,6 @@
 # Machine-generated Swift Outputs
 
-Compiled programs: 84/97
-
+Compiled programs: 86/97
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -65,7 +64,7 @@ Compiled programs: 84/97
 - [x] membership.mochi
 - [x] min_max_builtin.mochi
 - [x] nested_function.mochi
-- [ ] order_by_map.mochi
+- [x] order_by_map.mochi
 - [ ] outer_join.mochi
 - [x] partial_application.mochi
 - [x] print_hello.mochi
@@ -77,7 +76,7 @@ Compiled programs: 84/97
 - [x] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
 - [x] slice.mochi
-- [ ] sort_stable.mochi
+- [x] sort_stable.mochi
 - [x] str_builtin.mochi
 - [x] string_compare.mochi
 - [x] string_concat.mochi
@@ -103,4 +102,3 @@ Compiled programs: 84/97
 ## TODO
 - [ ] implement group+join queries
 - [ ] support variant types
-- [ ] support update statements
