@@ -5,6 +5,7 @@ package javacode
 import (
 	"bytes"
 	"fmt"
+	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -12,18 +13,20 @@ import (
 )
 
 type Compiler struct {
-	buf             *bytes.Buffer
-	indent          int
-	helpers         map[string]bool
-	vars            map[string]string
-	funRet          map[string]string
-	funSigs         map[string]*funSig
-	types           map[string]*parser.TypeDecl
-	needFuncImports bool
-	tmpCount        int
-	groupKeys       map[string]string
-	variantOf       map[string]string
-	variantFields   map[string][]string
+	buf               *bytes.Buffer
+	indent            int
+	helpers           map[string]bool
+	vars              map[string]string
+	funRet            map[string]string
+	funSigs           map[string]*funSig
+	types             map[string]*parser.TypeDecl
+	needFuncImports   bool
+	tmpCount          int
+	groupKeys         map[string]string
+	variantOf         map[string]string
+	variantFields     map[string][]string
+	variantFieldTypes map[string][]string
+	srcDir            string
 }
 
 type funSig struct {
@@ -33,16 +36,17 @@ type funSig struct {
 
 func New() *Compiler {
 	return &Compiler{
-		buf:           new(bytes.Buffer),
-		helpers:       make(map[string]bool),
-		vars:          make(map[string]string),
-		funRet:        make(map[string]string),
-		funSigs:       make(map[string]*funSig),
-		types:         make(map[string]*parser.TypeDecl),
-		tmpCount:      0,
-		groupKeys:     make(map[string]string),
-		variantOf:     make(map[string]string),
-		variantFields: make(map[string][]string),
+		buf:               new(bytes.Buffer),
+		helpers:           make(map[string]bool),
+		vars:              make(map[string]string),
+		funRet:            make(map[string]string),
+		funSigs:           make(map[string]*funSig),
+		types:             make(map[string]*parser.TypeDecl),
+		tmpCount:          0,
+		groupKeys:         make(map[string]string),
+		variantOf:         make(map[string]string),
+		variantFields:     make(map[string][]string),
+		variantFieldTypes: make(map[string][]string),
 	}
 }
 
@@ -56,6 +60,7 @@ func (c *Compiler) writeln(s string) {
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	// compile main body first so we know which helpers are needed
+	c.srcDir = filepath.Dir(prog.Pos.Filename)
 	body := new(bytes.Buffer)
 	origBuf := c.buf
 	c.buf = body
@@ -250,6 +255,25 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if c.helpers["load_yaml"] {
 		c.writeln("static List<Map<String,Object>> loadYaml(String path) {")
 		c.indent++
+		c.writeln("if (!(new java.io.File(path)).isAbsolute()) {")
+		c.indent++
+		c.writeln("java.io.File f = new java.io.File(path);")
+		c.writeln("if (!f.exists()) {")
+		c.indent++
+		c.writeln("String root = System.getenv(\"MOCHI_ROOT\");")
+		c.writeln("if (root != null && !root.isEmpty()) {")
+		c.indent++
+		c.writeln("String clean = path;")
+		c.writeln("while (clean.startsWith(\"../\")) clean = clean.substring(3);")
+		c.writeln("java.io.File alt = new java.io.File(root + java.io.File.separator + \"tests\" + java.io.File.separator + clean);")
+		c.writeln("if (!alt.exists()) alt = new java.io.File(root, clean);")
+		c.writeln("if (alt.exists()) path = alt.getPath();")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("}")
 		c.writeln("List<Map<String,Object>> list = new ArrayList<>();")
 		c.writeln("try (BufferedReader br = new BufferedReader(new FileReader(path))) {")
 		c.indent++
@@ -587,6 +611,9 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 		}
 	}
 	if p != nil && p.Struct != nil {
+		if parent, ok := c.variantOf[p.Struct.Name]; ok {
+			return parent
+		}
 		return p.Struct.Name
 	}
 	if p != nil && p.Load != nil {
@@ -604,6 +631,9 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 			if strings.HasPrefix(t, "Map<") {
 				return mapValueType(t)
 			}
+		}
+		if parent, ok := c.variantOf[p.Selector.Root]; ok && len(p.Selector.Tail) == 0 {
+			return parent
 		}
 	}
 	if p != nil && p.Query != nil {
@@ -772,10 +802,14 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		for _, v := range t.Variants {
 			c.variantOf[v.Name] = t.Name
 			var fields []string
+			var types []string
 			for _, f := range v.Fields {
+				typ := c.typeName(f.Type)
 				fields = append(fields, f.Name)
+				types = append(types, typ)
 			}
 			c.variantFields[v.Name] = fields
+			c.variantFieldTypes[v.Name] = types
 			if len(v.Fields) == 0 {
 				c.writeln(fmt.Sprintf("static class %s extends %s {}", v.Name, t.Name))
 				continue
@@ -1470,6 +1504,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Selector != nil:
 		s := p.Selector.Root
 		typ := c.vars[p.Selector.Root]
+		if parent, ok := c.variantOf[p.Selector.Root]; ok && len(p.Selector.Tail) == 0 {
+			if len(c.variantFields[p.Selector.Root]) == 0 {
+				return fmt.Sprintf("new %s.%s()", parent, p.Selector.Root), nil
+			}
+		}
 		if keyVar, ok := c.groupKeys[p.Selector.Root]; ok {
 			if len(p.Selector.Tail) == 1 && p.Selector.Tail[0] == "key" {
 				return keyVar, nil
@@ -1750,6 +1789,24 @@ func identName(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Call == nil {
+		return nil, false
+	}
+	if len(p.Ops) != 0 {
+		return nil, false
+	}
+	return p.Target.Call, true
 }
 
 func simpleStringKey(e *parser.Expr) (string, bool) {
@@ -2093,7 +2150,7 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	}
 	c.needFuncImports = true
 	var b strings.Builder
-	b.WriteString(fmt.Sprintf("(new java.util.function.Supplier<%s>(){public %s get(){\n", retType, retType))
+	b.WriteString(fmt.Sprintf("(new java.util.function.Supplier<%s>(){public %s get(){\n", wrapperType(retType), wrapperType(retType)))
 	b.WriteString("\tvar " + tmp + " = " + target + ";\n")
 	for i, cs := range m.Cases {
 		res, err := c.compileExpr(cs.Result)
@@ -2104,6 +2161,38 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 			b.WriteString("\treturn " + res + ";\n")
 			b.WriteString("}}).get()")
 			return b.String(), nil
+		}
+		if call, ok := callPattern(cs.Pattern); ok {
+			if parent, ok2 := c.variantOf[call.Func]; ok2 {
+				varVar := fmt.Sprintf("_v%d", c.tmpCount)
+				c.tmpCount++
+				b.WriteString(fmt.Sprintf("\tif (%s instanceof %s.%s %s) {\n", tmp, parent, call.Func, varVar))
+				for idx, arg := range call.Args {
+					if id, ok := identName(arg); ok && id != "_" {
+						field := c.variantFields[call.Func][idx]
+						b.WriteString(fmt.Sprintf("\t\tvar %s = %s.%s;\n", id, varVar, field))
+						c.vars[id] = c.variantFieldTypes[call.Func][idx]
+					}
+				}
+				b.WriteString(fmt.Sprintf("\t\treturn %s;\n", res))
+				b.WriteString("\t}\n")
+				for _, arg := range call.Args {
+					if id, ok := identName(arg); ok && id != "_" {
+						delete(c.vars, id)
+					}
+				}
+				continue
+			}
+		} else if ident, ok := identName(cs.Pattern); ok {
+			if parent, ok2 := c.variantOf[ident]; ok2 {
+				cond := fmt.Sprintf("%s instanceof %s.%s", tmp, parent, ident)
+				if i == 0 {
+					b.WriteString("\tif (" + cond + ") return " + res + ";\n")
+				} else {
+					b.WriteString("\telse if (" + cond + ") return " + res + ";\n")
+				}
+				continue
+			}
 		}
 		pat, err := c.compileExpr(cs.Pattern)
 		if err != nil {
@@ -2180,7 +2269,7 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		return fmt.Sprintf("saveJsonl(%s)", src), nil
+		return fmt.Sprintf("saveJsonl((List<Map<?,?>>)(List<?>)%s)", src), nil
 	}
 	return "", fmt.Errorf("save only supports stdout")
 }

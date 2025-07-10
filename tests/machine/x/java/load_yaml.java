@@ -29,6 +29,19 @@ public class Main {
 	return _res1;
 }}).get();
 	static List<Map<String,Object>> loadYaml(String path) {
+		if (!(new java.io.File(path)).isAbsolute()) {
+			java.io.File f = new java.io.File(path);
+			if (!f.exists()) {
+				String root = System.getenv("MOCHI_ROOT");
+				if (root != null && !root.isEmpty()) {
+					String clean = path;
+					while (clean.startsWith("../")) clean = clean.substring(3);
+					java.io.File alt = new java.io.File(root + java.io.File.separator + "tests" + java.io.File.separator + clean);
+					if (!alt.exists()) alt = new java.io.File(root, clean);
+					if (alt.exists()) path = alt.getPath();
+				}
+			}
+		}
 		List<Map<String,Object>> list = new ArrayList<>();
 		try (BufferedReader br = new BufferedReader(new FileReader(path))) {
 			Map<String,Object> cur = null;

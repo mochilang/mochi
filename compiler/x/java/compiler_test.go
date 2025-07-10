@@ -70,6 +70,7 @@ func TestCompileValidPrograms(t *testing.T) {
 				return
 			}
 			cmd := exec.Command("java", "-cp", tmp, "Main")
+			cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root)
 			var buf bytes.Buffer
 			cmd.Stdout = &buf
 			cmd.Stderr = &buf
