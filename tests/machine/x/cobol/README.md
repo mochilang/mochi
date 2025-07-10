@@ -1,4 +1,4 @@
-# Mochi to COBOL Machine Translations (46/97 compiled)
+# Mochi to COBOL Machine Translations (52/97 compiled)
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -18,7 +18,7 @@
 - [ ] exists_builtin.mochi
 - [x] for_list_collection.mochi
 - [x] for_loop.mochi
-- [ ] for_map_collection.mochi
+ - [x] for_map_collection.mochi
 - [x] fun_call.mochi
 - [ ] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
@@ -42,7 +42,7 @@
 - [ ] left_join.mochi
 - [ ] left_join_multi.mochi
 - [x] len_builtin.mochi
-- [ ] len_map.mochi
+ - [x] len_map.mochi
 - [x] len_string.mochi
 - [x] let_and_print.mochi
 - [ ] list_assign.mochi
@@ -51,11 +51,11 @@
 - [ ] list_set_ops.mochi
 - [ ] load_yaml.mochi
 - [ ] map_assign.mochi
-- [ ] map_in_operator.mochi
-- [ ] map_index.mochi
-- [ ] map_int_key.mochi
-- [ ] map_literal_dynamic.mochi
- - [ ] map_membership.mochi
+ - [x] map_in_operator.mochi
+ - [x] map_index.mochi
+ - [x] map_int_key.mochi
+ - [x] map_literal_dynamic.mochi
+ - [x] map_membership.mochi
  - [ ] map_nested_assign.mochi
  - [ ] match_expr.mochi
  - [ ] match_full.mochi

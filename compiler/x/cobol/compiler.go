@@ -23,6 +23,7 @@ type Compiler struct {
 	tmpVar     string
 	seqList    map[string]int
 	constLists map[string][]string
+	constMaps  map[string][]mapEntry
 }
 
 type varField struct {
@@ -36,6 +37,11 @@ type varDecl struct {
 	pic    string
 	val    string
 	fields []varField
+}
+
+type mapEntry struct {
+	key string
+	val string
 }
 
 type funDecl struct {
@@ -84,7 +90,7 @@ func (c *Compiler) collectForVars(st []*parser.Statement) {
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, seqList: make(map[string]int), constLists: make(map[string][]string)}
+	return &Compiler{env: env, seqList: make(map[string]int), constLists: make(map[string][]string), constMaps: make(map[string][]mapEntry)}
 }
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
@@ -97,6 +103,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.tmpVar = ""
 	c.seqList = make(map[string]int)
 	c.constLists = make(map[string][]string)
+	c.constMaps = make(map[string][]mapEntry)
 
 	name := strings.TrimSuffix(filepath.Base(prog.Pos.Filename), filepath.Ext(prog.Pos.Filename))
 	name = strings.ReplaceAll(name, "-", "_")
@@ -256,6 +263,24 @@ func (c *Compiler) addVar(name string, typ *parser.TypeRef, value *parser.Expr, 
 				c.constLists[name] = elems
 				return nil
 			}
+		} else if mp := mapLiteral(value); mp != nil {
+			entries := make([]mapEntry, len(mp.Items))
+			for i, it := range mp.Items {
+				k, err := c.compileExpr(it.Key)
+				if err != nil {
+					return err
+				}
+				v, err := c.compileExpr(it.Value)
+				if err != nil {
+					return err
+				}
+				entries[i] = mapEntry{key: k, val: v}
+			}
+			if c.constMaps == nil {
+				c.constMaps = make(map[string][]mapEntry)
+			}
+			c.constMaps[name] = entries
+			return nil
 		}
 	}
 	pic := "PIC 9"
@@ -444,9 +469,17 @@ func (c *Compiler) compilePrint(call *parser.CallExpr) error {
 						c.writeln(fmt.Sprintf("DISPLAY %d", len(lst.Elems)))
 						return nil
 					}
+					if mp := mapLiteral(fc.Args[0]); mp != nil {
+						c.writeln(fmt.Sprintf("DISPLAY %d", len(mp.Items)))
+						return nil
+					}
 					if id, ok := identExpr(fc.Args[0]); ok {
 						if n, ok := c.seqList[id]; ok {
 							c.writeln(fmt.Sprintf("DISPLAY %d", n))
+							return nil
+						}
+						if m, ok := c.constMaps[id]; ok {
+							c.writeln(fmt.Sprintf("DISPLAY %d", len(m)))
 							return nil
 						}
 					}
@@ -571,9 +604,15 @@ func (c *Compiler) compileUserCall(call *parser.CallExpr) (string, error) {
 		if lst := listLiteral(arg); lst != nil {
 			return fmt.Sprintf("%d", len(lst.Elems)), nil
 		}
+		if mp := mapLiteral(arg); mp != nil {
+			return fmt.Sprintf("%d", len(mp.Items)), nil
+		}
 		if id, ok := identExpr(arg); ok {
 			if n, ok := c.seqList[id]; ok {
 				return fmt.Sprintf("%d", n), nil
+			}
+			if m, ok := c.constMaps[id]; ok {
+				return fmt.Sprintf("%d", len(m)), nil
 			}
 		}
 		if types.IsStringType(types.TypeOfExpr(arg, c.env)) {
@@ -766,6 +805,33 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	name := cobolName(f.Name)
 	var start, end string
 	if f.RangeEnd == nil {
+		if mp := mapLiteral(f.Source); mp != nil {
+			for _, it := range mp.Items {
+				k, err := c.compileExpr(it.Key)
+				if err != nil {
+					return err
+				}
+				c.writeln(fmt.Sprintf("MOVE %s TO %s", k, name))
+				for _, st := range f.Body {
+					if err := c.compileStmt(st); err != nil {
+						return err
+					}
+				}
+			}
+			return nil
+		} else if id, ok := identExpr(f.Source); ok {
+			if entries, ok := c.constMaps[id]; ok {
+				for _, it := range entries {
+					c.writeln(fmt.Sprintf("MOVE %s TO %s", it.key, name))
+					for _, st := range f.Body {
+						if err := c.compileStmt(st); err != nil {
+							return err
+						}
+					}
+				}
+				return nil
+			}
+		}
 		if n, ok := seqIntList(f.Source); ok {
 			start = "1"
 			end = fmt.Sprintf("%d", n)
@@ -855,7 +921,29 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				leftType = types.BoolType{}
 				continue
 			}
+			if mp := mapLiteralPostfix(op.Right); mp != nil {
+				conds := make([]string, len(mp.Items))
+				for i, it := range mp.Items {
+					k, err := c.compileExpr(it.Key)
+					if err != nil {
+						return "", err
+					}
+					conds[i] = fmt.Sprintf("%s = %s", res, k)
+				}
+				res = "(" + strings.Join(conds, " OR ") + ")"
+				leftType = types.BoolType{}
+				continue
+			}
 			if id, ok := identPostfix(op.Right); ok {
+				if entries, ok := c.constMaps[id]; ok {
+					conds := make([]string, len(entries))
+					for i, it := range entries {
+						conds[i] = fmt.Sprintf("%s = %s", res, it.key)
+					}
+					res = "(" + strings.Join(conds, " OR ") + ")"
+					leftType = types.BoolType{}
+					continue
+				}
 				if n, ok := c.seqList[id]; ok {
 					res = fmt.Sprintf("(%s >= 1 AND %s <= %d)", res, res, n)
 					leftType = types.BoolType{}
@@ -949,6 +1037,49 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 						typ = types.AnyType{}
 						continue
 					}
+				}
+				if mp, ok := c.constMaps[name]; ok {
+					key, err := c.compileExpr(idx.Start)
+					if err != nil {
+						return "", err
+					}
+					found := false
+					for _, it := range mp {
+						if it.key == key {
+							val = it.val
+							typ = types.AnyType{}
+							found = true
+							break
+						}
+					}
+					if found {
+						continue
+					}
+				}
+			}
+			if mp := mapLiteralPostfix(p); mp != nil {
+				key, err := c.compileExpr(idx.Start)
+				if err != nil {
+					return "", err
+				}
+				found := false
+				for _, it := range mp.Items {
+					k, err := c.compileExpr(it.Key)
+					if err != nil {
+						return "", err
+					}
+					if k == key {
+						val, err = c.compileExpr(it.Value)
+						if err != nil {
+							return "", err
+						}
+						typ = types.AnyType{}
+						found = true
+						break
+					}
+				}
+				if found {
+					continue
 				}
 			}
 			idxExpr, err := c.compileExpr(idx.Start)
@@ -1230,6 +1361,28 @@ func listLiteralPostfix(p *parser.PostfixExpr) *parser.ListLiteral {
 		return nil
 	}
 	return p.Target.List
+}
+
+func mapLiteral(e *parser.Expr) *parser.MapLiteral {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return nil
+	}
+	v := u.Value
+	if len(v.Ops) != 0 || v.Target == nil {
+		return nil
+	}
+	return v.Target.Map
+}
+
+func mapLiteralPostfix(p *parser.PostfixExpr) *parser.MapLiteral {
+	if p == nil || len(p.Ops) != 0 || p.Target == nil {
+		return nil
+	}
+	return p.Target.Map
 }
 
 func identPostfix(p *parser.PostfixExpr) (string, bool) {
