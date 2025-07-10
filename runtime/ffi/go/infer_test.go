@@ -18,8 +18,8 @@ func TestInfer(t *testing.T) {
 		t.Fatalf("unexpected module path %s", info.Path)
 	}
 
-	if len(info.Functions) != 2 {
-		t.Fatalf("expected 2 functions, got %d", len(info.Functions))
+	if len(info.Functions) != 3 {
+		t.Fatalf("expected 3 functions, got %d", len(info.Functions))
 	}
 
 	var add ffiinfo.FuncInfo
@@ -51,6 +51,23 @@ func TestInfer(t *testing.T) {
 	}
 	if strings.TrimSpace(add.Examples[0].Output) != "5" {
 		t.Fatalf("Add example output incorrect: %q", add.Examples[0].Output)
+	}
+
+	foundMD5 := false
+	for _, f := range info.Functions {
+		if f.Name == "MD5Hex" {
+			foundMD5 = true
+			if len(f.Params) != 1 || f.Params[0].Type != "string" {
+				t.Fatalf("MD5Hex params incorrect: %+v", f.Params)
+			}
+			if len(f.Results) != 1 || f.Results[0].Type != "string" {
+				t.Fatalf("MD5Hex results incorrect: %+v", f.Results)
+			}
+			break
+		}
+	}
+	if !foundMD5 {
+		t.Fatalf("expected MD5Hex function in inference results")
 	}
 
 	foundFail := false
