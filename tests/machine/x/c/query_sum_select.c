@@ -11,12 +11,6 @@ static list_int list_int_create(int len) {
   l.data = (int *)malloc(sizeof(int) * len);
   return l;
 }
-static int _sum_int(list_int v) {
-  int sum = 0;
-  for (int i = 0; i < v.len; i++)
-    sum += v.data[i];
-  return sum;
-}
 int main() {
   list_int _t1 = list_int_create(3);
   _t1.data[0] = 1;
@@ -30,11 +24,16 @@ int main() {
     if (!(n > 1)) {
       continue;
     }
-    _t2.data[_t3] = _sum_int(n);
+    _t2.data[_t3] = n;
     _t3++;
   }
   _t2.len = _t3;
-  double result = _t2;
-  printf("%g\n", result);
+  double result = ({
+    double sum = 0;
+    for (int i = 0; i < _t2.len; i++)
+      sum += _t2.data[i];
+    sum;
+  });
+  printf("%.17g\n", result);
   return 0;
 }
