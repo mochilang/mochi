@@ -8,5 +8,5 @@ fn _save<T>(_src: &[T], _path: &str, _opts: std::collections::HashMap<String, St
 
 fn main() {
     let people = vec![People { name: "Alice", age: 30 }, People { name: "Bob", age: 25 }];
-    _save(people, "-", { let mut m = std::collections::BTreeMap::new(); m.insert("format", "jsonl"); m });
+    _save(&people, "-", { let mut m = std::collections::HashMap::new(); m.insert("format".to_string(), "jsonl".to_string()); m });
 }
