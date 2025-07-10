@@ -11,19 +11,19 @@ const grouped = (() => {
   for (const _k in groups) {
     const g = groups[_k];
     res.push({item: {cat: g.key, total: ((() => {
-  const _tmp1 = [];
+  const _tmp32 = [];
   for (const x of g) {
-    _tmp1.push(x.val);
+    _tmp32.push(x.val);
   }
-  let res = _tmp1;
+  let res = _tmp32;
   return res;
 })()
 .reduce((a,b)=>a+b,0))}, key: (-((() => {
-  const _tmp2 = [];
+  const _tmp33 = [];
   for (const x of g) {
-    _tmp2.push(x.val);
+    _tmp33.push(x.val);
   }
-  let res = _tmp2;
+  let res = _tmp33;
   return res;
 })()
 .reduce((a,b)=>a+b,0)))});

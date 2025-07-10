@@ -11,19 +11,19 @@ const stats = (() => {
   for (const _k in groups) {
     const g = groups[_k];
     res.push({city: g.key, count: g.length, avg_age: ((() => {
-  const _tmp1 = [];
+  const _tmp14 = [];
   for (const p of g) {
-    _tmp1.push(p.age);
+    _tmp14.push(p.age);
   }
-  let res = _tmp1;
+  let res = _tmp14;
   return res;
 })()
 .reduce((a,b)=>a+b,0)/(() => {
-  const _tmp1 = [];
+  const _tmp14 = [];
   for (const p of g) {
-    _tmp1.push(p.age);
+    _tmp14.push(p.age);
   }
-  let res = _tmp1;
+  let res = _tmp14;
   return res;
 })()
 .length)});
@@ -32,7 +32,7 @@ const stats = (() => {
 })()
 ;
 console.log("--- People grouped by city ---");
-const _tmp3 = stats;
-for (const s of (Array.isArray(_tmp3) ? _tmp3 : Object.keys(_tmp3))) {
+const _tmp16 = stats;
+for (const s of (Array.isArray(_tmp16) ? _tmp16 : Object.keys(_tmp16))) {
   console.log(s.city, ": count =", s.count, ", avg_age =", s.avg_age);
 }

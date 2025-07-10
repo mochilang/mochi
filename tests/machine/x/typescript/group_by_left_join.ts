@@ -15,12 +15,12 @@ const stats = (() => {
   for (const _k in groups) {
     const g = groups[_k];
     res.push({name: g.key, count: (() => {
-  const _tmp1 = [];
+  const _tmp23 = [];
   for (const r of g) {
     if (!(r.o)) continue;
-    _tmp1.push(r);
+    _tmp23.push(r);
   }
-  let res = _tmp1;
+  let res = _tmp23;
   return res;
 })()
 .length});
@@ -29,7 +29,7 @@ const stats = (() => {
 })()
 ;
 console.log("--- Group Left Join ---");
-const _tmp3 = stats;
-for (const s of (Array.isArray(_tmp3) ? _tmp3 : Object.keys(_tmp3))) {
+const _tmp25 = stats;
+for (const s of (Array.isArray(_tmp25) ? _tmp25 : Object.keys(_tmp25))) {
   console.log(s.name, "orders:", s.count);
 }

@@ -105,8 +105,3 @@ Compiled: 97/97 programs
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
-
-## Remaining Tasks
-
-- None
-

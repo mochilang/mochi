@@ -16,21 +16,21 @@ const groups = (() => {
 })()
 ;
 let tmp = [];
-const _tmp2 = groups;
-for (const g of (Array.isArray(_tmp2) ? _tmp2 : Object.keys(_tmp2))) {
+const _tmp36 = groups;
+for (const g of (Array.isArray(_tmp36) ? _tmp36 : Object.keys(_tmp36))) {
   let total = 0;
-  const _tmp3 = g.items;
-  for (const x of (Array.isArray(_tmp3) ? _tmp3 : Object.keys(_tmp3))) {
+  const _tmp37 = g.items;
+  for (const x of (Array.isArray(_tmp37) ? _tmp37 : Object.keys(_tmp37))) {
     total = (total + x.val);
   }
   tmp = [...tmp, {tag: g.key, total: total}];
 }
 const result = (() => {
-  const _tmp4 = [];
+  const _tmp38 = [];
   for (const r of tmp) {
-    _tmp4.push({item: r, key: r.tag});
+    _tmp38.push({item: r, key: r.tag});
   }
-  let res = _tmp4;
+  let res = _tmp38;
   res = res.sort((a,b)=> a.key < b.key ? -1 : a.key > b.key ? 1 : 0).map(x=>x.item);
   return res;
 })()

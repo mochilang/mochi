@@ -4,12 +4,12 @@ function contains(a: any, b: any) {
 }
 const xs = [1, 2, 3];
 const ys = (() => {
-  const _tmp1 = [];
+  const _tmp39 = [];
   for (const x of xs) {
     if (!(((x % 2) == 1))) continue;
-    _tmp1.push(x);
+    _tmp39.push(x);
   }
-  let res = _tmp1;
+  let res = _tmp39;
   return res;
 })()
 ;
