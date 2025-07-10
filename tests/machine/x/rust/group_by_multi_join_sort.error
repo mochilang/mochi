@@ -1,26 +1,19 @@
 line 0: compile: exit status 1
-error[E0277]: the trait bound `Key: Eq` is not satisfied
-  --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join_sort.rs:81:571
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join_sort.rs:81:714
    |
-81 | ...nt: c.c_comment, n_name: n.n_name }; tmp1.entry(key).or_insert_with(Vec::new).push(Item {c: c.clone(), o: o.clone(), l: l.clone(), n: ...
-   |                                              ^^^^^ the trait `Eq` is not implemented for `Key`
+81 | ...}); } else { tmp2.push(Item {c: c.clone(), o: o.clone(), l: l.clone(), n: n.clone() }); } } } } } tmp2.sort_by(|a,b| (-sum(&{ let mut ...
+   |                      ---- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Group`, found `Item`
+   |                      |
+   |                      arguments to this method are incorrect
    |
-note: required by a bound in `HashMap::<K, V, S>::entry`
-  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:884:5
-
-error[E0277]: the trait bound `Key: Hash` is not satisfied
-  --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join_sort.rs:81:571
-   |
-81 | ...t: c.c_comment, n_name: n.n_name }; tmp1.entry(key).or_insert_with(Vec::new).push(Item {c: c.clone(), o: o.clone(), l: l.clone(), n: n...
-   |                                             ^^^^^ the trait `Hash` is not implemented for `Key`
-   |
-note: required by a bound in `HashMap::<K, V, S>::entry`
-  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:884:5
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:2442:12
 
 error[E0277]: cannot subtract `f64` from `{integer}`
-  --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join_sort.rs:81:899
+  --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join_sort.rs:81:906
    |
-81 | ...().items { tmp3.push(x.l.l_extendedprice * (1 - x.l.l_discount)); } tmp3 })).partial_cmp(&(-sum(&{ let mut tmp3 = Vec::new();for x in ...
+81 | ...().items { tmp4.push(x.l.l_extendedprice * (1 - x.l.l_discount)); } tmp4 })).partial_cmp(&(-sum(&{ let mut tmp4 = Vec::new();for x in ...
    |                                                  ^ no implementation for `{integer} - f64`
    |
    = help: the trait `Sub<f64>` is not implemented for `{integer}`
@@ -36,9 +29,9 @@ error[E0277]: cannot subtract `f64` from `{integer}`
            and 56 others
 
 error[E0277]: cannot subtract `f64` from `{integer}`
-  --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join_sort.rs:81:1041
+  --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join_sort.rs:81:1048
    |
-81 | ...().items { tmp3.push(x.l.l_extendedprice * (1 - x.l.l_discount)); } tmp3 }))).unwrap()); let mut result = Vec::new(); for g in tmp2 { ...
+81 | ...().items { tmp4.push(x.l.l_extendedprice * (1 - x.l.l_discount)); } tmp4 }))).unwrap()); let mut result = Vec::new(); for g in tmp2 { ...
    |                                                  ^ no implementation for `{integer} - f64`
    |
    = help: the trait `Sub<f64>` is not implemented for `{integer}`
@@ -54,21 +47,21 @@ error[E0277]: cannot subtract `f64` from `{integer}`
            and 56 others
 
 error[E0308]: mismatched types
-  --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join_sort.rs:81:1161
+  --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join_sort.rs:81:1168
    |
-81 | ...g in tmp2 { result.push(Result { c_custkey: g.key.c_custkey, c_name: g.key.c_name, revenue: sum(&{ let mut tmp4 = Vec::new();for x in ...
+81 | ...g in tmp2 { result.push(Result { c_custkey: g.key.c_custkey, c_name: g.key.c_name, revenue: sum(&{ let mut tmp5 = Vec::new();for x in ...
    |                                                ^^^^^^^^^^^^^^^ expected `Group`, found `i32`
 
 error[E0308]: mismatched types
-  --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join_sort.rs:81:1186
+  --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join_sort.rs:81:1193
    |
-81 | ...Result { c_custkey: g.key.c_custkey, c_name: g.key.c_name, revenue: sum(&{ let mut tmp4 = Vec::new();for x in &g.clone().items { tmp4....
+81 | ...Result { c_custkey: g.key.c_custkey, c_name: g.key.c_name, revenue: sum(&{ let mut tmp5 = Vec::new();for x in &g.clone().items { tmp5....
    |                                                 ^^^^^^^^^^^^ expected `Group`, found `&str`
 
 error[E0277]: cannot subtract `f64` from `{integer}`
-  --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join_sort.rs:81:1305
+  --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join_sort.rs:81:1312
    |
-81 | ...().items { tmp4.push(x.l.l_extendedprice * (1 - x.l.l_discount)); } tmp4 }), c_acctbal: g.key.c_acctbal, n_name: g.key.n_name, c_addre...
+81 | ...().items { tmp5.push(x.l.l_extendedprice * (1 - x.l.l_discount)); } tmp5 }), c_acctbal: g.key.c_acctbal, n_name: g.key.n_name, c_addre...
    |                                                  ^ no implementation for `{integer} - f64`
    |
    = help: the trait `Sub<f64>` is not implemented for `{integer}`
@@ -84,36 +77,36 @@ error[E0277]: cannot subtract `f64` from `{integer}`
            and 56 others
 
 error[E0308]: mismatched types
-  --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join_sort.rs:81:1347
+  --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join_sort.rs:81:1354
    |
-81 | ...1 - x.l.l_discount)); } tmp4 }), c_acctbal: g.key.c_acctbal, n_name: g.key.n_name, c_address: g.key.c_address, c_phone: g.key.c_phone,...
+81 | ...1 - x.l.l_discount)); } tmp5 }), c_acctbal: g.key.c_acctbal, n_name: g.key.n_name, c_address: g.key.c_address, c_phone: g.key.c_phone,...
    |                                                ^^^^^^^^^^^^^^^ expected `Group`, found `f64`
 
 error[E0308]: mismatched types
-  --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join_sort.rs:81:1372
+  --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join_sort.rs:81:1379
    |
-81 | ...tmp4 }), c_acctbal: g.key.c_acctbal, n_name: g.key.n_name, c_address: g.key.c_address, c_phone: g.key.c_phone, c_comment: g.key.c_comm...
+81 | ...tmp5 }), c_acctbal: g.key.c_acctbal, n_name: g.key.n_name, c_address: g.key.c_address, c_phone: g.key.c_phone, c_comment: g.key.c_comm...
    |                                                 ^^^^^^^^^^^^ expected `Group`, found `&str`
 
 error[E0308]: mismatched types
-  --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join_sort.rs:81:1397
+  --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join_sort.rs:81:1404
    |
 81 | ...c_acctbal, n_name: g.key.n_name, c_address: g.key.c_address, c_phone: g.key.c_phone, c_comment: g.key.c_comment }); } result };
    |                                                ^^^^^^^^^^^^^^^ expected `Group`, found `&str`
 
 error[E0308]: mismatched types
-  --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join_sort.rs:81:1423
+  --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join_sort.rs:81:1430
    |
 81 | ...n_name, c_address: g.key.c_address, c_phone: g.key.c_phone, c_comment: g.key.c_comment }); } result };
    |                                                 ^^^^^^^^^^^^^ expected `Group`, found `&str`
 
 error[E0308]: mismatched types
-  --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join_sort.rs:81:1449
+  --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join_sort.rs:81:1456
    |
 81 | ...address, c_phone: g.key.c_phone, c_comment: g.key.c_comment }); } result };
    |                                                ^^^^^^^^^^^^^^^ expected `Group`, found `&str`
 
-error: aborting due to 12 previous errors
+error: aborting due to 11 previous errors
 
 Some errors have detailed explanations: E0277, E0308.
 For more information about an error, try `rustc --explain E0277`.

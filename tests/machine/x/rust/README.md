@@ -2,7 +2,7 @@
 
 This directory contains Rust code generated from the Mochi programs in `tests/vm/valid` using the Rust compiler. Each file was built with `rustc` and executed. Successful runs have a `.out` file, while failures produce a `.error` file.
 
-Compiled programs: 95/100
+Compiled programs: 96/100
 
 ## Checklist
 - [x] append_builtin
@@ -33,7 +33,7 @@ Compiled programs: 95/100
 - [x] group_by_having
 - [x] group_by_join
 - [x] group_by_left_join
-- [ ] group_by_multi_join
+- [x] group_by_multi_join
 - [ ] group_by_multi_join_sort
 - [x] group_by_sort
 - [x] group_items_iteration
