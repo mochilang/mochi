@@ -486,12 +486,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if c.helpers["_intersect"] {
 		out.WriteString("fn _intersect<T: Eq + std::hash::Hash + Clone>(a: Vec<T>, b: Vec<T>) -> Vec<T> {\n    use std::collections::HashSet;\n    let set: HashSet<T> = b.into_iter().collect();\n    a.into_iter().filter(|x| set.contains(x)).collect()\n}\n\n")
 	}
-	if c.helpers["_load"] {
-		out.WriteString("fn _load<T: serde::de::DeserializeOwned>(path: &str, _opts: std::collections::HashMap<String, String>) -> Vec<T> {\n    use std::io::Read;\n    let mut data = String::new();\n    if path.is_empty() || path == \"-\" {\n        std::io::stdin().read_to_string(&mut data).unwrap();\n    } else if let Ok(mut f) = std::fs::File::open(path) {\n        f.read_to_string(&mut data).unwrap();\n    }\n    if let Ok(v) = serde_json::from_str::<Vec<T>>(&data) { return v; }\n    if let Ok(v) = serde_json::from_str::<T>(&data) { return vec![v]; }\n    Vec::new()\n}\n\n")
-	}
-	if c.helpers["_save"] {
-		out.WriteString("fn _save<T: serde::Serialize>(src: &[T], path: &str, _opts: std::collections::HashMap<String, String>) {\n    if let Ok(text) = serde_json::to_string(src) {\n        if path.is_empty() || path == \"-\" {\n            println!(\"{}\", text);\n        } else {\n            std::fs::write(path, text).unwrap();\n        }\n    }\n}\n\n")
-	}
+        if c.helpers["_load"] {
+                out.WriteString("fn _load<T: serde::de::DeserializeOwned>(path: &str, opts: std::collections::HashMap<String, String>) -> Vec<T> {\n    use std::io::Read;\n    let mut data = String::new();\n    if path.is_empty() || path == \"-\" {\n        std::io::stdin().read_to_string(&mut data).unwrap();\n    } else if let Ok(mut f) = std::fs::File::open(path) {\n        f.read_to_string(&mut data).unwrap();\n    }\n    if let Some(fmt) = opts.get(\"format\") {\n        if fmt == \"yaml\" {\n            if let Ok(v) = serde_yaml::from_str::<Vec<T>>(&data) { return v; }\n            if let Ok(v) = serde_yaml::from_str::<T>(&data) { return vec![v]; }\n        }\n    }\n    if let Ok(v) = serde_json::from_str::<Vec<T>>(&data) { return v; }\n    if let Ok(v) = serde_json::from_str::<T>(&data) { return vec![v]; }\n    Vec::new()\n}\n\n")
+        }
+        if c.helpers["_save"] {
+                out.WriteString("fn _save<T: serde::Serialize>(src: &[T], path: &str, opts: std::collections::HashMap<String, String>) {\n    if let Some(fmt) = opts.get(\"format\") {\n        if fmt == \"jsonl\" {\n            if path.is_empty() || path == \"-\" {\n                for item in src { if let Ok(text) = serde_json::to_string(item) { println!(\"{}\", text); } }\n            } else if let Ok(mut f) = std::fs::File::create(path) {\n                use std::io::Write;\n                for item in src { if let Ok(text) = serde_json::to_string(item) { writeln!(f, \"{}\", text).unwrap(); } }\n            }\n            return;\n        }\n    }\n    if let Ok(text) = serde_json::to_string(src) {\n        if path.is_empty() || path == \"-\" {\n            println!(\"{}\", text);\n        } else {\n            std::fs::write(path, text).unwrap();\n        }\n    }\n}\n\n")
+        }
 	out.Write(c.buf.Bytes())
 	return out.Bytes(), nil
 }

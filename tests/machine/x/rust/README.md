@@ -94,11 +94,11 @@ Checklist of programs that currently compile and run (90/97):
 - [x] join_multi
 - [x] left_join
 - [x] left_join_multi
-- [ ] load_yaml
+ - [x] load_yaml
 - [ ] outer_join
 - [x] query_sum_select
  - [x] right_join
-- [ ] save_jsonl_stdout
+ - [x] save_jsonl_stdout
 - [x] sort_stable
 - [x] tree_sum
 - [x] update_stmt
