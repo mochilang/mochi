@@ -27,6 +27,7 @@ type Compiler struct {
 	useYAML   bool
 	useLoad   bool
 	useSave   bool
+	useTruthy bool
 	tmp       int
 	mapVars   map[string]bool
 	groupKeys map[string]string
@@ -50,6 +51,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.useYAML = false
 	c.useLoad = false
 	c.useSave = false
+	c.useTruthy = false
 	c.mapVars = make(map[string]bool)
 	c.groupKeys = make(map[string]string)
 
@@ -120,6 +122,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		out.WriteString("  if (col is Map) return col.containsKey(item);\n")
 		out.WriteString("  if (col is Iterable || col is String) return col.contains(item);\n")
 		out.WriteString("  return false;\n")
+		out.WriteString("}\n\n")
+	}
+	if c.useTruthy {
+		out.WriteString("bool _truthy(dynamic v) {\n")
+		out.WriteString("  if (v == null) return false;\n")
+		out.WriteString("  if (v is bool) return v;\n")
+		out.WriteString("  if (v is num) return v != 0;\n")
+		out.WriteString("  if (v is String) return v.isNotEmpty;\n")
+		out.WriteString("  if (v is Iterable || v is Map) return v.isNotEmpty;\n")
+		out.WriteString("  return true;\n")
 		out.WriteString("}\n\n")
 	}
 	if c.useLoad {
@@ -382,7 +394,7 @@ func (c *Compiler) compileFun(f *parser.FunStmt) error {
 }
 
 func (c *Compiler) compileIf(s *parser.IfStmt) error {
-	cond, err := c.compileExpr(s.Cond)
+	cond, err := c.boolExpr(s.Cond)
 	if err != nil {
 		return err
 	}
@@ -415,7 +427,7 @@ func (c *Compiler) compileIf(s *parser.IfStmt) error {
 }
 
 func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
-	cond, err := c.compileExpr(w.Cond)
+	cond, err := c.boolExpr(w.Cond)
 	if err != nil {
 		return err
 	}
@@ -515,7 +527,7 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 	}
 
 	if u.Where != nil {
-		cond, err := c.compileExpr(u.Where)
+		cond, err := c.boolExpr(u.Where)
 		if err != nil {
 			c.env = origEnv
 			return err
@@ -647,6 +659,17 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 				val = fmt.Sprintf("-(%s as num)", val)
 				continue
 			}
+			val = "-" + val
+			continue
+		}
+		if op == "!" {
+			if isBoolType(t) {
+				val = "!" + val
+			} else {
+				c.useTruthy = true
+				val = fmt.Sprintf("!_truthy(%s)", val)
+			}
+			continue
 		}
 		val = op + val
 	}
@@ -820,7 +843,7 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 }
 
 func (c *Compiler) compileIfExpr(ix *parser.IfExpr) (string, error) {
-	cond, err := c.compileExpr(ix.Cond)
+	cond, err := c.boolExpr(ix.Cond)
 	if err != nil {
 		return "", err
 	}
@@ -897,7 +920,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			out.WriteString(fmt.Sprintf("  var %s = <dynamic>[];\n", tmp))
 			left := c.mustExpr(q.Source)
 			right := c.mustExpr(j.Src)
-			cond := c.mustExpr(j.On)
+			cond := c.mustBoolExpr(j.On)
 			sel := c.mustExpr(q.Select)
 
 			if *j.Side == "right" {
@@ -983,7 +1006,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			}
 			for _, j := range q.Joins {
 				js := c.mustExpr(j.Src)
-				on := c.mustExpr(j.On)
+				on := c.mustBoolExpr(j.On)
 				loops = append(loops, loopInfo{head: fmt.Sprintf("var %s in %s", j.Var, js), cond: on})
 				if t := types.TypeOfExpr(j.Src, c.env); t != nil {
 					if lt, ok := t.(types.ListType); ok {
@@ -1003,7 +1026,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				}
 			}
 			if q.Where != nil {
-				cond := c.mustExpr(q.Where)
+				cond := c.mustBoolExpr(q.Where)
 				w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("if (!(%s)) continue;\n", cond))
 			}
 			val := c.mustExpr(arg)
@@ -1055,7 +1078,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	for _, j := range q.Joins {
 		js := c.mustExpr(j.Src)
-		on := c.mustExpr(j.On)
+		on := c.mustBoolExpr(j.On)
 		if j.Side != nil && *j.Side == "left" {
 			tmpVar := fmt.Sprintf("_jt%d", c.tmp)
 			c.tmp++
@@ -1091,7 +1114,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 
 	if q.Where != nil {
-		cond := c.mustExpr(q.Where)
+		cond := c.mustBoolExpr(q.Where)
 		w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("if (!(%s)) continue;\n", cond))
 	}
 
@@ -1135,7 +1158,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		w(fmt.Sprintf("    var %s = entry.value;\n", grpVar))
 		w(fmt.Sprintf("    var %s = entry.key;\n", keyVar))
 		if q.Group.Having != nil {
-			cond := c.mustExpr(q.Group.Having)
+			cond := c.mustBoolExpr(q.Group.Having)
 			w(fmt.Sprintf("    if (!(%s)) continue;\n", cond))
 		}
 		sel := c.mustExpr(q.Select)
@@ -1213,6 +1236,26 @@ func (c *Compiler) mustExpr(e *parser.Expr) string {
 	s, err := c.compileExpr(e)
 	if err != nil {
 		return "null"
+	}
+	return s
+}
+
+func (c *Compiler) boolExpr(e *parser.Expr) (string, error) {
+	s, err := c.compileExpr(e)
+	if err != nil {
+		return "", err
+	}
+	if _, ok := types.TypeOfExprBasic(e, c.env).(types.BoolType); !ok {
+		c.useTruthy = true
+		s = fmt.Sprintf("_truthy(%s)", s)
+	}
+	return s, nil
+}
+
+func (c *Compiler) mustBoolExpr(e *parser.Expr) string {
+	s, err := c.boolExpr(e)
+	if err != nil {
+		return "false"
 	}
 	return s
 }
@@ -1734,6 +1777,11 @@ func isNumericType(t types.Type) bool {
 	default:
 		return false
 	}
+}
+
+func isBoolType(t types.Type) bool {
+	_, ok := t.(types.BoolType)
+	return ok
 }
 
 func isComparableType(t types.Type) bool {

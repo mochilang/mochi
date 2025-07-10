@@ -103,3 +103,22 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+
+## Remaining Tasks
+
+The following programs still fail to compile or run:
+
+- group_by
+- group_by_conditional_sum
+- group_by_left_join
+- group_by_multi_join_sort
+- group_by_sort
+- group_items_iteration
+- load_yaml
+- match_full
+- outer_join
+- query_sum_select
+- right_join
+- slice
+- tree_sum
+- two-sum
