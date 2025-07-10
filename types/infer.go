@@ -308,6 +308,14 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 						} else {
 							cur = tt.Elem
 						}
+					case GroupType:
+						if field == "key" {
+							cur = tt.Key
+						} else if field == "items" {
+							cur = ListType{Elem: tt.Elem}
+						} else {
+							cur = AnyType{}
+						}
 					case StringType:
 						if field == "contains" {
 							cur = FuncType{Params: []Type{StringType{}}, Return: BoolType{}}
