@@ -1,30 +1,44 @@
+#include <algorithm>
 #include <iostream>
+#include <memory>
 
-struct __struct1 {
-  decltype(Leaf) left;
-  decltype(2) value;
-  decltype(Leaf) right;
+struct Tree {
+  virtual ~Tree() = default;
 };
-inline bool operator==(const __struct1 &a, const __struct1 &b) {
-  return a.left == b.left && a.value == b.value && a.right == b.right;
-}
-inline bool operator!=(const __struct1 &a, const __struct1 &b) {
-  return !(a == b);
-}
+struct Leaf : Tree {};
+struct Node : Tree {
+  std::unique_ptr<Tree> left;
+  int value;
+  std::unique_ptr<Tree> right;
+};
 
-auto sum_tree(auto t) {
+int sum_tree(Tree *t) {
   return ([&]() {
     auto __v = t;
-    if (__v == Leaf)
+    if (dynamic_cast<Leaf *>(__v))
       return 0;
-    else if (__v == Node(left, value, right))
-      return ((sum_tree(left) + value) + sum_tree(right));
+    if (auto __p1 = dynamic_cast<Node *>(__v)) {
+      return ((sum_tree(__p1->left.get()) + __p1->value) +
+              sum_tree(__p1->right.get()));
+    }
     return decltype(0){};
   })();
 }
 
 int main() {
-  auto t = __struct1{Leaf, 1, __struct1{Leaf, 2, Leaf}};
+  auto t = ([&]() {
+    auto __p = new Node();
+    __p->left = std::unique_ptr<Tree>(new Leaf{});
+    __p->value = 1;
+    __p->right = std::unique_ptr<Tree>(([&]() {
+      auto __p = new Node();
+      __p->left = std::unique_ptr<Tree>(new Leaf{});
+      __p->value = 2;
+      __p->right = std::unique_ptr<Tree>(new Leaf{});
+      return __p;
+    })());
+    return __p;
+  })();
   {
     std::cout << std::boolalpha << sum_tree(t);
     std::cout << std::endl;

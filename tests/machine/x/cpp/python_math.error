@@ -1,1 +1,25 @@
-line 0: compile error: unsupported statement at 2:1
+line 4: ../../../tests/machine/x/cpp/python_math.cpp:4:14: error: ‘math’ was not declared in this scope
+    4 | auto area = (math.pi * math.pow(r, 2));
+      |              ^~~~
+../../../tests/machine/x/cpp/python_math.cpp:4:24: error: ‘math’ was not declared in this scope
+    4 | auto area = (math.pi * math.pow(r, 2));
+      |                        ^~~~
+../../../tests/machine/x/cpp/python_math.cpp:5:13: error: ‘math’ was not declared in this scope
+    5 | auto root = math.sqrt(49);
+      |             ^~~~
+../../../tests/machine/x/cpp/python_math.cpp:6:14: error: ‘math’ was not declared in this scope
+    6 | auto sin45 = math.sin((math.pi / 4));
+      |              ^~~~
+../../../tests/machine/x/cpp/python_math.cpp:6:24: error: ‘math’ was not declared in this scope
+    6 | auto sin45 = math.sin((math.pi / 4));
+      |                        ^~~~
+../../../tests/machine/x/cpp/python_math.cpp:7:14: error: ‘math’ was not declared in this scope
+    7 | auto log_e = math.log(math.e);
+      |              ^~~~
+../../../tests/machine/x/cpp/python_math.cpp:7:23: error: ‘math’ was not declared in this scope
+    7 | auto log_e = math.log(math.e);
+      |                       ^~~~
+
+  3 | auto r = 3;
+  4 | auto area = (math.pi * math.pow(r, 2));
+  5 | auto root = math.sqrt(49);
