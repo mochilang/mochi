@@ -8,7 +8,7 @@ end
 
 def sum_tree(t)
 	return (begin
-	_t0 = $t
+	_t0 = t
 	case
 	when _t0.is_a?(Leaf)
 		0
