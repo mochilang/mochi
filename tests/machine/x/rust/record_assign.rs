@@ -1,4 +1,4 @@
-#[derive(Default, Debug, Clone, PartialEq)]
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
 struct Counter {
         n: i32,
 }

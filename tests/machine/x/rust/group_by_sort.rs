@@ -1,19 +1,19 @@
-#[derive(Default, Debug, Clone, PartialEq)]
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
 struct Item {
     cat: &'static str,
     val: i32,
 }
 
-#[derive(Default, Debug, Clone, PartialEq)]
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
 struct Group {
     key: &'static str,
     items: Vec<Item>,
 }
 
-#[derive(Default, Debug, Clone, PartialEq)]
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
 struct Result {
     cat: &'static str,
-    total: f64,
+    total: i32,
 }
 
 fn sum<T>(v: &[T]) -> T where T: std::iter::Sum<T> + Copy {

@@ -1,11 +1,11 @@
-#[derive(Default, Debug, Clone, PartialEq)]
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
 struct People {
     name: &'static str,
     age: i32,
     city: &'static str,
 }
 
-#[derive(Default, Debug, Clone, PartialEq)]
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
 struct Group {
     key: &'static str,
     items: Vec<People>,

@@ -1,4 +1,4 @@
-#[derive(Default, Debug, Clone, PartialEq)]
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
 struct Person {
         name: &'static str,
         age: i32,

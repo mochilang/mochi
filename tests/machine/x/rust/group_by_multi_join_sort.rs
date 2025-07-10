@@ -1,4 +1,4 @@
-#[derive(Default, Debug, Clone, PartialEq)]
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
 struct Nation {
     n_nationkey: i32,
     n_name: &'static str,
@@ -15,7 +15,7 @@ struct Customer {
     c_comment: &'static str,
 }
 
-#[derive(Default, Debug, Clone, PartialEq)]
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
 struct Order {
     o_orderkey: i32,
     o_custkey: i32,

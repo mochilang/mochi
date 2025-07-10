@@ -1,4 +1,30 @@
 line 0: compile: exit status 1
+error[E0277]: the trait bound `Result: Eq` is not satisfied
+  --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join.rs:30:5
+   |
+27 | #[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
+   |                                            -- in this derive macro expansion
+...
+30 |     items: Vec<Result>,
+   |     ^^^^^^^^^^^^^^^^^^ the trait `Eq` is not implemented for `Result`
+   |
+   = help: the trait `Eq` is implemented for `Vec<T, A>`
+   = note: required for `Vec<Result>` to implement `Eq`
+note: required by a bound in `AssertParamIsEq`
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/cmp.rs:364:1
+
+error[E0277]: the trait bound `Result: Hash` is not satisfied
+  --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join.rs:30:5
+   |
+27 | #[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
+   |                                                ---- in this derive macro expansion
+...
+30 |     items: Vec<Result>,
+   |     ^^^^^^^^^^^^^^^^^^ the trait `Hash` is not implemented for `Result`
+   |
+   = help: the trait `Hash` is implemented for `Vec<T, A>`
+   = note: required for `Vec<Result>` to implement `Hash`
+
 error[E0308]: mismatched types
   --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join.rs:47:264
    |
@@ -21,8 +47,9 @@ note: function defined here
 39 | fn sum<T>(v: &[T]) -> T where T: std::iter::Sum<T> + Copy {
    |    ^^^    -------
 
-error: aborting due to 2 previous errors
+error: aborting due to 4 previous errors
 
-For more information about this error, try `rustc --explain E0308`.
+Some errors have detailed explanations: E0277, E0308.
+For more information about an error, try `rustc --explain E0277`.
 
-#[derive(Default, Debug, Clone, PartialEq)]
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
