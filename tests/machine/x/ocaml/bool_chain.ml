@@ -17,7 +17,7 @@ let rec __show v =
 
 
 let rec boom  : bool =
-  print_endline (__show ("boom"));
+  print_endline "boom";
   true
 
 

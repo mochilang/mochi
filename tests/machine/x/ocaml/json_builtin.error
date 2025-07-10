@@ -1,0 +1,15 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/json_builtin.ml", line 3, characters 32-48:
+3 | let m : (string * Obj.t) list = { a = 1; b = 2 }
+                                    ^^^^^^^^^^^^^^^^
+Error: This expression should not be a record, the expected type is
+       (string * Obj.t) list
+
+
+Context (around line 3):
+   1 | type record1 = { mutable a : int; mutable b : int }
+   2 | 
+   3 | let m : (string * Obj.t) list = { a = 1; b = 2 }
+   4 | 
+   5 | let () =

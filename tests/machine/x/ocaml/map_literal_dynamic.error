@@ -1,0 +1,16 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/map_literal_dynamic.ml", line 23, characters 36-62:
+23 | let m : (string * Obj.t) list ref = ref { a = (!x); b = (!y) }
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This expression has type record1 ref
+       but an expression was expected of type (string * Obj.t) list ref
+       Type record1 is not compatible with type (string * Obj.t) list 
+
+
+Context (around line 23):
+  21 | let x : int ref = ref 3
+  22 | let y : int ref = ref 4
+  23 | let m : (string * Obj.t) list ref = ref { a = (!x); b = (!y) }
+  24 | 
+  25 | let () =

@@ -1,0 +1,16 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/left_join_multi.ml", line 38, characters 8-13:
+38 |       ) items;
+             ^^^^^
+Error: This expression has type record3 list
+       but an expression was expected of type (string * Obj.t) list list
+       Type record3 is not compatible with type (string * Obj.t) list 
+
+
+Context (around line 38):
+  36 |           __res0 := { orderId = Obj.obj (List.assoc "id" o); name = Obj.obj (List.assoc "name" c); item = i } :: !__res0;
+  37 |           matched := true)
+  38 |       ) items;
+  39 |       if not !matched then (
+  40 |         let i = Obj.magic () in

@@ -32,7 +32,7 @@ let s : string = "hello"
 let () =
   print_endline (__show ((List.mem 1 ys)));
   print_endline (__show ((List.mem 2 ys)));
-  print_endline (__show ((List.mem_assoc "a" m)));
-  print_endline (__show ((List.mem_assoc "b" m)));
-  print_endline (__show ((List.mem "ell" s)));
-  print_endline (__show ((List.mem "foo" s)));
+  print_endline (List.mem_assoc "a" m);
+  print_endline (List.mem_assoc "b" m);
+  print_endline (List.mem "ell" s);
+  print_endline (List.mem "foo" s);

@@ -26,4 +26,4 @@ let () =
     ) __it
   ) people
 assert ((people = [{ name = "Alice"; age = 17; status = "minor" };{ name = "Bob"; age = 26; status = "adult" };{ name = "Charlie"; age = 19; status = "adult" };{ name = "Diana"; age = 16; status = "minor" }]))
-print_endline (__show ("ok"));
+print_endline "ok";

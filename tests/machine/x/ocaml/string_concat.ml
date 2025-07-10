@@ -18,4 +18,4 @@ let rec __show v =
 
 
 let () =
-  print_endline (__show (("hello " ^ "world")));
+  print_endline ("hello " ^ "world");

@@ -1,0 +1,16 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/dataset_sort_take_limit.ml", line 29, characters 0-16:
+29 | List.rev !__res0)
+     ^^^^^^^^^^^^^^^^
+Error: This expression has type record1 list
+       but an expression was expected of type (string * Obj.t) list list
+       Type record1 is not compatible with type (string * Obj.t) list 
+
+
+Context (around line 29):
+  27 |       __res0 := p :: !__res0;
+  28 |   ) products;
+  29 | List.rev !__res0)
+  30 | 
+  31 | 

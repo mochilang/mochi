@@ -1,0 +1,16 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/join_multi.ml", line 36, characters 14-19:
+36 |             ) items;
+                   ^^^^^
+Error: This expression has type record3 list
+       but an expression was expected of type (string * Obj.t) list list
+       Type record3 is not compatible with type (string * Obj.t) list 
+
+
+Context (around line 36):
+  34 |                         if (Obj.obj (List.assoc "customerId" o) = Obj.obj (List.assoc "id" c)) && (Obj.obj (List.assoc "id" o) = Obj.obj (List.assoc "orderId" i)) then
+  35 |         __res0 := { name = Obj.obj (List.assoc "name" c); sku = Obj.obj (List.assoc "sku" i) } :: !__res0;
+  36 |             ) items;
+  37 |       ) customers;
+  38 |   ) orders;

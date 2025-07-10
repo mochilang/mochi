@@ -1,0 +1,15 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/values_builtin.ml", line 21, characters 32-55:
+21 | let m : (string * Obj.t) list = { a = 1; b = 2; c = 3 }
+                                     ^^^^^^^^^^^^^^^^^^^^^^^
+Error: This expression should not be a record, the expected type is
+       (string * Obj.t) list
+
+
+Context (around line 21):
+  19 | type record1 = { mutable a : int; mutable b : int; mutable c : int }
+  20 | 
+  21 | let m : (string * Obj.t) list = { a = 1; b = 2; c = 3 }
+  22 | 
+  23 | let () =

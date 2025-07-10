@@ -27,4 +27,4 @@ let string_slice s i j = String.sub s i (j - i)
 let () =
   print_endline (__show (slice [1;2;3] 1 3));
   print_endline (__show (slice [1;2;3] 0 2));
-  print_endline (__show (string_slice "hello" 1 4));
+  print_endline string_slice "hello" 1 4;

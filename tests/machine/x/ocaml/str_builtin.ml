@@ -18,4 +18,4 @@ let rec __show v =
 
 
 let () =
-  print_endline (__show (__show (123)));
+  print_endline __show (123);

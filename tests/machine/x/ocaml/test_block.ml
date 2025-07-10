@@ -20,4 +20,4 @@ let rec __show v =
 let () =
   let x : int = (1 + 2) in
   assert ((x = 3))
-  print_endline (__show ("ok"));
+  print_endline "ok";
