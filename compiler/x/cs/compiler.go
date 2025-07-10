@@ -2393,9 +2393,15 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	if fn, ok := c.env.GetFunc(call.Func); ok {
 		paramTypes = make([]types.Type, len(fn.Params))
 		for i, p := range fn.Params {
-			paramTypes[i] = c.resolveTypeRef(p.Type)
+			if p.Type != nil {
+				paramTypes[i] = c.resolveTypeRef(p.Type)
+			} else {
+				paramTypes[i] = types.AnyType{}
+			}
 		}
-		retType = c.resolveTypeRef(fn.Return)
+		if fn.Return != nil {
+			retType = c.resolveTypeRef(fn.Return)
+		}
 	} else if t, err := c.env.GetVar(call.Func); err == nil {
 		if ft, ok := t.(types.FuncType); ok {
 			paramTypes = ft.Params

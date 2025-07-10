@@ -2,7 +2,7 @@
 
 This directory holds C# source generated from the Mochi programs in `tests/vm/valid`.  Each compiled program has a `.cs` file and the expected output in a matching `.out`.  If the compiler failed a `.error` file will be present instead.
 
-Compiled programs: 67/97
+Compiled programs: 82/97
 
 ## Checklist
 - [x] append_builtin
@@ -72,36 +72,36 @@ Compiled programs: 67/97
 - [x] outer_join
 - [x] partial_application
 - [x] print_hello
-- [ ] pure_fold
+- [x] pure_fold
 - [ ] pure_global_fold
 - [ ] query_sum_select
 - [ ] record_assign
 - [x] right_join
 - [ ] save_jsonl_stdout
-- [ ] short_circuit
-- [ ] slice
-- [ ] sort_stable
+- [x] short_circuit
+- [x] slice
+- [x] sort_stable
 - [x] str_builtin
 - [ ] string_compare
-- [ ] string_concat
-- [ ] string_contains
-- [ ] string_in_operator
-- [ ] string_index
-- [ ] string_prefix_slice
+- [x] string_concat
+- [x] string_contains
+- [x] string_in_operator
+- [x] string_index
+- [x] string_prefix_slice
 - [ ] substring_builtin
-- [ ] sum_builtin
-- [ ] tail_recursion
-- [ ] test_block
+- [x] sum_builtin
+- [x] tail_recursion
+- [x] test_block
 - [ ] tree_sum
 - [ ] two-sum
-- [ ] typed_let
-- [ ] typed_var
-- [ ] unary_neg
+- [x] typed_let
+- [x] typed_var
+- [x] unary_neg
 - [ ] update_stmt
-- [ ] user_type_literal
+- [x] user_type_literal
 - [ ] values_builtin
-- [ ] var_assignment
-- [ ] while_loop
+- [x] var_assignment
+- [x] while_loop
 
 ### Tasks remaining
 - [ ] Implement the remaining Mochi features and generate code for the unchecked programs above.
