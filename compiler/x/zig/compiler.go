@@ -384,9 +384,19 @@ func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 				c.env.SetVar(s.Let.Name, typ, false)
 			}
 			if s.Let.Value != nil {
-				v, err := c.compileExpr(s.Let.Value, false)
-				if err != nil {
-					return err
+				var v string
+				if ml := extractMapLiteral(s.Let.Value); ml != nil {
+					var err error
+					v, err = c.compileMapLiteral(ml, true)
+					if err != nil {
+						return err
+					}
+				} else {
+					vv, err := c.compileExpr(s.Let.Value, false)
+					if err != nil {
+						return err
+					}
+					v = vv
 				}
 				if isFunExpr(s.Let.Value) || s.Let.Type == nil || canInferType(s.Let.Value, typ) {
 					c.writeln(fmt.Sprintf("const %s = %s;", name, v))
@@ -406,7 +416,25 @@ func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 				if s.Var.Type != nil {
 					typ = c.resolveTypeRef(s.Var.Type)
 				} else if s.Var.Value != nil {
-					typ = c.inferExprType(s.Var.Value)
+					if ml := extractMapLiteral(s.Var.Value); ml != nil {
+						var keyT types.Type = types.AnyType{}
+						var valT types.Type = types.AnyType{}
+						if len(ml.Items) > 0 {
+							if _, ok := simpleStringKey(ml.Items[0].Key); ok {
+								keyT = types.StringType{}
+							} else if c.isFloatExpr(ml.Items[0].Key) {
+								keyT = types.FloatType{}
+							} else if c.isBoolExpr(ml.Items[0].Key) {
+								keyT = types.BoolType{}
+							} else {
+								keyT = types.IntType{}
+							}
+							valT = c.inferExprType(ml.Items[0].Value)
+						}
+						typ = types.MapType{Key: keyT, Value: valT}
+					} else {
+						typ = c.inferExprType(s.Var.Value)
+					}
 				} else if old, err := c.env.GetVar(s.Var.Name); err == nil {
 					typ = old
 				}
@@ -415,9 +443,19 @@ func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 			if s.Var.Value != nil {
 				if isMapLiteralExpr(s.Var.Value) || isEmptyMapExpr(s.Var.Value) {
 					c.writeln(fmt.Sprintf("var %s: %s = undefined;", name, zigTypeOf(typ)))
-					v, err := c.compileExpr(s.Var.Value, false)
-					if err != nil {
-						return err
+					var v string
+					if ml := extractMapLiteral(s.Var.Value); ml != nil {
+						var err error
+						v, err = c.compileMapLiteral(ml, true)
+						if err != nil {
+							return err
+						}
+					} else {
+						vv, err := c.compileExpr(s.Var.Value, false)
+						if err != nil {
+							return err
+						}
+						v = vv
 					}
 					if c.globalInits == nil {
 						c.globalInits = map[string]string{}
@@ -1184,7 +1222,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.needsEqual = true
 		lbl := c.newLabel()
 		b.WriteString(lbl + ": { var " + tmp + " = std.ArrayList(" + groupType + ").init(std.heap.page_allocator); ")
-		b.WriteString("var " + idxMap + " = std.AutoHashMap(" + keyType + ", usize).init(std.heap.page_allocator); ")
+		idxMapType := "std.AutoHashMap(" + keyType + ", usize)"
+		if keyType == "[]const u8" {
+			idxMapType = "std.StringHashMap(usize)"
+		}
+		b.WriteString("var " + idxMap + " = " + idxMapType + ".init(std.heap.page_allocator); ")
 		b.WriteString("for (" + src + ") |" + sanitizeName(q.Var) + "| {")
 		for i, fs := range fromSrcs {
 			b.WriteString(" for (" + fs + ") |" + sanitizeName(q.Froms[i].Var) + "| {")
@@ -1677,7 +1719,25 @@ func (c *Compiler) compileVar(st *parser.VarStmt, inFun bool) error {
 		if st.Type != nil {
 			typ = c.resolveTypeRef(st.Type)
 		} else if st.Value != nil {
-			typ = c.inferExprType(st.Value)
+			if ml := extractMapLiteral(st.Value); ml != nil {
+				var keyT types.Type = types.AnyType{}
+				var valT types.Type = types.AnyType{}
+				if len(ml.Items) > 0 {
+					if _, ok := simpleStringKey(ml.Items[0].Key); ok {
+						keyT = types.StringType{}
+					} else if c.isFloatExpr(ml.Items[0].Key) {
+						keyT = types.FloatType{}
+					} else if c.isBoolExpr(ml.Items[0].Key) {
+						keyT = types.BoolType{}
+					} else {
+						keyT = types.IntType{}
+					}
+					valT = c.inferExprType(ml.Items[0].Value)
+				}
+				typ = types.MapType{Key: keyT, Value: valT}
+			} else {
+				typ = c.inferExprType(st.Value)
+			}
 		} else if old, err := c.env.GetVar(st.Name); err == nil {
 			typ = old
 		}
@@ -1706,11 +1766,19 @@ func (c *Compiler) compileVar(st *parser.VarStmt, inFun bool) error {
 	}
 	val := "0"
 	if st.Value != nil {
-		v, err := c.compileExpr(st.Value, false)
-		if err != nil {
-			return err
+		if ml := extractMapLiteral(st.Value); ml != nil {
+			v, err := c.compileMapLiteral(ml, true)
+			if err != nil {
+				return err
+			}
+			val = v
+		} else {
+			v, err := c.compileExpr(st.Value, false)
+			if err != nil {
+				return err
+			}
+			val = v
 		}
-		val = v
 	}
 	if st.Type == nil && st.Value != nil && canInferType(st.Value, typ) {
 		c.writeln(fmt.Sprintf("var %s = %s;", name, val))

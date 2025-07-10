@@ -1,0 +1,9 @@
+Error on line 23: zig build error: exit status 1
+/workspace/mochi/tests/machine/x/zig/cross_join_triple.zig:23:2: error: expected type 'cross_join_triple.combos__struct_3435', found 'cross_join_triple.combos__struct_3620'
+/workspace/mochi/tests/machine/x/zig/cross_join_triple.zig:19:103: note: struct declared here
+/workspace/mochi/tests/machine/x/zig/cross_join_triple.zig:15:50: note: struct declared here
+/tmp/zig-0.12.0/lib/std/array_list.zig:261:42: note: parameter type declared here
+
+22:     b: bool,
+23: }{
+24:     .n = n,

@@ -1,0 +1,14 @@
+Error on line 34: zig build error: exit status 1
+/tmp/zig-0.12.0/lib/std/heap/PageAllocator.zig:34:18: error: unable to evaluate comptime expression
+/tmp/zig-0.12.0/lib/std/heap/PageAllocator.zig:34:69: note: operation is runtime due to this operand
+/tmp/zig-0.12.0/lib/std/mem/Allocator.zig:86:29: note: called from here
+/tmp/zig-0.12.0/lib/std/mem/Allocator.zig:225:35: note: called from here
+/tmp/zig-0.12.0/lib/std/mem/Allocator.zig:211:40: note: called from here
+/tmp/zig-0.12.0/lib/std/mem/Allocator.zig:205:75: note: called from here
+/tmp/zig-0.12.0/lib/std/mem/Allocator.zig:193:41: note: called from here
+/tmp/zig-0.12.0/lib/std/array_list.zig:457:67: note: called from here
+/tmp/zig-0.12.0/lib/std/array_list.zig:434:51: note: called from here
+/tmp/zig-0.12.0/lib/std/array_list.zig:483:41: note: called from here
+/tmp/zig-0.12.0/lib/std/array_list.zig:262:49: note: called from here
+/workspace/mochi/tests/machine/x/zig/exists_builtin.zig:7:141: note: called from here
+

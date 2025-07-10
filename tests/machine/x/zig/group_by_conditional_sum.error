@@ -1,0 +1,7 @@
+Error on line 58: zig build error: exit status 1
+/workspace/mochi/tests/machine/x/zig/group_by_conditional_sum.zig:58:3: error: expected type 'array_list.ArrayListAligned(group_by_conditional_sum.result__struct_3973.result__struct_3973__struct_3974,null)', found 'array_list.ArrayListAligned(group_by_conditional_sum.result__struct_4029,null)'
+/tmp/zig-0.12.0/lib/std/array_list.zig:31:12: note: struct declared here (2 times)
+
+57:     flag: bool,
+58: }).init(std.heap.page_allocator) }; g.Items.append(i) catch unreachable; _tmp5.append(g) catch unreachable; _tmp6.put(_tmp7, _tmp5.items.len - 1) catch unreachable; } } var _tmp8 = std.ArrayList(struct { key: []const u8, Items: std.ArrayList(struct {
+59:     cat: []const u8,
