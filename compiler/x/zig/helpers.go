@@ -198,6 +198,24 @@ func simpleStringKey(e *parser.Expr) (string, bool) {
 	return "", false
 }
 
+// literalExpr reports whether e is a simple literal expression
+// like an integer, float, bool or string.
+func literalExpr(e *parser.Expr) bool {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Lit == nil {
+		return false
+	}
+	lit := p.Target.Lit
+	return lit.Int != nil || lit.Float != nil || lit.Bool != nil || lit.Str != nil
+}
+
 func identName(e *parser.Expr) (string, bool) {
 	if e == nil || len(e.Binary.Right) != 0 {
 		return "", false
