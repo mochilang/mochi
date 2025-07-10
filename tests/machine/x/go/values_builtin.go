@@ -9,18 +9,12 @@ import (
 )
 
 func main() {
-	type M struct {
-		A int `json:"a"`
-		B int `json:"b"`
-		C int `json:"c"`
+	var m map[string]int = map[string]int{
+		"a": 1,
+		"b": 2,
+		"c": 3,
 	}
-
-	var m M = M{
-		A: 1,
-		B: 2,
-		C: 3,
-	}
-	fmt.Println(strings.Trim(fmt.Sprint(_values(m)), "[]"))
+	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(_values(m)), "["), "]"))
 }
 
 func _values(v any) []any {

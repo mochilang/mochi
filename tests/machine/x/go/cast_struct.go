@@ -13,11 +13,7 @@ type Todo struct {
 }
 
 func main() {
-	type Todo1 struct {
-		Title string `json:"title"`
-	}
-
-	var todo Todo1 = Todo1{Title: "hi"}
+	var todo Todo = Todo{Title: "hi"}
 	_ = todo
 	fmt.Println(todo.Title)
 }

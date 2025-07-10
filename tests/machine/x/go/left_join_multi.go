@@ -5,100 +5,65 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"sort"
 	"strconv"
 	"strings"
 )
 
 func main() {
-	type CustomersItem struct {
-		Id   int    `json:"id"`
-		Name string `json:"name"`
-	}
-
-	var customers []CustomersItem = []CustomersItem{CustomersItem{
-		Id:   1,
-		Name: "Alice",
-	}, CustomersItem{
-		Id:   2,
-		Name: "Bob",
-	}}
+	var customers []map[string]any = []map[string]any{map[string]any{"id": 1, "name": "Alice"}, map[string]any{"id": 2, "name": "Bob"}}
 	_ = customers
-	type OrdersItem struct {
-		Id         int `json:"id"`
-		CustomerId int `json:"customerId"`
-	}
-
-	var orders []OrdersItem = []OrdersItem{OrdersItem{
-		Id:         100,
-		CustomerId: 1,
-	}, OrdersItem{
-		Id:         101,
-		CustomerId: 2,
-	}}
-	type ItemsItem struct {
-		OrderId int    `json:"orderId"`
-		Sku     string `json:"sku"`
-	}
-
-	var items []ItemsItem = []ItemsItem{ItemsItem{
-		OrderId: 100,
-		Sku:     "a",
-	}}
+	var orders []map[string]int = []map[string]int{map[string]int{"id": 100, "customerId": 1}, map[string]int{"id": 101, "customerId": 2}}
+	var items []map[string]any = []map[string]any{map[string]any{"orderId": 100, "sku": "a"}}
 	_ = items
-	type Result struct {
-		OrderId any `json:"orderId"`
-		Name    any `json:"name"`
-		Item    any `json:"item"`
-	}
-
-	type Result1 struct {
-		OrderId int       `json:"orderId"`
-		Name    string    `json:"name"`
-		Item    ItemsItem `json:"item"`
-	}
-
-	var result []Result = _cast[[]Result](func() []Result1 {
+	var result []map[string]any = func() []map[string]any {
 		src := _toAnySlice(orders)
 		resAny := _query(src, []_joinSpec{
 			{items: _toAnySlice(customers), on: func(_a ...any) bool {
-				o := _cast[OrdersItem](_a[0])
+				o := _cast[map[string]int](_a[0])
 				_ = o
-				c := _cast[CustomersItem](_a[1])
+				c := _cast[map[string]any](_a[1])
 				_ = c
-				return (o.CustomerId == c.Id)
-			}},
+				return _equal(o["customerId"], c["id"])
+			}, leftKey: func(_a ...any) any { o := _cast[map[string]int](_a[0]); _ = o; return o["customerId"] }, rightKey: func(_v any) any { c := _cast[map[string]any](_v); _ = c; return c["id"] }},
 			{items: _toAnySlice(items), on: func(_a ...any) bool {
-				o := _cast[OrdersItem](_a[0])
+				o := _cast[map[string]int](_a[0])
 				_ = o
-				c := _cast[CustomersItem](_a[1])
+				c := _cast[map[string]any](_a[1])
 				_ = c
-				i := _cast[ItemsItem](_a[2])
+				i := _cast[map[string]any](_a[2])
 				_ = i
-				return (o.Id == i.OrderId)
-			}, left: true},
+				return _equal(o["id"], i["orderId"])
+			}, leftKey: func(_a ...any) any {
+				o := _cast[map[string]int](_a[0])
+				_ = o
+				c := _cast[map[string]any](_a[1])
+				_ = c
+				return o["id"]
+			}, rightKey: func(_v any) any { i := _cast[map[string]any](_v); _ = i; return i["orderId"] }, left: true},
 		}, _queryOpts{selectFn: func(_a ...any) any {
-			o := _cast[OrdersItem](_a[0])
+			o := _cast[map[string]int](_a[0])
 			_ = o
-			c := _cast[CustomersItem](_a[1])
+			c := _cast[map[string]any](_a[1])
 			_ = c
-			i := _cast[ItemsItem](_a[2])
+			i := _cast[map[string]any](_a[2])
 			_ = i
-			return Result1{
-				OrderId: o.Id,
-				Name:    c.Name,
-				Item:    i,
+			return map[string]any{
+				"orderId": o["id"],
+				"name":    c["name"],
+				"item":    i,
 			}
 		}, skip: -1, take: -1})
-		out := make([]Result1, len(resAny))
+		out := make([]map[string]any, len(resAny))
 		for i, v := range resAny {
-			out[i] = _cast[Result1](v)
+			out[i] = _cast[map[string]any](v)
 		}
 		return out
-	}())
+	}()
 	fmt.Println("--- Left Join Multi ---")
 	for _, r := range result {
-		fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint(r.OrderId), fmt.Sprint(r.Name), fmt.Sprint(r.Item)}, " "), " "))
+		fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint(r["orderId"]), fmt.Sprint(r["name"]), fmt.Sprint(r["item"])}, " "), " "))
 	}
 }
 
@@ -165,11 +130,49 @@ func _convertMapAny(m map[any]any) map[string]any {
 	return out
 }
 
+func _equal(a, b any) bool {
+	av := reflect.ValueOf(a)
+	bv := reflect.ValueOf(b)
+	if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for i := 0; i < av.Len(); i++ {
+			if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if av.Kind() == reflect.Map && bv.Kind() == reflect.Map {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for _, k := range av.MapKeys() {
+			bvVal := bv.MapIndex(k)
+			if !bvVal.IsValid() {
+				return false
+			}
+			if !_equal(av.MapIndex(k).Interface(), bvVal.Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if (av.Kind() == reflect.Int || av.Kind() == reflect.Int64 || av.Kind() == reflect.Float64) &&
+		(bv.Kind() == reflect.Int || bv.Kind() == reflect.Int64 || bv.Kind() == reflect.Float64) {
+		return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()
+	}
+	return reflect.DeepEqual(a, b)
+}
+
 type _joinSpec struct {
-	items []any
-	on    func(...any) bool
-	left  bool
-	right bool
+	items    []any
+	on       func(...any) bool
+	leftKey  func(...any) any
+	rightKey func(any) any
+	left     bool
+	right    bool
 }
 type _queryOpts struct {
 	selectFn func(...any) any
@@ -185,6 +188,54 @@ func _query(src []any, joins []_joinSpec, opts _queryOpts) []any {
 		items[i] = []any{v}
 	}
 	for _, j := range joins {
+		if j.leftKey != nil && j.rightKey != nil {
+			rmap := map[string][]int{}
+			for ri, r := range j.items {
+				key := fmt.Sprint(j.rightKey(r))
+				rmap[key] = append(rmap[key], ri)
+			}
+			joined := [][]any{}
+			matched := make([]bool, len(j.items))
+			for _, left := range items {
+				key := fmt.Sprint(j.leftKey(left...))
+				if is, ok := rmap[key]; ok {
+					m := false
+					for _, ri := range is {
+						right := j.items[ri]
+						keep := true
+						if j.on != nil {
+							args := append(append([]any(nil), left...), right)
+							keep = j.on(args...)
+						}
+						if !keep {
+							continue
+						}
+						m = true
+						matched[ri] = true
+						joined = append(joined, append(append([]any(nil), left...), right))
+					}
+					if j.left && !m {
+						joined = append(joined, append(append([]any(nil), left...), nil))
+					}
+				} else if j.left {
+					joined = append(joined, append(append([]any(nil), left...), nil))
+				}
+			}
+			if j.right {
+				lw := 0
+				if len(items) > 0 {
+					lw = len(items[0])
+				}
+				for ri, right := range j.items {
+					if !matched[ri] {
+						undef := make([]any, lw)
+						joined = append(joined, append(undef, right))
+					}
+				}
+			}
+			items = joined
+			continue
+		}
 		joined := [][]any{}
 		if j.right && j.left {
 			matched := make([]bool, len(j.items))

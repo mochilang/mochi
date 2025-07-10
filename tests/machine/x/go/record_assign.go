@@ -17,8 +17,10 @@ func inc(c Counter) {
 	c = _cast[Counter](_cast[Counter]((c.N + 1)))
 }
 
+var c Counter
+
 func main() {
-	var c Counter = Counter{N: 0}
+	c = Counter{N: 0}
 	inc(c)
 	fmt.Println(c.N)
 }

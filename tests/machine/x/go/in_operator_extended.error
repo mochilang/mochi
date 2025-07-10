@@ -1,2 +1,0 @@
-Error on line 0: compile error: operator "in" cannot be used on types string and M
-1: let xs = [1, 2, 3]

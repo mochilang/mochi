@@ -11,61 +11,43 @@ import (
 )
 
 func main() {
-	type PeopleItem struct {
-		Name string `json:"name"`
-		Age  int    `json:"age"`
-		City string `json:"city"`
-	}
-
-	var people []PeopleItem = []PeopleItem{
-		PeopleItem{
-			Name: "Alice",
-			Age:  30,
-			City: "Paris",
+	var people []map[string]any = []map[string]any{
+		map[string]any{
+			"name": "Alice",
+			"age":  30,
+			"city": "Paris",
 		},
-		PeopleItem{
-			Name: "Bob",
-			Age:  15,
-			City: "Hanoi",
+		map[string]any{
+			"name": "Bob",
+			"age":  15,
+			"city": "Hanoi",
 		},
-		PeopleItem{
-			Name: "Charlie",
-			Age:  65,
-			City: "Paris",
+		map[string]any{
+			"name": "Charlie",
+			"age":  65,
+			"city": "Paris",
 		},
-		PeopleItem{
-			Name: "Diana",
-			Age:  45,
-			City: "Hanoi",
+		map[string]any{
+			"name": "Diana",
+			"age":  45,
+			"city": "Hanoi",
 		},
-		PeopleItem{
-			Name: "Eve",
-			Age:  70,
-			City: "Paris",
+		map[string]any{
+			"name": "Eve",
+			"age":  70,
+			"city": "Paris",
 		},
-		PeopleItem{
-			Name: "Frank",
-			Age:  22,
-			City: "Hanoi",
+		map[string]any{
+			"name": "Frank",
+			"age":  22,
+			"city": "Hanoi",
 		},
 	}
-	type Stats struct {
-		City    any     `json:"city"`
-		Count   int     `json:"count"`
-		Avg_age float64 `json:"avg_age"`
-	}
-
-	type Result struct {
-		City    any     `json:"city"`
-		Count   int     `json:"count"`
-		Avg_age float64 `json:"avg_age"`
-	}
-
-	var stats []Stats = _cast[[]Stats](func() []Result {
+	var stats []map[string]any = func() []map[string]any {
 		groups := map[string]*data.Group{}
 		order := []string{}
 		for _, person := range people {
-			key := person.City
+			key := person["city"]
 			ks := fmt.Sprint(key)
 			g, ok := groups[ks]
 			if !ok {
@@ -75,13 +57,13 @@ func main() {
 			}
 			g.Items = append(g.Items, person)
 		}
-		_res := []Result{}
+		_res := []map[string]any{}
 		for _, ks := range order {
 			g := groups[ks]
-			_res = append(_res, Result{
-				City:  g.Key,
-				Count: len(g.Items),
-				Avg_age: _avg(func() []any {
+			_res = append(_res, map[string]any{
+				"city":  g.Key,
+				"count": len(g.Items),
+				"avg_age": _avg(func() []any {
 					_res := []any{}
 					for _, p := range g.Items {
 						_res = append(_res, _cast[map[string]any](p)["age"])
@@ -91,10 +73,10 @@ func main() {
 			})
 		}
 		return _res
-	}())
+	}()
 	fmt.Println("--- People grouped by city ---")
 	for _, s := range stats {
-		fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint(s.City), fmt.Sprint(": count ="), fmt.Sprint(s.Count), fmt.Sprint(", avg_age ="), fmt.Sprint(s.Avg_age)}, " "), " "))
+		fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint(s["city"]), fmt.Sprint(": count ="), fmt.Sprint(s["count"]), fmt.Sprint(", avg_age ="), fmt.Sprint(s["avg_age"])}, " "), " "))
 	}
 }
 

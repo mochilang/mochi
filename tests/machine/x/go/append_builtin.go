@@ -9,7 +9,7 @@ import (
 
 func main() {
 	var a []int = []int{1, 2}
-	fmt.Println(strings.Trim(fmt.Sprint(append(_convSlice[int, any](a), 3)), "[]"))
+	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(append(_convSlice[int, any](a), 3)), "["), "]"))
 }
 
 func _convSlice[T any, U any](s []T) []U {

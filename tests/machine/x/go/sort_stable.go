@@ -11,31 +11,17 @@ import (
 )
 
 func main() {
-	type ItemsItem struct {
-		N int    `json:"n"`
-		V string `json:"v"`
-	}
-
-	var items []ItemsItem = []ItemsItem{ItemsItem{
-		N: 1,
-		V: "a",
-	}, ItemsItem{
-		N: 1,
-		V: "b",
-	}, ItemsItem{
-		N: 2,
-		V: "c",
-	}}
-	var result []string = func() []string {
+	var items []map[string]any = []map[string]any{map[string]any{"n": 1, "v": "a"}, map[string]any{"n": 1, "v": "b"}, map[string]any{"n": 2, "v": "c"}}
+	var result []any = func() []any {
 		src := _toAnySlice(items)
-		resAny := _query(src, []_joinSpec{}, _queryOpts{selectFn: func(_a ...any) any { i := _cast[ItemsItem](_a[0]); _ = i; return i.V }, sortKey: func(_a ...any) any { i := _cast[ItemsItem](_a[0]); _ = i; return i.N }, skip: -1, take: -1})
-		out := make([]string, len(resAny))
+		resAny := _query(src, []_joinSpec{}, _queryOpts{selectFn: func(_a ...any) any { i := _cast[map[string]any](_a[0]); _ = i; return i["v"] }, sortKey: func(_a ...any) any { i := _cast[map[string]any](_a[0]); _ = i; return i["n"] }, skip: -1, take: -1})
+		out := make([]any, len(resAny))
 		for i, v := range resAny {
-			out[i] = _cast[string](v)
+			out[i] = v
 		}
 		return out
 	}()
-	fmt.Println(strings.Trim(fmt.Sprint(result), "[]"))
+	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(result), "["), "]"))
 }
 
 func _cast[T any](v any) T {
@@ -102,10 +88,12 @@ func _convertMapAny(m map[any]any) map[string]any {
 }
 
 type _joinSpec struct {
-	items []any
-	on    func(...any) bool
-	left  bool
-	right bool
+	items    []any
+	on       func(...any) bool
+	leftKey  func(...any) any
+	rightKey func(any) any
+	left     bool
+	right    bool
 }
 type _queryOpts struct {
 	selectFn func(...any) any
@@ -121,6 +109,54 @@ func _query(src []any, joins []_joinSpec, opts _queryOpts) []any {
 		items[i] = []any{v}
 	}
 	for _, j := range joins {
+		if j.leftKey != nil && j.rightKey != nil {
+			rmap := map[string][]int{}
+			for ri, r := range j.items {
+				key := fmt.Sprint(j.rightKey(r))
+				rmap[key] = append(rmap[key], ri)
+			}
+			joined := [][]any{}
+			matched := make([]bool, len(j.items))
+			for _, left := range items {
+				key := fmt.Sprint(j.leftKey(left...))
+				if is, ok := rmap[key]; ok {
+					m := false
+					for _, ri := range is {
+						right := j.items[ri]
+						keep := true
+						if j.on != nil {
+							args := append(append([]any(nil), left...), right)
+							keep = j.on(args...)
+						}
+						if !keep {
+							continue
+						}
+						m = true
+						matched[ri] = true
+						joined = append(joined, append(append([]any(nil), left...), right))
+					}
+					if j.left && !m {
+						joined = append(joined, append(append([]any(nil), left...), nil))
+					}
+				} else if j.left {
+					joined = append(joined, append(append([]any(nil), left...), nil))
+				}
+			}
+			if j.right {
+				lw := 0
+				if len(items) > 0 {
+					lw = len(items[0])
+				}
+				for ri, right := range j.items {
+					if !matched[ri] {
+						undef := make([]any, lw)
+						joined = append(joined, append(undef, right))
+					}
+				}
+			}
+			items = joined
+			continue
+		}
 		joined := [][]any{}
 		if j.right && j.left {
 			matched := make([]bool, len(j.items))

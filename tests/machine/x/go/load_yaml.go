@@ -26,32 +26,19 @@ func main() {
 		}
 		return out
 	}()
-	type Adults struct {
-		Name  any `json:"name"`
-		Email any `json:"email"`
-	}
-
-	type Result struct {
-		Name  string `json:"name"`
-		Email string `json:"email"`
-	}
-
-	var adults []Adults = _cast[[]Adults](func() []Result {
-		_res := []Result{}
+	var adults []map[string]string = func() []map[string]string {
+		_res := []map[string]string{}
 		for _, p := range people {
 			if p.Age >= 18 {
 				if p.Age >= 18 {
-					_res = append(_res, Result{
-						Name:  p.Name,
-						Email: p.Email,
-					})
+					_res = append(_res, map[string]string{"name": p.Name, "email": p.Email})
 				}
 			}
 		}
 		return _res
-	}())
+	}()
 	for _, a := range adults {
-		fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint(a.Name), fmt.Sprint(a.Email)}, " "), " "))
+		fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint(a["name"]), fmt.Sprint(a["email"])}, " "), " "))
 	}
 }
 
