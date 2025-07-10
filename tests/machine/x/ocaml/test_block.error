@@ -1,0 +1,13 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/test_block.ml", line 23, characters 2-15:
+23 |   print_endline (__show ("ok"));
+       ^^^^^^^^^^^^^
+Error: Syntax error
+
+
+Context (around line 23):
+  21 |   let x = (1 + 2) in
+  22 |   assert ((x = 3))
+  23 |   print_endline (__show ("ok"));
+  24 | 

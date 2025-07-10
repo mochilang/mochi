@@ -23,7 +23,7 @@ let rec map_set m k v =
 let map_get m k = Obj.obj (List.assoc k m)
 
 
-let data : (string * (string * int) list) list ref = ref [("outer",Obj.repr ([("inner",Obj.repr (1))]))]
+let data : (string * Obj.t) list ref = ref [("outer",Obj.repr ([("inner",Obj.repr (1))]))]
 
 let () =
   data := map_set !data "outer" (map_set (map_get !data "outer") "inner" 2);

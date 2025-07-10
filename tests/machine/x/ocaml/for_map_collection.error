@@ -1,16 +1,5 @@
-stage: compile
+stage: run
 error:
-File "/workspace/mochi/tests/machine/x/ocaml/for_map_collection.ml", line 22, characters 34-77:
-22 | let m : (string * int) list ref = ref [("a",Obj.repr (1));("b",Obj.repr (2))]
-                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Error: This expression has type (string * Obj.t) list ref
-       but an expression was expected of type (string * int) list ref
-       Type Obj.t is not compatible with type int 
 
 
-Context (around line 22):
-  20 | 
-  21 | 
-  22 | let m : (string * int) list ref = ref [("a",Obj.repr (1));("b",Obj.repr (2))]
-  23 | 
-  24 | let () =
+Context (around line 0):
