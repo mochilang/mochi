@@ -1,6 +1,6 @@
 #include <iostream>
 
-auto sum_rec(auto n, auto acc) {
+int sum_rec(int n, int acc) {
   if ((n == 0)) {
     return acc;
   }

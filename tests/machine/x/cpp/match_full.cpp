@@ -32,7 +32,7 @@ auto status = ([]() {
   return decltype(std::string("confirmed")){};
 })();
 
-auto classify(auto n) {
+std::string classify(int n) {
   return ([&]() {
     auto __v = n;
     if (__v == 0)

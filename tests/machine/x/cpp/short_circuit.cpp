@@ -1,6 +1,6 @@
 #include <iostream>
 
-auto boom(auto a, auto b) {
+bool boom(int a, int b) {
   {
     std::cout << std::boolalpha << std::string("boom");
     std::cout << std::endl;

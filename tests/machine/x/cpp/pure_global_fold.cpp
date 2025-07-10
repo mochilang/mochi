@@ -2,7 +2,7 @@
 
 auto k = 2;
 
-auto inc(auto x) { return (x + k); }
+int inc(int x) { return (x + k); }
 
 int main() {
   {

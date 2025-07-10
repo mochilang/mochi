@@ -1,6 +1,6 @@
 #include <iostream>
 
-auto outer(auto x) {
+int outer(int x) {
   auto inner = [=](int y) { return (x + y); };
   return inner(5);
 }

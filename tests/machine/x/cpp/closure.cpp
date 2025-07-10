@@ -1,6 +1,6 @@
 #include <iostream>
 
-auto makeAdder(auto n) {
+auto makeAdder(int n) {
   return [=](int x) { return (x + n); };
 }
 
