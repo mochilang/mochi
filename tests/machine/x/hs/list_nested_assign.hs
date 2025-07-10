@@ -9,10 +9,10 @@ import Data.List (intercalate, isPrefixOf, isInfixOf)
 import qualified Data.List as List
 
 
-
 matrix = [[1, 2], [3, 4]]
 
 main :: IO ()
 main = do
-    let matrix = 5
+    let matrix = _updateAt 1 (\_it0 -> _updateAt 0 (const 5) _it0) matrix
     print (((matrix !! 1) !! 0))
+

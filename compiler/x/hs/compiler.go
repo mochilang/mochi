@@ -670,6 +670,14 @@ func (c *Compiler) assignPath(base string, typ types.Type, idx []*parser.IndexOp
 				c.usesList = true
 				c.usesUpdate = true
 				return fmt.Sprintf("_updateAt %s (const %s) %s", ix, val, base), nil
+			default:
+				if c.isIntExpr(idx[0].Start) {
+					c.usesList = true
+					c.usesUpdate = true
+					return fmt.Sprintf("_updateAt %s (const %s) %s", ix, val, base), nil
+				}
+				c.usesMap = true
+				return fmt.Sprintf("Map.insert %s %s %s", ix, val, base), nil
 			}
 		}
 		switch tt := typ.(type) {
@@ -688,6 +696,22 @@ func (c *Compiler) assignPath(base string, typ types.Type, idx []*parser.IndexOp
 				return "", err
 			}
 			return fmt.Sprintf("_updateAt %s (\\_ -> %s) %s", ix, inner, base), nil
+		default:
+			if c.isIntExpr(idx[0].Start) {
+				c.usesList = true
+				c.usesUpdate = true
+				inner, err := c.assignPath(fmt.Sprintf("(%s !! %s)", base, ix), types.AnyType{}, idx[1:], fields, val)
+				if err != nil {
+					return "", err
+				}
+				return fmt.Sprintf("_updateAt %s (\\_ -> %s) %s", ix, inner, base), nil
+			}
+			c.usesMap = true
+			inner, err := c.assignPath(fmt.Sprintf("fromMaybe (error \"missing\") (Map.lookup %s %s)", ix, base), types.AnyType{}, idx[1:], fields, val)
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("Map.adjust (\\_ -> %s) %s %s", inner, ix, base), nil
 		}
 	} else if len(fields) > 0 {
 		field := sanitizeName(fields[0].Name)

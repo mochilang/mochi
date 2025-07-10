@@ -9,10 +9,10 @@ import Data.List (intercalate, isPrefixOf, isInfixOf)
 import qualified Data.List as List
 
 
-
 scores = Map.fromList [("alice", 1)]
 
 main :: IO ()
 main = do
-    let scores = 2
+    let scores = Map.insert "bob" 2 scores
     print (fromMaybe (error "missing") (Map.lookup "bob" scores))
+
