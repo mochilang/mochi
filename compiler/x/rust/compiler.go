@@ -760,14 +760,26 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	if id, ok := c.simpleIdent(f.Source); ok && c.isGroupVar(id) {
 		src += ".items"
 	}
+	var elemType types.Type
 	if f.RangeEnd != nil {
 		end, err := c.compileExpr(f.RangeEnd)
 		if err != nil {
 			return err
 		}
+		elemType = types.IntType{}
 		c.writeln(fmt.Sprintf("for %s in (%s as i32)..(%s as i32) {", f.Name, src, end))
-	} else {
+	} else if mt, ok := types.TypeOfExprBasic(f.Source, c.env).(types.MapType); ok {
+		elemType = mt.Key
+		c.writeln(fmt.Sprintf("for %s in %s.keys() {", f.Name, src))
+	} else if lt, ok := types.TypeOfExprBasic(f.Source, c.env).(types.ListType); ok {
+		elemType = lt.Elem
 		c.writeln(fmt.Sprintf("for %s in %s {", f.Name, src))
+	} else {
+		elemType = types.AnyType{}
+		c.writeln(fmt.Sprintf("for %s in %s {", f.Name, src))
+	}
+	if c.env != nil {
+		c.env.SetVar(f.Name, elemType, true)
 	}
 	c.indent++
 	for _, s := range f.Body {
@@ -1531,9 +1543,6 @@ func (c *Compiler) compileGroupBySimple(q *parser.QueryExpr, src string, child *
 	if ml := tryMapLiteral(q.Select); ml != nil {
 		name := c.newStructName("Result")
 		sel, err = c.compileMapLiteralAsStruct(name, ml)
-		if err == nil {
-			child.SetVar(q.Var, types.StructType{Name: name}, true)
-		}
 	} else {
 		sel, err = c.compileExpr(q.Select)
 	}
@@ -1766,9 +1775,6 @@ func (c *Compiler) compileGroupByJoin(q *parser.QueryExpr, src string, child *ty
 	if ml := tryMapLiteral(q.Select); ml != nil {
 		name := c.newStructName("Result")
 		sel, err = c.compileMapLiteralAsStruct(name, ml)
-		if err == nil {
-			child.SetVar(q.Var, types.StructType{Name: name}, true)
-		}
 	} else {
 		sel, err = c.compileExpr(q.Select)
 	}
@@ -1844,9 +1850,6 @@ func (c *Compiler) compileLeftJoinSimple(q *parser.QueryExpr, src string, child 
 	if ml := tryMapLiteral(q.Select); ml != nil {
 		name := c.newStructName("Result")
 		sel, err = c.compileMapLiteralAsStruct(name, ml)
-		if err == nil {
-			child.SetVar(q.Var, types.StructType{Name: name}, true)
-		}
 	} else {
 		sel, err = c.compileExpr(q.Select)
 	}
@@ -1972,9 +1975,6 @@ func (c *Compiler) compileRightJoinSimple(q *parser.QueryExpr, src string, child
 	if ml := tryMapLiteral(q.Select); ml != nil {
 		name := c.newStructName("Result")
 		sel, err = c.compileMapLiteralAsStruct(name, ml)
-		if err == nil {
-			child.SetVar(q.Var, types.StructType{Name: name}, true)
-		}
 	} else {
 		sel, err = c.compileExpr(q.Select)
 	}
@@ -2071,9 +2071,6 @@ func (c *Compiler) compileOuterJoinSimple(q *parser.QueryExpr, src string, child
 	if ml := tryMapLiteral(q.Select); ml != nil {
 		name := c.newStructName("Result")
 		sel, err = c.compileMapLiteralAsStruct(name, ml)
-		if err == nil {
-			child.SetVar(q.Var, types.StructType{Name: name}, true)
-		}
 	} else {
 		sel, err = c.compileExpr(q.Select)
 	}
@@ -2168,8 +2165,8 @@ func (c *Compiler) compileLeftJoinLast(q *parser.QueryExpr, src string, child *t
 	if ml := tryMapLiteral(q.Select); ml != nil {
 		name := c.newStructName("Result")
 		sel, err = c.compileMapLiteralAsStruct(name, ml)
-		if err == nil {
-			child.SetVar(q.Var, types.StructType{Name: name}, true)
+		if err != nil {
+			// continue with error
 		}
 	} else {
 		sel, err = c.compileExpr(q.Select)
@@ -2453,9 +2450,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if ml := tryMapLiteral(q.Select); ml != nil {
 		name := c.newStructName("Result")
 		sel, err = c.compileMapLiteralAsStruct(name, ml)
-		if err == nil {
-			child.SetVar(q.Var, types.StructType{Name: name}, true)
-		}
 	} else {
 		sel, err = c.compileExpr(q.Select)
 	}
@@ -2567,7 +2561,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 	var b strings.Builder
-	b.WriteString("{ let mut m = std::collections::HashMap::new();")
+	b.WriteString("{ let mut m = std::collections::BTreeMap::new();")
 	for _, it := range m.Items {
 		var k string
 		if name, ok := c.simpleIdent(it.Key); ok {

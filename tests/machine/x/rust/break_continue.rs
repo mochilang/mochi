@@ -7,6 +7,6 @@ fn main() {
         if n > 7 {
             break;
         }
-        println!("{} {:?}", "odd number:", n);
+        println!("{} {}", "odd number:", n);
     }
 }
