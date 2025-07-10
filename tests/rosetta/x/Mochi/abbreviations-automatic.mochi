@@ -1,0 +1,93 @@
+// Mochi implementation of Rosetta "Abbreviations automatic" task
+// Calculates minimum unique abbreviation length for days of the week
+
+fun fields(s: string): list<string> {
+  var words: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i + 1)
+    if ch == " " || ch == "\t" {
+      if len(cur) > 0 {
+        words = append(words, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { words = append(words, cur) }
+  return words
+}
+
+fun allDistinct(xs: list<string>): bool {
+  var i = 0
+  while i < len(xs) {
+    var j = i + 1
+    while j < len(xs) {
+      if xs[i] == xs[j] { return false }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return true
+}
+
+fun takeRunes(s: string, n: int): string {
+  return substring(s, 0, n)
+}
+
+fun minAbbrev(words: list<string>): int {
+  var n = 1
+  while true {
+    var abbs: list<string> = []
+    var i = 0
+    while i < len(words) {
+      abbs = append(abbs, takeRunes(words[i], n))
+      i = i + 1
+    }
+    if allDistinct(abbs) { return n }
+    n = n + 1
+  }
+}
+
+fun left2(num: int): string {
+  let s = str(num)
+  if num < 10 { return " " + s }
+  return s
+}
+
+fun main() {
+  let lines = [
+    "domenica lunedí martedí mercoledí giovedí venerdí sabato",
+    "Nichiyou_bi Getzuyou_bi Kayou_bi Suiyou_bi Mokuyou_bi Kin'you_bi Doyou_bi",
+    "Il-yo-il Wol-yo-il Hwa-yo-il Su-yo-il Mok-yo-il Kum-yo-il To-yo-il",
+    "Dies_Dominica Dies_Lunæ Dies_Martis Dies_Mercurii Dies_Iovis Dies_Veneris Dies_Saturni",
+    "sve-tdien pirmdien otrdien tresvdien ceturtdien piektdien sestdien",
+  ]
+  var idx = 0
+  while idx < len(lines) {
+    let line = lines[idx]
+    if line == "" {
+      print("")
+      idx = idx + 1
+      continue
+    }
+    let words = fields(line)
+    if len(words) != 7 {
+      print("There aren't 7 days in line " + str(idx+1))
+      return null
+    }
+    if !allDistinct(words) {
+      print("INF " + line)
+      idx = idx + 1
+      continue
+    }
+    let m = minAbbrev(words)
+    print(left2(m) + "  " + line)
+    idx = idx + 1
+  }
+}
+
+main()
