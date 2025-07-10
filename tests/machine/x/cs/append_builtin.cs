@@ -5,7 +5,7 @@ class Program
 {
     static void Main()
     {
-        long[] a = new long[] { 1, 2 };
+        List<long> a = new List<long> { 1, 2 };
         Console.WriteLine(JsonSerializer.Serialize(new List<long>(a) { 3 }));
     }
 }

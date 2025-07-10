@@ -451,14 +451,22 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				typ = csType(s.Let.Type)
 				static = c.resolveTypeRef(s.Let.Type)
 				if isEmptyListLiteral(s.Let.Value) {
-					expr = fmt.Sprintf("new %s { }", typ)
+					if strings.HasPrefix(typ, "List<") {
+						expr = fmt.Sprintf("new %s()", typ)
+					} else {
+						expr = fmt.Sprintf("new %s { }", typ)
+					}
 				}
 			} else {
 				inferredT := c.inferExprType(s.Let.Value)
 				static = inferredT
 				typ = csTypeOf(inferredT)
-				if isEmptyListLiteral(s.Let.Value) && strings.HasSuffix(typ, "[]") {
-					expr = fmt.Sprintf("new %s { }", typ)
+				if isEmptyListLiteral(s.Let.Value) && (strings.HasSuffix(typ, "[]") || strings.HasPrefix(typ, "List<")) {
+					if strings.HasPrefix(typ, "List<") {
+						expr = fmt.Sprintf("new %s()", typ)
+					} else {
+						expr = fmt.Sprintf("new %s { }", typ)
+					}
 				}
 			}
 			if s.Let.Type != nil && isFetchExpr(s.Let.Value) && typ != "" {
@@ -497,14 +505,22 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				typ = csType(s.Var.Type)
 				static = c.resolveTypeRef(s.Var.Type)
 				if isEmptyListLiteral(s.Var.Value) {
-					expr = fmt.Sprintf("new %s { }", typ)
+					if strings.HasPrefix(typ, "List<") {
+						expr = fmt.Sprintf("new %s()", typ)
+					} else {
+						expr = fmt.Sprintf("new %s { }", typ)
+					}
 				}
 			} else {
 				inferredT := c.inferExprType(s.Var.Value)
 				static = inferredT
 				typ = csTypeOf(inferredT)
-				if isEmptyListLiteral(s.Var.Value) && strings.HasSuffix(typ, "[]") {
-					expr = fmt.Sprintf("new %s { }", typ)
+				if isEmptyListLiteral(s.Var.Value) && (strings.HasSuffix(typ, "[]") || strings.HasPrefix(typ, "List<")) {
+					if strings.HasPrefix(typ, "List<") {
+						expr = fmt.Sprintf("new %s()", typ)
+					} else {
+						expr = fmt.Sprintf("new %s { }", typ)
+					}
 				}
 			}
 			if s.Var.Type != nil && isFetchExpr(s.Var.Value) && typ != "" {
@@ -2259,7 +2275,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elemType = csTypeOf(lt.Elem)
 		}
 		if len(p.List.Elems) == 0 {
-			return fmt.Sprintf("new %s[] { }", elemType), nil
+			return fmt.Sprintf("new List<%s>()", elemType), nil
 		}
 		elems := make([]string, len(p.List.Elems))
 		for i, e := range p.List.Elems {
@@ -2269,7 +2285,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			elems[i] = v
 		}
-		return fmt.Sprintf("new %s[] { %s }", elemType, strings.Join(elems, ", ")), nil
+		return fmt.Sprintf("new List<%s> { %s }", elemType, strings.Join(elems, ", ")), nil
 	case p.Map != nil:
 		t := c.inferPrimaryType(p)
 		keyType := "dynamic"
@@ -2699,7 +2715,7 @@ func csType(t *parser.TypeRef) string {
 	}
 	if t.Generic != nil {
 		if t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
-			return csType(t.Generic.Args[0]) + "[]"
+			return fmt.Sprintf("List<%s>", csType(t.Generic.Args[0]))
 		}
 		if t.Generic.Name == "map" && len(t.Generic.Args) == 2 {
 			return fmt.Sprintf("Dictionary<%s, %s>", csType(t.Generic.Args[0]), csType(t.Generic.Args[1]))

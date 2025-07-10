@@ -49,7 +49,7 @@ func csTypeOf(t types.Type) string {
 	case types.BoolType:
 		return "bool"
 	case types.ListType:
-		return csTypeOf(tt.Elem) + "[]"
+		return fmt.Sprintf("List<%s>", csTypeOf(tt.Elem))
 	case types.MapType:
 		return fmt.Sprintf("Dictionary<%s, %s>", csTypeOf(tt.Key), csTypeOf(tt.Value))
 	case types.StructType:

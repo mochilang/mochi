@@ -6,7 +6,7 @@ class Program
 {
     static void Main()
     {
-        var people = new dynamic[] { new Dictionary<string, dynamic> { { "name", "Alice" }, { "age", 30 }, { "city", "Paris" } }, new Dictionary<string, dynamic> { { "name", "Bob" }, { "age", 15 }, { "city", "Hanoi" } }, new Dictionary<string, dynamic> { { "name", "Charlie" }, { "age", 65 }, { "city", "Paris" } }, new Dictionary<string, dynamic> { { "name", "Diana" }, { "age", 45 }, { "city", "Hanoi" } }, new Dictionary<string, dynamic> { { "name", "Eve" }, { "age", 70 }, { "city", "Paris" } }, new Dictionary<string, dynamic> { { "name", "Frank" }, { "age", 22 }, { "city", "Hanoi" } } };
+        var people = new List<dynamic> { new Dictionary<string, dynamic> { { "name", "Alice" }, { "age", 30 }, { "city", "Paris" } }, new Dictionary<string, dynamic> { { "name", "Bob" }, { "age", 15 }, { "city", "Hanoi" } }, new Dictionary<string, dynamic> { { "name", "Charlie" }, { "age", 65 }, { "city", "Paris" } }, new Dictionary<string, dynamic> { { "name", "Diana" }, { "age", 45 }, { "city", "Hanoi" } }, new Dictionary<string, dynamic> { { "name", "Eve" }, { "age", 70 }, { "city", "Paris" } }, new Dictionary<string, dynamic> { { "name", "Frank" }, { "age", 22 }, { "city", "Hanoi" } } };
         var stats = _group_by(people, person => person.city).Select(g => new Dictionary<string, dynamic> { { "city", g.Key }, { "count", Enumerable.Count(g) }, { "avg_age", _avg(g.Items.Select(p => p.age).ToArray()) } }).ToList();
         Console.WriteLine("--- People grouped by city ---");
         foreach (var s in stats)

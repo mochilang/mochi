@@ -6,8 +6,8 @@ class Program
 {
     static void Main()
     {
-        var customers = new dynamic[] { new Dictionary<string, dynamic> { { "id", 1 }, { "name", "Alice" } }, new Dictionary<string, dynamic> { { "id", 2 }, { "name", "Bob" } }, new Dictionary<string, dynamic> { { "id", 3 }, { "name", "Charlie" } } };
-        var orders = new dynamic[] { new Dictionary<string, long> { { "id", 100 }, { "customerId", 1 }, { "total", 250 } }, new Dictionary<string, long> { { "id", 101 }, { "customerId", 2 }, { "total", 125 } }, new Dictionary<string, long> { { "id", 102 }, { "customerId", 1 }, { "total", 300 } } };
+        var customers = new List<dynamic> { new Dictionary<string, dynamic> { { "id", 1 }, { "name", "Alice" } }, new Dictionary<string, dynamic> { { "id", 2 }, { "name", "Bob" } }, new Dictionary<string, dynamic> { { "id", 3 }, { "name", "Charlie" } } };
+        var orders = new List<dynamic> { new Dictionary<string, long> { { "id", 100 }, { "customerId", 1 }, { "total", 250 } }, new Dictionary<string, long> { { "id", 101 }, { "customerId", 2 }, { "total", 125 } }, new Dictionary<string, long> { { "id", 102 }, { "customerId", 1 }, { "total", 300 } } };
         var result = new Func<List<Dictionary<string, dynamic>>>(() =>
         {
             var _res = new List<Dictionary<string, dynamic>>();
