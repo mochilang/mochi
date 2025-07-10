@@ -1,2 +1,2 @@
 import go "mochi/runtime/ffi/go/testpkg" as testpkg auto
-print(testpkg.AchillesNumbersExample())
+print(testpkg.AckermannExample())
