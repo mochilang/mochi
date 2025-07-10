@@ -8,7 +8,7 @@ Each generated file now includes only the runtime helper functions that are actu
 
 Compiled: 97/97 programs
 
-Successfully ran: 81/97 programs
+Successfully ran: 82/97 programs
 
 ## Checklist
 
@@ -63,7 +63,7 @@ Successfully ran: 81/97 programs
 - [x] list_set_ops.mochi
 - [x] load_yaml.mochi
 - [x] map_assign.mochi
-- [ ] map_in_operator.mochi
+- [x] map_in_operator.mochi
 - [x] map_index.mochi
 - [x] map_int_key.mochi
 - [x] map_literal_dynamic.mochi
