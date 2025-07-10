@@ -1,13 +1,12 @@
-Error on line 0: run error: exit status 1
-panic: interface conversion: interface {} is map[string]int, not map[string]interface {}
-
-goroutine 1 [running]:
-main._cast[...](...)
-	/workspace/mochi/tests/machine/x/go/group_by_left_join.go:94
-main.main.func1(...)
-	/workspace/mochi/tests/machine/x/go/group_by_left_join.go:39
-main.main()
-	/workspace/mochi/tests/machine/x/go/group_by_left_join.go:86 +0x1731
-exit status 2
-
+Error on line 0: output mismatch
+-- got --
+--- Group Left Join ---
+Alice orders: 0
+Bob orders: 0
+Charlie orders: 0
+-- want --
+--- Group Left Join ---
+Alice orders: 2
+Bob orders: 1
+Charlie orders: 0
 1: //go:build ignore
