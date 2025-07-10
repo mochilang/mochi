@@ -10,6 +10,12 @@ struct Group {
     items: Vec<Data>,
 }
 
+#[derive(Default, Debug, Clone, PartialEq)]
+struct Item {
+    tag: &'static str,
+    total: i32,
+}
+
 fn append<T: Clone>(mut v: Vec<T>, item: T) -> Vec<T> {
     v.push(item);
     v
@@ -24,8 +30,8 @@ fn main() {
         for x in g.items {
             total = total + x.val;
         }
-        tmp = append(tmp, { let mut m = std::collections::HashMap::new(); m.insert("tag", g.key); m.insert("total", total); m });
+        tmp = append(tmp, Item { tag: g.key, total: total });
     }
-    let result = { let mut tmp3 = Vec::new();for &r in &tmp { let tmp4 = r; let tmp5 = r.tag; tmp3.push((tmp5, tmp4)); } tmp3.sort_by(|a,b| a.0.partial_cmp(&b.0).unwrap()); let mut tmp6 = Vec::new(); for p in tmp3 { tmp6.push(p.1); } tmp6 };
+    let result = { let mut tmp3 = Vec::new();for r in &tmp { let tmp4 = r.clone(); let tmp5 = r.tag; tmp3.push((tmp5, tmp4)); } tmp3.sort_by(|a,b| a.0.partial_cmp(&b.0).unwrap()); let mut tmp6 = Vec::new(); for p in tmp3 { tmp6.push(p.1); } tmp6 };
     println!("{:?}", result);
 }
