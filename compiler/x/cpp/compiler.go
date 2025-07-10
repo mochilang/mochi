@@ -719,6 +719,33 @@ func (c *Compiler) compilePrint(args []*parser.Expr) error {
 		if typ == "" && c.isVectorExpr(a) {
 			typ = "vector"
 		}
+		structType := ""
+		if t := c.varStruct[s]; t != "" {
+			structType = t
+		} else if t := structLiteralType(s); t != "" {
+			structType = t
+		} else if dot := strings.Index(s, "."); dot != -1 {
+			base := s[:dot]
+			fld := s[dot+1:]
+			if t := c.varStruct[base]; t != "" {
+				if idx := strings.Index(t, "{"); idx != -1 {
+					t = t[:idx]
+				}
+				if info, ok := c.structByName[t]; ok {
+					for i, f := range info.Fields {
+						if f == sanitizeName(fld) {
+							ft := info.Types[i]
+							if idx := strings.Index(ft, "{"); idx != -1 {
+								ft = ft[:idx]
+							}
+							if strings.HasPrefix(ft, "__struct") {
+								structType = ft
+							}
+						}
+					}
+				}
+			}
+		}
 		if i > 0 {
 			c.buf.WriteString("std::cout << ' '; ")
 		}
@@ -735,6 +762,13 @@ func (c *Compiler) compilePrint(args []*parser.Expr) error {
 			c.buf.WriteString("std::cout << std::boolalpha << (" + s + "); ")
 		case "pair":
 			c.buf.WriteString("std::cout << std::boolalpha << " + s + ".first << ' ' << " + s + ".second; ")
+		case "":
+			if structType != "" {
+				c.usesJSON = true
+				c.buf.WriteString("__json(" + s + "); ")
+			} else {
+				c.buf.WriteString("std::cout << std::boolalpha << " + s + "; ")
+			}
 		default:
 			c.buf.WriteString("std::cout << std::boolalpha << " + s + "; ")
 		}
@@ -1035,6 +1069,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 						case "bool":
 							ftype = "bool"
 						}
+					} else if t := c.varStruct[vals[i]]; t != "" {
+						if idx := strings.Index(t, "{"); idx != -1 {
+							t = t[:idx]
+						}
+						ftype = t
 					}
 					if dot := strings.Index(vals[i], "."); dot != -1 {
 						v := vals[i][:dot]
@@ -2365,6 +2404,29 @@ func (c *Compiler) ensureBool(expr string) string {
 			t = t[:idx]
 		}
 		return fmt.Sprintf("(%s != %s{})", expr, t)
+	}
+	if dot := strings.Index(expr, "."); dot != -1 {
+		base := expr[:dot]
+		fld := expr[dot+1:]
+		if t := c.varStruct[base]; t != "" {
+			if idx := strings.Index(t, "{"); idx != -1 {
+				t = t[:idx]
+			}
+			if info, ok := c.structByName[t]; ok {
+				for i, f := range info.Fields {
+					if f == sanitizeName(fld) {
+						ft := info.Types[i]
+						if idx := strings.Index(ft, "{"); idx != -1 {
+							ft = ft[:idx]
+						}
+						if strings.HasPrefix(ft, "__struct") {
+							return fmt.Sprintf("(%s != %s{})", expr, ft)
+						}
+						break
+					}
+				}
+			}
+		}
 	}
 	if t := structLiteralType(expr); t != "" {
 		return fmt.Sprintf("(%s != %s{})", expr, t)
