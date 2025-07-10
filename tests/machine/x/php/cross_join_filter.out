@@ -1,9 +1,5 @@
 string(18) "--- Even pairs ---"
-PHP Warning:  Attempt to read property "n" on array in /workspace/mochi/tests/machine/x/php/cross_join_filter.php on line 17
-PHP Warning:  Attempt to read property "l" on array in /workspace/mochi/tests/machine/x/php/cross_join_filter.php on line 17
-NULL
-NULL
-PHP Warning:  Attempt to read property "n" on array in /workspace/mochi/tests/machine/x/php/cross_join_filter.php on line 17
-PHP Warning:  Attempt to read property "l" on array in /workspace/mochi/tests/machine/x/php/cross_join_filter.php on line 17
-NULL
-NULL
+int(2)
+string(1) "A"
+int(2)
+string(1) "B"

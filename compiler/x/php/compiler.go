@@ -595,8 +595,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 			t = types.AnyType{}
 		case op.Call != nil:
-			if strings.HasSuffix(val, "->contains") && len(op.Call.Args) == 1 {
-				base := strings.TrimSuffix(val, "->contains")
+			if len(op.Call.Args) == 1 && (strings.HasSuffix(val, "->contains") || strings.HasSuffix(val, "['contains']")) {
+				base := strings.TrimSuffix(strings.TrimSuffix(val, "->contains"), "['contains']")
 				arg, err := c.compileExpr(op.Call.Args[0])
 				if err != nil {
 					return "", err
@@ -875,6 +875,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	if _, ok := c.isGroupVarExpr(q.Source); ok {
+		src = fmt.Sprintf("%s['items']", src)
+	}
 	child := types.NewEnv(c.env)
 	switch t := types.TypeOfExprBasic(q.Source, c.env).(type) {
 	case types.ListType:
@@ -905,10 +908,16 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	var buf bytes.Buffer
 	buf.WriteString("(function()" + use + " {")
 	buf.WriteString("\n")
+	var aggExpr *parser.Expr
 	if q.Group != nil {
 		buf.WriteString("    $groups = [];")
 	} else {
-		buf.WriteString("    $result = [];")
+		if a, ok := simpleCall(q.Select, "sum"); ok {
+			buf.WriteString("    $result = 0;")
+			aggExpr = a
+		} else {
+			buf.WriteString("    $result = [];")
+		}
 	}
 	buf.WriteString("\n")
 
@@ -919,12 +928,18 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
+		if _, ok := c.isGroupVarExpr(f.Src); ok {
+			s = fmt.Sprintf("%s['items']", s)
+		}
 		loops = append(loops, loopCond{loop: fmt.Sprintf("foreach (%s as $%s)", s, sanitizeName(f.Var))})
 	}
 	for _, j := range q.Joins {
 		s, err := c.compileExpr(j.Src)
 		if err != nil {
 			return "", err
+		}
+		if _, ok := c.isGroupVarExpr(j.Src); ok {
+			s = fmt.Sprintf("%s['items']", s)
 		}
 		cond, err := c.compileExpr(j.On)
 		if err != nil {
@@ -981,26 +996,37 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		buf.WriteString(fmt.Sprintf("$groups[$_k][] = $%s;\n", sanitizeName(q.Var)))
 	} else {
-		sel, err := c.compileExpr(q.Select)
-		if err != nil {
-			return "", err
-		}
-		keyExpr := ""
-		if q.Sort != nil {
-			keyExpr, err = c.compileExpr(q.Sort)
+		if aggExpr != nil {
+			arg, err := c.compileExpr(aggExpr)
 			if err != nil {
 				return "", err
 			}
-		}
-		for i := 0; i < indent; i++ {
-			buf.WriteString("    ")
-		}
-		if keyExpr != "" {
-			buf.WriteString(fmt.Sprintf("$result[] = [%s, %s];", keyExpr, sel))
+			for i := 0; i < indent; i++ {
+				buf.WriteString("    ")
+			}
+			buf.WriteString(fmt.Sprintf("$result += %s;\n", arg))
 		} else {
-			buf.WriteString(fmt.Sprintf("$result[] = %s;", sel))
+			sel, err := c.compileExpr(q.Select)
+			if err != nil {
+				return "", err
+			}
+			keyExpr := ""
+			if q.Sort != nil {
+				keyExpr, err = c.compileExpr(q.Sort)
+				if err != nil {
+					return "", err
+				}
+			}
+			for i := 0; i < indent; i++ {
+				buf.WriteString("    ")
+			}
+			if keyExpr != "" {
+				buf.WriteString(fmt.Sprintf("$result[] = [%s, %s];", keyExpr, sel))
+			} else {
+				buf.WriteString(fmt.Sprintf("$result[] = %s;", sel))
+			}
+			buf.WriteString("\n")
 		}
-		buf.WriteString("\n")
 	}
 
 	if q.Where != nil {
@@ -1036,21 +1062,34 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		gname := sanitizeName(q.Group.Name)
 		c.groupVars[gname] = true
 		buf.WriteString(fmt.Sprintf("        $%s = ['key'=>json_decode($_k, true),'items'=> $__g];\n", gname))
+
+		genv := types.NewEnv(child)
+		var elemT types.Type = types.AnyType{}
+		if vt, err := child.GetVar(q.Var); err == nil {
+			elemT = vt
+		}
+		genv.SetVar(q.Group.Name, types.GroupType{Elem: elemT}, true)
+		oldEnv2 := c.env
+		c.env = genv
+
 		if q.Group.Having != nil {
 			cond, err := c.compileExpr(q.Group.Having)
 			if err != nil {
+				c.env = oldEnv2
 				return "", err
 			}
 			buf.WriteString("        if (" + cond + ") {\n")
 		}
 		sel, err := c.compileExpr(q.Select)
 		if err != nil {
+			c.env = oldEnv2
 			return "", err
 		}
 		keyExpr := ""
 		if q.Sort != nil {
 			keyExpr, err = c.compileExpr(q.Sort)
 			if err != nil {
+				c.env = oldEnv2
 				return "", err
 			}
 		}
@@ -1062,8 +1101,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if q.Group.Having != nil {
 			buf.WriteString("        }\n")
 		}
+		c.env = oldEnv2
 		delete(c.groupVars, gname)
 		buf.WriteString("    }\n")
+	}
+
+	if aggExpr != nil {
+		buf.WriteString("    return $result;\n")
+		buf.WriteString("})()")
+		return buf.String(), nil
 	}
 
 	if q.Sort != nil {
@@ -1396,7 +1442,12 @@ func (c *Compiler) compileQueryExprAdvanced(q *parser.QueryExpr) (string, error)
 		paramList[i] = "$" + p
 	}
 	allParams := strings.Join(paramList, ", ")
-	selectFn := fmt.Sprintf("function(%s)%s{return %s;}", allParams, use, val)
+	var selectFn string
+	if q.Group == nil {
+		selectFn = fmt.Sprintf("function(%s)%s{return %s;}", allParams, use, val)
+	} else {
+		selectFn = fmt.Sprintf("function(%s)%s{return [%s];}", allParams, use, strings.Join(paramList, ", "))
+	}
 	opts := "[ 'select' => " + selectFn + " ]"
 	expr := fmt.Sprintf("_query(%s, [%s], %s)", src, strings.Join(joins, ", "), opts)
 	c.use("_query")

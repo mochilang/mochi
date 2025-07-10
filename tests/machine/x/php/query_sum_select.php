@@ -1,10 +1,10 @@
 <?php
 $nums = [1, 2, 3];
 $result = (function() use ($nums) {
-    $result = [];
+    $result = 0;
     foreach ($nums as $n) {
         if ($n > 1) {
-            $result[] = array_sum($n);
+            $result += $n;
         }
     }
     return $result;

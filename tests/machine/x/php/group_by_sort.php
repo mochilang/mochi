@@ -3,22 +3,22 @@ $items = [["cat" => "a", "val" => 3], ["cat" => "a", "val" => 1], ["cat" => "b",
 $grouped = (function() use ($items) {
     $groups = [];
     foreach ($items as $i) {
-        $_k = json_encode($i->cat);
+        $_k = json_encode($i['cat']);
         $groups[$_k][] = $i;
     }
     $result = [];
     foreach ($groups as $_k => $__g) {
         $g = ['key'=>json_decode($_k, true),'items'=> $__g];
-        $result[] = [-array_sum((function() {
+        $result[] = [-array_sum((function() use ($g) {
     $result = [];
-    foreach ($g as $x) {
-        $result[] = $x->val;
+    foreach ($g['items'] as $x) {
+        $result[] = $x['val'];
     }
     return $result;
-})()), ["cat" => $g->key, "total" => array_sum((function() {
+})()), ["cat" => $g['key'], "total" => array_sum((function() use ($g) {
     $result = [];
-    foreach ($g as $x) {
-        $result[] = $x->val;
+    foreach ($g['items'] as $x) {
+        $result[] = $x['val'];
     }
     return $result;
 })())]];

@@ -20,7 +20,7 @@ $adults = (function() use ($people) {
     return $result;
 })();
 foreach ($adults as $a) {
-    var_dump($a->name, $a->email);
+    var_dump($a['name'], $a['email']);
 }
 function _load($path = null, $opts = []) {
     $fmt = $opts['format'] ?? 'csv';

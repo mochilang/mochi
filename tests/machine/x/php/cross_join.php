@@ -5,12 +5,12 @@ $result = (function() use ($customers, $orders) {
     $result = [];
     foreach ($orders as $o) {
         foreach ($customers as $c) {
-            $result[] = ["orderId" => $o->id, "orderCustomerId" => $o->customerId, "pairedCustomerName" => $c->name, "orderTotal" => $o->total];
+            $result[] = ["orderId" => $o['id'], "orderCustomerId" => $o['customerId'], "pairedCustomerName" => $c['name'], "orderTotal" => $o['total']];
         }
     }
     return $result;
 })();
 var_dump("--- Cross Join: All order-customer pairs ---");
 foreach ($result as $entry) {
-    var_dump("Order", $entry->orderId, "(customerId:", $entry->orderCustomerId, ", total: $", $entry->orderTotal, ") paired with", $entry->pairedCustomerName);
+    var_dump("Order", $entry['orderId'], "(customerId:", $entry['orderCustomerId'], ", total: $", $entry['orderTotal'], ") paired with", $entry['pairedCustomerName']);
 }

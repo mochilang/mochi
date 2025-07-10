@@ -3,7 +3,7 @@
 This directory stores PHP code produced by the compiler tests. Each Mochi program from `tests/vm/valid` is compiled and executed. On success a `.out` file is written. Failures generate a `.error` file.
 
 ## Summary
-94/97 files compiled successfully
+97/97 files compiled successfully
 
 ## Checklist
 - [x] append_builtin.mochi
@@ -29,10 +29,10 @@ This directory stores PHP code produced by the compiler tests. Each Mochi progra
 - [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
 - [x] group_by.mochi
-- [ ] group_by_conditional_sum.mochi
+- [x] group_by_conditional_sum.mochi
 - [x] group_by_having.mochi
 - [x] group_by_join.mochi
-- [ ] group_by_left_join.mochi
+- [x] group_by_left_join.mochi
 - [x] group_by_multi_join.mochi
 - [x] group_by_multi_join_sort.mochi
 - [x] group_by_sort.mochi
@@ -75,7 +75,7 @@ This directory stores PHP code produced by the compiler tests. Each Mochi progra
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
-- [ ] query_sum_select.mochi
+- [x] query_sum_select.mochi
 - [x] record_assign.mochi
 - [x] right_join.mochi
 - [x] save_jsonl_stdout.mochi
@@ -103,9 +103,3 @@ This directory stores PHP code produced by the compiler tests. Each Mochi progra
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
-
-## TODO
-- [ ] Fix runtime warnings for cross join queries
-- [ ] Implement group_by_conditional_sum
-- [ ] Implement group_by_left_join
-- [ ] Implement query_sum_select

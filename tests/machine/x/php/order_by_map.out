@@ -1,16 +1,10 @@
-PHP Warning:  Attempt to read property "a" on array in /workspace/mochi/tests/machine/x/php/order_by_map.php on line 6
-PHP Warning:  Attempt to read property "b" on array in /workspace/mochi/tests/machine/x/php/order_by_map.php on line 6
-PHP Warning:  Attempt to read property "a" on array in /workspace/mochi/tests/machine/x/php/order_by_map.php on line 6
-PHP Warning:  Attempt to read property "b" on array in /workspace/mochi/tests/machine/x/php/order_by_map.php on line 6
-PHP Warning:  Attempt to read property "a" on array in /workspace/mochi/tests/machine/x/php/order_by_map.php on line 6
-PHP Warning:  Attempt to read property "b" on array in /workspace/mochi/tests/machine/x/php/order_by_map.php on line 6
 array(3) {
   [0]=>
   array(2) {
     ["a"]=>
-    int(1)
+    int(0)
     ["b"]=>
-    int(2)
+    int(5)
   }
   [1]=>
   array(2) {
@@ -22,8 +16,8 @@ array(3) {
   [2]=>
   array(2) {
     ["a"]=>
-    int(0)
+    int(1)
     ["b"]=>
-    int(5)
+    int(2)
   }
 }

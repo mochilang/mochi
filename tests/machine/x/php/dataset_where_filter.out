@@ -1,5 +1,13 @@
-PHP Warning:  Attempt to read property "age" on array in /workspace/mochi/tests/machine/x/php/dataset_where_filter.php on line 6
-PHP Warning:  Attempt to read property "age" on array in /workspace/mochi/tests/machine/x/php/dataset_where_filter.php on line 6
-PHP Warning:  Attempt to read property "age" on array in /workspace/mochi/tests/machine/x/php/dataset_where_filter.php on line 6
-PHP Warning:  Attempt to read property "age" on array in /workspace/mochi/tests/machine/x/php/dataset_where_filter.php on line 6
 string(14) "--- Adults ---"
+string(5) "Alice"
+string(2) "is"
+int(30)
+string(0) ""
+string(7) "Charlie"
+string(2) "is"
+int(65)
+string(9) " (senior)"
+string(5) "Diana"
+string(2) "is"
+int(45)
+string(0) ""

@@ -9,15 +9,15 @@ $result = (function() use ($items) {
     $result = [];
     foreach ($groups as $_k => $__g) {
         $g = ['key'=>json_decode($_k, true),'items'=> $__g];
-        $result[] = [$g['key'], ["cat" => $g['key'], "share" => array_sum((function() {
+        $result[] = [$g['key'], ["cat" => $g['key'], "share" => array_sum((function() use ($g) {
     $result = [];
-    foreach ($g as $x) {
+    foreach ($g['items'] as $x) {
         $result[] = ($x['flag'] ? $x['val'] : 0);
     }
     return $result;
-})()) / array_sum((function() {
+})()) / array_sum((function() use ($g) {
     $result = [];
-    foreach ($g as $x) {
+    foreach ($g['items'] as $x) {
         $result[] = $x['val'];
     }
     return $result;

@@ -5,8 +5,8 @@ $stats = (function() use ($customers, $orders) {
     $groups = [];
     foreach ($orders as $o) {
         foreach ($customers as $c) {
-            if ($o->customerId == $c->id) {
-                $_k = json_encode($c->name);
+            if ($o['customerId'] == $c['id']) {
+                $_k = json_encode($c['name']);
                 $groups[$_k][] = $o;
             }
         }
@@ -14,11 +14,11 @@ $stats = (function() use ($customers, $orders) {
     $result = [];
     foreach ($groups as $_k => $__g) {
         $g = ['key'=>json_decode($_k, true),'items'=> $__g];
-        $result[] = ["name" => $g->key, "count" => count($g['items'])];
+        $result[] = ["name" => $g['key'], "count" => count($g['items'])];
     }
     return $result;
 })();
 var_dump("--- Orders per customer ---");
 foreach ($stats as $s) {
-    var_dump($s->name, "orders:", $s->count);
+    var_dump($s['name'], "orders:", $s['count']);
 }

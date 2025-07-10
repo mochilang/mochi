@@ -6,11 +6,11 @@ $filtered = (function() use ($nations, $partsupp, $suppliers) {
     $result = [];
     foreach ($partsupp as $ps) {
         foreach ($suppliers as $s) {
-            if ($s->id == $ps->supplier) {
+            if ($s['id'] == $ps['supplier']) {
                 foreach ($nations as $n) {
-                    if ($n->id == $s->nation) {
-                        if ($n->name == "A") {
-                            $result[] = ["part" => $ps->part, "value" => $ps->cost * $ps->qty];
+                    if ($n['id'] == $s['nation']) {
+                        if ($n['name'] == "A") {
+                            $result[] = ["part" => $ps['part'], "value" => $ps['cost'] * $ps['qty']];
                         }
                     }
                 }
@@ -22,16 +22,16 @@ $filtered = (function() use ($nations, $partsupp, $suppliers) {
 $grouped = (function() use ($filtered) {
     $groups = [];
     foreach ($filtered as $x) {
-        $_k = json_encode($x->part);
+        $_k = json_encode($x['part']);
         $groups[$_k][] = $x;
     }
     $result = [];
     foreach ($groups as $_k => $__g) {
         $g = ['key'=>json_decode($_k, true),'items'=> $__g];
-        $result[] = ["part" => $g->key, "total" => array_sum((function() {
+        $result[] = ["part" => $g['key'], "total" => array_sum((function() use ($g) {
     $result = [];
-    foreach ($g as $r) {
-        $result[] = $r->value;
+    foreach ($g['items'] as $r) {
+        $result[] = $r['value'];
     }
     return $result;
 })())];

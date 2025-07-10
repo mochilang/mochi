@@ -1,0 +1,16 @@
+array(2) {
+  [0]=>
+  array(2) {
+    ["cat"]=>
+    string(1) "a"
+    ["share"]=>
+    float(0.6666666666666666)
+  }
+  [1]=>
+  array(2) {
+    ["cat"]=>
+    string(1) "b"
+    ["share"]=>
+    int(1)
+  }
+}
