@@ -1061,6 +1061,37 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 		b.WriteString("}")
 		return b.String(), nil
 	}
+	simple := true
+	for _, cs := range m.Cases {
+		if isUnderscoreExpr(cs.Pattern) {
+			continue
+		}
+		if !literalExpr(cs.Pattern) {
+			simple = false
+			break
+		}
+	}
+	if simple {
+		var b strings.Builder
+		b.WriteString("switch (" + target + ") {")
+		for _, cs := range m.Cases {
+			res, err := c.compileExpr(cs.Result, false)
+			if err != nil {
+				return "", err
+			}
+			if isUnderscoreExpr(cs.Pattern) {
+				b.WriteString("else => " + res + ", ")
+				continue
+			}
+			pat, err := c.compileExpr(cs.Pattern, false)
+			if err != nil {
+				return "", err
+			}
+			b.WriteString(pat + " => " + res + ", ")
+		}
+		b.WriteString("}")
+		return b.String(), nil
+	}
 	expr := "0"
 	for i := len(m.Cases) - 1; i >= 0; i-- {
 		cs := m.Cases[i]
