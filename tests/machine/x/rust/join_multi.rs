@@ -29,6 +29,6 @@ fn main() {
     let result = { let mut tmp1 = Vec::new();for o in &orders { for c in &customers { if !(o.customerId == c.id) { continue; } for i in &items { if !(o.id == i.orderId) { continue; } tmp1.push(Result { name: c.name, sku: i.sku }); } } } tmp1 };
     println!("{}", "--- Multi Join ---");
     for r in result {
-        println!("{:?} {} {:?}", r.name, "bought item", r.sku);
+        println!("{} {} {}", r.name, "bought item", r.sku);
     }
 }
