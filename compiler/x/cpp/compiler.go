@@ -159,13 +159,19 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 
 	globals := []*parser.Statement{}
 	encounteredFun := false
+	encounteredStmt := false
 	for _, st := range p.Statements {
 		if st.Fun != nil {
 			encounteredFun = true
+			encounteredStmt = true
 			continue
 		}
-		if !encounteredFun && (st.Let != nil || st.Var != nil || st.Type != nil) {
+		if !encounteredFun && !encounteredStmt && (st.Let != nil || st.Var != nil || st.Type != nil) {
 			globals = append(globals, st)
+			continue
+		}
+		if st.Let == nil && st.Var == nil && st.Type == nil {
+			encounteredStmt = true
 		}
 	}
 

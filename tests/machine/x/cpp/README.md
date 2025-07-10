@@ -106,3 +106,8 @@ Compiled programs: 99/100
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+
+## Remaining Tasks
+
+- [ ] Improve handling of empty list initializations
+

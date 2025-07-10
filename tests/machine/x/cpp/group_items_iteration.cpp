@@ -61,18 +61,6 @@ auto groups = ([]() {
   return __items;
 })();
 auto tmp = std::vector<int>{};
-auto result = ([]() {
-  std::vector<std::pair<decltype(r.tag), decltype(r)>> __items;
-  for (auto r : tmp) {
-    __items.push_back({r.tag, r});
-  }
-  std::sort(__items.begin(), __items.end(),
-            [](auto &a, auto &b) { return a.first < b.first; });
-  std::vector<decltype(r)> __res;
-  for (auto &p : __items)
-    __res.push_back(p.second);
-  return __res;
-})();
 
 int main() {
   for (auto g : groups) {
@@ -85,12 +73,25 @@ int main() {
       return v;
     })(tmp);
   }
+  auto result = ([&]() {
+    std::vector<std::pair<decltype(std::declval<__struct3>().tag), __struct3>>
+        __items;
+    for (auto r : tmp) {
+      __items.push_back({r.tag, r});
+    }
+    std::sort(__items.begin(), __items.end(),
+              [](auto &a, auto &b) { return a.first < b.first; });
+    std::vector<__struct3> __res;
+    for (auto &p : __items)
+      __res.push_back(p.second);
+    return __res;
+  })();
   {
     auto __tmp1 = result;
     for (size_t i = 0; i < __tmp1.size(); ++i) {
       if (i)
         std::cout << ' ';
-      std::cout << std::boolalpha << __tmp1[i];
+      std::cout << "<struct>";
     }
     std::cout << std::endl;
   }
