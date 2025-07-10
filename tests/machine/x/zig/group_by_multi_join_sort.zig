@@ -32,7 +32,7 @@ const customer = (blk1: { const _tmp1 = struct {
 }; const _arr = &[_]_tmp1{_tmp1{
     .c_custkey = 1,
     .c_name = "Alice",
-    .c_acctbal = 100,
+    .c_acctbal = 100.0,
     .c_nationkey = 1,
     .c_address = "123 St",
     .c_phone = "123-456",
@@ -63,14 +63,14 @@ const lineitem = (blk3: { const _tmp3 = struct {
     _tmp3{
     .l_orderkey = 1000,
     .l_returnflag = "R",
-    .l_extendedprice = 1000,
+    .l_extendedprice = 1000.0,
     .l_discount = 0.1,
 },
     _tmp3{
     .l_orderkey = 2000,
     .l_returnflag = "N",
-    .l_extendedprice = 500,
-    .l_discount = 0,
+    .l_extendedprice = 500.0,
+    .l_discount = 0.0,
 },
 }; break :blk3 _arr; });
 const start_date = "1993-10-01";
