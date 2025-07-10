@@ -4,9 +4,9 @@ This directory contains Kotlin code compiled from Mochi programs in `tests/vm/va
 
 ## Progress
 
-Compiled: 54/97 programs
+Compiled: 58/97 programs
 
-Successfully ran: 48/97 programs
+Successfully ran: 52/97 programs
 
 ## Checklist
 
@@ -34,7 +34,7 @@ Successfully ran: 48/97 programs
 - [x] fun_three_args.mochi
 - [x] group_by.mochi
 - [x] group_by_conditional_sum.mochi
-- [ ] group_by_having.mochi
+- [x] group_by_having.mochi
 - [x] group_by_join.mochi
 - [x] group_by_left_join.mochi
 - [x] group_by_multi_join.mochi
@@ -63,10 +63,10 @@ Successfully ran: 48/97 programs
 - [x] map_assign.mochi
 - [x] map_in_operator.mochi
 - [x] map_index.mochi
-- [ ] map_int_key.mochi
-- [ ] map_literal_dynamic.mochi
-- [ ] map_membership.mochi
-- [ ] map_nested_assign.mochi
+- [x] map_int_key.mochi
+- [x] map_literal_dynamic.mochi
+- [x] map_membership.mochi
+- [x] map_nested_assign.mochi
 - [ ] match_expr.mochi
 - [ ] match_full.mochi
 - [ ] math_ops.mochi
