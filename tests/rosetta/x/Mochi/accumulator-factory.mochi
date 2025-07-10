@@ -1,0 +1,20 @@
+// Mochi implementation of Rosetta "Accumulator factory" task
+// Translated from Go version in tests/rosetta/x/Go/accumulator-factory.go
+
+fun accumulator(sum: any): fun(any) {
+  var state = {"v": sum}
+  fun add(nv: any): any {
+    state["v"] = state["v"] + nv
+    return state["v"]
+  }
+  return add
+}
+
+fun main() {
+  let x = accumulator(1)
+  x(5)
+  accumulator(3)
+  print(str(x(2.3)))
+}
+
+main()
