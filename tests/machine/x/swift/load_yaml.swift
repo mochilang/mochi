@@ -34,13 +34,13 @@ func _load(path: String, opts: [String:Any]?) -> [[String:Any]] {
     if !cur.isEmpty { rows.append(cur) }
     return rows
 }
-struct Person {
+struct Person: Equatable {
     var name: String
     var age: Int
     var email: String
 }
 let people = _load(path: "../interpreter/valid/people.yaml", opts: ["format": "yaml"]).map { rec in Person(name: rec["name"] as! String, age: rec["age"] as! Int, email: rec["email"] as! String) }
-let adults = people.compactMap { p in p.age >= 18 ? (["name": p.name, "email": p.email]) : nil }
+var adults = people.compactMap { p in p.age >= 18 ? (["name": p.name, "email": p.email]) : nil }
 for a in adults {
     print(a["name"], a["email"])
 }

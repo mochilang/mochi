@@ -1,7 +1,7 @@
-let customers = [["id": 1, "name": "Alice"], ["id": 2, "name": "Bob"]]
-let orders = [["id": 100, "customerId": 1], ["id": 101, "customerId": 2]]
-let items = [["orderId": 100, "sku": "a"], ["orderId": 101, "sku": "b"]]
-let result = ({
+var customers = [["id": 1, "name": "Alice"], ["id": 2, "name": "Bob"]]
+var orders = [["id": 100, "customerId": 1], ["id": 101, "customerId": 2]]
+var items = [["orderId": 100, "sku": "a"], ["orderId": 101, "sku": "b"]]
+var result = ({
 	var _res: [[String:Any]] = []
 	for o in orders {
 		for c in customers {

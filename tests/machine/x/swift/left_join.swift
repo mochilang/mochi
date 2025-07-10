@@ -1,6 +1,6 @@
-let customers = [["id": 1, "name": "Alice"], ["id": 2, "name": "Bob"]]
-let orders = [["id": 100, "customerId": 1, "total": 250], ["id": 101, "customerId": 3, "total": 80]]
-let result = ({
+var customers = [["id": 1, "name": "Alice"], ["id": 2, "name": "Bob"]]
+var orders = [["id": 100, "customerId": 1, "total": 250], ["id": 101, "customerId": 3, "total": 80]]
+var result = ({
 	var _res: [[String:Any]] = []
 	let _src = orders
 	let _join = customers

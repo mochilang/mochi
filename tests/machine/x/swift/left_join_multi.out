@@ -55,4 +55,4 @@
 20 | }
 21 | 
 --- Left Join Multi ---
-Optional(100) Optional("Alice") Optional(["orderId": 100, "sku": "a"])
+Optional(100) Optional("Alice") Optional(["sku": "a", "orderId": 100])

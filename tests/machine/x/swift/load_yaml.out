@@ -1,5 +1,5 @@
 /workspace/mochi/tests/machine/x/swift/load_yaml.swift:45:11: warning: expression implicitly coerced from 'String?' to 'Any'
-43 | let adults = people.compactMap { p in p.age >= 18 ? (["name": p.name, "email": p.email]) : nil }
+43 | var adults = people.compactMap { p in p.age >= 18 ? (["name": p.name, "email": p.email]) : nil }
 44 | for a in adults {
 45 |     print(a["name"], a["email"])
    |           ||- note: provide a default value to avoid this warning
@@ -10,7 +10,7 @@
 47 | 
 
 /workspace/mochi/tests/machine/x/swift/load_yaml.swift:45:22: warning: expression implicitly coerced from 'String?' to 'Any'
-43 | let adults = people.compactMap { p in p.age >= 18 ? (["name": p.name, "email": p.email]) : nil }
+43 | var adults = people.compactMap { p in p.age >= 18 ? (["name": p.name, "email": p.email]) : nil }
 44 | for a in adults {
 45 |     print(a["name"], a["email"])
    |                      ||- note: provide a default value to avoid this warning

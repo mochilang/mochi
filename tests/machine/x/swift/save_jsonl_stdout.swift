@@ -22,5 +22,5 @@ func _save(_ rows: [[String:Any]], path: String, opts: [String:Any]?) {
         }
     }
 }
-let people = [["name": "Alice", "age": 30], ["name": "Bob", "age": 25]]
+var people = [["name": "Alice", "age": 30], ["name": "Bob", "age": 25]]
 _save(people, path: "-", opts: ["format": "jsonl"])

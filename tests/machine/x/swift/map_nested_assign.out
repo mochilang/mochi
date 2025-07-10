@@ -1,1 +1,7 @@
+/workspace/mochi/tests/machine/x/swift/map_nested_assign.swift:3:22: warning: forced cast from '[String : Int]?' to '[String : Any]' only unwraps optionals; did you mean to use '!'?
+1 | var data = ["outer": ["inner": 1]]
+2 | data["outer"]!["inner"] = 2
+3 | print((data["outer"] as! [String:Any])["inner"]!)
+  |                      `- warning: forced cast from '[String : Int]?' to '[String : Any]' only unwraps optionals; did you mean to use '!'?
+4 | 
 2

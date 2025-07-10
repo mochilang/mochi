@@ -1,2 +1,4 @@
-line: 0
-error: unsupported expression at line 15
+line 8: exit status 1
+		for s in suppliers {
+			if !(s["id"] as! Int == ps["supplier"] as! Int) { continue }
+			for n in nations {

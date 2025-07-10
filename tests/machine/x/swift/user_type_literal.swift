@@ -1,8 +1,8 @@
-struct Person {
+struct Person: Equatable {
     var name: String
     var age: Int
 }
-struct Book {
+struct Book: Equatable {
     var title: String
     var author: Person
 }

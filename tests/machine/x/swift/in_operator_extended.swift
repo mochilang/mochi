@@ -1,5 +1,5 @@
-let xs = [1, 2, 3]
-let ys = xs.compactMap { x in x % 2 == 1 ? (x) : nil }
+var xs = [1, 2, 3]
+var ys = xs.filter { x in x % 2 == 1 }
 print(ys.contains(1))
 print(ys.contains(2))
 let m = ["a": 1]
