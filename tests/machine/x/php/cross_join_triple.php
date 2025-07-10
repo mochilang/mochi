@@ -17,3 +17,4 @@ var_dump("--- Cross Join of three lists ---");
 foreach ($combos as $c) {
     var_dump($c['n'], $c['l'], $c['b']);
 }
+?>

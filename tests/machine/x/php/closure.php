@@ -4,3 +4,4 @@ function makeAdder($n) {
 }
 $add10 = makeAdder(10);
 var_dump($add10(7));
+?>

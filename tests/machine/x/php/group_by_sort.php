@@ -28,3 +28,4 @@ $grouped = (function() use ($items) {
     return $result;
 })();
 var_dump($grouped);
+?>

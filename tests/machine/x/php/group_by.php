@@ -35,3 +35,4 @@ var_dump("--- People grouped by city ---");
 foreach ($stats as $s) {
     var_dump($s['city'], ": count =", $s['count'], ", avg_age =", $s['avg_age']);
 }
+?>

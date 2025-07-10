@@ -5,3 +5,4 @@ function boom($a, $b) {
 }
 var_dump(false && boom(1, 2));
 var_dump(true || boom(1, 2));
+?>

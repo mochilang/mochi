@@ -119,4 +119,4 @@ function _group_by($src, $keyfn) {
     $sel = $opts['select'];
     foreach ($items as $r) { $res[] = $sel(...$r); }
     return $res;
-}
+}?>

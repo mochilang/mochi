@@ -31,3 +31,4 @@ function classify($n) {
 }
 var_dump(classify(0));
 var_dump(classify(5));
+?>

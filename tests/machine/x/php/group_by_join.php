@@ -22,3 +22,4 @@ var_dump("--- Orders per customer ---");
 foreach ($stats as $s) {
     var_dump($s['name'], "orders:", $s['count']);
 }
+?>

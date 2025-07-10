@@ -31,3 +31,4 @@ $result = (function() use ($tmp) {
     return $result;
 })();
 var_dump($result);
+?>

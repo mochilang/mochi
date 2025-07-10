@@ -10,3 +10,4 @@ $result = (function() use ($nums) {
     return $result;
 })();
 var_dump($result);
+?>

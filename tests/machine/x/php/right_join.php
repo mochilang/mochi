@@ -93,4 +93,4 @@ function _query($src, $joins, $opts) {
     $sel = $opts['select'];
     foreach ($items as $r) { $res[] = $sel(...$r); }
     return $res;
-}
+}?>
