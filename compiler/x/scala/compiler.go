@@ -1533,7 +1533,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 
 		groupEnv := types.NewEnv(c.env)
-		groupEnv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, false)
+		keyT := types.ExprType(q.Group.Exprs[0], c.env)
+		groupEnv.SetVar(q.Group.Name, types.GroupType{Key: keyT, Elem: types.AnyType{}}, false)
 
 		if q.Group.Having != nil {
 			c.env = groupEnv

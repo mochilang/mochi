@@ -554,7 +554,14 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 			child.SetVar(j.Var, je, true)
 		}
 		orig := env
-		env = child
+		if p.Query.Group != nil {
+			keyT := ExprType(p.Query.Group.Exprs[0], child)
+			genv := NewEnv(child)
+			genv.SetVar(p.Query.Group.Name, GroupType{Key: keyT, Elem: elemType}, true)
+			env = genv
+		} else {
+			env = child
+		}
 		elem := ExprType(p.Query.Select, env)
 		env = orig
 		return ListType{Elem: elem}
