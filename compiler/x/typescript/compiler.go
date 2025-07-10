@@ -77,6 +77,36 @@ func detectAggCall(e *parser.Expr) (name string, arg *parser.Expr, ok bool) {
 	}
 }
 
+// detectExistsQuery checks if the expression is a call to the `exists` builtin
+// with a simple query of the form:
+//
+//	from x in src
+//	where <cond>
+//	select x
+//
+// If so, it returns the source expression, variable name and condition.
+func detectExistsQuery(arg *parser.Expr) (src *parser.Expr, varName string, cond *parser.Expr, ok bool) {
+	if arg == nil || arg.Binary == nil || len(arg.Binary.Right) != 0 {
+		return nil, "", nil, false
+	}
+	au := arg.Binary.Left
+	if len(au.Ops) != 0 || au.Value == nil || len(au.Value.Ops) != 0 {
+		return nil, "", nil, false
+	}
+	targ := au.Value.Target
+	if targ == nil || targ.Query == nil {
+		return nil, "", nil, false
+	}
+	q := targ.Query
+	if len(q.Froms) != 0 || len(q.Joins) != 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+		return nil, "", nil, false
+	}
+	if q.Select == nil || getIdent(q.Select) != q.Var {
+		return nil, "", nil, false
+	}
+	return q.Source, q.Var, q.Where, true
+}
+
 // Compile converts the parsed Mochi program into TypeScript source code.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
@@ -1230,7 +1260,21 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 			}
 			return "", fmt.Errorf("count expects 1 arg")
 		case "exists":
-			if len(args) == 1 {
+			if len(p.Call.Args) == 1 {
+				if srcExpr, v, cond, ok := detectExistsQuery(p.Call.Args[0]); ok {
+					srcStr, err := c.expr(srcExpr)
+					if err != nil {
+						return "", err
+					}
+					condStr := "true"
+					if cond != nil {
+						condStr, err = c.expr(cond)
+						if err != nil {
+							return "", err
+						}
+					}
+					return fmt.Sprintf("%s.some((%s) => %s)", srcStr, v, condStr), nil
+				}
 				return fmt.Sprintf("(%s.length > 0)", args[0]), nil
 			}
 			return "", fmt.Errorf("exists expects 1 arg")
