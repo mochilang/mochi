@@ -38,6 +38,8 @@ type Compiler struct {
 	elemType     map[string]string
 	groups       map[string]struct{}
 	usesJSON     bool
+	usesIO       bool
+	definedLoad  bool
 }
 
 // New returns a new compiler instance.
@@ -52,6 +54,8 @@ func New() *Compiler {
 		funParams:    map[string]int{},
 		groups:       map[string]struct{}{},
 		usesJSON:     false,
+		usesIO:       false,
+		definedLoad:  false,
 		scope:        0,
 	}
 }
@@ -221,6 +225,9 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	}
 	if bytes.Contains(src, []byte("std::pair")) {
 		add("#include <utility>")
+	}
+	if bytes.Contains(src, []byte("std::ifstream")) || bytes.Contains(src, []byte("std::ofstream")) || c.usesIO {
+		add("#include <fstream>")
 	}
 
 	var out bytes.Buffer
@@ -1266,6 +1273,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return c.partialApply(name, args, n), nil
 		}
 		return name + "(" + strings.Join(args, ", ") + ")", nil
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	case p.Group != nil:
 		expr, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -1363,6 +1374,60 @@ func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
 		elseExpr = "0"
 	}
 	return fmt.Sprintf("(%s ? %s : %s)", cond, thenExpr, elseExpr), nil
+}
+
+func (c *Compiler) compileLoadExpr(le *parser.LoadExpr) (string, error) {
+	path := "\"\""
+	if le.Path != nil {
+		path = strconv.Quote(*le.Path)
+	}
+	typ, err := c.compileType(le.Type)
+	if err != nil {
+		return "", err
+	}
+	if !c.definedLoad {
+		c.headerWriteln("inline std::vector<" + typ + "> __load_yaml_person(const std::string &path){")
+		c.headerWriteln("    std::ifstream f(path);")
+		c.headerWriteln("    std::string line;")
+		c.headerWriteln("    std::vector<" + typ + "> people;")
+		c.headerWriteln("    " + typ + " cur;")
+		c.headerWriteln("    while(std::getline(f,line)){")
+		c.headerWriteln("        if(line.find(\"- name:\")!=std::string::npos){")
+		c.headerWriteln("            if(!cur.name.empty()) people.push_back(cur);")
+		c.headerWriteln("            cur=" + typ + "();")
+		c.headerWriteln("            cur.name=line.substr(line.find(':')+2);")
+		c.headerWriteln("        } else if(line.find(\"age:\")!=std::string::npos){")
+		c.headerWriteln("            cur.age=std::stoi(line.substr(line.find(':')+2));")
+		c.headerWriteln("        } else if(line.find(\"email:\")!=std::string::npos){")
+		c.headerWriteln("            cur.email=line.substr(line.find(':')+2);")
+		c.headerWriteln("        }")
+		c.headerWriteln("    }")
+		c.headerWriteln("    if(!cur.name.empty()) people.push_back(cur);")
+		c.headerWriteln("    return people;")
+		c.headerWriteln("}")
+		c.definedLoad = true
+	}
+	c.usesIO = true
+	expr := "__load_yaml_person(" + path + ")"
+	c.varStruct[expr] = typ
+	c.elemType[expr] = typ
+	return expr, nil
+}
+
+func (c *Compiler) compileSaveExpr(se *parser.SaveExpr) (string, error) {
+	src, err := c.compileExpr(se.Src)
+	if err != nil {
+		return "", err
+	}
+	path := "\"\""
+	if se.Path != nil {
+		path = strconv.Quote(*se.Path)
+	}
+	if path == "\"-\"" {
+		c.usesJSON = true
+		return "([&](){ for(auto &x:" + src + "){ __json(x); std::cout<<std::endl; } })()", nil
+	}
+	return "0", nil
 }
 
 func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error) {
