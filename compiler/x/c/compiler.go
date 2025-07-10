@@ -1042,8 +1042,28 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 						qenv.SetVar(j.Var, jt.Elem, true)
 					}
 				}
+				if q.Group != nil {
+					if st, ok := c.exprType(q.Source).(types.ListType); ok {
+						qenv.SetVar(q.Group.Name, types.GroupType{Elem: st.Elem}, true)
+					}
+				}
 				prevEnv := c.env
 				c.env = qenv
+				if q.Group != nil {
+					var keyT types.Type
+					if len(q.Group.Exprs) == 1 {
+						keyT = c.exprType(q.Group.Exprs[0])
+					} else if len(q.Group.Exprs) == 2 {
+						if _, ok := c.exprType(q.Group.Exprs[0]).(types.StringType); ok {
+							if _, ok2 := c.exprType(q.Group.Exprs[1]).(types.StringType); ok2 {
+								keyT = types.StructType{Name: "pair_string", Fields: map[string]types.Type{"a": types.StringType{}, "b": types.StringType{}}, Order: []string{"a", "b"}}
+							}
+						}
+					}
+					if keyT != nil {
+						c.groupKeys[q.Group.Name] = keyT
+					}
+				}
 				if st, ok := c.inferStructFromMap(ml, stmt.Name); ok {
 					t = types.ListType{Elem: st}
 					c.env = prevEnv
@@ -1053,6 +1073,9 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 					c.structLits[ml] = st
 				} else {
 					c.env = prevEnv
+				}
+				if q.Group != nil {
+					delete(c.groupKeys, q.Group.Name)
 				}
 			}
 		}
@@ -1827,16 +1850,28 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						c.env = genv
 					}
 					c.groupKeys[q.Group.Name] = lt.Elem
+					var retT types.Type
 					if ml := asMapLiteral(q.Select); ml != nil {
-						if _, ok := c.structLits[ml]; !ok {
-							if st, ok2 := c.inferStructFromMap(ml, q.Var); ok2 {
+						if st, ok := c.structLits[ml]; ok {
+							retT = st
+						} else if st, ok2 := c.inferStructFromMap(ml, q.Var); ok2 {
+							retT = st
+							c.structLits[ml] = st
+							if c.env != nil {
+								c.env.SetStruct(st.Name, st)
+							}
+							c.compileStructType(st)
+							c.compileStructListType(st)
+						}
+					}
+					if retT == nil {
+						retT = c.exprType(q.Select)
+						if ml := asMapLiteral(q.Select); ml != nil {
+							if st, ok := retT.(types.StructType); ok {
 								c.structLits[ml] = st
-								c.compileStructType(st)
-								c.compileStructListType(st)
 							}
 						}
 					}
-					retT := c.exprType(q.Select)
 					if ml := asMapLiteral(q.Select); ml != nil {
 						if st, ok := retT.(types.StructType); ok {
 							c.structLits[ml] = st
@@ -1930,15 +1965,34 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						if _, ok := c.structLits[ml]; !ok {
 							if st, ok2 := c.inferStructFromMap(ml, q.Var); ok2 {
 								c.structLits[ml] = st
+								if c.env != nil {
+									c.env.SetStruct(st.Name, st)
+								}
 								c.compileStructType(st)
 								c.compileStructListType(st)
 							}
 						}
 					}
-					retT := c.exprType(q.Select)
+					var retT types.Type
 					if ml := asMapLiteral(q.Select); ml != nil {
-						if st, ok := retT.(types.StructType); ok {
+						if st, ok := c.structLits[ml]; ok {
+							retT = st
+						} else if st, ok2 := c.inferStructFromMap(ml, q.Var); ok2 {
+							retT = st
 							c.structLits[ml] = st
+							if c.env != nil {
+								c.env.SetStruct(st.Name, st)
+							}
+							c.compileStructType(st)
+							c.compileStructListType(st)
+						}
+					}
+					if retT == nil {
+						retT = c.exprType(q.Select)
+						if ml := asMapLiteral(q.Select); ml != nil {
+							if st, ok := retT.(types.StructType); ok {
+								c.structLits[ml] = st
+							}
 						}
 					}
 					retList := types.ListType{Elem: retT}
@@ -2039,15 +2093,34 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 							if _, ok := c.structLits[ml]; !ok {
 								if st, ok2 := c.inferStructFromMap(ml, q.Var); ok2 {
 									c.structLits[ml] = st
+									if c.env != nil {
+										c.env.SetStruct(st.Name, st)
+									}
 									c.compileStructType(st)
 									c.compileStructListType(st)
 								}
 							}
 						}
-						retT := c.exprType(q.Select)
+						var retT types.Type
 						if ml := asMapLiteral(q.Select); ml != nil {
-							if st, ok := retT.(types.StructType); ok {
+							if st, ok := c.structLits[ml]; ok {
+								retT = st
+							} else if st, ok2 := c.inferStructFromMap(ml, q.Var); ok2 {
+								retT = st
 								c.structLits[ml] = st
+								if c.env != nil {
+									c.env.SetStruct(st.Name, st)
+								}
+								c.compileStructType(st)
+								c.compileStructListType(st)
+							}
+						}
+						if retT == nil {
+							retT = c.exprType(q.Select)
+							if ml := asMapLiteral(q.Select); ml != nil {
+								if st, ok := retT.(types.StructType); ok {
+									c.structLits[ml] = st
+								}
 							}
 						}
 						retList := types.ListType{Elem: retT}
