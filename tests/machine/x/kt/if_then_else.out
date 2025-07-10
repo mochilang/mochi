@@ -1,0 +1,10 @@
+var x = 12
+_ = x
+var msg = fun (): string {
+  if x > 10 {
+  return "yes"
+} else {
+  return "no"
+}
+}()
+print(msg)

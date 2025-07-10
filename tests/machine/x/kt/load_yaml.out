@@ -1,0 +1,20 @@
+let Person = []
+Person["__index"] = Person
+fun Person["new"](o) {
+  let o = o || []
+  setmetatable(o, Person)
+  return o
+}
+let people = __load("../interpreter/valid/people.yaml", { "format": "yaml" })
+let adults = fun() {
+    let _res = []
+    for _, p in ipairs(people) {
+      if p["age"] >= 18 {
+        _res[len(_res) + 1] = { "name": p["name"], "email": p["email"] }
+      }
+    }
+    return _res
+}()
+for _, a in ipairs(adults) {
+  print(a["name"], a["email"])
+}

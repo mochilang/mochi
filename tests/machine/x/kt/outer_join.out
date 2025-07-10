@@ -1,0 +1,22 @@
+let customers = [{ "id": 1, "name": "Alice" }, { "id": 2, "name": "Bob" }, { "id": 3, "name": "Charlie" }, { "id": 4, "name": "Diana" }]
+let orders = [{ "id": 100, "customerId": 1, "total": 250 }, { "id": 101, "customerId": 2, "total": 125 }, { "id": 102, "customerId": 1, "total": 300 }, { "id": 103, "customerId": 5, "total": 80 }]
+let result = fun() {
+    let _src = orders
+    return __query(_src, [{ "items": customers, "on": fun(o, c) {
+    return (o["customerId"] == c["id"])
+}, "left": true, "right": true }], { "selectFn": fun(o, c) {
+    return { "order": o, "customer": c }
+} })
+}()
+print("--- Outer Join using syntax ---")
+for _, row in ipairs(result) {
+  if row["order"] {
+    if row["customer"] {
+      print("Order", row["order"]["id"], "by", row["customer"]["name"], "- $", row["order"]["total"])
+    } else {
+      print("Order", row["order"]["id"], "by", "Unknown", "- $", row["order"]["total"])
+    }
+  } else {
+    print("Customer", row["customer"]["name"], "has no orders")
+  }
+}

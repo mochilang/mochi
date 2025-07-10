@@ -1,0 +1,6 @@
+fun inc(x: int): int {
+  return (x + k)
+}
+var k = 2
+_ = k
+print(5)

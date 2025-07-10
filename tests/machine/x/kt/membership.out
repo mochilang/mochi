@@ -1,0 +1,3 @@
+var nums = [1, 2, 3]
+print(slices.Contains(nums, 2))
+print(slices.Contains(nums, 4))

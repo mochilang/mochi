@@ -1,0 +1,42 @@
+let _Group = []
+fun _Group["new"](k) {
+  return { "key": k, "items": [] }
+}
+let items = [{ "cat": "a", "val": 10, "flag": true }, { "cat": "a", "val": 5, "flag": false }, { "cat": "b", "val": 20, "flag": true }]
+let result = fun() {
+    let _src = items
+    let _rows = __query(_src, [], { "selectFn": fun(i) {
+    return [i]
+} })
+    let _groups = __group_by_rows(_rows, fun(i) {
+    return i["cat"]
+}, fun(i) {
+    let _row = __merge(i)
+    _row["i"] = i
+    return _row
+})
+    let _res = []
+    for _, g in ipairs(_groups) {
+      _res[len(_res) + 1] = { "cat": g["key"], "share": (__sum(fun() {
+    let _res = []
+    for _, x in ipairs(g["items"]) {
+      _res[len(_res) + 1] = fun() {
+    if x["flag"] {
+      return x["val"]
+    } else {
+      return 0
+    }
+}()
+    }
+    return _res
+}()) / __sum(fun() {
+    let _res = []
+    for _, x in ipairs(g["items"]) {
+      _res[len(_res) + 1] = x["val"]
+    }
+    return _res
+}())) }
+    }
+    return _res
+}()
+print(result)
