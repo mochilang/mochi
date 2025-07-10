@@ -303,6 +303,26 @@ func (c *Compiler) stmt(s *parser.Statement) error {
 			}
 		}
 		c.writeln(fmt.Sprintf("val %s%s = %s", s.Let.Name, typ, val))
+		var t types.Type
+		if s.Let.Type != nil {
+			t = types.ResolveTypeRef(s.Let.Type, c.env)
+		} else if s.Let.Value != nil {
+			t = c.inferExprType(s.Let.Value)
+			if isAnyType(t) {
+				t = c.inferListLike(s.Let.Value)
+			} else if lt, ok := t.(types.ListType); ok {
+				if isAnyType(lt.Elem) {
+					t = c.inferListLike(s.Let.Value)
+				}
+			}
+		}
+		if t != nil {
+			if _, ok := t.(types.AnyType); !ok {
+				if cur, err := c.env.GetVar(s.Let.Name); err != nil || isAnyType(cur) {
+					c.env.SetVar(s.Let.Name, t, false)
+				}
+			}
+		}
 	case s.Var != nil:
 		var val, typ string
 		if s.Var.Value != nil {
@@ -322,6 +342,26 @@ func (c *Compiler) stmt(s *parser.Statement) error {
 			}
 		}
 		c.writeln(fmt.Sprintf("var %s%s = %s", s.Var.Name, typ, val))
+		var t types.Type
+		if s.Var.Type != nil {
+			t = types.ResolveTypeRef(s.Var.Type, c.env)
+		} else if s.Var.Value != nil {
+			t = c.inferExprType(s.Var.Value)
+			if isAnyType(t) {
+				t = c.inferListLike(s.Var.Value)
+			} else if lt, ok := t.(types.ListType); ok {
+				if isAnyType(lt.Elem) {
+					t = c.inferListLike(s.Var.Value)
+				}
+			}
+		}
+		if t != nil {
+			if _, ok := t.(types.AnyType); !ok {
+				if cur, err := c.env.GetVar(s.Var.Name); err != nil || isAnyType(cur) {
+					c.env.SetVar(s.Var.Name, t, true)
+				}
+			}
+		}
 	case s.Assign != nil:
 		v, err := c.expr(s.Assign.Value)
 		if err != nil {
@@ -1903,4 +1943,37 @@ func isStructType(t types.Type) bool {
 func isStringType(t types.Type) bool {
 	_, ok := t.(types.StringType)
 	return ok
+}
+
+func isAnyType(t types.Type) bool {
+	_, ok := t.(types.AnyType)
+	return ok
+}
+
+// inferListLike attempts to infer the element type of a query followed by
+// simple list operations like sort, drop or take. It returns AnyType if it
+// cannot determine a better type.
+func (c *Compiler) inferListLike(e *parser.Expr) types.Type {
+	if e == nil || e.Binary == nil {
+		return types.AnyType{}
+	}
+	q := e.Binary.Left.Value.Target.Query
+	if q == nil {
+		return types.AnyType{}
+	}
+	srcType := types.TypeOfExprBasic(q.Source, c.env)
+	var elem types.Type = types.AnyType{}
+	if lt, ok := srcType.(types.ListType); ok {
+		elem = lt.Elem
+	}
+	if sel := q.Select; sel != nil {
+		if sel.Binary != nil && len(sel.Binary.Right) == 0 {
+			if pf := sel.Binary.Left.Value; pf != nil && len(pf.Ops) == 0 {
+				if pf.Target.Selector != nil && pf.Target.Selector.Root == q.Var && len(pf.Target.Selector.Tail) == 0 {
+					return types.ListType{Elem: elem}
+				}
+			}
+		}
+	}
+	return types.ListType{Elem: types.MapType{Key: types.StringType{}, Value: types.AnyType{}}}
 }
