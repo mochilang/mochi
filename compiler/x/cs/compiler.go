@@ -233,9 +233,12 @@ func (c *Compiler) compileFunStmt(fn *parser.FunStmt) error {
 		c.varTypes[name] = pType
 		params[i] = fmt.Sprintf("%s %s", pType, name)
 	}
-	ret := csType(fn.Return)
-	if ret == "" {
-		ret = "void"
+	ret := "void"
+	if fn.Return != nil {
+		ret = csType(fn.Return)
+		if ret == "" {
+			ret = "void"
+		}
 	}
 	prefix := "static "
 	if c.inFun > 0 {
@@ -274,9 +277,12 @@ func (c *Compiler) compileTypeMethod(fn *parser.FunStmt) error {
 		c.varTypes[name] = pType
 		params[i] = fmt.Sprintf("%s %s", pType, name)
 	}
-	ret := csType(fn.Return)
-	if ret == "" {
-		ret = "void"
+	ret := "void"
+	if fn.Return != nil {
+		ret = csType(fn.Return)
+		if ret == "" {
+			ret = "void"
+		}
 	}
 	c.writeln(fmt.Sprintf("public %s %s(%s) {", ret, sanitizeName(fn.Name), strings.Join(params, ", ")))
 	c.indent++
@@ -659,6 +665,9 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 			return err
 		}
 		lhs = fmt.Sprintf("%s[%s]", lhs, iexpr)
+	}
+	for _, fld := range a.Field {
+		lhs = fmt.Sprintf("%s.%s", lhs, sanitizeName(fld.Name))
 	}
 	val, err := c.compileExpr(a.Value)
 	if err != nil {
@@ -2410,9 +2419,15 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	if fn, ok := c.env.GetFunc(call.Func); ok {
 		paramTypes = make([]types.Type, len(fn.Params))
 		for i, p := range fn.Params {
-			paramTypes[i] = c.resolveTypeRef(p.Type)
+			if p.Type != nil {
+				paramTypes[i] = c.resolveTypeRef(p.Type)
+			} else {
+				paramTypes[i] = types.AnyType{}
+			}
 		}
-		retType = c.resolveTypeRef(fn.Return)
+		if fn.Return != nil {
+			retType = c.resolveTypeRef(fn.Return)
+		}
 	} else if t, err := c.env.GetVar(call.Func); err == nil {
 		if ft, ok := t.(types.FuncType); ok {
 			paramTypes = ft.Params
