@@ -813,7 +813,15 @@ func (c *Compiler) postfix(p *parser.PostfixExpr) (string, error) {
 					return "", err
 				}
 				if i < len(p.Ops)-1 {
-					val = fmt.Sprintf("%s[%s]!!", val, idx)
+					prefix := &parser.PostfixExpr{Target: p.Target, Ops: p.Ops[:i]}
+					ct := c.inferPostfixType(prefix)
+					if types.IsMapType(ct) {
+						val = fmt.Sprintf("(%s[%s] as MutableMap<*, *>)", val, idx)
+					} else if types.IsListType(ct) {
+						val = fmt.Sprintf("(%s[%s] as MutableList<Any?>)", val, idx)
+					} else {
+						val = fmt.Sprintf("%s[%s]!!", val, idx)
+					}
 				} else {
 					val = fmt.Sprintf("%s[%s]", val, idx)
 				}
