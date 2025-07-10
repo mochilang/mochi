@@ -31,8 +31,9 @@ type Compiler struct {
 		Fields map[string]types.Type
 		Order  []string
 	}
-	groupVars []string
-	enumDecls []string
+	groupVars      []string
+	enumDecls      []string
+	lastListStruct string
 }
 
 func (c *Compiler) fieldType(e *parser.Expr) types.Type {
@@ -298,8 +299,9 @@ func New(env *types.Env) *Compiler {
 			Fields map[string]types.Type
 			Order  []string
 		}),
-		groupVars: []string{},
-		enumDecls: []string{},
+		groupVars:      []string{},
+		enumDecls:      []string{},
+		lastListStruct: "",
 	}
 }
 
@@ -591,6 +593,10 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 			}
 		}
 	}
+	if c.lastListStruct != "" {
+		c.listVars[l.Name] = c.lastListStruct
+		c.lastListStruct = ""
+	}
 	if c.inMain && c.indent == 1 {
 		c.globals[l.Name] = true
 	}
@@ -642,6 +648,10 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 				}
 			}
 		}
+	}
+	if c.lastListStruct != "" {
+		c.listVars[v.Name] = c.lastListStruct
+		c.lastListStruct = ""
 	}
 	if c.inMain && c.indent == 1 {
 		c.globals[v.Name] = true
@@ -1408,12 +1418,24 @@ func (c *Compiler) compileGroupBySimple(q *parser.QueryExpr, src string, child *
 		c.env = orig
 		return "", fmt.Errorf("multi-key group not supported")
 	}
-	keyExpr, err := c.compileExpr(q.Group.Exprs[0])
-	if err != nil {
-		c.env = orig
-		return "", err
+	var keyExpr string
+	var keyType types.Type
+	if ml := tryMapLiteral(q.Group.Exprs[0]); ml != nil {
+		name := c.newStructName("Key")
+		keyExpr, err = c.compileMapLiteralAsStruct(name, ml)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		keyType = types.StructType{Name: name}
+	} else {
+		keyExpr, err = c.compileExpr(q.Group.Exprs[0])
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		keyType = c.fieldType(q.Group.Exprs[0])
 	}
-	keyType := c.fieldType(q.Group.Exprs[0])
 	elemType, _ := child.GetVar(q.Var)
 
 	mapTmp := c.newTmp()
@@ -1559,12 +1581,24 @@ func (c *Compiler) compileGroupByJoin(q *parser.QueryExpr, src string, child *ty
 		c.env = orig
 		return "", fmt.Errorf("multi-key group not supported")
 	}
-	keyExpr, err := c.compileExpr(q.Group.Exprs[0])
-	if err != nil {
-		c.env = orig
-		return "", err
+	var keyExpr string
+	var keyType types.Type
+	if ml := tryMapLiteral(q.Group.Exprs[0]); ml != nil {
+		name := c.newStructName("Key")
+		keyExpr, err = c.compileMapLiteralAsStruct(name, ml)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		keyType = types.StructType{Name: name}
+	} else {
+		keyExpr, err = c.compileExpr(q.Group.Exprs[0])
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		keyType = c.fieldType(q.Group.Exprs[0])
 	}
-	keyType := c.fieldType(q.Group.Exprs[0])
 
 	itemStruct := c.newStructName("Item")
 	stItem := types.StructType{Name: itemStruct, Fields: map[string]types.Type{}, Order: []string{}}
@@ -2624,11 +2658,12 @@ func (c *Compiler) compileMapLiteralAsStruct(name string, m *parser.MapLiteral) 
 			return "", err
 		}
 		fields[i] = fmt.Sprintf("%s: %s", str, v)
-		st.Fields[str] = c.fieldType(it.Value)
+		st.Fields[str] = types.ExprType(it.Value, c.env)
 		st.Order = append(st.Order, str)
 	}
 	c.structs[name] = st
 	c.genStructs = append(c.genStructs, st)
+	c.lastListStruct = name
 	return fmt.Sprintf("%s { %s }", name, strings.Join(fields, ", ")), nil
 }
 
