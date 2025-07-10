@@ -218,6 +218,10 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 	}
 	var val string
 	if l.Value != nil {
+		if p := rootPrimary(l.Value); p != nil && p.List != nil && len(p.List.Elems) > 0 && typ == "" {
+			elemT := c.inferType(p.List.Elems[0])
+			typ = fmt.Sprintf("%s list", elemT)
+		}
 		if p := rootPrimary(l.Value); p != nil && p.Map != nil {
 			c.maps[l.Name] = true
 		}
@@ -378,6 +382,17 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	start, err := c.compileExpr(f.Source)
 	if err != nil {
 		return err
+	}
+	if name, ok := c.simpleIdentifier(f.Source); ok {
+		if t, ok2 := c.vars[name]; ok2 {
+			if strings.HasSuffix(t, " list") {
+				c.vars[f.Name] = strings.TrimSuffix(t, " list")
+			} else {
+				c.vars[f.Name] = t
+			}
+		}
+	} else if f.RangeEnd != nil {
+		c.vars[f.Name] = "int"
 	}
 	hasBC := containsBreakOrContinue(f.Body)
 	if hasBC {
@@ -840,7 +855,10 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 				return fmt.Sprintf("printfn \"%%s\" %s", args[0]), nil
 			}
 			if argAST != nil && c.isStringExpr(argAST) {
-				return fmt.Sprintf("printfn \"%%s\" %s", args[0]), nil
+				if identifierRegexp.MatchString(args[0]) {
+					return fmt.Sprintf("printfn \"%%s\" %s", args[0]), nil
+				}
+				return fmt.Sprintf("printfn \"%%s\" (%s)", args[0]), nil
 			}
 			if argAST != nil && argAST.Binary != nil && argAST.Binary.Left != nil && argAST.Binary.Left.Value != nil && argAST.Binary.Left.Value.Target != nil {
 				t := argAST.Binary.Left.Value.Target
@@ -863,7 +881,19 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 		conv := make([]string, len(args))
 		for i, a := range args {
-			conv[i] = fmt.Sprintf("string %s", a)
+			boolArg := false
+			if i < len(call.Args) && isBoolExpr(call.Args[i]) {
+				boolArg = true
+			} else if name, ok := c.simpleIdentifier(call.Args[i]); ok {
+				if t, ok2 := c.vars[name]; ok2 && t == "bool" {
+					boolArg = true
+				}
+			}
+			if boolArg {
+				conv[i] = fmt.Sprintf("sprintf \"%%b\" %s", a)
+			} else {
+				conv[i] = fmt.Sprintf("string %s", a)
+			}
 		}
 		return fmt.Sprintf("printfn \"%%s\" (String.concat \" \" [%s])", strings.Join(conv, "; ")), nil
 	case "append":
