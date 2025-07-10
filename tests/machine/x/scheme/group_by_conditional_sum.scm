@@ -20,7 +20,7 @@
 (define (_parse_yaml text)
   (let ((rows '()) (cur '()))
     (for-each (lambda (ln)
-                (when (string-prefix? ln "- ")
+                (when (string-prefix? "- " ln)
                   (when (not (null? cur))
                     (set! rows (append rows (list cur))))
                   (set! cur '())

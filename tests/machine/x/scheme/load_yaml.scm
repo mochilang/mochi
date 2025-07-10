@@ -8,7 +8,7 @@
             (begin (set-cdr! p v) m)
             (cons (cons k v) m)))
 )
-(import (srfi 95) (chibi json) (chibi io) (chibi) (chibi string))
+(import (srfi 1) (srfi 95) (chibi json) (chibi io) (chibi process) (chibi) (chibi string))
 
 (define (_to_string v)
   (call-with-output-string (lambda (p) (write v p))))
@@ -20,7 +20,7 @@
 (define (_parse_yaml text)
   (let ((rows '()) (cur '()))
     (for-each (lambda (ln)
-                (when (string-prefix? ln "- ")
+                (when (string-prefix? "- " ln)
                   (when (not (null? cur))
                     (set! rows (append rows (list cur))))
                   (set! cur '())
