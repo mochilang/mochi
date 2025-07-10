@@ -953,6 +953,71 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 	}
 
+	// handle simple aggregate queries like `select sum(x)` when no grouping
+	if q.Group == nil {
+		if agg, arg, ok := c.aggregateCall(q.Select); ok {
+			w("(() {\n")
+			w(fmt.Sprintf("  var %s = <dynamic>[];\n", tmp))
+
+			type loopInfo struct {
+				pre        []string
+				head, cond string
+			}
+			loops := []loopInfo{{head: fmt.Sprintf("var %s in %s", q.Var, c.mustExpr(q.Source))}}
+			if t := types.TypeOfExpr(q.Source, c.env); t != nil {
+				if lt, ok := t.(types.ListType); ok {
+					if _, ok := lt.Elem.(types.MapType); ok {
+						c.mapVars[q.Var] = true
+					}
+				}
+			}
+			for _, f := range q.Froms {
+				loops = append(loops, loopInfo{head: fmt.Sprintf("var %s in %s", f.Var, c.mustExpr(f.Src))})
+				if t := types.TypeOfExpr(f.Src, c.env); t != nil {
+					if lt, ok := t.(types.ListType); ok {
+						if _, ok := lt.Elem.(types.MapType); ok {
+							c.mapVars[f.Var] = true
+						}
+					}
+				}
+			}
+			for _, j := range q.Joins {
+				js := c.mustExpr(j.Src)
+				on := c.mustExpr(j.On)
+				loops = append(loops, loopInfo{head: fmt.Sprintf("var %s in %s", j.Var, js), cond: on})
+				if t := types.TypeOfExpr(j.Src, c.env); t != nil {
+					if lt, ok := t.(types.ListType); ok {
+						if _, ok := lt.Elem.(types.MapType); ok {
+							c.mapVars[j.Var] = true
+						}
+					}
+				}
+			}
+			for i, loop := range loops {
+				for _, pl := range loop.pre {
+					w(strings.Repeat("  ", i+1) + pl + "\n")
+				}
+				w(strings.Repeat("  ", i+1) + "for (" + loop.head + ") {\n")
+				if c := loop.cond; c != "" {
+					w(strings.Repeat("  ", i+2) + fmt.Sprintf("if (!(%s)) continue;\n", c))
+				}
+			}
+			if q.Where != nil {
+				cond := c.mustExpr(q.Where)
+				w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("if (!(%s)) continue;\n", cond))
+			}
+			val := c.mustExpr(arg)
+			w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("%s.add(%s);\n", tmp, val))
+			for i := len(loops) - 1; i >= 0; i-- {
+				w(strings.Repeat("  ", i+1) + "}\n")
+			}
+			w(fmt.Sprintf("  return %s;\n", c.aggregateExpr(agg, tmp)))
+			w("})()")
+			c.env = origEnv
+			return b.String(), nil
+		}
+	}
+
 	w("(() {\n")
 	w(fmt.Sprintf("  var %s = <dynamic>[];\n", tmp))
 	grpVar := ""
@@ -1189,6 +1254,47 @@ func (c *Compiler) simpleString(e *parser.Expr) (string, bool) {
 	return *p.Target.Lit.Str, true
 }
 
+// aggregateCall returns the aggregate builtin name and argument if e is a call
+// to sum/avg/min/max/count/len.
+func (c *Compiler) aggregateCall(e *parser.Expr) (string, *parser.Expr, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", nil, false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) > 0 {
+		return "", nil, false
+	}
+	p := u.Value
+	if p.Target == nil || p.Target.Call == nil || len(p.Ops) > 0 {
+		return "", nil, false
+	}
+	call := p.Target.Call
+	if len(call.Args) != 1 {
+		return "", nil, false
+	}
+	switch call.Func {
+	case "sum", "avg", "min", "max", "count", "len":
+		return call.Func, call.Args[0], true
+	}
+	return "", nil, false
+}
+
+func (c *Compiler) aggregateExpr(name, list string) string {
+	switch name {
+	case "count", "len":
+		return fmt.Sprintf("%s.length", list)
+	case "sum":
+		return fmt.Sprintf("%s.reduce((a, b) => a + b)", list)
+	case "avg":
+		return fmt.Sprintf("(%s.isEmpty ? 0 : %s.reduce((a, b) => a + b) / %s.length)", list, list, list)
+	case "min":
+		return fmt.Sprintf("%s.reduce((a, b) => a < b ? a : b)", list)
+	case "max":
+		return fmt.Sprintf("%s.reduce((a, b) => a > b ? a : b)", list)
+	}
+	return list
+}
+
 func (c *Compiler) compileSelector(sel *parser.SelectorExpr) string {
 	root := sel.Root
 	if key, ok := c.groupKeys[root]; ok {
@@ -1253,7 +1359,12 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("avg expects 1 arg")
 		}
 		a := args[0]
-		return fmt.Sprintf("(%s.isEmpty ? 0 : %s.reduce((a, b) => a + b) / %s.length)", a, a, a), nil
+		if _, ok := c.simpleIdentifier(call.Args[0]); ok {
+			return fmt.Sprintf("(%s.isEmpty ? 0 : %s.reduce((a, b) => a + b) / %s.length)", a, a, a), nil
+		}
+		tmp := fmt.Sprintf("_t%d", c.tmp)
+		c.tmp++
+		return fmt.Sprintf("(() { var %s = %s; return (%s.isEmpty ? 0 : %s.reduce((a, b) => a + b) / %s.length); })()", tmp, a, tmp, tmp, tmp), nil
 	case "count", "len":
 		if len(args) != 1 {
 			return "", fmt.Errorf("%s expects 1 arg", call.Func)
@@ -1264,19 +1375,34 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("sum expects 1 arg")
 		}
 		a := args[0]
-		return fmt.Sprintf("%s.reduce((a, b) => a + b)", a), nil
+		if _, ok := c.simpleIdentifier(call.Args[0]); ok {
+			return fmt.Sprintf("%s.reduce((a, b) => a + b)", a), nil
+		}
+		tmp := fmt.Sprintf("_t%d", c.tmp)
+		c.tmp++
+		return fmt.Sprintf("(() { var %s = %s; return %s.reduce((a, b) => a + b); })()", tmp, a, tmp), nil
 	case "min":
 		if len(args) != 1 {
 			return "", fmt.Errorf("min expects 1 arg")
 		}
 		a := args[0]
-		return fmt.Sprintf("%s.reduce((a, b) => a < b ? a : b)", a), nil
+		if _, ok := c.simpleIdentifier(call.Args[0]); ok {
+			return fmt.Sprintf("%s.reduce((a, b) => a < b ? a : b)", a), nil
+		}
+		tmp := fmt.Sprintf("_t%d", c.tmp)
+		c.tmp++
+		return fmt.Sprintf("(() { var %s = %s; return %s.reduce((a, b) => a < b ? a : b); })()", tmp, a, tmp), nil
 	case "max":
 		if len(args) != 1 {
 			return "", fmt.Errorf("max expects 1 arg")
 		}
 		a := args[0]
-		return fmt.Sprintf("%s.reduce((a, b) => a > b ? a : b)", a), nil
+		if _, ok := c.simpleIdentifier(call.Args[0]); ok {
+			return fmt.Sprintf("%s.reduce((a, b) => a > b ? a : b)", a), nil
+		}
+		tmp := fmt.Sprintf("_t%d", c.tmp)
+		c.tmp++
+		return fmt.Sprintf("(() { var %s = %s; return %s.reduce((a, b) => a > b ? a : b); })()", tmp, a, tmp), nil
 	case "str":
 		if len(args) != 1 {
 			return "", fmt.Errorf("str expects 1 arg")
