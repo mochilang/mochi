@@ -868,9 +868,13 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				}
 			}
 		}
+		var curT types.Type
+		if c.env != nil {
+			curT, _ = c.env.GetVar(s.Assign.Name)
+		}
 		if len(s.Assign.Index) == 1 {
 			if c.env != nil {
-				if tv, err := c.env.GetVar(s.Assign.Name); err == nil {
+				if tv := curT; tv != nil {
 					key := c.compileExpr(s.Assign.Index[0].Start)
 					val := c.compileExpr(s.Assign.Value)
 					if isMapIntBoolType(tv) {
@@ -892,8 +896,22 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			}
 		}
 		for _, idx := range s.Assign.Index {
+			if st, ok := curT.(types.StructType); ok {
+				if key, ok2 := types.SimpleStringKey(idx.Start); ok2 {
+					if ft, ok3 := st.Fields[key]; ok3 {
+						target = fmt.Sprintf("%s.%s", target, sanitizeName(key))
+						curT = ft
+						continue
+					}
+				}
+			}
 			ix := c.compileExpr(idx.Start)
 			target = fmt.Sprintf("%s.data[%s]", target, ix)
+			if lt, ok := curT.(types.ListType); ok {
+				curT = lt.Elem
+			} else if mt, ok := curT.(types.MapType); ok {
+				curT = mt.Value
+			}
 		}
 		useArrow := c.pointerVars[lhs] && len(s.Assign.Index) == 0
 		for i, f := range s.Assign.Field {
@@ -1192,6 +1210,15 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 						}
 					}
 				}
+			} else if ml := stmt.Value.Binary.Left.Value.Target.Map; ml != nil {
+				if st, ok := c.inferStructFromMap(ml, stmt.Name); ok {
+					t = st
+					if c.env != nil {
+						c.env.SetStruct(st.Name, st)
+					}
+					c.compileStructType(st)
+					c.structLits[ml] = st
+				}
 			}
 		}
 	} else if stmt.Value != nil {
@@ -1209,6 +1236,15 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 						c.structLits[ml] = st
 					}
 				}
+			}
+		} else if ml := stmt.Value.Binary.Left.Value.Target.Map; ml != nil {
+			if st, ok := c.inferStructFromMap(ml, stmt.Name); ok {
+				t = st
+				if c.env != nil {
+					c.env.SetStruct(st.Name, st)
+				}
+				c.compileStructType(st)
+				c.structLits[ml] = st
 			}
 		}
 	}
@@ -3059,9 +3095,22 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 	isStr := isStringPrimary(p.Target, c.env)
 	isFloatList := isListFloatPrimary(p.Target, c.env)
 	isStringList := isListStringPrimary(p.Target, c.env)
+	curT := c.primaryType(p.Target)
 	for _, op := range p.Ops {
 		if op.Index != nil {
 			if op.Index.Colon == nil {
+				if st, ok := curT.(types.StructType); ok {
+					if key, ok2 := types.SimpleStringKey(op.Index.Start); ok2 {
+						if ft, ok3 := st.Fields[key]; ok3 {
+							expr = fmt.Sprintf("%s.%s", expr, sanitizeName(key))
+							curT = ft
+							isStr = isStringType(ft)
+							isFloatList = isListFloatType(ft)
+							isStringList = isListStringType(ft)
+							continue
+						}
+					}
+				}
 				idx := c.compileExpr(op.Index.Start)
 				if isStr && op.Index.End == nil {
 					name := c.newTemp()
@@ -3093,6 +3142,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 					}
 					isFloatList = false
 					isStringList = false
+				}
+				if lt, ok := curT.(types.ListType); ok {
+					curT = lt.Elem
+				} else if mt, ok := curT.(types.MapType); ok {
+					curT = mt.Value
 				}
 			} else {
 				start := "0"
