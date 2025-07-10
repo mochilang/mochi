@@ -1,0 +1,353 @@
+// Almkvist-Giullera formula for pi implemented in Mochi
+// Ported from Go version in Rosetta tasks.
+
+// big integer helpers using base 10 digits (little endian)
+
+fun bigTrim(a: list<int>): list<int> {
+  var n = count(a)
+  while n > 1 && a[n-1] == 0 {
+    a = a[0:n-1]
+    n = n - 1
+  }
+  return a
+}
+
+fun bigFromInt(x: int): list<int> {
+  if x == 0 { return [0] }
+  var digits: list<int> = []
+  var n = x
+  while n > 0 {
+    digits = append(digits, n % 10)
+    n = n / 10
+  }
+  return digits
+}
+
+fun bigCmp(a: list<int>, b: list<int>): int {
+  if count(a) > count(b) { return 1 }
+  if count(a) < count(b) { return -1 }
+  var i = count(a) - 1
+  while i >= 0 {
+    if a[i] > b[i] { return 1 }
+    if a[i] < b[i] { return -1 }
+    i = i - 1
+  }
+  return 0
+}
+
+fun bigAdd(a: list<int>, b: list<int>): list<int> {
+  var res: list<int> = []
+  var carry = 0
+  var i = 0
+  while i < count(a) || i < count(b) || carry > 0 {
+    var av = 0
+    if i < count(a) { av = a[i] }
+    var bv = 0
+    if i < count(b) { bv = b[i] }
+    var s = av + bv + carry
+    res = append(res, s % 10)
+    carry = s / 10
+    i = i + 1
+  }
+  return bigTrim(res)
+}
+
+fun bigSub(a: list<int>, b: list<int>): list<int> {
+  var res: list<int> = []
+  var borrow = 0
+  var i = 0
+  while i < count(a) {
+    var av = a[i]
+    var bv = 0
+    if i < count(b) { bv = b[i] }
+    var diff = av - bv - borrow
+    if diff < 0 {
+      diff = diff + 10
+      borrow = 1
+    } else {
+      borrow = 0
+    }
+    res = append(res, diff)
+    i = i + 1
+  }
+  return bigTrim(res)
+}
+
+fun bigMulSmall(a: list<int>, m: int): list<int> {
+  if m == 0 { return [0] }
+  var res: list<int> = []
+  var carry = 0
+  var i = 0
+  while i < count(a) {
+    var prod = a[i] * m + carry
+    res = append(res, prod % 10)
+    carry = prod / 10
+    i = i + 1
+  }
+  while carry > 0 {
+    res = append(res, carry % 10)
+    carry = carry / 10
+  }
+  return bigTrim(res)
+}
+
+fun bigMulBig(a: list<int>, b: list<int>): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < count(a) + count(b) {
+    res = append(res, 0)
+    i = i + 1
+  }
+  i = 0
+  while i < count(a) {
+    var carry = 0
+    var j = 0
+    while j < count(b) {
+      var idx = i + j
+      var prod = res[idx] + a[i] * b[j] + carry
+      res[idx] = prod % 10
+      carry = prod / 10
+      j = j + 1
+    }
+    var idx = i + count(b)
+    while carry > 0 {
+      var prod = res[idx] + carry
+      res[idx] = prod % 10
+      carry = prod / 10
+      idx = idx + 1
+    }
+    i = i + 1
+  }
+  return bigTrim(res)
+}
+
+fun bigMulPow10(a: list<int>, k: int): list<int> {
+  var i = 0
+  while i < k {
+    a = [0] + a
+    i = i + 1
+  }
+  return a
+}
+
+fun bigDivSmall(a: list<int>, m: int): list<int> {
+  var res: list<int> = []
+  var rem = 0
+  var i = count(a) - 1
+  while i >= 0 {
+    var cur = rem * 10 + a[i]
+    var q = cur / m
+    rem = cur % m
+    res = [q] + res
+    i = i - 1
+  }
+  return bigTrim(res)
+}
+
+fun bigToString(a: list<int>): string {
+  var s = ""
+  var i = count(a) - 1
+  while i >= 0 {
+    s = s + str(a[i])
+    i = i - 1
+  }
+  return s
+}
+
+fun repeat(ch: string, n: int): string {
+  var s = ""
+  var i = 0
+  while i < n {
+    s = s + ch
+    i = i + 1
+  }
+  return s
+}
+
+fun sortInts(xs: list<int>): list<int> {
+  var res: list<int> = []
+  var tmp = xs
+  while count(tmp) > 0 {
+    var min = tmp[0]
+    var idx = 0
+    var i = 1
+    while i < count(tmp) {
+      if tmp[i] < min {
+        min = tmp[i]
+        idx = i
+      }
+      i = i + 1
+    }
+    res = res + [min]
+    var out: list<int> = []
+    var j = 0
+    while j < count(tmp) {
+      if j != idx { out = out + [tmp[j]] }
+      j = j + 1
+    }
+    tmp = out
+  }
+  return res
+}
+
+fun primesUpTo(n: int): list<int> {
+  var sieve: list<bool> = []
+  var i = 0
+  while i <= n {
+    sieve = append(sieve, true)
+    i = i + 1
+  }
+  var p = 2
+  while p * p <= n {
+    if sieve[p] {
+      var m = p * p
+      while m <= n {
+        sieve[m] = false
+        m = m + p
+      }
+    }
+    p = p + 1
+  }
+  var res: list<int> = []
+  var x = 2
+  while x <= n {
+    if sieve[x] { res = append(res, x) }
+    x = x + 1
+  }
+  return res
+}
+
+fun factorialExp(n: int, primes: list<int>): map<string,int> {
+  var m: map<string,int> = {}
+  for p in primes {
+    if p > n { break }
+    var t = n
+    var e = 0
+    while t > 0 {
+      t = t / p
+      e = e + t
+    }
+    m[str(p)] = e
+  }
+  return m
+}
+
+fun factorSmall(x: int, primes: list<int>): map<string,int> {
+  var f: map<string,int> = {}
+  var n = x
+  for p in primes {
+    if p * p > n { break }
+    var c = 0
+    while n % p == 0 {
+      c = c + 1
+      n = n / p
+    }
+    if c > 0 { f[str(p)] = c }
+  }
+  if n > 1 { f[str(n)] = f.get(str(n), 0) + 1 }
+  return f
+}
+
+fun computeIP(n: int, primes: list<int>): list<int> {
+  var exps = factorialExp(6*n, primes)
+  let fn = factorialExp(n, primes)
+  for k in fn { exps[k] = exps.get(k, 0) - 6 * fn[k] }
+  exps["2"] = exps.get("2", 0) + 5
+  let t2 = 532*n*n + 126*n + 9
+  let ft2 = factorSmall(t2, primes)
+  for k in ft2 { exps[k] = exps.get(k, 0) + ft2[k] }
+  exps["3"] = exps.get("3", 0) - 1
+  var keys: list<int> = []
+  for k in exps { keys = append(keys, int(k)) }
+  keys = sortInts(keys)
+  var res = bigFromInt(1)
+  for p in keys {
+    var e = exps[str(p)]
+    var i = 0
+    while i < e {
+      res = bigMulSmall(res, p)
+      i = i + 1
+    }
+  }
+  return res
+}
+
+fun formatTerm(ip: list<int>, pw: int): string {
+  var s = bigToString(ip)
+  if pw >= len(s) {
+    var frac = repeat("0", pw - len(s)) + s
+    if len(frac) < 33 { frac = frac + repeat("0", 33 - len(frac)) }
+    return "0." + substring(frac, 0, 33)
+  }
+  var intpart = substring(s, 0, len(s) - pw)
+  var frac = substring(s, len(s) - pw, len(s))
+  if len(frac) < 33 { frac = frac + repeat("0", 33 - len(frac)) }
+  return intpart + "." + substring(frac, 0, 33)
+}
+
+fun bigAbsDiff(a: list<int>, b: list<int>): list<int> {
+  if bigCmp(a, b) >= 0 { return bigSub(a, b) }
+  return bigSub(b, a)
+}
+
+fun main() {
+  let primes = primesUpTo(2000)
+  print("N                               Integer Portion  Pow  Nth Term (33 dp)")
+  let line = repeat("-", 89)
+  print(line)
+  var sum = bigFromInt(0)
+  var prev = bigFromInt(0)
+  var denomPow = 0
+  var n = 0
+  while true {
+    let ip = computeIP(n, primes)
+    let pw = 6*n + 3
+    if pw > denomPow {
+      sum = bigMulPow10(sum, pw - denomPow)
+      prev = bigMulPow10(prev, pw - denomPow)
+      denomPow = pw
+    }
+    if n < 10 {
+      let termStr = formatTerm(ip, pw)
+      var ipStr = bigToString(ip)
+      while len(ipStr) < 44 { ipStr = " " + ipStr }
+      var pwStr = str(-pw)
+      while len(pwStr) < 3 { pwStr = " " + pwStr }
+      var padTerm = termStr
+      while len(padTerm) < 35 { padTerm = padTerm + " " }
+      print(str(n) + "  " + ipStr + "  " + pwStr + "  " + padTerm)
+    }
+    sum = bigAdd(sum, ip)
+    let diff = bigAbsDiff(sum, prev)
+    if denomPow >= 70 && bigCmp(diff, bigMulPow10(bigFromInt(1), denomPow - 70)) < 0 {
+      break
+    }
+    prev = sum
+    n = n + 1
+  }
+  // compute pi
+  let precision = 70
+  let target = bigMulPow10(bigFromInt(1), denomPow + 2*precision)
+  var low = bigFromInt(0)
+  var high = bigMulPow10(bigFromInt(1), precision + 1)
+  while bigCmp(low, bigSub(high, bigFromInt(1))) < 0 {
+    var mid = bigDivSmall(bigAdd(low, high), 2)
+    var prod = bigMulBig(bigMulBig(mid, mid), sum)
+    if bigCmp(prod, target) <= 0 {
+      low = mid
+    } else {
+      high = bigSub(mid, bigFromInt(1))
+    }
+  }
+  var piInt = low
+  var piStr = bigToString(piInt)
+  if len(piStr) <= precision {
+    piStr = repeat("0", precision - len(piStr) + 1) + piStr
+  }
+  var out = substring(piStr, 0, len(piStr) - precision) + "." + substring(piStr, len(piStr) - precision, len(piStr))
+  print("")
+  print("Pi to 70 decimal places is:")
+  print(out)
+}
+
+main()
