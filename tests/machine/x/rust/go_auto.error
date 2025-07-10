@@ -1,0 +1,2 @@
+line 0: unsupported statement at line 1
+import go "mochi/runtime/ffi/go/testpkg" as testpkg auto

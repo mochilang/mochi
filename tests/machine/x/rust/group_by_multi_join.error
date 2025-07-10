@@ -1,0 +1,28 @@
+line 0: compile: exit status 1
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join.rs:47:264
+   |
+47 | ...p1.push(Result { part: ps.part, value: ps.cost * ps.qty as f64 }); } } } tmp1 };
+   |                                           ^^^^^^^^^^^^^^^^^^^^^^^ expected `Partsupp`, found `f64`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join.rs:48:356
+   |
+48 | ...t: g.key, total: sum(&{ let mut tmp4 = Vec::new();for r in &g.clone().items { tmp4.push(r.value); } tmp4 }) }); } result };
+   |                     --- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&[i32]`, found `&Vec<Partsupp>`
+   |                     |
+   |                     arguments to this function are incorrect
+   |
+   = note: expected reference `&[i32]`
+              found reference `&Vec<Partsupp>`
+note: function defined here
+  --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join.rs:39:4
+   |
+39 | fn sum<T>(v: &[T]) -> T where T: std::iter::Sum<T> + Copy {
+   |    ^^^    -------
+
+error: aborting due to 2 previous errors
+
+For more information about this error, try `rustc --explain E0308`.
+
+#[derive(Default, Debug, Clone, PartialEq)]

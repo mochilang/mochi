@@ -12,7 +12,7 @@ struct Group {
 
 #[derive(Default, Debug, Clone, PartialEq)]
 struct Item {
-    tag: i32,
+    tag: &'static str,
     total: i32,
 }
 
