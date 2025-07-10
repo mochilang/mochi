@@ -1407,6 +1407,9 @@ func swiftTypeOf(t string) string {
 			return "[" + et + "]"
 		}
 	}
+	if t != "" {
+		return t
+	}
 	return ""
 }
 
@@ -1517,9 +1520,32 @@ func (c *compiler) exprType(e *parser.Expr) string {
 	if p == nil || p.Target == nil {
 		return ""
 	}
-	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
-		if typ, ok := c.varTypes[p.Target.Selector.Root]; ok {
-			return typ
+	if p.Target.Selector != nil {
+		if len(p.Target.Selector.Tail) == 0 {
+			if typ, ok := c.varTypes[p.Target.Selector.Root]; ok {
+				return typ
+			}
+		}
+		if len(p.Target.Selector.Tail) == 1 {
+			root := p.Target.Selector.Root
+			fld := p.Target.Selector.Tail[0]
+			if m, ok := c.mapFields[root]; ok && m != nil {
+				if t, ok2 := m[fld]; ok2 && t != "" {
+					return t
+				}
+			}
+			if st, ok := c.structTypes[c.varTypes[root]]; ok {
+				if t, ok2 := st[fld]; ok2 && t != "" {
+					return t
+				}
+			}
+			if c.groups[root] {
+				if m, ok2 := c.groupElemFields[root]; ok2 {
+					if t, ok3 := m[fld]; ok3 && t != "" {
+						return t
+					}
+				}
+			}
 		}
 	}
 	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
@@ -1720,17 +1746,21 @@ func (c *compiler) groupQuery(q *parser.QueryExpr) (string, error) {
 	if et == "" {
 		et = "Any"
 	}
+	kt := swiftTypeOf(keyTyp)
+	if kt == "" {
+		kt = "AnyHashable"
+	}
 	retType := "[Any]"
 	if selIsGroup {
-		retType = fmt.Sprintf("[(key: AnyHashable, items: [%s])]", et)
+		retType = fmt.Sprintf("[(key: %s, items: [%s])]", kt, et)
 	}
 	b.WriteString(fmt.Sprintf("{ () -> %s in\n", retType))
-	b.WriteString(fmt.Sprintf("    var _groups: [AnyHashable:[%s]] = [:]\n", et))
+	b.WriteString(fmt.Sprintf("    var _groups: [%s:[%s]] = [:]\n", kt, et))
 	b.WriteString(fmt.Sprintf("    for %s in %s {\n", q.Var, filtered))
 	b.WriteString(fmt.Sprintf("        let _k = %s\n", keyExpr))
 	b.WriteString(fmt.Sprintf("        _groups[_k, default: []].append(%s)\n", q.Var))
 	b.WriteString("    }\n")
-	b.WriteString(fmt.Sprintf("    var _tmp: [(key: AnyHashable, items: [%s])] = []\n", et))
+	b.WriteString(fmt.Sprintf("    var _tmp: [(key: %s, items: [%s])] = []\n", kt, et))
 	b.WriteString("    for (k, v) in _groups {\n")
 	b.WriteString("        _tmp.append((key: k, items: v))\n")
 	b.WriteString("    }\n")
@@ -3087,7 +3117,18 @@ func (c *compiler) emitAutoStructs() {
 	sort.Strings(names)
 	for _, n := range names {
 		fields := c.structs[n]
-		c.writeln(fmt.Sprintf("struct %s: Equatable {", n))
+		eq := true
+		for _, f := range fields {
+			if !c.isEquatableType(c.structTypes[n][f]) {
+				eq = false
+				break
+			}
+		}
+		if eq {
+			c.writeln(fmt.Sprintf("struct %s: Equatable {", n))
+		} else {
+			c.writeln(fmt.Sprintf("struct %s {", n))
+		}
 		c.indent++
 		for _, f := range fields {
 			typ := c.structTypes[n][f]
@@ -3099,6 +3140,21 @@ func (c *compiler) emitAutoStructs() {
 		c.indent--
 		c.writeln("}\n")
 	}
+}
+
+func (c *compiler) isEquatableType(t string) bool {
+	switch t {
+	case "Int", "Double", "Bool", "String", "AnyHashable":
+		return true
+	}
+	if strings.HasPrefix(t, "[") && strings.HasSuffix(t, "]") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(t, "["), "]")
+		return c.isEquatableType(inner)
+	}
+	if _, ok := c.structs[t]; ok {
+		return true
+	}
+	return false
 }
 
 func (c *compiler) emitRuntime() {
