@@ -1,7 +1,0 @@
-Error on line 0: output mismatch
--- got --
-ok
-   test addition works                 ... ok (429ns)
--- want --
-ok
-1: //go:build ignore

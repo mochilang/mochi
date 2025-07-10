@@ -57,7 +57,6 @@ func test_update_adult_status() {
 var people []Person
 
 func main() {
-	failures := 0
 	people = []Person{
 		Person{Name: "Alice", Age: 17, Status: "minor"},
 		Person{Name: "Bob", Age: 25, Status: "unknown"},
@@ -74,28 +73,7 @@ func main() {
 		people[_tmp0] = _tmp1
 	}
 	fmt.Println("ok")
-	{
-		printTestStart("update adult status")
-		start := time.Now()
-		var failed error
-		func() {
-			defer func() {
-				if r := recover(); r != nil {
-					failed = fmt.Errorf("%v", r)
-				}
-			}()
-			test_update_adult_status()
-		}()
-		if failed != nil {
-			failures++
-			printTestFail(failed, time.Since(start))
-		} else {
-			printTestPass(time.Since(start))
-		}
-	}
-	if failures > 0 {
-		fmt.Printf("\n[FAIL] %d test(s) failed.\n", failures)
-	}
+	test_update_adult_status()
 }
 
 func _equal(a, b any) bool {

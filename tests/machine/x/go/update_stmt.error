@@ -1,7 +1,0 @@
-Error on line 0: output mismatch
--- got --
-ok
-   test update adult status            ... ok (8.0µs)
--- want --
-ok
-1: //go:build ignore
