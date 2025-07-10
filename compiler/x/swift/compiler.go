@@ -587,6 +587,7 @@ func (c *compiler) binary(b *parser.BinaryExpr) (string, error) {
 		return "", err
 	}
 	res := left
+	leftIsFloat := isFloatExpr(left)
 	for _, op := range b.Right {
 		if !supportedOp(op.Op) {
 			return "", fmt.Errorf("unsupported operator %s at line %d", op.Op, op.Pos.Line)
@@ -595,6 +596,7 @@ func (c *compiler) binary(b *parser.BinaryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
+		rightIsFloat := isFloatExpr(r)
 		switch op.Op {
 		case "in":
 			typ := c.primaryType(op.Right.Target)
@@ -614,7 +616,17 @@ func (c *compiler) binary(b *parser.BinaryExpr) (string, error) {
 		case "intersect":
 			res = fmt.Sprintf("Array(Set(%s).intersection(%s)).sorted()", res, r)
 		default:
+			if (leftIsFloat || rightIsFloat) && (op.Op == "*" || op.Op == "/" || op.Op == "+" || op.Op == "-") {
+				if leftIsFloat && !rightIsFloat {
+					r = fmt.Sprintf("Double(%s)", r)
+					rightIsFloat = true
+				} else if rightIsFloat && !leftIsFloat {
+					res = fmt.Sprintf("Double(%s)", res)
+					leftIsFloat = true
+				}
+			}
 			res = fmt.Sprintf("%s %s %s", res, op.Op, r)
+			leftIsFloat = leftIsFloat || rightIsFloat
 		}
 	}
 	return res, nil
@@ -2559,6 +2571,19 @@ func replaceIdent(s, name, repl string) string {
 	re := regexp.MustCompile(`\b` + regexp.QuoteMeta(name) + `\b`)
 	repl = strings.ReplaceAll(repl, "$", "$$")
 	return re.ReplaceAllString(s, repl)
+}
+
+var floatLit = regexp.MustCompile(`^\d+\.\d+$`)
+
+func isFloatExpr(s string) bool {
+	s = strings.TrimSpace(s)
+	if floatLit.MatchString(s) {
+		return true
+	}
+	if strings.Contains(s, "Double(") || strings.Contains(s, " as! Double") {
+		return true
+	}
+	return false
 }
 
 func castCond(cond string) string {
