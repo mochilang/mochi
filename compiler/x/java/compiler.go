@@ -642,7 +642,8 @@ func (c *Compiler) compileList(l *parser.ListLiteral) (string, error) {
 }
 
 func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
-	var items []string
+	var b strings.Builder
+	b.WriteString("new LinkedHashMap<>(){{")
 	for _, it := range m.Items {
 		var k string
 		if s, ok := simpleStringKey(it.Key); ok {
@@ -658,9 +659,10 @@ func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		items = append(items, fmt.Sprintf("%s, %s", k, v))
+		b.WriteString(fmt.Sprintf("put(%s, %s);", k, v))
 	}
-	return fmt.Sprintf("new HashMap<>(java.util.Map.of(%s))", strings.Join(items, ", ")), nil
+	b.WriteString("}}")
+	return b.String(), nil
 }
 
 func (c *Compiler) compileStructLiteral(s *parser.StructLiteral) (string, error) {
@@ -1531,7 +1533,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		c.vars[fr.Var] = listElemType(ft)
 	}
 	for _, j := range q.Joins {
-		if j.Side != nil {
+		if j.Side != nil && *j.Side != "left" && *j.Side != "right" && *j.Side != "outer" {
 			return "", fmt.Errorf("join type not supported")
 		}
 		jt := c.inferType(j.Src)
@@ -1580,14 +1582,40 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			c.vars = oldVars
 			return "", err
 		}
-		b.WriteString(fmt.Sprintf("%sfor (var %s : %s) {\n", indent, j.Var, js))
-		indent += "\t"
-		on, err := c.compileExpr(j.On)
-		if err != nil {
+		if j.Side != nil && *j.Side == "left" {
+			tmpList := fmt.Sprintf("_tmp%d", c.tmpCount)
+			c.tmpCount++
+			iterVar := fmt.Sprintf("_it%d", c.tmpCount)
+			c.tmpCount++
+			b.WriteString(fmt.Sprintf("%sList<Object> %s = new ArrayList<>();\n", indent, tmpList))
+			b.WriteString(fmt.Sprintf("%sfor (var %s : %s) {\n", indent, iterVar, js))
+			indent += "\t"
+			b.WriteString(fmt.Sprintf("%svar %s = %s;\n", indent, j.Var, iterVar))
+			on, err := c.compileExpr(j.On)
+			if err != nil {
+				c.vars = oldVars
+				return "", err
+			}
+			b.WriteString(fmt.Sprintf("%sif (!(%s)) continue;\n", indent, on))
+			b.WriteString(fmt.Sprintf("%s%s.add(%s);\n", indent, tmpList, iterVar))
+			indent = indent[:len(indent)-1]
+			b.WriteString(fmt.Sprintf("%s}\n", indent))
+			b.WriteString(fmt.Sprintf("%sif (%s.isEmpty()) %s.add(null);\n", indent, tmpList, tmpList))
+			b.WriteString(fmt.Sprintf("%sfor (var %s : %s) {\n", indent, j.Var, tmpList))
+			indent += "\t"
+		} else if j.Side != nil {
 			c.vars = oldVars
-			return "", err
+			return "", fmt.Errorf("join type not supported")
+		} else {
+			b.WriteString(fmt.Sprintf("%sfor (var %s : %s) {\n", indent, j.Var, js))
+			indent += "\t"
+			on, err := c.compileExpr(j.On)
+			if err != nil {
+				c.vars = oldVars
+				return "", err
+			}
+			b.WriteString(fmt.Sprintf("%sif (!(%s)) continue;\n", indent, on))
 		}
-		b.WriteString(fmt.Sprintf("%sif (!(%s)) continue;\n", indent, on))
 	}
 	if q.Where != nil {
 		cond, err := c.compileExpr(q.Where)
@@ -1640,9 +1668,15 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		}
 		b.WriteString(fmt.Sprintf("%s%s.add(%s);\n", indent, resVar, sel))
 	}
-	for range q.Joins {
-		indent = indent[:len(indent)-1]
-		b.WriteString(fmt.Sprintf("%s}\n", indent))
+	for _, j := range q.Joins {
+		loops := 1
+		if j.Side != nil && *j.Side == "left" {
+			loops = 2
+		}
+		for i := 0; i < loops; i++ {
+			indent = indent[:len(indent)-1]
+			b.WriteString(fmt.Sprintf("%s}\n", indent))
+		}
 	}
 	for range q.Froms {
 		indent = indent[:len(indent)-1]

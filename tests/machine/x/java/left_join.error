@@ -1,4 +1,0 @@
-line 0: compile error: join type not supported
-
-  1| let customers = [
-  2|   { id: 1, name: "Alice" },
