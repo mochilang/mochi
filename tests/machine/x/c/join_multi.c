@@ -74,7 +74,8 @@ int main() {
   _t3.data[0] = (itemsItem){.orderId = 100, .sku = "a"};
   _t3.data[1] = (itemsItem){.orderId = 101, .sku = "b"};
   list_itemsItem items = _t3;
-  int _t4 = int_create(orders.len * customers.len * items.len);
+  list_resultItem _t4 =
+      list_resultItem_create(orders.len * customers.len * items.len);
   int _t5 = 0;
   for (int _t6 = 0; _t6 < orders.len; _t6++) {
     ordersItem o = orders.data[_t6];

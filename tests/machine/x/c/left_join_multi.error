@@ -1,32 +1,11 @@
 line: 0
-error: cc error: exit status 1
-/workspace/mochi/tests/machine/x/c/left_join_multi.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/left_join_multi.c:77:3: error: unknown type name ‘list_int’
-   77 |   list_int _t4 = list_int_create(orders.len * customers.len * items.len);
-      |   ^~~~~~~~
-/workspace/mochi/tests/machine/x/c/left_join_multi.c:77:18: warning: implicit declaration of function ‘list_int_create’; did you mean ‘list_itemsItem_create’? [-Wimplicit-function-declaration]
-   77 |   list_int _t4 = list_int_create(orders.len * customers.len * items.len);
-      |                  ^~~~~~~~~~~~~~~
-      |                  list_itemsItem_create
-/workspace/mochi/tests/machine/x/c/left_join_multi.c:93:12: error: request for member ‘data’ in something not a structure or union
-   93 |         _t4.data[_t5] =
-      |            ^
-/workspace/mochi/tests/machine/x/c/left_join_multi.c:98:23: error: invalid initializer
-   98 |         itemsItem i = 0;
-      |                       ^
-/workspace/mochi/tests/machine/x/c/left_join_multi.c:99:12: error: request for member ‘data’ in something not a structure or union
-   99 |         _t4.data[_t5] =
-      |            ^
-/workspace/mochi/tests/machine/x/c/left_join_multi.c:105:6: error: request for member ‘len’ in something not a structure or union
-  105 |   _t4.len = _t5;
-      |      ^
-/workspace/mochi/tests/machine/x/c/left_join_multi.c:106:28: error: invalid initializer
-  106 |   list_resultItem result = _t4;
-      |                            ^~~
-/workspace/mochi/tests/machine/x/c/left_join_multi.c:112:14: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘itemsItem’ [-Wformat=]
-  112 |     printf("%d\n", r.item);
-      |             ~^     ~~~~~~
-      |              |      |
-      |              int    itemsItem
-
+error: output mismatch
+-- got --
+--- Left Join Multi ---
+100 Alice 100
+101 Bob 0
+-- want --
+--- Left Join Multi ---
+100 Alice map[orderId:100 sku:a]
+101 Bob <nil>
    1: #include <stdio.h>
