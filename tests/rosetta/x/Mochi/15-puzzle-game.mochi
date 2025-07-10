@@ -1,0 +1,123 @@
+// Mochi translation of the Rosetta "15 puzzle game" task
+// Based on the Go version.
+
+var board = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,0]
+let solved = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,0]
+var empty = 15
+var moves = 0
+var quit = false
+
+fun randMove(): int { return now() % 4 }
+
+fun isSolved(): bool {
+  var i = 0
+  while i < 16 {
+    if board[i] != solved[i] { return false }
+    i = i + 1
+  }
+  return true
+}
+
+fun isValidMove(m: int): map<string, any> {
+  if m == 0 { return {"idx": empty - 4, "ok": empty / 4 > 0} }
+  if m == 1 { return {"idx": empty + 4, "ok": empty / 4 < 3} }
+  if m == 2 { return {"idx": empty + 1, "ok": empty % 4 < 3} }
+  if m == 3 { return {"idx": empty - 1, "ok": empty % 4 > 0} }
+  return {"idx": 0, "ok": false}
+}
+
+fun doMove(m: int): bool {
+  let r = isValidMove(m)
+  if !r["ok"] { return false }
+  let i = empty
+  let j = r["idx"]
+  let tmp = board[i]
+  board[i] = board[j]
+  board[j] = tmp
+  empty = j
+  moves = moves + 1
+  return true
+}
+
+fun shuffle(n: int) {
+  var i = 0
+  while i < n || isSolved() {
+    if doMove(randMove()) { i = i + 1 }
+  }
+}
+
+fun printBoard() {
+  var line = ""
+  var i = 0
+  while i < 16 {
+    let val = board[i]
+    if val == 0 {
+      line = line + "  ."
+    } else {
+      let s = str(val)
+      if val < 10 {
+        line = line + "  " + s
+      } else {
+        line = line + " " + s
+      }
+    }
+    if i % 4 == 3 {
+      print(line)
+      line = ""
+    }
+    i = i + 1
+  }
+}
+
+fun playOneMove() {
+  while true {
+    print("Enter move #" + str(moves + 1) + " (U, D, L, R, or Q): ")
+    let s = input()
+    if s == "" { continue }
+    let c = s[0:1]
+    var m = 0
+    if c == "U" || c == "u" {
+      m = 0
+    } else if c == "D" || c == "d" {
+      m = 1
+    } else if c == "R" || c == "r" {
+      m = 2
+    } else if c == "L" || c == "l" {
+      m = 3
+    } else if c == "Q" || c == "q" {
+      print("Quiting after " + str(moves) + " moves.")
+      quit = true
+      return
+    } else {
+      print("Please enter \"U\", \"D\", \"L\", or \"R\" to move the empty cell\n" +
+            "up, down, left, or right. You can also enter \"Q\" to quit.\n" +
+            "Upper or lowercase is accepted and only the first non-blank\n" +
+            "character is important (i.e. you may enter \"up\" if you like).")
+      continue
+    }
+    if !doMove(m) {
+      print("That is not a valid move at the moment.")
+      continue
+    }
+    return
+  }
+}
+
+fun play() {
+  print("Starting board:")
+  while !quit && !isSolved() {
+    print("")
+    printBoard()
+    playOneMove()
+  }
+  if isSolved() {
+    print("You solved the puzzle in " + str(moves) + " moves.")
+  }
+}
+
+fun main() {
+  shuffle(50)
+  play()
+}
+
+main()
