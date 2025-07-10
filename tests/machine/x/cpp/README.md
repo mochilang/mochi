@@ -1,8 +1,8 @@
 # C++ Machine Output
 
-This directory contains C++ source code generated from Mochi programs and the corresponding outputs or errors.
+This directory contains C++ source code generated from Mochi programs and the corresponding outputs or error logs.
 
-Compiled programs: 85/97
+Compiled programs: 88/97
 
 ## Checklist
 
@@ -41,7 +41,7 @@ Compiled programs: 85/97
 - [x] if_then_else
 - [x] if_then_else_nested
 - [x] in_operator
-- [ ] in_operator_extended
+- [x] in_operator_extended
 - [x] inner_join
 - [x] join_multi
 - [x] json_builtin
@@ -55,7 +55,7 @@ Compiled programs: 85/97
 - [x] list_index
 - [x] list_nested_assign
 - [x] list_set_ops
-- [ ] load_yaml
+- [x] load_yaml
 - [x] map_assign
 - [x] map_in_operator
 - [x] map_index
@@ -78,7 +78,7 @@ Compiled programs: 85/97
 - [ ] query_sum_select
 - [x] record_assign
 - [ ] right_join
-- [ ] save_jsonl_stdout
+- [x] save_jsonl_stdout
 - [x] short_circuit
 - [x] slice
 - [x] sort_stable
@@ -103,3 +103,4 @@ Compiled programs: 85/97
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+
