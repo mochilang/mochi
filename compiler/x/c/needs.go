@@ -71,6 +71,7 @@ const (
 	needPrintListString      = "print_list_string"
 	needPrintListListInt     = "print_list_list_int"
 	needGroupByInt           = "group_by_int"
+	needGroupByString        = "group_by_string"
 	needListPairString       = "list_pair_string"
 	needGroupByPairString    = "group_by_pair_string"
 	needJSONMapString        = "json_map_string"
