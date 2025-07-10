@@ -31,6 +31,7 @@ type Compiler struct {
 	needsSetOps   bool
 	needsLoad     bool
 	needsSave     bool
+	needsExpect   bool
 
 	currentFun string
 	nested     map[string]nestedInfo
@@ -85,6 +86,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.needsSetOps = false
 	c.needsLoad = false
 	c.needsSave = false
+	c.needsExpect = false
 	c.nested = make(map[string]nestedInfo)
 	c.currentFun = ""
 
@@ -97,7 +99,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 		}
 	}
 	c.out = &c.buf
-	c.writeln(":- initialization(main).")
+	c.writeln(":- initialization(main, main).")
 	c.writeln("main :-")
 	c.indent++
 	for _, st := range p.Statements {
@@ -223,6 +225,9 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 		out.WriteString("        json_write_dict(Out, Rows)\n")
 		out.WriteString("    ),\n")
 		out.WriteString("    (Out == current_output -> flush_output(Out) ; close(Out)).\n\n")
+	}
+	if c.needsExpect {
+		out.WriteString("expect(Cond) :- (Cond -> true ; throw(error('expect failed'))).\n\n")
 	}
 	out.Write(c.lambdaBuf.Bytes())
 	out.Write(c.funcBuf.Bytes())
@@ -446,6 +451,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			c.writeln(fmt.Sprintf("%s = %s.", c.retVar, val))
 		}
 		return nil
+	case s.Expect != nil:
+		return c.compileExpect(s.Expect)
+	case s.Test != nil:
+		return c.compileTestBlock(s.Test)
+	case s.Update != nil:
+		return c.compileUpdate(s.Update)
 	case s.If != nil:
 		return c.compileIf(s.If)
 	case s.For != nil:
@@ -621,6 +632,176 @@ func (c *Compiler) compileWhile(ws *parser.WhileStmt) error {
 	c.indent--
 	c.writeln("), break, true),")
 	c.indent--
+	return nil
+}
+
+func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
+	val, arith, err := c.compileExpr(e.Value)
+	if err != nil {
+		return err
+	}
+	if arith {
+		tmp := c.newTmp()
+		c.writeln(fmt.Sprintf("%s is %s,", tmp, val))
+		val = tmp
+	}
+	c.writeln(fmt.Sprintf("expect(%s),", val))
+	c.needsExpect = true
+	return nil
+}
+
+func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	name := sanitizeAtom("test_" + t.Name)
+	oldOut := c.out
+	oldVars := c.vars
+	oldTmp := c.tmp
+	c.out = &c.funcBuf
+	c.vars = make(map[string]string)
+	c.tmp = 0
+	c.writeln(fmt.Sprintf("%s :-", name))
+	c.indent++
+	for _, st := range t.Body {
+		if err := c.compileStmt(st); err != nil {
+			c.out = oldOut
+			c.vars = oldVars
+			c.tmp = oldTmp
+			return err
+		}
+	}
+	c.writeln("true.")
+	c.indent--
+	c.writeln("")
+	c.out = oldOut
+	c.vars = oldVars
+	c.tmp = oldTmp
+	c.writeln(fmt.Sprintf("%s,", name))
+	return nil
+}
+
+func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
+	listVar := c.lookupVar(u.Target)
+	helper := sanitizeAtom(u.Target + "_update")
+
+	// collect identifiers used
+	used := map[string]struct{}{}
+	if u.Where != nil {
+		collectIdents(u.Where, used)
+	}
+	for _, it := range u.Set.Items {
+		if k, ok := identName(it.Key); ok {
+			used[k] = struct{}{}
+		}
+		collectIdents(it.Value, used)
+	}
+
+	// define helper predicate
+	oldOut := c.out
+	c.out = &c.funcBuf
+	itemVar := c.newTmp()
+	restVar := c.newTmp()
+	newItem := c.newTmp()
+	restOut := c.newTmp()
+	c.writeln(fmt.Sprintf("%s([], []).", helper))
+	c.writeln(fmt.Sprintf("%s([%s|%s], [%s|%s]) :-", helper, itemVar, restVar, newItem, restOut))
+	c.indent++
+	oldVars := c.vars
+	c.vars = make(map[string]string)
+	for k, v := range oldVars {
+		c.vars[k] = v
+	}
+	for f := range used {
+		fv := sanitizeVar(f)
+		c.writeln(fmt.Sprintf("get_item(%s, '%s', %s),", itemVar, strings.ToLower(f), fv))
+		c.vars[f] = fv
+	}
+	cond := "true"
+	if u.Where != nil {
+		var buf bytes.Buffer
+		outOld := c.out
+		c.out = &buf
+		cv, _, err := c.compileExpr(u.Where)
+		c.out = outOld
+		if err != nil {
+			c.out = oldOut
+			c.vars = oldVars
+			return err
+		}
+		for _, line := range strings.Split(strings.TrimSpace(buf.String()), "\n") {
+			line = strings.TrimSuffix(strings.TrimSpace(line), ",")
+			if line != "" {
+				c.writeln(line + ",")
+			}
+		}
+		cond = cv
+	}
+	c.writeln(fmt.Sprintf("(%s ->", cond))
+	c.indent++
+	tmpVal := itemVar
+	for _, it := range u.Set.Items {
+		var valBuf bytes.Buffer
+		outOld := c.out
+		c.out = &valBuf
+		vv, _, err := c.compileExpr(it.Value)
+		c.out = outOld
+		if err != nil {
+			c.out = oldOut
+			c.vars = oldVars
+			return err
+		}
+		for _, line := range strings.Split(strings.TrimSpace(valBuf.String()), "\n") {
+			line = strings.TrimSuffix(strings.TrimSpace(line), ",")
+			if line != "" {
+				c.writeln(line + ",")
+			}
+		}
+		keyExpr := ""
+		if k, ok := identName(it.Key); ok {
+			keyExpr = fmt.Sprintf("'%s'", strings.ToLower(k))
+		} else {
+			var kbuf bytes.Buffer
+			c.out = &kbuf
+			kv, _, err := c.compileExpr(it.Key)
+			c.out = outOld
+			if err != nil {
+				c.out = oldOut
+				c.vars = oldVars
+				return err
+			}
+			for _, line := range strings.Split(strings.TrimSpace(kbuf.String()), "\n") {
+				line = strings.TrimSuffix(strings.TrimSpace(line), ",")
+				if line != "" {
+					c.writeln(line + ",")
+				}
+			}
+			keyExpr = kv
+		}
+		tmp2 := c.newTmp()
+		c.needsSetItem = true
+		c.writeln(fmt.Sprintf("set_item(%s, %s, %s, %s),", tmpVal, keyExpr, vv, tmp2))
+		tmpVal = tmp2
+	}
+	c.writeln(fmt.Sprintf("%s = %s", newItem, tmpVal))
+	c.indent--
+	c.writeln(";")
+	c.indent++
+	c.writeln(fmt.Sprintf("%s = %s", newItem, itemVar))
+	c.indent--
+	c.writeln("),")
+	c.writeln(fmt.Sprintf("%s(%s, %s).", helper, restVar, restOut))
+	c.indent--
+	c.writeln("")
+	c.vars = oldVars
+	c.out = oldOut
+
+	// call helper
+	outVar := c.newTmp()
+	c.writeln(fmt.Sprintf("%s(%s, %s),", helper, listVar, outVar))
+	if c.mutVars[u.Target] {
+		c.writeln(fmt.Sprintf("nb_setval(%s, %s),", sanitizeAtom(u.Target), outVar))
+	} else {
+		name := c.newVar(u.Target)
+		c.writeln(fmt.Sprintf("%s = %s,", name, outVar))
+	}
 	return nil
 }
 
@@ -1672,4 +1853,106 @@ func identName(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+func collectIdents(e *parser.Expr, out map[string]struct{}) {
+	if e == nil || e.Binary == nil {
+		return
+	}
+	var scanPrimary func(*parser.Primary)
+	var scanPostfix func(*parser.PostfixExpr)
+	var scanUnary func(*parser.Unary)
+
+	scanUnary = func(u *parser.Unary) {
+		if u == nil {
+			return
+		}
+		scanPostfix(u.Value)
+	}
+	scanPostfix = func(p *parser.PostfixExpr) {
+		if p == nil {
+			return
+		}
+		scanPrimary(p.Target)
+		for _, op := range p.Ops {
+			if op.Index != nil {
+				collectIdents(op.Index.Start, out)
+				collectIdents(op.Index.End, out)
+			} else if op.Call != nil {
+				for _, a := range op.Call.Args {
+					collectIdents(a, out)
+				}
+			}
+		}
+	}
+	scanPrimary = func(p *parser.Primary) {
+		if p == nil {
+			return
+		}
+		switch {
+		case p.Query != nil:
+			collectIdents(p.Query.Source, out)
+			for _, f := range p.Query.Froms {
+				collectIdents(f.Src, out)
+			}
+			for _, j := range p.Query.Joins {
+				collectIdents(j.Src, out)
+				collectIdents(j.On, out)
+			}
+			collectIdents(p.Query.Where, out)
+			if p.Query.Group != nil {
+				collectIdents(p.Query.Group.Exprs[0], out)
+			}
+			collectIdents(p.Query.Sort, out)
+			collectIdents(p.Query.Skip, out)
+			collectIdents(p.Query.Take, out)
+			collectIdents(p.Query.Select, out)
+		case p.FunExpr != nil:
+			collectIdents(p.FunExpr.ExprBody, out)
+		case p.If != nil:
+			collectIdents(p.If.Cond, out)
+			collectIdents(p.If.Then, out)
+			collectIdents(p.If.Else, out)
+		case p.Match != nil:
+			collectIdents(p.Match.Target, out)
+			for _, c := range p.Match.Cases {
+				collectIdents(c.Pattern, out)
+				collectIdents(c.Result, out)
+			}
+		case p.List != nil:
+			for _, el := range p.List.Elems {
+				collectIdents(el, out)
+			}
+		case p.Map != nil:
+			for _, it := range p.Map.Items {
+				collectIdents(it.Key, out)
+				collectIdents(it.Value, out)
+			}
+		case p.Call != nil:
+			for _, a := range p.Call.Args {
+				collectIdents(a, out)
+			}
+		case p.Selector != nil:
+			out[p.Selector.Root] = struct{}{}
+		case p.Group != nil:
+			collectIdents(p.Group, out)
+		case p.Generate != nil:
+			for _, f := range p.Generate.Fields {
+				collectIdents(f.Value, out)
+			}
+		case p.Fetch != nil:
+			collectIdents(p.Fetch.URL, out)
+			collectIdents(p.Fetch.With, out)
+		case p.Load != nil:
+			collectIdents(p.Load.With, out)
+		case p.Save != nil:
+			collectIdents(p.Save.Src, out)
+			collectIdents(p.Save.With, out)
+		}
+	}
+
+	scanUnary(e.Binary.Left)
+	for _, part := range e.Binary.Right {
+		scanPostfix(part.Right)
+	}
 }
