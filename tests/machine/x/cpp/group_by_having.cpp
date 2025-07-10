@@ -1,9 +1,6 @@
-#include <algorithm>
 #include <iostream>
 #include <map>
-#include <numeric>
 #include <unordered_map>
-#include <utility>
 #include <vector>
 
 template <typename T> void __json(const T &);
@@ -55,6 +52,14 @@ struct __struct1 {
   decltype(std::string("Alice")) name;
   decltype(std::string("Paris")) city;
 };
+struct __struct2 {
+  decltype(std::declval<__struct1>().city) key;
+  std::vector<__struct1> items;
+};
+struct __struct3 {
+  decltype(std::declval<__struct2>().key) city;
+  int num;
+};
 inline void __json(const __struct1 &v) {
   bool first = true;
   std::cout << "{";
@@ -70,14 +75,6 @@ inline void __json(const __struct1 &v) {
   __json(v.city);
   std::cout << "}";
 }
-struct __struct2 {
-  decltype(std::declval<__struct1>().city) key;
-  std::vector<__struct1> items;
-};
-struct __struct3 {
-  decltype(std::declval<__struct2>().key) city;
-  int num;
-};
 inline void __json(const __struct3 &v) {
   bool first = true;
   std::cout << "{";
