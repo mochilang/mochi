@@ -7,7 +7,13 @@ fn _json(v: anytype) void {
     std.debug.print("{s}\n", .{buf.items});
 }
 
-const m = struct { a: i32, b: i32, }{ .a = 1, .b = 2 };
+const m = struct {
+    a: i32,
+    b: i32,
+}{
+    .a = 1,
+    .b = 2,
+};
 
 pub fn main() void {
     _json(m);

@@ -1,6 +1,15 @@
 const std = @import("std");
 
-var matrix = &[_][]const i32{&[_]i32{1, 2}, &[_]i32{3, 4}};
+var matrix = &[_][]const i32{
+    &[_]i32{
+    1,
+    2,
+},
+    &[_]i32{
+    3,
+    4,
+},
+};
 
 pub fn main() void {
     matrix.items[1][0] = 5;

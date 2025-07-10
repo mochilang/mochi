@@ -1,6 +1,16 @@
 const std = @import("std");
 
-const numbers = &[_]i32{1, 2, 3, 4, 5, 6, 7, 8, 9};
+const numbers = &[_]i32{
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+};
 
 pub fn main() void {
     for (numbers) |n| {

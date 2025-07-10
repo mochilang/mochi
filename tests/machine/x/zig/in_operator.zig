@@ -5,7 +5,11 @@ fn _contains_list_int(v: []const i32, item: i32) bool {
     return false;
 }
 
-const xs = &[_]i32{1, 2, 3};
+const xs = &[_]i32{
+    1,
+    2,
+    3,
+};
 
 pub fn main() void {
     std.debug.print("{}\n", .{_contains_list_int(xs, 2)});

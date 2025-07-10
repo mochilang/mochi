@@ -10,10 +10,52 @@ const Person = struct {
     status: []const u8,
 };
 
-const people = &[_]Person{Person{ .name = "Alice", .age = 17, .status = "minor" }, Person{ .name = "Bob", .age = 25, .status = "unknown" }, Person{ .name = "Charlie", .age = 18, .status = "unknown" }, Person{ .name = "Diana", .age = 16, .status = "minor" }};
+const people = &[_]Person{
+    Person{
+    .name = "Alice",
+    .age = 17,
+    .status = "minor",
+},
+    Person{
+    .name = "Bob",
+    .age = 25,
+    .status = "unknown",
+},
+    Person{
+    .name = "Charlie",
+    .age = 18,
+    .status = "unknown",
+},
+    Person{
+    .name = "Diana",
+    .age = 16,
+    .status = "minor",
+},
+};
 
 fn test_update_adult_status() void {
-    expect((people == &[_]Person{Person{ .name = "Alice", .age = 17, .status = "minor" }, Person{ .name = "Bob", .age = 26, .status = "adult" }, Person{ .name = "Charlie", .age = 19, .status = "adult" }, Person{ .name = "Diana", .age = 16, .status = "minor" }}));
+    expect((people == &[_]Person{
+    Person{
+    .name = "Alice",
+    .age = 17,
+    .status = "minor",
+},
+    Person{
+    .name = "Bob",
+    .age = 26,
+    .status = "adult",
+},
+    Person{
+    .name = "Charlie",
+    .age = 19,
+    .status = "adult",
+},
+    Person{
+    .name = "Diana",
+    .age = 16,
+    .status = "minor",
+},
+}));
 }
 
 pub fn main() void {
