@@ -106,9 +106,17 @@ func inferQueryType(q *parser.QueryExpr, env *types.Env) types.Type {
 	if q.Group != nil {
 		genv := types.NewEnv(child)
 		genv.SetVar(q.Group.Name, types.AnyType{}, true)
-		return types.ListType{Elem: types.TypeOfExprBasic(q.Select, genv)}
+		elem = types.TypeOfExprBasic(q.Select, genv)
+		if asMapLiteral(q.Select) != nil {
+			elem = types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
+		}
+		return types.ListType{Elem: elem}
 	}
-	return types.ListType{Elem: types.TypeOfExprBasic(q.Select, child)}
+	elem = types.TypeOfExprBasic(q.Select, child)
+	if asMapLiteral(q.Select) != nil {
+		elem = types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
+	}
+	return types.ListType{Elem: elem}
 }
 
 func (c *Compiler) newTypedVar(typ string) string {
