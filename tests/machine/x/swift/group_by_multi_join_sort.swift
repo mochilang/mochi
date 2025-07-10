@@ -1,0 +1,27 @@
+var nation = [["n_nationkey": 1, "n_name": "BRAZIL"]]
+var customer = [["c_custkey": 1, "c_name": "Alice", "c_acctbal": 100, "c_nationkey": 1, "c_address": "123 St", "c_phone": "123-456", "c_comment": "Loyal"]]
+var orders = [["o_orderkey": 1000, "o_custkey": 1, "o_orderdate": "1993-10-15"], ["o_orderkey": 2000, "o_custkey": 1, "o_orderdate": "1994-01-02"]]
+var lineitem = [["l_orderkey": 1000, "l_returnflag": "R", "l_extendedprice": 1000, "l_discount": 0.1], ["l_orderkey": 2000, "l_returnflag": "N", "l_extendedprice": 500, "l_discount": 0]]
+let start_date = "1993-10-01"
+let end_date = "1994-01-01"
+var result = ({
+	var _groups: [AnyHashable:[Any]] = [:]
+	for c in customer {
+		for o in orders {
+			if !(o["o_custkey"] as! Int == c["c_custkey"] as! Int) { continue }
+			for l in lineitem {
+				if !(l["l_orderkey"] as! Int == o["o_orderkey"] as! Int) { continue }
+				for n in nation {
+					if !(n["n_nationkey"] as! Int == c["c_nationkey"] as! Int) { continue }
+					if !(o["o_orderdate"] as! String >= start_date && o["o_orderdate"] as! String < end_date && l["l_returnflag"] as! String == "R") { continue }
+					let _k = ["c_custkey": c["c_custkey"] as! Int, "c_name": c["c_name"] as! String, "c_acctbal": c["c_acctbal"] as! Double, "c_address": c["c_address"] as! String, "c_phone": c["c_phone"] as! String, "c_comment": c["c_comment"] as! String, "n_name": n["n_name"] as! String]
+					_groups[_k, default: []].append(["c": c, "o": o, "l": l, "n": n])
+				}
+			}
+		}
+	}
+	var _tmp = _groups.map { (k, v) in (key: k, items: v) }
+	_tmp.sort { $0.items.map { x in x["l"] as! [String:Any]["l_extendedprice"]! * (1 - x["l"] as! [String:Any]["l_discount"]!) }.reduce(0, +) > $1.items.map { x in x["l"] as! [String:Any]["l_extendedprice"]! * (1 - x["l"] as! [String:Any]["l_discount"]!) }.reduce(0, +) }
+	return _tmp.map { g in ["c_custkey": g.key.c_custkey, "c_name": g.key.c_name, "revenue": g.items.map { x in x["l"] as! [String:Any]["l_extendedprice"]! * (1 - x["l"] as! [String:Any]["l_discount"]!) }.reduce(0, +), "c_acctbal": g.key.c_acctbal, "n_name": g.key.n_name, "c_address": g.key.c_address, "c_phone": g.key.c_phone, "c_comment": g.key.c_comment] }
+}())
+print(result)

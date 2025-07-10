@@ -448,6 +448,17 @@ func (c *compiler) forStmt(f *parser.ForStmt) error {
 			c.mapFields[f.Name] = fields
 		}
 	}
+	if sel := f.Source.Binary.Left.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 {
+		if c.groups[sel.Root] {
+			c.groups[f.Name] = true
+			if t, ok := c.groupElemType[sel.Root]; ok {
+				c.groupElemType[f.Name] = t
+			}
+			if gf, ok := c.groupElemFields[sel.Root]; ok {
+				c.groupElemFields[f.Name] = gf
+			}
+		}
+	}
 	for _, st := range f.Body {
 		if err := c.stmt(st); err != nil {
 			if havePrev {
@@ -765,6 +776,9 @@ func (c *compiler) primary(p *parser.Primary) (string, error) {
 	case p.Call != nil:
 		return c.callExpr(p.Call)
 	case p.List != nil:
+		if len(p.List.Elems) == 0 {
+			return "[Any]()", nil
+		}
 		elems := make([]string, len(p.List.Elems))
 		for i, e := range p.List.Elems {
 			s, err := c.expr(e)
@@ -2231,7 +2245,7 @@ func (c *compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	if q.Group != nil && len(q.Joins) == 0 {
 		return c.groupQuery(q)
 	}
-	if q.Group != nil && len(q.Joins) > 0 && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
+	if q.Group != nil && len(q.Joins) > 0 && !q.Distinct {
 		return c.groupJoinQuery(q)
 	}
 	if len(q.Joins) > 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
@@ -2711,6 +2725,31 @@ func (c *compiler) queryFieldTypes(q *parser.QueryExpr) map[string]string {
 		}
 	}
 
+	// When the query selects the group variable directly, return fields for
+	// the implicit group object so later statements can access `key` and
+	// `items`.
+	if q.Group != nil && isVarRef(q.Select, q.Group.Name) {
+		keyType := c.fieldType(q.Group.Exprs[0])
+		if keyType == "" {
+			keyType = c.exprType(q.Group.Exprs[0])
+		}
+		kt := swiftTypeOf(keyType)
+		if kt == "" {
+			kt = "AnyHashable"
+		}
+		et := swiftTypeOf(c.elementType(q.Source))
+		if et == "" {
+			et = "Any"
+		}
+		res := map[string]string{"key": kt, "items": "[" + et + "]"}
+		c.varTypes = savedVars
+		c.mapFields = savedFields
+		c.groups = savedGroups
+		c.groupElemType = savedElem
+		c.groupElemFields = savedElemFields
+		return res
+	}
+
 	res := c.elementFieldTypes(q.Select)
 
 	c.varTypes = savedVars
@@ -2761,6 +2800,13 @@ func (c *compiler) recordMapFields(name string, e *parser.Expr) {
 		} else if isVarRef(p.Target.Query.Select, p.Target.Query.Var) {
 			if t := c.elementFieldTypes(p.Target.Query.Source); t != nil {
 				c.mapFields[name] = t
+			}
+		}
+		if p.Target.Query.Group != nil && isVarRef(p.Target.Query.Select, p.Target.Query.Group.Name) {
+			if gf := c.elementFieldTypes(p.Target.Query.Source); gf != nil {
+				c.groups[name] = true
+				c.groupElemFields[name] = gf
+				c.groupElemType[name] = c.elementType(p.Target.Query.Source)
 			}
 		}
 	}

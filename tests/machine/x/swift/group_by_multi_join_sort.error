@@ -1,2 +1,4 @@
-line: 0
-error: unsupported query
+line 16: exit status 1
+					if !(n["n_nationkey"] as! Int == c["c_nationkey"] as! Int) { continue }
+					if !(o["o_orderdate"] as! String >= start_date && o["o_orderdate"] as! String < end_date && l["l_returnflag"] as! String == "R") { continue }
+					let _k = ["c_custkey": c["c_custkey"] as! Int, "c_name": c["c_name"] as! String, "c_acctbal": c["c_acctbal"] as! Double, "c_address": c["c_address"] as! String, "c_phone": c["c_phone"] as! String, "c_comment": c["c_comment"] as! String, "n_name": n["n_name"] as! String]
