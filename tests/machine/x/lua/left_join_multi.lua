@@ -11,6 +11,14 @@ function __eq(a, b)
     for k, _ in pairs(b) do if a[k] == nil then return false end end
     return true
 end
+function __print(...)
+    local args = {...}
+    local parts = {}
+    for i,a in ipairs(args) do
+        if a ~= nil and a ~= '' then parts[#parts+1] = tostring(a) end
+    end
+    print(table.concat(parts, ' '))
+end
 function __query(src, joins, opts)
     local whereFn = opts.where
     local items = {}
@@ -167,8 +175,8 @@ result = (function()
     { items = items, on = function(o, c, i) return __eq(o.id, i.orderId) end, left = true }
   }, { selectFn = function(o, c, i) return {["orderId"]=o.id, ["name"]=c.name, ["item"]=i} end })
 end)()
-print("--- Left Join Multi ---")
+__print("--- Left Join Multi ---")
 for _, r in ipairs(result) do
-  print(r.orderId, r.name, r.item)
+  __print(r.orderId, r.name, r.item)
   ::__continue0::
 end

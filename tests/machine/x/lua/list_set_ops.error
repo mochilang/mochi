@@ -1,0 +1,7 @@
+line 75: run error: exit status 1
+lua: /workspace/mochi/tests/machine/x/lua/list_set_ops.lua:75: attempt to call a nil value
+stack traceback:
+	/workspace/mochi/tests/machine/x/lua/list_set_ops.lua:75: in main chunk
+	[C]: in ?
+1 2 3
+

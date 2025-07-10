@@ -1,3 +1,11 @@
+function __print(...)
+    local args = {...}
+    local parts = {}
+    for i,a in ipairs(args) do
+        if a ~= nil and a ~= '' then parts[#parts+1] = tostring(a) end
+    end
+    print(table.concat(parts, ' '))
+end
 customers = {{["id"]=1, ["name"]="Alice"}, {["id"]=2, ["name"]="Bob"}, {["id"]=3, ["name"]="Charlie"}}
 orders = {{["id"]=100, ["customerId"]=1, ["total"]=250}, {["id"]=101, ["customerId"]=2, ["total"]=125}, {["id"]=102, ["customerId"]=1, ["total"]=300}}
 result = (function()
@@ -9,8 +17,8 @@ result = (function()
   end
   return _res
 end)()
-print("--- Cross Join: All order-customer pairs ---")
+__print("--- Cross Join: All order-customer pairs ---")
 for _, entry in ipairs(result) do
-  print("Order", entry.orderId, "(customerId:", entry.orderCustomerId, ", total: $", entry.orderTotal, ") paired with", entry.pairedCustomerName)
+  __print("Order", entry.orderId, "(customerId:", entry.orderCustomerId, ", total: $", entry.orderTotal, ") paired with", entry.pairedCustomerName)
   ::__continue0::
 end

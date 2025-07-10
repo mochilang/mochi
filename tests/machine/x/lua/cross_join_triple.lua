@@ -1,3 +1,11 @@
+function __print(...)
+    local args = {...}
+    local parts = {}
+    for i,a in ipairs(args) do
+        if a ~= nil and a ~= '' then parts[#parts+1] = tostring(a) end
+    end
+    print(table.concat(parts, ' '))
+end
 nums = {1, 2}
 letters = {"A", "B"}
 bools = {true, false}
@@ -12,8 +20,8 @@ combos = (function()
   end
   return _res
 end)()
-print("--- Cross Join of three lists ---")
+__print("--- Cross Join of three lists ---")
 for _, c in ipairs(combos) do
-  print(c.n, c.l, c.b)
+  __print(c.n, c.l, c.b)
   ::__continue0::
 end

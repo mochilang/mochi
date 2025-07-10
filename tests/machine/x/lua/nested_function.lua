@@ -10,6 +10,14 @@ function __add(a, b)
         return a + b
     end
 end
+function __print(...)
+    local args = {...}
+    local parts = {}
+    for i,a in ipairs(args) do
+        if a ~= nil and a ~= '' then parts[#parts+1] = tostring(a) end
+    end
+    print(table.concat(parts, ' '))
+end
 function outer(x)
   local function inner(y)
     return __add(x, y)
@@ -17,4 +25,4 @@ function outer(x)
   return inner(5)
 end
 
-print(outer(3))
+__print(outer(3))

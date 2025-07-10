@@ -26,10 +26,12 @@ type Compiler struct {
 	helpers      map[string]bool
 	packages     map[string]bool
 	methodFields map[string]bool
+
+	uninitVars map[string]bool
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, helpers: make(map[string]bool), packages: make(map[string]bool), tmpCount: 0, methodFields: nil}
+	return &Compiler{env: env, helpers: make(map[string]bool), packages: make(map[string]bool), tmpCount: 0, methodFields: nil, uninitVars: map[string]bool{}}
 }
 
 // Compile returns Lua source implementing prog.
@@ -43,6 +45,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.helpers = make(map[string]bool)
 	c.packages = make(map[string]bool)
 	c.methodFields = nil
+	c.uninitVars = map[string]bool{}
 
 	// Emit type and function declarations first.
 	for _, s := range prog.Statements {

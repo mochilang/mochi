@@ -4,6 +4,14 @@ function __div(a, b)
     end
     return a / b
 end
-print((6 * 7))
-print(__div(7, 2))
-print((7 % 2))
+function __print(...)
+    local args = {...}
+    local parts = {}
+    for i,a in ipairs(args) do
+        if a ~= nil and a ~= '' then parts[#parts+1] = tostring(a) end
+    end
+    print(table.concat(parts, ' '))
+end
+__print((6 * 7))
+__print(__div(7, 2))
+__print((7 % 2))

@@ -11,6 +11,14 @@ function __eq(a, b)
     for k, _ in pairs(b) do if a[k] == nil then return false end end
     return true
 end
+function __print(...)
+    local args = {...}
+    local parts = {}
+    for i,a in ipairs(args) do
+        if a ~= nil and a ~= '' then parts[#parts+1] = tostring(a) end
+    end
+    print(table.concat(parts, ' '))
+end
 numbers = {1, 2, 3, 4, 5, 6, 7, 8, 9}
 for _, n in ipairs(numbers) do
   if __eq((n % 2), 0) then
@@ -19,6 +27,6 @@ for _, n in ipairs(numbers) do
   if (n > 7) then
     break
   end
-  print("odd number:", n)
+  __print("odd number:", n)
   ::__continue0::
 end

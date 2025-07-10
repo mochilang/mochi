@@ -11,6 +11,14 @@ function __eq(a, b)
     for k, _ in pairs(b) do if a[k] == nil then return false end end
     return true
 end
+function __print(...)
+    local args = {...}
+    local parts = {}
+    for i,a in ipairs(args) do
+        if a ~= nil and a ~= '' then parts[#parts+1] = tostring(a) end
+    end
+    print(table.concat(parts, ' '))
+end
 function __slice(obj, i, j)
     if i == nil then i = 0 end
     if type(obj) == 'string' then
@@ -39,6 +47,6 @@ function __slice(obj, i, j)
 end
 prefix = "fore"
 s1 = "forest"
-print(__eq(__slice(s1, 0, #prefix), prefix))
+__print(__eq(__slice(s1, 0, #prefix), prefix))
 s2 = "desert"
-print(__eq(__slice(s2, 0, #prefix), prefix))
+__print(__eq(__slice(s2, 0, #prefix), prefix))

@@ -1,0 +1,6 @@
+line 217: run error: exit status 1
+lua: ...kspace/mochi/tests/machine/x/lua/group_by_multi_join.lua:217: attempt to call a table value
+stack traceback:
+	...kspace/mochi/tests/machine/x/lua/group_by_multi_join.lua:217: in main chunk
+	[C]: in ?
+

@@ -347,7 +347,16 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		return fmt.Sprintf("#%s", arg), nil
+		t := c.inferExprType(call.Args[0])
+		switch {
+		case isMap(t):
+			c.helpers["count"] = true
+			return fmt.Sprintf("__count(%s)", arg), nil
+		case isList(t) || isString(t):
+			return fmt.Sprintf("#%s", arg), nil
+		default:
+			return fmt.Sprintf("#%s", arg), nil
+		}
 	}
 	args := make([]string, len(call.Args))
 	for i, a := range call.Args {
@@ -365,7 +374,13 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			expr := "(function(lst) for i,v in ipairs(lst) do io.write(v) if i < #lst then io.write(\" \") end end io.write(\"\\n\") end)(" + a + ")"
 			return expr, nil
 		}
-		return fmt.Sprintf("print(%s)", argStr), nil
+		c.use("print")
+		for i := range args {
+			if n, ok := identName(call.Args[i]); ok && c.uninitVars[n] {
+				args[i] = "\"<nil>\""
+			}
+		}
+		return fmt.Sprintf("__print(%s)", strings.Join(args, ", ")), nil
 	case "str":
 		if len(args) == 1 {
 			return fmt.Sprintf("tostring(%s)", args[0]), nil
@@ -850,7 +865,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if sortExpr != "" || skipExpr != "" || takeExpr != "" {
 		b.WriteString("\tlocal items = _res\n")
 		if sortExpr != "" {
-			b.WriteString("\ttable.sort(items, function(a,b) return tostring(a.__key) < tostring(b.__key) end)\n")
+			b.WriteString("\ttable.sort(items, function(a,b) return a.__key < b.__key end)\n")
 			b.WriteString("\tlocal tmp = {}\n")
 			b.WriteString("\tfor _, it in ipairs(items) do tmp[#tmp+1] = it.__val end\n")
 			b.WriteString("\titems = tmp\n")

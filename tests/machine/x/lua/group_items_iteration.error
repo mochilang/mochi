@@ -1,0 +1,6 @@
+line 95: run error: exit status 1
+lua: ...pace/mochi/tests/machine/x/lua/group_items_iteration.lua:95: attempt to call a table value
+stack traceback:
+	...pace/mochi/tests/machine/x/lua/group_items_iteration.lua:95: in main chunk
+	[C]: in ?
+

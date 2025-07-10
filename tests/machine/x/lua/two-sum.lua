@@ -46,6 +46,14 @@ function __indexString(s, i)
     if i < 1 or i > len then error('index out of range') end
     return string.sub(s, i, i)
 end
+function __print(...)
+    local args = {...}
+    local parts = {}
+    for i,a in ipairs(args) do
+        if a ~= nil and a ~= '' then parts[#parts+1] = tostring(a) end
+    end
+    print(table.concat(parts, ' '))
+end
 function twoSum(nums, target)
   local n = #nums
   for i = 0, (n)-1 do
@@ -61,5 +69,5 @@ function twoSum(nums, target)
 end
 
 result = twoSum({2, 7, 11, 15}, 9)
-print(__index(result, 0))
-print(__index(result, 1))
+__print(__index(result, 0))
+__print(__index(result, 1))

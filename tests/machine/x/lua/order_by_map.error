@@ -1,0 +1,14 @@
+line 8: run error: exit status 1
+lua: /workspace/mochi/tests/machine/x/lua/order_by_map.lua:8: attempt to compare two table values
+stack traceback:
+	/workspace/mochi/tests/machine/x/lua/order_by_map.lua:8: in function </workspace/mochi/tests/machine/x/lua/order_by_map.lua:8>
+	[C]: in function 'table.sort'
+	/workspace/mochi/tests/machine/x/lua/order_by_map.lua:8: in function </workspace/mochi/tests/machine/x/lua/order_by_map.lua:2>
+	/workspace/mochi/tests/machine/x/lua/order_by_map.lua:2: in main chunk
+	[C]: in ?
+
+   6 | let sorted =
+   7 |   from x in data
+   8 |   sort by { a: x.a, b: x.b }
+   9 |   select x
+  10 | print(sorted)

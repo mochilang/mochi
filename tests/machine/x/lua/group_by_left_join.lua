@@ -68,6 +68,14 @@ function __merge(...)
     end
     return res
 end
+function __print(...)
+    local args = {...}
+    local parts = {}
+    for i,a in ipairs(args) do
+        if a ~= nil and a ~= '' then parts[#parts+1] = tostring(a) end
+    end
+    print(table.concat(parts, ' '))
+end
 function __query(src, joins, opts)
     local whereFn = opts.where
     local items = {}
@@ -236,8 +244,8 @@ end)())}
   end
   return _res
 end)()
-print("--- Group Left Join ---")
+__print("--- Group Left Join ---")
 for _, s in ipairs(stats) do
-  print(s.name, "orders:", s.count)
+  __print(s.name, "orders:", s.count)
   ::__continue0::
 end

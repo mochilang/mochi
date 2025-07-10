@@ -1,3 +1,11 @@
+function __print(...)
+    local args = {...}
+    local parts = {}
+    for i,a in ipairs(args) do
+        if a ~= nil and a ~= '' then parts[#parts+1] = tostring(a) end
+    end
+    print(table.concat(parts, ' '))
+end
 function __slice(obj, i, j)
     if i == nil then i = 0 end
     if type(obj) == 'string' then
@@ -26,4 +34,4 @@ function __slice(obj, i, j)
 end
 (function(lst) for i,v in ipairs(lst) do io.write(v) if i < #lst then io.write(" ") end end io.write("\n") end)(__slice({1, 2, 3}, 1, 3))
 (function(lst) for i,v in ipairs(lst) do io.write(v) if i < #lst then io.write(" ") end end io.write("\n") end)(__slice({1, 2, 3}, 0, 2))
-print(__slice("hello", 1, 4))
+__print(__slice("hello", 1, 4))
