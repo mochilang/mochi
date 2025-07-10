@@ -1,0 +1,6 @@
+// Mochi example for Rosetta task "Address of a variable"
+// Mochi currently does not expose raw memory addresses of variables.
+
+var myVar = 3.14
+print("value as float:", myVar)
+print("address: <not available>")
