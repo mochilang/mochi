@@ -1644,58 +1644,76 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	tmp := fmt.Sprintf("_t%d", c.tmpCount)
+
+	fn := fmt.Sprintf("_match%d", c.tmpCount)
+	arg := fmt.Sprintf("_t%d", c.tmpCount)
 	c.tmpCount++
-	var expr string
+
+	c.writeln(fmt.Sprintf("def %s(%s):", fn, arg))
+	c.indent++
+	c.writeln(fmt.Sprintf("match %s:", arg))
+	c.indent++
+
 	for i, cs := range m.Cases {
+		pat, err := c.matchPatternString(cs.Pattern)
+		if err != nil {
+			return "", err
+		}
+		if pat == "_" {
+			c.writeln("case _:")
+		} else {
+			c.writeln(fmt.Sprintf("case %s:", pat))
+		}
+		c.indent++
 		res, err := c.compileExpr(cs.Result)
 		if err != nil {
 			return "", err
 		}
-		if isUnderscoreExpr(cs.Pattern) {
-			expr += res
-			break
-		}
-		cond := ""
-		if call, ok := callPattern(cs.Pattern); ok {
-			if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
-				st := ut.Variants[call.Func]
-				cond = fmt.Sprintf("isinstance(%s, %s)", tmp, sanitizeName(call.Func))
-				names := []string{}
-				values := []string{}
-				for idx, arg := range call.Args {
-					if id, ok := identName(arg); ok {
-						if id == "_" {
-							continue
-						}
-						names = append(names, sanitizeName(id))
-						field := sanitizeName(st.Order[idx])
-						values = append(values, fmt.Sprintf("%s.%s", tmp, field))
-					}
-				}
-				if len(names) > 0 {
-					res = fmt.Sprintf("(lambda %s: %s)(%s)", strings.Join(names, ", "), res, strings.Join(values, ", "))
-				}
-			}
-		} else if ident, ok := identName(cs.Pattern); ok {
-			if _, ok := c.env.FindUnionByVariant(ident); ok {
-				cond = fmt.Sprintf("isinstance(%s, %s)", tmp, sanitizeName(ident))
-			}
-		}
-		if cond == "" {
-			pat, err := c.compileExpr(cs.Pattern)
-			if err != nil {
-				return "", err
-			}
-			cond = fmt.Sprintf("%s == %s", tmp, pat)
-		}
-		part := fmt.Sprintf("%s if %s else ", res, cond)
-		expr += part
-		if i == len(m.Cases)-1 {
-			expr += "None"
+		c.writeln("return " + res)
+		c.indent--
+
+		if i == len(m.Cases)-1 && pat != "_" {
+			c.writeln("case _:")
+			c.indent++
+			c.writeln("return None")
+			c.indent--
 		}
 	}
-	return fmt.Sprintf("(lambda %s=%s: %s)()", tmp, target, expr), nil
+
+	c.indent--
+	c.indent--
+	c.writeln("")
+	return fmt.Sprintf("%s(%s)", fn, target), nil
+}
+
+func (c *Compiler) matchPatternString(e *parser.Expr) (string, error) {
+	if isUnderscoreExpr(e) {
+		return "_", nil
+	}
+	if call, ok := callPattern(e); ok {
+		parts := make([]string, len(call.Args))
+		for i, a := range call.Args {
+			if id, ok := identName(a); ok {
+				parts[i] = sanitizeName(id)
+			} else {
+				s, err := c.compileExpr(a)
+				if err != nil {
+					return "", err
+				}
+				parts[i] = s
+			}
+		}
+		return fmt.Sprintf("%s(%s)", sanitizeName(call.Func), strings.Join(parts, ", ")), nil
+	}
+	if ident, ok := identName(e); ok {
+		if ut, ok := c.env.FindUnionByVariant(ident); ok {
+			if st, ok := ut.Variants[ident]; ok && len(st.Fields) == 0 {
+				return sanitizeName(ident) + "()", nil
+			}
+		}
+		return sanitizeName(ident), nil
+	}
+	return c.compileExpr(e)
 }
 
 func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {

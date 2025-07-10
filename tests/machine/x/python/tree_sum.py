@@ -4,19 +4,17 @@ import dataclasses
 
 
 def sum_tree(t: Tree) -> int:
-    return (
-        lambda _t0=t: (
-            0
-            if isinstance(_t0, Leaf)
-            else (
-                (lambda left, value, right: sum_tree(left) + value + sum_tree(right))(
-                    _t0.left, _t0.value, _t0.right
-                )
-                if isinstance(_t0, Node)
-                else None
-            )
-        )
-    )()
+
+    def _match0(_t0):
+        match _t0:
+            case Leaf():
+                return 0
+            case Node(left, value, right):
+                return sum_tree(left) + value + sum_tree(right)
+            case _:
+                return None
+
+    return _match0(t)
 
 
 class Tree:
