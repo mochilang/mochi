@@ -8,6 +8,14 @@ class Person {
 		this.age = age;
 		this.status = status;
 	}
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Person other)) return false;
+		return Objects.equals(this.name, other.name) && Objects.equals(this.age, other.age) && Objects.equals(this.status, other.status);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(name, age, status);
+	}
 }
 public class Main {
 	static List<Person> people = java.util.Arrays.asList(new Person("Alice", 17, "minor"), new Person("Bob", 25, "unknown"), new Person("Charlie", 18, "unknown"), new Person("Diana", 16, "minor"));

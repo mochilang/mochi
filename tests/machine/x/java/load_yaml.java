@@ -9,18 +9,26 @@ class Person {
 		this.age = age;
 		this.email = email;
 	}
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Person other)) return false;
+		return Objects.equals(this.name, other.name) && Objects.equals(this.age, other.age) && Objects.equals(this.email, other.email);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(name, age, email);
+	}
 }
 public class Main {
-	static List<Object> people = loadYaml("../interpreter/valid/people.yaml");
+	static List<Map<String,Object>> people = loadYaml("../interpreter/valid/people.yaml");
 	static List<Object> adults = (new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
 	List<Object> _res1 = new ArrayList<>();
 	for (var p : people) {
 		if (!(Boolean.TRUE.equals(((Number)((Map)p).get("age")).doubleValue() >= 18))) continue;
-		_res1.add(new LinkedHashMap<>(){{put("name", ((Map)p).get("name"));put("email", ((Map)p).get("email"));}});
+		_res1.add(new LinkedHashMap<>(Map.ofEntries(Map.entry("name", ((Map)p).get("name")), Map.entry("email", ((Map)p).get("email")))));
 	}
 	return _res1;
 }}).get();
-	static List<Map<String,Object>> loadYaml(String path) throws Exception {
+	static List<Map<String,Object>> loadYaml(String path) {
 		List<Map<String,Object>> list = new ArrayList<>();
 		try (BufferedReader br = new BufferedReader(new FileReader(path))) {
 			Map<String,Object> cur = null;
@@ -38,7 +46,7 @@ public class Main {
 				}
 			}
 			if (cur != null) list.add(cur);
-		}
+		} catch (Exception e) { throw new RuntimeException(e); }
 		return list;
 	}
 	public static void main(String[] args) {

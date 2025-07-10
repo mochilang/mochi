@@ -1,7 +1,0 @@
-line 0: run error: exit status 1
-Exception in thread "main" java.lang.AssertionError: expect failed
-	at Main.main(Main.java:20)
-
-
-  1| type Person {
-  2|   name: string
