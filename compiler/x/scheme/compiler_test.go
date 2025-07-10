@@ -60,6 +60,7 @@ func TestVMValidPrograms(t *testing.T) {
 				t.Fatalf("write code: %v", err)
 			}
 			cmd := exec.Command(schemePath, "-m", "chibi", codePath)
+			cmd.Dir = root
 			if inData, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 				cmd.Stdin = bytes.NewReader(inData)
 			}

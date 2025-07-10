@@ -1,0 +1,12 @@
+error running load_yaml:
+ERROR in "substring": string-index->cursor: index out of range: 2
+  called from for1 on line 75 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 22 of file /workspace/mochi/tests/machine/x/scheme/load_yaml.scm
+  called from <anonymous> on line 111 of file /workspace/mochi/tests/machine/x/scheme/load_yaml.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+
+context (line 75):
+           (let ((d (string->json text)))
+             (if (list? d) d (list d)))))))
+

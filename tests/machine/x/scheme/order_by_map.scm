@@ -8,7 +8,7 @@
             (begin (set-cdr! p v) m)
             (cons (cons k v) m)))
 )
-(import (srfi 95) (chibi json) (chibi io) (chibi))
+(import (srfi 95) (chibi json) (chibi io) (chibi) (chibi string))
 
 (define (_to_string v)
   (call-with-output-string (lambda (p) (write v p))))
@@ -26,7 +26,7 @@
                   (set! cur '())
                   (set! ln (substring ln 2 (string-length ln))))
                 (when (string-contains ln ":")
-                  (let* ((p (string-split ln ":"))
+                  (let* ((p (string-split ln #\:))
                          (k (string-trim (car p)))
                          (val (string-trim (string-join (cdr p) ":"))))
                     (set! cur (append cur (list (cons k (_yaml_value val))))))))
