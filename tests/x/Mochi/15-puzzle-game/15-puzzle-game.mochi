@@ -1,0 +1,135 @@
+# Mochi implementation of Rosetta 15 puzzle game
+
+var solved = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,0]
+
+var board = solved
+var empty = 15
+var moves = 0
+var quit = false
+
+fun boardStr(): string {
+  var s = ""
+  var i = 0
+  while i < 16 {
+    let c = board[i]
+    if c == 0 {
+      s = s + "  ."
+    } else {
+      let sc = str(c)
+      if c < 10 {
+        s = s + "  " + sc
+      } else if c < 100 {
+        s = s + " " + sc
+      } else {
+        s = s + sc
+      }
+    }
+    if i % 4 == 3 {
+      s = s + "\n"
+    }
+    i = i + 1
+  }
+  return s
+}
+
+fun randMove(): int { return now() % 4 }
+
+fun isValidMove(m: int): (int, bool) {
+  if m == 0 {
+    return (empty - 4, empty / 4 > 0)
+  }
+  if m == 1 {
+    return (empty + 4, empty / 4 < 3)
+  }
+  if m == 2 {
+    return (empty + 1, empty % 4 < 3)
+  }
+  if m == 3 {
+    return (empty - 1, empty % 4 > 0)
+  }
+  return (0, false)
+}
+
+fun doMove(m: int): bool {
+  let i = empty
+  let (j, ok) = isValidMove(m)
+  if ok {
+    let tmp = board[i]
+    board[i] = board[j]
+    board[j] = tmp
+    empty = j
+    moves = moves + 1
+  }
+  return ok
+}
+
+fun shuffle(n: int) {
+  var i = 0
+  while i < n || board == solved {
+    if doMove(randMove()) {
+      i = i + 1
+    }
+  }
+}
+
+fun trimStart(s: string): int {
+  var i = 0
+  while i < len(s) {
+    if substring(s, i, i+1) != " " {
+      break
+    }
+    i = i + 1
+  }
+  return i
+}
+
+fun playOneMove() {
+  while true {
+    print("Enter move #" + str(moves + 1) + " (U, D, L, R, or Q): ")
+    var s = input()
+    let idx = trimStart(s)
+    if idx >= len(s) {
+      continue
+    }
+    let ch = substring(s, idx, idx+1)
+    var m = 0
+    if ch == "U" || ch == "u" {
+      m = 0
+    } else if ch == "D" || ch == "d" {
+      m = 1
+    } else if ch == "R" || ch == "r" {
+      m = 2
+    } else if ch == "L" || ch == "l" {
+      m = 3
+    } else if ch == "Q" || ch == "q" {
+      print("Quiting after " + str(moves) + " moves.")
+      quit = true
+      return
+    } else {
+      print("Please enter \"U\", \"D\", \"L\", or \"R\" to move the empty cell\n" +
+            "up, down, left, or right. You can also enter \"Q\" to quit.\n" +
+            "Upper or lowercase is accepted and only the first non-blank\n" +
+            "character is important (i.e. you may enter \"up\" if you like).")
+      continue
+    }
+    if !doMove(m) {
+      print("That is not a valid move at the moment.")
+      continue
+    }
+    return
+  }
+}
+
+fun play() {
+  print("Starting board:")
+  while board != solved && !quit {
+    print("\n" + boardStr())
+    playOneMove()
+  }
+  if board == solved {
+    print("You solved the puzzle in " + str(moves) + " moves.")
+  }
+}
+
+shuffle(50)
+play()
