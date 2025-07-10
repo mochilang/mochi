@@ -5,13 +5,14 @@ class Person {
   Person(this.name, this.age, this.status);
 }
 
+List<Person> people = [
+  Person('Alice', 17, 'minor'),
+  Person('Bob', 25, 'unknown'),
+  Person('Charlie', 18, 'unknown'),
+  Person('Diana', 16, 'minor'),
+];
+
 void main() {
-  List<Person> people = [
-    Person('Alice', 17, 'minor'),
-    Person('Bob', 25, 'unknown'),
-    Person('Charlie', 18, 'unknown'),
-    Person('Diana', 16, 'minor'),
-  ];
   for (var _i0 = 0; _i0 < people.length; _i0++) {
     var _it1 = people[_i0];
     var name = _it1.name;

@@ -1,6 +1,15 @@
-var customers = [{'id': 1, 'name': 'Alice'}, {'id': 2, 'name': 'Bob'}, {'id': 3, 'name': 'Charlie'}, {'id': 4, 'name': 'Diana'}];
+var customers = [
+  {'id': 1, 'name': 'Alice'},
+  {'id': 2, 'name': 'Bob'},
+  {'id': 3, 'name': 'Charlie'},
+  {'id': 4, 'name': 'Diana'},
+];
 
-var orders = [{'id': 100, 'customerId': 1, 'total': 250}, {'id': 101, 'customerId': 2, 'total': 125}, {'id': 102, 'customerId': 1, 'total': 300}];
+var orders = [
+  {'id': 100, 'customerId': 1, 'total': 250},
+  {'id': 101, 'customerId': 2, 'total': 125},
+  {'id': 102, 'customerId': 1, 'total': 300},
+];
 
 var result = (() {
   var _q0 = <dynamic>[];
@@ -21,11 +30,20 @@ var result = (() {
 void main() {
   print('--- Right Join using syntax ---');
   var _iter2 = result;
-  for (var entry in (_iter2 is Map ? (_iter2 as Map).keys : _iter2) as Iterable) {
+  for (var entry
+      in (_iter2 is Map ? (_iter2 as Map).keys : _iter2) as Iterable) {
     if (entry['order']) {
-      print(['Customer', entry['customerName'], 'has order', entry['order']['id'], '- \$', entry['order']['total']].join(' '));
-    }
-    else {
+      print(
+        [
+          'Customer',
+          entry['customerName'],
+          'has order',
+          entry['order']['id'],
+          '- \$',
+          entry['order']['total'],
+        ].join(' '),
+      );
+    } else {
       print(['Customer', entry['customerName'], 'has no orders'].join(' '));
     }
   }

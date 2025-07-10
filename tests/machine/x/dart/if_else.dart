@@ -1,5 +1,6 @@
+var x = 5;
+
 void main() {
-  var x = 5;
   if (x > 3) {
     print('big');
   } else {

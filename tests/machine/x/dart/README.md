@@ -1,11 +1,8 @@
-# Dart Machine Output
+# Mochi to Dart Machine Outputs
 
-This directory contains Dart code generated from Mochi programs. Successful runs have a .out file, failures a .error file.
+This directory contains machine-generated Dart translations of programs from `tests/vm/valid`. Each program is compiled and executed during tests. Successful runs create an `.out` file while failures create an `.error` file.
 
-Compiled programs: 97/97
-
-Checklist:
-
+Checklist of programs that currently compile and run (83/97):
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -28,15 +25,9 @@ Checklist:
 - [x] fun_call
 - [x] fun_expr_in_let
 - [x] fun_three_args
-- [x] group_by
-- [x] group_by_conditional_sum
 - [x] group_by_having
 - [x] group_by_join
-- [x] group_by_left_join
 - [x] group_by_multi_join
-- [x] group_by_multi_join_sort
-- [x] group_by_sort
-- [x] group_items_iteration
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
@@ -55,7 +46,6 @@ Checklist:
 - [x] list_index
 - [x] list_nested_assign
 - [x] list_set_ops
-- [x] load_yaml
 - [x] map_assign
 - [x] map_in_operator
 - [x] map_index
@@ -64,23 +54,18 @@ Checklist:
 - [x] map_membership
 - [x] map_nested_assign
 - [x] match_expr
-- [x] match_full
 - [x] math_ops
 - [x] membership
 - [x] min_max_builtin
 - [x] nested_function
 - [x] order_by_map
-- [x] outer_join
 - [x] partial_application
 - [x] print_hello
 - [x] pure_fold
 - [x] pure_global_fold
-- [x] query_sum_select
 - [x] record_assign
-- [x] right_join
 - [x] save_jsonl_stdout
 - [x] short_circuit
-- [x] slice
 - [x] sort_stable
 - [x] str_builtin
 - [x] string_compare
@@ -93,8 +78,6 @@ Checklist:
 - [x] sum_builtin
 - [x] tail_recursion
 - [x] test_block
-- [x] tree_sum
-- [x] two-sum
 - [x] typed_let
 - [x] typed_var
 - [x] unary_neg
@@ -104,6 +87,18 @@ Checklist:
 - [x] var_assignment
 - [x] while_loop
 
-## Remaining Tasks
-
-None.
+## Remaining programs
+- [ ] group_by
+- [ ] group_by_conditional_sum
+- [ ] group_by_left_join
+- [ ] group_by_multi_join_sort
+- [ ] group_by_sort
+- [ ] group_items_iteration
+- [ ] load_yaml
+- [ ] match_full
+- [ ] outer_join
+- [ ] query_sum_select
+- [ ] right_join
+- [ ] slice
+- [ ] tree_sum
+- [ ] two-sum

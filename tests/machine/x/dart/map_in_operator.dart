@@ -4,8 +4,9 @@ bool _in(dynamic item, dynamic col) {
   return false;
 }
 
+var m = {1: 'a', 2: 'b'};
+
 void main() {
-  var m = {1: 'a', 2: 'b'};
   print(_in(1, m));
   print(_in(3, m));
 }

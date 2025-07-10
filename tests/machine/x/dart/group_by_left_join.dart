@@ -1,6 +1,14 @@
-var customers = [{'id': 1, 'name': 'Alice'}, {'id': 2, 'name': 'Bob'}, {'id': 3, 'name': 'Charlie'}];
+var customers = [
+  {'id': 1, 'name': 'Alice'},
+  {'id': 2, 'name': 'Bob'},
+  {'id': 3, 'name': 'Charlie'},
+];
 
-var orders = [{'id': 100, 'customerId': 1}, {'id': 101, 'customerId': 1}, {'id': 102, 'customerId': 2}];
+var orders = [
+  {'id': 100, 'customerId': 1},
+  {'id': 101, 'customerId': 1},
+  {'id': 102, 'customerId': 2},
+];
 
 var stats = (() {
   var _q0 = <dynamic>[];
@@ -14,20 +22,23 @@ var stats = (() {
     if (_jt2.isEmpty) _jt2.add(null);
     for (var o in _jt2) {
       var _k4 = c['name'];
-      _g1.putIfAbsent(_k4, () => <dynamic>[]).add(c);
+      _g1.putIfAbsent(_k4, () => <dynamic>[]).add({'c': c, 'o': o});
     }
   }
   for (var entry in _g1.entries) {
     var g = entry.value;
     var _k4 = entry.key;
-    _q0.add({'name': _k4, 'count': (() {
-  var _q5 = <dynamic>[];
-  for (var r in g) {
-    if (!(r['o'])) continue;
-    _q5.add(r);
-  }
-  return _q5;
-})().length});
+    _q0.add({
+      'name': _k4,
+      'count': (() {
+        var _q5 = <dynamic>[];
+        for (var r in g) {
+          if (!(r['o'])) continue;
+          _q5.add(r);
+        }
+        return _q5;
+      })().length,
+    });
   }
   return _q0;
 })();
@@ -39,4 +50,3 @@ void main() {
     print([s['name'], 'orders:', s['count']].join(' '));
   }
 }
-

@@ -3,7 +3,8 @@ class Todo {
   Todo(this.title);
 }
 
+var todo = Todo(({'title': 'hi'}['title'] as String));
+
 void main() {
-  var todo = Todo(({'title': 'hi'}['title'] as String));
   print(todo.title);
 }
