@@ -81,6 +81,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.indent = 0
 	c.writeln("import java.util.*;")
+	if c.helpers["load_yaml"] {
+		c.writeln("import java.io.*;")
+	}
 	if c.needFuncImports {
 		c.writeln("import java.util.function.*;")
 	}
@@ -220,6 +223,54 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.indent--
 		c.writeln("}")
 	}
+	if c.helpers["load_yaml"] {
+		c.writeln("static List<Map<String,Object>> loadYaml(String path) throws Exception {")
+		c.indent++
+		c.writeln("List<Map<String,Object>> list = new ArrayList<>();")
+		c.writeln("try (BufferedReader br = new BufferedReader(new FileReader(path))) {")
+		c.indent++
+		c.writeln("Map<String,Object> cur = null;")
+		c.writeln("String line;")
+		c.writeln("while ((line = br.readLine()) != null) {")
+		c.indent++
+		c.writeln("line = line.trim();")
+		c.writeln("if (line.startsWith(\"- name:\")) {")
+		c.indent++
+		c.writeln("if (cur != null) list.add(cur);")
+		c.writeln("cur = new LinkedHashMap<>();")
+		c.writeln("cur.put(\"name\", line.substring(line.indexOf(':')+1).trim());")
+		c.indent--
+		c.writeln("} else if (line.startsWith(\"age:\")) {")
+		c.indent++
+		c.writeln("if (cur != null) cur.put(\"age\", Integer.parseInt(line.substring(line.indexOf(':')+1).trim()));")
+		c.indent--
+		c.writeln("} else if (line.startsWith(\"email:\")) {")
+		c.indent++
+		c.writeln("if (cur != null) cur.put(\"email\", line.substring(line.indexOf(':')+1).trim());")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("}")
+		c.writeln("if (cur != null) list.add(cur);")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return list;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.helpers["save_jsonl"] {
+		c.writeln("static void saveJsonl(List<Map<String,Object>> list) {")
+		c.indent++
+		c.writeln("for (Map<String,Object> m : list) {")
+		c.indent++
+		c.writeln("List<String> parts = new ArrayList<>();")
+		c.writeln("for (var e : m.entrySet()) { parts.add(\"\\\"\" + e.getKey() + \"\\\":\" + e.getValue()); }")
+		c.writeln("System.out.println(\"{\" + String.join(\",\", parts) + \"}\");")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("}")
+	}
 	c.writeln("public static void main(String[] args) {")
 	c.indent++
 	c.buf.Write(body.Bytes())
@@ -248,6 +299,22 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileIf(s.If)
 	case s.Fun != nil:
 		return c.compileLocalFun(s.Fun)
+	case s.Test != nil:
+		for _, st := range s.Test.Body {
+			if err := c.compileStmt(st); err != nil {
+				return err
+			}
+		}
+		return nil
+	case s.Expect != nil:
+		expr, err := c.compileExpr(s.Expect.Value)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("if (!(%s)) throw new AssertionError(\"expect failed\");", expr))
+		return nil
+	case s.Update != nil:
+		return c.compileUpdate(s.Update)
 	case s.Break != nil:
 		c.writeln("break;")
 		return nil
@@ -427,6 +494,9 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 	}
 	if p != nil && p.Struct != nil {
 		return p.Struct.Name
+	}
+	if p != nil && p.Load != nil {
+		return "List<Object>"
 	}
 	if p != nil && p.FunExpr != nil {
 		if len(p.FunExpr.Params) == 1 && p.FunExpr.Return != nil && p.FunExpr.Return.Simple != nil && *p.FunExpr.Return.Simple == "int" && p.FunExpr.Params[0].Type != nil && p.FunExpr.Params[0].Type.Simple != nil && *p.FunExpr.Params[0].Type.Simple == "int" {
@@ -1411,6 +1481,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return "", err
 		}
 		return "(" + expr + ")", nil
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	}
 	return "", fmt.Errorf("expression unsupported at line %d", p.Pos.Line)
 }
@@ -1788,4 +1862,50 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	b.WriteString("\treturn null;\n")
 	b.WriteString("}}).get()")
 	return b.String(), nil
+}
+
+func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
+	listType := c.vars[u.Target]
+	elemType := listElemType(listType)
+	iter := fmt.Sprintf("_it%d", c.tmpCount)
+	c.tmpCount++
+	c.writeln(fmt.Sprintf("for (%s %s : %s) {", elemType, iter, u.Target))
+	c.indent++
+	if u.Where != nil {
+		cond, err := c.compileExpr(u.Where)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("if (!(%s)) continue;", cond))
+	}
+	for _, it := range u.Set.Items {
+		val, err := c.compileExpr(it.Value)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("%s.%s = %s;", iter, it.Key.Value, val))
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
+	if l.Path == nil {
+		return "", fmt.Errorf("load path required")
+	}
+	c.helpers["load_yaml"] = true
+	return fmt.Sprintf("loadYaml(%q)", *l.Path), nil
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
+	if s.Path == nil || *s.Path == "-" {
+		c.helpers["save_jsonl"] = true
+		src, err := c.compileExpr(s.Src)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("saveJsonl(%s)", src), nil
+	}
+	return "", fmt.Errorf("save only supports stdout")
 }
