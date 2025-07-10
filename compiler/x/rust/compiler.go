@@ -46,7 +46,7 @@ func (c *Compiler) fieldType(e *parser.Expr) types.Type {
 		case "avg":
 			return types.FloatType{}
 		case "sum":
-			if _, ok := at.(types.FloatType); ok {
+			if _, ok := at.(types.FloatType); ok || c.exprHasFloat(arg) {
 				return types.FloatType{}
 			}
 			return types.IntType{}
@@ -106,6 +106,97 @@ func (c *Compiler) fieldType(e *parser.Expr) types.Type {
 		}
 	}
 	return types.TypeOfExprBasic(e, c.env)
+}
+
+func (c *Compiler) exprHasFloat(e *parser.Expr) bool {
+	if e == nil {
+		return false
+	}
+	if _, ok := types.TypeOfExprBasic(e, c.env).(types.FloatType); ok {
+		return true
+	}
+	if e.Binary != nil {
+		if c.unaryHasFloat(e.Binary.Left) {
+			return true
+		}
+		for _, op := range e.Binary.Right {
+			if c.postfixHasFloat(op.Right) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (c *Compiler) unaryHasFloat(u *parser.Unary) bool {
+	if u == nil {
+		return false
+	}
+	if c.postfixHasFloat(u.Value) {
+		return true
+	}
+	return false
+}
+
+func (c *Compiler) postfixHasFloat(p *parser.PostfixExpr) bool {
+	if p == nil {
+		return false
+	}
+	if c.primaryHasFloat(p.Target) {
+		return true
+	}
+	for _, op := range p.Ops {
+		if op.Index != nil {
+			if c.exprHasFloat(op.Index.Start) || c.exprHasFloat(op.Index.End) {
+				return true
+			}
+		} else if op.Call != nil {
+			for _, a := range op.Call.Args {
+				if c.exprHasFloat(a) {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+func (c *Compiler) primaryHasFloat(p *parser.Primary) bool {
+	if p == nil {
+		return false
+	}
+	if _, ok := types.TypeOfPrimaryBasic(p, c.env).(types.FloatType); ok {
+		return true
+	}
+	switch {
+	case p.Group != nil:
+		return c.exprHasFloat(p.Group)
+	case p.If != nil:
+		return c.exprHasFloat(p.If.Then) || c.exprHasFloat(p.If.Else) || c.exprHasFloat(p.If.Cond)
+	case p.List != nil:
+		for _, e2 := range p.List.Elems {
+			if c.exprHasFloat(e2) {
+				return true
+			}
+		}
+	case p.Map != nil:
+		for _, it := range p.Map.Items {
+			if c.exprHasFloat(it.Value) {
+				return true
+			}
+		}
+	case p.Struct != nil:
+		for _, f := range p.Struct.Fields {
+			if c.exprHasFloat(f.Value) {
+				return true
+			}
+		}
+	case p.FunExpr != nil:
+		if p.FunExpr.ExprBody != nil {
+			return c.exprHasFloat(p.FunExpr.ExprBody)
+		}
+	}
+	return false
 }
 
 func usesIdentExpr(e *parser.Expr, name string) bool {
@@ -615,6 +706,13 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 				return err
 			}
 			c.writeln(fmt.Sprintf("let %s = %s;", l.Name, code))
+			if c.env != nil {
+				if structName, ok2 := c.listVars[l.Name]; ok2 {
+					if st, ok3 := c.structs[structName]; ok3 {
+						c.env.SetVar(l.Name, types.ListType{Elem: st}, false)
+					}
+				}
+			}
 			if c.inMain && c.indent == 1 {
 				c.globals[l.Name] = true
 			}
@@ -671,6 +769,13 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 				return err
 			}
 			c.writeln(fmt.Sprintf("let mut %s = %s;", v.Name, code))
+			if c.env != nil {
+				if structName, ok2 := c.listVars[v.Name]; ok2 {
+					if st, ok3 := c.structs[structName]; ok3 {
+						c.env.SetVar(v.Name, types.ListType{Elem: st}, true)
+					}
+				}
+			}
 			if c.inMain && c.indent == 1 {
 				c.globals[v.Name] = true
 			}
