@@ -1,7 +1,13 @@
 import java.util.*;
+class DataClass1 {
+	int a;
+	DataClass1(int a) {
+		this.a = a;
+	}
+}
 public class Main {
 	static List<Integer> xs = new ArrayList<>(java.util.Arrays.asList(1, 2, 3));
-	static List<Object> ys = (new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
+	static List<Object> ys = (new java.util.function.Supplier<List<Object>>(){public List<Object> get(){
 	List<Object> _res1 = new ArrayList<>();
 	for (var x : xs) {
 		if (!(Objects.equals(x % 2, 1))) continue;
@@ -9,14 +15,8 @@ public class Main {
 	}
 	return _res1;
 }}).get();
-	static Map<String,Integer> m = mapOfEntries(entry("a", 1));
+	static DataClass1 m = new DataClass1(1);
 	static String s = "hello";
-	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
-	static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {
-		LinkedHashMap<K,V> m = new LinkedHashMap<>();
-		for (var e : entries) m.put(e.getKey(), e.getValue());
-		return m;
-	}
 	static boolean inOp(Object item, Object collection) {
 		if (collection instanceof Map<?,?> m) return m.containsKey(item);
 		if (collection instanceof Collection<?> c) return c.contains(item);

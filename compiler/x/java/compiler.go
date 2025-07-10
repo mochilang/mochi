@@ -790,9 +790,6 @@ func (c *Compiler) compileGlobalVar(v *parser.VarStmt) error {
 		if isListLiteral(v.Value) != nil {
 			expr = fmt.Sprintf("new ArrayList<>(%s)", expr)
 		}
-		if isQueryExpr(v.Value) && typ != "int" {
-			typ = "List<Object>"
-		}
 	}
 	if typ == "var" {
 		typ = "Object"
@@ -817,9 +814,7 @@ func (c *Compiler) compileGlobalLet(v *parser.LetStmt) error {
 		if isListLiteral(v.Value) != nil {
 			expr = fmt.Sprintf("new ArrayList<>(%s)", expr)
 		}
-		if isQueryExpr(v.Value) && typ != "int" {
-			typ = "List<Object>"
-		} else if typ == "var" {
+		if typ == "var" {
 			typ = "Object"
 		}
 	}
@@ -954,7 +949,7 @@ func (c *Compiler) dataClassFor(m *parser.MapLiteral) string {
 }
 
 func (c *Compiler) compileDataClass(dc *dataClass) {
-	c.writeln(fmt.Sprintf("static class %s {", dc.name))
+	c.writeln(fmt.Sprintf("class %s {", dc.name))
 	c.indent++
 	var params []string
 	for i, f := range dc.fields {
@@ -1154,9 +1149,7 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 		} else if ml := isMapLiteral(v.Value); ml != nil && c.dataClassFor(ml) == "" && !isMapLitCastToStructExpr(v.Value) {
 			expr = fmt.Sprintf("new HashMap<>(%s)", expr)
 		}
-		if isQueryExpr(v.Value) && typ != "int" {
-			typ = "List<Object>"
-		} else if typ == "var" {
+		if typ == "var" {
 			typ = "Object"
 		}
 	}
@@ -1182,9 +1175,7 @@ func (c *Compiler) compileLet(v *parser.LetStmt) error {
 		} else if ml := isMapLiteral(v.Value); ml != nil && c.dataClassFor(ml) == "" && !isMapLitCastToStructExpr(v.Value) {
 			expr = fmt.Sprintf("new HashMap<>(%s)", expr)
 		}
-		if isQueryExpr(v.Value) {
-			typ = "List<Object>"
-		} else if typ == "var" {
+		if typ == "var" {
 			typ = "Object"
 		}
 	}
@@ -1288,13 +1279,26 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 			if strings.Contains(src, ".get(") {
 				src = fmt.Sprintf("(List)%s", src)
 			}
-			c.writeln(fmt.Sprintf("for (var %s : %s) {", f.Name, src))
+			elemType := listElemType(c.inferType(f.Source))
+			if elemType == "" {
+				elemType = "var"
+			}
+			c.writeln(fmt.Sprintf("for (%s %s : %s) {", elemType, f.Name, src))
 		}
 		c.indent++
+		prev := c.vars[f.Name]
+		if t := listElemType(c.inferType(f.Source)); t != "" {
+			c.vars[f.Name] = t
+		}
 		for _, s := range f.Body {
 			if err := c.compileStmt(s); err != nil {
 				return err
 			}
+		}
+		if prev == "" {
+			delete(c.vars, f.Name)
+		} else {
+			c.vars[f.Name] = prev
 		}
 		c.indent--
 		c.writeln("}")
@@ -2031,6 +2035,11 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 
 	resVar := fmt.Sprintf("_res%d", c.tmpCount)
 	c.tmpCount++
+	resultElem := c.inferType(q.Select)
+	if resultElem == "var" {
+		resultElem = "Object"
+	}
+	listType := fmt.Sprintf("List<%s>", wrapperType(resultElem))
 
 	groupsVar := ""
 	if q.Group != nil {
@@ -2065,8 +2074,8 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			tmpList := fmt.Sprintf("_tmp%d", c.tmpCount)
 			c.tmpCount++
 			var b strings.Builder
-			b.WriteString("(new java.util.function.Supplier<List<Object>>() {public List<Object> get() {\n")
-			b.WriteString(fmt.Sprintf("\tList<Object> %s = new ArrayList<>();\n", resVar))
+			b.WriteString(fmt.Sprintf("(new java.util.function.Supplier<%s>(){public %s get(){\n", listType, listType))
+			b.WriteString(fmt.Sprintf("\t%s %s = new ArrayList<>();\n", listType, resVar))
 			if *j.Side == "outer" {
 				b.WriteString("\tjava.util.Set<Object> _matched = new java.util.HashSet<>();\n")
 			}
@@ -2133,10 +2142,10 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	}
 
 	var b strings.Builder
-	b.WriteString("(new java.util.function.Supplier<List<Object>>() {public List<Object> get() {\n")
-	b.WriteString(fmt.Sprintf("\tList<Object> %s = new ArrayList<>();\n", resVar))
+	b.WriteString(fmt.Sprintf("(new java.util.function.Supplier<%s>(){public %s get(){\n", listType, listType))
+	b.WriteString(fmt.Sprintf("\t%s %s = new ArrayList<>();\n", listType, resVar))
 	if groupsVar != "" {
-		b.WriteString(fmt.Sprintf("\tMap<Object,List<Object>> %s = new LinkedHashMap<>();\n", groupsVar))
+		b.WriteString(fmt.Sprintf("\tMap<Object,List<%s>> %s = new LinkedHashMap<>();\n", elemType, groupsVar))
 	}
 	indent := "\t"
 	b.WriteString(fmt.Sprintf("%sfor (var %s : %s) {\n", indent, q.Var, src))
@@ -2233,7 +2242,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		c.vars[keyVar] = c.inferType(q.Group.Exprs[0])
 		bucketVar := fmt.Sprintf("_b%d", c.tmpCount)
 		c.tmpCount++
-		b.WriteString(fmt.Sprintf("%sList<Object> %s = %s.get(%s);\n", indent, bucketVar, groupsVar, keyVar))
+		b.WriteString(fmt.Sprintf("%sList<%s> %s = %s.get(%s);\n", indent, elemType, bucketVar, groupsVar, keyVar))
 		b.WriteString(fmt.Sprintf("%sif (%s == null) { %s = new ArrayList<>(); %s.put(%s, %s); }\n", indent, bucketVar, bucketVar, groupsVar, keyVar, bucketVar))
 		b.WriteString(fmt.Sprintf("%s%s.add(%s);\n", indent, bucketVar, rowVar))
 	} else {
@@ -2263,10 +2272,10 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		gName := q.Group.Name
 		keyVar := fmt.Sprintf("%s_key", gName)
 		c.groupKeys[gName] = keyVar
-		c.vars[gName] = "List<Object>"
+		c.vars[gName] = fmt.Sprintf("List<%s>", elemType)
 		b.WriteString(fmt.Sprintf("\tfor (var __e : %s.entrySet()) {\n", groupsVar))
 		b.WriteString(fmt.Sprintf("\t\tObject %s = __e.getKey();\n", keyVar))
-		b.WriteString(fmt.Sprintf("\t\tList<Object> %s = __e.getValue();\n", gName))
+		b.WriteString(fmt.Sprintf("\t\tList<%s> %s = __e.getValue();\n", elemType, gName))
 		if q.Group.Having != nil {
 			cond, err := c.compileExpr(q.Group.Having)
 			if err != nil {

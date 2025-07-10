@@ -1,0 +1,16 @@
+line 0: javac error: exit status 1
+/tmp/TestCompileValidProgramsbreak_continue417171151/001/Main.java:6: error: bad operand types for binary operator '%'
+		if (Objects.equals(n % 2, 0)) {
+		                     ^
+  first type:  Object
+  second type: int
+/tmp/TestCompileValidProgramsbreak_continue417171151/001/Main.java:9: error: bad operand types for binary operator '>'
+		if (n > 7) {
+		      ^
+  first type:  Object
+  second type: int
+2 errors
+
+
+  1| let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+  2| 

@@ -1,0 +1,8 @@
+line 0: run error: exit status 1
+--- Orders with customer info ---
+Exception in thread "main" java.lang.ClassCastException: class DataClass3 cannot be cast to class java.util.Map (DataClass3 is in unnamed module of loader 'app'; java.util.Map is in module java.base of loader 'bootstrap')
+	at Main.main(Main.java:46)
+
+
+  1| // inner_join.mochi
+  2| let customers = [
