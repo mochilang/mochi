@@ -2665,6 +2665,44 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 		}
 	}
 
+	if agg, arg, ok := c.aggregateCall(q.Select); ok && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		argT := c.exprType(arg)
+		listArg := types.ListType{Elem: argT}
+		listC := cTypeFromType(listArg)
+		if listC == "" {
+			listC = "list_int"
+		}
+		if listC == "list_string" {
+			c.need(needListString)
+		} else if listC == "list_float" {
+			c.need(needListFloat)
+		} else if listC == "list_list_int" {
+			c.need(needListListInt)
+		}
+
+		tmp := c.newTemp()
+		idxTmp := c.newTemp()
+		iter := c.newTemp()
+		c.writeln(fmt.Sprintf("%s %s = %s_create(%s.len);", listC, tmp, listC, src))
+		c.writeln(fmt.Sprintf("int %s = 0;", idxTmp))
+		c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", iter, iter, src, iter))
+		c.indent++
+		c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", elemC, sanitizeName(q.Var), src, iter))
+		if cond != "" {
+			c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", cond))
+		}
+		val := c.compileExpr(arg)
+		c.writeln(fmt.Sprintf("%s.data[%s] = %s;", tmp, idxTmp, val))
+		c.writeln(fmt.Sprintf("%s++;", idxTmp))
+		c.indent--
+		c.writeln("}")
+		c.writeln(fmt.Sprintf("%s.len = %s;", tmp, idxTmp))
+		if c.env != nil {
+			c.env = oldEnv
+		}
+		return c.aggregateExpr(agg, tmp, argT)
+	}
+
 	val := c.compileExpr(q.Select)
 	retT := c.exprType(q.Select)
 	if hasStruct {
@@ -2783,6 +2821,71 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	c.indent--
 	c.writeln("}")
 	return nil
+}
+
+func (c *Compiler) aggregateCall(e *parser.Expr) (string, *parser.Expr, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", nil, false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) > 0 {
+		return "", nil, false
+	}
+	p := u.Value
+	if p.Target == nil || p.Target.Call == nil || len(p.Ops) > 0 {
+		return "", nil, false
+	}
+	call := p.Target.Call
+	if len(call.Args) != 1 {
+		return "", nil, false
+	}
+	switch call.Func {
+	case "sum", "avg", "min", "max", "count", "len":
+		return call.Func, call.Args[0], true
+	}
+	return "", nil, false
+}
+
+func (c *Compiler) aggregateExpr(name, list string, elem types.Type) string {
+	switch name {
+	case "count", "len":
+		return fmt.Sprintf("%s.len", list)
+	case "sum":
+		switch elem.(type) {
+		case types.FloatType, types.IntType, types.BoolType:
+			return fmt.Sprintf("({ double sum=0; for(int i=0;i<%s.len;i++) sum+=%s.data[i]; sum; })", list, list)
+		}
+		c.need(needSumInt)
+		return fmt.Sprintf("_sum_int(%s)", list)
+	case "avg":
+		switch elem.(type) {
+		case types.FloatType, types.IntType, types.BoolType:
+			return fmt.Sprintf("({ double sum=0; for(int i=0;i<%s.len;i++) sum+=%s.data[i]; sum/%s.len; })", list, list, list)
+		}
+		c.need(needAvg)
+		return fmt.Sprintf("_avg(%s)", list)
+	case "min":
+		switch elem.(type) {
+		case types.FloatType:
+			return fmt.Sprintf("({ double m=%s.len?%s.data[0]:0; for(int i=1;i<%s.len;i++) if(%s.data[i]<m) m=%s.data[i]; m; })", list, list, list, list, list)
+		case types.StringType:
+			c.need(needStringHeader)
+			return fmt.Sprintf("({ char* m=%s.len?%s.data[0]:\"\"; for(int i=1;i<%s.len;i++) if(strcmp(%s.data[i], m)<0) m=%s.data[i]; m; })", list, list, list, list, list)
+		default:
+			return fmt.Sprintf("({ int m=%s.len?%s.data[0]:0; for(int i=1;i<%s.len;i++) if(%s.data[i]<m) m=%s.data[i]; m; })", list, list, list, list, list)
+		}
+	case "max":
+		switch elem.(type) {
+		case types.FloatType:
+			return fmt.Sprintf("({ double m=%s.len?%s.data[0]:0; for(int i=1;i<%s.len;i++) if(%s.data[i]>m) m=%s.data[i]; m; })", list, list, list, list, list)
+		case types.StringType:
+			c.need(needStringHeader)
+			return fmt.Sprintf("({ char* m=%s.len?%s.data[0]:\"\"; for(int i=1;i<%s.len;i++) if(strcmp(%s.data[i], m)>0) m=%s.data[i]; m; })", list, list, list, list, list)
+		default:
+			return fmt.Sprintf("({ int m=%s.len?%s.data[0]:0; for(int i=1;i<%s.len;i++) if(%s.data[i]>m) m=%s.data[i]; m; })", list, list, list, list, list)
+		}
+	}
+	return list
 }
 
 func (c *Compiler) compileExpr(e *parser.Expr) string {
