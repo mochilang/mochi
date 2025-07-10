@@ -1163,7 +1163,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, bool, error) {
 		for i, v := range varNames {
 			fields[i] = fmt.Sprintf("%s-%s", v, v)
 		}
-		c.writeln(fmt.Sprintf("dict_create(%s, map, [%s]),", itemVar, strings.Join(fields, ", ")))
+		loops = append(loops, fmt.Sprintf("dict_create(%s, map, [%s])", itemVar, strings.Join(fields, ", ")))
 		pairVar := c.newTmp()
 		loops = append(loops, fmt.Sprintf("%s = %s-%s", pairVar, keyVar, itemVar))
 
