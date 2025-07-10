@@ -2485,6 +2485,36 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 				return fmt.Sprintf("std.debug.print(%q, .{})", *lit+"\n"), nil
 			}
 		}
+		if len(call.Args) > 0 && c.isStringLiteralExpr(call.Args[0]) {
+			format := *call.Args[0].Binary.Left.Value.Target.Lit.Str
+			args := []string{}
+			for _, a := range call.Args[1:] {
+				if c.isStringLiteralExpr(a) {
+					format += " " + *a.Binary.Left.Value.Target.Lit.Str
+					continue
+				}
+				v, err := c.compileExpr(a, false)
+				if err != nil {
+					return "", err
+				}
+				args = append(args, v)
+				switch c.inferExprType(a).(type) {
+				case types.StringType:
+					format += " {s}"
+				case types.IntType, types.Int64Type:
+					format += " {d}"
+				case types.BoolType:
+					format += " {}"
+				default:
+					format += " {any}"
+				}
+			}
+			format += "\n"
+			if len(args) == 0 {
+				return fmt.Sprintf("std.debug.print(%q, .{})", format), nil
+			}
+			return fmt.Sprintf("std.debug.print(%q, .{%s})", format, strings.Join(args, ", ")), nil
+		}
 		args := make([]string, len(call.Args))
 		fmtParts := make([]string, len(call.Args))
 		for i, a := range call.Args {
