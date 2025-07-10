@@ -411,9 +411,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "%{" + strings.Join(items, ", ") + "}", nil
 	case p.Selector != nil:
 		name := sanitizeName(p.Selector.Root)
+		if _, ok := c.attrs[p.Selector.Root]; ok {
+			name = "@" + name
+		}
 		if len(p.Selector.Tail) > 0 {
 			name += "." + strings.Join(p.Selector.Tail, ".")
-		} else if c.env != nil {
+			return name, nil
+		}
+		if c.env != nil {
 			if ut, ok := c.env.FindUnionByVariant(p.Selector.Root); ok {
 				st := ut.Variants[p.Selector.Root]
 				c.ensureStruct(st)
@@ -424,9 +429,6 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if st, ok := c.env.GetStruct(p.Selector.Root); ok && len(st.Order) == 0 {
 				c.ensureStruct(st)
 				return fmt.Sprintf("%%%s{}", sanitizeName(st.Name)), nil
-			}
-			if _, ok := c.attrs[p.Selector.Root]; ok {
-				return "@" + name, nil
 			}
 		}
 		return name, nil
