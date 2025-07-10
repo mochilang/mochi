@@ -1,5 +1,4 @@
 program len_builtin
   implicit none
-  integer :: arr(3) = (/1,2,3/)
-  print *, size(arr)
+  print *, size((/1,2,3/))
 end program len_builtin

@@ -1,6 +1,6 @@
 program string_contains
   implicit none
-  character(len=5) :: s
+  character(len=100) :: s
   s = 'catch'
   print *, index(s,'cat') /= 0
   print *, index(s,'dog') /= 0

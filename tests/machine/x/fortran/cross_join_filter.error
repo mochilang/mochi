@@ -1,0 +1,4 @@
+error: unsupported expression at line 3
+   2| let letters = ["A", "B"]
+   3| let pairs = from n in nums
+   4|             from l in letters

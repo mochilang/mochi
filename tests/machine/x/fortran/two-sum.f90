@@ -1,26 +1,26 @@
 program two_sum
   implicit none
-  integer :: nums(4) = (/2,7,11,15/)
-  integer :: result(2)
-  result = two_sum_func(nums, 9)
-  print *, result(1)
-  print *, result(2)
-contains
-  function two_sum_func(nums, target) result(res)
-    integer, intent(in) :: nums(:)
+  integer :: result
+    integer :: n
+    integer :: i
+      integer :: j
+  result = twoSum((/2,7,11,15/),9)
+  print *, result(((0)+1))
+  print *, result(((1)+1))
+  contains
+  recursive integer function twoSum(nums,target) result(res)
+    integer, intent(in) :: nums
     integer, intent(in) :: target
-    integer :: res(2)
-    integer :: i, j, n
     n = size(nums)
-    do i = 1, n
-      do j = i + 1, n
-        if (nums(i) + nums(j) == target) then
-          res(1) = i - 1
-          res(2) = j - 1
+    do i = 0, n
+      do j = (i + 1), n
+        if (((nums(((i)+1)) + nums(((j)+1))) == target)) then
+          res = (/i,j/)
           return
         end if
       end do
     end do
-    res = (/ -1, -1 /)
-  end function two_sum_func
+    res = (/-1,-1/)
+    return
+  end function twoSum
 end program two_sum

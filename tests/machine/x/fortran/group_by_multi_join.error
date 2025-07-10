@@ -1,45 +1,4 @@
-error: gfortran: exit status 1
-/workspace/mochi/tests/machine/x/fortran/group_by_multi_join.f90:19:31:
-
-   11 |   type :: PartSupp
-      |                  2             
-......
-   19 |   type(PartSupp) :: partsupp(3)
-      |                               1
-Error: Symbol ‘partsupp’ at (1) also declared as a type at (2)
-/workspace/mochi/tests/machine/x/fortran/group_by_multi_join.f90:37:22:
-
-   37 |       if (partsupp(i)%supplier == suppliers(j)%id) then
-      |                      1
-Error: The leftmost part-ref in a data-ref cannot be a function reference at (1)
-/workspace/mochi/tests/machine/x/fortran/group_by_multi_join.f90:40:28:
-
-   40 |             if (partsupp(i)%part == 100) total100 = total100 + partsupp(i)%cost*partsupp(i)%qty
-      |                            1
-Error: The leftmost part-ref in a data-ref cannot be a function reference at (1)
-/workspace/mochi/tests/machine/x/fortran/group_by_multi_join.f90:41:28:
-
-   41 |             if (partsupp(i)%part == 200) total200 = total200 + partsupp(i)%cost*partsupp(i)%qty
-      |                            1
-Error: The leftmost part-ref in a data-ref cannot be a function reference at (1)
-/workspace/mochi/tests/machine/x/fortran/group_by_multi_join.f90:44:9:
-
-   44 |       end if
-      |         1
-Error: Expecting END DO statement at (1)
-/workspace/mochi/tests/machine/x/fortran/group_by_multi_join.f90:29:3:
-
-   29 |   partsupp(1) = PartSupp(100,1,10.0,2)
-      |   1
-Error: No initializer for component ‘supplier’ given in the structure constructor at (1)
-/workspace/mochi/tests/machine/x/fortran/group_by_multi_join.f90:30:3:
-
-   30 |   partsupp(2) = PartSupp(100,2,20.0,1)
-      |   1
-Error: No initializer for component ‘supplier’ given in the structure constructor at (1)
-/workspace/mochi/tests/machine/x/fortran/group_by_multi_join.f90:31:3:
-
-   31 |   partsupp(3) = PartSupp(200,1,5.0,3)
-      |   1
-Error: No initializer for component ‘supplier’ given in the structure constructor at (1)
-
+error: unsupported expression at line 2
+   1| let nations = [
+   2|   { id: 1, name: "A" },
+   3|   { id: 2, name: "B" }

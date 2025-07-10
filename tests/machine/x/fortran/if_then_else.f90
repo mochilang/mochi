@@ -1,12 +1,14 @@
 program if_then_else
   implicit none
   integer :: x
-  character(len=3) :: msg
+  character(len=100) :: msg
+  character(len=100) :: tmp0
   x = 12
-  if (x > 10) then
-    msg = 'yes'
+  if ((x > 10)) then
+    tmp0 = 'yes'
   else
-    msg = 'no '
+    tmp0 = 'no'
   end if
-  print *, trim(msg)
+  msg = tmp0
+  print *, msg
 end program if_then_else

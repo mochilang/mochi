@@ -1,6 +1,6 @@
 program string_index
   implicit none
-  character(len=5) :: s
+  character(len=100) :: s
   s = 'mochi'
-  print *, s(2:2)
+  print *, s((1)+1:(1)+1)
 end program string_index

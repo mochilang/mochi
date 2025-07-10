@@ -1,1 +1,3 @@
-map[a:0 b:5] map[a:1 b:1] map[a:1 b:2]
+a=           0 b=           5
+ a=           1 b=           1
+ a=           1 b=           2

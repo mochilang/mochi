@@ -1,5 +1,4 @@
 program len_string
   implicit none
-  character(len=*), parameter :: s = 'foo'
-  print *, len(s)
+  print *, len('mochi')
 end program len_string

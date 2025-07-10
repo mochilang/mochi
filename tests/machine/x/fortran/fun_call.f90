@@ -1,9 +1,11 @@
 program fun_call
   implicit none
   print *, add(2,3)
-contains
-  integer function add(a,b)
-    integer, intent(in) :: a,b
-    add = a + b
+  contains
+  recursive integer function add(a,b) result(res)
+    integer, intent(in) :: a
+    integer, intent(in) :: b
+    res = (a + b)
+    return
   end function add
 end program fun_call
