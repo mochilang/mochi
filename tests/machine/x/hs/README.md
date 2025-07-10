@@ -110,3 +110,4 @@ while failures have a `.error` log.
 - [ ] Add map and struct operations needed for JSON helpers.
 - [ ] Finish runtime features for update statements and YAML loading.
 - [ ] Improve query output formatting beyond `_showAny` helpers.
+- [ ] Generate `.out` files once Haskell dependencies are available.

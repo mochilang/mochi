@@ -141,14 +141,8 @@ _fetch url _
         Nothing -> error "failed to decode JSON"
 `
 
-const loadRuntime = `
+const anyValueRuntime = `
 data AnyValue = VInt Int | VDouble Double | VString String | VBool Bool deriving (Show)
-
-instance Aeson.ToJSON AnyValue where
-  toJSON (VInt n) = Aeson.toJSON n
-  toJSON (VDouble d) = Aeson.toJSON d
-  toJSON (VString s) = Aeson.toJSON s
-  toJSON (VBool b) = Aeson.toJSON b
 
 _asInt :: AnyValue -> Int
 _asInt (VInt n) = n
@@ -171,6 +165,14 @@ _showAny (VInt n) = show n
 _showAny (VDouble d) = show d
 _showAny (VString s) = s
 _showAny (VBool b) = if b then "true" else "false"
+`
+
+const loadRuntime = `
+instance Aeson.ToJSON AnyValue where
+  toJSON (VInt n) = Aeson.toJSON n
+  toJSON (VDouble d) = Aeson.toJSON d
+  toJSON (VString s) = Aeson.toJSON s
+  toJSON (VBool b) = Aeson.toJSON b
 
 _parseJSON :: String -> [Map.Map String String]
 _parseJSON text =
