@@ -1,0 +1,99 @@
+// 24 Game implementation in Mochi based on Go example
+
+fun rand1to9(): int {
+  return (now() % 9) + 1
+}
+
+fun absf(x: float): float {
+  if x < 0.0 { return -x }
+  return x
+}
+
+fun dropLast(xs: list<float>): list<float> {
+  var out: list<float> = []
+  var i = 0
+  while i < len(xs)-1 {
+    out = append(out, xs[i])
+    i = i + 1
+  }
+  return out
+}
+
+fun toDigit(ch: string): int {
+  let m = {"0":0,"1":1,"2":2,"3":3,"4":4,"5":5,"6":6,"7":7,"8":8,"9":9}
+  if ch in m { return m[ch] }
+  return -1
+}
+
+var digits: list<int> = []
+var i = 0
+while i < 4 {
+  digits = append(digits, rand1to9())
+  i = i + 1
+}
+var numsStr = str(digits[0]) + " " + str(digits[1]) + " " + str(digits[2]) + " " + str(digits[3])
+print("Your numbers: " + numsStr)
+print("Enter RPN: ")
+var expr = input()
+if len(expr) != 7 {
+  print("invalid. expression length must be 7. (4 numbers, 3 operators, no spaces)")
+}
+
+var used: list<bool> = [false, false, false, false]
+var stack: list<float> = []
+var idx = 0
+while idx < len(expr) {
+  let ch = substring(expr, idx, idx+1)
+  let d = toDigit(ch)
+  if d >= 0 {
+    var found = false
+    var j = 0
+    var free = false
+    while j < 4 {
+      if !used[j] { free = true }
+      if !used[j] && digits[j] == d {
+        used[j] = true
+        found = true
+        break
+      }
+      j = j + 1
+    }
+    if !found {
+      if free {
+        print("wrong numbers.")
+      } else {
+        print("too many numbers.")
+      }
+    } else {
+      stack = append(stack, d as float)
+    }
+  } else {
+    if len(stack) < 2 {
+      print("invalid expression syntax.")
+    } else {
+      let b = stack[len(stack)-1]
+      let a = stack[len(stack)-2]
+      var res = 0.0
+      if ch == "+" {
+        res = a + b
+      } else if ch == "-" {
+        res = a - b
+      } else if ch == "*" {
+        res = a * b
+      } else if ch == "/" {
+        res = a / b
+      } else {
+        print(ch + " invalid.")
+      }
+      stack[len(stack)-2] = res
+      stack = dropLast(stack)
+    }
+  }
+  idx = idx + 1
+}
+
+if len(stack) != 1 || absf(stack[0] - 24.0) > 0.000001 {
+  print("incorrect. " + str(stack[0]) + " != 24")
+} else {
+  print("correct.")
+}
