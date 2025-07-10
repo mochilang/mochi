@@ -16,14 +16,19 @@ func _json(_ v: Any) {
         print(s)
     }
 }
-var people = [["name": "Alice", "city": "Paris"], ["name": "Bob", "city": "Hanoi"], ["name": "Charlie", "city": "Paris"], ["name": "Diana", "city": "Hanoi"], ["name": "Eve", "city": "Paris"], ["name": "Frank", "city": "Hanoi"], ["name": "George", "city": "Paris"]]
+struct Auto1: Equatable {
+    var city: String
+    var name: String
+}
+
+var people = [Auto1(city: "Paris", name: "Alice"), Auto1(city: "Hanoi", name: "Bob"), Auto1(city: "Paris", name: "Charlie"), Auto1(city: "Hanoi", name: "Diana"), Auto1(city: "Paris", name: "Eve"), Auto1(city: "Hanoi", name: "Frank"), Auto1(city: "Paris", name: "George")]
 var big = { () -> [Any] in
-    var _groups: [AnyHashable:[[String:Any]]] = [:]
+    var _groups: [String:[Auto1]] = [:]
     for p in people {
-        let _k = p["city"] as! String
+        let _k = p.city
         _groups[_k, default: []].append(p)
     }
-    var _tmp: [(key: AnyHashable, items: [[String:Any]])] = []
+    var _tmp: [(key: String, items: [Auto1])] = []
     for (k, v) in _groups {
         _tmp.append((key: k, items: v))
     }

@@ -1,27 +1,44 @@
-var nations = [["id": 1, "name": "A"], ["id": 2, "name": "B"]]
-var suppliers = [["id": 1, "nation": 1], ["id": 2, "nation": 2]]
-var partsupp = [["part": 100, "supplier": 1, "cost": 10, "qty": 2], ["part": 100, "supplier": 2, "cost": 20, "qty": 1], ["part": 200, "supplier": 1, "cost": 5, "qty": 3]]
+struct Auto1: Equatable {
+    var id: Int
+    var name: String
+}
+
+struct Auto2: Equatable {
+    var id: Int
+    var nation: Int
+}
+
+struct Auto3: Equatable {
+    var cost: Double
+    var part: Int
+    var qty: Int
+    var supplier: Int
+}
+
+var nations = [Auto1(id: 1, name: "A"), Auto1(id: 2, name: "B")]
+var suppliers = [Auto2(id: 1, nation: 1), Auto2(id: 2, nation: 2)]
+var partsupp = [Auto3(cost: 10, part: 100, qty: 2, supplier: 1), Auto3(cost: 20, part: 100, qty: 1, supplier: 2), Auto3(cost: 5, part: 200, qty: 3, supplier: 1)]
 var filtered = ({
 	var _res: [[String:Any]] = []
 	for ps in partsupp {
 		for s in suppliers {
-			if !(s["id"] as! Int == ps["supplier"] as! Int) { continue }
+			if !(s.id == ps.supplier) { continue }
 			for n in nations {
-				if !(n["id"] as! Int == s["nation"] as! Int) { continue }
-				if !(n["name"] as! String == "A") { continue }
-				_res.append(["part": ps["part"] as! Int, "value": ps["cost"] as! Double * Double(ps["qty"] as! Int)])
+				if !(n.id == s.nation) { continue }
+				if !(n.name == "A") { continue }
+				_res.append(["part": ps.part, "value": ps.cost * ps.qty])
 			}
 		}
 	}
 	return _res
 }())
 var grouped = { () -> [Any] in
-    var _groups: [AnyHashable:[[String:Any]]] = [:]
+    var _groups: [Any:[[String:Any]]] = [:]
     for x in filtered {
         let _k = x["part"]!
         _groups[_k, default: []].append(x)
     }
-    var _tmp: [(key: AnyHashable, items: [[String:Any]])] = []
+    var _tmp: [(key: Any, items: [[String:Any]])] = []
     for (k, v) in _groups {
         _tmp.append((key: k, items: v))
     }

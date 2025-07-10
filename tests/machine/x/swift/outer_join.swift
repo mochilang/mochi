@@ -1,5 +1,16 @@
-var customers = [["id": 1, "name": "Alice"], ["id": 2, "name": "Bob"], ["id": 3, "name": "Charlie"], ["id": 4, "name": "Diana"]]
-var orders = [["id": 100, "customerId": 1, "total": 250], ["id": 101, "customerId": 2, "total": 125], ["id": 102, "customerId": 1, "total": 300], ["id": 103, "customerId": 5, "total": 80]]
+struct Auto1: Equatable {
+    var id: Int
+    var name: String
+}
+
+struct Auto2: Equatable {
+    var customerId: Int
+    var id: Int
+    var total: Int
+}
+
+var customers = [Auto1(id: 1, name: "Alice"), Auto1(id: 2, name: "Bob"), Auto1(id: 3, name: "Charlie"), Auto1(id: 4, name: "Diana")]
+var orders = [Auto2(customerId: 1, id: 100, total: 250), Auto2(customerId: 2, id: 101, total: 125), Auto2(customerId: 1, id: 102, total: 300), Auto2(customerId: 5, id: 103, total: 80)]
 var result = ({
 	var _res: [[String:Any]] = []
 	let _src = orders
@@ -8,7 +19,7 @@ var result = ({
 	for o in _src {
 		var _m = false
 		for (ri, c) in _join.enumerated() {
-			if !(o["customerId"] as! Int == c["id"] as! Int) { continue }
+			if !(o.customerId == c.id) { continue }
 			_matched[ri] = true
 			_m = true
 			_res.append(["order": o, "customer": c])

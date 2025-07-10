@@ -22,5 +22,10 @@ func _save(_ rows: [[String:Any]], path: String, opts: [String:Any]?) {
         }
     }
 }
-var people = [["name": "Alice", "age": 30], ["name": "Bob", "age": 25]]
+struct Auto1: Equatable {
+    var age: Int
+    var name: String
+}
+
+var people = [Auto1(age: 30, name: "Alice"), Auto1(age: 25, name: "Bob")]
 _save(people, path: "-", opts: ["format": "jsonl"])

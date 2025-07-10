@@ -2895,6 +2895,7 @@ func (c *compiler) recordMapFields(name string, e *parser.Expr) {
 				c.varTypes[name] = "list_" + st
 				c.swiftTypes[name] = "[" + st + "]"
 				c.autoStructs[st] = true
+				delete(c.mapFields, name)
 				return
 			}
 			c.mapFields[name] = c.mapFieldsFromLiteral(m)
@@ -2907,6 +2908,7 @@ func (c *compiler) recordMapFields(name string, e *parser.Expr) {
 			if st, ok2 := c.autoStructFromFields(fields); ok2 {
 				c.varTypes[name] = "list_" + st
 				c.swiftTypes[name] = "[" + st + "]"
+				delete(c.mapFields, name)
 			}
 		}
 	}

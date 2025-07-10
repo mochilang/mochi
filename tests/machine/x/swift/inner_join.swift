@@ -1,11 +1,22 @@
-var customers = [["id": 1, "name": "Alice"], ["id": 2, "name": "Bob"], ["id": 3, "name": "Charlie"]]
-var orders = [["id": 100, "customerId": 1, "total": 250], ["id": 101, "customerId": 2, "total": 125], ["id": 102, "customerId": 1, "total": 300], ["id": 103, "customerId": 4, "total": 80]]
+struct Auto1: Equatable {
+    var id: Int
+    var name: String
+}
+
+struct Auto2: Equatable {
+    var customerId: Int
+    var id: Int
+    var total: Int
+}
+
+var customers = [Auto1(id: 1, name: "Alice"), Auto1(id: 2, name: "Bob"), Auto1(id: 3, name: "Charlie")]
+var orders = [Auto2(customerId: 1, id: 100, total: 250), Auto2(customerId: 2, id: 101, total: 125), Auto2(customerId: 1, id: 102, total: 300), Auto2(customerId: 4, id: 103, total: 80)]
 var result = ({
 	var _res: [[String:Any]] = []
 	for o in orders {
 		for c in customers {
-			if !(o["customerId"] as! Int == c["id"] as! Int) { continue }
-			_res.append(["orderId": o["id"] as! Int, "customerName": c["name"] as! String, "total": o["total"] as! Int])
+			if !(o.customerId == c.id) { continue }
+			_res.append(["orderId": o.id, "customerName": c.name, "total": o.total])
 		}
 	}
 	return _res
