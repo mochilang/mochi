@@ -147,6 +147,14 @@ func isString(t types.Type) bool { _, ok := t.(types.StringType); return ok }
 func isList(t types.Type) bool   { _, ok := t.(types.ListType); return ok }
 func isMap(t types.Type) bool    { _, ok := t.(types.MapType); return ok }
 func isAny(t types.Type) bool    { _, ok := t.(types.AnyType); return ok }
+func isNumber(t types.Type) bool {
+	switch t.(type) {
+	case types.IntType, types.Int64Type, types.FloatType:
+		return true
+	default:
+		return false
+	}
+}
 
 func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
 	return types.ResolveTypeRef(t, c.env)
@@ -180,6 +188,21 @@ func (c *Compiler) isMapUnary(u *parser.Unary) bool {
 func (c *Compiler) isMapPostfix(p *parser.PostfixExpr) bool {
 	_, ok := c.inferPostfixType(p).(types.MapType)
 	return ok
+}
+
+func (c *Compiler) isNumberExpr(e *parser.Expr) bool {
+	t := c.inferExprType(e)
+	return isNumber(t)
+}
+
+func (c *Compiler) isNumberUnary(u *parser.Unary) bool {
+	t := c.inferUnaryType(u)
+	return isNumber(t)
+}
+
+func (c *Compiler) isNumberPostfix(p *parser.PostfixExpr) bool {
+	t := c.inferPostfixType(p)
+	return isNumber(t)
 }
 
 // listLiteral returns the ListLiteral contained in e if e is a simple list

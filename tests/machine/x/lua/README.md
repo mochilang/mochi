@@ -5,13 +5,6 @@ Each program was compiled and executed using the Lua compiler. Successful runs p
 
 Compiled programs: 97/97
 
-The custom `__print` helper has been removed. Generated code now uses Lua's
-native `print` function directly. Lists passed to `print` are detected and
-printed element by element to match Mochi's output.
-
-Set `MOCHI_LUAC` to the path of the Lua bytecode compiler if `luac` is not on
-the PATH. The compiler uses this tool for a basic syntax check.
-
 Checklist:
 - [x] append_builtin
 - [x] avg_builtin
@@ -36,9 +29,14 @@ Checklist:
 - [x] fun_expr_in_let
 - [x] fun_three_args
 - [x] group_by
+- [x] group_by_conditional_sum
 - [x] group_by_having
 - [x] group_by_join
 - [x] group_by_left_join
+- [x] group_by_multi_join
+- [x] group_by_multi_join_sort
+- [x] group_by_sort
+- [x] group_items_iteration
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
@@ -56,6 +54,8 @@ Checklist:
 - [x] list_assign
 - [x] list_index
 - [x] list_nested_assign
+- [x] list_set_ops
+- [x] load_yaml
 - [x] map_assign
 - [x] map_in_operator
 - [x] map_index
@@ -69,6 +69,7 @@ Checklist:
 - [x] membership
 - [x] min_max_builtin
 - [x] nested_function
+- [x] order_by_map
 - [x] outer_join
 - [x] partial_application
 - [x] print_hello
@@ -79,6 +80,8 @@ Checklist:
 - [x] right_join
 - [x] save_jsonl_stdout
 - [x] short_circuit
+- [x] slice
+- [x] sort_stable
 - [x] str_builtin
 - [x] string_compare
 - [x] string_concat
@@ -90,6 +93,7 @@ Checklist:
 - [x] sum_builtin
 - [x] tail_recursion
 - [x] test_block
+- [x] tree_sum
 - [x] two-sum
 - [x] typed_let
 - [x] typed_var
@@ -99,17 +103,3 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
-- [x] group_by_conditional_sum
-- [x] group_by_multi_join
-- [x] group_by_multi_join_sort
-- [x] group_by_sort
-- [x] group_items_iteration
-- [x] list_set_ops
-- [x] load_yaml
-- [x] order_by_map
-- [x] slice
-- [x] sort_stable
-- [x] tree_sum
-
-Remaining tasks:
-- [ ] None
