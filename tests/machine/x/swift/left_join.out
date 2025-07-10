@@ -82,5 +82,5 @@
 24 | }
 25 | 
 --- Left Join ---
-Order Optional(100) customer Optional(["name": "Alice", "id": 1]) total Optional(250)
+Order Optional(100) customer Optional(["id": 1, "name": "Alice"]) total Optional(250)
 Order Optional(101) customer Optional(nil) total Optional(80)

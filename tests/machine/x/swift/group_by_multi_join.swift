@@ -16,8 +16,15 @@ var filtered = ({
 	return _res
 }())
 var grouped = { () -> [Any] in
-    let _groups = Dictionary(grouping: filtered) { x in x["part"] }
-    var _tmp = _groups.map { (k, v) in (key: k, items: v) }
+    var _groups: [AnyHashable:[[String:Any]]] = [:]
+    for x in filtered {
+        let _k = x["part"]
+        _groups[_k, default: []].append(x)
+    }
+    var _tmp: [(key: AnyHashable, items: [[String:Any]])] = []
+    for (k, v) in _groups {
+        _tmp.append((key: k, items: v))
+    }
     return _tmp.map { g in (part: g.key, total: g.items.map { r in r["value"] }.reduce(0, +)) }
 }()
 print(grouped)

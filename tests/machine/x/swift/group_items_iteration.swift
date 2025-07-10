@@ -1,7 +1,14 @@
 var data = [["tag": "a", "val": 1], ["tag": "a", "val": 2], ["tag": "b", "val": 3]]
 var groups = { () -> [Any] in
-    let _groups = Dictionary(grouping: data) { d in d["tag"] as! String }
-    var _tmp = _groups.map { (k, v) in (key: k, items: v) }
+    var _groups: [AnyHashable:[[String:Any]]] = [:]
+    for d in data {
+        let _k = d["tag"] as! String
+        _groups[_k, default: []].append(d)
+    }
+    var _tmp: [(key: AnyHashable, items: [[String:Any]])] = []
+    for (k, v) in _groups {
+        _tmp.append((key: k, items: v))
+    }
     return _tmp.map { g in g }
 }()
 var tmp = []
