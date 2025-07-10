@@ -1889,6 +1889,16 @@ func (c *Compiler) discoverStructs(prog *parser.Program) {
 				c.env.SetStruct(structName, stype)
 				c.env.SetVar(name, types.ListType{Elem: stype}, mutable)
 				c.mapNodes[ml] = structName
+			} else if id, ok := identName(q.Select); ok && id == q.Var {
+				if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
+					c.env.SetVar(name, types.ListType{Elem: lt.Elem}, mutable)
+				}
+			} else {
+				if t := selectorType(q.Select, c.env); t != nil {
+					if st, ok := t.(types.StructType); ok {
+						c.env.SetVar(name, types.ListType{Elem: st}, mutable)
+					}
+				}
 			}
 		}
 	}
