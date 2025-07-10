@@ -69,6 +69,15 @@ func (c *Compiler) fieldType(e *parser.Expr) types.Type {
 			}
 		}
 	}
+	if c.env != nil {
+		if vt, err := c.env.GetVar(root); err == nil {
+			if st, ok := vt.(types.StructType); ok {
+				if t, ok2 := st.Fields[field]; ok2 {
+					return t
+				}
+			}
+		}
+	}
 	return types.TypeOfExprBasic(e, c.env)
 }
 
@@ -464,7 +473,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		out.WriteString("fn _intersect<T: Eq + std::hash::Hash + Clone>(a: Vec<T>, b: Vec<T>) -> Vec<T> {\n    use std::collections::HashSet;\n    let set: HashSet<T> = b.into_iter().collect();\n    a.into_iter().filter(|x| set.contains(x)).collect()\n}\n\n")
 	}
 	if c.helpers["_load"] {
-		out.WriteString("fn _load<T: serde::de::DeserializeOwned>(path: &str, _opts: std::collections::HashMap<String, String>) -> Vec<T> {\n    use std::io::Read;\n    let mut data = String::new();\n    if path.is_empty() || path == \"-\" {\n        std::io::stdin().read_to_string(&mut data).unwrap();\n    } else if let Ok(mut f) = std::fs::File::open(path) {\n        f.read_to_string(&mut data).unwrap();\n    }\n    if let Ok(v) = serde_json::from_str::<Vec<T>>(&data) { return v; }\n    if let Ok(v) = serde_json::from_str::<T>(&data) { return vec![v]; }\n    Vec::new()\n}\n\n")
+		out.WriteString("fn _load<T: serde::de::DeserializeOwned>(path: &str, _opts: std::collections::HashMap<String, String>) -> Vec<T> {\n    use std::io::Read;\n    let mut data = String::new();\n    if path.is_empty() || path == \"-\" {\n        std::io::stdin().read_to_string(&mut data).unwrap();\n    } else if let Ok(mut f) = std::fs::File::open(path) {\n        f.read_to_string(&mut data).unwrap();\n    }\n    let fmt = _opts.get(\"format\").map(String::as_str);\n    if let Some(\"yaml\") = fmt {\n        if let Ok(v) = serde_yaml::from_str::<Vec<T>>(&data) { return v; }\n        if let Ok(v) = serde_yaml::from_str::<T>(&data) { return vec![v]; }\n    }\n    if let Ok(v) = serde_json::from_str::<Vec<T>>(&data) { return v; }\n    if let Ok(v) = serde_json::from_str::<T>(&data) { return vec![v]; }\n    Vec::new()\n}\n\n")
 	}
 	if c.helpers["_save"] {
 		out.WriteString("fn _save<T: serde::Serialize>(src: &[T], path: &str, _opts: std::collections::HashMap<String, String>) {\n    if let Ok(text) = serde_json::to_string(src) {\n        if path.is_empty() || path == \"-\" {\n            println!(\"{}\", text);\n        } else {\n            std::fs::write(path, text).unwrap();\n        }\n    }\n}\n\n")
@@ -1372,7 +1381,20 @@ func (c *Compiler) compileGroupBySimple(q *parser.QueryExpr, src string, child *
 
 	var sortExpr string
 	if q.Sort != nil {
-		sortExpr, err = c.compileExpr(q.Sort)
+		if ml := tryMapLiteral(q.Sort); ml != nil {
+			var ok bool
+			sortExpr, ok, err = c.compileMapLiteralAsTuple(ml)
+			if err != nil {
+				c.popGroupVar()
+				c.env = orig
+				return "", err
+			}
+			if !ok {
+				sortExpr, err = c.compileExpr(q.Sort)
+			}
+		} else {
+			sortExpr, err = c.compileExpr(q.Sort)
+		}
 		if err != nil {
 			c.popGroupVar()
 			c.env = orig
@@ -1596,7 +1618,20 @@ func (c *Compiler) compileGroupByJoin(q *parser.QueryExpr, src string, child *ty
 
 	var sortExpr string
 	if q.Sort != nil {
-		sortExpr, err = c.compileExpr(q.Sort)
+		if ml := tryMapLiteral(q.Sort); ml != nil {
+			var ok bool
+			sortExpr, ok, err = c.compileMapLiteralAsTuple(ml)
+			if err != nil {
+				c.popGroupVar()
+				c.env = orig
+				return "", err
+			}
+			if !ok {
+				sortExpr, err = c.compileExpr(q.Sort)
+			}
+		} else {
+			sortExpr, err = c.compileExpr(q.Sort)
+		}
 		if err != nil {
 			c.popGroupVar()
 			c.env = orig
@@ -1684,7 +1719,19 @@ func (c *Compiler) compileLeftJoinSimple(q *parser.QueryExpr, src string, child 
 		}
 	}
 	if q.Sort != nil {
-		sortExpr, err = c.compileExpr(q.Sort)
+		if ml := tryMapLiteral(q.Sort); ml != nil {
+			var ok bool
+			sortExpr, ok, err = c.compileMapLiteralAsTuple(ml)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			if !ok {
+				sortExpr, err = c.compileExpr(q.Sort)
+			}
+		} else {
+			sortExpr, err = c.compileExpr(q.Sort)
+		}
 		if err != nil {
 			c.env = orig
 			return "", err
@@ -1812,7 +1859,19 @@ func (c *Compiler) compileRightJoinSimple(q *parser.QueryExpr, src string, child
 		}
 	}
 	if q.Sort != nil {
-		sortExpr, err = c.compileExpr(q.Sort)
+		if ml := tryMapLiteral(q.Sort); ml != nil {
+			var ok bool
+			sortExpr, ok, err = c.compileMapLiteralAsTuple(ml)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			if !ok {
+				sortExpr, err = c.compileExpr(q.Sort)
+			}
+		} else {
+			sortExpr, err = c.compileExpr(q.Sort)
+		}
 		if err != nil {
 			c.env = orig
 			return "", err
@@ -1940,7 +1999,19 @@ func (c *Compiler) compileLeftJoinLast(q *parser.QueryExpr, src string, child *t
 		}
 	}
 	if q.Sort != nil {
-		sortExpr, err = c.compileExpr(q.Sort)
+		if ml := tryMapLiteral(q.Sort); ml != nil {
+			var ok bool
+			sortExpr, ok, err = c.compileMapLiteralAsTuple(ml)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			if !ok {
+				sortExpr, err = c.compileExpr(q.Sort)
+			}
+		} else {
+			sortExpr, err = c.compileExpr(q.Sort)
+		}
 		if err != nil {
 			c.env = orig
 			return "", err
@@ -2214,7 +2285,19 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 	}
 	if q.Sort != nil {
-		sortExpr, err = c.compileExpr(q.Sort)
+		if ml := tryMapLiteral(q.Sort); ml != nil {
+			var ok bool
+			sortExpr, ok, err = c.compileMapLiteralAsTuple(ml)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			if !ok {
+				sortExpr, err = c.compileExpr(q.Sort)
+			}
+		} else {
+			sortExpr, err = c.compileExpr(q.Sort)
+		}
 		if err != nil {
 			c.env = orig
 			return "", err
@@ -2413,6 +2496,21 @@ func (c *Compiler) compileMapLiteralAsStruct(name string, m *parser.MapLiteral) 
 	c.structs[name] = st
 	c.genStructs = append(c.genStructs, st)
 	return fmt.Sprintf("%s { %s }", name, strings.Join(fields, ", ")), nil
+}
+
+func (c *Compiler) compileMapLiteralAsTuple(m *parser.MapLiteral) (string, bool, error) {
+	vals := make([]string, len(m.Items))
+	for i, it := range m.Items {
+		if _, ok := c.simpleKey(it.Key); !ok {
+			return "", false, nil
+		}
+		v, err := c.compileExpr(it.Value)
+		if err != nil {
+			return "", false, err
+		}
+		vals[i] = v
+	}
+	return "(" + strings.Join(vals, ", ") + ")", true, nil
 }
 
 func (c *Compiler) valueForKey(m *parser.MapLiteral, key string) *parser.Expr {
