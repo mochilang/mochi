@@ -30,6 +30,7 @@ type Compiler struct {
 	dataClasses       map[string]*dataClass
 	dataClassOrder    []string
 	srcDir            string
+	curVar            string
 }
 
 type dataClass struct {
@@ -58,6 +59,7 @@ func New() *Compiler {
 		variantFieldTypes: make(map[string][]string),
 		dataClasses:       make(map[string]*dataClass),
 		dataClassOrder:    []string{},
+		curVar:            "",
 	}
 }
 
@@ -495,6 +497,22 @@ func wrapperType(t string) string {
 	default:
 		return t
 	}
+}
+
+func classNameFromVar(s string) string {
+	if s == "" {
+		return ""
+	}
+	parts := strings.FieldsFunc(s, func(r rune) bool {
+		return r == '_' || r == '-' || r == ' '
+	})
+	for i, p := range parts {
+		if p == "" {
+			continue
+		}
+		parts[i] = strings.ToUpper(p[:1]) + p[1:]
+	}
+	return strings.Join(parts, "")
 }
 
 func mapValueType(t string) string {
@@ -981,6 +999,11 @@ func (c *Compiler) dataClassFor(m *parser.MapLiteral) string {
 		return dc.name
 	}
 	name := fmt.Sprintf("DataClass%d", len(c.dataClasses)+1)
+	if n := classNameFromVar(c.curVar); n != "" {
+		if c.dataClassByName(n) == nil {
+			name = n
+		}
+	}
 	var fields []string
 	var types []string
 	for _, it := range m.Items {
@@ -1012,6 +1035,12 @@ func (c *Compiler) rowDataClassFor(vars []string) string {
 		return dc.name
 	}
 	name := fmt.Sprintf("DataClass%d", len(c.dataClasses)+1)
+	if len(vars) > 0 {
+		n := classNameFromVar(strings.Join(vars, "_"))
+		if c.dataClassByName(n) == nil {
+			name = n
+		}
+	}
 	var fields, types []string
 	for _, v := range vars {
 		fields = append(fields, v)
@@ -1234,7 +1263,10 @@ func (c *Compiler) compileIfExpr(e *parser.IfExpr) (string, error) {
 
 func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	typ := c.typeName(v.Type)
+	orig := c.curVar
+	c.curVar = v.Name
 	expr, err := c.compileExpr(v.Value)
+	c.curVar = orig
 	if err != nil {
 		return err
 	}
@@ -1260,7 +1292,10 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 
 func (c *Compiler) compileLet(v *parser.LetStmt) error {
 	typ := c.typeName(v.Type)
+	orig := c.curVar
+	c.curVar = v.Name
 	expr, err := c.compileExpr(v.Value)
+	c.curVar = orig
 	if err != nil {
 		return err
 	}
@@ -1285,7 +1320,10 @@ func (c *Compiler) compileLet(v *parser.LetStmt) error {
 }
 
 func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
+	orig := c.curVar
+	c.curVar = a.Name
 	expr, err := c.compileExpr(a.Value)
+	c.curVar = orig
 	if err != nil {
 		return err
 	}
