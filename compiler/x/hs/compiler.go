@@ -194,10 +194,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	header.WriteString("{-# LANGUAGE DeriveGeneric #-}\n")
 	header.WriteString("module Main where\n\n")
 	header.WriteString("import Data.Maybe (fromMaybe)\n")
-	header.WriteString("import Data.Time.Clock.POSIX (getPOSIXTime)\n")
-	header.WriteString("import qualified Data.Map as Map\n")
-	header.WriteString("import Data.List (intercalate, isPrefixOf, isInfixOf)\n")
-	header.WriteString("import qualified Data.List as List\n")
+	if c.usesTime {
+		header.WriteString("import Data.Time.Clock.POSIX (getPOSIXTime)\n")
+	}
+	if c.usesMap || c.usesLoad || c.usesSave || c.usesFetch {
+		header.WriteString("import qualified Data.Map as Map\n")
+	}
+	if c.usesList || c.usesSlice || c.usesSliceStr || c.usesLoop || c.usesFetch {
+		header.WriteString("import Data.List (intercalate, isPrefixOf, isInfixOf)\n")
+		header.WriteString("import qualified Data.List as List\n")
+	}
 	if c.usesJSON || c.usesLoad || c.usesSave || c.usesFetch {
 		header.WriteString("import qualified Data.Aeson as Aeson\n")
 	}
