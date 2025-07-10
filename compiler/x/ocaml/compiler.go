@@ -17,6 +17,11 @@ type Compiler struct {
 	indent int
 	vars   map[string]bool // variables declared with 'var'
 
+	// generated anonymous struct types
+	structNames   map[string]string
+	anonStructs   []types.StructType
+	structCounter int
+
 	loop int
 	env  *types.Env
 	// flags to include runtime helpers
@@ -37,7 +42,11 @@ type Compiler struct {
 
 // New creates a compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{vars: make(map[string]bool), env: env}
+	return &Compiler{
+		vars:        make(map[string]bool),
+		env:         env,
+		structNames: make(map[string]string),
+	}
 }
 
 // Compile emits OCaml code for prog. Only a few constructs are supported.
@@ -46,9 +55,15 @@ func (c *Compiler) Compile(prog *parser.Program, _ string) ([]byte, error) {
 	c.indent = 0
 
 	c.vars = make(map[string]bool)
+	c.structNames = make(map[string]string)
+	c.anonStructs = nil
+	c.structCounter = 0
 
 	c.scanProgram(prog)
-	c.emitRuntime()
+
+	var body bytes.Buffer
+	oldBuf := c.buf
+	c.buf = body
 
 	// first emit type, function and variable declarations
 	for _, s := range prog.Statements {
@@ -88,6 +103,11 @@ func (c *Compiler) Compile(prog *parser.Program, _ string) ([]byte, error) {
 		c.writeln("()")
 	}
 	c.indent--
+	bodyBytes := c.buf.Bytes()
+	c.buf = oldBuf
+	c.emitRuntime()
+	c.emitAnonStructs()
+	c.buf.Write(bodyBytes)
 	return c.buf.Bytes(), nil
 }
 
@@ -163,6 +183,12 @@ func (c *Compiler) compileGlobalLet(l *parser.LetStmt) error {
 	typ := ""
 	if l.Type != nil {
 		typ = c.typeRef(l.Type)
+	} else if l.Value != nil {
+		t := types.ExprType(l.Value, c.env)
+		typGuess := c.ocamlType(t)
+		if typGuess != "" && typGuess != "Obj.t" {
+			typ = typGuess
+		}
 	}
 	if typ != "" {
 		c.writeln(fmt.Sprintf("let %s : %s = %s", l.Name, typ, val))
@@ -183,7 +209,16 @@ func (c *Compiler) compileGlobalVar(v *parser.VarStmt) error {
 	}
 	c.vars[v.Name] = true
 	typ, _ := c.env.GetVar(v.Name)
-	typStr := ocamlType(typ)
+	typStr := c.ocamlType(typ)
+	if typStr == "" || typStr == "Obj.t" {
+		if v.Value != nil {
+			t := types.ExprType(v.Value, c.env)
+			guess := c.ocamlType(t)
+			if guess != "" && guess != "Obj.t" {
+				typStr = guess
+			}
+		}
+	}
 	if typStr != "" {
 		c.writeln(fmt.Sprintf("let %s : %s ref = ref %s", v.Name, typStr, val))
 	} else {
@@ -204,6 +239,12 @@ func (c *Compiler) compileLocalLet(l *parser.LetStmt) error {
 	typ := ""
 	if l.Type != nil {
 		typ = c.typeRef(l.Type)
+	} else if l.Value != nil {
+		t := types.ExprType(l.Value, c.env)
+		guess := c.ocamlType(t)
+		if guess != "" && guess != "Obj.t" {
+			typ = guess
+		}
 	}
 	if typ != "" {
 		c.writeln(fmt.Sprintf("let %s : %s = %s in", l.Name, typ, val))
@@ -224,7 +265,16 @@ func (c *Compiler) compileLocalVar(v *parser.VarStmt) error {
 	}
 	c.vars[v.Name] = true
 	typ, _ := c.env.GetVar(v.Name)
-	typStr := ocamlType(typ)
+	typStr := c.ocamlType(typ)
+	if typStr == "" || typStr == "Obj.t" {
+		if v.Value != nil {
+			t := types.ExprType(v.Value, c.env)
+			guess := c.ocamlType(t)
+			if guess != "" && guess != "Obj.t" {
+				typStr = guess
+			}
+		}
+	}
 	if typStr != "" {
 		c.writeln(fmt.Sprintf("let %s : %s ref = ref %s in", v.Name, typStr, val))
 	} else {
@@ -1906,7 +1956,7 @@ func (c *Compiler) typeRef(t *parser.TypeRef) string {
 	return "unit"
 }
 
-func ocamlType(t types.Type) string {
+func (c *Compiler) ocamlType(t types.Type) string {
 	switch tt := t.(type) {
 	case types.IntType, types.Int64Type:
 		return "int"
@@ -1917,21 +1967,25 @@ func ocamlType(t types.Type) string {
 	case types.StringType:
 		return "string"
 	case types.ListType:
-		return ocamlType(tt.Elem) + " list"
+		return c.ocamlType(tt.Elem) + " list"
 	case types.MapType:
-		return fmt.Sprintf("(%s * Obj.t) list", ocamlType(tt.Key))
+		return fmt.Sprintf("(%s * Obj.t) list", c.ocamlType(tt.Key))
 	case types.GroupType:
-		return ocamlType(tt.Elem) + " list"
+		return c.ocamlType(tt.Elem) + " list"
 	case types.StructType:
-		return strings.ToLower(tt.Name)
+		name := tt.Name
+		if name == "" {
+			name = c.ensureStructName(tt)
+		}
+		return strings.ToLower(name)
 	case types.FuncType:
 		parts := make([]string, len(tt.Params))
 		for i, p := range tt.Params {
-			parts[i] = ocamlType(p)
+			parts[i] = c.ocamlType(p)
 		}
 		ret := "unit"
 		if tt.Return != nil {
-			ret = ocamlType(tt.Return)
+			ret = c.ocamlType(tt.Return)
 		}
 		parts = append(parts, ret)
 		return strings.Join(parts, " -> ")
@@ -1939,6 +1993,29 @@ func ocamlType(t types.Type) string {
 		return "unit"
 	}
 	return "Obj.t"
+}
+
+func (c *Compiler) structKey(st types.StructType) string {
+	var b strings.Builder
+	for _, f := range st.Order {
+		b.WriteString(f)
+		b.WriteString(":" + c.ocamlType(st.Fields[f]))
+		b.WriteByte(';')
+	}
+	return b.String()
+}
+
+func (c *Compiler) ensureStructName(st types.StructType) string {
+	key := c.structKey(st)
+	if name, ok := c.structNames[key]; ok {
+		return name
+	}
+	name := fmt.Sprintf("record%d", len(c.structNames)+1)
+	c.structNames[key] = name
+	newSt := st
+	newSt.Name = name
+	c.anonStructs = append(c.anonStructs, newSt)
+	return name
 }
 
 func (c *Compiler) writeln(s string) {
@@ -2328,6 +2405,19 @@ func (c *Compiler) emitRuntime() {
 	}
 
 	if c.needShow || c.needContains || c.needSlice || c.needStringSlice || c.needListSet || c.needMapSet || c.needMapGet || c.needListOps || c.needSum || c.needGroup || c.needLoop || c.needLoadYaml || c.needSaveJSONL {
+		c.buf.WriteByte('\n')
+	}
+}
+
+func (c *Compiler) emitAnonStructs() {
+	for _, st := range c.anonStructs {
+		fields := make([]string, len(st.Order))
+		for i, f := range st.Order {
+			fields[i] = fmt.Sprintf("mutable %s : %s", f, c.ocamlType(st.Fields[f]))
+		}
+		c.writeln(fmt.Sprintf("type %s = { %s }", strings.ToLower(st.Name), strings.Join(fields, "; ")))
+	}
+	if len(c.anonStructs) > 0 {
 		c.buf.WriteByte('\n')
 	}
 }
