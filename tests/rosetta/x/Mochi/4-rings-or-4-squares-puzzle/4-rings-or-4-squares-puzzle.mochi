@@ -1,0 +1,59 @@
+fun validComb(a: int, b: int, c: int, d: int, e: int, f: int, g: int): bool {
+  let square1 = a + b
+  let square2 = b + c + d
+  let square3 = d + e + f
+  let square4 = f + g
+  return square1 == square2 && square2 == square3 && square3 == square4
+}
+
+fun isUnique(a: int, b: int, c: int, d: int, e: int, f: int, g: int): bool {
+  var nums = [a,b,c,d,e,f,g]
+  var i = 0
+  while i < len(nums) {
+    var j = i + 1
+    while j < len(nums) {
+      if nums[i] == nums[j] { return false }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return true
+}
+
+fun getCombs(low: int, high: int, unique: bool): map<string, any> {
+  var valid = []
+  var count = 0
+  for b in low..(high + 1) {
+    for c in low..(high + 1) {
+      for d in low..(high + 1) {
+        let s = b + c + d
+        for e in low..(high + 1) {
+          for f in low..(high + 1) {
+            let a = s - b
+            let g = s - f
+            if a < low || a > high { continue }
+            if g < low || g > high { continue }
+            if d + e + f != s { continue }
+            if f + g != s { continue }
+            if !unique || isUnique(a,b,c,d,e,f,g) {
+              valid = append(valid, [a,b,c,d,e,f,g])
+              count = count + 1
+            }
+          }
+        }
+      }
+    }
+  }
+  return {"count": count, "list": valid}
+}
+
+let r1 = getCombs(1, 7, true)
+print(str(r1["count"]) + " unique solutions in 1 to 7")
+print(r1["list"])
+
+let r2 = getCombs(3, 9, true)
+print(str(r2["count"]) + " unique solutions in 3 to 9")
+print(r2["list"])
+
+let r3 = getCombs(0, 9, false)
+print(str(r3["count"]) + " non-unique solutions in 0 to 9")
