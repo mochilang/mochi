@@ -18,10 +18,10 @@ class DataClass2 {
 	}
 }
 class DataClass3 {
-	Object orderId;
-	Object customer;
-	Object total;
-	DataClass3(Object orderId, Object customer, Object total) {
+	int orderId;
+	DataClass1 customer;
+	int total;
+	DataClass3(int orderId, DataClass1 customer, int total) {
 		this.orderId = orderId;
 		this.customer = customer;
 		this.total = total;
@@ -48,8 +48,8 @@ public class Main {
 }}).get();
 	public static void main(String[] args) {
 	System.out.println("--- Left Join ---");
-	for (Object entry : result) {
-		System.out.println("Order" + " " + ((Map)entry).get("orderId") + " " + "customer" + " " + ((Map)entry).get("customer") + " " + "total" + " " + ((Map)entry).get("total"));
+	for (DataClass3 entry : result) {
+		System.out.println("Order" + " " + entry.orderId + " " + "customer" + " " + entry.customer + " " + "total" + " " + entry.total);
 	}
 	}
 }

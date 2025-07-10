@@ -1,7 +1,9 @@
-line 0: run error: exit status 1
---- Left Join Multi ---
-Exception in thread "main" java.lang.ClassCastException: class DataClass4 cannot be cast to class java.util.Map (DataClass4 is in unnamed module of loader 'app'; java.util.Map is in module java.base of loader 'bootstrap')
-	at Main.main(Main.java:62)
+line 0: javac error: exit status 1
+/tmp/TestCompileValidProgramsleft_join_multi2059969322/001/Main.java:53: error: incompatible types: Object cannot be converted to DataClass3
+				_res3.add(new DataClass4(o.id, c.name, i));
+				                                       ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+1 error
 
 
   1| let customers = [

@@ -30,8 +30,8 @@ public class Main {
 	for (var __e : _groups7.entrySet()) {
 		Object g_key = __e.getKey();
 		List<DataClass1> g = __e.getValue();
-		_res6.add(new DataClass2(g_key, sum((List<Number>)(List<?>)(new java.util.function.Supplier<List<Object>>(){public List<Object> get(){
-	List<Object> _res11 = new ArrayList<>();
+		_res6.add(new DataClass2(g_key, sum((List<Number>)(List<?>)(new java.util.function.Supplier<List<Integer>>(){public List<Integer> get(){
+	List<Integer> _res11 = new ArrayList<>();
 	for (var x : g) {
 		_res11.add(x.val);
 	}

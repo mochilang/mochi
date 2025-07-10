@@ -1,7 +1,12 @@
-line 0: run error: exit status 1
---- Adults ---
-Exception in thread "main" java.lang.ClassCastException: class DataClass2 cannot be cast to class java.util.Map (DataClass2 is in unnamed module of loader 'app'; java.util.Map is in module java.base of loader 'bootstrap')
-	at Main.main(Main.java:33)
+line 0: javac error: exit status 1
+/tmp/TestCompileValidProgramsdataset_where_filter3600109312/001/Main.java:26: error: incompatible types: boolean cannot be converted to int
+		_res1.add(new DataClass2(person.name, person.age, person.age >= 60));
+		                                                             ^
+/tmp/TestCompileValidProgramsdataset_where_filter3600109312/001/Main.java:33: error: incompatible types: int cannot be converted to boolean
+		System.out.println(person.name + " " + "is" + " " + person.age + " " + (person.is_senior ? " (senior)" : ""));
+		                                                                              ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+2 errors
 
 
   1| let people = [

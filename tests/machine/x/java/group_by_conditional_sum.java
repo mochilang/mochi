@@ -38,8 +38,8 @@ public class Main {
 		_res12.add((x.flag ? x.val : 0));
 	}
 	return _res12;
-}}).get())).doubleValue() / ((Number)sum((List<Number>)(List<?>)(new java.util.function.Supplier<List<Object>>(){public List<Object> get(){
-	List<Object> _res13 = new ArrayList<>();
+}}).get())).doubleValue() / ((Number)sum((List<Number>)(List<?>)(new java.util.function.Supplier<List<Integer>>(){public List<Integer> get(){
+	List<Integer> _res13 = new ArrayList<>();
 	for (var x : g) {
 		_res13.add(x.val);
 	}

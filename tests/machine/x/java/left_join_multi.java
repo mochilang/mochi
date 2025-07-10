@@ -24,10 +24,10 @@ class DataClass3 {
 	}
 }
 class DataClass4 {
-	Object orderId;
-	Object name;
-	Object item;
-	DataClass4(Object orderId, Object name, Object item) {
+	int orderId;
+	String name;
+	DataClass3 item;
+	DataClass4(int orderId, String name, DataClass3 item) {
 		this.orderId = orderId;
 		this.name = name;
 		this.item = item;
@@ -58,8 +58,8 @@ public class Main {
 }}).get();
 	public static void main(String[] args) {
 	System.out.println("--- Left Join Multi ---");
-	for (Object r : result) {
-		System.out.println(((Map)r).get("orderId") + " " + ((Map)r).get("name") + " " + ((Map)r).get("item"));
+	for (DataClass4 r : result) {
+		System.out.println(r.orderId + " " + r.name + " " + r.item);
 	}
 	}
 }

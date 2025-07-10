@@ -68,14 +68,14 @@ class DataClass5 {
 	}
 }
 class DataClass6 {
-	Object c_custkey;
-	Object c_name;
-	Object c_acctbal;
-	Object c_address;
-	Object c_phone;
-	Object c_comment;
-	Object n_name;
-	DataClass6(Object c_custkey, Object c_name, Object c_acctbal, Object c_address, Object c_phone, Object c_comment, Object n_name) {
+	int c_custkey;
+	String c_name;
+	double c_acctbal;
+	String c_address;
+	String c_phone;
+	String c_comment;
+	String n_name;
+	DataClass6(int c_custkey, String c_name, double c_acctbal, String c_address, String c_phone, String c_comment, String n_name) {
 		this.c_custkey = c_custkey;
 		this.c_name = c_name;
 		this.c_acctbal = c_acctbal;

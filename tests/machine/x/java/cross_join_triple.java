@@ -1,9 +1,9 @@
 import java.util.*;
 class DataClass1 {
-	Object n;
-	Object l;
-	Object b;
-	DataClass1(Object n, Object l, Object b) {
+	Integer n;
+	String l;
+	Boolean b;
+	DataClass1(Integer n, String l, Boolean b) {
 		this.n = n;
 		this.l = l;
 		this.b = b;
@@ -26,8 +26,8 @@ public class Main {
 }}).get();
 	public static void main(String[] args) {
 	System.out.println("--- Cross Join of three lists ---");
-	for (Object c : combos) {
-		System.out.println(((Map)c).get("n") + " " + ((Map)c).get("l") + " " + ((Map)c).get("b"));
+	for (DataClass1 c : combos) {
+		System.out.println(c.n + " " + c.l + " " + c.b);
 	}
 	}
 }

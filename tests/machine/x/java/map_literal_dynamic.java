@@ -1,8 +1,8 @@
 import java.util.*;
 class DataClass1 {
-	Object a;
-	Object b;
-	DataClass1(Object a, Object b) {
+	int a;
+	int b;
+	DataClass1(int a, int b) {
 		this.a = a;
 		this.b = b;
 	}
