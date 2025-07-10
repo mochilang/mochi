@@ -1,4 +1,0 @@
-line 10: exit status 1
-		for c in _src {
-			if !(o["customerId"] as! Int == c["id"] as! Int) { continue }
-			_m = true

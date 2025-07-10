@@ -1,4 +1,0 @@
-line 11: exit status 1
-		for (ri, c) in _join.enumerated() {
-			if !(o["customerId"] as! Int == c["id"] as! Int) { continue }
-			_matched[ri] = true

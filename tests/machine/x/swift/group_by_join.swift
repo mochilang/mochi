@@ -1,11 +1,21 @@
-var customers = [["id": 1, "name": "Alice"], ["id": 2, "name": "Bob"]]
-var orders = [["id": 100, "customerId": 1], ["id": 101, "customerId": 1], ["id": 102, "customerId": 2]]
+struct Auto1: Equatable {
+    var id: Int
+    var name: String
+}
+
+struct Auto2: Equatable {
+    var customerId: Int
+    var id: Int
+}
+
+var customers = [Auto1(id: 1, name: "Alice"), Auto1(id: 2, name: "Bob")]
+var orders = [Auto2(customerId: 1, id: 100), Auto2(customerId: 1, id: 101), Auto2(customerId: 2, id: 102)]
 var stats = ({
 	var _groups: [AnyHashable:[Any]] = [:]
 	for o in orders {
 		for c in customers {
-			if !(o["customerId"] as! Int == c["id"] as! Int) { continue }
-			let _k = c["name"] as! String
+			if !(o.customerId == c.id) { continue }
+			let _k = c.name
 			_groups[_k, default: []].append(["o": o, "c": c])
 		}
 	}

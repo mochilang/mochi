@@ -1,23 +1,33 @@
-var data = [["tag": "a", "val": 1], ["tag": "a", "val": 2], ["tag": "b", "val": 3]]
-var groups = { () -> [(key: AnyHashable, items: [[String:Any]])] in
-    var _groups: [AnyHashable:[[String:Any]]] = [:]
+struct Auto1: Equatable {
+    var tag: String
+    var val: Int
+}
+
+struct Auto2: Equatable {
+    var items: [Auto1]
+    var key: String
+}
+
+var data = [Auto1(tag: "a", val: 1), Auto1(tag: "a", val: 2), Auto1(tag: "b", val: 3)]
+var groups = { () -> [(key: String, items: [Auto1])] in
+    var _groups: [String:[Auto1]] = [:]
     for d in data {
-        let _k = d["tag"] as! String
+        let _k = d.tag
         _groups[_k, default: []].append(d)
     }
-    var _tmp: [(key: AnyHashable, items: [[String:Any]])] = []
+    var _tmp: [(key: String, items: [Auto1])] = []
     for (k, v) in _groups {
         _tmp.append((key: k, items: v))
     }
     return _tmp
 }()
 var tmp = [Any]()
-for g in groups as! [[String:Any]] {
+for g in groups {
     var total = 0
-    for x in g["items"] as! [[String:Any]] as! [[String:Any]] {
-        total = total + x["val"] as! Int
+    for x in g.items {
+        total = total + x.val
     }
-    tmp = tmp + [["tag": g["key"] as! AnyHashable, "total": total]]
+    tmp = tmp + [["tag": g.key, "total": total]]
 }
-var result = tmp.map { r in (value: r, key: r.tag) }.sorted { $0.key < $1.key }.map { $0.value }
+var result = tmp.map { r in (value: r, key: r["tag"] as! String) }.sorted { $0.key < $1.key }.map { $0.value }
 print(result)
