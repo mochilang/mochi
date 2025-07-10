@@ -1,3 +1,5 @@
+WARNING: reference to undefined variable: g
+WARNING: reference to undefined variable: n
 WARNING: reference to undefined variable: filter
 WARNING: reference to undefined variable: open-input-pipe
 WARNING: reference to undefined variable: format
@@ -6,4 +8,4 @@ WARNING: reference to undefined variable: string-join
 WARNING: reference to undefined variable: string-trim
 WARNING: reference to undefined variable: string-contains
 WARNING: reference to undefined variable: string-prefix?
-("a" "b" "c")
+()

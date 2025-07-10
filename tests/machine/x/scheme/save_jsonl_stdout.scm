@@ -1,4 +1,7 @@
-(import (srfi 95) (chibi json) (chibi io))
+(import (srfi 95) (chibi json) (chibi io) (chibi))
+
+(define (_to_string v)
+  (call-with-output-string (lambda (p) (write v p))))
 
 (define (_yaml_value v)
   (let ((n (string->number v)))
@@ -86,10 +89,10 @@
                     (_lt (cdr a) (cdr b))
                     (_lt ka kb)))))
     )
-    (else (string<? (format "~a" a) (format "~a" b)))))
+    (else (string<? (_to_string a) (_to_string b)))))
 
 (define (_sort pairs)
   (sort pairs (lambda (a b) (_lt (cdr a) (cdr b)))))
 
-(define people (list (list (cons "name" "Alice") (cons "age" 30)) (list (cons "name" "Bob") (cons "age" 25))))
-(_save people "-" (list (cons "format" "jsonl")))
+(define people (list (list (cons 'name "Alice") (cons 'age 30)) (list (cons 'name "Bob") (cons 'age 25))))
+(_save people "-" (list (cons 'format "jsonl")))

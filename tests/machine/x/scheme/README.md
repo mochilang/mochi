@@ -1,4 +1,4 @@
-# Scheme Machine Output (90/100 compiled and run)
+# Scheme Machine Output (97/100 compiled and run)
 
 This directory contains Scheme code generated from the Mochi programs in `tests/vm/valid`. Each program was executed with chibi-scheme. Successful runs have a `.out` file and failures provide a `.error`.
 
@@ -16,8 +16,8 @@ This directory contains Scheme code generated from the Mochi programs in `tests/
 - [x] cross_join
 - [x] cross_join_filter
 - [x] cross_join_triple
-- [ ] dataset_sort_take_limit
-- [ ] dataset_where_filter
+- [x] dataset_sort_take_limit
+- [x] dataset_where_filter
 - [x] exists_builtin
 - [x] for_list_collection
 - [x] for_loop
@@ -32,7 +32,7 @@ This directory contains Scheme code generated from the Mochi programs in `tests/
 - [x] group_by_join
 - [x] group_by_left_join
 - [x] group_by_multi_join
-- [ ] group_by_multi_join_sort
+- [x] group_by_multi_join_sort
 - [x] group_by_sort
 - [x] group_items_iteration
 - [x] if_else
@@ -53,7 +53,7 @@ This directory contains Scheme code generated from the Mochi programs in `tests/
 - [x] list_index
 - [x] list_nested_assign
 - [x] list_set_ops
-- [ ] load_yaml
+- [x] load_yaml
 - [x] map_assign
 - [x] map_in_operator
 - [x] map_index
@@ -67,7 +67,7 @@ This directory contains Scheme code generated from the Mochi programs in `tests/
 - [x] membership
 - [x] min_max_builtin
 - [x] nested_function
-- [ ] order_by_map
+- [x] order_by_map
 - [x] outer_join
 - [x] partial_application
 - [x] print_hello
@@ -78,10 +78,10 @@ This directory contains Scheme code generated from the Mochi programs in `tests/
 - [x] query_sum_select
 - [x] record_assign
 - [x] right_join
-- [ ] save_jsonl_stdout
+- [x] save_jsonl_stdout
 - [x] short_circuit
 - [x] slice
-- [ ] sort_stable
+- [x] sort_stable
 - [x] str_builtin
 - [x] string_compare
 - [x] string_concat

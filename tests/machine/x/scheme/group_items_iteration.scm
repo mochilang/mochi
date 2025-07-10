@@ -8,7 +8,10 @@
             (begin (set-cdr! p v) m)
             (cons (cons k v) m)))
 )
-(import (srfi 95) (chibi json) (chibi io))
+(import (srfi 95) (chibi json) (chibi io) (chibi))
+
+(define (_to_string v)
+  (call-with-output-string (lambda (p) (write v p))))
 
 (define (_yaml_value v)
   (let ((n (string->number v)))
@@ -96,7 +99,7 @@
                     (_lt (cdr a) (cdr b))
                     (_lt ka kb)))))
     )
-    (else (string<? (format "~a" a) (format "~a" b)))))
+    (else (string<? (_to_string a) (_to_string b)))))
 
 (define (_sort pairs)
   (sort pairs (lambda (a b) (_lt (cdr a) (cdr b)))))
@@ -173,7 +176,7 @@
               src)
     (map (lambda (k) (cdr (assoc k groups))) order))))
 
-(define data (list (list (cons "tag" "a") (cons "val" 1)) (list (cons "tag" "a") (cons "val" 2)) (list (cons "tag" "b") (cons "val" 3))))
+(define data (list (list (cons 'tag "a") (cons 'val 1)) (list (cons 'tag "a") (cons 'val 2)) (list (cons 'tag "b") (cons 'val 3))))
 (define groups (let ((_tmp '()))
   (for-each (lambda (d)
     (set! _tmp (append _tmp (list d)))
@@ -200,7 +203,7 @@
           '()
           )
         )
-        (set! tmp (append tmp (list (list (cons "tag" (map-get g 'key)) (cons "total" total)))))
+        (set! tmp (append tmp (list (list (cons 'tag (map-get g 'key)) (cons 'total total)))))
       )
       (loop (+ g_idx 1))
     )

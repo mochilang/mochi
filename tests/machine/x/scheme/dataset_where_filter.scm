@@ -9,11 +9,11 @@
             (cons (cons k v) m)))
 )
 
-(define people (list (list (cons "name" "Alice") (cons "age" 30)) (list (cons "name" "Bob") (cons "age" 15)) (list (cons "name" "Charlie") (cons "age" 65)) (list (cons "name" "Diana") (cons "age" 45))))
+(define people (list (list (cons 'name "Alice") (cons 'age 30)) (list (cons 'name "Bob") (cons 'age 15)) (list (cons 'name "Charlie") (cons 'age 65)) (list (cons 'name "Diana") (cons 'age 45))))
 (define adults (let ((_res '()))
   (for-each (lambda (person)
     (when (>= (map-get person 'age) 18)
-      (set! _res (append _res (list (list (cons "name" (map-get person 'name)) (cons "age" (map-get person 'age)) (cons "is_senior" (>= (map-get person 'age) 60))))))
+      (set! _res (append _res (list (list (cons 'name (map-get person 'name)) (cons 'age (map-get person 'age)) (cons 'is_senior (>= (map-get person 'age) 60))))))
     )
   ) (if (string? people) (string->list people) people))
   _res))

@@ -1,13 +1,4 @@
 --- Right Join using syntax ---
-Customer () has order () - $ ()
-Customer () has order () - $ ()
-Customer () has order () - $ ()
-Customer () has order () - $ ()
-Customer () has order () - $ ()
-Customer () has order () - $ ()
-Customer () has order () - $ ()
-Customer () has order () - $ ()
-Customer () has order () - $ ()
-Customer () has order () - $ ()
-Customer () has order () - $ ()
-Customer () has order () - $ ()
+Customer Alice has order 100 - $ 250
+Customer Alice has order 102 - $ 300
+Customer Bob has order 101 - $ 125

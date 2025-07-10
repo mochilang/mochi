@@ -6,4 +6,5 @@ WARNING: reference to undefined variable: string-join
 WARNING: reference to undefined variable: string-trim
 WARNING: reference to undefined variable: string-contains
 WARNING: reference to undefined variable: string-prefix?
-("a" "b" "c")
+{"name":"Alice","age":30}
+{"name":"Bob","age":25}

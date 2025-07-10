@@ -16,7 +16,7 @@
   (for-each (lambda (n)
     (for-each (lambda (l)
       (for-each (lambda (b)
-        (set! _res (append _res (list (list (cons "n" n) (cons "l" l) (cons "b" b)))))
+        (set! _res (append _res (list (list (cons 'n n) (cons 'l l) (cons 'b b)))))
       ) (if (string? bools) (string->list bools) bools))
     ) (if (string? letters) (string->list letters) letters))
   ) (if (string? nums) (string->list nums) nums))
