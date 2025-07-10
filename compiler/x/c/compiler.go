@@ -73,6 +73,7 @@ type Compiler struct {
 	capturesByFun map[string][]string
 	uninitVars    map[string]bool
 	pointerVars   map[string]bool
+	groupKeys     map[string]types.Type
 }
 
 func (c *Compiler) pushPointerVars() map[string]bool {
@@ -99,6 +100,7 @@ func New(env *types.Env) *Compiler {
 		capturesByFun: map[string][]string{},
 		uninitVars:    map[string]bool{},
 		pointerVars:   map[string]bool{},
+		groupKeys:     map[string]types.Type{},
 	}
 }
 
@@ -1707,6 +1709,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						genv.SetVar(q.Group.Name, types.GroupType{Elem: lt.Elem}, true)
 						c.env = genv
 					}
+					c.groupKeys[q.Group.Name] = lt.Elem
 					if ml := asMapLiteral(q.Select); ml != nil {
 						if _, ok := c.structLits[ml]; !ok {
 							if st, ok2 := c.inferStructFromMap(ml, q.Var); ok2 {
@@ -1750,6 +1753,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 					if c.env != nil {
 						c.env = prevEnv
 					}
+					delete(c.groupKeys, q.Group.Name)
 					return res
 				}
 			}
@@ -1804,6 +1808,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						genv.SetVar(q.Group.Name, types.GroupType{Elem: lt.Elem}, true)
 						c.env = genv
 					}
+					c.groupKeys[q.Group.Name] = types.StringType{}
 					if ml := asMapLiteral(q.Select); ml != nil {
 						if _, ok := c.structLits[ml]; !ok {
 							if st, ok2 := c.inferStructFromMap(ml, q.Var); ok2 {
@@ -1856,6 +1861,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 					if c.env != nil {
 						c.env = prevEnv
 					}
+					delete(c.groupKeys, q.Group.Name)
 					return res
 				}
 			}
@@ -1911,6 +1917,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 							genv.SetVar(q.Group.Name, types.GroupType{Elem: lt.Elem}, true)
 							c.env = genv
 						}
+						c.groupKeys[q.Group.Name] = types.StructType{Name: "pair_string", Fields: map[string]types.Type{"a": types.StringType{}, "b": types.StringType{}}, Order: []string{"a", "b"}}
 						if ml := asMapLiteral(q.Select); ml != nil {
 							if _, ok := c.structLits[ml]; !ok {
 								if st, ok2 := c.inferStructFromMap(ml, q.Var); ok2 {
@@ -1963,6 +1970,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						if c.env != nil {
 							c.env = prevEnv
 						}
+						delete(c.groupKeys, q.Group.Name)
 						return res
 					}
 				}
@@ -3839,6 +3847,11 @@ func isBoolArg(e *parser.Expr, env *types.Env) bool {
 func (c *Compiler) guessType(e *parser.Expr) types.Type {
 	t := c.exprType(e)
 	if types.ContainsAny(t) {
+		if name, ok := groupKeySelector(e); ok {
+			if kt, ok2 := c.groupKeys[name]; ok2 {
+				return kt
+			}
+		}
 		switch {
 		case isStringExpr(e, c.env):
 			return types.StringType{}
@@ -3851,6 +3864,22 @@ func (c *Compiler) guessType(e *parser.Expr) types.Type {
 		}
 	}
 	return t
+}
+
+// groupKeySelector reports the root variable name if e is a `var.key` selector.
+func groupKeySelector(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if u == nil || u.Value == nil || u.Value.Target == nil {
+		return "", false
+	}
+	sel := u.Value.Target.Selector
+	if sel != nil && len(sel.Tail) == 1 && sel.Tail[0] == "key" {
+		return sel.Root, true
+	}
+	return "", false
 }
 
 func isFloatExpr(e *parser.Expr, env *types.Env) bool {
