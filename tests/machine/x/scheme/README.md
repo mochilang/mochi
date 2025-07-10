@@ -1,11 +1,8 @@
-# Scheme Machine Results (97/97 compiled)
+# Scheme Machine Translations
 
-This directory contains Scheme source code automatically generated from the Mochi
-programs under `tests/vm/valid`.  Each `.scm` file was produced by the Scheme
-backend and should be comparable to the hand written versions in
-`tests/human/x/scheme`.
+This directory contains Scheme source code automatically generated from the Mochi programs under `tests/vm/valid`. Each `.scm` file was produced by the Scheme backend and should be comparable to the hand written versions in `tests/human/x/scheme`.
 
-## Success
+Compiled programs: 92/97 successful.
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -33,9 +30,9 @@ backend and should be comparable to the hand written versions in
 - [x] group_by_conditional_sum.mochi
 - [x] group_by_having.mochi
 - [x] group_by_join.mochi
-- [x] group_by_left_join.mochi
+- [ ] group_by_left_join.mochi
 - [x] group_by_multi_join.mochi
-- [x] group_by_multi_join_sort.mochi
+- [ ] group_by_multi_join_sort.mochi
 - [x] group_by_sort.mochi
 - [x] group_items_iteration.mochi
 - [x] if_else.mochi
@@ -46,8 +43,8 @@ backend and should be comparable to the hand written versions in
 - [x] inner_join.mochi
 - [x] join_multi.mochi
 - [x] json_builtin.mochi
-- [x] left_join.mochi
-- [x] left_join_multi.mochi
+- [ ] left_join.mochi
+- [ ] left_join_multi.mochi
 - [x] len_builtin.mochi
 - [x] len_map.mochi
 - [x] len_string.mochi
@@ -79,7 +76,7 @@ backend and should be comparable to the hand written versions in
 - [x] query_sum_select.mochi
 - [x] record_assign.mochi
 - [x] right_join.mochi
-- [x] save_jsonl_stdout.mochi
+- [ ] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
 - [x] slice.mochi
 - [x] sort_stable.mochi
@@ -106,11 +103,6 @@ backend and should be comparable to the hand written versions in
 - [x] while_loop.mochi
 
 ## Remaining Tasks
-
-The Scheme backend still lacks optimisations for larger dataset queries and does
-not yet support advanced Mochi features such as agents or concurrency.  Additional
-improvements planned for this backend include:
-
 - Better handling of date comparisons and sorting when running JOB benchmarks
 - More efficient dataset grouping and aggregation
 - Support for concurrent agents and streaming primitives
