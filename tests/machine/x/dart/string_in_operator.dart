@@ -4,8 +4,9 @@ bool _in(dynamic item, dynamic col) {
   return false;
 }
 
+var s = 'catch';
+
 void main() {
-  var s = 'catch';
   print(_in('cat', s));
   print(_in('dog', s));
 }

@@ -1,6 +1,16 @@
-var customers = [{'id': 1, 'name': 'Alice'}, {'id': 2, 'name': 'Bob'}, {'id': 3, 'name': 'Charlie'}, {'id': 4, 'name': 'Diana'}];
+var customers = [
+  {'id': 1, 'name': 'Alice'},
+  {'id': 2, 'name': 'Bob'},
+  {'id': 3, 'name': 'Charlie'},
+  {'id': 4, 'name': 'Diana'},
+];
 
-var orders = [{'id': 100, 'customerId': 1, 'total': 250}, {'id': 101, 'customerId': 2, 'total': 125}, {'id': 102, 'customerId': 1, 'total': 300}, {'id': 103, 'customerId': 5, 'total': 80}];
+var orders = [
+  {'id': 100, 'customerId': 1, 'total': 250},
+  {'id': 101, 'customerId': 2, 'total': 125},
+  {'id': 102, 'customerId': 1, 'total': 300},
+  {'id': 103, 'customerId': 5, 'total': 80},
+];
 
 var result = (() {
   var _q0 = <dynamic>[];
@@ -36,13 +46,29 @@ void main() {
   for (var row in (_iter2 is Map ? (_iter2 as Map).keys : _iter2) as Iterable) {
     if (row['order']) {
       if (row['customer']) {
-        print(['Order', row['order']['id'], 'by', row['customer']['name'], '- \$', row['order']['total']].join(' '));
+        print(
+          [
+            'Order',
+            row['order']['id'],
+            'by',
+            row['customer']['name'],
+            '- \$',
+            row['order']['total'],
+          ].join(' '),
+        );
+      } else {
+        print(
+          [
+            'Order',
+            row['order']['id'],
+            'by',
+            'Unknown',
+            '- \$',
+            row['order']['total'],
+          ].join(' '),
+        );
       }
-      else {
-        print(['Order', row['order']['id'], 'by', 'Unknown', '- \$', row['order']['total']].join(' '));
-      }
-    }
-    else {
+    } else {
       print(['Customer', row['customer']['name'], 'has no orders'].join(' '));
     }
   }

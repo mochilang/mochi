@@ -8,7 +8,7 @@ var label = (() {
     return 'two';
   } else if (_t == 3) {
     return 'three';
-  }  else {
+  } else {
     return 'unknown';
   }
   return null;
@@ -24,7 +24,7 @@ var mood = (() {
     return 'excited';
   } else if (_t == 'sun') {
     return 'relaxed';
-  }  else {
+  } else {
     return 'normal';
   }
   return null;
@@ -38,21 +38,22 @@ var status = (() {
     return 'confirmed';
   } else if (_t == false) {
     return 'denied';
-  }  return null;
+  }
+  return null;
 })();
 
 String classify(int n) {
   return (() {
-  var _t = n;
-  if (_t == 0) {
-    return 'zero';
-  } else if (_t == 1) {
-    return 'one';
-  }  else {
-    return 'many';
-  }
-  return null;
-})();
+    var _t = n;
+    if (_t == 0) {
+      return 'zero';
+    } else if (_t == 1) {
+      return 'one';
+    } else {
+      return 'many';
+    }
+    return null;
+  })();
 }
 
 void main() {

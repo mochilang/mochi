@@ -10,7 +10,8 @@ class Book {
   Book(this.title, this.author);
 }
 
+var book = Book('Go', Person('Bob', 42));
+
 void main() {
-  var book = Book('Go', Person('Bob', 42));
   print(book.author.name);
 }
