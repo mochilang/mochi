@@ -108,4 +108,9 @@ backend and should be comparable to the hand written versions in
 ## Remaining Tasks
 
 The Scheme backend still lacks optimisations for larger dataset queries and does
-not yet support advanced Mochi features such as agents or concurrency.
+not yet support advanced Mochi features such as agents or concurrency.  Additional
+improvements planned for this backend include:
+
+- Better handling of date comparisons and sorting when running JOB benchmarks
+- More efficient dataset grouping and aggregation
+- Support for concurrent agents and streaming primitives
