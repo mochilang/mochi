@@ -12,6 +12,6 @@ class Counter:
     n: int
 
 
-c: Counter = Counter(n=0)
+c = Counter(n=0)
 inc(c)
 print(c.n)

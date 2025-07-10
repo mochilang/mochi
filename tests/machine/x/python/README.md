@@ -100,3 +100,7 @@ Compiled programs: 97/97 successful.
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
+
+## Remaining Tasks
+- [ ] Integrate async helpers
+- [ ] Improve error handling

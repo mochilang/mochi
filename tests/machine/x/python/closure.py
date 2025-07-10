@@ -7,5 +7,5 @@ def makeAdder(n: int) -> typing.Callable[[int], int]:
     return lambda x: x + n
 
 
-add10: typing.Callable[[int], int] = makeAdder(10)
+add10 = makeAdder(10)
 print(add10(7))

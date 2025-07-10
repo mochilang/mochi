@@ -33,5 +33,5 @@ class Node(Tree):
     right: Tree
 
 
-t: Node = Node(left=Leaf(), value=1, right=Node(left=Leaf(), value=2, right=Leaf()))
+t = Node(left=Leaf(), value=1, right=Node(left=Leaf(), value=2, right=Leaf()))
 print(sum_tree(t))

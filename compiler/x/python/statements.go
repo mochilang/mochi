@@ -133,9 +133,10 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 			c.env.SetVar(s.Name, t, false)
 		}
 	}
-	useAnn := typ != nil && !isAny(typ)
+	explicit := s.Type != nil
+	useAnn := explicit
 	if useAnn {
-		typStr := pyType(typ)
+		typStr := pyType(c.resolveTypeRef(s.Type))
 		if needsTyping(typStr) {
 			c.imports["typing"] = "typing"
 		}
@@ -196,17 +197,15 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 			c.env.SetVar(s.Name, t, true)
 		}
 	}
-	if c.env != nil {
-		if t, err := c.env.GetVar(s.Name); err == nil && !isAny(t) {
-			typStr := pyType(t)
-			if needsTyping(typStr) {
-				c.imports["typing"] = "typing"
-			}
-			c.writeln(fmt.Sprintf("%s: %s = %s", name, typStr, value))
-			return nil
+	if s.Type != nil {
+		typStr := pyType(c.resolveTypeRef(s.Type))
+		if needsTyping(typStr) {
+			c.imports["typing"] = "typing"
 		}
+		c.writeln(fmt.Sprintf("%s: %s = %s", name, typStr, value))
+	} else {
+		c.writeln(fmt.Sprintf("%s = %s", name, value))
 	}
-	c.writeln(fmt.Sprintf("%s = %s", name, value))
 	return nil
 }
 

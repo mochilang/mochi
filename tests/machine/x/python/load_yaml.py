@@ -119,12 +119,10 @@ class Person:
     email: str
 
 
-people: list[Person] = [
+people = [
     Person(**_it)
     for _it in _load("../interpreter/valid/people.yaml", dict({"format": "yaml"}))
 ]
-adults: list[dict[str, str]] = [
-    {"name": p.name, "email": p.email} for p in people if p.age >= 18
-]
+adults = [{"name": p.name, "email": p.email} for p in people if p.age >= 18]
 for a in adults:
     print(a["name"], a["email"])
