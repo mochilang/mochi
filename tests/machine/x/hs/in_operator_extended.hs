@@ -3,7 +3,7 @@
 
 module Main where
 
-import Data.List (intercalate, isPrefixOf)
+import Data.List (intercalate, isInfixOf, isPrefixOf)
 import qualified Data.List as List
 import qualified Data.Map as Map
 import Data.Maybe (fromMaybe)
@@ -23,5 +23,5 @@ main = do
   print (elem 2 ys)
   print (Map.member "a" m)
   print (Map.member "b" m)
-  print (elem "ell" s)
-  print (elem "foo" s)
+  print (isInfixOf "ell" s)
+  print (isInfixOf "foo" s)

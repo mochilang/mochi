@@ -4,7 +4,7 @@ This directory contains Haskell code generated from Mochi programs in `tests/vm/
 Each `.hs` file is the compiler output. Programs that executed successfully have a corresponding `.out` file, 
 while failures have a `.error` log.
 
-## Compiled and ran successfully (60/97)
+## Compiled and ran successfully (65/97)
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -54,7 +54,12 @@ while failures have a `.error` log.
 - [x] string_concat
 - [x] string_index
 - [x] string_prefix_slice
+- [x] string_contains
+- [x] string_in_operator
+- [x] in_operator_extended
+- [x] substring_builtin
 - [x] sum_builtin
+- [x] min_max_builtin
 - [x] tail_recursion
 - [x] test_block
 - [x] two-sum
@@ -66,7 +71,7 @@ while failures have a `.error` log.
 - [x] var_assignment
 - [x] while_loop
 
-## Failed to build or run (37/97)
+## Failed to build or run (32/97)
 - [ ] dataset_where_filter
 - [ ] exists_builtin
 - [ ] group_by
@@ -77,7 +82,6 @@ while failures have a `.error` log.
 - [ ] group_by_multi_join_sort
 - [ ] group_by_sort
 - [ ] group_items_iteration
-- [ ] in_operator_extended
 - [ ] inner_join
 - [ ] join_multi
 - [ ] json_builtin
@@ -91,7 +95,6 @@ while failures have a `.error` log.
 - [ ] map_nested_assign
 - [ ] match_expr
 - [ ] match_full
-- [ ] min_max_builtin
 - [ ] order_by_map
 - [ ] outer_join
 - [ ] query_sum_select
@@ -99,9 +102,6 @@ while failures have a `.error` log.
 - [ ] right_join
 - [ ] save_jsonl_stdout
 - [ ] sort_stable
-- [ ] string_contains
-- [ ] string_in_operator
-- [ ] substring_builtin
 - [ ] tree_sum
 - [ ] update_stmt
 

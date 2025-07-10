@@ -13,4 +13,4 @@ Context around line 6:
     5| 
     6| import qualified Data.Aeson as Aeson
     7| import qualified Data.ByteString.Lazy.Char8 as BSL
-    8| import Data.List (intercalate, isPrefixOf)
+    8| import Data.List (intercalate, isInfixOf, isPrefixOf)

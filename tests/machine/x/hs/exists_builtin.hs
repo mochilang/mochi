@@ -5,7 +5,7 @@ module Main where
 import Data.Maybe (fromMaybe)
 import Data.Time.Clock.POSIX (getPOSIXTime)
 import qualified Data.Map as Map
-import Data.List (intercalate, isPrefixOf)
+import Data.List (intercalate, isPrefixOf, isInfixOf)
 import qualified Data.List as List
 
 
