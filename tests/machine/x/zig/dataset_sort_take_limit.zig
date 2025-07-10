@@ -66,7 +66,7 @@ const expensive = blk1: { var _tmp1 = std.ArrayList(struct { item: struct {
 }, _tmp3, 1, (1 + 3), 1); break :blk1 _tmp3; };
 
 pub fn main() void {
-    std.debug.print("{s}\n", .{"--- Top products (excluding most expensive) ---"});
+    std.debug.print("--- Top products (excluding most expensive) ---\n", .{});
     for (expensive) |item| {
         std.debug.print("{s} {s} {d}\n", .{item.name, "costs $", item.price});
     }

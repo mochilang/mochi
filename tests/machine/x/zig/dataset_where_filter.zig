@@ -36,7 +36,7 @@ const adults = blk1: { var _tmp1 = std.ArrayList(struct {
 }) catch unreachable; } const _tmp2 = _tmp1.toOwnedSlice() catch unreachable; break :blk1 _tmp2; };
 
 pub fn main() void {
-    std.debug.print("{s}\n", .{"--- Adults ---"});
+    std.debug.print("--- Adults ---\n", .{});
     for (adults) |person| {
         std.debug.print("{any} {s} {any} {s}\n", .{person.name, "is", person.age, if (person.is_senior) (" (senior)") else ("")});
     }

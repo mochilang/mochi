@@ -21,7 +21,7 @@ const pairs = blk0: { var _tmp0 = std.ArrayList(struct {
 }) catch unreachable; } } const _tmp1 = _tmp0.toOwnedSlice() catch unreachable; break :blk0 _tmp1; };
 
 pub fn main() void {
-    std.debug.print("{s}\n", .{"--- Even pairs ---"});
+    std.debug.print("--- Even pairs ---\n", .{});
     for (pairs) |p| {
         std.debug.print("{any} {any}\n", .{p.n, p.l});
     }
