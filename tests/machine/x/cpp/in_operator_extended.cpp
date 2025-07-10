@@ -5,6 +5,12 @@
 struct __struct1 {
   decltype(1) a;
 };
+inline bool operator==(const __struct1 &a, const __struct1 &b) {
+  return a.a == b.a;
+}
+inline bool operator!=(const __struct1 &a, const __struct1 &b) {
+  return !(a == b);
+}
 std::vector<int> xs = std::vector<decltype(1)>{1, 2, 3};
 auto ys = ([]() {
   std::vector<int> __items;

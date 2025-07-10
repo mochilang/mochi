@@ -52,19 +52,63 @@ struct __struct1 {
   decltype(1) id;
   decltype(std::string("Alice")) name;
 };
+inline bool operator==(const __struct1 &a, const __struct1 &b) {
+  return a.id == b.id && a.name == b.name;
+}
+inline bool operator!=(const __struct1 &a, const __struct1 &b) {
+  return !(a == b);
+}
 struct __struct2 {
   decltype(100) id;
   decltype(1) customerId;
 };
+inline bool operator==(const __struct2 &a, const __struct2 &b) {
+  return a.id == b.id && a.customerId == b.customerId;
+}
+inline bool operator!=(const __struct2 &a, const __struct2 &b) {
+  return !(a == b);
+}
 struct __struct3 {
   decltype(100) orderId;
   decltype(std::string("a")) sku;
 };
+inline bool operator==(const __struct3 &a, const __struct3 &b) {
+  return a.orderId == b.orderId && a.sku == b.sku;
+}
+inline bool operator!=(const __struct3 &a, const __struct3 &b) {
+  return !(a == b);
+}
 struct __struct4 {
   decltype(std::declval<__struct2>().id) orderId;
   decltype(std::declval<__struct1>().name) name;
   __struct3 item;
 };
+inline bool operator==(const __struct4 &a, const __struct4 &b) {
+  return a.orderId == b.orderId && a.name == b.name && a.item == b.item;
+}
+inline bool operator!=(const __struct4 &a, const __struct4 &b) {
+  return !(a == b);
+}
+inline void __json(const __struct4 &v) {
+  bool first = true;
+  std::cout << "{";
+  if (!first)
+    std::cout << ",";
+  first = false;
+  std::cout << "\"orderId\":";
+  __json(v.orderId);
+  if (!first)
+    std::cout << ",";
+  first = false;
+  std::cout << "\"name\":";
+  __json(v.name);
+  if (!first)
+    std::cout << ",";
+  first = false;
+  std::cout << "\"item\":";
+  __json(v.item);
+  std::cout << "}";
+}
 inline void __json(const __struct1 &v) {
   bool first = true;
   std::cout << "{";
@@ -108,26 +152,6 @@ inline void __json(const __struct3 &v) {
   first = false;
   std::cout << "\"sku\":";
   __json(v.sku);
-  std::cout << "}";
-}
-inline void __json(const __struct4 &v) {
-  bool first = true;
-  std::cout << "{";
-  if (!first)
-    std::cout << ",";
-  first = false;
-  std::cout << "\"orderId\":";
-  __json(v.orderId);
-  if (!first)
-    std::cout << ",";
-  first = false;
-  std::cout << "\"name\":";
-  __json(v.name);
-  if (!first)
-    std::cout << ",";
-  first = false;
-  std::cout << "\"item\":";
-  __json(v.item);
   std::cout << "}";
 }
 std::vector<__struct1> customers =

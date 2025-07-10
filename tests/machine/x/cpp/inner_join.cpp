@@ -5,16 +5,35 @@ struct __struct1 {
   decltype(1) id;
   decltype(std::string("Alice")) name;
 };
+inline bool operator==(const __struct1 &a, const __struct1 &b) {
+  return a.id == b.id && a.name == b.name;
+}
+inline bool operator!=(const __struct1 &a, const __struct1 &b) {
+  return !(a == b);
+}
 struct __struct2 {
   decltype(100) id;
   decltype(1) customerId;
   decltype(250) total;
 };
+inline bool operator==(const __struct2 &a, const __struct2 &b) {
+  return a.id == b.id && a.customerId == b.customerId && a.total == b.total;
+}
+inline bool operator!=(const __struct2 &a, const __struct2 &b) {
+  return !(a == b);
+}
 struct __struct3 {
   decltype(std::declval<__struct2>().id) orderId;
   decltype(std::declval<__struct1>().name) customerName;
   decltype(std::declval<__struct2>().total) total;
 };
+inline bool operator==(const __struct3 &a, const __struct3 &b) {
+  return a.orderId == b.orderId && a.customerName == b.customerName &&
+         a.total == b.total;
+}
+inline bool operator!=(const __struct3 &a, const __struct3 &b) {
+  return !(a == b);
+}
 std::vector<__struct1> customers =
     std::vector<decltype(__struct1{1, std::string("Alice")})>{
         __struct1{1, std::string("Alice")}, __struct1{2, std::string("Bob")},

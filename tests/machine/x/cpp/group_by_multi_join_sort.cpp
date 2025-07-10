@@ -8,6 +8,12 @@ struct __struct1 {
   decltype(1) n_nationkey;
   decltype(std::string("BRAZIL")) n_name;
 };
+inline bool operator==(const __struct1 &a, const __struct1 &b) {
+  return a.n_nationkey == b.n_nationkey && a.n_name == b.n_name;
+}
+inline bool operator!=(const __struct1 &a, const __struct1 &b) {
+  return !(a == b);
+}
 struct __struct2 {
   decltype(1) c_custkey;
   decltype(std::string("Alice")) c_name;
@@ -17,17 +23,40 @@ struct __struct2 {
   decltype(std::string("123-456")) c_phone;
   decltype(std::string("Loyal")) c_comment;
 };
+inline bool operator==(const __struct2 &a, const __struct2 &b) {
+  return a.c_custkey == b.c_custkey && a.c_name == b.c_name &&
+         a.c_acctbal == b.c_acctbal && a.c_nationkey == b.c_nationkey &&
+         a.c_address == b.c_address && a.c_phone == b.c_phone &&
+         a.c_comment == b.c_comment;
+}
+inline bool operator!=(const __struct2 &a, const __struct2 &b) {
+  return !(a == b);
+}
 struct __struct3 {
   decltype(1000) o_orderkey;
   decltype(1) o_custkey;
   decltype(std::string("1993-10-15")) o_orderdate;
 };
+inline bool operator==(const __struct3 &a, const __struct3 &b) {
+  return a.o_orderkey == b.o_orderkey && a.o_custkey == b.o_custkey &&
+         a.o_orderdate == b.o_orderdate;
+}
+inline bool operator!=(const __struct3 &a, const __struct3 &b) {
+  return !(a == b);
+}
 struct __struct4 {
   decltype(1000) l_orderkey;
   decltype(std::string("R")) l_returnflag;
   decltype(1000) l_extendedprice;
   decltype(0.1) l_discount;
 };
+inline bool operator==(const __struct4 &a, const __struct4 &b) {
+  return a.l_orderkey == b.l_orderkey && a.l_returnflag == b.l_returnflag &&
+         a.l_extendedprice == b.l_extendedprice && a.l_discount == b.l_discount;
+}
+inline bool operator!=(const __struct4 &a, const __struct4 &b) {
+  return !(a == b);
+}
 struct __struct5 {
   decltype(std::declval<__struct2>().c_custkey) c_custkey;
   decltype(std::declval<__struct2>().c_name) c_name;
@@ -37,16 +66,37 @@ struct __struct5 {
   decltype(std::declval<__struct2>().c_comment) c_comment;
   decltype(std::declval<__struct1>().n_name) n_name;
 };
+inline bool operator==(const __struct5 &a, const __struct5 &b) {
+  return a.c_custkey == b.c_custkey && a.c_name == b.c_name &&
+         a.c_acctbal == b.c_acctbal && a.c_address == b.c_address &&
+         a.c_phone == b.c_phone && a.c_comment == b.c_comment &&
+         a.n_name == b.n_name;
+}
+inline bool operator!=(const __struct5 &a, const __struct5 &b) {
+  return !(a == b);
+}
 struct __struct6 {
   __struct2 c;
   __struct3 o;
   __struct4 l;
   __struct1 n;
 };
+inline bool operator==(const __struct6 &a, const __struct6 &b) {
+  return a.c == b.c && a.o == b.o && a.l == b.l && a.n == b.n;
+}
+inline bool operator!=(const __struct6 &a, const __struct6 &b) {
+  return !(a == b);
+}
 struct __struct7 {
   __struct5 key;
   std::vector<__struct6> items;
 };
+inline bool operator==(const __struct7 &a, const __struct7 &b) {
+  return a.key == b.key && a.items == b.items;
+}
+inline bool operator!=(const __struct7 &a, const __struct7 &b) {
+  return !(a == b);
+}
 struct __struct8 {
   decltype(g.key.c_custkey) c_custkey;
   decltype(g.key.c_name) c_name;
@@ -57,6 +107,15 @@ struct __struct8 {
   decltype(g.key.c_phone) c_phone;
   decltype(g.key.c_comment) c_comment;
 };
+inline bool operator==(const __struct8 &a, const __struct8 &b) {
+  return a.c_custkey == b.c_custkey && a.c_name == b.c_name &&
+         a.revenue == b.revenue && a.c_acctbal == b.c_acctbal &&
+         a.n_name == b.n_name && a.c_address == b.c_address &&
+         a.c_phone == b.c_phone && a.c_comment == b.c_comment;
+}
+inline bool operator!=(const __struct8 &a, const __struct8 &b) {
+  return !(a == b);
+}
 std::vector<__struct1> nation =
     std::vector<decltype(__struct1{1, std::string("BRAZIL")})>{
         __struct1{1, std::string("BRAZIL")}};

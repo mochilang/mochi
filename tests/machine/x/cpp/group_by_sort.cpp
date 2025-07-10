@@ -8,14 +8,32 @@ struct __struct1 {
   decltype(std::string("a")) cat;
   decltype(3) val;
 };
+inline bool operator==(const __struct1 &a, const __struct1 &b) {
+  return a.cat == b.cat && a.val == b.val;
+}
+inline bool operator!=(const __struct1 &a, const __struct1 &b) {
+  return !(a == b);
+}
 struct __struct2 {
   decltype(std::declval<__struct1>().cat) key;
   std::vector<__struct1> items;
 };
+inline bool operator==(const __struct2 &a, const __struct2 &b) {
+  return a.key == b.key && a.items == b.items;
+}
+inline bool operator!=(const __struct2 &a, const __struct2 &b) {
+  return !(a == b);
+}
 struct __struct3 {
   decltype(std::declval<__struct2>().key) cat;
   bool total;
 };
+inline bool operator==(const __struct3 &a, const __struct3 &b) {
+  return a.cat == b.cat && a.total == b.total;
+}
+inline bool operator!=(const __struct3 &a, const __struct3 &b) {
+  return !(a == b);
+}
 std::vector<__struct1> items =
     std::vector<decltype(__struct1{std::string("a"), 3})>{
         __struct1{std::string("a"), 3}, __struct1{std::string("a"), 1},

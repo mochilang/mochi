@@ -6,6 +6,12 @@ struct __struct1 {
   std::string l;
   bool b;
 };
+inline bool operator==(const __struct1 &a, const __struct1 &b) {
+  return a.n == b.n && a.l == b.l && a.b == b.b;
+}
+inline bool operator!=(const __struct1 &a, const __struct1 &b) {
+  return !(a == b);
+}
 std::vector<int> nums = std::vector<decltype(1)>{1, 2};
 std::vector<std::string> letters =
     std::vector<decltype(std::string("A"))>{std::string("A"), std::string("B")};

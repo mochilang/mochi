@@ -6,28 +6,65 @@ struct __struct1 {
   decltype(1) id;
   decltype(std::string("A")) name;
 };
+inline bool operator==(const __struct1 &a, const __struct1 &b) {
+  return a.id == b.id && a.name == b.name;
+}
+inline bool operator!=(const __struct1 &a, const __struct1 &b) {
+  return !(a == b);
+}
 struct __struct2 {
   decltype(1) id;
   decltype(1) nation;
 };
+inline bool operator==(const __struct2 &a, const __struct2 &b) {
+  return a.id == b.id && a.nation == b.nation;
+}
+inline bool operator!=(const __struct2 &a, const __struct2 &b) {
+  return !(a == b);
+}
 struct __struct3 {
   decltype(100) part;
   decltype(1) supplier;
   decltype(10) cost;
   decltype(2) qty;
 };
+inline bool operator==(const __struct3 &a, const __struct3 &b) {
+  return a.part == b.part && a.supplier == b.supplier && a.cost == b.cost &&
+         a.qty == b.qty;
+}
+inline bool operator!=(const __struct3 &a, const __struct3 &b) {
+  return !(a == b);
+}
 struct __struct4 {
   decltype(std::declval<__struct3>().part) part;
   decltype((ps.cost * ps.qty)) value;
 };
+inline bool operator==(const __struct4 &a, const __struct4 &b) {
+  return a.part == b.part && a.value == b.value;
+}
+inline bool operator!=(const __struct4 &a, const __struct4 &b) {
+  return !(a == b);
+}
 struct __struct5 {
   decltype(std::declval<__struct4>().part) key;
   std::vector<__struct4> items;
 };
+inline bool operator==(const __struct5 &a, const __struct5 &b) {
+  return a.key == b.key && a.items == b.items;
+}
+inline bool operator!=(const __struct5 &a, const __struct5 &b) {
+  return !(a == b);
+}
 struct __struct6 {
   decltype(std::declval<__struct5>().key) part;
   bool total;
 };
+inline bool operator==(const __struct6 &a, const __struct6 &b) {
+  return a.part == b.part && a.total == b.total;
+}
+inline bool operator!=(const __struct6 &a, const __struct6 &b) {
+  return !(a == b);
+}
 std::vector<__struct1> nations =
     std::vector<decltype(__struct1{1, std::string("A")})>{
         __struct1{1, std::string("A")}, __struct1{2, std::string("B")}};
