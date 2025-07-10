@@ -169,7 +169,7 @@
           '()
           )
         )
-        (set! tmp (append tmp (list (cons "tag" (map-get g "key")) (cons "total" total))))
+        (set! tmp (append tmp (list (list (cons "tag" (map-get g "key")) (cons "total" total)))))
       )
       (loop (+ g_idx 1))
     )

@@ -1397,6 +1397,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 			return fmt.Sprintf("(list->string (reverse (string->list %s)))", args[0]), nil
 		}
 		return fmt.Sprintf("(reverse %s)", args[0]), nil
+	case "append":
+		if len(args) != 2 {
+			return "", fmt.Errorf("append expects 2 args")
+		}
+		return fmt.Sprintf("(append %s (list %s))", args[0], args[1]), nil
 	case "push":
 		if len(args) != 2 {
 			return "", fmt.Errorf("push expects 2 args")
