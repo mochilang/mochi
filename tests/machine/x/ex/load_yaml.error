@@ -1,0 +1,9 @@
+line 358
+warning: default values for the optional arguments in _load/2 are never used
+  /workspace/mochi/tests/machine/x/ex/load_yaml.exs:14
+
+** (File.Error) could not read file "../interpreter/valid/people.yaml": no such file or directory
+    (elixir 1.14.0) lib/file.ex:358: File.read!/1
+    /workspace/mochi/tests/machine/x/ex/load_yaml.exs:28: Main._load/2
+    /workspace/mochi/tests/machine/x/ex/load_yaml.exs:5: Main.main/0
+

@@ -10,7 +10,7 @@ end
 defmodule Main do
   @book %Book{title: "Go", author: %Person{name: "Bob", age: 42}}
   def main do
-    IO.puts(book.author.name)
+    IO.puts(@book.author.name)
   end
 end
 

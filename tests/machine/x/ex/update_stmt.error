@@ -1,0 +1,21 @@
+line 15
+warning: variable "people" does not exist and is being expanded to "people()", please use parentheses to remove the ambiguity or change the variable name
+  /workspace/mochi/tests/machine/x/ex/update_stmt.exs:15: Main.main/0
+
+warning: variable "name" is unused (if the variable is not meant to be used, prefix it with an underscore)
+  /workspace/mochi/tests/machine/x/ex/update_stmt.exs:16: Main.main/0
+
+warning: variable "status" is unused (if the variable is not meant to be used, prefix it with an underscore)
+  /workspace/mochi/tests/machine/x/ex/update_stmt.exs:16: Main.main/0
+
+warning: variable "people" is unused (if the variable is not meant to be used, prefix it with an underscore)
+  /workspace/mochi/tests/machine/x/ex/update_stmt.exs:14: Main.main/0
+
+** (CompileError) /workspace/mochi/tests/machine/x/ex/update_stmt.exs:15: undefined function people/0 (expected Main to define such a function or for it to be imported, but none are available)
+
+
+  def main do
+    people =
+      Enum.map(people, fn it ->
+        %{name: name, age: age, status: status} = it
+

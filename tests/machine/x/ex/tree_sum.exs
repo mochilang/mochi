@@ -8,14 +8,13 @@ defmodule Node do
 end
 
 defmodule Main do
-  @t %Node{left: %Leaf{}, value: 1, right: %Node{left: %Leaf{}, value: 2, right: %Leaf{}}}
   @spec sum_tree(Tree) :: integer()
   def sum_tree(t) do
     try do
       throw(
         {:return,
          (fn ->
-            t1 = @t
+            t1 = t
 
             case t1 do
               %Leaf{} ->
@@ -35,7 +34,9 @@ defmodule Main do
   end
 
   def main do
-    IO.inspect(sum_tree(@t))
+    # t :: Node
+    t = %Node{left: %Leaf{}, value: 1, right: %Node{left: %Leaf{}, value: 2, right: %Leaf{}}}
+    IO.inspect(sum_tree(t))
   end
 end
 

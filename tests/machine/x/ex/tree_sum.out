@@ -1,0 +1,4 @@
+warning: redefining module Node (current version loaded from /usr/lib/elixir/bin/../lib/elixir/ebin/Elixir.Node.beam)
+  /workspace/mochi/tests/machine/x/ex/tree_sum.exs:6
+
+3
