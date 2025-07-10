@@ -932,6 +932,23 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 				} else {
 					expr = fmt.Sprintf("(%s %s %s)", left, op, right)
 				}
+			case "<", "<=", ">", ">=":
+				leftStr = false
+				if isStringType(typs[i]) && isStringType(typs[i+1]) {
+					cmp := fmt.Sprintf("string.Compare(%s, %s)", left, right)
+					switch op {
+					case "<":
+						expr = fmt.Sprintf("%s < 0", cmp)
+					case "<=":
+						expr = fmt.Sprintf("%s <= 0", cmp)
+					case ">":
+						expr = fmt.Sprintf("%s > 0", cmp)
+					case ">=":
+						expr = fmt.Sprintf("%s >= 0", cmp)
+					}
+				} else {
+					expr = fmt.Sprintf("(%s %s %s)", left, op, right)
+				}
 			case "in":
 				leftStr = false
 				lt := typs[i]
@@ -2583,6 +2600,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		c.use("_sliceString")
 		end := fmt.Sprintf("(%s)+(%s)", args[1], args[2])
 		return fmt.Sprintf("_sliceString(%s, %s, %s)", args[0], args[1], end), nil
+	case "substring":
+		if len(args) != 3 {
+			return "", fmt.Errorf("substring expects 3 args")
+		}
+		c.use("_sliceString")
+		return fmt.Sprintf("_sliceString(%s, %s, %s)", args[0], args[1], args[2]), nil
 	case "eval":
 		if len(args) != 1 {
 			return "", fmt.Errorf("eval expects 1 arg")
