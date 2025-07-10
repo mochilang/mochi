@@ -6,8 +6,8 @@ class Program
 {
     static void Main()
     {
-        long[] nums = new long[] { 1, 2, 3 };
-        string[] letters = new string[] { "A", "B" };
+        List<long> nums = new List<long> { 1, 2, 3 };
+        List<string> letters = new List<string> { "A", "B" };
         var pairs = new Func<List<Dictionary<string, dynamic>>>(() =>
         {
             var _res = new List<Dictionary<string, dynamic>>();

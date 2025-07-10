@@ -6,9 +6,9 @@ class Program
 {
     static void Main()
     {
-        long[] nums = new long[] { 1, 2 };
-        string[] letters = new string[] { "A", "B" };
-        bool[] bools = new bool[] { true, false };
+        List<long> nums = new List<long> { 1, 2 };
+        List<string> letters = new List<string> { "A", "B" };
+        List<bool> bools = new List<bool> { true, false };
         var combos = new Func<List<Dictionary<string, dynamic>>>(() =>
         {
             var _res = new List<Dictionary<string, dynamic>>();

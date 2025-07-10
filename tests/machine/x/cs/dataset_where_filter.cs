@@ -6,7 +6,7 @@ class Program
 {
     static void Main()
     {
-        var people = new dynamic[] { new Dictionary<string, dynamic> { { "name", "Alice" }, { "age", 30 } }, new Dictionary<string, dynamic> { { "name", "Bob" }, { "age", 15 } }, new Dictionary<string, dynamic> { { "name", "Charlie" }, { "age", 65 } }, new Dictionary<string, dynamic> { { "name", "Diana" }, { "age", 45 } } };
+        var people = new List<dynamic> { new Dictionary<string, dynamic> { { "name", "Alice" }, { "age", 30 } }, new Dictionary<string, dynamic> { { "name", "Bob" }, { "age", 15 } }, new Dictionary<string, dynamic> { { "name", "Charlie" }, { "age", 65 } }, new Dictionary<string, dynamic> { { "name", "Diana" }, { "age", 45 } } };
         var adults = people.Where(person => (person.age >= 18)).Select(person => new Dictionary<string, dynamic> { { "name", person.name }, { "age", person.age }, { "is_senior", (person.age >= 60) } }).ToArray();
         Console.WriteLine("--- Adults ---");
         foreach (var person in adults)
