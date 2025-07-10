@@ -6,7 +6,7 @@ type Person = {
   email: string;
 };
 
-let adults: Record<string, string>[];
+let adults: { [key: string]: string }[];
 let people: Person[];
 
 function main(): void {
@@ -19,7 +19,7 @@ function main(): void {
     "email": p.email,
   }));
   for (const a of adults) {
-    console.log(a.name, a.email);
+    console.log(_fmt(a.name), _fmt(a.email));
   }
 }
 import { readAllSync } from "https://deno.land/std@0.221.0/io/read_all.ts";
@@ -55,7 +55,7 @@ function _parseCSV(text: string, header: boolean, delim: string): any[] {
   for (let i = start; i < lines.length; i++) {
     if (!lines[i]) continue;
     const parts = lines[i].split(delim);
-    const m: Record<string, any> = {};
+    const m: { [key: string]: any } = {};
     for (let j = 0; j < headers.length; j++) {
       const val = parts[j] ?? "";
       if (/^-?\d+$/.test(val)) m[headers[j]] = parseInt(val, 10);
@@ -157,8 +157,18 @@ function _save(rows: any[], path: string | null, opts: any): void {
   }
 }
 
-function _toAnyMap(m: any): Record<string, any> {
-  return m as Record<string, any>;
+function _fmt(v: any): string {
+  if (Array.isArray(v)) return v.map(_fmt).join(" ");
+  if (v && typeof v === "object") {
+    const keys = Object.keys(v).sort();
+    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
+    return "map[" + parts.join(" ") + "]";
+  }
+  return String(v);
+}
+
+function _toAnyMap(m: any): { [key: string]: any } {
+  return m as { [key: string]: any };
 }
 
 main();

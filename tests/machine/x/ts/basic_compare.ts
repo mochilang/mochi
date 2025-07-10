@@ -6,8 +6,18 @@ let b: number;
 function main(): void {
   a = 10 - 3;
   b = 2 + 2;
-  console.log(a);
-  console.log(a == 7);
-  console.log(b < 5);
+  console.log(_fmt(a));
+  console.log(_fmt(a == 7));
+  console.log(_fmt(b < 5));
 }
+function _fmt(v: any): string {
+  if (Array.isArray(v)) return v.map(_fmt).join(" ");
+  if (v && typeof v === "object") {
+    const keys = Object.keys(v).sort();
+    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
+    return "map[" + parts.join(" ") + "]";
+  }
+  return String(v);
+}
+
 main();

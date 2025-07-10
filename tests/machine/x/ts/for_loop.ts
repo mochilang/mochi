@@ -2,7 +2,17 @@
 
 function main(): void {
   for (let i: number = 1; i < 4; i++) {
-    console.log(i);
+    console.log(_fmt(i));
   }
 }
+function _fmt(v: any): string {
+  if (Array.isArray(v)) return v.map(_fmt).join(" ");
+  if (v && typeof v === "object") {
+    const keys = Object.keys(v).sort();
+    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
+    return "map[" + parts.join(" ") + "]";
+  }
+  return String(v);
+}
+
 main();

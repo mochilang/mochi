@@ -25,7 +25,7 @@ function main(): void {
     if (_equal(_t, 3)) return "three";
     return "unknown";
   })();
-  console.log(label);
+  console.log(_fmt(label));
   day = "sun";
   mood = (() => {
     const _t = day;
@@ -34,7 +34,7 @@ function main(): void {
     if (_equal(_t, "sun")) return "relaxed";
     return "normal";
   })();
-  console.log(mood);
+  console.log(_fmt(mood));
   ok = true;
   status = (() => {
     const _t = ok;
@@ -42,9 +42,9 @@ function main(): void {
     if (_equal(_t, false)) return "denied";
     return undefined;
   })();
-  console.log(status);
-  console.log(classify(0));
-  console.log(classify(5));
+  console.log(_fmt(status));
+  console.log(_fmt(classify(0)));
+  console.log(_fmt(classify(5)));
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
@@ -64,6 +64,16 @@ function _equal(a: any, b: any): boolean {
     return true;
   }
   return a === b;
+}
+
+function _fmt(v: any): string {
+  if (Array.isArray(v)) return v.map(_fmt).join(" ");
+  if (v && typeof v === "object") {
+    const keys = Object.keys(v).sort();
+    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
+    return "map[" + parts.join(" ") + "]";
+  }
+  return String(v);
 }
 
 main();

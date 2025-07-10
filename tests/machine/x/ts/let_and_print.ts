@@ -6,6 +6,16 @@ let b: number;
 function main(): void {
   a = 10;
   b = 20;
-  console.log(a + b);
+  console.log(_fmt(a + b));
 }
+function _fmt(v: any): string {
+  if (Array.isArray(v)) return v.map(_fmt).join(" ");
+  if (v && typeof v === "object") {
+    const keys = Object.keys(v).sort();
+    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
+    return "map[" + parts.join(" ") + "]";
+  }
+  return String(v);
+}
+
 main();

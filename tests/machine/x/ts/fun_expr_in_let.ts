@@ -6,6 +6,16 @@ function main(): void {
   square = function (x: number): number {
     return (x * x);
   };
-  console.log(square(6));
+  console.log(_fmt(square(6)));
 }
+function _fmt(v: any): string {
+  if (Array.isArray(v)) return v.map(_fmt).join(" ");
+  if (v && typeof v === "object") {
+    const keys = Object.keys(v).sort();
+    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
+    return "map[" + parts.join(" ") + "]";
+  }
+  return String(v);
+}
+
 main();
