@@ -1,11 +1,11 @@
-line 19: ../../../tests/machine/x/cpp/group_items_iteration.cpp:19:12: error: ‘total’ was not declared in this scope
-   19 |   decltype(total) total;
+line 79: ../../../tests/machine/x/cpp/group_items_iteration.cpp:79:12: error: ‘total’ was not declared in this scope
+   79 |   decltype(total) total;
       |            ^~~~~
-../../../tests/machine/x/cpp/group_items_iteration.cpp:19:12: error: ‘total’ was not declared in this scope
+../../../tests/machine/x/cpp/group_items_iteration.cpp:79:12: error: ‘total’ was not declared in this scope
 ../../../tests/machine/x/cpp/group_items_iteration.cpp: In instantiation of ‘main()::<lambda(auto:1)> [with auto:1 = std::vector<int>]’:
-../../../tests/machine/x/cpp/group_items_iteration.cpp:58:7:   required from here
-../../../tests/machine/x/cpp/group_items_iteration.cpp:56:18: error: no matching function for call to ‘std::vector<int>::push_back(__struct3)’
-   56 |       v.push_back(__struct3{g.key, total});
+../../../tests/machine/x/cpp/group_items_iteration.cpp:133:7:   required from here
+../../../tests/machine/x/cpp/group_items_iteration.cpp:131:18: error: no matching function for call to ‘std::vector<int>::push_back(__struct3)’
+  131 |       v.push_back(__struct3{g.key, total});
       |       ~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~
 In file included from /usr/include/c++/13/vector:66,
                  from ../../../tests/machine/x/cpp/group_items_iteration.cpp:7:
@@ -22,35 +22,35 @@ In file included from /usr/include/c++/13/vector:66,
  1298 |       push_back(value_type&& __x)
       |                 ~~~~~~~~~~~~~^~~
 ../../../tests/machine/x/cpp/group_items_iteration.cpp: In lambda function:
-../../../tests/machine/x/cpp/group_items_iteration.cpp:61:36: error: ‘r’ was not declared in this scope
-   61 |     std::vector<std::pair<decltype(r.tag), decltype(r)>> __items;
+../../../tests/machine/x/cpp/group_items_iteration.cpp:136:36: error: ‘r’ was not declared in this scope
+  136 |     std::vector<std::pair<decltype(r.tag), decltype(r)>> __items;
       |                                    ^
-../../../tests/machine/x/cpp/group_items_iteration.cpp:61:44: error: template argument 1 is invalid
-   61 |     std::vector<std::pair<decltype(r.tag), decltype(r)>> __items;
+../../../tests/machine/x/cpp/group_items_iteration.cpp:136:44: error: template argument 1 is invalid
+  136 |     std::vector<std::pair<decltype(r.tag), decltype(r)>> __items;
       |                                            ^~~~~~~~~~~
-../../../tests/machine/x/cpp/group_items_iteration.cpp:61:44: error: template argument 2 is invalid
-../../../tests/machine/x/cpp/group_items_iteration.cpp:61:55: error: template argument 1 is invalid
-   61 |     std::vector<std::pair<decltype(r.tag), decltype(r)>> __items;
+../../../tests/machine/x/cpp/group_items_iteration.cpp:136:44: error: template argument 2 is invalid
+../../../tests/machine/x/cpp/group_items_iteration.cpp:136:55: error: template argument 1 is invalid
+  136 |     std::vector<std::pair<decltype(r.tag), decltype(r)>> __items;
       |                                                       ^~
-../../../tests/machine/x/cpp/group_items_iteration.cpp:61:55: error: template argument 2 is invalid
-../../../tests/machine/x/cpp/group_items_iteration.cpp:63:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
-   63 |       __items.push_back({r.tag, r});
+../../../tests/machine/x/cpp/group_items_iteration.cpp:136:55: error: template argument 2 is invalid
+../../../tests/machine/x/cpp/group_items_iteration.cpp:138:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  138 |       __items.push_back({r.tag, r});
       |               ^~~~~~~~~
-../../../tests/machine/x/cpp/group_items_iteration.cpp:63:28: error: request for member ‘tag’ in ‘r’, which is of non-class type ‘int’
-   63 |       __items.push_back({r.tag, r});
+../../../tests/machine/x/cpp/group_items_iteration.cpp:138:28: error: request for member ‘tag’ in ‘r’, which is of non-class type ‘int’
+  138 |       __items.push_back({r.tag, r});
       |                            ^~~
-../../../tests/machine/x/cpp/group_items_iteration.cpp:65:23: error: request for member ‘begin’ in ‘__items’, which is of non-class type ‘int’
-   65 |     std::sort(__items.begin(), __items.end(),
+../../../tests/machine/x/cpp/group_items_iteration.cpp:140:23: error: request for member ‘begin’ in ‘__items’, which is of non-class type ‘int’
+  140 |     std::sort(__items.begin(), __items.end(),
       |                       ^~~~~
-../../../tests/machine/x/cpp/group_items_iteration.cpp:65:40: error: request for member ‘end’ in ‘__items’, which is of non-class type ‘int’
-   65 |     std::sort(__items.begin(), __items.end(),
+../../../tests/machine/x/cpp/group_items_iteration.cpp:140:40: error: request for member ‘end’ in ‘__items’, which is of non-class type ‘int’
+  140 |     std::sort(__items.begin(), __items.end(),
       |                                        ^~~
-../../../tests/machine/x/cpp/group_items_iteration.cpp:67:28: error: template argument 1 is invalid
-   67 |     std::vector<decltype(r)> __res;
+../../../tests/machine/x/cpp/group_items_iteration.cpp:142:28: error: template argument 1 is invalid
+  142 |     std::vector<decltype(r)> __res;
       |                            ^
-../../../tests/machine/x/cpp/group_items_iteration.cpp:67:28: error: template argument 2 is invalid
-../../../tests/machine/x/cpp/group_items_iteration.cpp:68:20: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
-   68 |     for (auto &p : __items)
+../../../tests/machine/x/cpp/group_items_iteration.cpp:142:28: error: template argument 2 is invalid
+../../../tests/machine/x/cpp/group_items_iteration.cpp:143:20: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+  143 |     for (auto &p : __items)
       |                    ^~~~~~~
       |                    std::begin
 In file included from /usr/include/c++/13/string:53,
@@ -63,24 +63,24 @@ In file included from /usr/include/c++/13/string:53,
 /usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
   114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
       |                                     ^~~~~
-../../../tests/machine/x/cpp/group_items_iteration.cpp:68:20: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
-   68 |     for (auto &p : __items)
+../../../tests/machine/x/cpp/group_items_iteration.cpp:143:20: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
+  143 |     for (auto &p : __items)
       |                    ^~~~~~~
       |                    std::end
 /usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
   116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
       |                                     ^~~
-../../../tests/machine/x/cpp/group_items_iteration.cpp:69:13: error: request for member ‘push_back’ in ‘__res’, which is of non-class type ‘int’
-   69 |       __res.push_back(p.second);
+../../../tests/machine/x/cpp/group_items_iteration.cpp:144:13: error: request for member ‘push_back’ in ‘__res’, which is of non-class type ‘int’
+  144 |       __res.push_back(p.second);
       |             ^~~~~~~~~
 ../../../tests/machine/x/cpp/group_items_iteration.cpp: In function ‘int main()’:
-../../../tests/machine/x/cpp/group_items_iteration.cpp:74:35: error: request for member ‘size’ in ‘__tmp1’, which is of non-class type ‘int’
-   74 |     for (size_t i = 0; i < __tmp1.size(); ++i) {
+../../../tests/machine/x/cpp/group_items_iteration.cpp:149:35: error: request for member ‘size’ in ‘__tmp1’, which is of non-class type ‘int’
+  149 |     for (size_t i = 0; i < __tmp1.size(); ++i) {
       |                                   ^~~~
-../../../tests/machine/x/cpp/group_items_iteration.cpp:77:44: error: invalid types ‘int[size_t {aka long unsigned int}]’ for array subscript
-   77 |       std::cout << std::boolalpha << __tmp1[i];
+../../../tests/machine/x/cpp/group_items_iteration.cpp:152:44: error: invalid types ‘int[size_t {aka long unsigned int}]’ for array subscript
+  152 |       std::cout << std::boolalpha << __tmp1[i];
       |                                            ^
 
- 18 |   decltype(std::declval<__struct2>().key) tag;
- 19 |   decltype(total) total;
- 20 | };
+ 78 |   decltype(std::declval<__struct2>().key) tag;
+ 79 |   decltype(total) total;
+ 80 | };

@@ -1,11 +1,11 @@
-line 9: ../../../tests/machine/x/cpp/pure_global_fold.cpp:9:10: warning: use of ‘auto’ in parameter declaration only available with ‘-std=c++20’ or ‘-fconcepts’
-    9 | auto inc(auto x) { return (x + k); }
+line 54: ../../../tests/machine/x/cpp/pure_global_fold.cpp:54:10: warning: use of ‘auto’ in parameter declaration only available with ‘-std=c++20’ or ‘-fconcepts’
+   54 | auto inc(auto x) { return (x + k); }
       |          ^~~~
 ../../../tests/machine/x/cpp/pure_global_fold.cpp: In function ‘auto inc(auto:1)’:
-../../../tests/machine/x/cpp/pure_global_fold.cpp:9:32: error: ‘k’ was not declared in this scope
-    9 | auto inc(auto x) { return (x + k); }
+../../../tests/machine/x/cpp/pure_global_fold.cpp:54:32: error: ‘k’ was not declared in this scope
+   54 | auto inc(auto x) { return (x + k); }
       |                                ^
 
-  8 | 
-  9 | auto inc(auto x) { return (x + k); }
- 10 | 
+ 53 | 
+ 54 | auto inc(auto x) { return (x + k); }
+ 55 | 

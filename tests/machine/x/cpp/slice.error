@@ -1,6 +1,6 @@
-line 13: ../../../tests/machine/x/cpp/slice.cpp: In function ‘int main()’:
-../../../tests/machine/x/cpp/slice.cpp:13:57: error: no matching function for call to ‘std::__cxx11::basic_string<char>::basic_string(std::vector<int>)’
-   13 |         << std::string(std::vector<decltype(1)>{1, 2, 3}).substr(1, (3) - (1));
+line 58: ../../../tests/machine/x/cpp/slice.cpp: In function ‘int main()’:
+../../../tests/machine/x/cpp/slice.cpp:58:57: error: no matching function for call to ‘std::__cxx11::basic_string<char>::basic_string(std::vector<int>)’
+   58 |         << std::string(std::vector<decltype(1)>{1, 2, 3}).substr(1, (3) - (1));
       |                                                         ^
 In file included from /usr/include/c++/13/string:54,
                  from /usr/include/c++/13/bits/locale_classes.h:40,
@@ -27,29 +27,29 @@ In file included from /usr/include/c++/13/bits/stl_pair.h:60,
   783 |         basic_string(const _Tp& __t, size_type __pos, size_type __n,
       |         ^~~~~~~~~~~~
 /usr/include/c++/13/bits/basic_string.h:783:9: note:   template argument deduction/substitution failed:
-../../../tests/machine/x/cpp/slice.cpp:13:57: note:   candidate expects 4 arguments, 1 provided
-   13 |         << std::string(std::vector<decltype(1)>{1, 2, 3}).substr(1, (3) - (1));
+../../../tests/machine/x/cpp/slice.cpp:58:57: note:   candidate expects 4 arguments, 1 provided
+   58 |         << std::string(std::vector<decltype(1)>{1, 2, 3}).substr(1, (3) - (1));
       |                                                         ^
 /usr/include/c++/13/bits/basic_string.h:760:9: note: candidate: ‘template<class _InputIterator, class> std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(_InputIterator, _InputIterator, const _Alloc&) [with <template-parameter-2-2> = _InputIterator; _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
   760 |         basic_string(_InputIterator __beg, _InputIterator __end,
       |         ^~~~~~~~~~~~
 /usr/include/c++/13/bits/basic_string.h:760:9: note:   template argument deduction/substitution failed:
-../../../tests/machine/x/cpp/slice.cpp:13:57: note:   candidate expects 3 arguments, 1 provided
-   13 |         << std::string(std::vector<decltype(1)>{1, 2, 3}).substr(1, (3) - (1));
+../../../tests/machine/x/cpp/slice.cpp:58:57: note:   candidate expects 3 arguments, 1 provided
+   58 |         << std::string(std::vector<decltype(1)>{1, 2, 3}).substr(1, (3) - (1));
       |                                                         ^
 /usr/include/c++/13/bits/basic_string.h:664:7: note: candidate: ‘template<class> std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(size_type, _CharT, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
   664 |       basic_string(size_type __n, _CharT __c, const _Alloc& __a = _Alloc())
       |       ^~~~~~~~~~~~
 /usr/include/c++/13/bits/basic_string.h:664:7: note:   template argument deduction/substitution failed:
-../../../tests/machine/x/cpp/slice.cpp:13:57: note:   candidate expects 3 arguments, 1 provided
-   13 |         << std::string(std::vector<decltype(1)>{1, 2, 3}).substr(1, (3) - (1));
+../../../tests/machine/x/cpp/slice.cpp:58:57: note:   candidate expects 3 arguments, 1 provided
+   58 |         << std::string(std::vector<decltype(1)>{1, 2, 3}).substr(1, (3) - (1));
       |                                                         ^
 /usr/include/c++/13/bits/basic_string.h:641:7: note: candidate: ‘template<class> std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const _CharT*, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
   641 |       basic_string(const _CharT* __s, const _Alloc& __a = _Alloc())
       |       ^~~~~~~~~~~~
 /usr/include/c++/13/bits/basic_string.h:641:7: note:   template argument deduction/substitution failed:
-../../../tests/machine/x/cpp/slice.cpp:13:29: note:   cannot convert ‘std::vector<int>(std::initializer_list<int>{((const int*)(& const int [3]{1, 2, 3})), 3}, std::allocator<int>())’ (type ‘std::vector<int>’) to type ‘const char*’
-   13 |         << std::string(std::vector<decltype(1)>{1, 2, 3}).substr(1, (3) - (1));
+../../../tests/machine/x/cpp/slice.cpp:58:29: note:   cannot convert ‘std::vector<int>(std::initializer_list<int>{((const int*)(& const int [3]{1, 2, 3})), 3}, std::allocator<int>())’ (type ‘std::vector<int>’) to type ‘const char*’
+   58 |         << std::string(std::vector<decltype(1)>{1, 2, 3}).substr(1, (3) - (1));
       |                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /usr/include/c++/13/bits/basic_string.h:716:7: note: candidate: ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
   716 |       basic_string(basic_string&& __str, const _Alloc& __a)
@@ -107,8 +107,8 @@ In file included from /usr/include/c++/13/bits/stl_pair.h:60,
   176 |       basic_string(__sv_wrapper __svw, const _Alloc& __a)
       |       ^~~~~~~~~~~~
 /usr/include/c++/13/bits/basic_string.h:176:7: note:   candidate expects 2 arguments, 1 provided
-../../../tests/machine/x/cpp/slice.cpp:19:57: error: no matching function for call to ‘std::__cxx11::basic_string<char>::basic_string(std::vector<int>)’
-   19 |         << std::string(std::vector<decltype(1)>{1, 2, 3}).substr(0, (2) - (0));
+../../../tests/machine/x/cpp/slice.cpp:64:57: error: no matching function for call to ‘std::__cxx11::basic_string<char>::basic_string(std::vector<int>)’
+   64 |         << std::string(std::vector<decltype(1)>{1, 2, 3}).substr(0, (2) - (0));
       |                                                         ^
 /usr/include/c++/13/bits/basic_string.h:795:9: note: candidate: ‘template<class _Tp, class> std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const _Tp&, const _Alloc&) [with <template-parameter-2-2> = _Tp; _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
   795 |         basic_string(const _Tp& __t, const _Alloc& __a = _Alloc())
@@ -118,29 +118,29 @@ In file included from /usr/include/c++/13/bits/stl_pair.h:60,
   783 |         basic_string(const _Tp& __t, size_type __pos, size_type __n,
       |         ^~~~~~~~~~~~
 /usr/include/c++/13/bits/basic_string.h:783:9: note:   template argument deduction/substitution failed:
-../../../tests/machine/x/cpp/slice.cpp:19:57: note:   candidate expects 4 arguments, 1 provided
-   19 |         << std::string(std::vector<decltype(1)>{1, 2, 3}).substr(0, (2) - (0));
+../../../tests/machine/x/cpp/slice.cpp:64:57: note:   candidate expects 4 arguments, 1 provided
+   64 |         << std::string(std::vector<decltype(1)>{1, 2, 3}).substr(0, (2) - (0));
       |                                                         ^
 /usr/include/c++/13/bits/basic_string.h:760:9: note: candidate: ‘template<class _InputIterator, class> std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(_InputIterator, _InputIterator, const _Alloc&) [with <template-parameter-2-2> = _InputIterator; _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
   760 |         basic_string(_InputIterator __beg, _InputIterator __end,
       |         ^~~~~~~~~~~~
 /usr/include/c++/13/bits/basic_string.h:760:9: note:   template argument deduction/substitution failed:
-../../../tests/machine/x/cpp/slice.cpp:19:57: note:   candidate expects 3 arguments, 1 provided
-   19 |         << std::string(std::vector<decltype(1)>{1, 2, 3}).substr(0, (2) - (0));
+../../../tests/machine/x/cpp/slice.cpp:64:57: note:   candidate expects 3 arguments, 1 provided
+   64 |         << std::string(std::vector<decltype(1)>{1, 2, 3}).substr(0, (2) - (0));
       |                                                         ^
 /usr/include/c++/13/bits/basic_string.h:664:7: note: candidate: ‘template<class> std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(size_type, _CharT, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
   664 |       basic_string(size_type __n, _CharT __c, const _Alloc& __a = _Alloc())
       |       ^~~~~~~~~~~~
 /usr/include/c++/13/bits/basic_string.h:664:7: note:   template argument deduction/substitution failed:
-../../../tests/machine/x/cpp/slice.cpp:19:57: note:   candidate expects 3 arguments, 1 provided
-   19 |         << std::string(std::vector<decltype(1)>{1, 2, 3}).substr(0, (2) - (0));
+../../../tests/machine/x/cpp/slice.cpp:64:57: note:   candidate expects 3 arguments, 1 provided
+   64 |         << std::string(std::vector<decltype(1)>{1, 2, 3}).substr(0, (2) - (0));
       |                                                         ^
 /usr/include/c++/13/bits/basic_string.h:641:7: note: candidate: ‘template<class> std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const _CharT*, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
   641 |       basic_string(const _CharT* __s, const _Alloc& __a = _Alloc())
       |       ^~~~~~~~~~~~
 /usr/include/c++/13/bits/basic_string.h:641:7: note:   template argument deduction/substitution failed:
-../../../tests/machine/x/cpp/slice.cpp:19:29: note:   cannot convert ‘std::vector<int>(std::initializer_list<int>{((const int*)(& const int [3]{1, 2, 3})), 3}, std::allocator<int>())’ (type ‘std::vector<int>’) to type ‘const char*’
-   19 |         << std::string(std::vector<decltype(1)>{1, 2, 3}).substr(0, (2) - (0));
+../../../tests/machine/x/cpp/slice.cpp:64:29: note:   cannot convert ‘std::vector<int>(std::initializer_list<int>{((const int*)(& const int [3]{1, 2, 3})), 3}, std::allocator<int>())’ (type ‘std::vector<int>’) to type ‘const char*’
+   64 |         << std::string(std::vector<decltype(1)>{1, 2, 3}).substr(0, (2) - (0));
       |                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /usr/include/c++/13/bits/basic_string.h:716:7: note: candidate: ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
   716 |       basic_string(basic_string&& __str, const _Alloc& __a)
@@ -199,6 +199,6 @@ In file included from /usr/include/c++/13/bits/stl_pair.h:60,
       |       ^~~~~~~~~~~~
 /usr/include/c++/13/bits/basic_string.h:176:7: note:   candidate expects 2 arguments, 1 provided
 
- 12 |         << std::boolalpha
- 13 |         << std::string(std::vector<decltype(1)>{1, 2, 3}).substr(1, (3) - (1));
- 14 |     std::cout << std::endl;
+ 57 |         << std::boolalpha
+ 58 |         << std::string(std::vector<decltype(1)>{1, 2, 3}).substr(1, (3) - (1));
+ 59 |     std::cout << std::endl;

@@ -1,19 +1,19 @@
-line 24: ../../../tests/machine/x/cpp/left_join_multi.cpp:24:12: error: ‘i’ was not declared in this scope
-   24 |   decltype(i) item;
+line 114: ../../../tests/machine/x/cpp/left_join_multi.cpp:114:12: error: ‘i’ was not declared in this scope
+  114 |   decltype(i) item;
       |            ^
-../../../tests/machine/x/cpp/left_join_multi.cpp:24:12: error: ‘i’ was not declared in this scope
+../../../tests/machine/x/cpp/left_join_multi.cpp:114:12: error: ‘i’ was not declared in this scope
 ../../../tests/machine/x/cpp/left_join_multi.cpp: In lambda function:
-../../../tests/machine/x/cpp/left_join_multi.cpp:47:55: error: cannot convert ‘__struct3’ to ‘int’ in initialization
-   47 |             __items.push_back(__struct4{o.id, c.name, i});
+../../../tests/machine/x/cpp/left_join_multi.cpp:157:55: error: cannot convert ‘__struct3’ to ‘int’ in initialization
+  157 |             __items.push_back(__struct4{o.id, c.name, i});
       |                                                       ^
       |                                                       |
       |                                                       __struct3
-../../../tests/machine/x/cpp/left_join_multi.cpp:51:55: error: cannot convert ‘__struct3’ to ‘int’ in initialization
-   51 |             __items.push_back(__struct4{o.id, c.name, i});
+../../../tests/machine/x/cpp/left_join_multi.cpp:161:55: error: cannot convert ‘__struct3’ to ‘int’ in initialization
+  161 |             __items.push_back(__struct4{o.id, c.name, i});
       |                                                       ^
       |                                                       |
       |                                                       __struct3
 
- 23 |   decltype(std::declval<__struct1>().name) name;
- 24 |   decltype(i) item;
- 25 | };
+113 |   decltype(std::declval<__struct1>().name) name;
+114 |   decltype(i) item;
+115 | };

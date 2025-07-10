@@ -1,23 +1,23 @@
-line 36: ../../../tests/machine/x/cpp/in_operator_extended.cpp: In function ‘int main()’:
-../../../tests/machine/x/cpp/in_operator_extended.cpp:36:31: error: ‘struct __struct1’ has no member named ‘begin’
-   36 |               << (std::find(m.begin(), m.end(), std::string("a")) != m.end());
+line 91: ../../../tests/machine/x/cpp/in_operator_extended.cpp: In function ‘int main()’:
+../../../tests/machine/x/cpp/in_operator_extended.cpp:91:31: error: ‘struct __struct1’ has no member named ‘begin’
+   91 |               << (std::find(m.begin(), m.end(), std::string("a")) != m.end());
       |                               ^~~~~
-../../../tests/machine/x/cpp/in_operator_extended.cpp:36:42: error: ‘struct __struct1’ has no member named ‘end’
-   36 |               << (std::find(m.begin(), m.end(), std::string("a")) != m.end());
+../../../tests/machine/x/cpp/in_operator_extended.cpp:91:42: error: ‘struct __struct1’ has no member named ‘end’
+   91 |               << (std::find(m.begin(), m.end(), std::string("a")) != m.end());
       |                                          ^~~
-../../../tests/machine/x/cpp/in_operator_extended.cpp:36:72: error: ‘struct __struct1’ has no member named ‘end’
-   36 |               << (std::find(m.begin(), m.end(), std::string("a")) != m.end());
+../../../tests/machine/x/cpp/in_operator_extended.cpp:91:72: error: ‘struct __struct1’ has no member named ‘end’
+   91 |               << (std::find(m.begin(), m.end(), std::string("a")) != m.end());
       |                                                                        ^~~
-../../../tests/machine/x/cpp/in_operator_extended.cpp:41:31: error: ‘struct __struct1’ has no member named ‘begin’
-   41 |               << (std::find(m.begin(), m.end(), std::string("b")) != m.end());
+../../../tests/machine/x/cpp/in_operator_extended.cpp:96:31: error: ‘struct __struct1’ has no member named ‘begin’
+   96 |               << (std::find(m.begin(), m.end(), std::string("b")) != m.end());
       |                               ^~~~~
-../../../tests/machine/x/cpp/in_operator_extended.cpp:41:42: error: ‘struct __struct1’ has no member named ‘end’
-   41 |               << (std::find(m.begin(), m.end(), std::string("b")) != m.end());
+../../../tests/machine/x/cpp/in_operator_extended.cpp:96:42: error: ‘struct __struct1’ has no member named ‘end’
+   96 |               << (std::find(m.begin(), m.end(), std::string("b")) != m.end());
       |                                          ^~~
-../../../tests/machine/x/cpp/in_operator_extended.cpp:41:72: error: ‘struct __struct1’ has no member named ‘end’
-   41 |               << (std::find(m.begin(), m.end(), std::string("b")) != m.end());
+../../../tests/machine/x/cpp/in_operator_extended.cpp:96:72: error: ‘struct __struct1’ has no member named ‘end’
+   96 |               << (std::find(m.begin(), m.end(), std::string("b")) != m.end());
       |                                                                        ^~~
 
- 35 |     std::cout << std::boolalpha
- 36 |               << (std::find(m.begin(), m.end(), std::string("a")) != m.end());
- 37 |     std::cout << std::endl;
+ 90 |     std::cout << std::boolalpha
+ 91 |               << (std::find(m.begin(), m.end(), std::string("a")) != m.end());
+ 92 |     std::cout << std::endl;
