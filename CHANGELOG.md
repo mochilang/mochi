@@ -1,4 +1,28 @@
 # 📦 CHANGELOG.md
+## [0.10.22] – 2025-07-10T17:45:54+07:00
+
+### Added
+
+* Go FFI MD5 example with tests
+* Outer and right join support for Java and Kotlin
+* Nested map assignment and union pattern support in the C backend
+* COBOL map operations and struct literals
+* Prolog update statements and test blocks with load/save builtins
+* YAML parser builtin for Dart and YAML/JSONL runtime support for Rust
+
+### Changed
+
+* Improved type inference across Go, OCaml, Scala, Swift and others
+* Better printing and formatting across Rust, Zig and Smalltalk compilers
+* Automated README generation with refreshed machine outputs
+* Enhanced join handling and sanitized names in the C backend
+
+### Fixed
+
+* Zero-arg call evaluation in Smalltalk and variable tracking in Scala
+* Map field casts and join query issues across Swift and Java
+* Removed obsolete error files and refreshed translations
+
 ## [0.10.21] – 2025-07-10T09:38:20+07:00
 
 ### Added
