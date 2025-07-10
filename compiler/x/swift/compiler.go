@@ -138,26 +138,31 @@ func (c *compiler) letStmt(l *parser.LetStmt) error {
 	if err != nil {
 		return err
 	}
+	inferred := c.inferType(l.Type, l.Value)
+	kw := "let"
+	if strings.HasPrefix(inferred, "list") {
+		kw = "var"
+	}
 	if l.Value != nil {
 		val, err := c.expr(l.Value)
 		if err != nil {
 			return err
 		}
 		if typ != "" {
-			c.writeln(fmt.Sprintf("let %s: %s = %s", l.Name, typ, val))
+			c.writeln(fmt.Sprintf("%s %s: %s = %s", kw, l.Name, typ, val))
 			c.swiftTypes[l.Name] = typ
 		} else {
-			c.writeln(fmt.Sprintf("let %s = %s", l.Name, val))
+			c.writeln(fmt.Sprintf("%s %s = %s", kw, l.Name, val))
 		}
-		c.varTypes[l.Name] = c.inferType(l.Type, l.Value)
+		c.varTypes[l.Name] = inferred
 		c.recordMapFields(l.Name, l.Value)
 		return nil
 	}
 	if typ == "" {
 		return fmt.Errorf("let without value or type at line %d", l.Pos.Line)
 	}
-	c.writeln(fmt.Sprintf("let %s: %s = %s", l.Name, typ, defaultValue(typ)))
-	c.varTypes[l.Name] = c.inferType(l.Type, nil)
+	c.writeln(fmt.Sprintf("%s %s: %s = %s", kw, l.Name, typ, defaultValue(typ)))
+	c.varTypes[l.Name] = inferred
 	c.recordMapFields(l.Name, l.Value)
 	c.swiftTypes[l.Name] = typ
 	return nil
@@ -1287,6 +1292,39 @@ func swiftTypeOf(t string) string {
 	return ""
 }
 
+func inferTypeRef(t *parser.TypeRef) string {
+	if t == nil {
+		return ""
+	}
+	if t.Generic != nil {
+		name := strings.ToLower(t.Generic.Name)
+		switch name {
+		case "list":
+			if len(t.Generic.Args) == 1 {
+				et := inferTypeRef(t.Generic.Args[0])
+				if et != "" {
+					return "list_" + et
+				}
+				return "list"
+			}
+		case "map":
+			return "map"
+		}
+		return ""
+	}
+	if t.Simple != nil {
+		switch strings.ToLower(*t.Simple) {
+		case "string":
+			return "string"
+		case "int", "float", "bool":
+			return "number"
+		default:
+			return strings.ToLower(*t.Simple)
+		}
+	}
+	return ""
+}
+
 func (c *compiler) writeln(s string) {
 	for i := 0; i < c.indent; i++ {
 		c.buf.WriteString("    ")
@@ -1302,12 +1340,17 @@ func (c *compiler) writeIndent() {
 }
 
 func (c *compiler) inferType(t *parser.TypeRef, val *parser.Expr) string {
-	if t != nil && t.Simple != nil {
-		switch strings.ToLower(*t.Simple) {
-		case "string":
-			return "string"
-		case "int", "float", "bool":
-			return "number"
+	if t != nil {
+		if ty := inferTypeRef(t); ty != "" {
+			return ty
+		}
+		if t.Simple != nil {
+			switch strings.ToLower(*t.Simple) {
+			case "string":
+				return "string"
+			case "int", "float", "bool":
+				return "number"
+			}
 		}
 	}
 	if val != nil && val.Binary != nil && val.Binary.Left != nil {

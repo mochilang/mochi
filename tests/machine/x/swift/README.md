@@ -1,6 +1,6 @@
 # Machine-generated Swift Outputs
 
-Compiled programs: 86/97
+Compiled programs: 87/97
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -94,7 +94,7 @@ Compiled programs: 86/97
 - [x] typed_let.mochi
 - [x] typed_var.mochi
 - [x] unary_neg.mochi
-- [ ] update_stmt.mochi
+- [x] update_stmt.mochi
 - [x] user_type_literal.mochi
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
