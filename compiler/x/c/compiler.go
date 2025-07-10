@@ -3559,7 +3559,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 						if isStringArg(a, c.env) {
 							fmtStr = "%s"
 						} else if isFloatArg(a, c.env) {
-							fmtStr = "%g"
+							fmtStr = "%.17g"
 						}
 						end := " "
 						if i == len(p.Call.Args)-1 {
