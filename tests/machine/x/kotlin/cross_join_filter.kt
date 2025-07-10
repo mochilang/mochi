@@ -6,16 +6,18 @@ fun toBool(v: Any?): Boolean = when (v) {
     null -> false
     else -> true
 }
+data class Pair(var n: Any?, var l: Any?)
+
 val nums = mutableListOf(1, 2, 3)
 
 val letters = mutableListOf("A", "B")
 
 val pairs = run {
-    val __res = mutableListOf<MutableMap<Any?, Any?>>()
+    val __res = mutableListOf<Pair>()
     for (n in nums) {
         for (l in letters) {
             if (toBool(n % 2 == 0)) {
-                __res.add((mutableMapOf("n" to n, "l" to l) as MutableMap<Any?, Any?>))
+                __res.add(Pair(n = n, l = l))
             }
         }
     }
@@ -25,6 +27,6 @@ val pairs = run {
 fun main() {
     println("--- Even pairs ---")
     for (p in pairs) {
-        println(listOf((p as MutableMap<*, *>)["n"], (p as MutableMap<*, *>)["l"]).joinToString(" "))
+        println(listOf(p.n, p.l).joinToString(" "))
     }
 }

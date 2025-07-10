@@ -25,6 +25,8 @@ fun toJson(v: Any?): String = when (v) {
 class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
 data class People(var name: String, var city: String)
 
+data class Big(var city: Any?, var num: Int)
+
 val people = mutableListOf(People(name = "Alice", city = "Paris"), People(name = "Bob", city = "Hanoi"), People(name = "Charlie", city = "Paris"), People(name = "Diana", city = "Hanoi"), People(name = "Eve", city = "Paris"), People(name = "Frank", city = "Hanoi"), People(name = "George", city = "Paris"))
 
 val big = run {
@@ -40,11 +42,11 @@ val big = run {
         }
         __g.add(mutableMapOf("p" to p) as MutableMap<Any?, Any?>)
     }
-    val __res = mutableListOf<MutableMap<Any?, Any?>>()
+    val __res = mutableListOf<Big>()
     for (k in __order) {
         val g = __groups[k]!!
         if (toBool(count(g) >= 4)) {
-            __res.add((mutableMapOf("city" to g.key, "num" to count(g)) as MutableMap<Any?, Any?>))
+            __res.add(Big(city = g.key, num = count(g)))
         }
     }
     __res

@@ -58,13 +58,15 @@ fun parseSimpleValue(s: String): Any? {
 }
 data class Person(var name: String, var age: Int, var email: String)
 
+data class Adult(var name: Any?, var email: Any?)
+
 val people = _load("../interpreter/valid/people.yaml", mutableMapOf("format" to "yaml")).map { Person(name = it["name"] as String, age = it["age"] as Int, email = it["email"] as String) }.toMutableList()
 
 val adults = run {
-    val __res = mutableListOf<MutableMap<Any?, Any?>>()
+    val __res = mutableListOf<Adult>()
     for (p in people) {
         if (toBool(p.age >= 18)) {
-            __res.add((mutableMapOf("name" to p.name, "email" to p.email) as MutableMap<Any?, Any?>))
+            __res.add(Adult(name = p.name, email = p.email))
         }
     }
     __res
@@ -72,6 +74,6 @@ val adults = run {
 
 fun main() {
     for (a in adults) {
-        println(listOf((a as MutableMap<*, *>)["name"], (a as MutableMap<*, *>)["email"]).joinToString(" "))
+        println(listOf(a.name, a.email).joinToString(" "))
     }
 }

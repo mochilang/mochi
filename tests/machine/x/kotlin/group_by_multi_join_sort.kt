@@ -37,6 +37,8 @@ data class Order(var o_orderkey: Int, var o_custkey: Int, var o_orderdate: Strin
 
 data class Lineitem(var l_orderkey: Int, var l_returnflag: String, var l_extendedprice: Double, var l_discount: Double)
 
+data class Result(var c_custkey: Any?, var c_name: Any?, var revenue: Int, var c_acctbal: Any?, var n_name: Any?, var c_address: Any?, var c_phone: Any?, var c_comment: Any?)
+
 val nation = mutableListOf(Nation(n_nationkey = 1, n_name = "BRAZIL"))
 
 val customer = mutableListOf(Customer(c_custkey = 1, c_name = "Alice", c_acctbal = 100, c_nationkey = 1, c_address = "123 St", c_phone = "123-456", c_comment = "Loyal"))
@@ -76,16 +78,16 @@ val result = run {
             }
         }
     }
-    val __res = mutableListOf<MutableMap<Any?, Any?>>()
+    val __res = mutableListOf<Result>()
     for (k in __order) {
         val g = __groups[k]!!
-        __res.add((mutableMapOf("c_custkey" to g.key.c_custkey, "c_name" to g.key.c_name, "revenue" to sum(run {
+        __res.add(Result(c_custkey = g.key.c_custkey, c_name = g.key.c_name, revenue = sum(run {
     val __res = mutableListOf<MutableMap<String, Any?>>()
     for (x in g) {
         __res.add((toDouble((x as MutableMap<*, *>)["l"]["l_extendedprice"]) * toDouble((1 - toInt((x as MutableMap<*, *>)["l"]["l_discount"]))) as MutableMap<String, Any?>))
     }
     __res
-}), "c_acctbal" to g.key.c_acctbal, "n_name" to g.key.n_name, "c_address" to g.key.c_address, "c_phone" to g.key.c_phone, "c_comment" to g.key.c_comment) as MutableMap<Any?, Any?>))
+}), c_acctbal = g.key.c_acctbal, n_name = g.key.n_name, c_address = g.key.c_address, c_phone = g.key.c_phone, c_comment = g.key.c_comment))
     }
     __res
 }.sortedByDescending { sum(run {

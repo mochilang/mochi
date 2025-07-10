@@ -10,6 +10,8 @@ fun count(list: Collection<Any?>): Int = list.size
 class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
 data class People(var name: String, var age: Int, var city: String)
 
+data class Stat(var city: Any?, var count: Int, var avg_age: Double)
+
 val people = mutableListOf(People(name = "Alice", age = 30, city = "Paris"), People(name = "Bob", age = 15, city = "Hanoi"), People(name = "Charlie", age = 65, city = "Paris"), People(name = "Diana", age = 45, city = "Hanoi"), People(name = "Eve", age = 70, city = "Paris"), People(name = "Frank", age = 22, city = "Hanoi"))
 
 val stats = run {
@@ -25,16 +27,16 @@ val stats = run {
         }
         __g.add(mutableMapOf("person" to person) as MutableMap<Any?, Any?>)
     }
-    val __res = mutableListOf<MutableMap<Any?, Any?>>()
+    val __res = mutableListOf<Stat>()
     for (k in __order) {
         val g = __groups[k]!!
-        __res.add((mutableMapOf("city" to g.key, "count" to count(g), "avg_age" to avg(run {
+        __res.add(Stat(city = g.key, count = count(g), avg_age = avg(run {
     val __res = mutableListOf<Int>()
     for (p in g) {
         __res.add(p.age)
     }
     __res
-})) as MutableMap<Any?, Any?>))
+})))
     }
     __res
 }
@@ -42,6 +44,6 @@ val stats = run {
 fun main() {
     println("--- People grouped by city ---")
     for (s in stats) {
-        println(listOf((s as MutableMap<*, *>)["city"], ": count =", (s as MutableMap<*, *>)["count"], ", avg_age =", (s as MutableMap<*, *>)["avg_age"]).joinToString(" "))
+        println(listOf(s.city, ": count =", s.count, ", avg_age =", s.avg_age).joinToString(" "))
     }
 }

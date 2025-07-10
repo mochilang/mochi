@@ -6,11 +6,13 @@ fun toBool(v: Any?): Boolean = when (v) {
     null -> false
     else -> true
 }
+data class Customer(var id: Int, var name: String)
+
 data class Order(var id: Int, var customerId: Int)
 
 data class Item(var orderId: Int, var sku: String)
 
-data class Customer(var id: Int, var name: String)
+data class Result(var orderId: Any?, var name: Any?, var item: Any?)
 
 val customers = mutableListOf(Customer(id = 1, name = "Alice"), Customer(id = 2, name = "Bob"))
 
@@ -19,13 +21,13 @@ val orders = mutableListOf(Order(id = 100, customerId = 1), Order(id = 101, cust
 val items = mutableListOf(Item(orderId = 100, sku = "a"))
 
 val result = run {
-    val __res = mutableListOf<MutableMap<Any?, Any?>>()
+    val __res = mutableListOf<Result>()
     for (o in orders) {
         for (c in customers) {
             if (toBool(o.customerId == c.id)) {
                 for (i in items) {
                     if (toBool(o.id == i.orderId)) {
-                        __res.add((mutableMapOf("orderId" to o.id, "name" to c.name, "item" to i) as MutableMap<Any?, Any?>))
+                        __res.add(Result(orderId = o.id, name = c.name, item = i))
                     }
                 }
             }
@@ -37,6 +39,6 @@ val result = run {
 fun main() {
     println("--- Left Join Multi ---")
     for (r in result) {
-        println(listOf((r as MutableMap<*, *>)["orderId"], (r as MutableMap<*, *>)["name"], (r as MutableMap<*, *>)["item"]).joinToString(" "))
+        println(listOf(r.orderId, r.name, r.item).joinToString(" "))
     }
 }
