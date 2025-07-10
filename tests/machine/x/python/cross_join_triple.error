@@ -1,0 +1,8 @@
+run: exit status 1
+--- Cross Join of three lists ---
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/machine/x/python/cross_join_triple.py", line 19, in <module>
+    print(c["n"], c["l"], c["b"])
+          ~^^^^^
+TypeError: 'Auto1' object is not subscriptable
+

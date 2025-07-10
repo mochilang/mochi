@@ -1,0 +1,7 @@
+run: exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/machine/x/python/load_yaml.py", line 137, in <module>
+    for _it in _load("../interpreter/valid/people.yaml", dict(Auto1(format="yaml")))
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: 'Auto1' object is not iterable
+

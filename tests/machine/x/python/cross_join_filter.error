@@ -1,0 +1,8 @@
+run: exit status 1
+--- Even pairs ---
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/machine/x/python/cross_join_filter.py", line 17, in <module>
+    print(p["n"], p["l"])
+          ~^^^^^
+TypeError: 'Auto1' object is not subscriptable
+

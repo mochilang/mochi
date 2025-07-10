@@ -574,6 +574,23 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 		env = orig
 		return ListType{Elem: elem}
 	case p.Map != nil:
+		if len(p.Map.Items) > 0 {
+			st := StructType{Fields: make(map[string]Type), Order: make([]string, len(p.Map.Items))}
+			allId := true
+			for i, it := range p.Map.Items {
+				key, ok := identName(it.Key)
+				if !ok {
+					allId = false
+					break
+				}
+				st.Fields[key] = ExprType(it.Value, env)
+				st.Order[i] = key
+			}
+			if allId {
+				return st
+			}
+		}
+
 		var keyType Type = AnyType{}
 		var valType Type = AnyType{}
 		if len(p.Map.Items) > 0 {
