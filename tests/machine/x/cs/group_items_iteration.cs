@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 
 public class Program {
     public static void Main() {
@@ -16,6 +17,6 @@ public class Program {
             tmp = (new Func<List<dynamic>>(() => {var _tmp0=new List<dynamic>(tmp);_tmp0.Add(new Dictionary<string, dynamic> { { "tag", g.Key }, { "total", total } });return _tmp0;}))();
         }
         var result = tmp.OrderBy(r => r["tag"]).Select(r => r);
-        Console.WriteLine(result);
+        Console.WriteLine(JsonSerializer.Serialize(result));
     }
 }

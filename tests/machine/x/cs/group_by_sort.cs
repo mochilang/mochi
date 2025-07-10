@@ -2,12 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 
 public class Program {
     public static void Main() {
         var items = new dynamic[] { new Dictionary<string, dynamic> { { "cat", "a" }, { "val", 3 } }, new Dictionary<string, dynamic> { { "cat", "a" }, { "val", 1 } }, new Dictionary<string, dynamic> { { "cat", "b" }, { "val", 5 } }, new Dictionary<string, dynamic> { { "cat", "b" }, { "val", 2 } } };
         var grouped = items.GroupBy(i => i["cat"]).OrderBy(g => (-_sum(g.Items.Select(x => x["val"])))).Select(g => new Dictionary<string, dynamic> { { "cat", g.Key }, { "total", _sum(g.Items.Select(x => x["val"])) } }).ToList();
-        Console.WriteLine(grouped);
+        Console.WriteLine(JsonSerializer.Serialize(grouped));
     }
     static double _sum(dynamic v) {
         if (v == null) return 0.0;

@@ -1,1 +1,0 @@
-/tmp/app/Program.cs(9,193): error CS1503: Argument 1: cannot convert from 'System.Collections.Generic.IEnumerable<dynamic>' to 'System.Collections.Generic.IEnumerable<decimal>' [/tmp/app/run.csproj]
