@@ -13,8 +13,8 @@ set_item(List, Index, Val, Out) :-
 
 :- initialization(main, main).
 main :-
-    dict_create(_V0, map, ['inner'-1]),
-    dict_create(_V1, map, ['outer'-_V0]),
+    dict_create(_V0, map, [inner-1]),
+    dict_create(_V1, map, [outer-_V0]),
     Data = _V1,
     get_item(Data, "outer", _V2),
     set_item(_V2, "inner", 2, _V3),
@@ -22,5 +22,6 @@ main :-
     Data_5 = _V4,
     get_item(Data_5, "outer", _V6),
     get_item(_V6, "inner", _V7),
-    writeln(_V7),
+    write(_V7),
+    nl,
     true.

@@ -4,7 +4,7 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 
 ## Summary
 
- - 92/97 programs compiled successfully.
+ - 74/97 programs compiled and ran successfully.
 
 ### Checklist
 - [x] append_builtin
@@ -13,46 +13,38 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 - [x] binary_precedence
 - [x] bool_chain
 - [x] break_continue
+- [x] cast_string_to_int
+- [x] cast_struct
+- [x] closure
 - [x] count_builtin
+- [x] cross_join
+- [x] cross_join_filter
+- [x] cross_join_triple
+- [x] dataset_sort_take_limit
 - [x] exists_builtin
 - [x] for_list_collection
 - [x] for_loop
+- [x] for_map_collection
 - [x] fun_call
+- [x] fun_expr_in_let
 - [x] fun_three_args
+- [x] group_by_multi_join_sort
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
+- [x] in_operator
+- [x] in_operator_extended
+- [x] inner_join
+- [x] join_multi
+- [x] json_builtin
+- [x] left_join
+- [x] left_join_multi
 - [x] len_builtin
+- [x] len_map
 - [x] len_string
 - [x] let_and_print
-- [x] math_ops
-- [x] min_max_builtin
-- [x] partial_application
-- [x] print_hello
-- [x] pure_fold
-- [x] pure_global_fold
-- [x] short_circuit
-- [x] str_builtin
-- [x] string_compare
-- [x] string_concat
-- [x] substring_builtin
-- [x] sum_builtin
-- [x] tail_recursion
-- [x] typed_let
-- [x] typed_var
-- [x] unary_neg
-- [x] var_assignment
-- [x] list_index
-- [x] slice
-- [x] string_contains
-- [x] string_index
-- [x] string_prefix_slice
-- [x] cast_string_to_int
-- [x] cast_struct
-- [x] membership
-- [x] for_map_collection
-- [x] len_map
 - [x] list_assign
+- [x] list_index
 - [x] list_nested_assign
 - [x] map_assign
 - [x] map_in_operator
@@ -61,46 +53,59 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 - [x] map_literal_dynamic
 - [x] map_membership
 - [x] map_nested_assign
-- [x] in_operator
+- [x] math_ops
+- [x] membership
+- [x] min_max_builtin
+- [x] order_by_map
+- [x] partial_application
+- [x] print_hello
+- [x] pure_fold
+- [x] pure_global_fold
+- [x] record_assign
+- [x] short_circuit
+- [x] slice
+- [x] sort_stable
+- [x] str_builtin
+- [x] string_compare
+- [x] string_concat
+- [x] string_contains
 - [x] string_in_operator
-- [x] values_builtin
+- [x] string_index
+- [x] string_prefix_slice
+- [x] substring_builtin
+- [x] sum_builtin
+- [x] tail_recursion
+- [x] typed_let
+- [x] typed_var
+- [x] unary_neg
 - [x] user_type_literal
-- [x] closure
-- [x] cross_join
-- [x] cross_join_filter
-- [x] cross_join_triple
-- [x] dataset_sort_take_limit
-- [x] dataset_where_filter
-- [x] fun_expr_in_let
-- [x] group_by
-- [x] group_by_conditional_sum
+- [x] values_builtin
+- [x] var_assignment
+- [ ] dataset_where_filter
+- [ ] group_by
+- [ ] group_by_conditional_sum
 - [ ] group_by_having
-- [x] group_by_join
-- [x] group_by_left_join
-- [x] group_by_multi_join
-- [x] group_by_multi_join_sort
-- [x] group_by_sort
-- [x] group_items_iteration
-- [x] in_operator_extended
-- [x] inner_join
-- [x] join_multi
-- [ ] json_builtin
-- [x] left_join
-- [x] left_join_multi
+- [ ] group_by_join
+- [ ] group_by_left_join
+- [ ] group_by_multi_join
+- [ ] group_by_sort
+- [ ] group_items_iteration
 - [ ] list_set_ops
 - [ ] load_yaml
 - [ ] match_expr
 - [ ] match_full
 - [ ] nested_function
-- [x] order_by_map
-- [x] outer_join
-- [x] query_sum_select
-- [ ] record_assign
-- [x] right_join
+- [ ] outer_join
+- [ ] query_sum_select
+- [ ] right_join
 - [ ] save_jsonl_stdout
-- [x] sort_stable
 - [ ] test_block
 - [ ] tree_sum
-- [x] two-sum
+- [ ] two-sum
 - [ ] update_stmt
-- [x] while_loop
+- [ ] while_loop
+
+### Remaining tasks
+- [ ] Improve query support (group joins, having)
+- [ ] Implement match expressions
+- [ ] Support external JSON/YAML builtins

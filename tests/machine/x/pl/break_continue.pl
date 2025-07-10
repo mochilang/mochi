@@ -7,7 +7,7 @@ main :-
             member(N, Numbers),
                 catch(
                     (
-                        (((N mod 2) =:= 0) ->
+                        (((N mod 2) == 0) ->
                             throw(continue),
                         ; true
                         ),
@@ -15,7 +15,10 @@ main :-
                             throw(break),
                         ; true
                         ),
-                        writeln("odd number:"),
+                        write("odd number:"),
+                        write(' '),
+                        write(N),
+                        nl,
                         true
                     ), continue, true),
                     fail

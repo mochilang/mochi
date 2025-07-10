@@ -2,11 +2,15 @@
 :- initialization(main, main).
 main :-
     (("a" < "b") -> _V0 = true ; _V0 = false),
-    writeln(_V0),
+    write(_V0),
+    nl,
     (("a" <= "a") -> _V1 = true ; _V1 = false),
-    writeln(_V1),
+    write(_V1),
+    nl,
     (("b" > "a") -> _V2 = true ; _V2 = false),
-    writeln(_V2),
+    write(_V2),
+    nl,
     (("b" >= "b") -> _V3 = true ; _V3 = false),
-    writeln(_V3),
+    write(_V3),
+    nl,
     true.

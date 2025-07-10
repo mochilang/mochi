@@ -1,6 +1,6 @@
 :- style_check(-singleton).
 Sum_rec(N, Acc, _Res) :-
-    ((N =:= 0) ->
+    ((N == 0) ->
         _Res = Acc.
     ; true
     ),
@@ -10,5 +10,6 @@ Sum_rec(N, Acc, _Res) :-
 :- initialization(main, main).
 main :-
     Sum_rec(10, 0, _V0),
-    writeln(_V0),
+    write(_V0),
+    nl,
     true.

@@ -3,8 +3,10 @@
 main :-
     X is 5,
     ((X > 3) ->
-        writeln("big"),
+        write("big"),
+        nl,
     ;
-        writeln("small"),
+        write("small"),
+        nl,
     ),
     true.

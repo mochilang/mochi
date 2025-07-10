@@ -10,5 +10,6 @@ main :-
     dict_create(_V0, map, [1-"a", 2-"b"]),
     M = _V0,
     get_item(M, 1, _V1),
-    writeln(_V1),
+    write(_V1),
+    nl,
     true.

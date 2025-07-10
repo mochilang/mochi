@@ -10,7 +10,9 @@ main :-
     dict_create(_V0, map, [1-"a", 2-"b"]),
     M = _V0,
     contains(M, 1, _V1),
-    writeln(_V1),
+    write(_V1),
+    nl,
     contains(M, 3, _V2),
-    writeln(_V2),
+    write(_V2),
+    nl,
     true.

@@ -10,5 +10,6 @@ main :-
     MakeAdder(10, _V0),
     Add10 = _V0,
     Add10(7, _V1),
-    writeln(_V1),
+    write(_V1),
+    nl,
     true.

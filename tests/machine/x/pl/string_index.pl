@@ -9,5 +9,6 @@ get_item(List, Index, Val) :- nth0(Index, List, Val).
 main :-
     S = "mochi",
     get_item(S, 1, _V0),
-    writeln(_V0),
+    write(_V0),
+    nl,
     true.

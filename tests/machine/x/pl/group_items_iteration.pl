@@ -7,12 +7,12 @@ get_item(List, Index, Val) :- nth0(Index, List, Val).
 
 :- initialization(main, main).
 main :-
-    dict_create(_V0, map, [Tag-"a", Val-1]),
-    dict_create(_V1, map, [Tag-"a", Val-2]),
-    dict_create(_V2, map, [Tag-"b", Val-3]),
+    dict_create(_V0, map, [tag-"a", val-1]),
+    dict_create(_V1, map, [tag-"a", val-2]),
+    dict_create(_V2, map, [tag-"b", val-3]),
     Data = [_V0, _V1, _V2],
-    findall(G, (member(D, Data), true), _V3),
-    Groups = _V3,
+    findall(_V3, (member(D, Data), true, _V3 = G), _V4),
+    Groups = _V4,
     Tmp = [],
     catch(
         (
@@ -22,27 +22,28 @@ main :-
                         Total is 0,
                         catch(
                             (
-                                get_item(G, 'items', _V4),
-                                member(X, _V4),
+                                get_item(G, 'items', _V5),
+                                member(X, _V5),
                                     catch(
                                         (
-                                            get_item(X, 'val', _V6),
-                                            Total_5 is (Total_5 + _V6),
+                                            get_item(X, 'val', _V7),
+                                            Total_6 is (Total_6 + _V7),
                                             true
                                         ), continue, true),
                                         fail
                                     ; true
                                 ), break, true),
-                                get_item(G, 'key', _V8),
-                                dict_create(_V9, map, [Tag-_V8, Total_5-Total_5]),
-                                append(Tmp_7, [_V9], _V10),
-                                Tmp_7 = _V10,
+                                get_item(G, 'key', _V9),
+                                dict_create(_V10, map, [tag-_V9, total-Total_6]),
+                                append(Tmp_8, [_V10], _V11),
+                                Tmp_8 = _V11,
                                 true
                             ), continue, true),
                             fail
                         ; true
                     ), break, true),
-                    findall(R, (member(R, Tmp_7), true), _V11),
-                    Result = _V11,
-                    writeln(Result),
+                    findall(_V12, (member(R, Tmp_8), true, _V12 = R), _V13),
+                    Result = _V13,
+                    write(Result),
+                    nl,
                     true.

@@ -7,8 +7,9 @@ len_any(Value, Len) :- length(Value, Len).
 
 :- initialization(main, main).
 main :-
-    dict_create(_V0, map, ['a'-1, 'b'-2]),
+    dict_create(_V0, map, [a-1, b-2]),
     len_any(_V0, _V1),
     _V2 is _V1,
-    writeln(_V2),
+    write(_V2),
+    nl,
     true.

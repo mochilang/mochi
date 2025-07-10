@@ -8,7 +8,8 @@ main :-
             ((I < 3) ->
                 catch(
                     (
-                        writeln(I),
+                        write(I),
+                        nl,
                         I_0 is (I_0 + 1),
                         true
                     ), continue, true),

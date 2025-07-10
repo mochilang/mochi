@@ -3,5 +3,6 @@
 main :-
     X is 8,
     Msg = ((X > 10) -> "big" ; ((X > 5) -> "medium" ; "small")),
-    writeln(Msg),
+    write(Msg),
+    nl,
     true.

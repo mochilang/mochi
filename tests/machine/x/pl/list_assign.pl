@@ -17,5 +17,6 @@ main :-
     set_item(Nums, 1, 3, _V0),
     Nums_1 = _V0,
     get_item(Nums_1, 1, _V2),
-    writeln(_V2),
+    write(_V2),
+    nl,
     true.
