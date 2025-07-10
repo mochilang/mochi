@@ -1,20 +1,14 @@
-/workspace/mochi/tests/machine/x/swift/map_literal_dynamic.swift:4:7: warning: expression implicitly coerced from 'Int?' to 'Any'
+/workspace/mochi/tests/machine/x/swift/map_literal_dynamic.swift:4:15: warning: forced cast from 'Int?' to 'Any' only unwraps optionals; did you mean to use '!'?
 2 | var y = 4
 3 | var m = ["a": x, "b": y]
-4 | print(m["a"], m["b"])
-  |       ||- note: provide a default value to avoid this warning
-  |       ||- note: force-unwrap the value to avoid this warning
-  |       |`- note: explicitly cast to 'Any' with 'as Any' to silence this warning
-  |       `- warning: expression implicitly coerced from 'Int?' to 'Any'
+4 | print((m["a"] as! Any), (m["b"] as! Any))
+  |               `- warning: forced cast from 'Int?' to 'Any' only unwraps optionals; did you mean to use '!'?
 5 | 
 
-/workspace/mochi/tests/machine/x/swift/map_literal_dynamic.swift:4:15: warning: expression implicitly coerced from 'Int?' to 'Any'
+/workspace/mochi/tests/machine/x/swift/map_literal_dynamic.swift:4:33: warning: forced cast from 'Int?' to 'Any' only unwraps optionals; did you mean to use '!'?
 2 | var y = 4
 3 | var m = ["a": x, "b": y]
-4 | print(m["a"], m["b"])
-  |               ||- note: provide a default value to avoid this warning
-  |               ||- note: force-unwrap the value to avoid this warning
-  |               |`- note: explicitly cast to 'Any' with 'as Any' to silence this warning
-  |               `- warning: expression implicitly coerced from 'Int?' to 'Any'
+4 | print((m["a"] as! Any), (m["b"] as! Any))
+  |                                 `- warning: forced cast from 'Int?' to 'Any' only unwraps optionals; did you mean to use '!'?
 5 | 
 Optional(3) Optional(4)

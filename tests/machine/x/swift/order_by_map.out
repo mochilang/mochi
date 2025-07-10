@@ -1,0 +1,14 @@
+/workspace/mochi/tests/machine/x/swift/order_by_map.swift:2:57: warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
+1 | var data = [["a": 1, "b": 2], ["a": 1, "b": 1], ["a": 0, "b": 5]]
+2 | var sorted = data.map { x in (value: x, key: (a: x["a"] as! Int, b: x["b"] as! Int)) }.sorted { $0.key < $1.key }.map { $0.value }
+  |                                                         `- warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
+3 | print(sorted)
+4 | 
+
+/workspace/mochi/tests/machine/x/swift/order_by_map.swift:2:76: warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
+1 | var data = [["a": 1, "b": 2], ["a": 1, "b": 1], ["a": 0, "b": 5]]
+2 | var sorted = data.map { x in (value: x, key: (a: x["a"] as! Int, b: x["b"] as! Int)) }.sorted { $0.key < $1.key }.map { $0.value }
+  |                                                                            `- warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
+3 | print(sorted)
+4 | 
+[["b": 5, "a": 0], ["b": 1, "a": 1], ["b": 2, "a": 1]]

@@ -1,3 +1,3 @@
-let nums = [3, 1, 4]
+var nums = [3, 1, 4]
 print(nums.min()!)
 print(nums.max()!)

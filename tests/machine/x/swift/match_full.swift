@@ -1,6 +1,7 @@
 let x = 2
 let label = { () in
-    switch x {
+    let __t = x
+    switch __t {
     case 1: return "one"
     case 2: return "two"
     case 3: return "three"
@@ -10,7 +11,8 @@ let label = { () in
 print(label)
 let day = "sun"
 let mood = { () in
-    switch day {
+    let __t = day
+    switch __t {
     case "mon": return "tired"
     case "fri": return "excited"
     case "sun": return "relaxed"
@@ -20,7 +22,8 @@ let mood = { () in
 print(mood)
 let ok = true
 let status = { () in
-    switch ok {
+    let __t = ok
+    switch __t {
     case true: return "confirmed"
     case false: return "denied"
     }
@@ -28,7 +31,8 @@ let status = { () in
 print(status)
 func classify(_ n: Int) -> String {
     return { () in
-    switch n {
+    let __t = n
+    switch __t {
     case 0: return "zero"
     case 1: return "one"
     default: return "many"

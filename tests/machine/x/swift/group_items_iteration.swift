@@ -1,5 +1,5 @@
-let data = [["tag": "a", "val": 1], ["tag": "a", "val": 2], ["tag": "b", "val": 3]]
-let groups = { () -> [Any] in
+var data = [["tag": "a", "val": 1], ["tag": "a", "val": 2], ["tag": "b", "val": 3]]
+var groups = { () -> [Any] in
     let _groups = Dictionary(grouping: data) { d in d["tag"] as! String }
     var _tmp = _groups.map { (k, v) in (key: k, items: v) }
     return _tmp.map { g in g }
@@ -12,5 +12,5 @@ for g in groups {
     }
     tmp = tmp + [["tag": g.key, "total": total]]
 }
-let result = tmp.map { r in (value: r, key: r.tag) }.sorted { $0.key < $1.key }.map { $0.value }
+var result = tmp.map { r in (value: r, key: r.tag) }.sorted { $0.key < $1.key }.map { $0.value }
 print(result)

@@ -1,4 +1,4 @@
-struct Counter {
+struct Counter: Equatable {
     var n: Int
 }
 func inc(_ c: inout Counter) {

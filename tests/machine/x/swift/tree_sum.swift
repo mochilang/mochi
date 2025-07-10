@@ -4,7 +4,8 @@ indirect enum Tree {
 }
 func sum_tree(_ t: Tree) -> Int {
     return { () in
-    switch t {
+    let __t = t
+    switch __t {
     case Tree.leaf: return 0
     case let .node(left, value, right): return sum_tree(left) + value + sum_tree(right)
     }
