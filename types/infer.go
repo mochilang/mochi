@@ -378,6 +378,23 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 			return IntType{}
 		case "avg":
 			return FloatType{}
+		case "sum":
+			if len(p.Call.Args) == 1 {
+				t := ExprType(p.Call.Args[0], env)
+				switch tt := t.(type) {
+				case ListType:
+					if _, ok := tt.Elem.(FloatType); ok {
+						return FloatType{}
+					}
+					return IntType{}
+				case GroupType:
+					if _, ok := tt.Elem.(FloatType); ok {
+						return FloatType{}
+					}
+					return IntType{}
+				}
+			}
+			return IntType{}
 		case "min", "max":
 			if len(p.Call.Args) == 1 {
 				t := ExprType(p.Call.Args[0], env)

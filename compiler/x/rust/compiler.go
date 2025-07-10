@@ -60,6 +60,19 @@ func (c *Compiler) fieldType(e *parser.Expr) types.Type {
 		switch op {
 		case "==", "!=", "<", "<=", ">", ">=", "&&", "||", "in":
 			return types.BoolType{}
+		case "/":
+			lt := types.TypeOfUnary(e.Binary.Left, c.env)
+			rt := types.TypeOfPostfix(e.Binary.Right[0].Right, c.env)
+			isInt := func(t types.Type) bool {
+				switch t.(type) {
+				case types.IntType, types.Int64Type:
+					return true
+				}
+				return false
+			}
+			if isInt(lt) && isInt(rt) {
+				return types.FloatType{}
+			}
 		}
 		return types.TypeOfExprBasic(e, c.env)
 	}
@@ -1564,6 +1577,9 @@ func (c *Compiler) compileGroupBySimple(q *parser.QueryExpr, src string, child *
 		sel, err = c.compileMapLiteralAsStruct(name, ml)
 	} else {
 		sel, err = c.compileExpr(q.Select)
+		if id, ok := c.simpleIdent(q.Select); ok && id == groupVar {
+			c.lastListStruct = groupStruct
+		}
 	}
 	if err != nil {
 		c.popGroupVar()
@@ -1800,6 +1816,9 @@ func (c *Compiler) compileGroupByJoin(q *parser.QueryExpr, src string, child *ty
 		sel, err = c.compileMapLiteralAsStruct(name, ml)
 	} else {
 		sel, err = c.compileExpr(q.Select)
+		if id, ok := c.simpleIdent(q.Select); ok && id == groupVar {
+			c.lastListStruct = groupStruct
+		}
 	}
 	if err != nil {
 		c.popGroupVar()
@@ -2682,7 +2701,7 @@ func (c *Compiler) compileMapLiteralAsStruct(name string, m *parser.MapLiteral) 
 			return "", err
 		}
 		fields[i] = fmt.Sprintf("%s: %s", str, v)
-		st.Fields[str] = types.ExprType(it.Value, c.env)
+		st.Fields[str] = c.fieldType(it.Value)
 		st.Order = append(st.Order, str)
 	}
 	c.structs[name] = st
