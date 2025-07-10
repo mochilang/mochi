@@ -1,0 +1,274 @@
+var adfgvx = "ADFGVX"
+var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+fun shuffleStr(s: string): string {
+  var arr: list<string> = []
+  var i = 0
+  while i < len(s) {
+    arr = arr + [s[i]]
+    i = i + 1
+  }
+  var j = len(arr) - 1
+  while j > 0 {
+    let k = now() % (j + 1)
+    let tmp = arr[j]
+    arr[j] = arr[k]
+    arr[k] = tmp
+    j = j - 1
+  }
+  var out = ""
+  i = 0
+  while i < len(arr) {
+    out = out + arr[i]
+    i = i + 1
+  }
+  return out
+}
+
+fun createPolybius(): list<string> {
+  let shuffled = shuffleStr(alphabet)
+  print("6 x 6 Polybius square:\n")
+  print("  | A D F G V X")
+  print("---------------")
+  var p: list<string> = []
+  var i = 0
+  while i < 6 {
+    var row = shuffled[i*6:(i+1)*6]
+    p = p + [row]
+    var line = adfgvx[i] + " | "
+    var j = 0
+    while j < 6 {
+      line = line + row[j] + " "
+      j = j + 1
+    }
+    print(line)
+    i = i + 1
+  }
+  return p
+}
+
+fun createKey(n: int): string {
+  if n < 7 || n > 12 {
+    print("Key should be within 7 and 12 letters long.")
+  }
+  var pool = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+  var key = ""
+  var i = 0
+  while i < n {
+    let idx = now() % len(pool)
+    key = key + pool[idx]
+    pool = pool[:idx] + pool[idx+1:len(pool)]
+    i = i + 1
+  }
+  print("\nThe key is " + key)
+  return key
+}
+
+fun orderKey(key: string): list<int> {
+  var pairs = []
+  var i = 0
+  while i < len(key) {
+    pairs = pairs + [[key[i], i]]
+    i = i + 1
+  }
+  // simple bubble sort by first element
+  var n = len(pairs)
+  var m = 0
+  while m < n {
+    var j = 0
+    while j < n - 1 {
+      if pairs[j][0] > pairs[j+1][0] {
+        let tmp = pairs[j]
+        pairs[j] = pairs[j+1]
+        pairs[j+1] = tmp
+      }
+      j = j + 1
+    }
+    m = m + 1
+  }
+  var res = []
+  i = 0
+  while i < n {
+    res = res + [pairs[i][1] as int]
+    i = i + 1
+  }
+  return res
+}
+
+fun encrypt(polybius: list<string>, key: string, plainText: string): string {
+  var temp = ""
+  var i = 0
+  while i < len(plainText) {
+    var r = 0
+    while r < 6 {
+      var c = 0
+      while c < 6 {
+        if polybius[r][c] == plainText[i] {
+          temp = temp + adfgvx[r] + adfgvx[c]
+        }
+        c = c + 1
+      }
+      r = r + 1
+    }
+    i = i + 1
+  }
+  var colLen = len(temp) / len(key)
+  if len(temp) % len(key) > 0 {
+    colLen = colLen + 1
+  }
+  var table: list<list<string>> = []
+  var rIdx = 0
+  while rIdx < colLen {
+    var row: list<string> = []
+    var j = 0
+    while j < len(key) {
+      row = row + [""]
+      j = j + 1
+    }
+    table = table + [row]
+    rIdx = rIdx + 1
+  }
+  var idx = 0
+  while idx < len(temp) {
+    let row = idx / len(key)
+    let col = idx % len(key)
+    table[row][col] = temp[idx:idx+1]
+    idx = idx + 1
+  }
+  let order = orderKey(key)
+  var cols: list<string> = []
+  var ci = 0
+  while ci < len(key) {
+    var colStr = ""
+    var ri = 0
+    while ri < colLen {
+      colStr = colStr + table[ri][order[ci]]
+      ri = ri + 1
+    }
+    cols = cols + [colStr]
+    ci = ci + 1
+  }
+  var result = ""
+  ci = 0
+  while ci < len(cols) {
+    result = result + cols[ci]
+    if ci < len(cols) - 1 {
+      result = result + " "
+    }
+    ci = ci + 1
+  }
+  return result
+}
+
+fun indexOf(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if s[i] == ch {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun decrypt(polybius: list<string>, key: string, cipherText: string): string {
+  var colStrs: list<string> = []
+  var start = 0
+  var i = 0
+  while i <= len(cipherText) {
+    if i == len(cipherText) || cipherText[i] == " " {
+      colStrs = colStrs + [cipherText[start:i]]
+      start = i + 1
+    }
+    i = i + 1
+  }
+  var maxColLen = 0
+  i = 0
+  while i < len(colStrs) {
+    if len(colStrs[i]) > maxColLen {
+      maxColLen = len(colStrs[i])
+    }
+    i = i + 1
+  }
+  var cols: list<list<string>> = []
+  i = 0
+  while i < len(colStrs) {
+    var s = colStrs[i]
+    var ls: list<string> = []
+    var j = 0
+    while j < len(s) {
+      ls = ls + [s[j]]
+      j = j + 1
+    }
+    if len(s) < maxColLen {
+      var pad: list<string> = []
+      var k = 0
+      while k < maxColLen {
+        if k < len(ls) {
+          pad = pad + [ls[k]]
+        } else {
+          pad = pad + [""]
+        }
+        k = k + 1
+      }
+      cols = cols + [pad]
+    } else {
+      cols = cols + [ls]
+    }
+    i = i + 1
+  }
+  var table: list<list<string>> = []
+  var r = 0
+  while r < maxColLen {
+    var row: list<string> = []
+    var c = 0
+    while c < len(key) {
+      row = row + [""]
+      c = c + 1
+    }
+    table = table + [row]
+    r = r + 1
+  }
+  let order = orderKey(key)
+  r = 0
+  while r < maxColLen {
+    var c = 0
+    while c < len(key) {
+      table[r][order[c]] = cols[c][r]
+      c = c + 1
+    }
+    r = r + 1
+  }
+  var temp = ""
+  r = 0
+  while r < len(table) {
+    var j = 0
+    while j < len(table[r]) {
+      temp = temp + table[r][j]
+      j = j + 1
+    }
+    r = r + 1
+  }
+  var plainText = ""
+  var idx = 0
+  while idx < len(temp) {
+    let rIdx = indexOf(adfgvx, temp[idx:idx+1])
+    let cIdx = indexOf(adfgvx, temp[idx+1:idx+2])
+    plainText = plainText + polybius[rIdx][cIdx]
+    idx = idx + 2
+  }
+  return plainText
+}
+
+fun main() {
+  let plainText = "ATTACKAT1200AM"
+  let polybius = createPolybius()
+  let key = createKey(9)
+  print("\nPlaintext : " + plainText)
+  let cipherText = encrypt(polybius, key, plainText)
+  print("\nEncrypted : " + cipherText)
+  let plainText2 = decrypt(polybius, key, cipherText)
+  print("\nDecrypted : " + plainText2)
+}
+
+main()
