@@ -1,0 +1,62 @@
+let DIM = 16
+
+var pile: list<list<int>> = []
+var y = 0
+while y < DIM {
+  var row: list<int> = []
+  var x = 0
+  while x < DIM {
+    row = append(row, 0)
+    x = x + 1
+  }
+  pile = append(pile, row)
+  y = y + 1
+}
+
+fun handlePile(p: list<list<int>>, x: int, y: int) {
+  let dim = len(p)
+  if p[y][x] >= 4 {
+    p[y][x] = p[y][x] - 4
+    if y > 0 {
+      p[y-1][x] = p[y-1][x] + 1
+      if p[y-1][x] >= 4 { handlePile(p, x, y-1) }
+    }
+    if x > 0 {
+      p[y][x-1] = p[y][x-1] + 1
+      if p[y][x-1] >= 4 { handlePile(p, x-1, y) }
+    }
+    if y < dim - 1 {
+      p[y+1][x] = p[y+1][x] + 1
+      if p[y+1][x] >= 4 { handlePile(p, x, y+1) }
+    }
+    if x < dim - 1 {
+      p[y][x+1] = p[y][x+1] + 1
+      if p[y][x+1] >= 4 { handlePile(p, x+1, y) }
+    }
+    handlePile(p, x, y)
+  }
+}
+
+fun drawPile(p: list<list<int>>) {
+  let chars = [" ", "░", "▓", "█"]
+  let dim = len(p)
+  var y = 0
+  while y < dim {
+    var line = ""
+    var x = 0
+    while x < dim {
+      var elem = p[y][x]
+      if elem > 3 { elem = 3 }
+      line = line + chars[elem]
+      x = x + 1
+    }
+    print(line)
+    y = y + 1
+  }
+}
+
+
+let hdim = (DIM / 2) as int - 1
+pile[hdim][hdim] = 16
+handlePile(pile, hdim, hdim)
+drawPile(pile)
