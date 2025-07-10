@@ -12,104 +12,87 @@ import (
 	"mochi/types"
 )
 
-const runtime = `
-fun <T> append(list: MutableList<T>, item: T): MutableList<T> {
+var runtimePieces = map[string]string{
+	"append": `fun <T> append(list: MutableList<T>, item: T): MutableList<T> {
     val res = list.toMutableList()
     res.add(item)
     return res
-}
-
-fun avg(list: List<Any?>): Double {
+}`,
+	"avg": `fun avg(list: List<Any?>): Double {
     if (list.isEmpty()) return 0.0
     var s = 0.0
     for (n in list) s += toDouble(n)
     return s / list.size
-}
-
-fun count(list: Collection<Any?>): Int = list.size
-
-fun exists(list: Collection<Any?>): Boolean = list.isNotEmpty()
-
-fun <T> values(m: Map<*, T>): MutableList<T> = m.values.toMutableList()
-
-fun len(v: Any?): Int = when (v) {
+}`,
+	"count":  `fun count(list: Collection<Any?>): Int = list.size`,
+	"exists": `fun exists(list: Collection<Any?>): Boolean = list.isNotEmpty()`,
+	"values": `fun <T> values(m: Map<*, T>): MutableList<T> = m.values.toMutableList()`,
+	"len": `fun len(v: Any?): Int = when (v) {
     is String -> v.length
     is Collection<*> -> v.size
     is Map<*, *> -> v.size
     else -> 0
-}
-
-fun max(list: List<Any?>): Int {
+}`,
+	"max": `fun max(list: List<Any?>): Int {
     var m = Int.MIN_VALUE
     for (n in list) {
         val v = toInt(n)
         if (v > m) m = v
     }
     return if (m == Int.MIN_VALUE) 0 else m
-}
-
-fun min(list: List<Any?>): Int {
+}`,
+	"min": `fun min(list: List<Any?>): Int {
     var m = Int.MAX_VALUE
     for (n in list) {
         val v = toInt(n)
         if (v < m) m = v
     }
     return if (m == Int.MAX_VALUE) 0 else m
-}
-
-fun sum(list: List<Any?>): Int {
+}`,
+	"sum": `fun sum(list: List<Any?>): Int {
     var s = 0
     for (n in list) s += toInt(n)
     return s
-}
-
-fun str(v: Any?): String = v.toString()
-
-fun substring(s: String, start: Int, end: Int): String = s.substring(start, end)
-
-fun toInt(v: Any?): Int = when (v) {
+}`,
+	"str":       `fun str(v: Any?): String = v.toString()`,
+	"substring": `fun substring(s: String, start: Int, end: Int): String = s.substring(start, end)`,
+	"toInt": `fun toInt(v: Any?): Int = when (v) {
     is Int -> v
     is Double -> v.toInt()
     is String -> v.toInt()
     is Boolean -> if (v) 1 else 0
     else -> 0
-}
-
-fun toDouble(v: Any?): Double = when (v) {
+}`,
+	"toDouble": `fun toDouble(v: Any?): Double = when (v) {
     is Double -> v
     is Int -> v.toDouble()
     is String -> v.toDouble()
     else -> 0.0
-}
-
-fun toBool(v: Any?): Boolean = when (v) {
+}`,
+	"toBool": `fun toBool(v: Any?): Boolean = when (v) {
     is Boolean -> v
     is Int -> v != 0
     is Double -> v != 0.0
     is String -> v.isNotEmpty()
     null -> false
     else -> true
-}
-
-fun <T> union(a: MutableList<T>, b: MutableList<T>): MutableList<T> {
+}`,
+	"union": `fun <T> union(a: MutableList<T>, b: MutableList<T>): MutableList<T> {
     val res = a.toMutableList()
     for (x in b) if (!res.contains(x)) res.add(x)
     return res
-}
-
-fun <T> except(a: MutableList<T>, b: MutableList<T>): MutableList<T> {
+}`,
+	"except": `fun <T> except(a: MutableList<T>, b: MutableList<T>): MutableList<T> {
     val res = mutableListOf<T>()
     for (x in a) if (!b.contains(x)) res.add(x)
     return res
-}
-
-fun <T> intersect(a: MutableList<T>, b: MutableList<T>): MutableList<T> {
+}`,
+	"intersect": `fun <T> intersect(a: MutableList<T>, b: MutableList<T>): MutableList<T> {
     val res = mutableListOf<T>()
     for (x in a) if (b.contains(x)) res.add(x)
     return res
-}
-
-fun _load(path: String?, opts: Map<String, Any?>?): MutableList<MutableMap<String, Any?>> {
+}`,
+	"_load": `fun _load(path: String?, opts: Map<String, Any?>?): MutableList<MutableMap<String, Any?>> {
     val fmt = opts?.get("format") as? String ?: "csv"
     val lines = if (path == null || path == "-") {
         listOf<String>()
@@ -120,9 +103,8 @@ fun _load(path: String?, opts: Map<String, Any?>?): MutableList<MutableMap<Strin
         "yaml" -> loadYamlSimple(lines)
         else -> mutableListOf()
     }
-}
-
-fun loadYamlSimple(lines: List<String>): MutableList<MutableMap<String, Any?>> {
+}`,
+	"loadYamlSimple": `fun loadYamlSimple(lines: List<String>): MutableList<MutableMap<String, Any?>> {
     val res = mutableListOf<MutableMap<String, Any?>>()
     var cur: MutableMap<String, Any?>? = null
     for (ln in lines) {
@@ -145,9 +127,8 @@ fun loadYamlSimple(lines: List<String>): MutableList<MutableMap<String, Any?>> {
     }
     cur?.let { res.add(it) }
     return res
-}
-
-fun parseSimpleValue(s: String): Any? {
+}`,
+	"parseSimpleValue": `fun parseSimpleValue(s: String): Any? {
     val t = s.trim()
     return when {
         t.matches(Regex("^-?\\d+$")) -> t.toInt()
@@ -157,9 +138,8 @@ fun parseSimpleValue(s: String): Any? {
         t.startsWith("\"") && t.endsWith("\"") -> t.substring(1, t.length - 1)
         else -> t
     }
-}
-
-fun _save(rows: List<Any?>, path: String?, opts: Map<String, Any?>?) {
+}`,
+	"_save": `fun _save(rows: List<Any?>, path: String?, opts: Map<String, Any?>?) {
     val fmt = opts?.get("format") as? String ?: "csv"
     val writer = if (path == null || path == "-") {
         java.io.BufferedWriter(java.io.OutputStreamWriter(System.out))
@@ -173,23 +153,32 @@ fun _save(rows: List<Any?>, path: String?, opts: Map<String, Any?>?) {
         }
     }
     if (path != null && path != "-") writer.close()
-}
-
-fun json(v: Any?) {
+}`,
+	"json": `fun json(v: Any?) {
     println(toJson(v))
-}
-
-fun toJson(v: Any?): String = when (v) {
+}`,
+	"toJson": `fun toJson(v: Any?): String = when (v) {
     null -> "null"
     is String -> "\"" + v.replace("\"", "\\\"") + "\""
     is Boolean, is Number -> v.toString()
     is Map<*, *> -> v.entries.joinToString(prefix = "{", postfix = "}") { toJson(it.key.toString()) + ":" + toJson(it.value) }
     is Iterable<*> -> v.joinToString(prefix = "[", postfix = "]") { toJson(it) }
     else -> toJson(v.toString())
+}`,
+	"Group": `class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items`,
 }
 
-class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
-`
+var runtimeOrder = []string{"append", "avg", "count", "exists", "values", "len", "max", "min", "sum", "str", "substring", "toInt", "toDouble", "toBool", "union", "except", "intersect", "_load", "loadYamlSimple", "parseSimpleValue", "_save", "json", "toJson", "Group"}
+
+func buildRuntime(used map[string]bool) string {
+	var parts []string
+	for _, n := range runtimeOrder {
+		if used[n] {
+			parts = append(parts, runtimePieces[n])
+		}
+	}
+	return strings.Join(parts, "\n\n")
+}
 
 // Compiler converts a subset of Mochi programs to Kotlin source code.
 type Compiler struct {
@@ -197,17 +186,19 @@ type Compiler struct {
 	indent   int
 	env      *types.Env
 	tmpCount int
+	used     map[string]bool
 }
 
 // New creates a new Kotlin compiler.
-func New(env *types.Env, _ string) *Compiler { return &Compiler{env: env, tmpCount: 0} }
+func New(env *types.Env, _ string) *Compiler {
+	return &Compiler{env: env, tmpCount: 0, used: make(map[string]bool)}
+}
 
 // Compile generates Kotlin code from prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.indent = 0
-	c.writeln(runtime)
-	c.writeln("")
+	c.used = make(map[string]bool)
 
 	// emit type declarations first
 	for _, s := range prog.Statements {
@@ -257,7 +248,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.indent--
 	c.writeln("}")
-	return c.buf.Bytes(), nil
+
+	body := c.buf.Bytes()
+	rt := buildRuntime(c.used)
+	var out bytes.Buffer
+	if rt != "" {
+		out.WriteString(rt)
+		out.WriteByte('\n')
+	}
+	out.Write(body)
+	return out.Bytes(), nil
 }
 
 func (c *Compiler) stmt(s *parser.Statement) error {
@@ -411,6 +411,8 @@ func (c *Compiler) ifStmt(i *parser.IfStmt) error {
 		return err
 	}
 	if _, ok := types.TypeOfExprBasic(i.Cond, c.env).(types.BoolType); !ok {
+		c.use("toBool")
+		c.use("toBool")
 		cond = "toBool(" + cond + ")"
 	}
 	c.writeln("if (" + cond + ") {")
@@ -446,6 +448,7 @@ func (c *Compiler) whileStmt(w *parser.WhileStmt) error {
 		return err
 	}
 	if _, ok := types.TypeOfExprBasic(w.Cond, c.env).(types.BoolType); !ok {
+		c.use("toBool")
 		cond = "toBool(" + cond + ")"
 	}
 	c.writeln("while (" + cond + ") {")
@@ -676,17 +679,20 @@ func (c *Compiler) binary(b *parser.BinaryExpr) (string, error) {
 			if op.All {
 				res = fmt.Sprintf("%s.toMutableList().apply { addAll(%s) }", res, r)
 			} else {
+				c.use("union")
 				res = fmt.Sprintf("union(%s.toMutableList(), %s.toMutableList())", res, r)
 			}
 			lType = types.ListType{}
 			continue
 		}
 		if op.Op == "except" {
+			c.use("except")
 			res = fmt.Sprintf("except(%s.toMutableList(), %s.toMutableList())", res, r)
 			lType = types.ListType{}
 			continue
 		}
 		if op.Op == "intersect" {
+			c.use("intersect")
 			res = fmt.Sprintf("intersect(%s.toMutableList(), %s.toMutableList())", res, r)
 			lType = types.ListType{}
 			continue
@@ -694,23 +700,29 @@ func (c *Compiler) binary(b *parser.BinaryExpr) (string, error) {
 		if isNumericOp(op.Op) {
 			if _, lok := lType.(types.AnyType); lok {
 				if _, rok := rType.(types.AnyType); rok {
+					c.use("toDouble")
 					res = fmt.Sprintf("toDouble(%s)", res)
 					r = fmt.Sprintf("toDouble(%s)", r)
 				} else {
 					switch rType.(type) {
 					case types.IntType:
+						c.use("toInt")
 						res = fmt.Sprintf("toInt(%s)", res)
 					case types.FloatType:
+						c.use("toDouble")
 						res = fmt.Sprintf("toDouble(%s)", res)
 					}
 				}
 			} else if _, rok := rType.(types.AnyType); rok {
 				switch lType.(type) {
 				case types.IntType:
+					c.use("toInt")
 					r = fmt.Sprintf("toInt(%s)", r)
 				case types.FloatType:
+					c.use("toDouble")
 					r = fmt.Sprintf("toDouble(%s)", r)
 				default:
+					c.use("toDouble")
 					r = fmt.Sprintf("toDouble(%s)", r)
 				}
 			}
@@ -915,6 +927,9 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 }
 
 func (c *Compiler) callExpr(call *parser.CallExpr) (string, error) {
+	if _, ok := runtimePieces[call.Func]; ok {
+		c.use(call.Func)
+	}
 	args := make([]string, len(call.Args))
 	var paramTypes []types.Type
 	if t, err := c.env.GetVar(call.Func); err == nil {
@@ -944,6 +959,7 @@ func (c *Compiler) callExpr(call *parser.CallExpr) (string, error) {
 		return fmt.Sprintf("println(listOf(%s).joinToString(\" \"))", strings.Join(args, ", ")), nil
 	}
 	if call.Func == "json" {
+		c.use("json")
 		if len(args) == 1 {
 			return fmt.Sprintf("json(%s)", args[0]), nil
 		}
@@ -1117,6 +1133,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	b.WriteString("run {\n")
 	b.WriteString(indent(lvl))
 	if q.Group != nil {
+		c.use("Group")
 		b.WriteString("val __groups = mutableMapOf<Any?, Group>()\n")
 		b.WriteString(indent(lvl))
 		b.WriteString("val __order = mutableListOf<Any?>()\n")
@@ -1148,6 +1165,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		if _, ok := types.TypeOfExprBasic(j.On, c.env).(types.BoolType); !ok {
+			c.use("toBool")
 			cond = "toBool(" + cond + ")"
 		}
 		b.WriteString(indent(lvl))
@@ -1160,6 +1178,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		if _, ok := types.TypeOfExprBasic(q.Where, c.env).(types.BoolType); !ok {
+			c.use("toBool")
 			cond = "toBool(" + cond + ")"
 		}
 		b.WriteString(indent(lvl))
@@ -1188,6 +1207,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		if _, ok := types.TypeOfExprBasic(q.Group.Having, c.env).(types.BoolType); !ok {
+			c.use("toBool")
 			h = "toBool(" + h + ")"
 		}
 		having = h
@@ -1377,6 +1397,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 }
 
 func (c *Compiler) loadExpr(l *parser.LoadExpr) (string, error) {
+	c.use("_load")
 	path := "null"
 	if l.Path != nil {
 		path = fmt.Sprintf("%q", *l.Path)
@@ -1407,6 +1428,7 @@ func (c *Compiler) loadExpr(l *parser.LoadExpr) (string, error) {
 }
 
 func (c *Compiler) saveExpr(s *parser.SaveExpr) (string, error) {
+	c.use("_save")
 	src, err := c.expr(s.Src)
 	if err != nil {
 		return "", err
@@ -1486,6 +1508,23 @@ func isNumericOp(op string) bool {
 		return true
 	default:
 		return false
+	}
+}
+
+func (c *Compiler) use(name string) {
+	if c.used == nil {
+		c.used = make(map[string]bool)
+	}
+	if c.used[name] {
+		return
+	}
+	c.used[name] = true
+	switch name {
+	case "_load":
+		c.use("loadYamlSimple")
+		c.use("parseSimpleValue")
+	case "_save", "json":
+		c.use("toJson")
 	}
 }
 
