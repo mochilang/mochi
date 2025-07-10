@@ -16,7 +16,6 @@ public class Main {
 			_res0.add(new LinkedHashMap<>(){{put("orderId", ((Map)o).get("id"));put("customer", c);put("total", ((Map)o).get("total"));}});
 		}
 	}
-}
 	return _res0;
 }}).get();
 	public static void main(String[] args) {

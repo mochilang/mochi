@@ -23,14 +23,13 @@ public class Main {
 			_b6.add(_row4);
 		}
 	}
-}
 	for (var __e : _groups1.entrySet()) {
 		Object g_key = __e.getKey();
 		List<Object> g = __e.getValue();
 		_res0.add(new LinkedHashMap<>(){{put("name", g_key);put("count", count((new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
 	List<Object> _res7 = new ArrayList<>();
 	for (var r : g) {
-		if (!(((Map)r).get("o"))) continue;
+		if (!(Boolean.TRUE.equals(((Map)r).get("o")))) continue;
 		_res7.add(r);
 	}
 	return _res7;
