@@ -4,7 +4,7 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 
 ## Summary
 
- - 75/97 programs compiled and ran successfully.
+ - 77/97 programs compiled and ran successfully.
 
 ### Checklist
 - [x] append_builtin
@@ -92,8 +92,8 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 - [ ] group_items_iteration
 - [ ] list_set_ops
 - [ ] load_yaml
-- [ ] match_expr
-- [ ] match_full
+ - [x] match_expr
+ - [x] match_full
 - [ ] nested_function
 - [ ] outer_join
 - [ ] query_sum_select
