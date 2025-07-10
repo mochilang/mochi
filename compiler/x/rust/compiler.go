@@ -2681,6 +2681,30 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 	return b.String(), nil
 }
 
+func (c *Compiler) compileHashMapLiteral(m *parser.MapLiteral) (string, error) {
+	var b strings.Builder
+	b.WriteString("{ let mut m = std::collections::HashMap::new();")
+	for _, it := range m.Items {
+		var k string
+		if name, ok := c.simpleIdent(it.Key); ok {
+			k = fmt.Sprintf("\"%s\"", name)
+		} else {
+			var err error
+			k, err = c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
+		}
+		v, err := c.compileExpr(it.Value)
+		if err != nil {
+			return "", err
+		}
+		fmt.Fprintf(&b, " m.insert(%s.to_string(), %s.to_string());", k, v)
+	}
+	b.WriteString(" m }")
+	return b.String(), nil
+}
+
 func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error) {
 	if info, ok := c.variantInfo[sl.Name]; ok {
 		fields := make([]string, len(sl.Fields))
@@ -3030,11 +3054,19 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 	}
 	opts := "std::collections::HashMap::new()"
 	if l.With != nil {
-		v, err := c.compileExpr(l.With)
-		if err != nil {
-			return "", err
+		if ml := tryMapLiteral(l.With); ml != nil {
+			v, err := c.compileHashMapLiteral(ml)
+			if err != nil {
+				return "", err
+			}
+			opts = v
+		} else {
+			v, err := c.compileExpr(l.With)
+			if err != nil {
+				return "", err
+			}
+			opts = v
 		}
-		opts = v
 	}
 	c.helpers["_load"] = true
 	return fmt.Sprintf("_load::<%s>(%s, %s)", typ, path, opts), nil
@@ -3051,14 +3083,22 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	}
 	opts := "std::collections::HashMap::new()"
 	if s.With != nil {
-		v, err := c.compileExpr(s.With)
-		if err != nil {
-			return "", err
+		if ml := tryMapLiteral(s.With); ml != nil {
+			v, err := c.compileHashMapLiteral(ml)
+			if err != nil {
+				return "", err
+			}
+			opts = v
+		} else {
+			v, err := c.compileExpr(s.With)
+			if err != nil {
+				return "", err
+			}
+			opts = v
 		}
-		opts = v
 	}
 	c.helpers["_save"] = true
-	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts), nil
+	return fmt.Sprintf("_save(&%s, %s, %s)", src, path, opts), nil
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) string {
