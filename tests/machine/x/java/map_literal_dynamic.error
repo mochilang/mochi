@@ -1,10 +1,10 @@
 line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramsmap_literal_dynamic3765900415/001/Main.java:15: error: cannot find symbol
+/tmp/TestCompileValidProgramsmap_literal_dynamic4146733339/001/Main.java:15: error: cannot find symbol
 	System.out.println(m.get("a") + " " + m.get("b"));
 	                    ^
   symbol:   method get(String)
   location: variable m of type DataClass1
-/tmp/TestCompileValidProgramsmap_literal_dynamic3765900415/001/Main.java:15: error: cannot find symbol
+/tmp/TestCompileValidProgramsmap_literal_dynamic4146733339/001/Main.java:15: error: cannot find symbol
 	System.out.println(m.get("a") + " " + m.get("b"));
 	                                       ^
   symbol:   method get(String)

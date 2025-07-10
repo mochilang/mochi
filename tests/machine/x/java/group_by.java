@@ -23,16 +23,16 @@ public class Main {
 	static List<DataClass1> people = new ArrayList<>(java.util.Arrays.asList(new DataClass1("Alice", 30, "Paris"), new DataClass1("Bob", 15, "Hanoi"), new DataClass1("Charlie", 65, "Paris"), new DataClass1("Diana", 45, "Hanoi"), new DataClass1("Eve", 70, "Paris"), new DataClass1("Frank", 22, "Hanoi")));
 	static List<DataClass2> stats = (new java.util.function.Supplier<List<DataClass2>>(){public List<DataClass2> get(){
 	List<DataClass2> _res6 = new ArrayList<>();
-	Map<Object,List<DataClass1>> _groups7 = new LinkedHashMap<>();
+	Map<String,List<DataClass1>> _groups7 = new LinkedHashMap<>();
 	for (var person : people) {
 		var _row8 = person;
-		Object _key9 = person.city;
+		String _key9 = person.city;
 		List<DataClass1> _b10 = _groups7.get(_key9);
 		if (_b10 == null) { _b10 = new ArrayList<>(); _groups7.put(_key9, _b10); }
 		_b10.add(_row8);
 	}
 	for (var __e : _groups7.entrySet()) {
-		Object g_key = __e.getKey();
+		String g_key = __e.getKey();
 		List<DataClass1> g = __e.getValue();
 		_res6.add(new DataClass2(g_key, count(g), avg((List<Number>)(List<?>)(new java.util.function.Supplier<List<Integer>>(){public List<Integer> get(){
 	List<Integer> _res11 = new ArrayList<>();

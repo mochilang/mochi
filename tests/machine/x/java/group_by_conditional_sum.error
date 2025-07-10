@@ -1,8 +1,8 @@
 line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramsgroup_by_conditional_sum2543794597/001/Main.java:41: error: incompatible types: possible lossy conversion from double to int
+/tmp/TestCompileValidProgramsgroup_by_conditional_sum2277627533/001/Main.java:41: error: incompatible types: possible lossy conversion from double to int
 }}).get())).doubleValue() / ((Number)sum((List<Number>)(List<?>)(new java.util.function.Supplier<List<Integer>>(){public List<Integer> get(){
                           ^
-Note: /tmp/TestCompileValidProgramsgroup_by_conditional_sum2543794597/001/Main.java uses unchecked or unsafe operations.
+Note: /tmp/TestCompileValidProgramsgroup_by_conditional_sum2277627533/001/Main.java uses unchecked or unsafe operations.
 Note: Recompile with -Xlint:unchecked for details.
 Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
 1 error
