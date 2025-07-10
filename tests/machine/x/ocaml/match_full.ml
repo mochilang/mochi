@@ -16,12 +16,12 @@ let rec __show v =
     | _ -> "<value>"
 
 
-let x = 2
-let label = (match x with | 1 -> "one" | 2 -> "two" | 3 -> "three" | _ -> "unknown")
-let day = "sun"
-let mood = (match day with | "mon" -> "tired" | "fri" -> "excited" | "sun" -> "relaxed" | _ -> "normal")
-let ok = true
-let status = (match ok with | true -> "confirmed" | false -> "denied")
+let x : int = 2
+let label : string = (match x with | 1 -> "one" | 2 -> "two" | 3 -> "three" | _ -> "unknown")
+let day : string = "sun"
+let mood : string = (match day with | "mon" -> "tired" | "fri" -> "excited" | "sun" -> "relaxed" | _ -> "normal")
+let ok : bool = true
+let status : string = (match ok with | true -> "confirmed" | false -> "denied")
 let rec classify (n : int) : string =
   (match n with | 0 -> "zero" | 1 -> "one" | _ -> "many")
 

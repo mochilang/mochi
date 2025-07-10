@@ -16,16 +16,18 @@ let rec __show v =
     | _ -> "<value>"
 
 
-let xs = [1;2;3]
-let ys = (let __res0 = ref [] in
+type record1 = { mutable a : int }
+
+let xs : int list = [1;2;3]
+let ys : int list = (let __res0 = ref [] in
   List.iter (fun x ->
       if ((x mod 2) = 1) then
     __res0 := x :: !__res0;
   ) xs;
 List.rev !__res0)
 
-let m = [("a",Obj.repr (1))]
-let s = "hello"
+let m : (string * Obj.t) list = { a = 1 }
+let s : string = "hello"
 
 let () =
   print_endline (__show ((List.mem 1 ys)));

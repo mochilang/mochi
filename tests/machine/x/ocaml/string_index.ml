@@ -16,7 +16,7 @@ let rec __show v =
     | _ -> "<value>"
 
 
-let s = "mochi"
+let s : string = "mochi"
 
 let () =
   print_endline (__show (List.nth s 1));

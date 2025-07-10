@@ -16,7 +16,7 @@ let rec __show v =
     | _ -> "<value>"
 
 
-let xs = [10;20;30]
+let xs : int list = [10;20;30]
 
 let () =
   print_endline (__show (List.nth xs 1));

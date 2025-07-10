@@ -16,7 +16,7 @@ let rec __show v =
     | _ -> "<value>"
 
 
-let k = 2
+let k : int = 2
 let rec inc (x : int) : int =
   (x + k)
 

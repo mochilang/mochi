@@ -188,6 +188,8 @@ func (c *Compiler) compileGlobalLet(l *parser.LetStmt) error {
 		typGuess := c.ocamlType(t)
 		if typGuess != "" && typGuess != "Obj.t" {
 			typ = typGuess
+		} else if st, ok := c.structTypeFromExpr(l.Value); ok {
+			typ = c.ocamlType(st)
 		}
 	}
 	if typ != "" {
@@ -216,6 +218,8 @@ func (c *Compiler) compileGlobalVar(v *parser.VarStmt) error {
 			guess := c.ocamlType(t)
 			if guess != "" && guess != "Obj.t" {
 				typStr = guess
+			} else if st, ok := c.structTypeFromExpr(v.Value); ok {
+				typStr = c.ocamlType(st)
 			}
 		}
 	}
@@ -244,6 +248,8 @@ func (c *Compiler) compileLocalLet(l *parser.LetStmt) error {
 		guess := c.ocamlType(t)
 		if guess != "" && guess != "Obj.t" {
 			typ = guess
+		} else if st, ok := c.structTypeFromExpr(l.Value); ok {
+			typ = c.ocamlType(st)
 		}
 	}
 	if typ != "" {
@@ -272,6 +278,8 @@ func (c *Compiler) compileLocalVar(v *parser.VarStmt) error {
 			guess := c.ocamlType(t)
 			if guess != "" && guess != "Obj.t" {
 				typStr = guess
+			} else if st, ok := c.structTypeFromExpr(v.Value); ok {
+				typStr = c.ocamlType(st)
 			}
 		}
 	}
@@ -1548,6 +1556,23 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return "[" + strings.Join(elems, ";") + "]", nil
 	case p.Map != nil:
+		if st, ok := c.structTypeFromMapLiteral(p.Map); ok {
+			name := c.ensureStructName(st)
+			fields := make([]string, len(p.Map.Items))
+			for i, it := range p.Map.Items {
+				key, _ := identConst(it.Key)
+				if key == "" {
+					key, _ = stringConst(it.Key)
+				}
+				v, err := c.compileExpr(it.Value)
+				if err != nil {
+					return "", err
+				}
+				fields[i] = fmt.Sprintf("%s = %s", key, v)
+			}
+			_ = name // ensureStructName adds type to anonStructs
+			return "{ " + strings.Join(fields, "; ") + " }", nil
+		}
 		items := make([]string, len(p.Map.Items))
 		for i, it := range p.Map.Items {
 			var k, v string
@@ -2157,6 +2182,53 @@ func identConst(e *parser.Expr) (string, bool) {
 		return u.Value.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+// structTypeFromMapLiteral returns a StructType representing ml if all keys are
+// constant identifiers or strings. The order of fields matches the literal.
+func (c *Compiler) structTypeFromMapLiteral(ml *parser.MapLiteral) (types.StructType, bool) {
+	fields := map[string]types.Type{}
+	order := []string{}
+	for _, it := range ml.Items {
+		var key string
+		var ok bool
+		if key, ok = identConst(it.Key); !ok {
+			key, ok = stringConst(it.Key)
+			if !ok {
+				return types.StructType{}, false
+			}
+		}
+		fields[key] = types.ExprType(it.Value, c.env)
+		order = append(order, key)
+	}
+	return types.StructType{Name: "", Fields: fields, Order: order}, true
+}
+
+// structTypeFromExpr checks if e is a map literal or list of map literals with
+// constant keys and returns an appropriate StructType or ListType of that
+// struct.
+func (c *Compiler) structTypeFromExpr(e *parser.Expr) (types.Type, bool) {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if ml := u.Value.Target.Map; ml != nil {
+		st, ok := c.structTypeFromMapLiteral(ml)
+		if ok {
+			return st, true
+		}
+	}
+	if ll := u.Value.Target.List; ll != nil && len(ll.Elems) > 0 {
+		if first := ll.Elems[0]; first.Binary != nil && first.Binary.Left != nil {
+			if ml := first.Binary.Left.Value.Target.Map; ml != nil {
+				st, ok := c.structTypeFromMapLiteral(ml)
+				if ok {
+					return types.ListType{Elem: st}, true
+				}
+			}
+		}
+	}
+	return nil, false
 }
 
 func identName(e *parser.Expr) (string, bool) {

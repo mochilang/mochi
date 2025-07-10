@@ -21,12 +21,10 @@ exception Continue
 
 
 let () =
-  let rec __loop0 i =
-    if i > 4 then () else (
+  try
+    for i = 1 to 4 do
       try
-        let i = i in
         print_endline (__show (i));
       with Continue -> ()
-      ; __loop0 (i + 1))
-  in
-  try __loop0 1 with Break -> ()
+    done
+  with Break -> ()

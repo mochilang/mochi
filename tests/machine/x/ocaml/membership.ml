@@ -16,7 +16,7 @@ let rec __show v =
     | _ -> "<value>"
 
 
-let nums = [1;2;3]
+let nums : int list = [1;2;3]
 
 let () =
   print_endline (__show ((List.mem 2 nums)));

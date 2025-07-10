@@ -18,8 +18,11 @@ let rec __show v =
 let sum lst = List.fold_left (+) 0 lst
 type ('k,'v) group = { key : 'k; items : 'v list }
 
-let items = [[("cat",Obj.repr ("a"));("val",Obj.repr (3))];[("cat",Obj.repr ("a"));("val",Obj.repr (1))];[("cat",Obj.repr ("b"));("val",Obj.repr (5))];[("cat",Obj.repr ("b"));("val",Obj.repr (2))]]
-let grouped = (let __groups0 = ref [] in
+type record1 = { mutable cat : string; mutable val : int }
+type record2 = { mutable cat : Obj.t; mutable total : float }
+
+let items : record1 list = [{ cat = "a"; val = 3 };{ cat = "a"; val = 1 };{ cat = "b"; val = 5 };{ cat = "b"; val = 2 }]
+let grouped : (string * Obj.t) list list = (let __groups0 = ref [] in
   List.iter (fun i ->
       let key = Obj.obj (List.assoc "cat" i) in
       let cur = try List.assoc key !__groups0 with Not_found -> [] in
@@ -28,12 +31,12 @@ let grouped = (let __groups0 = ref [] in
   let __res0 = ref [] in
   List.iter (fun (gKey,gItems) ->
     let g = { key = gKey; items = List.rev gItems } in
-    __res0 := [("cat",Obj.repr (g.key));("total",Obj.repr ((sum (let __res1 = ref [] in
+    __res0 := { cat = g.key; total = (sum (let __res1 = ref [] in
   List.iter (fun x ->
       __res1 := Obj.obj (List.assoc "val" x) :: !__res1;
   ) g.items;
 List.rev !__res1)
-)))] :: !__res0
+) } :: !__res0
   ) !__groups0;
   List.rev !__res0)
 

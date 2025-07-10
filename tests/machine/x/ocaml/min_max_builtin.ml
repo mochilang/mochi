@@ -16,7 +16,7 @@ let rec __show v =
     | _ -> "<value>"
 
 
-let nums = [3;1;4]
+let nums : int list = [3;1;4]
 
 let () =
   print_endline (__show (min nums));

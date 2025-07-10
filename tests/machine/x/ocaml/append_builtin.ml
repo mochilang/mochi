@@ -16,7 +16,7 @@ let rec __show v =
     | _ -> "<value>"
 
 
-let a = [1;2]
+let a : int list = [1;2]
 
 let () =
   print_endline (__show ((a @ [3])));

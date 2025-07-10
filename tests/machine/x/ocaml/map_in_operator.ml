@@ -16,7 +16,7 @@ let rec __show v =
     | _ -> "<value>"
 
 
-let m = [(1,Obj.repr ("a"));(2,Obj.repr ("b"))]
+let m : (int * Obj.t) list = [(1,Obj.repr ("a"));(2,Obj.repr ("b"))]
 
 let () =
   print_endline (__show ((List.mem_assoc 1 m)));

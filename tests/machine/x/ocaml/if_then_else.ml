@@ -16,8 +16,8 @@ let rec __show v =
     | _ -> "<value>"
 
 
-let x = 12
-let msg = (if (x > 10) then "yes" else "no")
+let x : int = 12
+let msg : string = (if (x > 10) then "yes" else "no")
 
 let () =
   print_endline (__show (msg));

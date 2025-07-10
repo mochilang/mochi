@@ -16,7 +16,7 @@ let rec __show v =
     | _ -> "<value>"
 
 
-let x = 5
+let x : int = 5
 
 let () =
   if (x > 3) then (

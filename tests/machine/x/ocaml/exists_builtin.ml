@@ -16,8 +16,8 @@ let rec __show v =
     | _ -> "<value>"
 
 
-let data = [1;2]
-let flag = ((let __res0 = ref [] in
+let data : int list = [1;2]
+let flag : bool = ((let __res0 = ref [] in
   List.iter (fun x ->
       if (x = 1) then
     __res0 := x :: !__res0;
