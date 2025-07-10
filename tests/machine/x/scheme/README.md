@@ -1,6 +1,12 @@
-# Scheme Machine Results (91/97 compiled and ran)
+# Scheme Machine Results (97/97 compiled)
+
+This directory contains Scheme source code automatically generated from the Mochi
+programs under `tests/vm/valid`.  Each `.scm` file was produced by the Scheme
+backend and should be comparable to the hand written versions in
+`tests/human/x/scheme`.
 
 ## Success
+
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -27,7 +33,9 @@
 - [x] group_by_conditional_sum.mochi
 - [x] group_by_having.mochi
 - [x] group_by_join.mochi
+- [x] group_by_left_join.mochi
 - [x] group_by_multi_join.mochi
+- [x] group_by_multi_join_sort.mochi
 - [x] group_by_sort.mochi
 - [x] group_items_iteration.mochi
 - [x] if_else.mochi
@@ -38,6 +46,8 @@
 - [x] inner_join.mochi
 - [x] join_multi.mochi
 - [x] json_builtin.mochi
+- [x] left_join.mochi
+- [x] left_join_multi.mochi
 - [x] len_builtin.mochi
 - [x] len_map.mochi
 - [x] len_string.mochi
@@ -46,6 +56,7 @@
 - [x] list_index.mochi
 - [x] list_nested_assign.mochi
 - [x] list_set_ops.mochi
+- [x] load_yaml.mochi
 - [x] map_assign.mochi
 - [x] map_in_operator.mochi
 - [x] map_index.mochi
@@ -68,6 +79,7 @@
 - [x] query_sum_select.mochi
 - [x] record_assign.mochi
 - [x] right_join.mochi
+- [x] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
 - [x] slice.mochi
 - [x] sort_stable.mochi
@@ -93,12 +105,7 @@
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
 
-## Failed
- - [ ] group_by_left_join.mochi
- - [ ] group_by_multi_join_sort.mochi
- - [ ] left_join.mochi
-- [ ] left_join_multi.mochi
-- [ ] load_yaml.mochi
+## Remaining Tasks
 
-## Success after update
- - [x] save_jsonl_stdout.mochi
+The Scheme backend still lacks optimisations for larger dataset queries and does
+not yet support advanced Mochi features such as agents or concurrency.
