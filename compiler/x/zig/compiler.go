@@ -27,6 +27,9 @@ type Compiler struct {
 	needsMinInt       bool
 	needsMinFloat     bool
 	needsMinString    bool
+	needsMaxInt       bool
+	needsMaxFloat     bool
+	needsMaxString    bool
 	needsInListInt    bool
 	needsInListString bool
 	needsSetOps       bool
@@ -2341,6 +2344,25 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			default:
 				c.needsMinInt = true
 				return fmt.Sprintf("_min_int(%s)", arg), nil
+			}
+		}
+	}
+	if name == "max" && len(call.Args) == 1 {
+		arg, err := c.compileExpr(call.Args[0], false)
+		if err != nil {
+			return "", err
+		}
+		if at, ok := c.inferExprType(call.Args[0]).(types.ListType); ok {
+			switch at.Elem.(type) {
+			case types.FloatType:
+				c.needsMaxFloat = true
+				return fmt.Sprintf("_max_float(%s)", arg), nil
+			case types.StringType:
+				c.needsMaxString = true
+				return fmt.Sprintf("_max_string(%s)", arg), nil
+			default:
+				c.needsMaxInt = true
+				return fmt.Sprintf("_max_int(%s)", arg), nil
 			}
 		}
 	}
