@@ -2,7 +2,7 @@
 
 This directory contains C++ source code generated from Mochi programs and the corresponding outputs or errors.
 
-Compiled programs: 79/97
+Compiled programs: 81/97
 
 ## Checklist
 
@@ -32,7 +32,7 @@ Compiled programs: 79/97
 - [x] if_then_else
 - [x] if_then_else_nested
 - [x] in_operator
- - [ ] len_builtin
+- [x] len_builtin
 - [x] len_map
 - [x] len_string
 - [x] let_and_print
@@ -92,7 +92,7 @@ Compiled programs: 79/97
 - [ ] order_by_map
 - [ ] outer_join
  - [x] partial_application
-- [ ] pure_global_fold
+- [x] pure_global_fold
 - [ ] query_sum_select
 - [ ] right_join
 - [ ] save_jsonl_stdout
@@ -127,7 +127,7 @@ Compiled programs: 79/97
 - [ ] order_by_map
 - [ ] outer_join
  - [x] partial_application
-- [ ] pure_global_fold
+- [x] pure_global_fold
 - [ ] query_sum_select
 - [ ] right_join
 - [ ] save_jsonl_stdout

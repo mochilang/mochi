@@ -102,6 +102,29 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.structCount = 0
 	c.usesJSON = false
 
+	globals := []*parser.Statement{}
+	encounteredFun := false
+	for _, st := range p.Statements {
+		if st.Fun != nil {
+			encounteredFun = true
+			continue
+		}
+		if !encounteredFun && (st.Let != nil || st.Var != nil) {
+			globals = append(globals, st)
+		}
+	}
+
+	globalSet := map[*parser.Statement]struct{}{}
+	for _, st := range globals {
+		globalSet[st] = struct{}{}
+		if err := c.compileStmt(st); err != nil {
+			return nil, err
+		}
+	}
+	if len(globals) > 0 {
+		c.writeln("")
+	}
+
 	// first generate function declarations
 	for _, st := range p.Statements {
 		if st.Fun != nil {
@@ -116,6 +139,9 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.indent++
 	for _, st := range p.Statements {
 		if st.Fun != nil {
+			continue
+		}
+		if _, ok := globalSet[st]; ok {
 			continue
 		}
 		if err := c.compileStmt(st); err != nil {
@@ -2059,7 +2085,9 @@ func (c *Compiler) inferType(expr string) string {
 		return "map"
 	}
 	if strings.HasPrefix(expr, "std::vector") {
-		return "vector"
+		if !strings.Contains(expr, ".") {
+			return "vector"
+		}
 	}
 	return ""
 }
