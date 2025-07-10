@@ -129,7 +129,7 @@ $result = (begin
 	_rows
 end)
 puts("--- Right Join using syntax ---")
-for entry in $result
+$result.each do |entry|
 	if entry.order
 		puts(["Customer", entry.customerName, "has order", entry.order.id, "- $", entry.order.total].join(" "))
 	else

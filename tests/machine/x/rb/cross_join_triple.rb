@@ -15,6 +15,6 @@ $combos = (begin
 	_res
 end)
 puts("--- Cross Join of three lists ---")
-for c in $combos
+$combos.each do |c|
 	puts([c.n, c.l, c.b].join(" "))
 end

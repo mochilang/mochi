@@ -1,4 +1,4 @@
 $m = {"a" => 1, "b" => 2}
-for k in $m.keys
+$m.each_key do |k|
 	puts(k)
 end

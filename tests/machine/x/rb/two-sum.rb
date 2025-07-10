@@ -1,7 +1,7 @@
 def twoSum(nums, target)
 	n = (nums).length
-	for i in 0...n
-		for j in (i + 1)...n
+	(0...n).each do |i|
+		((i + 1)...n).each do |j|
 			if ((nums[i] + nums[j]) == target)
 				return [i, j]
 			end

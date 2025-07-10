@@ -23,53 +23,53 @@ type Compiler struct {
 	helpers       map[string]bool
 	structs       map[string]bool
 	globals       map[string]bool
-        queryRows     map[string][]string
-        inKeyContext  bool
-        locals        []map[string]bool
+	queryRows     map[string][]string
+	inKeyContext  bool
+	locals        []map[string]bool
 }
 
 // New creates a new Ruby compiler instance.
 func New(env *types.Env) *Compiler {
-        c := &Compiler{env: env, helpers: make(map[string]bool), structs: make(map[string]bool), globals: make(map[string]bool), queryRows: make(map[string][]string)}
-        c.pushScope() // global scope
-        return c
+	c := &Compiler{env: env, helpers: make(map[string]bool), structs: make(map[string]bool), globals: make(map[string]bool), queryRows: make(map[string][]string)}
+	c.pushScope() // global scope
+	return c
 }
 
 func (c *Compiler) newTmp() string {
-        name := fmt.Sprintf("_t%d", c.tmpCount)
-        c.tmpCount++
-        return name
+	name := fmt.Sprintf("_t%d", c.tmpCount)
+	c.tmpCount++
+	return name
 }
 
 func (c *Compiler) pushScope(names ...string) {
-        scope := map[string]bool{}
-        for _, n := range names {
-                scope[sanitizeName(n)] = true
-        }
-        c.locals = append(c.locals, scope)
+	scope := map[string]bool{}
+	for _, n := range names {
+		scope[sanitizeName(n)] = true
+	}
+	c.locals = append(c.locals, scope)
 }
 
 func (c *Compiler) popScope() {
-        if len(c.locals) > 0 {
-                c.locals = c.locals[:len(c.locals)-1]
-        }
+	if len(c.locals) > 0 {
+		c.locals = c.locals[:len(c.locals)-1]
+	}
 }
 
 func (c *Compiler) addLocal(name string) {
-        if len(c.locals) == 0 {
-                return
-        }
-        c.locals[len(c.locals)-1][sanitizeName(name)] = true
+	if len(c.locals) == 0 {
+		return
+	}
+	c.locals[len(c.locals)-1][sanitizeName(name)] = true
 }
 
 func (c *Compiler) isLocal(name string) bool {
-        name = sanitizeName(name)
-        for i := len(c.locals) - 1; i >= 0; i-- {
-                if c.locals[i][name] {
-                        return true
-                }
-        }
-        return false
+	name = sanitizeName(name)
+	for i := len(c.locals) - 1; i >= 0; i-- {
+		if c.locals[i][name] {
+			return true
+		}
+	}
+	return false
 }
 
 // Compile generates Ruby code for prog.
@@ -201,15 +201,15 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 		}
 		c.env.SetVar(l.Name, typ, false)
 	}
-        name := sanitizeName(l.Name)
-        if c.indent == 0 {
-                c.globals[name] = true
-                name = "$" + name
-        } else {
-                c.addLocal(l.Name)
-        }
-        c.writeln(fmt.Sprintf("%s = %s", name, val))
-        return nil
+	name := sanitizeName(l.Name)
+	if c.indent == 0 {
+		c.globals[name] = true
+		name = "$" + name
+	} else {
+		c.addLocal(l.Name)
+	}
+	c.writeln(fmt.Sprintf("%s = %s", name, val))
+	return nil
 }
 
 func (c *Compiler) compileVar(v *parser.VarStmt) error {
@@ -232,15 +232,15 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 		}
 		c.env.SetVar(v.Name, typ, true)
 	}
-        name := sanitizeName(v.Name)
-        if c.indent == 0 {
-                c.globals[name] = true
-                name = "$" + name
-        } else {
-                c.addLocal(v.Name)
-        }
-        c.writeln(fmt.Sprintf("%s = %s", name, val))
-        return nil
+	name := sanitizeName(v.Name)
+	if c.indent == 0 {
+		c.globals[name] = true
+		name = "$" + name
+	} else {
+		c.addLocal(v.Name)
+	}
+	c.writeln(fmt.Sprintf("%s = %s", name, val))
+	return nil
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
@@ -331,22 +331,22 @@ func (c *Compiler) compileFunStmt(fn *parser.FunStmt) error {
 	for i, p := range fn.Params {
 		params[i] = sanitizeName(p.Name)
 	}
-        c.writeln(fmt.Sprintf("def %s(%s)", sanitizeName(fn.Name), strings.Join(params, ", ")))
-        var orig *types.Env
-        if c.env != nil {
-                orig = c.env
-                child := types.NewEnv(c.env)
-                for _, p := range fn.Params {
-                        child.SetVar(p.Name, types.AnyType{}, true)
-                }
-                c.env = child
-        }
-        c.pushScope()
-        for _, p := range fn.Params {
-                c.addLocal(p.Name)
-        }
-        c.indent++
-        for _, s := range fn.Body {
+	c.writeln(fmt.Sprintf("def %s(%s)", sanitizeName(fn.Name), strings.Join(params, ", ")))
+	var orig *types.Env
+	if c.env != nil {
+		orig = c.env
+		child := types.NewEnv(c.env)
+		for _, p := range fn.Params {
+			child.SetVar(p.Name, types.AnyType{}, true)
+		}
+		c.env = child
+	}
+	c.pushScope()
+	for _, p := range fn.Params {
+		c.addLocal(p.Name)
+	}
+	c.indent++
+	for _, s := range fn.Body {
 		if err := c.compileStmt(s); err != nil {
 			if orig != nil {
 				c.env = orig
@@ -354,13 +354,13 @@ func (c *Compiler) compileFunStmt(fn *parser.FunStmt) error {
 			return err
 		}
 	}
-        c.indent--
-        c.popScope()
-        if orig != nil {
-                c.env = orig
-        }
-        c.writeln("end")
-        return nil
+	c.indent--
+	c.popScope()
+	if orig != nil {
+		c.env = orig
+	}
+	c.writeln("end")
+	return nil
 }
 
 func (c *Compiler) compileLocalFunStmt(fn *parser.FunStmt) error {
@@ -368,22 +368,22 @@ func (c *Compiler) compileLocalFunStmt(fn *parser.FunStmt) error {
 	for i, p := range fn.Params {
 		params[i] = sanitizeName(p.Name)
 	}
-        c.writeln(fmt.Sprintf("%s = ->(%s){", sanitizeName(fn.Name), strings.Join(params, ", ")))
-        var orig *types.Env
-        if c.env != nil {
-                orig = c.env
-                child := types.NewEnv(c.env)
-                for _, p := range fn.Params {
-                        child.SetVar(p.Name, types.AnyType{}, true)
-                }
-                c.env = child
-        }
-        c.pushScope()
-        for _, p := range fn.Params {
-                c.addLocal(p.Name)
-        }
-        c.indent++
-        for _, s := range fn.Body {
+	c.writeln(fmt.Sprintf("%s = ->(%s){", sanitizeName(fn.Name), strings.Join(params, ", ")))
+	var orig *types.Env
+	if c.env != nil {
+		orig = c.env
+		child := types.NewEnv(c.env)
+		for _, p := range fn.Params {
+			child.SetVar(p.Name, types.AnyType{}, true)
+		}
+		c.env = child
+	}
+	c.pushScope()
+	for _, p := range fn.Params {
+		c.addLocal(p.Name)
+	}
+	c.indent++
+	for _, s := range fn.Body {
 		if err := c.compileStmt(s); err != nil {
 			if orig != nil {
 				c.env = orig
@@ -391,13 +391,13 @@ func (c *Compiler) compileLocalFunStmt(fn *parser.FunStmt) error {
 			return err
 		}
 	}
-        c.indent--
-        c.popScope()
-        if orig != nil {
-                c.env = orig
-        }
-        c.writeln("}")
-        return nil
+	c.indent--
+	c.popScope()
+	if orig != nil {
+		c.env = orig
+	}
+	c.writeln("}")
+	return nil
 }
 
 func (c *Compiler) compileMethod(fn *parser.FunStmt) error {
@@ -458,7 +458,7 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 }
 
 func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
-        name := sanitizeName(stmt.Name)
+	name := sanitizeName(stmt.Name)
 	if stmt.RangeEnd != nil {
 		start, err := c.compileExpr(stmt.Source)
 		if err != nil {
@@ -468,31 +468,31 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("for %s in %s...%s", name, start, end))
+		c.writeln(fmt.Sprintf("(%s...%s).each do |%s|", start, end, name))
 	} else {
 		src, err := c.compileExpr(stmt.Source)
 		if err != nil {
 			return err
 		}
 		if isStringLiteral(stmt.Source) {
-			c.writeln(fmt.Sprintf("for %s in %s.chars", name, src))
+			c.writeln(fmt.Sprintf("%s.each_char do |%s|", src, name))
 		} else if types.IsMapType(c.inferExprType(stmt.Source)) {
-			c.writeln(fmt.Sprintf("for %s in %s.keys", name, src))
+			c.writeln(fmt.Sprintf("%s.each_key do |%s|", src, name))
 		} else {
-			c.writeln(fmt.Sprintf("for %s in %s", name, src))
+			c.writeln(fmt.Sprintf("%s.each do |%s|", src, name))
 		}
-        }
-        c.indent++
-        c.pushScope(stmt.Name)
-        for _, s := range stmt.Body {
-                if err := c.compileStmt(s); err != nil {
-                        return err
-                }
-        }
-        c.popScope()
-        c.indent--
-        c.writeln("end")
-        return nil
+	}
+	c.indent++
+	c.pushScope(stmt.Name)
+	for _, s := range stmt.Body {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	c.popScope()
+	c.indent--
+	c.writeln("end")
+	return nil
 }
 
 func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
@@ -513,26 +513,26 @@ func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
 }
 
 func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
-        lhs := sanitizeName(s.Name)
-        if !c.isLocal(s.Name) && c.globals[lhs] {
-                lhs = "$" + lhs
-        }
-        for _, idx := range s.Index {
-                iexpr, err := c.compileExpr(idx.Start)
-                if err != nil {
-                        return err
-                }
-                lhs = fmt.Sprintf("%s[%s]", lhs, iexpr)
-        }
-        for _, f := range s.Field {
-                lhs += "." + sanitizeName(f.Name)
-        }
-        val, err := c.compileExpr(s.Value)
-        if err != nil {
-                return err
-        }
-        c.writeln(fmt.Sprintf("%s = %s", lhs, val))
-        return nil
+	lhs := sanitizeName(s.Name)
+	if !c.isLocal(s.Name) && c.globals[lhs] {
+		lhs = "$" + lhs
+	}
+	for _, idx := range s.Index {
+		iexpr, err := c.compileExpr(idx.Start)
+		if err != nil {
+			return err
+		}
+		lhs = fmt.Sprintf("%s[%s]", lhs, iexpr)
+	}
+	for _, f := range s.Field {
+		lhs += "." + sanitizeName(f.Name)
+	}
+	val, err := c.compileExpr(s.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("%s = %s", lhs, val))
+	return nil
 }
 
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
@@ -547,30 +547,30 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		}
 		return fmt.Sprintf("->(%s){ %s }", strings.Join(params, ", "), expr), nil
 	}
-        if len(fn.BlockBody) > 0 {
-                var childEnv *types.Env
-                if c.env != nil {
-                        childEnv = types.NewEnv(c.env)
-                        for _, p := range fn.Params {
-                                childEnv.SetVar(p.Name, types.AnyType{}, true)
-                        }
-                }
-                sub := &Compiler{env: childEnv, indent: c.indent + 1, helpers: c.helpers, useOpenStruct: c.useOpenStruct, tmpCount: c.tmpCount, globals: c.globals, structs: c.structs, queryRows: c.queryRows}
-                sub.locals = append(sub.locals, c.locals...)
-                sub.pushScope()
-                for _, p := range fn.Params {
-                        sub.addLocal(p.Name)
-                }
-                for _, s := range fn.BlockBody {
-                        if err := sub.compileStmt(s); err != nil {
-                                return "", err
-                        }
-                }
-                body := sub.buf.String()
-                c.tmpCount = sub.tmpCount
-                if sub.useOpenStruct {
-                        c.useOpenStruct = true
-                }
+	if len(fn.BlockBody) > 0 {
+		var childEnv *types.Env
+		if c.env != nil {
+			childEnv = types.NewEnv(c.env)
+			for _, p := range fn.Params {
+				childEnv.SetVar(p.Name, types.AnyType{}, true)
+			}
+		}
+		sub := &Compiler{env: childEnv, indent: c.indent + 1, helpers: c.helpers, useOpenStruct: c.useOpenStruct, tmpCount: c.tmpCount, globals: c.globals, structs: c.structs, queryRows: c.queryRows}
+		sub.locals = append(sub.locals, c.locals...)
+		sub.pushScope()
+		for _, p := range fn.Params {
+			sub.addLocal(p.Name)
+		}
+		for _, s := range fn.BlockBody {
+			if err := sub.compileStmt(s); err != nil {
+				return "", err
+			}
+		}
+		body := sub.buf.String()
+		c.tmpCount = sub.tmpCount
+		if sub.useOpenStruct {
+			c.useOpenStruct = true
+		}
 		var b strings.Builder
 		b.WriteString("->(" + strings.Join(params, ", ") + "){\n")
 		b.WriteString(body)
@@ -1567,10 +1567,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return "{" + strings.Join(items, ", ") + "}", nil
 	case p.Selector != nil:
-                name := sanitizeName(p.Selector.Root)
-                if !c.isLocal(p.Selector.Root) && c.globals[name] {
-                        name = "$" + name
-                }
+		name := sanitizeName(p.Selector.Root)
+		if !c.isLocal(p.Selector.Root) && c.globals[name] {
+			name = "$" + name
+		}
 		if vars, ok := c.queryRows[p.Selector.Root]; ok && len(p.Selector.Tail) > 0 {
 			idx := -1
 			for i, v := range vars {
@@ -1666,10 +1666,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			args[i] = v
 		}
-                name := sanitizeName(p.Call.Func)
-                if !c.isLocal(p.Call.Func) && c.globals[name] {
-                        name = "$" + name
-                }
+		name := sanitizeName(p.Call.Func)
+		if !c.isLocal(p.Call.Func) && c.globals[name] {
+			name = "$" + name
+		}
 		if builtin, ok, err := c.compileBuiltinCall(name, args, p.Call.Args); ok {
 			if err != nil {
 				return "", err
@@ -2133,10 +2133,10 @@ func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
 }
 
 func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
-        list := sanitizeName(u.Target)
-        if !c.isLocal(u.Target) && c.globals[list] {
-                list = "$" + list
-        }
+	list := sanitizeName(u.Target)
+	if !c.isLocal(u.Target) && c.globals[list] {
+		list = "$" + list
+	}
 	idxVar := c.newTmp()
 	itemVar := c.newTmp()
 	c.writeln(fmt.Sprintf("%s.each_with_index do |%s, %s|", list, itemVar, idxVar))

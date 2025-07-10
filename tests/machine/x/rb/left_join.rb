@@ -129,6 +129,6 @@ $result = (begin
 	_rows
 end)
 puts("--- Left Join ---")
-for entry in $result
+$result.each do |entry|
 	puts(["Order", entry.orderId, "customer", entry.customer, "total", entry.total].join(" "))
 end

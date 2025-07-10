@@ -14,6 +14,6 @@ $result = (begin
 	_res
 end)
 puts("--- Orders with customer info ---")
-for entry in $result
+$result.each do |entry|
 	puts(["Order", entry.orderId, "by", entry.customerName, "- $", entry.total].join(" "))
 end
