@@ -2,7 +2,8 @@
 :- initialization(main, main).
 main :-
     X is 12,
-    Msg = ((X > 10) -> "yes" ; "no"),
+    ((X > 10) -> _V0 = "yes" ; _V0 = "no"),
+    Msg = _V0,
     write(Msg),
     nl,
     true.

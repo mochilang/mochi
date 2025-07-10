@@ -4,7 +4,7 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 
 ## Summary
 
- - 74/97 programs compiled and ran successfully.
+ - 75/97 programs compiled and ran successfully.
 
 ### Checklist
 - [x] append_builtin
@@ -81,7 +81,7 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 - [x] user_type_literal
 - [x] values_builtin
 - [x] var_assignment
-- [ ] dataset_where_filter
+- [x] dataset_where_filter
 - [ ] group_by
 - [ ] group_by_conditional_sum
 - [ ] group_by_having
