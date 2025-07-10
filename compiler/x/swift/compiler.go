@@ -425,7 +425,11 @@ func (c *compiler) forStmt(f *parser.ForStmt) error {
 		if err != nil {
 			return err
 		}
-		if c.elementType(f.Source) == "map" {
+		et := c.elementType(f.Source)
+		styp := c.exprType(f.Source)
+		if styp == "map" {
+			src += ".keys"
+		} else if et == "map" {
 			src += " as! [[String:Any]]"
 		}
 		header = fmt.Sprintf("for %s in %s {", f.Name, src)
@@ -434,9 +438,15 @@ func (c *compiler) forStmt(f *parser.ForStmt) error {
 	c.indent++
 	prev, havePrev := c.varTypes[f.Name]
 	prevFields, haveFields := c.mapFields[f.Name]
-	c.varTypes[f.Name] = c.elementType(f.Source)
-	if fields := c.elementFieldTypes(f.Source); fields != nil {
-		c.mapFields[f.Name] = fields
+	elem := c.elementType(f.Source)
+	srcTyp := c.exprType(f.Source)
+	if srcTyp == "map" {
+		c.varTypes[f.Name] = "string"
+	} else {
+		c.varTypes[f.Name] = elem
+		if fields := c.elementFieldTypes(f.Source); fields != nil {
+			c.mapFields[f.Name] = fields
+		}
 	}
 	for _, st := range f.Body {
 		if err := c.stmt(st); err != nil {
@@ -1533,10 +1543,15 @@ func (c *compiler) existsQuery(q *parser.QueryExpr) (string, error) {
 	c.varTypes = copyMap(c.varTypes)
 	c.varTypes[q.Var] = c.exprType(q.Source)
 	cond, err := c.expr(q.Where)
-	c.varTypes = saved
 	if err != nil {
+		c.varTypes = saved
 		return "", err
 	}
+	if !boolExpr(q.Where) {
+		cond = castCond(cond)
+		cond = fmt.Sprintf("%s != nil", cond)
+	}
+	c.varTypes = saved
 	return fmt.Sprintf("%s.contains { %s in %s }", src, q.Var, cond), nil
 }
 
@@ -1564,6 +1579,10 @@ func (c *compiler) groupQuery(q *parser.QueryExpr) (string, error) {
 			c.varTypes = savedVars
 			c.mapFields = savedFields
 			return "", err
+		}
+		if !boolExpr(q.Where) {
+			cond = castCond(cond)
+			cond = fmt.Sprintf("%s != nil", cond)
 		}
 		filtered = fmt.Sprintf("%s.filter { %s in %s }", src, q.Var, cond)
 	} else {
@@ -1716,15 +1735,6 @@ func (c *compiler) groupJoinQuery(q *parser.QueryExpr) (string, error) {
 			joinSides[i] = *j.Side
 		}
 	}
-	joinOns := make([]string, len(q.Joins))
-	for i, j := range q.Joins {
-		on, err := c.expr(j.On)
-		if err != nil {
-			return "", err
-		}
-		joinOns[i] = on
-	}
-
 	savedVars := c.varTypes
 	savedFields := c.mapFields
 	c.varTypes = copyMap(c.varTypes)
@@ -1748,6 +1758,17 @@ func (c *compiler) groupJoinQuery(q *parser.QueryExpr) (string, error) {
 		_ = joinSrcs[i]
 	}
 
+	joinOns := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		on, err := c.expr(j.On)
+		if err != nil {
+			c.varTypes = savedVars
+			c.mapFields = savedFields
+			return "", err
+		}
+		joinOns[i] = on
+	}
+
 	cond := ""
 	if q.Where != nil {
 		ccond, err := c.expr(q.Where)
@@ -1755,6 +1776,10 @@ func (c *compiler) groupJoinQuery(q *parser.QueryExpr) (string, error) {
 			c.varTypes = savedVars
 			c.mapFields = savedFields
 			return "", err
+		}
+		if !boolExpr(q.Where) {
+			ccond = strings.ReplaceAll(ccond, " as! [String:Any]", "")
+			ccond = fmt.Sprintf("%s != nil", ccond)
 		}
 		cond = ccond
 	}
@@ -1769,7 +1794,8 @@ func (c *compiler) groupJoinQuery(q *parser.QueryExpr) (string, error) {
 	c.varTypes[gname] = ""
 	c.mapFields[gname] = nil
 	c.groups[gname] = true
-	elemFields := make(map[string]string)
+	c.groupElemType[gname] = ""
+	c.groupElemFields[gname] = nil
 	names := []string{q.Var}
 	for _, f := range q.Froms {
 		names = append(names, f.Var)
@@ -1777,15 +1803,6 @@ func (c *compiler) groupJoinQuery(q *parser.QueryExpr) (string, error) {
 	for _, j := range q.Joins {
 		names = append(names, j.Var)
 	}
-	for _, n := range names {
-		typ := swiftTypeOf(c.varTypes[n])
-		if typ == "" {
-			typ = "Any"
-		}
-		elemFields[n] = typ
-	}
-	c.groupElemType[gname] = "map"
-	c.groupElemFields[gname] = elemFields
 
 	var having string
 	if q.Group.Having != nil {
@@ -1996,6 +2013,10 @@ func (c *compiler) joinQuery(q *parser.QueryExpr) (string, error) {
 			c.mapFields = savedFields
 			return "", err
 		}
+		if !boolExpr(q.Where) {
+			ccond = strings.ReplaceAll(ccond, " as! [String:Any]", "")
+			ccond = fmt.Sprintf("%s != nil", ccond)
+		}
 		cond = ccond
 	}
 	selType := c.exprType(q.Select)
@@ -2193,6 +2214,10 @@ func (c *compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 					if err != nil {
 						return "", err
 					}
+					if !boolExpr(q.Where) {
+						cond = castCond(cond)
+						cond = fmt.Sprintf("%s != nil", cond)
+					}
 					src = fmt.Sprintf("%s.filter { %s in %s }", src, q.Var, cond)
 				}
 				switch call.Func {
@@ -2306,6 +2331,10 @@ func (c *compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 				cond, err := c.expr(q.Where)
 				if err != nil {
 					return "", err
+				}
+				if !boolExpr(q.Where) {
+					cond = castCond(cond)
+					cond = fmt.Sprintf("%s != nil", cond)
 				}
 				var res string
 				if isVarRef(q.Select, name) {
@@ -2504,6 +2533,18 @@ func replaceIdent(s, name, repl string) string {
 	return re.ReplaceAllString(s, repl)
 }
 
+func castCond(cond string) string {
+	if strings.Contains(cond, " as! [String:Any]") {
+		idx := strings.Index(cond, "[")
+		if idx > 0 {
+			varName := cond[:idx]
+			field := strings.TrimSuffix(cond[idx:], " as! [String:Any]")
+			return fmt.Sprintf("(%s as! [String:Any])%s", varName, field)
+		}
+	}
+	return cond
+}
+
 func (c *compiler) elementType(e *parser.Expr) string {
 	typ := c.exprType(e)
 	if strings.HasPrefix(typ, "list_") {
@@ -2524,10 +2565,17 @@ func (c *compiler) elementType(e *parser.Expr) string {
 			return c.exprType(e.Binary.Left.Value.Target.List.Elems[0])
 		}
 	}
-	if sel := e.Binary.Left.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 {
+	if sel := e.Binary.Left.Value.Target.Selector; sel != nil {
 		if c.groups[sel.Root] {
-			if t, ok := c.groupElemType[sel.Root]; ok {
-				return t
+			if len(sel.Tail) == 0 {
+				if t, ok := c.groupElemType[sel.Root]; ok {
+					return t
+				}
+			}
+			if len(sel.Tail) == 1 && sel.Tail[0] == "items" {
+				if t, ok := c.groupElemType[sel.Root]; ok {
+					return t
+				}
 			}
 		}
 	}
@@ -2539,15 +2587,24 @@ func (c *compiler) elementFieldTypes(e *parser.Expr) map[string]string {
 		return nil
 	}
 	p := e.Binary.Left.Value
-	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
-		if t, ok := c.mapFields[p.Target.Selector.Root]; ok {
-			if t != nil {
-				return t
+	if p.Target.Selector != nil {
+		if len(p.Target.Selector.Tail) == 0 {
+			if t, ok := c.mapFields[p.Target.Selector.Root]; ok {
+				if t != nil {
+					return t
+				}
+			}
+			if c.groups[p.Target.Selector.Root] {
+				if t, ok2 := c.groupElemFields[p.Target.Selector.Root]; ok2 {
+					return t
+				}
 			}
 		}
-		if c.groups[p.Target.Selector.Root] {
-			if t, ok2 := c.groupElemFields[p.Target.Selector.Root]; ok2 {
-				return t
+		if len(p.Target.Selector.Tail) == 1 && p.Target.Selector.Tail[0] == "items" {
+			if c.groups[p.Target.Selector.Root] {
+				if t, ok2 := c.groupElemFields[p.Target.Selector.Root]; ok2 {
+					return t
+				}
 			}
 		}
 	}
