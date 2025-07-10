@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"path/filepath"
+	"reflect"
 	"sort"
 	"strings"
 	"unicode"
@@ -1174,7 +1175,21 @@ func (c *Compiler) compileList(l *parser.ListLiteral, mutable bool) (string, err
 	if mutable {
 		prefix = "scala.collection.mutable.ArrayBuffer"
 	}
-	return fmt.Sprintf("%s(%s)", prefix, strings.Join(elems, ", ")), nil
+
+	// infer element type
+	var elemType types.Type = types.AnyType{}
+	if len(l.Elems) > 0 {
+		elemType = types.ExprType(l.Elems[0], c.env)
+		for _, e := range l.Elems[1:] {
+			t := types.ExprType(e, c.env)
+			if !sameType(elemType, t) {
+				elemType = types.AnyType{}
+				break
+			}
+		}
+	}
+	typeStr := c.typeOf(elemType)
+	return fmt.Sprintf("%s[%s](%s)", prefix, typeStr, strings.Join(elems, ", ")), nil
 }
 
 func (c *Compiler) compileMap(m *parser.MapLiteral, mutable bool) (string, error) {
@@ -1202,10 +1217,36 @@ func (c *Compiler) compileMap(m *parser.MapLiteral, mutable bool) (string, error
 	if mutable {
 		prefix = "scala.collection.mutable.Map"
 	}
+
+	// infer key and value types
+	var keyType, valType types.Type = types.AnyType{}, types.AnyType{}
+	if len(m.Items) > 0 {
+		keyType = types.ExprType(m.Items[0].Key, c.env)
+		// simple string key should be string type
+		if _, ok := types.SimpleStringKey(m.Items[0].Key); ok {
+			keyType = types.StringType{}
+		}
+		valType = types.ExprType(m.Items[0].Value, c.env)
+		for _, it := range m.Items[1:] {
+			kt := types.ExprType(it.Key, c.env)
+			if _, ok := types.SimpleStringKey(it.Key); ok {
+				kt = types.StringType{}
+			}
+			vt := types.ExprType(it.Value, c.env)
+			if !sameType(keyType, kt) {
+				keyType = types.AnyType{}
+			}
+			if !sameType(valType, vt) {
+				valType = types.AnyType{}
+			}
+		}
+	}
+	typeStr := fmt.Sprintf("[%s, %s]", c.typeOf(keyType), c.typeOf(valType))
+
 	if c.inSort {
 		return fmt.Sprintf("(%s)", strings.Join(vals, ", ")), nil
 	}
-	return fmt.Sprintf("%s(%s)", prefix, strings.Join(items, ", ")), nil
+	return fmt.Sprintf("%s%s(%s)", prefix, typeStr, strings.Join(items, ", ")), nil
 }
 
 func (c *Compiler) compileStructLit(st *parser.StructLiteral) (string, error) {
@@ -1605,6 +1646,63 @@ func (c *Compiler) typeOf(t types.Type) string {
 	default:
 		return "Any"
 	}
+}
+
+func sameType(a, b types.Type) bool {
+	if _, ok := a.(types.AnyType); ok {
+		_, ok2 := b.(types.AnyType)
+		return ok2
+	}
+	if _, ok := b.(types.AnyType); ok {
+		_, ok2 := a.(types.AnyType)
+		return ok2
+	}
+	if la, ok := a.(types.ListType); ok {
+		if lb, ok := b.(types.ListType); ok {
+			return sameType(la.Elem, lb.Elem)
+		}
+	}
+	if ma, ok := a.(types.MapType); ok {
+		if mb, ok := b.(types.MapType); ok {
+			return sameType(ma.Key, mb.Key) && sameType(ma.Value, mb.Value)
+		}
+	}
+	if ua, ok := a.(types.UnionType); ok {
+		if sb, ok := b.(types.StructType); ok {
+			if _, ok := ua.Variants[sb.Name]; ok {
+				return true
+			}
+		}
+	}
+	if ub, ok := b.(types.UnionType); ok {
+		if sa, ok := a.(types.StructType); ok {
+			if _, ok := ub.Variants[sa.Name]; ok {
+				return true
+			}
+		}
+	}
+	if _, ok := a.(types.Int64Type); ok {
+		if _, ok := b.(types.Int64Type); ok {
+			return true
+		}
+		if _, ok := b.(types.IntType); ok {
+			return true
+		}
+	}
+	if _, ok := b.(types.Int64Type); ok {
+		if _, ok := a.(types.Int64Type); ok {
+			return true
+		}
+		if _, ok := a.(types.IntType); ok {
+			return true
+		}
+	}
+	if _, ok := a.(types.IntType); ok {
+		if _, ok := b.(types.IntType); ok {
+			return true
+		}
+	}
+	return reflect.DeepEqual(a, b)
 }
 
 func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {

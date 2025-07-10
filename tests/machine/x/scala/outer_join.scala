@@ -12,9 +12,9 @@ object outer_join {
     case _ => true
   }
 
-  val customers = List(Map("id" -> (1), "name" -> ("Alice")), Map("id" -> (2), "name" -> ("Bob")), Map("id" -> (3), "name" -> ("Charlie")), Map("id" -> (4), "name" -> ("Diana")))
-  val orders = List(Map("id" -> (100), "customerId" -> (1), "total" -> (250)), Map("id" -> (101), "customerId" -> (2), "total" -> (125)), Map("id" -> (102), "customerId" -> (1), "total" -> (300)), Map("id" -> (103), "customerId" -> (5), "total" -> (80)))
-  val result = for { o <- orders; c = customers.find(c => o("customerId") == (c.id).asInstanceOf[Int]) } yield Map("order" -> (o), "customer" -> (c))
+  val customers = List[Map[String, Any]](Map[String, Any]("id" -> (1), "name" -> ("Alice")), Map[String, Any]("id" -> (2), "name" -> ("Bob")), Map[String, Any]("id" -> (3), "name" -> ("Charlie")), Map[String, Any]("id" -> (4), "name" -> ("Diana")))
+  val orders = List[Map[String, Int]](Map[String, Int]("id" -> (100), "customerId" -> (1), "total" -> (250)), Map[String, Int]("id" -> (101), "customerId" -> (2), "total" -> (125)), Map[String, Int]("id" -> (102), "customerId" -> (1), "total" -> (300)), Map[String, Int]("id" -> (103), "customerId" -> (5), "total" -> (80)))
+  val result = for { o <- orders; c = customers.find(c => o("customerId") == (c.id).asInstanceOf[Int]) } yield Map[String, Any]("order" -> (o), "customer" -> (c))
   def main(args: Array[String]): Unit = {
     println(("--- Outer Join using syntax ---"))
     for(row <- result) {

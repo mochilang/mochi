@@ -12,8 +12,8 @@ object dataset_where_filter {
     case _ => true
   }
 
-  val people = List(Map("name" -> ("Alice"), "age" -> (30)), Map("name" -> ("Bob"), "age" -> (15)), Map("name" -> ("Charlie"), "age" -> (65)), Map("name" -> ("Diana"), "age" -> (45)))
-  val adults = for { person <- people; if person("age") >= 18 } yield Map("name" -> (person("name")), "age" -> (person("age")), "is_senior" -> (person("age") >= 60))
+  val people = List[Map[String, Any]](Map[String, Any]("name" -> ("Alice"), "age" -> (30)), Map[String, Any]("name" -> ("Bob"), "age" -> (15)), Map[String, Any]("name" -> ("Charlie"), "age" -> (65)), Map[String, Any]("name" -> ("Diana"), "age" -> (45)))
+  val adults = for { person <- people; if person("age") >= 18 } yield Map[String, Any]("name" -> (person("name")), "age" -> (person("age")), "is_senior" -> (person("age") >= 60))
   def main(args: Array[String]): Unit = {
     println(("--- Adults ---"))
     for(person <- adults) {
