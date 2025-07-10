@@ -42,24 +42,16 @@ fn _slice_string(s: []const u8, start: i32, end: i32, step: i32) []const u8 {
     return res.toOwnedSlice() catch unreachable;
 }
 
-fn _print_list(comptime T: type, v: []const T) void {
-    for (v, 0..) |it, i| {
-        if (i > 0) std.debug.print(" ", .{});
-        std.debug.print("{any}", .{it});
-    }
-    std.debug.print("\n", .{});
-}
-
 pub fn main() void {
-    _print_list(i32, _slice_list(i32, &[_]i32{
+    std.debug.print("{any}\n", .{_slice_list(i32, &[_]i32{
     1,
     2,
     3,
-}, 1, 3, 1));
-    _print_list(i32, _slice_list(i32, &[_]i32{
+}, 1, 3, 1)});
+    std.debug.print("{any}\n", .{_slice_list(i32, &[_]i32{
     1,
     2,
     3,
-}, 0, 2, 1));
+}, 0, 2, 1)});
     std.debug.print("{s}\n", .{_slice_string("hello", 1, 4, 1)});
 }

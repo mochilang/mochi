@@ -2471,14 +2471,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	}
 	if name == "print" {
 		if len(call.Args) == 1 {
-			if lt, ok := c.inferExprType(call.Args[0]).(types.ListType); ok {
+			if _, ok := c.inferExprType(call.Args[0]).(types.ListType); ok {
 				arg, err := c.compileExpr(call.Args[0], false)
 				if err != nil {
 					return "", err
 				}
-				elem := zigTypeOf(lt.Elem)
-				c.needsPrintList = true
-				return fmt.Sprintf("_print_list(%s, %s)", elem, arg), nil
+				return fmt.Sprintf("std.debug.print(\"{any}\\n\", .{%s})", arg), nil
 			}
 			if c.isStringLiteralExpr(call.Args[0]) {
 				lit := call.Args[0].Binary.Left.Value.Target.Lit.Str

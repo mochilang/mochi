@@ -10,6 +10,6 @@ fn test_addition_works() void {
 }
 
 pub fn main() void {
-    std.debug.print("{s}\n", .{"ok"});
+    std.debug.print("ok\n", .{});
     test_addition_works();
 }

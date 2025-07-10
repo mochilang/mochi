@@ -20,6 +20,6 @@ pub fn main() void {
         if ((n > 7)) {
             break;
         }
-        std.debug.print("{s} {d}\n", .{"odd number:", n});
+        std.debug.print("odd number: {d}\n", .{n});
     }
 }

@@ -11,7 +11,7 @@ const xs = &[_]i32{
     3,
 };
 const ys = blk0: { var _tmp0 = std.ArrayList(i32).init(std.heap.page_allocator); for (xs) |x| { if (!((@mod(x, 2) == 1))) continue; _tmp0.append(x) catch unreachable; } const _tmp1 = _tmp0.toOwnedSlice() catch unreachable; break :blk0 _tmp1; };
-const m = struct { a: i32, }{ .a = 1 };
+const m = (blk1: { var _map2 = std.StringHashMap(i32).init(std.heap.page_allocator); _map2.put("a", 1) catch unreachable; break :blk1 _map2; });
 const s = "hello";
 
 pub fn main() void {

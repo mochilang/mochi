@@ -55,7 +55,7 @@ const stats = blk2: { var _tmp3 = std.ArrayList(struct { key: []const u8, Items:
     name: []const u8,
     age: i32,
     city: []const u8,
-}) }).init(std.heap.page_allocator); var _tmp4 = std.AutoHashMap([]const u8, usize).init(std.heap.page_allocator); for (people) |person| { const _tmp5 = person.city; if (_tmp4.get(_tmp5)) |idx| { _tmp3.items[idx].Items.append(person) catch unreachable; } else { var g = struct { key: []const u8, Items: std.ArrayList(struct {
+}) }).init(std.heap.page_allocator); var _tmp4 = std.StringHashMap(usize).init(std.heap.page_allocator); for (people) |person| { const _tmp5 = person.city; if (_tmp4.get(_tmp5)) |idx| { _tmp3.items[idx].Items.append(person) catch unreachable; } else { var g = struct { key: []const u8, Items: std.ArrayList(struct {
     name: []const u8,
     age: i32,
     city: []const u8,
@@ -82,7 +82,7 @@ const stats = blk2: { var _tmp3 = std.ArrayList(struct { key: []const u8, Items:
 }) catch unreachable; } const _tmp7Slice = _tmp7.toOwnedSlice() catch unreachable; break :blk2 _tmp7Slice; };
 
 pub fn main() void {
-    std.debug.print("{s}\n", .{"--- People grouped by city ---"});
+    std.debug.print("--- People grouped by city ---\n", .{});
     for (stats) |s| {
         std.debug.print("{any} {s} {any} {s} {any}\n", .{s.city, ": count =", s.count, ", avg_age =", s.avg_age});
     }

@@ -8,14 +8,6 @@ fn _append(comptime T: type, v: []const T, x: T) []T {
     return res.toOwnedSlice() catch unreachable;
 }
 
-fn _print_list(comptime T: type, v: []const T) void {
-    for (v, 0..) |it, i| {
-        if (i > 0) std.debug.print(" ", .{});
-        std.debug.print("{any}", .{it});
-    }
-    std.debug.print("\n", .{});
-}
-
 fn _equal(a: anytype, b: anytype) bool {
     if (@TypeOf(a) != @TypeOf(b)) return false;
     return switch (@typeInfo(@TypeOf(a))) {
@@ -44,7 +36,7 @@ const data = (blk0: { const _tmp0 = struct {
 const groups = blk1: { var _tmp1 = std.ArrayList(struct { key: []const u8, Items: std.ArrayList(struct {
     tag: []const u8,
     val: i32,
-}) }).init(std.heap.page_allocator); var _tmp2 = std.AutoHashMap([]const u8, usize).init(std.heap.page_allocator); for (data) |d| { const _tmp3 = d.tag; if (_tmp2.get(_tmp3)) |idx| { _tmp1.items[idx].Items.append(d) catch unreachable; } else { var g = struct { key: []const u8, Items: std.ArrayList(struct {
+}) }).init(std.heap.page_allocator); var _tmp2 = std.StringHashMap(usize).init(std.heap.page_allocator); for (data) |d| { const _tmp3 = d.tag; if (_tmp2.get(_tmp3)) |idx| { _tmp1.items[idx].Items.append(d) catch unreachable; } else { var g = struct { key: []const u8, Items: std.ArrayList(struct {
     tag: []const u8,
     val: i32,
 }) }{ .key = _tmp3, .Items = std.ArrayList(struct {
@@ -71,5 +63,5 @@ pub fn main() void {
     .total = total,
 });
     }
-    _print_list(i32, result);
+    std.debug.print("{any}\n", .{result});
 }

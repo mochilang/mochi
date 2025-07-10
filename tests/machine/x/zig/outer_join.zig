@@ -93,16 +93,16 @@ const result = blk2: { var _tmp2 = std.ArrayList(struct {
 }) catch unreachable; } } const res = _tmp2.toOwnedSlice() catch unreachable; break :blk2 res; };
 
 pub fn main() void {
-    std.debug.print("{s}\n", .{"--- Outer Join using syntax ---"});
+    std.debug.print("--- Outer Join using syntax ---\n", .{});
     for (result) |row| {
         if (row.order) {
             if (row.customer) {
-                std.debug.print("{s} {any} {s} {any} {s} {any}\n", .{"Order", row.order.id, "by", row.customer.name, "- $", row.order.total});
+                std.debug.print("Order {any} by {any} - $ {any}\n", .{row.order.id, row.customer.name, row.order.total});
             } else {
-                std.debug.print("{s} {any} {s} {s} {s} {any}\n", .{"Order", row.order.id, "by", "Unknown", "- $", row.order.total});
+                std.debug.print("Order {any} by Unknown - $ {any}\n", .{row.order.id, row.order.total});
             }
         } else {
-            std.debug.print("{s} {any} {s}\n", .{"Customer", row.customer.name, "has no orders"});
+            std.debug.print("Customer {any} has no orders\n", .{row.customer.name});
         }
     }
 }

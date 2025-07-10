@@ -1,9 +1,0 @@
-Error on line 82: zig build error: exit status 1
-/workspace/mochi/tests/machine/x/zig/group_by_multi_join.zig:82:2: error: expected type 'group_by_multi_join.filtered__struct_4076', found 'group_by_multi_join.filtered__struct_4138'
-/workspace/mochi/tests/machine/x/zig/group_by_multi_join.zig:79:236: note: struct declared here
-/workspace/mochi/tests/machine/x/zig/group_by_multi_join.zig:76:52: note: struct declared here
-/tmp/zig-0.12.0/lib/std/array_list.zig:261:42: note: parameter type declared here
-
-81:     value: f64,
-82: }{
-83:     .part = ps.part,

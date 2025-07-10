@@ -51,7 +51,7 @@ const people = (blk0: { const _tmp0 = struct {
 const big = blk1: { var _tmp1 = std.ArrayList(struct { key: []const u8, Items: std.ArrayList(struct {
     name: []const u8,
     city: []const u8,
-}) }).init(std.heap.page_allocator); var _tmp2 = std.AutoHashMap([]const u8, usize).init(std.heap.page_allocator); for (people) |p| { const _tmp3 = p.city; if (_tmp2.get(_tmp3)) |idx| { _tmp1.items[idx].Items.append(p) catch unreachable; } else { var g = struct { key: []const u8, Items: std.ArrayList(struct {
+}) }).init(std.heap.page_allocator); var _tmp2 = std.StringHashMap(usize).init(std.heap.page_allocator); for (people) |p| { const _tmp3 = p.city; if (_tmp2.get(_tmp3)) |idx| { _tmp1.items[idx].Items.append(p) catch unreachable; } else { var g = struct { key: []const u8, Items: std.ArrayList(struct {
     name: []const u8,
     city: []const u8,
 }) }{ .key = _tmp3, .Items = std.ArrayList(struct {

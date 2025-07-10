@@ -73,6 +73,6 @@ pub fn main() void {
         }
         people[_tmp0] = _tmp1;
     }
-    std.debug.print("{s}\n", .{"ok"});
+    std.debug.print("ok\n", .{});
     test_update_adult_status();
 }

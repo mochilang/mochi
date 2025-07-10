@@ -58,6 +58,6 @@ const result = blk2: { var _tmp2 = std.ArrayList(struct {
 pub fn main() void {
     std.debug.print("--- Cross Join: All order-customer pairs ---\n", .{});
     for (result) |entry| {
-        std.debug.print("{s} {any} {s} {any} {s} {any} {s} {any}\n", .{"Order", entry.orderId, "(customerId:", entry.orderCustomerId, ", total: $", entry.orderTotal, ") paired with", entry.pairedCustomerName});
+        std.debug.print("Order {any} (customerId: {any} , total: $ {any} ) paired with {any}\n", .{entry.orderId, entry.orderCustomerId, entry.orderTotal, entry.pairedCustomerName});
     }
 }

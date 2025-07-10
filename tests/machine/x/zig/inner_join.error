@@ -1,9 +1,0 @@
-Error on line 54: zig build error: exit status 1
-/workspace/mochi/tests/machine/x/zig/inner_join.zig:54:2: error: expected type 'inner_join.result__struct_3434', found 'inner_join.result__struct_3623'
-/workspace/mochi/tests/machine/x/zig/inner_join.zig:50:130: note: struct declared here
-/workspace/mochi/tests/machine/x/zig/inner_join.zig:46:50: note: struct declared here
-/tmp/zig-0.12.0/lib/std/array_list.zig:261:42: note: parameter type declared here
-
-53:     total: i32,
-54: }{
-55:     .orderId = o.id,

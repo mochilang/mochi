@@ -8,19 +8,11 @@ fn _append(comptime T: type, v: []const T, x: T) []T {
     return res.toOwnedSlice() catch unreachable;
 }
 
-fn _print_list(comptime T: type, v: []const T) void {
-    for (v, 0..) |it, i| {
-        if (i > 0) std.debug.print(" ", .{});
-        std.debug.print("{any}", .{it});
-    }
-    std.debug.print("\n", .{});
-}
-
 const a = &[_]i32{
     1,
     2,
 };
 
 pub fn main() void {
-    _print_list(i32, _append(i32, a, 3));
+    std.debug.print("{any}\n", .{_append(i32, a, 3)});
 }

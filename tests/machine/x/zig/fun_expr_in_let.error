@@ -1,6 +1,0 @@
-Error on line 4: zig build error: exit status 1
-/workspace/mochi/tests/machine/x/zig/fun_expr_in_let.zig:4:23: error: expected ',' after initializer
-
-3: const square = fn (x: i32) i32 {
-4:         return (x * x);
-5: };

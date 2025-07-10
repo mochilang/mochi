@@ -45,7 +45,7 @@ const orders = (blk1: { const _tmp1 = struct {
 const stats = blk3: { var _tmp4 = std.ArrayList(struct { key: []const u8, Items: std.ArrayList(struct {
     id: i32,
     name: []const u8,
-}) }).init(std.heap.page_allocator); var _tmp5 = std.AutoHashMap([]const u8, usize).init(std.heap.page_allocator); for (customers) |c| { for (orders) |o| { if (!((o.customerId == c.id))) continue; const _tmp6 = c.name; if (_tmp5.get(_tmp6)) |idx| { _tmp4.items[idx].Items.append(c) catch unreachable; } else { var g = struct { key: []const u8, Items: std.ArrayList(struct {
+}) }).init(std.heap.page_allocator); var _tmp5 = std.StringHashMap(usize).init(std.heap.page_allocator); for (customers) |c| { for (orders) |o| { if (!((o.customerId == c.id))) continue; const _tmp6 = c.name; if (_tmp5.get(_tmp6)) |idx| { _tmp4.items[idx].Items.append(c) catch unreachable; } else { var g = struct { key: []const u8, Items: std.ArrayList(struct {
     id: i32,
     name: []const u8,
 }) }{ .key = _tmp6, .Items = std.ArrayList(struct {
@@ -66,7 +66,7 @@ const stats = blk3: { var _tmp4 = std.ArrayList(struct { key: []const u8, Items:
 }) catch unreachable; } const _tmp8Slice = _tmp8.toOwnedSlice() catch unreachable; break :blk3 _tmp8Slice; };
 
 pub fn main() void {
-    std.debug.print("{s}\n", .{"--- Group Left Join ---"});
+    std.debug.print("--- Group Left Join ---\n", .{});
     for (stats) |s| {
         std.debug.print("{any} {s} {any}\n", .{s.name, "orders:", s.count});
     }
