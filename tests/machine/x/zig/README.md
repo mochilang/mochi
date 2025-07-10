@@ -103,3 +103,4 @@
 - [x] Support right and outer join queries
 - [x] Support join queries with grouping, having clauses, and sorting
 - [x] Format struct and list literals on multiple lines for readability
+- [ ] Improve float formatting for numeric outputs
