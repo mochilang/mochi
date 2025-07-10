@@ -1047,10 +1047,24 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("avg expects 1 arg")
 		}
+		if qarg, ok := queryExpr(call.Args[0]); ok {
+			inner, err := c.compileQueryExpr(qarg)
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("(%s).sum.toDouble / (%s).size", inner, inner), nil
+		}
 		return fmt.Sprintf("(%s).sum.toDouble / (%s).size", args[0], args[0]), nil
 	case "count":
 		if len(args) != 1 {
 			return "", fmt.Errorf("count expects 1 arg")
+		}
+		if qarg, ok := queryExpr(call.Args[0]); ok {
+			inner, err := c.compileQueryExpr(qarg)
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("(%s).size", inner), nil
 		}
 		if _, ok := types.ExprType(call.Args[0], c.env).(types.GroupType); ok {
 			return fmt.Sprintf("(%s).size", args[0]), nil
@@ -1071,15 +1085,36 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("min expects 1 arg")
 		}
+		if qarg, ok := queryExpr(call.Args[0]); ok {
+			inner, err := c.compileQueryExpr(qarg)
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("(%s).min", inner), nil
+		}
 		return fmt.Sprintf("%s.min", args[0]), nil
 	case "max":
 		if len(args) != 1 {
 			return "", fmt.Errorf("max expects 1 arg")
 		}
+		if qarg, ok := queryExpr(call.Args[0]); ok {
+			inner, err := c.compileQueryExpr(qarg)
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("(%s).max", inner), nil
+		}
 		return fmt.Sprintf("%s.max", args[0]), nil
 	case "sum":
 		if len(args) != 1 {
 			return "", fmt.Errorf("sum expects 1 arg")
+		}
+		if qarg, ok := queryExpr(call.Args[0]); ok {
+			inner, err := c.compileQueryExpr(qarg)
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("(%s).sum", inner), nil
 		}
 		return fmt.Sprintf("%s.sum", args[0]), nil
 	case "str":
@@ -1626,6 +1661,21 @@ func identOfUnary(u *parser.Unary) (string, bool) {
 		return "", false
 	}
 	return p.Target.Selector.Root, true
+}
+
+func queryExpr(e *parser.Expr) (*parser.QueryExpr, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) > 0 || u.Value == nil {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Query == nil {
+		return nil, false
+	}
+	return p.Target.Query, true
 }
 
 func indexOf(list []*parser.Statement, target *parser.Statement) int {
