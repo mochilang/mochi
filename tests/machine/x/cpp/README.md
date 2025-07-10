@@ -2,7 +2,7 @@
 
 This directory contains C++ source code generated from Mochi programs and the corresponding outputs or errors.
 
-Compiled programs: 81/97
+Compiled programs: 79/97
 
 ## Checklist
 
@@ -32,7 +32,7 @@ Compiled programs: 81/97
 - [x] if_then_else
 - [x] if_then_else_nested
 - [x] in_operator
-- [x] len_builtin
+ - [ ] len_builtin
 - [x] len_map
 - [x] len_string
 - [x] let_and_print
@@ -55,7 +55,7 @@ Compiled programs: 81/97
 - [x] pure_fold
 - [x] record_assign
 - [x] short_circuit
-- [x] slice
+ - [ ] slice
 - [x] str_builtin
 - [x] string_compare
 - [x] string_concat

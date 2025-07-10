@@ -1,32 +1,32 @@
-line 187: ../../../tests/machine/x/cpp/group_by_left_join.cpp: In lambda function:
-../../../tests/machine/x/cpp/group_by_left_join.cpp:187:51: error: no match for ‘operator!’ (operand type is ‘__struct2’)
-  187 |                                               if (!(r.o))
+line 77: ../../../tests/machine/x/cpp/group_by_left_join.cpp: In lambda function:
+../../../tests/machine/x/cpp/group_by_left_join.cpp:77:51: error: no match for ‘operator!’ (operand type is ‘__struct2’)
+   77 |                                               if (!(r.o))
       |                                                   ^~~~~~
-../../../tests/machine/x/cpp/group_by_left_join.cpp:187:51: note: candidate: ‘operator!(bool)’ (built-in)
-../../../tests/machine/x/cpp/group_by_left_join.cpp:187:51: note:   no known conversion for argument 1 from ‘__struct2’ to ‘bool’
+../../../tests/machine/x/cpp/group_by_left_join.cpp:77:51: note: candidate: ‘operator!(bool)’ (built-in)
+../../../tests/machine/x/cpp/group_by_left_join.cpp:77:51: note:   no known conversion for argument 1 from ‘__struct2’ to ‘bool’
 ../../../tests/machine/x/cpp/group_by_left_join.cpp: In lambda function:
-../../../tests/machine/x/cpp/group_by_left_join.cpp:184:43: warning: narrowing conversion of ‘(int)main()::<lambda()>::<lambda()>().std::vector<__struct3>::size()’ from ‘int’ to ‘bool’ [-Wnarrowing]
-  184 |       __items.push_back(__struct5{g.key, ((int)([&]() {
+../../../tests/machine/x/cpp/group_by_left_join.cpp:74:43: warning: narrowing conversion of ‘(int)main()::<lambda()>::<lambda()>().std::vector<__struct3>::size()’ from ‘int’ to ‘bool’ [-Wnarrowing]
+   74 |       __items.push_back(__struct5{g.key, ((int)([&]() {
       |                                          ~^~~~~~~~~~~~~
-  185 |                                             std::vector<__struct3> __items;
+   75 |                                             std::vector<__struct3> __items;
       |                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  186 |                                             for (auto r : g.items) {
+   76 |                                             for (auto r : g.items) {
       |                                             ~~~~~~~~~~~~~~~~~~~~~~~~
-  187 |                                               if (!(r.o))
+   77 |                                               if (!(r.o))
       |                                               ~~~~~~~~~~~
-  188 |                                                 continue;
+   78 |                                                 continue;
       |                                                 ~~~~~~~~~
-  189 |                                               __items.push_back(r);
+   79 |                                               __items.push_back(r);
       |                                               ~~~~~~~~~~~~~~~~~~~~~
-  190 |                                             }
+   80 |                                             }
       |                                             ~
-  191 |                                             return __items;
+   81 |                                             return __items;
       |                                             ~~~~~~~~~~~~~~~
-  192 |                                           })()
+   82 |                                           })()
       |                                           ~~~~
-  193 |                                               .size())});
+   83 |                                               .size())});
       |                                               ~~~~~~~~
 
-186 |                                             for (auto r : g.items) {
-187 |                                               if (!(r.o))
-188 |                                                 continue;
+ 76 |                                             for (auto r : g.items) {
+ 77 |                                               if (!(r.o))
+ 78 |                                                 continue;

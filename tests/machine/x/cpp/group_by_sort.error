@@ -1,47 +1,47 @@
-line 118: ../../../tests/machine/x/cpp/group_by_sort.cpp: In lambda function:
-../../../tests/machine/x/cpp/group_by_sort.cpp:118:39: error: lambda-expression in unevaluated context only available with ‘-std=c++20’ or ‘-std=gnu++20’
-  118 |     std::vector<std::pair<decltype((-([&](auto v) {
+line 41: ../../../tests/machine/x/cpp/group_by_sort.cpp: In lambda function:
+../../../tests/machine/x/cpp/group_by_sort.cpp:41:39: error: lambda-expression in unevaluated context only available with ‘-std=c++20’ or ‘-std=gnu++20’
+   41 |     std::vector<std::pair<decltype((-([&](auto v) {
       |                                       ^
-../../../tests/machine/x/cpp/group_by_sort.cpp:121:31: error: lambda-expression in unevaluated context only available with ‘-std=c++20’ or ‘-std=gnu++20’
-  121 |                           })(([&]() {
+../../../tests/machine/x/cpp/group_by_sort.cpp:44:31: error: lambda-expression in unevaluated context only available with ‘-std=c++20’ or ‘-std=gnu++20’
+   44 |                           })(([&]() {
       |                               ^
-../../../tests/machine/x/cpp/group_by_sort.cpp:129:27: error: template argument 1 is invalid
-  129 |                           __struct3>>
+../../../tests/machine/x/cpp/group_by_sort.cpp:52:27: error: template argument 1 is invalid
+   52 |                           __struct3>>
       |                           ^~~~~~~~~
-../../../tests/machine/x/cpp/group_by_sort.cpp:129:36: error: template argument 1 is invalid
-  129 |                           __struct3>>
+../../../tests/machine/x/cpp/group_by_sort.cpp:52:36: error: template argument 1 is invalid
+   52 |                           __struct3>>
       |                                    ^~
-../../../tests/machine/x/cpp/group_by_sort.cpp:129:36: error: template argument 2 is invalid
-../../../tests/machine/x/cpp/group_by_sort.cpp:132:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
-  132 |       __items.push_back(
+../../../tests/machine/x/cpp/group_by_sort.cpp:52:36: error: template argument 2 is invalid
+../../../tests/machine/x/cpp/group_by_sort.cpp:55:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+   55 |       __items.push_back(
       |               ^~~~~~~~~
-../../../tests/machine/x/cpp/group_by_sort.cpp:144:18: warning: narrowing conversion of ‘<lambda closure object>main()::<lambda()>::<lambda(auto:3)>().main()::<lambda()>::<lambda(auto:3)>(main()::<lambda()>::<lambda()>())’ from ‘int’ to ‘bool’ [-Wnarrowing]
-  142 |                g.key, ([&](auto v) {
+../../../tests/machine/x/cpp/group_by_sort.cpp:67:18: warning: narrowing conversion of ‘<lambda closure object>main()::<lambda()>::<lambda(auto:3)>().main()::<lambda()>::<lambda(auto:3)>(main()::<lambda()>::<lambda()>())’ from ‘int’ to ‘bool’ [-Wnarrowing]
+   65 |                g.key, ([&](auto v) {
       |                       ~~~~~~~~~~~~~~
-  143 |                  return std::accumulate(v.begin(), v.end(), 0);
+   66 |                  return std::accumulate(v.begin(), v.end(), 0);
       |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  144 |                })(([&]() {
+   67 |                })(([&]() {
       |                ~~^~~~~~~~~
-  145 |                  std::vector<decltype(std::declval<__struct1>().val)> __items;
+   68 |                  std::vector<decltype(std::declval<__struct1>().val)> __items;
       |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  146 |                  for (auto x : g.items) {
+   69 |                  for (auto x : g.items) {
       |                  ~~~~~~~~~~~~~~~~~~~~~~~~
-  147 |                    __items.push_back(x.val);
+   70 |                    __items.push_back(x.val);
       |                    ~~~~~~~~~~~~~~~~~~~~~~~~~
-  148 |                  }
+   71 |                  }
       |                  ~
-  149 |                  return __items;
+   72 |                  return __items;
       |                  ~~~~~~~~~~~~~~~
-  150 |                })())}});
+   73 |                })())}});
       |                ~~~~~
-../../../tests/machine/x/cpp/group_by_sort.cpp:152:23: error: request for member ‘begin’ in ‘__items’, which is of non-class type ‘int’
-  152 |     std::sort(__items.begin(), __items.end(),
+../../../tests/machine/x/cpp/group_by_sort.cpp:75:23: error: request for member ‘begin’ in ‘__items’, which is of non-class type ‘int’
+   75 |     std::sort(__items.begin(), __items.end(),
       |                       ^~~~~
-../../../tests/machine/x/cpp/group_by_sort.cpp:152:40: error: request for member ‘end’ in ‘__items’, which is of non-class type ‘int’
-  152 |     std::sort(__items.begin(), __items.end(),
+../../../tests/machine/x/cpp/group_by_sort.cpp:75:40: error: request for member ‘end’ in ‘__items’, which is of non-class type ‘int’
+   75 |     std::sort(__items.begin(), __items.end(),
       |                                        ^~~
-../../../tests/machine/x/cpp/group_by_sort.cpp:155:20: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
-  155 |     for (auto &p : __items)
+../../../tests/machine/x/cpp/group_by_sort.cpp:78:20: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+   78 |     for (auto &p : __items)
       |                    ^~~~~~~
       |                    std::begin
 In file included from /usr/include/c++/13/string:53,
@@ -54,14 +54,14 @@ In file included from /usr/include/c++/13/string:53,
 /usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
   114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
       |                                     ^~~~~
-../../../tests/machine/x/cpp/group_by_sort.cpp:155:20: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
-  155 |     for (auto &p : __items)
+../../../tests/machine/x/cpp/group_by_sort.cpp:78:20: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
+   78 |     for (auto &p : __items)
       |                    ^~~~~~~
       |                    std::end
 /usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
   116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
       |                                     ^~~
 
-117 |     }
-118 |     std::vector<std::pair<decltype((-([&](auto v) {
-119 |                             return std::accumulate(
+ 40 |     }
+ 41 |     std::vector<std::pair<decltype((-([&](auto v) {
+ 42 |                             return std::accumulate(

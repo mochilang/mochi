@@ -1,48 +1,48 @@
-line 55: ../../../tests/machine/x/cpp/tree_sum.cpp:55:12: error: ‘Leaf’ was not declared in this scope
-   55 |   decltype(Leaf) left;
+line 4: ../../../tests/machine/x/cpp/tree_sum.cpp:4:12: error: ‘Leaf’ was not declared in this scope
+    4 |   decltype(Leaf) left;
       |            ^~~~
-../../../tests/machine/x/cpp/tree_sum.cpp:55:12: error: ‘Leaf’ was not declared in this scope
-../../../tests/machine/x/cpp/tree_sum.cpp:57:12: error: ‘Leaf’ was not declared in this scope
-   57 |   decltype(Leaf) right;
+../../../tests/machine/x/cpp/tree_sum.cpp:4:12: error: ‘Leaf’ was not declared in this scope
+../../../tests/machine/x/cpp/tree_sum.cpp:6:12: error: ‘Leaf’ was not declared in this scope
+    6 |   decltype(Leaf) right;
       |            ^~~~
-../../../tests/machine/x/cpp/tree_sum.cpp:57:12: error: ‘Leaf’ was not declared in this scope
-../../../tests/machine/x/cpp/tree_sum.cpp:79:15: warning: use of ‘auto’ in parameter declaration only available with ‘-std=c++20’ or ‘-fconcepts’
-   79 | auto sum_tree(auto t) {
+../../../tests/machine/x/cpp/tree_sum.cpp:6:12: error: ‘Leaf’ was not declared in this scope
+../../../tests/machine/x/cpp/tree_sum.cpp:8:15: warning: use of ‘auto’ in parameter declaration only available with ‘-std=c++20’ or ‘-fconcepts’
+    8 | auto sum_tree(auto t) {
       |               ^~~~
 ../../../tests/machine/x/cpp/tree_sum.cpp: In lambda function:
-../../../tests/machine/x/cpp/tree_sum.cpp:82:16: error: ‘Leaf’ was not declared in this scope
-   82 |     if (__v == Leaf)
+../../../tests/machine/x/cpp/tree_sum.cpp:11:16: error: ‘Leaf’ was not declared in this scope
+   11 |     if (__v == Leaf)
       |                ^~~~
-../../../tests/machine/x/cpp/tree_sum.cpp:84:26: error: ‘left’ was not declared in this scope; did you mean ‘std::left’?
-   84 |     else if (__v == Node(left, value, right))
+../../../tests/machine/x/cpp/tree_sum.cpp:13:26: error: ‘left’ was not declared in this scope; did you mean ‘std::left’?
+   13 |     else if (__v == Node(left, value, right))
       |                          ^~~~
       |                          std::left
 In file included from /usr/include/c++/13/ios:44,
                  from /usr/include/c++/13/ostream:40,
                  from /usr/include/c++/13/iostream:41,
-                 from ../../../tests/machine/x/cpp/tree_sum.cpp:2:
+                 from ../../../tests/machine/x/cpp/tree_sum.cpp:1:
 /usr/include/c++/13/bits/ios_base.h:1042:3: note: ‘std::left’ declared here
  1042 |   left(ios_base& __base)
       |   ^~~~
-../../../tests/machine/x/cpp/tree_sum.cpp:84:32: error: ‘value’ was not declared in this scope
-   84 |     else if (__v == Node(left, value, right))
+../../../tests/machine/x/cpp/tree_sum.cpp:13:32: error: ‘value’ was not declared in this scope
+   13 |     else if (__v == Node(left, value, right))
       |                                ^~~~~
-../../../tests/machine/x/cpp/tree_sum.cpp:84:39: error: ‘right’ was not declared in this scope; did you mean ‘std::right’?
-   84 |     else if (__v == Node(left, value, right))
+../../../tests/machine/x/cpp/tree_sum.cpp:13:39: error: ‘right’ was not declared in this scope; did you mean ‘std::right’?
+   13 |     else if (__v == Node(left, value, right))
       |                                       ^~~~~
       |                                       std::right
 /usr/include/c++/13/bits/ios_base.h:1050:3: note: ‘std::right’ declared here
  1050 |   right(ios_base& __base)
       |   ^~~~~
-../../../tests/machine/x/cpp/tree_sum.cpp:84:21: error: there are no arguments to ‘Node’ that depend on a template parameter, so a declaration of ‘Node’ must be available [-fpermissive]
-   84 |     else if (__v == Node(left, value, right))
+../../../tests/machine/x/cpp/tree_sum.cpp:13:21: error: there are no arguments to ‘Node’ that depend on a template parameter, so a declaration of ‘Node’ must be available [-fpermissive]
+   13 |     else if (__v == Node(left, value, right))
       |                     ^~~~
-../../../tests/machine/x/cpp/tree_sum.cpp:84:21: note: (if you use ‘-fpermissive’, G++ will accept your code, but allowing the use of an undeclared name is deprecated)
+../../../tests/machine/x/cpp/tree_sum.cpp:13:21: note: (if you use ‘-fpermissive’, G++ will accept your code, but allowing the use of an undeclared name is deprecated)
 ../../../tests/machine/x/cpp/tree_sum.cpp: In function ‘int main()’:
-../../../tests/machine/x/cpp/tree_sum.cpp:91:22: error: ‘Leaf’ was not declared in this scope
-   91 |   auto t = __struct1{Leaf, 1, __struct1{Leaf, 2, Leaf}};
+../../../tests/machine/x/cpp/tree_sum.cpp:20:22: error: ‘Leaf’ was not declared in this scope
+   20 |   auto t = __struct1{Leaf, 1, __struct1{Leaf, 2, Leaf}};
       |                      ^~~~
 
- 54 | struct __struct1 {
- 55 |   decltype(Leaf) left;
- 56 |   decltype(2) value;
+  3 | struct __struct1 {
+  4 |   decltype(Leaf) left;
+  5 |   decltype(2) value;
