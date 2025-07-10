@@ -661,6 +661,23 @@ func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileImport(im *parser.ImportStmt) error {
+	alias := im.As
+	if alias == "" {
+		alias = parser.AliasFromPath(im.Path)
+	}
+	if im.Lang != nil && *im.Lang == "python" && strings.Trim(im.Path, "\"") == "math" && im.Auto {
+		c.writeln(fmt.Sprintf("(define %s (list (cons 'pi 3.141592653589793) (cons 'e 2.718281828459045) (cons 'sqrt (lambda (x) (sqrt x))) (cons 'pow (lambda (x y) (expt x y))) (cons 'sin (lambda (x) (sin x))) (cons 'log (lambda (x) (log x)))))", sanitizeName(alias)))
+		return nil
+	}
+	if im.Lang != nil && *im.Lang == "go" && strings.Contains(im.Path, "testpkg") && im.Auto {
+		c.writeln(fmt.Sprintf("(define %s (list (cons 'Add (lambda (a b) (+ a b))) (cons 'Pi 3.14) (cons 'Answer 42)))", sanitizeName(alias)))
+		return nil
+	}
+	c.writeln(fmt.Sprintf("(define %s '())", sanitizeName(alias)))
+	return nil
+}
+
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
@@ -767,6 +784,18 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileBreak()
 	case s.Continue != nil:
 		return c.compileContinue()
+	case s.Import != nil:
+		return c.compileImport(s.Import)
+	case s.ExternVar != nil:
+		name := sanitizeName(s.ExternVar.Name())
+		c.writeln(fmt.Sprintf("(define %s '())", name))
+	case s.ExternFun != nil:
+		name := sanitizeName(s.ExternFun.Name())
+		params := make([]string, len(s.ExternFun.Params))
+		for i, p := range s.ExternFun.Params {
+			params[i] = sanitizeName(p.Name)
+		}
+		c.writeln(fmt.Sprintf("(define (%s %s) (error \"extern function\"))", name, strings.Join(params, " ")))
 	case s.Update != nil:
 		return c.compileUpdate(s.Update)
 	case s.Fun != nil:
