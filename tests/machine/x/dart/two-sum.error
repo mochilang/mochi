@@ -1,4 +1,0 @@
-line 5: exit status 254
-    for (var j = (i as num) + 1; j < n; j++) {
-      if (nums[i] + nums[j] == target) {
-        return [i, j];

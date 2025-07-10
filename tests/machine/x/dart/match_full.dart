@@ -1,65 +1,61 @@
-var x = 2;
-
-var label = (() {
-  var _t = x;
-  if (_t == 1) {
-    return 'one';
-  } else if (_t == 2) {
-    return 'two';
-  } else if (_t == 3) {
-    return 'three';
-  } else {
-    return 'unknown';
-  }
-  return null;
-})();
-
-var day = 'sun';
-
-var mood = (() {
-  var _t = day;
-  if (_t == 'mon') {
-    return 'tired';
-  } else if (_t == 'fri') {
-    return 'excited';
-  } else if (_t == 'sun') {
-    return 'relaxed';
-  } else {
-    return 'normal';
-  }
-  return null;
-})();
-
-var ok = true;
-
-var status = (() {
-  var _t = ok;
-  if (_t == true) {
-    return 'confirmed';
-  } else if (_t == false) {
-    return 'denied';
-  }
-  return null;
-})();
-
 String classify(int n) {
-  return (() {
-    var _t = n;
-    if (_t == 0) {
+  switch (n) {
+    case 0:
       return 'zero';
-    } else if (_t == 1) {
+    case 1:
       return 'one';
-    } else {
+    default:
       return 'many';
-    }
-    return null;
-  })();
+  }
 }
 
 void main() {
+  var x = 2;
+  var label;
+  switch (x) {
+    case 1:
+      label = 'one';
+      break;
+    case 2:
+      label = 'two';
+      break;
+    case 3:
+      label = 'three';
+      break;
+    default:
+      label = 'unknown';
+  }
   print(label);
+
+  var day = 'sun';
+  var mood;
+  switch (day) {
+    case 'mon':
+      mood = 'tired';
+      break;
+    case 'fri':
+      mood = 'excited';
+      break;
+    case 'sun':
+      mood = 'relaxed';
+      break;
+    default:
+      mood = 'normal';
+  }
   print(mood);
+
+  var ok = true;
+  var status;
+  switch (ok) {
+    case true:
+      status = 'confirmed';
+      break;
+    case false:
+      status = 'denied';
+      break;
+  }
   print(status);
+
   print(classify(0));
   print(classify(5));
 }

@@ -1,4 +1,0 @@
-line 47: exit status 255
-  for (var row in (_iter2 is Map ? (_iter2 as Map).keys : _iter2) as Iterable) {
-    if (row['order']) {
-      if (row['customer']) {

@@ -411,6 +411,9 @@ func (c *Compiler) compileIf(s *parser.IfStmt) error {
 	if err != nil {
 		return err
 	}
+	if !isBoolType(types.TypeOfExpr(s.Cond, c.env)) {
+		cond += " != null"
+	}
 	c.writeln("if (" + cond + ") {")
 	c.indent++
 	for _, st := range s.Then {
@@ -443,6 +446,9 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 	cond, err := c.compileExpr(w.Cond)
 	if err != nil {
 		return err
+	}
+	if !isBoolType(types.TypeOfExpr(w.Cond, c.env)) {
+		cond += " != null"
 	}
 	c.writeln("while (" + cond + ") {")
 	c.indent++
@@ -1388,15 +1394,16 @@ func (c *Compiler) compileSelector(sel *parser.SelectorExpr) string {
 	if ok := c.mapVars[root]; ok {
 		typ = types.MapType{}
 	}
-	if err != nil {
-		if st, ok := c.env.GetStruct(root); ok && len(st.Order) == 0 {
+	if st, ok := c.env.GetStruct(root); ok && len(st.Order) == 0 {
+		return root + "()"
+	}
+	if ut, ok := c.env.FindUnionByVariant(root); ok {
+		if st, ok := ut.Variants[root]; ok && len(st.Order) == 0 {
 			return root + "()"
 		}
-		if ut, ok := c.env.FindUnionByVariant(root); ok {
-			if st, ok := ut.Variants[root]; ok && len(st.Order) == 0 {
-				return root + "()"
-			}
-		}
+	}
+	if err != nil {
+		// fall through
 	}
 	if _, ok := typ.(types.MapType); ok {
 		s := root
