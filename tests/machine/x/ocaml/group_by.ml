@@ -18,41 +18,19 @@ let rec __show v =
 exception Break
 exception Continue
 
-let string_contains s sub =
-  let len_s = String.length s and len_sub = String.length sub in
-  let rec aux i =
-    if i + len_sub > len_s then false
-    else if String.sub s i len_sub = sub then true
-    else aux (i + 1)
-  in aux 0
+type ('k,'v) group = { key : 'k; items : 'v list }
 
-let slice lst i j =
-  lst |> List.mapi (fun idx x -> idx, x)
-      |> List.filter (fun (idx, _) -> idx >= i && idx < j)
-      |> List.map snd
-
-let string_slice s i j = String.sub s i (j - i)
-
-let list_set lst idx value =
-  List.mapi (fun i v -> if i = idx then value else v) lst
-
-let rec map_set m k v =
-  match m with
-    | [] -> [(k,Obj.repr v)]
-    | (k2,v2)::tl -> if k2 = k then (k,Obj.repr v)::tl else (k2,v2)::map_set tl k v
-
-let map_get m k = Obj.obj (List.assoc k m)
-
-let list_union a b = List.sort_uniq compare (a @ b)
-let list_except a b = List.filter (fun x -> not (List.mem x b)) a
-let list_intersect a b = List.filter (fun x -> List.mem x b) a |> List.sort_uniq compare
-let list_union_all a b = a @ b
-let sum lst = List.fold_left (+) 0 lst
-
-let people = [[("name",Obj.repr "Alice");("age",Obj.repr 30);("city",Obj.repr "Paris")];[("name",Obj.repr "Bob");("age",Obj.repr 15);("city",Obj.repr "Hanoi")];[("name",Obj.repr "Charlie");("age",Obj.repr 65);("city",Obj.repr "Paris")];[("name",Obj.repr "Diana");("age",Obj.repr 45);("city",Obj.repr "Hanoi")];[("name",Obj.repr "Eve");("age",Obj.repr 70);("city",Obj.repr "Paris")];[("name",Obj.repr "Frank");("age",Obj.repr 22);("city",Obj.repr "Hanoi")]]
-let stats = (let __res0 = ref [] in
+let people = [[("name",Obj.repr ("Alice"));("age",Obj.repr (30));("city",Obj.repr ("Paris"))];[("name",Obj.repr ("Bob"));("age",Obj.repr (15));("city",Obj.repr ("Hanoi"))];[("name",Obj.repr ("Charlie"));("age",Obj.repr (65));("city",Obj.repr ("Paris"))];[("name",Obj.repr ("Diana"));("age",Obj.repr (45));("city",Obj.repr ("Hanoi"))];[("name",Obj.repr ("Eve"));("age",Obj.repr (70));("city",Obj.repr ("Paris"))];[("name",Obj.repr ("Frank"));("age",Obj.repr (22));("city",Obj.repr ("Hanoi"))]]
+let stats = (let __groups0 = ref [] in
   List.iter (fun person ->
-      __res0 := [("city",Obj.repr g.key);("count",Obj.repr List.length g);("avg_age",Obj.repr (List.fold_left (+) 0 (let __res1 = ref [] in
+      let key = Obj.obj (List.assoc "city" person) in
+      let cur = try List.assoc key !__groups0 with Not_found -> [] in
+      __groups0 := (key, person :: cur) :: List.remove_assoc key !__groups0;
+  ) people;
+  let __res0 = ref [] in
+  List.iter (fun (gKey,gItems) ->
+    let g = { key = gKey; items = List.rev gItems } in
+    __res0 := [("city",Obj.repr (g.key));("count",Obj.repr (List.length g));("avg_age",Obj.repr ((List.fold_left (+) 0 (let __res1 = ref [] in
   List.iter (fun p ->
       __res1 := p.age :: !__res1;
   ) g;
@@ -62,9 +40,9 @@ List.rev !__res1)
       __res1 := p.age :: !__res1;
   ) g;
 List.rev !__res1)
-))] :: !__res0;
-  ) people;
-List.rev !__res0)
+)))] :: !__res0
+  ) !__groups0;
+  List.rev !__res0)
 
 
 let () =
@@ -74,7 +52,7 @@ let () =
       | [] -> ()
       | s::rest ->
         try
-          print_endline (__show (s.city) ^ " " ^ __show (": count =") ^ " " ^ __show (s.count) ^ " " ^ __show (", avg_age =") ^ " " ^ __show (s.avg_age));
+          print_endline (__show (Obj.obj (List.assoc "city" s)) ^ " " ^ __show (": count =") ^ " " ^ __show (Obj.obj (List.assoc "count" s)) ^ " " ^ __show (", avg_age =") ^ " " ^ __show (Obj.obj (List.assoc "avg_age" s)));
         with Continue -> ()
         ; __loop2 rest
     in

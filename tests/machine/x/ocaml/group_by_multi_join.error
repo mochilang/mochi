@@ -1,0 +1,14 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/group_by_multi_join.ml", line 46, characters 18-23:
+46 |       __res2 := r.value :: !__res2;
+                       ^^^^^
+Error: Unbound record field value
+
+
+Context (around line 46):
+  44 |     __res1 := [("part",Obj.repr (g.key));("total",Obj.repr ((sum (let __res2 = ref [] in
+  45 |   List.iter (fun r ->
+  46 |       __res2 := r.value :: !__res2;
+  47 |   ) g;
+  48 | List.rev !__res2)

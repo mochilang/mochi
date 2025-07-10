@@ -1,0 +1,13 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/json_builtin.ml", line 4, characters 2-6:
+4 |   json m;
+      ^^^^
+Error: Unbound value json
+
+
+Context (around line 4):
+   2 | 
+   3 | let () =
+   4 |   json m;
+   5 | 

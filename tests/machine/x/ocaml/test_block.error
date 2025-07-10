@@ -1,1 +1,8 @@
+stage: compile
+error:
 unsupported statement at line 1
+
+Context (around line 1):
+   1 | test "addition works" {
+   2 |   let x = 1 + 2
+   3 |   expect x == 3

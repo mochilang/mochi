@@ -1,0 +1,17 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/map_nested_assign.ml", line 26, characters 53-104:
+26 | let data : (string * (string * int) list) list ref = ref [("outer",Obj.repr ([("inner",Obj.repr (1))]))]
+                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This expression has type (string * Obj.t) list ref
+       but an expression was expected of type
+         (string * (string * int) list) list ref
+       Type Obj.t is not compatible with type (string * int) list 
+
+
+Context (around line 26):
+  24 | 
+  25 | 
+  26 | let data : (string * (string * int) list) list ref = ref [("outer",Obj.repr ([("inner",Obj.repr (1))]))]
+  27 | 
+  28 | let () =

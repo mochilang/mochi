@@ -18,46 +18,16 @@ let rec __show v =
 exception Break
 exception Continue
 
-let string_contains s sub =
-  let len_s = String.length s and len_sub = String.length sub in
-  let rec aux i =
-    if i + len_sub > len_s then false
-    else if String.sub s i len_sub = sub then true
-    else aux (i + 1)
-  in aux 0
 
-let slice lst i j =
-  lst |> List.mapi (fun idx x -> idx, x)
-      |> List.filter (fun (idx, _) -> idx >= i && idx < j)
-      |> List.map snd
-
-let string_slice s i j = String.sub s i (j - i)
-
-let list_set lst idx value =
-  List.mapi (fun i v -> if i = idx then value else v) lst
-
-let rec map_set m k v =
-  match m with
-    | [] -> [(k,Obj.repr v)]
-    | (k2,v2)::tl -> if k2 = k then (k,Obj.repr v)::tl else (k2,v2)::map_set tl k v
-
-let map_get m k = Obj.obj (List.assoc k m)
-
-let list_union a b = List.sort_uniq compare (a @ b)
-let list_except a b = List.filter (fun x -> not (List.mem x b)) a
-let list_intersect a b = List.filter (fun x -> List.mem x b) a |> List.sort_uniq compare
-let list_union_all a b = a @ b
-let sum lst = List.fold_left (+) 0 lst
-
-let customers = [[("id",Obj.repr 1);("name",Obj.repr "Alice")];[("id",Obj.repr 2);("name",Obj.repr "Bob")]]
-let orders = [[("id",Obj.repr 100);("customerId",Obj.repr 1)];[("id",Obj.repr 101);("customerId",Obj.repr 2)]]
-let items = [[("orderId",Obj.repr 100);("sku",Obj.repr "a")];[("orderId",Obj.repr 101);("sku",Obj.repr "b")]]
+let customers = [[("id",Obj.repr (1));("name",Obj.repr ("Alice"))];[("id",Obj.repr (2));("name",Obj.repr ("Bob"))]]
+let orders = [[("id",Obj.repr (100));("customerId",Obj.repr (1))];[("id",Obj.repr (101));("customerId",Obj.repr (2))]]
+let items = [[("orderId",Obj.repr (100));("sku",Obj.repr ("a"))];[("orderId",Obj.repr (101));("sku",Obj.repr ("b"))]]
 let result = (let __res0 = ref [] in
   List.iter (fun o ->
       List.iter (fun c ->
             List.iter (fun i ->
-                        if (o.customerId = c.id) && (o.id = i.orderId) then
-        __res0 := [("name",Obj.repr c.name);("sku",Obj.repr i.sku)] :: !__res0;
+                        if (Obj.obj (List.assoc "customerId" o) = Obj.obj (List.assoc "id" c)) && (Obj.obj (List.assoc "id" o) = Obj.obj (List.assoc "orderId" i)) then
+        __res0 := [("name",Obj.repr (Obj.obj (List.assoc "name" c)));("sku",Obj.repr (Obj.obj (List.assoc "sku" i)))] :: !__res0;
             ) items;
       ) customers;
   ) orders;
@@ -71,7 +41,7 @@ let () =
       | [] -> ()
       | r::rest ->
         try
-          print_endline (__show (r.name) ^ " " ^ __show ("bought item") ^ " " ^ __show (r.sku));
+          print_endline (__show (Obj.obj (List.assoc "name" r)) ^ " " ^ __show ("bought item") ^ " " ^ __show (Obj.obj (List.assoc "sku" r)));
         with Continue -> ()
         ; __loop1 rest
     in
