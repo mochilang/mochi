@@ -637,18 +637,33 @@ func (c *Compiler) typeNameNullable(t *parser.TypeRef) string {
 }
 
 func (c *Compiler) zeroValue(t *parser.TypeRef) string {
-	if t == nil || t.Simple == nil {
+	if t == nil {
 		return "null"
 	}
-	switch *t.Simple {
-	case "int":
+	tt := types.ResolveTypeRef(t, c.env)
+	return kotlinZeroValue(tt)
+}
+
+func kotlinZeroValue(t types.Type) string {
+	switch tt := t.(type) {
+	case types.IntType:
 		return "0"
-	case "float":
+	case types.FloatType:
 		return "0.0"
-	case "string":
+	case types.StringType:
 		return "\"\""
-	case "bool":
+	case types.BoolType:
 		return "false"
+	case types.ListType:
+		return fmt.Sprintf("mutableListOf<%s>()", kotlinTypeOf(tt.Elem))
+	case types.MapType:
+		return fmt.Sprintf("mutableMapOf<%s, %s>()", kotlinTypeOf(tt.Key), kotlinTypeOf(tt.Value))
+	case types.StructType:
+		fields := make([]string, len(tt.Order))
+		for i, f := range tt.Order {
+			fields[i] = fmt.Sprintf("%s = %s", f, kotlinZeroValue(tt.Fields[f]))
+		}
+		return fmt.Sprintf("%s(%s)", tt.Name, strings.Join(fields, ", "))
 	default:
 		return "null"
 	}
