@@ -1030,22 +1030,22 @@ func collectVars(stmts []*parser.Statement, env *types.Env, vars map[string]stri
 			if typ == "integer" && s.Let.Type != nil {
 				typ = typeString(resolveSimpleTypeRef(s.Let.Type))
 			}
-			if typ == "integer" && s.Let.Value != nil {
+			if s.Let.Value != nil {
 				if isQueryExpr(s.Let.Value) {
 					qt := inferQueryType(rootPrimary(s.Let.Value).Query, env)
 					typ = typeString(qt)
-				} else {
+				} else if typ == "integer" {
 					typT := types.TypeOfExprBasic(s.Let.Value, env)
 					typ = typeString(typT)
-				}
-				if typ == "integer" && isStringSliceExpr(s.Let.Value, env, vars) {
-					typ = "string"
-				} else if typ == "integer" && isStringLiteral(s.Let.Value) {
-					typ = "string"
-				} else if typ == "integer" && isBoolLiteral(s.Let.Value) {
-					typ = "boolean"
-				} else if typ == "integer" && isListLiteral(s.Let.Value) {
-					typ = "specialize TArray<integer>"
+					if typ == "integer" && isStringSliceExpr(s.Let.Value, env, vars) {
+						typ = "string"
+					} else if typ == "integer" && isStringLiteral(s.Let.Value) {
+						typ = "string"
+					} else if typ == "integer" && isBoolLiteral(s.Let.Value) {
+						typ = "boolean"
+					} else if typ == "integer" && isListLiteral(s.Let.Value) {
+						typ = "specialize TArray<integer>"
+					}
 				}
 			}
 			vars[s.Let.Name] = typ
@@ -1063,16 +1063,16 @@ func collectVars(stmts []*parser.Statement, env *types.Env, vars map[string]stri
 			if typ == "integer" && s.Var.Type != nil {
 				typ = typeString(resolveSimpleTypeRef(s.Var.Type))
 			}
-			if typ == "integer" && s.Var.Value != nil {
+			if s.Var.Value != nil {
 				if isQueryExpr(s.Var.Value) {
 					qt := inferQueryType(rootPrimary(s.Var.Value).Query, env)
 					typ = typeString(qt)
-				} else {
+				} else if typ == "integer" {
 					typT := types.TypeOfExprBasic(s.Var.Value, env)
 					typ = typeString(typT)
-				}
-				if typ == "integer" && isStringSliceExpr(s.Var.Value, env, vars) {
-					typ = "string"
+					if typ == "integer" && isStringSliceExpr(s.Var.Value, env, vars) {
+						typ = "string"
+					}
 				}
 			}
 			if typ == "integer" && isListLiteral(s.Var.Value) {
