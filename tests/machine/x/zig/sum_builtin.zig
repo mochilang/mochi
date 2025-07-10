@@ -7,5 +7,9 @@ fn _sum_int(v: []const i32) i32 {
 }
 
 pub fn main() void {
-    std.debug.print("{any}\n", .{_sum_int(&[_]i32{1, 2, 3})});
+    std.debug.print("{any}\n", .{_sum_int(&[_]i32{
+    1,
+    2,
+    3,
+})});
 }

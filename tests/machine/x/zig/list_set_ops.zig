@@ -44,8 +44,31 @@ fn _print_list(comptime T: type, v: []const T) void {
 }
 
 pub fn main() void {
-    _print_list(i32, _union(i32, &[_]i32{1, 2}, &[_]i32{2, 3}));
-    _print_list(i32, _except(i32, &[_]i32{1, 2, 3}, &[_]i32{2}));
-    _print_list(i32, _intersect(i32, &[_]i32{1, 2, 3}, &[_]i32{2, 4}));
-    std.debug.print("{d}\n", .{(_union_all(i32, &[_]i32{1, 2}, &[_]i32{2, 3})).len});
+    _print_list(i32, _union(i32, &[_]i32{
+    1,
+    2,
+}, &[_]i32{
+    2,
+    3,
+}));
+    _print_list(i32, _except(i32, &[_]i32{
+    1,
+    2,
+    3,
+}, &[_]i32{2}));
+    _print_list(i32, _intersect(i32, &[_]i32{
+    1,
+    2,
+    3,
+}, &[_]i32{
+    2,
+    4,
+}));
+    std.debug.print("{d}\n", .{(_union_all(i32, &[_]i32{
+    1,
+    2,
+}, &[_]i32{
+    2,
+    3,
+})).len});
 }

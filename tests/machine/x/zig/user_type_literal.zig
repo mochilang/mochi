@@ -10,7 +10,13 @@ const Book = struct {
     author: Person,
 };
 
-const book = Book{ .title = "Go", .author = Person{ .name = "Bob", .age = 42 } };
+const book = Book{
+    .title = "Go",
+    .author = Person{
+    .name = "Bob",
+    .age = 42,
+},
+};
 
 pub fn main() void {
     std.debug.print("{s}\n", .{book.author.name});

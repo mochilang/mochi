@@ -51,7 +51,15 @@ fn _print_list(comptime T: type, v: []const T) void {
 }
 
 pub fn main() void {
-    _print_list(i32, _slice_list(i32, &[_]i32{1, 2, 3}, 1, 3, 1));
-    _print_list(i32, _slice_list(i32, &[_]i32{1, 2, 3}, 0, 2, 1));
+    _print_list(i32, _slice_list(i32, &[_]i32{
+    1,
+    2,
+    3,
+}, 1, 3, 1));
+    _print_list(i32, _slice_list(i32, &[_]i32{
+    1,
+    2,
+    3,
+}, 0, 2, 1));
     std.debug.print("{s}\n", .{_slice_string("hello", 1, 4, 1)});
 }

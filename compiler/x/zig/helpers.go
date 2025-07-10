@@ -37,7 +37,10 @@ func zigTypeOf(t types.Type) string {
 			for i, f := range tt.Order {
 				fields[i] = fmt.Sprintf("%s: %s,", sanitizeName(f), zigTypeOf(tt.Fields[f]))
 			}
-			return fmt.Sprintf("struct { %s }", strings.Join(fields, " "))
+			if len(fields) > 1 {
+				return "struct {\n    " + strings.Join(fields, "\n    ") + "\n}"
+			}
+			return fmt.Sprintf("struct { %s }", fields[0])
 		}
 		return sanitizeName(tt.Name)
 	case types.UnionType:
@@ -288,13 +291,28 @@ func (c *Compiler) mapLiteralStruct(m *parser.MapLiteral, name string) (typ, ini
 		fields[i] = fmt.Sprintf("%s: %s,", key, valType)
 		inits[i] = fmt.Sprintf(".%s = %s", key, valExpr)
 	}
-	structDef := fmt.Sprintf("struct { %s }", strings.Join(fields, " "))
+	var structDef string
+	if len(fields) > 1 {
+		structDef = "struct {\n    " + strings.Join(fields, "\n    ") + "\n}"
+	} else if len(fields) == 1 {
+		structDef = "struct { " + fields[0] + " }"
+	} else {
+		structDef = "struct {}"
+	}
 	if name != "" {
 		typ = fmt.Sprintf("const %s = %s;", name, structDef)
-		init = fmt.Sprintf("%s{ %s }", name, strings.Join(inits, ", "))
+		if len(inits) > 1 {
+			init = fmt.Sprintf("%s{\n    %s,\n}", name, strings.Join(inits, ",\n    "))
+		} else {
+			init = fmt.Sprintf("%s{ %s }", name, strings.Join(inits, ", "))
+		}
 	} else {
 		typ = structDef
-		init = fmt.Sprintf("%s{ %s }", structDef, strings.Join(inits, ", "))
+		if len(inits) > 1 {
+			init = fmt.Sprintf("%s{\n    %s,\n}", structDef, strings.Join(inits, ",\n    "))
+		} else {
+			init = fmt.Sprintf("%s{ %s }", structDef, strings.Join(inits, ", "))
+		}
 	}
 	return typ, init, true, nil
 }

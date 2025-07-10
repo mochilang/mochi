@@ -14,7 +14,11 @@ fn _max_int(v: []const i32) i32 {
     return m;
 }
 
-const nums = &[_]i32{3, 1, 4};
+const nums = &[_]i32{
+    3,
+    1,
+    4,
+};
 
 pub fn main() void {
     std.debug.print("{any}\n", .{_min_int(nums)});

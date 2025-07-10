@@ -2504,13 +2504,24 @@ func (c *Compiler) compileListLiteral(list *parser.ListLiteral, asRef bool) (str
 			lbl := c.newLabel()
 			var b strings.Builder
 			b.WriteString("(" + lbl + ": { " + decl + " const _arr = ")
-			if asRef {
-				b.WriteString("&[_]" + structName + "{")
+			if len(elems) > 1 {
+				if asRef {
+					b.WriteString("&[_]" + structName + "{\n    ")
+				} else {
+					b.WriteString("[_]" + structName + "{\n    ")
+				}
+				b.WriteString(strings.Join(elems, ",\n    "))
+				b.WriteString(",\n}")
 			} else {
-				b.WriteString("[_]" + structName + "{")
+				if asRef {
+					b.WriteString("&[_]" + structName + "{")
+				} else {
+					b.WriteString("[_]" + structName + "{")
+				}
+				b.WriteString(strings.Join(elems, ", "))
+				b.WriteString("}")
 			}
-			b.WriteString(strings.Join(elems, ", "))
-			b.WriteString("}; break :" + lbl + " _arr; })")
+			b.WriteString("; break :" + lbl + " _arr; })")
 			return b.String(), nil
 		}
 	}
@@ -2523,10 +2534,21 @@ func (c *Compiler) compileListLiteral(list *parser.ListLiteral, asRef bool) (str
 		}
 		elems[i] = v
 	}
-	if asRef {
-		return fmt.Sprintf("&[_]%s{%s}", elemType, strings.Join(elems, ", ")), nil
+	if len(elems) > 1 {
+		var b strings.Builder
+		if asRef {
+			b.WriteString("&[_]" + elemType + "{\n    ")
+		} else {
+			b.WriteString("[_]" + elemType + "{\n    ")
+		}
+		b.WriteString(strings.Join(elems, ",\n    "))
+		b.WriteString(",\n}")
+		return b.String(), nil
 	}
-	return fmt.Sprintf("[_]%s{%s}", elemType, strings.Join(elems, ", ")), nil
+	if asRef {
+		return fmt.Sprintf("&[_]%s{%s}", elemType, elems[0]), nil
+	}
+	return fmt.Sprintf("[_]%s{%s}", elemType, elems[0]), nil
 }
 
 func (c *Compiler) compileMapLiteral(m *parser.MapLiteral, forceMap bool) (string, error) {
@@ -2602,7 +2624,14 @@ func (c *Compiler) compileStructLiteral(s *parser.StructLiteral) (string, error)
 			}
 			fields[i] = fmt.Sprintf(".%s = %s", sanitizeName(f.Name), v)
 		}
-		return fmt.Sprintf("%s{ .%s = .{ %s } }", sanitizeName(info.Union), sanitizeName(s.Name), strings.Join(fields, ", ")), nil
+		if len(fields) > 1 {
+			var b strings.Builder
+			b.WriteString(fmt.Sprintf("%s{ .%s = .{\n    ", sanitizeName(info.Union), sanitizeName(s.Name)))
+			b.WriteString(strings.Join(fields, ",\n    "))
+			b.WriteString(",\n} }")
+			return b.String(), nil
+		}
+		return fmt.Sprintf("%s{ .%s = .{ %s } }", sanitizeName(info.Union), sanitizeName(s.Name), fields[0]), nil
 	}
 	fields := make([]string, len(s.Fields))
 	for i, f := range s.Fields {
@@ -2612,7 +2641,14 @@ func (c *Compiler) compileStructLiteral(s *parser.StructLiteral) (string, error)
 		}
 		fields[i] = fmt.Sprintf(".%s = %s", sanitizeName(f.Name), v)
 	}
-	return fmt.Sprintf("%s{ %s }", sanitizeName(s.Name), strings.Join(fields, ", ")), nil
+	if len(fields) > 1 {
+		var b strings.Builder
+		b.WriteString(fmt.Sprintf("%s{\n    ", sanitizeName(s.Name)))
+		b.WriteString(strings.Join(fields, ",\n    "))
+		b.WriteString(",\n}")
+		return b.String(), nil
+	}
+	return fmt.Sprintf("%s{ %s }", sanitizeName(s.Name), fields[0]), nil
 }
 
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
