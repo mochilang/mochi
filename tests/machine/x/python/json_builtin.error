@@ -1,0 +1,7 @@
+run: exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/machine/x/python/json_builtin.py", line 5, in <module>
+    m: dict[str, int] = {a: 1, b: 2}
+                         ^
+NameError: name 'a' is not defined
+

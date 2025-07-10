@@ -13,11 +13,7 @@ def _sort_key(k):
     return k
 
 
-items: list[dict[str, typing.Any]] = [
-    {"n": 1, "v": "a"},
-    {"n": 1, "v": "b"},
-    {"n": 2, "v": "c"},
-]
+items: list[dict[str, typing.Any]] = [{n: 1, v: "a"}, {n: 1, v: "b"}, {n: 2, v: "c"}]
 result: list[typing.Any] = [
     i["v"] for i in sorted([i for i in items], key=lambda i: _sort_key(i["n"]))
 ]

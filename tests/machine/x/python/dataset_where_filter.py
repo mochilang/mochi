@@ -3,10 +3,10 @@ from __future__ import annotations
 import typing
 
 people: list[dict[str, typing.Any]] = [
-    {"name": "Alice", "age": 30},
-    {"name": "Bob", "age": 15},
-    {"name": "Charlie", "age": 65},
-    {"name": "Diana", "age": 45},
+    {name: "Alice", age: 30},
+    {name: "Bob", age: 15},
+    {name: "Charlie", age: 65},
+    {name: "Diana", age: 45},
 ]
 adults: list[dict[str, typing.Any]] = [
     {"name": person["name"], "age": person["age"], "is_senior": person["age"] >= 60}

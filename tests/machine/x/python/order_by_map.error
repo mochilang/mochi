@@ -1,0 +1,7 @@
+run: exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/machine/x/python/order_by_map.py", line 15, in <module>
+    data: list[dict[str, int]] = [{a: 1, b: 2}, {a: 1, b: 1}, {a: 0, b: 5}]
+                                   ^
+NameError: name 'a' is not defined
+

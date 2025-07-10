@@ -159,30 +159,25 @@ def _sum(v):
     return s
 
 
-nation: list[dict[str, typing.Any]] = [{"n_nationkey": 1, "n_name": "BRAZIL"}]
+nation: list[dict[str, typing.Any]] = [{n_nationkey: 1, n_name: "BRAZIL"}]
 customer: list[dict[str, typing.Any]] = [
     {
-        "c_custkey": 1,
-        "c_name": "Alice",
-        "c_acctbal": 100,
-        "c_nationkey": 1,
-        "c_address": "123 St",
-        "c_phone": "123-456",
-        "c_comment": "Loyal",
+        c_custkey: 1,
+        c_name: "Alice",
+        c_acctbal: 100,
+        c_nationkey: 1,
+        c_address: "123 St",
+        c_phone: "123-456",
+        c_comment: "Loyal",
     }
 ]
 orders: list[dict[str, typing.Any]] = [
-    {"o_orderkey": 1000, "o_custkey": 1, "o_orderdate": "1993-10-15"},
-    {"o_orderkey": 2000, "o_custkey": 1, "o_orderdate": "1994-01-02"},
+    {o_orderkey: 1000, o_custkey: 1, o_orderdate: "1993-10-15"},
+    {o_orderkey: 2000, o_custkey: 1, o_orderdate: "1994-01-02"},
 ]
 lineitem: list[dict[str, typing.Any]] = [
-    {
-        "l_orderkey": 1000,
-        "l_returnflag": "R",
-        "l_extendedprice": 1000,
-        "l_discount": 0.1,
-    },
-    {"l_orderkey": 2000, "l_returnflag": "N", "l_extendedprice": 500, "l_discount": 0},
+    {l_orderkey: 1000, l_returnflag: "R", l_extendedprice: 1000, l_discount: 0.1},
+    {l_orderkey: 2000, l_returnflag: "N", l_extendedprice: 500, l_discount: 0},
 ]
 start_date: str = "1993-10-01"
 end_date: str = "1994-01-01"

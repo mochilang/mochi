@@ -160,10 +160,10 @@ def _sum(v):
 
 
 items: list[dict[str, typing.Any]] = [
-    {"cat": "a", "val": 3},
-    {"cat": "a", "val": 1},
-    {"cat": "b", "val": 5},
-    {"cat": "b", "val": 2},
+    {cat: "a", val: 3},
+    {cat: "a", val: 1},
+    {cat: "b", val: 5},
+    {cat: "b", val: 2},
 ]
 
 

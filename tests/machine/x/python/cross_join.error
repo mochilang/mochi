@@ -1,0 +1,10 @@
+run: exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/machine/x/python/cross_join.py", line 6, in <module>
+    {id: 1, name: "Alice"},
+            ^^^^
+NameError: name 'name' is not defined
+
+  { id: 3, name: "Charlie" }
+]
+let orders = [
