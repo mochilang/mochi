@@ -1,8 +1,8 @@
 # Haskell Machine Output
 
-This directory contains Haskell code generated from the Mochi programs in `tests/vm/valid`. Each program was compiled and executed with `runhaskell`. Successful runs have a corresponding `.out` file while failures produce a `.error` log.
+This directory contains Haskell code generated from the Mochi programs in `tests/vm/valid`. Each `.hs` file is the compiler output. Programs that executed successfully using `runhaskell` have a corresponding `.out` file while failures have a `.error` log.
 
-## Compiled and ran successfully
+## Compiled and ran successfully (50/97)
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -13,9 +13,9 @@ This directory contains Haskell code generated from the Mochi programs in `tests
 - [x] cast_struct
 - [x] closure
 - [x] count_builtin
+- [x] cross_join
 - [x] cross_join_filter
 - [x] cross_join_triple
-- [x] cross_join
 - [x] dataset_sort_take_limit
 - [x] for_list_collection
 - [x] for_loop
@@ -54,7 +54,7 @@ This directory contains Haskell code generated from the Mochi programs in `tests
 - [x] var_assignment
 - [x] while_loop
 
-## Failed to build or run
+## Failed to build or run (47/97)
 - [ ] dataset_where_filter
 - [ ] exists_builtin
 - [ ] group_by
