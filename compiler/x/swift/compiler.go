@@ -788,7 +788,7 @@ func (c *compiler) primary(p *parser.Primary) (string, error) {
 		if len(p.List.Elems) == 0 {
 			return "[Any]()", nil
 		}
-		if st, ok := c.detectAutoStructList(p.List); ok {
+		if st, ok := c.detectAutoStructList(p.List, ""); ok {
 			order := c.structs[st]
 			elems := make([]string, len(p.List.Elems))
 			for i, e := range p.List.Elems {
@@ -2845,7 +2845,7 @@ func (c *compiler) recordMapFields(name string, e *parser.Expr) {
 	p := e.Binary.Left.Value
 	if p.Target.List != nil && len(p.Target.List.Elems) > 0 {
 		if m := mapLit(p.Target.List.Elems[0]); m != nil {
-			if st, ok := c.detectAutoStructList(p.Target.List); ok {
+			if st, ok := c.detectAutoStructList(p.Target.List, name); ok {
 				c.varTypes[name] = "list_" + st
 				c.swiftTypes[name] = "[" + st + "]"
 				c.autoStructs[st] = true
@@ -2891,7 +2891,7 @@ func (c *compiler) recordMapFields(name string, e *parser.Expr) {
 		}
 	} else if p.Target.Call != nil && p.Target.Call.Func == "append" && len(p.Target.Call.Args) == 2 {
 		if m := mapLit(p.Target.Call.Args[1]); m != nil {
-			if st, ok := c.detectAutoStructList(&parser.ListLiteral{Elems: []*parser.Expr{p.Target.Call.Args[1]}}); ok {
+			if st, ok := c.detectAutoStructList(&parser.ListLiteral{Elems: []*parser.Expr{p.Target.Call.Args[1]}}, name); ok {
 				c.varTypes[name] = "list_" + st
 				c.swiftTypes[name] = "[" + st + "]"
 				c.autoStructs[st] = true
@@ -2905,7 +2905,7 @@ func (c *compiler) recordMapFields(name string, e *parser.Expr) {
 
 	if fields, ok := c.mapFields[name]; ok && fields != nil {
 		if typ := c.varTypes[name]; strings.HasPrefix(typ, "list") {
-			if st, ok2 := c.autoStructFromFields(fields); ok2 {
+			if st, ok2 := c.autoStructFromFields(fields, name); ok2 {
 				c.varTypes[name] = "list_" + st
 				c.swiftTypes[name] = "[" + st + "]"
 				delete(c.mapFields, name)
@@ -2953,7 +2953,7 @@ func (c *compiler) mapFieldsFromLiteral(m *parser.MapLiteral) map[string]string 
 	return fields
 }
 
-func (c *compiler) detectAutoStructList(l *parser.ListLiteral) (string, bool) {
+func (c *compiler) detectAutoStructList(l *parser.ListLiteral, name string) (string, bool) {
 	if l == nil || len(l.Elems) == 0 {
 		return "", false
 	}
@@ -2992,15 +2992,15 @@ func (c *compiler) detectAutoStructList(l *parser.ListLiteral) (string, bool) {
 		return name, true
 	}
 	c.autoCount++
-	name := fmt.Sprintf("Auto%d", c.autoCount)
-	c.structKeys[key] = name
-	c.structs[name] = order
-	c.structTypes[name] = fields
-	c.autoStructs[name] = true
-	return name, true
+	stName := c.genStructName(name)
+	c.structKeys[key] = stName
+	c.structs[stName] = order
+	c.structTypes[stName] = fields
+	c.autoStructs[stName] = true
+	return stName, true
 }
 
-func (c *compiler) autoStructFromFields(fields map[string]string) (string, bool) {
+func (c *compiler) autoStructFromFields(fields map[string]string, name string) (string, bool) {
 	if len(fields) == 0 {
 		return "", false
 	}
@@ -3020,12 +3020,12 @@ func (c *compiler) autoStructFromFields(fields map[string]string) (string, bool)
 		return name, true
 	}
 	c.autoCount++
-	name := fmt.Sprintf("Auto%d", c.autoCount)
-	c.structKeys[key] = name
-	c.structs[name] = order
-	c.structTypes[name] = fields
-	c.autoStructs[name] = true
-	return name, true
+	stName := c.genStructName(name)
+	c.structKeys[key] = stName
+	c.structs[stName] = order
+	c.structTypes[stName] = fields
+	c.autoStructs[stName] = true
+	return stName, true
 }
 
 func boolExpr(e *parser.Expr) bool {
@@ -3157,6 +3157,25 @@ func (c *compiler) isEquatableType(t string) bool {
 		return true
 	}
 	return false
+}
+
+func (c *compiler) genStructName(varName string) string {
+	base := strings.TrimLeft(varName, "_")
+	if strings.HasSuffix(base, "ies") {
+		base = strings.TrimSuffix(base, "ies") + "y"
+	} else if strings.HasSuffix(base, "s") && len(base) > 1 {
+		base = strings.TrimSuffix(base, "s")
+	}
+	if base != "" {
+		base = strings.ToUpper(base[:1]) + base[1:]
+	}
+	if base == "" {
+		return fmt.Sprintf("Auto%d", c.autoCount)
+	}
+	if _, ok := c.structs[base]; !ok {
+		return base
+	}
+	return fmt.Sprintf("%s%d", base, c.autoCount)
 }
 
 func (c *compiler) emitRuntime() {

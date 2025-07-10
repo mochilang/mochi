@@ -108,3 +108,7 @@ Compiled: 97/100 programs
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
+## Remaining Tasks
+
+- [ ] Support `import` statements for FFI modules (`go_auto.mochi`, `python_auto.mochi`, `python_math.mochi`).
+- [ ] Further improve automatic struct naming heuristics.
