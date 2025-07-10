@@ -1,23 +1,8 @@
 line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramsload_yaml3685013438/001/Main.java:13: error: incompatible types: List<Map<String,Object>> cannot be converted to List<Object>
+/tmp/TestCompileValidProgramsload_yaml4228523657/001/Main.java:14: error: incompatible types: List<Map<String,Object>> cannot be converted to List<Object>
 	static List<Object> people = loadYaml("../interpreter/valid/people.yaml");
 	                                     ^
-/tmp/TestCompileValidProgramsload_yaml3685013438/001/Main.java:24: error: cannot find symbol
-		try (BufferedReader br = new BufferedReader(new FileReader(path))) {
-		     ^
-  symbol:   class BufferedReader
-  location: class Main
-/tmp/TestCompileValidProgramsload_yaml3685013438/001/Main.java:24: error: cannot find symbol
-		try (BufferedReader br = new BufferedReader(new FileReader(path))) {
-		                             ^
-  symbol:   class BufferedReader
-  location: class Main
-/tmp/TestCompileValidProgramsload_yaml3685013438/001/Main.java:24: error: cannot find symbol
-		try (BufferedReader br = new BufferedReader(new FileReader(path))) {
-		                                                ^
-  symbol:   class FileReader
-  location: class Main
-4 errors
+1 error
 
 
   1| type Person {

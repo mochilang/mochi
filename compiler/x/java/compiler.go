@@ -54,6 +54,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 				typ = c.inferType(s.Var.Value)
 			}
 			c.vars[s.Var.Name] = typ
+			if s.Var.Value != nil {
+				if _, err := c.compileExpr(s.Var.Value); err != nil {
+					return nil, err
+				}
+			}
 			continue
 		}
 		if s.Let != nil {
@@ -62,6 +67,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 				typ = c.inferType(s.Let.Value)
 			}
 			c.vars[s.Let.Name] = typ
+			if s.Let.Value != nil {
+				if _, err := c.compileExpr(s.Let.Value); err != nil {
+					return nil, err
+				}
+			}
 			continue
 		}
 		if s.Type != nil {
@@ -473,6 +483,20 @@ func maybeBool(expr string) string {
 	}
 	return expr
 }
+func isPrimitive(expr string, c *Compiler) bool {
+	if expr == "true" || expr == "false" {
+		return true
+	}
+	if regexp.MustCompile(`^-?\d+(\.\d+)?$`).MatchString(expr) {
+		return true
+	}
+	if t, ok := c.vars[expr]; ok {
+		if t == "int" || t == "double" || t == "boolean" {
+			return true
+		}
+	}
+	return false
+}
 
 func (c *Compiler) inferType(e *parser.Expr) string {
 	// handle cast expressions first
@@ -535,6 +559,18 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 		}
 		if t, ok := c.funRet[p.Call.Func]; ok {
 			return t
+		}
+		switch p.Call.Func {
+		case "len":
+			return "int"
+		case "sum", "min", "max":
+			return "int"
+		case "avg":
+			return "double"
+		case "str":
+			return "String"
+		case "values":
+			return "List<Object>"
 		}
 	}
 	if p != nil && p.Struct != nil {
@@ -1168,6 +1204,16 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 		if (op.Op == "<" || op.Op == "<=" || op.Op == ">" || op.Op == ">=") &&
 			isString(expr) && isString(right) {
 			expr = fmt.Sprintf("%s.compareTo(%s) %s 0", expr, right, op.Op)
+		} else if op.Op == "==" || op.Op == "!=" {
+			if isPrimitive(expr, c) && isPrimitive(right, c) {
+				expr = fmt.Sprintf("%s %s %s", expr, op.Op, right)
+			} else {
+				if op.Op == "==" {
+					expr = fmt.Sprintf("Objects.equals(%s, %s)", expr, right)
+				} else {
+					expr = fmt.Sprintf("!Objects.equals(%s, %s)", expr, right)
+				}
+			}
 		} else if op.Op == "+" || op.Op == "-" || op.Op == "*" || op.Op == "/" || op.Op == "%" ||
 			op.Op == "<" || op.Op == "<=" || op.Op == ">" || op.Op == ">=" {
 			expr = fmt.Sprintf("%s %s %s", c.maybeNumber(expr), op.Op, c.maybeNumber(right))

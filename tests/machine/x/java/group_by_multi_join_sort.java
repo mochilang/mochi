@@ -7,41 +7,41 @@ public class Main {
 	static String start_date = "1993-10-01";
 	static String end_date = "1994-01-01";
 	static List<Object> result = (new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
-	List<Object> _res0 = new ArrayList<>();
-	Map<Object,List<Object>> _groups1 = new LinkedHashMap<>();
+	List<Object> _res6 = new ArrayList<>();
+	Map<Object,List<Object>> _groups7 = new LinkedHashMap<>();
 	for (var c : customer) {
 		for (var o : orders) {
-			if (!(((Map)o).get("o_custkey") == ((Map)c).get("c_custkey"))) continue;
+			if (!(Objects.equals(((Map)o).get("o_custkey"), ((Map)c).get("c_custkey")))) continue;
 			for (var l : lineitem) {
-				if (!(((Map)l).get("l_orderkey") == ((Map)o).get("o_orderkey"))) continue;
+				if (!(Objects.equals(((Map)l).get("l_orderkey"), ((Map)o).get("o_orderkey")))) continue;
 				for (var n : nation) {
-					if (!(((Map)n).get("n_nationkey") == ((Map)c).get("c_nationkey"))) continue;
-					if (!(Boolean.TRUE.equals(((Number)Boolean.TRUE.equals(((Number)((Map)o).get("o_orderdate")).doubleValue() >= start_date) && Boolean.TRUE.equals(((Map)o).get("o_orderdate"))).doubleValue() < end_date) && Boolean.TRUE.equals(((Map)l).get("l_returnflag")) == "R")) continue;
-					Map<String,Object> _row2 = new HashMap<>();
-					_row2.put("c", c);
-					_row2.put("o", o);
-					_row2.put("l", l);
-					_row2.put("n", n);
-					Object _key3 = new LinkedHashMap<>(){{put("c_custkey", ((Map)c).get("c_custkey"));put("c_name", ((Map)c).get("c_name"));put("c_acctbal", ((Map)c).get("c_acctbal"));put("c_address", ((Map)c).get("c_address"));put("c_phone", ((Map)c).get("c_phone"));put("c_comment", ((Map)c).get("c_comment"));put("n_name", ((Map)n).get("n_name"));}};
-					List<Object> _b4 = _groups1.get(_key3);
-					if (_b4 == null) { _b4 = new ArrayList<>(); _groups1.put(_key3, _b4); }
-					_b4.add(_row2);
+					if (!(Objects.equals(((Map)n).get("n_nationkey"), ((Map)c).get("c_nationkey")))) continue;
+					if (!(Boolean.TRUE.equals(Objects.equals(Boolean.TRUE.equals(((Number)Boolean.TRUE.equals(((Number)((Map)o).get("o_orderdate")).doubleValue() >= start_date) && Boolean.TRUE.equals(((Map)o).get("o_orderdate"))).doubleValue() < end_date) && Boolean.TRUE.equals(((Map)l).get("l_returnflag")), "R")))) continue;
+					Map<String,Object> _row8 = new HashMap<>();
+					_row8.put("c", c);
+					_row8.put("o", o);
+					_row8.put("l", l);
+					_row8.put("n", n);
+					Object _key9 = new LinkedHashMap<>(){{put("c_custkey", ((Map)c).get("c_custkey"));put("c_name", ((Map)c).get("c_name"));put("c_acctbal", ((Map)c).get("c_acctbal"));put("c_address", ((Map)c).get("c_address"));put("c_phone", ((Map)c).get("c_phone"));put("c_comment", ((Map)c).get("c_comment"));put("n_name", ((Map)n).get("n_name"));}};
+					List<Object> _b10 = _groups7.get(_key9);
+					if (_b10 == null) { _b10 = new ArrayList<>(); _groups7.put(_key9, _b10); }
+					_b10.add(_row8);
 				}
 			}
 		}
 	}
-	for (var __e : _groups1.entrySet()) {
+	for (var __e : _groups7.entrySet()) {
 		Object g_key = __e.getKey();
 		List<Object> g = __e.getValue();
-		_res0.add(new LinkedHashMap<>(){{put("c_custkey", g.key.c_custkey);put("c_name", g.key.c_name);put("revenue", sum((List<Number>)(List<?>)(new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
-	List<Object> _res5 = new ArrayList<>();
+		_res6.add(new LinkedHashMap<>(){{put("c_custkey", g.key.c_custkey);put("c_name", g.key.c_name);put("revenue", sum((List<Number>)(List<?>)(new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
+	List<Object> _res11 = new ArrayList<>();
 	for (var x : g) {
-		_res5.add(((Number)((Map)((Map)x).get("l")).get("l_extendedprice")).doubleValue() * ((Number)(1 - ((Number)((Map)((Map)x).get("l")).get("l_discount")).doubleValue())).doubleValue());
+		_res11.add(((Number)((Map)((Map)x).get("l")).get("l_extendedprice")).doubleValue() * ((Number)(1 - ((Number)((Map)((Map)x).get("l")).get("l_discount")).doubleValue())).doubleValue());
 	}
-	return _res5;
+	return _res11;
 }}).get()));put("c_acctbal", g.key.c_acctbal);put("n_name", g.key.n_name);put("c_address", g.key.c_address);put("c_phone", g.key.c_phone);put("c_comment", g.key.c_comment);}});
 	}
-	return _res0;
+	return _res6;
 }}).get();
 	static int sum(List<? extends Number> v) {
 		int s = 0;

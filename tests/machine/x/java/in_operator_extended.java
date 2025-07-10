@@ -2,12 +2,12 @@ import java.util.*;
 public class Main {
 	static List<Integer> xs = new ArrayList<>(java.util.Arrays.asList(1, 2, 3));
 	static List<Object> ys = (new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
-	List<Object> _res0 = new ArrayList<>();
+	List<Object> _res1 = new ArrayList<>();
 	for (var x : xs) {
-		if (!(x % 2 == 1)) continue;
-		_res0.add(x);
+		if (!(Objects.equals(x % 2, 1))) continue;
+		_res1.add(x);
 	}
-	return _res0;
+	return _res1;
 }}).get();
 	static Map<Object,Integer> m = new LinkedHashMap<>(){{put("a", 1);}};
 	static String s = "hello";
