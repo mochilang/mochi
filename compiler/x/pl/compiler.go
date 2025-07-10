@@ -97,7 +97,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 		}
 	}
 	c.out = &c.buf
-	c.writeln(":- initialization(main, main).")
+	c.writeln(":- initialization(main).")
 	c.writeln("main :-")
 	c.indent++
 	for _, st := range p.Statements {
@@ -526,6 +526,7 @@ func (c *Compiler) compileIf(is *parser.IfStmt) error {
 			return err
 		}
 	}
+	c.writeln("true")
 	c.indent--
 	if len(is.Else) > 0 {
 		c.writeln(";")
@@ -535,6 +536,7 @@ func (c *Compiler) compileIf(is *parser.IfStmt) error {
 				return err
 			}
 		}
+		c.writeln("true")
 		c.indent--
 	} else {
 		c.writeln("; true")
@@ -1033,6 +1035,17 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, bool, error) {
 		c.writeln(fmt.Sprintf("dict_pairs(%s, _, %s),", arg, pairs))
 		c.writeln(fmt.Sprintf("findall(V, member(_-V, %s), %s),", pairs, tmp))
 		return tmp, false, nil
+	case "json":
+		if len(call.Args) != 1 {
+			return "", false, fmt.Errorf("json expects 1 arg")
+		}
+		arg, _, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", false, err
+		}
+		c.needsLoad = true
+		c.writeln(fmt.Sprintf("json_write_dict(current_output, %s), nl,", arg))
+		return "true", false, nil
 	default:
 		args := make([]string, len(call.Args))
 		for i, a := range call.Args {
@@ -1378,7 +1391,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, bool, error) {
 		itemVar := c.newTmp()
 		fields := make([]string, len(varNames))
 		for i, v := range varNames {
-			fields[i] = fmt.Sprintf("%s-%s", v, v)
+			fields[i] = fmt.Sprintf("'%s'-%s", v, v)
 		}
 		loops = append(loops, fmt.Sprintf("dict_create(%s, map, [%s])", itemVar, strings.Join(fields, ", ")))
 		pairVar := c.newTmp()

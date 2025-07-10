@@ -1,0 +1,5 @@
+ERROR: /workspace/mochi/tests/machine/x/pl/two-sum.pl:32:60: Syntax error: Operator expected
+ERROR: /workspace/mochi/tests/machine/x/pl/two-sum.pl:35:43: Syntax error: Illegal start of term
+ERROR: /workspace/mochi/tests/machine/x/pl/two-sum.pl:48: Initialization goal raised exception:
+ERROR: main/0: Unknown procedure: twoSum/3
+

@@ -1,3 +1,0 @@
-run: exit status 2
-ERROR: /workspace/mochi/tests/machine/x/pl/query_sum_select.pl:2: user:main lists:sum_list/3: No rule matches lists:sum_list(2,0,_6272)
-
