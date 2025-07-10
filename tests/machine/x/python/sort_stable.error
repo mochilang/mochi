@@ -1,7 +1,0 @@
-run: exit status 1
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/machine/x/python/sort_stable.py", line 16, in <module>
-    items: list[dict[str, typing.Any]] = [{n: 1, v: "a"}, {n: 1, v: "b"}, {n: 2, v: "c"}]
-                                           ^
-NameError: name 'n' is not defined
-

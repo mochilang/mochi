@@ -153,12 +153,12 @@ def _sum(v):
     return s
 
 
-nations: list[dict[str, typing.Any]] = [{id: 1, name: "A"}, {id: 2, name: "B"}]
-suppliers: list[dict[str, int]] = [{id: 1, nation: 1}, {id: 2, nation: 2}]
+nations: list[dict[str, typing.Any]] = [{"id": 1, "name": "A"}, {"id": 2, "name": "B"}]
+suppliers: list[dict[str, int]] = [{"id": 1, "nation": 1}, {"id": 2, "nation": 2}]
 partsupp: list[dict[str, typing.Any]] = [
-    {part: 100, supplier: 1, cost: 10, qty: 2},
-    {part: 100, supplier: 2, cost: 20, qty: 1},
-    {part: 200, supplier: 1, cost: 5, qty: 3},
+    {"part": 100, "supplier": 1, "cost": 10, "qty": 2},
+    {"part": 100, "supplier": 2, "cost": 20, "qty": 1},
+    {"part": 200, "supplier": 1, "cost": 5, "qty": 3},
 ]
 filtered: list[dict[str, typing.Any]] = _query(
     partsupp,

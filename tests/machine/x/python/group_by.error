@@ -1,7 +1,0 @@
-run: exit status 1
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/machine/x/python/group_by.py", line 165, in <module>
-    {name: "Alice", age: 30, city: "Paris"},
-     ^^^^
-NameError: name 'name' is not defined
-
