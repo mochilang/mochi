@@ -36,7 +36,7 @@ List.rev !__res0)
 
 
 let () =
-  print_endline (__show ("--- Cross Join of three lists ---"));
+  print_endline "--- Cross Join of three lists ---";
   let rec __loop1 lst =
     match lst with
       | [] -> ()

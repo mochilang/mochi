@@ -18,7 +18,7 @@ let rec __show v =
 
 
 let () =
-  print_endline (__show (("a" < "b")));
-  print_endline (__show (("a" <= "a")));
-  print_endline (__show (("b" > "a")));
-  print_endline (__show (("b" >= "b")));
+  print_endline ("a" < "b");
+  print_endline ("a" <= "a");
+  print_endline ("b" > "a");
+  print_endline ("b" >= "b");

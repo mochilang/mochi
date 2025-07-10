@@ -21,5 +21,5 @@ type record1 = { mutable a : int; mutable b : int }
 let m : (string * Obj.t) list = { a = 1; b = 2 }
 
 let () =
-  print_endline (__show ((List.mem_assoc "a" m)));
-  print_endline (__show ((List.mem_assoc "c" m)));
+  print_endline (List.mem_assoc "a" m);
+  print_endline (List.mem_assoc "c" m);

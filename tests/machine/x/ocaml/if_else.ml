@@ -20,7 +20,7 @@ let x : int = 5
 
 let () =
   if (x > 3) then (
-    print_endline (__show ("big"));
+    print_endline "big";
   ) else (
-    print_endline (__show ("small"));
+    print_endline "small";
   ) ;
