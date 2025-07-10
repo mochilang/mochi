@@ -212,6 +212,8 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 	// forward declarations for user-defined types allow recursive structs
 	forwardSet := map[string]bool{}
 	var forward []string
+	skip := map[*parser.Statement]bool{}
+	var globals []string
 	for _, s := range prog.Statements {
 		if s.Type != nil {
 			name := sanitizeName(s.Type.Name)
@@ -225,6 +227,33 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 					forwardSet[vname] = true
 					forward = append(forward, vname)
 				}
+			}
+		}
+		// collect simple global variables so functions can use them
+		if s.Var != nil && s.Var.Value != nil {
+			if typ, val, ok := constLiteralTypeVal(s.Var.Value); ok {
+				t := typ
+				if s.Var.Type != nil {
+					t = c.cType(s.Var.Type)
+				}
+				globals = append(globals, fmt.Sprintf("static %s %s = %s;", t, sanitizeName(s.Var.Name), val))
+				if c.env != nil {
+					c.env.SetVar(s.Var.Name, resolveTypeRef(s.Var.Type, c.env), true)
+				}
+				skip[s] = true
+			}
+		}
+		if s.Let != nil && s.Let.Value != nil {
+			if typ, val, ok := constLiteralTypeVal(s.Let.Value); ok {
+				t := typ
+				if s.Let.Type != nil {
+					t = c.cType(s.Let.Type)
+				}
+				globals = append(globals, fmt.Sprintf("static %s %s = %s;", t, sanitizeName(s.Let.Name), val))
+				if c.env != nil {
+					c.env.SetVar(s.Let.Name, resolveTypeRef(s.Let.Type, c.env), true)
+				}
+				skip[s] = true
 			}
 		}
 	}
@@ -305,6 +334,9 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 		c.writeln(fmt.Sprintf("if (%s == NULL) { fprintf(stderr, \"extern object not registered: %s\\n\"); return 1; }", name, name))
 	}
 	for _, s := range prog.Statements {
+		if skip[s] {
+			continue
+		}
 		if s.Fun == nil && s.Test == nil {
 			if err := c.compileStmt(s); err != nil {
 				return nil, err
@@ -349,6 +381,12 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 		c.writeln(ex)
 	}
 	if len(c.externs) > 0 {
+		c.writeln("")
+	}
+	for _, g := range globals {
+		c.writeln(g)
+	}
+	if len(globals) > 0 {
 		c.writeln("")
 	}
 	c.buf.WriteString(body)
@@ -4680,4 +4718,35 @@ func (c *Compiler) inferStructFromMap(ml *parser.MapLiteral, name string) (types
 	}
 	st := types.StructType{Name: stName, Fields: fields, Order: order}
 	return st, true
+}
+
+// constLiteralTypeVal returns the C type and value for simple literal
+// expressions. It only handles integer, float, boolean and string literals.
+func constLiteralTypeVal(e *parser.Expr) (typ, val string, ok bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", "", false
+	}
+	u := e.Binary.Left
+	if u == nil || u.Value == nil || u.Value.Target == nil || len(u.Ops) > 0 || len(u.Value.Ops) > 0 {
+		return "", "", false
+	}
+	lit := u.Value.Target.Lit
+	if lit == nil {
+		return "", "", false
+	}
+	switch {
+	case lit.Int != nil:
+		return "int", strconv.Itoa(*lit.Int), true
+	case lit.Float != nil:
+		return "double", strconv.FormatFloat(*lit.Float, 'f', -1, 64), true
+	case lit.Bool != nil:
+		if bool(*lit.Bool) {
+			return "int", "1", true
+		}
+		return "int", "0", true
+	case lit.Str != nil:
+		return "char*", fmt.Sprintf("%q", *lit.Str), true
+	default:
+		return "", "", false
+	}
 }
