@@ -438,6 +438,9 @@ func parsePasType(s string) types.Type {
 			return types.FuncType{Params: parts, Return: ret}
 		}
 	}
+	if idx := strings.Index(s, ":"); idx > 0 && !strings.ContainsAny(s[:idx], "<(") {
+		return parsePasType(strings.TrimSpace(s[idx+1:]))
+	}
 	if strings.HasPrefix(s, "specialize TFPGMap<") && strings.HasSuffix(s, ">") {
 		inner := strings.TrimSuffix(strings.TrimPrefix(s, "specialize TFPGMap<"), ">")
 		parts := strings.SplitN(inner, ",", 2)
