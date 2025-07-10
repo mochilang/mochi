@@ -1,8 +1,5 @@
 open System
 
-exception Break
-exception Continue
-
 type Anon1 = {
     id: int
     name: string

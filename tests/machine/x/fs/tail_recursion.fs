@@ -1,8 +1,5 @@
 open System
 
-exception Break
-exception Continue
-
 let sum_rec (n) (acc) =
     if n = 0 then
         acc

@@ -1,8 +1,5 @@
 open System
 
-exception Break
-exception Continue
-
 type Anon1 = {
     id: int
     name: string
@@ -22,9 +19,5 @@ let stats = [ for gKey, gItems in [ for c in customers do
     let g = {| key = gKey; items = gItems |}
     yield { name = g.key; count = List.length [ for r in g do if r.o then yield r ] } ]
 printfn "%s" "--- Group Left Join ---"
-try
-    for s in stats do
-        try
-            printfn "%s" (String.concat " " [string s.name; string "orders:"; string s.count])
-        with Continue -> ()
-with Break -> ()
+for s in stats do
+    printfn "%s" (String.concat " " [string s.name; string "orders:"; string s.count])

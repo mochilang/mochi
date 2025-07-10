@@ -1,8 +1,5 @@
 open System
 
-exception Break
-exception Continue
-
 type Anon1 = {
     id: int
     name: string
@@ -21,12 +18,8 @@ let orders = [{ id = 100; customerId = 1; total = 250 }; { id = 101; customerId 
 let result = [ for o in orders do 
   let c = List.tryFind (fun c -> o.customerId = c.id) customers yield { customerName = c.name; order = o } ]
 printfn "%s" "--- Right Join using syntax ---"
-try
-    for entry in result do
-        try
-            if entry.order then
-                printfn "%s" (String.concat " " [string "Customer"; string entry.customerName; string "has order"; string entry.order.id; string "- $"; string entry.order.total])
-            else
-                printfn "%s" (String.concat " " [string "Customer"; string entry.customerName; string "has no orders"])
-        with Continue -> ()
-with Break -> ()
+for entry in result do
+    if entry.order then
+        printfn "%s" (String.concat " " [string "Customer"; string entry.customerName; string "has order"; string entry.order.id; string "- $"; string entry.order.total])
+    else
+        printfn "%s" (String.concat " " [string "Customer"; string entry.customerName; string "has no orders"])

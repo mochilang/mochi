@@ -1,8 +1,5 @@
 open System
 
-exception Break
-exception Continue
-
 let x = 2
 let label = (match x with
     | 1 -> "one"

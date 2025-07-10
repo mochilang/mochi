@@ -1,8 +1,5 @@
 open System
 
-exception Break
-exception Continue
-
 type Anon1 = {
     id: int
     name: string
@@ -22,9 +19,5 @@ let orders = [{ id = 100; customerId = 1; total = 250 }; { id = 101; customerId 
 let result = [ for o in orders do 
   for c in customers do if o.customerId = c.id then yield { orderId = o.id; customerName = c.name; total = o.total } ]
 printfn "%s" "--- Orders with customer info ---"
-try
-    for entry in result do
-        try
-            printfn "%s" (String.concat " " [string "Order"; string entry.orderId; string "by"; string entry.customerName; string "- $"; string entry.total])
-        with Continue -> ()
-with Break -> ()
+for entry in result do
+    printfn "%s" (String.concat " " [string "Order"; string entry.orderId; string "by"; string entry.customerName; string "- $"; string entry.total])

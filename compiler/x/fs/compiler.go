@@ -19,17 +19,19 @@ var identifierRegexp = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_]*$`)
 // subset of Mochi. It is intentionally minimal and only handles the
 // constructs required by a few simple programs.
 type Compiler struct {
-	buf      bytes.Buffer
-	prelude  bytes.Buffer
-	indent   int
-	vars     map[string]string
-	structs  map[string]map[string]string
-	groups   map[string]bool
-	maps     map[string]bool
-	anon     map[string]string
-	anonCnt  int
-	usesJson bool
-	usesYaml bool
+	buf          bytes.Buffer
+	prelude      bytes.Buffer
+	indent       int
+	vars         map[string]string
+	structs      map[string]map[string]string
+	groups       map[string]bool
+	maps         map[string]bool
+	anon         map[string]string
+	anonCnt      int
+	usesJson     bool
+	usesYaml     bool
+	usesBreak    bool
+	usesContinue bool
 }
 
 func defaultValue(typ string) string {
@@ -67,13 +69,15 @@ func (c *Compiler) compileType(t *parser.TypeRef) (string, error) {
 // New creates a new F# compiler instance.
 func New() *Compiler {
 	return &Compiler{
-		vars:     make(map[string]string),
-		structs:  make(map[string]map[string]string),
-		groups:   make(map[string]bool),
-		maps:     make(map[string]bool),
-		anon:     make(map[string]string),
-		usesJson: false,
-		usesYaml: false,
+		vars:         make(map[string]string),
+		structs:      make(map[string]map[string]string),
+		groups:       make(map[string]bool),
+		maps:         make(map[string]bool),
+		anon:         make(map[string]string),
+		usesJson:     false,
+		usesYaml:     false,
+		usesBreak:    false,
+		usesContinue: false,
 	}
 }
 
@@ -90,6 +94,8 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.anonCnt = 0
 	c.usesJson = false
 	c.usesYaml = false
+	c.usesBreak = false
+	c.usesContinue = false
 
 	for _, s := range p.Statements {
 		if err := c.compileStmt(s); err != nil {
@@ -106,9 +112,11 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 		header.WriteString("open YamlDotNet.Serialization\n")
 	}
 	header.WriteString("\n")
-	header.WriteString("exception Break\n")
-	header.WriteString("exception Continue\n")
-	header.WriteString("\n")
+	if c.usesBreak || c.usesContinue {
+		header.WriteString("exception Break\n")
+		header.WriteString("exception Continue\n")
+		header.WriteString("\n")
+	}
 	var final bytes.Buffer
 	final.Write(header.Bytes())
 	final.Write(c.prelude.Bytes())
@@ -313,22 +321,35 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 	if err != nil {
 		return err
 	}
-	c.writeln("try")
-	c.indent++
-	c.writeln(fmt.Sprintf("while %s do", cond))
-	c.indent++
-	c.writeln("try")
-	c.indent++
-	for _, st := range w.Body {
-		if err := c.compileStmt(st); err != nil {
-			return err
+	if containsBreakOrContinue(w.Body) {
+		c.usesBreak = true
+		c.usesContinue = true
+		c.writeln("try")
+		c.indent++
+		c.writeln(fmt.Sprintf("while %s do", cond))
+		c.indent++
+		c.writeln("try")
+		c.indent++
+		for _, st := range w.Body {
+			if err := c.compileStmt(st); err != nil {
+				return err
+			}
 		}
+		c.indent--
+		c.writeln("with Continue -> ()")
+		c.indent--
+		c.indent--
+		c.writeln("with Break -> ()")
+	} else {
+		c.writeln(fmt.Sprintf("while %s do", cond))
+		c.indent++
+		for _, st := range w.Body {
+			if err := c.compileStmt(st); err != nil {
+				return err
+			}
+		}
+		c.indent--
 	}
-	c.indent--
-	c.writeln("with Continue -> ()")
-	c.indent--
-	c.indent--
-	c.writeln("with Break -> ()")
 	return nil
 }
 
@@ -337,32 +358,48 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	if err != nil {
 		return err
 	}
+	hasBC := containsBreakOrContinue(f.Body)
+	if hasBC {
+		c.usesBreak = true
+		c.usesContinue = true
+	}
 	if f.RangeEnd != nil {
 		end, err := c.compileExpr(f.RangeEnd)
 		if err != nil {
 			return err
 		}
-		c.writeln("try")
-		c.indent++
+		if hasBC {
+			c.writeln("try")
+			c.indent++
+		}
 		c.writeln(fmt.Sprintf("for %s in %s .. %s do", f.Name, start, end))
 	} else {
-		c.writeln("try")
-		c.indent++
+		if hasBC {
+			c.writeln("try")
+			c.indent++
+		}
 		c.writeln(fmt.Sprintf("for %s in %s do", f.Name, start))
 	}
 	c.indent++
-	c.writeln("try")
-	c.indent++
+	if hasBC {
+		c.writeln("try")
+		c.indent++
+	}
 	for _, st := range f.Body {
 		if err := c.compileStmt(st); err != nil {
 			return err
 		}
 	}
-	c.indent--
-	c.writeln("with Continue -> ()")
-	c.indent--
-	c.indent--
-	c.writeln("with Break -> ()")
+	if hasBC {
+		c.indent--
+		c.writeln("with Continue -> ()")
+		c.indent--
+	} else {
+		c.indent--
+	}
+	if hasBC {
+		c.writeln("with Break -> ()")
+	}
 	return nil
 }
 
@@ -407,11 +444,13 @@ func (c *Compiler) compileReturn(r *parser.ReturnStmt) error {
 }
 
 func (c *Compiler) compileBreak(_ *parser.BreakStmt) error {
+	c.usesBreak = true
 	c.writeln("raise Break")
 	return nil
 }
 
 func (c *Compiler) compileContinue(_ *parser.ContinueStmt) error {
+	c.usesContinue = true
 	c.writeln("raise Continue")
 	return nil
 }
@@ -1551,6 +1590,34 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 		}
 	}
 	return "obj"
+}
+
+func containsBreakOrContinue(stmts []*parser.Statement) bool {
+	for _, st := range stmts {
+		switch {
+		case st.Break != nil, st.Continue != nil:
+			return true
+		case st.While != nil:
+			if containsBreakOrContinue(st.While.Body) {
+				return true
+			}
+		case st.For != nil:
+			if containsBreakOrContinue(st.For.Body) {
+				return true
+			}
+		case st.If != nil:
+			if containsBreakOrContinue(st.If.Then) {
+				return true
+			}
+			if st.If.Else != nil && containsBreakOrContinue(st.If.Else) {
+				return true
+			}
+			if st.If.ElseIf != nil && containsBreakOrContinue(st.If.ElseIf.Then) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func repoRoot() (string, error) {

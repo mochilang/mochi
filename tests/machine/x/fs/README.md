@@ -111,5 +111,5 @@ Compiled programs: 97/97
 
 ## Remaining Tasks
 
-- [ ] Improve formatting of generated F# code to more closely match hand written examples
+- [x] Improve formatting of generated F# loops when `break` and `continue` are not used
 - [ ] Expand support for additional standard library functions
