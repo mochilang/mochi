@@ -14,27 +14,13 @@
 11 | 				_res.append(["name": c["name"] as! String, "sku": i["sku"] as! String])
 12 | 			}
 
-/workspace/mochi/tests/machine/x/swift/join_multi.swift:19:11: warning: expression implicitly coerced from 'Any?' to 'Any'
+/workspace/mochi/tests/machine/x/swift/join_multi.swift:18:17: warning: forced cast of '[[String : Any]]' to same type has no effect
+16 | }())
 17 | print("--- Multi Join ---")
-18 | for r in result {
-19 |     print(r["name"], "bought item", r["sku"])
-   |           ||- note: provide a default value to avoid this warning
-   |           ||- note: force-unwrap the value to avoid this warning
-   |           |`- note: explicitly cast to 'Any' with 'as Any' to silence this warning
-   |           `- warning: expression implicitly coerced from 'Any?' to 'Any'
+18 | for r in result as! [[String:Any]] {
+   |                 `- warning: forced cast of '[[String : Any]]' to same type has no effect
+19 |     print(r["name"]!, "bought item", r["sku"]!)
 20 | }
-21 | 
-
-/workspace/mochi/tests/machine/x/swift/join_multi.swift:19:37: warning: expression implicitly coerced from 'Any?' to 'Any'
-17 | print("--- Multi Join ---")
-18 | for r in result {
-19 |     print(r["name"], "bought item", r["sku"])
-   |                                     ||- note: provide a default value to avoid this warning
-   |                                     ||- note: force-unwrap the value to avoid this warning
-   |                                     |`- note: explicitly cast to 'Any' with 'as Any' to silence this warning
-   |                                     `- warning: expression implicitly coerced from 'Any?' to 'Any'
-20 | }
-21 | 
 --- Multi Join ---
-Optional("Alice") bought item Optional("a")
-Optional("Bob") bought item Optional("b")
+Alice bought item a
+Bob bought item b

@@ -1,25 +1,11 @@
-/workspace/mochi/tests/machine/x/swift/dataset_where_filter.swift:5:11: warning: expression implicitly coerced from 'Any?' to 'Any'
+/workspace/mochi/tests/machine/x/swift/dataset_where_filter.swift:4:22: warning: forced cast of '[[String : Any]]' to same type has no effect
+2 | var adults = people.compactMap { person in person["age"] as! Int >= 18 ? (["name": person["name"] as! String, "age": person["age"] as! Int, "is_senior": person["age"] as! Int >= 60]) : nil }
 3 | print("--- Adults ---")
-4 | for person in adults {
-5 |     print(person["name"], "is", person["age"], person["is_senior"] as! Bool ? " (senior)" : "")
-  |           |     |- note: provide a default value to avoid this warning
-  |           |     |- note: force-unwrap the value to avoid this warning
-  |           |     `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
-  |           `- warning: expression implicitly coerced from 'Any?' to 'Any'
+4 | for person in adults as! [[String:Any]] {
+  |                      `- warning: forced cast of '[[String : Any]]' to same type has no effect
+5 |     print(person["name"]!, "is", person["age"]!, person["is_senior"] as! Bool ? " (senior)" : "")
 6 | }
-7 | 
-
-/workspace/mochi/tests/machine/x/swift/dataset_where_filter.swift:5:33: warning: expression implicitly coerced from 'Any?' to 'Any'
-3 | print("--- Adults ---")
-4 | for person in adults {
-5 |     print(person["name"], "is", person["age"], person["is_senior"] as! Bool ? " (senior)" : "")
-  |                                 |     |- note: provide a default value to avoid this warning
-  |                                 |     |- note: force-unwrap the value to avoid this warning
-  |                                 |     `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
-  |                                 `- warning: expression implicitly coerced from 'Any?' to 'Any'
-6 | }
-7 | 
 --- Adults ---
-Optional("Alice") is Optional(30) 
-Optional("Charlie") is Optional(65)  (senior)
-Optional("Diana") is Optional(45) 
+Alice is 30 
+Charlie is 65  (senior)
+Diana is 45 

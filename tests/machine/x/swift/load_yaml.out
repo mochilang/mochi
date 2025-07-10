@@ -1,21 +1,7 @@
-/workspace/mochi/tests/machine/x/swift/load_yaml.swift:45:11: warning: expression implicitly coerced from 'String?' to 'Any'
+/workspace/mochi/tests/machine/x/swift/load_yaml.swift:44:17: warning: forced cast from '[[String : String]]' to '[[String : Any]]' always succeeds; did you mean to use 'as'?
+42 | let people = _load(path: "../interpreter/valid/people.yaml", opts: ["format": "yaml"]).map { rec in Person(name: rec["name"] as! String, age: rec["age"] as! Int, email: rec["email"] as! String) }
 43 | var adults = people.compactMap { p in p.age >= 18 ? (["name": p.name, "email": p.email]) : nil }
-44 | for a in adults {
-45 |     print(a["name"], a["email"])
-   |           ||- note: provide a default value to avoid this warning
-   |           ||- note: force-unwrap the value to avoid this warning
-   |           |`- note: explicitly cast to 'Any' with 'as Any' to silence this warning
-   |           `- warning: expression implicitly coerced from 'String?' to 'Any'
+44 | for a in adults as! [[String:Any]] {
+   |                 `- warning: forced cast from '[[String : String]]' to '[[String : Any]]' always succeeds; did you mean to use 'as'?
+45 |     print(a["name"]!, a["email"]!)
 46 | }
-47 | 
-
-/workspace/mochi/tests/machine/x/swift/load_yaml.swift:45:22: warning: expression implicitly coerced from 'String?' to 'Any'
-43 | var adults = people.compactMap { p in p.age >= 18 ? (["name": p.name, "email": p.email]) : nil }
-44 | for a in adults {
-45 |     print(a["name"], a["email"])
-   |                      ||- note: provide a default value to avoid this warning
-   |                      ||- note: force-unwrap the value to avoid this warning
-   |                      |`- note: explicitly cast to 'Any' with 'as Any' to silence this warning
-   |                      `- warning: expression implicitly coerced from 'String?' to 'Any'
-46 | }
-47 | 

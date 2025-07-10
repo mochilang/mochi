@@ -11,6 +11,6 @@ var result = ({
 	return _res
 }())
 print("--- Orders with customer info ---")
-for entry in result {
-    print("Order", entry["orderId"], "by", entry["customerName"], "- $", entry["total"])
+for entry in result as! [[String:Any]] {
+    print("Order", entry["orderId"]!, "by", entry["customerName"]!, "- $", entry["total"]!)
 }

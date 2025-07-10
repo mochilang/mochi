@@ -19,6 +19,6 @@ var result = ({
 	return _res
 }())
 print("--- Left Join ---")
-for entry in result {
-    print("Order", entry["orderId"], "customer", entry["customer"], "total", entry["total"])
+for entry in result as! [[String:Any]] {
+    print("Order", entry["orderId"]!, "customer", entry["customer"]!, "total", entry["total"]!)
 }

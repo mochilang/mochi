@@ -19,11 +19,11 @@ var result = ({
 	return _res
 }())
 print("--- Right Join using syntax ---")
-for entry in result {
-    if entry["order"] != nil {
-        print("Customer", entry["customerName"], "has order", entry["order"]["id"], "- $", entry["order"]["total"])
+for entry in result as! [[String:Any]] {
+    if entry["order"]! != nil {
+        print("Customer", entry["customerName"]!, "has order", entry["order"]!["id"]!, "- $", entry["order"]!["total"]!)
     }
     else {
-        print("Customer", entry["customerName"], "has no orders")
+        print("Customer", entry["customerName"]!, "has no orders")
     }
 }

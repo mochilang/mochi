@@ -1,41 +1,16 @@
-/workspace/mochi/tests/machine/x/swift/cross_join_triple.swift:7:11: warning: expression implicitly coerced from 'Any?' to 'Any'
+/workspace/mochi/tests/machine/x/swift/cross_join_triple.swift:6:17: warning: forced cast of '[[String : Any]]' to same type has no effect
+4 | var combos = nums.flatMap { n in letters.flatMap { l in bools.map { b in ["n": n, "l": l, "b": b] } } }
 5 | print("--- Cross Join of three lists ---")
-6 | for c in combos {
-7 |     print(c["n"], c["l"], c["b"])
-  |           ||- note: provide a default value to avoid this warning
-  |           ||- note: force-unwrap the value to avoid this warning
-  |           |`- note: explicitly cast to 'Any' with 'as Any' to silence this warning
-  |           `- warning: expression implicitly coerced from 'Any?' to 'Any'
+6 | for c in combos as! [[String:Any]] {
+  |                 `- warning: forced cast of '[[String : Any]]' to same type has no effect
+7 |     print(c["n"]!, c["l"]!, c["b"]!)
 8 | }
-9 | 
-
-/workspace/mochi/tests/machine/x/swift/cross_join_triple.swift:7:19: warning: expression implicitly coerced from 'Any?' to 'Any'
-5 | print("--- Cross Join of three lists ---")
-6 | for c in combos {
-7 |     print(c["n"], c["l"], c["b"])
-  |                   ||- note: provide a default value to avoid this warning
-  |                   ||- note: force-unwrap the value to avoid this warning
-  |                   |`- note: explicitly cast to 'Any' with 'as Any' to silence this warning
-  |                   `- warning: expression implicitly coerced from 'Any?' to 'Any'
-8 | }
-9 | 
-
-/workspace/mochi/tests/machine/x/swift/cross_join_triple.swift:7:27: warning: expression implicitly coerced from 'Any?' to 'Any'
-5 | print("--- Cross Join of three lists ---")
-6 | for c in combos {
-7 |     print(c["n"], c["l"], c["b"])
-  |                           ||- note: provide a default value to avoid this warning
-  |                           ||- note: force-unwrap the value to avoid this warning
-  |                           |`- note: explicitly cast to 'Any' with 'as Any' to silence this warning
-  |                           `- warning: expression implicitly coerced from 'Any?' to 'Any'
-8 | }
-9 | 
 --- Cross Join of three lists ---
-Optional(1) Optional("A") Optional(true)
-Optional(1) Optional("A") Optional(false)
-Optional(1) Optional("B") Optional(true)
-Optional(1) Optional("B") Optional(false)
-Optional(2) Optional("A") Optional(true)
-Optional(2) Optional("A") Optional(false)
-Optional(2) Optional("B") Optional(true)
-Optional(2) Optional("B") Optional(false)
+1 A true
+1 A false
+1 B true
+1 B false
+2 A true
+2 A false
+2 B true
+2 B false

@@ -15,6 +15,6 @@ var result = ({
 	return _res
 }())
 print("--- Left Join Multi ---")
-for r in result {
-    print(r["orderId"], r["name"], r["item"])
+for r in result as! [[String:Any]] {
+    print(r["orderId"]!, r["name"]!, r["item"]!)
 }

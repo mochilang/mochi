@@ -425,6 +425,9 @@ func (c *compiler) forStmt(f *parser.ForStmt) error {
 		if err != nil {
 			return err
 		}
+		if c.elementType(f.Source) == "map" {
+			src += " as! [[String:Any]]"
+		}
 		header = fmt.Sprintf("for %s in %s {", f.Name, src)
 	}
 	c.writeln(header)
@@ -1170,13 +1173,17 @@ func (c *compiler) selector(s *parser.SelectorExpr) string {
 	if strings.HasPrefix(typ, "map") || (typ == "" && c.mapFields[s.Root] != nil) {
 		parts := []string{s.Root}
 		for _, f := range s.Tail {
-			cast := ""
+			typ := "Any"
 			if m, ok := c.mapFields[s.Root]; ok {
-				if t, ok2 := m[f]; ok2 && t != "Any" {
-					cast = fmt.Sprintf(" as! %s", t)
+				if t, ok2 := m[f]; ok2 && t != "" {
+					typ = t
 				}
 			}
-			parts = append(parts, fmt.Sprintf("[%q]%s", f, cast))
+			if typ == "Any" {
+				parts = append(parts, fmt.Sprintf("[%q]!", f))
+			} else {
+				parts = append(parts, fmt.Sprintf("[%q] as! %s", f, typ))
+			}
 		}
 		return strings.Join(parts, "")
 	}
@@ -1568,6 +1575,10 @@ func (c *compiler) groupQuery(q *parser.QueryExpr) (string, error) {
 		c.mapFields = savedFields
 		return "", err
 	}
+	keyTyp := c.fieldType(q.Group.Exprs[0])
+	if keyTyp == "" {
+		keyTyp = c.exprType(q.Group.Exprs[0])
+	}
 	gname := q.Group.Name
 	c.varTypes[gname] = ""
 	c.mapFields[gname] = nil
@@ -1586,10 +1597,7 @@ func (c *compiler) groupQuery(q *parser.QueryExpr) (string, error) {
 		}
 		having = hv
 	}
-	prevTuple := c.tupleMap
-	c.tupleMap = true
 	sel, err := c.expr(q.Select)
-	c.tupleMap = prevTuple
 	if err != nil {
 		c.varTypes = savedVars
 		c.mapFields = savedFields
@@ -1597,10 +1605,7 @@ func (c *compiler) groupQuery(q *parser.QueryExpr) (string, error) {
 	}
 	sortExpr := ""
 	if q.Sort != nil {
-		prev := c.tupleMap
-		c.tupleMap = true
 		s, err := c.expr(q.Sort)
-		c.tupleMap = prev
 		if err != nil {
 			c.varTypes = savedVars
 			c.mapFields = savedFields
@@ -1655,6 +1660,10 @@ func (c *compiler) groupQuery(q *parser.QueryExpr) (string, error) {
 		}
 		a := replaceIdent(sortExpr, gname, "$0")
 		bstr := replaceIdent(sortExpr, gname, "$1")
+		if strings.ToLower(keyTyp) == "string" {
+			a = fmt.Sprintf("String(describing: %s)", a)
+			bstr = fmt.Sprintf("String(describing: %s)", bstr)
+		}
 		op := "<"
 		if desc {
 			op = ">"
@@ -1788,10 +1797,7 @@ func (c *compiler) groupJoinQuery(q *parser.QueryExpr) (string, error) {
 		}
 		having = hv
 	}
-	prevTuple := c.tupleMap
-	c.tupleMap = true
 	sel, err := c.expr(q.Select)
-	c.tupleMap = prevTuple
 	if err != nil {
 		c.varTypes = savedVars
 		c.mapFields = savedFields
@@ -1799,10 +1805,7 @@ func (c *compiler) groupJoinQuery(q *parser.QueryExpr) (string, error) {
 	}
 	sortExpr := ""
 	if q.Sort != nil {
-		prev := c.tupleMap
-		c.tupleMap = true
 		s, err := c.expr(q.Sort)
-		c.tupleMap = prev
 		if err != nil {
 			c.varTypes = savedVars
 			c.mapFields = savedFields
@@ -2538,7 +2541,9 @@ func (c *compiler) elementFieldTypes(e *parser.Expr) map[string]string {
 	p := e.Binary.Left.Value
 	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
 		if t, ok := c.mapFields[p.Target.Selector.Root]; ok {
-			return t
+			if t != nil {
+				return t
+			}
 		}
 		if c.groups[p.Target.Selector.Root] {
 			if t, ok2 := c.groupElemFields[p.Target.Selector.Root]; ok2 {
@@ -2730,8 +2735,17 @@ func (c *compiler) fieldType(e *parser.Expr) string {
 		// only support single-level field access
 		if len(sel.Tail) == 1 {
 			if m, ok := c.mapFields[root]; ok {
-				if t, ok2 := m[sel.Tail[0]]; ok2 {
-					return t
+				if m != nil {
+					if t, ok2 := m[sel.Tail[0]]; ok2 {
+						return t
+					}
+				}
+			}
+			if c.groups[root] {
+				if m, ok2 := c.groupElemFields[root]; ok2 {
+					if t, ok3 := m[sel.Tail[0]]; ok3 {
+						return t
+					}
 				}
 			}
 		}

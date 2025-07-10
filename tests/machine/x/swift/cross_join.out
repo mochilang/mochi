@@ -4,7 +4,7 @@
 3 | var result = orders.flatMap { o in customers.map { c in ["orderId": o["id"] as! Int, "orderCustomerId": o["customerId"] as! Int, "pairedCustomerName": c["name"] as! String, "orderTotal": o["total"] as! Int] } }
   |                                                                             `- warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
 4 | print("--- Cross Join: All order-customer pairs ---")
-5 | for entry in result {
+5 | for entry in result as! [[String:Any]] {
 
 /workspace/mochi/tests/machine/x/swift/cross_join.swift:3:121: warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
 1 | var customers = [["id": 1, "name": "Alice"], ["id": 2, "name": "Bob"], ["id": 3, "name": "Charlie"]]
@@ -12,7 +12,7 @@
 3 | var result = orders.flatMap { o in customers.map { c in ["orderId": o["id"] as! Int, "orderCustomerId": o["customerId"] as! Int, "pairedCustomerName": c["name"] as! String, "orderTotal": o["total"] as! Int] } }
   |                                                                                                                         `- warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
 4 | print("--- Cross Join: All order-customer pairs ---")
-5 | for entry in result {
+5 | for entry in result as! [[String:Any]] {
 
 /workspace/mochi/tests/machine/x/swift/cross_join.swift:3:199: warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
 1 | var customers = [["id": 1, "name": "Alice"], ["id": 2, "name": "Bob"], ["id": 3, "name": "Charlie"]]
@@ -20,58 +20,22 @@
 3 | var result = orders.flatMap { o in customers.map { c in ["orderId": o["id"] as! Int, "orderCustomerId": o["customerId"] as! Int, "pairedCustomerName": c["name"] as! String, "orderTotal": o["total"] as! Int] } }
   |                                                                                                                                                                                                       `- warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
 4 | print("--- Cross Join: All order-customer pairs ---")
-5 | for entry in result {
+5 | for entry in result as! [[String:Any]] {
 
-/workspace/mochi/tests/machine/x/swift/cross_join.swift:6:20: warning: expression implicitly coerced from 'Any?' to 'Any'
+/workspace/mochi/tests/machine/x/swift/cross_join.swift:5:21: warning: forced cast of '[[String : Any]]' to same type has no effect
+3 | var result = orders.flatMap { o in customers.map { c in ["orderId": o["id"] as! Int, "orderCustomerId": o["customerId"] as! Int, "pairedCustomerName": c["name"] as! String, "orderTotal": o["total"] as! Int] } }
 4 | print("--- Cross Join: All order-customer pairs ---")
-5 | for entry in result {
-6 |     print("Order", entry["orderId"], "(customerId:", entry["orderCustomerId"], ", total: $", entry["orderTotal"], ") paired with", entry["pairedCustomerName"])
-  |                    |    |- note: provide a default value to avoid this warning
-  |                    |    |- note: force-unwrap the value to avoid this warning
-  |                    |    `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
-  |                    `- warning: expression implicitly coerced from 'Any?' to 'Any'
+5 | for entry in result as! [[String:Any]] {
+  |                     `- warning: forced cast of '[[String : Any]]' to same type has no effect
+6 |     print("Order", entry["orderId"]!, "(customerId:", entry["orderCustomerId"]!, ", total: $", entry["orderTotal"]!, ") paired with", entry["pairedCustomerName"]!)
 7 | }
-8 | 
-
-/workspace/mochi/tests/machine/x/swift/cross_join.swift:6:54: warning: expression implicitly coerced from 'Any?' to 'Any'
-4 | print("--- Cross Join: All order-customer pairs ---")
-5 | for entry in result {
-6 |     print("Order", entry["orderId"], "(customerId:", entry["orderCustomerId"], ", total: $", entry["orderTotal"], ") paired with", entry["pairedCustomerName"])
-  |                                                      |    |- note: provide a default value to avoid this warning
-  |                                                      |    |- note: force-unwrap the value to avoid this warning
-  |                                                      |    `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
-  |                                                      `- warning: expression implicitly coerced from 'Any?' to 'Any'
-7 | }
-8 | 
-
-/workspace/mochi/tests/machine/x/swift/cross_join.swift:6:94: warning: expression implicitly coerced from 'Any?' to 'Any'
-4 | print("--- Cross Join: All order-customer pairs ---")
-5 | for entry in result {
-6 |     print("Order", entry["orderId"], "(customerId:", entry["orderCustomerId"], ", total: $", entry["orderTotal"], ") paired with", entry["pairedCustomerName"])
-  |                                                                                              |    |- note: provide a default value to avoid this warning
-  |                                                                                              |    |- note: force-unwrap the value to avoid this warning
-  |                                                                                              |    `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
-  |                                                                                              `- warning: expression implicitly coerced from 'Any?' to 'Any'
-7 | }
-8 | 
-
-/workspace/mochi/tests/machine/x/swift/cross_join.swift:6:132: warning: expression implicitly coerced from 'Any?' to 'Any'
-4 | print("--- Cross Join: All order-customer pairs ---")
-5 | for entry in result {
-6 |     print("Order", entry["orderId"], "(customerId:", entry["orderCustomerId"], ", total: $", entry["orderTotal"], ") paired with", entry["pairedCustomerName"])
-  |                                                                                                                                    |    |- note: provide a default value to avoid this warning
-  |                                                                                                                                    |    |- note: force-unwrap the value to avoid this warning
-  |                                                                                                                                    |    `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
-  |                                                                                                                                    `- warning: expression implicitly coerced from 'Any?' to 'Any'
-7 | }
-8 | 
 --- Cross Join: All order-customer pairs ---
-Order Optional(100) (customerId: Optional(1) , total: $ Optional(250) ) paired with Optional("Alice")
-Order Optional(100) (customerId: Optional(1) , total: $ Optional(250) ) paired with Optional("Bob")
-Order Optional(100) (customerId: Optional(1) , total: $ Optional(250) ) paired with Optional("Charlie")
-Order Optional(101) (customerId: Optional(2) , total: $ Optional(125) ) paired with Optional("Alice")
-Order Optional(101) (customerId: Optional(2) , total: $ Optional(125) ) paired with Optional("Bob")
-Order Optional(101) (customerId: Optional(2) , total: $ Optional(125) ) paired with Optional("Charlie")
-Order Optional(102) (customerId: Optional(1) , total: $ Optional(300) ) paired with Optional("Alice")
-Order Optional(102) (customerId: Optional(1) , total: $ Optional(300) ) paired with Optional("Bob")
-Order Optional(102) (customerId: Optional(1) , total: $ Optional(300) ) paired with Optional("Charlie")
+Order 100 (customerId: 1 , total: $ 250 ) paired with Alice
+Order 100 (customerId: 1 , total: $ 250 ) paired with Bob
+Order 100 (customerId: 1 , total: $ 250 ) paired with Charlie
+Order 101 (customerId: 2 , total: $ 125 ) paired with Alice
+Order 101 (customerId: 2 , total: $ 125 ) paired with Bob
+Order 101 (customerId: 2 , total: $ 125 ) paired with Charlie
+Order 102 (customerId: 1 , total: $ 300 ) paired with Alice
+Order 102 (customerId: 1 , total: $ 300 ) paired with Bob
+Order 102 (customerId: 1 , total: $ 300 ) paired with Charlie

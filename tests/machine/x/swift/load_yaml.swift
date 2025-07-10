@@ -41,6 +41,6 @@ struct Person: Equatable {
 }
 let people = _load(path: "../interpreter/valid/people.yaml", opts: ["format": "yaml"]).map { rec in Person(name: rec["name"] as! String, age: rec["age"] as! Int, email: rec["email"] as! String) }
 var adults = people.compactMap { p in p.age >= 18 ? (["name": p.name, "email": p.email]) : nil }
-for a in adults {
-    print(a["name"], a["email"])
+for a in adults as! [[String:Any]] {
+    print(a["name"]!, a["email"]!)
 }
