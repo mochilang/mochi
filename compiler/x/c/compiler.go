@@ -314,7 +314,7 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 
 	c.writeln("#include <stdio.h>")
 	c.writeln("#include <stdlib.h>")
-	if c.has(needStringHeader) || c.has(needConcatString) || c.has(needConcatListString) || c.has(needListString) || c.has(needUnionListString) || c.has(needExceptListString) || c.has(needIntersectListString) || c.has(needInListString) || c.has(needInString) {
+	if c.has(needStringHeader) || c.has(needConcatString) || c.has(needConcatListString) || c.has(needListString) || c.has(needUnionListString) || c.has(needExceptListString) || c.has(needIntersectListString) || c.has(needInListString) || c.has(needInString) || c.has(needMapStringInt) || c.has(needGroupByPairString) {
 		c.writeln("#include <string.h>")
 	}
 	if c.has(needNow) {
