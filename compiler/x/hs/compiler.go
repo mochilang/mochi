@@ -31,6 +31,7 @@ type Compiler struct {
 	usesExpect   bool
 	usesFetch    bool
 	usesLoop     bool
+	usesUpdate   bool
 	tmpCount     int
 }
 
@@ -72,7 +73,7 @@ func (c *Compiler) hsType(t types.Type) string {
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, structs: make(map[string]bool), tmpCount: 0, usesLoop: false}
+	return &Compiler{env: env, structs: make(map[string]bool), tmpCount: 0, usesLoop: false, usesUpdate: false}
 }
 
 // Compile generates Haskell code for prog.
@@ -89,6 +90,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.usesExpect = false
 	c.usesFetch = false
 	c.usesLoop = false
+	c.usesUpdate = false
 	c.tmpCount = 0
 
 	for _, s := range prog.Statements {
@@ -233,6 +235,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if c.usesSlice || c.usesSliceStr {
 		header.WriteString(sliceHelpers)
 	}
+	if c.usesUpdate {
+		header.WriteString(updateHelpers)
+	}
 	if c.usesFetch {
 		header.WriteString(fetchHelper)
 	}
@@ -304,7 +309,7 @@ func (c *Compiler) compileMainStmt(s *parser.Statement) error {
 			c.writeln(fmt.Sprintf("let %s = %s", sanitizeName(s.Var.Name), val))
 		}
 	case s.Assign != nil:
-		val, err := c.compileExpr(s.Assign.Value)
+		val, err := c.compileAssignValue(s.Assign)
 		if err != nil {
 			return err
 		}
@@ -633,6 +638,71 @@ func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileAssignValue(a *parser.AssignStmt) (string, error) {
+	val, err := c.compileExpr(a.Value)
+	if err != nil {
+		return "", err
+	}
+	var typ types.Type
+	if c.env != nil {
+		if t, err := c.env.GetVar(a.Name); err == nil {
+			typ = t
+		}
+	}
+	return c.assignPath(sanitizeName(a.Name), typ, a.Index, a.Field, val)
+}
+
+func (c *Compiler) assignPath(base string, typ types.Type, idx []*parser.IndexOp, fields []*parser.FieldOp, val string) (string, error) {
+	if len(idx) == 0 && len(fields) == 0 {
+		return val, nil
+	}
+	if len(idx) > 0 {
+		ix, err := c.compileExpr(idx[0].Start)
+		if err != nil {
+			return "", err
+		}
+		if len(idx) == 1 && len(fields) == 0 {
+			switch typ.(type) {
+			case types.MapType:
+				c.usesMap = true
+				return fmt.Sprintf("Map.insert %s %s %s", ix, val, base), nil
+			case types.ListType:
+				c.usesList = true
+				c.usesUpdate = true
+				return fmt.Sprintf("_updateAt %s (const %s) %s", ix, val, base), nil
+			}
+		}
+		switch tt := typ.(type) {
+		case types.MapType:
+			c.usesMap = true
+			inner, err := c.assignPath(fmt.Sprintf("fromMaybe (error \"missing\") (Map.lookup %s %s)", ix, base), tt.Value, idx[1:], fields, val)
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("Map.adjust (\\_ -> %s) %s %s", inner, ix, base), nil
+		case types.ListType:
+			c.usesList = true
+			c.usesUpdate = true
+			inner, err := c.assignPath(fmt.Sprintf("(%s !! %s)", base, ix), tt.Elem, idx[1:], fields, val)
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("_updateAt %s (\\_ -> %s) %s", ix, inner, base), nil
+		}
+	} else if len(fields) > 0 {
+		field := sanitizeName(fields[0].Name)
+		if st, ok := typ.(types.StructType); ok {
+			ft := st.Fields[fields[0].Name]
+			inner, err := c.assignPath(fmt.Sprintf("%s (%s)", field, base), ft, idx, fields[1:], val)
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("%s { %s = %s }", base, field, inner), nil
+		}
+	}
+	return val, nil
+}
+
 func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 	list := sanitizeName(u.Target)
 	item := fmt.Sprintf("_it%d", c.tmpCount)
@@ -798,7 +868,7 @@ func (c *Compiler) compileStmtExpr(stmts []*parser.Statement, top bool) (string,
 			}
 			expr = fmt.Sprintf("(let %s = %s in %s)", sanitizeName(s.Fun.Name), val, expr)
 		case s.Assign != nil:
-			val, err := c.compileExpr(s.Assign.Value)
+			val, err := c.compileAssignValue(s.Assign)
 			if err != nil {
 				return "", err
 			}

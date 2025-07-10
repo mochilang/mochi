@@ -125,6 +125,11 @@ _sliceString s i j =
   in take (end' - start) (drop start s)
 `
 
+const updateHelpers = `
+_updateAt :: Int -> (a -> a) -> [a] -> [a]
+_updateAt i f xs = take i xs ++ [f (xs !! i)] ++ drop (i + 1) xs
+`
+
 const fetchHelper = `
 _fetch :: Aeson.FromJSON a => String -> Maybe (Map.Map String String) -> IO a
 _fetch url _
