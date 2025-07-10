@@ -148,6 +148,11 @@ func isListFloatType(t types.Type) bool {
 	return false
 }
 
+func isStringType(t types.Type) bool {
+	_, ok := t.(types.StringType)
+	return ok
+}
+
 func isMapIntBoolType(t types.Type) bool {
 	if mt, ok := t.(types.MapType); ok {
 		if _, ok := mt.Key.(types.IntType); ok {
