@@ -2517,22 +2517,22 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if len(args) != 2 {
 			return "", fmt.Errorf("append expects 2 args")
 		}
-		tmp := c.newVar()
 		elem := "dynamic"
 		if lt, ok := c.inferExprType(call.Args[0]).(types.ListType); ok {
 			elem = csTypeOf(lt.Elem)
 		}
-		expr := fmt.Sprintf("new List<%s>(%s)", elem, args[0])
-		return fmt.Sprintf("(new Func<List<%s>>(() => {var %s=%s;%s.Add(%s);return %s;}))()", elem, tmp, expr, tmp, args[1], tmp), nil
+		return fmt.Sprintf("new List<%s>(%s){%s}", elem, args[0], args[1]), nil
 	case "values":
 		if len(args) != 1 {
 			return "", fmt.Errorf("values expects 1 arg")
 		}
-		tmp := c.newVar()
 		val := "dynamic"
 		if mt, ok := c.inferExprType(call.Args[0]).(types.MapType); ok {
 			val = csTypeOf(mt.Value)
+			c.useLinq = true
+			return fmt.Sprintf("%s.Values.ToList()", args[0]), nil
 		}
+		tmp := c.newVar()
 		c.useLinq = true
 		return fmt.Sprintf("(new Func<List<%s>>(() => {var %s=new List<%s>();foreach(System.Collections.DictionaryEntry kv in %s){%s.Add(kv.Value);}return %s;}))()", val, tmp, val, args[0], tmp, tmp), nil
 	case "exists":
