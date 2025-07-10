@@ -1,0 +1,34 @@
+// 100 doors problem implemented in Mochi
+// Follows the basic simulation approach from the Go example.
+
+// initialize 100 doors, all closed (false)
+var doors = []
+for i in 0..100 {
+  doors = append(doors, false)
+}
+
+// perform 100 passes toggling doors
+for pass in 1..101 {
+  var door = pass - 1
+  while door < 100 {
+    doors[door] = !doors[door]
+    door = door + pass
+  }
+}
+
+// print door states in 10x10 grid using 1 for open, 0 for closed
+for row in 0..10 {
+  var line = ""
+  for col in 0..10 {
+    let idx = row * 10 + col
+    if doors[idx] {
+      line = line + "1"
+    } else {
+      line = line + "0"
+    }
+    if col < 9 {
+      line = line + " "
+    }
+  }
+  print(line)
+}
