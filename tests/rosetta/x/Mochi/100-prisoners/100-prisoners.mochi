@@ -1,0 +1,86 @@
+fun shuffle(xs: list<int>): list<int> {
+  var arr = xs
+  var i = 99  // length of arr minus 1
+  while i > 0 {
+    let j = now() % (i + 1)
+    let tmp = arr[i]
+    arr[i] = arr[j]
+    arr[j] = tmp
+    i = i - 1
+  }
+  return arr
+}
+
+fun doTrials(trials: int, np: int, strategy: string) {
+  var pardoned = 0
+  var t = 0
+  while t < trials {
+    var drawers: list<int> = []
+    var i = 0
+    while i < 100 {
+      drawers = drawers + [i]
+      i = i + 1
+    }
+    drawers = shuffle(drawers)
+    var p = 0
+    var success = true
+    while p < np {
+      var found = false
+      if strategy == "optimal" {
+        var prev = p
+        var d = 0
+        while d < 50 {
+          let this = drawers[prev]
+          if this == p {
+            found = true
+            break
+          }
+          prev = this
+          d = d + 1
+        }
+      } else {
+        var opened: list<bool> = []
+        var k = 0
+        while k < 100 {
+          opened = opened + [false]
+          k = k + 1
+        }
+        var d = 0
+        while d < 50 {
+          var n = now() % 100
+          while opened[n] {
+            n = now() % 100
+          }
+          opened[n] = true
+          if drawers[n] == p {
+            found = true
+            break
+          }
+          d = d + 1
+        }
+      }
+      if !found {
+        success = false
+        break
+      }
+      p = p + 1
+    }
+    if success {
+      pardoned = pardoned + 1
+    }
+    t = t + 1
+  }
+  let rf = (pardoned as float) / (trials as float) * 100.0
+  print("  strategy = " + strategy + "  pardoned = " + str(pardoned) + " relative frequency = " + str(rf) + "%")
+}
+
+fun main() {
+  let trials = 1000
+  for np in [10, 100] {
+    print("Results from " + str(trials) + " trials with " + str(np) + " prisoners:\n")
+    for strat in ["random", "optimal"] {
+      doTrials(trials, np, strat)
+    }
+  }
+}
+main()
