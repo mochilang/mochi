@@ -75,12 +75,12 @@ const result = blk2: { var _tmp2 = std.ArrayList(struct {
 }) catch unreachable; } } const res = _tmp2.toOwnedSlice() catch unreachable; break :blk2 res; };
 
 pub fn main() void {
-    std.debug.print("{s}\n", .{"--- Right Join using syntax ---"});
+    std.debug.print("--- Right Join using syntax ---\n", .{});
     for (result) |entry| {
         if (entry.order) {
-            std.debug.print("{s} {any} {s} {any} {s} {any}\n", .{"Customer", entry.customerName, "has order", entry.order.id, "- $", entry.order.total});
+            std.debug.print("Customer {any} has order {any} - $ {any}\n", .{entry.customerName, entry.order.id, entry.order.total});
         } else {
-            std.debug.print("{s} {any} {s}\n", .{"Customer", entry.customerName, "has no orders"});
+            std.debug.print("Customer {any} has no orders\n", .{entry.customerName});
         }
     }
 }

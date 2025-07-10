@@ -58,8 +58,8 @@ const result = blk2: { var _tmp2 = std.ArrayList(struct {
 }) catch unreachable; } } const _tmp3 = _tmp2.toOwnedSlice() catch unreachable; break :blk2 _tmp3; };
 
 pub fn main() void {
-    std.debug.print("{s}\n", .{"--- Orders with customer info ---"});
+    std.debug.print("--- Orders with customer info ---\n", .{});
     for (result) |entry| {
-        std.debug.print("{s} {any} {s} {any} {s} {any}\n", .{"Order", entry.orderId, "by", entry.customerName, "- $", entry.total});
+        std.debug.print("Order {any} by {any} - $ {any}\n", .{entry.orderId, entry.customerName, entry.total});
     }
 }

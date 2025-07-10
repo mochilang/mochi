@@ -6,14 +6,6 @@ fn _sum_int(v: []const i32) i32 {
     return sum;
 }
 
-fn _print_list(comptime T: type, v: []const T) void {
-    for (v, 0..) |it, i| {
-        if (i > 0) std.debug.print(" ", .{});
-        std.debug.print("{any}", .{it});
-    }
-    std.debug.print("\n", .{});
-}
-
 fn _equal(a: anytype, b: anytype) bool {
     if (@TypeOf(a) != @TypeOf(b)) return false;
     return switch (@typeInfo(@TypeOf(a))) {
@@ -46,7 +38,7 @@ const items = (blk0: { const _tmp0 = struct {
 const grouped = blk3: { var _tmp5 = std.ArrayList(struct { key: []const u8, Items: std.ArrayList(struct {
     cat: []const u8,
     val: i32,
-}) }).init(std.heap.page_allocator); var _tmp6 = std.AutoHashMap([]const u8, usize).init(std.heap.page_allocator); for (items) |i| { const _tmp7 = i.cat; if (_tmp6.get(_tmp7)) |idx| { _tmp5.items[idx].Items.append(i) catch unreachable; } else { var g = struct { key: []const u8, Items: std.ArrayList(struct {
+}) }).init(std.heap.page_allocator); var _tmp6 = std.StringHashMap(usize).init(std.heap.page_allocator); for (items) |i| { const _tmp7 = i.cat; if (_tmp6.get(_tmp7)) |idx| { _tmp5.items[idx].Items.append(i) catch unreachable; } else { var g = struct { key: []const u8, Items: std.ArrayList(struct {
     cat: []const u8,
     val: i32,
 }) }{ .key = _tmp7, .Items = std.ArrayList(struct {
@@ -73,5 +65,5 @@ const grouped = blk3: { var _tmp5 = std.ArrayList(struct { key: []const u8, Item
 }) catch unreachable; } const _tmp11Slice = _tmp11.toOwnedSlice() catch unreachable; break :blk3 _tmp11Slice; };
 
 pub fn main() void {
-    _print_list(std.StringHashMap(i32), grouped);
+    std.debug.print("{any}\n", .{grouped});
 }

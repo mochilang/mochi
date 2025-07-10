@@ -1,7 +1,7 @@
 const std = @import("std");
 
 fn boom(a: i32, b: i32) bool {
-    std.debug.print("{s}\n", .{"boom"});
+    std.debug.print("boom\n", .{});
     return true;
 }
 

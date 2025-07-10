@@ -1,9 +1,0 @@
-Error on line 32: zig build error: exit status 1
-/workspace/mochi/tests/machine/x/zig/dataset_where_filter.zig:32:2: error: expected type 'dataset_where_filter.adults__struct_3433', found 'dataset_where_filter.adults__struct_3620'
-/workspace/mochi/tests/machine/x/zig/dataset_where_filter.zig:28:109: note: struct declared here
-/workspace/mochi/tests/machine/x/zig/dataset_where_filter.zig:24:50: note: struct declared here
-/tmp/zig-0.12.0/lib/std/array_list.zig:261:42: note: parameter type declared here
-
-31:     is_senior: bool,
-32: }{
-33:     .name = person.name,

@@ -35,35 +35,27 @@ fn _intersect(comptime T: type, a: []const T, b: []const T) []T {
     return res.toOwnedSlice() catch unreachable;
 }
 
-fn _print_list(comptime T: type, v: []const T) void {
-    for (v, 0..) |it, i| {
-        if (i > 0) std.debug.print(" ", .{});
-        std.debug.print("{any}", .{it});
-    }
-    std.debug.print("\n", .{});
-}
-
 pub fn main() void {
-    _print_list(i32, _union(i32, &[_]i32{
+    std.debug.print("{any}\n", .{_union(i32, &[_]i32{
     1,
     2,
 }, &[_]i32{
     2,
     3,
-}));
-    _print_list(i32, _except(i32, &[_]i32{
+})});
+    std.debug.print("{any}\n", .{_except(i32, &[_]i32{
     1,
     2,
     3,
-}, &[_]i32{2}));
-    _print_list(i32, _intersect(i32, &[_]i32{
+}, &[_]i32{2})});
+    std.debug.print("{any}\n", .{_intersect(i32, &[_]i32{
     1,
     2,
     3,
 }, &[_]i32{
     2,
     4,
-}));
+})});
     std.debug.print("{d}\n", .{(_union_all(i32, &[_]i32{
     1,
     2,

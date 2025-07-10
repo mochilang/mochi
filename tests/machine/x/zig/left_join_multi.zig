@@ -54,7 +54,7 @@ const result = blk3: { var _tmp3 = std.ArrayList(struct {
 }) catch unreachable; } } } const _tmp4 = _tmp3.toOwnedSlice() catch unreachable; break :blk3 _tmp4; };
 
 pub fn main() void {
-    std.debug.print("{s}\n", .{"--- Left Join Multi ---"});
+    std.debug.print("--- Left Join Multi ---\n", .{});
     for (result) |r| {
         std.debug.print("{any} {any} {any}\n", .{r.orderId, r.name, r.item});
     }

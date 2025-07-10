@@ -1,9 +1,0 @@
-Error on line 18: zig build error: exit status 1
-/workspace/mochi/tests/machine/x/zig/cross_join_filter.zig:18:2: error: expected type 'cross_join_filter.pairs__struct_3434', found 'cross_join_filter.pairs__struct_3619'
-/workspace/mochi/tests/machine/x/zig/cross_join_filter.zig:15:121: note: struct declared here
-/workspace/mochi/tests/machine/x/zig/cross_join_filter.zig:12:49: note: struct declared here
-/tmp/zig-0.12.0/lib/std/array_list.zig:261:42: note: parameter type declared here
-
-17:     l: []const u8,
-18: }{
-19:     .n = n,

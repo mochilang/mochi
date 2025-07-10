@@ -1,8 +1,8 @@
 const std = @import("std");
 
-var scores: struct { alice: i32, } = undefined;
+var scores: std.StringHashMap(i32) = undefined;
 
 pub fn main() void {
-    scores["bob"] = 2;
-    std.debug.print("{any}\n", .{scores["bob"]});
+    _ = scores.put("bob", 2) catch unreachable;
+    std.debug.print("{d}\n", .{scores["bob"]});
 }

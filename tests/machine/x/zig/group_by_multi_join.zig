@@ -6,14 +6,6 @@ fn _sum_int(v: []const i32) i32 {
     return sum;
 }
 
-fn _print_list(comptime T: type, v: []const T) void {
-    for (v, 0..) |it, i| {
-        if (i > 0) std.debug.print(" ", .{});
-        std.debug.print("{any}", .{it});
-    }
-    std.debug.print("\n", .{});
-}
-
 fn _equal(a: anytype, b: anytype) bool {
     if (@TypeOf(a) != @TypeOf(b)) return false;
     return switch (@typeInfo(@TypeOf(a))) {
@@ -95,5 +87,5 @@ const grouped = blk5: { var _tmp7 = std.ArrayList(struct { key: i32, Items: std.
 }) catch unreachable; } const _tmp11Slice = _tmp11.toOwnedSlice() catch unreachable; break :blk5 _tmp11Slice; };
 
 pub fn main() void {
-    _print_list(std.StringHashMap(i32), grouped);
+    std.debug.print("{any}\n", .{grouped});
 }
