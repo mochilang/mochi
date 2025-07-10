@@ -1,1 +1,4 @@
-exec: "dart": executable file not found in $PATH
+line 44: exit status 254
+    for (var x in (_iter5 is Map ? (_iter5 as Map).keys : _iter5) as Iterable) {
+      total = (total as num) + (x.val as num);
+    }

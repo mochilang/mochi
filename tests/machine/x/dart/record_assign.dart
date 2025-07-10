@@ -4,7 +4,7 @@ class Counter {
 }
 
 void inc(Counter c) {
-  c.n = c.n + 1;
+  c.n = (c.n + 1 as int);
 }
 
 var c = Counter(0);

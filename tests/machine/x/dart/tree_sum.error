@@ -1,0 +1,3 @@
+line 1: exit status 254
+int sum_tree(Tree t) {
+  return (() {
