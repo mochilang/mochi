@@ -1,4 +1,4 @@
-# Mochi to Zig Machine Outputs (96/97 compiled)
+# Mochi to Zig Machine Outputs (97/97 compiled)
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -86,7 +86,7 @@
 - [x] sum_builtin.mochi
 - [x] tail_recursion.mochi
 - [x] test_block.mochi
-- [ ] tree_sum.mochi
+- [x] tree_sum.mochi
 - [x] two-sum.mochi
 - [x] typed_let.mochi
 - [x] typed_var.mochi

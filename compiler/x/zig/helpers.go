@@ -40,6 +40,8 @@ func zigTypeOf(t types.Type) string {
 			return fmt.Sprintf("struct { %s }", strings.Join(fields, " "))
 		}
 		return sanitizeName(tt.Name)
+	case types.UnionType:
+		return sanitizeName(tt.Name)
 	case types.FuncType:
 		params := make([]string, len(tt.Params))
 		for i, p := range tt.Params {
@@ -165,6 +167,8 @@ func zeroValue(t types.Type) string {
 		return fmt.Sprintf("std.AutoHashMap(%s, %s).init(std.heap.page_allocator)", zigTypeOf(tt.Key), zigTypeOf(tt.Value))
 	case types.StructType:
 		return fmt.Sprintf("%s{}", sanitizeName(tt.Name))
+	case types.UnionType:
+		return "undefined"
 	default:
 		return "undefined"
 	}
@@ -207,6 +211,38 @@ func identName(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+// variantPattern checks if e represents a union variant pattern like Node(a,b).
+// It returns the variant name and the identifiers bound to each field.
+func (c *Compiler) variantPattern(e *parser.Expr) (string, []string, bool) {
+	if name, ok := identName(e); ok {
+		if _, ok2 := c.variantInfo[name]; ok2 {
+			return name, nil, true
+		}
+		return "", nil, false
+	}
+	if e == nil || len(e.Binary.Right) != 0 {
+		return "", nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil || u.Value.Target == nil || len(u.Value.Ops) != 0 {
+		return "", nil, false
+	}
+	if call := u.Value.Target.Call; call != nil {
+		if _, ok := c.variantInfo[call.Func]; ok {
+			args := make([]string, len(call.Args))
+			for i, a := range call.Args {
+				id, ok := identName(a)
+				if !ok {
+					return "", nil, false
+				}
+				args[i] = id
+			}
+			return call.Func, args, true
+		}
+	}
+	return "", nil, false
 }
 
 // extractMapLiteral returns the map literal contained in the expression if
