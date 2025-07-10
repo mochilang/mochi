@@ -2,7 +2,7 @@
 
 This directory contains Erlang source code generated from the Mochi programs in `tests/vm/valid`.
 
-Compiled programs: 76/97
+Compiled programs: 78/97
 
 Checklist:
 - [x] append_builtin
@@ -57,9 +57,9 @@ Checklist:
 - [x] load_yaml
 - [x] map_assign
 - [x] map_in_operator
-- [ ] map_index
+ - [x] map_index
 - [x] map_int_key
-- [ ] map_literal_dynamic
+ - [x] map_literal_dynamic
 - [x] map_membership
 - [ ] map_nested_assign
 - [x] match_expr
@@ -110,4 +110,4 @@ Checklist:
 - [ ] Support group-by queries
 - [ ] Add code generation for remaining Mochi examples
 - [ ] Track parameter types for more accurate list/map access
-- [ ] Ensure string keys in maps remain quoted
+- [x] Ensure string keys in maps remain quoted
