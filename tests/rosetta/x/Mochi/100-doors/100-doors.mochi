@@ -9,10 +9,10 @@ for i in 0..100 {
 
 // perform 100 passes toggling doors
 for pass in 1..101 {
-  var door = pass - 1
-  while door < 100 {
-    doors[door] = !doors[door]
-    door = door + pass
+  var idx = pass - 1
+  while idx < 100 {
+    doors[idx] = !doors[idx]
+    idx = idx + pass
   }
 }
 
