@@ -2202,7 +2202,7 @@ func (c *compiler) elementFieldTypes(e *parser.Expr) map[string]string {
 	}
 	if p.Target.List != nil && len(p.Target.List.Elems) > 0 {
 		if m := mapLit(p.Target.List.Elems[0]); m != nil {
-			return mapFieldsFromLiteral(m)
+			return c.mapFieldsFromLiteral(m)
 		}
 	}
 	if p.Target.Query != nil {
@@ -2275,13 +2275,13 @@ func (c *compiler) recordMapFields(name string, e *parser.Expr) {
 				}
 			}
 		}
-		c.mapFields[name] = mapFieldsFromLiteral(m)
+		c.mapFields[name] = c.mapFieldsFromLiteral(m)
 		return
 	}
 	p := e.Binary.Left.Value
 	if p.Target.List != nil && len(p.Target.List.Elems) > 0 {
 		if m := mapLit(p.Target.List.Elems[0]); m != nil {
-			c.mapFields[name] = mapFieldsFromLiteral(m)
+			c.mapFields[name] = c.mapFieldsFromLiteral(m)
 			return
 		}
 	}
@@ -2304,7 +2304,7 @@ func (c *compiler) recordMapFields(name string, e *parser.Expr) {
 			fe := p.Target.Call.Args[0].Binary.Left.Value.Target.FunExpr
 			if fe != nil && fe.ExprBody != nil {
 				if m := mapLit(fe.ExprBody); m != nil {
-					c.mapFields[name] = mapFieldsFromLiteral(m)
+					c.mapFields[name] = c.mapFieldsFromLiteral(m)
 				}
 			}
 		}
@@ -2318,7 +2318,7 @@ func mapLit(e *parser.Expr) *parser.MapLiteral {
 	return e.Binary.Left.Value.Target.Map
 }
 
-func mapFieldsFromLiteral(m *parser.MapLiteral) map[string]string {
+func (c *compiler) mapFieldsFromLiteral(m *parser.MapLiteral) map[string]string {
 	if m == nil {
 		return nil
 	}
@@ -2328,13 +2328,44 @@ func mapFieldsFromLiteral(m *parser.MapLiteral) map[string]string {
 		if !ok {
 			continue
 		}
-		typ := literalType(it.Value)
+		typ := ""
+		if boolExpr(it.Value) {
+			typ = "Bool"
+		} else {
+			t := c.exprType(it.Value)
+			if t != "" {
+				typ = swiftTypeOf(t)
+			}
+		}
+		if typ == "" {
+			typ = literalType(it.Value)
+		}
 		if typ == "" {
 			typ = "Any"
 		}
 		fields[key] = typ
 	}
 	return fields
+}
+
+func boolExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	if len(e.Binary.Right) == 0 {
+		if u := e.Binary.Left; u != nil {
+			if v := u.Value; v != nil && v.Target != nil && v.Target.Lit != nil {
+				return v.Target.Lit.Bool != nil
+			}
+		}
+	}
+	for _, op := range e.Binary.Right {
+		switch op.Op {
+		case "<", "<=", ">", ">=", "==", "!=", "&&", "||":
+			return true
+		}
+	}
+	return false
 }
 
 func literalType(e *parser.Expr) string {
