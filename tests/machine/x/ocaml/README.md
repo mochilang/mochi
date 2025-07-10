@@ -70,8 +70,8 @@ that run successfully have a `.out` file while failures generate a `.error` repo
 - [x] while_loop
 
 ## Failed to build or run
-- [ ] closure
-- [ ] for_map_collection
+- [x] closure
+- [x] for_map_collection
 - [ ] group_by
 - [ ] group_by_conditional_sum
 - [ ] group_by_having
@@ -95,7 +95,7 @@ that run successfully have a `.out` file while failures generate a `.error` repo
 - [ ] query_sum_select
 - [ ] right_join
  - [x] save_jsonl_stdout
-- [ ] string_contains
+- [x] string_contains
 - [ ] string_in_operator
 - [ ] string_index
 - [ ] string_prefix_slice
