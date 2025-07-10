@@ -32,6 +32,9 @@ type Compiler struct {
 	tupleFields  map[string]map[string]int
 	currentGroup string
 	groupFields  map[string]bool
+	autoStructs  map[string]types.StructType
+	structKeys   map[string]string
+	autoCount    int
 }
 
 func New(env *types.Env) *Compiler {
@@ -47,6 +50,9 @@ func New(env *types.Env) *Compiler {
 		tupleFields:  make(map[string]map[string]int),
 		currentGroup: "",
 		groupFields:  nil,
+		autoStructs:  make(map[string]types.StructType),
+		structKeys:   make(map[string]string),
+		autoCount:    0,
 	}
 }
 
@@ -98,6 +104,90 @@ func (c *Compiler) collectImports(stmts []*parser.Statement) {
 			alias = sanitizeName(alias)
 			c.imports[alias] = path
 		}
+	}
+}
+
+func structKey(st types.StructType) string {
+	var b strings.Builder
+	for _, f := range st.Order {
+		b.WriteString(f)
+		if ft, ok := st.Fields[f]; ok && ft != nil {
+			b.WriteString(":" + ft.String())
+		} else {
+			b.WriteString(":")
+		}
+		b.WriteByte(';')
+	}
+	return b.String()
+}
+
+func (c *Compiler) ensureStructName(st types.StructType) types.StructType {
+	if st.Name != "" {
+		return st
+	}
+	key := structKey(st)
+	if name, ok := c.structKeys[key]; ok {
+		st.Name = name
+		return st
+	}
+	c.autoCount++
+	name := fmt.Sprintf("Auto%d", c.autoCount)
+	c.imports["dataclasses"] = "dataclasses"
+	st.Name = name
+	c.autoStructs[name] = st
+	c.structKeys[key] = name
+	if c.env != nil {
+		c.env.SetStruct(name, st)
+	}
+	return st
+}
+
+func (c *Compiler) namedType(t types.Type) types.Type {
+	switch tt := t.(type) {
+	case types.ListType:
+		return types.ListType{Elem: c.namedType(tt.Elem)}
+	case types.MapType:
+		return types.MapType{Key: c.namedType(tt.Key), Value: c.namedType(tt.Value)}
+	case types.StructType:
+		return c.ensureStructName(tt)
+	case types.FuncType:
+		params := make([]types.Type, len(tt.Params))
+		for i, p := range tt.Params {
+			params[i] = c.namedType(p)
+		}
+		return types.FuncType{Params: params, Return: c.namedType(tt.Return)}
+	default:
+		return t
+	}
+}
+
+func (c *Compiler) emitAutoStructs() {
+	if len(c.autoStructs) == 0 {
+		return
+	}
+	names := make([]string, 0, len(c.autoStructs))
+	for n := range c.autoStructs {
+		names = append(names, n)
+	}
+	sort.Strings(names)
+	for _, n := range names {
+		st := c.autoStructs[n]
+		c.writeln("@dataclasses.dataclass")
+		c.writeln(fmt.Sprintf("class %s:", n))
+		c.indent++
+		if len(st.Order) == 0 {
+			c.writeln("pass")
+		} else {
+			for _, f := range st.Order {
+				typStr := pyType(c.namedType(st.Fields[f]))
+				if needsTyping(typStr) {
+					c.imports["typing"] = "typing"
+				}
+				c.writeln(fmt.Sprintf("%s: %s", sanitizeName(f), typStr))
+			}
+		}
+		c.indent--
+		c.writeln("")
 	}
 }
 
@@ -178,6 +268,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 		c.writeln("")
 	}
+
+	c.emitAutoStructs()
 
 	if c.models {
 		c.writeln("_models = {}")
@@ -1047,6 +1139,22 @@ func (c *Compiler) compileListLiteral(l *parser.ListLiteral) (string, error) {
 }
 
 func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
+	// check if this literal represents a struct type
+	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Map: m}}}}}
+	if st, ok := c.inferExprType(expr).(types.StructType); ok {
+		st = c.ensureStructName(st)
+		fields := make([]string, len(m.Items))
+		for i, it := range m.Items {
+			name, _ := identName(it.Key)
+			val, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", err
+			}
+			fields[i] = fmt.Sprintf("%s=%s", sanitizeName(name), val)
+		}
+		return fmt.Sprintf("%s(%s)", sanitizeName(st.Name), strings.Join(fields, ", ")), nil
+	}
+
 	items := make([]string, len(m.Items))
 	for i, it := range m.Items {
 		k, err := c.compileExpr(it.Key)

@@ -101,7 +101,7 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	if s.Value != nil {
 		if ml := s.Value.Binary.Left.Value.Target.Map; ml != nil && len(ml.Items) == 0 {
 			if mt, ok := typ.(types.MapType); ok {
-				typStr := fmt.Sprintf("typing.cast(dict[%s, %s], {})", pyType(mt.Key), pyType(mt.Value))
+				typStr := fmt.Sprintf("typing.cast(dict[%s, %s], {})", pyType(c.namedType(mt.Key)), pyType(c.namedType(mt.Value)))
 				if needsTyping(typStr) {
 					c.imports["typing"] = "typing"
 				}
@@ -136,7 +136,7 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	explicit := s.Type != nil
 	useAnn := explicit
 	if useAnn {
-		typStr := pyType(c.resolveTypeRef(s.Type))
+		typStr := pyType(c.namedType(c.resolveTypeRef(s.Type)))
 		if needsTyping(typStr) {
 			c.imports["typing"] = "typing"
 		}
@@ -165,7 +165,7 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 	if s.Value != nil {
 		if ml := s.Value.Binary.Left.Value.Target.Map; ml != nil && len(ml.Items) == 0 {
 			if mt, ok := typ.(types.MapType); ok {
-				typStr := fmt.Sprintf("typing.cast(dict[%s, %s], {})", pyType(mt.Key), pyType(mt.Value))
+				typStr := fmt.Sprintf("typing.cast(dict[%s, %s], {})", pyType(c.namedType(mt.Key)), pyType(c.namedType(mt.Value)))
 				if needsTyping(typStr) {
 					c.imports["typing"] = "typing"
 				}
@@ -198,7 +198,7 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 		}
 	}
 	if s.Type != nil {
-		typStr := pyType(c.resolveTypeRef(s.Type))
+		typStr := pyType(c.namedType(c.resolveTypeRef(s.Type)))
 		if needsTyping(typStr) {
 			c.imports["typing"] = "typing"
 		}
@@ -234,7 +234,7 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 	if len(s.Index) == 0 {
 		if ml := s.Value.Binary.Left.Value.Target.Map; ml != nil && len(ml.Items) == 0 {
 			if mt, ok := typ.(types.MapType); ok {
-				typStr := fmt.Sprintf("typing.cast(dict[%s, %s], {})", pyType(mt.Key), pyType(mt.Value))
+				typStr := fmt.Sprintf("typing.cast(dict[%s, %s], {})", pyType(c.namedType(mt.Key)), pyType(c.namedType(mt.Value)))
 				if needsTyping(typStr) {
 					c.imports["typing"] = "typing"
 				}
@@ -458,7 +458,7 @@ func (c *Compiler) compileStructType(st types.StructType) error {
 		c.writeln("pass")
 	} else {
 		for _, fn := range st.Order {
-			typStr := pyType(st.Fields[fn])
+			typStr := pyType(c.namedType(st.Fields[fn]))
 			if needsTyping(typStr) {
 				needTyping = true
 			}
@@ -510,7 +510,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 				c.writeln("pass")
 			} else {
 				for _, f := range v.Fields {
-					typStr := pyType(c.resolveTypeRef(f.Type))
+					typStr := pyType(c.namedType(c.resolveTypeRef(f.Type)))
 					if needsTyping(typStr) {
 						needTyping = true
 					}
@@ -542,7 +542,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		} else {
 			for _, m := range t.Members {
 				if m.Field != nil {
-					typStr := pyType(c.resolveTypeRef(m.Field.Type))
+					typStr := pyType(c.namedType(c.resolveTypeRef(m.Field.Type)))
 					if needsTyping(typStr) {
 						needTyping = true
 					}
@@ -781,7 +781,7 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 			typ = c.resolveTypeRef(p.Type)
 		}
 		if typ != nil {
-			typStr := pyType(typ)
+			typStr := pyType(c.namedType(typ))
 			if needsTyping(typStr) {
 				needTyping = true
 			}
@@ -793,9 +793,9 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 	}
 	retType := "None"
 	if ft.Return != nil {
-		retType = pyType(ft.Return)
+		retType = pyType(c.namedType(ft.Return))
 	} else if fun.Return != nil {
-		retType = pyType(c.resolveTypeRef(fun.Return))
+		retType = pyType(c.namedType(c.resolveTypeRef(fun.Return)))
 	}
 	if needsTyping(retType) {
 		needTyping = true
@@ -929,7 +929,7 @@ func (c *Compiler) compileMethod(structName string, env *types.Env, fun *parser.
 			typ = c.resolveTypeRef(p.Type)
 		}
 		if typ != nil {
-			typStr := pyType(typ)
+			typStr := pyType(c.namedType(typ))
 			if needsTyping(typStr) {
 				needTyping = true
 			}
@@ -941,9 +941,9 @@ func (c *Compiler) compileMethod(structName string, env *types.Env, fun *parser.
 	}
 	retType := "None"
 	if ft.Return != nil {
-		retType = pyType(ft.Return)
+		retType = pyType(c.namedType(ft.Return))
 	} else if fun.Return != nil {
-		retType = pyType(c.resolveTypeRef(fun.Return))
+		retType = pyType(c.namedType(c.resolveTypeRef(fun.Return)))
 	}
 	if needsTyping(retType) {
 		needTyping = true

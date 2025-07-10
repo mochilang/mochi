@@ -1,0 +1,8 @@
+run: exit status 1
+--- Adults ---
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/machine/x/python/dataset_where_filter.py", line 27, in <module>
+    person["name"], "is", person["age"], " (senior)" if person["is_senior"] else ""
+    ~~~~~~^^^^^^^^
+TypeError: 'Auto1' object is not subscriptable
+

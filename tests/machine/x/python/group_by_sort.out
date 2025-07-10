@@ -1,1 +1,1 @@
-[{'cat': 'b', 'total': 7.0}, {'cat': 'a', 'total': 4.0}]
+[Auto2(cat='b', total=7.0), Auto2(cat='a', total=4.0)]
