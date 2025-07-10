@@ -28,16 +28,16 @@ var result = ({
 	return _res
 }())
 print("--- Outer Join using syntax ---")
-for row in result {
-    if row["order"] != nil {
-        if row["customer"] != nil {
-            print("Order", row["order"]["id"], "by", row["customer"]["name"], "- $", row["order"]["total"])
+for row in result as! [[String:Any]] {
+    if row["order"]! != nil {
+        if row["customer"]! != nil {
+            print("Order", row["order"]!["id"]!, "by", row["customer"]!["name"]!, "- $", row["order"]!["total"]!)
         }
         else {
-            print("Order", row["order"]["id"], "by", "Unknown", "- $", row["order"]["total"])
+            print("Order", row["order"]!["id"]!, "by", "Unknown", "- $", row["order"]!["total"]!)
         }
     }
     else {
-        print("Customer", row["customer"]["name"], "has no orders")
+        print("Customer", row["customer"]!["name"]!, "has no orders")
     }
 }

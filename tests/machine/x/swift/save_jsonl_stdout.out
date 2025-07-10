@@ -1,5 +1,5 @@
-{"age":30,"name":"Alice"}
-{"age":25,"name":"Bob"}
+{"name":"Alice","age":30}
+{"name":"Bob","age":25}
 /workspace/mochi/tests/machine/x/swift/save_jsonl_stdout.swift:10:33: warning: result of call to 'createFile(atPath:contents:attributes:)' is unused
  8 |             handle = FileHandle.standardOutput
  9 |         } else {

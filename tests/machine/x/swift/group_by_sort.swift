@@ -9,7 +9,7 @@ var grouped = { () -> [Any] in
     for (k, v) in _groups {
         _tmp.append((key: k, items: v))
     }
-    _tmp.sort { $0.items.map { x in x["val"] }.reduce(0, +) > $1.items.map { x in x["val"] }.reduce(0, +) }
-    return _tmp.map { g in (cat: g.key, total: g.items.map { x in x["val"] }.reduce(0, +)) }
+    _tmp.sort { String(describing: $0.items.map { x in x["val"] as! Int }.reduce(0, +)) > String(describing: $1.items.map { x in x["val"] as! Int }.reduce(0, +)) }
+    return _tmp.map { g in ["cat": g.key, "total": g.items.map { x in x["val"] as! Int }.reduce(0, +)] }
 }()
 print(grouped)

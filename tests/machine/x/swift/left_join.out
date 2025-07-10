@@ -49,38 +49,13 @@
 17 | 		}
 18 | 	}
 
-/workspace/mochi/tests/machine/x/swift/left_join.swift:23:20: warning: expression implicitly coerced from 'Any?' to 'Any'
+/workspace/mochi/tests/machine/x/swift/left_join.swift:22:21: warning: forced cast of '[[String : Any]]' to same type has no effect
+20 | }())
 21 | print("--- Left Join ---")
-22 | for entry in result {
-23 |     print("Order", entry["orderId"], "customer", entry["customer"], "total", entry["total"])
-   |                    |    |- note: provide a default value to avoid this warning
-   |                    |    |- note: force-unwrap the value to avoid this warning
-   |                    |    `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
-   |                    `- warning: expression implicitly coerced from 'Any?' to 'Any'
+22 | for entry in result as! [[String:Any]] {
+   |                     `- warning: forced cast of '[[String : Any]]' to same type has no effect
+23 |     print("Order", entry["orderId"]!, "customer", entry["customer"]!, "total", entry["total"]!)
 24 | }
-25 | 
-
-/workspace/mochi/tests/machine/x/swift/left_join.swift:23:50: warning: expression implicitly coerced from 'Any?' to 'Any'
-21 | print("--- Left Join ---")
-22 | for entry in result {
-23 |     print("Order", entry["orderId"], "customer", entry["customer"], "total", entry["total"])
-   |                                                  |    |- note: provide a default value to avoid this warning
-   |                                                  |    |- note: force-unwrap the value to avoid this warning
-   |                                                  |    `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
-   |                                                  `- warning: expression implicitly coerced from 'Any?' to 'Any'
-24 | }
-25 | 
-
-/workspace/mochi/tests/machine/x/swift/left_join.swift:23:78: warning: expression implicitly coerced from 'Any?' to 'Any'
-21 | print("--- Left Join ---")
-22 | for entry in result {
-23 |     print("Order", entry["orderId"], "customer", entry["customer"], "total", entry["total"])
-   |                                                                              |    |- note: provide a default value to avoid this warning
-   |                                                                              |    |- note: force-unwrap the value to avoid this warning
-   |                                                                              |    `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
-   |                                                                              `- warning: expression implicitly coerced from 'Any?' to 'Any'
-24 | }
-25 | 
 --- Left Join ---
-Order Optional(100) customer Optional(["id": 1, "name": "Alice"]) total Optional(250)
-Order Optional(101) customer Optional(nil) total Optional(80)
+Order 100 customer ["id": 1, "name": "Alice"] total 250
+Order 101 customer nil total 80

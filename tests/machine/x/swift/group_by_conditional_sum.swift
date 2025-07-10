@@ -9,7 +9,7 @@ var result = { () -> [Any] in
     for (k, v) in _groups {
         _tmp.append((key: k, items: v))
     }
-    _tmp.sort { $0.key < $1.key }
-    return _tmp.map { g in (cat: g.key, share: g.items.map { x in x["flag"] ? x["val"] : 0 }.reduce(0, +) / g.items.map { x in x["val"] }.reduce(0, +)) }
+    _tmp.sort { String(describing: $0.key) < String(describing: $1.key) }
+    return _tmp.map { g in ["cat": g.key, "share": g.items.map { x in x["flag"] as! Bool ? x["val"] as! Int : 0 }.reduce(0, +) / g.items.map { x in x["val"] as! Int }.reduce(0, +)] }
 }()
 print(result)

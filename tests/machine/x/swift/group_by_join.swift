@@ -10,9 +10,9 @@ var stats = ({
 		}
 	}
 	var _tmp = _groups.map { (k, v) in (key: k, items: v) }
-	return _tmp.map { g in (name: g.key, count: g.items.count) }
+	return _tmp.map { g in ["name": g.key, "count": g.items.count] }
 }())
 print("--- Orders per customer ---")
-for s in stats {
-    print(s["name"], "orders:", s["count"])
+for s in stats as! [[String:Any]] {
+    print(s["name"]!, "orders:", s["count"]!)
 }

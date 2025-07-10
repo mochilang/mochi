@@ -22,37 +22,12 @@
 12 | 			}
 13 | 		}
 
-/workspace/mochi/tests/machine/x/swift/left_join_multi.swift:19:11: warning: expression implicitly coerced from 'Any?' to 'Any'
+/workspace/mochi/tests/machine/x/swift/left_join_multi.swift:18:17: warning: forced cast of '[[String : Any]]' to same type has no effect
+16 | }())
 17 | print("--- Left Join Multi ---")
-18 | for r in result {
-19 |     print(r["orderId"], r["name"], r["item"])
-   |           ||- note: provide a default value to avoid this warning
-   |           ||- note: force-unwrap the value to avoid this warning
-   |           |`- note: explicitly cast to 'Any' with 'as Any' to silence this warning
-   |           `- warning: expression implicitly coerced from 'Any?' to 'Any'
+18 | for r in result as! [[String:Any]] {
+   |                 `- warning: forced cast of '[[String : Any]]' to same type has no effect
+19 |     print(r["orderId"]!, r["name"]!, r["item"]!)
 20 | }
-21 | 
-
-/workspace/mochi/tests/machine/x/swift/left_join_multi.swift:19:25: warning: expression implicitly coerced from 'Any?' to 'Any'
-17 | print("--- Left Join Multi ---")
-18 | for r in result {
-19 |     print(r["orderId"], r["name"], r["item"])
-   |                         ||- note: provide a default value to avoid this warning
-   |                         ||- note: force-unwrap the value to avoid this warning
-   |                         |`- note: explicitly cast to 'Any' with 'as Any' to silence this warning
-   |                         `- warning: expression implicitly coerced from 'Any?' to 'Any'
-20 | }
-21 | 
-
-/workspace/mochi/tests/machine/x/swift/left_join_multi.swift:19:36: warning: expression implicitly coerced from 'Any?' to 'Any'
-17 | print("--- Left Join Multi ---")
-18 | for r in result {
-19 |     print(r["orderId"], r["name"], r["item"])
-   |                                    ||- note: provide a default value to avoid this warning
-   |                                    ||- note: force-unwrap the value to avoid this warning
-   |                                    |`- note: explicitly cast to 'Any' with 'as Any' to silence this warning
-   |                                    `- warning: expression implicitly coerced from 'Any?' to 'Any'
-20 | }
-21 | 
 --- Left Join Multi ---
-Optional(100) Optional("Alice") Optional(["orderId": 100, "sku": "a"])
+100 Alice ["orderId": 100, "sku": "a"]

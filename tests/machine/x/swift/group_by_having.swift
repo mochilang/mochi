@@ -28,6 +28,6 @@ var big = { () -> [Any] in
         _tmp.append((key: k, items: v))
     }
     _tmp = _tmp.filter { g in g.items.count >= 4 }
-    return _tmp.map { g in (city: g.key, num: g.items.count) }
+    return _tmp.map { g in ["city": g.key, "num": g.items.count] }
 }()
 _json(big)

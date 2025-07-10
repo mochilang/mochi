@@ -15,6 +15,6 @@ var result = ({
 	return _res
 }())
 print("--- Multi Join ---")
-for r in result {
-    print(r["name"], "bought item", r["sku"])
+for r in result as! [[String:Any]] {
+    print(r["name"]!, "bought item", r["sku"]!)
 }

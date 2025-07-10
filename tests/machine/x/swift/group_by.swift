@@ -9,9 +9,9 @@ var stats = { () -> [Any] in
     for (k, v) in _groups {
         _tmp.append((key: k, items: v))
     }
-    return _tmp.map { g in (city: g.key, count: g.items.count, avg_age: (g.items.map { p in p["age"] }.reduce(0, +) / g.items.map { p in p["age"] }.count)) }
+    return _tmp.map { g in ["city": g.key, "count": g.items.count, "avg_age": (g.items.map { p in p["age"] as! Int }.reduce(0, +) / g.items.map { p in p["age"] as! Int }.count)] }
 }()
 print("--- People grouped by city ---")
-for s in stats {
-    print(s["city"], ": count =", s["count"], ", avg_age =", s["avg_age"])
+for s in stats as! [[String:Any]] {
+    print(s["city"]!, ": count =", s["count"]!, ", avg_age =", s["avg_age"]!)
 }

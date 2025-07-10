@@ -1,24 +1,10 @@
-/workspace/mochi/tests/machine/x/swift/cross_join_filter.swift:6:11: warning: expression implicitly coerced from 'Any?' to 'Any'
+/workspace/mochi/tests/machine/x/swift/cross_join_filter.swift:5:16: warning: forced cast of '[[String : Any]]' to same type has no effect
+3 | var pairs = nums.flatMap { n in letters.compactMap { l in n % 2 == 0 ? (["n": n, "l": l]) : nil } }
 4 | print("--- Even pairs ---")
-5 | for p in pairs {
-6 |     print(p["n"], p["l"])
-  |           ||- note: provide a default value to avoid this warning
-  |           ||- note: force-unwrap the value to avoid this warning
-  |           |`- note: explicitly cast to 'Any' with 'as Any' to silence this warning
-  |           `- warning: expression implicitly coerced from 'Any?' to 'Any'
+5 | for p in pairs as! [[String:Any]] {
+  |                `- warning: forced cast of '[[String : Any]]' to same type has no effect
+6 |     print(p["n"]!, p["l"]!)
 7 | }
-8 | 
-
-/workspace/mochi/tests/machine/x/swift/cross_join_filter.swift:6:19: warning: expression implicitly coerced from 'Any?' to 'Any'
-4 | print("--- Even pairs ---")
-5 | for p in pairs {
-6 |     print(p["n"], p["l"])
-  |                   ||- note: provide a default value to avoid this warning
-  |                   ||- note: force-unwrap the value to avoid this warning
-  |                   |`- note: explicitly cast to 'Any' with 'as Any' to silence this warning
-  |                   `- warning: expression implicitly coerced from 'Any?' to 'Any'
-7 | }
-8 | 
 --- Even pairs ---
-Optional(2) Optional("A")
-Optional(2) Optional("B")
+2 A
+2 B
