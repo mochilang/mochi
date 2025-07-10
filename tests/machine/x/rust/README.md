@@ -2,7 +2,7 @@
 
 This directory contains Rust code generated from the Mochi programs in `tests/vm/valid` using the Rust compiler. Each file was built with `rustc` and executed. Successful runs have a `.out` file, while failures produce a `.error` file.
 
-Compiled programs: 89/97
+Compiled programs: 91/97
 
 ## Checklist
 - [x] append_builtin
@@ -16,8 +16,8 @@ Compiled programs: 89/97
 - [x] closure
 - [x] count_builtin
 - [x] cross_join
-- [ ] cross_join_filter
-- [ ] cross_join_triple
+- [x] cross_join_filter
+- [x] cross_join_triple
 - [x] dataset_sort_take_limit
 - [x] dataset_where_filter
 - [x] exists_builtin

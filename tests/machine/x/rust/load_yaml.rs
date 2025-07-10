@@ -31,9 +31,9 @@ fn _load<T: serde::de::DeserializeOwned>(path: &str, opts: std::collections::Has
 }
 
 fn main() {
-    let people = _load::<Person>("../interpreter/valid/people.yaml", { let mut m = std::collections::HashMap::new(); m.insert("format", "yaml"); m });
+    let people = _load::<Person>("../interpreter/valid/people.yaml", { let mut m = std::collections::BTreeMap::new(); m.insert("format", "yaml"); m });
     let adults = { let mut tmp1 = Vec::new();for p in &people { if !(p.age >= 18) { continue; } tmp1.push(Result { name: p.name, email: p.email }); } tmp1 };
     for a in adults {
-        println!("{:?} {:?}", a.name, a.email);
+        println!("{} {}", a.name, a.email);
     }
 }
