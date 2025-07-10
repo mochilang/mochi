@@ -1300,6 +1300,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileSaveExpr(p.Save)
 	case p.Fetch != nil:
 		return c.compileFetchExpr(p.Fetch)
+	case p.Match != nil:
+		return c.compileMatchExpr(p.Match)
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
 	case p.Call != nil:
@@ -1606,6 +1608,82 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 	c.usesFetch = true
 	c.usesMap = true
 	return fmt.Sprintf("_fetch %s %s", url, opts), nil
+}
+
+func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
+	target, err := c.compileExpr(m.Target)
+	if err != nil {
+		return "", err
+	}
+	var b strings.Builder
+	b.WriteString("(case ")
+	b.WriteString(target)
+	b.WriteString(" of")
+	for _, cs := range m.Cases {
+		pat, vars, err := c.compileMatchPattern(cs.Pattern)
+		if err != nil {
+			return "", err
+		}
+		orig := c.env
+		if len(vars) > 0 {
+			child := types.NewEnv(c.env)
+			for n, t := range vars {
+				child.SetVar(n, t, true)
+			}
+			c.env = child
+		}
+		res, err := c.compileExpr(cs.Result)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		c.env = orig
+		b.WriteString(" ")
+		b.WriteString(pat)
+		b.WriteString(" -> ")
+		b.WriteString(res)
+		b.WriteString(";")
+	}
+	b.WriteString(" )")
+	return b.String(), nil
+}
+
+func (c *Compiler) compileMatchPattern(e *parser.Expr) (string, map[string]types.Type, error) {
+	if isUnderscoreExpr(e) {
+		return "_", nil, nil
+	}
+	if lit := extractLiteral(e); lit != nil {
+		v, err := c.compileLiteral(lit)
+		return v, nil, err
+	}
+	if call, ok := callPattern(e); ok {
+		if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
+			st := ut.Variants[call.Func]
+			if len(call.Args) != len(st.Order) {
+				return "", nil, fmt.Errorf("pattern arg mismatch")
+			}
+			parts := make([]string, len(call.Args))
+			vars := make(map[string]types.Type)
+			for i, a := range call.Args {
+				if id, ok := identName(a); ok {
+					name := sanitizeName(id)
+					parts[i] = name
+					if id != "_" {
+						vars[id] = st.Fields[st.Order[i]]
+					}
+				} else {
+					parts[i] = "_"
+				}
+			}
+			pat := sanitizeName(call.Func)
+			if len(parts) > 0 {
+				pat += " " + strings.Join(parts, " ")
+			}
+			return pat, vars, nil
+		}
+	}
+	v, err := c.compileExpr(e)
+	return v, nil, err
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
