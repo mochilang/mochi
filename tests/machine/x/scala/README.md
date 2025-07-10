@@ -28,7 +28,7 @@ Executed successfully: 77/97
 - [x] fun_call.mochi
 - [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
-- [ ] group_by.mochi
+ - [x] group_by.mochi
 - [ ] group_by_conditional_sum.mochi
 - [ ] group_by_having.mochi
 - [ ] group_by_join.mochi
