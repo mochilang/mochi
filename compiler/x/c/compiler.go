@@ -2072,8 +2072,23 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 			cond = c.compileExpr(q.Where)
 		}
 
+		if ml := asMapLiteral(q.Select); ml != nil {
+			if _, ok := c.structLits[ml]; !ok {
+				if st, ok2 := c.inferStructFromMap(ml, q.Var); ok2 {
+					c.structLits[ml] = st
+					c.compileStructType(st)
+					c.compileStructListType(st)
+				}
+			}
+		}
+
 		val := c.compileExpr(q.Select)
 		retT := c.exprType(q.Select)
+		if ml := asMapLiteral(q.Select); ml != nil {
+			if st, ok := retT.(types.StructType); ok {
+				c.structLits[ml] = st
+			}
+		}
 		retList := types.ListType{Elem: retT}
 		listC := cTypeFromType(retList)
 		if listC == "list_string" {
