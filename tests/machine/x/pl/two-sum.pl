@@ -11,7 +11,7 @@ len_any(Value, Len) :-
     is_dict(Value), !, dict_pairs(Value, _, Pairs), length(Pairs, Len).
 len_any(Value, Len) :- length(Value, Len).
 
-TwoSum(Nums, Target, _Res) :-
+twoSum(Nums, Target, _Res) :-
     len_any(Nums, _V0),
     N is _V0,
     catch(
@@ -46,7 +46,7 @@ TwoSum(Nums, Target, _Res) :-
                 
                 :- initialization(main, main).
                 main :-
-                    TwoSum([2, 7, 11, 15], 9, _V0),
+                    twoSum([2, 7, 11, 15], 9, _V0),
                     Result = _V0,
                     get_item(Result, 0, _V1),
                     write(_V1),
