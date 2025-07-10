@@ -1,17 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+typedef struct Person Person;
+
 typedef struct {
   int len;
-  int *data;
-} list_int;
-static list_int list_int_create(int len) {
-  list_int l;
+  Person *data;
+} list_Person;
+static list_Person list_Person_create(int len) {
+  list_Person l;
   l.len = len;
-  l.data = (int *)malloc(sizeof(int) * len);
+  l.data = (Person *)malloc(sizeof(Person) * len);
   return l;
 }
-typedef struct Person Person;
 
 typedef struct Person {
   char *name;
@@ -20,7 +21,7 @@ typedef struct Person {
 } Person;
 
 static void test_update_adult_status() {
-  list_int _t1 = list_int_create(4);
+  list_Person _t1 = list_Person_create(4);
   _t1.data[0] = (Person){.name = "Alice", .age = 17, .status = "minor"};
   _t1.data[1] = (Person){.name = "Bob", .age = 26, .status = "adult"};
   _t1.data[2] = (Person){.name = "Charlie", .age = 19, .status = "adult"};
@@ -32,7 +33,7 @@ static void test_update_adult_status() {
 }
 
 int main() {
-  list_int _t2 = list_int_create(4);
+  list_Person _t2 = list_Person_create(4);
   _t2.data[0] = (Person){.name = "Alice", .age = 17, .status = "minor"};
   _t2.data[1] = (Person){.name = "Bob", .age = 25, .status = "unknown"};
   _t2.data[2] = (Person){.name = "Charlie", .age = 18, .status = "unknown"};
