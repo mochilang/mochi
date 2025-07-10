@@ -1,6 +1,6 @@
 import java.util.*;
 public class Main {
-	static Map<Integer,String> m = new HashMap<>(java.util.Map.of(1, "a", 2, "b"));
+	static Map<Integer,String> m = new LinkedHashMap<>(){{put(1, "a");put(2, "b");}};
 	static boolean inOp(Object item, Object collection) {
 		if (collection instanceof Map<?,?> m) return m.containsKey(item);
 		if (collection instanceof Collection<?> c) return c.contains(item);

@@ -1,6 +1,6 @@
 import java.util.*;
 public class Main {
-	static List<Map<Object,Object>> data = new ArrayList<>(java.util.Arrays.asList(new HashMap<>(java.util.Map.of("tag", "a", "val", 1)), new HashMap<>(java.util.Map.of("tag", "a", "val", 2)), new HashMap<>(java.util.Map.of("tag", "b", "val", 3))));
+	static List<Map<Object,Object>> data = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<>(){{put("tag", "a");put("val", 1);}}, new LinkedHashMap<>(){{put("tag", "a");put("val", 2);}}, new LinkedHashMap<>(){{put("tag", "b");put("val", 3);}}));
 	static List<Object> groups = (new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
 	List<Object> _res0 = new ArrayList<>();
 	Map<Object,List<Object>> _groups1 = new LinkedHashMap<>();
@@ -34,10 +34,10 @@ public class Main {
 	public static void main(String[] args) {
 	for (var g : groups) {
 		int total = 0;
-		for (var x : ((Map)g).get("items")) {
-			total = total + ((Map)x).get("val");
+		for (var x : (List)((Map)g).get("items")) {
+			total = total + ((Number)((Map)x).get("val")).doubleValue();
 		}
-		tmp = append(tmp, new HashMap<>(java.util.Map.of("tag", ((Map)g).get("key"), "total", total)));
+		tmp = append(tmp, new LinkedHashMap<>(){{put("tag", ((Map)g).get("key"));put("total", total);}});
 	}
 	System.out.println(result);
 	}

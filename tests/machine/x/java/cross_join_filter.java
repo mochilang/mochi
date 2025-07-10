@@ -7,7 +7,7 @@ public class Main {
 	for (var n : nums) {
 		for (var l : letters) {
 			if (!(n % 2 == 0)) continue;
-			_res0.add(new HashMap<>(java.util.Map.of("n", n, "l", l)));
+			_res0.add(new LinkedHashMap<>(){{put("n", n);put("l", l);}});
 		}
 	}
 	return _res0;

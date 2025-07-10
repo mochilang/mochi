@@ -1,6 +1,21 @@
 import java.util.*;
 public class Main {
-	static Map<Object,Integer> m = new HashMap<>(java.util.Map.of("a", 1, "b", 2));
+	static Map<Object,Integer> m = new LinkedHashMap<>(){{put("a", 1);put("b", 2);}};
+	static String toJson(Object o) {
+		if (o instanceof Map<?,?> m) {
+			StringJoiner j = new StringJoiner(",", "{", "}");
+			for (var e : m.entrySet()) j.add("\"" + e.getKey() + "\":" + e.getValue());
+			return j.toString();
+		} else if (o instanceof Collection<?> c) {
+			StringJoiner j = new StringJoiner(",", "[", "]");
+			for (var x : c) j.add(toJson(x));
+			return j.toString();
+		} else if (o instanceof String s) {
+			return "\"" + s + "\"";
+		}
+		return String.valueOf(o);
+	}
+	static void json(Object o) { System.out.println(toJson(o)); }
 	public static void main(String[] args) {
 	json(m);
 	}

@@ -1,0 +1,9 @@
+line 0: javac error: exit status 1
+/tmp/TestCompileValidProgramsquery_sum_select3400792963/001/Main.java:8: error: incompatible types: Integer cannot be converted to List<?>
+		_res0.add(sum((List<Number>)(List<?>)n));
+		                                     ^
+1 error
+
+
+  1| let nums = [1,2,3]
+  2| let result = from n in nums where n > 1 select sum(n)

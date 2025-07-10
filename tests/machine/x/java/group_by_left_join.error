@@ -1,4 +1,40 @@
-line 0: compile error: join type not supported
+line 0: javac error: exit status 1
+/tmp/TestCompileValidProgramsgroup_by_left_join1871282317/001/Main.java:27: error: illegal start of type
+	for (var __e : _groups1.entrySet()) {
+	^
+/tmp/TestCompileValidProgramsgroup_by_left_join1871282317/001/Main.java:27: error: 'var' is not allowed here
+	for (var __e : _groups1.entrySet()) {
+	     ^
+/tmp/TestCompileValidProgramsgroup_by_left_join1871282317/001/Main.java:27: error: ';' expected
+	for (var __e : _groups1.entrySet()) {
+	            ^
+/tmp/TestCompileValidProgramsgroup_by_left_join1871282317/001/Main.java:27: error: <identifier> expected
+	for (var __e : _groups1.entrySet()) {
+	                                ^
+/tmp/TestCompileValidProgramsgroup_by_left_join1871282317/001/Main.java:27: error: ';' expected
+	for (var __e : _groups1.entrySet()) {
+	                                  ^
+/tmp/TestCompileValidProgramsgroup_by_left_join1871282317/001/Main.java:39: error: illegal start of type
+	return _res0;
+	^
+/tmp/TestCompileValidProgramsgroup_by_left_join1871282317/001/Main.java:39: error: <identifier> expected
+	return _res0;
+	            ^
+/tmp/TestCompileValidProgramsgroup_by_left_join1871282317/001/Main.java:40: error: ')' expected
+}}).get();
+ ^
+/tmp/TestCompileValidProgramsgroup_by_left_join1871282317/001/Main.java:40: error: class, interface, enum, or record expected
+}}).get();
+  ^
+/tmp/TestCompileValidProgramsgroup_by_left_join1871282317/001/Main.java:41: error: unnamed classes are a preview feature and are disabled by default.
+	static int count(Collection<?> c) {
+	       ^
+  (use --enable-preview to enable unnamed classes)
+/tmp/TestCompileValidProgramsgroup_by_left_join1871282317/001/Main.java:50: error: class, interface, enum, or record expected
+}
+^
+11 errors
+
 
   1| let customers = [
   2|   { id: 1, name: "Alice" },

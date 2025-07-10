@@ -1,4 +1,24 @@
-line 0: compile error: expression unsupported at line 7
+line 0: javac error: exit status 1
+/tmp/TestCompileValidProgramsload_yaml3685013438/001/Main.java:13: error: incompatible types: List<Map<String,Object>> cannot be converted to List<Object>
+	static List<Object> people = loadYaml("../interpreter/valid/people.yaml");
+	                                     ^
+/tmp/TestCompileValidProgramsload_yaml3685013438/001/Main.java:24: error: cannot find symbol
+		try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+		     ^
+  symbol:   class BufferedReader
+  location: class Main
+/tmp/TestCompileValidProgramsload_yaml3685013438/001/Main.java:24: error: cannot find symbol
+		try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+		                             ^
+  symbol:   class BufferedReader
+  location: class Main
+/tmp/TestCompileValidProgramsload_yaml3685013438/001/Main.java:24: error: cannot find symbol
+		try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+		                                                ^
+  symbol:   class FileReader
+  location: class Main
+4 errors
+
 
   1| type Person {
   2|   name: string

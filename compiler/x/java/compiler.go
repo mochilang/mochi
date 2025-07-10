@@ -272,6 +272,31 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.indent--
 		c.writeln("}")
 	}
+	if c.helpers["json"] {
+		c.writeln("static String toJson(Object o) {")
+		c.indent++
+		c.writeln("if (o instanceof Map<?,?> m) {")
+		c.indent++
+		c.writeln("StringJoiner j = new StringJoiner(\",\", \"{\", \"}\");")
+		c.writeln("for (var e : m.entrySet()) j.add(\"\\\"\" + e.getKey() + \"\\\":\" + e.getValue());")
+		c.writeln("return j.toString();")
+		c.indent--
+		c.writeln("} else if (o instanceof Collection<?> c) {")
+		c.indent++
+		c.writeln("StringJoiner j = new StringJoiner(\",\", \"[\", \"]\");")
+		c.writeln("for (var x : c) j.add(toJson(x));")
+		c.writeln("return j.toString();")
+		c.indent--
+		c.writeln("} else if (o instanceof String s) {")
+		c.indent++
+		c.writeln("return \"\\\"\" + s + \"\\\"\";")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return String.valueOf(o);")
+		c.indent--
+		c.writeln("}")
+		c.writeln("static void json(Object o) { System.out.println(toJson(o)); }")
+	}
 	c.writeln("public static void main(String[] args) {")
 	c.indent++
 	c.buf.Write(body.Bytes())
@@ -428,6 +453,20 @@ func listElemType(t string) string {
 		return "Object"
 	}
 	return strings.TrimSpace(t[5 : len(t)-1])
+}
+
+func maybeNumber(expr string) string {
+	if strings.Contains(expr, ").get(") {
+		return fmt.Sprintf("((Number)%s).doubleValue()", expr)
+	}
+	return expr
+}
+
+func maybeBool(expr string) string {
+	if strings.Contains(expr, ").get(") {
+		return fmt.Sprintf("Boolean.TRUE.equals(%s)", expr)
+	}
+	return expr
 }
 
 func (c *Compiler) inferType(e *parser.Expr) string {
@@ -801,6 +840,7 @@ func (c *Compiler) compileIfExpr(e *parser.IfExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	cond = maybeBool(cond)
 	thenExpr, err := c.compileExpr(e.Then)
 	if err != nil {
 		return "", err
@@ -959,6 +999,9 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		if c.exprIsMap(f.Source) {
 			c.writeln(fmt.Sprintf("for (var %s : %s.keySet()) {", f.Name, src))
 		} else {
+			if strings.Contains(src, ".get(") {
+				src = fmt.Sprintf("(List)%s", src)
+			}
 			c.writeln(fmt.Sprintf("for (var %s : %s) {", f.Name, src))
 		}
 		c.indent++
@@ -1117,6 +1160,11 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 		if (op.Op == "<" || op.Op == "<=" || op.Op == ">" || op.Op == ">=") &&
 			isString(expr) && isString(right) {
 			expr = fmt.Sprintf("%s.compareTo(%s) %s 0", expr, right, op.Op)
+		} else if op.Op == "+" || op.Op == "-" || op.Op == "*" || op.Op == "/" || op.Op == "%" ||
+			op.Op == "<" || op.Op == "<=" || op.Op == ">" || op.Op == ">=" {
+			expr = fmt.Sprintf("%s %s %s", maybeNumber(expr), op.Op, maybeNumber(right))
+		} else if op.Op == "&&" || op.Op == "||" {
+			expr = fmt.Sprintf("%s %s %s", maybeBool(expr), op.Op, maybeBool(right))
 		} else {
 			expr = fmt.Sprintf("%s %s %s", expr, op.Op, right)
 		}
@@ -1346,6 +1394,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", err
 			}
 			return fmt.Sprintf("String.valueOf(%s)", arg), nil
+		case "json":
+			if len(p.Call.Args) != 1 {
+				return "", fmt.Errorf("json expects one argument at line %d", p.Pos.Line)
+			}
+			c.helpers["json"] = true
+			arg, err := c.compileExpr(p.Call.Args[0])
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("json(%s)", arg), nil
 		case "substring":
 			if len(p.Call.Args) < 2 || len(p.Call.Args) > 3 {
 				return "", fmt.Errorf("substring expects 2 or 3 arguments at line %d", p.Pos.Line)

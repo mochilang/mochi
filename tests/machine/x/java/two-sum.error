@@ -1,0 +1,16 @@
+line 0: javac error: exit status 1
+/tmp/TestCompileValidProgramstwo-sum4238155423/001/Main.java:6: error: bad operand types for binary operator '<'
+		for (int i = 0; i < n; i++) {
+		                  ^
+  first type:  int
+  second type: Object
+/tmp/TestCompileValidProgramstwo-sum4238155423/001/Main.java:7: error: bad operand types for binary operator '<'
+			for (int j = i + 1; j < n; j++) {
+			                      ^
+  first type:  int
+  second type: Object
+2 errors
+
+
+  1| fun twoSum(nums: list<int>, target: int): list<int> {
+  2|   let n = len(nums)
