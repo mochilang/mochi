@@ -8,7 +8,7 @@ Each generated file now includes only the runtime helper functions that are actu
 
 Compiled: 97/97 programs
 
-Successfully ran: 82/97 programs
+Successfully ran: 83/97 programs
 
 ## Checklist
 
@@ -91,7 +91,7 @@ Successfully ran: 82/97 programs
 - [x] str_builtin.mochi
  - [ ] string_compare.mochi
 - [x] string_concat.mochi
- - [ ] string_contains.mochi
+- [x] string_contains.mochi
 - [x] string_in_operator.mochi
 - [x] string_index.mochi
 - [x] string_prefix_slice.mochi

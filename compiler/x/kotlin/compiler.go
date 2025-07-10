@@ -871,7 +871,7 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 		name := p.Selector.Root
 		t, _ := c.env.GetVar(p.Selector.Root)
 		if len(p.Selector.Tail) > 0 {
-			if isStructType(t) {
+			if isStructType(t) || isStringType(t) {
 				name += "." + strings.Join(p.Selector.Tail, ".")
 			} else {
 				name = fmt.Sprintf("(%s as MutableMap<*, *>)", name)
@@ -1626,4 +1626,9 @@ func isStructType(t types.Type) bool {
 	default:
 		return false
 	}
+}
+
+func isStringType(t types.Type) bool {
+	_, ok := t.(types.StringType)
+	return ok
 }
