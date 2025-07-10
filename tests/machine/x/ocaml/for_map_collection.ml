@@ -19,7 +19,7 @@ exception Break
 exception Continue
 
 
-let m : (string * int) list ref = ref [("a",Obj.repr (1));("b",Obj.repr (2))]
+let m : (string * Obj.t) list ref = ref [("a",Obj.repr (1));("b",Obj.repr (2))]
 
 let () =
   let rec __loop0 lst =

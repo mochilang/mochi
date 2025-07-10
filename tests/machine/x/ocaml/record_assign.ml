@@ -17,7 +17,7 @@ let rec __show v =
 
 
 type counter = { mutable n : int }
-let rec inc (c : counter) : unit =
+let rec inc (c : counter) =
   c.n <- (c.n + 1);
   ()
 
