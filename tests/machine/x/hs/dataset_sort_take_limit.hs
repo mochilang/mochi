@@ -3,17 +3,11 @@
 
 module Main where
 
-import qualified Data.Aeson as Aeson
-import qualified Data.Aeson.Key as Key
-import qualified Data.Aeson.KeyMap as KeyMap
-import qualified Data.ByteString.Lazy.Char8 as BSL
 import Data.List (intercalate, isInfixOf, isPrefixOf)
 import qualified Data.List as List
 import qualified Data.Map as Map
 import Data.Maybe (fromMaybe)
-import qualified Data.Text as T
 import Data.Time.Clock.POSIX (getPOSIXTime)
-import qualified Data.Vector as V
 
 forLoop :: Int -> Int -> (Int -> Maybe a) -> Maybe a
 forLoop start end f = go start
@@ -111,12 +105,6 @@ _parseCSV text header delim =
 
 data AnyValue = VInt Int | VDouble Double | VString String | VBool Bool deriving (Show)
 
-instance Aeson.ToJSON AnyValue where
-  toJSON (VInt n) = Aeson.toJSON n
-  toJSON (VDouble d) = Aeson.toJSON d
-  toJSON (VString s) = Aeson.toJSON s
-  toJSON (VBool b) = Aeson.toJSON b
-
 _asInt :: AnyValue -> Int
 _asInt (VInt n) = n
 _asInt v = error ("expected int, got " ++ show v)
@@ -138,50 +126,6 @@ _showAny (VInt n) = show n
 _showAny (VDouble d) = show d
 _showAny (VString s) = s
 _showAny (VBool b) = if b then "true" else "false"
-
-_parseJSON :: String -> [Map.Map String String]
-_parseJSON text =
-  case Aeson.decode (BSL.pack text) of
-    Just (Aeson.Array arr) -> map _valueToMap (V.toList arr)
-    Just v -> [_valueToMap v]
-    Nothing -> []
-
-_valueToMap :: Aeson.Value -> Map.Map String String
-_valueToMap (Aeson.Object o) =
-  Map.fromList [(T.unpack (Key.toText k), _valueToString v) | (k, v) <- KeyMap.toList o]
-_valueToMap _ = Map.empty
-
-_valueToString :: Aeson.Value -> String
-_valueToString (Aeson.String s) = T.unpack s
-_valueToString (Aeson.Number n) = show n
-_valueToString (Aeson.Bool b) = if b then "true" else "false"
-_valueToString _ = ""
-
-_mapToValue :: Map.Map String String -> Aeson.Value
-_mapToValue m =
-  Aeson.Object $ KeyMap.fromList [(Key.fromString k, Aeson.String (T.pack v)) | (k, v) <- Map.toList m]
-
-_load :: Maybe String -> Maybe (Map.Map String String) -> IO [Map.Map String String]
-_load path opts = do
-  txt <- _readInput path
-  let fmt = fromMaybe "csv" (opts >>= Map.lookup "format")
-  pure $ case fmt of
-    "json" -> _parseJSON txt
-    _ -> _parseCSV txt True ','
-
-_save :: [Map.Map String String] -> Maybe String -> Maybe (Map.Map String String) -> IO ()
-_save rows path opts =
-  let fmt = fromMaybe "csv" (opts >>= Map.lookup "format")
-   in case fmt of
-        "json" ->
-          let objs = map _mapToValue rows
-              val = if length objs == 1 then head objs else Aeson.Array (V.fromList objs)
-           in _writeOutput path (BSL.unpack (Aeson.encode val))
-        _ ->
-          let headers = if null rows then [] else Map.keys (head rows)
-              toLine m = intercalate "," [Map.findWithDefault "" h m | h <- headers]
-              text = unlines (if null headers then [] else intercalate "," headers : map toLine rows)
-           in _writeOutput path text
 
 products = [Map.fromList [("name", VString ("Laptop")), ("price", VInt (1500))], Map.fromList [("name", VString ("Smartphone")), ("price", VInt (900))], Map.fromList [("name", VString ("Tablet")), ("price", VInt (600))], Map.fromList [("name", VString ("Monitor")), ("price", VInt (300))], Map.fromList [("name", VString ("Keyboard")), ("price", VInt (100))], Map.fromList [("name", VString ("Mouse")), ("price", VInt (50))], Map.fromList [("name", VString ("Headphones")), ("price", VInt (200))]]
 
