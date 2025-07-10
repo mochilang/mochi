@@ -4,7 +4,7 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 
 ## Summary
 
- - 79/97 programs compiled and ran successfully.
+ - 80/97 programs compiled and ran successfully.
 
 ### Checklist
 - [x] append_builtin
@@ -103,7 +103,7 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 - [ ] tree_sum
 - [ ] two-sum
 - [ ] update_stmt
-- [ ] while_loop
+ - [x] while_loop
 
 ### Remaining tasks
 - [ ] Improve query support (group joins, having)

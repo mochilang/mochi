@@ -18,6 +18,7 @@ type Compiler struct {
 	indent        int
 	tmp           int
 	vars          map[string]string
+	mutVars       map[string]bool
 	retVar        string
 	needsGetItem  bool
 	needsSlice    bool
@@ -28,7 +29,7 @@ type Compiler struct {
 }
 
 func New() *Compiler {
-	c := &Compiler{vars: make(map[string]string)}
+	c := &Compiler{vars: make(map[string]string), mutVars: make(map[string]bool)}
 	c.out = &c.funcBuf
 	return c
 }
@@ -60,6 +61,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.indent = 0
 	c.tmp = 0
 	c.vars = make(map[string]string)
+	c.mutVars = make(map[string]bool)
 	c.needsGetItem = false
 	c.needsSlice = false
 	c.needsContains = false
@@ -242,9 +244,11 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		c.vars[s.Let.Name] = name
 	case s.Var != nil:
-		name := c.newVar(s.Var.Name)
+		name := sanitizeAtom(s.Var.Name)
+		c.mutVars[s.Var.Name] = true
+		c.vars[s.Var.Name] = name
 		if s.Var.Value == nil {
-			c.writeln(fmt.Sprintf("%s = _,", name))
+			c.writeln(fmt.Sprintf("nb_setval(%s, _),", name))
 			return nil
 		}
 		if call := getSimpleCall(s.Var.Value); call != nil && call.Func == "exists" && len(call.Args) == 1 {
@@ -260,21 +264,31 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return err
 		}
 		if arith {
-			c.writeln(fmt.Sprintf("%s is %s,", name, val))
-		} else {
-			c.writeln(fmt.Sprintf("%s = %s,", name, val))
+			tmp := c.newTmp()
+			c.writeln(fmt.Sprintf("%s is %s,", tmp, val))
+			val = tmp
 		}
+		c.writeln(fmt.Sprintf("nb_setval(%s, %s),", name, val))
 	case s.Assign != nil:
 		if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
-			name := c.newVar(s.Assign.Name)
 			val, arith, err := c.compileExpr(s.Assign.Value)
 			if err != nil {
 				return err
 			}
-			if arith {
-				c.writeln(fmt.Sprintf("%s is %s,", name, val))
+			if c.mutVars[s.Assign.Name] {
+				if arith {
+					tmp := c.newTmp()
+					c.writeln(fmt.Sprintf("%s is %s,", tmp, val))
+					val = tmp
+				}
+				c.writeln(fmt.Sprintf("nb_setval(%s, %s),", sanitizeAtom(s.Assign.Name), val))
 			} else {
-				c.writeln(fmt.Sprintf("%s = %s,", name, val))
+				name := c.newVar(s.Assign.Name)
+				if arith {
+					c.writeln(fmt.Sprintf("%s is %s,", name, val))
+				} else {
+					c.writeln(fmt.Sprintf("%s = %s,", name, val))
+				}
 			}
 		} else {
 			container := c.lookupVar(s.Assign.Name)
@@ -315,8 +329,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				c.writeln(fmt.Sprintf("set_item(%s, %s, %s, %s),", containers[i], idxVals[i], newVal, tmp2))
 				newVal = tmp2
 			}
-			name := c.newVar(s.Assign.Name)
-			c.writeln(fmt.Sprintf("%s = %s,", name, newVal))
+			if c.mutVars[s.Assign.Name] {
+				c.writeln(fmt.Sprintf("nb_setval(%s, %s),", sanitizeAtom(s.Assign.Name), newVal))
+			} else {
+				name := c.newVar(s.Assign.Name)
+				c.writeln(fmt.Sprintf("%s = %s,", name, newVal))
+			}
 		}
 	case s.Return != nil:
 		if c.retVar == "" {
@@ -632,6 +650,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, bool, error) {
 	case p.Lit != nil:
 		return c.compileLiteral(p.Lit)
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
+		if c.mutVars[p.Selector.Root] {
+			tmp := c.newTmp()
+			c.writeln(fmt.Sprintf("nb_getval(%s, %s),", sanitizeAtom(p.Selector.Root), tmp))
+			return tmp, false, nil
+		}
 		if v, ok := c.vars[p.Selector.Root]; ok {
 			return v, false, nil
 		}
@@ -894,6 +917,11 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, bool, error) {
 func (c *Compiler) lookupVar(name string) string {
 	if v, ok := c.vars[name]; ok {
 		return v
+	}
+	if c.mutVars[name] {
+		tmp := c.newTmp()
+		c.writeln(fmt.Sprintf("nb_getval(%s, %s),", sanitizeAtom(name), tmp))
+		return tmp
 	}
 	return sanitizeVar(name)
 }

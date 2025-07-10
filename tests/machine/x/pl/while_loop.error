@@ -1,4 +1,2 @@
-run: exit status 2
-0
-ERROR: /workspace/mochi/tests/machine/x/pl/while_loop.pl:2: user:main is/2: Arguments are not sufficiently instantiated
+run: exec: "swipl": executable file not found in $PATH
 
