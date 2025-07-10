@@ -1,0 +1,40 @@
+// Mochi translation of Rosetta Code "Abstract type" task
+// Demonstrates union types and pattern matching.
+
+type Beast =
+  Dog(kind: string, name: string)
+  | Cat(kind: string, name: string)
+
+fun beastKind(b: Beast): string {
+  return match b {
+    Dog(k, _) => k
+    Cat(k, _) => k
+  }
+}
+
+fun beastName(b: Beast): string {
+  return match b {
+    Dog(_, n) => n
+    Cat(_, n) => n
+  }
+}
+
+fun beastCry(b: Beast): string {
+  return match b {
+    Dog(_, _) => "Woof"
+    Cat(_, _) => "Meow"
+  }
+}
+
+fun bprint(b: Beast) {
+  print(beastName(b) + ", who's a " + beastKind(b) + ", cries: \"" + beastCry(b) + "\".")
+}
+
+fun main() {
+  let d: Beast = Dog { kind: "labrador", name: "Max" }
+  let c: Beast = Cat { kind: "siamese", name: "Sammy" }
+  bprint(d)
+  bprint(c)
+}
+
+main()
