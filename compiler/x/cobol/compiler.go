@@ -123,7 +123,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if needsTmpVar(prog.Statements) {
 		c.tmpVar = "TMP"
 		if !c.hasVar(c.tmpVar) {
-			c.vars = append(c.vars, varDecl{name: c.tmpVar, pic: "PIC 9", val: "0"})
+			c.vars = append(c.vars, varDecl{name: c.tmpVar, pic: "PIC 9(9)", val: "0"})
 		}
 	}
 
@@ -509,7 +509,7 @@ func (c *Compiler) compilePrint(call *parser.CallExpr) error {
 		if err != nil {
 			return err
 		}
-		if isSimpleExpr(arg) || types.IsStringType(types.TypeOfExpr(arg, c.env)) {
+		if isSimpleExpr(arg) || types.IsStringType(types.TypeOfExpr(arg, c.env)) || isLiteralValue(expr) {
 			c.writeln(fmt.Sprintf("DISPLAY %s", expr))
 			return nil
 		}
@@ -551,7 +551,7 @@ func (c *Compiler) compilePrint(call *parser.CallExpr) error {
 		if err != nil {
 			return err
 		}
-		if !isSimpleExpr(arg) {
+		if !isSimpleExpr(arg) && !isLiteralValue(expr) {
 			tmp := c.ensureTmpVar()
 			c.writeln(fmt.Sprintf("COMPUTE %s = %s", tmp, expr))
 			expr = tmp
@@ -1008,6 +1008,24 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 	}
 }
 
+func isLiteralValue(s string) bool {
+	if len(s) >= 2 && s[0] == '"' && s[len(s)-1] == '"' {
+		return true
+	}
+	if len(s) == 0 {
+		return false
+	}
+	if s[0] == '-' {
+		s = s[1:]
+	}
+	for _, ch := range s {
+		if ch < '0' || ch > '9' {
+			return false
+		}
+	}
+	return true
+}
+
 func (c *Compiler) writeln(s string) {
 	for i := 0; i < c.indent; i++ {
 		c.buf.WriteByte(' ')
@@ -1062,7 +1080,7 @@ func (c *Compiler) ensureTmpVar() string {
 	if c.tmpVar == "" {
 		c.tmpVar = "TMP"
 		if !c.hasVar(c.tmpVar) {
-			c.vars = append(c.vars, varDecl{name: c.tmpVar, pic: "PIC 9", val: "0"})
+			c.vars = append(c.vars, varDecl{name: c.tmpVar, pic: "PIC 9(9)", val: "0"})
 		}
 	}
 	return c.tmpVar
@@ -1179,7 +1197,7 @@ func listLiteralPostfix(p *parser.PostfixExpr) *parser.ListLiteral {
 }
 
 func identPostfix(p *parser.PostfixExpr) (string, bool) {
-	if p == nil || len(p.Ops) != 0 || p.Target == nil || p.Target.Selector == nil {
+	if p == nil || p.Target == nil || p.Target.Selector == nil {
 		return "", false
 	}
 	if len(p.Target.Selector.Tail) != 0 {

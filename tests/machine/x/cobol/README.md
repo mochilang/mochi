@@ -1,4 +1,4 @@
-# Mochi to COBOL Machine Translations (42/97 compiled)
+# Mochi to COBOL Machine Translations (43/97 compiled)
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -46,7 +46,7 @@
 - [x] len_string.mochi
 - [x] let_and_print.mochi
 - [ ] list_assign.mochi
-- [ ] list_index.mochi
+- [x] list_index.mochi
 - [ ] list_nested_assign.mochi
 - [ ] list_set_ops.mochi
 - [ ] load_yaml.mochi
