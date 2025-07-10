@@ -16,8 +16,10 @@ let rec __show v =
     | _ -> "<value>"
 
 
-let data = [[("a",Obj.repr (1));("b",Obj.repr (2))];[("a",Obj.repr (1));("b",Obj.repr (1))];[("a",Obj.repr (0));("b",Obj.repr (5))]]
-let sorted = (let __res0 = ref [] in
+type record1 = { mutable a : int; mutable b : int }
+
+let data : record1 list = [{ a = 1; b = 2 };{ a = 1; b = 1 };{ a = 0; b = 5 }]
+let sorted : (string * Obj.t) list list = (let __res0 = ref [] in
   List.iter (fun x ->
       __res0 := x :: !__res0;
   ) data;

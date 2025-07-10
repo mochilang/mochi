@@ -16,8 +16,8 @@ let rec __show v =
     | _ -> "<value>"
 
 
-let a = (10 - 3)
-let b = (2 + 2)
+let a : int = (10 - 3)
+let b : int = (2 + 2)
 
 let () =
   print_endline (__show (a));

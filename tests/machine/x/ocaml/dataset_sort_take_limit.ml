@@ -1,26 +1,28 @@
-let rec __show v =
-  let open Obj in
-  let rec list_aux o =
-    if is_int o && (magic (obj o) : int) = 0 then "" else
-     let hd = field o 0 in
-     let tl = field o 1 in
-     let rest = list_aux tl in
-     if rest = "" then __show (obj hd) else __show (obj hd) ^ "; " ^ rest
-  in
-  let r = repr v in
-  if is_int r then string_of_int (magic v) else
-  match tag r with
-    | 0 -> if size r = 0 then "[]" else "[" ^ list_aux r ^ "]"
-    | 252 -> (magic v : string)
-    | 253 -> string_of_float (magic v)
-    | _ -> "<value>"
+  let rec __show v =
+    let open Obj in
+    let rec list_aux o =
+      if is_int o && (magic (obj o) : int) = 0 then "" else
+       let hd = field o 0 in
+       let tl = field o 1 in
+       let rest = list_aux tl in
+       if rest = "" then __show (obj hd) else __show (obj hd) ^ "; " ^ rest
+    in
+    let r = repr v in
+    if is_int r then string_of_int (magic v) else
+    match tag r with
+      | 0 -> if size r = 0 then "[]" else "[" ^ list_aux r ^ "]"
+      | 252 -> (magic v : string)
+      | 253 -> string_of_float (magic v)
+      | _ -> "<value>"
 
-exception Break
-exception Continue
+  exception Break
+  exception Continue
 
 
-let products = [[("name",Obj.repr ("Laptop"));("price",Obj.repr (1500))];[("name",Obj.repr ("Smartphone"));("price",Obj.repr (900))];[("name",Obj.repr ("Tablet"));("price",Obj.repr (600))];[("name",Obj.repr ("Monitor"));("price",Obj.repr (300))];[("name",Obj.repr ("Keyboard"));("price",Obj.repr (100))];[("name",Obj.repr ("Mouse"));("price",Obj.repr (50))];[("name",Obj.repr ("Headphones"));("price",Obj.repr (200))]]
-let expensive = (let __res0 = ref [] in
+  type record1 = { mutable name : string; mutable price : int }
+
+let products : record1 list = [{ name = "Laptop"; price = 1500 };{ name = "Smartphone"; price = 900 };{ name = "Tablet"; price = 600 };{ name = "Monitor"; price = 300 };{ name = "Keyboard"; price = 100 };{ name = "Mouse"; price = 50 };{ name = "Headphones"; price = 200 }]
+let expensive : (string * Obj.t) list list = (let __res0 = ref [] in
   List.iter (fun p ->
       __res0 := p :: !__res0;
   ) products;

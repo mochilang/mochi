@@ -16,8 +16,8 @@ let rec __show v =
     | _ -> "<value>"
 
 
-let x = 2
-let label = (match x with | 1 -> "one" | 2 -> "two" | 3 -> "three" | _ -> "unknown")
+let x : int = 2
+let label : string = (match x with | 1 -> "one" | 2 -> "two" | 3 -> "three" | _ -> "unknown")
 
 let () =
   print_endline (__show (label));

@@ -18,6 +18,6 @@ let rec __show v =
 
 
 let () =
-  let x = (1 + 2) in
+  let x : int = (1 + 2) in
   assert ((x = 3))
   print_endline (__show ("ok"));

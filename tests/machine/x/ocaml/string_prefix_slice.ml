@@ -21,9 +21,9 @@ let slice lst i j =
       |> List.map snd
 
 
-let prefix = "fore"
-let s1 = "forest"
-let s2 = "desert"
+let prefix : string = "fore"
+let s1 : string = "forest"
+let s2 : string = "desert"
 
 let () =
   print_endline (__show ((slice s1 0 List.length prefix = prefix)));

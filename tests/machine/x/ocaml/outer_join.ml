@@ -1,37 +1,41 @@
-let rec __show v =
-  let open Obj in
-  let rec list_aux o =
-    if is_int o && (magic (obj o) : int) = 0 then "" else
-     let hd = field o 0 in
-     let tl = field o 1 in
-     let rest = list_aux tl in
-     if rest = "" then __show (obj hd) else __show (obj hd) ^ "; " ^ rest
-  in
-  let r = repr v in
-  if is_int r then string_of_int (magic v) else
-  match tag r with
-    | 0 -> if size r = 0 then "[]" else "[" ^ list_aux r ^ "]"
-    | 252 -> (magic v : string)
-    | 253 -> string_of_float (magic v)
-    | _ -> "<value>"
+  let rec __show v =
+    let open Obj in
+    let rec list_aux o =
+      if is_int o && (magic (obj o) : int) = 0 then "" else
+       let hd = field o 0 in
+       let tl = field o 1 in
+       let rest = list_aux tl in
+       if rest = "" then __show (obj hd) else __show (obj hd) ^ "; " ^ rest
+    in
+    let r = repr v in
+    if is_int r then string_of_int (magic v) else
+    match tag r with
+      | 0 -> if size r = 0 then "[]" else "[" ^ list_aux r ^ "]"
+      | 252 -> (magic v : string)
+      | 253 -> string_of_float (magic v)
+      | _ -> "<value>"
 
-exception Break
-exception Continue
+  exception Break
+  exception Continue
 
 
-let customers = [[("id",Obj.repr (1));("name",Obj.repr ("Alice"))];[("id",Obj.repr (2));("name",Obj.repr ("Bob"))];[("id",Obj.repr (3));("name",Obj.repr ("Charlie"))];[("id",Obj.repr (4));("name",Obj.repr ("Diana"))]]
-let orders = [[("id",Obj.repr (100));("customerId",Obj.repr (1));("total",Obj.repr (250))];[("id",Obj.repr (101));("customerId",Obj.repr (2));("total",Obj.repr (125))];[("id",Obj.repr (102));("customerId",Obj.repr (1));("total",Obj.repr (300))];[("id",Obj.repr (103));("customerId",Obj.repr (5));("total",Obj.repr (80))]]
-let result = (let __res0 = ref [] in
+  type record1 = { mutable id : int; mutable name : string }
+  type record2 = { mutable id : int; mutable customerId : int; mutable total : int }
+  type record3 = { mutable order : (string * Obj.t) list; mutable customer : (string * Obj.t) list }
+
+let customers : record1 list = [{ id = 1; name = "Alice" };{ id = 2; name = "Bob" };{ id = 3; name = "Charlie" };{ id = 4; name = "Diana" }]
+let orders : record2 list = [{ id = 100; customerId = 1; total = 250 };{ id = 101; customerId = 2; total = 125 };{ id = 102; customerId = 1; total = 300 };{ id = 103; customerId = 5; total = 80 }]
+let result : (string * Obj.t) list list = (let __res0 = ref [] in
   List.iter (fun o ->
     let matched = ref false in
     List.iter (fun c ->
       if (Obj.obj (List.assoc "customerId" o) = Obj.obj (List.assoc "id" c)) then (
-        __res0 := [("order",Obj.repr (o));("customer",Obj.repr (c))] :: !__res0;
+        __res0 := { order = o; customer = c } :: !__res0;
         matched := true)
     ) customers;
     if not !matched then (
       let c = Obj.magic () in
-      __res0 := [("order",Obj.repr (o));("customer",Obj.repr (c))] :: !__res0;
+      __res0 := { order = o; customer = c } :: !__res0;
     );
   ) orders;
   List.iter (fun c ->
@@ -41,7 +45,7 @@ let result = (let __res0 = ref [] in
     ) orders;
     if not !matched then (
       let o = Obj.magic () in
-      __res0 := [("order",Obj.repr (o));("customer",Obj.repr (c))] :: !__res0;
+      __res0 := { order = o; customer = c } :: !__res0;
     );
   ) customers;
   List.rev !__res0)

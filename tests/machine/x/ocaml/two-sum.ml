@@ -20,29 +20,25 @@ exception Continue
 
 
 let rec twoSum (nums : int list) (target : int) : int list =
-  let n = List.length nums in
-  let rec __loop0 i =
-    if i > n then () else (
+  let n : int = List.length nums in
+  try
+    for i = 0 to n do
       try
-        let i = i in
-        let rec __loop1 i =
-          if i > n then () else (
+        try
+          for j = (i + 1) to n do
             try
-              let j = i in
               if ((List.nth nums i + List.nth nums j) = target) then (
                 [i;j]
               ) ;
             with Continue -> ()
-            ; __loop1 (i + 1))
-        in
-        try __loop1 (i + 1) with Break -> ()
+          done
+        with Break -> ()
       with Continue -> ()
-      ; __loop0 (i + 1))
-  in
-  try __loop0 0 with Break -> ()
+    done
+  with Break -> ()
   [-1;-1]
 
-let result = twoSum [2;7;11;15] 9
+let result : int list = twoSum [2;7;11;15] 9
 
 let () =
   print_endline (__show (List.nth result 0));

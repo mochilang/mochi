@@ -18,7 +18,7 @@ let rec __show v =
 
 type person = { mutable name : string; mutable age : int }
 type book = { mutable title : string; mutable author : person }
-let book = { title = "Go"; author = { name = "Bob"; age = 42 } }
+let book : book = { title = "Go"; author = { name = "Bob"; age = 42 } }
 
 let () =
   print_endline (__show (book.author.name));

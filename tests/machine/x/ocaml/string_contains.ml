@@ -24,7 +24,7 @@ let string_contains s sub =
   in aux 0
 
 
-let s = "catch"
+let s : string = "catch"
 
 let () =
   print_endline (__show (string_contains s "cat"));

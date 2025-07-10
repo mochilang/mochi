@@ -16,7 +16,9 @@ let rec __show v =
     | _ -> "<value>"
 
 
-let m = [("a",Obj.repr (1));("b",Obj.repr (2))]
+type record1 = { mutable a : int; mutable b : int }
+
+let m : (string * Obj.t) list = { a = 1; b = 2 }
 
 let () =
   print_endline (__show ((List.mem_assoc "a" m)));

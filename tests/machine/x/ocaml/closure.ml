@@ -19,7 +19,7 @@ let rec __show v =
 let rec makeAdder (n : int) : int -> int =
   fun x -> (x + n)
 
-let add10 = makeAdder 10
+let add10 : int -> int = makeAdder 10
 
 let () =
   print_endline (__show (add10 7));

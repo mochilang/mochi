@@ -16,7 +16,7 @@ let rec __show v =
     | _ -> "<value>"
 
 
-let square = fun x -> (x * x)
+let square : int -> int = fun x -> (x * x)
 
 let () =
   print_endline (__show (square 6));

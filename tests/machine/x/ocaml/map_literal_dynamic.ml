@@ -16,9 +16,11 @@ let rec __show v =
     | _ -> "<value>"
 
 
+type record1 = { mutable a : int; mutable b : int }
+
 let x : int ref = ref 3
 let y : int ref = ref 4
-let m : (string * Obj.t) list ref = ref [("a",Obj.repr ((!x)));("b",Obj.repr ((!y)))]
+let m : (string * Obj.t) list ref = ref { a = (!x); b = (!y) }
 
 let () =
   print_endline (__show (Obj.obj (List.assoc "a" (!m))) ^ " " ^ __show (Obj.obj (List.assoc "b" (!m))));

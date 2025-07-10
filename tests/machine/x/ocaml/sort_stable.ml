@@ -16,8 +16,10 @@ let rec __show v =
     | _ -> "<value>"
 
 
-let items = [[("n",Obj.repr (1));("v",Obj.repr ("a"))];[("n",Obj.repr (1));("v",Obj.repr ("b"))];[("n",Obj.repr (2));("v",Obj.repr ("c"))]]
-let result = (let __res0 = ref [] in
+type record1 = { mutable n : int; mutable v : string }
+
+let items : record1 list = [{ n = 1; v = "a" };{ n = 1; v = "b" };{ n = 2; v = "c" }]
+let result : Obj.t list = (let __res0 = ref [] in
   List.iter (fun i ->
       __res0 := Obj.obj (List.assoc "v" i) :: !__res0;
   ) items;

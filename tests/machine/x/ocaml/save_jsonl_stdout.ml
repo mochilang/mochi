@@ -7,7 +7,9 @@ let save_jsonl rows path =
   if path <> "-" then close_out oc
 
 
-let people = [[("name",Obj.repr ("Alice"));("age",Obj.repr (30))];[("name",Obj.repr ("Bob"));("age",Obj.repr (25))]]
+type record1 = { mutable name : string; mutable age : int }
+
+let people : record1 list = [{ name = "Alice"; age = 30 };{ name = "Bob"; age = 25 }]
 
 let () =
   save_jsonl people "-";

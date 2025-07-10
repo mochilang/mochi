@@ -19,7 +19,7 @@ let rec __show v =
 let rec add (a : int) (b : int) : int =
   (a + b)
 
-let add5 = add 5
+let add5 : int = add 5
 
 let () =
   print_endline (__show (add5 3));

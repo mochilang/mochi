@@ -16,7 +16,7 @@ let rec __show v =
     | _ -> "<value>"
 
 
-let s = "catch"
+let s : string = "catch"
 
 let () =
   print_endline (__show ((List.mem "cat" s)));
