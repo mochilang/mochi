@@ -195,6 +195,19 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 		if lst := listLiteral(l.Value); lst != nil {
 			if inner := listLiteral(lst.Elems[0]); inner != nil {
 				cols := len(inner.Elems)
+				c.writelnDecl(fmt.Sprintf("%s, dimension(%d,%d) :: %s", typ, len(lst.Elems), cols, l.Name))
+			} else {
+				c.writelnDecl(fmt.Sprintf("%s, dimension(%d) :: %s", typ, len(lst.Elems), l.Name))
+			}
+		} else {
+			c.writelnDecl(fmt.Sprintf("%s :: %s", typ, l.Name))
+		}
+		c.declared[l.Name] = true
+	}
+	if l.Value != nil {
+		if lst := listLiteral(l.Value); lst != nil {
+			if inner := listLiteral(lst.Elems[0]); inner != nil {
+				cols := len(inner.Elems)
 				flat := make([]string, 0, len(lst.Elems)*cols)
 				for _, it := range lst.Elems {
 					in := listLiteral(it)
@@ -209,8 +222,7 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 						flat = append(flat, v)
 					}
 				}
-				c.writeln(fmt.Sprintf("%s, dimension(%d,%d) :: %s = reshape((/%s/),(/%d,%d/))", typ, len(lst.Elems), cols, l.Name, strings.Join(flat, ","), len(lst.Elems), cols))
-				c.declared[l.Name] = true
+				c.writeln(fmt.Sprintf("%s = reshape((/%s/),(/%d,%d/))", l.Name, strings.Join(flat, ","), len(lst.Elems), cols))
 				return nil
 			}
 			elems := make([]string, len(lst.Elems))
@@ -221,14 +233,9 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 				}
 				elems[i] = v
 			}
-			c.writeln(fmt.Sprintf("%s, dimension(%d) :: %s = (/%s/)", typ, len(lst.Elems), l.Name, strings.Join(elems, ",")))
-			c.declared[l.Name] = true
+			c.writeln(fmt.Sprintf("%s = (/%s/)", l.Name, strings.Join(elems, ",")))
 			return nil
 		}
-		c.writeln(fmt.Sprintf("%s :: %s", typ, l.Name))
-		c.declared[l.Name] = true
-	}
-	if l.Value != nil {
 		val, err := c.compileExpr(l.Value)
 		if err != nil {
 			return err
