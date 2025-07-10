@@ -2,8 +2,9 @@
 
 This directory contains Erlang source code generated from the Mochi programs in `tests/vm/valid`.
 
-Compiled programs: 97/97
+Compiled programs: 76/97
 
+Checklist:
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -26,15 +27,15 @@ Compiled programs: 97/97
 - [x] fun_call
 - [x] fun_expr_in_let
 - [x] fun_three_args
-- [x] group_by
-- [x] group_by_conditional_sum
-- [x] group_by_having
-- [x] group_by_join
-- [x] group_by_left_join
-- [x] group_by_multi_join
-- [x] group_by_multi_join_sort
-- [x] group_by_sort
-- [x] group_items_iteration
+- [ ] group_by
+- [ ] group_by_conditional_sum
+- [ ] group_by_having
+- [ ] group_by_join
+- [ ] group_by_left_join
+- [ ] group_by_multi_join
+- [ ] group_by_multi_join_sort
+- [ ] group_by_sort
+- [ ] group_items_iteration
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
@@ -42,7 +43,7 @@ Compiled programs: 97/97
 - [x] in_operator_extended
 - [x] inner_join
 - [x] join_multi
-- [x] json_builtin
+- [ ] json_builtin
 - [x] left_join
 - [x] left_join_multi
 - [x] len_builtin
@@ -56,11 +57,11 @@ Compiled programs: 97/97
 - [x] load_yaml
 - [x] map_assign
 - [x] map_in_operator
-- [x] map_index
+- [ ] map_index
 - [x] map_int_key
-- [x] map_literal_dynamic
+- [ ] map_literal_dynamic
 - [x] map_membership
-- [x] map_nested_assign
+- [ ] map_nested_assign
 - [x] match_expr
 - [x] match_full
 - [x] math_ops
@@ -68,20 +69,20 @@ Compiled programs: 97/97
 - [x] min_max_builtin
 - [x] nested_function
 - [x] order_by_map
-- [x] outer_join
+- [ ] outer_join
 - [x] partial_application
 - [x] print_hello
 - [x] pure_fold
-- [x] pure_global_fold
-- [x] query_sum_select
+- [ ] pure_global_fold
+- [ ] query_sum_select
 - [x] record_assign
-- [x] right_join
+- [ ] right_join
 - [x] save_jsonl_stdout
 - [x] short_circuit
 - [x] slice
 - [x] sort_stable
 - [x] str_builtin
-- [x] string_compare
+- [ ] string_compare
 - [x] string_concat
 - [x] string_contains
 - [x] string_in_operator
@@ -89,14 +90,14 @@ Compiled programs: 97/97
 - [x] string_prefix_slice
 - [x] substring_builtin
 - [x] sum_builtin
-- [x] tail_recursion
+- [ ] tail_recursion
 - [x] test_block
 - [x] tree_sum
-- [x] two-sum
+- [ ] two-sum
 - [x] typed_let
 - [x] typed_var
 - [x] unary_neg
-- [x] update_stmt
+- [ ] update_stmt
 - [x] user_type_literal
 - [x] values_builtin
 - [x] var_assignment
@@ -104,7 +105,7 @@ Compiled programs: 97/97
 
 ## Remaining tasks
 
-- [x] Implement `exists` query compilation
-- [x] Basic join support
-- [x] Support group-by queries
-- [x] Add code generation for remaining Mochi examples
+- [ ] Implement `exists` query compilation
+- [ ] Basic join support
+- [ ] Support group-by queries
+- [ ] Add code generation for remaining Mochi examples

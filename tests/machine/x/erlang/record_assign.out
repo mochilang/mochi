@@ -1,1 +1,2 @@
+tests/machine/x/erlang_new/record_assign.erl:5:5: Warning: variable 'C0' is unused
 0
