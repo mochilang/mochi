@@ -1289,6 +1289,21 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			return fmt.Sprintf("length %s", strings.Join(args, " ")), nil
 		}
+		if p.Call.Func == "exists" {
+			if len(args) == 1 {
+				t := c.inferExprType(p.Call.Args[0])
+				switch t.(type) {
+				case types.MapType:
+					c.usesMap = true
+					return fmt.Sprintf("Map.size %s > 0", args[0]), nil
+				case types.ListType, types.GroupType:
+					return fmt.Sprintf("not (null %s)", args[0]), nil
+				case types.StringType:
+					return fmt.Sprintf("not (null %s)", args[0]), nil
+				}
+			}
+			return fmt.Sprintf("not (null %s)", strings.Join(args, " ")), nil
+		}
 		if p.Call.Func == "avg" && len(args) == 1 {
 			return fmt.Sprintf("(sum %s `div` length %s)", args[0], args[0]), nil
 		}

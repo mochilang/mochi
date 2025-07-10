@@ -10,9 +10,9 @@ import qualified Data.List as List
 
 
 
-data = [1, 2]
+_data = [1, 2]
 
-flag = exists [x | x <- filter (\x -> (x == 1)) data]
+flag = not (null [x | x <- filter (\x -> (x == 1)) _data])
 
 main :: IO ()
 main = do
