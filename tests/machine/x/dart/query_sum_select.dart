@@ -4,9 +4,9 @@ var result = (() {
   var _q0 = <dynamic>[];
   for (var n in nums) {
     if (!(n > 1)) continue;
-    _q0.add(n.reduce((a, b) => a + b));
+    _q0.add(n);
   }
-  return _q0;
+  return _q0.reduce((a, b) => a + b);
 })();
 
 void main() {

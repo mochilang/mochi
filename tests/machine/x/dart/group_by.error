@@ -1,4 +1,0 @@
-line 38: exit status 255
-                  return _q4;
-                })().reduce((a, b) => a + b) /
-                (() {

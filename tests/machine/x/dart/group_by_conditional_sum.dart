@@ -10,31 +10,37 @@ var result = (() {
   var _q0 = <dynamic>[];
   var _g1 = <dynamic, List<dynamic>>{};
   for (var i in items) {
-    var _k4 = i['cat'];
-    _g1.putIfAbsent(_k4, () => <dynamic>[]).add({'i': i});
+    var _k6 = i['cat'];
+    _g1.putIfAbsent(_k6, () => <dynamic>[]).add(i);
   }
   for (var entry in _g1.entries) {
     var g = entry.value;
-    var _k4 = entry.key;
+    var _k6 = entry.key;
     _q0.add([
-      _k4,
+      _k6,
       {
-        'cat': _k4,
+        'cat': _k6,
         'share':
             (() {
-              var _q5 = <dynamic>[];
-              for (var x in g) {
-                _q5.add((x['flag'] ? x['val'] : 0));
-              }
-              return _q5;
-            })().reduce((a, b) => a + b) /
+              var _t8 = (() {
+                var _q7 = <dynamic>[];
+                for (var x in g) {
+                  _q7.add((x['flag'] ? x['val'] : 0));
+                }
+                return _q7;
+              })();
+              return _t8.reduce((a, b) => a + b);
+            })() /
             (() {
-              var _q6 = <dynamic>[];
-              for (var x in g) {
-                _q6.add(x['val']);
-              }
-              return _q6;
-            })().reduce((a, b) => a + b),
+              var _t10 = (() {
+                var _q9 = <dynamic>[];
+                for (var x in g) {
+                  _q9.add(x['val']);
+                }
+                return _q9;
+              })();
+              return _t10.reduce((a, b) => a + b);
+            })(),
       },
     ]);
   }
