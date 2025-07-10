@@ -321,6 +321,30 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		envTyp, _ := c.env.GetVar(s.Name)
 		if s.Type != nil {
 			t = c.resolveTypeRef(s.Type)
+			if s.Value != nil {
+				// If the declared type is a map with string keys and any values,
+				// but the initializer is a map literal, infer a struct type from
+				// the literal to avoid runtime casts.
+				if mt, ok := t.(types.MapType); ok && isString(mt.Key) && isAny(mt.Value) {
+					if ml := s.Value.Binary.Left.Value.Target.Map; ml != nil {
+						if st, ok := c.inferStructFromMap(ml, s.Name); ok {
+							t = st
+							c.env.SetStruct(st.Name, st)
+							c.compileStructType(st)
+						}
+					}
+				} else if lt, ok := t.(types.ListType); ok {
+					if mt, ok2 := lt.Elem.(types.MapType); ok2 && isString(mt.Key) && isAny(mt.Value) {
+						if ll := s.Value.Binary.Left.Value.Target.List; ll != nil {
+							if st, ok := c.inferStructFromList(ll, s.Name); ok {
+								t = types.ListType{Elem: st}
+								c.env.SetStruct(st.Name, st)
+								c.compileStructType(st)
+							}
+						}
+					}
+				}
+			}
 		} else if envTyp != nil {
 			t = envTyp
 		} else if s.Value != nil {
@@ -405,6 +429,27 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 		envTyp, _ := c.env.GetVar(s.Name)
 		if s.Type != nil {
 			typ = c.resolveTypeRef(s.Type)
+			if s.Value != nil {
+				if mt, ok := typ.(types.MapType); ok && isString(mt.Key) && isAny(mt.Value) {
+					if ml := s.Value.Binary.Left.Value.Target.Map; ml != nil {
+						if st, ok := c.inferStructFromMap(ml, s.Name); ok {
+							typ = st
+							c.env.SetStruct(st.Name, st)
+							c.compileStructType(st)
+						}
+					}
+				} else if lt, ok := typ.(types.ListType); ok {
+					if mt, ok2 := lt.Elem.(types.MapType); ok2 && isString(mt.Key) && isAny(mt.Value) {
+						if ll := s.Value.Binary.Left.Value.Target.List; ll != nil {
+							if st, ok := c.inferStructFromList(ll, s.Name); ok {
+								typ = types.ListType{Elem: st}
+								c.env.SetStruct(st.Name, st)
+								c.compileStructType(st)
+							}
+						}
+					}
+				}
+			}
 		} else if envTyp != nil {
 			typ = envTyp
 		} else if s.Value != nil {
