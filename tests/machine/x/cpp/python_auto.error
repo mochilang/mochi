@@ -1,1 +1,11 @@
-line 0: compile error: unsupported statement at 1:1
+line 14: ../../../tests/machine/x/cpp/python_auto.cpp: In function ‘int main()’:
+../../../tests/machine/x/cpp/python_auto.cpp:14:40: error: expected primary-expression before ‘.’ token
+   14 |     std::cout << std::boolalpha << math.sqrt(16);
+      |                                        ^
+../../../tests/machine/x/cpp/python_auto.cpp:18:40: error: expected primary-expression before ‘.’ token
+   18 |     std::cout << std::boolalpha << math.pi;
+      |                                        ^
+
+ 13 |   {
+ 14 |     std::cout << std::boolalpha << math.sqrt(16);
+ 15 |     std::cout << std::endl;

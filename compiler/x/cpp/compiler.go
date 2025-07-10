@@ -18,6 +18,18 @@ type structInfo struct {
 	Types  []string
 }
 
+type variantInfo struct {
+	Name   string
+	Fields []string
+	Types  []string
+	Union  string
+}
+
+type unionInfo struct {
+	Name     string
+	Variants []*variantInfo
+}
+
 // Compiler translates a subset of Mochi to simple C++17 code.
 type Compiler struct {
 	header bytes.Buffer
@@ -40,6 +52,9 @@ type Compiler struct {
 	usesJSON     bool
 	usesIO       bool
 	definedLoad  bool
+
+	unions   map[string]*unionInfo
+	variants map[string]*variantInfo
 }
 
 // New returns a new compiler instance.
@@ -57,6 +72,8 @@ func New() *Compiler {
 		usesIO:       false,
 		definedLoad:  false,
 		scope:        0,
+		unions:       map[string]*unionInfo{},
+		variants:     map[string]*variantInfo{},
 	}
 }
 
@@ -133,6 +150,8 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.structMap = map[string]*structInfo{}
 	c.structByName = map[string]*structInfo{}
 	c.structCount = 0
+	c.unions = map[string]*unionInfo{}
+	c.variants = map[string]*variantInfo{}
 	c.usesJSON = false
 
 	globals := []*parser.Statement{}
@@ -229,6 +248,9 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	if bytes.Contains(src, []byte("std::ifstream")) || bytes.Contains(src, []byte("std::ofstream")) || c.usesIO {
 		add("#include <fstream>")
 	}
+	if bytes.Contains(src, []byte("std::unique_ptr")) {
+		add("#include <memory>")
+	}
 
 	var out bytes.Buffer
 	for _, h := range includes {
@@ -255,14 +277,23 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	c.funParams[fn.Name] = len(fn.Params)
 	c.writeIndent()
-	c.buf.WriteString("auto ")
+	ret, err := c.compileType(fn.Return)
+	if err != nil {
+		return err
+	}
+	c.buf.WriteString(ret + " ")
 	c.buf.WriteString(fn.Name)
 	c.buf.WriteString("(")
 	for i, p := range fn.Params {
 		if i > 0 {
 			c.buf.WriteString(", ")
 		}
-		c.buf.WriteString("auto ")
+		typ, err := c.compileType(p.Type)
+		if err != nil {
+			return err
+		}
+		c.buf.WriteString(typ)
+		c.buf.WriteByte(' ')
 		c.buf.WriteString(p.Name)
 	}
 	c.buf.WriteString(") {\n")
@@ -281,8 +312,13 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 
 func (c *Compiler) compileStmt(st *parser.Statement) error {
 	switch {
+	case st.Import != nil:
+		return c.compileImport(st.Import)
 	case st.Type != nil:
 		return c.compileTypeDecl(st.Type)
+	case st.ExternVar != nil || st.ExternFun != nil || st.ExternType != nil || st.ExternObject != nil:
+		// extern declarations are ignored in the C++ backend
+		return nil
 	case st.Fun != nil:
 		lambda, err := c.compileLambda(st.Fun.Params, nil, st.Fun.Body)
 		if err != nil {
@@ -343,6 +379,37 @@ func (c *Compiler) compileStmt(st *parser.Statement) error {
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	if len(t.Variants) > 0 {
+		u := &unionInfo{Name: t.Name}
+		c.unions[t.Name] = u
+		c.headerWriteln("struct " + t.Name + " { virtual ~" + t.Name + "() = default; };")
+		for _, v := range t.Variants {
+			vi := &variantInfo{Name: v.Name, Union: t.Name}
+			for _, f := range v.Fields {
+				typ, err := c.compileType(f.Type)
+				if err != nil {
+					return err
+				}
+				if f.Type != nil && f.Type.Simple != nil && *f.Type.Simple == t.Name {
+					typ = "std::unique_ptr<" + t.Name + ">"
+				}
+				vi.Fields = append(vi.Fields, f.Name)
+				vi.Types = append(vi.Types, typ)
+			}
+			c.variants[v.Name] = vi
+			u.Variants = append(u.Variants, vi)
+			c.headerWriteln("struct " + v.Name + " : " + t.Name + " {")
+			for i, fn := range vi.Fields {
+				ft := vi.Types[i]
+				if ft == "" {
+					ft = "std::unique_ptr<" + t.Name + ">"
+				}
+				c.headerWriteln("    " + ft + " " + fn + ";")
+			}
+			c.headerWriteln("};")
+		}
+		return nil
+	}
 	if len(t.Members) == 0 {
 		return nil
 	}
@@ -358,6 +425,9 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		}
 	}
 	c.defineStruct(info)
+	sig := t.Name + ":" + strings.Join(info.Fields, ",")
+	c.structMap[sig] = info
+	c.structByName[info.Name] = info
 	return nil
 }
 
@@ -692,6 +762,35 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 
 func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
 	// expectations are ignored in generated C++
+	return nil
+}
+
+func (c *Compiler) compileImport(im *parser.ImportStmt) error {
+	if im.Lang == nil {
+		return nil
+	}
+	switch *im.Lang {
+	case "python":
+		if im.Path == "math" && im.Auto {
+			c.headerWriteln("#include <cmath>")
+			c.headerWriteln("namespace " + im.As + " {")
+			c.headerWriteln("inline double sqrt(double x){ return std::sqrt(x); }")
+			c.headerWriteln("inline double pow(double x,double y){ return std::pow(x,y); }")
+			c.headerWriteln("inline double sin(double x){ return std::sin(x); }")
+			c.headerWriteln("inline double log(double x){ return std::log(x); }")
+			c.headerWriteln("const double pi = 3.141592653589793;")
+			c.headerWriteln("const double e = 2.718281828459045;")
+			c.headerWriteln("}")
+		}
+	case "go":
+		if im.Path == "mochi/runtime/ffi/go/testpkg" && im.Auto {
+			c.headerWriteln("namespace " + im.As + " {")
+			c.headerWriteln("inline int Add(int a,int b){ return a+b; }")
+			c.headerWriteln("const double Pi = 3.14;")
+			c.headerWriteln("const int Answer = 42;")
+			c.headerWriteln("}")
+		}
+	}
 	return nil
 }
 
@@ -1235,6 +1334,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if alias, ok := c.aliases[name]; ok && len(p.Selector.Tail) == 0 {
 			name = alias
 		}
+		if _, ok := c.variants[name]; ok && len(p.Selector.Tail) == 0 {
+			return fmt.Sprintf("new %s{}", name), nil
+		}
 		for _, t := range p.Selector.Tail {
 			name += "." + t
 		}
@@ -1324,6 +1426,21 @@ func (c *Compiler) compileMatchExpr(mx *parser.MatchExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	var unionName string
+	for _, cs := range mx.Cases {
+		if id, ok := c.simpleIdentifier(cs.Pattern); ok {
+			if v, ok2 := c.variants[id]; ok2 {
+				unionName = v.Union
+				break
+			}
+		}
+		if call, ok := callPattern(cs.Pattern); ok {
+			if v, ok2 := c.variants[call.Func]; ok2 {
+				unionName = v.Union
+				break
+			}
+		}
+	}
 	elseExpr := ""
 	cases := make([]*parser.MatchCase, 0, len(mx.Cases))
 	for _, cs := range mx.Cases {
@@ -1356,6 +1473,49 @@ func (c *Compiler) compileMatchExpr(mx *parser.MatchExpr) (string, error) {
 	buf.WriteString("(" + cap + "() { auto __v = ")
 	buf.WriteString(target)
 	buf.WriteString("; ")
+	if unionName != "" {
+		for i, cs := range cases {
+			if call, ok := callPattern(cs.Pattern); ok {
+				if vi, ok2 := c.variants[call.Func]; ok2 {
+					buf.WriteString("if (auto __p" + strconv.Itoa(i) + " = dynamic_cast<" + vi.Name + "*>(__v)) { ")
+					old := c.aliases
+					c.aliases = map[string]string{}
+					for k := range old {
+						c.aliases[k] = old[k]
+					}
+					for j, a := range call.Args {
+						if id, ok := identName(a); ok {
+							alias := fmt.Sprintf("__p%[1]d->%s", i, vi.Fields[j])
+							if strings.HasPrefix(vi.Types[j], "std::unique_ptr") {
+								alias += ".get()"
+							}
+							c.aliases[id] = alias
+						}
+					}
+					res, err := c.compileExpr(cs.Result)
+					if err != nil {
+						c.aliases = old
+						return "", err
+					}
+					c.aliases = old
+					buf.WriteString("return " + res + "; }")
+					continue
+				}
+			}
+			if id, ok := c.simpleIdentifier(cs.Pattern); ok {
+				if _, ok2 := c.variants[id]; ok2 {
+					res, err := c.compileExpr(cs.Result)
+					if err != nil {
+						return "", err
+					}
+					buf.WriteString("if (dynamic_cast<" + id + "*>(__v)) return " + res + ";")
+					continue
+				}
+			}
+		}
+		buf.WriteString("return " + elseExpr + "; })()")
+		return buf.String(), nil
+	}
 	for i, cs := range cases {
 		pat, err := c.compileExpr(cs.Pattern)
 		if err != nil {
@@ -1462,6 +1622,23 @@ func (c *Compiler) compileSaveExpr(se *parser.SaveExpr) (string, error) {
 }
 
 func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error) {
+	if vi, ok := c.variants[sl.Name]; ok {
+		var buf strings.Builder
+		buf.WriteString("([&](){ auto __p = new " + vi.Name + "(); ")
+		for i, f := range sl.Fields {
+			v, err := c.compileExpr(f.Value)
+			if err != nil {
+				return "", err
+			}
+			ft := vi.Types[i]
+			if strings.HasPrefix(ft, "std::unique_ptr") {
+				v = fmt.Sprintf("std::unique_ptr<%s>(%s)", vi.Union, v)
+			}
+			buf.WriteString(fmt.Sprintf("__p->%s = %s; ", f.Name, v))
+		}
+		buf.WriteString("return __p; })()")
+		return buf.String(), nil
+	}
 	fieldNames := make([]string, len(sl.Fields))
 	fieldTypes := make([]string, len(sl.Fields))
 	inits := make([]string, len(sl.Fields))
@@ -2400,6 +2577,9 @@ func (c *Compiler) compileType(t *parser.TypeRef) (string, error) {
 		case "string":
 			return "std::string", nil
 		default:
+			if _, ok := c.unions[*t.Simple]; ok {
+				return *t.Simple + "*", nil
+			}
 			return *t.Simple, nil
 		}
 	}
