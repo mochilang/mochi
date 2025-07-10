@@ -1,8 +1,9 @@
 #include <iostream>
 #include <vector>
 
+std::vector<int> a = std::vector<decltype(1)>{1, 2};
+
 int main() {
-  std::vector<int> a = std::vector<decltype(1)>{1, 2};
   {
     auto __tmp1 = ([&](auto v) {
       v.push_back(3);

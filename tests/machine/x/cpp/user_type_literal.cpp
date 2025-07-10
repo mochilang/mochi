@@ -8,16 +8,17 @@ struct __struct2 {
   decltype(std::string("Go")) title;
   decltype(__struct1{std::string("Bob"), 42}) author;
 };
+struct Person {
+  std::string name;
+  int age;
+};
+struct Book {
+  std::string title;
+  Person author;
+};
+auto book = __struct2{std::string("Go"), __struct1{std::string("Bob"), 42}};
+
 int main() {
-  struct Person {
-    std::string name;
-    int age;
-  };
-  struct Book {
-    std::string title;
-    Person author;
-  };
-  auto book = __struct2{std::string("Go"), __struct1{std::string("Bob"), 42}};
   {
     std::cout << std::boolalpha << book.author.name;
     std::cout << std::endl;

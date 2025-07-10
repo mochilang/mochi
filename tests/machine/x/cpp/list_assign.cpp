@@ -1,8 +1,9 @@
 #include <iostream>
 #include <vector>
 
+std::vector<int> nums = std::vector<decltype(1)>{1, 2};
+
 int main() {
-  std::vector<int> nums = std::vector<decltype(1)>{1, 2};
   nums[1] = 3;
   {
     std::cout << std::boolalpha << nums[1];

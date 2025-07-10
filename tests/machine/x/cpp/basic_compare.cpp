@@ -1,8 +1,9 @@
 #include <iostream>
 
+auto a = (10 - 3);
+auto b = (2 + 2);
+
 int main() {
-  auto a = (10 - 3);
-  auto b = (2 + 2);
   {
     std::cout << std::boolalpha << a;
     std::cout << std::endl;

@@ -6,22 +6,23 @@ struct __struct1 {
   std::string l;
   bool b;
 };
-int main() {
-  std::vector<int> nums = std::vector<decltype(1)>{1, 2};
-  std::vector<std::string> letters = std::vector<decltype(std::string("A"))>{
-      std::string("A"), std::string("B")};
-  std::vector<bool> bools = std::vector<decltype(true)>{true, false};
-  auto combos = ([&]() {
-    std::vector<__struct1> __items;
-    for (auto n : nums) {
-      for (auto l : letters) {
-        for (auto b : bools) {
-          __items.push_back(__struct1{n, l, b});
-        }
+std::vector<int> nums = std::vector<decltype(1)>{1, 2};
+std::vector<std::string> letters =
+    std::vector<decltype(std::string("A"))>{std::string("A"), std::string("B")};
+std::vector<bool> bools = std::vector<decltype(true)>{true, false};
+auto combos = ([]() {
+  std::vector<__struct1> __items;
+  for (auto n : nums) {
+    for (auto l : letters) {
+      for (auto b : bools) {
+        __items.push_back(__struct1{n, l, b});
       }
     }
-    return __items;
-  })();
+  }
+  return __items;
+})();
+
+int main() {
   {
     std::cout << std::boolalpha
               << std::string("--- Cross Join of three lists ---");

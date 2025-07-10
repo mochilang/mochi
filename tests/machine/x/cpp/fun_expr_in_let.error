@@ -1,0 +1,7 @@
+line 3: ../../../tests/machine/x/cpp/fun_expr_in_let.cpp:3:16: error: non-local lambda expression cannot have a capture-default
+    3 | auto square = [=](int x) { return (x * x); };
+      |                ^
+
+  2 | 
+  3 | auto square = [=](int x) { return (x * x); };
+  4 | 

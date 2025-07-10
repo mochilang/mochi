@@ -6,18 +6,19 @@ struct __struct1 {
   decltype(17) age;
   decltype(std::string("minor")) status;
 };
+struct Person {
+  std::string name;
+  int age;
+  std::string status;
+};
+auto people = std::vector<decltype(__struct1{std::string("Alice"), 17,
+                                             std::string("minor")})>{
+    __struct1{std::string("Alice"), 17, std::string("minor")},
+    __struct1{std::string("Bob"), 25, std::string("unknown")},
+    __struct1{std::string("Charlie"), 18, std::string("unknown")},
+    __struct1{std::string("Diana"), 16, std::string("minor")}};
+
 int main() {
-  struct Person {
-    std::string name;
-    int age;
-    std::string status;
-  };
-  auto people = std::vector<decltype(__struct1{std::string("Alice"), 17,
-                                               std::string("minor")})>{
-      __struct1{std::string("Alice"), 17, std::string("minor")},
-      __struct1{std::string("Bob"), 25, std::string("unknown")},
-      __struct1{std::string("Charlie"), 18, std::string("unknown")},
-      __struct1{std::string("Diana"), 16, std::string("minor")}};
   for (auto &__tmp1 : people) {
     if ((__tmp1.age >= 18)) {
       __tmp1.status = std::string("adult");

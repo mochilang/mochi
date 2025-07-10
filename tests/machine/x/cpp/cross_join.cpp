@@ -16,22 +16,23 @@ struct __struct3 {
   decltype(std::declval<__struct1>().name) pairedCustomerName;
   decltype(std::declval<__struct2>().total) orderTotal;
 };
-int main() {
-  std::vector<__struct1> customers =
-      std::vector<decltype(__struct1{1, std::string("Alice")})>{
-          __struct1{1, std::string("Alice")}, __struct1{2, std::string("Bob")},
-          __struct1{3, std::string("Charlie")}};
-  std::vector<__struct2> orders = std::vector<decltype(__struct2{100, 1, 250})>{
-      __struct2{100, 1, 250}, __struct2{101, 2, 125}, __struct2{102, 1, 300}};
-  auto result = ([&]() {
-    std::vector<__struct3> __items;
-    for (auto o : orders) {
-      for (auto c : customers) {
-        __items.push_back(__struct3{o.id, o.customerId, c.name, o.total});
-      }
+std::vector<__struct1> customers =
+    std::vector<decltype(__struct1{1, std::string("Alice")})>{
+        __struct1{1, std::string("Alice")}, __struct1{2, std::string("Bob")},
+        __struct1{3, std::string("Charlie")}};
+std::vector<__struct2> orders = std::vector<decltype(__struct2{100, 1, 250})>{
+    __struct2{100, 1, 250}, __struct2{101, 2, 125}, __struct2{102, 1, 300}};
+auto result = ([]() {
+  std::vector<__struct3> __items;
+  for (auto o : orders) {
+    for (auto c : customers) {
+      __items.push_back(__struct3{o.id, o.customerId, c.name, o.total});
     }
-    return __items;
-  })();
+  }
+  return __items;
+})();
+
+int main() {
   {
     std::cout << std::boolalpha
               << std::string("--- Cross Join: All order-customer pairs ---");

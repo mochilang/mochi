@@ -5,6 +5,7 @@ struct __struct1 {
   decltype(2) value;
   decltype(Leaf) right;
 };
+
 auto sum_tree(auto t) {
   return ([&]() {
     auto __v = t;

@@ -1,32 +1,32 @@
-line 77: ../../../tests/machine/x/cpp/group_by_left_join.cpp: In lambda function:
-../../../tests/machine/x/cpp/group_by_left_join.cpp:77:51: error: no match for ‘operator!’ (operand type is ‘__struct2’)
-   77 |                                               if (!(r.o))
-      |                                                   ^~~~~~
-../../../tests/machine/x/cpp/group_by_left_join.cpp:77:51: note: candidate: ‘operator!(bool)’ (built-in)
-../../../tests/machine/x/cpp/group_by_left_join.cpp:77:51: note:   no known conversion for argument 1 from ‘__struct2’ to ‘bool’
+line 76: ../../../tests/machine/x/cpp/group_by_left_join.cpp: In lambda function:
+../../../tests/machine/x/cpp/group_by_left_join.cpp:76:49: error: no match for ‘operator!’ (operand type is ‘__struct2’)
+   76 |                                             if (!(r.o))
+      |                                                 ^~~~~~
+../../../tests/machine/x/cpp/group_by_left_join.cpp:76:49: note: candidate: ‘operator!(bool)’ (built-in)
+../../../tests/machine/x/cpp/group_by_left_join.cpp:76:49: note:   no known conversion for argument 1 from ‘__struct2’ to ‘bool’
 ../../../tests/machine/x/cpp/group_by_left_join.cpp: In lambda function:
-../../../tests/machine/x/cpp/group_by_left_join.cpp:74:43: warning: narrowing conversion of ‘(int)main()::<lambda()>::<lambda()>().std::vector<__struct3>::size()’ from ‘int’ to ‘bool’ [-Wnarrowing]
-   74 |       __items.push_back(__struct5{g.key, ((int)([&]() {
-      |                                          ~^~~~~~~~~~~~~
-   75 |                                             std::vector<__struct3> __items;
-      |                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   76 |                                             for (auto r : g.items) {
-      |                                             ~~~~~~~~~~~~~~~~~~~~~~~~
-   77 |                                               if (!(r.o))
-      |                                               ~~~~~~~~~~~
-   78 |                                                 continue;
-      |                                                 ~~~~~~~~~
-   79 |                                               __items.push_back(r);
-      |                                               ~~~~~~~~~~~~~~~~~~~~~
-   80 |                                             }
-      |                                             ~
-   81 |                                             return __items;
-      |                                             ~~~~~~~~~~~~~~~
-   82 |                                           })()
-      |                                           ~~~~
-   83 |                                               .size())});
-      |                                               ~~~~~~~~
+../../../tests/machine/x/cpp/group_by_left_join.cpp:73:41: warning: narrowing conversion of ‘(int)<lambda()>::<lambda()>().std::vector<__struct3>::size()’ from ‘int’ to ‘bool’ [-Wnarrowing]
+   73 |     __items.push_back(__struct5{g.key, ((int)([&]() {
+      |                                        ~^~~~~~~~~~~~~
+   74 |                                           std::vector<__struct3> __items;
+      |                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   75 |                                           for (auto r : g.items) {
+      |                                           ~~~~~~~~~~~~~~~~~~~~~~~~
+   76 |                                             if (!(r.o))
+      |                                             ~~~~~~~~~~~
+   77 |                                               continue;
+      |                                               ~~~~~~~~~
+   78 |                                             __items.push_back(r);
+      |                                             ~~~~~~~~~~~~~~~~~~~~~
+   79 |                                           }
+      |                                           ~
+   80 |                                           return __items;
+      |                                           ~~~~~~~~~~~~~~~
+   81 |                                         })()
+      |                                         ~~~~
+   82 |                                             .size())});
+      |                                             ~~~~~~~~
 
- 76 |                                             for (auto r : g.items) {
- 77 |                                               if (!(r.o))
- 78 |                                                 continue;
+ 75 |                                           for (auto r : g.items) {
+ 76 |                                             if (!(r.o))
+ 77 |                                               continue;
