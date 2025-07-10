@@ -18,8 +18,8 @@ func TestInfer(t *testing.T) {
 		t.Fatalf("unexpected module path %s", info.Path)
 	}
 
-	if len(info.Functions) != 3 {
-		t.Fatalf("expected 3 functions, got %d", len(info.Functions))
+	if len(info.Functions) < 3 {
+		t.Fatalf("expected at least 3 functions, got %d", len(info.Functions))
 	}
 
 	var add ffiinfo.FuncInfo

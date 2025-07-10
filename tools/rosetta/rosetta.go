@@ -153,13 +153,22 @@ func ListLanguages(refresh bool) ([]string, error) {
 
 // ListSources lists source file names for a given task and language. It checks local cache first unless refresh is true.
 func ListSources(task, language string, refresh bool) ([]string, error) {
-	localDir := filepath.Join(cacheDir(), "x", language, task)
+	var localDir string
+	if language == "Go" {
+		localDir = filepath.Join(cacheDir(), "x", language)
+	} else {
+		localDir = filepath.Join(cacheDir(), "x", language, task)
+	}
 	if !refresh {
-		if entries, err := os.ReadDir(localDir); err == nil {
-			names := make([]string, 0, len(entries))
-			for _, e := range entries {
-				if !e.IsDir() {
-					names = append(names, e.Name())
+		pattern := filepath.Join(localDir, task+"*")
+		if language != "Go" {
+			pattern = filepath.Join(localDir, "*")
+		}
+		if matches, err := filepath.Glob(pattern); err == nil && len(matches) > 0 {
+			names := make([]string, 0, len(matches))
+			for _, m := range matches {
+				if fi, err := os.Stat(m); err == nil && !fi.IsDir() {
+					names = append(names, filepath.Base(m))
 				}
 			}
 			if len(names) > 0 {
@@ -195,10 +204,16 @@ func ListSources(task, language string, refresh bool) ([]string, error) {
 }
 
 // Download retrieves the named source code for a task and language. Content is
-// cached under tests/rosetta/x/LANGUAGE/TASK/FILE. Go files are prefixed with a
-// build tag so that they are ignored by the Go toolchain.
+// cached under tests/rosetta/x/LANGUAGE. Go files are stored directly as
+// TASK.go (or TASK-1.go, etc.) and are prefixed with a build tag so that they
+// are ignored by the Go toolchain.
 func Download(task, language, name string, refresh bool) ([]byte, error) {
-	localPath := filepath.Join(cacheDir(), "x", language, task, name)
+	var localPath string
+	if language == "Go" {
+		localPath = filepath.Join(cacheDir(), "x", language, name)
+	} else {
+		localPath = filepath.Join(cacheDir(), "x", language, task, name)
+	}
 	if !refresh {
 		if b, err := os.ReadFile(localPath); err == nil {
 			return b, nil

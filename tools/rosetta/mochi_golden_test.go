@@ -10,7 +10,6 @@ import (
 	"strings"
 	"testing"
 
-	"mochi/golden"
 	"mochi/parser"
 	"mochi/runtime/vm"
 	"mochi/types"
@@ -20,30 +19,39 @@ func TestMochiTasks(t *testing.T) {
 	root := findRepoRoot(t)
 	base := filepath.Join(root, "tests/rosetta/x/Mochi")
 
-	entries, err := os.ReadDir(base)
+	outs, err := filepath.Glob(filepath.Join(base, "*.out"))
 	if err != nil {
-		t.Fatalf("read dir: %v", err)
+		t.Fatalf("glob: %v", err)
 	}
 
-	found := false
-	for _, e := range entries {
-		if !e.IsDir() {
-			continue
-		}
-		taskDir := filepath.Join(base, e.Name())
-		outs, err := filepath.Glob(filepath.Join(taskDir, "*.out"))
-		if err != nil {
-			t.Fatalf("glob: %v", err)
-		}
-		if len(outs) == 0 {
-			continue
-		}
-		found = true
-		golden.Run(t, filepath.Join("tests/rosetta/x/Mochi", e.Name()), ".mochi", ".out", runMochi)
-	}
-
-	if !found {
+	if len(outs) == 0 {
 		t.Fatal("no Mochi Rosetta tests found")
+	}
+
+	for _, out := range outs {
+		name := strings.TrimSuffix(filepath.Base(out), ".out")
+		src := filepath.Join(base, name+".mochi")
+		if _, err := os.Stat(src); err != nil {
+			t.Fatalf("missing source for %s", name)
+		}
+
+		t.Run(name, func(t *testing.T) {
+			got, err := runMochi(src)
+			if err != nil {
+				t.Fatalf("run error: %v", err)
+			}
+			want, err := os.ReadFile(out)
+			if err != nil {
+				t.Fatalf("read golden: %v", err)
+			}
+
+			got = bytes.TrimSpace(got)
+			want = bytes.TrimSpace(want)
+
+			if !bytes.Equal(got, want) {
+				t.Errorf("golden mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", name, got, want)
+			}
+		})
 	}
 }
 
