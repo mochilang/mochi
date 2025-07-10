@@ -10,7 +10,9 @@ fun toJson(v: Any?): String = when (v) {
     is Iterable<*> -> v.joinToString(prefix = "[", postfix = "]") { toJson(it) }
     else -> toJson(v.toString())
 }
-val m = mutableMapOf("a" to 1, "b" to 2)
+data class M(var a: Int, var b: Int)
+
+val m = M(a = 1, b = 2)
 
 fun main() {
     json(m)

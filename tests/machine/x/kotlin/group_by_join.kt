@@ -10,6 +10,8 @@ fun toBool(v: Any?): Boolean = when (v) {
 }
 
 class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
+data class Stat(var name: Any?, var count: Int)
+
 data class Customer(var id: Int, var name: String)
 
 data class Order(var id: Int, var customerId: Int)
@@ -35,10 +37,10 @@ val stats = run {
             }
         }
     }
-    val __res = mutableListOf<MutableMap<Any?, Any?>>()
+    val __res = mutableListOf<Stat>()
     for (k in __order) {
         val g = __groups[k]!!
-        __res.add((mutableMapOf("name" to g.key, "count" to count(g)) as MutableMap<Any?, Any?>))
+        __res.add(Stat(name = g.key, count = count(g)))
     }
     __res
 }
@@ -46,6 +48,6 @@ val stats = run {
 fun main() {
     println("--- Orders per customer ---")
     for (s in stats) {
-        println(listOf((s as MutableMap<*, *>)["name"], "orders:", (s as MutableMap<*, *>)["count"]).joinToString(" "))
+        println(listOf(s.name, "orders:", s.count).joinToString(" "))
     }
 }

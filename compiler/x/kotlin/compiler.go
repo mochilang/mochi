@@ -1240,6 +1240,13 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	if t := selectorType(q.Select, selEnv); t != nil {
 		selType = t
 	}
+	if ml, ok := mapLiteral(q.Select); ok {
+		if name, ok := c.mapNodes[ml]; ok {
+			if st, ok := c.env.GetStruct(name); ok {
+				selType = st
+			}
+		}
+	}
 
 	oldEnv := c.env
 	// special case: simple right or outer join without extra clauses
@@ -1755,6 +1762,7 @@ func (c *Compiler) discoverStructs(prog *parser.Program) {
 	for _, st := range prog.Statements {
 		var list *parser.ListLiteral
 		var mp *parser.MapLiteral
+		var q *parser.QueryExpr
 		var name string
 		var mutable bool
 		switch {
@@ -1763,12 +1771,18 @@ func (c *Compiler) discoverStructs(prog *parser.Program) {
 			if list == nil {
 				mp, _ = mapLiteral(st.Let.Value)
 			}
+			if ql := st.Let.Value.Binary.Left.Value.Target.Query; ql != nil {
+				q = ql
+			}
 			name = st.Let.Name
 			mutable = false
 		case st.Var != nil && st.Var.Value != nil:
 			list, _ = listLiteral(st.Var.Value)
 			if list == nil {
 				mp, _ = mapLiteral(st.Var.Value)
+			}
+			if ql := st.Var.Value.Binary.Left.Value.Target.Query; ql != nil {
+				q = ql
 			}
 			name = st.Var.Name
 			mutable = true
@@ -1851,6 +1865,31 @@ func (c *Compiler) discoverStructs(prog *parser.Program) {
 			c.env.SetStruct(structName, stype)
 			c.env.SetVar(name, stype, mutable)
 			c.mapNodes[mp] = structName
+		} else if q != nil {
+			if ml, ok := mapLiteral(q.Select); ok {
+				keys := []string{}
+				for _, it := range ml.Items {
+					if k, ok := identName(it.Key); ok {
+						keys = append(keys, k)
+					} else {
+						keys = nil
+						break
+					}
+				}
+				if keys == nil || len(keys) == 0 {
+					continue
+				}
+				fields := map[string]types.Type{}
+				for i, it := range ml.Items {
+					fields[keys[i]] = c.inferExprType(it.Value)
+				}
+				structName := structNameFromVar(name)
+				stype := types.StructType{Name: structName, Fields: fields, Order: keys}
+				c.inferred[structName] = stype
+				c.env.SetStruct(structName, stype)
+				c.env.SetVar(name, types.ListType{Elem: stype}, mutable)
+				c.mapNodes[ml] = structName
+			}
 		}
 	}
 }

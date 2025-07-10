@@ -6,6 +6,8 @@ fun toBool(v: Any?): Boolean = when (v) {
     null -> false
     else -> true
 }
+data class M(var a: Int)
+
 val xs = mutableListOf(1, 2, 3)
 
 val ys = run {
@@ -18,7 +20,7 @@ val ys = run {
     __res
 }
 
-val m = mutableMapOf("a" to 1)
+val m = M(a = 1)
 
 val s = "hello"
 

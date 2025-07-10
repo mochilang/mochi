@@ -7,6 +7,8 @@ fun sum(list: List<Any?>): Int {
 class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
 data class Item(var cat: String, var val: Int, var flag: Boolean)
 
+data class Result(var cat: Any?, var share: Double)
+
 val items = mutableListOf(Item(cat = "a", val = 10, flag = true), Item(cat = "a", val = 5, flag = false), Item(cat = "b", val = 20, flag = true))
 
 val result = run {
@@ -22,10 +24,10 @@ val result = run {
         }
         __g.add(mutableMapOf("i" to i) as MutableMap<Any?, Any?>)
     }
-    val __res = mutableListOf<MutableMap<Any?, Any?>>()
+    val __res = mutableListOf<Result>()
     for (k in __order) {
         val g = __groups[k]!!
-        __res.add((mutableMapOf("cat" to g.key, "share" to sum(run {
+        __res.add(Result(cat = g.key, share = sum(run {
     val __res = mutableListOf<Any?>()
     for (x in g) {
         __res.add(if (toBool(x.flag)) x.val else 0)
@@ -37,7 +39,7 @@ val result = run {
         __res.add(x.val)
     }
     __res
-})) as MutableMap<Any?, Any?>))
+})))
     }
     __res
 }.sortedBy { it.key as Comparable<Any> }

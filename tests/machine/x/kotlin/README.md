@@ -8,7 +8,7 @@ Each generated file now includes only the runtime helper functions that are actu
 
 Compiled: 100/100 programs
 
-Successfully ran: 83/100 programs
+Successfully ran: 88/100 programs
 
 ## Checklist
 
@@ -117,4 +117,4 @@ Successfully ran: 83/100 programs
 
 - [ ] Compare output with reference implementations
 - [x] Emit data classes for uniform map lists
-- [ ] Infer data classes from single map literals
+- [x] Infer data classes from single map literals
