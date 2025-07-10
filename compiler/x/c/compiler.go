@@ -70,7 +70,19 @@ type Compiler struct {
 	currentStruct string
 	autoType      bool
 	captures      map[string]captureInfo
+	capturesByFun map[string][]string
 	uninitVars    map[string]bool
+	pointerVars   map[string]bool
+}
+
+func (c *Compiler) pushPointerVars() map[string]bool {
+	old := c.pointerVars
+	c.pointerVars = map[string]bool{}
+	return old
+}
+
+func (c *Compiler) popPointerVars(old map[string]bool) {
+	c.pointerVars = old
 }
 
 func New(env *types.Env) *Compiler {
@@ -84,7 +96,9 @@ func New(env *types.Env) *Compiler {
 		fetchStructs:  map[string]bool{},
 		externObjects: []string{},
 		captures:      map[string]captureInfo{},
+		capturesByFun: map[string][]string{},
 		uninitVars:    map[string]bool{},
+		pointerVars:   map[string]bool{},
 	}
 }
 
@@ -440,12 +454,16 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 
 func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	oldEnv := c.env
+	oldPtr := c.pushPointerVars()
 	var bodyEnv *types.Env
 	if c.env != nil {
 		bodyEnv = types.NewEnv(c.env)
 		for _, p := range fun.Params {
 			if p.Type != nil {
 				bodyEnv.SetVar(p.Name, resolveTypeRef(p.Type, c.env), true)
+				if _, ok := resolveTypeRef(p.Type, c.env).(types.StructType); ok {
+					c.pointerVars[p.Name] = true
+				}
 			} else {
 				bodyEnv.SetVar(p.Name, types.IntType{}, true)
 			}
@@ -523,6 +541,7 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	if c.env != nil {
 		c.env = prevEnv
 	}
+	c.popPointerVars(oldPtr)
 	c.indent--
 	c.writeln("}")
 	return nil
@@ -530,6 +549,7 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 
 func (c *Compiler) compileTypeMethod(structName string, fun *parser.FunStmt) error {
 	oldEnv := c.env
+	oldPtr := c.pushPointerVars()
 	var bodyEnv *types.Env
 	if c.env != nil {
 		bodyEnv = types.NewEnv(c.env)
@@ -544,6 +564,9 @@ func (c *Compiler) compileTypeMethod(structName string, fun *parser.FunStmt) err
 		for _, p := range fun.Params {
 			if p.Type != nil {
 				bodyEnv.SetVar(p.Name, resolveTypeRef(p.Type, oldEnv), true)
+				if _, ok := resolveTypeRef(p.Type, oldEnv).(types.StructType); ok {
+					c.pointerVars[p.Name] = true
+				}
 			} else {
 				bodyEnv.SetVar(p.Name, types.IntType{}, true)
 			}
@@ -589,6 +612,7 @@ func (c *Compiler) compileTypeMethod(structName string, fun *parser.FunStmt) err
 	if c.env != nil {
 		c.env = prevEnv
 	}
+	c.popPointerVars(oldPtr)
 	c.indent--
 	c.writeln("}")
 	return nil
@@ -712,20 +736,42 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
 	case s.Fun != nil:
 		// Nested function declarations are hoisted to the top level.
-		// Compile the body separately and append to the lambdas slice
-		// so it appears before `main` like other helpers.
+		// Capture variables from the enclosing scope using globals.
 		oldBuf := c.buf
 		oldIndent := c.indent
+		oldCaps := c.captures
+		paramNames := make([]string, len(s.Fun.Params))
+		for i, p := range s.Fun.Params {
+			paramNames[i] = sanitizeName(p.Name)
+		}
+		captured := freeVarsStmt(s.Fun, paramNames)
+		capMap := map[string]captureInfo{}
+		for _, v := range captured {
+			if c.env != nil {
+				if t, err := c.env.GetVar(v); err == nil {
+					g := fmt.Sprintf("%s_%s", sanitizeName(s.Fun.Name), sanitizeName(v))
+					capMap[v] = captureInfo{global: g, typ: t}
+					c.lambdas = append(c.lambdas, fmt.Sprintf("static %s %s;", cTypeFromType(t), g))
+				}
+			}
+		}
+		c.captures = capMap
 		c.buf = bytes.Buffer{}
 		c.indent = 0
 		if err := c.compileFun(s.Fun); err != nil {
+			c.captures = oldCaps
 			c.buf = oldBuf
 			c.indent = oldIndent
 			return err
 		}
-		c.lambdas = append(c.lambdas, c.buf.String())
+		code := c.buf.String()
+		c.lambdas = append(c.lambdas, code)
+		c.captures = oldCaps
 		c.buf = oldBuf
 		c.indent = oldIndent
+		if len(captured) > 0 {
+			c.capturesByFun[sanitizeName(s.Fun.Name)] = captured
+		}
 		if c.env != nil {
 			var params []types.Type
 			for _, p := range s.Fun.Params {
@@ -796,8 +842,14 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			ix := c.compileExpr(idx.Start)
 			target = fmt.Sprintf("%s.data[%s]", target, ix)
 		}
-		for _, f := range s.Assign.Field {
-			target = fmt.Sprintf("%s.%s", target, sanitizeName(f.Name))
+		useArrow := c.pointerVars[lhs] && len(s.Assign.Index) == 0
+		for i, f := range s.Assign.Field {
+			if i == 0 && useArrow {
+				target = fmt.Sprintf("%s->%s", target, sanitizeName(f.Name))
+				useArrow = false
+			} else {
+				target = fmt.Sprintf("%s.%s", target, sanitizeName(f.Name))
+			}
 		}
 		val := c.compileExpr(s.Assign.Value)
 		c.writeln(fmt.Sprintf("%s = %s;", target, val))
@@ -1503,6 +1555,50 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) string {
 	assigns := make([]string, len(captured))
 	for i, v := range captured {
 		assigns[i] = fmt.Sprintf("%s_%s = %s", name, sanitizeName(v), sanitizeName(v))
+	}
+	assigns = append(assigns, name)
+	return fmt.Sprintf("(%s)", strings.Join(assigns, ", "))
+}
+
+func (c *Compiler) compilePartialCall(fnName string, ft types.FuncType, args []*parser.Expr) string {
+	name := fmt.Sprintf("_partial%d", len(c.lambdas))
+	oldBuf := c.buf
+	oldIndent := c.indent
+	c.buf = bytes.Buffer{}
+	c.indent = 0
+	remaining := ft.Params[len(args):]
+	params := make([]string, len(remaining))
+	paramNames := make([]string, len(remaining))
+	for i, p := range remaining {
+		pname := fmt.Sprintf("p%d", i)
+		params[i] = fmt.Sprintf("%s %s", cTypeFromType(p), pname)
+		paramNames[i] = pname
+	}
+	c.writeln(fmt.Sprintf("static %s %s(%s){", cTypeFromType(ft.Return), name, strings.Join(params, ", ")))
+	c.indent++
+	callArgs := make([]string, len(ft.Params))
+	for i := range args {
+		g := fmt.Sprintf("%s_arg%d", name, i)
+		callArgs[i] = g
+	}
+	for i, pn := range paramNames {
+		callArgs[len(args)+i] = pn
+	}
+	c.writeln(fmt.Sprintf("return %s(%s);", sanitizeName(fnName), strings.Join(callArgs, ", ")))
+	c.indent--
+	c.writeln("}")
+	c.lambdas = append(c.lambdas, c.buf.String())
+	for i := range args {
+		t := ft.Params[i]
+		g := fmt.Sprintf("%s_arg%d", name, i)
+		c.lambdas = append(c.lambdas, fmt.Sprintf("static %s %s;", cTypeFromType(t), g))
+	}
+	c.buf = oldBuf
+	c.indent = oldIndent
+	assigns := make([]string, len(args))
+	for i, a := range args {
+		expr := c.compileExpr(a)
+		assigns[i] = fmt.Sprintf("%s_arg%d = %s", name, i, expr)
 	}
 	assigns = append(assigns, name)
 	return fmt.Sprintf("(%s)", strings.Join(assigns, ", "))
@@ -3352,6 +3448,23 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			}
 			args[i] = arg
 		}
+		if c.env != nil {
+			if tv, err := c.env.GetVar(p.Call.Func); err == nil {
+				if ft, ok := tv.(types.FuncType); ok {
+					if len(p.Call.Args) < len(ft.Params) {
+						return c.compilePartialCall(p.Call.Func, ft, p.Call.Args)
+					}
+				}
+			}
+			if caps, ok := c.capturesByFun[sanitizeName(p.Call.Func)]; ok && len(caps) > 0 {
+				assigns := make([]string, len(caps))
+				for i, v := range caps {
+					assigns[i] = fmt.Sprintf("%s_%s = %s", sanitizeName(p.Call.Func), sanitizeName(v), sanitizeName(v))
+				}
+				assigns = append(assigns, fmt.Sprintf("%s(%s)", sanitizeName(p.Call.Func), strings.Join(args, ", ")))
+				return fmt.Sprintf("(%s)", strings.Join(assigns, ", "))
+			}
+		}
 		return fmt.Sprintf("%s(%s)", sanitizeName(p.Call.Func), strings.Join(args, ", "))
 	case p.If != nil:
 		return c.compileIfExpr(p.If)
@@ -3412,6 +3525,7 @@ func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
 		return expr
 	}
 	expr := sanitizeName(s.Root)
+	ptr := c.pointerVars[s.Root]
 	var typ types.Type
 	if c.currentStruct != "" && c.env != nil {
 		if st, ok := c.env.GetStruct(c.currentStruct); ok {
@@ -3426,7 +3540,7 @@ func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
 			typ = t
 		}
 	}
-	for _, f := range s.Tail {
+	for i, f := range s.Tail {
 		if gt, ok := typ.(types.GroupType); ok {
 			if f == "key" {
 				expr += ".key"
@@ -3458,7 +3572,11 @@ func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
 				continue
 			}
 		}
-		expr += "." + sanitizeName(f)
+		if ptr && i == 0 {
+			expr += "->" + sanitizeName(f)
+		} else {
+			expr += "." + sanitizeName(f)
+		}
 		if st, ok := typ.(types.StructType); ok {
 			typ = st.Fields[f]
 		} else {
@@ -4403,17 +4521,17 @@ func asFetchExpr(e *parser.Expr) *parser.FetchExpr {
 }
 
 func (c *Compiler) emitJSONExpr(e *parser.Expr) {
-        argExpr := c.compileExpr(e)
-        c.need(needJSON)
-        c.need(needListFloat)
-        c.need(needListString)
-        c.need(needListListInt)
-        c.need(needListInt)
-        if isListListExpr(e, c.env) {
-                c.writeln(fmt.Sprintf("_json_list_list_int(%s);", argExpr))
-        } else if isListIntExpr(e, c.env) {
-                c.writeln(fmt.Sprintf("_json_list_int(%s);", argExpr))
-        } else if isListFloatExpr(e, c.env) {
+	argExpr := c.compileExpr(e)
+	c.need(needJSON)
+	c.need(needListFloat)
+	c.need(needListString)
+	c.need(needListListInt)
+	c.need(needListInt)
+	if isListListExpr(e, c.env) {
+		c.writeln(fmt.Sprintf("_json_list_list_int(%s);", argExpr))
+	} else if isListIntExpr(e, c.env) {
+		c.writeln(fmt.Sprintf("_json_list_int(%s);", argExpr))
+	} else if isListFloatExpr(e, c.env) {
 		c.writeln(fmt.Sprintf("_json_list_float(%s);", argExpr))
 	} else if isListStringExpr(e, c.env) {
 		c.writeln(fmt.Sprintf("_json_list_string(%s);", argExpr))
