@@ -107,4 +107,4 @@ Executed successfully: 77/97
 ## Remaining Tasks
 - Finish full query join support
 - Improve `load`/`save` expression handling
-- Enhance type inference for collection literals
+- Refine case class generation for complex queries
