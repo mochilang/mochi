@@ -1,7 +1,7 @@
-fn sum(v: &[i32]) -> i32 {
-    v.iter().sum()
+fn sum<T>(v: &[T]) -> T where T: std::iter::Sum<T> + Copy {
+    v.iter().copied().sum()
 }
 
 fn main() {
-    println!("{:?}", sum(&vec![1, 2, 3]));
+    println!("{}", sum(&vec![1, 2, 3]));
 }

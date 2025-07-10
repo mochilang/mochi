@@ -5,5 +5,5 @@ fn main() {
         };
         return inner(5);
     }
-    println!("{:?}", outer(3));
+    println!("{}", outer(3));
 }

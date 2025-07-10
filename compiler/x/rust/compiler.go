@@ -2833,7 +2833,21 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	}
 	switch call.Func {
 	case "print":
-		fmtStr := strings.TrimSpace(strings.Repeat("{:?} ", len(args)))
+		fmtParts := make([]string, len(args))
+		for i, a := range call.Args {
+			if c.env != nil {
+				t := types.TypeOfExpr(a, c.env)
+				switch t.(type) {
+				case types.StringType, types.IntType, types.Int64Type, types.FloatType, types.BoolType:
+					fmtParts[i] = "{}"
+				default:
+					fmtParts[i] = "{:?}"
+				}
+			} else {
+				fmtParts[i] = "{:?}"
+			}
+		}
+		fmtStr := strings.TrimSpace(strings.Join(fmtParts, " "))
 		return fmt.Sprintf("println!(\"%s\", %s)", fmtStr, strings.Join(args, ", ")), nil
 	case "append":
 		c.helpers["append"] = true

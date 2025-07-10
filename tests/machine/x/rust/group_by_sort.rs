@@ -13,11 +13,11 @@ struct Group {
 #[derive(Default, Debug, Clone, PartialEq)]
 struct Result {
     cat: &'static str,
-    total: i32,
+    total: f64,
 }
 
-fn sum(v: &[i32]) -> i32 {
-    v.iter().sum()
+fn sum<T>(v: &[T]) -> T where T: std::iter::Sum<T> + Copy {
+    v.iter().copied().sum()
 }
 
 fn main() {

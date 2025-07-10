@@ -1,3 +1,3 @@
 fn main() {
-    println!("{:?}", "mochi".len());
+    println!("{}", "mochi".len() as i32);
 }

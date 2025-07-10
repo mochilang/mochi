@@ -9,5 +9,5 @@ fn main() {
         return match t {Tree::Leaf => 0, Tree::Node { left: left, value: value, right: right } => sum_tree(&left) + value + sum_tree(&right), };
     }
     let t = Tree::Node { left: Box::new(Tree::Leaf), value: 1, right: Box::new(Tree::Node { left: Box::new(Tree::Leaf), value: 2, right: Box::new(Tree::Leaf) }) };
-    println!("{:?}", sum_tree(&t));
+    println!("{}", sum_tree(&t.clone()));
 }

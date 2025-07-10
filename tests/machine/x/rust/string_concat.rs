@@ -1,3 +1,3 @@
 fn main() {
-    println!("{:?}", format!("{}{}", "hello ", "world"));
+    println!("{}", format!("{}{}", "hello ", "world"));
 }

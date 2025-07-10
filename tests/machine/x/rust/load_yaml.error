@@ -1,0 +1,46 @@
+line 0: compile: exit status 1
+error[E0433]: failed to resolve: use of unresolved module or unlinked crate `serde`
+  --> /workspace/mochi/tests/machine/x/rust/load_yaml.rs:14:13
+   |
+14 | fn _load<T: serde::de::DeserializeOwned>(path: &str, opts: std::collections::HashMap<String, String>) -> Vec<T> {
+   |             ^^^^^ use of unresolved module or unlinked crate `serde`
+   |
+   = help: you might be missing a crate named `serde`
+
+error[E0433]: failed to resolve: use of unresolved module or unlinked crate `serde_yaml`
+  --> /workspace/mochi/tests/machine/x/rust/load_yaml.rs:24:28
+   |
+24 |             if let Ok(v) = serde_yaml::from_str::<Vec<T>>(&data) { return v; }
+   |                            ^^^^^^^^^^ use of unresolved module or unlinked crate `serde_yaml`
+   |
+   = help: you might be missing a crate named `serde_yaml`
+
+error[E0433]: failed to resolve: use of unresolved module or unlinked crate `serde_yaml`
+  --> /workspace/mochi/tests/machine/x/rust/load_yaml.rs:25:28
+   |
+25 |             if let Ok(v) = serde_yaml::from_str::<T>(&data) { return vec![v]; }
+   |                            ^^^^^^^^^^ use of unresolved module or unlinked crate `serde_yaml`
+   |
+   = help: you might be missing a crate named `serde_yaml`
+
+error[E0433]: failed to resolve: use of unresolved module or unlinked crate `serde_json`
+  --> /workspace/mochi/tests/machine/x/rust/load_yaml.rs:28:20
+   |
+28 |     if let Ok(v) = serde_json::from_str::<Vec<T>>(&data) { return v; }
+   |                    ^^^^^^^^^^ use of unresolved module or unlinked crate `serde_json`
+   |
+   = help: you might be missing a crate named `serde_json`
+
+error[E0433]: failed to resolve: use of unresolved module or unlinked crate `serde_json`
+  --> /workspace/mochi/tests/machine/x/rust/load_yaml.rs:29:20
+   |
+29 |     if let Ok(v) = serde_json::from_str::<T>(&data) { return vec![v]; }
+   |                    ^^^^^^^^^^ use of unresolved module or unlinked crate `serde_json`
+   |
+   = help: you might be missing a crate named `serde_json`
+
+error: aborting due to 5 previous errors
+
+For more information about this error, try `rustc --explain E0433`.
+
+#[derive(Default, Debug, Clone, PartialEq)]

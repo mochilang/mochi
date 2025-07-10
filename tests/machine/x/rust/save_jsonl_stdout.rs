@@ -4,7 +4,18 @@ struct People {
     age: i32,
 }
 
-fn _save<T: serde::Serialize>(src: &[T], path: &str, _opts: std::collections::HashMap<String, String>) {
+fn _save<T: serde::Serialize>(src: &[T], path: &str, opts: std::collections::HashMap<String, String>) {
+    if let Some(fmt) = opts.get("format") {
+        if fmt == "jsonl" {
+            if path.is_empty() || path == "-" {
+                for item in src { if let Ok(text) = serde_json::to_string(item) { println!("{}", text); } }
+            } else if let Ok(mut f) = std::fs::File::create(path) {
+                use std::io::Write;
+                for item in src { if let Ok(text) = serde_json::to_string(item) { writeln!(f, "{}", text).unwrap(); } }
+            }
+            return;
+        }
+    }
     if let Ok(text) = serde_json::to_string(src) {
         if path.is_empty() || path == "-" {
             println!("{}", text);

@@ -3,5 +3,5 @@ fn main() {
     let inc = move |x: i32| -> i32 {
         return x + k;
     };
-    println!("{:?}", inc(3));
+    println!("{}", inc(3));
 }
