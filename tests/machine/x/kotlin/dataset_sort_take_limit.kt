@@ -13,6 +13,6 @@ val expensive = run {
 fun main() {
     println("--- Top products (excluding most expensive) ---")
     for (item in expensive) {
-        println(listOf((item as MutableMap<*, *>)["name"], "costs $", (item as MutableMap<*, *>)["price"]).joinToString(" "))
+        println(listOf(item.name, "costs $", item.price).joinToString(" "))
     }
 }

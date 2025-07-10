@@ -10,11 +10,11 @@ fun toBool(v: Any?): Boolean = when (v) {
 }
 
 class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
-data class Stat(var name: Any?, var count: Int)
-
 data class Customer(var id: Int, var name: String)
 
 data class Order(var id: Int, var customerId: Int)
+
+data class Stat(var name: Any?, var count: Int)
 
 val customers = mutableListOf(Customer(id = 1, name = "Alice"), Customer(id = 2, name = "Bob"))
 

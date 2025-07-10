@@ -14,6 +14,8 @@ fun toBool(v: Any?): Boolean = when (v) {
 }
 
 class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
+data class Grouped(var part: Any?, var total: Int)
+
 data class Nation(var id: Int, var name: String)
 
 data class Supplier(var id: Int, var nation: Int)
@@ -21,8 +23,6 @@ data class Supplier(var id: Int, var nation: Int)
 data class Partsupp(var part: Int, var supplier: Int, var cost: Double, var qty: Int)
 
 data class Filtered(var part: Any?, var value: Any?)
-
-data class Grouped(var part: Any?, var total: Int)
 
 val nations = mutableListOf(Nation(id = 1, name = "A"), Nation(id = 2, name = "B"))
 
