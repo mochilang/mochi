@@ -1,6 +1,7 @@
 package rosetta
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -150,7 +151,7 @@ func ListLanguages(refresh bool) ([]string, error) {
 
 // ListSources lists source file names for a given task and language. It checks local cache first unless refresh is true.
 func ListSources(task, language string, refresh bool) ([]string, error) {
-	localDir := filepath.Join(cacheDir(), task, language)
+	localDir := filepath.Join(cacheDir(), "x", language, task)
 	if !refresh {
 		if entries, err := os.ReadDir(localDir); err == nil {
 			names := make([]string, 0, len(entries))
@@ -191,9 +192,11 @@ func ListSources(task, language string, refresh bool) ([]string, error) {
 	return names, nil
 }
 
-// Download retrieves the named source code for a task and language. Content is cached under tests/rosetta/TASK/LANGUAGE/FILE.
+// Download retrieves the named source code for a task and language. Content is
+// cached under tests/rosetta/x/LANGUAGE/TASK/FILE. Go files are prefixed with a
+// build tag so that they are ignored by the Go toolchain.
 func Download(task, language, name string, refresh bool) ([]byte, error) {
-	localPath := filepath.Join(cacheDir(), task, language, name)
+	localPath := filepath.Join(cacheDir(), "x", language, task, name)
 	if !refresh {
 		if b, err := os.ReadFile(localPath); err == nil {
 			return b, nil
@@ -211,6 +214,12 @@ func Download(task, language, name string, refresh bool) ([]byte, error) {
 	data, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
+	}
+	if language == "Go" && strings.HasSuffix(name, ".go") {
+		if !bytes.HasPrefix(data, []byte("//go:build")) {
+			prefix := []byte("//go:build ignore\n// +build ignore\n\n")
+			data = append(prefix, data...)
+		}
 	}
 	if err := os.MkdirAll(filepath.Dir(localPath), 0755); err == nil {
 		os.WriteFile(localPath, data, 0644)
