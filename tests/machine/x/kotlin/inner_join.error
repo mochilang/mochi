@@ -1,6 +1,0 @@
-line 0:
---- Orders with customer info ---
-Exception in thread "main" java.lang.ClassCastException: class java.lang.String cannot be cast to class java.lang.Integer (java.lang.String and java.lang.Integer are in module java.base of loader 'bootstrap')
-	at Inner_joinKt.main(inner_join.kt:195)
-	at Inner_joinKt.main(inner_join.kt)
-

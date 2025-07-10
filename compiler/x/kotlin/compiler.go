@@ -1524,6 +1524,10 @@ func (c *Compiler) use(name string) {
 		c.use("parseSimpleValue")
 	case "_save", "json":
 		c.use("toJson")
+	case "sum", "max", "min":
+		c.use("toInt")
+	case "avg":
+		c.use("toDouble")
 	}
 }
 

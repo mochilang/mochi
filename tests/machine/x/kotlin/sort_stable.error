@@ -1,11 +1,11 @@
 line 0:
 Exception in thread "main" java.lang.ExceptionInInitializerError
-Caused by: java.lang.ClassCastException: class java.util.LinkedHashMap$Entry cannot be cast to class java.util.Map (java.util.LinkedHashMap$Entry and java.util.Map are in module java.base of loader 'bootstrap')
-	at Group_by_sortKt$$special$$inlined$sortedByDescending$1.compare(Comparisons.kt:323)
+Caused by: java.lang.ClassCastException: class java.lang.String cannot be cast to class java.util.Map (java.lang.String and java.util.Map are in module java.base of loader 'bootstrap')
+	at Sort_stableKt$$special$$inlined$sortedBy$1.compare(Comparisons.kt:320)
 	at java.base/java.util.TimSort.countRunAndMakeAscending(TimSort.java:355)
 	at java.base/java.util.TimSort.sort(TimSort.java:220)
 	at java.base/java.util.Arrays.sort(Arrays.java:1234)
 	at kotlin.collections.ArraysKt___ArraysJvmKt.sortWith(_ArraysJvm.kt:1862)
 	at kotlin.collections.CollectionsKt___CollectionsKt.sortedWith(_Collections.kt:947)
-	at Group_by_sortKt.<clinit>(group_by_sort.kt:55)
+	at Sort_stableKt.<clinit>(sort_stable.kt:15)
 

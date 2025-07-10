@@ -7,6 +7,13 @@ fun avg(list: List<Any?>): Double {
 
 fun count(list: Collection<Any?>): Int = list.size
 
+fun toDouble(v: Any?): Double = when (v) {
+    is Double -> v
+    is Int -> v.toDouble()
+    is String -> v.toDouble()
+    else -> 0.0
+}
+
 class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
 val people = mutableListOf(mutableMapOf("name" to "Alice", "age" to 30, "city" to "Paris"), mutableMapOf("name" to "Bob", "age" to 15, "city" to "Hanoi"), mutableMapOf("name" to "Charlie", "age" to 65, "city" to "Paris"), mutableMapOf("name" to "Diana", "age" to 45, "city" to "Hanoi"), mutableMapOf("name" to "Eve", "age" to 70, "city" to "Paris"), mutableMapOf("name" to "Frank", "age" to 22, "city" to "Hanoi"))
 

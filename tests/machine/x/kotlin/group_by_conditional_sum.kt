@@ -4,6 +4,14 @@ fun sum(list: List<Any?>): Int {
     return s
 }
 
+fun toInt(v: Any?): Int = when (v) {
+    is Int -> v
+    is Double -> v.toInt()
+    is String -> v.toInt()
+    is Boolean -> if (v) 1 else 0
+    else -> 0
+}
+
 class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
 val items = mutableListOf(mutableMapOf("cat" to "a", "val" to 10, "flag" to true), mutableMapOf("cat" to "a", "val" to 5, "flag" to false), mutableMapOf("cat" to "b", "val" to 20, "flag" to true))
 

@@ -8,7 +8,7 @@ Each generated file now includes only the runtime helper functions that are actu
 
 Compiled: 97/97 programs
 
-Successfully ran: 97/97 programs
+Successfully ran: 85/97 programs
 
 ## Checklist
 
@@ -40,9 +40,9 @@ Successfully ran: 97/97 programs
 - [x] group_by_join.mochi
 - [x] group_by_left_join.mochi
 - [x] group_by_multi_join.mochi
- - [x] group_by_multi_join_sort.mochi
- - [x] group_by_sort.mochi
- - [x] group_items_iteration.mochi
+ - [ ] group_by_multi_join_sort.mochi
+ - [ ] group_by_sort.mochi
+ - [ ] group_items_iteration.mochi
 - [x] if_else.mochi
 - [x] if_then_else.mochi
 - [x] if_then_else_nested.mochi
@@ -75,23 +75,23 @@ Successfully ran: 97/97 programs
 - [x] membership.mochi
 - [x] min_max_builtin.mochi
  - [x] nested_function.mochi
- - [x] order_by_map.mochi
- - [x] outer_join.mochi
+ - [ ] order_by_map.mochi
+ - [ ] outer_join.mochi
 - [x] partial_application.mochi
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
- - [x] query_sum_select.mochi
+ - [ ] query_sum_select.mochi
 - [x] record_assign.mochi
- - [x] right_join.mochi
+ - [ ] right_join.mochi
 - [x] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
 - [x] slice.mochi
- - [x] sort_stable.mochi
+ - [ ] sort_stable.mochi
 - [x] str_builtin.mochi
  - [x] string_compare.mochi
 - [x] string_concat.mochi
- - [x] string_contains.mochi
+ - [ ] string_contains.mochi
 - [x] string_in_operator.mochi
 - [x] string_index.mochi
 - [x] string_prefix_slice.mochi
@@ -99,12 +99,12 @@ Successfully ran: 97/97 programs
 - [x] sum_builtin.mochi
  - [x] tail_recursion.mochi
  - [x] test_block.mochi
- - [x] tree_sum.mochi
- - [x] two-sum.mochi
+ - [ ] tree_sum.mochi
+ - [ ] two-sum.mochi
 - [x] typed_let.mochi
 - [x] typed_var.mochi
 - [x] unary_neg.mochi
- - [x] update_stmt.mochi
+ - [ ] update_stmt.mochi
 - [x] user_type_literal.mochi
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi

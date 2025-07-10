@@ -1,0 +1,9 @@
+line 29:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/query_sum_select.kt:29:27: error: type mismatch: inferred type is Int but List<Any?> was expected
+            __res.add(sum(n))
+                          ^
+
+ 28:         if (toBool(n > 1)) {
+ 29:             __res.add(sum(n))
+ 30:         }

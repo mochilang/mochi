@@ -1,0 +1,12 @@
+line 4:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/string_contains.kt:4:13: error: expression '(s as MutableMap<*, *>)["contains"]' of type 'Any?' cannot be invoked as a function. The function 'invoke()' is not found
+    println((s as MutableMap<*, *>)["contains"]("cat"))
+            ^
+/workspace/mochi/tests/machine/x/kotlin/string_contains.kt:5:13: error: expression '(s as MutableMap<*, *>)["contains"]' of type 'Any?' cannot be invoked as a function. The function 'invoke()' is not found
+    println((s as MutableMap<*, *>)["contains"]("dog"))
+            ^
+
+  3: fun main() {
+  4:     println((s as MutableMap<*, *>)["contains"]("cat"))
+  5:     println((s as MutableMap<*, *>)["contains"]("dog"))

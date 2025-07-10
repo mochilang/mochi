@@ -4,6 +4,14 @@ fun sum(list: List<Any?>): Int {
     return s
 }
 
+fun toInt(v: Any?): Int = when (v) {
+    is Int -> v
+    is Double -> v.toInt()
+    is String -> v.toInt()
+    is Boolean -> if (v) 1 else 0
+    else -> 0
+}
+
 fun toDouble(v: Any?): Double = when (v) {
     is Double -> v
     is Int -> v.toDouble()
