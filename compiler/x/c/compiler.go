@@ -2237,8 +2237,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 		val := c.compileExpr(q.Select)
 		retT := c.exprType(q.Select)
 		if ml := asMapLiteral(q.Select); ml != nil {
-			if st, ok := retT.(types.StructType); ok {
+			if st, ok := c.structLits[ml]; ok {
+				retT = st
+			} else if st, ok := retT.(types.StructType); ok {
 				c.structLits[ml] = st
+				retT = st
 			}
 		}
 		retList := types.ListType{Elem: retT}
@@ -2368,8 +2371,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 			val := c.compileExpr(q.Select)
 			retT := c.exprType(q.Select)
 			if ml := asMapLiteral(q.Select); ml != nil {
-				if st, ok := retT.(types.StructType); ok {
+				if st, ok := c.structLits[ml]; ok {
+					retT = st
+				} else if st, ok := retT.(types.StructType); ok {
 					c.structLits[ml] = st
+					retT = st
 				}
 			}
 			retList := types.ListType{Elem: retT}
@@ -2465,6 +2471,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 
 	val := c.compileExpr(q.Select)
 	retT := c.exprType(q.Select)
+	if hasStruct {
+		retT = selStruct
+	}
 	retList := types.ListType{Elem: retT}
 	listC := cTypeFromType(retList)
 	if hasStruct {

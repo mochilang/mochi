@@ -60,7 +60,7 @@ int main() {
   _t2.data[2] = (ordersItem){.id = 102, .customerId = 1, .total = 300};
   _t2.data[3] = (ordersItem){.id = 103, .customerId = 4, .total = 80};
   list_ordersItem orders = _t2;
-  list_int _t3 = list_int_create(orders.len * customers.len);
+  list_resultItem _t3 = list_resultItem_create(orders.len * customers.len);
   int _t4 = 0;
   for (int _t5 = 0; _t5 < orders.len; _t5++) {
     ordersItem o = orders.data[_t5];
