@@ -1224,16 +1224,20 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	parts = append(parts, fmt.Sprintf("%s <- %s", q.Var, src))
 
 	child := types.NewEnv(c.env)
 	if lt, ok := types.ExprType(q.Source, c.env).(types.ListType); ok {
 		child.SetVar(q.Var, lt.Elem, false)
 	}
+	oldEnv := c.env
+	c.env = child
+
+	parts = append(parts, fmt.Sprintf("%s <- %s", q.Var, src))
 
 	for _, f := range q.Froms {
 		s, err := c.compileExpr(f.Src)
 		if err != nil {
+			c.env = oldEnv
 			return "", err
 		}
 		parts = append(parts, fmt.Sprintf("%s <- %s", f.Var, s))
@@ -1245,6 +1249,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	for _, j := range q.Joins {
 		s, err := c.compileExpr(j.Src)
 		if err != nil {
+			c.env = oldEnv
 			return "", err
 		}
 		var elemT types.Type = types.AnyType{}
@@ -1253,6 +1258,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		cond, err := c.compileExpr(j.On)
 		if err != nil {
+			c.env = oldEnv
 			return "", err
 		}
 		if j.Side == nil {
@@ -1264,8 +1270,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		child.SetVar(j.Var, elemT, false)
 	}
 
-	oldEnv := c.env
-	c.env = child
 	if q.Where != nil {
 		cond, err := c.compileExpr(q.Where)
 		if err != nil {

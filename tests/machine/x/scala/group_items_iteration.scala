@@ -6,10 +6,10 @@ object group_items_iteration {
     var tmp = scala.collection.mutable.ArrayBuffer()
     for(g <- groups) {
       var total = 0
-      for(x <- g._2) {
+      for(x <- g.items) {
         total += x.val
       }
-      tmp = tmp :+ Map("tag" -> (g._1), "total" -> (total))
+      tmp = tmp :+ Map("tag" -> (g.key), "total" -> (total))
     }
     println((result))
   }
