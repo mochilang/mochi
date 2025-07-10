@@ -22,6 +22,8 @@ type Compiler struct {
 	needFuncImports bool
 	tmpCount        int
 	groupKeys       map[string]string
+	variantOf       map[string]string
+	variantFields   map[string][]string
 }
 
 type funSig struct {
@@ -30,7 +32,18 @@ type funSig struct {
 }
 
 func New() *Compiler {
-	return &Compiler{buf: new(bytes.Buffer), helpers: make(map[string]bool), vars: make(map[string]string), funRet: make(map[string]string), funSigs: make(map[string]*funSig), types: make(map[string]*parser.TypeDecl), tmpCount: 0, groupKeys: make(map[string]string)}
+	return &Compiler{
+		buf:           new(bytes.Buffer),
+		helpers:       make(map[string]bool),
+		vars:          make(map[string]string),
+		funRet:        make(map[string]string),
+		funSigs:       make(map[string]*funSig),
+		types:         make(map[string]*parser.TypeDecl),
+		tmpCount:      0,
+		groupKeys:     make(map[string]string),
+		variantOf:     make(map[string]string),
+		variantFields: make(map[string][]string),
+	}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -270,9 +283,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("}")
 	}
 	if c.helpers["save_jsonl"] {
-		c.writeln("static void saveJsonl(List<Map<String,Object>> list) {")
+		c.writeln("static void saveJsonl(List<Map<?,?>> list) {")
 		c.indent++
-		c.writeln("for (Map<String,Object> m : list) {")
+		c.writeln("for (Map<?,?> m : list) {")
 		c.indent++
 		c.writeln("List<String> parts = new ArrayList<>();")
 		c.writeln("for (var e : m.entrySet()) { parts.add(\"\\\"\" + e.getKey() + \"\\\":\" + e.getValue()); }")
@@ -577,7 +590,7 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 		return p.Struct.Name
 	}
 	if p != nil && p.Load != nil {
-		return "List<Object>"
+		return "List<Map<String,Object>>"
 	}
 	if p != nil && p.FunExpr != nil {
 		if len(p.FunExpr.Params) == 1 && p.FunExpr.Return != nil && p.FunExpr.Return.Simple != nil && *p.FunExpr.Return.Simple == "int" && p.FunExpr.Params[0].Type != nil && p.FunExpr.Params[0].Type.Simple != nil && *p.FunExpr.Params[0].Type.Simple == "int" {
@@ -594,6 +607,9 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 		}
 	}
 	if p != nil && p.Query != nil {
+		if call := rootPrimary(p.Query.Select); call != nil && call.Call != nil && call.Call.Func == "sum" && len(call.Call.Args) == 1 && p.Query.Group == nil {
+			return "int"
+		}
 		et := c.inferType(p.Query.Select)
 		if et == "var" {
 			et = "Object"
@@ -751,7 +767,40 @@ func (c *Compiler) compileGlobalLet(v *parser.LetStmt) error {
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	if len(t.Variants) > 0 {
-		return fmt.Errorf("variants not supported")
+		c.writeln(fmt.Sprintf("class %s {", t.Name))
+		c.indent++
+		for _, v := range t.Variants {
+			c.variantOf[v.Name] = t.Name
+			var fields []string
+			for _, f := range v.Fields {
+				fields = append(fields, f.Name)
+			}
+			c.variantFields[v.Name] = fields
+			if len(v.Fields) == 0 {
+				c.writeln(fmt.Sprintf("static class %s extends %s {}", v.Name, t.Name))
+				continue
+			}
+			c.writeln(fmt.Sprintf("static class %s extends %s {", v.Name, t.Name))
+			c.indent++
+			var params []string
+			for _, f := range v.Fields {
+				typ := c.typeName(f.Type)
+				c.writeln(fmt.Sprintf("%s %s;", typ, f.Name))
+				params = append(params, fmt.Sprintf("%s %s", typ, f.Name))
+			}
+			c.writeln(fmt.Sprintf("%s(%s) {", v.Name, strings.Join(params, ", ")))
+			c.indent++
+			for _, f := range v.Fields {
+				c.writeln(fmt.Sprintf("this.%s = %s;", f.Name, f.Name))
+			}
+			c.indent--
+			c.writeln("}")
+			c.indent--
+			c.writeln("}")
+		}
+		c.indent--
+		c.writeln("}")
+		return nil
 	}
 	c.writeln(fmt.Sprintf("class %s {", t.Name))
 	c.indent++
@@ -772,6 +821,28 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 				c.writeln(fmt.Sprintf("this.%s = %s;", name, name))
 			}
 		}
+		c.indent--
+		c.writeln("}")
+	}
+	if len(params) > 0 {
+		var conds []string
+		var fields []string
+		for _, m := range t.Members {
+			if m.Field != nil {
+				fields = append(fields, m.Field.Name)
+				conds = append(conds, fmt.Sprintf("Objects.equals(this.%s, other.%s)", m.Field.Name, m.Field.Name))
+			}
+		}
+		c.writeln("@Override public boolean equals(Object o) {")
+		c.indent++
+		c.writeln("if (this == o) return true;")
+		c.writeln(fmt.Sprintf("if (!(o instanceof %s other)) return false;", t.Name))
+		c.writeln(fmt.Sprintf("return %s;", strings.Join(conds, " && ")))
+		c.indent--
+		c.writeln("}")
+		c.writeln("@Override public int hashCode() {")
+		c.indent++
+		c.writeln(fmt.Sprintf("return Objects.hash(%s);", strings.Join(fields, ", ")))
 		c.indent--
 		c.writeln("}")
 	}
@@ -825,7 +896,11 @@ func (c *Compiler) compileStructLiteral(s *parser.StructLiteral) (string, error)
 		}
 		args = append(args, v)
 	}
-	return fmt.Sprintf("new %s(%s)", s.Name, strings.Join(args, ", ")), nil
+	name := s.Name
+	if parent, ok := c.variantOf[s.Name]; ok {
+		name = parent + "." + s.Name
+	}
+	return fmt.Sprintf("new %s(%s)", name, strings.Join(args, ", ")), nil
 }
 
 func (c *Compiler) compileFunExpr(f *parser.FunExpr) (string, error) {
@@ -965,8 +1040,12 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 		return err
 	}
 	if len(a.Index) == 0 && len(a.Field) == 0 {
-		if c.vars[a.Name] == "int" && strings.Contains(expr, ".doubleValue()") {
-			expr = fmt.Sprintf("(int)(%s)", expr)
+		if c.vars[a.Name] == "int" {
+			if strings.Contains(expr, ".doubleValue()") {
+				expr = fmt.Sprintf("(int)(%s)", expr)
+			} else {
+				expr = fmt.Sprintf("(int)(%s)", expr)
+			}
 		}
 		c.writeln(fmt.Sprintf("%s = %s;", a.Name, expr))
 		return nil
@@ -1202,7 +1281,7 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 			continue
 		}
 		if (op.Op == "<" || op.Op == "<=" || op.Op == ">" || op.Op == ">=") &&
-			isString(expr) && isString(right) {
+			isStringVal(expr, c) && isStringVal(right, c) {
 			expr = fmt.Sprintf("%s.compareTo(%s) %s 0", expr, right, op.Op)
 		} else if op.Op == "==" || op.Op == "!=" {
 			if isPrimitive(expr, c) && isPrimitive(right, c) {
@@ -1228,6 +1307,16 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 
 func isString(s string) bool {
 	return len(s) >= 2 && s[0] == '"' && s[len(s)-1] == '"'
+}
+
+func isStringVal(s string, c *Compiler) bool {
+	if isString(s) {
+		return true
+	}
+	if t, ok := c.vars[s]; ok && t == "String" {
+		return true
+	}
+	return false
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
@@ -1377,8 +1466,24 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Selector != nil:
 		s := p.Selector.Root
 		typ := c.vars[p.Selector.Root]
-		if keyVar, ok := c.groupKeys[p.Selector.Root]; ok && len(p.Selector.Tail) == 1 && p.Selector.Tail[0] == "key" {
-			return keyVar, nil
+		if keyVar, ok := c.groupKeys[p.Selector.Root]; ok {
+			if len(p.Selector.Tail) == 1 && p.Selector.Tail[0] == "key" {
+				return keyVar, nil
+			}
+			if len(p.Selector.Tail) > 0 && p.Selector.Tail[0] == "key" {
+				s = keyVar
+				typ = c.vars[keyVar]
+				pTail := p.Selector.Tail[1:]
+				for _, f := range pTail {
+					if strings.HasPrefix(typ, "Map<") || typ == "Map" || typ == "Object" || typ == "" {
+						s = fmt.Sprintf("((Map)%s).get(\"%s\")", s, f)
+						typ = mapValueType(typ)
+					} else {
+						s += "." + f
+					}
+				}
+				return s, nil
+			}
 		}
 		for _, f := range p.Selector.Tail {
 			if strings.HasPrefix(typ, "Map<") || typ == "Map" || typ == "Object" || typ == "" {
@@ -1745,6 +1850,36 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		c.tmpCount++
 	}
 
+	if q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct && len(q.Froms) == 0 && len(q.Joins) == 0 {
+		if call := rootPrimary(q.Select); call != nil && call.Call != nil && call.Call.Func == "sum" && len(call.Call.Args) == 1 {
+			arg, err := c.compileExpr(call.Call.Args[0])
+			if err != nil {
+				return "", err
+			}
+			tmp := fmt.Sprintf("_sum%d", c.tmpCount)
+			c.tmpCount++
+			var b strings.Builder
+			b.WriteString("(new java.util.function.Supplier<Integer>(){public Integer get(){\n")
+			b.WriteString(fmt.Sprintf("\tint %s = 0;\n", tmp))
+			b.WriteString(fmt.Sprintf("\tfor (var %s : %s) {\n", q.Var, src))
+			cond := "true"
+			if q.Where != nil {
+				cond, err = c.compileExpr(q.Where)
+				if err != nil {
+					return "", err
+				}
+				cond = maybeBool(cond)
+				b.WriteString(fmt.Sprintf("\t\tif (!(%s)) continue;\n", cond))
+			}
+			b.WriteString(fmt.Sprintf("\t\t%s += %s;\n", tmp, c.maybeNumber(arg)))
+			b.WriteString("\t}\n")
+			b.WriteString(fmt.Sprintf("\treturn %s;\n", tmp))
+			b.WriteString("}}).get()")
+			c.vars = oldVars
+			return b.String(), nil
+		}
+	}
+
 	var b strings.Builder
 	b.WriteString("(new java.util.function.Supplier<List<Object>>() {public List<Object> get() {\n")
 	b.WriteString(fmt.Sprintf("\tList<Object> %s = new ArrayList<>();\n", resVar))
@@ -1843,6 +1978,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		keyVar := fmt.Sprintf("_key%d", c.tmpCount)
 		c.tmpCount++
 		b.WriteString(fmt.Sprintf("%sObject %s = %s;\n", indent, keyVar, keyExpr))
+		c.vars[keyVar] = c.inferType(q.Group.Exprs[0])
 		bucketVar := fmt.Sprintf("_b%d", c.tmpCount)
 		c.tmpCount++
 		b.WriteString(fmt.Sprintf("%sList<Object> %s = %s.get(%s);\n", indent, bucketVar, groupsVar, keyVar))
@@ -1888,12 +2024,16 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			cond = maybeBool(cond)
 			b.WriteString(fmt.Sprintf("\t\tif (!(%s)) continue;\n", cond))
 		}
-		sel, err := c.compileExpr(q.Select)
-		if err != nil {
-			c.vars = oldVars
-			return "", err
+		if id, ok := identName(q.Select); ok && id == gName {
+			b.WriteString(fmt.Sprintf("\t\t%[1]s.add(new LinkedHashMap<>(){{put(\"key\", %s);put(\"items\", %s);}});\n", resVar, keyVar, gName))
+		} else {
+			sel, err := c.compileExpr(q.Select)
+			if err != nil {
+				c.vars = oldVars
+				return "", err
+			}
+			b.WriteString(fmt.Sprintf("\t\t%[1]s.add(%[2]s);\n", resVar, sel))
 		}
-		b.WriteString(fmt.Sprintf("\t\t%[1]s.add(%[2]s);\n", resVar, sel))
 		b.WriteString("\t}\n")
 		delete(c.groupKeys, gName)
 	}
