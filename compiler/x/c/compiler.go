@@ -5,6 +5,7 @@ package ccode
 import (
 	"bytes"
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -413,6 +414,9 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 			c.indent++
 			for _, f := range v.Fields {
 				typ := c.cType(f.Type)
+				if f.Type != nil && f.Type.Simple != nil && *f.Type.Simple == t.Name {
+					typ += "*"
+				}
 				c.writeln(fmt.Sprintf("%s %s;", typ, sanitizeName(f.Name)))
 			}
 			c.indent--
@@ -432,6 +436,15 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		c.writeln("} value;")
 		c.indent--
 		c.writeln(fmt.Sprintf("}%s;", name))
+		// tag constants
+		keys := make([]string, len(t.Variants))
+		for i, v := range t.Variants {
+			keys[i] = sanitizeName(v.Name)
+		}
+		sort.Strings(keys)
+		for i, k := range keys {
+			c.writeln(fmt.Sprintf("#define %s_%s %d", sanitizeName(t.Name), k, i))
+		}
 		if c.env != nil {
 			ut := types.UnionType{Name: t.Name, Variants: map[string]types.StructType{}}
 			for _, v := range t.Variants {
@@ -965,6 +978,11 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 		}
 	} else if stmt.Value != nil {
 		t = c.exprType(stmt.Value)
+		if sl := asStructLiteral(stmt.Value); sl != nil && c.env != nil {
+			if ut, ok := c.env.FindUnionByVariant(sl.Name); ok {
+				t = ut
+			}
+		}
 		if ll := stmt.Value.Binary.Left.Value.Target.List; ll != nil {
 			if st, ok := c.inferStructFromList(ll, stmt.Name); ok {
 				t = types.ListType{Elem: st}
@@ -1517,6 +1535,69 @@ func (c *Compiler) compileIfExpr(e *parser.IfExpr) string {
 }
 
 func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) string {
+	t := c.exprType(m.Target)
+	if ut, ok := t.(types.UnionType); ok {
+		tmp := c.newTemp()
+		target := c.compileExpr(m.Target)
+		c.writeln(fmt.Sprintf("%s %s = %s;", cTypeFromType(ut), tmp, target))
+		resVar := c.newTemp()
+		retT := c.exprType(m.Cases[0].Result)
+		c.writeln(fmt.Sprintf("%s %s;", cTypeFromType(retT), resVar))
+		c.writeln(fmt.Sprintf("switch (%s.tag) {", tmp))
+		c.indent++
+		var defaultVal string
+		for _, cs := range m.Cases {
+			if ident, ok := identName(cs.Pattern); ok && ident == "_" {
+				defaultVal = c.compileExpr(cs.Result)
+				continue
+			}
+			if call, ok := callPattern(cs.Pattern); ok {
+				if st, ok2 := ut.Variants[call.Func]; ok2 {
+					c.writeln(fmt.Sprintf("case %s_%s:", sanitizeName(ut.Name), sanitizeName(call.Func)))
+					c.indent++
+					for i, arg := range call.Args {
+						if name, ok := identName(arg); ok {
+							field := st.Order[i]
+							ft := st.Fields[field]
+							expr := fmt.Sprintf("%s.value.%s.%s", tmp, sanitizeName(call.Func), sanitizeName(field))
+							if _, ok := ft.(types.UnionType); ok {
+								expr = "*" + expr
+							}
+							c.writeln(fmt.Sprintf("%s %s = %s;", cTypeFromType(ft), sanitizeName(name), expr))
+						}
+					}
+					val := c.compileExpr(cs.Result)
+					c.writeln(fmt.Sprintf("%s = %s;", resVar, val))
+					c.writeln("break;")
+					c.indent--
+				}
+				continue
+			}
+			if ident, ok := identName(cs.Pattern); ok {
+				if _, ok2 := ut.Variants[ident]; ok2 {
+					c.writeln(fmt.Sprintf("case %s_%s:", sanitizeName(ut.Name), sanitizeName(ident)))
+					c.indent++
+					val := c.compileExpr(cs.Result)
+					c.writeln(fmt.Sprintf("%s = %s;", resVar, val))
+					c.writeln("break;")
+					c.indent--
+					continue
+				}
+			}
+		}
+		c.writeln("default:")
+		c.indent++
+		if defaultVal == "" {
+			defaultVal = "0"
+		}
+		c.writeln(fmt.Sprintf("%s = %s;", resVar, defaultVal))
+		c.writeln("break;")
+		c.indent--
+		c.indent--
+		c.writeln("}")
+		return resVar
+	}
+
 	target := c.compileExpr(m.Target)
 	expr := "0"
 	for i := len(m.Cases) - 1; i >= 0; i-- {
@@ -3151,7 +3232,22 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		parts := make([]string, len(p.Struct.Fields))
 		for i, f := range p.Struct.Fields {
 			v := c.compileExpr(f.Value)
+			if c.env != nil {
+				if ut, ok := c.env.FindUnionByVariant(p.Struct.Name); ok {
+					st := ut.Variants[p.Struct.Name]
+					if ft, ok2 := st.Fields[f.Name]; ok2 {
+						if _, ok3 := ft.(types.UnionType); ok3 {
+							v = fmt.Sprintf("&%s", v)
+						}
+					}
+				}
+			}
 			parts[i] = fmt.Sprintf(".%s = %s", sanitizeName(f.Name), v)
+		}
+		if c.env != nil {
+			if ut, ok := c.env.FindUnionByVariant(p.Struct.Name); ok {
+				return fmt.Sprintf("(%s){.tag=%s_%s, .value.%s=(%s){%s}}", sanitizeName(ut.Name), sanitizeName(ut.Name), sanitizeName(p.Struct.Name), sanitizeName(p.Struct.Name), sanitizeName(p.Struct.Name), strings.Join(parts, ", "))
+			}
 		}
 		return fmt.Sprintf("(%s){%s}", sanitizeName(p.Struct.Name), strings.Join(parts, ", "))
 	case p.List != nil:
@@ -3623,7 +3719,17 @@ func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
 	}
 	if typ == nil && c.env != nil {
 		if t, err := c.env.GetVar(s.Root); err == nil {
+			if ft, ok := t.(types.FuncType); ok {
+				if ut, ok2 := c.env.FindUnionByVariant(s.Root); ok2 && len(ft.Params) == 0 {
+					return fmt.Sprintf("(%s){.tag=%s_%s}", sanitizeName(ut.Name), sanitizeName(ut.Name), sanitizeName(s.Root))
+				}
+			}
 			typ = t
+		}
+		if typ == nil {
+			if ut, ok := c.env.FindUnionByVariant(s.Root); ok {
+				return fmt.Sprintf("(%s){.tag=%s_%s}", sanitizeName(ut.Name), sanitizeName(ut.Name), sanitizeName(s.Root))
+			}
 		}
 	}
 	for i, f := range s.Tail {

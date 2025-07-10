@@ -8,9 +8,9 @@ typedef struct Node Node;
 typedef struct Leaf {
 } Leaf;
 typedef struct Node {
-  Tree left;
+  Tree *left;
   int value;
-  Tree right;
+  Tree *right;
 } Node;
 typedef struct Tree {
   int tag;
@@ -19,18 +19,40 @@ typedef struct Tree {
     Node Node;
   } value;
 } Tree;
+#define Tree_Leaf 0
+#define Tree_Node 1
 
 int sum_tree(Tree t) {
-  return (t == Leaf ? 0
-                    : (t == Node(left, value, right)
-                           ? sum_tree(left) + value + sum_tree(right)
-                           : 0));
+  Tree _t1 = t;
+  int _t2;
+  switch (_t1.tag) {
+  case Tree_Leaf:
+    _t2 = 0;
+    break;
+  case Tree_Node:
+    Tree left = *_t1.value.Node.left;
+    int value = _t1.value.Node.value;
+    Tree right = *_t1.value.Node.right;
+    _t2 = sum_tree(left) + value + sum_tree(right);
+    break;
+  default:
+    _t2 = 0;
+    break;
+  }
+  return _t2;
 }
 
 int main() {
-  int t = (Node){.left = Leaf,
+  Tree t =
+      (Tree){.tag = Tree_Node,
+             .value.Node = (Node){
+                 .left = &(Tree){.tag = Tree_Leaf},
                  .value = 1,
-                 .right = (Node){.left = Leaf, .value = 2, .right = Leaf}};
+                 .right = &(Tree){.tag = Tree_Node,
+                                  .value.Node = (Node){
+                                      .left = &(Tree){.tag = Tree_Leaf},
+                                      .value = 2,
+                                      .right = &(Tree){.tag = Tree_Leaf}}}}};
   printf("%d\n", sum_tree(t));
   return 0;
 }
