@@ -1,4 +1,23 @@
 # 📦 CHANGELOG.md
+## [0.10.21] – 2025-07-10T09:38:20+07:00
+
+### Added
+
+* Join and group-by support across C, C++, Pascal, Kotlin, Swift and more
+* String map handling and group-by string support for the C backend
+* Java compiler load/save and update/test features
+* Map size, max and json builtins for Haskell, Zig and Kotlin
+* YAML loading capability for the Scheme compiler
+
+### Changed
+
+* Improved type inference and runtime helper reuse across compilers
+* Optimized join queries with captured closure support
+
+### Fixed
+
+* Refresh machine outputs and examples across languages
+* Minor dataset and YAML test corrections
 
 ## [0.10.20] – 2025-07-09T10:05:52+07:00
 
