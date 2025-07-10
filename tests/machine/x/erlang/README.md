@@ -109,3 +109,5 @@ Checklist:
 - [ ] Basic join support
 - [ ] Support group-by queries
 - [ ] Add code generation for remaining Mochi examples
+- [ ] Track parameter types for more accurate list/map access
+- [ ] Ensure string keys in maps remain quoted
