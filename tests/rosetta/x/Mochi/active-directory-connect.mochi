@@ -1,0 +1,29 @@
+// Mochi version of Rosetta "Active Directory Connect" task
+// Translated from Go example in tests/rosetta/x/Go/active-directory-connect.go
+
+fun connect(client: map<string, any>): bool {
+  // In this simple demonstration we just pretend the connection succeeds
+  // without actually performing any network operations.
+  return true
+}
+
+fun main() {
+  let client = {
+    "base": "dc=example,dc=com",
+    "host": "ldap.example.com",
+    "port": 389,
+    "useSSL": false,
+    "bindDN": "uid=readonlyuser,ou=People,dc=example,dc=com",
+    "bindPassword": "readonlypassword",
+    "userFilter": "(uid=%s)",
+    "groupFilter": "(memberUid=%s)",
+    "attributes": ["givenName", "sn", "mail", "uid"],
+  }
+  if connect(client) {
+    print("LDAP connection established")
+  } else {
+    print("Failed to connect to LDAP server")
+  }
+}
+
+main()
