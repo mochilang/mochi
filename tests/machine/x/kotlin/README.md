@@ -4,9 +4,9 @@ This directory contains Kotlin code compiled from Mochi programs in `tests/vm/va
 
 ## Progress
 
-Compiled: 85/97 programs
+Compiled: 86/97 programs
 
-Successfully ran: 79/97 programs
+Successfully ran: 80/97 programs
 
 ## Checklist
 
@@ -75,7 +75,7 @@ Successfully ran: 79/97 programs
  - [x] nested_function.mochi
 - [ ] order_by_map.mochi
 - [ ] outer_join.mochi
-- [ ] partial_application.mochi
+- [x] partial_application.mochi
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi

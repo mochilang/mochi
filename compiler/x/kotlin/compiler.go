@@ -916,7 +916,21 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 
 func (c *Compiler) callExpr(call *parser.CallExpr) (string, error) {
 	args := make([]string, len(call.Args))
+	var paramTypes []types.Type
+	if t, err := c.env.GetVar(call.Func); err == nil {
+		if ft, ok := t.(types.FuncType); ok {
+			paramTypes = ft.Params
+		}
+	}
 	for i, a := range call.Args {
+		if len(paramTypes) > i {
+			v, err := c.expr(a)
+			if err != nil {
+				return "", err
+			}
+			args[i] = v
+			continue
+		}
 		s, err := c.expr(a)
 		if err != nil {
 			return "", err
@@ -934,6 +948,18 @@ func (c *Compiler) callExpr(call *parser.CallExpr) (string, error) {
 			return fmt.Sprintf("json(%s)", args[0]), nil
 		}
 		return fmt.Sprintf("json(listOf(%s))", strings.Join(args, ", ")), nil
+	}
+	if len(paramTypes) > 0 && len(args) < len(paramTypes) {
+		missing := paramTypes[len(args):]
+		names := make([]string, len(missing))
+		params := make([]string, len(missing))
+		for i, pt := range missing {
+			names[i] = fmt.Sprintf("p%d", i)
+			params[i] = fmt.Sprintf("%s: %s", names[i], kotlinTypeOf(pt))
+		}
+		allArgs := append(append([]string{}, args...), names...)
+		body := fmt.Sprintf("%s(%s)", call.Func, strings.Join(allArgs, ", "))
+		return fmt.Sprintf("{ %s -> %s }", strings.Join(params, ", "), body), nil
 	}
 	return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ", ")), nil
 }
