@@ -1969,10 +1969,11 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 		}
 		c.use("_toAnyMap")
 		withStr = fmt.Sprintf("_toAnyMap(%s)", w)
-	} else {
-		withStr = "undefined"
 	}
 	c.use("_fetch")
+	if withStr == "" {
+		return fmt.Sprintf("await _fetch(%s)", urlStr), nil
+	}
 	return fmt.Sprintf("await _fetch(%s, %s)", urlStr, withStr), nil
 }
 
