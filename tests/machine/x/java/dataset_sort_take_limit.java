@@ -1,6 +1,6 @@
 import java.util.*;
 public class Main {
-	static List<Map<Object,Object>> products = new ArrayList<>(java.util.Arrays.asList(new HashMap<>(java.util.Map.of("name", "Laptop", "price", 1500)), new HashMap<>(java.util.Map.of("name", "Smartphone", "price", 900)), new HashMap<>(java.util.Map.of("name", "Tablet", "price", 600)), new HashMap<>(java.util.Map.of("name", "Monitor", "price", 300)), new HashMap<>(java.util.Map.of("name", "Keyboard", "price", 100)), new HashMap<>(java.util.Map.of("name", "Mouse", "price", 50)), new HashMap<>(java.util.Map.of("name", "Headphones", "price", 200))));
+	static List<Map<Object,Object>> products = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<>(){{put("name", "Laptop");put("price", 1500);}}, new LinkedHashMap<>(){{put("name", "Smartphone");put("price", 900);}}, new LinkedHashMap<>(){{put("name", "Tablet");put("price", 600);}}, new LinkedHashMap<>(){{put("name", "Monitor");put("price", 300);}}, new LinkedHashMap<>(){{put("name", "Keyboard");put("price", 100);}}, new LinkedHashMap<>(){{put("name", "Mouse");put("price", 50);}}, new LinkedHashMap<>(){{put("name", "Headphones");put("price", 200);}}));
 	static List<Object> expensive = (new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
 	List<Object> _res0 = new ArrayList<>();
 	for (var p : products) {

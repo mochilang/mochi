@@ -9,7 +9,7 @@ public class Main {
 	}
 	return _res0;
 }}).get();
-	static Map<Object,Integer> m = new HashMap<>(java.util.Map.of("a", 1));
+	static Map<Object,Integer> m = new LinkedHashMap<>(){{put("a", 1);}};
 	static String s = "hello";
 	static boolean inOp(Object item, Object collection) {
 		if (collection instanceof Map<?,?> m) return m.containsKey(item);

@@ -1,6 +1,6 @@
 import java.util.*;
 public class Main {
-	static List<Map<Object,String>> people = new ArrayList<>(java.util.Arrays.asList(new HashMap<>(java.util.Map.of("name", "Alice", "city", "Paris")), new HashMap<>(java.util.Map.of("name", "Bob", "city", "Hanoi")), new HashMap<>(java.util.Map.of("name", "Charlie", "city", "Paris")), new HashMap<>(java.util.Map.of("name", "Diana", "city", "Hanoi")), new HashMap<>(java.util.Map.of("name", "Eve", "city", "Paris")), new HashMap<>(java.util.Map.of("name", "Frank", "city", "Hanoi")), new HashMap<>(java.util.Map.of("name", "George", "city", "Paris"))));
+	static List<Map<Object,String>> people = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<>(){{put("name", "Alice");put("city", "Paris");}}, new LinkedHashMap<>(){{put("name", "Bob");put("city", "Hanoi");}}, new LinkedHashMap<>(){{put("name", "Charlie");put("city", "Paris");}}, new LinkedHashMap<>(){{put("name", "Diana");put("city", "Hanoi");}}, new LinkedHashMap<>(){{put("name", "Eve");put("city", "Paris");}}, new LinkedHashMap<>(){{put("name", "Frank");put("city", "Hanoi");}}, new LinkedHashMap<>(){{put("name", "George");put("city", "Paris");}}));
 	static List<Object> big = (new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
 	List<Object> _res0 = new ArrayList<>();
 	Map<Object,List<Object>> _groups1 = new LinkedHashMap<>();
@@ -15,13 +15,28 @@ public class Main {
 		Object g_key = __e.getKey();
 		List<Object> g = __e.getValue();
 		if (!(count(g) >= 4)) continue;
-		_res0.add(new HashMap<>(java.util.Map.of("city", g_key, "num", count(g))));
+		_res0.add(new LinkedHashMap<>(){{put("city", g_key);put("num", count(g));}});
 	}
 	return _res0;
 }}).get();
 	static int count(Collection<?> c) {
 		return c.size();
 	}
+	static String toJson(Object o) {
+		if (o instanceof Map<?,?> m) {
+			StringJoiner j = new StringJoiner(",", "{", "}");
+			for (var e : m.entrySet()) j.add("\"" + e.getKey() + "\":" + e.getValue());
+			return j.toString();
+		} else if (o instanceof Collection<?> c) {
+			StringJoiner j = new StringJoiner(",", "[", "]");
+			for (var x : c) j.add(toJson(x));
+			return j.toString();
+		} else if (o instanceof String s) {
+			return "\"" + s + "\"";
+		}
+		return String.valueOf(o);
+	}
+	static void json(Object o) { System.out.println(toJson(o)); }
 	public static void main(String[] args) {
 	json(big);
 	}

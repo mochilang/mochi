@@ -8,7 +8,7 @@ public class Main {
 	for (var n : nums) {
 		for (var l : letters) {
 			for (var b : bools) {
-				_res0.add(new HashMap<>(java.util.Map.of("n", n, "l", l, "b", b)));
+				_res0.add(new LinkedHashMap<>(){{put("n", n);put("l", l);put("b", b);}});
 			}
 		}
 	}

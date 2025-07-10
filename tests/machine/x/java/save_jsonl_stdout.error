@@ -1,4 +1,10 @@
-line 0: compile error: expression unsupported at line 6
+line 0: javac error: exit status 1
+/tmp/TestCompileValidProgramssave_jsonl_stdout1260502871/001/Main.java:12: error: incompatible types: List<Map<Object,Object>> cannot be converted to List<Map<String,Object>>
+	saveJsonl(people);
+	          ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+1 error
+
 
   1| let people = [
   2|   { name: "Alice", age: 30 },
