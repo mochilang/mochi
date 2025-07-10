@@ -2203,6 +2203,57 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", fmt.Errorf("join sides not supported")
 		}
 	}
+	if q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
+		if name, arg, ok := c.aggCall(q.Select); ok && name == "sum" {
+			orig := c.env
+			c.env = child
+			val, err := c.compileExpr(arg)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			var cond string
+			if q.Where != nil {
+				cond, err = c.compileCond(q.Where)
+				if err != nil {
+					c.env = orig
+					return "", err
+				}
+			}
+			c.env = orig
+			acc := c.newTmp()
+			var b strings.Builder
+			fmt.Fprintf(&b, "{ let mut %s = 0;", acc)
+			b.WriteString(loopHead(q.Var, src, child))
+			for i, fs := range fromSrcs {
+				b.WriteString(" ")
+				b.WriteString(loopHead(q.Froms[i].Var, fs, child))
+			}
+			for i, js := range joinSrcs {
+				b.WriteString(" ")
+				b.WriteString(loopHead(q.Joins[i].Var, js, child))
+				if joinConds[i] != "" {
+					b.WriteString(" if !(" + joinConds[i] + ") { continue; }")
+				}
+			}
+			if cond != "" {
+				b.WriteString(" if !(" + cond + ") { continue; }")
+			}
+			fmt.Fprintf(&b, " %s += %s;", acc, val)
+			for range joinSrcs {
+				b.WriteString(" }")
+			}
+			for range fromSrcs {
+				b.WriteString(" }")
+			}
+			b.WriteString(" }")
+			b.WriteString(" ")
+			b.WriteString(acc)
+			b.WriteString(" }")
+			c.env = origEnv
+			return b.String(), nil
+		}
+	}
 	if q.Group != nil {
 		if len(q.Joins) > 0 {
 			res, err := c.compileGroupByJoin(q, src, child, fromSrcs, joinSrcs, joinConds, joinSides)
@@ -2837,6 +2888,25 @@ func (c *Compiler) simpleIdent(e *parser.Expr) (string, bool) {
 		return "", false
 	}
 	return p.Target.Selector.Root, true
+}
+
+func (c *Compiler) aggCall(e *parser.Expr) (string, *parser.Expr, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", nil, false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Call == nil {
+		return "", nil, false
+	}
+	call := p.Target.Call
+	if len(call.Args) != 1 {
+		return "", nil, false
+	}
+	return call.Func, call.Args[0], true
 }
 
 func (c *Compiler) writeln(s string) {
