@@ -1,5 +1,8 @@
-# Mochi to COBOL Machine Translations (52/97 compiled)
+# Mochi to COBOL Machine Translations (54/97 compiled)
 
+Generated using `go run -tags slow scripts/compile_cobol.go`.
+
+## Checklist
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -8,7 +11,7 @@
 - [x] break_continue.mochi
 - [x] cast_string_to_int.mochi
 - [x] cast_struct.mochi
-- [x] closure.mochi
+- [ ] closure.mochi
 - [x] count_builtin.mochi
 - [ ] cross_join.mochi
 - [ ] cross_join_filter.mochi
@@ -18,7 +21,7 @@
 - [ ] exists_builtin.mochi
 - [x] for_list_collection.mochi
 - [x] for_loop.mochi
- - [x] for_map_collection.mochi
+- [x] for_map_collection.mochi
 - [x] fun_call.mochi
 - [ ] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
@@ -32,17 +35,17 @@
 - [ ] group_by_sort.mochi
 - [ ] group_items_iteration.mochi
 - [x] if_else.mochi
- - [x] if_then_else.mochi
- - [x] if_then_else_nested.mochi
+- [x] if_then_else.mochi
+- [x] if_then_else_nested.mochi
 - [x] in_operator.mochi
 - [ ] in_operator_extended.mochi
 - [ ] inner_join.mochi
 - [ ] join_multi.mochi
-- [ ] json_builtin.mochi
+- [x] json_builtin.mochi
 - [ ] left_join.mochi
 - [ ] left_join_multi.mochi
 - [x] len_builtin.mochi
- - [x] len_map.mochi
+- [x] len_map.mochi
 - [x] len_string.mochi
 - [x] let_and_print.mochi
 - [ ] list_assign.mochi
@@ -51,21 +54,21 @@
 - [ ] list_set_ops.mochi
 - [ ] load_yaml.mochi
 - [ ] map_assign.mochi
- - [x] map_in_operator.mochi
- - [x] map_index.mochi
- - [x] map_int_key.mochi
- - [x] map_literal_dynamic.mochi
- - [x] map_membership.mochi
- - [ ] map_nested_assign.mochi
- - [ ] match_expr.mochi
- - [ ] match_full.mochi
- - [x] math_ops.mochi
- - [x] membership.mochi
- - [x] min_max_builtin.mochi
- - [x] nested_function.mochi
- - [ ] order_by_map.mochi
- - [ ] outer_join.mochi
- - [x] partial_application.mochi
+- [x] map_in_operator.mochi
+- [x] map_index.mochi
+- [x] map_int_key.mochi
+- [x] map_literal_dynamic.mochi
+- [x] map_membership.mochi
+- [ ] map_nested_assign.mochi
+- [ ] match_expr.mochi
+- [ ] match_full.mochi
+- [x] math_ops.mochi
+- [x] membership.mochi
+- [x] min_max_builtin.mochi
+- [x] nested_function.mochi
+- [ ] order_by_map.mochi
+- [ ] outer_join.mochi
+- [x] partial_application.mochi
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
@@ -76,13 +79,13 @@
 - [x] short_circuit.mochi
 - [ ] slice.mochi
 - [ ] sort_stable.mochi
- - [x] str_builtin.mochi
+- [x] str_builtin.mochi
 - [x] string_compare.mochi
 - [x] string_concat.mochi
 - [x] string_contains.mochi
 - [x] string_in_operator.mochi
- - [x] string_index.mochi
- - [x] string_prefix_slice.mochi
+- [x] string_index.mochi
+- [x] string_prefix_slice.mochi
 - [x] substring_builtin.mochi
 - [x] sum_builtin.mochi
 - [x] tail_recursion.mochi
@@ -94,7 +97,7 @@
 - [x] unary_neg.mochi
 - [ ] update_stmt.mochi
 - [ ] user_type_literal.mochi
-- [ ] values_builtin.mochi
+- [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
 
