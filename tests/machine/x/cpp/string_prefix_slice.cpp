@@ -2,7 +2,6 @@
 
 auto prefix = std::string("fore");
 auto s1 = std::string("forest");
-auto s2 = std::string("desert");
 
 int main() {
   {
@@ -10,6 +9,7 @@ int main() {
               << (std::string(s1).substr(0, (prefix.size()) - (0)) == prefix);
     std::cout << std::endl;
   }
+  auto s2 = std::string("desert");
   {
     std::cout << std::boolalpha
               << (std::string(s2).substr(0, (prefix.size()) - (0)) == prefix);

@@ -9,13 +9,12 @@ inline double log(double x) { return std::log(x); }
 const double pi = 3.141592653589793;
 const double e = 2.718281828459045;
 } // namespace math
-auto r = 3;
-auto area = (math::pi * math::pow(r, 2));
-auto root = math::sqrt(49);
-auto sin45 = math::sin((math::pi / 4));
-auto log_e = math::log(math::e);
-
 int main() {
+  auto r = 3;
+  auto area = (math::pi * math::pow(r, 2));
+  auto root = math::sqrt(49);
+  auto sin45 = math::sin((math::pi / 4));
+  auto log_e = math::log(math::e);
   {
     std::cout << std::boolalpha << std::string("Circle area with r =");
     std::cout << ' ';
