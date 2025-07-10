@@ -13,10 +13,15 @@ val orders = mutableListOf(mutableMapOf("id" to 100, "customerId" to 1, "total" 
 val result = run {
     val __res = mutableListOf<MutableMap<Any?, Any?>>()
     for (c in customers) {
+        val __tmp = mutableListOf<Any?>()
         for (o in orders) {
             if (toBool((o as MutableMap<*, *>)["customerId"] == (c as MutableMap<*, *>)["id"])) {
-                __res.add((mutableMapOf("customerName" to (c as MutableMap<*, *>)["name"], "order" to o) as MutableMap<Any?, Any?>))
+                __tmp.add(o)
             }
+        }
+        if (__tmp.isEmpty()) __tmp.add(null)
+        for (o in __tmp) {
+            __res.add(mutableMapOf("customerName" to (c as MutableMap<*, *>)["name"], "order" to o))
         }
     }
     __res

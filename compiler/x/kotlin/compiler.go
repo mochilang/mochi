@@ -1148,8 +1148,19 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	if t := selectorType(q.Select, selEnv); t != nil {
 		selType = t
 	}
-	_ = selType
+
 	oldEnv := c.env
+	// special case: simple right or outer join without extra clauses
+	if q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct &&
+		len(q.Froms) == 0 && len(q.Joins) == 1 && q.Where == nil {
+		j := q.Joins[0]
+		if j.Side != nil && (*j.Side == "right" || *j.Side == "outer") {
+			c.env = child
+			code, err := c.simpleRightOuterJoin(src, q, j, selType, *j.Side == "outer")
+			c.env = oldEnv
+			return code, err
+		}
+	}
 	c.env = child
 
 	b.WriteString("run {\n")
@@ -1416,6 +1427,95 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	c.env = oldEnv
 	return res, nil
+}
+
+func (c *Compiler) simpleRightOuterJoin(src string, q *parser.QueryExpr, j *parser.JoinClause, selType types.Type, outer bool) (string, error) {
+	var b strings.Builder
+	indent := func(n int) string { return strings.Repeat("    ", n) }
+	lvl := 1
+
+	js, err := c.expr(j.Src)
+	if err != nil {
+		return "", err
+	}
+	cond, err := c.expr(j.On)
+	if err != nil {
+		return "", err
+	}
+	if _, ok := types.TypeOfExprBasic(j.On, c.env).(types.BoolType); !ok {
+		c.use("toBool")
+		cond = "toBool(" + cond + ")"
+	}
+	sel, err := c.expr(q.Select)
+	if err != nil {
+		return "", err
+	}
+
+	b.WriteString("run {\n")
+	b.WriteString(indent(lvl))
+	b.WriteString(fmt.Sprintf("val __res = mutableListOf<%s>()\n", kotlinTypeOf(selType)))
+	if outer {
+		b.WriteString(indent(lvl))
+		b.WriteString("val __matched = mutableSetOf<Any?>()\n")
+	}
+	b.WriteString(indent(lvl))
+	b.WriteString(fmt.Sprintf("for (%s in %s) {\n", q.Var, src))
+	lvl++
+	b.WriteString(indent(lvl))
+	b.WriteString("val __tmp = mutableListOf<Any?>()\n")
+	b.WriteString(indent(lvl))
+	b.WriteString(fmt.Sprintf("for (%s in %s) {\n", j.Var, js))
+	lvl++
+	b.WriteString(indent(lvl))
+	b.WriteString(fmt.Sprintf("if (%s) {\n", cond))
+	lvl++
+	b.WriteString(indent(lvl))
+	b.WriteString(fmt.Sprintf("__tmp.add(%s)\n", j.Var))
+	if outer {
+		b.WriteString(indent(lvl))
+		b.WriteString(fmt.Sprintf("__matched.add(%s)\n", j.Var))
+	}
+	lvl--
+	b.WriteString(indent(lvl))
+	b.WriteString("}\n")
+	lvl--
+	b.WriteString(indent(lvl))
+	b.WriteString("}\n")
+	b.WriteString(indent(lvl))
+	b.WriteString("if (__tmp.isEmpty()) __tmp.add(null)\n")
+	b.WriteString(indent(lvl))
+	b.WriteString(fmt.Sprintf("for (%s in __tmp) {\n", j.Var))
+	lvl++
+	b.WriteString(indent(lvl))
+	b.WriteString(fmt.Sprintf("__res.add(%s)\n", sel))
+	lvl--
+	b.WriteString(indent(lvl))
+	b.WriteString("}\n")
+	lvl--
+	b.WriteString(indent(lvl))
+	b.WriteString("}\n")
+	if outer {
+		b.WriteString(indent(lvl))
+		b.WriteString(fmt.Sprintf("for (%s in %s) {\n", j.Var, js))
+		lvl++
+		b.WriteString(indent(lvl))
+		b.WriteString(fmt.Sprintf("if (!__matched.contains(%s)) {\n", j.Var))
+		lvl++
+		b.WriteString(indent(lvl))
+		b.WriteString(fmt.Sprintf("val %s = null\n", q.Var))
+		b.WriteString(indent(lvl))
+		b.WriteString(fmt.Sprintf("__res.add(%s)\n", sel))
+		lvl--
+		b.WriteString(indent(lvl))
+		b.WriteString("}\n")
+		lvl--
+		b.WriteString(indent(lvl))
+		b.WriteString("}\n")
+	}
+	b.WriteString(indent(lvl))
+	b.WriteString("__res\n")
+	b.WriteString("}")
+	return b.String(), nil
 }
 
 func (c *Compiler) loadExpr(l *parser.LoadExpr) (string, error) {

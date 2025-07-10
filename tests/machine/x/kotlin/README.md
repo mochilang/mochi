@@ -76,14 +76,14 @@ Successfully ran: 83/97 programs
 - [x] min_max_builtin.mochi
  - [x] nested_function.mochi
 - [ ] order_by_map.mochi
-- [ ] outer_join.mochi
+- [x] outer_join.mochi
 - [x] partial_application.mochi
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
 - [ ] query_sum_select.mochi
 - [x] record_assign.mochi
-- [ ] right_join.mochi
+- [x] right_join.mochi
 - [x] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
 - [x] slice.mochi
