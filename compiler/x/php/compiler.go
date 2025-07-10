@@ -569,7 +569,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			name := op.Field.Name
 			if gvName != "" {
 				if name == "key" {
-					val = fmt.Sprintf("$%s_key", gvName)
+					val = fmt.Sprintf("$%s['key']", gvName)
 					gvName = ""
 					t = types.AnyType{}
 					continue
@@ -581,9 +581,16 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					continue
 				}
 			}
-			if _, ok := t.(types.MapType); ok {
+			switch tt := t.(type) {
+			case types.MapType:
 				val = fmt.Sprintf("%s['%s']", val, name)
-			} else {
+			case types.StructType:
+				if tt.Name == "" {
+					val = fmt.Sprintf("%s['%s']", val, name)
+				} else {
+					val = fmt.Sprintf("%s->%s", val, sanitizeName(name))
+				}
+			default:
 				val = fmt.Sprintf("%s->%s", val, sanitizeName(name))
 			}
 			t = types.AnyType{}
@@ -673,8 +680,32 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 		}
 		name := "$" + sanitizeName(p.Selector.Root)
-		for _, t := range p.Selector.Tail {
-			name += "->" + sanitizeName(t)
+		var t types.Type
+		if c.env != nil {
+			if vt, err := c.env.GetVar(p.Selector.Root); err == nil {
+				t = vt
+			}
+		}
+		for _, fld := range p.Selector.Tail {
+			switch tt := t.(type) {
+			case types.MapType:
+				name += fmt.Sprintf("['%s']", fld)
+				t = tt.Value
+			case types.StructType:
+				if tt.Name == "" {
+					name += fmt.Sprintf("['%s']", fld)
+				} else {
+					name += "->" + sanitizeName(fld)
+				}
+				if ft, ok := tt.Fields[fld]; ok {
+					t = ft
+				} else {
+					t = types.AnyType{}
+				}
+			default:
+				name += fmt.Sprintf("['%s']", fld)
+				t = types.AnyType{}
+			}
 		}
 		return name, nil
 	case p.Struct != nil:
@@ -845,9 +876,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 	child := types.NewEnv(c.env)
-	if lt, ok := types.TypeOfExprBasic(q.Source, c.env).(types.ListType); ok {
-		child.SetVar(q.Var, lt.Elem, true)
-	} else {
+	switch t := types.TypeOfExprBasic(q.Source, c.env).(type) {
+	case types.ListType:
+		child.SetVar(q.Var, t.Elem, true)
+	case types.GroupType:
+		child.SetVar(q.Var, t.Elem, true)
+	default:
 		child.SetVar(q.Var, types.AnyType{}, true)
 	}
 	for _, f := range q.Froms {
@@ -1259,9 +1293,12 @@ func (c *Compiler) compileQueryExprAdvanced(q *parser.QueryExpr) (string, error)
 		return "", err
 	}
 	child := types.NewEnv(c.env)
-	if lt, ok := types.TypeOfExprBasic(q.Source, c.env).(types.ListType); ok {
-		child.SetVar(q.Var, lt.Elem, true)
-	} else {
+	switch t := types.TypeOfExprBasic(q.Source, c.env).(type) {
+	case types.ListType:
+		child.SetVar(q.Var, t.Elem, true)
+	case types.GroupType:
+		child.SetVar(q.Var, t.Elem, true)
+	default:
 		child.SetVar(q.Var, types.AnyType{}, true)
 	}
 	for _, f := range q.Froms {
@@ -1368,7 +1405,11 @@ func (c *Compiler) compileQueryExprAdvanced(q *parser.QueryExpr) (string, error)
 	}
 
 	genv := types.NewEnv(child)
-	genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
+	var elemT types.Type = types.AnyType{}
+	if vt, err := child.GetVar(q.Var); err == nil {
+		elemT = vt
+	}
+	genv.SetVar(q.Group.Name, types.GroupType{Elem: elemT}, true)
 	gname := sanitizeName(q.Group.Name)
 	c.groupVars[gname] = true
 	c.env = genv
