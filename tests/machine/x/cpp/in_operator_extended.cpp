@@ -13,8 +13,6 @@ auto ys = ([]() {
   }
   return __items;
 })();
-auto m = std::unordered_map<std::string, decltype(1)>{{std::string("a"), 1}};
-auto s = std::string("hello");
 
 int main() {
   {
@@ -27,6 +25,7 @@ int main() {
               << (std::find(ys.begin(), ys.end(), 2) != ys.end());
     std::cout << std::endl;
   }
+  auto m = std::unordered_map<std::string, decltype(1)>{{std::string("a"), 1}};
   {
     std::cout << std::boolalpha << (m.count(std::string("a")) > 0);
     std::cout << std::endl;
@@ -35,6 +34,7 @@ int main() {
     std::cout << std::boolalpha << (m.count(std::string("b")) > 0);
     std::cout << std::endl;
   }
+  auto s = std::string("hello");
   {
     std::cout << std::boolalpha
               << (s.find(std::string("ell")) != std::string::npos);
