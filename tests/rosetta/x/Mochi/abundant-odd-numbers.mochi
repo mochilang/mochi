@@ -1,0 +1,94 @@
+// Mochi implementation of Rosetta "Abundant odd numbers" task
+// Translated from Go version in tests/rosetta/x/Go/abundant-odd-numbers.go
+
+fun divisors(n: int): list<int> {
+  var divs: list<int> = [1]
+  var divs2: list<int> = []
+  var i = 2
+  while i * i <= n {
+    if n % i == 0 {
+      let j = (n / i) as int
+      divs = append(divs, i)
+      if i != j {
+        divs2 = append(divs2, j)
+      }
+    }
+    i = i + 1
+  }
+  var j = len(divs2) - 1
+  while j >= 0 {
+    divs = append(divs, divs2[j])
+    j = j - 1
+  }
+  return divs
+}
+
+fun sum(xs: list<int>): int {
+  var tot = 0
+  for v in xs {
+    tot = tot + v
+  }
+  return tot
+}
+
+fun sumStr(xs: list<int>): string {
+  var s = ""
+  var i = 0
+  while i < len(xs) {
+    s = s + str(xs[i]) + " + "
+    i = i + 1
+  }
+  return substring(s, 0, len(s) - 3)
+}
+
+fun pad2(n: int): string {
+  let s = str(n)
+  if len(s) < 2 { return " " + s }
+  return s
+}
+
+fun pad5(n: int): string {
+  var s = str(n)
+  while len(s) < 5 {
+    s = " " + s
+  }
+  return s
+}
+
+fun abundantOdd(searchFrom: int, countFrom: int, countTo: int, printOne: bool): int {
+  var count = countFrom
+  var n = searchFrom
+  while count < countTo {
+    let divs = divisors(n)
+    let tot = sum(divs)
+    if tot > n {
+      count = count + 1
+      if printOne && count < countTo {
+        n = n + 2
+        continue
+      }
+      let s = sumStr(divs)
+      if !printOne {
+        print(pad2(count) + ". " + pad5(n) + " < " + s + " = " + str(tot))
+      } else {
+        print(str(n) + " < " + s + " = " + str(tot))
+      }
+    }
+    n = n + 2
+  }
+  return n
+}
+
+fun main() {
+  let max = 25
+  print("The first " + str(max) + " abundant odd numbers are:")
+  let n = abundantOdd(1, 0, max, false)
+
+  print("\nThe one thousandth abundant odd number is:")
+  abundantOdd(n, max, 1000, true)
+
+  print("\nThe first abundant odd number above one billion is:")
+  abundantOdd(1000000001, 0, 1, true)
+}
+
+main()
