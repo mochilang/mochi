@@ -1,2 +1,1 @@
-ERROR: /workspace/mochi/tests/machine/x/pl/values_builtin.pl:6:9: Syntax error: Operator expected
-
+[1,2,3]
