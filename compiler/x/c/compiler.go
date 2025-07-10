@@ -3195,6 +3195,19 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					}
 					return name
 				}
+			} else if sl := asStructLiteral(p.List.Elems[0]); sl != nil {
+				stName := sl.Name
+				if st, ok := c.env.GetStruct(stName); ok {
+					listName := "list_" + sanitizeName(st.Name)
+					c.compileStructType(st)
+					c.compileStructListType(st)
+					c.writeln(fmt.Sprintf("%s %s = %s_create(%d);", listName, name, listName, len(p.List.Elems)))
+					for i, el := range p.List.Elems {
+						v := c.compileExpr(el)
+						c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
+					}
+					return name
+				}
 			}
 			c.need(needListInt)
 			c.writeln(fmt.Sprintf("list_int %s = list_int_create(%d);", name, len(p.List.Elems)))
@@ -4612,6 +4625,13 @@ func asFetchExpr(e *parser.Expr) *parser.FetchExpr {
 		return nil
 	}
 	return e.Binary.Left.Value.Target.Fetch
+}
+
+func asStructLiteral(e *parser.Expr) *parser.StructLiteral {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil || e.Binary.Left.Value.Target == nil {
+		return nil
+	}
+	return e.Binary.Left.Value.Target.Struct
 }
 
 func (c *Compiler) emitJSONExpr(e *parser.Expr) {
