@@ -57,19 +57,19 @@ const partsupp = (blk2: { const _tmp2 = struct {
     _tmp2{
     .part = 100,
     .supplier = 1,
-    .cost = 10,
+    .cost = 10.0,
     .qty = 2,
 },
     _tmp2{
     .part = 100,
     .supplier = 2,
-    .cost = 20,
+    .cost = 20.0,
     .qty = 1,
 },
     _tmp2{
     .part = 200,
     .supplier = 1,
-    .cost = 5,
+    .cost = 5.0,
     .qty = 3,
 },
 }; break :blk2 _arr; });

@@ -2461,7 +2461,11 @@ func (c *Compiler) compileLiteral(l *parser.Literal, hint types.Type) (string, e
 	case l.Int != nil:
 		return strconv.Itoa(*l.Int), nil
 	case l.Float != nil:
-		return strconv.FormatFloat(*l.Float, 'f', -1, 64), nil
+		s := strconv.FormatFloat(*l.Float, 'f', -1, 64)
+		if !strings.ContainsAny(s, ".eE") && !strings.Contains(s, ".") {
+			s += ".0"
+		}
+		return s, nil
 	case l.Str != nil:
 		return strconv.Quote(*l.Str), nil
 	case l.Bool != nil:
