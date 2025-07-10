@@ -228,3 +228,26 @@ func Download(task, language, name string, refresh bool) ([]byte, error) {
 	}
 	return data, nil
 }
+
+// DownloadTaskByNumber downloads all source files for the nth task in tasks.json
+// for the specified language. It returns the task name.
+func DownloadTaskByNumber(n int, language string, refresh bool) (string, error) {
+	tasks, err := ListTasks(false)
+	if err != nil {
+		return "", err
+	}
+	if n <= 0 || n > len(tasks) {
+		return "", fmt.Errorf("task number %d out of range", n)
+	}
+	task := tasks[n-1]
+	names, err := ListSources(task, language, refresh)
+	if err != nil {
+		return "", err
+	}
+	for _, name := range names {
+		if _, err := Download(task, language, name, refresh); err != nil {
+			return "", err
+		}
+	}
+	return task, nil
+}
