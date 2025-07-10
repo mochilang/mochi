@@ -1,4 +1,4 @@
-# Mochi to COBOL Machine Translations (54/97 compiled)
+# Mochi to COBOL Machine Translations (55/97 compiled)
 
 Generated using `go run -tags slow scripts/compile_cobol.go`.
 
@@ -73,7 +73,7 @@ Generated using `go run -tags slow scripts/compile_cobol.go`.
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
 - [ ] query_sum_select.mochi
-- [ ] record_assign.mochi
+- [x] record_assign.mochi
 - [ ] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
