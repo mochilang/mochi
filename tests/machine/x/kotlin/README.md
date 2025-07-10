@@ -6,9 +6,9 @@ Each generated file now includes only the runtime helper functions that are actu
 
 ## Progress
 
-Compiled: 97/97 programs
+Compiled: 100/100 programs
 
-Successfully ran: 83/97 programs
+Successfully ran: 83/100 programs
 
 ## Checklist
 
@@ -109,6 +109,9 @@ Successfully ran: 83/97 programs
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
+- [ ] go_auto.mochi
+- [ ] python_auto.mochi
+- [ ] python_math.mochi
 
 ## Remaining Work
 

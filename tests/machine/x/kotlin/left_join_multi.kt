@@ -6,11 +6,11 @@ fun toBool(v: Any?): Boolean = when (v) {
     null -> false
     else -> true
 }
-data class Customer(var id: Int, var name: String)
-
 data class Order(var id: Int, var customerId: Int)
 
 data class Item(var orderId: Int, var sku: String)
+
+data class Customer(var id: Int, var name: String)
 
 val customers = mutableListOf(Customer(id = 1, name = "Alice"), Customer(id = 2, name = "Bob"))
 

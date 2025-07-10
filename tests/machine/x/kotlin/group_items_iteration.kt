@@ -4,11 +4,12 @@ fun <T> append(list: MutableList<T>, item: T): MutableList<T> {
     return res
 }
 
-fun toDouble(v: Any?): Double = when (v) {
-    is Double -> v
-    is Int -> v.toDouble()
-    is String -> v.toDouble()
-    else -> 0.0
+fun toInt(v: Any?): Int = when (v) {
+    is Int -> v
+    is Double -> v.toInt()
+    is String -> v.toInt()
+    is Boolean -> if (v) 1 else 0
+    else -> 0
 }
 
 class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
@@ -51,7 +52,7 @@ fun main() {
     for (g in groups) {
         var total = 0
         for (x in g.items) {
-            total = toDouble(total) + toDouble((x as MutableMap<*, *>)["val"])
+            total = total + toInt((x as MutableMap<*, *>)["val"])
         }
         tmp = append(tmp, mutableMapOf("tag" to g.key, "total" to total))
     }
