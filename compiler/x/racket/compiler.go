@@ -221,79 +221,135 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 	if e == nil {
 		return "", fmt.Errorf("nil expr")
 	}
-	val, err := c.compileUnary(e.Binary.Left)
+
+	type opPart struct {
+		op  string
+		all bool
+	}
+
+	operands := []string{}
+	strFlags := []bool{}
+
+	first, err := c.compileUnary(e.Binary.Left)
 	if err != nil {
 		return "", err
 	}
-	isStrLeft := isStringUnary(e.Binary.Left)
-	for _, op := range e.Binary.Right {
-		rhs, err := c.compilePostfix(op.Right)
+	operands = append(operands, first)
+	strFlags = append(strFlags, isStringUnary(e.Binary.Left))
+
+	ops := []opPart{}
+	for _, part := range e.Binary.Right {
+		r, err := c.compilePostfix(part.Right)
 		if err != nil {
 			return "", err
 		}
-		rightStr := isStringPostfix(op.Right)
-		operator := op.Op
-		switch operator {
+		operands = append(operands, r)
+		strFlags = append(strFlags, isStringPostfix(part.Right))
+		ops = append(ops, opPart{op: part.Op, all: part.All})
+	}
+
+	levels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+		{"union", "except", "intersect"},
+	}
+
+	contains := func(sl []string, s string) bool {
+		for _, v := range sl {
+			if v == s {
+				return true
+			}
+		}
+		return false
+	}
+
+	apply := func(i int) error {
+		op := ops[i]
+		l := operands[i]
+		r := operands[i+1]
+		ls := strFlags[i]
+		rs := strFlags[i+1]
+		var expr string
+		var outStr bool
+		switch op.op {
 		case "+":
-			if isStrLeft || rightStr {
-				val = fmt.Sprintf("(string-append %s %s)", val, rhs)
+			if ls || rs {
+				expr = fmt.Sprintf("(string-append %s %s)", l, r)
+				outStr = true
 			} else {
-				val = fmt.Sprintf("(+ %s %s)", val, rhs)
+				expr = fmt.Sprintf("(+ %s %s)", l, r)
 			}
 		case "-", "*", "/":
-			val = fmt.Sprintf("(%s %s %s)", operator, val, rhs)
+			expr = fmt.Sprintf("(%s %s %s)", op.op, l, r)
 		case "%":
-			val = fmt.Sprintf("(remainder %s %s)", val, rhs)
+			expr = fmt.Sprintf("(remainder %s %s)", l, r)
 		case "union":
-			if op.All {
-				val = fmt.Sprintf("(append %s %s)", val, rhs)
+			if op.all {
+				expr = fmt.Sprintf("(append %s %s)", l, r)
 			} else {
-				val = fmt.Sprintf("(remove-duplicates (append %s %s))", val, rhs)
+				expr = fmt.Sprintf("(remove-duplicates (append %s %s))", l, r)
 			}
 		case "except":
-			val = fmt.Sprintf("(filter (lambda (x) (not (member x %s))) %s)", rhs, val)
+			expr = fmt.Sprintf("(filter (lambda (x) (not (member x %s))) %s)", r, l)
 		case "intersect":
-			val = fmt.Sprintf("(filter (lambda (x) (member x %s)) %s)", rhs, val)
+			expr = fmt.Sprintf("(filter (lambda (x) (member x %s)) %s)", r, l)
 		case "==":
-			if isStrLeft || rightStr {
-				val = fmt.Sprintf("(string=? %s %s)", val, rhs)
+			if ls || rs {
+				expr = fmt.Sprintf("(string=? %s %s)", l, r)
 			} else {
-				val = fmt.Sprintf("(equal? %s %s)", val, rhs)
+				expr = fmt.Sprintf("(equal? %s %s)", l, r)
 			}
 		case "!=":
-			if isStrLeft || rightStr {
-				val = fmt.Sprintf("(not (string=? %s %s))", val, rhs)
+			if ls || rs {
+				expr = fmt.Sprintf("(not (string=? %s %s))", l, r)
 			} else {
-				val = fmt.Sprintf("(not (equal? %s %s))", val, rhs)
+				expr = fmt.Sprintf("(not (equal? %s %s))", l, r)
 			}
 		case "<", "<=", ">", ">=":
-			cmpOp := operator
-			if isStrLeft || rightStr {
-				switch operator {
-				case "<":
-					cmpOp = "string<?"
-				case "<=":
-					cmpOp = "string<=?"
-				case ">":
-					cmpOp = "string>?"
-				case ">=":
-					cmpOp = "string>=?"
-				}
+			strOp := map[string]string{"<": "string<?", "<=": "string<=?", ">": "string>?", ">=": "string>=?"}[op.op]
+			if ls || rs {
+				expr = fmt.Sprintf("(%s %s %s)", strOp, l, r)
+			} else {
+				expr = fmt.Sprintf("(cond [(string? %s) (%s %s %s)] [(string? %s) (%s %s %s)] [else (%s %s %s)])", l, strOp, l, r, r, strOp, l, r, op.op, l, r)
 			}
-			val = fmt.Sprintf("(%s %s %s)", cmpOp, val, rhs)
 		case "&&":
-			val = fmt.Sprintf("(and %s %s)", val, rhs)
+			expr = fmt.Sprintf("(and %s %s)", l, r)
 		case "||":
-			val = fmt.Sprintf("(or %s %s)", val, rhs)
+			expr = fmt.Sprintf("(or %s %s)", l, r)
 		case "in":
 			c.needListLib = true
-			val = fmt.Sprintf("(cond [(string? %s) (regexp-match? (regexp %s) %s)] [(hash? %s) (hash-has-key? %s %s)] [else (member %s %s)])", rhs, val, rhs, rhs, rhs, val, val, rhs)
+			expr = fmt.Sprintf("(cond [(string? %s) (regexp-match? (regexp %s) %s)] [(hash? %s) (hash-has-key? %s %s)] [else (member %s %s)])", r, l, r, r, r, l, l, r)
 		default:
-			return "", fmt.Errorf("unsupported operator %s", operator)
+			return fmt.Errorf("unsupported operator %s", op.op)
 		}
-		isStrLeft = isStrLeft || rightStr
+		operands[i] = expr
+		strFlags[i] = outStr
+		operands = append(operands[:i+1], operands[i+2:]...)
+		strFlags = append(strFlags[:i+1], strFlags[i+2:]...)
+		ops = append(ops[:i], ops[i+1:]...)
+		return nil
 	}
-	return val, nil
+
+	for _, level := range levels {
+		for i := 0; i < len(ops); {
+			if !contains(level, ops[i].op) {
+				i++
+				continue
+			}
+			if err := apply(i); err != nil {
+				return "", err
+			}
+		}
+	}
+
+	if len(operands) != 1 {
+		return "", fmt.Errorf("expression compilation failed")
+	}
+	return operands[0], nil
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
@@ -502,6 +558,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.If != nil:
 		return c.compileIfExpr(p.If)
 	case p.Selector != nil:
+		if len(p.Selector.Tail) == 0 {
+			if fields, ok := c.structs[p.Selector.Root]; ok && len(fields) == 0 {
+				return fmt.Sprintf("(%s)", p.Selector.Root), nil
+			}
+		}
 		val := p.Selector.Root
 		t, _ := c.varTypes[val]
 		for _, f := range p.Selector.Tail {
