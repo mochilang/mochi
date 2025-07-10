@@ -1,0 +1,13 @@
+error running sort_stable:
+ERROR in _lt on line 99 of file /workspace/mochi/tests/machine/x/scheme/sort_stable.scm: undefined variable: format
+  called from <anonymous> on line 105 of file /workspace/mochi/tests/machine/x/scheme/sort_stable.scm
+  called from <anonymous> on line 105 of file /workspace/mochi/tests/machine/x/scheme/sort_stable.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+Searching for modules exporting format ...
+... none found.
+
+context (line 99):
+    )
+    (else (string<? (format "~a" a) (format "~a" b)))))
+

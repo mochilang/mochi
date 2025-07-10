@@ -33,6 +33,13 @@
     (if (= n 0) 0 (/ (_sum lst) n)))
 )
 
+(define (_exists v)
+  (cond
+    ((and (pair? v) (assq 'Items v)) (not (null? (cdr (assq 'Items v)))))
+    ((string? v) (> (string-length v) 0))
+    ((list? v) (not (null? v)))
+    (else #f)))
+
 (define (_max v)
   (let ((lst (cond
                ((and (pair? v) (assq 'Items v)) (cdr (assq 'Items v)))
@@ -84,7 +91,7 @@
   ) (if (string? people) (string->list people) people))
   (let ((_res '()))
     (for-each (lambda (g)
-      (when (>= (_count g) 4) (set! _res (append _res (list (list (cons "city" (map-get g "key")) (cons "num" (_count g)))))))
-    ) (_group_by _tmp (lambda (p) (map-get p "city"))))
+      (when (>= (_count g) 4) (set! _res (append _res (list (list (cons "city" (map-get g 'key)) (cons "num" (_count g)))))))
+    ) (_group_by _tmp (lambda (p) (map-get p 'city))))
     _res)))
 (_json big)

@@ -1,10 +1,9 @@
-WARNING: reference to undefined variable: string-split
 WARNING: reference to undefined variable: filter
 WARNING: reference to undefined variable: open-input-pipe
-WARNING: reference to undefined variable: port->string
-WARNING: reference to undefined variable: string->json
-WARNING: reference to undefined variable: json->string
-WARNING: reference to undefined variable: string-join
-WARNING: reference to undefined variable: string-contains
 WARNING: reference to undefined variable: format
+WARNING: reference to undefined variable: string-split
+WARNING: reference to undefined variable: string-join
+WARNING: reference to undefined variable: string-trim
+WARNING: reference to undefined variable: string-contains
+WARNING: reference to undefined variable: string-prefix?
 ()

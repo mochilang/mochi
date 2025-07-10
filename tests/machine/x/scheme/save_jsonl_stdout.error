@@ -1,12 +1,10 @@
 error running save_jsonl_stdout:
-ERROR on line 48 of file /workspace/mochi/tests/machine/x/scheme/save_jsonl_stdout.scm: undefined variable: json->string
+ERROR in "json-write": unable to encode key: not a symbol: ("name" . "Alice")
+  called from <anonymous> on line 69 of file /workspace/mochi/tests/machine/x/scheme/save_jsonl_stdout.scm
   called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
   called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
-Searching for modules exporting json->string ...
-json->string is exported by:
-  (chibi json)
 
-context (line 48):
-          (else
-           (write-string (json->string rows) out)))
-    (when (not (eq? out (current-output-port)))
+context (line 69):
+                  (open-output-file path))))
+    (cond ((string=? fmt "jsonl")
+           (for-each (lambda (r) (write-string (json->string r) out) (newline out)) rows))

@@ -1529,8 +1529,10 @@ func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-	} else {
-		elseExpr = "'()"
+	}
+	if elseExpr == "" {
+		// emit (when ...) form when no else branch is present
+		return fmt.Sprintf("(when %s %s)", cond, thenExpr), nil
 	}
 	return fmt.Sprintf("(if %s %s %s)", cond, thenExpr, elseExpr), nil
 }

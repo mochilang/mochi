@@ -8,11 +8,8 @@
           (let loop ((j (+ i 1)))
             (if (< j n)
               (begin
-                (if (equal? (+ (list-ref nums i) (list-ref nums j)) target)
-                  (begin
-                    (return (list i j))
-                  )
-                  '()
+                (when (equal? (+ (list-ref nums i) (list-ref nums j)) target)
+                  (return (list i j))
                 )
                 (loop (+ j 1))
               )

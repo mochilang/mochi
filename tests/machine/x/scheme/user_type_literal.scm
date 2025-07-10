@@ -18,4 +18,4 @@
 )
 
 (define book (list (cons 'title "Go") (cons 'author (list (cons 'name "Bob") (cons 'age 42)))))
-(begin (display (map-get (map-get book "author") "name")) (newline))
+(begin (display (map-get (map-get book 'author) 'name)) (newline))
