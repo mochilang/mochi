@@ -912,6 +912,15 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 						}
 					}
 				}
+			} else if ml := stmt.Value.Binary.Left.Value.Target.Map; ml != nil {
+				if st, ok := c.inferStructFromMap(ml, stmt.Name); ok {
+					t = st
+					if c.env != nil {
+						c.env.SetStruct(st.Name, st)
+					}
+					c.compileStructType(st)
+					c.structLits[ml] = st
+				}
 			}
 		}
 	} else if stmt.Value != nil {
@@ -929,6 +938,15 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 						c.structLits[ml] = st
 					}
 				}
+			}
+		} else if ml := stmt.Value.Binary.Left.Value.Target.Map; ml != nil {
+			if st, ok := c.inferStructFromMap(ml, stmt.Name); ok {
+				t = st
+				if c.env != nil {
+					c.env.SetStruct(st.Name, st)
+				}
+				c.compileStructType(st)
+				c.structLits[ml] = st
 			}
 		} else if q := stmt.Value.Binary.Left.Value.Target.Query; q != nil {
 			if ml := asMapLiteral(q.Select); ml != nil && c.env != nil {
@@ -4628,7 +4646,18 @@ func (c *Compiler) inferStructFromMap(ml *parser.MapLiteral, name string) (types
 			return types.StructType{}, false
 		}
 		order[i] = key
-		t := c.guessType(it.Value)
+		var t types.Type
+		if inner := it.Value.Binary.Left; inner != nil && inner.Value != nil && inner.Value.Target != nil && inner.Value.Target.Map != nil {
+			if st, ok := c.inferStructFromMap(inner.Value.Target.Map, key); ok {
+				t = st
+				c.compileStructType(st)
+				c.structLits[inner.Value.Target.Map] = st
+			} else {
+				t = c.guessType(it.Value)
+			}
+		} else {
+			t = c.guessType(it.Value)
+		}
 		fields[key] = t
 	}
 	stName := sanitizeName(name) + "Item"
