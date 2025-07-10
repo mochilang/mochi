@@ -36,6 +36,14 @@ type Compiler struct {
 }
 
 func (c *Compiler) fieldType(e *parser.Expr) types.Type {
+	if name, _, ok := c.aggCall(e); ok {
+		switch name {
+		case "avg":
+			return types.FloatType{}
+		case "sum", "min", "max", "len", "count":
+			return types.IntType{}
+		}
+	}
 	if e == nil || e.Binary == nil {
 		return types.TypeOfExprBasic(e, c.env)
 	}
@@ -563,8 +571,14 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 	if l.Type != nil {
 		typ := rustType(l.Type)
 		c.writeln(fmt.Sprintf("let %s: %s = %s;", l.Name, typ, val))
+		if c.env != nil {
+			c.env.SetVar(l.Name, types.ResolveTypeRef(l.Type, c.env), false)
+		}
 	} else {
 		c.writeln(fmt.Sprintf("let %s = %s;", l.Name, val))
+		if c.env != nil {
+			c.env.SetVar(l.Name, types.TypeOfExprBasic(l.Value, c.env), false)
+		}
 	}
 	if c.inMain && c.indent == 1 {
 		c.globals[l.Name] = true
@@ -603,8 +617,14 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	if v.Type != nil {
 		typ := rustType(v.Type)
 		c.writeln(fmt.Sprintf("let mut %s: %s = %s;", v.Name, typ, val))
+		if c.env != nil {
+			c.env.SetVar(v.Name, types.ResolveTypeRef(v.Type, c.env), true)
+		}
 	} else {
 		c.writeln(fmt.Sprintf("let mut %s = %s;", v.Name, val))
+		if c.env != nil {
+			c.env.SetVar(v.Name, types.TypeOfExprBasic(v.Value, c.env), true)
+		}
 	}
 	if c.inMain && c.indent == 1 {
 		c.globals[v.Name] = true
@@ -867,12 +887,23 @@ func (c *Compiler) compileFun(f *parser.FunStmt) error {
 	mut := c.mutParams[f.Name]
 	for i, p := range f.Params {
 		typ := rustType(p.Type)
+		if p.Type != nil && p.Type.Simple != nil {
+			if _, ok := c.env.GetUnion(*p.Type.Simple); ok {
+				typ = "&" + typ
+			}
+		}
 		if mut != nil && mut[i] {
 			params[i] = fmt.Sprintf("%s: &mut %s", p.Name, typ)
 		} else {
 			params[i] = fmt.Sprintf("%s: %s", p.Name, typ)
 		}
 	}
+	origEnv := c.env
+	childEnv := types.NewEnv(c.env)
+	for _, p := range f.Params {
+		childEnv.SetVar(p.Name, types.ResolveTypeRef(p.Type, c.env), true)
+	}
+	c.env = childEnv
 	retTy := "()"
 	if f.Return != nil {
 		retTy = rustType(f.Return)
@@ -901,11 +932,13 @@ func (c *Compiler) compileFun(f *parser.FunStmt) error {
 	c.indent++
 	for _, s := range f.Body {
 		if err := c.compileStmt(s); err != nil {
+			c.env = origEnv
 			return err
 		}
 	}
 	c.indent--
 	c.inMain = prev
+	c.env = origEnv
 	if !topLevel {
 		c.writeln("};")
 	} else {
@@ -1307,16 +1340,29 @@ func (c *Compiler) postfixIsString(pf *parser.PostfixExpr) bool {
 
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	params := make([]string, len(fn.Params))
+	origEnv := c.env
+	childEnv := types.NewEnv(c.env)
 	for i, p := range fn.Params {
-		params[i] = fmt.Sprintf("%s: %s", p.Name, rustType(p.Type))
+		typ := rustType(p.Type)
+		if p.Type != nil && p.Type.Simple != nil {
+			if _, ok := c.env.GetUnion(*p.Type.Simple); ok {
+				typ = "&" + typ
+			}
+		}
+		params[i] = fmt.Sprintf("%s: %s", p.Name, typ)
+		childEnv.SetVar(p.Name, types.ResolveTypeRef(p.Type, c.env), true)
 	}
+	c.env = childEnv
 	if fn.ExprBody != nil {
 		body, err := c.compileExpr(fn.ExprBody)
 		if err != nil {
+			c.env = origEnv
 			return "", err
 		}
+		c.env = origEnv
 		return fmt.Sprintf("Box::new(move |%s| %s)", strings.Join(params, ", "), body), nil
 	}
+	c.env = origEnv
 	return "", fmt.Errorf("block function expressions not supported")
 }
 
@@ -2626,14 +2672,26 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 	}
 	if typ, err := c.env.GetVar(call.Func); err == nil {
-		if ft, ok := typ.(types.FuncType); ok && !ft.Variadic && len(args) < len(ft.Params) {
-			missing := len(ft.Params) - len(args)
-			params := make([]string, missing)
-			for i := range params {
-				params[i] = c.newTmp()
+		if ft, ok := typ.(types.FuncType); ok {
+			for i := range args {
+				if i < len(ft.Params) {
+					switch ft.Params[i].(type) {
+					case types.UnionType, types.StructType:
+						if !strings.HasPrefix(args[i], "&") {
+							args[i] = "&" + args[i]
+						}
+					}
+				}
 			}
-			callArgs := append(append([]string{}, args...), params...)
-			return fmt.Sprintf("|%s| %s(%s)", strings.Join(params, ", "), call.Func, strings.Join(callArgs, ", ")), nil
+			if !ft.Variadic && len(args) < len(ft.Params) {
+				missing := len(ft.Params) - len(args)
+				params := make([]string, missing)
+				for i := range params {
+					params[i] = c.newTmp()
+				}
+				callArgs := append(append([]string{}, args...), params...)
+				return fmt.Sprintf("|%s| %s(%s)", strings.Join(params, ", "), call.Func, strings.Join(callArgs, ", ")), nil
+			}
 		}
 	}
 	switch call.Func {
