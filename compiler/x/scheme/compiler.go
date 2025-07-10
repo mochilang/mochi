@@ -14,7 +14,7 @@ import (
 	"mochi/types"
 )
 
-const datasetHelpers = `(import (srfi 95) (chibi json) (chibi io) (chibi))
+const datasetHelpers = `(import (srfi 95) (chibi json) (chibi io) (chibi) (chibi string))
 
 (define (_to_string v)
   (call-with-output-string (lambda (p) (write v p))))
@@ -32,7 +32,7 @@ const datasetHelpers = `(import (srfi 95) (chibi json) (chibi io) (chibi))
                   (set! cur '())
                   (set! ln (substring ln 2 (string-length ln))))
                 (when (string-contains ln ":")
-                  (let* ((p (string-split ln ":"))
+                  (let* ((p (string-split ln #\:))
                          (k (string-trim (car p)))
                          (val (string-trim (string-join (cdr p) ":"))))
                     (set! cur (append cur (list (cons k (_yaml_value val))))))))
