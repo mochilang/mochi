@@ -1,31 +1,11 @@
 line: 0
-error: cc error: exit status 1
-/workspace/mochi/tests/machine/x/c/left_join.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/left_join.c:60:3: error: unknown type name ‘list_int’
-   60 |   list_int _t3 = list_int_create(orders.len * customers.len);
-      |   ^~~~~~~~
-/workspace/mochi/tests/machine/x/c/left_join.c:60:18: warning: implicit declaration of function ‘list_int_create’ [-Wimplicit-function-declaration]
-   60 |   list_int _t3 = list_int_create(orders.len * customers.len);
-      |                  ^~~~~~~~~~~~~~~
-/workspace/mochi/tests/machine/x/c/left_join.c:71:10: error: request for member ‘data’ in something not a structure or union
-   71 |       _t3.data[_t4] =
-      |          ^
-/workspace/mochi/tests/machine/x/c/left_join.c:76:25: error: invalid initializer
-   76 |       customersItem c = 0;
-      |                         ^
-/workspace/mochi/tests/machine/x/c/left_join.c:77:10: error: request for member ‘data’ in something not a structure or union
-   77 |       _t3.data[_t4] =
-      |          ^
-/workspace/mochi/tests/machine/x/c/left_join.c:82:6: error: request for member ‘len’ in something not a structure or union
-   82 |   _t3.len = _t4;
-      |      ^
-/workspace/mochi/tests/machine/x/c/left_join.c:83:28: error: invalid initializer
-   83 |   list_resultItem result = _t3;
-      |                            ^~~
-/workspace/mochi/tests/machine/x/c/left_join.c:90:14: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘customersItem’ [-Wformat=]
-   90 |     printf("%d ", entry.customer);
-      |             ~^    ~~~~~~~~~~~~~~
-      |              |         |
-      |              int       customersItem
-
+error: output mismatch
+-- got --
+--- Left Join ---
+Order 100 customer 1 total 250
+Order 101 customer 0 total 80
+-- want --
+--- Left Join ---
+Order 100 customer map[id:1 name:Alice] total 250
+Order 101 customer <nil> total 80
    1: #include <stdio.h>

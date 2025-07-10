@@ -22,6 +22,23 @@ static list_list_int list_list_int_create(int len) {
   l.data = (list_int *)malloc(sizeof(list_int) * len);
   return l;
 }
+static char *slice_string(char *s, int start, int end) {
+  int len = strlen(s);
+  if (start < 0)
+    start += len;
+  if (end < 0)
+    end += len;
+  if (start < 0)
+    start = 0;
+  if (end > len)
+    end = len;
+  if (start > end)
+    start = end;
+  char *buf = (char *)malloc(end - start + 1);
+  memcpy(buf, s + start, end - start);
+  buf[end - start] = '\0';
+  return buf;
+}
 static list_int slice_list_int(list_int v, int start, int end) {
   if (start < 0)
     start += v.len;
@@ -60,25 +77,7 @@ int main() {
   list_int _t4 = slice_list_int(_t3, 0, 2);
   _print_list_int(_t4);
   printf("\n");
-  char *_t5 = ({
-    int _len = strlen("hello");
-    int _s = 1;
-    int _e = 4;
-    if (_s < 0)
-      _s += _len;
-    if (_e < 0)
-      _e += _len;
-    if (_s < 0)
-      _s = 0;
-    if (_e > _len)
-      _e = _len;
-    if (_s > _e)
-      _s = _e;
-    char *_b = (char *)malloc(_e - _s + 1);
-    memcpy(_b, "hello" + _s, _e - _s);
-    _b[_e - _s] = '\0';
-    _b;
-  });
+  char *_t5 = slice_string("hello", 1, 4);
   printf("%s\n", _t5);
   return 0;
 }

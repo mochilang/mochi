@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+static char *start_date = "1993-10-01";
+static char *end_date = "1994-01-01";
+
 typedef struct {
   int n_nationkey;
   char *n_name;
@@ -119,8 +122,6 @@ int main() {
                                .l_extendedprice = 500.0,
                                .l_discount = 0.0};
   list_lineitemItem lineitem = _t4;
-  char *start_date = "1993-10-01";
-  char *end_date = "1994-01-01";
   list_resultItem result = 0;
   printf("%d\n", result);
   return 0;

@@ -924,6 +924,17 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		val := c.compileExpr(s.Assign.Value)
 		c.writeln(fmt.Sprintf("%s = %s;", target, val))
+		if c.env != nil {
+			if call, ok := callPattern(s.Assign.Value); ok && call.Func == "append" && len(call.Args) == 2 {
+				elem := listElemType(call.Args[0], c.env)
+				if elem == nil || types.ContainsAny(elem) {
+					elem = c.guessType(call.Args[1])
+				}
+				if elem != nil {
+					c.env.SetVar(s.Assign.Name, types.ListType{Elem: elem}, true)
+				}
+			}
+		}
 	case s.Return != nil:
 		val := c.compileExpr(s.Return.Value)
 		c.writeln(fmt.Sprintf("return %s;", val))
@@ -3664,6 +3675,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 				v := c.compileExpr(el)
 				c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
 			}
+		} else {
+			c.need(needListInt)
+			c.writeln(fmt.Sprintf("list_int %s = list_int_create(0);", name))
 		}
 		return name
 	case p.Map != nil:

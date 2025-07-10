@@ -62,6 +62,9 @@ func cTypeFromType(t types.Type) string {
 	case types.StructType:
 		return sanitizeName(tt.Name)
 	case types.ListType:
+		if _, ok := tt.Elem.(types.AnyType); ok {
+			return "list_int"
+		}
 		elem := cTypeFromType(tt.Elem)
 		if elem == "int" {
 			return "list_int"

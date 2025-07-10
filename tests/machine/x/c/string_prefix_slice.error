@@ -1,0 +1,33 @@
+line: 0
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/string_prefix_slice.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/string_prefix_slice.c:52:46: error: request for member ‘len’ in something not a structure or union
+   52 |   list_int _t1 = slice_list_int(s1, 0, prefix.len);
+      |                                              ^
+/workspace/mochi/tests/machine/x/c/string_prefix_slice.c:52:33: error: incompatible type for argument 1 of ‘slice_list_int’
+   52 |   list_int _t1 = slice_list_int(s1, 0, prefix.len);
+      |                                 ^~
+      |                                 |
+      |                                 char *
+/workspace/mochi/tests/machine/x/c/string_prefix_slice.c:24:41: note: expected ‘list_int’ but argument is of type ‘char *’
+   24 | static list_int slice_list_int(list_int v, int start, int end) {
+      |                                ~~~~~~~~~^
+/workspace/mochi/tests/machine/x/c/string_prefix_slice.c:53:23: error: invalid operands to binary == (have ‘list_int’ and ‘char *’)
+   53 |   _print_list_int(_t1 == prefix);
+      |                       ^~
+/workspace/mochi/tests/machine/x/c/string_prefix_slice.c:55:46: error: request for member ‘len’ in something not a structure or union
+   55 |   list_int _t2 = slice_list_int(s2, 0, prefix.len);
+      |                                              ^
+/workspace/mochi/tests/machine/x/c/string_prefix_slice.c:55:33: error: incompatible type for argument 1 of ‘slice_list_int’
+   55 |   list_int _t2 = slice_list_int(s2, 0, prefix.len);
+      |                                 ^~
+      |                                 |
+      |                                 char *
+/workspace/mochi/tests/machine/x/c/string_prefix_slice.c:24:41: note: expected ‘list_int’ but argument is of type ‘char *’
+   24 | static list_int slice_list_int(list_int v, int start, int end) {
+      |                                ~~~~~~~~~^
+/workspace/mochi/tests/machine/x/c/string_prefix_slice.c:56:23: error: invalid operands to binary == (have ‘list_int’ and ‘char *’)
+   56 |   _print_list_int(_t2 == prefix);
+      |                       ^~
+
+   1: #include <stdio.h>

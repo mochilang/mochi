@@ -3,6 +3,70 @@
 #include <string.h>
 
 typedef struct {
+  int len;
+  int *data;
+} list_int;
+static list_int list_int_create(int len) {
+  list_int l;
+  l.len = len;
+  l.data = (int *)malloc(sizeof(int) * len);
+  return l;
+}
+typedef struct {
+  int len;
+  double *data;
+} list_float;
+static list_float list_float_create(int len) {
+  list_float l;
+  l.len = len;
+  l.data = (double *)malloc(sizeof(double) * len);
+  return l;
+}
+static double _sum_float(list_float v) {
+  double sum = 0;
+  for (int i = 0; i < v.len; i++)
+    sum += v.data[i];
+  return sum;
+}
+typedef struct {
+  int key;
+  list_int items;
+} _GroupInt;
+typedef struct {
+  int len;
+  int cap;
+  _GroupInt *data;
+} list_group_int;
+static list_group_int _group_by_int(list_int src) {
+  list_group_int res;
+  res.len = 0;
+  res.cap = 0;
+  res.data = NULL;
+  for (int i = 0; i < src.len; i++) {
+    int key = src.data[i];
+    int idx = -1;
+    for (int j = 0; j < res.len; j++)
+      if (res.data[j].key == key) {
+        idx = j;
+        break;
+      }
+    if (idx == -1) {
+      if (res.len >= res.cap) {
+        res.cap = res.cap ? res.cap * 2 : 4;
+        res.data = (_GroupInt *)realloc(res.data, sizeof(_GroupInt) * res.cap);
+      }
+      res.data[res.len].key = key;
+      res.data[res.len].items = list_int_create(0);
+      idx = res.len++;
+    }
+    _GroupInt *g = &res.data[idx];
+    g->items.data =
+        (int *)realloc(g->items.data, sizeof(int) * (g->items.len + 1));
+    g->items.data[g->items.len++] = src.data[i];
+  }
+  return res;
+}
+typedef struct {
   int id;
   char *name;
 } nationsItem;
@@ -96,7 +160,8 @@ int main() {
   _t3.data[2] =
       (partsuppItem){.part = 200, .supplier = 1, .cost = 5.0, .qty = 3};
   list_partsuppItem partsupp = _t3;
-  list_int _t4 = list_int_create(partsupp.len * suppliers.len * nations.len);
+  list_filteredItem _t4 =
+      list_filteredItem_create(partsupp.len * suppliers.len * nations.len);
   int _t5 = 0;
   for (int _t6 = 0; _t6 < partsupp.len; _t6++) {
     partsuppItem ps = partsupp.data[_t6];
@@ -121,7 +186,44 @@ int main() {
   }
   _t4.len = _t5;
   list_filteredItem filtered = _t4;
-  list_groupedItem grouped = 0;
+  list_filteredItem _t9 = list_filteredItem_create(filtered.len);
+  list_int _t10 = list_int_create(filtered.len);
+  int _t11 = 0;
+  for (int i = 0; i < filtered.len; i++) {
+    filteredItem x = filtered.data[i];
+    _t9.data[_t11] = x;
+    _t10.data[_t11] = x.part;
+    _t11++;
+  }
+  _t9.len = _t11;
+  _t10.len = _t11;
+  list_group_int _t12 = _group_by_int(_t10);
+  list_groupedItem _t13 = list_groupedItem_create(_t12.len);
+  int _t14 = 0;
+  for (int gi = 0; gi < _t12.len; gi++) {
+    _GroupInt _gp = _t12.data[gi];
+    list_filteredItem _t15 = list_filteredItem_create(_gp.items.len);
+    for (int j = 0; j < _gp.items.len; j++) {
+      _t15.data[j] = _t9.data[_gp.items.data[j]];
+    }
+    _t15.len = _gp.items.len;
+    struct {
+      int key;
+      list_filteredItem items;
+    } g = {_gp.key, _t15};
+    list_float _t16 = list_float_create(g.items.len);
+    int _t17 = 0;
+    for (int i = 0; i < g.items.len; i++) {
+      filteredItem r = g.items.data[i];
+      _t16.data[_t17] = r.value;
+      _t17++;
+    }
+    _t16.len = _t17;
+    _t13.data[_t14] = (groupedItem){.part = g.key, .total = _sum_float(_t16)};
+    _t14++;
+  }
+  _t13.len = _t14;
+  list_groupedItem grouped = _t13;
   printf("%d\n", grouped);
   return 0;
 }

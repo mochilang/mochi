@@ -1,0 +1,15 @@
+line: 0
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/python_math.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/python_math.c:14:14: error: ‘math’ undeclared (first use in this function)
+   14 |   int area = math.pi * math.pow(r, 2.0);
+      |              ^~~~
+/workspace/mochi/tests/machine/x/c/python_math.c:14:14: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/machine/x/c/python_math.c:19:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘double’ [-Wformat=]
+   19 |   printf("%d ", r);
+      |           ~^    ~
+      |            |    |
+      |            int  double
+      |           %f
+
+   1: #include <stdio.h>

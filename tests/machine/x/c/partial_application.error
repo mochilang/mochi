@@ -1,0 +1,13 @@
+line: 0
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/partial_application.c: In function ‘_partial0’:
+/workspace/mochi/tests/machine/x/c/partial_application.c:4:39: warning: implicit declaration of function ‘add’ [-Wimplicit-function-declaration]
+    4 | static int _partial0(int p0) { return add(_partial0_arg0, p0); }
+      |                                       ^~~
+/workspace/mochi/tests/machine/x/c/partial_application.c:4:43: error: ‘_partial0_arg0’ undeclared (first use in this function); did you mean ‘_partial0’?
+    4 | static int _partial0(int p0) { return add(_partial0_arg0, p0); }
+      |                                           ^~~~~~~~~~~~~~
+      |                                           _partial0
+/workspace/mochi/tests/machine/x/c/partial_application.c:4:43: note: each undeclared identifier is reported only once for each function it appears in
+
+   1: #include <stdio.h>

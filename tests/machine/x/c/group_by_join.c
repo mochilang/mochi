@@ -32,7 +32,7 @@ static list_ordersItem list_ordersItem_create(int len) {
 }
 
 typedef struct {
-  int name;
+  char *name;
   int count;
 } statsItem;
 typedef struct {
@@ -60,7 +60,7 @@ int main() {
   printf("%s\n", "--- Orders per customer ---");
   for (int _t3 = 0; _t3 < stats.len; _t3++) {
     statsItem s = stats.data[_t3];
-    printf("%d ", s.name);
+    printf("%s ", s.name);
     printf("%s ", "orders:");
     printf("%d\n", s.count);
   }
