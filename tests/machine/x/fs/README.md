@@ -111,5 +111,4 @@ Compiled programs: 97/97
 
 ## Remaining Tasks
 
-- [ ] Improve type inference for collections
-- [ ] Adjust printing of boolean fields in anonymous records
+All example programs compile and run as expected.
