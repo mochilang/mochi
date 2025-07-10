@@ -1,6 +1,6 @@
 import java.util.*;
 public class Main {
-	static List<Integer> nums = new ArrayList<>(java.util.Arrays.asList(1, 2, 3));
+	static List<Integer> nums = java.util.Arrays.asList(1, 2, 3);
 	static List<Object> result = (new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
 	List<Object> _res0 = new ArrayList<>();
 	for (var n : nums) {

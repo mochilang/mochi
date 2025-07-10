@@ -1,6 +1,6 @@
 import java.util.*;
 public class Main {
-	static List<Map<Object,String>> people = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<>(){{put("name", "Alice");put("city", "Paris");}}, new LinkedHashMap<>(){{put("name", "Bob");put("city", "Hanoi");}}, new LinkedHashMap<>(){{put("name", "Charlie");put("city", "Paris");}}, new LinkedHashMap<>(){{put("name", "Diana");put("city", "Hanoi");}}, new LinkedHashMap<>(){{put("name", "Eve");put("city", "Paris");}}, new LinkedHashMap<>(){{put("name", "Frank");put("city", "Hanoi");}}, new LinkedHashMap<>(){{put("name", "George");put("city", "Paris");}}));
+	static List<Map<Object,Object>> people = java.util.Arrays.asList(map("name", "Alice", "city", "Paris"), map("name", "Bob", "city", "Hanoi"), map("name", "Charlie", "city", "Paris"), map("name", "Diana", "city", "Hanoi"), map("name", "Eve", "city", "Paris"), map("name", "Frank", "city", "Hanoi"), map("name", "George", "city", "Paris"));
 	static List<Object> big = (new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
 	List<Object> _res0 = new ArrayList<>();
 	Map<Object,List<Object>> _groups1 = new LinkedHashMap<>();
@@ -15,12 +15,17 @@ public class Main {
 		Object g_key = __e.getKey();
 		List<Object> g = __e.getValue();
 		if (!(count(g) >= 4)) continue;
-		_res0.add(new LinkedHashMap<>(){{put("city", g_key);put("num", count(g));}});
+		_res0.add(map("city", g_key, "num", count(g)));
 	}
 	return _res0;
 }}).get();
 	static int count(Collection<?> c) {
 		return c.size();
+	}
+	static Map<Object,Object> map(Object... kv) {
+		Map<Object,Object> m = new LinkedHashMap<>();
+		for (int i = 0; i < kv.length; i += 2) m.put(String.valueOf(kv[i]), kv[i+1]);
+		return m;
 	}
 	static String toJson(Object o) {
 		if (o instanceof Map<?,?> m) {

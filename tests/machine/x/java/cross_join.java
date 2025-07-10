@@ -1,16 +1,21 @@
 import java.util.*;
 public class Main {
-	static List<Map<Object,Object>> customers = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<>(){{put("id", 1);put("name", "Alice");}}, new LinkedHashMap<>(){{put("id", 2);put("name", "Bob");}}, new LinkedHashMap<>(){{put("id", 3);put("name", "Charlie");}}));
-	static List<Map<Object,Integer>> orders = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<>(){{put("id", 100);put("customerId", 1);put("total", 250);}}, new LinkedHashMap<>(){{put("id", 101);put("customerId", 2);put("total", 125);}}, new LinkedHashMap<>(){{put("id", 102);put("customerId", 1);put("total", 300);}}));
+	static List<Map<Object,Object>> customers = java.util.Arrays.asList(map("id", 1, "name", "Alice"), map("id", 2, "name", "Bob"), map("id", 3, "name", "Charlie"));
+	static List<Map<Object,Object>> orders = java.util.Arrays.asList(map("id", 100, "customerId", 1, "total", 250), map("id", 101, "customerId", 2, "total", 125), map("id", 102, "customerId", 1, "total", 300));
 	static List<Object> result = (new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
 	List<Object> _res0 = new ArrayList<>();
 	for (var o : orders) {
 		for (var c : customers) {
-			_res0.add(new LinkedHashMap<>(){{put("orderId", ((Map)o).get("id"));put("orderCustomerId", ((Map)o).get("customerId"));put("pairedCustomerName", ((Map)c).get("name"));put("orderTotal", ((Map)o).get("total"));}});
+			_res0.add(map("orderId", ((Map)o).get("id"), "orderCustomerId", ((Map)o).get("customerId"), "pairedCustomerName", ((Map)c).get("name"), "orderTotal", ((Map)o).get("total")));
 		}
 	}
 	return _res0;
 }}).get();
+	static Map<Object,Object> map(Object... kv) {
+		Map<Object,Object> m = new LinkedHashMap<>();
+		for (int i = 0; i < kv.length; i += 2) m.put(String.valueOf(kv[i]), kv[i+1]);
+		return m;
+	}
 	public static void main(String[] args) {
 	System.out.println("--- Cross Join: All order-customer pairs ---");
 	for (var entry : result) {

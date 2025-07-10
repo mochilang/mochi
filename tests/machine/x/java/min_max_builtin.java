@@ -1,6 +1,6 @@
 import java.util.*;
 public class Main {
-	static List<Integer> nums = new ArrayList<>(java.util.Arrays.asList(3, 1, 4));
+	static List<Integer> nums = java.util.Arrays.asList(3, 1, 4);
 	static int min(List<? extends Number> v) {
 		int m = Integer.MAX_VALUE;
 		for (Number n : v) if (n.intValue() < m) m = n.intValue();

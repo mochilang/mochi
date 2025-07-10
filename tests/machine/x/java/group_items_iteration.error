@@ -1,8 +1,6 @@
-line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramsgroup_items_iteration3235728837/001/Main.java:38: error: incompatible types: possible lossy conversion from double to int
-			total = total + ((Number)((Map)x).get("val")).doubleValue();
-			              ^
-1 error
+line 0: run error: exit status 1
+Exception in thread "main" java.lang.ClassCastException: class java.util.ArrayList cannot be cast to class java.util.Map (java.util.ArrayList and java.util.Map are in module java.base of loader 'bootstrap')
+	at Main.main(Main.java:42)
 
 
   1| let data = [

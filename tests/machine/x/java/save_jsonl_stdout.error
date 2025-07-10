@@ -1,5 +1,5 @@
 line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramssave_jsonl_stdout1260502871/001/Main.java:12: error: incompatible types: List<Map<Object,Object>> cannot be converted to List<Map<String,Object>>
+/tmp/TestCompileValidProgramssave_jsonl_stdout1676012642/001/Main.java:17: error: incompatible types: List<Map<Object,Object>> cannot be converted to List<Map<String,Object>>
 	saveJsonl(people);
 	          ^
 Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output

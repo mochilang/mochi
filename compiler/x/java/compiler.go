@@ -224,6 +224,15 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.indent--
 		c.writeln("}")
 	}
+	if c.helpers["map"] {
+		c.writeln("static Map<Object,Object> map(Object... kv) {")
+		c.indent++
+		c.writeln("Map<Object,Object> m = new LinkedHashMap<>();")
+		c.writeln("for (int i = 0; i < kv.length; i += 2) m.put(String.valueOf(kv[i]), kv[i+1]);")
+		c.writeln("return m;")
+		c.indent--
+		c.writeln("}")
+	}
 	if c.helpers["load_yaml"] {
 		c.writeln("static List<Map<String,Object>> loadYaml(String path) throws Exception {")
 		c.indent++
@@ -496,28 +505,7 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 		return fmt.Sprintf("List<%s>", et)
 	}
 	if m := isMapLiteral(e); m != nil {
-		kt, vt := "Object", "Object"
-		for i, it := range m.Items {
-			k := wrapperType(c.inferType(it.Key))
-			if k == "var" {
-				k = c.litType(it.Key)
-			}
-			v := wrapperType(c.inferType(it.Value))
-			if v == "var" {
-				v = c.litType(it.Value)
-			}
-			if i == 0 {
-				kt, vt = k, v
-			} else {
-				if kt != k {
-					kt = "Object"
-				}
-				if vt != v {
-					vt = "Object"
-				}
-			}
-		}
-		return fmt.Sprintf("Map<%s,%s>", kt, vt)
+		return "Map<Object,Object>"
 	}
 	p := rootPrimary(e)
 	if p != nil && p.Lit != nil {
@@ -533,6 +521,28 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 				return "Object"
 			}
 		}
+		switch p.Call.Func {
+		case "len", "count":
+			return "int"
+		case "avg":
+			return "double"
+		case "sum", "min", "max":
+			return "int"
+		case "values":
+			if len(p.Call.Args) == 1 {
+				if name, ok := identName(p.Call.Args[0]); ok {
+					if t, ok2 := c.vars[name]; ok2 {
+						vt := mapValueType(t)
+						return fmt.Sprintf("List<%s>", wrapperType(vt))
+					}
+				}
+			}
+			return "List<Object>"
+		case "str", "json":
+			return "String"
+		case "load_yaml":
+			return "List<Map<String,Object>>"
+		}
 		if t, ok := c.funRet[p.Call.Func]; ok {
 			return t
 		}
@@ -541,7 +551,11 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 		return p.Struct.Name
 	}
 	if p != nil && p.Load != nil {
-		return "List<Object>"
+		if p.Load.Type != nil {
+			t := c.typeName(p.Load.Type)
+			return fmt.Sprintf("List<%s>", wrapperType(t))
+		}
+		return "List<Map<String,Object>>"
 	}
 	if p != nil && p.FunExpr != nil {
 		if len(p.FunExpr.Params) == 1 && p.FunExpr.Return != nil && p.FunExpr.Return.Simple != nil && *p.FunExpr.Return.Simple == "int" && p.FunExpr.Params[0].Type != nil && p.FunExpr.Params[0].Type.Simple != nil && *p.FunExpr.Params[0].Type.Simple == "int" {
@@ -669,7 +683,7 @@ func (c *Compiler) compileGlobalVar(v *parser.VarStmt) error {
 	if v.Type == nil && v.Value != nil {
 		typ = c.inferType(v.Value)
 		if isListLiteral(v.Value) != nil {
-			expr = fmt.Sprintf("new ArrayList<>(%s)", expr)
+			// leave as immutable list to preserve element types
 		}
 		if typ == "var" && isQueryExpr(v.Value) {
 			typ = "List<Object>"
@@ -696,7 +710,7 @@ func (c *Compiler) compileGlobalLet(v *parser.LetStmt) error {
 	if v.Type == nil && v.Value != nil {
 		typ = c.inferType(v.Value)
 		if isListLiteral(v.Value) != nil {
-			expr = fmt.Sprintf("new ArrayList<>(%s)", expr)
+			// leave as immutable list to preserve element types
 		}
 		if isQueryExpr(v.Value) {
 			typ = "List<Object>"
@@ -757,8 +771,8 @@ func (c *Compiler) compileList(l *parser.ListLiteral) (string, error) {
 }
 
 func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
-	var b strings.Builder
-	b.WriteString("new LinkedHashMap<>(){{")
+	c.helpers["map"] = true
+	var entries []string
 	for _, it := range m.Items {
 		var k string
 		if s, ok := simpleStringKey(it.Key); ok {
@@ -774,10 +788,9 @@ func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		b.WriteString(fmt.Sprintf("put(%s, %s);", k, v))
+		entries = append(entries, fmt.Sprintf("%s, %s", k, v))
 	}
-	b.WriteString("}}")
-	return b.String(), nil
+	return fmt.Sprintf("map(%s)", strings.Join(entries, ", ")), nil
 }
 
 func (c *Compiler) compileStructLiteral(s *parser.StructLiteral) (string, error) {

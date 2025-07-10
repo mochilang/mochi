@@ -1,8 +1,8 @@
 import java.util.*;
 public class Main {
-	static List<Map<Object,Object>> customers = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<>(){{put("id", 1);put("name", "Alice");}}, new LinkedHashMap<>(){{put("id", 2);put("name", "Bob");}}));
-	static List<Map<Object,Integer>> orders = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<>(){{put("id", 100);put("customerId", 1);}}, new LinkedHashMap<>(){{put("id", 101);put("customerId", 2);}}));
-	static List<Map<Object,Object>> items = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<>(){{put("orderId", 100);put("sku", "a");}}));
+	static List<Map<Object,Object>> customers = java.util.Arrays.asList(map("id", 1, "name", "Alice"), map("id", 2, "name", "Bob"));
+	static List<Map<Object,Object>> orders = java.util.Arrays.asList(map("id", 100, "customerId", 1), map("id", 101, "customerId", 2));
+	static List<Map<Object,Object>> items = java.util.Arrays.asList(map("orderId", 100, "sku", "a"));
 	static List<Object> result = (new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
 	List<Object> _res0 = new ArrayList<>();
 	for (var o : orders) {
@@ -16,12 +16,17 @@ public class Main {
 			}
 			if (_tmp1.isEmpty()) _tmp1.add(null);
 			for (var i : _tmp1) {
-				_res0.add(new LinkedHashMap<>(){{put("orderId", ((Map)o).get("id"));put("name", ((Map)c).get("name"));put("item", i);}});
+				_res0.add(map("orderId", ((Map)o).get("id"), "name", ((Map)c).get("name"), "item", i));
 			}
 		}
 	}
 	return _res0;
 }}).get();
+	static Map<Object,Object> map(Object... kv) {
+		Map<Object,Object> m = new LinkedHashMap<>();
+		for (int i = 0; i < kv.length; i += 2) m.put(String.valueOf(kv[i]), kv[i+1]);
+		return m;
+	}
 	public static void main(String[] args) {
 	System.out.println("--- Left Join Multi ---");
 	for (var r : result) {

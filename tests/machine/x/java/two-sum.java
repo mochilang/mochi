@@ -2,10 +2,10 @@ import java.util.*;
 public class Main {
 	static List<Integer> result = twoSum(java.util.Arrays.asList(2, 7, 11, 15), 9);
 	static List<Integer> twoSum(List<Integer> nums, int target) {
-		Object n = nums.size();
+		int n = nums.size();
 		for (int i = 0; i < n; i++) {
 			for (int j = i + 1; j < n; j++) {
-				if (nums.get(i) + nums.get(j) == target) {
+				if (((Number)nums.get(i)).doubleValue() + ((Number)nums.get(j)).doubleValue() == target) {
 					return java.util.Arrays.asList(i, j);
 				}
 			}
