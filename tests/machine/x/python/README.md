@@ -99,7 +99,6 @@ Compiled programs: 97/97 successful.
 - [x] user_type_literal.mochi
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
-- [x] while_loop.mochi
 
 ## Remaining Tasks
 - [ ] Integrate async helpers
