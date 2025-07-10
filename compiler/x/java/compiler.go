@@ -30,7 +30,6 @@ type Compiler struct {
 	dataClasses       map[string]*dataClass
 	dataClassOrder    []string
 	srcDir            string
-	allowDataClass    bool
 }
 
 type dataClass struct {
@@ -59,7 +58,6 @@ func New() *Compiler {
 		variantFieldTypes: make(map[string][]string),
 		dataClasses:       make(map[string]*dataClass),
 		dataClassOrder:    []string{},
-		allowDataClass:    true,
 	}
 }
 
@@ -596,10 +594,8 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 		return fmt.Sprintf("List<%s>", et)
 	}
 	if m := isMapLiteral(e); m != nil {
-		if c.allowDataClass {
-			if name := c.dataClassFor(m); name != "" {
-				return name
-			}
+		if name := c.dataClassFor(m); name != "" {
+			return name
 		}
 		kt, vt := "Object", "Object"
 		for i, it := range m.Items {
@@ -652,6 +648,8 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 			return "int"
 		case "sum", "min", "max":
 			return "int"
+		case "count":
+			return "int"
 		case "avg":
 			return "double"
 		case "str":
@@ -677,6 +675,22 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 		return "Object"
 	}
 	if p != nil && p.Selector != nil {
+		if keyVar, ok := c.groupKeys[p.Selector.Root]; ok {
+			if len(p.Selector.Tail) > 0 && p.Selector.Tail[0] == "key" {
+				typ := c.vars[keyVar]
+				if len(p.Selector.Tail) == 1 {
+					return typ
+				}
+				for _, f := range p.Selector.Tail[1:] {
+					if strings.HasPrefix(typ, "Map<") {
+						typ = mapValueType(typ)
+					} else {
+						typ = c.fieldType(typ, f)
+					}
+				}
+				return typ
+			}
+		}
 		if t, ok := c.vars[p.Selector.Root]; ok {
 			typ := t
 			if len(p.Selector.Tail) == 0 {
@@ -816,21 +830,12 @@ func (c *Compiler) exprIsMap(e *parser.Expr) bool {
 
 func (c *Compiler) compileGlobalVar(v *parser.VarStmt) error {
 	typ := c.typeName(v.Type)
-	old := c.allowDataClass
-	if isMapLiteral(v.Value) != nil {
-		c.allowDataClass = false
-	}
 	expr, err := c.compileExpr(v.Value)
-	c.allowDataClass = old
 	if err != nil {
 		return err
 	}
 	if v.Type == nil && v.Value != nil {
-		if isMapLiteral(v.Value) != nil {
-			c.allowDataClass = false
-		}
 		typ = c.inferType(v.Value)
-		c.allowDataClass = old
 		if isListLiteral(v.Value) != nil {
 			expr = fmt.Sprintf("new ArrayList<>(%s)", expr)
 		}
@@ -849,21 +854,12 @@ func (c *Compiler) compileGlobalVar(v *parser.VarStmt) error {
 
 func (c *Compiler) compileGlobalLet(v *parser.LetStmt) error {
 	typ := c.typeName(v.Type)
-	old := c.allowDataClass
-	if isMapLiteral(v.Value) != nil {
-		c.allowDataClass = false
-	}
 	expr, err := c.compileExpr(v.Value)
-	c.allowDataClass = old
 	if err != nil {
 		return err
 	}
 	if v.Type == nil && v.Value != nil {
-		if isMapLiteral(v.Value) != nil {
-			c.allowDataClass = false
-		}
 		typ = c.inferType(v.Value)
-		c.allowDataClass = old
 		if isListLiteral(v.Value) != nil {
 			expr = fmt.Sprintf("new ArrayList<>(%s)", expr)
 		}
@@ -1069,34 +1065,28 @@ func (c *Compiler) compileDataClass(dc *dataClass) {
 }
 
 func (c *Compiler) compileList(l *parser.ListLiteral) (string, error) {
-	old := c.allowDataClass
-	c.allowDataClass = true
 	var elems []string
 	for _, e := range l.Elems {
 		s, err := c.compileExpr(e)
 		if err != nil {
-			c.allowDataClass = old
 			return "", err
 		}
 		elems = append(elems, s)
 	}
-	c.allowDataClass = old
 	return fmt.Sprintf("java.util.Arrays.asList(%s)", strings.Join(elems, ", ")), nil
 }
 
 func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
-	if c.allowDataClass {
-		if name := c.dataClassFor(m); name != "" {
-			var args []string
-			for _, it := range m.Items {
-				v, err := c.compileExpr(it.Value)
-				if err != nil {
-					return "", err
-				}
-				args = append(args, v)
+	if name := c.dataClassFor(m); name != "" {
+		var args []string
+		for _, it := range m.Items {
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", err
 			}
-			return fmt.Sprintf("new %s(%s)", name, strings.Join(args, ", ")), nil
+			args = append(args, v)
 		}
+		return fmt.Sprintf("new %s(%s)", name, strings.Join(args, ", ")), nil
 	}
 	c.helpers["map_of_entries"] = true
 	var entries []string
@@ -1244,21 +1234,12 @@ func (c *Compiler) compileIfExpr(e *parser.IfExpr) (string, error) {
 
 func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	typ := c.typeName(v.Type)
-	old := c.allowDataClass
-	if isMapLiteral(v.Value) != nil {
-		c.allowDataClass = false
-	}
 	expr, err := c.compileExpr(v.Value)
-	c.allowDataClass = old
 	if err != nil {
 		return err
 	}
 	if v.Type == nil && v.Value != nil {
-		if isMapLiteral(v.Value) != nil {
-			c.allowDataClass = false
-		}
 		typ = c.inferType(v.Value)
-		c.allowDataClass = old
 		if isListLiteral(v.Value) != nil {
 			expr = fmt.Sprintf("new ArrayList<>(%s)", expr)
 		} else if ml := isMapLiteral(v.Value); ml != nil && c.dataClassFor(ml) == "" && !isMapLitCastToStructExpr(v.Value) {
@@ -1279,21 +1260,12 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 
 func (c *Compiler) compileLet(v *parser.LetStmt) error {
 	typ := c.typeName(v.Type)
-	old := c.allowDataClass
-	if isMapLiteral(v.Value) != nil {
-		c.allowDataClass = false
-	}
 	expr, err := c.compileExpr(v.Value)
-	c.allowDataClass = old
 	if err != nil {
 		return err
 	}
 	if v.Type == nil && v.Value != nil {
-		if isMapLiteral(v.Value) != nil {
-			c.allowDataClass = false
-		}
 		typ = c.inferType(v.Value)
-		c.allowDataClass = old
 		if isListLiteral(v.Value) != nil {
 			expr = fmt.Sprintf("new ArrayList<>(%s)", expr)
 		} else if ml := isMapLiteral(v.Value); ml != nil && c.dataClassFor(ml) == "" && !isMapLitCastToStructExpr(v.Value) {
@@ -1838,12 +1810,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", fmt.Errorf("len expects one argument at line %d", p.Pos.Line)
 			}
 			a := p.Call.Args[0]
-			old := c.allowDataClass
-			if isMapLiteral(a) != nil {
-				c.allowDataClass = false
-			}
 			expr, err := c.compileExpr(a)
-			c.allowDataClass = old
 			if err != nil {
 				return "", err
 			}
@@ -1959,13 +1926,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", fmt.Errorf("values expects 1 argument at line %d", p.Pos.Line)
 			}
 			c.helpers["values"] = true
-			argExpr := p.Call.Args[0]
-			old := c.allowDataClass
-			if isMapLiteral(argExpr) != nil {
-				c.allowDataClass = false
-			}
-			a1, err := c.compileExpr(argExpr)
-			c.allowDataClass = old
+			a1, err := c.compileExpr(p.Call.Args[0])
 			if err != nil {
 				return "", err
 			}
