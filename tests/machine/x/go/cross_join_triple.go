@@ -13,15 +13,21 @@ func main() {
 	_ = letters
 	var bools []bool = []bool{true, false}
 	_ = bools
-	var combos []map[string]any = func() []map[string]any {
-		_res := []map[string]any{}
+	type Combos struct {
+		N any `json:"n"`
+		L any `json:"l"`
+		B any `json:"b"`
+	}
+
+	var combos []Combos = func() []Combos {
+		_res := []Combos{}
 		for _, n := range nums {
 			for _, l := range letters {
 				for _, b := range bools {
-					_res = append(_res, map[string]any{
-						"n": n,
-						"l": l,
-						"b": b,
+					_res = append(_res, Combos{
+						N: n,
+						L: l,
+						B: b,
 					})
 				}
 			}
@@ -30,6 +36,6 @@ func main() {
 	}()
 	fmt.Println("--- Cross Join of three lists ---")
 	for _, c := range combos {
-		fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint(c["n"]), fmt.Sprint(c["l"]), fmt.Sprint(c["b"])}, " "), " "))
+		fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint(c.N), fmt.Sprint(c.L), fmt.Sprint(c.B)}, " "), " "))
 	}
 }

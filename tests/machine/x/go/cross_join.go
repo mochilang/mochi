@@ -8,30 +8,57 @@ import (
 )
 
 func main() {
-	var customers []map[string]any = []map[string]any{map[string]any{"id": 1, "name": "Alice"}, map[string]any{"id": 2, "name": "Bob"}, map[string]any{"id": 3, "name": "Charlie"}}
-	_ = customers
-	var orders []map[string]int = []map[string]int{map[string]int{
-		"id":         100,
-		"customerId": 1,
-		"total":      250,
-	}, map[string]int{
-		"id":         101,
-		"customerId": 2,
-		"total":      125,
-	}, map[string]int{
-		"id":         102,
-		"customerId": 1,
-		"total":      300,
+	type CustomersItem struct {
+		Id   int    `json:"id"`
+		Name string `json:"name"`
+	}
+
+	var customers []CustomersItem = []CustomersItem{CustomersItem{
+		Id:   1,
+		Name: "Alice",
+	}, CustomersItem{
+		Id:   2,
+		Name: "Bob",
+	}, CustomersItem{
+		Id:   3,
+		Name: "Charlie",
 	}}
-	var result []map[string]int = func() []map[string]any {
-		_res := []map[string]any{}
+	_ = customers
+	type OrdersItem struct {
+		Id         int `json:"id"`
+		CustomerId int `json:"customerId"`
+		Total      int `json:"total"`
+	}
+
+	var orders []OrdersItem = []OrdersItem{OrdersItem{
+		Id:         100,
+		CustomerId: 1,
+		Total:      250,
+	}, OrdersItem{
+		Id:         101,
+		CustomerId: 2,
+		Total:      125,
+	}, OrdersItem{
+		Id:         102,
+		CustomerId: 1,
+		Total:      300,
+	}}
+	type Result struct {
+		OrderId            any `json:"orderId"`
+		OrderCustomerId    any `json:"orderCustomerId"`
+		PairedCustomerName any `json:"pairedCustomerName"`
+		OrderTotal         any `json:"orderTotal"`
+	}
+
+	var result []Result = func() []Result {
+		_res := []Result{}
 		for _, o := range orders {
 			for _, c := range customers {
-				_res = append(_res, map[string]any{
-					"orderId":            o["id"],
-					"orderCustomerId":    o["customerId"],
-					"pairedCustomerName": c["name"],
-					"orderTotal":         o["total"],
+				_res = append(_res, Result{
+					OrderId:            o.Id,
+					OrderCustomerId:    o.CustomerId,
+					PairedCustomerName: c.Name,
+					OrderTotal:         o.Total,
 				})
 			}
 		}
@@ -39,6 +66,6 @@ func main() {
 	}()
 	fmt.Println("--- Cross Join: All order-customer pairs ---")
 	for _, entry := range result {
-		fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint("Order"), fmt.Sprint(entry["orderId"]), fmt.Sprint("(customerId:"), fmt.Sprint(entry["orderCustomerId"]), fmt.Sprint(", total: $"), fmt.Sprint(entry["orderTotal"]), fmt.Sprint(") paired with"), fmt.Sprint(entry["pairedCustomerName"])}, " "), " "))
+		fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint("Order"), fmt.Sprint(entry.OrderId), fmt.Sprint("(customerId:"), fmt.Sprint(entry.OrderCustomerId), fmt.Sprint(", total: $"), fmt.Sprint(entry.OrderTotal), fmt.Sprint(") paired with"), fmt.Sprint(entry.PairedCustomerName)}, " "), " "))
 	}
 }

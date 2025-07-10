@@ -345,8 +345,6 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 					}
 				}
 			}
-		} else if envTyp != nil {
-			t = envTyp
 		} else if s.Value != nil {
 			t = c.inferExprType(s.Value)
 			if ll := s.Value.Binary.Left.Value.Target.List; ll != nil {
@@ -450,8 +448,6 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 					}
 				}
 			}
-		} else if envTyp != nil {
-			typ = envTyp
 		} else if s.Value != nil {
 			typ = c.inferExprTypeHint(s.Value, typ)
 			if ll := s.Value.Binary.Left.Value.Target.List; ll != nil {
@@ -2350,7 +2346,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return fmt.Sprintf("map[%s]%s{%s}", keyType, valType, joinItems(parts, c.indent, 2)), nil
 
 	case p.Query != nil:
-		return c.compileQueryExpr(p.Query)
+		return c.compileQueryExpr(p.Query, nil)
 
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
@@ -2615,7 +2611,7 @@ func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
 	return buf.String(), nil
 }
 
-func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (string, error) {
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
 		return "", err
@@ -2691,14 +2687,26 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 	var sel string
 	var retElem string
-	sel, err = c.compileExpr(q.Select)
-	if err != nil {
-		c.env = original
-		return "", err
-	}
-	retElem = goType(c.inferExprType(q.Select))
-	if retElem == "" {
-		retElem = "any"
+	if lt, ok := hint.(types.ListType); ok {
+		sel, err = c.compileExprHint(q.Select, lt.Elem)
+		if err != nil {
+			c.env = original
+			return "", err
+		}
+		retElem = goType(lt.Elem)
+		if retElem == "" {
+			retElem = "any"
+		}
+	} else {
+		sel, err = c.compileExpr(q.Select)
+		if err != nil {
+			c.env = original
+			return "", err
+		}
+		retElem = goType(c.inferExprType(q.Select))
+		if retElem == "" {
+			retElem = "any"
+		}
 	}
 	var havingExpr string
 	if q.Group != nil && q.Group.Having != nil {
@@ -3199,7 +3207,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				if name, ok := identName(call.Args[0]); ok && name == q.Var {
 					tmpQ := *q
 					tmpQ.Select = &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Selector: &parser.SelectorExpr{Root: q.Var}}}}}}
-					items, err := c.compileQueryExpr(&tmpQ)
+					items, err := c.compileQueryExpr(&tmpQ, nil)
 					if err != nil {
 						return "", err
 					}
@@ -3793,6 +3801,11 @@ func (c *Compiler) foldCall(call *parser.CallExpr) (*parser.Literal, bool) {
 // The hint is currently only used for list literals and is applied recursively
 // for nested lists.
 func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, error) {
+	if e != nil && e.Binary != nil && len(e.Binary.Right) == 0 {
+		if q := e.Binary.Left.Value.Target.Query; q != nil {
+			return c.compileQueryExpr(q, hint)
+		}
+	}
 	if lt, ok := hint.(types.ListType); ok {
 		if e.Binary != nil && len(e.Binary.Right) == 0 {
 			if ll := e.Binary.Left.Value.Target.List; ll != nil {
