@@ -4,7 +4,7 @@
 (define partsupp (list (hash 'part 100 'supplier 1 'cost 10 'qty 2) (hash 'part 100 'supplier 2 'cost 20 'qty 1) (hash 'part 200 'supplier 1 'cost 5 'qty 3)))
 (define filtered (for*/list ([ps partsupp] [s suppliers] [n nations] #:when (and (equal? (hash-ref s 'id) (hash-ref ps 'supplier)) (equal? (hash-ref n 'id) (hash-ref s 'nation)) (string=? (hash-ref n 'name) "A"))) (hash 'part (hash-ref ps 'part) 'value (* (hash-ref ps 'cost) (hash-ref ps 'qty)))))
 (define grouped (let ([groups (make-hash)])
-  (for* ([x filtered]) (let ([key (hash-ref x 'part)] [bucket (hash-ref groups key '())]) (hash-set! groups key (cons (hash 'x x) bucket))))
+  (for* ([x filtered]) (let* ([key (hash-ref x 'part)] [bucket (hash-ref groups key '())]) (hash-set! groups key (cons x bucket))))
   (define _groups (for/list ([k (hash-keys groups)]) (hash 'key k 'items (hash-ref groups k))))
   (for/list ([g _groups]) (hash 'part (hash-ref g 'key) 'total (apply + (for*/list ([r (hash-ref g 'items)]) (hash-ref r 'value)))))))
 (displayln grouped)

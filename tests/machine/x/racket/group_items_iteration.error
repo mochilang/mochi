@@ -1,6 +1,0 @@
-run: exit status 1
-/workspace/mochi/tests/machine/x/racket/group_items_iteration.rkt:3:37: g: unbound identifier
-  in: g
-  location...:
-   /workspace/mochi/tests/machine/x/racket/group_items_iteration.rkt:3:37
-

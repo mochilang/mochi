@@ -1,7 +1,7 @@
 #lang racket
 (define data (list (hash 'tag "a" 'val 1) (hash 'tag "a" 'val 2) (hash 'tag "b" 'val 3)))
 (define groups (let ([groups (make-hash)])
-  (for* ([d data]) (let ([key (hash-ref d 'tag)] [bucket (hash-ref groups key '())]) (hash-set! groups key (cons (hash 'd d) bucket))))
+  (for* ([d data]) (let* ([key (hash-ref d 'tag)] [bucket (hash-ref groups key '())]) (hash-set! groups key (cons d bucket))))
   (define _groups (for/list ([k (hash-keys groups)]) (hash 'key k 'items (hash-ref groups k))))
   (for/list ([g _groups]) g)))
 (define tmp (list ))

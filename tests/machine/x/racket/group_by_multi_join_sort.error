@@ -1,0 +1,7 @@
+run: exit status 1
+>=: contract violation
+  expected: real?
+  given: "1993-10-01"
+  context...:
+   body of "/workspace/mochi/tests/machine/x/racket/group_by_multi_join_sort.rkt"
+

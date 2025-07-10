@@ -921,15 +921,18 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		itemParts := []string{fmt.Sprintf("'%s %s", q.Var, q.Var)}
-		for _, f := range q.Froms {
-			itemParts = append(itemParts, fmt.Sprintf("'%s %s", f.Var, f.Var))
+		itemExpr := q.Var
+		if len(q.Froms) > 0 || len(q.Joins) > 0 {
+			itemParts := []string{fmt.Sprintf("'%s %s", q.Var, q.Var)}
+			for _, f := range q.Froms {
+				itemParts = append(itemParts, fmt.Sprintf("'%s %s", f.Var, f.Var))
+			}
+			for _, j := range q.Joins {
+				itemParts = append(itemParts, fmt.Sprintf("'%s %s", j.Var, j.Var))
+			}
+			itemExpr = fmt.Sprintf("(hash %s)", strings.Join(itemParts, " "))
 		}
-		for _, j := range q.Joins {
-			itemParts = append(itemParts, fmt.Sprintf("'%s %s", j.Var, j.Var))
-		}
-		itemExpr := fmt.Sprintf("(hash %s)", strings.Join(itemParts, " "))
-		body := fmt.Sprintf("(let ([key %s] [bucket (hash-ref groups key '())]) (hash-set! groups key (cons %s bucket)))", keyExpr, itemExpr)
+		body := fmt.Sprintf("(let* ([key %s] [bucket (hash-ref groups key '())]) (hash-set! groups key (cons %s bucket)))", keyExpr, itemExpr)
 		if len(bindings) > 0 {
 			body = fmt.Sprintf("(let (%s) %s)", strings.Join(bindings, " "), body)
 		}
