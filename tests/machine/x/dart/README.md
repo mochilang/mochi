@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs. Successful runs have a .out file, failures a .error file.
 
-Compiled programs: 90/97
+Compiled programs: 97/97
 
 Checklist:
 
@@ -55,7 +55,7 @@ Checklist:
 - [x] list_index
 - [x] list_nested_assign
 - [x] list_set_ops
-- [ ] load_yaml
+- [x] load_yaml
 - [x] map_assign
 - [x] map_in_operator
 - [x] map_index
@@ -64,23 +64,23 @@ Checklist:
 - [x] map_membership
 - [x] map_nested_assign
 - [x] match_expr
-- [ ] match_full
+- [x] match_full
 - [x] math_ops
 - [x] membership
 - [x] min_max_builtin
 - [x] nested_function
 - [x] order_by_map
-- [ ] outer_join
+- [x] outer_join
 - [x] partial_application
 - [x] print_hello
 - [x] pure_fold
 - [x] pure_global_fold
 - [x] query_sum_select
 - [x] record_assign
-- [ ] right_join
+- [x] right_join
 - [x] save_jsonl_stdout
 - [x] short_circuit
-- [ ] slice
+- [x] slice
 - [x] sort_stable
 - [x] str_builtin
 - [x] string_compare
@@ -93,8 +93,8 @@ Checklist:
 - [x] sum_builtin
 - [x] tail_recursion
 - [x] test_block
-- [ ] tree_sum
-- [ ] two-sum
+- [x] tree_sum
+- [x] two-sum
 - [x] typed_let
 - [x] typed_var
 - [x] unary_neg
