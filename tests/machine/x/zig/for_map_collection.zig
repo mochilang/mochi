@@ -1,6 +1,6 @@
 const std = @import("std");
 
-var m: struct { a: i32 b: i32 } = undefined;
+var m: struct { a: i32, b: i32, } = undefined;
 
 pub fn main() void {
     for (m) |k| {

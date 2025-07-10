@@ -1,6 +1,6 @@
 const std = @import("std");
 
-var data: struct { outer: struct { inner: i32 } } = undefined;
+var data: struct { outer: struct { inner: i32, }, } = undefined;
 
 pub fn main() void {
     data["outer"]["inner"] = 2;

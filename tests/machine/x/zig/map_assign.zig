@@ -1,6 +1,6 @@
 const std = @import("std");
 
-var scores: struct { alice: i32 } = undefined;
+var scores: struct { alice: i32, } = undefined;
 
 pub fn main() void {
     scores["bob"] = 2;

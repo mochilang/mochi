@@ -6,7 +6,7 @@ const Counter = struct {
 
 var c = Counter{ .n = 0 };
 
-fn inc(c: i32) void {
+fn inc(c: Counter) void {
     c = (c.n + 1);
 }
 
