@@ -686,6 +686,40 @@ func (c *Compiler) compileIf(i *parser.IfStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileIfExpr(i *parser.IfExpr) (string, error) {
+	cond, err := c.compileExpr(i.Cond)
+	if err != nil {
+		return "", err
+	}
+	tmp := c.ensureTmpVar()
+	c.writeln("IF " + cond)
+	c.indent += 4
+	thenVal, err := c.compileExpr(i.Then)
+	if err != nil {
+		return "", err
+	}
+	c.writeln(fmt.Sprintf("COMPUTE %s = %s", tmp, thenVal))
+	c.indent -= 4
+	if i.ElseIf != nil || i.Else != nil {
+		c.writeln("ELSE")
+		c.indent += 4
+		if i.ElseIf != nil {
+			if _, err := c.compileIfExpr(i.ElseIf); err != nil {
+				return "", err
+			}
+		} else if i.Else != nil {
+			elseVal, err := c.compileExpr(i.Else)
+			if err != nil {
+				return "", err
+			}
+			c.writeln(fmt.Sprintf("COMPUTE %s = %s", tmp, elseVal))
+		}
+		c.indent -= 4
+	}
+	c.writeln("END-IF")
+	return tmp, nil
+}
+
 func negateOp(op string) (string, bool) {
 	switch op {
 	case "<":
@@ -968,6 +1002,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return "", err
 		}
 		return "(" + expr + ")", nil
+	case p.If != nil:
+		return c.compileIfExpr(p.If)
 	case p.Selector != nil:
 		name := p.Selector.Root
 		if len(p.Selector.Tail) > 0 {
