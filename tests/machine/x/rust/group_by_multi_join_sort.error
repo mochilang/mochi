@@ -53,18 +53,6 @@ error[E0277]: cannot subtract `f64` from `{integer}`
              `&f64` implements `Sub`
            and 56 others
 
-error[E0308]: mismatched types
-  --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join_sort.rs:81:1161
-   |
-81 | ...g in tmp2 { result.push(Result { c_custkey: g.key.c_custkey, c_name: g.key.c_name, revenue: sum(&{ let mut tmp4 = Vec::new();for x in ...
-   |                                                ^^^^^^^^^^^^^^^ expected `Group`, found `i32`
-
-error[E0308]: mismatched types
-  --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join_sort.rs:81:1186
-   |
-81 | ...Result { c_custkey: g.key.c_custkey, c_name: g.key.c_name, revenue: sum(&{ let mut tmp4 = Vec::new();for x in &g.clone().items { tmp4....
-   |                                                 ^^^^^^^^^^^^ expected `Group`, found `&str`
-
 error[E0277]: cannot subtract `f64` from `{integer}`
   --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join_sort.rs:81:1305
    |
@@ -83,39 +71,8 @@ error[E0277]: cannot subtract `f64` from `{integer}`
              `&f64` implements `Sub`
            and 56 others
 
-error[E0308]: mismatched types
-  --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join_sort.rs:81:1347
-   |
-81 | ...1 - x.l.l_discount)); } tmp4 }), c_acctbal: g.key.c_acctbal, n_name: g.key.n_name, c_address: g.key.c_address, c_phone: g.key.c_phone,...
-   |                                                ^^^^^^^^^^^^^^^ expected `Group`, found `f64`
+error: aborting due to 5 previous errors
 
-error[E0308]: mismatched types
-  --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join_sort.rs:81:1372
-   |
-81 | ...tmp4 }), c_acctbal: g.key.c_acctbal, n_name: g.key.n_name, c_address: g.key.c_address, c_phone: g.key.c_phone, c_comment: g.key.c_comm...
-   |                                                 ^^^^^^^^^^^^ expected `Group`, found `&str`
-
-error[E0308]: mismatched types
-  --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join_sort.rs:81:1397
-   |
-81 | ...c_acctbal, n_name: g.key.n_name, c_address: g.key.c_address, c_phone: g.key.c_phone, c_comment: g.key.c_comment }); } result };
-   |                                                ^^^^^^^^^^^^^^^ expected `Group`, found `&str`
-
-error[E0308]: mismatched types
-  --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join_sort.rs:81:1423
-   |
-81 | ...n_name, c_address: g.key.c_address, c_phone: g.key.c_phone, c_comment: g.key.c_comment }); } result };
-   |                                                 ^^^^^^^^^^^^^ expected `Group`, found `&str`
-
-error[E0308]: mismatched types
-  --> /workspace/mochi/tests/machine/x/rust/group_by_multi_join_sort.rs:81:1449
-   |
-81 | ...address, c_phone: g.key.c_phone, c_comment: g.key.c_comment }); } result };
-   |                                                ^^^^^^^^^^^^^^^ expected `Group`, found `&str`
-
-error: aborting due to 12 previous errors
-
-Some errors have detailed explanations: E0277, E0308.
-For more information about an error, try `rustc --explain E0277`.
+For more information about this error, try `rustc --explain E0277`.
 
 #[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]

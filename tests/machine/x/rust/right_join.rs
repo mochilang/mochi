@@ -23,10 +23,10 @@ fn main() {
     let result = { let mut tmp1 = Vec::new();for o in &orders { let mut _matched = false; for c in &customers { if !(o.customerId == c.id) { continue; } _matched = true; tmp1.push(Result { customerName: c.name, order: o.clone() }); } if !_matched { let c: Customer = Default::default(); tmp1.push(Result { customerName: c.name, order: o.clone() }); } } tmp1 };
     println!("{}", "--- Right Join using syntax ---");
     for entry in result {
-        if entry.order != Default::default() {
-            println!("{} {:?} {} {:?} {} {:?}", "Customer", entry.customerName, "has order", entry.order.id, "- $", entry.order.total);
+        if entry.order != Order::default() {
+            println!("{} {} {} {} {} {}", "Customer", entry.customerName, "has order", entry.order.id, "- $", entry.order.total);
         } else {
-            println!("{} {:?} {}", "Customer", entry.customerName, "has no orders");
+            println!("{} {} {}", "Customer", entry.customerName, "has no orders");
         }
     }
 }

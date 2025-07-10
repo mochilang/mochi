@@ -57,14 +57,14 @@ struct Group {
 
 #[derive(Default, Debug, Clone, PartialEq)]
 struct Result {
-    c_custkey: Group,
-    c_name: Group,
+    c_custkey: i32,
+    c_name: &'static str,
     revenue: i32,
-    c_acctbal: Group,
-    n_name: Group,
-    c_address: Group,
-    c_phone: Group,
-    c_comment: Group,
+    c_acctbal: f64,
+    n_name: &'static str,
+    c_address: &'static str,
+    c_phone: &'static str,
+    c_comment: &'static str,
 }
 
 fn sum<T>(v: &[T]) -> T where T: std::iter::Sum<T> + Copy {

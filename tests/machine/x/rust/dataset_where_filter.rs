@@ -16,6 +16,6 @@ fn main() {
     let adults = { let mut tmp1 = Vec::new();for person in &people { if !(person.age >= 18) { continue; } tmp1.push(Result { name: person.name, age: person.age, is_senior: person.age >= 60 }); } tmp1 };
     println!("{}", "--- Adults ---");
     for person in adults {
-        println!("{:?} {} {:?} {}", person.name, "is", person.age, if person.is_senior != Default::default() { " (senior)" } else { "" });
+        println!("{} {} {} {}", person.name, "is", person.age, if person.is_senior { " (senior)" } else { "" });
     }
 }

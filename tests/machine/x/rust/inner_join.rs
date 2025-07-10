@@ -24,6 +24,6 @@ fn main() {
     let result = { let mut tmp1 = Vec::new();for o in &orders { for c in &customers { if !(o.customerId == c.id) { continue; } tmp1.push(Result { orderId: o.id, customerName: c.name, total: o.total }); } } tmp1 };
     println!("{}", "--- Orders with customer info ---");
     for entry in result {
-        println!("{} {:?} {} {:?} {} {:?}", "Order", entry.orderId, "by", entry.customerName, "- $", entry.total);
+        println!("{} {} {} {} {} {}", "Order", entry.orderId, "by", entry.customerName, "- $", entry.total);
     }
 }

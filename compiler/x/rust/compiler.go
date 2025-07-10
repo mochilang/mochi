@@ -87,22 +87,43 @@ func (c *Compiler) fieldType(e *parser.Expr) types.Type {
 		return types.TypeOfExprBasic(e, c.env)
 	}
 	pf := u.Value
-	var root, field string
-	switch {
-	case len(pf.Ops) == 1 && pf.Ops[0].Field != nil && pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 0:
-		root = pf.Target.Selector.Root
-		field = pf.Ops[0].Field.Name
-	case len(pf.Ops) == 0 && pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1:
-		root = pf.Target.Selector.Root
-		field = pf.Target.Selector.Tail[0]
-	default:
+	if pf.Target == nil || pf.Target.Selector == nil {
+		return types.TypeOfExprBasic(e, c.env)
+	}
+	root := pf.Target.Selector.Root
+	fields := append([]string{}, pf.Target.Selector.Tail...)
+	for _, op := range pf.Ops {
+		if op.Field != nil {
+			fields = append(fields, op.Field.Name)
+		} else {
+			return types.TypeOfExprBasic(e, c.env)
+		}
+	}
+	if len(fields) == 0 {
 		return types.TypeOfExprBasic(e, c.env)
 	}
 	if structName, ok := c.listVars[root]; ok {
 		if st, ok2 := c.structs[structName]; ok2 {
-			if t, ok3 := st.Fields[field]; ok3 {
-				return t
+			t := types.Type(st)
+			for i, f := range fields {
+				stt, ok3 := t.(types.StructType)
+				if !ok3 {
+					return types.TypeOfExprBasic(e, c.env)
+				}
+				ft, ok4 := stt.Fields[f]
+				if !ok4 {
+					return types.TypeOfExprBasic(e, c.env)
+				}
+				t = ft
+				if i < len(fields)-1 {
+					if named, ok5 := t.(types.StructType); ok5 {
+						if sdef, ok6 := c.structs[named.Name]; ok6 {
+							t = sdef
+						}
+					}
+				}
 			}
+			return t
 		}
 	}
 	return types.TypeOfExprBasic(e, c.env)
