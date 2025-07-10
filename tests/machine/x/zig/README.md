@@ -102,3 +102,4 @@
 - [x] Support map literals in iterations by emitting `std.AutoHashMap` even when keys are simple
 - [x] Support right and outer join queries
 - [x] Support join queries with grouping, having clauses, and sorting
+- [ ] Format struct and list literals on multiple lines for readability

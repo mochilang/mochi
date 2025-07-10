@@ -7,7 +7,7 @@ const Person = struct {
 
 const Book = struct {
     title: []const u8,
-    author: i32,
+    author: Person,
 };
 
 const book = Book{ .title = "Go", .author = Person{ .name = "Bob", .age = 42 } };
