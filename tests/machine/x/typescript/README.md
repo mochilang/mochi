@@ -110,4 +110,4 @@ Compiled: 97/97 programs
 
 - Integrate with Node runtime for dataset queries and joins
 - Support asynchronous `fetch` statements
-- Improve formatting to match human examples
+- Finish improving formatting to match human examples

@@ -1160,7 +1160,7 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 			}
 			elems[i] = s
 		}
-		return "[" + strings.Join(elems, ", ") + "]", nil
+		return c.formatList(elems), nil
 	case p.Map != nil:
 		items := make([]string, len(p.Map.Items))
 		for i, m := range p.Map.Items {
@@ -1174,7 +1174,7 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 			}
 			items[i] = fmt.Sprintf("%s: %s", strings.Trim(k, "\""), v)
 		}
-		return "{" + strings.Join(items, ", ") + "}", nil
+		return c.formatMap(items), nil
 	case p.Struct != nil:
 		fields := []string{}
 		if names, ok := c.variants[p.Struct.Name]; ok {
@@ -1437,6 +1437,44 @@ func getFormat(e *parser.Expr) string {
 		}
 	}
 	return ""
+}
+
+func (c *Compiler) formatList(elems []string) string {
+	flat := "[" + strings.Join(elems, ", ") + "]"
+	if len(elems) <= 2 && len(flat) <= 40 {
+		return flat
+	}
+	var b strings.Builder
+	indent := strings.Repeat("  ", c.indent)
+	b.WriteString("[\n")
+	for i, s := range elems {
+		b.WriteString(indent + "  " + s)
+		if i < len(elems)-1 {
+			b.WriteString(",")
+		}
+		b.WriteString("\n")
+	}
+	b.WriteString(indent + "]")
+	return b.String()
+}
+
+func (c *Compiler) formatMap(items []string) string {
+	flat := "{" + strings.Join(items, ", ") + "}"
+	if len(items) <= 2 && len(flat) <= 40 {
+		return flat
+	}
+	var b strings.Builder
+	indent := strings.Repeat("  ", c.indent)
+	b.WriteString("{\n")
+	for i, s := range items {
+		b.WriteString(indent + "  " + s)
+		if i < len(items)-1 {
+			b.WriteString(",")
+		}
+		b.WriteString("\n")
+	}
+	b.WriteString(indent + "}")
+	return b.String()
 }
 
 func isSimpleIterable(e *parser.Expr) bool {
