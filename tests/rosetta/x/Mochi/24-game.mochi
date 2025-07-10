@@ -5,20 +5,17 @@
 fun randDigit(): int { return (now() % 9) + 1 }
 
 fun main() {
-  var nums = []
-  var used = []
+  var digits = []
   for i in 0..4 {
-    let d = randDigit()
-    nums = nums + [d]
-    used = used + [false]
+    digits = append(digits, randDigit())
   }
 
-  print("Your numbers: ")
+  var numstr = ""
   for i in 0..4 {
-    print(str(nums[i]))
-    if i < 3 { print(" ") }
+    numstr = numstr + str(digits[i])
   }
-  print("\nEnter RPN: ")
+  print("Your numbers: " + numstr + "\n")
+  print("Enter RPN: ")
   var expr = input()
   if len(expr) != 7 {
     print("invalid. expression length must be 7. (4 numbers, 3 operators, no spaces)")
@@ -31,22 +28,20 @@ fun main() {
   while i < len(expr) {
     let ch = substring(expr, i, i+1)
     if ch >= "0" && ch <= "9" {
-      var found = false
+      if len(digits) == 0 {
+        print("too many numbers.")
+        return
+      }
       var j = 0
-      while j < 4 {
-        if !used[j] && nums[j] == int(ch) - int("0") {
-          used[j] = true
-          found = true
-          break
-        }
+      while digits[j] != int(ch) - int("0") {
         j = j + 1
+        if j == len(digits) {
+          print("wrong numbers.")
+          return
+        }
       }
-      if !found {
-        print("wrong numbers.")
-        valid = false
-        break
-      }
-      stack = stack + [float(int(ch) - int("0"))]
+      digits = digits[:j] + digits[j+1:]
+      stack = append(stack, float(int(ch) - int("0")))
     } else {
       if len(stack) < 2 {
         print("invalid expression syntax.")
