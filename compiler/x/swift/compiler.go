@@ -2192,11 +2192,58 @@ func (c *compiler) elementFieldTypes(e *parser.Expr) map[string]string {
 		}
 	}
 	if p.Target.Query != nil {
-		if t := c.elementFieldTypes(p.Target.Query.Select); t != nil {
+		if t := c.queryFieldTypes(p.Target.Query); t != nil {
 			return t
 		}
 	}
 	return nil
+}
+
+func (c *compiler) queryFieldTypes(q *parser.QueryExpr) map[string]string {
+	savedVars := c.varTypes
+	savedFields := c.mapFields
+	savedGroups := c.groups
+	savedElem := c.groupElemType
+	savedElemFields := c.groupElemFields
+	c.varTypes = copyMap(c.varTypes)
+	c.mapFields = copyMap(c.mapFields)
+	c.groups = copyMap(c.groups)
+	c.groupElemType = copyMap(c.groupElemType)
+	c.groupElemFields = copyMap(c.groupElemFields)
+
+	c.varTypes[q.Var] = c.elementType(q.Source)
+	if f := c.elementFieldTypes(q.Source); f != nil {
+		c.mapFields[q.Var] = f
+	}
+	for _, f := range q.Froms {
+		c.varTypes[f.Var] = c.elementType(f.Src)
+		if ff := c.elementFieldTypes(f.Src); ff != nil {
+			c.mapFields[f.Var] = ff
+		}
+	}
+	for _, j := range q.Joins {
+		c.varTypes[j.Var] = c.elementType(j.Src)
+		if jf := c.elementFieldTypes(j.Src); jf != nil {
+			c.mapFields[j.Var] = jf
+		}
+	}
+	if q.Group != nil {
+		gname := q.Group.Name
+		c.groups[gname] = true
+		c.groupElemType[gname] = c.elementType(q.Source)
+		if gf := c.elementFieldTypes(q.Source); gf != nil {
+			c.groupElemFields[gname] = gf
+		}
+	}
+
+	res := c.elementFieldTypes(q.Select)
+
+	c.varTypes = savedVars
+	c.mapFields = savedFields
+	c.groups = savedGroups
+	c.groupElemType = savedElem
+	c.groupElemFields = savedElemFields
+	return res
 }
 
 func (c *compiler) recordMapFields(name string, e *parser.Expr) {
