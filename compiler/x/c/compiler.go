@@ -4028,12 +4028,12 @@ func isBoolArg(e *parser.Expr, env *types.Env) bool {
 // heuristics similar to inferStructFromMap.
 func (c *Compiler) guessType(e *parser.Expr) types.Type {
 	t := c.exprType(e)
-	if types.ContainsAny(t) {
-		if name, ok := groupKeySelector(e); ok {
-			if kt, ok2 := c.groupKeys[name]; ok2 {
-				return kt
-			}
+	if name, ok := groupKeySelector(e); ok {
+		if kt, ok2 := c.groupKeys[name]; ok2 {
+			return kt
 		}
+	}
+	if types.ContainsAny(t) {
 		switch {
 		case isStringExpr(e, c.env):
 			return types.StringType{}
