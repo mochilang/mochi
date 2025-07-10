@@ -1,5 +1,5 @@
 var data = [["tag": "a", "val": 1], ["tag": "a", "val": 2], ["tag": "b", "val": 3]]
-var groups = { () -> [Any] in
+var groups = { () -> [(key: AnyHashable, items: [[String:Any]])] in
     var _groups: [AnyHashable:[[String:Any]]] = [:]
     for d in data {
         let _k = d["tag"] as! String
@@ -9,7 +9,7 @@ var groups = { () -> [Any] in
     for (k, v) in _groups {
         _tmp.append((key: k, items: v))
     }
-    return _tmp.map { g in g }
+    return _tmp
 }()
 var tmp = []
 for g in groups {

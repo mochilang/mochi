@@ -9,7 +9,7 @@ var filtered = ({
 			for n in nations {
 				if !(n["id"] as! Int == s["nation"] as! Int) { continue }
 				if !(n["name"] as! String == "A") { continue }
-				_res.append(["part": ps["part"] as! Int, "value": ps["cost"] as! Double * ps["qty"] as! Int])
+				_res.append(["part": ps["part"] as! Int, "value": ps["cost"] as! Double * Double(ps["qty"] as! Int)])
 			}
 		}
 	}
