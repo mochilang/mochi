@@ -41,11 +41,12 @@ int main() {
       }
     }
     std::vector<std::pair<decltype((-([&](auto v) {
-                            return std::accumulate(v.begin(), v.end(), 0);
+                            return std::accumulate(
+                                v.bestd::declval<__struct2>() in(), v.end(), 0);
                           })(([&]() {
                             std::vector<decltype(std::declval<__struct1>().val)>
                                 __items;
-                            for (auto x : g.items) {
+                            for (auto x : std::declval<__struct2>().items) {
                               __items.push_back(x.val);
                             }
                             return __items;
@@ -85,7 +86,7 @@ int main() {
     for (size_t i = 0; i < __tmp1.size(); ++i) {
       if (i)
         std::cout << ' ';
-      std::cout << std::boolalpha << __tmp1[i];
+      std::cout << "<struct>";
     }
     std::cout << std::endl;
   }

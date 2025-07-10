@@ -1,18 +1,26 @@
-line 18: ../../../tests/machine/x/cpp/group_items_iteration.cpp:18:12: error: ‘g’ was not declared in this scope
-   18 |   decltype(g.key) tag;
-      |            ^
-../../../tests/machine/x/cpp/group_items_iteration.cpp:18:12: error: ‘g’ was not declared in this scope
-../../../tests/machine/x/cpp/group_items_iteration.cpp:19:12: error: ‘total’ was not declared in this scope
+line 19: ../../../tests/machine/x/cpp/group_items_iteration.cpp:19:12: error: ‘total’ was not declared in this scope
    19 |   decltype(total) total;
       |            ^~~~~
 ../../../tests/machine/x/cpp/group_items_iteration.cpp:19:12: error: ‘total’ was not declared in this scope
 ../../../tests/machine/x/cpp/group_items_iteration.cpp: In instantiation of ‘main()::<lambda(auto:1)> [with auto:1 = std::vector<int>]’:
 ../../../tests/machine/x/cpp/group_items_iteration.cpp:58:7:   required from here
-../../../tests/machine/x/cpp/group_items_iteration.cpp:56:31: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
+../../../tests/machine/x/cpp/group_items_iteration.cpp:56:18: error: no matching function for call to ‘std::vector<int>::push_back(__struct3)’
    56 |       v.push_back(__struct3{g.key, total});
-      |                             ~~^~~
-      |                               |
-      |                               std::string {aka std::__cxx11::basic_string<char>}
+      |       ~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/13/vector:66,
+                 from ../../../tests/machine/x/cpp/group_items_iteration.cpp:7:
+/usr/include/c++/13/bits/stl_vector.h:1281:7: note: candidate: ‘void std::vector<_Tp, _Alloc>::push_back(const value_type&) [with _Tp = int; _Alloc = std::allocator<int>; value_type = int]’
+ 1281 |       push_back(const value_type& __x)
+      |       ^~~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:1281:35: note:   no known conversion for argument 1 from ‘__struct3’ to ‘const std::vector<int>::value_type&’ {aka ‘const int&’}
+ 1281 |       push_back(const value_type& __x)
+      |                 ~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:1298:7: note: candidate: ‘void std::vector<_Tp, _Alloc>::push_back(value_type&&) [with _Tp = int; _Alloc = std::allocator<int>; value_type = int]’
+ 1298 |       push_back(value_type&& __x)
+      |       ^~~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:1298:30: note:   no known conversion for argument 1 from ‘__struct3’ to ‘std::vector<int>::value_type&&’ {aka ‘int&&’}
+ 1298 |       push_back(value_type&& __x)
+      |                 ~~~~~~~~~~~~~^~~
 ../../../tests/machine/x/cpp/group_items_iteration.cpp: In lambda function:
 ../../../tests/machine/x/cpp/group_items_iteration.cpp:61:36: error: ‘r’ was not declared in this scope
    61 |     std::vector<std::pair<decltype(r.tag), decltype(r)>> __items;
@@ -73,6 +81,6 @@ In file included from /usr/include/c++/13/string:53,
    77 |       std::cout << std::boolalpha << __tmp1[i];
       |                                            ^
 
- 17 | struct __struct3 {
- 18 |   decltype(g.key) tag;
+ 18 |   decltype(std::declval<__struct2>().key) tag;
  19 |   decltype(total) total;
+ 20 | };
