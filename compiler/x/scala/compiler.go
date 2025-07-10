@@ -16,19 +16,28 @@ import (
 )
 
 type Compiler struct {
-	buf     bytes.Buffer
-	indent  int
-	env     *types.Env
-	tmp     int
-	helpers map[string]bool
-	inSort  bool
-	updates map[string]bool
+	buf         bytes.Buffer
+	indent      int
+	env         *types.Env
+	tmp         int
+	helpers     map[string]bool
+	inSort      bool
+	updates     map[string]bool
+	autoStructs map[string]types.StructType
+	structKeys  map[string]string
+	autoCount   int
 }
 
 const indentStep = 2
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, helpers: make(map[string]bool), updates: make(map[string]bool)}
+	return &Compiler{
+		env:         env,
+		helpers:     make(map[string]bool),
+		updates:     make(map[string]bool),
+		autoStructs: make(map[string]types.StructType),
+		structKeys:  make(map[string]string),
+	}
 }
 
 func (c *Compiler) newVar(prefix string) string {
@@ -185,6 +194,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		idx += len(marker)
 	}
 	out.Write(data[:idx])
+	c.emitAutoStructs(&out, indentStep)
 	c.emitHelpers(&out, indentStep)
 	out.Write(data[idx:])
 	data = out.Bytes()
@@ -235,15 +245,6 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 
 func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	mutable := c.updates[s.Name]
-	var typ types.Type = types.AnyType{}
-	if s.Type != nil {
-		typ = types.ResolveTypeRef(s.Type, c.env)
-	} else if s.Value != nil {
-		typ = types.ExprType(s.Value, c.env)
-	}
-	if c.env != nil {
-		c.env.SetVar(s.Name, typ, mutable)
-	}
 	rhs := "0"
 	if s.Value != nil {
 		var err error
@@ -261,6 +262,15 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		if err != nil {
 			return err
 		}
+	}
+	var typ types.Type = types.AnyType{}
+	if s.Type != nil {
+		typ = types.ResolveTypeRef(s.Type, c.env)
+	} else if s.Value != nil {
+		typ = c.namedType(types.ExprType(s.Value, c.env))
+	}
+	if c.env != nil {
+		c.env.SetVar(s.Name, typ, mutable)
 	}
 	if s.Type != nil {
 		typ := c.typeString(s.Type)
@@ -302,7 +312,7 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 	if s.Type != nil {
 		typ = types.ResolveTypeRef(s.Type, c.env)
 	} else if s.Value != nil {
-		typ = types.ExprType(s.Value, c.env)
+		typ = c.namedType(types.ExprType(s.Value, c.env))
 	}
 	if c.env != nil {
 		c.env.SetVar(s.Name, typ, true)
@@ -1179,9 +1189,9 @@ func (c *Compiler) compileList(l *parser.ListLiteral, mutable bool) (string, err
 	// infer element type
 	var elemType types.Type = types.AnyType{}
 	if len(l.Elems) > 0 {
-		elemType = types.ExprType(l.Elems[0], c.env)
+		elemType = c.namedType(types.ExprType(l.Elems[0], c.env))
 		for _, e := range l.Elems[1:] {
-			t := types.ExprType(e, c.env)
+			t := c.namedType(types.ExprType(e, c.env))
 			if !sameType(elemType, t) {
 				elemType = types.AnyType{}
 				break
@@ -1193,6 +1203,12 @@ func (c *Compiler) compileList(l *parser.ListLiteral, mutable bool) (string, err
 }
 
 func (c *Compiler) compileMap(m *parser.MapLiteral, mutable bool) (string, error) {
+	// determine if this map corresponds to a struct type
+	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Map: m}}}}}
+	t := c.namedType(types.ExprType(expr, c.env))
+	if st, ok := t.(types.StructType); ok && !mutable {
+		return c.mapToStruct(st.Name, st, m)
+	}
 	items := make([]string, len(m.Items))
 	vals := make([]string, len(m.Items))
 	for i, it := range m.Items {
@@ -1221,18 +1237,18 @@ func (c *Compiler) compileMap(m *parser.MapLiteral, mutable bool) (string, error
 	// infer key and value types
 	var keyType, valType types.Type = types.AnyType{}, types.AnyType{}
 	if len(m.Items) > 0 {
-		keyType = types.ExprType(m.Items[0].Key, c.env)
+		keyType = c.namedType(types.ExprType(m.Items[0].Key, c.env))
 		// simple string key should be string type
 		if _, ok := types.SimpleStringKey(m.Items[0].Key); ok {
 			keyType = types.StringType{}
 		}
-		valType = types.ExprType(m.Items[0].Value, c.env)
+		valType = c.namedType(types.ExprType(m.Items[0].Value, c.env))
 		for _, it := range m.Items[1:] {
-			kt := types.ExprType(it.Key, c.env)
+			kt := c.namedType(types.ExprType(it.Key, c.env))
 			if _, ok := types.SimpleStringKey(it.Key); ok {
 				kt = types.StringType{}
 			}
-			vt := types.ExprType(it.Value, c.env)
+			vt := c.namedType(types.ExprType(it.Value, c.env))
 			if !sameType(keyType, kt) {
 				keyType = types.AnyType{}
 			}
@@ -1250,6 +1266,15 @@ func (c *Compiler) compileMap(m *parser.MapLiteral, mutable bool) (string, error
 }
 
 func (c *Compiler) compileStructLit(st *parser.StructLiteral) (string, error) {
+	if st.Name == "" {
+		typ := types.StructType{Fields: make(map[string]types.Type), Order: make([]string, len(st.Fields))}
+		for i, f := range st.Fields {
+			typ.Fields[f.Name] = c.namedType(types.ExprType(f.Value, c.env))
+			typ.Order[i] = f.Name
+		}
+		typ = c.ensureStructName(typ)
+		st.Name = typ.Name
+	}
 	args := make([]string, len(st.Fields))
 	for i, f := range st.Fields {
 		val, err := c.compileExpr(f.Value)
@@ -1808,4 +1833,72 @@ func collectUpdates(stmts []*parser.Statement, out map[string]bool) {
 			collectUpdates(s.Test.Body, out)
 		}
 	}
+}
+
+func structKey(st types.StructType) string {
+	parts := make([]string, len(st.Order))
+	for i, f := range st.Order {
+		parts[i] = fmt.Sprintf("%s:%s", f, st.Fields[f].String())
+	}
+	return strings.Join(parts, ";")
+}
+
+func (c *Compiler) ensureStructName(st types.StructType) types.StructType {
+	if st.Name != "" {
+		return st
+	}
+	key := structKey(st)
+	if name, ok := c.structKeys[key]; ok {
+		st.Name = name
+		return st
+	}
+	c.autoCount++
+	name := fmt.Sprintf("Auto%d", c.autoCount)
+	st.Name = name
+	c.autoStructs[name] = st
+	c.structKeys[key] = name
+	if c.env != nil {
+		c.env.SetStruct(name, st)
+	}
+	return st
+}
+
+func (c *Compiler) namedType(t types.Type) types.Type {
+	switch tt := t.(type) {
+	case types.ListType:
+		return types.ListType{Elem: c.namedType(tt.Elem)}
+	case types.MapType:
+		return types.MapType{Key: c.namedType(tt.Key), Value: c.namedType(tt.Value)}
+	case types.StructType:
+		return c.ensureStructName(tt)
+	case types.FuncType:
+		params := make([]types.Type, len(tt.Params))
+		for i, p := range tt.Params {
+			params[i] = c.namedType(p)
+		}
+		return types.FuncType{Params: params, Return: c.namedType(tt.Return)}
+	default:
+		return t
+	}
+}
+
+func (c *Compiler) emitAutoStructs(out *bytes.Buffer, indent int) {
+	if len(c.autoStructs) == 0 {
+		return
+	}
+	names := make([]string, 0, len(c.autoStructs))
+	for n := range c.autoStructs {
+		names = append(names, n)
+	}
+	sort.Strings(names)
+	pad := strings.Repeat(" ", indent)
+	for _, n := range names {
+		st := c.autoStructs[n]
+		fields := make([]string, len(st.Order))
+		for i, f := range st.Order {
+			fields[i] = fmt.Sprintf("%s: %s", f, c.typeOf(st.Fields[f]))
+		}
+		out.WriteString(pad + fmt.Sprintf("case class %s(%s)\n", n, strings.Join(fields, ", ")))
+	}
+	out.WriteByte('\n')
 }
