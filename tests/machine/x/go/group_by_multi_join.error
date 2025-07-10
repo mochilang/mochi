@@ -1,0 +1,13 @@
+Error on line 0: run error: exit status 1
+panic: interface conversion: interface {} is int, not float64
+
+goroutine 1 [running]:
+main._cast[...](...)
+	/workspace/mochi/tests/machine/x/go/group_by_multi_join.go:85
+main.main.func1(...)
+	/workspace/mochi/tests/machine/x/go/group_by_multi_join.go:46
+main.main()
+	/workspace/mochi/tests/machine/x/go/group_by_multi_join.go:53 +0x1666
+exit status 2
+
+1: //go:build ignore

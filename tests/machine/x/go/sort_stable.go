@@ -3,10 +3,8 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"sort"
-	"strconv"
 	"strings"
 )
 
@@ -14,7 +12,23 @@ func main() {
 	var items []map[string]any = []map[string]any{map[string]any{"n": 1, "v": "a"}, map[string]any{"n": 1, "v": "b"}, map[string]any{"n": 2, "v": "c"}}
 	var result []any = func() []any {
 		src := _toAnySlice(items)
-		resAny := _query(src, []_joinSpec{}, _queryOpts{selectFn: func(_a ...any) any { i := _cast[map[string]any](_a[0]); _ = i; return i["v"] }, sortKey: func(_a ...any) any { i := _cast[map[string]any](_a[0]); _ = i; return i["n"] }, skip: -1, take: -1})
+		resAny := _query(src, []_joinSpec{}, _queryOpts{selectFn: func(_a ...any) any {
+			_tmp0 := _a[0]
+			var i map[string]any
+			if _tmp0 != nil {
+				i = _cast[map[string]any](_tmp0)
+			}
+			_ = i
+			return i["v"]
+		}, sortKey: func(_a ...any) any {
+			_tmp0 := _a[0]
+			var i map[string]any
+			if _tmp0 != nil {
+				i = _cast[map[string]any](_tmp0)
+			}
+			_ = i
+			return i["n"]
+		}, skip: -1, take: -1})
 		out := make([]any, len(resAny))
 		for i, v := range resAny {
 			out[i] = v
@@ -25,53 +39,7 @@ func main() {
 }
 
 func _cast[T any](v any) T {
-	if tv, ok := v.(T); ok {
-		return tv
-	}
-	var out T
-	switch any(out).(type) {
-	case int:
-		switch vv := v.(type) {
-		case int:
-			return any(vv).(T)
-		case float64:
-			return any(int(vv)).(T)
-		case float32:
-			return any(int(vv)).(T)
-		case string:
-			n, _ := strconv.Atoi(vv)
-			return any(n).(T)
-		}
-	case float64:
-		switch vv := v.(type) {
-		case int:
-			return any(float64(vv)).(T)
-		case float64:
-			return any(vv).(T)
-		case float32:
-			return any(float64(vv)).(T)
-		}
-	case float32:
-		switch vv := v.(type) {
-		case int:
-			return any(float32(vv)).(T)
-		case float64:
-			return any(float32(vv)).(T)
-		case float32:
-			return any(vv).(T)
-		}
-	}
-	if m, ok := v.(map[any]any); ok {
-		v = _convertMapAny(m)
-	}
-	data, err := json.Marshal(v)
-	if err != nil {
-		panic(err)
-	}
-	if err := json.Unmarshal(data, &out); err != nil {
-		panic(err)
-	}
-	return out
+	return v.(T)
 }
 
 func _convertMapAny(m map[any]any) map[string]any {

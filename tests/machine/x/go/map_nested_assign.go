@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	var data map[string]map[string]int = map[string]map[string]int{"outer": map[string]int{"inner": 1}}
-	data["outer"]["inner"] = 2
-	fmt.Println(data["outer"]["inner"])
+	var _data map[string]map[string]int = map[string]map[string]int{"outer": map[string]int{"inner": 1}}
+	_data["outer"]["inner"] = 2
+	fmt.Println(_data["outer"]["inner"])
 }

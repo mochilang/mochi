@@ -3,11 +3,9 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"mochi/runtime/data"
 	"reflect"
-	"strconv"
 	"strings"
 )
 
@@ -19,10 +17,33 @@ func main() {
 		groups := map[string]*data.Group{}
 		order := []string{}
 		for _, c := range customers {
+			matched := false
 			for _, o := range orders {
 				if !(_equal(o["customerId"], c["id"])) {
 					continue
 				}
+				matched = true
+				key := c["name"]
+				ks := fmt.Sprint(key)
+				g, ok := groups[ks]
+				if !ok {
+					g = &data.Group{Key: key}
+					groups[ks] = g
+					order = append(order, ks)
+				}
+				_item := map[string]any{}
+				for k, v := range _cast[map[string]any](c) {
+					_item[k] = v
+				}
+				_item["c"] = c
+				for k, v := range _cast[map[string]any](o) {
+					_item[k] = v
+				}
+				_item["o"] = o
+				g.Items = append(g.Items, _item)
+			}
+			if !matched {
+				var o map[string]int
 				key := c["name"]
 				ks := fmt.Sprint(key)
 				g, ok := groups[ks]
@@ -70,53 +91,7 @@ func main() {
 }
 
 func _cast[T any](v any) T {
-	if tv, ok := v.(T); ok {
-		return tv
-	}
-	var out T
-	switch any(out).(type) {
-	case int:
-		switch vv := v.(type) {
-		case int:
-			return any(vv).(T)
-		case float64:
-			return any(int(vv)).(T)
-		case float32:
-			return any(int(vv)).(T)
-		case string:
-			n, _ := strconv.Atoi(vv)
-			return any(n).(T)
-		}
-	case float64:
-		switch vv := v.(type) {
-		case int:
-			return any(float64(vv)).(T)
-		case float64:
-			return any(vv).(T)
-		case float32:
-			return any(float64(vv)).(T)
-		}
-	case float32:
-		switch vv := v.(type) {
-		case int:
-			return any(float32(vv)).(T)
-		case float64:
-			return any(float32(vv)).(T)
-		case float32:
-			return any(vv).(T)
-		}
-	}
-	if m, ok := v.(map[any]any); ok {
-		v = _convertMapAny(m)
-	}
-	data, err := json.Marshal(v)
-	if err != nil {
-		panic(err)
-	}
-	if err := json.Unmarshal(data, &out); err != nil {
-		panic(err)
-	}
-	return out
+	return v.(T)
 }
 
 func _convertMapAny(m map[any]any) map[string]any {
