@@ -1,11 +1,16 @@
 # F# Machine Output
 
-This directory contains F# source code generated from Mochi programs in `tests/vm/valid`.
-Generated with `compiler/x/fs`. Programs that compile successfully have a `.fs` file, and if compilation fails an `.error` file captures the reason.
+This directory contains generated F# code from the Mochi examples found in `tests/vm/valid`.
+Each Mochi file is compiled using `compiler/x/fs` and executed with `mono`. The resulting
+source is saved with a `.fs` extension and any program output goes in a matching `.out` file.
+Compilation failures are recorded with an `.error` file.
+
+## Compilation Status
 
 Compiled programs: 97/97
 
-Checklist:
+### Checklist
+
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -55,7 +60,7 @@ Checklist:
 - [x] list_index
 - [x] list_nested_assign
 - [x] list_set_ops
- - [x] load_yaml
+- [x] load_yaml
 - [x] map_assign
 - [x] map_in_operator
 - [x] map_index
@@ -70,7 +75,7 @@ Checklist:
 - [x] min_max_builtin
 - [x] nested_function
 - [x] order_by_map
- - [x] outer_join
+- [x] outer_join
 - [x] partial_application
 - [x] print_hello
 - [x] pure_fold
@@ -78,7 +83,7 @@ Checklist:
 - [x] query_sum_select
 - [x] record_assign
 - [x] right_join
- - [x] save_jsonl_stdout
+- [x] save_jsonl_stdout
 - [x] short_circuit
 - [x] slice
 - [x] sort_stable
@@ -92,17 +97,19 @@ Checklist:
 - [x] substring_builtin
 - [x] sum_builtin
 - [x] tail_recursion
- - [x] test_block
- - [x] tree_sum
+- [x] test_block
+- [x] tree_sum
 - [x] two-sum
 - [x] typed_let
 - [x] typed_var
 - [x] unary_neg
- - [x] update_stmt
+- [x] update_stmt
 - [x] user_type_literal
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
 
-Remaining tasks:
-- [ ] Add F# toolchain to run compiled programs and compare output
+## Remaining Tasks
+
+- [ ] Improve formatting of generated F# code to more closely match hand written examples
+- [ ] Expand support for additional standard library functions

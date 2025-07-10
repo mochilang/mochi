@@ -620,7 +620,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					}
 					args[j] = s
 				}
-				val = fmt.Sprintf("%s.%s(%s)", val, sanitizeIdent(op.Field.Name), strings.Join(args, ", "))
+				name := op.Field.Name
+				if c.isStringPrimary(p.Target) && name == "contains" {
+					name = "Contains"
+				}
+				val = fmt.Sprintf("%s.%s(%s)", val, sanitizeIdent(name), strings.Join(args, ", "))
 				i++
 				continue
 			}
