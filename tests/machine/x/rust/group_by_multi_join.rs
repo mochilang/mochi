@@ -21,10 +21,10 @@ struct Partsupp {
 #[derive(Default, Debug, Clone, PartialEq)]
 struct Result {
     part: i32,
-    value: Partsupp,
+    value: f64,
 }
 
-#[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Default, Debug, Clone, PartialEq)]
 struct Group {
     key: i32,
     items: Vec<Result>,

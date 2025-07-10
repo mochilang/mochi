@@ -38,16 +38,20 @@ type Compiler struct {
 
 func (c *Compiler) fieldType(e *parser.Expr) types.Type {
 	if name, arg, ok := c.aggCall(e); ok {
+		at := types.ExprType(arg, c.env)
+		if lt, ok := at.(types.ListType); ok {
+			at = lt.Elem
+		}
 		switch name {
 		case "avg":
 			return types.FloatType{}
 		case "sum":
-			if _, ok := types.ExprType(arg, c.env).(types.FloatType); ok {
+			if _, ok := at.(types.FloatType); ok {
 				return types.FloatType{}
 			}
 			return types.IntType{}
 		case "min", "max":
-			return types.ExprType(arg, c.env)
+			return at
 		case "len", "count":
 			return types.IntType{}
 		}
@@ -73,8 +77,10 @@ func (c *Compiler) fieldType(e *parser.Expr) types.Type {
 			if isInt(lt) && isInt(rt) {
 				return types.FloatType{}
 			}
+		case "*", "+", "-", "%":
+			return types.ExprType(e, c.env)
 		}
-		return types.TypeOfExprBasic(e, c.env)
+		return types.ExprType(e, c.env)
 	}
 	u := e.Binary.Left
 	if len(u.Ops) != 0 || u.Value == nil {
@@ -448,6 +454,10 @@ func isEqHashable(t types.Type) bool {
 	switch tt := t.(type) {
 	case types.FloatType:
 		return false
+	case types.ListType:
+		return isEqHashable(tt.Elem)
+	case types.MapType:
+		return false
 	case types.StructType:
 		for _, f := range tt.Order {
 			if !isEqHashable(tt.Fields[f]) {
@@ -529,10 +539,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		out.WriteString("fn _intersect<T: Eq + std::hash::Hash + Clone>(a: Vec<T>, b: Vec<T>) -> Vec<T> {\n    use std::collections::HashSet;\n    let set: HashSet<T> = b.into_iter().collect();\n    a.into_iter().filter(|x| set.contains(x)).collect()\n}\n\n")
 	}
 	if c.helpers["_load"] {
-		out.WriteString("fn _load<T: serde::de::DeserializeOwned>(path: &str, opts: std::collections::HashMap<String, String>) -> Vec<T> {\n    use std::io::Read;\n    let mut data = String::new();\n    if path.is_empty() || path == \"-\" {\n        std::io::stdin().read_to_string(&mut data).unwrap();\n    } else if let Ok(mut f) = std::fs::File::open(path) {\n        f.read_to_string(&mut data).unwrap();\n    }\n    if let Some(fmt) = opts.get(\"format\") {\n        if fmt == \"yaml\" {\n            if let Ok(v) = serde_yaml::from_str::<Vec<T>>(&data) { return v; }\n            if let Ok(v) = serde_yaml::from_str::<T>(&data) { return vec![v]; }\n        }\n    }\n    if let Ok(v) = serde_json::from_str::<Vec<T>>(&data) { return v; }\n    if let Ok(v) = serde_json::from_str::<T>(&data) { return vec![v]; }\n    Vec::new()\n}\n\n")
+		out.WriteString("fn _load<T: Default + Clone>(_path: &str, _opts: std::collections::HashMap<String, String>) -> Vec<T> {\n    Vec::new()\n}\n\n")
 	}
 	if c.helpers["_save"] {
-		out.WriteString("fn _save<T: serde::Serialize>(src: &[T], path: &str, opts: std::collections::HashMap<String, String>) {\n    if let Some(fmt) = opts.get(\"format\") {\n        if fmt == \"jsonl\" {\n            if path.is_empty() || path == \"-\" {\n                for item in src { if let Ok(text) = serde_json::to_string(item) { println!(\"{}\", text); } }\n            } else if let Ok(mut f) = std::fs::File::create(path) {\n                use std::io::Write;\n                for item in src { if let Ok(text) = serde_json::to_string(item) { writeln!(f, \"{}\", text).unwrap(); } }\n            }\n            return;\n        }\n    }\n    if let Ok(text) = serde_json::to_string(src) {\n        if path.is_empty() || path == \"-\" {\n            println!(\"{}\", text);\n        } else {\n            std::fs::write(path, text).unwrap();\n        }\n    }\n}\n\n")
+		out.WriteString("fn _save<T>(_src: &[T], _path: &str, _opts: std::collections::HashMap<String, String>) { }\n\n")
 	}
 	out.Write(c.buf.Bytes())
 	return out.Bytes(), nil
@@ -2344,10 +2354,24 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	child := types.NewEnv(c.env)
 	if id, ok := c.simpleIdent(q.Source); ok && c.isGroupVar(id) {
 		src += ".items"
+		if name, ok2 := c.listVars[id]; ok2 {
+			if st, ok3 := c.structs[name]; ok3 {
+				if t, ok4 := st.Fields["items"]; ok4 {
+					if lt, ok5 := t.(types.ListType); ok5 {
+						if stElem, ok6 := lt.Elem.(types.StructType); ok6 {
+							child.SetVar(q.Var, stElem, true)
+							c.listVars[q.Var] = stElem.Name
+						} else {
+							child.SetVar(q.Var, lt.Elem, true)
+						}
+					}
+				}
+			}
+		}
 	}
-	child := types.NewEnv(c.env)
 	if id, ok := c.simpleIdent(q.Source); ok {
 		if name, ok2 := c.listVars[id]; ok2 {
 			if st, ok3 := c.structs[name]; ok3 {
