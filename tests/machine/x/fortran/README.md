@@ -103,3 +103,8 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+
+## Remaining tasks
+
+- [ ] Generate outputs for TPC-H dataset queries
+- [ ] Remove obsolete `.error` files after successful compilation
