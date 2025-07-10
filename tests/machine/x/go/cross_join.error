@@ -1,0 +1,5 @@
+Error on line 0: run error: exit status 1
+# command-line-arguments
+../../../tests/machine/x/go/cross_join.go:26:32: cannot use func() []map[string]any {…}() (value of type []map[string]any) as []map[string]int value in variable declaration
+
+1: //go:build ignore

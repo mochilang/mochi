@@ -1,8 +1,5 @@
 Error on line 0: run error: exit status 1
 # command-line-arguments
-../../../tests/machine/x/go/group_items_iteration.go:15:21: data.Group is not a type
-../../../tests/machine/x/go/group_items_iteration.go:16:30: data.Group is not a type
-../../../tests/machine/x/go/group_items_iteration.go:23:15: data.Group is not a type
-../../../tests/machine/x/go/group_items_iteration.go:29:19: data.Group is not a type
+../../../tests/machine/x/go/group_items_iteration.go:39:12: invalid operation: _cast[int]((float64(total) + _cast[float64](_cast[map[string]any](x)["val"]))) (value of type int) is not an interface
 
 1: //go:build ignore

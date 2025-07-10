@@ -3,19 +3,29 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"sort"
-	"strconv"
 	"strings"
 )
 
 func main() {
-	var data []map[string]int = []map[string]int{map[string]int{"a": 1, "b": 2}, map[string]int{"a": 1, "b": 1}, map[string]int{"a": 0, "b": 5}}
+	var _data []map[string]int = []map[string]int{map[string]int{"a": 1, "b": 2}, map[string]int{"a": 1, "b": 1}, map[string]int{"a": 0, "b": 5}}
 	var sorted []map[string]int = func() []map[string]int {
-		src := _toAnySlice(data)
-		resAny := _query(src, []_joinSpec{}, _queryOpts{selectFn: func(_a ...any) any { x := _cast[map[string]int](_a[0]); _ = x; return x }, sortKey: func(_a ...any) any {
-			x := _cast[map[string]int](_a[0])
+		src := _toAnySlice(_data)
+		resAny := _query(src, []_joinSpec{}, _queryOpts{selectFn: func(_a ...any) any {
+			_tmp0 := _a[0]
+			var x map[string]int
+			if _tmp0 != nil {
+				x = _cast[map[string]int](_tmp0)
+			}
+			_ = x
+			return x
+		}, sortKey: func(_a ...any) any {
+			_tmp0 := _a[0]
+			var x map[string]int
+			if _tmp0 != nil {
+				x = _cast[map[string]int](_tmp0)
+			}
 			_ = x
 			return map[string]int{"a": x["a"], "b": x["b"]}
 		}, skip: -1, take: -1})
@@ -29,53 +39,7 @@ func main() {
 }
 
 func _cast[T any](v any) T {
-	if tv, ok := v.(T); ok {
-		return tv
-	}
-	var out T
-	switch any(out).(type) {
-	case int:
-		switch vv := v.(type) {
-		case int:
-			return any(vv).(T)
-		case float64:
-			return any(int(vv)).(T)
-		case float32:
-			return any(int(vv)).(T)
-		case string:
-			n, _ := strconv.Atoi(vv)
-			return any(n).(T)
-		}
-	case float64:
-		switch vv := v.(type) {
-		case int:
-			return any(float64(vv)).(T)
-		case float64:
-			return any(vv).(T)
-		case float32:
-			return any(float64(vv)).(T)
-		}
-	case float32:
-		switch vv := v.(type) {
-		case int:
-			return any(float32(vv)).(T)
-		case float64:
-			return any(float32(vv)).(T)
-		case float32:
-			return any(vv).(T)
-		}
-	}
-	if m, ok := v.(map[any]any); ok {
-		v = _convertMapAny(m)
-	}
-	data, err := json.Marshal(v)
-	if err != nil {
-		panic(err)
-	}
-	if err := json.Unmarshal(data, &out); err != nil {
-		panic(err)
-	}
-	return out
+	return v.(T)
 }
 
 func _convertMapAny(m map[any]any) map[string]any {

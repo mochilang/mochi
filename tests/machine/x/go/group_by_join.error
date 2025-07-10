@@ -3,11 +3,11 @@ panic: interface conversion: interface {} is map[string]int, not map[string]inte
 
 goroutine 1 [running]:
 main._cast[...](...)
-	/workspace/mochi/tests/machine/x/go/group_by_left_join.go:94
+	/workspace/mochi/tests/machine/x/go/group_by_join.go:61
 main.main.func1(...)
-	/workspace/mochi/tests/machine/x/go/group_by_left_join.go:39
+	/workspace/mochi/tests/machine/x/go/group_by_join.go:33
 main.main()
-	/workspace/mochi/tests/machine/x/go/group_by_left_join.go:86 +0x1731
+	/workspace/mochi/tests/machine/x/go/group_by_join.go:53 +0xf05
 exit status 2
 
 1: //go:build ignore
