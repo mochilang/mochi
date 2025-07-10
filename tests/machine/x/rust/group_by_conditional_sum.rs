@@ -1,11 +1,11 @@
-#[derive(Default, Debug, Clone, PartialEq)]
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
 struct Item {
     cat: &'static str,
     val: i32,
     flag: bool,
 }
 
-#[derive(Default, Debug, Clone, PartialEq)]
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
 struct Group {
     key: &'static str,
     items: Vec<Item>,

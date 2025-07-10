@@ -444,6 +444,22 @@ func analyzeMutations(prog *parser.Program) map[string]map[int]bool {
 	return res
 }
 
+func isEqHashable(t types.Type) bool {
+	switch tt := t.(type) {
+	case types.FloatType:
+		return false
+	case types.StructType:
+		for _, f := range tt.Order {
+			if !isEqHashable(tt.Fields[f]) {
+				return false
+			}
+		}
+	case types.UnionType:
+		return false
+	}
+	return true
+}
+
 // Compile converts a parsed Mochi program into Rust source code.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
@@ -473,7 +489,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		out.WriteByte('\n')
 	}
 	for _, st := range c.genStructs {
-		out.WriteString("#[derive(Default, Debug, Clone, PartialEq)]\n")
+		derives := "#[derive(Default, Debug, Clone, PartialEq"
+		if isEqHashable(st) {
+			derives += ", Eq, Hash"
+		}
+		out.WriteString(derives + ")]\n")
 		out.WriteString("struct " + st.Name + " {\n")
 		for _, f := range st.Order {
 			out.WriteString("    " + f + ": " + rustTypeFromType(st.Fields[f]) + ",\n")
@@ -929,21 +949,33 @@ func (c *Compiler) compileTypeDecl(td *parser.TypeDecl) error {
 		return nil
 	}
 	st := types.StructType{Name: td.Name, Fields: map[string]types.Type{}, Order: []string{}}
-	var b strings.Builder
-	b.WriteString("#[derive(Default, Debug, Clone, PartialEq)]\n")
-	b.WriteString(fmt.Sprintf("struct %s {\n", td.Name))
+	var body strings.Builder
+	eqHash := true
 	c.indent++
 	for _, m := range td.Members {
 		if m.Field == nil {
 			return fmt.Errorf("unsupported type member")
 		}
 		typ := rustType(m.Field.Type)
-		st.Fields[m.Field.Name] = types.ResolveTypeRef(m.Field.Type, c.env)
+		ft := types.ResolveTypeRef(m.Field.Type, c.env)
+		st.Fields[m.Field.Name] = ft
 		st.Order = append(st.Order, m.Field.Name)
-		b.WriteString(strings.Repeat("    ", c.indent))
-		b.WriteString(fmt.Sprintf("%s: %s,\n", m.Field.Name, typ))
+		if !isEqHashable(ft) {
+			eqHash = false
+		}
+		body.WriteString(strings.Repeat("    ", c.indent))
+		body.WriteString(fmt.Sprintf("%s: %s,\n", m.Field.Name, typ))
 	}
 	c.indent--
+	derives := "#[derive(Default, Debug, Clone, PartialEq"
+	if eqHash {
+		derives += ", Eq, Hash"
+	}
+	derives += ")]\n"
+	var b strings.Builder
+	b.WriteString(derives)
+	b.WriteString(fmt.Sprintf("struct %s {\n", td.Name))
+	b.WriteString(body.String())
 	b.WriteString("}\n")
 	c.enumDecls = append(c.enumDecls, b.String())
 	c.structs[td.Name] = st

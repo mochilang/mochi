@@ -1,10 +1,10 @@
-#[derive(Default, Debug, Clone, PartialEq)]
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
 struct Nation {
     id: i32,
     name: &'static str,
 }
 
-#[derive(Default, Debug, Clone, PartialEq)]
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
 struct Supplier {
     id: i32,
     nation: i32,
@@ -21,19 +21,19 @@ struct Partsupp {
 #[derive(Default, Debug, Clone, PartialEq)]
 struct Result {
     part: i32,
-    value: f64,
+    value: Partsupp,
 }
 
-#[derive(Default, Debug, Clone, PartialEq)]
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
 struct Group {
     key: i32,
     items: Vec<Result>,
 }
 
-#[derive(Default, Debug, Clone, PartialEq)]
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
 struct Result1 {
     part: i32,
-    total: f64,
+    total: i32,
 }
 
 fn sum<T>(v: &[T]) -> T where T: std::iter::Sum<T> + Copy {
