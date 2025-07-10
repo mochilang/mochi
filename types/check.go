@@ -56,6 +56,7 @@ func (t MapType) String() string {
 }
 
 type GroupType struct {
+	Key  Type
 	Elem Type
 }
 
@@ -196,7 +197,7 @@ func unify(a, b Type, subst Subst) bool {
 	case GroupType:
 		switch bt := b.(type) {
 		case GroupType:
-			return unify(at.Elem, bt.Elem, subst)
+			return unify(at.Key, bt.Key, subst) && unify(at.Elem, bt.Elem, subst)
 		case AnyType:
 			return true
 		case *TypeVar:
@@ -1519,6 +1520,14 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 				}
 				return nil, errUnknownField(p.Pos, field, t)
 			case GroupType:
+				if field == "key" {
+					typ = t.Key
+					continue
+				}
+				if field == "items" {
+					typ = ListType{Elem: t.Elem}
+					continue
+				}
 				typ = AnyType{}
 				continue
 			case StringType:
@@ -2089,11 +2098,12 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 
 	var selT Type
 	if q.Group != nil {
-		if _, err := checkExpr(q.Group.Exprs[0], child); err != nil {
+		keyT, err := checkExpr(q.Group.Exprs[0], child)
+		if err != nil {
 			return nil, err
 		}
 		genv := NewEnv(child)
-		gStruct := GroupType{Elem: elemT}
+		gStruct := GroupType{Key: keyT, Elem: elemT}
 		genv.SetVar(q.Group.Name, gStruct, true)
 		if q.Group.Having != nil {
 			ht, err := checkExprWithExpected(q.Group.Having, genv, BoolType{})
