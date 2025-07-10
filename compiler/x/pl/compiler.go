@@ -703,7 +703,9 @@ func (c *Compiler) compileIfExpr(ix *parser.IfExpr) (string, bool, error) {
 		elseV = "true"
 	}
 	ar := thenA && elseA
-	return fmt.Sprintf("(%s -> %s ; %s)", cond, thenV, elseV), ar, nil
+	tmp := c.newTmp()
+	c.writeln(fmt.Sprintf("(%s -> %s = %s ; %s = %s),", cond, tmp, thenV, tmp, elseV))
+	return tmp, ar, nil
 }
 
 func (c *Compiler) compileCall(call *parser.CallExpr) (string, bool, error) {

@@ -30,7 +30,7 @@ main :-
                         write(_V12),
                         write(' '),
                         get_item(Person, 'is_senior', _V13),
-                        ((_V13 -> " (senior)" ; "") -> _V14 = true ; _V14 = false),
+                        (_V13 -> _V14 = " (senior)" ; _V14 = ""),
                         write(_V14),
                         nl,
                         true

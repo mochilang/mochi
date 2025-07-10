@@ -11,8 +11,8 @@ main :-
     dict_create(_V1, map, [cat-"a", val-5, flag-false]),
     dict_create(_V2, map, [cat-"b", val-20, flag-true]),
     Items = [_V0, _V1, _V2],
-    findall(_V14, (member(I, Items), true, get_item(G, 'key', _V3), findall(_V6, (member(X, G), true, get_item(X, 'flag', _V4), get_item(X, 'val', _V5), _V6 = (_V4 -> _V5 ; 0)), _V7), sum_list(_V7, _V8), findall(_V10, (member(X, G), true, get_item(X, 'val', _V9), _V10 = _V9), _V11), sum_list(_V11, _V12), dict_create(_V13, map, [cat-_V3, share-(_V8 / _V12)]), _V14 = _V13), _V15),
-    Result = _V15,
+    findall(_V15, (member(I, Items), true, get_item(G, 'key', _V3), findall(_V7, (member(X, G), true, get_item(X, 'flag', _V4), get_item(X, 'val', _V5), (_V4 -> _V6 = _V5 ; _V6 = 0), _V7 = _V6), _V8), sum_list(_V8, _V9), findall(_V11, (member(X, G), true, get_item(X, 'val', _V10), _V11 = _V10), _V12), sum_list(_V12, _V13), dict_create(_V14, map, [cat-_V3, share-(_V9 / _V13)]), _V15 = _V14), _V16),
+    Result = _V16,
     write(Result),
     nl,
     true.

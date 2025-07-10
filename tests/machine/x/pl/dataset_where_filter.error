@@ -1,4 +1,0 @@
-run: exit status 2
---- Adults ---
-ERROR: /workspace/mochi/tests/machine/x/pl/dataset_where_filter.pl:8: user:main catch/3: Type error: `callable' expected, found `get_item(map{age:30,is_senior:30>=60,name:"Alice"},name,_6654),write(_6654),write(' '),write("is"),write(' '),get_item(map{age:30,is_senior:30>=60,name:"Alice"},age,_6730),write(_6730),write(' '),get_item(map{age:30,is_senior:30>=60,name:"Alice"},is_senior,_6764),((_6764->" (senior)";"")->_6798=true;_6798=false),write(_6798),nl,true' (a compound)
-
