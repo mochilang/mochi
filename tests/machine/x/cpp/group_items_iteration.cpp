@@ -25,7 +25,7 @@ inline bool operator!=(const __struct2 &a, const __struct2 &b) {
 }
 struct __struct3 {
   decltype(std::declval<__struct2>().key) tag;
-  decltype(total) total;
+  int total;
 };
 inline bool operator==(const __struct3 &a, const __struct3 &b) {
   return a.tag == b.tag && a.total == b.total;

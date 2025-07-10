@@ -17,6 +17,30 @@ func identName(e *parser.Expr) (string, bool) {
 	return p.Target.Selector.Root, true
 }
 
+// sumOverVar returns the variable name if the expression is the builtin
+// sum called on that variable.
+func sumOverVar(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	pf := u.Value
+	if pf == nil || pf.Target == nil || pf.Target.Call == nil || len(pf.Ops) != 0 {
+		return "", false
+	}
+	call := pf.Target.Call
+	if call.Func != "sum" || len(call.Args) != 1 {
+		return "", false
+	}
+	if v, ok := identName(call.Args[0]); ok {
+		return v, true
+	}
+	return "", false
+}
+
 func collectIdents(e *parser.Expr, out map[string]struct{}) {
 	if e == nil || e.Binary == nil {
 		return

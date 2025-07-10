@@ -98,14 +98,14 @@ inline bool operator!=(const __struct7 &a, const __struct7 &b) {
   return !(a == b);
 }
 struct __struct8 {
-  decltype(g.key.c_custkey) c_custkey;
-  decltype(g.key.c_name) c_name;
+  decltype(std::declval<__struct7>().key.c_custkey) c_custkey;
+  decltype(std::declval<__struct7>().key.c_name) c_name;
   bool revenue;
-  decltype(g.key.c_acctbal) c_acctbal;
-  decltype(g.key.n_name) n_name;
-  decltype(g.key.c_address) c_address;
-  decltype(g.key.c_phone) c_phone;
-  decltype(g.key.c_comment) c_comment;
+  decltype(std::declval<__struct7>().key.c_acctbal) c_acctbal;
+  decltype(std::declval<__struct7>().key.n_name) n_name;
+  decltype(std::declval<__struct7>().key.c_address) c_address;
+  decltype(std::declval<__struct7>().key.c_phone) c_phone;
+  decltype(std::declval<__struct7>().key.c_comment) c_comment;
 };
 inline bool operator==(const __struct8 &a, const __struct8 &b) {
   return a.c_custkey == b.c_custkey && a.c_name == b.c_name &&
@@ -169,26 +169,7 @@ auto result = ([]() {
       }
     }
   }
-  std::vector<std::pair<decltype((-([&](auto v) {
-                          return std::accumulate(
-                              v.bestd::declval<__struct7>() in(), v.end(), 0);
-                        })(([&]() {
-                          std::vector<decltype((
-                              std::declval<__struct6>()
-                                  .std::declval<__struct4>()
-                                  .l_extendedprice *
-                              ((1 - std::declval<__struct6>()
-                                        .std::declval<__struct4>()
-                                        .l_discount))))>
-                              __items;
-                          for (auto x : std::declval<__struct7>().items) {
-                            __items.push_back(
-                                (x.l.l_extendedprice * ((1 - x.l.l_discount))));
-                          }
-                          return __items;
-                        })()))),
-                        __struct8>>
-      __items;
+  std::vector<std::pair<double, __struct8>> __items;
   for (auto &g : __groups) {
     __items.push_back(
         {(-([&](auto v) {

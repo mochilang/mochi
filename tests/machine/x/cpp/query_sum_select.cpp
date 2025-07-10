@@ -1,29 +1,20 @@
 #include <iostream>
-#include <numeric>
 #include <vector>
 
 std::vector<int> nums = std::vector<decltype(1)>{1, 2, 3};
 auto result = ([]() {
-  std::vector<decltype((
-      [&](auto v) { return std::accumulate(v.begin(), v.end(), 0); })(n))>
-      __items;
+  int __sum = 0;
   for (auto n : nums) {
     if (!((n > 1)))
       continue;
-    __items.push_back(
-        ([&](auto v) { return std::accumulate(v.begin(), v.end(), 0); })(n));
+    __sum += n;
   }
-  return __items;
+  return __sum;
 })();
 
 int main() {
   {
-    auto __tmp1 = result;
-    for (size_t i = 0; i < __tmp1.size(); ++i) {
-      if (i)
-        std::cout << ' ';
-      std::cout << std::boolalpha << __tmp1[i];
-    }
+    std::cout << std::boolalpha << result;
     std::cout << std::endl;
   }
   return 0;

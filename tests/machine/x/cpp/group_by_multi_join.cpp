@@ -37,7 +37,8 @@ inline bool operator!=(const __struct3 &a, const __struct3 &b) {
 }
 struct __struct4 {
   decltype(std::declval<__struct3>().part) part;
-  decltype((ps.cost * ps.qty)) value;
+  decltype((std::declval<__struct3>().cost *
+            std::declval<__struct3>().qty)) value;
 };
 inline bool operator==(const __struct4 &a, const __struct4 &b) {
   return a.part == b.part && a.value == b.value;

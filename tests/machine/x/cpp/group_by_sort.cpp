@@ -55,19 +55,7 @@ auto grouped = ([]() {
           __struct2{__key, std::vector<__struct1>{__struct1{i}}});
     }
   }
-  std::vector<std::pair<decltype((-([&](auto v) {
-                          return std::accumulate(
-                              v.bestd::declval<__struct2>() in(), v.end(), 0);
-                        })(([&]() {
-                          std::vector<decltype(std::declval<__struct1>().val)>
-                              __items;
-                          for (auto x : std::declval<__struct2>().items) {
-                            __items.push_back(x.val);
-                          }
-                          return __items;
-                        })()))),
-                        __struct3>>
-      __items;
+  std::vector<std::pair<double, __struct3>> __items;
   for (auto &g : __groups) {
     __items.push_back(
         {(-([&](auto v) { return std::accumulate(v.begin(), v.end(), 0); })(
