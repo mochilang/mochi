@@ -150,8 +150,28 @@ static list_group_int _group_by_int(list_int src) {
     for (int i = 0; i < a.len; i++) r.data[i] = a.data[i];
     for (int i = 0; i < b.len; i++) r.data[a.len + i] = b.data[i];
     return r;
-}
-`
+}`
+
+	helperGroupByString = `typedef struct { char* key; list_int items; } _GroupString;
+typedef struct { int len; int cap; _GroupString* data; } list_group_string;
+static list_group_string _group_by_string(list_string src) {
+    list_group_string res; res.len = 0; res.cap = 0; res.data = NULL;
+    for (int i=0; i<src.len; i++) {
+        char* key = src.data[i];
+        int idx = -1;
+        for (int j=0; j<res.len; j++) if (strcmp(res.data[j].key, key)==0) { idx = j; break; }
+        if (idx == -1) {
+            if (res.len >= res.cap) { res.cap = res.cap ? res.cap*2 : 4; res.data = (_GroupString*)realloc(res.data, sizeof(_GroupString)*res.cap); }
+            res.data[res.len].key = key;
+            res.data[res.len].items = list_int_create(0);
+            idx = res.len++;
+        }
+        _GroupString* g = &res.data[idx];
+        g->items.data = (int*)realloc(g->items.data, sizeof(int)*(g->items.len+1));
+        g->items.data[g->items.len++] = i;
+    }
+    return res;
+}`
 	helperPairString     = `typedef struct { char* a; char* b; } pair_string;`
 	helperListPairString = `typedef struct { int len; pair_string* data; } list_pair_string;
 static list_pair_string list_pair_string_create(int len) {
@@ -743,6 +763,7 @@ var helperCode = map[string]string{
 	needPrintListString:      helperPrintListString,
 	needPrintListListInt:     helperPrintListListInt,
 	needGroupByInt:           helperGroupByInt,
+	needGroupByString:        helperGroupByString,
 	needListPairString:       helperListPairString,
 	needGroupByPairString:    helperGroupByPairString,
 }
@@ -817,6 +838,7 @@ var helperOrder = []string{
 	needPrintListString,
 	needPrintListListInt,
 	needGroupByInt,
+	needGroupByString,
 	needListPairString,
 	needGroupByPairString,
 }
