@@ -503,8 +503,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				val = stmt + "; cr"
 			} else {
 				call := val
-				for _, a := range args {
-					call += " value: " + a
+				if len(args) == 0 {
+					call += " value"
+				} else {
+					for _, a := range args {
+						call += " value: " + a
+					}
 				}
 				val = call
 			}
@@ -692,8 +696,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return fmt.Sprintf("(%s copyFrom: %s to: %s)", args[0], args[1], args[2]), nil
 		default:
 			call := p.Call.Func
-			for _, a := range args {
-				call += " value: " + a
+			if len(args) == 0 {
+				call += " value"
+			} else {
+				for _, a := range args {
+					call += " value: " + a
+				}
 			}
 			return call, nil
 		}
