@@ -1097,6 +1097,9 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	} else if gt, ok := types.TypeOfExprBasic(q.Source, c.env).(types.GroupType); ok {
 		elem = gt.Elem
 	}
+	if len(q.Froms) > 0 || len(q.Joins) > 0 {
+		elem = types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
+	}
 	selEnv := child
 	if q.Group != nil {
 		genv := types.NewEnv(child)
@@ -1214,7 +1217,15 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(indent(lvl))
 		b.WriteString("}\n")
 		b.WriteString(indent(lvl))
-		b.WriteString(fmt.Sprintf("__g.add(%s)\n", q.Var))
+		rowParts := []string{fmt.Sprintf("\"%s\" to %s", q.Var, q.Var)}
+		for _, f := range q.Froms {
+			rowParts = append(rowParts, fmt.Sprintf("\"%s\" to %s", f.Var, f.Var))
+		}
+		for _, j := range q.Joins {
+			rowParts = append(rowParts, fmt.Sprintf("\"%s\" to %s", j.Var, j.Var))
+		}
+		row := "mutableMapOf(" + strings.Join(rowParts, ", ") + ") as MutableMap<Any?, Any?>"
+		b.WriteString(fmt.Sprintf("__g.add(%s)\n", row))
 	} else {
 		selAdd := sel
 		if _, ok := selType.(types.MapType); ok {
