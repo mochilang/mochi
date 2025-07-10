@@ -18,7 +18,7 @@ fun doTrials(trials: int, np: int, strategy: string) {
     var drawers: list<int> = []
     var i = 0
     while i < 100 {
-      drawers = drawers + [i]
+      drawers = append(drawers, i)
       i = i + 1
     }
     drawers = shuffle(drawers)
@@ -42,7 +42,7 @@ fun doTrials(trials: int, np: int, strategy: string) {
         var opened: list<bool> = []
         var k = 0
         while k < 100 {
-          opened = opened + [false]
+          opened = append(opened, false)
           k = k + 1
         }
         var d = 0
