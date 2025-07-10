@@ -1,8 +1,8 @@
 # F# Machine Output
 
 This directory contains generated F# code from the Mochi examples found in `tests/vm/valid`.
-Each Mochi file is compiled using `compiler/x/fs` and executed with `mono`. The resulting
-source is saved with a `.fs` extension and any program output goes in a matching `.out` file.
+Each Mochi file is compiled using `compiler/x/fs` and executed with `mono`.
+The resulting source is saved with a `.fs` extension and any program output goes in a matching `.out` file.
 Compilation failures are recorded with an `.error` file.
 
 ## Compilation Status
@@ -111,5 +111,5 @@ Compiled programs: 97/97
 
 ## Remaining Tasks
 
-- [x] Improve formatting of generated F# loops when `break` and `continue` are not used
- - [x] Expand support for additional standard library functions
+- [ ] Improve type inference for collections
+- [ ] Adjust printing of boolean fields in anonymous records
