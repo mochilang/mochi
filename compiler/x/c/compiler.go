@@ -980,7 +980,7 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 	if stmt.Type != nil {
 		t = resolveTypeRef(stmt.Type, c.env)
 		if stmt.Value != nil {
-			if ll := stmt.Value.Binary.Left.Value.Target.List; ll != nil {
+			if ll := stmt.Value.Binary.Left.Value.Target.List; ll != nil && !exprHasCast(stmt.Value) {
 				if st, ok := c.inferStructFromList(ll, stmt.Name); ok {
 					t = types.ListType{Elem: st}
 					if c.env != nil {
@@ -994,7 +994,7 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 						}
 					}
 				}
-			} else if ml := stmt.Value.Binary.Left.Value.Target.Map; ml != nil {
+			} else if ml := stmt.Value.Binary.Left.Value.Target.Map; ml != nil && !exprHasCast(stmt.Value) {
 				if st, ok := c.inferStructFromMap(ml, stmt.Name); ok {
 					t = st
 					if c.env != nil {
@@ -1012,7 +1012,7 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 				t = ut
 			}
 		}
-		if ll := stmt.Value.Binary.Left.Value.Target.List; ll != nil {
+		if ll := stmt.Value.Binary.Left.Value.Target.List; ll != nil && !exprHasCast(stmt.Value) {
 			if st, ok := c.inferStructFromList(ll, stmt.Name); ok {
 				t = types.ListType{Elem: st}
 				if c.env != nil {
@@ -1026,7 +1026,7 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 					}
 				}
 			}
-		} else if ml := stmt.Value.Binary.Left.Value.Target.Map; ml != nil {
+		} else if ml := stmt.Value.Binary.Left.Value.Target.Map; ml != nil && !exprHasCast(stmt.Value) {
 			if st, ok := c.inferStructFromMap(ml, stmt.Name); ok {
 				t = st
 				if c.env != nil {
@@ -1230,7 +1230,7 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 	if stmt.Type != nil {
 		t = resolveTypeRef(stmt.Type, c.env)
 		if stmt.Value != nil {
-			if ll := stmt.Value.Binary.Left.Value.Target.List; ll != nil {
+			if ll := stmt.Value.Binary.Left.Value.Target.List; ll != nil && !exprHasCast(stmt.Value) {
 				if st, ok := c.inferStructFromList(ll, stmt.Name); ok {
 					t = types.ListType{Elem: st}
 					if c.env != nil {
@@ -1244,7 +1244,7 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 						}
 					}
 				}
-			} else if ml := stmt.Value.Binary.Left.Value.Target.Map; ml != nil {
+			} else if ml := stmt.Value.Binary.Left.Value.Target.Map; ml != nil && !exprHasCast(stmt.Value) {
 				if st, ok := c.inferStructFromMap(ml, stmt.Name); ok {
 					t = st
 					if c.env != nil {
@@ -1257,7 +1257,7 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 		}
 	} else if stmt.Value != nil {
 		t = c.exprType(stmt.Value)
-		if ll := stmt.Value.Binary.Left.Value.Target.List; ll != nil {
+		if ll := stmt.Value.Binary.Left.Value.Target.List; ll != nil && !exprHasCast(stmt.Value) {
 			if st, ok := c.inferStructFromList(ll, stmt.Name); ok {
 				t = types.ListType{Elem: st}
 				if c.env != nil {
@@ -1271,7 +1271,7 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 					}
 				}
 			}
-		} else if ml := stmt.Value.Binary.Left.Value.Target.Map; ml != nil {
+		} else if ml := stmt.Value.Binary.Left.Value.Target.Map; ml != nil && !exprHasCast(stmt.Value) {
 			if st, ok := c.inferStructFromMap(ml, stmt.Name); ok {
 				t = st
 				if c.env != nil {
@@ -5063,6 +5063,18 @@ func asMapLiteral(e *parser.Expr) *parser.MapLiteral {
 		return nil
 	}
 	return e.Binary.Left.Value.Target.Map
+}
+
+// exprHasCast reports whether e is immediately followed by a cast operation.
+func exprHasCast(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil {
+		return false
+	}
+	ops := e.Binary.Left.Value.Ops
+	if len(ops) == 0 {
+		return false
+	}
+	return ops[len(ops)-1].Cast != nil
 }
 
 func asFetchExpr(e *parser.Expr) *parser.FetchExpr {
