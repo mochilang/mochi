@@ -352,6 +352,9 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
 		params[i] = capitalize(p.Name)
+		if t := typeNameFromRef(p.Type); t != "" {
+			c.types[p.Name] = t
+		}
 	}
 	c.funs[fn.Name] = len(fn.Params)
 	c.writeln(fmt.Sprintf("%s(%s) ->", fn.Name, strings.Join(params, ", ")))
@@ -441,14 +444,14 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) (string, error) {
 		}
 		bodyLines[i] = l
 	}
-        for v := range mutated {
-                delete(c.aliases, v)
-                delete(c.lets, v)
-        }
-        nextArgs := make([]string, 0, len(mutated))
-        for v := range mutated {
-                nextArgs = append(nextArgs, c.refVar(v))
-        }
+	for v := range mutated {
+		delete(c.aliases, v)
+		delete(c.lets, v)
+	}
+	nextArgs := make([]string, 0, len(mutated))
+	for v := range mutated {
+		nextArgs = append(nextArgs, c.refVar(v))
+	}
 	body := strings.Join(bodyLines, ", ")
 	if body == "" {
 		body = "ok"
@@ -652,11 +655,11 @@ func (c *Compiler) compileMatchExpr(mx *parser.MatchExpr) (string, error) {
 	}
 	parts := make([]string, len(mx.Cases))
 	for i, cs := range mx.Cases {
-                pat, err := c.compileExpr(cs.Pattern)
-                if err != nil {
-                        return "", err
-                }
-                pat = strings.ReplaceAll(pat, "=>", ":=")
+		pat, err := c.compileExpr(cs.Pattern)
+		if err != nil {
+			return "", err
+		}
+		pat = strings.ReplaceAll(pat, "=>", ":=")
 		res, err := c.compileExpr(cs.Result)
 		if err != nil {
 			return "", err
@@ -981,8 +984,14 @@ func (c *Compiler) mapBinOp(op string) (string, error) {
 		return "==", nil
 	case "!=":
 		return "/=", nil
-	case "<", "<=", ">", ">=":
-		return op, nil
+	case "<":
+		return "<", nil
+	case "<=":
+		return "=<", nil
+	case ">":
+		return ">", nil
+	case ">=":
+		return ">=", nil
 	case "&&":
 		return "andalso", nil
 	case "||":
@@ -1069,39 +1078,39 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					typ = "map"
 				}
 			}
-               case op.Field != nil:
-                       name := op.Field.Name
-                       if i+1 < len(p.Ops) && p.Ops[i+1].Call != nil && name == "contains" {
-                               i++
-                               arg, err := c.compileExpr(p.Ops[i].Call.Args[0])
-                               if err != nil {
-                                       return "", err
-                               }
-                               val = fmt.Sprintf("string:str(%s, %s) > 0", val, arg)
-                               typ = "bool"
-                       } else {
-                               val = fmt.Sprintf("maps:get(%s, %s)", name, val)
-                       }
-               case op.Call != nil:
-                       args := make([]string, len(op.Call.Args))
-                       for j, a := range op.Call.Args {
-                               s, err := c.compileExpr(a)
-                               if err != nil {
-                                       return "", err
-                               }
-                               args[j] = s
-                       }
-                       if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 1 && p.Target.Selector.Tail[0] == "contains" {
-                               base := c.refVar(p.Target.Selector.Root)
-                               val = fmt.Sprintf("string:str(%s, %s) > 0", base, args[0])
-                               typ = "bool"
-                       } else {
-                               val = fmt.Sprintf("%s(%s)", val, strings.Join(args, ", "))
-                       }
-               default:
-                       return "", fmt.Errorf("unsupported postfix at line %d", p.Target.Pos.Line)
-               }
-       }
+		case op.Field != nil:
+			name := op.Field.Name
+			if i+1 < len(p.Ops) && p.Ops[i+1].Call != nil && name == "contains" {
+				i++
+				arg, err := c.compileExpr(p.Ops[i].Call.Args[0])
+				if err != nil {
+					return "", err
+				}
+				val = fmt.Sprintf("string:str(%s, %s) > 0", val, arg)
+				typ = "bool"
+			} else {
+				val = fmt.Sprintf("maps:get(%s, %s)", name, val)
+			}
+		case op.Call != nil:
+			args := make([]string, len(op.Call.Args))
+			for j, a := range op.Call.Args {
+				s, err := c.compileExpr(a)
+				if err != nil {
+					return "", err
+				}
+				args[j] = s
+			}
+			if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 1 && p.Target.Selector.Tail[0] == "contains" {
+				base := c.refVar(p.Target.Selector.Root)
+				val = fmt.Sprintf("string:str(%s, %s) > 0", base, args[0])
+				typ = "bool"
+			} else {
+				val = fmt.Sprintf("%s(%s)", val, strings.Join(args, ", "))
+			}
+		default:
+			return "", fmt.Errorf("unsupported postfix at line %d", p.Target.Pos.Line)
+		}
+	}
 	return val, nil
 }
 
@@ -1120,12 +1129,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			parts[i+1] = fmt.Sprintf("%s => %s", f.Name, v)
 		}
 		return "#{" + strings.Join(parts, ", ") + "}", nil
-        case p.Selector != nil:
-                root := p.Selector.Root
-                if len(p.Selector.Tail) == 0 && unicode.IsUpper(rune(root[0])) && !c.lets[root] && c.varVers[root] == 0 {
-                        return strings.ToLower(root), nil
-                }
-                if k, ok := c.groupKeys[root]; ok {
+	case p.Selector != nil:
+		root := p.Selector.Root
+		if len(p.Selector.Tail) == 0 && unicode.IsUpper(rune(root[0])) && !c.lets[root] && c.varVers[root] == 0 {
+			return strings.ToLower(root), nil
+		}
+		if k, ok := c.groupKeys[root]; ok {
 			expr := k
 			tail := p.Selector.Tail
 			if len(tail) > 0 && tail[0] == "key" {
@@ -1389,20 +1398,20 @@ func (c *Compiler) compileLoadExpr(le *parser.LoadExpr) (string, error) {
 	if le.Path == nil {
 		return "", fmt.Errorf("load path required")
 	}
-        path := *le.Path
-        if !filepath.IsAbs(path) {
-                tryPath := filepath.Clean(filepath.Join(filepath.Dir(c.srcPath), path))
-                if exists(tryPath) {
-                        path = tryPath
-                } else {
-                        alt := filepath.Join(repoRoot(), "tests", strings.TrimLeft(path, "./"))
-                        path = filepath.Clean(alt)
-                }
-        }
-        data, err := os.ReadFile(path)
-        if err != nil {
-                return "", err
-        }
+	path := *le.Path
+	if !filepath.IsAbs(path) {
+		tryPath := filepath.Clean(filepath.Join(filepath.Dir(c.srcPath), path))
+		if exists(tryPath) {
+			path = tryPath
+		} else {
+			alt := filepath.Join(repoRoot(), "tests", strings.TrimLeft(path, "./"))
+			path = filepath.Clean(alt)
+		}
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return "", err
+	}
 	var items []map[string]interface{}
 	if err := yaml.Unmarshal(data, &items); err != nil {
 		return "", err
@@ -1471,10 +1480,9 @@ func (c *Compiler) compileMapKey(e *parser.Expr) (string, error) {
 				return u.Value.Target.Selector.Root, nil
 			}
 			if u.Value.Target.Lit != nil && u.Value.Target.Lit.Str != nil {
-				s := *u.Value.Target.Lit.Str
-				if identifierRegex.MatchString(s) {
-					return s, nil
-				}
+				// Keep quoted keys to avoid converting strings
+				// that look like identifiers into atoms.
+				return c.compileExpr(e)
 			}
 		}
 	}
@@ -1599,6 +1607,26 @@ func isLiteralExpr(e *parser.Expr) bool {
 		return false
 	}
 	return u.Value.Target.Lit != nil
+}
+
+func typeNameFromRef(tr *parser.TypeRef) string {
+	if tr == nil {
+		return ""
+	}
+	if tr.Generic != nil {
+		switch tr.Generic.Name {
+		case "list":
+			return "list"
+		case "map":
+			return "map"
+		}
+	}
+	if tr.Simple != nil {
+		if *tr.Simple == "string" {
+			return "string"
+		}
+	}
+	return ""
 }
 
 func (c *Compiler) inferExprType(e *parser.Expr) string {
