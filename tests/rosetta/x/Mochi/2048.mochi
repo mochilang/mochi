@@ -1,0 +1,277 @@
+// Simple 2048 game implemented in Mochi.
+// Ported from the Go version used in Rosetta examples.
+
+let SIZE = 4
+var score = 0
+var board: list<list<int>> = []
+var y = 0
+while y < SIZE {
+  var row: list<int> = []
+  var x = 0
+  while x < SIZE {
+    row = row + [0]
+    x = x + 1
+  }
+  board = board + [row]
+  y = y + 1
+}
+
+fun spawnTile(): bool {
+  var empty: list<list<int>> = []
+  var y = 0
+  while y < SIZE {
+    var x = 0
+    while x < SIZE {
+      if board[y][x] == 0 {
+        empty = empty + [[x, y]]
+      }
+      x = x + 1
+    }
+    y = y + 1
+  }
+  if len(empty) == 0 {
+    return true
+  }
+  var idx = now() % len(empty)
+  let cell = empty[idx]
+  var val = 4
+  if now() % 10 < 9 {
+    val = 2
+  }
+  board[cell[1]][cell[0]] = val
+  return len(empty) == 1
+}
+
+fun pad(n: int): string {
+  var s = str(n)
+  var pad = 4 - len(s)
+  var i = 0
+  var out = ""
+  while i < pad {
+    out = out + " "
+    i = i + 1
+  }
+  return out + s
+}
+
+fun draw() {
+  print("Score: " + str(score))
+  var y = 0
+  while y < SIZE {
+    print("+----+----+----+----+")
+    var line = "|"
+    var x = 0
+    while x < SIZE {
+      var v = board[y][x]
+      if v == 0 {
+        line = line + "    |"
+      } else {
+        line = line + pad(v) + "|"
+      }
+      x = x + 1
+    }
+    print(line)
+    y = y + 1
+  }
+  print("+----+----+----+----+")
+  print("W=Up S=Down A=Left D=Right Q=Quit")
+}
+
+fun slideLeft(row: list<int>): list<int> {
+  var xs: list<int> = []
+  var i = 0
+  while i < len(row) {
+    if row[i] != 0 {
+      xs = xs + [row[i]]
+    }
+    i = i + 1
+  }
+  var res: list<int> = []
+  i = 0
+  while i < len(xs) {
+    if i + 1 < len(xs) && xs[i] == xs[i+1] {
+      let v = xs[i] * 2
+      score = score + v
+      res = res + [v]
+      i = i + 2
+    } else {
+      res = res + [xs[i]]
+      i = i + 1
+    }
+  }
+  while len(res) < SIZE {
+    res = res + [0]
+  }
+  return res
+}
+
+fun reverseRow(r: list<int>): list<int> {
+  var out: list<int> = []
+  var i = len(r) - 1
+  while i >= 0 {
+    out = out + [r[i]]
+    i = i - 1
+  }
+  return out
+}
+
+fun moveLeft(): bool {
+  var moved = false
+  var y = 0
+  while y < SIZE {
+    let new = slideLeft(board[y])
+    var x = 0
+    while x < SIZE {
+      if board[y][x] != new[x] {
+        moved = true
+      }
+      board[y][x] = new[x]
+      x = x + 1
+    }
+    y = y + 1
+  }
+  return moved
+}
+
+fun moveRight(): bool {
+  var moved = false
+  var y = 0
+  while y < SIZE {
+    var rev = reverseRow(board[y])
+    rev = slideLeft(rev)
+    rev = reverseRow(rev)
+    var x = 0
+    while x < SIZE {
+      if board[y][x] != rev[x] {
+        moved = true
+      }
+      board[y][x] = rev[x]
+      x = x + 1
+    }
+    y = y + 1
+  }
+  return moved
+}
+
+fun getCol(x: int): list<int> {
+  var col: list<int> = []
+  var y = 0
+  while y < SIZE {
+    col = col + [board[y][x]]
+    y = y + 1
+  }
+  return col
+}
+
+fun setCol(x: int, col: list<int>) {
+  var y = 0
+  while y < SIZE {
+    board[y][x] = col[y]
+    y = y + 1
+  }
+}
+
+fun moveUp(): bool {
+  var moved = false
+  var x = 0
+  while x < SIZE {
+    var col = getCol(x)
+    let new = slideLeft(col)
+    var y = 0
+    while y < SIZE {
+      if board[y][x] != new[y] {
+        moved = true
+      }
+      board[y][x] = new[y]
+      y = y + 1
+    }
+    x = x + 1
+  }
+  return moved
+}
+
+fun moveDown(): bool {
+  var moved = false
+  var x = 0
+  while x < SIZE {
+    var col = reverseRow(getCol(x))
+    col = slideLeft(col)
+    col = reverseRow(col)
+    var y = 0
+    while y < SIZE {
+      if board[y][x] != col[y] {
+        moved = true
+      }
+      board[y][x] = col[y]
+      y = y + 1
+    }
+    x = x + 1
+  }
+  return moved
+}
+
+fun hasMoves(): bool {
+  var y = 0
+  while y < SIZE {
+    var x = 0
+    while x < SIZE {
+      if board[y][x] == 0 {
+        return true
+      }
+      if x + 1 < SIZE && board[y][x] == board[y][x+1] {
+        return true
+      }
+      if y + 1 < SIZE && board[y][x] == board[y+1][x] {
+        return true
+      }
+      x = x + 1
+    }
+    y = y + 1
+  }
+  return false
+}
+
+fun has2048(): bool {
+  var y = 0
+  while y < SIZE {
+    var x = 0
+    while x < SIZE {
+      if board[y][x] >= 2048 {
+        return true
+      }
+      x = x + 1
+    }
+    y = y + 1
+  }
+  return false
+}
+
+spawnTile()
+spawnTile()
+draw()
+while true {
+  print("Move: ")
+  let cmd = input()
+  var moved = false
+  if cmd == "a" || cmd == "A" { moved = moveLeft() }
+  if cmd == "d" || cmd == "D" { moved = moveRight() }
+  if cmd == "w" || cmd == "W" { moved = moveUp() }
+  if cmd == "s" || cmd == "S" { moved = moveDown() }
+  if cmd == "q" || cmd == "Q" { break }
+  if moved {
+    if spawnTile() && !hasMoves() {
+      draw()
+      print("Game Over")
+      break
+    }
+  }
+  draw()
+  if has2048() {
+    print("You win!")
+    break
+  }
+  if !hasMoves() {
+    print("Game Over")
+    break
+  }
+}
