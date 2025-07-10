@@ -2,7 +2,7 @@
 
 This directory contains C++ source code generated from Mochi programs and the corresponding outputs or error logs.
 
-Compiled programs: 88/97
+Compiled programs: 93/97
 
 ## Checklist
 
@@ -75,7 +75,7 @@ Compiled programs: 88/97
 - [x] print_hello
 - [x] pure_fold
 - [x] pure_global_fold
-- [ ] query_sum_select
+- [x] query_sum_select
 - [x] record_assign
 - [ ] right_join
 - [x] save_jsonl_stdout

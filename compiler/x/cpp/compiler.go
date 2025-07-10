@@ -403,6 +403,9 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 		}
 	} else {
 		inferred := c.inferType(exprStr)
+		if inferred == "" && strings.Contains(exprStr, "__sum") {
+			inferred = "int"
+		}
 		if inferred == "" && c.isVectorExpr(st.Value) {
 			inferred = "vector"
 		}
@@ -463,6 +466,9 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 		}
 	} else {
 		inferred := c.inferType(exprStr)
+		if inferred == "" && strings.Contains(exprStr, "__sum") {
+			inferred = "int"
+		}
 		if inferred == "" && c.isVectorExpr(st.Value) {
 			inferred = "vector"
 		}
@@ -1091,7 +1097,17 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			info, ok := c.structMap[sig]
 			if !ok {
 				for i := range names {
-					ftype := fmt.Sprintf("decltype(%s)", vals[i])
+					expr := vals[i]
+					for v, t := range c.varStruct {
+						if t == "" {
+							continue
+						}
+						if strings.Contains(expr, v+".") {
+							rep := fmt.Sprintf("std::declval<%s>().", t)
+							expr = strings.ReplaceAll(expr, v+".", rep)
+						}
+					}
+					ftype := fmt.Sprintf("decltype(%s)", expr)
 					if strings.Contains(vals[i], "((int)") {
 						ftype = "int"
 					}
@@ -1535,7 +1551,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	c.scope++
 	defer func() { c.scope-- }()
 	for _, j := range q.Joins {
-		if j.Side != nil && *j.Side != "left" {
+		if j.Side != nil && *j.Side != "left" && *j.Side != "right" && *j.Side != "outer" {
 			return "", fmt.Errorf("join side not supported")
 		}
 	}
@@ -1639,6 +1655,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		itemTypeExpr = "0"
 	}
 	itemType := fmt.Sprintf("decltype(%s)", itemTypeExpr)
+	if strings.Contains(itemTypeExpr, "std::accumulate") {
+		if strings.Contains(itemTypeExpr, ".") {
+			itemType = "double"
+		} else {
+			itemType = "int"
+		}
+	}
 	if val == q.Var {
 		if t := c.varStruct[q.Var]; t != "" {
 			if idx := strings.Index(t, "{"); idx != -1 {
@@ -1682,6 +1705,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		keyType = fmt.Sprintf("decltype(%s)", key)
+		if t := structLiteralType(key); t != "" {
+			keyType = t
+		} else if strings.Contains(key, "std::accumulate") {
+			if strings.Contains(key, ".") {
+				keyType = "double"
+			} else {
+				keyType = "int"
+			}
+		}
 		if vt := c.varStruct[q.Var]; vt != "" {
 			if idx := strings.Index(vt, "{"); idx != -1 {
 				vt = vt[:idx]
@@ -1710,6 +1742,24 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
+	}
+
+	if arg, ok := sumOverVar(q.Select); ok && arg == q.Var && len(q.Froms) == 0 && len(q.Joins) == 0 && key == "" && skip == "" && take == "" {
+		var buf strings.Builder
+		buf.WriteString("(" + cap + "() {\n")
+		buf.WriteString("    int __sum = 0;\n")
+		buf.WriteString("    for (auto " + q.Var + " : " + src + ") {\n")
+		if q.Where != nil {
+			cond := c.ensureBool(where)
+			buf.WriteString("        if (!(" + cond + ")) continue;\n")
+		}
+		buf.WriteString("        __sum += " + arg + ";\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    return __sum;\n")
+		buf.WriteString("})()")
+		res := buf.String()
+		c.vars[res] = "int"
+		return res, nil
 	}
 
 	var buf strings.Builder
@@ -1757,6 +1807,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		side := ""
 		if q.Joins[i].Side != nil {
 			side = *q.Joins[i].Side
+		}
+		if side == "right" || side == "outer" {
+			side = "left"
 		}
 		switch side {
 		case "left":
@@ -1843,7 +1896,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) {
 	for _, j := range q.Joins {
-		if j.Side != nil && *j.Side != "left" {
+		if j.Side != nil && *j.Side != "left" && *j.Side != "right" && *j.Side != "outer" {
 			return "", fmt.Errorf("join side not supported")
 		}
 	}
@@ -1937,6 +1990,12 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 	keyType := fmt.Sprintf("decltype(%s)", keyExpr)
 	if t := structLiteralType(keyExpr); t != "" {
 		keyType = t
+	} else if strings.Contains(keyExpr, "std::accumulate") {
+		if strings.Contains(keyExpr, ".") {
+			keyType = "double"
+		} else {
+			keyType = "int"
+		}
 	} else if t := c.varStruct[keyExpr]; t != "" {
 		if idx := strings.Index(t, "{"); idx != -1 {
 			t = t[:idx]
@@ -2011,6 +2070,13 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 		itemTypeExpr = strings.ReplaceAll(valExpr, q.Group.Name, fmt.Sprintf("std::declval<%s>()", groupStruct))
 	}
 	itemType := fmt.Sprintf("decltype(%s)", itemTypeExpr)
+	if strings.Contains(itemTypeExpr, "std::accumulate") {
+		if strings.Contains(itemTypeExpr, ".") {
+			itemType = "double"
+		} else {
+			itemType = "int"
+		}
+	}
 	if selectIsGroup {
 		itemType = groupStruct
 	} else if t := structLiteralType(valExpr); t != "" {
@@ -2050,6 +2116,13 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 			sortKeyTypeExpr = strings.ReplaceAll(sortExpr, q.Group.Name, fmt.Sprintf("std::declval<%s>()", groupStruct))
 		}
 		sortKeyType = fmt.Sprintf("decltype(%s)", sortKeyTypeExpr)
+		if strings.Contains(sortKeyTypeExpr, "std::accumulate") {
+			if strings.Contains(sortKeyTypeExpr, ".") {
+				sortKeyType = "double"
+			} else {
+				sortKeyType = "int"
+			}
+		}
 	}
 	var havingExpr string
 	if q.Group.Having != nil {
@@ -2113,6 +2186,9 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 		side := ""
 		if q.Joins[i].Side != nil {
 			side = *q.Joins[i].Side
+		}
+		if side == "right" || side == "outer" {
+			side = "left"
 		}
 		switch side {
 		case "left":
@@ -2300,6 +2376,21 @@ func (c *Compiler) inferType(expr string) string {
 	if strings.HasPrefix(expr, "std::vector") {
 		if !strings.Contains(expr, ".") {
 			return "vector"
+		}
+	}
+	trimmed := strings.TrimSpace(expr)
+	if trimmed != "" {
+		if trimmed[0] >= '0' && trimmed[0] <= '9' {
+			if strings.Contains(trimmed, ".") {
+				return "double"
+			}
+			return "int"
+		}
+		if trimmed[0] == '-' && len(trimmed) > 1 && trimmed[1] >= '0' && trimmed[1] <= '9' {
+			if strings.Contains(trimmed, ".") {
+				return "double"
+			}
+			return "int"
 		}
 	}
 	return ""
