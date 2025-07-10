@@ -136,7 +136,7 @@ static list_peopleItem list_peopleItem_create(int len) {
 }
 
 typedef struct {
-  int city;
+  char *city;
   int num;
 } bigItem;
 typedef struct {
@@ -172,7 +172,7 @@ int main() {
   _t2.len = _t4;
   _t3.len = _t4;
   list_group_string _t5 = _group_by_string(_t3);
-  list_int _t6 = list_int_create(_t5.len);
+  list_bigItem _t6 = list_bigItem_create(_t5.len);
   int _t7 = 0;
   for (int gi = 0; gi < _t5.len; gi++) {
     _GroupString _gp = _t5.data[gi];

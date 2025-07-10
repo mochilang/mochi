@@ -22,6 +22,14 @@ static list_string list_string_create(int len) {
   l.data = (char **)malloc(sizeof(char *) * len);
   return l;
 }
+static double _avg(list_int v) {
+  if (v.len == 0)
+    return 0;
+  double sum = 0;
+  for (int i = 0; i < v.len; i++)
+    sum += v.data[i];
+  return sum / v.len;
+}
 typedef struct {
   char *key;
   list_int items;
@@ -135,13 +143,8 @@ int main() {
       _t10++;
     }
     _t9.len = _t10;
-    _t6.data[_t7] = (statsItem){
-        .city = g.key, .count = g.items.len, .avg_age = ({
-                                               double sum = 0;
-                                               for (int i = 0; i < _t9.len; i++)
-                                                 sum += _t9.data[i];
-                                               sum / _t9.len;
-                                             })};
+    _t6.data[_t7] =
+        (statsItem){.city = g.key, .count = g.items.len, .avg_age = _avg(_t9)};
     _t7++;
   }
   _t6.len = _t7;
@@ -157,4 +160,3 @@ int main() {
   }
   return 0;
 }
-

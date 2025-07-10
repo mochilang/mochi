@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+static int x = 5;
+
 int main() {
-  int x = 5;
   if (x > 3) {
     printf("%s\n", "big");
   } else {

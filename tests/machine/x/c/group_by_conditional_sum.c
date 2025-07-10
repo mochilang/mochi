@@ -18,7 +18,7 @@ static list_itemsItem list_itemsItem_create(int len) {
 }
 
 typedef struct {
-  int cat;
+  char *cat;
   double share;
 } resultItem;
 typedef struct {

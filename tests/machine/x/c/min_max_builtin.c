@@ -11,25 +11,31 @@ static list_int list_int_create(int len) {
   l.data = (int *)malloc(sizeof(int) * len);
   return l;
 }
+static int _min_int(list_int v) {
+  if (v.len == 0)
+    return 0;
+  int m = v.data[0];
+  for (int i = 1; i < v.len; i++)
+    if (v.data[i] < m)
+      m = v.data[i];
+  return m;
+}
+static int _max_int(list_int v) {
+  if (v.len == 0)
+    return 0;
+  int m = v.data[0];
+  for (int i = 1; i < v.len; i++)
+    if (v.data[i] > m)
+      m = v.data[i];
+  return m;
+}
 int main() {
   list_int _t1 = list_int_create(3);
   _t1.data[0] = 3;
   _t1.data[1] = 1;
   _t1.data[2] = 4;
   list_int nums = _t1;
-  printf("%d\n", ({
-           int m = nums.len ? nums.data[0] : 0;
-           for (int i = 1; i < nums.len; i++)
-             if (nums.data[i] < m)
-               m = nums.data[i];
-           m;
-         }));
-  printf("%d\n", ({
-           int m = nums.len ? nums.data[0] : 0;
-           for (int i = 1; i < nums.len; i++)
-             if (nums.data[i] > m)
-               m = nums.data[i];
-           m;
-         }));
+  printf("%d\n", _min_int(nums));
+  printf("%d\n", _max_int(nums));
   return 0;
 }

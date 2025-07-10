@@ -1,12 +1,8 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/order_by_map.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/order_by_map.c:75:33: error: ‘x’ undeclared (first use in this function)
-   75 |   map_string_int_put(&_t2, "a", x.a);
-      |                                 ^
-/workspace/mochi/tests/machine/x/c/order_by_map.c:75:33: note: each undeclared identifier is reported only once for each function it appears in
 /workspace/mochi/tests/machine/x/c/order_by_map.c:90:18: error: invalid operands to binary > (have ‘map_string_int’ and ‘map_string_int’)
-   90 |       if (_t6[i] > _t6[j]) {
+   90 |       if (_t5[i] > _t5[j]) {
       |           ~~~~~~ ^ ~~~~~~
       |              |        |
       |              |        map_string_int
