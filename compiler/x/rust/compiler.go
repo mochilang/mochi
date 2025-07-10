@@ -582,7 +582,13 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 	} else {
 		c.writeln(fmt.Sprintf("let %s = %s;", l.Name, val))
 		if c.env != nil {
-			c.env.SetVar(l.Name, types.TypeOfExprBasic(l.Value, c.env), false)
+			t := types.TypeOfExpr(l.Value, c.env)
+			c.env.SetVar(l.Name, t, false)
+			if lt, ok := t.(types.ListType); ok {
+				if st, ok2 := lt.Elem.(types.StructType); ok2 {
+					c.listVars[l.Name] = st.Name
+				}
+			}
 		}
 	}
 	if c.inMain && c.indent == 1 {
@@ -628,7 +634,13 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	} else {
 		c.writeln(fmt.Sprintf("let mut %s = %s;", v.Name, val))
 		if c.env != nil {
-			c.env.SetVar(v.Name, types.TypeOfExprBasic(v.Value, c.env), true)
+			t := types.TypeOfExpr(v.Value, c.env)
+			c.env.SetVar(v.Name, t, true)
+			if lt, ok := t.(types.ListType); ok {
+				if st, ok2 := lt.Elem.(types.StructType); ok2 {
+					c.listVars[v.Name] = st.Name
+				}
+			}
 		}
 	}
 	if c.inMain && c.indent == 1 {
