@@ -156,6 +156,18 @@ fun main() {
     "Dibeer Altine Talaata Allarba Al_xebes Aljuma Gaaw",
     "iCawa uMvulo uLwesibini uLwesithathu uLuwesine uLwesihlanu uMgqibelo",
     "zuntik montik dinstik mitvokh donershtik fraytik shabes",
+    "iSonto uMsombuluko uLwesibili uLwesithathu uLwesine uLwesihlanu uMgqibelo",
+    "Dies_Dominica Dies_Lunæ Dies_Martis Dies_Mercurii Dies_Iovis Dies_Veneris Dies_Saturni",
+    "Bazar_gÜnÜ Bazar_ærtæsi Çærs,ænbæ_axs,amò Çærs,ænbæ_gÜnÜ CÜmæ_axs,amò CÜmæ_gÜnÜ CÜmæ_Senbæ",
+    "Sun Moon Mars Mercury Jove Venus Saturn",
+    "zondag maandag dinsdag woensdag donderdag vrijdag zaterdag",
+    "KoseEraa GyoOraa BenEraa Kuoraa YOwaaraa FeEraa Memenaa",
+    "Sonntag Montag Dienstag Mittwoch Donnerstag Freitag Sonnabend",
+    "Domingo Luns Terza_feira Corta_feira Xoves Venres Sábado",
+    "Dies_Solis Dies_Lunae Dies_Martis Dies_Mercurii Dies_Iovis Dies_Veneris Dies_Sabbatum",
+    "xing-_qi-_tiàn xing-_qi-_yi-. xing-_qi-_èr xing-_qi-_san-. xing-_qi-_sì xing-_qi-_wuv. xing-_qi-_liù",
+    "djadomingu djaluna djamars djarason djaweps djabièrnè djasabra",
+    "Killachau Atichau Quoyllurchau Illapachau Chaskachau Kuychichau Intichau",
   ]
 
   var i = 0
