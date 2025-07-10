@@ -652,18 +652,21 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 }
 
 func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
-	lhs := sanitizeName(a.Name)
-	for _, idx := range a.Index {
-		iexpr, err := c.compileExpr(idx.Start)
-		if err != nil {
-			return err
-		}
-		lhs = fmt.Sprintf("%s[%s]", lhs, iexpr)
-	}
-	val, err := c.compileExpr(a.Value)
-	if err != nil {
-		return err
-	}
+       lhs := sanitizeName(a.Name)
+       for _, idx := range a.Index {
+               iexpr, err := c.compileExpr(idx.Start)
+               if err != nil {
+                       return err
+               }
+               lhs = fmt.Sprintf("%s[%s]", lhs, iexpr)
+       }
+       for _, f := range a.Field {
+               lhs = fmt.Sprintf("%s.%s", lhs, sanitizeName(f.Name))
+       }
+       val, err := c.compileExpr(a.Value)
+       if err != nil {
+               return err
+       }
 	inferred := csTypeOf(c.inferExprType(a.Value))
 	cur, ok := c.varTypes[sanitizeName(a.Name)]
 	if !ok || cur == "dynamic" || cur == "dynamic[]" {
@@ -2259,9 +2262,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			items[i] = fmt.Sprintf("{ %s, %s }", k, v)
 		}
 		return fmt.Sprintf("new Dictionary<%s, %s> { %s }", keyType, valType, strings.Join(items, ", ")), nil
-	case p.Selector != nil:
-		expr := sanitizeName(p.Selector.Root)
-		var typ types.Type = types.AnyType{}
+       case p.Selector != nil:
+               expr := sanitizeName(p.Selector.Root)
+               if len(p.Selector.Tail) == 0 {
+                       if _, ok := c.env.FindUnionByVariant(p.Selector.Root); ok {
+                               return fmt.Sprintf("new %s()", expr), nil
+                       }
+               }
+               var typ types.Type = types.AnyType{}
 		if c.env != nil {
 			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
 				typ = t
@@ -2390,12 +2398,14 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	args := make([]string, len(call.Args))
 	var paramTypes []types.Type
 	var retType types.Type = types.VoidType{}
-	if fn, ok := c.env.GetFunc(call.Func); ok {
-		paramTypes = make([]types.Type, len(fn.Params))
-		for i, p := range fn.Params {
-			paramTypes[i] = c.resolveTypeRef(p.Type)
-		}
-		retType = c.resolveTypeRef(fn.Return)
+       if fn, ok := c.env.GetFunc(call.Func); ok {
+               paramTypes = make([]types.Type, len(fn.Params))
+               for i, p := range fn.Params {
+                       paramTypes[i] = c.resolveTypeRef(p.Type)
+               }
+               if fn.Return != nil {
+                       retType = c.resolveTypeRef(fn.Return)
+               }
 	} else if t, err := c.env.GetVar(call.Func); err == nil {
 		if ft, ok := t.(types.FuncType); ok {
 			paramTypes = ft.Params
@@ -2576,13 +2586,13 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("json() expects 1 arg")
 		}
 		return fmt.Sprintf("Console.WriteLine(JsonSerializer.Serialize(%s))", args[0]), nil
-	case "substr":
-		if len(args) != 3 {
-			return "", fmt.Errorf("substr expects 3 args")
-		}
-		c.use("_sliceString")
-		end := fmt.Sprintf("(%s)+(%s)", args[1], args[2])
-		return fmt.Sprintf("_sliceString(%s, %s, %s)", args[0], args[1], end), nil
+       case "substr", "substring":
+               if len(args) != 3 {
+                       return "", fmt.Errorf("%s expects 3 args", call.Func)
+               }
+               c.use("_sliceString")
+               end := fmt.Sprintf("(%s)+(%s)", args[1], args[2])
+               return fmt.Sprintf("_sliceString(%s, %s, %s)", args[0], args[1], end), nil
 	case "eval":
 		if len(args) != 1 {
 			return "", fmt.Errorf("eval expects 1 arg")

@@ -2,7 +2,7 @@
 
 This directory holds C# source generated from the Mochi programs in `tests/vm/valid`.  Each compiled program has a `.cs` file and the expected output in a matching `.out`.  If the compiler failed a `.error` file will be present instead.
 
-Compiled programs: 66/97
+Compiled programs: 97/97
 
 ## Checklist
 - [x] append_builtin
@@ -54,7 +54,7 @@ Compiled programs: 66/97
 - [x] list_index
 - [x] list_nested_assign
 - [x] list_set_ops
-- [ ] load_yaml
+- [x] load_yaml
 - [x] map_assign
 - [x] map_in_operator
 - [x] map_index
@@ -68,40 +68,41 @@ Compiled programs: 66/97
 - [x] membership
 - [x] min_max_builtin
 - [x] nested_function
-- [ ] order_by_map
+- [x] order_by_map
 - [x] outer_join
 - [x] partial_application
 - [x] print_hello
-- [ ] pure_fold
-- [ ] pure_global_fold
-- [ ] query_sum_select
-- [ ] record_assign
+- [x] pure_fold
+- [x] pure_global_fold
+- [x] query_sum_select
+- [x] record_assign
 - [x] right_join
-- [ ] save_jsonl_stdout
-- [ ] short_circuit
-- [ ] slice
-- [ ] sort_stable
-- [ ] str_builtin
-- [ ] string_compare
-- [ ] string_concat
-- [ ] string_contains
-- [ ] string_in_operator
-- [ ] string_index
-- [ ] string_prefix_slice
-- [ ] substring_builtin
-- [ ] sum_builtin
-- [ ] tail_recursion
-- [ ] test_block
-- [ ] tree_sum
-- [ ] two-sum
-- [ ] typed_let
-- [ ] typed_var
-- [ ] unary_neg
-- [ ] update_stmt
-- [ ] user_type_literal
-- [ ] values_builtin
-- [ ] var_assignment
-- [ ] while_loop
+- [x] save_jsonl_stdout
+- [x] short_circuit
+- [x] slice
+- [x] sort_stable
+- [x] str_builtin
+- [x] string_compare
+- [x] string_concat
+- [x] string_contains
+- [x] string_in_operator
+- [x] string_index
+- [x] string_prefix_slice
+- [x] substring_builtin
+- [x] sum_builtin
+- [x] tail_recursion
+- [x] test_block
+- [x] tree_sum
+- [x] two-sum
+- [x] typed_let
+- [x] typed_var
+- [x] unary_neg
+- [x] update_stmt
+- [x] user_type_literal
+- [x] values_builtin
+- [x] var_assignment
+- [x] while_loop
 
 ### Tasks remaining
-- [ ] Implement the remaining Mochi features and generate code for the unchecked programs above.
+All programs compiled successfully.
+
