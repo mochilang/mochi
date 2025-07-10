@@ -507,6 +507,21 @@ func (c *Compiler) compileAssign(st *parser.AssignStmt) error {
 		return err
 	}
 	c.buf.WriteString(name + " = " + expr + ";\n")
+	if len(st.Index) == 0 && len(st.Field) == 0 {
+		if s := extractVectorStruct(expr); s != "" {
+			c.varStruct[st.Name] = s
+		} else if t := c.varStruct[expr]; t != "" {
+			c.varStruct[st.Name] = t
+		}
+		if et := extractVectorElemType(expr); et != "" {
+			c.elemType[st.Name] = et
+		} else if t := c.elemType[expr]; t != "" {
+			c.elemType[st.Name] = t
+		}
+		if typ := c.inferType(expr); typ != "" {
+			c.vars[st.Name] = typ
+		}
+	}
 	return nil
 }
 
@@ -1713,8 +1728,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			} else {
 				keyType = "int"
 			}
-		}
-		if vt := c.varStruct[q.Var]; vt != "" {
+		} else if vt := c.varStruct[q.Var]; vt != "" {
 			if idx := strings.Index(vt, "{"); idx != -1 {
 				vt = vt[:idx]
 			}
@@ -1863,7 +1877,20 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	indent(indentLevel)
 	buf.WriteString("}\n")
 	if key != "" {
-		buf.WriteString("    std::sort(__items.begin(), __items.end(), [](auto &a, auto &b){ return a.first < b.first; });\n")
+		comp := "a.first < b.first"
+		if strings.HasPrefix(keyType, "__struct") {
+			if info, ok := c.structByName[keyType]; ok {
+				left := []string{}
+				right := []string{}
+				for _, f := range info.Fields {
+					fld := sanitizeName(f)
+					left = append(left, fmt.Sprintf("a.first.%s", fld))
+					right = append(right, fmt.Sprintf("b.first.%s", fld))
+				}
+				comp = fmt.Sprintf("std::tie(%s) < std::tie(%s)", strings.Join(left, ", "), strings.Join(right, ", "))
+			}
+		}
+		buf.WriteString(fmt.Sprintf("    std::sort(__items.begin(), __items.end(), [](auto &a, auto &b){ return %s; });\n", comp))
 	}
 	if skip != "" {
 		buf.WriteString("    if ((size_t)" + skip + " < __items.size()) __items.erase(__items.begin(), __items.begin()+" + skip + ");\n")
@@ -2273,7 +2300,20 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 	buf.WriteString("}\n")
 
 	if sortExpr != "" {
-		buf.WriteString("    std::sort(__items.begin(), __items.end(), [](auto &a, auto &b){ return a.first < b.first; });\n")
+		comp := "a.first < b.first"
+		if strings.HasPrefix(sortKeyType, "__struct") {
+			if info, ok := c.structByName[sortKeyType]; ok {
+				left := []string{}
+				right := []string{}
+				for _, f := range info.Fields {
+					fld := sanitizeName(f)
+					left = append(left, fmt.Sprintf("a.first.%s", fld))
+					right = append(right, fmt.Sprintf("b.first.%s", fld))
+				}
+				comp = fmt.Sprintf("std::tie(%s) < std::tie(%s)", strings.Join(left, ", "), strings.Join(right, ", "))
+			}
+		}
+		buf.WriteString(fmt.Sprintf("    std::sort(__items.begin(), __items.end(), [](auto &a, auto &b){ return %s; });\n", comp))
 	}
 	if skipExpr != "" {
 		buf.WriteString("    if ((size_t)" + skipExpr + " < __items.size()) __items.erase(__items.begin(), __items.begin()+" + skipExpr + ");\n")
