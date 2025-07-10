@@ -1,8 +1,8 @@
 <?php
 $customers = [["id" => 1, "name" => "Alice"], ["id" => 2, "name" => "Bob"], ["id" => 3, "name" => "Charlie"]];
 $orders = [["id" => 100, "customerId" => 1], ["id" => 101, "customerId" => 1], ["id" => 102, "customerId" => 2]];
-$stats = (function() {
-    $_rows = _query($customers, [['items'=>$orders, 'on'=>function($c, $o){return $o->customerId == $c->id;}, 'left'=>true]], [ 'select' => function($c, $o){return ["name" => $g->key, "count" => count((function() {
+$stats = (function() use ($customers, $orders) {
+    $_rows = _query($customers, [['items'=>$orders, 'on'=>function($c, $o) use ($customers, $orders){return $o->customerId == $c->id;}, 'left'=>true]], [ 'select' => function($c, $o) use ($customers, $orders){return ["name" => $g->key, "count" => count((function() {
     $result = [];
     foreach ($g as $r) {
         if ($r->o) {
@@ -11,11 +11,11 @@ $stats = (function() {
     }
     return $result;
 })())];} ]);
-    $_groups = _group_by($_rows, function($c, $o){return $c->name;});
+    $_groups = _group_by($_rows, function($c, $o) use ($customers, $orders){return $c->name;});
     $result = [];
     foreach ($_groups as $__g) {
         $g = $__g;
-        $result[] = ["name" => $g->key, "count" => count((function() {
+        $result[] = ["name" => $g->key, "count" => count((function() use ($g) {
     $result = [];
     foreach ($g as $r) {
         if ($r->o) {

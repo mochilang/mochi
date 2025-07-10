@@ -2,7 +2,7 @@
 $customers = [["id" => 1, "name" => "Alice"], ["id" => 2, "name" => "Bob"]];
 $orders = [["id" => 100, "customerId" => 1], ["id" => 101, "customerId" => 2]];
 $items = [["orderId" => 100, "sku" => "a"], ["orderId" => 101, "sku" => "b"]];
-$result = (function() {
+$result = (function() use ($customers, $items, $orders) {
     $result = [];
     foreach ($orders as $o) {
         foreach ($customers as $c) {

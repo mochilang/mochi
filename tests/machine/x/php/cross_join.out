@@ -1,3 +1,145 @@
-PHP Warning:  Undefined variable $orders in /workspace/mochi/tests/machine/x/php/cross_join.php on line 6
-PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/cross_join.php on line 6
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 8
 string(44) "--- Cross Join: All order-customer pairs ---"
+PHP Warning:  Attempt to read property "orderId" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+PHP Warning:  Attempt to read property "orderCustomerId" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+PHP Warning:  Attempt to read property "orderTotal" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+PHP Warning:  Attempt to read property "pairedCustomerName" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+string(5) "Order"
+NULL
+string(12) "(customerId:"
+NULL
+string(10) ", total: $"
+NULL
+string(13) ") paired with"
+NULL
+PHP Warning:  Attempt to read property "orderId" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+PHP Warning:  Attempt to read property "orderCustomerId" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+PHP Warning:  Attempt to read property "orderTotal" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+PHP Warning:  Attempt to read property "pairedCustomerName" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+string(5) "Order"
+NULL
+string(12) "(customerId:"
+NULL
+string(10) ", total: $"
+NULL
+string(13) ") paired with"
+NULL
+PHP Warning:  Attempt to read property "orderId" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+PHP Warning:  Attempt to read property "orderCustomerId" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+PHP Warning:  Attempt to read property "orderTotal" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+PHP Warning:  Attempt to read property "pairedCustomerName" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+string(5) "Order"
+NULL
+string(12) "(customerId:"
+NULL
+string(10) ", total: $"
+NULL
+string(13) ") paired with"
+NULL
+PHP Warning:  Attempt to read property "orderId" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+PHP Warning:  Attempt to read property "orderCustomerId" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+PHP Warning:  Attempt to read property "orderTotal" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+PHP Warning:  Attempt to read property "pairedCustomerName" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+string(5) "Order"
+NULL
+string(12) "(customerId:"
+NULL
+string(10) ", total: $"
+NULL
+string(13) ") paired with"
+NULL
+PHP Warning:  Attempt to read property "orderId" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+PHP Warning:  Attempt to read property "orderCustomerId" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+PHP Warning:  Attempt to read property "orderTotal" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+PHP Warning:  Attempt to read property "pairedCustomerName" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+string(5) "Order"
+NULL
+string(12) "(customerId:"
+NULL
+string(10) ", total: $"
+NULL
+string(13) ") paired with"
+NULL
+PHP Warning:  Attempt to read property "orderId" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+PHP Warning:  Attempt to read property "orderCustomerId" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+PHP Warning:  Attempt to read property "orderTotal" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+PHP Warning:  Attempt to read property "pairedCustomerName" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+string(5) "Order"
+NULL
+string(12) "(customerId:"
+NULL
+string(10) ", total: $"
+NULL
+string(13) ") paired with"
+NULL
+PHP Warning:  Attempt to read property "orderId" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+PHP Warning:  Attempt to read property "orderCustomerId" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+PHP Warning:  Attempt to read property "orderTotal" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+PHP Warning:  Attempt to read property "pairedCustomerName" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+string(5) "Order"
+NULL
+string(12) "(customerId:"
+NULL
+string(10) ", total: $"
+NULL
+string(13) ") paired with"
+NULL
+PHP Warning:  Attempt to read property "orderId" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+PHP Warning:  Attempt to read property "orderCustomerId" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+PHP Warning:  Attempt to read property "orderTotal" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+PHP Warning:  Attempt to read property "pairedCustomerName" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+string(5) "Order"
+NULL
+string(12) "(customerId:"
+NULL
+string(10) ", total: $"
+NULL
+string(13) ") paired with"
+NULL
+PHP Warning:  Attempt to read property "orderId" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+PHP Warning:  Attempt to read property "orderCustomerId" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+PHP Warning:  Attempt to read property "orderTotal" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+PHP Warning:  Attempt to read property "pairedCustomerName" on array in /workspace/mochi/tests/machine/x/php/cross_join.php on line 15
+string(5) "Order"
+NULL
+string(12) "(customerId:"
+NULL
+string(10) ", total: $"
+NULL
+string(13) ") paired with"
+NULL

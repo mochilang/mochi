@@ -1,4 +1,2 @@
 PHP Warning:  file(/workspace/mochi/tests/machine/x/php/../interpreter/valid/people.yaml): Failed to open stream: No such file or directory in /workspace/mochi/tests/machine/x/php/load_yaml.php on line 33
 PHP Warning:  foreach() argument must be of type array|object, false given in /workspace/mochi/tests/machine/x/php/load_yaml.php on line 36
-PHP Warning:  Undefined variable $people in /workspace/mochi/tests/machine/x/php/load_yaml.php on line 15
-PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/load_yaml.php on line 15

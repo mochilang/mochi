@@ -1,6 +1,6 @@
 <?php
 $items = [["cat" => "a", "val" => 3], ["cat" => "a", "val" => 1], ["cat" => "b", "val" => 5], ["cat" => "b", "val" => 2]];
-$grouped = (function() {
+$grouped = (function() use ($items) {
     $groups = [];
     foreach ($items as $i) {
         $_k = json_encode($i->cat);

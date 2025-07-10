@@ -1,7 +1,7 @@
 <?php
 $customers = [["id" => 1, "name" => "Alice"], ["id" => 2, "name" => "Bob"], ["id" => 3, "name" => "Charlie"]];
 $orders = [["id" => 100, "customerId" => 1, "total" => 250], ["id" => 101, "customerId" => 2, "total" => 125], ["id" => 102, "customerId" => 1, "total" => 300]];
-$result = (function() {
+$result = (function() use ($customers, $orders) {
     $result = [];
     foreach ($orders as $o) {
         foreach ($customers as $c) {

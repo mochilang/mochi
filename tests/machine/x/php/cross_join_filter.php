@@ -1,7 +1,7 @@
 <?php
 $nums = [1, 2, 3];
 $letters = ["A", "B"];
-$pairs = (function() {
+$pairs = (function() use ($letters, $nums) {
     $result = [];
     foreach ($nums as $n) {
         foreach ($letters as $l) {

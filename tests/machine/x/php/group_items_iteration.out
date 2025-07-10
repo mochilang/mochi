@@ -1,6 +1,16 @@
-PHP Warning:  Undefined variable $data in /workspace/mochi/tests/machine/x/php/group_items_iteration.php on line 5
-PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/group_items_iteration.php on line 5
-PHP Warning:  Undefined variable $tmp in /workspace/mochi/tests/machine/x/php/group_items_iteration.php on line 26
-PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/group_items_iteration.php on line 26
-array(0) {
+PHP Warning:  Attempt to read property "tag" on array in /workspace/mochi/tests/machine/x/php/group_items_iteration.php on line 6
+PHP Warning:  Attempt to read property "tag" on array in /workspace/mochi/tests/machine/x/php/group_items_iteration.php on line 6
+PHP Warning:  Attempt to read property "tag" on array in /workspace/mochi/tests/machine/x/php/group_items_iteration.php on line 6
+PHP Warning:  Attempt to read property "items" on array in /workspace/mochi/tests/machine/x/php/group_items_iteration.php on line 19
+PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/group_items_iteration.php on line 19
+PHP Warning:  Attempt to read property "key" on array in /workspace/mochi/tests/machine/x/php/group_items_iteration.php on line 22
+PHP Warning:  Attempt to read property "tag" on array in /workspace/mochi/tests/machine/x/php/group_items_iteration.php on line 27
+array(1) {
+  [0]=>
+  array(2) {
+    ["tag"]=>
+    NULL
+    ["total"]=>
+    int(0)
+  }
 }

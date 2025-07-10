@@ -1,3 +1,23 @@
-PHP Warning:  Undefined variable $products in /workspace/mochi/tests/machine/x/php/dataset_sort_take_limit.php on line 5
-PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/dataset_sort_take_limit.php on line 5
+PHP Warning:  Attempt to read property "price" on array in /workspace/mochi/tests/machine/x/php/dataset_sort_take_limit.php on line 6
+PHP Warning:  Attempt to read property "price" on array in /workspace/mochi/tests/machine/x/php/dataset_sort_take_limit.php on line 6
+PHP Warning:  Attempt to read property "price" on array in /workspace/mochi/tests/machine/x/php/dataset_sort_take_limit.php on line 6
+PHP Warning:  Attempt to read property "price" on array in /workspace/mochi/tests/machine/x/php/dataset_sort_take_limit.php on line 6
+PHP Warning:  Attempt to read property "price" on array in /workspace/mochi/tests/machine/x/php/dataset_sort_take_limit.php on line 6
+PHP Warning:  Attempt to read property "price" on array in /workspace/mochi/tests/machine/x/php/dataset_sort_take_limit.php on line 6
+PHP Warning:  Attempt to read property "price" on array in /workspace/mochi/tests/machine/x/php/dataset_sort_take_limit.php on line 6
 string(47) "--- Top products (excluding most expensive) ---"
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/dataset_sort_take_limit.php on line 15
+PHP Warning:  Attempt to read property "price" on array in /workspace/mochi/tests/machine/x/php/dataset_sort_take_limit.php on line 15
+NULL
+string(7) "costs $"
+NULL
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/dataset_sort_take_limit.php on line 15
+PHP Warning:  Attempt to read property "price" on array in /workspace/mochi/tests/machine/x/php/dataset_sort_take_limit.php on line 15
+NULL
+string(7) "costs $"
+NULL
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/dataset_sort_take_limit.php on line 15
+PHP Warning:  Attempt to read property "price" on array in /workspace/mochi/tests/machine/x/php/dataset_sort_take_limit.php on line 15
+NULL
+string(7) "costs $"
+NULL

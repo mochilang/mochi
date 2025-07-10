@@ -1,4 +1,14 @@
-PHP Warning:  Undefined variable $items in /workspace/mochi/tests/machine/x/php/sort_stable.php on line 5
-PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/sort_stable.php on line 5
-array(0) {
+PHP Warning:  Attempt to read property "n" on array in /workspace/mochi/tests/machine/x/php/sort_stable.php on line 6
+PHP Warning:  Attempt to read property "v" on array in /workspace/mochi/tests/machine/x/php/sort_stable.php on line 6
+PHP Warning:  Attempt to read property "n" on array in /workspace/mochi/tests/machine/x/php/sort_stable.php on line 6
+PHP Warning:  Attempt to read property "v" on array in /workspace/mochi/tests/machine/x/php/sort_stable.php on line 6
+PHP Warning:  Attempt to read property "n" on array in /workspace/mochi/tests/machine/x/php/sort_stable.php on line 6
+PHP Warning:  Attempt to read property "v" on array in /workspace/mochi/tests/machine/x/php/sort_stable.php on line 6
+array(3) {
+  [0]=>
+  NULL
+  [1]=>
+  NULL
+  [2]=>
+  NULL
 }
