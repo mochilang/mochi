@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"strings"
+	"unicode"
 
 	"mochi/parser"
 )
@@ -657,6 +658,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, bool, error) {
 		}
 		if v, ok := c.vars[p.Selector.Root]; ok {
 			return v, false, nil
+		}
+		if len(p.Selector.Root) > 0 && unicode.IsUpper(rune(p.Selector.Root[0])) {
+			return sanitizeAtom(p.Selector.Root), false, nil
 		}
 		return sanitizeVar(p.Selector.Root), false, nil
 	case p.Selector != nil:
