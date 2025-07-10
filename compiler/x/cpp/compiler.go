@@ -57,7 +57,14 @@ type Compiler struct {
 	variants map[string]*variantInfo
 
 	packages map[string]struct{}
+
+	future []*parser.Statement
+
+	placeholders map[string]string
 }
+
+// Future sets the slice of upcoming statements used for type prediction.
+func (c *Compiler) Future(stmts []*parser.Statement) { c.future = stmts }
 
 // New returns a new compiler instance.
 func New() *Compiler {
@@ -77,6 +84,8 @@ func New() *Compiler {
 		unions:       map[string]*unionInfo{},
 		variants:     map[string]*variantInfo{},
 		packages:     map[string]struct{}{},
+		future:       nil,
+		placeholders: map[string]string{},
 	}
 }
 
@@ -178,9 +187,9 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	globalSet := map[*parser.Statement]struct{}{}
 	for _, st := range globals {
 		globalSet[st] = struct{}{}
-		if err := c.compileStmt(st); err != nil {
-			return nil, err
-		}
+	}
+	if err := c.compileBlock(globals); err != nil {
+		return nil, err
 	}
 	if len(globals) > 0 {
 		c.writeln("")
@@ -199,6 +208,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.writeln("int main() {")
 	c.indent++
 	c.scope++
+	mainStmts := []*parser.Statement{}
 	for _, st := range p.Statements {
 		if st.Fun != nil {
 			continue
@@ -206,9 +216,10 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 		if _, ok := globalSet[st]; ok {
 			continue
 		}
-		if err := c.compileStmt(st); err != nil {
-			return nil, err
-		}
+		mainStmts = append(mainStmts, st)
+	}
+	if err := c.compileBlock(mainStmts); err != nil {
+		return nil, err
 	}
 	c.writeln("return 0;")
 	c.indent--
@@ -228,6 +239,11 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	src := body.Bytes()
 	for pkg := range c.packages {
 		src = bytes.ReplaceAll(src, []byte(pkg+"."), []byte(pkg+"::"))
+	}
+	for ph, name := range c.placeholders {
+		if t := c.elemType[name]; t != "" {
+			src = bytes.ReplaceAll(src, []byte(ph), []byte(t))
+		}
 	}
 
 	includes := []string{"#include <iostream>"}
@@ -311,10 +327,8 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	c.buf.WriteString(") {\n")
 	c.indent++
 	c.scope++
-	for _, st := range fn.Body {
-		if err := c.compileStmt(st); err != nil {
-			return err
-		}
+	if err := c.compileBlock(fn.Body); err != nil {
+		return err
 	}
 	c.indent--
 	c.scope--
@@ -388,6 +402,23 @@ func (c *Compiler) compileStmt(st *parser.Statement) error {
 	default:
 		return fmt.Errorf("unsupported statement at %v", st.Pos)
 	}
+}
+
+func (c *Compiler) compileBlock(stmts []*parser.Statement) error {
+	prev := c.future
+	for i, st := range stmts {
+		if i+1 < len(stmts) {
+			c.future = stmts[i+1:]
+		} else {
+			c.future = nil
+		}
+		if err := c.compileStmt(st); err != nil {
+			c.future = prev
+			return err
+		}
+	}
+	c.future = prev
+	return nil
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
@@ -523,6 +554,22 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 	if st.Type == nil {
 		if et := extractVectorElemType(exprStr); et != "" {
 			typ = fmt.Sprintf("std::vector<%s>", et)
+		} else if isEmptyListExpr(st.Value) {
+			if et := c.predictElemType(st.Name); et != "" {
+				typ = fmt.Sprintf("std::vector<%s>", et)
+				exprStr = fmt.Sprintf("std::vector<%s>{}", et)
+				if strings.HasPrefix(et, "__struct") {
+					c.varStruct[st.Name] = et
+				}
+				c.elemType[st.Name] = et
+				c.vars[st.Name] = "vector"
+			} else {
+				ph := "__" + st.Name + "_type"
+				typ = fmt.Sprintf("std::vector<%s>", ph)
+				exprStr = fmt.Sprintf("std::vector<%s>{}", ph)
+				c.placeholders[ph] = st.Name
+				c.vars[st.Name] = "vector"
+			}
 		}
 	}
 
@@ -615,20 +662,16 @@ func (c *Compiler) compileIf(st *parser.IfStmt) error {
 	cond = c.ensureBool(cond)
 	c.writeln("if (" + cond + ") {")
 	c.indent++
-	for _, s := range st.Then {
-		if err := c.compileStmt(s); err != nil {
-			return err
-		}
+	if err := c.compileBlock(st.Then); err != nil {
+		return err
 	}
 	c.indent--
 	c.writeln("}")
 	if st.Else != nil {
 		c.writeln("else {")
 		c.indent++
-		for _, s := range st.Else {
-			if err := c.compileStmt(s); err != nil {
-				return err
-			}
+		if err := c.compileBlock(st.Else); err != nil {
+			return err
 		}
 		c.indent--
 		c.writeln("}")
@@ -644,10 +687,8 @@ func (c *Compiler) compileWhile(st *parser.WhileStmt) error {
 	cond = c.ensureBool(cond)
 	c.writeln("while (" + cond + ") {")
 	c.indent++
-	for _, s := range st.Body {
-		if err := c.compileStmt(s); err != nil {
-			return err
-		}
+	if err := c.compileBlock(st.Body); err != nil {
+		return err
 	}
 	c.indent--
 	c.writeln("}")
@@ -681,10 +722,8 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 		}
 	}
 	c.indent++
-	for _, s := range st.Body {
-		if err := c.compileStmt(s); err != nil {
-			return err
-		}
+	if err := c.compileBlock(st.Body); err != nil {
+		return err
 	}
 	c.indent--
 	c.writeln("}")
@@ -764,10 +803,8 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 
 func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	c.writeln("// test " + strings.Trim(t.Name, "\""))
-	for _, st := range t.Body {
-		if err := c.compileStmt(st); err != nil {
-			return err
-		}
+	if err := c.compileBlock(t.Body); err != nil {
+		return err
 	}
 	return nil
 }
@@ -869,6 +906,88 @@ func (c *Compiler) isVectorExpr(e *parser.Expr) bool {
 	}
 	return false
 }
+
+func isEmptyListExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) > 0 || u.Value == nil {
+		return false
+	}
+	pf := u.Value
+	if len(pf.Ops) > 0 || pf.Target == nil || pf.Target.List == nil {
+		return false
+	}
+	return len(pf.Target.List.Elems) == 0
+}
+
+func (c *Compiler) predictElemType(name string) string {
+	return c.predictElemTypeIn(name, c.future)
+}
+
+func (c *Compiler) predictElemTypeIn(name string, stmts []*parser.Statement) string {
+	for _, st := range stmts {
+		switch {
+		case st.Assign != nil && st.Assign.Name == name:
+			exprStr, err := c.simulateExpr(st.Assign.Value)
+			if err == nil {
+				if et := extractVectorElemType(exprStr); et != "" {
+					return et
+				}
+			}
+		case st.For != nil:
+			if et := c.predictElemTypeIn(name, st.For.Body); et != "" {
+				return et
+			}
+		case st.While != nil:
+			if et := c.predictElemTypeIn(name, st.While.Body); et != "" {
+				return et
+			}
+		case st.If != nil:
+			if et := c.predictElemTypeIn(name, st.If.Then); et != "" {
+				return et
+			}
+			if st.If.Else != nil {
+				if et := c.predictElemTypeIn(name, st.If.Else); et != "" {
+					return et
+				}
+			}
+		case st.Test != nil:
+			if et := c.predictElemTypeIn(name, st.Test.Body); et != "" {
+				return et
+			}
+		}
+	}
+	return ""
+}
+
+func (c *Compiler) simulateExpr(e *parser.Expr) (string, error) {
+	sub := *c
+	sub.buf.Reset()
+	sub.header.Reset()
+	sub.future = nil
+	sub.vars = map[string]string{}
+	for k, v := range c.vars {
+		sub.vars[k] = v
+	}
+	sub.aliases = map[string]string{}
+	for k, v := range c.aliases {
+		sub.aliases[k] = v
+	}
+	sub.varStruct = map[string]string{}
+	for k, v := range c.varStruct {
+		sub.varStruct[k] = v
+	}
+	sub.elemType = map[string]string{}
+	for k, v := range c.elemType {
+		sub.elemType[k] = v
+	}
+	return sub.compileExpr(e)
+}
+
+// Predict returns the predicted element type for a vector variable.
+func (c *Compiler) Predict(name string) string { return c.predictElemType(name) }
 
 func (c *Compiler) compilePrint(args []*parser.Expr) error {
 	c.writeIndent()
