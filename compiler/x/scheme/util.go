@@ -52,6 +52,15 @@ func simpleStringKey(e *parser.Expr) (string, bool) {
 	return "", false
 }
 
+func contains(list []string, s string) bool {
+	for _, v := range list {
+		if v == s {
+			return true
+		}
+	}
+	return false
+}
+
 func identName(e *parser.Expr) (string, bool) {
 	if e == nil || len(e.Binary.Right) != 0 {
 		return "", false
