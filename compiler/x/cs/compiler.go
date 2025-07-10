@@ -951,26 +951,23 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 				typs[i] = types.BoolType{}
 			case "union_all":
 				leftStr = false
-				c.use("_union_all")
-				expr = fmt.Sprintf("_union_all(%s, %s)", left, right)
+				c.useLinq = true
+				expr = fmt.Sprintf("Enumerable.Concat(%s, %s).ToArray()", left, right)
 				leftList = true
 			case "union":
 				leftStr = false
-				c.use("_union")
-				c.use("_in")
-				expr = fmt.Sprintf("_union(%s, %s)", left, right)
+				c.useLinq = true
+				expr = fmt.Sprintf("Enumerable.Union(%s, %s).ToArray()", left, right)
 				leftList = true
 			case "except":
 				leftStr = false
-				c.use("_except")
-				c.use("_in")
-				expr = fmt.Sprintf("_except(%s, %s)", left, right)
+				c.useLinq = true
+				expr = fmt.Sprintf("Enumerable.Except(%s, %s).ToArray()", left, right)
 				leftList = true
 			case "intersect":
 				leftStr = false
-				c.use("_intersect")
-				c.use("_in")
-				expr = fmt.Sprintf("_intersect(%s, %s)", left, right)
+				c.useLinq = true
+				expr = fmt.Sprintf("Enumerable.Intersect(%s, %s).ToArray()", left, right)
 				leftList = true
 			default:
 				leftStr = false
@@ -2436,6 +2433,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	switch call.Func {
 	case "print":
 		if len(args) == 1 {
+			t := c.inferExprType(call.Args[0])
+			if isListType(t) {
+				c.useLinq = true
+				return fmt.Sprintf("Console.WriteLine(string.Join(\" \", %s))", args[0]), nil
+			}
 			return fmt.Sprintf("Console.WriteLine(%s)", args[0]), nil
 		}
 		parts := make([]string, len(args))
