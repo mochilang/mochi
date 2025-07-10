@@ -29,6 +29,7 @@ type Compiler struct {
 	usesSliceStr bool
 	usesExpect   bool
 	usesFetch    bool
+	usesLoop     bool
 	tmpCount     int
 }
 
@@ -70,7 +71,7 @@ func (c *Compiler) hsType(t types.Type) string {
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, structs: make(map[string]bool), tmpCount: 0}
+	return &Compiler{env: env, structs: make(map[string]bool), tmpCount: 0, usesLoop: false}
 }
 
 // Compile generates Haskell code for prog.
@@ -86,6 +87,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.usesSliceStr = false
 	c.usesExpect = false
 	c.usesFetch = false
+	c.usesLoop = false
 	c.tmpCount = 0
 
 	for _, s := range prog.Statements {
@@ -211,7 +213,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		header.WriteString("import qualified Data.ByteString.Lazy.Char8 as BSL\n")
 	}
 	header.WriteString("\n")
-	header.WriteString(runtime)
+	if c.usesLoop || c.usesMap || c.usesList || c.usesTime || c.usesJSON || c.usesLoad || c.usesSave || c.usesSlice || c.usesSliceStr || c.usesExpect || c.usesFetch {
+		header.WriteString(runtime)
+	}
 	if c.usesJSON {
 		header.WriteString(jsonHelper)
 	}
@@ -313,6 +317,7 @@ func (c *Compiler) compileMainStmt(s *parser.Statement) error {
 		}
 		c.writeln(expr)
 	case s.For != nil:
+		c.usesLoop = true
 		if hasBreakOrContinue(s.For.Body) {
 			return c.compileForLoopBC(s.For)
 		}
@@ -364,6 +369,7 @@ func (c *Compiler) compileMainStmt(s *parser.Statement) error {
 			return err
 		}
 	case s.While != nil:
+		c.usesLoop = true
 		// Special case simple counting loops where the body ends with an
 		// assignment to a variable used in the condition. Translate
 		// these to a recursive function so the variable value is
@@ -728,6 +734,7 @@ func (c *Compiler) compileStmtExpr(stmts []*parser.Statement, top bool) (string,
 			}
 			expr = chainMaybe(ifExpr, expr)
 		case s.For != nil:
+			c.usesLoop = true
 			bodyExpr, err := c.compileStmtExpr(s.For.Body, false)
 			if err != nil {
 				return "", err
@@ -792,6 +799,7 @@ func (c *Compiler) compileStmtExpr(stmts []*parser.Statement, top bool) (string,
 			}
 			expr = fmt.Sprintf("(let %s = %s in %s)", sanitizeName(s.Assign.Name), val, expr)
 		case s.While != nil:
+			c.usesLoop = true
 			bodyExpr, err := c.compileStmtExpr(s.While.Body, false)
 			if err != nil {
 				return "", err
@@ -1035,11 +1043,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					end = e
 				}
 				if c.isStringPrimary(p.Target) {
-					c.usesSliceStr = true
-					expr = fmt.Sprintf("_sliceString %s %s %s", expr, start, end)
+					expr = fmt.Sprintf("take (%s - %s) (drop %s %s)", end, start, start, expr)
 				} else {
-					c.usesSlice = true
-					expr = fmt.Sprintf("_slice %s %s %s", expr, start, end)
+					expr = fmt.Sprintf("take (%s - %s) (drop %s %s)", end, start, start, expr)
 				}
 			} else {
 				idx, err := c.compileExpr(op.Index.Start)
@@ -1050,7 +1056,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					c.usesMap = true
 					expr = fmt.Sprintf("fromMaybe (error \"missing\") (Map.lookup %s %s)", idx, expr)
 				} else if c.isStringPrimary(p.Target) {
-					expr = fmt.Sprintf("_indexString %s %s", expr, idx)
+					expr = fmt.Sprintf("[%s !! %s]", expr, idx)
 				} else {
 					expr = fmt.Sprintf("(%s !! %s)", expr, idx)
 				}
@@ -1175,8 +1181,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			return fmt.Sprintf("length %s", strings.Join(args, " ")), nil
 		}
-		if p.Call.Func == "avg" {
-			return fmt.Sprintf("avg %s", strings.Join(args, " ")), nil
+		if p.Call.Func == "avg" && len(args) == 1 {
+			return fmt.Sprintf("(sum %s `div` length %s)", args[0], args[0]), nil
 		}
 		if p.Call.Func == "str" {
 			return fmt.Sprintf("show %s", strings.Join(args, " ")), nil
@@ -1185,7 +1191,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return fmt.Sprintf("(%s ++ [%s])", args[0], args[1]), nil
 		}
 		if p.Call.Func == "append" && len(args) == 2 {
-			return fmt.Sprintf("_append %s %s", args[0], args[1]), nil
+			return fmt.Sprintf("(%s ++ [%s])", args[0], args[1]), nil
 		}
 		if p.Call.Func == "keys" && len(args) == 1 {
 			c.usesMap = true
@@ -1326,7 +1332,7 @@ type callArgs struct {
 func (c *Compiler) compilePrint(ca callArgs) (string, error) {
 	if len(ca.args) == 1 {
 		arg := ca.args[0]
-		if strings.HasPrefix(arg, "\"") || strings.HasPrefix(arg, "show(") || strings.HasPrefix(arg, "show ") || strings.HasPrefix(arg, "show") || strings.HasPrefix(arg, "_indexString") || c.isStringExpr(ca.exprs[0]) {
+		if strings.HasPrefix(arg, "\"") || strings.HasPrefix(arg, "show(") || strings.HasPrefix(arg, "show ") || strings.HasPrefix(arg, "show") || c.isStringExpr(ca.exprs[0]) {
 			return fmt.Sprintf("putStrLn (%s)", arg), nil
 		}
 		if _, ok := c.inferExprType(ca.exprs[0]).(types.AnyType); ok {
@@ -1336,7 +1342,7 @@ func (c *Compiler) compilePrint(ca callArgs) (string, error) {
 	}
 	parts := make([]string, len(ca.args))
 	for i, a := range ca.args {
-		if strings.HasPrefix(a, "\"") || strings.HasPrefix(a, "_indexString") || c.isStringExpr(ca.exprs[i]) {
+		if strings.HasPrefix(a, "\"") || c.isStringExpr(ca.exprs[i]) {
 			parts[i] = a
 		} else if _, ok := c.inferExprType(ca.exprs[i]).(types.AnyType); ok {
 			parts[i] = fmt.Sprintf("_showAny (%s)", a)
@@ -1830,6 +1836,7 @@ func hasBreakOrContinueIf(st *parser.IfStmt) bool {
 }
 
 func (c *Compiler) compileForLoopBC(loop *parser.ForStmt) error {
+	c.usesLoop = true
 	orig := c.env
 	var vType types.Type = types.AnyType{}
 	if loop.RangeEnd != nil {
