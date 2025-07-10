@@ -1383,6 +1383,12 @@ func (c *compiler) inferType(t *parser.TypeRef, val *parser.Expr) string {
 				if t != "" {
 					return "list_" + t
 				}
+				if isVarRef(p.Target.Query.Select, p.Target.Query.Var) {
+					et := c.elementType(p.Target.Query.Source)
+					if et != "" {
+						return "list_" + et
+					}
+				}
 				return "list"
 			}
 		}
@@ -1883,13 +1889,19 @@ func (c *compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		saved := c.varTypes
+		savedFields := c.mapFields
 		c.varTypes = copyMap(c.varTypes)
+		c.mapFields = copyMap(c.mapFields)
 		c.varTypes[q.Var] = c.elementType(q.Source)
+		if fields := c.elementFieldTypes(q.Source); fields != nil {
+			c.mapFields[q.Var] = fields
+		}
 		prev := c.tupleMap
 		c.tupleMap = true
 		sel, err := c.expr(q.Select)
 		if err != nil {
 			c.varTypes = saved
+			c.mapFields = savedFields
 			return "", err
 		}
 		key, err := c.expr(q.Sort)
