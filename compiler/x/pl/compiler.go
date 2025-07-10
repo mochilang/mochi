@@ -5,6 +5,7 @@ package pl
 import (
 	"bytes"
 	"fmt"
+	"sort"
 	"strings"
 	"unicode"
 
@@ -27,10 +28,20 @@ type Compiler struct {
 	needsLenAny   bool
 	needsSetItem  bool
 	needsGroup    bool
+	needsSetOps   bool
+
+	currentFun string
+	nested     map[string]nestedInfo
+}
+
+type nestedInfo struct {
+	name     string
+	captured []string
 }
 
 func New() *Compiler {
 	c := &Compiler{vars: make(map[string]string), mutVars: make(map[string]bool)}
+	c.nested = make(map[string]nestedInfo)
 	c.out = &c.funcBuf
 	return c
 }
@@ -69,6 +80,9 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.needsLenAny = false
 	c.needsSetItem = false
 	c.needsGroup = false
+	c.needsSetOps = false
+	c.nested = make(map[string]nestedInfo)
+	c.currentFun = ""
 
 	c.out = &c.funcBuf
 	for _, st := range p.Statements {
@@ -169,6 +183,16 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 		out.WriteString("group_pairs([K-V|T], Acc, Res) :- group_insert(K, V, Acc, Acc1), group_pairs(T, Acc1, Res).\n")
 		out.WriteString("group_by(List, Fn, Groups) :- findall(K-V, (member(V, List), call(Fn, V, K)), Pairs), group_pairs(Pairs, [], Groups).\n\n")
 	}
+	if c.needsSetOps {
+		out.WriteString("union(A, B, R) :- append(A, B, C), list_to_set(C, R).\n")
+		out.WriteString("except([], _, []).\n")
+		out.WriteString("except([H|T], B, R) :- memberchk(H, B), !, except(T, B, R).\n")
+		out.WriteString("except([H|T], B, [H|R]) :- except(T, B, R).\n\n")
+		out.WriteString("intersect(A, B, R) :- intersect(A, B, [], R).\n")
+		out.WriteString("intersect([], _, Acc, R) :- reverse(Acc, R).\n")
+		out.WriteString("intersect([H|T], B, Acc, R) :- memberchk(H, B), \\+ memberchk(H, Acc), !, intersect(T, B, [H|Acc], R).\n")
+		out.WriteString("intersect([_|T], B, Acc, R) :- intersect(T, B, Acc, R).\n\n")
+	}
 	out.Write(c.lambdaBuf.Bytes())
 	out.Write(c.funcBuf.Bytes())
 	out.Write(c.buf.Bytes())
@@ -178,8 +202,13 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	oldVars := c.vars
 	oldTmp := c.tmp
+	oldNested := c.nested
+	oldCurrent := c.currentFun
+
 	c.vars = make(map[string]string)
 	c.tmp = 0
+	c.nested = make(map[string]nestedInfo)
+	c.currentFun = sanitizeAtom(fn.Name)
 
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
@@ -215,8 +244,32 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	c.writeln("")
 	c.vars = oldVars
 	c.tmp = oldTmp
+	c.nested = oldNested
+	c.currentFun = oldCurrent
 	c.retVar = ""
 	return nil
+}
+
+func (c *Compiler) compileNestedFun(fn *parser.FunStmt) error {
+	keys := make([]string, 0, len(c.vars))
+	for k := range c.vars {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	captures := make([]string, len(keys))
+	params := make([]parser.Param, 0, len(keys)+len(fn.Params))
+	for i, k := range keys {
+		captures[i] = k
+		params = append(params, parser.Param{Name: sanitizeVar(k)})
+	}
+	params = append(params, fn.Params...)
+	name := fmt.Sprintf("%s__%s", c.currentFun, fn.Name)
+	newFn := &parser.FunStmt{Name: name, Params: params, Body: fn.Body}
+	c.nested[fn.Name] = nestedInfo{name: sanitizeAtom(name), captured: captures}
+	err := c.compileFun(newFn)
+	delete(c.nested, fn.Name)
+	return err
 }
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
@@ -396,6 +449,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return nil
 		}
 		return fmt.Errorf("unsupported expression statement")
+	case s.Fun != nil:
+		return c.compileNestedFun(s.Fun)
 	default:
 		return fmt.Errorf("unsupported statement")
 	}
@@ -560,6 +615,28 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, bool, error) {
 			tmp := c.newTmp()
 			c.needsContains = true
 			c.writeln(fmt.Sprintf("contains(%s, %s, %s),", rhs, res, tmp))
+			res = tmp
+			arith = false
+		} else if op.Op == "union" {
+			tmp := c.newTmp()
+			if op.All {
+				c.writeln(fmt.Sprintf("append(%s, %s, %s),", res, rhs, tmp))
+			} else {
+				c.needsSetOps = true
+				c.writeln(fmt.Sprintf("union(%s, %s, %s),", res, rhs, tmp))
+			}
+			res = tmp
+			arith = false
+		} else if op.Op == "except" {
+			tmp := c.newTmp()
+			c.needsSetOps = true
+			c.writeln(fmt.Sprintf("except(%s, %s, %s),", res, rhs, tmp))
+			res = tmp
+			arith = false
+		} else if op.Op == "intersect" {
+			tmp := c.newTmp()
+			c.needsSetOps = true
+			c.writeln(fmt.Sprintf("intersect(%s, %s, %s),", res, rhs, tmp))
 			res = tmp
 			arith = false
 		} else {
@@ -775,6 +852,22 @@ func (c *Compiler) compileIfExpr(ix *parser.IfExpr) (string, bool, error) {
 }
 
 func (c *Compiler) compileCall(call *parser.CallExpr) (string, bool, error) {
+	if info, ok := c.nested[call.Func]; ok {
+		args := make([]string, 0, len(info.captured)+len(call.Args))
+		for _, v := range info.captured {
+			args = append(args, c.lookupVar(v))
+		}
+		for _, a := range call.Args {
+			s, _, err := c.compileExpr(a)
+			if err != nil {
+				return "", false, err
+			}
+			args = append(args, s)
+		}
+		tmp := c.newTmp()
+		c.writeln(fmt.Sprintf("%s(%s, %s),", info.name, strings.Join(args, ", "), tmp))
+		return tmp, false, nil
+	}
 	switch call.Func {
 	case "append":
 		if len(call.Args) != 2 {
