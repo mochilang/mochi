@@ -1,0 +1,91 @@
+// Mochi implementation of Rosetta "Algebraic data types" task
+// Mirrors the Go red-black tree example.
+
+fun node(cl: string, le: any, aa: int, ri: any): map<string, any> {
+  return {"cl": cl, "le": le, "aa": aa, "ri": ri}
+}
+
+fun treeString(t: any): string {
+  if t == null {
+    return "E"
+  }
+  let m = t as map<string, any>
+  return "T(" + m["cl"] + ", " + treeString(m["le"]) + ", " + str(m["aa"]) + ", " + treeString(m["ri"]) + ")"
+}
+
+fun balance(t: any): any {
+  if t == null { return t }
+  let m = t as map<string, any>
+  if m["cl"] != "B" {
+    return t
+  }
+  let le = m["le"]
+  let ri = m["ri"]
+  if le != null {
+    let leMap = le as map<string, any>
+    if leMap["cl"] == "R" {
+      let lele = leMap["le"]
+      if lele != null {
+        let leleMap = lele as map<string, any>
+        if leleMap["cl"] == "R" {
+          return node("R", node("B", leleMap["le"], leleMap["aa"], leleMap["ri"]), leMap["aa"], node("B", leMap["ri"], m["aa"], ri))
+        }
+      }
+      let leri = leMap["ri"]
+      if leri != null {
+        let leriMap = leri as map<string, any>
+        if leriMap["cl"] == "R" {
+          return node("R", node("B", leMap["le"], leMap["aa"], leriMap["le"]), leriMap["aa"], node("B", leriMap["ri"], m["aa"], ri))
+        }
+      }
+    }
+  }
+  if ri != null {
+    let riMap = ri as map<string, any>
+    if riMap["cl"] == "R" {
+      let rile = riMap["le"]
+      if rile != null {
+        let rileMap = rile as map<string, any>
+        if rileMap["cl"] == "R" {
+          return node("R", node("B", m["le"], m["aa"], rileMap["le"]), rileMap["aa"], node("B", rileMap["ri"], riMap["aa"], riMap["ri"]))
+        }
+      }
+      let riri = riMap["ri"]
+      if riri != null {
+        let ririMap = riri as map<string, any>
+        if ririMap["cl"] == "R" {
+          return node("R", node("B", m["le"], m["aa"], riMap["le"]), riMap["aa"], node("B", ririMap["le"], ririMap["aa"], ririMap["ri"]))
+        }
+      }
+    }
+  }
+  return t
+}
+
+fun ins(tr: any, x: int): any {
+  if tr == null {
+    return node("R", null, x, null)
+  }
+  if x < tr["aa"] {
+    return balance(node(tr["cl"], ins(tr["le"], x), tr["aa"], tr["ri"]))
+  }
+  if x > tr["aa"] {
+    return balance(node(tr["cl"], tr["le"], tr["aa"], ins(tr["ri"], x)))
+  }
+  return tr
+}
+
+fun insert(tr: any, x: int): any {
+  let t = ins(tr, x)
+  if t == null { return null }
+  let m = t as map<string, any>
+  return node("B", m["le"], m["aa"], m["ri"])
+}
+
+var tr: any = null
+var i = 1
+while i <= 16 {
+  tr = insert(tr, i)
+  i = i + 1
+}
+print(treeString(tr))
