@@ -107,3 +107,8 @@ Successfully ran: 80/97 programs
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
+
+## Remaining Work
+
+- [ ] Re-run compilation after join and group by enhancements
+- [ ] Verify output against reference implementations
