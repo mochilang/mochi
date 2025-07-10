@@ -1,6 +1,6 @@
 import java.util.*;
 public class Main {
-	static List<Map<String,Object>> items = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<String,Object>(){{put("cat", "a");put("val", 3);}}, new LinkedHashMap<String,Object>(){{put("cat", "a");put("val", 1);}}, new LinkedHashMap<String,Object>(){{put("cat", "b");put("val", 5);}}, new LinkedHashMap<String,Object>(){{put("cat", "b");put("val", 2);}}));
+	static List<Map<String,Object>> items = new ArrayList<>(java.util.Arrays.asList(mapOfEntries(entry("cat", "a"), entry("val", 3)), mapOfEntries(entry("cat", "a"), entry("val", 1)), mapOfEntries(entry("cat", "b"), entry("val", 5)), mapOfEntries(entry("cat", "b"), entry("val", 2))));
 	static List<Object> grouped = (new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
 	List<Object> _res6 = new ArrayList<>();
 	Map<Object,List<Object>> _groups7 = new LinkedHashMap<>();
@@ -14,13 +14,13 @@ public class Main {
 	for (var __e : _groups7.entrySet()) {
 		Object g_key = __e.getKey();
 		List<Object> g = __e.getValue();
-		_res6.add(new LinkedHashMap<String,Object>(){{put("cat", g_key);put("total", sum((List<Number>)(List<?>)(new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
+		_res6.add(mapOfEntries(entry("cat", g_key), entry("total", sum((List<Number>)(List<?>)(new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
 	List<Object> _res11 = new ArrayList<>();
 	for (var x : g) {
 		_res11.add(((Map)x).get("val"));
 	}
 	return _res11;
-}}).get()));}});
+}}).get()))));
 	}
 	return _res6;
 }}).get();
@@ -28,6 +28,12 @@ public class Main {
 		int s = 0;
 		for (Number n : v) s += n.intValue();
 		return s;
+	}
+	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
+	static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {
+		LinkedHashMap<K,V> m = new LinkedHashMap<>();
+		for (var e : entries) m.put(e.getKey(), e.getValue());
+		return m;
 	}
 	public static void main(String[] args) {
 	System.out.println(grouped);

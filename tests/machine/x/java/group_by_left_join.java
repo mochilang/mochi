@@ -1,7 +1,7 @@
 import java.util.*;
 public class Main {
-	static List<Map<String,Object>> customers = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<String,Object>(){{put("id", 1);put("name", "Alice");}}, new LinkedHashMap<String,Object>(){{put("id", 2);put("name", "Bob");}}, new LinkedHashMap<String,Object>(){{put("id", 3);put("name", "Charlie");}}));
-	static List<Map<String,Integer>> orders = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<String,Integer>(){{put("id", 100);put("customerId", 1);}}, new LinkedHashMap<String,Integer>(){{put("id", 101);put("customerId", 1);}}, new LinkedHashMap<String,Integer>(){{put("id", 102);put("customerId", 2);}}));
+	static List<Map<String,Object>> customers = new ArrayList<>(java.util.Arrays.asList(mapOfEntries(entry("id", 1), entry("name", "Alice")), mapOfEntries(entry("id", 2), entry("name", "Bob")), mapOfEntries(entry("id", 3), entry("name", "Charlie"))));
+	static List<Map<String,Integer>> orders = new ArrayList<>(java.util.Arrays.asList(mapOfEntries(entry("id", 100), entry("customerId", 1)), mapOfEntries(entry("id", 101), entry("customerId", 1)), mapOfEntries(entry("id", 102), entry("customerId", 2))));
 	static List<Object> stats = (new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
 	List<Object> _res8 = new ArrayList<>();
 	Map<Object,List<Object>> _groups9 = new LinkedHashMap<>();
@@ -26,19 +26,25 @@ public class Main {
 	for (var __e : _groups9.entrySet()) {
 		Object g_key = __e.getKey();
 		List<Object> g = __e.getValue();
-		_res8.add(new LinkedHashMap<String,Object>(){{put("name", g_key);put("count", count((new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
+		_res8.add(mapOfEntries(entry("name", g_key), entry("count", count((new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
 	List<Object> _res15 = new ArrayList<>();
 	for (var r : g) {
 		if (!(((Map)r).get("o") != null)) continue;
 		_res15.add(r);
 	}
 	return _res15;
-}}).get()));}});
+}}).get()))));
 	}
 	return _res8;
 }}).get();
 	static int count(Collection<?> c) {
 		return c.size();
+	}
+	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
+	static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {
+		LinkedHashMap<K,V> m = new LinkedHashMap<>();
+		for (var e : entries) m.put(e.getKey(), e.getValue());
+		return m;
 	}
 	public static void main(String[] args) {
 	System.out.println("--- Group Left Join ---");
