@@ -22,6 +22,9 @@ fun poly(p: int): string {
     }
     i = i - 1
   }
+  if s == "" {
+    s = "1"
+  }
   return s
 }
 
