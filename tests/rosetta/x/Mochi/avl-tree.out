@@ -1,0 +1,64 @@
+Empty tree:
+null
+
+Insert test:
+{
+   "Data": 3,
+   "Balance": 0,
+   "Link": [
+      {
+         "Data": 1,
+         "Balance": -1,
+         "Link": [
+            {
+               "Data": 1,
+               "Balance": 0,
+               "Link": [
+                  null,
+                  null
+               ]
+            },
+            null
+         ]
+      },
+      {
+         "Data": 4,
+         "Balance": 1,
+         "Link": [
+            null,
+            {
+               "Data": 5,
+               "Balance": 0,
+               "Link": [
+                  null,
+                  null
+               ]
+            }
+         ]
+      }
+   ]
+}
+
+Remove test:
+{
+   "Data": 4,
+   "Balance": 0,
+   "Link": [
+      {
+         "Data": 1,
+         "Balance": 0,
+         "Link": [
+            null,
+            null
+         ]
+      },
+      {
+         "Data": 5,
+         "Balance": 0,
+         "Link": [
+            null,
+            null
+         ]
+      }
+   ]
+}
