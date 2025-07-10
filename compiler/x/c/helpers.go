@@ -192,11 +192,13 @@ func isMapIntStringType(t types.Type) bool {
 
 // defaultCValue returns a zero value literal for the given type.
 func defaultCValue(t types.Type) string {
-	switch t.(type) {
+	switch tt := t.(type) {
 	case types.StringType:
 		return "NULL"
 	case types.FloatType, types.IntType, types.BoolType:
 		return "0"
+	case types.StructType:
+		return fmt.Sprintf("(%s){0}", sanitizeName(tt.Name))
 	default:
 		return "0"
 	}
