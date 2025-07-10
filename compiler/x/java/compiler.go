@@ -248,7 +248,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("}")
 	}
 	if c.helpers["load_yaml"] {
-		c.writeln("static List<Map<String,Object>> loadYaml(String path) throws Exception {")
+		c.writeln("static List<Map<String,Object>> loadYaml(String path) {")
 		c.indent++
 		c.writeln("List<Map<String,Object>> list = new ArrayList<>();")
 		c.writeln("try (BufferedReader br = new BufferedReader(new FileReader(path))) {")
@@ -277,7 +277,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("}")
 		c.writeln("if (cur != null) list.add(cur);")
 		c.indent--
-		c.writeln("}")
+		c.writeln("} catch (Exception e) { throw new RuntimeException(e); }")
 		c.writeln("return list;")
 		c.indent--
 		c.writeln("}")
@@ -723,7 +723,7 @@ func (c *Compiler) compileGlobalVar(v *parser.VarStmt) error {
 		if isListLiteral(v.Value) != nil {
 			expr = fmt.Sprintf("new ArrayList<>(%s)", expr)
 		}
-		if typ == "var" && isQueryExpr(v.Value) {
+		if isQueryExpr(v.Value) && typ != "int" {
 			typ = "List<Object>"
 		}
 	}
@@ -750,7 +750,7 @@ func (c *Compiler) compileGlobalLet(v *parser.LetStmt) error {
 		if isListLiteral(v.Value) != nil {
 			expr = fmt.Sprintf("new ArrayList<>(%s)", expr)
 		}
-		if isQueryExpr(v.Value) {
+		if isQueryExpr(v.Value) && typ != "int" {
 			typ = "List<Object>"
 		} else if typ == "var" {
 			typ = "Object"
@@ -864,8 +864,7 @@ func (c *Compiler) compileList(l *parser.ListLiteral) (string, error) {
 }
 
 func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
-	var b strings.Builder
-	b.WriteString("new LinkedHashMap<>(){{")
+	var entries []string
 	for _, it := range m.Items {
 		var k string
 		if s, ok := simpleStringKey(it.Key); ok {
@@ -881,10 +880,9 @@ func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		b.WriteString(fmt.Sprintf("put(%s, %s);", k, v))
+		entries = append(entries, fmt.Sprintf("Map.entry(%s, %s)", k, v))
 	}
-	b.WriteString("}}")
-	return b.String(), nil
+	return fmt.Sprintf("new LinkedHashMap<>(Map.ofEntries(%s))", strings.Join(entries, ", ")), nil
 }
 
 func (c *Compiler) compileStructLiteral(s *parser.StructLiteral) (string, error) {
@@ -991,7 +989,7 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 		} else if isMapLiteral(v.Value) != nil && !isMapLitCastToStructExpr(v.Value) {
 			expr = fmt.Sprintf("new HashMap<>(%s)", expr)
 		}
-		if isQueryExpr(v.Value) {
+		if isQueryExpr(v.Value) && typ != "int" {
 			typ = "List<Object>"
 		} else if typ == "var" {
 			typ = "Object"
@@ -1295,6 +1293,12 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 			}
 		} else if op.Op == "+" || op.Op == "-" || op.Op == "*" || op.Op == "/" || op.Op == "%" ||
 			op.Op == "<" || op.Op == "<=" || op.Op == ">" || op.Op == ">=" {
+			if op.Op == "<" || op.Op == "<=" || op.Op == ">" || op.Op == ">=" {
+				if isStringVal(expr, c) || isStringVal(right, c) {
+					expr = fmt.Sprintf("String.valueOf(%s).compareTo(String.valueOf(%s)) %s 0", expr, right, op.Op)
+					continue
+				}
+			}
 			expr = fmt.Sprintf("%s %s %s", c.maybeNumber(expr), op.Op, c.maybeNumber(right))
 		} else if op.Op == "&&" || op.Op == "||" {
 			expr = fmt.Sprintf("%s %s %s", maybeBool(expr), op.Op, maybeBool(right))
@@ -2025,7 +2029,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			b.WriteString(fmt.Sprintf("\t\tif (!(%s)) continue;\n", cond))
 		}
 		if id, ok := identName(q.Select); ok && id == gName {
-			b.WriteString(fmt.Sprintf("\t\t%[1]s.add(new LinkedHashMap<>(){{put(\"key\", %s);put(\"items\", %s);}});\n", resVar, keyVar, gName))
+			b.WriteString(fmt.Sprintf("\t\t%[1]s.add(new LinkedHashMap<>(Map.ofEntries(Map.entry(\"key\", %s), Map.entry(\"items\", %s))));\n", resVar, keyVar, gName))
 		} else {
 			sel, err := c.compileExpr(q.Select)
 			if err != nil {

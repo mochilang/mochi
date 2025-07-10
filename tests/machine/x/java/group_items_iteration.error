@@ -1,9 +1,0 @@
-line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramsgroup_items_iteration532216928/001/Main.java:38: error: incompatible types: possible lossy conversion from double to int
-			total = total + ((Number)((Map)x).get("val")).doubleValue();
-			              ^
-1 error
-
-
-  1| let data = [
-  2|   {tag: "a", val: 1},

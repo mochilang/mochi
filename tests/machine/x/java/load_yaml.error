@@ -1,8 +1,16 @@
-line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramsload_yaml4228523657/001/Main.java:14: error: incompatible types: List<Map<String,Object>> cannot be converted to List<Object>
-	static List<Object> people = loadYaml("../interpreter/valid/people.yaml");
-	                                     ^
-1 error
+line 0: run error: exit status 1
+Exception in thread "main" java.lang.ExceptionInInitializerError
+Caused by: java.lang.RuntimeException: java.io.FileNotFoundException: ../interpreter/valid/people.yaml (No such file or directory)
+	at Main.loadYaml(Main.java:49)
+	at Main.<clinit>(Main.java:22)
+Caused by: java.io.FileNotFoundException: ../interpreter/valid/people.yaml (No such file or directory)
+	at java.base/java.io.FileInputStream.open0(Native Method)
+	at java.base/java.io.FileInputStream.open(FileInputStream.java:213)
+	at java.base/java.io.FileInputStream.<init>(FileInputStream.java:152)
+	at java.base/java.io.FileInputStream.<init>(FileInputStream.java:106)
+	at java.base/java.io.FileReader.<init>(FileReader.java:60)
+	at Main.loadYaml(Main.java:33)
+	... 1 more
 
 
   1| type Person {
