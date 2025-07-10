@@ -2,7 +2,7 @@
 
 This directory contains C++ source code generated from Mochi programs and the corresponding outputs or error logs.
 
-Compiled programs: 97/100
+Compiled programs: 99/100
 
 ## Checklist
 
@@ -35,7 +35,7 @@ Compiled programs: 97/100
 - [x] group_by_join
 - [x] group_by_left_join
 - [x] group_by_multi_join
-- [ ] group_by_multi_join_sort
+- [x] group_by_multi_join_sort
 - [x] group_by_sort
 - [ ] group_items_iteration
 - [x] if_else
@@ -77,7 +77,7 @@ Compiled programs: 97/100
 - [x] pure_fold
 - [x] pure_global_fold
 - [x] python_auto
-- [ ] python_math
+- [x] python_math
 - [x] query_sum_select
 - [x] record_assign
 - [x] right_join

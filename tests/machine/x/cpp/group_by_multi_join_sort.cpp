@@ -175,12 +175,9 @@ auto result = ([]() {
         {(-([&](auto v) {
            return std::accumulate(v.begin(), v.end(), 0);
          })(([&]() {
-           std::vector<decltype((std::declval<__struct6>()
-                                     .std::declval<__struct4>()
-                                     .l_extendedprice *
-                                 ((1 - std::declval<__struct6>()
-                                           .std::declval<__struct4>()
-                                           .l_discount))))>
+           std::vector<decltype((
+               std::declval<__struct6>().l.l_extendedprice *
+               ((1 - std::declval<__struct6>().l.l_discount))))>
                __items;
            for (auto x : g.items) {
              __items.push_back((x.l.l_extendedprice * ((1 - x.l.l_discount))));
@@ -190,12 +187,9 @@ auto result = ([]() {
          __struct8{g.key.c_custkey, g.key.c_name, ([&](auto v) {
                      return std::accumulate(v.begin(), v.end(), 0);
                    })(([&]() {
-                     std::vector<decltype((std::declval<__struct6>()
-                                               .std::declval<__struct4>()
-                                               .l_extendedprice *
-                                           ((1 - std::declval<__struct6>()
-                                                     .std::declval<__struct4>()
-                                                     .l_discount))))>
+                     std::vector<decltype((
+                         std::declval<__struct6>().l.l_extendedprice *
+                         ((1 - std::declval<__struct6>().l.l_discount))))>
                          __items;
                      for (auto x : g.items) {
                        __items.push_back(

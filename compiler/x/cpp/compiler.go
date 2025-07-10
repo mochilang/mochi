@@ -220,6 +220,9 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	body.Write(c.buf.Bytes())
 
 	src := body.Bytes()
+	for pkg := range c.packages {
+		src = bytes.ReplaceAll(src, []byte(pkg+"."), []byte(pkg+"::"))
+	}
 
 	includes := []string{"#include <iostream>"}
 	add := func(h string) {
@@ -775,7 +778,7 @@ func (c *Compiler) compileImport(im *parser.ImportStmt) error {
 	c.packages[im.As] = struct{}{}
 	switch *im.Lang {
 	case "python":
-		if im.Path == "math" && im.Auto {
+		if im.Path == "math" {
 			c.headerWriteln("#include <cmath>")
 			c.headerWriteln("namespace " + im.As + " {")
 			c.headerWriteln("inline double sqrt(double x){ return std::sqrt(x); }")
@@ -1221,8 +1224,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 							continue
 						}
 						if strings.Contains(expr, v+".") {
-							rep := fmt.Sprintf("std::declval<%s>().", t)
-							expr = strings.ReplaceAll(expr, v+".", rep)
+							expr = replaceVarRef(expr, v, t)
 						}
 					}
 					ftype := fmt.Sprintf("decltype(%s)", expr)
@@ -1663,8 +1665,7 @@ func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error
 				continue
 			}
 			if strings.Contains(val, v+".") {
-				rep := fmt.Sprintf("std::declval<%s>().", t)
-				ftype = strings.ReplaceAll(ftype, v+".", rep)
+				ftype = replaceVarRef(ftype, v, t)
 			}
 		}
 		if dot := strings.Index(val, "."); dot != -1 {
@@ -1848,8 +1849,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			continue
 		}
 		if strings.Contains(val, v+".") {
-			rep := fmt.Sprintf("std::declval<%s>().", t)
-			itemTypeExpr = strings.ReplaceAll(itemTypeExpr, v+".", rep)
+			itemTypeExpr = replaceVarRef(itemTypeExpr, v, t)
 		}
 	}
 	if matched, _ := regexp.MatchString(`[A-Za-z_][A-Za-z0-9_]*\\.`, itemTypeExpr); matched {
@@ -2756,6 +2756,14 @@ func (c *Compiler) structFromVars(names []string) string {
 	}
 	c.defineStruct(info)
 	return info.Name
+}
+
+// replaceVarRef replaces field accesses like "var.field" with
+// "std::declval<typ>().field" while avoiding nested replacements
+// inside already-expanded expressions.
+func replaceVarRef(expr, name, typ string) string {
+	re := regexp.MustCompile(`(^|[^A-Za-z0-9_.>])` + regexp.QuoteMeta(name) + `\.`)
+	return re.ReplaceAllString(expr, `${1}std::declval<`+typ+`>().`)
 }
 
 // compileFunExpr converts an anonymous function expression to a C++ lambda.
