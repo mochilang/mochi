@@ -76,7 +76,7 @@ func sanitizeName(name string) string {
 	if sanitized == "" || !((sanitized[0] >= 'A' && sanitized[0] <= 'Z') || (sanitized[0] >= 'a' && sanitized[0] <= 'z') || sanitized[0] == '_') {
 		sanitized = "_" + sanitized
 	}
-	if goReserved[sanitized] {
+	if goReserved[sanitized] || sanitized == "data" {
 		sanitized = "_" + sanitized
 	}
 	return sanitized
