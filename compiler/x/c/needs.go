@@ -73,8 +73,11 @@ const (
 	needGroupByInt           = "group_by_int"
 	needGroupByString        = "group_by_string"
 	needListPairString       = "list_pair_string"
+	needListMapStringInt     = "list_map_string_int"
 	needGroupByPairString    = "group_by_pair_string"
 	needJSONMapString        = "json_map_string"
 	needJSONListMapString    = "json_list_map_string"
+	needJSONMapStringInt     = "json_map_string_int"
+	needJSONListMapStringInt = "json_list_map_string_int"
 	needStringHeader         = "string_h"
 )

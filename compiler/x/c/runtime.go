@@ -85,6 +85,9 @@ static int map_string_int_contains(map_string_int m,const char* k){
     for(int i=0;i<m.len;i++) if(strcmp(m.data[i].key,k)==0) return 1;
     return 0;
 }`
+	helperListMapStringInt = `typedef struct { int len; int cap; map_string_int* data; } list_map_string_int;
+static list_map_string_int list_map_string_int_create(int cap){ list_map_string_int l; l.len=0; l.cap=cap; l.data=cap?(map_string_int*)malloc(sizeof(map_string_int)*cap):NULL; return l; }
+static void list_map_string_int_push(list_map_string_int* l,map_string_int m){ if(l->len>=l->cap){ l->cap=l->cap?l->cap*2:4; l->data=(map_string_int*)realloc(l->data,sizeof(map_string_int)*l->cap);} l->data[l->len++]=m; }`
 
 	helperMapIntString = `typedef struct { int key; char* value; } pair_int_string;
 static pair_int_string pair_int_string_new(int key, char* val){ pair_int_string p; p.key=key; p.value=val; return p; }
@@ -552,6 +555,21 @@ static void _json_list_list_int(list_list_int v) {
     for (int i = 0; i < v.len; i++) { if (i > 0) printf(","); _json_map_string(v.data[i]); }
     printf("]");
 }`
+	helperJSONMapStringInt = `static void _json_map_string_int(map_string_int m) {
+    printf("{");
+    for (int i = 0; i < m.len; i++) {
+        if (i > 0) printf(",");
+        _json_string(m.data[i].key);
+        printf(":%d", m.data[i].value);
+    }
+    printf("}\n");
+}`
+	helperJSONListMapStringInt = `static void _json_list_map_string_int(list_map_string_int v) {
+    if (v.len == 1) { _json_map_string_int(v.data[0]); return; }
+    printf("[");
+    for (int i = 0; i < v.len; i++) { if (i > 0) printf(","); _json_map_string_int(v.data[i]); }
+    printf("]");
+}`
 	helperLoadJSON = `static char* _read_all(const char* path) {
     FILE* f = (!path || path[0]=='\0' || strcmp(path,"-")==0) ? stdin : fopen(path, "r");
     if (!f) { fprintf(stderr, "cannot open %s\n", path); exit(1); }
@@ -743,6 +761,8 @@ var helperCode = map[string]string{
 	needJSON:                 helperJSON,
 	needJSONMapString:        helperJSONMapString,
 	needJSONListMapString:    helperJSONListMapString,
+	needJSONMapStringInt:     helperJSONMapStringInt,
+	needJSONListMapStringInt: helperJSONListMapStringInt,
 	needLoadJSON:             helperLoadJSON,
 	needSaveJSON:             helperSaveJSON,
 	needFetch:                helperFetch,
@@ -765,6 +785,7 @@ var helperCode = map[string]string{
 	needGroupByInt:           helperGroupByInt,
 	needGroupByString:        helperGroupByString,
 	needListPairString:       helperListPairString,
+	needListMapStringInt:     helperListMapStringInt,
 	needGroupByPairString:    helperGroupByPairString,
 }
 
@@ -824,6 +845,8 @@ var helperOrder = []string{
 	needJSON,
 	needJSONMapString,
 	needJSONListMapString,
+	needJSONMapStringInt,
+	needJSONListMapStringInt,
 	needLoadJSON,
 	needSaveJSON,
 	needFetch,
@@ -840,6 +863,7 @@ var helperOrder = []string{
 	needGroupByInt,
 	needGroupByString,
 	needListPairString,
+	needListMapStringInt,
 	needGroupByPairString,
 }
 

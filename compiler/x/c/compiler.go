@@ -3849,6 +3849,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 				return ""
 			}
 			c.emitJSONExpr(p.Call.Args[0])
+			c.writeln("printf(\"\\n\");")
 			return ""
 		}
 		args := make([]string, len(p.Call.Args))
@@ -4945,6 +4946,86 @@ func isListMapStringPrimary(p *parser.Primary, env *types.Env) bool {
 	return false
 }
 
+func isListMapStringIntExpr(e *parser.Expr, env *types.Env) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	return isListMapStringIntUnary(e.Binary.Left, env)
+}
+
+func isListMapStringIntUnary(u *parser.Unary, env *types.Env) bool {
+	if u == nil {
+		return false
+	}
+	return isListMapStringIntPostfix(u.Value, env)
+}
+
+func isListMapStringIntPostfix(p *parser.PostfixExpr, env *types.Env) bool {
+	if p == nil {
+		return false
+	}
+	if len(p.Ops) == 0 {
+		return isListMapStringIntPrimary(p.Target, env)
+	}
+	if p.Ops[0].Index != nil && p.Ops[0].Index.Colon != nil {
+		if isStringPrimary(p.Target, env) {
+			return false
+		}
+		return true
+	}
+	return false
+}
+
+func isListMapStringIntPrimary(p *parser.Primary, env *types.Env) bool {
+	if p == nil {
+		return false
+	}
+	if p.List != nil {
+		if len(p.List.Elems) == 0 {
+			return true
+		}
+		el := p.List.Elems[0]
+		if el.Binary != nil && el.Binary.Left != nil && el.Binary.Left.Value != nil && el.Binary.Left.Value.Target != nil {
+			if el.Binary.Left.Value.Target.Map != nil {
+				return true
+			}
+			if sel := el.Binary.Left.Value.Target.Selector; sel != nil && env != nil {
+				if t, err := env.GetVar(sel.Root); err == nil {
+					if isMapStringIntType(t) {
+						return true
+					}
+					if lt, ok := t.(types.ListType); ok {
+						if isMapStringIntType(lt.Elem) {
+							return true
+						}
+					}
+				}
+			}
+		}
+	}
+	if p.Selector != nil && env != nil {
+		if t, err := env.GetVar(p.Selector.Root); err == nil {
+			if lt, ok := t.(types.ListType); ok {
+				if isMapStringIntType(lt.Elem) {
+					return true
+				}
+			}
+		}
+	}
+	if p.Call != nil && env != nil {
+		if t, err := env.GetVar(p.Call.Func); err == nil {
+			if ft, ok := t.(types.FuncType); ok {
+				if lt, ok2 := ft.Return.(types.ListType); ok2 {
+					if isMapStringIntType(lt.Elem) {
+						return true
+					}
+				}
+			}
+		}
+	}
+	return false
+}
+
 func asMapLiteral(e *parser.Expr) *parser.MapLiteral {
 	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil || e.Binary.Left.Value.Target == nil {
 		return nil
@@ -4987,6 +5068,10 @@ func (c *Compiler) emitJSONExpr(e *parser.Expr) {
 	} else if isListMapStringExpr(e, c.env) {
 		c.need(needJSONListMapString)
 		c.writeln(fmt.Sprintf("_json_list_map_string(%s);", argExpr))
+	} else if isListMapStringIntExpr(e, c.env) {
+		c.need(needListMapStringInt)
+		c.need(needJSONListMapStringInt)
+		c.writeln(fmt.Sprintf("_json_list_map_string_int(%s);", argExpr))
 	} else if isFloatArg(e, c.env) {
 		c.writeln(fmt.Sprintf("_json_float(%s);", argExpr))
 	} else if isStringArg(e, c.env) {
@@ -4994,6 +5079,30 @@ func (c *Compiler) emitJSONExpr(e *parser.Expr) {
 	} else if isMapStringExpr(e, c.env) {
 		c.need(needJSONMapString)
 		c.writeln(fmt.Sprintf("_json_map_string(%s);", argExpr))
+	} else if isMapStringIntExpr(e, c.env) {
+		c.need(needJSONMapStringInt)
+		c.need(needListMapStringInt)
+		c.writeln(fmt.Sprintf("_json_map_string_int(%s);", argExpr))
+	} else if st, ok := c.exprType(e).(types.StructType); ok {
+		arg := c.compileExpr(e)
+		c.writeln("printf(\"{\");")
+		for i, name := range st.Order {
+			if i > 0 {
+				c.writeln("printf(\",\");")
+			}
+			c.writeln(fmt.Sprintf("_json_string(\"%s\");", name))
+			c.writeln("printf(\":\");")
+			field := fmt.Sprintf("%s.%s", arg, sanitizeName(name))
+			switch st.Fields[name].(type) {
+			case types.StringType:
+				c.writeln(fmt.Sprintf("_json_string(%s);", field))
+			case types.FloatType:
+				c.writeln(fmt.Sprintf("_json_float(%s);", field))
+			default:
+				c.writeln(fmt.Sprintf("_json_int(%s);", field))
+			}
+		}
+		c.writeln("printf(\"}\");")
 	} else {
 		c.writeln(fmt.Sprintf("_json_int(%s);", argExpr))
 	}
