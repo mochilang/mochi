@@ -516,7 +516,7 @@ func (c *Compiler) maybeNumber(expr string) string {
 
 func maybeBool(expr string) string {
 	if strings.Contains(expr, ").get(") {
-		return fmt.Sprintf("Boolean.TRUE.equals(%s)", expr)
+		return fmt.Sprintf("%s != null", expr)
 	}
 	return expr
 }
@@ -914,9 +914,9 @@ func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		entries = append(entries, fmt.Sprintf("Map.entry(%s, %s)", k, v))
+		entries = append(entries, fmt.Sprintf("put(%s, %s);", k, v))
 	}
-	return fmt.Sprintf("new LinkedHashMap<>(Map.ofEntries(%s))", strings.Join(entries, ", ")), nil
+	return fmt.Sprintf("new LinkedHashMap<>(){{%s}}", strings.Join(entries, "")), nil
 }
 
 func (c *Compiler) compileStructLiteral(s *parser.StructLiteral) (string, error) {
@@ -1122,7 +1122,7 @@ func (c *Compiler) compileIf(i *parser.IfStmt) error {
 	if err != nil {
 		return err
 	}
-	c.writeln("if (" + cond + ") {")
+	c.writeln("if (" + maybeBool(cond) + ") {")
 	c.indent++
 	for _, s := range i.Then {
 		if err := c.compileStmt(s); err != nil {
@@ -1909,6 +1909,66 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		}
 		groupsVar = fmt.Sprintf("_groups%d", c.tmpCount)
 		c.tmpCount++
+	}
+
+	// simple right or outer join without additional clauses
+	if q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct &&
+		len(q.Froms) == 0 && len(q.Joins) == 1 && q.Where == nil {
+		j := q.Joins[0]
+		if j.Side != nil && (*j.Side == "right" || *j.Side == "outer") {
+			js, err := c.compileExpr(j.Src)
+			if err != nil {
+				c.vars = oldVars
+				return "", err
+			}
+			on, err := c.compileExpr(j.On)
+			if err != nil {
+				c.vars = oldVars
+				return "", err
+			}
+			sel, err := c.compileExpr(q.Select)
+			if err != nil {
+				c.vars = oldVars
+				return "", err
+			}
+			tmpList := fmt.Sprintf("_tmp%d", c.tmpCount)
+			c.tmpCount++
+			var b strings.Builder
+			b.WriteString("(new java.util.function.Supplier<List<Object>>() {public List<Object> get() {\n")
+			b.WriteString(fmt.Sprintf("\tList<Object> %s = new ArrayList<>();\n", resVar))
+			if *j.Side == "outer" {
+				b.WriteString("\tjava.util.Set<Object> _matched = new java.util.HashSet<>();\n")
+			}
+			b.WriteString(fmt.Sprintf("\tfor (var %s : %s) {\n", q.Var, src))
+			b.WriteString(fmt.Sprintf("\t\tList<Object> %s = new ArrayList<>();\n", tmpList))
+			b.WriteString(fmt.Sprintf("\t\tfor (var _it%d : %s) {\n", c.tmpCount, js))
+			iter := fmt.Sprintf("_it%d", c.tmpCount)
+			c.tmpCount++
+			b.WriteString(fmt.Sprintf("\t\t\tvar %s = %s;\n", j.Var, iter))
+			b.WriteString(fmt.Sprintf("\t\t\tif (!(%s)) continue;\n", on))
+			b.WriteString(fmt.Sprintf("\t\t\t%[1]s.add(%s);\n", tmpList, iter))
+			if *j.Side == "outer" {
+				b.WriteString(fmt.Sprintf("\t\t\t_matched.add(%s);\n", iter))
+			}
+			b.WriteString("\t\t}\n")
+			b.WriteString(fmt.Sprintf("\t\tif (%s.isEmpty()) %s.add(null);\n", tmpList, tmpList))
+			b.WriteString(fmt.Sprintf("\t\tfor (var %s : %s) {\n", j.Var, tmpList))
+			b.WriteString(fmt.Sprintf("\t\t\t%[1]s.add(%s);\n", resVar, sel))
+			b.WriteString("\t\t}\n")
+			b.WriteString("\t}\n")
+			if *j.Side == "outer" {
+				b.WriteString(fmt.Sprintf("\tfor (var %s : %s) {\n", j.Var, js))
+				b.WriteString("\t\tif (!_matched.contains(" + j.Var + ")) {\n")
+				b.WriteString(fmt.Sprintf("\t\t\tObject %s = null;\n", q.Var))
+				b.WriteString(fmt.Sprintf("\t\t\t%[1]s.add(%s);\n", resVar, sel))
+				b.WriteString("\t\t}\n")
+				b.WriteString("\t}\n")
+			}
+			b.WriteString(fmt.Sprintf("\treturn %s;\n", resVar))
+			b.WriteString("}}).get()")
+			c.vars = oldVars
+			return b.String(), nil
+		}
 	}
 
 	if q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct && len(q.Froms) == 0 && len(q.Joins) == 0 {
