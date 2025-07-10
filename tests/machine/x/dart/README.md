@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs. Successful runs have a .out file, failures a .error file.
 
-Compiled programs: 87/97
+Compiled programs: 88/97
 
 Checklist:
 
@@ -32,7 +32,7 @@ Checklist:
 - [x] group_by_conditional_sum
 - [x] group_by_having
 - [x] group_by_join
-- [ ] group_by_left_join
+- [x] group_by_left_join
 - [x] group_by_multi_join
 - [ ] group_by_multi_join_sort
 - [x] group_by_sort

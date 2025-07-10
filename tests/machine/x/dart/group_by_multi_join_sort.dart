@@ -53,7 +53,7 @@ var result = (() {
                   (end_date as num) &&
               l['l_returnflag'] == 'R'))
             continue;
-          var _k3 = {
+          var _k4 = {
             'c_custkey': c['c_custkey'],
             'c_name': c['c_name'],
             'c_acctbal': c['c_acctbal'],
@@ -62,7 +62,7 @@ var result = (() {
             'c_comment': c['c_comment'],
             'n_name': n['n_name'],
           };
-          _g1.putIfAbsent(_k3, () => <dynamic>[]).add({
+          _g1.putIfAbsent(_k4, () => <dynamic>[]).add({
             'c': c,
             'o': o,
             'l': l,
@@ -74,31 +74,37 @@ var result = (() {
   }
   for (var entry in _g1.entries) {
     var g = entry.value;
-    var _k3 = entry.key;
+    var _k4 = entry.key;
     _q0.add([
       -(() {
-        var _q5 = <dynamic>[];
-        for (var x in g) {
-          _q5.add(
-            (x['l']['l_extendedprice'] as num) *
-                ((1 - (x['l']['l_discount'] as num)) as num),
-          );
-        }
-        return _q5;
-      })().reduce((a, b) => a + b),
-      {
-        'c_custkey': g['key']['c_custkey'],
-        'c_name': g['key']['c_name'],
-        'revenue': (() {
-          var _q4 = <dynamic>[];
+        var _t8 = (() {
+          var _q7 = <dynamic>[];
           for (var x in g) {
-            _q4.add(
+            _q7.add(
               (x['l']['l_extendedprice'] as num) *
                   ((1 - (x['l']['l_discount'] as num)) as num),
             );
           }
-          return _q4;
-        })().reduce((a, b) => a + b),
+          return _q7;
+        })();
+        return _t8.reduce((a, b) => a + b);
+      })(),
+      {
+        'c_custkey': g['key']['c_custkey'],
+        'c_name': g['key']['c_name'],
+        'revenue': (() {
+          var _t6 = (() {
+            var _q5 = <dynamic>[];
+            for (var x in g) {
+              _q5.add(
+                (x['l']['l_extendedprice'] as num) *
+                    ((1 - (x['l']['l_discount'] as num)) as num),
+              );
+            }
+            return _q5;
+          })();
+          return _t6.reduce((a, b) => a + b);
+        })(),
         'c_acctbal': g['key']['c_acctbal'],
         'n_name': g['key']['n_name'],
         'c_address': g['key']['c_address'],
