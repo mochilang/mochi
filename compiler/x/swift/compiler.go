@@ -789,19 +789,27 @@ func (c *compiler) primary(p *parser.Primary) (string, error) {
 			return "[Any]()", nil
 		}
 		if st, ok := c.detectAutoStructList(p.List); ok {
+			order := c.structs[st]
 			elems := make([]string, len(p.List.Elems))
 			for i, e := range p.List.Elems {
 				m := mapLit(e)
-				fields := make([]string, len(m.Items))
-				for j, it := range m.Items {
+				if m == nil {
+					return "", fmt.Errorf("expected map literal")
+				}
+				vals := make(map[string]string)
+				for _, it := range m.Items {
 					key, _ := keyName(it.Key)
 					v, err := c.expr(it.Value)
 					if err != nil {
 						return "", err
 					}
-					fields[j] = fmt.Sprintf("%s: %s", key, v)
+					vals[key] = v
 				}
-				elems[i] = fmt.Sprintf("%s(%s)", st, strings.Join(fields, ", "))
+				parts := make([]string, len(order))
+				for j, k := range order {
+					parts[j] = fmt.Sprintf("%s: %s", k, vals[k])
+				}
+				elems[i] = fmt.Sprintf("%s(%s)", st, strings.Join(parts, ", "))
 			}
 			return "[" + strings.Join(elems, ", ") + "]", nil
 		}
@@ -2863,6 +2871,15 @@ func (c *compiler) recordMapFields(name string, e *parser.Expr) {
 			return
 		}
 	}
+
+	if fields, ok := c.mapFields[name]; ok && fields != nil {
+		if typ := c.varTypes[name]; strings.HasPrefix(typ, "list") {
+			if st, ok2 := c.autoStructFromFields(fields); ok2 {
+				c.varTypes[name] = "list_" + st
+				c.swiftTypes[name] = "[" + st + "]"
+			}
+		}
+	}
 }
 
 func mapLit(e *parser.Expr) *parser.MapLiteral {
@@ -2935,6 +2952,34 @@ func (c *compiler) detectAutoStructList(l *parser.ListLiteral) (string, bool) {
 			return "", false
 		}
 	}
+	key := ""
+	for _, k := range order {
+		key += k + ":" + fields[k] + ";"
+	}
+	if name, ok := c.structKeys[key]; ok {
+		return name, true
+	}
+	c.autoCount++
+	name := fmt.Sprintf("Auto%d", c.autoCount)
+	c.structKeys[key] = name
+	c.structs[name] = order
+	c.structTypes[name] = fields
+	c.autoStructs[name] = true
+	return name, true
+}
+
+func (c *compiler) autoStructFromFields(fields map[string]string) (string, bool) {
+	if len(fields) == 0 {
+		return "", false
+	}
+	order := make([]string, 0, len(fields))
+	for k := range fields {
+		if fields[k] == "" || fields[k] == "Any" {
+			return "", false
+		}
+		order = append(order, k)
+	}
+	sort.Strings(order)
 	key := ""
 	for _, k := range order {
 		key += k + ":" + fields[k] + ";"
