@@ -39,3 +39,4 @@ $grouped = (function() use ($filtered) {
     return $result;
 })();
 var_dump($grouped);
+?>

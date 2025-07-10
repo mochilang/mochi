@@ -37,6 +37,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 	c.emitRuntime()
+	c.writeln("?>")
 	return c.buf.Bytes(), nil
 }
 

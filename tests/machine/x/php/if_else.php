@@ -5,3 +5,4 @@ if ($x > 3) {
 } else {
     var_dump("small");
 }
+?>

@@ -47,3 +47,4 @@ $result = (function() use ($customer, $end_date, $lineitem, $nation, $orders, $s
     return $result;
 })();
 var_dump($result);
+?>

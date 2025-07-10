@@ -7,3 +7,4 @@ $label = (function($_t) {
     return "unknown";
 })($x);
 var_dump($label);
+?>

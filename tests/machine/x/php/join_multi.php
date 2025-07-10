@@ -21,3 +21,4 @@ var_dump("--- Multi Join ---");
 foreach ($result as $r) {
     var_dump($r['name'], "bought item", $r['sku']);
 }
+?>

@@ -28,3 +28,4 @@ $result = (function() use ($items) {
     return $result;
 })();
 var_dump($result);
+?>

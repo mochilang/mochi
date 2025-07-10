@@ -21,3 +21,4 @@ foreach ($people as $_tmp0 => $_tmp1) {
     $people[$_tmp0] = $_tmp1;
 }
 var_dump("ok");
+?>

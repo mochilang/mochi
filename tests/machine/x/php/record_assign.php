@@ -11,3 +11,4 @@ function inc($c) {
 $c = new Counter(['n' => 0]);
 inc($c);
 var_dump($c->n);
+?>

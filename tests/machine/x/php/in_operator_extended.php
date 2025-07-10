@@ -17,3 +17,4 @@ var_dump(array_key_exists("b", $m));
 $s = "hello";
 var_dump(strpos($s, "ell") !== false);
 var_dump(strpos($s, "foo") !== false);
+?>

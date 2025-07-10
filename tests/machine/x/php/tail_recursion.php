@@ -6,3 +6,4 @@ function sum_rec($n, $acc) {
     return sum_rec($n - 1, $acc + $n);
 }
 var_dump(sum_rec(10, 0));
+?>

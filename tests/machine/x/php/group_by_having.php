@@ -16,3 +16,4 @@ $big = (function() use ($people) {
     return $result;
 })();
 json_encode($big);
+?>

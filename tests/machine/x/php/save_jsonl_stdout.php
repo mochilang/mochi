@@ -11,4 +11,4 @@ function _save($rows, $path = null, $opts = []) {
         }
         if ($out !== STDOUT) fclose($out);
     }
-}
+}?>

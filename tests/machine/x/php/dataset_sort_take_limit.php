@@ -14,3 +14,4 @@ var_dump("--- Top products (excluding most expensive) ---");
 foreach ($expensive as $item) {
     var_dump($item['name'], "costs $", $item['price']);
 }
+?>

@@ -21,3 +21,4 @@ function sum_tree($t) {
 }
 $t = new Node(new Leaf(), 1, new Node(new Leaf(), 2, new Leaf()));
 var_dump(sum_tree($t));
+?>

@@ -9,3 +9,4 @@ foreach ($numbers as $n) {
     }
     var_dump("odd number:", $n);
 }
+?>

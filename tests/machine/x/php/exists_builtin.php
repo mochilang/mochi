@@ -10,3 +10,4 @@ $flag = count((function() use ($data) {
     return $result;
 })()) > 0;
 var_dump($flag);
+?>

@@ -10,3 +10,4 @@ $sorted = (function() use ($data) {
     return $result;
 })();
 var_dump($sorted);
+?>

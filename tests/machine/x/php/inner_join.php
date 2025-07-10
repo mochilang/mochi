@@ -16,3 +16,4 @@ var_dump("--- Orders with customer info ---");
 foreach ($result as $entry) {
     var_dump("Order", $entry['orderId'], "by", $entry['customerName'], "- $", $entry['total']);
 }
+?>
