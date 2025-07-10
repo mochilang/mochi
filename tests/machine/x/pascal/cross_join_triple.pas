@@ -1,4 +1,4 @@
-program main;
+program CrossJoinTriple;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 
@@ -42,6 +42,6 @@ begin
   writeln('--- Cross Join of three lists ---');
   for c in combos do
     begin
-      writeln(c.n, ' ', c.l, ' ', c.b);
+      writeln(c.KeyData['n'], ' ', c.KeyData['l'], ' ', c.KeyData['b']);
     end;
 end.

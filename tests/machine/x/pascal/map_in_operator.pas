@@ -1,4 +1,4 @@
-program main;
+program MapInOperator;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

@@ -1,4 +1,4 @@
-program main;
+program BoolChain;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

@@ -1,4 +1,4 @@
-program main;
+program GroupItemsIteration;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 
@@ -90,13 +90,13 @@ begin
 end;
 
 var
-  _tmp0: specialize TFPGMap<Variant, Variant>;
-  _tmp1: specialize TFPGMap<Variant, Variant>;
-  _tmp2: specialize TFPGMap<Variant, Variant>;
+  _tmp0: specialize TFPGMap<string, Variant>;
+  _tmp1: specialize TFPGMap<string, Variant>;
+  _tmp2: specialize TFPGMap<string, Variant>;
   _tmp3: specialize TArray<specialize TFPGMap<string, Variant>>;
   _tmp4: specialize TArray<specialize _Group<specialize TFPGMap<string, Variant>>>;
   _tmp5: specialize TArray<Variant>;
-  _tmp6: specialize TFPGMap<Variant, Variant>;
+  _tmp6: specialize TFPGMap<string, Variant>;
   _tmp7: specialize TArray<Variant>;
   _tmp8: specialize TArray<Variant>;
   d: specialize TFPGMap<string, Variant>;
@@ -110,13 +110,13 @@ var
   x: Variant;
 
 begin
-  _tmp0 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp0 := specialize TFPGMap<string, Variant>.Create;
   _tmp0.AddOrSetData('tag', 'a');
   _tmp0.AddOrSetData('val', 1);
-  _tmp1 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp1 := specialize TFPGMap<string, Variant>.Create;
   _tmp1.AddOrSetData('tag', 'a');
   _tmp1.AddOrSetData('val', 2);
-  _tmp2 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp2 := specialize TFPGMap<string, Variant>.Create;
   _tmp2.AddOrSetData('tag', 'b');
   _tmp2.AddOrSetData('val', 3);
   data := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp0, _tmp1, _tmp2]);
@@ -126,7 +126,7 @@ begin
       _tmp3 := Concat(_tmp3, [d]);
     end;
   _tmp4 := specialize _group_by<specialize TFPGMap<string, Variant>>(_tmp3, function(d: specialize
-           TFPGMap<string, Variant>): Variant begin Result := d.tag
+           TFPGMap<string, Variant>): Variant begin Result := d.KeyData['tag']
 end
 );
 SetLength(_tmp5, 0);
@@ -143,7 +143,7 @@ for g in groups do
       begin
         total := total + x.val;
       end;
-    _tmp6 := specialize TFPGMap<Variant, Variant>.Create;
+    _tmp6 := specialize TFPGMap<string, Variant>.Create;
     _tmp6.AddOrSetData('tag', g.key);
     _tmp6.AddOrSetData('total', total);
     tmp := specialize _appendList<Variant>(tmp, _tmp6);

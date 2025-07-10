@@ -1,4 +1,4 @@
-program main;
+program PureFold;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

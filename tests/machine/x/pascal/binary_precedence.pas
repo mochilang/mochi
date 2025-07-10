@@ -1,4 +1,4 @@
-program main;
+program BinaryPrecedence;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

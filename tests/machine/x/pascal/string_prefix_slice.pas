@@ -1,4 +1,4 @@
-program main;
+program StringPrefixSlice;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

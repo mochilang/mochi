@@ -4,43 +4,35 @@ Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling /workspace/mochi/tests/machine/x/pascal/group_by_multi_join_sort.pas
-group_by_multi_join_sort.pas(78,13) Error: Illegal type conversion: "{Array Of Const/Constant Open} Array of TFPGMap$2$crcA49C6E68" to "TArray$1$crc90DE1C48"
-group_by_multi_join_sort.pas(87,15) Error: Illegal type conversion: "{Array Of Const/Constant Open} Array of TFPGMap$2$crcA49C6E68" to "TArray$1$crc90DE1C48"
-group_by_multi_join_sort.pas(96,13) Error: Illegal type conversion: "{Array Of Const/Constant Open} Array of TFPGMap$2$crcA49C6E68" to "TArray$1$crc90DE1C48"
-group_by_multi_join_sort.pas(107,15) Error: Illegal type conversion: "{Array Of Const/Constant Open} Array of TFPGMap$2$crcA49C6E68" to "TArray$1$crc90DE1C48"
-group_by_multi_join_sort.pas(111,35) Error: Identifier not found "g"
-group_by_multi_join_sort.pas(112,32) Error: Identifier not found "g"
-group_by_multi_join_sort.pas(114,12) Error: Identifier not found "g"
-group_by_multi_join_sort.pas(116,33) Error: Illegal qualifier
-group_by_multi_join_sort.pas(116,59) Error: Illegal qualifier
-group_by_multi_join_sort.pas(116,16) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of TArray$1$crcE41905E8", expected "{Open} Array Of Pointer"
-group_by_multi_join_sort.pas(114,12) Error: Cannot find an enumerator for the type "<erroneous type>"
-group_by_multi_join_sort.pas(119,35) Error: Identifier not found "g"
-group_by_multi_join_sort.pas(120,32) Error: Identifier not found "g"
-group_by_multi_join_sort.pas(121,35) Error: Identifier not found "g"
-group_by_multi_join_sort.pas(122,33) Error: Identifier not found "g"
-group_by_multi_join_sort.pas(123,35) Error: Identifier not found "g"
-group_by_multi_join_sort.pas(125,12) Error: Identifier not found "g"
-group_by_multi_join_sort.pas(127,33) Error: Illegal qualifier
-group_by_multi_join_sort.pas(127,59) Error: Illegal qualifier
-group_by_multi_join_sort.pas(127,16) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of TArray$1$crcE41905E8", expected "{Open} Array Of Pointer"
-group_by_multi_join_sort.pas(125,12) Error: Cannot find an enumerator for the type "<erroneous type>"
-group_by_multi_join_sort.pas(133,11) Error: Identifier not found "o"
-group_by_multi_join_sort.pas(135,20) Error: Identifier not found "o"
-group_by_multi_join_sort.pas(135,36) Error: identifier idents no member "c_custkey"
-group_by_multi_join_sort.pas(136,15) Error: Identifier not found "l"
-group_by_multi_join_sort.pas(138,24) Error: Identifier not found "l"
-group_by_multi_join_sort.pas(138,39) Error: Identifier not found "o"
-group_by_multi_join_sort.pas(139,19) Error: Identifier not found "n"
-group_by_multi_join_sort.pas(141,28) Error: Identifier not found "n"
-group_by_multi_join_sort.pas(141,46) Error: identifier idents no member "c_nationkey"
-group_by_multi_join_sort.pas(142,30) Error: Identifier not found "o"
-group_by_multi_join_sort.pas(142,64) Error: Identifier not found "o"
-group_by_multi_join_sort.pas(142,96) Error: Identifier not found "l"
-group_by_multi_join_sort.pas(144,49) Error: Incompatible types: got "{Array Of Const/Constant Open} Array of TFPGMap$2$crcA49C6E68" expected "TArray$1$crc90DE1C48"
-group_by_multi_join_sort.pas(144,43) Error: Incompatible types: got "TFPGMap<System.Variant,System.Variant>" expected "TFPGMap<System.ShortString,System.Variant>"
+group_by_multi_join_sort.pas(114,11) Error: Identifier not found "o"
+group_by_multi_join_sort.pas(116,20) Error: Identifier not found "o"
+group_by_multi_join_sort.pas(117,15) Error: Identifier not found "l"
+group_by_multi_join_sort.pas(119,24) Error: Identifier not found "l"
+group_by_multi_join_sort.pas(119,39) Error: Identifier not found "o"
+group_by_multi_join_sort.pas(120,19) Error: Identifier not found "n"
+group_by_multi_join_sort.pas(122,28) Error: Identifier not found "n"
+group_by_multi_join_sort.pas(123,30) Error: Identifier not found "o"
+group_by_multi_join_sort.pas(123,75) Error: Identifier not found "o"
+group_by_multi_join_sort.pas(124,38) Error: Identifier not found "l"
+group_by_multi_join_sort.pas(126,51) Error: Identifier not found "g"
+group_by_multi_join_sort.pas(127,48) Error: Identifier not found "g"
+group_by_multi_join_sort.pas(129,28) Error: Identifier not found "g"
+group_by_multi_join_sort.pas(131,49) Error: Illegal qualifier
+group_by_multi_join_sort.pas(131,75) Error: Illegal qualifier
+group_by_multi_join_sort.pas(131,32) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of TArray$1$crcE41905E8", expected "{Open} Array Of Pointer"
+group_by_multi_join_sort.pas(129,28) Error: Cannot find an enumerator for the type "<erroneous type>"
+group_by_multi_join_sort.pas(134,51) Error: Identifier not found "g"
+group_by_multi_join_sort.pas(135,48) Error: Identifier not found "g"
+group_by_multi_join_sort.pas(136,51) Error: Identifier not found "g"
+group_by_multi_join_sort.pas(137,49) Error: Identifier not found "g"
+group_by_multi_join_sort.pas(138,51) Error: Identifier not found "g"
+group_by_multi_join_sort.pas(141,28) Error: Identifier not found "g"
+group_by_multi_join_sort.pas(143,51) Error: Illegal qualifier
+group_by_multi_join_sort.pas(143,77) Error: Illegal qualifier
+group_by_multi_join_sort.pas(143,33) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of TArray$1$crcE41905E8", expected "{Open} Array Of Pointer"
+group_by_multi_join_sort.pas(141,28) Error: Cannot find an enumerator for the type "<erroneous type>"
 group_by_multi_join_sort.pas(17,19) Error: Can't read or write variables of this type
-group_by_multi_join_sort.pas(154) Fatal: There were 36 errors compiling module, stopping
+group_by_multi_join_sort.pas(154) Fatal: There were 28 errors compiling module, stopping
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode
 

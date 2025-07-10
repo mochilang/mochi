@@ -1,4 +1,4 @@
-program main;
+program CastStringToInt;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

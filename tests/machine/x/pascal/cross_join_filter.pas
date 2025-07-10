@@ -1,4 +1,4 @@
-program main;
+program CrossJoinFilter;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 
@@ -36,6 +36,6 @@ begin
   writeln('--- Even pairs ---');
   for p in pairs do
     begin
-      writeln(p.n, ' ', p.l);
+      writeln(p.KeyData['n'], ' ', p.KeyData['l']);
     end;
 end.

@@ -1,4 +1,4 @@
-program main;
+program StringConcat;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

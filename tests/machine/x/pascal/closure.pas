@@ -1,4 +1,4 @@
-program main;
+program Closure;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 
@@ -8,7 +8,7 @@ type
   generic TArray<T> = array of T;
 
 type
-  TFunc0 = function (p0: integer): integer is nested;
+  TFunc0 = function (p0: integer): integer;
 
 
 function makeAdder(n: integer): TFunc0;
@@ -24,7 +24,7 @@ begin
 end;
 
 var
-  add10: function (p0: integer): integer is nested;
+  add10: function (p0: p0__integer): integer;
 
 begin
   add10 := makeAdder(10);

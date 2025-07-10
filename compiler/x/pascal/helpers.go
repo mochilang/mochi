@@ -52,6 +52,21 @@ func sanitizeName(name string) string {
 	return res
 }
 
+// pascalCase converts a file or identifier name like "print_hello" to
+// "PrintHello" suitable for use as a Pascal program identifier.
+func pascalCase(s string) string {
+	parts := strings.FieldsFunc(s, func(r rune) bool {
+		return r == '_' || r == '-' || r == ' ' || r == '.'
+	})
+	for i, p := range parts {
+		if p == "" {
+			continue
+		}
+		parts[i] = strings.ToUpper(p[:1]) + strings.ToLower(p[1:])
+	}
+	return sanitizeName(strings.Join(parts, ""))
+}
+
 func rootPrimary(e *parser.Expr) *parser.Primary {
 	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil {
 		return nil

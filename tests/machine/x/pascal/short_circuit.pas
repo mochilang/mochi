@@ -1,4 +1,4 @@
-program main;
+program ShortCircuit;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

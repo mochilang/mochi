@@ -1,4 +1,4 @@
-program main;
+program StringCompare;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

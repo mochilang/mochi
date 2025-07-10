@@ -1,4 +1,4 @@
-program main;
+program IfElse;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

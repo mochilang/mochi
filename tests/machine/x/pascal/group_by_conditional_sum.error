@@ -1,27 +1,24 @@
-line: 115
+line: 114
 error: fpc error: exit status 1
 Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling /workspace/mochi/tests/machine/x/pascal/group_by_conditional_sum.pas
-group_by_conditional_sum.pas(80,12) Error: Illegal type conversion: "{Array Of Const/Constant Open} Array of TFPGMap$2$crcA49C6E68" to "TArray$1$crc90DE1C48"
-group_by_conditional_sum.pas(82,29) Error: Identifier not found "g"
-group_by_conditional_sum.pas(83,8) Error: Illegal qualifier
-group_by_conditional_sum.pas(85,18) Error: Illegal qualifier
-group_by_conditional_sum.pas(89,16) Error: Incompatible types: got "ShortInt" expected "TArray$1$crc90DE1C48"
-group_by_conditional_sum.pas(92,12) Error: Identifier not found "g"
-group_by_conditional_sum.pas(92,12) Error: Cannot find an enumerator for the type "<erroneous type>"
-group_by_conditional_sum.pas(97,12) Error: Identifier not found "g"
-group_by_conditional_sum.pas(99,33) Error: Illegal qualifier
-group_by_conditional_sum.pas(99,16) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of TArray$1$crcE41905E8", expected "{Open} Array Of Pointer"
-group_by_conditional_sum.pas(97,12) Error: Cannot find an enumerator for the type "<erroneous type>"
+group_by_conditional_sum.pas(86,33) Error: Identifier not found "g"
+group_by_conditional_sum.pas(88,16) Error: Identifier not found "g"
+group_by_conditional_sum.pas(90,16) Error: Illegal qualifier
+group_by_conditional_sum.pas(92,26) Error: Illegal qualifier
+group_by_conditional_sum.pas(96,24) Error: Incompatible types: got "ShortInt" expected "TArray$1$crc90DE1C48"
+group_by_conditional_sum.pas(88,16) Error: Cannot find an enumerator for the type "<erroneous type>"
+group_by_conditional_sum.pas(101,16) Error: Identifier not found "g"
+group_by_conditional_sum.pas(103,37) Error: Illegal qualifier
+group_by_conditional_sum.pas(103,20) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of TArray$1$crcE41905E8", expected "{Open} Array Of Pointer"
+group_by_conditional_sum.pas(101,16) Error: Cannot find an enumerator for the type "<erroneous type>"
 group_by_conditional_sum.pas(41,64) Error: Operator is not overloaded: "Double" div "Double"
-group_by_conditional_sum.pas(108,37) Error: Incompatible types: got "{Array Of Const/Constant Open} Array of TFPGMap$2$crcA49C6E68" expected "TArray$1$crc90DE1C48"
-group_by_conditional_sum.pas(108,31) Error: Incompatible types: got "TFPGMap<System.Variant,System.Variant>" expected "TFPGMap<System.ShortString,System.Variant>"
-group_by_conditional_sum.pas(109,31) Error: Identifier not found "g"
-group_by_conditional_sum.pas(109,16) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of TArray$1$crcE41905E8", expected "{Open} Array Of Pointer"
+group_by_conditional_sum.pas(108,31) Error: Identifier not found "g"
+group_by_conditional_sum.pas(108,16) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of TArray$1$crcE41905E8", expected "{Open} Array Of Pointer"
 group_by_conditional_sum.pas(17,19) Error: Can't read or write variables of this type
-group_by_conditional_sum.pas(115) Fatal: There were 17 errors compiling module, stopping
+group_by_conditional_sum.pas(114) Fatal: There were 14 errors compiling module, stopping
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode
 

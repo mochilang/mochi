@@ -1,4 +1,4 @@
-program main;
+program LenString;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

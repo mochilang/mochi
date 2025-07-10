@@ -1,4 +1,4 @@
-program main;
+program LoadYaml;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 
@@ -30,8 +30,8 @@ end;
 end;
 
 var
-  _tmp0: specialize TFPGMap<Variant, Variant>;
-  _tmp1: specialize TArray<specialize TFPGMap<string, string>>;
+  _tmp0: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp1: specialize TFPGMap<string, Variant>;
   a: specialize TFPGMap<string, string>;
   adults: specialize TArray<specialize TFPGMap<string, string>>;
   p: Person;
@@ -39,18 +39,18 @@ var
 
 begin
   people := _load("../interpreter/valid/people.yaml");
-  _tmp0 := specialize TFPGMap<Variant, Variant>.Create;
-  _tmp0.AddOrSetData('name', p.name);
-  _tmp0.AddOrSetData('email', p.email);
-  SetLength(_tmp1, 0);
+  SetLength(_tmp0, 0);
   for p in people do
     begin
       if not ((p.age >= 18)) then continue;
-      _tmp1 := Concat(_tmp1, [_tmp0]);
+      _tmp1 := specialize TFPGMap<string, Variant>.Create;
+      _tmp1.AddOrSetData('name', p.name);
+      _tmp1.AddOrSetData('email', p.email);
+      _tmp0 := Concat(_tmp0, [_tmp1]);
     end;
-  adults := _tmp1;
+  adults := _tmp0;
   for a in adults do
     begin
-      writeln(a.name, ' ', a.email);
+      writeln(a.KeyData['name'], ' ', a.KeyData['email']);
     end;
 end.

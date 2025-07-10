@@ -1,4 +1,4 @@
-program main;
+program TwoSum;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 
@@ -10,9 +10,7 @@ type
 function twoSum(nums: specialize TArray<integer>; target: integer): specialize TArray<integer>;
 
 var
-  i: integer;
-  j: Variant;
-  n: integer;
+  n: Variant;
 begin
   n := Length(nums);
   for i := 0 to n - 1 do

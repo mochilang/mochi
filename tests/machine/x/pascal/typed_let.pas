@@ -1,4 +1,4 @@
-program main;
+program TypedLet;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

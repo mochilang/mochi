@@ -1,4 +1,4 @@
-program main;
+program UnaryNeg;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

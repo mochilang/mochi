@@ -1,4 +1,4 @@
-program main;
+program MinMaxBuiltin;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

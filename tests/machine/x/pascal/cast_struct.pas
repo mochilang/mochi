@@ -1,4 +1,4 @@
-program main;
+program CastStruct;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

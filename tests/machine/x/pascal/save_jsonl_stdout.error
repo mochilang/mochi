@@ -9,7 +9,6 @@ save_jsonl_stdout.pas(14,20) Error: Error in type definition
 save_jsonl_stdout.pas(17,9) Error: Identifier not found "TJSONStreamer"
 save_jsonl_stdout.pas(21,19) Error: Illegal qualifier
 save_jsonl_stdout.pas(25,8) Error: Illegal qualifier
-save_jsonl_stdout.pas(42,13) Error: Illegal type conversion: "{Array Of Const/Constant Open} Array of TFPGMap$2$crcA49C6E68" to "TArray$1$crc7ED07D64"
 save_jsonl_stdout.pas(43,3) Error: Generics without specialization cannot be used as a type for a variable
 save_jsonl_stdout.pas(43,22) Fatal: illegal character "'"'" ($22)
 Fatal: Compilation aborted

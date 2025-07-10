@@ -1,4 +1,4 @@
-program main;
+program MathOps;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

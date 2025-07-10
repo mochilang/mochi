@@ -1,4 +1,4 @@
-program main;
+program MapMembership;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 

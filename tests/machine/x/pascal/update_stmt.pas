@@ -1,4 +1,4 @@
-program main;
+program UpdateStmt;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 
@@ -63,10 +63,10 @@ begin
   for _tmp4 := 0 to High(people) do
     begin
       _tmp5 := people[_tmp4];
-      if (_tmp5.age >= 18) then
+      if (age >= 18) then
         begin
           _tmp5.status := 'adult';
-          _tmp5.age := _tmp5.age + 1;
+          _tmp5.age := age + 1;
         end;
       people[_tmp4] := _tmp5;
     end;
