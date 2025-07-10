@@ -1147,7 +1147,7 @@ func (c *compiler) selector(s *parser.SelectorExpr) string {
 		for _, f := range s.Tail {
 			cast := ""
 			if m, ok := c.mapFields[s.Root]; ok {
-				if t, ok2 := m[f]; ok2 {
+				if t, ok2 := m[f]; ok2 && t != "Any" {
 					cast = fmt.Sprintf(" as! %s", t)
 				}
 			}
@@ -2353,6 +2353,10 @@ func (c *compiler) recordMapFields(name string, e *parser.Expr) {
 	if p.Target.Query != nil {
 		if t := c.elementFieldTypes(p.Target.Query.Select); t != nil {
 			c.mapFields[name] = t
+		} else if t := c.queryFieldTypes(p.Target.Query); t != nil {
+			c.mapFields[name] = t
+		} else if m := mapLit(p.Target.Query.Select); m != nil {
+			c.mapFields[name] = c.mapFieldsFromLiteral(m)
 		} else if isVarRef(p.Target.Query.Select, p.Target.Query.Var) {
 			if t := c.elementFieldTypes(p.Target.Query.Source); t != nil {
 				c.mapFields[name] = t
@@ -2395,6 +2399,8 @@ func (c *compiler) mapFieldsFromLiteral(m *parser.MapLiteral) map[string]string 
 			t := c.exprType(it.Value)
 			if t != "" {
 				typ = swiftTypeOf(t)
+			} else {
+				typ = c.fieldType(it.Value)
 			}
 		}
 		if typ == "" {
@@ -2426,6 +2432,39 @@ func boolExpr(e *parser.Expr) bool {
 		}
 	}
 	return false
+}
+
+func (c *compiler) fieldType(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return ""
+	}
+	p := e.Binary.Left.Value
+	if sel := p.Target.Selector; sel != nil {
+		root := sel.Root
+		// only support single-level field access
+		if len(sel.Tail) == 1 {
+			if m, ok := c.mapFields[root]; ok {
+				if t, ok2 := m[sel.Tail[0]]; ok2 {
+					return t
+				}
+			}
+		}
+	}
+	if len(p.Ops) == 1 && p.Ops[0].Index != nil {
+		idx := p.Ops[0].Index
+		if idx.Start != nil && idx.End == nil && idx.Colon == nil && idx.Colon2 == nil {
+			if key, ok := keyName(idx.Start); ok {
+				if sel := p.Target.Selector; sel != nil && len(sel.Tail) == 0 {
+					if m, ok := c.mapFields[sel.Root]; ok {
+						if t, ok2 := m[key]; ok2 {
+							return t
+						}
+					}
+				}
+			}
+		}
+	}
+	return ""
 }
 
 func literalType(e *parser.Expr) string {

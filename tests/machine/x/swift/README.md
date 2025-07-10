@@ -90,7 +90,7 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
-- [ ] dataset_where_filter
+- [x] dataset_where_filter
 - [ ] group_by
 - [ ] group_by_conditional_sum
 - [ ] group_by_having
