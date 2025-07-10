@@ -2480,6 +2480,10 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 				c.needsPrintList = true
 				return fmt.Sprintf("_print_list(%s, %s)", elem, arg), nil
 			}
+			if c.isStringLiteralExpr(call.Args[0]) {
+				lit := call.Args[0].Binary.Left.Value.Target.Lit.Str
+				return fmt.Sprintf("std.debug.print(%q, .{})", *lit+"\n"), nil
+			}
 		}
 		args := make([]string, len(call.Args))
 		fmtParts := make([]string, len(call.Args))
@@ -3039,6 +3043,17 @@ func (c *Compiler) isStringPrimary(p *parser.Primary) bool {
 		}
 	}
 	return false
+}
+
+func (c *Compiler) isStringLiteralExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || u.Value.Target == nil || len(u.Value.Ops) > 0 {
+		return false
+	}
+	return u.Value.Target.Lit != nil && u.Value.Target.Lit.Str != nil
 }
 
 func (c *Compiler) isMapExpr(e *parser.Expr) bool {

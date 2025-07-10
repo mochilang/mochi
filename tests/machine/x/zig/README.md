@@ -102,3 +102,4 @@ These files were generated using the Zig compiler backend. Each `.mochi` program
 
 ## TODO
 - [ ] Keep generated outputs in sync with compiler improvements.
+- [ ] Optimize print statements for constant strings.

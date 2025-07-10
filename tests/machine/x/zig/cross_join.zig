@@ -56,7 +56,7 @@ const result = blk2: { var _tmp2 = std.ArrayList(struct {
 }) catch unreachable; } } const _tmp3 = _tmp2.toOwnedSlice() catch unreachable; break :blk2 _tmp3; };
 
 pub fn main() void {
-    std.debug.print("{s}\n", .{"--- Cross Join: All order-customer pairs ---"});
+    std.debug.print("--- Cross Join: All order-customer pairs ---\n", .{});
     for (result) |entry| {
         std.debug.print("{s} {any} {s} {any} {s} {any} {s} {any}\n", .{"Order", entry.orderId, "(customerId:", entry.orderCustomerId, ", total: $", entry.orderTotal, ") paired with", entry.pairedCustomerName});
     }

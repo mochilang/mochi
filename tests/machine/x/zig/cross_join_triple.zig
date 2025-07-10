@@ -27,7 +27,7 @@ const combos = blk0: { var _tmp0 = std.ArrayList(struct {
 }) catch unreachable; } } } const _tmp1 = _tmp0.toOwnedSlice() catch unreachable; break :blk0 _tmp1; };
 
 pub fn main() void {
-    std.debug.print("{s}\n", .{"--- Cross Join of three lists ---"});
+    std.debug.print("--- Cross Join of three lists ---\n", .{});
     for (combos) |c| {
         std.debug.print("{any} {any} {any}\n", .{c.n, c.l, c.b});
     }
