@@ -987,6 +987,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			type loopInfo struct {
 				pre        []string
 				head, cond string
+				boolCond   bool
 			}
 			loops := []loopInfo{{head: fmt.Sprintf("var %s in %s", q.Var, c.mustExpr(q.Source))}}
 			if t := types.TypeOfExpr(q.Source, c.env); t != nil {
@@ -1009,7 +1010,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			for _, j := range q.Joins {
 				js := c.mustExpr(j.Src)
 				on := c.mustExpr(j.On)
-				loops = append(loops, loopInfo{head: fmt.Sprintf("var %s in %s", j.Var, js), cond: on})
+				loops = append(loops, loopInfo{head: fmt.Sprintf("var %s in %s", j.Var, js), cond: on, boolCond: isBoolType(types.TypeOfExpr(j.On, c.env))})
 				if t := types.TypeOfExpr(j.Src, c.env); t != nil {
 					if lt, ok := t.(types.ListType); ok {
 						if _, ok := lt.Elem.(types.MapType); ok {
@@ -1023,13 +1024,21 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 					w(strings.Repeat("  ", i+1) + pl + "\n")
 				}
 				w(strings.Repeat("  ", i+1) + "for (" + loop.head + ") {\n")
-				if c := loop.cond; c != "" {
-					w(strings.Repeat("  ", i+2) + fmt.Sprintf("if (!(%s)) continue;\n", c))
+				if cond := loop.cond; cond != "" {
+					if loop.boolCond {
+						w(strings.Repeat("  ", i+2) + fmt.Sprintf("if (!(%s)) continue;\n", cond))
+					} else {
+						w(strings.Repeat("  ", i+2) + fmt.Sprintf("if (%s == null) continue;\n", cond))
+					}
 				}
 			}
 			if q.Where != nil {
-				cond := c.mustExpr(q.Where)
-				w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("if (!(%s)) continue;\n", cond))
+				condStr := c.mustExpr(q.Where)
+				if isBoolType(types.TypeOfExpr(q.Where, c.env)) {
+					w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("if (!(%s)) continue;\n", condStr))
+				} else {
+					w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("if (%s == null) continue;\n", condStr))
+				}
 			}
 			val := c.mustExpr(arg)
 			w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("%s.add(%s);\n", tmp, val))
@@ -1092,9 +1101,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				"}",
 				fmt.Sprintf("if (%s.isEmpty) %s.add(null);", tmpVar, tmpVar),
 			}
-			loops = append(loops, loopInfo{pre: pre, head: fmt.Sprintf("var %s in %s", j.Var, tmpVar)})
+			loops = append(loops, loopInfo{pre: pre, head: fmt.Sprintf("var %s in %s", j.Var, tmpVar), boolCond: true})
 		} else {
-			loops = append(loops, loopInfo{head: fmt.Sprintf("var %s in %s", j.Var, js), cond: on})
+			loops = append(loops, loopInfo{head: fmt.Sprintf("var %s in %s", j.Var, js), cond: on, boolCond: isBoolType(types.TypeOfExpr(j.On, c.env))})
 		}
 		if t := types.TypeOfExpr(j.Src, c.env); t != nil {
 			if lt, ok := t.(types.ListType); ok {
@@ -1110,14 +1119,22 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			w(strings.Repeat("  ", i+1) + pl + "\n")
 		}
 		w(strings.Repeat("  ", i+1) + "for (" + loop.head + ") {\n")
-		if c := loop.cond; c != "" {
-			w(strings.Repeat("  ", i+2) + fmt.Sprintf("if (!(%s)) continue;\n", c))
+		if cond := loop.cond; cond != "" {
+			if loop.boolCond {
+				w(strings.Repeat("  ", i+2) + fmt.Sprintf("if (!(%s)) continue;\n", cond))
+			} else {
+				w(strings.Repeat("  ", i+2) + fmt.Sprintf("if (%s == null) continue;\n", cond))
+			}
 		}
 	}
 
 	if q.Where != nil {
-		cond := c.mustExpr(q.Where)
-		w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("if (!(%s)) continue;\n", cond))
+		condStr := c.mustExpr(q.Where)
+		if isBoolType(types.TypeOfExpr(q.Where, c.env)) {
+			w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("if (!(%s)) continue;\n", condStr))
+		} else {
+			w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("if (%s == null) continue;\n", condStr))
+		}
 	}
 
 	sel := c.mustExpr(q.Select)
@@ -1180,10 +1197,17 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		w(fmt.Sprintf("    var %s = entry.value;\n", grpVar))
 		w(fmt.Sprintf("    var %s = entry.key;\n", keyVar))
 		if q.Group.Having != nil {
-			cond := c.mustExpr(q.Group.Having)
-			w(fmt.Sprintf("    if (!(%s)) continue;\n", cond))
+			condStr := c.mustExpr(q.Group.Having)
+			if isBoolType(types.TypeOfExpr(q.Group.Having, c.env)) {
+				w(fmt.Sprintf("    if (!(%s)) continue;\n", condStr))
+			} else {
+				w(fmt.Sprintf("    if (%s == null) continue;\n", condStr))
+			}
 		}
 		sel := c.mustExpr(q.Select)
+		if name, ok := c.simpleIdentifier(q.Select); ok && name == q.Group.Name {
+			sel = fmt.Sprintf("{'key': %s, 'items': %s}", keyVar, grpVar)
+		}
 		if q.Sort != nil {
 			key := c.mustExpr(q.Sort)
 			w(fmt.Sprintf("    %s.add([%s, %s]);\n", tmp, key, sel))
@@ -1350,9 +1374,19 @@ func (c *Compiler) compileSelector(sel *parser.SelectorExpr) string {
 			return root
 		}
 	}
-	typ, _ := c.env.GetVar(root)
+	typ, err := c.env.GetVar(root)
 	if ok := c.mapVars[root]; ok {
 		typ = types.MapType{}
+	}
+	if err != nil {
+		if st, ok := c.env.GetStruct(root); ok && len(st.Order) == 0 {
+			return root + "()"
+		}
+		if ut, ok := c.env.FindUnionByVariant(root); ok {
+			if st, ok := ut.Variants[root]; ok && len(st.Order) == 0 {
+				return root + "()"
+			}
+		}
 	}
 	if _, ok := typ.(types.MapType); ok {
 		s := root
@@ -1779,6 +1813,11 @@ func isNumericType(t types.Type) bool {
 	default:
 		return false
 	}
+}
+
+func isBoolType(t types.Type) bool {
+	_, ok := t.(types.BoolType)
+	return ok
 }
 
 func isComparableType(t types.Type) bool {
