@@ -43,6 +43,9 @@ func New(env *types.Env) *Compiler {
 		groupElemType:   make(map[string]string),
 		groupElemFields: make(map[string]map[string]string),
 		helpers:         make(map[string]bool),
+		autoStructs:     make(map[string]bool),
+		structKeys:      make(map[string]string),
+		autoCount:       0,
 	}}
 }
 
@@ -59,6 +62,9 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 		c.writeln("import Foundation")
 		c.writeln("")
 		c.emitRuntime()
+	}
+	if len(c.autoStructs) > 0 {
+		c.emitAutoStructs()
 	}
 	c.buf.WriteString(body)
 	return []byte(c.buf.String()), nil
@@ -80,6 +86,9 @@ type compiler struct {
 	groupElemFields map[string]map[string]string
 	helpers         map[string]bool
 	tupleMap        bool
+	autoStructs     map[string]bool
+	structKeys      map[string]string
+	autoCount       int
 }
 
 func (c *compiler) program(p *parser.Program) error {
@@ -778,6 +787,23 @@ func (c *compiler) primary(p *parser.Primary) (string, error) {
 	case p.List != nil:
 		if len(p.List.Elems) == 0 {
 			return "[Any]()", nil
+		}
+		if st, ok := c.detectAutoStructList(p.List); ok {
+			elems := make([]string, len(p.List.Elems))
+			for i, e := range p.List.Elems {
+				m := mapLit(e)
+				fields := make([]string, len(m.Items))
+				for j, it := range m.Items {
+					key, _ := keyName(it.Key)
+					v, err := c.expr(it.Value)
+					if err != nil {
+						return "", err
+					}
+					fields[j] = fmt.Sprintf("%s: %s", key, v)
+				}
+				elems[i] = fmt.Sprintf("%s(%s)", st, strings.Join(fields, ", "))
+			}
+			return "[" + strings.Join(elems, ", ") + "]", nil
 		}
 		elems := make([]string, len(p.List.Elems))
 		for i, e := range p.List.Elems {
@@ -2781,6 +2807,12 @@ func (c *compiler) recordMapFields(name string, e *parser.Expr) {
 	p := e.Binary.Left.Value
 	if p.Target.List != nil && len(p.Target.List.Elems) > 0 {
 		if m := mapLit(p.Target.List.Elems[0]); m != nil {
+			if st, ok := c.detectAutoStructList(p.Target.List); ok {
+				c.varTypes[name] = "list_" + st
+				c.swiftTypes[name] = "[" + st + "]"
+				c.autoStructs[st] = true
+				return
+			}
 			c.mapFields[name] = c.mapFieldsFromLiteral(m)
 			return
 		}
@@ -2818,6 +2850,17 @@ func (c *compiler) recordMapFields(name string, e *parser.Expr) {
 					c.mapFields[name] = c.mapFieldsFromLiteral(m)
 				}
 			}
+		}
+	} else if p.Target.Call != nil && p.Target.Call.Func == "append" && len(p.Target.Call.Args) == 2 {
+		if m := mapLit(p.Target.Call.Args[1]); m != nil {
+			if st, ok := c.detectAutoStructList(&parser.ListLiteral{Elems: []*parser.Expr{p.Target.Call.Args[1]}}); ok {
+				c.varTypes[name] = "list_" + st
+				c.swiftTypes[name] = "[" + st + "]"
+				c.autoStructs[st] = true
+				return
+			}
+			c.mapFields[name] = c.mapFieldsFromLiteral(m)
+			return
 		}
 	}
 }
@@ -2859,6 +2902,53 @@ func (c *compiler) mapFieldsFromLiteral(m *parser.MapLiteral) map[string]string 
 		fields[key] = typ
 	}
 	return fields
+}
+
+func (c *compiler) detectAutoStructList(l *parser.ListLiteral) (string, bool) {
+	if l == nil || len(l.Elems) == 0 {
+		return "", false
+	}
+	first := mapLit(l.Elems[0])
+	if first == nil {
+		return "", false
+	}
+	fields := c.mapFieldsFromLiteral(first)
+	order := make([]string, 0, len(fields))
+	for k := range fields {
+		order = append(order, k)
+	}
+	sort.Strings(order)
+	for _, e := range l.Elems[1:] {
+		m := mapLit(e)
+		if m == nil {
+			return "", false
+		}
+		f2 := c.mapFieldsFromLiteral(m)
+		for _, k := range order {
+			if f2[k] == "" {
+				return "", false
+			}
+		}
+	}
+	for _, t := range fields {
+		if t == "Any" || t == "" {
+			return "", false
+		}
+	}
+	key := ""
+	for _, k := range order {
+		key += k + ":" + fields[k] + ";"
+	}
+	if name, ok := c.structKeys[key]; ok {
+		return name, true
+	}
+	c.autoCount++
+	name := fmt.Sprintf("Auto%d", c.autoCount)
+	c.structKeys[key] = name
+	c.structs[name] = order
+	c.structTypes[name] = fields
+	c.autoStructs[name] = true
+	return name, true
 }
 
 func boolExpr(e *parser.Expr) bool {
@@ -2942,6 +3032,28 @@ func literalType(e *parser.Expr) string {
 		return "String"
 	}
 	return ""
+}
+
+func (c *compiler) emitAutoStructs() {
+	names := make([]string, 0, len(c.autoStructs))
+	for n := range c.autoStructs {
+		names = append(names, n)
+	}
+	sort.Strings(names)
+	for _, n := range names {
+		fields := c.structs[n]
+		c.writeln(fmt.Sprintf("struct %s: Equatable {", n))
+		c.indent++
+		for _, f := range fields {
+			typ := c.structTypes[n][f]
+			if typ == "" {
+				typ = "Any"
+			}
+			c.writeln(fmt.Sprintf("var %s: %s", f, typ))
+		}
+		c.indent--
+		c.writeln("}\n")
+	}
 }
 
 func (c *compiler) emitRuntime() {
