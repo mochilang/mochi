@@ -772,9 +772,15 @@ func (c *Compiler) compileUpdateStmt(u *parser.UpdateStmt) error {
 	list := u.Target
 	idx := c.newTmp()
 	item := c.newTmp()
-	c.writeln(fmt.Sprintf("for %s in 0..%s.len() {", idx, list))
+	mutList := list
+	if m, err := c.env.IsMutable(list); err != nil || !m {
+		tmp := c.newTmp()
+		c.writeln(fmt.Sprintf("let mut %s = %s.clone();", tmp, list))
+		mutList = tmp
+	}
+	c.writeln(fmt.Sprintf("for %s in 0..%s.len() {", idx, mutList))
 	c.indent++
-	c.writeln(fmt.Sprintf("let mut %s = %s[%s].clone();", item, list, idx))
+	c.writeln(fmt.Sprintf("let mut %s = %s[%s].clone();", item, mutList, idx))
 
 	orig := c.env
 	if c.env != nil {
@@ -816,9 +822,12 @@ func (c *Compiler) compileUpdateStmt(u *parser.UpdateStmt) error {
 		c.writeln("}")
 	}
 	c.env = orig
-	c.writeln(fmt.Sprintf("%s[%s] = %s;", list, idx, item))
+	c.writeln(fmt.Sprintf("%s[%s] = %s;", mutList, idx, item))
 	c.indent--
 	c.writeln("}")
+	if mutList != list {
+		c.writeln(fmt.Sprintf("let %s = %s;", list, mutList))
+	}
 	return nil
 }
 
