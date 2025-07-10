@@ -455,8 +455,13 @@ func listElemType(t string) string {
 	return strings.TrimSpace(t[5 : len(t)-1])
 }
 
-func maybeNumber(expr string) string {
-	if strings.Contains(expr, ").get(") {
+func (c *Compiler) maybeNumber(expr string) string {
+	if t, ok := c.vars[expr]; ok {
+		if t == "int" || t == "double" {
+			return expr
+		}
+	}
+	if strings.Contains(expr, ".get(") {
 		return fmt.Sprintf("((Number)%s).doubleValue()", expr)
 	}
 	return expr
@@ -924,6 +929,9 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 		return err
 	}
 	if len(a.Index) == 0 && len(a.Field) == 0 {
+		if c.vars[a.Name] == "int" && strings.Contains(expr, ".doubleValue()") {
+			expr = fmt.Sprintf("(int)(%s)", expr)
+		}
 		c.writeln(fmt.Sprintf("%s = %s;", a.Name, expr))
 		return nil
 	}
@@ -1162,7 +1170,7 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 			expr = fmt.Sprintf("%s.compareTo(%s) %s 0", expr, right, op.Op)
 		} else if op.Op == "+" || op.Op == "-" || op.Op == "*" || op.Op == "/" || op.Op == "%" ||
 			op.Op == "<" || op.Op == "<=" || op.Op == ">" || op.Op == ">=" {
-			expr = fmt.Sprintf("%s %s %s", maybeNumber(expr), op.Op, maybeNumber(right))
+			expr = fmt.Sprintf("%s %s %s", c.maybeNumber(expr), op.Op, c.maybeNumber(right))
 		} else if op.Op == "&&" || op.Op == "||" {
 			expr = fmt.Sprintf("%s %s %s", maybeBool(expr), op.Op, maybeBool(right))
 		} else {
