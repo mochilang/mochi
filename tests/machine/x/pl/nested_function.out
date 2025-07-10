@@ -1,0 +1,3 @@
+ERROR: /workspace/mochi/tests/machine/x/pl/nested_function.pl:9: Initialization goal raised exception:
+ERROR: outer/2: Unknown procedure: inner/2
+

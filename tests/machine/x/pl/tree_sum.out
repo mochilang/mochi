@@ -1,0 +1,8 @@
+ERROR: /workspace/mochi/tests/machine/x/pl/tree_sum.pl:8: Initialization goal raised exception:
+ERROR: Stack limit (1.0Gb) exceeded
+ERROR:   Stack sizes: local: 0.9Gb, global: 67.5Mb, trail: 1Kb
+ERROR:   Stack depth: 8,848,933, last-call: 0%, Choice points: 9
+ERROR:   Probable infinite recursion (cycle):
+ERROR:     [8,848,933] user:sum_tree(_17701798, _17701800)
+ERROR:     [8,848,932] user:sum_tree(_17701818, _17701820)
+

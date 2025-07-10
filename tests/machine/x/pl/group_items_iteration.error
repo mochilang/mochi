@@ -1,3 +1,0 @@
-run: exit status 2
-ERROR: /workspace/mochi/tests/machine/x/pl/group_items_iteration.pl:8: user:main Type error: `integer' expected, found `items' (an atom)
-

@@ -4,7 +4,7 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 
 ## Summary
 
- - 86/97 programs compiled and ran successfully.
+ - 95/97 programs compiled and ran successfully.
 
 ### Checklist
 - [x] append_builtin
@@ -82,22 +82,22 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 - [x] values_builtin
 - [x] var_assignment
 - [x] dataset_where_filter
-- [ ] group_by
-- [ ] group_by_conditional_sum
-- [ ] group_by_having
-- [ ] group_by_join
-- [ ] group_by_left_join
-- [ ] group_by_multi_join
-- [ ] group_by_sort
-- [ ] group_items_iteration
+- [x] group_by
+- [x] group_by_conditional_sum
+- [x] group_by_having
+- [x] group_by_join
+- [x] group_by_left_join
+- [x] group_by_multi_join
+- [x] group_by_sort
+- [x] group_items_iteration
 - [x] list_set_ops
 - [x] load_yaml
  - [x] match_expr
  - [x] match_full
 - [x] nested_function
-- [ ] outer_join
-- [ ] query_sum_select
-- [ ] right_join
+- [x] outer_join
+- [x] query_sum_select
+- [x] right_join
 - [x] save_jsonl_stdout
 - [ ] test_block
  - [x] tree_sum
@@ -106,6 +106,5 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
  - [x] while_loop
 
 ### Remaining tasks
-- [ ] Improve query support (group joins, having)
-- [ ] Implement match expressions
-- [ ] Support external JSON/YAML builtins
+- [ ] Implement update statements
+- [ ] Support block expressions
