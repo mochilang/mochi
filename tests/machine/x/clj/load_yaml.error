@@ -1,6 +1,6 @@
 exit status 1
-Syntax error (ClassNotFoundException) compiling at (/workspace/mochi/tests/machine/x/clj/load_yaml.clj:25:20).
-clojure.data.json
+Execution error (FileNotFoundException) at java.io.FileInputStream/open0 (FileInputStream.java:-2).
+../interpreter/valid/people.yaml (No such file or directory)
 
 Full report at:
-/tmp/clojure-10990888259475005153.edn
+/tmp/clojure-13368956691616474548.edn

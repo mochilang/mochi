@@ -1,6 +1,6 @@
 exit status 1
-Execution error (ArityException) at main/-query (outer_join.clj:32).
-Wrong number of args (3) passed to: main/-main/fn--658
+Syntax error reading source at (/workspace/mochi/tests/machine/x/clj/outer_join.clj:130:1).
+EOF while reading, starting at line 3
 
 Full report at:
-/tmp/clojure-13673821903122050419.edn
+/tmp/clojure-13915048741040374524.edn

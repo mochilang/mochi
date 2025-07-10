@@ -449,7 +449,7 @@ func joinEqParts(e *parser.Expr) (*parser.Expr, *parser.Expr, bool) {
 		return nil, nil, false
 	}
 	left := &parser.Expr{Binary: &parser.BinaryExpr{Left: e.Binary.Left}}
-	right := &parser.Expr{Binary: &parser.BinaryExpr{Left: op.Right}}
+	right := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}
 	if _, _, ok := fieldAccess(left); !ok {
 		return nil, nil, false
 	}

@@ -2231,6 +2231,8 @@ func (c *Compiler) compileQueryHelper(q *parser.QueryExpr) (string, error) {
 	}
 	joinSrcs := make([]string, len(q.Joins))
 	joinOns := make([]string, len(q.Joins))
+	joinLeftKeys := make([]string, len(q.Joins))
+	joinRightKeys := make([]string, len(q.Joins))
 	for i, j := range q.Joins {
 		js, err := c.compileExpr(j.Src)
 		if err != nil {
@@ -2242,6 +2244,17 @@ func (c *Compiler) compileQueryHelper(q *parser.QueryExpr) (string, error) {
 		}
 		joinSrcs[i] = js
 		joinOns[i] = on
+
+		if leftExpr, rightExpr, ok := joinEqParts(j.On); ok {
+			lkey, err := c.compileExpr(leftExpr)
+			if err == nil {
+				rkey, err2 := c.compileExpr(rightExpr)
+				if err2 == nil {
+					joinLeftKeys[i] = lkey
+					joinRightKeys[i] = rkey
+				}
+			}
+		}
 	}
 	var whereExpr, sortExpr, skipExpr, takeExpr string
 	var groupKey string
