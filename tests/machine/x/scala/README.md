@@ -1,9 +1,9 @@
-# Scala Machine Generated Programs
+# Scala Machine Translations
 
-This directory contains Scala source code produced automatically from the Mochi programs in `tests/vm/valid`. The compiler lives in `compiler/x/scala` and the generated code is built with `scalac` and executed with `scala`.
+This directory contains Scala code generated from the Mochi programs in `tests/vm/valid` using the Scala compiler. Each program was compiled with `scalac`. Successful runs produced an `.out` file while failures produced an `.error` file.
 
 Compiled programs: 97/97
-Executed successfully: 74/97
+Executed successfully: 77/97
 
 ## Program checklist
 - [x] append_builtin.mochi
@@ -53,7 +53,7 @@ Executed successfully: 74/97
 - [x] let_and_print.mochi
 - [x] list_assign.mochi
 - [x] list_index.mochi
-- [ ] list_nested_assign.mochi
+- [x] list_nested_assign.mochi
 - [x] list_set_ops.mochi
 - [ ] load_yaml.mochi
 - [x] map_assign.mochi
@@ -62,7 +62,7 @@ Executed successfully: 74/97
 - [x] map_int_key.mochi
 - [x] map_literal_dynamic.mochi
 - [x] map_membership.mochi
-- [ ] map_nested_assign.mochi
+- [x] map_nested_assign.mochi
 - [x] match_expr.mochi
 - [x] match_full.mochi
 - [x] math_ops.mochi
@@ -104,6 +104,6 @@ Executed successfully: 74/97
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
 
-## Remaining work
+## Remaining Tasks
 - Finish full query join support
 - Improve `load`/`save` expression handling
