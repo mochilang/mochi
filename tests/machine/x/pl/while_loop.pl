@@ -1,16 +1,21 @@
 :- style_check(-singleton).
 :- initialization(main, main).
 main :-
-    I is 0,
+    _V0 is 0,
+    nb_setval(i, _V0),
     catch(
         (
             repeat,
-            ((I < 3) ->
+            nb_getval(i, _V1),
+            ((_V1 < 3) ->
                 catch(
                     (
-                        write(I),
+                        nb_getval(i, _V2),
+                        write(_V2),
                         nl,
-                        I_0 is (I_0 + 1),
+                        nb_getval(i, _V3),
+                        _V4 is (_V3 + 1),
+                        nb_setval(i, _V4),
                         true
                     ), continue, true),
                     fail

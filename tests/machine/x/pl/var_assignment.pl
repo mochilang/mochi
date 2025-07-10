@@ -1,8 +1,11 @@
 :- style_check(-singleton).
 :- initialization(main, main).
 main :-
-    X is 1,
-    X_0 is 2,
-    write(X_0),
+    _V0 is 1,
+    nb_setval(x, _V0),
+    _V1 is 2,
+    nb_setval(x, _V1),
+    nb_getval(x, _V2),
+    write(_V2),
     nl,
     true.
