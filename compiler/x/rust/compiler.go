@@ -486,12 +486,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if c.helpers["_intersect"] {
 		out.WriteString("fn _intersect<T: Eq + std::hash::Hash + Clone>(a: Vec<T>, b: Vec<T>) -> Vec<T> {\n    use std::collections::HashSet;\n    let set: HashSet<T> = b.into_iter().collect();\n    a.into_iter().filter(|x| set.contains(x)).collect()\n}\n\n")
 	}
-        if c.helpers["_load"] {
-                out.WriteString("fn _load<T: serde::de::DeserializeOwned>(path: &str, opts: std::collections::HashMap<String, String>) -> Vec<T> {\n    use std::io::Read;\n    let mut data = String::new();\n    if path.is_empty() || path == \"-\" {\n        std::io::stdin().read_to_string(&mut data).unwrap();\n    } else if let Ok(mut f) = std::fs::File::open(path) {\n        f.read_to_string(&mut data).unwrap();\n    }\n    if let Some(fmt) = opts.get(\"format\") {\n        if fmt == \"yaml\" {\n            if let Ok(v) = serde_yaml::from_str::<Vec<T>>(&data) { return v; }\n            if let Ok(v) = serde_yaml::from_str::<T>(&data) { return vec![v]; }\n        }\n    }\n    if let Ok(v) = serde_json::from_str::<Vec<T>>(&data) { return v; }\n    if let Ok(v) = serde_json::from_str::<T>(&data) { return vec![v]; }\n    Vec::new()\n}\n\n")
-        }
-        if c.helpers["_save"] {
-                out.WriteString("fn _save<T: serde::Serialize>(src: &[T], path: &str, opts: std::collections::HashMap<String, String>) {\n    if let Some(fmt) = opts.get(\"format\") {\n        if fmt == \"jsonl\" {\n            if path.is_empty() || path == \"-\" {\n                for item in src { if let Ok(text) = serde_json::to_string(item) { println!(\"{}\", text); } }\n            } else if let Ok(mut f) = std::fs::File::create(path) {\n                use std::io::Write;\n                for item in src { if let Ok(text) = serde_json::to_string(item) { writeln!(f, \"{}\", text).unwrap(); } }\n            }\n            return;\n        }\n    }\n    if let Ok(text) = serde_json::to_string(src) {\n        if path.is_empty() || path == \"-\" {\n            println!(\"{}\", text);\n        } else {\n            std::fs::write(path, text).unwrap();\n        }\n    }\n}\n\n")
-        }
+	if c.helpers["_load"] {
+		out.WriteString("fn _load<T: serde::de::DeserializeOwned>(path: &str, opts: std::collections::HashMap<String, String>) -> Vec<T> {\n    use std::io::Read;\n    let mut data = String::new();\n    if path.is_empty() || path == \"-\" {\n        std::io::stdin().read_to_string(&mut data).unwrap();\n    } else if let Ok(mut f) = std::fs::File::open(path) {\n        f.read_to_string(&mut data).unwrap();\n    }\n    if let Some(fmt) = opts.get(\"format\") {\n        if fmt == \"yaml\" {\n            if let Ok(v) = serde_yaml::from_str::<Vec<T>>(&data) { return v; }\n            if let Ok(v) = serde_yaml::from_str::<T>(&data) { return vec![v]; }\n        }\n    }\n    if let Ok(v) = serde_json::from_str::<Vec<T>>(&data) { return v; }\n    if let Ok(v) = serde_json::from_str::<T>(&data) { return vec![v]; }\n    Vec::new()\n}\n\n")
+	}
+	if c.helpers["_save"] {
+		out.WriteString("fn _save<T: serde::Serialize>(src: &[T], path: &str, opts: std::collections::HashMap<String, String>) {\n    if let Some(fmt) = opts.get(\"format\") {\n        if fmt == \"jsonl\" {\n            if path.is_empty() || path == \"-\" {\n                for item in src { if let Ok(text) = serde_json::to_string(item) { println!(\"{}\", text); } }\n            } else if let Ok(mut f) = std::fs::File::create(path) {\n                use std::io::Write;\n                for item in src { if let Ok(text) = serde_json::to_string(item) { writeln!(f, \"{}\", text).unwrap(); } }\n            }\n            return;\n        }\n    }\n    if let Ok(text) = serde_json::to_string(src) {\n        if path.is_empty() || path == \"-\" {\n            println!(\"{}\", text);\n        } else {\n            std::fs::write(path, text).unwrap();\n        }\n    }\n}\n\n")
+	}
 	out.Write(c.buf.Bytes())
 	return out.Bytes(), nil
 }
@@ -2013,6 +2013,76 @@ func (c *Compiler) compileRightJoinSimple(q *parser.QueryExpr, src string, child
 	return b.String(), nil
 }
 
+func (c *Compiler) compileOuterJoinSimple(q *parser.QueryExpr, src string, child *types.Env, joinSrc, joinCond string) (string, error) {
+	orig := c.env
+	c.env = child
+	var err error
+	origVarType, _ := child.GetVar(q.Var)
+	var sel string
+	if ml := tryMapLiteral(q.Select); ml != nil {
+		name := c.newStructName("Result")
+		sel, err = c.compileMapLiteralAsStruct(name, ml)
+		if err == nil {
+			c.listVars[q.Var] = name
+			child.SetVar(q.Var, types.StructType{Name: name}, true)
+		}
+	} else {
+		sel, err = c.compileExpr(q.Select)
+	}
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+
+	tmp := c.newTmp()
+	var b strings.Builder
+	b.WriteString("{ let mut ")
+	b.WriteString(tmp)
+	b.WriteString(" = Vec::new();")
+
+	b.WriteString(loopHead(q.Var, src, child))
+	b.WriteString(" let mut _matched = false;")
+	b.WriteString(" ")
+	b.WriteString(loopHead(q.Joins[0].Var, joinSrc, child))
+	if joinCond != "" {
+		b.WriteString(" if !(" + joinCond + ") { continue; }")
+	}
+	b.WriteString(" _matched = true;")
+	b.WriteString(" " + tmp + ".push(" + sel + ");")
+	b.WriteString(" }")
+	b.WriteString(" if !_matched {")
+	b.WriteString(" ")
+	b.WriteString(defaultDecl(q.Joins[0].Var, child))
+	b.WriteString(" " + tmp + ".push(" + sel + ");")
+	b.WriteString(" }")
+	b.WriteString(" }")
+
+	b.WriteString(" for ")
+	b.WriteString(q.Joins[0].Var)
+	b.WriteString(" in &")
+	b.WriteString(joinSrc)
+	b.WriteString(" {")
+	b.WriteString(" let mut _matched = false;")
+	b.WriteString(" ")
+	b.WriteString(loopHead(q.Var, src, child))
+	if joinCond != "" {
+		b.WriteString(" if " + joinCond + " { _matched = true; break; }")
+	} else {
+		b.WriteString(" { _matched = true; break; }")
+	}
+	b.WriteString(" }")
+	b.WriteString(" if !_matched {")
+	b.WriteString(" ")
+	b.WriteString(defaultDeclType(q.Var, origVarType))
+	b.WriteString(" " + tmp + ".push(" + sel + ");")
+	b.WriteString(" }")
+	b.WriteString(" }")
+
+	b.WriteString(" " + tmp + " }")
+	c.env = orig
+	return b.String(), nil
+}
+
 func (c *Compiler) compileLeftJoinLast(q *parser.QueryExpr, src string, child *types.Env, fromSrcs, joinSrcs, joinConds []string) (string, error) {
 	orig := c.env
 	c.env = child
@@ -2242,6 +2312,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	if len(q.Joins) == 1 && joinSides[0] == "right" && q.Group == nil {
 		res, err := c.compileRightJoinSimple(q, src, child, fromSrcs, joinSrcs[0], joinConds[0])
+		c.env = origEnv
+		return res, err
+	}
+	if len(q.Joins) == 1 && joinSides[0] == "outer" && len(q.Froms) == 0 && q.Group == nil {
+		res, err := c.compileOuterJoinSimple(q, src, child, joinSrcs[0], joinConds[0])
 		c.env = origEnv
 		return res, err
 	}
