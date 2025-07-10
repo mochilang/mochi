@@ -1172,12 +1172,7 @@ func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error
 				ftype = strings.ReplaceAll(ftype, v+".", rep)
 			}
 		}
-		if matched, _ := regexp.MatchString(`[A-Za-z_][A-Za-z0-9_]*\\.`, ftype); matched {
-			ftype = "int"
-		}
-		if t := inferExprType(val); t != "" {
-			ftype = t
-		} else if dot := strings.Index(val, "."); dot != -1 {
+		if dot := strings.Index(val, "."); dot != -1 {
 			v := val[:dot]
 			fld := val[dot+1:]
 			simple := true
@@ -1194,8 +1189,6 @@ func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error
 					}
 					ftype = fmt.Sprintf("decltype(std::declval<%s>().%s)", t, fld)
 				}
-			} else if t := inferExprType(val); t != "" {
-				ftype = t
 			}
 		} else if c.vars[val] == "string" {
 			ftype = "std::string"
