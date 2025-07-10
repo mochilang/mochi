@@ -34,6 +34,8 @@ type Compiler struct {
 	varStruct   map[string]string
 	elemType    map[string]string
 	groups      map[string]struct{}
+
+	needJSON bool
 }
 
 // New returns a new compiler instance.
@@ -46,6 +48,7 @@ func New() *Compiler {
 		elemType:  map[string]string{},
 		funParams: map[string]int{},
 		groups:    map[string]struct{}{},
+		needJSON:  false,
 	}
 }
 
@@ -98,25 +101,8 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.header.Reset()
 	c.structMap = map[string]*structInfo{}
 	c.structCount = 0
-	c.headerWriteln("#include <iostream>")
-	c.headerWriteln("#include <vector>")
-	c.headerWriteln("#include <unordered_map>")
-	c.headerWriteln("#include <map>")
-	c.headerWriteln("#include <algorithm>")
-	c.headerWriteln("#include <numeric>")
-	c.headerWriteln("#include <utility>")
-	c.headerWriteln("")
 
-	c.headerWriteln("template<typename T> void __json(const T&);")
-	c.headerWriteln("inline void __json(int v){ std::cout<<v; }")
-	c.headerWriteln("inline void __json(double v){ std::cout<<v; }")
-	c.headerWriteln("inline void __json(bool v){ std::cout<<(v?\"true\":\"false\"); }")
-	c.headerWriteln("inline void __json(const std::string &v){ std::cout<<\"\\\"\"<<v<<\"\\\"\"; }")
-	c.headerWriteln("inline void __json(const char* v){ std::cout<<\"\\\"\"<<v<<\"\\\"\"; }")
-	c.headerWriteln("template<typename T> void __json(const std::vector<T>& v){ std::cout<<\"[\"; bool first=true; for(const auto&x:v){ if(!first) std::cout<<\",\"; first=false; __json(x);} std::cout<<\"]\"; }")
-	c.headerWriteln("template<typename K,typename V> void __json(const std::map<K,V>& m){ std::cout<<\"{\"; bool first=true; for(const auto&kv:m){ if(!first) std::cout<<\",\"; first=false; __json(kv.first); std::cout<<\":\"; __json(kv.second);} std::cout<<\"}\"; }")
-	c.headerWriteln("template<typename K,typename V> void __json(const std::unordered_map<K,V>& m){ std::cout<<\"{\"; bool first=true; for(const auto&kv:m){ if(!first) std::cout<<\",\"; first=false; __json(kv.first); std::cout<<\":\"; __json(kv.second);} std::cout<<\"}\"; }")
-	c.headerWriteln("")
+	c.needJSON = false
 
 	// first generate function declarations
 	for _, st := range p.Statements {
@@ -141,7 +127,46 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.writeln("return 0;")
 	c.indent--
 	c.writeln("}")
+	if c.needJSON {
+		for _, info := range c.structMap {
+			c.generateJSONPrinter(info)
+		}
+		c.headerWriteln(helperJSON)
+	}
+
+	src := c.header.String() + c.buf.String()
+	includes := []string{"iostream"}
+	if strings.Contains(src, "std::vector<") {
+		includes = append(includes, "vector")
+	}
+	if strings.Contains(src, "std::unordered_map<") {
+		includes = append(includes, "unordered_map")
+	}
+	if strings.Contains(src, "std::map<") {
+		includes = append(includes, "map")
+	}
+	if strings.Contains(src, "std::sort(") || strings.Contains(src, "std::find(") || strings.Contains(src, "std::unique(") || strings.Contains(src, "std::remove(") {
+		includes = append(includes, "algorithm")
+	}
+	if strings.Contains(src, "std::accumulate(") {
+		includes = append(includes, "numeric")
+	}
+	if strings.Contains(src, "std::pair<") {
+		includes = append(includes, "utility")
+	}
+	if strings.Contains(src, "std::string") {
+		includes = append(includes, "string")
+	}
+
 	var out bytes.Buffer
+	seen := map[string]bool{}
+	for _, inc := range includes {
+		if !seen[inc] {
+			out.WriteString("#include <" + inc + ">\n")
+			seen[inc] = true
+		}
+	}
+	out.WriteByte('\n')
 	out.Write(c.header.Bytes())
 	out.Write(c.buf.Bytes())
 	return FormatCPP(out.Bytes()), nil
@@ -948,7 +973,6 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				}
 				def.WriteString("};")
 				c.headerWriteln(def.String())
-				c.generateJSONPrinter(info)
 			}
 			return fmt.Sprintf("%s{%s}", info.Name, strings.Join(vals, ", ")), nil
 		}
@@ -1069,6 +1093,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 		case "json":
 			if len(args) == 1 {
+				c.needJSON = true
 				return fmt.Sprintf("(__json(%s))", args[0]), nil
 			}
 		}
@@ -1228,7 +1253,6 @@ func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error
 		}
 		def.WriteString("};")
 		c.headerWriteln(def.String())
-		c.generateJSONPrinter(info)
 	}
 	return fmt.Sprintf("%s{%s}", info.Name, strings.Join(inits, ", ")), nil
 }
@@ -2121,7 +2145,6 @@ func (c *Compiler) structFromVars(names []string) string {
 	}
 	def.WriteString("};")
 	c.headerWriteln(def.String())
-	c.generateJSONPrinter(info)
 	return info.Name
 }
 
