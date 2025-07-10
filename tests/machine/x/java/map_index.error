@@ -1,0 +1,11 @@
+line 0: javac error: exit status 1
+/tmp/TestCompileValidProgramsmap_index2104016818/001/Main.java:13: error: cannot find symbol
+	System.out.println(m.get("b"));
+	                    ^
+  symbol:   method get(String)
+  location: variable m of type DataClass1
+1 error
+
+
+  1| let m = {"a": 1, "b": 2}
+  2| print(m["b"])

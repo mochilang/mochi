@@ -1,0 +1,8 @@
+line 0: run error: exit status 1
+--- Right Join using syntax ---
+Exception in thread "main" java.lang.ClassCastException: class DataClass3 cannot be cast to class java.util.Map (DataClass3 is in unnamed module of loader 'app'; java.util.Map is in module java.base of loader 'bootstrap')
+	at Main.main(Main.java:50)
+
+
+  1| // right_join.mochi
+  2| // Right join: keep all customers, include orders if any

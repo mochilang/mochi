@@ -1,0 +1,11 @@
+line 0: javac error: exit status 1
+/tmp/TestCompileValidProgramslen_map2516065112/001/Main.java:12: error: cannot find symbol
+	System.out.println(new DataClass1(1, 2).size());
+	                                       ^
+  symbol:   method size()
+  location: class DataClass1
+1 error
+
+
+  1| print(len({"a":1, "b":2}))
+  2| 

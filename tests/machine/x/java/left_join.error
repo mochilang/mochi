@@ -1,0 +1,8 @@
+line 0: run error: exit status 1
+--- Left Join ---
+Exception in thread "main" java.lang.ClassCastException: class DataClass3 cannot be cast to class java.util.Map (DataClass3 is in unnamed module of loader 'app'; java.util.Map is in module java.base of loader 'bootstrap')
+	at Main.main(Main.java:52)
+
+
+  1| let customers = [
+  2|   { id: 1, name: "Alice" },
