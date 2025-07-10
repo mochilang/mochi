@@ -1,9 +1,0 @@
-line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramsgroup_items_iteration1566945355/001/Main.java:40: error: local variables referenced from an inner class must be final or effectively final
-		tmp = append(tmp, new LinkedHashMap<String,Object>(){{put("tag", ((Map)g).get("key"));put("total", total);}});
-		                                                                                                   ^
-1 error
-
-
-  1| let data = [
-  2|   {tag: "a", val: 1},

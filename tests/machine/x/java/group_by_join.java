@@ -1,7 +1,7 @@
 import java.util.*;
 public class Main {
-	static List<Map<String,Object>> customers = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<String,Object>(){{put("id", 1);put("name", "Alice");}}, new LinkedHashMap<String,Object>(){{put("id", 2);put("name", "Bob");}}));
-	static List<Map<String,Integer>> orders = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<String,Integer>(){{put("id", 100);put("customerId", 1);}}, new LinkedHashMap<String,Integer>(){{put("id", 101);put("customerId", 1);}}, new LinkedHashMap<String,Integer>(){{put("id", 102);put("customerId", 2);}}));
+	static List<Map<String,Object>> customers = new ArrayList<>(java.util.Arrays.asList(Main.<String,Object>mapOf("id", 1, "name", "Alice"), Main.<String,Object>mapOf("id", 2, "name", "Bob")));
+	static List<Map<String,Integer>> orders = new ArrayList<>(java.util.Arrays.asList(Main.<String,Integer>mapOf("id", 100, "customerId", 1), Main.<String,Integer>mapOf("id", 101, "customerId", 1), Main.<String,Integer>mapOf("id", 102, "customerId", 2)));
 	static List<Object> stats = (new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
 	List<Object> _res5 = new ArrayList<>();
 	Map<Object,List<Object>> _groups6 = new LinkedHashMap<>();
@@ -20,12 +20,17 @@ public class Main {
 	for (var __e : _groups6.entrySet()) {
 		Object g_key = __e.getKey();
 		List<Object> g = __e.getValue();
-		_res5.add(new LinkedHashMap<String,Object>(){{put("name", g_key);put("count", count(g));}});
+		_res5.add(Main.<String,Object>mapOf("name", g_key, "count", count(g)));
 	}
 	return _res5;
 }}).get();
 	static int count(Collection<?> c) {
 		return c.size();
+	}
+	static <K,V> LinkedHashMap<K,V> mapOf(Object... kv) {
+		LinkedHashMap<K,V> m = new LinkedHashMap<>();
+		for (int i = 0; i < kv.length; i += 2) m.put((K)kv[i], (V)kv[i+1]);
+		return m;
 	}
 	public static void main(String[] args) {
 	System.out.println("--- Orders per customer ---");

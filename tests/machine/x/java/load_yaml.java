@@ -24,10 +24,15 @@ public class Main {
 	List<Object> _res1 = new ArrayList<>();
 	for (var p : people) {
 		if (!(((Number)((Map)p).get("age")).doubleValue() >= 18)) continue;
-		_res1.add(new LinkedHashMap<String,Object>(){{put("name", ((Map)p).get("name"));put("email", ((Map)p).get("email"));}});
+		_res1.add(Main.<String,Object>mapOf("name", ((Map)p).get("name"), "email", ((Map)p).get("email")));
 	}
 	return _res1;
 }}).get();
+	static <K,V> LinkedHashMap<K,V> mapOf(Object... kv) {
+		LinkedHashMap<K,V> m = new LinkedHashMap<>();
+		for (int i = 0; i < kv.length; i += 2) m.put((K)kv[i], (V)kv[i+1]);
+		return m;
+	}
 	static List<Map<String,Object>> loadYaml(String path) {
 		if (!(new java.io.File(path)).isAbsolute()) {
 			java.io.File f = new java.io.File(path);

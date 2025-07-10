@@ -1,6 +1,6 @@
 import java.util.*;
 public class Main {
-	static List<Map<String,String>> people = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<String,String>(){{put("name", "Alice");put("city", "Paris");}}, new LinkedHashMap<String,String>(){{put("name", "Bob");put("city", "Hanoi");}}, new LinkedHashMap<String,String>(){{put("name", "Charlie");put("city", "Paris");}}, new LinkedHashMap<String,String>(){{put("name", "Diana");put("city", "Hanoi");}}, new LinkedHashMap<String,String>(){{put("name", "Eve");put("city", "Paris");}}, new LinkedHashMap<String,String>(){{put("name", "Frank");put("city", "Hanoi");}}, new LinkedHashMap<String,String>(){{put("name", "George");put("city", "Paris");}}));
+	static List<Map<String,String>> people = new ArrayList<>(java.util.Arrays.asList(Main.<String,String>mapOf("name", "Alice", "city", "Paris"), Main.<String,String>mapOf("name", "Bob", "city", "Hanoi"), Main.<String,String>mapOf("name", "Charlie", "city", "Paris"), Main.<String,String>mapOf("name", "Diana", "city", "Hanoi"), Main.<String,String>mapOf("name", "Eve", "city", "Paris"), Main.<String,String>mapOf("name", "Frank", "city", "Hanoi"), Main.<String,String>mapOf("name", "George", "city", "Paris")));
 	static List<Object> big = (new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
 	List<Object> _res5 = new ArrayList<>();
 	Map<Object,List<Object>> _groups6 = new LinkedHashMap<>();
@@ -15,12 +15,17 @@ public class Main {
 		Object g_key = __e.getKey();
 		List<Object> g = __e.getValue();
 		if (!(count(g) >= 4)) continue;
-		_res5.add(new LinkedHashMap<String,Object>(){{put("city", g_key);put("num", count(g));}});
+		_res5.add(Main.<String,Object>mapOf("city", g_key, "num", count(g)));
 	}
 	return _res5;
 }}).get();
 	static int count(Collection<?> c) {
 		return c.size();
+	}
+	static <K,V> LinkedHashMap<K,V> mapOf(Object... kv) {
+		LinkedHashMap<K,V> m = new LinkedHashMap<>();
+		for (int i = 0; i < kv.length; i += 2) m.put((K)kv[i], (V)kv[i+1]);
+		return m;
 	}
 	static String toJson(Object o) {
 		if (o instanceof Map<?,?> m) {

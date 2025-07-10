@@ -1,6 +1,6 @@
 import java.util.*;
 public class Main {
-	static List<Map<String,Object>> items = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<String,Object>(){{put("cat", "a");put("val", 10);put("flag", true);}}, new LinkedHashMap<String,Object>(){{put("cat", "a");put("val", 5);put("flag", false);}}, new LinkedHashMap<String,Object>(){{put("cat", "b");put("val", 20);put("flag", true);}}));
+	static List<Map<String,Object>> items = new ArrayList<>(java.util.Arrays.asList(Main.<String,Object>mapOf("cat", "a", "val", 10, "flag", true), Main.<String,Object>mapOf("cat", "a", "val", 5, "flag", false), Main.<String,Object>mapOf("cat", "b", "val", 20, "flag", true)));
 	static List<Object> result = (new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
 	List<Object> _res7 = new ArrayList<>();
 	Map<Object,List<Object>> _groups8 = new LinkedHashMap<>();
@@ -14,7 +14,7 @@ public class Main {
 	for (var __e : _groups8.entrySet()) {
 		Object g_key = __e.getKey();
 		List<Object> g = __e.getValue();
-		_res7.add(new LinkedHashMap<String,Object>(){{put("cat", g_key);put("share", ((Number)sum((List<Number>)(List<?>)(new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
+		_res7.add(Main.<String,Object>mapOf("cat", g_key, "share", ((Number)sum((List<Number>)(List<?>)(new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
 	List<Object> _res12 = new ArrayList<>();
 	for (var x : g) {
 		_res12.add((((Map)x).get("flag") != null ? ((Map)x).get("val") : 0));
@@ -26,7 +26,7 @@ public class Main {
 		_res13.add(((Map)x).get("val"));
 	}
 	return _res13;
-}}).get())).doubleValue());}});
+}}).get())).doubleValue()));
 	}
 	return _res7;
 }}).get();
@@ -34,6 +34,11 @@ public class Main {
 		int s = 0;
 		for (Number n : v) s += n.intValue();
 		return s;
+	}
+	static <K,V> LinkedHashMap<K,V> mapOf(Object... kv) {
+		LinkedHashMap<K,V> m = new LinkedHashMap<>();
+		for (int i = 0; i < kv.length; i += 2) m.put((K)kv[i], (V)kv[i+1]);
+		return m;
 	}
 	public static void main(String[] args) {
 	System.out.println(result);

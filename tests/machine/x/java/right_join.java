@@ -1,7 +1,7 @@
 import java.util.*;
 public class Main {
-	static List<Map<String,Object>> customers = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<String,Object>(){{put("id", 1);put("name", "Alice");}}, new LinkedHashMap<String,Object>(){{put("id", 2);put("name", "Bob");}}, new LinkedHashMap<String,Object>(){{put("id", 3);put("name", "Charlie");}}, new LinkedHashMap<String,Object>(){{put("id", 4);put("name", "Diana");}}));
-	static List<Map<String,Integer>> orders = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<String,Integer>(){{put("id", 100);put("customerId", 1);put("total", 250);}}, new LinkedHashMap<String,Integer>(){{put("id", 101);put("customerId", 2);put("total", 125);}}, new LinkedHashMap<String,Integer>(){{put("id", 102);put("customerId", 1);put("total", 300);}}));
+	static List<Map<String,Object>> customers = new ArrayList<>(java.util.Arrays.asList(Main.<String,Object>mapOf("id", 1, "name", "Alice"), Main.<String,Object>mapOf("id", 2, "name", "Bob"), Main.<String,Object>mapOf("id", 3, "name", "Charlie"), Main.<String,Object>mapOf("id", 4, "name", "Diana")));
+	static List<Map<String,Integer>> orders = new ArrayList<>(java.util.Arrays.asList(Main.<String,Integer>mapOf("id", 100, "customerId", 1, "total", 250), Main.<String,Integer>mapOf("id", 101, "customerId", 2, "total", 125), Main.<String,Integer>mapOf("id", 102, "customerId", 1, "total", 300)));
 	static List<Object> result = (new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
 	List<Object> _res3 = new ArrayList<>();
 	for (var c : customers) {
@@ -13,11 +13,16 @@ public class Main {
 		}
 		if (_tmp4.isEmpty()) _tmp4.add(null);
 		for (var o : _tmp4) {
-			_res3.add(new LinkedHashMap<String,Object>(){{put("customerName", ((Map)c).get("name"));put("order", o);}});
+			_res3.add(Main.<String,Object>mapOf("customerName", ((Map)c).get("name"), "order", o));
 		}
 	}
 	return _res3;
 }}).get();
+	static <K,V> LinkedHashMap<K,V> mapOf(Object... kv) {
+		LinkedHashMap<K,V> m = new LinkedHashMap<>();
+		for (int i = 0; i < kv.length; i += 2) m.put((K)kv[i], (V)kv[i+1]);
+		return m;
+	}
 	public static void main(String[] args) {
 	System.out.println("--- Right Join using syntax ---");
 	for (var entry : result) {

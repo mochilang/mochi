@@ -1,8 +1,8 @@
 import java.util.*;
 public class Main {
-	static List<Map<String,Object>> customers = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<String,Object>(){{put("id", 1);put("name", "Alice");}}, new LinkedHashMap<String,Object>(){{put("id", 2);put("name", "Bob");}}));
-	static List<Map<String,Integer>> orders = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<String,Integer>(){{put("id", 100);put("customerId", 1);}}, new LinkedHashMap<String,Integer>(){{put("id", 101);put("customerId", 2);}}));
-	static List<Map<String,Object>> items = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<String,Object>(){{put("orderId", 100);put("sku", "a");}}));
+	static List<Map<String,Object>> customers = new ArrayList<>(java.util.Arrays.asList(Main.<String,Object>mapOf("id", 1, "name", "Alice"), Main.<String,Object>mapOf("id", 2, "name", "Bob")));
+	static List<Map<String,Integer>> orders = new ArrayList<>(java.util.Arrays.asList(Main.<String,Integer>mapOf("id", 100, "customerId", 1), Main.<String,Integer>mapOf("id", 101, "customerId", 2)));
+	static List<Map<String,Object>> items = new ArrayList<>(java.util.Arrays.asList(Main.<String,Object>mapOf("orderId", 100, "sku", "a")));
 	static List<Object> result = (new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
 	List<Object> _res3 = new ArrayList<>();
 	for (var o : orders) {
@@ -16,12 +16,17 @@ public class Main {
 			}
 			if (_tmp4.isEmpty()) _tmp4.add(null);
 			for (var i : _tmp4) {
-				_res3.add(new LinkedHashMap<String,Object>(){{put("orderId", ((Map)o).get("id"));put("name", ((Map)c).get("name"));put("item", i);}});
+				_res3.add(Main.<String,Object>mapOf("orderId", ((Map)o).get("id"), "name", ((Map)c).get("name"), "item", i));
 			}
 		}
 	}
 	return _res3;
 }}).get();
+	static <K,V> LinkedHashMap<K,V> mapOf(Object... kv) {
+		LinkedHashMap<K,V> m = new LinkedHashMap<>();
+		for (int i = 0; i < kv.length; i += 2) m.put((K)kv[i], (V)kv[i+1]);
+		return m;
+	}
 	public static void main(String[] args) {
 	System.out.println("--- Left Join Multi ---");
 	for (var r : result) {

@@ -2,7 +2,12 @@ import java.util.*;
 public class Main {
 	static int x = 3;
 	static int y = 4;
-	static Map<String,Object> m = new LinkedHashMap<String,Object>(){{put("a", x);put("b", y);}};
+	static Map<String,Object> m = Main.<String,Object>mapOf("a", x, "b", y);
+	static <K,V> LinkedHashMap<K,V> mapOf(Object... kv) {
+		LinkedHashMap<K,V> m = new LinkedHashMap<>();
+		for (int i = 0; i < kv.length; i += 2) m.put((K)kv[i], (V)kv[i+1]);
+		return m;
+	}
 	public static void main(String[] args) {
 	System.out.println(m.get("a") + " " + m.get("b"));
 	}

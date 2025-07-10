@@ -252,6 +252,13 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.indent--
 		c.writeln("}")
 	}
+	c.writeln("static <K,V> LinkedHashMap<K,V> mapOf(Object... kv) {")
+	c.indent++
+	c.writeln("LinkedHashMap<K,V> m = new LinkedHashMap<>();")
+	c.writeln("for (int i = 0; i < kv.length; i += 2) m.put((K)kv[i], (V)kv[i+1]);")
+	c.writeln("return m;")
+	c.indent--
+	c.writeln("}")
 	if c.helpers["load_yaml"] {
 		c.writeln("static List<Map<String,Object>> loadYaml(String path) {")
 		c.indent++
@@ -649,6 +656,15 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 		if call := rootPrimary(p.Query.Select); call != nil && call.Call != nil && call.Call.Func == "sum" && len(call.Call.Args) == 1 && p.Query.Group == nil {
 			return "int"
 		}
+		if p.Query.Group != nil {
+			if id, ok := identName(p.Query.Select); ok && id == p.Query.Group.Name {
+				keyT := c.inferType(p.Query.Group.Exprs[0])
+				if keyT == "var" {
+					keyT = "Object"
+				}
+				return fmt.Sprintf("List<Map<%s,Object>>", wrapperType(keyT))
+			}
+		}
 		et := c.inferType(p.Query.Select)
 		if et == "var" {
 			et = "Object"
@@ -923,10 +939,10 @@ func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		entries = append(entries, fmt.Sprintf("put(%s, %s);", k, v))
+		entries = append(entries, k, v)
 	}
 	kt, vt := c.mapLiteralTypes(m)
-	return fmt.Sprintf("new LinkedHashMap<%s,%s>(){{%s}}", kt, vt, strings.Join(entries, "")), nil
+	return fmt.Sprintf("Main.<%s,%s>mapOf(%s)", kt, vt, strings.Join(entries, ", ")), nil
 }
 
 func (c *Compiler) mapLiteralTypes(m *parser.MapLiteral) (string, string) {

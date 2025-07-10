@@ -8,12 +8,17 @@ public class Main {
 	for (var n : nums) {
 		for (var l : letters) {
 			for (var b : bools) {
-				_res1.add(new LinkedHashMap<String,Object>(){{put("n", n);put("l", l);put("b", b);}});
+				_res1.add(Main.<String,Object>mapOf("n", n, "l", l, "b", b));
 			}
 		}
 	}
 	return _res1;
 }}).get();
+	static <K,V> LinkedHashMap<K,V> mapOf(Object... kv) {
+		LinkedHashMap<K,V> m = new LinkedHashMap<>();
+		for (int i = 0; i < kv.length; i += 2) m.put((K)kv[i], (V)kv[i+1]);
+		return m;
+	}
 	public static void main(String[] args) {
 	System.out.println("--- Cross Join of three lists ---");
 	for (var c : combos) {
