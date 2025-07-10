@@ -92,7 +92,7 @@ const (
 		"}\n"
 
 	helperFmt = "function _fmt(v: any): string {\n" +
-		"  if (Array.isArray(v)) return '[' + v.map(_fmt).join(' ') + ']';\n" +
+		"  if (Array.isArray(v)) return v.map(_fmt).join(' ');\n" +
 		"  if (v && typeof v === 'object') {\n" +
 		"    const keys = Object.keys(v).sort();\n" +
 		"    const parts = keys.map(k => k + ':' + _fmt(v[k]));\n" +

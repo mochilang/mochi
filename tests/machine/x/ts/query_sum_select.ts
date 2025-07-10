@@ -9,9 +9,22 @@ function main(): void {
     2,
     3,
   ];
-  result = nums.filter((n) => (n > 1)).map((n) => _sum(n));
-  console.log(result);
+  result = (() => {
+    const _items = nums.filter((n) => (n > 1)).map((n) => n);
+    return _sum(_items);
+  })();
+  console.log(_fmt(result));
 }
+function _fmt(v: any): string {
+  if (Array.isArray(v)) return v.map(_fmt).join(" ");
+  if (v && typeof v === "object") {
+    const keys = Object.keys(v).sort();
+    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
+    return "map[" + parts.join(" ") + "]";
+  }
+  return String(v);
+}
+
 function _sum(v: any): number {
   let list: any[] | null = null;
   if (Array.isArray(v)) list = v;

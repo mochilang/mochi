@@ -69,7 +69,7 @@ function main(): void {
     }
     people[_i] = _item;
   }
-  console.log("ok");
+  console.log(_fmt("ok"));
   test_update_adult_status();
 }
 function _equal(a: any, b: any): boolean {
@@ -90,6 +90,16 @@ function _equal(a: any, b: any): boolean {
     return true;
   }
   return a === b;
+}
+
+function _fmt(v: any): string {
+  if (Array.isArray(v)) return v.map(_fmt).join(" ");
+  if (v && typeof v === "object") {
+    const keys = Object.keys(v).sort();
+    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
+    return "map[" + parts.join(" ") + "]";
+  }
+  return String(v);
 }
 
 main();

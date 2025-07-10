@@ -8,9 +8,19 @@ function main(): void {
     1,
     4,
   ];
-  console.log(_min(nums));
-  console.log(_max(nums));
+  console.log(_fmt(_min(nums)));
+  console.log(_fmt(_max(nums)));
 }
+function _fmt(v: any): string {
+  if (Array.isArray(v)) return v.map(_fmt).join(" ");
+  if (v && typeof v === "object") {
+    const keys = Object.keys(v).sort();
+    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
+    return "map[" + parts.join(" ") + "]";
+  }
+  return String(v);
+}
+
 function _max(v: any): number {
   let list: any[] | null = null;
   if (Array.isArray(v)) list = v;

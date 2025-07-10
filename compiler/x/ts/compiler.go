@@ -1677,7 +1677,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	switch call.Func {
 	case "print":
 		c.use("_fmt")
-		return fmt.Sprintf("console.log(_fmt(%s))", argStr), nil
+		parts := make([]string, len(args))
+		for i, a := range args {
+			parts[i] = fmt.Sprintf("_fmt(%s)", a)
+		}
+		return fmt.Sprintf("console.log(%s)", strings.Join(parts, ", ")), nil
 	case "keys":
 		if len(call.Args) == 1 {
 			t := c.inferExprType(call.Args[0])
