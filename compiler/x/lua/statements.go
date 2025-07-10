@@ -366,10 +366,17 @@ func (c *Compiler) compileFor(s *parser.ForStmt) error {
 			}
 			c.indent++
 		case isMap(t):
+			keys := fmt.Sprintf("_k%d", c.tmpCount)
+			tmp := fmt.Sprintf("_m%d", c.tmpCount)
+			c.tmpCount++
+			c.writeln(fmt.Sprintf("local %s = %s", tmp, src))
+			c.writeln(fmt.Sprintf("local %s = {}", keys))
+			c.writeln(fmt.Sprintf("for k in pairs(%s) do %s[#%s+1] = k end", tmp, keys, keys))
+			c.writeln(fmt.Sprintf("table.sort(%s, function(a,b) return tostring(a)<tostring(b) end)", keys))
 			if useVar {
-				c.writeln(fmt.Sprintf("for %s in pairs(%s) do", name, src))
+				c.writeln(fmt.Sprintf("for _, %s in ipairs(%s) do", name, keys))
 			} else {
-				c.writeln(fmt.Sprintf("for _ in pairs(%s) do", src))
+				c.writeln(fmt.Sprintf("for _ in ipairs(%s) do", keys))
 			}
 			c.indent++
 		case isString(t):
