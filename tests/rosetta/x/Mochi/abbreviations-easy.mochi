@@ -100,7 +100,7 @@ fun main() {
     mins = append(mins, count)
     i = i + 1
   }
-  let sentence = "riG   rePEAT copies  put mo   rest    types   fup.    6\npoweRin"
+  let sentence = "riG   rePEAT copies  put mo   rest    types   fup.    6       poweRin"
   let words = fields(sentence)
   let results = validate(commands, words, mins)
   var out1 = "user words:  "
