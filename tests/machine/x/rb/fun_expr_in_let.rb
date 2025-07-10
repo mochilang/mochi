@@ -1,2 +1,2 @@
-$square = ->(x){ (x * x) }
-puts($square.call(6))
+square = ->(x){ (x * x) }
+puts(square.call(6))

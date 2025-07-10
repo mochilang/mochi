@@ -156,12 +156,12 @@ def _query(src, joins, opts)
   res
 end
 
-$customers = [OpenStruct.new(id: 1, name: "Alice"), OpenStruct.new(id: 2, name: "Bob")]
-$orders = [OpenStruct.new(id: 100, customerId: 1), OpenStruct.new(id: 101, customerId: 1), OpenStruct.new(id: 102, customerId: 2)]
-$stats = (begin
-	src = $orders
+customers = [OpenStruct.new(id: 1, name: "Alice"), OpenStruct.new(id: 2, name: "Bob")]
+orders = [OpenStruct.new(id: 100, customerId: 1), OpenStruct.new(id: 101, customerId: 1), OpenStruct.new(id: 102, customerId: 2)]
+stats = (begin
+	src = orders
 	_rows = _query(src, [
-		{ 'items' => $customers, 'on' => ->(o, c){ (o.customerId == c.id) } }
+		{ 'items' => customers, 'on' => ->(o, c){ (o.customerId == c.id) } }
 	], { 'select' => ->(o, c){ [o, c] } })
 	_groups = _group_by(_rows, ->(o, c){ c.name })
 	_items0 = _groups
@@ -172,6 +172,6 @@ $stats = (begin
 	_res
 end)
 puts("--- Orders per customer ---")
-$stats.each do |s|
+stats.each do |s|
 	puts([s.name, "orders:", s.count].join(" "))
 end

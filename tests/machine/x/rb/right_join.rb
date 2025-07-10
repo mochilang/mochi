@@ -119,17 +119,17 @@ def _query(src, joins, opts)
   res
 end
 
-$customers = [OpenStruct.new(id: 1, name: "Alice"), OpenStruct.new(id: 2, name: "Bob"), OpenStruct.new(id: 3, name: "Charlie"), OpenStruct.new(id: 4, name: "Diana")]
-$orders = [OpenStruct.new(id: 100, customerId: 1, total: 250), OpenStruct.new(id: 101, customerId: 2, total: 125), OpenStruct.new(id: 102, customerId: 1, total: 300)]
-$result = (begin
-	src = $customers
+customers = [OpenStruct.new(id: 1, name: "Alice"), OpenStruct.new(id: 2, name: "Bob"), OpenStruct.new(id: 3, name: "Charlie"), OpenStruct.new(id: 4, name: "Diana")]
+orders = [OpenStruct.new(id: 100, customerId: 1, total: 250), OpenStruct.new(id: 101, customerId: 2, total: 125), OpenStruct.new(id: 102, customerId: 1, total: 300)]
+result = (begin
+	src = customers
 	_rows = _query(src, [
-		{ 'items' => $orders, 'on' => ->(c, o){ (o.customerId == c.id) }, 'right' => true }
+		{ 'items' => orders, 'on' => ->(c, o){ (o.customerId == c.id) }, 'right' => true }
 	], { 'select' => ->(c, o){ OpenStruct.new(customerName: c.name, order: o) } })
 	_rows
 end)
 puts("--- Right Join using syntax ---")
-$result.each do |entry|
+result.each do |entry|
 	if entry.order
 		puts(["Customer", entry.customerName, "has order", entry.order.id, "- $", entry.order.total].join(" "))
 	else

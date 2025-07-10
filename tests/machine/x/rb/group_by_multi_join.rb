@@ -52,15 +52,15 @@ def _sum(v)
   s
 end
 
-$nations = [OpenStruct.new(id: 1, name: "A"), OpenStruct.new(id: 2, name: "B")]
-$suppliers = [OpenStruct.new(id: 1, nation: 1), OpenStruct.new(id: 2, nation: 2)]
-$partsupp = [OpenStruct.new(part: 100, supplier: 1, cost: 10.0, qty: 2), OpenStruct.new(part: 100, supplier: 2, cost: 20.0, qty: 1), OpenStruct.new(part: 200, supplier: 1, cost: 5.0, qty: 3)]
-$filtered = (begin
+nations = [OpenStruct.new(id: 1, name: "A"), OpenStruct.new(id: 2, name: "B")]
+suppliers = [OpenStruct.new(id: 1, nation: 1), OpenStruct.new(id: 2, nation: 2)]
+partsupp = [OpenStruct.new(part: 100, supplier: 1, cost: 10.0, qty: 2), OpenStruct.new(part: 100, supplier: 2, cost: 20.0, qty: 1), OpenStruct.new(part: 200, supplier: 1, cost: 5.0, qty: 3)]
+filtered = (begin
 	_res = []
-	for ps in $partsupp
-		for s in $suppliers
+	for ps in partsupp
+		for s in suppliers
 			if (s.id == ps.supplier)
-				for n in $nations
+				for n in nations
 					if (n.id == s.nation)
 						if (n.name == "A")
 							_res << OpenStruct.new(part: ps.part, value: (ps.cost * ps.qty))
@@ -72,5 +72,5 @@ $filtered = (begin
 	end
 	_res
 end)
-$grouped = _group_by($filtered, ->(x){ x.part }).map { |g| OpenStruct.new(part: g.key, total: _sum(((g)).map { |r| r.value })) }
-puts($grouped)
+grouped = _group_by(filtered, ->(x){ x.part }).map { |g| OpenStruct.new(part: g.key, total: _sum(((g)).map { |r| r.value })) }
+puts(grouped)

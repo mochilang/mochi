@@ -1,3 +1,3 @@
-$s = "catch"
-puts(($s.include?("cat")))
-puts(($s.include?("dog")))
+s = "catch"
+puts((s.include?("cat")))
+puts((s.include?("dog")))

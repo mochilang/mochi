@@ -10,6 +10,6 @@ def twoSum(nums, target)
 	return [(-1), (-1)]
 end
 
-$result = twoSum([2, 7, 11, 15], 9)
-puts($result[0])
-puts($result[1])
+result = twoSum([2, 7, 11, 15], 9)
+puts(result[0])
+puts(result[1])

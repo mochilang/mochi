@@ -170,9 +170,9 @@ def _sum(v)
   s
 end
 
-$items = [OpenStruct.new(cat: "a", val: 3), OpenStruct.new(cat: "a", val: 1), OpenStruct.new(cat: "b", val: 5), OpenStruct.new(cat: "b", val: 2)]
-$grouped = (begin
-	src = $items
+items = [OpenStruct.new(cat: "a", val: 3), OpenStruct.new(cat: "a", val: 1), OpenStruct.new(cat: "b", val: 5), OpenStruct.new(cat: "b", val: 2)]
+grouped = (begin
+	src = items
 	_rows = _query(src, [
 	], { 'select' => ->(i){ [i] } })
 	_groups = _group_by(_rows, ->(i){ i.cat })
@@ -184,4 +184,4 @@ $grouped = (begin
 	end
 	_res
 end)
-puts($grouped)
+puts(grouped)

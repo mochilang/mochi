@@ -48,5 +48,5 @@ def _save(rows, path=nil, opts=nil)
   end
 end
 
-$people = [OpenStruct.new(name: "Alice", age: 30), OpenStruct.new(name: "Bob", age: 25)]
-_save($people, "-", (OpenStruct.new(format: "jsonl")).to_h.transform_keys(&:to_s))
+people = [OpenStruct.new(name: "Alice", age: 30), OpenStruct.new(name: "Bob", age: 25)]
+_save(people, "-", (OpenStruct.new(format: "jsonl")).to_h.transform_keys(&:to_s))

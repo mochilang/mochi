@@ -119,17 +119,17 @@ def _query(src, joins, opts)
   res
 end
 
-$customers = [OpenStruct.new(id: 1, name: "Alice"), OpenStruct.new(id: 2, name: "Bob"), OpenStruct.new(id: 3, name: "Charlie"), OpenStruct.new(id: 4, name: "Diana")]
-$orders = [OpenStruct.new(id: 100, customerId: 1, total: 250), OpenStruct.new(id: 101, customerId: 2, total: 125), OpenStruct.new(id: 102, customerId: 1, total: 300), OpenStruct.new(id: 103, customerId: 5, total: 80)]
-$result = (begin
-	src = $orders
+customers = [OpenStruct.new(id: 1, name: "Alice"), OpenStruct.new(id: 2, name: "Bob"), OpenStruct.new(id: 3, name: "Charlie"), OpenStruct.new(id: 4, name: "Diana")]
+orders = [OpenStruct.new(id: 100, customerId: 1, total: 250), OpenStruct.new(id: 101, customerId: 2, total: 125), OpenStruct.new(id: 102, customerId: 1, total: 300), OpenStruct.new(id: 103, customerId: 5, total: 80)]
+result = (begin
+	src = orders
 	_rows = _query(src, [
-		{ 'items' => $customers, 'on' => ->(o, c){ (o.customerId == c.id) }, 'left' => true, 'right' => true }
+		{ 'items' => customers, 'on' => ->(o, c){ (o.customerId == c.id) }, 'left' => true, 'right' => true }
 	], { 'select' => ->(o, c){ OpenStruct.new(order: o, customer: c) } })
 	_rows
 end)
 puts("--- Outer Join using syntax ---")
-$result.each do |row|
+result.each do |row|
 	if row.order
 		if row.customer
 			puts(["Order", row.order.id, "by", row.customer.name, "- $", row.order.total].join(" "))

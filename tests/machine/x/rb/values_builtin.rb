@@ -1,2 +1,2 @@
-$m = {"a" => 1, "b" => 2, "c" => 3}
-puts(($m).values)
+m = {"a" => 1, "b" => 2, "c" => 3}
+puts((m).values)

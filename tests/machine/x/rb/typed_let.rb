@@ -1,2 +1,2 @@
-$y = nil
-puts($y)
+y = nil
+puts(y)

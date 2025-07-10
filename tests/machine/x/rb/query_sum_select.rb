@@ -13,6 +13,6 @@ def _sum(v)
   s
 end
 
-$nums = [1, 2, 3]
-$result = ((($nums)).select { |n| (n > 1) }).map { |n| _sum(n) }
-puts($result)
+nums = [1, 2, 3]
+result = (((nums)).select { |n| (n > 1) }).map { |n| _sum(n) }
+puts(result)

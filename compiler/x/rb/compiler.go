@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 
+	ast "mochi/ast"
 	"mochi/parser"
 	"mochi/types"
 )
@@ -26,6 +27,66 @@ type Compiler struct {
 	queryRows     map[string][]string
 	inKeyContext  bool
 	locals        []map[string]bool
+}
+
+// collectGlobals determines which top-level variables must be compiled as Ruby
+// globals because they are referenced inside function bodies.
+func collectGlobals(prog *parser.Program) map[string]bool {
+	top := map[string]bool{}
+	for _, s := range prog.Statements {
+		switch {
+		case s.Let != nil:
+			top[sanitizeName(s.Let.Name)] = true
+		case s.Var != nil:
+			top[sanitizeName(s.Var.Name)] = true
+		}
+	}
+
+	used := map[string]bool{}
+	root := ast.FromProgram(prog)
+
+	var rootSelectorName func(n *ast.Node) (string, bool)
+	rootSelectorName = func(n *ast.Node) (string, bool) {
+		if n.Kind != "selector" {
+			return "", false
+		}
+		for len(n.Children) > 0 && n.Children[0].Kind == "selector" {
+			n = n.Children[0]
+		}
+		if s, ok := n.Value.(string); ok {
+			return sanitizeName(s), true
+		}
+		return "", false
+	}
+
+	var walk func(n *ast.Node, inFun bool)
+	walk = func(n *ast.Node, inFun bool) {
+		if n.Kind == "fun" || n.Kind == "funexpr" {
+			for _, ch := range n.Children {
+				if ch.Kind == "param" || ch.Kind == "type" {
+					continue
+				}
+				walk(ch, true)
+			}
+			return
+		}
+		if inFun {
+			if name, ok := rootSelectorName(n); ok && top[name] {
+				used[name] = true
+			}
+			if n.Kind == "call" {
+				if s, ok := n.Value.(string); ok && top[sanitizeName(s)] {
+					used[sanitizeName(s)] = true
+				}
+			}
+		}
+		for _, ch := range n.Children {
+			walk(ch, inFun)
+		}
+	}
+
+	walk(root, false)
+	return used
 }
 
 // New creates a new Ruby compiler instance.
@@ -78,16 +139,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	// reset state so helpers from previous compilations aren't leaked
 	c.helpers = map[string]bool{}
 	c.useOpenStruct = false
-	// collect top level globals so functions defined before variables can
-	// still reference them as globals
-	for _, s := range prog.Statements {
-		switch {
-		case s.Let != nil:
-			c.globals[sanitizeName(s.Let.Name)] = true
-		case s.Var != nil:
-			c.globals[sanitizeName(s.Var.Name)] = true
-		}
-	}
+	// determine which top level variables are referenced from functions
+	// and must therefore be compiled as Ruby globals
+	c.globals = collectGlobals(prog)
 	tests := []*parser.TestBlock{}
 	for _, s := range prog.Statements {
 		if s.Type != nil {
@@ -203,8 +257,9 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 	}
 	name := sanitizeName(l.Name)
 	if c.indent == 0 {
-		c.globals[name] = true
-		name = "$" + name
+		if c.globals[name] {
+			name = "$" + name
+		}
 	} else {
 		c.addLocal(l.Name)
 	}
@@ -234,8 +289,9 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	}
 	name := sanitizeName(v.Name)
 	if c.indent == 0 {
-		c.globals[name] = true
-		name = "$" + name
+		if c.globals[name] {
+			name = "$" + name
+		}
 	} else {
 		c.addLocal(v.Name)
 	}
