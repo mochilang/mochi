@@ -1,6 +1,6 @@
 # Machine-generated Swift Outputs
 
-Compiled programs: 80/97
+Compiled programs: 81/97
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -40,7 +40,7 @@ Compiled programs: 80/97
 - [x] in_operator_extended.mochi
 - [x] inner_join.mochi
 - [x] join_multi.mochi
-- [ ] json_builtin.mochi
+- [x] json_builtin.mochi
 - [x] left_join.mochi
 - [x] left_join_multi.mochi
 - [x] len_builtin.mochi
