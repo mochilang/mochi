@@ -389,6 +389,20 @@ func (c *Compiler) compileFor(fr *parser.ForStmt) error {
 	if err != nil {
 		return err
 	}
+	srcType := types.ExprType(fr.Source, c.env)
+	var elemType types.Type
+	switch t := srcType.(type) {
+	case types.ListType:
+		elemType = t.Elem
+	case types.GroupType:
+		elemType = t.Elem
+	default:
+		elemType = types.AnyType{}
+	}
+	oldEnv := c.env
+	loopEnv := types.NewEnv(oldEnv)
+	loopEnv.SetVar(fr.Name, elemType, true)
+	c.env = loopEnv
 	loopName := fmt.Sprintf("__loop%d", c.loop)
 	c.loop++
 	c.writeln(fmt.Sprintf("let rec %s lst =", loopName))
@@ -402,9 +416,11 @@ func (c *Compiler) compileFor(fr *parser.ForStmt) error {
 	c.indent++
 	for _, st := range fr.Body {
 		if err := c.compileStmt(st); err != nil {
+			c.env = oldEnv
 			return err
 		}
 	}
+	c.env = oldEnv
 	c.indent--
 	c.writeln("with Continue -> ()")
 	c.writeln(fmt.Sprintf("; %s rest", loopName))
@@ -491,6 +507,43 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	return buf.String(), nil
 }
 
+// queryEnv builds an environment containing the variables introduced by q.
+func (c *Compiler) queryEnv(q *parser.QueryExpr) *types.Env {
+	env := types.NewEnv(c.env)
+
+	elem := func(e *parser.Expr) types.Type {
+		t := types.ExprType(e, c.env)
+		switch tt := t.(type) {
+		case types.ListType:
+			return tt.Elem
+		case types.GroupType:
+			return tt.Elem
+		default:
+			return types.AnyType{}
+		}
+	}
+
+	env.SetVar(q.Var, elem(q.Source), true)
+	for _, fr := range q.Froms {
+		env.SetVar(fr.Var, elem(fr.Src), true)
+	}
+	for _, jo := range q.Joins {
+		env.SetVar(jo.Var, elem(jo.Src), true)
+	}
+	if q.Group != nil {
+		env.SetVar(q.Group.Name, types.AnyType{}, true)
+	}
+	return env
+}
+
+func (c *Compiler) compileExprWithEnv(e *parser.Expr, env *types.Env) (string, error) {
+	old := c.env
+	c.env = env
+	s, err := c.compileExpr(e)
+	c.env = old
+	return s, err
+}
+
 func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	if q.Group != nil {
 		return c.compileGroup(q)
@@ -519,8 +572,9 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	sources := make([]string, total)
 	vars := make([]string, total)
 	idx := 0
+	outerEnv := c.env
 	for _, fr := range froms {
-		src, err := c.compileExpr(fr.Src)
+		src, err := c.compileExprWithEnv(fr.Src, outerEnv)
 		if err != nil {
 			return "", err
 		}
@@ -528,9 +582,10 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		vars[idx] = fr.Var
 		idx++
 	}
+	qenv := c.queryEnv(q)
 	joinConds := make([]string, len(q.Joins))
 	for j, jo := range q.Joins {
-		src, err := c.compileExpr(jo.Src)
+		src, err := c.compileExprWithEnv(jo.Src, outerEnv)
 		if err != nil {
 			return "", err
 		}
@@ -538,7 +593,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		vars[idx] = jo.Var
 		idx++
 		if jo.On != nil {
-			cond, err := c.compileExpr(jo.On)
+			cond, err := c.compileExprWithEnv(jo.On, qenv)
 			if err != nil {
 				return "", err
 			}
@@ -553,7 +608,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		}
 	}
 	if q.Where != nil {
-		w, err := c.compileExpr(q.Where)
+		w, err := c.compileExprWithEnv(q.Where, qenv)
 		if err != nil {
 			return "", err
 		}
@@ -579,7 +634,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		buf.WriteString(fmt.Sprintf("if %s then\n", cond))
 		buf.WriteString(strings.Repeat("  ", total+1))
 	}
-	sel, err := c.compileExpr(q.Select)
+	sel, err := c.compileExprWithEnv(q.Select, qenv)
 	if err != nil {
 		return "", err
 	}
@@ -597,29 +652,31 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 
 func (c *Compiler) compileLeftJoin(q *parser.QueryExpr) (string, error) {
 	join := q.Joins[0]
-	leftSrc, err := c.compileExpr(q.Source)
+	outerEnv := c.env
+	leftSrc, err := c.compileExprWithEnv(q.Source, outerEnv)
 	if err != nil {
 		return "", err
 	}
-	rightSrc, err := c.compileExpr(join.Src)
+	rightSrc, err := c.compileExprWithEnv(join.Src, outerEnv)
 	if err != nil {
 		return "", err
 	}
+	qenv := c.queryEnv(q)
 	on := "true"
 	if join.On != nil {
-		on, err = c.compileExpr(join.On)
+		on, err = c.compileExprWithEnv(join.On, qenv)
 		if err != nil {
 			return "", err
 		}
 	}
 	where := ""
 	if q.Where != nil {
-		where, err = c.compileExpr(q.Where)
+		where, err = c.compileExprWithEnv(q.Where, qenv)
 		if err != nil {
 			return "", err
 		}
 	}
-	sel, err := c.compileExpr(q.Select)
+	sel, err := c.compileExprWithEnv(q.Select, qenv)
 	if err != nil {
 		return "", err
 	}
@@ -653,29 +710,31 @@ func (c *Compiler) compileLeftJoin(q *parser.QueryExpr) (string, error) {
 
 func (c *Compiler) compileRightJoin(q *parser.QueryExpr) (string, error) {
 	join := q.Joins[0]
-	rightSrc, err := c.compileExpr(join.Src)
+	outerEnv := c.env
+	rightSrc, err := c.compileExprWithEnv(join.Src, outerEnv)
 	if err != nil {
 		return "", err
 	}
-	leftSrc, err := c.compileExpr(q.Source)
+	leftSrc, err := c.compileExprWithEnv(q.Source, outerEnv)
 	if err != nil {
 		return "", err
 	}
+	qenv := c.queryEnv(q)
 	on := "true"
 	if join.On != nil {
-		on, err = c.compileExpr(join.On)
+		on, err = c.compileExprWithEnv(join.On, qenv)
 		if err != nil {
 			return "", err
 		}
 	}
 	where := ""
 	if q.Where != nil {
-		where, err = c.compileExpr(q.Where)
+		where, err = c.compileExprWithEnv(q.Where, qenv)
 		if err != nil {
 			return "", err
 		}
 	}
-	sel, err := c.compileExpr(q.Select)
+	sel, err := c.compileExprWithEnv(q.Select, qenv)
 	if err != nil {
 		return "", err
 	}
@@ -709,29 +768,31 @@ func (c *Compiler) compileRightJoin(q *parser.QueryExpr) (string, error) {
 
 func (c *Compiler) compileOuterJoin(q *parser.QueryExpr) (string, error) {
 	join := q.Joins[0]
-	leftSrc, err := c.compileExpr(q.Source)
+	outerEnv := c.env
+	leftSrc, err := c.compileExprWithEnv(q.Source, outerEnv)
 	if err != nil {
 		return "", err
 	}
-	rightSrc, err := c.compileExpr(join.Src)
+	rightSrc, err := c.compileExprWithEnv(join.Src, outerEnv)
 	if err != nil {
 		return "", err
 	}
+	qenv := c.queryEnv(q)
 	on := "true"
 	if join.On != nil {
-		on, err = c.compileExpr(join.On)
+		on, err = c.compileExprWithEnv(join.On, qenv)
 		if err != nil {
 			return "", err
 		}
 	}
 	where := ""
 	if q.Where != nil {
-		where, err = c.compileExpr(q.Where)
+		where, err = c.compileExprWithEnv(q.Where, qenv)
 		if err != nil {
 			return "", err
 		}
 	}
-	sel, err := c.compileExpr(q.Select)
+	sel, err := c.compileExprWithEnv(q.Select, qenv)
 	if err != nil {
 		return "", err
 	}
@@ -786,8 +847,9 @@ func (c *Compiler) compileLeftJoinLast(q *parser.QueryExpr) (string, error) {
 	sources := make([]string, total)
 	vars := make([]string, total)
 	idx := 0
+	outerEnv := c.env
 	for _, fr := range froms {
-		src, err := c.compileExpr(fr.Src)
+		src, err := c.compileExprWithEnv(fr.Src, outerEnv)
 		if err != nil {
 			return "", err
 		}
@@ -795,9 +857,10 @@ func (c *Compiler) compileLeftJoinLast(q *parser.QueryExpr) (string, error) {
 		vars[idx] = fr.Var
 		idx++
 	}
+	qenv := c.queryEnv(q)
 	joinConds := make([]string, len(prev))
 	for j, jo := range prev {
-		src, err := c.compileExpr(jo.Src)
+		src, err := c.compileExprWithEnv(jo.Src, outerEnv)
 		if err != nil {
 			return "", err
 		}
@@ -805,7 +868,7 @@ func (c *Compiler) compileLeftJoinLast(q *parser.QueryExpr) (string, error) {
 		vars[idx] = jo.Var
 		idx++
 		if jo.On != nil {
-			cond, err := c.compileExpr(jo.On)
+			cond, err := c.compileExprWithEnv(jo.On, qenv)
 			if err != nil {
 				return "", err
 			}
@@ -821,25 +884,25 @@ func (c *Compiler) compileLeftJoinLast(q *parser.QueryExpr) (string, error) {
 	}
 	prevCond := strings.Join(condPrev, " && ")
 
-	lastSrc, err := c.compileExpr(last.Src)
+	lastSrc, err := c.compileExprWithEnv(last.Src, outerEnv)
 	if err != nil {
 		return "", err
 	}
 	on := "true"
 	if last.On != nil {
-		on, err = c.compileExpr(last.On)
+		on, err = c.compileExprWithEnv(last.On, qenv)
 		if err != nil {
 			return "", err
 		}
 	}
 	where := ""
 	if q.Where != nil {
-		where, err = c.compileExpr(q.Where)
+		where, err = c.compileExprWithEnv(q.Where, qenv)
 		if err != nil {
 			return "", err
 		}
 	}
-	sel, err := c.compileExpr(q.Select)
+	sel, err := c.compileExprWithEnv(q.Select, qenv)
 	if err != nil {
 		return "", err
 	}
@@ -905,29 +968,31 @@ func (c *Compiler) compileLeftJoinLast(q *parser.QueryExpr) (string, error) {
 
 func (c *Compiler) compileJoin(q *parser.QueryExpr) (string, error) {
 	join := q.Joins[0]
-	leftSrc, err := c.compileExpr(q.Source)
+	outerEnv := c.env
+	leftSrc, err := c.compileExprWithEnv(q.Source, outerEnv)
 	if err != nil {
 		return "", err
 	}
-	rightSrc, err := c.compileExpr(join.Src)
+	rightSrc, err := c.compileExprWithEnv(join.Src, outerEnv)
 	if err != nil {
 		return "", err
 	}
+	qenv := c.queryEnv(q)
 	on := "true"
 	if join.On != nil {
-		on, err = c.compileExpr(join.On)
+		on, err = c.compileExprWithEnv(join.On, qenv)
 		if err != nil {
 			return "", err
 		}
 	}
 	where := ""
 	if q.Where != nil {
-		where, err = c.compileExpr(q.Where)
+		where, err = c.compileExprWithEnv(q.Where, qenv)
 		if err != nil {
 			return "", err
 		}
 	}
-	sel, err := c.compileExpr(q.Select)
+	sel, err := c.compileExprWithEnv(q.Select, qenv)
 	if err != nil {
 		return "", err
 	}
@@ -960,8 +1025,9 @@ func (c *Compiler) compileGroup(q *parser.QueryExpr) (string, error) {
 	sources := make([]string, total)
 	vars := make([]string, total)
 	idx := 0
+	outerEnv := c.env
 	for _, fr := range froms {
-		src, err := c.compileExpr(fr.Src)
+		src, err := c.compileExprWithEnv(fr.Src, outerEnv)
 		if err != nil {
 			return "", err
 		}
@@ -969,9 +1035,10 @@ func (c *Compiler) compileGroup(q *parser.QueryExpr) (string, error) {
 		vars[idx] = fr.Var
 		idx++
 	}
+	qenv := c.queryEnv(q)
 	joinConds := make([]string, len(q.Joins))
 	for j, jo := range q.Joins {
-		src, err := c.compileExpr(jo.Src)
+		src, err := c.compileExprWithEnv(jo.Src, outerEnv)
 		if err != nil {
 			return "", err
 		}
@@ -979,7 +1046,7 @@ func (c *Compiler) compileGroup(q *parser.QueryExpr) (string, error) {
 		vars[idx] = jo.Var
 		idx++
 		if jo.On != nil {
-			cond, err := c.compileExpr(jo.On)
+			cond, err := c.compileExprWithEnv(jo.On, qenv)
 			if err != nil {
 				return "", err
 			}
@@ -993,7 +1060,7 @@ func (c *Compiler) compileGroup(q *parser.QueryExpr) (string, error) {
 		}
 	}
 	if q.Where != nil {
-		w, err := c.compileExpr(q.Where)
+		w, err := c.compileExprWithEnv(q.Where, qenv)
 		if err != nil {
 			return "", err
 		}
@@ -1001,7 +1068,7 @@ func (c *Compiler) compileGroup(q *parser.QueryExpr) (string, error) {
 	}
 	cond := strings.Join(condParts, " && ")
 
-	keyExpr, err := c.compileExpr(q.Group.Exprs[0])
+	keyExpr, err := c.compileExprWithEnv(q.Group.Exprs[0], qenv)
 	if err != nil {
 		return "", err
 	}
@@ -1045,12 +1112,9 @@ func (c *Compiler) compileGroup(q *parser.QueryExpr) (string, error) {
 	buf.WriteString(fmt.Sprintf("  let %s = ref [] in\n", resName))
 	buf.WriteString(fmt.Sprintf("  List.iter (fun (%sKey,%sItems) ->\n", q.Group.Name, q.Group.Name))
 	buf.WriteString(fmt.Sprintf("    let %s = { key = %sKey; items = List.rev %sItems } in\n", q.Group.Name, q.Group.Name, q.Group.Name))
-	selEnv := c.env
-	genv := types.NewEnv(selEnv)
-	genv.SetVar(q.Group.Name, types.AnyType{}, true)
-	c.env = genv
-	sel, err := c.compileExpr(q.Select)
-	c.env = selEnv
+	selEnv := types.NewEnv(qenv)
+	selEnv.SetVar(q.Group.Name, types.AnyType{}, true)
+	sel, err := c.compileExprWithEnv(q.Select, selEnv)
 	if err != nil {
 		return "", err
 	}
@@ -1294,7 +1358,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			items[i] = fmt.Sprintf("(%s,Obj.repr %s)", k, v)
+			items[i] = fmt.Sprintf("(%s,Obj.repr (%s))", k, v)
 		}
 		return "[" + strings.Join(items, ";") + "]", nil
 	case p.Struct != nil:
