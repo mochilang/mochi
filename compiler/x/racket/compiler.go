@@ -756,14 +756,45 @@ func (c *Compiler) compileFun(f *parser.FunStmt) error {
 		}
 	}
 	c.funArity[f.Name] = len(f.Params)
-	c.writeln(fmt.Sprintf("(define (%s %s)", f.Name, strings.Join(params, " ")))
-	c.writeln("  (let/ec return")
-	for _, st := range f.Body {
-		if err := c.compileStmtFull(st, "", "", "return"); err != nil {
+
+	retCount := countReturns(f.Body)
+	simpleNoReturn := retCount == 0
+	simpleReturn := retCount == 1 && len(f.Body) > 0 && f.Body[len(f.Body)-1].Return != nil && countReturns(f.Body[:len(f.Body)-1]) == 0
+
+	pstr := strings.Join(params, " ")
+	if pstr != "" {
+		c.writeln(fmt.Sprintf("(define (%s %s)", f.Name, pstr))
+	} else {
+		c.writeln(fmt.Sprintf("(define (%s)", f.Name))
+	}
+	if simpleNoReturn {
+		for _, st := range f.Body {
+			if err := c.compileStmtFull(st, "", "", ""); err != nil {
+				return err
+			}
+		}
+		c.writeln(")")
+	} else if simpleReturn {
+		for _, st := range f.Body[:len(f.Body)-1] {
+			if err := c.compileStmtFull(st, "", "", ""); err != nil {
+				return err
+			}
+		}
+		val, err := c.compileExpr(f.Body[len(f.Body)-1].Return.Value)
+		if err != nil {
 			return err
 		}
+		c.writeln("  " + val)
+		c.writeln(")")
+	} else {
+		c.writeln("  (let/ec return")
+		for _, st := range f.Body {
+			if err := c.compileStmtFull(st, "", "", "return"); err != nil {
+				return err
+			}
+		}
+		c.writeln("  ))")
 	}
-	c.writeln("  ))")
 	c.varTypes = prev
 	return nil
 }
@@ -1318,4 +1349,36 @@ func getListElemType(tr *parser.TypeRef) string {
 		return *tr.Generic.Args[0].Simple
 	}
 	return ""
+}
+
+func countReturns(sts []*parser.Statement) int {
+	total := 0
+	for _, st := range sts {
+		total += countReturnsStmt(st)
+	}
+	return total
+}
+
+func countReturnsStmt(s *parser.Statement) int {
+	switch {
+	case s.Return != nil:
+		return 1
+	case s.If != nil:
+		return countReturns(s.If.Then) + countReturnsIf(s.If.ElseIf) + countReturns(s.If.Else)
+	case s.While != nil:
+		return countReturns(s.While.Body)
+	case s.For != nil:
+		return countReturns(s.For.Body)
+	case s.Test != nil:
+		return countReturns(s.Test.Body)
+	default:
+		return 0
+	}
+}
+
+func countReturnsIf(s *parser.IfStmt) int {
+	if s == nil {
+		return 0
+	}
+	return countReturns(s.Then) + countReturnsIf(s.ElseIf) + countReturns(s.Else)
 }

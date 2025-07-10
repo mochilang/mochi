@@ -9,7 +9,7 @@
   )
   (void)
 )
-(if (> n 7)
+(if (cond [(string? n) (string>? n 7)] [(string? 7) (string>? n 7)] [else (> n 7)])
   (begin
 (break)
   )

@@ -1,11 +1,8 @@
 #lang racket
-(struct Leaf ())
-(struct Node (left value right))
-
-(define (sum-tree t)
-  (match t
-    [(Leaf) 0]
-    [(Node l v r) (+ (sum-tree l) v (sum-tree r))]))
-
+(struct Leaf () #:transparent #:mutable)
+(struct Node (left value right) #:transparent #:mutable)
+(define (sum_tree t)
+  (match t [(Leaf) 0] [(Node left value right) (+ (+ (sum_tree left) value) (sum_tree right))])
+)
 (define t (Node (Leaf) 1 (Node (Leaf) 2 (Leaf))))
-(displayln (sum-tree t))
+(displayln (sum_tree t))

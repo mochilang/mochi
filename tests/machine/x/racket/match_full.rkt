@@ -9,8 +9,7 @@
 (define status (match ok [#t "confirmed"] [#f "denied"]))
 (displayln status)
 (define (classify n)
-  (let/ec return
-(return (match n [0 "zero"] [1 "one"] [_ "many"]))
-  ))
+  (match n [0 "zero"] [1 "one"] [_ "many"])
+)
 (displayln (classify 0))
 (displayln (classify 5))

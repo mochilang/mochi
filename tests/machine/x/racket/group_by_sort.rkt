@@ -3,6 +3,6 @@
 (define grouped (let ([groups (make-hash)])
   (for* ([i items]) (let* ([key (hash-ref i 'cat)] [bucket (hash-ref groups key '())]) (hash-set! groups key (cons i bucket))))
   (define _groups (for/list ([k (hash-keys groups)]) (hash 'key k 'items (hash-ref groups k))))
-  (set! _groups (sort _groups (lambda (a b) (> (let ([g a]) (- (apply + (for*/list ([x (hash-ref g 'items)]) (hash-ref x 'val))))) (let ([g b]) (- (apply + (for*/list ([x (hash-ref g 'items)]) (hash-ref x 'val)))))))))
+  (set! _groups (sort _groups (lambda (a b) (cond [(string? (let ([g a]) (- (apply + (for*/list ([x (hash-ref g 'items)]) (hash-ref x 'val)))))) (string>? (let ([g a]) (- (apply + (for*/list ([x (hash-ref g 'items)]) (hash-ref x 'val))))) (let ([g b]) (- (apply + (for*/list ([x (hash-ref g 'items)]) (hash-ref x 'val))))))] [(string? (let ([g b]) (- (apply + (for*/list ([x (hash-ref g 'items)]) (hash-ref x 'val)))))) (string>? (let ([g a]) (- (apply + (for*/list ([x (hash-ref g 'items)]) (hash-ref x 'val))))) (let ([g b]) (- (apply + (for*/list ([x (hash-ref g 'items)]) (hash-ref x 'val))))))] [else (> (let ([g a]) (- (apply + (for*/list ([x (hash-ref g 'items)]) (hash-ref x 'val))))) (let ([g b]) (- (apply + (for*/list ([x (hash-ref g 'items)]) (hash-ref x 'val))))))]))))
   (for/list ([g _groups]) (hash 'cat (hash-ref g 'key) 'total (apply + (for*/list ([x (hash-ref g 'items)]) (hash-ref x 'val)))))))
 (displayln grouped)

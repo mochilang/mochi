@@ -4,6 +4,6 @@
 (define big (let ([groups (make-hash)])
   (for* ([p people]) (let* ([key (hash-ref p 'city)] [bucket (hash-ref groups key '())]) (hash-set! groups key (cons p bucket))))
   (define _groups (for/list ([k (hash-keys groups)]) (hash 'key k 'items (hash-ref groups k))))
-  (set! _groups (filter (lambda (g) (>= (length (hash-ref g 'items)) 4)) _groups))
+  (set! _groups (filter (lambda (g) (cond [(string? (length (hash-ref g 'items))) (string>=? (length (hash-ref g 'items)) 4)] [(string? 4) (string>=? (length (hash-ref g 'items)) 4)] [else (>= (length (hash-ref g 'items)) 4)])) _groups))
   (for/list ([g _groups]) (hash 'city (hash-ref g 'key) 'num (length (hash-ref g 'items))))))
 (displayln (jsexpr->string big))
