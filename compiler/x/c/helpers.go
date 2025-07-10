@@ -57,6 +57,8 @@ func cTypeFromType(t types.Type) string {
 		return "double"
 	case types.StringType:
 		return "char*"
+	case types.UnionType:
+		return sanitizeName(tt.Name)
 	case types.StructType:
 		return sanitizeName(tt.Name)
 	case types.ListType:
@@ -330,6 +332,23 @@ func identName(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+// callPattern returns the call expression if e is a direct
+// function call with no operators.
+func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target.Call == nil {
+		return nil, false
+	}
+	return p.Target.Call, true
 }
 
 func formatFuncPtrDecl(typ, name, val string) string {
