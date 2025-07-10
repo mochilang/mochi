@@ -16,7 +16,7 @@ $result = (function() use ($customer, $end_date, $lineitem, $nation, $orders, $s
                             if ($n['n_nationkey'] == $c['c_nationkey']) {
                                 if ($o['o_orderdate'] >= $start_date && $o['o_orderdate'] < $end_date && $l['l_returnflag'] == "R") {
                                     $_k = json_encode(["c_custkey" => $c['c_custkey'], "c_name" => $c['c_name'], "c_acctbal" => $c['c_acctbal'], "c_address" => $c['c_address'], "c_phone" => $c['c_phone'], "c_comment" => $c['c_comment'], "n_name" => $n['n_name']]);
-                                    $groups[$_k][] = $c;
+                                    $groups[$_k][] = ["c" => $c, "o" => $o, "l" => $l, "n" => $n];
                                 }
                             }
                         }

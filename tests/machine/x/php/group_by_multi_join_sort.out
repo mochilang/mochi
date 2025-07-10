@@ -1,11 +1,3 @@
-PHP Warning:  Undefined array key "l" in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 34
-PHP Warning:  Trying to access array offset on null in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 34
-PHP Warning:  Undefined array key "l" in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 34
-PHP Warning:  Trying to access array offset on null in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 34
-PHP Warning:  Undefined array key "l" in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 40
-PHP Warning:  Trying to access array offset on null in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 40
-PHP Warning:  Undefined array key "l" in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 40
-PHP Warning:  Trying to access array offset on null in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 40
 array(1) {
   [0]=>
   array(8) {
@@ -14,7 +6,7 @@ array(1) {
     ["c_name"]=>
     string(5) "Alice"
     ["revenue"]=>
-    int(0)
+    float(900)
     ["c_acctbal"]=>
     int(100)
     ["n_name"]=>
