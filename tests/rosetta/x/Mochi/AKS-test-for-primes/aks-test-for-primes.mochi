@@ -1,0 +1,63 @@
+fun poly(p: int): string {
+  var s: string = ""
+  var coef: int = 1
+  var i = p
+  if coef != 1 {
+    s = s + str(coef)
+  }
+  while i > 0 {
+    s = s + "x"
+    if i != 1 {
+      s = s + "^" + str(i)
+    }
+    coef = (coef * i / (p - i + 1)) as int
+    var d = coef
+    if (p - (i - 1)) % 2 == 1 {
+      d = -d
+    }
+    if d < 0 {
+      s = s + " - " + str(-d)
+    } else {
+      s = s + " + " + str(d)
+    }
+    i = i - 1
+  }
+  return s
+}
+
+fun aks(n: int): bool {
+  if n < 2 { return false }
+  var c: int = n
+  var i = 1
+  while i < n {
+    if c % n != 0 { return false }
+    c = (c * (n - i) / (i + 1)) as int
+    i = i + 1
+  }
+  return true
+}
+
+fun main() {
+  var p = 0
+  while p <= 7 {
+    print(str(p) + ":  " + poly(p))
+    p = p + 1
+  }
+  var first = true
+  p = 2
+  var line: string = ""
+  while p < 50 {
+    if aks(p) {
+      if first {
+        line = line + str(p)
+        first = false
+      } else {
+        line = line + " " + str(p)
+      }
+    }
+    p = p + 1
+  }
+  print(line)
+}
+
+main()
