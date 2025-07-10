@@ -55,6 +55,8 @@ type Compiler struct {
 
 	unions   map[string]*unionInfo
 	variants map[string]*variantInfo
+
+	namespaces map[string]struct{}
 }
 
 // New returns a new compiler instance.
@@ -74,6 +76,7 @@ func New() *Compiler {
 		scope:        0,
 		unions:       map[string]*unionInfo{},
 		variants:     map[string]*variantInfo{},
+		namespaces:   map[string]struct{}{},
 	}
 }
 
@@ -135,6 +138,27 @@ func sanitizeName(name string) string {
 		s = "_" + s
 	}
 	return s
+}
+
+func isIdentChar(r byte) bool {
+	return (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9') || r == '_'
+}
+
+func replaceVarDot(expr, v, t string) string {
+	pat := v + "."
+	for {
+		idx := strings.Index(expr, pat)
+		if idx == -1 {
+			break
+		}
+		if idx == 0 || (!isIdentChar(expr[idx-1]) && expr[idx-1] != '>' && expr[idx-1] != ')') {
+			expr = expr[:idx] + "std::declval<" + t + ">()." + expr[idx+len(pat):]
+			idx += len("std::declval<" + t + ">().")
+		} else {
+			idx += len(pat)
+		}
+	}
+	return expr
 }
 
 func (c *Compiler) writeIndent() {
@@ -771,24 +795,26 @@ func (c *Compiler) compileImport(im *parser.ImportStmt) error {
 	}
 	switch *im.Lang {
 	case "python":
-		if im.Path == "math" && im.Auto {
+		if im.Path == "math" {
 			c.headerWriteln("#include <cmath>")
-			c.headerWriteln("namespace " + im.As + " {")
-			c.headerWriteln("inline double sqrt(double x){ return std::sqrt(x); }")
-			c.headerWriteln("inline double pow(double x,double y){ return std::pow(x,y); }")
-			c.headerWriteln("inline double sin(double x){ return std::sin(x); }")
-			c.headerWriteln("inline double log(double x){ return std::log(x); }")
-			c.headerWriteln("const double pi = 3.141592653589793;")
-			c.headerWriteln("const double e = 2.718281828459045;")
-			c.headerWriteln("}")
+			c.headerWriteln("struct " + im.As + "_t {")
+			c.headerWriteln("    static double sqrt(double x){ return std::sqrt(x); }")
+			c.headerWriteln("    static double pow(double x,double y){ return std::pow(x,y); }")
+			c.headerWriteln("    static double sin(double x){ return std::sin(x); }")
+			c.headerWriteln("    static double log(double x){ return std::log(x); }")
+			c.headerWriteln("    static constexpr double pi = 3.141592653589793;")
+			c.headerWriteln("    static constexpr double e = 2.718281828459045;")
+			c.headerWriteln("};")
+			c.headerWriteln(im.As + "_t " + im.As + ";")
 		}
 	case "go":
-		if im.Path == "mochi/runtime/ffi/go/testpkg" && im.Auto {
+		if im.Path == "mochi/runtime/ffi/go/testpkg" {
 			c.headerWriteln("namespace " + im.As + " {")
 			c.headerWriteln("inline int Add(int a,int b){ return a+b; }")
 			c.headerWriteln("const double Pi = 3.14;")
 			c.headerWriteln("const int Answer = 42;")
 			c.headerWriteln("}")
+			c.namespaces[im.As] = struct{}{}
 		}
 	}
 	return nil
@@ -1116,7 +1142,11 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, error) {
 			}
 		} else if op.Field != nil {
 			base := expr
-			expr = fmt.Sprintf("%s.%s", expr, op.Field.Name)
+			if _, ok := c.namespaces[base]; ok {
+				expr = fmt.Sprintf("%s::%s", base, op.Field.Name)
+			} else {
+				expr = fmt.Sprintf("%s.%s", expr, op.Field.Name)
+			}
 			t := c.varStruct[base]
 			if t == "" {
 				t = structLiteralType(base)
@@ -1217,8 +1247,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 							continue
 						}
 						if strings.Contains(expr, v+".") {
-							rep := fmt.Sprintf("std::declval<%s>().", t)
-							expr = strings.ReplaceAll(expr, v+".", rep)
+							expr = replaceVarDot(expr, v, t)
 						}
 					}
 					ftype := fmt.Sprintf("decltype(%s)", expr)
@@ -1336,6 +1365,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		if _, ok := c.variants[name]; ok && len(p.Selector.Tail) == 0 {
 			return fmt.Sprintf("new %s{}", name), nil
+		}
+		if _, ok := c.namespaces[name]; ok {
+			if len(p.Selector.Tail) > 0 {
+				name += "::" + p.Selector.Tail[0]
+				for _, t := range p.Selector.Tail[1:] {
+					name += "." + t
+				}
+				return name, nil
+			}
 		}
 		for _, t := range p.Selector.Tail {
 			name += "." + t
@@ -1654,8 +1692,7 @@ func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error
 				continue
 			}
 			if strings.Contains(val, v+".") {
-				rep := fmt.Sprintf("std::declval<%s>().", t)
-				ftype = strings.ReplaceAll(ftype, v+".", rep)
+				ftype = replaceVarDot(ftype, v, t)
 			}
 		}
 		if dot := strings.Index(val, "."); dot != -1 {
@@ -1839,8 +1876,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			continue
 		}
 		if strings.Contains(val, v+".") {
-			rep := fmt.Sprintf("std::declval<%s>().", t)
-			itemTypeExpr = strings.ReplaceAll(itemTypeExpr, v+".", rep)
+			itemTypeExpr = replaceVarDot(itemTypeExpr, v, t)
 		}
 	}
 	if matched, _ := regexp.MatchString(`[A-Za-z_][A-Za-z0-9_]*\\.`, itemTypeExpr); matched {
