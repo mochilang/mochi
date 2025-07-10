@@ -1,0 +1,7 @@
+exit status 1
+/workspace/mochi/tests/machine/x/scala/json_builtin.scala:6: error: type mismatch;
+ found   : json_builtin.Auto1
+ required: Map[String,Any]
+    println(scala.util.parsing.json.JSONObject(m).toString())
+                                               ^
+one error found

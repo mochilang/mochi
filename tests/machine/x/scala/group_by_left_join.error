@@ -1,0 +1,11 @@
+exit status 1
+/workspace/mochi/tests/machine/x/scala/group_by_left_join.scala:8: error: value o is not a member of (group_by_left_join.Auto1, Option[group_by_left_join.Auto2])
+  val stats = ((for { c <- customers; o = orders.find(o => (o.customerId).asInstanceOf[Int] == c.id) } yield (c.name, (c, o))).groupBy(_._1).map{ case(k,list) => (k, list.map(_._2)) }.toList).map{ case(gKey,gItems) => { val g = (gKey, gItems); Auto3(name = g._1, count = (for { r <- g._2; if r.o } yield r).size) } }.toList
+                                                                                                                                                                                                                                                                                                      ^
+/workspace/mochi/tests/machine/x/scala/group_by_left_join.scala:12: error: value name is not a member of Nothing
+      println((s.name) + " " + ("orders:") + " " + (s.count))
+                 ^
+/workspace/mochi/tests/machine/x/scala/group_by_left_join.scala:12: error: value count is not a member of Nothing
+      println((s.name) + " " + ("orders:") + " " + (s.count))
+                                                      ^
+three errors found

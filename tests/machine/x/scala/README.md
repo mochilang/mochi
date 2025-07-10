@@ -1,6 +1,6 @@
 # Scala Machine Translations
 
-This directory contains Scala code generated from the Mochi programs in `tests/vm/valid` using the Scala compiler. Each program was compiled with `scalac`. Successful runs produced an `.out` file while failures produced an `.error` file. The compiler now infers element types for lists and maps to generate type-safe collections.
+This directory contains Scala code generated from the Mochi programs in `tests/vm/valid` using the Scala compiler. Each program was compiled with `scalac`. Successful runs produced an `.out` file while failures produced an `.error` file. The compiler now infers element types for lists and maps and emits `case class` definitions when possible.
 
 Compiled programs: 97/97
 Executed successfully: 77/97
@@ -107,4 +107,4 @@ Executed successfully: 77/97
 ## Remaining Tasks
 - Finish full query join support
 - Improve `load`/`save` expression handling
-- Refine case class generation for complex queries
+- Further refine `case class` generation for complex query results
