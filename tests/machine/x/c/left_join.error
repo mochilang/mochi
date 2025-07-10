@@ -10,23 +10,22 @@ error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/left_join.c:71:10: error: request for member ‘data’ in something not a structure or union
    71 |       _t3.data[_t4] =
       |          ^
-/workspace/mochi/tests/machine/x/c/left_join.c:72:53: error: incompatible types when initializing type ‘int’ using type ‘customersItem’
-   72 |           (resultItem){.orderId = o.id, .customer = c, .total = o.total};
-      |                                                     ^
 /workspace/mochi/tests/machine/x/c/left_join.c:76:25: error: invalid initializer
    76 |       customersItem c = 0;
       |                         ^
 /workspace/mochi/tests/machine/x/c/left_join.c:77:10: error: request for member ‘data’ in something not a structure or union
    77 |       _t3.data[_t4] =
       |          ^
-/workspace/mochi/tests/machine/x/c/left_join.c:78:53: error: incompatible types when initializing type ‘int’ using type ‘customersItem’
-   78 |           (resultItem){.orderId = o.id, .customer = c, .total = o.total};
-      |                                                     ^
 /workspace/mochi/tests/machine/x/c/left_join.c:82:6: error: request for member ‘len’ in something not a structure or union
    82 |   _t3.len = _t4;
       |      ^
 /workspace/mochi/tests/machine/x/c/left_join.c:83:28: error: invalid initializer
    83 |   list_resultItem result = _t3;
       |                            ^~~
+/workspace/mochi/tests/machine/x/c/left_join.c:90:14: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘customersItem’ [-Wformat=]
+   90 |     printf("%d ", entry.customer);
+      |             ~^    ~~~~~~~~~~~~~~
+      |              |         |
+      |              int       customersItem
 
    1: #include <stdio.h>

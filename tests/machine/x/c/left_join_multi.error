@@ -11,31 +11,22 @@ error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/left_join_multi.c:93:12: error: request for member ‘data’ in something not a structure or union
    93 |         _t4.data[_t5] =
       |            ^
-/workspace/mochi/tests/machine/x/c/left_join_multi.c:94:51: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
-   94 |             (resultItem){.orderId = o.id, .name = c.name, .item = i};
-      |                                                   ^
-/workspace/mochi/tests/machine/x/c/left_join_multi.c:94:51: note: (near initialization for ‘(anonymous).name’)
-/workspace/mochi/tests/machine/x/c/left_join_multi.c:94:67: error: incompatible types when initializing type ‘int’ using type ‘itemsItem’
-   94 |             (resultItem){.orderId = o.id, .name = c.name, .item = i};
-      |                                                                   ^
 /workspace/mochi/tests/machine/x/c/left_join_multi.c:98:23: error: invalid initializer
    98 |         itemsItem i = 0;
       |                       ^
 /workspace/mochi/tests/machine/x/c/left_join_multi.c:99:12: error: request for member ‘data’ in something not a structure or union
    99 |         _t4.data[_t5] =
       |            ^
-/workspace/mochi/tests/machine/x/c/left_join_multi.c:100:51: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
-  100 |             (resultItem){.orderId = o.id, .name = c.name, .item = i};
-      |                                                   ^
-/workspace/mochi/tests/machine/x/c/left_join_multi.c:100:51: note: (near initialization for ‘(anonymous).name’)
-/workspace/mochi/tests/machine/x/c/left_join_multi.c:100:67: error: incompatible types when initializing type ‘int’ using type ‘itemsItem’
-  100 |             (resultItem){.orderId = o.id, .name = c.name, .item = i};
-      |                                                                   ^
 /workspace/mochi/tests/machine/x/c/left_join_multi.c:105:6: error: request for member ‘len’ in something not a structure or union
   105 |   _t4.len = _t5;
       |      ^
 /workspace/mochi/tests/machine/x/c/left_join_multi.c:106:28: error: invalid initializer
   106 |   list_resultItem result = _t4;
       |                            ^~~
+/workspace/mochi/tests/machine/x/c/left_join_multi.c:112:14: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘itemsItem’ [-Wformat=]
+  112 |     printf("%d\n", r.item);
+      |             ~^     ~~~~~~
+      |              |      |
+      |              int    itemsItem
 
    1: #include <stdio.h>

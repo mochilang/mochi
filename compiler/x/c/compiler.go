@@ -4388,16 +4388,17 @@ func asFetchExpr(e *parser.Expr) *parser.FetchExpr {
 }
 
 func (c *Compiler) emitJSONExpr(e *parser.Expr) {
-	argExpr := c.compileExpr(e)
-	c.need(needJSON)
-	c.need(needListFloat)
-	c.need(needListString)
-	c.need(needListListInt)
-	if isListListExpr(e, c.env) {
-		c.writeln(fmt.Sprintf("_json_list_list_int(%s);", argExpr))
-	} else if isListIntExpr(e, c.env) {
-		c.writeln(fmt.Sprintf("_json_list_int(%s);", argExpr))
-	} else if isListFloatExpr(e, c.env) {
+        argExpr := c.compileExpr(e)
+        c.need(needJSON)
+        c.need(needListFloat)
+        c.need(needListString)
+        c.need(needListListInt)
+        c.need(needListInt)
+        if isListListExpr(e, c.env) {
+                c.writeln(fmt.Sprintf("_json_list_list_int(%s);", argExpr))
+        } else if isListIntExpr(e, c.env) {
+                c.writeln(fmt.Sprintf("_json_list_int(%s);", argExpr))
+        } else if isListFloatExpr(e, c.env) {
 		c.writeln(fmt.Sprintf("_json_list_float(%s);", argExpr))
 	} else if isListStringExpr(e, c.env) {
 		c.writeln(fmt.Sprintf("_json_list_string(%s);", argExpr))

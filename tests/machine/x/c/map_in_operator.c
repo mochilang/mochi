@@ -58,4 +58,3 @@ int main() {
   printf("%s\n", (map_int_string_contains(m, 3)) ? "true" : "false");
   return 0;
 }
-

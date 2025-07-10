@@ -48,8 +48,8 @@ static list_itemsItem list_itemsItem_create(int len) {
 
 typedef struct {
   int orderId;
-  int name;
-  int item;
+  char *name;
+  itemsItem item;
 } resultItem;
 typedef struct {
   int len;
@@ -108,7 +108,7 @@ int main() {
   for (int _t10 = 0; _t10 < result.len; _t10++) {
     resultItem r = result.data[_t10];
     printf("%d ", r.orderId);
-    printf("%d ", r.name);
+    printf("%s ", r.name);
     printf("%d\n", r.item);
   }
   return 0;

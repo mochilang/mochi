@@ -1,46 +1,52 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct {
-  int key;
+  char *key;
   int value;
-} map_int_bool_item;
-static map_int_bool_item *map_int_bool_item_new(int key, int value) {
-  map_int_bool_item *it =
-      (map_int_bool_item *)malloc(sizeof(map_int_bool_item));
-  it->key = key;
-  it->value = value;
-  return it;
+} pair_string_int;
+static pair_string_int pair_string_int_new(char *key, int value) {
+  pair_string_int p;
+  p.key = key;
+  p.value = value;
+  return p;
 }
 typedef struct {
   int len;
   int cap;
-  map_int_bool_item **data;
-} map_int_bool;
-static map_int_bool map_int_bool_create(int cap) {
-  map_int_bool m;
+  pair_string_int *data;
+} map_string_int;
+static map_string_int map_string_int_create(int cap) {
+  map_string_int m;
   m.len = 0;
   m.cap = cap;
-  m.data = cap ? (map_int_bool_item **)malloc(sizeof(map_int_bool_item *) * cap)
-               : NULL;
+  m.data =
+      cap ? (pair_string_int *)malloc(sizeof(pair_string_int) * cap) : NULL;
   return m;
 }
-static void map_int_bool_put(map_int_bool *m, int key, int value) {
+static void map_string_int_put(map_string_int *m, char *k, int v) {
   for (int i = 0; i < m->len; i++)
-    if (m->data[i]->key == key) {
-      m->data[i]->value = value;
+    if (strcmp(m->data[i].key, k) == 0) {
+      m->data[i].value = v;
       return;
     }
   if (m->len >= m->cap) {
     m->cap = m->cap ? m->cap * 2 : 4;
-    m->data = (map_int_bool_item **)realloc(
-        m->data, sizeof(map_int_bool_item *) * m->cap);
+    m->data =
+        (pair_string_int *)realloc(m->data, sizeof(pair_string_int) * m->cap);
   }
-  m->data[m->len++] = map_int_bool_item_new(key, value);
+  m->data[m->len++] = pair_string_int_new(k, v);
 }
-static int map_int_bool_contains(map_int_bool m, int key) {
+static int map_string_int_get(map_string_int m, const char *k) {
   for (int i = 0; i < m.len; i++)
-    if (m.data[i]->key == key)
+    if (strcmp(m.data[i].key, k) == 0)
+      return m.data[i].value;
+  return 0;
+}
+static int map_string_int_contains(map_string_int m, const char *k) {
+  for (int i = 0; i < m.len; i++)
+    if (strcmp(m.data[i].key, k) == 0)
       return 1;
   return 0;
 }
@@ -65,11 +71,12 @@ int main() {
   _t1.data[1] = (dataItem){.a = 1, .b = 1};
   _t1.data[2] = (dataItem){.a = 0, .b = 5};
   list_dataItem data = _t1;
-  map_int_bool _t2 = map_int_bool_create(2);
-  map_int_bool_put(&_t2, "a", x.a);
-  map_int_bool_put(&_t2, "b", x.b);
+  map_string_int _t2 = map_string_int_create(2);
+  map_string_int_put(&_t2, "a", x.a);
+  map_string_int_put(&_t2, "b", x.b);
   list_dataItem _t3 = list_dataItem_create(data.len);
-  int *_t6 = (int *)malloc(sizeof(int) * data.len);
+  map_string_int *_t6 =
+      (map_string_int *)malloc(sizeof(map_string_int) * data.len);
   int _t4 = 0;
   for (int _t5 = 0; _t5 < data.len; _t5++) {
     dataItem x = data.data[_t5];
@@ -81,7 +88,7 @@ int main() {
   for (int i = 0; i < _t4 - 1; i++) {
     for (int j = i + 1; j < _t4; j++) {
       if (_t6[i] > _t6[j]) {
-        int _t7 = _t6[i];
+        map_string_int _t7 = _t6[i];
         _t6[i] = _t6[j];
         _t6[j] = _t7;
         dataItem _t8 = _t3.data[i];

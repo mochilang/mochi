@@ -51,7 +51,7 @@ static list_partsuppItem list_partsuppItem_create(int len) {
 
 typedef struct {
   int part;
-  int value;
+  double value;
 } filteredItem;
 typedef struct {
   int len;

@@ -10,37 +10,20 @@ error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/right_join.c:73:10: error: request for member ‘data’ in something not a structure or union
    73 |       _t3.data[_t4] = (resultItem){.customerName = c.name, .order = o};
       |          ^
-/workspace/mochi/tests/machine/x/c/right_join.c:73:52: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
-   73 |       _t3.data[_t4] = (resultItem){.customerName = c.name, .order = o};
-      |                                                    ^
-/workspace/mochi/tests/machine/x/c/right_join.c:73:52: note: (near initialization for ‘(anonymous).customerName’)
-/workspace/mochi/tests/machine/x/c/right_join.c:73:69: error: incompatible types when initializing type ‘int’ using type ‘ordersItem’
-   73 |       _t3.data[_t4] = (resultItem){.customerName = c.name, .order = o};
-      |                                                                     ^
 /workspace/mochi/tests/machine/x/c/right_join.c:77:25: error: invalid initializer
    77 |       customersItem c = 0;
       |                         ^
 /workspace/mochi/tests/machine/x/c/right_join.c:78:10: error: request for member ‘data’ in something not a structure or union
    78 |       _t3.data[_t4] = (resultItem){.customerName = c.name, .order = o};
       |          ^
-/workspace/mochi/tests/machine/x/c/right_join.c:78:52: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
-   78 |       _t3.data[_t4] = (resultItem){.customerName = c.name, .order = o};
-      |                                                    ^
-/workspace/mochi/tests/machine/x/c/right_join.c:78:52: note: (near initialization for ‘(anonymous).customerName’)
-/workspace/mochi/tests/machine/x/c/right_join.c:78:69: error: incompatible types when initializing type ‘int’ using type ‘ordersItem’
-   78 |       _t3.data[_t4] = (resultItem){.customerName = c.name, .order = o};
-      |                                                                     ^
 /workspace/mochi/tests/machine/x/c/right_join.c:82:6: error: request for member ‘len’ in something not a structure or union
    82 |   _t3.len = _t4;
       |      ^
 /workspace/mochi/tests/machine/x/c/right_join.c:83:28: error: invalid initializer
    83 |   list_resultItem result = _t3;
       |                            ^~~
-/workspace/mochi/tests/machine/x/c/right_join.c:91:32: error: request for member ‘id’ in something not a structure or union
-   91 |       printf("%d ", entry.order.id);
-      |                                ^
-/workspace/mochi/tests/machine/x/c/right_join.c:93:33: error: request for member ‘total’ in something not a structure or union
-   93 |       printf("%d\n", entry.order.total);
-      |                                 ^
+/workspace/mochi/tests/machine/x/c/right_join.c:87:9: error: used struct type value where scalar is required
+   87 |     if (entry.order) {
+      |         ^~~~~
 
    1: #include <stdio.h>

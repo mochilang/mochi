@@ -16,13 +16,5 @@ error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/load_yaml.c:196:22: error: request for member ‘data’ in something not a structure or union
   196 |     Person p = people.data[_t3];
       |                      ^
-/workspace/mochi/tests/machine/x/c/load_yaml.c:200:42: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
-  200 |     _t1.data[_t2] = (adultsItem){.name = p.name, .email = p.email};
-      |                                          ^
-/workspace/mochi/tests/machine/x/c/load_yaml.c:200:42: note: (near initialization for ‘(anonymous).name’)
-/workspace/mochi/tests/machine/x/c/load_yaml.c:200:59: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
-  200 |     _t1.data[_t2] = (adultsItem){.name = p.name, .email = p.email};
-      |                                                           ^
-/workspace/mochi/tests/machine/x/c/load_yaml.c:200:59: note: (near initialization for ‘(anonymous).email’)
 
    1: #include <stdio.h>
