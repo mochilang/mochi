@@ -3,5 +3,5 @@ fn main() {
     if let Some(tmp1) = data.get_mut("outer") {
         tmp1.insert("inner", 2);
     }
-    println!("{:?}", data[&"outer"][&"inner"]);
+    println!("{}", data[&"outer"][&"inner"]);
 }

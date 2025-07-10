@@ -3,5 +3,5 @@ fn main() {
         return Box::new(move |x: i32| x + n);
     }
     let add10 = makeAdder(10);
-    println!("{:?}", add10(7));
+    println!("{}", add10(7));
 }

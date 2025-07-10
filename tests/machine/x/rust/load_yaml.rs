@@ -7,17 +7,23 @@ struct Person {
 
 #[derive(Default, Debug, Clone, PartialEq)]
 struct Result {
-    name: i32,
-    email: i32,
+    name: &'static str,
+    email: &'static str,
 }
 
-fn _load<T: serde::de::DeserializeOwned>(path: &str, _opts: std::collections::HashMap<String, String>) -> Vec<T> {
+fn _load<T: serde::de::DeserializeOwned>(path: &str, opts: std::collections::HashMap<String, String>) -> Vec<T> {
     use std::io::Read;
     let mut data = String::new();
     if path.is_empty() || path == "-" {
         std::io::stdin().read_to_string(&mut data).unwrap();
     } else if let Ok(mut f) = std::fs::File::open(path) {
         f.read_to_string(&mut data).unwrap();
+    }
+    if let Some(fmt) = opts.get("format") {
+        if fmt == "yaml" {
+            if let Ok(v) = serde_yaml::from_str::<Vec<T>>(&data) { return v; }
+            if let Ok(v) = serde_yaml::from_str::<T>(&data) { return vec![v]; }
+        }
     }
     if let Ok(v) = serde_json::from_str::<Vec<T>>(&data) { return v; }
     if let Ok(v) = serde_json::from_str::<T>(&data) { return vec![v]; }

@@ -1,0 +1,38 @@
+line 0: compile: exit status 1
+error[E0433]: failed to resolve: use of unresolved module or unlinked crate `serde`
+ --> /workspace/mochi/tests/machine/x/rust/save_jsonl_stdout.rs:7:13
+  |
+7 | fn _save<T: serde::Serialize>(src: &[T], path: &str, opts: std::collections::HashMap<String, String>) {
+  |             ^^^^^ use of unresolved module or unlinked crate `serde`
+  |
+  = help: you might be missing a crate named `serde`
+
+error[E0433]: failed to resolve: use of unresolved module or unlinked crate `serde_json`
+  --> /workspace/mochi/tests/machine/x/rust/save_jsonl_stdout.rs:11:53
+   |
+11 |                 for item in src { if let Ok(text) = serde_json::to_string(item) { println!("{}", text); } }
+   |                                                     ^^^^^^^^^^ use of unresolved module or unlinked crate `serde_json`
+   |
+   = help: you might be missing a crate named `serde_json`
+
+error[E0433]: failed to resolve: use of unresolved module or unlinked crate `serde_json`
+  --> /workspace/mochi/tests/machine/x/rust/save_jsonl_stdout.rs:14:53
+   |
+14 |                 for item in src { if let Ok(text) = serde_json::to_string(item) { writeln!(f, "{}", text).unwrap(); } }
+   |                                                     ^^^^^^^^^^ use of unresolved module or unlinked crate `serde_json`
+   |
+   = help: you might be missing a crate named `serde_json`
+
+error[E0433]: failed to resolve: use of unresolved module or unlinked crate `serde_json`
+  --> /workspace/mochi/tests/machine/x/rust/save_jsonl_stdout.rs:19:23
+   |
+19 |     if let Ok(text) = serde_json::to_string(src) {
+   |                       ^^^^^^^^^^ use of unresolved module or unlinked crate `serde_json`
+   |
+   = help: you might be missing a crate named `serde_json`
+
+error: aborting due to 4 previous errors
+
+For more information about this error, try `rustc --explain E0433`.
+
+#[derive(Default, Debug, Clone, PartialEq)]

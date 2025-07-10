@@ -8,6 +8,6 @@ fn max(v: &[i32]) -> i32 {
 
 fn main() {
     let nums = vec![3, 1, 4];
-    println!("{:?}", min(&nums));
-    println!("{:?}", max(&nums));
+    println!("{}", min(&nums));
+    println!("{}", max(&nums));
 }

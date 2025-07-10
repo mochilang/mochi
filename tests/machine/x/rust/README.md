@@ -1,8 +1,10 @@
 # Mochi to Rust Machine Outputs
 
-This directory stores machine generated Rust translations of programs from `tests/vm/valid`. Each entry is compiled and executed during tests. If a program fails to compile or run, a `.error` file contains the diagnostic details.
+This directory contains Rust code generated from the Mochi programs in `tests/vm/valid` using the Rust compiler. Each file was built with `rustc` and executed. Successful runs have a `.out` file, while failures produce a `.error` file.
 
-Checklist of programs that currently compile and run (97/97):
+Compiled programs: 89/97
+
+## Checklist
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -13,6 +15,11 @@ Checklist of programs that currently compile and run (97/97):
 - [x] cast_struct
 - [x] closure
 - [x] count_builtin
+- [x] cross_join
+- [ ] cross_join_filter
+- [ ] cross_join_triple
+- [x] dataset_sort_take_limit
+- [x] dataset_where_filter
 - [x] exists_builtin
 - [x] for_list_collection
 - [x] for_loop
@@ -20,11 +27,25 @@ Checklist of programs that currently compile and run (97/97):
 - [x] fun_call
 - [x] fun_expr_in_let
 - [x] fun_three_args
+- [x] group_by
+- [ ] group_by_conditional_sum
+- [x] group_by_having
+- [x] group_by_join
+- [x] group_by_left_join
+- [x] group_by_multi_join
+- [ ] group_by_multi_join_sort
+- [ ] group_by_sort
+- [ ] group_items_iteration
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
 - [x] in_operator
 - [x] in_operator_extended
+- [x] inner_join
+- [x] join_multi
+- [x] json_builtin
+- [x] left_join
+- [x] left_join_multi
 - [x] len_builtin
 - [x] len_map
 - [x] len_string
@@ -33,53 +54,56 @@ Checklist of programs that currently compile and run (97/97):
 - [x] list_index
 - [x] list_nested_assign
 - [x] list_set_ops
+- [ ] load_yaml
 - [x] map_assign
 - [x] map_in_operator
 - [x] map_index
 - [x] map_int_key
 - [x] map_literal_dynamic
-- [x] cross_join
-- [x] cross_join_filter
-- [x] cross_join_triple
-- [x] dataset_sort_take_limit
-- [x] dataset_where_filter
 - [x] map_membership
 - [x] map_nested_assign
 - [x] match_expr
 - [x] match_full
 - [x] math_ops
 - [x] membership
+- [x] min_max_builtin
+- [x] nested_function
+- [x] order_by_map
+- [x] outer_join
 - [x] partial_application
 - [x] print_hello
 - [x] pure_fold
 - [x] pure_global_fold
+- [x] query_sum_select
 - [x] record_assign
+- [x] right_join
+- [ ] save_jsonl_stdout
 - [x] short_circuit
+- [x] slice
+- [x] sort_stable
+- [x] str_builtin
 - [x] string_compare
 - [x] string_concat
 - [x] string_contains
 - [x] string_in_operator
 - [x] string_index
+- [x] string_prefix_slice
+- [x] substring_builtin
 - [x] sum_builtin
 - [x] tail_recursion
 - [x] test_block
+- [x] tree_sum
 - [x] two-sum
 - [x] typed_let
 - [x] typed_var
 - [x] unary_neg
+- [x] update_stmt
+- [x] user_type_literal
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
-- [x] json_builtin
-- [x] min_max_builtin
-- [x] nested_function
-- [x] slice
-- [x] str_builtin
-- [x] string_prefix_slice
-- [x] substring_builtin
-- [x] user_type_literal
-- [x] order_by_map
 
+## Remaining Tasks
 
-All programs implemented.
-
+- [ ] Implement support for dataset joins that currently fail to compile
+- [ ] Handle loading and saving external data

@@ -5,5 +5,5 @@ fn main() {
         }
         return sum_rec(n - 1, acc + n);
     }
-    println!("{:?}", sum_rec(10, 0));
+    println!("{}", sum_rec(10, 0));
 }

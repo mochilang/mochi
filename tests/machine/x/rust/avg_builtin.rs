@@ -4,5 +4,5 @@ fn avg(v: &[i32]) -> f64 {
 }
 
 fn main() {
-    println!("{:?}", avg(&vec![1, 2, 3]));
+    println!("{}", avg(&vec![1, 2, 3]));
 }

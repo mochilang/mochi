@@ -26,5 +26,5 @@ fn main() {
     println!("{:?}", _union(vec![1, 2], vec![2, 3]));
     println!("{:?}", _except(vec![1, 2, 3], vec![2]));
     println!("{:?}", _intersect(vec![1, 2, 3], vec![2, 4]));
-    println!("{:?}", _union_all(vec![1, 2], vec![2, 3]).len());
+    println!("{}", _union_all(vec![1, 2], vec![2, 3]).len() as i32);
 }
