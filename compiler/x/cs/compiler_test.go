@@ -19,9 +19,9 @@ import (
 )
 
 func TestCompileValidPrograms(t *testing.T) {
-        if err := cscode.EnsureDotnet(); err != nil {
-                t.Skipf("dotnet not installed: %v", err)
-        }
+	if err := cscode.EnsureDotnet(); err != nil {
+		t.Skipf("dotnet not installed: %v", err)
+	}
 
 	root := findRepoRoot(t)
 	pattern := filepath.Join(root, "tests", "vm", "valid", "*.mochi")
@@ -148,39 +148,11 @@ func findRepoRoot(t *testing.T) string {
 		}
 		dir = parent
 	}
-        t.Fatal("go.mod not found")
-        return ""
+	t.Fatal("go.mod not found")
+	return ""
 }
 
 func TestMain(m *testing.M) {
-        code := m.Run()
-        updateReadme()
-        os.Exit(code)
-}
-
-func updateReadme() {
-        root := findRepoRoot(&testing.T{})
-        srcDir := filepath.Join(root, "tests", "vm", "valid")
-        outDir := filepath.Join(root, "tests", "machine", "x", "cs")
-        files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-        total := len(files)
-        compiled := 0
-        var lines []string
-        for _, f := range files {
-                name := strings.TrimSuffix(filepath.Base(f), ".mochi")
-                mark := "[ ]"
-                if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
-                        compiled++
-                        mark = "[x]"
-                }
-                lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
-        }
-        var buf bytes.Buffer
-        buf.WriteString("# C# Machine Output\n\n")
-        buf.WriteString("This directory holds C# source generated from the Mochi programs in `tests/vm/valid`. Each compiled program has a `.cs` file and the expected output in a matching `.out`. If the compiler failed a `.error` file will be present instead.\n\n")
-        fmt.Fprintf(&buf, "Compiled programs: %d/%d\n\n", compiled, total)
-        buf.WriteString("Checklist:\n\n")
-        buf.WriteString(strings.Join(lines, "\n"))
-        buf.WriteString("\n")
-        _ = os.WriteFile(filepath.Join(outDir, "README.md"), buf.Bytes(), 0o644)
+	code := m.Run()
+	os.Exit(code)
 }

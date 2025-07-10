@@ -110,43 +110,5 @@ func findRepoRoot(t *testing.T) string {
 
 func TestMain(m *testing.M) {
 	code := m.Run()
-	updateReadme()
 	os.Exit(code)
-}
-
-func updateReadme() {
-	root := findRepoRoot(&testing.T{})
-	srcDir := filepath.Join(root, "tests", "vm", "valid")
-	outDir := filepath.Join(root, "tests", "machine", "x", "clj")
-	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-	total := len(files)
-	compiled := 0
-	var lines []string
-	for _, f := range files {
-		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
-		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
-			compiled++
-			mark = "[x]"
-		}
-		lines = append(lines, fmt.Sprintf("- %s %s.mochi", mark, name))
-	}
-	var buf bytes.Buffer
-	buf.WriteString("# Clojure Machine Translations\n\n")
-	buf.WriteString("This directory contains Clojure code generated from the Mochi programs in `tests/vm/valid` using the Clojure compiler. Each program was compiled and executed. Successful runs produced an `.out` file while failures produced an `.error` file.\n\n")
-	fmt.Fprintf(&buf, "Compiled programs: %d/%d successful.\n", compiled, total)
-	buf.WriteString(strings.Join(lines, "\n"))
-	buf.WriteString("\n\n## Status\n")
-	if compiled == total {
-		buf.WriteString("All example programs compile and run successfully.\n")
-	} else {
-		fmt.Fprintf(&buf, "%d programs failed.\n", total-compiled)
-	}
-	buf.WriteString("\n## Remaining tasks\n")
-	if compiled == total {
-		buf.WriteString("None\n")
-	} else {
-		buf.WriteString("- [ ] Fix failing examples\n")
-	}
-	_ = os.WriteFile(filepath.Join(outDir, "README.md"), buf.Bytes(), 0o644)
 }
