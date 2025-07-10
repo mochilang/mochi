@@ -1,4 +1,18 @@
-PHP Warning:  Undefined variable $items in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 5
-PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 5
-array(0) {
+PHP Warning:  Attempt to read property "cat" on array in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 6
+PHP Warning:  Attempt to read property "cat" on array in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 6
+PHP Warning:  Attempt to read property "cat" on array in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 6
+PHP Warning:  Attempt to read property "cat" on array in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 6
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 14
+PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 14
+PHP Warning:  Attempt to read property "key" on array in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 18
+PHP Warning:  Undefined variable $g in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 20
+PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/group_by_sort.php on line 20
+array(1) {
+  [0]=>
+  array(2) {
+    ["cat"]=>
+    NULL
+    ["total"]=>
+    int(0)
+  }
 }

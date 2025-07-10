@@ -2,7 +2,7 @@
 $nations = [["id" => 1, "name" => "A"], ["id" => 2, "name" => "B"]];
 $suppliers = [["id" => 1, "nation" => 1], ["id" => 2, "nation" => 2]];
 $partsupp = [["part" => 100, "supplier" => 1, "cost" => 10, "qty" => 2], ["part" => 100, "supplier" => 2, "cost" => 20, "qty" => 1], ["part" => 200, "supplier" => 1, "cost" => 5, "qty" => 3]];
-$filtered = (function() {
+$filtered = (function() use ($nations, $partsupp, $suppliers) {
     $result = [];
     foreach ($partsupp as $ps) {
         foreach ($suppliers as $s) {
@@ -19,7 +19,7 @@ $filtered = (function() {
     }
     return $result;
 })();
-$grouped = (function() {
+$grouped = (function() use ($filtered) {
     $groups = [];
     foreach ($filtered as $x) {
         $_k = json_encode($x->part);

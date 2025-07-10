@@ -1,6 +1,6 @@
 <?php
 $data = [["tag" => "a", "val" => 1], ["tag" => "a", "val" => 2], ["tag" => "b", "val" => 3]];
-$groups = (function() {
+$groups = (function() use ($data) {
     $groups = [];
     foreach ($data as $d) {
         $_k = json_encode($d->tag);
@@ -21,7 +21,7 @@ foreach ($groups as $g) {
     }
     $tmp = array_merge($tmp, [["tag" => $g->key, "total" => $total]]);
 }
-$result = (function() {
+$result = (function() use ($tmp) {
     $result = [];
     foreach ($tmp as $r) {
         $result[] = [$r->tag, $r];

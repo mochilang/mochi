@@ -2,7 +2,7 @@
 $nums = [1, 2];
 $letters = ["A", "B"];
 $bools = [true, false];
-$combos = (function() {
+$combos = (function() use ($bools, $letters, $nums) {
     $result = [];
     foreach ($nums as $n) {
         foreach ($letters as $l) {

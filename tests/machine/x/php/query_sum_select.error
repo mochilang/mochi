@@ -1,0 +1,6 @@
+PHP Fatal error:  Uncaught TypeError: array_sum(): Argument #1 ($array) must be of type array, int given in /workspace/mochi/tests/machine/x/php/query_sum_select.php:7
+Stack trace:
+#0 /workspace/mochi/tests/machine/x/php/query_sum_select.php(7): array_sum()
+#1 /workspace/mochi/tests/machine/x/php/query_sum_select.php(11): {closure}()
+#2 {main}
+  thrown in /workspace/mochi/tests/machine/x/php/query_sum_select.php on line 7

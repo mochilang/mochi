@@ -1,6 +1,6 @@
 <?php
 $xs = [1, 2, 3];
-$ys = (function() {
+$ys = (function() use ($xs) {
     $result = [];
     foreach ($xs as $x) {
         if ($x % 2 == 1) {

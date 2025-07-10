@@ -1,4 +1,26 @@
-PHP Warning:  Undefined variable $customer in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 10
-PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 10
+PHP Warning:  Attempt to read property "o_custkey" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 12
+PHP Warning:  Attempt to read property "c_custkey" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 12
+PHP Warning:  Attempt to read property "l_orderkey" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 14
+PHP Warning:  Attempt to read property "o_orderkey" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 14
+PHP Warning:  Attempt to read property "n_nationkey" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 16
+PHP Warning:  Attempt to read property "c_nationkey" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 16
+PHP Warning:  Attempt to read property "o_orderdate" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 17
+PHP Warning:  Attempt to read property "l_orderkey" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 14
+PHP Warning:  Attempt to read property "o_orderkey" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 14
+PHP Warning:  Attempt to read property "n_nationkey" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 16
+PHP Warning:  Attempt to read property "c_nationkey" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 16
+PHP Warning:  Attempt to read property "o_orderdate" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 17
+PHP Warning:  Attempt to read property "o_custkey" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 12
+PHP Warning:  Attempt to read property "c_custkey" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 12
+PHP Warning:  Attempt to read property "l_orderkey" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 14
+PHP Warning:  Attempt to read property "o_orderkey" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 14
+PHP Warning:  Attempt to read property "n_nationkey" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 16
+PHP Warning:  Attempt to read property "c_nationkey" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 16
+PHP Warning:  Attempt to read property "o_orderdate" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 17
+PHP Warning:  Attempt to read property "l_orderkey" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 14
+PHP Warning:  Attempt to read property "o_orderkey" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 14
+PHP Warning:  Attempt to read property "n_nationkey" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 16
+PHP Warning:  Attempt to read property "c_nationkey" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 16
+PHP Warning:  Attempt to read property "o_orderdate" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join_sort.php on line 17
 array(0) {
 }

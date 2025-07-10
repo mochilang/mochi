@@ -1,6 +1,6 @@
 <?php
 $nums = [1, 2, 3];
-$result = (function() {
+$result = (function() use ($nums) {
     $result = [];
     foreach ($nums as $n) {
         if ($n > 1) {

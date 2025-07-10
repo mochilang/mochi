@@ -1,3 +1,25 @@
-PHP Warning:  Undefined variable $orders in /workspace/mochi/tests/machine/x/php/group_by_join.php on line 6
-PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/group_by_join.php on line 6
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/group_by_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/group_by_join.php on line 8
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/group_by_join.php on line 9
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/group_by_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/group_by_join.php on line 8
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/group_by_join.php on line 9
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/group_by_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/group_by_join.php on line 8
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/group_by_join.php on line 9
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/group_by_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/group_by_join.php on line 8
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/group_by_join.php on line 9
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/group_by_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/group_by_join.php on line 8
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/group_by_join.php on line 9
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/group_by_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/group_by_join.php on line 8
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/group_by_join.php on line 9
+PHP Warning:  Attempt to read property "key" on array in /workspace/mochi/tests/machine/x/php/group_by_join.php on line 17
 string(27) "--- Orders per customer ---"
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/group_by_join.php on line 23
+PHP Warning:  Attempt to read property "count" on array in /workspace/mochi/tests/machine/x/php/group_by_join.php on line 23
+NULL
+string(7) "orders:"
+NULL

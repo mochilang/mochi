@@ -10,7 +10,7 @@ class Person {
     }
 }
 $people = array_map(fn($it) => new Person($it), _load("../interpreter/valid/people.yaml", ["format" => "yaml"]));
-$adults = (function() {
+$adults = (function() use ($people) {
     $result = [];
     foreach ($people as $p) {
         if ($p->age >= 18) {

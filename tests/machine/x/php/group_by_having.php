@@ -1,6 +1,6 @@
 <?php
 $people = [["name" => "Alice", "city" => "Paris"], ["name" => "Bob", "city" => "Hanoi"], ["name" => "Charlie", "city" => "Paris"], ["name" => "Diana", "city" => "Hanoi"], ["name" => "Eve", "city" => "Paris"], ["name" => "Frank", "city" => "Hanoi"], ["name" => "George", "city" => "Paris"]];
-$big = (function() {
+$big = (function() use ($people) {
     $groups = [];
     foreach ($people as $p) {
         $_k = json_encode($p->city);

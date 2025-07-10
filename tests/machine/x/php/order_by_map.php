@@ -1,6 +1,6 @@
 <?php
 $data = [["a" => 1, "b" => 2], ["a" => 1, "b" => 1], ["a" => 0, "b" => 5]];
-$sorted = (function() {
+$sorted = (function() use ($data) {
     $result = [];
     foreach ($data as $x) {
         $result[] = [["a" => $x->a, "b" => $x->b], $x];

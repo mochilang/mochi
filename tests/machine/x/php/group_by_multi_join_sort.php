@@ -5,7 +5,7 @@ $orders = [["o_orderkey" => 1000, "o_custkey" => 1, "o_orderdate" => "1993-10-15
 $lineitem = [["l_orderkey" => 1000, "l_returnflag" => "R", "l_extendedprice" => 1000, "l_discount" => 0.1], ["l_orderkey" => 2000, "l_returnflag" => "N", "l_extendedprice" => 500, "l_discount" => 0]];
 $start_date = "1993-10-01";
 $end_date = "1994-01-01";
-$result = (function() {
+$result = (function() use ($customer, $end_date, $lineitem, $nation, $orders, $start_date) {
     $groups = [];
     foreach ($customer as $c) {
         foreach ($orders as $o) {

@@ -1,6 +1,6 @@
 <?php
 $products = [["name" => "Laptop", "price" => 1500], ["name" => "Smartphone", "price" => 900], ["name" => "Tablet", "price" => 600], ["name" => "Monitor", "price" => 300], ["name" => "Keyboard", "price" => 100], ["name" => "Mouse", "price" => 50], ["name" => "Headphones", "price" => 200]];
-$expensive = (function() {
+$expensive = (function() use ($products) {
     $result = [];
     foreach ($products as $p) {
         $result[] = [-$p->price, $p];

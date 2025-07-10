@@ -1,6 +1,6 @@
 <?php
 $data = [1, 2];
-$flag = count((function() {
+$flag = count((function() use ($data) {
     $result = [];
     foreach ($data as $x) {
         if ($x == 1) {

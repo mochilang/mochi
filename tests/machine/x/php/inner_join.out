@@ -1,3 +1,169 @@
-PHP Warning:  Undefined variable $orders in /workspace/mochi/tests/machine/x/php/inner_join.php on line 6
-PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/inner_join.php on line 6
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
+PHP Warning:  Attempt to read property "customerId" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 8
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 9
 string(33) "--- Orders with customer info ---"
+PHP Warning:  Attempt to read property "orderId" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+PHP Warning:  Attempt to read property "customerName" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+string(5) "Order"
+NULL
+string(2) "by"
+NULL
+string(3) "- $"
+NULL
+PHP Warning:  Attempt to read property "orderId" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+PHP Warning:  Attempt to read property "customerName" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+string(5) "Order"
+NULL
+string(2) "by"
+NULL
+string(3) "- $"
+NULL
+PHP Warning:  Attempt to read property "orderId" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+PHP Warning:  Attempt to read property "customerName" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+string(5) "Order"
+NULL
+string(2) "by"
+NULL
+string(3) "- $"
+NULL
+PHP Warning:  Attempt to read property "orderId" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+PHP Warning:  Attempt to read property "customerName" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+string(5) "Order"
+NULL
+string(2) "by"
+NULL
+string(3) "- $"
+NULL
+PHP Warning:  Attempt to read property "orderId" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+PHP Warning:  Attempt to read property "customerName" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+string(5) "Order"
+NULL
+string(2) "by"
+NULL
+string(3) "- $"
+NULL
+PHP Warning:  Attempt to read property "orderId" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+PHP Warning:  Attempt to read property "customerName" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+string(5) "Order"
+NULL
+string(2) "by"
+NULL
+string(3) "- $"
+NULL
+PHP Warning:  Attempt to read property "orderId" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+PHP Warning:  Attempt to read property "customerName" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+string(5) "Order"
+NULL
+string(2) "by"
+NULL
+string(3) "- $"
+NULL
+PHP Warning:  Attempt to read property "orderId" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+PHP Warning:  Attempt to read property "customerName" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+string(5) "Order"
+NULL
+string(2) "by"
+NULL
+string(3) "- $"
+NULL
+PHP Warning:  Attempt to read property "orderId" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+PHP Warning:  Attempt to read property "customerName" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+string(5) "Order"
+NULL
+string(2) "by"
+NULL
+string(3) "- $"
+NULL
+PHP Warning:  Attempt to read property "orderId" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+PHP Warning:  Attempt to read property "customerName" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+string(5) "Order"
+NULL
+string(2) "by"
+NULL
+string(3) "- $"
+NULL
+PHP Warning:  Attempt to read property "orderId" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+PHP Warning:  Attempt to read property "customerName" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+string(5) "Order"
+NULL
+string(2) "by"
+NULL
+string(3) "- $"
+NULL
+PHP Warning:  Attempt to read property "orderId" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+PHP Warning:  Attempt to read property "customerName" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+PHP Warning:  Attempt to read property "total" on array in /workspace/mochi/tests/machine/x/php/inner_join.php on line 17
+string(5) "Order"
+NULL
+string(2) "by"
+NULL
+string(3) "- $"
+NULL

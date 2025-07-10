@@ -1,6 +1,50 @@
-PHP Warning:  Undefined variable $partsupp in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 7
-PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 7
-PHP Warning:  Undefined variable $filtered in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 24
-PHP Warning:  foreach() argument must be of type array|object, null given in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 24
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 9
+PHP Warning:  Attempt to read property "supplier" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 9
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 11
+PHP Warning:  Attempt to read property "nation" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 11
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 12
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 11
+PHP Warning:  Attempt to read property "nation" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 11
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 12
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 9
+PHP Warning:  Attempt to read property "supplier" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 9
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 11
+PHP Warning:  Attempt to read property "nation" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 11
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 12
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 11
+PHP Warning:  Attempt to read property "nation" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 11
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 12
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 9
+PHP Warning:  Attempt to read property "supplier" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 9
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 11
+PHP Warning:  Attempt to read property "nation" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 11
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 12
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 11
+PHP Warning:  Attempt to read property "nation" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 11
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 12
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 9
+PHP Warning:  Attempt to read property "supplier" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 9
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 11
+PHP Warning:  Attempt to read property "nation" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 11
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 12
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 11
+PHP Warning:  Attempt to read property "nation" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 11
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 12
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 9
+PHP Warning:  Attempt to read property "supplier" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 9
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 11
+PHP Warning:  Attempt to read property "nation" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 11
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 12
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 11
+PHP Warning:  Attempt to read property "nation" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 11
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 12
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 9
+PHP Warning:  Attempt to read property "supplier" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 9
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 11
+PHP Warning:  Attempt to read property "nation" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 11
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 12
+PHP Warning:  Attempt to read property "id" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 11
+PHP Warning:  Attempt to read property "nation" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 11
+PHP Warning:  Attempt to read property "name" on array in /workspace/mochi/tests/machine/x/php/group_by_multi_join.php on line 12
 array(0) {
 }
