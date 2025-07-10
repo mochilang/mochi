@@ -16,6 +16,28 @@ import (
 
 const datasetHelpers = `(import (srfi 95) (chibi json) (chibi io))
 
+(define (_yaml_value v)
+  (let ((n (string->number v)))
+    (if n n v)))
+
+(define (_parse_yaml text)
+  (let ((rows '()) (cur '()))
+    (for-each (lambda (ln)
+                (when (string-prefix? ln "- ")
+                  (when (not (null? cur))
+                    (set! rows (append rows (list cur))))
+                  (set! cur '())
+                  (set! ln (substring ln 2 (string-length ln))))
+                (when (string-contains ln ":")
+                  (let* ((p (string-split ln ":"))
+                         (k (string-trim (car p)))
+                         (val (string-trim (string-join (cdr p) ":"))))
+                    (set! cur (append cur (list (cons k (_yaml_value val))))))))
+              (string-split text #\newline))
+    (when (not (null? cur))
+      (set! rows (append rows (list cur))))
+    rows))
+
 (define (_fetch url opts)
   (let* ((method (if (and opts (assq 'method opts)) (cdr (assq 'method opts)) "GET"))
          (args (list "curl" "-s" "-X" method)))
@@ -49,6 +71,8 @@ const datasetHelpers = `(import (srfi 95) (chibi json) (chibi io))
            (map string->json
                 (filter (lambda (l) (not (string=? l "")))
                         (string-split text #\newline))))
+          ((string=? fmt "yaml")
+           (_parse_yaml text))
           (else
            (let ((d (string->json text)))
              (if (list? d) d (list d)))))))
@@ -826,75 +850,111 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 }
 
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
-	leftAst := b.Left
-	left, err := c.compileUnary(leftAst)
+	left, err := c.compileUnary(b.Left)
 	if err != nil {
 		return "", err
 	}
-	expr := left
-	for _, op := range b.Right {
-		rightAst := op.Right
-		right, err := c.compilePostfix(rightAst)
+	operands := []string{left}
+	ops := []string{}
+	rights := []*parser.PostfixExpr{}
+	strFlags := []bool{c.isStringUnary(b.Left)}
+	listFlags := []bool{isListUnary(b.Left)}
+	for _, part := range b.Right {
+		r, err := c.compilePostfix(part.Right)
 		if err != nil {
 			return "", err
 		}
-		switch op.Op {
-		case "+":
-			if c.isStringUnary(leftAst) || c.isStringPostfix(rightAst) {
-				expr = fmt.Sprintf("(string-append %s %s)", expr, right)
-			} else if isListUnary(leftAst) || isListPostfix(rightAst) {
-				expr = fmt.Sprintf("(append %s %s)", expr, right)
-			} else {
-				expr = fmt.Sprintf("(+ %s %s)", expr, right)
-			}
-		case "-", "*", "/":
-			expr = fmt.Sprintf("(%s %s %s)", op.Op, expr, right)
-		case "%":
-			expr = fmt.Sprintf("(modulo %s %s)", expr, right)
-		case "==":
-			expr = fmt.Sprintf("(equal? %s %s)", expr, right)
-		case "!=":
-			expr = fmt.Sprintf("(not (equal? %s %s))", expr, right)
-		case "&&":
-			expr = fmt.Sprintf("(and %s %s)", expr, right)
-		case "||":
-			expr = fmt.Sprintf("(or %s %s)", expr, right)
-		case "in":
-			root := rootNamePostfix(rightAst)
-			if c.varType(root) == "string" || c.isStringPostfix(rightAst) {
-				c.needStringLib = true
-				expr = fmt.Sprintf("(if (string-contains %s %s) #t #f)", right, expr)
-			} else if c.varType(root) == "map" || c.isMapPostfix(rightAst) {
-				expr = fmt.Sprintf("(if (assoc %s %s) #t #f)", expr, right)
-			} else {
-				expr = fmt.Sprintf("(if (member %s %s) #t #f)", expr, right)
-			}
-		case "union":
-			c.needListOps = true
-			if op.All {
-				expr = fmt.Sprintf("(_union_all %s %s)", expr, right)
-			} else {
-				expr = fmt.Sprintf("(_union %s %s)", expr, right)
-			}
-		case "except":
-			c.needListOps = true
-			expr = fmt.Sprintf("(_except %s %s)", expr, right)
-		case "intersect":
-			c.needListOps = true
-			expr = fmt.Sprintf("(_intersect %s %s)", expr, right)
-		case "<", "<=", ">", ">=":
-			if c.isStringUnary(leftAst) || c.isStringPostfix(rightAst) {
-				fn := map[string]string{"<": "string<?", "<=": "string<=?", ">": "string>?", ">=": "string>=?"}[op.Op]
-				expr = fmt.Sprintf("(%s %s %s)", fn, expr, right)
-			} else {
-				expr = fmt.Sprintf("(%s %s %s)", op.Op, expr, right)
-			}
-		default:
-			expr = fmt.Sprintf("(%s %s %s)", op.Op, expr, right)
+		operands = append(operands, r)
+		op := part.Op
+		if part.Op == "union" && part.All {
+			op = "union_all"
 		}
-		leftAst = &parser.Unary{Value: rightAst}
+		ops = append(ops, op)
+		rights = append(rights, part.Right)
+		strFlags = append(strFlags, c.isStringPostfix(part.Right))
+		listFlags = append(listFlags, isListPostfix(part.Right))
 	}
-	return expr, nil
+
+	prec := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!=", "in"}, {"union", "union_all", "except", "intersect"}, {"&&"}, {"||"}}
+
+	for _, level := range prec {
+		for i := 0; i < len(ops); {
+			if contains(level, ops[i]) {
+				l := operands[i]
+				r := operands[i+1]
+				op := ops[i]
+				var expr string
+				switch op {
+				case "&&":
+					expr = fmt.Sprintf("(and %s %s)", l, r)
+				case "||":
+					expr = fmt.Sprintf("(or %s %s)", l, r)
+				case "+":
+					if strFlags[i] || strFlags[i+1] {
+						expr = fmt.Sprintf("(string-append %s %s)", l, r)
+					} else if listFlags[i] || listFlags[i+1] {
+						expr = fmt.Sprintf("(append %s %s)", l, r)
+					} else {
+						expr = fmt.Sprintf("(+ %s %s)", l, r)
+					}
+				case "-", "*", "/":
+					expr = fmt.Sprintf("(%s %s %s)", op, l, r)
+				case "%":
+					expr = fmt.Sprintf("(modulo %s %s)", l, r)
+				case "==":
+					expr = fmt.Sprintf("(equal? %s %s)", l, r)
+				case "!=":
+					expr = fmt.Sprintf("(not (equal? %s %s))", l, r)
+				case "in":
+					root := rootNamePostfix(rights[i])
+					if c.varType(root) == "string" || c.isStringPostfix(rights[i]) {
+						c.needStringLib = true
+						expr = fmt.Sprintf("(if (string-contains %s %s) #t #f)", r, l)
+					} else if c.varType(root) == "map" || c.isMapPostfix(rights[i]) {
+						expr = fmt.Sprintf("(if (assoc %s %s) #t #f)", l, r)
+					} else {
+						expr = fmt.Sprintf("(if (member %s %s) #t #f)", l, r)
+					}
+				case "union":
+					c.needListOps = true
+					expr = fmt.Sprintf("(_union %s %s)", l, r)
+				case "union_all":
+					c.needListOps = true
+					expr = fmt.Sprintf("(_union_all %s %s)", l, r)
+				case "except":
+					c.needListOps = true
+					expr = fmt.Sprintf("(_except %s %s)", l, r)
+				case "intersect":
+					c.needListOps = true
+					expr = fmt.Sprintf("(_intersect %s %s)", l, r)
+				case "<", "<=", ">", ">=":
+					if strFlags[i] || strFlags[i+1] {
+						fn := map[string]string{"<": "string<?", "<=": "string<=?", ">": "string>?", ">=": "string>=?"}[op]
+						expr = fmt.Sprintf("(%s %s %s)", fn, l, r)
+					} else {
+						expr = fmt.Sprintf("(%s %s %s)", op, l, r)
+					}
+				default:
+					expr = fmt.Sprintf("(%s %s %s)", op, l, r)
+				}
+				operands[i] = expr
+				strFlags[i] = strFlags[i] || strFlags[i+1]
+				listFlags[i] = listFlags[i] || listFlags[i+1]
+				operands = append(operands[:i+1], operands[i+2:]...)
+				strFlags = append(strFlags[:i+1], strFlags[i+2:]...)
+				listFlags = append(listFlags[:i+1], listFlags[i+2:]...)
+				rights = append(rights[:i], rights[i+1:]...)
+				ops = append(ops[:i], ops[i+1:]...)
+			} else {
+				i++
+			}
+		}
+	}
+
+	if len(operands) != 1 {
+		return "", fmt.Errorf("invalid expression")
+	}
+	return operands[0], nil
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
