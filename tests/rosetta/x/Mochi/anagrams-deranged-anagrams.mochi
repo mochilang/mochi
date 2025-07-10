@@ -1,0 +1,76 @@
+// Mochi implementation of "Anagrams/Deranged anagrams" task
+// Finds the longest pair of deranged anagrams in a word list
+
+fun sortRunes(s: string): string {
+  var arr: list<string> = []
+  var i = 0
+  while i < len(s) {
+    arr = append(arr, s[i:i+1])
+    i = i + 1
+  }
+  var n = len(arr)
+  var m = 0
+  while m < n {
+    var j = 0
+    while j < n - 1 {
+      if arr[j] > arr[j+1] {
+        let tmp = arr[j]
+        arr[j] = arr[j+1]
+        arr[j+1] = tmp
+      }
+      j = j + 1
+    }
+    m = m + 1
+  }
+  var out = ""
+  i = 0
+  while i < n {
+    out = out + arr[i]
+    i = i + 1
+  }
+  return out
+}
+
+fun deranged(a: string, b: string): bool {
+  if len(a) != len(b) { return false }
+  var i = 0
+  while i < len(a) {
+    if a[i:i+1] == b[i:i+1] { return false }
+    i = i + 1
+  }
+  return true
+}
+
+fun main() {
+  let words = [
+    "constitutionalism",
+    "misconstitutional",
+  ]
+
+  var m: map<string, list<string>> = {}
+  var bestLen = 0
+  var w1 = ""
+  var w2 = ""
+
+  for w in words {
+    if len(w) <= bestLen { continue }
+    let k = sortRunes(w)
+    if !(k in m) {
+      m[k] = [w]
+      continue
+    }
+    for c in m[k] {
+      if deranged(w, c) {
+        bestLen = len(w)
+        w1 = c
+        w2 = w
+        break
+      }
+    }
+    m[k] = append(m[k], w)
+  }
+
+  print(w1 + " " + w2 + " : Length " + str(bestLen))
+}
+
+main()
