@@ -1,38 +1,35 @@
 line 0: compile: exit status 1
-error[E0433]: failed to resolve: use of unresolved module or unlinked crate `serde`
- --> /workspace/mochi/tests/machine/x/rust/save_jsonl_stdout.rs:7:13
-  |
-7 | fn _save<T: serde::Serialize>(src: &[T], path: &str, opts: std::collections::HashMap<String, String>) {
-  |             ^^^^^ use of unresolved module or unlinked crate `serde`
-  |
-  = help: you might be missing a crate named `serde`
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/machine/x/rust/save_jsonl_stdout.rs:11:102
+   |
+11 |     _save(people, "-", { let mut m = std::collections::BTreeMap::new(); m.insert("format", "jsonl"); m });
+   |                                                                                                      ^ expected `HashMap<String, String>`, found `BTreeMap<&str, &str>`
+   |
+   = note: expected struct `HashMap<String, String>`
+              found struct `BTreeMap<&str, &str>`
 
-error[E0433]: failed to resolve: use of unresolved module or unlinked crate `serde_json`
-  --> /workspace/mochi/tests/machine/x/rust/save_jsonl_stdout.rs:11:53
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/machine/x/rust/save_jsonl_stdout.rs:11:11
    |
-11 |                 for item in src { if let Ok(text) = serde_json::to_string(item) { println!("{}", text); } }
-   |                                                     ^^^^^^^^^^ use of unresolved module or unlinked crate `serde_json`
+11 |     _save(people, "-", { let mut m = std::collections::BTreeMap::new(); m.insert("format", "jsonl"); m });
+   |     ----- ^^^^^^ expected `&[_]`, found `Vec<People>`
+   |     |
+   |     arguments to this function are incorrect
    |
-   = help: you might be missing a crate named `serde_json`
+   = note: expected reference `&[_]`
+                 found struct `Vec<People>`
+note: function defined here
+  --> /workspace/mochi/tests/machine/x/rust/save_jsonl_stdout.rs:7:4
+   |
+7  | fn _save<T>(_src: &[T], _path: &str, _opts: std::collections::HashMap<String, String>) { }
+   |    ^^^^^    ----------
+help: consider borrowing here
+   |
+11 |     _save(&people, "-", { let mut m = std::collections::BTreeMap::new(); m.insert("format", "jsonl"); m });
+   |           +
 
-error[E0433]: failed to resolve: use of unresolved module or unlinked crate `serde_json`
-  --> /workspace/mochi/tests/machine/x/rust/save_jsonl_stdout.rs:14:53
-   |
-14 |                 for item in src { if let Ok(text) = serde_json::to_string(item) { writeln!(f, "{}", text).unwrap(); } }
-   |                                                     ^^^^^^^^^^ use of unresolved module or unlinked crate `serde_json`
-   |
-   = help: you might be missing a crate named `serde_json`
+error: aborting due to 2 previous errors
 
-error[E0433]: failed to resolve: use of unresolved module or unlinked crate `serde_json`
-  --> /workspace/mochi/tests/machine/x/rust/save_jsonl_stdout.rs:19:23
-   |
-19 |     if let Ok(text) = serde_json::to_string(src) {
-   |                       ^^^^^^^^^^ use of unresolved module or unlinked crate `serde_json`
-   |
-   = help: you might be missing a crate named `serde_json`
-
-error: aborting due to 4 previous errors
-
-For more information about this error, try `rustc --explain E0433`.
+For more information about this error, try `rustc --explain E0308`.
 
 #[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
