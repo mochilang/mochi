@@ -1756,6 +1756,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			c.vars = oldVars
 			return "", err
 		}
+		cond = maybeBool(cond)
 		b.WriteString(fmt.Sprintf("%sif (!(%s)) continue;\n", indent, cond))
 	}
 	if groupsVar != "" {
@@ -1801,11 +1802,9 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		}
 		b.WriteString(fmt.Sprintf("%s%s.add(%s);\n", indent, resVar, sel))
 	}
-	for _, j := range q.Joins {
+	for range q.Joins {
 		loops := 1
-		if j.Side != nil && *j.Side == "left" {
-			loops = 2
-		}
+		// the additional loop used for left join is closed earlier
 		for i := 0; i < loops; i++ {
 			indent = indent[:len(indent)-1]
 			b.WriteString(fmt.Sprintf("%s}\n", indent))
@@ -1832,6 +1831,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 				c.vars = oldVars
 				return "", err
 			}
+			cond = maybeBool(cond)
 			b.WriteString(fmt.Sprintf("\t\tif (!(%s)) continue;\n", cond))
 		}
 		sel, err := c.compileExpr(q.Select)
