@@ -30,13 +30,13 @@ let result = (let __groups0 = ref [] in
     let g = { key = gKey; items = List.rev gItems } in
     __res0 := [("cat",Obj.repr (g.key));("share",Obj.repr (((sum (let __res1 = ref [] in
   List.iter (fun x ->
-      __res1 := (if x.flag then x.val else 0) :: !__res1;
-  ) g;
+      __res1 := (if Obj.obj (List.assoc "flag" x) then Obj.obj (List.assoc "val" x) else 0) :: !__res1;
+  ) g.items;
 List.rev !__res1)
 ) / (sum (let __res2 = ref [] in
   List.iter (fun x ->
-      __res2 := x.val :: !__res2;
-  ) g;
+      __res2 := Obj.obj (List.assoc "val" x) :: !__res2;
+  ) g.items;
 List.rev !__res2)
 ))))] :: !__res0
   ) !__groups0;

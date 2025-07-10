@@ -36,9 +36,9 @@ let stats = (let __groups0 = ref [] in
     let g = { key = gKey; items = List.rev gItems } in
     __res0 := [("name",Obj.repr (g.key));("count",Obj.repr (List.length (let __res1 = ref [] in
   List.iter (fun r ->
-      if r.o then
+      if Obj.obj (List.assoc "o" r) then
     __res1 := r :: !__res1;
-  ) g;
+  ) g.items;
 List.rev !__res1)
 ))] :: !__res0
   ) !__groups0;

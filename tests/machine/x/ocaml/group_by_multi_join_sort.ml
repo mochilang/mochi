@@ -42,8 +42,8 @@ let result = (let __groups0 = ref [] in
     let g = { key = gKey; items = List.rev gItems } in
     __res0 := [("c_custkey",Obj.repr (g.key.c_custkey));("c_name",Obj.repr (g.key.c_name));("revenue",Obj.repr ((sum (let __res1 = ref [] in
   List.iter (fun x ->
-      __res1 := (x.l.l_extendedprice * ((1 - x.l.l_discount))) :: !__res1;
-  ) g;
+      __res1 := (Obj.obj (List.assoc "l" x).l_extendedprice * ((1 - Obj.obj (List.assoc "l" x).l_discount))) :: !__res1;
+  ) g.items;
 List.rev !__res1)
 )));("c_acctbal",Obj.repr (g.key.c_acctbal));("n_name",Obj.repr (g.key.n_name));("c_address",Obj.repr (g.key.c_address));("c_phone",Obj.repr (g.key.c_phone));("c_comment",Obj.repr (g.key.c_comment))] :: !__res0
   ) !__groups0;

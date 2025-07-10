@@ -671,6 +671,9 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
+		if _, ok := types.ExprType(fr.Src, outerEnv).(types.GroupType); ok {
+			src += ".items"
+		}
 		sources[idx] = src
 		vars[idx] = fr.Var
 		idx++
@@ -681,6 +684,9 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		src, err := c.compileExprWithEnv(jo.Src, outerEnv)
 		if err != nil {
 			return "", err
+		}
+		if _, ok := types.ExprType(jo.Src, outerEnv).(types.GroupType); ok {
+			src += ".items"
 		}
 		sources[idx] = src
 		vars[idx] = jo.Var
@@ -750,9 +756,15 @@ func (c *Compiler) compileLeftJoin(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	if _, ok := types.ExprType(q.Source, outerEnv).(types.GroupType); ok {
+		leftSrc += ".items"
+	}
 	rightSrc, err := c.compileExprWithEnv(join.Src, outerEnv)
 	if err != nil {
 		return "", err
+	}
+	if _, ok := types.ExprType(join.Src, outerEnv).(types.GroupType); ok {
+		rightSrc += ".items"
 	}
 	qenv := c.queryEnv(q)
 	on := "true"
@@ -808,9 +820,15 @@ func (c *Compiler) compileRightJoin(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	if _, ok := types.ExprType(join.Src, outerEnv).(types.GroupType); ok {
+		rightSrc += ".items"
+	}
 	leftSrc, err := c.compileExprWithEnv(q.Source, outerEnv)
 	if err != nil {
 		return "", err
+	}
+	if _, ok := types.ExprType(q.Source, outerEnv).(types.GroupType); ok {
+		leftSrc += ".items"
 	}
 	qenv := c.queryEnv(q)
 	on := "true"
@@ -866,9 +884,15 @@ func (c *Compiler) compileOuterJoin(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	if _, ok := types.ExprType(q.Source, outerEnv).(types.GroupType); ok {
+		leftSrc += ".items"
+	}
 	rightSrc, err := c.compileExprWithEnv(join.Src, outerEnv)
 	if err != nil {
 		return "", err
+	}
+	if _, ok := types.ExprType(join.Src, outerEnv).(types.GroupType); ok {
+		rightSrc += ".items"
 	}
 	qenv := c.queryEnv(q)
 	on := "true"
@@ -946,6 +970,9 @@ func (c *Compiler) compileLeftJoinLast(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
+		if _, ok := types.ExprType(fr.Src, outerEnv).(types.GroupType); ok {
+			src += ".items"
+		}
 		sources[idx] = src
 		vars[idx] = fr.Var
 		idx++
@@ -956,6 +983,9 @@ func (c *Compiler) compileLeftJoinLast(q *parser.QueryExpr) (string, error) {
 		src, err := c.compileExprWithEnv(jo.Src, outerEnv)
 		if err != nil {
 			return "", err
+		}
+		if _, ok := types.ExprType(jo.Src, outerEnv).(types.GroupType); ok {
+			src += ".items"
 		}
 		sources[idx] = src
 		vars[idx] = jo.Var
@@ -980,6 +1010,9 @@ func (c *Compiler) compileLeftJoinLast(q *parser.QueryExpr) (string, error) {
 	lastSrc, err := c.compileExprWithEnv(last.Src, outerEnv)
 	if err != nil {
 		return "", err
+	}
+	if _, ok := types.ExprType(last.Src, outerEnv).(types.GroupType); ok {
+		lastSrc += ".items"
 	}
 	on := "true"
 	if last.On != nil {
@@ -1066,9 +1099,15 @@ func (c *Compiler) compileJoin(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	if _, ok := types.ExprType(q.Source, outerEnv).(types.GroupType); ok {
+		leftSrc += ".items"
+	}
 	rightSrc, err := c.compileExprWithEnv(join.Src, outerEnv)
 	if err != nil {
 		return "", err
+	}
+	if _, ok := types.ExprType(join.Src, outerEnv).(types.GroupType); ok {
+		rightSrc += ".items"
 	}
 	qenv := c.queryEnv(q)
 	on := "true"
@@ -1124,6 +1163,9 @@ func (c *Compiler) compileGroup(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
+		if _, ok := types.ExprType(fr.Src, outerEnv).(types.GroupType); ok {
+			src += ".items"
+		}
 		sources[idx] = src
 		vars[idx] = fr.Var
 		idx++
@@ -1134,6 +1176,9 @@ func (c *Compiler) compileGroup(q *parser.QueryExpr) (string, error) {
 		src, err := c.compileExprWithEnv(jo.Src, outerEnv)
 		if err != nil {
 			return "", err
+		}
+		if _, ok := types.ExprType(jo.Src, outerEnv).(types.GroupType); ok {
+			src += ".items"
 		}
 		sources[idx] = src
 		vars[idx] = jo.Var
@@ -1205,8 +1250,18 @@ func (c *Compiler) compileGroup(q *parser.QueryExpr) (string, error) {
 	buf.WriteString(fmt.Sprintf("  let %s = ref [] in\n", resName))
 	buf.WriteString(fmt.Sprintf("  List.iter (fun (%sKey,%sItems) ->\n", q.Group.Name, q.Group.Name))
 	buf.WriteString(fmt.Sprintf("    let %s = { key = %sKey; items = List.rev %sItems } in\n", q.Group.Name, q.Group.Name, q.Group.Name))
+	srcType := types.ExprType(q.Source, c.env)
+	var elemType types.Type
+	switch t := srcType.(type) {
+	case types.ListType:
+		elemType = t.Elem
+	case types.GroupType:
+		elemType = t.Elem
+	default:
+		elemType = types.AnyType{}
+	}
 	selEnv := types.NewEnv(qenv)
-	selEnv.SetVar(q.Group.Name, types.AnyType{}, true)
+	selEnv.SetVar(q.Group.Name, types.GroupType{Elem: elemType}, true)
 	sel, err := c.compileExprWithEnv(q.Select, selEnv)
 	if err != nil {
 		return "", err
@@ -1416,6 +1471,18 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				typ = mt.Value
 				continue
 			}
+			if gt, ok := typ.(types.GroupType); ok {
+				switch field {
+				case "items":
+					expr = expr + ".items"
+					typ = types.ListType{Elem: gt.Elem}
+					continue
+				case "key":
+					expr = expr + ".key"
+					typ = types.AnyType{}
+					continue
+				}
+			}
 			expr = expr + "." + field
 			if st, ok := typ.(types.StructType); ok {
 				if ft, ok2 := st.Fields[field]; ok2 {
@@ -1564,10 +1631,18 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if isStringLiteralExpr(call.Args[0]) {
 			return fmt.Sprintf("String.length %s", args[0]), nil
 		}
+		t := types.ExprType(call.Args[0], c.env)
+		if _, ok := t.(types.GroupType); ok {
+			return fmt.Sprintf("List.length %s.items", args[0]), nil
+		}
 		return fmt.Sprintf("List.length %s", args[0]), nil
 	case "count":
 		if len(args) != 1 {
 			return "", fmt.Errorf("count expects 1 arg")
+		}
+		t := types.ExprType(call.Args[0], c.env)
+		if _, ok := t.(types.GroupType); ok {
+			return fmt.Sprintf("List.length %s.items", args[0]), nil
 		}
 		return fmt.Sprintf("List.length %s", args[0]), nil
 	case "avg":

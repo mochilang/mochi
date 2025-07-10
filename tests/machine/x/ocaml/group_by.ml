@@ -30,15 +30,15 @@ let stats = (let __groups0 = ref [] in
   let __res0 = ref [] in
   List.iter (fun (gKey,gItems) ->
     let g = { key = gKey; items = List.rev gItems } in
-    __res0 := [("city",Obj.repr (g.key));("count",Obj.repr (List.length g));("avg_age",Obj.repr ((List.fold_left (+) 0 (let __res1 = ref [] in
+    __res0 := [("city",Obj.repr (g.key));("count",Obj.repr (List.length g.items));("avg_age",Obj.repr ((List.fold_left (+) 0 (let __res1 = ref [] in
   List.iter (fun p ->
-      __res1 := p.age :: !__res1;
-  ) g;
+      __res1 := Obj.obj (List.assoc "age" p) :: !__res1;
+  ) g.items;
 List.rev !__res1)
  / List.length (let __res1 = ref [] in
   List.iter (fun p ->
-      __res1 := p.age :: !__res1;
-  ) g;
+      __res1 := Obj.obj (List.assoc "age" p) :: !__res1;
+  ) g.items;
 List.rev !__res1)
 )))] :: !__res0
   ) !__groups0;
