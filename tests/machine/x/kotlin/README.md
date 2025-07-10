@@ -2,6 +2,8 @@
 
 This directory contains Kotlin code compiled from Mochi programs in `tests/vm/valid` using the experimental compiler.
 
+Each generated file now includes only the runtime helper functions that are actually used by that program.
+
 ## Progress
 
 Compiled: 97/97 programs

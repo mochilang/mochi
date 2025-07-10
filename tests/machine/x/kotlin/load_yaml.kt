@@ -1,73 +1,3 @@
-
-fun <T> append(list: MutableList<T>, item: T): MutableList<T> {
-    val res = list.toMutableList()
-    res.add(item)
-    return res
-}
-
-fun avg(list: List<Any?>): Double {
-    if (list.isEmpty()) return 0.0
-    var s = 0.0
-    for (n in list) s += toDouble(n)
-    return s / list.size
-}
-
-fun count(list: Collection<Any?>): Int = list.size
-
-fun exists(list: Collection<Any?>): Boolean = list.isNotEmpty()
-
-fun <T> values(m: Map<*, T>): MutableList<T> = m.values.toMutableList()
-
-fun len(v: Any?): Int = when (v) {
-    is String -> v.length
-    is Collection<*> -> v.size
-    is Map<*, *> -> v.size
-    else -> 0
-}
-
-fun max(list: List<Any?>): Int {
-    var m = Int.MIN_VALUE
-    for (n in list) {
-        val v = toInt(n)
-        if (v > m) m = v
-    }
-    return if (m == Int.MIN_VALUE) 0 else m
-}
-
-fun min(list: List<Any?>): Int {
-    var m = Int.MAX_VALUE
-    for (n in list) {
-        val v = toInt(n)
-        if (v < m) m = v
-    }
-    return if (m == Int.MAX_VALUE) 0 else m
-}
-
-fun sum(list: List<Any?>): Int {
-    var s = 0
-    for (n in list) s += toInt(n)
-    return s
-}
-
-fun str(v: Any?): String = v.toString()
-
-fun substring(s: String, start: Int, end: Int): String = s.substring(start, end)
-
-fun toInt(v: Any?): Int = when (v) {
-    is Int -> v
-    is Double -> v.toInt()
-    is String -> v.toInt()
-    is Boolean -> if (v) 1 else 0
-    else -> 0
-}
-
-fun toDouble(v: Any?): Double = when (v) {
-    is Double -> v
-    is Int -> v.toDouble()
-    is String -> v.toDouble()
-    else -> 0.0
-}
-
 fun toBool(v: Any?): Boolean = when (v) {
     is Boolean -> v
     is Int -> v != 0
@@ -75,24 +5,6 @@ fun toBool(v: Any?): Boolean = when (v) {
     is String -> v.isNotEmpty()
     null -> false
     else -> true
-}
-
-fun <T> union(a: MutableList<T>, b: MutableList<T>): MutableList<T> {
-    val res = a.toMutableList()
-    for (x in b) if (!res.contains(x)) res.add(x)
-    return res
-}
-
-fun <T> except(a: MutableList<T>, b: MutableList<T>): MutableList<T> {
-    val res = mutableListOf<T>()
-    for (x in a) if (!b.contains(x)) res.add(x)
-    return res
-}
-
-fun <T> intersect(a: MutableList<T>, b: MutableList<T>): MutableList<T> {
-    val res = mutableListOf<T>()
-    for (x in a) if (b.contains(x)) res.add(x)
-    return res
 }
 
 fun _load(path: String?, opts: Map<String, Any?>?): MutableList<MutableMap<String, Any?>> {
@@ -144,39 +56,6 @@ fun parseSimpleValue(s: String): Any? {
         else -> t
     }
 }
-
-fun _save(rows: List<Any?>, path: String?, opts: Map<String, Any?>?) {
-    val fmt = opts?.get("format") as? String ?: "csv"
-    val writer = if (path == null || path == "-") {
-        java.io.BufferedWriter(java.io.OutputStreamWriter(System.out))
-    } else {
-        java.io.File(path).bufferedWriter()
-    }
-    if (fmt == "jsonl") {
-        for (r in rows) {
-            writer.write(toJson(r))
-            writer.newLine()
-        }
-    }
-    if (path != null && path != "-") writer.close()
-}
-
-fun json(v: Any?) {
-    println(toJson(v))
-}
-
-fun toJson(v: Any?): String = when (v) {
-    null -> "null"
-    is String -> "\"" + v.replace("\"", "\\\"") + "\""
-    is Boolean, is Number -> v.toString()
-    is Map<*, *> -> v.entries.joinToString(prefix = "{", postfix = "}") { toJson(it.key.toString()) + ":" + toJson(it.value) }
-    is Iterable<*> -> v.joinToString(prefix = "[", postfix = "]") { toJson(it) }
-    else -> toJson(v.toString())
-}
-
-class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
-
-
 data class Person(var name: String, var age: Int, var email: String)
 
 val people = _load("../interpreter/valid/people.yaml", mutableMapOf("format" to "yaml")).map { Person(name = it["name"] as String, age = it["age"] as Int, email = it["email"] as String) }.toMutableList()
