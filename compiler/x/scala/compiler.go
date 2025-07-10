@@ -28,6 +28,26 @@ type Compiler struct {
 	autoCount   int
 }
 
+func (c *Compiler) detectStructMap(e *parser.Expr) (types.StructType, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return types.StructType{}, false
+	}
+	m := e.Binary.Left.Value.Target.Map
+	if m == nil {
+		return types.StructType{}, false
+	}
+	st := types.StructType{Fields: make(map[string]types.Type), Order: make([]string, len(m.Items))}
+	for i, it := range m.Items {
+		key, ok := types.SimpleStringKey(it.Key)
+		if !ok {
+			return types.StructType{}, false
+		}
+		st.Fields[key] = c.namedType(types.ExprType(it.Value, c.env))
+		st.Order[i] = key
+	}
+	return st, true
+}
+
 const indentStep = 2
 
 func New(env *types.Env) *Compiler {
@@ -268,6 +288,35 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		typ = types.ResolveTypeRef(s.Type, c.env)
 	} else if s.Value != nil {
 		typ = c.namedType(types.ExprType(s.Value, c.env))
+		if q := s.Value.Binary.Left.Value.Target.Query; q != nil {
+			if st, ok := c.detectStructMap(q.Select); ok {
+				st = c.ensureStructName(st)
+				typ = types.ListType{Elem: st}
+			}
+		} else if lst := s.Value.Binary.Left.Value.Target.List; lst != nil {
+			if len(lst.Elems) > 0 {
+				if st, ok := c.detectStructMap(lst.Elems[0]); ok {
+					same := true
+					for _, e := range lst.Elems[1:] {
+						st2, ok2 := c.detectStructMap(e)
+						if !ok2 || len(st2.Order) != len(st.Order) {
+							same = false
+							break
+						}
+						for i, f := range st.Order {
+							if st2.Order[i] != f {
+								same = false
+								break
+							}
+						}
+					}
+					if same {
+						st = c.ensureStructName(st)
+						typ = types.ListType{Elem: st}
+					}
+				}
+			}
+		}
 	}
 	if c.env != nil {
 		c.env.SetVar(s.Name, typ, mutable)
@@ -1197,6 +1246,58 @@ func (c *Compiler) compileList(l *parser.ListLiteral, mutable bool) (string, err
 				break
 			}
 		}
+		if _, ok := elemType.(types.MapType); ok && !mutable {
+			order := make([]string, 0)
+			fields := make(map[string]types.Type)
+			valid := true
+			for i, e := range l.Elems {
+				if e.Binary == nil || len(e.Binary.Right) != 0 {
+					valid = false
+					break
+				}
+				ml := e.Binary.Left.Value.Target.Map
+				if ml == nil {
+					valid = false
+					break
+				}
+				if i == 0 {
+					order = make([]string, len(ml.Items))
+					for j, it := range ml.Items {
+						k, ok := types.SimpleStringKey(it.Key)
+						if !ok {
+							valid = false
+							break
+						}
+						order[j] = k
+						fields[k] = c.namedType(types.ExprType(it.Value, c.env))
+					}
+				} else {
+					if len(ml.Items) != len(order) {
+						valid = false
+						break
+					}
+					for j, it := range ml.Items {
+						k, ok := types.SimpleStringKey(it.Key)
+						if !ok || k != order[j] {
+							valid = false
+							break
+						}
+						t := c.namedType(types.ExprType(it.Value, c.env))
+						if !sameType(fields[k], t) {
+							fields[k] = types.AnyType{}
+						}
+					}
+				}
+				if !valid {
+					break
+				}
+			}
+			if valid {
+				st := types.StructType{Fields: fields, Order: order}
+				st = c.ensureStructName(st)
+				elemType = st
+			}
+		}
 	}
 	typeStr := c.typeOf(elemType)
 	return fmt.Sprintf("%s[%s](%s)", prefix, typeStr, strings.Join(elems, ", ")), nil
@@ -1208,6 +1309,24 @@ func (c *Compiler) compileMap(m *parser.MapLiteral, mutable bool) (string, error
 	t := c.namedType(types.ExprType(expr, c.env))
 	if st, ok := t.(types.StructType); ok && !mutable {
 		return c.mapToStruct(st.Name, st, m)
+	}
+	// if all keys are simple strings, treat as an anonymous struct
+	if !mutable {
+		anon := types.StructType{Fields: make(map[string]types.Type), Order: make([]string, len(m.Items))}
+		allSimple := true
+		for i, it := range m.Items {
+			key, ok := types.SimpleStringKey(it.Key)
+			if !ok {
+				allSimple = false
+				break
+			}
+			anon.Fields[key] = c.namedType(types.ExprType(it.Value, c.env))
+			anon.Order[i] = key
+		}
+		if allSimple {
+			anon = c.ensureStructName(anon)
+			return c.mapToStruct(anon.Name, anon, m)
+		}
 	}
 	items := make([]string, len(m.Items))
 	vals := make([]string, len(m.Items))
@@ -1561,7 +1680,7 @@ func (c *Compiler) mapToStruct(name string, st types.StructType, m *parser.MapLi
 	for i, field := range st.Order {
 		var expr *parser.Expr
 		for _, it := range m.Items {
-			if lit := it.Key.Binary.Left.Value.Target.Lit; lit != nil && lit.Str != nil && *lit.Str == field {
+			if key, ok := types.SimpleStringKey(it.Key); ok && key == field {
 				expr = it.Value
 				break
 			}
