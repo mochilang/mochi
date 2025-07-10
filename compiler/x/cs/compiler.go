@@ -441,6 +441,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		name := sanitizeName(s.Let.Name)
 		var typ string
 		var expr string
+		var static types.Type = types.AnyType{}
 		if s.Let.Value != nil {
 			var err error
 			expr, err = c.compileExpr(s.Let.Value)
@@ -449,12 +450,14 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			}
 			if s.Let.Type != nil {
 				typ = csType(s.Let.Type)
+				static = c.resolveTypeRef(s.Let.Type)
 				if isEmptyListLiteral(s.Let.Value) {
 					expr = fmt.Sprintf("new %s { }", typ)
 				}
 			} else {
-				inferred := csTypeOf(c.inferExprType(s.Let.Value))
-				typ = inferred
+				inferredT := c.inferExprType(s.Let.Value)
+				static = inferredT
+				typ = csTypeOf(inferredT)
 				if isEmptyListLiteral(s.Let.Value) && strings.HasSuffix(typ, "[]") {
 					expr = fmt.Sprintf("new %s { }", typ)
 				}
@@ -466,12 +469,14 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		} else {
 			if s.Let.Type != nil {
 				typ = csType(s.Let.Type)
+				static = c.resolveTypeRef(s.Let.Type)
 				expr = "default"
 			} else {
 				typ = "dynamic"
 				expr = "null"
 			}
 		}
+		c.env.SetVar(s.Let.Name, static, false)
 		c.varTypes[name] = typ
 		decl := "var"
 		if typ != "" && !strings.Contains(typ, "dynamic") {
@@ -482,6 +487,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		name := sanitizeName(s.Var.Name)
 		var typ string
 		var expr string
+		var static types.Type = types.AnyType{}
 		if s.Var.Value != nil {
 			var err error
 			expr, err = c.compileExpr(s.Var.Value)
@@ -490,12 +496,14 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			}
 			if s.Var.Type != nil {
 				typ = csType(s.Var.Type)
+				static = c.resolveTypeRef(s.Var.Type)
 				if isEmptyListLiteral(s.Var.Value) {
 					expr = fmt.Sprintf("new %s { }", typ)
 				}
 			} else {
-				inferred := csTypeOf(c.inferExprType(s.Var.Value))
-				typ = inferred
+				inferredT := c.inferExprType(s.Var.Value)
+				static = inferredT
+				typ = csTypeOf(inferredT)
 				if isEmptyListLiteral(s.Var.Value) && strings.HasSuffix(typ, "[]") {
 					expr = fmt.Sprintf("new %s { }", typ)
 				}
@@ -507,12 +515,14 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		} else {
 			if s.Var.Type != nil {
 				typ = csType(s.Var.Type)
+				static = c.resolveTypeRef(s.Var.Type)
 				expr = "default"
 			} else {
 				typ = "dynamic"
 				expr = "null"
 			}
 		}
+		c.env.SetVar(s.Var.Name, static, true)
 		c.varTypes[name] = typ
 		decl := "var"
 		if typ != "" && !strings.Contains(typ, "dynamic") {
@@ -2476,8 +2486,14 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if len(args) == 1 {
 			t := c.inferExprType(call.Args[0])
 			if isListType(t) {
-				c.useLinq = true
-				return fmt.Sprintf("Console.WriteLine(string.Join(\" \", %s))", args[0]), nil
+				if lt, ok := t.(types.ListType); ok && isPrimitiveType(lt.Elem) {
+					c.useLinq = true
+					return fmt.Sprintf("Console.WriteLine(string.Join(\" \", %s))", args[0]), nil
+				}
+				return fmt.Sprintf("Console.WriteLine(JsonSerializer.Serialize(%s))", args[0]), nil
+			}
+			if isMapType(t) || isStructType(t) || isGroupType(t) || isUnionType(t) {
+				return fmt.Sprintf("Console.WriteLine(JsonSerializer.Serialize(%s))", args[0]), nil
 			}
 			return fmt.Sprintf("Console.WriteLine(%s)", args[0]), nil
 		}
@@ -2945,6 +2961,20 @@ func isMapType(t types.Type) bool {
 func isStringType(t types.Type) bool {
 	_, ok := t.(types.StringType)
 	return ok
+}
+
+func isStructType(t types.Type) bool { _, ok := t.(types.StructType); return ok }
+
+func isUnionType(t types.Type) bool { _, ok := t.(types.UnionType); return ok }
+
+func isGroupType(t types.Type) bool { _, ok := t.(types.GroupType); return ok }
+
+func isPrimitiveType(t types.Type) bool {
+	switch t.(type) {
+	case types.IntType, types.Int64Type, types.FloatType, types.StringType, types.BoolType:
+		return true
+	}
+	return false
 }
 
 func (c *Compiler) compilePackageImport(alias, path, filename string) error {
