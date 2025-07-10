@@ -546,10 +546,26 @@ static void _json_list_list_int(list_list_int v) {
     }
     printf("}");
 }`
+	helperJSONMapStringInt = `static void _json_map_string_int(map_string_int m) {
+    printf("{");
+    for (int i = 0; i < m.len; i++) {
+        if (i > 0) printf(",");
+        _json_string(m.data[i].key);
+        printf(":");
+        _json_int(m.data[i].value);
+    }
+    printf("}");
+}`
 	helperJSONListMapString = `static void _json_list_map_string(list_map_string v) {
     if (v.len == 1) { _json_map_string(v.data[0]); return; }
     printf("[");
     for (int i = 0; i < v.len; i++) { if (i > 0) printf(","); _json_map_string(v.data[i]); }
+    printf("]");
+}`
+	helperJSONListMapStringInt = `static void _json_list_map_string_int(list_map_string_int v) {
+    if (v.len == 1) { _json_map_string_int(v.data[0]); return; }
+    printf("[");
+    for (int i = 0; i < v.len; i++) { if (i > 0) printf(","); _json_map_string_int(v.data[i]); }
     printf("]");
 }`
 	helperLoadJSON = `static char* _read_all(const char* path) {
@@ -565,6 +581,9 @@ static void map_string_put(map_string* m,char* k,char* v){ if(m->len>=m->cap){ m
 typedef struct { int len; int cap; map_string* data; } list_map_string;
 static list_map_string list_map_string_create(int cap){ list_map_string l; l.len=0; l.cap=cap; l.data=cap?(map_string*)malloc(sizeof(map_string)*cap):NULL; return l; }
 static void list_map_string_push(list_map_string* l,map_string m){ if(l->len>=l->cap){ l->cap=l->cap?l->cap*2:4; l->data=(map_string*)realloc(l->data,sizeof(map_string)*l->cap);} l->data[l->len++]=m; }
+typedef struct { int len; int cap; map_string_int* data; } list_map_string_int;
+static list_map_string_int list_map_string_int_create(int cap){ list_map_string_int l; l.len=0; l.cap=cap; l.data=cap?(map_string_int*)malloc(sizeof(map_string_int)*cap):NULL; return l; }
+static void list_map_string_int_push(list_map_string_int* l,map_string_int m){ if(l->len>=l->cap){ l->cap=l->cap?l->cap*2:4; l->data=(map_string_int*)realloc(l->data,sizeof(map_string_int)*l->cap);} l->data[l->len++]=m; }
 static void _skip_ws(const char** s){ while(**s && (**s==' '||**s=='\t'||**s=='\n'||**s=='\r'))(*s)++; }
 static char* _parse_string(const char** s){ const char* p=*s; if(*p!='"') return strdup(""); p++; const char* st=p; while(*p && *p!='"'){ if(*p=='\\'&&p[1]) p++; p++; } size_t len=p-st; char* out=(char*)malloc(len+1); memcpy(out,st,len); out[len]='\0'; if(*p=='"') p++; *s=p; return out; }
 static int _isnum(char c){ return (c>='0'&&c<='9')||c=='-'||c=='+'||c=='.'; }
@@ -742,7 +761,9 @@ var helperCode = map[string]string{
 	needNow:                  helperNow,
 	needJSON:                 helperJSON,
 	needJSONMapString:        helperJSONMapString,
+	needJSONMapStringInt:     helperJSONMapStringInt,
 	needJSONListMapString:    helperJSONListMapString,
+	needJSONListMapStringInt: helperJSONListMapStringInt,
 	needLoadJSON:             helperLoadJSON,
 	needSaveJSON:             helperSaveJSON,
 	needFetch:                helperFetch,
@@ -823,7 +844,9 @@ var helperOrder = []string{
 	needNow,
 	needJSON,
 	needJSONMapString,
+	needJSONMapStringInt,
 	needJSONListMapString,
+	needJSONListMapStringInt,
 	needLoadJSON,
 	needSaveJSON,
 	needFetch,

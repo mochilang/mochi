@@ -4891,6 +4891,28 @@ func (c *Compiler) emitJSONExpr(e *parser.Expr) {
 	} else if isMapStringExpr(e, c.env) {
 		c.need(needJSONMapString)
 		c.writeln(fmt.Sprintf("_json_map_string(%s);", argExpr))
+	} else if isMapStringIntExpr(e, c.env) {
+		c.need(needJSONMapStringInt)
+		c.writeln(fmt.Sprintf("_json_map_string_int(%s);", argExpr))
+	} else if st, ok := c.exprType(e).(types.StructType); ok {
+		c.writeln("printf(\"{\");")
+		for i, field := range st.Order {
+			if i > 0 {
+				c.writeln("printf(\",\");")
+			}
+			c.writeln(fmt.Sprintf("_json_string(\"%s\");", field))
+			c.writeln("printf(\":\");")
+			fe := fmt.Sprintf("%s.%s", argExpr, sanitizeName(field))
+			switch st.Fields[field].(type) {
+			case types.IntType:
+				c.writeln(fmt.Sprintf("_json_int(%s);", fe))
+			case types.FloatType:
+				c.writeln(fmt.Sprintf("_json_float(%s);", fe))
+			case types.StringType:
+				c.writeln(fmt.Sprintf("_json_string(%s);", fe))
+			}
+		}
+		c.writeln("printf(\"}\");")
 	} else {
 		c.writeln(fmt.Sprintf("_json_int(%s);", argExpr))
 	}
