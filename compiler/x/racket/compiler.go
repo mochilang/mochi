@@ -15,6 +15,7 @@ type Compiler struct {
 	needListLib      bool
 	needJSONLib      bool
 	needYAMLLib      bool
+	needPathLib      bool
 	needFuncLib      bool
 	structs          map[string][]string
 	structFieldTypes map[string]map[string]string
@@ -33,6 +34,7 @@ func New() *Compiler {
 		funArity:         make(map[string]int),
 		groups:           make(map[string]bool),
 		listElemTypes:    make(map[string]string),
+		needPathLib:      false,
 	}
 }
 
@@ -54,6 +56,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	if c.needYAMLLib {
 		out.WriteString("(require yaml)\n")
+	}
+	if c.needPathLib {
+		out.WriteString("(require file/paths)\n")
 	}
 	if c.needFuncLib {
 		out.WriteString("(require racket/function)\n")
@@ -311,11 +316,7 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 			}
 		case "<", "<=", ">", ">=":
 			strOp := map[string]string{"<": "string<?", "<=": "string<=?", ">": "string>?", ">=": "string>=?"}[op.op]
-			if ls || rs {
-				expr = fmt.Sprintf("(%s %s %s)", strOp, l, r)
-			} else {
-				expr = fmt.Sprintf("(cond [(string? %s) (%s %s %s)] [(string? %s) (%s %s %s)] [else (%s %s %s)])", l, strOp, l, r, r, strOp, l, r, op.op, l, r)
-			}
+			expr = fmt.Sprintf("(cond [(string? %s) (%s %s %s)] [(string? %s) (%s %s %s)] [else (%s %s %s)])", l, strOp, l, r, r, strOp, l, r, op.op, l, r)
 		case "&&":
 			expr = fmt.Sprintf("(and %s %s)", l, r)
 		case "||":
@@ -1027,7 +1028,11 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		buf.WriteString("  " + collect + "\n")
 		buf.WriteString("  (define _groups (for/list ([k (hash-keys groups)]) (hash 'key k 'items (hash-ref groups k))))\n")
 		if sortExpr != "" {
-			buf.WriteString(fmt.Sprintf("  (set! _groups (sort _groups (lambda (a b) (> (let ([%s a]) %s) (let ([%s b]) %s)))))\n", q.Group.Name, sortExpr, q.Group.Name, sortExpr))
+			cmp := fmt.Sprintf("(cond [(string? (let ([%s a]) %s)) (string>? (let ([%s a]) %s) (let ([%s b]) %s))] [(string? (let ([%s b]) %s)) (string>? (let ([%s a]) %s) (let ([%s b]) %s))] [else (> (let ([%s a]) %s) (let ([%s b]) %s))])",
+				q.Group.Name, sortExpr, q.Group.Name, sortExpr, q.Group.Name, sortExpr,
+				q.Group.Name, sortExpr, q.Group.Name, sortExpr, q.Group.Name, sortExpr,
+				q.Group.Name, sortExpr, q.Group.Name, sortExpr)
+			buf.WriteString(fmt.Sprintf("  (set! _groups (sort _groups (lambda (a b) %s)))\n", cmp))
 		}
 		if have != "" {
 			buf.WriteString(fmt.Sprintf("  (set! _groups (filter (lambda (%s) %s) _groups))\n", q.Group.Name, have))
@@ -1145,7 +1150,13 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 		return "'()", nil
 	}
 	c.needYAMLLib = true
-	return fmt.Sprintf("(yaml-load (file->string %q))", *l.Path), nil
+	c.needPathLib = true
+	comps := strings.Split(*l.Path, "/")
+	for i, p := range comps {
+		comps[i] = fmt.Sprintf("%q", p)
+	}
+	path := fmt.Sprintf("(build-path (path-only (current-load-relative-directory)) %s)", strings.Join(comps, " "))
+	return fmt.Sprintf("(yaml-load (file->string %s))", path), nil
 }
 
 func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
