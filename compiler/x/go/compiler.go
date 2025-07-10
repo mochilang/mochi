@@ -485,6 +485,18 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 			t = v
 		}
 	}
+	for _, f := range s.Field {
+		if st, ok := t.(types.StructType); ok {
+			if ft, ok2 := st.Fields[f.Name]; ok2 {
+				t = ft
+			} else {
+				t = types.AnyType{}
+			}
+		} else {
+			t = types.AnyType{}
+		}
+		lhs += "." + exportName(sanitizeName(f.Name))
+	}
 	for _, idx := range s.Index {
 		iexpr, err := c.compileExpr(idx.Start)
 		if err != nil {
@@ -2079,6 +2091,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if c.env != nil {
 			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
 				typ = t
+			}
+		}
+		if len(p.Selector.Tail) == 0 {
+			if ut, ok := c.env.FindUnionByVariant(p.Selector.Root); ok {
+				st := ut.Variants[p.Selector.Root]
+				if len(st.Fields) == 0 {
+					return base + "{}", nil
+				}
 			}
 		}
 		if c.receiver != "" && len(p.Selector.Tail) == 0 {
@@ -3782,6 +3802,9 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 						v = fmt.Sprintf("_convSlice[%s,%s](%s)", goType(et.Elem), goType(lt.Elem), v)
 					}
 				}
+			}
+			if _, ok := paramTypes[i].(types.StructType); ok {
+				v = "&" + v
 			}
 			args[i] = v
 			continue
