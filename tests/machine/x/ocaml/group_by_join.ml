@@ -34,7 +34,7 @@ let stats = (let __groups0 = ref [] in
   let __res0 = ref [] in
   List.iter (fun (gKey,gItems) ->
     let g = { key = gKey; items = List.rev gItems } in
-    __res0 := [("name",Obj.repr (g.key));("count",Obj.repr (List.length g))] :: !__res0
+    __res0 := [("name",Obj.repr (g.key));("count",Obj.repr (List.length g.items))] :: !__res0
   ) !__groups0;
   List.rev !__res0)
 

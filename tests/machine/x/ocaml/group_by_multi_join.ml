@@ -43,8 +43,8 @@ let grouped = (let __groups1 = ref [] in
     let g = { key = gKey; items = List.rev gItems } in
     __res1 := [("part",Obj.repr (g.key));("total",Obj.repr ((sum (let __res2 = ref [] in
   List.iter (fun r ->
-      __res2 := r.value :: !__res2;
-  ) g;
+      __res2 := Obj.obj (List.assoc "value" r) :: !__res2;
+  ) g.items;
 List.rev !__res2)
 )))] :: !__res1
   ) !__groups1;
