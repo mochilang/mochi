@@ -10,7 +10,7 @@
   _res))
 (begin (display (if (member 1 ys) #t #f)) (newline))
 (begin (display (if (member 2 ys) #t #f)) (newline))
-(define m (list (cons "a" 1)))
+(define m (list (cons 'a 1)))
 (begin (display (if (assoc "a" m) #t #f)) (newline))
 (begin (display (if (assoc "b" m) #t #f)) (newline))
 (define s "hello")

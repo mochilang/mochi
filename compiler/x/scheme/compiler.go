@@ -16,6 +16,9 @@ import (
 
 const datasetHelpers = `(import (srfi 95) (chibi json) (chibi io) (chibi))
 
+(define (_to_string v)
+  (call-with-output-string (lambda (p) (write v p))))
+
 (define (_yaml_value v)
   (let ((n (string->number v)))
     (if n n v)))
@@ -102,7 +105,7 @@ const datasetHelpers = `(import (srfi 95) (chibi json) (chibi io) (chibi))
                     (_lt (cdr a) (cdr b))
                     (_lt ka kb)))))
     )
-    (else (string<? (format "~a" a) (format "~a" b)))))
+    (else (string<? (_to_string a) (_to_string b)))))
 
 (define (_sort pairs)
   (sort pairs (lambda (a b) (_lt (cdr a) (cdr b)))))`
@@ -1189,6 +1192,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Map != nil:
 		pairs := make([]string, len(p.Map.Items))
 		for i, it := range p.Map.Items {
+			if id, ok := identName(it.Key); ok {
+				v, err := c.compileExpr(it.Value)
+				if err != nil {
+					return "", err
+				}
+				pairs[i] = fmt.Sprintf("(cons '%s %s)", sanitizeName(id), v)
+				continue
+			}
 			if s, ok := simpleStringKey(it.Key); ok {
 				v, err := c.compileExpr(it.Value)
 				if err != nil {

@@ -8,7 +8,10 @@
             (begin (set-cdr! p v) m)
             (cons (cons k v) m)))
 )
-(import (srfi 95) (chibi json) (chibi io))
+(import (srfi 95) (chibi json) (chibi io) (chibi))
+
+(define (_to_string v)
+  (call-with-output-string (lambda (p) (write v p))))
 
 (define (_yaml_value v)
   (let ((n (string->number v)))
@@ -96,12 +99,12 @@
                     (_lt (cdr a) (cdr b))
                     (_lt ka kb)))))
     )
-    (else (string<? (format "~a" a) (format "~a" b)))))
+    (else (string<? (_to_string a) (_to_string b)))))
 
 (define (_sort pairs)
   (sort pairs (lambda (a b) (_lt (cdr a) (cdr b)))))
 
-(define items (list (list (cons "n" 1) (cons "v" "a")) (list (cons "n" 1) (cons "v" "b")) (list (cons "n" 2) (cons "v" "c"))))
+(define items (list (list (cons 'n 1) (cons 'v "a")) (list (cons 'n 1) (cons 'v "b")) (list (cons 'n 2) (cons 'v "c"))))
 (define result (let ((_res '()) (_tmp '()))
   (for-each (lambda (i)
     (set! _tmp (append _tmp (list (cons (map-get i 'v) (map-get i 'n)))))

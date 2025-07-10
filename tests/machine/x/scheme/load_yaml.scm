@@ -8,7 +8,10 @@
             (begin (set-cdr! p v) m)
             (cons (cons k v) m)))
 )
-(import (srfi 95) (chibi json) (chibi io))
+(import (srfi 95) (chibi json) (chibi io) (chibi))
+
+(define (_to_string v)
+  (call-with-output-string (lambda (p) (write v p))))
 
 (define (_yaml_value v)
   (let ((n (string->number v)))
@@ -96,7 +99,7 @@
                     (_lt (cdr a) (cdr b))
                     (_lt ka kb)))))
     )
-    (else (string<? (format "~a" a) (format "~a" b)))))
+    (else (string<? (_to_string a) (_to_string b)))))
 
 (define (_sort pairs)
   (sort pairs (lambda (a b) (_lt (cdr a) (cdr b)))))
@@ -105,11 +108,11 @@
   (list (cons 'name name) (cons 'age age) (cons 'email email))
 )
 
-(define people (_load "tests/interpreter/valid/people.yaml" (list (cons "format" "yaml"))))
+(define people (_load "tests/interpreter/valid/people.yaml" (list (cons 'format "yaml"))))
 (define adults (let ((_res '()))
   (for-each (lambda (p)
     (when (>= (map-get p 'age) 18)
-      (set! _res (append _res (list (list (cons "name" (map-get p 'name)) (cons "email" (map-get p 'email))))))
+      (set! _res (append _res (list (list (cons 'name (map-get p 'name)) (cons 'email (map-get p 'email))))))
     )
   ) (if (string? people) (string->list people) people))
   _res))

@@ -8,7 +8,10 @@
             (begin (set-cdr! p v) m)
             (cons (cons k v) m)))
 )
-(import (srfi 95) (chibi json) (chibi io))
+(import (srfi 95) (chibi json) (chibi io) (chibi))
+
+(define (_to_string v)
+  (call-with-output-string (lambda (p) (write v p))))
 
 (define (_yaml_value v)
   (let ((n (string->number v)))
@@ -96,7 +99,7 @@
                     (_lt (cdr a) (cdr b))
                     (_lt ka kb)))))
     )
-    (else (string<? (format "~a" a) (format "~a" b)))))
+    (else (string<? (_to_string a) (_to_string b)))))
 
 (define (_sort pairs)
   (sort pairs (lambda (a b) (_lt (cdr a) (cdr b)))))
@@ -119,7 +122,7 @@
                         (cons (car xs) out)
                         out)))))))
 
-(define products (list (list (cons "name" "Laptop") (cons "price" 1500)) (list (cons "name" "Smartphone") (cons "price" 900)) (list (cons "name" "Tablet") (cons "price" 600)) (list (cons "name" "Monitor") (cons "price" 300)) (list (cons "name" "Keyboard") (cons "price" 100)) (list (cons "name" "Mouse") (cons "price" 50)) (list (cons "name" "Headphones") (cons "price" 200))))
+(define products (list (list (cons 'name "Laptop") (cons 'price 1500)) (list (cons 'name "Smartphone") (cons 'price 900)) (list (cons 'name "Tablet") (cons 'price 600)) (list (cons 'name "Monitor") (cons 'price 300)) (list (cons 'name "Keyboard") (cons 'price 100)) (list (cons 'name "Mouse") (cons 'price 50)) (list (cons 'name "Headphones") (cons 'price 200))))
 (define expensive (let ((_res '()) (_tmp '()))
   (for-each (lambda (p)
     (set! _tmp (append _tmp (list (cons p (- (map-get p 'price))))))

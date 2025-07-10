@@ -1,5 +1,3 @@
 --- Left Join ---
-Order () customer () total ()
-Order () customer () total ()
-Order () customer () total ()
-Order () customer () total ()
+Order 100 customer ((id . 1) (name . "Alice")) total 250
+Order 101 customer () total 80

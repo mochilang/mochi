@@ -9,8 +9,8 @@
             (cons (cons k v) m)))
 )
 
-(define customers (list (list (cons "id" 1) (cons "name" "Alice")) (list (cons "id" 2) (cons "name" "Bob"))))
-(define orders (list (list (cons "id" 100) (cons "customerId" 1) (cons "total" 250)) (list (cons "id" 101) (cons "customerId" 3) (cons "total" 80))))
+(define customers (list (list (cons 'id 1) (cons 'name "Alice")) (list (cons 'id 2) (cons 'name "Bob"))))
+(define orders (list (list (cons 'id 100) (cons 'customerId 1) (cons 'total 250)) (list (cons 'id 101) (cons 'customerId 3) (cons 'total 80))))
 (define result (let ((_res '()))
   (for-each (lambda (o)
     (let ((_ms0 '()) (_m0 #f))
@@ -21,10 +21,10 @@
 ) (if (string? customers) (string->list customers) customers))
       (if _m0
           (for-each (lambda (c)
-            (set! _res (append _res (list (list (cons "orderId" (map-get o 'id)) (cons "customer" c) (cons "total" (map-get o 'total))))))
+            (set! _res (append _res (list (list (cons 'orderId (map-get o 'id)) (cons 'customer c) (cons 'total (map-get o 'total))))))
           ) _ms0)
           (let ((c '()))
-            (set! _res (append _res (list (list (cons "orderId" (map-get o 'id)) (cons "customer" c) (cons "total" (map-get o 'total))))))
+            (set! _res (append _res (list (list (cons 'orderId (map-get o 'id)) (cons 'customer c) (cons 'total (map-get o 'total))))))
           ))
     )
   ) (if (string? orders) (string->list orders) orders))

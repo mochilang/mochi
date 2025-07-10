@@ -15,7 +15,7 @@
   (for-each (lambda (n)
     (for-each (lambda (l)
       (when (equal? (modulo n 2) 0)
-        (set! _res (append _res (list (list (cons "n" n) (cons "l" l)))))
+        (set! _res (append _res (list (list (cons 'n n) (cons 'l l)))))
       )
     ) (if (string? letters) (string->list letters) letters))
   ) (if (string? nums) (string->list nums) nums))
