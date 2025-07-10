@@ -1,5 +1,0 @@
-exit status 1
-/workspace/mochi/tests/machine/x/scala/group_items_iteration.scala:10: error: identifier expected but 'val' found.
-        total += x.val
-                   ^
-one error found

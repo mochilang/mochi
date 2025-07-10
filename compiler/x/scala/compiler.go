@@ -941,10 +941,13 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 }
 
 func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
-	if len(s.Tail) == 0 {
-		return s.Root
-	}
 	if t, err := c.env.GetVar(s.Root); err == nil {
+		if len(s.Tail) == 0 {
+			if _, ok := t.(types.GroupType); ok {
+				return fmt.Sprintf("%s._2", s.Root)
+			}
+			return s.Root
+		}
 		switch tt := t.(type) {
 		case types.MapType:
 			base := s.Root
@@ -964,9 +967,6 @@ func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
 				return base
 			}
 		case types.GroupType:
-			if len(s.Tail) == 0 {
-				return fmt.Sprintf("%s._2", s.Root)
-			}
 			if len(s.Tail) == 1 {
 				switch s.Tail[0] {
 				case "key":
@@ -977,6 +977,10 @@ func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
 			}
 			_ = tt // silence unused warning in case build tags differ
 		}
+	} else if len(s.Tail) == 0 {
+		return s.Root
+	} else {
+		// fall through
 	}
 	parts := append([]string{s.Root}, s.Tail...)
 	return strings.Join(parts, ".")
@@ -1007,7 +1011,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("count expects 1 arg")
 		}
 		if _, ok := types.ExprType(call.Args[0], c.env).(types.GroupType); ok {
-			return fmt.Sprintf("(%s)._2.size", args[0]), nil
+			return fmt.Sprintf("(%s).size", args[0]), nil
 		}
 		return fmt.Sprintf("%s.size", args[0]), nil
 	case "len":
