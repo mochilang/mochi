@@ -28,9 +28,9 @@ class DataClass3 {
 	}
 }
 class DataClass4 {
-	Object part;
-	Object value;
-	DataClass4(Object part, Object value) {
+	int part;
+	double value;
+	DataClass4(int part, double value) {
 		this.part = part;
 		this.value = value;
 	}
@@ -74,8 +74,8 @@ public class Main {
 	for (var __e : _groups9.entrySet()) {
 		Object g_key = __e.getKey();
 		List<DataClass4> g = __e.getValue();
-		_res8.add(new DataClass5(g_key, sum((List<Number>)(List<?>)(new java.util.function.Supplier<List<Object>>(){public List<Object> get(){
-	List<Object> _res13 = new ArrayList<>();
+		_res8.add(new DataClass5(g_key, sum((List<Number>)(List<?>)(new java.util.function.Supplier<List<Double>>(){public List<Double> get(){
+	List<Double> _res13 = new ArrayList<>();
 	for (var r : g) {
 		_res13.add(r.value);
 	}

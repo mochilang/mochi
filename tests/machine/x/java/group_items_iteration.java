@@ -9,8 +9,8 @@ class DataClass1 {
 }
 class DataClass2 {
 	Object tag;
-	Object total;
-	DataClass2(Object tag, Object total) {
+	int total;
+	DataClass2(Object tag, int total) {
 		this.tag = tag;
 		this.total = total;
 	}

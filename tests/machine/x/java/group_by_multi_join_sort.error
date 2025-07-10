@@ -1,23 +1,23 @@
 line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramsgroup_by_multi_join_sort1830399090/001/Main.java:105: error: bad operand types for binary operator '&&'
+/tmp/TestCompileValidProgramsgroup_by_multi_join_sort2089809053/001/Main.java:105: error: bad operand types for binary operator '&&'
 					if (!(Objects.equals(String.valueOf(String.valueOf(o.o_orderdate).compareTo(String.valueOf(start_date)) >= 0 && o.o_orderdate).compareTo(String.valueOf(end_date)) < 0 && l.l_returnflag, "R"))) continue;
 					                                                                                                             ^
   first type:  boolean
   second type: String
-/tmp/TestCompileValidProgramsgroup_by_multi_join_sort1830399090/001/Main.java:114: error: incompatible types: Map<String,Object> cannot be converted to DataClass2
+/tmp/TestCompileValidProgramsgroup_by_multi_join_sort2089809053/001/Main.java:114: error: incompatible types: Map<String,Object> cannot be converted to DataClass2
 					_b10.add(_row8);
 					         ^
-/tmp/TestCompileValidProgramsgroup_by_multi_join_sort1830399090/001/Main.java:125: error: cannot find symbol
+/tmp/TestCompileValidProgramsgroup_by_multi_join_sort2089809053/001/Main.java:125: error: cannot find symbol
 		_res11.add(x.l.l_extendedprice * (1 - x.l.l_discount));
 		            ^
   symbol:   variable l
   location: variable x of type DataClass2
-/tmp/TestCompileValidProgramsgroup_by_multi_join_sort1830399090/001/Main.java:125: error: cannot find symbol
+/tmp/TestCompileValidProgramsgroup_by_multi_join_sort2089809053/001/Main.java:125: error: cannot find symbol
 		_res11.add(x.l.l_extendedprice * (1 - x.l.l_discount));
 		                                       ^
   symbol:   variable l
   location: variable x of type DataClass2
-Note: /tmp/TestCompileValidProgramsgroup_by_multi_join_sort1830399090/001/Main.java uses unchecked or unsafe operations.
+Note: /tmp/TestCompileValidProgramsgroup_by_multi_join_sort2089809053/001/Main.java uses unchecked or unsafe operations.
 Note: Recompile with -Xlint:unchecked for details.
 Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
 4 errors

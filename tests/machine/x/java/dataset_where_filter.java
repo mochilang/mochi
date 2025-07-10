@@ -8,10 +8,10 @@ class DataClass1 {
 	}
 }
 class DataClass2 {
-	Object name;
-	Object age;
-	Object is_senior;
-	DataClass2(Object name, Object age, Object is_senior) {
+	String name;
+	int age;
+	int is_senior;
+	DataClass2(String name, int age, int is_senior) {
 		this.name = name;
 		this.age = age;
 		this.is_senior = is_senior;
@@ -29,8 +29,8 @@ public class Main {
 }}).get();
 	public static void main(String[] args) {
 	System.out.println("--- Adults ---");
-	for (Object person : adults) {
-		System.out.println(((Map)person).get("name") + " " + "is" + " " + ((Map)person).get("age") + " " + (((Map)person).get("is_senior") != null ? " (senior)" : ""));
+	for (DataClass2 person : adults) {
+		System.out.println(person.name + " " + "is" + " " + person.age + " " + (person.is_senior ? " (senior)" : ""));
 	}
 	}
 }

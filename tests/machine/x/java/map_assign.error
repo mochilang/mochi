@@ -1,10 +1,10 @@
 line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramsmap_assign3281431341/001/Main.java:11: error: cannot find symbol
+/tmp/TestCompileValidProgramsmap_assign1875224666/001/Main.java:11: error: cannot find symbol
 	scores.put("bob", 2);
 	      ^
   symbol:   method put(String,int)
   location: variable scores of type DataClass1
-/tmp/TestCompileValidProgramsmap_assign3281431341/001/Main.java:12: error: cannot find symbol
+/tmp/TestCompileValidProgramsmap_assign1875224666/001/Main.java:12: error: cannot find symbol
 	System.out.println(scores.get("bob"));
 	                         ^
   symbol:   method get(String)

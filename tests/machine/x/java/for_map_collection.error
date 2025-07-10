@@ -1,5 +1,5 @@
 line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramsfor_map_collection736707117/001/Main.java:13: error: for-each not applicable to expression type
+/tmp/TestCompileValidProgramsfor_map_collection123972279/001/Main.java:13: error: for-each not applicable to expression type
 	for (Object k : m) {
 	                ^
   required: array or java.lang.Iterable

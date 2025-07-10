@@ -18,10 +18,10 @@ class DataClass2 {
 	}
 }
 class DataClass3 {
-	Object orderId;
-	Object customerName;
-	Object total;
-	DataClass3(Object orderId, Object customerName, Object total) {
+	int orderId;
+	String customerName;
+	int total;
+	DataClass3(int orderId, String customerName, int total) {
 		this.orderId = orderId;
 		this.customerName = customerName;
 		this.total = total;
@@ -42,8 +42,8 @@ public class Main {
 }}).get();
 	public static void main(String[] args) {
 	System.out.println("--- Orders with customer info ---");
-	for (Object entry : result) {
-		System.out.println("Order" + " " + ((Map)entry).get("orderId") + " " + "by" + " " + ((Map)entry).get("customerName") + " " + "- $" + " " + ((Map)entry).get("total"));
+	for (DataClass3 entry : result) {
+		System.out.println("Order" + " " + entry.orderId + " " + "by" + " " + entry.customerName + " " + "- $" + " " + entry.total);
 	}
 	}
 }

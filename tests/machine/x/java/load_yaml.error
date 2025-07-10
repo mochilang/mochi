@@ -1,7 +1,0 @@
-line 0: run error: exit status 1
-Exception in thread "main" java.lang.ClassCastException: class DataClass1 cannot be cast to class java.util.Map (DataClass1 is in unnamed module of loader 'app'; java.util.Map is in module java.base of loader 'bootstrap')
-	at Main.main(Main.java:75)
-
-
-  1| type Person {
-  2|   name: string
