@@ -412,7 +412,6 @@ func (c *Compiler) ifStmt(i *parser.IfStmt) error {
 	}
 	if _, ok := types.TypeOfExprBasic(i.Cond, c.env).(types.BoolType); !ok {
 		c.use("toBool")
-		c.use("toBool")
 		cond = "toBool(" + cond + ")"
 	}
 	c.writeln("if (" + cond + ") {")

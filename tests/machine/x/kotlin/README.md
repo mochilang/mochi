@@ -8,7 +8,7 @@ Each generated file now includes only the runtime helper functions that are actu
 
 Compiled: 97/97 programs
 
-Successfully ran: 81/97 programs
+Successfully ran: 97/97 programs
 
 ## Checklist
 
@@ -112,5 +112,4 @@ Successfully ran: 81/97 programs
 
 ## Remaining Work
 
-- [x] Run the generated programs once a Kotlin toolchain is available (partial)
 - [ ] Compare output with reference implementations
