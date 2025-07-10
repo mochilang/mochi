@@ -21,6 +21,6 @@ var
 
 begin
   xs := specialize TArray<integer>([1, 2, 3]);
-  writeln(specialize _containsList<Variant>(xs, 2));
-  writeln(not specialize _containsList<Variant>(xs, 5));
+  writeln(specialize _containsList<integer>(xs, 2));
+  writeln(not specialize _containsList<integer>(xs, 5));
 end.

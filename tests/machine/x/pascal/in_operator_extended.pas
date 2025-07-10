@@ -34,14 +34,14 @@ begin
       _tmp0 := Concat(_tmp0, [x]);
     end;
   ys := _tmp0;
-  writeln(specialize _containsList<Variant>(ys, 1));
-  writeln(specialize _containsList<Variant>(ys, 2));
+  writeln(specialize _containsList<integer>(ys, 1));
+  writeln(specialize _containsList<integer>(ys, 2));
   _tmp1 := specialize TFPGMap<string, integer>.Create;
   _tmp1.AddOrSetData('a', 1);
   m := _tmp1;
   writeln((m.IndexOf('a') >= 0));
   writeln((m.IndexOf('b') >= 0));
   s := 'hello';
-  writeln(('ell' in s));
-  writeln(('foo' in s));
+  writeln((Pos('ell', s) > 0));
+  writeln((Pos('foo', s) > 0));
 end.

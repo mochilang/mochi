@@ -1374,6 +1374,8 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	operands := []string{}
 	lists := []bool{}
 	maps := []bool{}
+	strings_ := []bool{}
+	rights := []*parser.PostfixExpr{nil}
 	elemType := c.elemTypeOfExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: b.Left}})
 
 	left, err := c.compileUnary(b.Left)
@@ -1383,6 +1385,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	operands = append(operands, left)
 	lists = append(lists, c.isListUnary(b.Left))
 	maps = append(maps, c.isMapUnary(b.Left))
+	strings_ = append(strings_, c.isStringUnary(b.Left))
 	operators := []string{}
 
 	for _, part := range b.Right {
@@ -1393,6 +1396,8 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		operands = append(operands, r)
 		lists = append(lists, c.isListPostfix(part.Right))
 		maps = append(maps, c.isMapPostfix(part.Right))
+		strings_ = append(strings_, c.isStringPostfix(part.Right))
+		rights = append(rights, part.Right)
 		op := part.Op
 		if part.Op == "union" && part.All {
 			op = "union_all"
@@ -1442,9 +1447,11 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 					if maps[i+1] {
 						res = fmt.Sprintf("(%s.IndexOf(%s) >= 0)", r, l)
 					} else if rlist {
-						elem := elemType
+						elem := c.elemTypeOfExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: rights[i+1]}}})
 						c.use("_containsList")
 						res = fmt.Sprintf("specialize _containsList<%s>(%s, %s)", elem, r, l)
+					} else if strings_[i+1] {
+						res = fmt.Sprintf("(Pos(%s, %s) > 0)", l, r)
 					} else {
 						res = fmt.Sprintf("(%s in %s)", l, r)
 					}
@@ -1472,6 +1479,8 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				lists[i] = isList
 				operands = append(operands[:i+1], operands[i+2:]...)
 				lists = append(lists[:i+1], lists[i+2:]...)
+				strings_ = append(strings_[:i+1], strings_[i+2:]...)
+				rights = append(rights[:i+1], rights[i+2:]...)
 				operators = append(operators[:i], operators[i+1:]...)
 			} else {
 				i++
@@ -1514,7 +1523,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	for _, op := range p.Ops {
+	prev := expr
+	for i, op := range p.Ops {
 		if op.Index != nil {
 			if op.Index.End != nil || op.Index.Colon != nil {
 				start := "0"
@@ -1570,6 +1580,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 		} else if op.Field != nil {
 			part := sanitizeName(op.Field.Name)
+			prev = expr
 			if c.isMapPostfix(&parser.PostfixExpr{Target: p.Target}) {
 				expr = fmt.Sprintf("%s.KeyData['%s']", expr, part)
 			} else {
@@ -1577,14 +1588,27 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 		} else if op.Call != nil {
 			args := make([]string, len(op.Call.Args))
-			for i, a := range op.Call.Args {
+			for j, a := range op.Call.Args {
 				v, err := c.compileExpr(a)
 				if err != nil {
 					return "", err
 				}
-				args[i] = v
+				args[j] = v
 			}
-			expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
+			if i > 0 && p.Ops[i-1].Field != nil {
+				name := p.Ops[i-1].Field.Name
+				if name == "contains" && len(args) == 1 {
+					if _, ok := types.TypeOfPrimary(p.Target, c.env).(types.StringType); ok {
+						expr = fmt.Sprintf("(Pos(%s, %s) > 0)", args[0], prev)
+					} else {
+						expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
+					}
+				} else {
+					expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
+				}
+			} else {
+				expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
+			}
 		} else if op.Cast != nil {
 			typ := c.typeRef(op.Cast.Type)
 			if typ == "double" {
