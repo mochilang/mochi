@@ -4,5 +4,6 @@ defmodule Main do
   def main do
     IO.inspect(@a ++ [3])
   end
-  end
+end
+
 Main.main()

@@ -4,134 +4,208 @@ defmodule Main do
   @orders [%{id: 100, customerId: 1}, %{id: 101, customerId: 1}, %{id: 102, customerId: 2}]
   def main do
     # stats :: list(map())
-    stats = (fn ->
-  src = @customers
-  rows = _query(src, [
-    %{items: @orders, on: fn c, o -> (o.customerId == c.id) end, left: true}
-  ], %{select: fn c, o -> [c, o] end })
-  groups = _group_by(rows, fn [c, o] -> c.name end)
-  items = groups
-  Enum.map(items, fn g -> %{name: g.key, count: _count(for r <- g.items, r.o, do: r)} end)
-end).()
-    IO.inspect("--- Group Left Join ---")
+    stats =
+      (fn ->
+         src = @customers
+
+         rows =
+           _query(
+             src,
+             [
+               %{items: @orders, on: fn c, o -> o.customerId == c.id end, left: true}
+             ],
+             %{select: fn c, o -> [c, o] end}
+           )
+
+         groups = _group_by(rows, fn [c, o] -> c.name end)
+         items = groups
+         Enum.map(items, fn g -> %{name: g.key, count: _count(for r <- g.items, r.o, do: r)} end)
+       end).()
+
+    IO.puts("--- Group Left Join ---")
+
     for s <- stats do
       IO.puts(Enum.join(Enum.map([s.name, "orders:", s.count], &inspect(&1)), " "))
     end
   end
+
   defp _count(v) do
-  cond do
-    is_list(v) -> length(v)
-    is_map(v) and Map.has_key?(v, :items) -> length(Map.get(v, :items))
-    true -> raise "count() expects list or group"
+    cond do
+      is_list(v) -> length(v)
+      is_map(v) and Map.has_key?(v, :items) -> length(Map.get(v, :items))
+      true -> raise "count() expects list or group"
+    end
   end
-end
 
   defmodule Group do
-  defstruct key: nil, items: []
-  def fetch(g, k) do
-    case k do
-      :key -> {:ok, g.key}
-      :items -> {:ok, g.items}
-      _ -> :error
+    defstruct key: nil, items: []
+
+    def fetch(g, k) do
+      case k do
+        :key -> {:ok, g.key}
+        :items -> {:ok, g.items}
+        _ -> :error
+      end
+    end
+
+    def get_and_update(g, k, f) do
+      case k do
+        :key ->
+          {v, nv} = f.(g.key)
+          {v, %{g | key: nv}}
+
+        :items ->
+          {v, nv} = f.(g.items)
+          {v, %{g | items: nv}}
+
+        _ ->
+          {nil, g}
+      end
     end
   end
-  def get_and_update(g, k, f) do
-    case k do
-      :key ->
-        {v, nv} = f.(g.key)
-        {v, %{g | key: nv}}
-      :items ->
-        {v, nv} = f.(g.items)
-        {v, %{g | items: nv}}
-      _ -> {nil, g}
-    end
-  end
-end
 
   defp _group_by(src, keyfn) do
-  {groups, order} = Enum.reduce(src, {%{}, []}, fn it, {groups, order} ->
-    key = if is_list(it) do
-      arity = :erlang.fun_info(keyfn, :arity) |> elem(1)
-      if arity == 1, do: keyfn.(it), else: apply(keyfn, it)
-    else
-      keyfn.(it)
-    end
-    ks = :erlang.phash2(key)
-    {groups, order} = if Map.has_key?(groups, ks) do
-      {groups, order}
-    else
-      {Map.put(groups, ks, %Group{key: key}), order ++ [ks]}
-    end
-    val = if is_list(it) and length(it) == 1, do: hd(it), else: it
-    groups = Map.update!(groups, ks, fn g -> %{g | items: g.items ++ [val]} end)
-    {groups, order}
-  end)
-  Enum.map(order, fn k -> groups[k] end)
-end
+    {groups, order} =
+      Enum.reduce(src, {%{}, []}, fn it, {groups, order} ->
+        key =
+          if is_list(it) do
+            arity = :erlang.fun_info(keyfn, :arity) |> elem(1)
+            if arity == 1, do: keyfn.(it), else: apply(keyfn, it)
+          else
+            keyfn.(it)
+          end
+
+        ks = :erlang.phash2(key)
+
+        {groups, order} =
+          if Map.has_key?(groups, ks) do
+            {groups, order}
+          else
+            {Map.put(groups, ks, %Group{key: key}), order ++ [ks]}
+          end
+
+        val = if is_list(it) and length(it) == 1, do: hd(it), else: it
+        groups = Map.update!(groups, ks, fn g -> %{g | items: g.items ++ [val]} end)
+        {groups, order}
+      end)
+
+    Enum.map(order, fn k -> groups[k] end)
+  end
 
   defp _query(src, joins, opts \\ %{}) do
-  where = Map.get(opts, :where)
-  items = Enum.map(src, fn v -> [v] end)
-  items = (if where, do: Enum.filter(items, fn r -> where.(r) end), else: items)
-  items = Enum.reduce(joins, items, fn j, items ->
-    joined = cond do
-      Map.get(j, :right) && Map.get(j, :left) ->
-        matched = for _ <- j[:items], do: false
-        {res, matched} = Enum.reduce(items, {[], matched}, fn left, {acc, matched} ->
-          {acc, matched, m} = Enum.reduce(Enum.with_index(j[:items]), {acc, matched, false}, fn {right, ri}, {acc, matched, m} ->
-            keep = (if Map.has_key?(j, :on) and j[:on], do: apply(j[:on], left ++ [right]), else: true)
-            if keep do
-              matched = List.replace_at(matched, ri, true)
-              {acc ++ [left ++ [right]], matched, true}
-            else
-              {acc, matched, m}
-            end
-          end)
-          acc = (if !m, do: acc ++ [left ++ [nil]], else: acc)
-          {acc, matched}
-        end)
-        Enum.reduce(Enum.with_index(j[:items]), res, fn {right, ri}, acc ->
-          if Enum.at(matched, ri) do
-            acc
-          else
-            undef = List.duplicate(nil, (if items == [], do: 0, else: length(hd(items))))
-            acc ++ [undef ++ [right]]
+    where = Map.get(opts, :where)
+    items = Enum.map(src, fn v -> [v] end)
+    items = if where, do: Enum.filter(items, fn r -> where.(r) end), else: items
+
+    items =
+      Enum.reduce(joins, items, fn j, items ->
+        joined =
+          cond do
+            Map.get(j, :right) && Map.get(j, :left) ->
+              matched = for _ <- j[:items], do: false
+
+              {res, matched} =
+                Enum.reduce(items, {[], matched}, fn left, {acc, matched} ->
+                  {acc, matched, m} =
+                    Enum.reduce(Enum.with_index(j[:items]), {acc, matched, false}, fn {right, ri},
+                                                                                      {acc,
+                                                                                       matched,
+                                                                                       m} ->
+                      keep =
+                        if Map.has_key?(j, :on) and j[:on],
+                          do: apply(j[:on], left ++ [right]),
+                          else: true
+
+                      if keep do
+                        matched = List.replace_at(matched, ri, true)
+                        {acc ++ [left ++ [right]], matched, true}
+                      else
+                        {acc, matched, m}
+                      end
+                    end)
+
+                  acc = if !m, do: acc ++ [left ++ [nil]], else: acc
+                  {acc, matched}
+                end)
+
+              Enum.reduce(Enum.with_index(j[:items]), res, fn {right, ri}, acc ->
+                if Enum.at(matched, ri) do
+                  acc
+                else
+                  undef = List.duplicate(nil, if(items == [], do: 0, else: length(hd(items))))
+                  acc ++ [undef ++ [right]]
+                end
+              end)
+
+            Map.get(j, :right) ->
+              Enum.reduce(j[:items], [], fn right, acc ->
+                {acc2, m} =
+                  Enum.reduce(items, {acc, false}, fn left, {acc, m} ->
+                    keep =
+                      if Map.has_key?(j, :on) and j[:on],
+                        do: apply(j[:on], left ++ [right]),
+                        else: true
+
+                    if keep, do: {acc ++ [left ++ [right]], true}, else: {acc, m}
+                  end)
+
+                if !m do
+                  undef = List.duplicate(nil, if(items == [], do: 0, else: length(hd(items))))
+                  acc2 ++ [undef ++ [right]]
+                else
+                  acc2
+                end
+              end)
+
+            true ->
+              Enum.reduce(items, [], fn left, acc ->
+                {acc2, m} =
+                  Enum.reduce(j[:items], {acc, false}, fn right, {acc, m} ->
+                    keep =
+                      if Map.has_key?(j, :on) and j[:on],
+                        do: apply(j[:on], left ++ [right]),
+                        else: true
+
+                    if keep, do: {acc ++ [left ++ [right]], true}, else: {acc, m}
+                  end)
+
+                if Map.get(j, :left) && !m do
+                  acc2 ++ [left ++ [nil]]
+                else
+                  acc2
+                end
+              end)
           end
-        end)
-      Map.get(j, :right) ->
-        Enum.reduce(j[:items], [], fn right, acc ->
-          {acc2, m} = Enum.reduce(items, {acc, false}, fn left, {acc, m} ->
-            keep = (if Map.has_key?(j, :on) and j[:on], do: apply(j[:on], left ++ [right]), else: true)
-            if keep, do: {acc ++ [left ++ [right]], true}, else: {acc, m}
-          end)
-          if !m do
-            undef = List.duplicate(nil, (if items == [], do: 0, else: length(hd(items))))
-            acc2 ++ [undef ++ [right]]
-          else
-            acc2
-          end
-        end)
-      true ->
-        Enum.reduce(items, [], fn left, acc ->
-          {acc2, m} = Enum.reduce(j[:items], {acc, false}, fn right, {acc, m} ->
-            keep = (if Map.has_key?(j, :on) and j[:on], do: apply(j[:on], left ++ [right]), else: true)
-            if keep, do: {acc ++ [left ++ [right]], true}, else: {acc, m}
-          end)
-          if Map.get(j, :left) && !m do
-            acc2 ++ [left ++ [nil]]
-          else
-            acc2
-          end
-        end)
-    end
-    joined = (if where, do: Enum.filter(joined, fn r -> where.(r) end), else: joined)
-    joined
-  end)
-  items = (if Map.has_key?(opts, :sortKey), do: Enum.sort_by(items, fn r -> apply(opts[:sortKey], r) end), else: items)
-  items = (if Map.has_key?(opts, :skip), do: (n = opts[:skip]; (if n < length(items), do: Enum.drop(items, n), else: [])), else: items)
-  items = (if Map.has_key?(opts, :take), do: (n = opts[:take]; (if n < length(items), do: Enum.take(items, n), else: items)), else: items)
-  Enum.map(items, fn r -> apply(opts[:select], r) end)
+
+        joined = if where, do: Enum.filter(joined, fn r -> where.(r) end), else: joined
+        joined
+      end)
+
+    items =
+      if Map.has_key?(opts, :sortKey),
+        do: Enum.sort_by(items, fn r -> apply(opts[:sortKey], r) end),
+        else: items
+
+    items =
+      if Map.has_key?(opts, :skip),
+        do:
+          (
+            n = opts[:skip]
+            if n < length(items), do: Enum.drop(items, n), else: []
+          ),
+        else: items
+
+    items =
+      if Map.has_key?(opts, :take),
+        do:
+          (
+            n = opts[:take]
+            if n < length(items), do: Enum.take(items, n), else: items
+          ),
+        else: items
+
+    Enum.map(items, fn r -> apply(opts[:select], r) end)
+  end
 end
 
-  end
 Main.main()

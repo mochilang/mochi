@@ -202,6 +202,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.writeln(fmt.Sprintf("defmodule %s do", mod))
 	c.indent++
+	// record top-level function names first
+	for _, s := range prog.Statements {
+		if s.Fun != nil {
+			c.funcs[s.Fun.Name] = true
+		}
+	}
 	// collect top-level constants as module attributes
 	helperRe := regexp.MustCompile(`_[a-zA-Z0-9]+\(`)
 	letNames := []string{}

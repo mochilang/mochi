@@ -7,5 +7,6 @@ defmodule Main do
     nums = List.replace_at(nums, 1, 3)
     IO.inspect(Enum.at(nums, 1))
   end
-  end
+end
+
 Main.main()

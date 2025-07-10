@@ -3,16 +3,20 @@ defmodule Main do
   @x 2
   def main do
     # label :: String.t()
-    label = (fn ->
-  t2 = @x
-  case t2 do
-    1 -> "one"
-    2 -> "two"
-    3 -> "three"
-    _ -> "unknown"
+    label =
+      (fn ->
+         t2 = @x
+
+         case t2 do
+           1 -> "one"
+           2 -> "two"
+           3 -> "three"
+           _ -> "unknown"
+         end
+       end).()
+
+    IO.puts(label)
   end
-end).()
-    IO.inspect(label)
-  end
-  end
+end
+
 Main.main()

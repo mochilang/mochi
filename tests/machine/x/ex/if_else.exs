@@ -2,11 +2,12 @@
 defmodule Main do
   @x 5
   def main do
-    if (@x > 3) do
-      IO.inspect("big")
+    if @x > 3 do
+      IO.puts("big")
     else
-      IO.inspect("small")
+      IO.puts("small")
     end
   end
-  end
+end
+
 Main.main()

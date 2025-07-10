@@ -3,5 +3,6 @@ defmodule Main do
   def main do
     IO.inspect(map_size(%{"a" => 1, "b" => 2}))
   end
-  end
+end
+
 Main.main()

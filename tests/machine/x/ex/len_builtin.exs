@@ -3,5 +3,6 @@ defmodule Main do
   def main do
     IO.inspect(length([1, 2, 3]))
   end
-  end
+end
+
 Main.main()

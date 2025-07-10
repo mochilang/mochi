@@ -3,7 +3,8 @@ defmodule Main do
   @a 10
   @b 20
   def main do
-    IO.inspect((@a + @b))
+    IO.inspect(@a + @b)
   end
-  end
+end
+
 Main.main()

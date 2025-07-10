@@ -1,4 +1,0 @@
-warning: default values for the optional arguments in _query/3 are never used
-  /workspace/mochi/tests/machine/x/ex/group_by_sort.mochi.exs:75
-
-[%{cat: "b", total: 7}, %{cat: "a", total: 4}]

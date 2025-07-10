@@ -2,14 +2,15 @@
 defmodule Main do
   @s "mochi"
   def main do
-    IO.inspect(_index_string(@s, 1))
+    IO.puts(_index_string(@s, 1))
   end
+
   defp _index_string(s, i) do
-  chars = String.graphemes(s)
-  idx = if i < 0, do: i + length(chars), else: i
-  if idx < 0 or idx >= length(chars), do: raise "index out of range"
-  Enum.at(chars, idx)
+    chars = String.graphemes(s)
+    idx = if i < 0, do: i + length(chars), else: i
+    if idx < 0 or idx >= length(chars), do: raise("index out of range")
+    Enum.at(chars, idx)
+  end
 end
 
-  end
 Main.main()

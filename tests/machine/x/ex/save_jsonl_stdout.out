@@ -1,0 +1,9 @@
+warning: default values for the optional arguments in _save/3 are never used
+  /workspace/mochi/tests/machine/x/ex/save_jsonl_stdout.exs:8
+
+30,Alice
+25,Bobwarning: Jason.encode!/1 is undefined (module Jason is not available or is yet to be defined)
+Invalid call found at 3 locations:
+  /workspace/mochi/tests/machine/x/ex/save_jsonl_stdout.exs:20: Main._save/3
+  /workspace/mochi/tests/machine/x/ex/save_jsonl_stdout.exs:21: Main._save/3
+  /workspace/mochi/tests/machine/x/ex/save_jsonl_stdout.exs:45: Main._to_csv/3

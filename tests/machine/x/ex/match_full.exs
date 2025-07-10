@@ -6,52 +6,68 @@ defmodule Main do
   @spec classify(integer()) :: String.t()
   def classify(n) do
     try do
-      throw {:return, (fn ->
-  t4 = n
-  case t4 do
-    0 -> "zero"
-    1 -> "one"
-    _ -> "many"
+      throw(
+        {:return,
+         (fn ->
+            t4 = n
+
+            case t4 do
+              0 -> "zero"
+              1 -> "one"
+              _ -> "many"
+            end
+          end).()}
+      )
+    catch
+      {:return, v} -> v
+    end
   end
-end).()}
-    catch {:return, v} -> v end
-  end
-  
+
   def main do
     # label :: String.t()
-    label = (fn ->
-  t5 = @x
-  case t5 do
-    1 -> "one"
-    2 -> "two"
-    3 -> "three"
-    _ -> "unknown"
-  end
-end).()
-    IO.inspect(label)
+    label =
+      (fn ->
+         t5 = @x
+
+         case t5 do
+           1 -> "one"
+           2 -> "two"
+           3 -> "three"
+           _ -> "unknown"
+         end
+       end).()
+
+    IO.puts(label)
     # mood :: String.t()
-    mood = (fn ->
-  t6 = @day
-  case t6 do
-    "mon" -> "tired"
-    "fri" -> "excited"
-    "sun" -> "relaxed"
-    _ -> "normal"
-  end
-end).()
-    IO.inspect(mood)
+    mood =
+      (fn ->
+         t6 = @day
+
+         case t6 do
+           "mon" -> "tired"
+           "fri" -> "excited"
+           "sun" -> "relaxed"
+           _ -> "normal"
+         end
+       end).()
+
+    IO.puts(mood)
     # status :: String.t()
-    status = (fn ->
-  t7 = @ok
-  case t7 do
-    true -> "confirmed"
-    false -> "denied"
-    _ -> nil
+    status =
+      (fn ->
+         t7 = @ok
+
+         case t7 do
+           true -> "confirmed"
+           false -> "denied"
+           _ -> nil
+         end
+       end).()
+
+    IO.puts(status)
+    IO.puts(classify(0))
+    IO.puts(classify(5))
   end
-end).()
-    IO.inspect(status)
-    IO.inspect(classify(0))
-    IO.inspect(classify(5))
-  end
-  end
+end
+
 Main.main()

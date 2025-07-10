@@ -3,14 +3,17 @@ defmodule Main do
   @spec boom(integer(), integer()) :: boolean()
   def boom(a, b) do
     try do
-      IO.inspect("boom")
-      throw {:return, true}
-    catch {:return, v} -> v end
+      IO.puts("boom")
+      throw({:return, true})
+    catch
+      {:return, v} -> v
+    end
   end
-  
+
   def main do
-    IO.inspect((false && boom(1, 2)))
-    IO.inspect((true || boom(1, 2)))
+    IO.inspect(false && boom(1, 2))
+    IO.inspect(true || boom(1, 2))
   end
-  end
+end
+
 Main.main()

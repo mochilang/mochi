@@ -3,5 +3,6 @@ defmodule Main do
   def main do
     IO.inspect(String.length("mochi"))
   end
-  end
+end
+
 Main.main()

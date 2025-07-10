@@ -4,12 +4,15 @@ defmodule Main do
   @spec inc(integer()) :: integer()
   def inc(x) do
     try do
-      throw {:return, (x + @k)}
-    catch {:return, v} -> v end
+      throw({:return, x + @k})
+    catch
+      {:return, v} -> v
+    end
   end
-  
+
   def main do
     IO.inspect(inc(3))
   end
-  end
+end
+
 Main.main()

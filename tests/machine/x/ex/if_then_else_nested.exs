@@ -3,20 +3,23 @@ defmodule Main do
   @x 8
   def main do
     # msg :: String.t()
-    msg = (fn ->
-  if (@x > 10) do
-    "big"
-  else
-    (fn ->
-  if (@x > 5) do
-    "medium"
-  else
-    "small"
+    msg =
+      (fn ->
+         if @x > 10 do
+           "big"
+         else
+           (fn ->
+              if @x > 5 do
+                "medium"
+              else
+                "small"
+              end
+            end).()
+         end
+       end).()
+
+    IO.puts(msg)
   end
-end).()
-  end
-end).()
-    IO.inspect(msg)
-  end
-  end
+end
+
 Main.main()

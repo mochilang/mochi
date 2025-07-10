@@ -7,5 +7,6 @@ defmodule Main do
     data = Map.update!(data, "outer", fn it -> Map.put(it, "inner", 2) end)
     IO.inspect(Map.get(Map.get(data, "outer"), "inner"))
   end
-  end
+end
+
 Main.main()

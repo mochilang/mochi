@@ -6,5 +6,6 @@ defmodule Main do
     result = for i <- Enum.sort_by(@items, fn i -> i.n end), do: i.v
     IO.inspect(result)
   end
-  end
+end
+
 Main.main()

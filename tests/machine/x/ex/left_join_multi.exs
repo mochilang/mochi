@@ -5,14 +5,18 @@ defmodule Main do
   @items [%{orderId: 100, sku: "a"}]
   def main do
     # result :: list(map())
-    result = for o <- @orders, c <- @customers, (o.customerId == c.id) do
-  i = Enum.find(@items, fn i -> (o.id == i.orderId) end)
-  %{orderId: o.id, name: c.name, item: i}
-end
-    IO.inspect("--- Left Join Multi ---")
+    result =
+      for o <- @orders, c <- @customers, o.customerId == c.id do
+        i = Enum.find(@items, fn i -> o.id == i.orderId end)
+        %{orderId: o.id, name: c.name, item: i}
+      end
+
+    IO.puts("--- Left Join Multi ---")
+
     for r <- result do
       IO.puts(Enum.join(Enum.map([r.orderId, r.name, r.item], &inspect(&1)), " "))
     end
   end
-  end
+end
+
 Main.main()

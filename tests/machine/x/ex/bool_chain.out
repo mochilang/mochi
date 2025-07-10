@@ -1,0 +1,12 @@
+warning: this check/guard will always yield the same result
+  /workspace/mochi/tests/machine/x/ex/bool_chain.exs:14
+
+warning: this check/guard will always yield the same result
+  /workspace/mochi/tests/machine/x/ex/bool_chain.exs:15
+
+warning: this check/guard will always yield the same result
+  /workspace/mochi/tests/machine/x/ex/bool_chain.exs:16
+
+true
+false
+false

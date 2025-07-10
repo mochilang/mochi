@@ -4,14 +4,18 @@ defmodule Main do
   def outer(x) do
     try do
       inner = fn y ->
-        throw {:return, (x + y)}
+        throw({:return, x + y})
       end
-      throw {:return, inner.(5)}
-    catch {:return, v} -> v end
+
+      throw({:return, inner.(5)})
+    catch
+      {:return, v} -> v
+    end
   end
-  
+
   def main do
     IO.inspect(outer(3))
   end
-  end
+end
+
 Main.main()

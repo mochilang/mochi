@@ -4,17 +4,26 @@ defmodule Person do
 end
 
 defmodule Main do
-  @people [%Person{name: "Alice", age: 17, status: "minor"}, %Person{name: "Bob", age: 25, status: "unknown"}, %Person{name: "Charlie", age: 18, status: "unknown"}, %Person{name: "Diana", age: 16, status: "minor"}]
+  @people [
+    %Person{name: "Alice", age: 17, status: "minor"},
+    %Person{name: "Bob", age: 25, status: "unknown"},
+    %Person{name: "Charlie", age: 18, status: "unknown"},
+    %Person{name: "Diana", age: 16, status: "minor"}
+  ]
   def main do
-    people = Enum.map(people, fn it ->
-      %{name: name, age: age, status: status} = it
-      if (age >= 18) do
-        %{it | status: "adult", age: (age + 1)}
-      else
-        it
-      end
-    end)
-    IO.inspect("ok")
+    people =
+      Enum.map(people, fn it ->
+        %{name: name, age: age, status: status} = it
+
+        if age >= 18 do
+          %{it | status: "adult", age: age + 1}
+        else
+          it
+        end
+      end)
+
+    IO.puts("ok")
   end
-  end
+end
+
 Main.main()

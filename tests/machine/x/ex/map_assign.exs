@@ -7,5 +7,6 @@ defmodule Main do
     scores = Map.put(scores, "bob", 2)
     IO.inspect(Map.get(scores, "bob"))
   end
-  end
+end
+
 Main.main()

@@ -3,12 +3,15 @@ defmodule Main do
   @spec add(integer(), integer()) :: integer()
   def add(a, b) do
     try do
-      throw {:return, (a + b)}
-    catch {:return, v} -> v end
+      throw({:return, a + b})
+    catch
+      {:return, v} -> v
+    end
   end
-  
+
   def main do
     IO.inspect(add(2, 3))
   end
-  end
+end
+
 Main.main()

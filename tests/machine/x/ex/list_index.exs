@@ -4,5 +4,6 @@ defmodule Main do
   def main do
     IO.inspect(Enum.at(@xs, 1))
   end
-  end
+end
+
 Main.main()

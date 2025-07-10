@@ -12,19 +12,31 @@ defmodule Main do
   @spec sum_tree(Tree) :: integer()
   def sum_tree(t) do
     try do
-      throw {:return, (fn ->
-  t1 = @t
-  case t1 do
-    %Leaf{} -> 0
-    %Node{left: left, value: value, right: right} -> ((sum_tree(left) + value) + sum_tree(right))
-    _ -> nil
+      throw(
+        {:return,
+         (fn ->
+            t1 = @t
+
+            case t1 do
+              %Leaf{} ->
+                0
+
+              %Node{left: left, value: value, right: right} ->
+                sum_tree(left) + value + sum_tree(right)
+
+              _ ->
+                nil
+            end
+          end).()}
+      )
+    catch
+      {:return, v} -> v
+    end
   end
-end).()}
-    catch {:return, v} -> v end
-  end
-  
+
   def main do
     IO.inspect(sum_tree(@t))
   end
-  end
+end
+
 Main.main()

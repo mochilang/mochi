@@ -7,72 +7,91 @@ defmodule Main do
     # tmp :: list(any())
     tmp = []
     _ = tmp
-    {tmp} = Enum.reduce(groups, {tmp}, fn g, {tmp} ->
-      total = 0
-      _ = total
-      {total} = Enum.reduce(_iter(g.items), {total}, fn x, {total} ->
-        total = (total + x.val)
-        {:cont, {total}}
+
+    {tmp} =
+      Enum.reduce(groups, {tmp}, fn g, {tmp} ->
+        total = 0
+        _ = total
+
+        {total} =
+          Enum.reduce(_iter(g.items), {total}, fn x, {total} ->
+            total = total + x.val
+            {:cont, {total}}
+          end)
+
+        _ = total
+        tmp = tmp ++ [%{tag: g.key, total: total}]
+        {:cont, {tmp}}
       end)
-      _ = total
-      tmp = tmp ++ [%{tag: g.key, total: total}]
-      {:cont, {tmp}}
-    end)
+
     _ = tmp
     # result :: list(any())
     result = for r <- Enum.sort_by(tmp, fn r -> r.tag end), do: r
     IO.inspect(result)
   end
+
   defmodule Group do
-  defstruct key: nil, items: []
-  def fetch(g, k) do
-    case k do
-      :key -> {:ok, g.key}
-      :items -> {:ok, g.items}
-      _ -> :error
+    defstruct key: nil, items: []
+
+    def fetch(g, k) do
+      case k do
+        :key -> {:ok, g.key}
+        :items -> {:ok, g.items}
+        _ -> :error
+      end
+    end
+
+    def get_and_update(g, k, f) do
+      case k do
+        :key ->
+          {v, nv} = f.(g.key)
+          {v, %{g | key: nv}}
+
+        :items ->
+          {v, nv} = f.(g.items)
+          {v, %{g | items: nv}}
+
+        _ ->
+          {nil, g}
+      end
     end
   end
-  def get_and_update(g, k, f) do
-    case k do
-      :key ->
-        {v, nv} = f.(g.key)
-        {v, %{g | key: nv}}
-      :items ->
-        {v, nv} = f.(g.items)
-        {v, %{g | items: nv}}
-      _ -> {nil, g}
-    end
-  end
-end
 
   defp _group_by(src, keyfn) do
-  {groups, order} = Enum.reduce(src, {%{}, []}, fn it, {groups, order} ->
-    key = if is_list(it) do
-      arity = :erlang.fun_info(keyfn, :arity) |> elem(1)
-      if arity == 1, do: keyfn.(it), else: apply(keyfn, it)
-    else
-      keyfn.(it)
-    end
-    ks = :erlang.phash2(key)
-    {groups, order} = if Map.has_key?(groups, ks) do
-      {groups, order}
-    else
-      {Map.put(groups, ks, %Group{key: key}), order ++ [ks]}
-    end
-    val = if is_list(it) and length(it) == 1, do: hd(it), else: it
-    groups = Map.update!(groups, ks, fn g -> %{g | items: g.items ++ [val]} end)
-    {groups, order}
-  end)
-  Enum.map(order, fn k -> groups[k] end)
-end
+    {groups, order} =
+      Enum.reduce(src, {%{}, []}, fn it, {groups, order} ->
+        key =
+          if is_list(it) do
+            arity = :erlang.fun_info(keyfn, :arity) |> elem(1)
+            if arity == 1, do: keyfn.(it), else: apply(keyfn, it)
+          else
+            keyfn.(it)
+          end
+
+        ks = :erlang.phash2(key)
+
+        {groups, order} =
+          if Map.has_key?(groups, ks) do
+            {groups, order}
+          else
+            {Map.put(groups, ks, %Group{key: key}), order ++ [ks]}
+          end
+
+        val = if is_list(it) and length(it) == 1, do: hd(it), else: it
+        groups = Map.update!(groups, ks, fn g -> %{g | items: g.items ++ [val]} end)
+        {groups, order}
+      end)
+
+    Enum.map(order, fn k -> groups[k] end)
+  end
 
   defp _iter(v) do
-  if is_map(v) do
-    Map.keys(v)
-  else
-    v
+    if is_map(v) do
+      Map.keys(v)
+    else
+      v
+    end
   end
 end
 
-  end
 Main.main()

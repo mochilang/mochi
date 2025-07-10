@@ -2,7 +2,8 @@
 defmodule Main do
   def main do
     IO.inspect(-3)
-    IO.inspect((5 + -2))
+    IO.inspect(5 + -2)
   end
-  end
+end
+
 Main.main()

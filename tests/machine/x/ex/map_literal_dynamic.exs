@@ -12,5 +12,6 @@ defmodule Main do
     _ = m
     IO.puts(Enum.join(Enum.map([Map.get(m, "a"), Map.get(m, "b")], &inspect(&1)), " "))
   end
-  end
+end
+
 Main.main()
