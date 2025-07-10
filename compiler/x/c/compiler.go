@@ -3027,6 +3027,25 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 				return fmt.Sprintf("%s.items.len > 0", arg)
 			}
 			return fmt.Sprintf("%s.len > 0", arg)
+		} else if p.Call.Func == "values" {
+			arg := c.compileExpr(p.Call.Args[0])
+			if isMapStringIntExpr(p.Call.Args[0], c.env) {
+				c.need(needValuesMapStringInt)
+				c.need(needMapStringInt)
+				c.need(needListInt)
+				return fmt.Sprintf("_values_map_string_int(%s)", arg)
+			} else if isMapIntStringExpr(p.Call.Args[0], c.env) {
+				c.need(needValuesMapIntString)
+				c.need(needMapIntString)
+				c.need(needListString)
+				return fmt.Sprintf("_values_map_int_string(%s)", arg)
+			} else if isMapIntBoolExpr(p.Call.Args[0], c.env) {
+				c.need(needValuesMapIntBool)
+				c.need(needMapIntBool)
+				c.need(needListInt)
+				return fmt.Sprintf("_values_map_int_bool(%s)", arg)
+			}
+			return "0"
 		} else if p.Call.Func == "count" {
 			t := c.exprType(p.Call.Args[0])
 			arg := c.compileExpr(p.Call.Args[0])
@@ -3697,6 +3716,11 @@ func isListIntPostfix(p *parser.PostfixExpr, env *types.Env) bool {
 func isListIntPrimary(p *parser.Primary, env *types.Env) bool {
 	if p == nil {
 		return false
+	}
+	if p.Call != nil && p.Call.Func == "values" && env != nil {
+		if isMapStringIntExpr(p.Call.Args[0], env) || isMapIntBoolExpr(p.Call.Args[0], env) {
+			return true
+		}
 	}
 	if p.List != nil {
 		if len(p.List.Elems) == 0 {

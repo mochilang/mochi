@@ -94,6 +94,24 @@ static void map_int_string_put(map_int_string* m,int k,char* v){ for(int i=0;i<m
 static char* map_int_string_get(map_int_string m,int k){ for(int i=0;i<m.len;i++) if(m.data[i].key==k) return m.data[i].value; return ""; }
 static int map_int_string_contains(map_int_string m,int k){ for(int i=0;i<m.len;i++) if(m.data[i].key==k) return 1; return 0; }`
 
+	helperValuesMapIntBool = `static list_int _values_map_int_bool(map_int_bool m){
+    list_int res = list_int_create(m.len);
+    for(int i=0;i<m.len;i++) res.data[i] = m.data[i]->value;
+    return res;
+}`
+
+	helperValuesMapStringInt = `static list_int _values_map_string_int(map_string_int m){
+    list_int res = list_int_create(m.len);
+    for(int i=0;i<m.len;i++) res.data[i] = m.data[i].value;
+    return res;
+}`
+
+	helperValuesMapIntString = `static list_string _values_map_int_string(map_int_string m){
+    list_string res = list_string_create(m.len);
+    for(int i=0;i<m.len;i++) res.data[i] = m.data[i].value;
+    return res;
+}`
+
 	helperGroupByInt = `typedef struct { int key; list_int items; } _GroupInt;
 typedef struct { int len; int cap; _GroupInt* data; } list_group_int;
 static list_group_int _group_by_int(list_int src) {
@@ -712,6 +730,9 @@ var helperCode = map[string]string{
 	needMapIntBool:           helperMapIntBool,
 	needMapStringInt:         helperMapStringInt,
 	needMapIntString:         helperMapIntString,
+	needValuesMapIntBool:     helperValuesMapIntBool,
+	needValuesMapStringInt:   helperValuesMapStringInt,
+	needValuesMapIntString:   helperValuesMapIntString,
 	needIndexString:          helperIndexString,
 	needSliceString:          helperSliceString,
 	needSliceListInt:         helperSliceListInt,
@@ -734,6 +755,9 @@ var helperOrder = []string{
 	needMapIntBool,
 	needMapStringInt,
 	needMapIntString,
+	needValuesMapIntBool,
+	needValuesMapStringInt,
+	needValuesMapIntString,
 	needConcatListInt,
 	needConcatListFloat,
 	needConcatListString,
