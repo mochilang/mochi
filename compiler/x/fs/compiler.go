@@ -231,6 +231,11 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 		}
 		if typ == "" && c.isStringExpr(l.Value) {
 			typ = "string"
+		} else if typ == "" {
+			if p := rootPrimary(l.Value); p != nil && p.Query != nil {
+				elemT := c.inferQueryElemType(p.Query)
+				typ = fmt.Sprintf("%s list", elemT)
+			}
 		}
 		// infer type from cast expression
 		if typ == "" {
@@ -285,6 +290,15 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 				val, err = c.compileMap(p.Map)
 				if err != nil {
 					return err
+				}
+			} else if p.Query != nil {
+				val, err = c.compileQuery(p.Query)
+				if err != nil {
+					return err
+				}
+				if typ == "" {
+					elemT := c.inferQueryElemType(p.Query)
+					typ = fmt.Sprintf("%s list", elemT)
 				}
 			} else {
 				val, err = c.compileExpr(v.Value)
@@ -874,7 +888,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 					return fmt.Sprintf("printfn \"%%s\" (String.concat \" \" (List.map string %s))", args[0]), nil
 				}
 			}
-			if isBoolExpr(argAST) {
+			if isBoolExpr(argAST) || c.inferType(argAST) == "bool" {
 				return fmt.Sprintf("printfn \"%%b\" (%s)", args[0]), nil
 			}
 			return fmt.Sprintf("printfn \"%%A\" (%s)", args[0]), nil
@@ -886,6 +900,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 				boolArg = true
 			} else if name, ok := c.simpleIdentifier(call.Args[i]); ok {
 				if t, ok2 := c.vars[name]; ok2 && t == "bool" {
+					boolArg = true
+				}
+			}
+			if !boolArg {
+				if c.inferType(call.Args[i]) == "bool" {
 					boolArg = true
 				}
 			}
@@ -1257,6 +1276,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	c.vars[q.Var] = c.collectionElemType(q.Source)
 	loops := []string{fmt.Sprintf("for %s in %s do", q.Var, src)}
 	bindings := []string{}
 	for _, fr := range q.Froms {
@@ -1264,6 +1284,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
+		c.vars[fr.Var] = c.collectionElemType(fr.Src)
 		loops = append(loops, fmt.Sprintf("for %s in %s do", fr.Var, s))
 	}
 	joinConds := []string{}
@@ -1272,6 +1293,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
+		c.vars[j.Var] = c.collectionElemType(j.Src)
 		on, err := c.compileExpr(j.On)
 		if err != nil {
 			return "", err
@@ -1657,6 +1679,29 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 		}
 	}
 	return "obj"
+}
+
+func (c *Compiler) collectionElemType(e *parser.Expr) string {
+	if name, ok := c.simpleIdentifier(e); ok {
+		if t, ok2 := c.vars[name]; ok2 {
+			if strings.HasSuffix(t, " list") {
+				return strings.TrimSuffix(t, " list")
+			}
+		}
+	}
+	if p := rootPrimary(e); p != nil {
+		if p.List != nil && len(p.List.Elems) > 0 {
+			return c.inferType(p.List.Elems[0])
+		}
+	}
+	return "obj"
+}
+
+func (c *Compiler) inferQueryElemType(q *parser.QueryExpr) string {
+	if q == nil {
+		return "obj"
+	}
+	return c.inferType(q.Select)
 }
 
 func containsBreakOrContinue(stmts []*parser.Statement) bool {
