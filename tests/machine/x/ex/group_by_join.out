@@ -1,8 +1,8 @@
 warning: variable "o" is unused (if the variable is not meant to be used, prefix it with an underscore)
-  /workspace/mochi/tests/machine/x/ex/group_by_join.exs:20: Main.main/0
+  /workspace/mochi/tests/machine/x/ex/group_by_join.exs:22: Main.main/0
 
 warning: default values for the optional arguments in _query/3 are never used
-  /workspace/mochi/tests/machine/x/ex/group_by_join.exs:95
+  /workspace/mochi/tests/machine/x/ex/group_by_join.exs:97
 
 --- Orders per customer ---
 "Alice" "orders:" 2

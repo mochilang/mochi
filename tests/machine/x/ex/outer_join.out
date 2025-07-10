@@ -1,5 +1,5 @@
 warning: default values for the optional arguments in _query/3 are never used
-  /workspace/mochi/tests/machine/x/ex/outer_join.exs:68
+  /workspace/mochi/tests/machine/x/ex/outer_join.exs:67
 
 --- Outer Join using syntax ---
 "Order" 100 "by" "Alice" "- $" 250
