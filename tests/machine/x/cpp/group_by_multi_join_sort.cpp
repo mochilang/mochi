@@ -114,12 +114,18 @@ int main() {
       }
     }
     std::vector<std::pair<decltype((-([&](auto v) {
-                            return std::accumulate(v.begin(), v.end(), 0);
+                            return std::accumulate(
+                                v.bestd::declval<__struct7>() in(), v.end(), 0);
                           })(([&]() {
-                            std::vector<decltype((x.l.l_extendedprice *
-                                                  ((1 - x.l.l_discount))))>
+                            std::vector<decltype((
+                                std::declval<__struct6>()
+                                    .std::declval<__struct4>()
+                                    .l_extendedprice *
+                                ((1 - std::declval<__struct6>()
+                                          .std::declval<__struct4>()
+                                          .l_discount))))>
                                 __items;
-                            for (auto x : g.items) {
+                            for (auto x : std::declval<__struct7>().items) {
                               __items.push_back((x.l.l_extendedprice *
                                                  ((1 - x.l.l_discount))));
                             }
@@ -131,8 +137,12 @@ int main() {
       __items.push_back(
           {(-([&](auto v) { return std::accumulate(v.begin(), v.end(), 0); })(
                ([&]() {
-                 std::vector<decltype((x.l.l_extendedprice *
-                                       ((1 - x.l.l_discount))))>
+                 std::vector<decltype((std::declval<__struct6>()
+                                           .std::declval<__struct4>()
+                                           .l_extendedprice *
+                                       ((1 - std::declval<__struct6>()
+                                                 .std::declval<__struct4>()
+                                                 .l_discount))))>
                      __items;
                  for (auto x : g.items) {
                    __items.push_back(
@@ -140,20 +150,25 @@ int main() {
                  }
                  return __items;
                })())),
-           __struct8{g.key.c_custkey, g.key.c_name, ([&](auto v) {
-                       return std::accumulate(v.begin(), v.end(), 0);
-                     })(([&]() {
-                       std::vector<decltype((x.l.l_extendedprice *
-                                             ((1 - x.l.l_discount))))>
-                           __items;
-                       for (auto x : g.items) {
-                         __items.push_back(
-                             (x.l.l_extendedprice * ((1 - x.l.l_discount))));
-                       }
-                       return __items;
-                     })()),
-                     g.key.c_acctbal, g.key.n_name, g.key.c_address,
-                     g.key.c_phone, g.key.c_comment}});
+           __struct8{
+               g.key.c_custkey, g.key.c_name, ([&](auto v) {
+                 return std::accumulate(v.begin(), v.end(), 0);
+               })(([&]() {
+                 std::vector<decltype((std::declval<__struct6>()
+                                           .std::declval<__struct4>()
+                                           .l_extendedprice *
+                                       ((1 - std::declval<__struct6>()
+                                                 .std::declval<__struct4>()
+                                                 .l_discount))))>
+                     __items;
+                 for (auto x : g.items) {
+                   __items.push_back(
+                       (x.l.l_extendedprice * ((1 - x.l.l_discount))));
+                 }
+                 return __items;
+               })()),
+               g.key.c_acctbal, g.key.n_name, g.key.c_address, g.key.c_phone,
+               g.key.c_comment}});
     }
     std::sort(__items.begin(), __items.end(),
               [](auto &a, auto &b) { return a.first < b.first; });
@@ -167,7 +182,7 @@ int main() {
     for (size_t i = 0; i < __tmp1.size(); ++i) {
       if (i)
         std::cout << ' ';
-      std::cout << std::boolalpha << __tmp1[i];
+      std::cout << "<struct>";
     }
     std::cout << std::endl;
   }

@@ -15,7 +15,7 @@ struct __struct2 {
   std::vector<__struct1> items;
 };
 struct __struct3 {
-  decltype(g.key) tag;
+  decltype(std::declval<__struct2>().key) tag;
   decltype(total) total;
 };
 int main() {

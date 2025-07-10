@@ -72,7 +72,7 @@ Compiled programs: 74/97
 - [x] var_assignment
 - [x] while_loop
  - [x] group_by
-- [ ] group_by_conditional_sum
+ - [x] group_by_conditional_sum
 - [ ] group_by_having
  - [x] group_by_join
 - [ ] group_by_left_join
@@ -107,7 +107,7 @@ Compiled programs: 74/97
 ## Remaining Tasks
 
  - [x] group_by
- - [ ] group_by_conditional_sum
+ - [x] group_by_conditional_sum
  - [ ] group_by_having
  - [x] group_by_join
 - [ ] group_by_left_join

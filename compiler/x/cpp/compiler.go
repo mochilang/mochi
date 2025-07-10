@@ -5,6 +5,7 @@ package cpp
 import (
 	"bytes"
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -289,9 +290,13 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 	}
 	if s := extractVectorStruct(exprStr); s != "" {
 		c.varStruct[st.Name] = s
+	} else if t := c.varStruct[exprStr]; t != "" {
+		c.varStruct[st.Name] = t
 	}
 	if et := extractVectorElemType(exprStr); et != "" {
 		c.elemType[st.Name] = et
+	} else if t := c.elemType[exprStr]; t != "" {
+		c.elemType[st.Name] = t
 	}
 	return nil
 }
@@ -345,9 +350,13 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 	}
 	if s := extractVectorStruct(exprStr); s != "" {
 		c.varStruct[st.Name] = s
+	} else if t := c.varStruct[exprStr]; t != "" {
+		c.varStruct[st.Name] = t
 	}
 	if et := extractVectorElemType(exprStr); et != "" {
 		c.elemType[st.Name] = et
+	} else if t := c.elemType[exprStr]; t != "" {
+		c.elemType[st.Name] = t
 	}
 	return nil
 }
@@ -624,7 +633,11 @@ func (c *Compiler) compilePrint(args []*parser.Expr) error {
 		case "vector":
 			tmp := c.newTmp()
 			c.buf.WriteString("auto " + tmp + " = " + s + "; ")
-			c.buf.WriteString("for(size_t i=0;i<" + tmp + ".size();++i){ if(i) std::cout<<' '; std::cout << std::boolalpha << " + tmp + "[i]; } ")
+			if et := c.elemType[s]; et != "" && strings.HasPrefix(et, "__struct") {
+				c.buf.WriteString("for(size_t i=0;i<" + tmp + ".size();++i){ if(i) std::cout<<' '; std::cout << \"<struct>\"; } ")
+			} else {
+				c.buf.WriteString("for(size_t i=0;i<" + tmp + ".size();++i){ if(i) std::cout<<' '; std::cout << std::boolalpha << " + tmp + "[i]; } ")
+			}
 		case "bool":
 			c.buf.WriteString("std::cout << std::boolalpha << (" + s + "); ")
 		case "pair":
@@ -1150,6 +1163,18 @@ func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error
 		}
 		fieldNames[i] = f.Name
 		ftype := fmt.Sprintf("decltype(%s)", val)
+		for v, t := range c.varStruct {
+			if t == "" {
+				continue
+			}
+			if strings.Contains(val, v+".") {
+				rep := fmt.Sprintf("std::declval<%s>().", t)
+				ftype = strings.ReplaceAll(ftype, v+".", rep)
+			}
+		}
+		if matched, _ := regexp.MatchString(`[A-Za-z_][A-Za-z0-9_]*\\.`, ftype); matched {
+			ftype = "int"
+		}
 		if t := inferExprType(val); t != "" {
 			ftype = t
 		} else if dot := strings.Index(val, "."); dot != -1 {
@@ -1325,7 +1350,20 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	itemType := fmt.Sprintf("decltype(%s)", val)
+	itemTypeExpr := val
+	for v, t := range c.varStruct {
+		if t == "" {
+			continue
+		}
+		if strings.Contains(val, v+".") {
+			rep := fmt.Sprintf("std::declval<%s>().", t)
+			itemTypeExpr = strings.ReplaceAll(itemTypeExpr, v+".", rep)
+		}
+	}
+	if matched, _ := regexp.MatchString(`[A-Za-z_][A-Za-z0-9_]*\\.`, itemTypeExpr); matched {
+		itemTypeExpr = "0"
+	}
+	itemType := fmt.Sprintf("decltype(%s)", itemTypeExpr)
 	if val == q.Var {
 		if t := c.varStruct[q.Var]; t != "" {
 			if idx := strings.Index(t, "{"); idx != -1 {
@@ -1517,7 +1555,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		buf.WriteString("    return __items;\n")
 	}
 	buf.WriteString("})()")
-	return buf.String(), nil
+	res := buf.String()
+	if strings.HasPrefix(itemType, "__struct") {
+		c.varStruct[res] = itemType
+		c.elemType[res] = itemType
+	}
+	return res, nil
 }
 
 func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) {
@@ -1674,7 +1717,11 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 		c.aliases = oldAliases
 		return "", err
 	}
-	itemType := fmt.Sprintf("decltype(%s)", valExpr)
+	itemTypeExpr := valExpr
+	if strings.Contains(valExpr, q.Group.Name) {
+		itemTypeExpr = strings.ReplaceAll(valExpr, q.Group.Name, fmt.Sprintf("std::declval<%s>()", groupStruct))
+	}
+	itemType := fmt.Sprintf("decltype(%s)", itemTypeExpr)
 	if selectIsGroup {
 		itemType = groupStruct
 	} else if t := structLiteralType(valExpr); t != "" {
@@ -1709,7 +1756,11 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 			c.aliases = oldAliases
 			return "", err
 		}
-		sortKeyType = fmt.Sprintf("decltype(%s)", sortExpr)
+		sortKeyTypeExpr := sortExpr
+		if strings.Contains(sortExpr, q.Group.Name) {
+			sortKeyTypeExpr = strings.ReplaceAll(sortExpr, q.Group.Name, fmt.Sprintf("std::declval<%s>()", groupStruct))
+		}
+		sortKeyType = fmt.Sprintf("decltype(%s)", sortKeyTypeExpr)
 	}
 	var havingExpr string
 	if q.Group.Having != nil {
@@ -1885,7 +1936,12 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 		buf.WriteString("    return __items;\n")
 	}
 	buf.WriteString("})()")
-	return buf.String(), nil
+	res := buf.String()
+	if strings.HasPrefix(itemType, "__struct") {
+		c.varStruct[res] = itemType
+		c.elemType[res] = itemType
+	}
+	return res, nil
 }
 
 func (c *Compiler) simpleIdentifier(e *parser.Expr) (string, bool) {

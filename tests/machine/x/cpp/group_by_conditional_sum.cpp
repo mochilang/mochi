@@ -42,7 +42,8 @@ int main() {
             __struct2{__key, std::vector<__struct1>{__struct1{i}}});
       }
     }
-    std::vector<std::pair<decltype(g.key), __struct3>> __items;
+    std::vector<std::pair<decltype(std::declval<__struct2>().key), __struct3>>
+        __items;
     for (auto &g : __groups) {
       __items.push_back(
           {g.key,
@@ -51,7 +52,10 @@ int main() {
                (([&](auto v) {
                   return std::accumulate(v.begin(), v.end(), 0);
                 })(([&]() {
-                  std::vector<decltype((x.flag ? x.val : 0))> __items;
+                  std::vector<decltype((std::declval<__struct1>().flag
+                                            ? std::declval<__struct1>().val
+                                            : 0))>
+                      __items;
                   for (auto x : g.items) {
                     __items.push_back((x.flag ? x.val : 0));
                   }
@@ -79,7 +83,7 @@ int main() {
     for (size_t i = 0; i < __tmp1.size(); ++i) {
       if (i)
         std::cout << ' ';
-      std::cout << std::boolalpha << __tmp1[i];
+      std::cout << "<struct>";
     }
     std::cout << std::endl;
   }

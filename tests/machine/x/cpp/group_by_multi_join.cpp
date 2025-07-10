@@ -25,14 +25,11 @@ struct __struct4 {
   decltype((ps.cost * ps.qty)) value;
 };
 struct __struct5 {
-  decltype(x) x;
+  decltype(std::declval<__struct4>().part) key;
+  std::vector<__struct4> items;
 };
 struct __struct6 {
-  decltype(x.part) key;
-  std::vector<__struct5> items;
-};
-struct __struct7 {
-  decltype(std::declval<__struct6>().key) part;
+  decltype(std::declval<__struct5>().key) part;
   bool total;
 };
 int main() {
@@ -63,29 +60,29 @@ int main() {
     return __items;
   })();
   auto grouped = ([&]() {
-    std::vector<__struct6> __groups;
+    std::vector<__struct5> __groups;
     for (auto x : filtered) {
       auto __key = x.part;
       bool __found = false;
       for (auto &__g : __groups) {
         if (__g.key == __key) {
-          __g.items.push_back(__struct5{x});
+          __g.items.push_back(__struct4{x});
           __found = true;
           break;
         }
       }
       if (!__found) {
         __groups.push_back(
-            __struct6{__key, std::vector<__struct5>{__struct5{x}}});
+            __struct5{__key, std::vector<__struct4>{__struct4{x}}});
       }
     }
-    std::vector<__struct7> __items;
+    std::vector<__struct6> __items;
     for (auto &g : __groups) {
-      __items.push_back(__struct7{
+      __items.push_back(__struct6{
           g.key, ([&](auto v) {
             return std::accumulate(v.begin(), v.end(), 0);
           })(([&]() {
-            std::vector<decltype(std::declval<__struct5>().value)> __items;
+            std::vector<decltype(std::declval<__struct4>().value)> __items;
             for (auto r : g.items) {
               __items.push_back(r.value);
             }
@@ -99,7 +96,7 @@ int main() {
     for (size_t i = 0; i < __tmp1.size(); ++i) {
       if (i)
         std::cout << ' ';
-      std::cout << std::boolalpha << __tmp1[i];
+      std::cout << "<struct>";
     }
     std::cout << std::endl;
   }

@@ -31,7 +31,7 @@ int main() {
     for (size_t i = 0; i < __tmp1.size(); ++i) {
       if (i)
         std::cout << ' ';
-      std::cout << std::boolalpha << __tmp1[i];
+      std::cout << "<struct>";
     }
     std::cout << std::endl;
   }
