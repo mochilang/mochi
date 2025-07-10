@@ -383,14 +383,25 @@ func (c *Compiler) funDecl(f *parser.FunStmt) error {
 		ret = c.typeName(f.Return)
 	}
 	c.writeln(fmt.Sprintf("fun %s(%s): %s {", f.Name, strings.Join(params, ", "), ret))
+	oldEnv := c.env
+	c.env = types.NewEnv(c.env)
+	for _, p := range f.Params {
+		var pt types.Type = types.AnyType{}
+		if p.Type != nil {
+			pt = types.ResolveTypeRef(p.Type, oldEnv)
+		}
+		c.env.SetVar(p.Name, pt, false)
+	}
 	c.indent++
 	for _, st := range f.Body {
 		if err := c.stmt(st); err != nil {
+			c.env = oldEnv
 			return err
 		}
 	}
 	c.indent--
 	c.writeln("}")
+	c.env = oldEnv
 	return nil
 }
 
