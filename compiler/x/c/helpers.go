@@ -355,6 +355,33 @@ func freeVars(fn *parser.FunExpr, params []string) []string {
 	return out
 }
 
+// freeVarsStmt returns the free variable names used inside the function statement.
+func freeVarsStmt(fn *parser.FunStmt, params []string) []string {
+	vars := map[string]struct{}{}
+	for _, st := range fn.Body {
+		scanStmt(st, vars)
+	}
+	outMap := map[string]struct{}{}
+	for v := range vars {
+		skip := false
+		for _, p := range params {
+			if p == sanitizeName(v) {
+				skip = true
+				break
+			}
+		}
+		if !skip {
+			outMap[v] = struct{}{}
+		}
+	}
+	out := make([]string, 0, len(outMap))
+	for k := range outMap {
+		out = append(out, k)
+	}
+	sort.Strings(out)
+	return out
+}
+
 func scanStmt(s *parser.Statement, vars map[string]struct{}) {
 	switch {
 	case s.Let != nil:
