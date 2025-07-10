@@ -1,0 +1,21 @@
+// Mochi implementation of Rosetta "Ackermann function" task
+// Translated from Go version in tests/rosetta/x/Go/ackermann-function-1.go
+
+fun ackermann(m: int, n: int): int {
+  if m == 0 {
+    return n + 1
+  }
+  if n == 0 {
+    return ackermann(m - 1, 1)
+  }
+  return ackermann(m - 1, ackermann(m, n - 1))
+}
+
+fun main() {
+  print("A(0, 0) = " + str(ackermann(0,0)))
+  print("A(1, 2) = " + str(ackermann(1,2)))
+  print("A(2, 4) = " + str(ackermann(2,4)))
+  print("A(3, 4) = " + str(ackermann(3,4)))
+}
+
+main()
