@@ -1,6 +1,2 @@
-run: exit status 2
-ERROR: /workspace/mochi/tests/machine/x/pl/group_by_having.pl:20:7: Syntax error: Operator expected
-ERROR: /workspace/mochi/tests/machine/x/pl/group_by_having.pl:8: user:main catch/3: Unknown procedure: main/1
-ERROR:   However, there are definitions for:
-ERROR:         main/0
+run: exec: "swipl": executable file not found in $PATH
 
