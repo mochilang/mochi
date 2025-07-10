@@ -4,7 +4,7 @@ This directory contains Haskell code generated from Mochi programs in `tests/vm/
 Each `.hs` file is the compiler output. Programs that executed successfully have a corresponding `.out` file, 
 while failures have a `.error` log.
 
-## Compiled and ran successfully (73/97)
+## Compiled and ran successfully (70/97)
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -19,6 +19,7 @@ while failures have a `.error` log.
 - [x] cross_join_filter
 - [x] cross_join_triple
 - [x] dataset_sort_take_limit
+- [x] dataset_where_filter
 - [x] exists_builtin
 - [x] for_list_collection
 - [x] for_loop
@@ -31,6 +32,8 @@ while failures have a `.error` log.
 - [x] if_then_else
 - [x] if_then_else_nested
 - [x] in_operator
+- [x] in_operator_extended
+- [x] json_builtin
 - [x] len_builtin
 - [x] len_map
 - [x] len_string
@@ -41,8 +44,11 @@ while failures have a `.error` log.
 - [x] map_int_key
 - [x] map_literal_dynamic
 - [x] map_membership
+- [x] match_expr
+- [x] match_full
 - [x] math_ops
 - [x] membership
+- [x] min_max_builtin
 - [x] nested_function
 - [x] partial_application
 - [x] print_hello
@@ -53,14 +59,12 @@ while failures have a `.error` log.
 - [x] str_builtin
 - [x] string_compare
 - [x] string_concat
-- [x] string_index
-- [x] string_prefix_slice
 - [x] string_contains
 - [x] string_in_operator
-- [x] in_operator_extended
+- [x] string_index
+- [x] string_prefix_slice
 - [x] substring_builtin
 - [x] sum_builtin
-- [x] min_max_builtin
 - [x] tail_recursion
 - [x] test_block
 - [x] two-sum
@@ -71,14 +75,8 @@ while failures have a `.error` log.
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
-- [x] list_assign
-- [x] list_nested_assign
-- [x] map_assign
-- [x] match_expr
-- [x] match_full
 
-## Failed to build or run (26/97)
-- [ ] dataset_where_filter
+## Failed to build or run (27/97)
 - [ ] group_by
 - [ ] group_by_conditional_sum
 - [ ] group_by_join
@@ -89,12 +87,14 @@ while failures have a `.error` log.
 - [ ] group_items_iteration
 - [ ] inner_join
 - [ ] join_multi
-- [ ] json_builtin
 - [ ] left_join
 - [ ] left_join_multi
-- [x] list_set_ops
+- [ ] list_assign
+- [ ] list_nested_assign
+- [ ] list_set_ops
 - [ ] load_yaml
-- [x] map_nested_assign
+- [ ] map_assign
+- [ ] map_nested_assign
 - [ ] order_by_map
 - [ ] outer_join
 - [ ] query_sum_select

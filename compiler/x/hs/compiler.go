@@ -1266,11 +1266,18 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				if err != nil {
 					return "", err
 				}
+				vt := c.inferExprType(it.Value)
 				if anyVal {
-					vt := c.inferExprType(it.Value)
 					if !isAny(vt) {
 						c.usesAnyValue = true
 						v = wrapAnyValue(vt, v)
+					}
+				} else {
+					switch vt.(type) {
+					case types.IntType, types.Int64Type:
+						v = fmt.Sprintf("(%s :: Int)", v)
+					case types.FloatType:
+						v = fmt.Sprintf("(%s :: Double)", v)
 					}
 				}
 				items[i] = fmt.Sprintf("(%s, %s)", k, v)
