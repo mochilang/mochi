@@ -1,0 +1,85 @@
+// Mochi implementation of Rosetta "24 game" task
+// Generates four random digits 1-9 and asks for an RPN expression
+// using those digits to make the value 24.
+
+fun randDigit(): int { return (now() % 9) + 1 }
+
+fun main() {
+  var nums = []
+  var used = []
+  for i in 0..4 {
+    let d = randDigit()
+    nums = nums + [d]
+    used = used + [false]
+  }
+
+  print("Your numbers: ")
+  for i in 0..4 {
+    print(str(nums[i]))
+    if i < 3 { print(" ") }
+  }
+  print("\nEnter RPN: ")
+  var expr = input()
+  if len(expr) != 7 {
+    print("invalid. expression length must be 7. (4 numbers, 3 operators, no spaces)")
+    return
+  }
+
+  var stack = []
+  var i = 0
+  var valid = true
+  while i < len(expr) {
+    let ch = substring(expr, i, i+1)
+    if ch >= "0" && ch <= "9" {
+      var found = false
+      var j = 0
+      while j < 4 {
+        if !used[j] && nums[j] == int(ch) - int("0") {
+          used[j] = true
+          found = true
+          break
+        }
+        j = j + 1
+      }
+      if !found {
+        print("wrong numbers.")
+        valid = false
+        break
+      }
+      stack = stack + [float(int(ch) - int("0"))]
+    } else {
+      if len(stack) < 2 {
+        print("invalid expression syntax.")
+        valid = false
+        break
+      }
+      var b = stack[len(stack)-1]
+      var a = stack[len(stack)-2]
+      if ch == "+" {
+        stack[len(stack)-2] = a + b
+      } else if ch == "-" {
+        stack[len(stack)-2] = a - b
+      } else if ch == "*" {
+        stack[len(stack)-2] = a * b
+      } else if ch == "/" {
+        stack[len(stack)-2] = a / b
+      } else {
+        print(ch + " invalid.")
+        valid = false
+        break
+      }
+      stack = stack[:len(stack)-1]
+    }
+    i = i + 1
+  }
+
+  if valid {
+    if abs(stack[0] - 24.0) > 0.000001 {
+      print("incorrect. " + str(stack[0]) + " != 24")
+    } else {
+      print("correct.")
+    }
+  }
+}
+
+main()
