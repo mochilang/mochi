@@ -186,7 +186,7 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	}
 	resVar := "_Res"
 	c.retVar = resVar
-	c.writeln(fmt.Sprintf("%s(%s, %s) :-", sanitizeVar(fn.Name), strings.Join(params, ", "), resVar))
+	c.writeln(fmt.Sprintf("%s(%s, %s) :-", sanitizeAtom(fn.Name), strings.Join(params, ", "), resVar))
 	c.indent++
 	for i, st := range fn.Body {
 		if i == len(fn.Body)-1 && st.Return != nil {
@@ -709,6 +709,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, bool, error) {
 		return c.compileCall(p.Call)
 	case p.Query != nil:
 		return c.compileQuery(p.Query)
+	case p.Match != nil:
+		return c.compileMatchExpr(p.Match)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
 	}
@@ -842,7 +844,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, bool, error) {
 			args[i] = s
 		}
 		tmp := c.newTmp()
-		c.writeln(fmt.Sprintf("%s(%s, %s),", sanitizeVar(call.Func), strings.Join(args, ", "), tmp))
+		c.writeln(fmt.Sprintf("%s(%s, %s),", sanitizeAtom(call.Func), strings.Join(args, ", "), tmp))
 		return tmp, false, nil
 	}
 }
@@ -885,6 +887,17 @@ func sanitizeVar(s string) string {
 	}
 	if s[0] >= 'a' && s[0] <= 'z' {
 		s = strings.ToUpper(s[:1]) + s[1:]
+	}
+	return s
+}
+
+func sanitizeAtom(s string) string {
+	s = strings.ReplaceAll(s, "-", "_")
+	if s == "" {
+		return ""
+	}
+	if s[0] >= 'A' && s[0] <= 'Z' {
+		s = strings.ToLower(s[:1]) + s[1:]
 	}
 	return s
 }
@@ -1309,4 +1322,82 @@ func (c *Compiler) compileCast(val string, cast *parser.CastOp) (string, bool, e
 		}
 	}
 	return val, false, nil
+}
+
+func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, bool, error) {
+	target, _, err := c.compileExpr(m.Target)
+	if err != nil {
+		return "", false, err
+	}
+	var cur string
+	var ar bool
+	for i := len(m.Cases) - 1; i >= 0; i-- {
+		cs := m.Cases[i]
+		res, resAr, err := c.compileExpr(cs.Result)
+		if err != nil {
+			return "", false, err
+		}
+		if cur == "" {
+			cur = res
+			ar = resAr
+			continue
+		}
+		pat, _, err := c.compileExpr(cs.Pattern)
+		if err != nil {
+			return "", false, err
+		}
+		tmp := c.newTmp()
+		c.writeln(fmt.Sprintf("(%s == %s -> %s = %s ; %s = %s),", target, pat, tmp, res, tmp, cur))
+		cur = tmp
+		ar = ar && resAr
+	}
+	return cur, ar, nil
+}
+
+func isUnderscoreExpr(e *parser.Expr) bool {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Selector == nil {
+		return false
+	}
+	return p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0
+}
+
+func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Call == nil {
+		return nil, false
+	}
+	return p.Target.Call, true
+}
+
+func identName(e *parser.Expr) (string, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Selector == nil {
+		return "", false
+	}
+	if len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
 }
