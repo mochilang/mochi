@@ -624,7 +624,7 @@ func (c *Compiler) queryEnv(q *parser.QueryExpr) *types.Env {
 		env.SetVar(jo.Var, elem(jo.Src), true)
 	}
 	if q.Group != nil {
-		env.SetVar(q.Group.Name, types.AnyType{}, true)
+		env.SetVar(q.Group.Name, types.GroupType{Elem: elem(q.Source)}, true)
 	}
 	return env
 }
@@ -1679,11 +1679,15 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 			params[i] = p.Name
 		}
 	}
-	ret := "unit"
+	ret := ""
 	if fn.Return != nil {
 		ret = c.typeRef(fn.Return)
 	}
-	c.writeln(fmt.Sprintf("let rec %s %s : %s =", fn.Name, strings.Join(params, " "), ret))
+	if ret != "" {
+		c.writeln(fmt.Sprintf("let rec %s %s : %s =", fn.Name, strings.Join(params, " "), ret))
+	} else {
+		c.writeln(fmt.Sprintf("let rec %s %s =", fn.Name, strings.Join(params, " ")))
+	}
 	c.indent++
 	for _, st := range fn.Body {
 		if err := c.compileStmt(st); err != nil {
@@ -1711,11 +1715,15 @@ func (c *Compiler) compileLocalFun(fn *parser.FunStmt) error {
 			params[i] = p.Name
 		}
 	}
-	ret := "unit"
+	ret := ""
 	if fn.Return != nil {
 		ret = c.typeRef(fn.Return)
 	}
-	c.writeln(fmt.Sprintf("let rec %s %s : %s =", fn.Name, strings.Join(params, " "), ret))
+	if ret != "" {
+		c.writeln(fmt.Sprintf("let rec %s %s : %s =", fn.Name, strings.Join(params, " "), ret))
+	} else {
+		c.writeln(fmt.Sprintf("let rec %s %s =", fn.Name, strings.Join(params, " ")))
+	}
 	c.indent++
 	for _, st := range fn.Body {
 		if err := c.compileStmt(st); err != nil {
@@ -1777,7 +1785,9 @@ func ocamlType(t types.Type) string {
 	case types.ListType:
 		return ocamlType(tt.Elem) + " list"
 	case types.MapType:
-		return fmt.Sprintf("(%s * %s) list", ocamlType(tt.Key), ocamlType(tt.Value))
+		return fmt.Sprintf("(%s * Obj.t) list", ocamlType(tt.Key))
+	case types.GroupType:
+		return ocamlType(tt.Elem) + " list"
 	case types.StructType:
 		return strings.ToLower(tt.Name)
 	case types.VoidType:
@@ -2288,6 +2298,9 @@ func (c *Compiler) scanPostfix(p *parser.PostfixExpr) {
 				c.scanExpr(a)
 			}
 			if i > 0 && p.Ops[i-1].Field != nil && p.Ops[i-1].Field.Name == "contains" {
+				c.needContains = true
+			}
+			if i == 0 && p.Target.Selector != nil && len(p.Target.Selector.Tail) > 0 && p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1] == "contains" {
 				c.needContains = true
 			}
 		}
