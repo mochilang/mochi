@@ -1119,13 +1119,27 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			if c.env != nil {
 				lt := types.TypeOfUnary(leftAST, c.env)
 				rt := types.TypeOfPostfix(op.Right, c.env)
-				if _, ok := lt.(types.FloatType); ok && op.Op == "*" {
-					if _, ok2 := rt.(types.IntType); ok2 {
-						r = fmt.Sprintf("%s as f64", r)
+				isInt := func(t types.Type) bool {
+					switch t.(type) {
+					case types.IntType, types.Int64Type:
+						return true
 					}
-				} else if _, ok := rt.(types.FloatType); ok && op.Op == "*" {
-					if _, ok2 := lt.(types.IntType); ok2 {
-						res = fmt.Sprintf("(%s as f64)", res)
+					return false
+				}
+				if op.Op == "/" && isInt(lt) && isInt(rt) {
+					res = fmt.Sprintf("(%s as f64) / (%s as f64)", res, r)
+					leftAST = &parser.Unary{Value: op.Right}
+					continue
+				}
+				if op.Op == "*" || op.Op == "/" {
+					if _, ok := lt.(types.FloatType); ok {
+						if isInt(rt) {
+							r = fmt.Sprintf("%s as f64", r)
+						}
+					} else if _, ok := rt.(types.FloatType); ok {
+						if isInt(lt) {
+							res = fmt.Sprintf("(%s as f64)", res)
+						}
 					}
 				}
 			}
@@ -1446,7 +1460,12 @@ func (c *Compiler) compileGroupBySimple(q *parser.QueryExpr, src string, child *
 			c.env = orig
 			return "", err
 		}
-		keyType = types.StructType{Name: name}
+		if st, ok := c.structs[name]; ok {
+			keyType = st
+		} else {
+			keyType = types.StructType{Name: name}
+		}
+
 	} else {
 		keyExpr, err = c.compileExpr(q.Group.Exprs[0])
 		if err != nil {
@@ -1606,7 +1625,11 @@ func (c *Compiler) compileGroupByJoin(q *parser.QueryExpr, src string, child *ty
 			c.env = orig
 			return "", err
 		}
-		keyType = types.StructType{Name: name}
+		if st, ok := c.structs[name]; ok {
+			keyType = st
+		} else {
+			keyType = types.StructType{Name: name}
+		}
 	} else {
 		keyExpr, err = c.compileExpr(q.Group.Exprs[0])
 		if err != nil {
