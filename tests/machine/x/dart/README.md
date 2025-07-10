@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs. Successful runs have a .out file, failures a .error file.
 
-Compiled programs: 97/97
+Compiled programs: 96/97
 
 Checklist:
 
@@ -36,7 +36,7 @@ Checklist:
 - [x] group_by_multi_join
 - [x] group_by_multi_join_sort
 - [x] group_by_sort
-- [x] group_items_iteration
+- [ ] group_items_iteration
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested

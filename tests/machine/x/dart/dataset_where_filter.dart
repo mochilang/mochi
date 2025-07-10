@@ -8,11 +8,11 @@ var people = [
 var adults = (() {
   var _q0 = <dynamic>[];
   for (var person in people) {
-    if (!((person['age'] as num) >= 18)) continue;
+    if (!((person['age'] as int) >= 18)) continue;
     _q0.add({
       'name': person['name'],
       'age': person['age'],
-      'is_senior': (person['age'] as num) >= 60,
+      'is_senior': (person['age'] as int) >= 60,
     });
   }
   return _q0;

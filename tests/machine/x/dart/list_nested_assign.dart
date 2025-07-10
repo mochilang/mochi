@@ -4,6 +4,6 @@ var matrix = [
 ];
 
 void main() {
-  matrix[1][0] = 5;
+  matrix[1][0] = (5 as int);
   print(matrix[1][0]);
 }

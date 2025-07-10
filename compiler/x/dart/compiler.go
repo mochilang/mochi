@@ -338,6 +338,9 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 	if err != nil {
 		return err
 	}
+	if _, ok := typ.(types.IntType); ok {
+		val = fmt.Sprintf("(%s as int)", val)
+	}
 	c.writeln(fmt.Sprintf("%s = %s;", target, val))
 	return nil
 }
@@ -634,7 +637,15 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			if (op.Op == "<" || op.Op == "<=" || op.Op == ">" || op.Op == ">=") &&
 				(leftType == (types.StringType{}) || rightType == (types.StringType{}) ||
 					(strings.HasPrefix(cur, "'") && strings.HasPrefix(r, "'"))) {
-				cmp := fmt.Sprintf("%s.compareTo(%s)", cur, r)
+				leftCmp := cur
+				rightCmp := r
+				if leftType != (types.StringType{}) {
+					leftCmp = fmt.Sprintf("%s.toString()", cur)
+				}
+				if rightType != (types.StringType{}) {
+					rightCmp = fmt.Sprintf("%s.toString()", r)
+				}
+				cmp := fmt.Sprintf("%s.compareTo(%s)", leftCmp, rightCmp)
 				switch op.Op {
 				case "<":
 					res = fmt.Sprintf("%s < 0", cmp)
@@ -652,10 +663,18 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				rr := r
 				if isNumericOp(op.Op) {
 					if !isNumericType(leftType) {
-						l = fmt.Sprintf("(%s as num)", l)
+						cast := "num"
+						if rightType == (types.IntType{}) {
+							cast = "int"
+						}
+						l = fmt.Sprintf("(%s as %s)", l, cast)
 					}
 					if !isNumericType(rightType) {
-						rr = fmt.Sprintf("(%s as num)", rr)
+						cast := "num"
+						if leftType == (types.IntType{}) {
+							cast = "int"
+						}
+						rr = fmt.Sprintf("(%s as %s)", rr, cast)
 					}
 				}
 				res = fmt.Sprintf("%s %s %s", l, op.Op, rr)
@@ -1382,16 +1401,23 @@ func (c *Compiler) aggregateExpr(name, list string) string {
 
 func (c *Compiler) compileSelector(sel *parser.SelectorExpr) string {
 	root := sel.Root
+	tail := sel.Tail
 	if key, ok := c.groupKeys[root]; ok {
-		if len(sel.Tail) == 1 && sel.Tail[0] == "key" {
-			return key
+		if len(tail) > 0 && tail[0] == "key" {
+			root = key
+			tail = tail[1:]
+		} else if len(tail) > 0 && tail[0] == "items" {
+			tail = tail[1:]
 		}
-		if len(sel.Tail) == 1 && sel.Tail[0] == "items" {
+		if len(tail) == 0 {
 			return root
 		}
 	}
 	typ, err := c.env.GetVar(root)
 	if ok := c.mapVars[root]; ok {
+		typ = types.MapType{}
+	}
+	if _, ok := c.groupKeys[sel.Root]; ok && root != sel.Root {
 		typ = types.MapType{}
 	}
 	if st, ok := c.env.GetStruct(root); ok && len(st.Order) == 0 {
@@ -1407,21 +1433,21 @@ func (c *Compiler) compileSelector(sel *parser.SelectorExpr) string {
 	}
 	if _, ok := typ.(types.MapType); ok {
 		s := root
-		for _, part := range sel.Tail {
+		for _, part := range tail {
 			s += fmt.Sprintf("['%s']", part)
 		}
 		return s
 	}
 	if _, ok := typ.(types.GroupType); ok {
 		s := root
-		for _, part := range sel.Tail {
+		for _, part := range tail {
 			s += fmt.Sprintf("['%s']", part)
 		}
 		return s
 	}
 	s := root
-	if len(sel.Tail) > 0 {
-		s += "." + strings.Join(sel.Tail, ".")
+	if len(tail) > 0 {
+		s += "." + strings.Join(tail, ".")
 	}
 	return s
 }

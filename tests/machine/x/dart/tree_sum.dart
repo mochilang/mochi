@@ -1,21 +1,20 @@
-abstract class Tree {}
-class Leaf extends Tree {}
-class Node extends Tree {
-  Tree left;
-  int value;
-  Tree right;
-  Node(this.left, this.value, this.right);
+int sum_tree(Tree t) {
+  return (() {
+    var _t = t;
+    if (_t is Leaf) {
+      return 0;
+    } else if (_t is Node) {
+      var left = (_t as Node).left;
+      var value = (_t as Node).value;
+      var right = (_t as Node).right;
+      return (sum_tree(left) + (value as int) as int) + sum_tree(right);
+    }
+    return null;
+  })();
 }
 
-int sumTree(Tree t) {
-  if (t is Leaf) return 0;
-  if (t is Node) {
-    return sumTree(t.left) + t.value + sumTree(t.right);
-  }
-  return 0;
-}
+var t = Node(Leaf(), 1, Node(Leaf(), 2, Leaf()));
 
 void main() {
-  var t = Node(Leaf(), 1, Node(Leaf(), 2, Leaf()));
-  print(sumTree(t));
+  print(sum_tree(t));
 }
