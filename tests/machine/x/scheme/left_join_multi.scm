@@ -21,7 +21,7 @@
             (when (equal? (map-get o 'id) (map-get i 'orderId))
               (set! _ms0 (append _ms0 (list i)))
               (set! _m0 #t))
-            )) (if (string? items) (string->list items) items))
+) (if (string? items) (string->list items) items))
           (if _m0
               (for-each (lambda (i)
                 (set! _res (append _res (list (list (cons "orderId" (map-get o 'id)) (cons "name" (map-get c 'name)) (cons "item" i)))))

@@ -14,7 +14,7 @@ import (
 	"mochi/types"
 )
 
-const datasetHelpers = `(import (srfi 95) (chibi json) (chibi io))
+const datasetHelpers = `(import (srfi 95) (chibi json) (chibi io) (chibi))
 
 (define (_yaml_value v)
   (let ((n (string->number v)))
@@ -1835,7 +1835,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 					b.WriteString(indent + "    (when " + on + "\n")
 					b.WriteString(indent + fmt.Sprintf("      (set! %s (append %s (list %s)))\n", tmp, tmp, jv))
 					b.WriteString(indent + fmt.Sprintf("      (set! %s #t))\n", flag))
-					b.WriteString(indent + "    )")
 				} else {
 					b.WriteString(indent + fmt.Sprintf("    (set! %s (append %s (list %s)))\n", tmp, tmp, jv))
 					b.WriteString(indent + fmt.Sprintf("    (set! %s #t)\n", flag))
@@ -2014,7 +2013,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				b.WriteString(indent + "    (when " + on + "\n")
 				b.WriteString(indent + fmt.Sprintf("      (set! %s (append %s (list %s)))\n", tmp, tmp, jv))
 				b.WriteString(indent + fmt.Sprintf("      (set! %s #t))\n", flag))
-				b.WriteString(indent + "    )")
 			} else {
 				b.WriteString(indent + fmt.Sprintf("    (set! %s (append %s (list %s)))\n", tmp, tmp, jv))
 				b.WriteString(indent + fmt.Sprintf("    (set! %s #t)\n", flag))

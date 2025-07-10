@@ -90,7 +90,7 @@
         (when (equal? (map-get o 'customerId) (map-get c 'id))
           (set! _ms0 (append _ms0 (list o)))
           (set! _m0 #t))
-        )) (if (string? orders) (string->list orders) orders))
+) (if (string? orders) (string->list orders) orders))
       (if _m0
           (for-each (lambda (o)
             (set! _tmp (append _tmp (list c)))
