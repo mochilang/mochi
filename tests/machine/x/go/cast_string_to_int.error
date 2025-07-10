@@ -1,11 +1,11 @@
 Error on line 0: run error: exit status 1
-panic: interface conversion: interface {} is string, not int
+panic: json: cannot unmarshal string into Go value of type int
 
 goroutine 1 [running]:
-main._cast[...](...)
-	/workspace/mochi/tests/machine/x/go/cast_string_to_int.go:14
+main._cast[...]({0x4ccc40, 0x5153c0})
+	/workspace/mochi/tests/machine/x/go/cast_string_to_int.go:56 +0x38a
 main.main()
-	/workspace/mochi/tests/machine/x/go/cast_string_to_int.go:10 +0x7a
+	/workspace/mochi/tests/machine/x/go/cast_string_to_int.go:11 +0x28
 exit status 2
 
 1: //go:build ignore

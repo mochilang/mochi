@@ -1469,6 +1469,13 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 		return nil
 	}
 
+	mut := map[string]bool{}
+	for _, p := range fun.Params {
+		if paramModified(p.Name, fun.Body) {
+			mut[p.Name] = true
+		}
+	}
+
 	c.writeIndent()
 	c.buf.WriteString("func " + name + "(")
 	for i, p := range fun.Params {
@@ -1478,6 +1485,9 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 		paramType := "any"
 		if i < len(ft.Params) {
 			paramType = goType(ft.Params[i])
+		}
+		if mut[p.Name] && paramType != "" {
+			paramType = "*" + paramType
 		}
 		c.buf.WriteString(sanitizeName(p.Name) + " " + paramType)
 	}
@@ -4320,6 +4330,48 @@ func containsExpect(s *parser.Statement) bool {
 				return true
 			}
 		}
+	}
+	return false
+}
+
+func paramModified(name string, stmts []*parser.Statement) bool {
+	for _, s := range stmts {
+		switch {
+		case s.Assign != nil:
+			if s.Assign.Name == name && (len(s.Assign.Field) > 0 || len(s.Assign.Index) > 0) {
+				return true
+			}
+		case s.Update != nil:
+			if s.Update.Target == name {
+				return true
+			}
+		case s.If != nil:
+			if paramModified(name, s.If.Then) || paramModifiedIfStmt(name, s.If.ElseIf) || paramModified(name, s.If.Else) {
+				return true
+			}
+		case s.For != nil:
+			if paramModified(name, s.For.Body) {
+				return true
+			}
+		case s.While != nil:
+			if paramModified(name, s.While.Body) {
+				return true
+			}
+		case s.On != nil:
+			if paramModified(name, s.On.Body) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func paramModifiedIfStmt(name string, is *parser.IfStmt) bool {
+	if is == nil {
+		return false
+	}
+	if paramModified(name, is.Then) || paramModifiedIfStmt(name, is.ElseIf) || paramModified(name, is.Else) {
+		return true
 	}
 	return false
 }
