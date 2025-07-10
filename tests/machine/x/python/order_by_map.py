@@ -12,7 +12,7 @@ def _sort_key(k):
     return k
 
 
-data: list[dict[str, int]] = [{a: 1, b: 2}, {a: 1, b: 1}, {a: 0, b: 5}]
+data: list[dict[str, int]] = [{"a": 1, "b": 2}, {"a": 1, "b": 1}, {"a": 0, "b": 5}]
 _sorted: list[dict[str, int]] = [
     x
     for x in sorted(

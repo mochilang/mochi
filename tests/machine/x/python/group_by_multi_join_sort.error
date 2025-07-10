@@ -1,7 +1,0 @@
-run: exit status 1
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/machine/x/python/group_by_multi_join_sort.py", line 162, in <module>
-    nation: list[dict[str, typing.Any]] = [{n_nationkey: 1, n_name: "BRAZIL"}]
-                                            ^^^^^^^^^^^
-NameError: name 'n_nationkey' is not defined
-

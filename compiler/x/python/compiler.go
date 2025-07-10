@@ -964,6 +964,11 @@ func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, err
 				if err != nil {
 					return "", err
 				}
+				if s, ok := simpleStringKey(it.Key); ok {
+					k = fmt.Sprintf("%q", sanitizeName(s))
+				} else if name, ok := identName(it.Key); ok {
+					k = fmt.Sprintf("%q", sanitizeName(name))
+				}
 				v, err := c.compileExprHint(it.Value, mt.Value)
 				if err != nil {
 					return "", err

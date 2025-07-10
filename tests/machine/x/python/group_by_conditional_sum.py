@@ -160,9 +160,9 @@ def _sum(v):
 
 
 items: list[dict[str, typing.Any]] = [
-    {cat: "a", val: 10, flag: True},
-    {cat: "a", val: 5, flag: False},
-    {cat: "b", val: 20, flag: True},
+    {"cat": "a", "val": 10, "flag": True},
+    {"cat": "a", "val": 5, "flag": False},
+    {"cat": "b", "val": 20, "flag": True},
 ]
 
 

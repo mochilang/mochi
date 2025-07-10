@@ -1,7 +1,0 @@
-run: exit status 1
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/machine/x/python/outer_join.py", line 89, in <module>
-    {id: 1, name: "Alice"},
-            ^^^^
-NameError: name 'name' is not defined
-

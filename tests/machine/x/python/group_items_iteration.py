@@ -144,9 +144,9 @@ def _sort_key(k):
 
 
 data: list[dict[str, typing.Any]] = [
-    {tag: "a", val: 1},
-    {tag: "a", val: 2},
-    {tag: "b", val: 3},
+    {"tag": "a", "val": 1},
+    {"tag": "a", "val": 2},
+    {"tag": "b", "val": 3},
 ]
 
 

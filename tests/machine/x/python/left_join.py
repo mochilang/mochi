@@ -85,10 +85,13 @@ def _query(src, joins, opts):
     return res
 
 
-customers: list[dict[str, typing.Any]] = [{id: 1, name: "Alice"}, {id: 2, name: "Bob"}]
+customers: list[dict[str, typing.Any]] = [
+    {"id": 1, "name": "Alice"},
+    {"id": 2, "name": "Bob"},
+]
 orders: list[dict[str, int]] = [
-    {id: 100, customerId: 1, total: 250},
-    {id: 101, customerId: 3, total: 80},
+    {"id": 100, "customerId": 1, "total": 250},
+    {"id": 101, "customerId": 3, "total": 80},
 ]
 result: list[dict[str, typing.Any]] = _query(
     orders,

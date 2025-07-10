@@ -1,7 +1,0 @@
-run: exit status 1
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/machine/x/python/group_by_sort.py", line 163, in <module>
-    {cat: "a", val: 3},
-     ^^^
-NameError: name 'cat' is not defined
-
