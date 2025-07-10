@@ -1,4 +1,5 @@
+var s = 'mochi';
+
 void main() {
-  var s = 'mochi';
   print(s[1]);
 }

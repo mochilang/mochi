@@ -4,12 +4,13 @@ import 'package:yaml/yaml.dart';
 
 dynamic _load(String path, dynamic opts) {
   var fmt = 'csv';
-  if (opts is Map && opts.containsKey('format')) fmt = opts['format'].toString();
+  if (opts is Map && opts.containsKey('format'))
+    fmt = opts['format'].toString();
   if (fmt == 'yaml') {
     var text = File(path).readAsStringSync();
     var data = loadYaml(text);
-    if (data is List) return [for (var d in data) Map<String,dynamic>.from(d)];
-    if (data is Map) return [Map<String,dynamic>.from(data)];
+    if (data is List) return [for (var d in data) Map<String, dynamic>.from(d)];
+    if (data is Map) return [Map<String, dynamic>.from(data)];
     return [];
   }
   var text = File(path).readAsStringSync();
@@ -26,7 +27,16 @@ class Person {
   Person(this.name, this.age, this.email);
 }
 
-var people = [for (var _it in (_load('tests/interpreter/valid/people.yaml', {'format': 'yaml'}))) Person((_it['name'] as String), (_it['age'] as int), (_it['email'] as String))];
+var people = [
+  for (var _it in (_load('tests/interpreter/valid/people.yaml', {
+    'format': 'yaml',
+  })))
+    Person(
+      (_it['name'] as String),
+      (_it['age'] as int),
+      (_it['email'] as String),
+    ),
+];
 
 var adults = (() {
   var _q0 = <dynamic>[];

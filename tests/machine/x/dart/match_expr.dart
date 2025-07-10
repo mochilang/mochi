@@ -8,7 +8,7 @@ var label = (() {
     return 'two';
   } else if (_t == 3) {
     return 'three';
-  }  else {
+  } else {
     return 'unknown';
   }
   return null;

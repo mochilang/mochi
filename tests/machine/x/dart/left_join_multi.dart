@@ -1,8 +1,16 @@
-var customers = [{'id': 1, 'name': 'Alice'}, {'id': 2, 'name': 'Bob'}];
+var customers = [
+  {'id': 1, 'name': 'Alice'},
+  {'id': 2, 'name': 'Bob'},
+];
 
-var orders = [{'id': 100, 'customerId': 1}, {'id': 101, 'customerId': 2}];
+var orders = [
+  {'id': 100, 'customerId': 1},
+  {'id': 101, 'customerId': 2},
+];
 
-var items = [{'orderId': 100, 'sku': 'a'}];
+var items = [
+  {'orderId': 100, 'sku': 'a'},
+];
 
 var result = (() {
   var _q0 = <dynamic>[];
@@ -30,4 +38,3 @@ void main() {
     print([r['orderId'], r['name'], r['item']].join(' '));
   }
 }
-

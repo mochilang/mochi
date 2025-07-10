@@ -7,8 +7,9 @@ void inc(Counter c) {
   c.n = c.n + 1;
 }
 
+var c = Counter(0);
+
 void main() {
-  var c = Counter(0);
   inc(c);
   print(c.n);
 }

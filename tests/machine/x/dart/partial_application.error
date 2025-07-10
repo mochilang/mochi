@@ -1,4 +1,0 @@
-line 6: exit status 254
-void main() {
-  var add5 = add(5);
-  print(add5(3));

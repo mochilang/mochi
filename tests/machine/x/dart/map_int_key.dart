@@ -1,4 +1,5 @@
+var m = {1: 'a', 2: 'b'};
+
 void main() {
-  var m = {1: 'a', 2: 'b'};
-  print(m[1]);
+  print((m as Map)[1]);
 }
