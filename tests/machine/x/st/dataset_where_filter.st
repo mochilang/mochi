@@ -1,4 +1,4 @@
-| person people adults |
+| people adults person |
 people := {Dictionary newFrom:{#name->'Alice'. #age->30}. Dictionary newFrom:{#name->'Bob'. #age->15}. Dictionary newFrom:{#name->'Charlie'. #age->65}. Dictionary newFrom:{#name->'Diana'. #age->45}}.
 adults := [ | tmp |
   tmp := OrderedCollection new.

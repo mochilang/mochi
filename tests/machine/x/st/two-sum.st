@@ -1,4 +1,4 @@
-| n i j result twoSum |
+| twoSum n i j result |
 twoSum := [:nums :target | n := (nums size).
 0 to: n do: [:i |.
 (i + 1) to: n do: [:j |.

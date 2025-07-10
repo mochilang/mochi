@@ -1,4 +1,4 @@
-| n numbers |
+| numbers n |
 Object subclass: #BreakSignal instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!.
 Object subclass: #ContinueSignal instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!.
 numbers := {1. 2. 3. 4. 5. 6. 7. 8. 9}.

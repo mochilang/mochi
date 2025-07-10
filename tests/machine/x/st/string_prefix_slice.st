@@ -1,4 +1,4 @@
-| s1 s2 prefix |
+| prefix s1 s2 |
 prefix := 'fore'.
 s1 := 'forest'.
 Transcript show: ((s1 at: 0 = prefix)) printString; cr.

@@ -14,6 +14,7 @@ import (
 type Compiler struct {
 	buf          bytes.Buffer
 	vars         map[string]bool
+	order        []string
 	indent       int
 	needBreak    bool
 	needContinue bool
@@ -44,13 +45,9 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	bodyBytes := c.buf.Bytes()
 	c.buf = saved
 
-	if len(c.vars) > 0 {
+	if len(c.order) > 0 {
 		c.buf.WriteString("| ")
-		names := make([]string, 0, len(c.vars))
-		for n := range c.vars {
-			names = append(names, n)
-		}
-		c.buf.WriteString(strings.Join(names, " "))
+		c.buf.WriteString(strings.Join(c.order, " "))
 		c.buf.WriteString(" |\n")
 	}
 	if c.needBreak {
@@ -67,11 +64,20 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 func (c *Compiler) collectVars(st *parser.Statement) {
 	switch {
 	case st.Let != nil:
-		c.vars[st.Let.Name] = true
+		if !c.vars[st.Let.Name] {
+			c.order = append(c.order, st.Let.Name)
+			c.vars[st.Let.Name] = true
+		}
 	case st.Var != nil:
-		c.vars[st.Var.Name] = true
+		if !c.vars[st.Var.Name] {
+			c.order = append(c.order, st.Var.Name)
+			c.vars[st.Var.Name] = true
+		}
 	case st.Fun != nil:
-		c.vars[st.Fun.Name] = true
+		if !c.vars[st.Fun.Name] {
+			c.order = append(c.order, st.Fun.Name)
+			c.vars[st.Fun.Name] = true
+		}
 		for _, s := range st.Fun.Body {
 			c.collectVars(s)
 		}
@@ -90,7 +96,10 @@ func (c *Compiler) collectVars(st *parser.Statement) {
 			c.collectVars(s)
 		}
 	case st.For != nil:
-		c.vars[st.For.Name] = true
+		if !c.vars[st.For.Name] {
+			c.order = append(c.order, st.For.Name)
+			c.vars[st.For.Name] = true
+		}
 		for _, s := range st.For.Body {
 			c.collectVars(s)
 		}
