@@ -1,0 +1,14 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/group_items_iteration.ml", line 57, characters 41-44:
+57 |                   total := ((!total) + x.val);
+                                              ^^^
+Error: Syntax error
+
+
+Context (around line 57):
+  55 |               | x::rest ->
+  56 |                 try
+  57 |                   total := ((!total) + x.val);
+  58 |                 with Continue -> ()
+  59 |                 ; __loop3 rest

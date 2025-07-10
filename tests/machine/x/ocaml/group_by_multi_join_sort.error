@@ -1,0 +1,15 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/group_by_multi_join_sort.ml", line 32, characters 376-384:
+32 |                                     if (Obj.obj (List.assoc "o_custkey" o) = Obj.obj (List.assoc "c_custkey" c)) && (Obj.obj (List.assoc "l_orderkey" l) = Obj.obj (List.assoc "o_orderkey" o)) && (Obj.obj (List.assoc "n_nationkey" n) = Obj.obj (List.assoc "c_nationkey" c)) && (((((Obj.obj (List.assoc "o_orderdate" o) >= start_date) && Obj.obj (List.assoc "o_orderdate" o)) < end_date) && Obj.obj (List.assoc "l_returnflag" l)) = "R") then (
+                                                                                                                                                                                                                                                                                                                                                                                             ^^^^^^^^
+Error: This expression has type string but an expression was expected of type
+         bool
+
+
+Context (around line 32):
+  30 |             List.iter (fun l ->
+  31 |                     List.iter (fun n ->
+  32 |                                     if (Obj.obj (List.assoc "o_custkey" o) = Obj.obj (List.assoc "c_custkey" c)) && (Obj.obj (List.assoc "l_orderkey" l) = Obj.obj (List.assoc "o_orderkey" o)) && (Obj.obj (List.assoc "n_nationkey" n) = Obj.obj (List.assoc "c_nationkey" c)) && (((((Obj.obj (List.assoc "o_orderdate" o) >= start_date) && Obj.obj (List.assoc "o_orderdate" o)) < end_date) && Obj.obj (List.assoc "l_returnflag" l)) = "R") then (
+  33 |             let key = [("c_custkey",Obj.repr (Obj.obj (List.assoc "c_custkey" c)));("c_name",Obj.repr (Obj.obj (List.assoc "c_name" c)));("c_acctbal",Obj.repr (Obj.obj (List.assoc "c_acctbal" c)));("c_address",Obj.repr (Obj.obj (List.assoc "c_address" c)));("c_phone",Obj.repr (Obj.obj (List.assoc "c_phone" c)));("c_comment",Obj.repr (Obj.obj (List.assoc "c_comment" c)));("n_name",Obj.repr (Obj.obj (List.assoc "n_name" n)))] in
+  34 |             let cur = try List.assoc key !__groups0 with Not_found -> [] in

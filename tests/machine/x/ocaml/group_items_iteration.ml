@@ -20,10 +20,10 @@ exception Continue
 
 type ('k,'v) group = { key : 'k; items : 'v list }
 
-let data = [[("tag",Obj.repr "a");("val",Obj.repr 1)];[("tag",Obj.repr "a");("val",Obj.repr 2)];[("tag",Obj.repr "b");("val",Obj.repr 3)]]
+let data = [[("tag",Obj.repr ("a"));("val",Obj.repr (1))];[("tag",Obj.repr ("a"));("val",Obj.repr (2))];[("tag",Obj.repr ("b"));("val",Obj.repr (3))]]
 let groups = (let __groups0 = ref [] in
   List.iter (fun d ->
-      let key = d.tag in
+      let key = Obj.obj (List.assoc "tag" d) in
       let cur = try List.assoc key !__groups0 with Not_found -> [] in
       __groups0 := (key, d :: cur) :: List.remove_assoc key !__groups0;
   ) data;
@@ -59,7 +59,7 @@ let () =
                 ; __loop3 rest
             in
             try __loop3 g.items with Break -> ()
-            tmp := ((!tmp) @ [[("tag",Obj.repr g.key);("total",Obj.repr (!total))]]);
+            tmp := ((!tmp) @ [[("tag",Obj.repr (g.key));("total",Obj.repr ((!total)))]]);
           with Continue -> ()
           ; __loop2 rest
       in

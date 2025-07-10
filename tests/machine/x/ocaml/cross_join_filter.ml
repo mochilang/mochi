@@ -18,36 +18,6 @@ let rec __show v =
 exception Break
 exception Continue
 
-let string_contains s sub =
-  let len_s = String.length s and len_sub = String.length sub in
-  let rec aux i =
-    if i + len_sub > len_s then false
-    else if String.sub s i len_sub = sub then true
-    else aux (i + 1)
-  in aux 0
-
-let slice lst i j =
-  lst |> List.mapi (fun idx x -> idx, x)
-      |> List.filter (fun (idx, _) -> idx >= i && idx < j)
-      |> List.map snd
-
-let string_slice s i j = String.sub s i (j - i)
-
-let list_set lst idx value =
-  List.mapi (fun i v -> if i = idx then value else v) lst
-
-let rec map_set m k v =
-  match m with
-    | [] -> [(k,Obj.repr v)]
-    | (k2,v2)::tl -> if k2 = k then (k,Obj.repr v)::tl else (k2,v2)::map_set tl k v
-
-let map_get m k = Obj.obj (List.assoc k m)
-
-let list_union a b = List.sort_uniq compare (a @ b)
-let list_except a b = List.filter (fun x -> not (List.mem x b)) a
-let list_intersect a b = List.filter (fun x -> List.mem x b) a |> List.sort_uniq compare
-let list_union_all a b = a @ b
-let sum lst = List.fold_left (+) 0 lst
 
 let nums = [1;2;3]
 let letters = ["A";"B"]
@@ -55,7 +25,7 @@ let pairs = (let __res0 = ref [] in
   List.iter (fun n ->
       List.iter (fun l ->
               if ((n mod 2) = 0) then
-      __res0 := [("n",Obj.repr n);("l",Obj.repr l)] :: !__res0;
+      __res0 := [("n",Obj.repr (n));("l",Obj.repr (l))] :: !__res0;
       ) letters;
   ) nums;
 List.rev !__res0)
@@ -68,7 +38,7 @@ let () =
       | [] -> ()
       | p::rest ->
         try
-          print_endline (__show (p.n) ^ " " ^ __show (p.l));
+          print_endline (__show (Obj.obj (List.assoc "n" p)) ^ " " ^ __show (Obj.obj (List.assoc "l" p)));
         with Continue -> ()
         ; __loop1 rest
     in

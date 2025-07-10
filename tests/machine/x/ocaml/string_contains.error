@@ -1,0 +1,14 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/string_contains.ml", line 22, characters 25-40:
+22 |   print_endline (__show (string_contains s "cat"));
+                              ^^^^^^^^^^^^^^^
+Error: Unbound value string_contains
+
+
+Context (around line 22):
+  20 | 
+  21 | let () =
+  22 |   print_endline (__show (string_contains s "cat"));
+  23 |   print_endline (__show (string_contains s "dog"));
+  24 | 

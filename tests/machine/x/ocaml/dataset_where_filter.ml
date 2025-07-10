@@ -18,42 +18,12 @@ let rec __show v =
 exception Break
 exception Continue
 
-let string_contains s sub =
-  let len_s = String.length s and len_sub = String.length sub in
-  let rec aux i =
-    if i + len_sub > len_s then false
-    else if String.sub s i len_sub = sub then true
-    else aux (i + 1)
-  in aux 0
 
-let slice lst i j =
-  lst |> List.mapi (fun idx x -> idx, x)
-      |> List.filter (fun (idx, _) -> idx >= i && idx < j)
-      |> List.map snd
-
-let string_slice s i j = String.sub s i (j - i)
-
-let list_set lst idx value =
-  List.mapi (fun i v -> if i = idx then value else v) lst
-
-let rec map_set m k v =
-  match m with
-    | [] -> [(k,Obj.repr v)]
-    | (k2,v2)::tl -> if k2 = k then (k,Obj.repr v)::tl else (k2,v2)::map_set tl k v
-
-let map_get m k = Obj.obj (List.assoc k m)
-
-let list_union a b = List.sort_uniq compare (a @ b)
-let list_except a b = List.filter (fun x -> not (List.mem x b)) a
-let list_intersect a b = List.filter (fun x -> List.mem x b) a |> List.sort_uniq compare
-let list_union_all a b = a @ b
-let sum lst = List.fold_left (+) 0 lst
-
-let people = [[("name",Obj.repr "Alice");("age",Obj.repr 30)];[("name",Obj.repr "Bob");("age",Obj.repr 15)];[("name",Obj.repr "Charlie");("age",Obj.repr 65)];[("name",Obj.repr "Diana");("age",Obj.repr 45)]]
+let people = [[("name",Obj.repr ("Alice"));("age",Obj.repr (30))];[("name",Obj.repr ("Bob"));("age",Obj.repr (15))];[("name",Obj.repr ("Charlie"));("age",Obj.repr (65))];[("name",Obj.repr ("Diana"));("age",Obj.repr (45))]]
 let adults = (let __res0 = ref [] in
   List.iter (fun person ->
-      if (person.age >= 18) then
-    __res0 := [("name",Obj.repr person.name);("age",Obj.repr person.age);("is_senior",Obj.repr (person.age >= 60))] :: !__res0;
+      if (Obj.obj (List.assoc "age" person) >= 18) then
+    __res0 := [("name",Obj.repr (Obj.obj (List.assoc "name" person)));("age",Obj.repr (Obj.obj (List.assoc "age" person)));("is_senior",Obj.repr ((Obj.obj (List.assoc "age" person) >= 60)))] :: !__res0;
   ) people;
 List.rev !__res0)
 
@@ -65,7 +35,7 @@ let () =
       | [] -> ()
       | person::rest ->
         try
-          print_endline (__show (person.name) ^ " " ^ __show ("is") ^ " " ^ __show (person.age) ^ " " ^ __show ((if person.is_senior then " (senior)" else "")));
+          print_endline (__show (Obj.obj (List.assoc "name" person)) ^ " " ^ __show ("is") ^ " " ^ __show (Obj.obj (List.assoc "age" person)) ^ " " ^ __show ((if Obj.obj (List.assoc "is_senior" person) then " (senior)" else "")));
         with Continue -> ()
         ; __loop1 rest
     in
