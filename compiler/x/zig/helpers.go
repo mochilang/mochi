@@ -35,7 +35,7 @@ func zigTypeOf(t types.Type) string {
 		if tt.Name == "" {
 			fields := make([]string, len(tt.Order))
 			for i, f := range tt.Order {
-				fields[i] = fmt.Sprintf("%s: %s", sanitizeName(f), zigTypeOf(tt.Fields[f]))
+				fields[i] = fmt.Sprintf("%s: %s,", sanitizeName(f), zigTypeOf(tt.Fields[f]))
 			}
 			return fmt.Sprintf("struct { %s }", strings.Join(fields, " "))
 		}
