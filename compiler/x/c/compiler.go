@@ -2558,10 +2558,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 		cond = c.compileExpr(q.Where)
 	}
 
-	var sortExpr string
 	var sortT types.Type
 	if q.Sort != nil {
-		sortExpr = c.compileExpr(q.Sort)
 		sortT = c.exprType(q.Sort)
 	}
 
@@ -2620,7 +2618,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 	iter := c.newTemp()
 	var keyArr string
 	keyType := ""
-	if sortExpr != "" {
+	if q.Sort != nil {
 		keyType = cTypeFromType(sortT)
 		if keyType == "" {
 			keyType = "int"
@@ -2657,6 +2655,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 	}
 	c.writeln(fmt.Sprintf("%s.data[%s] = %s;", res, idx, val))
 	if keyType != "" {
+		sortExpr := c.compileExpr(q.Sort)
 		c.writeln(fmt.Sprintf("%s[%s] = %s;", keyArr, idx, sortExpr))
 	}
 	c.writeln(fmt.Sprintf("%s++;", idx))
