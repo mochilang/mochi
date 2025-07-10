@@ -1,6 +1,6 @@
 import java.util.*;
 public class Main {
-	static List<Map<Object,String>> people = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<>(){{put("name", "Alice");put("city", "Paris");}}, new LinkedHashMap<>(){{put("name", "Bob");put("city", "Hanoi");}}, new LinkedHashMap<>(){{put("name", "Charlie");put("city", "Paris");}}, new LinkedHashMap<>(){{put("name", "Diana");put("city", "Hanoi");}}, new LinkedHashMap<>(){{put("name", "Eve");put("city", "Paris");}}, new LinkedHashMap<>(){{put("name", "Frank");put("city", "Hanoi");}}, new LinkedHashMap<>(){{put("name", "George");put("city", "Paris");}}));
+	static List<Map<String,String>> people = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<String,String>(){{put("name", "Alice");put("city", "Paris");}}, new LinkedHashMap<String,String>(){{put("name", "Bob");put("city", "Hanoi");}}, new LinkedHashMap<String,String>(){{put("name", "Charlie");put("city", "Paris");}}, new LinkedHashMap<String,String>(){{put("name", "Diana");put("city", "Hanoi");}}, new LinkedHashMap<String,String>(){{put("name", "Eve");put("city", "Paris");}}, new LinkedHashMap<String,String>(){{put("name", "Frank");put("city", "Hanoi");}}, new LinkedHashMap<String,String>(){{put("name", "George");put("city", "Paris");}}));
 	static List<Object> big = (new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
 	List<Object> _res5 = new ArrayList<>();
 	Map<Object,List<Object>> _groups6 = new LinkedHashMap<>();
@@ -15,7 +15,7 @@ public class Main {
 		Object g_key = __e.getKey();
 		List<Object> g = __e.getValue();
 		if (!(count(g) >= 4)) continue;
-		_res5.add(new LinkedHashMap<>(){{put("city", g_key);put("num", count(g));}});
+		_res5.add(new LinkedHashMap<String,Object>(){{put("city", g_key);put("num", count(g));}});
 	}
 	return _res5;
 }}).get();

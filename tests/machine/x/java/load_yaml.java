@@ -23,8 +23,8 @@ public class Main {
 	static List<Object> adults = (new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
 	List<Object> _res1 = new ArrayList<>();
 	for (var p : people) {
-		if (!(Boolean.TRUE.equals(((Number)((Map)p).get("age")).doubleValue() >= 18))) continue;
-		_res1.add(new LinkedHashMap<>(Map.ofEntries(Map.entry("name", ((Map)p).get("name")), Map.entry("email", ((Map)p).get("email")))));
+		if (!(((Number)((Map)p).get("age")).doubleValue() >= 18)) continue;
+		_res1.add(new LinkedHashMap<String,Object>(){{put("name", ((Map)p).get("name"));put("email", ((Map)p).get("email"));}});
 	}
 	return _res1;
 }}).get();

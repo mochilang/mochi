@@ -1,7 +1,7 @@
 import java.util.*;
 public class Main {
-	static List<Map<Object,Object>> customers = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<>(){{put("id", 1);put("name", "Alice");}}, new LinkedHashMap<>(){{put("id", 2);put("name", "Bob");}}, new LinkedHashMap<>(){{put("id", 3);put("name", "Charlie");}}));
-	static List<Map<Object,Integer>> orders = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<>(){{put("id", 100);put("customerId", 1);}}, new LinkedHashMap<>(){{put("id", 101);put("customerId", 1);}}, new LinkedHashMap<>(){{put("id", 102);put("customerId", 2);}}));
+	static List<Map<String,Object>> customers = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<String,Object>(){{put("id", 1);put("name", "Alice");}}, new LinkedHashMap<String,Object>(){{put("id", 2);put("name", "Bob");}}, new LinkedHashMap<String,Object>(){{put("id", 3);put("name", "Charlie");}}));
+	static List<Map<String,Integer>> orders = new ArrayList<>(java.util.Arrays.asList(new LinkedHashMap<String,Integer>(){{put("id", 100);put("customerId", 1);}}, new LinkedHashMap<String,Integer>(){{put("id", 101);put("customerId", 1);}}, new LinkedHashMap<String,Integer>(){{put("id", 102);put("customerId", 2);}}));
 	static List<Object> stats = (new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
 	List<Object> _res8 = new ArrayList<>();
 	Map<Object,List<Object>> _groups9 = new LinkedHashMap<>();
@@ -26,10 +26,10 @@ public class Main {
 	for (var __e : _groups9.entrySet()) {
 		Object g_key = __e.getKey();
 		List<Object> g = __e.getValue();
-		_res8.add(new LinkedHashMap<>(){{put("name", g_key);put("count", count((new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
+		_res8.add(new LinkedHashMap<String,Object>(){{put("name", g_key);put("count", count((new java.util.function.Supplier<List<Object>>() {public List<Object> get() {
 	List<Object> _res15 = new ArrayList<>();
 	for (var r : g) {
-		if (!(Boolean.TRUE.equals(((Map)r).get("o")))) continue;
+		if (!(((Map)r).get("o") != null)) continue;
 		_res15.add(r);
 	}
 	return _res15;

@@ -7,7 +7,7 @@ public class Main {
 	for (var n : nums) {
 		for (var l : letters) {
 			if (!(Objects.equals(n % 2, 0))) continue;
-			_res1.add(new LinkedHashMap<>(){{put("n", n);put("l", l);}});
+			_res1.add(new LinkedHashMap<String,Object>(){{put("n", n);put("l", l);}});
 		}
 	}
 	return _res1;

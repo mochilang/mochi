@@ -4,7 +4,7 @@ public class Main {
 	public static void main(String[] args) {
 	while (i < 3) {
 		System.out.println(i);
-		i = i + 1;
+		i = (int)(i + 1);
 	}
 	}
 }

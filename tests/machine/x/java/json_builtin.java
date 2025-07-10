@@ -1,6 +1,6 @@
 import java.util.*;
 public class Main {
-	static Map<Object,Integer> m = new LinkedHashMap<>(){{put("a", 1);put("b", 2);}};
+	static Map<String,Integer> m = new LinkedHashMap<String,Integer>(){{put("a", 1);put("b", 2);}};
 	static String toJson(Object o) {
 		if (o instanceof Map<?,?> m) {
 			StringJoiner j = new StringJoiner(",", "{", "}");
