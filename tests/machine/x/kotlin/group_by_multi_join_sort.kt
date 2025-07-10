@@ -29,13 +29,21 @@ fun toBool(v: Any?): Boolean = when (v) {
 }
 
 class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
-val nation = mutableListOf(mutableMapOf("n_nationkey" to 1, "n_name" to "BRAZIL"))
+data class Nation(var n_nationkey: Int, var n_name: String)
 
-val customer = mutableListOf(mutableMapOf("c_custkey" to 1, "c_name" to "Alice", "c_acctbal" to 100, "c_nationkey" to 1, "c_address" to "123 St", "c_phone" to "123-456", "c_comment" to "Loyal"))
+data class Customer(var c_custkey: Int, var c_name: String, var c_acctbal: Double, var c_nationkey: Int, var c_address: String, var c_phone: String, var c_comment: String)
 
-val orders = mutableListOf(mutableMapOf("o_orderkey" to 1000, "o_custkey" to 1, "o_orderdate" to "1993-10-15"), mutableMapOf("o_orderkey" to 2000, "o_custkey" to 1, "o_orderdate" to "1994-01-02"))
+data class Order(var o_orderkey: Int, var o_custkey: Int, var o_orderdate: String)
 
-val lineitem = mutableListOf(mutableMapOf("l_orderkey" to 1000, "l_returnflag" to "R", "l_extendedprice" to 1000, "l_discount" to 0.1), mutableMapOf("l_orderkey" to 2000, "l_returnflag" to "N", "l_extendedprice" to 500, "l_discount" to 0))
+data class Lineitem(var l_orderkey: Int, var l_returnflag: String, var l_extendedprice: Double, var l_discount: Double)
+
+val nation = mutableListOf(Nation(n_nationkey = 1, n_name = "BRAZIL"))
+
+val customer = mutableListOf(Customer(c_custkey = 1, c_name = "Alice", c_acctbal = 100, c_nationkey = 1, c_address = "123 St", c_phone = "123-456", c_comment = "Loyal"))
+
+val orders = mutableListOf(Order(o_orderkey = 1000, o_custkey = 1, o_orderdate = "1993-10-15"), Order(o_orderkey = 2000, o_custkey = 1, o_orderdate = "1994-01-02"))
+
+val lineitem = mutableListOf(Lineitem(l_orderkey = 1000, l_returnflag = "R", l_extendedprice = 1000, l_discount = 0.1), Lineitem(l_orderkey = 2000, l_returnflag = "N", l_extendedprice = 500, l_discount = 0))
 
 val start_date = "1993-10-01"
 
@@ -46,13 +54,13 @@ val result = run {
     val __order = mutableListOf<Any?>()
     for (c in customer) {
         for (o in orders) {
-            if (toBool((o as MutableMap<*, *>)["o_custkey"] == (c as MutableMap<*, *>)["c_custkey"])) {
+            if (toBool(o.o_custkey == c.c_custkey)) {
                 for (l in lineitem) {
-                    if (toBool((l as MutableMap<*, *>)["l_orderkey"] == (o as MutableMap<*, *>)["o_orderkey"])) {
+                    if (toBool(l.l_orderkey == o.o_orderkey)) {
                         for (n in nation) {
-                            if (toBool((n as MutableMap<*, *>)["n_nationkey"] == (c as MutableMap<*, *>)["c_nationkey"])) {
-                                if (toBool((o as MutableMap<*, *>)["o_orderdate"] >= start_date && (o as MutableMap<*, *>)["o_orderdate"] < end_date && (l as MutableMap<*, *>)["l_returnflag"] == "R")) {
-                                    val __k = mutableMapOf("c_custkey" to (c as MutableMap<*, *>)["c_custkey"], "c_name" to (c as MutableMap<*, *>)["c_name"], "c_acctbal" to (c as MutableMap<*, *>)["c_acctbal"], "c_address" to (c as MutableMap<*, *>)["c_address"], "c_phone" to (c as MutableMap<*, *>)["c_phone"], "c_comment" to (c as MutableMap<*, *>)["c_comment"], "n_name" to (n as MutableMap<*, *>)["n_name"])
+                            if (toBool(n.n_nationkey == c.c_nationkey)) {
+                                if (toBool(o.o_orderdate >= start_date && o.o_orderdate < end_date && l.l_returnflag == "R")) {
+                                    val __k = mutableMapOf("c_custkey" to c.c_custkey, "c_name" to c.c_name, "c_acctbal" to c.c_acctbal, "c_address" to c.c_address, "c_phone" to c.c_phone, "c_comment" to c.c_comment, "n_name" to n.n_name)
                                     var __g = __groups[__k]
                                     if (__g == null) {
                                         __g = Group(__k, mutableListOf())

@@ -22,7 +22,9 @@ fun toJson(v: Any?): String = when (v) {
     is Iterable<*> -> v.joinToString(prefix = "[", postfix = "]") { toJson(it) }
     else -> toJson(v.toString())
 }
-val people = mutableListOf(mutableMapOf("name" to "Alice", "age" to 30), mutableMapOf("name" to "Bob", "age" to 25))
+data class People(var name: String, var age: Int)
+
+val people = mutableListOf(People(name = "Alice", age = 30), People(name = "Bob", age = 25))
 
 fun main() {
     _save(people, "-", mutableMapOf("format" to "jsonl"))

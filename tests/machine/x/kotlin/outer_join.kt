@@ -6,9 +6,13 @@ fun toBool(v: Any?): Boolean = when (v) {
     null -> false
     else -> true
 }
-val customers = mutableListOf(mutableMapOf("id" to 1, "name" to "Alice"), mutableMapOf("id" to 2, "name" to "Bob"), mutableMapOf("id" to 3, "name" to "Charlie"), mutableMapOf("id" to 4, "name" to "Diana"))
+data class Customer(var id: Int, var name: String)
 
-val orders = mutableListOf(mutableMapOf("id" to 100, "customerId" to 1, "total" to 250), mutableMapOf("id" to 101, "customerId" to 2, "total" to 125), mutableMapOf("id" to 102, "customerId" to 1, "total" to 300), mutableMapOf("id" to 103, "customerId" to 5, "total" to 80))
+data class Order(var id: Int, var customerId: Int, var total: Int)
+
+val customers = mutableListOf(Customer(id = 1, name = "Alice"), Customer(id = 2, name = "Bob"), Customer(id = 3, name = "Charlie"), Customer(id = 4, name = "Diana"))
+
+val orders = mutableListOf(Order(id = 100, customerId = 1, total = 250), Order(id = 101, customerId = 2, total = 125), Order(id = 102, customerId = 1, total = 300), Order(id = 103, customerId = 5, total = 80))
 
 val result = run {
     val __res = mutableListOf<MutableMap<Any?, Any?>>()
@@ -16,7 +20,7 @@ val result = run {
     for (o in orders) {
         val __tmp = mutableListOf<Any?>()
         for (c in customers) {
-            if (toBool((o as MutableMap<*, *>)["customerId"] == (c as MutableMap<*, *>)["id"])) {
+            if (toBool(o.customerId == c.id)) {
                 __tmp.add(c)
                 __matched.add(c)
             }
