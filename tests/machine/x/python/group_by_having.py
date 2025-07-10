@@ -147,13 +147,13 @@ def _query(src, joins, opts):
 
 
 people: list[dict[str, str]] = [
-    {"name": "Alice", "city": "Paris"},
-    {"name": "Bob", "city": "Hanoi"},
-    {"name": "Charlie", "city": "Paris"},
-    {"name": "Diana", "city": "Hanoi"},
-    {"name": "Eve", "city": "Paris"},
-    {"name": "Frank", "city": "Hanoi"},
-    {"name": "George", "city": "Paris"},
+    {name: "Alice", city: "Paris"},
+    {name: "Bob", city: "Hanoi"},
+    {name: "Charlie", city: "Paris"},
+    {name: "Diana", city: "Hanoi"},
+    {name: "Eve", city: "Paris"},
+    {name: "Frank", city: "Hanoi"},
+    {name: "George", city: "Paris"},
 ]
 
 
@@ -162,6 +162,7 @@ def _q0():
     _rows = _query(_src, [], {"select": lambda p: p})
     _groups = _group_by(_rows, lambda p: p["city"])
     _items1 = _groups
+    _items1 = [g for g in _items1 if len(g.Items) >= 4]
     return [{"city": _get(g, "key"), "num": len(g.Items)} for g in _items1]
 
 

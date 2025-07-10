@@ -630,3 +630,7 @@ func unionFieldPathType(ut types.UnionType, tail []string) (types.Type, bool) {
 	}
 	return result, true
 }
+
+func needsTyping(s string) bool {
+	return strings.Contains(s, "typing.")
+}

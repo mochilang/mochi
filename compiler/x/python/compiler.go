@@ -952,8 +952,11 @@ func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, err
 	if mt, ok := hint.(types.MapType); ok {
 		if ml := e.Binary.Left.Value.Target.Map; ml != nil {
 			if len(ml.Items) == 0 {
-				c.imports["typing"] = "typing"
-				return fmt.Sprintf("typing.cast(dict[%s, %s], {})", pyType(mt.Key), pyType(mt.Value)), nil
+				typStr := fmt.Sprintf("typing.cast(dict[%s, %s], {})", pyType(mt.Key), pyType(mt.Value))
+				if needsTyping(typStr) {
+					c.imports["typing"] = "typing"
+				}
+				return typStr, nil
 			}
 			items := make([]string, len(ml.Items))
 			for i, it := range ml.Items {

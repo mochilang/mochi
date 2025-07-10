@@ -1,0 +1,7 @@
+run: exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/machine/x/python/save_jsonl_stdout.py", line 70, in <module>
+    people: list[dict[str, typing.Any]] = [{name: "Alice", age: 30}, {name: "Bob", age: 25}]
+                                            ^^^^
+NameError: name 'name' is not defined
+

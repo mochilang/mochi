@@ -162,12 +162,12 @@ def _query(src, joins, opts):
 
 
 people: list[dict[str, typing.Any]] = [
-    {"name": "Alice", "age": 30, "city": "Paris"},
-    {"name": "Bob", "age": 15, "city": "Hanoi"},
-    {"name": "Charlie", "age": 65, "city": "Paris"},
-    {"name": "Diana", "age": 45, "city": "Hanoi"},
-    {"name": "Eve", "age": 70, "city": "Paris"},
-    {"name": "Frank", "age": 22, "city": "Hanoi"},
+    {name: "Alice", age: 30, city: "Paris"},
+    {name: "Bob", age: 15, city: "Hanoi"},
+    {name: "Charlie", age: 65, city: "Paris"},
+    {name: "Diana", age: 45, city: "Hanoi"},
+    {name: "Eve", age: 70, city: "Paris"},
+    {name: "Frank", age: 22, city: "Hanoi"},
 ]
 
 
