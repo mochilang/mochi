@@ -1,9 +1,0 @@
-run: exit status 1
->: contract violation
-  expected: real?
-  given: "a"
-  context...:
-   /usr/share/racket/collects/racket/private/sort.rkt:204:14: loop
-   /usr/share/racket/collects/racket/private/sort.rkt:369:3
-   body of "/workspace/mochi/tests/machine/x/racket/group_by_conditional_sum.rkt"
-
