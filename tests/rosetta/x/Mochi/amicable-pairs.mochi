@@ -1,0 +1,45 @@
+// Mochi implementation of Rosetta "Amicable pairs" task
+// Translated from Go version in tests/rosetta/x/Go/amicable-pairs.go
+
+fun pfacSum(i: int): int {
+  var sum = 0
+  var p = 1
+  while p <= i / 2 {
+    if i % p == 0 {
+      sum = sum + p
+    }
+    p = p + 1
+  }
+  return sum
+}
+
+fun pad5(n: int): string {
+  var s = str(n)
+  while len(s) < 5 {
+    s = " " + s
+  }
+  return s
+}
+
+fun main() {
+  var a: list<int> = []
+  for _ in 0..20000 {
+    a = append(a, 0)
+  }
+  var i = 1
+  while i < 20000 {
+    a[i] = pfacSum(i)
+    i = i + 1
+  }
+  print("The amicable pairs below 20,000 are:")
+  var n = 2
+  while n < 19999 {
+    let m = a[n]
+    if m > n && m < 20000 && n == a[m] {
+      print("  " + pad5(n) + " and " + pad5(m))
+    }
+    n = n + 1
+  }
+}
+
+main()
