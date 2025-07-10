@@ -1,0 +1,122 @@
+fun fields(s: string): list<string> {
+  var words: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i + 1)
+    if ch == " " || ch == "\n" || ch == "\t" {
+      if len(cur) > 0 {
+        words = append(words, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 {
+    words = append(words, cur)
+  }
+  return words
+}
+
+fun join(xs: list<string>, sep: string): string {
+  var res = ""
+  var i = 0
+  while i < len(xs) {
+    if i > 0 {
+      res = res + sep
+    }
+    res = res + xs[i]
+    i = i + 1
+  }
+  return res
+}
+
+fun numberName(n: int): string {
+  let small = [
+    "no", "one", "two", "three", "four", "five", "six",
+    "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen",
+    "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"
+  ]
+  let tens = [
+    "ones", "ten", "twenty", "thirty", "forty",
+    "fifty", "sixty", "seventy", "eighty", "ninety"
+  ]
+  if n < 0 { return "" }
+  if n < 20 { return small[n] }
+  if n < 100 {
+    var t = tens[(n / 10) as int]
+    var s = n % 10
+    if s > 0 {
+      t = t + " " + small[s]
+    }
+    return t
+  }
+  return ""
+}
+
+fun pluralizeFirst(s: string, n: int): string {
+  if n == 1 { return s }
+  let w = fields(s)
+  if len(w) > 0 {
+    w[0] = w[0] + "s"
+  }
+  return join(w, " ")
+}
+fun randInt(seed: int, n: int): int {
+  let next = (seed * 1664525 + 1013904223) % 2147483647
+  return next % n
+}
+
+fun slur(p: string, d: int): string {
+  if len(p) <= 2 { return p }
+  var a: list<string> = []
+  var i = 1
+  while i < len(p) - 1 {
+    a = append(a, substring(p, i, i + 1))
+    i = i + 1
+  }
+  var idx = len(a) - 1
+  var seed = d
+  while idx >= 1 {
+    seed = (seed * 1664525 + 1013904223) % 2147483647
+    if seed % 100 >= d {
+      let j = seed % (idx + 1)
+      let tmp = a[idx]
+      a[idx] = a[j]
+      a[j] = tmp
+    }
+    idx = idx - 1
+  }
+  var s = substring(p, 0, 1)
+  var k = 0
+  while k < len(a) {
+    s = s + a[k]
+    k = k + 1
+  }
+  s = s + substring(p, len(p) - 1, len(p))
+  let w = fields(s)
+  return join(w, " ")
+}
+
+fun main() {
+  var i = 99
+  while i > 0 {
+    print(slur(numberName(i), i) + " " +
+      pluralizeFirst(slur("bottle of", i), i) + " " +
+      slur("beer on the wall", i))
+    print(slur(numberName(i), i) + " " +
+      pluralizeFirst(slur("bottle of", i), i) + " " +
+      slur("beer", i))
+    print(slur("take one", i) + " " +
+      slur("down", i) + " " +
+      slur("pass it around", i))
+    print(slur(numberName(i - 1), i) + " " +
+      pluralizeFirst(slur("bottle of", i), i - 1) + " " +
+      slur("beer on the wall", i))
+    i = i - 1
+  }
+}
+
+main()
