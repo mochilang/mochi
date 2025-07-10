@@ -995,7 +995,22 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		for i := 0; i < indent; i++ {
 			buf.WriteString("    ")
 		}
-		buf.WriteString(fmt.Sprintf("$groups[$_k][] = $%s;\n", sanitizeName(q.Var)))
+		vars := []string{q.Var}
+		for _, f := range q.Froms {
+			vars = append(vars, f.Var)
+		}
+		for _, j := range q.Joins {
+			vars = append(vars, j.Var)
+		}
+		if len(vars) == 1 {
+			buf.WriteString(fmt.Sprintf("$groups[$_k][] = $%s;\n", sanitizeName(vars[0])))
+		} else {
+			rowElems := make([]string, len(vars))
+			for i, v := range vars {
+				rowElems[i] = fmt.Sprintf("\"%s\" => $%s", v, sanitizeName(v))
+			}
+			buf.WriteString(fmt.Sprintf("$groups[$_k][] = [%s];\n", strings.Join(rowElems, ", ")))
+		}
 	} else {
 		if aggExpr != nil {
 			arg, err := c.compileExpr(aggExpr)
@@ -1065,11 +1080,29 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		buf.WriteString(fmt.Sprintf("        $%s = ['key'=>json_decode($_k, true),'items'=> $__g];\n", gname))
 
 		genv := types.NewEnv(child)
-		var elemT types.Type = types.AnyType{}
-		if vt, err := child.GetVar(q.Var); err == nil {
-			elemT = vt
+		vars := []string{q.Var}
+		for _, f := range q.Froms {
+			vars = append(vars, f.Var)
 		}
-		genv.SetVar(q.Group.Name, types.GroupType{Elem: elemT}, true)
+		for _, j := range q.Joins {
+			vars = append(vars, j.Var)
+		}
+		if len(vars) == 1 {
+			if vt, err := child.GetVar(vars[0]); err == nil {
+				genv.SetVar(q.Group.Name, types.GroupType{Elem: vt}, true)
+			} else {
+				genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
+			}
+		} else {
+			st := types.StructType{Fields: map[string]types.Type{}, Order: []string{}}
+			for _, v := range vars {
+				if vt, err := child.GetVar(v); err == nil {
+					st.Fields[v] = vt
+					st.Order = append(st.Order, v)
+				}
+			}
+			genv.SetVar(q.Group.Name, types.GroupType{Elem: st}, true)
+		}
 		oldEnv2 := c.env
 		c.env = genv
 
@@ -1457,11 +1490,29 @@ func (c *Compiler) compileQueryExprAdvanced(q *parser.QueryExpr) (string, error)
 	}
 
 	genv := types.NewEnv(child)
-	var elemT types.Type = types.AnyType{}
-	if vt, err := child.GetVar(q.Var); err == nil {
-		elemT = vt
+	vars := []string{q.Var}
+	for _, f := range q.Froms {
+		vars = append(vars, f.Var)
 	}
-	genv.SetVar(q.Group.Name, types.GroupType{Elem: elemT}, true)
+	for _, j := range q.Joins {
+		vars = append(vars, j.Var)
+	}
+	if len(vars) == 1 {
+		if vt, err := child.GetVar(vars[0]); err == nil {
+			genv.SetVar(q.Group.Name, types.GroupType{Elem: vt}, true)
+		} else {
+			genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
+		}
+	} else {
+		st := types.StructType{Fields: map[string]types.Type{}, Order: []string{}}
+		for _, v := range vars {
+			if vt, err := child.GetVar(v); err == nil {
+				st.Fields[v] = vt
+				st.Order = append(st.Order, v)
+			}
+		}
+		genv.SetVar(q.Group.Name, types.GroupType{Elem: st}, true)
+	}
 	gname := sanitizeName(q.Group.Name)
 	c.groupVars[gname] = true
 	c.env = genv

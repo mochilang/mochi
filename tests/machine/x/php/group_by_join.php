@@ -7,7 +7,7 @@ $stats = (function() use ($customers, $orders) {
         foreach ($customers as $c) {
             if ($o['customerId'] == $c['id']) {
                 $_k = json_encode($c['name']);
-                $groups[$_k][] = $o;
+                $groups[$_k][] = ["o" => $o, "c" => $c];
             }
         }
     }
