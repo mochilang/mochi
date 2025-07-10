@@ -31,15 +31,6 @@ const (
 		"    end\n" +
 		"end\n"
 
-	helperPrint = "function __print(...)\n" +
-		"    local args = {...}\n" +
-		"    local parts = {}\n" +
-		"    for i,a in ipairs(args) do\n" +
-		"        if a ~= nil and a ~= '' then parts[#parts+1] = tostring(a) end\n" +
-		"    end\n" +
-		"    print(table.concat(parts, ' '))\n" +
-		"end\n"
-
 	helperIter = "function __iter(obj)\n" +
 		"    if type(obj) == 'table' then\n" +
 		"        if obj[1] ~= nil or #obj > 0 then\n" +
@@ -750,9 +741,8 @@ const (
 		"            end\n" +
 		"            for ri, right in ipairs(jitems) do\n" +
 		"                if not matched[ri] then\n" +
-		"                    local undef = {}\n" +
-		"                    if #items > 0 then for _=1,#items[1] do undef[#undef+1]=nil end end\n" +
-		"                    local row = {table.unpack(undef)}\n" +
+		"                    local row = {}\n" +
+		"                    for _=1,ji do row[#row+1] = nil end\n" +
 		"                    row[#row+1] = right\n" +
 		"                    if ji == #joins and whereFn and not whereFn(table.unpack(row)) then\n" +
 		"                    else\n" +
@@ -781,9 +771,8 @@ const (
 		"                    end\n" +
 		"                end\n" +
 		"                if not m then\n" +
-		"                    local undef = {}\n" +
-		"                    if #items > 0 then for _=1,#items[1] do undef[#undef+1]=nil end end\n" +
-		"                    local row = {table.unpack(undef)}\n" +
+		"                    local row = {}\n" +
+		"                    for _=1,ji do row[#row+1] = nil end\n" +
 		"                    row[#row+1] = right\n" +
 		"                    if ji == #joins and whereFn and not whereFn(table.unpack(row)) then\n" +
 		"                    else\n" +
@@ -857,7 +846,6 @@ const (
 
 var helperMap = map[string]string{
 	"run_tests":      helperRunTests,
-	"print":          helperPrint,
 	"iter":           helperIter,
 	"div":            helperDiv,
 	"add":            helperAdd,

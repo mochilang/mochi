@@ -196,7 +196,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				if isStringLiteral(op.Index.Start) {
+				t := c.inferPrimaryType(p.Target)
+				if isMap(t) {
+					expr = fmt.Sprintf("%s[%s]", expr, idx)
+				} else if isStringLiteral(op.Index.Start) {
 					expr = fmt.Sprintf("%s[%s]", expr, idx)
 				} else {
 					c.helpers["index"] = true
@@ -371,16 +374,14 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "print":
 		if len(call.Args) == 1 && isList(c.inferExprType(call.Args[0])) {
 			a := args[0]
-			expr := "(function(lst) for i,v in ipairs(lst) do io.write(v) if i < #lst then io.write(\" \") end end io.write(\"\\n\") end)(" + a + ")"
-			return expr, nil
+			return fmt.Sprintf("print(table.concat(%s, \" \"))", a), nil
 		}
-		c.use("print")
 		for i := range args {
 			if n, ok := identName(call.Args[i]); ok && c.uninitVars[n] {
 				args[i] = "\"<nil>\""
 			}
 		}
-		return fmt.Sprintf("__print(%s)", strings.Join(args, ", ")), nil
+		return fmt.Sprintf(";(function(...) local parts={} for i=1,select('#', ...) do local a=select(i, ...) if a~=nil and a~='' then parts[#parts+1]=tostring(a) end end print(table.concat(parts, ' ')) end)(%s)", strings.Join(args, ", ")), nil
 	case "str":
 		if len(args) == 1 {
 			return fmt.Sprintf("tostring(%s)", args[0]), nil
