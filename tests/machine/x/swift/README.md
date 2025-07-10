@@ -103,4 +103,4 @@ Compiled programs: 87/97
 ## TODO
 - [x] implement join queries
 - [x] handle load/save dataset operations
-- [ ] preserve map field information in queries
+- [x] preserve map field information in queries
