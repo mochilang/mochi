@@ -1,0 +1,56 @@
+
+fun fields(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let c = s[i:i+1]
+    if c == " " {
+      if len(cur) > 0 {
+        res = append(res, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + c
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 {
+    res = append(res, cur)
+  }
+  return res
+}
+
+fun canSpell(word: string, blks: list<string>): bool {
+  if len(word) == 0 { return true }
+  let c = lower(word[0:1])
+  var i = 0
+  while i < len(blks) {
+    let b = blks[i]
+    if c == lower(b[0:1]) || c == lower(b[1:2]) {
+      var rest: list<string> = []
+      var j = 0
+      while j < len(blks) {
+        if j != i { rest = append(rest, blks[j]) }
+        j = j + 1
+      }
+      if canSpell(word[1:], rest) { return true }
+    }
+    i = i + 1
+  }
+  return false
+}
+
+fun newSpeller(blocks: string): fun(string): bool {
+  let bl = fields(blocks)
+  return fun(w: string): bool => canSpell(w, bl)
+}
+
+fun main() {
+  let sp = newSpeller("BO XK DQ CP NA GT RE TG QD FS JW HU VI AN OB ER FS LY PC ZM")
+  for word in ["A", "BARK", "BOOK", "TREAT", "COMMON", "SQUAD", "CONFUSE"] {
+    print(word + " " + str(sp(word)))
+  }
+}
+
+main()
