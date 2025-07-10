@@ -1,8 +1,0 @@
-exit status 1
-/workspace/mochi/tests/machine/x/scala/group_items_iteration.scala:2: error: identifier expected but ':' found.
-  case class Auto1(tag: String, val: Int)
-                                   ^
-/workspace/mochi/tests/machine/x/scala/group_items_iteration.scala:19: error: ':' expected but '}' found.
-}
-^
-two errors found

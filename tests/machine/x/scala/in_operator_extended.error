@@ -1,8 +1,0 @@
-exit status 1
-/workspace/mochi/tests/machine/x/scala/in_operator_extended.scala:11: error: value contains is not a member of in_operator_extended.Auto1
-    println((m.contains("a")))
-               ^
-/workspace/mochi/tests/machine/x/scala/in_operator_extended.scala:12: error: value contains is not a member of in_operator_extended.Auto1
-    println((m.contains("b")))
-               ^
-two errors found

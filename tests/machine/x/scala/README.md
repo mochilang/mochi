@@ -2,8 +2,8 @@
 
 This directory contains Scala code generated from the Mochi programs in `tests/vm/valid` using the Scala compiler. Each program was compiled with `scalac`. Successful runs produced an `.out` file while failures produced an `.error` file. The compiler now infers element types for lists and maps and emits `case class` definitions when possible. Group-by queries now preserve the key type when generating case classes.
 
-Compiled programs: 97/97
-Executed successfully: 77/97
+Compiled programs: 100/100
+Executed successfully: 82/100
 
 ## Program checklist
 - [x] append_builtin.mochi
@@ -100,6 +100,8 @@ Executed successfully: 77/97
 - [x] unary_neg.mochi
 - [x] update_stmt.mochi
 - [x] user_type_literal.mochi
+- [ ] python_auto.mochi
+- [ ] python_math.mochi
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi

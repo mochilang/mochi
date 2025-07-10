@@ -4,7 +4,7 @@ object group_by_multi_join {
   case class Auto3(part: Int, supplier: Int, cost: Double, qty: Int)
   case class Auto4(part: Int, value: Double)
   case class Auto5(part: Any, value: Any)
-  case class Auto6(part: Any, total: Double)
+  case class Auto6(part: Any, total: Int)
 
   val nations = List[Auto1](Auto1(id = 1, name = "A"), Auto1(id = 2, name = "B"))
   val suppliers = List[Auto2](Auto2(id = 1, nation = 1), Auto2(id = 2, nation = 2))

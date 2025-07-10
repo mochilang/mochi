@@ -144,6 +144,66 @@ func sanitizeName(name string) string {
 	return b.String()
 }
 
+var scalaKeywords = map[string]bool{
+	"abstract":  true,
+	"case":      true,
+	"catch":     true,
+	"class":     true,
+	"def":       true,
+	"do":        true,
+	"else":      true,
+	"extends":   true,
+	"false":     true,
+	"final":     true,
+	"finally":   true,
+	"for":       true,
+	"forSome":   true,
+	"if":        true,
+	"implicit":  true,
+	"import":    true,
+	"lazy":      true,
+	"match":     true,
+	"new":       true,
+	"null":      true,
+	"object":    true,
+	"override":  true,
+	"package":   true,
+	"private":   true,
+	"protected": true,
+	"return":    true,
+	"sealed":    true,
+	"super":     true,
+	"this":      true,
+	"throw":     true,
+	"trait":     true,
+	"try":       true,
+	"true":      true,
+	"type":      true,
+	"val":       true,
+	"var":       true,
+	"while":     true,
+	"with":      true,
+	"yield":     true,
+}
+
+func sanitizeField(name string) string {
+	for i, r := range name {
+		if i == 0 {
+			if !unicode.IsLetter(r) && r != '_' {
+				return "`" + name + "`"
+			}
+		} else {
+			if !unicode.IsLetter(r) && !unicode.IsDigit(r) && r != '_' {
+				return "`" + name + "`"
+			}
+		}
+	}
+	if scalaKeywords[name] {
+		return "`" + name + "`"
+	}
+	return name
+}
+
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	name := sanitizeName(strings.TrimSuffix(filepath.Base(prog.Pos.Filename), filepath.Ext(prog.Pos.Filename)))
 	collectUpdates(prog.Statements, c.updates)
@@ -385,7 +445,7 @@ func (c *Compiler) compileTypeDecl(td *parser.TypeDecl) error {
 			}
 			fields := make([]string, len(v.Fields))
 			for i, f := range v.Fields {
-				fields[i] = fmt.Sprintf("%s: %s", f.Name, c.typeString(f.Type))
+				fields[i] = fmt.Sprintf("%s: %s", sanitizeField(f.Name), c.typeString(f.Type))
 			}
 			c.writeln(fmt.Sprintf("case class %s(%s) extends %s", v.Name, strings.Join(fields, ", "), td.Name))
 		}
@@ -395,7 +455,7 @@ func (c *Compiler) compileTypeDecl(td *parser.TypeDecl) error {
 	for _, m := range td.Members {
 		if m.Field != nil {
 			f := m.Field
-			fields = append(fields, fmt.Sprintf("var %s: %s", f.Name, c.typeString(f.Type)))
+			fields = append(fields, fmt.Sprintf("var %s: %s", sanitizeField(f.Name), c.typeString(f.Type)))
 		}
 	}
 	if len(fields) == 0 {
@@ -632,7 +692,7 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 		target = fmt.Sprintf("%s(%s)", target, idxExpr)
 	}
 	for _, f := range s.Field {
-		target += "." + f.Name
+		target += "." + sanitizeField(f.Name)
 	}
 	// check for compound assignment like x = x + y
 	if len(s.Index) == 0 && len(s.Field) == 0 {
@@ -691,15 +751,17 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 	child := types.NewEnv(c.env)
 	if st, ok := elemType.(types.StructType); ok {
 		for _, f := range st.Order {
-			c.writeln(fmt.Sprintf("var %s = %s.%s", f, item, f))
-			child.SetVar(f, st.Fields[f], true)
+			name := sanitizeField(f)
+			c.writeln(fmt.Sprintf("var %s = %s.%s", name, item, sanitizeField(f)))
+			child.SetVar(name, st.Fields[f], true)
 		}
 	} else if mt, ok := elemType.(types.MapType); ok {
 		if _, ok2 := mt.Key.(types.StringType); ok2 {
 			for _, it := range u.Set.Items {
 				if key, ok3 := identName(it.Key); ok3 {
-					c.writeln(fmt.Sprintf("var %s = %s(%q)", key, item, key))
-					child.SetVar(key, mt.Value, true)
+					name := sanitizeField(key)
+					c.writeln(fmt.Sprintf("var %s = %s(%q)", name, item, key))
+					child.SetVar(name, mt.Value, true)
 				}
 			}
 		}
@@ -752,7 +814,8 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 	if st, ok := elemType.(types.StructType); ok {
 		parts := make([]string, len(st.Order))
 		for i, f := range st.Order {
-			parts[i] = fmt.Sprintf("%s = %s", f, f)
+			name := sanitizeField(f)
+			parts[i] = fmt.Sprintf("%s = %s", name, name)
 		}
 		c.writeln(fmt.Sprintf("%s = %s(%s)", item, st.Name, strings.Join(parts, ", ")))
 	}
@@ -1084,7 +1147,11 @@ func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
 	} else {
 		// fall through
 	}
-	parts := append([]string{s.Root}, s.Tail...)
+	parts := make([]string, len(s.Tail)+1)
+	parts[0] = s.Root
+	for i, f := range s.Tail {
+		parts[i+1] = sanitizeField(f)
+	}
 	return strings.Join(parts, ".")
 }
 
@@ -1404,7 +1471,7 @@ func (c *Compiler) compileStructLit(st *parser.StructLiteral) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		args[i] = fmt.Sprintf("%s = %s", f.Name, val)
+		args[i] = fmt.Sprintf("%s = %s", sanitizeField(f.Name), val)
 	}
 	return fmt.Sprintf("%s(%s)", st.Name, strings.Join(args, ", ")), nil
 }
@@ -1697,7 +1764,7 @@ func (c *Compiler) mapToStruct(name string, st types.StructType, m *parser.MapLi
 		if err != nil {
 			return "", err
 		}
-		args[i] = fmt.Sprintf("%s = %s", field, val)
+		args[i] = fmt.Sprintf("%s = %s", sanitizeField(field), val)
 	}
 	return fmt.Sprintf("%s(%s)", name, strings.Join(args, ", ")), nil
 }
@@ -2020,7 +2087,7 @@ func (c *Compiler) emitAutoStructs(out *bytes.Buffer, indent int) {
 		st := c.autoStructs[n]
 		fields := make([]string, len(st.Order))
 		for i, f := range st.Order {
-			fields[i] = fmt.Sprintf("%s: %s", f, c.typeOf(st.Fields[f]))
+			fields[i] = fmt.Sprintf("%s: %s", sanitizeField(f), c.typeOf(st.Fields[f]))
 		}
 		out.WriteString(pad + fmt.Sprintf("case class %s(%s)\n", n, strings.Join(fields, ", ")))
 	}
