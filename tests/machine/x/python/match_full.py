@@ -3,29 +3,67 @@ from __future__ import annotations
 
 
 def classify(n: int) -> str:
-    return (lambda _t0=n: "zero" if _t0 == 0 else "one" if _t0 == 1 else "many")()
+
+    def _match0(_t0):
+        match _t0:
+            case 0:
+                return "zero"
+            case 1:
+                return "one"
+            case _:
+                return "many"
+
+    return _match0(n)
 
 
 x: int = 2
-label: str = (
-    lambda _t1=x: (
-        "one" if _t1 == 1 else "two" if _t1 == 2 else "three" if _t1 == 3 else "unknown"
-    )
-)()
+
+
+def _match1(_t1):
+    match _t1:
+        case 1:
+            return "one"
+        case 2:
+            return "two"
+        case 3:
+            return "three"
+        case _:
+            return "unknown"
+
+
+label: str = _match1(x)
 print(label)
 day: str = "sun"
-mood: str = (
-    lambda _t2=day: (
-        "tired"
-        if _t2 == "mon"
-        else "excited" if _t2 == "fri" else "relaxed" if _t2 == "sun" else "normal"
-    )
-)()
+
+
+def _match2(_t2):
+    match _t2:
+        case "mon":
+            return "tired"
+        case "fri":
+            return "excited"
+        case "sun":
+            return "relaxed"
+        case _:
+            return "normal"
+
+
+mood: str = _match2(day)
 print(mood)
 ok: bool = True
-status: str = (
-    lambda _t3=ok: "confirmed" if _t3 == True else "denied" if _t3 == False else None
-)()
+
+
+def _match3(_t3):
+    match _t3:
+        case True:
+            return "confirmed"
+        case False:
+            return "denied"
+        case _:
+            return None
+
+
+status: str = _match3(ok)
 print(status)
 print(classify(0))
 print(classify(5))

@@ -2,7 +2,7 @@
 
 This directory contains Python code generated from the Mochi programs in `tests/vm/valid` using the Python compiler. Each program was compiled and executed. Successful runs produced an `.out` file while failures produced an `.error` file.
 
-Compiled programs: 97/97 successful.
+Compiled programs: 74/97 successful.
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -13,11 +13,11 @@ Compiled programs: 97/97 successful.
 - [x] cast_struct.mochi
 - [x] closure.mochi
 - [x] count_builtin.mochi
-- [x] cross_join.mochi
+- [ ] cross_join.mochi
 - [x] cross_join_filter.mochi
 - [x] cross_join_triple.mochi
-- [x] dataset_sort_take_limit.mochi
-- [x] dataset_where_filter.mochi
+- [ ] dataset_sort_take_limit.mochi
+- [ ] dataset_where_filter.mochi
 - [x] exists_builtin.mochi
 - [x] for_list_collection.mochi
 - [x] for_loop.mochi
@@ -25,25 +25,25 @@ Compiled programs: 97/97 successful.
 - [x] fun_call.mochi
 - [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
-- [x] group_by.mochi
-- [x] group_by_conditional_sum.mochi
-- [x] group_by_having.mochi
-- [x] group_by_join.mochi
-- [x] group_by_left_join.mochi
-- [x] group_by_multi_join.mochi
-- [x] group_by_multi_join_sort.mochi
-- [x] group_by_sort.mochi
-- [x] group_items_iteration.mochi
+- [ ] group_by.mochi
+- [ ] group_by_conditional_sum.mochi
+- [ ] group_by_having.mochi
+- [ ] group_by_join.mochi
+- [ ] group_by_left_join.mochi
+- [ ] group_by_multi_join.mochi
+- [ ] group_by_multi_join_sort.mochi
+- [ ] group_by_sort.mochi
+- [ ] group_items_iteration.mochi
 - [x] if_else.mochi
 - [x] if_then_else.mochi
 - [x] if_then_else_nested.mochi
 - [x] in_operator.mochi
-- [x] in_operator_extended.mochi
-- [x] inner_join.mochi
-- [x] join_multi.mochi
-- [x] json_builtin.mochi
-- [x] left_join.mochi
-- [x] left_join_multi.mochi
+- [ ] in_operator_extended.mochi
+- [ ] inner_join.mochi
+- [ ] join_multi.mochi
+- [ ] json_builtin.mochi
+- [ ] left_join.mochi
+- [ ] left_join_multi.mochi
 - [x] len_builtin.mochi
 - [x] len_map.mochi
 - [x] len_string.mochi
@@ -66,19 +66,19 @@ Compiled programs: 97/97 successful.
 - [x] membership.mochi
 - [x] min_max_builtin.mochi
 - [x] nested_function.mochi
-- [x] order_by_map.mochi
-- [x] outer_join.mochi
+- [ ] order_by_map.mochi
+- [ ] outer_join.mochi
 - [x] partial_application.mochi
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
 - [x] query_sum_select.mochi
 - [x] record_assign.mochi
-- [x] right_join.mochi
-- [x] save_jsonl_stdout.mochi
+- [ ] right_join.mochi
+- [ ] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
 - [x] slice.mochi
-- [x] sort_stable.mochi
+- [ ] sort_stable.mochi
 - [x] str_builtin.mochi
 - [x] string_compare.mochi
 - [x] string_concat.mochi

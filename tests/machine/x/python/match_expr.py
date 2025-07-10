@@ -2,9 +2,19 @@
 from __future__ import annotations
 
 x: int = 2
-label: str = (
-    lambda _t0=x: (
-        "one" if _t0 == 1 else "two" if _t0 == 2 else "three" if _t0 == 3 else "unknown"
-    )
-)()
+
+
+def _match0(_t0):
+    match _t0:
+        case 1:
+            return "one"
+        case 2:
+            return "two"
+        case 3:
+            return "three"
+        case _:
+            return "unknown"
+
+
+label: str = _match0(x)
 print(label)
