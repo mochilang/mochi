@@ -3,22 +3,30 @@
 (defrecord _Group [key Items])
 
 (defn _group_by [src keyfn]
-  (let [groups (atom {})
-        order (atom [])]
+  (let [groups (transient {})
+        order (transient [])]
     (doseq [it src]
       (let [k (keyfn it)
-            ks (str k)]
-        (when-not (contains? @groups ks)
-          (swap! groups assoc ks (_Group. k []))
-          (swap! order conj ks))
-        (swap! groups update ks (fn [g] (assoc g :Items (conj (:Items g) it)))))
-    )
-    (map (fn [k] (@groups k)) @order)))
+            ks (str k)
+            g (get groups ks)]
+        (if g
+          (assoc! groups ks (assoc g :Items (conj (:Items g) it)))
+          (do
+            (assoc! groups ks (_Group. k [it]))
+            (conj! order ks))))
+    (let [g (persistent! groups)
+          o (persistent! order)]
+      (mapv #(get g %) o))) )
 
+(defn _sort_key [k]
+  (cond
+    (map? k) (pr-str (into (sorted-map) k))
+    (sequential? k) (vec k)
+    :else k))
 (declare data groups tmp result)
 
 (defn -main []
-  (def data [{:tag "a" :val 1} {:tag "a" :val 2} {:tag "b" :val 3}]) ;; list of map of string to any
+  (def data [{:tag "a" :val 1} {:tag "a" :val 2} {:tag "b" :val 3}]) ;; list of 
   (def groups (map (fn [g] g) (_group_by data (fn [d] (:tag d))))) ;; list of any
   (def tmp []) ;; list of any
   (loop [_tmp0 (seq groups)]
@@ -64,7 +72,7 @@
 )
 )
 )
-(def result (vec (->> (for [r tmp] r) (sort-by (fn [r] (:tag r)))))) ;; list of any
+(def result (vec (->> (for [r tmp] r) (sort-by (fn [r] (_sort_key (:tag r))))))) ;; list of any
 (println result)
 )
 

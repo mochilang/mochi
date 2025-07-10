@@ -2,7 +2,7 @@
 
 This directory contains Clojure code generated from the Mochi programs in `tests/vm/valid` using the Clojure compiler. Each program was compiled and executed. Successful runs produced an `.out` file while failures produced an `.error` file.
 
-Compiled programs: 97/97 successful.
+Compiled programs: 94/97 successful.
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -28,7 +28,11 @@ Compiled programs: 97/97 successful.
 - [x] group_by.mochi
 - [x] group_by_conditional_sum.mochi
 - [x] group_by_having.mochi
+- [x] group_by_join.mochi
+- [x] group_by_left_join.mochi
 - [x] group_by_multi_join.mochi
+- [x] group_by_multi_join_sort.mochi
+- [x] group_by_sort.mochi
 - [x] group_items_iteration.mochi
 - [x] if_else.mochi
 - [x] if_then_else.mochi
@@ -38,6 +42,8 @@ Compiled programs: 97/97 successful.
 - [x] inner_join.mochi
 - [x] join_multi.mochi
 - [x] json_builtin.mochi
+- [x] left_join.mochi
+- [x] left_join_multi.mochi
 - [x] len_builtin.mochi
 - [x] len_map.mochi
 - [x] len_string.mochi
@@ -46,6 +52,7 @@ Compiled programs: 97/97 successful.
 - [x] list_index.mochi
 - [x] list_nested_assign.mochi
 - [x] list_set_ops.mochi
+- [ ] load_yaml.mochi
 - [x] map_assign.mochi
 - [x] map_in_operator.mochi
 - [x] map_index.mochi
@@ -59,10 +66,16 @@ Compiled programs: 97/97 successful.
 - [x] membership.mochi
 - [x] min_max_builtin.mochi
 - [x] nested_function.mochi
+- [x] order_by_map.mochi
+- [ ] outer_join.mochi
+- [x] partial_application.mochi
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
+- [x] query_sum_select.mochi
 - [x] record_assign.mochi
+- [x] right_join.mochi
+- [ ] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
 - [x] slice.mochi
 - [x] sort_stable.mochi
@@ -84,26 +97,12 @@ Compiled programs: 97/97 successful.
 - [x] unary_neg.mochi
 - [x] update_stmt.mochi
 - [x] user_type_literal.mochi
+- [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
-- [x] group_by_join.mochi
-- [x] group_by_left_join.mochi
-- [x] group_by_multi_join_sort.mochi
-- [x] group_by_sort.mochi
-- [x] left_join.mochi
-- [x] left_join_multi.mochi
-- [x] load_yaml.mochi
-- [x] order_by_map.mochi
-- [x] outer_join.mochi
-- [x] partial_application.mochi
-- [x] query_sum_select.mochi
-- [x] right_join.mochi
-- [x] save_jsonl_stdout.mochi
-- [x] values_builtin.mochi
 
 ## Status
-All example programs compile and run successfully.
+3 programs failed.
 
 ## Remaining tasks
-None
-
+- [ ] Fix failing examples

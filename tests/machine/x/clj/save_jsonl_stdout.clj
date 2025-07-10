@@ -37,7 +37,7 @@
 (declare people)
 
 (defn -main []
-  (def people [{:name "Alice" :age 30} {:name "Bob" :age 25}]) ;; list of map of string to any
+  (def people [{:name "Alice" :age 30} {:name "Bob" :age 25}]) ;; list of 
   (_save people "-" {:format "jsonl"})
 )
 
