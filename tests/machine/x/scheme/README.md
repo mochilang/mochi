@@ -1,4 +1,4 @@
-# Scheme Machine Output (96/100 compiled and run)
+# Scheme Machine Output (97/100 compiled and run)
 
 This directory contains Scheme code generated from the Mochi programs in `tests/vm/valid`. Each program was executed with chibi-scheme. Successful runs have a `.out` file and failures provide a `.error`.
 
@@ -53,7 +53,7 @@ This directory contains Scheme code generated from the Mochi programs in `tests/
 - [x] list_index
 - [x] list_nested_assign
 - [x] list_set_ops
-- [ ] load_yaml
+- [x] load_yaml
 - [x] map_assign
 - [x] map_in_operator
 - [x] map_index
