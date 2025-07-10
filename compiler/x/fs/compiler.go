@@ -112,7 +112,6 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 		}
 	}
 	var header bytes.Buffer
-	header.WriteString("open System\n")
 	if c.usesJson {
 		header.WriteString("open System.Text.Json\n")
 	}
@@ -890,6 +889,13 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			}
 			if isBoolExpr(argAST) || c.inferType(argAST) == "bool" {
 				return fmt.Sprintf("printfn \"%%b\" (%s)", args[0]), nil
+			}
+			t := c.inferType(argAST)
+			if t == "int" {
+				return fmt.Sprintf("printfn \"%%d\" (%s)", args[0]), nil
+			}
+			if t == "float" {
+				return fmt.Sprintf("printfn \"%%f\" (%s)", args[0]), nil
 			}
 			return fmt.Sprintf("printfn \"%%A\" (%s)", args[0]), nil
 		}
