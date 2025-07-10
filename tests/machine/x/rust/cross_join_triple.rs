@@ -12,6 +12,6 @@ fn main() {
     let combos = { let mut tmp1 = Vec::new();for &n in &nums { for &l in &letters { for &b in &bools { tmp1.push(Result { n: n, l: l, b: b }); } } } tmp1 };
     println!("{}", "--- Cross Join of three lists ---");
     for c in combos {
-        println!("{:?} {:?} {:?}", c.n, c.l, c.b);
+        println!("{} {} {}", c.n, c.l, c.b);
     }
 }

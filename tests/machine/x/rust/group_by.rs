@@ -28,6 +28,6 @@ fn main() {
     let stats = { let mut tmp1 = std::collections::HashMap::new();for person in &people { let key = person.city; tmp1.entry(key).or_insert_with(Vec::new).push(person.clone()); } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } let mut result = Vec::new(); for g in tmp2 { result.push(Result { city: g.key, count: g.clone().items.len() as i32, avg_age: avg(&{ let mut tmp3 = Vec::new();for p in &g.clone().items { tmp3.push(p.age); } tmp3 }) }); } result };
     println!("{}", "--- People grouped by city ---");
     for s in stats {
-        println!("{:?} {} {:?} {} {:?}", s.city, ": count =", s.count, ", avg_age =", s.avg_age);
+        println!("{} {} {} {} {}", s.city, ": count =", s.count, ", avg_age =", s.avg_age);
     }
 }

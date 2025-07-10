@@ -25,6 +25,6 @@ fn main() {
     let result = { let mut tmp1 = Vec::new();for o in &orders { for c in &customers { tmp1.push(Result { orderId: o.id, orderCustomerId: o.customerId, pairedCustomerName: c.name, orderTotal: o.total }); } } tmp1 };
     println!("{}", "--- Cross Join: All order-customer pairs ---");
     for entry in result {
-        println!("{} {:?} {} {:?} {} {:?} {} {:?}", "Order", entry.orderId, "(customerId:", entry.orderCustomerId, ", total: $", entry.orderTotal, ") paired with", entry.pairedCustomerName);
+        println!("{} {} {} {} {} {} {} {}", "Order", entry.orderId, "(customerId:", entry.orderCustomerId, ", total: $", entry.orderTotal, ") paired with", entry.pairedCustomerName);
     }
 }
