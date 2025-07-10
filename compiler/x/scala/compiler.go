@@ -48,6 +48,38 @@ func (c *Compiler) detectStructMap(e *parser.Expr) (types.StructType, bool) {
 	return st, true
 }
 
+// queryStruct analyzes the SELECT map of q using a temporary environment that
+// includes the range variables of the query. It returns a struct type when the
+// SELECT expression is a map literal with simple string keys.
+func (c *Compiler) queryStruct(q *parser.QueryExpr) (types.StructType, bool) {
+	if q == nil {
+		return types.StructType{}, false
+	}
+	child := types.NewEnv(c.env)
+	if lt, ok := types.ExprType(q.Source, c.env).(types.ListType); ok {
+		child.SetVar(q.Var, lt.Elem, false)
+	}
+	for _, f := range q.Froms {
+		if lt, ok := types.ExprType(f.Src, c.env).(types.ListType); ok {
+			child.SetVar(f.Var, lt.Elem, false)
+		} else {
+			child.SetVar(f.Var, types.AnyType{}, false)
+		}
+	}
+	for _, j := range q.Joins {
+		if lt, ok := types.ExprType(j.Src, c.env).(types.ListType); ok {
+			child.SetVar(j.Var, lt.Elem, false)
+		} else {
+			child.SetVar(j.Var, types.AnyType{}, false)
+		}
+	}
+	oldEnv := c.env
+	c.env = child
+	st, ok := c.detectStructMap(q.Select)
+	c.env = oldEnv
+	return st, ok
+}
+
 const indentStep = 2
 
 func New(env *types.Env) *Compiler {
@@ -289,7 +321,7 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	} else if s.Value != nil {
 		typ = c.namedType(types.ExprType(s.Value, c.env))
 		if q := s.Value.Binary.Left.Value.Target.Query; q != nil {
-			if st, ok := c.detectStructMap(q.Select); ok {
+			if st, ok := c.queryStruct(q); ok {
 				st = c.ensureStructName(st)
 				typ = types.ListType{Elem: st}
 			}
