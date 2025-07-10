@@ -53,8 +53,8 @@ public class Main {
 	}
 	public static void main(String[] args) {
 	System.out.println("--- Orders per customer ---");
-	for (Object s : stats) {
-		System.out.println(((Map)s).get("name") + " " + "orders:" + " " + ((Map)s).get("count"));
+	for (DataClass3 s : stats) {
+		System.out.println(s.name + " " + "orders:" + " " + s.count);
 	}
 	}
 }

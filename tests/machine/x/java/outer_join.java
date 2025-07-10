@@ -18,9 +18,9 @@ class DataClass2 {
 	}
 }
 class DataClass3 {
-	Object order;
-	Object customer;
-	DataClass3(Object order, Object customer) {
+	DataClass2 order;
+	DataClass1 customer;
+	DataClass3(DataClass2 order, DataClass1 customer) {
 		this.order = order;
 		this.customer = customer;
 	}
@@ -54,17 +54,17 @@ public class Main {
 }}).get();
 	public static void main(String[] args) {
 	System.out.println("--- Outer Join using syntax ---");
-	for (Object row : result) {
-		if (((Map)row).get("order") != null) {
-			if (((Map)row).get("customer") != null) {
-				System.out.println("Order" + " " + ((Map)((Map)row).get("order")).get("id") + " " + "by" + " " + ((Map)((Map)row).get("customer")).get("name") + " " + "- $" + " " + ((Map)((Map)row).get("order")).get("total"));
+	for (DataClass3 row : result) {
+		if (row.order) {
+			if (row.customer) {
+				System.out.println("Order" + " " + row.order.id + " " + "by" + " " + row.customer.name + " " + "- $" + " " + row.order.total);
 			}
 			else {
-				System.out.println("Order" + " " + ((Map)((Map)row).get("order")).get("id") + " " + "by" + " " + "Unknown" + " " + "- $" + " " + ((Map)((Map)row).get("order")).get("total"));
+				System.out.println("Order" + " " + row.order.id + " " + "by" + " " + "Unknown" + " " + "- $" + " " + row.order.total);
 			}
 		}
 		else {
-			System.out.println("Customer" + " " + ((Map)((Map)row).get("customer")).get("name") + " " + "has no orders");
+			System.out.println("Customer" + " " + row.customer.name + " " + "has no orders");
 		}
 	}
 	}

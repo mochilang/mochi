@@ -18,9 +18,9 @@ class DataClass2 {
 	}
 }
 class DataClass3 {
-	Object customerName;
-	Object order;
-	DataClass3(Object customerName, Object order) {
+	String customerName;
+	DataClass2 order;
+	DataClass3(String customerName, DataClass2 order) {
 		this.customerName = customerName;
 		this.order = order;
 	}
@@ -46,12 +46,12 @@ public class Main {
 }}).get();
 	public static void main(String[] args) {
 	System.out.println("--- Right Join using syntax ---");
-	for (Object entry : result) {
-		if (((Map)entry).get("order") != null) {
-			System.out.println("Customer" + " " + ((Map)entry).get("customerName") + " " + "has order" + " " + ((Map)((Map)entry).get("order")).get("id") + " " + "- $" + " " + ((Map)((Map)entry).get("order")).get("total"));
+	for (DataClass3 entry : result) {
+		if (entry.order) {
+			System.out.println("Customer" + " " + entry.customerName + " " + "has order" + " " + entry.order.id + " " + "- $" + " " + entry.order.total);
 		}
 		else {
-			System.out.println("Customer" + " " + ((Map)entry).get("customerName") + " " + "has no orders");
+			System.out.println("Customer" + " " + entry.customerName + " " + "has no orders");
 		}
 	}
 	}

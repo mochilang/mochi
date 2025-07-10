@@ -1,5 +1,5 @@
 line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramsgroup_by_join2205843227/001/Main.java:41: error: incompatible types: Map<String,Object> cannot be converted to DataClass2
+/tmp/TestCompileValidProgramsgroup_by_join1451374983/001/Main.java:41: error: incompatible types: Map<String,Object> cannot be converted to DataClass2
 			_b9.add(_row7);
 			        ^
 Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output

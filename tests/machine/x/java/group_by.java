@@ -34,8 +34,8 @@ public class Main {
 	for (var __e : _groups7.entrySet()) {
 		Object g_key = __e.getKey();
 		List<DataClass1> g = __e.getValue();
-		_res6.add(new DataClass2(g_key, count(g), avg((List<Number>)(List<?>)(new java.util.function.Supplier<List<Object>>(){public List<Object> get(){
-	List<Object> _res11 = new ArrayList<>();
+		_res6.add(new DataClass2(g_key, count(g), avg((List<Number>)(List<?>)(new java.util.function.Supplier<List<Integer>>(){public List<Integer> get(){
+	List<Integer> _res11 = new ArrayList<>();
 	for (var p : g) {
 		_res11.add(p.age);
 	}
@@ -55,8 +55,8 @@ public class Main {
 	}
 	public static void main(String[] args) {
 	System.out.println("--- People grouped by city ---");
-	for (Object s : stats) {
-		System.out.println(((Map)s).get("city") + " " + ": count =" + " " + ((Map)s).get("count") + " " + ", avg_age =" + " " + ((Map)s).get("avg_age"));
+	for (DataClass2 s : stats) {
+		System.out.println(s.city + " " + ": count =" + " " + s.count + " " + ", avg_age =" + " " + s.avg_age);
 	}
 	}
 }

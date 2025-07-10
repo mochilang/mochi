@@ -7,8 +7,8 @@ class DataClass1 {
 }
 public class Main {
 	static List<Integer> xs = new ArrayList<>(java.util.Arrays.asList(1, 2, 3));
-	static List<Object> ys = (new java.util.function.Supplier<List<Object>>(){public List<Object> get(){
-	List<Object> _res1 = new ArrayList<>();
+	static List<Integer> ys = (new java.util.function.Supplier<List<Integer>>(){public List<Integer> get(){
+	List<Integer> _res1 = new ArrayList<>();
 	for (var x : xs) {
 		if (!(Objects.equals(x % 2, 1))) continue;
 		_res1.add(x);

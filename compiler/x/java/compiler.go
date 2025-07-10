@@ -665,9 +665,18 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 	}
 	if p != nil && p.Selector != nil {
 		if t, ok := c.vars[p.Selector.Root]; ok {
-			if strings.HasPrefix(t, "Map<") {
-				return mapValueType(t)
+			typ := t
+			if len(p.Selector.Tail) == 0 {
+				return typ
 			}
+			for _, f := range p.Selector.Tail {
+				if strings.HasPrefix(typ, "Map<") {
+					typ = mapValueType(typ)
+				} else {
+					typ = c.fieldType(typ, f)
+				}
+			}
+			return typ
 		}
 		if parent, ok := c.variantOf[p.Selector.Root]; ok && len(p.Selector.Tail) == 0 {
 			return parent
@@ -677,10 +686,23 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 		if call := rootPrimary(p.Query.Select); call != nil && call.Call != nil && call.Call.Func == "sum" && len(call.Call.Args) == 1 && p.Query.Group == nil {
 			return "int"
 		}
+		old := c.vars
+		c.vars = copyMap(c.vars)
+		srcType := c.inferType(p.Query.Source)
+		c.vars[p.Query.Var] = listElemType(srcType)
+		for _, fr := range p.Query.Froms {
+			ft := c.inferType(fr.Src)
+			c.vars[fr.Var] = listElemType(ft)
+		}
+		for _, j := range p.Query.Joins {
+			jt := c.inferType(j.Src)
+			c.vars[j.Var] = listElemType(jt)
+		}
 		et := c.inferType(p.Query.Select)
 		if et == "var" {
 			et = "Object"
 		}
+		c.vars = old
 		return fmt.Sprintf("List<%s>", wrapperType(et))
 	}
 	return "var"
@@ -946,6 +968,33 @@ func (c *Compiler) dataClassFor(m *parser.MapLiteral) string {
 	c.dataClasses[shape] = &dataClass{name: name, fields: fields, types: types}
 	c.dataClassOrder = append(c.dataClassOrder, shape)
 	return name
+}
+
+func (c *Compiler) dataClassByName(name string) *dataClass {
+	for _, dc := range c.dataClasses {
+		if dc.name == name {
+			return dc
+		}
+	}
+	return nil
+}
+
+func (c *Compiler) fieldType(structName, field string) string {
+	if td, ok := c.types[structName]; ok {
+		for _, m := range td.Members {
+			if m.Field != nil && m.Field.Name == field {
+				return c.typeName(m.Field.Type)
+			}
+		}
+	}
+	if dc := c.dataClassByName(structName); dc != nil {
+		for i, f := range dc.fields {
+			if f == field {
+				return dc.types[i]
+			}
+		}
+	}
+	return "Object"
 }
 
 func (c *Compiler) compileDataClass(dc *dataClass) {

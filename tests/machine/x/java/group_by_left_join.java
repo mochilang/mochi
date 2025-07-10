@@ -50,8 +50,8 @@ public class Main {
 	for (var __e : _groups9.entrySet()) {
 		Object g_key = __e.getKey();
 		List<DataClass1> g = __e.getValue();
-		_res8.add(new DataClass3(g_key, count((new java.util.function.Supplier<List<Object>>(){public List<Object> get(){
-	List<Object> _res15 = new ArrayList<>();
+		_res8.add(new DataClass3(g_key, count((new java.util.function.Supplier<List<DataClass1>>(){public List<DataClass1> get(){
+	List<DataClass1> _res15 = new ArrayList<>();
 	for (var r : g) {
 		if (!(r.o)) continue;
 		_res15.add(r);
@@ -66,8 +66,8 @@ public class Main {
 	}
 	public static void main(String[] args) {
 	System.out.println("--- Group Left Join ---");
-	for (Object s : stats) {
-		System.out.println(((Map)s).get("name") + " " + "orders:" + " " + ((Map)s).get("count"));
+	for (DataClass3 s : stats) {
+		System.out.println(s.name + " " + "orders:" + " " + s.count);
 	}
 	}
 }

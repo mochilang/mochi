@@ -71,8 +71,8 @@ public class Main {
 		return list;
 	}
 	public static void main(String[] args) {
-	for (Object a : adults) {
-		System.out.println(((Map)a).get("name") + " " + ((Map)a).get("email"));
+	for (DataClass1 a : adults) {
+		System.out.println(a.name + " " + a.email);
 	}
 	}
 }

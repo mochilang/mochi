@@ -1,8 +1,8 @@
 import java.util.*;
 class DataClass1 {
-	Object n;
-	Object l;
-	DataClass1(Object n, Object l) {
+	Integer n;
+	String l;
+	DataClass1(Integer n, String l) {
 		this.n = n;
 		this.l = l;
 	}
@@ -22,8 +22,8 @@ public class Main {
 }}).get();
 	public static void main(String[] args) {
 	System.out.println("--- Even pairs ---");
-	for (Object p : pairs) {
-		System.out.println(((Map)p).get("n") + " " + ((Map)p).get("l"));
+	for (DataClass1 p : pairs) {
+		System.out.println(p.n + " " + p.l);
 	}
 	}
 }

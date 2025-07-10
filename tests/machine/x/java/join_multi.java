@@ -24,9 +24,9 @@ class DataClass3 {
 	}
 }
 class DataClass4 {
-	Object name;
-	Object sku;
-	DataClass4(Object name, Object sku) {
+	String name;
+	String sku;
+	DataClass4(String name, String sku) {
 		this.name = name;
 		this.sku = sku;
 	}
@@ -50,8 +50,8 @@ public class Main {
 }}).get();
 	public static void main(String[] args) {
 	System.out.println("--- Multi Join ---");
-	for (Object r : result) {
-		System.out.println(((Map)r).get("name") + " " + "bought item" + " " + ((Map)r).get("sku"));
+	for (DataClass4 r : result) {
+		System.out.println(r.name + " " + "bought item" + " " + r.sku);
 	}
 	}
 }
