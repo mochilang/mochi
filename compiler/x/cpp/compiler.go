@@ -329,6 +329,16 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	}
 	c.indent--
 	c.writeln("};")
+	// generate equality operators so struct values can be compared
+	c.writeln("inline bool operator==(const " + t.Name + " &a, const " + t.Name + " &b){")
+	for _, m := range t.Members {
+		if m.Field != nil {
+			c.writeln("    if(a." + m.Field.Name + " != b." + m.Field.Name + ") return false;")
+		}
+	}
+	c.writeln("    return true;")
+	c.writeln("}")
+	c.writeln("inline bool operator!=(const " + t.Name + " &a, const " + t.Name + " &b){ return !(a==b); }")
 	return nil
 }
 
@@ -1122,6 +1132,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				}
 				def.WriteString("};")
 				c.headerWriteln(def.String())
+				c.generateStructEquality(info)
 			}
 			return fmt.Sprintf("%s{%s}", info.Name, strings.Join(vals, ", ")), nil
 		}
@@ -1368,6 +1379,9 @@ func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error
 				rep := fmt.Sprintf("std::declval<%s>().", t)
 				ftype = strings.ReplaceAll(ftype, v+".", rep)
 			}
+		}
+		if matched, _ := regexp.MatchString(`[A-Za-z_][A-Za-z0-9_]*\\.`, ftype); matched {
+			ftype = "auto"
 		}
 		if dot := strings.Index(val, "."); dot != -1 {
 			v := val[:dot]
@@ -1897,6 +1911,7 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 	groupStruct := fmt.Sprintf("__struct%d", c.structCount+1)
 	c.structCount++
 	c.headerWriteln(fmt.Sprintf("struct %s { %s key; std::vector<%s> items; };", groupStruct, keyType, itemStruct))
+	c.generateStructEquality(&structInfo{Name: groupStruct, Fields: []string{"key", "items"}})
 	backup[q.Group.Name] = c.varStruct[q.Group.Name]
 	c.varStruct[q.Group.Name] = groupStruct
 	backupElem[q.Group.Name+".items"] = c.elemType[q.Group.Name+".items"]
@@ -2226,6 +2241,12 @@ func (c *Compiler) inferType(expr string) string {
 			return "vector"
 		}
 	}
+	if _, err := strconv.Atoi(expr); err == nil {
+		return "int"
+	}
+	if expr == "true" || expr == "false" {
+		return "bool"
+	}
 	return ""
 }
 
@@ -2237,6 +2258,9 @@ func inferExprType(expr string) string {
 	}
 	if strings.Contains(expr, "true") || strings.Contains(expr, "false") {
 		return "bool"
+	}
+	if _, err := strconv.Atoi(expr); err == nil {
+		return "int"
 	}
 	return ""
 }
@@ -2322,12 +2346,22 @@ func (c *Compiler) structFromVars(names []string) string {
 				t = t[:idx]
 			}
 			fieldType = t
+		} else if typ, ok := c.vars[n]; ok {
+			switch typ {
+			case "string":
+				fieldType = "std::string"
+			case "int":
+				fieldType = "int"
+			case "bool":
+				fieldType = "bool"
+			}
 		}
 		info.Types[i] = fieldType
 		def.WriteString(fieldType + " " + sanitizeName(n) + "; ")
 	}
 	def.WriteString("};")
 	c.headerWriteln(def.String())
+	c.generateStructEquality(info)
 	return info.Name
 }
 
@@ -2430,6 +2464,18 @@ func (c *Compiler) generateJSONPrinter(info *structInfo) {
 	}
 	c.headerWriteln("    std::cout<<\"}\";")
 	c.headerWriteln("}")
+}
+
+// generateStructEquality outputs simple equality operators for the struct so
+// that instances can be compared using == and !=.
+func (c *Compiler) generateStructEquality(info *structInfo) {
+	c.headerWriteln("inline bool operator==(const " + info.Name + " &a, const " + info.Name + " &b){")
+	for _, f := range info.Fields {
+		c.headerWriteln("    if(a." + f + " != b." + f + ") return false;")
+	}
+	c.headerWriteln("    return true;")
+	c.headerWriteln("}")
+	c.headerWriteln("inline bool operator!=(const " + info.Name + " &a, const " + info.Name + " &b){ return !(a==b); }")
 }
 
 func (c *Compiler) ensureBool(expr string) string {
