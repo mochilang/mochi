@@ -13,7 +13,7 @@ def _load(path=nil, opts=nil)
     delim = opts['delimiter'] || delim
     delim = delim[0] if delim.is_a?(String) && !delim.empty?
   end
-  io = (path.nil? || path == '') ? STDIN : File.open(path, 'r')
+  io = (path.nil? || path == '' || path == '-') ? STDIN : File.open(path, 'r')
   begin
     case fmt
     when 'csv','tsv'

@@ -64,7 +64,7 @@ end`
     delim = opts['delimiter'] || delim
     delim = delim[0] if delim.is_a?(String) && !delim.empty?
   end
-  io = (path.nil? || path == '') ? STDIN : File.open(path, 'r')
+  io = (path.nil? || path == '' || path == '-') ? STDIN : File.open(path, 'r')
   begin
     case fmt
     when 'csv','tsv'
@@ -121,7 +121,7 @@ end`
     delim = delim[0] if delim.is_a?(String) && !delim.empty?
   end
   rows = rows.map { |r| r.respond_to?(:to_h) ? r.to_h : r }
-  io = (path.nil? || path == '') ? STDOUT : File.open(path, 'w')
+  io = (path.nil? || path == '' || path == '-') ? STDOUT : File.open(path, 'w')
   begin
     case fmt
     when 'csv','tsv'
