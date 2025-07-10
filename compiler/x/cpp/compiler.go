@@ -74,6 +74,29 @@ func (c *Compiler) headerWriteln(s string) {
 	c.header.WriteByte('\n')
 }
 
+func (c *Compiler) defineStruct(info *structInfo) {
+	var def strings.Builder
+	def.WriteString("struct " + info.Name + " {")
+	for i, n := range info.Fields {
+		def.WriteString(info.Types[i] + " " + n + "; ")
+	}
+	def.WriteString("};")
+	c.headerWriteln(def.String())
+	if len(info.Fields) > 0 {
+		var eq strings.Builder
+		eq.WriteString("inline bool operator==(const " + info.Name + " &a, const " + info.Name + " &b){ return ")
+		for i, n := range info.Fields {
+			if i > 0 {
+				eq.WriteString(" && ")
+			}
+			eq.WriteString("a." + n + "==b." + n)
+		}
+		eq.WriteString("; }")
+		c.headerWriteln(eq.String())
+		c.headerWriteln("inline bool operator!=(const " + info.Name + " &a, const " + info.Name + " &b){ return !(a==b); }")
+	}
+}
+
 func sanitizeName(name string) string {
 	if name == "" {
 		return ""
@@ -316,19 +339,18 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	if len(t.Members) == 0 {
 		return nil
 	}
-	c.writeln(fmt.Sprintf("struct %s {", t.Name))
-	c.indent++
+	info := &structInfo{Name: t.Name}
 	for _, m := range t.Members {
 		if m.Field != nil {
 			typ, err := c.compileType(m.Field.Type)
 			if err != nil {
 				return err
 			}
-			c.writeln(fmt.Sprintf("%s %s;", typ, m.Field.Name))
+			info.Fields = append(info.Fields, m.Field.Name)
+			info.Types = append(info.Types, typ)
 		}
 	}
-	c.indent--
-	c.writeln("};")
+	c.defineStruct(info)
 	return nil
 }
 
@@ -1400,13 +1422,7 @@ func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error
 		info = &structInfo{Name: fmt.Sprintf("__struct%d", c.structCount), Fields: append([]string(nil), fieldNames...), Types: append([]string(nil), fieldTypes...)}
 		c.structMap[sig] = info
 		c.structByName[info.Name] = info
-		var def strings.Builder
-		def.WriteString("struct " + info.Name + " {")
-		for i := range fieldNames {
-			def.WriteString(fieldTypes[i] + " " + fieldNames[i] + "; ")
-		}
-		def.WriteString("};")
-		c.headerWriteln(def.String())
+		c.defineStruct(info)
 	}
 	return fmt.Sprintf("%s{%s}", info.Name, strings.Join(inits, ", ")), nil
 }
@@ -1896,7 +1912,8 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 	}
 	groupStruct := fmt.Sprintf("__struct%d", c.structCount+1)
 	c.structCount++
-	c.headerWriteln(fmt.Sprintf("struct %s { %s key; std::vector<%s> items; };", groupStruct, keyType, itemStruct))
+	info := &structInfo{Name: groupStruct, Fields: []string{"key", "items"}, Types: []string{keyType, "std::vector<" + itemStruct + ">"}}
+	c.defineStruct(info)
 	backup[q.Group.Name] = c.varStruct[q.Group.Name]
 	c.varStruct[q.Group.Name] = groupStruct
 	backupElem[q.Group.Name+".items"] = c.elemType[q.Group.Name+".items"]
@@ -2313,8 +2330,6 @@ func (c *Compiler) structFromVars(names []string) string {
 	info := &structInfo{Name: fmt.Sprintf("__struct%d", c.structCount), Fields: append([]string(nil), names...), Types: make([]string, len(names))}
 	c.structMap[sig] = info
 	c.structByName[info.Name] = info
-	var def strings.Builder
-	def.WriteString("struct " + info.Name + " {")
 	for i, n := range names {
 		fieldType := "decltype(" + sanitizeName(n) + ")"
 		if t := c.varStruct[n]; t != "" {
@@ -2324,10 +2339,8 @@ func (c *Compiler) structFromVars(names []string) string {
 			fieldType = t
 		}
 		info.Types[i] = fieldType
-		def.WriteString(fieldType + " " + sanitizeName(n) + "; ")
 	}
-	def.WriteString("};")
-	c.headerWriteln(def.String())
+	c.defineStruct(info)
 	return info.Name
 }
 
@@ -2436,6 +2449,20 @@ func (c *Compiler) ensureBool(expr string) string {
 	if t := c.varStruct[expr]; t != "" {
 		if idx := strings.Index(t, "{"); idx != -1 {
 			t = t[:idx]
+		}
+		if info, ok := c.structByName[t]; ok {
+			var parts []string
+			for i, f := range info.Fields {
+				zero := "0"
+				ft := info.Types[i]
+				if strings.HasPrefix(ft, "std::string") {
+					zero = "std::string()"
+				} else if ft == "bool" {
+					zero = "false"
+				}
+				parts = append(parts, fmt.Sprintf("%s.%s != %s", expr, f, zero))
+			}
+			return "(" + strings.Join(parts, " || ") + ")"
 		}
 		return fmt.Sprintf("(%s != %s{})", expr, t)
 	}
