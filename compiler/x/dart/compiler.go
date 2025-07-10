@@ -626,7 +626,8 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		default:
 			// string comparison
 			if (op.Op == "<" || op.Op == "<=" || op.Op == ">" || op.Op == ">=") &&
-				strings.HasPrefix(cur, "'") && strings.HasPrefix(r, "'") {
+				(leftType == (types.StringType{}) || rightType == (types.StringType{}) ||
+					(strings.HasPrefix(cur, "'") && strings.HasPrefix(r, "'"))) {
 				cmp := fmt.Sprintf("%s.compareTo(%s)", cur, r)
 				switch op.Op {
 				case "<":
@@ -878,6 +879,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	w := func(s string) { b.WriteString(s) }
 
 	origEnv := c.env
+	origGroup := c.groupKeys
+	tmpGroup := make(map[string]string, len(c.groupKeys))
+	for k, v := range c.groupKeys {
+		tmpGroup[k] = v
+	}
+	c.groupKeys = tmpGroup
 	child := types.NewEnv(c.env)
 	srcType := types.TypeOfExpr(q.Source, c.env)
 	var elemType types.Type = types.AnyType{}
@@ -1048,6 +1055,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			w(fmt.Sprintf("  return %s;\n", c.aggregateExpr(agg, tmp)))
 			w("})()")
 			c.env = origEnv
+			c.groupKeys = origGroup
 			return b.String(), nil
 		}
 	}
@@ -1249,6 +1257,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	w(fmt.Sprintf("  return %s;\n", tmp))
 	w("})()")
 	c.env = origEnv
+	c.groupKeys = origGroup
 	return b.String(), nil
 }
 
@@ -1390,6 +1399,13 @@ func (c *Compiler) compileSelector(sel *parser.SelectorExpr) string {
 		}
 	}
 	if _, ok := typ.(types.MapType); ok {
+		s := root
+		for _, part := range sel.Tail {
+			s += fmt.Sprintf("['%s']", part)
+		}
+		return s
+	}
+	if _, ok := typ.(types.GroupType); ok {
 		s := root
 		for _, part := range sel.Tail {
 			s += fmt.Sprintf("['%s']", part)
