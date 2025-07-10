@@ -30,10 +30,10 @@ struct Group {
     items: Vec<Result>,
 }
 
-#[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Default, Debug, Clone, PartialEq)]
 struct Result1 {
     part: i32,
-    total: i32,
+    total: f64,
 }
 
 fn sum<T>(v: &[T]) -> T where T: std::iter::Sum<T> + Copy {
