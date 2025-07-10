@@ -114,38 +114,38 @@ int main() {
   _t2.len = _t4;
   _t3.len = _t4;
   list_group_string _t5 = _group_by_string(_t3);
-  list_int _t6 = list_int_create(g.items.len);
+  list_int _t6 = list_int_create(_t5.len);
   int _t7 = 0;
-  for (int i = 0; i < g.items.len; i++) {
-    peopleItem p = g.items.data[i];
-    _t6.data[_t7] = p.age;
-    _t7++;
-  }
-  _t6.len = _t7;
-  list_int _t8 = list_int_create(_t5.len);
-  int _t9 = 0;
   for (int gi = 0; gi < _t5.len; gi++) {
     _GroupString _gp = _t5.data[gi];
-    list_peopleItem _t10 = list_peopleItem_create(_gp.items.len);
+    list_peopleItem _t8 = list_peopleItem_create(_gp.items.len);
     for (int j = 0; j < _gp.items.len; j++) {
-      _t10.data[j] = _t2.data[_gp.items.data[j]];
+      _t8.data[j] = _t2.data[_gp.items.data[j]];
     }
-    _t10.len = _gp.items.len;
+    _t8.len = _gp.items.len;
     struct {
       char *key;
       list_peopleItem items;
-    } g = {_gp.key, _t10};
-    _t8.data[_t9] = (statsItem){
+    } g = {_gp.key, _t8};
+    list_int _t9 = list_int_create(g.items.len);
+    int _t10 = 0;
+    for (int i = 0; i < g.items.len; i++) {
+      peopleItem p = g.items.data[i];
+      _t9.data[_t10] = p.age;
+      _t10++;
+    }
+    _t9.len = _t10;
+    _t6.data[_t7] = (statsItem){
         .city = g.key, .count = g.items.len, .avg_age = ({
                                                double sum = 0;
-                                               for (int i = 0; i < _t6.len; i++)
-                                                 sum += _t6.data[i];
-                                               sum / _t6.len;
+                                               for (int i = 0; i < _t9.len; i++)
+                                                 sum += _t9.data[i];
+                                               sum / _t9.len;
                                              })};
-    _t9++;
+    _t7++;
   }
-  _t8.len = _t9;
-  list_statsItem stats = _t8;
+  _t6.len = _t7;
+  list_statsItem stats = _t6;
   printf("%s\n", "--- People grouped by city ---");
   for (int _t11 = 0; _t11 < stats.len; _t11++) {
     statsItem s = stats.data[_t11];

@@ -1564,7 +1564,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 							}
 						}
 					}
-					val := c.compileExpr(q.Select)
 					retT := c.exprType(q.Select)
 					if ml := asMapLiteral(q.Select); ml != nil {
 						if st, ok := retT.(types.StructType); ok {
@@ -1587,6 +1586,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 					c.writeln(fmt.Sprintf("for (int i=0; i<%s.len; i++) {", groups))
 					c.indent++
 					c.writeln(fmt.Sprintf("_GroupInt %s = %s.data[i];", sanitizeName(q.Group.Name), groups))
+					val := c.compileExpr(q.Select)
 					c.writeln(fmt.Sprintf("%s.data[%s] = %s;", res, idx, val))
 					c.writeln(fmt.Sprintf("%s++;", idx))
 					c.indent--
@@ -1661,7 +1661,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 							}
 						}
 					}
-					val := c.compileExpr(q.Select)
 					retT := c.exprType(q.Select)
 					if ml := asMapLiteral(q.Select); ml != nil {
 						if st, ok := retT.(types.StructType); ok {
@@ -1693,6 +1692,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 					c.writeln("}")
 					c.writeln(fmt.Sprintf("%s.len = _gp.items.len;", items))
 					c.writeln(fmt.Sprintf("struct {char* key; %s items; } %s = { _gp.key, %s };", listC, sanitizeName(q.Group.Name), items))
+					val := c.compileExpr(q.Select)
 					c.writeln(fmt.Sprintf("%s.data[%s] = %s;", res, idxRes, val))
 					c.writeln(fmt.Sprintf("%s++;", idxRes))
 					c.indent--
@@ -1768,7 +1768,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 								}
 							}
 						}
-						val := c.compileExpr(q.Select)
 						retT := c.exprType(q.Select)
 						if ml := asMapLiteral(q.Select); ml != nil {
 							if st, ok := retT.(types.StructType); ok {
@@ -1800,6 +1799,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						c.writeln("}")
 						c.writeln(fmt.Sprintf("%s.len = _gp.items.len;", items))
 						c.writeln(fmt.Sprintf("struct { pair_string key; %s items; } %s = { _gp.key, %s };", listC, sanitizeName(q.Group.Name), items))
+						val := c.compileExpr(q.Select)
 						c.writeln(fmt.Sprintf("%s.data[%s] = %s;", res, idxRes, val))
 						c.writeln(fmt.Sprintf("%s++;", idxRes))
 						c.indent--
@@ -4403,17 +4403,17 @@ func asFetchExpr(e *parser.Expr) *parser.FetchExpr {
 }
 
 func (c *Compiler) emitJSONExpr(e *parser.Expr) {
-        argExpr := c.compileExpr(e)
-        c.need(needJSON)
-        c.need(needListFloat)
-        c.need(needListString)
-        c.need(needListListInt)
-        c.need(needListInt)
-        if isListListExpr(e, c.env) {
-                c.writeln(fmt.Sprintf("_json_list_list_int(%s);", argExpr))
-        } else if isListIntExpr(e, c.env) {
-                c.writeln(fmt.Sprintf("_json_list_int(%s);", argExpr))
-        } else if isListFloatExpr(e, c.env) {
+	argExpr := c.compileExpr(e)
+	c.need(needJSON)
+	c.need(needListFloat)
+	c.need(needListString)
+	c.need(needListListInt)
+	c.need(needListInt)
+	if isListListExpr(e, c.env) {
+		c.writeln(fmt.Sprintf("_json_list_list_int(%s);", argExpr))
+	} else if isListIntExpr(e, c.env) {
+		c.writeln(fmt.Sprintf("_json_list_int(%s);", argExpr))
+	} else if isListFloatExpr(e, c.env) {
 		c.writeln(fmt.Sprintf("_json_list_float(%s);", argExpr))
 	} else if isListStringExpr(e, c.env) {
 		c.writeln(fmt.Sprintf("_json_list_string(%s);", argExpr))
