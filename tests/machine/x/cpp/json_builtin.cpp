@@ -52,6 +52,12 @@ struct __struct1 {
   decltype(1) a;
   decltype(2) b;
 };
+inline bool operator==(const __struct1 &a, const __struct1 &b) {
+  return a.a == b.a && a.b == b.b;
+}
+inline bool operator!=(const __struct1 &a, const __struct1 &b) {
+  return !(a == b);
+}
 inline void __json(const __struct1 &v) {
   bool first = true;
   std::cout << "{";

@@ -1,16 +1,26 @@
 #include <iostream>
 #include <vector>
 
-struct __struct1 {
-  decltype(std::string("Alice")) name;
-  decltype(17) age;
-  decltype(std::string("minor")) status;
-};
 struct Person {
   std::string name;
   int age;
   std::string status;
 };
+inline bool operator==(const Person &a, const Person &b) {
+  return a.name == b.name && a.age == b.age && a.status == b.status;
+}
+inline bool operator!=(const Person &a, const Person &b) { return !(a == b); }
+struct __struct1 {
+  decltype(std::string("Alice")) name;
+  decltype(17) age;
+  decltype(std::string("minor")) status;
+};
+inline bool operator==(const __struct1 &a, const __struct1 &b) {
+  return a.name == b.name && a.age == b.age && a.status == b.status;
+}
+inline bool operator!=(const __struct1 &a, const __struct1 &b) {
+  return !(a == b);
+}
 auto people = std::vector<decltype(__struct1{std::string("Alice"), 17,
                                              std::string("minor")})>{
     __struct1{std::string("Alice"), 17, std::string("minor")},

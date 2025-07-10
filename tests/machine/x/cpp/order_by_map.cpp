@@ -7,6 +7,12 @@ struct __struct1 {
   decltype(1) a;
   decltype(2) b;
 };
+inline bool operator==(const __struct1 &a, const __struct1 &b) {
+  return a.a == b.a && a.b == b.b;
+}
+inline bool operator!=(const __struct1 &a, const __struct1 &b) {
+  return !(a == b);
+}
 std::vector<__struct1> data = std::vector<decltype(__struct1{1, 2})>{
     __struct1{1, 2}, __struct1{1, 1}, __struct1{0, 5}};
 auto sorted = ([]() {

@@ -52,16 +52,55 @@ struct __struct1 {
   decltype(1) id;
   decltype(std::string("Alice")) name;
 };
+inline bool operator==(const __struct1 &a, const __struct1 &b) {
+  return a.id == b.id && a.name == b.name;
+}
+inline bool operator!=(const __struct1 &a, const __struct1 &b) {
+  return !(a == b);
+}
 struct __struct2 {
   decltype(100) id;
   decltype(1) customerId;
   decltype(250) total;
 };
+inline bool operator==(const __struct2 &a, const __struct2 &b) {
+  return a.id == b.id && a.customerId == b.customerId && a.total == b.total;
+}
+inline bool operator!=(const __struct2 &a, const __struct2 &b) {
+  return !(a == b);
+}
 struct __struct3 {
   decltype(std::declval<__struct2>().id) orderId;
   __struct1 customer;
   decltype(std::declval<__struct2>().total) total;
 };
+inline bool operator==(const __struct3 &a, const __struct3 &b) {
+  return a.orderId == b.orderId && a.customer == b.customer &&
+         a.total == b.total;
+}
+inline bool operator!=(const __struct3 &a, const __struct3 &b) {
+  return !(a == b);
+}
+inline void __json(const __struct3 &v) {
+  bool first = true;
+  std::cout << "{";
+  if (!first)
+    std::cout << ",";
+  first = false;
+  std::cout << "\"orderId\":";
+  __json(v.orderId);
+  if (!first)
+    std::cout << ",";
+  first = false;
+  std::cout << "\"customer\":";
+  __json(v.customer);
+  if (!first)
+    std::cout << ",";
+  first = false;
+  std::cout << "\"total\":";
+  __json(v.total);
+  std::cout << "}";
+}
 inline void __json(const __struct1 &v) {
   bool first = true;
   std::cout << "{";
@@ -90,26 +129,6 @@ inline void __json(const __struct2 &v) {
   first = false;
   std::cout << "\"customerId\":";
   __json(v.customerId);
-  if (!first)
-    std::cout << ",";
-  first = false;
-  std::cout << "\"total\":";
-  __json(v.total);
-  std::cout << "}";
-}
-inline void __json(const __struct3 &v) {
-  bool first = true;
-  std::cout << "{";
-  if (!first)
-    std::cout << ",";
-  first = false;
-  std::cout << "\"orderId\":";
-  __json(v.orderId);
-  if (!first)
-    std::cout << ",";
-  first = false;
-  std::cout << "\"customer\":";
-  __json(v.customer);
   if (!first)
     std::cout << ",";
   first = false;

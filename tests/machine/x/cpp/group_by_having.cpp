@@ -52,14 +52,32 @@ struct __struct1 {
   decltype(std::string("Alice")) name;
   decltype(std::string("Paris")) city;
 };
+inline bool operator==(const __struct1 &a, const __struct1 &b) {
+  return a.name == b.name && a.city == b.city;
+}
+inline bool operator!=(const __struct1 &a, const __struct1 &b) {
+  return !(a == b);
+}
 struct __struct2 {
   decltype(std::declval<__struct1>().city) key;
   std::vector<__struct1> items;
 };
+inline bool operator==(const __struct2 &a, const __struct2 &b) {
+  return a.key == b.key && a.items == b.items;
+}
+inline bool operator!=(const __struct2 &a, const __struct2 &b) {
+  return !(a == b);
+}
 struct __struct3 {
   decltype(std::declval<__struct2>().key) city;
   int num;
 };
+inline bool operator==(const __struct3 &a, const __struct3 &b) {
+  return a.city == b.city && a.num == b.num;
+}
+inline bool operator!=(const __struct3 &a, const __struct3 &b) {
+  return !(a == b);
+}
 inline void __json(const __struct1 &v) {
   bool first = true;
   std::cout << "{";

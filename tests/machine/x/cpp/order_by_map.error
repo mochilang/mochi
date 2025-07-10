@@ -1,6 +1,6 @@
-line 16: ../../../tests/machine/x/cpp/order_by_map.cpp: In lambda function:
-../../../tests/machine/x/cpp/order_by_map.cpp:16:22: error: no matching function for call to ‘std::vector<std::pair<int, __struct1> >::push_back(<brace-enclosed initializer list>)’
-   16 |     __items.push_back({__struct1{x.a, x.b}, x});
+line 22: ../../../tests/machine/x/cpp/order_by_map.cpp: In lambda function:
+../../../tests/machine/x/cpp/order_by_map.cpp:22:22: error: no matching function for call to ‘std::vector<std::pair<int, __struct1> >::push_back(<brace-enclosed initializer list>)’
+   22 |     __items.push_back({__struct1{x.a, x.b}, x});
       |     ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~
 In file included from /usr/include/c++/13/vector:66,
                  from ../../../tests/machine/x/cpp/order_by_map.cpp:4:
@@ -17,6 +17,6 @@ In file included from /usr/include/c++/13/vector:66,
  1298 |       push_back(value_type&& __x)
       |                 ~~~~~~~~~~~~~^~~
 
- 15 |   for (auto x : data) {
- 16 |     __items.push_back({__struct1{x.a, x.b}, x});
- 17 |   }
+ 21 |   for (auto x : data) {
+ 22 |     __items.push_back({__struct1{x.a, x.b}, x});
+ 23 |   }

@@ -7,6 +7,12 @@ struct __struct1 {
   decltype(std::string("Laptop")) name;
   decltype(1500) price;
 };
+inline bool operator==(const __struct1 &a, const __struct1 &b) {
+  return a.name == b.name && a.price == b.price;
+}
+inline bool operator!=(const __struct1 &a, const __struct1 &b) {
+  return !(a == b);
+}
 std::vector<__struct1> products =
     std::vector<decltype(__struct1{std::string("Laptop"), 1500})>{
         __struct1{std::string("Laptop"), 1500},

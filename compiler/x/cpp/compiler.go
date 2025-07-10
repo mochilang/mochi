@@ -1137,13 +1137,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				info = &structInfo{Name: fmt.Sprintf("__struct%d", c.structCount), Fields: append([]string(nil), names...), Types: append([]string(nil), fieldTypes...)}
 				c.structMap[sig] = info
 				c.structByName[info.Name] = info
-				var def strings.Builder
-				def.WriteString("struct " + info.Name + " {")
-				for i, n := range names {
-					def.WriteString(fieldTypes[i] + " " + n + "; ")
-				}
-				def.WriteString("};")
-				c.headerWriteln(def.String())
+				c.defineStruct(info)
 			}
 			return fmt.Sprintf("%s{%s}", info.Name, strings.Join(vals, ", ")), nil
 		}

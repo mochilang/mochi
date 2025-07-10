@@ -5,6 +5,12 @@ struct __struct1 {
   decltype(2) value;
   decltype(Leaf) right;
 };
+inline bool operator==(const __struct1 &a, const __struct1 &b) {
+  return a.left == b.left && a.value == b.value && a.right == b.right;
+}
+inline bool operator!=(const __struct1 &a, const __struct1 &b) {
+  return !(a == b);
+}
 
 auto sum_tree(auto t) {
   return ([&]() {

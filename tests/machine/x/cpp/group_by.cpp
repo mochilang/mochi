@@ -6,15 +6,33 @@ struct __struct1 {
   decltype(30) age;
   decltype(std::string("Paris")) city;
 };
+inline bool operator==(const __struct1 &a, const __struct1 &b) {
+  return a.name == b.name && a.age == b.age && a.city == b.city;
+}
+inline bool operator!=(const __struct1 &a, const __struct1 &b) {
+  return !(a == b);
+}
 struct __struct2 {
   decltype(std::declval<__struct1>().city) key;
   std::vector<__struct1> items;
 };
+inline bool operator==(const __struct2 &a, const __struct2 &b) {
+  return a.key == b.key && a.items == b.items;
+}
+inline bool operator!=(const __struct2 &a, const __struct2 &b) {
+  return !(a == b);
+}
 struct __struct3 {
   decltype(std::declval<__struct2>().key) city;
   int count;
   bool avg_age;
 };
+inline bool operator==(const __struct3 &a, const __struct3 &b) {
+  return a.city == b.city && a.count == b.count && a.avg_age == b.avg_age;
+}
+inline bool operator!=(const __struct3 &a, const __struct3 &b) {
+  return !(a == b);
+}
 std::vector<__struct1> people = std::vector<decltype(__struct1{
     std::string("Alice"), 30, std::string("Paris")})>{
     __struct1{std::string("Alice"), 30, std::string("Paris")},

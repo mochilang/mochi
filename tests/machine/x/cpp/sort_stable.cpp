@@ -7,6 +7,12 @@ struct __struct1 {
   decltype(1) n;
   decltype(std::string("a")) v;
 };
+inline bool operator==(const __struct1 &a, const __struct1 &b) {
+  return a.n == b.n && a.v == b.v;
+}
+inline bool operator!=(const __struct1 &a, const __struct1 &b) {
+  return !(a == b);
+}
 std::vector<__struct1> items =
     std::vector<decltype(__struct1{1, std::string("a")})>{
         __struct1{1, std::string("a")}, __struct1{1, std::string("b")},
