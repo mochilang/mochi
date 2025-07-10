@@ -19,19 +19,22 @@ var identifierRegexp = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_]*$`)
 // subset of Mochi. It is intentionally minimal and only handles the
 // constructs required by a few simple programs.
 type Compiler struct {
-	buf          bytes.Buffer
-	prelude      bytes.Buffer
-	indent       int
-	vars         map[string]string
-	structs      map[string]map[string]string
-	groups       map[string]bool
-	maps         map[string]bool
-	anon         map[string]string
-	anonCnt      int
-	usesJson     bool
-	usesYaml     bool
-	usesBreak    bool
-	usesContinue bool
+	buf           bytes.Buffer
+	prelude       bytes.Buffer
+	indent        int
+	vars          map[string]string
+	structs       map[string]map[string]string
+	groups        map[string]bool
+	maps          map[string]bool
+	anon          map[string]string
+	anonCnt       int
+	usesJson      bool
+	usesYaml      bool
+	usesBreak     bool
+	usesContinue  bool
+	usesUnion     bool
+	usesExcept    bool
+	usesIntersect bool
 }
 
 func defaultValue(typ string) string {
@@ -69,15 +72,18 @@ func (c *Compiler) compileType(t *parser.TypeRef) (string, error) {
 // New creates a new F# compiler instance.
 func New() *Compiler {
 	return &Compiler{
-		vars:         make(map[string]string),
-		structs:      make(map[string]map[string]string),
-		groups:       make(map[string]bool),
-		maps:         make(map[string]bool),
-		anon:         make(map[string]string),
-		usesJson:     false,
-		usesYaml:     false,
-		usesBreak:    false,
-		usesContinue: false,
+		vars:          make(map[string]string),
+		structs:       make(map[string]map[string]string),
+		groups:        make(map[string]bool),
+		maps:          make(map[string]bool),
+		anon:          make(map[string]string),
+		usesJson:      false,
+		usesYaml:      false,
+		usesBreak:     false,
+		usesContinue:  false,
+		usesUnion:     false,
+		usesExcept:    false,
+		usesIntersect: false,
 	}
 }
 
@@ -96,6 +102,9 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.usesYaml = false
 	c.usesBreak = false
 	c.usesContinue = false
+	c.usesUnion = false
+	c.usesExcept = false
+	c.usesIntersect = false
 
 	for _, s := range p.Statements {
 		if err := c.compileStmt(s); err != nil {
@@ -116,6 +125,18 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 		header.WriteString("exception Break\n")
 		header.WriteString("exception Continue\n")
 		header.WriteString("\n")
+	}
+	if c.usesUnion {
+		c.prelude.WriteString("let _union (a: 'T list) (b: 'T list) : 'T list =\n")
+		c.prelude.WriteString("    List.distinct (a @ b)\n\n")
+	}
+	if c.usesExcept {
+		c.prelude.WriteString("let _except (a: 'T list) (b: 'T list) : 'T list =\n")
+		c.prelude.WriteString("    List.filter (fun x -> not (List.contains x b)) a\n\n")
+	}
+	if c.usesIntersect {
+		c.prelude.WriteString("let _intersect (a: 'T list) (b: 'T list) : 'T list =\n")
+		c.prelude.WriteString("    a |> List.filter (fun x -> List.contains x b) |> List.distinct\n\n")
 	}
 	var final bytes.Buffer
 	final.Write(header.Bytes())
@@ -573,6 +594,22 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			}
 			res = fmt.Sprintf("List.contains %s %s", res, r)
 			continue
+		case "union":
+			if op.All {
+				res = fmt.Sprintf("(%s @ %s)", res, r)
+				continue
+			}
+			c.usesUnion = true
+			res = fmt.Sprintf("(_union %s %s)", res, r)
+			continue
+		case "except":
+			c.usesExcept = true
+			res = fmt.Sprintf("(_except %s %s)", res, r)
+			continue
+		case "intersect":
+			c.usesIntersect = true
+			res = fmt.Sprintf("(_intersect %s %s)", res, r)
+			continue
 		}
 		res = fmt.Sprintf("%s %s %s", res, oper, r)
 	}
@@ -815,7 +852,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 						return fmt.Sprintf("printfn \"%%s\" (String.concat \" \" (List.map string (%s)))", args[0]), nil
 					}
 				}
-				if t.List != nil {
+				if t.List != nil && len(argAST.Binary.Right) == 0 {
 					return fmt.Sprintf("printfn \"%%s\" (String.concat \" \" (List.map string %s))", args[0]), nil
 				}
 			}
