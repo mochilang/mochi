@@ -1,4 +1,3 @@
-open System
 
 let add (a) (b) =
     a + b

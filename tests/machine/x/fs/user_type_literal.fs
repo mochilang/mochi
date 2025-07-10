@@ -1,4 +1,3 @@
-open System
 
 type Person = {
     mutable name: string

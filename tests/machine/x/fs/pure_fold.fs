@@ -1,4 +1,3 @@
-open System
 
 let triple (x) =
     x * 3

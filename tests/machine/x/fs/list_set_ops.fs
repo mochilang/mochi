@@ -1,4 +1,3 @@
-open System
 
 let _union (a: 'T list) (b: 'T list) : 'T list =
     List.distinct (a @ b)

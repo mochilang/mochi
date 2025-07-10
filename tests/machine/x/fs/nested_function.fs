@@ -1,4 +1,3 @@
-open System
 
 let outer (x) =
     let inner (y) =

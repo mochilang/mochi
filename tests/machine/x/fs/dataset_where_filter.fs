@@ -1,4 +1,3 @@
-open System
 
 type Anon1 = {
     name: string

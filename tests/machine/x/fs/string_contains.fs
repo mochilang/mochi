@@ -1,4 +1,3 @@
-open System
 
 let s: string = "catch"
 printfn "%s" s.contains("cat")

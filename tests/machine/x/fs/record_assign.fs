@@ -1,4 +1,3 @@
-open System
 
 type Counter = {
     mutable n: int

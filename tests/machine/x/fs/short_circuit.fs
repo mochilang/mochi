@@ -1,4 +1,3 @@
-open System
 
 let boom (a) (b) =
     printfn "%s" "boom"

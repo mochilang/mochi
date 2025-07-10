@@ -1,4 +1,3 @@
-open System
 
 let twoSum (nums) (target) =
     let n = List.length nums
