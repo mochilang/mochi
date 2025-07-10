@@ -9,6 +9,15 @@ import (
 	"mochi/types"
 )
 
+var hsReserved = map[string]bool{
+	"case": true, "class": true, "data": true, "default": true,
+	"deriving": true, "do": true, "else": true, "foreign": true,
+	"if": true, "import": true, "in": true, "infix": true,
+	"infixl": true, "infixr": true, "instance": true, "let": true,
+	"module": true, "newtype": true, "of": true, "then": true,
+	"type": true, "where": true,
+}
+
 func (c *Compiler) writeln(s string) {
 	c.writeIndent()
 	c.buf.WriteString(s)
@@ -35,6 +44,9 @@ func sanitizeName(name string) string {
 	}
 	s := b.String()
 	if s == "" || !((s[0] >= 'A' && s[0] <= 'Z') || (s[0] >= 'a' && s[0] <= 'z') || s[0] == '_') {
+		s = "_" + s
+	}
+	if hsReserved[s] {
 		s = "_" + s
 	}
 	return s
