@@ -1,0 +1,15 @@
+line: 0
+error: output mismatch
+-- got --
+two
+1644617776
+1644617816
+zero
+many
+-- want --
+two
+relaxed
+confirmed
+zero
+many
+   1: #include <stdio.h>

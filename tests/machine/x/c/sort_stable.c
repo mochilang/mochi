@@ -39,7 +39,7 @@ int main() {
   _t1.data[0] = (itemsItem){.n = 1, .v = "a"};
   _t1.data[1] = (itemsItem){.n = 1, .v = "b"};
   _t1.data[2] = (itemsItem){.n = 2, .v = "c"};
-  list_itemsItem items = _t1;
+  __auto_type items = _t1;
   list_string _t2 = list_string_create(items.len);
   int *_t5 = (int *)malloc(sizeof(int) * items.len);
   int _t3 = 0;
@@ -62,7 +62,7 @@ int main() {
       }
     }
   }
-  list_string result = _t2;
+  __auto_type result = _t2;
   _print_list_string(result);
   printf("\n");
   return 0;

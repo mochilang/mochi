@@ -43,7 +43,7 @@ int sum_tree(Tree t) {
 }
 
 int main() {
-  Tree t =
+  __auto_type t =
       (Tree){.tag = Tree_Node,
              .value.Node = (Node){
                  .left = &(Tree){.tag = Tree_Leaf},

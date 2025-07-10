@@ -30,7 +30,7 @@ static list_dataItem list_dataItem_create(int len) {
 }
 
 int main() {
-  dataItem data = (dataItem){.outer = (outerItem){.inner = 1}};
+  __auto_type data = (dataItem){.outer = (outerItem){.inner = 1}};
   data.outer.inner = 2;
   printf("%d\n", data.outer.inner);
   return 0;

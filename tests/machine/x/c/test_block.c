@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 static void test_addition_works() {
-  int x = 1 + 2;
+  __auto_type x = 1 + 2;
   if (!(x == 3)) {
     fprintf(stderr, "expect failed\n");
     exit(1);

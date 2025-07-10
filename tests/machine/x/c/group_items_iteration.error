@@ -4,20 +4,17 @@ error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/group_items_iteration.c:153:21: error: incompatible types when assigning to type ‘int’ from type ‘struct <anonymous>’
   153 |     _t6.data[_t7] = g;
       |                     ^
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:158:18: error: ‘_t9’ undeclared (first use in this function); did you mean ‘_t7’?
-  158 |   list_int tmp = _t9;
-      |                  ^~~
-      |                  _t7
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:158:18: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:158:21: error: ‘_t9’ undeclared (first use in this function); did you mean ‘_t7’?
+  158 |   __auto_type tmp = _t9;
+      |                     ^~~
+      |                     _t7
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:158:21: note: each undeclared identifier is reported only once for each function it appears in
 /workspace/mochi/tests/machine/x/c/group_items_iteration.c:162:32: error: request for member ‘items’ in something not a structure or union
   162 |     for (int _t11 = 0; _t11 < g.items.len; _t11++) {
       |                                ^
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:163:16: error: request for member ‘items’ in something not a structure or union
-  163 |       int x = g.items.data[_t11];
-      |                ^
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:164:24: error: request for member ‘val’ in something not a structure or union
-  164 |       total = total + x.val;
-      |                        ^
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:163:21: error: request for member ‘items’ in something not a structure or union
+  163 |       dataItem x = g.items.data[_t11];
+      |                     ^
 /workspace/mochi/tests/machine/x/c/group_items_iteration.c:167:37: error: request for member ‘key’ in something not a structure or union
   167 |     map_int_bool_put(&_t12, "tag", g.key);
       |                                     ^
@@ -37,9 +34,9 @@ error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/group_items_iteration.c:49:51: note: expected ‘int’ but argument is of type ‘char *’
    49 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
       |                                               ~~~~^~~
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:169:11: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:169:5: error: ‘tmp’ undeclared (first use in this function)
   169 |     tmp = 0;
-      |           ^
+      |     ^~~
 /workspace/mochi/tests/machine/x/c/group_items_iteration.c:177:19: error: request for member ‘tag’ in something not a structure or union
   177 |     _t16[_t14] = r.tag;
       |                   ^

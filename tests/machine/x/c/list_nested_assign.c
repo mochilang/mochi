@@ -31,7 +31,7 @@ int main() {
   _t3.data[0] = 3;
   _t3.data[1] = 4;
   _t1.data[1] = _t3;
-  list_list_int matrix = _t1;
+  __auto_type matrix = _t1;
   matrix.data[1].data[0] = 5;
   printf("%d\n", matrix.data[1].data[0]);
   return 0;

@@ -7,7 +7,7 @@ static int _partial0_arg0;
 int add(int a, int b) { return a + b; }
 
 int main() {
-  int (*add5)(int) = (_partial0_arg0 = 5, _partial0);
+  __auto_type add5 = (_partial0_arg0 = 5, _partial0);
   printf("%d\n", add5(3));
   return 0;
 }

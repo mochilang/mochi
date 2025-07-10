@@ -15,7 +15,7 @@ int main() {
   list_int _t1 = list_int_create(2);
   _t1.data[0] = 1;
   _t1.data[1] = 2;
-  list_int data = _t1;
+  __auto_type data = _t1;
   list_int _t2 = list_int_create(data.len);
   int _t3 = 0;
   for (int _t4 = 0; _t4 < data.len; _t4++) {
@@ -27,7 +27,7 @@ int main() {
     _t3++;
   }
   _t2.len = _t3;
-  int flag = _t2.len > 0;
+  __auto_type flag = _t2.len > 0;
   printf("%s\n", (flag) ? "true" : "false");
   return 0;
 }

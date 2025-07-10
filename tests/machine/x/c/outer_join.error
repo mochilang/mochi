@@ -1,21 +1,6 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/outer_join.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/outer_join.c:63:3: error: unknown type name ‘list_int’
-   63 |   list_int _t3 = list_int_create(orders.len * customers.len);
-      |   ^~~~~~~~
-/workspace/mochi/tests/machine/x/c/outer_join.c:63:18: warning: implicit declaration of function ‘list_int_create’ [-Wimplicit-function-declaration]
-   63 |   list_int _t3 = list_int_create(orders.len * customers.len);
-      |                  ^~~~~~~~~~~~~~~
-/workspace/mochi/tests/machine/x/c/outer_join.c:72:10: error: request for member ‘data’ in something not a structure or union
-   72 |       _t3.data[_t4] = (resultItem){.order = o, .customer = c};
-      |          ^
-/workspace/mochi/tests/machine/x/c/outer_join.c:76:6: error: request for member ‘len’ in something not a structure or union
-   76 |   _t3.len = _t4;
-      |      ^
-/workspace/mochi/tests/machine/x/c/outer_join.c:77:28: error: invalid initializer
-   77 |   list_resultItem result = _t3;
-      |                            ^~~
 /workspace/mochi/tests/machine/x/c/outer_join.c:81:9: error: used struct type value where scalar is required
    81 |     if (row.order) {
       |         ^~~

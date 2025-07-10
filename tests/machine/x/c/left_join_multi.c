@@ -66,14 +66,14 @@ int main() {
   list_customersItem _t1 = list_customersItem_create(2);
   _t1.data[0] = (customersItem){.id = 1, .name = "Alice"};
   _t1.data[1] = (customersItem){.id = 2, .name = "Bob"};
-  list_customersItem customers = _t1;
+  __auto_type customers = _t1;
   list_ordersItem _t2 = list_ordersItem_create(2);
   _t2.data[0] = (ordersItem){.id = 100, .customerId = 1};
   _t2.data[1] = (ordersItem){.id = 101, .customerId = 2};
-  list_ordersItem orders = _t2;
+  __auto_type orders = _t2;
   list_itemsItem _t3 = list_itemsItem_create(1);
   _t3.data[0] = (itemsItem){.orderId = 100, .sku = "a"};
-  list_itemsItem items = _t3;
+  __auto_type items = _t3;
   list_resultItem _t4 =
       list_resultItem_create(orders.len * customers.len * items.len);
   int _t5 = 0;

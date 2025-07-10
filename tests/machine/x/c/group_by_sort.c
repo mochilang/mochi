@@ -17,7 +17,7 @@ static list_itemsItem list_itemsItem_create(int len) {
 }
 
 typedef struct {
-  int cat;
+  char *cat;
   double total;
 } groupedItem;
 typedef struct {
@@ -37,7 +37,7 @@ int main() {
   _t1.data[1] = (itemsItem){.cat = "a", .val = 1};
   _t1.data[2] = (itemsItem){.cat = "b", .val = 5};
   _t1.data[3] = (itemsItem){.cat = "b", .val = 2};
-  list_itemsItem items = _t1;
+  __auto_type items = _t1;
   list_groupedItem grouped = 0;
   printf("%d\n", grouped);
   return 0;

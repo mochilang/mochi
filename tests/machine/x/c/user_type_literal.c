@@ -15,7 +15,7 @@ typedef struct Book {
 } Book;
 
 int main() {
-  Book book =
+  __auto_type book =
       (Book){.title = "Go", .author = (Person){.name = "Bob", .age = 42}};
   printf("%s\n", book.author.name);
   return 0;
