@@ -112,3 +112,4 @@ while failures have a `.error` log.
 - [ ] Improve query output formatting beyond `_showAny` helpers.
 - [ ] Generate `.out` files once Haskell dependencies are available.
 - [ ] Implement record assignment transformations.
+- [x] Trim unused imports in generated code.
