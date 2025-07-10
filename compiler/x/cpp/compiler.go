@@ -470,6 +470,7 @@ func (c *Compiler) compileIf(st *parser.IfStmt) error {
 	if err != nil {
 		return err
 	}
+	cond = c.ensureBool(cond)
 	c.writeln("if (" + cond + ") {")
 	c.indent++
 	for _, s := range st.Then {
@@ -498,6 +499,7 @@ func (c *Compiler) compileWhile(st *parser.WhileStmt) error {
 	if err != nil {
 		return err
 	}
+	cond = c.ensureBool(cond)
 	c.writeln("while (" + cond + ") {")
 	c.indent++
 	for _, s := range st.Body {
@@ -579,6 +581,7 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 			c.aliases = oldAliases
 			return err
 		}
+		cond = c.ensureBool(cond)
 		c.writeln("if (" + cond + ") {")
 		c.indent++
 	}
@@ -669,6 +672,11 @@ func (c *Compiler) isVectorExpr(e *parser.Expr) bool {
 	}
 	pf := u.Value
 	if len(pf.Ops) > 0 {
+		for _, op := range pf.Ops {
+			if op.Index != nil && (op.Index.End != nil || op.Index.Colon != nil) {
+				return true
+			}
+		}
 		return false
 	}
 	if pf.Target != nil {
@@ -891,7 +899,18 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				expr = fmt.Sprintf("std::string(%s).substr(%s, (%s)-(%s))", expr, start, end, start)
+				if end == "" {
+					end = fmt.Sprintf("%s.size()", expr)
+				}
+				if c.isVectorType(expr) {
+					et := extractVectorElemType(expr)
+					if et == "" {
+						et = fmt.Sprintf("decltype(%s[0])", expr)
+					}
+					expr = fmt.Sprintf("([&](auto v){ return std::vector<%s>(v.begin()+%s, v.begin()+%s); })(%s)", et, start, end, expr)
+				} else {
+					expr = fmt.Sprintf("std::string(%s).substr(%s, (%s)-(%s))", expr, start, end, start)
+				}
 			} else {
 				if op.Index.Start == nil {
 					return "", fmt.Errorf("unsupported empty index")
@@ -1554,7 +1573,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if i == len(joinSrcs) {
 			if where != "" {
 				indent(indentLevel)
-				buf.WriteString("if (!(" + where + ")) continue;\n")
+				cond := c.ensureBool(where)
+				buf.WriteString("if (!(" + cond + ")) continue;\n")
 			}
 			indent(indentLevel)
 			if key != "" || skip != "" || take != "" {
@@ -1577,7 +1597,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			buf.WriteString("for (auto " + q.Joins[i].Var + " : " + joinSrcs[i] + ") {\n")
 			indentLevel++
 			indent(indentLevel)
-			buf.WriteString("if (!(" + joinOns[i] + ")) continue;\n")
+			onCond := c.ensureBool(joinOns[i])
+			buf.WriteString("if (!(" + onCond + ")) continue;\n")
 			indent(indentLevel)
 			buf.WriteString("__matched" + strconv.Itoa(i) + " = true;\n")
 			joinLoop(i + 1)
@@ -1601,7 +1622,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			buf.WriteString("for (auto " + q.Joins[i].Var + " : " + joinSrcs[i] + ") {\n")
 			indentLevel++
 			indent(indentLevel)
-			buf.WriteString("if (!(" + joinOns[i] + ")) continue;\n")
+			onCond := c.ensureBool(joinOns[i])
+			buf.WriteString("if (!(" + onCond + ")) continue;\n")
 			joinLoop(i + 1)
 			indentLevel--
 			indent(indentLevel)
@@ -1928,7 +1950,8 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 			buf.WriteString("for (auto " + q.Joins[i].Var + " : " + joinSrcs[i] + ") {\n")
 			indentLevel++
 			indent(indentLevel)
-			buf.WriteString("if (!(" + joinOns[i] + ")) continue;\n")
+			onCond := c.ensureBool(joinOns[i])
+			buf.WriteString("if (!(" + onCond + ")) continue;\n")
 			indent(indentLevel)
 			buf.WriteString("__matched" + strconv.Itoa(i) + " = true;\n")
 			joinLoop(i + 1)
@@ -1952,7 +1975,8 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 			buf.WriteString("for (auto " + q.Joins[i].Var + " : " + joinSrcs[i] + ") {\n")
 			indentLevel++
 			indent(indentLevel)
-			buf.WriteString("if (!(" + joinOns[i] + ")) continue;\n")
+			onCond := c.ensureBool(joinOns[i])
+			buf.WriteString("if (!(" + onCond + ")) continue;\n")
 			joinLoop(i + 1)
 			indentLevel--
 			indent(indentLevel)
@@ -1986,7 +2010,8 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 	indentLevel++
 	if havingExpr != "" {
 		indent(indentLevel)
-		buf.WriteString("if (!(" + havingExpr + ")) continue;\n")
+		cond := c.ensureBool(havingExpr)
+		buf.WriteString("if (!(" + cond + ")) continue;\n")
 	}
 	indent(indentLevel)
 	if sortExpr != "" || skipExpr != "" || takeExpr != "" {
@@ -2286,4 +2311,30 @@ func (c *Compiler) generateJSONPrinter(info *structInfo) {
 	}
 	c.headerWriteln("    std::cout<<\"}\";")
 	c.headerWriteln("}")
+}
+
+func (c *Compiler) ensureBool(expr string) string {
+	if t := c.varStruct[expr]; t != "" {
+		if idx := strings.Index(t, "{"); idx != -1 {
+			t = t[:idx]
+		}
+		return fmt.Sprintf("(%s != %s{})", expr, t)
+	}
+	if t := structLiteralType(expr); t != "" {
+		return fmt.Sprintf("(%s != %s{})", expr, t)
+	}
+	return expr
+}
+
+func (c *Compiler) isVectorType(expr string) bool {
+	if c.vars[expr] == "vector" {
+		return true
+	}
+	if strings.HasPrefix(expr, "std::vector<") {
+		return true
+	}
+	if extractVectorElemType(expr) != "" {
+		return true
+	}
+	return false
 }
