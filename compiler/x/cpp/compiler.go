@@ -1079,7 +1079,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			vals = append(vals, v)
 		}
-		if simple {
+		if simple && len(p.Map.Items) > 1 {
 			sig := strings.Join(names, ",")
 			info, ok := c.structMap[sig]
 			if !ok {

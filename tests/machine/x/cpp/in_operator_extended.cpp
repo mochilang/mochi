@@ -1,16 +1,8 @@
 #include <algorithm>
 #include <iostream>
+#include <unordered_map>
 #include <vector>
 
-struct __struct1 {
-  decltype(1) a;
-};
-inline bool operator==(const __struct1 &a, const __struct1 &b) {
-  return a.a == b.a;
-}
-inline bool operator!=(const __struct1 &a, const __struct1 &b) {
-  return !(a == b);
-}
 std::vector<int> xs = std::vector<decltype(1)>{1, 2, 3};
 auto ys = ([]() {
   std::vector<int> __items;
@@ -21,7 +13,7 @@ auto ys = ([]() {
   }
   return __items;
 })();
-auto m = __struct1{1};
+auto m = std::unordered_map<std::string, decltype(1)>{{std::string("a"), 1}};
 auto s = std::string("hello");
 
 int main() {
@@ -36,13 +28,11 @@ int main() {
     std::cout << std::endl;
   }
   {
-    std::cout << std::boolalpha
-              << (std::find(m.begin(), m.end(), std::string("a")) != m.end());
+    std::cout << std::boolalpha << (m.count(std::string("a")) > 0);
     std::cout << std::endl;
   }
   {
-    std::cout << std::boolalpha
-              << (std::find(m.begin(), m.end(), std::string("b")) != m.end());
+    std::cout << std::boolalpha << (m.count(std::string("b")) > 0);
     std::cout << std::endl;
   }
   {
