@@ -60,7 +60,7 @@ auto groups = ([]() {
   }
   return __items;
 })();
-auto tmp = std::vector<int>{};
+std::vector<__struct3> tmp = std::vector<__struct3>{};
 
 int main() {
   for (auto g : groups) {
