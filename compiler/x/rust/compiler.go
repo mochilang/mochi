@@ -37,29 +37,29 @@ type Compiler struct {
 }
 
 func (c *Compiler) fieldType(e *parser.Expr) types.Type {
-       if name, arg, ok := c.aggCall(e); ok {
-               at := types.ExprType(arg, c.env)
-               if lt, ok := at.(types.ListType); ok {
-                       at = lt.Elem
-               }
-               if _, ok := at.(types.AnyType); ok {
-                       if t := c.inferAggElemType(arg); t != nil {
-                               at = t
-                       }
-               }
-               switch name {
-               case "avg":
-                       return types.FloatType{}
-               case "sum":
-                       if _, ok := at.(types.FloatType); ok || c.exprHasFloat(arg) {
-                               return types.FloatType{}
-                       }
-                       return types.IntType{}
-               case "min", "max":
-                       return at
-               case "len", "count":
-                       return types.IntType{}
-               }
+	if name, arg, ok := c.aggCall(e); ok {
+		at := types.ExprType(arg, c.env)
+		if lt, ok := at.(types.ListType); ok {
+			at = lt.Elem
+		}
+		if _, ok := at.(types.AnyType); ok {
+			if t := c.inferAggElemType(arg); t != nil {
+				at = t
+			}
+		}
+		switch name {
+		case "avg":
+			return types.FloatType{}
+		case "sum":
+			if _, ok := at.(types.FloatType); ok || c.exprHasFloat(arg) {
+				return types.FloatType{}
+			}
+			return types.IntType{}
+		case "min", "max":
+			return at
+		case "len", "count":
+			return types.IntType{}
+		}
 	}
 	if e == nil || e.Binary == nil {
 		return types.TypeOfExprBasic(e, c.env)
@@ -549,28 +549,28 @@ func analyzeMutations(prog *parser.Program) map[string]map[int]bool {
 // inferAggElemType deduces the element type of an aggregation argument.
 // It handles queries over group variables where regular inference results in AnyType.
 func (c *Compiler) inferAggElemType(e *parser.Expr) types.Type {
-       if e == nil || e.Binary == nil {
-               return nil
-       }
-       u := e.Binary.Left
-       if u == nil || u.Value == nil || u.Value.Target == nil || u.Value.Target.Query == nil {
-               return nil
-       }
-       q := u.Value.Target.Query
-       if name, ok := c.simpleIdent(q.Source); ok && c.isGroupVar(name) {
-               if structName, ok2 := c.listVars[name]; ok2 {
-                       if st, ok3 := c.structs[structName]; ok3 {
-                               if t, ok4 := st.Fields["items"]; ok4 {
-                                       if lt, ok5 := t.(types.ListType); ok5 {
-                                               child := types.NewEnv(c.env)
-                                               child.SetVar(q.Var, lt.Elem, true)
-                                               return types.ExprType(q.Select, child)
-                                       }
-                               }
-                       }
-               }
-       }
-       return nil
+	if e == nil || e.Binary == nil {
+		return nil
+	}
+	u := e.Binary.Left
+	if u == nil || u.Value == nil || u.Value.Target == nil || u.Value.Target.Query == nil {
+		return nil
+	}
+	q := u.Value.Target.Query
+	if name, ok := c.simpleIdent(q.Source); ok && c.isGroupVar(name) {
+		if structName, ok2 := c.listVars[name]; ok2 {
+			if st, ok3 := c.structs[structName]; ok3 {
+				if t, ok4 := st.Fields["items"]; ok4 {
+					if lt, ok5 := t.(types.ListType); ok5 {
+						child := types.NewEnv(c.env)
+						child.SetVar(q.Var, lt.Elem, true)
+						return types.ExprType(q.Select, child)
+					}
+				}
+			}
+		}
+	}
+	return nil
 }
 
 func isEqHashable(t types.Type) bool {
@@ -1323,7 +1323,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 					leftAST = &parser.Unary{Value: op.Right}
 					continue
 				}
-				if op.Op == "*" || op.Op == "/" {
+				if op.Op == "*" || op.Op == "/" || op.Op == "-" {
 					if _, ok := lt.(types.FloatType); ok {
 						if isInt(rt) {
 							r = fmt.Sprintf("%s as f64", r)
@@ -1666,27 +1666,27 @@ func (c *Compiler) compileGroupBySimple(q *parser.QueryExpr, src string, child *
 		}
 		keyType = c.fieldType(q.Group.Exprs[0])
 	}
-       elemType, _ := child.GetVar(q.Var)
+	elemType, _ := child.GetVar(q.Var)
 
-       groupStruct := c.newStructName("Group")
-       st := types.StructType{Name: groupStruct, Fields: map[string]types.Type{"key": keyType, "items": types.ListType{Elem: elemType}}, Order: []string{"key", "items"}}
-       c.structs[groupStruct] = st
-       c.genStructs = append(c.genStructs, st)
+	groupStruct := c.newStructName("Group")
+	st := types.StructType{Name: groupStruct, Fields: map[string]types.Type{"key": keyType, "items": types.ListType{Elem: elemType}}, Order: []string{"key", "items"}}
+	c.structs[groupStruct] = st
+	c.genStructs = append(c.genStructs, st)
 
-       eqHash := isEqHashable(keyType)
-       mapTmp := c.newTmp()
-       groupVec := c.newTmp()
+	eqHash := isEqHashable(keyType)
+	mapTmp := c.newTmp()
+	groupVec := c.newTmp()
 
-       var b strings.Builder
-       if eqHash {
-               b.WriteString("{ let mut ")
-               b.WriteString(mapTmp)
-               b.WriteString(" = std::collections::HashMap::new();")
-       } else {
-               b.WriteString("{ let mut ")
-               b.WriteString(groupVec)
-               b.WriteString(fmt.Sprintf(" = Vec::<%s>::new();", groupStruct))
-       }
+	var b strings.Builder
+	if eqHash {
+		b.WriteString("{ let mut ")
+		b.WriteString(mapTmp)
+		b.WriteString(" = std::collections::HashMap::new();")
+	} else {
+		b.WriteString("{ let mut ")
+		b.WriteString(groupVec)
+		b.WriteString(fmt.Sprintf(" = Vec::<%s>::new();", groupStruct))
+	}
 	b.WriteString(loopHead(q.Var, src, child))
 	for i, fs := range fromSrcs {
 		fmt.Fprintf(&b, " %s", loopHead(q.Froms[i].Var, fs, child))
@@ -1694,23 +1694,23 @@ func (c *Compiler) compileGroupBySimple(q *parser.QueryExpr, src string, child *
 	if cond != "" {
 		b.WriteString(" if !(" + cond + ") { continue; }")
 	}
-       fmt.Fprintf(&b, " let key = %s;", keyExpr)
-       if eqHash {
-               fmt.Fprintf(&b, " %s.entry(key).or_insert_with(Vec::new).push(%s);", mapTmp, loopVal(q.Var, child))
-       } else {
-               tmpg := c.newTmp()
-               fmt.Fprintf(&b, " if let Some(%s) = %s.iter_mut().find(|g| g.key == key) { %s.items.push(%s); } else { %s.push(%s { key: key, items: vec![%s] }); }", tmpg, groupVec, tmpg, loopVal(q.Var, child), groupVec, groupStruct, loopVal(q.Var, child))
-       }
-       for range fromSrcs {
-               b.WriteString(" }")
-       }
-       b.WriteString(" }")
-       if eqHash {
-               b.WriteString(" let mut ")
-               b.WriteString(groupVec)
-               b.WriteString(fmt.Sprintf(" = Vec::<%s>::new();", groupStruct))
-               b.WriteString(fmt.Sprintf(" for (k,v) in %s { %s.push(%s { key: k, items: v }); }", mapTmp, groupVec, groupStruct))
-       }
+	fmt.Fprintf(&b, " let key = %s;", keyExpr)
+	if eqHash {
+		fmt.Fprintf(&b, " %s.entry(key).or_insert_with(Vec::new).push(%s);", mapTmp, loopVal(q.Var, child))
+	} else {
+		tmpg := c.newTmp()
+		fmt.Fprintf(&b, " if let Some(%s) = %s.iter_mut().find(|g| g.key == key) { %s.items.push(%s); } else { %s.push(%s { key: key, items: vec![%s] }); }", tmpg, groupVec, tmpg, loopVal(q.Var, child), groupVec, groupStruct, loopVal(q.Var, child))
+	}
+	for range fromSrcs {
+		b.WriteString(" }")
+	}
+	b.WriteString(" }")
+	if eqHash {
+		b.WriteString(" let mut ")
+		b.WriteString(groupVec)
+		b.WriteString(fmt.Sprintf(" = Vec::<%s>::new();", groupStruct))
+		b.WriteString(fmt.Sprintf(" for (k,v) in %s { %s.push(%s { key: k, items: v }); }", mapTmp, groupVec, groupStruct))
+	}
 
 	groupVar := q.Group.Name
 	groupEnv := types.NewEnv(orig)
@@ -1847,8 +1847,8 @@ func (c *Compiler) compileGroupByJoin(q *parser.QueryExpr, src string, child *ty
 		keyType = c.fieldType(q.Group.Exprs[0])
 	}
 
-       itemStruct := c.newStructName("Item")
-       stItem := types.StructType{Name: itemStruct, Fields: map[string]types.Type{}, Order: []string{}}
+	itemStruct := c.newStructName("Item")
+	stItem := types.StructType{Name: itemStruct, Fields: map[string]types.Type{}, Order: []string{}}
 	names := []string{q.Var}
 	for _, f := range q.Froms {
 		names = append(names, f.Var)
@@ -1862,28 +1862,28 @@ func (c *Compiler) compileGroupByJoin(q *parser.QueryExpr, src string, child *ty
 			stItem.Order = append(stItem.Order, n)
 		}
 	}
-       c.structs[itemStruct] = stItem
-       c.genStructs = append(c.genStructs, stItem)
+	c.structs[itemStruct] = stItem
+	c.genStructs = append(c.genStructs, stItem)
 
-       groupStruct := c.newStructName("Group")
-       st := types.StructType{Name: groupStruct, Fields: map[string]types.Type{"key": keyType, "items": types.ListType{Elem: stItem}}, Order: []string{"key", "items"}}
-       c.structs[groupStruct] = st
-       c.genStructs = append(c.genStructs, st)
+	groupStruct := c.newStructName("Group")
+	st := types.StructType{Name: groupStruct, Fields: map[string]types.Type{"key": keyType, "items": types.ListType{Elem: stItem}}, Order: []string{"key", "items"}}
+	c.structs[groupStruct] = st
+	c.genStructs = append(c.genStructs, st)
 
-       eqHash := isEqHashable(keyType)
-       mapTmp := c.newTmp()
-       groupVec := c.newTmp()
+	eqHash := isEqHashable(keyType)
+	mapTmp := c.newTmp()
+	groupVec := c.newTmp()
 
-       var b strings.Builder
-       if eqHash {
-               b.WriteString("{ let mut ")
-               b.WriteString(mapTmp)
-               b.WriteString(" = std::collections::HashMap::new();")
-       } else {
-               b.WriteString("{ let mut ")
-               b.WriteString(groupVec)
-               b.WriteString(fmt.Sprintf(" = Vec::<%s>::new();", groupStruct))
-       }
+	var b strings.Builder
+	if eqHash {
+		b.WriteString("{ let mut ")
+		b.WriteString(mapTmp)
+		b.WriteString(" = std::collections::HashMap::new();")
+	} else {
+		b.WriteString("{ let mut ")
+		b.WriteString(groupVec)
+		b.WriteString(fmt.Sprintf(" = Vec::<%s>::new();", groupStruct))
+	}
 	b.WriteString(loopHead(q.Var, src, child))
 	for i, fs := range fromSrcs {
 		fmt.Fprintf(&b, " %s", loopHead(q.Froms[i].Var, fs, child))
@@ -1900,59 +1900,65 @@ func (c *Compiler) compileGroupByJoin(q *parser.QueryExpr, src string, child *ty
 		if cond != "" {
 			b.WriteString(" if !(" + cond + ") { continue; }")
 		}
-               b.WriteString(" " + matched + " = true;")
-               b.WriteString(" let key = " + keyExpr + ";")
-               if eqHash {
-                       b.WriteString(" " + mapTmp + ".entry(key).or_insert_with(Vec::new).push(" + itemStruct + " {")
-               } else {
-                       tmpg := c.newTmp()
-                       b.WriteString(fmt.Sprintf(" if let Some(%s) = %s.iter_mut().find(|g| g.key == key) { %s.items.push(%s {", tmpg, groupVec, tmpg, itemStruct))
-               }
-               for i, n := range names {
-                       if i > 0 {
-                               b.WriteString(", ")
-                       }
-                       b.WriteString(n + ": " + loopVal(n, child))
-               }
-               if eqHash {
-                       b.WriteString(" });")
-               } else {
-                       b.WriteString(" }); } else { " + groupVec + ".push(" + itemStruct + " {")
-                       for i, n := range names {
-                               if i > 0 {
-                                       b.WriteString(", ")
-                               }
-                               b.WriteString(n + ": " + loopVal(n, child))
-                       }
-                       b.WriteString(" }); }")
-               }
-               b.WriteString(" }")
-               b.WriteString(" if !" + matched + " {")
-               b.WriteString(" ")
-               b.WriteString(defaultDecl(q.Joins[0].Var, child))
-               b.WriteString(" let key = " + keyExpr + ";")
-               if eqHash {
-                       b.WriteString(" " + mapTmp + ".entry(key).or_insert_with(Vec::new).push(" + itemStruct + " {")
-                       for i, n := range names {
-                               if i > 0 { b.WriteString(", ") }
-                               b.WriteString(n + ": " + loopVal(n, child))
-                       }
-                       b.WriteString(" });")
-               } else {
-                       tmpg := c.newTmp()
-                       b.WriteString(fmt.Sprintf(" if let Some(%s) = %s.iter_mut().find(|g| g.key == key) { %s.items.push(%s {", tmpg, groupVec, tmpg, itemStruct))
-                       for i, n := range names {
-                               if i > 0 { b.WriteString(", ") }
-                               b.WriteString(n + ": " + loopVal(n, child))
-                       }
-                       b.WriteString(" }); } else { " + groupVec + ".push(" + itemStruct + " {")
-                       for i, n := range names {
-                               if i > 0 { b.WriteString(", ") }
-                               b.WriteString(n + ": " + loopVal(n, child))
-                       }
-                       b.WriteString(" }); }")
-               }
-               b.WriteString(" }")
+		b.WriteString(" " + matched + " = true;")
+		b.WriteString(" let key = " + keyExpr + ";")
+		if eqHash {
+			b.WriteString(" " + mapTmp + ".entry(key).or_insert_with(Vec::new).push(" + itemStruct + " {")
+		} else {
+			tmpg := c.newTmp()
+			b.WriteString(fmt.Sprintf(" if let Some(%s) = %s.iter_mut().find(|g| g.key == key) { %s.items.push(%s {", tmpg, groupVec, tmpg, itemStruct))
+		}
+		for i, n := range names {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			b.WriteString(n + ": " + loopVal(n, child))
+		}
+		if eqHash {
+			b.WriteString(" });")
+		} else {
+			b.WriteString(" }); } else { " + groupVec + ".push(" + groupStruct + " { key: key, items: vec![" + itemStruct + " {")
+			for i, n := range names {
+				if i > 0 {
+					b.WriteString(", ")
+				}
+				b.WriteString(n + ": " + loopVal(n, child))
+			}
+			b.WriteString(" }] }); }")
+		}
+		b.WriteString(" }")
+		b.WriteString(" if !" + matched + " {")
+		b.WriteString(" ")
+		b.WriteString(defaultDecl(q.Joins[0].Var, child))
+		b.WriteString(" let key = " + keyExpr + ";")
+		if eqHash {
+			b.WriteString(" " + mapTmp + ".entry(key).or_insert_with(Vec::new).push(" + itemStruct + " {")
+			for i, n := range names {
+				if i > 0 {
+					b.WriteString(", ")
+				}
+				b.WriteString(n + ": " + loopVal(n, child))
+			}
+			b.WriteString(" });")
+		} else {
+			tmpg := c.newTmp()
+			b.WriteString(fmt.Sprintf(" if let Some(%s) = %s.iter_mut().find(|g| g.key == key) { %s.items.push(%s {", tmpg, groupVec, tmpg, itemStruct))
+			for i, n := range names {
+				if i > 0 {
+					b.WriteString(", ")
+				}
+				b.WriteString(n + ": " + loopVal(n, child))
+			}
+			b.WriteString(" }); } else { " + groupVec + ".push(" + groupStruct + " { key: key, items: vec![" + itemStruct + " {")
+			for i, n := range names {
+				if i > 0 {
+					b.WriteString(", ")
+				}
+				b.WriteString(n + ": " + loopVal(n, child))
+			}
+			b.WriteString(" }] }); }")
+		}
+		b.WriteString(" }")
 	} else {
 		for i, js := range joinSrcs {
 			b.WriteString(" ")
@@ -1964,43 +1970,45 @@ func (c *Compiler) compileGroupByJoin(q *parser.QueryExpr, src string, child *ty
 		if cond != "" {
 			b.WriteString(" if !(" + cond + ") { continue; }")
 		}
-               b.WriteString(" let key = " + keyExpr + ";")
-               if eqHash {
-                       b.WriteString(" " + mapTmp + ".entry(key).or_insert_with(Vec::new).push(" + itemStruct + " {")
-               } else {
-                       tmpg := c.newTmp()
-                       b.WriteString(fmt.Sprintf(" if let Some(%s) = %s.iter_mut().find(|g| g.key == key) { %s.items.push(%s {", tmpg, groupVec, tmpg, itemStruct))
-               }
-               for i, n := range names {
-                       if i > 0 {
-                               b.WriteString(", ")
-                       }
-                       b.WriteString(n + ": " + loopVal(n, child))
-               }
-               if eqHash {
-                       b.WriteString(" });")
-               } else {
-                       b.WriteString(" }); } else { " + groupVec + ".push(" + itemStruct + " {")
-                       for i, n := range names {
-                               if i > 0 { b.WriteString(", ") }
-                               b.WriteString(n + ": " + loopVal(n, child))
-                       }
-                       b.WriteString(" }); }")
-               }
-               for range joinSrcs {
-                       b.WriteString(" }")
-               }
+		b.WriteString(" let key = " + keyExpr + ";")
+		if eqHash {
+			b.WriteString(" " + mapTmp + ".entry(key).or_insert_with(Vec::new).push(" + itemStruct + " {")
+		} else {
+			tmpg := c.newTmp()
+			b.WriteString(fmt.Sprintf(" if let Some(%s) = %s.iter_mut().find(|g| g.key == key) { %s.items.push(%s {", tmpg, groupVec, tmpg, itemStruct))
+		}
+		for i, n := range names {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			b.WriteString(n + ": " + loopVal(n, child))
+		}
+		if eqHash {
+			b.WriteString(" });")
+		} else {
+			b.WriteString(" }); } else { " + groupVec + ".push(" + groupStruct + " { key: key, items: vec![" + itemStruct + " {")
+			for i, n := range names {
+				if i > 0 {
+					b.WriteString(", ")
+				}
+				b.WriteString(n + ": " + loopVal(n, child))
+			}
+			b.WriteString(" }] }); }")
+		}
+		for range joinSrcs {
+			b.WriteString(" }")
+		}
 	}
 	for range fromSrcs {
 		b.WriteString(" }")
 	}
-       b.WriteString(" }")
-       if eqHash {
-               b.WriteString(" let mut ")
-               b.WriteString(groupVec)
-               b.WriteString(fmt.Sprintf(" = Vec::<%s>::new();", groupStruct))
-               b.WriteString(fmt.Sprintf(" for (k,v) in %s { %s.push(%s { key: k, items: v }); }", mapTmp, groupVec, groupStruct))
-       }
+	b.WriteString(" }")
+	if eqHash {
+		b.WriteString(" let mut ")
+		b.WriteString(groupVec)
+		b.WriteString(fmt.Sprintf(" = Vec::<%s>::new();", groupStruct))
+		b.WriteString(fmt.Sprintf(" for (k,v) in %s { %s.push(%s { key: k, items: v }); }", mapTmp, groupVec, groupStruct))
+	}
 
 	groupVar := q.Group.Name
 	groupEnv := types.NewEnv(orig)
