@@ -1,7 +1,7 @@
 #include <iostream>
 
 auto x = 2;
-auto label = ([&]() {
+auto label = ([]() {
   auto __v = x;
   if (__v == 1)
     return std::string("one");

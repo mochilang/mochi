@@ -59,7 +59,7 @@ auto result = ([]() {
                   })()) /
               ([&](auto v) {
                 return std::accumulate(v.begin(), v.end(), 0);
-              })(([]() {
+              })(([&]() {
                 std::vector<decltype(std::declval<__struct1>().val)> __items;
                 for (auto x : g.items) {
                   __items.push_back(x.val);

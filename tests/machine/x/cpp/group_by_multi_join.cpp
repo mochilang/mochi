@@ -54,7 +54,7 @@ auto filtered = ([]() {
   }
   return __items;
 })();
-auto grouped = ([&]() {
+auto grouped = ([]() {
   std::vector<__struct5> __groups;
   for (auto x : filtered) {
     auto __key = x.part;
@@ -74,8 +74,9 @@ auto grouped = ([&]() {
   std::vector<__struct6> __items;
   for (auto &g : __groups) {
     __items.push_back(__struct6{
-        g.key,
-        ([&](auto v) { return std::accumulate(v.begin(), v.end(), 0); })(([]() {
+        g.key, ([&](auto v) {
+          return std::accumulate(v.begin(), v.end(), 0);
+        })(([&]() {
           std::vector<decltype(std::declval<__struct4>().value)> __items;
           for (auto r : g.items) {
             __items.push_back(r.value);

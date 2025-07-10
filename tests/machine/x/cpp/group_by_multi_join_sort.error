@@ -37,7 +37,7 @@ line 51: ../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:51:12: error:
   113 |   std::vector<std::pair<decltype((-([&](auto v) {
       |                                     ^
 ../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:116:29: error: lambda-expression in unevaluated context only available with ‘-std=c++20’ or ‘-std=gnu++20’
-  116 |                         })(([]() {
+  116 |                         })(([&]() {
       |                             ^
 ../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:131:25: error: template argument 1 is invalid
   131 |                         __struct8>>
@@ -66,15 +66,6 @@ line 51: ../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:51:12: error:
   143 |                                            .l_discount))))>
       |                                                           ^
 ../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:143:59: error: template argument 2 is invalid
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:145:26: error: ‘g’ is not captured
-  145 |            for (auto x : g.items) {
-      |                          ^
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:137:15: note: the lambda has no capture-default
-  137 |          })(([]() {
-      |               ^
-../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:133:14: note: ‘__struct7& g’ declared here
-  133 |   for (auto &g : __groups) {
-      |              ^
 ../../../tests/machine/x/cpp/group_by_multi_join_sort.cpp:146:22: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
   146 |              __items.push_back((x.l.l_extendedprice * ((1 - x.l.l_discount))));
       |                      ^~~~~~~~~

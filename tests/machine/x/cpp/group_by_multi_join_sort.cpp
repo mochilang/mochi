@@ -113,7 +113,7 @@ auto result = ([]() {
   std::vector<std::pair<decltype((-([&](auto v) {
                           return std::accumulate(
                               v.bestd::declval<__struct7>() in(), v.end(), 0);
-                        })(([]() {
+                        })(([&]() {
                           std::vector<decltype((
                               std::declval<__struct6>()
                                   .std::declval<__struct4>()
@@ -134,7 +134,7 @@ auto result = ([]() {
     __items.push_back(
         {(-([&](auto v) {
            return std::accumulate(v.begin(), v.end(), 0);
-         })(([]() {
+         })(([&]() {
            std::vector<decltype((std::declval<__struct6>()
                                      .std::declval<__struct4>()
                                      .l_extendedprice *

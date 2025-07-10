@@ -1,7 +1,7 @@
 #include <iostream>
 
 auto x = 2;
-auto label = ([&]() {
+auto label = ([]() {
   auto __v = x;
   if (__v == 1)
     return std::string("one");
@@ -12,7 +12,7 @@ auto label = ([&]() {
   return std::string("unknown");
 })();
 auto day = std::string("sun");
-auto mood = ([&]() {
+auto mood = ([]() {
   auto __v = day;
   if (__v == std::string("mon"))
     return std::string("tired");
@@ -23,7 +23,7 @@ auto mood = ([&]() {
   return std::string("normal");
 })();
 auto ok = true;
-auto status = ([&]() {
+auto status = ([]() {
   auto __v = ok;
   if (__v == true)
     return std::string("confirmed");
