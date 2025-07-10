@@ -1,0 +1,2 @@
+exit status 127
+escript: exception error: no function clause matching lists:sum(2,0) (lists.erl, line 319)

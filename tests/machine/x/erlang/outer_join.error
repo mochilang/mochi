@@ -1,0 +1,4 @@
+exit status 127
+tests/machine/x/erlang_new/outer_join.erl:9:35: illegal guard expression
+tests/machine/x/erlang_new/outer_join.erl:9:63: illegal guard expression
+escript: There were compilation errors.

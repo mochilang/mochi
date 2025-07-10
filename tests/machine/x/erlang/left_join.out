@@ -1,0 +1,6 @@
+tests/machine/x/erlang_new/left_join.erl:7:106: Warning: variable 'O' shadowed in generate
+tests/machine/x/erlang_new/left_join.erl:7:154: Warning: variable 'O' shadowed in 'fun'
+tests/machine/x/erlang_new/left_join.erl:18:1: Warning: function mochi_left_join/3 is unused
+"--- Left Join ---"
+"Order" 100 "customer" #{id => 1,name => "Alice"} "total" 250
+"Order" 101 "customer" undefined "total" 80

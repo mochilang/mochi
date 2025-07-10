@@ -1,0 +1,4 @@
+exit status 127
+tests/machine/x/erlang_new/two-sum.erl:6:59: illegal guard expression
+tests/machine/x/erlang_new/two-sum.erl:6:79: illegal guard expression
+escript: There were compilation errors.
