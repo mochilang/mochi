@@ -34,6 +34,6 @@ fn main() {
     let stats = { let mut tmp1 = std::collections::HashMap::new();for o in &orders { for c in &customers { if !(o.customerId == c.id) { continue; } let key = c.name; tmp1.entry(key).or_insert_with(Vec::new).push(Item {o: o.clone(), c: c.clone() }); } } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } let mut result = Vec::new(); for g in tmp2 { result.push(Result { name: g.key, count: g.clone().items.len() as i32 }); } result };
     println!("{}", "--- Orders per customer ---");
     for s in stats {
-        println!("{:?} {} {:?}", s.name, "orders:", s.count);
+        println!("{} {} {}", s.name, "orders:", s.count);
     }
 }
