@@ -53,16 +53,6 @@ function main(): void {
     }
     return _res;
   })();
-  console.log(_fmt(sorted));
+  console.log(Array.isArray(sorted) ? sorted.join(" ") : sorted);
 }
-function _fmt(v: any): string {
-  if (Array.isArray(v)) return v.map(_fmt).join(" ");
-  if (v && typeof v === "object") {
-    const keys = Object.keys(v).sort();
-    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
-    return "map[" + parts.join(" ") + "]";
-  }
-  return String(v);
-}
-
 main();

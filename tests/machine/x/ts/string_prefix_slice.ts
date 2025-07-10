@@ -7,20 +7,10 @@ let s2: string;
 function main(): void {
   prefix = "fore";
   s1 = "forest";
-  console.log(_fmt(_sliceString(s1, 0, prefix.length) == prefix));
+  console.log(_sliceString(s1, 0, prefix.length) == prefix);
   s2 = "desert";
-  console.log(_fmt(_sliceString(s2, 0, prefix.length) == prefix));
+  console.log(_sliceString(s2, 0, prefix.length) == prefix);
 }
-function _fmt(v: any): string {
-  if (Array.isArray(v)) return v.map(_fmt).join(" ");
-  if (v && typeof v === "object") {
-    const keys = Object.keys(v).sort();
-    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
-    return "map[" + parts.join(" ") + "]";
-  }
-  return String(v);
-}
-
 function _sliceString(s: string, i: number, j: number): string {
   let start = i;
   let end = j;

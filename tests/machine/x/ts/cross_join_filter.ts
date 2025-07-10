@@ -28,19 +28,9 @@ function main(): void {
     }
     return _res;
   })();
-  console.log(_fmt("--- Even pairs ---"));
+  console.log("--- Even pairs ---");
   for (const p of pairs) {
-    console.log(_fmt(p.n), _fmt(p.l));
+    console.log(p.n, p.l);
   }
 }
-function _fmt(v: any): string {
-  if (Array.isArray(v)) return v.map(_fmt).join(" ");
-  if (v && typeof v === "object") {
-    const keys = Object.keys(v).sort();
-    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
-    return "map[" + parts.join(" ") + "]";
-  }
-  return String(v);
-}
-
 main();

@@ -27,24 +27,14 @@ function main(): void {
     "age": person.age,
     "is_senior": (person.age >= 60),
   }));
-  console.log(_fmt("--- Adults ---"));
+  console.log("--- Adults ---");
   for (const person of adults) {
     console.log(
-      _fmt(person.name),
-      _fmt("is"),
-      _fmt(person.age),
-      _fmt(person.is_senior ? " (senior)" : ""),
+      person.name,
+      "is",
+      person.age,
+      person.is_senior ? " (senior)" : "",
     );
   }
 }
-function _fmt(v: any): string {
-  if (Array.isArray(v)) return v.map(_fmt).join(" ");
-  if (v && typeof v === "object") {
-    const keys = Object.keys(v).sort();
-    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
-    return "map[" + parts.join(" ") + "]";
-  }
-  return String(v);
-}
-
 main();

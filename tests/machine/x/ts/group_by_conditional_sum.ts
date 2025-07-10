@@ -66,18 +66,8 @@ function main(): void {
     }
     return _res;
   })();
-  console.log(_fmt(result));
+  console.log(Array.isArray(result) ? result.join(" ") : result);
 }
-function _fmt(v: any): string {
-  if (Array.isArray(v)) return v.map(_fmt).join(" ");
-  if (v && typeof v === "object") {
-    const keys = Object.keys(v).sort();
-    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
-    return "map[" + parts.join(" ") + "]";
-  }
-  return String(v);
-}
-
 function _sum(v: any): number {
   let list: any[] | null = null;
   if (Array.isArray(v)) list = v;

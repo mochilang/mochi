@@ -7,17 +7,7 @@ function main(): void {
     [1]: "a",
     [2]: "b",
   };
-  console.log(_fmt(Object.prototype.hasOwnProperty.call(m, String(1))));
-  console.log(_fmt(Object.prototype.hasOwnProperty.call(m, String(3))));
+  console.log(Object.prototype.hasOwnProperty.call(m, String(1)));
+  console.log(Object.prototype.hasOwnProperty.call(m, String(3)));
 }
-function _fmt(v: any): string {
-  if (Array.isArray(v)) return v.map(_fmt).join(" ");
-  if (v && typeof v === "object") {
-    const keys = Object.keys(v).sort();
-    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
-    return "map[" + parts.join(" ") + "]";
-  }
-  return String(v);
-}
-
 main();

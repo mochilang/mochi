@@ -71,19 +71,9 @@ function main(): void {
     }
     return _res;
   })();
-  console.log(_fmt("--- Top products (excluding most expensive) ---"));
+  console.log("--- Top products (excluding most expensive) ---");
   for (const item of expensive) {
-    console.log(_fmt(item.name), _fmt("costs $"), _fmt(item.price));
+    console.log(item.name, "costs $", item.price);
   }
 }
-function _fmt(v: any): string {
-  if (Array.isArray(v)) return v.map(_fmt).join(" ");
-  if (v && typeof v === "object") {
-    const keys = Object.keys(v).sort();
-    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
-    return "map[" + parts.join(" ") + "]";
-  }
-  return String(v);
-}
-
 main();

@@ -53,26 +53,16 @@ function main(): void {
     }
     return _res;
   })();
-  console.log(_fmt("--- Left Join ---"));
+  console.log("--- Left Join ---");
   for (const entry of result) {
     console.log(
-      _fmt("Order"),
-      _fmt(entry.orderId),
-      _fmt("customer"),
-      _fmt(entry.customer),
-      _fmt("total"),
-      _fmt(entry.total),
+      "Order",
+      entry.orderId,
+      "customer",
+      entry.customer,
+      "total",
+      entry.total,
     );
   }
 }
-function _fmt(v: any): string {
-  if (Array.isArray(v)) return v.map(_fmt).join(" ");
-  if (v && typeof v === "object") {
-    const keys = Object.keys(v).sort();
-    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
-    return "map[" + parts.join(" ") + "]";
-  }
-  return String(v);
-}
-
 main();

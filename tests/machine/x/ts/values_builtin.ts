@@ -8,18 +8,8 @@ function main(): void {
     "b": 2,
     "c": 3,
   };
-  console.log(_fmt(_values(m)));
+  console.log(Array.isArray(_values(m)) ? _values(m).join(" ") : _values(m));
 }
-function _fmt(v: any): string {
-  if (Array.isArray(v)) return v.map(_fmt).join(" ");
-  if (v && typeof v === "object") {
-    const keys = Object.keys(v).sort();
-    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
-    return "map[" + parts.join(" ") + "]";
-  }
-  return String(v);
-}
-
 function _values<T>(m: { [key: string]: T }): T[] {
   if (m && typeof m === "object" && !Array.isArray(m)) {
     return Object.values(m);

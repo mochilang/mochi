@@ -6,16 +6,6 @@ let x: number;
 function main(): void {
   x = 12;
   msg = (x > 10) ? "yes" : "no";
-  console.log(_fmt(msg));
+  console.log(msg);
 }
-function _fmt(v: any): string {
-  if (Array.isArray(v)) return v.map(_fmt).join(" ");
-  if (v && typeof v === "object") {
-    const keys = Object.keys(v).sort();
-    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
-    return "map[" + parts.join(" ") + "]";
-  }
-  return String(v);
-}
-
 main();

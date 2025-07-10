@@ -7,16 +7,6 @@ function main(): void {
     [1]: "a",
     [2]: "b",
   };
-  console.log(_fmt(m[1]));
+  console.log(m[1]);
 }
-function _fmt(v: any): string {
-  if (Array.isArray(v)) return v.map(_fmt).join(" ");
-  if (v && typeof v === "object") {
-    const keys = Object.keys(v).sort();
-    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
-    return "map[" + parts.join(" ") + "]";
-  }
-  return String(v);
-}
-
 main();

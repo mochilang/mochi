@@ -63,15 +63,9 @@ function main(): void {
     }
     return _res;
   })();
-  console.log(_fmt("--- People grouped by city ---"));
+  console.log("--- People grouped by city ---");
   for (const s of stats) {
-    console.log(
-      _fmt(s.city),
-      _fmt(": count ="),
-      _fmt(s.count),
-      _fmt(", avg_age ="),
-      _fmt(s.avg_age),
-    );
+    console.log(s.city, ": count =", s.count, ", avg_age =", s.avg_age);
   }
 }
 function _avg(v: any): number {
@@ -86,16 +80,6 @@ function _count(v: any): number {
     if (Array.isArray((v as any).Items)) return (v as any).Items.length;
   }
   return 0;
-}
-
-function _fmt(v: any): string {
-  if (Array.isArray(v)) return v.map(_fmt).join(" ");
-  if (v && typeof v === "object") {
-    const keys = Object.keys(v).sort();
-    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
-    return "map[" + parts.join(" ") + "]";
-  }
-  return String(v);
 }
 
 function _sum(v: any): number {

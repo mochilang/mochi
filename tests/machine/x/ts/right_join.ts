@@ -64,34 +64,20 @@ function main(): void {
     }
     return _res;
   })();
-  console.log(_fmt("--- Right Join using syntax ---"));
+  console.log("--- Right Join using syntax ---");
   for (const entry of result) {
     if (entry.order) {
       console.log(
-        _fmt("Customer"),
-        _fmt(entry.customerName),
-        _fmt("has order"),
-        _fmt(entry.order.id),
-        _fmt("- $"),
-        _fmt(entry.order.total),
+        "Customer",
+        entry.customerName,
+        "has order",
+        entry.order.id,
+        "- $",
+        entry.order.total,
       );
     } else {
-      console.log(
-        _fmt("Customer"),
-        _fmt(entry.customerName),
-        _fmt("has no orders"),
-      );
+      console.log("Customer", entry.customerName, "has no orders");
     }
   }
 }
-function _fmt(v: any): string {
-  if (Array.isArray(v)) return v.map(_fmt).join(" ");
-  if (v && typeof v === "object") {
-    const keys = Object.keys(v).sort();
-    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
-    return "map[" + parts.join(" ") + "]";
-  }
-  return String(v);
-}
-
 main();

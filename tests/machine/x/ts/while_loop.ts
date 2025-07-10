@@ -5,18 +5,8 @@ var i: number;
 function main(): void {
   i = 0;
   while ((i < 3)) {
-    console.log(_fmt(i));
+    console.log(i);
     i = i + 1;
   }
 }
-function _fmt(v: any): string {
-  if (Array.isArray(v)) return v.map(_fmt).join(" ");
-  if (v && typeof v === "object") {
-    const keys = Object.keys(v).sort();
-    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
-    return "map[" + parts.join(" ") + "]";
-  }
-  return String(v);
-}
-
 main();

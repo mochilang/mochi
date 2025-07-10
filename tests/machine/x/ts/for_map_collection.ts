@@ -8,17 +8,7 @@ function main(): void {
     "b": 2,
   };
   for (const k of Object.keys(m)) {
-    console.log(_fmt(k));
+    console.log(k);
   }
 }
-function _fmt(v: any): string {
-  if (Array.isArray(v)) return v.map(_fmt).join(" ");
-  if (v && typeof v === "object") {
-    const keys = Object.keys(v).sort();
-    const parts = keys.map((k) => k + ":" + _fmt(v[k]));
-    return "map[" + parts.join(" ") + "]";
-  }
-  return String(v);
-}
-
 main();
