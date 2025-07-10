@@ -106,3 +106,8 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+
+## Remaining tasks
+
+- [ ] Implement join and grouping support for dataset queries
+- [ ] Support YAML input and JSONL output programs

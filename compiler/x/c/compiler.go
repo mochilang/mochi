@@ -2966,37 +2966,45 @@ func (c *Compiler) aggregateExpr(name, list string, elem types.Type) string {
 		return fmt.Sprintf("%s.len", list)
 	case "sum":
 		switch elem.(type) {
-		case types.FloatType, types.IntType, types.BoolType:
-			return fmt.Sprintf("({ double sum=0; for(int i=0;i<%s.len;i++) sum+=%s.data[i]; sum; })", list, list)
+		case types.FloatType:
+			c.need(needSumFloat)
+			return fmt.Sprintf("_sum_float(%s)", list)
+		default:
+			c.need(needSumInt)
+			return fmt.Sprintf("_sum_int(%s)", list)
 		}
-		c.need(needSumInt)
-		return fmt.Sprintf("_sum_int(%s)", list)
 	case "avg":
 		switch elem.(type) {
-		case types.FloatType, types.IntType, types.BoolType:
-			return fmt.Sprintf("({ double sum=0; for(int i=0;i<%s.len;i++) sum+=%s.data[i]; sum/%s.len; })", list, list, list)
+		case types.FloatType:
+			c.need(needAvgFloat)
+			return fmt.Sprintf("_avg_float(%s)", list)
+		default:
+			c.need(needAvg)
+			return fmt.Sprintf("_avg(%s)", list)
 		}
-		c.need(needAvg)
-		return fmt.Sprintf("_avg(%s)", list)
 	case "min":
 		switch elem.(type) {
 		case types.FloatType:
-			return fmt.Sprintf("({ double m=%s.len?%s.data[0]:0; for(int i=1;i<%s.len;i++) if(%s.data[i]<m) m=%s.data[i]; m; })", list, list, list, list, list)
+			c.need(needMinFloat)
+			return fmt.Sprintf("_min_float(%s)", list)
 		case types.StringType:
-			c.need(needStringHeader)
-			return fmt.Sprintf("({ char* m=%s.len?%s.data[0]:\"\"; for(int i=1;i<%s.len;i++) if(strcmp(%s.data[i], m)<0) m=%s.data[i]; m; })", list, list, list, list, list)
+			c.need(needMinString)
+			return fmt.Sprintf("_min_string(%s)", list)
 		default:
-			return fmt.Sprintf("({ int m=%s.len?%s.data[0]:0; for(int i=1;i<%s.len;i++) if(%s.data[i]<m) m=%s.data[i]; m; })", list, list, list, list, list)
+			c.need(needMinInt)
+			return fmt.Sprintf("_min_int(%s)", list)
 		}
 	case "max":
 		switch elem.(type) {
 		case types.FloatType:
-			return fmt.Sprintf("({ double m=%s.len?%s.data[0]:0; for(int i=1;i<%s.len;i++) if(%s.data[i]>m) m=%s.data[i]; m; })", list, list, list, list, list)
+			c.need(needMaxFloat)
+			return fmt.Sprintf("_max_float(%s)", list)
 		case types.StringType:
-			c.need(needStringHeader)
-			return fmt.Sprintf("({ char* m=%s.len?%s.data[0]:\"\"; for(int i=1;i<%s.len;i++) if(strcmp(%s.data[i], m)>0) m=%s.data[i]; m; })", list, list, list, list, list)
+			c.need(needMaxString)
+			return fmt.Sprintf("_max_string(%s)", list)
 		default:
-			return fmt.Sprintf("({ int m=%s.len?%s.data[0]:0; for(int i=1;i<%s.len;i++) if(%s.data[i]>m) m=%s.data[i]; m; })", list, list, list, list, list)
+			c.need(needMaxInt)
+			return fmt.Sprintf("_max_int(%s)", list)
 		}
 	}
 	return list
@@ -3404,7 +3412,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 				if isStr && op.Index.End == nil {
 					name := c.newTemp()
 					c.need(needStringHeader)
-					c.writeln(fmt.Sprintf("char* %s = ({ int _len = strlen(%s); int _i = %s; if (_i < 0) _i += _len; if (_i < 0 || _i >= _len) { fprintf(stderr, \"index out of range\\n\"); exit(1); } char* _b = (char*)malloc(2); _b[0] = %s[_i]; _b[1] = '\\0'; _b; });", name, expr, idx, expr))
+					c.need(needIndexString)
+					c.writeln(fmt.Sprintf("char* %s = _index_string(%s, %s);", name, expr, idx))
 					if c.env != nil {
 						c.env.SetVar(name, types.StringType{}, true)
 					}
@@ -3449,7 +3458,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 				name := c.newTemp()
 				if isStr {
 					c.need(needStringHeader)
-					c.writeln(fmt.Sprintf("char* %s = ({ int _len = strlen(%s); int _s = %s; int _e = %s; if (_s < 0) _s += _len; if (_e < 0) _e += _len; if (_s < 0) _s = 0; if (_e > _len) _e = _len; if (_s > _e) _s = _e; char* _b = (char*)malloc(_e - _s + 1); memcpy(_b, %s + _s, _e - _s); _b[_e - _s] = '\\0'; _b; });", name, expr, start, end, expr))
+					c.need(needSliceString)
+					c.writeln(fmt.Sprintf("char* %s = slice_string(%s, %s, %s);", name, expr, start, end))
 					if c.env != nil {
 						c.env.SetVar(name, types.StringType{}, true)
 					}
@@ -3872,45 +3882,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			}
 		} else if p.Call.Func == "sum" {
 			arg := c.compileExpr(p.Call.Args[0])
-			switch listElemType(p.Call.Args[0], c.env).(type) {
-			case types.FloatType, types.IntType, types.BoolType:
-				// Always return double to match the runtime semantics
-				return fmt.Sprintf("({ double sum=0; for(int i=0;i<%s.len;i++) sum+=%s.data[i]; sum; })", arg, arg)
-			}
-			c.need(needSumInt)
-			return fmt.Sprintf("_sum_int(%s)", arg)
+			elem := listElemType(p.Call.Args[0], c.env)
+			return c.aggregateExpr("sum", arg, elem)
 		} else if p.Call.Func == "avg" {
 			arg := c.compileExpr(p.Call.Args[0])
-			switch listElemType(p.Call.Args[0], c.env).(type) {
-			case types.FloatType:
-				return fmt.Sprintf("({ double sum=0; for(int i=0;i<%s.len;i++) sum+=%s.data[i]; sum/%s.len; })", arg, arg, arg)
-			case types.IntType, types.BoolType:
-				return fmt.Sprintf("({ double sum=0; for(int i=0;i<%s.len;i++) sum+=%s.data[i]; sum/%s.len; })", arg, arg, arg)
-			}
-			c.need(needAvg)
-			return fmt.Sprintf("_avg(%s)", arg)
+			elem := listElemType(p.Call.Args[0], c.env)
+			return c.aggregateExpr("avg", arg, elem)
 		} else if p.Call.Func == "min" {
 			arg := c.compileExpr(p.Call.Args[0])
-			switch listElemType(p.Call.Args[0], c.env).(type) {
-			case types.FloatType:
-				return fmt.Sprintf("({ double m=%s.len?%s.data[0]:0; for(int i=1;i<%s.len;i++) if(%s.data[i]<m) m=%s.data[i]; m; })", arg, arg, arg, arg, arg)
-			case types.StringType:
-				c.need(needStringHeader)
-				return fmt.Sprintf("({ char* m=%s.len?%s.data[0]:\"\"; for(int i=1;i<%s.len;i++) if(strcmp(%s.data[i], m)<0) m=%s.data[i]; m; })", arg, arg, arg, arg, arg)
-			default:
-				return fmt.Sprintf("({ int m=%s.len?%s.data[0]:0; for(int i=1;i<%s.len;i++) if(%s.data[i]<m) m=%s.data[i]; m; })", arg, arg, arg, arg, arg)
-			}
+			elem := listElemType(p.Call.Args[0], c.env)
+			return c.aggregateExpr("min", arg, elem)
 		} else if p.Call.Func == "max" {
 			arg := c.compileExpr(p.Call.Args[0])
-			switch listElemType(p.Call.Args[0], c.env).(type) {
-			case types.FloatType:
-				return fmt.Sprintf("({ double m=%s.len?%s.data[0]:0; for(int i=1;i<%s.len;i++) if(%s.data[i]>m) m=%s.data[i]; m; })", arg, arg, arg, arg, arg)
-			case types.StringType:
-				c.need(needStringHeader)
-				return fmt.Sprintf("({ char* m=%s.len?%s.data[0]:\"\"; for(int i=1;i<%s.len;i++) if(strcmp(%s.data[i], m)>0) m=%s.data[i]; m; })", arg, arg, arg, arg, arg)
-			default:
-				return fmt.Sprintf("({ int m=%s.len?%s.data[0]:0; for(int i=1;i<%s.len;i++) if(%s.data[i]>m) m=%s.data[i]; m; })", arg, arg, arg, arg, arg)
-			}
+			elem := listElemType(p.Call.Args[0], c.env)
+			return c.aggregateExpr("max", arg, elem)
 		} else if p.Call.Func == "reduce" {
 			list := c.compileExpr(p.Call.Args[0])
 			fn := c.compileExpr(p.Call.Args[1])
