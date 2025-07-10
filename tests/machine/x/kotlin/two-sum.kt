@@ -177,8 +177,21 @@ fun toJson(v: Any?): String = when (v) {
 class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
 
 
-fun main() {
-    for (i in 1 until 4) {
-        println(i)
+val result = twoSum(mutableListOf(2, 7, 11, 15), 9)
+
+fun twoSum(nums: Any, target: Int): Any {
+    val n = len(nums)
+    for (i in 0 until n) {
+        for (j in i + 1 until n) {
+            if (toBool(nums[i] + nums[j] == target)) {
+                return mutableListOf(i, j)
+            }
+        }
     }
+    return mutableListOf(-1, -1)
+}
+
+fun main() {
+    println(result[0])
+    println(result[1])
 }

@@ -177,8 +177,13 @@ fun toJson(v: Any?): String = when (v) {
 class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
 
 
-fun main() {
-    for (i in 1 until 4) {
-        println(i)
+fun sum_rec(n: Int, acc: Int): Int {
+    if (toBool(n == 0)) {
+        return acc
     }
+    return sum_rec(n - 1, acc + n)
+}
+
+fun main() {
+    println(sum_rec(10, 0))
 }

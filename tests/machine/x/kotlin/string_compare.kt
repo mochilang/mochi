@@ -178,7 +178,8 @@ class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by 
 
 
 fun main() {
-    for (i in 1 until 4) {
-        println(i)
-    }
+    println("a" < "b")
+    println("a" <= "a")
+    println("b" > "a")
+    println("b" >= "b")
 }

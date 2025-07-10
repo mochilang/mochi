@@ -178,7 +178,7 @@ class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by 
 
 
 fun triple(x: Int): Int {
-    return toInt(x) * 3
+    return x * 3
 }
 
 fun main() {

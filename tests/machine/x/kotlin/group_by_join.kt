@@ -161,6 +161,10 @@ fun _save(rows: List<Any?>, path: String?, opts: Map<String, Any?>?) {
     if (path != null && path != "-") writer.close()
 }
 
+fun json(v: Any?) {
+    println(toJson(v))
+}
+
 fun toJson(v: Any?): String = when (v) {
     null -> "null"
     is String -> "\"" + v.replace("\"", "\\\"") + "\""
@@ -190,7 +194,7 @@ val stats = run {
                     __groups[__k] = __g
                     __order.add(__k)
                 }
-                __g.add(o)
+                __g.add(mutableMapOf("o" to o, "c" to c) as MutableMap<Any?, Any?>)
             }
         }
     }

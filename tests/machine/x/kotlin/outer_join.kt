@@ -177,8 +177,35 @@ fun toJson(v: Any?): String = when (v) {
 class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
 
 
+val customers = mutableListOf(mutableMapOf("id" to 1, "name" to "Alice"), mutableMapOf("id" to 2, "name" to "Bob"), mutableMapOf("id" to 3, "name" to "Charlie"), mutableMapOf("id" to 4, "name" to "Diana"))
+
+val orders = mutableListOf(mutableMapOf("id" to 100, "customerId" to 1, "total" to 250), mutableMapOf("id" to 101, "customerId" to 2, "total" to 125), mutableMapOf("id" to 102, "customerId" to 1, "total" to 300), mutableMapOf("id" to 103, "customerId" to 5, "total" to 80))
+
+val result = run {
+    val __res = mutableListOf<MutableMap<Any?, Any?>>()
+    for (o in orders) {
+        for (c in customers) {
+            if (toBool((o as MutableMap<*, *>)["customerId"] == (c as MutableMap<*, *>)["id"])) {
+                __res.add((mutableMapOf("order" to o, "customer" to c) as MutableMap<Any?, Any?>))
+            }
+        }
+    }
+    __res
+}
+
 fun main() {
-    for (i in 1 until 4) {
-        println(i)
+    println("--- Outer Join using syntax ---")
+    for (row in result) {
+        if (toBool((row as MutableMap<*, *>)["order"])) {
+            if (toBool((row as MutableMap<*, *>)["customer"])) {
+                println(listOf("Order", (row as MutableMap<*, *>)["order"]["id"], "by", (row as MutableMap<*, *>)["customer"]["name"], "- $", (row as MutableMap<*, *>)["order"]["total"]).joinToString(" "))
+            }
+            else {
+                println(listOf("Order", (row as MutableMap<*, *>)["order"]["id"], "by", "Unknown", "- $", (row as MutableMap<*, *>)["order"]["total"]).joinToString(" "))
+            }
+        }
+        else {
+            println(listOf("Customer", (row as MutableMap<*, *>)["customer"]["name"], "has no orders").joinToString(" "))
+        }
     }
 }
