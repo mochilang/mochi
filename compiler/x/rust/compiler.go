@@ -37,11 +37,18 @@ type Compiler struct {
 }
 
 func (c *Compiler) fieldType(e *parser.Expr) types.Type {
-	if name, _, ok := c.aggCall(e); ok {
+	if name, arg, ok := c.aggCall(e); ok {
 		switch name {
 		case "avg":
 			return types.FloatType{}
-		case "sum", "min", "max", "len", "count":
+		case "sum":
+			if _, ok := types.ExprType(arg, c.env).(types.FloatType); ok {
+				return types.FloatType{}
+			}
+			return types.IntType{}
+		case "min", "max":
+			return types.ExprType(arg, c.env)
+		case "len", "count":
 			return types.IntType{}
 		}
 	}
@@ -468,7 +475,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		out.WriteString("fn avg(v: &[i32]) -> f64 {\n    let sum: i32 = v.iter().sum();\n    sum as f64 / v.len() as f64\n}\n\n")
 	}
 	if c.helpers["sum"] {
-		out.WriteString("fn sum(v: &[i32]) -> i32 {\n    v.iter().sum()\n}\n\n")
+		out.WriteString("fn sum<T>(v: &[T]) -> T where T: std::iter::Sum<T> + Copy {\n    v.iter().copied().sum()\n}\n\n")
 	}
 	if c.helpers["min"] {
 		out.WriteString("fn min(v: &[i32]) -> i32 {\n    *v.iter().min().unwrap()\n}\n\n")
