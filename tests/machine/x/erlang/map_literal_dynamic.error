@@ -1,5 +1,0 @@
-exit status 127
-escript: exception error: bad key: "a"
-  in function  maps:get/2
-     called as maps:get("a",#{a => 3,b => 4})
-     *** argument 1: not present in map

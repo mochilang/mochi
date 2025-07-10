@@ -1476,13 +1476,13 @@ func (c *Compiler) compileMapKey(e *parser.Expr) (string, error) {
 	if e != nil && e.Binary != nil && len(e.Binary.Right) == 0 {
 		u := e.Binary.Left
 		if len(u.Ops) == 0 && u.Value != nil && len(u.Value.Ops) == 0 {
-			if u.Value.Target.Selector != nil && len(u.Value.Target.Selector.Tail) == 0 {
-				return u.Value.Target.Selector.Root, nil
-			}
 			if u.Value.Target.Lit != nil && u.Value.Target.Lit.Str != nil {
 				// Keep quoted keys to avoid converting strings
 				// that look like identifiers into atoms.
 				return c.compileExpr(e)
+			}
+			if u.Value.Target.Selector != nil && len(u.Value.Target.Selector.Tail) == 0 {
+				return u.Value.Target.Selector.Root, nil
 			}
 		}
 	}
