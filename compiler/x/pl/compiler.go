@@ -29,6 +29,8 @@ type Compiler struct {
 	needsSetItem  bool
 	needsGroup    bool
 	needsSetOps   bool
+	needsLoad     bool
+	needsSave     bool
 
 	currentFun string
 	nested     map[string]nestedInfo
@@ -81,6 +83,8 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.needsSetItem = false
 	c.needsGroup = false
 	c.needsSetOps = false
+	c.needsLoad = false
+	c.needsSave = false
 	c.nested = make(map[string]nestedInfo)
 	c.currentFun = ""
 
@@ -192,6 +196,33 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 		out.WriteString("intersect([], _, Acc, R) :- reverse(Acc, R).\n")
 		out.WriteString("intersect([H|T], B, Acc, R) :- memberchk(H, B), \\+ memberchk(H, Acc), !, intersect(T, B, [H|Acc], R).\n")
 		out.WriteString("intersect([_|T], B, Acc, R) :- intersect(T, B, Acc, R).\n\n")
+	}
+	if c.needsLoad || c.needsSave {
+		out.WriteString(":- use_module(library(http/json)).\n")
+	}
+	if c.needsLoad {
+		out.WriteString("load_data(Path, Opts, Rows) :-\n")
+		out.WriteString("    (is_dict(Opts), get_dict(format, Opts, Fmt) -> true ; Fmt = 'json'),\n")
+		out.WriteString("    (Path == '' ; Path == '-' -> read_string(user_input, _, Text) ; read_file_to_string(Path, Text, [])),\n")
+		out.WriteString("    (Fmt == 'jsonl' ->\n")
+		out.WriteString("        split_string(Text, '\\n', ' \\t\\r', Lines0),\n")
+		out.WriteString("        exclude(=(''), Lines0, Lines),\n")
+		out.WriteString("        findall(D, (member(L, Lines), open_string(L, S), json_read_dict(S, D), close(S)), Rows)\n")
+		out.WriteString("    ;\n")
+		out.WriteString("        open_string(Text, S), json_read_dict(S, Data), close(S),\n")
+		out.WriteString("        (is_list(Data) -> Rows = Data ; Rows = [Data])\n")
+		out.WriteString("    ).\n\n")
+	}
+	if c.needsSave {
+		out.WriteString("save_data(Rows, Path, Opts) :-\n")
+		out.WriteString("    (is_dict(Opts), get_dict(format, Opts, Fmt) -> true ; Fmt = 'json'),\n")
+		out.WriteString("    (Path == '' ; Path == '-' -> Out = current_output ; open(Path, write, Out)),\n")
+		out.WriteString("    (Fmt == 'jsonl' ->\n")
+		out.WriteString("        forall(member(R, Rows), (json_write_dict(Out, R), nl(Out)))\n")
+		out.WriteString("    ;\n")
+		out.WriteString("        json_write_dict(Out, Rows)\n")
+		out.WriteString("    ),\n")
+		out.WriteString("    (Out == current_output -> flush_output(Out) ; close(Out)).\n\n")
 	}
 	out.Write(c.lambdaBuf.Bytes())
 	out.Write(c.funcBuf.Bytes())
@@ -452,6 +483,14 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return nil
 		}
 		if call := getSimpleCall(s.Expr.Expr); call != nil {
+			val, _, err := c.compileExpr(s.Expr.Expr)
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("%s,", val))
+			return nil
+		}
+		if se := getSaveExpr(s.Expr.Expr); se != nil {
 			val, _, err := c.compileExpr(s.Expr.Expr)
 			if err != nil {
 				return err
@@ -819,6 +858,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, bool, error) {
 		tmp := c.newTmp()
 		c.writeln(fmt.Sprintf("dict_create(%s, map, [%s]),", tmp, strings.Join(pairs, ", ")))
 		return tmp, false, nil
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	case p.If != nil:
 		return c.compileIfExpr(p.If)
 	case p.Call != nil:
@@ -1485,6 +1528,46 @@ func (c *Compiler) compileCast(val string, cast *parser.CastOp) (string, bool, e
 	return val, false, nil
 }
 
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, bool, error) {
+	path := "\"\""
+	if l.Path != nil {
+		path = fmt.Sprintf("%q", *l.Path)
+	}
+	opts := "nil"
+	if l.With != nil {
+		v, _, err := c.compileExpr(l.With)
+		if err != nil {
+			return "", false, err
+		}
+		opts = v
+	}
+	tmp := c.newTmp()
+	c.needsLoad = true
+	c.writeln(fmt.Sprintf("load_data(%s, %s, %s),", path, opts, tmp))
+	return tmp, false, nil
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, bool, error) {
+	src, _, err := c.compileExpr(s.Src)
+	if err != nil {
+		return "", false, err
+	}
+	path := "\"\""
+	if s.Path != nil {
+		path = fmt.Sprintf("%q", *s.Path)
+	}
+	opts := "nil"
+	if s.With != nil {
+		v, _, err := c.compileExpr(s.With)
+		if err != nil {
+			return "", false, err
+		}
+		opts = v
+	}
+	c.needsSave = true
+	return fmt.Sprintf("save_data(%s, %s, %s)", src, path, opts), false, nil
+}
+
 func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, bool, error) {
 	target, _, err := c.compileExpr(m.Target)
 	if err != nil {
@@ -1543,6 +1626,21 @@ func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
 		return nil, false
 	}
 	return p.Target.Call, true
+}
+
+func getSaveExpr(e *parser.Expr) *parser.SaveExpr {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Save == nil {
+		return nil
+	}
+	return p.Target.Save
 }
 
 func identName(e *parser.Expr) (string, bool) {
