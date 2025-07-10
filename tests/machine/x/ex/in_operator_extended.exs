@@ -5,13 +5,14 @@ defmodule Main do
   @s "hello"
   def main do
     # ys :: list(integer())
-    ys = for x <- @xs, (rem(x, 2) == 1), do: x
-    IO.inspect((if is_map(ys), do: Map.has_key?(ys, 1), else: Enum.member?(ys, 1)))
-    IO.inspect((if is_map(ys), do: Map.has_key?(ys, 2), else: Enum.member?(ys, 2)))
-    IO.inspect((if is_map(@m), do: Map.has_key?(@m, "a"), else: Enum.member?(@m, "a")))
-    IO.inspect((if is_map(@m), do: Map.has_key?(@m, "b"), else: Enum.member?(@m, "b")))
+    ys = for x <- @xs, rem(x, 2) == 1, do: x
+    IO.inspect(if is_map(ys), do: Map.has_key?(ys, 1), else: Enum.member?(ys, 1))
+    IO.inspect(if is_map(ys), do: Map.has_key?(ys, 2), else: Enum.member?(ys, 2))
+    IO.inspect(if is_map(@m), do: Map.has_key?(@m, "a"), else: Enum.member?(@m, "a"))
+    IO.inspect(if is_map(@m), do: Map.has_key?(@m, "b"), else: Enum.member?(@m, "b"))
     IO.inspect(String.contains?(@s, "ell"))
     IO.inspect(String.contains?(@s, "foo"))
   end
-  end
+end
+
 Main.main()

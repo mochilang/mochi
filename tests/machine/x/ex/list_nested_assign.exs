@@ -7,5 +7,6 @@ defmodule Main do
     matrix = List.update_at(matrix, 1, fn it -> List.replace_at(it, 0, 5) end)
     IO.inspect(Enum.at(Enum.at(matrix, 1), 0))
   end
-  end
+end
+
 Main.main()

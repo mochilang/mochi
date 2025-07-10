@@ -6,10 +6,12 @@ defmodule Main do
   def main do
     # combos :: list(map())
     combos = for n <- @nums, l <- @letters, b <- @bools, do: %{n: n, l: l, b: b}
-    IO.inspect("--- Cross Join of three lists ---")
+    IO.puts("--- Cross Join of three lists ---")
+
     for c <- combos do
       IO.puts(Enum.join(Enum.map([c.n, c.l, c.b], &inspect(&1)), " "))
     end
   end
-  end
+end
+
 Main.main()

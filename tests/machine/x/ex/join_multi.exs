@@ -5,11 +5,19 @@ defmodule Main do
   @items [%{orderId: 100, sku: "a"}, %{orderId: 101, sku: "b"}]
   def main do
     # result :: list(map())
-    result = for o <- @orders, c <- @customers, i <- @items, (o.customerId == c.id) && (o.id == i.orderId), do: %{name: c.name, sku: i.sku}
-    IO.inspect("--- Multi Join ---")
+    result =
+      for o <- @orders,
+          c <- @customers,
+          i <- @items,
+          o.customerId == c.id && o.id == i.orderId,
+          do: %{name: c.name, sku: i.sku}
+
+    IO.puts("--- Multi Join ---")
+
     for r <- result do
       IO.puts(Enum.join(Enum.map([r.name, "bought item", r.sku], &inspect(&1)), " "))
     end
   end
-  end
+end
+
 Main.main()

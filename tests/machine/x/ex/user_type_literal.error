@@ -1,0 +1,12 @@
+line 13
+warning: variable "book" does not exist and is being expanded to "book()", please use parentheses to remove the ambiguity or change the variable name
+  /workspace/mochi/tests/machine/x/ex/user_type_literal.exs:13: Main.main/0
+
+** (CompileError) /workspace/mochi/tests/machine/x/ex/user_type_literal.exs:13: undefined function book/0 (expected Main to define such a function or for it to be imported, but none are available)
+
+
+  @book %Book{title: "Go", author: %Person{name: "Bob", age: 42}}
+  def main do
+    IO.puts(book.author.name)
+  end
+end

@@ -3,12 +3,15 @@ defmodule Main do
   @spec sum3(integer(), integer(), integer()) :: integer()
   def sum3(a, b, c) do
     try do
-      throw {:return, ((a + b) + c)}
-    catch {:return, v} -> v end
+      throw({:return, a + b + c})
+    catch
+      {:return, v} -> v
+    end
   end
-  
+
   def main do
     IO.inspect(sum3(1, 2, 3))
   end
-  end
+end
+
 Main.main()

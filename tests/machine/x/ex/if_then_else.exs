@@ -3,14 +3,17 @@ defmodule Main do
   @x 12
   def main do
     # msg :: String.t()
-    msg = (fn ->
-  if (@x > 10) do
-    "yes"
-  else
-    "no"
+    msg =
+      (fn ->
+         if @x > 10 do
+           "yes"
+         else
+           "no"
+         end
+       end).()
+
+    IO.puts(msg)
   end
-end).()
-    IO.inspect(msg)
-  end
-  end
+end
+
 Main.main()

@@ -7,10 +7,12 @@ defmodule Main do
   @spec inc(Counter) :: nil
   def inc(c) do
     try do
-      c = _structify(Counter, (c.n + 1))
-    catch {:return, v} -> v end
+      c = _structify(Counter, c.n + 1)
+    catch
+      {:return, v} -> v
+    end
   end
-  
+
   def main do
     # c :: Counter
     c = _structify(Counter, %Counter{n: 0})
@@ -18,15 +20,24 @@ defmodule Main do
     inc(c)
     IO.inspect(c.n)
   end
+
   defp _structify(mod, v) do
-  cond do
-    is_map(v) ->
-      m = Enum.reduce(v, %{}, fn {k,val}, acc -> Map.put(acc, String.to_atom(to_string(k)), _structify(nil, val)) end)
-      if mod, do: struct(mod, m), else: m
-    is_list(v) -> Enum.map(v, &_structify(nil, &1))
-    true -> v
+    cond do
+      is_map(v) ->
+        m =
+          Enum.reduce(v, %{}, fn {k, val}, acc ->
+            Map.put(acc, String.to_atom(to_string(k)), _structify(nil, val))
+          end)
+
+        if mod, do: struct(mod, m), else: m
+
+      is_list(v) ->
+        Enum.map(v, &_structify(nil, &1))
+
+      true ->
+        v
+    end
   end
 end
 
-  end
 Main.main()

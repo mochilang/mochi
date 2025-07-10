@@ -5,43 +5,50 @@ defmodule Main do
     IO.inspect(_min(@nums))
     IO.inspect(_max(@nums))
   end
+
   defp _max(v) do
-  list = cond do
-    is_map(v) and Map.has_key?(v, :items) -> Map.get(v, :items)
-    is_list(v) -> v
-    true -> raise "max() expects list or group"
-  end
-  if Enum.count(list) == 0 do
-    0
-  else
-    hd = hd(list)
-    Enum.reduce(tl(list), hd, fn it, acc ->
+    list =
       cond do
-        is_binary(acc) and is_binary(it) -> if it > acc, do: it, else: acc
-        true -> if Kernel.>(it, acc), do: it, else: acc
+        is_map(v) and Map.has_key?(v, :items) -> Map.get(v, :items)
+        is_list(v) -> v
+        true -> raise "max() expects list or group"
       end
-    end)
+
+    if Enum.count(list) == 0 do
+      0
+    else
+      hd = hd(list)
+
+      Enum.reduce(tl(list), hd, fn it, acc ->
+        cond do
+          is_binary(acc) and is_binary(it) -> if it > acc, do: it, else: acc
+          true -> if Kernel.>(it, acc), do: it, else: acc
+        end
+      end)
+    end
   end
-end
 
   defp _min(v) do
-  list = cond do
-    is_map(v) and Map.has_key?(v, :items) -> Map.get(v, :items)
-    is_list(v) -> v
-    true -> raise "min() expects list or group"
-  end
-  if Enum.count(list) == 0 do
-    0
-  else
-    hd = hd(list)
-    Enum.reduce(tl(list), hd, fn it, acc ->
+    list =
       cond do
-        is_binary(acc) and is_binary(it) -> if it < acc, do: it, else: acc
-        true -> if Kernel.<(it, acc), do: it, else: acc
+        is_map(v) and Map.has_key?(v, :items) -> Map.get(v, :items)
+        is_list(v) -> v
+        true -> raise "min() expects list or group"
       end
-    end)
+
+    if Enum.count(list) == 0 do
+      0
+    else
+      hd = hd(list)
+
+      Enum.reduce(tl(list), hd, fn it, acc ->
+        cond do
+          is_binary(acc) and is_binary(it) -> if it < acc, do: it, else: acc
+          true -> if Kernel.<(it, acc), do: it, else: acc
+        end
+      end)
+    end
   end
 end
 
-  end
 Main.main()

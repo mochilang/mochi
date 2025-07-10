@@ -4,5 +4,6 @@ defmodule Main do
   def main do
     IO.inspect(Map.get(@m, "b"))
   end
-  end
+end
+
 Main.main()

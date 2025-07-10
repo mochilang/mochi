@@ -4,11 +4,13 @@ defmodule Main do
   @letters ["A", "B"]
   def main do
     # pairs :: list(map())
-    pairs = for n <- @nums, l <- @letters, (rem(n, 2) == 0), do: %{n: n, l: l}
-    IO.inspect("--- Even pairs ---")
+    pairs = for n <- @nums, l <- @letters, rem(n, 2) == 0, do: %{n: n, l: l}
+    IO.puts("--- Even pairs ---")
+
     for p <- pairs do
       IO.puts(Enum.join(Enum.map([p.n, p.l], &inspect(&1)), " "))
     end
   end
-  end
+end
+
 Main.main()

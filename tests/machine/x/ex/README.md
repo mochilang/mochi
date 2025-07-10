@@ -2,9 +2,10 @@
 
 This directory contains Elixir source code generated from Mochi programs and the corresponding outputs.
 
-Compiled programs: 97/97
+Compiled programs: 83/97
 
-### Successful
+Checklist:
+
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -13,7 +14,7 @@ Compiled programs: 97/97
 - [x] break_continue
 - [x] cast_string_to_int
 - [x] cast_struct
-- [x] closure
+- [ ] closure
 - [x] count_builtin
 - [x] cross_join
 - [x] cross_join_filter
@@ -25,17 +26,17 @@ Compiled programs: 97/97
 - [x] for_loop
 - [x] for_map_collection
 - [x] fun_call
-- [x] fun_expr_in_let
+- [ ] fun_expr_in_let
 - [x] fun_three_args
 - [x] group_by
 - [x] group_by_conditional_sum
 - [x] group_by_having
 - [x] group_by_join
-- [x] group_by_left_join
+- [ ] group_by_left_join
 - [x] group_by_multi_join
-- [x] group_by_multi_join_sort
-- [x] group_by_sort
-- [x] group_items_iteration
+- [ ] group_by_multi_join_sort
+- [ ] group_by_sort
+- [ ] group_items_iteration
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
@@ -54,7 +55,7 @@ Compiled programs: 97/97
 - [x] list_index
 - [x] list_nested_assign
 - [x] list_set_ops
-- [x] load_yaml
+- [ ] load_yaml
 - [x] map_assign
 - [x] map_in_operator
 - [x] map_index
@@ -70,12 +71,12 @@ Compiled programs: 97/97
 - [x] nested_function
 - [x] order_by_map
 - [x] outer_join
-- [x] partial_application
+- [ ] partial_application
 - [x] print_hello
 - [x] pure_fold
 - [x] pure_global_fold
 - [x] query_sum_select
-- [x] record_assign
+- [ ] record_assign
 - [x] right_join
 - [x] save_jsonl_stdout
 - [x] short_circuit
@@ -84,7 +85,7 @@ Compiled programs: 97/97
 - [x] str_builtin
 - [x] string_compare
 - [x] string_concat
-- [x] string_contains
+- [ ] string_contains
 - [x] string_in_operator
 - [x] string_index
 - [x] string_prefix_slice
@@ -92,13 +93,29 @@ Compiled programs: 97/97
 - [x] sum_builtin
 - [x] tail_recursion
 - [x] test_block
-- [x] tree_sum
-- [x] two-sum
+- [ ] tree_sum
+- [ ] two-sum
 - [x] typed_let
 - [x] typed_var
 - [x] unary_neg
-- [x] update_stmt
-- [x] user_type_literal
+- [ ] update_stmt
+- [ ] user_type_literal
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+
+### Remaining tasks
+- [ ] closure
+- [ ] fun_expr_in_let
+- [ ] group_by_left_join
+- [ ] group_by_multi_join_sort
+- [ ] group_by_sort
+- [ ] group_items_iteration
+- [ ] load_yaml
+- [ ] partial_application
+- [ ] record_assign
+- [ ] string_contains
+- [ ] tree_sum
+- [ ] two-sum
+- [ ] update_stmt
+- [ ] user_type_literal

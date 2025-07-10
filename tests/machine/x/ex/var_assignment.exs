@@ -7,5 +7,6 @@ defmodule Main do
     x = 2
     IO.inspect(x)
   end
-  end
+end
+
 Main.main()

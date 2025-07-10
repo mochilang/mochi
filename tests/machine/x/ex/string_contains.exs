@@ -5,5 +5,6 @@ defmodule Main do
     IO.inspect(String.contains?(s, "cat"))
     IO.inspect(String.contains?(s, "dog"))
   end
-  end
+end
+
 Main.main()

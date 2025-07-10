@@ -4,14 +4,26 @@ defmodule Main do
   @orders [%{id: 100, customerId: 1, total: 250}, %{id: 101, customerId: 3, total: 80}]
   def main do
     # result :: list(map())
-    result = for o <- @orders do
-  c = Enum.find(@customers, fn c -> (o.customerId == c.id) end)
-  %{orderId: o.id, customer: c, total: o.total}
-end
-    IO.inspect("--- Left Join ---")
+    result =
+      for o <- @orders do
+        c = Enum.find(@customers, fn c -> o.customerId == c.id end)
+        %{orderId: o.id, customer: c, total: o.total}
+      end
+
+    IO.puts("--- Left Join ---")
+
     for entry <- result do
-      IO.puts(Enum.join(Enum.map(["Order", entry.orderId, "customer", entry.customer, "total", entry.total], &inspect(&1)), " "))
+      IO.puts(
+        Enum.join(
+          Enum.map(
+            ["Order", entry.orderId, "customer", entry.customer, "total", entry.total],
+            &inspect(&1)
+          ),
+          " "
+        )
+      )
     end
   end
-  end
+end
+
 Main.main()

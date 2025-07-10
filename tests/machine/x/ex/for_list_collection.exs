@@ -5,5 +5,6 @@ defmodule Main do
       IO.inspect(n)
     end
   end
-  end
+end
+
 Main.main()

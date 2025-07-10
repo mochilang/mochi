@@ -3,15 +3,18 @@ defmodule Main do
   @spec boom() :: boolean()
   def boom() do
     try do
-      IO.inspect("boom")
-      throw {:return, true}
-    catch {:return, v} -> v end
+      IO.puts("boom")
+      throw({:return, true})
+    catch
+      {:return, v} -> v
+    end
   end
-  
+
   def main do
-    IO.inspect((((1 < 2) && (2 < 3)) && (3 < 4)))
-    IO.inspect((((1 < 2) && (2 > 3)) && boom()))
-    IO.inspect(((((1 < 2) && (2 < 3)) && (3 > 4)) && boom()))
+    IO.inspect(1 < 2 && 2 < 3 && 3 < 4)
+    IO.inspect(1 < 2 && 2 > 3 && boom())
+    IO.inspect(1 < 2 && 2 < 3 && 3 > 4 && boom())
   end
-  end
+end
+
 Main.main()

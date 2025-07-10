@@ -1,0 +1,11 @@
+warning: variable "a" is unused (if the variable is not meant to be used, prefix it with an underscore)
+  /workspace/mochi/tests/machine/x/ex/short_circuit.exs:4: Main.boom/2
+
+warning: variable "b" is unused (if the variable is not meant to be used, prefix it with an underscore)
+  /workspace/mochi/tests/machine/x/ex/short_circuit.exs:4: Main.boom/2
+
+warning: this check/guard will always yield the same result
+  /workspace/mochi/tests/machine/x/ex/short_circuit.exs:15
+
+false
+true

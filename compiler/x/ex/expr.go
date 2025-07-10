@@ -290,7 +290,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				switch res {
 				case "print":
 					if len(args) == 1 {
-						res = fmt.Sprintf("IO.inspect(%s)", argStr)
+						if t := c.inferExprType(op.Call.Args[0]); t == (types.StringType{}) {
+							res = fmt.Sprintf("IO.puts(%s)", argStr)
+						} else {
+							res = fmt.Sprintf("IO.inspect(%s)", argStr)
+						}
 					} else {
 						res = fmt.Sprintf("IO.puts(Enum.join(Enum.map([%s], &inspect(&1)), \" \"))", argStr)
 					}
@@ -477,6 +481,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		switch p.Call.Func {
 		case "print":
 			if len(args) == 1 {
+				if t := c.inferExprType(p.Call.Args[0]); t == (types.StringType{}) {
+					return fmt.Sprintf("IO.puts(%s)", argStr), nil
+				}
 				return fmt.Sprintf("IO.inspect(%s)", argStr), nil
 			}
 			return fmt.Sprintf("IO.puts(Enum.join(Enum.map([%s], &inspect(&1)), \" \"))", argStr), nil

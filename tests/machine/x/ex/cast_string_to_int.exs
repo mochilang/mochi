@@ -3,5 +3,6 @@ defmodule Main do
   def main do
     IO.inspect("1995")
   end
-  end
+end
+
 Main.main()

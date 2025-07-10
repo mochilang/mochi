@@ -3,15 +3,19 @@ defmodule Main do
   @spec sum_rec(integer(), integer()) :: integer()
   def sum_rec(n, acc) do
     try do
-      if (n == 0) do
-        throw {:return, acc}
+      if n == 0 do
+        throw({:return, acc})
       end
-      throw {:return, sum_rec((n - 1), (acc + n))}
-    catch {:return, v} -> v end
+
+      throw({:return, sum_rec(n - 1, acc + n)})
+    catch
+      {:return, v} -> v
+    end
   end
-  
+
   def main do
     IO.inspect(sum_rec(10, 0))
   end
-  end
+end
+
 Main.main()

@@ -2,7 +2,8 @@
 defmodule Main do
   @m %{1 => "a", 2 => "b"}
   def main do
-    IO.inspect(Map.get(@m, 1))
+    IO.puts(Map.get(@m, 1))
   end
-  end
+end
+
 Main.main()

@@ -4,21 +4,25 @@ defmodule Main do
     # i :: integer()
     i = 0
     _ = i
+
     t1 = fn t1, i ->
       try do
-        if (i < 3) do
+        if i < 3 do
           IO.inspect(i)
-          i = (i + 1)
+          i = i + 1
           t1.(t1, i)
         else
           {:ok, i}
         end
-      catch :break ->
-        {:ok, i}
+      catch
+        :break ->
+          {:ok, i}
       end
     end
+
     {_, i} = t1.(t1, i)
     _ = i
   end
-  end
+end
+
 Main.main()

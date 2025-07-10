@@ -3,12 +3,15 @@ defmodule Main do
   @spec triple(integer()) :: integer()
   def triple(x) do
     try do
-      throw {:return, (x * 3)}
-    catch {:return, v} -> v end
+      throw({:return, x * 3})
+    catch
+      {:return, v} -> v
+    end
   end
-  
+
   def main do
-    IO.inspect(triple((1 + 2)))
+    IO.inspect(triple(1 + 2))
   end
-  end
+end
+
 Main.main()
