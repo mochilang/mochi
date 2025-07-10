@@ -31,6 +31,8 @@ type Compiler struct {
 	needSum         bool
 	needGroup       bool
 	needLoop        bool
+	needLoadYaml    bool
+	needSaveJSONL   bool
 }
 
 // New creates a compiler instance.
@@ -121,6 +123,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Continue != nil:
 		c.writeln("raise Continue")
 		return nil
+	case s.Test != nil:
+		return c.compileTestBlock(s.Test)
+	case s.Expect != nil:
+		return c.compileExpect(s.Expect)
+	case s.Update != nil:
+		return c.compileUpdate(s.Update)
 	case s.Fun != nil:
 		return c.compileLocalFun(s.Fun)
 	case s.Let != nil:
@@ -505,6 +513,91 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	}
 	buf.WriteString(")")
 	return buf.String(), nil
+}
+
+func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	for _, st := range t.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
+	expr, err := c.compileExpr(e.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("assert (%s)", expr))
+	return nil
+}
+
+func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
+	list := u.Target
+	itemVar := "__it"
+	cond := ""
+
+	var st types.StructType
+	if c.env != nil {
+		if t, err := c.env.GetVar(u.Target); err == nil {
+			if lt, ok := t.(types.ListType); ok {
+				if s, ok := lt.Elem.(types.StructType); ok {
+					st = s
+				}
+			}
+		}
+	}
+
+	child := types.NewEnv(c.env)
+	for _, f := range st.Order {
+		child.SetVar(f, st.Fields[f], true)
+	}
+	old := c.env
+	c.env = child
+
+	c.writeln(fmt.Sprintf("let %s =", list))
+	c.indent++
+	c.writeln(fmt.Sprintf("List.map (fun %s ->", itemVar))
+	c.indent++
+
+	if u.Where != nil {
+		c.indent++ // extra indent for if body
+		condExpr, err := c.compileExpr(u.Where)
+		if err != nil {
+			c.env = old
+			return err
+		}
+		cond = condExpr
+		c.indent--
+	}
+
+	parts := make([]string, len(u.Set.Items))
+	for i, it := range u.Set.Items {
+		key, _ := identName(it.Key)
+		val, err := c.compileExpr(it.Value)
+		if err != nil {
+			c.env = old
+			return err
+		}
+		parts[i] = fmt.Sprintf("%s = %s", key, val)
+	}
+	updateExpr := fmt.Sprintf("{ %s with %s }", itemVar, strings.Join(parts, "; "))
+
+	if u.Where != nil {
+		c.writeln(fmt.Sprintf("if %s then %s else %s", cond, updateExpr, itemVar))
+	} else {
+		c.writeln(updateExpr)
+	}
+
+	c.indent--
+	c.writeln(fmt.Sprintf(") %s", itemVar)) // closing fun
+	c.indent--
+	c.writeln(fmt.Sprintf(") %s", list))
+	c.indent--
+
+	c.env = old
+	return nil
 }
 
 // queryEnv builds an environment containing the variables introduced by q.
@@ -1387,6 +1480,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			fields[i] = fmt.Sprintf("%s = %s", f.Name, v)
 		}
 		return "{ " + strings.Join(fields, "; ") + " }", nil
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	case p.If != nil:
 		return c.compileIfExpr(p.If)
 	case p.Query != nil:
@@ -1507,6 +1604,50 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 		return fmt.Sprintf("%s %s", call.Func, strings.Join(args, " ")), nil
 	}
+}
+
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
+	path := "\"\""
+	if l.Path != nil {
+		path = fmt.Sprintf("%q", *l.Path)
+	}
+	c.needLoadYaml = true
+	expr := fmt.Sprintf("load_yaml %s", path)
+	if l.Type != nil && l.Type.Simple != nil {
+		if st, ok := c.env.GetStruct(*l.Type.Simple); ok {
+			parts := make([]string, len(st.Order))
+			for i, f := range st.Order {
+				typ := st.Fields[f]
+				conv := fmt.Sprintf("Obj.obj (List.assoc \"%s\" m)", f)
+				switch typ.(type) {
+				case types.IntType, types.Int64Type:
+					conv = fmt.Sprintf("(Obj.obj (List.assoc \"%s\" m) : int)", f)
+				case types.FloatType:
+					conv = fmt.Sprintf("(Obj.obj (List.assoc \"%s\" m) : float)", f)
+				case types.BoolType:
+					conv = fmt.Sprintf("(Obj.obj (List.assoc \"%s\" m) : bool)", f)
+				case types.StringType:
+					conv = fmt.Sprintf("(Obj.obj (List.assoc \"%s\" m) : string)", f)
+				}
+				parts[i] = fmt.Sprintf("%s = %s", f, conv)
+			}
+			expr = fmt.Sprintf("List.map (fun m -> { %s }) (%s)", strings.Join(parts, "; "), expr)
+		}
+	}
+	return expr, nil
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
+	src, err := c.compileExpr(s.Src)
+	if err != nil {
+		return "", err
+	}
+	path := "\"-\""
+	if s.Path != nil {
+		path = fmt.Sprintf("%q", *s.Path)
+	}
+	c.needSaveJSONL = true
+	return fmt.Sprintf("save_jsonl %s %s", src, path), nil
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) string {
@@ -1973,7 +2114,65 @@ func (c *Compiler) emitRuntime() {
 		c.writeln("type ('k,'v) group = { key : 'k; items : 'v list }")
 	}
 
-	if c.needShow || c.needContains || c.needSlice || c.needStringSlice || c.needListSet || c.needMapSet || c.needMapGet || c.needListOps || c.needSum || c.needGroup || c.needLoop {
+	if c.needLoadYaml {
+		c.writeln("let load_yaml path =")
+		c.indent++
+		c.writeln("let ic = if path = \"-\" then stdin else open_in path in")
+		c.writeln("let rec parse acc cur =")
+		c.indent++
+		c.writeln("try")
+		c.indent++
+		c.writeln("let line = String.trim (input_line ic) in")
+		c.writeln("if line = \"\" then parse acc cur else")
+		c.writeln("if String.get line 0 = '-' then (")
+		c.indent++
+		c.writeln("let acc = (match cur with None -> acc | Some m -> m :: acc) in")
+		c.writeln("let l = String.trim (String.sub line 1 (String.length line - 1)) in")
+		c.writeln("let idx = String.index l ':' in")
+		c.writeln("let key = String.sub l 0 idx |> String.trim in")
+		c.writeln("let value = String.sub l (idx+1) (String.length l - idx - 1) |> String.trim in")
+		c.writeln("let cur = Some [ (key, Obj.repr value) ] in")
+		c.writeln("parse acc cur")
+		c.indent--
+		c.writeln(") else (")
+		c.indent++
+		c.writeln("let idx = String.index line ':' in")
+		c.writeln("let key = String.sub line 0 idx |> String.trim in")
+		c.writeln("let value = String.sub line (idx+1) (String.length line - idx - 1) |> String.trim in")
+		c.writeln("let v = Obj.repr value in")
+		c.writeln("let cur = match cur with None -> Some [ (key,v) ] | Some m -> Some ((key,v)::m) in")
+		c.writeln("parse acc cur")
+		c.indent--
+		c.writeln(")")
+		c.indent--
+		c.writeln("with End_of_file ->")
+		c.indent++
+		c.writeln("if path <> \"-\" then close_in ic;")
+		c.writeln("let acc = match cur with None -> acc | Some m -> m :: acc in")
+		c.writeln("List.rev acc")
+		c.indent--
+		c.indent--
+		c.writeln("in parse [] None")
+		c.indent--
+		c.buf.WriteByte('\n')
+	}
+
+	if c.needSaveJSONL {
+		c.writeln("let save_jsonl rows path =")
+		c.indent++
+		c.writeln("let oc = if path = \"-\" then stdout else open_out path in")
+		c.writeln("List.iter (fun m ->")
+		c.indent++
+		c.writeln("let parts = List.map (fun (k,v) -> Printf.sprintf \"\\\"%s\\\": %s\" k (__show (Obj.obj v))) m in")
+		c.writeln("output_string oc (\"{\" ^ String.concat \", \" parts ^ \"}\\n\")")
+		c.indent--
+		c.writeln(") rows;")
+		c.writeln("if path <> \"-\" then close_out oc")
+		c.indent--
+		c.buf.WriteByte('\n')
+	}
+
+	if c.needShow || c.needContains || c.needSlice || c.needStringSlice || c.needListSet || c.needMapSet || c.needMapGet || c.needListOps || c.needSum || c.needGroup || c.needLoop || c.needLoadYaml || c.needSaveJSONL {
 		c.buf.WriteByte('\n')
 	}
 }
@@ -2157,6 +2356,17 @@ func (c *Compiler) scanPrimary(p *parser.Primary) {
 		for _, st := range p.FunExpr.BlockBody {
 			c.scanStmt(st)
 		}
+	case p.Load != nil:
+		if p.Load.With != nil {
+			c.scanExpr(p.Load.With)
+		}
+		c.needLoadYaml = true
+	case p.Save != nil:
+		c.scanExpr(p.Save.Src)
+		if p.Save.With != nil {
+			c.scanExpr(p.Save.With)
+		}
+		c.needSaveJSONL = true
 	case p.Group != nil:
 		c.scanExpr(p.Group)
 	}

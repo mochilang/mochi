@@ -86,7 +86,7 @@ that run successfully have a `.out` file while failures generate a `.error` repo
 - [ ] left_join
 - [ ] left_join_multi
 - [ ] list_nested_assign
-- [ ] load_yaml
+ - [x] load_yaml
 - [ ] map_assign
 - [ ] map_literal_dynamic
 - [ ] map_nested_assign
@@ -94,15 +94,15 @@ that run successfully have a `.out` file while failures generate a `.error` repo
 - [ ] outer_join
 - [ ] query_sum_select
 - [ ] right_join
-- [ ] save_jsonl_stdout
+ - [x] save_jsonl_stdout
 - [ ] string_contains
 - [ ] string_in_operator
 - [ ] string_index
 - [ ] string_prefix_slice
 - [ ] tail_recursion
-- [ ] test_block
+ - [x] test_block
 - [ ] two-sum
-- [ ] update_stmt
+ - [x] update_stmt
 - [ ] values_builtin
 
 ## Remaining Tasks
