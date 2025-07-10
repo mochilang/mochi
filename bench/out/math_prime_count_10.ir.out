@@ -15,7 +15,7 @@ func main (regs=30)
 L4:
   LessInt      r6, r5, r1
   JumpIfFalse  r6, L0
-  // var count = 0
+  // var total = 0
   Const        r2, 0
   Move         r7, r2
   // for i in 2..n {
@@ -29,7 +29,7 @@ L3:
   Move         r11, r9
   Call         r12, is_prime, r11
   JumpIfFalse  r12, L2
-  // count = count + 1
+  // total = total + 1
   Const        r13, 1
   AddInt       r14, r7, r13
   Move         r7, r14
@@ -40,7 +40,7 @@ L2:
   Move         r9, r16
   Jump         L3
 L1:
-  // last = count
+  // last = total
   Move         r3, r7
   // for r in 0..repeat {
   Const        r17, 1

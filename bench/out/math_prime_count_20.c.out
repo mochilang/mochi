@@ -87,12 +87,16 @@ static void _json_list_list_int(list_list_int v) {
   }
   printf("]");
 }
+static int n = 20;
+static int repeat = 100;
+static int last = 0;
+
 int is_prime(int n) {
-  if ((n < 2)) {
+  if (n < 2) {
     return 0;
   }
-  for (int i = 2; i < ((n - 1)); i++) {
-    if (((n % i) == 0)) {
+  for (int i = 2; i < (n - 1); i++) {
+    if (n % i == 0) {
       return 0;
     }
   }
@@ -100,25 +104,22 @@ int is_prime(int n) {
 }
 
 int main() {
-  int n = 20;
-  int repeat = 100;
-  int last = 0;
   long long start = _now();
   for (int r = 0; r < repeat; r++) {
-    int count = 0;
+    int total = 0;
     for (int i = 2; i < n; i++) {
       if (is_prime(i)) {
-        count = (count + 1);
+        total = total + 1;
       }
     }
-    last = count;
+    last = total;
   }
   long long end = _now();
-  int duration = (((end - start)) / 1000);
+  double duration = (end - start) / 1000;
   printf("{");
   _json_string("duration_us");
   printf(":");
-  _json_int(duration);
+  _json_float(duration);
   printf(",");
   _json_string("output");
   printf(":");

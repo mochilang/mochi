@@ -103,6 +103,9 @@ static void _json_list_list_int(list_list_int v) {
   }
   printf("]");
 }
+static int size = 20;
+static int repeat = 10;
+
 list_list_int matmul(list_list_int a, list_list_int b) {
   int n = a.len;
   int m = b.data[0].len;
@@ -115,7 +118,7 @@ list_list_int matmul(list_list_int a, list_list_int b) {
     for (int j = 0; j < m; j++) {
       int sum = 0;
       for (int k = 0; k < p; k++) {
-        sum = ((sum + a.data[i].data[k]) * b.data[k].data[j]);
+        sum = sum + a.data[i].data[k] * b.data[k].data[j];
       }
       list_int _t3 = list_int_create(1);
       _t3.data[0] = sum;
@@ -131,8 +134,6 @@ list_list_int matmul(list_list_int a, list_list_int b) {
 }
 
 int main() {
-  int size = 20;
-  int repeat = 10;
   list_list_int _t7 = list_list_int_create(0);
   list_list_int a = _t7;
   for (int i = 0; i < size; i++) {
@@ -140,7 +141,7 @@ int main() {
     list_int row = _t8;
     for (int j = 0; j < size; j++) {
       list_int _t9 = list_int_create(1);
-      _t9.data[0] = (i + j);
+      _t9.data[0] = i + j;
       list_int _t10 = concat_list_int(row, _t9);
       row = _t10;
     }
@@ -156,7 +157,7 @@ int main() {
     list_int row = _t14;
     for (int j = 0; j < size; j++) {
       list_int _t15 = list_int_create(1);
-      _t15.data[0] = (i * j);
+      _t15.data[0] = i * j;
       list_int _t16 = concat_list_int(row, _t15);
       row = _t16;
     }
@@ -172,11 +173,11 @@ int main() {
     last = matmul(a, b);
   }
   long long end = _now();
-  int duration = (((end - start)) / 1000);
+  double duration = (end - start) / 1000;
   printf("{");
   _json_string("duration_us");
   printf(":");
-  _json_int(duration);
+  _json_float(duration);
   printf(",");
   _json_string("output");
   printf(":");

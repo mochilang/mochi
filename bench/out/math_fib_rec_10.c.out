@@ -87,22 +87,23 @@ static void _json_list_list_int(list_list_int v) {
   }
   printf("]");
 }
+static int n = 10;
+
 int fib(int n) {
-  if ((n <= 1)) {
+  if (n <= 1) {
     return n;
   }
-  return (fib((n - 1)) + fib((n - 2)));
+  return fib(n - 1) + fib(n - 2);
 }
 
 int main() {
-  int n = 10;
   long long start = _now();
   int result = fib(n);
-  int duration = (((_now() - start)) / 1000);
+  double duration = (_now() - start) / 1000;
   printf("{");
   _json_string("duration_us");
   printf(":");
-  _json_int(duration);
+  _json_float(duration);
   printf(",");
   _json_string("output");
   printf(":");
