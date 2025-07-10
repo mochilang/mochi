@@ -1,8 +1,19 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/group_by.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/group_by.c:45:26: error: invalid initializer
-   45 |   list_statsItem stats = 0;
-      |                          ^
+/workspace/mochi/tests/machine/x/c/group_by.c:117:34: error: ‘g’ undeclared (first use in this function)
+  117 |   list_int _t6 = list_int_create(g.items.len);
+      |                                  ^
+/workspace/mochi/tests/machine/x/c/group_by.c:117:34: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/machine/x/c/group_by.c:139:17: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+  139 |         .city = g.key, .count = g.items.len, .avg_age = ({
+      |                 ^
+/workspace/mochi/tests/machine/x/c/group_by.c:139:17: note: (near initialization for ‘(anonymous).city’)
+/workspace/mochi/tests/machine/x/c/group_by.c:138:21: error: incompatible types when assigning to type ‘int’ from type ‘statsItem’
+  138 |     _t8.data[_t9] = (statsItem){
+      |                     ^
+/workspace/mochi/tests/machine/x/c/group_by.c:148:26: error: invalid initializer
+  148 |   list_statsItem stats = _t8;
+      |                          ^~~
 
    1: #include <stdio.h>

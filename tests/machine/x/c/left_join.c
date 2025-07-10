@@ -34,7 +34,7 @@ static list_ordersItem list_ordersItem_create(int len) {
 
 typedef struct {
   int orderId;
-  int customer;
+  customersItem customer;
   int total;
 } resultItem;
 typedef struct {

@@ -1,31 +1,18 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/order_by_map.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/order_by_map.c:69:31: error: ‘x’ undeclared (first use in this function)
-   69 |   map_int_bool_put(&_t2, "a", x.a);
-      |                               ^
-/workspace/mochi/tests/machine/x/c/order_by_map.c:69:31: note: each undeclared identifier is reported only once for each function it appears in
-/workspace/mochi/tests/machine/x/c/order_by_map.c:69:26: warning: passing argument 2 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
-   69 |   map_int_bool_put(&_t2, "a", x.a);
-      |                          ^~~
-      |                          |
-      |                          char *
-/workspace/mochi/tests/machine/x/c/order_by_map.c:28:51: note: expected ‘int’ but argument is of type ‘char *’
-   28 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
-      |                                               ~~~~^~~
-/workspace/mochi/tests/machine/x/c/order_by_map.c:70:26: warning: passing argument 2 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
-   70 |   map_int_bool_put(&_t2, "b", x.b);
-      |                          ^~~
-      |                          |
-      |                          char *
-/workspace/mochi/tests/machine/x/c/order_by_map.c:28:51: note: expected ‘int’ but argument is of type ‘char *’
-   28 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
-      |                                               ~~~~^~~
-/workspace/mochi/tests/machine/x/c/order_by_map.c:77:16: error: incompatible types when assigning to type ‘int’ from type ‘map_int_bool’
-   77 |     _t6[_t4] = _t2;
-      |                ^~~
-/workspace/mochi/tests/machine/x/c/order_by_map.c:94:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘list_dataItem’ [-Wformat=]
-   94 |   printf("%d\n", sorted);
+/workspace/mochi/tests/machine/x/c/order_by_map.c:75:33: error: ‘x’ undeclared (first use in this function)
+   75 |   map_string_int_put(&_t2, "a", x.a);
+      |                                 ^
+/workspace/mochi/tests/machine/x/c/order_by_map.c:75:33: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/machine/x/c/order_by_map.c:90:18: error: invalid operands to binary > (have ‘map_string_int’ and ‘map_string_int’)
+   90 |       if (_t6[i] > _t6[j]) {
+      |           ~~~~~~ ^ ~~~~~~
+      |              |        |
+      |              |        map_string_int
+      |              map_string_int
+/workspace/mochi/tests/machine/x/c/order_by_map.c:101:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘list_dataItem’ [-Wformat=]
+  101 |   printf("%d\n", sorted);
       |           ~^     ~~~~~~
       |            |     |
       |            int   list_dataItem

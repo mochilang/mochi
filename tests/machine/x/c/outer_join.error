@@ -10,35 +10,17 @@ error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/outer_join.c:72:10: error: request for member ‘data’ in something not a structure or union
    72 |       _t3.data[_t4] = (resultItem){.order = o, .customer = c};
       |          ^
-/workspace/mochi/tests/machine/x/c/outer_join.c:72:45: error: incompatible types when initializing type ‘int’ using type ‘ordersItem’
-   72 |       _t3.data[_t4] = (resultItem){.order = o, .customer = c};
-      |                                             ^
-/workspace/mochi/tests/machine/x/c/outer_join.c:72:60: error: incompatible types when initializing type ‘int’ using type ‘customersItem’
-   72 |       _t3.data[_t4] = (resultItem){.order = o, .customer = c};
-      |                                                            ^
 /workspace/mochi/tests/machine/x/c/outer_join.c:76:6: error: request for member ‘len’ in something not a structure or union
    76 |   _t3.len = _t4;
       |      ^
 /workspace/mochi/tests/machine/x/c/outer_join.c:77:28: error: invalid initializer
    77 |   list_resultItem result = _t3;
       |                            ^~~
-/workspace/mochi/tests/machine/x/c/outer_join.c:84:32: error: request for member ‘id’ in something not a structure or union
-   84 |         printf("%d ", row.order.id);
-      |                                ^
-/workspace/mochi/tests/machine/x/c/outer_join.c:86:35: error: request for member ‘name’ in something not a structure or union
-   86 |         printf("%d ", row.customer.name);
-      |                                   ^
-/workspace/mochi/tests/machine/x/c/outer_join.c:88:33: error: request for member ‘total’ in something not a structure or union
-   88 |         printf("%d\n", row.order.total);
-      |                                 ^
-/workspace/mochi/tests/machine/x/c/outer_join.c:91:32: error: request for member ‘id’ in something not a structure or union
-   91 |         printf("%d ", row.order.id);
-      |                                ^
-/workspace/mochi/tests/machine/x/c/outer_join.c:95:33: error: request for member ‘total’ in something not a structure or union
-   95 |         printf("%d\n", row.order.total);
-      |                                 ^
-/workspace/mochi/tests/machine/x/c/outer_join.c:99:33: error: request for member ‘name’ in something not a structure or union
-   99 |       printf("%d ", row.customer.name);
-      |                                 ^
+/workspace/mochi/tests/machine/x/c/outer_join.c:81:9: error: used struct type value where scalar is required
+   81 |     if (row.order) {
+      |         ^~~
+/workspace/mochi/tests/machine/x/c/outer_join.c:82:11: error: used struct type value where scalar is required
+   82 |       if (row.customer) {
+      |           ^~~
 
    1: #include <stdio.h>

@@ -47,8 +47,8 @@ static list_itemsItem list_itemsItem_create(int len) {
 }
 
 typedef struct {
-  int name;
-  int sku;
+  char *name;
+  char *sku;
 } resultItem;
 typedef struct {
   int len;
@@ -74,7 +74,7 @@ int main() {
   _t3.data[0] = (itemsItem){.orderId = 100, .sku = "a"};
   _t3.data[1] = (itemsItem){.orderId = 101, .sku = "b"};
   list_itemsItem items = _t3;
-  list_int _t4 = list_int_create(orders.len * customers.len * items.len);
+  int _t4 = int_create(orders.len * customers.len * items.len);
   int _t5 = 0;
   for (int _t6 = 0; _t6 < orders.len; _t6++) {
     ordersItem o = orders.data[_t6];
@@ -98,9 +98,9 @@ int main() {
   printf("%s\n", "--- Multi Join ---");
   for (int _t9 = 0; _t9 < result.len; _t9++) {
     resultItem r = result.data[_t9];
-    printf("%d ", r.name);
+    printf("%s ", r.name);
     printf("%s ", "bought item");
-    printf("%d\n", r.sku);
+    printf("%s\n", r.sku);
   }
   return 0;
 }

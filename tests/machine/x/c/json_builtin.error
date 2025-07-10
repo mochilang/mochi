@@ -1,46 +1,13 @@
 line: 0
 error: cc error: exit status 1
-/workspace/mochi/tests/machine/x/c/json_builtin.c:27:3: error: unknown type name ‘list_int’
-   27 |   list_int *data;
-      |   ^~~~~~~~
-/workspace/mochi/tests/machine/x/c/json_builtin.c: In function ‘list_list_int_create’:
-/workspace/mochi/tests/machine/x/c/json_builtin.c:32:13: error: ‘list_int’ undeclared (first use in this function); did you mean ‘list_string’?
-   32 |   l.data = (list_int *)malloc(sizeof(list_int) * len);
-      |             ^~~~~~~~
-      |             list_string
-/workspace/mochi/tests/machine/x/c/json_builtin.c:32:13: note: each undeclared identifier is reported only once for each function it appears in
-/workspace/mochi/tests/machine/x/c/json_builtin.c:32:23: error: expected expression before ‘)’ token
-   32 |   l.data = (list_int *)malloc(sizeof(list_int) * len);
-      |                       ^
-/workspace/mochi/tests/machine/x/c/json_builtin.c: At top level:
-/workspace/mochi/tests/machine/x/c/json_builtin.c:81:28: error: unknown type name ‘list_int’; did you mean ‘list_string’?
-   81 | static void _json_list_int(list_int v) {
-      |                            ^~~~~~~~
-      |                            list_string
-/workspace/mochi/tests/machine/x/c/json_builtin.c: In function ‘_json_list_list_int’:
-/workspace/mochi/tests/machine/x/c/json_builtin.c:113:5: warning: implicit declaration of function ‘_json_list_int’; did you mean ‘_json_list_string’? [-Wimplicit-function-declaration]
-  113 |     _json_list_int(v.data[i]);
-      |     ^~~~~~~~~~~~~~
-      |     _json_list_string
 /workspace/mochi/tests/machine/x/c/json_builtin.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/json_builtin.c:119:26: warning: passing argument 2 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
-  119 |   map_int_bool_put(&_t1, "a", 1);
-      |                          ^~~
-      |                          |
-      |                          char *
-/workspace/mochi/tests/machine/x/c/json_builtin.c:59:51: note: expected ‘int’ but argument is of type ‘char *’
-   59 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
-      |                                               ~~~~^~~
-/workspace/mochi/tests/machine/x/c/json_builtin.c:120:26: warning: passing argument 2 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
-  120 |   map_int_bool_put(&_t1, "b", 2);
-      |                          ^~~
-      |                          |
-      |                          char *
-/workspace/mochi/tests/machine/x/c/json_builtin.c:59:51: note: expected ‘int’ but argument is of type ‘char *’
-   59 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
-      |                                               ~~~~^~~
-/workspace/mochi/tests/machine/x/c/json_builtin.c:121:11: error: incompatible types when initializing type ‘int’ using type ‘map_int_bool’
-  121 |   int m = _t1;
-      |           ^~~
+/workspace/mochi/tests/machine/x/c/json_builtin.c:137:13: error: incompatible type for argument 1 of ‘_json_int’
+  137 |   _json_int(m);
+      |             ^
+      |             |
+      |             map_string_int
+/workspace/mochi/tests/machine/x/c/json_builtin.c:93:27: note: expected ‘int’ but argument is of type ‘map_string_int’
+   93 | static void _json_int(int v) { printf("%d", v); }
+      |                       ~~~~^
 
    1: #include <stdio.h>

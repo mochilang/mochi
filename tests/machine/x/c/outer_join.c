@@ -33,8 +33,8 @@ static list_ordersItem list_ordersItem_create(int len) {
 }
 
 typedef struct {
-  int order;
-  int customer;
+  ordersItem order;
+  customersItem customer;
 } resultItem;
 typedef struct {
   int len;
@@ -83,7 +83,7 @@ int main() {
         printf("%s ", "Order");
         printf("%d ", row.order.id);
         printf("%s ", "by");
-        printf("%d ", row.customer.name);
+        printf("%s ", row.customer.name);
         printf("%s ", "- $");
         printf("%d\n", row.order.total);
       } else {
@@ -96,7 +96,7 @@ int main() {
       }
     } else {
       printf("%s ", "Customer");
-      printf("%d ", row.customer.name);
+      printf("%s ", row.customer.name);
       printf("%s\n", "has no orders");
     }
   }

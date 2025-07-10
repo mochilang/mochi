@@ -168,8 +168,8 @@ static list_map_string _load_json(const char *path) {
 typedef struct Person Person;
 
 typedef struct {
-  int name;
-  int email;
+  char *name;
+  char *email;
 } adultsItem;
 typedef struct {
   int len;
@@ -204,8 +204,8 @@ int main() {
   list_adultsItem adults = _t1;
   for (int _t4 = 0; _t4 < adults.len; _t4++) {
     adultsItem a = adults.data[_t4];
-    printf("%d ", a.name);
-    printf("%d\n", a.email);
+    printf("%s ", a.name);
+    printf("%s\n", a.email);
   }
   return 0;
 }
