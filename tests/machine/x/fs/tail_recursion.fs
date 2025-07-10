@@ -1,4 +1,3 @@
-open System
 
 let sum_rec (n) (acc) =
     if n = 0 then

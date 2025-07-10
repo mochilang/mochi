@@ -112,7 +112,9 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 		}
 	}
 	var header bytes.Buffer
-	header.WriteString("open System\n")
+	if c.usesJson || c.usesYaml {
+		header.WriteString("open System\n")
+	}
 	if c.usesJson {
 		header.WriteString("open System.Text.Json\n")
 	}

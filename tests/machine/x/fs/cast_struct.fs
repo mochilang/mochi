@@ -1,4 +1,3 @@
-open System
 
 type Todo = {
     mutable title: string

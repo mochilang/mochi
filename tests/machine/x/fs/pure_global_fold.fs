@@ -1,4 +1,3 @@
-open System
 
 let k = 2
 let inc (x) =

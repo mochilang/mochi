@@ -1,4 +1,3 @@
-open System
 
 let x = 2
 let label = (match x with

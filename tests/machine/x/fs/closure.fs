@@ -1,4 +1,3 @@
-open System
 
 let makeAdder (n) =
     fun x -> x + n

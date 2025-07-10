@@ -1,4 +1,3 @@
-open System
 
 let prefix: string = "fore"
 let s1: string = "forest"

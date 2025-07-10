@@ -112,4 +112,5 @@ Compiled programs: 97/97
 ## Remaining Tasks
 
 - [x] Improve formatting of generated F# loops when `break` and `continue` are not used
- - [x] Expand support for additional standard library functions
+- [x] Expand support for additional standard library functions
+- [x] Skip `open System` when not required

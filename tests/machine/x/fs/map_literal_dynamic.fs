@@ -1,4 +1,3 @@
-open System
 
 let mutable x = 3
 let mutable y = 4

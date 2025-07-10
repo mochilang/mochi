@@ -1,4 +1,3 @@
-open System
 
 exception Break
 exception Continue
