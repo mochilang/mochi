@@ -1,4 +1,7 @@
 # Mochi to Zig Machine Outputs (97/97 compiled)
+
+These files were generated using the Zig compiler backend. Each `.mochi` program from `tests/vm/valid` was compiled to Zig and executed; the resulting Zig sources and program outputs are stored here.
+
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -17,7 +20,7 @@
 - [x] exists_builtin.mochi
 - [x] for_list_collection.mochi
 - [x] for_loop.mochi
- - [x] for_map_collection.mochi
+- [x] for_map_collection.mochi
 - [x] fun_call.mochi
 - [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
@@ -98,9 +101,4 @@
 - [x] while_loop.mochi
 
 ## TODO
-- [x] Regenerate outputs after fixing map literal temporary variable names
-- [x] Support map literals in iterations by emitting `std.AutoHashMap` even when keys are simple
-- [x] Support right and outer join queries
-- [x] Support join queries with grouping, having clauses, and sorting
-- [x] Format struct and list literals on multiple lines for readability
-- [x] Improve float formatting for numeric outputs
+- [ ] Keep generated outputs in sync with compiler improvements.
