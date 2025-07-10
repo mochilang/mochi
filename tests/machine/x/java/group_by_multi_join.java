@@ -29,8 +29,8 @@ class DataClass3 {
 }
 class DataClass4 {
 	int part;
-	double value;
-	DataClass4(int part, double value) {
+	int value;
+	DataClass4(int part, int value) {
 		this.part = part;
 		this.value = value;
 	}
@@ -63,19 +63,19 @@ public class Main {
 }}).get();
 	static List<DataClass5> grouped = (new java.util.function.Supplier<List<DataClass5>>(){public List<DataClass5> get(){
 	List<DataClass5> _res8 = new ArrayList<>();
-	Map<Object,List<DataClass4>> _groups9 = new LinkedHashMap<>();
+	Map<Integer,List<DataClass4>> _groups9 = new LinkedHashMap<>();
 	for (var x : filtered) {
 		var _row10 = x;
-		Object _key11 = x.part;
+		int _key11 = x.part;
 		List<DataClass4> _b12 = _groups9.get(_key11);
 		if (_b12 == null) { _b12 = new ArrayList<>(); _groups9.put(_key11, _b12); }
 		_b12.add(_row10);
 	}
 	for (var __e : _groups9.entrySet()) {
-		Object g_key = __e.getKey();
+		int g_key = __e.getKey();
 		List<DataClass4> g = __e.getValue();
-		_res8.add(new DataClass5(g_key, sum((List<Number>)(List<?>)(new java.util.function.Supplier<List<Double>>(){public List<Double> get(){
-	List<Double> _res13 = new ArrayList<>();
+		_res8.add(new DataClass5(g_key, sum((List<Number>)(List<?>)(new java.util.function.Supplier<List<Integer>>(){public List<Integer> get(){
+	List<Integer> _res13 = new ArrayList<>();
 	for (var r : g) {
 		_res13.add(r.value);
 	}

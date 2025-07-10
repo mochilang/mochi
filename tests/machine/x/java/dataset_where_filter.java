@@ -10,8 +10,8 @@ class DataClass1 {
 class DataClass2 {
 	String name;
 	int age;
-	int is_senior;
-	DataClass2(String name, int age, int is_senior) {
+	boolean is_senior;
+	DataClass2(String name, int age, boolean is_senior) {
 		this.name = name;
 		this.age = age;
 		this.is_senior = is_senior;

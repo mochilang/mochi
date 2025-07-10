@@ -1,12 +1,10 @@
 line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramsgroup_by_left_join3125307608/001/Main.java:47: error: incompatible types: Map<String,Object> cannot be converted to DataClass1
-			_b14.add(_row12);
-			         ^
-/tmp/TestCompileValidProgramsgroup_by_left_join3125307608/001/Main.java:56: error: cannot find symbol
+/tmp/TestCompileValidProgramsgroup_by_left_join3333765603/001/Main.java:49: error: incompatible types: Object cannot be converted to DataClass2
+			DataClass4 _row12 = new DataClass4(c, o);
+			                                      ^
+/tmp/TestCompileValidProgramsgroup_by_left_join3333765603/001/Main.java:62: error: bad operand type DataClass2 for unary operator '!'
 		if (!(r.o)) continue;
-		       ^
-  symbol:   variable o
-  location: variable r of type DataClass1
+		    ^
 Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
 2 errors
 

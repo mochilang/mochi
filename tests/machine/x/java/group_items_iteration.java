@@ -19,16 +19,16 @@ public class Main {
 	static List<DataClass1> data = new ArrayList<>(java.util.Arrays.asList(new DataClass1("a", 1), new DataClass1("a", 2), new DataClass1("b", 3)));
 	static List<Object> groups = (new java.util.function.Supplier<List<Object>>(){public List<Object> get(){
 	List<Object> _res6 = new ArrayList<>();
-	Map<Object,List<DataClass1>> _groups7 = new LinkedHashMap<>();
+	Map<String,List<DataClass1>> _groups7 = new LinkedHashMap<>();
 	for (var d : data) {
 		var _row8 = d;
-		Object _key9 = d.tag;
+		String _key9 = d.tag;
 		List<DataClass1> _b10 = _groups7.get(_key9);
 		if (_b10 == null) { _b10 = new ArrayList<>(); _groups7.put(_key9, _b10); }
 		_b10.add(_row8);
 	}
 	for (var __e : _groups7.entrySet()) {
-		Object g_key = __e.getKey();
+		String g_key = __e.getKey();
 		List<DataClass1> g = __e.getValue();
 		_res6.add(new LinkedHashMap<>(Map.ofEntries(Map.entry("key", g_key), Map.entry("items", g))));
 	}

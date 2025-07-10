@@ -68,6 +68,18 @@ class DataClass5 {
 	}
 }
 class DataClass6 {
+	DataClass2 c;
+	DataClass3 o;
+	DataClass4 l;
+	DataClass1 n;
+	DataClass6(DataClass2 c, DataClass3 o, DataClass4 l, DataClass1 n) {
+		this.c = c;
+		this.o = o;
+		this.l = l;
+		this.n = n;
+	}
+}
+class DataClass7 {
 	int c_custkey;
 	String c_name;
 	double c_acctbal;
@@ -75,7 +87,7 @@ class DataClass6 {
 	String c_phone;
 	String c_comment;
 	String n_name;
-	DataClass6(int c_custkey, String c_name, double c_acctbal, String c_address, String c_phone, String c_comment, String n_name) {
+	DataClass7(int c_custkey, String c_name, double c_acctbal, String c_address, String c_phone, String c_comment, String n_name) {
 		this.c_custkey = c_custkey;
 		this.c_name = c_name;
 		this.c_acctbal = c_acctbal;
@@ -94,7 +106,7 @@ public class Main {
 	static String end_date = "1994-01-01";
 	static List<DataClass5> result = (new java.util.function.Supplier<List<DataClass5>>(){public List<DataClass5> get(){
 	List<DataClass5> _res6 = new ArrayList<>();
-	Map<Object,List<DataClass2>> _groups7 = new LinkedHashMap<>();
+	Map<DataClass7,List<DataClass6>> _groups7 = new LinkedHashMap<>();
 	for (var c : customer) {
 		for (var o : orders) {
 			if (!(Objects.equals(o.o_custkey, c.c_custkey))) continue;
@@ -103,13 +115,9 @@ public class Main {
 				for (var n : nation) {
 					if (!(Objects.equals(n.n_nationkey, c.c_nationkey))) continue;
 					if (!(Objects.equals(String.valueOf(String.valueOf(o.o_orderdate).compareTo(String.valueOf(start_date)) >= 0 && o.o_orderdate).compareTo(String.valueOf(end_date)) < 0 && l.l_returnflag, "R"))) continue;
-					Map<String,Object> _row8 = new HashMap<>();
-					_row8.put("c", c);
-					_row8.put("o", o);
-					_row8.put("l", l);
-					_row8.put("n", n);
-					Object _key9 = new DataClass6(c.c_custkey, c.c_name, c.c_acctbal, c.c_address, c.c_phone, c.c_comment, n.n_name);
-					List<DataClass2> _b10 = _groups7.get(_key9);
+					DataClass6 _row8 = new DataClass6(c, o, l, n);
+					DataClass7 _key9 = new DataClass7(c.c_custkey, c.c_name, c.c_acctbal, c.c_address, c.c_phone, c.c_comment, n.n_name);
+					List<DataClass6> _b10 = _groups7.get(_key9);
 					if (_b10 == null) { _b10 = new ArrayList<>(); _groups7.put(_key9, _b10); }
 					_b10.add(_row8);
 				}
@@ -117,15 +125,15 @@ public class Main {
 		}
 	}
 	for (var __e : _groups7.entrySet()) {
-		Object g_key = __e.getKey();
-		List<DataClass2> g = __e.getValue();
-		_res6.add(new DataClass5(((Map)g_key).get("c_custkey"), ((Map)g_key).get("c_name"), sum((List<Number>)(List<?>)(new java.util.function.Supplier<List<Object>>(){public List<Object> get(){
-	List<Object> _res11 = new ArrayList<>();
+		DataClass7 g_key = __e.getKey();
+		List<DataClass6> g = __e.getValue();
+		_res6.add(new DataClass5(g_key.c_custkey, g_key.c_name, sum((List<Number>)(List<?>)(new java.util.function.Supplier<List<Integer>>(){public List<Integer> get(){
+	List<Integer> _res11 = new ArrayList<>();
 	for (var x : g) {
 		_res11.add(x.l.l_extendedprice * (1 - x.l.l_discount));
 	}
 	return _res11;
-}}).get()), ((Map)g_key).get("c_acctbal"), ((Map)g_key).get("n_name"), ((Map)g_key).get("c_address"), ((Map)g_key).get("c_phone"), ((Map)g_key).get("c_comment")));
+}}).get()), g_key.c_acctbal, g_key.n_name, g_key.c_address, g_key.c_phone, g_key.c_comment));
 	}
 	return _res6;
 }}).get();

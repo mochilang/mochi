@@ -574,6 +574,15 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 			}
 		}
 	}
+	if e != nil && e.Binary != nil && len(e.Binary.Right) > 0 {
+		op := e.Binary.Right[len(e.Binary.Right)-1].Op
+		switch op {
+		case "==", "!=", "<", "<=", ">", ">=", "in", "&&", "||":
+			return "boolean"
+		case "+", "-", "*", "/", "%":
+			return "int"
+		}
+	}
 	if l := isListLiteral(e); l != nil {
 		et := "Object"
 		if len(l.Elems) > 0 {
@@ -977,6 +986,26 @@ func (c *Compiler) dataClassByName(name string) *dataClass {
 		}
 	}
 	return nil
+}
+
+func (c *Compiler) rowDataClassFor(vars []string) string {
+	shape := "row|" + strings.Join(vars, ";")
+	if dc, ok := c.dataClasses[shape]; ok {
+		return dc.name
+	}
+	name := fmt.Sprintf("DataClass%d", len(c.dataClasses)+1)
+	var fields, types []string
+	for _, v := range vars {
+		fields = append(fields, v)
+		typ := c.vars[v]
+		if typ == "" {
+			typ = "Object"
+		}
+		types = append(types, typ)
+	}
+	c.dataClasses[shape] = &dataClass{name: name, fields: fields, types: types}
+	c.dataClassOrder = append(c.dataClassOrder, shape)
+	return name
 }
 
 func (c *Compiler) fieldType(structName, field string) string {
@@ -2100,6 +2129,19 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		c.tmpCount++
 	}
 
+	rowVars := []string{q.Var}
+	for _, fr := range q.Froms {
+		rowVars = append(rowVars, fr.Var)
+	}
+	for _, j := range q.Joins {
+		rowVars = append(rowVars, j.Var)
+	}
+	rowType := elemType
+	if q.Group != nil && len(rowVars) > 1 {
+		rowType = c.rowDataClassFor(rowVars)
+		elemType = rowType
+	}
+
 	// simple right or outer join without additional clauses
 	if q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct &&
 		len(q.Froms) == 0 && len(q.Joins) == 1 && q.Where == nil {
@@ -2194,7 +2236,11 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	b.WriteString(fmt.Sprintf("(new java.util.function.Supplier<%s>(){public %s get(){\n", listType, listType))
 	b.WriteString(fmt.Sprintf("\t%s %s = new ArrayList<>();\n", listType, resVar))
 	if groupsVar != "" {
-		b.WriteString(fmt.Sprintf("\tMap<Object,List<%s>> %s = new LinkedHashMap<>();\n", elemType, groupsVar))
+		keyType := c.inferType(q.Group.Exprs[0])
+		if keyType == "var" {
+			keyType = "Object"
+		}
+		b.WriteString(fmt.Sprintf("\tMap<%s,List<%s>> %s = new LinkedHashMap<>();\n", wrapperType(keyType), rowType, groupsVar))
 	}
 	indent := "\t"
 	b.WriteString(fmt.Sprintf("%sfor (var %s : %s) {\n", indent, q.Var, src))
@@ -2270,15 +2316,11 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		}
 		if len(vars) == 1 {
 			b.WriteString(fmt.Sprintf("%svar %s = %s;\n", indent, rowVar, vars[0]))
+			c.vars[rowVar] = c.vars[vars[0]]
 		} else {
-			b.WriteString(fmt.Sprintf("%sMap<String,Object> %s = new HashMap<>();\n", indent, rowVar))
-			b.WriteString(fmt.Sprintf("%s%s.put(\"%s\", %s);\n", indent, rowVar, q.Var, q.Var))
-			for _, fr := range q.Froms {
-				b.WriteString(fmt.Sprintf("%s%s.put(\"%s\", %s);\n", indent, rowVar, fr.Var, fr.Var))
-			}
-			for _, j := range q.Joins {
-				b.WriteString(fmt.Sprintf("%s%s.put(\"%s\", %s);\n", indent, rowVar, j.Var, j.Var))
-			}
+			args := strings.Join(vars, ", ")
+			b.WriteString(fmt.Sprintf("%s%s %s = new %s(%s);\n", indent, rowType, rowVar, rowType, args))
+			c.vars[rowVar] = rowType
 		}
 		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
 		if err != nil {
@@ -2287,11 +2329,15 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		}
 		keyVar := fmt.Sprintf("_key%d", c.tmpCount)
 		c.tmpCount++
-		b.WriteString(fmt.Sprintf("%sObject %s = %s;\n", indent, keyVar, keyExpr))
-		c.vars[keyVar] = c.inferType(q.Group.Exprs[0])
+		keyType := c.inferType(q.Group.Exprs[0])
+		if keyType == "var" {
+			keyType = "Object"
+		}
+		b.WriteString(fmt.Sprintf("%s%s %s = %s;\n", indent, keyType, keyVar, keyExpr))
+		c.vars[keyVar] = keyType
 		bucketVar := fmt.Sprintf("_b%d", c.tmpCount)
 		c.tmpCount++
-		b.WriteString(fmt.Sprintf("%sList<%s> %s = %s.get(%s);\n", indent, elemType, bucketVar, groupsVar, keyVar))
+		b.WriteString(fmt.Sprintf("%sList<%s> %s = %s.get(%s);\n", indent, rowType, bucketVar, groupsVar, keyVar))
 		b.WriteString(fmt.Sprintf("%sif (%s == null) { %s = new ArrayList<>(); %s.put(%s, %s); }\n", indent, bucketVar, bucketVar, groupsVar, keyVar, bucketVar))
 		b.WriteString(fmt.Sprintf("%s%s.add(%s);\n", indent, bucketVar, rowVar))
 	} else {
@@ -2321,10 +2367,15 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		gName := q.Group.Name
 		keyVar := fmt.Sprintf("%s_key", gName)
 		c.groupKeys[gName] = keyVar
-		c.vars[gName] = fmt.Sprintf("List<%s>", elemType)
+		c.vars[gName] = fmt.Sprintf("List<%s>", rowType)
+		keyType := c.inferType(q.Group.Exprs[0])
+		if keyType == "var" {
+			keyType = "Object"
+		}
+		c.vars[keyVar] = keyType
 		b.WriteString(fmt.Sprintf("\tfor (var __e : %s.entrySet()) {\n", groupsVar))
-		b.WriteString(fmt.Sprintf("\t\tObject %s = __e.getKey();\n", keyVar))
-		b.WriteString(fmt.Sprintf("\t\tList<%s> %s = __e.getValue();\n", elemType, gName))
+		b.WriteString(fmt.Sprintf("\t\t%[1]s %s = __e.getKey();\n", keyType, keyVar))
+		b.WriteString(fmt.Sprintf("\t\tList<%s> %s = __e.getValue();\n", rowType, gName))
 		if q.Group.Having != nil {
 			cond, err := c.compileExpr(q.Group.Having)
 			if err != nil {

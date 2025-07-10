@@ -1,5 +1,5 @@
 line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramsleft_join_multi2059969322/001/Main.java:53: error: incompatible types: Object cannot be converted to DataClass3
+/tmp/TestCompileValidProgramsleft_join_multi2754561364/001/Main.java:53: error: incompatible types: Object cannot be converted to DataClass3
 				_res3.add(new DataClass4(o.id, c.name, i));
 				                                       ^
 Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
