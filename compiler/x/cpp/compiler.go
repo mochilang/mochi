@@ -15,6 +15,7 @@ import (
 type structInfo struct {
 	Name   string
 	Fields []string
+	Types  []string
 }
 
 // Compiler translates a subset of Mochi to simple C++17 code.
@@ -29,25 +30,27 @@ type Compiler struct {
 
 	aliases map[string]string
 
-	structMap   map[string]*structInfo
-	structCount int
-	varStruct   map[string]string
-	elemType    map[string]string
-	groups      map[string]struct{}
-	usesJSON    bool
+	structMap    map[string]*structInfo
+	structByName map[string]*structInfo
+	structCount  int
+	varStruct    map[string]string
+	elemType     map[string]string
+	groups       map[string]struct{}
+	usesJSON     bool
 }
 
 // New returns a new compiler instance.
 func New() *Compiler {
 	return &Compiler{
-		vars:      map[string]string{},
-		aliases:   map[string]string{},
-		structMap: map[string]*structInfo{},
-		varStruct: map[string]string{},
-		elemType:  map[string]string{},
-		funParams: map[string]int{},
-		groups:    map[string]struct{}{},
-		usesJSON:  false,
+		vars:         map[string]string{},
+		aliases:      map[string]string{},
+		structMap:    map[string]*structInfo{},
+		structByName: map[string]*structInfo{},
+		varStruct:    map[string]string{},
+		elemType:     map[string]string{},
+		funParams:    map[string]int{},
+		groups:       map[string]struct{}{},
+		usesJSON:     false,
 	}
 }
 
@@ -99,6 +102,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.header.Reset()
 	c.structMap = map[string]*structInfo{}
+	c.structByName = map[string]*structInfo{}
 	c.structCount = 0
 	c.usesJSON = false
 
@@ -922,7 +926,41 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, error) {
 				expr = fmt.Sprintf("%s[%s]", expr, idx)
 			}
 		} else if op.Field != nil {
+			base := expr
 			expr = fmt.Sprintf("%s.%s", expr, op.Field.Name)
+			t := c.varStruct[base]
+			if t == "" {
+				t = structLiteralType(base)
+			}
+			if idx := strings.Index(t, "{"); idx != -1 {
+				t = t[:idx]
+			}
+			if info, ok := c.structByName[t]; ok {
+				for i, f := range info.Fields {
+					if f == op.Field.Name && i < len(info.Types) {
+						ft := info.Types[i]
+						if strings.HasPrefix(ft, "std::vector<") {
+							if et := extractVectorElemType(ft); et != "" {
+								c.elemType[expr] = et
+								if strings.HasPrefix(et, "__struct") {
+									c.varStruct[expr] = et
+								}
+							}
+						} else {
+							if strings.HasPrefix(ft, "__struct") {
+								c.varStruct[expr] = ft
+							} else if ft == "std::string" {
+								c.vars[expr] = "string"
+							} else if ft == "int" {
+								c.vars[expr] = "int"
+							} else if ft == "bool" {
+								c.vars[expr] = "bool"
+							}
+						}
+						break
+					}
+				}
+			}
 		} else if op.Cast != nil {
 			t, err := c.compileType(op.Cast.Type)
 			if err != nil {
@@ -965,6 +1003,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Map != nil:
 		names := []string{}
 		vals := []string{}
+		fieldTypes := []string{}
 		simple := true
 		for _, it := range p.Map.Items {
 			if n, ok := c.simpleIdentifier(it.Key); ok {
@@ -982,12 +1021,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			sig := strings.Join(names, ",")
 			info, ok := c.structMap[sig]
 			if !ok {
-				c.structCount++
-				info = &structInfo{Name: fmt.Sprintf("__struct%d", c.structCount), Fields: append([]string(nil), names...)}
-				c.structMap[sig] = info
-				var def strings.Builder
-				def.WriteString("struct " + info.Name + " {")
-				for i, n := range names {
+				for i := range names {
 					ftype := fmt.Sprintf("decltype(%s)", vals[i])
 					if strings.Contains(vals[i], "((int)") {
 						ftype = "int"
@@ -1030,7 +1064,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 					} else if t := inferExprType(vals[i]); t != "" {
 						ftype = t
 					}
-					def.WriteString(ftype + " " + n + "; ")
+					fieldTypes = append(fieldTypes, ftype)
+				}
+				c.structCount++
+				info = &structInfo{Name: fmt.Sprintf("__struct%d", c.structCount), Fields: append([]string(nil), names...), Types: append([]string(nil), fieldTypes...)}
+				c.structMap[sig] = info
+				c.structByName[info.Name] = info
+				var def strings.Builder
+				def.WriteString("struct " + info.Name + " {")
+				for i, n := range names {
+					def.WriteString(fieldTypes[i] + " " + n + "; ")
 				}
 				def.WriteString("};")
 				c.headerWriteln(def.String())
@@ -1305,8 +1348,9 @@ func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error
 	info, ok := c.structMap[sig]
 	if !ok {
 		c.structCount++
-		info = &structInfo{Name: fmt.Sprintf("__struct%d", c.structCount), Fields: append([]string(nil), fieldNames...)}
+		info = &structInfo{Name: fmt.Sprintf("__struct%d", c.structCount), Fields: append([]string(nil), fieldNames...), Types: append([]string(nil), fieldTypes...)}
 		c.structMap[sig] = info
+		c.structByName[info.Name] = info
 		var def strings.Builder
 		def.WriteString("struct " + info.Name + " {")
 		for i := range fieldNames {
@@ -2198,11 +2242,12 @@ func (c *Compiler) structFromVars(names []string) string {
 		return info.Name
 	}
 	c.structCount++
-	info := &structInfo{Name: fmt.Sprintf("__struct%d", c.structCount), Fields: append([]string(nil), names...)}
+	info := &structInfo{Name: fmt.Sprintf("__struct%d", c.structCount), Fields: append([]string(nil), names...), Types: make([]string, len(names))}
 	c.structMap[sig] = info
+	c.structByName[info.Name] = info
 	var def strings.Builder
 	def.WriteString("struct " + info.Name + " {")
-	for _, n := range names {
+	for i, n := range names {
 		fieldType := "decltype(" + sanitizeName(n) + ")"
 		if t := c.varStruct[n]; t != "" {
 			if idx := strings.Index(t, "{"); idx != -1 {
@@ -2210,6 +2255,7 @@ func (c *Compiler) structFromVars(names []string) string {
 			}
 			fieldType = t
 		}
+		info.Types[i] = fieldType
 		def.WriteString(fieldType + " " + sanitizeName(n) + "; ")
 	}
 	def.WriteString("};")
