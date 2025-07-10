@@ -3323,6 +3323,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			}
 			if ml := asMapLiteral(p.Call.Args[0]); ml != nil {
 				c.need(needJSON)
+				c.need(needListInt)
 				c.need(needListFloat)
 				c.need(needListString)
 				c.need(needListListInt)
@@ -4405,6 +4406,7 @@ func asFetchExpr(e *parser.Expr) *parser.FetchExpr {
 func (c *Compiler) emitJSONExpr(e *parser.Expr) {
 	argExpr := c.compileExpr(e)
 	c.need(needJSON)
+	c.need(needListInt)
 	c.need(needListFloat)
 	c.need(needListString)
 	c.need(needListListInt)
@@ -4426,6 +4428,9 @@ func (c *Compiler) emitJSONExpr(e *parser.Expr) {
 	} else if isMapStringExpr(e, c.env) {
 		c.need(needJSONMapString)
 		c.writeln(fmt.Sprintf("_json_map_string(%s);", argExpr))
+	} else if isMapStringIntExpr(e, c.env) {
+		c.need(needJSONMapStringInt)
+		c.writeln(fmt.Sprintf("_json_map_string_int(%s);", argExpr))
 	} else {
 		c.writeln(fmt.Sprintf("_json_int(%s);", argExpr))
 	}
