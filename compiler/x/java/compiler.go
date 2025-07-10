@@ -5,6 +5,7 @@ package javacode
 import (
 	"bytes"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"mochi/parser"
@@ -1869,12 +1870,23 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 	elemType := listElemType(listType)
 	iter := fmt.Sprintf("_it%d", c.tmpCount)
 	c.tmpCount++
+	fields := map[string]bool{}
+	if td, ok := c.types[elemType]; ok {
+		for _, m := range td.Members {
+			if m.Field != nil {
+				fields[m.Field.Name] = true
+			}
+		}
+	}
 	c.writeln(fmt.Sprintf("for (%s %s : %s) {", elemType, iter, u.Target))
 	c.indent++
 	if u.Where != nil {
 		cond, err := c.compileExpr(u.Where)
 		if err != nil {
 			return err
+		}
+		for f := range fields {
+			cond = regexp.MustCompile(`\b`+f+`\b`).ReplaceAllString(cond, iter+"."+f)
 		}
 		c.writeln(fmt.Sprintf("if (!(%s)) continue;", cond))
 	}
@@ -1883,7 +1895,14 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("%s.%s = %s;", iter, it.Key.Value, val))
+		key, ok := simpleStringKey(it.Key)
+		if !ok {
+			return fmt.Errorf("update key must be identifier")
+		}
+		for f := range fields {
+			val = regexp.MustCompile(`\b`+f+`\b`).ReplaceAllString(val, iter+"."+f)
+		}
+		c.writeln(fmt.Sprintf("%s.%s = %s;", iter, key, val))
 	}
 	c.indent--
 	c.writeln("}")
