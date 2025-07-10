@@ -1,0 +1,9 @@
+Error on line 51: zig build error: exit status 1
+/workspace/mochi/tests/machine/x/zig/cross_join.zig:51:2: error: expected type 'cross_join.result__struct_3434', found 'cross_join.result__struct_3623'
+/workspace/mochi/tests/machine/x/zig/cross_join.zig:46:89: note: struct declared here
+/workspace/mochi/tests/machine/x/zig/cross_join.zig:41:50: note: struct declared here
+/tmp/zig-0.12.0/lib/std/array_list.zig:261:42: note: parameter type declared here
+
+50:     orderTotal: i32,
+51: }{
+52:     .orderId = o.id,

@@ -1,0 +1,9 @@
+Error on line 48: zig build error: exit status 1
+/workspace/mochi/tests/machine/x/zig/join_multi.zig:48:2: error: expected type 'join_multi.result__struct_3435', found 'join_multi.result__struct_3626'
+/workspace/mochi/tests/machine/x/zig/join_multi.zig:45:186: note: struct declared here
+/workspace/mochi/tests/machine/x/zig/join_multi.zig:42:50: note: struct declared here
+/tmp/zig-0.12.0/lib/std/array_list.zig:261:42: note: parameter type declared here
+
+47:     sku: []const u8,
+48: }{
+49:     .name = c.name,

@@ -47,7 +47,7 @@ const result = blk3: { var _tmp5 = std.ArrayList(struct { key: []const u8, Items
     cat: []const u8,
     val: i32,
     flag: bool,
-}) }).init(std.heap.page_allocator); var _tmp6 = std.AutoHashMap([]const u8, usize).init(std.heap.page_allocator); for (items) |i| { const _tmp7 = i.cat; if (_tmp6.get(_tmp7)) |idx| { _tmp5.items[idx].Items.append(i) catch unreachable; } else { var g = struct { key: []const u8, Items: std.ArrayList(struct {
+}) }).init(std.heap.page_allocator); var _tmp6 = std.StringHashMap(usize).init(std.heap.page_allocator); for (items) |i| { const _tmp7 = i.cat; if (_tmp6.get(_tmp7)) |idx| { _tmp5.items[idx].Items.append(i) catch unreachable; } else { var g = struct { key: []const u8, Items: std.ArrayList(struct {
     cat: []const u8,
     val: i32,
     flag: bool,

@@ -1,0 +1,6 @@
+Error on line 102: zig build error: exit status 1
+/workspace/mochi/tests/machine/x/zig/group_by_multi_join_sort.zig:102:292: error: operator >= not allowed for type '[]const u8'
+
+101:     n_name: []const u8,
+102: }, usize).init(std.heap.page_allocator); for (customer) |c| { for (orders) |o| { if (!((o.o_custkey == c.c_custkey))) continue; for (lineitem) |l| { if (!((l.l_orderkey == o.o_orderkey))) continue; for (nation) |n| { if (!((n.n_nationkey == c.c_nationkey))) continue; if (!((((o.o_orderdate >= start_date) and (o.o_orderdate < end_date)) and std.mem.eql(u8, l.l_returnflag, "R")))) continue; const _tmp10 = struct {
+103:     c_custkey: i32,

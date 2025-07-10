@@ -1,0 +1,8 @@
+Error on line 60: zig build error: exit status 1
+/workspace/mochi/tests/machine/x/zig/dataset_sort_take_limit.zig:60:85: error: expected type 'dataset_sort_take_limit.expensive__struct_3434.expensive__struct_3434__struct_3523', found 'dataset_sort_take_limit.products__struct_3620'
+/workspace/mochi/tests/machine/x/zig/dataset_sort_take_limit.zig:24:41: note: struct declared here
+/workspace/mochi/tests/machine/x/zig/dataset_sort_take_limit.zig:57:68: note: struct declared here
+
+59:     price: i32,
+60: }, key: i32 }).init(std.heap.page_allocator); for (products) |p| { _tmp1.append(.{ .item = p, .key = -p.price }) catch unreachable; } for (0.._tmp1.items.len) |i| { for (i+1.._tmp1.items.len) |j| { if (_tmp1.items[j].key < _tmp1.items[i].key) { const t = _tmp1.items[i]; _tmp1.items[i] = _tmp1.items[j]; _tmp1.items[j] = t; } } } var _tmp2 = std.ArrayList(struct {
+61:     name: []const u8,

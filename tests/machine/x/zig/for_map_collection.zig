@@ -1,12 +1,11 @@
 const std = @import("std");
 
-var m: struct {
-    a: i32,
-    b: i32,
-} = undefined;
+var m: std.StringHashMap(i32) = undefined;
 
 pub fn main() void {
-    for (m) |k| {
-        std.debug.print("{any}\n", .{k});
+    var _tmp1 = m.keyIterator();
+    while (_tmp1.next()) |k_ptr| {
+        const k = k_ptr.*;
+        std.debug.print("{s}\n", .{k});
     }
 }
