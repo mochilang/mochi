@@ -1,16 +1,6 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/group_by_having.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/group_by_having.c:188:39: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
-  188 |     _t6.data[_t7] = (bigItem){.city = g.key, .num = g.items.len};
-      |                                       ^
-/workspace/mochi/tests/machine/x/c/group_by_having.c:188:39: note: (near initialization for ‘(anonymous).city’)
-/workspace/mochi/tests/machine/x/c/group_by_having.c:188:21: error: incompatible types when assigning to type ‘int’ from type ‘bigItem’
-  188 |     _t6.data[_t7] = (bigItem){.city = g.key, .num = g.items.len};
-      |                     ^
-/workspace/mochi/tests/machine/x/c/group_by_having.c:192:22: error: invalid initializer
-  192 |   list_bigItem big = _t6;
-      |                      ^~~
 /workspace/mochi/tests/machine/x/c/group_by_having.c:193:13: error: incompatible type for argument 1 of ‘_json_int’
   193 |   _json_int(big);
       |             ^~~

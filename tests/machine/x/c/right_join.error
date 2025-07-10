@@ -10,9 +10,6 @@ error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/right_join.c:73:10: error: request for member ‘data’ in something not a structure or union
    73 |       _t3.data[_t4] = (resultItem){.customerName = c.name, .order = o};
       |          ^
-/workspace/mochi/tests/machine/x/c/right_join.c:77:25: error: invalid initializer
-   77 |       customersItem c = 0;
-      |                         ^
 /workspace/mochi/tests/machine/x/c/right_join.c:78:10: error: request for member ‘data’ in something not a structure or union
    78 |       _t3.data[_t4] = (resultItem){.customerName = c.name, .order = o};
       |          ^

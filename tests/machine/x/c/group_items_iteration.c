@@ -155,12 +155,13 @@ int main() {
   }
   _t6.len = _t7;
   list_int groups = _t6;
+  list_int _t9 = list_int_create(0);
   list_int tmp = _t9;
   for (int _t10 = 0; _t10 < groups.len; _t10++) {
     int g = groups.data[_t10];
     int total = 0;
     for (int _t11 = 0; _t11 < g.items.len; _t11++) {
-      int x = g.items.data[_t11];
+      dataItem x = g.items.data[_t11];
       total = total + x.val;
     }
     map_int_bool _t12 = map_int_bool_create(2);

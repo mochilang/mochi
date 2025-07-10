@@ -74,7 +74,7 @@ int main() {
       _t4++;
     }
     if (!_t6) {
-      customersItem c = 0;
+      customersItem c = (customersItem){0};
       _t3.data[_t4] = (resultItem){.customerName = c.name, .order = o};
       _t4++;
     }

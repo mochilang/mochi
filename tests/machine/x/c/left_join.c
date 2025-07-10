@@ -57,7 +57,7 @@ int main() {
   _t2.data[0] = (ordersItem){.id = 100, .customerId = 1, .total = 250};
   _t2.data[1] = (ordersItem){.id = 101, .customerId = 3, .total = 80};
   list_ordersItem orders = _t2;
-  list_int _t3 = list_int_create(orders.len * customers.len);
+  list_resultItem _t3 = list_resultItem_create(orders.len * customers.len);
   int _t4 = 0;
   for (int _t5 = 0; _t5 < orders.len; _t5++) {
     ordersItem o = orders.data[_t5];
@@ -73,7 +73,7 @@ int main() {
       _t4++;
     }
     if (!_t7) {
-      customersItem c = 0;
+      customersItem c = (customersItem){0};
       _t3.data[_t4] =
           (resultItem){.orderId = o.id, .customer = c, .total = o.total};
       _t4++;

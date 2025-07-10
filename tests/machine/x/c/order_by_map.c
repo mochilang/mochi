@@ -71,33 +71,33 @@ int main() {
   _t1.data[1] = (dataItem){.a = 1, .b = 1};
   _t1.data[2] = (dataItem){.a = 0, .b = 5};
   list_dataItem data = _t1;
-  map_string_int _t2 = map_string_int_create(2);
-  map_string_int_put(&_t2, "a", x.a);
-  map_string_int_put(&_t2, "b", x.b);
-  list_dataItem _t3 = list_dataItem_create(data.len);
-  map_string_int *_t6 =
+  list_dataItem _t2 = list_dataItem_create(data.len);
+  map_string_int *_t5 =
       (map_string_int *)malloc(sizeof(map_string_int) * data.len);
-  int _t4 = 0;
-  for (int _t5 = 0; _t5 < data.len; _t5++) {
-    dataItem x = data.data[_t5];
-    _t3.data[_t4] = x;
-    _t6[_t4] = _t2;
-    _t4++;
+  int _t3 = 0;
+  for (int _t4 = 0; _t4 < data.len; _t4++) {
+    dataItem x = data.data[_t4];
+    _t2.data[_t3] = x;
+    map_string_int _t6 = map_string_int_create(2);
+    map_string_int_put(&_t6, "a", x.a);
+    map_string_int_put(&_t6, "b", x.b);
+    _t5[_t3] = _t6;
+    _t3++;
   }
-  _t3.len = _t4;
-  for (int i = 0; i < _t4 - 1; i++) {
-    for (int j = i + 1; j < _t4; j++) {
-      if (_t6[i] > _t6[j]) {
-        map_string_int _t7 = _t6[i];
-        _t6[i] = _t6[j];
-        _t6[j] = _t7;
-        dataItem _t8 = _t3.data[i];
-        _t3.data[i] = _t3.data[j];
-        _t3.data[j] = _t8;
+  _t2.len = _t3;
+  for (int i = 0; i < _t3 - 1; i++) {
+    for (int j = i + 1; j < _t3; j++) {
+      if (_t5[i] > _t5[j]) {
+        map_string_int _t7 = _t5[i];
+        _t5[i] = _t5[j];
+        _t5[j] = _t7;
+        dataItem _t8 = _t2.data[i];
+        _t2.data[i] = _t2.data[j];
+        _t2.data[j] = _t8;
       }
     }
   }
-  list_dataItem sorted = _t3;
+  list_dataItem sorted = _t2;
   printf("%d\n", sorted);
   return 0;
 }

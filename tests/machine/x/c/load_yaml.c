@@ -66,6 +66,26 @@ static void list_map_string_push(list_map_string *l, map_string m) {
   }
   l->data[l->len++] = m;
 }
+typedef struct {
+  int len;
+  int cap;
+  map_string_int *data;
+} list_map_string_int;
+static list_map_string_int list_map_string_int_create(int cap) {
+  list_map_string_int l;
+  l.len = 0;
+  l.cap = cap;
+  l.data = cap ? (map_string_int *)malloc(sizeof(map_string_int) * cap) : NULL;
+  return l;
+}
+static void list_map_string_int_push(list_map_string_int *l, map_string_int m) {
+  if (l->len >= l->cap) {
+    l->cap = l->cap ? l->cap * 2 : 4;
+    l->data =
+        (map_string_int *)realloc(l->data, sizeof(map_string_int) * l->cap);
+  }
+  l->data[l->len++] = m;
+}
 static void _skip_ws(const char **s) {
   while (**s && (**s == ' ' || **s == '\t' || **s == '\n' || **s == '\r'))
     (*s)++;
