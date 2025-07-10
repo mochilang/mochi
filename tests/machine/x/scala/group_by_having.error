@@ -1,7 +1,0 @@
-exit status 1
-/workspace/mochi/tests/machine/x/scala/group_by_having.scala:8: error: type mismatch;
- found   : List[group_by_having.Auto2]
- required: Map[String,Any]
-    println(scala.util.parsing.json.JSONObject(big).toString())
-                                               ^
-one error found

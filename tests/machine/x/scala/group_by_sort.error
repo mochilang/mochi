@@ -1,8 +1,0 @@
-exit status 1
-/workspace/mochi/tests/machine/x/scala/group_by_sort.scala:2: error: identifier expected but ':' found.
-  case class Auto1(cat: String, val: Int)
-                                   ^
-/workspace/mochi/tests/machine/x/scala/group_by_sort.scala:10: error: ':' expected but '}' found.
-}
-^
-two errors found
