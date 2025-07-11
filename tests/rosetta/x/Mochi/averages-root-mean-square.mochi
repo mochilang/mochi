@@ -1,0 +1,23 @@
+// Mochi translation of Rosetta "Averages/Root mean square" task
+// Computes the RMS of the integers 1..n where n = 10.
+
+fun sqrtApprox(x: float): float {
+  var guess = x
+  var i = 0
+  // Newton's method for square root
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+let n = 10
+var sum = 0.0
+var x = 1
+while x <= n {
+  sum = sum + (x as float) * (x as float)
+  x = x + 1
+}
+let rms = sqrtApprox(sum / (n as float))
+print(str(rms))
