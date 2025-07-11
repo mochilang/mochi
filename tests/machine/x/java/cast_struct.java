@@ -13,12 +13,6 @@ class Todo {
 		return Objects.hash(title);
 	}
 }
-class DataClass1 {
-	String title;
-	DataClass1(String title) {
-		this.title = title;
-	}
-}
 public class Main {
 	static Todo todo = new Todo("hi");
 	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }

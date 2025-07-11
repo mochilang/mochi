@@ -1,35 +1,27 @@
 import java.util.*;
-class DataClass1 {
-	String tag;
-	int val;
-	DataClass1(String tag, int val) {
-		this.tag = tag;
-		this.val = val;
-	}
-}
-class DataClass2 {
+class Tmp {
 	Object tag;
 	int total;
-	DataClass2(Object tag, int total) {
+	Tmp(Object tag, int total) {
 		this.tag = tag;
 		this.total = total;
 	}
 }
 public class Main {
-	static List<DataClass1> data = new ArrayList<>(java.util.Arrays.asList(new DataClass1("a", 1), new DataClass1("a", 2), new DataClass1("b", 3)));
+	static List<Map<String,Object>> data = new ArrayList<>(java.util.Arrays.asList(mapOfEntries(entry("tag", "a"), entry("val", 1)), mapOfEntries(entry("tag", "a"), entry("val", 2)), mapOfEntries(entry("tag", "b"), entry("val", 3))));
 	static List<Object> groups = (new java.util.function.Supplier<List<Object>>(){public List<Object> get(){
 	List<Object> _res6 = new ArrayList<>();
-	Map<String,List<DataClass1>> _groups7 = new LinkedHashMap<>();
+	Map<Object,List<Map<String,Object>>> _groups7 = new LinkedHashMap<>();
 	for (var d : data) {
 		var _row8 = d;
-		String _key9 = d.tag;
-		List<DataClass1> _b10 = _groups7.get(_key9);
+		Object _key9 = ((Map)d).get("tag");
+		List<Map<String,Object>> _b10 = _groups7.get(_key9);
 		if (_b10 == null) { _b10 = new ArrayList<>(); _groups7.put(_key9, _b10); }
 		_b10.add(_row8);
 	}
 	for (var __e : _groups7.entrySet()) {
-		String g_key = __e.getKey();
-		List<DataClass1> g = __e.getValue();
+		Object g_key = __e.getKey();
+		List<Map<String,Object>> g = __e.getValue();
 		_res6.add(new LinkedHashMap<>(Map.ofEntries(Map.entry("key", g_key), Map.entry("items", g))));
 	}
 	return _res6;
@@ -47,13 +39,19 @@ public class Main {
 		res.add(item);
 		return res;
 	}
+	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
+	static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {
+		LinkedHashMap<K,V> m = new LinkedHashMap<>();
+		for (var e : entries) m.put(e.getKey(), e.getValue());
+		return m;
+	}
 	public static void main(String[] args) {
 	for (Object g : groups) {
 		int total = 0;
 		for (Object x : (List)((Map)g).get("items")) {
 			total = (int)(total + ((Number)((Map)x).get("val")).doubleValue());
 		}
-		tmp = append(tmp, new DataClass2(((Map)g).get("key"), total));
+		tmp = append(tmp, new Tmp(((Map)g).get("key"), total));
 	}
 	System.out.println(result);
 	}

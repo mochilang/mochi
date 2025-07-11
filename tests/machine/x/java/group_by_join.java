@@ -1,66 +1,48 @@
 import java.util.*;
-class DataClass1 {
-	int id;
-	String name;
-	DataClass1(int id, String name) {
-		this.id = id;
-		this.name = name;
-	}
-}
-class DataClass2 {
-	int id;
-	int customerId;
-	DataClass2(int id, int customerId) {
-		this.id = id;
-		this.customerId = customerId;
-	}
-}
-class DataClass3 {
-	Object name;
-	Object count;
-	DataClass3(Object name, Object count) {
-		this.name = name;
-		this.count = count;
-	}
-}
-class DataClass4 {
-	DataClass2 o;
-	DataClass1 c;
-	DataClass4(DataClass2 o, DataClass1 c) {
+class OC {
+	Map<String,Integer> o;
+	Map<String,Object> c;
+	OC(Map<String,Integer> o, Map<String,Object> c) {
 		this.o = o;
 		this.c = c;
 	}
 }
 public class Main {
-	static List<DataClass1> customers = new ArrayList<>(java.util.Arrays.asList(new DataClass1(1, "Alice"), new DataClass1(2, "Bob")));
-	static List<DataClass2> orders = new ArrayList<>(java.util.Arrays.asList(new DataClass2(100, 1), new DataClass2(101, 1), new DataClass2(102, 2)));
-	static List<DataClass3> stats = (new java.util.function.Supplier<List<DataClass3>>(){public List<DataClass3> get(){
-	List<DataClass3> _res5 = new ArrayList<>();
-	Map<String,List<DataClass4>> _groups6 = new LinkedHashMap<>();
+	static List<Map<String,Object>> customers = new ArrayList<>(java.util.Arrays.asList(mapOfEntries(entry("id", 1), entry("name", "Alice")), mapOfEntries(entry("id", 2), entry("name", "Bob"))));
+	static List<Map<String,Integer>> orders = new ArrayList<>(java.util.Arrays.asList(mapOfEntries(entry("id", 100), entry("customerId", 1)), mapOfEntries(entry("id", 101), entry("customerId", 1)), mapOfEntries(entry("id", 102), entry("customerId", 2))));
+	static List<Map<String,Object>> stats = (new java.util.function.Supplier<List<Map<String,Object>>>(){public List<Map<String,Object>> get(){
+	List<Map<String,Object>> _res5 = new ArrayList<>();
+	Map<Object,List<OC>> _groups6 = new LinkedHashMap<>();
 	for (var o : orders) {
 		for (var c : customers) {
-			if (!(Objects.equals(o.customerId, c.id))) continue;
-			DataClass4 _row7 = new DataClass4(o, c);
-			String _key8 = c.name;
-			List<DataClass4> _b9 = _groups6.get(_key8);
+			if (!(Objects.equals(((Integer)((Map)o).get("customerId")), ((Map)c).get("id")))) continue;
+			OC _row7 = new OC(o, c);
+			Object _key8 = ((Map)c).get("name");
+			List<OC> _b9 = _groups6.get(_key8);
 			if (_b9 == null) { _b9 = new ArrayList<>(); _groups6.put(_key8, _b9); }
 			_b9.add(_row7);
 		}
 	}
 	for (var __e : _groups6.entrySet()) {
-		String g_key = __e.getKey();
-		List<DataClass4> g = __e.getValue();
-		_res5.add(new DataClass3(g_key, count(g)));
+		Object g_key = __e.getKey();
+		List<OC> g = __e.getValue();
+		_res5.add(mapOfEntries(entry("name", g_key), entry("count", count(g))));
 	}
 	return _res5;
 }}).get();
 	static int count(Collection<?> c) {
 		return c.size();
 	}
+	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
+	static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {
+		LinkedHashMap<K,V> m = new LinkedHashMap<>();
+		for (var e : entries) m.put(e.getKey(), e.getValue());
+		return m;
+	}
 	public static void main(String[] args) {
 	System.out.println("--- Orders per customer ---");
-	for (DataClass3 s : stats) {
-		System.out.println(s.name + " " + "orders:" + " " + s.count);
+	for (Map<String,Object> s : stats) {
+		System.out.println(((Map)s).get("name") + " " + "orders:" + " " + ((Map)s).get("count"));
 	}
 	}
 }

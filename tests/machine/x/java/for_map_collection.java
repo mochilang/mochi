@@ -1,12 +1,4 @@
 import java.util.*;
-class DataClass1 {
-	int a;
-	int b;
-	DataClass1(int a, int b) {
-		this.a = a;
-		this.b = b;
-	}
-}
 public class Main {
 	static Map<String,Integer> m = mapOfEntries(entry("a", 1), entry("b", 2));
 	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
@@ -16,7 +8,7 @@ public class Main {
 		return m;
 	}
 	public static void main(String[] args) {
-	for (Object k : m) {
+	for (var k : m.keySet()) {
 		System.out.println(k);
 	}
 	}

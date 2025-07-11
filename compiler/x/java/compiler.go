@@ -503,6 +503,7 @@ func classNameFromVar(s string) string {
 	if s == "" {
 		return ""
 	}
+	s = singularize(s)
 	parts := strings.FieldsFunc(s, func(r rune) bool {
 		return r == '_' || r == '-' || r == ' '
 	})
@@ -513,6 +514,28 @@ func classNameFromVar(s string) string {
 		parts[i] = strings.ToUpper(p[:1]) + p[1:]
 	}
 	return strings.Join(parts, "")
+}
+
+func singularize(s string) string {
+	irregular := map[string]string{
+		"people":   "person",
+		"men":      "man",
+		"women":    "woman",
+		"children": "child",
+	}
+	if v, ok := irregular[strings.ToLower(s)]; ok {
+		return v
+	}
+	if strings.HasSuffix(s, "ies") && len(s) > 3 {
+		return s[:len(s)-3] + "y"
+	}
+	if strings.HasSuffix(s, "es") && len(s) > 2 {
+		return s[:len(s)-2]
+	}
+	if strings.HasSuffix(s, "s") && len(s) > 1 {
+		return s[:len(s)-1]
+	}
+	return s
 }
 
 func mapValueType(t string) string {
@@ -985,17 +1008,35 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 }
 
 func (c *Compiler) dataClassFor(m *parser.MapLiteral) string {
+	if c.curVar == "" {
+		return ""
+	}
 	var keys []string
+	var fields []string
+	var types []string
 	for _, it := range m.Items {
 		s, ok := simpleStringKey(it.Key)
 		if !ok {
 			return ""
 		}
 		keys = append(keys, s)
+		fields = append(fields, s)
+		typ := c.inferType(it.Value)
+		if typ == "var" {
+			typ = c.litType(it.Value)
+		}
+		types = append(types, typ)
 	}
 	sort.Strings(keys)
 	shape := strings.Join(keys, ";")
 	if dc, ok := c.dataClasses[shape]; ok {
+		if len(dc.types) == len(types) {
+			for i := range types {
+				if dc.types[i] == "Object" && types[i] != "Object" {
+					dc.types[i] = types[i]
+				}
+			}
+		}
 		return dc.name
 	}
 	name := fmt.Sprintf("DataClass%d", len(c.dataClasses)+1)
@@ -1003,17 +1044,6 @@ func (c *Compiler) dataClassFor(m *parser.MapLiteral) string {
 		if c.dataClassByName(n) == nil {
 			name = n
 		}
-	}
-	var fields []string
-	var types []string
-	for _, it := range m.Items {
-		s, _ := simpleStringKey(it.Key)
-		fields = append(fields, s)
-		typ := c.inferType(it.Value)
-		if typ == "var" {
-			typ = c.litType(it.Value)
-		}
-		types = append(types, typ)
 	}
 	c.dataClasses[shape] = &dataClass{name: name, fields: fields, types: types}
 	c.dataClassOrder = append(c.dataClassOrder, shape)
@@ -1788,8 +1818,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				pTail := p.Selector.Tail[1:]
 				for _, f := range pTail {
 					if strings.HasPrefix(typ, "Map<") || typ == "Map" || typ == "Object" || typ == "" {
-						s = fmt.Sprintf("((Map)%s).get(\"%s\")", s, f)
-						typ = mapValueType(typ)
+						vt := mapValueType(typ)
+						if vt != "Object" {
+							s = fmt.Sprintf("((%s)((Map)%s).get(\"%s\"))", vt, s, f)
+						} else {
+							s = fmt.Sprintf("((Map)%s).get(\"%s\")", s, f)
+						}
+						typ = vt
 					} else {
 						s += "." + f
 					}
@@ -1799,8 +1834,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		for _, f := range p.Selector.Tail {
 			if strings.HasPrefix(typ, "Map<") || typ == "Map" || typ == "Object" || typ == "" {
-				s = fmt.Sprintf("((Map)%s).get(\"%s\")", s, f)
-				typ = mapValueType(typ)
+				vt := mapValueType(typ)
+				if vt != "Object" {
+					s = fmt.Sprintf("((%s)((Map)%s).get(\"%s\"))", vt, s, f)
+				} else {
+					s = fmt.Sprintf("((Map)%s).get(\"%s\")", s, f)
+				}
+				typ = vt
 			} else {
 				s += "." + f
 			}

@@ -1,36 +1,24 @@
 import java.util.*;
-class DataClass1 {
-	String name;
-	int age;
-	DataClass1(String name, int age) {
-		this.name = name;
-		this.age = age;
-	}
-}
-class DataClass2 {
-	String name;
-	int age;
-	boolean is_senior;
-	DataClass2(String name, int age, boolean is_senior) {
-		this.name = name;
-		this.age = age;
-		this.is_senior = is_senior;
-	}
-}
 public class Main {
-	static List<DataClass1> people = new ArrayList<>(java.util.Arrays.asList(new DataClass1("Alice", 30), new DataClass1("Bob", 15), new DataClass1("Charlie", 65), new DataClass1("Diana", 45)));
-	static List<DataClass2> adults = (new java.util.function.Supplier<List<DataClass2>>(){public List<DataClass2> get(){
-	List<DataClass2> _res1 = new ArrayList<>();
+	static List<Map<String,Object>> people = new ArrayList<>(java.util.Arrays.asList(mapOfEntries(entry("name", "Alice"), entry("age", 30)), mapOfEntries(entry("name", "Bob"), entry("age", 15)), mapOfEntries(entry("name", "Charlie"), entry("age", 65)), mapOfEntries(entry("name", "Diana"), entry("age", 45))));
+	static List<Map<String,Object>> adults = (new java.util.function.Supplier<List<Map<String,Object>>>(){public List<Map<String,Object>> get(){
+	List<Map<String,Object>> _res1 = new ArrayList<>();
 	for (var person : people) {
-		if (!(person.age >= 18)) continue;
-		_res1.add(new DataClass2(person.name, person.age, person.age >= 60));
+		if (!(((Number)((Map)person).get("age")).doubleValue() >= 18)) continue;
+		_res1.add(mapOfEntries(entry("name", ((Map)person).get("name")), entry("age", ((Map)person).get("age")), entry("is_senior", ((Number)((Map)person).get("age")).doubleValue() >= 60)));
 	}
 	return _res1;
 }}).get();
+	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
+	static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {
+		LinkedHashMap<K,V> m = new LinkedHashMap<>();
+		for (var e : entries) m.put(e.getKey(), e.getValue());
+		return m;
+	}
 	public static void main(String[] args) {
 	System.out.println("--- Adults ---");
-	for (DataClass2 person : adults) {
-		System.out.println(person.name + " " + "is" + " " + person.age + " " + (person.is_senior ? " (senior)" : ""));
+	for (Map<String,Object> person : adults) {
+		System.out.println(((Map)person).get("name") + " " + "is" + " " + ((Map)person).get("age") + " " + (((Map)person).get("is_senior") != null ? " (senior)" : ""));
 	}
 	}
 }

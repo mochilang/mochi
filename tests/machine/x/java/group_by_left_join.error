@@ -1,10 +1,12 @@
 line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramsgroup_by_left_join2937338303/001/Main.java:49: error: incompatible types: Object cannot be converted to DataClass2
-			DataClass4 _row12 = new DataClass4(c, o);
-			                                      ^
-/tmp/TestCompileValidProgramsgroup_by_left_join2937338303/001/Main.java:62: error: bad operand type DataClass2 for unary operator '!'
+/tmp/TestCompileValidProgramsgroup_by_left_join2005430272/001/Main.java:25: error: incompatible types: Object cannot be converted to Map<String,Integer>
+			CO _row12 = new CO(c, o);
+			                      ^
+/tmp/TestCompileValidProgramsgroup_by_left_join2005430272/001/Main.java:38: error: bad operand type Map<String,Integer> for unary operator '!'
 		if (!(r.o)) continue;
 		    ^
+Note: /tmp/TestCompileValidProgramsgroup_by_left_join2005430272/001/Main.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
 Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
 2 errors
 

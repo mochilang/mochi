@@ -1,49 +1,27 @@
 import java.util.*;
-class DataClass1 {
-	int id;
-	String name;
-	DataClass1(int id, String name) {
-		this.id = id;
-		this.name = name;
-	}
-}
-class DataClass2 {
-	int id;
-	int customerId;
-	int total;
-	DataClass2(int id, int customerId, int total) {
-		this.id = id;
-		this.customerId = customerId;
-		this.total = total;
-	}
-}
-class DataClass3 {
-	int orderId;
-	String customerName;
-	int total;
-	DataClass3(int orderId, String customerName, int total) {
-		this.orderId = orderId;
-		this.customerName = customerName;
-		this.total = total;
-	}
-}
 public class Main {
-	static List<DataClass1> customers = new ArrayList<>(java.util.Arrays.asList(new DataClass1(1, "Alice"), new DataClass1(2, "Bob"), new DataClass1(3, "Charlie")));
-	static List<DataClass2> orders = new ArrayList<>(java.util.Arrays.asList(new DataClass2(100, 1, 250), new DataClass2(101, 2, 125), new DataClass2(102, 1, 300), new DataClass2(103, 4, 80)));
-	static List<DataClass3> result = (new java.util.function.Supplier<List<DataClass3>>(){public List<DataClass3> get(){
-	List<DataClass3> _res1 = new ArrayList<>();
+	static List<Map<String,Object>> customers = new ArrayList<>(java.util.Arrays.asList(mapOfEntries(entry("id", 1), entry("name", "Alice")), mapOfEntries(entry("id", 2), entry("name", "Bob")), mapOfEntries(entry("id", 3), entry("name", "Charlie"))));
+	static List<Map<String,Integer>> orders = new ArrayList<>(java.util.Arrays.asList(mapOfEntries(entry("id", 100), entry("customerId", 1), entry("total", 250)), mapOfEntries(entry("id", 101), entry("customerId", 2), entry("total", 125)), mapOfEntries(entry("id", 102), entry("customerId", 1), entry("total", 300)), mapOfEntries(entry("id", 103), entry("customerId", 4), entry("total", 80))));
+	static List<Map<String,Object>> result = (new java.util.function.Supplier<List<Map<String,Object>>>(){public List<Map<String,Object>> get(){
+	List<Map<String,Object>> _res1 = new ArrayList<>();
 	for (var o : orders) {
 		for (var c : customers) {
-			if (!(Objects.equals(o.customerId, c.id))) continue;
-			_res1.add(new DataClass3(o.id, c.name, o.total));
+			if (!(Objects.equals(((Integer)((Map)o).get("customerId")), ((Map)c).get("id")))) continue;
+			_res1.add(mapOfEntries(entry("orderId", ((Integer)((Map)o).get("id"))), entry("customerName", ((Map)c).get("name")), entry("total", ((Integer)((Map)o).get("total")))));
 		}
 	}
 	return _res1;
 }}).get();
+	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
+	static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {
+		LinkedHashMap<K,V> m = new LinkedHashMap<>();
+		for (var e : entries) m.put(e.getKey(), e.getValue());
+		return m;
+	}
 	public static void main(String[] args) {
 	System.out.println("--- Orders with customer info ---");
-	for (DataClass3 entry : result) {
-		System.out.println("Order" + " " + entry.orderId + " " + "by" + " " + entry.customerName + " " + "- $" + " " + entry.total);
+	for (Map<String,Object> entry : result) {
+		System.out.println("Order" + " " + ((Map)entry).get("orderId") + " " + "by" + " " + ((Map)entry).get("customerName") + " " + "- $" + " " + ((Map)entry).get("total"));
 	}
 	}
 }
