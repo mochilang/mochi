@@ -4,7 +4,7 @@ This directory contains Swift code compiled from Mochi programs in `tests/vm/val
 
 ## Progress
 
-Compiled: 97/100 programs
+Compiled: 100/100 programs
 
 ## Checklist
 
@@ -30,7 +30,7 @@ Compiled: 97/100 programs
 - [x] fun_call.mochi
 - [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
-- [ ] go_auto.mochi
+- [x] go_auto.mochi
 - [x] group_by.mochi
 - [x] group_by_conditional_sum.mochi
 - [x] group_by_having.mochi
@@ -78,8 +78,8 @@ Compiled: 97/100 programs
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
-- [ ] python_auto.mochi
-- [ ] python_math.mochi
+- [x] python_auto.mochi
+- [x] python_math.mochi
 - [x] query_sum_select.mochi
 - [x] record_assign.mochi
 - [x] right_join.mochi
@@ -110,5 +110,13 @@ Compiled: 97/100 programs
 - [x] while_loop.mochi
 ## Remaining Tasks
 
-- [ ] Support `import` statements for FFI modules (`go_auto.mochi`, `python_auto.mochi`, `python_math.mochi`).
+- [x] Support `import` statements for FFI modules (`go_auto.mochi`, `python_auto.mochi`, `python_math.mochi`).
 - [ ] Further improve automatic struct naming heuristics.
+- [ ] Add support for enum pattern matching.
+- [ ] Implement error handling with try/catch.
+- [ ] Emit comments from the original Mochi source.
+- [ ] Support generic functions and types.
+- [ ] Optimize query comprehension translation.
+- [ ] Implement optional chaining for map fields.
+- [ ] Add async/await translation support.
+- [ ] Improve compiler error reporting.
