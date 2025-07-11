@@ -37,6 +37,8 @@ type Compiler struct {
 
 	aliases   map[string]string
 	groupKeys map[string]string
+
+	globals map[string]string
 }
 
 func New(srcPath string) *Compiler {
@@ -52,6 +54,7 @@ func New(srcPath string) *Compiler {
 		needJSON:      false,
 		aliases:       make(map[string]string),
 		groupKeys:     make(map[string]string),
+		globals:       make(map[string]string),
 	}
 }
 
@@ -139,6 +142,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.needJSON = false
 	c.aliases = make(map[string]string)
 	c.groupKeys = make(map[string]string)
+	c.globals = make(map[string]string)
+
+	for _, st := range prog.Statements {
+		if st.Let != nil && st.Let.Value != nil && isLiteralExpr(st.Let.Value) {
+			v, err := c.compileExpr(st.Let.Value)
+			if err == nil {
+				c.globals[st.Let.Name] = v
+			}
+		}
+	}
 
 	base := strings.TrimSuffix(filepath.Base(c.srcPath), filepath.Ext(c.srcPath))
 	c.writeln("#!/usr/bin/env escript")
@@ -359,6 +372,31 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	c.funs[fn.Name] = len(fn.Params)
 	c.writeln(fmt.Sprintf("%s(%s) ->", fn.Name, strings.Join(params, ", ")))
 	c.indent++
+
+	// special case: if-return followed by return
+	if len(fn.Body) == 2 {
+		ifst := fn.Body[0].If
+		if ifst != nil && ifst.ElseIf == nil && len(ifst.Then) == 1 && ifst.Then[0].Return != nil && len(ifst.Else) == 0 {
+			if ret := fn.Body[1].Return; ret != nil {
+				cond, err := c.compileExpr(ifst.Cond)
+				if err != nil {
+					return err
+				}
+				thenExpr, err := c.compileReturn(ifst.Then[0].Return)
+				if err != nil {
+					return err
+				}
+				elseExpr, err := c.compileReturn(ret)
+				if err != nil {
+					return err
+				}
+				c.writeln(fmt.Sprintf("case %s of true -> %s; _ -> %s end.", cond, thenExpr, elseExpr))
+				c.indent--
+				return nil
+			}
+		}
+	}
+
 	var lines []string
 	for _, st := range fn.Body {
 		l, err := c.compileStmtLine(st)
@@ -1131,6 +1169,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "#{" + strings.Join(parts, ", ") + "}", nil
 	case p.Selector != nil:
 		root := p.Selector.Root
+		if len(p.Selector.Tail) == 0 {
+			if v, ok := c.globals[root]; ok {
+				return v, nil
+			}
+		}
 		if len(p.Selector.Tail) == 0 && unicode.IsUpper(rune(root[0])) && !c.lets[root] && c.varVers[root] == 0 {
 			return strings.ToLower(root), nil
 		}
@@ -1308,10 +1351,10 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", err
 		}
 		return fmt.Sprintf("maps:values(%s)", a0), nil
-        case "exists":
-                if len(call.Args) != 1 {
-                        return "", fmt.Errorf("exists expects 1 arg")
-                }
+	case "exists":
+		if len(call.Args) != 1 {
+			return "", fmt.Errorf("exists expects 1 arg")
+		}
 		// Special case for simple query expressions so we can
 		// translate to lists:any/2 like the human implementations.
 		if q := extractQuery(call.Args[0]); q != nil {
@@ -1334,18 +1377,18 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-                return fmt.Sprintf("(length(%s) > 0)", a0), nil
-       case "json":
-               if len(call.Args) != 1 {
-                       return "", fmt.Errorf("json expects 1 arg")
-               }
-               a0, err := c.compileExpr(call.Args[0])
-               if err != nil {
-                       return "", err
-               }
-               c.needJSON = true
-               return fmt.Sprintf("io:format(\"~s\\n\", [mochi_json_encode(%s)])", a0), nil
-        case "substring":
+		return fmt.Sprintf("(length(%s) > 0)", a0), nil
+	case "json":
+		if len(call.Args) != 1 {
+			return "", fmt.Errorf("json expects 1 arg")
+		}
+		a0, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", err
+		}
+		c.needJSON = true
+		return fmt.Sprintf("io:format(\"~s\\n\", [mochi_json_encode(%s)])", a0), nil
+	case "substring":
 		if len(call.Args) != 3 {
 			return "", fmt.Errorf("substring expects 3 args")
 		}
@@ -1483,20 +1526,20 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 }
 
 func (c *Compiler) compileMapKey(e *parser.Expr) (string, error) {
-       // Map keys may be simple identifiers like a or b which should be emitted
-       // as atoms rather than variables. Detect this pattern before falling
-       // back to the general expression compiler so quoted keys remain quoted.
-       if e != nil && e.Binary != nil && len(e.Binary.Right) == 0 {
-               u := e.Binary.Left
-               if len(u.Ops) == 0 && u.Value != nil && len(u.Value.Ops) == 0 {
-                       if sel := u.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 {
-                               if unicode.IsLower(rune(sel.Root[0])) {
-                                       return sel.Root, nil
-                               }
-                       }
-               }
-       }
-       return c.compileExpr(e)
+	// Map keys may be simple identifiers like a or b which should be emitted
+	// as atoms rather than variables. Detect this pattern before falling
+	// back to the general expression compiler so quoted keys remain quoted.
+	if e != nil && e.Binary != nil && len(e.Binary.Right) == 0 {
+		u := e.Binary.Left
+		if len(u.Ops) == 0 && u.Value != nil && len(u.Value.Ops) == 0 {
+			if sel := u.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 {
+				if unicode.IsLower(rune(sel.Root[0])) {
+					return sel.Root, nil
+				}
+			}
+		}
+	}
+	return c.compileExpr(e)
 }
 
 func (c *Compiler) writeln(s string) {

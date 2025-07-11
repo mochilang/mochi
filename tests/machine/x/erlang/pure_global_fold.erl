@@ -2,7 +2,7 @@
 % pure_global_fold.erl - generated from pure_global_fold.mochi
 
 inc(X) ->
-    (X + K).
+    (X + 2).
 
 main(_) ->
     K = 2,
