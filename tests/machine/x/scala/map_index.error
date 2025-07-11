@@ -1,5 +1,0 @@
-exit status 1
-/workspace/mochi/tests/machine/x/scala/map_index.scala:6: error: map_index.M does not take parameters
-    println((m("b")))
-              ^
-one error found

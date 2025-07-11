@@ -1,7 +1,0 @@
-exit status 1
-/workspace/mochi/tests/machine/x/scala/group_by_multi_join.scala:12: error: type mismatch;
- found   : Double
- required: Int
-  val grouped = ((for { x <- filtered } yield (x.part, (x))).groupBy(_._1).map{ case(k,list) => (k, list.map(_._2)) }.toList).map{ case(gKey,gItems) => { val g = (gKey, gItems); Grouped(part = g._1, total = (for { r <- g._2 } yield r.value).sum) } }.toList
-                                                                                                                                                                                                                                                 ^
-one error found

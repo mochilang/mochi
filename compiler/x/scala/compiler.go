@@ -27,6 +27,7 @@ type Compiler struct {
 	structKeys  map[string]string
 	autoCount   int
 	structHint  string
+	mapVars     map[string]bool
 }
 
 func (c *Compiler) detectStructMap(e *parser.Expr, env *types.Env) (types.StructType, bool) {
@@ -62,6 +63,7 @@ func New(env *types.Env) *Compiler {
 		autoStructs: make(map[string]types.StructType),
 		structKeys:  make(map[string]string),
 		structHint:  "",
+		mapVars:     make(map[string]bool),
 	}
 }
 
@@ -212,6 +214,7 @@ func sanitizeField(name string) string {
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	name := sanitizeName(strings.TrimSuffix(filepath.Base(prog.Pos.Filename), filepath.Ext(prog.Pos.Filename)))
 	collectUpdates(prog.Statements, c.updates)
+	collectMapUses(prog.Statements, c.mapVars)
 	// emit user-defined types before the main object
 	for _, s := range prog.Statements {
 		if s.Type != nil {
@@ -1419,11 +1422,11 @@ func (c *Compiler) compileMap(m *parser.MapLiteral, mutable bool) (string, error
 	// determine if this map corresponds to a struct type
 	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Map: m}}}}}
 	t := c.namedType(types.ExprType(expr, c.env))
-	if st, ok := t.(types.StructType); ok && !mutable {
+	if st, ok := t.(types.StructType); ok && !mutable && !c.mapVars[c.structHint] {
 		return c.mapToStruct(st.Name, st, m)
 	}
 	// if all keys are simple strings, treat as an anonymous struct
-	if !mutable {
+	if !mutable && !c.mapVars[c.structHint] {
 		anon := types.StructType{Fields: make(map[string]types.Type), Order: make([]string, len(m.Items))}
 		allSimple := true
 		for i, it := range m.Items {
@@ -1630,7 +1633,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}()...), ", ")
 		tmp := fmt.Sprintf("for { %s } yield (%s, (%s))", strings.Join(parts, "; "), keyExpr, tuple)
 		groups := fmt.Sprintf("(%s).groupBy(_._1).map{ case(k,list) => (k, list.map(_._2)) }.toList", tmp)
+
+		groupEnv := types.NewEnv(c.env)
+		keyT := types.ExprType(q.Group.Exprs[0], c.env)
+		groupEnv.SetVar(q.Group.Name, types.GroupType{Key: keyT, Elem: types.AnyType{}}, false)
+
 		if q.Sort != nil {
+			c.env = groupEnv
 			c.inSort = true
 			key, err := c.compileExpr(q.Sort)
 			c.inSort = false
@@ -1640,10 +1649,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			}
 			groups = fmt.Sprintf("(%s).sortBy(%s => %s)", groups, q.Group.Name, key)
 		}
-
-		groupEnv := types.NewEnv(c.env)
-		keyT := types.ExprType(q.Group.Exprs[0], c.env)
-		groupEnv.SetVar(q.Group.Name, types.GroupType{Key: keyT, Elem: types.AnyType{}}, false)
 
 		if q.Group.Having != nil {
 			c.env = groupEnv
@@ -2010,6 +2015,13 @@ func simpleIdent(e *parser.Expr) (string, bool) {
 	return p.Target.Selector.Root, true
 }
 
+func simplePostfixIdent(p *parser.PostfixExpr) (string, bool) {
+	if p == nil || len(p.Ops) > 0 || p.Target == nil || p.Target.Selector == nil || len(p.Target.Selector.Tail) > 0 {
+		return "", false
+	}
+	return p.Target.Selector.Root, true
+}
+
 func identName(e *parser.Expr) (string, bool) {
 	if e == nil || len(e.Binary.Right) != 0 {
 		return "", false
@@ -2082,6 +2094,193 @@ func collectUpdates(stmts []*parser.Statement, out map[string]bool) {
 		case s.Test != nil:
 			collectUpdates(s.Test.Body, out)
 		}
+	}
+}
+
+func collectMapUses(stmts []*parser.Statement, out map[string]bool) {
+	for _, s := range stmts {
+		switch {
+		case s.Let != nil:
+			collectExprMapUses(s.Let.Value, out)
+		case s.Var != nil:
+			collectExprMapUses(s.Var.Value, out)
+		case s.Assign != nil:
+			if len(s.Assign.Index) > 0 {
+				out[s.Assign.Name] = true
+			}
+			collectExprMapUses(s.Assign.Value, out)
+			for _, idx := range s.Assign.Index {
+				collectExprMapUses(idx.Start, out)
+				collectExprMapUses(idx.End, out)
+				collectExprMapUses(idx.Step, out)
+			}
+		case s.Update != nil:
+			out[s.Update.Target] = true
+			if s.Update.Where != nil {
+				collectExprMapUses(s.Update.Where, out)
+			}
+			for _, it := range s.Update.Set.Items {
+				collectExprMapUses(it.Key, out)
+				collectExprMapUses(it.Value, out)
+			}
+		case s.Return != nil:
+			collectExprMapUses(s.Return.Value, out)
+		case s.Expr != nil:
+			collectExprMapUses(s.Expr.Expr, out)
+		case s.If != nil:
+			collectExprMapUses(s.If.Cond, out)
+			collectMapUses(s.If.Then, out)
+			if s.If.ElseIf != nil {
+				collectMapUses([]*parser.Statement{{If: s.If.ElseIf}}, out)
+			}
+			if s.If.Else != nil {
+				collectMapUses(s.If.Else, out)
+			}
+		case s.While != nil:
+			collectExprMapUses(s.While.Cond, out)
+			collectMapUses(s.While.Body, out)
+		case s.For != nil:
+			collectExprMapUses(s.For.Source, out)
+			collectExprMapUses(s.For.RangeEnd, out)
+			collectMapUses(s.For.Body, out)
+		case s.Fun != nil:
+			collectMapUses(s.Fun.Body, out)
+		case s.Test != nil:
+			collectMapUses(s.Test.Body, out)
+		}
+	}
+}
+
+func collectExprMapUses(e *parser.Expr, out map[string]bool) {
+	if e == nil || e.Binary == nil {
+		return
+	}
+	collectUnaryMapUses(e.Binary.Left, out)
+	for _, op := range e.Binary.Right {
+		if op.Op == "in" {
+			if name, ok := simplePostfixIdent(op.Right); ok {
+				out[name] = true
+			}
+		}
+		collectPostfixMapUses(op.Right, out)
+	}
+}
+
+func collectUnaryMapUses(u *parser.Unary, out map[string]bool) {
+	if u == nil {
+		return
+	}
+	collectPostfixMapUses(u.Value, out)
+}
+
+func collectPostfixMapUses(p *parser.PostfixExpr, out map[string]bool) {
+	if p == nil {
+		return
+	}
+	collectPrimaryMapUses(p.Target, out)
+	for _, op := range p.Ops {
+		if op.Index != nil {
+			if p.Target != nil && p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+				out[p.Target.Selector.Root] = true
+			}
+			collectExprMapUses(op.Index.Start, out)
+			collectExprMapUses(op.Index.End, out)
+			collectExprMapUses(op.Index.Step, out)
+		} else if op.Call != nil {
+			for _, a := range op.Call.Args {
+				collectExprMapUses(a, out)
+			}
+		} else if op.Field != nil {
+			// nothing
+		} else if op.Cast != nil {
+			// nothing
+		}
+	}
+}
+
+func collectPrimaryMapUses(p *parser.Primary, out map[string]bool) {
+	if p == nil {
+		return
+	}
+	switch {
+	case p.If != nil:
+		collectIfExprMapUses(p.If, out)
+	case p.FunExpr != nil:
+		collectFunExprMapUses(p.FunExpr, out)
+	case p.List != nil:
+		for _, e := range p.List.Elems {
+			collectExprMapUses(e, out)
+		}
+	case p.Map != nil:
+		for _, it := range p.Map.Items {
+			collectExprMapUses(it.Key, out)
+			collectExprMapUses(it.Value, out)
+		}
+	case p.Struct != nil:
+		for _, f := range p.Struct.Fields {
+			collectExprMapUses(f.Value, out)
+		}
+	case p.Match != nil:
+		collectExprMapUses(p.Match.Target, out)
+		for _, cs := range p.Match.Cases {
+			collectExprMapUses(cs.Pattern, out)
+			collectExprMapUses(cs.Result, out)
+		}
+	case p.Query != nil:
+		collectExprMapUses(p.Query.Source, out)
+		for _, f := range p.Query.Froms {
+			collectExprMapUses(f.Src, out)
+		}
+		for _, j := range p.Query.Joins {
+			collectExprMapUses(j.Src, out)
+			collectExprMapUses(j.On, out)
+		}
+		collectExprMapUses(p.Query.Where, out)
+		if p.Query.Group != nil {
+			for _, ge := range p.Query.Group.Exprs {
+				collectExprMapUses(ge, out)
+			}
+			collectExprMapUses(p.Query.Group.Having, out)
+		}
+		collectExprMapUses(p.Query.Sort, out)
+		collectExprMapUses(p.Query.Select, out)
+	case p.Call != nil:
+		for _, a := range p.Call.Args {
+			collectExprMapUses(a, out)
+		}
+	case p.Selector != nil:
+		// nothing
+	case p.Group != nil:
+		collectExprMapUses(p.Group, out)
+	case p.Load != nil:
+		collectExprMapUses(p.Load.With, out)
+	case p.Save != nil:
+		collectExprMapUses(p.Save.Src, out)
+		collectExprMapUses(p.Save.With, out)
+	}
+}
+
+func collectIfExprMapUses(e *parser.IfExpr, out map[string]bool) {
+	if e == nil {
+		return
+	}
+	collectExprMapUses(e.Cond, out)
+	collectExprMapUses(e.Then, out)
+	if e.ElseIf != nil {
+		collectIfExprMapUses(e.ElseIf, out)
+	}
+	collectExprMapUses(e.Else, out)
+}
+
+func collectFunExprMapUses(f *parser.FunExpr, out map[string]bool) {
+	if f == nil {
+		return
+	}
+	if f.ExprBody != nil {
+		collectExprMapUses(f.ExprBody, out)
+	}
+	if len(f.BlockBody) > 0 {
+		collectMapUses(f.BlockBody, out)
 	}
 }
 

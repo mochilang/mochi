@@ -3,7 +3,7 @@
 This directory contains Scala code generated from the Mochi programs in `tests/vm/valid` using the Scala compiler. Each source file was compiled with `scalac` and executed with `scala`. Successful runs produced an `.out` file while failures produced an `.error` file.
 
 Compiled programs: 100
-Executed successfully: 78
+Executed successfully: 79
 
 ## Program checklist
 - [x] append_builtin.mochi
@@ -30,14 +30,14 @@ Executed successfully: 78
 - [x] fun_three_args.mochi
 - [ ] go_auto.mochi
 - [x] group_by.mochi
-- [ ] group_by_conditional_sum.mochi
-- [ ] group_by_having.mochi
+- [x] group_by_conditional_sum.mochi
+- [x] group_by_having.mochi
 - [x] group_by_join.mochi
-- [ ] group_by_left_join.mochi
-- [ ] group_by_multi_join.mochi
-- [ ] group_by_multi_join_sort.mochi
-- [ ] group_by_sort.mochi
-- [ ] group_items_iteration.mochi
+- [x] group_by_left_join.mochi
+- [x] group_by_multi_join.mochi
+- [x] group_by_multi_join_sort.mochi
+- [x] group_by_sort.mochi
+- [x] group_items_iteration.mochi
 - [x] if_else.mochi
 - [x] if_then_else.mochi
 - [x] if_then_else_nested.mochi
@@ -45,33 +45,33 @@ Executed successfully: 78
 - [ ] in_operator_extended.mochi
 - [x] inner_join.mochi
 - [x] join_multi.mochi
-- [ ] json_builtin.mochi
+- [x] json_builtin.mochi
 - [x] left_join.mochi
 - [x] left_join_multi.mochi
 - [x] len_builtin.mochi
-- [ ] len_map.mochi
+- [x] len_map.mochi
 - [x] len_string.mochi
 - [x] let_and_print.mochi
 - [x] list_assign.mochi
 - [x] list_index.mochi
 - [x] list_nested_assign.mochi
 - [x] list_set_ops.mochi
-- [ ] load_yaml.mochi
+- [x] load_yaml.mochi
 - [x] map_assign.mochi
 - [x] map_in_operator.mochi
-- [ ] map_index.mochi
+- [x] map_index.mochi
 - [x] map_int_key.mochi
 - [x] map_literal_dynamic.mochi
-- [ ] map_membership.mochi
-- [ ] map_nested_assign.mochi
+- [x] map_membership.mochi
+- [x] map_nested_assign.mochi
 - [x] match_expr.mochi
 - [x] match_full.mochi
 - [x] math_ops.mochi
 - [x] membership.mochi
 - [x] min_max_builtin.mochi
 - [x] nested_function.mochi
-- [ ] order_by_map.mochi
-- [ ] outer_join.mochi
+- [x] order_by_map.mochi
+- [x] outer_join.mochi
 - [x] partial_application.mochi
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
@@ -80,11 +80,11 @@ Executed successfully: 78
 - [ ] python_math.mochi
 - [x] query_sum_select.mochi
 - [x] record_assign.mochi
-- [ ] right_join.mochi
-- [ ] save_jsonl_stdout.mochi
+- [x] right_join.mochi
+- [x] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
 - [x] slice.mochi
-- [ ] sort_stable.mochi
+- [x] sort_stable.mochi
 - [x] str_builtin.mochi
 - [x] string_compare.mochi
 - [x] string_concat.mochi
