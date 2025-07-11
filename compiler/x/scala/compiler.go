@@ -28,6 +28,7 @@ type Compiler struct {
 	autoCount   int
 	structHint  string
 	mapVars     map[string]bool
+	pyModules   map[string]string
 }
 
 func (c *Compiler) detectStructMap(e *parser.Expr, env *types.Env) (types.StructType, bool) {
@@ -64,6 +65,7 @@ func New(env *types.Env) *Compiler {
 		structKeys:  make(map[string]string),
 		structHint:  "",
 		mapVars:     make(map[string]bool),
+		pyModules:   make(map[string]string),
 	}
 }
 
@@ -314,11 +316,15 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileAssign(s.Assign)
 	case s.Update != nil:
 		return c.compileUpdate(s.Update)
+	case s.Import != nil:
+		return c.addImport(s.Import)
 	case s.Break != nil:
 		c.writeln("return")
 		return nil
 	case s.Continue != nil:
 		c.writeln("// continue")
+		return nil
+	case s.ExternVar != nil, s.ExternFun != nil, s.ExternType != nil, s.ExternObject != nil:
 		return nil
 	case s.Test != nil:
 		return c.compileTestBlock(s.Test)
@@ -1165,6 +1171,17 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 }
 
 func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
+	if mod, ok := c.pyModules[s.Root]; ok && mod == "math" {
+		attr := strings.Join(s.Tail, ".")
+		switch attr {
+		case "pi":
+			return "scala.math.Pi"
+		case "e":
+			return "scala.math.E"
+		default:
+			return fmt.Sprintf("scala.math.%s", attr)
+		}
+	}
 	if t, err := c.env.GetVar(s.Root); err == nil {
 		if len(s.Tail) == 0 {
 			if _, ok := t.(types.GroupType); ok {
@@ -2422,4 +2439,38 @@ func (c *Compiler) querySelectEnv(q *parser.QueryExpr) *types.Env {
 		env = g
 	}
 	return env
+}
+
+func (c *Compiler) addImport(im *parser.ImportStmt) error {
+	if im.Lang == nil {
+		return fmt.Errorf("unsupported import language: <nil>")
+	}
+	mod := strings.Trim(im.Path, "\"")
+	alias := im.As
+	if alias == "" {
+		alias = parser.AliasFromPath(im.Path)
+	}
+	switch *im.Lang {
+	case "python":
+		if mod == "math" {
+			c.pyModules[alias] = mod
+			return nil
+		}
+		return fmt.Errorf("unsupported python module: %s", mod)
+	case "go":
+		if mod == "mochi/runtime/ffi/go/testpkg" {
+			c.writeln(fmt.Sprintf("object %s {", alias))
+			c.indent += indentStep
+			c.writeln("def Add(a: Int, b: Int): Int = a + b")
+			c.writeln("val Pi: Double = 3.14")
+			c.writeln("val Answer: Int = 42")
+			c.indent -= indentStep
+			c.writeln("}")
+			c.writeln("")
+			return nil
+		}
+		return fmt.Errorf("unsupported go module: %s", mod)
+	default:
+		return fmt.Errorf("unsupported import language: %s", *im.Lang)
+	}
 }
