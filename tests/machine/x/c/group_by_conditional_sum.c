@@ -162,8 +162,9 @@ int main() {
       tmp16++;
     }
     tmp15.len = tmp16;
-    tmp7.data[tmp8] =
-        (ResultItem){.cat = g.key, .share = _sum_int(tmp12) / _sum_int(tmp15)};
+    tmp7.data[tmp8] = (ResultItem){.cat = g.key,
+                                   .share = ((double)_sum_int(tmp12)) /
+                                            ((double)_sum_int(tmp15))};
     tmp9[tmp8] = g.key;
     tmp8++;
   }
@@ -181,6 +182,18 @@ int main() {
     }
   }
   list_ResultItem result = tmp7;
-  printf("%d\n", result);
+  for (int i22 = 0; i22 < result.len; i22++) {
+    ResultItem it = result.data[i22];
+    if (i22 > 0)
+      printf(" ");
+    printf("map[");
+    printf("cat:");
+    printf("%s", it.cat);
+    printf(" ");
+    printf("share:");
+    printf("%.16g", it.share);
+    printf("]");
+  }
+  printf("\n");
   return 0;
 }
