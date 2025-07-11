@@ -5,7 +5,6 @@ package main
 import (
 	"fmt"
 	"mochi/runtime/data"
-	"strings"
 
 	"golang.org/x/exp/constraints"
 )
@@ -23,7 +22,7 @@ func main() {
 		}
 		return results
 	}())
-	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(result), "["), "]"))
+	fmt.Println(result)
 }
 
 func _sum(v any) float64 {

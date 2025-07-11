@@ -123,7 +123,7 @@ func main() {
 		}
 		return results
 	}()
-	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(grouped), "["), "]"))
+	fmt.Println(grouped)
 }
 
 func _sum(v any) float64 {

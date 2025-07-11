@@ -1,5 +1,0 @@
-Error on line 0: run error: exit status 1
-# command-line-arguments
-../../../tests/machine/x/go/record_assign.go:22:6: cannot use &c (value of type *Counter) as Counter value in argument to inc
-
-1: //go:build ignore

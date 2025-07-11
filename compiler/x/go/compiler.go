@@ -3993,12 +3993,6 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	switch call.Func {
 	case "print":
 		c.imports["fmt"] = true
-		if len(call.Args) == 1 {
-			if _, ok := c.inferExprType(call.Args[0]).(types.ListType); ok {
-				c.imports["strings"] = true
-				return fmt.Sprintf("fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(%s), \"[\"), \"]\"))", args[0]), nil
-			}
-		}
 		return fmt.Sprintf("fmt.Println(%s)", strings.Join(args, ", ")), nil
 	case "str":
 		c.imports["fmt"] = true

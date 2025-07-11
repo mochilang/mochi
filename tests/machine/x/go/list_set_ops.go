@@ -5,13 +5,12 @@ package main
 import (
 	"fmt"
 	"reflect"
-	"strings"
 )
 
 func main() {
-	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(_union[int]([]int{1, 2}, []int{2, 3})), "["), "]"))
-	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(_except[int]([]int{1, 2, 3}, []int{2})), "["), "]"))
-	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(_intersect[int]([]int{1, 2, 3}, []int{2, 4})), "["), "]"))
+	fmt.Println(_union[int]([]int{1, 2}, []int{2, 3}))
+	fmt.Println(_except[int]([]int{1, 2, 3}, []int{2}))
+	fmt.Println(_intersect[int]([]int{1, 2, 3}, []int{2, 4}))
 	fmt.Println(len(append(append([]int{}, []int{1, 2}...), []int{2, 3}...)))
 }
 

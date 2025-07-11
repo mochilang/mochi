@@ -72,7 +72,7 @@ func main() {
 		}
 		return out
 	}()
-	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(result), "["), "]"))
+	fmt.Println(result)
 }
 
 type _joinSpec struct {

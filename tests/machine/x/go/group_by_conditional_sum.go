@@ -120,7 +120,7 @@ func main() {
 		}
 		return results
 	}()
-	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(result), "["), "]"))
+	fmt.Println(result)
 }
 
 func _exists(v any) bool {
