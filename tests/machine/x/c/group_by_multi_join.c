@@ -251,6 +251,18 @@ int main() {
   }
   tmp14.len = tmp15;
   list_GroupedItem grouped = tmp14;
-  printf("%d\n", grouped);
+  for (int i21 = 0; i21 < grouped.len; i21++) {
+    GroupedItem it = grouped.data[i21];
+    if (i21 > 0)
+      printf(" ");
+    printf("map[");
+    printf("part:");
+    printf("%d", it.part);
+    printf(" ");
+    printf("total:");
+    printf("%.16g", it.total);
+    printf("]");
+  }
+  printf("\n");
   return 0;
 }

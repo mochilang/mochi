@@ -105,6 +105,18 @@ int main() {
     }
   }
   list_DataItem sorted = tmp2;
-  printf("%d\n", sorted);
+  for (int i11 = 0; i11 < sorted.len; i11++) {
+    DataItem it = sorted.data[i11];
+    if (i11 > 0)
+      printf(" ");
+    printf("map[");
+    printf("a:");
+    printf("%d", it.a);
+    printf(" ");
+    printf("b:");
+    printf("%d", it.b);
+    printf("]");
+  }
+  printf("\n");
   return 0;
 }

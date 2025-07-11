@@ -144,6 +144,36 @@ int main() {
   list_LineitemItem tmp4 = {2, tmp4_data};
   list_LineitemItem lineitem = tmp4;
   list_ResultItem result = 0;
-  printf("%d\n", result);
+  for (int i5 = 0; i5 < result.len; i5++) {
+    ResultItem it = result.data[i5];
+    if (i5 > 0)
+      printf(" ");
+    printf("map[");
+    printf("c_custkey:");
+    printf("%d", it.c_custkey);
+    printf(" ");
+    printf("c_name:");
+    printf("%d", it.c_name);
+    printf(" ");
+    printf("revenue:");
+    printf("%.16g", it.revenue);
+    printf(" ");
+    printf("c_acctbal:");
+    printf("%d", it.c_acctbal);
+    printf(" ");
+    printf("n_name:");
+    printf("%d", it.n_name);
+    printf(" ");
+    printf("c_address:");
+    printf("%d", it.c_address);
+    printf(" ");
+    printf("c_phone:");
+    printf("%d", it.c_phone);
+    printf(" ");
+    printf("c_comment:");
+    printf("%d", it.c_comment);
+    printf("]");
+  }
+  printf("\n");
   return 0;
 }

@@ -1,7 +1,0 @@
-line: 0
-error: output mismatch
--- got --
-2
--- want --
-map[cat:b total:7] map[cat:a total:4]
-   1: #include <stdio.h>
