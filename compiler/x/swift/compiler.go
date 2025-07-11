@@ -3260,7 +3260,14 @@ func (c *compiler) genStructName(varName string) string {
 		base = strings.TrimSuffix(base, "s")
 	}
 	if base != "" {
-		base = strings.ToUpper(base[:1]) + base[1:]
+		parts := strings.Split(base, "_")
+		for i, p := range parts {
+			if len(p) == 0 {
+				continue
+			}
+			parts[i] = strings.ToUpper(p[:1]) + p[1:]
+		}
+		base = strings.Join(parts, "")
 	}
 	if base == "" {
 		return fmt.Sprintf("Auto%d", c.autoCount)
