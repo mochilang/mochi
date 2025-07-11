@@ -275,7 +275,7 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 					t = c.cType(s.Var.Type)
 				}
 				globals = append(globals, fmt.Sprintf("static %s %s = %s;", t, sanitizeName(s.Var.Name), val))
-				if c.env != nil {
+				if c.env != nil && s.Var.Type != nil {
 					c.env.SetVar(s.Var.Name, resolveTypeRef(s.Var.Type, c.env), true)
 				}
 				skip[s] = true
@@ -288,7 +288,7 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 					t = c.cType(s.Let.Type)
 				}
 				globals = append(globals, fmt.Sprintf("static %s %s = %s;", t, sanitizeName(s.Let.Name), val))
-				if c.env != nil {
+				if c.env != nil && s.Let.Type != nil {
 					c.env.SetVar(s.Let.Name, resolveTypeRef(s.Let.Type, c.env), true)
 				}
 				skip[s] = true
@@ -4312,6 +4312,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 						if isStringArg(a, c.env) {
 							fmtStr = "%s"
 						} else if isFloatArg(a, c.env) {
+							fmtStr = "%.16g"
+						} else if _, ok := c.exprType(a).(types.FloatType); ok {
 							fmtStr = "%.16g"
 						} else if _, ok := constFloatValue(a); ok || looksLikeFloatConst(argExpr) {
 							fmtStr = "%.16g"
