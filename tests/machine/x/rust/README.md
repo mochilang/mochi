@@ -107,6 +107,7 @@ Compiled programs: 95/100
 - [x] while_loop
 
 ## Remaining Tasks
+- [ ] Add support for the `in` operator with query results and substrings
 
 - [ ] Implement support for dataset joins that currently fail to compile
 - [ ] Handle loading and saving external data
