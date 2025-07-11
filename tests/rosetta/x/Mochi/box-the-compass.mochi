@@ -1,0 +1,115 @@
+// Mochi implementation of Rosetta "Box the compass" task
+// Translated from Go version in tests/rosetta/x/Go/box-the-compass.go
+
+fun padLeft(s: string, w: int): string {
+  var res = ""
+  var n = w - len(s)
+  while n > 0 {
+    res = res + " "
+    n = n - 1
+  }
+  return res + s
+}
+
+fun padRight(s: string, w: int): string {
+  var out = s
+  var i = len(s)
+  while i < w {
+    out = out + " "
+    i = i + 1
+  }
+  return out
+}
+
+fun indexOf(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if substring(s, i, i+1) == ch {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+
+fun format2(f: float): string {
+  var s = str(f)
+  let idx = indexOf(s, ".")
+  if idx < 0 {
+    s = s + ".00"
+  } else {
+    var need = idx + 3
+    if len(s) > need {
+      s = substring(s, 0, need)
+    } else {
+      while len(s) < need {
+        s = s + "0"
+      }
+    }
+  }
+  return s
+}
+
+fun cpx(h: float): int {
+  var x = ((h / 11.25) + 0.5) as int
+  x = x % 32
+  if x < 0 { x = x + 32 }
+  return x
+}
+
+let compassPoint = [
+  "North",
+  "North by east",
+  "North-northeast",
+  "Northeast by north",
+  "Northeast",
+  "Northeast by east",
+  "East-northeast",
+  "East by north",
+  "East",
+  "East by south",
+  "East-southeast",
+  "Southeast by east",
+  "Southeast",
+  "Southeast by south",
+  "South-southeast",
+  "South by east",
+  "South",
+  "South by west",
+  "South-southwest",
+  "Southwest by south",
+  "Southwest",
+  "Southwest by west",
+  "West-southwest",
+  "West by south",
+  "West",
+  "West by north",
+  "West-northwest",
+  "Northwest by west",
+  "Northwest",
+  "Northwest by north",
+  "North-northwest",
+  "North by west",
+]
+
+fun degrees2compasspoint(h: float): string {
+  return compassPoint[cpx(h)]
+}
+
+let headings = [
+  0.0, 16.87, 16.88, 33.75, 50.62, 50.63, 67.5,
+  84.37, 84.38, 101.25, 118.12, 118.13, 135.0, 151.87, 151.88, 168.75,
+  185.62, 185.63, 202.5, 219.37, 219.38, 236.25, 253.12, 253.13, 270.0,
+  286.87, 286.88, 303.75, 320.62, 320.63, 337.5, 354.37, 354.38,
+]
+
+print("Index  Compass point         Degree")
+var i = 0
+while i < len(headings) {
+  let h = headings[i]
+  let idx = i % 32 + 1
+  let cp = degrees2compasspoint(h)
+  print(padLeft(str(idx), 4) + "   " + padRight(cp, 19) + " " + format2(h) + "°")
+  i = i + 1
+}
