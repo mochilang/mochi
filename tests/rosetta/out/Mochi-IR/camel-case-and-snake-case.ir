@@ -1,0 +1,514 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun trimSpace(s: string): string {
+func trimSpace (regs=27)
+  // var start = 0
+  Const        r1, 0
+  Move         r2, r1
+L2:
+  // while start < len(s) && s[start:start+1] == " " {
+  Len          r3, r0
+  LessInt      r4, r2, r3
+  Move         r5, r2
+  Const        r7, 1
+  AddInt       r8, r2, r7
+  Move         r6, r8
+  Slice        r9, r0, r5, r6
+  Const        r10, " "
+  Equal        r11, r9, r10
+  Move         r12, r4
+  JumpIfFalse  r12, L0
+  Move         r12, r11
+L0:
+  JumpIfFalse  r12, L1
+  // start = start + 1
+  Const        r7, 1
+  AddInt       r13, r2, r7
+  Move         r2, r13
+  // while start < len(s) && s[start:start+1] == " " {
+  Jump         L2
+L1:
+  // var end = len(s)
+  Len          r14, r0
+  Move         r15, r14
+L5:
+  // while end > start && s[end-1:end] == " " {
+  LessInt      r16, r2, r15
+  Const        r7, 1
+  SubInt       r18, r15, r7
+  Move         r17, r18
+  Move         r19, r15
+  Slice        r20, r0, r17, r19
+  Const        r10, " "
+  Equal        r21, r20, r10
+  Move         r22, r16
+  JumpIfFalse  r22, L3
+  Move         r22, r21
+L3:
+  JumpIfFalse  r22, L4
+  // end = end - 1
+  Const        r7, 1
+  SubInt       r23, r15, r7
+  Move         r15, r23
+  // while end > start && s[end-1:end] == " " {
+  Jump         L5
+L4:
+  // return s[start:end]
+  Move         r24, r2
+  Move         r25, r15
+  Slice        r26, r0, r24, r25
+  Return       r26
+
+  // fun isUpper(ch: string): bool {
+func isUpper (regs=6)
+  // return ch >= "A" && ch <= "Z"
+  Const        r1, "A"
+  LessEq       r2, r1, r0
+  Const        r3, "Z"
+  LessEq       r4, r0, r3
+  Move         r5, r2
+  JumpIfFalse  r5, L0
+  Move         r5, r4
+L0:
+  Return       r5
+
+  // fun padLeft(s: string, w: int): string {
+func padLeft (regs=14)
+  // var res = ""
+  Const        r2, ""
+  Move         r3, r2
+  // var n = w - len(s)
+  Len          r4, r0
+  Sub          r5, r1, r4
+  Move         r6, r5
+L1:
+  // while n > 0 {
+  Const        r7, 0
+  Less         r8, r7, r6
+  JumpIfFalse  r8, L0
+  // res = res + " "
+  Const        r9, " "
+  Add          r10, r3, r9
+  Move         r3, r10
+  // n = n - 1
+  Const        r11, 1
+  Sub          r12, r6, r11
+  Move         r6, r12
+  // while n > 0 {
+  Jump         L1
+L0:
+  // return res + s
+  Add          r13, r3, r0
+  Return       r13
+
+  // fun snakeToCamel(s: string): string {
+func snakeToCamel (regs=35)
+  // s = trimSpace(s)
+  Move         r1, r0
+  Call         r2, trimSpace, r1
+  Move         r0, r2
+  // var out = ""
+  Const        r3, ""
+  Move         r4, r3
+  // var up = false
+  Const        r5, false
+  Move         r6, r5
+  // var i = 0
+  Const        r7, 0
+  Move         r8, r7
+L3:
+  // while i < len(s) {
+  Len          r9, r0
+  LessInt      r10, r8, r9
+  JumpIfFalse  r10, L0
+  // let ch = s[i:i+1]
+  Move         r11, r8
+  Const        r13, 1
+  AddInt       r14, r8, r13
+  Move         r12, r14
+  Slice        r15, r0, r11, r12
+  // if ch == "_" || ch == "-" || ch == " " || ch == "." {
+  Const        r16, "_"
+  Equal        r17, r15, r16
+  Const        r18, "-"
+  Equal        r19, r15, r18
+  Const        r20, " "
+  Equal        r21, r15, r20
+  Const        r22, "."
+  Equal        r23, r15, r22
+  Move         r24, r17
+  JumpIfTrue   r24, L1
+  Move         r24, r19
+  JumpIfTrue   r24, L1
+  Move         r24, r21
+  JumpIfTrue   r24, L1
+  Move         r24, r23
+L1:
+  JumpIfFalse  r24, L2
+  // up = true
+  Const        r25, true
+  Move         r6, r25
+  // i = i + 1
+  Const        r13, 1
+  AddInt       r26, r8, r13
+  Move         r8, r26
+  // continue
+  Jump         L3
+L2:
+  // if i == 0 {
+  Const        r7, 0
+  EqualInt     r27, r8, r7
+  JumpIfFalse  r27, L4
+  // out = out + lower(ch)
+  Lower        r28, r15
+  Add          r29, r4, r28
+  Move         r4, r29
+  // up = false
+  Const        r5, false
+  Move         r6, r5
+  // i = i + 1
+  Const        r13, 1
+  AddInt       r30, r8, r13
+  Move         r8, r30
+  // continue
+  Jump         L3
+L4:
+  // if up {
+  JumpIfFalse  r6, L5
+  // out = out + upper(ch)
+  Upper        r31, r15
+  Add          r32, r4, r31
+  Move         r4, r32
+  // up = false
+  Const        r5, false
+  Move         r6, r5
+  // if up {
+  Jump         L6
+L5:
+  // out = out + ch
+  Add          r33, r4, r15
+  Move         r4, r33
+L6:
+  // i = i + 1
+  Const        r13, 1
+  AddInt       r34, r8, r13
+  Move         r8, r34
+  // while i < len(s) {
+  Jump         L3
+L0:
+  // return out
+  Return       r4
+
+  // fun camelToSnake(s: string): string {
+func camelToSnake (regs=86)
+  // s = trimSpace(s)
+  Move         r1, r0
+  Call         r2, trimSpace, r1
+  Move         r0, r2
+  // var out = ""
+  Const        r3, ""
+  Move         r4, r3
+  // var prevUnd = false
+  Const        r5, false
+  Move         r6, r5
+  // var i = 0
+  Const        r7, 0
+  Move         r8, r7
+L5:
+  // while i < len(s) {
+  Len          r9, r0
+  LessInt      r10, r8, r9
+  JumpIfFalse  r10, L0
+  // let ch = s[i:i+1]
+  Move         r11, r8
+  Const        r13, 1
+  AddInt       r14, r8, r13
+  Move         r12, r14
+  Slice        r15, r0, r11, r12
+  // if ch == " " || ch == "-" || ch == "." {
+  Const        r16, " "
+  Equal        r17, r15, r16
+  Const        r18, "-"
+  Equal        r19, r15, r18
+  Const        r20, "."
+  Equal        r21, r15, r20
+  Move         r22, r17
+  JumpIfTrue   r22, L1
+  Move         r22, r19
+  JumpIfTrue   r22, L1
+  Move         r22, r21
+L1:
+  JumpIfFalse  r22, L2
+  // if !prevUnd && len(out) > 0 {
+  Not          r23, r6
+  Len          r24, r4
+  Const        r7, 0
+  LessInt      r25, r7, r24
+  Move         r26, r23
+  JumpIfFalse  r26, L3
+  Move         r26, r25
+L3:
+  JumpIfFalse  r26, L4
+  // out = out + "_"
+  Const        r27, "_"
+  Add          r28, r4, r27
+  Move         r4, r28
+  // prevUnd = true
+  Const        r29, true
+  Move         r6, r29
+L4:
+  // i = i + 1
+  Const        r13, 1
+  AddInt       r30, r8, r13
+  Move         r8, r30
+  // continue
+  Jump         L5
+L2:
+  // if ch == "_" {
+  Const        r27, "_"
+  Equal        r31, r15, r27
+  JumpIfFalse  r31, L6
+  // if !prevUnd && len(out) > 0 {
+  Not          r32, r6
+  Len          r33, r4
+  Const        r7, 0
+  LessInt      r34, r7, r33
+  Move         r35, r32
+  JumpIfFalse  r35, L7
+  Move         r35, r34
+L7:
+  JumpIfFalse  r35, L8
+  // out = out + "_"
+  Const        r27, "_"
+  Add          r36, r4, r27
+  Move         r4, r36
+  // prevUnd = true
+  Const        r29, true
+  Move         r6, r29
+L8:
+  // i = i + 1
+  Const        r13, 1
+  AddInt       r37, r8, r13
+  Move         r8, r37
+  // continue
+  Jump         L5
+L6:
+  // if isUpper(ch) {
+  Move         r38, r15
+  Call         r39, isUpper, r38
+  JumpIfFalse  r39, L9
+  // if i > 0 && (!prevUnd) {
+  Const        r7, 0
+  LessInt      r40, r7, r8
+  Move         r41, r40
+  JumpIfFalse  r41, L10
+  Not          r42, r6
+  Move         r41, r42
+L10:
+  JumpIfFalse  r41, L11
+  // out = out + "_"
+  Const        r27, "_"
+  Add          r43, r4, r27
+  Move         r4, r43
+L11:
+  // out = out + lower(ch)
+  Lower        r44, r15
+  Add          r45, r4, r44
+  Move         r4, r45
+  // prevUnd = false
+  Const        r5, false
+  Move         r6, r5
+  // if isUpper(ch) {
+  Jump         L12
+L9:
+  // out = out + lower(ch)
+  Lower        r46, r15
+  Add          r47, r4, r46
+  Move         r4, r47
+  // prevUnd = false
+  Const        r5, false
+  Move         r6, r5
+L12:
+  // i = i + 1
+  Const        r13, 1
+  AddInt       r48, r8, r13
+  Move         r8, r48
+  // while i < len(s) {
+  Jump         L5
+L0:
+  // var start = 0
+  Const        r7, 0
+  Move         r49, r7
+L15:
+  // while start < len(out) && out[start:start+1] == "_" { start = start + 1 }
+  Len          r50, r4
+  LessInt      r51, r49, r50
+  Move         r52, r49
+  Const        r13, 1
+  AddInt       r54, r49, r13
+  Move         r53, r54
+  Slice        r55, r4, r52, r53
+  Const        r27, "_"
+  Equal        r56, r55, r27
+  Move         r57, r51
+  JumpIfFalse  r57, L13
+  Move         r57, r56
+L13:
+  JumpIfFalse  r57, L14
+  Const        r13, 1
+  AddInt       r58, r49, r13
+  Move         r49, r58
+  Jump         L15
+L14:
+  // var end = len(out)
+  Len          r59, r4
+  Move         r60, r59
+L18:
+  // while end > start && out[end-1:end] == "_" { end = end - 1 }
+  LessInt      r61, r49, r60
+  Const        r13, 1
+  SubInt       r63, r60, r13
+  Move         r62, r63
+  Move         r64, r60
+  Slice        r65, r4, r62, r64
+  Const        r27, "_"
+  Equal        r66, r65, r27
+  Move         r67, r61
+  JumpIfFalse  r67, L16
+  Move         r67, r66
+L16:
+  JumpIfFalse  r67, L17
+  Const        r13, 1
+  SubInt       r68, r60, r13
+  Move         r60, r68
+  Jump         L18
+L17:
+  // out = out[start:end]
+  Move         r69, r49
+  Move         r70, r60
+  Slice        r71, r4, r69, r70
+  Move         r4, r71
+  // var res = ""
+  Const        r3, ""
+  Move         r72, r3
+  // var j = 0
+  Const        r7, 0
+  Move         r73, r7
+  // var lastUnd = false
+  Const        r5, false
+  Move         r74, r5
+L23:
+  // while j < len(out) {
+  Len          r75, r4
+  LessInt      r76, r73, r75
+  JumpIfFalse  r76, L19
+  // let c = out[j:j+1]
+  Move         r77, r73
+  Const        r13, 1
+  AddInt       r79, r73, r13
+  Move         r78, r79
+  Slice        r80, r4, r77, r78
+  // if c == "_" {
+  Const        r27, "_"
+  Equal        r81, r80, r27
+  JumpIfFalse  r81, L20
+  // if !lastUnd { res = res + c }
+  Not          r82, r74
+  JumpIfFalse  r82, L21
+  Add          r83, r72, r80
+  Move         r72, r83
+L21:
+  // lastUnd = true
+  Const        r29, true
+  Move         r74, r29
+  // if c == "_" {
+  Jump         L22
+L20:
+  // res = res + c
+  Add          r84, r72, r80
+  Move         r72, r84
+  // lastUnd = false
+  Const        r5, false
+  Move         r74, r5
+L22:
+  // j = j + 1
+  Const        r13, 1
+  AddInt       r85, r73, r13
+  Move         r73, r85
+  // while j < len(out) {
+  Jump         L23
+L19:
+  // return res
+  Return       r72
+
+  // fun main() {
+func main (regs=37)
+  // let samples = [
+  Const        r0, ["snakeCase", "snake_case", "snake-case", "snake case", "snake CASE", "snake.case", "variable_10_case", "variable10Case", "ɛrgo rE tHis", "hurry-up-joe!", "c://my-docs/happy_Flag-Day/12.doc", " spaces "]
+  // print("=== To snake_case ===")
+  Const        r1, "=== To snake_case ==="
+  Print        r1
+  // for s in samples {
+  Const        r2, ["snakeCase", "snake_case", "snake-case", "snake case", "snake CASE", "snake.case", "variable_10_case", "variable10Case", "ɛrgo rE tHis", "hurry-up-joe!", "c://my-docs/happy_Flag-Day/12.doc", " spaces "]
+  IterPrep     r3, r2
+  Len          r4, r3
+  Const        r5, 0
+L1:
+  LessInt      r6, r5, r4
+  JumpIfFalse  r6, L0
+  Index        r7, r3, r5
+  Move         r8, r7
+  // print(padLeft(s, 34) + " => " + camelToSnake(s))
+  Move         r9, r8
+  Const        r11, 34
+  Move         r10, r11
+  Call2        r12, padLeft, r9, r10
+  Const        r13, " => "
+  Add          r14, r12, r13
+  Move         r15, r8
+  Call         r16, camelToSnake, r15
+  Add          r17, r14, r16
+  Print        r17
+  // for s in samples {
+  Const        r18, 1
+  AddInt       r19, r5, r18
+  Move         r5, r19
+  Jump         L1
+L0:
+  // print("")
+  Const        r20, ""
+  Print        r20
+  // print("=== To camelCase ===")
+  Const        r21, "=== To camelCase ==="
+  Print        r21
+  // for s in samples {
+  Const        r22, ["snakeCase", "snake_case", "snake-case", "snake case", "snake CASE", "snake.case", "variable_10_case", "variable10Case", "ɛrgo rE tHis", "hurry-up-joe!", "c://my-docs/happy_Flag-Day/12.doc", " spaces "]
+  IterPrep     r23, r22
+  Len          r24, r23
+  Const        r25, 0
+L3:
+  LessInt      r26, r25, r24
+  JumpIfFalse  r26, L2
+  Index        r27, r23, r25
+  Move         r8, r27
+  // print(padLeft(s, 34) + " => " + snakeToCamel(s))
+  Move         r28, r8
+  Const        r11, 34
+  Move         r29, r11
+  Call2        r30, padLeft, r28, r29
+  Const        r13, " => "
+  Add          r31, r30, r13
+  Move         r32, r8
+  Call         r33, snakeToCamel, r32
+  Add          r34, r31, r33
+  Print        r34
+  // for s in samples {
+  Const        r35, 1
+  AddInt       r36, r25, r35
+  Move         r25, r36
+  Jump         L3
+L2:
+  Return       r0
