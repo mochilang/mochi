@@ -1,36 +1,36 @@
 import java.util.*;
-class DataClass1 {
+class ItemsCatVal {
 	String cat;
 	int val;
-	DataClass1(String cat, int val) {
+	ItemsCatVal(String cat, int val) {
 		this.cat = cat;
 		this.val = val;
 	}
 }
-class DataClass2 {
+class GroupedCatTotal {
 	Object cat;
 	int total;
-	DataClass2(Object cat, int total) {
+	GroupedCatTotal(Object cat, int total) {
 		this.cat = cat;
 		this.total = total;
 	}
 }
 public class Main {
-	static List<DataClass1> items = new ArrayList<>(java.util.Arrays.asList(new DataClass1("a", 3), new DataClass1("a", 1), new DataClass1("b", 5), new DataClass1("b", 2)));
-	static List<DataClass2> grouped = (new java.util.function.Supplier<List<DataClass2>>(){public List<DataClass2> get(){
-	List<DataClass2> _res6 = new ArrayList<>();
-	Map<String,List<DataClass1>> _groups7 = new LinkedHashMap<>();
+	static List<ItemsCatVal> items = new ArrayList<>(Arrays.asList(new ItemsCatVal("a", 3), new ItemsCatVal("a", 1), new ItemsCatVal("b", 5), new ItemsCatVal("b", 2)));
+	static List<GroupedCatTotal> grouped = (new java.util.function.Supplier<List<GroupedCatTotal>>(){public List<GroupedCatTotal> get(){
+	List<GroupedCatTotal> _res6 = new ArrayList<>();
+	Map<String,List<ItemsCatVal>> _groups7 = new LinkedHashMap<>();
 	for (var i : items) {
 		var _row8 = i;
 		String _key9 = i.cat;
-		List<DataClass1> _b10 = _groups7.get(_key9);
+		List<ItemsCatVal> _b10 = _groups7.get(_key9);
 		if (_b10 == null) { _b10 = new ArrayList<>(); _groups7.put(_key9, _b10); }
 		_b10.add(_row8);
 	}
 	for (var __e : _groups7.entrySet()) {
 		String g_key = __e.getKey();
-		List<DataClass1> g = __e.getValue();
-		_res6.add(new DataClass2(g_key, sum((List<Number>)(List<?>)(new java.util.function.Supplier<List<Integer>>(){public List<Integer> get(){
+		List<ItemsCatVal> g = __e.getValue();
+		_res6.add(new GroupedCatTotal(g_key, sum((List<Number>)(List<?>)(new java.util.function.Supplier<List<Integer>>(){public List<Integer> get(){
 	List<Integer> _res11 = new ArrayList<>();
 	for (var x : g) {
 		_res11.add(x.val);

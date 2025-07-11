@@ -18,21 +18,21 @@ class Person {
 		return Objects.hash(name, age, email);
 	}
 }
-class DataClass1 {
+class AdultsEmailName {
 	Object name;
 	Object email;
-	DataClass1(Object name, Object email) {
+	AdultsEmailName(Object name, Object email) {
 		this.name = name;
 		this.email = email;
 	}
 }
 public class Main {
 	static List<Map<String,Object>> people = loadYaml("../interpreter/valid/people.yaml");
-	static List<DataClass1> adults = (new java.util.function.Supplier<List<DataClass1>>(){public List<DataClass1> get(){
-	List<DataClass1> _res1 = new ArrayList<>();
+	static List<AdultsEmailName> adults = (new java.util.function.Supplier<List<AdultsEmailName>>(){public List<AdultsEmailName> get(){
+	List<AdultsEmailName> _res1 = new ArrayList<>();
 	for (var p : people) {
 		if (!(((Number)((Map)p).get("age")).doubleValue() >= 18)) continue;
-		_res1.add(new DataClass1(((Map)p).get("name"), ((Map)p).get("email")));
+		_res1.add(new AdultsEmailName(((Map)p).get("name"), ((Map)p).get("email")));
 	}
 	return _res1;
 }}).get();
@@ -71,7 +71,7 @@ public class Main {
 		return list;
 	}
 	public static void main(String[] args) {
-	for (DataClass1 a : adults) {
+	for (AdultsEmailName a : adults) {
 		System.out.println(a.name + " " + a.email);
 	}
 	}

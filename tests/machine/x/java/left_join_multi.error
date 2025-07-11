@@ -1,7 +1,7 @@
 line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramsleft_join_multi3073721853/001/Main.java:53: error: incompatible types: Object cannot be converted to DataClass3
-				_res3.add(new DataClass4(o.id, c.name, i));
-				                                       ^
+/tmp/TestCompileValidProgramsleft_join_multi2191425139/001/Main.java:53: error: incompatible types: Object cannot be converted to ItemsOrderIdSku
+				_res3.add(new ResultItemNameOrderId(o.id, c.name, i));
+				                                                  ^
 Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
 1 error
 

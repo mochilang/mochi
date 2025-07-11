@@ -1,35 +1,35 @@
 import java.util.*;
-class DataClass1 {
+class PeopleAgeName {
 	String name;
 	int age;
-	DataClass1(String name, int age) {
+	PeopleAgeName(String name, int age) {
 		this.name = name;
 		this.age = age;
 	}
 }
-class DataClass2 {
+class AdultsAgeIsSeniorName {
 	String name;
 	int age;
 	boolean is_senior;
-	DataClass2(String name, int age, boolean is_senior) {
+	AdultsAgeIsSeniorName(String name, int age, boolean is_senior) {
 		this.name = name;
 		this.age = age;
 		this.is_senior = is_senior;
 	}
 }
 public class Main {
-	static List<DataClass1> people = new ArrayList<>(java.util.Arrays.asList(new DataClass1("Alice", 30), new DataClass1("Bob", 15), new DataClass1("Charlie", 65), new DataClass1("Diana", 45)));
-	static List<DataClass2> adults = (new java.util.function.Supplier<List<DataClass2>>(){public List<DataClass2> get(){
-	List<DataClass2> _res1 = new ArrayList<>();
+	static List<PeopleAgeName> people = new ArrayList<>(Arrays.asList(new PeopleAgeName("Alice", 30), new PeopleAgeName("Bob", 15), new PeopleAgeName("Charlie", 65), new PeopleAgeName("Diana", 45)));
+	static List<AdultsAgeIsSeniorName> adults = (new java.util.function.Supplier<List<AdultsAgeIsSeniorName>>(){public List<AdultsAgeIsSeniorName> get(){
+	List<AdultsAgeIsSeniorName> _res1 = new ArrayList<>();
 	for (var person : people) {
 		if (!(person.age >= 18)) continue;
-		_res1.add(new DataClass2(person.name, person.age, person.age >= 60));
+		_res1.add(new AdultsAgeIsSeniorName(person.name, person.age, person.age >= 60));
 	}
 	return _res1;
 }}).get();
 	public static void main(String[] args) {
 	System.out.println("--- Adults ---");
-	for (DataClass2 person : adults) {
+	for (AdultsAgeIsSeniorName person : adults) {
 		System.out.println(person.name + " " + "is" + " " + person.age + " " + (person.is_senior ? " (senior)" : ""));
 	}
 	}

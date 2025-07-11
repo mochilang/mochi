@@ -1,14 +1,14 @@
 import java.util.*;
-class DataClass1 {
+class PeopleAgeName {
 	String name;
 	int age;
-	DataClass1(String name, int age) {
+	PeopleAgeName(String name, int age) {
 		this.name = name;
 		this.age = age;
 	}
 }
 public class Main {
-	static List<DataClass1> people = new ArrayList<>(java.util.Arrays.asList(new DataClass1("Alice", 30), new DataClass1("Bob", 25)));
+	static List<PeopleAgeName> people = new ArrayList<>(Arrays.asList(new PeopleAgeName("Alice", 30), new PeopleAgeName("Bob", 25)));
 	static void saveJsonl(List<Map<?,?>> list) {
 		for (Map<?,?> m : list) {
 			List<String> parts = new ArrayList<>();

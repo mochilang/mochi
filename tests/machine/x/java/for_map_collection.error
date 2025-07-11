@@ -1,11 +1,9 @@
 line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramsfor_map_collection2392750887/001/Main.java:19: error: for-each not applicable to expression type
+/tmp/TestCompileValidProgramsfor_map_collection1719269010/001/Main.java:13: error: for-each not applicable to expression type
 	for (Object k : m) {
 	                ^
   required: array or java.lang.Iterable
-  found:    Map<String,Integer>
-Note: /tmp/TestCompileValidProgramsfor_map_collection2392750887/001/Main.java uses unchecked or unsafe operations.
-Note: Recompile with -Xlint:unchecked for details.
+  found:    MAB
 1 error
 
 

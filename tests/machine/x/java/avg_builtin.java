@@ -7,6 +7,6 @@ public class Main {
 		return (double)s / v.size();
 	}
 	public static void main(String[] args) {
-	System.out.println(avg((List<Number>)(List<?>)java.util.Arrays.asList(1, 2, 3)));
+	System.out.println(avg((List<Number>)(List<?>)Arrays.asList(1, 2, 3)));
 	}
 }

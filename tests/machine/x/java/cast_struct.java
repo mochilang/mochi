@@ -13,20 +13,14 @@ class Todo {
 		return Objects.hash(title);
 	}
 }
-class DataClass1 {
+class TodoTitle {
 	String title;
-	DataClass1(String title) {
+	TodoTitle(String title) {
 		this.title = title;
 	}
 }
 public class Main {
 	static Todo todo = new Todo("hi");
-	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
-	static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {
-		LinkedHashMap<K,V> m = new LinkedHashMap<>();
-		for (var e : entries) m.put(e.getKey(), e.getValue());
-		return m;
-	}
 	public static void main(String[] args) {
 	System.out.println(todo.title);
 	}
