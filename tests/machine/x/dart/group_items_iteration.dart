@@ -1,10 +1,6 @@
 import 'dart:convert';
 
-var data = [
-  {'tag': 'a', 'val': 1},
-  {'tag': 'a', 'val': 2},
-  {'tag': 'b', 'val': 3},
-];
+var data = [{'tag': 'a', 'val': 1}, {'tag': 'a', 'val': 2}, {'tag': 'b', 'val': 3}];
 
 var groups = (() {
   var _q0 = <dynamic>[];
@@ -28,9 +24,7 @@ var result = (() {
   for (var r in tmp) {
     _q3.add([r.tag, r]);
   }
-  _q3.sort(
-    (a, b) => (jsonEncode(a[0]) as Comparable).compareTo(jsonEncode(b[0])),
-  );
+  _q3.sort((a,b) => (jsonEncode(a[0]) as Comparable).compareTo(jsonEncode(b[0])));
   _q3 = [for (var x in _q3) x[1]];
   return _q3;
 })();
@@ -41,7 +35,7 @@ void main() {
     var total = 0;
     var _iter5 = g['items'];
     for (var x in (_iter5 is Map ? (_iter5 as Map).keys : _iter5) as Iterable) {
-      total = (total as num) + (x.val as num);
+      total = (total as num) + (x['val'] as num);
     }
     tmp = List.from(tmp)..add({'tag': g['key'], 'total': total});
   }
