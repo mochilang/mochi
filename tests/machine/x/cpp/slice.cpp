@@ -6,10 +6,12 @@ int main() {
     auto __tmp1 = ([&](auto v) {
       return std::vector<int>(v.begin() + 1, v.begin() + 3);
     })(std::vector<decltype(1)>{1, 2, 3});
-    for (size_t i = 0; i < __tmp1.size(); ++i) {
-      if (i)
+    bool first = true;
+    for (const auto &_x : __tmp1) {
+      if (!first)
         std::cout << ' ';
-      std::cout << std::boolalpha << __tmp1[i];
+      first = false;
+      std::cout << std::boolalpha << _x;
     }
     std::cout << std::endl;
   }
@@ -17,10 +19,12 @@ int main() {
     auto __tmp2 = ([&](auto v) {
       return std::vector<int>(v.begin() + 0, v.begin() + 2);
     })(std::vector<decltype(1)>{1, 2, 3});
-    for (size_t i = 0; i < __tmp2.size(); ++i) {
-      if (i)
+    bool first = true;
+    for (const auto &_x : __tmp2) {
+      if (!first)
         std::cout << ' ';
-      std::cout << std::boolalpha << __tmp2[i];
+      first = false;
+      std::cout << std::boolalpha << _x;
     }
     std::cout << std::endl;
   }
