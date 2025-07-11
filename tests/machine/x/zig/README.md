@@ -106,4 +106,5 @@ Compiled programs: 97/97
 ## Remaining Tasks
 
 - Keep generated outputs in sync with compiler improvements.
-- Implement additional idiomatic mappings for built-in functions.
+- Add more idiomatic mappings for built-in functions (e.g. string
+  concatenation).
