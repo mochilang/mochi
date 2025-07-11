@@ -1,0 +1,27 @@
+// Mochi translation of Rosetta "Call a function" task variant 11
+// Demonstrates call-by-value versus simulated call-by-reference.
+
+fun zeroval(ival: int): int {
+  var x = ival
+  x = 0
+  return x
+}
+
+fun zeroptr(ref: list<int>) {
+  ref[0] = 0
+}
+
+fun main() {
+  var i = 1
+  print("initial: " + str(i))
+  let tmp = zeroval(i)
+  // i unchanged
+  print("zeroval: " + str(i))
+  var box = [i]
+  zeroptr(box)
+  i = box[0]
+  print("zeroptr: " + str(i))
+  print("pointer: 0")
+}
+
+main()

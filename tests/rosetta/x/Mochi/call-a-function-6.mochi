@@ -1,0 +1,16 @@
+// Mochi translation of Rosetta "Call a function" task variant 6
+// Pass arguments stored in a map.
+
+fun bar(a: int, b: int, c: int) {
+  print(str(a) + ", " + str(b) + ", " + str(c))
+}
+
+fun main() {
+  var args: map<string,int> = {}
+  args["a"] = 3
+  args["b"] = 2
+  args["c"] = 1
+  bar(args["a"], args["b"], args["c"])
+}
+
+main()

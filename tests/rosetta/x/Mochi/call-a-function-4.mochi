@@ -1,0 +1,6 @@
+// Placeholder for gif.Encode example; Mochi has no GIF library.
+fun main() {
+  // Would call gif.Encode here
+}
+
+main()
