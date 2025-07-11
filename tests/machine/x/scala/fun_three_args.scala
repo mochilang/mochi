@@ -1,7 +1,5 @@
 object fun_three_args {
-  def sum3(a: Int, b: Int, c: Int): Int = {
-    return ((a).asInstanceOf[Int] + (b).asInstanceOf[Int]).asInstanceOf[Int] + (c).asInstanceOf[Int]
-  }
+  def sum3(a: Int, b: Int, c: Int): Int = (a + b).asInstanceOf[Int] + c
   
   def main(args: Array[String]): Unit = {
     println((sum3(1, 2, 3)))

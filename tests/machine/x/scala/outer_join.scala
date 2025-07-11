@@ -1,8 +1,8 @@
 object outer_join {
   case class Auto1(id: Int, name: String)
   case class Auto2(id: Int, customerId: Int, total: Int)
-  case class Auto3(order: Auto2, customer: Auto1)
-  case class Auto4(order: Any, customer: Any)
+  case class Auto3(order: Auto2, customer: Any)
+  case class Auto4(order: Auto2, customer: Auto1)
 
   def _truthy(v: Any): Boolean = v match {
     case null => false

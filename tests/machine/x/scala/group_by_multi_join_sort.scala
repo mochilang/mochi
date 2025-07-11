@@ -4,7 +4,7 @@ object group_by_multi_join_sort {
   case class Auto3(o_orderkey: Int, o_custkey: Int, o_orderdate: String)
   case class Auto4(l_orderkey: Int, l_returnflag: String, l_extendedprice: Double, l_discount: Double)
   case class Auto5(c_custkey: Int, c_name: String, c_acctbal: Double, c_address: String, c_phone: String, c_comment: String, n_name: String)
-  case class Auto6(c_custkey: Any, c_name: Any, revenue: Int, c_acctbal: Any, n_name: Any, c_address: Any, c_phone: Any, c_comment: Any)
+  case class Auto6(c_custkey: Int, c_name: String, revenue: Int, c_acctbal: Double, n_name: String, c_address: String, c_phone: String, c_comment: String)
 
   val nation = List[Auto1](Auto1(n_nationkey = 1, n_name = "BRAZIL"))
   val customer = List[Auto2](Auto2(c_custkey = 1, c_name = "Alice", c_acctbal = 100, c_nationkey = 1, c_address = "123 St", c_phone = "123-456", c_comment = "Loyal"))

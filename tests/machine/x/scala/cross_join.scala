@@ -2,7 +2,6 @@ object cross_join {
   case class Auto1(id: Int, name: String)
   case class Auto2(id: Int, customerId: Int, total: Int)
   case class Auto3(orderId: Int, orderCustomerId: Int, pairedCustomerName: String, orderTotal: Int)
-  case class Auto4(orderId: Any, orderCustomerId: Any, pairedCustomerName: Any, orderTotal: Any)
 
   val customers = List[Auto1](Auto1(id = 1, name = "Alice"), Auto1(id = 2, name = "Bob"), Auto1(id = 3, name = "Charlie"))
   val orders = List[Auto2](Auto2(id = 100, customerId = 1, total = 250), Auto2(id = 101, customerId = 2, total = 125), Auto2(id = 102, customerId = 1, total = 300))

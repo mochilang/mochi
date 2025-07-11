@@ -1,10 +1,10 @@
 object two_sum {
   def twoSum(nums: List[Int], target: Int): List[Int] = {
     val n = nums.length
-    for(i <- 0 to n) {
-      for(j <- (i).asInstanceOf[Int] + 1 to n) {
-        if (((nums(i)).asInstanceOf[Int] + (nums(j)).asInstanceOf[Int]).asInstanceOf[Int] == (target).asInstanceOf[Int]) {
-          return List[Any](i, j)
+    for(i <- 0 until n) {
+      for(j <- i + 1 until n) {
+        if ((nums(i) + nums(j)).asInstanceOf[Int] == target) {
+          return List[Int](i, j)
         }
       }
     }

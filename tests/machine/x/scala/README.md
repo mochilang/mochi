@@ -45,7 +45,7 @@ Executed successfully: 82/100
 - [ ] inner_join.mochi
 - [ ] join_multi.mochi
 - [x] json_builtin.mochi
-- [ ] left_join.mochi
+ - [x] left_join.mochi
 - [ ] left_join_multi.mochi
 - [x] len_builtin.mochi
 - [x] len_map.mochi
@@ -55,7 +55,7 @@ Executed successfully: 82/100
 - [x] list_index.mochi
 - [x] list_nested_assign.mochi
 - [x] list_set_ops.mochi
-- [ ] load_yaml.mochi
+ - [x] load_yaml.mochi
 - [x] map_assign.mochi
 - [x] map_in_operator.mochi
 - [x] map_index.mochi
@@ -94,7 +94,7 @@ Executed successfully: 82/100
 - [x] tail_recursion.mochi
 - [x] test_block.mochi
 - [x] tree_sum.mochi
-- [ ] two-sum.mochi
+ - [x] two-sum.mochi
 - [x] typed_let.mochi
 - [x] typed_var.mochi
 - [x] unary_neg.mochi

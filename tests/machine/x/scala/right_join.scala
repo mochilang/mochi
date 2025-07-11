@@ -1,8 +1,8 @@
 object right_join {
   case class Auto1(id: Int, name: String)
   case class Auto2(id: Int, customerId: Int, total: Int)
-  case class Auto3(customerName: String, order: Auto2)
-  case class Auto4(customerName: Any, order: Any)
+  case class Auto3(customerName: String, order: Any)
+  case class Auto4(customerName: String, order: Auto2)
 
   def _truthy(v: Any): Boolean = v match {
     case null => false

@@ -1,7 +1,6 @@
 object dataset_where_filter {
   case class Auto1(name: String, age: Int)
   case class Auto2(name: String, age: Int, is_senior: Boolean)
-  case class Auto3(name: Any, age: Any, is_senior: Boolean)
 
   val people = List[Auto1](Auto1(name = "Alice", age = 30), Auto1(name = "Bob", age = 15), Auto1(name = "Charlie", age = 65), Auto1(name = "Diana", age = 45))
   val adults = for { person <- people; if person.age >= 18 } yield Auto2(name = person.name, age = person.age, is_senior = person.age >= 60)

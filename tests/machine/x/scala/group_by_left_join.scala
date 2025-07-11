@@ -1,7 +1,7 @@
 object group_by_left_join {
   case class Auto1(id: Int, name: String)
   case class Auto2(id: Int, customerId: Int)
-  case class Auto3(name: Any, count: Int)
+  case class Auto3(name: String, count: Int)
 
   val customers = List[Auto1](Auto1(id = 1, name = "Alice"), Auto1(id = 2, name = "Bob"), Auto1(id = 3, name = "Charlie"))
   val orders = List[Auto2](Auto2(id = 100, customerId = 1), Auto2(id = 101, customerId = 1), Auto2(id = 102, customerId = 2))

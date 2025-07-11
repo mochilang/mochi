@@ -1,6 +1,5 @@
 object cross_join_triple {
   case class Auto1(n: Int, l: String, b: Boolean)
-  case class Auto2(n: Any, l: Any, b: Any)
 
   val nums = List[Int](1, 2)
   val letters = List[String]("A", "B")

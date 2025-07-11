@@ -2,8 +2,8 @@ object left_join_multi {
   case class Auto1(id: Int, name: String)
   case class Auto2(id: Int, customerId: Int)
   case class Auto3(orderId: Int, sku: String)
-  case class Auto4(orderId: Int, name: String, item: Auto3)
-  case class Auto5(orderId: Any, name: Any, item: Any)
+  case class Auto4(orderId: Int, name: String, item: Any)
+  case class Auto5(orderId: Int, name: String, item: Auto3)
 
   val customers = List[Auto1](Auto1(id = 1, name = "Alice"), Auto1(id = 2, name = "Bob"))
   val orders = List[Auto2](Auto2(id = 100, customerId = 1), Auto2(id = 101, customerId = 2))
