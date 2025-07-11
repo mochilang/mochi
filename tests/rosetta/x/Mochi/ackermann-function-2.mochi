@@ -1,0 +1,40 @@
+// Mochi implementation of Rosetta "Ackermann function" task (optimized)
+// Translated from Go version in tests/rosetta/x/Go/ackermann-function-2.go
+
+fun pow(base: int, exp: int): int {
+  var result = 1
+  var i = 0
+  while i < exp {
+    result = result * base
+    i = i + 1
+  }
+  return result
+}
+
+fun ackermann2(m: int, n: int): int {
+  if m == 0 {
+    return n + 1
+  }
+  if m == 1 {
+    return n + 2
+  }
+  if m == 2 {
+    return 2 * n + 3
+  }
+  if m == 3 {
+    return 8 * pow(2, n) - 3
+  }
+  if n == 0 {
+    return ackermann2(m - 1, 1)
+  }
+  return ackermann2(m - 1, ackermann2(m, n - 1))
+}
+
+fun main() {
+  print("A(0, 0) = " + str(ackermann2(0,0)))
+  print("A(1, 2) = " + str(ackermann2(1,2)))
+  print("A(2, 4) = " + str(ackermann2(2,4)))
+  print("A(3, 4) = " + str(ackermann2(3,4)))
+}
+
+main()
