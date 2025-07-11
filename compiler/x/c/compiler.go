@@ -1136,6 +1136,11 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 			}
 		}
 	}
+	if _, ok := t.(types.AnyType); ok && stmt.Value != nil {
+		if isFloatArg(stmt.Value, c.env) {
+			t = types.FloatType{}
+		}
+	}
 	if t == nil {
 		t = types.IntType{}
 	}
@@ -1865,12 +1870,15 @@ func (c *Compiler) compilePartialCall(fnName string, ft types.FuncType, args []*
 	c.writeln(fmt.Sprintf("return %s(%s);", sanitizeName(fnName), strings.Join(callArgs, ", ")))
 	c.indent--
 	c.writeln("}")
-	c.lambdas = append(c.lambdas, c.buf.String())
+	// declare captured argument globals before the lambda definition
+	decls := make([]string, len(args))
 	for i := range args {
 		t := ft.Params[i]
 		g := fmt.Sprintf("%s_arg%d", name, i)
-		c.lambdas = append(c.lambdas, fmt.Sprintf("static %s %s;", cTypeFromType(t), g))
+		decls[i] = fmt.Sprintf("static %s %s;", cTypeFromType(t), g)
 	}
+	c.lambdas = append(c.lambdas, strings.Join(decls, "\n"))
+	c.lambdas = append(c.lambdas, c.buf.String())
 	c.buf = oldBuf
 	c.indent = oldIndent
 	assigns := make([]string, len(args))
@@ -4360,6 +4368,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 							fmtStr = "%s"
 						} else if isFloatArg(a, c.env) {
 							fmtStr = "%.16g"
+						} else if name, okn := identName(a); okn && c.env != nil {
+							if vt, err := c.env.GetVar(name); err == nil {
+								if _, okf := vt.(types.FloatType); okf {
+									fmtStr = "%.16g"
+								}
+							}
 						} else if _, ok := constFloatValue(a); ok || looksLikeFloatConst(argExpr) {
 							fmtStr = "%.16g"
 						}
