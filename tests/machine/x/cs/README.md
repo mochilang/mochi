@@ -110,3 +110,13 @@ Checklist:
 ## Remaining work
 - [ ] Improve LINQ query formatting for complex joins
 - [ ] Further reduce dynamic usage in helper runtime
+- [ ] Support async I/O helpers
+- [ ] Add error handling for file operations
+- [ ] Optimize union pattern matching
+- [ ] Implement caching for compiled queries
+- [ ] Refactor runtime helpers into partial classes
+- [ ] Add CLI flag to output generated C#
+- [ ] Emit XML documentation comments
+- [ ] Use C# record types for structs when possible
+- [ ] Investigate Roslyn-based formatting
+- [ ] Add unit tests for generated code

@@ -1518,6 +1518,54 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			}
 		}
 
+		// format query using LINQ comprehension when joins are simple
+		if q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+			simple := true
+			joinPairs := make([][2]string, len(q.Joins))
+			for i, j := range q.Joins {
+				if joinSides[i] != "" {
+					simple = false
+					break
+				}
+				on := j.On
+				if on == nil || on.Binary == nil || len(on.Binary.Right) != 1 || on.Binary.Right[0].Op != "==" {
+					simple = false
+					break
+				}
+				lk, err := c.compileUnary(on.Binary.Left)
+				if err != nil {
+					c.env = orig
+					return "", err
+				}
+				rk, err := c.compilePostfix(on.Binary.Right[0].Right)
+				if err != nil {
+					c.env = orig
+					return "", err
+				}
+				joinPairs[i] = [2]string{lk, rk}
+			}
+			if simple {
+				var buf strings.Builder
+				buf.WriteString("(\n")
+				buf.WriteString(fmt.Sprintf("\tfrom %s in %s\n", v, src))
+				for i, f := range q.Froms {
+					buf.WriteString(fmt.Sprintf("\tfrom %s in %s\n", sanitizeName(f.Var), fromSrcs[i]))
+				}
+				for i, j := range q.Joins {
+					buf.WriteString(fmt.Sprintf("\tjoin %s in %s on %s equals %s\n", sanitizeName(j.Var), joinSrcs[i], joinPairs[i][0], joinPairs[i][1]))
+				}
+				if cond != "" {
+					buf.WriteString(fmt.Sprintf("\twhere %s\n", cond))
+				}
+				buf.WriteString(fmt.Sprintf("\tselect %s\n)", sel))
+				if _, ok := c.inferExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Query: q}}}}}).(types.ListType); ok {
+					buf.WriteString(".ToList()")
+				}
+				c.env = orig
+				return buf.String(), nil
+			}
+		}
+
 		if q.Group != nil {
 			keyExpr, err := c.compileExpr(q.Group.Exprs[0])
 			if err != nil {
