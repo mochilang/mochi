@@ -1556,23 +1556,6 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return "[" + strings.Join(elems, ";") + "]", nil
 	case p.Map != nil:
-		if st, ok := c.structTypeFromMapLiteral(p.Map); ok {
-			name := c.ensureStructName(st)
-			fields := make([]string, len(p.Map.Items))
-			for i, it := range p.Map.Items {
-				key, _ := identConst(it.Key)
-				if key == "" {
-					key, _ = stringConst(it.Key)
-				}
-				v, err := c.compileExpr(it.Value)
-				if err != nil {
-					return "", err
-				}
-				fields[i] = fmt.Sprintf("%s = %s", key, v)
-			}
-			_ = name // ensureStructName adds type to anonStructs
-			return "{ " + strings.Join(fields, "; ") + " }", nil
-		}
 		items := make([]string, len(p.Map.Items))
 		for i, it := range p.Map.Items {
 			var k, v string
@@ -1729,6 +1712,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("sum expects 1 arg")
 		}
 		return fmt.Sprintf("(sum %s)", args[0]), nil
+	case "values":
+		if len(args) != 1 {
+			return "", fmt.Errorf("values expects 1 arg")
+		}
+		return fmt.Sprintf("List.map snd %s", args[0]), nil
 	case "exists":
 		if len(args) != 1 {
 			return "", fmt.Errorf("exists expects 1 arg")

@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from the Mochi programs in `tests/vm/valid` using the OCaml compiler. Each program was compiled and executed with `ocamlc`. Successful runs produced an `.out` file while failures produced an `.error` file.
 
-Compiled programs: 68/100 successful.
+Compiled programs: 69/100 successful.
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -101,7 +101,7 @@ Compiled programs: 68/100 successful.
 - [x] unary_neg.mochi
 - [ ] update_stmt.mochi
 - [x] user_type_literal.mochi
-- [ ] values_builtin.mochi
+- [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
 
@@ -110,13 +110,3 @@ Compiled programs: 68/100 successful.
 - [ ] Integrate an OCaml runtime to execute compiled programs in CI
 - [x] Expand anonymous record typing for clearer generated code
 - [x] Emit native `for` loops when iterating over numeric ranges
-- [ ] Optimize tail recursion to loops
-- [ ] Support OCaml modules for multi-file outputs
-- [ ] Generate variant types for union constructs
-- [ ] Improve runtime error messages with context
-- [ ] Comment code with inferred types
-- [ ] Provide CLI tool `mochi-ocaml` for users
-- [ ] Offer interactive REPL using OCaml backend
-- [ ] Add property-based tests for compiler output
-- [ ] Document mapping between Mochi and OCaml
-- [ ] Benchmark compiled code performance
