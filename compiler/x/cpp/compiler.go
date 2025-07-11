@@ -3,14 +3,14 @@
 package cpp
 
 import (
-        "bytes"
-        "fmt"
-        "regexp"
-        "sort"
-        "strconv"
-        "strings"
+	"bytes"
+	"fmt"
+	"regexp"
+	"sort"
+	"strconv"
+	"strings"
 
-        "mochi/parser"
+	"mochi/parser"
 )
 
 type structInfo struct {
@@ -227,16 +227,16 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.scope--
 	c.writeln("}")
 
-        if c.usesJSON {
-                names := make([]string, 0, len(c.structMap))
-                for name := range c.structMap {
-                        names = append(names, name)
-                }
-                sort.Strings(names)
-                for _, n := range names {
-                        c.generateJSONPrinter(c.structMap[n])
-                }
-        }
+	if c.usesJSON {
+		names := make([]string, 0, len(c.structMap))
+		for name := range c.structMap {
+			names = append(names, name)
+		}
+		sort.Strings(names)
+		for _, n := range names {
+			c.generateJSONPrinter(c.structMap[n])
+		}
+	}
 
 	var body bytes.Buffer
 	body.Write(c.header.Bytes())
@@ -996,124 +996,128 @@ func (c *Compiler) simulateExpr(e *parser.Expr) (string, error) {
 func (c *Compiler) Predict(name string) string { return c.predictElemType(name) }
 
 func (c *Compiler) compilePrint(args []*parser.Expr) error {
-        // Special case: a single simple argument can be printed on one line
-        // without the extra block used for complex prints.
-        if len(args) == 1 {
-                s, err := c.compileExpr(args[0])
-                if err != nil {
-                        return err
-                }
-                typ := c.inferType(s)
-                if typ == "" {
-                        if t, ok := c.vars[s]; ok {
-                                typ = t
-                        }
-                }
-                if typ == "" && c.isVectorExpr(args[0]) {
-                        typ = "vector"
-                }
-                structType := ""
-                if t := c.varStruct[s]; t != "" {
-                        structType = t
-                } else if t := structLiteralType(s); t != "" {
-                        structType = t
-                }
-                if typ != "vector" {
-                        c.writeIndent()
-                        switch typ {
-                        case "bool":
-                                c.buf.WriteString("std::cout << std::boolalpha << (" + s + ") << std::endl;")
-                        case "pair":
-                                c.buf.WriteString("std::cout << std::boolalpha << " + s + ".first << ' ' << " + s + ".second << std::endl;")
-                        case "":
-                                if structType != "" {
-                                        c.usesJSON = true
-                                        c.buf.WriteString("__json(" + s + "); std::cout << std::endl;")
-                                } else {
-                                        c.buf.WriteString("std::cout << std::boolalpha << " + s + " << std::endl;")
-                                }
-                        default:
-                                c.buf.WriteString("std::cout << std::boolalpha << " + s + " << std::endl;")
-                        }
-                        c.buf.WriteByte('\n')
-                        return nil
-                }
-        }
+	// Special case: a single simple argument can be printed on one line
+	// without the extra block used for complex prints.
+	if len(args) == 1 {
+		s, err := c.compileExpr(args[0])
+		if err != nil {
+			return err
+		}
+		typ := c.inferType(s)
+		if typ == "" {
+			if t, ok := c.vars[s]; ok {
+				typ = t
+			}
+		}
+		if typ == "" && c.isVectorExpr(args[0]) {
+			typ = "vector"
+		}
+		structType := ""
+		if t := c.varStruct[s]; t != "" {
+			structType = t
+		} else if t := structLiteralType(s); t != "" {
+			structType = t
+		}
+		if typ != "vector" {
+			c.writeIndent()
+			switch typ {
+			case "bool":
+				c.buf.WriteString("std::cout << std::boolalpha << (" + s + ") << std::endl;")
+			case "int", "double", "string":
+				c.buf.WriteString("std::cout << " + s + " << std::endl;")
+			case "pair":
+				c.buf.WriteString("std::cout << std::boolalpha << " + s + ".first << ' ' << " + s + ".second << std::endl;")
+			case "":
+				if structType != "" {
+					c.usesJSON = true
+					c.buf.WriteString("__json(" + s + "); std::cout << std::endl;")
+				} else {
+					c.buf.WriteString("std::cout << std::boolalpha << " + s + " << std::endl;")
+				}
+			default:
+				c.buf.WriteString("std::cout << std::boolalpha << " + s + " << std::endl;")
+			}
+			c.buf.WriteByte('\n')
+			return nil
+		}
+	}
 
-        // Fallback: original implementation using a scoped block
-        c.writeIndent()
-        c.buf.WriteString("{ ")
-        for i, a := range args {
-                s, err := c.compileExpr(a)
-                if err != nil {
-                        return err
-                }
-                typ := c.inferType(s)
-                if typ == "" {
-                        if t, ok := c.vars[s]; ok {
-                                typ = t
-                        }
-                }
-                if typ == "" && c.isVectorExpr(a) {
-                        typ = "vector"
-                }
-                structType := ""
-                if t := c.varStruct[s]; t != "" {
-                        structType = t
-                } else if t := structLiteralType(s); t != "" {
-                        structType = t
-                } else if dot := strings.Index(s, "."); dot != -1 {
-                        base := s[:dot]
-                        fld := s[dot+1:]
-                        if t := c.varStruct[base]; t != "" {
-                                if idx := strings.Index(t, "{"); idx != -1 {
-                                        t = t[:idx]
-                                }
-                                if info, ok := c.structByName[t]; ok {
-                                        for i, f := range info.Fields {
-                                                if f == sanitizeName(fld) {
-                                                        ft := info.Types[i]
-                                                        if idx := strings.Index(ft, "{"); idx != -1 {
-                                                                ft = ft[:idx]
-                                                        }
-                                                        if strings.HasPrefix(ft, "__struct") {
-                                                                structType = ft
-                                                        }
-                                                }
-                                        }
-                                }
-                        }
-                }
-                if i > 0 {
-                        c.buf.WriteString("std::cout << ' '; ")
-                }
-                switch typ {
-                case "vector":
-                        tmp := c.newTmp()
-                        c.buf.WriteString("auto " + tmp + " = " + s + "; ")
-                        if et := c.elemType[s]; et != "" && strings.HasPrefix(et, "__struct") {
-                                c.buf.WriteString("for(size_t i=0;i<" + tmp + ".size();++i){ if(i) std::cout<<' '; std::cout << \"<struct>\"; } ")
-                        } else {
-                                c.buf.WriteString("for(size_t i=0;i<" + tmp + ".size();++i){ if(i) std::cout<<' '; std::cout << std::boolalpha << " + tmp + "[i]; } ")
-                        }
-                case "bool":
-                        c.buf.WriteString("std::cout << std::boolalpha << (" + s + "); ")
-                case "pair":
-                        c.buf.WriteString("std::cout << std::boolalpha << " + s + ".first << ' ' << " + s + ".second; ")
-                case "":
-                        if structType != "" {
-                                c.usesJSON = true
-                                c.buf.WriteString("__json(" + s + "); ")
-                        } else {
-                                c.buf.WriteString("std::cout << std::boolalpha << " + s + "; ")
-                        }
-                default:
-                        c.buf.WriteString("std::cout << std::boolalpha << " + s + "; ")
-                }
-        }
-        c.buf.WriteString("std::cout << std::endl; }")
-        c.buf.WriteByte('\n')
-        return nil
+	// Fallback: original implementation using a scoped block
+	c.writeIndent()
+	c.buf.WriteString("{ ")
+	for i, a := range args {
+		s, err := c.compileExpr(a)
+		if err != nil {
+			return err
+		}
+		typ := c.inferType(s)
+		if typ == "" {
+			if t, ok := c.vars[s]; ok {
+				typ = t
+			}
+		}
+		if typ == "" && c.isVectorExpr(a) {
+			typ = "vector"
+		}
+		structType := ""
+		if t := c.varStruct[s]; t != "" {
+			structType = t
+		} else if t := structLiteralType(s); t != "" {
+			structType = t
+		} else if dot := strings.Index(s, "."); dot != -1 {
+			base := s[:dot]
+			fld := s[dot+1:]
+			if t := c.varStruct[base]; t != "" {
+				if idx := strings.Index(t, "{"); idx != -1 {
+					t = t[:idx]
+				}
+				if info, ok := c.structByName[t]; ok {
+					for i, f := range info.Fields {
+						if f == sanitizeName(fld) {
+							ft := info.Types[i]
+							if idx := strings.Index(ft, "{"); idx != -1 {
+								ft = ft[:idx]
+							}
+							if strings.HasPrefix(ft, "__struct") {
+								structType = ft
+							}
+						}
+					}
+				}
+			}
+		}
+		if i > 0 {
+			c.buf.WriteString("std::cout << ' '; ")
+		}
+		switch typ {
+		case "vector":
+			tmp := c.newTmp()
+			c.buf.WriteString("auto " + tmp + " = " + s + "; ")
+			if et := c.elemType[s]; et != "" && strings.HasPrefix(et, "__struct") {
+				c.buf.WriteString("for(size_t i=0;i<" + tmp + ".size();++i){ if(i) std::cout<<' '; std::cout << \"<struct>\"; } ")
+			} else {
+				c.buf.WriteString("for(size_t i=0;i<" + tmp + ".size();++i){ if(i) std::cout<<' '; std::cout << std::boolalpha << " + tmp + "[i]; } ")
+			}
+		case "bool":
+			c.buf.WriteString("std::cout << std::boolalpha << (" + s + "); ")
+		case "int", "double", "string":
+			c.buf.WriteString("std::cout << " + s + "; ")
+		case "pair":
+			c.buf.WriteString("std::cout << std::boolalpha << " + s + ".first << ' ' << " + s + ".second; ")
+		case "":
+			if structType != "" {
+				c.usesJSON = true
+				c.buf.WriteString("__json(" + s + "); ")
+			} else {
+				c.buf.WriteString("std::cout << std::boolalpha << " + s + "; ")
+			}
+		default:
+			c.buf.WriteString("std::cout << std::boolalpha << " + s + "; ")
+		}
+	}
+	c.buf.WriteString("std::cout << std::endl; }")
+	c.buf.WriteByte('\n')
+	return nil
 }
 
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {

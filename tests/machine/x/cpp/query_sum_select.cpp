@@ -13,6 +13,6 @@ auto result = ([]() {
 })();
 
 int main() {
-  std::cout << std::boolalpha << result << std::endl;
+  std::cout << result << std::endl;
   return 0;
 }

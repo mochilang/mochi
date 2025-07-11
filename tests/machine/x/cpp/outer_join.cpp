@@ -61,36 +61,35 @@ auto result = ([]() {
 })();
 
 int main() {
-  std::cout << std::boolalpha << std::string("--- Outer Join using syntax ---")
-            << std::endl;
+  std::cout << std::string("--- Outer Join using syntax ---") << std::endl;
   for (auto row : result) {
     if ((row.order != __struct2{})) {
       if ((row.customer != __struct1{})) {
         {
-          std::cout << std::boolalpha << std::string("Order");
+          std::cout << std::string("Order");
           std::cout << ' ';
           std::cout << std::boolalpha << row.order.id;
           std::cout << ' ';
-          std::cout << std::boolalpha << std::string("by");
+          std::cout << std::string("by");
           std::cout << ' ';
           std::cout << std::boolalpha << row.customer.name;
           std::cout << ' ';
-          std::cout << std::boolalpha << std::string("- $");
+          std::cout << std::string("- $");
           std::cout << ' ';
           std::cout << std::boolalpha << row.order.total;
           std::cout << std::endl;
         }
       } else {
         {
-          std::cout << std::boolalpha << std::string("Order");
+          std::cout << std::string("Order");
           std::cout << ' ';
           std::cout << std::boolalpha << row.order.id;
           std::cout << ' ';
-          std::cout << std::boolalpha << std::string("by");
+          std::cout << std::string("by");
           std::cout << ' ';
-          std::cout << std::boolalpha << std::string("Unknown");
+          std::cout << std::string("Unknown");
           std::cout << ' ';
-          std::cout << std::boolalpha << std::string("- $");
+          std::cout << std::string("- $");
           std::cout << ' ';
           std::cout << std::boolalpha << row.order.total;
           std::cout << std::endl;
@@ -98,11 +97,11 @@ int main() {
       }
     } else {
       {
-        std::cout << std::boolalpha << std::string("Customer");
+        std::cout << std::string("Customer");
         std::cout << ' ';
         std::cout << std::boolalpha << row.customer.name;
         std::cout << ' ';
-        std::cout << std::boolalpha << std::string("has no orders");
+        std::cout << std::string("has no orders");
         std::cout << std::endl;
       }
     }

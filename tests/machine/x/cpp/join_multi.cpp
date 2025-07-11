@@ -66,12 +66,12 @@ auto result = ([]() {
 })();
 
 int main() {
-  std::cout << std::boolalpha << std::string("--- Multi Join ---") << std::endl;
+  std::cout << std::string("--- Multi Join ---") << std::endl;
   for (auto r : result) {
     {
       std::cout << std::boolalpha << r.name;
       std::cout << ' ';
-      std::cout << std::boolalpha << std::string("bought item");
+      std::cout << std::string("bought item");
       std::cout << ' ';
       std::cout << std::boolalpha << r.sku;
       std::cout << std::endl;

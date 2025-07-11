@@ -85,13 +85,12 @@ auto stats = ([]() {
 })();
 
 int main() {
-  std::cout << std::boolalpha << std::string("--- Orders per customer ---")
-            << std::endl;
+  std::cout << std::string("--- Orders per customer ---") << std::endl;
   for (auto s : stats) {
     {
       std::cout << std::boolalpha << s.name;
       std::cout << ' ';
-      std::cout << std::boolalpha << std::string("orders:");
+      std::cout << std::string("orders:");
       std::cout << ' ';
       std::cout << std::boolalpha << s.count;
       std::cout << std::endl;

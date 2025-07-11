@@ -53,24 +53,23 @@ auto result = ([]() {
 })();
 
 int main() {
-  std::cout << std::boolalpha
-            << std::string("--- Cross Join: All order-customer pairs ---")
+  std::cout << std::string("--- Cross Join: All order-customer pairs ---")
             << std::endl;
   for (auto entry : result) {
     {
-      std::cout << std::boolalpha << std::string("Order");
+      std::cout << std::string("Order");
       std::cout << ' ';
       std::cout << std::boolalpha << entry.orderId;
       std::cout << ' ';
-      std::cout << std::boolalpha << std::string("(customerId:");
+      std::cout << std::string("(customerId:");
       std::cout << ' ';
       std::cout << std::boolalpha << entry.orderCustomerId;
       std::cout << ' ';
-      std::cout << std::boolalpha << std::string(", total: $");
+      std::cout << std::string(", total: $");
       std::cout << ' ';
       std::cout << std::boolalpha << entry.orderTotal;
       std::cout << ' ';
-      std::cout << std::boolalpha << std::string(") paired with");
+      std::cout << std::string(") paired with");
       std::cout << ' ';
       std::cout << std::boolalpha << entry.pairedCustomerName;
       std::cout << std::endl;

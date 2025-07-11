@@ -54,19 +54,18 @@ auto result = ([]() {
 })();
 
 int main() {
-  std::cout << std::boolalpha
-            << std::string("--- Orders with customer info ---") << std::endl;
+  std::cout << std::string("--- Orders with customer info ---") << std::endl;
   for (auto entry : result) {
     {
-      std::cout << std::boolalpha << std::string("Order");
+      std::cout << std::string("Order");
       std::cout << ' ';
       std::cout << std::boolalpha << entry.orderId;
       std::cout << ' ';
-      std::cout << std::boolalpha << std::string("by");
+      std::cout << std::string("by");
       std::cout << ' ';
       std::cout << std::boolalpha << entry.customerName;
       std::cout << ' ';
-      std::cout << std::boolalpha << std::string("- $");
+      std::cout << std::string("- $");
       std::cout << ' ';
       std::cout << std::boolalpha << entry.total;
       std::cout << std::endl;
