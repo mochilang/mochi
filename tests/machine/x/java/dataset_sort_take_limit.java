@@ -7,6 +7,14 @@ class NamePrice {
 		this.price = price;
 	}
 	int size() { return 2; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof NamePrice other)) return false;
+		return Objects.equals(this.name, other.name) && Objects.equals(this.price, other.price);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(name, price);
+	}
 }
 public class DatasetSortTakeLimit {
 	public static void main(String[] args) {

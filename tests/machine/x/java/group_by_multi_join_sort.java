@@ -7,6 +7,14 @@ class NNationkeyNName {
 		this.n_name = n_name;
 	}
 	int size() { return 2; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof NNationkeyNName other)) return false;
+		return Objects.equals(this.n_nationkey, other.n_nationkey) && Objects.equals(this.n_name, other.n_name);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(n_nationkey, n_name);
+	}
 }
 class CCustkeyCNameCAcctbalCNationkeyCAddressCPhoneCComment {
 	int c_custkey;
@@ -26,6 +34,14 @@ class CCustkeyCNameCAcctbalCNationkeyCAddressCPhoneCComment {
 		this.c_comment = c_comment;
 	}
 	int size() { return 7; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof CCustkeyCNameCAcctbalCNationkeyCAddressCPhoneCComment other)) return false;
+		return Objects.equals(this.c_custkey, other.c_custkey) && Objects.equals(this.c_name, other.c_name) && Objects.equals(this.c_acctbal, other.c_acctbal) && Objects.equals(this.c_nationkey, other.c_nationkey) && Objects.equals(this.c_address, other.c_address) && Objects.equals(this.c_phone, other.c_phone) && Objects.equals(this.c_comment, other.c_comment);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(c_custkey, c_name, c_acctbal, c_nationkey, c_address, c_phone, c_comment);
+	}
 }
 class OOrderkeyOCustkeyOOrderdate {
 	int o_orderkey;
@@ -37,6 +53,14 @@ class OOrderkeyOCustkeyOOrderdate {
 		this.o_orderdate = o_orderdate;
 	}
 	int size() { return 3; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof OOrderkeyOCustkeyOOrderdate other)) return false;
+		return Objects.equals(this.o_orderkey, other.o_orderkey) && Objects.equals(this.o_custkey, other.o_custkey) && Objects.equals(this.o_orderdate, other.o_orderdate);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(o_orderkey, o_custkey, o_orderdate);
+	}
 }
 class LOrderkeyLReturnflagLExtendedpriceLDiscount {
 	int l_orderkey;
@@ -50,6 +74,14 @@ class LOrderkeyLReturnflagLExtendedpriceLDiscount {
 		this.l_discount = l_discount;
 	}
 	int size() { return 4; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof LOrderkeyLReturnflagLExtendedpriceLDiscount other)) return false;
+		return Objects.equals(this.l_orderkey, other.l_orderkey) && Objects.equals(this.l_returnflag, other.l_returnflag) && Objects.equals(this.l_extendedprice, other.l_extendedprice) && Objects.equals(this.l_discount, other.l_discount);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(l_orderkey, l_returnflag, l_extendedprice, l_discount);
+	}
 }
 class CCustkeyCNameRevenueCAcctbalNNameCAddressCPhoneCComment {
 	Object c_custkey;
@@ -71,6 +103,14 @@ class CCustkeyCNameRevenueCAcctbalNNameCAddressCPhoneCComment {
 		this.c_comment = c_comment;
 	}
 	int size() { return 8; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof CCustkeyCNameRevenueCAcctbalNNameCAddressCPhoneCComment other)) return false;
+		return Objects.equals(this.c_custkey, other.c_custkey) && Objects.equals(this.c_name, other.c_name) && Objects.equals(this.revenue, other.revenue) && Objects.equals(this.c_acctbal, other.c_acctbal) && Objects.equals(this.n_name, other.n_name) && Objects.equals(this.c_address, other.c_address) && Objects.equals(this.c_phone, other.c_phone) && Objects.equals(this.c_comment, other.c_comment);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(c_custkey, c_name, revenue, c_acctbal, n_name, c_address, c_phone, c_comment);
+	}
 }
 class COLN {
 	CCustkeyCNameCAcctbalCNationkeyCAddressCPhoneCComment c;
@@ -84,6 +124,14 @@ class COLN {
 		this.n = n;
 	}
 	int size() { return 4; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof COLN other)) return false;
+		return Objects.equals(this.c, other.c) && Objects.equals(this.o, other.o) && Objects.equals(this.l, other.l) && Objects.equals(this.n, other.n);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(c, o, l, n);
+	}
 }
 class CCustkeyCNameCAcctbalCAddressCPhoneCCommentNName {
 	int c_custkey;
@@ -103,6 +151,14 @@ class CCustkeyCNameCAcctbalCAddressCPhoneCCommentNName {
 		this.n_name = n_name;
 	}
 	int size() { return 7; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof CCustkeyCNameCAcctbalCAddressCPhoneCCommentNName other)) return false;
+		return Objects.equals(this.c_custkey, other.c_custkey) && Objects.equals(this.c_name, other.c_name) && Objects.equals(this.c_acctbal, other.c_acctbal) && Objects.equals(this.c_address, other.c_address) && Objects.equals(this.c_phone, other.c_phone) && Objects.equals(this.c_comment, other.c_comment) && Objects.equals(this.n_name, other.n_name);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(c_custkey, c_name, c_acctbal, c_address, c_phone, c_comment, n_name);
+	}
 }
 public class GroupByMultiJoinSort {
 	public static void main(String[] args) {

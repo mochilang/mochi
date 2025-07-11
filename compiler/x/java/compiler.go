@@ -1268,6 +1268,26 @@ func (c *Compiler) compileDataClass(dc *dataClass) {
 	c.indent--
 	c.writeln("}")
 	c.writeln(fmt.Sprintf("int size() { return %d; }", len(dc.fields)))
+	if len(dc.fields) > 0 {
+		var conds []string
+		var fields []string
+		for _, f := range dc.fields {
+			conds = append(conds, fmt.Sprintf("Objects.equals(this.%s, other.%s)", f, f))
+			fields = append(fields, f)
+		}
+		c.writeln("@Override public boolean equals(Object o) {")
+		c.indent++
+		c.writeln("if (this == o) return true;")
+		c.writeln(fmt.Sprintf("if (!(o instanceof %s other)) return false;", dc.name))
+		c.writeln(fmt.Sprintf("return %s;", strings.Join(conds, " && ")))
+		c.indent--
+		c.writeln("}")
+		c.writeln("@Override public int hashCode() {")
+		c.indent++
+		c.writeln(fmt.Sprintf("return Objects.hash(%s);", strings.Join(fields, ", ")))
+		c.indent--
+		c.writeln("}")
+	}
 	c.indent--
 	c.writeln("}")
 }

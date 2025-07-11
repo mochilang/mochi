@@ -7,6 +7,14 @@ class NameCity {
 		this.city = city;
 	}
 	int size() { return 2; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof NameCity other)) return false;
+		return Objects.equals(this.name, other.name) && Objects.equals(this.city, other.city);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(name, city);
+	}
 }
 class CityNum {
 	Object city;
@@ -16,6 +24,14 @@ class CityNum {
 		this.num = num;
 	}
 	int size() { return 2; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof CityNum other)) return false;
+		return Objects.equals(this.city, other.city) && Objects.equals(this.num, other.num);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(city, num);
+	}
 }
 public class GroupByHaving {
 	static String toJson(Object o) {

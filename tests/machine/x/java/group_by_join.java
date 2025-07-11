@@ -7,6 +7,14 @@ class IdName {
 		this.name = name;
 	}
 	int size() { return 2; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof IdName other)) return false;
+		return Objects.equals(this.id, other.id) && Objects.equals(this.name, other.name);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(id, name);
+	}
 }
 class IdCustomerId {
 	int id;
@@ -16,6 +24,14 @@ class IdCustomerId {
 		this.customerId = customerId;
 	}
 	int size() { return 2; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof IdCustomerId other)) return false;
+		return Objects.equals(this.id, other.id) && Objects.equals(this.customerId, other.customerId);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(id, customerId);
+	}
 }
 class NameCount {
 	Object name;
@@ -25,6 +41,14 @@ class NameCount {
 		this.count = count;
 	}
 	int size() { return 2; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof NameCount other)) return false;
+		return Objects.equals(this.name, other.name) && Objects.equals(this.count, other.count);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(name, count);
+	}
 }
 class OC {
 	IdCustomerId o;
@@ -34,6 +58,14 @@ class OC {
 		this.c = c;
 	}
 	int size() { return 2; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof OC other)) return false;
+		return Objects.equals(this.o, other.o) && Objects.equals(this.c, other.c);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(o, c);
+	}
 }
 public class GroupByJoin {
 	public static void main(String[] args) {

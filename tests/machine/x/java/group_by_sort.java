@@ -7,6 +7,14 @@ class CatVal {
 		this.val = val;
 	}
 	int size() { return 2; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof CatVal other)) return false;
+		return Objects.equals(this.cat, other.cat) && Objects.equals(this.val, other.val);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(cat, val);
+	}
 }
 class CatTotal {
 	Object cat;
@@ -16,6 +24,14 @@ class CatTotal {
 		this.total = total;
 	}
 	int size() { return 2; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof CatTotal other)) return false;
+		return Objects.equals(this.cat, other.cat) && Objects.equals(this.total, other.total);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(cat, total);
+	}
 }
 public class GroupBySort {
 	public static void main(String[] args) {
