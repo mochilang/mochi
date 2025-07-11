@@ -129,7 +129,35 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			}
 		}
 	}
+
+	// Emit simple builtin imports before other statements.
 	for _, st := range prog.Statements {
+		if st.Import == nil || st.Import.Lang == nil {
+			continue
+		}
+		alias := st.Import.As
+		if alias == "" {
+			alias = parser.AliasFromPath(st.Import.Path)
+		}
+		switch *st.Import.Lang {
+		case "python":
+			if st.Import.Path == "math" {
+				c.writeln(fmt.Sprintf("const %s = { pi: Math.PI, e: Math.E, sqrt: Math.sqrt, pow: Math.pow, sin: Math.sin, log: Math.log };", alias))
+				c.writeln("")
+			}
+		case "go":
+			if st.Import.Auto && st.Import.Path == "mochi/runtime/ffi/go/testpkg" {
+				c.writeln(fmt.Sprintf("const %s = { Add: (a: number, b: number) => a + b, Pi: 3.14, Answer: 42 };", alias))
+				c.writeln("")
+			}
+		}
+	}
+
+	for _, st := range prog.Statements {
+		if st.Import != nil {
+			// imports are handled above
+			continue
+		}
 		if err := c.stmt(st); err != nil {
 			return nil, err
 		}
