@@ -1,0 +1,35 @@
+// Mochi implementation of Rosetta "Bitmap/Flood fill" task
+// Simple flood fill on a small grid of characters.
+
+var grid: list<list<string>> = [
+  [".", ".", ".", ".", "."],
+  [".", "#", "#", "#", "."],
+  [".", "#", ".", "#", "."],
+  [".", "#", "#", "#", "."],
+  [".", ".", ".", ".", "."],
+]
+
+fun flood(x: int, y: int, repl: string) {
+  let target = grid[y][x]
+  if target == repl { return }
+
+  fun ff(px: int, py: int) {
+    if px < 0 || py < 0 || py >= len(grid) || px >= len(grid[0]) { return }
+    if grid[py][px] != target { return }
+    grid[py][px] = repl
+    ff(px - 1, py)
+    ff(px + 1, py)
+    ff(px, py - 1)
+    ff(px, py + 1)
+  }
+
+  ff(x, y)
+}
+
+flood(2, 2, "o")
+
+for row in grid {
+  var line = ""
+  for ch in row { line = line + ch }
+  print(line)
+}
