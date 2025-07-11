@@ -1,0 +1,67 @@
+fun isPrime(n: int): bool {
+  if n < 2 { return false }
+  if n % 2 == 0 { return n == 2 }
+  if n % 3 == 0 { return n == 3 }
+  var d = 5
+  while d * d <= n {
+    if n % d == 0 { return false }
+    d = d + 2
+    if n % d == 0 { return false }
+    d = d + 4
+  }
+  return true
+}
+
+fun countPrimeFactors(n: int): int {
+  if n == 1 { return 0 }
+  if isPrime(n) { return 1 }
+  var count = 0
+  var f = 2
+  while true {
+    if n % f == 0 {
+      count = count + 1
+      n = n / f
+      if n == 1 { return count }
+      if isPrime(n) { f = n }
+    } else if f >= 3 {
+      f = f + 2
+    } else {
+      f = 3
+    }
+  }
+  return count
+}
+
+fun pad4(n: int): string {
+  var s = str(n)
+  while len(s) < 4 {
+    s = " " + s
+  }
+  return s
+}
+
+fun main() {
+  let max = 120
+  print("The attractive numbers up to and including " + str(max) + " are:")
+  var count = 0
+  var line = ""
+  var lineCount = 0
+  var i = 1
+  while i <= max {
+    let c = countPrimeFactors(i)
+    if isPrime(c) {
+      line = line + pad4(i)
+      count = count + 1
+      lineCount = lineCount + 1
+      if lineCount == 20 {
+        print(line)
+        line = ""
+        lineCount = 0
+      }
+    }
+    i = i + 1
+  }
+  if lineCount > 0 { print(line) }
+}
+
+main()
