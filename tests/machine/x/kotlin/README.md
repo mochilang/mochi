@@ -143,3 +143,13 @@ Successfully ran: 97/100 programs
 - [ ] Add integration tests for generated programs
 - [ ] Provide Gradle build scripts for compiled code
 - [ ] Explore Kotlin/Native backends for cross-platform
+- [ ] Support compile-time constant folding
+- [ ] Generate better error messages for type mismatches
+- [ ] Auto-format generated code with ktfmt
+- [ ] Provide CLI option for custom runtime path
+- [ ] Offer debug mode with verbose compiler logs
+- [ ] Integrate static analyzers for generated Kotlin
+- [ ] Reduce temporary variable allocations
+- [ ] Emit top-level properties as `const val` when possible
+- [ ] Validate generated code using `kotlinc` before output
+- [ ] Document compiler flags in this README
