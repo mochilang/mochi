@@ -108,7 +108,6 @@ Compiled: 100/100 programs
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
-
 ## Remaining Tasks
 
 - Integrate with Node runtime for dataset queries and joins
