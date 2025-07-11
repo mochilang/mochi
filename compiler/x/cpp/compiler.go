@@ -1932,8 +1932,18 @@ func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error
 					ftype = fmt.Sprintf("decltype(std::declval<%s>().%s)", t, fld)
 				}
 			}
-		} else if c.vars[val] == "string" {
-			ftype = "std::string"
+		} else if t := c.varStruct[val]; t != "" {
+			if idx := strings.Index(t, "{"); idx != -1 {
+				t = t[:idx]
+			}
+			ftype = t
+		} else if typ, ok := c.vars[val]; ok {
+			switch typ {
+			case "string":
+				ftype = "std::string"
+			case "int", "double", "bool":
+				ftype = typ
+			}
 		}
 		fieldTypes[i] = ftype
 		inits[i] = val

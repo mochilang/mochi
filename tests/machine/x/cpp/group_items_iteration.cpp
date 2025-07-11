@@ -5,9 +5,31 @@
 #include <utility>
 #include <vector>
 
+struct __struct1 {
+  std::string tag;
+  int val;
+};
+inline bool operator==(const __struct1 &a, const __struct1 &b) {
+  return a.tag == b.tag && a.val == b.val;
+}
+inline bool operator!=(const __struct1 &a, const __struct1 &b) {
+  return !(a == b);
+}
+
+struct __struct2 {
+  std::string key;
+  std::vector<__struct1> items;
+};
+inline bool operator==(const __struct2 &a, const __struct2 &b) {
+  return a.key == b.key && a.items == b.items;
+}
+inline bool operator!=(const __struct2 &a, const __struct2 &b) {
+  return !(a == b);
+}
+
 struct __struct3 {
-  decltype(g.key) tag;
-  decltype(total) total;
+  std::string tag;
+  int total;
 };
 inline bool operator==(const __struct3 &a, const __struct3 &b) {
   return a.tag == b.tag && a.total == b.total;
@@ -15,17 +37,7 @@ inline bool operator==(const __struct3 &a, const __struct3 &b) {
 inline bool operator!=(const __struct3 &a, const __struct3 &b) {
   return !(a == b);
 }
-template <typename T, typename U>
-std::vector<T> __append(const std::vector<T> &v, const U &x) {
-  auto r = v;
-  r.push_back(x);
-  return r;
-}
-a.key == b.key &&a.items == b.items;
-}
-inline bool operator!=(const __struct2 &a, const __struct2 &b) {
-  return !(a == b);
-}
+
 template <typename T, typename U>
 std::vector<T> __append(const std::vector<T> &v, const U &x) {
   auto r = v;
@@ -34,11 +46,11 @@ std::vector<T> __append(const std::vector<T> &v, const U &x) {
 }
 int main() {
   std::vector<__struct1> data =
-      std::vector<decltype(__struct1{std::string("a"), 1})>{
-          __struct1{std::string("a"), 1}, __struct1{std::string("a"), 2},
-          __struct1{std::string("b"), 3}};
+      std::vector<__struct1>{__struct1{std::string("a"), 1},
+                             __struct1{std::string("a"), 2},
+                             __struct1{std::string("b"), 3}};
   auto groups = ([&]() {
-    std::map<decltype(d.tag), std::vector<__struct1>> __groups;
+    std::map<std::string, std::vector<__struct1>> __groups;
     for (auto d : data) {
       __groups[d.tag].push_back(__struct1{d});
     }
