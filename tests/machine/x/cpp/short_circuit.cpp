@@ -1,7 +1,7 @@
 #include <iostream>
 
 bool boom(int a, int b) {
-  std::cout << std::boolalpha << std::string("boom") << std::endl;
+  std::cout << std::string("boom") << std::endl;
   return true;
 }
 

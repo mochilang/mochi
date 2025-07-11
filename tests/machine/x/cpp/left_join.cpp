@@ -162,18 +162,18 @@ auto result = ([]() {
 })();
 
 int main() {
-  std::cout << std::boolalpha << std::string("--- Left Join ---") << std::endl;
+  std::cout << std::string("--- Left Join ---") << std::endl;
   for (auto entry : result) {
     {
-      std::cout << std::boolalpha << std::string("Order");
+      std::cout << std::string("Order");
       std::cout << ' ';
       std::cout << std::boolalpha << entry.orderId;
       std::cout << ' ';
-      std::cout << std::boolalpha << std::string("customer");
+      std::cout << std::string("customer");
       std::cout << ' ';
       __json(entry.customer);
       std::cout << ' ';
-      std::cout << std::boolalpha << std::string("total");
+      std::cout << std::string("total");
       std::cout << ' ';
       std::cout << std::boolalpha << entry.total;
       std::cout << std::endl;

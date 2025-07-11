@@ -12,7 +12,7 @@ int main() {
       break;
     }
     {
-      std::cout << std::boolalpha << std::string("odd number:");
+      std::cout << std::string("odd number:");
       std::cout << ' ';
       std::cout << std::boolalpha << n;
       std::cout << std::endl;

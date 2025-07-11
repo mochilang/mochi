@@ -4,6 +4,6 @@ auto x = 1;
 
 int main() {
   x = 2;
-  std::cout << std::boolalpha << x << std::endl;
+  std::cout << x << std::endl;
   return 0;
 }

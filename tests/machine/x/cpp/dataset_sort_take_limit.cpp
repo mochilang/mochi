@@ -41,14 +41,13 @@ auto expensive = ([]() {
 })();
 
 int main() {
-  std::cout << std::boolalpha
-            << std::string("--- Top products (excluding most expensive) ---")
+  std::cout << std::string("--- Top products (excluding most expensive) ---")
             << std::endl;
   for (auto item : expensive) {
     {
       std::cout << std::boolalpha << item.name;
       std::cout << ' ';
-      std::cout << std::boolalpha << std::string("costs $");
+      std::cout << std::string("costs $");
       std::cout << ' ';
       std::cout << std::boolalpha << item.price;
       std::cout << std::endl;

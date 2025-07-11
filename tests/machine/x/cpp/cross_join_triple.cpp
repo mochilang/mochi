@@ -29,8 +29,7 @@ auto combos = ([]() {
 })();
 
 int main() {
-  std::cout << std::boolalpha
-            << std::string("--- Cross Join of three lists ---") << std::endl;
+  std::cout << std::string("--- Cross Join of three lists ---") << std::endl;
   for (auto c : combos) {
     {
       std::cout << std::boolalpha << c.n;

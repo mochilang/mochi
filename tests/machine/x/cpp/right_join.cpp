@@ -60,31 +60,30 @@ auto result = ([]() {
 })();
 
 int main() {
-  std::cout << std::boolalpha << std::string("--- Right Join using syntax ---")
-            << std::endl;
+  std::cout << std::string("--- Right Join using syntax ---") << std::endl;
   for (auto entry : result) {
     if ((entry.order != __struct2{})) {
       {
-        std::cout << std::boolalpha << std::string("Customer");
+        std::cout << std::string("Customer");
         std::cout << ' ';
         std::cout << std::boolalpha << entry.customerName;
         std::cout << ' ';
-        std::cout << std::boolalpha << std::string("has order");
+        std::cout << std::string("has order");
         std::cout << ' ';
         std::cout << std::boolalpha << entry.order.id;
         std::cout << ' ';
-        std::cout << std::boolalpha << std::string("- $");
+        std::cout << std::string("- $");
         std::cout << ' ';
         std::cout << std::boolalpha << entry.order.total;
         std::cout << std::endl;
       }
     } else {
       {
-        std::cout << std::boolalpha << std::string("Customer");
+        std::cout << std::string("Customer");
         std::cout << ' ';
         std::cout << std::boolalpha << entry.customerName;
         std::cout << ' ';
-        std::cout << std::boolalpha << std::string("has no orders");
+        std::cout << std::string("has no orders");
         std::cout << std::endl;
       }
     }
