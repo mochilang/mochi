@@ -1,0 +1,94 @@
+// Mochi implementation of Rosetta "Benfords law" task
+// Translated from Go version in tests/rosetta/x/Go/benfords-law.go
+
+fun floorf(x: float): float {
+  return (x as int) as float
+}
+
+fun indexOf(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if substring(s, i, i+1) == ch {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun fmtF3(x: float): string {
+  var y = floorf(x * 1000.0 + 0.5) / 1000.0
+  var s = str(y)
+  var dot = indexOf(s, ".")
+  if dot == 0 - 1 {
+    s = s + ".000"
+  } else {
+    var decs = len(s) - dot - 1
+    if decs > 3 {
+      s = substring(s, 0, dot + 4)
+    } else {
+      while decs < 3 {
+        s = s + "0"
+        decs = decs + 1
+      }
+    }
+  }
+  return s
+}
+
+fun padFloat3(x: float, width: int): string {
+  var s = fmtF3(x)
+  while len(s) < width {
+    s = " " + s
+  }
+  return s
+}
+
+fun fib1000(): list<float> {
+  var a = 0.0
+  var b = 1.0
+  var res: list<float> = []
+  var i = 0
+  while i < 1000 {
+    res = append(res, b)
+    var t = b
+    b = b + a
+    a = t
+    i = i + 1
+  }
+  return res
+}
+
+fun leadingDigit(x: float): int {
+  if x < 0.0 { x = -x }
+  while x >= 10.0 { x = x / 10.0 }
+  while x > 0.0 && x < 1.0 { x = x * 10.0 }
+  return x as int
+}
+
+fun show(nums: list<float>, title: string) {
+  var counts = [0,0,0,0,0,0,0,0,0]
+  for n in nums {
+    let d = leadingDigit(n)
+    if d >= 1 && d <= 9 {
+      counts[d-1] = counts[d-1] + 1
+    }
+  }
+  let preds = [0.301,0.176,0.125,0.097,0.079,0.067,0.058,0.051,0.046]
+  let total = len(nums)
+  print(title)
+  print("Digit  Observed  Predicted")
+  var i = 0
+  while i < 9 {
+    let obs = (counts[i] as float) / (total as float)
+    var line = "  " + str(i+1) + "  " + padFloat3(obs, 9) + "  " + padFloat3(preds[i], 8)
+    print(line)
+    i = i + 1
+  }
+}
+
+fun main() {
+  show(fib1000(), "First 1000 Fibonacci numbers")
+}
+
+main()
