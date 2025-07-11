@@ -1,0 +1,46 @@
+// Mochi implementation of Rosetta "Cantor set" task
+// Mirrors the logic of tests/rosetta/x/Go/cantor-set.go
+
+let width = 81
+let height = 5
+
+var lines: list<string> = []
+for i in 0..height {
+  var row = ""
+  var j = 0
+  while j < width {
+    row = row + "*"
+    j = j + 1
+  }
+  lines = append(lines, row)
+}
+
+fun setChar(s: string, idx: int, ch: string): string {
+  return substring(s, 0, idx) + ch + substring(s, idx+1, len(s))
+}
+
+var stack: list<map<string, int>> = [{"start": 0, "len": width, "index": 1}]
+while len(stack) > 0 {
+  var frame = stack[len(stack)-1]
+  stack = stack[:len(stack)-1]
+  let start = frame["start"]
+  let lenSeg = frame["len"]
+  let index = frame["index"]
+  let seg = (lenSeg / 3) as int
+  if seg == 0 { continue }
+  var i = index
+  while i < height {
+    var j = start + seg
+    while j < start + 2 * seg {
+      lines[i] = setChar(lines[i], j, " ")
+      j = j + 1
+    }
+    i = i + 1
+  }
+  stack = append(stack, {"start": start, "len": seg, "index": index + 1})
+  stack = append(stack, {"start": start + seg * 2, "len": seg, "index": index + 1})
+}
+
+for line in lines {
+  print(line)
+}
