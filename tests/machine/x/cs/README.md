@@ -109,3 +109,4 @@ Checklist:
 
 ## Remaining work
 - [ ] Improve LINQ query formatting for complex joins
+- [ ] Further reduce dynamic usage in helper runtime

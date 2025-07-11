@@ -1368,6 +1368,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
 			elemT = lt.Elem
 		}
+		keyT := c.assignTypeNames(c.inferExprType(q.Group.Exprs[0]), "Key")
+		c.registerStructs(keyT)
+		elemT = c.assignTypeNames(elemT, "Item").(types.Type)
+		c.registerStructs(elemT)
 		genv.SetVar(q.Group.Name, types.GroupType{Elem: elemT}, true)
 		c.env = genv
 		valExpr, err := c.compileExpr(q.Select)
@@ -1405,6 +1409,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				return "", err
 			}
 		}
+		keyTypeStr := csTypeOf(keyT)
+		elemTypeStr := csTypeOf(elemT)
 		c.env = orig
 
 		srcParts := []string{src}
@@ -1413,7 +1419,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		filtered := strings.Join(srcParts, ".")
 		c.use("_group_by")
-		expr := fmt.Sprintf("_group_by(%s, %s => %s)", filtered, v, keyExpr)
+		expr := fmt.Sprintf("_group_by<%s, %s>(%s, %s => %s)", elemTypeStr, keyTypeStr, filtered, v, keyExpr)
 		if havingExpr != "" {
 			expr = fmt.Sprintf("%s.Where(%s => %s)", expr, sanitizeName(q.Group.Name), havingExpr)
 		}
@@ -1523,6 +1529,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
 				groupT = lt.Elem
 			}
+			keyT := c.assignTypeNames(c.inferExprType(q.Group.Exprs[0]), "Key")
+			c.registerStructs(keyT)
+			groupT = c.assignTypeNames(groupT, "Item").(types.Type)
+			c.registerStructs(groupT)
 			genv.SetVar(q.Group.Name, groupT, true)
 			c.env = genv
 			valExpr, err := c.compileExpr(q.Select)
@@ -1552,11 +1562,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 					return "", err
 				}
 			}
+			keyTypeStr := csTypeOf(keyT)
+			elemTypeStr := csTypeOf(groupT)
 			c.env = orig
 
 			var buf strings.Builder
 			buf.WriteString(fmt.Sprintf("new Func<List<%s>>(() => {\n", resultType))
-			buf.WriteString("\tvar groups = new Dictionary<string, _Group>();\n")
+			buf.WriteString(fmt.Sprintf("\tvar groups = new Dictionary<string, _Group<%s, %s>>();\n", keyTypeStr, elemTypeStr))
 			buf.WriteString("\tvar order = new List<string>();\n")
 			buf.WriteString(fmt.Sprintf("\tforeach (var %s in %s) {\n", v, src))
 			indent := "\t\t"
@@ -1591,7 +1603,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			buf.WriteString(fmt.Sprintf(indent+"var key = %s;\n", keyExpr))
 			buf.WriteString(indent + "var ks = Convert.ToString(key);\n")
 			buf.WriteString(indent + "if (!groups.TryGetValue(ks, out var g)) {\n")
-			buf.WriteString(indent + "\tg = new _Group(key);\n")
+			buf.WriteString(fmt.Sprintf(indent+"\tg = new _Group<%s, %s>(key);\n", keyTypeStr, elemTypeStr))
 			buf.WriteString(indent + "\tgroups[ks] = g;\n")
 			buf.WriteString(indent + "\torder.Add(ks);\n")
 			buf.WriteString(indent + "}\n")
@@ -1611,7 +1623,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			indent = indent[:len(indent)-1]
 			buf.WriteString(indent + "}\n")
 
-			buf.WriteString("\tvar items = new List<_Group>();\n")
+			buf.WriteString(fmt.Sprintf("\tvar items = new List<_Group<%s, %s>>();\n", keyTypeStr, elemTypeStr))
 			buf.WriteString("\tforeach (var ks in order) items.Add(groups[ks]);\n")
 			if sortGroup != "" {
 				buf.WriteString(fmt.Sprintf("\titems = items.OrderBy(%s => %s).ToList();\n", sanitizeName(q.Group.Name), sortGroup))
