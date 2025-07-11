@@ -2,9 +2,9 @@
 #include <vector>
 
 int main() {
-  std::vector<int> data = std::vector<decltype(1)>{1, 2};
+  auto data = std::vector<int>{1, 2};
   auto flag = (!([&]() {
-                  std::vector<int> __items;
+                  std::vector<decltype(x)> __items;
                   for (auto x : data) {
                     if (!((x == 1)))
                       continue;

@@ -75,10 +75,8 @@ inline void __json(const __struct1 &v) {
   std::cout << "}";
 }
 int main() {
-  std::vector<__struct1> people =
-      std::vector<decltype(__struct1{std::string("Alice"), 30})>{
-          __struct1{std::string("Alice"), 30},
-          __struct1{std::string("Bob"), 25}};
+  auto people = std::vector<__struct1>{__struct1{std::string("Alice"), 30},
+                                       __struct1{std::string("Bob"), 25}};
   ([&]() {
     for (auto &x : people) {
       __json(x);

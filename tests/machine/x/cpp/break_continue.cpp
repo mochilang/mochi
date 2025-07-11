@@ -3,8 +3,7 @@
 #include <vector>
 
 int main() {
-  std::vector<int> numbers =
-      std::vector<decltype(1)>{1, 2, 3, 4, 5, 6, 7, 8, 9};
+  auto numbers = std::vector<int>{1, 2, 3, 4, 5, 6, 7, 8, 9};
   for (auto n : numbers) {
     if (((n % 2) == 0)) {
       continue;

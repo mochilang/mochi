@@ -9,7 +9,7 @@ int main() {
       std::sort(a.begin(), a.end());
       a.erase(std::unique(a.begin(), a.end()), a.end());
       return a;
-    })(std::vector<decltype(1)>{1, 2}, std::vector<decltype(2)>{2, 3});
+    })(std::vector<int>{1, 2}, std::vector<int>{2, 3});
     bool first = true;
     for (const auto &_x : __tmp1) {
       if (!first)
@@ -24,7 +24,7 @@ int main() {
       for (auto &x : b)
         a.erase(std::remove(a.begin(), a.end(), x), a.end());
       return a;
-    })(std::vector<decltype(1)>{1, 2, 3}, std::vector<decltype(2)>{2});
+    })(std::vector<int>{1, 2, 3}, std::vector<int>{2});
     bool first = true;
     for (const auto &_x : __tmp2) {
       if (!first)
@@ -41,7 +41,7 @@ int main() {
         if (std::find(b.begin(), b.end(), x) != b.end())
           r_.push_back(x);
       return r_;
-    })(std::vector<decltype(1)>{1, 2, 3}, std::vector<decltype(2)>{2, 4});
+    })(std::vector<int>{1, 2, 3}, std::vector<int>{2, 4});
     bool first = true;
     for (const auto &_x : __tmp3) {
       if (!first)
@@ -57,8 +57,7 @@ int main() {
                  std::sort(a.begin(), a.end());
                  a.erase(std::unique(a.begin(), a.end()), a.end());
                  return a;
-               })(std::vector<decltype(1)>{1, 2},
-                  std::vector<decltype(2)>{2, 3})
+               })(std::vector<int>{1, 2}, std::vector<int>{2, 3})
                    .size()
             << std::endl;
   return 0;

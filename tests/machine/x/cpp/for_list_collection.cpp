@@ -2,7 +2,7 @@
 #include <vector>
 
 int main() {
-  for (auto n : std::vector<decltype(1)>{1, 2, 3}) {
+  for (auto n : std::vector<int>{1, 2, 3}) {
     std::cout << std::boolalpha << n << std::endl;
   }
   return 0;
