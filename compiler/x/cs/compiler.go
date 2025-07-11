@@ -2387,6 +2387,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		t := c.inferPrimaryType(p)
 		elemType := "dynamic"
 		if lt, ok := t.(types.ListType); ok {
+			if st, ok2 := lt.Elem.(types.StructType); ok2 && st.Name == "" {
+				base := c.structHint
+				if base == "" {
+					base = "Item"
+				}
+				st.Name = c.newStructName(base)
+				lt.Elem = st
+				c.extraStructs = append(c.extraStructs, st)
+			}
 			elemType = csTypeOf(lt.Elem)
 		}
 		if len(p.List.Elems) == 0 {

@@ -108,4 +108,4 @@ Checklist:
 - [x] while_loop
 
 ## Remaining work
-- [ ] Improve automatic class generation for complex nested structures
+- [x] Improve automatic class generation for complex nested structures
