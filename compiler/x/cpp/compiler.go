@@ -2825,6 +2825,10 @@ func (c *Compiler) compileType(t *parser.TypeRef) (string, error) {
 }
 
 func (c *Compiler) inferType(expr string) string {
+	trimmed := strings.TrimSpace(expr)
+	for len(trimmed) > 1 && trimmed[0] == '(' && trimmed[len(trimmed)-1] == ')' {
+		trimmed = strings.TrimSpace(trimmed[1 : len(trimmed)-1])
+	}
 	if strings.HasPrefix(expr, "std::string") {
 		return "string"
 	}
@@ -2836,7 +2840,6 @@ func (c *Compiler) inferType(expr string) string {
 			return "vector"
 		}
 	}
-	trimmed := strings.TrimSpace(expr)
 	if trimmed != "" {
 		if trimmed[0] >= '0' && trimmed[0] <= '9' {
 			if strings.Contains(trimmed, ".") {
