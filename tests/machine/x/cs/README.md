@@ -106,3 +106,6 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+
+## Remaining work
+- [ ] Improve automatic class generation for complex nested structures

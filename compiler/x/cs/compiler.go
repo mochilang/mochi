@@ -31,11 +31,27 @@ type Compiler struct {
 	handlerCount int
 	useStream    bool
 	models       bool
+	structHint   string
+	extraStructs []types.StructType
+	structCount  int
 }
 
 // New creates a new C# compiler.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, helpers: make(map[string]bool), varTypes: make(map[string]string), packages: make(map[string]bool), structs: make(map[string]bool), modules: make(map[string]bool), inFun: 0, useStream: false, models: false}
+	return &Compiler{
+		env:          env,
+		helpers:      make(map[string]bool),
+		varTypes:     make(map[string]string),
+		packages:     make(map[string]bool),
+		structs:      make(map[string]bool),
+		modules:      make(map[string]bool),
+		inFun:        0,
+		useStream:    false,
+		models:       false,
+		structHint:   "",
+		extraStructs: nil,
+		structCount:  0,
+	}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -210,6 +226,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if prog.Package != "" {
 		c.indent--
 		c.writeln("}")
+	}
+	for _, st := range c.extraStructs {
+		c.compileClassType(st)
+		c.writeln("")
 	}
 	c.emitRuntime()
 	if c.useStream {
@@ -431,6 +451,28 @@ func (c *Compiler) compileStructType(st types.StructType) {
 	}
 }
 
+func (c *Compiler) compileClassType(st types.StructType) {
+	name := sanitizeName(st.Name)
+	if c.structs[name] {
+		return
+	}
+	c.structs[name] = true
+	c.writeln(fmt.Sprintf("public class %s {", name))
+	c.indent++
+	for _, fn := range st.Order {
+		ft := st.Fields[fn]
+		c.writeln(fmt.Sprintf("public %s %s;", csTypeOf(ft), sanitizeName(fn)))
+	}
+	c.indent--
+	c.writeln("}")
+	c.writeln("")
+	for _, ft := range st.Fields {
+		if sub, ok := ft.(types.StructType); ok {
+			c.compileClassType(sub)
+		}
+	}
+}
+
 func (c *Compiler) scanProgram(prog *parser.Program) {
 	var scanExpr func(e *parser.Expr)
 	scanExpr = func(e *parser.Expr) {
@@ -486,7 +528,9 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		var static types.Type = types.AnyType{}
 		if s.Let.Value != nil {
 			var err error
+			c.structHint = singular(name)
 			expr, err = c.compileExpr(s.Let.Value)
+			c.structHint = ""
 			if err != nil {
 				return err
 			}
@@ -504,6 +548,19 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				inferredT := c.inferExprType(s.Let.Value)
 				static = inferredT
 				typ = csTypeOf(inferredT)
+				if st, ok := inferredT.(types.StructType); ok && st.Name == "" {
+					st.Name = c.newStructName(singular(name))
+					typ = st.Name
+					static = st
+					c.extraStructs = append(c.extraStructs, st)
+				} else if lt, ok := inferredT.(types.ListType); ok {
+					if st, ok := lt.Elem.(types.StructType); ok && st.Name == "" {
+						st.Name = c.newStructName(singular(name))
+						typ = fmt.Sprintf("List<%s>", st.Name)
+						static = types.ListType{Elem: st}
+						c.extraStructs = append(c.extraStructs, st)
+					}
+				}
 				if isEmptyListLiteral(s.Let.Value) && (strings.HasSuffix(typ, "[]") || strings.HasPrefix(typ, "List<")) {
 					if strings.HasPrefix(typ, "List<") {
 						expr = fmt.Sprintf("new %s()", typ)
@@ -540,7 +597,9 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		var static types.Type = types.AnyType{}
 		if s.Var.Value != nil {
 			var err error
+			c.structHint = singular(name)
 			expr, err = c.compileExpr(s.Var.Value)
+			c.structHint = ""
 			if err != nil {
 				return err
 			}
@@ -558,6 +617,19 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				inferredT := c.inferExprType(s.Var.Value)
 				static = inferredT
 				typ = csTypeOf(inferredT)
+				if st, ok := inferredT.(types.StructType); ok && st.Name == "" {
+					st.Name = c.newStructName(singular(name))
+					typ = st.Name
+					static = st
+					c.extraStructs = append(c.extraStructs, st)
+				} else if lt, ok := inferredT.(types.ListType); ok {
+					if st, ok := lt.Elem.(types.StructType); ok && st.Name == "" {
+						st.Name = c.newStructName(singular(name))
+						typ = fmt.Sprintf("List<%s>", st.Name)
+						static = types.ListType{Elem: st}
+						c.extraStructs = append(c.extraStructs, st)
+					}
+				}
 				if isEmptyListLiteral(s.Var.Value) && (strings.HasSuffix(typ, "[]") || strings.HasPrefix(typ, "List<")) {
 					if strings.HasPrefix(typ, "List<") {
 						expr = fmt.Sprintf("new %s()", typ)
@@ -2331,6 +2403,33 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return fmt.Sprintf("new List<%s> { %s }", elemType, strings.Join(elems, ", ")), nil
 	case p.Map != nil:
 		t := c.inferPrimaryType(p)
+		if st, ok := t.(types.StructType); ok {
+			name := st.Name
+			if name == "" {
+				base := c.structHint
+				if base == "" {
+					base = "Item"
+				}
+				name = c.newStructName(base)
+				st.Name = name
+				c.extraStructs = append(c.extraStructs, st)
+			}
+			items := make([]string, len(p.Map.Items))
+			for i, it := range p.Map.Items {
+				field := ""
+				if n, ok := selectorName(it.Key); ok {
+					field = sanitizeName(n)
+				} else {
+					field = sanitizeName(fmt.Sprintf("f%d", i))
+				}
+				v, err := c.compileExpr(it.Value)
+				if err != nil {
+					return "", err
+				}
+				items[i] = fmt.Sprintf("%s = %s", field, v)
+			}
+			return fmt.Sprintf("new %s { %s }", name, strings.Join(items, ", ")), nil
+		}
 		keyType := "dynamic"
 		valType := "dynamic"
 		if mt, ok := t.(types.MapType); ok {

@@ -8,7 +8,7 @@ class Program
     {
         List<int> nums = new List<int> { 1, 2, 3 };
         List<string> letters = new List<string> { "A", "B" };
-        var pairs = new Func<List<dynamic>>(() =>
+        List<Pair> pairs = new Func<List<dynamic>>(() =>
         {
             var _res = new List<dynamic>();
             foreach (var n in nums)
@@ -18,7 +18,7 @@ class Program
                 {
                     if (((n % 2) == 0))
                     {
-                        _res.Add(new Dictionary<dynamic, dynamic> { { "n", n }, { "l", l } });
+                        _res.Add(new Pair { n = n, l = l });
                     }
                 }
             }
@@ -30,4 +30,13 @@ class Program
             Console.WriteLine(string.Join(" ", new[] { Convert.ToString(p.n), Convert.ToString(p.l) }));
         }
     }
+    public class Pair
+    {
+        public int n;
+        public dynamic l;
+    }
+
+
+
+
 }
