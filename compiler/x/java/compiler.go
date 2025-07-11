@@ -1222,6 +1222,9 @@ func (c *Compiler) compileList(l *parser.ListLiteral) (string, error) {
 func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
 	// Always emit standard map literals for readability
 	c.helpers["map_of_entries"] = true
+	if len(m.Items) == 0 {
+		return "new LinkedHashMap<>()", nil
+	}
 	var entries []string
 	for _, it := range m.Items {
 		var k string
