@@ -1,0 +1,16 @@
+line 0: javac error: exit status 1
+/tmp/TestCompileValidProgramsmap_assign2377223137/001/Main.java:11: error: cannot find symbol
+	scores.bob = 2;
+	      ^
+  symbol:   variable bob
+  location: variable scores of type ScoresAlice
+/tmp/TestCompileValidProgramsmap_assign2377223137/001/Main.java:12: error: cannot find symbol
+	System.out.println(scores.bob);
+	                         ^
+  symbol:   variable bob
+  location: variable scores of type ScoresAlice
+2 errors
+
+
+  1| var scores = {"alice": 1}
+  2| scores["bob"] = 2

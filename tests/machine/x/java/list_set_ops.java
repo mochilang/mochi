@@ -21,9 +21,9 @@ public class Main {
 		return res;
 	}
 	public static void main(String[] args) {
-	System.out.println(union(java.util.Arrays.asList(1, 2), java.util.Arrays.asList(2, 3)));
-	System.out.println(except(java.util.Arrays.asList(1, 2, 3), java.util.Arrays.asList(2)));
-	System.out.println(intersect(java.util.Arrays.asList(1, 2, 3), java.util.Arrays.asList(2, 4)));
-	System.out.println(union_all(java.util.Arrays.asList(1, 2), java.util.Arrays.asList(2, 3)).size());
+	System.out.println(union(Arrays.asList(1, 2), Arrays.asList(2, 3)));
+	System.out.println(except(Arrays.asList(1, 2, 3), Arrays.asList(2)));
+	System.out.println(intersect(Arrays.asList(1, 2, 3), Arrays.asList(2, 4)));
+	System.out.println(union_all(Arrays.asList(1, 2), Arrays.asList(2, 3)).size());
 	}
 }

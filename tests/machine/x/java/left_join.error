@@ -1,7 +1,7 @@
 line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramsleft_join2472444881/001/Main.java:44: error: incompatible types: Object cannot be converted to DataClass1
-			_res3.add(new DataClass3(o.id, c, o.total));
-			                               ^
+/tmp/TestCompileValidProgramsleft_join1141963335/001/Main.java:44: error: incompatible types: Object cannot be converted to CustomersIdName
+			_res3.add(new ResultCustomerOrderIdTotal(o.id, c, o.total));
+			                                               ^
 Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
 1 error
 

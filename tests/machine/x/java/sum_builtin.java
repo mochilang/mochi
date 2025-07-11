@@ -6,6 +6,6 @@ public class Main {
 		return s;
 	}
 	public static void main(String[] args) {
-	System.out.println(sum((List<Number>)(List<?>)java.util.Arrays.asList(1, 2, 3)));
+	System.out.println(sum((List<Number>)(List<?>)Arrays.asList(1, 2, 3)));
 	}
 }

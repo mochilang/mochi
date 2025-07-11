@@ -1,0 +1,16 @@
+line 0: javac error: exit status 1
+/tmp/TestCompileValidProgramsvalues_builtin3007231259/001/Main.java:18: error: method values in class Main cannot be applied to given types;
+	System.out.println(values(m));
+	                   ^
+  required: Map<K,V>
+  found:    MABC
+  reason: cannot infer type-variable(s) K,V
+    (argument mismatch; MABC cannot be converted to Map<K,V>)
+  where K,V are type-variables:
+    K extends Object declared in method <K,V>values(Map<K,V>)
+    V extends Object declared in method <K,V>values(Map<K,V>)
+1 error
+
+
+  1| let m = {"a":1, "b":2, "c":3}
+  2| print(values(m))

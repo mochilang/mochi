@@ -4,6 +4,6 @@ public class Main {
 		return c.size();
 	}
 	public static void main(String[] args) {
-	System.out.println(count(java.util.Arrays.asList(1, 2, 3)));
+	System.out.println(count(Arrays.asList(1, 2, 3)));
 	}
 }

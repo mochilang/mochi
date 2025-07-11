@@ -1128,7 +1128,7 @@ func (c *Compiler) compileList(l *parser.ListLiteral) (string, error) {
 		}
 		elems = append(elems, s)
 	}
-	return fmt.Sprintf("java.util.Arrays.asList(%s)", strings.Join(elems, ", ")), nil
+	return fmt.Sprintf("Arrays.asList(%s)", strings.Join(elems, ", ")), nil
 }
 
 func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
