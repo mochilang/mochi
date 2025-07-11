@@ -9,7 +9,11 @@ typedef struct {
 static list_int list_int_create(int len) {
   list_int l;
   l.len = len;
-  l.data = (int *)malloc(sizeof(int) * len);
+  l.data = calloc(len, sizeof(int));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 typedef struct {
@@ -19,7 +23,11 @@ typedef struct {
 static list_float list_float_create(int len) {
   list_float l;
   l.len = len;
-  l.data = (double *)malloc(sizeof(double) * len);
+  l.data = calloc(len, sizeof(double));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 typedef struct {
@@ -29,7 +37,11 @@ typedef struct {
 static list_string list_string_create(int len) {
   list_string l;
   l.len = len;
-  l.data = (char **)malloc(sizeof(char *) * len);
+  l.data = calloc(len, sizeof(char *));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 typedef struct {
@@ -39,7 +51,11 @@ typedef struct {
 static list_list_int list_list_int_create(int len) {
   list_list_int l;
   l.len = len;
-  l.data = (list_int *)malloc(sizeof(list_int) * len);
+  l.data = calloc(len, sizeof(list_int));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 static void _json_int(int v) { printf("%d", v); }
@@ -131,7 +147,11 @@ typedef struct {
 static list_peopleItem list_peopleItem_create(int len) {
   list_peopleItem l;
   l.len = len;
-  l.data = (peopleItem *)malloc(sizeof(peopleItem) * len);
+  l.data = calloc(len, sizeof(peopleItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
@@ -146,50 +166,54 @@ typedef struct {
 static list_bigItem list_bigItem_create(int len) {
   list_bigItem l;
   l.len = len;
-  l.data = (bigItem *)malloc(sizeof(bigItem) * len);
+  l.data = calloc(len, sizeof(bigItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
 int main() {
-  peopleItem _t1_data[] = {(peopleItem){.name = "Alice", .city = "Paris"},
-                           (peopleItem){.name = "Bob", .city = "Hanoi"},
-                           (peopleItem){.name = "Charlie", .city = "Paris"},
-                           (peopleItem){.name = "Diana", .city = "Hanoi"},
-                           (peopleItem){.name = "Eve", .city = "Paris"},
-                           (peopleItem){.name = "Frank", .city = "Hanoi"},
-                           (peopleItem){.name = "George", .city = "Paris"}};
-  list_peopleItem _t1 = {7, _t1_data};
-  list_peopleItem people = _t1;
-  list_peopleItem _t2 = list_peopleItem_create(people.len);
-  list_string _t3 = list_string_create(people.len);
-  int _t4 = 0;
+  peopleItem tmp1_data[] = {(peopleItem){.name = "Alice", .city = "Paris"},
+                            (peopleItem){.name = "Bob", .city = "Hanoi"},
+                            (peopleItem){.name = "Charlie", .city = "Paris"},
+                            (peopleItem){.name = "Diana", .city = "Hanoi"},
+                            (peopleItem){.name = "Eve", .city = "Paris"},
+                            (peopleItem){.name = "Frank", .city = "Hanoi"},
+                            (peopleItem){.name = "George", .city = "Paris"}};
+  list_peopleItem tmp1 = {7, tmp1_data};
+  list_peopleItem people = tmp1;
+  list_peopleItem tmp2 = list_peopleItem_create(people.len);
+  list_string tmp3 = list_string_create(people.len);
+  int tmp4 = 0;
   for (int i = 0; i < people.len; i++) {
     peopleItem p = people.data[i];
-    _t2.data[_t4] = p;
-    _t3.data[_t4] = p.city;
-    _t4++;
+    tmp2.data[tmp4] = p;
+    tmp3.data[tmp4] = p.city;
+    tmp4++;
   }
-  _t2.len = _t4;
-  _t3.len = _t4;
-  list_group_string _t5 = _group_by_string(_t3);
-  list_bigItem _t6 = list_bigItem_create(_t5.len);
-  int _t7 = 0;
-  for (int gi = 0; gi < _t5.len; gi++) {
-    _GroupString _gp = _t5.data[gi];
-    list_peopleItem _t8 = list_peopleItem_create(_gp.items.len);
+  tmp2.len = tmp4;
+  tmp3.len = tmp4;
+  list_group_string tmp5 = _group_by_string(tmp3);
+  list_bigItem tmp6 = list_bigItem_create(tmp5.len);
+  int tmp7 = 0;
+  for (int gi = 0; gi < tmp5.len; gi++) {
+    _GroupString _gp = tmp5.data[gi];
+    list_peopleItem tmp8 = list_peopleItem_create(_gp.items.len);
     for (int j = 0; j < _gp.items.len; j++) {
-      _t8.data[j] = _t2.data[_gp.items.data[j]];
+      tmp8.data[j] = tmp2.data[_gp.items.data[j]];
     }
-    _t8.len = _gp.items.len;
+    tmp8.len = _gp.items.len;
     struct {
       char *key;
       list_peopleItem items;
-    } g = {_gp.key, _t8};
-    _t6.data[_t7] = (bigItem){.city = g.key, .num = g.items.len};
-    _t7++;
+    } g = {_gp.key, tmp8};
+    tmp6.data[tmp7] = (bigItem){.city = g.key, .num = g.items.len};
+    tmp7++;
   }
-  _t6.len = _t7;
-  list_bigItem big = _t6;
+  tmp6.len = tmp7;
+  list_bigItem big = tmp6;
   _json_int(big);
   return 0;
 }

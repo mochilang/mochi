@@ -1,0 +1,13 @@
+line: 0
+error: output mismatch
+-- got --
+--- Top products (excluding most expensive) ---
+Smartphone costs $ 0
+Tablet costs $ 0
+Monitor costs $ 0
+-- want --
+--- Top products (excluding most expensive) ---
+Smartphone costs $ 900
+Tablet costs $ 600
+Monitor costs $ 300
+   1: #include <stdio.h>

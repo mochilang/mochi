@@ -15,13 +15,17 @@ typedef struct {
 static list_mItem list_mItem_create(int len) {
   list_mItem l;
   l.len = len;
-  l.data = (mItem *)malloc(sizeof(mItem) * len);
+  l.data = calloc(len, sizeof(mItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
 int main() {
   mItem m = (mItem){.a = x, .b = y};
-  printf("%d ", m.a);
-  printf("%d\n", m.b);
+  printf("%.16g ", m.a);
+  printf("%.16g\n", m.b);
   return 0;
 }

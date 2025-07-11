@@ -9,7 +9,11 @@ typedef struct {
 static list_int list_int_create(int len) {
   list_int l;
   l.len = len;
-  l.data = (int *)malloc(sizeof(int) * len);
+  l.data = calloc(len, sizeof(int));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 typedef struct {
@@ -19,7 +23,11 @@ typedef struct {
 static list_string list_string_create(int len) {
   list_string l;
   l.len = len;
-  l.data = (char **)malloc(sizeof(char *) * len);
+  l.data = calloc(len, sizeof(char *));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 typedef struct {
@@ -34,40 +42,44 @@ typedef struct {
 static list_combosItem list_combosItem_create(int len) {
   list_combosItem l;
   l.len = len;
-  l.data = (combosItem *)malloc(sizeof(combosItem) * len);
+  l.data = calloc(len, sizeof(combosItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
 int main() {
-  int _t1_data[] = {1, 2};
-  list_int _t1 = {2, _t1_data};
-  list_int nums = _t1;
-  char *_t2_data[] = {"A", "B"};
-  list_string _t2 = {2, _t2_data};
-  list_string letters = _t2;
-  int _t3_data[] = {1, 0};
-  list_int _t3 = {2, _t3_data};
-  list_int bools = _t3;
-  list_combosItem _t4 =
+  int tmp1_data[] = {1, 2};
+  list_int tmp1 = {2, tmp1_data};
+  list_int nums = tmp1;
+  char *tmp2_data[] = {"A", "B"};
+  list_string tmp2 = {2, tmp2_data};
+  list_string letters = tmp2;
+  int tmp3_data[] = {1, 0};
+  list_int tmp3 = {2, tmp3_data};
+  list_int bools = tmp3;
+  list_combosItem tmp4 =
       list_combosItem_create(nums.len * letters.len * bools.len);
-  int _t5 = 0;
-  for (int _t6 = 0; _t6 < nums.len; _t6++) {
-    int n = nums.data[_t6];
-    for (int _t7 = 0; _t7 < letters.len; _t7++) {
-      char *l = letters.data[_t7];
-      for (int _t8 = 0; _t8 < bools.len; _t8++) {
-        int b = bools.data[_t8];
-        _t4.data[_t5] = (combosItem){.n = n, .l = l, .b = b};
-        _t5++;
+  int tmp5 = 0;
+  for (int n_idx = 0; n_idx < nums.len; n_idx++) {
+    int n = nums.data[n_idx];
+    for (int l_idx = 0; l_idx < letters.len; l_idx++) {
+      char *l = letters.data[l_idx];
+      for (int b_idx = 0; b_idx < bools.len; b_idx++) {
+        int b = bools.data[b_idx];
+        tmp4.data[tmp5] = (combosItem){.n = n, .l = l, .b = b};
+        tmp5++;
       }
     }
   }
-  _t4.len = _t5;
-  list_combosItem combos = _t4;
+  tmp4.len = tmp5;
+  list_combosItem combos = tmp4;
   printf("%s\n", "--- Cross Join of three lists ---");
-  for (int _t9 = 0; _t9 < combos.len; _t9++) {
-    combosItem c = combos.data[_t9];
-    printf("%d ", c.n);
+  for (int tmp6 = 0; tmp6 < combos.len; tmp6++) {
+    combosItem c = combos.data[tmp6];
+    printf("%.16g ", c.n);
     printf("%s ", c.l);
     printf("%s\n", (c.b) ? "true" : "false");
   }

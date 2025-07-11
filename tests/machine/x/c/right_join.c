@@ -12,7 +12,11 @@ typedef struct {
 static list_customersItem list_customersItem_create(int len) {
   list_customersItem l;
   l.len = len;
-  l.data = (customersItem *)malloc(sizeof(customersItem) * len);
+  l.data = calloc(len, sizeof(customersItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
@@ -28,7 +32,11 @@ typedef struct {
 static list_ordersItem list_ordersItem_create(int len) {
   list_ordersItem l;
   l.len = len;
-  l.data = (ordersItem *)malloc(sizeof(ordersItem) * len);
+  l.data = calloc(len, sizeof(ordersItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
@@ -43,55 +51,59 @@ typedef struct {
 static list_resultItem list_resultItem_create(int len) {
   list_resultItem l;
   l.len = len;
-  l.data = (resultItem *)malloc(sizeof(resultItem) * len);
+  l.data = calloc(len, sizeof(resultItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
 int main() {
-  customersItem _t1_data[] = {(customersItem){.id = 1, .name = "Alice"},
-                              (customersItem){.id = 2, .name = "Bob"},
-                              (customersItem){.id = 3, .name = "Charlie"},
-                              (customersItem){.id = 4, .name = "Diana"}};
-  list_customersItem _t1 = {4, _t1_data};
-  list_customersItem customers = _t1;
-  ordersItem _t2_data[] = {
+  customersItem tmp1_data[] = {(customersItem){.id = 1, .name = "Alice"},
+                               (customersItem){.id = 2, .name = "Bob"},
+                               (customersItem){.id = 3, .name = "Charlie"},
+                               (customersItem){.id = 4, .name = "Diana"}};
+  list_customersItem tmp1 = {4, tmp1_data};
+  list_customersItem customers = tmp1;
+  ordersItem tmp2_data[] = {
       (ordersItem){.id = 100, .customerId = 1, .total = 250},
       (ordersItem){.id = 101, .customerId = 2, .total = 125},
       (ordersItem){.id = 102, .customerId = 1, .total = 300}};
-  list_ordersItem _t2 = {3, _t2_data};
-  list_ordersItem orders = _t2;
-  list_int _t3 = list_int_create(orders.len * customers.len);
-  int _t4 = 0;
-  for (int _t5 = 0; _t5 < orders.len; _t5++) {
-    ordersItem o = orders.data[_t5];
-    int _t6 = 0;
-    for (int _t7 = 0; _t7 < customers.len; _t7++) {
-      customersItem c = customers.data[_t7];
+  list_ordersItem tmp2 = {3, tmp2_data};
+  list_ordersItem orders = tmp2;
+  list_int tmp3 = list_int_create(orders.len * customers.len);
+  int tmp4 = 0;
+  for (int tmp5 = 0; tmp5 < orders.len; tmp5++) {
+    ordersItem o = orders.data[tmp5];
+    int tmp6 = 0;
+    for (int tmp7 = 0; tmp7 < customers.len; tmp7++) {
+      customersItem c = customers.data[tmp7];
       if (!(o.customerId == c.id)) {
         continue;
       }
-      _t6 = 1;
-      _t3.data[_t4] = (resultItem){.customerName = c.name, .order = o};
-      _t4++;
+      tmp6 = 1;
+      tmp3.data[tmp4] = (resultItem){.customerName = c.name, .order = o};
+      tmp4++;
     }
-    if (!_t6) {
+    if (!tmp6) {
       customersItem c = (customersItem){0};
-      _t3.data[_t4] = (resultItem){.customerName = c.name, .order = o};
-      _t4++;
+      tmp3.data[tmp4] = (resultItem){.customerName = c.name, .order = o};
+      tmp4++;
     }
   }
-  _t3.len = _t4;
-  list_resultItem result = _t3;
+  tmp3.len = tmp4;
+  list_resultItem result = tmp3;
   printf("%s\n", "--- Right Join using syntax ---");
-  for (int _t8 = 0; _t8 < result.len; _t8++) {
-    resultItem entry = result.data[_t8];
+  for (int tmp8 = 0; tmp8 < result.len; tmp8++) {
+    resultItem entry = result.data[tmp8];
     if (entry.order) {
       printf("%s ", "Customer");
       printf("%s ", entry.customerName);
       printf("%s ", "has order");
-      printf("%d ", entry.order.id);
+      printf("%.16g ", entry.order.id);
       printf("%s ", "- $");
-      printf("%d\n", entry.order.total);
+      printf("%.16g\n", entry.order.total);
     } else {
       printf("%s ", "Customer");
       printf("%s ", entry.customerName);

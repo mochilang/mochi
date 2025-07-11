@@ -18,12 +18,12 @@ int main() {
   printf("%s ", "Circle area with r =");
   printf("%d ", r);
   printf("%s ", "=>");
-  printf("%d\n", area);
+  printf("%.16g\n", area);
   printf("%s ", "Square root of 49:");
-  printf("%.17g\n", root);
+  printf("%.16g\n", root);
   printf("%s ", "sin(π/4):");
-  printf("%.17g\n", sin45);
+  printf("%.16g\n", sin45);
   printf("%s ", "log(e):");
-  printf("%.17g\n", log_e);
+  printf("%.16g\n", log_e);
   return 0;
 }

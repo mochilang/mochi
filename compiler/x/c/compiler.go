@@ -132,8 +132,12 @@ func (c *Compiler) writeIndent() {
 }
 
 func (c *Compiler) newTemp() string {
-	c.tmp++
-	return fmt.Sprintf("_t%d", c.tmp)
+        return c.newTempPrefix("tmp")
+}
+
+func (c *Compiler) newTempPrefix(prefix string) string {
+        c.tmp++
+        return fmt.Sprintf("%s%d", prefix, c.tmp)
 }
 
 func (c *Compiler) need(key string) {

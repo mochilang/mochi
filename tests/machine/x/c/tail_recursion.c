@@ -9,6 +9,6 @@ int sum_rec(int n, int acc) {
 }
 
 int main() {
-  printf("%d\n", sum_rec(10, 0));
+  printf("%.16g\n", sum_rec(10, 0));
   return 0;
 }

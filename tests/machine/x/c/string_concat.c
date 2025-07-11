@@ -12,7 +12,7 @@ static char *concat_string(char *a, char *b) {
   return buf;
 }
 int main() {
-  char *_t1 = concat_string("hello ", "world");
-  printf("%s\n", _t1);
+  char *tmp1 = concat_string("hello ", "world");
+  printf("%s\n", tmp1);
   return 0;
 }

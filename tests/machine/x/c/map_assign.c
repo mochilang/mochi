@@ -11,7 +11,11 @@ typedef struct {
 static list_scoresItem list_scoresItem_create(int len) {
   list_scoresItem l;
   l.len = len;
-  l.data = (scoresItem *)malloc(sizeof(scoresItem) * len);
+  l.data = calloc(len, sizeof(scoresItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 

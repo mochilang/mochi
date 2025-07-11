@@ -1,8 +1,8 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/load_yaml.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/load_yaml.c:270:24: error: invalid initializer
-  270 |   list_Person people = _load_json("../interpreter/valid/people.yaml");
+/workspace/mochi/tests/machine/x/c/load_yaml.c:293:24: error: invalid initializer
+  293 |   list_Person people = _load_json("../interpreter/valid/people.yaml");
       |                        ^~~~~~~~~~
 
    1: #include <stdio.h>

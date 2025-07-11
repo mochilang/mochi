@@ -66,15 +66,19 @@ typedef struct {
 static list_peopleItem list_peopleItem_create(int len) {
   list_peopleItem l;
   l.len = len;
-  l.data = (peopleItem *)malloc(sizeof(peopleItem) * len);
+  l.data = calloc(len, sizeof(peopleItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
 int main() {
-  peopleItem _t1_data[] = {(peopleItem){.name = "Alice", .age = 30},
-                           (peopleItem){.name = "Bob", .age = 25}};
-  list_peopleItem _t1 = {2, _t1_data};
-  list_peopleItem people = _t1;
+  peopleItem tmp1_data[] = {(peopleItem){.name = "Alice", .age = 30},
+                            (peopleItem){.name = "Bob", .age = 25}};
+  list_peopleItem tmp1 = {2, tmp1_data};
+  list_peopleItem people = tmp1;
   _save_json(people, "-");
   return 0;
 }

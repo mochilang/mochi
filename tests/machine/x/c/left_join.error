@@ -2,8 +2,8 @@ line: 0
 error: output mismatch
 -- got --
 --- Left Join ---
-Order 100 customer 1 total 250
-Order 101 customer 0 total 80
+Order 1.358077306217774e-312 customer 1.358077306217774e-312 total 1.358077306217774e-312
+Order 1.358077306217774e-312 customer 1.358077306217774e-312 total 1.358077306217774e-312
 -- want --
 --- Left Join ---
 Order 100 customer map[id:1 name:Alice] total 250

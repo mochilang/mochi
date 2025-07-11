@@ -21,8 +21,11 @@ static map_string_int map_string_int_create(int cap) {
   map_string_int m;
   m.len = 0;
   m.cap = cap;
-  m.data =
-      cap ? (pair_string_int *)malloc(sizeof(pair_string_int) * cap) : NULL;
+  m.data = cap ? calloc(cap, sizeof(pair_string_int)) : NULL;
+  if (cap && !m.data) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return m;
 }
 static void map_string_int_put(map_string_int *m, char *k, int v) {
@@ -83,7 +86,11 @@ static map_string map_string_create(int cap) {
   map_string m;
   m.len = 0;
   m.cap = cap;
-  m.data = cap ? (pair_string *)malloc(sizeof(pair_string) * cap) : NULL;
+  m.data = cap ? calloc(cap, sizeof(pair_string)) : NULL;
+  if (cap && !m.data) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return m;
 }
 static void map_string_put(map_string *m, char *k, char *v) {
@@ -104,7 +111,11 @@ static list_map_string list_map_string_create(int cap) {
   list_map_string l;
   l.len = 0;
   l.cap = cap;
-  l.data = cap ? (map_string *)malloc(sizeof(map_string) * cap) : NULL;
+  l.data = cap ? calloc(cap, sizeof(map_string)) : NULL;
+  if (cap && !l.data) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 static void list_map_string_push(list_map_string *l, map_string m) {
@@ -123,7 +134,11 @@ static list_map_string_int list_map_string_int_create(int cap) {
   list_map_string_int l;
   l.len = 0;
   l.cap = cap;
-  l.data = cap ? (map_string_int *)malloc(sizeof(map_string_int) * cap) : NULL;
+  l.data = cap ? calloc(cap, sizeof(map_string_int)) : NULL;
+  if (cap && !l.data) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 static void list_map_string_int_push(list_map_string_int *l, map_string_int m) {
@@ -246,7 +261,11 @@ typedef struct {
 static list_adultsItem list_adultsItem_create(int len) {
   list_adultsItem l;
   l.len = len;
-  l.data = (adultsItem *)malloc(sizeof(adultsItem) * len);
+  l.data = calloc(len, sizeof(adultsItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
@@ -262,26 +281,30 @@ typedef struct {
 static list_Person list_Person_create(int len) {
   list_Person l;
   l.len = len;
-  l.data = (Person *)malloc(sizeof(Person) * len);
+  l.data = calloc(len, sizeof(Person));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
 int main() {
   list_Person people = _load_json("../interpreter/valid/people.yaml");
-  list_adultsItem _t1 = list_adultsItem_create(people.len);
-  int _t2 = 0;
-  for (int _t3 = 0; _t3 < people.len; _t3++) {
-    Person p = people.data[_t3];
+  list_adultsItem tmp1 = list_adultsItem_create(people.len);
+  int tmp2 = 0;
+  for (int tmp3 = 0; tmp3 < people.len; tmp3++) {
+    Person p = people.data[tmp3];
     if (!(p.age >= 18)) {
       continue;
     }
-    _t1.data[_t2] = (adultsItem){.name = p.name, .email = p.email};
-    _t2++;
+    tmp1.data[tmp2] = (adultsItem){.name = p.name, .email = p.email};
+    tmp2++;
   }
-  _t1.len = _t2;
-  list_adultsItem adults = _t1;
-  for (int _t4 = 0; _t4 < adults.len; _t4++) {
-    adultsItem a = adults.data[_t4];
+  tmp1.len = tmp2;
+  list_adultsItem adults = tmp1;
+  for (int tmp4 = 0; tmp4 < adults.len; tmp4++) {
+    adultsItem a = adults.data[tmp4];
     printf("%s ", a.name);
     printf("%s\n", a.email);
   }

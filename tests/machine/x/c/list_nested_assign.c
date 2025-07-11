@@ -8,7 +8,11 @@ typedef struct {
 static list_int list_int_create(int len) {
   list_int l;
   l.len = len;
-  l.data = (int *)malloc(sizeof(int) * len);
+  l.data = calloc(len, sizeof(int));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 typedef struct {
@@ -18,18 +22,22 @@ typedef struct {
 static list_list_int list_list_int_create(int len) {
   list_list_int l;
   l.len = len;
-  l.data = (list_int *)malloc(sizeof(list_int) * len);
+  l.data = calloc(len, sizeof(list_int));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 int main() {
-  int _t2_data[] = {1, 2};
-  list_int _t2 = {2, _t2_data};
-  int _t3_data[] = {3, 4};
-  list_int _t3 = {2, _t3_data};
-  list_int _t1_data[] = {_t2, _t3};
-  list_list_int _t1 = {2, _t1_data};
-  list_list_int matrix = _t1;
+  int tmp2_data[] = {1, 2};
+  list_int tmp2 = {2, tmp2_data};
+  int tmp3_data[] = {3, 4};
+  list_int tmp3 = {2, tmp3_data};
+  list_int tmp1_data[] = {tmp2, tmp3};
+  list_list_int tmp1 = {2, tmp1_data};
+  list_list_int matrix = tmp1;
   matrix.data[1].data[0] = 5;
-  printf("%d\n", matrix.data[1].data[0]);
+  printf("%.16g\n", matrix.data[1].data[0]);
   return 0;
 }

@@ -1,8 +1,14 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/group_by_left_join.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/group_by_left_join.c:60:26: error: invalid initializer
-   60 |   list_statsItem stats = 0;
+/workspace/mochi/tests/machine/x/c/group_by_left_join.c:72:26: error: invalid initializer
+   72 |   list_statsItem stats = 0;
       |                          ^
+/workspace/mochi/tests/machine/x/c/group_by_left_join.c:78:17: warning: format ‘%g’ expects argument of type ‘double’, but argument 2 has type ‘int’ [-Wformat=]
+   78 |     printf("%.16g\n", s.count);
+      |             ~~~~^     ~~~~~~~
+      |                 |      |
+      |                 double int
+      |             %.16d
 
    1: #include <stdio.h>

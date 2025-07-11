@@ -1,16 +1,17 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/order_by_map.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/order_by_map.c:89:18: error: invalid operands to binary > (have ‘map_string_int’ and ‘map_string_int’)
-   89 |       if (_t5[i] > _t5[j]) {
-      |           ~~~~~~ ^ ~~~~~~
-      |              |        |
-      |              |        map_string_int
-      |              map_string_int
-/workspace/mochi/tests/machine/x/c/order_by_map.c:100:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘list_dataItem’ [-Wformat=]
-  100 |   printf("%d\n", sorted);
-      |           ~^     ~~~~~~
-      |            |     |
-      |            int   list_dataItem
+/workspace/mochi/tests/machine/x/c/order_by_map.c:97:19: error: invalid operands to binary > (have ‘map_string_int’ and ‘map_string_int’)
+   97 |       if (tmp5[i] > tmp5[j]) {
+      |           ~~~~~~~ ^ ~~~~~~~
+      |               |         |
+      |               |         map_string_int
+      |               map_string_int
+/workspace/mochi/tests/machine/x/c/order_by_map.c:108:15: warning: format ‘%g’ expects argument of type ‘double’, but argument 2 has type ‘list_dataItem’ [-Wformat=]
+  108 |   printf("%.16g\n", sorted);
+      |           ~~~~^     ~~~~~~
+      |               |     |
+      |               |     list_dataItem
+      |               double
 
    1: #include <stdio.h>

@@ -8,7 +8,11 @@ typedef struct {
 static list_int list_int_create(int len) {
   list_int l;
   l.len = len;
-  l.data = (int *)malloc(sizeof(int) * len);
+  l.data = calloc(len, sizeof(int));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 typedef struct {
@@ -18,7 +22,11 @@ typedef struct {
 static list_list_int list_list_int_create(int len) {
   list_list_int l;
   l.len = len;
-  l.data = (list_int *)malloc(sizeof(list_int) * len);
+  l.data = calloc(len, sizeof(list_int));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 static list_int slice_list_int(list_int v, int start, int end) {
@@ -49,11 +57,11 @@ static char *s1 = "forest";
 static char *s2 = "desert";
 
 int main() {
-  list_int _t1 = slice_list_int(s1, 0, prefix.len);
-  _print_list_int(_t1 == prefix);
+  list_int tmp1 = slice_list_int(s1, 0, prefix.len);
+  _print_list_int(tmp1 == prefix);
   printf("\n");
-  list_int _t2 = slice_list_int(s2, 0, prefix.len);
-  _print_list_int(_t2 == prefix);
+  list_int tmp2 = slice_list_int(s2, 0, prefix.len);
+  _print_list_int(tmp2 == prefix);
   printf("\n");
   return 0;
 }

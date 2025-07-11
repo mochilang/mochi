@@ -1,11 +1,35 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/outer_join.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/outer_join.c:82:9: error: used struct type value where scalar is required
-   82 |     if (row.order) {
+/workspace/mochi/tests/machine/x/c/outer_join.c:94:9: error: used struct type value where scalar is required
+   94 |     if (row.order) {
       |         ^~~
-/workspace/mochi/tests/machine/x/c/outer_join.c:83:11: error: used struct type value where scalar is required
-   83 |       if (row.customer) {
+/workspace/mochi/tests/machine/x/c/outer_join.c:95:11: error: used struct type value where scalar is required
+   95 |       if (row.customer) {
       |           ^~~
+/workspace/mochi/tests/machine/x/c/outer_join.c:97:21: warning: format ‘%g’ expects argument of type ‘double’, but argument 2 has type ‘int’ [-Wformat=]
+   97 |         printf("%.16g ", row.order.id);
+      |                 ~~~~^    ~~~~~~~~~~~~
+      |                     |             |
+      |                     double        int
+      |                 %.16d
+/workspace/mochi/tests/machine/x/c/outer_join.c:101:21: warning: format ‘%g’ expects argument of type ‘double’, but argument 2 has type ‘int’ [-Wformat=]
+  101 |         printf("%.16g\n", row.order.total);
+      |                 ~~~~^     ~~~~~~~~~~~~~~~
+      |                     |              |
+      |                     double         int
+      |                 %.16d
+/workspace/mochi/tests/machine/x/c/outer_join.c:104:21: warning: format ‘%g’ expects argument of type ‘double’, but argument 2 has type ‘int’ [-Wformat=]
+  104 |         printf("%.16g ", row.order.id);
+      |                 ~~~~^    ~~~~~~~~~~~~
+      |                     |             |
+      |                     double        int
+      |                 %.16d
+/workspace/mochi/tests/machine/x/c/outer_join.c:108:21: warning: format ‘%g’ expects argument of type ‘double’, but argument 2 has type ‘int’ [-Wformat=]
+  108 |         printf("%.16g\n", row.order.total);
+      |                 ~~~~^     ~~~~~~~~~~~~~~~
+      |                     |              |
+      |                     double         int
+      |                 %.16d
 
    1: #include <stdio.h>

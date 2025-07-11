@@ -1,13 +1,13 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/group_by_having.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/group_by_having.c:193:13: error: incompatible type for argument 1 of ‘_json_int’
-  193 |   _json_int(big);
+/workspace/mochi/tests/machine/x/c/group_by_having.c:217:13: error: incompatible type for argument 1 of ‘_json_int’
+  217 |   _json_int(big);
       |             ^~~
       |             |
       |             list_bigItem
-/workspace/mochi/tests/machine/x/c/group_by_having.c:45:27: note: expected ‘int’ but argument is of type ‘list_bigItem’
-   45 | static void _json_int(int v) { printf("%d", v); }
+/workspace/mochi/tests/machine/x/c/group_by_having.c:61:27: note: expected ‘int’ but argument is of type ‘list_bigItem’
+   61 | static void _json_int(int v) { printf("%d", v); }
       |                       ~~~~^
 
    1: #include <stdio.h>

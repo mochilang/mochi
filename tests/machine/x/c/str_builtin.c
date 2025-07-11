@@ -7,7 +7,7 @@ static char *_str(int v) {
   return buf;
 }
 int main() {
-  char *_t1 = _str(123);
-  printf("%s\n", _t1);
+  char *tmp1 = _str(123);
+  printf("%s\n", tmp1);
   return 0;
 }

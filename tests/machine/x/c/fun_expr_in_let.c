@@ -5,6 +5,6 @@ int _lambda0(int x) { return x * x; }
 
 int main() {
   int (*square)(int) = _lambda0;
-  printf("%d\n", square(6));
+  printf("%.16g\n", square(6));
   return 0;
 }
