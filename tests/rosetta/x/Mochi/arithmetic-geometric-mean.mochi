@@ -1,0 +1,35 @@
+// Mochi implementation of Rosetta "Arithmetic-geometric-mean" task
+// Translated from Go version in tests/rosetta/x/Go/arithmetic-geometric-mean.go
+
+fun abs(x: float): float {
+  if x < 0.0 { return -x }
+  return x
+}
+
+fun sqrtApprox(x: float): float {
+  var guess = x
+  var i = 0
+  // Use Newton's method for better precision
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun agm(a: float, g: float): float {
+  let eps = 0.00000000000001
+  while abs(a - g) > abs(a) * eps {
+    let newA = (a + g) / 2.0
+    let newG = sqrtApprox(a * g)
+    a = newA
+    g = newG
+  }
+  return a
+}
+
+fun main() {
+  print(str(agm(1.0, 1.0 / sqrtApprox(2.0))))
+}
+
+main()
