@@ -1,0 +1,123 @@
+// Mochi implementation of Rosetta "Aliquot sequence classifications" task
+// Translated from Go version in tests/rosetta/x/Go/aliquot-sequence-classifications.go
+
+let THRESHOLD = 140737488355328
+
+fun indexOf(xs: list<int>, value: int): int {
+  var i = 0
+  while i < len(xs) {
+    if xs[i] == value { return i }
+    i = i + 1
+  }
+  return 0 - 1
+}
+
+fun contains(xs: list<int>, value: int): bool {
+  return indexOf(xs, value) != 0 - 1
+}
+
+fun maxOf(a: int, b: int): int { if a > b { return a } else { return b } }
+
+fun intSqrt(n: int): int {
+  if n == 0 { return 0 }
+  var x = n
+  var y = (x + 1) / 2
+  while y < x {
+    x = y
+    y = (x + n / x) / 2
+  }
+  return x
+}
+
+fun sumProperDivisors(n: int): int {
+  if n < 2 { return 0 }
+  let sqrt = intSqrt(n)
+  var sum = 1
+  var i = 2
+  while i <= sqrt {
+    if n % i == 0 {
+      sum = sum + i + n / i
+    }
+    i = i + 1
+  }
+  if sqrt * sqrt == n { sum = sum - sqrt }
+  return sum
+}
+
+fun classifySequence(k: int): map<string, any> {
+  var last = k
+  var seq: list<int> = [k]
+  while true {
+    last = sumProperDivisors(last)
+    seq = append(seq, last)
+    let n = len(seq)
+    var aliquot = ""
+    if last == 0 {
+      aliquot = "Terminating"
+    } else if n == 2 && last == k {
+      aliquot = "Perfect"
+    } else if n == 3 && last == k {
+      aliquot = "Amicable"
+    } else if n >= 4 && last == k {
+      aliquot = "Sociable[" + str(n - 1) + "]"
+    } else if last == seq[n-2] {
+      aliquot = "Aspiring"
+    } else if contains(seq[1:maxOf(1, n-2)], last) {
+      let idx = indexOf(seq, last)
+      aliquot = "Cyclic[" + str(n - 1 - idx) + "]"
+    } else if n == 16 || last > THRESHOLD {
+      aliquot = "Non-Terminating"
+    }
+    if aliquot != "" { return {"seq": seq, "aliquot": aliquot} }
+  }
+  return {"seq": seq, "aliquot": ""}
+}
+
+fun padLeft(n: int, w: int): string {
+  var s = str(n)
+  while len(s) < w { s = " " + s }
+  return s
+}
+
+fun padRight(s: string, w: int): string {
+  var r = s
+  while len(r) < w { r = r + " " }
+  return r
+}
+
+fun joinWithCommas(seq: list<int>): string {
+  var s = "["
+  var i = 0
+  while i < len(seq) {
+    s = s + str(seq[i])
+    if i < len(seq) - 1 { s = s + ", " }
+    i = i + 1
+  }
+  s = s + "]"
+  return s
+}
+
+fun main() {
+  print("Aliquot classifications - periods for Sociable/Cyclic in square brackets:\n")
+  var k = 1
+  while k <= 10 {
+    let res = classifySequence(k)
+    print(padLeft(k, 2) + ": " + padRight(res["aliquot"] as string, 15) + " " + joinWithCommas(res["seq"] as list<int>))
+    k = k + 1
+  }
+  print("")
+  let s = [11, 12, 28, 496, 220, 1184, 12496, 1264460, 790, 909, 562, 1064, 1488]
+  var i = 0
+  while i < len(s) {
+    let val = s[i]
+    let res = classifySequence(val)
+    print(padLeft(val, 7) + ": " + padRight(res["aliquot"] as string, 15) + " " + joinWithCommas(res["seq"] as list<int>))
+    i = i + 1
+  }
+  print("")
+  let big = 15355717786080
+  let r = classifySequence(big)
+  print(str(big) + ": " + padRight(r["aliquot"] as string, 15) + " " + joinWithCommas(r["seq"] as list<int>))
+}
+
+main()
