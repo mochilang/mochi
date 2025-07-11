@@ -1,0 +1,16 @@
+// Babbage problem implemented in Mochi
+// Find the smallest positive integer whose square ends with 269696
+
+let target = 269696
+let modulus = 1000000
+
+var n = 1
+while true {
+  let square = n * n
+  let ending = square % modulus
+  if ending == target {
+    print("The smallest number whose square ends with " + str(target) + " is " + str(n))
+    break
+  }
+  n = n + 1
+}
