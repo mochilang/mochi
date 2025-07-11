@@ -22,12 +22,12 @@ type record1 = { mutable id : int; mutable name : string }
 type record2 = { mutable id : int; mutable nation : int }
 type record3 = { mutable part : int; mutable supplier : int; mutable cost : float; mutable qty : int }
 type record4 = { mutable part : Obj.t; mutable value : Obj.t }
-type record5 = { mutable part : Obj.t; mutable total : float }
+type record5 = { mutable part : Obj.t; mutable total : int }
 
 let nations : record1 list = [{ id = 1; name = "A" };{ id = 2; name = "B" }]
 let suppliers : record2 list = [{ id = 1; nation = 1 };{ id = 2; nation = 2 }]
 let partsupp : record3 list = [{ part = 100; supplier = 1; cost = 10; qty = 2 };{ part = 100; supplier = 2; cost = 20; qty = 1 };{ part = 200; supplier = 1; cost = 5; qty = 3 }]
-let filtered : (string * Obj.t) list list = (let __res0 = ref [] in
+let filtered : record4 list = (let __res0 = ref [] in
   List.iter (fun ps ->
       List.iter (fun s ->
             List.iter (fun n ->
@@ -38,7 +38,7 @@ let filtered : (string * Obj.t) list list = (let __res0 = ref [] in
   ) partsupp;
 List.rev !__res0)
 
-let grouped : (string * Obj.t) list list = (let __groups1 = ref [] in
+let grouped : record5 list = (let __groups1 = ref [] in
   List.iter (fun x ->
       let key = Obj.obj (List.assoc "part" x) in
       let cur = try List.assoc key !__groups1 with Not_found -> [] in

@@ -27,7 +27,7 @@
 let customers : record1 list = [{ id = 1; name = "Alice" };{ id = 2; name = "Bob" }]
 let orders : record2 list = [{ id = 100; customerId = 1 };{ id = 101; customerId = 2 }]
 let items : record3 list = [{ orderId = 100; sku = "a" }]
-let result : (string * Obj.t) list list = (let __res0 = ref [] in
+let result : record4 list = (let __res0 = ref [] in
   List.iter (fun o ->
       List.iter (fun c ->
       let matched = ref false in

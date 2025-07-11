@@ -12,5 +12,5 @@ Context (around line 29):
   27 | let nations : record1 list = [{ id = 1; name = "A" };{ id = 2; name = "B" }]
   28 | let suppliers : record2 list = [{ id = 1; nation = 1 };{ id = 2; nation = 2 }]
   29 | let partsupp : record3 list = [{ part = 100; supplier = 1; cost = 10; qty = 2 };{ part = 100; supplier = 2; cost = 20; qty = 1 };{ part = 200; supplier = 1; cost = 5; qty = 3 }]
-  30 | let filtered : (string * Obj.t) list list = (let __res0 = ref [] in
+  30 | let filtered : record4 list = (let __res0 = ref [] in
   31 |   List.iter (fun ps ->

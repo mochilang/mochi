@@ -23,7 +23,7 @@
   type record2 = { mutable name : Obj.t; mutable age : Obj.t; mutable is_senior : bool }
 
 let people : record1 list = [{ name = "Alice"; age = 30 };{ name = "Bob"; age = 15 };{ name = "Charlie"; age = 65 };{ name = "Diana"; age = 45 }]
-let adults : (string * Obj.t) list list = (let __res0 = ref [] in
+let adults : record2 list = (let __res0 = ref [] in
   List.iter (fun person ->
       if (Obj.obj (List.assoc "age" person) >= 18) then
     __res0 := { name = Obj.obj (List.assoc "name" person); age = Obj.obj (List.assoc "age" person); is_senior = (Obj.obj (List.assoc "age" person) >= 60) } :: !__res0;

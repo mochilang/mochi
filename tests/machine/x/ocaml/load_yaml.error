@@ -1,16 +1,15 @@
 stage: compile
 error:
-File "/workspace/mochi/tests/machine/x/ocaml/load_yaml.ml", line 59, characters 0-16:
-59 | List.rev !__res0)
-     ^^^^^^^^^^^^^^^^
+File "/workspace/mochi/tests/machine/x/ocaml/load_yaml.ml", line 72, characters 16-22:
+72 |     try __loop1 adults with Break -> ()
+                     ^^^^^^
 Error: This expression has type record1 list
        but an expression was expected of type (string * Obj.t) list list
        Type record1 is not compatible with type (string * Obj.t) list 
 
 
-Context (around line 59):
-  57 |     __res0 := { name = p.name; email = p.email } :: !__res0;
-  58 |   ) people;
-  59 | List.rev !__res0)
-  60 | 
-  61 | 
+Context (around line 72):
+  70 |         ; __loop1 rest
+  71 |     in
+  72 |     try __loop1 adults with Break -> ()
+  73 | 

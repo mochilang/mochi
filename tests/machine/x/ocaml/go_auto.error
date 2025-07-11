@@ -1,0 +1,8 @@
+stage: compile
+error:
+unsupported statement at line 1
+
+Context (around line 1):
+   1 | import go "mochi/runtime/ffi/go/testpkg" as testpkg auto
+   2 | 
+   3 | print(testpkg.Add(2,3))

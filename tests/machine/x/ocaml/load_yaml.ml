@@ -51,7 +51,7 @@
 
 type person = { mutable name : string; mutable age : int; mutable email : string }
 let people : person list = List.map (fun m -> { name = (Obj.obj (List.assoc "name" m) : string); age = (Obj.obj (List.assoc "age" m) : int); email = (Obj.obj (List.assoc "email" m) : string) }) (load_yaml "../interpreter/valid/people.yaml")
-let adults : (string * Obj.t) list list = (let __res0 = ref [] in
+let adults : record1 list = (let __res0 = ref [] in
   List.iter (fun p ->
       if (p.age >= 18) then
     __res0 := { name = p.name; email = p.email } :: !__res0;
