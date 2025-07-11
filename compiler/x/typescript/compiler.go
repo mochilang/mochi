@@ -131,6 +131,16 @@ func simpleExprType(e *parser.Expr) string {
 			return "boolean"
 		}
 	}
+	if p.Call != nil && len(p.Call.Args) == 1 {
+		switch p.Call.Func {
+		case "sum", "count", "avg", "min", "max", "len":
+			return "number"
+		case "str", "string":
+			return "string"
+		case "bool":
+			return "boolean"
+		}
+	}
 	return "any"
 }
 
@@ -909,9 +919,9 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 			writeln("if (!(" + havingStr + ")) continue;")
 		}
 		if sortStr != "" {
-			writeln("res.push({item: " + sel + ", key: " + sortStr + "});")
+			writeln(fmt.Sprintf("%s.push({item: %s, key: %s});", res, sel, sortStr))
 		} else {
-			writeln("res.push(" + sel + ");")
+			writeln(fmt.Sprintf("%s.push(%s);", res, sel))
 		}
 		indent--
 		writeln("}")
@@ -981,9 +991,9 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 					writeln("if (!(" + whereStr + ")) continue;")
 				}
 				if sortStr != "" {
-					writeln(res + ".push({item: " + sel + ", key: " + sortStr + "});")
+					writeln(fmt.Sprintf("%s.push({item: %s, key: %s});", res, sel, sortStr))
 				} else {
-					writeln(res + ".push(" + sel + ");")
+					writeln(fmt.Sprintf("%s.push(%s);", res, sel))
 				}
 				for range q.Joins {
 					indent--
@@ -1014,9 +1024,9 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 				writeln("if (!(" + whereStr + ")) continue;")
 			}
 			if sortStr != "" {
-				writeln(res + ".push({item: " + sel + ", key: " + sortStr + "});")
+				writeln(fmt.Sprintf("%s.push({item: %s, key: %s});", res, sel, sortStr))
 			} else {
-				writeln(res + ".push(" + sel + ");")
+				writeln(fmt.Sprintf("%s.push(%s);", res, sel))
 			}
 			for range q.Joins {
 				indent--
@@ -1033,14 +1043,14 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	}
 
 	if sortStr != "" {
-		writeln("res = res.sort((a,b)=> a.key < b.key ? -1 : a.key > b.key ? 1 : 0).map(x=>x.item);")
+		writeln(fmt.Sprintf("%s = %s.sort((a,b)=> a.key < b.key ? -1 : a.key > b.key ? 1 : 0).map(x=>x.item);", res, res))
 	}
 	if skipStr != "" || takeStr != "" {
 		start := "0"
 		if skipStr != "" {
 			start = skipStr
 		}
-		end := "res.length"
+		end := fmt.Sprintf("%s.length", res)
 		if takeStr != "" {
 			if skipStr != "" {
 				end = "(" + skipStr + " + " + takeStr + ")"
@@ -1048,9 +1058,9 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 				end = takeStr
 			}
 		}
-		writeln(fmt.Sprintf("res = res.slice(%s, %s);", start, end))
+		writeln(fmt.Sprintf("%s = %s.slice(%s, %s);", res, res, start, end))
 	}
-	writeln("return res;")
+	writeln(fmt.Sprintf("return %s;", res))
 	indent--
 	writeln("})()")
 	return b.String(), nil

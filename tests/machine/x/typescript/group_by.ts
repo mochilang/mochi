@@ -31,7 +31,7 @@ const people = [
 }
 ];
 const stats = (() => {
-  const _tmp1: Array<{ avg_age: any; city: any; count: any }> = [];
+  const _tmp1: Array<{ avg_age: number; city: any; count: number }> = [];
   const groups = {};
   for (const person of people) {
     const _k = JSON.stringify(person.city);
@@ -41,13 +41,13 @@ const stats = (() => {
   }
   for (const _k in groups) {
     const g = groups[_k];
-    res.push({
+    _tmp1.push({
   city: g.key,
   count: g.length,
   avg_age: (g.map((p) => p.age).reduce((a,b)=>a+b,0)/g.map((p) => p.age).length)
 });
   }
-  return res;
+  return _tmp1;
 })()
 ;
 console.log("--- People grouped by city ---");
