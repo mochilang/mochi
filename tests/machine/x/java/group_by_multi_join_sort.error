@@ -1,5 +1,5 @@
 line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramsgroup_by_multi_join_sort3830789613/001/Main.java:117: error: bad operand types for binary operator '&&'
+/tmp/TestCompileValidProgramsgroup_by_multi_join_sort1036556409/001/GroupByMultiJoinSort.java:117: error: bad operand types for binary operator '&&'
 					if (!(Objects.equals(String.valueOf(String.valueOf(o.o_orderdate).compareTo(String.valueOf(start_date)) >= 0 && o.o_orderdate).compareTo(String.valueOf(end_date)) < 0 && l.l_returnflag, "R"))) continue;
 					                                                                                                             ^
   first type:  boolean

@@ -1,10 +1,10 @@
 line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramsmap_assign2253198580/001/Main.java:11: error: cannot find symbol
+/tmp/TestCompileValidProgramsmap_assign3171864320/001/MapAssign.java:10: error: cannot find symbol
 	scores.bob = 2;
 	      ^
   symbol:   variable bob
   location: variable scores of type ScoresAlice
-/tmp/TestCompileValidProgramsmap_assign2253198580/001/Main.java:12: error: cannot find symbol
+/tmp/TestCompileValidProgramsmap_assign3171864320/001/MapAssign.java:11: error: cannot find symbol
 	System.out.println(scores.bob);
 	                         ^
   symbol:   variable bob

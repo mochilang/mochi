@@ -1,7 +1,7 @@
 line 0: run error: exit status 1
 Exception in thread "main" java.lang.ClassCastException: class PeopleAgeName cannot be cast to class java.util.Map (PeopleAgeName is in unnamed module of loader 'app'; java.util.Map is in module java.base of loader 'bootstrap')
-	at Main.saveJsonl(Main.java:13)
-	at Main.main(Main.java:20)
+	at SaveJsonlStdout.saveJsonl(SaveJsonlStdout.java:13)
+	at SaveJsonlStdout.main(SaveJsonlStdout.java:20)
 
 
   1| let people = [

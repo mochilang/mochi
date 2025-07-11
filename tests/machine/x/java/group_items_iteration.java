@@ -42,18 +42,13 @@ public class GroupItemsIteration {
 	}
 	return _res11;
 }}).get();
-	static <T> List<T> append(List<T> list, T item) {
-		List<T> res = new ArrayList<>(list);
-		res.add(item);
-		return res;
-	}
 	public static void main(String[] args) {
 	for (Object g : groups) {
 		int total = 0;
 		for (Object x : (List)((Map)g).get("items")) {
 			total = (int)(total + ((Number)((Map)x).get("val")).doubleValue());
 		}
-		tmp = append(tmp, new TmpTagTotal(((Map)g).get("key"), total));
+		tmp = java.util.stream.Stream.concat(tmp.stream(), java.util.stream.Stream.of(new TmpTagTotal(((Map)g).get("key"), total))).collect(java.util.stream.Collectors.toList());
 	}
 	System.out.println(result);
 	}

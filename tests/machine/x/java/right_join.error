@@ -1,8 +1,8 @@
 line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramsright_join4054051389/001/Main.java:42: error: incompatible types: Object cannot be converted to OrdersCustomerIdIdTotal
+/tmp/TestCompileValidProgramsright_join2360648770/001/RightJoin.java:42: error: incompatible types: Object cannot be converted to OrdersCustomerIdIdTotal
 			_res3.add(new ResultCustomerNameOrder(c.name, o));
 			                                              ^
-/tmp/TestCompileValidProgramsright_join4054051389/001/Main.java:50: error: incompatible types: OrdersCustomerIdIdTotal cannot be converted to boolean
+/tmp/TestCompileValidProgramsright_join2360648770/001/RightJoin.java:50: error: incompatible types: OrdersCustomerIdIdTotal cannot be converted to boolean
 		if (entry.order) {
 		         ^
 Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output

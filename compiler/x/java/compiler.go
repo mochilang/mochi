@@ -1706,8 +1706,17 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 			return "", err
 		}
 		if op.Op == "in" {
-			c.helpers["in"] = true
-			expr = fmt.Sprintf("inOp(%s, %s)", expr, right)
+			typ := c.inferType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}})
+			if typ == "String" {
+				expr = fmt.Sprintf("%s.contains(String.valueOf(%s))", right, expr)
+			} else if strings.HasPrefix(typ, "List<") {
+				expr = fmt.Sprintf("%s.contains(%s)", right, expr)
+			} else if strings.HasPrefix(typ, "Map<") {
+				expr = fmt.Sprintf("%s.containsKey(%s)", right, expr)
+			} else {
+				c.helpers["in"] = true
+				expr = fmt.Sprintf("inOp(%s, %s)", expr, right)
+			}
 			continue
 		}
 		if op.Op == "union" {
@@ -2060,7 +2069,6 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if len(p.Call.Args) != 2 {
 				return "", fmt.Errorf("append expects 2 arguments at line %d", p.Pos.Line)
 			}
-			c.helpers["append"] = true
 			a1, err := c.compileExpr(p.Call.Args[0])
 			if err != nil {
 				return "", err
@@ -2069,7 +2077,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			return fmt.Sprintf("append(%s, %s)", a1, a2), nil
+			return fmt.Sprintf("java.util.stream.Stream.concat(%s.stream(), java.util.stream.Stream.of(%s)).collect(java.util.stream.Collectors.toList())", a1, a2), nil
 		case "count":
 			if len(p.Call.Args) != 1 {
 				return "", fmt.Errorf("count expects 1 argument at line %d", p.Pos.Line)
@@ -2125,11 +2133,22 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if len(p.Call.Args) != 1 {
 				return "", fmt.Errorf("values expects 1 argument at line %d", p.Pos.Line)
 			}
-			c.helpers["values"] = true
 			a1, err := c.compileExpr(p.Call.Args[0])
 			if err != nil {
 				return "", err
 			}
+			typ := c.inferType(p.Call.Args[0])
+			if strings.HasPrefix(typ, "Map<") {
+				return fmt.Sprintf("new ArrayList<>(%s.values())", a1), nil
+			}
+			if dc := c.dataClassByName(typ); dc != nil {
+				var fields []string
+				for _, f := range dc.fields {
+					fields = append(fields, fmt.Sprintf("%s.%s", a1, f))
+				}
+				return fmt.Sprintf("Arrays.asList(%s)", strings.Join(fields, ", ")), nil
+			}
+			c.helpers["values"] = true
 			return fmt.Sprintf("values(%s)", a1), nil
 		case "exists":
 			if len(p.Call.Args) != 1 {
