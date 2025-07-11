@@ -1,0 +1,189 @@
+// Mochi implementation of Rosetta "Biorhythms" task
+// Translated from Go version in tests/rosetta/x/Go/biorhythms.go
+
+let PI: float = 3.141592653589793
+let TWO_PI: float = 6.283185307179586
+
+fun sinApprox(x: float): float {
+  var term = x
+  var sum = x
+  var n = 1
+  while n <= 8 {
+    let denom = ((2*n) * (2*n + 1)) as float
+    term = -term * x * x / denom
+    sum = sum + term
+    n = n + 1
+  }
+  return sum
+}
+
+fun floor(x: float): float {
+  var i = x as int
+  if (i as float) > x { i = i - 1 }
+  return i as float
+}
+
+fun absFloat(x: float): float { if x < 0.0 { return -x } return x }
+fun absInt(n: int): int { if n < 0 { return -n } return n }
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  let digits = {
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5,
+    "6": 6,
+    "7": 7,
+    "8": 8,
+    "9": 9,
+  }
+  while i < len(str) {
+    n = n * 10 + digits[str[i:i+1]]
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun parseDate(s: string): list<int> {
+  let y = parseIntStr(s[0:4])
+  let m = parseIntStr(s[5:7])
+  let d = parseIntStr(s[8:10])
+  return [y, m, d]
+}
+
+fun leap(y: int): bool {
+  if y % 400 == 0 { return true }
+  if y % 100 == 0 { return false }
+  return y % 4 == 0
+}
+
+fun daysInMonth(y: int, m: int): int {
+  let feb = if leap(y) { 29 } else { 28 }
+  let lengths = [31, feb, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+  return lengths[m-1]
+}
+
+fun addDays(y: int, m: int, d: int, n: int): list<int> {
+  var yy = y
+  var mm = m
+  var dd = d
+  if n >= 0 {
+    var i = 0
+    while i < n {
+      dd = dd + 1
+      if dd > daysInMonth(yy, mm) {
+        dd = 1
+        mm = mm + 1
+        if mm > 12 {
+          mm = 1
+          yy = yy + 1
+        }
+      }
+      i = i + 1
+    }
+  } else {
+    var i = 0
+    while i > n {
+      dd = dd - 1
+      if dd < 1 {
+        mm = mm - 1
+        if mm < 1 {
+          mm = 12
+          yy = yy - 1
+        }
+        dd = daysInMonth(yy, mm)
+      }
+      i = i - 1
+    }
+  }
+  return [yy, mm, dd]
+}
+
+fun pad2(n: int): string { if n < 10 { return "0" + str(n) } return str(n) }
+
+fun dateString(y: int, m: int, d: int): string {
+  return str(y) + "-" + pad2(m) + "-" + pad2(d)
+}
+
+fun day(y: int, m: int, d: int): int {
+  let part1 = 367 * y
+  let part2 = ((7 * ((y + ((m + 9) / 12)) as int)) / 4) as int
+  let part3 = ((275 * m) / 9) as int
+  return part1 - part2 + part3 + d - 730530
+}
+
+fun biorhythms(birth: string, target: string) {
+  let bparts = parseDate(birth)
+  let by = bparts[0]
+  let bm = bparts[1]
+  let bd = bparts[2]
+  let tparts = parseDate(target)
+  let ty = tparts[0]
+  let tm = tparts[1]
+  let td = tparts[2]
+  let diff = absInt(day(ty, tm, td) - day(by, bm, bd))
+
+  print("Born " + birth + ", Target " + target)
+  print("Day " + str(diff))
+
+  let cycles = ["Physical day ", "Emotional day", "Mental day   "]
+  let lengths = [23, 28, 33]
+  let quadrants = [["up and rising", "peak"], ["up but falling", "transition"], ["down and falling", "valley"], ["down but rising", "transition"]]
+
+  var i = 0
+  while i < 3 {
+    let length = lengths[i]
+    let cycle = cycles[i]
+    let position = diff % length
+    let quadrant = (position * 4) / length
+    var percent = sinApprox(2.0 * PI * (position as float) / (length as float))
+    percent = floor(percent * 1000.0) / 10.0
+    var description = ""
+    if percent > 95.0 {
+      description = " peak"
+    } else if percent < (-95.0) {
+      description = " valley"
+    } else if absFloat(percent) < 5.0 {
+      description = " critical transition"
+    } else {
+      let daysToAdd = (quadrant + 1) * length / 4 - position
+      let res = addDays(ty, tm, td, daysToAdd)
+      let ny = res[0]
+      let nm = res[1]
+      let nd = res[2]
+      let transition = dateString(ny, nm, nd)
+      let trend = quadrants[quadrant][0]
+      let next = quadrants[quadrant][1]
+      var pct = str(percent)
+      if !contains(pct, ".") { pct = pct + ".0" }
+      description = " " + pct + "% (" + trend + ", next " + next + " " + transition + ")"
+    }
+    var posStr = str(position)
+    if position < 10 { posStr = " " + posStr }
+    print(cycle + posStr + " : " + description)
+    i = i + 1
+  }
+  print("")
+}
+
+fun main() {
+  let pairs = [["1943-03-09", "1972-07-11"], ["1809-01-12", "1863-11-19"], ["1809-02-12", "1863-11-19"]]
+  var idx = 0
+  while idx < len(pairs) {
+    let p = pairs[idx]
+    biorhythms(p[0], p[1])
+    idx = idx + 1
+  }
+}
+
+main()
