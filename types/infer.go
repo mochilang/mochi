@@ -445,6 +445,19 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 				}
 			}
 			return ListType{Elem: AnyType{}}
+		case "append":
+			if len(p.Call.Args) == 2 {
+				t := ExprType(p.Call.Args[0], env)
+				if lt, ok := t.(ListType); ok {
+					elem := lt.Elem
+					argT := ExprType(p.Call.Args[1], env)
+					if !equalTypes(elem, argT) {
+						elem = AnyType{}
+					}
+					return ListType{Elem: elem}
+				}
+			}
+			return ListType{Elem: AnyType{}}
 		case "now":
 			return Int64Type{}
 		case "to_json":

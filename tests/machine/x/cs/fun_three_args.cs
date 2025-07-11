@@ -1,7 +1,7 @@
 using System;
 
 class Program {
-    static long sum3(long a, long b, long c) {
+    static int sum3(int a, int b, int c) {
         return ((a + b) + c);
     }
     

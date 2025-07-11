@@ -4,7 +4,7 @@ using System.Text.Json;
 
 class Program {
     static void Main() {
-        Console.WriteLine(_cast<long>("1995"));
+        Console.WriteLine(_cast<int>("1995"));
     }
     static T _cast<T>(dynamic v) {
         if (v is T tv) return tv;

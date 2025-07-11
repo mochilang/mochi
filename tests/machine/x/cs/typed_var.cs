@@ -2,7 +2,7 @@ using System;
 
 class Program {
     static void Main() {
-        long x = default;
+        int x = default;
         Console.WriteLine(x);
     }
 }

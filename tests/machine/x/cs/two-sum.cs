@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 
 class Program {
-    static List<long> twoSum(List<long> nums, long target) {
+    static List<int> twoSum(List<int> nums, int target) {
         int n = nums.Length;
         for (var i = 0; i < n; i++) {
             for (var j = (i + 1); j < n; j++) {

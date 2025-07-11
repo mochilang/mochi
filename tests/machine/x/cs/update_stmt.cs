@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public record struct Person {
     public string name;
-    public long age;
+    public int age;
     public string status;
 }
 

@@ -1,7 +1,7 @@
 using System;
 
 class Program {
-    static bool boom(long a, long b) {
+    static bool boom(int a, int b) {
         Console.WriteLine("boom");
         return true;
     }

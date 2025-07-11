@@ -1,7 +1,7 @@
 using System;
 
 class Program {
-    static long triple(long x) {
+    static int triple(int x) {
         return (x * 3);
     }
     

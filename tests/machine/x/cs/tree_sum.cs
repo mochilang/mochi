@@ -6,13 +6,13 @@ public struct Leaf : Tree {
 }
 public struct Node : Tree {
     public Tree left;
-    public long value;
+    public int value;
     public Tree right;
     public void isTree() {}
 }
 
 class Program {
-    static long sum_tree(Tree t) {
+    static int sum_tree(Tree t) {
         return new Func<dynamic>(() => {
         var _t = t;
         if (_t is Leaf) return 0;
