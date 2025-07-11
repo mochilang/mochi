@@ -23,7 +23,7 @@ fn append<T: Clone>(mut v: Vec<T>, item: T) -> Vec<T> {
 
 fn main() {
     let data = vec![Data { tag: "a", val: 1 }, Data { tag: "a", val: 2 }, Data { tag: "b", val: 3 }];
-    let groups = { let mut tmp1 = std::collections::HashMap::new();for d in &data { let key = d.tag; tmp1.entry(key).or_insert_with(Vec::new).push(d.clone()); } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } let mut result = Vec::new(); for g in tmp2 { result.push(g.clone()); } result };
+    let groups = { let mut tmp1 = std::collections::HashMap::new();for d in &data { let key = d.tag; tmp1.entry(key).or_insert_with(Vec::new).push(d.clone()); } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(g.clone()); } result };
     let mut tmp = vec![];
     for g in groups {
         let mut total = 0;
