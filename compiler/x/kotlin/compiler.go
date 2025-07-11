@@ -646,6 +646,22 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 }
 
 func (c *Compiler) typeDecl(t *parser.TypeDecl) error {
+	if len(t.Members) == 0 && len(t.Variants) > 0 {
+		c.writeln(fmt.Sprintf("sealed class %s", t.Name))
+		c.writeln("")
+		for _, v := range t.Variants {
+			if len(v.Fields) == 0 {
+				c.writeln(fmt.Sprintf("object %s : %s()", v.Name, t.Name))
+				continue
+			}
+			fields := make([]string, len(v.Fields))
+			for i, f := range v.Fields {
+				fields[i] = fmt.Sprintf("val %s: %s", escapeIdent(f.Name), c.typeName(f.Type))
+			}
+			c.writeln(fmt.Sprintf("data class %s(%s) : %s()", v.Name, strings.Join(fields, ", "), t.Name))
+		}
+		return nil
+	}
 	if len(t.Members) == 0 {
 		return nil
 	}
@@ -1438,7 +1454,16 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		for _, j := range q.Joins {
 			rowParts = append(rowParts, fmt.Sprintf("\"%s\" to %s", j.Var, j.Var))
 		}
-		row := "mutableMapOf(" + strings.Join(rowParts, ", ") + ") as MutableMap<Any?, Any?>"
+		var row string
+		if len(rowParts) == 1 {
+			if t, err := c.env.GetVar(q.Var); err == nil && isStructType(t) {
+				row = q.Var
+			} else {
+				row = "mutableMapOf(" + rowParts[0] + ") as MutableMap<Any?, Any?>"
+			}
+		} else {
+			row = "mutableMapOf(" + strings.Join(rowParts, ", ") + ") as MutableMap<Any?, Any?>"
+		}
 		b.WriteString(fmt.Sprintf("__g.add(%s)\n", row))
 	} else {
 		selAdd := sel

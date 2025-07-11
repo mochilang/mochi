@@ -1,9 +1,9 @@
 class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
-data class Item(var cat: String, var val: Int)
+data class Item(var cat: String, var `val`: Int)
 
 data class Grouped(var cat: Any?, var total: Int)
 
-val items = mutableListOf(Item(cat = "a", val = 3), Item(cat = "a", val = 1), Item(cat = "b", val = 5), Item(cat = "b", val = 2))
+val items = mutableListOf(Item(cat = "a", `val` = 3), Item(cat = "a", `val` = 1), Item(cat = "b", `val` = 5), Item(cat = "b", `val` = 2))
 
 val grouped = run {
     val __groups = mutableMapOf<Any?, Group>()
@@ -16,7 +16,7 @@ val grouped = run {
             __groups[__k] = __g
             __order.add(__k)
         }
-        __g.add(mutableMapOf("i" to i) as MutableMap<Any?, Any?>)
+        __g.add(i)
     }
     val __res = mutableListOf<Grouped>()
     for (k in __order) {
@@ -27,7 +27,7 @@ val grouped = run {
         __res.add(x.val)
     }
     __res
-}.sumOf { toInt(it) }))
+}.sum()))
     }
     __res
 }.sortedByDescending { run {
@@ -36,7 +36,7 @@ val grouped = run {
         __res.add(x.val)
     }
     __res
-}.sumOf { toInt(it) } as Comparable<Any> }
+}.sum() as Comparable<Any> }
 
 fun main() {
     println(grouped)

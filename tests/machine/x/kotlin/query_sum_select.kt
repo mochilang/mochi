@@ -4,7 +4,7 @@ val result = run {
     val __res = mutableListOf<Any?>()
     for (n in nums) {
         if (n > 1) {
-            __res.add(n.sumOf { toInt(it) })
+            __res.add(n.sum())
         }
     }
     __res
