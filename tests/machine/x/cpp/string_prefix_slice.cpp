@@ -1,9 +1,9 @@
 #include <iostream>
-
-auto prefix = std::string("fore");
-auto s1 = std::string("forest");
+#include <string>
 
 int main() {
+  auto prefix = std::string("fore");
+  auto s1 = std::string("forest");
   std::cout << std::boolalpha
             << (std::string(s1).substr(0, (prefix.size()) - (0)) == prefix)
             << std::endl;

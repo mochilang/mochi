@@ -1,14 +1,16 @@
 #include <iostream>
 #include <vector>
 
-std::vector<int> a = std::vector<decltype(1)>{1, 2};
-
+template <typename T, typename U>
+std::vector<T> __append(const std::vector<T> &v, const U &x) {
+  auto r = v;
+  r.push_back(x);
+  return r;
+}
 int main() {
+  std::vector<int> a = std::vector<decltype(1)>{1, 2};
   {
-    auto __tmp1 = ([&](auto v) {
-      v.push_back(3);
-      return v;
-    })(a);
+    auto __tmp1 = __append(a, 3);
     bool first = true;
     for (const auto &_x : __tmp1) {
       if (!first)

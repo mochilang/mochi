@@ -1,5 +1,6 @@
 #include <iostream>
 #include <map>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -154,39 +155,38 @@ inline void __json(const __struct3 &v) {
   __json(v.sku);
   std::cout << "}";
 }
-std::vector<__struct1> customers =
-    std::vector<decltype(__struct1{1, std::string("Alice")})>{
-        __struct1{1, std::string("Alice")}, __struct1{2, std::string("Bob")}};
-std::vector<__struct2> orders = std::vector<decltype(__struct2{100, 1})>{
-    __struct2{100, 1}, __struct2{101, 2}};
-std::vector<__struct3> items =
-    std::vector<decltype(__struct3{100, std::string("a")})>{
-        __struct3{100, std::string("a")}};
-auto result = ([]() {
-  std::vector<__struct4> __items;
-  for (auto o : orders) {
-    for (auto c : customers) {
-      if (!((o.customerId == c.id)))
-        continue;
-      {
-        bool __matched1 = false;
-        for (auto i : items) {
-          if (!((o.id == i.orderId)))
-            continue;
-          __matched1 = true;
-          __items.push_back(__struct4{o.id, c.name, i});
-        }
-        if (!__matched1) {
-          auto i = std::decay_t<decltype(*(items).begin())>{};
-          __items.push_back(__struct4{o.id, c.name, i});
+int main() {
+  std::vector<__struct1> customers =
+      std::vector<decltype(__struct1{1, std::string("Alice")})>{
+          __struct1{1, std::string("Alice")}, __struct1{2, std::string("Bob")}};
+  std::vector<__struct2> orders = std::vector<decltype(__struct2{100, 1})>{
+      __struct2{100, 1}, __struct2{101, 2}};
+  std::vector<__struct3> items =
+      std::vector<decltype(__struct3{100, std::string("a")})>{
+          __struct3{100, std::string("a")}};
+  auto result = ([&]() {
+    std::vector<__struct4> __items;
+    for (auto o : orders) {
+      for (auto c : customers) {
+        if (!((o.customerId == c.id)))
+          continue;
+        {
+          bool __matched1 = false;
+          for (auto i : items) {
+            if (!((o.id == i.orderId)))
+              continue;
+            __matched1 = true;
+            __items.push_back(__struct4{o.id, c.name, i});
+          }
+          if (!__matched1) {
+            auto i = std::decay_t<decltype(*(items).begin())>{};
+            __items.push_back(__struct4{o.id, c.name, i});
+          }
         }
       }
     }
-  }
-  return __items;
-})();
-
-int main() {
+    return __items;
+  })();
   std::cout << std::string("--- Left Join Multi ---") << std::endl;
   for (auto r : result) {
     {

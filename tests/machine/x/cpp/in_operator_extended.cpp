@@ -1,20 +1,20 @@
 #include <algorithm>
 #include <iostream>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
-std::vector<int> xs = std::vector<decltype(1)>{1, 2, 3};
-auto ys = ([]() {
-  std::vector<int> __items;
-  for (auto x : xs) {
-    if (!(((x % 2) == 1)))
-      continue;
-    __items.push_back(x);
-  }
-  return __items;
-})();
-
 int main() {
+  std::vector<int> xs = std::vector<decltype(1)>{1, 2, 3};
+  auto ys = ([&]() {
+    std::vector<int> __items;
+    for (auto x : xs) {
+      if (!(((x % 2) == 1)))
+        continue;
+      __items.push_back(x);
+    }
+    return __items;
+  })();
   std::cout << std::boolalpha
             << (std::find(ys.begin(), ys.end(), 1) != ys.end()) << std::endl;
   std::cout << std::boolalpha

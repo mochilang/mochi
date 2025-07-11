@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <iostream>
 #include <numeric>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -116,99 +117,98 @@ inline bool operator==(const __struct8 &a, const __struct8 &b) {
 inline bool operator!=(const __struct8 &a, const __struct8 &b) {
   return !(a == b);
 }
-std::vector<__struct1> nation =
-    std::vector<decltype(__struct1{1, std::string("BRAZIL")})>{
-        __struct1{1, std::string("BRAZIL")}};
-std::vector<__struct2> customer = std::vector<decltype(__struct2{
-    1, std::string("Alice"), 100, 1, std::string("123 St"),
-    std::string("123-456"), std::string("Loyal")})>{
-    __struct2{1, std::string("Alice"), 100, 1, std::string("123 St"),
-              std::string("123-456"), std::string("Loyal")}};
-std::vector<__struct3> orders =
-    std::vector<decltype(__struct3{1000, 1, std::string("1993-10-15")})>{
-        __struct3{1000, 1, std::string("1993-10-15")},
-        __struct3{2000, 1, std::string("1994-01-02")}};
-std::vector<__struct4> lineitem =
-    std::vector<decltype(__struct4{1000, std::string("R"), 1000, 0.1})>{
-        __struct4{1000, std::string("R"), 1000, 0.1},
-        __struct4{2000, std::string("N"), 500, 0}};
-auto start_date = std::string("1993-10-01");
-auto end_date = std::string("1994-01-01");
-auto result = ([]() {
-  std::vector<__struct7> __groups;
-  for (auto c : customer) {
-    for (auto o : orders) {
-      if (!((o.o_custkey == c.c_custkey)))
-        continue;
-      for (auto l : lineitem) {
-        if (!((l.l_orderkey == o.o_orderkey)))
+int main() {
+  std::vector<__struct1> nation =
+      std::vector<decltype(__struct1{1, std::string("BRAZIL")})>{
+          __struct1{1, std::string("BRAZIL")}};
+  std::vector<__struct2> customer = std::vector<decltype(__struct2{
+      1, std::string("Alice"), 100, 1, std::string("123 St"),
+      std::string("123-456"), std::string("Loyal")})>{
+      __struct2{1, std::string("Alice"), 100, 1, std::string("123 St"),
+                std::string("123-456"), std::string("Loyal")}};
+  std::vector<__struct3> orders =
+      std::vector<decltype(__struct3{1000, 1, std::string("1993-10-15")})>{
+          __struct3{1000, 1, std::string("1993-10-15")},
+          __struct3{2000, 1, std::string("1994-01-02")}};
+  std::vector<__struct4> lineitem =
+      std::vector<decltype(__struct4{1000, std::string("R"), 1000, 0.1})>{
+          __struct4{1000, std::string("R"), 1000, 0.1},
+          __struct4{2000, std::string("N"), 500, 0}};
+  auto start_date = std::string("1993-10-01");
+  auto end_date = std::string("1994-01-01");
+  auto result = ([&]() {
+    std::vector<__struct7> __groups;
+    for (auto c : customer) {
+      for (auto o : orders) {
+        if (!((o.o_custkey == c.c_custkey)))
           continue;
-        for (auto n : nation) {
-          if (!((n.n_nationkey == c.c_nationkey)))
+        for (auto l : lineitem) {
+          if (!((l.l_orderkey == o.o_orderkey)))
             continue;
-          if (!((((o.o_orderdate >= start_date) &&
-                  (o.o_orderdate < end_date)) &&
-                 (l.l_returnflag == std::string("R")))))
-            continue;
-          auto __key =
-              __struct5{c.c_custkey, c.c_name,    c.c_acctbal, c.c_address,
-                        c.c_phone,   c.c_comment, n.n_name};
-          bool __found = false;
-          for (auto &__g : __groups) {
-            if (__g.key == __key) {
-              __g.items.push_back(__struct6{c, o, l, n});
-              __found = true;
-              break;
+          for (auto n : nation) {
+            if (!((n.n_nationkey == c.c_nationkey)))
+              continue;
+            if (!((((o.o_orderdate >= start_date) &&
+                    (o.o_orderdate < end_date)) &&
+                   (l.l_returnflag == std::string("R")))))
+              continue;
+            auto __key =
+                __struct5{c.c_custkey, c.c_name,    c.c_acctbal, c.c_address,
+                          c.c_phone,   c.c_comment, n.n_name};
+            bool __found = false;
+            for (auto &__g : __groups) {
+              if (__g.key == __key) {
+                __g.items.push_back(__struct6{c, o, l, n});
+                __found = true;
+                break;
+              }
             }
-          }
-          if (!__found) {
-            __groups.push_back(__struct7{
-                __key, std::vector<__struct6>{__struct6{c, o, l, n}}});
+            if (!__found) {
+              __groups.push_back(__struct7{
+                  __key, std::vector<__struct6>{__struct6{c, o, l, n}}});
+            }
           }
         }
       }
     }
-  }
-  std::vector<std::pair<double, __struct8>> __items;
-  for (auto &g : __groups) {
-    __items.push_back(
-        {(-([&](auto v) {
-           return std::accumulate(v.begin(), v.end(), 0);
-         })(([&]() {
-           std::vector<decltype((
-               std::declval<__struct6>().l.l_extendedprice *
-               ((1 - std::declval<__struct6>().l.l_discount))))>
-               __items;
-           for (auto x : g.items) {
-             __items.push_back((x.l.l_extendedprice * ((1 - x.l.l_discount))));
-           }
-           return __items;
-         })())),
-         __struct8{g.key.c_custkey, g.key.c_name, ([&](auto v) {
-                     return std::accumulate(v.begin(), v.end(), 0);
-                   })(([&]() {
-                     std::vector<decltype((
-                         std::declval<__struct6>().l.l_extendedprice *
-                         ((1 - std::declval<__struct6>().l.l_discount))))>
-                         __items;
-                     for (auto x : g.items) {
-                       __items.push_back(
-                           (x.l.l_extendedprice * ((1 - x.l.l_discount))));
-                     }
-                     return __items;
-                   })()),
-                   g.key.c_acctbal, g.key.n_name, g.key.c_address,
-                   g.key.c_phone, g.key.c_comment}});
-  }
-  std::sort(__items.begin(), __items.end(),
-            [](auto &a, auto &b) { return a.first < b.first; });
-  std::vector<__struct8> __res;
-  for (auto &p : __items)
-    __res.push_back(p.second);
-  return __res;
-})();
-
-int main() {
+    std::vector<std::pair<double, __struct8>> __items;
+    for (auto &g : __groups) {
+      __items.push_back(
+          {(-([&](auto v) { return std::accumulate(v.begin(), v.end(), 0); })(
+               ([&]() {
+                 std::vector<decltype((
+                     std::declval<__struct6>().l.l_extendedprice *
+                     ((1 - std::declval<__struct6>().l.l_discount))))>
+                     __items;
+                 for (auto x : g.items) {
+                   __items.push_back(
+                       (x.l.l_extendedprice * ((1 - x.l.l_discount))));
+                 }
+                 return __items;
+               })())),
+           __struct8{g.key.c_custkey, g.key.c_name, ([&](auto v) {
+                       return std::accumulate(v.begin(), v.end(), 0);
+                     })(([&]() {
+                       std::vector<decltype((
+                           std::declval<__struct6>().l.l_extendedprice *
+                           ((1 - std::declval<__struct6>().l.l_discount))))>
+                           __items;
+                       for (auto x : g.items) {
+                         __items.push_back(
+                             (x.l.l_extendedprice * ((1 - x.l.l_discount))));
+                       }
+                       return __items;
+                     })()),
+                     g.key.c_acctbal, g.key.n_name, g.key.c_address,
+                     g.key.c_phone, g.key.c_comment}});
+    }
+    std::sort(__items.begin(), __items.end(),
+              [](auto &a, auto &b) { return a.first < b.first; });
+    std::vector<__struct8> __res;
+    for (auto &p : __items)
+      __res.push_back(p.second);
+    return __res;
+  })();
   {
     auto __tmp1 = result;
     bool first = true;

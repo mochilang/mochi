@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 
 int main() {
   // test addition works

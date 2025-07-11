@@ -1,8 +1,8 @@
 #include <iostream>
-
-auto x = 5;
+#include <string>
 
 int main() {
+  auto x = 5;
   if ((x > 3)) {
     std::cout << std::string("big") << std::endl;
   } else {

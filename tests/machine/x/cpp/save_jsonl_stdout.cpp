@@ -1,5 +1,6 @@
 #include <iostream>
 #include <map>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -73,11 +74,11 @@ inline void __json(const __struct1 &v) {
   __json(v.age);
   std::cout << "}";
 }
-std::vector<__struct1> people =
-    std::vector<decltype(__struct1{std::string("Alice"), 30})>{
-        __struct1{std::string("Alice"), 30}, __struct1{std::string("Bob"), 25}};
-
 int main() {
+  std::vector<__struct1> people =
+      std::vector<decltype(__struct1{std::string("Alice"), 30})>{
+          __struct1{std::string("Alice"), 30},
+          __struct1{std::string("Bob"), 25}};
   ([&]() {
     for (auto &x : people) {
       __json(x);

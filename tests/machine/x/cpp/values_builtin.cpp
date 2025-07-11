@@ -1,11 +1,11 @@
 #include <iostream>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
-auto m = std::unordered_map<std::string, decltype(1)>{
-    {std::string("a"), 1}, {std::string("b"), 2}, {std::string("c"), 3}};
-
 int main() {
+  auto m = std::unordered_map<std::string, decltype(1)>{
+      {std::string("a"), 1}, {std::string("b"), 2}, {std::string("c"), 3}};
   {
     auto __tmp1 = ([&]() {
       std::vector<int> v;

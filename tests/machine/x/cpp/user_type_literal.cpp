@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 
 struct Person {
   std::string name;
@@ -16,9 +17,8 @@ inline bool operator==(const Book &a, const Book &b) {
   return a.title == b.title && a.author == b.author;
 }
 inline bool operator!=(const Book &a, const Book &b) { return !(a == b); }
-auto book = Book{std::string("Go"), Person{std::string("Bob"), 42}};
-
 int main() {
+  auto book = Book{std::string("Go"), Person{std::string("Bob"), 42}};
   std::cout << std::boolalpha << book.author.name << std::endl;
   return 0;
 }
