@@ -1,0 +1,41 @@
+// Mochi implementation of Rosetta "Arithmetic-geometric-mean/Calculate Pi" task
+// Translated from Go version in tests/rosetta/x/Go/arithmetic-geometric-mean-calculate-pi.go
+
+fun abs(x: float): float {
+  if x < 0.0 { return -x }
+  return x
+}
+
+fun sqrtApprox(x: float): float {
+  var guess = x
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun agmPi(): float {
+  var a = 1.0
+  var g = 1.0 / sqrtApprox(2.0)
+  var sum = 0.0
+  var pow = 2.0
+  while abs(a - g) > 0.000000000000001 {
+    var t = (a + g) / 2.0
+    var u = sqrtApprox(a * g)
+    a = t
+    g = u
+    pow = pow * 2.0
+    var diff = a * a - g * g
+    sum = sum + diff * pow
+  }
+  var pi = 4.0 * a * a / (1.0 - sum)
+  return pi
+}
+
+fun main() {
+  print(str(agmPi()))
+}
+
+main()
