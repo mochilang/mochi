@@ -1,15 +1,13 @@
 line: 0
-error: cc error: exit status 1
-/workspace/mochi/tests/machine/x/c/python_math.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/python_math.c:14:14: error: ‘math’ undeclared (first use in this function)
-   14 |   int area = math.pi * math.pow(r, 2.0);
-      |              ^~~~
-/workspace/mochi/tests/machine/x/c/python_math.c:14:14: note: each undeclared identifier is reported only once for each function it appears in
-/workspace/mochi/tests/machine/x/c/python_math.c:19:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘double’ [-Wformat=]
-   19 |   printf("%d ", r);
-      |           ~^    ~
-      |            |    |
-      |            int  double
-      |           %f
-
+error: output mismatch
+-- got --
+Circle area with r = 1262918208 => 28
+Square root of 49: 7
+sin(π/4): 0.70710678118654746
+log(e): 1
+-- want --
+Circle area with r = 3 => 28.274333882308138
+Square root of 49: 7
+sin(π/4): 0.7071067811865475
+log(e): 1
    1: #include <stdio.h>

@@ -63,7 +63,7 @@ Checklist:
 - [x] map_int_key
 - [x] map_literal_dynamic
 - [x] map_membership
-- [x] map_nested_assign
+- [ ] map_nested_assign
 - [x] match_expr
 - [x] match_full
 - [x] math_ops
