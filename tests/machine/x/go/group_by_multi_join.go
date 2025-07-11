@@ -16,11 +16,11 @@ func main() {
 	}
 
 	var nations []NationsItem = []NationsItem{NationsItem{
-		Id:   1,
-		Name: "A",
+		1,
+		"A",
 	}, NationsItem{
-		Id:   2,
-		Name: "B",
+		2,
+		"B",
 	}}
 	_ = nations
 	type SuppliersItem struct {
@@ -29,11 +29,11 @@ func main() {
 	}
 
 	var suppliers []SuppliersItem = []SuppliersItem{SuppliersItem{
-		Id:     1,
-		Nation: 1,
+		1,
+		1,
 	}, SuppliersItem{
-		Id:     2,
-		Nation: 2,
+		2,
+		2,
 	}}
 	_ = suppliers
 	type PartsuppItem struct {
@@ -44,20 +44,20 @@ func main() {
 	}
 
 	var partsupp []PartsuppItem = []PartsuppItem{PartsuppItem{
-		Part:     100,
-		Supplier: 1,
-		Cost:     10.0,
-		Qty:      2,
+		100,
+		1,
+		10.0,
+		2,
 	}, PartsuppItem{
-		Part:     100,
-		Supplier: 2,
-		Cost:     20.0,
-		Qty:      1,
+		100,
+		2,
+		20.0,
+		1,
 	}, PartsuppItem{
-		Part:     200,
-		Supplier: 1,
-		Cost:     5.0,
-		Qty:      3,
+		200,
+		1,
+		5.0,
+		3,
 	}}
 	type Filtered struct {
 		Part  any `json:"part"`
@@ -78,8 +78,8 @@ func main() {
 					if n.Name == "A" {
 						if n.Name == "A" {
 							results = append(results, Filtered{
-								Part:  ps.Part,
-								Value: (ps.Cost * float64(ps.Qty)),
+								ps.Part,
+								(ps.Cost * float64(ps.Qty)),
 							})
 						}
 					}
@@ -111,8 +111,8 @@ func main() {
 		for _, ks := range order {
 			g := groups[ks]
 			results = append(results, Grouped{
-				Part: g.Key,
-				Total: _sum(func() []any {
+				g.Key,
+				_sum(func() []any {
 					results := []any{}
 					for _, r := range g.Items {
 						results = append(results, _toAnyMap(r)["value"])
