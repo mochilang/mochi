@@ -63,6 +63,12 @@ func (t MapType) String() string {
 	return fmt.Sprintf("{%s: %s}", t.Key.String(), t.Value.String())
 }
 
+type OptionType struct {
+	Elem Type
+}
+
+func (t OptionType) String() string { return fmt.Sprintf("option[%s]", t.Elem.String()) }
+
 type GroupType struct {
 	Key  Type
 	Elem Type
@@ -187,6 +193,25 @@ func unify(a, b Type, subst Subst) bool {
 		case MapType:
 			return unify(at.Key, bt.Key, subst) &&
 				unify(at.Value, bt.Value, subst)
+		case AnyType:
+			return true
+		case *TypeVar:
+			if subst != nil {
+				if val, ok := subst[bt.Name]; ok {
+					return unify(at, val, subst)
+				}
+				subst[bt.Name] = at
+				return true
+			}
+			return false
+		default:
+			return false
+		}
+
+	case OptionType:
+		switch bt := b.(type) {
+		case OptionType:
+			return unify(at.Elem, bt.Elem, subst)
 		case AnyType:
 			return true
 		case *TypeVar:
@@ -357,6 +382,11 @@ func unify(a, b Type, subst Subst) bool {
 			}
 			if atv, ok := a.(*TypeVar); ok {
 				return atv.Name == bt.Name
+			}
+			return false
+		case OptionType:
+			if ot, ok := a.(OptionType); ok {
+				return unify(ot.Elem, bt.Elem, subst)
 			}
 			return false
 		default:
