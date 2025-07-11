@@ -150,6 +150,15 @@ func isListStringType(t types.Type) bool {
 	return false
 }
 
+func listStructType(t types.Type) (types.StructType, bool) {
+	if lt, ok := t.(types.ListType); ok {
+		if st, ok2 := lt.Elem.(types.StructType); ok2 {
+			return st, true
+		}
+	}
+	return types.StructType{}, false
+}
+
 func isListFloatType(t types.Type) bool {
 	if lt, ok := t.(types.ListType); ok {
 		if _, ok2 := lt.Elem.(types.FloatType); ok2 {

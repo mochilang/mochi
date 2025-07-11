@@ -1885,9 +1885,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						idxVar := c.newTemp()
 						c.writeln(fmt.Sprintf("list_int %s = list_int_create(%s.len);", filtered, src))
 						c.writeln(fmt.Sprintf("int %s = 0;", idxVar))
-						c.writeln(fmt.Sprintf("for (int i=0; i<%s.len; i++) {", src))
+						iterVar := sanitizeName(q.Var) + "_idx"
+						c.writeln(fmt.Sprintf("for (int %s=0; %s<%s.len; %s++) {", iterVar, iterVar, src, iterVar))
 						c.indent++
-						c.writeln(fmt.Sprintf("int %s = %s.data[i];", sanitizeName(q.Var), src))
+						c.writeln(fmt.Sprintf("int %s = %s.data[%s];", sanitizeName(q.Var), src, iterVar))
 						c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", cond))
 						c.writeln(fmt.Sprintf("%s.data[%s] = %s;", filtered, idxVar, sanitizeName(q.Var)))
 						c.writeln(fmt.Sprintf("%s++;", idxVar))
@@ -1934,7 +1935,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 					}
 					var sortT types.Type
 					if q.Sort != nil {
-						sortT = c.exprType(q.Sort)
+						sortT = c.guessType(q.Sort)
 					}
 					retList := types.ListType{Elem: retT}
 					listC := cTypeFromType(retList)
@@ -1961,9 +1962,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						c.writeln(fmt.Sprintf("%s *%s = (%s*)malloc(sizeof(%s)*%s.len);", keyType, keyArr, keyType, keyType, groups))
 					}
 					c.writeln(fmt.Sprintf("int %s = 0;", idx))
-					c.writeln(fmt.Sprintf("for (int i=0; i<%s.len; i++) {", groups))
+					iterVar := sanitizeName(q.Group.Name) + "_idx"
+					c.writeln(fmt.Sprintf("for (int %s=0; %s<%s.len; %s++) {", iterVar, iterVar, groups, iterVar))
 					c.indent++
-					c.writeln(fmt.Sprintf("_GroupInt %s = %s.data[i];", sanitizeName(q.Group.Name), groups))
+					c.writeln(fmt.Sprintf("_GroupInt %s = %s.data[%s];", sanitizeName(q.Group.Name), groups, iterVar))
 					val := c.compileExpr(q.Select)
 					c.writeln(fmt.Sprintf("%s.data[%s] = %s;", res, idx, val))
 					if keyType != "" {
@@ -2043,9 +2045,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 					c.writeln(fmt.Sprintf("%s %s = %s_create(%s.len);", listC, rows, listC, src))
 					c.writeln(fmt.Sprintf("list_string %s = list_string_create(%s.len);", keys, src))
 					c.writeln(fmt.Sprintf("int %s = 0;", idxVar))
-					c.writeln(fmt.Sprintf("for (int i=0; i<%s.len; i++) {", src))
+					iterVar := sanitizeName(q.Var) + "_idx"
+					c.writeln(fmt.Sprintf("for (int %s=0; %s<%s.len; %s++) {", iterVar, iterVar, src, iterVar))
 					c.indent++
-					c.writeln(fmt.Sprintf("%s %s = %s.data[i];", cTypeFromType(lt.Elem), sanitizeName(q.Var), src))
+					c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", cTypeFromType(lt.Elem), sanitizeName(q.Var), src, iterVar))
 					if cond != "" {
 						c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", cond))
 					}
@@ -2111,7 +2114,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 					}
 					var sortT types.Type
 					if q.Sort != nil {
-						sortT = c.exprType(q.Sort)
+						sortT = c.guessType(q.Sort)
 					}
 					res := c.newTemp()
 					idxRes := c.newTemp()
@@ -2207,9 +2210,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 					c.writeln(fmt.Sprintf("%s %s = %s_create(%s.len);", listC, rows, listC, src))
 					c.writeln(fmt.Sprintf("list_int %s = list_int_create(%s.len);", keys, src))
 					c.writeln(fmt.Sprintf("int %s = 0;", idxVar))
-					c.writeln(fmt.Sprintf("for (int i=0; i<%s.len; i++) {", src))
+					iterVar := sanitizeName(q.Var) + "_idx"
+					c.writeln(fmt.Sprintf("for (int %s=0; %s<%s.len; %s++) {", iterVar, iterVar, src, iterVar))
 					c.indent++
-					c.writeln(fmt.Sprintf("%s %s = %s.data[i];", cTypeFromType(lt.Elem), sanitizeName(q.Var), src))
+					c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", cTypeFromType(lt.Elem), sanitizeName(q.Var), src, iterVar))
 					if cond != "" {
 						c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", cond))
 					}
@@ -2275,7 +2279,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 					}
 					var sortT types.Type
 					if q.Sort != nil {
-						sortT = c.exprType(q.Sort)
+						sortT = c.guessType(q.Sort)
 					}
 					res := c.newTemp()
 					idxRes := c.newTemp()
@@ -2384,9 +2388,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						c.writeln(fmt.Sprintf("%s %s = %s_create(%s.len);", listC, rows, listC, src))
 						c.writeln(fmt.Sprintf("list_pair_string %s = list_pair_string_create(%s.len);", pairs, src))
 						c.writeln(fmt.Sprintf("int %s = 0;", idxVar))
-						c.writeln(fmt.Sprintf("for (int i=0; i<%s.len; i++) {", src))
+						iterVar := sanitizeName(q.Var) + "_idx"
+						c.writeln(fmt.Sprintf("for (int %s=0; %s<%s.len; %s++) {", iterVar, iterVar, src, iterVar))
 						c.indent++
-						c.writeln(fmt.Sprintf("%s %s = %s.data[i];", cTypeFromType(lt.Elem), sanitizeName(q.Var), src))
+						c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", cTypeFromType(lt.Elem), sanitizeName(q.Var), src, iterVar))
 						if cond != "" {
 							c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", cond))
 						}
@@ -2453,7 +2458,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						}
 						var sortT types.Type
 						if q.Sort != nil {
-							sortT = c.exprType(q.Sort)
+							sortT = c.guessType(q.Sort)
 						}
 						res := c.newTemp()
 						idxRes := c.newTemp()
@@ -3084,9 +3089,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 			idx := c.newTemp()
 			c.writeln(fmt.Sprintf("%s %s = %s_create(%s.items.len);", listC, res, listC, src))
 			c.writeln(fmt.Sprintf("int %s = 0;", idx))
-			c.writeln(fmt.Sprintf("for (int i=0; i<%s.items.len; i++) {", src))
+			iterVar := sanitizeName(q.Var) + "_idx"
+			c.writeln(fmt.Sprintf("for (int %s=0; %s<%s.items.len; %s++) {", iterVar, iterVar, src, iterVar))
 			c.indent++
-			c.writeln(fmt.Sprintf("%s %s = %s.items.data[i];", elemC, sanitizeName(q.Var), src))
+			c.writeln(fmt.Sprintf("%s %s = %s.items.data[%s];", elemC, sanitizeName(q.Var), src, iterVar))
 			if cond != "" {
 				c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", cond))
 			}
@@ -3128,7 +3134,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 
 	var sortT types.Type
 	if q.Sort != nil {
-		sortT = c.exprType(q.Sort)
+		sortT = c.guessType(q.Sort)
 	}
 
 	var skipExpr string
@@ -3352,7 +3358,7 @@ func (c *Compiler) aggregateExpr(name, list string, elem types.Type) string {
 			return fmt.Sprintf("_sum_float(%s)", list)
 		default:
 			c.need(needSumInt)
-			return fmt.Sprintf("_sum_int(%s)", list)
+			return fmt.Sprintf("(double)_sum_int(%s)", list)
 		}
 	case "avg":
 		switch elem.(type) {
@@ -3726,7 +3732,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			leftString = false
 			continue
 		}
-		if op.Op == "/" && isInt(leftType) && isInt(rightType) {
+		if op.Op == "/" && !isFloat(leftType) && !isFloat(rightType) {
 			left = fmt.Sprintf("((double)%s) / ((double)%s)", left, right)
 			leftType = types.FloatType{}
 		} else {
@@ -4241,6 +4247,40 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					c.need(needListString)
 					c.need(needPrintListString)
 					c.writeln(fmt.Sprintf("_print_list_string(%s);", argExpr))
+					if i == len(p.Call.Args)-1 {
+						c.writeln("printf(\"\\n\");")
+					} else {
+						c.writeln("printf(\" \");")
+					}
+				} else if st, ok := listStructExpr(a, c.env); ok {
+					name := argExpr
+					iter := c.newTemp()
+					entry := c.newTemp()
+					c.writeln(fmt.Sprintf("for (int %s=0; %s<%s.len; %s++) {", iter, iter, name, iter))
+					c.indent++
+					c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", cTypeFromType(st), entry, name, iter))
+					c.writeln("printf(\"map[\");")
+					for j, field := range st.Order {
+						if j > 0 {
+							c.writeln("printf(\" \");")
+						}
+						typ := st.Fields[field]
+						fieldName := field
+						c.writeln(fmt.Sprintf("printf(\"%s:\");", fieldName))
+						fe := fmt.Sprintf("%s.%s", entry, sanitizeName(field))
+						switch typ.(type) {
+						case types.StringType:
+							c.writeln(fmt.Sprintf("printf(\"%%s\", %s);", fe))
+						case types.FloatType:
+							c.writeln(fmt.Sprintf("printf(\"%%.16g\", %s);", fe))
+						default:
+							c.writeln(fmt.Sprintf("printf(\"%%d\", %s);", fe))
+						}
+					}
+					c.writeln("printf(\"]\");")
+					c.writeln(fmt.Sprintf("if (%s < %s.len-1) printf(\" \");", iter, name))
+					c.indent--
+					c.writeln("}")
 					if i == len(p.Call.Args)-1 {
 						c.writeln("printf(\"\\n\");")
 					} else {
@@ -5150,6 +5190,14 @@ func isListStringPostfix(p *parser.PostfixExpr, env *types.Env) bool {
 		return true
 	}
 	return false
+}
+
+func listStructExpr(e *parser.Expr, env *types.Env) (types.StructType, bool) {
+	if env == nil || e == nil {
+		return types.StructType{}, false
+	}
+	t := types.CheckExprType(e, env)
+	return listStructType(t)
 }
 
 func isListStringPrimary(p *parser.Primary, env *types.Env) bool {
