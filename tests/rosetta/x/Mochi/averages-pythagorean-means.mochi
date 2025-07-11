@@ -1,0 +1,52 @@
+// Mochi implementation of Rosetta "Averages/Pythagorean means" task
+// Translated from Go version in tests/rosetta/x/Go/averages-pythagorean-means.go
+
+// integer power for floats
+fun powf(base: float, exp: int): float {
+  var result = 1.0
+  var i = 0
+  while i < exp {
+    result = result * base
+    i = i + 1
+  }
+  return result
+}
+
+// compute the nth root of x using binary search
+fun nthRoot(x: float, n: int): float {
+  var low = 0.0
+  var high = x
+  var i = 0
+  while i < 60 {
+    let mid = (low + high) / 2.0
+    if powf(mid, n) > x {
+      high = mid
+    } else {
+      low = mid
+    }
+    i = i + 1
+  }
+  return low
+}
+
+fun main() {
+  var sum = 0.0
+  var sumRecip = 0.0
+  var prod = 1.0
+  var n = 1
+  while n <= 10 {
+    let f = n as float
+    sum = sum + f
+    sumRecip = sumRecip + 1.0 / f
+    prod = prod * f
+    n = n + 1
+  }
+  let count = 10.0
+  let a = sum / count
+  let g = nthRoot(prod, 10)
+  let h = count / sumRecip
+  print("A: " + str(a) + " G: " + str(g) + " H: " + str(h))
+  print("A >= G >= H: " + str(a >= g && g >= h))
+}
+
+main()
