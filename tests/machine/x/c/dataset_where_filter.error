@@ -1,22 +1,22 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/dataset_where_filter.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/dataset_where_filter.c:50:3: error: unknown type name ‘list_adultsItem’; did you mean ‘list_AdultsItem’?
-   50 |   list_adultsItem tmp2 = list_adultsItem_create(people.len);
+/workspace/mochi/tests/machine/x/c/dataset_where_filter.c:81:3: error: unknown type name ‘list_adultsItem’; did you mean ‘list_AdultsItem’?
+   81 |   list_adultsItem tmp2 = list_adultsItem_create(people.len);
       |   ^~~~~~~~~~~~~~~
       |   list_AdultsItem
-/workspace/mochi/tests/machine/x/c/dataset_where_filter.c:50:26: warning: implicit declaration of function ‘list_adultsItem_create’; did you mean ‘list_AdultsItem_create’? [-Wimplicit-function-declaration]
-   50 |   list_adultsItem tmp2 = list_adultsItem_create(people.len);
+/workspace/mochi/tests/machine/x/c/dataset_where_filter.c:81:26: warning: implicit declaration of function ‘list_adultsItem_create’; did you mean ‘list_AdultsItem_create’? [-Wimplicit-function-declaration]
+   81 |   list_adultsItem tmp2 = list_adultsItem_create(people.len);
       |                          ^~~~~~~~~~~~~~~~~~~~~~
       |                          list_AdultsItem_create
-/workspace/mochi/tests/machine/x/c/dataset_where_filter.c:57:9: error: request for member ‘data’ in something not a structure or union
-   57 |     tmp2.data[tmp3] = (AdultsItem){
+/workspace/mochi/tests/machine/x/c/dataset_where_filter.c:88:9: error: request for member ‘data’ in something not a structure or union
+   88 |     tmp2.data[tmp3] = (AdultsItem){
       |         ^
-/workspace/mochi/tests/machine/x/c/dataset_where_filter.c:61:7: error: request for member ‘len’ in something not a structure or union
-   61 |   tmp2.len = tmp3;
+/workspace/mochi/tests/machine/x/c/dataset_where_filter.c:92:7: error: request for member ‘len’ in something not a structure or union
+   92 |   tmp2.len = tmp3;
       |       ^
-/workspace/mochi/tests/machine/x/c/dataset_where_filter.c:62:28: error: invalid initializer
-   62 |   list_AdultsItem adults = tmp2;
+/workspace/mochi/tests/machine/x/c/dataset_where_filter.c:93:28: error: invalid initializer
+   93 |   list_AdultsItem adults = tmp2;
       |                            ^~~~
 
    1: #include <stdio.h>

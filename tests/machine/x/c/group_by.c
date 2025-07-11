@@ -96,6 +96,23 @@ static list_PeopleItem list_PeopleItem_create(int len) {
   }
   return l;
 }
+static void _print_list_peopleItem(list_PeopleItem v) {
+  for (int i = 0; i < v.len; i++) {
+    PeopleItem s = v.data[i];
+    printf("map[");
+    printf("name:");
+    printf("%s", s.name);
+    printf(" ");
+    printf("age:");
+    printf("%d", s.age);
+    printf(" ");
+    printf("city:");
+    printf("%s", s.city);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
+}
 
 typedef struct {
   char *city;
@@ -115,6 +132,23 @@ static list_StatsItem list_StatsItem_create(int len) {
     exit(1);
   }
   return l;
+}
+static void _print_list_statsItem(list_StatsItem v) {
+  for (int i = 0; i < v.len; i++) {
+    StatsItem s = v.data[i];
+    printf("map[");
+    printf("city:");
+    printf("%s", s.city);
+    printf(" ");
+    printf("count:");
+    printf("%d", s.count);
+    printf(" ");
+    printf("avg_age:");
+    printf("%g", s.avg_age);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
 }
 
 int main() {

@@ -154,6 +154,20 @@ static list_PeopleItem list_PeopleItem_create(int len) {
   }
   return l;
 }
+static void _print_list_peopleItem(list_PeopleItem v) {
+  for (int i = 0; i < v.len; i++) {
+    PeopleItem s = v.data[i];
+    printf("map[");
+    printf("name:");
+    printf("%s", s.name);
+    printf(" ");
+    printf("city:");
+    printf("%s", s.city);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
+}
 
 typedef struct {
   char *city;
@@ -172,6 +186,20 @@ static list_BigItem list_BigItem_create(int len) {
     exit(1);
   }
   return l;
+}
+static void _print_list_bigItem(list_BigItem v) {
+  for (int i = 0; i < v.len; i++) {
+    BigItem s = v.data[i];
+    printf("map[");
+    printf("city:");
+    printf("%s", s.city);
+    printf(" ");
+    printf("num:");
+    printf("%d", s.num);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
 }
 
 int main() {

@@ -22,6 +22,20 @@ static list_MItem list_MItem_create(int len) {
   }
   return l;
 }
+static void _print_list_mItem(list_MItem v) {
+  for (int i = 0; i < v.len; i++) {
+    MItem s = v.data[i];
+    printf("map[");
+    printf("a:");
+    printf("%d", s.a);
+    printf(" ");
+    printf("b:");
+    printf("%d", s.b);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
+}
 
 int main() {
   MItem m = (MItem){.a = x, .b = y};

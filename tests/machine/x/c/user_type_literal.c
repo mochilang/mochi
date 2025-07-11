@@ -22,6 +22,26 @@ static list_Person list_Person_create(int len) {
   }
   return l;
 }
+static void _print_list_Person(list_Person v) {
+  for (int i = 0; i < v.len; i++) {
+    Person s = v.data[i];
+    printf("map[");
+    printf("name:");
+    printf("%s", s.name);
+    printf(" ");
+    printf("age:");
+    printf("%d", s.age);
+    printf(" ");
+    printf("name:");
+    printf("%s", s.name);
+    printf(" ");
+    printf("age:");
+    printf("%d", s.age);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
+}
 
 typedef struct Book {
   char *title;
@@ -40,6 +60,24 @@ static list_Book list_Book_create(int len) {
     exit(1);
   }
   return l;
+}
+static void _print_list_Book(list_Book v) {
+  for (int i = 0; i < v.len; i++) {
+    Book s = v.data[i];
+    printf("map[");
+    printf("title:");
+    printf("%s", s.title);
+    printf(" ");
+    printf("author:");
+    printf(" ");
+    printf("title:");
+    printf("%s", s.title);
+    printf(" ");
+    printf("author:");
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
 }
 
 int main() {

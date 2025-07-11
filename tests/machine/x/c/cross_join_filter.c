@@ -48,6 +48,20 @@ static list_PairsItem list_PairsItem_create(int len) {
   }
   return l;
 }
+static void _print_list_pairsItem(list_PairsItem v) {
+  for (int i = 0; i < v.len; i++) {
+    PairsItem s = v.data[i];
+    printf("map[");
+    printf("n:");
+    printf("%d", s.n);
+    printf(" ");
+    printf("l:");
+    printf("%s", s.l);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
+}
 
 int main() {
   int tmp1_data[] = {1, 2, 3};

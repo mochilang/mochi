@@ -1,22 +1,22 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/map_membership.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/map_membership.c:25:21: error: expected ‘)’ before ‘in’
-   25 |   printf("%d\n", "a" in m);
+/workspace/mochi/tests/machine/x/c/map_membership.c:39:21: error: expected ‘)’ before ‘in’
+   39 |   printf("%d\n", "a" in m);
       |         ~           ^~~
       |                     )
-/workspace/mochi/tests/machine/x/c/map_membership.c:25:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]
-   25 |   printf("%d\n", "a" in m);
+/workspace/mochi/tests/machine/x/c/map_membership.c:39:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]
+   39 |   printf("%d\n", "a" in m);
       |           ~^     ~~~
       |            |     |
       |            int   char *
       |           %s
-/workspace/mochi/tests/machine/x/c/map_membership.c:26:21: error: expected ‘)’ before ‘in’
-   26 |   printf("%d\n", "c" in m);
+/workspace/mochi/tests/machine/x/c/map_membership.c:40:21: error: expected ‘)’ before ‘in’
+   40 |   printf("%d\n", "c" in m);
       |         ~           ^~~
       |                     )
-/workspace/mochi/tests/machine/x/c/map_membership.c:26:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]
-   26 |   printf("%d\n", "c" in m);
+/workspace/mochi/tests/machine/x/c/map_membership.c:40:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]
+   40 |   printf("%d\n", "c" in m);
       |           ~^     ~~~
       |            |     |
       |            int   char *

@@ -22,6 +22,20 @@ static list_NationItem list_NationItem_create(int len) {
   }
   return l;
 }
+static void _print_list_nationItem(list_NationItem v) {
+  for (int i = 0; i < v.len; i++) {
+    NationItem s = v.data[i];
+    printf("map[");
+    printf("n_nationkey:");
+    printf("%d", s.n_nationkey);
+    printf(" ");
+    printf("n_name:");
+    printf("%s", s.n_name);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
+}
 
 typedef struct {
   int c_custkey;
@@ -46,6 +60,35 @@ static list_CustomerItem list_CustomerItem_create(int len) {
   }
   return l;
 }
+static void _print_list_customerItem(list_CustomerItem v) {
+  for (int i = 0; i < v.len; i++) {
+    CustomerItem s = v.data[i];
+    printf("map[");
+    printf("c_custkey:");
+    printf("%d", s.c_custkey);
+    printf(" ");
+    printf("c_name:");
+    printf("%s", s.c_name);
+    printf(" ");
+    printf("c_acctbal:");
+    printf("%g", s.c_acctbal);
+    printf(" ");
+    printf("c_nationkey:");
+    printf("%d", s.c_nationkey);
+    printf(" ");
+    printf("c_address:");
+    printf("%s", s.c_address);
+    printf(" ");
+    printf("c_phone:");
+    printf("%s", s.c_phone);
+    printf(" ");
+    printf("c_comment:");
+    printf("%s", s.c_comment);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
+}
 
 typedef struct {
   int o_orderkey;
@@ -65,6 +108,23 @@ static list_OrdersItem list_OrdersItem_create(int len) {
     exit(1);
   }
   return l;
+}
+static void _print_list_ordersItem(list_OrdersItem v) {
+  for (int i = 0; i < v.len; i++) {
+    OrdersItem s = v.data[i];
+    printf("map[");
+    printf("o_orderkey:");
+    printf("%d", s.o_orderkey);
+    printf(" ");
+    printf("o_custkey:");
+    printf("%d", s.o_custkey);
+    printf(" ");
+    printf("o_orderdate:");
+    printf("%s", s.o_orderdate);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
 }
 
 typedef struct {
@@ -86,6 +146,26 @@ static list_LineitemItem list_LineitemItem_create(int len) {
     exit(1);
   }
   return l;
+}
+static void _print_list_lineitemItem(list_LineitemItem v) {
+  for (int i = 0; i < v.len; i++) {
+    LineitemItem s = v.data[i];
+    printf("map[");
+    printf("l_orderkey:");
+    printf("%d", s.l_orderkey);
+    printf(" ");
+    printf("l_returnflag:");
+    printf("%s", s.l_returnflag);
+    printf(" ");
+    printf("l_extendedprice:");
+    printf("%g", s.l_extendedprice);
+    printf(" ");
+    printf("l_discount:");
+    printf("%g", s.l_discount);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
 }
 
 typedef struct {
@@ -111,6 +191,38 @@ static list_ResultItem list_ResultItem_create(int len) {
     exit(1);
   }
   return l;
+}
+static void _print_list_resultItem(list_ResultItem v) {
+  for (int i = 0; i < v.len; i++) {
+    ResultItem s = v.data[i];
+    printf("map[");
+    printf("c_custkey:");
+    printf("%d", s.c_custkey);
+    printf(" ");
+    printf("c_name:");
+    printf("%d", s.c_name);
+    printf(" ");
+    printf("revenue:");
+    printf("%g", s.revenue);
+    printf(" ");
+    printf("c_acctbal:");
+    printf("%d", s.c_acctbal);
+    printf(" ");
+    printf("n_name:");
+    printf("%d", s.n_name);
+    printf(" ");
+    printf("c_address:");
+    printf("%d", s.c_address);
+    printf(" ");
+    printf("c_phone:");
+    printf("%d", s.c_phone);
+    printf(" ");
+    printf("c_comment:");
+    printf("%d", s.c_comment);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
 }
 
 int main() {
@@ -144,6 +256,7 @@ int main() {
   list_LineitemItem tmp4 = {2, tmp4_data};
   list_LineitemItem lineitem = tmp4;
   list_ResultItem result = 0;
-  printf("%d\n", result);
+  _print_list_resultItem(result);
+  printf("\n");
   return 0;
 }

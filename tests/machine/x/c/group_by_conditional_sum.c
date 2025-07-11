@@ -94,6 +94,23 @@ static list_ItemsItem list_ItemsItem_create(int len) {
   }
   return l;
 }
+static void _print_list_itemsItem(list_ItemsItem v) {
+  for (int i = 0; i < v.len; i++) {
+    ItemsItem s = v.data[i];
+    printf("map[");
+    printf("cat:");
+    printf("%s", s.cat);
+    printf(" ");
+    printf("val:");
+    printf("%d", s.val);
+    printf(" ");
+    printf("flag:");
+    printf("%d", s.flag);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
+}
 
 typedef struct {
   char *cat;
@@ -112,6 +129,20 @@ static list_ResultItem list_ResultItem_create(int len) {
     exit(1);
   }
   return l;
+}
+static void _print_list_resultItem(list_ResultItem v) {
+  for (int i = 0; i < v.len; i++) {
+    ResultItem s = v.data[i];
+    printf("map[");
+    printf("cat:");
+    printf("%s", s.cat);
+    printf(" ");
+    printf("share:");
+    printf("%g", s.share);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
 }
 
 int main() {
@@ -181,6 +212,7 @@ int main() {
     }
   }
   list_ResultItem result = tmp7;
-  printf("%d\n", result);
+  _print_list_resultItem(result);
+  printf("\n");
   return 0;
 }

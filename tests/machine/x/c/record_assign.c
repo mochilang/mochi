@@ -20,6 +20,20 @@ static list_Counter list_Counter_create(int len) {
   }
   return l;
 }
+static void _print_list_Counter(list_Counter v) {
+  for (int i = 0; i < v.len; i++) {
+    Counter s = v.data[i];
+    printf("map[");
+    printf("n:");
+    printf("%d", s.n);
+    printf(" ");
+    printf("n:");
+    printf("%d", s.n);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
+}
 
 int inc(Counter *c) { c->n = c->n + 1; }
 

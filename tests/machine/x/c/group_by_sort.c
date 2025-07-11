@@ -93,6 +93,20 @@ static list_ItemsItem list_ItemsItem_create(int len) {
   }
   return l;
 }
+static void _print_list_itemsItem(list_ItemsItem v) {
+  for (int i = 0; i < v.len; i++) {
+    ItemsItem s = v.data[i];
+    printf("map[");
+    printf("cat:");
+    printf("%s", s.cat);
+    printf(" ");
+    printf("val:");
+    printf("%d", s.val);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
+}
 
 typedef struct {
   char *cat;
@@ -111,6 +125,20 @@ static list_GroupedItem list_GroupedItem_create(int len) {
     exit(1);
   }
   return l;
+}
+static void _print_list_groupedItem(list_GroupedItem v) {
+  for (int i = 0; i < v.len; i++) {
+    GroupedItem s = v.data[i];
+    printf("map[");
+    printf("cat:");
+    printf("%s", s.cat);
+    printf(" ");
+    printf("total:");
+    printf("%g", s.total);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
 }
 
 int main() {
@@ -179,6 +207,7 @@ int main() {
     }
   }
   list_GroupedItem grouped = tmp7;
-  printf("%d\n", grouped);
+  _print_list_groupedItem(grouped);
+  printf("\n");
   return 0;
 }

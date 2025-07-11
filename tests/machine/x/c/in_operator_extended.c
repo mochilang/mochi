@@ -40,6 +40,17 @@ static list_MItem list_MItem_create(int len) {
   }
   return l;
 }
+static void _print_list_mItem(list_MItem v) {
+  for (int i = 0; i < v.len; i++) {
+    MItem s = v.data[i];
+    printf("map[");
+    printf("a:");
+    printf("%d", s.a);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
+}
 
 int main() {
   int tmp1_data[] = {1, 2, 3};

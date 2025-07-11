@@ -19,6 +19,20 @@ static list_PeopleItem list_PeopleItem_create(int len) {
   }
   return l;
 }
+static void _print_list_peopleItem(list_PeopleItem v) {
+  for (int i = 0; i < v.len; i++) {
+    PeopleItem s = v.data[i];
+    printf("map[");
+    printf("name:");
+    printf("%s", s.name);
+    printf(" ");
+    printf("age:");
+    printf("%d", s.age);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
+}
 
 typedef struct {
   char *name;
@@ -38,6 +52,23 @@ static list_AdultsItem list_AdultsItem_create(int len) {
     exit(1);
   }
   return l;
+}
+static void _print_list_adultsItem(list_AdultsItem v) {
+  for (int i = 0; i < v.len; i++) {
+    AdultsItem s = v.data[i];
+    printf("map[");
+    printf("name:");
+    printf("%s", s.name);
+    printf(" ");
+    printf("age:");
+    printf("%d", s.age);
+    printf(" ");
+    printf("is_senior:");
+    printf("%d", s.is_senior);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
 }
 
 int main() {
