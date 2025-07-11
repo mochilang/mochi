@@ -3,7 +3,7 @@
 This directory contains Scala code generated from the Mochi programs in `tests/vm/valid` using the Scala compiler. Each source file was compiled with `scalac` and executed with `scala`. Successful runs produced an `.out` file while failures produced an `.error` file.
 
 Compiled programs: 100
-Executed successfully: 91
+Executed successfully: 92
 
 ## Program checklist
 - [x] append_builtin.mochi
@@ -151,4 +151,14 @@ Executed successfully: 91
 - [ ] Add compile-time warnings for implicit casts.
 - [ ] Support generics in user-defined types.
 - [ ] Document runtime helpers.
+- [ ] Create benchmarking suite for join algorithms.
+- [ ] Support reading from environment variables.
+- [ ] Improve error handling for file operations.
+- [ ] Add library for command line flags.
+- [ ] Generate example Makefile for running programs.
+- [ ] Provide helper to pretty-print datasets.
+- [ ] Optimize List to Vector conversions.
+- [ ] Add custom exception types.
+- [ ] Implement plugin architecture for optimizations.
+- [ ] Explore macros for compile-time checks.
 
