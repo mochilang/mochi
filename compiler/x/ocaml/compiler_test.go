@@ -126,36 +126,6 @@ func TestPrograms(t *testing.T) {
 
 func TestMain(m *testing.M) {
 	code := m.Run()
-	updateReadme()
 	os.Exit(code)
 }
 
-func updateReadme() {
-	root := repoRoot(&testing.T{})
-	srcDir := filepath.Join(root, "tests", "vm", "valid")
-	outDir := filepath.Join(root, "tests", "machine", "x", "ocaml")
-	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-	total := len(files)
-	compiled := 0
-	var lines []string
-	for _, f := range files {
-		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
-		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
-			compiled++
-			mark = "[x]"
-		}
-		lines = append(lines, fmt.Sprintf("- %s %s.mochi", mark, name))
-	}
-	var buf bytes.Buffer
-	buf.WriteString("# OCaml Machine Translations\n\n")
-	buf.WriteString("This directory contains OCaml code generated from the Mochi programs in `tests/vm/valid` using the OCaml compiler. Each program was compiled and executed with `ocamlc`. Successful runs produced an `.out` file while failures produced an `.error` file.\n\n")
-	fmt.Fprintf(&buf, "Compiled programs: %d/%d successful.\n\n", compiled, total)
-	buf.WriteString(strings.Join(lines, "\n"))
-	buf.WriteString("\n\n## Remaining Tasks\n")
-	buf.WriteString("- [ ] Improve support for complex query groups and joins\n")
-	buf.WriteString("- [ ] Integrate an OCaml runtime to execute compiled programs in CI\n")
-	buf.WriteString("- [x] Expand anonymous record typing for clearer generated code\n")
-	buf.WriteString("- [x] Emit native `for` loops when iterating over numeric ranges\n")
-	_ = os.WriteFile(filepath.Join(outDir, "README.md"), buf.Bytes(), 0644)
-}

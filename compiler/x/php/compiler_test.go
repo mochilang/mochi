@@ -92,33 +92,6 @@ func writeError(dir, name string, msg []byte) {
 
 func TestMain(m *testing.M) {
 	code := m.Run()
-	updateReadme()
 	os.Exit(code)
 }
 
-func updateReadme() {
-	root := findRoot(&testing.T{})
-	srcDir := filepath.Join(root, "tests", "vm", "valid")
-	outDir := filepath.Join(root, "tests", "machine", "x", "php")
-	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-	total := len(files)
-	compiled := 0
-	var lines []string
-	for _, f := range files {
-		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
-		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
-			compiled++
-			mark = "[x]"
-		}
-		lines = append(lines, fmt.Sprintf("- %s %s.mochi", mark, name))
-	}
-	var buf bytes.Buffer
-	buf.WriteString("# Machine Generated PHP Programs\n\n")
-	buf.WriteString("This directory stores PHP code produced by the compiler tests. Each Mochi program from `tests/vm/valid` is compiled and executed. On success a `.out` file is written. Failures generate a `.error` file.\n\n")
-	fmt.Fprintf(&buf, "## Summary\n%d/%d files compiled successfully\n\n", compiled, total)
-	buf.WriteString("## Checklist\n")
-	buf.WriteString(strings.Join(lines, "\n"))
-	buf.WriteString("\n")
-	os.WriteFile(filepath.Join(outDir, "README.md"), buf.Bytes(), 0644)
-}
