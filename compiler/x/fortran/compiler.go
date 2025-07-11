@@ -734,12 +734,24 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 						end = fmt.Sprintf("size(%s)", res)
 					}
 				}
-				// convert to 1-based inclusive range
+				// convert to 1-based inclusive range and
+				// support negative indices which count from
+				// the end of the slice
+				isStr := types.IsStringPrimary(p.Target, c.env)
+				lenFunc := "size"
+				if isStr {
+					lenFunc = "len"
+				}
 				startF := "1"
-				if start != "0" {
+				if strings.HasPrefix(start, "-") {
+					startF = fmt.Sprintf("%s(%s)%s+1", lenFunc, res, start)
+				} else if start != "0" {
 					startF = fmt.Sprintf("(%s)+1", start)
 				}
 				endF := end
+				if strings.HasPrefix(end, "-") {
+					endF = fmt.Sprintf("%s(%s)%s", lenFunc, res, end)
+				}
 				idxList = append(idxList, fmt.Sprintf("%s:%s", startF, endF))
 			} else if op.Index.Colon2 != nil {
 				return "", fmt.Errorf("slices not supported")

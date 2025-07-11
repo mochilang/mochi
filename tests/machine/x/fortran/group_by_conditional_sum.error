@@ -1,4 +1,0 @@
-error: unsupported expression at line 2
-   1| let items = [
-   2|   { cat: "a", val: 10, flag: true },
-   3|   { cat: "a", val: 5, flag: false },

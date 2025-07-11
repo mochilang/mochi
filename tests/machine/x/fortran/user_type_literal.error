@@ -1,4 +1,0 @@
-error: unsupported expression at line 11
-  10| 
-  11| let book = Book {
-  12|   title: "Go",

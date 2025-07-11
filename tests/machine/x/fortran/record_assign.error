@@ -1,4 +1,0 @@
-error: unsupported expression at line 7
-   6| 
-   7| var c = Counter { n: 0 }
-   8| inc(c)
