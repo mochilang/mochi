@@ -3,13 +3,14 @@
 package cpp
 
 import (
-	"bytes"
-	"fmt"
-	"regexp"
-	"strconv"
-	"strings"
+        "bytes"
+        "fmt"
+        "regexp"
+        "sort"
+        "strconv"
+        "strings"
 
-	"mochi/parser"
+        "mochi/parser"
 )
 
 type structInfo struct {
@@ -226,11 +227,16 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.scope--
 	c.writeln("}")
 
-	if c.usesJSON {
-		for _, info := range c.structMap {
-			c.generateJSONPrinter(info)
-		}
-	}
+        if c.usesJSON {
+                names := make([]string, 0, len(c.structMap))
+                for name := range c.structMap {
+                        names = append(names, name)
+                }
+                sort.Strings(names)
+                for _, n := range names {
+                        c.generateJSONPrinter(c.structMap[n])
+                }
+        }
 
 	var body bytes.Buffer
 	body.Write(c.header.Bytes())
