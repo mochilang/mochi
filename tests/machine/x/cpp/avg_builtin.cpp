@@ -10,7 +10,6 @@ template <typename T> double __avg(const std::vector<T> &v) {
   return s / v.size();
 }
 int main() {
-  std::cout << std::boolalpha << __avg(std::vector<decltype(1)>{1, 2, 3})
-            << std::endl;
+  std::cout << std::boolalpha << __avg(std::vector<int>{1, 2, 3}) << std::endl;
   return 0;
 }

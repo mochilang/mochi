@@ -2,7 +2,7 @@
 #include <vector>
 
 int main() {
-  std::vector<int> nums = std::vector<decltype(1)>{1, 2, 3};
+  auto nums = std::vector<int>{1, 2, 3};
   auto result = ([&]() {
     int __sum = 0;
     for (auto n : nums) {

@@ -1430,6 +1430,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				} else {
 					elemType = t
 				}
+			} else if t := c.inferType(elems[0]); t != "" {
+				switch t {
+				case "string":
+					elemType = "std::string"
+				case "int", "double", "bool":
+					elemType = t
+				default:
+					elemType = fmt.Sprintf("decltype(%s)", elems[0])
+				}
 			} else {
 				elemType = fmt.Sprintf("decltype(%s)", elems[0])
 			}

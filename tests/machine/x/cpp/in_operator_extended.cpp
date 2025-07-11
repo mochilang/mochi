@@ -5,9 +5,9 @@
 #include <vector>
 
 int main() {
-  std::vector<int> xs = std::vector<decltype(1)>{1, 2, 3};
+  auto xs = std::vector<int>{1, 2, 3};
   auto ys = ([&]() {
-    std::vector<int> __items;
+    std::vector<decltype(x)> __items;
     for (auto x : xs) {
       if (!(((x % 2) == 1)))
         continue;

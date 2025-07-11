@@ -3,7 +3,7 @@
 #include <vector>
 
 int main() {
-  std::vector<int> nums = std::vector<decltype(1)>{1, 2, 3};
+  auto nums = std::vector<int>{1, 2, 3};
   std::cout << std::boolalpha
             << (std::find(nums.begin(), nums.end(), 2) != nums.end())
             << std::endl;

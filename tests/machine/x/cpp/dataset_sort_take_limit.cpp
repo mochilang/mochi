@@ -15,18 +15,16 @@ inline bool operator!=(const __struct1 &a, const __struct1 &b) {
   return !(a == b);
 }
 int main() {
-  std::vector<__struct1> products =
-      std::vector<decltype(__struct1{std::string("Laptop"), 1500})>{
-          __struct1{std::string("Laptop"), 1500},
-          __struct1{std::string("Smartphone"), 900},
-          __struct1{std::string("Tablet"), 600},
-          __struct1{std::string("Monitor"), 300},
-          __struct1{std::string("Keyboard"), 100},
-          __struct1{std::string("Mouse"), 50},
-          __struct1{std::string("Headphones"), 200}};
+  auto products =
+      std::vector<__struct1>{__struct1{std::string("Laptop"), 1500},
+                             __struct1{std::string("Smartphone"), 900},
+                             __struct1{std::string("Tablet"), 600},
+                             __struct1{std::string("Monitor"), 300},
+                             __struct1{std::string("Keyboard"), 100},
+                             __struct1{std::string("Mouse"), 50},
+                             __struct1{std::string("Headphones"), 200}};
   auto expensive = ([&]() {
-    std::vector<std::pair<decltype(std::declval<__struct1>().price), __struct1>>
-        __items;
+    std::vector<std::pair<decltype((-p.price)), decltype(p)>> __items;
     for (auto p : products) {
       __items.push_back({(-p.price), p});
     }
@@ -36,7 +34,7 @@ int main() {
       __items.erase(__items.begin(), __items.begin() + 1);
     if ((size_t)3 < __items.size())
       __items.resize(3);
-    std::vector<__struct1> __res;
+    std::vector<decltype(p)> __res;
     for (auto &p : __items)
       __res.push_back(p.second);
     return __res;

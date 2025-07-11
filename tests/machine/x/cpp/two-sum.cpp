@@ -10,11 +10,11 @@ auto twoSum(auto nums, int target) {
       }
     }
   }
-  return std::vector<decltype((-1))>{(-1), (-1)};
+  return std::vector<int>{(-1), (-1)};
 }
 
 int main() {
-  auto result = twoSum(std::vector<decltype(2)>{2, 7, 11, 15}, 9);
+  auto result = twoSum(std::vector<int>{2, 7, 11, 15}, 9);
   std::cout << std::boolalpha << result[0] << std::endl;
   std::cout << std::boolalpha << result[1] << std::endl;
   return 0;

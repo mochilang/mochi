@@ -23,8 +23,8 @@ inline bool operator!=(const __struct2 &a, const __struct2 &b) {
   return !(a == b);
 }
 struct __struct3 {
-  __struct1 c;
-  __struct2 o;
+  decltype(c) c;
+  decltype(o) o;
 };
 inline bool operator==(const __struct3 &a, const __struct3 &b) {
   return a.c == b.c && a.o == b.o;
@@ -33,7 +33,7 @@ inline bool operator!=(const __struct3 &a, const __struct3 &b) {
   return !(a == b);
 }
 struct __struct4 {
-  decltype(std::declval<__struct1>().name) key;
+  decltype(c.name) key;
   std::vector<__struct3> items;
 };
 inline bool operator==(const __struct4 &a, const __struct4 &b) {
@@ -53,12 +53,11 @@ inline bool operator!=(const __struct5 &a, const __struct5 &b) {
   return !(a == b);
 }
 int main() {
-  std::vector<__struct1> customers =
-      std::vector<decltype(__struct1{1, std::string("Alice")})>{
-          __struct1{1, std::string("Alice")}, __struct1{2, std::string("Bob")},
-          __struct1{3, std::string("Charlie")}};
-  std::vector<__struct2> orders = std::vector<decltype(__struct2{100, 1})>{
-      __struct2{100, 1}, __struct2{101, 1}, __struct2{102, 2}};
+  auto customers = std::vector<__struct1>{__struct1{1, std::string("Alice")},
+                                          __struct1{2, std::string("Bob")},
+                                          __struct1{3, std::string("Charlie")}};
+  auto orders = std::vector<__struct2>{__struct2{100, 1}, __struct2{101, 1},
+                                       __struct2{102, 2}};
   auto stats = ([&]() {
     std::vector<__struct4> __groups;
     for (auto c : customers) {
@@ -105,7 +104,7 @@ int main() {
       __items.push_back(__struct5{g.key, ((int)([&]() {
                                             std::vector<__struct3> __items;
                                             for (auto r : g.items) {
-                                              if (!((r.o != __struct2{})))
+                                              if (!(r.o))
                                                 continue;
                                               __items.push_back(r);
                                             }
