@@ -48,17 +48,15 @@ void __json(const std::unordered_map<K, V> &m) {
   std::cout << "}";
 }
 
-struct __struct1 {
+struct M {
   decltype(1) a;
   decltype(2) b;
 };
-inline bool operator==(const __struct1 &a, const __struct1 &b) {
+inline bool operator==(const M &a, const M &b) {
   return a.a == b.a && a.b == b.b;
 }
-inline bool operator!=(const __struct1 &a, const __struct1 &b) {
-  return !(a == b);
-}
-inline void __json(const __struct1 &v) {
+inline bool operator!=(const M &a, const M &b) { return !(a == b); }
+inline void __json(const M &v) {
   bool first = true;
   std::cout << "{";
   if (!first)
@@ -74,7 +72,7 @@ inline void __json(const __struct1 &v) {
   std::cout << "}";
 }
 int main() {
-  auto m = __struct1{1, 2};
+  auto m = M{1, 2};
   (__json(m));
   return 0;
 }

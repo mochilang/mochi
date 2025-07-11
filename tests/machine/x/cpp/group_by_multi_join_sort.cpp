@@ -5,17 +5,15 @@
 #include <utility>
 #include <vector>
 
-struct __struct1 {
+struct Nation {
   decltype(1) n_nationkey;
   decltype(std::string("BRAZIL")) n_name;
 };
-inline bool operator==(const __struct1 &a, const __struct1 &b) {
+inline bool operator==(const Nation &a, const Nation &b) {
   return a.n_nationkey == b.n_nationkey && a.n_name == b.n_name;
 }
-inline bool operator!=(const __struct1 &a, const __struct1 &b) {
-  return !(a == b);
-}
-struct __struct2 {
+inline bool operator!=(const Nation &a, const Nation &b) { return !(a == b); }
+struct Customer {
   decltype(1) c_custkey;
   decltype(std::string("Alice")) c_name;
   decltype(100) c_acctbal;
@@ -24,63 +22,59 @@ struct __struct2 {
   decltype(std::string("123-456")) c_phone;
   decltype(std::string("Loyal")) c_comment;
 };
-inline bool operator==(const __struct2 &a, const __struct2 &b) {
+inline bool operator==(const Customer &a, const Customer &b) {
   return a.c_custkey == b.c_custkey && a.c_name == b.c_name &&
          a.c_acctbal == b.c_acctbal && a.c_nationkey == b.c_nationkey &&
          a.c_address == b.c_address && a.c_phone == b.c_phone &&
          a.c_comment == b.c_comment;
 }
-inline bool operator!=(const __struct2 &a, const __struct2 &b) {
+inline bool operator!=(const Customer &a, const Customer &b) {
   return !(a == b);
 }
-struct __struct3 {
+struct Order {
   decltype(1000) o_orderkey;
   decltype(1) o_custkey;
   decltype(std::string("1993-10-15")) o_orderdate;
 };
-inline bool operator==(const __struct3 &a, const __struct3 &b) {
+inline bool operator==(const Order &a, const Order &b) {
   return a.o_orderkey == b.o_orderkey && a.o_custkey == b.o_custkey &&
          a.o_orderdate == b.o_orderdate;
 }
-inline bool operator!=(const __struct3 &a, const __struct3 &b) {
-  return !(a == b);
-}
-struct __struct4 {
+inline bool operator!=(const Order &a, const Order &b) { return !(a == b); }
+struct Lineitem {
   decltype(1000) l_orderkey;
   decltype(std::string("R")) l_returnflag;
   decltype(1000) l_extendedprice;
   decltype(0.1) l_discount;
 };
-inline bool operator==(const __struct4 &a, const __struct4 &b) {
+inline bool operator==(const Lineitem &a, const Lineitem &b) {
   return a.l_orderkey == b.l_orderkey && a.l_returnflag == b.l_returnflag &&
          a.l_extendedprice == b.l_extendedprice && a.l_discount == b.l_discount;
 }
-inline bool operator!=(const __struct4 &a, const __struct4 &b) {
+inline bool operator!=(const Lineitem &a, const Lineitem &b) {
   return !(a == b);
 }
-struct __struct5 {
-  decltype(std::declval<__struct2>().c_custkey) c_custkey;
-  decltype(std::declval<__struct2>().c_name) c_name;
-  decltype(std::declval<__struct2>().c_acctbal) c_acctbal;
-  decltype(std::declval<__struct2>().c_address) c_address;
-  decltype(std::declval<__struct2>().c_phone) c_phone;
-  decltype(std::declval<__struct2>().c_comment) c_comment;
-  decltype(std::declval<__struct1>().n_name) n_name;
+struct Result {
+  decltype(std::declval<Customer>().c_custkey) c_custkey;
+  decltype(std::declval<Customer>().c_name) c_name;
+  decltype(std::declval<Customer>().c_acctbal) c_acctbal;
+  decltype(std::declval<Customer>().c_address) c_address;
+  decltype(std::declval<Customer>().c_phone) c_phone;
+  decltype(std::declval<Customer>().c_comment) c_comment;
+  decltype(std::declval<Nation>().n_name) n_name;
 };
-inline bool operator==(const __struct5 &a, const __struct5 &b) {
+inline bool operator==(const Result &a, const Result &b) {
   return a.c_custkey == b.c_custkey && a.c_name == b.c_name &&
          a.c_acctbal == b.c_acctbal && a.c_address == b.c_address &&
          a.c_phone == b.c_phone && a.c_comment == b.c_comment &&
          a.n_name == b.n_name;
 }
-inline bool operator!=(const __struct5 &a, const __struct5 &b) {
-  return !(a == b);
-}
+inline bool operator!=(const Result &a, const Result &b) { return !(a == b); }
 struct __struct6 {
-  __struct2 c;
-  __struct3 o;
-  __struct4 l;
-  __struct1 n;
+  Customer c;
+  Order o;
+  Lineitem l;
+  Nation n;
 };
 inline bool operator==(const __struct6 &a, const __struct6 &b) {
   return a.c == b.c && a.o == b.o && a.l == b.l && a.n == b.n;
@@ -89,7 +83,7 @@ inline bool operator!=(const __struct6 &a, const __struct6 &b) {
   return !(a == b);
 }
 struct __struct7 {
-  __struct5 key;
+  Result key;
   std::vector<__struct6> items;
 };
 inline bool operator==(const __struct7 &a, const __struct7 &b) {
@@ -118,17 +112,17 @@ inline bool operator!=(const __struct8 &a, const __struct8 &b) {
   return !(a == b);
 }
 int main() {
-  std::vector<__struct1> nation =
-      std::vector<__struct1>{__struct1{1, std::string("BRAZIL")}};
-  std::vector<__struct2> customer = std::vector<__struct2>{
-      __struct2{1, std::string("Alice"), 100, 1, std::string("123 St"),
-                std::string("123-456"), std::string("Loyal")}};
-  std::vector<__struct3> orders =
-      std::vector<__struct3>{__struct3{1000, 1, std::string("1993-10-15")},
-                             __struct3{2000, 1, std::string("1994-01-02")}};
-  std::vector<__struct4> lineitem =
-      std::vector<__struct4>{__struct4{1000, std::string("R"), 1000, 0.1},
-                             __struct4{2000, std::string("N"), 500, 0}};
+  std::vector<Nation> nation =
+      std::vector<Nation>{Nation{1, std::string("BRAZIL")}};
+  std::vector<Customer> customer = std::vector<Customer>{
+      Customer{1, std::string("Alice"), 100, 1, std::string("123 St"),
+               std::string("123-456"), std::string("Loyal")}};
+  std::vector<Order> orders =
+      std::vector<Order>{Order{1000, 1, std::string("1993-10-15")},
+                         Order{2000, 1, std::string("1994-01-02")}};
+  std::vector<Lineitem> lineitem =
+      std::vector<Lineitem>{Lineitem{1000, std::string("R"), 1000, 0.1},
+                            Lineitem{2000, std::string("N"), 500, 0}};
   auto start_date = std::string("1993-10-01");
   auto end_date = std::string("1994-01-01");
   auto result = ([&]() {
@@ -148,8 +142,8 @@ int main() {
                    (l.l_returnflag == std::string("R")))))
               continue;
             auto __key =
-                __struct5{c.c_custkey, c.c_name,    c.c_acctbal, c.c_address,
-                          c.c_phone,   c.c_comment, n.n_name};
+                Result{c.c_custkey, c.c_name,    c.c_acctbal, c.c_address,
+                       c.c_phone,   c.c_comment, n.n_name};
             bool __found = false;
             for (auto &__g : __groups) {
               if (__g.key == __key) {

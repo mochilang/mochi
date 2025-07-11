@@ -49,40 +49,36 @@ void __json(const std::unordered_map<K, V> &m) {
   std::cout << "}";
 }
 
-struct __struct1 {
+struct Customer {
   decltype(1) id;
   decltype(std::string("Alice")) name;
 };
-inline bool operator==(const __struct1 &a, const __struct1 &b) {
+inline bool operator==(const Customer &a, const Customer &b) {
   return a.id == b.id && a.name == b.name;
 }
-inline bool operator!=(const __struct1 &a, const __struct1 &b) {
+inline bool operator!=(const Customer &a, const Customer &b) {
   return !(a == b);
 }
-struct __struct2 {
+struct Order {
   decltype(100) id;
   decltype(1) customerId;
   decltype(250) total;
 };
-inline bool operator==(const __struct2 &a, const __struct2 &b) {
+inline bool operator==(const Order &a, const Order &b) {
   return a.id == b.id && a.customerId == b.customerId && a.total == b.total;
 }
-inline bool operator!=(const __struct2 &a, const __struct2 &b) {
-  return !(a == b);
-}
-struct __struct3 {
-  decltype(std::declval<__struct2>().id) orderId;
-  __struct1 customer;
-  decltype(std::declval<__struct2>().total) total;
+inline bool operator!=(const Order &a, const Order &b) { return !(a == b); }
+struct Result {
+  decltype(std::declval<Order>().id) orderId;
+  Customer customer;
+  decltype(std::declval<Order>().total) total;
 };
-inline bool operator==(const __struct3 &a, const __struct3 &b) {
+inline bool operator==(const Result &a, const Result &b) {
   return a.orderId == b.orderId && a.customer == b.customer &&
          a.total == b.total;
 }
-inline bool operator!=(const __struct3 &a, const __struct3 &b) {
-  return !(a == b);
-}
-inline void __json(const __struct2 &v) {
+inline bool operator!=(const Result &a, const Result &b) { return !(a == b); }
+inline void __json(const Order &v) {
   bool first = true;
   std::cout << "{";
   if (!first)
@@ -102,7 +98,7 @@ inline void __json(const __struct2 &v) {
   __json(v.total);
   std::cout << "}";
 }
-inline void __json(const __struct1 &v) {
+inline void __json(const Customer &v) {
   bool first = true;
   std::cout << "{";
   if (!first)
@@ -117,7 +113,7 @@ inline void __json(const __struct1 &v) {
   __json(v.name);
   std::cout << "}";
 }
-inline void __json(const __struct3 &v) {
+inline void __json(const Result &v) {
   bool first = true;
   std::cout << "{";
   if (!first)
@@ -138,12 +134,12 @@ inline void __json(const __struct3 &v) {
   std::cout << "}";
 }
 int main() {
-  std::vector<__struct1> customers = std::vector<__struct1>{
-      __struct1{1, std::string("Alice")}, __struct1{2, std::string("Bob")}};
-  std::vector<__struct2> orders =
-      std::vector<__struct2>{__struct2{100, 1, 250}, __struct2{101, 3, 80}};
+  std::vector<Customer> customers = std::vector<Customer>{
+      Customer{1, std::string("Alice")}, Customer{2, std::string("Bob")}};
+  std::vector<Order> orders =
+      std::vector<Order>{Order{100, 1, 250}, Order{101, 3, 80}};
   auto result = ([&]() {
-    std::vector<__struct3> __items;
+    std::vector<Result> __items;
     for (auto o : orders) {
       {
         bool __matched0 = false;
@@ -151,11 +147,11 @@ int main() {
           if (!((o.customerId == c.id)))
             continue;
           __matched0 = true;
-          __items.push_back(__struct3{o.id, c, o.total});
+          __items.push_back(Result{o.id, c, o.total});
         }
         if (!__matched0) {
           auto c = std::decay_t<decltype(*(customers).begin())>{};
-          __items.push_back(__struct3{o.id, c, o.total});
+          __items.push_back(Result{o.id, c, o.total});
         }
       }
     }

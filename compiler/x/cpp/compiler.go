@@ -287,7 +287,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	if bytes.Contains(src, []byte("std::string")) {
 		add("#include <string>")
 	}
-	if bytes.Contains(src, []byte("std::sort")) || bytes.Contains(src, []byte("std::remove")) || bytes.Contains(src, []byte("std::min_element")) || bytes.Contains(src, []byte("std::max_element")) || bytes.Contains(src, []byte("std::unique")) || bytes.Contains(src, []byte("std::find")) {
+	if bytes.Contains(src, []byte("std::sort")) || bytes.Contains(src, []byte("std::remove")) || bytes.Contains(src, []byte("std::min_element")) || bytes.Contains(src, []byte("std::max_element")) || bytes.Contains(src, []byte("std::unique")) || bytes.Contains(src, []byte("std::find")) || bytes.Contains(src, []byte("std::any_of")) {
 		add("#include <algorithm>")
 	}
 	if bytes.Contains(src, []byte("std::accumulate")) {
@@ -587,7 +587,7 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 			if et := c.predictElemType(st.Name); et != "" {
 				typ = fmt.Sprintf("std::vector<%s>", et)
 				exprStr = fmt.Sprintf("std::vector<%s>{}", et)
-				if strings.HasPrefix(et, "__struct") {
+				if c.isStructName(et) {
 					c.varStruct[st.Name] = et
 				}
 				c.elemType[st.Name] = et
@@ -1148,7 +1148,7 @@ func (c *Compiler) compilePrint(args []*parser.Expr) error {
 							if idx := strings.Index(ft, "{"); idx != -1 {
 								ft = ft[:idx]
 							}
-							if strings.HasPrefix(ft, "__struct") {
+							if c.isStructName(ft) {
 								structType = ft
 							}
 						}
@@ -1163,7 +1163,7 @@ func (c *Compiler) compilePrint(args []*parser.Expr) error {
 		case "vector":
 			tmp := c.newTmp()
 			c.buf.WriteString("auto " + tmp + " = " + s + "; bool first=true; for(const auto &_x : " + tmp + "){ if(!first) std::cout<<' '; first=false; ")
-			if et := c.elemType[s]; et != "" && strings.HasPrefix(et, "__struct") {
+			if et := c.elemType[s]; et != "" && c.isStructName(et) {
 				c.buf.WriteString("std::cout<<\"<struct>\";")
 			} else {
 				c.buf.WriteString("std::cout<<std::boolalpha<<_x;")
@@ -1406,12 +1406,12 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, error) {
 						if strings.HasPrefix(ft, "std::vector<") {
 							if et := c.extractVectorElemType(ft); et != "" {
 								c.elemType[expr] = et
-								if strings.HasPrefix(et, "__struct") {
+								if c.isStructName(et) {
 									c.varStruct[expr] = et
 								}
 							}
 						} else {
-							if strings.HasPrefix(ft, "__struct") {
+							if c.isStructName(ft) {
 								c.varStruct[expr] = ft
 							} else if ft == "std::string" {
 								c.vars[expr] = "string"
@@ -1694,6 +1694,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 		case "exists":
 			if len(args) == 1 {
+				if q, ok := simpleExistsQuery(p.Call.Args[0]); ok {
+					return c.compileExistsQuery(q)
+				}
 				return fmt.Sprintf("(!%s.empty())", args[0]), nil
 			}
 		case "min":
@@ -2098,7 +2101,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.vars[q.Var] = "int"
 		case et == "bool":
 			c.vars[q.Var] = "bool"
-		case strings.HasPrefix(et, "__struct"):
+		case c.isStructName(et):
 			c.varStruct[q.Var] = et
 		}
 	}
@@ -2121,7 +2124,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				c.vars[f.Var] = "int"
 			case et == "bool":
 				c.vars[f.Var] = "bool"
-			case strings.HasPrefix(et, "__struct"):
+			case c.isStructName(et):
 				c.varStruct[f.Var] = et
 			}
 		}
@@ -2146,7 +2149,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				c.vars[j.Var] = "int"
 			case et == "bool":
 				c.vars[j.Var] = "bool"
-			case strings.HasPrefix(et, "__struct"):
+			case c.isStructName(et):
 				c.varStruct[j.Var] = et
 			}
 		}
@@ -2388,7 +2391,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	buf.WriteString("}\n")
 	if key != "" {
 		comp := "a.first < b.first"
-		if strings.HasPrefix(keyType, "__struct") {
+		if c.isStructName(keyType) {
 			if info, ok := c.structByName[keyType]; ok {
 				left := []string{}
 				right := []string{}
@@ -2417,7 +2420,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	buf.WriteString("})()")
 	res := buf.String()
-	if strings.HasPrefix(itemType, "__struct") {
+	if c.isStructName(itemType) {
 		c.varStruct[res] = itemType
 		c.elemType[res] = itemType
 	}
@@ -2453,7 +2456,7 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 					c.vars[q.Var] = "int"
 				case et == "bool":
 					c.vars[q.Var] = "bool"
-				case strings.HasPrefix(et, "__struct"):
+				case c.isStructName(et):
 					c.varStruct[q.Var] = et
 				}
 			}
@@ -2562,7 +2565,7 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 			c.vars[q.Var] = "int"
 		case et == "bool":
 			c.vars[q.Var] = "bool"
-		case strings.HasPrefix(et, "__struct"):
+		case c.isStructName(et):
 			c.varStruct[q.Var] = et
 		}
 	}
@@ -2585,7 +2588,7 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 				c.vars[f.Var] = "int"
 			case et == "bool":
 				c.vars[f.Var] = "bool"
-			case strings.HasPrefix(et, "__struct"):
+			case c.isStructName(et):
 				c.varStruct[f.Var] = et
 			}
 		}
@@ -2610,7 +2613,7 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 				c.vars[j.Var] = "int"
 			case et == "bool":
 				c.vars[j.Var] = "bool"
-			case strings.HasPrefix(et, "__struct"):
+			case c.isStructName(et):
 				c.varStruct[j.Var] = et
 			}
 		}
@@ -2941,7 +2944,7 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 
 	if sortExpr != "" {
 		comp := "a.first < b.first"
-		if strings.HasPrefix(sortKeyType, "__struct") {
+		if c.isStructName(sortKeyType) {
 			if info, ok := c.structByName[sortKeyType]; ok {
 				left := []string{}
 				right := []string{}
@@ -2971,7 +2974,7 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 	buf.WriteString("})()")
 	c.scope--
 	res := buf.String()
-	if strings.HasPrefix(itemType, "__struct") {
+	if c.isStructName(itemType) {
 		c.varStruct[res] = itemType
 		c.elemType[res] = itemType
 	}
@@ -3345,6 +3348,83 @@ func (c *Compiler) partialApply(name string, args []string, total int) string {
 	return buf.String()
 }
 
+// compileExistsQuery converts a simple query used with the exists builtin into
+// a call to std::any_of when possible.
+func (c *Compiler) compileExistsQuery(q *parser.QueryExpr) (string, error) {
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+
+	// Backup variable information for the query variable.
+	oldVar := c.vars[q.Var]
+	oldStruct := c.varStruct[q.Var]
+	oldElem := c.elemType[q.Var]
+
+	if t := c.varStruct[src]; t != "" {
+		c.varStruct[q.Var] = t
+	}
+	if et := c.elemType[src]; et != "" {
+		switch {
+		case strings.Contains(et, "std::string"):
+			c.vars[q.Var] = "string"
+		case et == "int":
+			c.vars[q.Var] = "int"
+		case et == "bool":
+			c.vars[q.Var] = "bool"
+		case c.isStructName(et):
+			c.varStruct[q.Var] = et
+		}
+	}
+
+	cond := "true"
+	if q.Where != nil {
+		cond, err = c.compileExpr(q.Where)
+		if err != nil {
+			// restore and return
+			if oldVar == "" {
+				delete(c.vars, q.Var)
+			} else {
+				c.vars[q.Var] = oldVar
+			}
+			if oldStruct == "" {
+				delete(c.varStruct, q.Var)
+			} else {
+				c.varStruct[q.Var] = oldStruct
+			}
+			if oldElem == "" {
+				delete(c.elemType, q.Var)
+			} else {
+				c.elemType[q.Var] = oldElem
+			}
+			return "", err
+		}
+		cond = c.ensureBool(cond)
+	}
+
+	// Restore previous variable info.
+	if oldVar == "" {
+		delete(c.vars, q.Var)
+	} else {
+		c.vars[q.Var] = oldVar
+	}
+	if oldStruct == "" {
+		delete(c.varStruct, q.Var)
+	} else {
+		c.varStruct[q.Var] = oldStruct
+	}
+	if oldElem == "" {
+		delete(c.elemType, q.Var)
+	} else {
+		c.elemType[q.Var] = oldElem
+	}
+
+	if cond == "true" {
+		return fmt.Sprintf("(!%s.empty())", src), nil
+	}
+	return fmt.Sprintf("std::any_of(%s.begin(), %s.end(), [&](auto %s){ return %s; })", src, src, q.Var, cond), nil
+}
+
 func (c *Compiler) generateJSONPrinter(info *structInfo) {
 	c.headerWriteln("inline void __json(const " + info.Name + " &v){")
 	c.headerWriteln("    bool first=true;")
@@ -3392,7 +3472,7 @@ func (c *Compiler) ensureBool(expr string) string {
 						if idx := strings.Index(ft, "{"); idx != -1 {
 							ft = ft[:idx]
 						}
-						if strings.HasPrefix(ft, "__struct") {
+						if c.isStructName(ft) {
 							return fmt.Sprintf("(%s != %s{})", expr, ft)
 						}
 						break

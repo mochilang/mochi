@@ -49,19 +49,17 @@ void __json(const std::unordered_map<K, V> &m) {
   std::cout << "}";
 }
 
-struct __struct1 {
+struct People {
   decltype(std::string("Alice")) name;
   decltype(std::string("Paris")) city;
 };
-inline bool operator==(const __struct1 &a, const __struct1 &b) {
+inline bool operator==(const People &a, const People &b) {
   return a.name == b.name && a.city == b.city;
 }
-inline bool operator!=(const __struct1 &a, const __struct1 &b) {
-  return !(a == b);
-}
+inline bool operator!=(const People &a, const People &b) { return !(a == b); }
 struct __struct2 {
-  decltype(std::declval<__struct1>().city) key;
-  std::vector<__struct1> items;
+  decltype(std::declval<People>().city) key;
+  std::vector<People> items;
 };
 inline bool operator==(const __struct2 &a, const __struct2 &b) {
   return a.key == b.key && a.items == b.items;
@@ -69,17 +67,15 @@ inline bool operator==(const __struct2 &a, const __struct2 &b) {
 inline bool operator!=(const __struct2 &a, const __struct2 &b) {
   return !(a == b);
 }
-struct __struct3 {
+struct Big {
   decltype(std::declval<__struct2>().key) city;
   int num;
 };
-inline bool operator==(const __struct3 &a, const __struct3 &b) {
+inline bool operator==(const Big &a, const Big &b) {
   return a.city == b.city && a.num == b.num;
 }
-inline bool operator!=(const __struct3 &a, const __struct3 &b) {
-  return !(a == b);
-}
-inline void __json(const __struct3 &v) {
+inline bool operator!=(const Big &a, const Big &b) { return !(a == b); }
+inline void __json(const Big &v) {
   bool first = true;
   std::cout << "{";
   if (!first)
@@ -94,7 +90,7 @@ inline void __json(const __struct3 &v) {
   __json(v.num);
   std::cout << "}";
 }
-inline void __json(const __struct1 &v) {
+inline void __json(const People &v) {
   bool first = true;
   std::cout << "{";
   if (!first)
@@ -110,14 +106,14 @@ inline void __json(const __struct1 &v) {
   std::cout << "}";
 }
 int main() {
-  std::vector<__struct1> people = std::vector<__struct1>{
-      __struct1{std::string("Alice"), std::string("Paris")},
-      __struct1{std::string("Bob"), std::string("Hanoi")},
-      __struct1{std::string("Charlie"), std::string("Paris")},
-      __struct1{std::string("Diana"), std::string("Hanoi")},
-      __struct1{std::string("Eve"), std::string("Paris")},
-      __struct1{std::string("Frank"), std::string("Hanoi")},
-      __struct1{std::string("George"), std::string("Paris")}};
+  std::vector<People> people =
+      std::vector<People>{People{std::string("Alice"), std::string("Paris")},
+                          People{std::string("Bob"), std::string("Hanoi")},
+                          People{std::string("Charlie"), std::string("Paris")},
+                          People{std::string("Diana"), std::string("Hanoi")},
+                          People{std::string("Eve"), std::string("Paris")},
+                          People{std::string("Frank"), std::string("Hanoi")},
+                          People{std::string("George"), std::string("Paris")}};
   auto big = ([&]() {
     std::vector<__struct2> __groups;
     for (auto p : people) {
@@ -125,21 +121,20 @@ int main() {
       bool __found = false;
       for (auto &__g : __groups) {
         if (__g.key == __key) {
-          __g.items.push_back(__struct1{p});
+          __g.items.push_back(People{p});
           __found = true;
           break;
         }
       }
       if (!__found) {
-        __groups.push_back(
-            __struct2{__key, std::vector<__struct1>{__struct1{p}}});
+        __groups.push_back(__struct2{__key, std::vector<People>{People{p}}});
       }
     }
-    std::vector<__struct3> __items;
+    std::vector<Big> __items;
     for (auto &g : __groups) {
       if (!((((int)g.items.size()) >= 4)))
         continue;
-      __items.push_back(__struct3{g.key, ((int)g.items.size())});
+      __items.push_back(Big{g.key, ((int)g.items.size())});
     }
     return __items;
   })();

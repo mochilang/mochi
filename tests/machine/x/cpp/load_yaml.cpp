@@ -33,24 +33,22 @@ inline std::vector<Person> __load_yaml_person(const std::string &path) {
     people.push_back(cur);
   return people;
 }
-struct __struct1 {
+struct Adult {
   decltype(std::declval<Person>().name) name;
   decltype(std::declval<Person>().email) email;
 };
-inline bool operator==(const __struct1 &a, const __struct1 &b) {
+inline bool operator==(const Adult &a, const Adult &b) {
   return a.name == b.name && a.email == b.email;
 }
-inline bool operator!=(const __struct1 &a, const __struct1 &b) {
-  return !(a == b);
-}
+inline bool operator!=(const Adult &a, const Adult &b) { return !(a == b); }
 int main() {
   auto people = __load_yaml_person("../interpreter/valid/people.yaml");
   auto adults = ([&]() {
-    std::vector<__struct1> __items;
+    std::vector<Adult> __items;
     for (auto p : people) {
       if (!((p.age >= 18)))
         continue;
-      __items.push_back(__struct1{p.name, p.email});
+      __items.push_back(Adult{p.name, p.email});
     }
     return __items;
   })();
