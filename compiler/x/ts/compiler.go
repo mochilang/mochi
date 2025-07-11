@@ -1425,9 +1425,17 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 			c.use("_contains")
 			return fmt.Sprintf("_contains(%s, %s)", right, left), types.BoolType{}, nil
 		}
-	case "union", "union_all", "except", "intersect":
-		c.use("_" + op)
-		return fmt.Sprintf("_%s(%s, %s)", op, left, right), types.ListType{Elem: types.AnyType{}}, nil
+	case "union":
+		expr := fmt.Sprintf("Array.from(new Set([...%s, ...%s]))", left, right)
+		return expr, types.ListType{Elem: types.AnyType{}}, nil
+	case "union_all":
+		return fmt.Sprintf("%s.concat(%s)", left, right), types.ListType{Elem: types.AnyType{}}, nil
+	case "except":
+		expr := fmt.Sprintf("%s.filter(v => !%s.includes(v))", left, right)
+		return expr, types.ListType{Elem: types.AnyType{}}, nil
+	case "intersect":
+		expr := fmt.Sprintf("%s.filter(v => %s.includes(v))", left, right)
+		return expr, types.ListType{Elem: types.AnyType{}}, nil
 	default:
 		return fmt.Sprintf("(%s %s %s)", left, op, right), types.AnyType{}, nil
 	}
