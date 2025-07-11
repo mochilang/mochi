@@ -1,0 +1,44 @@
+// Mochi implementation of Rosetta "Chinese remainder theorem" task
+// Uses integer arithmetic.
+
+fun egcd(a: int, b: int): list<int> {
+  if a == 0 { return [b, 0, 1] }
+  let res = egcd(b % a, a)
+  let g = res[0]
+  let x1 = res[1]
+  let y1 = res[2]
+  return [g, y1 - (b / a) * x1, x1]
+}
+
+fun modInv(a: int, m: int): int {
+  let r = egcd(a, m)
+  if r[0] != 1 { return 0 }
+  let x = r[1]
+  if x < 0 { return x + m }
+  return x
+}
+
+fun crt(a: list<int>, n: list<int>): int {
+  var prod = 1
+  var i = 0
+  while i < len(n) {
+    prod = prod * n[i]
+    i = i + 1
+  }
+  var x = 0
+  i = 0
+  while i < len(n) {
+    let ni = n[i]
+    let ai = a[i]
+    let p = prod / ni
+    let inv = modInv(p % ni, ni)
+    x = x + ai * inv * p
+    i = i + 1
+  }
+  return x % prod
+}
+
+let n = [3,5,7]
+let a = [2,3,2]
+let res = crt(a,n)
+print(str(res) + " <nil>")
