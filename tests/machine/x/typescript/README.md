@@ -1,6 +1,7 @@
 # Machine-generated TypeScript Programs
 
 This directory contains TypeScript code compiled from Mochi programs in `tests/vm/valid` using the experimental compiler.
+The compiler now emits simpler `from` query loops with explicit result types.
 
 ## Progress
 
@@ -113,3 +114,5 @@ Compiled: 100/100 programs
 - Integrate with Node runtime for dataset queries and joins
 - Support asynchronous `fetch` statements
 - Finish improving formatting to match human examples
+- Improve type inference for query results
+
