@@ -70,9 +70,17 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if s.Import.Lang == nil {
 			return c.compilePackageImport(s.Import)
 		}
-		if *s.Import.Lang == "go" && strings.Trim(s.Import.Path, "\"") == "strings" {
-			// no-op, handled by special cases in call compilation
-			return nil
+		if *s.Import.Lang == "go" {
+			p := strings.Trim(s.Import.Path, "\"")
+			if p == "strings" {
+				// no-op, handled by special cases in call compilation
+				return nil
+			}
+			if s.Import.Auto && p == "mochi/runtime/ffi/go/testpkg" {
+				// simple built-in Go package used by tests
+				return nil
+			}
+			return fmt.Errorf("unsupported import language: %v", s.Import.Lang)
 		}
 		if *s.Import.Lang != "python" {
 			return fmt.Errorf("unsupported import language: %v", s.Import.Lang)

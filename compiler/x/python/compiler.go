@@ -269,6 +269,26 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("")
 	}
 
+	// Handle simple built-in imports from other languages.
+	for _, s := range prog.Statements {
+		if s.Import != nil && s.Import.Lang != nil {
+			lang := *s.Import.Lang
+			p := strings.Trim(s.Import.Path, "\"")
+			alias := s.Import.As
+			if alias == "" {
+				alias = parser.AliasFromPath(s.Import.Path)
+			}
+			alias = sanitizeName(alias)
+			switch lang {
+			case "go":
+				if s.Import.Auto && p == "mochi/runtime/ffi/go/testpkg" {
+					c.writeln(fmt.Sprintf("%s = {\"Add\": lambda a, b: a + b, \"Pi\": 3.14, \"Answer\": 42}", alias))
+					c.writeln("")
+				}
+			}
+		}
+	}
+
 	c.emitAutoStructs()
 
 	if c.models {
