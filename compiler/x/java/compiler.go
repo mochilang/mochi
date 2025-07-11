@@ -1834,10 +1834,23 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 		return "", err
 	}
 	expr := left
+	usingSB := false
 	for _, op := range b.Right {
 		right, err := c.compilePostfix(op.Right)
 		if err != nil {
 			return "", err
+		}
+		if op.Op == "+" && (isStringVal(expr, c) || isStringVal(right, c) || usingSB) {
+			if !usingSB {
+				expr = fmt.Sprintf("new StringBuilder(String.valueOf(%s))", expr)
+				usingSB = true
+			}
+			expr = fmt.Sprintf("%s.append(String.valueOf(%s))", expr, right)
+			continue
+		}
+		if usingSB {
+			expr += ".toString()"
+			usingSB = false
 		}
 		if op.Op == "in" {
 			typ := c.inferType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}})
@@ -1900,6 +1913,9 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 		} else {
 			expr = fmt.Sprintf("%s %s %s", expr, op.Op, right)
 		}
+	}
+	if usingSB {
+		expr += ".toString()"
 	}
 	return expr, nil
 }
