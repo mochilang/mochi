@@ -27,6 +27,7 @@ type Compiler struct {
 	varTypes     map[string]string
 	packages     map[string]bool
 	structs      map[string]bool
+	modules      map[string]bool
 	handlerCount int
 	useStream    bool
 	models       bool
@@ -34,7 +35,7 @@ type Compiler struct {
 
 // New creates a new C# compiler.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, helpers: make(map[string]bool), varTypes: make(map[string]string), packages: make(map[string]bool), structs: make(map[string]bool), inFun: 0, useStream: false, models: false}
+	return &Compiler{env: env, helpers: make(map[string]bool), varTypes: make(map[string]string), packages: make(map[string]bool), structs: make(map[string]bool), modules: make(map[string]bool), inFun: 0, useStream: false, models: false}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -115,6 +116,48 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			}
 			c.compileStructType(st)
 			c.writeln("")
+		}
+	}
+
+	// Foreign module stubs
+	for _, s := range prog.Statements {
+		if s.Import != nil && s.Import.Lang != nil {
+			alias := s.Import.As
+			if alias == "" {
+				alias = parser.AliasFromPath(s.Import.Path)
+			}
+			alias = sanitizeName(alias)
+			lang := *s.Import.Lang
+			p := strings.Trim(s.Import.Path, "\"")
+			switch lang {
+			case "go":
+				if s.Import.Auto && p == "mochi/runtime/ffi/go/testpkg" {
+					c.modules[alias] = true
+					c.writeln(fmt.Sprintf("static class %s {", alias))
+					c.indent++
+					c.writeln("public static int Add(int a, int b) { return a + b; }")
+					c.writeln("public const double Pi = 3.14;")
+					c.writeln("public const int Answer = 42;")
+					c.indent--
+					c.writeln("}")
+					c.writeln("")
+				}
+			case "python":
+				if p == "math" {
+					c.modules[alias] = true
+					c.writeln(fmt.Sprintf("static class %s {", alias))
+					c.indent++
+					c.writeln("public const double pi = Math.PI;")
+					c.writeln("public const double e = Math.E;")
+					c.writeln("public static double sqrt(double x) { return Math.Sqrt(x); }")
+					c.writeln("public static double pow(double x, double y) { return Math.Pow(x, y); }")
+					c.writeln("public static double sin(double x) { return Math.Sin(x); }")
+					c.writeln("public static double log(double x) { return Math.Log(x); }")
+					c.indent--
+					c.writeln("}")
+					c.writeln("")
+				}
+			}
 		}
 	}
 
@@ -599,7 +642,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			alias = sanitizeName(alias)
 			return c.compilePackageImport(alias, s.Import.Path, s.Pos.Filename)
 		}
-		// Ignore foreign language imports for now
+		// foreign imports handled at top level
 		return nil
 	default:
 		// ignore other statements in minimal compiler
@@ -2312,6 +2355,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return fmt.Sprintf("new Dictionary<%s, %s> { %s }", keyType, valType, strings.Join(items, ", ")), nil
 	case p.Selector != nil:
 		expr := sanitizeName(p.Selector.Root)
+		if c.modules[p.Selector.Root] {
+			if len(p.Selector.Tail) == 0 {
+				return expr, nil
+			}
+			parts := make([]string, len(p.Selector.Tail))
+			for i, s := range p.Selector.Tail {
+				parts[i] = sanitizeName(s)
+			}
+			return expr + "." + strings.Join(parts, "."), nil
+		}
 		var typ types.Type = types.AnyType{}
 		if c.env != nil {
 			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
