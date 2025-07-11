@@ -1,0 +1,89 @@
+fun xor(a: int, b: int): int {
+  var res = 0
+  var bit = 1
+  var x = a
+  var y = b
+  while x > 0 || y > 0 {
+    let abit = x % 2
+    let bbit = y % 2
+    if abit != bbit { res = res + bit }
+    x = x / 2
+    y = y / 2
+    bit = bit * 2
+  }
+  return res
+}
+
+fun rshift(x: int, n: int): int {
+  var v = x
+  var i = 0
+  while i < n { v = v / 2; i = i + 1 }
+  return v
+}
+
+fun ord(ch: string): int {
+  let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  let lower = "abcdefghijklmnopqrstuvwxyz"
+  var idx = indexOf(upper, ch)
+  if idx >= 0 { return 65 + idx }
+  idx = indexOf(lower, ch)
+  if idx >= 0 { return 97 + idx }
+  if ch == " " { return 32 }
+  return 0
+}
+
+fun toHex(n: int): string {
+  let digits = "0123456789ABCDEF"
+  if n == 0 { return "0" }
+  var v = n
+  var out = ""
+  while v > 0 {
+    let d = v % 16
+    out = digits[d:d+1] + out
+    v = v / 16
+  }
+  return out
+}
+
+fun crc32Table(): list<int> {
+  var table: list<int> = []
+  var i = 0
+  while i < 256 {
+    var word = i
+    var j = 0
+    while j < 8 {
+      if word % 2 == 1 {
+        word = xor(rshift(word,1), 0xEDB88320)
+      } else {
+        word = rshift(word,1)
+      }
+      j = j + 1
+    }
+    table = append(table, word)
+    i = i + 1
+  }
+  return table
+}
+
+let table = crc32Table()
+
+fun crc32(s: string): int {
+  var crc = 0xFFFFFFFF
+  var i = 0
+  while i < len(s) {
+    let c = ord(s[i:i+1])
+    let idx = xor(crc % 256, c)
+    crc = xor(table[idx], rshift(crc,8))
+    i = i + 1
+  }
+  return 0xFFFFFFFF - crc
+}
+
+fun main() {
+  let s = "The quick brown fox jumps over the lazy dog"
+  let result = crc32(s)
+  let hex = toHex(result)
+  print(hex)
+}
+
+main()
