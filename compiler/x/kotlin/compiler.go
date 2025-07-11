@@ -935,8 +935,12 @@ func (c *Compiler) postfix(p *parser.PostfixExpr) (string, error) {
 				if i < len(p.Ops)-1 {
 					prefix := &parser.PostfixExpr{Target: p.Target, Ops: p.Ops[:i]}
 					ct := c.inferPostfixType(prefix)
-					if types.IsMapType(ct) {
+					if mt, ok := ct.(types.MapType); ok {
+						val = fmt.Sprintf("(%s[%s] as MutableMap<%s, %s>)", val, idx, kotlinTypeOf(mt.Key), kotlinTypeOf(mt.Value))
+					} else if types.IsMapType(ct) {
 						val = fmt.Sprintf("(%s[%s] as MutableMap<*, *>)", val, idx)
+					} else if lt, ok := ct.(types.ListType); ok {
+						val = fmt.Sprintf("(%s[%s] as MutableList<%s>)", val, idx, kotlinTypeOf(lt.Elem))
 					} else if types.IsListType(ct) {
 						val = fmt.Sprintf("(%s[%s] as MutableList<Any?>)", val, idx)
 					} else {
@@ -994,7 +998,11 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 			if isStructType(t) || isStringType(t) {
 				name += "." + strings.Join(p.Selector.Tail, ".")
 			} else {
-				name = fmt.Sprintf("(%s as MutableMap<*, *>)", name)
+				if mt, ok := t.(types.MapType); ok {
+					name = fmt.Sprintf("(%s as MutableMap<%s, %s>)", name, kotlinTypeOf(mt.Key), kotlinTypeOf(mt.Value))
+				} else {
+					name = fmt.Sprintf("(%s as MutableMap<*, *>)", name)
+				}
 				for _, part := range p.Selector.Tail {
 					name += fmt.Sprintf("[%q]", part)
 				}

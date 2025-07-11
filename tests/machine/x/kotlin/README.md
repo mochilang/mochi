@@ -120,3 +120,16 @@ Successfully ran: 97/100 programs
 - [x] Infer data classes from single map literals
 - [x] Infer struct type when query selects a struct variable
 - [x] Avoid unnecessary boolean conversions in conditions
+
+## Upcoming Improvements
+
+- [ ] Better type hints for map indexing
+- [ ] Generate extension functions for common list operations
+- [ ] Reduce casting by tracking variable nullability
+- [ ] Support Kotlin coroutines for async features
+- [ ] Implement tail recursion optimization
+- [ ] Emit sealed interfaces for union types
+- [ ] Improve error reporting during compilation
+- [ ] Provide configuration for custom package names
+- [ ] Generate unit tests alongside compiled code
+- [ ] Experiment with using Kotlin flow for query pipelines
