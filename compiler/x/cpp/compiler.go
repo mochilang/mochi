@@ -270,6 +270,9 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	if bytes.Contains(src, []byte("std::map")) || c.usesJSON {
 		add("#include <map>")
 	}
+	if bytes.Contains(src, []byte("std::string")) {
+		add("#include <string>")
+	}
 	if bytes.Contains(src, []byte("std::sort")) || bytes.Contains(src, []byte("std::remove")) || bytes.Contains(src, []byte("std::min_element")) || bytes.Contains(src, []byte("std::max_element")) || bytes.Contains(src, []byte("std::unique")) || bytes.Contains(src, []byte("std::find")) {
 		add("#include <algorithm>")
 	}
