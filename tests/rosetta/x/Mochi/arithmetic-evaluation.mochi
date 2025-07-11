@@ -1,0 +1,156 @@
+// Mochi implementation of arithmetic expression evaluation using
+// a simple recursive descent parser. Supports + - * / ^ and parentheses
+// for integer values.
+
+type Parser { expr: string, pos: int }
+
+fun skipWS(p: Parser): Parser {
+  var i = p.pos
+  while i < len(p.expr) && substring(p.expr, i, i+1) == " " {
+    i = i + 1
+  }
+  p.pos = i
+  return p
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (str[i:i+1] as int) - 48
+    i = i + 1
+  }
+  return n
+}
+
+fun parseNumber(p: Parser): (int, Parser) {
+  p = skipWS(p)
+  var start = p.pos
+  while p.pos < len(p.expr) {
+    let ch = substring(p.expr, p.pos, p.pos+1)
+    if ch >= "0" && ch <= "9" {
+      p.pos = p.pos + 1
+    } else {
+      break
+    }
+  }
+  let token = substring(p.expr, start, p.pos)
+  return (parseIntStr(token), p)
+}
+
+fun parseFactor(p: Parser): (int, Parser) {
+  p = skipWS(p)
+  if p.pos < len(p.expr) && substring(p.expr, p.pos, p.pos+1) == "(" {
+    p.pos = p.pos + 1
+    var v
+    (v, p) = parseExpr(p)
+    p = skipWS(p)
+    if p.pos < len(p.expr) && substring(p.expr, p.pos, p.pos+1) == ")" {
+      p.pos = p.pos + 1
+    }
+    return (v, p)
+  }
+  if p.pos < len(p.expr) && substring(p.expr, p.pos, p.pos+1) == "-" {
+    p.pos = p.pos + 1
+    var v
+    (v, p) = parseFactor(p)
+    return (-v, p)
+  }
+  return parseNumber(p)
+}
+
+fun powInt(base: int, exp: int): int {
+  var r = 1
+  var b = base
+  var e = exp
+  while e > 0 {
+    if e % 2 == 1 { r = r * b }
+    b = b * b
+    e = e / 2 as int
+  }
+  return r
+}
+
+fun parsePower(p: Parser): (int, Parser) {
+  var v
+  (v, p) = parseFactor(p)
+  while true {
+    p = skipWS(p)
+    if p.pos < len(p.expr) && substring(p.expr, p.pos, p.pos+1) == "^" {
+      p.pos = p.pos + 1
+      var rhs
+      (rhs, p) = parseFactor(p)
+      v = powInt(v, rhs)
+    } else {
+      break
+    }
+  }
+  return (v, p)
+}
+
+fun parseTerm(p: Parser): (int, Parser) {
+  var v
+  (v, p) = parsePower(p)
+  while true {
+    p = skipWS(p)
+    if p.pos < len(p.expr) {
+      let op = substring(p.expr, p.pos, p.pos+1)
+      if op == "*" {
+        p.pos = p.pos + 1
+        var rhs
+        (rhs, p) = parsePower(p)
+        v = v * rhs
+        continue
+      }
+      if op == "/" {
+        p.pos = p.pos + 1
+        var rhs
+        (rhs, p) = parsePower(p)
+        v = v / rhs as int
+        continue
+      }
+    }
+    break
+  }
+  return (v, p)
+}
+
+fun parseExpr(p: Parser): (int, Parser) {
+  var v
+  (v, p) = parseTerm(p)
+  while true {
+    p = skipWS(p)
+    if p.pos < len(p.expr) {
+      let op = substring(p.expr, p.pos, p.pos+1)
+      if op == "+" {
+        p.pos = p.pos + 1
+        var rhs
+        (rhs, p) = parseTerm(p)
+        v = v + rhs
+        continue
+      }
+      if op == "-" {
+        p.pos = p.pos + 1
+        var rhs
+        (rhs, p) = parseTerm(p)
+        v = v - rhs
+        continue
+      }
+    }
+    break
+  }
+  return (v, p)
+}
+
+fun evalExpr(expr: string): int {
+  var p = Parser{expr: expr, pos: 0}
+  let v, _ = parseExpr(p)
+  return v
+}
+
+fun main() {
+  let expr = "2*(3-1)+2*5"
+  print(expr + " = " + str(evalExpr(expr)))
+}
+
+main()
