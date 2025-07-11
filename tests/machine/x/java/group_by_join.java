@@ -1,63 +1,46 @@
 import java.util.*;
-class CustomersIdName {
-	int id;
-	String name;
-	CustomersIdName(int id, String name) {
-		this.id = id;
-		this.name = name;
-	}
-}
-class OrdersCustomerIdId {
-	int id;
-	int customerId;
-	OrdersCustomerIdId(int id, int customerId) {
-		this.id = id;
-		this.customerId = customerId;
-	}
-}
-class StatsCountName {
-	Object name;
-	int count;
-	StatsCountName(Object name, int count) {
-		this.name = name;
-		this.count = count;
-	}
-}
 class OC {
-	OrdersCustomerIdId o;
-	CustomersIdName c;
-	OC(OrdersCustomerIdId o, CustomersIdName c) {
+	Map<String,Integer> o;
+	Map<String,Object> c;
+	OC(Map<String,Integer> o, Map<String,Object> c) {
 		this.o = o;
 		this.c = c;
 	}
+	int size() { return 2; }
 }
 public class GroupByJoin {
-	static List<CustomersIdName> customers = new ArrayList<>(Arrays.asList(new CustomersIdName(1, "Alice"), new CustomersIdName(2, "Bob")));
-	static List<OrdersCustomerIdId> orders = new ArrayList<>(Arrays.asList(new OrdersCustomerIdId(100, 1), new OrdersCustomerIdId(101, 1), new OrdersCustomerIdId(102, 2)));
-	static List<StatsCountName> stats = (new java.util.function.Supplier<List<StatsCountName>>(){public List<StatsCountName> get(){
-	List<StatsCountName> _res5 = new ArrayList<>();
-	Map<String,List<OC>> _groups6 = new LinkedHashMap<>();
+	static List<Map<String,Object>> customers = new ArrayList<>(Arrays.asList(mapOfEntries(entry("id", 1), entry("name", "Alice")), mapOfEntries(entry("id", 2), entry("name", "Bob"))));
+	static List<Map<String,Integer>> orders = new ArrayList<>(Arrays.asList(mapOfEntries(entry("id", 100), entry("customerId", 1)), mapOfEntries(entry("id", 101), entry("customerId", 1)), mapOfEntries(entry("id", 102), entry("customerId", 2))));
+	static List<Map<String,Object>> stats = (new java.util.function.Supplier<List<Map<String,Object>>>(){public List<Map<String,Object>> get(){
+	List<Map<String,Object>> _res5 = new ArrayList<>();
+	Map<Object,List<OC>> _groups6 = new LinkedHashMap<>();
 	for (var o : orders) {
 		for (var c : customers) {
-			if (!(Objects.equals(o.customerId, c.id))) continue;
+			if (!(Objects.equals(((Map)o).get("customerId"), ((Map)c).get("id")))) continue;
 			OC _row7 = new OC(o, c);
-			String _key8 = c.name;
+			Object _key8 = ((Map)c).get("name");
 			List<OC> _b9 = _groups6.get(_key8);
 			if (_b9 == null) { _b9 = new ArrayList<>(); _groups6.put(_key8, _b9); }
 			_b9.add(_row7);
 		}
 	}
 	for (var __e : _groups6.entrySet()) {
-		String g_key = __e.getKey();
+		Object g_key = __e.getKey();
 		List<OC> g = __e.getValue();
-		_res5.add(new StatsCountName(g_key, g.size()));
+		_res5.add(mapOfEntries(entry("name", g_key), entry("count", g.size())));
 	}
 	return _res5;
 }}).get();
+	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
+	static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {
+		LinkedHashMap<K,V> m = new LinkedHashMap<>();
+		for (var e : entries) m.put(e.getKey(), e.getValue());
+		return m;
+	}
 	public static void main(String[] args) {
 	System.out.println("--- Orders per customer ---");
-	for (StatsCountName s : stats) {
-		System.out.println(s.name + " " + "orders:" + " " + s.count);
+	for (Map<String,Object> s : stats) {
+		System.out.println(((Map)s).get("name") + " " + "orders:" + " " + ((Map)s).get("count"));
 	}
 	}
 }

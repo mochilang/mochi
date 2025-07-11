@@ -1,19 +1,14 @@
-class DataInner {
-	int inner;
-	DataInner(int inner) {
-		this.inner = inner;
-	}
-}
-class DataOuter {
-	DataInner outer;
-	DataOuter(DataInner outer) {
-		this.outer = outer;
-	}
-}
+import java.util.*;
 public class MapNestedAssign {
-	static DataOuter data = new DataOuter(new DataInner(1));
+	static Map<String,Map<String,Integer>> data = mapOfEntries(entry("outer", mapOfEntries(entry("inner", 1))));
+	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
+	static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {
+		LinkedHashMap<K,V> m = new LinkedHashMap<>();
+		for (var e : entries) m.put(e.getKey(), e.getValue());
+		return m;
+	}
 	public static void main(String[] args) {
-	data.outer.inner = 2;
-	System.out.println(data.outer.inner);
+	((Map)data.get("outer")).put("inner", 2);
+	System.out.println(((Map)data.get("outer")).get("inner"));
 	}
 }

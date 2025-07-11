@@ -1,40 +1,30 @@
 import java.util.*;
-class PeopleCityName {
-	String name;
-	String city;
-	PeopleCityName(String name, String city) {
-		this.name = name;
-		this.city = city;
-	}
-}
-class BigCityNum {
-	Object city;
-	int num;
-	BigCityNum(Object city, int num) {
-		this.city = city;
-		this.num = num;
-	}
-}
 public class GroupByHaving {
-	static List<PeopleCityName> people = new ArrayList<>(Arrays.asList(new PeopleCityName("Alice", "Paris"), new PeopleCityName("Bob", "Hanoi"), new PeopleCityName("Charlie", "Paris"), new PeopleCityName("Diana", "Hanoi"), new PeopleCityName("Eve", "Paris"), new PeopleCityName("Frank", "Hanoi"), new PeopleCityName("George", "Paris")));
-	static List<BigCityNum> big = (new java.util.function.Supplier<List<BigCityNum>>(){public List<BigCityNum> get(){
-	List<BigCityNum> _res5 = new ArrayList<>();
-	Map<String,List<PeopleCityName>> _groups6 = new LinkedHashMap<>();
+	static List<Map<String,String>> people = new ArrayList<>(Arrays.asList(mapOfEntries(entry("name", "Alice"), entry("city", "Paris")), mapOfEntries(entry("name", "Bob"), entry("city", "Hanoi")), mapOfEntries(entry("name", "Charlie"), entry("city", "Paris")), mapOfEntries(entry("name", "Diana"), entry("city", "Hanoi")), mapOfEntries(entry("name", "Eve"), entry("city", "Paris")), mapOfEntries(entry("name", "Frank"), entry("city", "Hanoi")), mapOfEntries(entry("name", "George"), entry("city", "Paris"))));
+	static List<Map<String,Object>> big = (new java.util.function.Supplier<List<Map<String,Object>>>(){public List<Map<String,Object>> get(){
+	List<Map<String,Object>> _res5 = new ArrayList<>();
+	Map<String,List<Map<String,String>>> _groups6 = new LinkedHashMap<>();
 	for (var p : people) {
 		var _row7 = p;
-		String _key8 = p.city;
-		List<PeopleCityName> _b9 = _groups6.get(_key8);
+		String _key8 = ((Map)p).get("city");
+		List<Map<String,String>> _b9 = _groups6.get(_key8);
 		if (_b9 == null) { _b9 = new ArrayList<>(); _groups6.put(_key8, _b9); }
 		_b9.add(_row7);
 	}
 	for (var __e : _groups6.entrySet()) {
 		String g_key = __e.getKey();
-		List<PeopleCityName> g = __e.getValue();
+		List<Map<String,String>> g = __e.getValue();
 		if (!(g.size() >= 4)) continue;
-		_res5.add(new BigCityNum(g_key, g.size()));
+		_res5.add(mapOfEntries(entry("city", g_key), entry("num", g.size())));
 	}
 	return _res5;
 }}).get();
+	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
+	static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {
+		LinkedHashMap<K,V> m = new LinkedHashMap<>();
+		for (var e : entries) m.put(e.getKey(), e.getValue());
+		return m;
+	}
 	static String toJson(Object o) {
 		if (o instanceof Map<?,?> m) {
 			StringJoiner j = new StringJoiner(",", "{", "}");
