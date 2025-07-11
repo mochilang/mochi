@@ -1,0 +1,19 @@
+fun merge(base: map<string, any>, update: map<string, any>): map<string, any> {
+  var result: map<string, any> = {}
+  for k in base {
+    result[k] = base[k]
+  }
+  for k in update {
+    result[k] = update[k]
+  }
+  return result
+}
+
+fun main() {
+  let base: map<string, any> = {"name": "Rocket Skates", "price": 12.75, "color": "yellow"}
+  let update: map<string, any> = {"price": 15.25, "color": "red", "year": 1974}
+  let result = merge(base, update)
+  print(result)
+}
+
+main()
