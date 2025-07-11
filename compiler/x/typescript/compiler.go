@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -644,6 +645,10 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
+	}
+
+	if code, ok := c.simpleChainQuery(q, q.Select, src, sel, whereStr, sortStr, skipStr, takeStr); ok {
+		return code, nil
 	}
 
 	var b bytes.Buffer
@@ -1496,4 +1501,50 @@ func isSimpleIterable(e *parser.Expr) bool {
 		return true
 	}
 	return false
+}
+
+func (c *Compiler) simpleChainQuery(q *parser.QueryExpr, selExpr *parser.Expr, src, sel, whereStr, sortStr, skipStr, takeStr string) (string, bool) {
+	if len(q.Froms) != 0 || len(q.Joins) != 0 || q.Group != nil || q.Distinct {
+		return "", false
+	}
+	var b strings.Builder
+	b.WriteString(src)
+	if sortStr != "" {
+		pat := regexp.MustCompile(`\b` + regexp.QuoteMeta(q.Var) + `\b`)
+		as := pat.ReplaceAllString(sortStr, "a")
+		bs := pat.ReplaceAllString(sortStr, "b")
+		b.WriteString(".slice().sort((a,b)=> ")
+		b.WriteString(as + " < " + bs + " ? -1 : " + as + " > " + bs + " ? 1 : 0")
+		b.WriteString(")")
+	}
+	if whereStr != "" {
+		b.WriteString(fmt.Sprintf(".filter((%s) => %s)", q.Var, whereStr))
+	}
+	if getIdent(q.Select) != q.Var {
+		s := sel
+		if isLiteralComplexUnary(selExpr.Binary.Left) {
+			s = "(" + s + ")"
+		}
+		b.WriteString(fmt.Sprintf(".map((%s) => %s)", q.Var, s))
+	}
+	if skipStr != "" || takeStr != "" {
+		start := "0"
+		if skipStr != "" {
+			start = skipStr
+		}
+		end := ""
+		if takeStr != "" {
+			if skipStr != "" {
+				end = "(" + skipStr + " + " + takeStr + ")"
+			} else {
+				end = takeStr
+			}
+		}
+		if end == "" {
+			b.WriteString(fmt.Sprintf(".slice(%s)", start))
+		} else {
+			b.WriteString(fmt.Sprintf(".slice(%s, %s)", start, end))
+		}
+	}
+	return b.String(), true
 }
