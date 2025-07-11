@@ -1,0 +1,8 @@
+exit status 1
+/workspace/mochi/tests/machine/x/scala/map_membership.scala:6: error: value contains is not a member of map_membership.M
+    println((m.contains("a")))
+               ^
+/workspace/mochi/tests/machine/x/scala/map_membership.scala:7: error: value contains is not a member of map_membership.M
+    println((m.contains("c")))
+               ^
+two errors found

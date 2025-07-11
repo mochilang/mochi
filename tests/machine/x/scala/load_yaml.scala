@@ -1,12 +1,12 @@
 case class Person(var name: String, var age: Int, var email: String)
 
 object load_yaml {
-  case class Auto1(name: String, email: String)
+  case class Adult(name: String, email: String)
 
   def _load_yaml(path: String): List[Map[String, String]] = { val lines = scala.io.Source.fromFile(path).getLines().toList; lines.grouped(3).flatMap { case List(n,a,e) => Some(Map("name"->n.split(':')(1).trim, "age"->a.split(':')(1).trim, "email"->e.split(':')(1).trim)); case _ => None }.toList }
 
   val people = _load_yaml("../interpreter/valid/people.yaml").map(r => Person(name = r("name"), age = r("age").toInt, email = r("email")))
-  val adults = for { p <- people; if p.age >= 18 } yield Auto1(name = p.name, email = p.email)
+  val adults = for { p <- people; if p.age >= 18 } yield Adult(name = p.name, email = p.email)
   def main(args: Array[String]): Unit = {
     for(a <- adults) {
       println((a.name) + " " + (a.email))

@@ -1,8 +1,8 @@
 object outer_join {
-  case class Auto1(id: Int, name: String)
-  case class Auto2(id: Int, customerId: Int, total: Int)
-  case class Auto3(order: Auto2, customer: Any)
-  case class Auto4(order: Auto2, customer: Auto1)
+  case class Customer(id: Int, name: String)
+  case class Order(id: Int, customerId: Int, total: Int)
+  case class Result(order: Order, customer: Any)
+  case class Result1(order: Order, customer: Customer)
 
   def _truthy(v: Any): Boolean = v match {
     case null => false
@@ -17,9 +17,9 @@ object outer_join {
     case _ => true
   }
 
-  val customers = List[Auto1](Auto1(id = 1, name = "Alice"), Auto1(id = 2, name = "Bob"), Auto1(id = 3, name = "Charlie"), Auto1(id = 4, name = "Diana"))
-  val orders = List[Auto2](Auto2(id = 100, customerId = 1, total = 250), Auto2(id = 101, customerId = 2, total = 125), Auto2(id = 102, customerId = 1, total = 300), Auto2(id = 103, customerId = 5, total = 80))
-  val result = for { o <- orders; c = customers.find(c => o.customerId == (c.id).asInstanceOf[Int]) } yield Auto3(order = o, customer = c)
+  val customers = List[Customer](Customer(id = 1, name = "Alice"), Customer(id = 2, name = "Bob"), Customer(id = 3, name = "Charlie"), Customer(id = 4, name = "Diana"))
+  val orders = List[Order](Order(id = 100, customerId = 1, total = 250), Order(id = 101, customerId = 2, total = 125), Order(id = 102, customerId = 1, total = 300), Order(id = 103, customerId = 5, total = 80))
+  val result = for { o <- orders; c = customers.find(c => o.customerId == (c.id).asInstanceOf[Int]) } yield Result(order = o, customer = c)
   def main(args: Array[String]): Unit = {
     println(("--- Outer Join using syntax ---"))
     for(row <- result) {

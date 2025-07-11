@@ -1,0 +1,7 @@
+exit status 1
+/workspace/mochi/tests/machine/x/scala/map_nested_assign.scala:5: error: type mismatch;
+ found   : map_nested_assign.Data
+ required: Map[String,Int]
+    var data = scala.collection.mutable.Map[String, Map[String, Int]]("outer" -> (Data(inner = 1)))
+                                                                                      ^
+one error found

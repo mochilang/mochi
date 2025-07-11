@@ -2100,6 +2100,7 @@ func deriveStructName(base string) string {
 	if strings.HasSuffix(base, "s") && len(base) > 1 {
 		base = base[:len(base)-1]
 	}
+	base = strings.ReplaceAll(base, "-", "_")
 	parts := strings.Split(base, "_")
 	for i, p := range parts {
 		if len(p) == 0 {

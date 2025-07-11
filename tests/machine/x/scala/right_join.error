@@ -1,0 +1,8 @@
+exit status 1
+/workspace/mochi/tests/machine/x/scala/right_join.scala:27: error: value id is not a member of Any
+        println(("Customer") + " " + (entry.customerName) + " " + ("has order") + " " + (entry.order.id) + " " + ("- $") + " " + (entry.order.total))
+                                                                                                     ^
+/workspace/mochi/tests/machine/x/scala/right_join.scala:27: error: value total is not a member of Any
+        println(("Customer") + " " + (entry.customerName) + " " + ("has order") + " " + (entry.order.id) + " " + ("- $") + " " + (entry.order.total))
+                                                                                                                                              ^
+two errors found

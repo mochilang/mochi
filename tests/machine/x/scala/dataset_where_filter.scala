@@ -1,9 +1,9 @@
 object dataset_where_filter {
-  case class Auto1(name: String, age: Int)
-  case class Auto2(name: String, age: Int, is_senior: Boolean)
+  case class Adult(name: String, age: Int, is_senior: Boolean)
+  case class People(name: String, age: Int)
 
-  val people = List[Auto1](Auto1(name = "Alice", age = 30), Auto1(name = "Bob", age = 15), Auto1(name = "Charlie", age = 65), Auto1(name = "Diana", age = 45))
-  val adults = for { person <- people; if person.age >= 18 } yield Auto2(name = person.name, age = person.age, is_senior = person.age >= 60)
+  val people = List[People](People(name = "Alice", age = 30), People(name = "Bob", age = 15), People(name = "Charlie", age = 65), People(name = "Diana", age = 45))
+  val adults = for { person <- people; if person.age >= 18 } yield Adult(name = person.name, age = person.age, is_senior = person.age >= 60)
   def main(args: Array[String]): Unit = {
     println(("--- Adults ---"))
     for(person <- adults) {
