@@ -14,7 +14,7 @@ const combos = (() => {
       }
     }
   }
-  return res;
+  return _tmp1;
 })()
 ;
 console.log("--- Cross Join of three lists ---");

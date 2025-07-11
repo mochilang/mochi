@@ -34,7 +34,7 @@ const result = (() => {
       _tmp1.push({order: o, customer: c});
     }
   }
-  return res;
+  return _tmp1;
 })()
 ;
 console.log("--- Outer Join using syntax ---");

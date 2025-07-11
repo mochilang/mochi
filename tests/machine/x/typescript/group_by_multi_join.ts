@@ -35,11 +35,11 @@ const filtered = (() => {
       }
     }
   }
-  return res;
+  return _tmp1;
 })()
 ;
 const grouped = (() => {
-  const _tmp2: Array<{ part: any; total: any }> = [];
+  const _tmp2: Array<{ part: any; total: number }> = [];
   const groups = {};
   for (const x of filtered) {
     const _k = JSON.stringify(x.part);
@@ -49,12 +49,12 @@ const grouped = (() => {
   }
   for (const _k in groups) {
     const g = groups[_k];
-    res.push({
+    _tmp2.push({
   part: g.key,
   total: (g.map((r) => r.value).reduce((a,b)=>a+b,0))
 });
   }
-  return res;
+  return _tmp2;
 })()
 ;
 console.log(grouped);

@@ -1,0 +1,8 @@
+line 0: run: exit status 1
+[0m[1m[31merror[0m: Uncaught (in promise) TypeError: Assignment to constant variable.
+  _tmp1 = _tmp1.sort((a,b)=> a.key < b.key ? -1 : a.key > b.key ? 1 : 0).map(x=>x.item);
+[0m[31m  ^[0m
+    at [0m[36mfile:///workspace/mochi/tests/machine/x/typescript/group_by_sort.ts[0m:[0m[33m23[0m:[0m[33m3[0m
+    at [0m[36mfile:///workspace/mochi/tests/machine/x/typescript/group_by_sort.ts[0m:[0m[33m25[0m:[0m[33m2[0m
+
+const items = [

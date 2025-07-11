@@ -26,7 +26,7 @@ const result = (() => {
 });
     }
   }
-  return res;
+  return _tmp1;
 })()
 ;
 console.log("--- Left Join ---");
