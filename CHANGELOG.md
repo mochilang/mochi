@@ -1,4 +1,29 @@
 # 📦 CHANGELOG.md
+## [0.10.23] – 2025-07-11T15:23:14+07:00
+
+### Added
+
+* Basic Go and Python FFI support in the virtual machine
+* Builtin module infrastructure for the C backend with JSON struct support
+* Numerous Rosetta Code tasks including 15-puzzle, Active Directory search and arithmetic examples
+* TypeScript compiler generates typed queries and supports builtin imports
+* Rust and Java compilers handle FFI imports with improved output
+
+### Changed
+
+* Automatic struct inference across C#, Kotlin, Python, Scala, Swift, Java and Go
+* C backend uses `calloc` with allocation checks and stack-based list literals
+* Go compiler features sprint helper and improved variable naming
+* C++ and Zig compilers improve type inference and constant string operations
+* Java compiler provides descriptive class names and better struct naming
+
+### Fixed
+
+* Java compiler map handling and helper issues
+* Scala map membership bugs and case class derivation
+* Swift group query logic
+* Rust `in` operator semantics and environment typing
+* Python compiler map literal handling
 ## [0.10.22] – 2025-07-10T17:45:54+07:00
 
 ### Added
