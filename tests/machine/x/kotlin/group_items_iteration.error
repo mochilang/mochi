@@ -1,0 +1,52 @@
+line 10:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/group_items_iteration.kt:10:37: error: parameter name expected
+data class Data(var tag: String, var val: Int)
+                                    ^
+/workspace/mochi/tests/machine/x/kotlin/group_items_iteration.kt:10:41: error: parameter name expected
+data class Data(var tag: String, var val: Int)
+                                        ^
+/workspace/mochi/tests/machine/x/kotlin/group_items_iteration.kt:12:42: error: expecting an expression
+val data = mutableListOf(Data(tag = "a", val = 1), Data(tag = "a", val = 2), Data(tag = "b", val = 3))
+                                         ^
+/workspace/mochi/tests/machine/x/kotlin/group_items_iteration.kt:12:42: error: expecting ')'
+val data = mutableListOf(Data(tag = "a", val = 1), Data(tag = "a", val = 2), Data(tag = "b", val = 3))
+                                         ^
+/workspace/mochi/tests/machine/x/kotlin/group_items_iteration.kt:12:50: error: property getter or setter expected
+val data = mutableListOf(Data(tag = "a", val = 1), Data(tag = "a", val = 2), Data(tag = "b", val = 3))
+                                                 ^
+/workspace/mochi/tests/machine/x/kotlin/group_items_iteration.kt:12:71: error: expecting property name or receiver type
+val data = mutableListOf(Data(tag = "a", val = 1), Data(tag = "a", val = 2), Data(tag = "b", val = 3))
+                                                                      ^
+/workspace/mochi/tests/machine/x/kotlin/group_items_iteration.kt:12:75: error: property getter or setter expected
+val data = mutableListOf(Data(tag = "a", val = 1), Data(tag = "a", val = 2), Data(tag = "b", val = 3))
+                                                                          ^
+/workspace/mochi/tests/machine/x/kotlin/group_items_iteration.kt:12:97: error: expecting property name or receiver type
+val data = mutableListOf(Data(tag = "a", val = 1), Data(tag = "a", val = 2), Data(tag = "b", val = 3))
+                                                                                                ^
+/workspace/mochi/tests/machine/x/kotlin/group_items_iteration.kt:12:101: error: property getter or setter expected
+val data = mutableListOf(Data(tag = "a", val = 1), Data(tag = "a", val = 2), Data(tag = "b", val = 3))
+                                                                                                    ^
+/workspace/mochi/tests/machine/x/kotlin/group_items_iteration.kt:10:38: error: conflicting declarations: public final var <no name provided>: [ERROR : Annotation is absent], public final val <no name provided>: Int
+data class Data(var tag: String, var val: Int)
+                                     ^
+/workspace/mochi/tests/machine/x/kotlin/group_items_iteration.kt:12:26: error: assignments are not expressions, and only expressions are allowed in this context
+val data = mutableListOf(Data(tag = "a", val = 1), Data(tag = "a", val = 2), Data(tag = "b", val = 3))
+                         ^
+/workspace/mochi/tests/machine/x/kotlin/group_items_iteration.kt:12:48: error: the integer literal does not conform to the expected type Data
+val data = mutableListOf(Data(tag = "a", val = 1), Data(tag = "a", val = 2), Data(tag = "b", val = 3))
+                                               ^
+/workspace/mochi/tests/machine/x/kotlin/group_items_iteration.kt:25:17: error: type inference failed: Not enough information to infer parameter V in fun <K, V> mutableMapOf(vararg pairs: Pair<K, V>): MutableMap<K, V>
+Please specify it explicitly.
+
+        __g.add(mutableMapOf("d" to d) as MutableMap<Any?, Any?>)
+                ^
+/workspace/mochi/tests/machine/x/kotlin/group_items_iteration.kt:35:11: error: type inference failed: Not enough information to infer parameter T in inline fun <T> mutableListOf(): MutableList<T>
+Please specify it explicitly.
+
+var tmp = mutableListOf()
+          ^
+
+  9: class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
+ 10: data class Data(var tag: String, var val: Int)
+ 11: 

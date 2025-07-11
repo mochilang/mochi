@@ -1,0 +1,15 @@
+line 7:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/query_sum_select.kt:7:25: error: unresolved reference: sumOf
+            __res.add(n.sumOf { toInt(it) })
+                        ^
+/workspace/mochi/tests/machine/x/kotlin/query_sum_select.kt:7:33: error: unresolved reference: toInt
+            __res.add(n.sumOf { toInt(it) })
+                                ^
+/workspace/mochi/tests/machine/x/kotlin/query_sum_select.kt:7:39: error: unresolved reference: it
+            __res.add(n.sumOf { toInt(it) })
+                                      ^
+
+  6:         if (n > 1) {
+  7:             __res.add(n.sumOf { toInt(it) })
+  8:         }

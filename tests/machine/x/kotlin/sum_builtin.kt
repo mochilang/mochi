@@ -1,3 +1,3 @@
 fun main() {
-    println(mutableListOf(1, 2, 3).sumOf { toInt(it) })
+    println(mutableListOf(1, 2, 3).sum())
 }
