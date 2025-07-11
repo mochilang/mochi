@@ -25,15 +25,15 @@ static char *s = "hello";
 
 typedef struct {
   int a;
-} mItem;
+} MItem;
 typedef struct {
   int len;
-  mItem *data;
-} list_mItem;
-static list_mItem list_mItem_create(int len) {
-  list_mItem l;
+  MItem *data;
+} list_MItem;
+static list_MItem list_MItem_create(int len) {
+  list_MItem l;
   l.len = len;
-  l.data = calloc(len, sizeof(mItem));
+  l.data = calloc(len, sizeof(MItem));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -59,7 +59,7 @@ int main() {
   list_int ys = tmp2;
   printf("%s\n", (contains_list_int(ys, 1)) ? "true" : "false");
   printf("%s\n", (contains_list_int(ys, 2)) ? "true" : "false");
-  mItem m = (mItem){.a = 1};
+  MItem m = (MItem){.a = 1};
   printf("%d\n", "a" in m);
   printf("%d\n", "b" in m);
   printf("%d\n", "ell" in s);

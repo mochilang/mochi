@@ -20,6 +20,6 @@ int main() {
   list_int tmp1 = {2, tmp1_data};
   list_int nums = tmp1;
   nums.data[1] = 3;
-  printf("%.16g\n", nums.data[1]);
+  printf("%d\n", nums.data[1]);
   return 0;
 }

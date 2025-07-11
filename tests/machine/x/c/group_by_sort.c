@@ -78,15 +78,15 @@ static list_group_string _group_by_string(list_string src) {
 typedef struct {
   char *cat;
   int val;
-} itemsItem;
+} ItemsItem;
 typedef struct {
   int len;
-  itemsItem *data;
-} list_itemsItem;
-static list_itemsItem list_itemsItem_create(int len) {
-  list_itemsItem l;
+  ItemsItem *data;
+} list_ItemsItem;
+static list_ItemsItem list_ItemsItem_create(int len) {
+  list_ItemsItem l;
   l.len = len;
-  l.data = calloc(len, sizeof(itemsItem));
+  l.data = calloc(len, sizeof(ItemsItem));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -97,15 +97,15 @@ static list_itemsItem list_itemsItem_create(int len) {
 typedef struct {
   char *cat;
   double total;
-} groupedItem;
+} GroupedItem;
 typedef struct {
   int len;
-  groupedItem *data;
-} list_groupedItem;
-static list_groupedItem list_groupedItem_create(int len) {
-  list_groupedItem l;
+  GroupedItem *data;
+} list_GroupedItem;
+static list_GroupedItem list_GroupedItem_create(int len) {
+  list_GroupedItem l;
   l.len = len;
-  l.data = calloc(len, sizeof(groupedItem));
+  l.data = calloc(len, sizeof(GroupedItem));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -114,16 +114,16 @@ static list_groupedItem list_groupedItem_create(int len) {
 }
 
 int main() {
-  itemsItem tmp1_data[] = {
-      (itemsItem){.cat = "a", .val = 3}, (itemsItem){.cat = "a", .val = 1},
-      (itemsItem){.cat = "b", .val = 5}, (itemsItem){.cat = "b", .val = 2}};
-  list_itemsItem tmp1 = {4, tmp1_data};
-  list_itemsItem items = tmp1;
-  list_itemsItem tmp2 = list_itemsItem_create(items.len);
+  ItemsItem tmp1_data[] = {
+      (ItemsItem){.cat = "a", .val = 3}, (ItemsItem){.cat = "a", .val = 1},
+      (ItemsItem){.cat = "b", .val = 5}, (ItemsItem){.cat = "b", .val = 2}};
+  list_ItemsItem tmp1 = {4, tmp1_data};
+  list_ItemsItem items = tmp1;
+  list_ItemsItem tmp2 = list_ItemsItem_create(items.len);
   list_string tmp3 = list_string_create(items.len);
   int tmp4 = 0;
   for (int i = 0; i < items.len; i++) {
-    itemsItem i = items.data[i];
+    ItemsItem i = items.data[i];
     tmp2.data[tmp4] = i;
     tmp3.data[tmp4] = i.cat;
     tmp4++;
@@ -131,33 +131,33 @@ int main() {
   tmp2.len = tmp4;
   tmp3.len = tmp4;
   list_group_string tmp5 = _group_by_string(tmp3);
-  list_groupedItem tmp6 = list_groupedItem_create(tmp5.len);
+  list_GroupedItem tmp6 = list_GroupedItem_create(tmp5.len);
   double *tmp8 = (double *)malloc(sizeof(double) * tmp5.len);
   int tmp7 = 0;
   for (int gi = 0; gi < tmp5.len; gi++) {
     _GroupString _gp = tmp5.data[gi];
-    list_itemsItem tmp9 = list_itemsItem_create(_gp.items.len);
+    list_ItemsItem tmp9 = list_ItemsItem_create(_gp.items.len);
     for (int j = 0; j < _gp.items.len; j++) {
       tmp9.data[j] = tmp2.data[_gp.items.data[j]];
     }
     tmp9.len = _gp.items.len;
     struct {
       char *key;
-      list_itemsItem items;
+      list_ItemsItem items;
     } g = {_gp.key, tmp9};
     list_int tmp10 = list_int_create(g.items.len);
     int tmp11 = 0;
     for (int i = 0; i < g.items.len; i++) {
-      itemsItem x = g.items.data[i];
+      ItemsItem x = g.items.data[i];
       tmp10.data[tmp11] = x.val;
       tmp11++;
     }
     tmp10.len = tmp11;
-    tmp6.data[tmp7] = (groupedItem){.cat = g.key, .total = _sum_int(tmp10)};
+    tmp6.data[tmp7] = (GroupedItem){.cat = g.key, .total = _sum_int(tmp10)};
     list_int tmp12 = list_int_create(g.items.len);
     int tmp13 = 0;
     for (int i = 0; i < g.items.len; i++) {
-      itemsItem x = g.items.data[i];
+      ItemsItem x = g.items.data[i];
       tmp12.data[tmp13] = x.val;
       tmp13++;
     }
@@ -172,13 +172,13 @@ int main() {
         double tmp14 = tmp8[i];
         tmp8[i] = tmp8[j];
         tmp8[j] = tmp14;
-        groupedItem tmp15 = tmp6.data[i];
+        GroupedItem tmp15 = tmp6.data[i];
         tmp6.data[i] = tmp6.data[j];
         tmp6.data[j] = tmp15;
       }
     }
   }
-  list_groupedItem grouped = tmp6;
-  printf("%.16g\n", grouped);
+  list_GroupedItem grouped = tmp6;
+  printf("%d\n", grouped);
   return 0;
 }

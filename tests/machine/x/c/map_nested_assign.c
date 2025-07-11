@@ -3,15 +3,15 @@
 
 typedef struct {
   int inner;
-} outerItem;
+} OuterItem;
 typedef struct {
   int len;
-  outerItem *data;
-} list_outerItem;
-static list_outerItem list_outerItem_create(int len) {
-  list_outerItem l;
+  OuterItem *data;
+} list_OuterItem;
+static list_OuterItem list_OuterItem_create(int len) {
+  list_OuterItem l;
   l.len = len;
-  l.data = calloc(len, sizeof(outerItem));
+  l.data = calloc(len, sizeof(OuterItem));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -20,16 +20,16 @@ static list_outerItem list_outerItem_create(int len) {
 }
 
 typedef struct {
-  outerItem outer;
-} dataItem;
+  OuterItem outer;
+} DataItem;
 typedef struct {
   int len;
-  dataItem *data;
-} list_dataItem;
-static list_dataItem list_dataItem_create(int len) {
-  list_dataItem l;
+  DataItem *data;
+} list_DataItem;
+static list_DataItem list_DataItem_create(int len) {
+  list_DataItem l;
   l.len = len;
-  l.data = calloc(len, sizeof(dataItem));
+  l.data = calloc(len, sizeof(DataItem));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -38,8 +38,8 @@ static list_dataItem list_dataItem_create(int len) {
 }
 
 int main() {
-  dataItem data = (dataItem){.outer = (outerItem){.inner = 1}};
+  DataItem data = (DataItem){.outer = (OuterItem){.inner = 1}};
   data.outer.inner = 2;
-  printf("%.16g\n", data.outer.inner);
+  printf("%d\n", data.outer.inner);
   return 0;
 }

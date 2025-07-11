@@ -35,7 +35,7 @@ int main() {
   int tmp3_data[] = {2, 7, 11, 15};
   list_int tmp3 = {4, tmp3_data};
   list_int result = twoSum(tmp3, 9);
-  printf("%.16g\n", result.data[0]);
-  printf("%.16g\n", result.data[1]);
+  printf("%d\n", result.data[0]);
+  printf("%d\n", result.data[1]);
   return 0;
 }

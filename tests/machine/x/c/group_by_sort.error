@@ -2,13 +2,12 @@ line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/group_by_sort.c: In function ‘main’:
 /workspace/mochi/tests/machine/x/c/group_by_sort.c:126:29: error: array subscript is not an integer
-  126 |     itemsItem i = items.data[i];
+  126 |     ItemsItem i = items.data[i];
       |                             ^
-/workspace/mochi/tests/machine/x/c/group_by_sort.c:182:15: warning: format ‘%g’ expects argument of type ‘double’, but argument 2 has type ‘list_groupedItem’ [-Wformat=]
-  182 |   printf("%.16g\n", grouped);
-      |           ~~~~^     ~~~~~~~
-      |               |     |
-      |               |     list_groupedItem
-      |               double
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:182:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘list_GroupedItem’ [-Wformat=]
+  182 |   printf("%d\n", grouped);
+      |           ~^     ~~~~~~~
+      |            |     |
+      |            int   list_GroupedItem
 
    1: #include <stdio.h>

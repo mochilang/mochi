@@ -7,15 +7,15 @@ static int y = 4;
 typedef struct {
   int a;
   int b;
-} mItem;
+} MItem;
 typedef struct {
   int len;
-  mItem *data;
-} list_mItem;
-static list_mItem list_mItem_create(int len) {
-  list_mItem l;
+  MItem *data;
+} list_MItem;
+static list_MItem list_MItem_create(int len) {
+  list_MItem l;
   l.len = len;
-  l.data = calloc(len, sizeof(mItem));
+  l.data = calloc(len, sizeof(MItem));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -24,8 +24,8 @@ static list_mItem list_mItem_create(int len) {
 }
 
 int main() {
-  mItem m = (mItem){.a = x, .b = y};
-  printf("%.16g ", m.a);
-  printf("%.16g\n", m.b);
+  MItem m = (MItem){.a = x, .b = y};
+  printf("%d ", m.a);
+  printf("%d\n", m.b);
   return 0;
 }

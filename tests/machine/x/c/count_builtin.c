@@ -18,6 +18,6 @@ static list_int list_int_create(int len) {
 int main() {
   int tmp1_data[] = {1, 2, 3};
   list_int tmp1 = {3, tmp1_data};
-  printf("%.16g\n", tmp1.len);
+  printf("%d\n", tmp1.len);
   return 0;
 }

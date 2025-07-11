@@ -56,15 +56,15 @@ static int map_string_int_contains(map_string_int m, const char *k) {
 typedef struct {
   int a;
   int b;
-} dataItem;
+} DataItem;
 typedef struct {
   int len;
-  dataItem *data;
-} list_dataItem;
-static list_dataItem list_dataItem_create(int len) {
-  list_dataItem l;
+  DataItem *data;
+} list_DataItem;
+static list_DataItem list_DataItem_create(int len) {
+  list_DataItem l;
   l.len = len;
-  l.data = calloc(len, sizeof(dataItem));
+  l.data = calloc(len, sizeof(DataItem));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -73,17 +73,17 @@ static list_dataItem list_dataItem_create(int len) {
 }
 
 int main() {
-  dataItem tmp1_data[] = {(dataItem){.a = 1, .b = 2},
-                          (dataItem){.a = 1, .b = 1},
-                          (dataItem){.a = 0, .b = 5}};
-  list_dataItem tmp1 = {3, tmp1_data};
-  list_dataItem data = tmp1;
-  list_dataItem tmp2 = list_dataItem_create(data.len);
+  DataItem tmp1_data[] = {(DataItem){.a = 1, .b = 2},
+                          (DataItem){.a = 1, .b = 1},
+                          (DataItem){.a = 0, .b = 5}};
+  list_DataItem tmp1 = {3, tmp1_data};
+  list_DataItem data = tmp1;
+  list_DataItem tmp2 = list_DataItem_create(data.len);
   map_string_int *tmp5 =
       (map_string_int *)malloc(sizeof(map_string_int) * data.len);
   int tmp3 = 0;
   for (int tmp4 = 0; tmp4 < data.len; tmp4++) {
-    dataItem x = data.data[tmp4];
+    DataItem x = data.data[tmp4];
     tmp2.data[tmp3] = x;
     map_string_int tmp6 = map_string_int_create(2);
     map_string_int_put(&tmp6, "a", x.a);
@@ -98,13 +98,13 @@ int main() {
         map_string_int tmp7 = tmp5[i];
         tmp5[i] = tmp5[j];
         tmp5[j] = tmp7;
-        dataItem tmp8 = tmp2.data[i];
+        DataItem tmp8 = tmp2.data[i];
         tmp2.data[i] = tmp2.data[j];
         tmp2.data[j] = tmp8;
       }
     }
   }
-  list_dataItem sorted = tmp2;
-  printf("%.16g\n", sorted);
+  list_DataItem sorted = tmp2;
+  printf("%d\n", sorted);
   return 0;
 }

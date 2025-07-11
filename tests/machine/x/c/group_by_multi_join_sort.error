@@ -2,13 +2,12 @@ line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/group_by_multi_join_sort.c: In function ‘main’:
 /workspace/mochi/tests/machine/x/c/group_by_multi_join_sort.c:146:28: error: invalid initializer
-  146 |   list_resultItem result = 0;
+  146 |   list_ResultItem result = 0;
       |                            ^
-/workspace/mochi/tests/machine/x/c/group_by_multi_join_sort.c:147:15: warning: format ‘%g’ expects argument of type ‘double’, but argument 2 has type ‘list_resultItem’ [-Wformat=]
-  147 |   printf("%.16g\n", result);
-      |           ~~~~^     ~~~~~~
-      |               |     |
-      |               |     list_resultItem
-      |               double
+/workspace/mochi/tests/machine/x/c/group_by_multi_join_sort.c:147:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘list_ResultItem’ [-Wformat=]
+  147 |   printf("%d\n", result);
+      |           ~^     ~~~~~~
+      |            |     |
+      |            int   list_ResultItem
 
    1: #include <stdio.h>

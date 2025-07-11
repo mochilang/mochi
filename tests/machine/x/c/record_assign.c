@@ -26,6 +26,6 @@ int inc(Counter *c) { c->n = c->n + 1; }
 int main() {
   Counter c = (Counter){.n = 0};
   inc(&c);
-  printf("%.16g\n", c.n);
+  printf("%d\n", c.n);
   return 0;
 }

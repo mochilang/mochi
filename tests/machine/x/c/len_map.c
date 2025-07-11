@@ -57,6 +57,6 @@ int main() {
   map_string_int tmp1 = map_string_int_create(2);
   map_string_int_put(&tmp1, "a", 1);
   map_string_int_put(&tmp1, "b", 2);
-  printf("%.16g\n", tmp1.len);
+  printf("%d\n", tmp1.len);
   return 0;
 }

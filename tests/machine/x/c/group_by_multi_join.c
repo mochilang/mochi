@@ -77,15 +77,15 @@ static list_group_int _group_by_int(list_int src) {
 typedef struct {
   int id;
   char *name;
-} nationsItem;
+} NationsItem;
 typedef struct {
   int len;
-  nationsItem *data;
-} list_nationsItem;
-static list_nationsItem list_nationsItem_create(int len) {
-  list_nationsItem l;
+  NationsItem *data;
+} list_NationsItem;
+static list_NationsItem list_NationsItem_create(int len) {
+  list_NationsItem l;
   l.len = len;
-  l.data = calloc(len, sizeof(nationsItem));
+  l.data = calloc(len, sizeof(NationsItem));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -96,15 +96,15 @@ static list_nationsItem list_nationsItem_create(int len) {
 typedef struct {
   int id;
   int nation;
-} suppliersItem;
+} SuppliersItem;
 typedef struct {
   int len;
-  suppliersItem *data;
-} list_suppliersItem;
-static list_suppliersItem list_suppliersItem_create(int len) {
-  list_suppliersItem l;
+  SuppliersItem *data;
+} list_SuppliersItem;
+static list_SuppliersItem list_SuppliersItem_create(int len) {
+  list_SuppliersItem l;
   l.len = len;
-  l.data = calloc(len, sizeof(suppliersItem));
+  l.data = calloc(len, sizeof(SuppliersItem));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -117,15 +117,15 @@ typedef struct {
   int supplier;
   double cost;
   int qty;
-} partsuppItem;
+} PartsuppItem;
 typedef struct {
   int len;
-  partsuppItem *data;
-} list_partsuppItem;
-static list_partsuppItem list_partsuppItem_create(int len) {
-  list_partsuppItem l;
+  PartsuppItem *data;
+} list_PartsuppItem;
+static list_PartsuppItem list_PartsuppItem_create(int len) {
+  list_PartsuppItem l;
   l.len = len;
-  l.data = calloc(len, sizeof(partsuppItem));
+  l.data = calloc(len, sizeof(PartsuppItem));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -136,15 +136,15 @@ static list_partsuppItem list_partsuppItem_create(int len) {
 typedef struct {
   int part;
   double value;
-} filteredItem;
+} FilteredItem;
 typedef struct {
   int len;
-  filteredItem *data;
-} list_filteredItem;
-static list_filteredItem list_filteredItem_create(int len) {
-  list_filteredItem l;
+  FilteredItem *data;
+} list_FilteredItem;
+static list_FilteredItem list_FilteredItem_create(int len) {
+  list_FilteredItem l;
   l.len = len;
-  l.data = calloc(len, sizeof(filteredItem));
+  l.data = calloc(len, sizeof(FilteredItem));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -155,15 +155,15 @@ static list_filteredItem list_filteredItem_create(int len) {
 typedef struct {
   int part;
   double total;
-} groupedItem;
+} GroupedItem;
 typedef struct {
   int len;
-  groupedItem *data;
-} list_groupedItem;
-static list_groupedItem list_groupedItem_create(int len) {
-  list_groupedItem l;
+  GroupedItem *data;
+} list_GroupedItem;
+static list_GroupedItem list_GroupedItem_create(int len) {
+  list_GroupedItem l;
   l.len = len;
-  l.data = calloc(len, sizeof(groupedItem));
+  l.data = calloc(len, sizeof(GroupedItem));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -172,32 +172,32 @@ static list_groupedItem list_groupedItem_create(int len) {
 }
 
 int main() {
-  nationsItem tmp1_data[] = {(nationsItem){.id = 1, .name = "A"},
-                             (nationsItem){.id = 2, .name = "B"}};
-  list_nationsItem tmp1 = {2, tmp1_data};
-  list_nationsItem nations = tmp1;
-  suppliersItem tmp2_data[] = {(suppliersItem){.id = 1, .nation = 1},
-                               (suppliersItem){.id = 2, .nation = 2}};
-  list_suppliersItem tmp2 = {2, tmp2_data};
-  list_suppliersItem suppliers = tmp2;
-  partsuppItem tmp3_data[] = {
-      (partsuppItem){.part = 100, .supplier = 1, .cost = 10.0, .qty = 2},
-      (partsuppItem){.part = 100, .supplier = 2, .cost = 20.0, .qty = 1},
-      (partsuppItem){.part = 200, .supplier = 1, .cost = 5.0, .qty = 3}};
-  list_partsuppItem tmp3 = {3, tmp3_data};
-  list_partsuppItem partsupp = tmp3;
-  list_filteredItem tmp4 =
-      list_filteredItem_create(partsupp.len * suppliers.len * nations.len);
+  NationsItem tmp1_data[] = {(NationsItem){.id = 1, .name = "A"},
+                             (NationsItem){.id = 2, .name = "B"}};
+  list_NationsItem tmp1 = {2, tmp1_data};
+  list_NationsItem nations = tmp1;
+  SuppliersItem tmp2_data[] = {(SuppliersItem){.id = 1, .nation = 1},
+                               (SuppliersItem){.id = 2, .nation = 2}};
+  list_SuppliersItem tmp2 = {2, tmp2_data};
+  list_SuppliersItem suppliers = tmp2;
+  PartsuppItem tmp3_data[] = {
+      (PartsuppItem){.part = 100, .supplier = 1, .cost = 10.0, .qty = 2},
+      (PartsuppItem){.part = 100, .supplier = 2, .cost = 20.0, .qty = 1},
+      (PartsuppItem){.part = 200, .supplier = 1, .cost = 5.0, .qty = 3}};
+  list_PartsuppItem tmp3 = {3, tmp3_data};
+  list_PartsuppItem partsupp = tmp3;
+  list_FilteredItem tmp4 =
+      list_FilteredItem_create(partsupp.len * suppliers.len * nations.len);
   int tmp5 = 0;
   for (int tmp6 = 0; tmp6 < partsupp.len; tmp6++) {
-    partsuppItem ps = partsupp.data[tmp6];
+    PartsuppItem ps = partsupp.data[tmp6];
     for (int tmp7 = 0; tmp7 < suppliers.len; tmp7++) {
-      suppliersItem s = suppliers.data[tmp7];
+      SuppliersItem s = suppliers.data[tmp7];
       if (!(s.id == ps.supplier)) {
         continue;
       }
       for (int tmp8 = 0; tmp8 < nations.len; tmp8++) {
-        nationsItem n = nations.data[tmp8];
+        NationsItem n = nations.data[tmp8];
         if (!(n.id == s.nation)) {
           continue;
         }
@@ -205,18 +205,18 @@ int main() {
           continue;
         }
         tmp4.data[tmp5] =
-            (filteredItem){.part = ps.part, .value = ps.cost * ps.qty};
+            (FilteredItem){.part = ps.part, .value = ps.cost * ps.qty};
         tmp5++;
       }
     }
   }
   tmp4.len = tmp5;
-  list_filteredItem filtered = tmp4;
-  list_filteredItem tmp9 = list_filteredItem_create(filtered.len);
+  list_FilteredItem filtered = tmp4;
+  list_FilteredItem tmp9 = list_FilteredItem_create(filtered.len);
   list_int tmp10 = list_int_create(filtered.len);
   int tmp11 = 0;
   for (int i = 0; i < filtered.len; i++) {
-    filteredItem x = filtered.data[i];
+    FilteredItem x = filtered.data[i];
     tmp9.data[tmp11] = x;
     tmp10.data[tmp11] = x.part;
     tmp11++;
@@ -224,33 +224,33 @@ int main() {
   tmp9.len = tmp11;
   tmp10.len = tmp11;
   list_group_int tmp12 = _group_by_int(tmp10);
-  list_groupedItem tmp13 = list_groupedItem_create(tmp12.len);
+  list_GroupedItem tmp13 = list_GroupedItem_create(tmp12.len);
   int tmp14 = 0;
   for (int gi = 0; gi < tmp12.len; gi++) {
     _GroupInt _gp = tmp12.data[gi];
-    list_filteredItem tmp15 = list_filteredItem_create(_gp.items.len);
+    list_FilteredItem tmp15 = list_FilteredItem_create(_gp.items.len);
     for (int j = 0; j < _gp.items.len; j++) {
       tmp15.data[j] = tmp9.data[_gp.items.data[j]];
     }
     tmp15.len = _gp.items.len;
     struct {
       int key;
-      list_filteredItem items;
+      list_FilteredItem items;
     } g = {_gp.key, tmp15};
     list_float tmp16 = list_float_create(g.items.len);
     int tmp17 = 0;
     for (int i = 0; i < g.items.len; i++) {
-      filteredItem r = g.items.data[i];
+      FilteredItem r = g.items.data[i];
       tmp16.data[tmp17] = r.value;
       tmp17++;
     }
     tmp16.len = tmp17;
     tmp13.data[tmp14] =
-        (groupedItem){.part = g.key, .total = _sum_float(tmp16)};
+        (GroupedItem){.part = g.key, .total = _sum_float(tmp16)};
     tmp14++;
   }
   tmp13.len = tmp14;
-  list_groupedItem grouped = tmp13;
-  printf("%.16g\n", grouped);
+  list_GroupedItem grouped = tmp13;
+  printf("%d\n", grouped);
   return 0;
 }

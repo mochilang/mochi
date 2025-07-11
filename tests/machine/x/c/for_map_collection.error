@@ -1,10 +1,10 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/for_map_collection.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/for_map_collection.c:25:30: error: ‘mItem’ has no member named ‘len’
+/workspace/mochi/tests/machine/x/c/for_map_collection.c:25:30: error: ‘MItem’ has no member named ‘len’
    25 |   for (int tmp1 = 0; tmp1 < m.len; tmp1++) {
       |                              ^
-/workspace/mochi/tests/machine/x/c/for_map_collection.c:26:14: error: ‘mItem’ has no member named ‘data’
+/workspace/mochi/tests/machine/x/c/for_map_collection.c:26:14: error: ‘MItem’ has no member named ‘data’
    26 |     int k = m.data[tmp1];
       |              ^
 

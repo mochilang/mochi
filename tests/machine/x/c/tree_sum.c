@@ -53,6 +53,6 @@ int main() {
                                       .left = &(Tree){.tag = Tree_Leaf},
                                       .value = 2,
                                       .right = &(Tree){.tag = Tree_Leaf}}}}};
-  printf("%.16g\n", sum_tree(t));
+  printf("%d\n", sum_tree(t));
   return 0;
 }

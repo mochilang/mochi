@@ -33,15 +33,15 @@ static list_string list_string_create(int len) {
 typedef struct {
   int n;
   char *l;
-} pairsItem;
+} PairsItem;
 typedef struct {
   int len;
-  pairsItem *data;
-} list_pairsItem;
-static list_pairsItem list_pairsItem_create(int len) {
-  list_pairsItem l;
+  PairsItem *data;
+} list_PairsItem;
+static list_PairsItem list_PairsItem_create(int len) {
+  list_PairsItem l;
   l.len = len;
-  l.data = calloc(len, sizeof(pairsItem));
+  l.data = calloc(len, sizeof(PairsItem));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -56,7 +56,7 @@ int main() {
   char *tmp2_data[] = {"A", "B"};
   list_string tmp2 = {2, tmp2_data};
   list_string letters = tmp2;
-  list_pairsItem tmp3 = list_pairsItem_create(nums.len * letters.len);
+  list_PairsItem tmp3 = list_PairsItem_create(nums.len * letters.len);
   int tmp4 = 0;
   for (int n_idx = 0; n_idx < nums.len; n_idx++) {
     int n = nums.data[n_idx];
@@ -65,16 +65,16 @@ int main() {
       if (!(n % 2 == 0)) {
         continue;
       }
-      tmp3.data[tmp4] = (pairsItem){.n = n, .l = l};
+      tmp3.data[tmp4] = (PairsItem){.n = n, .l = l};
       tmp4++;
     }
   }
   tmp3.len = tmp4;
-  list_pairsItem pairs = tmp3;
+  list_PairsItem pairs = tmp3;
   printf("%s\n", "--- Even pairs ---");
   for (int tmp5 = 0; tmp5 < pairs.len; tmp5++) {
-    pairsItem p = pairs.data[tmp5];
-    printf("%.16g ", p.n);
+    PairsItem p = pairs.data[tmp5];
+    printf("%d ", p.n);
     printf("%s\n", p.l);
   }
   return 0;

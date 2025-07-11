@@ -253,15 +253,15 @@ typedef struct Person Person;
 typedef struct {
   char *name;
   char *email;
-} adultsItem;
+} AdultsItem;
 typedef struct {
   int len;
-  adultsItem *data;
-} list_adultsItem;
-static list_adultsItem list_adultsItem_create(int len) {
-  list_adultsItem l;
+  AdultsItem *data;
+} list_AdultsItem;
+static list_AdultsItem list_AdultsItem_create(int len) {
+  list_AdultsItem l;
   l.len = len;
-  l.data = calloc(len, sizeof(adultsItem));
+  l.data = calloc(len, sizeof(AdultsItem));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -298,13 +298,13 @@ int main() {
     if (!(p.age >= 18)) {
       continue;
     }
-    tmp1.data[tmp2] = (adultsItem){.name = p.name, .email = p.email};
+    tmp1.data[tmp2] = (AdultsItem){.name = p.name, .email = p.email};
     tmp2++;
   }
   tmp1.len = tmp2;
-  list_adultsItem adults = tmp1;
+  list_AdultsItem adults = tmp1;
   for (int tmp4 = 0; tmp4 < adults.len; tmp4++) {
-    adultsItem a = adults.data[tmp4];
+    AdultsItem a = adults.data[tmp4];
     printf("%s ", a.name);
     printf("%s\n", a.email);
   }
