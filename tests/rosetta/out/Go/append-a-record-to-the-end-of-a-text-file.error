@@ -1,0 +1,4 @@
+run error: exit status 1
+# command-line-arguments
+../../tests/rosetta/out/Go/append-a-record-to-the-end-of-a-text-file.go:30:6: main redeclared in this block
+	../../tests/rosetta/out/Go/append-a-record-to-the-end-of-a-text-file.go:20:6: other declaration of main

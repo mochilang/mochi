@@ -1,0 +1,4 @@
+run error: exit status 1
+# command-line-arguments
+../../tests/rosetta/out/Go/ascii-art-diagram-converter.go:63:6: main redeclared in this block
+	../../tests/rosetta/out/Go/ascii-art-diagram-converter.go:10:6: other declaration of main

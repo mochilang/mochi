@@ -1,0 +1,4 @@
+run error: exit status 1
+# command-line-arguments
+../../tests/rosetta/out/Go/additive-primes.go:96:6: main redeclared in this block
+	../../tests/rosetta/out/Go/additive-primes.go:64:6: other declaration of main

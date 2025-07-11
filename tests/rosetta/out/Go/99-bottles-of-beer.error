@@ -1,0 +1,4 @@
+run error: exit status 1
+# command-line-arguments
+../../tests/rosetta/out/Go/99-bottles-of-beer.go:35:6: main redeclared in this block
+	../../tests/rosetta/out/Go/99-bottles-of-beer.go:21:6: other declaration of main

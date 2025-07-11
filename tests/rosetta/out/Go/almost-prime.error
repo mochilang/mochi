@@ -1,0 +1,5 @@
+run error: exit status 1
+# command-line-arguments
+../../tests/rosetta/out/Go/almost-prime.go:42:8: cannot use append(_convSlice[int, any](r), n) (value of type []any) as []int value in assignment
+../../tests/rosetta/out/Go/almost-prime.go:61:6: main redeclared in this block
+	../../tests/rosetta/out/Go/almost-prime.go:50:6: other declaration of main

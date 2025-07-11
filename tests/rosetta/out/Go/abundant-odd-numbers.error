@@ -1,0 +1,8 @@
+run error: exit status 1
+# command-line-arguments
+../../tests/rosetta/out/Go/abundant-odd-numbers.go:23:11: cannot use append(_convSlice[int, any](divs), i) (value of type []any) as []int value in assignment
+../../tests/rosetta/out/Go/abundant-odd-numbers.go:25:13: cannot use append(_convSlice[int, any](divs2), j) (value of type []any) as []int value in assignment
+../../tests/rosetta/out/Go/abundant-odd-numbers.go:35:10: cannot use append(_convSlice[int, any](divs), divs2[j]) (value of type []any) as []int value in assignment
+../../tests/rosetta/out/Go/abundant-odd-numbers.go:94:17: cannot use _sumOrdered[int](divs) (value of type float64) as int value in variable declaration
+../../tests/rosetta/out/Go/abundant-odd-numbers.go:124:6: main redeclared in this block
+	../../tests/rosetta/out/Go/abundant-odd-numbers.go:114:6: other declaration of main

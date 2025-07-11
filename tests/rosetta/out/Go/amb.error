@@ -1,0 +1,8 @@
+run error: exit status 1
+# command-line-arguments
+../../tests/rosetta/out/Go/amb.go:16:13: invalid operation: cannot index res (variable of type *[]string)
+../../tests/rosetta/out/Go/amb.go:25:7: invalid operation: cannot index res (variable of type *[]string)
+../../tests/rosetta/out/Go/amb.go:49:9: cannot use append(_convSlice[string, any](res), "") (value of type []any) as []string value in assignment
+../../tests/rosetta/out/Go/amb.go:52:18: cannot use res (variable of type []string) as *[]string value in argument to amb
+../../tests/rosetta/out/Go/amb.go:69:6: main redeclared in this block
+	../../tests/rosetta/out/Go/amb.go:36:6: other declaration of main

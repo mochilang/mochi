@@ -1,0 +1,9 @@
+run error: exit status 1
+# command-line-arguments
+../../tests/rosetta/out/Go/abbreviations-easy.go:22:13: cannot use append(_convSlice[string, any](words), cur) (value of type []any) as []string value in assignment
+../../tests/rosetta/out/Go/abbreviations-easy.go:31:11: cannot use append(_convSlice[string, any](words), cur) (value of type []any) as []string value in assignment
+../../tests/rosetta/out/Go/abbreviations-easy.go:91:16: cannot use append(_convSlice[string, any](results), c) (value of type []any) as []string value in assignment
+../../tests/rosetta/out/Go/abbreviations-easy.go:99:14: cannot use append(_convSlice[string, any](results), "*error*") (value of type []any) as []string value in assignment
+../../tests/rosetta/out/Go/abbreviations-easy.go:129:10: cannot use append(_convSlice[int, any](mins), count) (value of type []any) as []int value in assignment
+../../tests/rosetta/out/Go/abbreviations-easy.go:148:6: main redeclared in this block
+	../../tests/rosetta/out/Go/abbreviations-easy.go:107:6: other declaration of main

@@ -1,0 +1,5 @@
+output mismatch
+-- got --
+<nil>
+-- want --
+Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd

@@ -1,0 +1,6 @@
+run error: exit status 1
+# command-line-arguments
+../../tests/rosetta/out/Go/abstract-type.go:61:6: declared and not used: _tmp4
+../../tests/rosetta/out/Go/abstract-type.go:64:6: declared and not used: _tmp5
+../../tests/rosetta/out/Go/abstract-type.go:85:6: main redeclared in this block
+	../../tests/rosetta/out/Go/abstract-type.go:78:6: other declaration of main

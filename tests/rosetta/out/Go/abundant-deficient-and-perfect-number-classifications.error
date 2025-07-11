@@ -1,0 +1,4 @@
+run error: exit status 1
+# command-line-arguments
+../../tests/rosetta/out/Go/abundant-deficient-and-perfect-number-classifications.go:52:6: main redeclared in this block
+	../../tests/rosetta/out/Go/abundant-deficient-and-perfect-number-classifications.go:26:6: other declaration of main

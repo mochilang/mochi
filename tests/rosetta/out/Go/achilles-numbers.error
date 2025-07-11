@@ -1,0 +1,6 @@
+run error: exit status 1
+# command-line-arguments
+../../tests/rosetta/out/Go/achilles-numbers.go:161:20: invalid operation: cannot call non-function achSet["keys"] (map index expression of type bool)
+../../tests/rosetta/out/Go/achilles-numbers.go:161:27: cannot use "keys" (untyped string constant) as int value in map index
+../../tests/rosetta/out/Go/achilles-numbers.go:254:6: main redeclared in this block
+	../../tests/rosetta/out/Go/achilles-numbers.go:156:6: other declaration of main

@@ -1,0 +1,13 @@
+run error: exit status 1
+# command-line-arguments
+../../tests/rosetta/out/Go/abelian-sandpile-model-identity.go:37:9: cannot use append(_convSlice[int, any](res), (a[i] + b[i])) (value of type []any) as []int value in assignment
+../../tests/rosetta/out/Go/abelian-sandpile-model-identity.go:58:16: invalid argument: p (variable of type *[]int) for built-in len
+../../tests/rosetta/out/Go/abelian-sandpile-model-identity.go:61:7: invalid operation: cannot index p (variable of type *[]int)
+../../tests/rosetta/out/Go/abelian-sandpile-model-identity.go:62:5: invalid operation: cannot index p (variable of type *[]int)
+../../tests/rosetta/out/Go/abelian-sandpile-model-identity.go:65:6: invalid operation: cannot index p (variable of type *[]int)
+../../tests/rosetta/out/Go/abelian-sandpile-model-identity.go:114:10: cannot use s4 (variable of type []int) as *[]int value in argument to topple
+../../tests/rosetta/out/Go/abelian-sandpile-model-identity.go:145:10: cannot use s3_a (variable of type []int) as *[]int value in argument to topple
+../../tests/rosetta/out/Go/abelian-sandpile-model-identity.go:152:10: cannot use s3_b (variable of type []int) as *[]int value in argument to topple
+../../tests/rosetta/out/Go/abelian-sandpile-model-identity.go:184:10: cannot use s4b (variable of type []int) as *[]int value in argument to topple
+../../tests/rosetta/out/Go/abelian-sandpile-model-identity.go:193:10: cannot use s5 (variable of type []int) as *[]int value in argument to topple
+../../tests/rosetta/out/Go/abelian-sandpile-model-identity.go:193:10: too many errors

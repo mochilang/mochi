@@ -1,0 +1,7 @@
+run error: exit status 1
+# command-line-arguments
+../../tests/rosetta/out/Go/abc-problem.go:22:11: cannot use append(_convSlice[string, any](res), cur) (value of type []any) as []string value in assignment
+../../tests/rosetta/out/Go/abc-problem.go:31:9: cannot use append(_convSlice[string, any](res), cur) (value of type []any) as []string value in assignment
+../../tests/rosetta/out/Go/abc-problem.go:56:13: cannot use append(_convSlice[string, any](rest), blks[j]) (value of type []any) as []string value in assignment
+../../tests/rosetta/out/Go/abc-problem.go:93:6: main redeclared in this block
+	../../tests/rosetta/out/Go/abc-problem.go:78:6: other declaration of main

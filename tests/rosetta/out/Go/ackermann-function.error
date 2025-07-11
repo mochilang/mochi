@@ -1,0 +1,4 @@
+run error: exit status 1
+# command-line-arguments
+../../tests/rosetta/out/Go/ackermann-function.go:28:6: main redeclared in this block
+	../../tests/rosetta/out/Go/ackermann-function.go:21:6: other declaration of main
