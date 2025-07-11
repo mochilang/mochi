@@ -111,8 +111,8 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 ### Remaining tasks
 - [x] Implement update statements
 - [x] Support block expressions
-- [ ] Support Go FFI imports
-- [ ] Support Python FFI imports
+- [x] Support Go FFI imports
+- [x] Support Python FFI imports
 - [ ] Improve error messages from Prolog runtime
 - [ ] Optimize generated code for tail recursion
 - [ ] Add support for macros
@@ -131,3 +131,13 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 - [ ] Support multi-file compilation
 - [ ] Add linter for generated Prolog
 - [ ] Improve variable naming heuristics
+- [ ] Integrate Prolog unit tests
+- [ ] Support concurrency primitives
+- [ ] Generate coverage reports
+- [ ] Provide command line compiler tool
+- [ ] Implement cross-module optimizations
+- [ ] Add database access library support
+- [ ] Support asynchronous I/O
+- [ ] Improve documentation of FFI usage
+- [ ] Add code formatter for Prolog output
+- [ ] Implement plugin system for custom backends

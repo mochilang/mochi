@@ -1,4 +1,7 @@
 :- style_check(-singleton).
+go_get(_, _, _) :- throw(error('go ffi not implemented')).
+go_call(_, _, _, _) :- throw(error('go ffi not implemented')).
+
 testpkg_add(A, B, R) :- R is A + B.
 testpkg_pi(P) :- P is 3.14.
 testpkg_answer(A) :- A is 42.

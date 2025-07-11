@@ -1,4 +1,7 @@
 :- style_check(-singleton).
+python_get(_, _, _) :- throw(error('python ffi not implemented')).
+python_call(_, _, _, _) :- throw(error('python ffi not implemented')).
+
 math_pi(P) :- P is 3.141592653589793.
 math_e(E) :- E is 2.718281828459045.
 math_sqrt(X, R) :- R is sqrt(X).
