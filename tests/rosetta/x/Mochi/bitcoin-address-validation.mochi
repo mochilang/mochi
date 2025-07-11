@@ -1,0 +1,68 @@
+fun indexOf(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if s[i:i+1] == ch {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun set58(addr: string): list<int> {
+  let tmpl = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+  var a: list<int> = []
+  var i = 0
+  while i < 25 {
+    a = append(a, 0)
+    i = i + 1
+  }
+  var idx = 0
+  while idx < len(addr) {
+    let ch = addr[idx:idx+1]
+    var c = indexOf(tmpl, ch)
+    if c < 0 {
+      return []
+    }
+    var j = 24
+    while j >= 0 {
+      c = c + 58 * a[j]
+      a[j] = c % 256
+      c = (c / 256) as int
+      j = j - 1
+    }
+    if c > 0 {
+      return []
+    }
+    idx = idx + 1
+  }
+  return a
+}
+
+fun doubleSHA256(bs: list<int>): list<int> {
+  let first = sha256(bs)
+  return sha256(first)
+}
+
+fun computeChecksum(a: list<int>): list<int> {
+  let hash = doubleSHA256(a[0:21])
+  return hash[0:4]
+}
+
+fun validA58(addr: string): bool {
+  let a = set58(addr)
+  if len(a) != 25 { return false }
+  if a[0] != 0 { return false }
+  let sum = computeChecksum(a)
+  var i = 0
+  while i < 4 {
+    if a[21+i] != sum[i] {
+      return false
+    }
+    i = i + 1
+  }
+  return true
+}
+
+print(str(validA58("1AGNa15ZQXAZUgFiqJ3i7Z2DPU2J6hW62i")))
+print(str(validA58("17NdbrSGoUotzeGCcMMCqnFkEvLymoou9j")))
