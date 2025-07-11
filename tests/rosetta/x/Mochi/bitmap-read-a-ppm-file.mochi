@@ -1,0 +1,222 @@
+// Mochi implementation for Rosetta Code task "Bitmap/Read a PPM file"
+
+// Simple RGB pixel type
+
+type Pixel {
+  R: int
+  G: int
+  B: int
+}
+
+type Bitmap {
+  w: int
+  h: int
+  max: int
+  data: list<list<Pixel>>
+}
+
+fun newBitmap(w: int, h: int, max: int): Bitmap {
+  var rows: list<list<Pixel>> = []
+  var y = 0
+  while y < h {
+    var row: list<Pixel> = []
+    var x = 0
+    while x < w {
+      row = append(row, Pixel{R:0,G:0,B:0})
+      x = x + 1
+    }
+    rows = append(rows, row)
+    y = y + 1
+  }
+  return Bitmap{w: w, h: h, max: max, data: rows}
+}
+
+fun setPx(b: Bitmap, x: int, y: int, p: Pixel) {
+  var rows = b.data
+  var row = rows[y]
+  row[x] = p
+  rows[y] = row
+  b.data = rows
+}
+
+fun getPx(b: Bitmap, x: int, y: int): Pixel {
+  return b.data[y][x]
+}
+
+fun splitLines(s: string): list<string> {
+  var out: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substr(s, i, i+1)
+    if ch == "\n" {
+      out = append(out, cur)
+      cur = ""
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  out = append(out, cur)
+  return out
+}
+
+fun splitWS(s: string): list<string> {
+  var out: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substr(s, i, i+1)
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 {
+        out = append(out, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 {
+    out = append(out, cur)
+  }
+  return out
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  let digits = {
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5,
+    "6": 6,
+    "7": 7,
+    "8": 8,
+    "9": 9,
+  }
+  while i < len(str) {
+    n = n * 10 + digits[str[i:i+1]]
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun tokenize(s: string): list<string> {
+  let lines = splitLines(s)
+  var toks: list<string> = []
+  var i = 0
+  while i < len(lines) {
+    let line = lines[i]
+    if len(line) > 0 && substr(line,0,1) == "#" {
+      i = i + 1
+      continue
+    }
+    let parts = splitWS(line)
+    var j = 0
+    while j < len(parts) {
+      toks = append(toks, parts[j])
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return toks
+}
+
+fun readP3(text: string): Bitmap {
+  let toks = tokenize(text)
+  if len(toks) < 4 { return newBitmap(0,0,0) }
+  if toks[0] != "P3" { return newBitmap(0,0,0) }
+  let w: int = parseIntStr(toks[1])
+  let h: int = parseIntStr(toks[2])
+  let maxv: int = parseIntStr(toks[3])
+  var idx = 4
+  var bm = newBitmap(w, h, maxv)
+  var y = h - 1
+  while y >= 0 {
+    var x = 0
+    while x < w {
+      let r: int = parseIntStr(toks[idx])
+      let g: int = parseIntStr(toks[idx+1])
+      let b: int = parseIntStr(toks[idx+2])
+      setPx(bm, x, y, Pixel{R:r,G:g,B:b})
+      idx = idx + 3
+      x = x + 1
+    }
+    y = y - 1
+  }
+  return bm
+}
+
+fun toGrey(b: Bitmap) {
+  let h: int = b.h
+  let w: int = b.w
+  var m = 0
+  var y = 0
+  while y < h {
+    var x = 0
+    while x < w {
+      let p = getPx(b,x,y)
+      var l = (p.R * 2126 + p.G * 7152 + p.B * 722) / 10000
+      if l > b.max { l = b.max }
+      setPx(b, x, y, Pixel{R:l,G:l,B:l})
+      if l > m { m = l }
+      x = x + 1
+    }
+    y = y + 1
+  }
+  b.max = m
+}
+
+fun pad(n: int, w: int): string {
+  var s = str(n)
+  while len(s) < w { s = " " + s }
+  return s
+}
+
+fun writeP3(b: Bitmap): string {
+  let h: int = b.h
+  let w: int = b.w
+  var max = b.max
+  let digits = len(str(max))
+  var out = "P3\n# generated from Bitmap.writeppmp3\n" + str(w) + " " + str(h) + "\n" + str(max) + "\n"
+  var y = h - 1
+  while y >= 0 {
+    var line = ""
+    var x = 0
+    while x < w {
+      let p = getPx(b,x,y)
+      line = line + "   " + pad(p.R, digits) + " " + pad(p.G, digits) + " " + pad(p.B, digits)
+      x = x + 1
+    }
+    out = out + line + "\n"
+    y = y - 1
+  }
+  return out
+}
+
+var ppmtxt = "P3\n" +
+  "# feep.ppm\n" +
+  "4 4\n" +
+  "15\n" +
+  " 0  0  0    0  0  0    0  0  0   15  0 15\n" +
+  " 0  0  0    0 15  7    0  0  0    0  0  0\n" +
+  " 0  0  0    0  0  0    0 15  7    0  0  0\n" +
+  "15  0 15    0  0  0    0  0  0    0  0  0\n"
+
+print("Original Colour PPM file")
+print(ppmtxt)
+var bm = readP3(ppmtxt)
+print("Grey PPM:")
+toGrey(bm)
+let out = writeP3(bm)
+print(out)
