@@ -1,0 +1,131 @@
+// Mochi implementation of Rosetta "Bitmap" task
+// Provides a simple RGB bitmap type with basic operations
+
+// 8-bit RGB pixel
+// fields use capital letters to mimic Go struct
+
+type Pixel {
+  R: int
+  G: int
+  B: int
+}
+
+fun pixelFromRgb(c: int): Pixel {
+  let r = ((c / 65536) as int) % 256
+  let g = ((c / 256) as int) % 256
+  let b = c % 256
+  return Pixel{ R: r, G: g, B: b }
+ }
+
+fun rgbFromPixel(p: Pixel): int {
+  return p.R * 65536 + p.G * 256 + p.B
+ }
+
+ // Bitmap structure storing pixels row major
+type Bitmap {
+  cols: int
+  rows: int
+  px: list<list<Pixel>>
+}
+
+fun NewBitmap(x: int, y: int): Bitmap {
+  var data: list<list<Pixel>> = []
+  var row = 0
+  while row < y {
+    var r: list<Pixel> = []
+    var col = 0
+    while col < x {
+      r = append(r, Pixel{R:0,G:0,B:0})
+      col = col + 1
+    }
+    data = append(data, r)
+    row = row + 1
+  }
+  return Bitmap{ cols: x, rows: y, px: data }
+ }
+
+fun Extent(b: Bitmap): map<string,int> {
+  return {"cols": b.cols, "rows": b.rows}
+ }
+
+fun Fill(b: Bitmap, p: Pixel) {
+  var y = 0
+  while y < b.rows {
+    var x = 0
+    while x < b.cols {
+      var px = b.px
+      var row = px[y]
+      row[x] = p
+      px[y] = row
+      b.px = px
+      x = x + 1
+    }
+    y = y + 1
+  }
+ }
+
+fun FillRgb(b: Bitmap, c: int) { Fill(b, pixelFromRgb(c)) }
+
+fun SetPx(b: Bitmap, x: int, y: int, p: Pixel): bool {
+  if x < 0 || x >= b.cols || y < 0 || y >= b.rows { return false }
+  var px = b.px
+  var row = px[y]
+  row[x] = p
+  px[y] = row
+  b.px = px
+  return true
+ }
+
+fun SetPxRgb(b: Bitmap, x: int, y: int, c: int): bool {
+  return SetPx(b, x, y, pixelFromRgb(c))
+ }
+
+fun GetPx(b: Bitmap, x: int, y: int): map<string, any> {
+  if x < 0 || x >= b.cols || y < 0 || y >= b.rows {
+    return {"ok": false}
+  }
+  let row = b.px[y]
+  return {"ok": true, "pixel": row[x]}
+ }
+
+fun GetPxRgb(b: Bitmap, x: int, y: int): map<string, any> {
+  let r = GetPx(b, x, y)
+  if !r.ok { return {"ok": false} }
+  return {"ok": true, "rgb": rgbFromPixel(r.pixel)}
+ }
+
+fun ppmSize(b: Bitmap): int {
+  let header = "P6\n# Creator: Rosetta Code http://rosettacode.org/\n" +
+    str(b.cols) + " " + str(b.rows) + "\n255\n"
+  return len(header) + 3 * b.cols * b.rows
+ }
+
+fun pixelStr(p: Pixel): string {
+  return "{" + str(p.R) + " " + str(p.G) + " " + str(p.B) + "}"
+ }
+
+fun main() {
+  var bm = NewBitmap(300, 240)
+  FillRgb(bm, 16711680)
+  SetPxRgb(bm, 10, 20, 255)
+  SetPxRgb(bm, 20, 30, 0)
+  SetPxRgb(bm, 30, 40, 1056816)
+
+  let c1 = GetPx(bm, 0, 0)
+  let c2 = GetPx(bm, 10, 20)
+  let c3 = GetPx(bm, 30, 40)
+
+  print("Image size: " + str(bm.cols) + " × " + str(bm.rows))
+  print(str(ppmSize(bm)) + " bytes when encoded as PPM.")
+  if c1.ok { print("Pixel at (0,0) is " + pixelStr(c1.pixel)) }
+  if c2.ok { print("Pixel at (10,20) is " + pixelStr(c2.pixel)) }
+  if c3.ok {
+    let p = c3.pixel
+    var r16 = p.R * 257
+    var g16 = p.G * 257
+    var b16 = p.B * 257
+    print("Pixel at (30,40) has R=" + str(r16) + ", G=" + str(g16) + ", B=" + str(b16))
+  }
+ }
+
+ main()
