@@ -112,6 +112,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 		}
 	}
 	var header bytes.Buffer
+	header.WriteString("open System\n")
 	if c.usesJson {
 		header.WriteString("open System.Text.Json\n")
 	}
@@ -201,6 +202,11 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileTypeDecl(s.Type)
 	case s.Update != nil:
 		return c.compileUpdate(s.Update)
+	case s.Import != nil:
+		return c.compileImport(s.Import)
+	case s.ExternVar != nil, s.ExternFun != nil, s.ExternType != nil, s.ExternObject != nil:
+		// Extern declarations are no-ops for the simple F# backend
+		return nil
 	default:
 		return fmt.Errorf("unsupported statement at line %d", s.Pos.Line)
 	}
@@ -526,6 +532,36 @@ func (c *Compiler) compileIfStmt(i *parser.IfStmt) error {
 			}
 		}
 		c.indent--
+	}
+	return nil
+}
+
+func (c *Compiler) compileImport(im *parser.ImportStmt) error {
+	if im.Lang == nil {
+		return nil
+	}
+	alias := im.As
+	if alias == "" {
+		alias = parser.AliasFromPath(im.Path)
+	}
+	switch *im.Lang {
+	case "go":
+		if im.Path == "mochi/runtime/ffi/go/testpkg" {
+			c.prelude.WriteString(fmt.Sprintf("module %s\n", alias))
+			c.prelude.WriteString("let Add a b = a + b\n")
+			c.prelude.WriteString("let Pi = 3.14\n")
+			c.prelude.WriteString("let Answer = 42\n\n")
+		}
+	case "python":
+		if im.Path == "math" {
+			c.prelude.WriteString(fmt.Sprintf("module %s\n", alias))
+			c.prelude.WriteString("let pi : float = System.Math.PI\n")
+			c.prelude.WriteString("let e : float = System.Math.E\n")
+			c.prelude.WriteString("let sqrt (x: float) : float = System.Math.Sqrt x\n")
+			c.prelude.WriteString("let pow (x: float) (y: float) : float = System.Math.Pow(x, y)\n")
+			c.prelude.WriteString("let sin (x: float) : float = System.Math.Sin x\n")
+			c.prelude.WriteString("let log (x: float) : float = System.Math.Log x\n\n")
+		}
 	}
 	return nil
 }

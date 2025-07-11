@@ -7,7 +7,7 @@ Compilation failures are recorded with an `.error` file.
 
 ## Compilation Status
 
-Compiled programs: 97/97
+Compiled programs: 100/100
 
 ### Checklist
 
@@ -33,6 +33,7 @@ Compiled programs: 97/97
 - [x] fun_call
 - [x] fun_expr_in_let
 - [x] fun_three_args
+- [x] go_auto
 - [x] group_by
 - [x] group_by_conditional_sum
 - [x] group_by_having
@@ -80,6 +81,8 @@ Compiled programs: 97/97
 - [x] print_hello
 - [x] pure_fold
 - [x] pure_global_fold
+- [x] python_auto
+- [x] python_math
 - [x] query_sum_select
 - [x] record_assign
 - [x] right_join
@@ -111,4 +114,13 @@ Compiled programs: 97/97
 
 ## Remaining Tasks
 
-All example programs compile and run as expected.
+- [ ] Compare generated code with reference implementations
+- [ ] Improve dataset query support
+- [ ] Handle FFI imports beyond built-in modules
+- [ ] Add type inference for map literals
+- [ ] Support pattern matching on tuples
+- [ ] Implement option type helpers
+- [ ] Provide clearer errors for unsupported constructs
+- [ ] Use more F# standard library functions
+- [ ] Integrate Fantomas formatting
+- [ ] Benchmark compiler on large inputs
