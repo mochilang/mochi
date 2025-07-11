@@ -99,7 +99,7 @@ func useDef(ins Instr, n int) (use, def []bool) {
 		addUse(ins.B)
 		addUse(ins.C)
 	case OpNeg, OpNegInt, OpNegFloat, OpNot, OpStr, OpFirst, OpExists,
-		OpLen, OpCount, OpAvg, OpSum, OpMin, OpMax, OpValues,
+		OpLen, OpCount, OpAvg, OpSum, OpMin, OpMax, OpValues, OpSqrt,
 		OpCast, OpIterPrep, OpNow:
 		addDef(ins.A)
 		addUse(ins.B)
@@ -610,7 +610,7 @@ func constFold(fn *Function) bool {
 				consts[ins.A] = cinfo{}
 			}
 		case OpNeg, OpNegInt, OpNegFloat, OpNot, OpStr, OpUpper, OpLower, OpFirst, OpLen,
-			OpCount, OpExists, OpAvg, OpSum, OpMin, OpMax, OpValues, OpSort:
+			OpCount, OpExists, OpAvg, OpSum, OpMin, OpMax, OpValues, OpSort, OpSqrt:
 			b := consts[ins.B]
 			if b.known {
 				if val, ok := evalUnaryConst(ins.Op, b.val); ok {
@@ -790,6 +790,10 @@ func evalUnaryConst(op Op, v Value) (Value, bool) {
 			return Value{Tag: ValueStr, Str: strings.ToLower(v.Str)}, true
 		}
 		return Value{Tag: ValueStr, Str: strings.ToLower(fmt.Sprint(v.ToAny()))}, true
+	case OpSqrt:
+		if v.Tag == ValueFloat || v.Tag == ValueInt {
+			return Value{Tag: ValueFloat, Float: math.Sqrt(toFloat(v))}, true
+		}
 	case OpFirst:
 		if lst, ok := toList(v); ok {
 			if len(lst) > 0 {

@@ -145,6 +145,8 @@ func applyTags(tags []RegTag, ins Instr) {
 		tags[ins.A] = TagFloat
 	case OpSum:
 		tags[ins.A] = TagUnknown
+	case OpSqrt:
+		tags[ins.A] = TagFloat
 	case OpMin, OpMax:
 		tags[ins.A] = TagUnknown
 	case OpValues:

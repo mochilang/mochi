@@ -6,24 +6,14 @@ fun abs(x: float): float {
   return x
 }
 
-fun sqrtApprox(x: float): float {
-  var guess = x
-  var i = 0
-  while i < 20 {
-    guess = (guess + x / guess) / 2.0
-    i = i + 1
-  }
-  return guess
-}
-
 fun agmPi(): float {
   var a = 1.0
-  var g = 1.0 / sqrtApprox(2.0)
+  var g = 1.0 / sqrt(2.0)
   var sum = 0.0
   var pow = 2.0
   while abs(a - g) > 0.000000000000001 {
     var t = (a + g) / 2.0
-    var u = sqrtApprox(a * g)
+    var u = sqrt(a * g)
     a = t
     g = u
     pow = pow * 2.0

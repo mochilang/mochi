@@ -92,6 +92,7 @@ const (
 	OpUpper
 	OpLower
 	OpReverse
+	OpSqrt
 	OpInput
 	OpFirst
 	OpCount
@@ -225,6 +226,8 @@ func (op Op) String() string {
 		return "Lower"
 	case OpReverse:
 		return "Reverse"
+	case OpSqrt:
+		return "Sqrt"
 	case OpInput:
 		return "Input"
 	case OpFirst:
@@ -479,6 +482,8 @@ func (p *Program) Disassemble(src string) string {
 			case OpLower:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpReverse:
+				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
+			case OpSqrt:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpInput:
 				fmt.Fprintf(&b, "%s", formatReg(ins.A))
@@ -1473,6 +1478,9 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			default:
 				return Value{}, m.newError(fmt.Errorf("reverse expects list or string"), trace, ins.Line)
 			}
+		case OpSqrt:
+			b := fr.regs[ins.B]
+			fr.regs[ins.A] = Value{Tag: ValueFloat, Float: math.Sqrt(toFloat(b))}
 		case OpSHA256:
 			v := fr.regs[ins.B]
 			var data []byte
@@ -2387,7 +2395,7 @@ func (fc *funcCompiler) emit(pos lexer.Position, i Instr) {
 		fc.tags[i.A] = tagInt
 	case OpJSON, OpPrint, OpPrint2, OpPrintN:
 		// no result
-	case OpAppend, OpStr, OpUpper, OpLower, OpReverse, OpInput, OpFirst, OpSHA256:
+	case OpAppend, OpStr, OpUpper, OpLower, OpReverse, OpSqrt, OpInput, OpFirst, OpSHA256:
 		fc.tags[i.A] = tagUnknown
 	case OpLoad:
 		fc.tags[i.A] = tagUnknown
@@ -2962,6 +2970,13 @@ func (fc *funcCompiler) compilePostfix(p *parser.PostfixExpr) int {
 			arg := fc.compileExpr(p.Ops[0].Call.Args[0])
 			dst := fc.newReg()
 			fc.emit(p.Ops[0].Call.Pos, Instr{Op: OpLower, A: dst, B: arg})
+			return dst
+		}
+		// math.Sqrt(x) -> sqrt(x)
+		if rootName == "math" && methodName == "Sqrt" {
+			arg := fc.compileExpr(p.Ops[0].Call.Args[0])
+			dst := fc.newReg()
+			fc.emit(p.Ops[0].Call.Pos, Instr{Op: OpSqrt, A: dst, B: arg})
 			return dst
 		}
 		if typ, err := fc.comp.env.GetVar(rootName); err == nil {
@@ -3541,6 +3556,11 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			arg := fc.compileExpr(p.Call.Args[0])
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpReverse, A: dst, B: arg})
+			return dst
+		case "sqrt":
+			arg := fc.compileExpr(p.Call.Args[0])
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpSqrt, A: dst, B: arg})
 			return dst
 		case "sha256":
 			arg := fc.compileExpr(p.Call.Args[0])
