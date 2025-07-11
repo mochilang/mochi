@@ -9,7 +9,8 @@ const (
 static list_int list_int_create(int len) {
     list_int l;
     l.len = len;
-    l.data = (int*)malloc(sizeof(int)*len);
+    l.data = calloc(len, sizeof(int));
+    if (!l.data && len > 0) { fprintf(stderr, "alloc failed\n"); exit(1); }
     return l;
 }
 `
@@ -17,7 +18,8 @@ static list_int list_int_create(int len) {
 static list_float list_float_create(int len) {
     list_float l;
     l.len = len;
-    l.data = (double*)malloc(sizeof(double)*len);
+    l.data = calloc(len, sizeof(double));
+    if (!l.data && len > 0) { fprintf(stderr, "alloc failed\n"); exit(1); }
     return l;
 }
 `
@@ -25,7 +27,8 @@ static list_float list_float_create(int len) {
 static list_string list_string_create(int len) {
     list_string l;
     l.len = len;
-    l.data = (char**)malloc(sizeof(char*)*len);
+    l.data = calloc(len, sizeof(char*));
+    if (!l.data && len > 0) { fprintf(stderr, "alloc failed\n"); exit(1); }
     return l;
 }
 `
@@ -33,12 +36,14 @@ static list_string list_string_create(int len) {
 static list_list_int list_list_int_create(int len) {
     list_list_int l;
     l.len = len;
-    l.data = (list_int*)malloc(sizeof(list_int)*len);
+    l.data = calloc(len, sizeof(list_int));
+    if (!l.data && len > 0) { fprintf(stderr, "alloc failed\n"); exit(1); }
     return l;
 }`
 	helperMapIntBool = `typedef struct { int key; int value; } map_int_bool_item;
 static map_int_bool_item* map_int_bool_item_new(int key, int value) {
-    map_int_bool_item* it = (map_int_bool_item*)malloc(sizeof(map_int_bool_item));
+    map_int_bool_item* it = calloc(1, sizeof(map_int_bool_item));
+    if (!it) { fprintf(stderr, "alloc failed\n"); exit(1); }
     it->key = key;
     it->value = value;
     return it;
@@ -46,7 +51,8 @@ static map_int_bool_item* map_int_bool_item_new(int key, int value) {
 typedef struct { int len; int cap; map_int_bool_item** data; } map_int_bool;
 static map_int_bool map_int_bool_create(int cap) {
     map_int_bool m; m.len = 0; m.cap = cap;
-    m.data = cap ? (map_int_bool_item**)malloc(sizeof(map_int_bool_item*)*cap) : NULL;
+    m.data = cap ? calloc(cap, sizeof(map_int_bool_item*)) : NULL;
+    if (cap && !m.data) { fprintf(stderr, "alloc failed\n"); exit(1); }
     return m;
 }
 static void map_int_bool_put(map_int_bool* m, int key, int value) {
@@ -69,7 +75,8 @@ static pair_string_int pair_string_int_new(char* key, int value) {
 typedef struct { int len; int cap; pair_string_int* data; } map_string_int;
 static map_string_int map_string_int_create(int cap) {
     map_string_int m; m.len = 0; m.cap = cap;
-    m.data = cap?(pair_string_int*)malloc(sizeof(pair_string_int)*cap):NULL;
+    m.data = cap ? calloc(cap, sizeof(pair_string_int)) : NULL;
+    if (cap && !m.data) { fprintf(stderr, "alloc failed\n"); exit(1); }
     return m;
 }
 static void map_string_int_put(map_string_int* m, char* k, int v){
@@ -89,7 +96,7 @@ static int map_string_int_contains(map_string_int m,const char* k){
 	helperMapIntString = `typedef struct { int key; char* value; } pair_int_string;
 static pair_int_string pair_int_string_new(int key, char* val){ pair_int_string p; p.key=key; p.value=val; return p; }
 typedef struct { int len; int cap; pair_int_string* data; } map_int_string;
-static map_int_string map_int_string_create(int cap){ map_int_string m; m.len=0; m.cap=cap; m.data=cap?(pair_int_string*)malloc(sizeof(pair_int_string)*cap):NULL; return m; }
+static map_int_string map_int_string_create(int cap){ map_int_string m; m.len=0; m.cap=cap; m.data=cap?calloc(cap, sizeof(pair_int_string)):NULL; if(cap && !m.data){ fprintf(stderr,"alloc failed\n"); exit(1); } return m; }
 static void map_int_string_put(map_int_string* m,int k,char* v){ for(int i=0;i<m->len;i++) if(m->data[i].key==k){ m->data[i].value=v; return; } if(m->len>=m->cap){ m->cap=m->cap?m->cap*2:4; m->data=(pair_int_string*)realloc(m->data,sizeof(pair_int_string)*m->cap); } m->data[m->len++]=pair_int_string_new(k,v); }
 static char* map_int_string_get(map_int_string m,int k){ for(int i=0;i<m.len;i++) if(m.data[i].key==k) return m.data[i].value; return ""; }
 static int map_int_string_contains(map_int_string m,int k){ for(int i=0;i<m.len;i++) if(m.data[i].key==k) return 1; return 0; }`
@@ -175,7 +182,7 @@ static list_group_string _group_by_string(list_string src) {
 	helperPairString     = `typedef struct { char* a; char* b; } pair_string;`
 	helperListPairString = `typedef struct { int len; pair_string* data; } list_pair_string;
 static list_pair_string list_pair_string_create(int len) {
-    list_pair_string l; l.len = len; l.data = (pair_string*)malloc(sizeof(pair_string)*len); return l;
+    list_pair_string l; l.len = len; l.data = calloc(len, sizeof(pair_string)); if(!l.data && len>0){ fprintf(stderr,"alloc failed\n"); exit(1); } return l;
 }`
 	helperGroupByPairString = `typedef struct { pair_string key; list_int items; } _GroupPairString;
 typedef struct { int len; int cap; _GroupPairString* data; } list_group_pair_string;
@@ -576,13 +583,13 @@ static void _json_list_list_int(list_list_int v) {
     if (f!=stdin) fclose(f); return buf; }
 typedef struct { char* key; char* value; } pair_string;
 typedef struct { int len; int cap; pair_string* data; } map_string;
-static map_string map_string_create(int cap){ map_string m; m.len=0; m.cap=cap; m.data=cap?(pair_string*)malloc(sizeof(pair_string)*cap):NULL; return m; }
+static map_string map_string_create(int cap){ map_string m; m.len=0; m.cap=cap; m.data=cap?calloc(cap, sizeof(pair_string)):NULL; if(cap && !m.data){ fprintf(stderr,"alloc failed\n"); exit(1); } return m; }
 static void map_string_put(map_string* m,char* k,char* v){ if(m->len>=m->cap){ m->cap=m->cap?m->cap*2:4; m->data=(pair_string*)realloc(m->data,sizeof(pair_string)*m->cap);} m->data[m->len].key=k; m->data[m->len].value=v; m->len++; }
 typedef struct { int len; int cap; map_string* data; } list_map_string;
-static list_map_string list_map_string_create(int cap){ list_map_string l; l.len=0; l.cap=cap; l.data=cap?(map_string*)malloc(sizeof(map_string)*cap):NULL; return l; }
+static list_map_string list_map_string_create(int cap){ list_map_string l; l.len=0; l.cap=cap; l.data=cap?calloc(cap, sizeof(map_string)):NULL; if(cap && !l.data){ fprintf(stderr,"alloc failed\n"); exit(1); } return l; }
 static void list_map_string_push(list_map_string* l,map_string m){ if(l->len>=l->cap){ l->cap=l->cap?l->cap*2:4; l->data=(map_string*)realloc(l->data,sizeof(map_string)*l->cap);} l->data[l->len++]=m; }
 typedef struct { int len; int cap; map_string_int* data; } list_map_string_int;
-static list_map_string_int list_map_string_int_create(int cap){ list_map_string_int l; l.len=0; l.cap=cap; l.data=cap?(map_string_int*)malloc(sizeof(map_string_int)*cap):NULL; return l; }
+static list_map_string_int list_map_string_int_create(int cap){ list_map_string_int l; l.len=0; l.cap=cap; l.data=cap?calloc(cap, sizeof(map_string_int)):NULL; if(cap && !l.data){ fprintf(stderr,"alloc failed\n"); exit(1); } return l; }
 static void list_map_string_int_push(list_map_string_int* l,map_string_int m){ if(l->len>=l->cap){ l->cap=l->cap?l->cap*2:4; l->data=(map_string_int*)realloc(l->data,sizeof(map_string_int)*l->cap);} l->data[l->len++]=m; }
 static void _skip_ws(const char** s){ while(**s && (**s==' '||**s=='\t'||**s=='\n'||**s=='\r'))(*s)++; }
 static char* _parse_string(const char** s){ const char* p=*s; if(*p!='"') return strdup(""); p++; const char* st=p; while(*p && *p!='"'){ if(*p=='\\'&&p[1]) p++; p++; } size_t len=p-st; char* out=(char*)malloc(len+1); memcpy(out,st,len); out[len]='\0'; if(*p=='"') p++; *s=p; return out; }
