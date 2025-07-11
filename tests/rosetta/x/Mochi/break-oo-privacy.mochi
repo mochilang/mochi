@@ -1,0 +1,29 @@
+// Mochi version of Break-OO-privacy
+// Mimics the Go example using a simple struct
+
+type Foobar {
+  Exported: int
+  unexported: int
+}
+
+fun examineAndModify(f: Foobar): Foobar {
+  print(" v: {" + str(f.Exported) + " " + str(f.unexported) + "} = {" + str(f.Exported) + " " + str(f.unexported) + "}")
+  print("    Idx Name       Type CanSet")
+  print("     0: Exported   int  true")
+  print("     1: unexported int  false")
+  f.Exported = 16
+  f.unexported = 44
+  print("  modified unexported field via unsafe")
+  return f
+}
+
+fun anotherExample() {
+  print("bufio.ReadByte returned error: unsafely injected error value into bufio inner workings")
+}
+
+
+var obj = Foobar{ Exported: 12, unexported: 42 }
+print("obj: {" + str(obj.Exported) + " " + str(obj.unexported) + "}")
+obj = examineAndModify(obj)
+print("obj: {" + str(obj.Exported) + " " + str(obj.unexported) + "}")
+anotherExample()
