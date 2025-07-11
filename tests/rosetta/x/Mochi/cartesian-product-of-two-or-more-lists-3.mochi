@@ -1,0 +1,67 @@
+// Mochi implementation of Rosetta "Cartesian-product-of-two-or-more-lists" task
+// Translated from Go version in tests/rosetta/x/Go/cartesian-product-of-two-or-more-lists-3.go
+
+fun listStr(xs: list<int>): string {
+  var s = "["
+  var i = 0
+  while i < len(xs) {
+    s = s + str(xs[i])
+    if i < len(xs)-1 { s = s + " " }
+    i = i + 1
+  }
+  s = s + "]"
+  return s
+}
+
+fun llStr(lst: list<list<int>>): string {
+  var s = "["
+  var i = 0
+  while i < len(lst) {
+    s = s + listStr(lst[i])
+    if i < len(lst)-1 { s = s + " " }
+    i = i + 1
+  }
+  s = s + "]"
+  return s
+}
+
+fun concat(a: list<int>, b: list<int>): list<int> {
+  var out: list<int> = []
+  for v in a { out = append(out, v) }
+  for v in b { out = append(out, v) }
+  return out
+}
+
+fun cartN(lists: any): list<list<int>> {
+  if lists == null { return [] }
+  let a = lists as list<list<int>>
+  if len(a) == 0 { return [[]] }
+  var out: list<list<int>> = []
+  let rest = cartN(a[1:len(a)])
+  for x in a[0] {
+    for p in rest {
+      out = append(out, concat([x], p))
+    }
+  }
+  return out
+}
+
+fun main() {
+  print(llStr(cartN([[1,2],[3,4]])))
+  print(llStr(cartN([[3,4],[1,2]])))
+  print(llStr(cartN([[1,2],[]])))
+  print(llStr(cartN([[],[1,2]])))
+  print("")
+  print("[")
+  for p in cartN([[1776,1789],[7,12],[4,14,23],[0,1]]) {
+    print(" "+listStr(p))
+  }
+  print("]")
+  print(llStr(cartN([[1,2,3],[30],[500,100]])))
+  print(llStr(cartN([[1,2,3],[],[500,100]])))
+  print("")
+  print(llStr(cartN(null)))
+  print(llStr(cartN([])))
+}
+
+main()
