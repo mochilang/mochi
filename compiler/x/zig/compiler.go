@@ -107,6 +107,11 @@ func (c *Compiler) writeln(s string) {
 	c.buf.WriteByte('\n')
 }
 
+func (c *Compiler) writelnType(s string, t types.Type) {
+	s = fmt.Sprintf("%s // %s", s, zigTypeOf(t))
+	c.writeln(s)
+}
+
 func (c *Compiler) writeIndent() {
 	for i := 0; i < c.indent; i++ {
 		c.buf.WriteByte('\t')
@@ -452,7 +457,7 @@ func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 									c.env.SetVar(s.Let.Name, types.ListType{Elem: st}, false)
 								}
 							}
-							c.writeln(fmt.Sprintf("const %s = %s;", name, v))
+							c.writelnType(fmt.Sprintf("const %s = %s;", name, v), typ)
 							c.constGlobals[name] = true
 							continue
 						}
@@ -478,7 +483,7 @@ func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 								c.env.SetVar(s.Let.Name, st, false)
 							}
 						}
-						c.writeln(fmt.Sprintf("const %s = %s;", name, v))
+						c.writelnType(fmt.Sprintf("const %s = %s;", name, v), typ)
 						c.constGlobals[name] = true
 						continue
 					}
@@ -497,13 +502,13 @@ func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 					v = vv
 				}
 				if isFunExpr(s.Let.Value) || s.Let.Type == nil || canInferType(s.Let.Value, typ) {
-					c.writeln(fmt.Sprintf("const %s = %s;", name, v))
+					c.writelnType(fmt.Sprintf("const %s = %s;", name, v), typ)
 				} else {
-					c.writeln(fmt.Sprintf("const %s: %s = %s;", name, zigTypeOf(typ), v))
+					c.writelnType(fmt.Sprintf("const %s: %s = %s;", name, zigTypeOf(typ), v), typ)
 				}
 				c.constGlobals[name] = true
 			} else {
-				c.writeln(fmt.Sprintf("var %s: %s = %s;", name, zigTypeOf(typ), zeroValue(typ)))
+				c.writelnType(fmt.Sprintf("var %s: %s = %s;", name, zigTypeOf(typ), zeroValue(typ)), typ)
 				c.constGlobals[name] = true
 			}
 			continue
@@ -540,7 +545,7 @@ func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 			}
 			if s.Var.Value != nil {
 				if isMapLiteralExpr(s.Var.Value) || isEmptyMapExpr(s.Var.Value) {
-					c.writeln(fmt.Sprintf("var %s: %s = undefined;", name, zigTypeOf(typ)))
+					c.writelnType(fmt.Sprintf("var %s: %s = undefined;", name, zigTypeOf(typ)), typ)
 					var v string
 					if ml := extractMapLiteral(s.Var.Value); ml != nil {
 						var err error
@@ -565,13 +570,13 @@ func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 						return err
 					}
 					if s.Var.Type == nil || canInferType(s.Var.Value, typ) {
-						c.writeln(fmt.Sprintf("var %s = %s;", name, v))
+						c.writelnType(fmt.Sprintf("var %s = %s;", name, v), typ)
 					} else {
 						c.writeln(fmt.Sprintf("var %s: %s = %s;", name, zigTypeOf(typ), v))
 					}
 				}
 			} else {
-				c.writeln(fmt.Sprintf("var %s: %s = %s;", name, zigTypeOf(typ), zeroValue(typ)))
+				c.writelnType(fmt.Sprintf("var %s: %s = %s;", name, zigTypeOf(typ), zeroValue(typ)), typ)
 			}
 			c.constGlobals[name] = true
 			continue
@@ -759,13 +764,13 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 			}
 		}
 		if isFunExpr(s.Let.Value) {
-			c.writeln(fmt.Sprintf("const %s = %s;", name, val))
+			c.writelnType(fmt.Sprintf("const %s = %s;", name, val), typ)
 			return nil
 		}
 		if s.Let.Type == nil && canInferType(s.Let.Value, typ) {
-			c.writeln(fmt.Sprintf("const %s = %s;", name, val))
+			c.writelnType(fmt.Sprintf("const %s = %s;", name, val), typ)
 		} else {
-			c.writeln(fmt.Sprintf("const %s: %s = %s;", name, zigTypeOf(typ), val))
+			c.writelnType(fmt.Sprintf("const %s: %s = %s;", name, zigTypeOf(typ), val), typ)
 		}
 		return nil
 	case s.Var != nil:
@@ -1950,7 +1955,7 @@ func (c *Compiler) compileVar(st *parser.VarStmt, inFun bool) error {
 							c.env.SetVar(st.Name, types.ListType{Elem: stype}, true)
 						}
 					}
-					c.writeln(fmt.Sprintf("var %s = %s;", name, init))
+					c.writelnType(fmt.Sprintf("var %s = %s;", name, init), typ)
 					return nil
 				}
 			}
@@ -1973,9 +1978,9 @@ func (c *Compiler) compileVar(st *parser.VarStmt, inFun bool) error {
 		}
 	}
 	if st.Type == nil && st.Value != nil && canInferType(st.Value, typ) {
-		c.writeln(fmt.Sprintf("var %s = %s;", name, val))
+		c.writelnType(fmt.Sprintf("var %s = %s;", name, val), typ)
 	} else {
-		c.writeln(fmt.Sprintf("var %s: %s = %s;", name, zigTypeOf(typ), val))
+		c.writelnType(fmt.Sprintf("var %s: %s = %s;", name, zigTypeOf(typ), val), typ)
 	}
 	return nil
 }
