@@ -82,26 +82,38 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		if s.Var != nil {
 			typ := c.typeName(s.Var.Type)
 			if s.Var.Type == nil && s.Var.Value != nil {
+				orig := c.curVar
+				c.curVar = s.Var.Name
 				typ = c.inferType(s.Var.Value)
+				c.curVar = orig
 			}
 			c.vars[s.Var.Name] = typ
 			if s.Var.Value != nil {
+				orig := c.curVar
+				c.curVar = s.Var.Name
 				if _, err := c.compileExpr(s.Var.Value); err != nil {
 					return nil, err
 				}
+				c.curVar = orig
 			}
 			continue
 		}
 		if s.Let != nil {
 			typ := c.typeName(s.Let.Type)
 			if s.Let.Type == nil && s.Let.Value != nil {
+				orig := c.curVar
+				c.curVar = s.Let.Name
 				typ = c.inferType(s.Let.Value)
+				c.curVar = orig
 			}
 			c.vars[s.Let.Name] = typ
 			if s.Let.Value != nil {
+				orig := c.curVar
+				c.curVar = s.Let.Name
 				if _, err := c.compileExpr(s.Let.Value); err != nil {
 					return nil, err
 				}
+				c.curVar = orig
 			}
 			continue
 		}
@@ -848,7 +860,10 @@ func (c *Compiler) exprIsMap(e *parser.Expr) bool {
 
 func (c *Compiler) compileGlobalVar(v *parser.VarStmt) error {
 	typ := c.typeName(v.Type)
+	orig := c.curVar
+	c.curVar = v.Name
 	expr, err := c.compileExpr(v.Value)
+	c.curVar = orig
 	if err != nil {
 		return err
 	}
@@ -872,7 +887,10 @@ func (c *Compiler) compileGlobalVar(v *parser.VarStmt) error {
 
 func (c *Compiler) compileGlobalLet(v *parser.LetStmt) error {
 	typ := c.typeName(v.Type)
+	orig := c.curVar
+	c.curVar = v.Name
 	expr, err := c.compileExpr(v.Value)
+	c.curVar = orig
 	if err != nil {
 		return err
 	}
@@ -999,7 +1017,15 @@ func (c *Compiler) dataClassFor(m *parser.MapLiteral) string {
 		return dc.name
 	}
 	name := fmt.Sprintf("DataClass%d", len(c.dataClasses)+1)
-	if n := classNameFromVar(c.curVar); n != "" {
+	base := c.curVar
+	if base != "" {
+		base = base + "_" + strings.Join(keys, "_")
+		if n := classNameFromVar(base); n != "" {
+			if c.dataClassByName(n) == nil {
+				name = n
+			}
+		}
+	} else if n := classNameFromVar(strings.Join(keys, "_")); n != "" {
 		if c.dataClassByName(n) == nil {
 			name = n
 		}
@@ -1108,8 +1134,13 @@ func (c *Compiler) compileList(l *parser.ListLiteral) (string, error) {
 func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
 	if name := c.dataClassFor(m); name != "" {
 		var args []string
+		origVar := c.curVar
 		for _, it := range m.Items {
+			if s, ok := simpleStringKey(it.Key); ok {
+				c.curVar = origVar + "_" + s
+			}
 			v, err := c.compileExpr(it.Value)
+			c.curVar = origVar
 			if err != nil {
 				return "", err
 			}
@@ -1352,18 +1383,28 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 			return err
 		}
 		if i == len(a.Index)-1 {
-			if strings.HasPrefix(typ, "Map<") || strings.HasPrefix(ix, "\"") {
+			if strings.HasPrefix(typ, "Map<") {
 				c.writeln(fmt.Sprintf("%s.put(%s, %s);", target, ix, expr))
-			} else {
+			} else if strings.HasPrefix(typ, "List<") {
 				c.writeln(fmt.Sprintf("%s.set(%s, %s);", target, ix, expr))
+			} else if field, ok := simpleStringKey(idx.Start); ok {
+				c.writeln(fmt.Sprintf("%s.%s = %s;", target, field, expr))
+			} else {
+				c.writeln(fmt.Sprintf("((Map)%s).put(%s, %s);", target, ix, expr))
 			}
 		} else {
 			if strings.HasPrefix(typ, "Map<") {
 				target = fmt.Sprintf("((Map)%s.get(%s))", target, ix)
 				typ = mapValueType(typ)
-			} else {
+			} else if strings.HasPrefix(typ, "List<") {
 				target = fmt.Sprintf("((List)%s.get(%s))", target, ix)
 				typ = listElemType(typ)
+			} else if field, ok := simpleStringKey(idx.Start); ok {
+				target = fmt.Sprintf("%s.%s", target, field)
+				typ = c.fieldType(typ, field)
+			} else {
+				target = fmt.Sprintf("((Map)%s.get(%s))", target, ix)
+				typ = mapValueType(typ)
 			}
 		}
 	}
@@ -1730,7 +1771,16 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if isString(val) || c.vars[val] == "String" {
 					val = fmt.Sprintf("%s.charAt(%s)", val, idx)
 				} else if last {
-					val = fmt.Sprintf("%s.get(%s)", val, idx)
+					if strings.HasPrefix(typ, "Map<") {
+						val = fmt.Sprintf("%s.get(%s)", val, idx)
+					} else if strings.HasPrefix(typ, "List<") {
+						val = fmt.Sprintf("%s.get(%s)", val, idx)
+					} else if field, ok := simpleStringKey(op.Index.Start); ok {
+						val = fmt.Sprintf("%s.%s", val, field)
+						typ = c.fieldType(typ, field)
+					} else {
+						val = fmt.Sprintf("((Map)%s).get(%s)", val, idx)
+					}
 				} else {
 					if strings.HasPrefix(typ, "Map<") {
 						val = fmt.Sprintf("((Map)%s.get(%s))", val, idx)
@@ -1738,6 +1788,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					} else if strings.HasPrefix(typ, "List<") {
 						val = fmt.Sprintf("((List)%s.get(%s))", val, idx)
 						typ = listElemType(typ)
+					} else if field, ok := simpleStringKey(op.Index.Start); ok {
+						val = fmt.Sprintf("%s.%s", val, field)
+						typ = c.fieldType(typ, field)
 					} else {
 						val = fmt.Sprintf("((Map)%s.get(%s))", val, idx)
 					}
