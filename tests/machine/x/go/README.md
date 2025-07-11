@@ -106,3 +106,12 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+
+## Remaining Tasks
+
+- [ ] group_by_left_join
+- [ ] left_join
+- [ ] left_join_multi
+- [ ] outer_join
+- [ ] right_join
+

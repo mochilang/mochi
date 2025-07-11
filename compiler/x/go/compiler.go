@@ -2584,7 +2584,7 @@ func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
 		if retType == "any" {
 			buf.WriteString("\treturn nil\n")
 		} else {
-			buf.WriteString(fmt.Sprintf("\tvar _zero %s\n\treturn _zero\n", retType))
+			buf.WriteString(fmt.Sprintf("\tvar zeroVal %s\n\treturn zeroVal\n", retType))
 		}
 	}
 	buf.WriteString("}()")
@@ -2816,7 +2816,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 		buf.WriteString("\t\t}\n")
 		buf.WriteString(fmt.Sprintf("\t\tg.Items = append(g.Items, %s)\n", sanitizeName(q.Var)))
 		buf.WriteString("\t}\n")
-		buf.WriteString(fmt.Sprintf("\t_res := []%s{}\n", retElem))
+		buf.WriteString(fmt.Sprintf("\tresults := []%s{}\n", retElem))
 		alias := sanitizeName(q.Group.Name)
 		buf.WriteString("\tfor _, ks := range order {\n")
 		buf.WriteString("\t\tg := groups[ks]\n")
@@ -2826,9 +2826,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 		if havingExpr != "" {
 			buf.WriteString(fmt.Sprintf("\t\tif !(%s) { continue }\n", havingExpr))
 		}
-		buf.WriteString(fmt.Sprintf("\t\t_res = append(_res, %s)\n", sel))
+		buf.WriteString(fmt.Sprintf("\t\tresults = append(results, %s)\n", sel))
 		buf.WriteString("\t}\n")
-		buf.WriteString("\treturn _res\n")
+		buf.WriteString("\treturn results\n")
 		buf.WriteString("}()")
 		return buf.String(), nil
 	}
@@ -3035,14 +3035,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 			buf.WriteString(fmt.Sprintf("\titems = _paginate[*data.Group](items, %s, %s)\n", sk, tk))
 		}
 
-		buf.WriteString(fmt.Sprintf("\t_res := []%s{}\n", retElem))
+		buf.WriteString(fmt.Sprintf("\tresults := []%s{}\n", retElem))
 		buf.WriteString(fmt.Sprintf("\tfor _, %s := range items {\n", sanitizeName(q.Group.Name)))
 		if havingExpr != "" {
 			buf.WriteString(fmt.Sprintf("\t\tif !(%s) { continue }\n", havingExpr))
 		}
-		buf.WriteString(fmt.Sprintf("\t\t_res = append(_res, %s)\n", sel))
+		buf.WriteString(fmt.Sprintf("\t\tresults = append(results, %s)\n", sel))
 		buf.WriteString("\t}\n")
-		buf.WriteString("\treturn _res\n")
+		buf.WriteString("\treturn results\n")
 		buf.WriteString("}()")
 		return buf.String(), nil
 	}
@@ -3239,7 +3239,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("func() []%s {\n", retElem))
 	if simple {
-		buf.WriteString(fmt.Sprintf("\t_res := []%s{}\n", retElem))
+		buf.WriteString(fmt.Sprintf("\tresults := []%s{}\n", retElem))
 	} else {
 		buf.WriteString(fmt.Sprintf("\titems := []%s{}\n", elemGo))
 	}
@@ -3338,7 +3338,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 		if cond != "" {
 			if simple {
 				buf.WriteString(fmt.Sprintf(indent+"if %s {\n", cond))
-				buf.WriteString(fmt.Sprintf(indent+"\t_res = append(_res, %s)\n", sel))
+				buf.WriteString(fmt.Sprintf(indent+"\tresults = append(results, %s)\n", sel))
 				buf.WriteString(indent + "}\n")
 			} else {
 				buf.WriteString(fmt.Sprintf(indent+"if %s {\n", cond))
@@ -3347,7 +3347,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 			}
 		} else {
 			if simple {
-				buf.WriteString(fmt.Sprintf(indent+"_res = append(_res, %s)\n", sel))
+				buf.WriteString(fmt.Sprintf(indent+"results = append(results, %s)\n", sel))
 			} else {
 				buf.WriteString(fmt.Sprintf(indent+"items = append(items, %s)\n", sanitizeName(q.Var)))
 			}
@@ -3360,7 +3360,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 		if cond != "" {
 			if simple {
 				buf.WriteString(fmt.Sprintf(indent+"if %s {\n", cond))
-				buf.WriteString(fmt.Sprintf(indent+"\t_res = append(_res, %s)\n", sel))
+				buf.WriteString(fmt.Sprintf(indent+"\tresults = append(results, %s)\n", sel))
 				buf.WriteString(indent + "}\n")
 			} else {
 				buf.WriteString(fmt.Sprintf(indent+"if %s {\n", cond))
@@ -3369,7 +3369,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 			}
 		} else {
 			if simple {
-				buf.WriteString(fmt.Sprintf(indent+"_res = append(_res, %s)\n", sel))
+				buf.WriteString(fmt.Sprintf(indent+"results = append(results, %s)\n", sel))
 			} else {
 				buf.WriteString(fmt.Sprintf(indent+"items = append(items, %s)\n", sanitizeName(q.Var)))
 			}
@@ -3381,7 +3381,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 			// condition after all loops
 			if simple {
 				buf.WriteString(fmt.Sprintf(indent+"if %s {\n", cond))
-				buf.WriteString(fmt.Sprintf(indent+"\t_res = append(_res, %s)\n", sel))
+				buf.WriteString(fmt.Sprintf(indent+"\tresults = append(results, %s)\n", sel))
 				buf.WriteString(indent + "}\n")
 			} else {
 				buf.WriteString(fmt.Sprintf(indent+"if %s {\n", cond))
@@ -3390,7 +3390,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 			}
 		} else {
 			if simple {
-				buf.WriteString(fmt.Sprintf(indent+"_res = append(_res, %s)\n", sel))
+				buf.WriteString(fmt.Sprintf(indent+"results = append(results, %s)\n", sel))
 			} else {
 				buf.WriteString(fmt.Sprintf(indent+"items = append(items, %s)\n", sanitizeName(q.Var)))
 			}
@@ -3413,7 +3413,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 	buf.WriteString(indent + "}\n")
 
 	if simple {
-		buf.WriteString("\treturn _res\n")
+		buf.WriteString("\treturn results\n")
 		buf.WriteString("}()")
 		return buf.String(), nil
 	}
@@ -3466,11 +3466,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 		buf.WriteString(fmt.Sprintf("\titems = _paginate[%s](items, %s, %s)\n", elemGo, sk, tk))
 	}
 
-	buf.WriteString(fmt.Sprintf("\t_res := []%s{}\n", retElem))
+	buf.WriteString(fmt.Sprintf("\tresults := []%s{}\n", retElem))
 	buf.WriteString(fmt.Sprintf("\tfor _, %s := range items {\n", sanitizeName(q.Var)))
-	buf.WriteString(fmt.Sprintf("\t\t_res = append(_res, %s)\n", sel))
+	buf.WriteString(fmt.Sprintf("\t\tresults = append(results, %s)\n", sel))
 	buf.WriteString("\t}\n")
-	buf.WriteString("\treturn _res\n")
+	buf.WriteString("\treturn results\n")
 	buf.WriteString("}()")
 	return buf.String(), nil
 }
@@ -3567,7 +3567,7 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	if retType == "any" {
 		buf.WriteString("\treturn nil\n")
 	} else {
-		buf.WriteString(fmt.Sprintf("\tvar _zero %s\n\treturn _zero\n", retType))
+		buf.WriteString(fmt.Sprintf("\tvar zeroVal %s\n\treturn zeroVal\n", retType))
 	}
 	buf.WriteString("}()")
 	return buf.String(), nil
