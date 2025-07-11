@@ -1272,7 +1272,30 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		src = fmt.Sprintf("%s.Items", src)
 		stype = types.ListType{Elem: gt.Elem}
 	}
-	resultType := csTypeOf(c.inferExprType(q.Select))
+	resultT := c.inferExprType(q.Select)
+	resultType := csTypeOf(resultT)
+	if st, ok := resultT.(types.StructType); ok && st.Name == "" {
+		base := c.structHint
+		if base == "" {
+			base = "Item"
+		}
+		st.Name = c.newStructName(base)
+		resultType = st.Name
+		resultT = st
+		c.extraStructs = append(c.extraStructs, st)
+	} else if lt, ok := resultT.(types.ListType); ok {
+		if st, ok2 := lt.Elem.(types.StructType); ok2 && st.Name == "" {
+			base := c.structHint
+			if base == "" {
+				base = "Item"
+			}
+			st.Name = c.newStructName(base)
+			lt.Elem = st
+			resultType = fmt.Sprintf("List<%s>", st.Name)
+			resultT = types.ListType{Elem: st}
+			c.extraStructs = append(c.extraStructs, st)
+		}
+	}
 	orig := c.env
 	child := types.NewEnv(c.env)
 	var elemT types.Type = types.AnyType{}
