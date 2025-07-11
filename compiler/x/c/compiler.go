@@ -493,6 +493,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 			st.Methods = orig.Methods
 		}
 		c.env.SetStruct(t.Name, st)
+		c.compileStructListType(st)
 	}
 	for _, m := range t.Members {
 		if m.Method != nil {
@@ -1694,6 +1695,7 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) string {
 		path = fmt.Sprintf("%q", *l.Path)
 	}
 	c.need(needLoadJSON)
+	c.need(needMapStringInt)
 	c.need(needStringHeader)
 	return fmt.Sprintf("_load_json(%s)", path)
 }
