@@ -1,0 +1,79 @@
+// Mochi implementation of Rosetta "Brownian tree" task
+// Generates a simple diffusion-limited aggregation on a 2D grid.
+
+const w: int = 400
+const h: int = 300
+const n: int = 15000
+const frost: int = 255
+
+var grid: list<list<int>> = []
+var y = 0
+while y < h {
+  var row: list<int> = []
+  var x = 0
+  while x < w {
+    row = append(row, 0)
+    x = x + 1
+  }
+  grid = append(grid, row)
+  y = y + 1
+}
+
+grid[h/3][w/3] = frost
+
+fun inBounds(x: int, y: int): bool {
+  return x >= 0 && x < w && y >= 0 && y < h
+}
+
+fun hasNeighbor(x: int, y: int): bool {
+  var dy = -1
+  while dy <= 1 {
+    var dx = -1
+    while dx <= 1 {
+      if !(dx == 0 && dy == 0) {
+        let nx = x + dx
+        let ny = y + dy
+        if inBounds(nx, ny) && grid[ny][nx] == frost {
+          return true
+        }
+      }
+      dx = dx + 1
+    }
+    dy = dy + 1
+  }
+  return false
+}
+
+var a = 0
+while a < n {
+  var px = now() % w
+  var py = now() % h
+  if grid[py][px] == frost {
+    var lost = false
+    while true {
+      px = px + (now() % 3) - 1
+      py = py + (now() % 3) - 1
+      if !inBounds(px, py) {
+        lost = true
+        break
+      }
+      if grid[py][px] != frost { break }
+    }
+    if lost { continue }
+  } else {
+    var lost = false
+    while !hasNeighbor(px, py) {
+      px = px + (now() % 3) - 1
+      py = py + (now() % 3) - 1
+      if !inBounds(px, py) {
+        lost = true
+        break
+      }
+    }
+    if lost { continue }
+  }
+  grid[py][px] = frost
+  a = a + 1
+}
+
+// The algorithm produces an image but this example has no textual output.
