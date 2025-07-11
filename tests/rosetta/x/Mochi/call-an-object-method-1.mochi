@@ -1,0 +1,26 @@
+// Mochi translation of Rosetta "Call an object method" example 1
+// Demonstrates calling methods on an instance.
+
+type Foo {
+  fun ValueMethod(x: int) {}
+  fun PointerMethod(x: int) {}
+}
+
+var myValue = Foo{}
+var myPointer = Foo{}
+
+// Calling value method on value
+myValue.ValueMethod(0)
+// Calling pointer method on pointer (simulated)
+myPointer.PointerMethod(0)
+
+// Value methods can also be called on our pointer variable
+myPointer.ValueMethod(0)
+// Pointer methods can be called on the value variable
+myValue.PointerMethod(0)
+
+// Accessing methods as regular functions would normally require
+// additional language features. Here we simply call the methods
+// directly on the objects again.
+myValue.ValueMethod(0)
+myPointer.PointerMethod(0)

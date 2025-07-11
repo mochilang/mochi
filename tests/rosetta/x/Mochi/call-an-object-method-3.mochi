@@ -1,0 +1,20 @@
+// Mochi translation of Rosetta "Call an object method" example 3
+// Equivalent to Go version call-an-object-method-3.go
+
+type Box {
+  Contents: string
+  secret: int
+
+  fun TellSecret(): int {
+    return secret
+  }
+}
+
+fun New(): Box {
+  var b = Box{ Contents: "rabbit", secret: 1 }
+  return b
+}
+
+var box = New()
+
+box.TellSecret()

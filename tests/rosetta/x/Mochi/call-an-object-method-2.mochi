@@ -1,0 +1,35 @@
+// Mochi translation of Rosetta "Call an object method" example 2
+// Defines a Box type with an instance method and a constructor
+
+// functions returned from factory capture this counter
+fun newFactory(): list<fun()> {
+  var sn = 0
+
+  fun New(): Box {
+    sn = sn + 1
+    var b = Box{ secret: sn }
+    if sn == 1 {
+      b.Contents = "rabbit"
+    } else if sn == 2 {
+      b.Contents = "rock"
+    }
+    return b
+  }
+
+  fun Count(): int { return sn }
+
+  return [New, Count]
+}
+
+let funcs = newFactory()
+let New = funcs[0]
+let Count = funcs[1]
+
+type Box {
+  Contents: string
+  secret: int
+
+  fun TellSecret(): int {
+    return secret
+  }
+}
