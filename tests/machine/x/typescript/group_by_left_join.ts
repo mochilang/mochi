@@ -9,7 +9,7 @@ const orders = [
   {id: 102, customerId: 2}
 ];
 const stats = (() => {
-  const _tmp1: Array<{ count: any; name: any }> = [];
+  const _tmp1: Array<{ count: number; name: any }> = [];
   const groups = {};
   for (const c of customers) {
     for (const o of orders) {
@@ -22,12 +22,12 @@ const stats = (() => {
   }
   for (const _k in groups) {
     const g = groups[_k];
-    res.push({
+    _tmp1.push({
   name: g.key,
   count: g.filter((r) => r.o).length
 });
   }
-  return res;
+  return _tmp1;
 })()
 ;
 console.log("--- Group Left Join ---");

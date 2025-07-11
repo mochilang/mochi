@@ -8,7 +8,7 @@ const people = [
   {name: "George", city: "Paris"}
 ];
 const big = (() => {
-  const _tmp1: Array<{ city: any; num: any }> = [];
+  const _tmp1: Array<{ city: any; num: number }> = [];
   const groups = {};
   for (const p of people) {
     const _k = JSON.stringify(p.city);
@@ -19,9 +19,9 @@ const big = (() => {
   for (const _k in groups) {
     const g = groups[_k];
     if (!((g.length >= 4))) continue;
-    res.push({city: g.key, num: g.length});
+    _tmp1.push({city: g.key, num: g.length});
   }
-  return res;
+  return _tmp1;
 })()
 ;
 console.log(JSON.stringify(big));

@@ -1,4 +1,4 @@
-type Counter = { n: number; };
+interface Counter { n: number; }
 function inc(c) {
   c.n = (c.n + 1);
 }

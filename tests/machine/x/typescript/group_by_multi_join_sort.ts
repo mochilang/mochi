@@ -39,7 +39,7 @@ const lineitem = [
 const start_date = "1993-10-01";
 const end_date = "1994-01-01";
 const result = (() => {
-  const _tmp1: Array<{ c_acctbal: any; c_address: any; c_comment: any; c_custkey: any; c_name: any; c_phone: any; n_name: any; revenue: any }> = [];
+  const _tmp1: Array<{ c_acctbal: any; c_address: any; c_comment: any; c_custkey: any; c_name: any; c_phone: any; n_name: any; revenue: number }> = [];
   const groups = {};
   for (const c of customer) {
     for (const o of orders) {
@@ -75,7 +75,7 @@ const result = (() => {
   }
   for (const _k in groups) {
     const g = groups[_k];
-    res.push({item: {
+    _tmp1.push({item: {
   c_custkey: g.key.c_custkey,
   c_name: g.key.c_name,
   revenue: (g.map((x) => (x.l.l_extendedprice * ((1 - x.l.l_discount)))).reduce((a,b)=>a+b,0)),
@@ -86,8 +86,8 @@ const result = (() => {
   c_comment: g.key.c_comment
 }, key: (-(g.map((x) => (x.l.l_extendedprice * ((1 - x.l.l_discount)))).reduce((a,b)=>a+b,0)))});
   }
-  res = res.sort((a,b)=> a.key < b.key ? -1 : a.key > b.key ? 1 : 0).map(x=>x.item);
-  return res;
+  _tmp1 = _tmp1.sort((a,b)=> a.key < b.key ? -1 : a.key > b.key ? 1 : 0).map(x=>x.item);
+  return _tmp1;
 })()
 ;
 console.log(result);

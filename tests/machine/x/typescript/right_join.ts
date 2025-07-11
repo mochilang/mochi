@@ -29,7 +29,7 @@ const result = (() => {
       _tmp1.push({customerName: c.name, order: o});
     }
   }
-  return res;
+  return _tmp1;
 })()
 ;
 console.log("--- Right Join using syntax ---");

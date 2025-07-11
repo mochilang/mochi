@@ -12,7 +12,7 @@ const pairs = (() => {
       _tmp1.push({n: n, l: l});
     }
   }
-  return res;
+  return _tmp1;
 })()
 ;
 console.log("--- Even pairs ---");

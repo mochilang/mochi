@@ -14,9 +14,9 @@ const groups = (() => {
   }
   for (const _k in groups) {
     const g = groups[_k];
-    res.push(g);
+    _tmp1.push(g);
   }
-  return res;
+  return _tmp1;
 })()
 ;
 let tmp = [];

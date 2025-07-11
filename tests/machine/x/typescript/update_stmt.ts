@@ -1,4 +1,8 @@
-type Person = { name: string; age: number; status: string; };
+interface Person {
+  name: string;
+  age: number;
+  status: string;
+}
 const people: Person[] = [
   {name: "Alice", age: 17, status: "minor"},
   {name: "Bob", age: 25, status: "unknown"},
@@ -7,8 +11,8 @@ const people: Person[] = [
 ];
 for (let i = 0; i < people.length; i++) {
   let _tmp1 = people[i];
-  let status = _tmp1.status;
   let age = _tmp1.age;
+  let status = _tmp1.status;
   if ((age >= 18)) {
     _tmp1.status = "adult";
     _tmp1.age = (age + 1);

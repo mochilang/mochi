@@ -1712,6 +1712,36 @@ func (c *Compiler) simpleChainQuery(q *parser.QueryExpr, selExpr *parser.Expr, s
 	if len(q.Froms) != 0 || len(q.Joins) != 0 || q.Group != nil || q.Distinct {
 		return "", false
 	}
+	if agg, arg, ok := detectAggCall(q.Select); ok {
+		if sortStr != "" || skipStr != "" || takeStr != "" {
+			return "", false
+		}
+		argStr, err := c.expr(arg)
+		if err != nil {
+			return "", false
+		}
+		var b strings.Builder
+		b.WriteString(src)
+		if whereStr != "" {
+			b.WriteString(fmt.Sprintf(".filter((%s) => %s)", q.Var, whereStr))
+		}
+		if getIdent(arg) != q.Var {
+			s := argStr
+			if isLiteralComplexUnary(arg.Binary.Left) {
+				s = "(" + s + ")"
+			}
+			b.WriteString(fmt.Sprintf(".map((%s) => %s)", q.Var, s))
+		}
+		switch agg {
+		case "sum":
+			b.WriteString(".reduce((a,b)=>a+b,0)")
+		case "count":
+			b.WriteString(".length")
+		default:
+			return "", false
+		}
+		return b.String(), true
+	}
 	var b strings.Builder
 	b.WriteString(src)
 	if sortStr != "" {
