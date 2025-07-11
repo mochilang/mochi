@@ -106,3 +106,12 @@ Compiled programs: 100/100 successful.
 
 ## Remaining Tasks
 - [ ] Compare generated code with reference implementations
+- [ ] Add benchmarks for large datasets
+- [ ] Improve error reporting for runtime failures
+- [ ] Support optional type annotations
+- [ ] Integrate with Python packaging tools
+- [ ] Generate docstrings for compiled functions
+- [ ] Optimize stream handling performance
+- [ ] Expand test coverage for edge cases
+- [ ] Reduce external module dependencies
+- [ ] Document compiler flags and environment setup
