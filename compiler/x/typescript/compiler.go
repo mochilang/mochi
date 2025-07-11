@@ -268,6 +268,9 @@ func (c *Compiler) stmt(s *parser.Statement) error {
 		}
 	case s.Type != nil:
 		return c.typeDecl(s.Type)
+	case s.ExternVar != nil, s.ExternFun != nil, s.ExternObject != nil, s.ExternType != nil:
+		// extern declarations do not affect generated TypeScript code
+		return nil
 	default:
 		return fmt.Errorf("unsupported statement at line %d", s.Pos.Line)
 	}
