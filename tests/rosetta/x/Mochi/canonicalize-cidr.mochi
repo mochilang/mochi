@@ -1,0 +1,133 @@
+// Mochi translation of Rosetta "Canonicalize CIDR" task
+// Mirrors the logic of tests/rosetta/x/Go/canonicalize-cidr.go
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i+len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun join(xs: list<string>, sep: string): string {
+  var res = ""
+  var i = 0
+  while i < len(xs) {
+    if i > 0 { res = res + sep }
+    res = res + xs[i]
+    i = i + 1
+  }
+  return res
+}
+
+fun repeat(ch: string, n: int): string {
+  var out = ""
+  var i = 0
+  while i < n {
+    out = out + ch
+    i = i + 1
+  }
+  return out
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  let digits = {
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5,
+    "6": 6,
+    "7": 7,
+    "8": 8,
+    "9": 9,
+  }
+  while i < len(str) {
+    n = n * 10 + digits[str[i:i+1]]
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun toBinary(n: int, bits: int): string {
+  var b = ""
+  var val = n
+  var i = 0
+  while i < bits {
+    b = str(val % 2) + b
+    val = (val / 2) as int
+    i = i + 1
+  }
+  return b
+}
+
+fun binToInt(bits: string): int {
+  var n = 0
+  var i = 0
+  while i < len(bits) {
+    n = n * 2 + parseIntStr(bits[i:i+1])
+    i = i + 1
+  }
+  return n
+}
+
+fun padRight(s: string, width: int): string {
+  var out = s
+  while len(out) < width {
+    out = out + " "
+  }
+  return out
+}
+
+fun canonicalize(cidr: string): string {
+  let parts = split(cidr, "/")
+  let dotted = parts[0]
+  let size = parseIntStr(parts[1])
+
+  var binParts: list<string> = []
+  for p in split(dotted, ".") {
+    binParts = append(binParts, toBinary(parseIntStr(p), 8))
+  }
+  var binary = join(binParts, "")
+  binary = binary[0:size] + repeat("0", 32 - size)
+
+  var canonParts: list<string> = []
+  var i = 0
+  while i < len(binary) {
+    canonParts = append(canonParts, str(binToInt(binary[i:i+8])))
+    i = i + 8
+  }
+  return join(canonParts, ".") + "/" + parts[1]
+}
+
+let tests = [
+  "87.70.141.1/22",
+  "36.18.154.103/12",
+  "62.62.197.11/29",
+  "67.137.119.181/4",
+  "161.214.74.21/24",
+  "184.232.176.184/18",
+]
+
+for t in tests {
+  print(padRight(t, 18) + " -> " + canonicalize(t))
+}
