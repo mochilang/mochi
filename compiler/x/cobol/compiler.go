@@ -266,17 +266,21 @@ func (c *Compiler) addVar(name string, typ *parser.TypeRef, value *parser.Expr, 
 		}
 		if lst := listLiteral(value); lst != nil {
 			elems := make([]string, len(lst.Elems))
+			okConst := true
 			for i, e := range lst.Elems {
 				v, err := c.compileExpr(e)
 				if err != nil {
-					return err
+					okConst = false
+					break
 				}
 				elems[i] = v
 			}
-			if c.constLists == nil {
-				c.constLists = make(map[string][]string)
+			if okConst {
+				if c.constLists == nil {
+					c.constLists = make(map[string][]string)
+				}
+				c.constLists[name] = elems
 			}
-			c.constLists[name] = elems
 			fields, err := c.buildListFields("", lst)
 			if err != nil {
 				return err
@@ -285,21 +289,26 @@ func (c *Compiler) addVar(name string, typ *parser.TypeRef, value *parser.Expr, 
 			return nil
 		} else if mp := mapLiteral(value); mp != nil {
 			entries := make([]mapEntry, len(mp.Items))
+			okConst := true
 			for i, it := range mp.Items {
 				k, err := c.compileExpr(it.Key)
 				if err != nil {
-					return err
+					okConst = false
+					break
 				}
 				v, err := c.compileExpr(it.Value)
 				if err != nil {
-					return err
+					okConst = false
+					break
 				}
 				entries[i] = mapEntry{key: k, val: v}
 			}
-			if c.constMaps == nil {
-				c.constMaps = make(map[string][]mapEntry)
+			if okConst {
+				if c.constMaps == nil {
+					c.constMaps = make(map[string][]mapEntry)
+				}
+				c.constMaps[name] = entries
 			}
-			c.constMaps[name] = entries
 			fields, err := c.buildMapFields("", mp)
 			if err == nil && len(fields) > 0 {
 				c.vars = append(c.vars, varDecl{name: name, fields: fields})
