@@ -1,0 +1,1 @@
+[Result { c_custkey: 1, c_name: "Alice", revenue: 900.0, c_acctbal: 100.0, n_name: "BRAZIL", c_address: "123 St", c_phone: "123-456", c_comment: "Loyal" }]
