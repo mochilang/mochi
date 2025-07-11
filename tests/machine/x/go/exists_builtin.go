@@ -7,10 +7,10 @@ import (
 )
 
 func main() {
-	var _data []int = []int{1, 2}
+	var dataVar []int = []int{1, 2}
 	var flag bool = len(func() []int {
 		_res := []int{}
-		for _, x := range _data {
+		for _, x := range dataVar {
 			if x == 1 {
 				if x == 1 {
 					_res = append(_res, x)

@@ -27,18 +27,18 @@ func main() {
 	var result []string = func() []string {
 		src := _toAnySlice(items)
 		resAny := _query(src, []_joinSpec{}, _queryOpts{selectFn: func(_a ...any) any {
-			_tmp0 := _a[0]
+			tmp0 := _a[0]
 			var i ItemsItem
-			if _tmp0 != nil {
-				i = _tmp0.(ItemsItem)
+			if tmp0 != nil {
+				i = tmp0.(ItemsItem)
 			}
 			_ = i
 			return i.V
 		}, sortKey: func(_a ...any) any {
-			_tmp0 := _a[0]
+			tmp0 := _a[0]
 			var i ItemsItem
-			if _tmp0 != nil {
-				i = _tmp0.(ItemsItem)
+			if tmp0 != nil {
+				i = tmp0.(ItemsItem)
 			}
 			_ = i
 			return i.N

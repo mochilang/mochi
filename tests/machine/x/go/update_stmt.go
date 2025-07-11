@@ -63,14 +63,14 @@ func main() {
 		Person{Name: "Charlie", Age: 18, Status: "unknown"},
 		Person{Name: "Diana", Age: 16, Status: "minor"},
 	}
-	for _tmp0, _tmp1 := range people {
-		age := _tmp1.Age
+	for i0, v1 := range people {
+		age := v1.Age
 		if !(age >= 18) {
 			continue
 		}
-		_tmp1.Status = "adult"
-		_tmp1.Age = (age + 1)
-		people[_tmp0] = _tmp1
+		v1.Status = "adult"
+		v1.Age = (age + 1)
+		people[i0] = v1
 	}
 	fmt.Println("ok")
 	test_update_adult_status()

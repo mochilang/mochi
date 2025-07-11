@@ -27,10 +27,10 @@ func sum_tree(t Tree) int {
 		if _, ok := _t.(Leaf); ok {
 			return 0
 		}
-		if _tmp0, ok := _t.(Node); ok {
-			left := _tmp0.Left
-			value := _tmp0.Value
-			right := _tmp0.Right
+		if tmp0, ok := _t.(Node); ok {
+			left := tmp0.Left
+			value := tmp0.Value
+			right := tmp0.Right
 			return ((sum_tree(left) + value) + sum_tree(right))
 		}
 		return nil

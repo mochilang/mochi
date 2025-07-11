@@ -46,18 +46,18 @@ func main() {
 	var expensive []ProductsItem = func() []ProductsItem {
 		src := _toAnySlice(products)
 		resAny := _query(src, []_joinSpec{}, _queryOpts{selectFn: func(_a ...any) any {
-			_tmp0 := _a[0]
+			tmp0 := _a[0]
 			var p ProductsItem
-			if _tmp0 != nil {
-				p = _tmp0.(ProductsItem)
+			if tmp0 != nil {
+				p = tmp0.(ProductsItem)
 			}
 			_ = p
 			return p
 		}, sortKey: func(_a ...any) any {
-			_tmp0 := _a[0]
+			tmp0 := _a[0]
 			var p ProductsItem
-			if _tmp0 != nil {
-				p = _tmp0.(ProductsItem)
+			if tmp0 != nil {
+				p = tmp0.(ProductsItem)
 			}
 			_ = p
 			return -p.Price

@@ -53,80 +53,80 @@ func main() {
 		src := _toAnySlice(orders)
 		resAny := _query(src, []_joinSpec{
 			{items: _toAnySlice(customers), on: func(_a ...any) bool {
-				_tmp0 := _a[0]
+				tmp0 := _a[0]
 				var o OrdersItem
-				if _tmp0 != nil {
-					o = _tmp0.(OrdersItem)
+				if tmp0 != nil {
+					o = tmp0.(OrdersItem)
 				}
 				_ = o
-				_tmp1 := _a[1]
+				tmp1 := _a[1]
 				var c CustomersItem
-				if _tmp1 != nil {
-					c = _tmp1.(CustomersItem)
+				if tmp1 != nil {
+					c = tmp1.(CustomersItem)
 				}
 				_ = c
 				return (o.CustomerId == c.Id)
 			}, leftKey: func(_a ...any) any {
-				_tmp0 := _a[0]
+				tmp0 := _a[0]
 				var o OrdersItem
-				if _tmp0 != nil {
-					o = _tmp0.(OrdersItem)
+				if tmp0 != nil {
+					o = tmp0.(OrdersItem)
 				}
 				_ = o
 				return o.CustomerId
 			}, rightKey: func(_v any) any { c := _v.(CustomersItem); _ = c; return c.Id }},
 			{items: _toAnySlice(items), on: func(_a ...any) bool {
-				_tmp0 := _a[0]
+				tmp0 := _a[0]
 				var o OrdersItem
-				if _tmp0 != nil {
-					o = _tmp0.(OrdersItem)
+				if tmp0 != nil {
+					o = tmp0.(OrdersItem)
 				}
 				_ = o
-				_tmp1 := _a[1]
+				tmp1 := _a[1]
 				var c CustomersItem
-				if _tmp1 != nil {
-					c = _tmp1.(CustomersItem)
+				if tmp1 != nil {
+					c = tmp1.(CustomersItem)
 				}
 				_ = c
-				_tmp2 := _a[2]
+				tmp2 := _a[2]
 				var i ItemsItem
-				if _tmp2 != nil {
-					i = _tmp2.(ItemsItem)
+				if tmp2 != nil {
+					i = tmp2.(ItemsItem)
 				}
 				_ = i
 				return (o.Id == i.OrderId)
 			}, leftKey: func(_a ...any) any {
-				_tmp0 := _a[0]
+				tmp0 := _a[0]
 				var o OrdersItem
-				if _tmp0 != nil {
-					o = _tmp0.(OrdersItem)
+				if tmp0 != nil {
+					o = tmp0.(OrdersItem)
 				}
 				_ = o
-				_tmp1 := _a[1]
+				tmp1 := _a[1]
 				var c CustomersItem
-				if _tmp1 != nil {
-					c = _tmp1.(CustomersItem)
+				if tmp1 != nil {
+					c = tmp1.(CustomersItem)
 				}
 				_ = c
 				return o.Id
 			}, rightKey: func(_v any) any { i := _v.(ItemsItem); _ = i; return i.OrderId }, left: true},
 		}, _queryOpts{selectFn: func(_a ...any) any {
-			_tmp0 := _a[0]
+			tmp0 := _a[0]
 			var o OrdersItem
-			if _tmp0 != nil {
-				o = _tmp0.(OrdersItem)
+			if tmp0 != nil {
+				o = tmp0.(OrdersItem)
 			}
 			_ = o
-			_tmp1 := _a[1]
+			tmp1 := _a[1]
 			var c CustomersItem
-			if _tmp1 != nil {
-				c = _tmp1.(CustomersItem)
+			if tmp1 != nil {
+				c = tmp1.(CustomersItem)
 			}
 			_ = c
-			_tmp2 := _a[2]
+			tmp2 := _a[2]
 			var i ItemsItem
-			if _tmp2 != nil {
-				i = _tmp2.(ItemsItem)
+			if tmp2 != nil {
+				i = tmp2.(ItemsItem)
 			}
 			_ = i
 			return Result{

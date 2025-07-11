@@ -73,11 +73,12 @@ func sanitizeName(name string) string {
 		}
 	}
 	sanitized := b.String()
-	if sanitized == "" || !((sanitized[0] >= 'A' && sanitized[0] <= 'Z') || (sanitized[0] >= 'a' && sanitized[0] <= 'z') || sanitized[0] == '_') {
-		sanitized = "_" + sanitized
+	sanitized = strings.TrimLeft(sanitized, "_")
+	if sanitized == "" || !((sanitized[0] >= 'A' && sanitized[0] <= 'Z') || (sanitized[0] >= 'a' && sanitized[0] <= 'z')) {
+		sanitized = "v" + sanitized
 	}
 	if goReserved[sanitized] || sanitized == "data" {
-		sanitized = "_" + sanitized
+		sanitized = sanitized + "Var"
 	}
 	return sanitized
 }
@@ -382,7 +383,13 @@ func (c *Compiler) eqJoinKeys(e *parser.Expr, leftVar, rightVar string) (string,
 }
 
 func (c *Compiler) newVar() string {
-	name := fmt.Sprintf("_tmp%d", c.tempVarCount)
+	name := fmt.Sprintf("tmp%d", c.tempVarCount)
+	c.tempVarCount++
+	return name
+}
+
+func (c *Compiler) newNamedVar(prefix string) string {
+	name := fmt.Sprintf("%s%d", prefix, c.tempVarCount)
 	c.tempVarCount++
 	return name
 }

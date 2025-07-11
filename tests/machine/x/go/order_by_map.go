@@ -9,51 +9,51 @@ import (
 )
 
 func main() {
-	type _dataItem struct {
+	type DataVarItem struct {
 		A int `json:"a"`
 		B int `json:"b"`
 	}
 
-	var _data []_dataItem = []_dataItem{_dataItem{
+	var dataVar []DataVarItem = []DataVarItem{DataVarItem{
 		A: 1,
 		B: 2,
-	}, _dataItem{
+	}, DataVarItem{
 		A: 1,
 		B: 1,
-	}, _dataItem{
+	}, DataVarItem{
 		A: 0,
 		B: 5,
 	}}
-	type _ struct {
+	type v struct {
 		A int `json:"a"`
 		B int `json:"b"`
 	}
 
-	var sorted []_dataItem = func() []_dataItem {
-		src := _toAnySlice(_data)
+	var sorted []DataVarItem = func() []DataVarItem {
+		src := _toAnySlice(dataVar)
 		resAny := _query(src, []_joinSpec{}, _queryOpts{selectFn: func(_a ...any) any {
-			_tmp0 := _a[0]
-			var x _dataItem
-			if _tmp0 != nil {
-				x = _tmp0.(_dataItem)
+			tmp0 := _a[0]
+			var x DataVarItem
+			if tmp0 != nil {
+				x = tmp0.(DataVarItem)
 			}
 			_ = x
 			return x
 		}, sortKey: func(_a ...any) any {
-			_tmp0 := _a[0]
-			var x _dataItem
-			if _tmp0 != nil {
-				x = _tmp0.(_dataItem)
+			tmp0 := _a[0]
+			var x DataVarItem
+			if tmp0 != nil {
+				x = tmp0.(DataVarItem)
 			}
 			_ = x
-			return _{
+			return v{
 				A: x.A,
 				B: x.B,
 			}
 		}, skip: -1, take: -1})
-		out := make([]_dataItem, len(resAny))
+		out := make([]DataVarItem, len(resAny))
 		for i, v := range resAny {
-			out[i] = v.(_dataItem)
+			out[i] = v.(DataVarItem)
 		}
 		return out
 	}()
