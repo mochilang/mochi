@@ -136,7 +136,17 @@ func (c *Compiler) emitHelpers(out *bytes.Buffer, indent int) {
 				pad + "  buf.toList\n" +
 				pad + "}\n")
 		case "_save_jsonl":
-			out.WriteString(pad + "def _save_jsonl(rows: List[Map[String, Any]], path: String): Unit = { val out = if(path == \"-\") Console.out else new java.io.PrintWriter(path); rows.foreach(r => out.println(scala.util.parsing.json.JSONObject(r).toString())); out.flush(); if(out ne Console.out) out.close() }\n")
+			out.WriteString(pad + "def _save_jsonl(rows: Iterable[Any], path: String): Unit = {\n" +
+				pad + "  def toMap(v: Any): Map[String,Any] = v match {\n" +
+				pad + "    case m: Map[_, _] => m.asInstanceOf[Map[String,Any]]\n" +
+				pad + "    case p: Product => p.getClass.getDeclaredFields.map(_.getName).zip(p.productIterator).toMap.asInstanceOf[Map[String,Any]]\n" +
+				pad + "    case x => Map(\"value\" -> x)\n" +
+				pad + "  }\n" +
+				pad + "  val out = if(path == \"-\") Console.out else new java.io.PrintWriter(path)\n" +
+				pad + "  rows.foreach(r => out.println(scala.util.parsing.json.JSONObject(toMap(r)).toString()))\n" +
+				pad + "  out.flush()\n" +
+				pad + "  if(out ne Console.out) out.close()\n" +
+				pad + "}\n")
 		case "_truthy":
 			out.WriteString(pad + "def _truthy(v: Any): Boolean = v match {\n" +
 				pad + "  case null => false\n" +

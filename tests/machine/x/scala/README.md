@@ -3,7 +3,7 @@
 This directory contains Scala code generated from the Mochi programs in `tests/vm/valid` using the Scala compiler. Each source file was compiled with `scalac` and executed with `scala`. Successful runs produced an `.out` file while failures produced an `.error` file.
 
 Compiled programs: 100
-Executed successfully: 83
+Executed successfully: 86
 
 ## Program checklist
 - [x] append_builtin.mochi
@@ -110,5 +110,15 @@ Executed successfully: 83
 ## Remaining Tasks
 - [x] Support automatic imports for Go/Python packages.
 - [x] Implement dataset joins and YAML helpers.
-- [ ] Improve JSON saving helpers.
+- [x] Improve JSON saving helpers.
+- [ ] Add command-line argument parsing utilities.
+- [ ] Optimize record structure generation.
+- [ ] Add support for asynchronous I/O.
+- [ ] Improve pattern matching translation.
+- [ ] Simplify generated code for dataset joins.
+- [ ] Implement streaming JSON output.
+- [ ] Add integration tests for compiler.
+- [ ] Refactor helper functions into separate file.
+- [ ] Enhance error reporting for unsupported constructs.
+- [ ] Support custom type annotations.
 
