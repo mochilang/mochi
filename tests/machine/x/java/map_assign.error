@@ -1,15 +1,12 @@
 line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramsmap_assign2339127485/001/MapAssign.java:21: error: cannot find symbol
-    scores.bob = 2;
-          ^
-  symbol:   variable bob
-  location: variable scores of type Alice
-/tmp/TestCompileValidProgramsmap_assign2339127485/001/MapAssign.java:22: error: cannot find symbol
+/tmp/TestCompileValidProgramsmap_assign1058901577/001/MapAssign.java:22: error: cannot find symbol
     System.out.println(scores.bob);
                              ^
   symbol:   variable bob
   location: variable scores of type Alice
-2 errors
+Note: /tmp/TestCompileValidProgramsmap_assign1058901577/001/MapAssign.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+1 error
 
 
   1| var scores = {"alice": 1}

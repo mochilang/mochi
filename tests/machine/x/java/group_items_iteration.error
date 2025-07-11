@@ -1,9 +1,0 @@
-line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramsgroup_items_iteration1965867295/001/GroupItemsIteration.java:72: error: local variables referenced from an inner class must be final or effectively final
-    for (var r : tmp) {
-                 ^
-1 error
-
-
-  1| let data = [
-  2|   {tag: "a", val: 1},

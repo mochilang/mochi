@@ -18,7 +18,7 @@ class Alice {
 public class MapAssign {
     public static void main(String[] args) {
     Alice scores = new Alice(1);
-    scores.bob = 2;
+    ((Map)scores).put("bob", 2);
     System.out.println(scores.bob);
     }
 }

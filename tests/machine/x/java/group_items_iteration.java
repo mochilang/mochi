@@ -62,10 +62,10 @@ public class GroupItemsIteration {
     List<Object> tmp = new ArrayList<>(Arrays.asList());
     for (Object g : groups) {
         int total = 0;
-        for (Object x : (List)((Map)g).get("items")) {
-            total = (int)(total + ((Number)((Map)x).get("val")).doubleValue());
+        for (TagVal x : (List<TagVal>)((Map)g).get("items")) {
+            total = (int)(total + x.val);
         }
-        tmp = append(tmp, new TagTotal(((Map)g).get("key"), total));
+        tmp.add(new TagTotal(((Map)g).get("key"), total));
     }
     List<Object> result = (new java.util.function.Supplier<List<Object>>(){public List<Object> get(){
     List<Object> _res5 = new ArrayList<>();

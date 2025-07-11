@@ -24,6 +24,7 @@ type Compiler struct {
 	needUtilImports   bool
 	tmpCount          int
 	groupKeys         map[string]string
+	groupItems        map[string]string
 	variantOf         map[string]string
 	variantFields     map[string][]string
 	variantFieldTypes map[string][]string
@@ -67,6 +68,7 @@ func New() *Compiler {
 		needUtilImports:   false,
 		globalVars:        make(map[string]bool),
 		globalUsed:        make(map[string]bool),
+		groupItems:        make(map[string]string),
 	}
 }
 
@@ -882,6 +884,23 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 				if len(p.Selector.Tail) == 1 {
 					return typ
 				}
+				for _, f := range p.Selector.Tail[1:] {
+					if strings.HasPrefix(typ, "Map<") {
+						typ = mapValueType(typ)
+					} else {
+						typ = c.fieldType(typ, f)
+					}
+				}
+				return typ
+			}
+		}
+		if itemType, ok := c.groupItems[p.Selector.Root]; ok {
+			if len(p.Selector.Tail) > 0 && p.Selector.Tail[0] == "items" {
+				typ := fmt.Sprintf("List<%s>", wrapperType(itemType))
+				if len(p.Selector.Tail) == 1 {
+					return typ
+				}
+				typ = itemType
 				for _, f := range p.Selector.Tail[1:] {
 					if strings.HasPrefix(typ, "Map<") {
 						typ = mapValueType(typ)
@@ -1733,10 +1752,14 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 			}
 			c.writeln(fmt.Sprintf("for (String %s : Arrays.asList(%s)) {", f.Name, strings.Join(keys, ", ")))
 		} else {
-			if strings.Contains(src, ".get(") {
-				src = fmt.Sprintf("(List)%s", src)
-			}
 			elemType := listElemType(c.inferType(f.Source))
+			if strings.Contains(src, ".get(") {
+				if elemType == "" {
+					src = fmt.Sprintf("(List)%s", src)
+				} else {
+					src = fmt.Sprintf("(List<%s>)%s", wrapperType(elemType), src)
+				}
+			}
 			if elemType == "" {
 				elemType = "var"
 			}
@@ -2177,6 +2200,27 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 						typ = mapValueType(typ)
 					} else {
 						s += "." + f
+					}
+				}
+				return s, nil
+			}
+		}
+		if itemType, ok := c.groupItems[p.Selector.Root]; ok {
+			if len(p.Selector.Tail) > 0 && p.Selector.Tail[0] == "items" {
+				s = fmt.Sprintf("((Map)%s).get(\"items\")", s)
+				typ = fmt.Sprintf("List<%s>", wrapperType(itemType))
+				if len(p.Selector.Tail) == 1 {
+					return s, nil
+				}
+				// access fields on elements of the items list
+				typ = itemType
+				for _, f := range p.Selector.Tail[1:] {
+					if strings.HasPrefix(typ, "Map<") || typ == "Map" || typ == "Object" || typ == "" {
+						s = fmt.Sprintf("((Map)%s).get(\"%s\")", s, f)
+						typ = mapValueType(typ)
+					} else {
+						s += "." + f
+						typ = c.fieldType(typ, f)
 					}
 				}
 				return s, nil
@@ -2832,6 +2876,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		keyVar := fmt.Sprintf("%s_key", gName)
 		c.groupKeys[gName] = keyVar
 		c.vars[gName] = fmt.Sprintf("List<%s>", rowType)
+		c.groupItems[gName] = rowType
 		keyType := c.inferType(q.Group.Exprs[0])
 		if keyType == "var" {
 			keyType = "Object"
