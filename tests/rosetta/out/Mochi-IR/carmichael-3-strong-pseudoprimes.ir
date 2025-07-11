@@ -1,0 +1,241 @@
+func main (regs=13)
+  // print("The following are Carmichael munbers for p1 <= 61:\n")
+  Const        r0, "The following are Carmichael munbers for p1 <= 61:\n"
+  Print        r0
+  // print("p1     p2      p3     product")
+  Const        r1, "p1     p2      p3     product"
+  Print        r1
+  // print("==     ==      ==     =======")
+  Const        r2, "==     ==      ==     ======="
+  Print        r2
+  // for p1 in 2..62 {
+  Const        r3, 2
+  Const        r4, 62
+  Move         r5, r3
+L2:
+  LessInt      r6, r5, r4
+  JumpIfFalse  r6, L0
+  // if isPrime(p1) { carmichael(p1) }
+  Move         r7, r5
+  Call         r8, isPrime, r7
+  JumpIfFalse  r8, L1
+  Move         r9, r5
+  Call         r10, carmichael, r9
+L1:
+  // for p1 in 2..62 {
+  Const        r11, 1
+  AddInt       r12, r5, r11
+  Move         r5, r12
+  Jump         L2
+L0:
+  Return       r0
+
+  // fun mod(n: int, m: int): int {
+func mod (regs=5)
+  // return ((n % m) + m) % m
+  Mod          r2, r0, r1
+  Add          r3, r2, r1
+  Mod          r4, r3, r1
+  Return       r4
+
+  // fun isPrime(n: int): bool {
+func isPrime (regs=24)
+  // if n < 2 { return false }
+  Const        r1, 2
+  Less         r2, r0, r1
+  JumpIfFalse  r2, L0
+  Const        r3, false
+  Return       r3
+L0:
+  // if n % 2 == 0 { return n == 2 }
+  Const        r1, 2
+  Mod          r4, r0, r1
+  Const        r5, 0
+  Equal        r6, r4, r5
+  JumpIfFalse  r6, L1
+  Const        r1, 2
+  Equal        r7, r0, r1
+  Return       r7
+L1:
+  // if n % 3 == 0 { return n == 3 }
+  Const        r8, 3
+  Mod          r9, r0, r8
+  Const        r5, 0
+  Equal        r10, r9, r5
+  JumpIfFalse  r10, L2
+  Const        r8, 3
+  Equal        r11, r0, r8
+  Return       r11
+L2:
+  // var d = 5
+  Const        r12, 5
+  Move         r13, r12
+L6:
+  // while d * d <= n {
+  MulInt       r14, r13, r13
+  LessEq       r15, r14, r0
+  JumpIfFalse  r15, L3
+  // if n % d == 0 { return false }
+  Mod          r16, r0, r13
+  Const        r5, 0
+  Equal        r17, r16, r5
+  JumpIfFalse  r17, L4
+  Const        r3, false
+  Return       r3
+L4:
+  // d = d + 2
+  Const        r1, 2
+  AddInt       r18, r13, r1
+  Move         r13, r18
+  // if n % d == 0 { return false }
+  Mod          r19, r0, r13
+  Const        r5, 0
+  Equal        r20, r19, r5
+  JumpIfFalse  r20, L5
+  Const        r3, false
+  Return       r3
+L5:
+  // d = d + 4
+  Const        r21, 4
+  AddInt       r22, r13, r21
+  Move         r13, r22
+  // while d * d <= n {
+  Jump         L6
+L3:
+  // return true
+  Const        r23, true
+  Return       r23
+
+  // fun pad(n: int, width: int): string {
+func pad (regs=8)
+  // var s = str(n)
+  Str          r2, r0
+  Move         r3, r2
+L1:
+  // while len(s) < width {
+  Len          r4, r3
+  Less         r5, r4, r1
+  JumpIfFalse  r5, L0
+  // s = " " + s
+  Const        r6, " "
+  Add          r7, r6, r3
+  Move         r3, r7
+  // while len(s) < width {
+  Jump         L1
+L0:
+  // return s
+  Return       r3
+
+  // fun carmichael(p1: int) {
+func carmichael (regs=66)
+  // for h3 in 2..p1 {
+  Const        r1, 2
+  Move         r2, r1
+L8:
+  LessInt      r3, r2, r0
+  JumpIfFalse  r3, L0
+  // for d in 1..(h3 + p1) {
+  Const        r4, 1
+  Add          r5, r2, r0
+  Move         r6, r4
+L7:
+  LessInt      r7, r6, r5
+  JumpIfFalse  r7, L1
+  // if ((h3 + p1) * (p1 - 1)) % d == 0 && mod(-p1 * p1, h3) == d % h3 {
+  Add          r8, r2, r0
+  Const        r4, 1
+  Sub          r9, r0, r4
+  Mul          r10, r8, r9
+  Mod          r11, r10, r6
+  ModInt       r12, r6, r2
+  Const        r13, 0
+  Equal        r14, r11, r13
+  Neg          r17, r0
+  Mul          r18, r17, r0
+  Move         r15, r18
+  Move         r16, r2
+  Call2        r19, mod, r15, r16
+  Equal        r20, r19, r12
+  Move         r21, r14
+  JumpIfFalse  r21, L2
+  Move         r21, r20
+L2:
+  JumpIfFalse  r21, L3
+  // let p2 = 1 + ((p1 - 1) * (h3 + p1) / d)
+  Const        r4, 1
+  Const        r4, 1
+  Sub          r22, r0, r4
+  Add          r23, r2, r0
+  Mul          r24, r22, r23
+  Div          r25, r24, r6
+  Add          r26, r4, r25
+  // if !isPrime(p2) { continue }
+  Move         r27, r26
+  Call         r28, isPrime, r27
+  Not          r29, r28
+  JumpIfFalse  r29, L4
+  Jump         L3
+L4:
+  // let p3 = 1 + (p1 * p2 / h3)
+  Const        r4, 1
+  Mul          r30, r0, r26
+  Div          r31, r30, r2
+  Add          r32, r4, r31
+  // if !isPrime(p3) { continue }
+  Move         r33, r32
+  Call         r34, isPrime, r33
+  Not          r35, r34
+  JumpIfFalse  r35, L5
+  Jump         L3
+L5:
+  // if (p2 * p3) % (p1 - 1) != 1 { continue }
+  Mul          r36, r26, r32
+  Const        r4, 1
+  Sub          r37, r0, r4
+  Mod          r38, r36, r37
+  Const        r4, 1
+  NotEqual     r39, r38, r4
+  JumpIfFalse  r39, L6
+  Jump         L3
+L6:
+  // let c = p1 * p2 * p3
+  Mul          r40, r0, r26
+  Mul          r41, r40, r32
+  // print(pad(p1, 2) + "   " + pad(p2, 4) + "   " + pad(p3, 5) + "     " + str(c))
+  Move         r42, r0
+  Const        r1, 2
+  Move         r43, r1
+  Call2        r44, pad, r42, r43
+  Const        r45, "   "
+  Add          r46, r44, r45
+  Move         r47, r26
+  Const        r49, 4
+  Move         r48, r49
+  Call2        r50, pad, r47, r48
+  Add          r51, r46, r50
+  Const        r45, "   "
+  Add          r52, r51, r45
+  Move         r53, r32
+  Const        r55, 5
+  Move         r54, r55
+  Call2        r56, pad, r53, r54
+  Add          r57, r52, r56
+  Const        r58, "     "
+  Add          r59, r57, r58
+  Str          r60, r41
+  Add          r61, r59, r60
+  Print        r61
+L3:
+  // for d in 1..(h3 + p1) {
+  Const        r62, 1
+  AddInt       r63, r6, r62
+  Move         r6, r63
+  Jump         L7
+L1:
+  // for h3 in 2..p1 {
+  Const        r64, 1
+  AddInt       r65, r2, r64
+  Move         r2, r65
+  Jump         L8
+L0:
+  Return       r0
