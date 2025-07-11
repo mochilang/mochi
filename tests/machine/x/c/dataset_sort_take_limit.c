@@ -52,22 +52,22 @@ int main() {
     tmp3++;
   }
   tmp2.len = tmp3;
-  for (int i = 0; i < tmp3 - 1; i++) {
-    for (int j = i + 1; j < tmp3; j++) {
-      if (tmp5[i] > tmp5[j]) {
-        int tmp9 = tmp5[i];
-        tmp5[i] = tmp5[j];
-        tmp5[j] = tmp9;
-        ProductsItem tmp10 = tmp2.data[i];
-        tmp2.data[i] = tmp2.data[j];
-        tmp2.data[j] = tmp10;
+  for (int i11 = 0; i11 < tmp3 - 1; i11++) {
+    for (int i12 = i11 + 1; i12 < tmp3; i12++) {
+      if (tmp5[i11] > tmp5[i12]) {
+        int tmp9 = tmp5[i11];
+        tmp5[i11] = tmp5[i12];
+        tmp5[i12] = tmp9;
+        ProductsItem tmp10 = tmp2.data[i11];
+        tmp2.data[i11] = tmp2.data[i12];
+        tmp2.data[i12] = tmp10;
       }
     }
   }
   list_ProductsItem expensive = tmp2;
   printf("%s\n", "--- Top products (excluding most expensive) ---");
-  for (int tmp11 = 0; tmp11 < expensive.len; tmp11++) {
-    ProductsItem item = expensive.data[tmp11];
+  for (int tmp13 = 0; tmp13 < expensive.len; tmp13++) {
+    ProductsItem item = expensive.data[tmp13];
     printf("%s ", item.name);
     printf("%s ", "costs $");
     printf("%d\n", item.price);

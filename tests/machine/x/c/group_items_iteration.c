@@ -146,71 +146,71 @@ int main() {
   list_DataItem tmp2 = list_DataItem_create(data.len);
   list_string tmp3 = list_string_create(data.len);
   int tmp4 = 0;
-  for (int i = 0; i < data.len; i++) {
-    DataItem d = data.data[i];
+  for (int i5 = 0; i5 < data.len; i5++) {
+    DataItem d = data.data[i5];
     tmp2.data[tmp4] = d;
     tmp3.data[tmp4] = d.tag;
     tmp4++;
   }
   tmp2.len = tmp4;
   tmp3.len = tmp4;
-  list_group_string tmp5 = _group_by_string(tmp3);
-  list_int tmp6 = list_int_create(tmp5.len);
-  int tmp7 = 0;
-  for (int gi = 0; gi < tmp5.len; gi++) {
-    _GroupString _gp = tmp5.data[gi];
-    list_DataItem tmp8 = list_DataItem_create(_gp.items.len);
-    for (int j = 0; j < _gp.items.len; j++) {
-      tmp8.data[j] = tmp2.data[_gp.items.data[j]];
+  list_group_string tmp6 = _group_by_string(tmp3);
+  list_int tmp7 = list_int_create(tmp6.len);
+  int tmp8 = 0;
+  for (int gi = 0; gi < tmp6.len; gi++) {
+    _GroupString _gp = tmp6.data[gi];
+    list_DataItem tmp9 = list_DataItem_create(_gp.items.len);
+    for (int i10 = 0; i10 < _gp.items.len; i10++) {
+      tmp9.data[i10] = tmp2.data[_gp.items.data[i10]];
     }
-    tmp8.len = _gp.items.len;
+    tmp9.len = _gp.items.len;
     struct {
       char *key;
       list_DataItem items;
-    } g = {_gp.key, tmp8};
-    tmp6.data[tmp7] = g;
-    tmp7++;
+    } g = {_gp.key, tmp9};
+    tmp7.data[tmp8] = g;
+    tmp8++;
   }
-  tmp6.len = tmp7;
-  list_int groups = tmp6;
-  int tmp9_data[] = {};
-  list_int tmp9 = {0, tmp9_data};
-  list_int tmp = tmp9;
-  for (int tmp10 = 0; tmp10 < groups.len; tmp10++) {
-    int g = groups.data[tmp10];
+  tmp7.len = tmp8;
+  list_int groups = tmp7;
+  int tmp11_data[] = {};
+  list_int tmp11 = {0, tmp11_data};
+  list_int tmp = tmp11;
+  for (int tmp12 = 0; tmp12 < groups.len; tmp12++) {
+    int g = groups.data[tmp12];
     int total = 0;
-    for (int tmp11 = 0; tmp11 < g.items.len; tmp11++) {
-      DataItem x = g.items.data[tmp11];
+    for (int tmp13 = 0; tmp13 < g.items.len; tmp13++) {
+      DataItem x = g.items.data[tmp13];
       total = total + x.val;
     }
-    map_int_bool tmp12 = map_int_bool_create(2);
-    map_int_bool_put(&tmp12, "tag", g.key);
-    map_int_bool_put(&tmp12, "total", total);
+    map_int_bool tmp14 = map_int_bool_create(2);
+    map_int_bool_put(&tmp14, "tag", g.key);
+    map_int_bool_put(&tmp14, "total", total);
     tmp = 0;
   }
-  list_int tmp13 = list_int_create(tmp.len);
-  int *tmp16 = (int *)malloc(sizeof(int) * tmp.len);
-  int tmp14 = 0;
-  for (int tmp15 = 0; tmp15 < tmp.len; tmp15++) {
-    int r = tmp.data[tmp15];
-    tmp13.data[tmp14] = r;
-    tmp16[tmp14] = r.tag;
-    tmp14++;
+  list_int tmp15 = list_int_create(tmp.len);
+  int *tmp18 = (int *)malloc(sizeof(int) * tmp.len);
+  int tmp16 = 0;
+  for (int tmp17 = 0; tmp17 < tmp.len; tmp17++) {
+    int r = tmp.data[tmp17];
+    tmp15.data[tmp16] = r;
+    tmp18[tmp16] = r.tag;
+    tmp16++;
   }
-  tmp13.len = tmp14;
-  for (int i = 0; i < tmp14 - 1; i++) {
-    for (int j = i + 1; j < tmp14; j++) {
-      if (tmp16[i] > tmp16[j]) {
-        int tmp17 = tmp16[i];
-        tmp16[i] = tmp16[j];
-        tmp16[j] = tmp17;
-        int tmp18 = tmp13.data[i];
-        tmp13.data[i] = tmp13.data[j];
-        tmp13.data[j] = tmp18;
+  tmp15.len = tmp16;
+  for (int i21 = 0; i21 < tmp16 - 1; i21++) {
+    for (int i22 = i21 + 1; i22 < tmp16; i22++) {
+      if (tmp18[i21] > tmp18[i22]) {
+        int tmp19 = tmp18[i21];
+        tmp18[i21] = tmp18[i22];
+        tmp18[i22] = tmp19;
+        int tmp20 = tmp15.data[i21];
+        tmp15.data[i21] = tmp15.data[i22];
+        tmp15.data[i22] = tmp20;
       }
     }
   }
-  list_int result = tmp13;
+  list_int result = tmp15;
   printf("%d\n", result);
   return 0;
 }

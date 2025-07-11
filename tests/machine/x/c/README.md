@@ -118,3 +118,13 @@ Checklist:
 - [ ] Improve printf formatting for structs and lists
 - [ ] Support multiple right/outer joins in a single query
 - [ ] Emit standalone header files for generated code
+- [ ] Integrate dynamic memory safety checks
+- [ ] Implement expression constant folding
+- [ ] Support generics via macros
+- [ ] Improve error messages for unsupported features
+- [ ] Add CLI flag to toggle auto-type usage
+- [ ] Provide library wrappers for YAML/JSON parsing
+- [ ] Support cross-compiling for Windows
+- [ ] Optimize string concatenation
+- [ ] Add support for enumeration constant generation
+- [ ] Enhance test coverage for dataset operations

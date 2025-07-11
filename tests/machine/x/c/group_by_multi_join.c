@@ -215,42 +215,42 @@ int main() {
   list_FilteredItem tmp9 = list_FilteredItem_create(filtered.len);
   list_int tmp10 = list_int_create(filtered.len);
   int tmp11 = 0;
-  for (int i = 0; i < filtered.len; i++) {
-    FilteredItem x = filtered.data[i];
+  for (int i12 = 0; i12 < filtered.len; i12++) {
+    FilteredItem x = filtered.data[i12];
     tmp9.data[tmp11] = x;
     tmp10.data[tmp11] = x.part;
     tmp11++;
   }
   tmp9.len = tmp11;
   tmp10.len = tmp11;
-  list_group_int tmp12 = _group_by_int(tmp10);
-  list_GroupedItem tmp13 = list_GroupedItem_create(tmp12.len);
-  int tmp14 = 0;
-  for (int gi = 0; gi < tmp12.len; gi++) {
-    _GroupInt _gp = tmp12.data[gi];
-    list_FilteredItem tmp15 = list_FilteredItem_create(_gp.items.len);
-    for (int j = 0; j < _gp.items.len; j++) {
-      tmp15.data[j] = tmp9.data[_gp.items.data[j]];
+  list_group_int tmp13 = _group_by_int(tmp10);
+  list_GroupedItem tmp14 = list_GroupedItem_create(tmp13.len);
+  int tmp15 = 0;
+  for (int gi = 0; gi < tmp13.len; gi++) {
+    _GroupInt _gp = tmp13.data[gi];
+    list_FilteredItem tmp16 = list_FilteredItem_create(_gp.items.len);
+    for (int i17 = 0; i17 < _gp.items.len; i17++) {
+      tmp16.data[i17] = tmp9.data[_gp.items.data[i17]];
     }
-    tmp15.len = _gp.items.len;
+    tmp16.len = _gp.items.len;
     struct {
       int key;
       list_FilteredItem items;
-    } g = {_gp.key, tmp15};
-    list_float tmp16 = list_float_create(g.items.len);
-    int tmp17 = 0;
-    for (int i = 0; i < g.items.len; i++) {
-      FilteredItem r = g.items.data[i];
-      tmp16.data[tmp17] = r.value;
-      tmp17++;
+    } g = {_gp.key, tmp16};
+    list_float tmp18 = list_float_create(g.items.len);
+    int tmp19 = 0;
+    for (int i20 = 0; i20 < g.items.len; i20++) {
+      FilteredItem r = g.items.data[i20];
+      tmp18.data[tmp19] = r.value;
+      tmp19++;
     }
-    tmp16.len = tmp17;
-    tmp13.data[tmp14] =
-        (GroupedItem){.part = g.key, .total = _sum_float(tmp16)};
-    tmp14++;
+    tmp18.len = tmp19;
+    tmp14.data[tmp15] =
+        (GroupedItem){.part = g.key, .total = _sum_float(tmp18)};
+    tmp15++;
   }
-  tmp13.len = tmp14;
-  list_GroupedItem grouped = tmp13;
+  tmp14.len = tmp15;
+  list_GroupedItem grouped = tmp14;
   printf("%d\n", grouped);
   return 0;
 }
