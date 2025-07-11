@@ -1,9 +1,9 @@
 line: 0
-error: cc error: exit status 1
-/workspace/mochi/tests/machine/x/c/python_auto.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/python_auto.c:5:18: error: ‘math’ undeclared (first use in this function)
-    5 |   printf("%d\n", math.sqrt(16.0));
-      |                  ^~~~
-/workspace/mochi/tests/machine/x/c/python_auto.c:5:18: note: each undeclared identifier is reported only once for each function it appears in
-
+error: output mismatch
+-- got --
+4
+496538048
+-- want --
+4
+3.141592653589793
    1: #include <stdio.h>

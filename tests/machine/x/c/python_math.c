@@ -11,10 +11,10 @@ extern double math_log(double x);
 static double r = 3;
 
 int main() {
-  int area = math.pi * math.pow(r, 2.0);
-  double root = math.sqrt(49.0);
-  double sin45 = math.sin(math.pi / 4.0);
-  double log_e = math.log(math.e);
+  int area = 3.141592653589793 * (r * r);
+  double root = 7;
+  double sin45 = __builtin_sin(3.141592653589793 / 4.0);
+  double log_e = __builtin_log(2.718281828459045);
   printf("%s ", "Circle area with r =");
   printf("%d ", r);
   printf("%s ", "=>");
