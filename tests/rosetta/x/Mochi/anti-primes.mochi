@@ -1,0 +1,31 @@
+fun countDivisors(n: int): int {
+  if n < 2 { return 1 }
+  var count = 2 // 1 and n
+  var i = 2
+  while i <= n / 2 {
+    if n % i == 0 { count = count + 1 }
+    i = i + 1
+  }
+  return count
+}
+
+fun main() {
+  print("The first 20 anti-primes are:")
+  var maxDiv = 0
+  var count = 0
+  var n = 1
+  var line = ""
+  while count < 20 {
+    let d = countDivisors(n)
+    if d > maxDiv {
+      line = line + str(n) + " "
+      maxDiv = d
+      count = count + 1
+    }
+    n = n + 1
+  }
+  line = substring(line, 0, len(line) - 1)
+  print(line)
+}
+
+main()
