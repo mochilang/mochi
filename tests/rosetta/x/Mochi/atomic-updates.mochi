@@ -1,0 +1,89 @@
+// Mochi implementation of Rosetta "Atomic updates" task
+// Based on Go version but runs deterministically for testing
+
+fun randOrder(seed: int, n: int): list<int> {
+  let next = (seed * 1664525 + 1013904223) % 2147483647
+  return [next, next % n]
+}
+
+fun randChaos(seed: int, n: int): list<int> {
+  let next = (seed * 1103515245 + 12345) % 2147483647
+  return [next, next % n]
+}
+
+fun main() {
+  let nBuckets = 10
+  let initialSum = 1000
+  var buckets: list<int> = []
+  for i in 0..nBuckets {
+    buckets = append(buckets, 0)
+  }
+  var i = nBuckets
+  var dist = initialSum
+  while i > 0 {
+    let v = dist / i
+    i = i - 1
+    buckets[i] = v
+    dist = dist - v
+  }
+
+  var tc0 = 0
+  var tc1 = 0
+  var total = 0
+  var nTicks = 0
+  var seedOrder = 1
+  var seedChaos = 2
+
+  print("sum  ---updates---    mean  buckets")
+  var t = 0
+  while t < 5 {
+    // order step
+    var r = randOrder(seedOrder, nBuckets)
+    seedOrder = r[0]
+    var b1 = r[1]
+    var b2 = (b1 + 1) % nBuckets
+    let v1 = buckets[b1]
+    let v2 = buckets[b2]
+    if v1 > v2 {
+      var a = ((v1 - v2) / 2) as int
+      if a > buckets[b1] { a = buckets[b1] }
+      buckets[b1] = buckets[b1] - a
+      buckets[b2] = buckets[b2] + a
+    } else {
+      var a = ((v2 - v1) / 2) as int
+      if a > buckets[b2] { a = buckets[b2] }
+      buckets[b2] = buckets[b2] - a
+      buckets[b1] = buckets[b1] + a
+    }
+    tc0 = tc0 + 1
+
+    // chaos step
+    r = randChaos(seedChaos, nBuckets)
+    seedChaos = r[0]
+    b1 = r[1]
+    b2 = (b1 + 1) % nBuckets
+    r = randChaos(seedChaos, buckets[b1] + 1)
+    seedChaos = r[0]
+    var amt = r[1]
+    if amt > buckets[b1] { amt = buckets[b1] }
+    buckets[b1] = buckets[b1] - amt
+    buckets[b2] = buckets[b2] + amt
+    tc1 = tc1 + 1
+
+    // snapshot
+    var sum = 0
+    var idx = 0
+    while idx < nBuckets {
+      sum = sum + buckets[idx]
+      idx = idx + 1
+    }
+    total = total + tc0 + tc1
+    nTicks = nTicks + 1
+    print(str(sum) + " " + str(tc0) + " " + str(tc1) + " " + str(total / nTicks) + "  " + str(buckets))
+    tc0 = 0
+    tc1 = 0
+    t = t + 1
+  }
+}
+
+main()
