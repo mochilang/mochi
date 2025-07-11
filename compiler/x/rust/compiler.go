@@ -3320,6 +3320,15 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	}
 	switch call.Func {
 	case "print":
+		if len(call.Args) == 1 {
+			a := call.Args[0]
+			if a != nil && a.Binary != nil && len(a.Binary.Right) == 0 {
+				u := a.Binary.Left
+				if u != nil && len(u.Ops) == 0 && u.Value != nil && len(u.Value.Ops) == 0 && u.Value.Target != nil && u.Value.Target.Lit != nil && u.Value.Target.Lit.Str != nil {
+					return fmt.Sprintf("println!(%q)", *u.Value.Target.Lit.Str), nil
+				}
+			}
+		}
 		fmtParts := make([]string, len(args))
 		for i, a := range call.Args {
 			if c.env != nil {

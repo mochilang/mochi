@@ -21,5 +21,5 @@ fn main() {
     }
     let people = tmp3;
     assert!(people == vec![Person { name: "Alice", age: 17, status: "minor" }, Person { name: "Bob", age: 26, status: "adult" }, Person { name: "Charlie", age: 19, status: "adult" }, Person { name: "Diana", age: 16, status: "minor" }]);
-    println!("{}", "ok");
+    println!("ok");
 }
