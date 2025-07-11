@@ -413,6 +413,31 @@ func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 			}
 			if s.Let.Value != nil {
 				var v string
+				if ml := extractMapLiteral(s.Let.Value); ml != nil && s.Let.Type == nil {
+					structName := pascalCase(name)
+					decl, init, ok, err := c.mapLiteralStruct(ml, structName)
+					if ok && err == nil {
+						if !c.structs[structName] {
+							c.writeln(decl)
+							c.structs[structName] = true
+							if c.env != nil {
+								st, ok := c.structTypeFromMapLiteral(ml, structName)
+								if ok {
+									c.env.SetStruct(structName, st)
+								}
+							}
+						}
+						v = init
+						if c.env != nil {
+							if st, ok := c.structTypeFromMapLiteral(ml, structName); ok {
+								c.env.SetVar(s.Let.Name, st, false)
+							}
+						}
+						c.writeln(fmt.Sprintf("const %s = %s;", name, v))
+						c.constGlobals[name] = true
+						continue
+					}
+				}
 				if ml := extractMapLiteral(s.Let.Value); ml != nil {
 					var err error
 					v, err = c.compileMapLiteral(ml, true)
@@ -644,7 +669,37 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 		}
 		val := "0"
 		if s.Let.Value != nil {
-			if f := fetchExprOnly(s.Let.Value); f != nil && typ != (types.AnyType{}) {
+			if ml := extractMapLiteral(s.Let.Value); ml != nil && s.Let.Type == nil {
+				structName := pascalCase(name)
+				decl, init, ok, err := c.mapLiteralStruct(ml, structName)
+				if ok && err == nil {
+					if !c.structs[structName] {
+						c.writeln(decl)
+						c.structs[structName] = true
+						if c.env != nil {
+							st, ok := c.structTypeFromMapLiteral(ml, structName)
+							if ok {
+								c.env.SetStruct(structName, st)
+							}
+						}
+					}
+					val = init
+					if c.env != nil {
+						if st, ok := c.structTypeFromMapLiteral(ml, structName); ok {
+							c.env.SetVar(s.Let.Name, st, false)
+							if inFun {
+								c.locals[s.Let.Name] = st
+							}
+						}
+					}
+				} else {
+					v, err := c.compileMapLiteral(ml, true)
+					if err != nil {
+						return err
+					}
+					val = v
+				}
+			} else if f := fetchExprOnly(s.Let.Value); f != nil && typ != (types.AnyType{}) {
 				v, err := c.compileFetchExprTyped(f, typ)
 				if err != nil {
 					return err

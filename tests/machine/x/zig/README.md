@@ -112,3 +112,4 @@ Compiled programs: 100/100
 - Add more idiomatic mappings for built-in functions (e.g. string
   concatenation).
 - Improve idiomatic mappings for Zig built-ins.
+- Generate named structs from constant map literals for readability.

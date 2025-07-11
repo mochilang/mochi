@@ -398,6 +398,35 @@ func canInferType(e *parser.Expr, t types.Type) bool {
 	return true
 }
 
+// pascalCase converts a string like "foo_bar" to "FooBar" for use as a type name.
+func pascalCase(s string) string {
+	parts := strings.FieldsFunc(s, func(r rune) bool {
+		return r == '_' || r == '-' || r == ' ' || r == '.'
+	})
+	for i, p := range parts {
+		if p == "" {
+			continue
+		}
+		parts[i] = strings.ToUpper(p[:1]) + strings.ToLower(p[1:])
+	}
+	return sanitizeName(strings.Join(parts, ""))
+}
+
+// structTypeFromMapLiteral builds a StructType for a map literal with identifier keys.
+func (c *Compiler) structTypeFromMapLiteral(m *parser.MapLiteral, name string) (types.StructType, bool) {
+	st := types.StructType{Name: name, Fields: map[string]types.Type{}, Order: make([]string, len(m.Items))}
+	for i, it := range m.Items {
+		k, ok := simpleStringKey(it.Key)
+		if !ok {
+			return types.StructType{}, false
+		}
+		key := sanitizeName(k)
+		st.Fields[key] = c.inferExprType(it.Value)
+		st.Order[i] = key
+	}
+	return st, true
+}
+
 func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 	if p == nil {
 		return types.AnyType{}
