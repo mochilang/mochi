@@ -249,7 +249,7 @@ var helperSave = "def _save(rows, path, opts):\n" +
 	"        if isinstance(delim, str) and delim:\n" +
 	"            delim = delim[0]\n" +
 	"    rows = [ dataclasses.asdict(r) if dataclasses.is_dataclass(r) else r for r in rows ]\n" +
-	"    if path is not None and not os.path.isabs(path):\n" +
+	"    if path is not None and path != '-' and not os.path.isabs(path):\n" +
 	"        base = os.path.join(os.path.dirname(__file__), path)\n" +
 	"        if not os.path.exists(base) and os.environ.get('MOCHI_ROOT'):\n" +
 	"            clean = path\n" +

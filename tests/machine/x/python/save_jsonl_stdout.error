@@ -1,7 +1,0 @@
-run: exit status 1
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/machine/x/python/save_jsonl_stdout.py", line 78, in <module>
-    _save(people, "-", dict(Auto1(format="jsonl")))
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-TypeError: 'Auto1' object is not iterable
-

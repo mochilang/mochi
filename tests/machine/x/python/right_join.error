@@ -1,8 +1,0 @@
-run: exit status 1
---- Right Join using syntax ---
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/machine/x/python/right_join.py", line 133, in <module>
-    if entry["order"]:
-       ~~~~~^^^^^^^^^
-TypeError: 'Auto1' object is not subscriptable
-

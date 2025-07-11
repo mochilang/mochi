@@ -1,8 +1,0 @@
-run: exit status 1
---- Multi Join ---
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/machine/x/python/join_multi.py", line 109, in <module>
-    print(r["name"], "bought item", r["sku"])
-          ~^^^^^^^^
-TypeError: 'Auto1' object is not subscriptable
-
