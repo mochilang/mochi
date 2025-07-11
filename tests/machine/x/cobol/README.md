@@ -1,4 +1,4 @@
-# Mochi to COBOL Machine Translations (56/97 compiled)
+# Mochi to COBOL Machine Translations (58/97 compiled)
 
 Generated using `go run -tags slow scripts/compile_cobol.go`.
 
@@ -48,12 +48,12 @@ Generated using `go run -tags slow scripts/compile_cobol.go`.
 - [x] len_map.mochi
 - [x] len_string.mochi
 - [x] let_and_print.mochi
-- [ ] list_assign.mochi
+- [x] list_assign.mochi
 - [x] list_index.mochi
 - [ ] list_nested_assign.mochi
 - [ ] list_set_ops.mochi
 - [ ] load_yaml.mochi
-- [ ] map_assign.mochi
+- [x] map_assign.mochi
 - [x] map_in_operator.mochi
 - [x] map_index.mochi
 - [x] map_int_key.mochi
@@ -113,3 +113,14 @@ Generated using `go run -tags slow scripts/compile_cobol.go`.
 - [ ] Implement YAML loading utilities
 - [ ] Provide stable sort for collections
 - [ ] Allow arithmetic with user-defined structs
+- [ ] Improve constant folding for maps
+- [ ] Support nested list assignments
+- [ ] Add nested map assignment support
+- [ ] Provide runtime helpers for map lookups
+- [ ] Optimize generated COBOL formatting
+- [ ] Handle boolean string operations
+- [ ] Implement function literals and closures
+- [ ] Add dataset sorting utilities
+- [ ] Parse command line arguments
+- [ ] Improve error messages for unsupported features
+- [ ] Support file input and output utilities

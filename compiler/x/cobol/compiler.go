@@ -255,28 +255,34 @@ func (c *Compiler) addVar(name string, typ *parser.TypeRef, value *parser.Expr, 
 				c.seqList = make(map[string]int)
 			}
 			c.seqList[name] = n
+			lst := listLiteral(value)
+			if lst != nil {
+				fields, err := c.buildListFields("", lst)
+				if err == nil {
+					c.vars = append(c.vars, varDecl{name: name, fields: fields})
+				}
+			}
 			return nil
 		}
 		if lst := listLiteral(value); lst != nil {
 			elems := make([]string, len(lst.Elems))
 			for i, e := range lst.Elems {
-				if !isLiteralExpr(e) {
-					lst = nil
-					break
-				}
 				v, err := c.compileExpr(e)
 				if err != nil {
 					return err
 				}
 				elems[i] = v
 			}
-			if lst != nil {
-				if c.constLists == nil {
-					c.constLists = make(map[string][]string)
-				}
-				c.constLists[name] = elems
-				return nil
+			if c.constLists == nil {
+				c.constLists = make(map[string][]string)
 			}
+			c.constLists[name] = elems
+			fields, err := c.buildListFields("", lst)
+			if err != nil {
+				return err
+			}
+			c.vars = append(c.vars, varDecl{name: name, fields: fields})
+			return nil
 		} else if mp := mapLiteral(value); mp != nil {
 			entries := make([]mapEntry, len(mp.Items))
 			for i, it := range mp.Items {
@@ -294,6 +300,10 @@ func (c *Compiler) addVar(name string, typ *parser.TypeRef, value *parser.Expr, 
 				c.constMaps = make(map[string][]mapEntry)
 			}
 			c.constMaps[name] = entries
+			fields, err := c.buildMapFields("", mp)
+			if err == nil && len(fields) > 0 {
+				c.vars = append(c.vars, varDecl{name: name, fields: fields})
+			}
 			return nil
 		}
 	}
@@ -398,15 +408,27 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 	if err != nil {
 		return err
 	}
-	name := cobolName(a.Name)
-	// handle field assignments like `rec.field = expr`
-	if len(a.Field) > 0 {
-		name = cobolName(a.Field[len(a.Field)-1].Name)
-	}
+	target := cobolName(a.Name)
 	if len(a.Index) > 0 {
-		return fmt.Errorf("indexing not supported")
+		for _, idx := range a.Index {
+			if idx.Colon != nil || idx.End != nil || idx.Step != nil || idx.Colon2 != nil {
+				return fmt.Errorf("slices not supported")
+			}
+			if i, ok := intLiteral(idx.Start); ok {
+				target += fmt.Sprintf("-E%d", i+1)
+				continue
+			}
+			if s, ok := stringLiteral(idx.Start); ok {
+				target += "-" + cobolName(s)
+				continue
+			}
+			return fmt.Errorf("indexing not supported")
+		}
 	}
-	c.writeln(fmt.Sprintf("COMPUTE %s = %s", name, val))
+	if len(a.Field) > 0 {
+		target += "-" + cobolName(a.Field[len(a.Field)-1].Name)
+	}
+	c.writeln(fmt.Sprintf("COMPUTE %s = %s", target, val))
 	return nil
 }
 
@@ -1103,6 +1125,16 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					continue
 				}
 			}
+			if i, ok := intLiteral(idx.Start); ok {
+				val = fmt.Sprintf("%s-E%d", val, i+1)
+				typ = types.AnyType{}
+				continue
+			}
+			if s, ok := stringLiteral(idx.Start); ok {
+				val = fmt.Sprintf("%s-%s", val, cobolName(s))
+				typ = types.AnyType{}
+				continue
+			}
 			idxExpr, err := c.compileExpr(idx.Start)
 			if err != nil {
 				return "", err
@@ -1504,6 +1536,54 @@ func (c *Compiler) buildStructFields(prefix string, st types.StructType, sl *par
 		}
 		pic := cobolPic(ft, valStr)
 		fields = append(fields, varField{name: prefix + cobolName(f.Name), pic: pic, val: valStr})
+	}
+	return fields, nil
+}
+
+func (c *Compiler) buildListFields(prefix string, lst *parser.ListLiteral) ([]varField, error) {
+	fields := make([]varField, 0, len(lst.Elems))
+	for i, e := range lst.Elems {
+		if sub := listLiteral(e); sub != nil {
+			subFields, err := c.buildListFields(prefix+fmt.Sprintf("E%d-", i+1), sub)
+			if err != nil {
+				return nil, err
+			}
+			fields = append(fields, subFields...)
+			continue
+		}
+		valStr, err := c.compileExpr(e)
+		if err != nil {
+			return nil, err
+		}
+		typ := types.TypeOfExpr(e, c.env)
+		pic := cobolPic(typ, valStr)
+		fields = append(fields, varField{name: prefix + fmt.Sprintf("E%d", i+1), pic: pic, val: valStr})
+	}
+	return fields, nil
+}
+
+func (c *Compiler) buildMapFields(prefix string, mp *parser.MapLiteral) ([]varField, error) {
+	fields := make([]varField, 0, len(mp.Items))
+	for _, it := range mp.Items {
+		key, ok := simpleStringKey(it.Key)
+		if !ok {
+			continue
+		}
+		if sub := mapLiteral(it.Value); sub != nil {
+			subFields, err := c.buildMapFields(prefix+cobolName(key)+"-", sub)
+			if err != nil {
+				return nil, err
+			}
+			fields = append(fields, subFields...)
+			continue
+		}
+		valStr, err := c.compileExpr(it.Value)
+		if err != nil {
+			return nil, err
+		}
+		typ := types.TypeOfExpr(it.Value, c.env)
+		pic := cobolPic(typ, valStr)
+		fields = append(fields, varField{name: prefix + cobolName(key), pic: pic, val: valStr})
 	}
 	return fields, nil
 }
