@@ -1,0 +1,311 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun nextRand(seed: int): int {
+func nextRand (regs=7)
+  // return (seed * 1664525 + 1013904223) % 2147483647
+  Const        r1, 1664525
+  Mul          r2, r0, r1
+  Const        r3, 1013904223
+  Add          r4, r2, r3
+  Const        r5, 2147483647
+  Mod          r6, r4, r5
+  Return       r6
+
+  // fun shuffleChars(s: string, seed: int): list<any> {
+func shuffleChars (regs=36)
+  // var chars: list<string> = []
+  Const        r2, []
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L1:
+  // while i < len(s) {
+  Len          r6, r0
+  LessInt      r7, r5, r6
+  JumpIfFalse  r7, L0
+  // chars = append(chars, substring(s, i, i + 1))
+  Const        r8, 1
+  AddInt       r9, r5, r8
+  Slice        r10, r0, r5, r9
+  Append       r11, r3, r10
+  Move         r3, r11
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r12, r5, r8
+  Move         r5, r12
+  // while i < len(s) {
+  Jump         L1
+L0:
+  // var sd = seed
+  Move         r13, r1
+  // var idx = len(chars) - 1
+  Len          r14, r3
+  Const        r8, 1
+  SubInt       r15, r14, r8
+  Move         r16, r15
+L3:
+  // while idx > 0 {
+  Const        r4, 0
+  LessInt      r17, r4, r16
+  JumpIfFalse  r17, L2
+  // sd = nextRand(sd)
+  Move         r18, r13
+  Call         r19, nextRand, r18
+  Move         r13, r19
+  // var j = sd % (idx + 1)
+  Const        r8, 1
+  AddInt       r20, r16, r8
+  Mod          r21, r13, r20
+  Move         r22, r21
+  // let tmp = chars[idx]
+  Index        r23, r3, r16
+  // chars[idx] = chars[j]
+  Index        r24, r3, r22
+  SetIndex     r3, r16, r24
+  // chars[j] = tmp
+  SetIndex     r3, r22, r23
+  // idx = idx - 1
+  Const        r8, 1
+  SubInt       r25, r16, r8
+  Move         r16, r25
+  // while idx > 0 {
+  Jump         L3
+L2:
+  // var res = ""
+  Const        r26, ""
+  Move         r27, r26
+  // i = 0
+  Const        r4, 0
+  Move         r5, r4
+L5:
+  // while i < len(chars) {
+  Len          r28, r3
+  LessInt      r29, r5, r28
+  JumpIfFalse  r29, L4
+  // res = res + chars[i]
+  Index        r30, r3, r5
+  Add          r31, r27, r30
+  Move         r27, r31
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r32, r5, r8
+  Move         r5, r32
+  // while i < len(chars) {
+  Jump         L5
+L4:
+  // return [res, sd]
+  Move         r33, r27
+  Move         r34, r13
+  MakeList     r35, 2, r33
+  Return       r35
+
+  // fun bestShuffle(s: string, seed: int): list<any> {
+func bestShuffle (regs=59)
+  // let r = shuffleChars(s, seed)
+  Move         r2, r0
+  Move         r3, r1
+  Call2        r4, shuffleChars, r2, r3
+  // var t = r[0]
+  Const        r5, 0
+  Index        r6, r4, r5
+  Move         r7, r6
+  // var sd = r[1]
+  Const        r8, 1
+  Index        r9, r4, r8
+  Move         r10, r9
+  // var arr: list<string> = []
+  Const        r11, []
+  Move         r12, r11
+  // var i = 0
+  Const        r5, 0
+  Move         r13, r5
+L1:
+  // while i < len(t) {
+  Len          r14, r7
+  LessInt      r15, r13, r14
+  JumpIfFalse  r15, L0
+  // arr = append(arr, substring(t, i, i + 1))
+  Const        r8, 1
+  AddInt       r16, r13, r8
+  Slice        r17, r7, r13, r16
+  Append       r18, r12, r17
+  Move         r12, r18
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r19, r13, r8
+  Move         r13, r19
+  // while i < len(t) {
+  Jump         L1
+L0:
+  // i = 0
+  Const        r5, 0
+  Move         r13, r5
+L7:
+  // while i < len(arr) {
+  Len          r20, r12
+  LessInt      r21, r13, r20
+  JumpIfFalse  r21, L2
+  // var j = 0
+  Const        r5, 0
+  Move         r22, r5
+L6:
+  // while j < len(arr) {
+  Len          r23, r12
+  LessInt      r24, r22, r23
+  JumpIfFalse  r24, L3
+  // if i != j && arr[i] != substring(s, j, j + 1) && arr[j] != substring(s, i, i + 1) {
+  NotEqual     r25, r13, r22
+  Index        r26, r12, r13
+  Const        r8, 1
+  AddInt       r27, r22, r8
+  Slice        r28, r0, r22, r27
+  NotEqual     r29, r26, r28
+  Index        r30, r12, r22
+  Const        r8, 1
+  AddInt       r31, r13, r8
+  Slice        r32, r0, r13, r31
+  NotEqual     r33, r30, r32
+  Move         r34, r25
+  JumpIfFalse  r34, L4
+  Move         r34, r29
+  JumpIfFalse  r34, L4
+  Move         r34, r33
+L4:
+  JumpIfFalse  r34, L5
+  // let tmp = arr[i]
+  Index        r35, r12, r13
+  // arr[i] = arr[j]
+  Index        r36, r12, r22
+  SetIndex     r12, r13, r36
+  // arr[j] = tmp
+  SetIndex     r12, r22, r35
+  // break
+  Jump         L3
+L5:
+  // j = j + 1
+  Const        r8, 1
+  AddInt       r37, r22, r8
+  Move         r22, r37
+  // while j < len(arr) {
+  Jump         L6
+L3:
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r38, r13, r8
+  Move         r13, r38
+  // while i < len(arr) {
+  Jump         L7
+L2:
+  // var count = 0
+  Const        r5, 0
+  Move         r39, r5
+  // i = 0
+  Const        r5, 0
+  Move         r13, r5
+L10:
+  // while i < len(arr) {
+  Len          r40, r12
+  LessInt      r41, r13, r40
+  JumpIfFalse  r41, L8
+  // if arr[i] == substring(s, i, i + 1) {
+  Index        r42, r12, r13
+  Const        r8, 1
+  AddInt       r43, r13, r8
+  Slice        r44, r0, r13, r43
+  Equal        r45, r42, r44
+  JumpIfFalse  r45, L9
+  // count = count + 1
+  Const        r8, 1
+  AddInt       r46, r39, r8
+  Move         r39, r46
+L9:
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r47, r13, r8
+  Move         r13, r47
+  // while i < len(arr) {
+  Jump         L10
+L8:
+  // var out = ""
+  Const        r48, ""
+  Move         r49, r48
+  // i = 0
+  Const        r5, 0
+  Move         r13, r5
+L12:
+  // while i < len(arr) {
+  Len          r50, r12
+  LessInt      r51, r13, r50
+  JumpIfFalse  r51, L11
+  // out = out + arr[i]
+  Index        r52, r12, r13
+  Add          r53, r49, r52
+  Move         r49, r53
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r54, r13, r8
+  Move         r13, r54
+  // while i < len(arr) {
+  Jump         L12
+L11:
+  // return [out, sd, count]
+  Move         r55, r49
+  Move         r56, r10
+  Move         r57, r39
+  MakeList     r58, 3, r55
+  Return       r58
+
+  // fun main() {
+func main (regs=26)
+  // let ts = ["abracadabra", "seesaw", "elk", "grrrrrr", "up", "a"]
+  Const        r0, ["abracadabra", "seesaw", "elk", "grrrrrr", "up", "a"]
+  // var seed = 1
+  Const        r1, 1
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L1:
+  // while i < len(ts) {
+  Const        r5, 6
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // let r = bestShuffle(ts[i], seed)
+  Index        r9, r0, r4
+  Move         r7, r9
+  Move         r8, r2
+  Call2        r10, bestShuffle, r7, r8
+  // let shuf = r[0]
+  Const        r3, 0
+  Index        r11, r10, r3
+  // seed = r[1]
+  Const        r1, 1
+  Index        r12, r10, r1
+  Move         r2, r12
+  // let cnt = r[2]
+  Const        r13, 2
+  Index        r14, r10, r13
+  // print(ts[i] + " -> " + shuf + " (" + str(cnt) + ")")
+  Index        r15, r0, r4
+  Const        r16, " -> "
+  Add          r17, r15, r16
+  Add          r18, r17, r11
+  Const        r19, " ("
+  Add          r20, r18, r19
+  Str          r21, r14
+  Add          r22, r20, r21
+  Const        r23, ")"
+  Add          r24, r22, r23
+  Print        r24
+  // i = i + 1
+  Const        r1, 1
+  AddInt       r25, r4, r1
+  Move         r4, r25
+  // while i < len(ts) {
+  Jump         L1
+L0:
+  Return       r0
