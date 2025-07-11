@@ -1,0 +1,7 @@
+let a: bigint = 10
+let b: bigint = 5
+print(a + b)
+print(a - b)
+print(a * b)
+print(a / b)
+print(a % b)
