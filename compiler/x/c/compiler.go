@@ -1906,9 +1906,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						idxVar := c.newTemp()
 						c.writeln(fmt.Sprintf("list_int %s = list_int_create(%s.len);", filtered, src))
 						c.writeln(fmt.Sprintf("int %s = 0;", idxVar))
-						c.writeln(fmt.Sprintf("for (int i=0; i<%s.len; i++) {", src))
+						idxIter := c.newTempPrefix("i")
+						c.writeln(fmt.Sprintf("for (int %s=0; %s<%s.len; %s++) {", idxIter, idxIter, src, idxIter))
 						c.indent++
-						c.writeln(fmt.Sprintf("int %s = %s.data[i];", sanitizeName(q.Var), src))
+						c.writeln(fmt.Sprintf("int %s = %s.data[%s];", sanitizeName(q.Var), src, idxIter))
 						c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", cond))
 						c.writeln(fmt.Sprintf("%s.data[%s] = %s;", filtered, idxVar, sanitizeName(q.Var)))
 						c.writeln(fmt.Sprintf("%s++;", idxVar))
@@ -1982,9 +1983,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						c.writeln(fmt.Sprintf("%s *%s = (%s*)malloc(sizeof(%s)*%s.len);", keyType, keyArr, keyType, keyType, groups))
 					}
 					c.writeln(fmt.Sprintf("int %s = 0;", idx))
-					c.writeln(fmt.Sprintf("for (int i=0; i<%s.len; i++) {", groups))
+					idxIter := c.newTempPrefix("i")
+					c.writeln(fmt.Sprintf("for (int %s=0; %s<%s.len; %s++) {", idxIter, idxIter, groups, idxIter))
 					c.indent++
-					c.writeln(fmt.Sprintf("_GroupInt %s = %s.data[i];", sanitizeName(q.Group.Name), groups))
+					c.writeln(fmt.Sprintf("_GroupInt %s = %s.data[%s];", sanitizeName(q.Group.Name), groups, idxIter))
 					val := c.compileExpr(q.Select)
 					c.writeln(fmt.Sprintf("%s.data[%s] = %s;", res, idx, val))
 					if keyType != "" {
@@ -2064,9 +2066,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 					c.writeln(fmt.Sprintf("%s %s = %s_create(%s.len);", listC, rows, listC, src))
 					c.writeln(fmt.Sprintf("list_string %s = list_string_create(%s.len);", keys, src))
 					c.writeln(fmt.Sprintf("int %s = 0;", idxVar))
-					c.writeln(fmt.Sprintf("for (int i=0; i<%s.len; i++) {", src))
+					idxIter := c.newTempPrefix("i")
+					c.writeln(fmt.Sprintf("for (int %s=0; %s<%s.len; %s++) {", idxIter, idxIter, src, idxIter))
 					c.indent++
-					c.writeln(fmt.Sprintf("%s %s = %s.data[i];", cTypeFromType(lt.Elem), sanitizeName(q.Var), src))
+					c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", cTypeFromType(lt.Elem), sanitizeName(q.Var), src, idxIter))
 					if cond != "" {
 						c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", cond))
 					}
@@ -2150,14 +2153,16 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						c.writeln(fmt.Sprintf("%s *%s = (%s*)malloc(sizeof(%s)*%s.len);", keyType, keyArr, keyType, keyType, groups))
 					}
 					c.writeln(fmt.Sprintf("int %s = 0;", idxRes))
-					c.writeln(fmt.Sprintf("for (int gi=0; gi<%s.len; gi++) {", groups))
+					giIter := c.newTempPrefix("gi")
+					c.writeln(fmt.Sprintf("for (int %s=0; %s<%s.len; %s++) {", giIter, giIter, groups, giIter))
 					c.indent++
-					c.writeln(fmt.Sprintf("_GroupString _gp = %s.data[gi];", groups))
+					c.writeln(fmt.Sprintf("_GroupString _gp = %s.data[%s];", groups, giIter))
 					items := c.newTemp()
 					c.writeln(fmt.Sprintf("%s %s = %s_create(_gp.items.len);", listC, items, listC))
-					c.writeln(fmt.Sprintf("for (int j=0; j<_gp.items.len; j++) {"))
+					jIter := c.newTempPrefix("j")
+					c.writeln(fmt.Sprintf("for (int %s=0; %s<_gp.items.len; %s++) {", jIter, jIter, jIter))
 					c.indent++
-					c.writeln(fmt.Sprintf("%s.data[j] = %s.data[_gp.items.data[j]];", items, rows))
+					c.writeln(fmt.Sprintf("%s.data[%s] = %s.data[_gp.items.data[%s]];", items, jIter, rows, jIter))
 					c.indent--
 					c.writeln("}")
 					c.writeln(fmt.Sprintf("%s.len = _gp.items.len;", items))
@@ -2228,9 +2233,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 					c.writeln(fmt.Sprintf("%s %s = %s_create(%s.len);", listC, rows, listC, src))
 					c.writeln(fmt.Sprintf("list_int %s = list_int_create(%s.len);", keys, src))
 					c.writeln(fmt.Sprintf("int %s = 0;", idxVar))
-					c.writeln(fmt.Sprintf("for (int i=0; i<%s.len; i++) {", src))
+					idxIter := c.newTempPrefix("i")
+					c.writeln(fmt.Sprintf("for (int %s=0; %s<%s.len; %s++) {", idxIter, idxIter, src, idxIter))
 					c.indent++
-					c.writeln(fmt.Sprintf("%s %s = %s.data[i];", cTypeFromType(lt.Elem), sanitizeName(q.Var), src))
+					c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", cTypeFromType(lt.Elem), sanitizeName(q.Var), src, idxIter))
 					if cond != "" {
 						c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", cond))
 					}
@@ -2314,14 +2320,16 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						c.writeln(fmt.Sprintf("%s *%s = (%s*)malloc(sizeof(%s)*%s.len);", keyType, keyArr, keyType, keyType, groups))
 					}
 					c.writeln(fmt.Sprintf("int %s = 0;", idxRes))
-					c.writeln(fmt.Sprintf("for (int gi=0; gi<%s.len; gi++) {", groups))
+					giIter := c.newTempPrefix("gi")
+					c.writeln(fmt.Sprintf("for (int %s=0; %s<%s.len; %s++) {", giIter, giIter, groups, giIter))
 					c.indent++
-					c.writeln(fmt.Sprintf("_GroupInt _gp = %s.data[gi];", groups))
+					c.writeln(fmt.Sprintf("_GroupInt _gp = %s.data[%s];", groups, giIter))
 					items := c.newTemp()
 					c.writeln(fmt.Sprintf("%s %s = %s_create(_gp.items.len);", listC, items, listC))
-					c.writeln(fmt.Sprintf("for (int j=0; j<_gp.items.len; j++) {"))
+					jIter := c.newTempPrefix("j")
+					c.writeln(fmt.Sprintf("for (int %s=0; %s<_gp.items.len; %s++) {", jIter, jIter, jIter))
 					c.indent++
-					c.writeln(fmt.Sprintf("%s.data[j] = %s.data[_gp.items.data[j]];", items, rows))
+					c.writeln(fmt.Sprintf("%s.data[%s] = %s.data[_gp.items.data[%s]];", items, jIter, rows, jIter))
 					c.indent--
 					c.writeln("}")
 					c.writeln(fmt.Sprintf("%s.len = _gp.items.len;", items))
@@ -2405,9 +2413,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						c.writeln(fmt.Sprintf("%s %s = %s_create(%s.len);", listC, rows, listC, src))
 						c.writeln(fmt.Sprintf("list_pair_string %s = list_pair_string_create(%s.len);", pairs, src))
 						c.writeln(fmt.Sprintf("int %s = 0;", idxVar))
-						c.writeln(fmt.Sprintf("for (int i=0; i<%s.len; i++) {", src))
+						idxIter := c.newTempPrefix("i")
+						c.writeln(fmt.Sprintf("for (int %s=0; %s<%s.len; %s++) {", idxIter, idxIter, src, idxIter))
 						c.indent++
-						c.writeln(fmt.Sprintf("%s %s = %s.data[i];", cTypeFromType(lt.Elem), sanitizeName(q.Var), src))
+						c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", cTypeFromType(lt.Elem), sanitizeName(q.Var), src, idxIter))
 						if cond != "" {
 							c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", cond))
 						}
@@ -2492,14 +2501,16 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 							c.writeln(fmt.Sprintf("%s *%s = (%s*)malloc(sizeof(%s)*%s.len);", keyType, keyArr, keyType, keyType, groups))
 						}
 						c.writeln(fmt.Sprintf("int %s = 0;", idxRes))
-						c.writeln(fmt.Sprintf("for (int gi=0; gi<%s.len; gi++) {", groups))
+						giIter := c.newTempPrefix("gi")
+						c.writeln(fmt.Sprintf("for (int %s=0; %s<%s.len; %s++) {", giIter, giIter, groups, giIter))
 						c.indent++
-						c.writeln(fmt.Sprintf("_GroupPairString _gp = %s.data[gi];", groups))
+						c.writeln(fmt.Sprintf("_GroupPairString _gp = %s.data[%s];", groups, giIter))
 						items := c.newTemp()
 						c.writeln(fmt.Sprintf("%s %s = %s_create(_gp.items.len);", listC, items, listC))
-						c.writeln(fmt.Sprintf("for (int j=0; j<_gp.items.len; j++) {"))
+						jIter := c.newTempPrefix("j")
+						c.writeln(fmt.Sprintf("for (int %s=0; %s<_gp.items.len; %s++) {", jIter, jIter, jIter))
 						c.indent++
-						c.writeln(fmt.Sprintf("%s.data[j] = %s.data[_gp.items.data[j]];", items, rows))
+						c.writeln(fmt.Sprintf("%s.data[%s] = %s.data[_gp.items.data[%s]];", items, jIter, rows, jIter))
 						c.indent--
 						c.writeln("}")
 						c.writeln(fmt.Sprintf("%s.len = _gp.items.len;", items))
@@ -3114,9 +3125,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 			idx := c.newTemp()
 			c.writeln(fmt.Sprintf("%s %s = %s_create(%s.items.len);", listC, res, listC, src))
 			c.writeln(fmt.Sprintf("int %s = 0;", idx))
-			c.writeln(fmt.Sprintf("for (int i=0; i<%s.items.len; i++) {", src))
+			idxIter := c.newTempPrefix("i")
+			c.writeln(fmt.Sprintf("for (int %s=0; %s<%s.items.len; %s++) {", idxIter, idxIter, src, idxIter))
 			c.indent++
-			c.writeln(fmt.Sprintf("%s %s = %s.items.data[i];", elemC, sanitizeName(q.Var), src))
+			c.writeln(fmt.Sprintf("%s %s = %s.items.data[%s];", elemC, sanitizeName(q.Var), src, idxIter))
 			if cond != "" {
 				c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", cond))
 			}
@@ -4272,9 +4284,45 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					c.need(needPrintListString)
 					c.writeln(fmt.Sprintf("_print_list_string(%s);", argExpr))
 					if i == len(p.Call.Args)-1 {
-						c.writeln("printf(\"\\n\");")
+						c.writeln("printf(\\n);")
 					} else {
 						c.writeln("printf(\" \");")
+					}
+				} else if _, ok := c.exprType(a).(types.StructType); ok {
+					end := " "
+					if i == len(p.Call.Args)-1 {
+						end = "\\n"
+					}
+					c.writeln(fmt.Sprintf("printf(\"<struct>%s\");", end))
+				} else if lt, ok := c.exprType(a).(types.ListType); ok {
+					if _, ok2 := lt.Elem.(types.StructType); ok2 {
+						end := " "
+						if i == len(p.Call.Args)-1 {
+							end = "\\n"
+						}
+						c.writeln(fmt.Sprintf("printf(\"<list>%s\");", end))
+					} else {
+						if isBoolArg(a, c.env) {
+							end := " "
+							if i == len(p.Call.Args)-1 {
+								end = "\\n"
+							}
+							c.writeln(fmt.Sprintf("printf(\"%%s%s\", (%s)?\"true\":\"false\");", end, argExpr))
+						} else {
+							fmtStr := "%d"
+							if isStringArg(a, c.env) {
+								fmtStr = "%s"
+							} else if isFloatArg(a, c.env) {
+								fmtStr = "%.16g"
+							} else if _, ok := constFloatValue(a); ok || looksLikeFloatConst(argExpr) {
+								fmtStr = "%.16g"
+							}
+							end := " "
+							if i == len(p.Call.Args)-1 {
+								end = "\\n"
+							}
+							c.writeln(fmt.Sprintf("printf(\"%s%s\", %s);", fmtStr, end, argExpr))
+						}
 					}
 				} else {
 					if isBoolArg(a, c.env) {

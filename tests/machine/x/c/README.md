@@ -106,8 +106,6 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
-
-## Remaining Tasks
 - [ ] Implement dataset grouping and aggregation helpers
 - [ ] Support map types and membership operations
 - [ ] Handle enums and union types
@@ -118,3 +116,13 @@ Checklist:
 - [ ] Improve printf formatting for structs and lists
 - [ ] Support multiple right/outer joins in a single query
 - [ ] Emit standalone header files for generated code
+- [ ] Add CLI option for optimization level
+- [ ] Integrate unit tests for generated C code
+- [ ] Support Windows compilation via MinGW
+- [ ] Enhance error reporting with line numbers
+- [ ] Implement garbage collection strategies
+- [ ] Allow custom memory allocators
+- [ ] Document compiler flags in README
+- [ ] Benchmark performance against Go backend
+- [ ] Support cross-compilation for ARM targets
+- [ ] Provide Docker image with build tools
