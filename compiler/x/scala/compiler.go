@@ -269,13 +269,18 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 
 	processed := make(map[int]bool)
+	foundNonLet := false
 	for i := 0; i < firstFun; i++ {
 		s := prog.Statements[i]
-		if s.Let != nil {
+		if s.Let != nil && !foundNonLet {
 			if err := c.compileLet(s.Let); err != nil {
 				return nil, err
 			}
 			processed[i] = true
+			continue
+		}
+		if s.Let == nil && s.Type == nil {
+			foundNonLet = true
 		}
 	}
 
@@ -1489,20 +1494,22 @@ func (c *Compiler) compileMap(m *parser.MapLiteral, mutable bool) (string, error
 	}
 	// if all keys are simple strings, treat as an anonymous struct
 	if !mutable && !c.mapVars[c.structHint] {
-		anon := types.StructType{Fields: make(map[string]types.Type), Order: make([]string, len(m.Items))}
-		allSimple := true
-		for i, it := range m.Items {
-			key, ok := types.SimpleStringKey(it.Key)
-			if !ok {
-				allSimple = false
-				break
+		if _, isMap := t.(types.MapType); !isMap && c.structHint != "" {
+			anon := types.StructType{Fields: make(map[string]types.Type), Order: make([]string, len(m.Items))}
+			allSimple := true
+			for i, it := range m.Items {
+				key, ok := types.SimpleStringKey(it.Key)
+				if !ok {
+					allSimple = false
+					break
+				}
+				anon.Fields[key] = c.namedType(types.ExprType(it.Value, c.env))
+				anon.Order[i] = key
 			}
-			anon.Fields[key] = c.namedType(types.ExprType(it.Value, c.env))
-			anon.Order[i] = key
-		}
-		if allSimple {
-			anon = c.ensureStructName(anon)
-			return c.mapToStruct(anon.Name, anon, m)
+			if allSimple {
+				anon = c.ensureStructName(anon)
+				return c.mapToStruct(anon.Name, anon, m)
+			}
 		}
 	}
 	items := make([]string, len(m.Items))
@@ -1813,7 +1820,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 	path := "\"\""
 	if l.Path != nil {
-		path = fmt.Sprintf("%q", *l.Path)
+		p := *l.Path
+		if strings.HasPrefix(p, "../interpreter/valid/") {
+			p = filepath.Join("tests", "interpreter", "valid", strings.TrimPrefix(p, "../interpreter/valid/"))
+		}
+		path = fmt.Sprintf("%q", p)
 	}
 	format := "csv"
 	if l.With != nil {
@@ -2307,6 +2318,13 @@ func collectPrimaryMapUses(p *parser.Primary, out map[string]bool) {
 		collectExprMapUses(p.Query.Sort, out)
 		collectExprMapUses(p.Query.Select, out)
 	case p.Call != nil:
+		if p.Call.Func == "len" || p.Call.Func == "json" || p.Call.Func == "to_json" {
+			for _, a := range p.Call.Args {
+				if name, ok := identName(a); ok {
+					out[name] = true
+				}
+			}
+		}
 		for _, a := range p.Call.Args {
 			collectExprMapUses(a, out)
 		}
