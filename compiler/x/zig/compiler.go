@@ -2779,11 +2779,41 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		return fmt.Sprintf("_reduce(%s, %s, %s, %s)", elem, listArg, initArg, fnArg), nil
 	}
 	if name == "str" && len(call.Args) == 1 {
+		// constant folding for literals
+		if literalExpr(call.Args[0]) {
+			lit := call.Args[0].Binary.Left.Value.Target.Lit
+			switch {
+			case lit.Int != nil:
+				return strconv.Quote(strconv.Itoa(*lit.Int)), nil
+			case lit.Float != nil:
+				s := strconv.FormatFloat(*lit.Float, 'f', -1, 64)
+				if !strings.ContainsAny(s, ".eE") && !strings.Contains(s, ".") {
+					s += ".0"
+				}
+				return strconv.Quote(s), nil
+			case lit.Bool != nil:
+				if *lit.Bool {
+					return "\"true\"", nil
+				}
+				return "\"false\"", nil
+			case lit.Str != nil:
+				return strconv.Quote(*lit.Str), nil
+			}
+		}
 		arg, err := c.compileExpr(call.Args[0], false)
 		if err != nil {
 			return "", err
 		}
-		return fmt.Sprintf("std.fmt.allocPrint(std.heap.page_allocator, \"{d}\", .{%s}) catch unreachable", arg), nil
+		fmtStr := "{any}"
+		switch c.inferExprType(call.Args[0]).(type) {
+		case types.IntType, types.Int64Type:
+			fmtStr = "{d}"
+		case types.BoolType:
+			fmtStr = "{}"
+		case types.FloatType:
+			fmtStr = "{d}"
+		}
+		return fmt.Sprintf("std.fmt.allocPrint(std.heap.page_allocator, %q, .{%s}) catch unreachable", fmtStr, arg), nil
 	}
 	if name == "now" && len(call.Args) == 0 {
 		return "std.time.nanoTimestamp()", nil
