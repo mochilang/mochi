@@ -83,6 +83,36 @@ func _query(src []any, joins []_joinSpec, opts _queryOpts) []any {
 	}
 	for _, j := range joins {
 		if j.leftKey != nil && j.rightKey != nil {
+			if j.right && !j.left {
+				lmap := map[string][]int{}
+				for li, l := range items {
+					key := fmt.Sprint(j.leftKey(l...))
+					lmap[key] = append(lmap[key], li)
+				}
+				joined := [][]any{}
+				for _, right := range j.items {
+					key := fmt.Sprint(j.rightKey(right))
+					if is, ok := lmap[key]; ok {
+						for _, li := range is {
+							left := items[li]
+							keep := true
+							if j.on != nil {
+								args := append(append([]any(nil), left...), right)
+								keep = j.on(args...)
+							}
+							if !keep {
+								continue
+							}
+							joined = append(joined, append(append([]any(nil), left...), right))
+						}
+					} else {
+						undef := make([]any, len(items[0]))
+						joined = append(joined, append(undef, right))
+					}
+				}
+				items = joined
+				continue
+			}
 			rmap := map[string][]int{}
 			for ri, r := range j.items {
 				key := fmt.Sprint(j.rightKey(r))

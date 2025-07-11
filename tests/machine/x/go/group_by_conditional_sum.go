@@ -101,8 +101,8 @@ func main() {
 					results := []any{}
 					for _, x := range g.Items {
 						results = append(results, func() any {
-							if _exists((x).(map[string]any)["flag"]) {
-								return (x).(map[string]any)["val"]
+							if _exists(_toAnyMap(x)["flag"]) {
+								return _toAnyMap(x)["val"]
 							} else {
 								return 0
 							}
@@ -112,7 +112,7 @@ func main() {
 				}())) / float64(_sum(func() []any {
 					results := []any{}
 					for _, x := range g.Items {
-						results = append(results, (x).(map[string]any)["val"])
+						results = append(results, _toAnyMap(x)["val"])
 					}
 					return results
 				}()))),

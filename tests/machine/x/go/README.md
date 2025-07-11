@@ -110,3 +110,13 @@ Checklist:
 ## Remaining Tasks
 
 - [ ] Enhance type inference to avoid unnecessary `_toAnyMap` conversions.
+- [ ] Optimize dataset query loops for large join results.
+- [ ] Support generics in function return types.
+- [ ] Simplify struct initialization when field order matches.
+- [ ] Improve error messages for type mismatches.
+- [ ] Implement streaming I/O support in the runtime.
+- [ ] Refine variable naming in generated code.
+- [ ] Add support for map literals with computed keys.
+- [ ] Generate comments from Mochi docs in output.
+- [ ] Investigate build-time caching to speed up tests.
+- [ ] Deduplicate extern modules when auto-imported.

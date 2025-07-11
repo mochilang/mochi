@@ -2170,10 +2170,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 						typ = types.AnyType{}
 					}
 				default:
-					// treat as dynamic map using helper
-					c.use("_toAnyMap")
-					base = fmt.Sprintf("_toAnyMap(%s)[%q]", base, field)
-					typ = types.AnyType{}
+					if isStringMapLike(typ) {
+						base = fmt.Sprintf("%s[%q]", base, field)
+						typ = types.AnyType{}
+					} else {
+						// treat as dynamic map using helper
+						c.use("_toAnyMap")
+						base = fmt.Sprintf("_toAnyMap(%s)[%q]", base, field)
+						typ = types.AnyType{}
+					}
 				}
 				if i == len(p.Selector.Tail)-1 {
 					return base, nil
@@ -2365,7 +2370,7 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		if isStringMap(c.inferExprType(f.With)) {
+		if isStringMapLike(c.inferExprType(f.With)) {
 			withStr = w
 		} else {
 			c.use("_toAnyMap")
@@ -2463,7 +2468,7 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		if isStringMap(c.inferExprType(l.With)) {
+		if isStringMapLike(c.inferExprType(l.With)) {
 			opts = v
 		} else {
 			c.use("_toAnyMap")
@@ -2515,7 +2520,7 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		if isStringMap(c.inferExprType(s.With)) {
+		if isStringMapLike(c.inferExprType(s.With)) {
 			opts = v
 		} else {
 			c.use("_toAnyMap")
@@ -2624,7 +2629,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 		elemType = lt.Elem
 		directRange = true
 	}
-	elemIsMap := isStringMap(elemType)
+	elemIsMap := isStringMapLike(elemType)
 	original := c.env
 	child := types.NewEnv(c.env)
 	child.SetVar(q.Var, elemType, true)
@@ -2637,7 +2642,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 			felem = lt.Elem
 		}
 		child.SetVar(f.Var, felem, true)
-		fromIsMap[i] = isStringMap(felem)
+		fromIsMap[i] = isStringMapLike(felem)
 	}
 	// Add join variables to environment
 	joinIsMap := make([]bool, len(q.Joins))
@@ -2648,7 +2653,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 			jelem = lt.Elem
 		}
 		child.SetVar(j.Var, jelem, true)
-		joinIsMap[i] = isStringMap(jelem)
+		joinIsMap[i] = isStringMapLike(jelem)
 	}
 
 	var groupKey string

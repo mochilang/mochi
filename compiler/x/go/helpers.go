@@ -256,6 +256,23 @@ func isStringMap(t types.Type) bool {
 	return false
 }
 
+// isStringMapLike reports whether t is or resolves to a map with string keys.
+// It also returns true for union types where all variants are string-keyed maps.
+func isStringMapLike(t types.Type) bool {
+	if isStringMap(t) {
+		return true
+	}
+	if ut, ok := t.(types.UnionType); ok {
+		for _, v := range ut.Variants {
+			if !isStringMap(v) {
+				return false
+			}
+		}
+		return true
+	}
+	return false
+}
+
 func isMap(t types.Type) bool {
 	_, ok := t.(types.MapType)
 	return ok
