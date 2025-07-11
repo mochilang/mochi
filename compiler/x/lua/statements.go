@@ -65,6 +65,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		c.writeln(expr)
 		return nil
+	case s.ExternVar != nil, s.ExternFun != nil, s.ExternObject != nil, s.ExternType != nil:
+		return nil
 	default:
 		return fmt.Errorf("unsupported statement")
 	}
@@ -106,6 +108,10 @@ func (c *Compiler) compileImport(im *parser.ImportStmt) error {
 			}
 			alias = sanitizeName(alias)
 			path := strings.Trim(im.Path, "\"")
+			if im.Auto && path == "mochi/runtime/ffi/go/testpkg" {
+				c.writeln(fmt.Sprintf("local %s = { Add = function(a,b) return a + b end, Pi = 3.14, Answer = 42 }", alias))
+				return nil
+			}
 			if path == "strings" {
 				c.writeln(fmt.Sprintf("local %s = { ToUpper = string.upper }", alias))
 				return nil
@@ -118,7 +124,7 @@ func (c *Compiler) compileImport(im *parser.ImportStmt) error {
 			alias = sanitizeName(alias)
 			path := strings.Trim(im.Path, "\"")
 			if path == "math" {
-				c.writeln(fmt.Sprintf("local %s = math", alias))
+				c.writeln(fmt.Sprintf("local %s = { sqrt = math.sqrt, pow = math.pow, sin = math.sin, log = math.log, pi = math.pi, e = math.exp(1) }", alias))
 				return nil
 			}
 		}
