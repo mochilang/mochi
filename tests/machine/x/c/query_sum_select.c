@@ -18,10 +18,8 @@ static int _sum_int(list_int v) {
   return sum;
 }
 int main() {
-  list_int _t1 = list_int_create(3);
-  _t1.data[0] = 1;
-  _t1.data[1] = 2;
-  _t1.data[2] = 3;
+  int _t1_data[] = {1, 2, 3};
+  list_int _t1 = {3, _t1_data};
   list_int nums = _t1;
   list_int _t2 = list_int_create(nums.len);
   int _t3 = 0;

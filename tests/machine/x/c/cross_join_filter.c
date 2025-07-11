@@ -38,14 +38,11 @@ static list_pairsItem list_pairsItem_create(int len) {
 }
 
 int main() {
-  list_int _t1 = list_int_create(3);
-  _t1.data[0] = 1;
-  _t1.data[1] = 2;
-  _t1.data[2] = 3;
+  int _t1_data[] = {1, 2, 3};
+  list_int _t1 = {3, _t1_data};
   list_int nums = _t1;
-  list_string _t2 = list_string_create(2);
-  _t2.data[0] = "A";
-  _t2.data[1] = "B";
+  char *_t2_data[] = {"A", "B"};
+  list_string _t2 = {2, _t2_data};
   list_string letters = _t2;
   list_pairsItem _t3 = list_pairsItem_create(nums.len * letters.len);
   int _t4 = 0;

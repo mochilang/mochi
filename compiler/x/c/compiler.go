@@ -3632,35 +3632,43 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		}
 		if nested {
 			c.need(needListListInt)
-			c.writeln(fmt.Sprintf("list_list_int %s = list_list_int_create(%d);", name, len(p.List.Elems)))
+			vals := make([]string, len(p.List.Elems))
 			for i, el := range p.List.Elems {
-				v := c.compileExpr(el)
-				c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
+				vals[i] = c.compileExpr(el)
 			}
+			data := name + "_data"
+			c.writeln(fmt.Sprintf("list_int %s[] = {%s};", data, strings.Join(vals, ", ")))
+			c.writeln(fmt.Sprintf("list_list_int %s = {%d, %s};", name, len(vals), data))
 		} else if len(p.List.Elems) > 0 && isStringExpr(p.List.Elems[0], c.env) {
 			c.need(needListString)
-			c.writeln(fmt.Sprintf("list_string %s = list_string_create(%d);", name, len(p.List.Elems)))
+			vals := make([]string, len(p.List.Elems))
 			for i, el := range p.List.Elems {
-				v := c.compileExpr(el)
-				c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
+				vals[i] = c.compileExpr(el)
 			}
+			data := name + "_data"
+			c.writeln(fmt.Sprintf("char* %s[] = {%s};", data, strings.Join(vals, ", ")))
+			c.writeln(fmt.Sprintf("list_string %s = {%d, %s};", name, len(vals), data))
 		} else if len(p.List.Elems) > 0 && isFloatExpr(p.List.Elems[0], c.env) {
 			c.need(needListFloat)
-			c.writeln(fmt.Sprintf("list_float %s = list_float_create(%d);", name, len(p.List.Elems)))
+			vals := make([]string, len(p.List.Elems))
 			for i, el := range p.List.Elems {
-				v := c.compileExpr(el)
-				c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
+				vals[i] = c.compileExpr(el)
 			}
+			data := name + "_data"
+			c.writeln(fmt.Sprintf("double %s[] = {%s};", data, strings.Join(vals, ", ")))
+			c.writeln(fmt.Sprintf("list_float %s = {%d, %s};", name, len(vals), data))
 		} else if len(p.List.Elems) > 0 {
 			if ml := asMapLiteral(p.List.Elems[0]); ml != nil {
 				if st, ok := c.structLits[ml]; ok {
 					listName := "list_" + sanitizeName(st.Name)
 					c.compileStructListType(st)
-					c.writeln(fmt.Sprintf("%s %s = %s_create(%d);", listName, name, listName, len(p.List.Elems)))
+					vals := make([]string, len(p.List.Elems))
 					for i, el := range p.List.Elems {
-						v := c.compileExpr(el)
-						c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
+						vals[i] = c.compileExpr(el)
 					}
+					data := name + "_data"
+					c.writeln(fmt.Sprintf("%s %s[] = {%s};", sanitizeName(st.Name), data, strings.Join(vals, ", ")))
+					c.writeln(fmt.Sprintf("%s %s = {%d, %s};", listName, name, len(vals), data))
 					return name
 				}
 			} else if sl := asStructLiteral(p.List.Elems[0]); sl != nil {
@@ -3669,20 +3677,24 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					listName := "list_" + sanitizeName(st.Name)
 					c.compileStructType(st)
 					c.compileStructListType(st)
-					c.writeln(fmt.Sprintf("%s %s = %s_create(%d);", listName, name, listName, len(p.List.Elems)))
+					vals := make([]string, len(p.List.Elems))
 					for i, el := range p.List.Elems {
-						v := c.compileExpr(el)
-						c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
+						vals[i] = c.compileExpr(el)
 					}
+					data := name + "_data"
+					c.writeln(fmt.Sprintf("%s %s[] = {%s};", sanitizeName(st.Name), data, strings.Join(vals, ", ")))
+					c.writeln(fmt.Sprintf("%s %s = {%d, %s};", listName, name, len(vals), data))
 					return name
 				}
 			}
 			c.need(needListInt)
-			c.writeln(fmt.Sprintf("list_int %s = list_int_create(%d);", name, len(p.List.Elems)))
+			vals := make([]string, len(p.List.Elems))
 			for i, el := range p.List.Elems {
-				v := c.compileExpr(el)
-				c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
+				vals[i] = c.compileExpr(el)
 			}
+			data := name + "_data"
+			c.writeln(fmt.Sprintf("int %s[] = {%s};", data, strings.Join(vals, ", ")))
+			c.writeln(fmt.Sprintf("list_int %s = {%d, %s};", name, len(vals), data))
 		} else {
 			c.need(needListInt)
 			c.writeln(fmt.Sprintf("list_int %s = list_int_create(0);", name))

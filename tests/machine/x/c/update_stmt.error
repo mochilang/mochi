@@ -1,32 +1,28 @@
 line: 0
 error: cc error: exit status 1
-/workspace/mochi/tests/machine/x/c/update_stmt.c: In function ‘list_Person_create’:
-/workspace/mochi/tests/machine/x/c/update_stmt.c:13:36: error: invalid application of ‘sizeof’ to incomplete type ‘Person’
-   13 |   l.data = (Person *)malloc(sizeof(Person) * len);
-      |                                    ^~~~~~
 /workspace/mochi/tests/machine/x/c/update_stmt.c: In function ‘test_update_adult_status’:
 /workspace/mochi/tests/machine/x/c/update_stmt.c:29:9: error: ‘people’ undeclared (first use in this function)
    29 |   if (!(people == _t1)) {
       |         ^~~~~~
 /workspace/mochi/tests/machine/x/c/update_stmt.c:29:9: note: each undeclared identifier is reported only once for each function it appears in
 /workspace/mochi/tests/machine/x/c/update_stmt.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/update_stmt.c:47:11: error: redefinition of ‘name’
-   47 |     char *name = _t4.name;
+/workspace/mochi/tests/machine/x/c/update_stmt.c:48:11: error: redefinition of ‘name’
+   48 |     char *name = _t4.name;
       |           ^~~~
-/workspace/mochi/tests/machine/x/c/update_stmt.c:44:11: note: previous definition of ‘name’ with type ‘char *’
-   44 |     char *name = _t4.name;
+/workspace/mochi/tests/machine/x/c/update_stmt.c:45:11: note: previous definition of ‘name’ with type ‘char *’
+   45 |     char *name = _t4.name;
       |           ^~~~
-/workspace/mochi/tests/machine/x/c/update_stmt.c:48:9: error: redefinition of ‘age’
-   48 |     int age = _t4.age;
+/workspace/mochi/tests/machine/x/c/update_stmt.c:49:9: error: redefinition of ‘age’
+   49 |     int age = _t4.age;
       |         ^~~
-/workspace/mochi/tests/machine/x/c/update_stmt.c:45:9: note: previous definition of ‘age’ with type ‘int’
-   45 |     int age = _t4.age;
+/workspace/mochi/tests/machine/x/c/update_stmt.c:46:9: note: previous definition of ‘age’ with type ‘int’
+   46 |     int age = _t4.age;
       |         ^~~
-/workspace/mochi/tests/machine/x/c/update_stmt.c:49:11: error: redefinition of ‘status’
-   49 |     char *status = _t4.status;
+/workspace/mochi/tests/machine/x/c/update_stmt.c:50:11: error: redefinition of ‘status’
+   50 |     char *status = _t4.status;
       |           ^~~~~~
-/workspace/mochi/tests/machine/x/c/update_stmt.c:46:11: note: previous definition of ‘status’ with type ‘char *’
-   46 |     char *status = _t4.status;
+/workspace/mochi/tests/machine/x/c/update_stmt.c:47:11: note: previous definition of ‘status’ with type ‘char *’
+   47 |     char *status = _t4.status;
       |           ^~~~~~
 
    1: #include <stdio.h>

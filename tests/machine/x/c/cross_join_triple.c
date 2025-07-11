@@ -39,17 +39,14 @@ static list_combosItem list_combosItem_create(int len) {
 }
 
 int main() {
-  list_int _t1 = list_int_create(2);
-  _t1.data[0] = 1;
-  _t1.data[1] = 2;
+  int _t1_data[] = {1, 2};
+  list_int _t1 = {2, _t1_data};
   list_int nums = _t1;
-  list_string _t2 = list_string_create(2);
-  _t2.data[0] = "A";
-  _t2.data[1] = "B";
+  char *_t2_data[] = {"A", "B"};
+  list_string _t2 = {2, _t2_data};
   list_string letters = _t2;
-  list_int _t3 = list_int_create(2);
-  _t3.data[0] = 1;
-  _t3.data[1] = 0;
+  int _t3_data[] = {1, 0};
+  list_int _t3 = {2, _t3_data};
   list_int bools = _t3;
   list_combosItem _t4 =
       list_combosItem_create(nums.len * letters.len * bools.len);

@@ -33,11 +33,11 @@ static list_adultsItem list_adultsItem_create(int len) {
 }
 
 int main() {
-  list_peopleItem _t1 = list_peopleItem_create(4);
-  _t1.data[0] = (peopleItem){.name = "Alice", .age = 30};
-  _t1.data[1] = (peopleItem){.name = "Bob", .age = 15};
-  _t1.data[2] = (peopleItem){.name = "Charlie", .age = 65};
-  _t1.data[3] = (peopleItem){.name = "Diana", .age = 45};
+  peopleItem _t1_data[] = {(peopleItem){.name = "Alice", .age = 30},
+                           (peopleItem){.name = "Bob", .age = 15},
+                           (peopleItem){.name = "Charlie", .age = 65},
+                           (peopleItem){.name = "Diana", .age = 45}};
+  list_peopleItem _t1 = {4, _t1_data};
   list_peopleItem people = _t1;
   list_adultsItem _t2 = list_adultsItem_create(people.len);
   int _t3 = 0;

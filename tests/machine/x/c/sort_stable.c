@@ -35,10 +35,10 @@ static list_itemsItem list_itemsItem_create(int len) {
 }
 
 int main() {
-  list_itemsItem _t1 = list_itemsItem_create(3);
-  _t1.data[0] = (itemsItem){.n = 1, .v = "a"};
-  _t1.data[1] = (itemsItem){.n = 1, .v = "b"};
-  _t1.data[2] = (itemsItem){.n = 2, .v = "c"};
+  itemsItem _t1_data[] = {(itemsItem){.n = 1, .v = "a"},
+                          (itemsItem){.n = 1, .v = "b"},
+                          (itemsItem){.n = 2, .v = "c"}};
+  list_itemsItem _t1 = {3, _t1_data};
   list_itemsItem items = _t1;
   list_string _t2 = list_string_create(items.len);
   int *_t5 = (int *)malloc(sizeof(int) * items.len);

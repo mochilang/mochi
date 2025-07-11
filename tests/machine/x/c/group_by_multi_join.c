@@ -144,21 +144,19 @@ static list_groupedItem list_groupedItem_create(int len) {
 }
 
 int main() {
-  list_nationsItem _t1 = list_nationsItem_create(2);
-  _t1.data[0] = (nationsItem){.id = 1, .name = "A"};
-  _t1.data[1] = (nationsItem){.id = 2, .name = "B"};
+  nationsItem _t1_data[] = {(nationsItem){.id = 1, .name = "A"},
+                            (nationsItem){.id = 2, .name = "B"}};
+  list_nationsItem _t1 = {2, _t1_data};
   list_nationsItem nations = _t1;
-  list_suppliersItem _t2 = list_suppliersItem_create(2);
-  _t2.data[0] = (suppliersItem){.id = 1, .nation = 1};
-  _t2.data[1] = (suppliersItem){.id = 2, .nation = 2};
+  suppliersItem _t2_data[] = {(suppliersItem){.id = 1, .nation = 1},
+                              (suppliersItem){.id = 2, .nation = 2}};
+  list_suppliersItem _t2 = {2, _t2_data};
   list_suppliersItem suppliers = _t2;
-  list_partsuppItem _t3 = list_partsuppItem_create(3);
-  _t3.data[0] =
-      (partsuppItem){.part = 100, .supplier = 1, .cost = 10.0, .qty = 2};
-  _t3.data[1] =
-      (partsuppItem){.part = 100, .supplier = 2, .cost = 20.0, .qty = 1};
-  _t3.data[2] =
-      (partsuppItem){.part = 200, .supplier = 1, .cost = 5.0, .qty = 3};
+  partsuppItem _t3_data[] = {
+      (partsuppItem){.part = 100, .supplier = 1, .cost = 10.0, .qty = 2},
+      (partsuppItem){.part = 100, .supplier = 2, .cost = 20.0, .qty = 1},
+      (partsuppItem){.part = 200, .supplier = 1, .cost = 5.0, .qty = 3}};
+  list_partsuppItem _t3 = {3, _t3_data};
   list_partsuppItem partsupp = _t3;
   list_filteredItem _t4 =
       list_filteredItem_create(partsupp.len * suppliers.len * nations.len);

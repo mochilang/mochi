@@ -30,10 +30,8 @@ static int _max_int(list_int v) {
   return m;
 }
 int main() {
-  list_int _t1 = list_int_create(3);
-  _t1.data[0] = 3;
-  _t1.data[1] = 1;
-  _t1.data[2] = 4;
+  int _t1_data[] = {3, 1, 4};
+  list_int _t1 = {3, _t1_data};
   list_int nums = _t1;
   printf("%d\n", _min_int(nums));
   printf("%d\n", _max_int(nums));

@@ -151,14 +151,14 @@ static list_bigItem list_bigItem_create(int len) {
 }
 
 int main() {
-  list_peopleItem _t1 = list_peopleItem_create(7);
-  _t1.data[0] = (peopleItem){.name = "Alice", .city = "Paris"};
-  _t1.data[1] = (peopleItem){.name = "Bob", .city = "Hanoi"};
-  _t1.data[2] = (peopleItem){.name = "Charlie", .city = "Paris"};
-  _t1.data[3] = (peopleItem){.name = "Diana", .city = "Hanoi"};
-  _t1.data[4] = (peopleItem){.name = "Eve", .city = "Paris"};
-  _t1.data[5] = (peopleItem){.name = "Frank", .city = "Hanoi"};
-  _t1.data[6] = (peopleItem){.name = "George", .city = "Paris"};
+  peopleItem _t1_data[] = {(peopleItem){.name = "Alice", .city = "Paris"},
+                           (peopleItem){.name = "Bob", .city = "Hanoi"},
+                           (peopleItem){.name = "Charlie", .city = "Paris"},
+                           (peopleItem){.name = "Diana", .city = "Hanoi"},
+                           (peopleItem){.name = "Eve", .city = "Paris"},
+                           (peopleItem){.name = "Frank", .city = "Hanoi"},
+                           (peopleItem){.name = "George", .city = "Paris"}};
+  list_peopleItem _t1 = {7, _t1_data};
   list_peopleItem people = _t1;
   list_peopleItem _t2 = list_peopleItem_create(people.len);
   list_string _t3 = list_string_create(people.len);

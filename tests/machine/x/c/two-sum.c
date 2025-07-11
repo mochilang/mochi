@@ -16,25 +16,20 @@ list_int twoSum(list_int nums, int target) {
   for (int i = 0; i < n; i++) {
     for (int j = i + 1; j < n; j++) {
       if (nums.data[i] + nums.data[j] == target) {
-        list_int _t1 = list_int_create(2);
-        _t1.data[0] = i;
-        _t1.data[1] = j;
+        int _t1_data[] = {i, j};
+        list_int _t1 = {2, _t1_data};
         return _t1;
       }
     }
   }
-  list_int _t2 = list_int_create(2);
-  _t2.data[0] = (-1);
-  _t2.data[1] = (-1);
+  int _t2_data[] = {(-1), (-1)};
+  list_int _t2 = {2, _t2_data};
   return _t2;
 }
 
 int main() {
-  list_int _t3 = list_int_create(4);
-  _t3.data[0] = 2;
-  _t3.data[1] = 7;
-  _t3.data[2] = 11;
-  _t3.data[3] = 15;
+  int _t3_data[] = {2, 7, 11, 15};
+  list_int _t3 = {4, _t3_data};
   list_int result = twoSum(_t3, 9);
   printf("%d\n", result.data[0]);
   printf("%d\n", result.data[1]);
