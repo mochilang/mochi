@@ -1,5 +1,5 @@
 import java.util.*;
-public class Main {
+public class PureFold {
 	static int triple(int x) {
 		return x * 3;
 	}

@@ -7,7 +7,7 @@ class ProductsNamePrice {
 		this.price = price;
 	}
 }
-public class Main {
+public class DatasetSortTakeLimit {
 	static List<ProductsNamePrice> products = new ArrayList<>(Arrays.asList(new ProductsNamePrice("Laptop", 1500), new ProductsNamePrice("Smartphone", 900), new ProductsNamePrice("Tablet", 600), new ProductsNamePrice("Monitor", 300), new ProductsNamePrice("Keyboard", 100), new ProductsNamePrice("Mouse", 50), new ProductsNamePrice("Headphones", 200)));
 	static List<ProductsNamePrice> expensive = (new java.util.function.Supplier<List<ProductsNamePrice>>(){public List<ProductsNamePrice> get(){
 	List<ProductsNamePrice> _res1 = new ArrayList<>();

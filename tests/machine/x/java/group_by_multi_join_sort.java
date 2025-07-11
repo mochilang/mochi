@@ -97,7 +97,7 @@ class ResultCAcctbalCAddressCCommentCCustkeyCNameCPhoneNName {
 		this.n_name = n_name;
 	}
 }
-public class Main {
+public class GroupByMultiJoinSort {
 	static List<NationNNameNNationkey> nation = new ArrayList<>(Arrays.asList(new NationNNameNNationkey(1, "BRAZIL")));
 	static List<CustomerCAcctbalCAddressCCommentCCustkeyCNameCNationkeyCPhone> customer = new ArrayList<>(Arrays.asList(new CustomerCAcctbalCAddressCCommentCCustkeyCNameCNationkeyCPhone(1, "Alice", 100.000000, 1, "123 St", "123-456", "Loyal")));
 	static List<OrdersOCustkeyOOrderdateOOrderkey> orders = new ArrayList<>(Arrays.asList(new OrdersOCustkeyOOrderdateOOrderkey(1000, 1, "1993-10-15"), new OrdersOCustkeyOOrderdateOOrderkey(2000, 1, "1994-01-02")));

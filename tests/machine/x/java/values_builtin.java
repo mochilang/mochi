@@ -9,7 +9,7 @@ class MABC {
 		this.c = c;
 	}
 }
-public class Main {
+public class ValuesBuiltin {
 	static MABC m = new MABC(1, 2, 3);
 	static <K,V> List<V> values(Map<K,V> m) {
 		return new ArrayList<>(m.values());

@@ -13,7 +13,7 @@ class Counter {
 		return Objects.hash(n);
 	}
 }
-public class Main {
+public class RecordAssign {
 	static Counter c = new Counter(0);
 	static void inc(Counter c) {
 		c.n = c.n + 1;

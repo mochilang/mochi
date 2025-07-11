@@ -1,5 +1,5 @@
 import java.util.*;
-public class Main {
+public class InOperator {
 	static List<Integer> xs = new ArrayList<>(Arrays.asList(1, 2, 3));
 	static boolean inOp(Object item, Object collection) {
 		if (collection instanceof Map<?,?> m) return m.containsKey(item);

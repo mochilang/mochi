@@ -1,5 +1,5 @@
 import java.util.*;
-public class Main {
+public class ListSetOps {
 	static <T> List<T> union_all(List<T> a, List<T> b) {
 		List<T> res = new ArrayList<>(a);
 		res.addAll(b);

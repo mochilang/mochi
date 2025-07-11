@@ -15,7 +15,7 @@ class TmpTagTotal {
 		this.total = total;
 	}
 }
-public class Main {
+public class GroupItemsIteration {
 	static List<DataTagVal> data = new ArrayList<>(Arrays.asList(new DataTagVal("a", 1), new DataTagVal("a", 2), new DataTagVal("b", 3)));
 	static List<Object> groups = (new java.util.function.Supplier<List<Object>>(){public List<Object> get(){
 	List<Object> _res6 = new ArrayList<>();

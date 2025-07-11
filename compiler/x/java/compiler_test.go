@@ -36,6 +36,22 @@ func context(src string, line int) string {
 	return strings.Join(out, "\n")
 }
 
+func classNameFromVar(s string) string {
+	if s == "" {
+		return ""
+	}
+	parts := strings.FieldsFunc(s, func(r rune) bool {
+		return r == '_' || r == '-' || r == ' '
+	})
+	for i, p := range parts {
+		if p == "" {
+			continue
+		}
+		parts[i] = strings.ToUpper(p[:1]) + p[1:]
+	}
+	return strings.Join(parts, "")
+}
+
 func TestCompileValidPrograms(t *testing.T) {
 	root := filepath.Join("..", "..", "..")
 	dir := filepath.Join(root, "tests", "vm", "valid")
@@ -47,6 +63,10 @@ func TestCompileValidPrograms(t *testing.T) {
 	os.MkdirAll(outDir, 0755)
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+		className := classNameFromVar(name)
+		if className == "" {
+			className = "Main"
+		}
 		t.Run(name, func(t *testing.T) {
 			prog, err := parser.Parse(f)
 			if err != nil {
@@ -63,13 +83,13 @@ func TestCompileValidPrograms(t *testing.T) {
 				t.Fatalf("write error: %v", err)
 			}
 			tmp := t.TempDir()
-			mainFile := filepath.Join(tmp, "Main.java")
+			mainFile := filepath.Join(tmp, className+".java")
 			os.WriteFile(mainFile, code, 0644)
 			if out, err := exec.Command("javac", mainFile).CombinedOutput(); err != nil {
 				writeError(outDir, name, f, 0, fmt.Sprintf("javac error: %v\n%s", err, out))
 				return
 			}
-			cmd := exec.Command("java", "-cp", tmp, "Main")
+			cmd := exec.Command("java", "-cp", tmp, className)
 			cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root)
 			var buf bytes.Buffer
 			cmd.Stdout = &buf

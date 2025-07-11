@@ -25,7 +25,7 @@ class ResultCustomerNameOrder {
 		this.order = order;
 	}
 }
-public class Main {
+public class RightJoin {
 	static List<CustomersIdName> customers = new ArrayList<>(Arrays.asList(new CustomersIdName(1, "Alice"), new CustomersIdName(2, "Bob"), new CustomersIdName(3, "Charlie"), new CustomersIdName(4, "Diana")));
 	static List<OrdersCustomerIdIdTotal> orders = new ArrayList<>(Arrays.asList(new OrdersCustomerIdIdTotal(100, 1, 250), new OrdersCustomerIdIdTotal(101, 2, 125), new OrdersCustomerIdIdTotal(102, 1, 300)));
 	static List<ResultCustomerNameOrder> result = (new java.util.function.Supplier<List<ResultCustomerNameOrder>>(){public List<ResultCustomerNameOrder> get(){

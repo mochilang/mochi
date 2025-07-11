@@ -1,5 +1,5 @@
 import java.util.*;
-public class Main {
+public class TailRecursion {
 	static int sum_rec(int n, int acc) {
 		if (n == 0) {
 			return acc;

@@ -1,5 +1,5 @@
 import java.util.*;
-public class Main {
+public class TypedLet {
 	static int y = 0;
 	public static void main(String[] args) {
 	System.out.println(y);

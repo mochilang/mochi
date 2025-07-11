@@ -17,7 +17,7 @@ class AdultsAgeIsSeniorName {
 		this.is_senior = is_senior;
 	}
 }
-public class Main {
+public class DatasetWhereFilter {
 	static List<PeopleAgeName> people = new ArrayList<>(Arrays.asList(new PeopleAgeName("Alice", 30), new PeopleAgeName("Bob", 15), new PeopleAgeName("Charlie", 65), new PeopleAgeName("Diana", 45)));
 	static List<AdultsAgeIsSeniorName> adults = (new java.util.function.Supplier<List<AdultsAgeIsSeniorName>>(){public List<AdultsAgeIsSeniorName> get(){
 	List<AdultsAgeIsSeniorName> _res1 = new ArrayList<>();

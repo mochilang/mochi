@@ -9,7 +9,7 @@ class CombosBLN {
 		this.b = b;
 	}
 }
-public class Main {
+public class CrossJoinTriple {
 	static List<Integer> nums = new ArrayList<>(Arrays.asList(1, 2));
 	static List<String> letters = new ArrayList<>(Arrays.asList("A", "B"));
 	static List<Boolean> bools = new ArrayList<>(Arrays.asList(true, false));

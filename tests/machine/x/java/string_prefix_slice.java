@@ -1,5 +1,5 @@
 import java.util.*;
-public class Main {
+public class StringPrefixSlice {
 	static String prefix = "fore";
 	static String s1 = "forest";
 	static String s2 = "desert";

@@ -1,5 +1,5 @@
 import java.util.*;
-public class Main {
+public class PureGlobalFold {
 	static int k = 2;
 	static int inc(int x) {
 		return x + k;

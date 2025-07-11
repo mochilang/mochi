@@ -43,7 +43,7 @@ class GroupedPartTotal {
 		this.total = total;
 	}
 }
-public class Main {
+public class GroupByMultiJoin {
 	static List<NationsIdName> nations = new ArrayList<>(Arrays.asList(new NationsIdName(1, "A"), new NationsIdName(2, "B")));
 	static List<SuppliersIdNation> suppliers = new ArrayList<>(Arrays.asList(new SuppliersIdNation(1, 1), new SuppliersIdNation(2, 2)));
 	static List<PartsuppCostPartQtySupplier> partsupp = new ArrayList<>(Arrays.asList(new PartsuppCostPartQtySupplier(100, 1, 10.000000, 2), new PartsuppCostPartQtySupplier(100, 2, 20.000000, 1), new PartsuppCostPartQtySupplier(200, 1, 5.000000, 3)));

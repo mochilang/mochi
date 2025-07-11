@@ -1,5 +1,5 @@
 import java.util.*;
-public class Main {
+public class QuerySumSelect {
 	static List<Integer> nums = new ArrayList<>(Arrays.asList(1, 2, 3));
 	static double result = (new java.util.function.Supplier<Integer>(){public Integer get(){
 	int _sum3 = 0;

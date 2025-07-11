@@ -11,7 +11,7 @@ class DataOuter {
 		this.outer = outer;
 	}
 }
-public class Main {
+public class MapNestedAssign {
 	static DataOuter data = new DataOuter(new DataInner(1));
 	public static void main(String[] args) {
 	data.outer.inner = 2;

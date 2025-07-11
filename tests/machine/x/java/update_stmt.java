@@ -17,7 +17,7 @@ class Person {
 		return Objects.hash(name, age, status);
 	}
 }
-public class Main {
+public class UpdateStmt {
 	static List<Person> people = Arrays.asList(new Person("Alice", 17, "minor"), new Person("Bob", 25, "unknown"), new Person("Charlie", 18, "unknown"), new Person("Diana", 16, "minor"));
 	public static void main(String[] args) {
 	for (Person _it0 : people) {

@@ -7,7 +7,7 @@ class MAB {
 		this.b = b;
 	}
 }
-public class Main {
+public class MapMembership {
 	static MAB m = new MAB(1, 2);
 	static boolean inOp(Object item, Object collection) {
 		if (collection instanceof Map<?,?> m) return m.containsKey(item);

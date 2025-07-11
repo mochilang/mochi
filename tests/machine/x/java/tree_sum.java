@@ -12,7 +12,7 @@ class Tree {
 		}
 	}
 }
-public class Main {
+public class TreeSum {
 	static Tree t = new Tree.Node(new Tree.Leaf(), 1, new Tree.Node(new Tree.Leaf(), 2, new Tree.Leaf()));
 	static int sum_tree(Tree t) {
 		return (new java.util.function.Supplier<Integer>(){public Integer get(){

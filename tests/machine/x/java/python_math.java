@@ -7,7 +7,7 @@ class math {
 	static double sin(double x) { return Math.sin(x); }
 	static double log(double x) { return Math.log(x); }
 }
-public class Main {
+public class PythonMath {
 	static double r = 3.000000;
 	static double area = math.pi * math.pow(r, 2.000000);
 	static Object root = math.sqrt(49.000000);

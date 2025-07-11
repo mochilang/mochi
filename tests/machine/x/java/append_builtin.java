@@ -1,5 +1,5 @@
 import java.util.*;
-public class Main {
+public class AppendBuiltin {
 	static List<Integer> a = new ArrayList<>(Arrays.asList(1, 2));
 	static <T> List<T> append(List<T> list, T item) {
 		List<T> res = new ArrayList<>(list);

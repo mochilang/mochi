@@ -17,7 +17,7 @@ class ResultCatShare {
 		this.share = share;
 	}
 }
-public class Main {
+public class GroupByConditionalSum {
 	static List<ItemsCatFlagVal> items = new ArrayList<>(Arrays.asList(new ItemsCatFlagVal("a", 10, true), new ItemsCatFlagVal("a", 5, false), new ItemsCatFlagVal("b", 20, true)));
 	static List<ResultCatShare> result = (new java.util.function.Supplier<List<ResultCatShare>>(){public List<ResultCatShare> get(){
 	List<ResultCatShare> _res7 = new ArrayList<>();

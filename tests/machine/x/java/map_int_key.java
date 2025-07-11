@@ -1,5 +1,5 @@
 import java.util.*;
-public class Main {
+public class MapIntKey {
 	static Map<Integer,String> m = mapOfEntries(entry(1, "a"), entry(2, "b"));
 	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
 	static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {

@@ -1,5 +1,5 @@
 import java.util.*;
-public class Main {
+public class ShortCircuit {
 	static boolean boom(int a, int b) {
 		System.out.println("boom");
 		return true;
