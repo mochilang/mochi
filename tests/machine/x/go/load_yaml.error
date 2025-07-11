@@ -1,13 +1,6 @@
 Error on line 0: run error: exit status 1
-panic: interface conversion: interface {} is map[string]interface {}, not main.Person
-
-goroutine 1 [running]:
-main._cast[...](...)
-	/workspace/mochi/tests/machine/x/go/load_yaml.go:44
-main.main.func1(...)
-	/workspace/mochi/tests/machine/x/go/load_yaml.go:23
-main.main()
-	/workspace/mochi/tests/machine/x/go/load_yaml.go:26 +0x745
-exit status 2
+# command-line-arguments
+../../../tests/machine/x/go/load_yaml.go:25:75: cannot use _ as value or type
+../../../tests/machine/x/go/load_yaml.go:28:13: invalid operation: r (variable of type map[string]any) is not an interface
 
 1: //go:build ignore

@@ -4,11 +4,12 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 )
 
 func main() {
 	var s string = "mochi"
-	fmt.Println(_indexString(s, 1))
+	fmt.Println(_sprint(_indexString(s, 1)))
 }
 
 func _indexString(s string, i int) string {
@@ -20,4 +21,15 @@ func _indexString(s string, i int) string {
 		panic("index out of range")
 	}
 	return string(runes[i])
+}
+
+func _sprint(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
+		return "<nil>"
+	}
+	return fmt.Sprint(v)
 }

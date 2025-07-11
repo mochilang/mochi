@@ -4,6 +4,7 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 )
 
@@ -34,8 +35,19 @@ func main() {
 		}
 		return _res
 	}()
-	fmt.Println("--- Cross Join of three lists ---")
+	fmt.Println(_sprint("--- Cross Join of three lists ---"))
 	for _, c := range combos {
-		fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint(c.N), fmt.Sprint(c.L), fmt.Sprint(c.B)}, " "), " "))
+		fmt.Println(strings.TrimRight(strings.Join([]string{_sprint(c.N), _sprint(c.L), _sprint(c.B)}, " "), " "))
 	}
+}
+
+func _sprint(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
+		return "<nil>"
+	}
+	return fmt.Sprint(v)
 }

@@ -1,13 +1,6 @@
 Error on line 0: run error: exit status 1
-panic: interface conversion: interface {} is map[string]int, not map[string]interface {}
-
-goroutine 1 [running]:
-main._cast[...](...)
-	/workspace/mochi/tests/machine/x/go/group_by_join.go:61
-main.main.func1(...)
-	/workspace/mochi/tests/machine/x/go/group_by_join.go:33
-main.main()
-	/workspace/mochi/tests/machine/x/go/group_by_join.go:53 +0xf05
-exit status 2
+# command-line-arguments
+../../../tests/machine/x/go/group_by_join.go:63:23: invalid operation: o (variable of struct type OrdersItem) is not an interface
+../../../tests/machine/x/go/group_by_join.go:67:23: invalid operation: c (variable of struct type CustomersItem) is not an interface
 
 1: //go:build ignore

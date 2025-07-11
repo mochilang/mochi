@@ -9,20 +9,51 @@ import (
 )
 
 func main() {
-	var people []map[string]string = []map[string]string{
-		map[string]string{"name": "Alice", "city": "Paris"},
-		map[string]string{"name": "Bob", "city": "Hanoi"},
-		map[string]string{"name": "Charlie", "city": "Paris"},
-		map[string]string{"name": "Diana", "city": "Hanoi"},
-		map[string]string{"name": "Eve", "city": "Paris"},
-		map[string]string{"name": "Frank", "city": "Hanoi"},
-		map[string]string{"name": "George", "city": "Paris"},
+	type PeopleItem struct {
+		Name string `json:"name"`
+		City string `json:"city"`
 	}
-	var big []map[string]any = func() []map[string]any {
+
+	var people []PeopleItem = []PeopleItem{
+		PeopleItem{
+			Name: "Alice",
+			City: "Paris",
+		},
+		PeopleItem{
+			Name: "Bob",
+			City: "Hanoi",
+		},
+		PeopleItem{
+			Name: "Charlie",
+			City: "Paris",
+		},
+		PeopleItem{
+			Name: "Diana",
+			City: "Hanoi",
+		},
+		PeopleItem{
+			Name: "Eve",
+			City: "Paris",
+		},
+		PeopleItem{
+			Name: "Frank",
+			City: "Hanoi",
+		},
+		PeopleItem{
+			Name: "George",
+			City: "Paris",
+		},
+	}
+	type Big struct {
+		City any `json:"city"`
+		Num  int `json:"num"`
+	}
+
+	var big []Big = func() []Big {
 		groups := map[string]*data.Group{}
 		order := []string{}
 		for _, p := range people {
-			key := p["city"]
+			key := p.City
 			ks := fmt.Sprint(key)
 			g, ok := groups[ks]
 			if !ok {
@@ -32,13 +63,16 @@ func main() {
 			}
 			g.Items = append(g.Items, p)
 		}
-		_res := []map[string]any{}
+		_res := []Big{}
 		for _, ks := range order {
 			g := groups[ks]
 			if !(len(g.Items) >= 4) {
 				continue
 			}
-			_res = append(_res, map[string]any{"city": g.Key, "num": len(g.Items)})
+			_res = append(_res, Big{
+				City: g.Key,
+				Num:  len(g.Items),
+			})
 		}
 		return _res
 	}()

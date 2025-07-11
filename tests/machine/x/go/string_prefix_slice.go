@@ -4,14 +4,15 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 )
 
 func main() {
 	var prefix string = "fore"
 	var s1 string = "forest"
-	fmt.Println((_sliceString(s1, 0, 4) == prefix))
+	fmt.Println(_sprint((_sliceString(s1, 0, 4) == prefix)))
 	var s2 string = "desert"
-	fmt.Println((_sliceString(s2, 0, 4) == prefix))
+	fmt.Println(_sprint((_sliceString(s2, 0, 4) == prefix)))
 }
 
 func _sliceString(s string, i, j int) string {
@@ -34,4 +35,15 @@ func _sliceString(s string, i, j int) string {
 		end = start
 	}
 	return string([]rune(s)[start:end])
+}
+
+func _sprint(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
+		return "<nil>"
+	}
+	return fmt.Sprint(v)
 }

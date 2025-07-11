@@ -22,7 +22,7 @@ func main() {
 		}
 		return "unknown"
 	}()
-	fmt.Println(label)
+	fmt.Println(_sprint(label))
 }
 
 func _equal(a, b any) bool {
@@ -59,4 +59,15 @@ func _equal(a, b any) bool {
 		return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()
 	}
 	return reflect.DeepEqual(a, b)
+}
+
+func _sprint(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
+		return "<nil>"
+	}
+	return fmt.Sprint(v)
 }

@@ -10,8 +10,23 @@ import (
 )
 
 func main() {
-	var people []map[string]any = []map[string]any{map[string]any{"name": "Alice", "age": 30}, map[string]any{"name": "Bob", "age": 25}}
-	_save(people, "-", _toAnyMap(map[string]string{"format": "jsonl"}))
+	type PeopleItem struct {
+		Name string `json:"name"`
+		Age  int    `json:"age"`
+	}
+
+	var people []PeopleItem = []PeopleItem{PeopleItem{
+		Name: "Alice",
+		Age:  30,
+	}, PeopleItem{
+		Name: "Bob",
+		Age:  25,
+	}}
+	type _ struct {
+		Format string `json:"format"`
+	}
+
+	_save(people, "-", _toAnyMap(_{Format: "jsonl"}))
 }
 
 func _save(src any, path string, opts map[string]any) {

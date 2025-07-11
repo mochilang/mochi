@@ -9,10 +9,10 @@ import (
 )
 
 func main() {
-	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(_union[int]([]int{1, 2}, []int{2, 3})), "["), "]"))
-	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(_except[int]([]int{1, 2, 3}, []int{2})), "["), "]"))
-	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(_intersect[int]([]int{1, 2, 3}, []int{2, 4})), "["), "]"))
-	fmt.Println(len(append(append([]int{}, []int{1, 2}...), []int{2, 3}...)))
+	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(_sprint(_union[int]([]int{1, 2}, []int{2, 3})), "["), "]"))
+	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(_sprint(_except[int]([]int{1, 2, 3}, []int{2})), "["), "]"))
+	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(_sprint(_intersect[int]([]int{1, 2, 3}, []int{2, 4})), "["), "]"))
+	fmt.Println(_sprint(len(append(append([]int{}, []int{1, 2}...), []int{2, 3}...))))
 }
 
 func _equal(a, b any) bool {
@@ -92,6 +92,17 @@ func _intersect[T any](a, b []T) []T {
 		}
 	}
 	return res
+}
+
+func _sprint(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
+		return "<nil>"
+	}
+	return fmt.Sprint(v)
 }
 
 func _union[T any](a, b []T) []T {

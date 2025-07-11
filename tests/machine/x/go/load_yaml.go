@@ -3,10 +3,10 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"mochi/runtime/data"
 	"os"
+	"reflect"
 	"strings"
 )
 
@@ -17,88 +17,40 @@ type Person struct {
 }
 
 func main() {
+	type _ struct {
+		Format string `json:"format"`
+	}
+
 	var people []Person = func() []Person {
-		rows := _load("../../../tests/interpreter/valid/people.yaml", _toAnyMap(map[string]string{"format": "yaml"}))
+		rows := _load("../../../tests/interpreter/valid/people.yaml", _toAnyMap(_{Format: "yaml"}))
 		out := make([]Person, len(rows))
 		for i, r := range rows {
-			out[i] = _cast[Person](r)
+			out[i] = r.(Person)
 		}
 		return out
 	}()
-	var adults []map[string]string = func() []map[string]string {
-		_res := []map[string]string{}
+	type Adults struct {
+		Name  any `json:"name"`
+		Email any `json:"email"`
+	}
+
+	var adults []Adults = func() []Adults {
+		_res := []Adults{}
 		for _, p := range people {
 			if p.Age >= 18 {
 				if p.Age >= 18 {
-					_res = append(_res, map[string]string{"name": p.Name, "email": p.Email})
+					_res = append(_res, Adults{
+						Name:  p.Name,
+						Email: p.Email,
+					})
 				}
 			}
 		}
 		return _res
 	}()
 	for _, a := range adults {
-		fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint(a["name"]), fmt.Sprint(a["email"])}, " "), " "))
+		fmt.Println(strings.TrimRight(strings.Join([]string{_sprint(a.Name), _sprint(a.Email)}, " "), " "))
 	}
-}
-
-func _cast[T any](v any) T {
-	if tv, ok := v.(T); ok {
-		return tv
-	}
-	var out T
-	switch any(out).(type) {
-	case int:
-		switch vv := v.(type) {
-		case int:
-			return any(vv).(T)
-		case float64:
-			return any(int(vv)).(T)
-		case float32:
-			return any(int(vv)).(T)
-		}
-	case float64:
-		switch vv := v.(type) {
-		case int:
-			return any(float64(vv)).(T)
-		case float64:
-			return any(vv).(T)
-		case float32:
-			return any(float64(vv)).(T)
-		}
-	case float32:
-		switch vv := v.(type) {
-		case int:
-			return any(float32(vv)).(T)
-		case float64:
-			return any(float32(vv)).(T)
-		case float32:
-			return any(vv).(T)
-		}
-	}
-	if m, ok := v.(map[any]any); ok {
-		v = _convertMapAny(m)
-	}
-	data, err := json.Marshal(v)
-	if err != nil {
-		panic(err)
-	}
-	if err := json.Unmarshal(data, &out); err != nil {
-		panic(err)
-	}
-	return out
-}
-
-func _convertMapAny(m map[any]any) map[string]any {
-	out := make(map[string]any, len(m))
-	for k, v := range m {
-		key := fmt.Sprint(k)
-		if sub, ok := v.(map[any]any); ok {
-			out[key] = _convertMapAny(sub)
-		} else {
-			out[key] = v
-		}
-	}
-	return out
 }
 
 func _load(path string, opts map[string]any) []map[string]any {
@@ -151,6 +103,17 @@ func _load(path string, opts map[string]any) []map[string]any {
 		panic(err)
 	}
 	return rows
+}
+
+func _sprint(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
+		return "<nil>"
+	}
+	return fmt.Sprint(v)
 }
 
 func _toAnyMap(m any) map[string]any {

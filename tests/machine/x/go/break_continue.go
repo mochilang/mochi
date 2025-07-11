@@ -4,6 +4,7 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 )
 
@@ -26,6 +27,17 @@ func main() {
 		if n > 7 {
 			break
 		}
-		fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint("odd number:"), fmt.Sprint(n)}, " "), " "))
+		fmt.Println(strings.TrimRight(strings.Join([]string{_sprint("odd number:"), _sprint(n)}, " "), " "))
 	}
+}
+
+func _sprint(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
+		return "<nil>"
+	}
+	return fmt.Sprint(v)
 }

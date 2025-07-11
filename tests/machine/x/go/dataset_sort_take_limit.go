@@ -3,111 +3,77 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
+	"reflect"
 	"sort"
 	"strings"
 )
 
 func main() {
-	var products []map[string]any = []map[string]any{
-		map[string]any{"name": "Laptop", "price": 1500},
-		map[string]any{"name": "Smartphone", "price": 900},
-		map[string]any{"name": "Tablet", "price": 600},
-		map[string]any{"name": "Monitor", "price": 300},
-		map[string]any{"name": "Keyboard", "price": 100},
-		map[string]any{"name": "Mouse", "price": 50},
-		map[string]any{"name": "Headphones", "price": 200},
+	type ProductsItem struct {
+		Name  string `json:"name"`
+		Price int    `json:"price"`
 	}
-	var expensive []map[string]any = func() []map[string]any {
+
+	var products []ProductsItem = []ProductsItem{
+		ProductsItem{
+			Name:  "Laptop",
+			Price: 1500,
+		},
+		ProductsItem{
+			Name:  "Smartphone",
+			Price: 900,
+		},
+		ProductsItem{
+			Name:  "Tablet",
+			Price: 600,
+		},
+		ProductsItem{
+			Name:  "Monitor",
+			Price: 300,
+		},
+		ProductsItem{
+			Name:  "Keyboard",
+			Price: 100,
+		},
+		ProductsItem{
+			Name:  "Mouse",
+			Price: 50,
+		},
+		ProductsItem{
+			Name:  "Headphones",
+			Price: 200,
+		},
+	}
+	var expensive []ProductsItem = func() []ProductsItem {
 		src := _toAnySlice(products)
 		resAny := _query(src, []_joinSpec{}, _queryOpts{selectFn: func(_a ...any) any {
 			_tmp0 := _a[0]
-			var p map[string]any
+			var p ProductsItem
 			if _tmp0 != nil {
-				p = _cast[map[string]any](_tmp0)
+				p = _tmp0.(ProductsItem)
 			}
 			_ = p
 			return p
 		}, sortKey: func(_a ...any) any {
 			_tmp0 := _a[0]
-			var p map[string]any
+			var p ProductsItem
 			if _tmp0 != nil {
-				p = _cast[map[string]any](_tmp0)
+				p = _tmp0.(ProductsItem)
 			}
 			_ = p
-			return -_cast[float64](p["price"])
+			return -p.Price
 		}, skip: 1, take: 3})
-		out := make([]map[string]any, len(resAny))
+		out := make([]ProductsItem, len(resAny))
 		for i, v := range resAny {
-			out[i] = _cast[map[string]any](v)
+			out[i] = v.(ProductsItem)
 		}
 		return out
 	}()
-	fmt.Println("--- Top products (excluding most expensive) ---")
+	fmt.Println(_sprint("--- Top products (excluding most expensive) ---"))
 	for _, item := range expensive {
-		fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint(item["name"]), fmt.Sprint("costs $"), fmt.Sprint(item["price"])}, " "), " "))
+		fmt.Println(strings.TrimRight(strings.Join([]string{_sprint(item.Name), _sprint("costs $"), _sprint(item.Price)}, " "), " "))
 	}
-}
-
-func _cast[T any](v any) T {
-	if tv, ok := v.(T); ok {
-		return tv
-	}
-	var out T
-	switch any(out).(type) {
-	case int:
-		switch vv := v.(type) {
-		case int:
-			return any(vv).(T)
-		case float64:
-			return any(int(vv)).(T)
-		case float32:
-			return any(int(vv)).(T)
-		}
-	case float64:
-		switch vv := v.(type) {
-		case int:
-			return any(float64(vv)).(T)
-		case float64:
-			return any(vv).(T)
-		case float32:
-			return any(float64(vv)).(T)
-		}
-	case float32:
-		switch vv := v.(type) {
-		case int:
-			return any(float32(vv)).(T)
-		case float64:
-			return any(float32(vv)).(T)
-		case float32:
-			return any(vv).(T)
-		}
-	}
-	if m, ok := v.(map[any]any); ok {
-		v = _convertMapAny(m)
-	}
-	data, err := json.Marshal(v)
-	if err != nil {
-		panic(err)
-	}
-	if err := json.Unmarshal(data, &out); err != nil {
-		panic(err)
-	}
-	return out
-}
-
-func _convertMapAny(m map[any]any) map[string]any {
-	out := make(map[string]any, len(m))
-	for k, v := range m {
-		key := fmt.Sprint(k)
-		if sub, ok := v.(map[any]any); ok {
-			out[key] = _convertMapAny(sub)
-		} else {
-			out[key] = v
-		}
-	}
-	return out
 }
 
 type _joinSpec struct {
@@ -312,6 +278,17 @@ func _query(src []any, joins []_joinSpec, opts _queryOpts) []any {
 		res[i] = opts.selectFn(r...)
 	}
 	return res
+}
+
+func _sprint(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
+		return "<nil>"
+	}
+	return fmt.Sprint(v)
 }
 
 func _toAnySlice[T any](s []T) []any {

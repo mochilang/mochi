@@ -9,12 +9,29 @@ import (
 )
 
 func main() {
-	var m map[string]int = map[string]int{
-		"a": 1,
-		"b": 2,
-		"c": 3,
+	type M struct {
+		A int `json:"a"`
+		B int `json:"b"`
+		C int `json:"c"`
 	}
-	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(_values(m)), "["), "]"))
+
+	var m M = M{
+		A: 1,
+		B: 2,
+		C: 3,
+	}
+	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(_sprint(_values(m)), "["), "]"))
+}
+
+func _sprint(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
+		return "<nil>"
+	}
+	return fmt.Sprint(v)
 }
 
 func _values(v any) []any {

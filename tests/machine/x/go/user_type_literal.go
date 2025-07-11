@@ -4,6 +4,7 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 )
 
 type Person struct {
@@ -19,5 +20,16 @@ type Book struct {
 func main() {
 	var book Book = Book{Title: "Go", Author: Person{Name: "Bob", Age: 42}}
 	_ = book
-	fmt.Println(book.Author.Name)
+	fmt.Println(_sprint(book.Author.Name))
+}
+
+func _sprint(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
+		return "<nil>"
+	}
+	return fmt.Sprint(v)
 }

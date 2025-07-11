@@ -3926,23 +3926,23 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 
 	switch call.Func {
 	case "print":
-		c.imports["fmt"] = true
+		c.use("_sprint")
 		if len(call.Args) == 1 {
 			if _, ok := c.inferExprType(call.Args[0]).(types.ListType); ok {
 				c.imports["strings"] = true
-				return fmt.Sprintf("fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(%s), \"[\"), \"]\"))", args[0]), nil
+				return fmt.Sprintf("fmt.Println(strings.TrimSuffix(strings.TrimPrefix(_sprint(%s), \"[\"), \"]\"))", args[0]), nil
 			}
-			return fmt.Sprintf("fmt.Println(%s)", argStr), nil
+			return fmt.Sprintf("fmt.Println(_sprint(%s))", argStr), nil
 		}
 		c.imports["strings"] = true
 		parts := make([]string, len(args))
 		for i, a := range args {
-			parts[i] = fmt.Sprintf("fmt.Sprint(%s)", a)
+			parts[i] = fmt.Sprintf("_sprint(%s)", a)
 		}
 		return fmt.Sprintf("fmt.Println(strings.TrimRight(strings.Join([]string{%s}, \" \"), \" \"))", strings.Join(parts, ", ")), nil
 	case "str":
-		c.imports["fmt"] = true
-		return fmt.Sprintf("fmt.Sprint(%s)", argStr), nil
+		c.use("_sprint")
+		return fmt.Sprintf("_sprint(%s)", argStr), nil
 	case "input":
 		c.imports["fmt"] = true
 		c.use("_input")

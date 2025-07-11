@@ -1,5 +1,6 @@
 Error on line 0: run error: exit status 1
 # command-line-arguments
-../../../tests/machine/x/go/group_items_iteration.go:39:12: invalid operation: _cast[int]((float64(total) + _cast[float64](_cast[map[string]any](x)["val"]))) (value of type int) is not an interface
+../../../tests/machine/x/go/group_items_iteration.go:54:23: x.Val undefined (type any has no field or method Val)
+../../../tests/machine/x/go/group_items_iteration.go:61:21: cannot use _ as value or type
 
 1: //go:build ignore

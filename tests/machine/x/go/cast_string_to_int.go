@@ -4,10 +4,20 @@ package main
 
 import (
 	"fmt"
-	"strconv"
+	"reflect"
 )
 
 func main() {
-	n, _ := strconv.Atoi("1995")
-	fmt.Println(n)
+	fmt.Println(_sprint(int("1995")))
+}
+
+func _sprint(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
+		return "<nil>"
+	}
+	return fmt.Sprint(v)
 }

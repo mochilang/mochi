@@ -4,10 +4,22 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 )
 
 func main() {
-	fmt.Println((6 * 7))
-	fmt.Println((float64(7) / float64(2)))
-	fmt.Println((7 % 2))
+	fmt.Println(_sprint((6 * 7)))
+	fmt.Println(_sprint((float64(7) / float64(2))))
+	fmt.Println(_sprint((7 % 2)))
+}
+
+func _sprint(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
+		return "<nil>"
+	}
+	return fmt.Sprint(v)
 }
