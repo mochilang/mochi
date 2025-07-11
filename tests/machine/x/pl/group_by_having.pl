@@ -39,6 +39,19 @@ group_pairs([], Acc, Res) :- reverse(Acc, Res).
 group_pairs([K-V|T], Acc, Res) :- group_insert(K, V, Acc, Acc1), group_pairs(T, Acc1, Res).
 group_by(List, Fn, Groups) :- findall(K-V, (member(V, List), call(Fn, V, K)), Pairs), group_pairs(Pairs, [], Groups).
 
+:- use_module(library(http/json)).
+load_data(Path, Opts, Rows) :-
+    (is_dict(Opts), get_dict(format, Opts, Fmt) -> true ; Fmt = 'json'),
+    (Path == '' ; Path == '-' -> read_string(user_input, _, Text) ; read_file_to_string(Path, Text, [])),
+    (Fmt == 'jsonl' ->
+        split_string(Text, '\n', ' \t\r', Lines0),
+        exclude(=(''), Lines0, Lines),
+        findall(D, (member(L, Lines), open_string(L, S), json_read_dict(S, D), close(S)), Rows)
+    ;
+        open_string(Text, S), json_read_dict(S, Data), close(S),
+        (is_list(Data) -> Rows = Data ; Rows = [Data])
+    ).
+
 :- initialization(main, main).
 main :-
     dict_create(_V0, map, [name-"Alice", city-"Paris"]),
@@ -49,10 +62,10 @@ main :-
     dict_create(_V5, map, [name-"Frank", city-"Hanoi"]),
     dict_create(_V6, map, [name-"George", city-"Paris"]),
     People = [_V0, _V1, _V2, _V3, _V4, _V5, _V6],
-    findall(_V10, (member(P, People), true, get_item(P, 'city', _V7), _V8 = _V7, dict_create(_V9, map, [P-P]), _V10 = _V8-_V9), _V11),
+    findall(_V10, (member(P, People), true, get_item(P, 'city', _V7), _V8 = _V7, dict_create(_V9, map, ['P'-P]), _V10 = _V8-_V9), _V11),
     group_pairs(_V11, [], _V12),
     findall(_V16, (member(G, _V12), get_item(G, 'key', _V13), count(G, _V14), dict_create(_V15, map, [city-_V13, num-_V14]), _V16 = _V15), _V17),
     Big = _V17,
-    Json(Big, _V18),
-    _V18,
+    json_write_dict(current_output, Big), nl,
+    true,
     true.

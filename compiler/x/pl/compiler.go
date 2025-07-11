@@ -837,7 +837,8 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, bool, error) {
 			res = fmt.Sprintf("(%s \\== %s)", res, rhs)
 			arith = false
 		} else if op.Op == "<" || op.Op == "<=" || op.Op == ">" || op.Op == ">=" {
-			res = fmt.Sprintf("(%s %s %s)", res, op.Op, rhs)
+			cmp := map[string]string{"<": "@<", "<=": "@=<", ">": "@>", ">=": "@>="}[op.Op]
+			res = fmt.Sprintf("(%s %s %s)", res, cmp, rhs)
 			arith = false
 		} else if op.Op == "&&" {
 			res = fmt.Sprintf("(%s, %s)", res, rhs)
@@ -1280,6 +1281,7 @@ func (c *Compiler) newTmp() string {
 
 func sanitizeVar(s string) string {
 	s = strings.ReplaceAll(s, "-", "_")
+	s = strings.ReplaceAll(s, " ", "_")
 	if s == "" {
 		return "_"
 	}
@@ -1291,6 +1293,7 @@ func sanitizeVar(s string) string {
 
 func sanitizeAtom(s string) string {
 	s = strings.ReplaceAll(s, "-", "_")
+	s = strings.ReplaceAll(s, " ", "_")
 	if s == "" {
 		return ""
 	}

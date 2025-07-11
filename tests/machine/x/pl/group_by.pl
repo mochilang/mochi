@@ -48,7 +48,7 @@ main :-
     dict_create(_V4, map, [name-"Eve", age-70, city-"Paris"]),
     dict_create(_V5, map, [name-"Frank", age-22, city-"Hanoi"]),
     People = [_V0, _V1, _V2, _V3, _V4, _V5],
-    findall(_V9, (member(Person, People), true, get_item(Person, 'city', _V6), _V7 = _V6, dict_create(_V8, map, [Person-Person]), _V9 = _V7-_V8), _V10),
+    findall(_V9, (member(Person, People), true, get_item(Person, 'city', _V6), _V7 = _V6, dict_create(_V8, map, ['Person'-Person]), _V9 = _V7-_V8), _V10),
     group_pairs(_V10, [], _V11),
     findall(_V19, (member(G, _V11), get_item(G, 'key', _V12), count(G, _V13), findall(_V15, (member(P, G), true, get_item(P, 'age', _V14), _V15 = _V14), _V16), avg(_V16, _V17), dict_create(_V18, map, [city-_V12, count-_V13, avg_age-_V17]), _V19 = _V18), _V20),
     Stats = _V20,

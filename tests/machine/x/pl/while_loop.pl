@@ -7,7 +7,7 @@ main :-
         (
             repeat,
             nb_getval(i, _V1),
-            ((_V1 < 3) ->
+            ((_V1 @< 3) ->
                 catch(
                     (
                         nb_getval(i, _V2),

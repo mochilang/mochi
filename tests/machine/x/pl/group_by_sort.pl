@@ -46,7 +46,7 @@ main :-
     dict_create(_V2, map, [cat-"b", val-5]),
     dict_create(_V3, map, [cat-"b", val-2]),
     Items = [_V0, _V1, _V2, _V3],
-    findall(_V7, (member(I, Items), true, get_item(I, 'cat', _V4), _V5 = _V4, dict_create(_V6, map, [I-I]), _V7 = _V5-_V6), _V8),
+    findall(_V7, (member(I, Items), true, get_item(I, 'cat', _V4), _V5 = _V4, dict_create(_V6, map, ['I'-I]), _V7 = _V5-_V6), _V8),
     group_pairs(_V8, [], _V9),
     findall(_V16, (member(G, _V9), get_item(G, 'key', _V10), findall(_V12, (member(X, G), true, get_item(X, 'val', _V11), _V12 = _V11), _V13), sum(_V13, _V14), dict_create(_V15, map, [cat-_V10, total-_V14]), _V16 = _V15), _V17),
     Grouped = _V17,

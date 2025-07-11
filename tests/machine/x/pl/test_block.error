@@ -1,1 +1,7 @@
-unsupported statement
+run: exit status 2
+ERROR: /workspace/mochi/tests/machine/x/pl/test_block.pl:4:18: Syntax error: Operator expected
+ERROR: /workspace/mochi/tests/machine/x/pl/test_block.pl:11:17: Syntax error: Operator expected
+ERROR: /workspace/mochi/tests/machine/x/pl/test_block.pl:9: user:main catch/3: Unknown procedure: main/1
+ERROR:   However, there are definitions for:
+ERROR:         main/0
+

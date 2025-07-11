@@ -7,14 +7,20 @@ get_item(List, Index, Val) :- nth0(Index, List, Val).
 
 :- initialization(main, main).
 main :-
-    X is 3,
-    Y is 4,
-    dict_create(_V0, map, [a-X, b-Y]),
-    M = _V0,
-    get_item(M, "a", _V1),
-    write(_V1),
+    _V0 is 3,
+    nb_setval(x, _V0),
+    _V1 is 4,
+    nb_setval(y, _V1),
+    nb_getval(x, _V2),
+    nb_getval(y, _V3),
+    dict_create(_V4, map, [a-_V2, b-_V3]),
+    nb_setval(m, _V4),
+    nb_getval(m, _V5),
+    get_item(_V5, "a", _V6),
+    write(_V6),
     write(' '),
-    get_item(M, "b", _V2),
-    write(_V2),
+    nb_getval(m, _V7),
+    get_item(_V7, "b", _V8),
+    write(_V8),
     nl,
     true.

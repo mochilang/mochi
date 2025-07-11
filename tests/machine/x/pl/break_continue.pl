@@ -9,10 +9,12 @@ main :-
                     (
                         (((N mod 2) == 0) ->
                             throw(continue),
+                            true
                         ; true
                         ),
-                        ((N > 7) ->
+                        ((N @> 7) ->
                             throw(break),
+                            true
                         ; true
                         ),
                         write("odd number:"),

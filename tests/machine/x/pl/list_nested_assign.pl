@@ -13,12 +13,13 @@ set_item(List, Index, Val, Out) :-
 
 :- initialization(main, main).
 main :-
-    Matrix = [[1, 2], [3, 4]],
-    get_item(Matrix, 1, _V0),
+    nb_setval(matrix, [[1, 2], [3, 4]]),
+    get_item(matrix, 1, _V0),
     set_item(_V0, 0, 5, _V1),
-    set_item(Matrix, 1, _V1, _V2),
-    Matrix_3 = _V2,
-    get_item(Matrix_3, 1, _V4),
+    set_item(matrix, 1, _V1, _V2),
+    nb_setval(matrix, _V2),
+    nb_getval(matrix, _V3),
+    get_item(_V3, 1, _V4),
     get_item(_V4, 0, _V5),
     write(_V5),
     nl,

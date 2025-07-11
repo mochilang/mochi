@@ -23,7 +23,7 @@ main :-
     dict_create(_V0, map, [format-"yaml"]),
     load_data("../interpreter/valid/people.yaml", _V0, _V1),
     People = _V1,
-    findall(_V6, (member(P, People), get_item(P, 'age', _V2), (_V2 >= 18), get_item(P, 'name', _V3), get_item(P, 'email', _V4), dict_create(_V5, map, [name-_V3, email-_V4]), _V6 = _V5), _V7),
+    findall(_V6, (member(P, People), get_item(P, 'age', _V2), (_V2 @>= 18), get_item(P, 'name', _V3), get_item(P, 'email', _V4), dict_create(_V5, map, [name-_V3, email-_V4]), _V6 = _V5), _V7),
     Adults = _V7,
     catch(
         (

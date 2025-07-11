@@ -11,7 +11,7 @@ set_item(List, Index, Val, Out) :-
     nth0(Index, List, _, Rest),
     nth0(Index, Out, Val, Rest).
 
-Inc(C, _Res) :-
+inc(C, _Res) :-
     get_item(C, 'n', _V0),
     set_item(C, 'n', (_V0 + 1), _V1),
     C_2 = _V1,
@@ -19,10 +19,11 @@ Inc(C, _Res) :-
 :- initialization(main, main).
 main :-
     dict_create(_V0, p_counter, ['n'-0]),
-    C = _V0,
-    Inc(C, _V1),
-    _V1,
-    get_item(C, 'n', _V2),
-    write(_V2),
+    nb_setval(c, _V0),
+    nb_getval(c, _V1),
+    inc(_V1, _V2),
+    _V2,
+    get_item(c, 'n', _V3),
+    write(_V3),
     nl,
     true.

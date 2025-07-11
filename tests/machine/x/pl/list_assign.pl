@@ -13,10 +13,11 @@ set_item(List, Index, Val, Out) :-
 
 :- initialization(main, main).
 main :-
-    Nums = [1, 2],
-    set_item(Nums, 1, 3, _V0),
-    Nums_1 = _V0,
-    get_item(Nums_1, 1, _V2),
+    nb_setval(nums, [1, 2]),
+    set_item(nums, 1, 3, _V0),
+    nb_setval(nums, _V0),
+    nb_getval(nums, _V1),
+    get_item(_V1, 1, _V2),
     write(_V2),
     nl,
     true.

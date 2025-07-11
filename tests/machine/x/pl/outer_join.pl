@@ -48,6 +48,7 @@ main :-
                                 get_item(_V21, 'total', _V22),
                                 write(_V22),
                                 nl,
+                                true
                             ;
                                 write("Order"),
                                 write(' '),
@@ -65,7 +66,9 @@ main :-
                                 get_item(_V25, 'total', _V26),
                                 write(_V26),
                                 nl,
+                                true
                             ),
+                            true
                         ;
                             write("Customer"),
                             write(' '),
@@ -75,6 +78,7 @@ main :-
                             write(' '),
                             write("has no orders"),
                             nl,
+                            true
                         ),
                         true
                     ), continue, true),
