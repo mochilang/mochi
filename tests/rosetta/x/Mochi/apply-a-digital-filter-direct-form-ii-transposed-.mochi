@@ -1,0 +1,47 @@
+// Mochi implementation of Rosetta Code task "Apply a digital filter (direct form II transposed)"
+// Translated from Go version in tests/rosetta/x/Go/apply-a-digital-filter-direct-form-ii-transposed-.go
+
+// Apply a digital filter to an input sequence.
+fun applyFilter(input: list<float>, a: list<float>, b: list<float>): list<float> {
+  var out: list<float> = []
+  let scale = 1.0 / a[0]
+  var i = 0
+  while i < len(input) {
+    var tmp = 0.0
+    // numerator part
+    var j = 0
+    while j <= i && j < len(b) {
+      tmp = tmp + b[j] * input[i - j]
+      j = j + 1
+    }
+    // denominator part (skip a[0])
+    j = 0
+    while j < i && j + 1 < len(a) {
+      tmp = tmp - a[j + 1] * out[i - j - 1]
+      j = j + 1
+    }
+    out = append(out, tmp * scale)
+    i = i + 1
+  }
+  return out
+}
+
+// Constants for a Butterworth filter (order 3, low pass)
+let a = [1.0, -0.00000000000000027756, 0.33333333, -0.00000000000000001850]
+let b = [0.16666667, 0.5, 0.5, 0.16666667]
+
+let sig = [
+  -0.917843918645, 0.141984778794, 1.20536903482, 0.190286794412,
+  -0.662370894973, -1.00700480494, -0.404707073677, 0.800482325044,
+  0.743500089861, 1.01090520172, 0.741527555207, 0.277841675195,
+  0.400833448236, -0.2085993586, -0.172842103641, -0.134316096293,
+  0.0259303398477, 0.490105989562, 0.549391221511, 0.9047198589,
+]
+
+let res = applyFilter(sig, a, b)
+var k = 0
+while k < len(res) {
+  print(res[k])
+  k = k + 1
+}
+
