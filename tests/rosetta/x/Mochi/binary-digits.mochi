@@ -1,0 +1,16 @@
+fun toBin(n: int): string {
+  if n == 0 {
+    return "0"
+  }
+  var bits = ""
+  var x: int = n
+  while x > 0 {
+    bits = str(x % 2) + bits
+    x = (x / 2) as int
+  }
+  return bits
+}
+
+for i in 0..16 {
+  print(toBin(i))
+}
