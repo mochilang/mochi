@@ -1,0 +1,131 @@
+// Mochi implementation of Rosetta Code task "Brilliant numbers"
+// Translated from the Go version in tests/rosetta/x/Go/brilliant-numbers.go
+
+fun primesUpTo(n: int): list<int> {
+  var sieve: list<bool> = []
+  var i = 0
+  while i <= n {
+    sieve = append(sieve, true)
+    i = i + 1
+  }
+  var p = 2
+  while p * p <= n {
+    if sieve[p] {
+      var m = p * p
+      while m <= n {
+        sieve[m] = false
+        m = m + p
+      }
+    }
+    p = p + 1
+  }
+  var res: list<int> = []
+  var x = 2
+  while x <= n {
+    if sieve[x] { res = append(res, x) }
+    x = x + 1
+  }
+  return res
+}
+
+fun sortInts(xs: list<int>): list<int> {
+  var res: list<int> = []
+  var tmp = xs
+  while len(tmp) > 0 {
+    var min = tmp[0]
+    var idx = 0
+    var i = 1
+    while i < len(tmp) {
+      if tmp[i] < min {
+        min = tmp[i]
+        idx = i
+      }
+      i = i + 1
+    }
+    res = append(res, min)
+    var out: list<int> = []
+    var j = 0
+    while j < len(tmp) {
+      if j != idx { out = append(out, tmp[j]) }
+      j = j + 1
+    }
+    tmp = out
+  }
+  return res
+}
+
+fun commatize(n: int): string {
+  var s = str(n)
+  var i = len(s) - 3
+  while i >= 1 {
+    s = s[0:i] + "," + s[i:len(s)]
+    i = i - 3
+  }
+  return s
+}
+
+var primes = primesUpTo(3200000)
+
+fun getBrilliant(digits: int, limit: int, countOnly: bool): map<string,any> {
+  var brilliant: list<int> = []
+  var count = 0
+  var pow = 1
+  var next = 999999999999999
+  var k = 1
+  while k <= digits {
+    var s: list<int> = []
+    for p in primes {
+      if p >= pow * 10 { break }
+      if p > pow { s = append(s, p) }
+    }
+    var i = 0
+    while i < len(s) {
+      var j = i
+      while j < len(s) {
+        var prod = s[i] * s[j]
+        if prod < limit {
+          if countOnly {
+            count = count + 1
+          } else {
+            brilliant = append(brilliant, prod)
+          }
+        } else {
+          if prod < next { next = prod }
+          break
+        }
+        j = j + 1
+      }
+      i = i + 1
+    }
+    pow = pow * 10
+    k = k + 1
+  }
+  if countOnly { return {"bc": count, "next": next} }
+  return {"bc": brilliant, "next": next}
+}
+
+fun main() {
+  print("First 100 brilliant numbers:")
+  let r = getBrilliant(2, 10000, false)
+  var br = sortInts(r["bc"])
+  br = br[0:100]
+  var i = 0
+  while i < len(br) {
+    print(str(br[i]).padStart(4, " ") + " ", false)
+    if (i + 1) % 10 == 0 { print("", true) }
+    i = i + 1
+  }
+  print("", true)
+  var k = 1
+  while k <= 13 {
+    let limit = pow(10, k)
+    let r2 = getBrilliant(k, limit, true)
+    let total = r2["bc"]
+    let next = r2["next"]
+    let climit = commatize(limit)
+    let ctotal = commatize(total + 1)
+    let cnext = commatize(next)
+    print("First >= " + climit.padStart(18, " ") + " is " + ctotal.padStart(14, " ") + " in the series: " + cnext.padStart(18, " "))
+    k = k + 1
+  }
+}
