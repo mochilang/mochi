@@ -1,11 +1,3 @@
-fun toBool(v: Any?): Boolean = when (v) {
-    is Boolean -> v
-    is Int -> v != 0
-    is Double -> v != 0.0
-    is String -> v.isNotEmpty()
-    null -> false
-    else -> true
-}
 data class Customer(var id: Int, var name: String)
 
 data class Order(var id: Int, var customerId: Int)
@@ -24,9 +16,9 @@ val result = run {
     val __res = mutableListOf<Result>()
     for (o in orders) {
         for (c in customers) {
-            if (toBool(o.customerId == c.id)) {
+            if (o.customerId == c.id) {
                 for (i in items) {
-                    if (toBool(o.id == i.orderId)) {
+                    if (o.id == i.orderId) {
                         __res.add(Result(name = c.name, sku = i.sku))
                     }
                 }

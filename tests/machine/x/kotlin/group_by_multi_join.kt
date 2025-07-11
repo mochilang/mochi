@@ -4,25 +4,16 @@ fun sum(list: List<Any?>): Int {
     return s
 }
 
-fun toBool(v: Any?): Boolean = when (v) {
-    is Boolean -> v
-    is Int -> v != 0
-    is Double -> v != 0.0
-    is String -> v.isNotEmpty()
-    null -> false
-    else -> true
-}
-
 class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
+data class Partsupp(var part: Int, var supplier: Int, var cost: Double, var qty: Int)
+
+data class Filtered(var part: Any?, var value: Any?)
+
 data class Grouped(var part: Any?, var total: Int)
 
 data class Nation(var id: Int, var name: String)
 
 data class Supplier(var id: Int, var nation: Int)
-
-data class Partsupp(var part: Int, var supplier: Int, var cost: Double, var qty: Int)
-
-data class Filtered(var part: Any?, var value: Any?)
 
 val nations = mutableListOf(Nation(id = 1, name = "A"), Nation(id = 2, name = "B"))
 
@@ -34,10 +25,10 @@ val filtered = run {
     val __res = mutableListOf<Filtered>()
     for (ps in partsupp) {
         for (s in suppliers) {
-            if (toBool(s.id == ps.supplier)) {
+            if (s.id == ps.supplier) {
                 for (n in nations) {
-                    if (toBool(n.id == s.nation)) {
-                        if (toBool(n.name == "A")) {
+                    if (n.id == s.nation) {
+                        if (n.name == "A") {
                             __res.add(Filtered(part = ps.part, value = ps.cost * ps.qty))
                         }
                     }

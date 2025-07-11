@@ -1,16 +1,8 @@
-fun toBool(v: Any?): Boolean = when (v) {
-    is Boolean -> v
-    is Int -> v != 0
-    is Double -> v != 0.0
-    is String -> v.isNotEmpty()
-    null -> false
-    else -> true
-}
-data class Result(var orderId: Any?, var customerName: Any?, var total: Any?)
-
 data class Customer(var id: Int, var name: String)
 
 data class Order(var id: Int, var customerId: Int, var total: Int)
+
+data class Result(var orderId: Any?, var customerName: Any?, var total: Any?)
 
 val customers = mutableListOf(Customer(id = 1, name = "Alice"), Customer(id = 2, name = "Bob"), Customer(id = 3, name = "Charlie"))
 
@@ -20,7 +12,7 @@ val result = run {
     val __res = mutableListOf<Result>()
     for (o in orders) {
         for (c in customers) {
-            if (toBool(o.customerId == c.id)) {
+            if (o.customerId == c.id) {
                 __res.add(Result(orderId = o.id, customerName = c.name, total = o.total))
             }
         }

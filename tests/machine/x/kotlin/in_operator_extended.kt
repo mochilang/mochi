@@ -1,11 +1,3 @@
-fun toBool(v: Any?): Boolean = when (v) {
-    is Boolean -> v
-    is Int -> v != 0
-    is Double -> v != 0.0
-    is String -> v.isNotEmpty()
-    null -> false
-    else -> true
-}
 data class M(var a: Int)
 
 val xs = mutableListOf(1, 2, 3)
@@ -13,7 +5,7 @@ val xs = mutableListOf(1, 2, 3)
 val ys = run {
     val __res = mutableListOf<Int>()
     for (x in xs) {
-        if (toBool(x % 2 == 1)) {
+        if (x % 2 == 1) {
             __res.add(x)
         }
     }

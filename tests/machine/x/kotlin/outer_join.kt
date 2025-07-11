@@ -22,7 +22,7 @@ val result = run {
     for (o in orders) {
         val __tmp = mutableListOf<Any?>()
         for (c in customers) {
-            if (toBool(o.customerId == c.id)) {
+            if (o.customerId == c.id) {
                 __tmp.add(c)
                 __matched.add(c)
             }

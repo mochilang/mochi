@@ -472,7 +472,7 @@ func (c *Compiler) ifStmt(i *parser.IfStmt) error {
 	if err != nil {
 		return err
 	}
-	if _, ok := types.TypeOfExprBasic(i.Cond, c.env).(types.BoolType); !ok {
+	if _, ok := c.inferExprType(i.Cond).(types.BoolType); !ok {
 		c.use("toBool")
 		cond = "toBool(" + cond + ")"
 	}
@@ -508,7 +508,7 @@ func (c *Compiler) whileStmt(w *parser.WhileStmt) error {
 	if err != nil {
 		return err
 	}
-	if _, ok := types.TypeOfExprBasic(w.Cond, c.env).(types.BoolType); !ok {
+	if _, ok := c.inferExprType(w.Cond).(types.BoolType); !ok {
 		c.use("toBool")
 		cond = "toBool(" + cond + ")"
 	}
@@ -1134,7 +1134,10 @@ func (c *Compiler) ifExpr(ix *parser.IfExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	cond = "toBool(" + cond + ")"
+	if _, ok := c.inferExprType(ix.Cond).(types.BoolType); !ok {
+		c.use("toBool")
+		cond = "toBool(" + cond + ")"
+	}
 	thenExpr, err := c.expr(ix.Then)
 	if err != nil {
 		return "", err
@@ -1296,7 +1299,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		if _, ok := types.TypeOfExprBasic(j.On, c.env).(types.BoolType); !ok {
+		if _, ok := c.inferExprType(j.On).(types.BoolType); !ok {
 			c.use("toBool")
 			cond = "toBool(" + cond + ")"
 		}
@@ -1309,7 +1312,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		if _, ok := types.TypeOfExprBasic(q.Where, c.env).(types.BoolType); !ok {
+		if _, ok := c.inferExprType(q.Where).(types.BoolType); !ok {
 			c.use("toBool")
 			cond = "toBool(" + cond + ")"
 		}
@@ -1338,7 +1341,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 			c.env = child
 			return "", err
 		}
-		if _, ok := types.TypeOfExprBasic(q.Group.Having, c.env).(types.BoolType); !ok {
+		if _, ok := c.inferExprType(q.Group.Having).(types.BoolType); !ok {
 			c.use("toBool")
 			h = "toBool(" + h + ")"
 		}
@@ -1541,7 +1544,7 @@ func (c *Compiler) simpleRightOuterJoin(src string, q *parser.QueryExpr, j *pars
 	if err != nil {
 		return "", err
 	}
-	if _, ok := types.TypeOfExprBasic(j.On, c.env).(types.BoolType); !ok {
+	if _, ok := c.inferExprType(j.On).(types.BoolType); !ok {
 		c.use("toBool")
 		cond = "toBool(" + cond + ")"
 	}
