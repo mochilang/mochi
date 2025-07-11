@@ -1,0 +1,8 @@
+// Mochi version of Rosetta "Case-sensitivity of identifiers" task
+// Demonstrates that identifiers with different case are distinct.
+
+var dog = "Benjamin"
+var Dog = "Samba"
+var DOG = "Bernie"
+
+print("The three dogs are named " + dog + ", " + Dog + " and " + DOG + ".")
