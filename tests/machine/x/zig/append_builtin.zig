@@ -1,18 +1,10 @@
 const std = @import("std");
 
-fn _append(comptime T: type, v: []const T, x: T) []T {
-    var res = std.ArrayList(T).init(std.heap.page_allocator);
-    defer res.deinit();
-    res.appendSlice(v) catch unreachable;
-    res.append(x) catch unreachable;
-    return res.toOwnedSlice() catch unreachable;
-}
-
 const a = &[_]i32{
     1,
     2,
 };
 
 pub fn main() void {
-    std.debug.print("{any}\n", .{_append(i32, a, 3)});
+    std.debug.print("{any}\n", .{blk0: { var _tmp0 = std.ArrayList(i32).init(std.heap.page_allocator); defer _tmp0.deinit(); _tmp0.appendSlice(a) catch unreachable; _tmp0.append(3) catch unreachable; break :blk0 _tmp0.toOwnedSlice() catch unreachable; }});
 }

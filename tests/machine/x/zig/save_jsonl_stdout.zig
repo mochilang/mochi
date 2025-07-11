@@ -28,19 +28,20 @@ fn _save_json(rows: anytype, path: ?[]const u8) void {
     _write_output(path, buf.items);
 }
 
-const people = (blk0: { const _tmp0 = struct {
+const PeopleItem = struct {
     name: []const u8,
     age: i32,
-}; const _arr = &[_]_tmp0{
-    _tmp0{
+};
+const people = &[_]PeopleItem{
+    PeopleItem{
     .name = "Alice",
     .age = 30,
 },
-    _tmp0{
+    PeopleItem{
     .name = "Bob",
     .age = 25,
 },
-}; break :blk0 _arr; });
+};
 
 pub fn main() void {
     _save_json(people, "-");

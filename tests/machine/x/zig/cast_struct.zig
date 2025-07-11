@@ -1,8 +1,6 @@
 const std = @import("std");
 
-const Todo = struct {
-    title: []const u8,
-};
+const Todo = struct { title: []const u8 };
 
 const todo = Todo{ .title = "hi" };
 

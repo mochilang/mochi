@@ -1,54 +1,57 @@
 const std = @import("std");
 
-const customers = (blk0: { const _tmp0 = struct {
+const CustomersItem = struct {
     id: i32,
     name: []const u8,
-}; const _arr = &[_]_tmp0{
-    _tmp0{
+};
+const customers = &[_]CustomersItem{
+    CustomersItem{
     .id = 1,
     .name = "Alice",
 },
-    _tmp0{
+    CustomersItem{
     .id = 2,
     .name = "Bob",
 },
-}; break :blk0 _arr; });
-const orders = (blk1: { const _tmp1 = struct {
+};
+const OrdersItem = struct {
     id: i32,
     customerId: i32,
-}; const _arr = &[_]_tmp1{
-    _tmp1{
+};
+const orders = &[_]OrdersItem{
+    OrdersItem{
     .id = 100,
     .customerId = 1,
 },
-    _tmp1{
+    OrdersItem{
     .id = 101,
     .customerId = 2,
 },
-}; break :blk1 _arr; });
-const items = (blk2: { const _tmp2 = struct {
+};
+const ItemsItem = struct {
     orderId: i32,
     sku: []const u8,
-}; const _arr = &[_]_tmp2{
-    _tmp2{
+};
+const items = &[_]ItemsItem{
+    ItemsItem{
     .orderId = 100,
     .sku = "a",
 },
-    _tmp2{
+    ItemsItem{
     .orderId = 101,
     .sku = "b",
 },
-}; break :blk2 _arr; });
-const result = blk3: { var _tmp3 = std.ArrayList(struct {
+};
+const result = blk0: { var _tmp0 = std.ArrayList(struct {
     name: []const u8,
     sku: []const u8,
-}).init(std.heap.page_allocator); for (orders) |o| { for (customers) |c| { if (!((o.customerId == c.id))) continue; for (items) |i| { if (!((o.id == i.orderId))) continue; _tmp3.append(struct {
+}).init(std.heap.page_allocator); for (orders) |o| { for (customers) |c| { if (!((o.customerId == c.id))) continue; for (items) |i| { if (!((o.id == i.orderId))) continue; _tmp0.append(struct {
     name: []const u8,
     sku: []const u8,
 }{
     .name = c.name,
     .sku = i.sku,
-}) catch unreachable; } } } const _tmp4 = _tmp3.toOwnedSlice() catch unreachable; break :blk3 _tmp4; };
+}) catch unreachable; } } } const _tmp1 = _tmp0.toOwnedSlice() catch unreachable; break :blk0 _tmp1; };
 
 pub fn main() void {
     std.debug.print("--- Multi Join ---\n", .{});

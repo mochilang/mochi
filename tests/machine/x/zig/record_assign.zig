@@ -1,8 +1,6 @@
 const std = @import("std");
 
-const Counter = struct {
-    n: i32,
-};
+const Counter = struct { n: i32 };
 
 var c = Counter{ .n = 0 };
 

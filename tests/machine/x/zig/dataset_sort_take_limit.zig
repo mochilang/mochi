@@ -21,49 +21,41 @@ fn _slice_list(comptime T: type, v: []const T, start: i32, end: i32, step: i32) 
     return res.toOwnedSlice() catch unreachable;
 }
 
-const products = (blk0: { const _tmp0 = struct {
+const ProductsItem = struct {
     name: []const u8,
     price: i32,
-}; const _arr = &[_]_tmp0{
-    _tmp0{
+};
+const products = &[_]ProductsItem{
+    ProductsItem{
     .name = "Laptop",
     .price = 1500,
 },
-    _tmp0{
+    ProductsItem{
     .name = "Smartphone",
     .price = 900,
 },
-    _tmp0{
+    ProductsItem{
     .name = "Tablet",
     .price = 600,
 },
-    _tmp0{
+    ProductsItem{
     .name = "Monitor",
     .price = 300,
 },
-    _tmp0{
+    ProductsItem{
     .name = "Keyboard",
     .price = 100,
 },
-    _tmp0{
+    ProductsItem{
     .name = "Mouse",
     .price = 50,
 },
-    _tmp0{
+    ProductsItem{
     .name = "Headphones",
     .price = 200,
 },
-}; break :blk0 _arr; });
-const expensive = blk1: { var _tmp1 = std.ArrayList(struct { item: struct {
-    name: []const u8,
-    price: i32,
-}, key: i32 }).init(std.heap.page_allocator); for (products) |p| { _tmp1.append(.{ .item = p, .key = -p.price }) catch unreachable; } for (0.._tmp1.items.len) |i| { for (i+1.._tmp1.items.len) |j| { if (_tmp1.items[j].key < _tmp1.items[i].key) { const t = _tmp1.items[i]; _tmp1.items[i] = _tmp1.items[j]; _tmp1.items[j] = t; } } } var _tmp2 = std.ArrayList(struct {
-    name: []const u8,
-    price: i32,
-}).init(std.heap.page_allocator);for (_tmp1.items) |p| { _tmp2.append(p.item) catch unreachable; } const _tmp3 = _tmp2.toOwnedSlice() catch unreachable; _tmp3 = _slice_list(struct {
-    name: []const u8,
-    price: i32,
-}, _tmp3, 1, (1 + 3), 1); break :blk1 _tmp3; };
+};
+const expensive = blk0: { var _tmp0 = std.ArrayList(struct { item: ProductsItem, key: i32 }).init(std.heap.page_allocator); for (products) |p| { _tmp0.append(.{ .item = p, .key = -p.price }) catch unreachable; } for (0.._tmp0.items.len) |i| { for (i+1.._tmp0.items.len) |j| { if (_tmp0.items[j].key < _tmp0.items[i].key) { const t = _tmp0.items[i]; _tmp0.items[i] = _tmp0.items[j]; _tmp0.items[j] = t; } } } var _tmp1 = std.ArrayList(ProductsItem).init(std.heap.page_allocator);for (_tmp0.items) |p| { _tmp1.append(p.item) catch unreachable; } const _tmp2 = _tmp1.toOwnedSlice() catch unreachable; _tmp2 = _slice_list(ProductsItem, _tmp2, 1, (1 + 3), 1); break :blk0 _tmp2; };
 
 pub fn main() void {
     std.debug.print("--- Top products (excluding most expensive) ---\n", .{});
