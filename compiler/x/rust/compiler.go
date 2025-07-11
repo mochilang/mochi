@@ -3394,6 +3394,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("values expects 1 arg")
 		}
 		return fmt.Sprintf("%s.values().cloned().collect::<Vec<_>>()", args[0]), nil
+	case "keys":
+		if len(args) != 1 {
+			return "", fmt.Errorf("keys expects 1 arg")
+		}
+		return fmt.Sprintf("%s.keys().cloned().collect::<Vec<_>>()", args[0]), nil
 	case "str":
 		if len(args) != 1 {
 			return "", fmt.Errorf("str expects 1 arg")

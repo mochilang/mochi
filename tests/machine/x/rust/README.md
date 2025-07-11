@@ -120,3 +120,13 @@ Compiled programs: 100/100
 - [ ] Enhance type inference for nested structs
 - [ ] Implement benchmarking harness
 - [ ] Add code formatting similar to rustfmt
+- [ ] Generate API documentation with rustdoc
+- [ ] Add linter integration for idiomatic Rust
+- [ ] Support cross-compilation targets
+- [ ] Improve integration with existing Rust crates
+- [ ] Provide FFI examples for C interoperability
+- [ ] Explore WebAssembly backend options
+- [ ] Introduce automated formatting checks
+- [ ] Expand unit test coverage for edge cases
+- [ ] Document contribution guidelines for Rust code
+- [ ] Add CI caching for Rust dependencies
