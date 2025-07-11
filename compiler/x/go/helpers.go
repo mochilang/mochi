@@ -248,6 +248,14 @@ func isStringAnyMap(t types.Type) bool {
 	return false
 }
 
+// isStringMap reports whether t is a map with string keys regardless of value type.
+func isStringMap(t types.Type) bool {
+	if mt, ok := t.(types.MapType); ok {
+		return isString(mt.Key)
+	}
+	return false
+}
+
 func isMap(t types.Type) bool {
 	_, ok := t.(types.MapType)
 	return ok
