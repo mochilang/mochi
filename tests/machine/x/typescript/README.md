@@ -1,6 +1,6 @@
 # Machine-generated TypeScript Programs
 
-This directory contains TypeScript code compiled from Mochi programs in `tests/vm/valid` using the experimental compiler. The compiler generates simpler `from` query loops and adds basic type annotations for query results.
+This directory contains TypeScript code compiled from Mochi programs in `tests/vm/valid` using the experimental compiler.
 
 ## Progress
 
@@ -110,9 +110,13 @@ Compiled: 100/100 programs
 - [x] while_loop.mochi
 
 ## Remaining Tasks
-
-- Integrate with Node runtime for dataset queries and joins
-- Support asynchronous `fetch` statements
-- Finish improving formatting to match human examples
-- Improve type inference for query results
-
+- [ ] Improve formatting of generated interfaces
+- [ ] Use template strings for string concatenation
+- [ ] Leverage built-in array helpers instead of manual loops
+- [ ] Add async function support for I/O operations
+- [ ] Preserve comments from source Mochi code
+- [ ] Generate discriminated union helpers
+- [ ] Optimize query translations to use map/reduce
+- [ ] Support optional chaining and nullish coalescing
+- [ ] Emit type annotations for loaded YAML data
+- [ ] Reduce temporary variables in simple expressions
