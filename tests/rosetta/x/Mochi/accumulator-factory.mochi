@@ -2,10 +2,10 @@
 // Translated from Go version in tests/rosetta/x/Go/accumulator-factory.go
 
 fun accumulator(sum: any): fun(any) {
-  var state = {"v": sum}
+  var store: list<any> = [sum]
   fun add(nv: any): any {
-    state["v"] = state["v"] + nv
-    return state["v"]
+    store[0] = store[0] + nv
+    return store[0]
   }
   return add
 }
