@@ -127,8 +127,8 @@ public class Main {
 	for (var __e : _groups7.entrySet()) {
 		ResultCAcctbalCAddressCCommentCCustkeyCNameCPhoneNName g_key = __e.getKey();
 		List<COLN> g = __e.getValue();
-		_res6.add(new ResultCAcctbalCAddressCCommentCCustkeyCNameCPhoneNNameRevenue(g_key.c_custkey, g_key.c_name, sum((List<Number>)(List<?>)(new java.util.function.Supplier<List<Integer>>(){public List<Integer> get(){
-	List<Integer> _res11 = new ArrayList<>();
+		_res6.add(new ResultCAcctbalCAddressCCommentCCustkeyCNameCPhoneNNameRevenue(g_key.c_custkey, g_key.c_name, sum((List<Number>)(List<?>)(new java.util.function.Supplier<List<Double>>(){public List<Double> get(){
+	List<Double> _res11 = new ArrayList<>();
 	for (var x : g) {
 		_res11.add(x.l.l_extendedprice * (1 - x.l.l_discount));
 	}
