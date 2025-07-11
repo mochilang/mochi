@@ -1,0 +1,140 @@
+fun indexOf(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if s[i] == ch {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  let digits = {
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5,
+    "6": 6,
+    "7": 7,
+    "8": 8,
+    "9": 9,
+  }
+  while i < len(str) {
+    n = n * 10 + digits[str[i]]
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun ord(ch: string): int {
+  let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  let lower = "abcdefghijklmnopqrstuvwxyz"
+  var idx = indexOf(upper, ch)
+  if idx >= 0 { return 65 + idx }
+  idx = indexOf(lower, ch)
+  if idx >= 0 { return 97 + idx }
+  if ch >= "0" && ch <= "9" { return 48 + parseIntStr(ch) }
+  if ch == "+" { return 43 }
+  if ch == "/" { return 47 }
+  if ch == " " { return 32 }
+  if ch == "=" { return 61 }
+  return 0
+}
+
+fun chr(n: int): string {
+  let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  let lower = "abcdefghijklmnopqrstuvwxyz"
+  if n >= 65 && n < 91 { return upper[n-65:n-64] }
+  if n >= 97 && n < 123 { return lower[n-97:n-96] }
+  if n >= 48 && n < 58 {
+    let digits = "0123456789"
+    return digits[n-48:n-47]
+  }
+  if n == 43 { return "+" }
+  if n == 47 { return "/" }
+  if n == 32 { return " " }
+  if n == 61 { return "=" }
+  return "?" }
+
+fun toBinary(n: int, bits: int): string {
+  var b = ""
+  var val = n
+  var i = 0
+  while i < bits {
+    b = str(val % 2) + b
+    val = (val / 2) as int
+    i = i + 1
+  }
+  return b
+}
+
+fun binToInt(bits: string): int {
+  var n = 0
+  var i = 0
+  while i < len(bits) {
+    n = n * 2 + parseIntStr(bits[i:i+1])
+    i = i + 1
+  }
+  return n
+}
+
+fun base64Encode(text: string): string {
+  let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+  var bin = ""
+  for ch in text {
+    bin = bin + toBinary(ord(ch), 8)
+  }
+  while len(bin) % 6 != 0 { bin = bin + "0" }
+  var out = ""
+  var i = 0
+  while i < len(bin) {
+    let chunk = bin[i:i+6]
+    let val = binToInt(chunk)
+    out = out + alphabet[val:val+1]
+    i = i + 6
+  }
+  let pad = (3 - (len(text) % 3)) % 3
+  if pad == 1 { out = out[0:len(out)-1] + "=" }
+  if pad == 2 { out = out[0:len(out)-2] + "==" }
+  return out
+}
+
+fun base64Decode(enc: string): string {
+  let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+  var bin = ""
+  var i = 0
+  while i < len(enc) {
+    let ch = enc[i]
+    if ch == "=" { break }
+    let idx = indexOf(alphabet, ch)
+    bin = bin + toBinary(idx, 6)
+    i = i + 1
+  }
+  var out = ""
+  i = 0
+  while i + 8 <= len(bin) {
+    let chunk = bin[i:i+8]
+    let val = binToInt(chunk)
+    out = out + chr(val)
+    i = i + 8
+  }
+  return out
+}
+
+let msg = "Rosetta Code Base64 decode data task"
+print("Original : " + msg)
+let enc = base64Encode(msg)
+print("\nEncoded  : " + enc)
+let dec = base64Decode(enc)
+print("\nDecoded  : " + dec)
