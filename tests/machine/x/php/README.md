@@ -118,3 +118,13 @@ This directory stores PHP code produced by the compiler tests. Each Mochi progra
 - [ ] Handle union and option types
 - [ ] Add module and import support
 - [ ] Better error messages for unsupported features
+- [ ] Support asynchronous operations
+- [ ] Add documentation generator
+- [ ] Implement CLI runner for PHP code
+- [ ] Integrate type hints into generated PHP
+- [ ] Implement constant propagation optimization
+- [ ] Support generics for container types
+- [ ] Add more examples for dataset queries
+- [ ] Improve error recovery in parser
+- [ ] Add support for PHP enums
+- [ ] Provide benchmarking harness for compiled programs

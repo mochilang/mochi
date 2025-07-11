@@ -1,7 +1,43 @@
 <?php
-$customers = [["id" => 1, "name" => "Alice"], ["id" => 2, "name" => "Bob"], ["id" => 3, "name" => "Charlie"], ["id" => 4, "name" => "Diana"]];
-$orders = [["id" => 100, "customerId" => 1, "total" => 250], ["id" => 101, "customerId" => 2, "total" => 125], ["id" => 102, "customerId" => 1, "total" => 300]];
-$result = _query($customers, [['items'=>$orders, 'on'=>function($c, $o) use ($customers, $orders){return $o['customerId'] == $c['id'];}, 'right'=>true]], [ 'select' => function($c, $o) use ($customers, $orders){return ["customerName" => $c['name'], "order" => $o];} ]);
+$customers = [
+    [
+        "id" => 1,
+        "name" => "Alice"
+    ],
+    [
+        "id" => 2,
+        "name" => "Bob"
+    ],
+    [
+        "id" => 3,
+        "name" => "Charlie"
+    ],
+    [
+        "id" => 4,
+        "name" => "Diana"
+    ]
+];
+$orders = [
+    [
+        "id" => 100,
+        "customerId" => 1,
+        "total" => 250
+    ],
+    [
+        "id" => 101,
+        "customerId" => 2,
+        "total" => 125
+    ],
+    [
+        "id" => 102,
+        "customerId" => 1,
+        "total" => 300
+    ]
+];
+$result = _query($customers, [['items'=>$orders, 'on'=>function($c, $o) use ($customers, $orders){return $o['customerId'] == $c['id'];}, 'right'=>true]], [ 'select' => function($c, $o) use ($customers, $orders){return [
+    "customerName" => $c['name'],
+    "order" => $o
+];} ]);
 var_dump("--- Right Join using syntax ---");
 foreach ($result as $entry) {
     if ($entry['order']) {

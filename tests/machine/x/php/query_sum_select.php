@@ -1,5 +1,9 @@
 <?php
-$nums = [1, 2, 3];
+$nums = [
+    1,
+    2,
+    3
+];
 $result = (function() use ($nums) {
     $result = 0;
     foreach ($nums as $n) {

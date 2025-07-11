@@ -1,7 +1,48 @@
 <?php
-$customers = [["id" => 1, "name" => "Alice"], ["id" => 2, "name" => "Bob"], ["id" => 3, "name" => "Charlie"], ["id" => 4, "name" => "Diana"]];
-$orders = [["id" => 100, "customerId" => 1, "total" => 250], ["id" => 101, "customerId" => 2, "total" => 125], ["id" => 102, "customerId" => 1, "total" => 300], ["id" => 103, "customerId" => 5, "total" => 80]];
-$result = _query($orders, [['items'=>$customers, 'on'=>function($o, $c) use ($customers, $orders){return $o['customerId'] == $c['id'];}, 'left'=>true, 'right'=>true]], [ 'select' => function($o, $c) use ($customers, $orders){return ["order" => $o, "customer" => $c];} ]);
+$customers = [
+    [
+        "id" => 1,
+        "name" => "Alice"
+    ],
+    [
+        "id" => 2,
+        "name" => "Bob"
+    ],
+    [
+        "id" => 3,
+        "name" => "Charlie"
+    ],
+    [
+        "id" => 4,
+        "name" => "Diana"
+    ]
+];
+$orders = [
+    [
+        "id" => 100,
+        "customerId" => 1,
+        "total" => 250
+    ],
+    [
+        "id" => 101,
+        "customerId" => 2,
+        "total" => 125
+    ],
+    [
+        "id" => 102,
+        "customerId" => 1,
+        "total" => 300
+    ],
+    [
+        "id" => 103,
+        "customerId" => 5,
+        "total" => 80
+    ]
+];
+$result = _query($orders, [['items'=>$customers, 'on'=>function($o, $c) use ($customers, $orders){return $o['customerId'] == $c['id'];}, 'left'=>true, 'right'=>true]], [ 'select' => function($o, $c) use ($customers, $orders){return [
+    "order" => $o,
+    "customer" => $c
+];} ]);
 var_dump("--- Outer Join using syntax ---");
 foreach ($result as $row) {
     if ($row['order']) {

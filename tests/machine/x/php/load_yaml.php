@@ -14,7 +14,10 @@ $adults = (function() use ($people) {
     $result = [];
     foreach ($people as $p) {
         if ($p->age >= 18) {
-            $result[] = ["name" => $p->name, "email" => $p->email];
+            $result[] = [
+    "name" => $p->name,
+    "email" => $p->email
+];
         }
     }
     return $result;

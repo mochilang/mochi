@@ -1,3 +1,7 @@
 <?php
-var_dump(count([1, 2, 3]));
+var_dump(count([
+    1,
+    2,
+    3
+]));
 ?>

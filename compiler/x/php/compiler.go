@@ -688,7 +688,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			elems[i] = s
 		}
-		return "[" + strings.Join(elems, ", ") + "]", nil
+		return formatList(elems), nil
 	case p.Map != nil:
 		parts := make([]string, len(p.Map.Items))
 		for i, it := range p.Map.Items {
@@ -708,7 +708,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			parts[i] = fmt.Sprintf("%s => %s", key, v)
 		}
-		return "[" + strings.Join(parts, ", ") + "]", nil
+		return formatMap(parts), nil
 	case p.Selector != nil:
 		if ut, ok := c.env.FindUnionByVariant(p.Selector.Root); ok && len(p.Selector.Tail) == 0 {
 			st := ut.Variants[p.Selector.Root]
@@ -1266,7 +1266,7 @@ func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error
 		}
 		fields[i] = fmt.Sprintf("'%s' => %s", f.Name, v)
 	}
-	return fmt.Sprintf("new %s([%s])", sanitizeName(sl.Name), strings.Join(fields, ", ")), nil
+	return fmt.Sprintf("new %s(%s)", sanitizeName(sl.Name), formatMap(fields)), nil
 }
 
 func (c *Compiler) compileIfExpr(ix *parser.IfExpr) (string, error) {

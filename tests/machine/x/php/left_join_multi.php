@@ -1,8 +1,33 @@
 <?php
-$customers = [["id" => 1, "name" => "Alice"], ["id" => 2, "name" => "Bob"]];
-$orders = [["id" => 100, "customerId" => 1], ["id" => 101, "customerId" => 2]];
-$items = [["orderId" => 100, "sku" => "a"]];
-$result = _query($orders, [['items'=>$customers, 'on'=>function($o, $c) use ($customers, $items, $orders){return $o['customerId'] == $c['id'];}], ['items'=>$items, 'on'=>function($o, $c, $i) use ($customers, $items, $orders){return $o['id'] == $i['orderId'];}, 'left'=>true]], [ 'select' => function($o, $c, $i) use ($customers, $items, $orders){return ["orderId" => $o['id'], "name" => $c['name'], "item" => $i];} ]);
+$customers = [
+    [
+        "id" => 1,
+        "name" => "Alice"
+    ],
+    [
+        "id" => 2,
+        "name" => "Bob"
+    ]
+];
+$orders = [
+    [
+        "id" => 100,
+        "customerId" => 1
+    ],
+    [
+        "id" => 101,
+        "customerId" => 2
+    ]
+];
+$items = [[
+    "orderId" => 100,
+    "sku" => "a"
+]];
+$result = _query($orders, [['items'=>$customers, 'on'=>function($o, $c) use ($customers, $items, $orders){return $o['customerId'] == $c['id'];}], ['items'=>$items, 'on'=>function($o, $c, $i) use ($customers, $items, $orders){return $o['id'] == $i['orderId'];}, 'left'=>true]], [ 'select' => function($o, $c, $i) use ($customers, $items, $orders){return [
+    "orderId" => $o['id'],
+    "name" => $c['name'],
+    "item" => $i
+];} ]);
 var_dump("--- Left Join Multi ---");
 foreach ($result as $r) {
     var_dump($r['orderId'], $r['name'], $r['item']);
