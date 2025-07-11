@@ -117,3 +117,13 @@ This directory contains Scheme code generated from the Mochi programs in `tests/
 - [ ] Add generic type parameter compilation
 - [ ] Extend dataset query language with window functions
 - [ ] Improve error messages for invalid constructs
+- [ ] Reduce startup time for the compiler tests
+- [ ] Provide better integration with package managers
+- [ ] Add support for tail-position detection
+- [ ] Generate documentation comments from Mochi sources
+- [ ] Support interactive debugging hooks
+- [ ] Improve constant folding optimizations
+- [ ] Better detection of dead code during compilation
+- [ ] Implement lazy evaluation primitives
+- [ ] Add code coverage instrumentation
+- [ ] Provide tooling for dependency visualization
