@@ -81,21 +81,6 @@ inline bool operator==(const __struct3 &a, const __struct3 &b) {
 inline bool operator!=(const __struct3 &a, const __struct3 &b) {
   return !(a == b);
 }
-inline void __json(const __struct1 &v) {
-  bool first = true;
-  std::cout << "{";
-  if (!first)
-    std::cout << ",";
-  first = false;
-  std::cout << "\"id\":";
-  __json(v.id);
-  if (!first)
-    std::cout << ",";
-  first = false;
-  std::cout << "\"name\":";
-  __json(v.name);
-  std::cout << "}";
-}
 inline void __json(const __struct2 &v) {
   bool first = true;
   std::cout << "{";
@@ -114,6 +99,21 @@ inline void __json(const __struct2 &v) {
   first = false;
   std::cout << "\"total\":";
   __json(v.total);
+  std::cout << "}";
+}
+inline void __json(const __struct1 &v) {
+  bool first = true;
+  std::cout << "{";
+  if (!first)
+    std::cout << ",";
+  first = false;
+  std::cout << "\"id\":";
+  __json(v.id);
+  if (!first)
+    std::cout << ",";
+  first = false;
+  std::cout << "\"name\":";
+  __json(v.name);
   std::cout << "}";
 }
 inline void __json(const __struct3 &v) {
