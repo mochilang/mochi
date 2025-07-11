@@ -25,7 +25,7 @@ Compiled programs: 100/100 successful.
 - [x] fun_call.mochi
 - [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
- - [x] go_auto.mochi
+- [x] go_auto.mochi
 - [x] group_by.mochi
 - [x] group_by_conditional_sum.mochi
 - [x] group_by_having.mochi

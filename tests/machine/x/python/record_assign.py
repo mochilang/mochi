@@ -4,7 +4,7 @@ import dataclasses
 
 
 def inc(c: Counter) -> None:
-    c = c.n + 1
+    c.n = c.n + 1
 
 
 @dataclasses.dataclass
