@@ -1,0 +1,10 @@
+fun main() {
+  let x = 43
+  if x != 42 {
+    print("Assertion failed")
+  } else {
+    print("Assertion passed")
+  }
+}
+
+main()
