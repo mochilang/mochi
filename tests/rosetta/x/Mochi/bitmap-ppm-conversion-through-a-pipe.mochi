@@ -1,0 +1,123 @@
+// Mochi implementation of Rosetta "Bitmap/PPM conversion through a pipe" task
+// Since Mochi does not currently provide external process execution,
+// this example focuses on constructing the bitmap as in the Go version.
+// The resulting PPM data could then be written or piped to another program.
+
+// Pixel and Bitmap helpers adapted from bitmap.mochi
+
+type Pixel { R: int, G: int, B: int }
+
+fun pixelFromRgb(c: int): Pixel {
+  let r = ((c / 65536) as int) % 256
+  let g = ((c / 256) as int) % 256
+  let b = c % 256
+  return Pixel{ R: r, G: g, B: b }
+}
+
+fun rgbFromPixel(p: Pixel): int {
+  return p.R * 65536 + p.G * 256 + p.B
+}
+
+type Bitmap {
+  cols: int,
+  rows: int,
+  px: list<list<Pixel>>,
+}
+
+fun NewBitmap(x: int, y: int): Bitmap {
+  var data: list<list<Pixel>> = []
+  var row = 0
+  while row < y {
+    var r: list<Pixel> = []
+    var col = 0
+    while col < x {
+      r = append(r, Pixel{R:0,G:0,B:0})
+      col = col + 1
+    }
+    data = append(data, r)
+    row = row + 1
+  }
+  return Bitmap{ cols: x, rows: y, px: data }
+}
+
+fun FillRgb(b: Bitmap, c: int) {
+  var y = 0
+  let p = pixelFromRgb(c)
+  while y < b.rows {
+    var x = 0
+    while x < b.cols {
+      var px = b.px
+      var row = px[y]
+      row[x] = p
+      px[y] = row
+      b.px = px
+      x = x + 1
+    }
+    y = y + 1
+  }
+}
+
+fun SetPxRgb(b: Bitmap, x: int, y: int, c: int): bool {
+  if x < 0 || x >= b.cols || y < 0 || y >= b.rows { return false }
+  var px = b.px
+  var row = px[y]
+  row[x] = pixelFromRgb(c)
+  px[y] = row
+  b.px = px
+  return true
+}
+
+// simple linear congruential generator for reproducible pseudo random numbers
+fun nextRand(seed: int): int { return (seed * 1664525 + 1013904223) % 2147483648 }
+
+fun main() {
+  var bm = NewBitmap(400, 300)
+  FillRgb(bm, 12615744)
+
+  var seed = now()
+  var i = 0
+  while i < 2000 {
+    seed = nextRand(seed)
+    let x = seed % 400
+    seed = nextRand(seed)
+    let y = seed % 300
+    SetPxRgb(bm, x, y, 8405024)
+    i = i + 1
+  }
+
+  var x = 0
+  while x < 400 {
+    var y = 240
+    while y < 245 {
+      SetPxRgb(bm, x, y, 8405024)
+      y = y + 1
+    }
+    y = 260
+    while y < 265 {
+      SetPxRgb(bm, x, y, 8405024)
+      y = y + 1
+    }
+    x = x + 1
+  }
+
+  var y = 0
+  while y < 300 {
+    var x = 80
+    while x < 85 {
+      SetPxRgb(bm, x, y, 8405024)
+      x = x + 1
+    }
+    x = 95
+    while x < 100 {
+      SetPxRgb(bm, x, y, 8405024)
+      x = x + 1
+    }
+    y = y + 1
+  }
+
+  // At this point the bitmap bm contains the pixel data which the Go version
+  // would pipe to the external "cjpeg" command. Mochi does not implement
+  // external piping yet, so no further action is taken here.
+}
+
+main()
