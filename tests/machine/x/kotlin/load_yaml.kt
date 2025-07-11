@@ -1,12 +1,3 @@
-fun toBool(v: Any?): Boolean = when (v) {
-    is Boolean -> v
-    is Int -> v != 0
-    is Double -> v != 0.0
-    is String -> v.isNotEmpty()
-    null -> false
-    else -> true
-}
-
 fun _load(path: String?, opts: Map<String, Any?>?): MutableList<MutableMap<String, Any?>> {
     val fmt = opts?.get("format") as? String ?: "csv"
     val lines = if (path == null || path == "-") {
@@ -65,7 +56,7 @@ val people = _load("../interpreter/valid/people.yaml", mutableMapOf("format" to 
 val adults = run {
     val __res = mutableListOf<Adult>()
     for (p in people) {
-        if (toBool(p.age >= 18)) {
+        if (p.age >= 18) {
             __res.add(Adult(name = p.name, email = p.email))
         }
     }

@@ -25,7 +25,7 @@ val stats = run {
     val __order = mutableListOf<Any?>()
     for (c in customers) {
         for (o in orders) {
-            if (toBool(o.customerId == c.id)) {
+            if (o.customerId == c.id) {
                 val __k = c.name
                 var __g = __groups[__k]
                 if (__g == null) {

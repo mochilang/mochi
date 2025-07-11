@@ -119,3 +119,4 @@ Successfully ran: 88/100 programs
 - [x] Emit data classes for uniform map lists
 - [x] Infer data classes from single map literals
 - [x] Infer struct type when query selects a struct variable
+- [x] Avoid unnecessary boolean conversions in conditions

@@ -30,7 +30,7 @@ val result = run {
         __res.add(Result(cat = g.key, share = sum(run {
     val __res = mutableListOf<Any?>()
     for (x in g) {
-        __res.add(if (toBool(x.flag)) x.val else 0)
+        __res.add(if (x.flag) x.val else 0)
     }
     __res
 }) / sum(run {

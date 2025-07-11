@@ -1,20 +1,11 @@
 fun count(list: Collection<Any?>): Int = list.size
 
-fun toBool(v: Any?): Boolean = when (v) {
-    is Boolean -> v
-    is Int -> v != 0
-    is Double -> v != 0.0
-    is String -> v.isNotEmpty()
-    null -> false
-    else -> true
-}
-
 class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
-data class Customer(var id: Int, var name: String)
-
 data class Order(var id: Int, var customerId: Int)
 
 data class Stat(var name: Any?, var count: Int)
+
+data class Customer(var id: Int, var name: String)
 
 val customers = mutableListOf(Customer(id = 1, name = "Alice"), Customer(id = 2, name = "Bob"))
 
@@ -25,7 +16,7 @@ val stats = run {
     val __order = mutableListOf<Any?>()
     for (o in orders) {
         for (c in customers) {
-            if (toBool(o.customerId == c.id)) {
+            if (o.customerId == c.id) {
                 val __k = c.name
                 var __g = __groups[__k]
                 if (__g == null) {

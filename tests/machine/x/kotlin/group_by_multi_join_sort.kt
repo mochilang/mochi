@@ -19,25 +19,16 @@ fun toDouble(v: Any?): Double = when (v) {
     else -> 0.0
 }
 
-fun toBool(v: Any?): Boolean = when (v) {
-    is Boolean -> v
-    is Int -> v != 0
-    is Double -> v != 0.0
-    is String -> v.isNotEmpty()
-    null -> false
-    else -> true
-}
-
 class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
-data class Result(var c_custkey: Any?, var c_name: Any?, var revenue: Int, var c_acctbal: Any?, var n_name: Any?, var c_address: Any?, var c_phone: Any?, var c_comment: Any?)
-
-data class Nation(var n_nationkey: Int, var n_name: String)
-
 data class Customer(var c_custkey: Int, var c_name: String, var c_acctbal: Double, var c_nationkey: Int, var c_address: String, var c_phone: String, var c_comment: String)
 
 data class Order(var o_orderkey: Int, var o_custkey: Int, var o_orderdate: String)
 
 data class Lineitem(var l_orderkey: Int, var l_returnflag: String, var l_extendedprice: Double, var l_discount: Double)
+
+data class Result(var c_custkey: Any?, var c_name: Any?, var revenue: Int, var c_acctbal: Any?, var n_name: Any?, var c_address: Any?, var c_phone: Any?, var c_comment: Any?)
+
+data class Nation(var n_nationkey: Int, var n_name: String)
 
 val nation = mutableListOf(Nation(n_nationkey = 1, n_name = "BRAZIL"))
 
@@ -56,12 +47,12 @@ val result = run {
     val __order = mutableListOf<Any?>()
     for (c in customer) {
         for (o in orders) {
-            if (toBool(o.o_custkey == c.c_custkey)) {
+            if (o.o_custkey == c.c_custkey) {
                 for (l in lineitem) {
-                    if (toBool(l.l_orderkey == o.o_orderkey)) {
+                    if (l.l_orderkey == o.o_orderkey) {
                         for (n in nation) {
-                            if (toBool(n.n_nationkey == c.c_nationkey)) {
-                                if (toBool(o.o_orderdate >= start_date && o.o_orderdate < end_date && l.l_returnflag == "R")) {
+                            if (n.n_nationkey == c.c_nationkey) {
+                                if (o.o_orderdate >= start_date && o.o_orderdate < end_date && l.l_returnflag == "R") {
                                     val __k = mutableMapOf("c_custkey" to c.c_custkey, "c_name" to c.c_name, "c_acctbal" to c.c_acctbal, "c_address" to c.c_address, "c_phone" to c.c_phone, "c_comment" to c.c_comment, "n_name" to n.n_name)
                                     var __g = __groups[__k]
                                     if (__g == null) {
