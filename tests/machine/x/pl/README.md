@@ -108,3 +108,13 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 ### Remaining tasks
 - [x] Implement update statements
 - [x] Support block expressions
+- [ ] Support Go FFI imports
+- [ ] Support Python FFI imports
+- [ ] Improve error messages from Prolog runtime
+- [ ] Optimize generated code for tail recursion
+- [ ] Add support for macros
+- [ ] Implement module system mapping
+- [ ] Generate more idiomatic Prolog for match expressions
+- [ ] Handle records with optional fields
+- [ ] Support lazy evaluation features
+- [ ] Document known limitations in compiler

@@ -49,7 +49,7 @@ main :-
     dict_create(_V4, map, [id-101, customerid-1]),
     dict_create(_V5, map, [id-102, customerid-2]),
     Orders = [_V3, _V4, _V5],
-    findall(_V12, (member(C, Customers), findall(O, (member(O, Orders), get_item(O, 'customerid', _V6), get_item(C, 'id', _V7), (_V6 == _V7)), _V8), (_V8 = [] -> O = nil; member(O, _V8)), true, get_item(C, 'name', _V9), _V10 = _V9, dict_create(_V11, map, [C-C, O-O]), _V12 = _V10-_V11), _V13),
+    findall(_V12, (member(C, Customers), findall(O, (member(O, Orders), get_item(O, 'customerid', _V6), get_item(C, 'id', _V7), (_V6 == _V7)), _V8), (_V8 = [] -> O = nil; member(O, _V8)), true, get_item(C, 'name', _V9), _V10 = _V9, dict_create(_V11, map, ['C'-C, 'O'-O]), _V12 = _V10-_V11), _V13),
     group_pairs(_V13, [], _V14),
     findall(_V21, (member(G, _V14), get_item(G, 'key', _V15), findall(_V17, (member(R, G), get_item(R, 'o', _V16), _V16, _V17 = R), _V18), count(_V18, _V19), dict_create(_V20, map, [name-_V15, count-_V19]), _V21 = _V20), _V22),
     Stats = _V22,

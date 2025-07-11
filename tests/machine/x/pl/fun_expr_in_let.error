@@ -1,0 +1,3 @@
+run: exit status 2
+ERROR: /workspace/mochi/tests/machine/x/pl/fun_expr_in_let.pl:5: user:main main/0: Unknown procedure: square/2
+

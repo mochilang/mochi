@@ -1,3 +1,4 @@
-ERROR: /workspace/mochi/tests/machine/x/pl/short_circuit.pl:2:4: Syntax error: Operator expected
-ERROR: /workspace/mochi/tests/machine/x/pl/short_circuit.pl:9:7: Syntax error: Operator expected
-
+boom
+false,true
+boom
+true;true

@@ -30,6 +30,7 @@ twoSum(Nums, Target, _Res) :-
                                             get_item(Nums, J, _V4),
                                             (((_V3 + _V4) == Target) ->
                                                 _Res = [I, J].
+                                                true
                                             ; true
                                             ),
                                             true

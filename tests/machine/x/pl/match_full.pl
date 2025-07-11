@@ -1,5 +1,5 @@
 :- style_check(-singleton).
-Classify(N, _Res) :-
+classify(N, _Res) :-
     (N == 1 -> _V0 = "one" ; _V0 = "many"),
     (N == 0 -> _V1 = "zero" ; _V1 = _V0),
     _Res = _V1.
@@ -25,10 +25,10 @@ main :-
     Status = _V6,
     write(Status),
     nl,
-    Classify(0, _V7),
+    classify(0, _V7),
     write(_V7),
     nl,
-    Classify(5, _V8),
+    classify(5, _V8),
     write(_V8),
     nl,
     true.

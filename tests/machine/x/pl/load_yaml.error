@@ -1,0 +1,3 @@
+run: exit status 2
+ERROR: /workspace/mochi/tests/machine/x/pl/load_yaml.pl:21: user:main source_sink `"../interpreter/valid/people.yaml"' does not exist
+

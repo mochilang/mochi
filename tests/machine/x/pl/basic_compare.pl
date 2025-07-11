@@ -8,7 +8,7 @@ main :-
     ((A == 7) -> _V0 = true ; _V0 = false),
     write(_V0),
     nl,
-    ((B < 5) -> _V1 = true ; _V1 = false),
+    ((B @< 5) -> _V1 = true ; _V1 = false),
     write(_V1),
     nl,
     true.

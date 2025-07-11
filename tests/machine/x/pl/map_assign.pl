@@ -14,10 +14,11 @@ set_item(List, Index, Val, Out) :-
 :- initialization(main, main).
 main :-
     dict_create(_V0, map, [alice-1]),
-    Scores = _V0,
-    set_item(Scores, "bob", 2, _V1),
-    Scores_2 = _V1,
-    get_item(Scores_2, "bob", _V3),
+    nb_setval(scores, _V0),
+    set_item(scores, "bob", 2, _V1),
+    nb_setval(scores, _V1),
+    nb_getval(scores, _V2),
+    get_item(_V2, "bob", _V3),
     write(_V3),
     nl,
     true.

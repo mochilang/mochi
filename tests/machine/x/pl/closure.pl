@@ -1,15 +1,15 @@
 :- style_check(-singleton).
-P__lambda0(X, _Res) :-
+p__lambda0(X, _Res) :-
     _Res is (X + N).
 
-MakeAdder(N, _Res) :-
+makeAdder(N, _Res) :-
     _Res = p__lambda0.
 
 :- initialization(main, main).
 main :-
-    MakeAdder(10, _V0),
+    makeAdder(10, _V0),
     Add10 = _V0,
-    Add10(7, _V1),
+    add10(7, _V1),
     write(_V1),
     nl,
     true.

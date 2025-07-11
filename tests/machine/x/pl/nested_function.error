@@ -1,0 +1,3 @@
+run: exit status 2
+ERROR: /workspace/mochi/tests/machine/x/pl/nested_function.pl:9: user:main outer/2: Unknown procedure: inner/2
+

@@ -48,7 +48,7 @@ main :-
     dict_create(_V3, map, [id-101, customerid-1]),
     dict_create(_V4, map, [id-102, customerid-2]),
     Orders = [_V2, _V3, _V4],
-    findall(_V10, (member(O, Orders), member(C, Customers), get_item(O, 'customerid', _V5), get_item(C, 'id', _V6), (_V5 == _V6), true, get_item(C, 'name', _V7), _V8 = _V7, dict_create(_V9, map, [O-O, C-C]), _V10 = _V8-_V9), _V11),
+    findall(_V10, (member(O, Orders), member(C, Customers), get_item(O, 'customerid', _V5), get_item(C, 'id', _V6), (_V5 == _V6), true, get_item(C, 'name', _V7), _V8 = _V7, dict_create(_V9, map, ['O'-O, 'C'-C]), _V10 = _V8-_V9), _V11),
     group_pairs(_V11, [], _V12),
     findall(_V16, (member(G, _V12), get_item(G, 'key', _V13), count(G, _V14), dict_create(_V15, map, [name-_V13, count-_V14]), _V16 = _V15), _V17),
     Stats = _V17,

@@ -1,11 +1,11 @@
 :- style_check(-singleton).
-P__lambda0(X, _Res) :-
+p__lambda0(X, _Res) :-
     _Res is (X * X).
 
 :- initialization(main, main).
 main :-
     Square = p__lambda0,
-    Square(6, _V1),
+    square(6, _V1),
     write(_V1),
     nl,
     true.

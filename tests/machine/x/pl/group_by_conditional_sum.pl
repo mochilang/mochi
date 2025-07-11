@@ -45,7 +45,7 @@ main :-
     dict_create(_V1, map, [cat-"a", val-5, flag-false]),
     dict_create(_V2, map, [cat-"b", val-20, flag-true]),
     Items = [_V0, _V1, _V2],
-    findall(_V6, (member(I, Items), true, get_item(I, 'cat', _V3), _V4 = _V3, dict_create(_V5, map, [I-I]), _V6 = _V4-_V5), _V7),
+    findall(_V6, (member(I, Items), true, get_item(I, 'cat', _V3), _V4 = _V3, dict_create(_V5, map, ['I'-I]), _V6 = _V4-_V5), _V7),
     group_pairs(_V7, [], _V8),
     findall(_V21, (member(G, _V8), get_item(G, 'key', _V9), findall(_V13, (member(X, G), true, get_item(X, 'flag', _V10), get_item(X, 'val', _V11), (_V10 -> _V12 = _V11 ; _V12 = 0), _V13 = _V12), _V14), sum(_V14, _V15), findall(_V17, (member(X, G), true, get_item(X, 'val', _V16), _V17 = _V16), _V18), sum(_V18, _V19), dict_create(_V20, map, [cat-_V9, share-(_V15 / _V19)]), _V21 = _V20), _V22),
     Result = _V22,

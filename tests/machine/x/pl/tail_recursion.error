@@ -1,0 +1,5 @@
+run: exit status 2
+ERROR: /workspace/mochi/tests/machine/x/pl/tail_recursion.pl:4:17: Syntax error: Operator expected
+ERROR: /workspace/mochi/tests/machine/x/pl/tail_recursion.pl:7:3: Syntax error: Illegal start of term
+ERROR: /workspace/mochi/tests/machine/x/pl/tail_recursion.pl:11: user:main main/0: Unknown procedure: sum_rec/3
+
