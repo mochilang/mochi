@@ -483,26 +483,30 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		if err != nil {
 			return err
 		}
-		iterVar := fmt.Sprintf("_iter%d", c.tmp)
-		c.tmp++
-		c.writeln(fmt.Sprintf("var %s = %s;", iterVar, src))
-
-		// mark loop variable as map-backed if the source is a list of maps
 		t := types.TypeOfExpr(srcExpr, c.env)
-		if lt, ok := t.(types.ListType); ok {
-			if _, ok := lt.Elem.(types.MapType); ok {
+		switch tt := t.(type) {
+		case types.ListType:
+			if _, ok := tt.Elem.(types.MapType); ok {
 				c.mapVars[f.Name] = true
 			}
 			child := types.NewEnv(c.env)
-			child.SetVar(f.Name, lt.Elem, true)
+			child.SetVar(f.Name, tt.Elem, true)
 			c.env = child
-		} else {
+			c.writeln(fmt.Sprintf("for (var %s in %s) {", f.Name, src))
+		case types.MapType:
+			child := types.NewEnv(c.env)
+			child.SetVar(f.Name, tt.Value, true)
+			c.env = child
+			c.writeln(fmt.Sprintf("for (var %s in %s.keys) {", f.Name, src))
+		default:
+			iterVar := fmt.Sprintf("_iter%d", c.tmp)
+			c.tmp++
+			c.writeln(fmt.Sprintf("var %s = %s;", iterVar, src))
 			child := types.NewEnv(c.env)
 			child.SetVar(f.Name, types.AnyType{}, true)
 			c.env = child
+			c.writeln(fmt.Sprintf("for (var %s in (%s is Map ? (%s as Map).keys : %s) as Iterable) {", f.Name, iterVar, iterVar, iterVar))
 		}
-
-		c.writeln(fmt.Sprintf("for (var %s in (%s is Map ? (%s as Map).keys : %s) as Iterable) {", f.Name, iterVar, iterVar, iterVar))
 	}
 	c.indent++
 	for _, st := range f.Body {

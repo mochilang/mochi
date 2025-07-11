@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs. Successful runs have a .out file, failures a .error file.
 
-Compiled programs: 96/97
+Compiled programs: 97/97
 
 Checklist:
 
@@ -36,7 +36,7 @@ Checklist:
 - [x] group_by_multi_join
 - [x] group_by_multi_join_sort
 - [x] group_by_sort
-- [ ] group_items_iteration
+- [x] group_items_iteration
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
@@ -103,3 +103,16 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+
+## Remaining Tasks
+
+- [ ] Support slices and range expressions
+- [ ] Implement pattern matching translation
+- [ ] Generate struct type definitions
+- [ ] Improve query optimization
+- [ ] Add asynchronous I/O support
+- [ ] Enhance error reporting in generated code
+- [ ] Improve YAML parser features
+- [ ] Support generics for collections
+- [ ] Provide integration tests with Dart packages
+- [ ] Optimize string handling
