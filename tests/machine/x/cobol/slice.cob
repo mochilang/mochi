@@ -1,0 +1,10 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. SLICE.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01 TMP PIC 9(9) VALUE 0.
+       PROCEDURE DIVISION.
+       DISPLAY 2 3
+       DISPLAY 1 2
+       DISPLAY "hello"((1 + 1):(4 - 1))
+       STOP RUN.

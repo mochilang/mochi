@@ -478,6 +478,18 @@ func (c *Compiler) compilePrint(call *parser.CallExpr) error {
 	}
 	if len(call.Args) == 1 {
 		arg := call.Args[0]
+		if elems, ok := listSliceLiteralExpr(arg); ok {
+			parts := make([]string, len(elems))
+			for i, e := range elems {
+				v, err := c.compileExpr(e)
+				if err != nil {
+					return err
+				}
+				parts[i] = v
+			}
+			c.writeln("DISPLAY " + strings.Join(parts, " "))
+			return nil
+		}
 		if fc, ok := isCallTo(arg, ""); ok {
 			switch fc.Func {
 			case "append":
@@ -1027,6 +1039,63 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 }
 
 func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
+	// Handle list literals used with indexing/slicing directly to allow
+	// constant folding of simple list operations.
+	if p.Target != nil && p.Target.List != nil && len(p.Ops) == 1 {
+		op := p.Ops[0]
+		if op.Index != nil {
+			idx := op.Index
+			if idx.Step != nil || idx.Colon2 != nil {
+				return "", fmt.Errorf("slices not supported")
+			}
+			elems := p.Target.List.Elems
+			// convert list slice/index at compile time when indices
+			// are integer literals
+			if idx.Colon != nil || idx.End != nil {
+				start := 0
+				end := len(elems)
+				var ok bool
+				if idx.Start != nil {
+					start, ok = intLiteral(idx.Start)
+					if !ok {
+						return "", fmt.Errorf("slice start must be int literal")
+					}
+				}
+				if idx.End != nil {
+					end, ok = intLiteral(idx.End)
+					if !ok {
+						return "", fmt.Errorf("slice end must be int literal")
+					}
+				}
+				if start < 0 {
+					start = 0
+				}
+				if end > len(elems) {
+					end = len(elems)
+				}
+				if start > end {
+					start = end
+				}
+				parts := make([]string, 0, end-start)
+				for i := start; i < end; i++ {
+					s, err := c.compileExpr(elems[i])
+					if err != nil {
+						return "", err
+					}
+					parts = append(parts, s)
+				}
+				return strings.Join(parts, " "), nil
+			}
+			if idx.Start != nil && idx.End == nil && idx.Colon == nil {
+				i, ok := intLiteral(idx.Start)
+				if !ok || i < 0 || i >= len(elems) {
+					return "", fmt.Errorf("index must be int literal")
+				}
+				return c.compileExpr(elems[i])
+			}
+		}
+	}
+
 	val, err := c.compilePrimary(p.Target)
 	if err != nil {
 		return "", err
@@ -1609,4 +1678,51 @@ func cobolPic(t types.Type, val string) string {
 	default:
 		return "PIC 9"
 	}
+}
+
+func listSliceLiteralExpr(e *parser.Expr) ([]*parser.Expr, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil || len(u.Value.Ops) != 1 {
+		return nil, false
+	}
+	p := u.Value
+	if p.Target == nil || p.Target.List == nil {
+		return nil, false
+	}
+	op := p.Ops[0]
+	if op.Index == nil || op.Index.Step != nil || op.Index.Colon2 != nil {
+		return nil, false
+	}
+	if op.Index.Colon == nil && op.Index.End == nil {
+		return nil, false
+	}
+	elems := p.Target.List.Elems
+	start := 0
+	end := len(elems)
+	var ok bool
+	if op.Index.Start != nil {
+		start, ok = intLiteral(op.Index.Start)
+		if !ok {
+			return nil, false
+		}
+	}
+	if op.Index.End != nil {
+		end, ok = intLiteral(op.Index.End)
+		if !ok {
+			return nil, false
+		}
+	}
+	if start < 0 {
+		start = 0
+	}
+	if end > len(elems) {
+		end = len(elems)
+	}
+	if start > end {
+		start = end
+	}
+	return elems[start:end], true
 }
