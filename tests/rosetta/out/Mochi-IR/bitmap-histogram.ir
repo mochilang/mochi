@@ -1,0 +1,304 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun image(): list<list<int>> {
+func image (regs=1)
+  // return [[0,0,10000],[65535,65535,65535],[65535,65535,65535]]
+  Const        r0, [[0, 0, 10000], [65535, 65535, 65535], [65535, 65535, 65535]]
+  Return       r0
+
+  // fun histogram(g: list<list<int>>, bins: int): list<int> {
+func histogram (regs=33)
+  // if bins <= 0 { bins = len(g[0]) }
+  Const        r2, 0
+  LessEq       r3, r1, r2
+  JumpIfFalse  r3, L0
+  Const        r2, 0
+  Index        r4, r0, r2
+  Len          r5, r4
+  Move         r1, r5
+L0:
+  // var h: list<int> = []
+  Const        r6, []
+  Move         r7, r6
+  // var i = 0
+  Const        r2, 0
+  Move         r8, r2
+L2:
+  // while i < bins {
+  LessInt      r9, r8, r1
+  JumpIfFalse  r9, L1
+  // h = append(h, 0)
+  Const        r2, 0
+  Append       r10, r7, r2
+  Move         r7, r10
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r12, r8, r11
+  Move         r8, r12
+  // while i < bins {
+  Jump         L2
+L1:
+  // var y = 0
+  Const        r2, 0
+  Move         r13, r2
+L6:
+  // while y < len(g) {
+  Len          r14, r0
+  LessInt      r15, r13, r14
+  JumpIfFalse  r15, L3
+  // var row = g[y]
+  Index        r16, r0, r13
+  Move         r17, r16
+  // var x = 0
+  Const        r2, 0
+  Move         r18, r2
+L5:
+  // while x < len(row) {
+  Len          r19, r17
+  LessInt      r20, r18, r19
+  JumpIfFalse  r20, L4
+  // var p = row[x]
+  Index        r21, r17, r18
+  Move         r22, r21
+  // var idx = ((p * (bins - 1)) / 65535) as int
+  Const        r11, 1
+  SubInt       r23, r1, r11
+  Mul          r24, r22, r23
+  Const        r25, 65535
+  Div          r26, r24, r25
+  Cast         r27, r26, int
+  Move         r28, r27
+  // h[idx] = h[idx] + 1
+  Index        r29, r7, r28
+  Const        r11, 1
+  Add          r30, r29, r11
+  SetIndex     r7, r28, r30
+  // x = x + 1
+  Const        r11, 1
+  AddInt       r31, r18, r11
+  Move         r18, r31
+  // while x < len(row) {
+  Jump         L5
+L4:
+  // y = y + 1
+  Const        r11, 1
+  AddInt       r32, r13, r11
+  Move         r13, r32
+  // while y < len(g) {
+  Jump         L6
+L3:
+  // return h
+  Return       r7
+
+  // fun medianThreshold(h: list<int>): int {
+func medianThreshold (regs=26)
+  // var lb = 0
+  Const        r1, 0
+  Move         r2, r1
+  // var ub = len(h) - 1
+  Len          r3, r0
+  Const        r4, 1
+  SubInt       r5, r3, r4
+  Move         r6, r5
+  // var lSum = 0
+  Const        r1, 0
+  Move         r7, r1
+  // var uSum = 0
+  Const        r1, 0
+  Move         r8, r1
+L2:
+  // while lb <= ub {
+  LessEqInt    r9, r2, r6
+  JumpIfFalse  r9, L0
+  // if lSum + h[lb] < uSum + h[ub] {
+  Index        r10, r0, r2
+  Add          r11, r7, r10
+  Index        r12, r0, r6
+  Add          r13, r8, r12
+  Less         r14, r11, r13
+  JumpIfFalse  r14, L1
+  // lSum = lSum + h[lb]
+  Index        r15, r0, r2
+  Add          r16, r7, r15
+  Move         r7, r16
+  // lb = lb + 1
+  Const        r4, 1
+  AddInt       r17, r2, r4
+  Move         r2, r17
+  // if lSum + h[lb] < uSum + h[ub] {
+  Jump         L2
+L1:
+  // uSum = uSum + h[ub]
+  Index        r18, r0, r6
+  Add          r19, r8, r18
+  Move         r8, r19
+  // ub = ub - 1
+  Const        r4, 1
+  SubInt       r20, r6, r4
+  Move         r6, r20
+  // while lb <= ub {
+  Jump         L2
+L0:
+  // return ((ub * 65535) / len(h)) as int
+  Const        r21, 65535
+  MulInt       r22, r6, r21
+  Len          r23, r0
+  DivInt       r24, r22, r23
+  Cast         r25, r24, int
+  Return       r25
+
+  // fun threshold(g: list<list<int>>, t: int): list<list<int>> {
+func threshold (regs=23)
+  // var out: list<list<int>> = []
+  Const        r2, []
+  Move         r3, r2
+  // var y = 0
+  Const        r4, 0
+  Move         r5, r4
+L5:
+  // while y < len(g) {
+  Len          r6, r0
+  LessInt      r7, r5, r6
+  JumpIfFalse  r7, L0
+  // var row = g[y]
+  Index        r8, r0, r5
+  Move         r9, r8
+  // var newRow: list<int> = []
+  Const        r2, []
+  Move         r10, r2
+  // var x = 0
+  Const        r4, 0
+  Move         r11, r4
+L4:
+  // while x < len(row) {
+  Len          r12, r9
+  LessInt      r13, r11, r12
+  JumpIfFalse  r13, L1
+  // if row[x] < t {
+  Index        r14, r9, r11
+  Less         r15, r14, r1
+  JumpIfFalse  r15, L2
+  // newRow = append(newRow, 0)
+  Const        r4, 0
+  Append       r16, r10, r4
+  Move         r10, r16
+  // if row[x] < t {
+  Jump         L3
+L2:
+  // newRow = append(newRow, 65535)
+  Const        r17, 65535
+  Append       r18, r10, r17
+  Move         r10, r18
+L3:
+  // x = x + 1
+  Const        r19, 1
+  AddInt       r20, r11, r19
+  Move         r11, r20
+  // while x < len(row) {
+  Jump         L4
+L1:
+  // out = append(out, newRow)
+  Append       r21, r3, r10
+  Move         r3, r21
+  // y = y + 1
+  Const        r19, 1
+  AddInt       r22, r5, r19
+  Move         r5, r22
+  // while y < len(g) {
+  Jump         L5
+L0:
+  // return out
+  Return       r3
+
+  // fun printImage(g: list<list<int>>) {
+func printImage (regs=21)
+  // var y = 0
+  Const        r1, 0
+  Move         r2, r1
+L5:
+  // while y < len(g) {
+  Len          r3, r0
+  LessInt      r4, r2, r3
+  JumpIfFalse  r4, L0
+  // var row = g[y]
+  Index        r5, r0, r2
+  Move         r6, r5
+  // var line = ""
+  Const        r7, ""
+  Move         r8, r7
+  // var x = 0
+  Const        r1, 0
+  Move         r9, r1
+L4:
+  // while x < len(row) {
+  Len          r10, r6
+  LessInt      r11, r9, r10
+  JumpIfFalse  r11, L1
+  // if row[x] == 0 {
+  Index        r12, r6, r9
+  Const        r1, 0
+  Equal        r13, r12, r1
+  JumpIfFalse  r13, L2
+  // line = line + "0"
+  Const        r14, "0"
+  Add          r15, r8, r14
+  Move         r8, r15
+  // if row[x] == 0 {
+  Jump         L3
+L2:
+  // line = line + "1"
+  Const        r16, "1"
+  Add          r17, r8, r16
+  Move         r8, r17
+L3:
+  // x = x + 1
+  Const        r18, 1
+  AddInt       r19, r9, r18
+  Move         r9, r19
+  // while x < len(row) {
+  Jump         L4
+L1:
+  // print(line)
+  Print        r8
+  // y = y + 1
+  Const        r18, 1
+  AddInt       r20, r2, r18
+  Move         r2, r20
+  // while y < len(g) {
+  Jump         L5
+L0:
+  Return       r0
+
+  // fun main() {
+func main (regs=18)
+  // let img = image()
+  Call         r0, image, 
+  // let h = histogram(img, 0)
+  Move         r1, r0
+  Const        r3, 0
+  Move         r2, r3
+  Call2        r4, histogram, r1, r2
+  // print("Histogram: " + str(h))
+  Const        r5, "Histogram: "
+  Str          r6, r4
+  Add          r7, r5, r6
+  Print        r7
+  // let t = medianThreshold(h)
+  Move         r8, r4
+  Call         r9, medianThreshold, r8
+  // print("Threshold: " + str(t))
+  Const        r10, "Threshold: "
+  Str          r11, r9
+  Add          r12, r10, r11
+  Print        r12
+  // let bw = threshold(img, t)
+  Move         r13, r0
+  Move         r14, r9
+  Call2        r15, threshold, r13, r14
+  // printImage(bw)
+  Move         r16, r15
+  Call         r17, printImage, r16
+  Return       r0
