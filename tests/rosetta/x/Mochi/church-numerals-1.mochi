@@ -1,0 +1,51 @@
+// Mochi translation of Rosetta "Church-numerals" task
+// Based on Go version church-numerals-1.go
+
+type Fn = fun(any): any
+
+type Church = fun(Fn): Fn
+
+fun zero(f: Fn): Fn { return fun(x: any): any { return x } }
+
+fun succ(c: Church): Church {
+  return fun(f: Fn): Fn { return fun(x: any): any { return f(c(f)(x)) } }
+}
+
+fun add(c: Church, d: Church): Church {
+  return fun(f: Fn): Fn { return fun(x: any): any { return c(f)(d(f)(x)) } }
+}
+
+fun mul(c: Church, d: Church): Church {
+  return fun(f: Fn): Fn { return fun(x: any): any { return c(d(f))(x) } }
+}
+
+fun pow(c: Church, d: Church): Church {
+  var di = toInt(d)
+  var prod = c
+  var i = 1
+  while i < di {
+    prod = mul(prod, c)
+    i = i + 1
+  }
+  return prod
+}
+
+fun incr(i: any): any { return (i as int) + 1 }
+
+fun toInt(c: Church): int { return c(incr)(0) as int }
+
+fun intToChurch(i: int): Church {
+  if i == 0 { return zero }
+  return succ(intToChurch(i - 1))
+}
+
+let z: Church = zero
+let three = succ(succ(succ(z)))
+let four = succ(three)
+print("three        -> " + str(toInt(three)))
+print("four         -> " + str(toInt(four)))
+print("three + four -> " + str(toInt(add(three, four))))
+print("three * four -> " + str(toInt(mul(three, four))))
+print("three ^ four -> " + str(toInt(pow(three, four))))
+print("four ^ three -> " + str(toInt(pow(four, three))))
+print("5 -> five    -> " + str(toInt(intToChurch(5))))

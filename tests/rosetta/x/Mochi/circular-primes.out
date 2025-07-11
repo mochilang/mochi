@@ -1,0 +1,13 @@
+The first 19 circular primes are:
+[2, 3, 5, 7, 11, 13, 17, 31, 37, 71, 73, 79, 97, 113, 131, 197, 199, 311, 337]
+
+The next 4 circular primes, in repunit format, are:
+[R(19) R(23) R(317) R(1031)]
+
+The following repunits are probably circular primes:
+R(5003) : true
+R(9887) : true
+R(15073) : true
+R(25031) : true
+R(35317) : true
+R(49081) : true
