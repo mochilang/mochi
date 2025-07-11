@@ -6,18 +6,6 @@ object match_full {
     case 3 => "three"
     case _ => "unknown"
   }
-  val day = "sun"
-  val mood = day match {
-    case "mon" => "tired"
-    case "fri" => "excited"
-    case "sun" => "relaxed"
-    case _ => "normal"
-  }
-  val ok = true
-  val status = ok match {
-    case true => "confirmed"
-    case false => "denied"
-  }
   def classify(n: Int): String = n match {
     case 0 => "zero"
     case 1 => "one"
@@ -26,7 +14,19 @@ object match_full {
   
   def main(args: Array[String]): Unit = {
     println((label))
+    val day = "sun"
+    val mood = day match {
+      case "mon" => "tired"
+      case "fri" => "excited"
+      case "sun" => "relaxed"
+      case _ => "normal"
+    }
     println((mood))
+    val ok = true
+    val status = ok match {
+      case true => "confirmed"
+      case false => "denied"
+    }
     println((status))
     println((classify(0)))
     println((classify(5)))

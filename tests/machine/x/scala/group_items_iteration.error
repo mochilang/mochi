@@ -1,11 +1,14 @@
-exit status 1
-/workspace/mochi/tests/machine/x/scala/group_items_iteration.scala:7: error: not found: value tmp
-  val result = (for { r <- tmp } yield r).sortBy(r => r.tag)
-                           ^
-/workspace/mochi/tests/machine/x/scala/group_items_iteration.scala:12: error: value _2 is not a member of List[group_items_iteration.Data]
+tests/machine/x/scala/group_items_iteration.scala:11: error: value _2 is not a member of List[group_items_iteration.Data]
       for(x <- g._2) {
                  ^
-/workspace/mochi/tests/machine/x/scala/group_items_iteration.scala:15: error: value _1 is not a member of List[group_items_iteration.Data]
+tests/machine/x/scala/group_items_iteration.scala:14: error: value _1 is not a member of List[group_items_iteration.Data]
       tmp = tmp :+ Auto1(tag = g._1, total = total)
                                  ^
-three errors found
+tests/machine/x/scala/group_items_iteration.scala:16: error: value tag is not a member of Any
+    val result = (for { r <- tmp } yield r).sortBy(r => r.tag)
+                                                          ^
+tests/machine/x/scala/group_items_iteration.scala:16: error: diverging implicit expansion for type scala.math.Ordering[B]
+starting with method Tuple9 in object Ordering
+    val result = (for { r <- tmp } yield r).sortBy(r => r.tag)
+                                                  ^
+four errors found

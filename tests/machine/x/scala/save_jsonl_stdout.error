@@ -1,0 +1,10 @@
+exit status 1
+/workspace/mochi/tests/machine/x/scala/save_jsonl_stdout.scala:7: error: type mismatch;
+ found   : Iterator[Any]
+ required: scala.collection.GenIterable[?]
+      case p: Product => p.getClass.getDeclaredFields.map(_.getName).zip(p.productIterator).toMap.asInstanceOf[Map[String,Any]]
+                                                                           ^
+/workspace/mochi/tests/machine/x/scala/save_jsonl_stdout.scala:11: error: value println is not a member of java.io.Closeable with Appendable with java.io.Flushable{def append(x$1: Char): java.io.Closeable with Appendable with java.io.Flushable; def append(x$1: CharSequence,x$2: Int,x$3: Int): java.io.Closeable with Appendable with java.io.Flushable; def append(x$1: CharSequence): java.io.Closeable with Appendable with java.io.Flushable}
+    rows.foreach(r => out.println(scala.util.parsing.json.JSONObject(toMap(r)).toString()))
+                          ^
+two errors found
