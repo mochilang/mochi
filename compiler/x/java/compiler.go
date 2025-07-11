@@ -32,6 +32,8 @@ type Compiler struct {
 	srcDir            string
 	curVar            string
 	className         string
+	globalVars        map[string]bool
+	globalUsed        map[string]bool
 }
 
 type dataClass struct {
@@ -63,6 +65,8 @@ func New() *Compiler {
 		curVar:            "",
 		className:         "",
 		needUtilImports:   false,
+		globalVars:        make(map[string]bool),
+		globalUsed:        make(map[string]bool),
 	}
 }
 
@@ -75,6 +79,23 @@ func (c *Compiler) writeln(s string) {
 }
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
+	// Determine which globals are referenced inside functions
+	c.globalVars = make(map[string]bool)
+	for _, s := range prog.Statements {
+		if s.Var != nil {
+			c.globalVars[s.Var.Name] = true
+		}
+		if s.Let != nil {
+			c.globalVars[s.Let.Name] = true
+		}
+	}
+	c.globalUsed = make(map[string]bool)
+	for _, s := range prog.Statements {
+		if s.Fun != nil {
+			collectUsedGlobalsInStmts(s.Fun.Body, c.globalVars, c.globalUsed)
+		}
+	}
+
 	// compile main body first so we know which helpers are needed
 	c.srcDir = filepath.Dir(prog.Pos.Filename)
 	base := strings.TrimSuffix(filepath.Base(prog.Pos.Filename), filepath.Ext(prog.Pos.Filename))
@@ -88,6 +109,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.indent = 1
 	for _, s := range prog.Statements {
 		if s.Var != nil {
+			if !c.globalUsed[s.Var.Name] {
+				if err := c.compileVar(s.Var); err != nil {
+					return nil, err
+				}
+				continue
+			}
 			typ := c.typeName(s.Var.Type)
 			if s.Var.Type == nil && s.Var.Value != nil {
 				orig := c.curVar
@@ -107,6 +134,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			continue
 		}
 		if s.Let != nil {
+			if !c.globalUsed[s.Let.Name] {
+				if err := c.compileLet(s.Let); err != nil {
+					return nil, err
+				}
+				continue
+			}
 			typ := c.typeName(s.Let.Type)
 			if s.Let.Type == nil && s.Let.Value != nil {
 				orig := c.curVar
@@ -178,11 +211,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	// global declarations
 	for _, s := range prog.Statements {
 		switch {
-		case s.Var != nil:
+		case s.Var != nil && c.globalUsed[s.Var.Name]:
 			if err := c.compileGlobalVar(s.Var); err != nil {
 				return nil, err
 			}
-		case s.Let != nil:
+		case s.Let != nil && c.globalUsed[s.Let.Name]:
 			if err := c.compileGlobalLet(s.Let); err != nil {
 				return nil, err
 			}
@@ -2798,4 +2831,169 @@ func needsUtilImports(code string) bool {
 		}
 	}
 	return false
+}
+
+func collectUsedGlobalsInStmts(stmts []*parser.Statement, globals map[string]bool, used map[string]bool) {
+	for _, s := range stmts {
+		switch {
+		case s.Var != nil:
+			collectUsedGlobalsInExpr(s.Var.Value, globals, used)
+		case s.Let != nil:
+			collectUsedGlobalsInExpr(s.Let.Value, globals, used)
+		case s.Assign != nil:
+			if globals[s.Assign.Name] {
+				used[s.Assign.Name] = true
+			}
+			for _, ix := range s.Assign.Index {
+				collectUsedGlobalsInExpr(ix.Start, globals, used)
+				collectUsedGlobalsInExpr(ix.End, globals, used)
+				collectUsedGlobalsInExpr(ix.Step, globals, used)
+			}
+			collectUsedGlobalsInExpr(s.Assign.Value, globals, used)
+		case s.Return != nil:
+			collectUsedGlobalsInExpr(s.Return.Value, globals, used)
+		case s.If != nil:
+			collectUsedGlobalsInExpr(s.If.Cond, globals, used)
+			collectUsedGlobalsInStmts(s.If.Then, globals, used)
+			if s.If.ElseIf != nil {
+				collectUsedGlobalsInStmts([]*parser.Statement{{If: s.If.ElseIf}}, globals, used)
+			}
+			collectUsedGlobalsInStmts(s.If.Else, globals, used)
+		case s.For != nil:
+			collectUsedGlobalsInExpr(s.For.Source, globals, used)
+			collectUsedGlobalsInExpr(s.For.RangeEnd, globals, used)
+			collectUsedGlobalsInStmts(s.For.Body, globals, used)
+		case s.While != nil:
+			collectUsedGlobalsInExpr(s.While.Cond, globals, used)
+			collectUsedGlobalsInStmts(s.While.Body, globals, used)
+		case s.Fun != nil:
+			collectUsedGlobalsInStmts(s.Fun.Body, globals, used)
+		case s.Expect != nil:
+			collectUsedGlobalsInExpr(s.Expect.Value, globals, used)
+		case s.Expr != nil:
+			collectUsedGlobalsInExpr(s.Expr.Expr, globals, used)
+		case s.Test != nil:
+			collectUsedGlobalsInStmts(s.Test.Body, globals, used)
+		case s.Fetch != nil:
+			collectUsedGlobalsInExpr(s.Fetch.URL, globals, used)
+			collectUsedGlobalsInExpr(s.Fetch.With, globals, used)
+		case s.Update != nil:
+			collectUsedGlobalsInExpr(s.Update.Src, globals, used)
+			collectUsedGlobalsInExpr(s.Update.Where, globals, used)
+			collectUsedGlobalsInExpr(s.Update.Value, globals, used)
+		}
+	}
+}
+
+func collectUsedGlobalsInExpr(e *parser.Expr, globals map[string]bool, used map[string]bool) {
+	if e == nil || e.Binary == nil {
+		return
+	}
+	var scanUnary func(u *parser.Unary)
+	var scanPostfix func(p *parser.PostfixExpr)
+	var scanPrimary func(p *parser.Primary)
+
+	scanUnary = func(u *parser.Unary) {
+		if u == nil {
+			return
+		}
+		scanPostfix(u.Value)
+	}
+	scanPostfix = func(p *parser.PostfixExpr) {
+		if p == nil {
+			return
+		}
+		scanPrimary(p.Target)
+		for _, op := range p.Ops {
+			if op.Call != nil {
+				for _, a := range op.Call.Args {
+					collectUsedGlobalsInExpr(a, globals, used)
+				}
+			}
+			if op.Index != nil {
+				collectUsedGlobalsInExpr(op.Index.Start, globals, used)
+				collectUsedGlobalsInExpr(op.Index.End, globals, used)
+				collectUsedGlobalsInExpr(op.Index.Step, globals, used)
+			}
+		}
+	}
+	scanPrimary = func(p *parser.Primary) {
+		if p == nil {
+			return
+		}
+		switch {
+		case p.Selector != nil:
+			if globals[p.Selector.Root] {
+				used[p.Selector.Root] = true
+			}
+			// tails ignored
+		case p.Call != nil:
+			if globals[p.Call.Func] {
+				used[p.Call.Func] = true
+			}
+			for _, a := range p.Call.Args {
+				collectUsedGlobalsInExpr(a, globals, used)
+			}
+		case p.List != nil:
+			for _, el := range p.List.Elems {
+				collectUsedGlobalsInExpr(el, globals, used)
+			}
+		case p.Map != nil:
+			for _, it := range p.Map.Items {
+				collectUsedGlobalsInExpr(it.Key, globals, used)
+				collectUsedGlobalsInExpr(it.Value, globals, used)
+			}
+		case p.Struct != nil:
+			for _, f := range p.Struct.Fields {
+				collectUsedGlobalsInExpr(f.Value, globals, used)
+			}
+		case p.Generate != nil:
+			for _, f := range p.Generate.Fields {
+				collectUsedGlobalsInExpr(f.Value, globals, used)
+			}
+		case p.Match != nil:
+			collectUsedGlobalsInExpr(p.Match.Target, globals, used)
+			for _, cs := range p.Match.Cases {
+				collectUsedGlobalsInExpr(cs.Pattern, globals, used)
+				collectUsedGlobalsInExpr(cs.Result, globals, used)
+			}
+		case p.If != nil:
+			collectUsedGlobalsInExpr(p.If.Cond, globals, used)
+			collectUsedGlobalsInExpr(p.If.Then, globals, used)
+			if p.If.ElseIf != nil {
+				collectUsedGlobalsInExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{If: p.If.ElseIf}}}}}, globals, used)
+			}
+			collectUsedGlobalsInExpr(p.If.Else, globals, used)
+		case p.Query != nil:
+			collectUsedGlobalsInExpr(p.Query.Source, globals, used)
+			for _, fr := range p.Query.Froms {
+				collectUsedGlobalsInExpr(fr.Src, globals, used)
+			}
+			for _, j := range p.Query.Joins {
+				collectUsedGlobalsInExpr(j.Src, globals, used)
+				collectUsedGlobalsInExpr(j.On, globals, used)
+			}
+			collectUsedGlobalsInExpr(p.Query.Where, globals, used)
+			if p.Query.Group != nil {
+				for _, e := range p.Query.Group.Exprs {
+					collectUsedGlobalsInExpr(e, globals, used)
+				}
+				collectUsedGlobalsInExpr(p.Query.Group.Having, globals, used)
+			}
+			collectUsedGlobalsInExpr(p.Query.Select, globals, used)
+			collectUsedGlobalsInExpr(p.Query.Sort, globals, used)
+			collectUsedGlobalsInExpr(p.Query.Skip, globals, used)
+			collectUsedGlobalsInExpr(p.Query.Take, globals, used)
+		case p.FunExpr != nil:
+			collectUsedGlobalsInStmts(p.FunExpr.BlockBody, globals, used)
+			collectUsedGlobalsInExpr(p.FunExpr.ExprBody, globals, used)
+		case p.Group != nil:
+			collectUsedGlobalsInExpr(p.Group, globals, used)
+		}
+	}
+
+	scanUnary(e.Binary.Left)
+	for _, part := range e.Binary.Right {
+		scanPostfix(part.Right)
+	}
 }
