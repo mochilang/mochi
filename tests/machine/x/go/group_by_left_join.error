@@ -1,8 +1,12 @@
-Error on line 0: run error: exit status 1
-# command-line-arguments
-../../../tests/machine/x/go/group_by_left_join.go:68:23: invalid operation: c (variable of struct type CustomersItem) is not an interface
-../../../tests/machine/x/go/group_by_left_join.go:72:23: invalid operation: o (variable of struct type OrdersItem) is not an interface
-../../../tests/machine/x/go/group_by_left_join.go:89:23: invalid operation: c (variable of struct type CustomersItem) is not an interface
-../../../tests/machine/x/go/group_by_left_join.go:93:23: invalid operation: o (variable of struct type OrdersItem) is not an interface
-
+Error on line 0: output mismatch
+-- got --
+--- Group Left Join ---
+Alice orders: 2
+Bob orders: 1
+Charlie orders: 1
+-- want --
+--- Group Left Join ---
+Alice orders: 2
+Bob orders: 1
+Charlie orders: 0
 1: //go:build ignore

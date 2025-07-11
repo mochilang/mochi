@@ -3,11 +3,11 @@ panic: interface conversion: interface {} is main.PeopleItem, not map[string]int
 
 goroutine 1 [running]:
 main.main.main.func1.func2(...)
-	/workspace/mochi/tests/machine/x/go/group_by.go:80
+	/workspace/mochi/tests/machine/x/go/group_by.go:78
 main.main.func1(...)
-	/workspace/mochi/tests/machine/x/go/group_by.go:83
+	/workspace/mochi/tests/machine/x/go/group_by.go:81
 main.main()
-	/workspace/mochi/tests/machine/x/go/group_by.go:87 +0xae5
+	/workspace/mochi/tests/machine/x/go/group_by.go:85 +0x9ce
 exit status 2
 
 1: //go:build ignore

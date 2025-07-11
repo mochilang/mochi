@@ -4,13 +4,12 @@ package main
 
 import (
 	"fmt"
-	"reflect"
 
 	"golang.org/x/exp/constraints"
 )
 
 func main() {
-	fmt.Println(_sprint(_avgOrdered[int]([]int{1, 2, 3})))
+	fmt.Println(_avgOrdered[int]([]int{1, 2, 3}))
 }
 
 func _avgOrdered[T constraints.Integer | constraints.Float](s []T) float64 {
@@ -22,15 +21,4 @@ func _avgOrdered[T constraints.Integer | constraints.Float](s []T) float64 {
 		sum += float64(v)
 	}
 	return sum / float64(len(s))
-}
-
-func _sprint(v any) string {
-	if v == nil {
-		return "<nil>"
-	}
-	rv := reflect.ValueOf(v)
-	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
-		return "<nil>"
-	}
-	return fmt.Sprint(v)
 }

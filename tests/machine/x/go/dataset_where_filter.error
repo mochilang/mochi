@@ -1,8 +1,8 @@
 Error on line 0: output mismatch
 -- got --
 --- Adults ---
-Alice is 30
-Charlie is 65
+Alice is 30 
+Charlie is 65  (senior)
 Diana is 45
 -- want --
 --- Adults ---

@@ -7,7 +7,6 @@ import (
 	"mochi/runtime/data"
 	"reflect"
 	"sort"
-	"strings"
 )
 
 func main() {
@@ -109,12 +108,12 @@ func main() {
 		}
 		return out
 	}()
-	fmt.Println(_sprint("--- Right Join using syntax ---"))
+	fmt.Println("--- Right Join using syntax ---")
 	for _, entry := range result {
 		if _exists(entry.Order) {
-			fmt.Println(strings.TrimRight(strings.Join([]string{_sprint("Customer"), _sprint(entry.CustomerName), _sprint("has order"), _sprint((entry.Order).(map[string]any)["id"]), _sprint("- $"), _sprint((entry.Order).(map[string]any)["total"])}, " "), " "))
+			fmt.Println("Customer", entry.CustomerName, "has order", (entry.Order).(map[string]any)["id"], "- $", (entry.Order).(map[string]any)["total"])
 		} else {
-			fmt.Println(strings.TrimRight(strings.Join([]string{_sprint("Customer"), _sprint(entry.CustomerName), _sprint("has no orders")}, " "), " "))
+			fmt.Println("Customer", entry.CustomerName, "has no orders")
 		}
 	}
 }
@@ -359,17 +358,6 @@ func _query(src []any, joins []_joinSpec, opts _queryOpts) []any {
 		res[i] = opts.selectFn(r...)
 	}
 	return res
-}
-
-func _sprint(v any) string {
-	if v == nil {
-		return "<nil>"
-	}
-	rv := reflect.ValueOf(v)
-	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
-		return "<nil>"
-	}
-	return fmt.Sprint(v)
 }
 
 func _toAnySlice[T any](s []T) []any {

@@ -4,9 +4,7 @@ package main
 
 import (
 	"fmt"
-	"reflect"
 	"sort"
-	"strings"
 )
 
 func main() {
@@ -70,9 +68,9 @@ func main() {
 		}
 		return out
 	}()
-	fmt.Println(_sprint("--- Top products (excluding most expensive) ---"))
+	fmt.Println("--- Top products (excluding most expensive) ---")
 	for _, item := range expensive {
-		fmt.Println(strings.TrimRight(strings.Join([]string{_sprint(item.Name), _sprint("costs $"), _sprint(item.Price)}, " "), " "))
+		fmt.Println(item.Name, "costs $", item.Price)
 	}
 }
 
@@ -278,17 +276,6 @@ func _query(src []any, joins []_joinSpec, opts _queryOpts) []any {
 		res[i] = opts.selectFn(r...)
 	}
 	return res
-}
-
-func _sprint(v any) string {
-	if v == nil {
-		return "<nil>"
-	}
-	rv := reflect.ValueOf(v)
-	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
-		return "<nil>"
-	}
-	return fmt.Sprint(v)
 }
 
 func _toAnySlice[T any](s []T) []any {

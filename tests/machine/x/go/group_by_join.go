@@ -5,8 +5,6 @@ package main
 import (
 	"fmt"
 	"mochi/runtime/data"
-	"reflect"
-	"strings"
 )
 
 func main() {
@@ -60,11 +58,11 @@ func main() {
 					order = append(order, ks)
 				}
 				_item := map[string]any{}
-				for k, v := range o.(map[string]any) {
+				for k, v := range _toAnyMap(o) {
 					_item[k] = v
 				}
 				_item["o"] = o
-				for k, v := range c.(map[string]any) {
+				for k, v := range _toAnyMap(c) {
 					_item[k] = v
 				}
 				_item["c"] = c
@@ -84,19 +82,23 @@ func main() {
 		}
 		return _res
 	}()
-	fmt.Println(_sprint("--- Orders per customer ---"))
+	fmt.Println("--- Orders per customer ---")
 	for _, s := range stats {
-		fmt.Println(strings.TrimRight(strings.Join([]string{_sprint(s.Name), _sprint("orders:"), _sprint(s.Count)}, " "), " "))
+		fmt.Println(s.Name, "orders:", s.Count)
 	}
 }
 
-func _sprint(v any) string {
-	if v == nil {
-		return "<nil>"
+func _toAnyMap(m any) map[string]any {
+	switch v := m.(type) {
+	case map[string]any:
+		return v
+	case map[string]string:
+		out := make(map[string]any, len(v))
+		for k, vv := range v {
+			out[k] = vv
+		}
+		return out
+	default:
+		return nil
 	}
-	rv := reflect.ValueOf(v)
-	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
-		return "<nil>"
-	}
-	return fmt.Sprint(v)
 }

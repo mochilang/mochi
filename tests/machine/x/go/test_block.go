@@ -4,7 +4,6 @@ package main
 
 import (
 	"fmt"
-	"reflect"
 	"time"
 )
 
@@ -46,17 +45,6 @@ func test_addition_works() {
 }
 
 func main() {
-	fmt.Println(_sprint("ok"))
+	fmt.Println("ok")
 	test_addition_works()
-}
-
-func _sprint(v any) string {
-	if v == nil {
-		return "<nil>"
-	}
-	rv := reflect.ValueOf(v)
-	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
-		return "<nil>"
-	}
-	return fmt.Sprint(v)
 }

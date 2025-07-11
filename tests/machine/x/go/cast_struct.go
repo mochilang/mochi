@@ -4,7 +4,6 @@ package main
 
 import (
 	"fmt"
-	"reflect"
 )
 
 type Todo struct {
@@ -18,16 +17,5 @@ func main() {
 
 	var todo Todo1 = Todo1{Title: "hi"}
 	_ = todo
-	fmt.Println(_sprint(todo.Title))
-}
-
-func _sprint(v any) string {
-	if v == nil {
-		return "<nil>"
-	}
-	rv := reflect.ValueOf(v)
-	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
-		return "<nil>"
-	}
-	return fmt.Sprint(v)
+	fmt.Println(todo.Title)
 }

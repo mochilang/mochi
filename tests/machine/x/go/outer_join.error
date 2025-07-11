@@ -4,7 +4,7 @@ panic: interface conversion: interface {} is main.OrdersItem, not map[string]int
 
 goroutine 1 [running]:
 main.main()
-	/workspace/mochi/tests/machine/x/go/outer_join.go:125 +0xd49
+	/workspace/mochi/tests/machine/x/go/outer_join.go:124 +0xa17
 exit status 2
 
 1: //go:build ignore

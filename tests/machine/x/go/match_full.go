@@ -36,7 +36,7 @@ func main() {
 		}
 		return "unknown"
 	}()
-	fmt.Println(_sprint(label))
+	fmt.Println(label)
 	var day string = "sun"
 	var mood string = func() string {
 		_t := day
@@ -51,7 +51,7 @@ func main() {
 		}
 		return "normal"
 	}()
-	fmt.Println(_sprint(mood))
+	fmt.Println(mood)
 	var ok bool = true
 	var status string = func() string {
 		_t := ok
@@ -64,9 +64,9 @@ func main() {
 		var _zero string
 		return _zero
 	}()
-	fmt.Println(_sprint(status))
-	fmt.Println(_sprint(classify(0)))
-	fmt.Println(_sprint(classify(5)))
+	fmt.Println(status)
+	fmt.Println(classify(0))
+	fmt.Println(classify(5))
 }
 
 func _equal(a, b any) bool {
@@ -103,15 +103,4 @@ func _equal(a, b any) bool {
 		return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()
 	}
 	return reflect.DeepEqual(a, b)
-}
-
-func _sprint(v any) string {
-	if v == nil {
-		return "<nil>"
-	}
-	rv := reflect.ValueOf(v)
-	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
-		return "<nil>"
-	}
-	return fmt.Sprint(v)
 }
