@@ -294,8 +294,7 @@ func (c *Compiler) castExpr(expr string, from, to types.Type) string {
 			c.use("_exists")
 			return fmt.Sprintf("_exists(%s)", expr)
 		}
-		c.use("_cast")
-		return fmt.Sprintf("_cast[%s](%s)", toGo, expr)
+		return fmt.Sprintf("(%s).(%s)", expr, toGo)
 	}
 
 	return fmt.Sprintf("%s(%s)", toGo, expr)
