@@ -72,7 +72,7 @@ func main() {
 		_tmp1.Age = (age + 1)
 		people[_tmp0] = _tmp1
 	}
-	fmt.Println(_sprint("ok"))
+	fmt.Println("ok")
 	test_update_adult_status()
 }
 
@@ -110,15 +110,4 @@ func _equal(a, b any) bool {
 		return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()
 	}
 	return reflect.DeepEqual(a, b)
-}
-
-func _sprint(v any) string {
-	if v == nil {
-		return "<nil>"
-	}
-	rv := reflect.ValueOf(v)
-	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
-		return "<nil>"
-	}
-	return fmt.Sprint(v)
 }

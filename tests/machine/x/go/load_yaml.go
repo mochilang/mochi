@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"mochi/runtime/data"
 	"os"
-	"reflect"
-	"strings"
 )
 
 type Person struct {
@@ -49,7 +47,7 @@ func main() {
 		return _res
 	}()
 	for _, a := range adults {
-		fmt.Println(strings.TrimRight(strings.Join([]string{_sprint(a.Name), _sprint(a.Email)}, " "), " "))
+		fmt.Println(a.Name, a.Email)
 	}
 }
 
@@ -103,17 +101,6 @@ func _load(path string, opts map[string]any) []map[string]any {
 		panic(err)
 	}
 	return rows
-}
-
-func _sprint(v any) string {
-	if v == nil {
-		return "<nil>"
-	}
-	rv := reflect.ValueOf(v)
-	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
-		return "<nil>"
-	}
-	return fmt.Sprint(v)
 }
 
 func _toAnyMap(m any) map[string]any {

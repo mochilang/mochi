@@ -48,7 +48,7 @@ func main() {
 				order = append(order, ks)
 			}
 			_item := map[string]any{}
-			for k, v := range i.(map[string]any) {
+			for k, v := range _toAnyMap(i) {
 				_item[k] = v
 			}
 			_item["i"] = i
@@ -120,7 +120,7 @@ func main() {
 		}
 		return _res
 	}()
-	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(_sprint(result), "["), "]"))
+	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(result), "["), "]"))
 }
 
 func _exists(v any) bool {
@@ -161,17 +161,6 @@ func _exists(v any) bool {
 	return false
 }
 
-func _sprint(v any) string {
-	if v == nil {
-		return "<nil>"
-	}
-	rv := reflect.ValueOf(v)
-	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
-		return "<nil>"
-	}
-	return fmt.Sprint(v)
-}
-
 func _sum(v any) float64 {
 	var items []any
 	if g, ok := v.(*data.Group); ok {
@@ -210,4 +199,19 @@ func _sum(v any) float64 {
 		}
 	}
 	return sum
+}
+
+func _toAnyMap(m any) map[string]any {
+	switch v := m.(type) {
+	case map[string]any:
+		return v
+	case map[string]string:
+		out := make(map[string]any, len(v))
+		for k, vv := range v {
+			out[k] = vv
+		}
+		return out
+	default:
+		return nil
+	}
 }

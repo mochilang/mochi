@@ -5,7 +5,6 @@ package main
 import (
 	"fmt"
 	"mochi/runtime/data"
-	"reflect"
 	"sort"
 	"strings"
 )
@@ -132,19 +131,19 @@ func main() {
 								order = append(order, ks)
 							}
 							_item := map[string]any{}
-							for k, v := range c.(map[string]any) {
+							for k, v := range _toAnyMap(c) {
 								_item[k] = v
 							}
 							_item["c"] = c
-							for k, v := range o.(map[string]any) {
+							for k, v := range _toAnyMap(o) {
 								_item[k] = v
 							}
 							_item["o"] = o
-							for k, v := range l.(map[string]any) {
+							for k, v := range _toAnyMap(l) {
 								_item[k] = v
 							}
 							_item["l"] = l
-							for k, v := range n.(map[string]any) {
+							for k, v := range _toAnyMap(n) {
 								_item[k] = v
 							}
 							_item["n"] = n
@@ -220,18 +219,7 @@ func main() {
 		}
 		return _res
 	}()
-	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(_sprint(result), "["), "]"))
-}
-
-func _sprint(v any) string {
-	if v == nil {
-		return "<nil>"
-	}
-	rv := reflect.ValueOf(v)
-	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
-		return "<nil>"
-	}
-	return fmt.Sprint(v)
+	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(result), "["), "]"))
 }
 
 func _sum(v any) float64 {
@@ -272,4 +260,19 @@ func _sum(v any) float64 {
 		}
 	}
 	return sum
+}
+
+func _toAnyMap(m any) map[string]any {
+	switch v := m.(type) {
+	case map[string]any:
+		return v
+	case map[string]string:
+		out := make(map[string]any, len(v))
+		for k, vv := range v {
+			out[k] = vv
+		}
+		return out
+	default:
+		return nil
+	}
 }

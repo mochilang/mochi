@@ -5,8 +5,6 @@ package main
 import (
 	"fmt"
 	"mochi/runtime/data"
-	"reflect"
-	"strings"
 )
 
 func main() {
@@ -85,9 +83,9 @@ func main() {
 		}
 		return _res
 	}()
-	fmt.Println(_sprint("--- People grouped by city ---"))
+	fmt.Println("--- People grouped by city ---")
 	for _, s := range stats {
-		fmt.Println(strings.TrimRight(strings.Join([]string{_sprint(s.City), _sprint(": count ="), _sprint(s.Count), _sprint(", avg_age ="), _sprint(s.Avg_age)}, " "), " "))
+		fmt.Println(s.City, ": count =", s.Count, ", avg_age =", s.Avg_age)
 	}
 }
 
@@ -140,15 +138,4 @@ func _avg(v any) float64 {
 		}
 	}
 	return sum / float64(len(items))
-}
-
-func _sprint(v any) string {
-	if v == nil {
-		return "<nil>"
-	}
-	rv := reflect.ValueOf(v)
-	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
-		return "<nil>"
-	}
-	return fmt.Sprint(v)
 }

@@ -5,7 +5,6 @@ package main
 import (
 	"fmt"
 	"mochi/runtime/data"
-	"reflect"
 	"strings"
 )
 
@@ -123,18 +122,7 @@ func main() {
 		}
 		return _res
 	}()
-	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(_sprint(grouped), "["), "]"))
-}
-
-func _sprint(v any) string {
-	if v == nil {
-		return "<nil>"
-	}
-	rv := reflect.ValueOf(v)
-	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
-		return "<nil>"
-	}
-	return fmt.Sprint(v)
+	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(grouped), "["), "]"))
 }
 
 func _sum(v any) float64 {

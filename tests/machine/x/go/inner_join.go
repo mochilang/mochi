@@ -4,8 +4,6 @@ package main
 
 import (
 	"fmt"
-	"reflect"
-	"strings"
 )
 
 func main() {
@@ -75,19 +73,8 @@ func main() {
 		}
 		return _res
 	}()
-	fmt.Println(_sprint("--- Orders with customer info ---"))
+	fmt.Println("--- Orders with customer info ---")
 	for _, entry := range result {
-		fmt.Println(strings.TrimRight(strings.Join([]string{_sprint("Order"), _sprint(entry.OrderId), _sprint("by"), _sprint(entry.CustomerName), _sprint("- $"), _sprint(entry.Total)}, " "), " "))
+		fmt.Println("Order", entry.OrderId, "by", entry.CustomerName, "- $", entry.Total)
 	}
-}
-
-func _sprint(v any) string {
-	if v == nil {
-		return "<nil>"
-	}
-	rv := reflect.ValueOf(v)
-	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
-		return "<nil>"
-	}
-	return fmt.Sprint(v)
 }

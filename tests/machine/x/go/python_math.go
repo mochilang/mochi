@@ -5,8 +5,6 @@ package main
 import (
 	"fmt"
 	"mochi/runtime/ffi/python"
-	"reflect"
-	"strings"
 )
 
 func main() {
@@ -21,19 +19,8 @@ func main() {
 		v, _ := python.Attr("math", "log", func() float64 { v, _ := python.Attr("math", "e"); return v.(float64) }())
 		return v.(float64)
 	}()
-	fmt.Println(strings.TrimRight(strings.Join([]string{_sprint("Circle area with r ="), _sprint(r), _sprint("=>"), _sprint(area)}, " "), " "))
-	fmt.Println(strings.TrimRight(strings.Join([]string{_sprint("Square root of 49:"), _sprint(root)}, " "), " "))
-	fmt.Println(strings.TrimRight(strings.Join([]string{_sprint("sin(π/4):"), _sprint(sin45)}, " "), " "))
-	fmt.Println(strings.TrimRight(strings.Join([]string{_sprint("log(e):"), _sprint(log_e)}, " "), " "))
-}
-
-func _sprint(v any) string {
-	if v == nil {
-		return "<nil>"
-	}
-	rv := reflect.ValueOf(v)
-	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
-		return "<nil>"
-	}
-	return fmt.Sprint(v)
+	fmt.Println("Circle area with r =", r, "=>", area)
+	fmt.Println("Square root of 49:", root)
+	fmt.Println("sin(π/4):", sin45)
+	fmt.Println("log(e):", log_e)
 }

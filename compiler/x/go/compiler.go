@@ -32,6 +32,9 @@ type Compiler struct {
 	pyModules     map[string]string
 	goModules     map[string]string
 	tsModules     map[string]string
+	pyAuto        map[string]bool
+	goAuto        map[string]bool
+	tsAuto        map[string]bool
 	externObjects map[string]bool
 
 	tempVarCount int
@@ -58,6 +61,9 @@ func New(env *types.Env) *Compiler {
 		pyModules:       map[string]string{},
 		goModules:       map[string]string{},
 		tsModules:       map[string]string{},
+		pyAuto:          map[string]bool{},
+		goAuto:          map[string]bool{},
+		tsAuto:          map[string]bool{},
 		externObjects:   map[string]bool{},
 		tempVarCount:    0,
 		anonStructCount: 0,
@@ -1943,10 +1949,13 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			return val, nil
 		}
 		if mod, ok := c.goModules[sel.Root]; ok {
+			auto := c.goAuto[sel.Root]
+			attr := strings.Join(sel.Tail, ".")
 			name := mod
-			if len(sel.Tail) > 0 {
-				name += "." + strings.Join(sel.Tail, ".")
+			if attr != "" {
+				name += "." + attr
 			}
+			c.imports["mochi/runtime/ffi/go"] = true
 			if len(p.Ops) > 0 && p.Ops[0].Call != nil {
 				args := make([]string, len(p.Ops[0].Call.Args))
 				for i, a := range p.Ops[0].Call.Args {
@@ -1956,11 +1965,17 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					}
 					args[i] = v
 				}
-				c.imports["mochi/runtime/ffi/go"] = true
+				if auto {
+					val := fmt.Sprintf("func() any { v, _ := goffi.AttrAuto(%q, %q, %s); return v }()", mod, attr, strings.Join(args, ", "))
+					return val, nil
+				}
 				val := fmt.Sprintf("func() any { v, _ := goffi.Call(%q, %s); return v }()", name, strings.Join(args, ", "))
 				return val, nil
 			}
-			c.imports["mochi/runtime/ffi/go"] = true
+			if auto {
+				val := fmt.Sprintf("func() any { v, _ := goffi.AttrAuto(%q, %q); return v }()", mod, attr)
+				return val, nil
+			}
 			val := fmt.Sprintf("func() any { v, _ := goffi.Call(%q); return v }()", name)
 			return val, nil
 		}
@@ -2891,14 +2906,17 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 		buf.WriteString(indent + "}\n")
 		itemVar := "_item"
 		buf.WriteString(fmt.Sprintf(indent+"%s := map[string]any{}\n", itemVar))
-		buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s.(map[string]any) { %s[k] = v }\n", sanitizeName(q.Var), itemVar))
+		c.use("_toAnyMap")
+		buf.WriteString(fmt.Sprintf(indent+"for k, v := range _toAnyMap(%s) { %s[k] = v }\n", sanitizeName(q.Var), itemVar))
 		buf.WriteString(fmt.Sprintf(indent+"%s[\"%s\"] = %s\n", itemVar, sanitizeName(q.Var), sanitizeName(q.Var)))
 		for _, f := range q.Froms {
-			buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s.(map[string]any) { %s[k] = v }\n", sanitizeName(f.Var), itemVar))
+			c.use("_toAnyMap")
+			buf.WriteString(fmt.Sprintf(indent+"for k, v := range _toAnyMap(%s) { %s[k] = v }\n", sanitizeName(f.Var), itemVar))
 			buf.WriteString(fmt.Sprintf(indent+"%s[\"%s\"] = %s\n", itemVar, sanitizeName(f.Var), sanitizeName(f.Var)))
 		}
 		for _, j := range q.Joins {
-			buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s.(map[string]any) { %s[k] = v }\n", sanitizeName(j.Var), itemVar))
+			c.use("_toAnyMap")
+			buf.WriteString(fmt.Sprintf(indent+"for k, v := range _toAnyMap(%s) { %s[k] = v }\n", sanitizeName(j.Var), itemVar))
 			buf.WriteString(fmt.Sprintf(indent+"%s[\"%s\"] = %s\n", itemVar, sanitizeName(j.Var), sanitizeName(j.Var)))
 		}
 		buf.WriteString(fmt.Sprintf(indent+"g.Items = append(g.Items, %s)\n", itemVar))
@@ -2926,14 +2944,17 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 			buf.WriteString(indent + "}\n")
 			itemVar := "_item"
 			buf.WriteString(fmt.Sprintf(indent+"%s := map[string]any{}\n", itemVar))
-			buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s.(map[string]any) { %s[k] = v }\n", sanitizeName(q.Var), itemVar))
+			c.use("_toAnyMap")
+			buf.WriteString(fmt.Sprintf(indent+"for k, v := range _toAnyMap(%s) { %s[k] = v }\n", sanitizeName(q.Var), itemVar))
 			buf.WriteString(fmt.Sprintf(indent+"%s[\"%s\"] = %s\n", itemVar, sanitizeName(q.Var), sanitizeName(q.Var)))
 			for _, f := range q.Froms {
-				buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s.(map[string]any) { %s[k] = v }\n", sanitizeName(f.Var), itemVar))
+				c.use("_toAnyMap")
+				buf.WriteString(fmt.Sprintf(indent+"for k, v := range _toAnyMap(%s) { %s[k] = v }\n", sanitizeName(f.Var), itemVar))
 				buf.WriteString(fmt.Sprintf(indent+"%s[\"%s\"] = %s\n", itemVar, sanitizeName(f.Var), sanitizeName(f.Var)))
 			}
 			for _, j := range q.Joins {
-				buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s.(map[string]any) { %s[k] = v }\n", sanitizeName(j.Var), itemVar))
+				c.use("_toAnyMap")
+				buf.WriteString(fmt.Sprintf(indent+"for k, v := range _toAnyMap(%s) { %s[k] = v }\n", sanitizeName(j.Var), itemVar))
 				buf.WriteString(fmt.Sprintf(indent+"%s[\"%s\"] = %s\n", itemVar, sanitizeName(j.Var), sanitizeName(j.Var)))
 			}
 			buf.WriteString(fmt.Sprintf(indent+"g.Items = append(g.Items, %s)\n", itemVar))
@@ -3926,23 +3947,17 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 
 	switch call.Func {
 	case "print":
-		c.use("_sprint")
+		c.imports["fmt"] = true
 		if len(call.Args) == 1 {
 			if _, ok := c.inferExprType(call.Args[0]).(types.ListType); ok {
 				c.imports["strings"] = true
-				return fmt.Sprintf("fmt.Println(strings.TrimSuffix(strings.TrimPrefix(_sprint(%s), \"[\"), \"]\"))", args[0]), nil
+				return fmt.Sprintf("fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(%s), \"[\"), \"]\"))", args[0]), nil
 			}
-			return fmt.Sprintf("fmt.Println(_sprint(%s))", argStr), nil
 		}
-		c.imports["strings"] = true
-		parts := make([]string, len(args))
-		for i, a := range args {
-			parts[i] = fmt.Sprintf("_sprint(%s)", a)
-		}
-		return fmt.Sprintf("fmt.Println(strings.TrimRight(strings.Join([]string{%s}, \" \"), \" \"))", strings.Join(parts, ", ")), nil
+		return fmt.Sprintf("fmt.Println(%s)", strings.Join(args, ", ")), nil
 	case "str":
-		c.use("_sprint")
-		return fmt.Sprintf("_sprint(%s)", argStr), nil
+		c.imports["fmt"] = true
+		return fmt.Sprintf("fmt.Sprint(%s)", argStr), nil
 	case "input":
 		c.imports["fmt"] = true
 		c.use("_input")
@@ -4612,12 +4627,21 @@ func (c *Compiler) addImport(im *parser.ImportStmt) error {
 	switch *im.Lang {
 	case "python":
 		c.pyModules[alias] = mod
+		if im.Auto {
+			c.pyAuto[alias] = true
+		}
 		c.imports["mochi/runtime/ffi/python"] = true
 	case "go":
 		c.goModules[alias] = mod
+		if im.Auto {
+			c.goAuto[alias] = true
+		}
 		c.imports["mochi/runtime/ffi/go"] = true
 	case "typescript":
 		c.tsModules[alias] = mod
+		if im.Auto {
+			c.tsAuto[alias] = true
+		}
 		c.imports["mochi/runtime/ffi/deno"] = true
 	default:
 		return fmt.Errorf("unsupported import language: %s", *im.Lang)

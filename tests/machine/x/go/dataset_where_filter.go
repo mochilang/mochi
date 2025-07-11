@@ -4,8 +4,6 @@ package main
 
 import (
 	"fmt"
-	"reflect"
-	"strings"
 )
 
 func main() {
@@ -53,25 +51,14 @@ func main() {
 		}
 		return _res
 	}()
-	fmt.Println(_sprint("--- Adults ---"))
+	fmt.Println("--- Adults ---")
 	for _, person := range adults {
-		fmt.Println(strings.TrimRight(strings.Join([]string{_sprint(person.Name), _sprint("is"), _sprint(person.Age), _sprint(func() string {
+		fmt.Println(person.Name, "is", person.Age, func() string {
 			if person.Is_senior {
 				return " (senior)"
 			} else {
 				return ""
 			}
-		}())}, " "), " "))
+		}())
 	}
-}
-
-func _sprint(v any) string {
-	if v == nil {
-		return "<nil>"
-	}
-	rv := reflect.ValueOf(v)
-	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
-		return "<nil>"
-	}
-	return fmt.Sprint(v)
 }

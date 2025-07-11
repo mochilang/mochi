@@ -4,7 +4,6 @@ package main
 
 import (
 	"fmt"
-	"reflect"
 )
 
 type Tree interface{ isTree() }
@@ -42,16 +41,5 @@ var t Node
 
 func main() {
 	t = Node{Left: Tree(Leaf{}), Value: 1, Right: Node{Left: Tree(Leaf{}), Value: 2, Right: Tree(Leaf{})}}
-	fmt.Println(_sprint(sum_tree(t)))
-}
-
-func _sprint(v any) string {
-	if v == nil {
-		return "<nil>"
-	}
-	rv := reflect.ValueOf(v)
-	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
-		return "<nil>"
-	}
-	return fmt.Sprint(v)
+	fmt.Println(sum_tree(t))
 }

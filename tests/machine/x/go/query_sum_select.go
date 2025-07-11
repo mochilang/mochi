@@ -5,7 +5,6 @@ package main
 import (
 	"fmt"
 	"mochi/runtime/data"
-	"reflect"
 	"strings"
 
 	"golang.org/x/exp/constraints"
@@ -24,18 +23,7 @@ func main() {
 		}
 		return _res
 	}())
-	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(_sprint(result), "["), "]"))
-}
-
-func _sprint(v any) string {
-	if v == nil {
-		return "<nil>"
-	}
-	rv := reflect.ValueOf(v)
-	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
-		return "<nil>"
-	}
-	return fmt.Sprint(v)
+	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(result), "["), "]"))
 }
 
 func _sum(v any) float64 {

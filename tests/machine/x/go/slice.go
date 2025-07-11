@@ -4,14 +4,13 @@ package main
 
 import (
 	"fmt"
-	"reflect"
 	"strings"
 )
 
 func main() {
-	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(_sprint([]int{1, 2, 3}[1:3]), "["), "]"))
-	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(_sprint([]int{1, 2, 3}[0:2]), "["), "]"))
-	fmt.Println(_sprint(_sliceString("hello", 1, 4)))
+	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint([]int{1, 2, 3}[1:3]), "["), "]"))
+	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint([]int{1, 2, 3}[0:2]), "["), "]"))
+	fmt.Println(_sliceString("hello", 1, 4))
 }
 
 func _sliceString(s string, i, j int) string {
@@ -34,15 +33,4 @@ func _sliceString(s string, i, j int) string {
 		end = start
 	}
 	return string([]rune(s)[start:end])
-}
-
-func _sprint(v any) string {
-	if v == nil {
-		return "<nil>"
-	}
-	rv := reflect.ValueOf(v)
-	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
-		return "<nil>"
-	}
-	return fmt.Sprint(v)
 }

@@ -4,8 +4,6 @@ package main
 
 import (
 	"fmt"
-	"reflect"
-	"strings"
 )
 
 func main() {
@@ -31,19 +29,8 @@ func main() {
 		}
 		return _res
 	}()
-	fmt.Println(_sprint("--- Even pairs ---"))
+	fmt.Println("--- Even pairs ---")
 	for _, p := range pairs {
-		fmt.Println(strings.TrimRight(strings.Join([]string{_sprint(p.N), _sprint(p.L)}, " "), " "))
+		fmt.Println(p.N, p.L)
 	}
-}
-
-func _sprint(v any) string {
-	if v == nil {
-		return "<nil>"
-	}
-	rv := reflect.ValueOf(v)
-	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
-		return "<nil>"
-	}
-	return fmt.Sprint(v)
 }

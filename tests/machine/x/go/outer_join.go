@@ -7,7 +7,6 @@ import (
 	"mochi/runtime/data"
 	"reflect"
 	"sort"
-	"strings"
 )
 
 func main() {
@@ -118,16 +117,16 @@ func main() {
 		}
 		return out
 	}()
-	fmt.Println(_sprint("--- Outer Join using syntax ---"))
+	fmt.Println("--- Outer Join using syntax ---")
 	for _, row := range result {
 		if _exists(row.Order) {
 			if _exists(row.Customer) {
-				fmt.Println(strings.TrimRight(strings.Join([]string{_sprint("Order"), _sprint((row.Order).(map[string]any)["id"]), _sprint("by"), _sprint((row.Customer).(map[string]any)["name"]), _sprint("- $"), _sprint((row.Order).(map[string]any)["total"])}, " "), " "))
+				fmt.Println("Order", (row.Order).(map[string]any)["id"], "by", (row.Customer).(map[string]any)["name"], "- $", (row.Order).(map[string]any)["total"])
 			} else {
-				fmt.Println(strings.TrimRight(strings.Join([]string{_sprint("Order"), _sprint((row.Order).(map[string]any)["id"]), _sprint("by"), _sprint("Unknown"), _sprint("- $"), _sprint((row.Order).(map[string]any)["total"])}, " "), " "))
+				fmt.Println("Order", (row.Order).(map[string]any)["id"], "by", "Unknown", "- $", (row.Order).(map[string]any)["total"])
 			}
 		} else {
-			fmt.Println(strings.TrimRight(strings.Join([]string{_sprint("Customer"), _sprint((row.Customer).(map[string]any)["name"]), _sprint("has no orders")}, " "), " "))
+			fmt.Println("Customer", (row.Customer).(map[string]any)["name"], "has no orders")
 		}
 	}
 }
@@ -372,17 +371,6 @@ func _query(src []any, joins []_joinSpec, opts _queryOpts) []any {
 		res[i] = opts.selectFn(r...)
 	}
 	return res
-}
-
-func _sprint(v any) string {
-	if v == nil {
-		return "<nil>"
-	}
-	rv := reflect.ValueOf(v)
-	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
-		return "<nil>"
-	}
-	return fmt.Sprint(v)
 }
 
 func _toAnySlice[T any](s []T) []any {

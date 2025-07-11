@@ -4,8 +4,6 @@ package main
 
 import (
 	"fmt"
-	"reflect"
-	"strings"
 )
 
 func main() {
@@ -65,19 +63,8 @@ func main() {
 		}
 		return _res
 	}()
-	fmt.Println(_sprint("--- Cross Join: All order-customer pairs ---"))
+	fmt.Println("--- Cross Join: All order-customer pairs ---")
 	for _, entry := range result {
-		fmt.Println(strings.TrimRight(strings.Join([]string{_sprint("Order"), _sprint(entry.OrderId), _sprint("(customerId:"), _sprint(entry.OrderCustomerId), _sprint(", total: $"), _sprint(entry.OrderTotal), _sprint(") paired with"), _sprint(entry.PairedCustomerName)}, " "), " "))
+		fmt.Println("Order", entry.OrderId, "(customerId:", entry.OrderCustomerId, ", total: $", entry.OrderTotal, ") paired with", entry.PairedCustomerName)
 	}
-}
-
-func _sprint(v any) string {
-	if v == nil {
-		return "<nil>"
-	}
-	rv := reflect.ValueOf(v)
-	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
-		return "<nil>"
-	}
-	return fmt.Sprint(v)
 }

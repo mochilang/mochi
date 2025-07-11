@@ -4,20 +4,8 @@ package main
 
 import (
 	"fmt"
-	"reflect"
 )
 
 func main() {
-	fmt.Println(_sprint(len(map[string]int{"a": 1, "b": 2})))
-}
-
-func _sprint(v any) string {
-	if v == nil {
-		return "<nil>"
-	}
-	rv := reflect.ValueOf(v)
-	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
-		return "<nil>"
-	}
-	return fmt.Sprint(v)
+	fmt.Println(len(map[string]int{"a": 1, "b": 2}))
 }
