@@ -1,3 +1,0 @@
-exit status 127
-tests/machine/x/erlang_new/json_builtin.erl:6:5: function json/1 undefined
-escript: There were compilation errors.

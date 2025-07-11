@@ -2,7 +2,7 @@
 
 This directory contains Erlang source code generated from the Mochi programs in `tests/vm/valid`.
 
-Compiled programs: 78/97
+Compiled programs: 81/97
 
 Checklist:
 - [x] append_builtin
@@ -43,7 +43,7 @@ Checklist:
 - [x] in_operator_extended
 - [x] inner_join
 - [x] join_multi
-- [ ] json_builtin
+ - [x] json_builtin
 - [x] left_join
 - [x] left_join_multi
 - [x] len_builtin
@@ -61,7 +61,7 @@ Checklist:
 - [x] map_int_key
  - [x] map_literal_dynamic
 - [x] map_membership
-- [ ] map_nested_assign
+ - [x] map_nested_assign
 - [x] match_expr
 - [x] match_full
 - [x] math_ops
@@ -82,7 +82,7 @@ Checklist:
 - [x] slice
 - [x] sort_stable
 - [x] str_builtin
-- [ ] string_compare
+ - [x] string_compare
 - [x] string_concat
 - [x] string_contains
 - [x] string_in_operator
@@ -121,3 +121,13 @@ Checklist:
 - [ ] Support pattern matching in let bindings
 - [ ] Add constant propagation for simple expressions
 - [ ] Investigate generating specs for dialyzer
+- [ ] Improve map key inference for atoms vs variables
+- [ ] Add tail recursion optimisation pass
+- [ ] Implement outer join operations
+- [ ] Support right join queries
+- [ ] Translate nested group by queries
+- [ ] Generate documentation for runtime helpers
+- [ ] Benchmark generated code for performance
+- [ ] Create GitHub workflow for automatic code generation
+- [ ] Support two-sum example using dictionaries
+- [ ] Implement update statement translation
