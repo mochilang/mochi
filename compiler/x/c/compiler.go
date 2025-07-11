@@ -759,7 +759,8 @@ func (c *Compiler) compileStructListType(st types.StructType) {
 		c.indent++
 		c.writeln(fmt.Sprintf("%s l;", listName))
 		c.writeln("l.len = len;")
-		c.writeln(fmt.Sprintf("l.data = (%s*)malloc(sizeof(%s)*len);", sanitizeName(st.Name), sanitizeName(st.Name)))
+		c.writeln(fmt.Sprintf("l.data = calloc(len, sizeof(%s));", sanitizeName(st.Name)))
+		c.writeln("if (!l.data && len > 0) { fprintf(stderr, \"alloc failed\\n\"); exit(1); }")
 		c.writeln("return l;")
 		c.indent--
 		c.writeln("}")
@@ -773,7 +774,8 @@ func (c *Compiler) compileStructListType(st types.StructType) {
 	c.indent++
 	c.writeln(fmt.Sprintf("%s l;", listName))
 	c.writeln("l.len = len;")
-	c.writeln(fmt.Sprintf("l.data = (%s*)malloc(sizeof(%s)*len);", sanitizeName(st.Name), sanitizeName(st.Name)))
+	c.writeln(fmt.Sprintf("l.data = calloc(len, sizeof(%s));", sanitizeName(st.Name)))
+	c.writeln("if (!l.data && len > 0) { fprintf(stderr, \"alloc failed\\n\"); exit(1); }")
 	c.writeln("return l;")
 	c.indent--
 	c.writeln("}")
@@ -2608,7 +2610,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 		var loop func(int)
 		loop = func(i int) {
 			src := sources[i]
-			iter := c.newTemp()
+			iter := sanitizeName(src.varName) + "_idx"
 			c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", iter, iter, src.expr, iter))
 			c.indent++
 			c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", cTypeFromType(src.elem), sanitizeName(src.varName), src.expr, iter))
